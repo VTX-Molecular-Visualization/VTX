@@ -1,14 +1,13 @@
-#1 Get VCPKG from  Github
+# 1. Get VCPKG from  Github
 git clone https://github.com/microsoft/vcpkg.git
-#2 Enter repository
 cd vcpkg
-#3 Deploy
+# 2. Install VCPKG
 .\bootstrap-vcpkg.bat
-#4 Integrate
+# 3. Integrate VCPKG
 .\vcpkg integrate install
-#5 Install dependencies
+# 4. Install project dependencies
 ./vcpkg install sdl2:x64-windows gl3w:x64-windows imgui:x64-windows
-#6 Build
+# 5. Make solution
 Run cmake.bat
-#7 Open solution
+# 6. Open solution
 Open VTX.sln then set project "VTX" as startup project
