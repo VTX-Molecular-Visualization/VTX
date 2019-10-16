@@ -11,6 +11,6 @@
 ### 4. Install project dependencies
     ./vcpkg install sdl2:x64-windows gl3w:x64-windows imgui:x64-windows
 ### 5. Make solution
-Run cmake.bat
+Run cmake_VS2019_x64.bat
 ### 6. Open solution
 Open VTX.sln then set project "VTX" as startup project
