@@ -1,15 +1,25 @@
 #ifndef __VTX_APP__
 #define __VTX_APP__
 
-#include "core/application.hpp"
-
 namespace VTX
 {
-	class VTXApp final : public Core::Application<VTXApp>
+	class VTXApp final
 	{
 	public:
-		virtual void start() override;
-		virtual void stop() override;
+		static VTXApp& INSTANCE()
+		{
+			static VTXApp instance;
+			return instance;
+		}
+
+		void start();
+		void stop();
+
+	protected:
+		VTXApp() = default;
+		VTXApp(const VTXApp&) = delete;
+		VTXApp& operator=(const VTXApp&) = delete;
+		virtual ~VTXApp() = default;
 	};
 }
 
