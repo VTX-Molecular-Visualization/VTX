@@ -11,5 +11,6 @@ del /q "*.cmake"
 del /q "*.vcxproj"
 del /q "*.sln"
 del /q "*.filters"
+del /q "*.user"
 ECHO [VTX] DONE
 PAUSE
