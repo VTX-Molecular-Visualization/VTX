@@ -1,0 +1,4 @@
+*.sln
+*.vcxproj
+*.filters
+CMake*
