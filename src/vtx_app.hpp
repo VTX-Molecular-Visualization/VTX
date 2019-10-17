@@ -15,7 +15,7 @@ namespace VTX
 		void start();
 		void stop();
 
-	protected:
+	private:
 		VTXApp() = default;
 		VTXApp(const VTXApp&) = delete;
 		VTXApp& operator=(const VTXApp&) = delete;
