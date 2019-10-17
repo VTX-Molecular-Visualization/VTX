@@ -5,8 +5,8 @@ namespace VTX
 {
 	class VTXApp final
 	{
-	public:
-		static VTXApp& INSTANCE()
+	  public:
+		static VTXApp & INSTANCE()
 		{
 			static VTXApp instance;
 			return instance;
@@ -15,12 +15,12 @@ namespace VTX
 		void start();
 		void stop();
 
-	private:
-		VTXApp() = default;
-		VTXApp(const VTXApp&) = delete;
-		VTXApp& operator=(const VTXApp&) = delete;
-		virtual ~VTXApp() = default;
+	  private:
+		VTXApp()				 = default;
+		VTXApp( const VTXApp & ) = delete;
+		VTXApp & operator=( const VTXApp & ) = delete;
+		virtual ~VTXApp()					 = default;
 	};
-}
+} // namespace VTX
 
 #endif

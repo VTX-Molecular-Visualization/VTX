@@ -7,13 +7,13 @@ namespace VTX
 	{
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO();
+		ImGuiIO & io = ImGui::GetIO();
 		ImGui::StyleColorsDark();
-		ImGui::Begin("Hello, world!");
+		ImGui::Begin( "Hello, world!" );
 	}
 
 	void VTXApp::stop()
 	{
 		ImGui::DestroyContext();
 	}
-}
+} // namespace VTX

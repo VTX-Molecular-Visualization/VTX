@@ -1,4 +1,4 @@
-AccessModifierOffset: 4
+AccessModifierOffset: -2
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
@@ -20,21 +20,21 @@ AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
 BraceWrapping:
-	AfterCaseLabel: false
-	AfterClass: true
-	AfterControlStatement: Always
-	AfterEnum: true
-	AfterFunction: true
-	AfterNamespace: true
-	AfterStruct: true
-	AfterUnion: true
-	AfterExternBlock: true
-	BeforeCatch: true
-	BeforeElse: true
-	IndentBraces: true
-	SplitEmptyFunction: false
-	SplitEmptyRecord: false
-	SplitEmptyNamespace: false
+    AfterCaseLabel: false
+    AfterClass: true
+    AfterControlStatement: true
+    AfterEnum: true
+    AfterFunction: true
+    AfterNamespace: true
+    AfterStruct: true
+    AfterUnion: true
+    AfterExternBlock: true
+    BeforeCatch: true
+    BeforeElse: true
+    IndentBraces: true
+    SplitEmptyFunction: false
+    SplitEmptyRecord: false
+    SplitEmptyNamespace: false
 BreakBeforeBinaryOperators: All
 BreakBeforeBraces: Allman
 BreakBeforeTernaryOperators: true
@@ -88,6 +88,6 @@ SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: true
 SpacesInParentheses: true
 SpacesInSquareBrackets: true
-Standard: c++17
+Standard: Cpp11
 TabWidth: 4
 UseTab: Always
