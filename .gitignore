@@ -1,4 +1,8 @@
 *.sln
 *.vcxproj
 *.filters
-CMake*
+cmake*
+*.user
+.vs/
+*.dir/
+Debug/
