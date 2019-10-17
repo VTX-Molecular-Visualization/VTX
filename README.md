@@ -13,4 +13,4 @@
 ### 5. Make solution
 Run cmake_VS2019_x64.bat
 ### 6. Open solution
-Open VTX.sln then set project "VTX" as startup project
+Open "_windows/VTX.sln" then set project "VTX" as startup project
