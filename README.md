@@ -14,3 +14,9 @@
 Run cmake_VS2019_x64.bat
 ### 6. Open solution
 Open "_windows/VTX.sln" then set project "VTX" as startup project
+
+## LINUX
+
+## MAC OS
+
+
