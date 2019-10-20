@@ -9,7 +9,7 @@
 ### 3. Integrate VCPKG
     .\vcpkg integrate install
 ### 4. Install project dependencies
-    ./vcpkg install sdl2:x64-windows gl3w:x64-windows imgui:x64-windows glm:x64-windows msgpack:x64-windows
+    .\vcpkg install sdl2:x64-windows gl3w:x64-windows imgui:x64-windows glm:x64-windows msgpack:x64-windows
 ### 5. Make solution
 Run cmake_VS2019_x64.bat
 ### 6. Open solution
