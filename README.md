@@ -14,6 +14,15 @@
 Run cmake_VS2019_x64.bat
 ### 6. Open solution
 Open "_windows/VTX.sln" then set project "VTX" as startup project
+### Install/configure ClangFormat
+Install [ClangFormat VS extension](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.ClangFormat)
+Go to Tools -> Options, then under LLVM/Clang, set the followiung values:
+- Format On Save
+	- Enable: True
+- Format Options
+	- Fallback Style: LLVM
+	- Sort includes: True
+	- Style: file
 
 ## LINUX
 
