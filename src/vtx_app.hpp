@@ -14,7 +14,6 @@ namespace VTX
 			return instance;
 		}
 
-		void init();
 		void start();
 		void stop();
 
@@ -23,6 +22,7 @@ namespace VTX
 		VTXApp( const VTXApp & ) = delete;
 		VTXApp & operator=( const VTXApp & ) = delete;
 		~VTXApp()							 = default;
+		void _init();
 	};
 } // namespace VTX
 

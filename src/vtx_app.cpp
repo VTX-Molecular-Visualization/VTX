@@ -3,9 +3,9 @@
 
 namespace VTX
 {
-	VTXApp::VTXApp() { this->init(); }
+	VTXApp::VTXApp() { this->_init(); }
 
-	void VTXApp::init() { INFO( "Initializing app" ); }
+	void VTXApp::_init() { INFO( "Initializing app" ); }
 
 	void VTXApp::start()
 	{
