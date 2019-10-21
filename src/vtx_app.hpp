@@ -1,6 +1,8 @@
 #ifndef __VTX_APP__
 #define __VTX_APP__
 
+#include "util/logger.hpp"
+
 namespace VTX
 {
 	class VTXApp final
@@ -12,14 +14,15 @@ namespace VTX
 			return instance;
 		}
 
+		void init();
 		void start();
 		void stop();
 
 	  private:
-		VTXApp()				 = default;
+		VTXApp();
 		VTXApp( const VTXApp & ) = delete;
 		VTXApp & operator=( const VTXApp & ) = delete;
-		virtual ~VTXApp()					 = default;
+		~VTXApp()							 = default;
 	};
 } // namespace VTX
 
