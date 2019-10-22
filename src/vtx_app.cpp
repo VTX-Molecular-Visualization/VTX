@@ -1,27 +1,16 @@
 #include "vtx_app.hpp"
-#include <imgui.h>
 
 namespace VTX
 {
-	VTXApp::VTXApp() { this->_init(); }
-
-	void VTXApp::_init() { INFO( "Initializing app" ); }
-
-	void VTXApp::start()
+	VTXApp::VTXApp()
 	{
-		INFO( "Starting app" );
-		/*
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO & io = ImGui::GetIO();
-		ImGui::StyleColorsDark();
-		ImGui::Begin( "Hello, world!" );
-		*/
+		INFO( "Initializing app" );
+		_ui = new UI::UserInterface();
 	}
 
-	void VTXApp::stop()
-	{
-		INFO( "Stopping app" );
-		/*ImGui::DestroyContext();*/
-	}
+	VTXApp::~VTXApp() { delete _ui; }
+
+	void VTXApp::start() { INFO( "Starting app" ); }
+
+	void VTXApp::stop() { INFO( "Stopping app" ); }
 } // namespace VTX

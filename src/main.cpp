@@ -1,16 +1,22 @@
+#include "util/logger.hpp"
 #include "vtx_app.hpp"
-#include <chrono>
-#include <thread>
 
 using namespace VTX;
 
-int main()
+int main( int argc, char * argv[] )
 {
-	VTXApp & app = VTXApp::INSTANCE();
+	try
+	{
+		VTXApp & app = VTXApp::INSTANCE();
 
-	app.start();
-	std::this_thread::sleep_for( std::chrono::milliseconds( 2000 ) );
-	app.stop();
+		app.start();
+		app.stop();
+	}
+	catch ( const std::exception & e )
+	{
+		ERROR( e.what() );
+		return EXIT_FAILURE;
+	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }

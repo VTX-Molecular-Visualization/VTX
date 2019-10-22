@@ -1,6 +1,7 @@
 #ifndef __VTX_APP__
 #define __VTX_APP__
 
+#include "ui/user_interface.hpp"
 #include "util/logger.hpp"
 
 namespace VTX
@@ -18,11 +19,12 @@ namespace VTX
 		void stop();
 
 	  private:
+		UI::UserInterface * _ui = nullptr;
+
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;
 		VTXApp & operator=( const VTXApp & ) = delete;
-		~VTXApp()							 = default;
-		void _init();
+		~VTXApp();
 	};
 } // namespace VTX
 
