@@ -13,7 +13,7 @@ set(CMAKE_SUPPRESS_REGENERATION true)
 set(PATH_SRC "src")
 
 # Get all .hpp.
-file(GLOB_RECURSE HPP ${PATH_SRC}/*.hpp)
+file(GLOB_RECURSE HPP ${PATH_SRC}/*.hpp ${PATH_SRC}/*.h)
 foreach(SRC IN ITEMS ${HPP})
     get_filename_component(SRC_PATH "${SRC}" PATH)
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
@@ -34,9 +34,13 @@ endforeach()
 
 # Find libs.
 find_package(SDL2 CONFIG REQUIRED)
+find_package(gl3w CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
 
 # Declare executable with source files.
 add_executable(VTX ${HPP} ${CPP})
 
 # Link libs.
 target_link_libraries(VTX PRIVATE SDL2::SDL2 SDL2::SDL2main)
+target_link_libraries(VTX PRIVATE unofficial::gl3w::gl3w)
+target_link_libraries(VTX PRIVATE glm)
