@@ -32,5 +32,12 @@ foreach(SRC IN ITEMS ${CPP})
     source_group("Sources${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
+# Find libs.
+find_package(SDL2 REQUIRED)
+
 # Declare executable with source files.
 add_executable(VTX ${HPP} ${CPP})
+
+# Link libs.
+include_directories(${SDL2_INCLUDE_DIR})
+target_link_libraries(VTX SDL2 SDL2main)
