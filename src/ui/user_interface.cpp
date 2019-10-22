@@ -2,7 +2,9 @@
 #include "../lib/imgui/imgui.h"
 #include "../lib/imgui/imgui_impl_opengl3.h"
 #include "../lib/imgui/imgui_impl_sdl.h"
+#include "../util/logger.hpp"
 #include <GL/gl3w.h>
+#include <iostream>
 
 namespace VTX
 {
@@ -10,6 +12,7 @@ namespace VTX
 	{
 		UserInterface::UserInterface()
 		{
+			INFO( "Creating user interface" );
 			_initSDL2();
 			_initIMGUI();
 		}
@@ -22,6 +25,7 @@ namespace VTX
 
 		void UserInterface::_initSDL2()
 		{
+			INFO( "Initializing SDL2" );
 			if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) != 0 )
 			{
 				// throw SDLException( SDL_GetError() );
@@ -59,25 +63,30 @@ namespace VTX
 				// throw SDLException( SDL_GetError() );
 			}
 
+			SDL_GL_MakeCurrent( _window, _glContext );
 			SDL_GL_SetSwapInterval( true );
 		}
 
 		void UserInterface::_initIMGUI()
 		{
+			INFO( "Initializing IMGUI" );
+
 			/*
 			if ( !IMGUI_CHECKVERSION() )
 				throw std::exception( "imgui check version error" );
 				*/
 
 			ImGui::CreateContext();
-			ImGuiIO & io = ImGui::GetIO();
-			// Enable Keyboard Controls
-			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-			// dark style
+			// Setup controls.
+			ImGuiIO & io = ImGui::GetIO();
+			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+			io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
+
+			// Dark style.
 			ImGui::StyleColorsDark();
 
-			// Setup Platform/Renderer bindings
+			// Setup Platform/Renderer bindings.
 			ImGui_ImplSDL2_InitForOpenGL( _window, _glContext );
 			ImGui_ImplOpenGL3_Init();
 		}
@@ -99,18 +108,31 @@ namespace VTX
 
 		void UserInterface::display()
 		{
-			ImGuiIO & io = ImGui::GetIO();
-			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-			io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
-
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame( _window );
 			ImGui::NewFrame();
 			ImGui::Render();
-			SDL_GL_MakeCurrent( _window, _glContext );
+			ImGuiIO & io = ImGui::GetIO();
 			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
+		}
+
+		void UserInterface::_showMenuBar()
+		{
+			if ( ImGui::BeginMainMenuBar() )
+			{
+				if ( ImGui::BeginMenu( "File" ) )
+				{
+					if ( ImGui::MenuItem( "New" ) )
+					{ std::cout << "New menu" << std::endl; }
+					if ( ImGui::MenuItem( "Open" ) )
+					{ std::cout << "Open menu" << std::endl; }
+					ImGui::EndMenu();
+				}
+				ImGui::Separator();
+				ImGui::Separator();
+			}
+			ImGui::EndMainMenuBar();
 		}
 
 	} // namespace UI

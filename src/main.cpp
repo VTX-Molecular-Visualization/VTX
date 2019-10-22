@@ -7,17 +7,14 @@ int main( int argc, char * argv[] )
 {
 	try
 	{
-		VTXApp & app = VTXApp::INSTANCE();
-
-		app.start();
-		//app.stop();
+		VTXApp::INSTANCE().start();
 	}
 	catch ( const std::exception & e )
 	{
 		ERROR( e.what() );
+		VTXApp::INSTANCE().stop();
 		return EXIT_FAILURE;
 	}
-
 
 	return EXIT_SUCCESS;
 }

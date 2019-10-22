@@ -24,6 +24,7 @@ namespace VTX
 			void _initIMGUI();
 			void _disposeSDL2();
 			void _disposeIMGUI();
+			void _showMenuBar();
 		};
 	} // namespace UI
 } // namespace VTX
