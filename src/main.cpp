@@ -10,13 +10,14 @@ int main( int argc, char * argv[] )
 		VTXApp & app = VTXApp::INSTANCE();
 
 		app.start();
-		app.stop();
+		//app.stop();
 	}
 	catch ( const std::exception & e )
 	{
 		ERROR( e.what() );
 		return EXIT_FAILURE;
 	}
+
 
 	return EXIT_SUCCESS;
 }

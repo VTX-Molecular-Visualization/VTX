@@ -33,11 +33,10 @@ foreach(SRC IN ITEMS ${CPP})
 endforeach()
 
 # Find libs.
-find_package(SDL2 REQUIRED)
+find_package(SDL2 CONFIG REQUIRED)
 
 # Declare executable with source files.
 add_executable(VTX ${HPP} ${CPP})
 
 # Link libs.
-include_directories(${SDL2_INCLUDE_DIR})
-target_link_libraries(VTX SDL2 SDL2main)
+target_link_libraries(VTX PRIVATE SDL2::SDL2 SDL2::SDL2main)

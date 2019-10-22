@@ -1,7 +1,7 @@
 #ifndef __USER_INTERFACE__
 #define __USER_INTERFACE__
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 namespace VTX
 {
@@ -14,7 +14,6 @@ namespace VTX
 			~UserInterface();
 
 		  private:
-			dur de mal coder
 			SDL_Window *  _window	 = nullptr;
 			SDL_GLContext _glContext = nullptr;
 			// SDL_DisplayMode _displayMode;
