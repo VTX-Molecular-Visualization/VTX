@@ -1,0 +1,398 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Fichiers sources">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Fichiers d%27en-tête">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Fichiers de ressources">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="DLLs">
+      <UniqueIdentifier>{8c24f35c-131f-4cbd-afaf-12cfd87a21ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{17056a57-11f8-40ba-ad3c-8eb682adc237}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="io">
+      <UniqueIdentifier>{8e83db52-522c-4271-ab74-3a4d2953b6ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{5e21dc0a-b01f-4ae0-8051-e5e8611717e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{8bf7bf18-3ff6-4899-84b2-156949cd8f02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="molecules">
+      <UniqueIdentifier>{0f163682-b79a-4523-8b0a-66474de2e3c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders\shading">
+      <UniqueIdentifier>{467ebf6a-5761-4342-bde3-cbe142ff94a2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\defines.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GLSLProgram.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\chrono.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\io\filePath.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\app.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\io\ioUtils.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GLSLProgramManager.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\nonCopyableClass.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\aCamera.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\triangleMesh.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\appConfig.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\imgui\imconfig.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\imgui\imgui.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\imgui\imgui_impl_opengl3.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\imgui\imgui_impl_sdl.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\imgui\imgui_internal.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\imgui\imstb_rectpack.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\imgui\imstb_textedit.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="third_party\imgui\imstb_truetype.h">
+      <Filter>imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="src\window.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\userInterface.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\scene.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\freeflyCamera.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\trackballCamera.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\exceptions.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\singletonClass.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\renderer.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\aabb.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\io\pdbFile.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\controller.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\molecules\bond.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\mathUtils.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\molecules\chain.hpp">
+      <Filter>molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\molecules\residue.hpp">
+      <Filter>molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\io\mmtfReader.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\wireRep.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\molecules\atom.hpp">
+      <Filter>molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vdwSphereRepGeomShader.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\aMoleculeRep.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\bboxRep.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\transform.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\colorGenerators.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ballAndStickRep.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vdwSphereRepGeomShaderDeferred.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vdwSpherePointSpritesRep.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vdwSphereSSBORep.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gBuffers.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\geometryPass.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\aRenderPass.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ballAndStickRepDeferred.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="src\io\arcReader.hpp">
+      <Filter>io</Filter>
+    </ClInclude>
+    <ClInclude Include="src\molecules\aMolecule.hpp">
+      <Filter>molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\molecules\moleculeDynamic.hpp">
+      <Filter>molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\molecules\moleculeStatic.hpp">
+      <Filter>molecules</Filter>
+    </ClInclude>
+    <ClInclude Include="src\math\modelMatrix.hpp">
+      <Filter>math</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\app.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\GL\gl3w.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLSLProgram.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GLSLProgramManager.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\io\ioUtils.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\imgui\imgui_impl_opengl3.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\imgui\imgui_impl_sdl.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\imgui\imgui.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\imgui\imgui_demo.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\imgui\imgui_draw.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="third_party\imgui\imgui_widgets.cpp">
+      <Filter>imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\window.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\userInterface.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\appConfig.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\renderer.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\math\aabb.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="src\io\pdbFile.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\aCamera.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\io\mmtfReader.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wireRep.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\molecules\atom.cpp">
+      <Filter>molecules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vdwSphereRepGeomShader.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\molecules\residue.cpp">
+      <Filter>molecules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\bboxRep.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ballAndStickRep.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vdwSphereRepGeomShaderDeferred.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vdwSpherePointSpritesRep.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\vdwSphereSSBORep.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gBuffers.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ballAndStickRepDeferred.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\io\arcReader.cpp">
+      <Filter>io</Filter>
+    </ClCompile>
+    <ClCompile Include="src\molecules\moleculeStatic.cpp">
+      <Filter>molecules</Filter>
+    </ClCompile>
+    <ClCompile Include="src\molecules\moleculeDynamic.cpp">
+      <Filter>molecules</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\shaders\spherePointSprites.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\spherePointSprites.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\cylinderImpostor.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\wire.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\wire.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\spherePointSpritesPerspective.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\spherePointSpritesPerspective.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\sphereImpostor.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\sphereImpostor.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\sphereImpostorGeom.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\line.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\line.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\sphereImpostorGeomQuad.geom">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\sphereImpostorGeomOctagon.geom">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\sphereImpostorGeomTriangle.geom">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\sphereImpostorGeomHexagon.geom">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\cylinderImpostorGeom.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\cylinderImpostorGeom.geom">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\sphereImpostorDeferred.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\shading\diffuseShading.frag">
+      <Filter>shaders\shading</Filter>
+    </None>
+    <None Include="src\shaders\passVertices.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\shading\toonShading.frag">
+      <Filter>shaders\shading</Filter>
+    </None>
+    <None Include="src\shaders\shading\blinnPhongShading.frag">
+      <Filter>shaders\shading</Filter>
+    </None>
+    <None Include="src\shaders\shading\ssao.frag">
+      <Filter>shaders\shading</Filter>
+    </None>
+    <None Include="src\shaders\shading\blur.frag">
+      <Filter>shaders\shading</Filter>
+    </None>
+    <None Include="src\shaders\cylinderImpostorDeferred.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="src\shaders\shading\fxaa.frag">
+      <Filter>shaders\shading</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="third_party\SDL2\lib\x64\SDL2.dll" />
+  </ItemGroup>
+</Project>

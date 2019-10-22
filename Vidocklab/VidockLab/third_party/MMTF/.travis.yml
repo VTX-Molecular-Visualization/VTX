@@ -1,0 +1,64 @@
+language: cpp
+sudo: false
+
+linux64_addons:
+    addons: &linux64
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.8
+
+linux32_addons:
+    addons: &linux32
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.8
+        - g++-4.8-multilib
+        - linux-libc-dev:i386
+        - libc6-dev-i386
+
+osx_gcc_addons:
+    addons: &osx_gcc
+      homebrew:
+        packages:
+        - gcc@6
+
+# Set empty values for allow_failures to work
+env:
+
+matrix:
+  fast_finish: true
+  include:
+    - os: linux
+      env: EMSCRIPTEN=ON
+    - os: linux
+      compiler: clang
+      addons: *linux64
+    - os: linux
+      compiler: gcc
+      env: ARCH=x86 CMAKE_EXTRA=-DHAVE_LIBM=/lib32/libm.so.6
+      addons: *linux32
+    - os: osx
+      compiler: clang
+    - os: osx
+      compiler: gcc
+      addons: *osx_gcc
+
+before_install:
+  # Setting environement
+  - cd $TRAVIS_BUILD_DIR
+  - source ci/setup-travis.sh
+  - $CC --version
+  - $CXX --version
+
+script:
+  - cd $TRAVIS_BUILD_DIR
+  - mkdir build && cd build
+  - $CMAKE_CONFIGURE cmake $CMAKE_ARGS $CMAKE_EXTRA ..
+  - make -j2
+  - ctest -j2 --output-on-failure
+  - bash $TRAVIS_BUILD_DIR/ci/travis-test-example.sh
+  - cd $TRAVIS_BUILD_DIR
