@@ -12,7 +12,7 @@ namespace VTX
 				std::chrono::system_clock::now() );
 			std::string nowStr( ctime( &now ) );
 
-			// Substring to remove breakline.
+			// Substring to remove newline.
 			return nowStr.substr( 0, nowStr.length() - 1 );
 		}
 	} // namespace Util

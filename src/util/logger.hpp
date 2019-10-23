@@ -8,11 +8,6 @@
 #define WARNING( s ) VTX::Util::Logger::logWarning( s )
 #define ERROR( s ) VTX::Util::Logger::logError( s )
 
-constexpr int LOG_LEVEL_DEBUG	= 0;
-constexpr int LOG_LEVEL_INFO	= 1;
-constexpr int LOG_LEVEL_WARNING = 2;
-constexpr int LOG_LEVEL_ERROR	= 3;
-
 namespace VTX
 {
 	namespace Util
@@ -20,6 +15,14 @@ namespace VTX
 		class Logger
 		{
 		  public:
+			enum LEVE
+			{
+				DEBUG = 0,
+				INFO,
+				WARNING,
+				ERROR
+			};
+
 			static void logDebug( std::string );
 			static void logInfo( std::string );
 			static void logWarning( std::string );
@@ -27,7 +30,7 @@ namespace VTX
 
 		  private:
 			Logger() = default;
-			static std::string _formatLog( std::string );
+			static void _log( std::string, std::string );
 		};
 	} // namespace Util
 } // namespace VTX

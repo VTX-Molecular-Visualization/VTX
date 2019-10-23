@@ -8,35 +8,37 @@ namespace VTX
 		void Logger::logDebug( std::string p_debug )
 		{
 #ifdef LOG_LEVEL
-			if ( LOG_LEVEL > LOG_LEVEL_DEBUG ) return;
+			if ( LOG_LEVEL > LEVEL::DEBUG ) return;
 #endif
-			std::cout << _formatLog( p_debug ) << std::endl;
+			_log( "DEBUG", p_debug );
 		}
 
 		void Logger::logInfo( std::string p_info )
 		{
 #ifdef LOG_LEVEL
-			if ( LOG_LEVEL > LOG_LEVEL_INFO ) return;
+			if ( LOG_LEVEL > LEVEL::INFO ) return;
 #endif
-			std::cout << _formatLog( p_info ) << std::endl;
+			_log( "INFO", p_info );
 		}
 
 		void Logger::logWarning( std::string p_warning )
 		{
 #ifdef LOG_LEVEL
-			if ( LOG_LEVEL > LOG_LEVEL_WARNING ) return;
+			if ( LOG_LEVEL > LEVEL::WARNING ) return;
 #endif
-			std::cout << _formatLog( p_warning ) << std::endl;
+			_log( "WARNING", p_warning );
 		}
 
 		void Logger::logError( std::string p_error )
 		{
-			std::cerr << _formatLog( p_error ) << std::endl;
+			_log( "ERROR", p_error );
 		}
 
-		std::string Logger::_formatLog( std::string p_string )
+		void Logger::_log( std::string p_level, std::string p_string )
 		{
-			return "[" + Time::getNowString() + "] " + p_string;
+			std::cout << "[" + Time::getNowString() + "]" + "[" + p_level + "] "
+							 + p_string
+					  << std::endl;
 		}
 	} // namespace Util
 } // namespace VTX

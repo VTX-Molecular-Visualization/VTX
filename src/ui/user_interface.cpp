@@ -1,4 +1,5 @@
 #include "user_interface.hpp"
+#include "../exceptions.hpp"
 #include "../lib/imgui/imgui.h"
 #include "../lib/imgui/imgui_impl_opengl3.h"
 #include "../lib/imgui/imgui_impl_sdl.h"
@@ -29,10 +30,7 @@ namespace VTX
 		{
 			INFO( "Initializing SDL2" );
 			if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) != 0 )
-			{
-				ERROR( SDL_GetError() );
-				// throw SDLException( SDL_GetError() );
-			}
+			{ throw Exception::SDLException( SDL_GetError() ); }
 
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, 0 );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK,
@@ -55,17 +53,11 @@ namespace VTX
 											| SDL_WINDOW_ALLOW_HIGHDPI );
 
 			if ( _window == nullptr )
-			{
-				ERROR( SDL_GetError() );
-				// throw SDLException( SDL_GetError() );
-			}
+			{ throw Exception::SDLException( SDL_GetError() ); }
 
 			_glContext = SDL_GL_CreateContext( _window );
 			if ( _glContext == nullptr )
-			{
-				ERROR( SDL_GetError() );
-				// throw SDLException( SDL_GetError() );
-			}
+			{ throw Exception::SDLException( SDL_GetError() ); }
 
 			SDL_GL_MakeCurrent( _window, _glContext );
 			SDL_GL_SetSwapInterval( true );
@@ -75,15 +67,9 @@ namespace VTX
 		{
 			INFO( "Initializing OpenGL" );
 			if ( gl3wInit() )
-			{
-				ERROR( "failed to initialize OpenGL" );
-				// throw GLException( "failed to initialize OpenGL" );
-			}
+			{ throw Exception::GLException( "gl3wInit() failed" ); }
 			if ( !gl3wIsSupported( 4, 5 ) )
-			{
-				ERROR( "OpenGL 4.5 not supported" );
-				// throw GLException( "OpenGL 4.5 not supported" );
-			}
+			{ throw Exception::GLException( "OpenGL 4.5 not supported" ); }
 
 			std::cout << "--- GL version: " << glGetString( GL_VERSION )
 					  << std::endl
@@ -98,7 +84,10 @@ namespace VTX
 			INFO( "Initializing IMGUI" );
 
 			if ( !IMGUI_CHECKVERSION() )
-			{ ERROR( "imgui check version error" ); }
+			{
+				throw Exception::IMGUIException(
+					"IMGUI_CHECKVERSION() failed" );
+			}
 
 			ImGui::CreateContext();
 
