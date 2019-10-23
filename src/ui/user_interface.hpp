@@ -21,10 +21,10 @@ namespace VTX
 			// SDL_DisplayMode _displayMode;
 
 			void _initSDL2();
+			void _initGL();
 			void _initIMGUI();
 			void _disposeSDL2();
 			void _disposeIMGUI();
-			void _showMenuBar();
 		};
 	} // namespace UI
 } // namespace VTX

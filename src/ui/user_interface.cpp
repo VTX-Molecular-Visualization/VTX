@@ -3,6 +3,7 @@
 #include "../lib/imgui/imgui_impl_opengl3.h"
 #include "../lib/imgui/imgui_impl_sdl.h"
 #include "../util/logger.hpp"
+#include "../vtx_app.hpp"
 #include <GL/gl3w.h>
 #include <iostream>
 
@@ -14,6 +15,7 @@ namespace VTX
 		{
 			INFO( "Creating user interface" );
 			_initSDL2();
+			_initGL();
 			_initIMGUI();
 		}
 
@@ -28,6 +30,7 @@ namespace VTX
 			INFO( "Initializing SDL2" );
 			if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) != 0 )
 			{
+				ERROR( SDL_GetError() );
 				// throw SDLException( SDL_GetError() );
 			}
 
@@ -36,30 +39,31 @@ namespace VTX
 								 SDL_GL_CONTEXT_PROFILE_CORE );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
-
+			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 			SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
 			SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
-			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
 			// SDL_GetCurrentDisplayMode( 0, &m_displayMode );
 
 			_window = SDL_CreateWindow( "Test",
-										SDL_WINDOWPOS_UNDEFINED,
-										SDL_WINDOWPOS_UNDEFINED,
-										1920,
-										1080,
+										SDL_WINDOWPOS_CENTERED,
+										SDL_WINDOWPOS_CENTERED,
+										800,
+										600,
 										SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
 											| SDL_WINDOW_RESIZABLE
 											| SDL_WINDOW_ALLOW_HIGHDPI );
 
 			if ( _window == nullptr )
 			{
+				ERROR( SDL_GetError() );
 				// throw SDLException( SDL_GetError() );
 			}
 
 			_glContext = SDL_GL_CreateContext( _window );
 			if ( _glContext == nullptr )
 			{
+				ERROR( SDL_GetError() );
 				// throw SDLException( SDL_GetError() );
 			}
 
@@ -67,14 +71,34 @@ namespace VTX
 			SDL_GL_SetSwapInterval( true );
 		}
 
+		void UserInterface::_initGL()
+		{
+			INFO( "Initializing OpenGL" );
+			if ( gl3wInit() )
+			{
+				ERROR( "failed to initialize OpenGL" );
+				// throw GLException( "failed to initialize OpenGL" );
+			}
+			if ( !gl3wIsSupported( 4, 5 ) )
+			{
+				ERROR( "OpenGL 4.5 not supported" );
+				// throw GLException( "OpenGL 4.5 not supported" );
+			}
+
+			std::cout << "--- GL version: " << glGetString( GL_VERSION )
+					  << std::endl
+					  << "--- GLSL version: "
+					  << glGetString( GL_SHADING_LANGUAGE_VERSION ) << std::endl
+					  << "--- GL device: " << glGetString( GL_VENDOR ) << " "
+					  << glGetString( GL_RENDERER ) << std::endl;
+		}
+
 		void UserInterface::_initIMGUI()
 		{
 			INFO( "Initializing IMGUI" );
 
-			/*
 			if ( !IMGUI_CHECKVERSION() )
-				throw std::exception( "imgui check version error" );
-				*/
+			{ ERROR( "imgui check version error" ); }
 
 			ImGui::CreateContext();
 
@@ -108,6 +132,18 @@ namespace VTX
 
 		void UserInterface::display()
 		{
+			SDL_Event event;
+			while ( SDL_PollEvent( &event ) )
+			{
+				ImGui_ImplSDL2_ProcessEvent( &event );
+				if ( ( event.type == SDL_QUIT )
+					 || ( event.type == SDL_WINDOWEVENT
+						  && event.window.event == SDL_WINDOWEVENT_CLOSE
+						  && event.window.windowID
+								 == SDL_GetWindowID( _window ) ) )
+				{ VTXApp::INSTANCE().stop(); }
+			}
+
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame( _window );
 			ImGui::NewFrame();
@@ -115,24 +151,7 @@ namespace VTX
 			ImGuiIO & io = ImGui::GetIO();
 			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
-		}
-
-		void UserInterface::_showMenuBar()
-		{
-			if ( ImGui::BeginMainMenuBar() )
-			{
-				if ( ImGui::BeginMenu( "File" ) )
-				{
-					if ( ImGui::MenuItem( "New" ) )
-					{ std::cout << "New menu" << std::endl; }
-					if ( ImGui::MenuItem( "Open" ) )
-					{ std::cout << "Open menu" << std::endl; }
-					ImGui::EndMenu();
-				}
-				ImGui::Separator();
-				ImGui::Separator();
-			}
-			ImGui::EndMainMenuBar();
+			SDL_GL_SwapWindow( _window );
 		}
 
 	} // namespace UI

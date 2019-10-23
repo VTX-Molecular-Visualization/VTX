@@ -19,12 +19,16 @@ namespace VTX
 		void stop();
 
 	  private:
-		UI::UserInterface * _ui = nullptr;
+		UI::UserInterface * _ui		   = nullptr;
+		bool				_isRunning = false;
+		double				_time	   = 0.;
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;
 		VTXApp & operator=( const VTXApp & ) = delete;
 		~VTXApp();
+
+		void _update();
 	};
 } // namespace VTX
 

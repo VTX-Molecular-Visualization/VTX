@@ -13,11 +13,19 @@ namespace VTX
 	void VTXApp::start()
 	{
 		INFO( "Starting application" );
-		while ( 1 )
+		_isRunning = true;
+
+		while ( _isRunning )
 		{
-			_ui->display();
+			update();
 		}
 	}
 
-	void VTXApp::stop() { INFO( "Stopping application" ); }
+	void VTXApp::stop()
+	{
+		INFO( "Stopping application" );
+		_isRunning = false;
+	}
+
+	void VTXApp::_update() { _ui->display(); }
 } // namespace VTX
