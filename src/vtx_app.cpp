@@ -17,7 +17,7 @@ namespace VTX
 
 		while ( _isRunning )
 		{
-			update();
+			_update();
 		}
 	}
 

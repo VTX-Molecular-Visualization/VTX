@@ -141,15 +141,21 @@ namespace VTX
 						  && event.window.event == SDL_WINDOWEVENT_CLOSE
 						  && event.window.windowID
 								 == SDL_GetWindowID( _window ) ) )
-				{ VTXApp::INSTANCE().stop(); }
+				{
+					VTXApp::INSTANCE().stop();
+					return;
+				}
 			}
 
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame( _window );
 			ImGui::NewFrame();
+			bool demo = true;
+			ImGui::ShowDemoWindow( &demo );
 			ImGui::Render();
 			ImGuiIO & io = ImGui::GetIO();
 			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+			glClear( GL_COLOR_BUFFER_BIT );
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
 			SDL_GL_SwapWindow( _window );
 		}
