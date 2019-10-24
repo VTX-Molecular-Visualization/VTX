@@ -5,6 +5,7 @@
 #include "../lib/imgui/imgui_impl_sdl.h"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
+#include "component_menu.hpp"
 #include <GL/gl3w.h>
 #include <iostream>
 
@@ -24,6 +25,11 @@ namespace VTX
 		{
 			_disposeIMGUI();
 			_disposeSDL2();
+		}
+
+		void UserInterface::_addComponents()
+		{
+			_addComponent( new ComponentMenu() );
 		}
 
 		void UserInterface::_initSDL2()
@@ -119,7 +125,7 @@ namespace VTX
 			{ ImGui::DestroyContext(); }
 		}
 
-		void UserInterface::display()
+		void UserInterface::_draw()
 		{
 			SDL_Event event;
 			while ( SDL_PollEvent( &event ) )

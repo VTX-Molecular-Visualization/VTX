@@ -2,13 +2,9 @@
 
 namespace VTX
 {
-	VTXApp::VTXApp()
-	{
-		INFO( "Initializing application" );
-		_ui = new UI::UserInterface();
-	}
+	VTXApp::VTXApp() { INFO( "Initializing application" ); }
 
-	VTXApp::~VTXApp() { delete _ui; }
+	VTXApp::~VTXApp() {}
 
 	void VTXApp::start()
 	{
@@ -27,5 +23,5 @@ namespace VTX
 		_isRunning = false;
 	}
 
-	void VTXApp::_update() { _ui->display(); }
+	void VTXApp::_update() { _ui.display(); }
 } // namespace VTX

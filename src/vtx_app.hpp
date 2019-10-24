@@ -19,9 +19,9 @@ namespace VTX
 		void stop();
 
 	  private:
-		UI::UserInterface * _ui		   = nullptr;
-		bool				_isRunning = false;
-		double				_time	   = 0.;
+		UI::UserInterface _ui		 = UI::UserInterface();
+		bool			  _isRunning = false;
+		double			  _time		 = 0.;
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;

@@ -1,19 +1,22 @@
 #ifndef __USER_INTERFACE__
 #define __USER_INTERFACE__
 
+#include "base_component.hpp"
 #include <SDL2/SDL.h>
 
 namespace VTX
 {
 	namespace UI
 	{
-		class UserInterface
+		class UserInterface : public BaseComponent
 		{
 		  public:
 			UserInterface();
 			~UserInterface();
 
-			void display();
+		  protected:
+			virtual void _addComponents() override;
+			virtual void _draw() override;
 
 		  private:
 			SDL_Window *  _window	 = nullptr;
