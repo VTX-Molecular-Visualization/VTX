@@ -1,5 +1,5 @@
-#ifndef __UTIL_TIME__
-#define __UTIL_TIME__
+#ifndef __MY_TIME__
+#define __MY_TIME__
 
 #include <iostream>
 

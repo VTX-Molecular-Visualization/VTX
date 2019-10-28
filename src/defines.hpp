@@ -7,6 +7,9 @@
 
 namespace VTX
 {
+	constexpr int OPENGL_VERSION_MAJOR = 4;
+	constexpr int OPENGL_VERSION_MINOR = 4;
+
 	using uint = unsigned int;
 
 	using Vec2f = glm::vec2;

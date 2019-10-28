@@ -1,12 +1,12 @@
-#ifndef __UTIL_LOGGER__
-#define __UTIL_LOGGER__
+#ifndef __LOGGER__
+#define __LOGGER__
 
 #include <iostream>
 
-#define DEBUG( s ) VTX::Util::Logger::logInfo( s )
-#define INFO( s ) VTX::Util::Logger::logInfo( s )
-#define WARNING( s ) VTX::Util::Logger::logWarning( s )
-#define ERROR( s ) VTX::Util::Logger::logError( s )
+#define DBG( s ) VTX::Util::Logger::logInfo( s )
+#define INF( s ) VTX::Util::Logger::logInfo( s )
+#define WRG( s ) VTX::Util::Logger::logWarning( s )
+#define ERR( s ) VTX::Util::Logger::logError( s )
 
 namespace VTX
 {
@@ -23,14 +23,14 @@ namespace VTX
 				ERROR
 			};
 
-			static void logDebug( std::string );
-			static void logInfo( std::string );
-			static void logWarning( std::string );
-			static void logError( std::string );
+			static void logDebug( const std::string );
+			static void logInfo( const std::string );
+			static void logWarning( const std::string );
+			static void logError( const std::string );
 
 		  private:
 			Logger() = default;
-			static void _log( std::string, std::string );
+			static void _log( const std::string, const std::string );
 		};
 	} // namespace Util
 } // namespace VTX

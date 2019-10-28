@@ -1,4 +1,5 @@
 #include "user_interface.hpp"
+#include "../defines.hpp"
 #include "../exceptions.hpp"
 #include "../lib/imgui/imgui.h"
 #include "../lib/imgui/imgui_impl_opengl3.h"
@@ -15,17 +16,24 @@ namespace VTX
 	{
 		UserInterface::UserInterface()
 		{
-			INFO( "Creating user interface" );
-			_initSDL2();
-			_initGL();
-			_initIMGUI();
+			INF( "Creating user interface" );
+
+			try
+			{
+				_initSDL2();
+				_initGL();
+				_initIMGUI();
+			}
+
+			catch ( const std::exception & p_e )
+			{
+				ERR( p_e.what() );
+				_disposeAll();
+				throw Exception::VTXException( "Can't start VTX" );
+			}
 		}
 
-		UserInterface::~UserInterface()
-		{
-			_disposeIMGUI();
-			_disposeSDL2();
-		}
+		UserInterface::~UserInterface() { _disposeAll(); }
 
 		void UserInterface::_addComponents()
 		{
@@ -34,15 +42,18 @@ namespace VTX
 
 		void UserInterface::_initSDL2()
 		{
-			INFO( "Initializing SDL2" );
+			INF( "Initializing SDL2" );
+
 			if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) != 0 )
 			{ throw Exception::SDLException( SDL_GetError() ); }
 
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, 0 );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK,
 								 SDL_GL_CONTEXT_PROFILE_CORE );
-			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 4 );
-			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 5 );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION,
+								 OPENGL_VERSION_MAJOR );
+			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION,
+								 OPENGL_VERSION_MINOR );
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 			SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
 			SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
@@ -71,11 +82,15 @@ namespace VTX
 
 		void UserInterface::_initGL()
 		{
-			INFO( "Initializing OpenGL" );
+			INF( "Initializing OpenGL" );
 			if ( gl3wInit() )
 			{ throw Exception::GLException( "gl3wInit() failed" ); }
-			if ( !gl3wIsSupported( 4, 5 ) )
-			{ throw Exception::GLException( "OpenGL 4.5 not supported" ); }
+
+			if ( !gl3wIsSupported( OPENGL_VERSION_MAJOR,
+								   OPENGL_VERSION_MAJOR ) )
+			{
+				throw Exception::GLException( "OpenGL version not supported" );
+			}
 
 			std::cout << "--- GL version: " << glGetString( GL_VERSION )
 					  << std::endl
@@ -87,7 +102,7 @@ namespace VTX
 
 		void UserInterface::_initIMGUI()
 		{
-			INFO( "Initializing IMGUI" );
+			INF( "Initializing IMGUI" );
 
 			if ( !IMGUI_CHECKVERSION() )
 			{
@@ -106,8 +121,23 @@ namespace VTX
 			ImGui::StyleColorsDark();
 
 			// Setup Platform/Renderer bindings.
-			ImGui_ImplSDL2_InitForOpenGL( _window, _glContext );
-			ImGui_ImplOpenGL3_Init();
+			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
+			{
+				throw Exception::IMGUIException(
+					"ImGui_ImplSDL2_InitForOpenGL failed" );
+			}
+			if ( ImGui_ImplOpenGL3_Init() == false )
+			{
+				throw Exception::IMGUIException(
+					"ImGui_ImplOpenGL3_Init failed" );
+			}
+		}
+
+		void UserInterface::_disposeAll()
+		{
+			_disposeIMGUI();
+			_disposeGL();
+			_disposeSDL2();
 		}
 
 		void UserInterface::_disposeSDL2()
@@ -117,10 +147,13 @@ namespace VTX
 			SDL_Quit();
 		}
 
+		void UserInterface::_disposeGL() {}
+
 		void UserInterface::_disposeIMGUI()
 		{
 			ImGui_ImplOpenGL3_Shutdown();
 			ImGui_ImplSDL2_Shutdown();
+
 			if ( ImGui::GetCurrentContext() != nullptr )
 			{ ImGui::DestroyContext(); }
 		}

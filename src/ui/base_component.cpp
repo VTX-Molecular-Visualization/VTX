@@ -7,7 +7,14 @@ namespace VTX
 	{
 		BaseComponent::BaseComponent() { _addComponents(); }
 
-		BaseComponent::~BaseComponent() {}
+		BaseComponent::~BaseComponent()
+		{
+			for ( BaseComponent * component : _components )
+			{
+				delete component;
+			}
+			_components.clear();
+		}
 
 		void BaseComponent::_addComponent( BaseComponent * p_component )
 		{
@@ -17,9 +24,9 @@ namespace VTX
 		void BaseComponent::display()
 		{
 			_draw();
-			for ( int i = 0; i < _components.size(); ++i )
+			for ( BaseComponent * component : _components )
 			{
-				//_components[ i ].display();
+				component->display();
 			}
 		};
 	} // namespace UI

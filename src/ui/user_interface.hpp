@@ -26,7 +26,9 @@ namespace VTX
 			void _initSDL2();
 			void _initGL();
 			void _initIMGUI();
+			void _disposeAll();
 			void _disposeSDL2();
+			void _disposeGL();
 			void _disposeIMGUI();
 		};
 	} // namespace UI

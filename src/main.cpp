@@ -9,10 +9,9 @@ int main( int argc, char * argv[] )
 	{
 		VTXApp::INSTANCE().start();
 	}
-	catch ( const std::exception & e )
+	catch ( const std::exception & p_e )
 	{
-		ERROR( e.what() );
-		VTXApp::INSTANCE().stop();
+		ERR( p_e.what() );
 		return EXIT_FAILURE;
 	}
 

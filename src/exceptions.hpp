@@ -34,6 +34,15 @@ namespace VTX
 			{
 			}
 		};
+
+		class VTXException : public std::runtime_error
+		{
+		  public:
+			explicit VTXException( const std::string & p_err ) :
+				std::runtime_error( std::string( "[VTX] " ) + p_err )
+			{
+			}
+		};
 	} // namespace Exception
 } // namespace VTX
 
