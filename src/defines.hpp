@@ -8,9 +8,10 @@
 namespace VTX
 {
 	constexpr int OPENGL_VERSION_MAJOR = 4;
-	constexpr int OPENGL_VERSION_MINOR = 4;
+	constexpr int OPENGL_VERSION_MINOR = 5;
 
 	using uint = unsigned int;
+	using uchar = unsigned char;
 
 	using Vec2f = glm::vec2;
 	using Vec3f = glm::vec3;

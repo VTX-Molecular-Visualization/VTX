@@ -87,17 +87,19 @@ namespace VTX
 			{ throw Exception::GLException( "gl3wInit() failed" ); }
 
 			if ( !gl3wIsSupported( OPENGL_VERSION_MAJOR,
-								   OPENGL_VERSION_MAJOR ) )
+								   OPENGL_VERSION_MINOR ) )
 			{
 				throw Exception::GLException( "OpenGL version not supported" );
 			}
 
-			std::cout << "--- GL version: " << glGetString( GL_VERSION )
-					  << std::endl
-					  << "--- GLSL version: "
-					  << glGetString( GL_SHADING_LANGUAGE_VERSION ) << std::endl
-					  << "--- GL device: " << glGetString( GL_VENDOR ) << " "
-					  << glGetString( GL_RENDERER ) << std::endl;
+			const uchar * glVersion = glGetString( GL_VERSION );
+			const uchar * glslVersion = glGetString( GL_SHADING_LANGUAGE_VERSION );
+			const uchar * glVendor = glGetString( GL_VENDOR );
+			const uchar * glRenderer= glGetString( GL_RENDERER );
+
+			INF( "GL version: " + std::string ((const char* )glVersion ));
+			INF( "GLSL version: " + std::string ((const char* )glslVersion ));
+			INF( "GL device: " + std::string ((const char* )glVendor) + " " + std::string ((const char* )glRenderer ));
 		}
 
 		void UserInterface::_initIMGUI()
