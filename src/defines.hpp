@@ -7,6 +7,10 @@
 
 namespace VTX
 {
+	constexpr int VTX_VERSION_MAJOR = 0;
+	constexpr int VTX_VERSION_MINOR = 0;
+	constexpr int VTX_VERSION_RELEASE = 0;
+
 	constexpr int OPENGL_VERSION_MAJOR = 4;
 	constexpr int OPENGL_VERSION_MINOR = 5;
 
