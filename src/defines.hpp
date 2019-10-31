@@ -18,7 +18,8 @@ namespace VTX
 	constexpr int WINDOWS_WIDTH	 = 1920;
 	constexpr int WINDOWS_HEIGHT = 1080;
 
-	constexpr float STYLE_BORDER_ROUNDED_SIZE = 0.f;
+	constexpr float IMGUI_BORDER_ROUNDED_SIZE = 0.f;
+	constexpr bool	IMGUI_SHOW_DEMO			  = true;
 
 	// Types.
 	using uint	= unsigned int;
