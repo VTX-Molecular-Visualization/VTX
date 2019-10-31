@@ -7,6 +7,7 @@
 
 namespace VTX
 {
+	// VTX CONFIGURATION.
 	constexpr int VTX_VERSION_MAJOR	  = 0;
 	constexpr int VTX_VERSION_MINOR	  = 0;
 	constexpr int VTX_VERSION_RELEASE = 0;
@@ -17,6 +18,9 @@ namespace VTX
 	constexpr int WINDOWS_WIDTH	 = 1920;
 	constexpr int WINDOWS_HEIGHT = 1080;
 
+	constexpr float STYLE_BORDER_ROUNDED_SIZE = 0.f;
+
+	// Types.
 	using uint	= unsigned int;
 	using uchar = unsigned char;
 
@@ -26,6 +30,7 @@ namespace VTX
 
 	using Mat4f = glm::mat4;
 
+	// Constants.
 	const Mat4f MAT4F_ID   = Mat4f( 1.f );
 	const Vec3f VEC3F_ZERO = Vec3f( 0.f, 0.f, 0.f );
 	const Vec3f VEC3F_X	   = Vec3f( 1.f, 0.f, 0.f );
