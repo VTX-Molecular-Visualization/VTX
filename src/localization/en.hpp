@@ -7,9 +7,8 @@ namespace VTX
 {
 	namespace Localization
 	{
-
-		std::map<std::string, std::string> en
-			= { { "MainMenu.Menu", "Menu" }, { "MainMenu.Menu", "Menu" } };
+		std::map<std::string, const char *> en
+			= { { "MainMenu.Menu", "Menu" }, { "MainMenu.Menu.Quit", "Quit" } };
 
 	} // namespace Localization
 } // namespace VTX

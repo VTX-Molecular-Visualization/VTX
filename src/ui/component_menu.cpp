@@ -1,7 +1,9 @@
 #include "component_menu.hpp"
 #include "../defines.hpp"
 #include "../lib/imgui/imgui.h"
+#include "../localization/language.hpp"
 #include "../util/logger.hpp"
+#include "../vtx_app.hpp"
 
 namespace VTX
 {
@@ -12,10 +14,10 @@ namespace VTX
 			// Menu Bar
 			if ( ImGui::BeginMainMenuBar() )
 			{
-				ImGui::SetWindowFontScale( 1.5f );
-				if ( ImGui::BeginMenu( "Menu" ) )
+				if ( ImGui::BeginMenu( TEXT( "MainMenu.Menu" ) ) )
 				{
-					if ( ImGui::MenuItem( "Quit" ) ) {}
+					if ( ImGui::MenuItem( TEXT( "MainMenu.Menu.Quit" ) ) )
+					{ VTXApp::INSTANCE().stop(); }
 
 					ImGui::EndMenu();
 				}
