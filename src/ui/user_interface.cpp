@@ -4,8 +4,10 @@
 #include "../lib/imgui/imgui.h"
 #include "../lib/imgui/imgui_impl_opengl3.h"
 #include "../lib/imgui/imgui_impl_sdl.h"
+#include "../localization/language.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
+#include "component_console.hpp"
 #include "component_menu.hpp"
 #include <GL/gl3w.h>
 #include <iostream>
@@ -38,6 +40,7 @@ namespace VTX
 		void UserInterface::_addComponents()
 		{
 			_addComponent( new ComponentMenu() );
+			_addComponent( new ComponentConsole() );
 		}
 
 		void UserInterface::_initSDL2()
@@ -64,8 +67,8 @@ namespace VTX
 			_window = SDL_CreateWindow( title.c_str(),
 										SDL_WINDOWPOS_CENTERED,
 										SDL_WINDOWPOS_CENTERED,
-										1200,
-										1080,
+										WINDOWS_WIDTH,
+										WINDOWS_HEIGHT,
 										SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
 											| SDL_WINDOW_RESIZABLE
 											| SDL_WINDOW_ALLOW_HIGHDPI );

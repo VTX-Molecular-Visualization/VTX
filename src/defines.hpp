@@ -7,14 +7,17 @@
 
 namespace VTX
 {
-	constexpr int VTX_VERSION_MAJOR = 0;
-	constexpr int VTX_VERSION_MINOR = 0;
+	constexpr int VTX_VERSION_MAJOR	  = 0;
+	constexpr int VTX_VERSION_MINOR	  = 0;
 	constexpr int VTX_VERSION_RELEASE = 0;
 
 	constexpr int OPENGL_VERSION_MAJOR = 4;
 	constexpr int OPENGL_VERSION_MINOR = 5;
 
-	using uint = unsigned int;
+	constexpr int WINDOWS_WIDTH	 = 1920;
+	constexpr int WINDOWS_HEIGHT = 1080;
+
+	using uint	= unsigned int;
 	using uchar = unsigned char;
 
 	using Vec2f = glm::vec2;

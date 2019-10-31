@@ -1,11 +1,11 @@
 #ifndef __LANGUAGE__
 #define __LANGUAGE__
 
-#include "en.hpp"
+#include "lang_en.hpp"
 #include <iostream>
 #include <map>
 
-#define TEXT( s ) VTX::Localization::Language::text( s )
+#define LOCALE( s ) VTX::Localization::Language::text( s )
 
 namespace VTX
 {
@@ -18,7 +18,7 @@ namespace VTX
 			{
 				try
 				{
-					return en.at( p_key );
+					return values.at( p_key );
 				}
 				catch ( std::exception p_e )
 				{

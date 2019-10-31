@@ -11,12 +11,11 @@ namespace VTX
 	{
 		void ComponentMenu::_draw()
 		{
-			// Menu Bar
 			if ( ImGui::BeginMainMenuBar() )
 			{
-				if ( ImGui::BeginMenu( TEXT( "MainMenu.Menu" ) ) )
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Menu" ) ) )
 				{
-					if ( ImGui::MenuItem( TEXT( "MainMenu.Menu.Quit" ) ) )
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
 					{ VTXApp::INSTANCE().stop(); }
 
 					ImGui::EndMenu();
