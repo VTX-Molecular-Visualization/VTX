@@ -60,11 +60,12 @@ namespace VTX
 
 			// SDL_GetCurrentDisplayMode( 0, &m_displayMode );
 
-			_window = SDL_CreateWindow( "Test",
+			std::string title( "VTX" );
+			_window = SDL_CreateWindow( title.c_str(),
 										SDL_WINDOWPOS_CENTERED,
 										SDL_WINDOWPOS_CENTERED,
-										800,
-										600,
+										1200,
+										1080,
 										SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL
 											| SDL_WINDOW_RESIZABLE
 											| SDL_WINDOW_ALLOW_HIGHDPI );
@@ -93,13 +94,15 @@ namespace VTX
 			}
 
 			const uchar * glVersion = glGetString( GL_VERSION );
-			const uchar * glslVersion = glGetString( GL_SHADING_LANGUAGE_VERSION );
-			const uchar * glVendor = glGetString( GL_VENDOR );
-			const uchar * glRenderer= glGetString( GL_RENDERER );
+			const uchar * glslVersion
+				= glGetString( GL_SHADING_LANGUAGE_VERSION );
+			const uchar * glVendor	 = glGetString( GL_VENDOR );
+			const uchar * glRenderer = glGetString( GL_RENDERER );
 
-			INF( "GL version: " + std::string ((const char* )glVersion ));
-			INF( "GLSL version: " + std::string ((const char* )glslVersion ));
-			INF( "GL device: " + std::string ((const char* )glVendor) + " " + std::string ((const char* )glRenderer ));
+			INF( "GL version: " + std::string( (const char *)glVersion ) );
+			INF( "GLSL version: " + std::string( (const char *)glslVersion ) );
+			INF( "GL device: " + std::string( (const char *)glVendor ) + " "
+				 + std::string( (const char *)glRenderer ) );
 		}
 
 		void UserInterface::_initIMGUI()
@@ -119,7 +122,7 @@ namespace VTX
 			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 			io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
-			// Dark style.
+			// Style.
 			ImGui::StyleColorsDark();
 
 			// Setup Platform/Renderer bindings.
@@ -162,6 +165,8 @@ namespace VTX
 
 		void UserInterface::_draw()
 		{
+			// TODO: move ?
+			// Quit event.
 			SDL_Event event;
 			while ( SDL_PollEvent( &event ) )
 			{
@@ -180,9 +185,14 @@ namespace VTX
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame( _window );
 			ImGui::NewFrame();
-			bool demo = true;
-			ImGui::ShowDemoWindow( &demo );
+
+			// ImGuiWindowFlags flags = 0;
+			// flags |= ImGuiWindowFlags_MenuBar;
+
+			_drawComponents();
+
 			ImGui::Render();
+
 			ImGuiIO & io = ImGui::GetIO();
 			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 			glClear( GL_COLOR_BUFFER_BIT );

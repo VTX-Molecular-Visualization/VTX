@@ -6,6 +6,7 @@ namespace VTX
 	{
 		INF( "Initializing application" );
 		_ui = new UI::UserInterface();
+		_ui->init();
 	}
 
 	VTXApp::~VTXApp() { delete _ui; }

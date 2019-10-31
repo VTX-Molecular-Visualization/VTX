@@ -10,6 +10,7 @@ namespace VTX
 		class ComponentMenu : public BaseComponent
 		{
 		  protected:
+			virtual void _addComponents() override {};
 			virtual void _draw() override;
 		};
 	} // namespace UI
