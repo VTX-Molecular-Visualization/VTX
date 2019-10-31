@@ -126,7 +126,13 @@ namespace VTX
 			io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
 			// Style.
-			ImGui::StyleColorsDark();
+			ImGui::StyleColorsLight();
+			ImGui::GetStyle().WindowRounding	= STYLE_BORDER_ROUNDED_SIZE;
+			ImGui::GetStyle().ChildRounding		= STYLE_BORDER_ROUNDED_SIZE;
+			ImGui::GetStyle().FrameRounding		= STYLE_BORDER_ROUNDED_SIZE;
+			ImGui::GetStyle().GrabRounding		= STYLE_BORDER_ROUNDED_SIZE;
+			ImGui::GetStyle().PopupRounding		= STYLE_BORDER_ROUNDED_SIZE;
+			ImGui::GetStyle().ScrollbarRounding = STYLE_BORDER_ROUNDED_SIZE;
 
 			// Setup Platform/Renderer bindings.
 			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
@@ -193,6 +199,7 @@ namespace VTX
 			// flags |= ImGuiWindowFlags_MenuBar;
 
 			_drawComponents();
+			// ImGui::ShowDemoWindow( NULL );
 
 			ImGui::Render();
 

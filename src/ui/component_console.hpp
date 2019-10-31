@@ -11,6 +11,9 @@ namespace VTX
 		{
 		  protected:
 			virtual void _draw() override;
+
+		  private:
+			void _clear();
 		};
 	} // namespace UI
 } // namespace VTX
