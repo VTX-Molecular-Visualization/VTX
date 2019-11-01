@@ -5,6 +5,7 @@
 #include "../lib/imgui/imgui_impl_opengl3.h"
 #include "../lib/imgui/imgui_impl_sdl.h"
 #include "../localization/language.hpp"
+#include "../style.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
 #include "component_console.hpp"
@@ -16,7 +17,7 @@ namespace VTX
 {
 	namespace UI
 	{
-		UserInterface::UserInterface()
+		UserInterface::UserInterface( bool * p_show ) : BaseComponent( p_show )
 		{
 			INF( "Creating user interface" );
 
@@ -39,15 +40,17 @@ namespace VTX
 
 		void UserInterface::_addComponents()
 		{
-			_addComponent( new ComponentMenu() );
-			_addComponent( new ComponentConsole() );
+			_addComponent( new ComponentMenu( &_showMenu, &_showConsole ) );
+			_addComponent( new ComponentConsole( &_showConsole ) );
 		}
 
 		void UserInterface::_initSDL2()
 		{
 			INF( "Initializing SDL2" );
 
-			if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) != 0 )
+			if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER
+						   | SDL_INIT_GAMECONTROLLER )
+				 != 0 )
 			{ throw Exception::SDLException( SDL_GetError() ); }
 
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, 0 );
@@ -125,14 +128,22 @@ namespace VTX
 			io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 			io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
 
+			// Configuration.
+			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+			if ( IMGUI_ENABLE_VIEWPORTS )
+			{ io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; }
+
 			// Style.
 			ImGui::StyleColorsLight();
-			ImGui::GetStyle().WindowRounding	= IMGUI_BORDER_ROUNDED_SIZE;
-			ImGui::GetStyle().ChildRounding		= IMGUI_BORDER_ROUNDED_SIZE;
-			ImGui::GetStyle().FrameRounding		= IMGUI_BORDER_ROUNDED_SIZE;
-			ImGui::GetStyle().GrabRounding		= IMGUI_BORDER_ROUNDED_SIZE;
-			ImGui::GetStyle().PopupRounding		= IMGUI_BORDER_ROUNDED_SIZE;
-			ImGui::GetStyle().ScrollbarRounding = IMGUI_BORDER_ROUNDED_SIZE;
+			ImGui::GetStyle().WindowRounding	= IMGUI_STYLE_ROUNDING;
+			ImGui::GetStyle().ChildRounding		= IMGUI_STYLE_ROUNDING;
+			ImGui::GetStyle().FrameRounding		= IMGUI_STYLE_ROUNDING;
+			ImGui::GetStyle().GrabRounding		= IMGUI_STYLE_ROUNDING;
+			ImGui::GetStyle().PopupRounding		= IMGUI_STYLE_ROUNDING;
+			ImGui::GetStyle().ScrollbarRounding = IMGUI_STYLE_ROUNDING;
+			ImGui::GetStyle().WindowBorderSize	= IMGUI_STYLE_WINDOW_BORDER;
+			ImGui::GetStyle().WindowPadding		= ImVec2(
+				IMGUI_STYLE_WINDOW_PADDING, IMGUI_STYLE_WINDOW_PADDING );
 
 			// Setup Platform/Renderer bindings.
 			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
@@ -174,9 +185,11 @@ namespace VTX
 
 		void UserInterface::_draw()
 		{
+			ImGuiIO & io = ImGui::GetIO();
+			SDL_Event event;
+
 			// TODO: move ?
 			// Quit event.
-			SDL_Event event;
 			while ( SDL_PollEvent( &event ) )
 			{
 				ImGui_ImplSDL2_ProcessEvent( &event );
@@ -191,22 +204,56 @@ namespace VTX
 				}
 			}
 
+			// New frame.
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame( _window );
 			ImGui::NewFrame();
 
-			// ImGuiWindowFlags flags = 0;
-			// flags |= ImGuiWindowFlags_MenuBar;
+			// Configuration.
+			ImGuiViewport * viewport = ImGui::GetMainViewport();
+			ImGui::SetNextWindowPos( viewport->Pos );
+			ImGui::SetNextWindowSize( viewport->Size );
+			ImGui::SetNextWindowViewport( viewport->ID );
+			ImGui::SetNextWindowBgAlpha( 0.0f );
+			ImGuiWindowFlags windowFlags
+				= ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking
+				  | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse
+				  | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove
+				  | ImGuiWindowFlags_NoBringToFrontOnFocus
+				  | ImGuiWindowFlags_NoNavFocus;
 
+			// Main begin.
+			ImGui::Begin( IMGUI_ID_MAIN_WINDOW, _show, windowFlags );
+
+			// Docking.
+			ImGuiID dockSpaceId = ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE );
+			ImGuiDockNodeFlags dockSpaceFlags
+				= ImGuiDockNodeFlags_PassthruCentralNode;
+			ImGui::DockSpace(
+				dockSpaceId, ImVec2( 0.0f, 0.0f ), dockSpaceFlags );
+
+			// Draw all components.
 			_drawComponents();
-			if ( IMGUI_SHOW_DEMO ) ImGui::ShowDemoWindow( NULL );
+			if ( IMGUI_SHOW_DEMO ) { ImGui::ShowDemoWindow( NULL ); }
 
+			// Main end.
+			ImGui::End();
+
+			// Render.
 			ImGui::Render();
-
-			ImGuiIO & io = ImGui::GetIO();
 			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 			glClear( GL_COLOR_BUFFER_BIT );
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
+
+			if ( io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable )
+			{
+				SDL_Window *  currentWindow	 = SDL_GL_GetCurrentWindow();
+				SDL_GLContext currentContext = SDL_GL_GetCurrentContext();
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+				SDL_GL_MakeCurrent( currentWindow, currentContext );
+			}
+
 			SDL_GL_SwapWindow( _window );
 		}
 

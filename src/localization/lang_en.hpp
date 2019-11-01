@@ -2,13 +2,24 @@
 #define __LANG_EN__
 
 #include <map>
+#include <string>
 
 namespace VTX
 {
 	namespace Localization
 	{
-		static std::map<std::string, const char *> values
-			= { { "MainMenu.Menu", "Menu" }, { "MainMenu.Menu.Quit", "Quit" } };
+		static std::map<std::string, const char *> values = {
+
+			// Main menu.
+			{ "MainMenu.Menu", "Menu" },
+			{ "MainMenu.Menu.Quit", "Quit" },
+			{ "MainMenu.Display", "Display" },
+			{ "MainMenu.Display.Console", "Console" },
+
+			// Console.
+			{ "Console.Console", "Console" }
+
+		};
 
 	} // namespace Localization
 } // namespace VTX

@@ -11,7 +11,7 @@ namespace VTX
 		class UserInterface : public BaseComponent
 		{
 		  public:
-			UserInterface();
+			UserInterface( bool * );
 			~UserInterface();
 
 		  protected:
@@ -22,6 +22,9 @@ namespace VTX
 			SDL_Window *  _window	 = nullptr;
 			SDL_GLContext _glContext = nullptr;
 			// SDL_DisplayMode _displayMode;
+
+			bool _showMenu	  = true;
+			bool _showConsole = true;
 
 			void _initSDL2();
 			void _initGL();

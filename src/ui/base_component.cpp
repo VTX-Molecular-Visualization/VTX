@@ -6,9 +6,14 @@ namespace VTX
 {
 	namespace UI
 	{
-		BaseComponent::BaseComponent() {}
+		BaseComponent::BaseComponent( bool * p_show ) : _show( p_show ) {}
 
-		void BaseComponent::init() { _addComponents(); }
+		void BaseComponent::init()
+		{
+			if ( _isInitialized ) { return; }
+			_addComponents();
+			_isInitialized = true;
+		}
 
 		BaseComponent::~BaseComponent()
 		{
@@ -29,6 +34,7 @@ namespace VTX
 		{
 			for ( BaseComponent * component : _components )
 			{
+				if ( component->isShown() == false ) { continue; }
 				component->display();
 			}
 		}

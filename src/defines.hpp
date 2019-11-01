@@ -15,11 +15,13 @@ namespace VTX
 	constexpr int OPENGL_VERSION_MAJOR = 4;
 	constexpr int OPENGL_VERSION_MINOR = 5;
 
-	constexpr int WINDOWS_WIDTH	 = 1920;
-	constexpr int WINDOWS_HEIGHT = 1080;
-
-	constexpr float IMGUI_BORDER_ROUNDED_SIZE = 0.f;
-	constexpr bool	IMGUI_SHOW_DEMO			  = true;
+	constexpr int	WINDOWS_WIDTH  = 1920;
+	constexpr int	WINDOWS_HEIGHT = 1080;
+	constexpr float CAMERA_NEAR	   = 1e-1f;
+	constexpr float CAMERA_FAR	   = 1e4f;
+	constexpr float CAMERA_FOV	   = 60.f;
+	constexpr float CAMERA_FOV_MIN = 10.f;
+	constexpr float CAMERA_FOV_MAX = 90.f;
 
 	// Types.
 	using uint	= unsigned int;

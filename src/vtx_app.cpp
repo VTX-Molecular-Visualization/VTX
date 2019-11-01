@@ -5,7 +5,7 @@ namespace VTX
 	VTXApp::VTXApp()
 	{
 		INF( "Initializing application" );
-		_ui = new UI::UserInterface();
+		_ui = new UI::UserInterface( NULL );
 		_ui->init();
 	}
 

@@ -1,0 +1,20 @@
+#ifndef __STYLE__
+#define __STYLE__
+
+namespace VTX
+{
+	constexpr char * IMGUI_ID_MAIN_WINDOW	 = "VTXMainWindow";
+	constexpr char * IMGUI_ID_MAIN_DOCKSPACE = "VTXMainDockSpace";
+
+	constexpr bool IMGUI_SHOW_DEMO		  = 0;
+	constexpr bool IMGUI_ENABLE_VIEWPORTS = 1;
+
+	constexpr float IMGUI_STYLE_ROUNDING	   = 0.f;
+	constexpr float IMGUI_STYLE_WINDOW_BORDER  = 0.f;
+	constexpr float IMGUI_STYLE_WINDOW_PADDING = 0.f;
+
+	constexpr float IMGUI_STYLE_MENUBAR_PADDING = 5.f;
+
+} // namespace VTX
+
+#endif
