@@ -2,7 +2,7 @@
 
 namespace VTX
 {
-	namespace Scene
+	namespace Object3D
 	{
 	}
 } // namespace VTX

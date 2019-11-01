@@ -5,11 +5,11 @@
 
 namespace VTX
 {
-	namespace Camera
+	namespace Object3D
 	{
 		class CameraFreeFly : BaseCamera
 		{
 		};
-	} // namespace Camera
+	} // namespace Object3D
 } // namespace VTX
 #endif

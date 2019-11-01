@@ -2,7 +2,7 @@
 
 namespace VTX
 {
-	namespace Camera
+	namespace Object3D
 	{
 	}
 } // namespace VTX

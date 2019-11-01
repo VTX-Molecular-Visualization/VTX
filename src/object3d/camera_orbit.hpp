@@ -5,7 +5,7 @@
 
 namespace VTX
 {
-	namespace Camera
+	namespace Object3D
 	{
 		class CameraOrbit : BaseCamera
 		{
@@ -13,6 +13,6 @@ namespace VTX
 			Vec3f _target = VEC3F_ZERO;
 		};
 
-	} // namespace Camera
+	} // namespace Object3D
 } // namespace VTX
 #endif

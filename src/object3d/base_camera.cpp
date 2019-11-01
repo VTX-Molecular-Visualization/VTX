@@ -3,7 +3,7 @@
 
 namespace VTX
 {
-	namespace Camera
+	namespace Object3D
 	{
 		Mat4f BaseCamera::getViewMatrix() const
 		{
@@ -63,5 +63,5 @@ namespace VTX
 			_up	  = glm::cross( _front, _left );
 		}
 
-	} // namespace Camera
+	} // namespace Object3D
 } // namespace VTX
