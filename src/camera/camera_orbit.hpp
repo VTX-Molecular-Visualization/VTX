@@ -9,7 +9,10 @@ namespace VTX
 	{
 		class CameraOrbit : BaseCamera
 		{
+		  private:
+			Vec3f _target = VEC3F_ZERO;
 		};
+
 	} // namespace Camera
 } // namespace VTX
 #endif
