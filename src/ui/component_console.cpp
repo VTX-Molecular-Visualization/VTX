@@ -1,5 +1,6 @@
 #include "component_console.hpp"
 #include "../defines.hpp"
+#include "../lib/imgui/imgui.h"
 #include "../localization/language.hpp"
 #include "../style.hpp"
 
@@ -21,6 +22,13 @@ namespace VTX
 			if ( ImGui::Begin( LOCALE( "Console.Console" ), _show, flags )
 				 == false )
 			{
+				ImGui::ListBoxHeader( "" );
+				for ( Util::Logger::Log log : _logs )
+				{
+					ImGui::Text( log.message.c_str() );
+				}
+				ImGui::ListBoxFooter();
+
 				ImGui::End();
 				return;
 			}
@@ -28,6 +36,11 @@ namespace VTX
 			ImGui::End();
 		}
 
-		void ComponentConsole::_clear() {}
+		void ComponentConsole::addLog( const Util::Logger::Log p_log )
+		{
+			_logs.push_back( p_log );
+		}
+
+		void ComponentConsole::_clear() { _logs.clear(); }
 	} // namespace UI
 } // namespace VTX

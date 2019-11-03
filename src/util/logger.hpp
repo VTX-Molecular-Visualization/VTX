@@ -15,12 +15,18 @@ namespace VTX
 		class Logger
 		{
 		  public:
-			enum LEVE
+			enum LEVEL
 			{
 				DEBUG = 0,
 				INFO,
 				WARNING,
 				ERROR
+			};
+
+			struct Log
+			{
+				LEVEL		level;
+				std::string message;
 			};
 
 			static void logDebug( const std::string );
