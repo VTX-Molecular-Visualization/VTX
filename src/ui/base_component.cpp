@@ -39,6 +39,25 @@ namespace VTX
 			}
 		}
 
+		void BaseComponent::_registerEventHandler(
+			Event::UIEvent::EVENT_UI   p_event,
+			std::function<void( ... )> p_callback )
+		{
+			try
+			{
+				_events.try_emplace( p_event, p_callback );
+			}
+			catch ( std::exception p_e )
+			{
+				WRG( "Event already registered" );
+			}
+		}
+
+		void BaseComponent::receiveEvent( Event::UIEvent & p_event )
+		{
+			// TODO.
+		}
+
 		void BaseComponent::display() { _draw(); };
 
 	} // namespace UI
