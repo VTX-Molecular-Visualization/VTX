@@ -10,13 +10,13 @@ namespace VTX
 		class ComponentMenu : public BaseComponent
 		{
 		  public:
-			ComponentMenu( bool *, bool * );
+			ComponentMenu( bool * const, bool * const );
 
 		  protected:
 			virtual void _draw() override;
 
 		  private:
-			bool * _showConsole;
+			bool * const _showConsole;
 		};
 	} // namespace UI
 } // namespace VTX

@@ -10,8 +10,10 @@ namespace VTX
 {
 	namespace UI
 	{
-		ComponentMenu::ComponentMenu( bool * p_show, bool * p_showConsole ) :
-			BaseComponent( p_show ), _showConsole( p_showConsole )
+		ComponentMenu::ComponentMenu( bool * const p_show,
+									  bool * const p_showConsole ) :
+			BaseComponent( p_show ),
+			_showConsole( p_showConsole )
 		{
 		}
 

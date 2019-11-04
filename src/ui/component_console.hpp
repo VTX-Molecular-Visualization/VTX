@@ -14,7 +14,7 @@ namespace VTX
 		class ComponentConsole : public BaseComponent
 		{
 		  public:
-			ComponentConsole( bool * );
+			ComponentConsole( bool * const );
 			void addLog( const Util::Logger::Log );
 
 		  protected:

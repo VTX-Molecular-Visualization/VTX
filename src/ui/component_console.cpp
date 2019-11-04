@@ -8,7 +8,7 @@ namespace VTX
 {
 	namespace UI
 	{
-		ComponentConsole::ComponentConsole( bool * p_show ) :
+		ComponentConsole::ComponentConsole( bool * const p_show ) :
 			BaseComponent( p_show )
 		{
 		}
