@@ -21,7 +21,7 @@ namespace VTX
 			virtual void display() final;
 			virtual void init();
 			bool		 isShown() { return *_show; }
-			void		 receiveEvent( const Event::EVENT_UI, va_list );
+			void		 receiveEvent( const Event::EVENT_UI, const int, ... );
 
 		  protected:
 			bool * _show;
@@ -32,7 +32,7 @@ namespace VTX
 
 			virtual void _registerEventHandler(
 				const Event::EVENT_UI,
-				const std::function<void( va_list )> ) final;
+				const std::function<void( const int, ... )> ) final;
 			virtual void _registerEventHandlers() {};
 
 			virtual void _draw() = 0;
@@ -41,8 +41,9 @@ namespace VTX
 			bool						 _isInitialized = false;
 			std::vector<BaseComponent *> _components
 				= std::vector<BaseComponent *>();
-			std::map<Event::EVENT_UI, std::function<void( va_list )>> _events
-				= std::map<Event::EVENT_UI, std::function<void( va_list )>>();
+			std::map<Event::EVENT_UI, std::function<void( const int, ... )>>
+				_events = std::map<Event::EVENT_UI,
+								   std::function<void( const int, ... )>>();
 		};
 	} // namespace UI
 } // namespace VTX

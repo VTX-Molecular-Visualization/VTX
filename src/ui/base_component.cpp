@@ -41,8 +41,8 @@ namespace VTX
 		}
 
 		void BaseComponent::_registerEventHandler(
-			const Event::EVENT_UI				 p_event,
-			const std::function<void( va_list )> p_callback )
+			const Event::EVENT_UI						p_event,
+			const std::function<void( const int, ... )> p_callback )
 		{
 			try
 			{
@@ -55,7 +55,8 @@ namespace VTX
 		}
 
 		void BaseComponent::receiveEvent( const Event::EVENT_UI p_event,
-										  const va_list			p_args )
+										  const int				p_args,
+										  ... )
 		{
 			try
 			{

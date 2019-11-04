@@ -32,12 +32,11 @@ namespace VTX
 		VTXApp::_isRunning = false;
 	}
 
-	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event, ... ) const
+	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event,
+							  const int				p_args,
+							  ... ) const
 	{
-		va_list ap;
-		va_start( ap, p_event );
-		_ui->receiveEvent( p_event, ap );
-		va_end( ap );
+		_ui->receiveEvent( p_event, p_args );
 	}
 
 	void VTXApp::_update() { _ui->display(); }
