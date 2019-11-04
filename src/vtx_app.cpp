@@ -2,6 +2,8 @@
 
 namespace VTX
 {
+	bool VTXApp::_isRunning;
+
 	VTXApp::VTXApp()
 	{
 		INF( "Initializing application" );
@@ -14,9 +16,11 @@ namespace VTX
 	void VTXApp::start()
 	{
 		INF( "Starting application" );
-		_isRunning = true;
+		VTXApp::_isRunning = true;
+		INF( "Application started" );
+		_ui->printInfos();
 
-		while ( _isRunning )
+		while ( VTXApp::_isRunning )
 		{
 			_update();
 		}
@@ -25,12 +29,15 @@ namespace VTX
 	void VTXApp::stop()
 	{
 		INF( "Stopping application" );
-		_isRunning = false;
+		VTXApp::_isRunning = false;
 	}
 
-	void VTXApp::fireUIEvent( Event::EVENT_UI p_event, va_list p_args )
+	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event, ... ) const
 	{
-		_ui->receiveEvent( p_event, p_args );
+		va_list ap;
+		va_start( ap, p_event );
+		_ui->receiveEvent( p_event, ap );
+		va_end( ap );
 	}
 
 	void VTXApp::_update() { _ui->display(); }

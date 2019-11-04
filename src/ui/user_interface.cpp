@@ -38,6 +38,20 @@ namespace VTX
 
 		UserInterface::~UserInterface() { _disposeAll(); }
 
+		void UserInterface::printInfos() const
+		{
+			const uchar * glVersion = glGetString( GL_VERSION );
+			const uchar * glslVersion
+				= glGetString( GL_SHADING_LANGUAGE_VERSION );
+			const uchar * glVendor	 = glGetString( GL_VENDOR );
+			const uchar * glRenderer = glGetString( GL_RENDERER );
+
+			INF( "GL version: " + std::string( (const char *)glVersion ) );
+			INF( "GLSL version: " + std::string( (const char *)glslVersion ) );
+			INF( "GL device: " + std::string( (const char *)glVendor ) + " "
+				 + std::string( (const char *)glRenderer ) );
+		}
+
 		void UserInterface::_addComponents()
 		{
 			_addComponent( new ComponentMenu( &_showMenu, &_showConsole ) );
@@ -98,17 +112,6 @@ namespace VTX
 			{
 				throw Exception::GLException( "OpenGL version not supported" );
 			}
-
-			const uchar * glVersion = glGetString( GL_VERSION );
-			const uchar * glslVersion
-				= glGetString( GL_SHADING_LANGUAGE_VERSION );
-			const uchar * glVendor	 = glGetString( GL_VENDOR );
-			const uchar * glRenderer = glGetString( GL_RENDERER );
-
-			INF( "GL version: " + std::string( (const char *)glVersion ) );
-			INF( "GLSL version: " + std::string( (const char *)glslVersion ) );
-			INF( "GL device: " + std::string( (const char *)glVendor ) + " "
-				 + std::string( (const char *)glRenderer ) );
 		}
 
 		void UserInterface::_initIMGUI()

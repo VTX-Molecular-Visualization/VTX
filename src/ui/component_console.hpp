@@ -19,6 +19,7 @@ namespace VTX
 
 		  protected:
 			virtual void _draw() override;
+			virtual void _registerEventHandlers() override;
 
 		  private:
 			std::vector<Util::Logger::Log> _logs

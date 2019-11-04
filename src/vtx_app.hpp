@@ -15,16 +15,17 @@ namespace VTX
 			static VTXApp instance;
 			return instance;
 		}
+		static bool isRunning() { return VTXApp::_isRunning; }
 
 		void start();
 		void stop();
 
-		void fireUIEvent( Event::EVENT_UI, va_list );
+		void fireUIEvent( const Event::EVENT_UI, ... ) const;
 
 	  private:
-		UI::UserInterface * _ui		   = nullptr;
-		bool				_isRunning = false;
-		double				_time	   = 0.;
+		static bool			_isRunning;
+		UI::UserInterface * _ui	  = nullptr;
+		double				_time = 0.;
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;

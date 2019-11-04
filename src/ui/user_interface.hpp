@@ -13,6 +13,7 @@ namespace VTX
 		  public:
 			UserInterface( bool * );
 			~UserInterface();
+			void printInfos() const;
 
 		  protected:
 			virtual void _addComponents() override;

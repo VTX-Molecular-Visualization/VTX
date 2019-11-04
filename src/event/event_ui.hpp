@@ -7,7 +7,7 @@ namespace VTX
 	{
 		enum EVENT_UI
 		{
-			EVENT_UI_LOG_CONSOLE
+			LOG_CONSOLE
 		};
 	} // namespace Event
 } // namespace VTX

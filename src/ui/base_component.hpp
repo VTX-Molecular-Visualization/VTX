@@ -16,23 +16,23 @@ namespace VTX
 		class BaseComponent
 		{
 		  public:
-			BaseComponent( bool * );
+			BaseComponent( bool * const );
 			~BaseComponent();
 			virtual void display() final;
 			virtual void init();
 			bool		 isShown() { return *_show; }
-			void		 receiveEvent( Event::EVENT_UI, va_list );
+			void		 receiveEvent( const Event::EVENT_UI, va_list );
 
 		  protected:
 			bool * _show;
 
-			virtual void _addComponent( BaseComponent * ) final;
+			virtual void _addComponent( BaseComponent * const ) final;
 			virtual void _addComponents() {};
 			virtual void _drawComponents() final;
 
 			virtual void _registerEventHandler(
-				Event::EVENT_UI,
-				std::function<void( va_list )> ) final;
+				const Event::EVENT_UI,
+				const std::function<void( va_list )> ) final;
 			virtual void _registerEventHandlers() {};
 
 			virtual void _draw() = 0;

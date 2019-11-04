@@ -13,6 +13,14 @@ namespace VTX
 		{
 		}
 
+		void ComponentConsole::_registerEventHandlers()
+		{
+			_registerEventHandler( Event::EVENT_UI::LOG_CONSOLE,
+								   []( va_list p_args ) {
+
+								   } );
+		}
+
 		void ComponentConsole::_draw()
 		{
 			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;

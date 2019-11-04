@@ -13,7 +13,7 @@ namespace VTX
 			std::string nowStr( ctime( &now ) );
 
 			// Substring to remove newline.
-			return nowStr.substr( 0, nowStr.length() - 1 );
+			return nowStr.substr( 11, nowStr.length() - 17 );
 		}
 	} // namespace Util
 } // namespace VTX

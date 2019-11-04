@@ -29,14 +29,14 @@ namespace VTX
 				std::string message;
 			};
 
-			static void logDebug( const std::string );
-			static void logInfo( const std::string );
-			static void logWarning( const std::string );
-			static void logError( const std::string );
+			static void logDebug( const std::string & );
+			static void logInfo( const std::string & );
+			static void logWarning( const std::string & );
+			static void logError( const std::string & );
 
 		  private:
 			Logger() = default;
-			static void _log( const std::string, const std::string );
+			static void _log( const LEVEL, const std::string & );
 		};
 	} // namespace Util
 } // namespace VTX
