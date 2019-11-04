@@ -3,8 +3,10 @@
 
 #include "../event/event_ui.hpp"
 #include "../util/logger.hpp"
+#include <cstdarg>
 #include <functional>
 #include <map>
+//#include <type_traits>
 #include <vector>
 
 namespace VTX
@@ -19,7 +21,7 @@ namespace VTX
 			virtual void display() final;
 			virtual void init();
 			bool		 isShown() { return *_show; }
-			void		 receiveEvent( Event::UIEvent<> & );
+			void		 receiveEvent( Event::EVENT_UI, va_list );
 
 		  protected:
 			bool * _show;
@@ -29,8 +31,8 @@ namespace VTX
 			virtual void _drawComponents() final;
 
 			virtual void _registerEventHandler(
-				Event::UIEvent::EVENT_UI,
-				std::function<void( ... )> ) final;
+				Event::EVENT_UI,
+				std::function<void( va_list )> ) final;
 			virtual void _registerEventHandlers() {};
 
 			virtual void _draw() = 0;
@@ -39,9 +41,8 @@ namespace VTX
 			bool						 _isInitialized = false;
 			std::vector<BaseComponent *> _components
 				= std::vector<BaseComponent *>();
-			std::map<Event::UIEvent::EVENT_UI, std::function<void( ... )>>
-				_events = std::map<Event::UIEvent::EVENT_UI,
-								   std::function<void( ... )>>();
+			std::map<Event::EVENT_UI, std::function<void( va_list )>> _events
+				= std::map<Event::EVENT_UI, std::function<void( va_list )>>();
 		};
 	} // namespace UI
 } // namespace VTX

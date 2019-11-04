@@ -1,6 +1,7 @@
 #ifndef __VTX_APP__
 #define __VTX_APP__
 
+#include "event/event_ui.hpp"
 #include "ui/user_interface.hpp"
 #include "util/logger.hpp"
 
@@ -17,6 +18,8 @@ namespace VTX
 
 		void start();
 		void stop();
+
+		void fireUIEvent( Event::EVENT_UI, va_list );
 
 	  private:
 		UI::UserInterface * _ui		   = nullptr;

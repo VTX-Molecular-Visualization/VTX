@@ -40,8 +40,8 @@ namespace VTX
 		}
 
 		void BaseComponent::_registerEventHandler(
-			Event::UIEvent::EVENT_UI   p_event,
-			std::function<void( ... )> p_callback )
+			Event::EVENT_UI				   p_event,
+			std::function<void( va_list )> p_callback )
 		{
 			try
 			{
@@ -49,13 +49,28 @@ namespace VTX
 			}
 			catch ( std::exception p_e )
 			{
-				WRG( "Event already registered" );
+				WRG( "Event UI already registered" );
 			}
 		}
 
-		void BaseComponent::receiveEvent( Event::UIEvent & p_event )
+		void BaseComponent::receiveEvent( Event::EVENT_UI p_event,
+										  va_list		  p_args )
 		{
-			// TODO.
+			try
+			{
+				_events.at( p_event )( p_args );
+			}
+			catch ( std::exception )
+			{
+				// Nothing.
+			}
+
+			// Propagate to children.
+			for ( BaseComponent * component : _components )
+			{
+				if ( component->isShown() == false ) { continue; }
+				component->receiveEvent( p_event, p_args );
+			}
 		}
 
 		void BaseComponent::display() { _draw(); };

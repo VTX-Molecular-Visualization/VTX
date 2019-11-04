@@ -28,5 +28,10 @@ namespace VTX
 		_isRunning = false;
 	}
 
+	void VTXApp::fireUIEvent( Event::EVENT_UI p_event, va_list p_args )
+	{
+		_ui->receiveEvent( p_event, p_args );
+	}
+
 	void VTXApp::_update() { _ui->display(); }
 } // namespace VTX
