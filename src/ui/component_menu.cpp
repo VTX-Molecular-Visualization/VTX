@@ -27,7 +27,7 @@ namespace VTX
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Menu" ), _show ) )
 				{
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
-					{ VTXApp::INSTANCE().stop(); }
+					{ VTXApp::get().stop(); }
 
 					ImGui::EndMenu();
 				}

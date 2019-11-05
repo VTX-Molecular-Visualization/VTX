@@ -1,7 +1,7 @@
 #ifndef __VTX_APP__
 #define __VTX_APP__
 
-#include "event/event_ui.hpp"
+#include "event/event.hpp"
 #include "ui/user_interface.hpp"
 #include "util/logger.hpp"
 
@@ -10,7 +10,7 @@ namespace VTX
 	class VTXApp final
 	{
 	  public:
-		static VTXApp & INSTANCE()
+		static VTXApp & get()
 		{
 			static VTXApp instance;
 			return instance;
@@ -20,7 +20,9 @@ namespace VTX
 		void start();
 		void stop();
 
-		void fireUIEvent( const Event::EVENT_UI, const int p_args, ... ) const;
+		template<typename T>
+		void fireUIEvent( const Event::EVENT_UI,
+						  const Event::Event<T> & ) const;
 
 	  private:
 		static bool			_isRunning;

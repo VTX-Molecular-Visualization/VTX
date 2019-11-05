@@ -1,5 +1,5 @@
 #include "logger.hpp"
-#include "../event/event_ui.hpp"
+#include "../event/event.hpp"
 #include "../vtx_app.hpp"
 #include "time.hpp"
 #include <algorithm>
@@ -32,8 +32,10 @@ namespace VTX
 		{
 			if ( VTXApp::isRunning() )
 			{
-				VTXApp::INSTANCE().fireUIEvent(
-					Event::EVENT_UI::LOG_CONSOLE, p_level, p_string );
+				/*
+				VTXApp::get().fireUIEvent(
+					Event::EVENT_UI::LOG_CONSOLE,  );
+					*/
 			}
 
 #ifdef LOG_LEVEL

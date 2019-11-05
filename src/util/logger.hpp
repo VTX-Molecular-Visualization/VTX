@@ -15,7 +15,7 @@ namespace VTX
 		class Logger
 		{
 		  public:
-			enum LEVEL
+			enum class LEVEL
 			{
 				DEBUG = 0,
 				INFO,

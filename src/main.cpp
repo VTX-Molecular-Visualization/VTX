@@ -7,7 +7,7 @@ int main( int argc, char * argv[] )
 {
 	try
 	{
-		VTXApp::INSTANCE().start();
+		VTXApp::get().start();
 	}
 	catch ( const std::exception & p_e )
 	{

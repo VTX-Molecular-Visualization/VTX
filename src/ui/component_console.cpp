@@ -1,8 +1,10 @@
 #include "component_console.hpp"
 #include "../defines.hpp"
+#include "../event/event.hpp"
 #include "../lib/imgui/imgui.h"
 #include "../localization/language.hpp"
 #include "../style.hpp"
+#include "../util/logger.hpp"
 
 namespace VTX
 {
@@ -15,10 +17,12 @@ namespace VTX
 
 		void ComponentConsole::_registerEventHandlers()
 		{
-			_registerEventHandler( Event::EVENT_UI::LOG_CONSOLE,
-								   []( va_list p_args ) {
+			_registerEventHandler<Util::Logger::Log>(
+				Event::EVENT_UI::LOG_CONSOLE,
 
-								   } );
+				[]( Event::Event<Util::Logger::Log> ) {
+					std::cout << "EVENT OK" << std::endl;
+				} );
 		}
 
 		void ComponentConsole::_draw()

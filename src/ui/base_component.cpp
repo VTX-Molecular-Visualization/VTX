@@ -40,9 +40,10 @@ namespace VTX
 			}
 		}
 
+		template<typename T>
 		void BaseComponent::_registerEventHandler(
-			const Event::EVENT_UI						p_event,
-			const std::function<void( const int, ... )> p_callback )
+			const Event::EVENT_UI								 p_event,
+			const std::function<void( const Event::Event<T> & )> p_callback )
 		{
 			try
 			{
@@ -54,13 +55,13 @@ namespace VTX
 			}
 		}
 
-		void BaseComponent::receiveEvent( const Event::EVENT_UI p_event,
-										  const int				p_args,
-										  ... )
+		template<typename T>
+		void BaseComponent::receiveEvent( const Event::EVENT_UI	  p_name,
+										  const Event::Event<T> & p_event )
 		{
 			try
 			{
-				_events.at( p_event )( p_args );
+				_events.at( p_name )( p_event );
 			}
 			catch ( const std::exception )
 			{
@@ -70,7 +71,7 @@ namespace VTX
 			for ( BaseComponent * const component : _components )
 			{
 				if ( component->isShown() == false ) { continue; }
-				component->receiveEvent( p_event, p_args );
+				component->receiveEvent<T>( p_name, p_event );
 			}
 		}
 

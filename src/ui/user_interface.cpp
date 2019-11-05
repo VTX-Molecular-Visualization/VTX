@@ -202,7 +202,7 @@ namespace VTX
 						  && event.window.windowID
 								 == SDL_GetWindowID( _window ) ) )
 				{
-					VTXApp::INSTANCE().stop();
+					VTXApp::get().stop();
 					return;
 				}
 			}
