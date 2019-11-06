@@ -1,5 +1,5 @@
-#ifndef __STYLE__
-#define __STYLE__
+#ifndef __VTX_STYLE__
+#define __VTX_STYLE__
 
 namespace VTX
 {

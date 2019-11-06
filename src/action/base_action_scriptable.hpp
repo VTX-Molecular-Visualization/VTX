@@ -1,5 +1,5 @@
-#ifndef __BASE_ACTION_SCRIPTABLE__
-#define __BASE_ACTION_SCRIPTABLE__
+#ifndef __VTX_BASE_ACTION_SCRIPTABLE__
+#define __VTX_BASE_ACTION_SCRIPTABLE__
 
 #include "base_action.hpp"
 

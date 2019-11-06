@@ -1,5 +1,5 @@
-#ifndef __CONTROLLER_GAMEPAD__
-#define __CONTROLLER_GAMEPAD__
+#ifndef __VTX_CONTROLLER_GAMEPAD__
+#define __VTX_CONTROLLER_GAMEPAD__
 
 #include "base_controller.hpp"
 

@@ -1,5 +1,5 @@
-#ifndef __SCENE__
-#define __SCENE__
+#ifndef __VTX_SCENE__
+#define __VTX_SCENE__
 
 #include "object_3d.hpp"
 

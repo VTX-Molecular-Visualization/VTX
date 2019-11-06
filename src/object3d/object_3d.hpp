@@ -1,5 +1,5 @@
-#ifndef __OBJECT_3D__
-#define __OBJECT_3D__
+#ifndef __VTX_OBJECT_3D__
+#define __VTX_OBJECT_3D__
 
 #include "../defines.hpp"
 

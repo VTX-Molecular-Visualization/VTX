@@ -1,5 +1,5 @@
-#ifndef __BASE_RENDERER__
-#define __BASE_RENDERER__
+#ifndef __VTX_BASE_RENDERER__
+#define __VTX_BASE_RENDERER__
 
 namespace VTX
 {

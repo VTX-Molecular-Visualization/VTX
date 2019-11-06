@@ -1,5 +1,5 @@
-#ifndef __USER_INTERFACE__
-#define __USER_INTERFACE__
+#ifndef __VTX_USER_INTERFACE__
+#define __VTX_USER_INTERFACE__
 
 #include "base_component.hpp"
 #include <SDL2/SDL.h>

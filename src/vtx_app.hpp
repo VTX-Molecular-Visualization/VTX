@@ -21,8 +21,7 @@ namespace VTX
 		void stop();
 
 		template<typename T>
-		void fireUIEvent( const Event::EVENT_UI,
-						  const Event::Event<T> & ) const;
+		void fireUIEvent( const Event::EVENT_UI, const T & ) const;
 
 	  private:
 		static bool			_isRunning;

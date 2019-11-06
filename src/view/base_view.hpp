@@ -1,5 +1,5 @@
-#ifndef __BASE_VIEW__
-#define __BASE_VIEW__
+#ifndef __VTX_BASE_VIEW__
+#define __VTX_BASE_VIEW__
 
 namespace VTX
 {

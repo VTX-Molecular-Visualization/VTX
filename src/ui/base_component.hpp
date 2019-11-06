@@ -1,5 +1,5 @@
-#ifndef __BASE_COMPONENT__
-#define __BASE_COMPONENT__
+#ifndef __VTX_BASE_COMPONENT__
+#define __VTX_BASE_COMPONENT__
 
 #include "../event/event.hpp"
 #include "../util/logger.hpp"
@@ -21,7 +21,7 @@ namespace VTX
 			bool		 isShown() { return *_show; }
 
 			template<typename T>
-			void receiveEvent( const Event::EVENT_UI, const Event::Event<T> & );
+			void receiveEvent( const Event::EVENT_UI, const T & );
 
 		  protected:
 			bool * _show;
@@ -31,9 +31,8 @@ namespace VTX
 			virtual void _drawComponents() final;
 
 			template<typename T>
-			void _registerEventHandler(
-				const Event::EVENT_UI,
-				const std::function<void( const Event::Event<T> & )> );
+			void		 _registerEventHandler( const Event::EVENT_UI,
+												const std::function<void( T )> );
 			virtual void _registerEventHandlers() {};
 
 			virtual void _draw() = 0;
@@ -42,11 +41,9 @@ namespace VTX
 			bool						 _isInitialized = false;
 			std::vector<BaseComponent *> _components
 				= std::vector<BaseComponent *>();
-			std::map<Event::EVENT_UI,
-					 std::function<void( const Event::Event<void *> & )>>
-				_events = std::map<
-					Event::EVENT_UI,
-					std::function<void( const Event::Event<void *> & )>>();
+			std::map<Event::EVENT_UI, std::function<void( const void * )>>
+				_events = std::map<Event::EVENT_UI,
+								   std::function<void( const void * )>>();
 		};
 	} // namespace UI
 } // namespace VTX

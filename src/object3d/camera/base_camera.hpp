@@ -1,5 +1,5 @@
-#ifndef __BASE_CAMERA__
-#define __BASE_CAMERA__
+#ifndef __VTX_BASE_CAMERA__
+#define __VTX_BASE_CAMERA__
 
 #include "../../defines.hpp"
 #include "../object_3d.hpp"
@@ -34,17 +34,17 @@ namespace VTX
 				float _screenWidth;
 				float _screenHeight;
 				float _near = CAMERA_NEAR;
-				float _far  = CAMERA_FAR;
-				float _fov  = CAMERA_FOV;
+				float _far	= CAMERA_FAR;
+				float _fov	= CAMERA_FOV;
 
 				Vec3f _front = VEC3F_Z;
-				Vec3f _up	= VEC3F_Y;
-				Vec3f _left  = VEC3F_X;
+				Vec3f _up	 = VEC3F_Y;
+				Vec3f _left	 = VEC3F_X;
 
 				float _theta = 0.f;
-				float _phi   = 0.f;
+				float _phi	 = 0.f;
 			};
 		} // namespace Camera
-	}	 // namespace Object3D
+	}	  // namespace Object3D
 } // namespace VTX
 #endif

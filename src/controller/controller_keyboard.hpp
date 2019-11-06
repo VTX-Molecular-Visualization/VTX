@@ -1,5 +1,5 @@
-#ifndef __CONTROLLER_KEYBOARD__
-#define __CONTROLLER_KEYBOARD__
+#ifndef __VTX_CONTROLLER_KEYBOARD__
+#define __VTX_CONTROLLER_KEYBOARD__
 
 #include "base_controller.hpp"
 

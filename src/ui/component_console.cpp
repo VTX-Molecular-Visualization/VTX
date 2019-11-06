@@ -4,7 +4,6 @@
 #include "../lib/imgui/imgui.h"
 #include "../localization/language.hpp"
 #include "../style.hpp"
-#include "../util/logger.hpp"
 
 namespace VTX
 {
@@ -15,13 +14,18 @@ namespace VTX
 		{
 		}
 
+		void print( int i ) {}
+
 		void ComponentConsole::_registerEventHandlers()
 		{
-			_registerEventHandler<Util::Logger::Log>(
-				Event::EVENT_UI::LOG_CONSOLE,
-				[]( const Event::Event<Util::Logger::Log> & p_event ) {
-					std::cout << "EVENT OK" << std::endl;
-				} );
+			/*
+			std::function func = &ComponentConsole::_addLog;
+
+			const std::function<void( int )> f;
+
+			_registerEventHandler<int>( VTX::Event::EVENT_UI::LOG_CONSOLE,
+										[]( int ) {} );
+										*/
 		}
 
 		void ComponentConsole::_draw()
@@ -46,7 +50,6 @@ namespace VTX
 
 			ImGui::End();
 		}
-
 		void ComponentConsole::_addLog( const Util::Logger::Log & p_log )
 		{
 			_logs.push_back( p_log );

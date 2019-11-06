@@ -33,8 +33,8 @@ namespace VTX
 	}
 
 	template<typename T>
-	void VTXApp::fireUIEvent( const Event::EVENT_UI	  p_name,
-							  const Event::Event<T> & p_event ) const
+	void VTXApp::fireUIEvent( const Event::EVENT_UI p_name,
+							  const T &				p_event ) const
 	{
 		_ui->receiveEvent<T>( p_name, p_event );
 	}

@@ -1,5 +1,5 @@
-#ifndef __RENDERER__
-#define __RENDERER__
+#ifndef __VTX_RENDERER__
+#define __VTX_RENDERER__
 
 #include "base_renderer.hpp"
 

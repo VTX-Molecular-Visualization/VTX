@@ -1,5 +1,5 @@
-#ifndef __BASE_CONTROLLER__
-#define __BASE_CONTROLLER__
+#ifndef __VTX_BASE_CONTROLLER__
+#define __VTX_BASE_CONTROLLER__
 
 namespace VTX
 {

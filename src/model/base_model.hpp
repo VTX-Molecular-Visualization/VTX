@@ -1,5 +1,5 @@
-#ifndef __BASE_MODEL__
-#define __BASE_MODEL__
+#ifndef __VTX_BASE_MODEL__
+#define __VTX_BASE_MODEL__
 
 namespace VTX
 {

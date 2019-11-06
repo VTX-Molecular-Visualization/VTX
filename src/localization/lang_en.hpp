@@ -1,5 +1,5 @@
-#ifndef __LANG_EN__
-#define __LANG_EN__
+#ifndef __VTX_LANG_EN__
+#define __VTX_LANG_EN__
 
 #include <map>
 #include <string>

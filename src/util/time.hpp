@@ -1,5 +1,5 @@
-#ifndef __MY_TIME__
-#define __MY_TIME__
+#ifndef __VTX__TIME__
+#define __VTX__TIME__
 
 #include <iostream>
 

@@ -1,5 +1,5 @@
-#ifndef __LANGUAGE__
-#define __LANGUAGE__
+#ifndef __VTX_LANGUAGE__
+#define __VTX_LANGUAGE__
 
 #include "lang_en.hpp"
 #include <iostream>

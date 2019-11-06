@@ -1,5 +1,5 @@
-#ifndef __EXCEPTIONS__
-#define __EXCEPTIONS__
+#ifndef __VTX_EXCEPTIONS__
+#define __VTX_EXCEPTIONS__
 
 #include <iostream>
 #include <string>

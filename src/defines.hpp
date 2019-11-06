@@ -1,5 +1,5 @@
-#ifndef __DEFINES__
-#define __DEFINES__
+#ifndef __VTX_DEFINES__
+#define __VTX_DEFINES__
 
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>

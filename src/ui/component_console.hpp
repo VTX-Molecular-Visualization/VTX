@@ -1,5 +1,5 @@
-#ifndef __COMPONENT_CONSOLE__
-#define __COMPONENT_CONSOLE__
+#ifndef __VTX_COMPONENT_CONSOLE__
+#define __VTX_COMPONENT_CONSOLE__
 
 #include "../lib/imgui/imgui.h"
 #include "../localization/language.hpp"

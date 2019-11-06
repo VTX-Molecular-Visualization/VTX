@@ -1,5 +1,5 @@
-#ifndef __VIEW_BALL_AND_STICK__
-#define __VIEW_BALL_AND_STICK__
+#ifndef __VTX_VIEW_BALL_AND_STICK__
+#define __VTX_VIEW_BALL_AND_STICK__
 
 #include "base_view.hpp"
 

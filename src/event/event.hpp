@@ -1,5 +1,5 @@
-#ifndef __EVENT__
-#define __EVENT__
+#ifndef __VTX_EVENT__
+#define __VTX_EVENT__
 
 namespace VTX
 {
@@ -10,17 +10,19 @@ namespace VTX
 			LOG_CONSOLE
 		};
 
+		/*
 		template<typename T>
 		class Event
 		{
 		  public:
-			Event( T p_arg ) : _data( p_arg ) {};
+			Event() : _data( NULL ) {};
+			Event( T & p_arg ) : _data( p_arg ) {};
 			T data() { return _data; }
 
 		  private:
 			T _data;
 		};
-
+		*/
 	} // namespace Event
 } // namespace VTX
 #endif

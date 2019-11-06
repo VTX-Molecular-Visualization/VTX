@@ -1,5 +1,5 @@
-#ifndef __CAMERA_ORBIT__
-#define __CAMERA_ORBIT__
+#ifndef __VTX_CAMERA_ORBIT__
+#define __VTX_CAMERA_ORBIT__
 
 #include "base_camera.hpp"
 

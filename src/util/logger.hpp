@@ -1,5 +1,5 @@
-#ifndef __LOGGER__
-#define __LOGGER__
+#ifndef __VTX_LOGGER__
+#define __VTX_LOGGER__
 
 #include <iostream>
 

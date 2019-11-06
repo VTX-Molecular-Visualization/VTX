@@ -1,5 +1,5 @@
-#ifndef __CAMERA_FREE_FLY__
-#define __CAMERA_FREE_FLY__
+#ifndef __VTX_CAMERA_FREE_FLY__
+#define __VTX_CAMERA_FREE_FLY__
 
 #include "base_camera.hpp "
 

@@ -1,5 +1,5 @@
-#ifndef __CONTROLLER_MOUSE__
-#define __CONTROLLER_MOUSE__
+#ifndef __VTX_CONTROLLER_MOUSE__
+#define __VTX_CONTROLLER_MOUSE__
 
 #include "base_controller.hpp"
 
