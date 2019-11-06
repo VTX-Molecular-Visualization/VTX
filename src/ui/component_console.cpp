@@ -19,8 +19,7 @@ namespace VTX
 		{
 			_registerEventHandler<Util::Logger::Log>(
 				Event::EVENT_UI::LOG_CONSOLE,
-
-				[]( Event::Event<Util::Logger::Log> ) {
+				[]( const Event::Event<Util::Logger::Log> & p_event ) {
 					std::cout << "EVENT OK" << std::endl;
 				} );
 		}
@@ -48,7 +47,7 @@ namespace VTX
 			ImGui::End();
 		}
 
-		void ComponentConsole::addLog( const Util::Logger::Log p_log )
+		void ComponentConsole::_addLog( const Util::Logger::Log & p_log )
 		{
 			_logs.push_back( p_log );
 		}

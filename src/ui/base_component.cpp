@@ -1,5 +1,4 @@
 #include "base_component.hpp"
-#include "../util/logger.hpp"
 #include <iostream>
 
 namespace VTX
@@ -65,12 +64,13 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
+				// Nothing.
 			}
 
 			// Propagate to children.
 			for ( BaseComponent * const component : _components )
 			{
-				if ( component->isShown() == false ) { continue; }
+				// if ( component->isShown() == false ) { continue; }
 				component->receiveEvent<T>( p_name, p_event );
 			}
 		}

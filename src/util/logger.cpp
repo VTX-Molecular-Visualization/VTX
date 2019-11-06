@@ -28,8 +28,16 @@ namespace VTX
 			_log( LEVEL::ERROR, p_error );
 		}
 
-		void Logger::_log( const LEVEL p_level, const std::string & p_string )
+		void Logger::_log( const LEVEL p_level, const std::string & p_message )
 		{
+			Log log;
+			log.level = p_level;
+			std::string message( p_message );
+			message.erase( std::remove( message.begin(), message.end(), '\n' ),
+						   message.end() );
+			log.message = message;
+			log.date	= Time::getNowString();
+
 			if ( VTXApp::isRunning() )
 			{
 				/*
@@ -42,12 +50,8 @@ namespace VTX
 			if ( LOG_LEVEL > p_level ) return;
 #endif
 
-			std::string str( p_string );
-			str.erase( std::remove( str.begin(), str.end(), '\n' ), str.end() );
-
-			std::cout << "[" + Time::getNowString()
-							 + "] " //+ "[" + p_level + "] "
-							 + str
+			std::cout << "[" + log.date + "] " //+ "[" + p_level + "] "
+							 + log.message
 					  << std::endl;
 		}
 	} // namespace Util

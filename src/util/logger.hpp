@@ -26,6 +26,7 @@ namespace VTX
 			struct Log
 			{
 				LEVEL		level;
+				std::string date;
 				std::string message;
 			};
 

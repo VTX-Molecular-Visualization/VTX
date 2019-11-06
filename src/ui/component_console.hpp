@@ -15,7 +15,6 @@ namespace VTX
 		{
 		  public:
 			ComponentConsole( bool * const );
-			void addLog( const Util::Logger::Log );
 
 		  protected:
 			virtual void _draw() override;
@@ -25,6 +24,7 @@ namespace VTX
 			std::vector<Util::Logger::Log> _logs
 				= std::vector<Util::Logger::Log>();
 
+			void _addLog( const Util::Logger::Log & );
 			void _clear();
 		};
 	} // namespace UI
