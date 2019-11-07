@@ -1,4 +1,4 @@
-#include "mmtf_reader.hpp"
+#include "reader_mmtf.hpp"
 #include "../exceptions.hpp"
 #include "../lib/mmtf/mmtf.hpp"
 #include "../util/logger.hpp"
@@ -7,7 +7,7 @@ namespace VTX
 {
 	namespace IO
 	{
-		void MMTFReader::readFile( const Path &			  p_path,
+		void ReaderMMTF::readFile( const Path &			  p_path,
 								   Model::ModelMolecule & p_molecule )
 		{
 			// Decode MMTF.

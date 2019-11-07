@@ -1,5 +1,5 @@
-#ifndef __VTX_MMTF_READER__
-#define __VTX_MMTF_READER__
+#ifndef __VTX_READER_MMTF__
+#define __VTX_READER_MMTF__
 
 #include "base_reader.hpp"
 
@@ -7,7 +7,7 @@ namespace VTX
 {
 	namespace IO
 	{
-		class MMTFReader : public BaseReader
+		class ReaderMMTF : public BaseReader
 		{
 		  public:
 			virtual void readFile( const Path &,
