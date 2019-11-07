@@ -1,4 +1,7 @@
 #include "vtx_app.hpp"
+#include "io/path.hpp"
+#include "io/reader_mmtf.hpp"
+#include "model/model_molecule.hpp"
 
 namespace VTX
 {
@@ -19,6 +22,14 @@ namespace VTX
 		VTXApp::_isRunning = true;
 		VTX_INFO( "Application started" );
 		_ui->printInfos();
+
+		// TESTS.
+		Model::ModelMolecule molecule = Model::ModelMolecule();
+		IO::ReaderMMTF *	 mmtf	  = new IO::ReaderMMTF();
+		IO::Path path( "C:/Users/Simon/Documents/git/VTX/data/4v6x.mmtf" );
+		mmtf->readFile( path, molecule );
+		delete mmtf;
+		//////
 
 		while ( VTXApp::_isRunning )
 		{
