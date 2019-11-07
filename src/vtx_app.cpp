@@ -6,7 +6,7 @@ namespace VTX
 
 	VTXApp::VTXApp()
 	{
-		INF( "Initializing application" );
+		VTX_INFO( "Initializing application" );
 		_ui = new UI::UserInterface( NULL );
 		_ui->init();
 	}
@@ -15,9 +15,9 @@ namespace VTX
 
 	void VTXApp::start()
 	{
-		INF( "Starting application" );
+		VTX_INFO( "Starting application" );
 		VTXApp::_isRunning = true;
-		INF( "Application started" );
+		VTX_INFO( "Application started" );
 		_ui->printInfos();
 
 		while ( VTXApp::_isRunning )
@@ -28,7 +28,7 @@ namespace VTX
 
 	void VTXApp::stop()
 	{
-		INF( "Stopping application" );
+		VTX_INFO( "Stopping application" );
 		VTXApp::_isRunning = false;
 	}
 

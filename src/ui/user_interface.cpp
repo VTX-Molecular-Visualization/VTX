@@ -19,7 +19,7 @@ namespace VTX
 	{
 		UserInterface::UserInterface( bool * p_show ) : BaseComponent( p_show )
 		{
-			INF( "Creating user interface" );
+			VTX_INFO( "Creating user interface" );
 
 			try
 			{
@@ -30,7 +30,7 @@ namespace VTX
 
 			catch ( const std::exception & p_e )
 			{
-				ERR( p_e.what() );
+				VTX_ERROR( p_e.what() );
 				_disposeAll();
 				throw Exception::VTXException( "Can't start VTX" );
 			}
@@ -46,9 +46,11 @@ namespace VTX
 			const uchar * glVendor	 = glGetString( GL_VENDOR );
 			const uchar * glRenderer = glGetString( GL_RENDERER );
 
-			INF( "GL version: " + std::string( (const char *)glVersion ) );
-			INF( "GLSL version: " + std::string( (const char *)glslVersion ) );
-			INF( "GL device: " + std::string( (const char *)glVendor ) + " "
+			VTX_INFO( "GL version: " + std::string( (const char *)glVersion ) );
+			VTX_INFO( "GLSL version: "
+					  + std::string( (const char *)glslVersion ) );
+			VTX_INFO( "GL device: " + std::string( (const char *)glVendor )
+					  + " "
 				 + std::string( (const char *)glRenderer ) );
 		}
 
@@ -60,7 +62,7 @@ namespace VTX
 
 		void UserInterface::_initSDL2()
 		{
-			INF( "Initializing SDL2" );
+			VTX_INFO( "Initializing SDL2" );
 
 			if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER
 						   | SDL_INIT_GAMECONTROLLER )
@@ -103,7 +105,7 @@ namespace VTX
 
 		void UserInterface::_initGL()
 		{
-			INF( "Initializing OpenGL" );
+			VTX_INFO( "Initializing OpenGL" );
 			if ( gl3wInit() )
 			{ throw Exception::GLException( "gl3wInit() failed" ); }
 
@@ -116,7 +118,7 @@ namespace VTX
 
 		void UserInterface::_initIMGUI()
 		{
-			INF( "Initializing IMGUI" );
+			VTX_INFO( "Initializing IMGUI" );
 
 			if ( !IMGUI_CHECKVERSION() )
 			{

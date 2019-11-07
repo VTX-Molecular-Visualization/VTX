@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.15)
 project(VTX)
 
 # Configuration.
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 set(CMAKE_SUPPRESS_REGENERATION true)
 
@@ -36,6 +36,7 @@ endforeach()
 find_package(SDL2 CONFIG REQUIRED)
 find_package(gl3w CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
+find_package(msgpack CONFIG REQUIRED)
 
 # Declare executable with source files.
 add_executable(VTX ${HPP} ${CPP})
@@ -44,3 +45,7 @@ add_executable(VTX ${HPP} ${CPP})
 target_link_libraries(VTX PRIVATE SDL2::SDL2 SDL2::SDL2main)
 target_link_libraries(VTX PRIVATE unofficial::gl3w::gl3w)
 target_link_libraries(VTX PRIVATE glm)
+target_link_libraries(VTX PRIVATE msgpackc msgpackc-cxx)
+if(WIN32)
+  target_link_libraries(VTX PRIVATE ws2_32)
+endif()

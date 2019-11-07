@@ -2,11 +2,11 @@
 //
 // Licensed under the MIT License (see accompanying LICENSE file).
 //
-// The authors of this code are: Gerardo Tauriello
+// The authors of this code are: Gerardo Tauriello, and Daniel Farrell.
 //
 // Based on mmtf_c developed by Julien Ferte (http://www.julienferte.com/),
 // Anthony Bradley, Thomas Holder with contributions from Yana Valasatava,
-// Gazal Kalyan, Alexander Rose.
+// Gazal Kalyan, Alexander Rose
 //
 // *************************************************************************
 
@@ -14,6 +14,7 @@
 #define MMTF_BINARY_DECODER_H
 
 #include "structure_data.hpp"
+#include "errors.hpp"
 
 #include <msgpack.hpp>
 #include <cstring> // low level mem
@@ -45,7 +46,7 @@ public:
      *
      * @tparam T Can be one of:
      *           - std::vector<float>       (strategies: 1, 9, 10, 11, 12, 13)
-     *           - std::vector<int8_t>      (strategies: 2)
+     *           - std::vector<int8_t>      (strategies: 2, 16)
      *           - std::vector<int16_t>     (strategies: 3)
      *           - std::vector<int32_t>     (strategies: 4, 7, 8, 14, 15)
      *           - std::vector<std::string> (strategies: 5)
@@ -253,6 +254,12 @@ inline void BinaryDecoder::decode(std::vector<int8_t>& output) {
     switch (strategy_) {
     case 2: {
         decodeFromBytes_(output);
+        break;
+    }
+    case 16: {
+        std::vector<int32_t> step1;
+        decodeFromBytes_(step1);
+        runLengthDecode_(step1, output);
         break;
     }
     default: {

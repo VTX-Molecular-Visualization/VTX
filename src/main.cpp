@@ -11,7 +11,7 @@ int main( int argc, char * argv[] )
 	}
 	catch ( const std::exception & p_e )
 	{
-		ERR( p_e.what() );
+		VTX_ERROR( p_e.what() );
 		return EXIT_FAILURE;
 	}
 

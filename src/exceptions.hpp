@@ -12,7 +12,7 @@ namespace VTX
 		{
 		  public:
 			explicit SDLException( const std::string & p_err ) :
-				std::runtime_error( std::string( "[SDL] " ) + p_err )
+				std::runtime_error( "[SDL] " + p_err )
 			{
 			}
 		};
@@ -21,7 +21,7 @@ namespace VTX
 		{
 		  public:
 			explicit GLException( const std::string & p_err ) :
-				std::runtime_error( std::string( "[GL] " ) + p_err )
+				std::runtime_error( "[GL] " + p_err )
 			{
 			}
 		};
@@ -30,7 +30,16 @@ namespace VTX
 		{
 		  public:
 			explicit IMGUIException( const std::string & p_err ) :
-				std::runtime_error( std::string( "[IMGUI] " ) + p_err )
+				std::runtime_error( "[IMGUI] " + p_err )
+			{
+			}
+		};
+
+		class MMTFException : public std::runtime_error
+		{
+		  public:
+			explicit MMTFException( const std::string & p_err ) :
+				std::runtime_error( "[MMTF] " + p_err )
 			{
 			}
 		};
@@ -39,7 +48,7 @@ namespace VTX
 		{
 		  public:
 			explicit VTXException( const std::string & p_err ) :
-				std::runtime_error( std::string( "[VTX] " ) + p_err )
+				std::runtime_error( "[VTX] " + p_err )
 			{
 			}
 		};
