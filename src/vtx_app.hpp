@@ -2,6 +2,8 @@
 #define __VTX_APP__
 
 #include "event/event.hpp"
+#include "object3d/scene.hpp"
+#include "renderer/renderer.hpp"
 #include "ui/user_interface.hpp"
 #include "util/logger.hpp"
 
@@ -24,9 +26,11 @@ namespace VTX
 		void fireUIEvent( const Event::EVENT_UI, const T & ) const;
 
 	  private:
-		static bool			_isRunning;
-		UI::UserInterface * _ui	  = nullptr;
-		double				_time = 0.;
+		static bool			 _isRunning;
+		double				 _time = 0.f;
+		UI::UserInterface *	 _ui;
+		Object3D::Scene *	 _scene;
+		Renderer::Renderer * _renderer;
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;

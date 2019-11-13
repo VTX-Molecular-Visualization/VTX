@@ -11,7 +11,7 @@ namespace VTX
 		class UserInterface : public BaseComponent
 		{
 		  public:
-			UserInterface( bool * );
+			UserInterface();
 			~UserInterface();
 			void printInfos() const;
 

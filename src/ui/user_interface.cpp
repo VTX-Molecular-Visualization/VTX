@@ -17,7 +17,7 @@ namespace VTX
 {
 	namespace UI
 	{
-		UserInterface::UserInterface( bool * p_show ) : BaseComponent( p_show )
+		UserInterface::UserInterface() : BaseComponent( NULL )
 		{
 			VTX_INFO( "Creating user interface" );
 
@@ -50,8 +50,7 @@ namespace VTX
 			VTX_INFO( "GLSL version: "
 					  + std::string( (const char *)glslVersion ) );
 			VTX_INFO( "GL device: " + std::string( (const char *)glVendor )
-					  + " "
-				 + std::string( (const char *)glRenderer ) );
+					  + " " + std::string( (const char *)glRenderer ) );
 		}
 
 		void UserInterface::_addComponents()
@@ -82,7 +81,9 @@ namespace VTX
 
 			// SDL_GetCurrentDisplayMode( 0, &m_displayMode );
 
-			std::string title( "VTX" );
+			std::string title( "VTX " + VTX_VERSION_MAJOR + '.'
+							   + VTX_VERSION_MINOR + 'r'
+							   + VTX_VERSION_RELEASE );
 			_window = SDL_CreateWindow( title.c_str(),
 										SDL_WINDOWPOS_CENTERED,
 										SDL_WINDOWPOS_CENTERED,

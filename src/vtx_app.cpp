@@ -10,11 +10,18 @@ namespace VTX
 	VTXApp::VTXApp()
 	{
 		VTX_INFO( "Initializing application" );
-		_ui = new UI::UserInterface( NULL );
+		_ui = new UI::UserInterface();
 		_ui->init();
+		_scene	  = new Object3D::Scene();
+		_renderer = new Renderer::Renderer();
 	}
 
-	VTXApp::~VTXApp() { delete _ui; }
+	VTXApp::~VTXApp()
+	{
+		delete _ui;
+		delete _scene;
+		delete _renderer;
+	}
 
 	void VTXApp::start()
 	{
@@ -26,7 +33,7 @@ namespace VTX
 		// TESTS.
 		Model::ModelMolecule molecule = Model::ModelMolecule();
 		IO::ReaderMMTF *	 mmtf	  = new IO::ReaderMMTF();
-		IO::Path path( "C:/Users/Simon/Documents/git/VTX/data/4v6x.mmtf" );
+		IO::Path path( "C:/Users/SAMAR/Desktop/VTX/VTX/data/4v6x.mmtf" );
 		mmtf->readFile( path, molecule );
 		delete mmtf;
 		//////
