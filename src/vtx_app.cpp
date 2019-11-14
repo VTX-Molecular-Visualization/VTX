@@ -32,16 +32,17 @@ namespace VTX
 		VTX_INFO( "Application started" );
 		_ui->printInfos();
 
-		// TESTS.
+		////////////// TESTS.
 		Model::ModelMolecule molecule = Model::ModelMolecule();
-		IO::Path			 path(
-			"C:/Users/Samar/Desktop/VTX/Vidocklab/VidockLab/data/3j3q.mmtf" );
-
-		std::thread thread( [&path, &molecule ] {
-			IO::ReaderMMTF mmtf = IO::ReaderMMTF();
-			mmtf.readFile( path, molecule );
-		} );
-		//////
+		std::thread			 thread( [&molecule ] {
+			 IO::ReaderMMTF mmtf = IO::ReaderMMTF();
+			 mmtf.readFile(
+				 IO::Path( "C:/Users/Samar/Desktop/VTX/Vidocklab/VidockLab/data/"
+						   "3j3q.mmtf" ),
+				 molecule );
+			 molecule.printInfos();
+		 } );
+		//////////////
 
 		while ( VTXApp::_isRunning )
 		{

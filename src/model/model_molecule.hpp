@@ -2,6 +2,7 @@
 #define __VTX_MODEL_MOLECULE__
 
 #include "../defines.hpp"
+#include "../util/logger.hpp"
 #include "atom.hpp"
 #include "base_model.hpp"
 #include "chain.hpp"
@@ -41,6 +42,13 @@ namespace VTX
 			void addAtomColor( const Vec3f p_color )
 			{
 				_atomColors.emplace_back( p_color );
+			}
+
+			void printInfos()
+			{
+				VTX_INFO( "Chains: " + std::to_string( _chains.size() ) );
+				VTX_INFO( "Residues: " + std::to_string( _residues.size() ) );
+				VTX_INFO( "Atoms: " + std::to_string( _atoms.size() ) );
 			}
 
 		  private:

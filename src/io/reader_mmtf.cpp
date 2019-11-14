@@ -99,10 +99,6 @@ namespace VTX
 				}
 			}
 			VTX_INFO( "Models created" );
-			VTX_INFO( "Chains: " + std::to_string( chainIdx ) );
-			VTX_INFO( "Residues: " + std::to_string( residueGlobalIdx ) );
-			VTX_INFO( "Atoms: " + std::to_string( atomGlobalIdx ) );
-			// std::cout << atomGlobalIdx << " atoms" << std::endl;
 		}
 
 	} // namespace IO
