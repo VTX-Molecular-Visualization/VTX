@@ -10,7 +10,6 @@ namespace VTX
 		class ReaderMMTF : public BaseReader
 		{
 		  public:
-			ReaderMMTF() {}
 			virtual void readFile( const Path &,
 								   Model::ModelMolecule & ) override;
 		};

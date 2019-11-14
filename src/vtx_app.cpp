@@ -3,6 +3,7 @@
 #include "io/reader_mmtf.hpp"
 #include "model/atom.hpp"
 #include "model/model_molecule.hpp"
+#include <thread>
 
 namespace VTX
 {
@@ -33,10 +34,13 @@ namespace VTX
 
 		// TESTS.
 		Model::ModelMolecule molecule = Model::ModelMolecule();
-		IO::ReaderMMTF *	 mmtf	  = new IO::ReaderMMTF();
-		IO::Path path( "C:/Users/SAMAR/Desktop/VTX/VTX/data/4v6x.mmtf" );
-		mmtf->readFile( path, molecule );
-		delete mmtf;
+		IO::Path			 path(
+			"C:/Users/Samar/Desktop/VTX/Vidocklab/VidockLab/data/3j3q.mmtf" );
+
+		std::thread thread( [&path, &molecule ] {
+			IO::ReaderMMTF mmtf = IO::ReaderMMTF();
+			mmtf.readFile( path, molecule );
+		} );
 		//////
 
 		while ( VTXApp::_isRunning )

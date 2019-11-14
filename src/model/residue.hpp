@@ -8,45 +8,58 @@ namespace VTX
 {
 	namespace Model
 	{
-		enum class RESIDUE_TYPE
-		{
-			ALA = 0,
-			ARG,
-			ASN,
-			ASP,
-			CYS,
-			GLN,
-			GLU,
-			GLY,
-			HIS,
-			ILE,
-			LEU,
-			LYS,
-			MET,
-			PHE,
-			PRO,
-			SER,
-			THR,
-			TRP,
-			TYR,
-			VAL,
-			HOH, /// TODO: keep water as a residue ?
-			// keep at last
-			INVALID_TYPE,
-			RESIDUE_TYPE_COUNT
-		};
-
 		class Residue
 		{
 		  public:
-			uint		 getId() const { return _id; };
-			void		 setId( const uint p_id ) { _id = p_id; };
-			RESIDUE_TYPE getType() const { return _type; };
-			void setType( const RESIDUE_TYPE p_type ) { _type = p_type; };
+			enum RESIDUE_SYMBOL
+			{
+				UNKNOWN,
+				ALA,
+				ARG,
+				ASN,
+				ASP,
+				CYS,
+				GLN,
+				GLU,
+				GLY,
+				HIS,
+				ILE,
+				LEU,
+				LYS,
+				MET,
+				PHE,
+				PRO,
+				SER,
+				THR,
+				TRP,
+				TYR,
+				VAL,
+				HOH,
+				COUNT
+			};
+
+			// Static const mapping.
+			static const std::string SYMBOL_NAME[ RESIDUE_SYMBOL::COUNT ];
+			static const std::string SYMBOL_SHORT[ RESIDUE_SYMBOL::COUNT ];
+			static const Vec3f *	 SYMBOL_COLOR[ RESIDUE_SYMBOL::COUNT ];
+
+			const uint			 getId() const { return _id; };
+			void				 setId( const uint p_id ) { _id = p_id; };
+			const RESIDUE_SYMBOL getSymbol() const { return _symbol; };
+			void setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
+			const std::string & getName() const
+			{
+				return SYMBOL_NAME[ _symbol ];
+			}
+			const std::string & getSymbolShort() const
+			{
+				return SYMBOL_SHORT[ _symbol ];
+			}
+			const Vec3f * getColor() const { return SYMBOL_COLOR[ _symbol ]; }
 
 		  private:
-			uint		 _id   = INVALID_ID;
-			RESIDUE_TYPE _type = RESIDUE_TYPE::INVALID_TYPE;
+			uint		   _id	   = INVALID_ID;
+			RESIDUE_SYMBOL _symbol = RESIDUE_SYMBOL::UNKNOWN;
 		};
 
 	} // namespace Model

@@ -1,6 +1,7 @@
 #include "reader_mmtf.hpp"
 #include "../defines.hpp"
 #include "../exceptions.hpp"
+#include "../lib/magic_enum.hpp"
 #include "../lib/mmtf/mmtf.hpp"
 #include "../model/atom.hpp"
 #include "../model/chain.hpp"
@@ -40,7 +41,8 @@ namespace VTX
 
 			// For each chain in the model 0.
 			uint chainCount = data.chainsPerModel[ 0 ];
-			for ( uint chainIdx = 0; chainIdx < chainCount; ++chainIdx )
+			uint chainIdx	= 0;
+			for ( ; chainIdx < chainCount; ++chainIdx )
 			{
 				// New chain.
 				Model::Chain & chain = p_molecule.addChain();
@@ -59,9 +61,14 @@ namespace VTX
 					// New residue.
 					Model::Residue & residue = p_molecule.addResidue();
 					residue.setId( residueGlobalIdx );
-					// const std::string & residueSymbol = group.groupName;
-					// residue.setType( Residue::getTypeFromSymbol( resSymbol )
-					// );
+					const std::string & residueSymbol = group.groupName;
+					auto				symbol
+						= magic_enum::enum_cast<Model::Residue::RESIDUE_SYMBOL>(
+							residueSymbol );
+					residue.setSymbol(
+						symbol.has_value()
+							? symbol.value()
+							: Model::Residue::RESIDUE_SYMBOL::UNKNOWN );
 
 					// For each atom in the residue.
 					uint atomCount = uint( group.atomNameList.size() );
@@ -71,18 +78,31 @@ namespace VTX
 						// New atom.
 						Model::Atom & atom = p_molecule.addAtom();
 						atom.setId( atomGlobalIdx );
-						// const std::string & atomSymbol = group.elementList[ k
-						// ]; atom.m_type = Atom::getTypeFromSymbol( atomSymbol
-						// );
+						const std::string & atomSymbol
+							= group.elementList[ atomIdx ];
+						auto symbol
+							= magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>(
+								atomSymbol );
+						atom.setSymbol(
+							symbol.has_value()
+								? symbol.value()
+								: Model::Atom::ATOM_SYMBOL::UNKNOWN );
 
 						x = data.xCoordList[ atomGlobalIdx ];
 						y = data.yCoordList[ atomGlobalIdx ];
 						z = data.zCoordList[ atomGlobalIdx ];
+
+						p_molecule.addAtomPosition( Vec3f( x, y, z ) );
+						p_molecule.addAtomRadius( atom.getVdwRadius() );
+						p_molecule.addAtomColor( *atom.getColor() );
 					}
 				}
 			}
 			VTX_INFO( "Models created" );
-			std::cout << atomGlobalIdx << " atoms" << std::endl;
+			VTX_INFO( "Chains: " + std::to_string( chainIdx ) );
+			VTX_INFO( "Residues: " + std::to_string( residueGlobalIdx ) );
+			VTX_INFO( "Atoms: " + std::to_string( atomGlobalIdx ) );
+			// std::cout << atomGlobalIdx << " atoms" << std::endl;
 		}
 
 	} // namespace IO
