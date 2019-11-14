@@ -13,10 +13,12 @@ namespace VTX
 			ComponentMenu( bool * const, bool * const );
 
 		  protected:
+			virtual void _addComponents() override;
 			virtual void _draw() override;
 
 		  private:
 			bool * const _showConsole;
+			bool		 _showDialogImport = false;
 		};
 	} // namespace UI
 } // namespace VTX

@@ -31,11 +31,13 @@ namespace VTX
 		_ui->printInfos();
 
 		// TESTS.
+		/*
 		Model::ModelMolecule molecule = Model::ModelMolecule();
 		IO::ReaderMMTF *	 mmtf	  = new IO::ReaderMMTF();
 		IO::Path path( "C:/Users/SAMAR/Desktop/VTX/VTX/data/4v6x.mmtf" );
 		mmtf->readFile( path, molecule );
 		delete mmtf;
+		*/
 		//////
 
 		while ( VTXApp::_isRunning )

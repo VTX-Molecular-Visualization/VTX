@@ -15,8 +15,9 @@ namespace VTX
 	constexpr int OPENGL_VERSION_MAJOR = 4;
 	constexpr int OPENGL_VERSION_MINOR = 5;
 
-	constexpr int	WINDOWS_WIDTH  = 800;
-	constexpr int	WINDOWS_HEIGHT = 600;
+	constexpr int WINDOWS_WIDTH	 = 1200;
+	constexpr int WINDOWS_HEIGHT = 1080;
+
 	constexpr float CAMERA_NEAR	   = 1e-1f;
 	constexpr float CAMERA_FAR	   = 1e4f;
 	constexpr float CAMERA_FOV	   = 60.f;

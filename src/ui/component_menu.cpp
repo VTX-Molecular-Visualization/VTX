@@ -5,6 +5,7 @@
 #include "../style.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
+#include "dialog/component_dialog_import.hpp"
 
 namespace VTX
 {
@@ -15,6 +16,11 @@ namespace VTX
 			BaseComponent( p_show ),
 			_showConsole( p_showConsole )
 		{
+		}
+
+		void ComponentMenu::_addComponents()
+		{
+			_addComponent( new ComponentDialogImport( &_showDialogImport ) );
 		}
 
 		void ComponentMenu::_draw()
@@ -28,6 +34,14 @@ namespace VTX
 				{
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
 					{ VTXApp::get().stop(); }
+
+					ImGui::EndMenu();
+				}
+
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Import" ), _show ) )
+				{
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Import.MMTF" ) ) )
+					{}
 
 					ImGui::EndMenu();
 				}

@@ -13,6 +13,8 @@ namespace VTX
 			// Main menu.
 			{ "MainMenu.Menu", "Menu" },
 			{ "MainMenu.Menu.Quit", "Quit" },
+			{ "MainMenu.Import", "Import" },
+			{ "MainMenu.Import.MMTF", "MMTF" },
 			{ "MainMenu.Display", "Display" },
 			{ "MainMenu.Display.Console", "Console" },
 
