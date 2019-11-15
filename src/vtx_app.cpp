@@ -1,7 +1,6 @@
 #include "vtx_app.hpp"
 #include "io/path.hpp"
 #include "io/reader/reader_mmtf.hpp"
-#include "model/atom.hpp"
 #include "model/model_molecule.hpp"
 #include <thread>
 

@@ -1,10 +1,10 @@
-#include "residue.hpp"
+#include "model_residue.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
-		const std::string Residue::SYMBOL_NAME[ RESIDUE_SYMBOL::COUNT ] = {
+		const std::string ModelResidue::SYMBOL_NAME[ RESIDUE_SYMBOL::COUNT ] = {
 			"Unknown",		 // UNKWNON,
 			"Alanine",		 // ALA,
 			"Arginine",		 // ARG,
@@ -29,7 +29,7 @@ namespace VTX
 			"Water"			 // HOH,
 		};
 
-		const std::string Residue::SYMBOL_SHORT[ RESIDUE_SYMBOL::COUNT ] = {
+		const std::string ModelResidue::SYMBOL_SHORT[ RESIDUE_SYMBOL::COUNT ] = {
 			"UNKNOWN", // UNKWNON
 			"A",	   // ALA,
 			"R",	   // ARG,
@@ -54,7 +54,7 @@ namespace VTX
 			"HOH",	   // HOH,
 		};
 
-		const Vec3f * Residue::SYMBOL_COLOR[ RESIDUE_SYMBOL::COUNT ] = {
+		const Vec3f * ModelResidue::SYMBOL_COLOR[ RESIDUE_SYMBOL::COUNT ] = {
 			&COLOR_WHITE
 			// TODO
 		};

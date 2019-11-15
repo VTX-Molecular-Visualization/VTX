@@ -2,12 +2,16 @@
 #define __VTX_ATOM__
 
 #include "../defines.hpp"
+#include "base_model.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
-		class Atom
+		class ModelMolecule;
+		class ModelChain;
+		class ModelResidue;
+		class ModelAtom : BaseModel
 		{
 		  public:
 			// Sorted by atomic number.
@@ -140,18 +144,28 @@ namespace VTX
 			static const float		 SYMBOL_VDW_RADIUS[ ATOM_SYMBOL::COUNT ];
 			static const Vec3f *	 SYMBOL_COLOR[ ATOM_SYMBOL::COUNT ];
 
-			const uint			getId() const { return _id; };
-			void				setId( const uint p_id ) { _id = p_id; };
-			const ATOM_SYMBOL	getSymbol() const { return _symbol; };
-			void				setSymbol( const ATOM_SYMBOL p_symbol ) { _symbol = p_symbol; };
-			const std::string & getName() const { return SYMBOL_NAME[ _symbol ]; }
-			const uint			getAtomicNumber() const { return (uint)_symbol; }
-			const float			getVdwRadius() const { return SYMBOL_VDW_RADIUS[ _symbol ]; }
-			const Vec3f *		getColor() const { return SYMBOL_COLOR[ _symbol ]; }
+			inline ModelMolecule * const getMoleculePtr() const { return _moleculePtr; }
+			inline void				  setMoleculePtr( ModelMolecule * const p_molecule ) { _moleculePtr = p_molecule; }
+			inline ModelChain * const getChainPtr() const { return _chainPtr; }
+			inline void				  setChainPtr( ModelChain * const p_chain ) { _chainPtr = p_chain; }
+			inline ModelResidue * const getResiduePtr() const { return _residuePtr; }
+			inline void					setResiduePtr( ModelResidue * const p_residue ) { _residuePtr = p_residue; }
+
+			inline const uint		   getId() const { return _id; };
+			inline void				   setId( const uint p_id ) { _id = p_id; };
+			inline const ATOM_SYMBOL   getSymbol() const { return _symbol; };
+			inline void				   setSymbol( const ATOM_SYMBOL p_symbol ) { _symbol = p_symbol; };
+			inline const std::string & getName() const { return SYMBOL_NAME[ _symbol ]; }
+			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
+			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ _symbol ]; }
+			inline const Vec3f *	   getColor() const { return SYMBOL_COLOR[ _symbol ]; }
 
 		  private:
-			uint		_id		= INVALID_ID;
-			ATOM_SYMBOL _symbol = ATOM_SYMBOL::UNKNOWN;
+			ModelMolecule * _moleculePtr = nullptr;
+			ModelChain *	_chainPtr	 = nullptr;
+			ModelResidue *	_residuePtr	 = nullptr;
+			uint			_id			 = INVALID_ID;
+			ATOM_SYMBOL		_symbol		 = ATOM_SYMBOL::UNKNOWN;
 		};
 
 	} // namespace Model

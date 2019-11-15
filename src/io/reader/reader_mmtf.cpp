@@ -3,9 +3,6 @@
 #include "../../exceptions.hpp"
 #include "../../lib/magic_enum.hpp"
 #include "../../lib/mmtf/mmtf.hpp"
-#include "../../model/atom.hpp"
-#include "../../model/chain.hpp"
-#include "../../model/residue.hpp"
 #include "../../util/logger.hpp"
 
 namespace VTX
@@ -33,43 +30,57 @@ namespace VTX
 			p_molecule.setName( data.title );
 
 			float x, y, z;
+			uint  chainGlobalIdx   = 0;
 			uint  residueGlobalIdx = 0;
 			uint  atomGlobalIdx	   = 0;
 			uint  bondGlobalIdx	   = 0;
 
 			// For each chain in the model 0.
 			uint chainCount = data.chainsPerModel[ 0 ];
-			uint chainIdx	= 0;
-			for ( ; chainIdx < chainCount; ++chainIdx )
+			for ( ; chainGlobalIdx < chainCount; ++chainGlobalIdx )
 			{
 				// New chain.
-				Model::Chain & chain = p_molecule.addChain();
-				chain.setId( chainIdx );
-				chain.setName( data.chainNameList[ chainIdx ] );
+				Model::ModelChain & chain = p_molecule.addChain();
+				chain.setMoleculePtr( &p_molecule );
+				chain.setId( chainGlobalIdx );
+				chain.setName( data.chainNameList[ chainGlobalIdx ] );
+				chain.setIdFirstResidue( residueGlobalIdx );
+				chain.setResidueCount( data.groupsPerChain[ chainGlobalIdx ] );
 
 				// For each residue in the chain.
-				uint residueCount = data.groupsPerChain[ chainIdx ];
+				uint residueCount = data.groupsPerChain[ chainGlobalIdx ];
 				for ( uint residueLocalIdx = 0; residueLocalIdx < residueCount; ++residueLocalIdx, ++residueGlobalIdx )
 				{
 					const mmtf::GroupType & group = data.groupList[ data.groupTypeList[ residueGlobalIdx ] ];
 
 					// New residue.
-					Model::Residue & residue = p_molecule.addResidue();
+					Model::ModelResidue & residue = p_molecule.addResidue();
+					residue.setMoleculePtr( &p_molecule );
+					residue.setChainPtr( &chain );
 					residue.setId( residueGlobalIdx );
 					const std::string & residueSymbol = group.groupName;
-					auto				symbol = magic_enum::enum_cast<Model::Residue::RESIDUE_SYMBOL>( residueSymbol );
-					residue.setSymbol( symbol.has_value() ? symbol.value() : Model::Residue::RESIDUE_SYMBOL::UNKNOWN );
+					std::optional symbol = magic_enum::enum_cast<Model::ModelResidue::RESIDUE_SYMBOL>( residueSymbol );
+					residue.setSymbol( symbol.has_value() ? symbol.value()
+														  : Model::ModelResidue::RESIDUE_SYMBOL::UNKNOWN );
+					residue.setIdFirstAtom( atomGlobalIdx );
+					residue.setAtomCount( uint( group.atomNameList.size() ) );
+					residue.setIdFirstBond( bondGlobalIdx );
+					residue.setBondCount( uint( group.bondAtomList.size() ) / 2u ); // 2 index by bond.
+					if ( group.bondAtomList.size() % 2 != 0 ) { VTX_WARNING( "Incorrect number of bonds index" ); }
 
 					// For each atom in the residue.
 					uint atomCount = uint( group.atomNameList.size() );
 					for ( uint atomIdx = 0; atomIdx < atomCount; ++atomIdx, ++atomGlobalIdx )
 					{
 						// New atom.
-						Model::Atom & atom = p_molecule.addAtom();
+						Model::ModelAtom & atom = p_molecule.addAtom();
+						atom.setMoleculePtr( &p_molecule );
+						atom.setChainPtr( &chain );
+						atom.setResiduePtr( &residue );
 						atom.setId( atomGlobalIdx );
 						const std::string & atomSymbol = group.elementList[ atomIdx ];
-						auto				symbol	   = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( atomSymbol );
-						atom.setSymbol( symbol.has_value() ? symbol.value() : Model::Atom::ATOM_SYMBOL::UNKNOWN );
+						std::optional		symbol = magic_enum::enum_cast<Model::ModelAtom::ATOM_SYMBOL>( atomSymbol );
+						atom.setSymbol( symbol.has_value() ? symbol.value() : Model::ModelAtom::ATOM_SYMBOL::UNKNOWN );
 
 						x = data.xCoordList[ atomGlobalIdx ];
 						y = data.yCoordList[ atomGlobalIdx ];

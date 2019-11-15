@@ -6,4 +6,5 @@ cmake*
 .vs/
 *.dir/
 Debug/
+Release/
 imgui.ini
