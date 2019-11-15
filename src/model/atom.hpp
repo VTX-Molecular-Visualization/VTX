@@ -140,23 +140,14 @@ namespace VTX
 			static const float		 SYMBOL_VDW_RADIUS[ ATOM_SYMBOL::COUNT ];
 			static const Vec3f *	 SYMBOL_COLOR[ ATOM_SYMBOL::COUNT ];
 
-			const uint		  getId() const { return _id; };
-			void			  setId( const uint p_id ) { _id = p_id; };
-			const ATOM_SYMBOL getSymbol() const { return _symbol; };
-			void			  setSymbol( const ATOM_SYMBOL p_symbol )
-			{
-				_symbol = p_symbol;
-			};
-			const std::string & getName() const
-			{
-				return SYMBOL_NAME[ _symbol ];
-			}
-			const uint	getAtomicNumber() const { return (uint)_symbol; }
-			const float getVdwRadius() const
-			{
-				return SYMBOL_VDW_RADIUS[ _symbol ];
-			}
-			const Vec3f * getColor() const { return SYMBOL_COLOR[ _symbol ]; }
+			const uint			getId() const { return _id; };
+			void				setId( const uint p_id ) { _id = p_id; };
+			const ATOM_SYMBOL	getSymbol() const { return _symbol; };
+			void				setSymbol( const ATOM_SYMBOL p_symbol ) { _symbol = p_symbol; };
+			const std::string & getName() const { return SYMBOL_NAME[ _symbol ]; }
+			const uint			getAtomicNumber() const { return (uint)_symbol; }
+			const float			getVdwRadius() const { return SYMBOL_VDW_RADIUS[ _symbol ]; }
+			const Vec3f *		getColor() const { return SYMBOL_COLOR[ _symbol ]; }
 
 		  private:
 			uint		_id		= INVALID_ID;

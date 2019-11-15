@@ -1,8 +1,8 @@
 #ifndef __VTX_BASE_READER__
 #define __VTX_BASE_READER__
 
-#include "../model/model_molecule.hpp"
-#include "path.hpp"
+#include "../../model/model_molecule.hpp"
+#include "../path.hpp"
 
 namespace VTX
 {

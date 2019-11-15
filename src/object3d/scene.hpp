@@ -15,8 +15,7 @@ namespace VTX
 			void addMolecule( const Model::ModelMolecule );
 
 		  private:
-			std::vector<Model::ModelMolecule> _molecules
-				= std::vector<Model::ModelMolecule>();
+			std::vector<Model::ModelMolecule> _molecules = std::vector<Model::ModelMolecule>();
 		};
 	} // namespace Object3D
 } // namespace VTX

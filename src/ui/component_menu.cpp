@@ -11,45 +11,36 @@ namespace VTX
 {
 	namespace UI
 	{
-		ComponentMenu::ComponentMenu( bool * const p_show,
-									  bool * const p_showConsole ) :
-			BaseComponent( p_show ),
-			_showConsole( p_showConsole )
+		ComponentMenu::ComponentMenu( bool * const p_show, bool * const p_showConsole ) :
+			BaseComponent( p_show ), _showConsole( p_showConsole )
 		{
 		}
 
-		void ComponentMenu::_addComponents()
-		{
-			_addComponent( new ComponentDialogImport( &_showDialogImport ) );
-		}
+		void ComponentMenu::_addComponents() { _addComponent( new ComponentDialogImport( &_showDialogImport ) ); }
 
 		void ComponentMenu::_draw()
 		{
 			ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding,
-								 ImVec2( IMGUI_STYLE_MENUBAR_PADDING,
-										 IMGUI_STYLE_MENUBAR_PADDING ) );
+								 ImVec2( IMGUI_STYLE_MENUBAR_PADDING, IMGUI_STYLE_MENUBAR_PADDING ) );
 			if ( ImGui::BeginMainMenuBar() )
 			{
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Menu" ), _show ) )
 				{
-					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
-					{ VTXApp::get().stop(); }
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) ) { VTXApp::get().stop(); }
 
 					ImGui::EndMenu();
 				}
 
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Import" ), _show ) )
 				{
-					if ( ImGui::MenuItem( LOCALE( "MainMenu.Import.MMTF" ) ) )
-					{}
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Import.MMTF" ) ) ) {}
 
 					ImGui::EndMenu();
 				}
 
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Display" ), _show ) )
 				{
-					ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ),
-									 _showConsole );
+					ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), _showConsole );
 
 					ImGui::EndMenu();
 				}

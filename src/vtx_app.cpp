@@ -1,6 +1,6 @@
 #include "vtx_app.hpp"
 #include "io/path.hpp"
-#include "io/reader_mmtf.hpp"
+#include "io/reader/reader_mmtf.hpp"
 #include "model/atom.hpp"
 #include "model/model_molecule.hpp"
 #include <thread>
@@ -36,10 +36,9 @@ namespace VTX
 		Model::ModelMolecule molecule = Model::ModelMolecule();
 		_threads.push_back( std::thread( [&molecule ] {
 			IO::ReaderMMTF mmtf = IO::ReaderMMTF();
-			mmtf.readFile(
-				IO::Path( "C:/Users/Samar/Desktop/VTX/Vidocklab/VidockLab/data/"
-						  "3j3q.mmtf" ),
-				molecule );
+			mmtf.readFile( IO::Path( "C:/Users/Samar/Desktop/VTX/Vidocklab/VidockLab/data/"
+									 "3j3q.mmtf" ),
+						   molecule );
 			molecule.printInfos();
 		} ) );
 		//////////////
@@ -64,8 +63,7 @@ namespace VTX
 		VTXApp::_isRunning = false;
 	}
 
-	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event,
-							  const int				p_args... ) const
+	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event, const int p_args... ) const
 	{
 		_ui->receiveEvent( p_event, p_args );
 	}

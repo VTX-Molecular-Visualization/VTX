@@ -46,16 +46,10 @@ namespace VTX
 			const uint			 getId() const { return _id; };
 			void				 setId( const uint p_id ) { _id = p_id; };
 			const RESIDUE_SYMBOL getSymbol() const { return _symbol; };
-			void setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
-			const std::string & getName() const
-			{
-				return SYMBOL_NAME[ _symbol ];
-			}
-			const std::string & getSymbolShort() const
-			{
-				return SYMBOL_SHORT[ _symbol ];
-			}
-			const Vec3f * getColor() const { return SYMBOL_COLOR[ _symbol ]; }
+			void				 setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
+			const std::string &	 getName() const { return SYMBOL_NAME[ _symbol ]; }
+			const std::string &	 getSymbolShort() const { return SYMBOL_SHORT[ _symbol ]; }
+			const Vec3f *		 getColor() const { return SYMBOL_COLOR[ _symbol ]; }
 
 		  private:
 			uint		   _id	   = INVALID_ID;

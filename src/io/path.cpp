@@ -37,8 +37,7 @@ namespace VTX
 		{
 			std::string	 str = getFileName();
 			const size_t pos = str.find_last_of( '.' );
-			if ( ( pos != std::string::npos ) && ( pos != 0 ) )
-				str = str.substr( 0, pos );
+			if ( ( pos != std::string::npos ) && ( pos != 0 ) ) str = str.substr( 0, pos );
 			return str;
 		}
 
@@ -50,28 +49,20 @@ namespace VTX
 				return *this;
 			}
 			Path res( *this );
-			if ( p_path._path.front() != PATH_SEPARATOR )
-			{ res._path += PATH_SEPARATOR; }
+			if ( p_path._path.front() != PATH_SEPARATOR ) { res._path += PATH_SEPARATOR; }
 			res._path += p_path._path;
 			return res;
 		}
 
-		bool Path::operator==( const Path & p_path ) const
-		{
-			return _path == p_path._path;
-		}
+		bool Path::operator==( const Path & p_path ) const { return _path == p_path._path; }
 
-		bool Path::operator!=( const Path & p_path ) const
-		{
-			return !operator==( p_path );
-		}
+		bool Path::operator!=( const Path & p_path ) const { return !operator==( p_path ); }
 
 		void Path::format()
 		{
 			for ( size_t i = 0; i < _path.size(); ++i )
 			{
-				if ( _path[ i ] == '\\' || _path[ i ] == '/' )
-				{ _path[ i ] = PATH_SEPARATOR; }
+				if ( _path[ i ] == '\\' || _path[ i ] == '/' ) { _path[ i ] = PATH_SEPARATOR; }
 			}
 			while ( !_path.empty() && _path.back() == PATH_SEPARATOR )
 			{

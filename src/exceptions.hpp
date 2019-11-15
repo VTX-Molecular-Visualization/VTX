@@ -11,46 +11,31 @@ namespace VTX
 		class SDLException : public std::runtime_error
 		{
 		  public:
-			explicit SDLException( const std::string & p_err ) :
-				std::runtime_error( "[SDL] " + p_err )
-			{
-			}
+			explicit SDLException( const std::string & p_err ) : std::runtime_error( "[SDL] " + p_err ) {}
 		};
 
 		class GLException : public std::runtime_error
 		{
 		  public:
-			explicit GLException( const std::string & p_err ) :
-				std::runtime_error( "[GL] " + p_err )
-			{
-			}
+			explicit GLException( const std::string & p_err ) : std::runtime_error( "[GL] " + p_err ) {}
 		};
 
 		class IMGUIException : public std::runtime_error
 		{
 		  public:
-			explicit IMGUIException( const std::string & p_err ) :
-				std::runtime_error( "[IMGUI] " + p_err )
-			{
-			}
+			explicit IMGUIException( const std::string & p_err ) : std::runtime_error( "[IMGUI] " + p_err ) {}
 		};
 
 		class MMTFException : public std::runtime_error
 		{
 		  public:
-			explicit MMTFException( const std::string & p_err ) :
-				std::runtime_error( "[MMTF] " + p_err )
-			{
-			}
+			explicit MMTFException( const std::string & p_err ) : std::runtime_error( "[MMTF] " + p_err ) {}
 		};
 
 		class VTXException : public std::runtime_error
 		{
 		  public:
-			explicit VTXException( const std::string & p_err ) :
-				std::runtime_error( "[VTX] " + p_err )
-			{
-			}
+			explicit VTXException( const std::string & p_err ) : std::runtime_error( "[VTX] " + p_err ) {}
 		};
 	} // namespace Exception
 } // namespace VTX

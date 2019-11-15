@@ -19,12 +19,10 @@ namespace VTX
 		  protected:
 			virtual void _draw() override;
 			virtual void _registerEventHandlers() override;
-			virtual void _applyEvent( const Event::EVENT_UI,
-									  const int p_args... ) override;
+			virtual void _applyEvent( const Event::EVENT_UI, const int p_args... ) override;
 
 		  private:
-			std::vector<Util::Logger::Log> _logs
-				= std::vector<Util::Logger::Log>();
+			std::vector<Util::Logger::Log> _logs = std::vector<Util::Logger::Log>();
 
 			void _addLog( const Util::Logger::Log & );
 			void _clear();

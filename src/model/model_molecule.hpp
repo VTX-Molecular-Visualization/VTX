@@ -18,31 +18,19 @@ namespace VTX
 		{
 		  public:
 			std::string getName() const { return _name; };
-			void setName( const std::string & p_name ) { _name = p_name; };
+			void		setName( const std::string & p_name ) { _name = p_name; };
 
 			Chain & addChain() { return _chains.emplace_back( Chain() ); }
 			Chain & getChain( uint p_idx ) { return _chains[ p_idx ]; }
 
-			Residue & addResidue()
-			{
-				return _residues.emplace_back( Residue() );
-			}
+			Residue & addResidue() { return _residues.emplace_back( Residue() ); }
 			Residue & getResidue( uint p_idx ) { return _residues[ p_idx ]; }
 
 			Atom & addAtom() { return _atoms.emplace_back( Atom() ); }
 			Atom & getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
-			void   addAtomPosition( const Vec3f p_position )
-			{
-				_atomPositions.emplace_back( p_position );
-			}
-			void addAtomRadius( const float p_radius )
-			{
-				_atomRadius.emplace_back( p_radius );
-			}
-			void addAtomColor( const Vec3f p_color )
-			{
-				_atomColors.emplace_back( p_color );
-			}
+			void   addAtomPosition( const Vec3f p_position ) { _atomPositions.emplace_back( p_position ); }
+			void   addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
+			void   addAtomColor( const Vec3f p_color ) { _atomColors.emplace_back( p_color ); }
 
 			void printInfos()
 			{
