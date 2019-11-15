@@ -164,8 +164,9 @@ namespace VTX
 			ModelMolecule * _moleculePtr = nullptr;
 			ModelChain *	_chainPtr	 = nullptr;
 			ModelResidue *	_residuePtr	 = nullptr;
-			uint			_id			 = INVALID_ID;
-			ATOM_SYMBOL		_symbol		 = ATOM_SYMBOL::UNKNOWN;
+
+			uint		_id		= INVALID_ID;
+			ATOM_SYMBOL _symbol = ATOM_SYMBOL::UNKNOWN;
 		};
 
 	} // namespace Model

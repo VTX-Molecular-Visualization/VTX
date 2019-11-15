@@ -37,6 +37,9 @@ namespace VTX
 
 			// For each chain in the model 0.
 			uint chainCount = data.chainsPerModel[ 0 ];
+#ifdef _DEBUG
+			p_molecule.chainCount = chainCount;
+#endif
 			for ( ; chainGlobalIdx < chainCount; ++chainGlobalIdx )
 			{
 				// New chain.
@@ -49,6 +52,9 @@ namespace VTX
 
 				// For each residue in the chain.
 				uint residueCount = data.groupsPerChain[ chainGlobalIdx ];
+#ifdef _DEBUG
+				p_molecule.residueCount += residueCount;
+#endif
 				for ( uint residueLocalIdx = 0; residueLocalIdx < residueCount; ++residueLocalIdx, ++residueGlobalIdx )
 				{
 					const mmtf::GroupType & group = data.groupList[ data.groupTypeList[ residueGlobalIdx ] ];
@@ -70,6 +76,9 @@ namespace VTX
 
 					// For each atom in the residue.
 					uint atomCount = uint( group.atomNameList.size() );
+#ifdef _DEBUG
+					p_molecule.atomCount += atomCount;
+#endif
 					for ( uint atomIdx = 0; atomIdx < atomCount; ++atomIdx, ++atomGlobalIdx )
 					{
 						// New atom.
@@ -86,12 +95,59 @@ namespace VTX
 						y = data.yCoordList[ atomGlobalIdx ];
 						z = data.zCoordList[ atomGlobalIdx ];
 
+						// AABB
+
 						p_molecule.addAtomPosition( Vec3f( x, y, z ) );
 						p_molecule.addAtomRadius( atom.getVdwRadius() );
 						p_molecule.addAtomColor( *atom.getColor() );
 					}
+
+					// For each bond in the residue.
+					uint bondCount = residue.getBondCount();
+#ifdef _DEBUG
+					p_molecule.bondCount += bondCount * 2;
+#endif
+					for ( uint boundIdx = 0; boundIdx < bondCount * 2; boundIdx += 2, bondGlobalIdx += 2 )
+					{
+						p_molecule.addBond( bondGlobalIdx + group.bondAtomList[ boundIdx ] );
+						p_molecule.addBond( bondGlobalIdx + group.bondAtomList[ boundIdx + 1u ] );
+					}
 				}
 			}
+
+			p_molecule.addBonds( data.bondAtomList );
+
+#ifdef _DEBUG
+			p_molecule.bondCount += data.bondAtomList.size();
+#endif
+
+#ifdef _DEBUG
+			if ( p_molecule.getChainCount() != p_molecule.chainCount )
+			{
+				VTX_ERROR( "p_molecule.getChainCount() != p_molecule.chainCount : "
+						   + std::to_string( p_molecule.getChainCount() )
+						   + " != " + std::to_string( p_molecule.chainCount ) );
+			}
+			if ( p_molecule.getResidueCount() != p_molecule.residueCount )
+			{
+				VTX_ERROR( "p_molecule.getResidueCount() != p_molecule.residueCount : "
+						   + std::to_string( p_molecule.getResidueCount() )
+						   + " != " + std::to_string( p_molecule.residueCount ) );
+			}
+			if ( p_molecule.getAtomCount() != p_molecule.atomCount )
+			{
+				VTX_ERROR( "p_molecule.getAtomCount() != p_molecule.atomCount : "
+						   + std::to_string( p_molecule.getAtomCount() )
+						   + " != " + std::to_string( p_molecule.atomCount ) );
+			}
+			if ( p_molecule.getBondCount() != p_molecule.bondCount )
+			{
+				VTX_ERROR( "p_molecule.getBondCount() != p_molecule.bondCount : "
+						   + std::to_string( p_molecule.getBondCount() )
+						   + " != " + std::to_string( p_molecule.bondCount ) );
+			}
+#endif
+
 			VTX_INFO( "Models created" );
 		}
 
