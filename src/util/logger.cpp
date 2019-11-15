@@ -1,5 +1,6 @@
 #include "logger.hpp"
 #include "../event/event.hpp"
+#include "../lib/magic_enum.hpp"
 #include "../vtx_app.hpp"
 #include "time.hpp"
 #include <algorithm>
@@ -49,9 +50,10 @@ namespace VTX
 #ifdef LOG_LEVEL
 			if ( LOG_LEVEL > p_level ) return;
 #endif
-
-			std::cout << "[" + log.date + "] " //+ "[" + p_level + "] "
-							 + log.message
+			std::cout << "[" + log.date + "] " + "["
+							 + std::string( magic_enum::enum_name( p_level ) )
+								   .substr( 8 )
+							 + "] " + log.message
 					  << std::endl;
 		}
 	} // namespace Util
