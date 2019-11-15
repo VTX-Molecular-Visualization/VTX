@@ -41,10 +41,8 @@ namespace VTX
 
 			if ( VTXApp::isRunning() )
 			{
-				/*
 				VTXApp::get().fireUIEvent(
-					Event::EVENT_UI::LOG_CONSOLE,  );
-					*/
+					Event::EVENT_UI::LOG_CONSOLE, 1, log );
 			}
 
 #ifdef LOG_LEVEL

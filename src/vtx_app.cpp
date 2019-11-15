@@ -34,14 +34,14 @@ namespace VTX
 
 		////////////// TESTS.
 		Model::ModelMolecule molecule = Model::ModelMolecule();
-		std::thread			 thread( [&molecule ] {
-			 IO::ReaderMMTF mmtf = IO::ReaderMMTF();
-			 mmtf.readFile(
-				 IO::Path( "C:/Users/Samar/Desktop/VTX/Vidocklab/VidockLab/data/"
-						   "3j3q.mmtf" ),
-				 molecule );
-			 molecule.printInfos();
-		 } );
+		_threads.push_back( std::thread( [&molecule ] {
+			IO::ReaderMMTF mmtf = IO::ReaderMMTF();
+			mmtf.readFile(
+				IO::Path( "C:/Users/Samar/Desktop/VTX/Vidocklab/VidockLab/data/"
+						  "3j3q.mmtf" ),
+				molecule );
+			molecule.printInfos();
+		} ) );
 		//////////////
 
 		while ( VTXApp::_isRunning )
@@ -53,14 +53,21 @@ namespace VTX
 	void VTXApp::stop()
 	{
 		VTX_INFO( "Stopping application" );
+
+		for ( std::thread & thread : _threads )
+		{
+			thread.join();
+		}
+		_threads.clear();
+
+		VTX_INFO( "Application stopped" );
 		VTXApp::_isRunning = false;
 	}
 
-	template<typename T>
-	void VTXApp::fireUIEvent( const Event::EVENT_UI p_name,
-							  const T &				p_event ) const
+	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event,
+							  const int				p_args... ) const
 	{
-		_ui->receiveEvent<T>( p_name, p_event );
+		_ui->receiveEvent( p_event, p_args );
 	}
 
 	void VTXApp::_update() { _ui->display(); }

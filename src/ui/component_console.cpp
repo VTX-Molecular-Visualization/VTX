@@ -14,18 +14,17 @@ namespace VTX
 		{
 		}
 
-		void print( int i ) {}
-
 		void ComponentConsole::_registerEventHandlers()
 		{
-			/*
-			std::function func = &ComponentConsole::_addLog;
+			_registerEventHandler( VTX::Event::EVENT_UI::LOG_CONSOLE );
+		}
 
-			const std::function<void( int )> f;
-
-			_registerEventHandler<int>( VTX::Event::EVENT_UI::LOG_CONSOLE,
-										[]( int ) {} );
-										*/
+		void ComponentConsole::_applyEvent( const Event::EVENT_UI p_event,
+											const int			  p_args... )
+		{
+			if ( p_event == Event::EVENT_UI::LOG_CONSOLE )
+			{ //_addLog( p_args[ 1 ] );
+			}
 		}
 
 		void ComponentConsole::_draw()

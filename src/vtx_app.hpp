@@ -6,6 +6,8 @@
 #include "renderer/renderer.hpp"
 #include "ui/user_interface.hpp"
 #include "util/logger.hpp"
+#include <thread>
+#include <vector>
 
 namespace VTX
 {
@@ -22,15 +24,15 @@ namespace VTX
 		void start();
 		void stop();
 
-		template<typename T>
-		void fireUIEvent( const Event::EVENT_UI, const T & ) const;
+		void fireUIEvent( const Event::EVENT_UI, const int p_args... ) const;
 
 	  private:
-		static bool			 _isRunning;
-		double				 _time = 0.f;
-		UI::UserInterface *	 _ui;
-		Object3D::Scene *	 _scene;
-		Renderer::Renderer * _renderer;
+		static bool				 _isRunning;
+		double					 _time = 0.f;
+		UI::UserInterface *		 _ui;
+		Object3D::Scene *		 _scene;
+		Renderer::Renderer *	 _renderer;
+		std::vector<std::thread> _threads = std::vector<std::thread>();
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;
