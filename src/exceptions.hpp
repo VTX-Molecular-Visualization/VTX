@@ -26,12 +26,6 @@ namespace VTX
 			explicit IMGUIException( const std::string & p_err ) : std::runtime_error( "[IMGUI] " + p_err ) {}
 		};
 
-		class MMTFException : public std::runtime_error
-		{
-		  public:
-			explicit MMTFException( const std::string & p_err ) : std::runtime_error( "[MMTF] " + p_err ) {}
-		};
-
 		class VTXException : public std::runtime_error
 		{
 		  public:
