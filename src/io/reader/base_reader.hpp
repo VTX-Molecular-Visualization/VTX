@@ -11,7 +11,7 @@ namespace VTX
 		class BaseReader
 		{
 		  public:
-			virtual void readFile( const Path &, Model::ModelMolecule & ) = 0;
+			virtual bool readFile( const Path &, Model::ModelMolecule & ) = 0;
 		};
 
 	} // namespace IO

@@ -13,7 +13,7 @@ namespace VTX
 		VTX_INFO( "Initializing application" );
 		_ui = new UI::UserInterface();
 		_ui->init();
-		_scene	  = new Object3D::Scene();
+		_scene	= new Object3D::Scene();
 		_renderer = new Renderer::Renderer();
 	}
 
@@ -33,12 +33,14 @@ namespace VTX
 
 		////////////// TESTS.
 		Model::ModelMolecule molecule = Model::ModelMolecule();
-		_threads.push_back( std::thread( [&molecule ] {
+		_threads.push_back( std::thread( [&molecule] {
 			IO::ReaderMMTF mmtf = IO::ReaderMMTF();
-			mmtf.readFile( IO::Path( "C:/Users/Samar/Desktop/VTX/Vidocklab/VidockLab/data/"
-									 "3j3q.mmtf" ),
-						   molecule );
+			if (mmtf.readFile(IO::Path("C:/Users/Samar/Desktop/VTX/Vidocklab/VidockLab/data/"
+				"3j3q.mmtf"),
+				molecule))
+			{
 			molecule.printInfos();
+			}
 		} ) );
 		//////////////
 

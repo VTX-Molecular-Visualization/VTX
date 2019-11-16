@@ -9,19 +9,29 @@ namespace VTX
 {
 	namespace IO
 	{
-		void ReaderMMTF::readFile( const Path & p_path, Model::ModelMolecule & p_molecule )
+		bool ReaderMMTF::readFile( const Path & p_path, Model::ModelMolecule & p_molecule )
 		{
 			VTX_INFO( "Loading " + p_path.getFileName() + "..." );
 
 			// Decode MMTF.
 			mmtf::StructureData data;
-			mmtf::decodeFromFile( data, p_path.c_str() );
+
+			try
+			{
+				mmtf::decodeFromFile( data, p_path.c_str() );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "File does not exists: " + p_path.getFileName() );
+				return false;
+			}
 
 			// Check for consistency.
 			if ( data.hasConsistentData( true ) ) { VTX_INFO( "File loaded" ); }
 			else
 			{
-				throw Exception::MMTFException( "Inconsistent file: " + p_path.getFileName() );
+				VTX_ERROR( "Inconsistent file: " + p_path.getFileName() );
+				return false;
 			}
 
 			VTX_INFO( "Creating models..." );
@@ -31,10 +41,10 @@ namespace VTX
 
 			float		 x, y, z;
 			Math::AABB & aabb			  = p_molecule.AABB();
-			uint		 chainGlobalIdx	  = 0;
+			uint		 chainGlobalIdx   = 0;
 			uint		 residueGlobalIdx = 0;
-			uint		 atomGlobalIdx	  = 0;
-			uint		 bondGlobalIdx	  = 0;
+			uint		 atomGlobalIdx	= 0;
+			uint		 bondGlobalIdx	= 0;
 
 			// For each chain in the model 0.
 			uint chainCount = data.chainsPerModel[ 0 ];
@@ -176,6 +186,7 @@ namespace VTX
 			}
 
 			VTX_INFO( "Models created" );
+			return true;
 		}
 
 	} // namespace IO
