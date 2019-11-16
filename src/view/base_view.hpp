@@ -15,7 +15,8 @@ namespace VTX
 		class BaseView
 		{
 		  public:
-			BaseView( T p_model ) : _model( p_model ) {};
+			void		 setModel( const T & p_model ) { _model = p_model; }
+			virtual void notify() {};
 
 		  protected:
 			T _model;

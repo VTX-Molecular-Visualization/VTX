@@ -11,8 +11,15 @@ namespace VTX
 		class BaseModel
 		{
 		  public:
+			virtual void init();
+
+		  protected:
+			virtual void _addView( View::BaseView<BaseModel> * const ) final;
+			virtual void _addViews() {};
+			virtual void _notifyViews() const final;
+
 		  private:
-			std::vector<View::BaseView<BaseModel> *> _components = std::vector<View::BaseView<BaseModel> *>();
+			std::vector<View::BaseView<BaseModel> *> _views = std::vector<View::BaseView<BaseModel> *>();
 		};
 	} // namespace Model
 } // namespace VTX
