@@ -29,11 +29,12 @@ namespace VTX
 			// Set molecule properties.
 			p_molecule.setName( data.title );
 
-			float x, y, z;
-			uint  chainGlobalIdx   = 0;
-			uint  residueGlobalIdx = 0;
-			uint  atomGlobalIdx	   = 0;
-			uint  bondGlobalIdx	   = 0;
+			float		 x, y, z;
+			Math::AABB & aabb			  = p_molecule.AABB();
+			uint		 chainGlobalIdx	  = 0;
+			uint		 residueGlobalIdx = 0;
+			uint		 atomGlobalIdx	  = 0;
+			uint		 bondGlobalIdx	  = 0;
 
 			// For each chain in the model 0.
 			uint chainCount = data.chainsPerModel[ 0 ];
@@ -66,8 +67,8 @@ namespace VTX
 					residue.setId( residueGlobalIdx );
 					const std::string & residueSymbol = group.groupName;
 					std::optional symbol = magic_enum::enum_cast<Model::ModelResidue::RESIDUE_SYMBOL>( residueSymbol );
-					residue.setSymbol( symbol.has_value() ? symbol.value()
-														  : Model::ModelResidue::RESIDUE_SYMBOL::UNKNOWN );
+					symbol.has_value() ? residue.setSymbol( symbol.value() )
+									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 					residue.setIdFirstAtom( atomGlobalIdx );
 					residue.setAtomCount( uint( group.atomNameList.size() ) );
 					residue.setIdFirstBond( bondGlobalIdx );
@@ -89,17 +90,19 @@ namespace VTX
 						atom.setId( atomGlobalIdx );
 						const std::string & atomSymbol = group.elementList[ atomIdx ];
 						std::optional		symbol = magic_enum::enum_cast<Model::ModelAtom::ATOM_SYMBOL>( atomSymbol );
-						atom.setSymbol( symbol.has_value() ? symbol.value() : Model::ModelAtom::ATOM_SYMBOL::UNKNOWN );
+						symbol.has_value() ? atom.setSymbol( symbol.value() )
+										   : p_molecule.addUnknownAtomSymbol( atomSymbol );
 
 						x = data.xCoordList[ atomGlobalIdx ];
 						y = data.yCoordList[ atomGlobalIdx ];
 						z = data.zCoordList[ atomGlobalIdx ];
 
-						// AABB
-
-						p_molecule.addAtomPosition( Vec3f( x, y, z ) );
+						Vec3f & atomPosition = p_molecule.addAtomPosition( Vec3f( x, y, z ) );
 						p_molecule.addAtomRadius( atom.getVdwRadius() );
 						p_molecule.addAtomColor( *atom.getColor() );
+
+						// Extends bounding box along atom position.
+						aabb.extend( atomPosition );
 					}
 
 					// For each bond in the residue.
@@ -115,6 +118,7 @@ namespace VTX
 				}
 			}
 
+			// Add all atom's bonds.
 			p_molecule.addBonds( data.bondAtomList );
 
 #ifdef _DEBUG
@@ -147,6 +151,29 @@ namespace VTX
 						   + " != " + std::to_string( p_molecule.bondCount ) );
 			}
 #endif
+
+			// Display unknowm symbols.
+			std::set<std::string> & unknownResidueSymbols = p_molecule.getUnknownResidueSymbols();
+			if ( unknownResidueSymbols.empty() == false )
+			{
+				std::string unknownResidueSymbolsStr = "";
+				for ( std::string symbol : unknownResidueSymbols )
+				{
+					unknownResidueSymbolsStr += symbol + " ";
+				}
+				VTX_WARNING( "Unknown residue symbols : " + unknownResidueSymbolsStr );
+			}
+
+			std::set<std::string> & unknownAtomSymbols = p_molecule.getUnknownAtomSymbols();
+			if ( unknownAtomSymbols.empty() == false )
+			{
+				std::string unknownAtomSymbolsStr = "";
+				for ( std::string symbol : unknownAtomSymbols )
+				{
+					unknownAtomSymbolsStr += symbol + " ";
+				}
+				VTX_WARNING( "Unknown atom symbols : " + unknownAtomSymbolsStr );
+			}
 
 			VTX_INFO( "Models created" );
 		}
