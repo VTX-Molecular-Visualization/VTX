@@ -49,14 +49,14 @@ namespace Model
 		inline uint getAtomCount() const { return _atoms.size(); }
 		inline uint getBondCount() const { return _bonds.size(); }
 
-		void printInfos()
+		friend std::ostream & operator<<( std::ostream & out, ModelMolecule & p_molecule )
 		{
-			__OUT__( "-------------------------------------------" );
-			__OUT__( "Chains: " + std::to_string( _chains.size() ) );
-			__OUT__( "Residues: " + std::to_string( _residues.size() ) );
-			__OUT__( "Atoms: " + std::to_string( _atoms.size() ) );
-			__OUT__( "Bonds: " + std::to_string( _bonds.size() ) );
-			__OUT__( "-------------------------------------------" );
+			return out << "-------------------------------------------" << std::endl
+					   << "Chains: " + std::to_string( p_molecule.getChainCount() ) << std::endl
+					   << "Residues: " + std::to_string( p_molecule.getResidueCount() ) << std::endl
+					   << "Atoms: " + std::to_string( p_molecule.getAtomCount() ) << std::endl
+					   << "Bonds: " + std::to_string( p_molecule.getBondCount() ) << std::endl
+					   << "-------------------------------------------" << std::endl;
 		}
 
 	  private:
