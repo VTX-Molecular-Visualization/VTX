@@ -7,7 +7,7 @@ namespace VTX
 {
 	namespace View
 	{
-		class ViewBallAndStick : BaseView3DMolecule
+		class ViewBallAndStick : public BaseView3DMolecule
 		{
 		  public:
 			ViewBallAndStick() {}

@@ -4,7 +4,6 @@
 #include "../defines.hpp"
 #include "../math/aabb.hpp"
 #include "../util/logger.hpp"
-//#include "../view/view_ball_and_stick.hpp"
 #include "base_model.hpp"
 #include "model_atom.hpp"
 #include "model_chain.hpp"
@@ -18,8 +17,8 @@ namespace VTX
 {
 	namespace Model
 	{
-		// class View::ViewBallAndStick;
-
+		class ViewBallAndStick;
+		class ComponentScene;
 		class ModelMolecule : BaseModel
 		{
 		  public:
@@ -79,6 +78,7 @@ namespace VTX
 		  protected:
 			virtual void _addViews() override final {
 				//_addView( new View::ViewBallAndStick() );
+				// MERDE, faut récupérer la vue ailleurs...
 				//_addView( new UI::ComponentScene() );
 			};
 

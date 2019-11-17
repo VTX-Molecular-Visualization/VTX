@@ -7,14 +7,6 @@ namespace VTX
 	{
 		BaseComponent::BaseComponent( bool * const p_show ) : _show( p_show ) {}
 
-		void BaseComponent::init()
-		{
-			if ( _isInitialized ) { return; }
-			_addComponents();
-			_registerEventHandlers();
-			_isInitialized = true;
-		}
-
 		BaseComponent::~BaseComponent()
 		{
 			for ( BaseComponent * const component : _components )
@@ -22,6 +14,14 @@ namespace VTX
 				delete component;
 			}
 			_components.clear();
+		}
+
+		void BaseComponent::init()
+		{
+			if ( _isInitialized ) { return; }
+			_addComponents();
+			_registerEventHandlers();
+			_isInitialized = true;
 		}
 
 		void BaseComponent::_addComponent( BaseComponent * const p_component )

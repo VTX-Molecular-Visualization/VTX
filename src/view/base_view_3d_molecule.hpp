@@ -8,7 +8,7 @@ namespace VTX
 {
 	namespace View
 	{
-		class BaseView3DMolecule : public BaseView3D<Model::ModelMolecule>
+		class BaseView3DMolecule : public virtual BaseView3D<Model::ModelMolecule>
 		{
 		  public:
 		  private:

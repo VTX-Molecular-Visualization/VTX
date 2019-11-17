@@ -4,6 +4,15 @@ namespace VTX
 {
 	namespace Model
 	{
+		BaseModel::~BaseModel()
+		{
+			for ( View::BaseView<BaseModel> * const view : _views )
+			{
+				delete view;
+			}
+			_views.clear();
+		}
+
 		void BaseModel::init() { _addViews(); }
 
 		void BaseModel::_addView( View::BaseView<BaseModel> * const p_view )

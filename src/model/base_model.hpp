@@ -11,6 +11,8 @@ namespace VTX
 		class BaseModel
 		{
 		  public:
+			BaseModel() = default;
+			~BaseModel();
 			virtual void init();
 
 		  protected:
