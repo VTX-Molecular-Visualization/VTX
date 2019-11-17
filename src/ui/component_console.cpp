@@ -27,13 +27,14 @@ namespace VTX
 
 			if ( ImGui::Begin( LOCALE( "Console.Console" ), _show, flags ) == false )
 			{
+				/*
 				ImGui::ListBoxHeader( "" );
 				for ( Util::Logger::Log log : _logs )
 				{
 					ImGui::Text( log.message.c_str() );
 				}
 				ImGui::ListBoxFooter();
-
+				*/
 				ImGui::End();
 				return;
 			}

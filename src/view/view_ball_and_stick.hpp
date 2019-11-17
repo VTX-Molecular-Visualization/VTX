@@ -9,6 +9,9 @@ namespace VTX
 	{
 		class ViewBallAndStick : BaseView3DMolecule
 		{
+		  public:
+			ViewBallAndStick() {}
+			virtual void update( const uint p_time ) override {}
 		};
 	} // namespace View
 } // namespace VTX

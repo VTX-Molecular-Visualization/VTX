@@ -17,9 +17,11 @@ namespace VTX
 
 			if ( ImGui::Begin( LOCALE( "Scene.Scene" ), _show, flags ) == false )
 			{
+				/*
 				ImGui::ListBoxHeader( "" );
 
 				ImGui::ListBoxFooter();
+				*/
 
 				ImGui::End();
 				return;

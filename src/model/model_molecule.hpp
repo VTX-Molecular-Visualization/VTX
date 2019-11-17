@@ -4,6 +4,7 @@
 #include "../defines.hpp"
 #include "../math/aabb.hpp"
 #include "../util/logger.hpp"
+//#include "../view/view_ball_and_stick.hpp"
 #include "base_model.hpp"
 #include "model_atom.hpp"
 #include "model_chain.hpp"
@@ -17,6 +18,8 @@ namespace VTX
 {
 	namespace Model
 	{
+		// class View::ViewBallAndStick;
+
 		class ModelMolecule : BaseModel
 		{
 		  public:
@@ -72,6 +75,12 @@ namespace VTX
 				VTX_INFO( "AABB Max: " + glm::to_string( _aabb.max() ) );
 				VTX_INFO( "-------------------------------------------" );
 			}
+
+		  protected:
+			virtual void _addViews() override final {
+				//_addView( new View::ViewBallAndStick() );
+				//_addView( new UI::ComponentScene() );
+			};
 
 		  private:
 			// Models.
