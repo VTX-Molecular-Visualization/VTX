@@ -10,6 +10,10 @@ namespace VTX
 			LOG_CONSOLE
 		};
 
+		enum class EVENT_MODEL
+		{
+			UPDATE
+		};
 		/*
 		template<typename T>
 		class Event

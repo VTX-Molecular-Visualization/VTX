@@ -16,11 +16,14 @@ namespace VTX
 			{ "MainMenu.Import", "Import" },
 			{ "MainMenu.Import.MMTF", "MMTF" },
 			{ "MainMenu.Display", "Display" },
+			{ "MainMenu.Display.Scene", "Scene" },
 			{ "MainMenu.Display.Console", "Console" },
 
 			// Console.
-			{ "Console.Console", "Console" }
+			{ "Console.Console", "Console" },
 
+			// Scene.
+			{ "Scene.Scene", "Scene" }
 		};
 
 	} // namespace Localization

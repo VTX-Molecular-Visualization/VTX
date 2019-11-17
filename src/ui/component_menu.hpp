@@ -10,7 +10,7 @@ namespace VTX
 		class ComponentMenu : public BaseComponent
 		{
 		  public:
-			ComponentMenu( bool * const, bool * const );
+			ComponentMenu( bool * const, bool * const, bool * const );
 
 		  protected:
 			virtual void _addComponents() override;
@@ -18,6 +18,7 @@ namespace VTX
 
 		  private:
 			bool * const _showConsole;
+			bool * const _showScene;
 			bool		 _showDialogImport = false;
 		};
 	} // namespace UI

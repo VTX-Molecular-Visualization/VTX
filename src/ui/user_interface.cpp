@@ -10,6 +10,7 @@
 #include "../vtx_app.hpp"
 #include "component_console.hpp"
 #include "component_menu.hpp"
+#include "component_scene.hpp"
 #include <GL/gl3w.h>
 #include <iostream>
 
@@ -53,8 +54,9 @@ namespace VTX
 
 		void UserInterface::_addComponents()
 		{
-			_addComponent( new ComponentMenu( &_showMenu, &_showConsole ) );
+			_addComponent( new ComponentMenu( &_showMenu, &_showConsole, &_showScene ) );
 			_addComponent( new ComponentConsole( &_showConsole ) );
+			_addComponent( new ComponentScene( &_showScene ) );
 		}
 
 		void UserInterface::_initSDL2()

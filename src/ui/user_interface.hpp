@@ -26,6 +26,7 @@ namespace VTX
 
 			bool _showMenu	  = true;
 			bool _showConsole = true;
+			bool _showScene	  = true;
 
 			void _initSDL2();
 			void _initGL();

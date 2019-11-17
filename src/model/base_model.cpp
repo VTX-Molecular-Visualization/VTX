@@ -12,11 +12,11 @@ namespace VTX
 			_views.push_back( p_view );
 		}
 
-		void BaseModel::_notifyViews() const
+		void BaseModel::_notifyViews( Event::EVENT_MODEL p_event ) const
 		{
 			for ( View::BaseView<BaseModel> * view : _views )
 			{
-				view->notify();
+				view->notify( p_event );
 			}
 		}
 
