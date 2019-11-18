@@ -17,7 +17,7 @@ int main( int argc, char ** argv )
 	//////////////////////////////
 	// Load MMTF file.
 	Model::Molecule molecule = Model::Molecule();
-	IO::Path		path	 = IO::Path( "data/4v6x.mmtf" );
+	IO::Path		path	 = IO::Path( "data/173D.mmtf" );
 	IO::ReaderMMTF	reader	 = IO::ReaderMMTF();
 	if ( reader.readFile( path, molecule ) ) { std::cout << molecule << std::endl; }
 
