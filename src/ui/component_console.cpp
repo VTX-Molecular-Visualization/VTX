@@ -35,7 +35,7 @@ namespace VTX
 			}
 			for ( Util::Logger::Log log : _logs )
 			{
-				ImGui::Text( ( "[" + log.date + "] " + "[" + log.level + "] " + log.message ).c_str() );
+				ImGui::Selectable( ( "[" + log.date + "] " + "[" + log.level + "] " + log.message ).c_str() );
 			}
 
 			if ( ImGui::GetScrollY() >= ImGui::GetScrollMaxY() ) { ImGui::SetScrollHereY( 1.0f ); }

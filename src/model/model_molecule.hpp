@@ -65,16 +65,16 @@ namespace VTX
 			void printInfos()
 			{
 				VTX_INFO( "Molecule: " + _name );
-				VTX_INFO( "Chains: " + std::to_string( _chains.size() ) );
-				VTX_INFO( "Residues: " + std::to_string( _residues.size() ) );
-				VTX_INFO( "Atoms: " + std::to_string( _atoms.size() ) );
-				VTX_INFO( "Bonds: " + std::to_string( _bonds.size() ) );
+				VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: "
+						  + std::to_string( _residues.size() ) + " / Atoms: " + std::to_string( _atoms.size() )
+						  + " / Bonds: " + std::to_string( _bonds.size() ) );
 			}
 
 		  protected:
-			virtual void _addViews() override final {
-				//_addView( new View::ViewBallAndStick() );
-				// MERDE, faut récupérer la vue ailleurs...
+			virtual void _addViews() override final
+			{
+				_addView( new View::ViewBallAndStick() );
+				// MERDE, faut récupérer la vue ailleurs, elle est créée dans la UI...
 				//_addView( new UI::ComponentScene() );
 			};
 
