@@ -18,7 +18,7 @@ namespace IO
 		}
 		catch ( const std::exception & p_e )
 		{
-			__ERR__( "Can not decode file: " + p_path.getFileName() );
+			__ERR__( "Could not decode file: " + p_path.getFileName() );
 			__ERR__( p_e.what() );
 			return false;
 		}

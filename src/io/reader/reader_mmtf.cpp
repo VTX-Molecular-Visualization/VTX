@@ -22,7 +22,7 @@ namespace VTX
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Can not decode file: " + p_path.getFileName() );
+				VTX_ERROR( "Could not decode file: " + p_path.getFileName() );
 				VTX_ERROR( p_e.what() );
 				return false;
 			}
