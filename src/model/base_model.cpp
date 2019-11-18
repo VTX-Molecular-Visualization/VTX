@@ -15,7 +15,8 @@ namespace VTX
 
 		void BaseModel::init() { _addViews(); }
 
-		void BaseModel::_addView( View::BaseView<BaseModel> * const p_view )
+		template<typename T, typename>
+		void BaseModel::_addView( T * const p_view )
 		{
 			p_view->setModel( *this );
 			_views.push_back( p_view );

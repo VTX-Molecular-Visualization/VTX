@@ -71,10 +71,8 @@ namespace VTX
 			}
 
 		  protected:
-			virtual void _addViews() override final
-			{
-				_addView( new View::ViewBallAndStick() );
-				// MERDE, faut récupérer la vue ailleurs, elle est créée dans la UI...
+			virtual void _addViews() override final {
+				//_addView( new View::ViewBallAndStick() );
 				//_addView( new UI::ComponentScene() );
 			};
 
