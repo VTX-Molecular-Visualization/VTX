@@ -126,7 +126,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Samar\Desktop\VTX\RTMol\lib\msgpack;$(ProjectDir)lib/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)lib/glm;$(ProjectDir)lib/msgpack;$(ProjectDir)lib/</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
