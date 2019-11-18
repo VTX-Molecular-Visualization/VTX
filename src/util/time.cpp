@@ -1,6 +1,6 @@
 #include "time.hpp"
 #include <chrono>
-#include <ctime>
+#include <time.h>
 
 namespace VTX
 {
@@ -8,11 +8,13 @@ namespace VTX
 	{
 		std::string Time::getNowString()
 		{
-			__time64_t	now = std::chrono::system_clock::to_time_t( std::chrono::system_clock::now() );
-			std::string nowStr( ctime( &now ) );
+			__time64_t now = std::chrono::system_clock::to_time_t( std::chrono::system_clock::now() );
+			char	   nowStr[ 26 ];
+			ctime_s( nowStr, 26 * sizeof( char ), &now );
+			std::string coucou( nowStr );
 
 			// Substring to remove newline.
-			return nowStr.substr( 11, nowStr.length() - 17 );
+			return coucou.substr( 11, coucou.length() - 17 );
 		}
 	} // namespace Util
 } // namespace VTX

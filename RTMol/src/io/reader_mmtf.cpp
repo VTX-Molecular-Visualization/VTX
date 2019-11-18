@@ -125,7 +125,7 @@ namespace IO
 		p_molecule.addBonds( data.bondAtomList );
 
 #ifdef _DEBUG
-		p_molecule.bondCount += data.bondAtomList.size();
+		p_molecule.bondCount += (uint)data.bondAtomList.size();
 #endif
 
 #ifdef _DEBUG

@@ -44,10 +44,10 @@ namespace Model
 			_bonds.insert( _bonds.end(), p_bonds.begin(), p_bonds.end() );
 		}
 
-		inline uint getChainCount() const { return _chains.size(); }
-		inline uint getResidueCount() const { return _residues.size(); }
-		inline uint getAtomCount() const { return _atoms.size(); }
-		inline uint getBondCount() const { return _bonds.size(); }
+		inline uint getChainCount() const { return (uint)_chains.size(); }
+		inline uint getResidueCount() const { return (uint)_residues.size(); }
+		inline uint getAtomCount() const { return (uint)_atoms.size(); }
+		inline uint getBondCount() const { return (uint)_bonds.size(); }
 
 		friend std::ostream & operator<<( std::ostream & out, ModelMolecule & p_molecule )
 		{

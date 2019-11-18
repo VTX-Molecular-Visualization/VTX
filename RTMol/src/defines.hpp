@@ -16,8 +16,8 @@ using Vec4f = glm::vec4;
 constexpr uint INVALID_ID = UINT_MAX;
 
 // Image.
-#define JPG_CHANNELS 3
-constexpr uint JPG_QUALITY = 100;
+constexpr uint JPG_CHANNELS = 3u;
+constexpr uint JPG_QUALITY	= 100u;
 
 // Log.
 inline void __OUT__( const std::string & str ) { std::cout << str << std::endl; }
