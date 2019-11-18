@@ -3,11 +3,6 @@
 
 #include <iostream>
 
-#define VTX_DEBUG( s ) VTX::Util::Logger::logInfo( s )
-#define VTX_INFO( s ) VTX::Util::Logger::logInfo( s )
-#define VTX_WARNING( s ) VTX::Util::Logger::logWarning( s )
-#define VTX_ERROR( s ) VTX::Util::Logger::logError( s )
-
 namespace VTX
 {
 	namespace Util
