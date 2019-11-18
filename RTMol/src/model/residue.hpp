@@ -6,9 +6,9 @@
 
 namespace Model
 {
-	class ModelMolecule;
-	class ModelChain;
-	class ModelResidue
+	class Molecule;
+	class Chain;
+	class Residue
 	{
 	  public:
 		enum RESIDUE_SYMBOL
@@ -43,10 +43,10 @@ namespace Model
 		static const std::string SYMBOL_SHORT[ RESIDUE_SYMBOL::COUNT ];
 		static const Vec3f *	 SYMBOL_COLOR[ RESIDUE_SYMBOL::COUNT ];
 
-		inline ModelMolecule * const getMoleculePtr() const { return _moleculePtr; }
-		inline void					 setMoleculePtr( ModelMolecule * const p_molecule ) { _moleculePtr = p_molecule; }
-		inline ModelChain * const	 getChainPtr() const { return _chainPtr; }
-		inline void					 setChainPtr( ModelChain * const p_chain ) { _chainPtr = p_chain; }
+		inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
+		inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
+		inline Chain * const	getChainPtr() const { return _chainPtr; }
+		inline void				setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
 
 		inline const uint			getId() const { return _id; };
 		inline void					setId( const uint p_id ) { _id = p_id; };
@@ -65,8 +65,8 @@ namespace Model
 		inline void					setBondCount( const uint p_count ) { _bondCount = p_count; };
 
 	  private:
-		ModelMolecule * _moleculePtr = nullptr;
-		ModelChain *	_chainPtr	 = nullptr;
+		Molecule * _moleculePtr = nullptr;
+		Chain *	   _chainPtr	= nullptr;
 
 		uint		   _id			= INVALID_ID;
 		RESIDUE_SYMBOL _symbol		= RESIDUE_SYMBOL::UNKNOWN;

@@ -9,7 +9,7 @@ namespace IO
 	class ReaderMMTF
 	{
 	  public:
-		bool readFile( const Path &, Model::ModelMolecule & );
+		bool readFile( const Path &, Model::Molecule & );
 	};
 
 } // namespace IO

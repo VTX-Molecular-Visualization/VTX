@@ -5,7 +5,7 @@
 
 namespace IO
 {
-	bool ReaderMMTF::readFile( const Path & p_path, Model::ModelMolecule & p_molecule )
+	bool ReaderMMTF::readFile( const Path & p_path, Model::Molecule & p_molecule )
 	{
 		__OUT__( "Loading " + p_path.getFileName() + "..." );
 
@@ -50,7 +50,7 @@ namespace IO
 		for ( ; chainGlobalIdx < chainCount; ++chainGlobalIdx )
 		{
 			// New chain.
-			Model::ModelChain & chain = p_molecule.addChain();
+			Model::Chain & chain = p_molecule.addChain();
 			chain.setMoleculePtr( &p_molecule );
 			chain.setId( chainGlobalIdx );
 			chain.setName( data.chainNameList[ chainGlobalIdx ] );
@@ -67,12 +67,12 @@ namespace IO
 				const mmtf::GroupType & group = data.groupList[ data.groupTypeList[ residueGlobalIdx ] ];
 
 				// New residue.
-				Model::ModelResidue & residue = p_molecule.addResidue();
+				Model::Residue & residue = p_molecule.addResidue();
 				residue.setMoleculePtr( &p_molecule );
 				residue.setChainPtr( &chain );
 				residue.setId( residueGlobalIdx );
 				const std::string & residueSymbol = group.groupName;
-				std::optional symbol = magic_enum::enum_cast<Model::ModelResidue::RESIDUE_SYMBOL>( residueSymbol );
+				std::optional		symbol = magic_enum::enum_cast<Model::Residue::RESIDUE_SYMBOL>( residueSymbol );
 				symbol.has_value() ? residue.setSymbol( symbol.value() )
 								   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 				residue.setIdFirstAtom( atomGlobalIdx );
@@ -89,13 +89,13 @@ namespace IO
 				for ( uint atomIdx = 0; atomIdx < atomCount; ++atomIdx, ++atomGlobalIdx )
 				{
 					// New atom.
-					Model::ModelAtom & atom = p_molecule.addAtom();
+					Model::Atom & atom = p_molecule.addAtom();
 					atom.setMoleculePtr( &p_molecule );
 					atom.setChainPtr( &chain );
 					atom.setResiduePtr( &residue );
 					atom.setId( atomGlobalIdx );
 					const std::string & atomSymbol = group.elementList[ atomIdx ];
-					std::optional		symbol	   = magic_enum::enum_cast<Model::ModelAtom::ATOM_SYMBOL>( atomSymbol );
+					std::optional		symbol	   = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( atomSymbol );
 					symbol.has_value() ? atom.setSymbol( symbol.value() )
 									   : p_molecule.addUnknownAtomSymbol( atomSymbol );
 

@@ -11,18 +11,18 @@
 
 namespace Model
 {
-	class ModelMolecule
+	class Molecule
 	{
 	  public:
 		inline const std::string & getName() const { return _name; };
 		inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
-		inline ModelChain &	  addChain() { return _chains.emplace_back( ModelChain() ); }
-		inline ModelChain &	  getChain( uint p_idx ) { return _chains[ p_idx ]; }
-		inline ModelResidue & addResidue() { return _residues.emplace_back( ModelResidue() ); }
-		inline ModelResidue & getResidue( uint p_idx ) { return _residues[ p_idx ]; }
-		inline ModelAtom &	  addAtom() { return _atoms.emplace_back( ModelAtom() ); }
-		inline ModelAtom &	  getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
+		inline Chain &	 addChain() { return _chains.emplace_back( Chain() ); }
+		inline Chain &	 getChain( uint p_idx ) { return _chains[ p_idx ]; }
+		inline Residue & addResidue() { return _residues.emplace_back( Residue() ); }
+		inline Residue & getResidue( uint p_idx ) { return _residues[ p_idx ]; }
+		inline Atom &	 addAtom() { return _atoms.emplace_back( Atom() ); }
+		inline Atom &	 getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
 
 		inline std::set<std::string> & getUnknownResidueSymbols() { return _unknownResidueSymbol; }
 		inline std::set<std::string> & getUnknownAtomSymbols() { return _unknownAtomSymbol; }
@@ -49,7 +49,7 @@ namespace Model
 		inline uint getAtomCount() const { return (uint)_atoms.size(); }
 		inline uint getBondCount() const { return (uint)_bonds.size(); }
 
-		friend std::ostream & operator<<( std::ostream & out, ModelMolecule & p_molecule )
+		friend std::ostream & operator<<( std::ostream & out, Molecule & p_molecule )
 		{
 			return out << "-------------------------------------------" << std::endl
 					   << "Chains: " + std::to_string( p_molecule.getChainCount() ) << std::endl
@@ -61,10 +61,10 @@ namespace Model
 
 	  private:
 		// Models.
-		std::string				  _name		= "";
-		std::vector<ModelChain>	  _chains	= std::vector<ModelChain>();
-		std::vector<ModelResidue> _residues = std::vector<ModelResidue>();
-		std::vector<ModelAtom>	  _atoms	= std::vector<ModelAtom>();
+		std::string			 _name	   = "";
+		std::vector<Chain>	 _chains   = std::vector<Chain>();
+		std::vector<Residue> _residues = std::vector<Residue>();
+		std::vector<Atom>	 _atoms	   = std::vector<Atom>();
 
 		std::set<std::string> _unknownResidueSymbol = std::set<std::string>();
 		std::set<std::string> _unknownAtomSymbol	= std::set<std::string>();
