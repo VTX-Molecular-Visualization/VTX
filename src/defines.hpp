@@ -30,6 +30,8 @@ namespace VTX
 	inline void VTX_WARNING( const std::string & p_str ) { VTX::Util::Logger::logWarning( p_str ); }
 	inline void VTX_ERROR( const std::string & p_str ) { VTX::Util::Logger::logError( p_str ); }
 
+	constexpr int VTX_CONSOLE_SIZE = 80;
+
 	// Types.
 	using uint	= unsigned int;
 	using uchar = unsigned char;

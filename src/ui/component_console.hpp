@@ -5,7 +5,7 @@
 #include "../localization/language.hpp"
 #include "../util/logger.hpp"
 #include "base_component.hpp"
-#include <vector>
+#include <list>
 
 namespace VTX
 {
@@ -22,7 +22,7 @@ namespace VTX
 			virtual void _applyEvent( const Event::EVENT_UI, void * p_arg ) override;
 
 		  private:
-			std::vector<Util::Logger::Log> _logs = std::vector<Util::Logger::Log>();
+			std::list<Util::Logger::Log> _logs = std::list<Util::Logger::Log>();
 
 			void _addLog( const Util::Logger::Log & );
 			void _clear();

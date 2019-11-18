@@ -64,15 +64,11 @@ namespace VTX
 
 			void printInfos()
 			{
-				VTX_INFO( "-------------------------------------------" );
+				VTX_INFO( "Molecule: " + _name );
 				VTX_INFO( "Chains: " + std::to_string( _chains.size() ) );
 				VTX_INFO( "Residues: " + std::to_string( _residues.size() ) );
 				VTX_INFO( "Atoms: " + std::to_string( _atoms.size() ) );
 				VTX_INFO( "Bonds: " + std::to_string( _bonds.size() ) );
-				VTX_INFO( "Centroid: " + glm::to_string( _aabb.center() ) );
-				VTX_INFO( "AABB Min: " + glm::to_string( _aabb.min() ) );
-				VTX_INFO( "AABB Max: " + glm::to_string( _aabb.max() ) );
-				VTX_INFO( "-------------------------------------------" );
 			}
 
 		  protected:

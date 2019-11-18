@@ -33,17 +33,20 @@ namespace VTX
 				ImGui::End();
 				return;
 			}
-
 			for ( Util::Logger::Log log : _logs )
 			{
 				ImGui::Text( ( "[" + log.date + "] " + "[" + log.level + "] " + log.message ).c_str() );
 			}
 
-			ImGui::SetScrollHereY( 1.0f );
+			if ( ImGui::GetScrollY() >= ImGui::GetScrollMaxY() ) { ImGui::SetScrollHereY( 1.0f ); }
 
 			ImGui::End();
 		}
-		void ComponentConsole::_addLog( const Util::Logger::Log & p_log ) { _logs.push_back( p_log ); }
+		void ComponentConsole::_addLog( const Util::Logger::Log & p_log )
+		{
+			_logs.push_back( p_log );
+			if ( _logs.size() > VTX_CONSOLE_SIZE ) { _logs.pop_front(); }
+		}
 
 		void ComponentConsole::_clear() { _logs.clear(); }
 	} // namespace UI
