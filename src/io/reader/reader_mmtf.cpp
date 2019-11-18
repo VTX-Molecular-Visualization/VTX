@@ -22,7 +22,8 @@ namespace VTX
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "File does not exists: " + p_path.getFileName() );
+				VTX_ERROR( "Can not decode file: " + p_path.getFileName() );
+				VTX_ERROR( p_e.what() );
 				return false;
 			}
 
@@ -41,10 +42,10 @@ namespace VTX
 
 			float		 x, y, z;
 			Math::AABB & aabb			  = p_molecule.AABB();
-			uint		 chainGlobalIdx   = 0;
+			uint		 chainGlobalIdx	  = 0;
 			uint		 residueGlobalIdx = 0;
-			uint		 atomGlobalIdx	= 0;
-			uint		 bondGlobalIdx	= 0;
+			uint		 atomGlobalIdx	  = 0;
+			uint		 bondGlobalIdx	  = 0;
 
 			// For each chain in the model 0.
 			uint chainCount = data.chainsPerModel[ 0 ];

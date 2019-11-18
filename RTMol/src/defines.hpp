@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <iostream>
 #include <string>
 
 // Types.
@@ -19,8 +20,8 @@ constexpr uint INVALID_ID = UINT_MAX;
 constexpr uint JPG_QUALITY = 100;
 
 // Log.
-#define __OUT__( str ) std::cout << str << std::endl;
-#define __ERR__( str ) std::cerr << str << std::endl;
+inline void __OUT__( const std::string & str ) { std::cout << str << std::endl; }
+inline void __ERR__( const std::string & str ) { std::cerr << str << std::endl; }
 
 // Colors.
 const Vec3f COLOR_BLACK		 = Vec3f( 0.0f, 0.0f, 0.0f );
