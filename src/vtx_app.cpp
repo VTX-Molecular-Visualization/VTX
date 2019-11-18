@@ -36,7 +36,7 @@ namespace VTX
 		_threads.push_back( std::thread( [&molecule ] {
 			IO::ReaderMMTF mmtf = IO::ReaderMMTF();
 			if ( mmtf.readFile( IO::Path( "../Vidocklab/VidockLab/data/"
-										  "3j3q.mmtf" ),
+										  "4v6x.mmtf" ),
 								molecule ) )
 			{ molecule.printInfos(); }
 		} ) );
@@ -62,9 +62,9 @@ namespace VTX
 		VTXApp::_isRunning = false;
 	}
 
-	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event, const int p_args... ) const
+	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event, void * p_arg ) const
 	{
-		_ui->receiveEvent( p_event, p_args );
+		_ui->receiveEvent( p_event, p_arg );
 	}
 
 	void VTXApp::_update() { _ui->display(); }

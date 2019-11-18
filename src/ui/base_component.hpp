@@ -5,7 +5,7 @@
 #include "../util/logger.hpp"
 #include <cstdarg>
 #include <functional>
-#include <map>
+#include <set>
 #include <vector>
 
 namespace VTX
@@ -21,7 +21,7 @@ namespace VTX
 			virtual void init();
 			bool		 isShown() { return *_show; }
 
-			virtual void receiveEvent( const Event::EVENT_UI, const int p_args... ) final;
+			void receiveEvent( const Event::EVENT_UI, void * const );
 
 		  protected:
 			bool * _show;
@@ -32,15 +32,14 @@ namespace VTX
 
 			virtual void _registerEventHandler( const Event::EVENT_UI ) final;
 			virtual void _registerEventHandlers() {};
-			virtual void _applyEvent( const Event::EVENT_UI, const int p_args... ) {};
+			virtual void _applyEvent( const Event::EVENT_UI, void * p_arg ) {};
 
 			virtual void _draw() = 0;
 
 		  private:
 			bool						 _isInitialized = false;
 			std::vector<BaseComponent *> _components	= std::vector<BaseComponent *>();
-			// TODO: replace by std::set
-			std::vector<Event::EVENT_UI> _events = std::vector<Event::EVENT_UI>();
+			std::set<Event::EVENT_UI>	 _events		= std::set<Event::EVENT_UI>();
 		};
 	} // namespace UI
 } // namespace VTX

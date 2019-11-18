@@ -24,7 +24,7 @@ namespace VTX
 		void start();
 		void stop();
 
-		void fireUIEvent( const Event::EVENT_UI, const int p_args... ) const;
+		void fireUIEvent( const Event::EVENT_UI, void * ) const;
 
 	  private:
 		static bool				 _isRunning;

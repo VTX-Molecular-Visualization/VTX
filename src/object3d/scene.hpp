@@ -12,7 +12,8 @@ namespace VTX
 		class Scene : public Object3D
 		{
 		  public:
-			void addMolecule( const Model::ModelMolecule );
+			void loadMoleculeFromFile() {}
+			void addMolecule( const Model::ModelMolecule & p_molecule ) { _molecules.emplace_back( p_molecule ); }
 
 		  private:
 			std::vector<Model::ModelMolecule> _molecules = std::vector<Model::ModelMolecule>();

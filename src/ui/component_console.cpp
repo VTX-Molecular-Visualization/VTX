@@ -4,6 +4,7 @@
 #include "../lib/imgui/imgui.h"
 #include "../localization/language.hpp"
 #include "../style.hpp"
+#include "../util/logger.hpp"
 
 namespace VTX
 {
@@ -13,10 +14,12 @@ namespace VTX
 
 		void ComponentConsole::_registerEventHandlers() { _registerEventHandler( VTX::Event::EVENT_UI::LOG_CONSOLE ); }
 
-		void ComponentConsole::_applyEvent( const Event::EVENT_UI p_event, const int p_args... )
+		void ComponentConsole::_applyEvent( const Event::EVENT_UI p_event, void * p_arg )
 		{
 			if ( p_event == Event::EVENT_UI::LOG_CONSOLE )
-			{ //_addLog( p_args[ 1 ] );
+			{
+				Util::Logger::Log * log = (Util::Logger::Log *)( p_arg );
+				_addLog( *log );
 			}
 		}
 
@@ -27,17 +30,16 @@ namespace VTX
 
 			if ( ImGui::Begin( LOCALE( "Console.Console" ), _show, flags ) == false )
 			{
-				/*
-				ImGui::ListBoxHeader( "" );
-				for ( Util::Logger::Log log : _logs )
-				{
-					ImGui::Text( log.message.c_str() );
-				}
-				ImGui::ListBoxFooter();
-				*/
 				ImGui::End();
 				return;
 			}
+
+			for ( Util::Logger::Log log : _logs )
+			{
+				ImGui::Text( ( "[" + log.date + "] " + "[" + log.level + "] " + log.message ).c_str() );
+			}
+
+			ImGui::SetScrollHereY( 1.0f );
 
 			ImGui::End();
 		}

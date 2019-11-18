@@ -39,19 +39,19 @@ namespace VTX
 			}
 		}
 
-		void BaseComponent::_registerEventHandler( const Event::EVENT_UI p_event ) { _events.push_back( p_event ); }
+		void BaseComponent::_registerEventHandler( const Event::EVENT_UI p_event ) { _events.emplace( p_event ); }
 
-		void BaseComponent::receiveEvent( const Event::EVENT_UI p_event, const int p_args... )
+		void BaseComponent::receiveEvent( const Event::EVENT_UI p_event, void * p_arg )
 		{
 			if ( std::find( _events.begin(), _events.end(), p_event ) != _events.end() )
-			{ _applyEvent( p_event, p_args ); }
+			{ _applyEvent( p_event, p_arg ); }
 
 			// Propagate to children.
 			for ( BaseComponent * const component : _components )
 			{
 				// Only shown components?
 				if ( component->isShown() == false ) { continue; }
-				component->receiveEvent( p_event, p_args );
+				component->receiveEvent( p_event, p_arg );
 			}
 		}
 
