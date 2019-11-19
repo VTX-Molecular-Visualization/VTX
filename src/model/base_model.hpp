@@ -16,8 +16,7 @@ namespace VTX
 			virtual void init();
 
 		  protected:
-			template<typename T, typename = std::enable_if<std::is_base_of<View::BaseView<BaseModel>, T>::value>>
-			void		 _addView( T * const );
+			void		 _addView( View::BaseView<BaseModel> * const );
 			virtual void _addViews() {};
 			virtual void _notifyViews( Event::EVENT_MODEL ) const final;
 

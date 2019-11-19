@@ -17,8 +17,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		class ViewBallAndStick;
-		class ComponentScene;
 		class ModelMolecule : BaseModel
 		{
 		  public:
@@ -62,19 +60,10 @@ namespace VTX
 
 			inline Math::AABB & AABB() { return _aabb; }
 
-			void printInfos()
-			{
-				VTX_INFO( "Molecule: " + _name );
-				VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: "
-						  + std::to_string( _residues.size() ) + " / Atoms: " + std::to_string( _atoms.size() )
-						  + " / Bonds: " + std::to_string( _bonds.size() ) );
-			}
+			void printInfos();
 
 		  protected:
-			virtual void _addViews() override final {
-				//_addView( new View::ViewBallAndStick() );
-				//_addView( new UI::ComponentScene() );
-			};
+			virtual void _addViews() override final;
 
 		  private:
 			// Models.
