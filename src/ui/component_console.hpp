@@ -15,6 +15,7 @@ namespace VTX
 		{
 		  public:
 			ComponentConsole( bool * const );
+			virtual COMPONENT_TYPE getName() const override { return COMPONENT_TYPE::CONSOLE; }
 
 		  protected:
 			virtual void _draw() override;

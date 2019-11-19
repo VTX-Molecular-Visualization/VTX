@@ -5,7 +5,6 @@
 #include "../style.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
-#include "dialog/component_dialog_import.hpp"
 
 namespace VTX
 {
@@ -16,7 +15,9 @@ namespace VTX
 		{
 		}
 
-		void ComponentMenu::_addComponents() { _addComponent( new ComponentDialogImport( &_showDialogImport ) ); }
+		void ComponentMenu::_addComponents()
+		{ /*_addComponent( new ComponentDialogImport( &_showDialogImport ) );*/
+		}
 
 		void ComponentMenu::_draw()
 		{

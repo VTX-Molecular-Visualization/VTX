@@ -1,12 +1,14 @@
 #ifndef __VTX_BASE_COMPONENT__
 #define __VTX_BASE_COMPONENT__
 
+#include "../defines.hpp"
 #include "../event/event.hpp"
-#include "../util/logger.hpp"
+#include "../lib/magic_enum.hpp"
+#include "enum_component_type.hpp"
 #include <cstdarg>
 #include <functional>
+#include <map>
 #include <set>
-#include <vector>
 
 namespace VTX
 {
@@ -23,6 +25,8 @@ namespace VTX
 
 			void receiveEvent( const Event::EVENT_UI, void * const );
 
+			virtual COMPONENT_TYPE getName() const = 0;
+
 		  protected:
 			bool * _show;
 
@@ -37,9 +41,9 @@ namespace VTX
 			virtual void _draw() = 0;
 
 		  private:
-			bool						 _isInitialized = false;
-			std::vector<BaseComponent *> _components	= std::vector<BaseComponent *>();
-			std::set<Event::EVENT_UI>	 _events		= std::set<Event::EVENT_UI>();
+			bool									  _isInitialized = false;
+			std::map<COMPONENT_TYPE, BaseComponent *> _components	 = std::map<COMPONENT_TYPE, BaseComponent *>();
+			std::set<Event::EVENT_UI>				  _events		 = std::set<Event::EVENT_UI>();
 		};
 	} // namespace UI
 } // namespace VTX

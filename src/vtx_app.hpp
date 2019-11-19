@@ -24,7 +24,8 @@ namespace VTX
 		void start();
 		void stop();
 
-		void fireUIEvent( const Event::EVENT_UI, void * ) const;
+		void				fireUIEvent( const Event::EVENT_UI, void * ) const;
+		UI::UserInterface & getUI() const { return *_ui; }
 
 	  private:
 		static bool				 _isRunning;

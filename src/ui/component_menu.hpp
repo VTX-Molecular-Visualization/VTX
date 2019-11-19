@@ -11,6 +11,7 @@ namespace VTX
 		{
 		  public:
 			ComponentMenu( bool * const, bool * const, bool * const );
+			virtual COMPONENT_TYPE getName() const override { return COMPONENT_TYPE::MENU; }
 
 		  protected:
 			virtual void _addComponents() override;

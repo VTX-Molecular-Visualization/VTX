@@ -15,6 +15,8 @@ namespace VTX
 
 		void BaseModel::init() { _addViews(); }
 
+		void BaseModel::update() { _notifyViews( Event::EVENT_MODEL::UPDATE ); }
+
 		void BaseModel::_addView( View::BaseView<BaseModel> * const p_view )
 		{
 			p_view->setModel( *this );

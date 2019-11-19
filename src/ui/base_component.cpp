@@ -9,7 +9,7 @@ namespace VTX
 
 		BaseComponent::~BaseComponent()
 		{
-			for ( BaseComponent * const component : _components )
+			for ( auto const & [ type, component ] : _components )
 			{
 				delete component;
 			}
@@ -27,12 +27,20 @@ namespace VTX
 		void BaseComponent::_addComponent( BaseComponent * const p_component )
 		{
 			p_component->init();
-			_components.push_back( p_component );
+			try
+			{
+				_components.try_emplace( p_component->getName(), p_component );
+			}
+			catch ( std::exception p_e )
+			{
+				VTX_WARNING( "A view with this name already exists: "
+							 + std::string( magic_enum::enum_name( p_component->getName() ) ) );
+			}
 		}
 
 		void BaseComponent::_drawComponents()
 		{
-			for ( BaseComponent * const component : _components )
+			for ( auto const & [ type, component ] : _components )
 			{
 				if ( component->isShown() == false ) { continue; }
 				component->display();
@@ -47,7 +55,7 @@ namespace VTX
 			{ _applyEvent( p_event, p_arg ); }
 
 			// Propagate to children.
-			for ( BaseComponent * const component : _components )
+			for ( auto const & [ type, component ] : _components )
 			{
 				// Only shown components?
 				if ( component->isShown() == false ) { continue; }

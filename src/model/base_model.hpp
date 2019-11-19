@@ -14,6 +14,7 @@ namespace VTX
 			BaseModel() = default;
 			~BaseModel();
 			virtual void init();
+			virtual void update();
 
 		  protected:
 			void		 _addView( View::BaseView<BaseModel> * const );
