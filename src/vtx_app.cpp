@@ -33,6 +33,7 @@ namespace VTX
 
 		////////////// TESTS.
 		Model::ModelMolecule molecule = Model::ModelMolecule();
+		molecule.init();
 		_threads.push_back( std::thread( [&molecule ] {
 			IO::ReaderMMTF mmtf = IO::ReaderMMTF();
 			if ( mmtf.readFile( IO::Path( "../Vidocklab/VidockLab/data/"

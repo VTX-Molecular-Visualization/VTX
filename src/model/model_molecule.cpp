@@ -7,7 +7,7 @@ namespace VTX
 	{
 		void ModelMolecule::_addViews()
 		{
-			_addView( new View::ViewBallAndStick() );
+			_addView( (View::BaseView<BaseModel> *)( new View::ViewBallAndStick() ) );
 			//_addView( new UI::ComponentScene() );
 		}
 

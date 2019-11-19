@@ -17,7 +17,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		class ModelMolecule : BaseModel
+		class ModelMolecule : public BaseModel
 		{
 		  public:
 			inline const std::string & getName() const { return _name; };
