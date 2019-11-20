@@ -14,7 +14,7 @@ namespace VTX
 		{
 			CREATE,
 			UPDATE,
-			DELETE
+			DESTROY
 		};
 		/*
 		template<typename T>

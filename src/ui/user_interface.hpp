@@ -15,8 +15,6 @@ namespace VTX
 			~UserInterface();
 			void printInfos() const;
 
-			virtual COMPONENT_TYPE getName() const override { return COMPONENT_TYPE::MAIN_UI; }
-
 		  protected:
 			virtual void _addComponents() override;
 			virtual void _draw() override;

@@ -1,5 +1,7 @@
 #include "model_molecule.hpp"
+#include "../ui/enum_component_type.hpp"
 #include "../view/view_ball_and_stick.hpp"
+#include "../vtx_app.hpp"
 
 namespace VTX
 {
@@ -8,7 +10,8 @@ namespace VTX
 		void ModelMolecule::_addViews()
 		{
 			_addView( (View::BaseView<BaseModel> *)( new View::ViewBallAndStick() ) );
-			//_addView( new UI::ComponentScene() );
+			_addView(
+				(View::BaseView<BaseModel> *)( VTXApp::get().getUIComponentByType( UI::COMPONENT_TYPE::SCENE ) ) );
 		}
 
 		void ModelMolecule::printInfos()

@@ -38,7 +38,7 @@ namespace VTX
 			if ( mmtf.readFile( IO::Path( "../Vidocklab/VidockLab/data/"
 										  "4v6x.mmtf" ),
 								molecule ) )
-		
+
 			{
 				molecule.init();
 				molecule.printInfos();
@@ -66,7 +66,12 @@ namespace VTX
 		VTXApp::_isRunning = false;
 	}
 
-	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event, void * p_arg ) const
+	UI::BaseComponent * VTXApp::getUIComponentByType( UI::COMPONENT_TYPE p_type ) const
+	{
+		return _ui->getComponentByType( p_type );
+	};
+
+	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event, void * const p_arg ) const
 	{
 		_ui->receiveEvent( p_event, p_arg );
 	}

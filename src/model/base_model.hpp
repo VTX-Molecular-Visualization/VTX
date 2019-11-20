@@ -12,7 +12,7 @@ namespace VTX
 		{
 		  public:
 			BaseModel() = default;
-			~BaseModel();
+			virtual ~BaseModel();
 			virtual void init();
 			virtual void update();
 

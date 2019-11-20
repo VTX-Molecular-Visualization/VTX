@@ -18,25 +18,25 @@ namespace VTX
 		{
 		  public:
 			BaseComponent( bool * const );
-			~BaseComponent();
+			virtual ~BaseComponent();
+
 			virtual void display() final;
 			virtual void init();
 			bool		 isShown() { return *_show; }
 
-			void receiveEvent( const Event::EVENT_UI, void * const );
-
-			virtual COMPONENT_TYPE getName() const = 0;
+			BaseComponent * getComponentByType( const COMPONENT_TYPE ) const;
+			void			receiveEvent( const Event::EVENT_UI, void * const );
 
 		  protected:
 			bool * _show;
 
-			virtual void _addComponent( BaseComponent * const ) final;
+			virtual void _addComponent( const COMPONENT_TYPE, BaseComponent * const ) final;
 			virtual void _addComponents() {};
 			virtual void _drawComponents() final;
 
 			virtual void _registerEventHandler( const Event::EVENT_UI ) final;
 			virtual void _registerEventHandlers() {};
-			virtual void _applyEvent( const Event::EVENT_UI, void * p_arg ) {};
+			virtual void _applyEvent( const Event::EVENT_UI, void * const p_arg ) {};
 
 			virtual void _draw() = 0;
 

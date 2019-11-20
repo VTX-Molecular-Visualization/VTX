@@ -19,7 +19,7 @@ namespace VTX
 
 		void BaseModel::_addView( View::BaseView<BaseModel> * const p_view )
 		{
-			p_view->setModel( *this );
+			p_view->setModel( this );
 			_views.push_back( p_view );
 		}
 

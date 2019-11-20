@@ -24,17 +24,17 @@ namespace VTX
 			_isInitialized = true;
 		}
 
-		void BaseComponent::_addComponent( BaseComponent * const p_component )
+		void BaseComponent::_addComponent( const COMPONENT_TYPE p_type, BaseComponent * const p_component )
 		{
 			p_component->init();
 			try
 			{
-				_components.try_emplace( p_component->getName(), p_component );
+				_components.try_emplace( p_type, p_component );
 			}
-			catch ( std::exception p_e )
+			catch ( const std::exception )
 			{
 				VTX_WARNING( "A view with this name already exists: "
-							 + std::string( magic_enum::enum_name( p_component->getName() ) ) );
+							 + std::string( magic_enum::enum_name( p_type ) ) );
 			}
 		}
 
@@ -49,7 +49,24 @@ namespace VTX
 
 		void BaseComponent::_registerEventHandler( const Event::EVENT_UI p_event ) { _events.emplace( p_event ); }
 
-		void BaseComponent::receiveEvent( const Event::EVENT_UI p_event, void * p_arg )
+		BaseComponent * BaseComponent::getComponentByType( const COMPONENT_TYPE p_type ) const
+		{
+			try
+			{
+				return _components.at( p_type );
+			}
+			catch ( const std::exception )
+			{
+				for ( auto const & [ type, component ] : _components )
+				{
+					if ( type == p_type ) { return component; }
+				}
+
+				return nullptr;
+			}
+		}
+
+		void BaseComponent::receiveEvent( const Event::EVENT_UI p_event, void * const p_arg )
 		{
 			if ( std::find( _events.begin(), _events.end(), p_event ) != _events.end() )
 			{ _applyEvent( p_event, p_arg ); }

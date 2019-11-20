@@ -7,7 +7,6 @@ namespace VTX
 	{
 		enum class COMPONENT_TYPE
 		{
-			MAIN_UI,
 			MENU,
 			CONSOLE,
 			SCENE

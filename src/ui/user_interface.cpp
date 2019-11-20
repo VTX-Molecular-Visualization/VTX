@@ -54,9 +54,9 @@ namespace VTX
 
 		void UserInterface::_addComponents()
 		{
-			_addComponent( new ComponentMenu( &_showMenu, &_showConsole, &_showScene ) );
-			_addComponent( new ComponentConsole( &_showConsole ) );
-			_addComponent( new ComponentScene( &_showScene ) );
+			_addComponent( COMPONENT_TYPE::MENU, new ComponentMenu( &_showMenu, &_showConsole, &_showScene ) );
+			_addComponent( COMPONENT_TYPE::CONSOLE, new ComponentConsole( &_showConsole ) );
+			_addComponent( COMPONENT_TYPE::SCENE, new ComponentScene( &_showScene ) );
 		}
 
 		void UserInterface::_initSDL2()

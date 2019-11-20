@@ -16,11 +16,14 @@ namespace VTX
 		class BaseView
 		{
 		  public:
-			void		 setModel( const T & p_model ) { _model = p_model; }
+			BaseView( ) = default;
+			virtual ~BaseView() { _model = nullptr; };
+
+			void		 setModel( T * const p_model ) { _model = p_model; }
 			virtual void notify( Event::EVENT_MODEL ) {};
 
 		  protected:
-			T _model;
+			T * _model = nullptr;
 		};
 	} // namespace View
 } // namespace VTX

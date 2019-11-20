@@ -14,7 +14,7 @@ namespace VTX
 
 		void ComponentConsole::_registerEventHandlers() { _registerEventHandler( VTX::Event::EVENT_UI::LOG_CONSOLE ); }
 
-		void ComponentConsole::_applyEvent( const Event::EVENT_UI p_event, void * p_arg )
+		void ComponentConsole::_applyEvent( const Event::EVENT_UI p_event, void * const p_arg )
 		{
 			if ( p_event == Event::EVENT_UI::LOG_CONSOLE )
 			{
