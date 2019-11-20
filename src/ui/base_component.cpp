@@ -9,9 +9,9 @@ namespace VTX
 
 		BaseComponent::~BaseComponent()
 		{
-			for ( auto const & [ type, component ] : _components )
+			for ( const auto & [ type, component ] : _components )
 			{
-				delete component;
+				delete &component;
 			}
 			_components.clear();
 		}
@@ -24,7 +24,8 @@ namespace VTX
 			_isInitialized = true;
 		}
 
-		void BaseComponent::_addComponent( const COMPONENT_TYPE p_type, BaseComponent * const p_component )
+		void BaseComponent::_addComponent( const COMPONENT_TYPE					p_type,
+										   std::shared_ptr<BaseComponent> const p_component )
 		{
 			p_component->init();
 			try
@@ -33,14 +34,14 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "A view with this name already exists: "
+				VTX_WARNING( "A view with this type already exists: "
 							 + std::string( magic_enum::enum_name( p_type ) ) );
 			}
 		}
 
 		void BaseComponent::_drawComponents()
 		{
-			for ( auto const & [ type, component ] : _components )
+			for ( const auto & [ type, component ] : _components )
 			{
 				if ( component->isShown() == false ) { continue; }
 				component->display();
@@ -49,7 +50,7 @@ namespace VTX
 
 		void BaseComponent::_registerEventHandler( const Event::EVENT_UI p_event ) { _events.emplace( p_event ); }
 
-		BaseComponent * BaseComponent::getComponentByType( const COMPONENT_TYPE p_type ) const
+		std::shared_ptr<BaseComponent> BaseComponent::getComponentByType( const COMPONENT_TYPE p_type ) const
 		{
 			try
 			{
@@ -57,7 +58,7 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				for ( auto const & [ type, component ] : _components )
+				for ( const auto & [ type, component ] : _components )
 				{
 					if ( type == p_type ) { return component; }
 				}

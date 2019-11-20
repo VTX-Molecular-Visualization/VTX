@@ -24,8 +24,8 @@ namespace VTX
 		void start();
 		void stop();
 
-		void				fireUIEvent( const Event::EVENT_UI, void * const ) const;
-		UI::BaseComponent * getUIComponentByType( UI::COMPONENT_TYPE p_type ) const;
+		void							   fireUIEvent( const Event::EVENT_UI, void * const ) const;
+		std::shared_ptr<UI::BaseComponent> getUIComponentByType( UI::COMPONENT_TYPE p_type ) const;
 
 	  private:
 		static bool				 _isRunning;

@@ -17,12 +17,13 @@ namespace VTX
 			virtual void update();
 
 		  protected:
-			void		 _addView( View::BaseView<BaseModel> * const );
+			void		 _addView( std::shared_ptr<View::BaseView<BaseModel>> const );
 			virtual void _addViews() {};
 			virtual void _notifyViews( Event::EVENT_MODEL ) const final;
 
 		  private:
-			std::vector<View::BaseView<BaseModel> *> _views = std::vector<View::BaseView<BaseModel> *>();
+			std::vector<std::shared_ptr<View::BaseView<BaseModel>>> _views
+				= std::vector<std::shared_ptr<View::BaseView<BaseModel>>>();
 		};
 	} // namespace Model
 } // namespace VTX
