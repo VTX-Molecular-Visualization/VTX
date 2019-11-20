@@ -6,9 +6,9 @@ namespace VTX
 	{
 		BaseModel::~BaseModel()
 		{
-			for ( std::shared_ptr<View::BaseView<BaseModel>> const view : _views )
+			for ( std::shared_ptr<View::BaseView<BaseModel>> view : _views )
 			{
-				delete &view;
+				view.reset();
 			}
 			_views.clear();
 		}

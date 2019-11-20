@@ -11,7 +11,7 @@ namespace VTX
 		{
 			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
 				(View::BaseView<BaseModel> *)( new View::ViewBallAndStick() ) ) );
-			_addView( std::dynamic_pointer_cast<View::BaseView<BaseModel>>(
+			_addView( std::reinterpret_pointer_cast<View::BaseView<BaseModel>>(
 				( VTXApp::get().getUIComponentByType( UI::COMPONENT_TYPE::SCENE ) ) ) );
 		}
 

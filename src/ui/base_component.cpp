@@ -9,9 +9,9 @@ namespace VTX
 
 		BaseComponent::~BaseComponent()
 		{
-			for ( const auto & [ type, component ] : _components )
+			for ( auto & [ type, component ] : _components )
 			{
-				delete &component;
+				component.reset();
 			}
 			_components.clear();
 		}
