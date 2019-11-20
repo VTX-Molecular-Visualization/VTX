@@ -16,7 +16,7 @@ namespace VTX
 		class BaseView
 		{
 		  public:
-			BaseView( ) = default;
+			BaseView() = default;
 			virtual ~BaseView() { _model = nullptr; };
 
 			void		 setModel( T * const p_model ) { _model = p_model; }

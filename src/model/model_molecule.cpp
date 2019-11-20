@@ -15,7 +15,7 @@ namespace VTX
 				( VTXApp::get().getUIComponentByType( UI::COMPONENT_TYPE::SCENE ) ) ) );
 		}
 
-		void ModelMolecule::printInfos()
+		void ModelMolecule::printInfos() const
 		{
 			VTX_INFO( "Molecule: " + _name );
 			VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: "

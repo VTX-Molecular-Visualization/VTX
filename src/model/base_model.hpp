@@ -17,9 +17,9 @@ namespace VTX
 			virtual void update();
 
 		  protected:
-			void		 _addView( std::shared_ptr<View::BaseView<BaseModel>> const );
+			void		 _addView( const std::shared_ptr<View::BaseView<BaseModel>> );
 			virtual void _addViews() {};
-			virtual void _notifyViews( Event::EVENT_MODEL ) const final;
+			virtual void _notifyViews( const Event::EVENT_MODEL ) const final;
 
 		  private:
 			std::vector<std::shared_ptr<View::BaseView<BaseModel>>> _views

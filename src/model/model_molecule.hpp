@@ -60,7 +60,7 @@ namespace VTX
 
 			inline Math::AABB & AABB() { return _aabb; }
 
-			void printInfos();
+			void printInfos() const;
 
 		  protected:
 			virtual void _addViews() override final;

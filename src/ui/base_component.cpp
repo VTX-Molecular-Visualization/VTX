@@ -25,7 +25,7 @@ namespace VTX
 		}
 
 		void BaseComponent::_addComponent( const COMPONENT_TYPE					p_type,
-										   std::shared_ptr<BaseComponent> const p_component )
+										   const std::shared_ptr<BaseComponent> p_component )
 		{
 			p_component->init();
 			try
@@ -60,7 +60,8 @@ namespace VTX
 			{
 				for ( const auto & [ type, component ] : _components )
 				{
-					if ( type == p_type ) { return component; }
+					std::shared_ptr<BaseComponent> child = component->getComponentByType( p_type );
+					if ( child != nullptr ) { return child; }
 				}
 
 				return nullptr;

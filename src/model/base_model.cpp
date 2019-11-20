@@ -17,13 +17,13 @@ namespace VTX
 
 		void BaseModel::update() { _notifyViews( Event::EVENT_MODEL::UPDATE ); }
 
-		void BaseModel::_addView( std::shared_ptr<View::BaseView<BaseModel>> const p_view )
+		void BaseModel::_addView( const std::shared_ptr<View::BaseView<BaseModel>> p_view )
 		{
 			p_view->setModel( this );
 			_views.push_back( p_view );
 		}
 
-		void BaseModel::_notifyViews( Event::EVENT_MODEL p_event ) const
+		void BaseModel::_notifyViews( const Event::EVENT_MODEL p_event ) const
 		{
 			for ( std::shared_ptr<View::BaseView<BaseModel>> view : _views )
 			{

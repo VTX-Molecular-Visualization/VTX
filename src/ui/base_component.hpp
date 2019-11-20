@@ -28,9 +28,9 @@ namespace VTX
 			void						   receiveEvent( const Event::EVENT_UI, void * const );
 
 		  protected:
-			bool * _show;
+			bool * _show = nullptr;
 
-			virtual void _addComponent( const COMPONENT_TYPE, std::shared_ptr<BaseComponent> const ) final;
+			virtual void _addComponent( const COMPONENT_TYPE, const std::shared_ptr<BaseComponent> ) final;
 			virtual void _addComponents() {};
 			virtual void _drawComponents() final;
 
