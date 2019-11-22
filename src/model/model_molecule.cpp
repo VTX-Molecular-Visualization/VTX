@@ -11,8 +11,8 @@ namespace VTX
 		{
 			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
 				(View::BaseView<BaseModel> *)( new View::ViewBallAndStick() ) ) );
-			//_addView( std::reinterpret_pointer_cast<View::BaseView<BaseModel>>(
-			//	( VTXApp::get().getUIComponentByType( UI::COMPONENT_TYPE::SCENE ) ) ) );
+			_addView( std::reinterpret_pointer_cast<View::BaseView<BaseModel>>(
+				( VTXApp::get().getUIComponentByType( UI::COMPONENT_TYPE::SCENE ) ) ) );
 		}
 
 		void ModelMolecule::printInfos() const
