@@ -4,7 +4,6 @@
 #include "../lib/imgui/imgui.h"
 #include "../lib/imgui/imgui_impl_opengl3.h"
 #include "../lib/imgui/imgui_impl_sdl.h"
-#include "../localization/language.hpp"
 #include "../style.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
