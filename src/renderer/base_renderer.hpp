@@ -5,6 +5,19 @@ namespace VTX
 {
 	namespace Renderer
 	{
+		enum MODE
+		{
+			FORWARD = 0,
+			DEFERRED
+		};
+
+		enum class SHADING
+		{
+			LAMBERT,
+			BLINN_PHONG,
+			TOON
+		};
+
 		class BaseRenderer
 		{
 		};

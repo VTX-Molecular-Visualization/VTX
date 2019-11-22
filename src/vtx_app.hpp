@@ -3,7 +3,7 @@
 
 #include "event/event.hpp"
 #include "object3d/scene.hpp"
-#include "renderer/renderer.hpp"
+#include "renderer/renderer_deferred.hpp"
 #include "ui/user_interface.hpp"
 #include "util/logger.hpp"
 #include <thread>
@@ -28,12 +28,13 @@ namespace VTX
 		std::shared_ptr<UI::BaseComponent> getUIComponentByType( UI::COMPONENT_TYPE p_type ) const;
 
 	  private:
-		static bool				 _isRunning;
-		double					 _time = 0.f;
-		UI::UserInterface *		 _ui;
-		Object3D::Scene *		 _scene;
-		Renderer::Renderer *	 _renderer;
-		std::vector<std::thread> _threads = std::vector<std::thread>();
+		static bool			_isRunning;
+		double				_time = 0.f;
+		UI::UserInterface * _ui;
+		Object3D::Scene *	_scene;
+		// TODO: use manager to switch?
+		Renderer::RendererDeferred * _renderer;
+		std::vector<std::thread>	 _threads = std::vector<std::thread>();
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;

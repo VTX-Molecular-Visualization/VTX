@@ -2,6 +2,7 @@
 #include "../defines.hpp"
 #include "../lib/imgui/imgui.h"
 #include "../localization/language.hpp"
+#include "../setting.hpp"
 #include "../style.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
@@ -45,6 +46,27 @@ namespace VTX
 				{
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), _showScene );
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), _showConsole );
+
+					ImGui::EndMenu();
+				}
+
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), _show ) )
+				{
+					int mode = Setting::Rendering::mode;
+					if ( ImGui::Combo( "Rendering", &mode, "Forward\0Deferred\0" ) )
+					{
+						switch ( mode )
+						{
+						case 0: Setting::Rendering::mode = Renderer ::MODE ::FORWARD; break;
+						case 1: Setting::Rendering::mode = Renderer ::MODE ::DEFERRED; break;
+						default: break;
+						}
+					}
+
+					ImGui::Separator();
+					ImGui::Checkbox( LOCALE( "MainMenu.Settings.AA" ), &Setting::Rendering::useAA );
+					ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &Setting::Rendering::useSSAO );
+					ImGui::Checkbox( LOCALE( "MainMenu.Settings.BLUR" ), &Setting::Rendering::useBlur );
 
 					ImGui::EndMenu();
 				}

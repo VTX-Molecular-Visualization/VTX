@@ -14,7 +14,7 @@ namespace VTX
 		_ui = new UI::UserInterface();
 		_ui->init();
 		_scene	  = new Object3D::Scene();
-		_renderer = new Renderer::Renderer();
+		_renderer = new Renderer::RendererDeferred();
 	}
 
 	VTXApp::~VTXApp()
@@ -40,6 +40,7 @@ namespace VTX
 								molecule ) )
 
 			{
+				//_scene->addMolecule( molecule );
 				molecule.init();
 				molecule.printInfos();
 				molecule.update();

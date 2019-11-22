@@ -7,14 +7,8 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		class Renderer : BaseRenderer
+		class RendererDeferred : BaseRenderer
 		{
-			enum Shading
-			{
-				LAMBERT = 0,
-				BLINN_PHONG,
-				TOON
-			};
 		};
 	} // namespace Renderer
 } // namespace VTX

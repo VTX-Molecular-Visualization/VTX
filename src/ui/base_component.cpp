@@ -77,7 +77,7 @@ namespace VTX
 			for ( auto const & [ type, component ] : _components )
 			{
 				// Only shown components?
-				if ( component->isShown() == false ) { continue; }
+				if ( component->isShown() == false ) { /*continue;*/ }
 				component->receiveEvent( p_event, p_arg );
 			}
 		}
