@@ -20,6 +20,7 @@ namespace VTX
 			{ "MainMenu.Display.Console", "Console" },
 			{ "MainMenu.Settings", "Options" },
 			{ "MainMenu.Settings.Render", "Render mode" },
+			{ "MainMenu.Settings.Shading", "Shading" },
 			{ "MainMenu.Settings.AA", "AA" },
 			{ "MainMenu.Settings.SSAO", "SSAO" },
 			{ "MainMenu.Settings.BLUR", "BLUR" },

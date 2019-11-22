@@ -56,9 +56,23 @@ namespace VTX
 					{
 						switch ( mode )
 						{
-						case 0: Setting::Rendering::mode = Renderer ::MODE ::FORWARD; break;
 						case 1: Setting::Rendering::mode = Renderer ::MODE ::DEFERRED; break;
-						default: break;
+						default: VTX_ERROR( "Unknown rendering mode" );
+						case 0: Setting::Rendering::mode = Renderer ::MODE ::FORWARD; break;
+						}
+
+						VTXApp::get().createRenderer();
+					}
+					int shading = Setting::Rendering::shading;
+					if ( ImGui::Combo(
+							 LOCALE( "MainMenu.Settings.Shading" ), &shading, "Lambert\0Blinn Phong\0Toon\0" ) )
+					{
+						switch ( shading )
+						{
+						case 1: Setting::Rendering::shading = Renderer ::SHADING ::BLINN_PHONG; break;
+						case 2: Setting::Rendering::shading = Renderer ::SHADING ::TOON; break;
+						default: VTX_ERROR( "Unknown shading mode" );
+						case 0: Setting::Rendering::shading = Renderer ::SHADING ::LAMBERT; break;
 						}
 					}
 

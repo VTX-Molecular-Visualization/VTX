@@ -9,10 +9,11 @@ namespace VTX
 	{
 		namespace Rendering
 		{
-			static Renderer::MODE mode	  = Renderer::MODE::DEFERRED;
-			static bool			  useAA	  = true;
-			static bool			  useSSAO = true;
-			static bool			  useBlur = true;
+			static Renderer::MODE	 mode	 = Renderer::MODE::DEFERRED;
+			static Renderer::SHADING shading = Renderer::SHADING::LAMBERT;
+			static bool				 useAA	 = true;
+			static bool				 useSSAO = true;
+			static bool				 useBlur = true;
 		}; // namespace Rendering
 	}	   // namespace Setting
 } // namespace VTX

@@ -2,7 +2,6 @@
 #define __VTX_BASE_CAMERA__
 
 #include "../../defines.hpp"
-#include "../object_3d.hpp"
 
 namespace VTX
 {
@@ -10,7 +9,7 @@ namespace VTX
 	{
 		namespace Camera
 		{
-			class BaseCamera : public Object3D
+			class BaseCamera
 			{
 			  public:
 				BaseCamera()		  = default;
@@ -37,9 +36,10 @@ namespace VTX
 				float _far	= CAMERA_FAR;
 				float _fov	= CAMERA_FOV;
 
-				Vec3f _front = VEC3F_Z;
-				Vec3f _up	 = VEC3F_Y;
-				Vec3f _left	 = VEC3F_X;
+				Vec3f _position = VEC3F_ZERO;
+				Vec3f _front	= VEC3F_Z;
+				Vec3f _up		= VEC3F_Y;
+				Vec3f _left		= VEC3F_X;
 
 				float _theta = 0.f;
 				float _phi	 = 0.f;

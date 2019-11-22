@@ -7,7 +7,7 @@ namespace VTX
 	{
 		namespace Camera
 		{
-			Mat4f BaseCamera::getViewMatrix() const { return glm::lookAt( _pos, _pos + _front, _up ); }
+			Mat4f BaseCamera::getViewMatrix() const { return glm::lookAt( _position, _position + _front, _up ); }
 
 			Mat4f BaseCamera::getProjectionMatrix() const
 			{
@@ -25,11 +25,11 @@ namespace VTX
 				_fov = glm::clamp( _fov - p_delta, CAMERA_FOV_MIN, CAMERA_FOV_MAX );
 			}
 
-			void BaseCamera::_moveFront( const float delta ) { _pos += delta * _front; }
+			void BaseCamera::_moveFront( const float delta ) { _position += delta * _front; }
 
-			void BaseCamera::_moveLeft( const float delta ) { _pos += delta * _left; }
+			void BaseCamera::_moveLeft( const float delta ) { _position += delta * _left; }
 
-			void BaseCamera::_moveUp( const float delta ) { _pos += delta * _up; }
+			void BaseCamera::_moveUp( const float delta ) { _position += delta * _up; }
 
 			void BaseCamera::_rotateLeft( const float angle )
 			{

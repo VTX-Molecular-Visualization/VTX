@@ -13,9 +13,9 @@ namespace VTX
 			DEFERRED
 		};
 
-		enum class SHADING
+		enum SHADING
 		{
-			LAMBERT,
+			LAMBERT = 0,
 			BLINN_PHONG,
 			TOON
 		};
@@ -24,6 +24,8 @@ namespace VTX
 		{
 		  public:
 			virtual double render( const Object3D::Scene & ) = 0;
+
+		  private:
 		};
 	} // namespace Renderer
 } // namespace VTX

@@ -3,14 +3,13 @@
 
 #include "../model/model_molecule.hpp"
 #include "camera/camera_orbit.hpp"
-#include "object_3d.hpp"
 #include <vector>
 
 namespace VTX
 {
 	namespace Object3D
 	{
-		class Scene : public Object3D
+		class Scene
 		{
 		  public:
 			void addMolecule( const Model::ModelMolecule & p_molecule ) { _molecules.emplace_back( p_molecule ); }
