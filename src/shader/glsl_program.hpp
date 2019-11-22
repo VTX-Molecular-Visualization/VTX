@@ -13,26 +13,24 @@ namespace VTX
 		{
 		  public:
 			GLSLProgram() = default;
-			/*
 			~GLSLProgram();
 
-			inline GLuint getId() const;
-			inline void	  use() const;
+			inline GLuint getId() const { return _id; }
+			inline void	  use() const { glUseProgram( _id ); }
 
 			void create( const std::string & name );
 			void attachShader( const GLuint shaderId ) const;
-			void attachShader( const IO::Path & shaderFilePath ) const;
 			void link();
 
-			void		detachShaders();
-			std::string getInfoLog() const;
+			void detachShaders();
 
 		  private:
-			std::string m_name = UNDEFINED_STRING;
+			GLuint		_id	  = GL_INVALID_INDEX;
+			std::string _name = "";
 
-			GLuint m_id = GL_INVALID_INDEX;
+			std::string _getProgramErrors() const;
+
 			friend class GLSLProgramManager;
-			*/
 		};
 	}; // namespace Shader
 } // namespace VTX

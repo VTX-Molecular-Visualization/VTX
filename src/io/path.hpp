@@ -21,16 +21,24 @@ namespace VTX
 			Path( const char * );
 			Path( const std::string & );
 
-			const char * c_str() const;
-			bool		 isEmpty() const;
-			std::string	 getDirectory() const;
-			std::string	 getFileName() const;
-			std::string	 getExtension() const;
-			std::string	 getFileNameWithoutExtension() const;
+			const std::string str() const { return _path; }
+			const char *	  c_str() const { return _path.c_str(); }
 
-			Path operator+( const Path & p_path ) const;
-			bool operator==( const Path & ) const;
-			bool operator!=( const Path & ) const;
+			operator std::string() const { return _path; }
+
+			bool		isEmpty() const;
+			std::string getDirectory() const;
+			std::string getFileName() const;
+			std::string getExtension() const;
+			std::string getFileNameWithoutExtension() const;
+
+			Path				  operator+( const Path & ) const;
+			bool				  operator==( const Path & ) const;
+			bool				  operator!=( const Path & ) const;
+			friend std::ostream & operator<<( std::ostream &, const Path & );
+			friend std::istream & operator>>( std::istream &, Path & );
+
+			static std::string read( const Path & );
 
 		  private:
 			std::string _path = "";
