@@ -78,5 +78,9 @@ namespace VTX
 		_ui->receiveEvent( p_event, p_arg );
 	}
 
-	void VTXApp::_update() { _ui->display(); }
+	void VTXApp::_update()
+	{
+		_ui->display();
+		_renderer->render( *_scene );
+	}
 } // namespace VTX

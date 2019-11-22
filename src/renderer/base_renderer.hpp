@@ -1,6 +1,8 @@
 #ifndef __VTX_BASE_RENDERER__
 #define __VTX_BASE_RENDERER__
 
+#include "../object3d/scene.hpp"
+
 namespace VTX
 {
 	namespace Renderer
@@ -20,6 +22,8 @@ namespace VTX
 
 		class BaseRenderer
 		{
+		  public:
+			virtual double render( const Object3D::Scene & ) = 0;
 		};
 	} // namespace Renderer
 } // namespace VTX
