@@ -5,8 +5,6 @@
 #include <iostream>
 #include <map>
 
-#define LOCALE( s ) VTX::Localization::Language::text( s )
-
 namespace VTX
 {
 	namespace Localization

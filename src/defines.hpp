@@ -1,6 +1,7 @@
 #ifndef __VTX_DEFINES__
 #define __VTX_DEFINES__
 
+#include "localization/language.hpp"
 #include "util/logger.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
@@ -25,12 +26,14 @@ namespace VTX
 	constexpr float CAMERA_FOV_MAX = 90.f;
 
 	// Log.
-	inline void VTX_DEBUG( const std::string & p_str ) { VTX::Util::Logger::logInfo( p_str ); }
-	inline void VTX_INFO( const std::string & p_str ) { VTX::Util::Logger::logInfo( p_str ); }
-	inline void VTX_WARNING( const std::string & p_str ) { VTX::Util::Logger::logWarning( p_str ); }
-	inline void VTX_ERROR( const std::string & p_str ) { VTX::Util::Logger::logError( p_str ); }
-
+	inline void	  VTX_DEBUG( const std::string & p_str ) { VTX::Util::Logger::logInfo( p_str ); }
+	inline void	  VTX_INFO( const std::string & p_str ) { VTX::Util::Logger::logInfo( p_str ); }
+	inline void	  VTX_WARNING( const std::string & p_str ) { VTX::Util::Logger::logWarning( p_str ); }
+	inline void	  VTX_ERROR( const std::string & p_str ) { VTX::Util::Logger::logError( p_str ); }
 	constexpr int VTX_CONSOLE_SIZE = 80;
+
+	// Localization.
+	inline const char * LOCALE( const char * p_str ) { return VTX::Localization::Language::text( p_str ); }
 
 	// Types.
 	using uint	= unsigned int;

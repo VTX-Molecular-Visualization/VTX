@@ -53,7 +53,7 @@ namespace VTX
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), _show ) )
 				{
 					int mode = Setting::Rendering::mode;
-					if ( ImGui::Combo( "Rendering", &mode, "Forward\0Deferred\0" ) )
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Render" ), &mode, "Forward\0Deferred\0" ) )
 					{
 						switch ( mode )
 						{

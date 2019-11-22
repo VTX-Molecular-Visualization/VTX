@@ -18,6 +18,11 @@ namespace VTX
 			{ "MainMenu.Display", "Display" },
 			{ "MainMenu.Display.Scene", "Scene" },
 			{ "MainMenu.Display.Console", "Console" },
+			{ "MainMenu.Settings", "Options" },
+			{ "MainMenu.Settings.Render", "Render mode" },
+			{ "MainMenu.Settings.AA", "AA" },
+			{ "MainMenu.Settings.SSAO", "SSAO" },
+			{ "MainMenu.Settings.BLUR", "BLUR" },
 
 			// Console.
 			{ "Console.Console", "Console" },

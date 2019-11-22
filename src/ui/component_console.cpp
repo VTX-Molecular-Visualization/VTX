@@ -2,7 +2,6 @@
 #include "../defines.hpp"
 #include "../event/event.hpp"
 #include "../lib/imgui/imgui.h"
-#include "../localization/language.hpp"
 #include "../style.hpp"
 #include "../util/logger.hpp"
 
