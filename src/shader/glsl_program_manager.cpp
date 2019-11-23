@@ -37,7 +37,7 @@ namespace VTX
 			}
 		}
 
-		GLSLProgram * GLSLProgramManager::createProgram( const std::string & p_name )
+		std::shared_ptr<GLSLProgram> GLSLProgramManager::createProgram( const std::string & p_name )
 		{
 			VTX_INFO( "Create program " + p_name );
 
@@ -50,7 +50,8 @@ namespace VTX
 			{
 				VTX_WARNING( "Program already exists" );
 			}
-			return &_programs[ p_name ];
+
+			return std::make_shared<GLSLProgram>( _programs[ p_name ] );
 		}
 
 		void GLSLProgramManager::deleteProgram( const std::string & p_name )
@@ -65,11 +66,11 @@ namespace VTX
 			}
 		}
 
-		const GLSLProgram * GLSLProgramManager::getProgram( const std::string & p_name ) const
+		const std::shared_ptr<GLSLProgram> GLSLProgramManager::getProgram( const std::string & p_name ) const
 		{
 			try
 			{
-				return &( _programs.at( p_name ) );
+				return std::make_shared<GLSLProgram>( _programs.at( p_name ) );
 			}
 			catch ( const std::exception )
 			{

@@ -24,11 +24,11 @@ namespace VTX
 		  public:
 			GLSLProgramManager() = default;
 			~GLSLProgramManager();
-			GLSLProgram *		createProgram( const std::string & );
-			void				deleteProgram( const std::string & );
-			const GLSLProgram * getProgram( const std::string & ) const;
-			GLuint				createShader( const IO::Path & );
-			GLuint				getShader( const std::string & ) const;
+			std::shared_ptr<GLSLProgram>	   createProgram( const std::string & );
+			void							   deleteProgram( const std::string & );
+			const std::shared_ptr<GLSLProgram> getProgram( const std::string & ) const;
+			GLuint							   createShader( const IO::Path & );
+			GLuint							   getShader( const std::string & ) const;
 
 			static const std::map<std::string, Shader::SHADER_TYPE> EXTENSIONS;
 			static SHADER_TYPE										getShaderType( const std::string & );
