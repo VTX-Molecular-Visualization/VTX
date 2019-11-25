@@ -72,7 +72,7 @@ namespace VTX
 		VTXApp::_isRunning = false;
 	}
 
-	std::shared_ptr<UI::BaseComponent> VTXApp::getUIComponentByType( UI::COMPONENT_TYPE p_type ) const
+	UI::BaseComponent * const VTXApp::getUIComponentByType( const UI::COMPONENT_TYPE p_type ) const
 	{
 		return _ui->getComponentByType( p_type );
 	};

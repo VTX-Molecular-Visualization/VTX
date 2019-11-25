@@ -10,17 +10,13 @@ namespace VTX
 	{
 		void ModelMolecule::_addViews()
 		{
-			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
-				(View::BaseView<BaseModel> *)( new View::ViewBallAndStick() ) ) );
+			_addView( (View::BaseView<BaseModel> *)( new View::ViewBallAndStick() ) );
 
-			std::shared_ptr<UI::ComponentScene> component = std::dynamic_pointer_cast<UI::ComponentScene>(
-				VTXApp::get().getUIComponentByType( UI::COMPONENT_TYPE::SCENE ) );
+			UI::BaseComponent *			component = VTXApp::get().getUIComponentByType( UI::COMPONENT_TYPE::SCENE );
+			UI::ComponentScene *		scene	  = dynamic_cast<UI::ComponentScene *>( component );
+			View::BaseView<BaseModel> * view	  = (View::BaseView<BaseModel> *)( scene );
 
-			std::shared_ptr<View::BaseView<BaseModel>> view
-				= std::reinterpret_pointer_cast<View::BaseView<BaseModel>>( component );
-
-			if ( component ) { VTX_INFO( "OKOKOK" ); }
-			_addView( std::shared_ptr<View::BaseView<BaseModel>>( view ) );
+			_addView( view );
 		}
 
 		void ModelMolecule::printInfos() const

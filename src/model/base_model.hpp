@@ -19,13 +19,13 @@ namespace VTX
 			void		 setSelected( const bool p_selected ) { _isSelected = p_selected; }
 
 		  protected:
-			void		 _addView( const std::shared_ptr<View::BaseView<BaseModel>> );
+			void		 _addView( View::BaseView<BaseModel> * const );
 			virtual void _addViews() {};
 			virtual void _notifyViews( const Event::EVENT_MODEL ) const final;
 
 		  private:
-			std::vector<std::shared_ptr<View::BaseView<BaseModel>>> _views
-				= std::vector<std::shared_ptr<View::BaseView<BaseModel>>>();
+			std::vector<View::BaseView<BaseModel>*> _views
+				= std::vector<View::BaseView<BaseModel>*>();
 			bool _isSelected = false;
 		};
 	} // namespace Model
