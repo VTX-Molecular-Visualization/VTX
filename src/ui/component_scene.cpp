@@ -8,7 +8,7 @@ namespace VTX
 {
 	namespace UI
 	{
-		ComponentScene::ComponentScene( bool * const p_show ) : BaseComponent( p_show ) {}
+		ComponentScene::ComponentScene( bool * const p_show ) : BaseComponent( p_show ), BaseView() {}
 
 		void ComponentScene::_draw()
 		{
@@ -17,15 +17,12 @@ namespace VTX
 
 			if ( ImGui::Begin( LOCALE( "Scene.Scene" ), _show, flags ) == false )
 			{
-				/*
-				ImGui::ListBoxHeader( "" );
-
-				ImGui::ListBoxFooter();
-				*/
-
 				ImGui::End();
 				return;
 			}
+
+			// ImGui::ListBoxHeader( "" );
+			// ImGui::ListBoxFooter();
 
 			ImGui::End();
 		}

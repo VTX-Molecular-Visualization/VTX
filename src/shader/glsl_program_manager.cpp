@@ -37,7 +37,7 @@ namespace VTX
 			}
 		}
 
-		std::shared_ptr<GLSLProgram> GLSLProgramManager::createProgram( const std::string & p_name )
+		const std::shared_ptr<GLSLProgram> GLSLProgramManager::createProgram( const std::string & p_name )
 		{
 			VTX_INFO( "Create program " + p_name );
 
