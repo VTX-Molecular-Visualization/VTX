@@ -24,13 +24,13 @@ namespace VTX
 
 			ImGuiIO & io = ImGui::GetIO();
 
-			ImGui::Text( "Time UI:  %.3fms", VTXApp::get().getTimeLastUI() );
-			ImGui::Text( "Time renderer:  %.3fms", VTXApp::get().getTimeLastRenderer() );
-			ImGui::Text( "FPS ImGui: %.1f", io.Framerate );
+			ImGui::Text( "Time UI:  %.0f ms", VTXApp::get().getTimeLastUI() * 1000.0 );
+			ImGui::Text( "Time renderer:  %.0f ms", VTXApp::get().getTimeLastRenderer() * 1000.0 );
+			ImGui::Text( "FPS ImGui: %.0f", io.Framerate );
 
 			try
 			{
-				ImGui::Text( "FPS computed: %.1f", 1e3f / VTXApp::get().getTimeLast() );
+				ImGui::Text( "FPS computed: %.0f", 1.f / VTXApp::get().getTimeLast() );
 			}
 			catch ( const std::exception )
 			{
