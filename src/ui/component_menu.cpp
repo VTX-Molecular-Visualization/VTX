@@ -10,8 +10,12 @@ namespace VTX
 {
 	namespace UI
 	{
-		ComponentMenu::ComponentMenu( bool * const p_show, bool * const p_showConsole, bool * const p_showScene ) :
-			BaseComponent( p_show ), _showConsole( p_showConsole ), _showScene( p_showScene )
+		ComponentMenu::ComponentMenu( bool * const p_show,
+									  bool * const p_showConsole,
+									  bool * const p_showScene,
+									  bool * const p_showSelection ) :
+			BaseComponent( p_show ),
+			_showConsole( p_showConsole ), _showScene( p_showScene ), _showSelection( p_showSelection )
 		{
 		}
 
@@ -44,7 +48,9 @@ namespace VTX
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Display" ), _show ) )
 				{
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), _showScene );
+					ImGui::Checkbox( LOCALE( "MainMenu.Display.Selection" ), _showSelection );
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), _showConsole );
+					ImGui::Separator();
 
 					ImGui::EndMenu();
 				}

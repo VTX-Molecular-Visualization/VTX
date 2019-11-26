@@ -17,6 +17,7 @@ namespace VTX
 			{ "MainMenu.Import.MMTF", "MMTF" },
 			{ "MainMenu.Display", "Display" },
 			{ "MainMenu.Display.Scene", "Scene" },
+			{ "MainMenu.Display.Selection", "Selection" },
 			{ "MainMenu.Display.Console", "Console" },
 			{ "MainMenu.Settings", "Options" },
 			{ "MainMenu.Settings.Render", "Render mode" },
@@ -29,7 +30,10 @@ namespace VTX
 			{ "Console.Console", "Console" },
 
 			// Scene.
-			{ "Scene.Scene", "Scene" }
+			{ "Scene.Scene", "Scene" },
+
+			// Selection.
+			{ "Selection.Selection", "Selection" }
 		};
 
 	} // namespace Localization

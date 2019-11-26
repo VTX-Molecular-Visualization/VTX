@@ -9,7 +9,8 @@ namespace VTX
 		{
 			MENU,
 			CONSOLE,
-			SCENE
+			SCENE,
+			SELECTION
 		};
 	} // namespace UI
 } // namespace VTX
