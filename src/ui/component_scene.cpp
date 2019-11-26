@@ -77,9 +77,6 @@ namespace VTX
 			ImGui::End();
 		}
 
-		void ComponentScene::notify( Event::EVENT_MODEL p_event )
-		{
-			if ( p_event == Event::EVENT_MODEL::UPDATE ) { VTX_INFO( "NOTIFY VIEW GUI" ); }
-		}
+		void ComponentScene::notify( Event::EVENT_MODEL p_event ) {}
 	} // namespace UI
 } // namespace VTX

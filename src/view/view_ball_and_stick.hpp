@@ -12,7 +12,7 @@ namespace VTX
 		  public:
 			ViewBallAndStick() {}
 			virtual void render( const uint p_time ) override {};
-			virtual void notify( Event::EVENT_MODEL ) { VTX_INFO( "NOTIFY VIEW 3D" ); };
+			virtual void notify( Event::EVENT_MODEL ) {};
 		};
 	} // namespace View
 } // namespace VTX

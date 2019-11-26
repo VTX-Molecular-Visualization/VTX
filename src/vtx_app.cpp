@@ -47,7 +47,6 @@ namespace VTX
 				scene->addMolecule( molecule );
 				molecule.init();
 				molecule.printInfos();
-				molecule.update();
 			}
 		} ) );
 		//////////////

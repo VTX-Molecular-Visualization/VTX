@@ -12,9 +12,6 @@ namespace VTX
 
 		enum class EVENT_MODEL
 		{
-			CREATE,
-			UPDATE,
-			DESTROY
 		};
 		/*
 		template<typename T>
