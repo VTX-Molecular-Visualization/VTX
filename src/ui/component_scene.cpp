@@ -21,9 +21,22 @@ namespace VTX
 				return;
 			}
 
-			// ImGui::ListBoxHeader( "" );
-			// ImGui::ListBoxFooter();
+			if ( _model == nullptr )
+			{
+				ImGui::End();
+				return;
+			}
 
+			if ( ImGui::TreeNode( _model->getName().c_str() ) )
+			{
+				for ( Model::ModelChain & chain : _model->getChains() )
+				{
+					ImGui::Selectable( chain.getName().c_str() );
+				}
+
+				ImGui::TreePop();
+				ImGui::Separator();
+			}
 			ImGui::End();
 		}
 

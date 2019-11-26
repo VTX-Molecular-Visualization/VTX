@@ -23,12 +23,15 @@ namespace VTX
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
-			inline ModelChain &	  addChain() { return _chains.emplace_back( ModelChain() ); }
-			inline ModelChain &	  getChain( uint p_idx ) { return _chains[ p_idx ]; }
-			inline ModelResidue & addResidue() { return _residues.emplace_back( ModelResidue() ); }
-			inline ModelResidue & getResidue( uint p_idx ) { return _residues[ p_idx ]; }
-			inline ModelAtom &	  addAtom() { return _atoms.emplace_back( ModelAtom() ); }
-			inline ModelAtom &	  getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
+			inline ModelChain &				   addChain() { return _chains.emplace_back( ModelChain() ); }
+			inline ModelChain &				   getChain( uint p_idx ) { return _chains[ p_idx ]; }
+			inline std::vector<ModelChain> &   getChains() { return _chains; }
+			inline ModelResidue &			   addResidue() { return _residues.emplace_back( ModelResidue() ); }
+			inline ModelResidue &			   getResidue( uint p_idx ) { return _residues[ p_idx ]; }
+			inline std::vector<ModelResidue> & getResidues() { return _residues; }
+			inline ModelAtom &				   addAtom() { return _atoms.emplace_back( ModelAtom() ); }
+			inline ModelAtom &				   getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
+			inline std::vector<ModelAtom> &	   getAtoms() { return _atoms; }
 
 			inline std::set<std::string> & getUnknownResidueSymbols() { return _unknownResidueSymbol; }
 			inline std::set<std::string> & getUnknownAtomSymbols() { return _unknownAtomSymbol; }
