@@ -9,11 +9,11 @@ namespace VTX
 	{
 		namespace Math
 		{
-			static inline Vec3f min( const Vec3f & a, const Vec3f & b )
+			inline Vec3f min( const Vec3f & a, const Vec3f & b )
 			{
 				return Vec3f( a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y, a.z < b.z ? a.z : b.z );
 			}
-			static inline Vec3f max( const Vec3f & a, const Vec3f & b )
+			inline Vec3f max( const Vec3f & a, const Vec3f & b )
 			{
 				return Vec3f( a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z );
 			}
