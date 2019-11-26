@@ -4,6 +4,7 @@
 #include "event/event.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
+#include "tool/chrono.hpp"
 #include "ui/user_interface.hpp"
 #include "util/logger.hpp"
 #include <thread>
@@ -29,11 +30,20 @@ namespace VTX
 		const std::shared_ptr<UI::BaseComponent> getUIComponentByType( const UI::COMPONENT_TYPE p_type ) const;
 		void									 createRenderer();
 
+		inline double getTimeTotal() { return _timeTotal; }
+		inline double getTimeLast() { return _timeLast; }
+		inline double getTimeLastUI() { return _timeLastUI; }
+		inline double getTimeLastRenderer() { return _timeLastRenderer; }
+
 	  private:
 		static bool			_isRunning;
-		double				_time  = 0.f;
-		UI::UserInterface * _ui	   = nullptr;
-		Object3D::Scene *	_scene = nullptr;
+		Tool::Chrono		_chrono			  = Tool::Chrono();
+		double				_timeTotal		  = 0.f;
+		double				_timeLast		  = 0.f;
+		double				_timeLastUI		  = 0.f;
+		double				_timeLastRenderer = 0.f;
+		UI::UserInterface * _ui				  = nullptr;
+		Object3D::Scene *	_scene			  = nullptr;
 		// TODO: use manager to switch, or just switch in render loop?
 		Renderer::BaseRenderer * _renderer = nullptr;
 		std::vector<std::thread> _threads  = std::vector<std::thread>();

@@ -3,7 +3,6 @@
 
 #include "../object3d/scene.hpp"
 #include "../shader/glsl_program_manager.hpp"
-#include "../tool/chrono.hpp"
 
 namespace VTX
 {
@@ -29,7 +28,6 @@ namespace VTX
 
 		  private:
 			Shader::GLSLProgramManager _programManager = Shader::GLSLProgramManager();
-			Tool::Chrono			   _chrono		   = Tool::Chrono();
 		};
 	} // namespace Renderer
 } // namespace VTX

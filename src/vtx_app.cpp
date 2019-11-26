@@ -95,7 +95,21 @@ namespace VTX
 
 	void VTXApp::_update()
 	{
+		// UI.
+		_chrono.start();
 		_ui->display();
+		_chrono.stop();
+		_timeLastUI = _chrono.elapsedTime();
+
+		// Renderer.
+		_chrono.start();
 		_renderer->render( *_scene );
+		_chrono.stop();
+		_timeLastRenderer = _chrono.elapsedTime();
+
+		// Timers.
+		_timeLast = _timeLastUI;
+		_timeLast += _timeLastRenderer;
+		_timeTotal += _timeLast;
 	}
 } // namespace VTX
