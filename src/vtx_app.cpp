@@ -47,7 +47,7 @@ namespace VTX
 				scene->addMolecule( molecule );
 				molecule.init();
 				molecule.printInfos();
-				// molecule.update();
+				molecule.update();
 			}
 		} ) );
 		//////////////
@@ -72,7 +72,7 @@ namespace VTX
 		VTXApp::_isRunning = false;
 	}
 
-	UI::BaseComponent * const VTXApp::getUIComponentByType( const UI::COMPONENT_TYPE p_type ) const
+	const std::shared_ptr<UI::BaseComponent> VTXApp::getUIComponentByType( const UI::COMPONENT_TYPE p_type ) const
 	{
 		return _ui->getComponentByType( p_type );
 	};

@@ -10,13 +10,12 @@ namespace VTX
 	{
 		void ModelMolecule::_addViews()
 		{
-			_addView( (View::BaseView<BaseModel> *)( new View::ViewBallAndStick() ) );
+			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
+				(View::BaseView<BaseModel> *)( new View::ViewBallAndStick() ) ) );
 
-			UI::BaseComponent *			component = VTXApp::get().getUIComponentByType( UI::COMPONENT_TYPE::SCENE );
-			UI::ComponentScene *		scene	  = dynamic_cast<UI::ComponentScene *>( component );
-			View::BaseView<BaseModel> * view	  = (View::BaseView<BaseModel> *)( scene );
-
-			_addView( view );
+			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
+				(View::BaseView<BaseModel> *)( dynamic_cast<View::BaseView<ModelMolecule> *>(
+					VTXApp::get().getUIComponentByType( UI::COMPONENT_TYPE::SCENE ).get() ) ) ) );
 		}
 
 		void ModelMolecule::printInfos() const

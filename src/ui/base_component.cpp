@@ -11,7 +11,7 @@ namespace VTX
 		{
 			for ( auto & [ type, component ] : _components )
 			{
-				delete component;
+				component.reset();
 			}
 			_components.clear();
 		}
@@ -24,7 +24,8 @@ namespace VTX
 			_isInitialized = true;
 		}
 
-		void BaseComponent::_addComponent( const COMPONENT_TYPE p_type, BaseComponent * const p_component )
+		void BaseComponent::_addComponent( const COMPONENT_TYPE					p_type,
+										   const std::shared_ptr<BaseComponent> p_component )
 		{
 			p_component->init();
 			try
@@ -49,7 +50,7 @@ namespace VTX
 
 		void BaseComponent::_registerEventHandler( const Event::EVENT_UI p_event ) { _events.emplace( p_event ); }
 
-		BaseComponent * const BaseComponent::getComponentByType( const COMPONENT_TYPE p_type ) const
+		const std::shared_ptr<BaseComponent> BaseComponent::getComponentByType( const COMPONENT_TYPE p_type ) const
 		{
 			try
 			{
@@ -59,7 +60,7 @@ namespace VTX
 			{
 				for ( const auto & [ type, component ] : _components )
 				{
-					BaseComponent * child = component->getComponentByType( p_type );
+					std::shared_ptr<BaseComponent> child = component->getComponentByType( p_type );
 					if ( child != nullptr ) { return child; }
 				}
 

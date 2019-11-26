@@ -6,9 +6,9 @@ namespace VTX
 	{
 		BaseModel::~BaseModel()
 		{
-			for ( View::BaseView<BaseModel> * view : _views )
+			for ( std::shared_ptr<View::BaseView<BaseModel>> view : _views )
 			{
-				delete view;
+				view.reset();
 			}
 			_views.clear();
 		}
@@ -17,7 +17,7 @@ namespace VTX
 
 		void BaseModel::update() { _notifyViews( Event::EVENT_MODEL::UPDATE ); }
 
-		void BaseModel::_addView( View::BaseView<BaseModel> * const p_view )
+		void BaseModel::_addView( const std::shared_ptr<View::BaseView<BaseModel>> p_view )
 		{
 			p_view->setModel( this );
 			_views.push_back( p_view );
@@ -25,7 +25,7 @@ namespace VTX
 
 		void BaseModel::_notifyViews( const Event::EVENT_MODEL p_event ) const
 		{
-			for ( View::BaseView<BaseModel> * view : _views )
+			for ( std::shared_ptr<View::BaseView<BaseModel>> view : _views )
 			{
 				view->notify( p_event );
 			}

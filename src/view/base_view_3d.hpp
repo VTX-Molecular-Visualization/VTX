@@ -8,11 +8,11 @@ namespace VTX
 {
 	namespace View
 	{
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		template<typename T>
 		class BaseView3D : public BaseView<T>
 		{
 		  public:
-			virtual void update( const uint p_time ) = 0;
+			virtual void render( const uint p_time ) = 0;
 
 		  private:
 		};

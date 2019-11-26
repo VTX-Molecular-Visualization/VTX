@@ -15,7 +15,7 @@ namespace VTX
 		{
 		  public:
 			ComponentScene( bool * const );
-			virtual void notify( Event::EVENT_MODEL ) override { VTX_INFO( "EVENT RECEIVED" ); };
+			virtual void notify( Event::EVENT_MODEL ) override;
 
 		  protected:
 			virtual void _draw() override;

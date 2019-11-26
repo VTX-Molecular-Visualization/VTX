@@ -8,7 +8,7 @@ namespace VTX
 {
 	namespace UI
 	{
-		ComponentScene::ComponentScene( bool * const p_show ) : BaseComponent( p_show ), BaseView() {}
+		ComponentScene::ComponentScene( bool * const p_show ) : BaseComponent( p_show ) {}
 
 		void ComponentScene::_draw()
 		{
@@ -25,6 +25,11 @@ namespace VTX
 			// ImGui::ListBoxFooter();
 
 			ImGui::End();
+		}
+
+		void ComponentScene::notify( Event::EVENT_MODEL p_event )
+		{
+			if ( p_event == Event::EVENT_MODEL::UPDATE ) { VTX_INFO( "NOTIFY VIEW GUI" ); }
 		}
 	} // namespace UI
 } // namespace VTX

@@ -12,13 +12,14 @@ namespace VTX
 	{
 		class BaseModel;
 
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		template<typename T>
 		class BaseView
 		{
 		  public:
+			BaseView() {}
 			virtual ~BaseView() { _model = nullptr; };
 
-			void		 setModel( T * const p_model ) { _model = p_model; }
+			virtual void setModel( T * const p_model ) final { _model = p_model; }
 			virtual void notify( Event::EVENT_MODEL ) {};
 
 		  protected:

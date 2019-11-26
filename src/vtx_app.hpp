@@ -26,8 +26,8 @@ namespace VTX
 
 		void fireUIEvent( const Event::EVENT_UI, void * const ) const;
 
-		UI::BaseComponent * const getUIComponentByType( const UI::COMPONENT_TYPE p_type ) const;
-		void					  createRenderer();
+		const std::shared_ptr<UI::BaseComponent> getUIComponentByType( const UI::COMPONENT_TYPE p_type ) const;
+		void									 createRenderer();
 
 	  private:
 		static bool			_isRunning;
