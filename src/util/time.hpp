@@ -1,21 +1,28 @@
 #ifndef __VTX__TIME__
 #define __VTX__TIME__
 
+#include <chrono>
 #include <iostream>
+#include <time.h>
 
 namespace VTX
 {
 	namespace Util
 	{
-		class Time
+		namespace Time
 		{
-		  public:
-			static std::string getNowString();
+			std::string getNowString()
+			{
+				__time64_t now = std::chrono::system_clock::to_time_t( std::chrono::system_clock::now() );
+				char	   nowStr[ 26 ];
+				ctime_s( nowStr, 26 * sizeof( char ), &now );
+				std::string string( nowStr );
 
-		  private:
-			Time() = default;
-		};
-	} // namespace Util
+				// Substring to remove newline.
+				return string.substr( 11, string.length() - 17 );
+			}
+		} // namespace Time
+	}	  // namespace Util
 } // namespace VTX
 
 #endif

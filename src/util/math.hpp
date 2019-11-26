@@ -7,9 +7,8 @@ namespace VTX
 {
 	namespace Util
 	{
-		class Math
+		namespace Math
 		{
-		  public:
 			static inline Vec3f min( const Vec3f & a, const Vec3f & b )
 			{
 				return Vec3f( a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y, a.z < b.z ? a.z : b.z );
@@ -18,11 +17,8 @@ namespace VTX
 			{
 				return Vec3f( a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z );
 			}
-
-		  private:
-			Math() = default;
-		};
-	} // namespace Util
+		} // namespace Math
+	}	  // namespace Util
 } // namespace VTX
 
 #endif

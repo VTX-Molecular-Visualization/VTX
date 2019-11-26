@@ -1,6 +1,6 @@
 #include "model_molecule.hpp"
 #include "../ui/component_scene.hpp"
-#include "../ui/enum_component_type.hpp"
+#include "../util/type.hpp"
 #include "../view/view_ball_and_stick.hpp"
 #include "../vtx_app.hpp"
 
@@ -13,11 +13,7 @@ namespace VTX
 			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
 				(View::BaseView<BaseModel> *)( new View::ViewBallAndStick() ) ) );
 
-			std::shared_ptr<UI::BaseComponent> component
-				= VTXApp::get().getUIComponentByType( UI::COMPONENT_TYPE::SCENE );
-			std::shared_ptr<View::BaseView<ModelMolecule>> view
-				= std::dynamic_pointer_cast<View::BaseView<ModelMolecule>>( component );
-			_addView( std::reinterpret_pointer_cast<View::BaseView<BaseModel>>( view ) );
+			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_TYPE::SCENE ) );
 		}
 
 		void ModelMolecule::printInfos() const

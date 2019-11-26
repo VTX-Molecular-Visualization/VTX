@@ -12,7 +12,7 @@ namespace VTX
 	{
 		class BaseModel;
 
-		template<typename T>
+		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
 		class BaseView
 		{
 		  public:
