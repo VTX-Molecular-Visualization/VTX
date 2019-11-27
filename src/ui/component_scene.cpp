@@ -13,10 +13,10 @@ namespace VTX
 
 		void ComponentScene::_draw()
 		{
-			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
+			ImGuiWindowFlags flagsWindow = ImGuiWindowFlags_NoCollapse;
 			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
 
-			if ( ImGui::Begin( LOCALE( "Scene.Scene" ), _show, flags ) == false )
+			if ( ImGui::Begin( LOCALE( "Scene.Scene" ), _show, flagsWindow ) == false )
 			{
 				ImGui::End();
 				return;
@@ -54,23 +54,33 @@ namespace VTX
 			{
 				for ( Model::ModelChain & chain : _model->getChains() )
 				{
+					ImGui::PushID( chain.getId() );
 					if ( ImGui::TreeNode( chain.getName().c_str() ) )
 					{
 						for ( int i = 0; i < chain.getResidueCount(); ++i )
 						{
 							Model::ModelResidue & residue = _model->getResidue( chain.getIdFirstResidue() + i );
+							ImGui::PushID( residue.getId() );
 							if ( ImGui::TreeNode( residue.getSymbolName().c_str() ) )
 							{
 								for ( int j = 0; j < residue.getAtomCount(); ++j )
 								{
 									Model::ModelAtom & atom = _model->getAtom( residue.getIdFirstAtom() + j );
-									ImGui::Selectable( atom.getName().c_str() );
+									ImGui::PushID( atom.getId() );
+									if ( ImGui::Selectable( atom.getName().c_str() ) )
+									{
+										_model->setSelectedAtom( atom.getId() );
+										ImGui::SetItemDefaultFocus();
+									}
+									ImGui::PopID();
 								}
 								ImGui::TreePop();
 							}
+							ImGui::PopID();
 						}
 						ImGui::TreePop();
 					}
+					ImGui::PopID();
 				}
 				ImGui::TreePop();
 			}

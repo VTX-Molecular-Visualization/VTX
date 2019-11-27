@@ -65,6 +65,13 @@ namespace VTX
 
 			void printInfos() const;
 
+			ModelChain * const	 getSelectedChain() const { return _selectedChain; }
+			ModelResidue * const getSelectedResidue() const { return _selectedResidue; }
+			ModelAtom * const	 getSelectedAtom() const { return _selectedAtom; }
+			void				 setSelectedChain( const uint );
+			void				 setSelectedResidue( const uint );
+			void				 setSelectedAtom( const uint );
+
 		  protected:
 			virtual void _addViews() override final;
 
@@ -85,6 +92,11 @@ namespace VTX
 			std::vector<uint>  _bonds		  = std::vector<uint>();
 
 			Math::AABB _aabb;
+
+			// Selection.
+			ModelChain *   _selectedChain	= nullptr;
+			ModelResidue * _selectedResidue = nullptr;
+			ModelAtom *	   _selectedAtom	= nullptr;
 
 #ifdef _DEBUG
 		  public:
