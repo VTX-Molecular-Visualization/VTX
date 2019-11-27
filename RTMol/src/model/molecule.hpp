@@ -17,12 +17,15 @@ namespace Model
 		inline const std::string & getName() const { return _name; };
 		inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
-		inline Chain &	 addChain() { return _chains.emplace_back( Chain() ); }
-		inline Chain &	 getChain( uint p_idx ) { return _chains[ p_idx ]; }
-		inline Residue & addResidue() { return _residues.emplace_back( Residue() ); }
-		inline Residue & getResidue( uint p_idx ) { return _residues[ p_idx ]; }
-		inline Atom &	 addAtom() { return _atoms.emplace_back( Atom() ); }
-		inline Atom &	 getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
+		inline Chain &				  addChain() { return _chains.emplace_back( Chain() ); }
+		inline Chain &				  getChain( uint p_idx ) { return _chains[ p_idx ]; }
+		inline std::vector<Chain> &	  getChains() { return _chains; }
+		inline Residue &			  addResidue() { return _residues.emplace_back( Residue() ); }
+		inline Residue &			  getResidue( uint p_idx ) { return _residues[ p_idx ]; }
+		inline std::vector<Residue> & getResidues() { return _residues; }
+		inline Atom &				  addAtom() { return _atoms.emplace_back( Atom() ); }
+		inline Atom &				  getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
+		inline std::vector<Atom> &	  getAtoms() { return _atoms; }
 
 		inline std::set<std::string> & getUnknownResidueSymbols() { return _unknownResidueSymbol; }
 		inline std::set<std::string> & getUnknownAtomSymbols() { return _unknownAtomSymbol; }

@@ -44,15 +44,23 @@ namespace IO
 		uint  atomGlobalIdx	   = 0;
 		uint  bondGlobalIdx	   = 0;
 
-		// For each chain in the model 0.
-		uint chainCount = data.chainsPerModel[ 0 ];
+		// Reserve memory for vectors of chains and residues to avoid pointer loss when space is reallocated.
+		uint chainCount	 = data.chainsPerModel[ 0 ];
+		uint residueSize = 0;
+		for ( uint i = 0; i < chainCount; ++i )
+		{
+			residueSize += data.groupsPerChain[ i ];
+		}
+		p_molecule.getChains().resize( chainCount );
+		p_molecule.getResidues().resize( residueSize );
 #ifdef _DEBUG
 		p_molecule.chainCount = chainCount;
 #endif
+		// For each chain in the model 0
 		for ( ; chainGlobalIdx < chainCount; ++chainGlobalIdx )
 		{
 			// New chain.
-			Model::Chain & chain = p_molecule.addChain();
+			Model::Chain & chain = p_molecule.getChain( chainGlobalIdx );
 			chain.setMoleculePtr( &p_molecule );
 			chain.setId( chainGlobalIdx );
 			chain.setName( data.chainNameList[ chainGlobalIdx ] );
@@ -69,7 +77,7 @@ namespace IO
 				const mmtf::GroupType & group = data.groupList[ data.groupTypeList[ residueGlobalIdx ] ];
 
 				// New residue.
-				Model::Residue & residue = p_molecule.addResidue();
+				Model::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
 				residue.setMoleculePtr( &p_molecule );
 				residue.setChainPtr( &chain );
 				residue.setId( residueGlobalIdx );
