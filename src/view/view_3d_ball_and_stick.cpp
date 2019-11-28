@@ -1,4 +1,4 @@
-#include "view_ball_and_stick.hpp"
+#include "view_3d_ball_and_stick.hpp"
 
 namespace VTX
 {

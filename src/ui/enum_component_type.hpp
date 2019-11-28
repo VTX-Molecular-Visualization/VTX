@@ -10,7 +10,8 @@ namespace VTX
 			MENU,
 			CONSOLE,
 			SCENE,
-			SELECTION
+			SELECTION,
+			VIEW_MOLECULE
 		};
 	} // namespace UI
 } // namespace VTX

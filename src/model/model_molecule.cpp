@@ -1,7 +1,7 @@
 #include "model_molecule.hpp"
 #include "../ui/component_scene.hpp"
 #include "../util/type.hpp"
-#include "../view/view_ball_and_stick.hpp"
+#include "../view/view_3d_ball_and_stick.hpp"
 #include "../vtx_app.hpp"
 
 namespace VTX
@@ -11,9 +11,9 @@ namespace VTX
 		void ModelMolecule::_addViews()
 		{
 			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
-				(View::BaseView<BaseModel> *)( new View::ViewBallAndStick() ) ) );
+				(View::BaseView<BaseModel> *)( new View::View3DBallAndStick() ) ) );
 
-			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_TYPE::SCENE ) );
+			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_TYPE::VIEW_MOLECULE ) );
 		}
 
 		void ModelMolecule::printInfos() const

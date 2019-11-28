@@ -7,10 +7,10 @@ namespace VTX
 {
 	namespace View
 	{
-		class ViewBallAndStick : public BaseView3DMolecule
+		class View3DBallAndStick : public BaseView3DMolecule
 		{
 		  public:
-			ViewBallAndStick() {}
+			View3DBallAndStick() {}
 			virtual void render( const uint p_time ) override {};
 			virtual void notify( Event::EVENT_MODEL ) {};
 		};
