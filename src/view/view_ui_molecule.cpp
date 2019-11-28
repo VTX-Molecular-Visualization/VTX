@@ -15,7 +15,8 @@ namespace VTX
 			ImGui::Text( "Bonds: %d", _model->getBondCount() );
 			ImGui::Separator();
 
-			if ( ImGui::TreeNode( _model->getName().c_str() ) )
+			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
+			if ( ImGui::CollapsingHeader( _model->getName().c_str(), flags ) )
 			{
 				for ( Model::ModelChain & chain : _model->getChains() )
 				{
@@ -47,7 +48,7 @@ namespace VTX
 					}
 					ImGui::PopID();
 				}
-				ImGui::TreePop();
+				// ImGui::TreePop();
 			}
 		}
 	} // namespace View
