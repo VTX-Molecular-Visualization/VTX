@@ -40,7 +40,7 @@ namespace VTX
 		_threads.push_back( std::thread( [&molecule, scene ] {
 			IO::ReaderMMTF mmtf = IO::ReaderMMTF();
 			if ( mmtf.readFile( IO::Path( "../Vidocklab/VidockLab/data/"
-										  "3kgv.mmtf" ),
+										  "4v6x.mmtf" ),
 								molecule ) )
 
 			{

@@ -39,11 +39,22 @@ namespace VTX
 			}
 		}
 
+		void BaseComponent::_drawComponent( const COMPONENT_TYPE p_type )
+		{
+			try
+			{
+				_components.at( p_type )->display();
+			}
+			catch ( const std::exception )
+			{
+				VTX_WARNING( "Component not found" );
+			}
+		}
+
 		void BaseComponent::_drawComponents()
 		{
 			for ( const auto & [ type, component ] : _components )
 			{
-				if ( component->isShown() == false ) { continue; }
 				component->display();
 			}
 		}
@@ -76,15 +87,15 @@ namespace VTX
 			// Propagate to children.
 			for ( auto const & [ type, component ] : _components )
 			{
-				// Only shown components?
-				if ( component->isShown() == false )
-				{ /*continue;*/
-				}
 				component->receiveEvent( p_event, p_arg );
 			}
 		}
 
-		void BaseComponent::display() { _draw(); };
+		void BaseComponent::display()
+		{
+			if ( _show != nullptr && _show == false ) { return; }
+			_draw();
+		};
 
 	} // namespace UI
 } // namespace VTX

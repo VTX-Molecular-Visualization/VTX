@@ -4,14 +4,13 @@
 #include "../lib/imgui/imgui.h"
 #include "../localization/language.hpp"
 #include "../model/model_molecule.hpp"
-#include "../view/base_view.hpp"
-#include "base_component.hpp"
+#include "../view/base_view_ui.hpp"
 
 namespace VTX
 {
 	namespace UI
 	{
-		class ComponentScene : public BaseComponent, public View::BaseView<Model::ModelMolecule>
+		class ComponentScene : public View::BaseViewUI<Model::ModelMolecule>
 		{
 		  public:
 			ComponentScene( bool * const );

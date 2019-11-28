@@ -20,7 +20,7 @@ namespace VTX
 			BaseComponent( bool * const );
 			virtual ~BaseComponent();
 
-			virtual void display() final;
+			virtual void display();
 			virtual void init();
 			virtual bool isShown() final { return *_show; }
 
@@ -32,6 +32,7 @@ namespace VTX
 
 			virtual void _addComponent( const COMPONENT_TYPE, const std::shared_ptr<BaseComponent> ) final;
 			virtual void _addComponents() {};
+			virtual void _drawComponent( const COMPONENT_TYPE );
 			virtual void _drawComponents() final;
 
 			virtual void _registerEventHandler( const Event::EVENT_UI ) final;

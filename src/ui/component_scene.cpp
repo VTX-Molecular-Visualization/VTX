@@ -3,13 +3,14 @@
 #include "../lib/imgui/imgui.h"
 #include "../localization/language.hpp"
 #include "../style.hpp"
+#include "../view/base_view_ui.hpp"
 #include "../vtx_app.hpp"
 
 namespace VTX
 {
 	namespace UI
 	{
-		ComponentScene::ComponentScene( bool * const p_show ) : BaseComponent( p_show ) {}
+		ComponentScene::ComponentScene( bool * const p_show ) : BaseViewUI<Model::ModelMolecule>( p_show ) {}
 
 		void ComponentScene::_draw()
 		{

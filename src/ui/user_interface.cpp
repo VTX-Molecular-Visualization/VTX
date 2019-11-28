@@ -18,7 +18,7 @@ namespace VTX
 {
 	namespace UI
 	{
-		UserInterface::UserInterface() : BaseComponent( NULL )
+		UserInterface::UserInterface() : BaseComponent( nullptr )
 		{
 			VTX_INFO( "Creating user interface" );
 

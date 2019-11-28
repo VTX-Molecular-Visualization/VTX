@@ -49,15 +49,12 @@ namespace VTX
 			uint		 atomGlobalIdx	  = 0;
 			uint		 bondGlobalIdx	  = 0;
 
-			// Reserve memory for vectors of chains and residues to avoid pointer loss when space is reallocated.
-			uint chainCount	 = data.chainsPerModel[ 0 ];
-			uint residueSize = 0;
-			for ( uint i = 0; i < chainCount; ++i )
-			{
-				residueSize += data.groupsPerChain[ i ];
-			}
-			p_molecule.getChains().resize( chainCount );
-			p_molecule.getResidues().resize( residueSize );
+			// Reserve memory for vectors to avoid pointer loss.
+			p_molecule.getChains().resize( data.numChains );
+			p_molecule.getResidues().resize( data.numGroups );
+			p_molecule.getAtoms().resize( data.numAtoms );
+
+			uint chainCount = data.chainsPerModel[ 0 ];
 #ifdef _DEBUG
 			p_molecule.chainCount = chainCount;
 #endif
@@ -74,6 +71,7 @@ namespace VTX
 
 				// For each residue in the chain.
 				uint residueCount = data.groupsPerChain[ chainGlobalIdx ];
+				if ( residueCount == 0 ) { VTX_WARNING( "No residues" ); }
 #ifdef _DEBUG
 				p_molecule.residueCount += residueCount;
 #endif
@@ -94,17 +92,18 @@ namespace VTX
 					residue.setAtomCount( uint( group.atomNameList.size() ) );
 					residue.setIdFirstBond( bondGlobalIdx );
 					residue.setBondCount( uint( group.bondAtomList.size() ) / 2u ); // 2 index by bond.
-					if ( group.bondAtomList.size() % 2 != 0 ) { VTX_WARNING( "Incorrect number of bonds index" ); }
+					if ( group.bondAtomList.size() % 2 != 0 ) { VTX_WARNING( "Incorrect number of bonds" ); }
 
 					// For each atom in the residue.
 					uint atomCount = uint( group.atomNameList.size() );
+					if ( atomCount == 0 ) { VTX_WARNING( "No atoms" ); }
 #ifdef _DEBUG
 					p_molecule.atomCount += atomCount;
 #endif
 					for ( uint atomIdx = 0; atomIdx < atomCount; ++atomIdx, ++atomGlobalIdx )
 					{
 						// New atom.
-						Model::ModelAtom & atom = p_molecule.addAtom();
+						Model::ModelAtom & atom = p_molecule.getAtom( atomGlobalIdx );
 						atom.setMoleculePtr( &p_molecule );
 						atom.setChainPtr( &chain );
 						atom.setResiduePtr( &residue );
@@ -147,29 +146,26 @@ namespace VTX
 #endif
 
 #ifdef _DEBUG
-			if ( p_molecule.getChainCount() != p_molecule.chainCount )
+			if ( p_molecule.getChainCount() != p_molecule.chainCount || p_molecule.getChainCount() != data.numChains )
 			{
-				VTX_ERROR( "p_molecule.getChainCount() != p_molecule.chainCount : "
-						   + std::to_string( p_molecule.getChainCount() )
-						   + " != " + std::to_string( p_molecule.chainCount ) );
+				VTX_ERROR( "Chain count error: " + std::to_string( p_molecule.getChainCount() ) + " / "
+						   + std::to_string( p_molecule.chainCount ) + " / " + std::to_string( data.numChains ) );
 			}
-			if ( p_molecule.getResidueCount() != p_molecule.residueCount )
+			if ( p_molecule.getResidueCount() != p_molecule.residueCount
+				 || p_molecule.getResidueCount() != data.numGroups )
 			{
-				VTX_ERROR( "p_molecule.getResidueCount() != p_molecule.residueCount : "
-						   + std::to_string( p_molecule.getResidueCount() )
-						   + " != " + std::to_string( p_molecule.residueCount ) );
+				VTX_ERROR( "Residue count error: " + std::to_string( p_molecule.getResidueCount() ) + " / "
+						   + std::to_string( p_molecule.residueCount ) + " / " + std::to_string( data.numGroups ) );
 			}
-			if ( p_molecule.getAtomCount() != p_molecule.atomCount )
+			if ( p_molecule.getAtomCount() != p_molecule.atomCount || p_molecule.getAtomCount() != data.numAtoms )
 			{
-				VTX_ERROR( "p_molecule.getAtomCount() != p_molecule.atomCount : "
-						   + std::to_string( p_molecule.getAtomCount() )
-						   + " != " + std::to_string( p_molecule.atomCount ) );
+				VTX_ERROR( "Atom count error: " + std::to_string( p_molecule.getAtomCount() ) + " / "
+						   + std::to_string( p_molecule.atomCount ) + " / " + std::to_string( data.numAtoms ) );
 			}
-			if ( p_molecule.getBondCount() != p_molecule.bondCount )
+			if ( p_molecule.getBondCount() != p_molecule.bondCount || p_molecule.getBondCount() != data.numBonds * 2 )
 			{
-				VTX_ERROR( "p_molecule.getBondCount() != p_molecule.bondCount : "
-						   + std::to_string( p_molecule.getBondCount() )
-						   + " != " + std::to_string( p_molecule.bondCount ) );
+				VTX_ERROR( "Bond count error: " + std::to_string( p_molecule.getBondCount() ) + " / "
+						   + std::to_string( p_molecule.bondCount ) + " / " + std::to_string( data.numBonds * 2 ) );
 			}
 #endif
 
