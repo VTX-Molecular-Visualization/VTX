@@ -4,14 +4,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		BaseModel::~BaseModel()
-		{
-			for ( std::shared_ptr<View::BaseView<BaseModel>> view : _views )
-			{
-				view.reset();
-			}
-			_views.clear();
-		}
+		BaseModel::~BaseModel() { _resetViews(); }
 
 		void BaseModel::init() { _addViews(); }
 
@@ -27,6 +20,16 @@ namespace VTX
 			{
 				view->notify( p_event );
 			}
+		}
+
+		void BaseModel::_resetViews()
+		{
+			for ( std::shared_ptr<View::BaseView<BaseModel>> view : _views )
+			{
+				view->setModel( nullptr );
+				view.reset();
+			}
+			_views.clear();
 		}
 
 	} // namespace Model

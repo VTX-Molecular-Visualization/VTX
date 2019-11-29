@@ -1,9 +1,20 @@
 #include "model_atom.hpp"
+#include "../util/type.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
+		void ModelAtom::setSelected( const bool p_selected )
+		{
+			_isSelected = p_selected;
+			if ( isSelected() ) { _addView( Util::Type::componentToView<ModelAtom>( UI::COMPONENT_TYPE::VIEW_ATOM ) ); }
+			else
+			{
+				_resetViews();
+			}
+		}
+
 		const std::string ModelAtom::SYMBOL_NAME[ ATOM_SYMBOL::COUNT ] = {
 			"Unknown",		 // UNKNOWN = 0,
 			"Hydrogen",		 // H		= 1,

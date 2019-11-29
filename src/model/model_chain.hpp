@@ -10,7 +10,7 @@ namespace VTX
 	namespace Model
 	{
 		class ModelMolecule;
-		class ModelChain : BaseModel
+		class ModelChain : public BaseModel
 		{
 		  public:
 			inline ModelMolecule * const getMoleculePtr() const { return _moleculePtr; }
@@ -24,6 +24,8 @@ namespace VTX
 			inline void				   setIdFirstResidue( const uint p_id ) { _idFirstResidue = p_id; };
 			inline uint				   getResidueCount() const { return _residueCount; };
 			inline void				   setResidueCount( const uint p_count ) { _residueCount = p_count; };
+
+			virtual void setSelected( const bool ) override;
 
 		  private:
 			ModelMolecule * _moleculePtr = nullptr;

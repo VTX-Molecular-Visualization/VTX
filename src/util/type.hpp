@@ -3,6 +3,7 @@
 
 #include "../model/base_model.hpp"
 #include "../ui/base_component.hpp"
+#include "../vtx_app.hpp"
 
 namespace VTX
 {

@@ -93,7 +93,7 @@ namespace VTX
 
 		void BaseComponent::display()
 		{
-			if ( _show != nullptr && _show == false ) { return; }
+			if ( _show != nullptr && isShown() == false ) { return; }
 			_draw();
 		};
 

@@ -11,7 +11,7 @@ namespace VTX
 	{
 		class ModelMolecule;
 		class ModelChain;
-		class ModelResidue : BaseModel
+		class ModelResidue : public BaseModel
 		{
 		  public:
 			enum RESIDUE_SYMBOL
@@ -66,6 +66,8 @@ namespace VTX
 			inline void					setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
 			inline uint					getBondCount() const { return _bondCount; };
 			inline void					setBondCount( const uint p_count ) { _bondCount = p_count; };
+
+			virtual void setSelected( const bool ) override;
 
 		  private:
 			ModelMolecule * _moleculePtr = nullptr;

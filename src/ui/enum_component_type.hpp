@@ -11,7 +11,10 @@ namespace VTX
 			CONSOLE,
 			SCENE,
 			SELECTION,
-			VIEW_MOLECULE
+			VIEW_MOLECULE,
+			VIEW_CHAIN,
+			VIEW_RESIDUE,
+			VIEW_ATOM
 		};
 	} // namespace UI
 } // namespace VTX

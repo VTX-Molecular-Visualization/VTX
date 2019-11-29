@@ -11,7 +11,7 @@ namespace VTX
 		class ModelMolecule;
 		class ModelChain;
 		class ModelResidue;
-		class ModelAtom : BaseModel
+		class ModelAtom : public BaseModel
 		{
 		  public:
 			// Sorted by atomic number.
@@ -159,6 +159,8 @@ namespace VTX
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
 			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ _symbol ]; }
 			inline const Vec3f *	   getColor() const { return SYMBOL_COLOR[ _symbol ]; }
+
+			virtual void setSelected( const bool ) override;
 
 		  private:
 			const ModelMolecule * _moleculePtr = nullptr;

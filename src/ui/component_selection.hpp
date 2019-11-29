@@ -11,13 +11,13 @@ namespace VTX
 {
 	namespace UI
 	{
-		class ComponentSelection : public BaseComponent, public View::BaseView<Model::ModelMolecule>
+		class ComponentSelection : public BaseComponent
 		{
 		  public:
 			ComponentSelection( bool * const );
-			virtual void notify( Event::EVENT_MODEL ) override;
 
 		  protected:
+			virtual void _addComponents() override;
 			virtual void _draw() override;
 
 		  private:

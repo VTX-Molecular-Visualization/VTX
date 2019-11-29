@@ -1,5 +1,4 @@
 #include "model_molecule.hpp"
-#include "../ui/component_scene.hpp"
 #include "../util/type.hpp"
 #include "../view/view_3d_ball_and_stick.hpp"
 #include "../vtx_app.hpp"
@@ -26,9 +25,11 @@ namespace VTX
 
 		void ModelMolecule::setSelectedChain( const uint p_id )
 		{
+			if ( _selectedChain != nullptr ) { _selectedChain->setSelected( false ); }
 			try
 			{
 				_selectedChain = &getChain( p_id );
+				_selectedChain->setSelected( true );
 				VTX_INFO( "Chain " + std::to_string( _selectedChain->getId() ) + " selected" );
 			}
 			catch ( const std::exception )
@@ -39,9 +40,11 @@ namespace VTX
 		}
 		void ModelMolecule::setSelectedResidue( const uint p_id )
 		{
+			if ( _selectedResidue != nullptr ) { _selectedResidue->setSelected( false ); }
 			try
 			{
 				_selectedResidue = &getResidue( p_id );
+				_selectedResidue->setSelected( true );
 				setSelectedChain( _selectedResidue->getChainPtr()->getId() );
 				VTX_INFO( "Residue " + std::to_string( _selectedResidue->getId() ) + " selected" );
 			}
@@ -53,9 +56,11 @@ namespace VTX
 		}
 		void ModelMolecule::setSelectedAtom( const uint p_id )
 		{
+			if ( _selectedAtom != nullptr ) { _selectedAtom->setSelected( false ); }
 			try
 			{
 				_selectedAtom = &getAtom( p_id );
+				_selectedAtom->setSelected( true );
 				setSelectedResidue( _selectedAtom->getResiduePtr()->getId() );
 				VTX_INFO( "Atom " + std::to_string( _selectedAtom->getId() ) + " selected" );
 			}

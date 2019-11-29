@@ -29,21 +29,23 @@ namespace VTX
 				return;
 			}
 
-			ImGuiIO & io = ImGui::GetIO();
-
-			ImGui::Text( "Time UI:  %.0f ms", VTXApp::get().getTimeLastUI() * 1000.0 );
-			ImGui::Text( "Time renderer:  %.0f ms", VTXApp::get().getTimeLastRenderer() * 1000.0 );
-			ImGui::Text( "FPS ImGui: %.0f", io.Framerate );
-
-			try
+			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
+			if ( ImGui::CollapsingHeader( LOCALE( "Scene.Performance" ), flags ) )
 			{
-				ImGui::Text( "FPS computed: %.0f", 1.f / VTXApp::get().getTimeLast() );
-			}
-			catch ( const std::exception )
-			{
-			}
+				ImGuiIO & io = ImGui::GetIO();
 
-			ImGui::Separator();
+				ImGui::Text( "Time UI:  %.0f ms", VTXApp::get().getTimeLastUI() * 1000.0 );
+				ImGui::Text( "Time renderer:  %.0f ms", VTXApp::get().getTimeLastRenderer() * 1000.0 );
+				ImGui::Text( "FPS ImGui: %.0f", io.Framerate );
+
+				try
+				{
+					ImGui::Text( "FPS computed: %.0f", 1.f / VTXApp::get().getTimeLast() );
+				}
+				catch ( const std::exception )
+				{
+				}
+			}
 
 			_drawComponent( COMPONENT_TYPE::VIEW_MOLECULE );
 

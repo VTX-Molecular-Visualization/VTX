@@ -16,7 +16,7 @@ namespace VTX
 			BaseViewUI( bool * const p_show ) : BaseComponent( p_show ) {}
 			virtual void display() override
 			{
-				if ( _show == false ) { return; }
+				if ( _show != nullptr && isShown() == false ) { return; }
 				if ( _model == nullptr ) { return; }
 				_draw();
 			};

@@ -31,9 +31,13 @@ namespace VTX
 
 			// Scene.
 			{ "Scene.Scene", "Scene" },
+			{ "Scene.Performance", "Performance" },
 
 			// Selection.
-			{ "Selection.Selection", "Selection" }
+			{ "Selection.Selection", "Selection" },
+
+			// Views.
+			{ "View.Molecule.Data", "Data" }
 		};
 
 	} // namespace Localization

@@ -9,13 +9,15 @@ namespace VTX
 
 		void ViewUIMolecule::_draw()
 		{
-			ImGui::Text( "Chains: %d", _model->getChainCount() );
-			ImGui::Text( "Residues: %d", _model->getResidueCount() );
-			ImGui::Text( "Atoms: %d", _model->getAtomCount() );
-			ImGui::Text( "Bonds: %d", _model->getBondCount() );
-			ImGui::Separator();
-
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
+			if ( ImGui::CollapsingHeader( LOCALE( "View.Molecule.Data" ), flags ) )
+			{
+				ImGui::Text( "Chains: %d", _model->getChainCount() );
+				ImGui::Text( "Residues: %d", _model->getResidueCount() );
+				ImGui::Text( "Atoms: %d", _model->getAtomCount() );
+				ImGui::Text( "Bonds: %d", _model->getBondCount() );
+			}
+
 			if ( ImGui::CollapsingHeader( _model->getName().c_str(), flags ) )
 			{
 				for ( Model::ModelChain & chain : _model->getChains() )

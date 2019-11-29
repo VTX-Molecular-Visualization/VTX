@@ -1,9 +1,21 @@
 #include "model_residue.hpp"
+#include "../util/type.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
+		void ModelResidue::setSelected( const bool p_selected )
+		{
+			_isSelected = p_selected;
+			if ( isSelected() )
+			{ _addView( Util::Type::componentToView<ModelResidue>( UI::COMPONENT_TYPE::VIEW_RESIDUE ) ); }
+			else
+			{
+				_resetViews();
+			}
+		}
+
 		const std::string ModelResidue::SYMBOL_NAME[ RESIDUE_SYMBOL::COUNT ] = {
 			"Unknown",		 // UNKWNON,
 			"Alanine",		 // ALA,
@@ -58,5 +70,6 @@ namespace VTX
 			&COLOR_WHITE
 			// TODO
 		};
+
 	} // namespace Model
 } // namespace VTX

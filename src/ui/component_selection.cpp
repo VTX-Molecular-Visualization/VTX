@@ -3,12 +3,24 @@
 #include "../lib/imgui/imgui.h"
 #include "../localization/language.hpp"
 #include "../style.hpp"
+#include "../view/view_ui_atom.hpp"
+#include "../view/view_ui_chain.hpp"
+#include "../view/view_ui_residue.hpp"
 
 namespace VTX
 {
 	namespace UI
 	{
-		ComponentSelection::ComponentSelection( bool * const p_show ) : BaseComponent( p_show ) {}
+		ComponentSelection::ComponentSelection( bool * const p_show ) : BaseComponent( p_show )
+		{
+			_addComponent( COMPONENT_TYPE::VIEW_CHAIN,
+						   std::make_shared<View::ViewUIChain>( View::ViewUIChain( _show ) ) );
+			_addComponent( COMPONENT_TYPE::VIEW_RESIDUE,
+						   std::make_shared<View::ViewUIResidue>( View::ViewUIResidue( _show ) ) );
+			_addComponent( COMPONENT_TYPE::VIEW_ATOM, std::make_shared<View::ViewUIAtom>( View::ViewUIAtom( _show ) ) );
+		}
+
+		void ComponentSelection::_addComponents() {}
 
 		void ComponentSelection::_draw()
 		{
@@ -21,15 +33,10 @@ namespace VTX
 				return;
 			}
 
-			if ( _model == nullptr )
-			{
-				ImGui::End();
-				return;
-			}
+			_drawComponents();
 
 			ImGui::End();
 		}
 
-		void ComponentSelection::notify( Event::EVENT_MODEL p_event ) {}
 	} // namespace UI
 } // namespace VTX
