@@ -18,6 +18,7 @@ namespace VTX
 				ImGui::Text( "Bonds: %d", _model->getBondCount() );
 			}
 
+			ImGui::PushID( "ViewMolecule" );
 			if ( ImGui::CollapsingHeader( _model->getName().c_str(), flags ) )
 			{
 				for ( Model::ModelChain & chain : _model->getChains() )
@@ -50,8 +51,8 @@ namespace VTX
 					}
 					ImGui::PopID();
 				}
-				// ImGui::TreePop();
 			}
+			ImGui::PopID();
 		}
 	} // namespace View
 } // namespace VTX

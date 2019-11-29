@@ -10,12 +10,13 @@ namespace VTX
 		void ViewUIResidue::_draw()
 		{
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-
-			if ( ImGui::CollapsingHeader( ( "Residue: " + _model->getSymbolName() ).c_str() ), flags )
+			ImGui::PushID( "ViewResidue" );
+			if ( ImGui::CollapsingHeader( ( "Residue: " + _model->getSymbolName() ).c_str(), flags ) )
 			{
 				ImGui::Text( "ID: %d", _model->getId() );
 				ImGui::Text( "Atoms: %d", _model->getAtomCount() );
 			}
+			ImGui::PopID();
 		}
 	} // namespace View
 } // namespace VTX
