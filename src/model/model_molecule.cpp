@@ -30,7 +30,6 @@ namespace VTX
 			{
 				_selectedChain = &getChain( p_id );
 				_selectedChain->setSelected( true );
-				VTX_INFO( "Chain " + std::to_string( _selectedChain->getId() ) + " selected" );
 			}
 			catch ( const std::exception )
 			{
@@ -46,7 +45,6 @@ namespace VTX
 				_selectedResidue = &getResidue( p_id );
 				_selectedResidue->setSelected( true );
 				setSelectedChain( _selectedResidue->getChainPtr()->getId() );
-				VTX_INFO( "Residue " + std::to_string( _selectedResidue->getId() ) + " selected" );
 			}
 			catch ( const std::exception )
 			{
@@ -62,7 +60,6 @@ namespace VTX
 				_selectedAtom = &getAtom( p_id );
 				_selectedAtom->setSelected( true );
 				setSelectedResidue( _selectedAtom->getResiduePtr()->getId() );
-				VTX_INFO( "Atom " + std::to_string( _selectedAtom->getId() ) + " selected" );
 			}
 			catch ( const std::exception )
 			{
