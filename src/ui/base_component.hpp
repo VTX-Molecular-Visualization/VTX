@@ -4,7 +4,6 @@
 #include "../defines.hpp"
 #include "../event/event.hpp"
 #include "../lib/magic_enum.hpp"
-#include "enum_component_type.hpp"
 #include <cstdarg>
 #include <functional>
 #include <map>
@@ -14,6 +13,18 @@ namespace VTX
 {
 	namespace UI
 	{
+		enum class COMPONENT_TYPE
+		{
+			MENU,
+			CONSOLE,
+			SCENE,
+			SELECTION,
+			VIEW_MOLECULE,
+			VIEW_CHAIN,
+			VIEW_RESIDUE,
+			VIEW_ATOM
+		};
+
 		class BaseComponent
 		{
 		  public:
