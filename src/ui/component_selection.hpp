@@ -16,6 +16,8 @@ namespace VTX
 		  public:
 			ComponentSelection( bool * const );
 
+			virtual COMPONENT_NAME getName() const override { return COMPONENT_NAME::SELECTION; }
+
 		  protected:
 			virtual void _addComponents() override;
 			virtual void _draw() override;

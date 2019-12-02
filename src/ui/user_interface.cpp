@@ -58,6 +58,7 @@ namespace VTX
 			switch ( Setting::UI::theme )
 			{
 			case UI::THEME::DARK: ImGui::StyleColorsDark(); break;
+			case UI::THEME::CLASSIC: ImGui::StyleColorsClassic(); break;
 			default:
 			case UI::THEME::LIGHT: ImGui::StyleColorsLight(); break;
 			}
@@ -65,14 +66,11 @@ namespace VTX
 
 		void UserInterface::_addComponents()
 		{
-			_addComponent( COMPONENT_TYPE::MENU,
-						   std::make_shared<ComponentMenu>(
-							   ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showSelection ) ) );
-			_addComponent( COMPONENT_TYPE::CONSOLE,
-						   std::make_shared<ComponentConsole>( ComponentConsole( &_showConsole ) ) );
-			_addComponent( COMPONENT_TYPE::SCENE, std::make_shared<ComponentScene>( ComponentScene( &_showScene ) ) );
-			_addComponent( COMPONENT_TYPE::SELECTION,
-						   std::make_shared<ComponentSelection>( ComponentSelection( &_showSelection ) ) );
+			_addComponent( std::make_shared<ComponentMenu>(
+				ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showSelection ) ) );
+			_addComponent( std::make_shared<ComponentConsole>( ComponentConsole( &_showConsole ) ) );
+			_addComponent( std::make_shared<ComponentScene>( ComponentScene( &_showScene ) ) );
+			_addComponent( std::make_shared<ComponentSelection>( ComponentSelection( &_showSelection ) ) );
 		}
 
 		void UserInterface::_initSDL2()

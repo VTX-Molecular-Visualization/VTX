@@ -13,8 +13,9 @@ namespace VTX
 {
 	namespace UI
 	{
-		enum class COMPONENT_TYPE
+		enum class COMPONENT_NAME
 		{
+			UI,
 			MENU,
 			CONSOLE,
 			SCENE,
@@ -35,15 +36,17 @@ namespace VTX
 			virtual void init();
 			virtual bool isShown() final { return *_show; }
 
-			virtual const std::shared_ptr<BaseComponent> getComponentByType( const COMPONENT_TYPE ) const final;
+			virtual const std::shared_ptr<BaseComponent> getComponentByName( const COMPONENT_NAME ) const final;
 			virtual void								 receiveEvent( const Event::EVENT_UI, void * const ) final;
+
+			virtual COMPONENT_NAME getName() const = 0;
 
 		  protected:
 			bool * _show = nullptr;
 
-			virtual void _addComponent( const COMPONENT_TYPE, const std::shared_ptr<BaseComponent> ) final;
+			virtual void _addComponent( const std::shared_ptr<BaseComponent> ) final;
 			virtual void _addComponents() {};
-			virtual void _drawComponent( const COMPONENT_TYPE );
+			virtual void _drawComponent( const COMPONENT_NAME );
 			virtual void _drawComponents() final;
 
 			virtual void _registerEventHandler( const Event::EVENT_UI ) final;
@@ -54,8 +57,8 @@ namespace VTX
 
 		  private:
 			bool													 _isInitialized = false;
-			std::map<COMPONENT_TYPE, std::shared_ptr<BaseComponent>> _components
-				= std::map<COMPONENT_TYPE, std::shared_ptr<BaseComponent>>();
+			std::map<COMPONENT_NAME, std::shared_ptr<BaseComponent>> _components
+				= std::map<COMPONENT_NAME, std::shared_ptr<BaseComponent>>();
 			std::set<Event::EVENT_UI> _events = std::set<Event::EVENT_UI>();
 		};
 	} // namespace UI

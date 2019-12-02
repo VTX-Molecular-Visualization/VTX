@@ -9,7 +9,7 @@ namespace VTX
 		{
 			_isSelected = p_selected;
 			if ( isSelected() )
-			{ _addView( Util::Type::componentToView<ModelChain>( UI::COMPONENT_TYPE::VIEW_CHAIN ) ); }
+			{ _addView( Util::Type::componentToView<ModelChain>( UI::COMPONENT_NAME::VIEW_CHAIN ) ); }
 			else
 			{
 				_resetViews();

@@ -12,7 +12,7 @@ namespace VTX
 			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
 				(View::BaseView<BaseModel> *)( new View::View3DBallAndStick() ) ) );
 
-			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_TYPE::VIEW_MOLECULE ) );
+			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE ) );
 		}
 
 		void ModelMolecule::printInfos() const

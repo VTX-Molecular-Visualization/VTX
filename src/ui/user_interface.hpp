@@ -11,7 +11,8 @@ namespace VTX
 		enum THEME
 		{
 			LIGHT,
-			DARK
+			DARK,
+			CLASSIC
 		};
 
 		class UserInterface : public BaseComponent
@@ -21,6 +22,8 @@ namespace VTX
 			~UserInterface();
 			void printInfos() const;
 			void setTheme() const;
+
+			virtual COMPONENT_NAME getName() const override { return COMPONENT_NAME::UI; }
 
 		  protected:
 			virtual void _addComponents() override;

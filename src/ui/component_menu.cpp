@@ -54,8 +54,9 @@ namespace VTX
 
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), _show ) )
 				{
-					if ( ImGui::Combo(
-							 LOCALE( "MainMenu.Settings.Theme" ), (int *)&Setting::UI::theme, "Light\0Dark\0" ) )
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Theme" ),
+									   (int *)&Setting::UI::theme,
+									   "Light\0Dark\0Classic\0" ) )
 					{ VTXApp::get().setTheme(); }
 
 					ImGui::Separator();
