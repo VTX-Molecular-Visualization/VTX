@@ -9,7 +9,7 @@ namespace VTX
 
 		BaseComponent::~BaseComponent()
 		{
-			for ( auto & [ type, component ] : _components )
+			for ( auto & [ name, component ] : _components )
 			{
 				component.reset();
 			}
@@ -68,7 +68,7 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				for ( const auto & [ type, component ] : _components )
+				for ( const auto & [ name, component ] : _components )
 				{
 					std::shared_ptr<BaseComponent> child = component->getComponentByName( p_name );
 					if ( child != nullptr ) { return child; }
@@ -84,7 +84,7 @@ namespace VTX
 			{ _applyEvent( p_event, p_arg ); }
 
 			// Propagate to children.
-			for ( auto const & [ type, component ] : _components )
+			for ( auto const & [ name, component ] : _components )
 			{
 				component->receiveEvent( p_event, p_arg );
 			}

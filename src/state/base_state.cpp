@@ -2,7 +2,7 @@
 
 namespace VTX
 {
-	namespace StateMachine
+	namespace State
 	{
-	} // namespace StateMachine
+	} // namespace State
 } // namespace VTX

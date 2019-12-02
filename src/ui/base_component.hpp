@@ -4,8 +4,6 @@
 #include "../defines.hpp"
 #include "../event/event.hpp"
 #include "../lib/magic_enum.hpp"
-#include <cstdarg>
-#include <functional>
 #include <map>
 #include <set>
 
