@@ -1,7 +1,6 @@
 #include "component_menu.hpp"
 #include "../defines.hpp"
 #include "../lib/imgui/imgui.h"
-#include "../settings.hpp"
 #include "../style.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
@@ -50,37 +49,26 @@ namespace VTX
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), _showScene );
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Selection" ), _showSelection );
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), _showConsole );
-					ImGui::Separator();
-
 					ImGui::EndMenu();
 				}
 
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), _show ) )
 				{
-					int mode = Setting::Rendering::mode;
-					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Render" ), &mode, "Forward\0Deferred\0" ) )
-					{
-						switch ( mode )
-						{
-						case 1: Setting::Rendering::mode = Renderer ::MODE ::DEFERRED; break;
-						default: VTX_ERROR( "Unknown rendering mode" );
-						case 0: Setting::Rendering::mode = Renderer ::MODE ::FORWARD; break;
-						}
-
-						VTXApp::get().createRenderer();
-					}
-					int shading = Setting::Rendering::shading;
 					if ( ImGui::Combo(
-							 LOCALE( "MainMenu.Settings.Shading" ), &shading, "Lambert\0Blinn Phong\0Toon\0" ) )
-					{
-						switch ( shading )
-						{
-						case 1: Setting::Rendering::shading = Renderer ::SHADING ::BLINN_PHONG; break;
-						case 2: Setting::Rendering::shading = Renderer ::SHADING ::TOON; break;
-						default: VTX_ERROR( "Unknown shading mode" );
-						case 0: Setting::Rendering::shading = Renderer ::SHADING ::LAMBERT; break;
-						}
-					}
+							 LOCALE( "MainMenu.Settings.Theme" ), (int *)&Setting::UI::theme, "Light\0Dark\0" ) )
+					{ VTXApp::get().setTheme(); }
+
+					ImGui::Separator();
+
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Render" ),
+									   (int *)&Setting::Rendering::mode,
+									   "Forward\0Deferred\0" ) )
+					{ VTXApp::get().createRenderer(); }
+
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ),
+									   (int *)&Setting::Rendering::shading,
+									   "Lambert\0Blinn Phong\0Toon\0" ) )
+					{}
 
 					ImGui::Separator();
 					ImGui::Checkbox( LOCALE( "MainMenu.Settings.AA" ), &Setting::Rendering::useAA );

@@ -4,7 +4,6 @@
 #include "model/model_molecule.hpp"
 #include "renderer/renderer_deferred.hpp"
 #include "renderer/renderer_forward.hpp"
-#include "settings.hpp"
 #include <thread>
 
 namespace VTX
@@ -91,6 +90,8 @@ namespace VTX
 			_renderer = new Renderer::RendererForward();
 		}
 	}
+
+	void VTXApp::setTheme() const { _ui->setTheme(); }
 
 	void VTXApp::_update()
 	{

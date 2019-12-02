@@ -4,6 +4,7 @@
 #include "event/event.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
+#include "settings.hpp"
 #include "tool/chrono.hpp"
 #include "ui/user_interface.hpp"
 #include "util/logger.hpp"
@@ -29,6 +30,7 @@ namespace VTX
 
 		const std::shared_ptr<UI::BaseComponent> getUIComponentByType( const UI::COMPONENT_TYPE p_type ) const;
 		void									 createRenderer();
+		void									 setTheme() const;
 
 		inline double getTimeTotal() { return _timeTotal; }
 		inline double getTimeLast() { return _timeLast; }

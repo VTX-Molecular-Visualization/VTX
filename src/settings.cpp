@@ -10,16 +10,16 @@ namespace VTX
 	{
 		namespace UI
 		{
-			extern VTX::UI::THEME theme;
+			VTX::UI::THEME theme = VTX::UI::THEME::LIGHT;
 		};
 
 		namespace Rendering
 		{
-			extern Renderer::MODE	 mode;
-			extern Renderer::SHADING shading;
-			extern bool				 useAA;
-			extern bool				 useSSAO;
-			extern bool				 useBlur;
+			Renderer::MODE	  mode	  = Renderer::MODE::DEFERRED;
+			Renderer::SHADING shading = Renderer::SHADING::LAMBERT;
+			bool			  useAA	  = true;
+			bool			  useSSAO = true;
+			bool			  useBlur = true;
 		}; // namespace Rendering
 	}	   // namespace Setting
 } // namespace VTX

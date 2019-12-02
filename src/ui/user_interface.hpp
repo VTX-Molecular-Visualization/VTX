@@ -8,12 +8,19 @@ namespace VTX
 {
 	namespace UI
 	{
+		enum THEME
+		{
+			LIGHT,
+			DARK
+		};
+
 		class UserInterface : public BaseComponent
 		{
 		  public:
 			UserInterface();
 			~UserInterface();
 			void printInfos() const;
+			void setTheme() const;
 
 		  protected:
 			virtual void _addComponents() override;

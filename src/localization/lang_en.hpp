@@ -20,6 +20,7 @@ namespace VTX
 			{ "MainMenu.Display.Selection", "Selection" },
 			{ "MainMenu.Display.Console", "Console" },
 			{ "MainMenu.Settings", "Options" },
+			{ "MainMenu.Settings.Theme", "Theme" },
 			{ "MainMenu.Settings.Render", "Render mode" },
 			{ "MainMenu.Settings.Shading", "Shading" },
 			{ "MainMenu.Settings.AA", "AA" },

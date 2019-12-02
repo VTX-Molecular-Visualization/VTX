@@ -4,6 +4,7 @@
 #include "../lib/imgui/imgui.h"
 #include "../lib/imgui/imgui_impl_opengl3.h"
 #include "../lib/imgui/imgui_impl_sdl.h"
+#include "../settings.hpp"
 #include "../style.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
@@ -50,6 +51,16 @@ namespace VTX
 			VTX_INFO( "GLSL version: " + std::string( (const char *)glslVersion ) );
 			VTX_INFO( "GL device: " + std::string( (const char *)glVendor ) + " "
 					  + std::string( (const char *)glRenderer ) );
+		}
+
+		void UserInterface::setTheme() const
+		{
+			switch ( Setting::UI::theme )
+			{
+			case UI::THEME::DARK: ImGui::StyleColorsDark(); break;
+			default:
+			case UI::THEME::LIGHT: ImGui::StyleColorsLight(); break;
+			}
 		}
 
 		void UserInterface::_addComponents()
@@ -130,7 +141,7 @@ namespace VTX
 			if ( IMGUI_ENABLE_VIEWPORTS ) { io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; }
 
 			// Style.
-			ImGui::StyleColorsLight();
+			setTheme();
 			ImGui::GetStyle().WindowRounding	= IMGUI_STYLE_ROUNDING;
 			ImGui::GetStyle().ChildRounding		= IMGUI_STYLE_ROUNDING;
 			ImGui::GetStyle().FrameRounding		= IMGUI_STYLE_ROUNDING;

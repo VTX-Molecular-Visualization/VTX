@@ -44,15 +44,12 @@ namespace IO
 		uint  atomGlobalIdx	   = 0;
 		uint  bondGlobalIdx	   = 0;
 
-		// Reserve memory for vectors of chains and residues to avoid pointer loss when space is reallocated.
-		uint chainCount	 = data.chainsPerModel[ 0 ];
-		uint residueSize = 0;
-		for ( uint i = 0; i < chainCount; ++i )
-		{
-			residueSize += data.groupsPerChain[ i ];
-		}
-		p_molecule.getChains().resize( chainCount );
-		p_molecule.getResidues().resize( residueSize );
+		// Reserve memory for vectors to avoid pointer loss.
+		p_molecule.getChains().resize( data.numChains );
+		p_molecule.getResidues().resize( data.numGroups );
+		p_molecule.getAtoms().resize( data.numAtoms );
+
+		uint chainCount = data.chainsPerModel[ 0 ];
 #ifdef _DEBUG
 		p_molecule.chainCount = chainCount;
 #endif
@@ -69,6 +66,7 @@ namespace IO
 
 			// For each residue in the chain.
 			uint residueCount = data.groupsPerChain[ chainGlobalIdx ];
+			if ( residueCount == 0 ) { __OUT__( "No residues" ); }
 #ifdef _DEBUG
 			p_molecule.residueCount += residueCount;
 #endif
@@ -93,13 +91,14 @@ namespace IO
 
 				// For each atom in the residue.
 				uint atomCount = uint( group.atomNameList.size() );
+				if ( atomCount == 0 ) { __OUT__( "No atoms" ); }
 #ifdef _DEBUG
 				p_molecule.atomCount += atomCount;
 #endif
 				for ( uint atomIdx = 0; atomIdx < atomCount; ++atomIdx, ++atomGlobalIdx )
 				{
 					// New atom.
-					Model::Atom & atom = p_molecule.addAtom();
+					Model::Atom & atom = p_molecule.getAtom( atomGlobalIdx );
 					atom.setMoleculePtr( &p_molecule );
 					atom.setChainPtr( &chain );
 					atom.setResiduePtr( &residue );
@@ -139,27 +138,25 @@ namespace IO
 #endif
 
 #ifdef _DEBUG
-		if ( p_molecule.getChainCount() != p_molecule.chainCount )
+		if ( p_molecule.getChainCount() != p_molecule.chainCount || p_molecule.getChainCount() != data.numChains )
 		{
-			__ERR__( "p_molecule.getChainCount() != p_molecule.chainCount : "
-					 + std::to_string( p_molecule.getChainCount() )
-					 + " != " + std::to_string( p_molecule.chainCount ) );
+			__ERR__( "Chain count error: " + std::to_string( p_molecule.getChainCount() ) + " / "
+					 + std::to_string( p_molecule.chainCount ) + " / " + std::to_string( data.numChains ) );
 		}
-		if ( p_molecule.getResidueCount() != p_molecule.residueCount )
+		if ( p_molecule.getResidueCount() != p_molecule.residueCount || p_molecule.getResidueCount() != data.numGroups )
 		{
-			__ERR__( "p_molecule.getResidueCount() != p_molecule.residueCount : "
-					 + std::to_string( p_molecule.getResidueCount() )
-					 + " != " + std::to_string( p_molecule.residueCount ) );
+			__ERR__( "Residue count error: " + std::to_string( p_molecule.getResidueCount() ) + " / "
+					 + std::to_string( p_molecule.residueCount ) + " / " + std::to_string( data.numGroups ) );
 		}
-		if ( p_molecule.getAtomCount() != p_molecule.atomCount )
+		if ( p_molecule.getAtomCount() != p_molecule.atomCount || p_molecule.getAtomCount() != data.numAtoms )
 		{
-			__ERR__( "p_molecule.getAtomCount() != p_molecule.atomCount : "
-					 + std::to_string( p_molecule.getAtomCount() ) + " != " + std::to_string( p_molecule.atomCount ) );
+			__ERR__( "Atom count error: " + std::to_string( p_molecule.getAtomCount() ) + " / "
+					 + std::to_string( p_molecule.atomCount ) + " / " + std::to_string( data.numAtoms ) );
 		}
-		if ( p_molecule.getBondCount() != p_molecule.bondCount )
+		if ( p_molecule.getBondCount() != p_molecule.bondCount || p_molecule.getBondCount() != data.numBonds * 2 )
 		{
-			__ERR__( "p_molecule.getBondCount() != p_molecule.bondCount : "
-					 + std::to_string( p_molecule.getBondCount() ) + " != " + std::to_string( p_molecule.bondCount ) );
+			__ERR__( "Bond count error: " + std::to_string( p_molecule.getBondCount() ) + " / "
+					 + std::to_string( p_molecule.bondCount ) + " / " + std::to_string( data.numBonds * 2 ) );
 		}
 #endif
 
