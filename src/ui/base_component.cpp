@@ -33,7 +33,7 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "A view with this type already exists: "
+				VTX_WARNING( "A component with this name already exists: "
 							 + std::string( magic_enum::enum_name( p_component->getName() ) ) );
 			}
 		}

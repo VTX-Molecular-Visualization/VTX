@@ -16,18 +16,37 @@ namespace VTX
 
 		void StateMachine::init() { _addStates(); }
 
+		void StateMachine::goToState( const STATE_NAME p_name )
+		{
+			try
+			{
+				_switchState( _states.at( p_name ) );
+			}
+			catch ( const std::exception )
+			{
+				VTX_ERROR( "State not found: " + std::string( magic_enum::enum_name( p_name ) ) );
+			}
+		}
+
 		void StateMachine::_addState( const std::shared_ptr<BaseState> p_state )
 		{
-			p_state->init();
+			// p_state->init();
 			try
 			{
 				_states.try_emplace( p_state->getName(), p_state );
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "A view with this type already exists: "
+				VTX_WARNING( "A state with this name already exists: "
 							 + std::string( magic_enum::enum_name( p_state->getName() ) ) );
 			}
+		}
+
+		void StateMachine::_switchState( const std::shared_ptr<BaseState> p_state )
+		{
+			if ( _currentState != nullptr ) { _currentState->exit(); }
+			_currentState = p_state;
+			if ( _currentState != nullptr ) { _currentState->enter(); }
 		}
 	}; // namespace State
 };	   // namespace VTX

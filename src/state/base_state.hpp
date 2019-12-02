@@ -7,17 +7,18 @@ namespace VTX
 	{
 		enum class STATE_NAME
 		{
+			LOADING,
+			VISU
 		};
 
-		class StateMachine;
-		class BaseState : public StateMachine
+		class BaseState
 		{
 		  public:
-			virtual STATE_NAME getName() const = 0;
+			BaseState() = default;
 
-		  protected:
-			virtual void _enter() = 0;
-			virtual void _exit()  = 0;
+			virtual STATE_NAME getName() const = 0;
+			virtual void	   enter()		   = 0;
+			virtual void	   exit()		   = 0;
 		};
 	} // namespace State
 } // namespace VTX

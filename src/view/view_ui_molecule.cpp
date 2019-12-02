@@ -26,13 +26,13 @@ namespace VTX
 					ImGui::PushID( chain.getId() );
 					if ( ImGui::TreeNode( chain.getName().c_str() ) )
 					{
-						for ( int i = 0; i < chain.getResidueCount(); ++i )
+						for ( uint i = 0; i < chain.getResidueCount(); ++i )
 						{
 							Model::ModelResidue & residue = _model->getResidue( chain.getIdFirstResidue() + i );
 							ImGui::PushID( residue.getId() );
 							if ( ImGui::TreeNode( residue.getSymbolName().c_str() ) )
 							{
-								for ( int j = 0; j < residue.getAtomCount(); ++j )
+								for ( uint j = 0; j < residue.getAtomCount(); ++j )
 								{
 									Model::ModelAtom & atom = _model->getAtom( residue.getIdFirstAtom() + j );
 									ImGui::PushID( atom.getId() );
