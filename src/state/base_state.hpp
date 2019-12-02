@@ -8,7 +8,7 @@ namespace VTX
 		enum class STATE_NAME
 		{
 			LOADING,
-			VISU
+			VISUALIZATION
 		};
 
 		class BaseState
@@ -19,6 +19,7 @@ namespace VTX
 			virtual STATE_NAME getName() const = 0;
 			virtual void	   enter()		   = 0;
 			virtual void	   exit()		   = 0;
+			virtual void	   update() {}
 		};
 	} // namespace State
 } // namespace VTX

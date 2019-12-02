@@ -15,6 +15,8 @@ namespace VTX
 		VTX_INFO( "Initializing application" );
 		_ui = new UI::UserInterface();
 		_ui->init();
+		_stateMachine = new State::StateMachine();
+		_stateMachine->init();
 		_scene = new Object3D::Scene();
 		createRenderer();
 	}
@@ -22,6 +24,7 @@ namespace VTX
 	VTXApp::~VTXApp()
 	{
 		delete _ui;
+		delete _stateMachine;
 		delete _scene;
 		delete _renderer;
 	}
@@ -33,21 +36,10 @@ namespace VTX
 		VTX_INFO( "Application started" );
 		_ui->printInfos();
 
-		////////////// TESTS.
-		Model::ModelMolecule molecule = Model::ModelMolecule();
-		Object3D::Scene *	 scene	  = _scene;
-		_threads.push_back( std::thread( [&molecule, scene ] {
-			IO::ReaderMMTF mmtf = IO::ReaderMMTF();
-			if ( mmtf.readFile( IO::Path( "../Vidocklab/VidockLab/data/"
-										  "4v6x.mmtf" ),
-								molecule ) )
+		_stateMachine->goToState( State::STATE_NAME::LOADING );
 
-			{
-				scene->addMolecule( molecule );
-				molecule.init();
-				molecule.printInfos();
-			}
-		} ) );
+		////////////// TESTS.
+
 		//////////////
 
 		while ( VTXApp::_isRunning )
@@ -60,9 +52,10 @@ namespace VTX
 	{
 		VTX_INFO( "Stopping application" );
 
-		for ( std::thread & thread : _threads )
+		for ( std::thread * thread : _threads )
 		{
-			thread.join();
+			thread->join();
+			delete thread;
 		}
 		_threads.clear();
 
@@ -75,10 +68,14 @@ namespace VTX
 		return _ui->getComponentByName( p_name );
 	};
 
+	void VTXApp::goToState( const State::STATE_NAME p_name ) { _stateMachine->goToState( p_name ); }
+
 	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event, void * const p_arg ) const
 	{
 		_ui->receiveEvent( p_event, p_arg );
 	}
+
+	void VTXApp::runThread( std::thread * const p_thread ) { _threads.emplace_back( p_thread ); }
 
 	void VTXApp::createRenderer()
 	{
@@ -101,11 +98,15 @@ namespace VTX
 		_chrono.stop();
 		_timeLastUI = _chrono.elapsedTime();
 
+		// State machine.
+		_stateMachine->update();
+
+		// TODO: move renderer in concerned state (or a ptr?).
 		// Renderer.
-		_chrono.start();
-		_renderer->render( *_scene );
-		_chrono.stop();
-		_timeLastRenderer = _chrono.elapsedTime();
+		//_chrono.start();
+		//_renderer->render( *_scene );
+		//_chrono.stop();
+		//_timeLastRenderer = _chrono.elapsedTime();
 
 		// Timers.
 		_timeLast = _timeLastUI;

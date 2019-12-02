@@ -12,11 +12,12 @@ namespace VTX
 		class Scene
 		{
 		  public:
-			void addMolecule( const Model::ModelMolecule & p_molecule ) { _molecules.emplace_back( p_molecule ); }
+			~Scene();
+			void addMolecule( Model::ModelMolecule * const p_molecule ) { _molecules.emplace_back( p_molecule ); }
 
 		  private:
-			Camera::CameraOrbit				  _camera	 = Camera::CameraOrbit();
-			std::vector<Model::ModelMolecule> _molecules = std::vector<Model::ModelMolecule>();
+			Camera::CameraOrbit					_camera	   = Camera::CameraOrbit();
+			std::vector<Model::ModelMolecule *> _molecules = std::vector<Model::ModelMolecule *>();
 		};
 	} // namespace Object3D
 } // namespace VTX
