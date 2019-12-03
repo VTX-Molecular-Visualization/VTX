@@ -74,7 +74,6 @@ namespace VTX
 					ImGui::Separator();
 					ImGui::Checkbox( LOCALE( "MainMenu.Settings.AA" ), &Setting::Rendering::useAA );
 					ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &Setting::Rendering::useSSAO );
-					ImGui::Checkbox( LOCALE( "MainMenu.Settings.BLUR" ), &Setting::Rendering::useBlur );
 
 					ImGui::EndMenu();
 				}

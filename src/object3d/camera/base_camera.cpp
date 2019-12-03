@@ -25,21 +25,21 @@ namespace VTX
 				_fov = glm::clamp( _fov - p_delta, CAMERA_FOV_MIN, CAMERA_FOV_MAX );
 			}
 
-			void BaseCamera::_moveFront( const float delta ) { _position += delta * _front; }
+			void BaseCamera::_moveFront( const float p_delta ) { _position += p_delta * _front; }
 
-			void BaseCamera::_moveLeft( const float delta ) { _position += delta * _left; }
+			void BaseCamera::_moveLeft( const float p_delta ) { _position += p_delta * _left; }
 
-			void BaseCamera::_moveUp( const float delta ) { _position += delta * _up; }
+			void BaseCamera::_moveUp( const float p_delta ) { _position += p_delta * _up; }
 
-			void BaseCamera::_rotateLeft( const float angle )
+			void BaseCamera::_rotateLeft( const float p_angle )
 			{
-				_phi -= glm::radians( angle );
+				_phi -= glm::radians( p_angle );
 				_update();
 			}
 
-			void BaseCamera::_rotateUp( const float angle )
+			void BaseCamera::_rotateUp( const float p_angle )
 			{
-				_theta -= glm::radians( angle );
+				_theta -= glm::radians( p_angle );
 				_update();
 			}
 

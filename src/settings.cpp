@@ -19,7 +19,6 @@ namespace VTX
 			Renderer::SHADING shading = Renderer::SHADING::LAMBERT;
 			bool			  useAA	  = true;
 			bool			  useSSAO = true;
-			bool			  useBlur = true;
 		}; // namespace Rendering
 	}	   // namespace Setting
 } // namespace VTX

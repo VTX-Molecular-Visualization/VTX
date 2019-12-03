@@ -25,7 +25,6 @@ namespace VTX
 			{ "MainMenu.Settings.Shading", "Shading" },
 			{ "MainMenu.Settings.AA", "AA" },
 			{ "MainMenu.Settings.SSAO", "SSAO" },
-			{ "MainMenu.Settings.BLUR", "BLUR" },
 
 			// Console.
 			{ "Console.Console", "Console" },

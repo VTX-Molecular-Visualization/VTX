@@ -29,5 +29,6 @@ namespace VTX
 		}
 
 		void StateLoading::exit() {}
+
 	} // namespace State
 } // namespace VTX

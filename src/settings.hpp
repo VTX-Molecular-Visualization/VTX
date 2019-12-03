@@ -19,7 +19,6 @@ namespace VTX
 			extern Renderer::SHADING shading;
 			extern bool				 useAA;
 			extern bool				 useSSAO;
-			extern bool				 useBlur;
 		}; // namespace Rendering
 	}	   // namespace Setting
 } // namespace VTX

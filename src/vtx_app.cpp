@@ -38,10 +38,6 @@ namespace VTX
 
 		_stateMachine->goToState( State::STATE_NAME::LOADING );
 
-		////////////// TESTS.
-
-		//////////////
-
 		while ( VTXApp::_isRunning )
 		{
 			_update();

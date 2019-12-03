@@ -2,6 +2,7 @@
 #define __VTX_ATOM__
 
 #include "../defines.hpp"
+#include "../lib/magic_enum.hpp"
 #include "base_model.hpp"
 
 namespace VTX
@@ -154,6 +155,7 @@ namespace VTX
 			inline const uint		   getId() const { return _id; };
 			inline void				   setId( const uint p_id ) { _id = p_id; };
 			inline const ATOM_SYMBOL   getSymbol() const { return _symbol; };
+			inline const std::string   getSymbolStr() const { return std::string( magic_enum::enum_name( _symbol ) ); };
 			inline void				   setSymbol( const ATOM_SYMBOL p_symbol ) { _symbol = p_symbol; };
 			inline const std::string & getName() const { return SYMBOL_NAME[ _symbol ]; }
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
