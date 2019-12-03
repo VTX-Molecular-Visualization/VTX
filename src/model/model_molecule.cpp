@@ -67,5 +67,36 @@ namespace VTX
 				_selectedAtom = nullptr;
 			}
 		}
+
+		void ModelMolecule::resetSelectedChain()
+		{
+			if ( _selectedChain != nullptr )
+			{
+				_selectedChain->setSelected( false );
+				_selectedChain = nullptr;
+			}
+
+			resetSelectedResidue();
+		}
+
+		void ModelMolecule::resetSelectedResidue()
+		{
+			if ( _selectedResidue != nullptr )
+			{
+				_selectedResidue->setSelected( false );
+				_selectedResidue = nullptr;
+			}
+
+			resetSelectedAtom();
+		}
+
+		void ModelMolecule::resetSelectedAtom()
+		{
+			if ( _selectedAtom != nullptr )
+			{
+				_selectedAtom->setSelected( false );
+				_selectedAtom = nullptr;
+			}
+		}
 	} // namespace Model
 } // namespace VTX

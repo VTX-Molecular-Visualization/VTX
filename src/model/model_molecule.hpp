@@ -71,6 +71,9 @@ namespace VTX
 			void				 setSelectedChain( const uint );
 			void				 setSelectedResidue( const uint );
 			void				 setSelectedAtom( const uint );
+			void				 resetSelectedChain();
+			void				 resetSelectedResidue();
+			void				 resetSelectedAtom();
 
 		  protected:
 			virtual void _addViews() override final;

@@ -9,8 +9,7 @@ namespace VTX
 
 		void ViewUIMolecule::_draw()
 		{
-			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-			if ( ImGui::CollapsingHeader( LOCALE( "View.Molecule.Data" ), flags ) )
+			if ( ImGui::CollapsingHeader( LOCALE( "View.Molecule.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
 				ImGui::Text( "Chains: %d", _model->getChainCount() );
 				ImGui::Text( "Residues: %d", _model->getResidueCount() );
@@ -19,18 +18,38 @@ namespace VTX
 			}
 
 			ImGui::PushID( "ViewMolecule" );
-			if ( ImGui::CollapsingHeader( _model->getName().c_str(), flags ) )
+			if ( ImGui::CollapsingHeader( _model->getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
 				for ( Model::ModelChain & chain : _model->getChains() )
 				{
 					ImGui::PushID( chain.getId() );
-					if ( ImGui::TreeNode( chain.getName().c_str() ) )
+					bool chainOpened = ImGui::TreeNodeEx(
+						chain.getName().c_str(),
+						chain.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
+					if ( ImGui::IsItemClicked() )
+					{
+						if ( chainOpened )
+							_model->resetSelectedChain();
+						else
+							_model->setSelectedChain( chain.getId() );
+					}
+					if ( chainOpened && chain.isSelected() )
 					{
 						for ( uint i = 0; i < chain.getResidueCount(); ++i )
 						{
 							Model::ModelResidue & residue = _model->getResidue( chain.getIdFirstResidue() + i );
 							ImGui::PushID( residue.getId() );
-							if ( ImGui::TreeNode( residue.getSymbolShort().c_str() ) )
+							bool residueOpened = ImGui::TreeNodeEx(
+								residue.getSymbolShort().c_str(),
+								residue.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
+							if ( ImGui::IsItemClicked() )
+							{
+								if ( residueOpened )
+									_model->resetSelectedResidue();
+								else
+									_model->setSelectedResidue( residue.getId() );
+							}
+							if ( residueOpened )
 							{
 								for ( uint j = 0; j < residue.getAtomCount(); ++j )
 								{
