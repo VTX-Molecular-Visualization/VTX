@@ -10,7 +10,6 @@ namespace VTX
 	{
 		enum MODE
 		{
-			FORWARD = 0,
 			DEFERRED
 		};
 

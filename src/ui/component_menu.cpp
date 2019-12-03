@@ -61,9 +61,8 @@ namespace VTX
 
 					ImGui::Separator();
 
-					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Render" ),
-									   (int *)&Setting::Rendering::mode,
-									   "Forward\0Deferred\0" ) )
+					if ( ImGui::Combo(
+							 LOCALE( "MainMenu.Settings.Render" ), (int *)&Setting::Rendering::mode, "Deferred\0" ) )
 					{ VTXApp::get().createRenderer(); }
 
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ),
