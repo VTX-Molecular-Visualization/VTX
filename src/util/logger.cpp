@@ -1,9 +1,9 @@
 #include "logger.hpp"
 #include "../event/event.hpp"
-#include "../lib/magic_enum.hpp"
 #include "../vtx_app.hpp"
 #include "time.hpp"
 #include <algorithm>
+#include <magic_enum.hpp>
 
 namespace VTX
 {

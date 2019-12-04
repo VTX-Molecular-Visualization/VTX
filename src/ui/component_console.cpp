@@ -1,7 +1,6 @@
 #include "component_console.hpp"
 #include "../defines.hpp"
 #include "../event/event.hpp"
-#include "../lib/imgui/imgui.h"
 #include "../style.hpp"
 #include "../util/logger.hpp"
 

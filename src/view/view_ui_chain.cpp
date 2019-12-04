@@ -1,5 +1,4 @@
 #include "view_ui_chain.hpp"
-#include "../lib/imgui/imgui.h"
 
 namespace VTX
 {

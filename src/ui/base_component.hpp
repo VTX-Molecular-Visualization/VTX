@@ -3,7 +3,8 @@
 
 #include "../defines.hpp"
 #include "../event/event.hpp"
-#include "../lib/magic_enum.hpp"
+#include "imgui/imgui.h"
+#include <magic_enum.hpp>
 #include <map>
 #include <set>
 

@@ -2,8 +2,8 @@
 #define __VTX_ATOM__
 
 #include "../defines.hpp"
-#include "../lib/magic_enum.hpp"
 #include "base_model.hpp"
+#include <magic_enum.hpp>
 
 namespace VTX
 {

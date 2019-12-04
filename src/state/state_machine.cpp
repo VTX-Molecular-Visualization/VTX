@@ -1,8 +1,8 @@
 #include "state_machine.hpp"
 #include "../defines.hpp"
-#include "../lib/magic_enum.hpp"
 #include "state_loading.hpp"
 #include "state_visualization.hpp"
+#include <magic_enum.hpp>
 
 namespace VTX
 {

@@ -1,9 +1,6 @@
 #include "user_interface.hpp"
 #include "../defines.hpp"
 #include "../exceptions.hpp"
-#include "../lib/imgui/imgui.h"
-#include "../lib/imgui/imgui_impl_opengl3.h"
-#include "../lib/imgui/imgui_impl_sdl.h"
 #include "../settings.hpp"
 #include "../style.hpp"
 #include "../util/logger.hpp"
@@ -12,6 +9,8 @@
 #include "component_menu.hpp"
 #include "component_scene.hpp"
 #include "component_selection.hpp"
+#include "imgui/imgui_impl_opengl3.h"
+#include "imgui/imgui_impl_sdl.h"
 #include <GL/gl3w.h>
 #include <iostream>
 

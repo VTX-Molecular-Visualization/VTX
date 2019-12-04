@@ -4,8 +4,9 @@ cmake_minimum_required(VERSION 3.15)
 # Project name.
 project(VTX)
 
-# Create source path.
+# Create paths.
 set(PATH_SRC "src")
+set(PATH_LIB "lib")
 
 # Get all .hpp.
 file(GLOB_RECURSE HPP ${PATH_SRC}/*.hpp ${PATH_SRC}/*.h)
@@ -50,6 +51,9 @@ target_link_libraries(VTX PRIVATE msgpackc msgpackc-cxx)
 if(WIN32)
   target_link_libraries(VTX PRIVATE ws2_32)
 endif()
+
+# Additionnal includes.
+target_include_directories(VTX PRIVATE ${PATH_LIB})
 
 # Compiler options #2.
 if(CMAKE_COMPILER_IS_GNUCC)

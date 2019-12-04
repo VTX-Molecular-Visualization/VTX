@@ -1,5 +1,4 @@
 #include "view_ui_molecule.hpp"
-#include "../lib/imgui/imgui.h"
 
 namespace VTX
 {

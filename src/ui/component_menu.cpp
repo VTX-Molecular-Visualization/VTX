@@ -1,6 +1,5 @@
 #include "component_menu.hpp"
 #include "../defines.hpp"
-#include "../lib/imgui/imgui.h"
 #include "../style.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"

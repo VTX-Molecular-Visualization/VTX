@@ -1,8 +1,8 @@
 #ifndef __VTX_STATE_MACHINE__
 #define __VTX_STATE_MACHINE__
 
-#include "../lib/magic_enum.hpp"
 #include "base_state.hpp"
+#include <magic_enum.hpp>
 #include <map>
 #include <memory>
 

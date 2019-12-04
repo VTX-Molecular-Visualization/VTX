@@ -1,5 +1,4 @@
 #include "view_ui_atom.hpp"
-#include "../lib/imgui/imgui.h"
 
 namespace VTX
 {

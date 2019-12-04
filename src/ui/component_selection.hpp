@@ -1,7 +1,6 @@
 #ifndef __VTX_COMPONENT_SELECTION__
 #define __VTX_COMPONENT_SELECTION__
 
-#include "../lib/imgui/imgui.h"
 #include "../localization/language.hpp"
 #include "../model/model_molecule.hpp"
 #include "../view/base_view.hpp"

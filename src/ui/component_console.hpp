@@ -1,7 +1,6 @@
 #ifndef __VTX_COMPONENT_CONSOLE__
 #define __VTX_COMPONENT_CONSOLE__
 
-#include "../lib/imgui/imgui.h"
 #include "../localization/language.hpp"
 #include "../util/logger.hpp"
 #include "base_component.hpp"

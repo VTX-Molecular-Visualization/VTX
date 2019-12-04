@@ -1,6 +1,5 @@
 #include "component_selection.hpp"
 #include "../defines.hpp"
-#include "../lib/imgui/imgui.h"
 #include "../localization/language.hpp"
 #include "../style.hpp"
 #include "../view/view_ui_atom.hpp"

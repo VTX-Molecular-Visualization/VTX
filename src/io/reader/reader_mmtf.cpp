@@ -1,9 +1,9 @@
 #include "reader_mmtf.hpp"
 #include "../../defines.hpp"
 #include "../../exceptions.hpp"
-#include "../../lib/magic_enum.hpp"
+#include <magic_enum.hpp>
 #pragma warning( push, 0 )
-#include "../../lib/mmtf/mmtf.hpp"
+#include <mmtf/mmtf.hpp>
 #pragma warning( pop )
 #include "../../util/logger.hpp"
 
