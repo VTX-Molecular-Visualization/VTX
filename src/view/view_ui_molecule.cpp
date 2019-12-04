@@ -32,7 +32,7 @@ namespace VTX
 						else
 							_model->setSelectedChain( chain.getId() );
 					}
-					if ( chainOpened && chain.isSelected() )
+					if ( chainOpened )
 					{
 						for ( uint i = 0; i < chain.getResidueCount(); ++i )
 						{
