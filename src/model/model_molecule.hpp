@@ -4,6 +4,7 @@
 #include "../defines.hpp"
 #include "../math/aabb.hpp"
 #include "../util/logger.hpp"
+#include "../view/view_3d_ball_and_stick.hpp"
 #include "base_model.hpp"
 #include "model_atom.hpp"
 #include "model_chain.hpp"
@@ -20,6 +21,7 @@ namespace VTX
 		class ModelMolecule : public BaseModel
 		{
 		  public:
+			// Models.
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
@@ -74,6 +76,10 @@ namespace VTX
 			void				 resetSelectedChain();
 			void				 resetSelectedResidue();
 			void				 resetSelectedAtom();
+
+			// Views.
+			std::shared_ptr<View::BaseView3DMolecule> createAndGetView3DByRepresentation(
+				const View::BaseView3DMolecule::REPRESENTATION );
 
 		  protected:
 			virtual void _addViews() override final;

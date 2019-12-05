@@ -11,6 +11,14 @@ namespace VTX
 		class BaseView3DMolecule : public BaseView3D<Model::ModelMolecule>
 		{
 		  public:
+			enum class REPRESENTATION
+			{
+				BALL_AND_STICK
+			};
+
+			BaseView3DMolecule()  = default;
+			~BaseView3DMolecule() = default;
+
 		  private:
 		};
 	} // namespace View

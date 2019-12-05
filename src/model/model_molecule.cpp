@@ -1,18 +1,31 @@
 #include "model_molecule.hpp"
 #include "../util/type.hpp"
-#include "../view/view_3d_ball_and_stick.hpp"
 #include "../vtx_app.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
-		void ModelMolecule::_addViews()
-		{
-			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
-				(View::BaseView<BaseModel> *)( new View::View3DBallAndStick() ) ) );
+		void ModelMolecule::_addViews() {}
 
-			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE ) );
+		std::shared_ptr<View::BaseView3DMolecule> ModelMolecule::createAndGetView3DByRepresentation(
+			const View::BaseView3DMolecule::REPRESENTATION p_representation )
+		{
+			switch ( p_representation )
+			{
+			case View::BaseView3DMolecule::REPRESENTATION::BALL_AND_STICK:
+
+				View::View3DBallAndStick * view = new View::View3DBallAndStick();
+
+				_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( view ) ) );
+				return std::shared_ptr<View::BaseView3DMolecule>( view );
+
+			default:
+				VTX_ERROR( "Unknown representation." );
+				// Throw exception.
+			}
+
+			return nullptr;
 		}
 
 		void ModelMolecule::printInfos() const

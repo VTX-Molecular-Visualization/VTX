@@ -19,6 +19,7 @@ namespace VTX
 
 				return std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( view );
 			}
+
 		} // namespace Type
 	}	  // namespace Util
 } // namespace VTX

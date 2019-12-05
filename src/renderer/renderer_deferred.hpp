@@ -10,7 +10,12 @@ namespace VTX
 		class RendererDeferred : public BaseRenderer
 		{
 		  public:
-			virtual double render( const Object3D::Scene & p_scene ) override { return 0.0; };
+			RendererDeferred()	= default;
+			~RendererDeferred() = default;
+
+			virtual void   start( const Object3D::Scene *, const View::BaseView3DMolecule::REPRESENTATION ) override;
+			virtual void   stop() override;
+			virtual double render( const Object3D::Scene * ) override;
 		};
 	} // namespace Renderer
 } // namespace VTX

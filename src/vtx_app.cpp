@@ -3,7 +3,6 @@
 #include "io/reader/reader_mmtf.hpp"
 #include "model/model_molecule.hpp"
 #include "renderer/renderer_deferred.hpp"
-#include "renderer/renderer_forward.hpp"
 #include <thread>
 
 namespace VTX
@@ -17,8 +16,8 @@ namespace VTX
 		_ui->init();
 		_stateMachine = new State::StateMachine();
 		_stateMachine->init();
-		_scene = new Object3D::Scene();
-		createRenderer();
+		_scene	  = new Object3D::Scene();
+		_renderer = new Renderer::RendererDeferred();
 	}
 
 	VTXApp::~VTXApp()
@@ -73,18 +72,13 @@ namespace VTX
 
 	void VTXApp::runThread( std::thread * const p_thread ) { _threads.emplace_back( p_thread ); }
 
-	void VTXApp::createRenderer()
-	{
-		if ( _renderer != nullptr ) { delete _renderer; }
-
-		if ( Setting::Rendering::mode == Renderer::MODE::DEFERRED ) { _renderer = new Renderer::RendererDeferred(); }
-		else
-		{
-			_renderer = new Renderer::RendererForward();
-		}
-	}
-
 	void VTXApp::setTheme() const { _ui->setTheme(); }
+
+	void VTXApp::startRenderer() const
+	{
+		// TODO: throw exceptionn if renderer null.
+		_renderer->start( _scene, View::BaseView3DMolecule::REPRESENTATION::BALL_AND_STICK );
+	}
 
 	void VTXApp::_update()
 	{
@@ -97,12 +91,11 @@ namespace VTX
 		// State machine.
 		_stateMachine->update();
 
-		// TODO: move renderer in concerned state (or a ptr?).
 		// Renderer.
-		//_chrono.start();
-		//_renderer->render( *_scene );
-		//_chrono.stop();
-		//_timeLastRenderer = _chrono.elapsedTime();
+		_chrono.start();
+		_renderer->render( _scene );
+		_chrono.stop();
+		_timeLastRenderer = _chrono.elapsedTime();
 
 		// Timers.
 		_timeLast = _timeLastUI;
