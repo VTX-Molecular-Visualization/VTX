@@ -17,6 +17,7 @@ namespace VTX
 		  public:
 			BaseModel() = default;
 			virtual ~BaseModel();
+
 			virtual void init();
 			bool		 isSelected() const { return _isSelected; }
 			virtual void setSelected( const bool p_selected ) { _isSelected = p_selected; }

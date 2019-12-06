@@ -8,6 +8,7 @@
 #include "../defines.hpp"
 #include "../math/aabb.hpp"
 #include "../util/logger.hpp"
+//#include "../view/base_view_3d_molecule.hpp"
 #include "base_model.hpp"
 #include "model_atom.hpp"
 #include "model_chain.hpp"
@@ -28,13 +29,13 @@ namespace VTX
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
-			inline ModelChain &				   addChain() { return _chains.emplace_back( ModelChain() ); }
-			inline ModelChain &				   getChain( uint p_idx ) { return _chains[ p_idx ]; }
-			inline ModelResidue &			   addResidue() { return _residues.emplace_back( ModelResidue() ); }
-			inline ModelResidue &			   getResidue( uint p_idx ) { return _residues[ p_idx ]; }
-			inline ModelAtom &				   addAtom() { return _atoms.emplace_back( ModelAtom() ); }
-			inline ModelAtom &				   getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
-			
+			inline ModelChain &	  addChain() { return _chains.emplace_back( ModelChain() ); }
+			inline ModelChain &	  getChain( uint p_idx ) { return _chains[ p_idx ]; }
+			inline ModelResidue & addResidue() { return _residues.emplace_back( ModelResidue() ); }
+			inline ModelResidue & getResidue( uint p_idx ) { return _residues[ p_idx ]; }
+			inline ModelAtom &	  addAtom() { return _atoms.emplace_back( ModelAtom() ); }
+			inline ModelAtom &	  getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
+
 			inline std::vector<ModelChain> &   getChains() { return _chains; }
 			inline std::vector<ModelResidue> & getResidues() { return _residues; }
 			inline std::vector<ModelAtom> &	   getAtoms() { return _atoms; }
@@ -82,10 +83,8 @@ namespace VTX
 			void				 resetSelectedAtom();
 
 			// Views.
-			/*
-			std::shared_ptr<View::BaseView3DMolecule> createAndGetView3DByRepresentation(
-				const View::BaseView3DMolecule::REPRESENTATION );
-				*/
+			// std::shared_ptr<View::BaseView3DMolecule> createAndGetView3DByRepresentation(
+			// const View::BaseView3DMolecule::REPRESENTATION );
 
 		  protected:
 			virtual void _addViews() override final;

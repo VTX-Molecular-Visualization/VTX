@@ -1,6 +1,7 @@
 #include "model_molecule.hpp"
 #include "../util/type.hpp"
 #include "../vtx_app.hpp"
+//#include "../view/view_3d_ball_and_stick.hpp"
 
 namespace VTX
 {
@@ -14,13 +15,12 @@ namespace VTX
 		{
 			if ( p_representation == View::BaseView3DMolecule::REPRESENTATION::BALL_AND_STICK )
 			{
-				View::View3DBallAndStick * view = new View::View3DBallAndStick();
+				// View::View3DBallAndStick * view = new View::View3DBallAndStick();
 
-				_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( view ) ) );
+				//_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( view ) ) );
 
-				return std::shared_ptr<View::BaseView3DMolecule>( view );
+				// return std::shared_ptr<View::BaseView3DMolecule>( view );
 			}
-
 			return nullptr;
 		}
 		*/
