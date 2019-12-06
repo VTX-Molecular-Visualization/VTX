@@ -30,12 +30,13 @@ namespace VTX
 
 			inline ModelChain &				   addChain() { return _chains.emplace_back( ModelChain() ); }
 			inline ModelChain &				   getChain( uint p_idx ) { return _chains[ p_idx ]; }
-			inline std::vector<ModelChain> &   getChains() { return _chains; }
 			inline ModelResidue &			   addResidue() { return _residues.emplace_back( ModelResidue() ); }
 			inline ModelResidue &			   getResidue( uint p_idx ) { return _residues[ p_idx ]; }
-			inline std::vector<ModelResidue> & getResidues() { return _residues; }
 			inline ModelAtom &				   addAtom() { return _atoms.emplace_back( ModelAtom() ); }
 			inline ModelAtom &				   getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
+			
+			inline std::vector<ModelChain> &   getChains() { return _chains; }
+			inline std::vector<ModelResidue> & getResidues() { return _residues; }
 			inline std::vector<ModelAtom> &	   getAtoms() { return _atoms; }
 
 			inline std::set<std::string> & getUnknownResidueSymbols() { return _unknownResidueSymbol; }

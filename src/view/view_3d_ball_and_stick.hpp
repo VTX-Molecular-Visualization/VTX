@@ -24,7 +24,7 @@ namespace VTX
 			virtual void notify( Event::EVENT_MODEL ) {};
 
 		  private:
-			// TODO: move in BaseView3D?
+			// TODO: move in BaseView3D or BaseView3DMolecule?
 			GLint _uViewMatrix	   = GL_INVALID_INDEX;
 			GLint _uProjMatrix	   = GL_INVALID_INDEX;
 			GLint _uCylinderRadius = GL_INVALID_INDEX;

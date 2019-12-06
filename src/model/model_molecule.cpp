@@ -1,6 +1,5 @@
 #include "model_molecule.hpp"
 #include "../util/type.hpp"
-#include "../view/view_3d_ball_and_stick.hpp"
 #include "../vtx_app.hpp"
 
 namespace VTX
