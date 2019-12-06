@@ -1,6 +1,10 @@
 #ifndef __VTX__MATH__
 #define __VTX__MATH__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../defines.hpp"
 
 namespace VTX

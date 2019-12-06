@@ -1,6 +1,10 @@
 #ifndef __VTX_BASE_VIEW_3D_MOLECULE__
 #define __VTX_BASE_VIEW_3D_MOLECULE__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../model/model_molecule.hpp"
 #include "base_view_3d.hpp"
 

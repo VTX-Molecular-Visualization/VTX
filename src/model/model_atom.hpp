@@ -1,6 +1,10 @@
 #ifndef __VTX_ATOM__
 #define __VTX_ATOM__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../defines.hpp"
 #include "base_model.hpp"
 #include <magic_enum.hpp>

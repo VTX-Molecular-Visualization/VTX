@@ -1,6 +1,10 @@
 #ifndef __VTX__AABB__
 #define __VTX__AABB__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../defines.hpp"
 
 namespace VTX
@@ -16,14 +20,14 @@ namespace VTX
 			explicit AABB( const Vec3f & point ) : _min( point ), _max( point ) {}
 			AABB( const Vec3f & p_center, const float p_radius );
 
-			inline const Vec3f & min() const { return _min; }
-			inline const Vec3f & max() const { return _max; }
+			inline const Vec3f & getMin() const { return _min; }
+			inline const Vec3f & getMax() const { return _max; }
 
 			void extend( const Vec3f & p_point );
 			void extend( const Vec3f & p_center, const float p_radius );
 
-			Vec3f center() const { return ( _min + _max ) * 0.5f; }
-			float radius() const { return glm::length( _max - _min ) * 0.5f; }
+			Vec3f getCenter() const { return ( _min + _max ) * 0.5f; }
+			float getRadius() const { return glm::length( _max - _min ) * 0.5f; }
 
 		  private:
 			Vec3f _min = Vec3f( FLT_MAX );

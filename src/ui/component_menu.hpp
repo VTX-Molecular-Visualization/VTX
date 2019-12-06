@@ -1,6 +1,10 @@
 #ifndef __VTX_COMPONENT_MENU__
 #define __VTX_COMPONENT_MENU__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "base_component.hpp"
 
 namespace VTX

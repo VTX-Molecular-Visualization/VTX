@@ -1,6 +1,10 @@
 #ifndef __VTX_BASE_VIEW_3D__
 #define __VTX_BASE_VIEW_3D__
 
+#ifdef _MSC_VER
+#pragma once
+
+#endif
 #include "../model/base_model.hpp"
 #include "base_view.hpp"
 

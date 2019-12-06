@@ -1,6 +1,10 @@
 #ifndef __VTX_SETTINGS__
 #define __VTX_SETTINGS__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "renderer/base_renderer.hpp"
 #include "ui/user_interface.hpp"
 

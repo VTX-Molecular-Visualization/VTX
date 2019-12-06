@@ -1,6 +1,10 @@
 #ifndef __VTX_EVENT__
 #define __VTX_EVENT__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 namespace VTX
 {
 	namespace Event

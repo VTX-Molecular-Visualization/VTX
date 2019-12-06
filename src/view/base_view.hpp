@@ -1,6 +1,10 @@
 #ifndef __VTX_BASE_VIEW__
 #define __VTX_BASE_VIEW__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../defines.hpp"
 #include "../event/event.hpp"
 #include <type_traits>

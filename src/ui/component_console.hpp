@@ -1,6 +1,10 @@
 #ifndef __VTX_COMPONENT_CONSOLE__
 #define __VTX_COMPONENT_CONSOLE__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../localization/language.hpp"
 #include "../util/logger.hpp"
 #include "base_component.hpp"

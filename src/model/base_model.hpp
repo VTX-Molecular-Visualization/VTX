@@ -1,6 +1,10 @@
 #ifndef __VTX_BASE_MODEL__
 #define __VTX_BASE_MODEL__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../view/base_view.hpp"
 #include <vector>
 

@@ -1,6 +1,10 @@
 #ifndef __VTX_APP__
 #define __VTX_APP__
 
+#ifdef _MSC_VER
+#pragma once
+
+#endif
 #include "event/event.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
@@ -32,7 +36,7 @@ namespace VTX
 
 		const std::shared_ptr<UI::BaseComponent> getUIComponentByName( const UI::COMPONENT_NAME ) const;
 		void									 setTheme() const;
-		void									 startRenderer() const;
+		void									 initRenderer() const;
 
 		inline Object3D::Scene & getScene() { return *_scene; }
 

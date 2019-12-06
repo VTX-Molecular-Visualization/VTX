@@ -1,6 +1,10 @@
 #ifndef __VTX_VIEW_UI_CHAIN__
 #define __VTX_VIEW_UI_CHAIN__
 
+#ifdef _MSC_VER
+#pragma once
+
+#endif
 #include "../model/model_chain.hpp"
 #include "base_view_ui.hpp"
 

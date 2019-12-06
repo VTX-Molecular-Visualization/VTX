@@ -1,6 +1,10 @@
 #ifndef __VTX_LOGGER__
 #define __VTX_LOGGER__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include <iostream>
 
 namespace VTX

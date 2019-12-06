@@ -8,7 +8,7 @@ namespace VTX
 		void StateVisualization::enter()
 		{
 			// Start the renderer.
-			VTXApp::get().startRenderer();
+			VTXApp::get().initRenderer();
 		}
 
 		void StateVisualization::exit() {}

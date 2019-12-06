@@ -7,28 +7,29 @@ namespace VTX
 	{
 		// TODO: maybe move some features in the base class.
 
-		void RendererDeferred::start( const Object3D::Scene *						 p_scene,
-									  const View::BaseView3DMolecule::REPRESENTATION p_representation )
+		void RendererDeferred::init( Object3D::Scene * const						p_scene,
+									 const View::BaseView3DMolecule::REPRESENTATION p_representation )
 		{
-			stop();
+			clear();
 			// Get the views to render by representation.
-			_moleculeViews = p_scene->getMoleculeViewsByRepresentation( p_representation );
+			//_moleculeViews = p_scene->getMoleculeViewsByRepresentation( p_representation );
 		}
 
-		void RendererDeferred::stop()
+		void RendererDeferred::clear()
 		{
 			// Reset each shared_ptr here or not?
-			_moleculeViews.clear();
+			//_moleculeViews.clear();
 		}
 
-		double RendererDeferred::render( const Object3D::Scene * )
+		double RendererDeferred::render( const Object3D::Scene * const )
 		{
 			// Rendering process.
-
+			/*
 			for ( const std::shared_ptr<View::BaseView3DMolecule> view : _moleculeViews )
 			{
 				view->render( 0.0 );
 			}
+			*/
 
 			return 0.0;
 		};

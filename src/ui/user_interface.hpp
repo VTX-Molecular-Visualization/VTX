@@ -1,6 +1,10 @@
 #ifndef __VTX_USER_INTERFACE__
 #define __VTX_USER_INTERFACE__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "base_component.hpp"
 #include <SDL2/SDL.h>
 

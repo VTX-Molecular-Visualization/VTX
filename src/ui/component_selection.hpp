@@ -1,6 +1,10 @@
 #ifndef __VTX_COMPONENT_SELECTION__
 #define __VTX_COMPONENT_SELECTION__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../localization/language.hpp"
 #include "../model/model_molecule.hpp"
 #include "../view/base_view.hpp"

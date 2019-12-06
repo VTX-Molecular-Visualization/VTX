@@ -1,6 +1,10 @@
 #ifndef __VTX__TIME__
 #define __VTX__TIME__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include <chrono>
 #include <iostream>
 #include <time.h>

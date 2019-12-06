@@ -1,6 +1,10 @@
 #ifndef __VTX_RESIDUE__
 #define __VTX_RESIDUE__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../defines.hpp"
 #include "base_model.hpp"
 #include <map>

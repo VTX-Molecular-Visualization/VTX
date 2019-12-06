@@ -1,6 +1,10 @@
 #ifndef __VTX_BASE_COMPONENT__
 #define __VTX_BASE_COMPONENT__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../defines.hpp"
 #include "../event/event.hpp"
 #include "imgui/imgui.h"

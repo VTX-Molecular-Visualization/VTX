@@ -1,6 +1,10 @@
 #ifndef __VTX_GLSL_PROGRAM_MANAGER__
 #define __VTX_GLSL_PROGRAM_MANAGER__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "glsl_program.hpp"
 #include <map>
 

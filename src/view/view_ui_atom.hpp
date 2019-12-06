@@ -1,6 +1,10 @@
 #ifndef __VTX_VIEW_UI_ATOM__
 #define __VTX_VIEW_UI_ATOM__
 
+#ifdef _MSC_VER
+#pragma once
+
+#endif
 #include "../model/model_atom.hpp"
 #include "base_view_ui.hpp"
 

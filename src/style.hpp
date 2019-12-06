@@ -1,6 +1,10 @@
 #ifndef __VTX_STYLE__
 #define __VTX_STYLE__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 namespace VTX
 {
 	constexpr char * IMGUI_ID_MAIN_WINDOW	 = "VTXMainWindow";

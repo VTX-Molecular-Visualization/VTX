@@ -74,10 +74,10 @@ namespace VTX
 
 	void VTXApp::setTheme() const { _ui->setTheme(); }
 
-	void VTXApp::startRenderer() const
+	void VTXApp::initRenderer() const
 	{
 		// TODO: throw exceptionn if renderer null.
-		_renderer->start( _scene, View::BaseView3DMolecule::REPRESENTATION::BALL_AND_STICK );
+		_renderer->init( _scene, View::BaseView3DMolecule::REPRESENTATION::BALL_AND_STICK );
 	}
 
 	void VTXApp::_update()

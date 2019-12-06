@@ -1,6 +1,10 @@
 #ifndef __VTX_LANG_EN__
 #define __VTX_LANG_EN__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include <map>
 #include <string>
 

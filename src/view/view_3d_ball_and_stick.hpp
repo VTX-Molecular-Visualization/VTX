@@ -1,6 +1,10 @@
 #ifndef __VTX_VIEW_3D_BALL_AND_STICK__
 #define __VTX_VIEW_3D_BALL_AND_STICK__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../shader/glsl_program_manager.hpp"
 #include "base_view_3d_molecule.hpp"
 #include <glm/gtc/matrix_transform.hpp>

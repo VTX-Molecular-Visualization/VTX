@@ -14,6 +14,7 @@ namespace VTX
 			_molecules.clear();
 		}
 
+		/*
 		std::vector<std::shared_ptr<View::BaseView3DMolecule>> Scene::getMoleculeViewsByRepresentation(
 			const View::BaseView3DMolecule::REPRESENTATION p_representation )
 		{
@@ -27,5 +28,7 @@ namespace VTX
 
 			return views;
 		}
+		*/
+
 	} // namespace Object3D
 } // namespace VTX

@@ -1,6 +1,10 @@
 #ifndef __VTX__TRANSFORM__
 #define __VTX__TRANSFORM__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../defines.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 

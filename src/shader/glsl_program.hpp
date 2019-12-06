@@ -1,6 +1,10 @@
 #ifndef __VTX_GLSL_PROGRAM__
 #define __VTX_GLSL_PROGRAM__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../io/path.hpp"
 #include <GL/gl3w.h>
 #include <string>

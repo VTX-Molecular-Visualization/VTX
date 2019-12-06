@@ -1,10 +1,13 @@
 #ifndef __VTX_MODEL_MOLECULE__
 #define __VTX_MODEL_MOLECULE__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../defines.hpp"
 #include "../math/aabb.hpp"
 #include "../util/logger.hpp"
-#include "../view/view_3d_ball_and_stick.hpp"
 #include "base_model.hpp"
 #include "model_atom.hpp"
 #include "model_chain.hpp"
@@ -78,8 +81,10 @@ namespace VTX
 			void				 resetSelectedAtom();
 
 			// Views.
+			/*
 			std::shared_ptr<View::BaseView3DMolecule> createAndGetView3DByRepresentation(
 				const View::BaseView3DMolecule::REPRESENTATION );
+				*/
 
 		  protected:
 			virtual void _addViews() override final;

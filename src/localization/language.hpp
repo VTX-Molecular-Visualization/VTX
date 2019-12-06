@@ -1,6 +1,10 @@
 #ifndef __VTX_LANGUAGE__
 #define __VTX_LANGUAGE__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "lang_en.hpp"
 #include <iostream>
 #include <map>

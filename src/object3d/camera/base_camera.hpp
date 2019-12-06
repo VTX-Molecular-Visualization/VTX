@@ -1,6 +1,10 @@
 #ifndef __VTX_BASE_CAMERA__
 #define __VTX_BASE_CAMERA__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "../../defines.hpp"
 
 namespace VTX

@@ -1,6 +1,10 @@
 #ifndef __VTX_CAMERA_ORBIT__
 #define __VTX_CAMERA_ORBIT__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "base_camera.hpp"
 
 namespace VTX

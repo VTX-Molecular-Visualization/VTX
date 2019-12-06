@@ -1,6 +1,10 @@
 #ifndef __VTX_DEFINES__
 #define __VTX_DEFINES__
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include "localization/language.hpp"
 #include "util/logger.hpp"
 #include <glm/glm.hpp>
