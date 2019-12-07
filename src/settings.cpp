@@ -1,6 +1,4 @@
-#ifndef __VTX_SETTINGS__
-#define __VTX_SETTINGS__
-
+#include "settings.hpp"
 #include "renderer/base_renderer.hpp"
 #include "ui/user_interface.hpp"
 
@@ -10,8 +8,9 @@ namespace VTX
 	{
 		namespace UI
 		{
-			VTX::UI::THEME theme = VTX::UI::THEME::LIGHT;
-		};
+			VTX::UI::THEME		theme			  = VTX::UI::THEME::LIGHT;
+			SYMBOL_DISPLAY_MODE symbolDisplayMode = SYMBOL_DISPLAY_MODE::SHORT;
+		}; // namespace UI
 
 		namespace Rendering
 		{
@@ -22,4 +21,3 @@ namespace VTX
 		}; // namespace Rendering
 	}	   // namespace Setting
 } // namespace VTX
-#endif

@@ -15,9 +15,7 @@ namespace VTX
 
 			VTXApp::get().runThread( new std::thread( [ molecule, scene ] {
 				IO::ReaderMMTF mmtf = IO::ReaderMMTF();
-				if ( mmtf.readFile( IO::Path( "../Vidocklab/VidockLab/data/"
-											  "4v6x.mmtf" ),
-									*molecule ) )
+				if ( mmtf.readFile( IO::Path( "../data/4v6x.mmtf" ), *molecule ) )
 
 				{
 					molecule->init();

@@ -11,11 +11,11 @@ namespace VTX
 			if ( isSelected() ) { _addView( Util::Type::componentToView<ModelAtom>( UI::COMPONENT_NAME::VIEW_ATOM ) ); }
 			else
 			{
-				_resetViews();
+				_clearViews();
 			}
 		}
 
-		const std::string ModelAtom::SYMBOL_NAME[ ATOM_SYMBOL::COUNT ] = {
+		const std::string ModelAtom::SYMBOL_NAME[ (int)ATOM_SYMBOL::COUNT ] = {
 			"Unknown",		 // UNKNOWN = 0,
 			"Hydrogen",		 // H		= 1,
 			"Helium",		 // HE		= 2,
@@ -137,7 +137,7 @@ namespace VTX
 			"Ununoctium"	 // UUO		= 118,
 		};
 
-		const float ModelAtom::SYMBOL_VDW_RADIUS[ ATOM_SYMBOL::COUNT ] = {
+		const float ModelAtom::SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ] = {
 			0.00f, // UNKNOWN	= 0,
 			1.20f, // H			= 1,
 			1.43f, // HE		= 2,
@@ -258,7 +258,7 @@ namespace VTX
 			0.00f, // UUS		= 117,
 			0.00f  // UUO		= 118,
 		};
-		const Vec3f * ModelAtom::SYMBOL_COLOR[ ATOM_SYMBOL::COUNT ] = {
+		const Vec3f * ModelAtom::SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ] = {
 			&COLOR_BLACK,	   // UNKNOWN	= 0,
 			&COLOR_WHITE,	   // H			= 1,
 			&COLOR_MAGENTA,	   // HE		= 2,

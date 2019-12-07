@@ -23,8 +23,9 @@ namespace VTX
 			BaseView() = default;
 			virtual ~BaseView() { _model = nullptr; };
 
-			virtual void setModel( T * const p_model ) final { _model = p_model; }
-			virtual void notify( Event::EVENT_MODEL ) {};
+			virtual std::string getNameStr() const = 0;
+			virtual void		setModel( T * const p_model ) final { _model = p_model; }
+			virtual void		notify( Event::EVENT_MODEL ) {};
 
 		  protected:
 			T * _model = nullptr;

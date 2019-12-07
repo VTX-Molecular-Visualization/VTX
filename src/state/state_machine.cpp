@@ -10,9 +10,9 @@ namespace VTX
 	{
 		StateMachine::~StateMachine()
 		{
-			for ( auto & [ name, state ] : _states )
+			for ( PairEnumToStateSharedPtr pair : _states )
 			{
-				state.reset();
+				pair.second.reset();
 			}
 			_states.clear();
 		}
@@ -42,9 +42,9 @@ namespace VTX
 			_addState( std::make_shared<StateVisualization>( StateVisualization() ) );
 		}
 
-		void StateMachine::_addState( const std::shared_ptr<BaseState> p_state )
+		void StateMachine::_addState( const StateSharedPtr p_state )
 		{
-			// p_state->init();
+			// std::static_pointer_cast<StateMachine>( p_state )->init();
 			try
 			{
 				_states.try_emplace( p_state->getName(), p_state );
@@ -56,7 +56,7 @@ namespace VTX
 			}
 		}
 
-		void StateMachine::_switchState( const std::shared_ptr<BaseState> p_state )
+		void StateMachine::_switchState( const StateSharedPtr p_state )
 		{
 			VTX_INFO( "Entering state: " + std::string( magic_enum::enum_name( p_state->getName() ) ) );
 			if ( _currentState != nullptr ) { _currentState->exit(); }

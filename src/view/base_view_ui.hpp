@@ -18,6 +18,11 @@ namespace VTX
 		{
 		  public:
 			BaseViewUI( bool * const p_show ) : BaseComponent( p_show ) {}
+
+			virtual std::string getNameStr() const override
+			{
+				return std::string( magic_enum::enum_name( getName() ) );
+			}
 			virtual void display() override
 			{
 				if ( _show != nullptr && isShown() == false ) { return; }

@@ -7,13 +7,13 @@ namespace VTX
 {
 	namespace Shader
 	{
-		const std::map<std::string, Shader::SHADER_TYPE> GLSLProgramManager::EXTENSIONS
-			= std::map<std::string, Shader::SHADER_TYPE>( { { ".vert", SHADER_TYPE::VERTEX },
-															{ ".geom", SHADER_TYPE::GEOMETRY },
-															{ ".frag", SHADER_TYPE::FRAGMENT },
-															{ ".comp", SHADER_TYPE::COMPUTE },
-															{ ".tesc", SHADER_TYPE::TESS_CONTROL },
-															{ ".tese", SHADER_TYPE::TESS_EVALUATION } } );
+		const GLSLProgramManager::MapStringToEnum GLSLProgramManager::EXTENSIONS
+			= MapStringToEnum( { { ".vert", SHADER_TYPE::VERTEX },
+								 { ".geom", SHADER_TYPE::GEOMETRY },
+								 { ".frag", SHADER_TYPE::FRAGMENT },
+								 { ".comp", SHADER_TYPE::COMPUTE },
+								 { ".tesc", SHADER_TYPE::TESS_CONTROL },
+								 { ".tese", SHADER_TYPE::TESS_EVALUATION } } );
 
 		SHADER_TYPE GLSLProgramManager::getShaderType( const std::string & p_name )
 		{
@@ -31,9 +31,9 @@ namespace VTX
 
 		GLSLProgramManager::~GLSLProgramManager()
 		{
-			for ( const auto & [ nname, shader ] : _shaders )
+			for ( const PairStringToGLuint pair : _shaders )
 			{
-				glDeleteShader( shader );
+				glDeleteShader( pair.second );
 			}
 		}
 

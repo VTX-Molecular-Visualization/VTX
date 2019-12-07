@@ -4,30 +4,37 @@ namespace VTX
 {
 	namespace Model
 	{
-		BaseModel::~BaseModel() { _resetViews(); }
+		BaseModel::~BaseModel() { _clearViews(); }
 
 		void BaseModel::init() { _addViews(); }
 
-		void BaseModel::_addView( const std::shared_ptr<View::BaseView<BaseModel>> p_view )
+		void BaseModel::_addView( const ViewSharedPtr p_view )
 		{
 			p_view->setModel( this );
-			_views.push_back( p_view );
+			try
+			{
+				_views.try_emplace( p_view->getNameStr(), p_view );
+			}
+			catch ( const std::exception )
+			{
+				VTX_WARNING( "A component with this name already exists: " + p_view->getNameStr() );
+			}
 		}
 
 		void BaseModel::_notifyViews( const Event::EVENT_MODEL p_event ) const
 		{
-			for ( std::shared_ptr<View::BaseView<BaseModel>> view : _views )
+			for ( PairStringToViewSharedPtr pair : _views )
 			{
-				view->notify( p_event );
+				pair.second->notify( p_event );
 			}
 		}
 
-		void BaseModel::_resetViews()
+		void BaseModel::_clearViews()
 		{
-			for ( std::shared_ptr<View::BaseView<BaseModel>> view : _views )
+			for ( PairStringToViewSharedPtr pair : _views )
 			{
-				view->setModel( nullptr );
-				view.reset();
+				pair.second->setModel( nullptr );
+				pair.second.reset();
 			}
 			_views.clear();
 		}

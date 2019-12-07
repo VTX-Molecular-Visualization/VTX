@@ -164,7 +164,7 @@ namespace VTX
 			inline const ATOM_SYMBOL   getSymbol() const { return _symbol; };
 			inline const std::string   getSymbolStr() const { return std::string( magic_enum::enum_name( _symbol ) ); };
 			inline void				   setSymbol( const ATOM_SYMBOL p_symbol ) { _symbol = p_symbol; };
-			inline const std::string & getName() const { return SYMBOL_NAME[ (int)_symbol ]; }
+			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
 			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ (int)_symbol ]; }
 			inline const Vec3f *	   getColor() const { return SYMBOL_COLOR[ (int)_symbol ]; }

@@ -12,7 +12,7 @@ namespace VTX
 			{ _addView( Util::Type::componentToView<ModelChain>( UI::COMPONENT_NAME::VIEW_CHAIN ) ); }
 			else
 			{
-				_resetViews();
+				_clearViews();
 			}
 		}
 	} // namespace Model

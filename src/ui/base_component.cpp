@@ -9,9 +9,9 @@ namespace VTX
 
 		BaseComponent::~BaseComponent()
 		{
-			for ( auto & [ name, component ] : _components )
+			for ( PairEnumToComponentSharedPtr pair : _components )
 			{
-				component.reset();
+				pair.second.reset();
 			}
 			_components.clear();
 		}
@@ -24,7 +24,7 @@ namespace VTX
 			_isInitialized = true;
 		}
 
-		void BaseComponent::_addComponent( const std::shared_ptr<BaseComponent> p_component )
+		void BaseComponent::_addComponent( const ComponentSharedPtr p_component )
 		{
 			p_component->init();
 			try
@@ -52,9 +52,9 @@ namespace VTX
 
 		void BaseComponent::_drawComponents()
 		{
-			for ( const auto & [ type, component ] : _components )
+			for ( const PairEnumToComponentSharedPtr pair : _components )
 			{
-				component->display();
+				pair.second->display();
 			}
 		}
 
@@ -68,9 +68,9 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				for ( const auto & [ name, component ] : _components )
+				for ( const PairEnumToComponentSharedPtr pair : _components )
 				{
-					std::shared_ptr<BaseComponent> child = component->getComponentByName( p_name );
+					std::shared_ptr<BaseComponent> child = pair.second->getComponentByName( p_name );
 					if ( child != nullptr ) { return child; }
 				}
 
@@ -84,9 +84,9 @@ namespace VTX
 			{ _applyEvent( p_event, p_arg ); }
 
 			// Propagate to children.
-			for ( auto const & [ name, component ] : _components )
+			for ( const PairEnumToComponentSharedPtr pair : _components )
 			{
-				component->receiveEvent( p_event, p_arg );
+				pair.second->receiveEvent( p_event, p_arg );
 			}
 		}
 

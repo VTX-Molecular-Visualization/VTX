@@ -1,4 +1,5 @@
 #include "view_ui_molecule.hpp"
+#include "../settings.hpp"
 
 namespace VTX
 {
@@ -39,7 +40,9 @@ namespace VTX
 							Model::ModelResidue & residue = _model->getResidue( chain.getIdFirstResidue() + i );
 							ImGui::PushID( residue.getId() );
 							bool residueOpened = ImGui::TreeNodeEx(
-								residue.getSymbolShort().c_str(),
+								VTX::Setting::UI::symbolDisplayMode == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
+									? residue.getSymbolShort().c_str()
+									: residue.getSymbolName().c_str(),
 								residue.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 							if ( ImGui::IsItemClicked() )
 							{
@@ -54,7 +57,11 @@ namespace VTX
 								{
 									Model::ModelAtom & atom = _model->getAtom( residue.getIdFirstAtom() + j );
 									ImGui::PushID( atom.getId() );
-									if ( ImGui::Selectable( atom.getSymbolStr().c_str(), atom.isSelected() ) )
+									if ( ImGui::Selectable( VTX::Setting::UI::symbolDisplayMode
+																	== VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
+																? atom.getSymbolStr().c_str()
+																: atom.getSymbolName().c_str(),
+															atom.isSelected() ) )
 									{
 										_model->setSelectedAtom( atom.getId() );
 										ImGui::SetItemDefaultFocus();

@@ -49,9 +49,18 @@ namespace VTX
 
 					ImGui::Separator();
 
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.SymbolDisplay" ),
+									   (int *)&Setting::UI::symbolDisplayMode,
+									   "Short\0Long\0" ) )
+					{ VTXApp::get().setTheme(); }
+
+					ImGui::Separator();
+
+					/*
 					if ( ImGui::Combo(
 							 LOCALE( "MainMenu.Settings.Render" ), (int *)&Setting::Rendering::mode, "Deferred\0" ) )
 					{}
+					*/
 
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ),
 									   (int *)&Setting::Rendering::shading,

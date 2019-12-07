@@ -6,7 +6,7 @@
 #endif
 
 #include "../view/base_view.hpp"
-#include <vector>
+#include <map>
 
 namespace VTX
 {
@@ -15,6 +15,10 @@ namespace VTX
 		class BaseModel
 		{
 		  public:
+			using ViewSharedPtr				= std::shared_ptr<View::BaseView<BaseModel>>;
+			using MapStringToViewSharedPtr	= std::map<const std::string, ViewSharedPtr>;
+			using PairStringToViewSharedPtr = std::pair<const std::string, ViewSharedPtr>;
+
 			BaseModel() = default;
 			virtual ~BaseModel();
 
@@ -23,14 +27,13 @@ namespace VTX
 			virtual void setSelected( const bool p_selected ) { _isSelected = p_selected; }
 
 		  protected:
-			void		 _addView( const std::shared_ptr<View::BaseView<BaseModel>> );
+			void		 _addView( const ViewSharedPtr );
 			virtual void _addViews() {};
 			virtual void _notifyViews( const Event::EVENT_MODEL ) const final;
-			virtual void _resetViews() final;
+			virtual void _clearViews() final;
 
-			bool													_isSelected = false;
-			std::vector<std::shared_ptr<View::BaseView<BaseModel>>> _views
-				= std::vector<std::shared_ptr<View::BaseView<BaseModel>>>();
+			bool					 _isSelected = false;
+			MapStringToViewSharedPtr _views		 = MapStringToViewSharedPtr();
 		};
 	} // namespace Model
 } // namespace VTX

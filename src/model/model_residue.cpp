@@ -12,11 +12,11 @@ namespace VTX
 			{ _addView( Util::Type::componentToView<ModelResidue>( UI::COMPONENT_NAME::VIEW_RESIDUE ) ); }
 			else
 			{
-				_resetViews();
+				_clearViews();
 			}
 		}
 
-		const std::string ModelResidue::SYMBOL_NAME[ RESIDUE_SYMBOL::COUNT ] = {
+		const std::string ModelResidue::SYMBOL_NAME[ (int)RESIDUE_SYMBOL::COUNT ] = {
 			"Unknown",		 // UNKWNON,
 			"Alanine",		 // ALA,
 			"Arginine",		 // ARG,
@@ -41,7 +41,7 @@ namespace VTX
 			"Water"			 // HOH,
 		};
 
-		const std::string ModelResidue::SYMBOL_SHORT[ RESIDUE_SYMBOL::COUNT ] = {
+		const std::string ModelResidue::SYMBOL_SHORT[ (int)RESIDUE_SYMBOL::COUNT ] = {
 			"UNKNOWN", // UNKWNON
 			"A",	   // ALA,
 			"R",	   // ARG,
@@ -66,7 +66,7 @@ namespace VTX
 			"HOH",	   // HOH,
 		};
 
-		const Vec3f * ModelResidue::SYMBOL_COLOR[ RESIDUE_SYMBOL::COUNT ] = {
+		const Vec3f * ModelResidue::SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ] = {
 			&COLOR_WHITE
 			// TODO
 		};

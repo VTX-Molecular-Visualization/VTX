@@ -17,6 +17,10 @@ namespace VTX
 		class StateMachine
 		{
 		  public:
+			using StateSharedPtr		   = std::shared_ptr<BaseState>;
+			using MapEnumToStateSharedPtr  = std::map<STATE_NAME, StateSharedPtr>;
+			using PairEnumToStateSharedPtr = std::pair<STATE_NAME, StateSharedPtr>;
+
 			StateMachine() = default;
 			virtual ~StateMachine();
 
@@ -25,15 +29,14 @@ namespace VTX
 			void		 goToState( const STATE_NAME );
 
 		  protected:
-			virtual void _addState( const std::shared_ptr<BaseState> ) final;
+			virtual void _addState( const StateSharedPtr ) final;
 			virtual void _addStates();
 
 		  private:
-			std::shared_ptr<BaseState>						 _currentState = nullptr;
-			std::map<STATE_NAME, std::shared_ptr<BaseState>> _states
-				= std::map<STATE_NAME, std::shared_ptr<BaseState>>();
+			StateSharedPtr			_currentState = nullptr;
+			MapEnumToStateSharedPtr _states		  = MapEnumToStateSharedPtr();
 
-			void _switchState( const std::shared_ptr<BaseState> );
+			void _switchState( const StateSharedPtr );
 		};
 	}; // namespace State
 };	   // namespace VTX

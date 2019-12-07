@@ -26,6 +26,12 @@ namespace VTX
 		class GLSLProgramManager
 		{
 		  public:
+			using MapStringToEnum	  = std::map<std::string, Shader::SHADER_TYPE>;
+			using MapStringToProgram  = std::map<std::string, Shader::GLSLProgram>;
+			using PairStringToProgram = std::pair<std::string, Shader::GLSLProgram>;
+			using MapStringToGLuint	  = std::map<std::string, GLuint>;
+			using PairStringToGLuint  = std::pair<std::string, GLuint>;
+
 			GLSLProgramManager() = default;
 			~GLSLProgramManager();
 			GLSLProgram * const createProgram( const std::string & );
@@ -34,13 +40,13 @@ namespace VTX
 			GLuint				createShader( const IO::Path & );
 			GLuint				getShader( const std::string & ) const;
 
-			static const std::map<std::string, Shader::SHADER_TYPE> EXTENSIONS;
-			static SHADER_TYPE										getShaderType( const std::string & );
+			static const MapStringToEnum EXTENSIONS;
+			static SHADER_TYPE			 getShaderType( const std::string & );
 
 		  private:
-			GLuint									   _currentProgram = GL_INVALID_INDEX;
-			std::map<std::string, Shader::GLSLProgram> _programs	   = std::map<std::string, Shader::GLSLProgram>();
-			std::map<std::string, GLuint>			   _shaders		   = std::map<std::string, GLuint>();
+			GLuint			   _currentProgram = GL_INVALID_INDEX;
+			MapStringToProgram _programs	   = MapStringToProgram();
+			MapStringToGLuint  _shaders		   = MapStringToGLuint();
 
 			std::string _getShaderErrors( const GLuint ) const;
 		};

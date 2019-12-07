@@ -7,7 +7,10 @@ namespace VTX
 {
 	namespace Model
 	{
-		void ModelMolecule::_addViews() {}
+		void ModelMolecule::_addViews()
+		{
+			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE ) );
+		}
 
 		/*
 		std::shared_ptr<View::BaseView3DMolecule> ModelMolecule::createAndGetView3DByRepresentation(

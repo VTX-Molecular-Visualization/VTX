@@ -12,16 +12,17 @@ namespace VTX
 {
 	namespace Setting
 	{
-		enum class SYMBOL_DISPLAY_MODE : int
-		{
-			SHORT,
-			LONG
-		};
-
 		namespace UI
 		{
-			extern VTX::UI::THEME theme;
-		};
+			enum class SYMBOL_DISPLAY_MODE : int
+			{
+				SHORT,
+				LONG
+			};
+
+			extern VTX::UI::THEME	   theme;
+			extern SYMBOL_DISPLAY_MODE symbolDisplayMode;
+		}; // namespace UI
 
 		namespace Rendering
 		{
