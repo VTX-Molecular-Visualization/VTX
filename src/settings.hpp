@@ -12,6 +12,12 @@ namespace VTX
 {
 	namespace Setting
 	{
+		enum class SYMBOL_DISPLAY_MODE : int
+		{
+			SHORT,
+			LONG
+		};
+
 		namespace UI
 		{
 			extern VTX::UI::THEME theme;

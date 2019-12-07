@@ -12,12 +12,12 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		enum MODE
+		enum class MODE : int
 		{
 			DEFERRED
 		};
 
-		enum SHADING
+		enum class SHADING : int
 		{
 			LAMBERT = 0,
 			BLINN_PHONG,

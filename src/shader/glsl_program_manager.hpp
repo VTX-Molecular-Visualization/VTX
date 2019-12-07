@@ -12,7 +12,7 @@ namespace VTX
 {
 	namespace Shader
 	{
-		enum SHADER_TYPE
+		enum class SHADER_TYPE : int
 		{
 			VERTEX			= GL_VERTEX_SHADER,
 			FRAGMENT		= GL_FRAGMENT_SHADER,

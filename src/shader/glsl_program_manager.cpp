@@ -94,7 +94,7 @@ namespace VTX
 			GLuint shaderId = getShader( name );
 			if ( shaderId == GL_INVALID_INDEX )
 			{
-				shaderId					 = glCreateShader( type );
+				shaderId					 = glCreateShader( (int)type );
 				const std::string str		 = IO::Path::read( SHADER_DIR + p_path.str() );
 				const GLchar *	  shaderCode = str.c_str();
 				glShaderSource( shaderId, 1, &shaderCode, 0 );

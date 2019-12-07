@@ -18,7 +18,7 @@ namespace VTX
 		class ModelResidue : public BaseModel
 		{
 		  public:
-			enum RESIDUE_SYMBOL
+			enum class RESIDUE_SYMBOL : int
 			{
 				UNKNOWN,
 				ALA,
@@ -46,9 +46,9 @@ namespace VTX
 			};
 
 			// Static const mapping.
-			static const std::string SYMBOL_NAME[ RESIDUE_SYMBOL::COUNT ];
-			static const std::string SYMBOL_SHORT[ RESIDUE_SYMBOL::COUNT ];
-			static const Vec3f *	 SYMBOL_COLOR[ RESIDUE_SYMBOL::COUNT ];
+			static const std::string SYMBOL_NAME[ (int)RESIDUE_SYMBOL::COUNT ];
+			static const std::string SYMBOL_SHORT[ (int)RESIDUE_SYMBOL::COUNT ];
+			static const Vec3f *	 SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ];
 
 			inline ModelMolecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				  setMoleculePtr( ModelMolecule * const p_molecule ) { _moleculePtr = p_molecule; }
@@ -59,9 +59,9 @@ namespace VTX
 			inline void					setId( const uint p_id ) { _id = p_id; };
 			inline const RESIDUE_SYMBOL getSymbol() const { return _symbol; };
 			inline void					setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
-			inline const std::string &	getSymbolName() const { return SYMBOL_NAME[ _symbol ]; }
-			inline const std::string &	getSymbolShort() const { return SYMBOL_SHORT[ _symbol ]; }
-			inline const Vec3f *		getColor() const { return SYMBOL_COLOR[ _symbol ]; }
+			inline const std::string &	getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
+			inline const std::string &	getSymbolShort() const { return SYMBOL_SHORT[ (int)_symbol ]; }
+			inline const Vec3f *		getColor() const { return SYMBOL_COLOR[ (int)_symbol ]; }
 			inline uint					getIdFirstAtom() const { return _idFirstAtom; };
 			inline void					setIdFirstAtom( const uint p_id ) { _idFirstAtom = p_id; };
 			inline uint					getAtomCount() const { return _atomCount; };

@@ -12,7 +12,7 @@ namespace VTX
 {
 	namespace UI
 	{
-		enum THEME
+		enum class THEME : int
 		{
 			LIGHT,
 			DARK,

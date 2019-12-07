@@ -17,9 +17,7 @@ namespace VTX
 		{
 		}
 
-		void ComponentMenu::_addComponents()
-		{ /*_addComponent( new ComponentDialogImport( &_showDialogImport ) );*/
-		}
+		void ComponentMenu::_addComponents() {}
 
 		void ComponentMenu::_draw()
 		{
@@ -33,15 +31,6 @@ namespace VTX
 
 					ImGui::EndMenu();
 				}
-
-				/*
-				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Import" ), _show ) )
-				{
-					if ( ImGui::MenuItem( LOCALE( "MainMenu.Import.MMTF" ) ) ) {}
-
-					ImGui::EndMenu();
-				}
-				*/
 
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Display" ), _show ) )
 				{

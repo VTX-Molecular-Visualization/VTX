@@ -23,7 +23,7 @@ namespace VTX
 		{
 		  public:
 			// Sorted by atomic number.
-			enum ATOM_SYMBOL
+			enum class ATOM_SYMBOL : int
 			{
 				UNKNOWN = 0,
 				H		= 1,
@@ -148,9 +148,9 @@ namespace VTX
 			};
 
 			// Static const mapping.
-			static const std::string SYMBOL_NAME[ ATOM_SYMBOL::COUNT ];
-			static const float		 SYMBOL_VDW_RADIUS[ ATOM_SYMBOL::COUNT ];
-			static const Vec3f *	 SYMBOL_COLOR[ ATOM_SYMBOL::COUNT ];
+			static const std::string SYMBOL_NAME[ (int)ATOM_SYMBOL::COUNT ];
+			static const float		 SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ];
+			static const Vec3f *	 SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ];
 
 			inline const ModelMolecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void setMoleculePtr( const ModelMolecule * const p_molecule ) { _moleculePtr = p_molecule; }
@@ -164,10 +164,10 @@ namespace VTX
 			inline const ATOM_SYMBOL   getSymbol() const { return _symbol; };
 			inline const std::string   getSymbolStr() const { return std::string( magic_enum::enum_name( _symbol ) ); };
 			inline void				   setSymbol( const ATOM_SYMBOL p_symbol ) { _symbol = p_symbol; };
-			inline const std::string & getName() const { return SYMBOL_NAME[ _symbol ]; }
+			inline const std::string & getName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
-			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ _symbol ]; }
-			inline const Vec3f *	   getColor() const { return SYMBOL_COLOR[ _symbol ]; }
+			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ (int)_symbol ]; }
+			inline const Vec3f *	   getColor() const { return SYMBOL_COLOR[ (int)_symbol ]; }
 
 			virtual void setSelected( const bool ) override;
 
