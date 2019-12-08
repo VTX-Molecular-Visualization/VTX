@@ -20,6 +20,10 @@ namespace VTX
 			View3DBallAndStick()  = default;
 			~View3DBallAndStick() = default;
 
+			virtual std::string getNameStr() const override
+			{
+				return std::string( magic_enum::enum_name( REPRESENTATION::BALL_AND_STICK ) );
+			};
 			virtual void render( const uint p_time ) override {};
 			virtual void notify( Event::EVENT_MODEL ) {};
 

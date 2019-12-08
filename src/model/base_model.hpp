@@ -22,9 +22,10 @@ namespace VTX
 			BaseModel() = default;
 			virtual ~BaseModel();
 
-			virtual void init();
-			bool		 isSelected() const { return _isSelected; }
-			virtual void setSelected( const bool p_selected ) { _isSelected = p_selected; }
+			virtual void				init();
+			virtual const ViewSharedPtr getViewByName( const std::string & ) const final;
+			bool						isSelected() const { return _isSelected; }
+			virtual void				setSelected( const bool p_selected ) { _isSelected = p_selected; }
 
 		  protected:
 			void		 _addView( const ViewSharedPtr );

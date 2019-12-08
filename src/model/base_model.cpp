@@ -1,4 +1,5 @@
 #include "base_model.hpp"
+#include <magic_enum.hpp>
 
 namespace VTX
 {
@@ -7,6 +8,19 @@ namespace VTX
 		BaseModel::~BaseModel() { _clearViews(); }
 
 		void BaseModel::init() { _addViews(); }
+
+		const BaseModel::ViewSharedPtr BaseModel::getViewByName( const std::string & p_name ) const
+		{
+			try
+			{
+				return _views.at( p_name );
+			}
+			catch ( const std::exception )
+			{
+				VTX_WARNING( "View not found: " + p_name );
+				return nullptr;
+			}
+		}
 
 		void BaseModel::_addView( const ViewSharedPtr p_view )
 		{
@@ -17,7 +31,7 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "A component with this name already exists: " + p_view->getNameStr() );
+				VTX_WARNING( "A view with this name already exists: " + p_view->getNameStr() );
 			}
 		}
 

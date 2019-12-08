@@ -46,7 +46,7 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "Component not found" );
+				VTX_WARNING( "Component not found: " + std::string( magic_enum::enum_name( p_name ) ) );
 			}
 		}
 
@@ -60,7 +60,7 @@ namespace VTX
 
 		void BaseComponent::_registerEventHandler( const Event::EVENT_UI p_event ) { _events.emplace( p_event ); }
 
-		const std::shared_ptr<BaseComponent> BaseComponent::getComponentByName( const COMPONENT_NAME p_name ) const
+		const BaseComponent::ComponentSharedPtr BaseComponent::getComponentByName( const COMPONENT_NAME p_name ) const
 		{
 			try
 			{
@@ -70,7 +70,7 @@ namespace VTX
 			{
 				for ( const PairEnumToComponentSharedPtr pair : _components )
 				{
-					std::shared_ptr<BaseComponent> child = pair.second->getComponentByName( p_name );
+					ComponentSharedPtr child = pair.second->getComponentByName( p_name );
 					if ( child != nullptr ) { return child; }
 				}
 

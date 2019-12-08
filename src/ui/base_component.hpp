@@ -43,8 +43,8 @@ namespace VTX
 			virtual void init();
 			virtual bool isShown() final { return *_show; }
 
-			virtual const std::shared_ptr<BaseComponent> getComponentByName( const COMPONENT_NAME ) const final;
-			virtual void								 receiveEvent( const Event::EVENT_UI, void * const ) final;
+			virtual const ComponentSharedPtr getComponentByName( const COMPONENT_NAME ) const final;
+			virtual void					 receiveEvent( const Event::EVENT_UI, void * const ) final;
 
 			virtual COMPONENT_NAME getName() const = 0;
 

@@ -36,8 +36,6 @@ namespace VTX
 
 		  protected:
 			Shader::GLSLProgramManager _programManager = Shader::GLSLProgramManager();
-			// std::vector<std::shared_ptr<View::BaseView3DMolecule>> _moleculeViews
-			//	= std::vector<std::shared_ptr<View::BaseView3DMolecule>>();
 		};
 	} // namespace Renderer
 } // namespace VTX

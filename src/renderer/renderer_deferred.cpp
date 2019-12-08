@@ -21,18 +21,7 @@ namespace VTX
 			//_moleculeViews.clear();
 		}
 
-		double RendererDeferred::render( const Object3D::Scene * const )
-		{
-			// Rendering process.
-			/*
-			for ( const std::shared_ptr<View::BaseView3DMolecule> view : _moleculeViews )
-			{
-				view->render( 0.0 );
-			}
-			*/
-
-			return 0.0;
-		};
+		double RendererDeferred::render( const Object3D::Scene * const ) { return 0.0; };
 
 	} // namespace Renderer
 } // namespace VTX
