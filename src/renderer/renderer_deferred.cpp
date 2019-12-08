@@ -18,8 +18,10 @@ namespace VTX
 
 			// Init pass.
 			_initGeometricPass();
+			_initSsaoPass();
 			_initBlurPass();
 			_initShadingPass();
+			_initAntiAliasingPass();
 			_initQuadVAO();
 
 			// Init views.
@@ -309,7 +311,7 @@ namespace VTX
 			_ssaoShader->use();
 
 			glUniformMatrix4fv(
-				_uProjMatrixLoc, 1, GL_FALSE, glm::value_ptr( p_scene.getCameraOrbit().getProjectionMatrix() ) );
+				_uProjMatrixLoc, 1, GL_FALSE, glm::value_ptr( ( p_scene.getCameraOrbit().getProjectionMatrix() ) ) );
 
 			glBindVertexArray( _quadVAO );
 			glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
