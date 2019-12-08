@@ -56,20 +56,23 @@ namespace VTX
 			{
 				return _atomPositions.emplace_back( p_position );
 			}
-			inline void	   addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
-			inline float   getAtomRadius( const uint p_idx ) { return _atomRadius[ p_idx ]; }
-			inline void	   addAtomColor( const Vec3f p_color ) { _atomColors.emplace_back( p_color ); }
-			inline Vec3f & getAtomColor( const uint p_idx ) { return _atomColors[ p_idx ]; }
-			inline void	   addBond( const uint p_bond ) { _bonds.emplace_back( p_bond ); }
-			inline void	   addBonds( const std::vector<int> & p_bonds )
+			inline std::vector<Vec3f> & getAtomPositions() { return _atomPositions; };
+			inline void					addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
+			inline float				getAtomRadius( const uint p_idx ) { return _atomRadius[ p_idx ]; }
+			inline std::vector<float> & getAtomRadius() { return _atomRadius; };
+			inline void					addAtomColor( const Vec3f p_color ) { _atomColors.emplace_back( p_color ); }
+			inline Vec3f &				getAtomColor( const uint p_idx ) { return _atomColors[ p_idx ]; }
+			inline std::vector<Vec3f> & getAtomColors() { return _atomColors; };
+			inline void					addBond( const uint p_bond ) { _bonds.emplace_back( p_bond ); }
+			inline void					addBonds( const std::vector<int> & p_bonds )
 			{
 				_bonds.insert( _bonds.end(), p_bonds.begin(), p_bonds.end() );
 			}
-
-			inline uint getChainCount() const { return (uint)_chains.size(); }
-			inline uint getResidueCount() const { return (uint)_residues.size(); }
-			inline uint getAtomCount() const { return (uint)_atoms.size(); }
-			inline uint getBondCount() const { return (uint)_bonds.size(); }
+			inline std::vector<uint> & getBonds() { return _bonds; };
+			inline uint				   getChainCount() const { return (uint)_chains.size(); }
+			inline uint				   getResidueCount() const { return (uint)_residues.size(); }
+			inline uint				   getAtomCount() const { return (uint)_atoms.size(); }
+			inline uint				   getBondCount() const { return (uint)_bonds.size(); }
 
 			inline Math::AABB & AABB() { return _aabb; }
 
