@@ -54,7 +54,7 @@ namespace VTX
 			glDrawArrays( GL_POINTS, 0, _model->getAtomCount() );
 
 			// Draw sticks.
-			glDrawElements( GL_LINES, 0, GL_UNSIGNED_INT, (void *)( _model->getBondCount() * sizeof( uint ) ) );
+			glDrawElements( GL_LINES, _model->getBondCount(), GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
 		}
 
 	} // namespace View

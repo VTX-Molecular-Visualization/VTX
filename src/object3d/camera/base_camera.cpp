@@ -37,6 +37,17 @@ namespace VTX
 				_up					 = glm::cross( _front, _left );
 			}
 
+			void BaseCamera::printInfo() const
+			{
+				VTX_INFO( "Position: " + glm::to_string( _position ) );
+				VTX_INFO( "Front: " + glm::to_string( _front ) );
+				VTX_INFO( "Left: " + glm::to_string( _left ) );
+				VTX_INFO( "Up: " + glm::to_string( _up ) );
+				VTX_INFO( "Phi: " + std::to_string( _phi ) );
+				VTX_INFO( "Theta: " + std::to_string( _theta ) );
+				VTX_INFO( "Fov: " + std::to_string( _fov ) );
+			}
+
 		} // namespace Camera
 	}	  // namespace Object3D
 } // namespace VTX

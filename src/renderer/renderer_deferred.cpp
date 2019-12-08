@@ -9,7 +9,7 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		void RendererDeferred::init( const Object3D::Scene & p_scene )
+		void RendererDeferred::init( Object3D::Scene & p_scene )
 		{
 			VTX_INFO( "Initializing renderer..." );
 
@@ -32,7 +32,9 @@ namespace VTX
 			}
 
 			_isInitialized = true;
-		} // namespace RendererDeferred::init(constObject3D::Scene&,p_scene)
+			VTX_INFO( "Renderer initialized" );
+			p_scene.getCameraOrbit().printInfo();
+		}
 
 		inline void RendererDeferred::_initGeometricPass()
 		{
@@ -236,7 +238,7 @@ namespace VTX
 			glBindVertexArray( 0 );
 		}
 
-		void RendererDeferred::clear( const Object3D::Scene & p_scene )
+		void RendererDeferred::clear( Object3D::Scene & p_scene )
 		{
 			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
@@ -272,10 +274,10 @@ namespace VTX
 				view->bindVAO();
 				view->bindIBO();
 
+				view->useShaders( _programManager );
 				view->setCameraMatrices( p_scene.getCameraOrbit().getViewMatrix(),
 										 p_scene.getCameraOrbit().getProjectionMatrix() );
 
-				view->useShaders( _programManager );
 				view->render( 0 );
 				view->unbindIBO();
 				view->unbindVAO();
