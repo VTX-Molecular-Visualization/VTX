@@ -16,7 +16,7 @@ namespace VTX
 		class BaseView3D : public BaseView<T>
 		{
 		  public:
-			virtual void render( const uint p_time ) = 0;
+			virtual void render( const uint ) = 0;
 
 		  private:
 		};

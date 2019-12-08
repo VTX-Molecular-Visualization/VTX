@@ -23,7 +23,7 @@ namespace VTX
 			{
 				return std::string( magic_enum::enum_name( REPRESENTATION::BALL_AND_STICK ) );
 			};
-			virtual void render( const uint p_time ) override {};
+			virtual void render( const uint p_time ) override;
 			virtual void notify( Event::EVENT_MODEL ) {};
 
 			virtual std::string				 getProgramName() const override;

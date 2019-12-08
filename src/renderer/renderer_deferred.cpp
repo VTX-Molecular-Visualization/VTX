@@ -34,7 +34,6 @@ namespace VTX
 
 				program->link();
 				view->setupUniforms( program->getId() );
-				program->use();
 			}
 
 			_isInitialized = true;
@@ -183,7 +182,7 @@ namespace VTX
 		{
 			if ( _isInitialized == false ) { return; }
 
-			glClear( GL_COLOR_BUFFER_BIT );
+			// glClear( GL_COLOR_BUFFER_BIT );
 			glEnable( GL_DEPTH_TEST );
 			_geometricPass( p_scene );
 			glDisable( GL_DEPTH_TEST );
@@ -207,8 +206,9 @@ namespace VTX
 
 				view->setCameraMatrices( p_scene.getCameraOrbit().getViewMatrix(),
 										 p_scene.getCameraOrbit().getProjectionMatrix() );
-				view->render( 0 );
 
+				_programManager.getProgram( view->getProgramName() )->use();
+				view->render( 0 );
 				view->unbindIBO();
 				view->unbindVAO();
 			}
