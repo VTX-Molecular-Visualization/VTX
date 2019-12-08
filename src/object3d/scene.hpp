@@ -20,7 +20,7 @@ namespace VTX
 			~Scene();
 
 			void addMolecule( Model::ModelMolecule * const p_molecule ) { _molecules.emplace_back( p_molecule ); }
-			inline Camera::CameraOrbit				   getCameraOrbit() const { return _camera; }
+			inline Camera::CameraOrbit &			   getCameraOrbit() { return _camera; }
 			inline std::vector<Model::ModelMolecule *> getMolecules() const { return _molecules; };
 
 		  private:

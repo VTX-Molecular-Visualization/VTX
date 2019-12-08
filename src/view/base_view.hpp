@@ -24,11 +24,17 @@ namespace VTX
 			virtual ~BaseView() { _model = nullptr; };
 
 			virtual std::string getNameStr() const = 0;
-			virtual void		setModel( T * const p_model ) final { _model = p_model; }
-			virtual void		notify( Event::EVENT_MODEL ) {};
+			virtual void		setModel( T * const p_model ) final
+			{
+				_model = p_model;
+				if ( _model != nullptr ) _prepare();
+			}
+			virtual void notify( Event::EVENT_MODEL ) {};
 
 		  protected:
 			T * _model = nullptr;
+
+			virtual void _prepare() {};
 		};
 	} // namespace View
 } // namespace VTX

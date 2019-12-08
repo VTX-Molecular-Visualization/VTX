@@ -1,5 +1,4 @@
 #include "base_camera.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 
 namespace VTX
 {
@@ -7,19 +6,6 @@ namespace VTX
 	{
 		namespace Camera
 		{
-			Mat4f BaseCamera::getViewMatrix() const { return glm::lookAt( _position, _position + _front, _up ); }
-
-			Mat4f BaseCamera::getProjectionMatrix() const
-			{
-				return glm::perspective( glm::radians( _fov ), _screenWidth / _screenHeight, _near, _far );
-			}
-
-			void BaseCamera::setScreenSize( const int p_width, const int p_height )
-			{
-				_screenWidth  = float( p_width );
-				_screenHeight = float( p_height );
-			}
-
 			void BaseCamera::_zoom( const float p_delta )
 			{
 				_fov = glm::clamp( _fov - p_delta, CAMERA_FOV_MIN, CAMERA_FOV_MAX );

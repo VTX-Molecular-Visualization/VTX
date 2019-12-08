@@ -30,13 +30,19 @@ namespace VTX
 				ATOM_RADIUS	  = 2
 			};
 
-			BaseView3DMolecule();
+			BaseView3DMolecule() = default;
 			~BaseView3DMolecule();
 
-			void							 setCameraMatrices( const Object3D::Camera::BaseCamera & ) const;
+			void							 setCameraMatrices( const Mat4f, const Mat4f ) const;
 			virtual std::string				 getProgramName() const		  = 0;
 			virtual std::vector<std::string> getShaderNames() const		  = 0;
 			virtual void					 setupUniforms( const GLint ) = 0;
+
+			void bindVAO() const { glBindVertexArray( _vao ); }
+			void unbindVAO() const { glBindVertexArray( 0 ); }
+
+			void bindIBO() const { glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO ); }
+			void unbindIBO() const { glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 ); }
 
 		  protected:
 			GLint _uViewMatrix	   = GL_INVALID_INDEX;
@@ -55,6 +61,8 @@ namespace VTX
 			GLuint _atomColorsVBO = GL_INVALID_VALUE;
 			// Vao.
 			GLuint _vao = GL_INVALID_VALUE;
+
+			virtual void _prepare() override;
 		}; // namespace View
 	}	   // namespace View
 } // namespace VTX

@@ -6,6 +6,7 @@
 #endif
 
 #include "../../defines.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 
 namespace VTX
 {
@@ -19,9 +20,16 @@ namespace VTX
 				BaseCamera()		  = default;
 				virtual ~BaseCamera() = default;
 
-				Mat4f getViewMatrix() const;
-				Mat4f getProjectionMatrix() const;
-				void  setScreenSize( const int, const int );
+				inline Mat4f getViewMatrix() const { return glm::lookAt( _position, _position + _front, _up ); }
+				inline Mat4f getProjectionMatrix() const
+				{
+					return glm::perspective( glm::radians( _fov ), _screenWidth / _screenHeight, _near, _far );
+				}
+				inline void setScreenSize( const int p_width, const int p_height )
+				{
+					_screenWidth  = float( p_width );
+					_screenHeight = float( p_height );
+				}
 
 			  protected:
 				virtual void _zoom( const float ) final;

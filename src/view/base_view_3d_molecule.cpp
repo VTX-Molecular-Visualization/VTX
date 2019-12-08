@@ -6,7 +6,7 @@ namespace VTX
 {
 	namespace View
 	{
-		BaseView3DMolecule::BaseView3DMolecule()
+		void BaseView3DMolecule::_prepare()
 		{
 			uint atomCount = _model->getAtomCount();
 			uint bondCount = _model->getBondCount();
@@ -73,10 +73,10 @@ namespace VTX
 			glDeleteVertexArrays( 1, &_vao );
 		}
 
-		void BaseView3DMolecule::setCameraMatrices( const Object3D::Camera::BaseCamera & p_camera ) const
+		void BaseView3DMolecule::setCameraMatrices( const Mat4f p_viewMatrix, const Mat4f p_projMatrix ) const
 		{
-			glUniformMatrix4fv( _uViewMatrix, 1, GL_FALSE, glm::value_ptr( p_camera.getViewMatrix() ) );
-			glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_camera.getProjectionMatrix() ) );
+			glUniformMatrix4fv( _uViewMatrix, 1, GL_FALSE, glm::value_ptr( p_viewMatrix ) );
+			glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_projMatrix ) );
 			// TODO: set radius as setting.
 			glUniform1f( _uCylinderRadius, 0.2f );
 		}

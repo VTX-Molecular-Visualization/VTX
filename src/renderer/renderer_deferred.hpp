@@ -19,7 +19,7 @@ namespace VTX
 
 			virtual void init( const Object3D::Scene & ) override;
 			virtual void clear( const Object3D::Scene & ) override;
-			virtual void render( const Object3D::Scene &, const uint ) override;
+			virtual void render( Object3D::Scene &, const uint ) override;
 
 		  private:
 			// Geometry pass.
@@ -63,7 +63,7 @@ namespace VTX
 			// inline void _initAntiAliasingPass();
 			inline void _initQuadVAO();
 
-			inline void _geometricPass( const Object3D::Scene & );
+			inline void _geometricPass( Object3D::Scene & );
 			// inline void _ssaoPass();
 			inline void _blurPass();
 			inline void _shadingPass();

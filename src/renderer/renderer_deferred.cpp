@@ -125,15 +125,16 @@ namespace VTX
 			static const GLenum draw_bufferShading[] = { GL_COLOR_ATTACHMENT0 };
 			glDrawBuffers( 1, draw_bufferShading );
 			_toonShading = _programManager.createProgram( "ToonShading" );
-			_toonShading->attachShader( _programManager.createShader( "toonShading.frag" ) );
+			_toonShading->attachShader( _programManager.createShader( "shading/toonShading.frag" ) );
 			_toonShading->link();
 			_diffuseShading = _programManager.createProgram( "DiffuseShading" );
-			_diffuseShading->attachShader( _programManager.createShader( "diffuseShading.frag" ) );
+			_diffuseShading->attachShader( _programManager.createShader( "shading/diffuseShading.frag" ) );
 			_diffuseShading->link();
 			_blinnPhongShading = _programManager.createProgram( "BlinnPhongShading" );
-			_blinnPhongShading->attachShader( _programManager.createShader( "blinnPhongShading.frag" ) );
+			_blinnPhongShading->attachShader( _programManager.createShader( "shading/blinnPhongShading.frag" ) );
 			_blinnPhongShading->link();
 
+			// TODO: use settings.
 			_currentShading = _diffuseShading;
 		}
 
@@ -178,7 +179,7 @@ namespace VTX
 			_isInitialized = false;
 		}
 
-		void RendererDeferred::render( const Object3D::Scene & p_scene, const uint p_time )
+		void RendererDeferred::render( Object3D::Scene & p_scene, const uint p_time )
 		{
 			if ( _isInitialized == false ) { return; }
 
@@ -192,22 +193,24 @@ namespace VTX
 			// _antiAliasingPass();
 		};
 
-		inline void RendererDeferred::_geometricPass( const Object3D::Scene & p_scene )
+		inline void RendererDeferred::_geometricPass( Object3D::Scene & p_scene )
 		{
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboGeo );
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
 			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
-				// view->bindVAO();
-				// view->bindIBO();
-
 				View::BaseView3DMolecule * view = (View::BaseView3DMolecule *)molecule->getCurrentView3D();
-				view->setCameraMatrices( p_scene.getCameraOrbit() );
+
+				view->bindVAO();
+				view->bindIBO();
+
+				view->setCameraMatrices( p_scene.getCameraOrbit().getViewMatrix(),
+										 p_scene.getCameraOrbit().getProjectionMatrix() );
 				view->render( 0 );
 
-				// view->unbindIBO();
-				// view->unbindVAO();
+				view->unbindIBO();
+				view->unbindVAO();
 			}
 
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
