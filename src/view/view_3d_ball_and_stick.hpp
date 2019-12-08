@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "../shader/glsl_program_manager.hpp"
 #include "base_view_3d_molecule.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -27,11 +26,11 @@ namespace VTX
 			virtual void render( const uint p_time ) override {};
 			virtual void notify( Event::EVENT_MODEL ) {};
 
+			virtual std::string				 getProgramName() const override;
+			virtual std::vector<std::string> getShaderNames() const override;
+			virtual void					 setupUniforms( const GLint p_programId ) override;
+
 		  private:
-			// TODO: move in BaseView3D or BaseView3DMolecule?
-			GLint _uViewMatrix	   = GL_INVALID_INDEX;
-			GLint _uProjMatrix	   = GL_INVALID_INDEX;
-			GLint _uCylinderRadius = GL_INVALID_INDEX;
 		};
 	} // namespace View
 } // namespace VTX

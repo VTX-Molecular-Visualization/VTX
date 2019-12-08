@@ -93,7 +93,7 @@ namespace VTX
 
 		// Renderer.
 		_chrono.start();
-		_renderer->render( _scene );
+		_renderer->render( _scene, 0 );
 		_chrono.stop();
 		_timeLastRenderer = _chrono.elapsedTime();
 

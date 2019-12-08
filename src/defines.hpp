@@ -29,7 +29,8 @@ namespace VTX
 	constexpr float CAMERA_FOV_MIN = 10.f;
 	constexpr float CAMERA_FOV_MAX = 90.f;
 
-	const std::string SHADER_DIR = "shader/shaders";
+	const std::string DATA_DIR	 = "../data/";
+	const std::string SHADER_DIR = "../shaders/";
 
 	// Log.
 	inline void	  VTX_DEBUG( const std::string & p_str ) { VTX::Util::Logger::logInfo( p_str ); }

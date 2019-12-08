@@ -86,7 +86,7 @@ namespace VTX
 
 			if ( ifs.is_open() == false )
 			{
-				VTX_ERROR( "Can not open file: " + p_path.str() );
+				VTX_ERROR( "Could not open file: " + p_path.str() );
 				return "";
 			}
 

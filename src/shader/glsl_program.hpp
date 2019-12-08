@@ -22,8 +22,8 @@ namespace VTX
 			inline GLuint getId() const { return _id; }
 			inline void	  use() const { glUseProgram( _id ); }
 
-			void create( const std::string & name );
-			void attachShader( const GLuint shaderId ) const;
+			void create( const std::string & );
+			void attachShader( const GLuint ) const;
 			void link();
 
 			void detachShaders();

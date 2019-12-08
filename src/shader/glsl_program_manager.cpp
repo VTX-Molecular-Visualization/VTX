@@ -8,12 +8,12 @@ namespace VTX
 	namespace Shader
 	{
 		const GLSLProgramManager::MapStringToEnum GLSLProgramManager::EXTENSIONS
-			= MapStringToEnum( { { ".vert", SHADER_TYPE::VERTEX },
-								 { ".geom", SHADER_TYPE::GEOMETRY },
-								 { ".frag", SHADER_TYPE::FRAGMENT },
-								 { ".comp", SHADER_TYPE::COMPUTE },
-								 { ".tesc", SHADER_TYPE::TESS_CONTROL },
-								 { ".tese", SHADER_TYPE::TESS_EVALUATION } } );
+			= MapStringToEnum( { { "vert", SHADER_TYPE::VERTEX },
+								 { "geom", SHADER_TYPE::GEOMETRY },
+								 { "frag", SHADER_TYPE::FRAGMENT },
+								 { "comp", SHADER_TYPE::COMPUTE },
+								 { "tesc", SHADER_TYPE::TESS_CONTROL },
+								 { "tese", SHADER_TYPE::TESS_EVALUATION } } );
 
 		SHADER_TYPE GLSLProgramManager::getShaderType( const std::string & p_name )
 		{
@@ -39,7 +39,7 @@ namespace VTX
 
 		GLSLProgram * const GLSLProgramManager::createProgram( const std::string & p_name )
 		{
-			VTX_INFO( "Create program " + p_name );
+			VTX_INFO( "Creating program: " + p_name );
 
 			if ( _programs.find( p_name ) == _programs.end() )
 			{
@@ -94,9 +94,16 @@ namespace VTX
 			GLuint shaderId = getShader( name );
 			if ( shaderId == GL_INVALID_INDEX )
 			{
-				shaderId					 = glCreateShader( (int)type );
-				const std::string str		 = IO::Path::read( SHADER_DIR + p_path.str() );
-				const GLchar *	  shaderCode = str.c_str();
+				shaderId			  = glCreateShader( (int)type );
+				const std::string str = IO::Path::read( SHADER_DIR + p_path.str() );
+
+				if ( str.empty() )
+				{
+					glDeleteShader( shaderId );
+					return GL_INVALID_INDEX;
+				}
+
+				const GLchar * shaderCode = str.c_str();
 				glShaderSource( shaderId, 1, &shaderCode, 0 );
 				glCompileShader( shaderId );
 				GLint compiled;
@@ -112,7 +119,6 @@ namespace VTX
 					return GL_INVALID_INDEX;
 				}
 				_shaders[ name ] = shaderId;
-				VTX_INFO( "Shader compiled" );
 			}
 			else
 			{
