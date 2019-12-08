@@ -17,9 +17,50 @@ namespace VTX
 			RendererDeferred()	= default;
 			~RendererDeferred() = default;
 
-			virtual void init( Object3D::Scene * const ) override;
-			virtual void clear( Object3D::Scene * const ) override;
-			virtual void render( const Object3D::Scene * const, const uint ) override;
+			virtual void init( const Object3D::Scene & ) override;
+			virtual void clear( const Object3D::Scene & ) override;
+			virtual void render( const Object3D::Scene &, const uint ) override;
+
+		  private:
+			// Geometry pass.
+			GLuint _fboGeo						 = GL_INVALID_VALUE;
+			GLuint _colorNormalCompressedTexture = GL_INVALID_VALUE;
+			GLuint _camSpacePositionsTexture	 = GL_INVALID_VALUE;
+			GLuint _depthTexture				 = GL_INVALID_VALUE;
+
+			GLuint _quadVAO = GL_INVALID_VALUE;
+			GLuint _quadVBO = GL_INVALID_VALUE;
+
+			// SSAO pass.
+			GLuint				  _fboSSAO		  = GL_INVALID_VALUE;
+			GLuint				  _ssaoTexture	  = GL_INVALID_VALUE;
+			GLuint				  _noiseTexture	  = GL_INVALID_VALUE;
+			Shader::GLSLProgram * _ssaoShader	  = nullptr;
+			GLint				  _uProjMatrixLoc = GL_INVALID_INDEX;
+			GLint				  _uAoKernelLoc	  = GL_INVALID_INDEX;
+			Shader::GLSLProgram * _blurShader	  = nullptr;
+
+			// Blur pass.
+			GLuint _fboBlur		= GL_INVALID_VALUE;
+			GLuint _blurTexture = GL_INVALID_VALUE;
+
+			// Shading pass.
+			GLuint				  _fboShading		 = GL_INVALID_VALUE;
+			GLuint				  _shadingTexture	 = GL_INVALID_VALUE;
+			Shader::GLSLProgram * _diffuseShading	 = nullptr;
+			Shader::GLSLProgram * _toonShading		 = nullptr;
+			Shader::GLSLProgram * _blinnPhongShading = nullptr;
+
+			Shader::GLSLProgram * _currentShading = nullptr;
+
+			// Anti-aliasing pass.
+			Shader::GLSLProgram * _aaShader = nullptr;
+
+			inline void _geometricPass( const Object3D::Scene & );
+			inline void _ssaoPass( const Object3D::Scene & );
+			inline void _blurPass();
+			inline void _shadingPass();
+			inline void _antiAliasingPass();
 		};
 	} // namespace Renderer
 } // namespace VTX

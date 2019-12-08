@@ -31,9 +31,9 @@ namespace VTX
 			BaseRenderer()	= default;
 			~BaseRenderer() = default;
 
-			virtual void init( Object3D::Scene * const )					 = 0;
-			virtual void clear( Object3D::Scene * const )					 = 0;
-			virtual void render( const Object3D::Scene * const, const uint ) = 0;
+			virtual void init( const Object3D::Scene & )			   = 0;
+			virtual void clear( const Object3D::Scene & )			   = 0;
+			virtual void render( const Object3D::Scene &, const uint ) = 0;
 
 		  protected:
 			bool					   _isInitialized  = false;

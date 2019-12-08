@@ -77,7 +77,7 @@ namespace VTX
 	void VTXApp::initRenderer() const
 	{
 		// TODO: throw exceptionn if renderer null.
-		_renderer->init( _scene );
+		_renderer->init( *_scene );
 	}
 
 	void VTXApp::_update()
@@ -93,7 +93,7 @@ namespace VTX
 
 		// Renderer.
 		_chrono.start();
-		_renderer->render( _scene, 0 );
+		//_renderer->render( *_scene, 0 );
 		_chrono.stop();
 		_timeLastRenderer = _chrono.elapsedTime();
 

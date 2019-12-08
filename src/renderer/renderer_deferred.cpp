@@ -7,12 +7,12 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		void RendererDeferred::init( Object3D::Scene * const p_scene )
+		void RendererDeferred::init( const Object3D::Scene & p_scene )
 		{
 			VTX_INFO( "Initializing renderer..." );
 			clear( p_scene );
 
-			for ( Model::ModelMolecule * const molecule : p_scene->getMolecules() )
+			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
 				View::BaseView3DMolecule * view = (View::BaseView3DMolecule *)molecule->getCurrentView3D();
 
@@ -29,11 +29,11 @@ namespace VTX
 			}
 
 			_isInitialized = true;
-		}
+		} // namespace RendererDeferred::init(constObject3D::Scene&,p_scene)
 
-		void RendererDeferred::clear( Object3D::Scene * const p_scene )
+		void RendererDeferred::clear( const Object3D::Scene & p_scene )
 		{
-			for ( Model::ModelMolecule * const molecule : p_scene->getMolecules() )
+			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
 				View::BaseView3DMolecule * view = (View::BaseView3DMolecule *)molecule->getCurrentView3D();
 
@@ -43,16 +43,36 @@ namespace VTX
 			_isInitialized = false;
 		}
 
-		void RendererDeferred::render( const Object3D::Scene * const p_scene, const uint p_time )
+		void RendererDeferred::render( const Object3D::Scene & p_scene, const uint p_time )
 		{
 			if ( _isInitialized == false ) { return; }
 
+			glEnable( GL_DEPTH_TEST );
+			_geometricPass( p_scene );
+			glDisable( GL_DEPTH_TEST );
+			_ssaoPass( p_scene );
+			_blurPass();
+			_shadingPass();
+			// _antiAliasingPass();
+
+			/*
 			for ( Model::ModelMolecule * const molecule : p_scene->getMolecules() )
 			{
 				View::BaseView3DMolecule * view = (View::BaseView3DMolecule *)molecule->getCurrentView3D();
 				view->render( 0 );
 			}
+			*/
 		};
+
+		inline void RendererDeferred::_geometricPass( const Object3D::Scene & p_scene ) {}
+
+		inline void RendererDeferred::_ssaoPass( const Object3D::Scene & p_scene ) {}
+
+		inline void RendererDeferred::_blurPass() {}
+
+		inline void RendererDeferred::_shadingPass() {}
+
+		inline void RendererDeferred::_antiAliasingPass() {}
 
 	} // namespace Renderer
 } // namespace VTX
