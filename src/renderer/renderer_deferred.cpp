@@ -25,6 +25,7 @@ namespace VTX
 
 				program->link();
 				view->setupUniforms( program->getId() );
+				program->use();
 			}
 
 			_isInitialized = true;
