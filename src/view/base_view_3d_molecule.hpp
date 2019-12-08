@@ -33,11 +33,6 @@ namespace VTX
 			BaseView3DMolecule() = default;
 			~BaseView3DMolecule();
 
-			void							 setCameraMatrices( const Mat4f, const Mat4f ) const;
-			virtual std::string				 getProgramName() const		  = 0;
-			virtual std::vector<std::string> getShaderNames() const		  = 0;
-			virtual void					 setupUniforms( const GLint ) = 0;
-
 			void bindVAO() const { glBindVertexArray( _vao ); }
 			void unbindVAO() const { glBindVertexArray( 0 ); }
 
@@ -45,10 +40,6 @@ namespace VTX
 			void unbindIBO() const { glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 ); }
 
 		  protected:
-			GLint _uViewMatrix	   = GL_INVALID_INDEX;
-			GLint _uProjMatrix	   = GL_INVALID_INDEX;
-			GLint _uCylinderRadius = GL_INVALID_INDEX;
-
 			// Atom positions vbo.
 			GLuint _atomPositionsVBO = GL_INVALID_VALUE;
 			// Bonds ibo.

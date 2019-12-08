@@ -70,13 +70,5 @@ namespace VTX
 			glBindVertexArray( 0 );
 		}
 
-		void BaseView3DMolecule::setCameraMatrices( const Mat4f p_viewMatrix, const Mat4f p_projMatrix ) const
-		{
-			glUniformMatrix4fv( _uViewMatrix, 1, GL_FALSE, glm::value_ptr( p_viewMatrix ) );
-			glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_projMatrix ) );
-			// TODO: set radius as setting.
-			glUniform1f( _uCylinderRadius, 0.2f );
-		}
-
 	} // namespace View
 } // namespace VTX

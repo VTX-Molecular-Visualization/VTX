@@ -85,7 +85,6 @@ namespace VTX
 		// Renderer.
 		_chrono.start();
 		ImGuiIO & io = ImGui::GetIO();
-		// VTX_INFO( std::to_string( io.DisplaySize.x ) );
 		_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_scene->getCameraOrbit().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_renderer->render( *_scene, 0 );

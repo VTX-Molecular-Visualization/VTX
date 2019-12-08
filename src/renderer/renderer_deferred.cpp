@@ -1,6 +1,6 @@
 #include "renderer_deferred.hpp"
 #include "../model/model_molecule.hpp"
-#include "../view/base_view_3d_molecule.hpp"
+#include "../view/view_3d_ball_and_stick.hpp"
 #include "base_renderer.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <random>
@@ -28,16 +28,7 @@ namespace VTX
 			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
 				View::BaseView3DMolecule * view = (View::BaseView3DMolecule *)molecule->getCurrentView3D();
-
-				// Create program.
-				Shader::GLSLProgram * program = _programManager.createProgram( view->getProgramName() );
-				for ( std::string shader : view->getShaderNames() )
-				{
-					program->attachShader( _programManager.createShader( shader ) );
-				}
-
-				program->link();
-				view->setupUniforms( program->getId() );
+				view->setupShaders( _programManager );
 			}
 
 			_isInitialized = true;
@@ -119,7 +110,7 @@ namespace VTX
 			Vec3f										 aoKernel[ kernelSize ];
 			for ( uint i = 0; i < kernelSize; i++ )
 			{
-				std::cout << "adaptative ? " << std::endl;
+				// std::cout << "adaptative ? " << std::endl;
 				Vec3f v;
 				// sample on unit hemisphere
 				v.x = 2.f * dist( gen ) - 1.f;
@@ -223,13 +214,13 @@ namespace VTX
 			// Init quad vao/vbo for deferred shading.
 
 			// clang-format off
-		GLfloat m_quadVertices[] =
-		{
-			-1.0f,  1.0f,
-            -1.0f, -1.0f, 
-             1.0f,  1.0f,
-             1.0f, -1.0f,
-		};
+			GLfloat m_quadVertices[] =
+			{
+				-1.0f,  1.0f,
+				-1.0f, -1.0f, 
+				 1.0f,  1.0f,
+				 1.0f, -1.0f,
+			};
 			// clang-format on
 
 			// setup plane VAO
@@ -251,8 +242,7 @@ namespace VTX
 			{
 				View::BaseView3DMolecule * view = (View::BaseView3DMolecule *)molecule->getCurrentView3D();
 
-				// Delete program.
-				_programManager.deleteProgram( view->getProgramName() );
+				// TODO: delete shaders/programs or let them for further use?
 			}
 			_isInitialized = false;
 		}
@@ -277,7 +267,7 @@ namespace VTX
 
 			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
-				View::BaseView3DMolecule * view = (View::BaseView3DMolecule *)molecule->getCurrentView3D();
+				View::View3DBallAndStick * view = (View::View3DBallAndStick *)molecule->getCurrentView3D();
 
 				view->bindVAO();
 				view->bindIBO();
@@ -285,7 +275,7 @@ namespace VTX
 				view->setCameraMatrices( p_scene.getCameraOrbit().getViewMatrix(),
 										 p_scene.getCameraOrbit().getProjectionMatrix() );
 
-				_programManager.getProgram( view->getProgramName() )->use();
+				view->useShaders( _programManager );
 				view->render( 0 );
 				view->unbindIBO();
 				view->unbindVAO();

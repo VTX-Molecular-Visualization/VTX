@@ -4,24 +4,57 @@ namespace VTX
 {
 	namespace View
 	{
-		std::string View3DBallAndStick::getProgramName() const { return "CylinderGeom"; }
-
-		std::vector<std::string> View3DBallAndStick::getShaderNames() const
+		void View3DBallAndStick::setupShaders( Shader::GLSLProgramManager & p_programManager )
 		{
-			return { "cylinderImpostorGeom.vert", "cylinderImpostorGeom.geom", "cylinderImpostorDeferred.frag" };
+			// Balls.
+			Shader::GLSLProgram * program = p_programManager.createProgram( "SphereImpostorGeomShader" );
+			program->attachShader( p_programManager.createShader( "sphereImpostorGeom.vert" ) );
+			program->attachShader( p_programManager.createShader( "sphereImpostorGeomQuad.geom" ) );
+			program->attachShader( p_programManager.createShader( "sphereImpostorDeferred.frag" ) );
+			program->link();
+
+			_uViewMatrix	  = glGetUniformLocation( program->getId(), "uMVMatrix" );
+			_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
+			_uBallRadiusScale = glGetUniformLocation( program->getId(), "uRadScale" );
+			// TODO.
+			glUniform1f( _uBallRadiusScale, 1.0f );
+
+			// Sticks.
+			program = p_programManager.createProgram( "CylinderGeom" );
+			program->attachShader( p_programManager.createShader( "cylinderImpostorGeom.vert" ) );
+			program->attachShader( p_programManager.createShader( "cylinderImpostorGeom.geom" ) );
+			program->attachShader( p_programManager.createShader( "cylinderImpostorDeferred.frag" ) );
+			program->link();
+
+			_uViewMatrix	 = glGetUniformLocation( program->getId(), "uMVMatrix" );
+			_uProjMatrix	 = glGetUniformLocation( program->getId(), "uProjMatrix" );
+			_uCylinderRadius = glGetUniformLocation( program->getId(), "uCylRad" );
+			// TODO.
+			glUniform1f( _uCylinderRadius, 0.2f );
 		}
 
-		void View3DBallAndStick::setupUniforms( const GLint p_programId )
+		void View3DBallAndStick::useShaders( Shader::GLSLProgramManager & p_programManager )
 		{
-			_uViewMatrix	 = glGetUniformLocation( p_programId, "uMVMatrix" );
-			_uProjMatrix	 = glGetUniformLocation( p_programId, "uProjMatrix" );
-			_uCylinderRadius = glGetUniformLocation( p_programId, "uCylRad" );
+			p_programManager.getProgram( "SphereImpostorGeomShader" )->use();
+			p_programManager.getProgram( "CylinderGeom" )->use();
+		}
+
+		void View3DBallAndStick::setCameraMatrices( const Mat4f p_viewMatrix, const Mat4f p_projMatrix ) const
+		{
+			glUniformMatrix4fv( _uViewMatrix, 1, GL_FALSE, glm::value_ptr( p_viewMatrix ) );
+			glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_projMatrix ) );
+
+			glUniformMatrix4fv( _uViewMatrix2, 1, GL_FALSE, glm::value_ptr( p_viewMatrix ) );
+			glUniformMatrix4fv( _uProjMatrix2, 1, GL_FALSE, glm::value_ptr( p_projMatrix ) );
 		}
 
 		void View3DBallAndStick::render( const uint p_time )
 		{
-			glDrawElements( GL_LINES, 0, GL_UNSIGNED_INT, (void *)( _model->getAtomCount() * sizeof( uint ) ) );
-			// glDrawArrays( GL_POINTS, 0, _model->getAtomCount() );
+			// Draw balls.
+			glDrawArrays( GL_POINTS, 0, _model->getAtomCount() );
+
+			// Draw sticks.
+			glDrawElements( GL_LINES, 0, GL_UNSIGNED_INT, (void *)( _model->getBondCount() * sizeof( uint ) ) );
 		}
 
 	} // namespace View
