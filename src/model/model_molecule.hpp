@@ -25,6 +25,9 @@ namespace VTX
 		class ModelMolecule : public BaseModel
 		{
 		  public:
+			ModelMolecule() = default;
+			~ModelMolecule();
+
 			// Models.
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
@@ -83,7 +86,7 @@ namespace VTX
 			void				 resetSelectedAtom();
 
 			// Views.
-			std::shared_ptr<BaseView3DMolecule> createAndGetView3DByRepresentation();
+			inline BaseView3DMolecule * getCurrentView3D() { return _currentView3D; };
 
 		  protected:
 			virtual void _addViews() override final;
@@ -110,6 +113,9 @@ namespace VTX
 			ModelChain *   _selectedChain	= nullptr;
 			ModelResidue * _selectedResidue = nullptr;
 			ModelAtom *	   _selectedAtom	= nullptr;
+
+			// Views.
+			BaseView3DMolecule * _currentView3D;
 
 #ifdef _DEBUG
 		  public:

@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../view/base_view_3d_molecule.hpp"
+#include "../model/model_molecule.hpp"
 #include "camera/camera_orbit.hpp"
 #include <vector>
 
@@ -13,7 +13,6 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		class ModelMolecule;
 		class Scene
 		{
 		  public:
@@ -21,9 +20,8 @@ namespace VTX
 			~Scene();
 
 			void addMolecule( Model::ModelMolecule * const p_molecule ) { _molecules.emplace_back( p_molecule ); }
-			inline Camera::CameraOrbit							   getCameraOrbit() const { return _camera; }
-			std::vector<std::shared_ptr<View::BaseView3DMolecule>> getMoleculeViewsByRepresentation(
-				const View::BaseView3DMolecule::REPRESENTATION );
+			inline Camera::CameraOrbit				   getCameraOrbit() const { return _camera; }
+			inline std::vector<Model::ModelMolecule *> getMolecules() const { return _molecules; };
 
 		  private:
 			Camera::CameraOrbit					_camera	   = Camera::CameraOrbit();

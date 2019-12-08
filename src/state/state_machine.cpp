@@ -58,7 +58,6 @@ namespace VTX
 
 		void StateMachine::_switchState( const StateSharedPtr p_state )
 		{
-			VTX_INFO( "Entering state: " + std::string( magic_enum::enum_name( p_state->getName() ) ) );
 			if ( _currentState != nullptr ) { _currentState->exit(); }
 			_currentState = p_state;
 			if ( _currentState != nullptr ) { _currentState->enter(); }

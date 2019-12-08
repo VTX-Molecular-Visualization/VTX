@@ -20,7 +20,7 @@ namespace VTX
 				BALL_AND_STICK
 			};
 
-			BaseView3DMolecule()  = default;
+			BaseView3DMolecule() {};
 			~BaseView3DMolecule() = default;
 
 		  private:

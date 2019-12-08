@@ -7,18 +7,15 @@ namespace VTX
 {
 	namespace Model
 	{
+		ModelMolecule::~ModelMolecule() { _currentView3D = nullptr; }
+
 		void ModelMolecule::_addViews()
 		{
 			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE ) );
-		}
 
-		std::shared_ptr<BaseView3DMolecule> ModelMolecule::createAndGetView3DByRepresentation()
-		{
 			View::View3DBallAndStick * view = new View::View3DBallAndStick();
-
 			_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( view ) ) );
-
-			return std::shared_ptr<BaseView3DMolecule>( (BaseView3DMolecule *)view );
+			_currentView3D = (BaseView3DMolecule *)view;
 		}
 
 		void ModelMolecule::printInfos() const

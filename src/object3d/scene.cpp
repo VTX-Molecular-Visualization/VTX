@@ -14,20 +14,5 @@ namespace VTX
 			_molecules.clear();
 		}
 
-		std::vector<std::shared_ptr<View::BaseView3DMolecule>> Scene::getMoleculeViewsByRepresentation(
-			const View::BaseView3DMolecule::REPRESENTATION p_representation )
-		{
-			std::vector<std::shared_ptr<View::BaseView3DMolecule>> views
-				= std::vector<std::shared_ptr<View::BaseView3DMolecule>>();
-
-			for ( Model::ModelMolecule * const molecule : _molecules )
-			{
-				// TODO: add representation (forward declare enum in ModelMolecule?).
-				views.emplace_back( molecule->createAndGetView3DByRepresentation() );
-			}
-
-			return views;
-		}
-
 	} // namespace Object3D
 } // namespace VTX

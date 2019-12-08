@@ -1,31 +1,22 @@
 #include "renderer_deferred.hpp"
+#include "../model/model_molecule.hpp"
+#include "../view/base_view_3d_molecule.hpp"
 #include "base_renderer.hpp"
 
 namespace VTX
 {
 	namespace Renderer
 	{
-		// TODO: maybe move some features in the base class.
+		void RendererDeferred::init( Object3D::Scene * const p_scene ) { clear(); }
 
-		void RendererDeferred::init( Object3D::Scene * const						p_scene,
-									 const View::BaseView3DMolecule::REPRESENTATION p_representation )
-		{
-			clear();
-			// Get the views to render by representation.
-			_moleculeViews = p_scene->getMoleculeViewsByRepresentation( p_representation );
-		}
+		void RendererDeferred::clear() {}
 
-		void RendererDeferred::clear()
+		double RendererDeferred::render( const Object3D::Scene * const p_scene )
 		{
-			// Reset each shared_ptr here or not?
-			_moleculeViews.clear();
-		}
-
-		double RendererDeferred::render( const Object3D::Scene * const )
-		{
-			for ( MoleculeView3DSharedPtr molecule : _moleculeViews )
+			for ( Model::ModelMolecule * const molecule : p_scene->getMolecules() )
 			{
-				molecule->render( 0.0 );
+				View::BaseView3DMolecule * view = (View::BaseView3DMolecule *)molecule->getCurrentView3D();
+				view->render( 0 );
 			}
 			return 0.0;
 		};
