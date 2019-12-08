@@ -8,7 +8,6 @@
 #include "../defines.hpp"
 #include "../math/aabb.hpp"
 #include "../util/logger.hpp"
-//#include "../view/base_view_3d_molecule.hpp"
 #include "base_model.hpp"
 #include "model_atom.hpp"
 #include "model_chain.hpp"
@@ -22,6 +21,7 @@ namespace VTX
 {
 	namespace Model
 	{
+		class BaseView3DMolecule;
 		class ModelMolecule : public BaseModel
 		{
 		  public:
@@ -83,8 +83,7 @@ namespace VTX
 			void				 resetSelectedAtom();
 
 			// Views.
-			// std::shared_ptr<View::BaseView3DMolecule> createAndGetView3DByRepresentation(
-			// const View::BaseView3DMolecule::REPRESENTATION );
+			std::shared_ptr<BaseView3DMolecule> createAndGetView3DByRepresentation();
 
 		  protected:
 			virtual void _addViews() override final;

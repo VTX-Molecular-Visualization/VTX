@@ -7,6 +7,8 @@
 
 #include "../object3d/scene.hpp"
 #include "../shader/glsl_program_manager.hpp"
+#include "../view/base_view_3d_molecule.hpp"
+#include <vector>
 
 namespace VTX
 {
@@ -27,6 +29,9 @@ namespace VTX
 		class BaseRenderer
 		{
 		  public:
+			using MoleculeView3DSharedPtr		= std::shared_ptr<View::BaseView3DMolecule>;
+			using VectorMoleculeView3DSharedPtr = std::vector<MoleculeView3DSharedPtr>;
+
 			BaseRenderer()	= default;
 			~BaseRenderer() = default;
 
@@ -35,7 +40,8 @@ namespace VTX
 			virtual double render( const Object3D::Scene * const )										   = 0;
 
 		  protected:
-			Shader::GLSLProgramManager _programManager = Shader::GLSLProgramManager();
+			VectorMoleculeView3DSharedPtr _moleculeViews  = VectorMoleculeView3DSharedPtr();
+			Shader::GLSLProgramManager	  _programManager = Shader::GLSLProgramManager();
 		};
 	} // namespace Renderer
 } // namespace VTX
