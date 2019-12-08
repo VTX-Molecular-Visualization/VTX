@@ -20,9 +20,6 @@ namespace VTX
 			uint atomCount = _model->getAtomCount();
 			uint bondCount = _model->getBondCount();
 
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
-
 			glGenBuffers( 1, &_atomPositionsVBO );
 			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
 			glBufferData(

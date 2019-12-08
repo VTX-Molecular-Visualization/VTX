@@ -182,10 +182,9 @@ namespace VTX
 		{
 			if ( _isInitialized == false ) { return; }
 
-			// glClear( GL_COLOR_BUFFER_BIT );
-			glEnable( GL_DEPTH_TEST );
+			//glEnable( GL_DEPTH_TEST );
 			_geometricPass( p_scene );
-			glDisable( GL_DEPTH_TEST );
+			//glDisable( GL_DEPTH_TEST );
 			//_ssaoPass();
 			_blurPass();
 			_shadingPass();

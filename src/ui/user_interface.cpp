@@ -231,8 +231,9 @@ namespace VTX
 
 			// Render.
 			ImGui::Render();
-			// glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-			// glClear( GL_COLOR_BUFFER_BIT );
+			// Useless?
+			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+			glClear( GL_COLOR_BUFFER_BIT );
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
 
 			if ( io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable )
