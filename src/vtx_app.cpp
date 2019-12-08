@@ -82,15 +82,6 @@ namespace VTX
 
 	void VTXApp::_update()
 	{
-		// UI.
-		_chrono.start();
-		_ui->display();
-		_chrono.stop();
-		_timeLastUI = _chrono.elapsedTime();
-
-		// State machine.
-		_stateMachine->update();
-
 		// Renderer.
 		_chrono.start();
 		ImGuiIO & io = ImGui::GetIO();
@@ -100,6 +91,15 @@ namespace VTX
 		_renderer->render( *_scene, 0 );
 		_chrono.stop();
 		_timeLastRenderer = _chrono.elapsedTime();
+
+		// UI.
+		_chrono.start();
+		_ui->display();
+		_chrono.stop();
+		_timeLastUI = _chrono.elapsedTime();
+
+		// State machine.
+		_stateMachine->update();
 
 		// Timers.
 		_timeLast = _timeLastUI;

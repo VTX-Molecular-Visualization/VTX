@@ -2,6 +2,8 @@
 #include "../model/model_molecule.hpp"
 #include "../view/base_view_3d_molecule.hpp"
 #include "base_renderer.hpp"
+#include <glm/gtc/type_ptr.hpp>
+#include <random>
 
 namespace VTX
 {
@@ -83,7 +85,77 @@ namespace VTX
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 		}
 
-		// inline void RendererDeferred::_initSsaoPass() {}
+		inline void RendererDeferred::_initSsaoPass()
+		{
+			glGenFramebuffers( 1, &_fboSSAO );
+			glBindFramebuffer( GL_FRAMEBUFFER, _fboSSAO );
+
+			glGenTextures( 1, &_ssaoTexture );
+			glBindTexture( GL_TEXTURE_2D, _ssaoTexture );
+			glTexStorage2D( GL_TEXTURE_2D, 1, GL_R32F, _width, _height );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+			glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _ssaoTexture, 0 );
+			static const GLenum draw_bufferSSAO[] = { GL_COLOR_ATTACHMENT0 };
+			glDrawBuffers( 1, draw_bufferSSAO );
+
+			_ssaoShader = _programManager.createProgram( "SSAO" );
+			_ssaoShader->attachShader( _programManager.createShader( "shading/ssao.frag" ) );
+			_ssaoShader->link();
+
+			_uProjMatrixLoc = glGetUniformLocation( _ssaoShader->getId(), "uProjMatrix" );
+			_uAoKernelLoc	= glGetUniformLocation( _ssaoShader->getId(), "uAoKernel" );
+
+			// generate random ao kernel
+			std::random_device							 rd;
+			static std::mt19937							 gen( 0 ); // rd());
+			static std::uniform_real_distribution<float> dist( 0.f, 1.f );
+			const uint									 kernelSize = 32;
+			Vec3f										 aoKernel[ kernelSize ];
+			for ( uint i = 0; i < kernelSize; i++ )
+			{
+				std::cout << "adaptative ? " << std::endl;
+				Vec3f v;
+				// sample on unit hemisphere
+				v.x = 2.f * dist( gen ) - 1.f;
+				v.y = 2.f * dist( gen ) - 1.f;
+				v.z = dist( gen );
+				v	= glm::normalize( v );
+				// scale sample within the hemisphere
+				v *= dist( gen );
+				// accelerating interpolation (distance from center reduces when
+				// number of points grow up)
+				float scale = float( i ) / float( kernelSize );
+				scale		= 0.1f + 0.9f * scale * scale; // lerp
+				v *= scale;
+				aoKernel[ i ] = v;
+			}
+
+			_ssaoShader->use();
+			glUniform3fv( _uAoKernelLoc, kernelSize, (const GLfloat *)aoKernel );
+
+			// generate noise texture
+			const uint		   noiseTextureSize = 128;
+			std::vector<Vec3f> noise( noiseTextureSize * noiseTextureSize );
+
+			for ( uint i = 0; i < noiseTextureSize * noiseTextureSize; ++i )
+			{
+				noise[ i ] = Vec3f( dist( gen ), dist( gen ), 0.f );
+				noise[ i ] = glm::normalize( noise[ i ] );
+			}
+			glGenTextures( 1, &_noiseTexture );
+			glBindTexture( GL_TEXTURE_2D, _noiseTexture );
+			glTexImage2D(
+				GL_TEXTURE_2D, 0, GL_RGB16F, noiseTextureSize, noiseTextureSize, 0, GL_RGB, GL_FLOAT, noise.data() );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			// repeat tile over the image
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+		}
 
 		inline void RendererDeferred::_initBlurPass()
 		{
@@ -137,7 +209,12 @@ namespace VTX
 			_currentShading = _diffuseShading;
 		}
 
-		// inline void RendererDeferred::_initAntiAliasingPass() {}
+		inline void RendererDeferred::_initAntiAliasingPass()
+		{
+			_aaShader = _programManager.createProgram( "AA" );
+			_aaShader->attachShader( _programManager.createShader( "shading/fxaa.frag" ) );
+			_aaShader->link();
+		}
 
 		inline void RendererDeferred::_initQuadVAO()
 		{
@@ -182,13 +259,13 @@ namespace VTX
 		{
 			if ( _isInitialized == false ) { return; }
 
-			//glEnable( GL_DEPTH_TEST );
+			glEnable( GL_DEPTH_TEST );
 			_geometricPass( p_scene );
-			//glDisable( GL_DEPTH_TEST );
-			//_ssaoPass();
+			glDisable( GL_DEPTH_TEST );
+			_ssaoPass( p_scene );
 			_blurPass();
 			_shadingPass();
-			// _antiAliasingPass();
+			_antiAliasingPass();
 		};
 
 		inline void RendererDeferred::_geometricPass( Object3D::Scene & p_scene )
@@ -215,7 +292,39 @@ namespace VTX
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 		}
 
-		// inline void RendererDeferred::_ssaoPass() {}
+		inline void RendererDeferred::_ssaoPass( Object3D::Scene & p_scene )
+		{
+			glBindFramebuffer( GL_FRAMEBUFFER, _fboSSAO );
+			glClear( GL_COLOR_BUFFER_BIT );
+
+			glActiveTexture( GL_TEXTURE0 );
+			glBindTexture( GL_TEXTURE_2D, _colorNormalCompressedTexture );
+			glActiveTexture( GL_TEXTURE1 );
+			glBindTexture( GL_TEXTURE_2D, _camSpacePositionsTexture );
+			glActiveTexture( GL_TEXTURE2 );
+			glBindTexture( GL_TEXTURE_2D, _noiseTexture );
+			glActiveTexture( GL_TEXTURE3 );
+			glBindTexture( GL_TEXTURE_2D, _depthTexture );
+
+			_ssaoShader->use();
+
+			glUniformMatrix4fv(
+				_uProjMatrixLoc, 1, GL_FALSE, glm::value_ptr( p_scene.getCameraOrbit().getProjectionMatrix() ) );
+
+			glBindVertexArray( _quadVAO );
+			glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+			glBindVertexArray( 0 );
+
+			// TODO Needed ?
+			glActiveTexture( GL_TEXTURE0 );
+			glBindTexture( GL_TEXTURE_2D, 0 );
+			glActiveTexture( GL_TEXTURE1 );
+			glBindTexture( GL_TEXTURE_2D, 0 );
+			glActiveTexture( GL_TEXTURE2 );
+			glBindTexture( GL_TEXTURE_2D, 0 );
+			glActiveTexture( GL_TEXTURE3 );
+			glBindTexture( GL_TEXTURE_2D, 0 );
+		}
 
 		inline void RendererDeferred::_blurPass()
 		{
@@ -255,7 +364,19 @@ namespace VTX
 			glBindVertexArray( 0 );
 		}
 
-		// inline void RendererDeferred::_antiAliasingPass() {}
+		inline void RendererDeferred::_antiAliasingPass()
+		{
+			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+			glActiveTexture( GL_TEXTURE0 );
+			glBindTexture( GL_TEXTURE_2D, _shadingTexture );
+
+			_aaShader->use();
+
+			glBindVertexArray( _quadVAO );
+			glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+			glBindVertexArray( 0 );
+		}
 
 	} // namespace Renderer
 } // namespace VTX
