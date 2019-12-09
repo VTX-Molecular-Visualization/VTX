@@ -6,7 +6,17 @@
 #endif
 
 #include "base_component.hpp"
+#include <GL/gl3w.h>
 #include <SDL2/SDL.h>
+
+// GL error callback return type.
+typedef void( APIENTRY * DEBUGPROC )( GLenum		 p_source,
+									  GLenum		 p_type,
+									  GLuint		 p_id,
+									  GLenum		 p_severity,
+									  GLsizei		 p_length,
+									  const GLchar * p_message,
+									  const void *	 p_userParam );
 
 namespace VTX
 {

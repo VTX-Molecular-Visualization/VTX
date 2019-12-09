@@ -3,6 +3,7 @@
 #include "../exceptions.hpp"
 #include "../settings.hpp"
 #include "../style.hpp"
+#include "../tool/gl_debug.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
 #include "component_console.hpp"
@@ -11,7 +12,6 @@
 #include "component_selection.hpp"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_sdl.h"
-#include <GL/gl3w.h>
 #include <iostream>
 
 namespace VTX
@@ -118,6 +118,11 @@ namespace VTX
 
 			if ( !gl3wIsSupported( OPENGL_VERSION_MAJOR, OPENGL_VERSION_MINOR ) )
 			{ throw Exception::GLException( "OpenGL version not supported" ); }
+
+#ifdef _DEBUG
+			glEnable( GL_DEBUG_OUTPUT );
+			glDebugMessageCallback( VTX::Tool::GLDebugMessageCallback, NULL );
+#endif
 		}
 
 		void UserInterface::_initIMGUI()
@@ -182,7 +187,6 @@ namespace VTX
 		void UserInterface::_draw()
 		{
 			ImGuiIO & io = ImGui::GetIO();
-			SDL_Event event;
 
 			// New frame.
 			ImGui_ImplOpenGL3_NewFrame();
@@ -217,24 +221,23 @@ namespace VTX
 
 			// Render.
 			ImGui::Render();
-			// Useless?
-			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-			glClear( GL_COLOR_BUFFER_BIT );
-			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
 
 			if ( io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable )
 			{
-				SDL_Window *  currentWindow	 = SDL_GL_GetCurrentWindow();
-				SDL_GLContext currentContext = SDL_GL_GetCurrentContext();
 				ImGui::UpdatePlatformWindows();
 				ImGui::RenderPlatformWindowsDefault();
-				SDL_GL_MakeCurrent( currentWindow, currentContext );
 			}
+
+			/////////////////////////////// Useless?
+			SDL_GL_MakeCurrent( _window, _glContext );
+			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+			// glClear( GL_COLOR_BUFFER_BIT );
+			//////////////////////////////
+			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
 
 			SDL_GL_SwapWindow( _window );
 		}
 
 		bool UserInterface::pollEvent( SDL_Event & p_event ) const { return SDL_PollEvent( &p_event ); }
-
 	} // namespace UI
 } // namespace VTX
