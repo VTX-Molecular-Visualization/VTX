@@ -30,6 +30,13 @@ namespace VTX
 				_screenHeight = float( p_height );
 			}
 
+			virtual void zoom( const float ) final;
+			virtual void moveFront( const float ) final;
+			virtual void moveLeft( const float ) final;
+			virtual void moveUp( const float ) final;
+			virtual void rotateLeft( const float ) final;
+			virtual void rotateUp( const float ) final;
+
 			virtual void printInfo() const;
 
 		  protected:
@@ -67,13 +74,6 @@ namespace VTX
 
 			float _theta = 0.f;
 			float _phi	 = 0.f;
-
-			virtual void _zoom( const float ) final;
-			virtual void _moveFront( const float ) final;
-			virtual void _moveLeft( const float ) final;
-			virtual void _moveUp( const float ) final;
-			virtual void _rotateLeft( const float ) final;
-			virtual void _rotateUp( const float ) final;
 
 			void _update();
 		}; // namespace Camera

@@ -27,6 +27,7 @@ namespace VTX
 
 		  private:
 			Object3D::Camera & _camera;
+			bool			   _mouseLeftPressed = false;
 		};
 	} // namespace Controller
 } // namespace VTX

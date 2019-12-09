@@ -4,24 +4,24 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		void Camera::_zoom( const float p_delta )
+		void Camera::zoom( const float p_delta )
 		{
 			_fov = glm::clamp( _fov - p_delta, CAMERA_FOV_MIN, CAMERA_FOV_MAX );
 		}
 
-		void Camera::_moveFront( const float p_delta ) { _position += p_delta * _front; }
+		void Camera::moveFront( const float p_delta ) { _position += p_delta * _front; }
 
-		void Camera::_moveLeft( const float p_delta ) { _position += p_delta * _left; }
+		void Camera::moveLeft( const float p_delta ) { _position += p_delta * _left; }
 
-		void Camera::_moveUp( const float p_delta ) { _position += p_delta * _up; }
+		void Camera::moveUp( const float p_delta ) { _position += p_delta * _up; }
 
-		void Camera::_rotateLeft( const float p_angle )
+		void Camera::rotateLeft( const float p_angle )
 		{
 			_phi -= glm::radians( p_angle );
 			_update();
 		}
 
-		void Camera::_rotateUp( const float p_angle )
+		void Camera::rotateUp( const float p_angle )
 		{
 			_theta -= glm::radians( p_angle );
 			_update();
