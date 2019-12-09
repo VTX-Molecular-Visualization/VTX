@@ -3,7 +3,7 @@
 #include "../exceptions.hpp"
 #include "../settings.hpp"
 #include "../style.hpp"
-#include "../tool/gl_debug.hpp"
+#include "../util/opengl.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
 #include "component_console.hpp"
@@ -121,7 +121,7 @@ namespace VTX
 
 #ifdef _DEBUG
 			glEnable( GL_DEBUG_OUTPUT );
-			glDebugMessageCallback( VTX::Tool::GLDebugMessageCallback, NULL );
+			glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
 #endif
 		}
 

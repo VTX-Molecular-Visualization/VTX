@@ -33,12 +33,14 @@ namespace VTX
 
 		void View3DBallAndStick::useShaders( Shader::GLSLProgramManager & p_programManager )
 		{
+			VTX_INFO( "Use shader" );
 			p_programManager.getProgram( "SphereImpostorGeomShader" )->use();
 			p_programManager.getProgram( "CylinderGeom" )->use();
 		}
 
 		void View3DBallAndStick::setCameraMatrices( const Mat4f p_viewMatrix, const Mat4f p_projMatrix ) const
 		{
+			VTX_INFO( "Set uniforms" );
 			glUniformMatrix4fv( _uViewMatrix, 1, GL_FALSE, glm::value_ptr( p_viewMatrix ) );
 			glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_projMatrix ) );
 
@@ -52,6 +54,7 @@ namespace VTX
 
 		void View3DBallAndStick::render( const uint p_time )
 		{
+			VTX_INFO( "Draw" );
 			// Draw balls.
 			glDrawArrays( GL_POINTS, 0, _model->getAtomCount() );
 

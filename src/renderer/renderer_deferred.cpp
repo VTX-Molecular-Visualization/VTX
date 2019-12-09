@@ -253,6 +253,8 @@ namespace VTX
 		{
 			if ( _isInitialized == false ) { return; }
 
+			VTX_INFO( "Rendering" );
+
 			glEnable( GL_DEPTH_TEST );
 			_geometricPass( p_scene );
 			glDisable( GL_DEPTH_TEST );
