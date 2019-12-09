@@ -37,6 +37,7 @@ namespace VTX
 
 		inline void RendererDeferred::_initGeometricPass()
 		{
+			VTX_INFO( std::to_string( _width ) + " x " + std::to_string( _height ) );
 			glEnable( GL_DEPTH_TEST );
 			glClearDepth( 1.f );
 			glDepthFunc( GL_LESS );

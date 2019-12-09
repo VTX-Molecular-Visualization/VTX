@@ -51,13 +51,11 @@ namespace VTX
 			{
 			case GL_DEBUG_SEVERITY_HIGH:
 				_severity = "HIGH";
-				{
-					std::printf(
-						"%d: %s of %s severity, raised from %s: %s\n", p_id, _type, _severity, _source, p_msg );
-				}
+				std::printf( "%d: %s of %s severity, raised from %s: %s\n", p_id, _type, _severity, _source, p_msg );
+				break;
 
-			case GL_DEBUG_SEVERITY_MEDIUM: _severity = "MEDIUM";
-			case GL_DEBUG_SEVERITY_LOW: _severity = "LOW";
+			case GL_DEBUG_SEVERITY_MEDIUM: _severity = "MEDIUM"; break;
+			case GL_DEBUG_SEVERITY_LOW: _severity = "LOW"; break;
 			case GL_DEBUG_SEVERITY_NOTIFICATION: _severity = "NOTIFICATION"; break;
 			default: _severity = "UNKNOWN"; break;
 			}

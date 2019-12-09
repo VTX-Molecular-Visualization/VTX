@@ -17,6 +17,7 @@ namespace VTX
 
 		void BaseView3DMolecule::_prepare()
 		{
+			VTX_INFO( "Initializing GL buffers" );
 			uint atomCount = _model->getAtomCount();
 			uint bondCount = _model->getBondCount();
 

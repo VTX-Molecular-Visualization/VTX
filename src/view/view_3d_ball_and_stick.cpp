@@ -6,6 +6,8 @@ namespace VTX
 	{
 		void View3DBallAndStick::setupShaders( Shader::GLSLProgramManager & p_programManager )
 		{
+			VTX_INFO( "Initializing shaders" );
+
 			// Balls.
 			Shader::GLSLProgram * program = p_programManager.createProgram( "SphereImpostorGeomShader" );
 			program->attachShader( p_programManager.createShader( "sphereImpostorGeom.vert" ) );
