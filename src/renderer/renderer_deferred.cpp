@@ -33,7 +33,6 @@ namespace VTX
 
 			_isInitialized = true;
 			VTX_INFO( "Renderer initialized" );
-			p_scene.getCameraOrbit().printInfo();
 		}
 
 		inline void RendererDeferred::_initGeometricPass()
@@ -275,8 +274,8 @@ namespace VTX
 				view->bindIBO();
 
 				view->useShaders( _programManager );
-				view->setCameraMatrices( p_scene.getCameraOrbit().getViewMatrix(),
-										 p_scene.getCameraOrbit().getProjectionMatrix() );
+				view->setCameraMatrices( p_scene.getCamera().getViewMatrix(),
+										 p_scene.getCamera().getProjectionMatrix() );
 
 				view->render( 0 );
 				view->unbindIBO();
@@ -303,7 +302,7 @@ namespace VTX
 			_ssaoShader->use();
 
 			glUniformMatrix4fv(
-				_uProjMatrixLoc, 1, GL_FALSE, glm::value_ptr( ( p_scene.getCameraOrbit().getProjectionMatrix() ) ) );
+				_uProjMatrixLoc, 1, GL_FALSE, glm::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
 
 			glBindVertexArray( _quadVAO );
 			glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
