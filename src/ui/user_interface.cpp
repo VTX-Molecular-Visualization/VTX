@@ -184,20 +184,6 @@ namespace VTX
 			ImGuiIO & io = ImGui::GetIO();
 			SDL_Event event;
 
-			// TODO: move ?
-			// Quit event.
-			while ( SDL_PollEvent( &event ) )
-			{
-				ImGui_ImplSDL2_ProcessEvent( &event );
-				if ( ( event.type == SDL_QUIT )
-					 || ( event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE
-						  && event.window.windowID == SDL_GetWindowID( _window ) ) )
-				{
-					VTXApp::get().stop();
-					return;
-				}
-			}
-
 			// New frame.
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame( _window );
@@ -247,6 +233,8 @@ namespace VTX
 
 			SDL_GL_SwapWindow( _window );
 		}
+
+		bool UserInterface::pollEvent( SDL_Event & p_event ) const { return SDL_PollEvent( &p_event ); }
 
 	} // namespace UI
 } // namespace VTX

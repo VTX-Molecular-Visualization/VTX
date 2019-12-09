@@ -6,7 +6,6 @@
 #endif
 
 #include "../model/model_molecule.hpp"
-#include "../object3d/camera/camera_orbit.hpp"
 #include "base_view_3d.hpp"
 #include <GL/gl3w.h>
 #include <vector>

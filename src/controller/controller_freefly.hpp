@@ -1,5 +1,5 @@
-#ifndef __VTX_CONTROLLER_GAMEPAD__
-#define __VTX_CONTROLLER_GAMEPAD__
+#ifndef __VTX_CONTROLLER_FREE_FLY__
+#define __VTX_CONTROLLER_FREE_FLY__
 
 #ifdef _MSC_VER
 #pragma once
@@ -11,7 +11,7 @@ namespace VTX
 {
 	namespace Controller
 	{
-		class ControllerGamepad : BaseController
+		class ControllerFreeFly : BaseController
 		{
 		};
 	} // namespace Controller

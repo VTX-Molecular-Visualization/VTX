@@ -62,5 +62,10 @@ namespace VTX
 			_currentState = p_state;
 			if ( _currentState != nullptr ) { _currentState->enter(); }
 		}
+
+		void StateMachine::handleEvent( const SDL_Event & p_event )
+		{
+			if ( _currentState != nullptr ) { _currentState->handleEvent( p_event ); }
+		}
 	}; // namespace State
 };	   // namespace VTX

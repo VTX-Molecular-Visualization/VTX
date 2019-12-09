@@ -16,8 +16,6 @@ namespace VTX
 			_uViewMatrix	  = glGetUniformLocation( program->getId(), "uMVMatrix" );
 			_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
 			_uBallRadiusScale = glGetUniformLocation( program->getId(), "uRadScale" );
-			// TODO.
-			glUniform1f( _uBallRadiusScale, 1.0f );
 
 			// Sticks.
 			program = p_programManager.createProgram( "CylinderGeom" );
@@ -29,8 +27,6 @@ namespace VTX
 			_uViewMatrix	 = glGetUniformLocation( program->getId(), "uMVMatrix" );
 			_uProjMatrix	 = glGetUniformLocation( program->getId(), "uProjMatrix" );
 			_uCylinderRadius = glGetUniformLocation( program->getId(), "uCylRad" );
-			// TODO.
-			glUniform1f( _uCylinderRadius, 0.2f );
 		}
 
 		void View3DBallAndStick::useShaders( Shader::GLSLProgramManager & p_programManager )
@@ -46,6 +42,10 @@ namespace VTX
 
 			glUniformMatrix4fv( _uViewMatrix2, 1, GL_FALSE, glm::value_ptr( p_viewMatrix ) );
 			glUniformMatrix4fv( _uProjMatrix2, 1, GL_FALSE, glm::value_ptr( p_projMatrix ) );
+
+			// Set at each frame or one time is enough?
+			glUniform1f( _uBallRadiusScale, 1.0f );
+			glUniform1f( _uCylinderRadius, 0.2f );
 		}
 
 		void View3DBallAndStick::render( const uint p_time )

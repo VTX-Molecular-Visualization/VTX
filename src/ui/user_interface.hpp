@@ -25,6 +25,7 @@ namespace VTX
 			UserInterface();
 			~UserInterface();
 			void printInfos() const;
+			bool pollEvent( SDL_Event & evt ) const;
 			void setTheme() const;
 
 			virtual COMPONENT_NAME getName() const override { return COMPONENT_NAME::UI; }

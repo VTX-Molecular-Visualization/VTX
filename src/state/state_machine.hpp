@@ -28,6 +28,8 @@ namespace VTX
 			virtual void update() final;
 			void		 goToState( const STATE_NAME );
 
+			void handleEvent( const SDL_Event & );
+
 		  protected:
 			virtual void _addState( const StateSharedPtr ) final;
 			virtual void _addStates();

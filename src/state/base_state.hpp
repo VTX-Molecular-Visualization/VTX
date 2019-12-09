@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#include "../controller/base_controller.hpp"
+
 namespace VTX
 {
 	namespace State
@@ -24,6 +26,11 @@ namespace VTX
 			virtual void	   enter()		   = 0;
 			virtual void	   exit()		   = 0;
 			virtual void	   update() {}
+
+			void handleEvent( const SDL_Event & );
+
+		  protected:
+			Controller::BaseController * _controller = nullptr;
 		};
 	} // namespace State
 } // namespace VTX

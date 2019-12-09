@@ -3,6 +3,7 @@
 #include "io/reader/reader_mmtf.hpp"
 #include "model/model_molecule.hpp"
 #include "renderer/renderer_deferred.hpp"
+#include "ui/imgui/imgui_impl_sdl.h"
 #include <thread>
 
 namespace VTX
@@ -85,24 +86,43 @@ namespace VTX
 		// Renderer.
 		_chrono.start();
 		ImGuiIO & io = ImGui::GetIO();
-		_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_scene->getCameraOrbit().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+		_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_renderer->render( *_scene, 0 );
 		_chrono.stop();
 		_timeLastRenderer = _chrono.elapsedTime();
 
-		// UI.
+		// UI/machine/events.
 		_chrono.start();
+		SDL_Event event;
+		while ( _ui->pollEvent( event ) )
+		{
+			_handleEvent( event );
+		}
 		_ui->display();
+		_stateMachine->update();
 		_chrono.stop();
 		_timeLastUI = _chrono.elapsedTime();
-
-		// State machine.
-		_stateMachine->update();
 
 		// Timers.
 		_timeLast = _timeLastUI;
 		_timeLast += _timeLastRenderer;
 		_timeTotal += _timeLast;
+	}
+
+	void VTXApp::_handleEvent( const SDL_Event & p_event )
+	{
+		// Quit event.
+		ImGui_ImplSDL2_ProcessEvent( &p_event );
+		switch ( p_event.type )
+		{
+		case SDL_QUIT: stop(); return;
+		case SDL_WINDOWEVENT:
+			if ( p_event.window.event == SDL_WINDOWEVENT_CLOSE ) stop();
+			return;
+		}
+
+		// Propagate to state machine.
+		_stateMachine->handleEvent( p_event );
 	}
 } // namespace VTX

@@ -65,6 +65,7 @@ namespace VTX
 		~VTXApp();
 
 		void _update();
+		void _handleEvent( const SDL_Event & );
 	};
 } // namespace VTX
 

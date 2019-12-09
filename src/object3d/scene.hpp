@@ -6,7 +6,7 @@
 #endif
 
 #include "../model/model_molecule.hpp"
-#include "camera/camera_orbit.hpp"
+#include "camera.hpp"
 #include <vector>
 
 namespace VTX
@@ -20,11 +20,11 @@ namespace VTX
 			~Scene();
 
 			void addMolecule( Model::ModelMolecule * const p_molecule ) { _molecules.emplace_back( p_molecule ); }
-			inline Camera::CameraOrbit &			   getCameraOrbit() { return _camera; }
+			inline Camera &							   getCameraOrbit() { return _camera; }
 			inline std::vector<Model::ModelMolecule *> getMolecules() const { return _molecules; };
 
 		  private:
-			Camera::CameraOrbit					_camera	   = Camera::CameraOrbit();
+			Camera								_camera	   = Camera();
 			std::vector<Model::ModelMolecule *> _molecules = std::vector<Model::ModelMolecule *>();
 		};
 	} // namespace Object3D

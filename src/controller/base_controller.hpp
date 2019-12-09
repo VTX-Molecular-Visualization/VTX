@@ -5,12 +5,16 @@
 #pragma once
 #endif
 
+#include <SDL2/SDL.h>
+
 namespace VTX
 {
 	namespace Controller
 	{
 		class BaseController
 		{
+		  public:
+			void handleEvent( const SDL_Event & );
 		};
 	} // namespace Controller
 } // namespace VTX
