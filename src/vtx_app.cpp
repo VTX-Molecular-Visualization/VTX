@@ -84,6 +84,8 @@ namespace VTX
 		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 	}
 
+	void VTXApp::setRendererShading() const { _renderer->setShading(); }
+
 	void VTXApp::_update()
 	{
 		// Renderer.

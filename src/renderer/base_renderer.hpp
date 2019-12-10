@@ -36,6 +36,7 @@ namespace VTX
 			virtual void init( Object3D::Scene &, uint, uint ) = 0;
 			virtual void clear( Object3D::Scene & )			   = 0;
 			virtual void render( Object3D::Scene & )		   = 0;
+			virtual void setShading()						   = 0;
 
 		  protected:
 			bool					   _isInitialized  = false;

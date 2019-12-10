@@ -52,7 +52,7 @@ namespace VTX
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.SymbolDisplay" ),
 									   (int *)&Setting::UI::symbolDisplayMode,
 									   "Short\0Long\0" ) )
-					{ VTXApp::get().setTheme(); }
+					{ }
 
 					ImGui::Separator();
 
@@ -65,7 +65,7 @@ namespace VTX
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ),
 									   (int *)&Setting::Rendering::shading,
 									   "Lambert\0Blinn Phong\0Toon\0" ) )
-					{}
+					{ VTXApp::get().setRendererShading(); }
 
 					// ImGui::Separator();
 					// ImGui::Checkbox( LOCALE( "MainMenu.Settings.AA" ), &Setting::Rendering::useAA );

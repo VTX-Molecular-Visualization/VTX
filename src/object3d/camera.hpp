@@ -73,7 +73,7 @@ namespace VTX
 			Vec3f _up	= VEC3F_Y;
 
 			float _theta = 0.f;
-			float _phi	 = 4.22369;
+			float _phi	 = 4.22369f;
 
 			void _update();
 		}; // namespace Camera

@@ -1,5 +1,6 @@
 #include "renderer_deferred.hpp"
 #include "../model/model_molecule.hpp"
+#include "../settings.hpp"
 #include "../view/view_3d_ball_and_stick.hpp"
 #include "base_renderer.hpp"
 #include <random>
@@ -210,8 +211,8 @@ namespace VTX
 			_blinnPhongShading->attachShader( _programManager.createShader( "shading/blinnPhongShading.frag" ) );
 			_blinnPhongShading->link();
 
-			// TODO: use settings.
-			_currentShading = _diffuseShading;
+			// Use setting value.
+			setShading();
 		}
 
 		inline void RendererDeferred::_initAntiAliasingPass()
@@ -380,5 +381,15 @@ namespace VTX
 			glBindVertexArray( 0 );
 		}
 
+		void RendererDeferred::setShading()
+		{
+			switch ( Setting::Rendering::shading )
+			{
+			case SHADING::TOON: _currentShading = _toonShading; break;
+			case SHADING::BLINN_PHONG: _currentShading = _blinnPhongShading; break;
+			case SHADING::LAMBERT:
+			default: _currentShading = _diffuseShading;
+			}
+		}
 	} // namespace Renderer
 } // namespace VTX

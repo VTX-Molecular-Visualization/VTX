@@ -20,6 +20,7 @@ namespace VTX
 			virtual void init( Object3D::Scene &, uint, uint ) override;
 			virtual void clear( Object3D::Scene & ) override;
 			virtual void render( Object3D::Scene & ) override;
+			virtual void setShading() override;
 
 		  private:
 			// Geometry pass.

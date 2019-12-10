@@ -37,6 +37,7 @@ namespace VTX
 		const std::shared_ptr<UI::BaseComponent> getUIComponentByName( const UI::COMPONENT_NAME ) const;
 		void									 setTheme() const;
 		void									 initRenderer() const;
+		void									 setRendererShading() const;
 
 		inline Object3D::Scene & getScene() { return *_scene; }
 
