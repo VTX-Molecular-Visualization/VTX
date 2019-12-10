@@ -24,7 +24,7 @@ namespace VTX
 			_initSsaoPass();
 			_initBlurPass();
 			_initShadingPass();
-			_initAntiAliasingPass();
+			//_initAntiAliasingPass();
 			_initQuadVAO();
 
 			// Init views.
@@ -268,6 +268,7 @@ namespace VTX
 			_geometricPass( p_scene );
 			glDisable( GL_DEPTH_TEST );
 			_ssaoPass( p_scene );
+
 			_blurPass();
 			_shadingPass();
 			//_antiAliasingPass();
@@ -299,6 +300,8 @@ namespace VTX
 		{
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboSSAO );
 			glClear( GL_COLOR_BUFFER_BIT );
+
+			if ( Setting::Rendering::useSSAO == false ) return;
 
 			glActiveTexture( GL_TEXTURE0 );
 			glBindTexture( GL_TEXTURE_2D, _colorNormalCompressedTexture );

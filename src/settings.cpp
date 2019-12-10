@@ -16,8 +16,8 @@ namespace VTX
 		{
 			Renderer::MODE	  mode	  = Renderer::MODE::DEFERRED;
 			Renderer::SHADING shading = Renderer::SHADING::LAMBERT;
-			bool			  useAA	  = true;
-			bool			  useSSAO = true;
+			bool			  useAA	  = false;
+			bool			  useSSAO = false;
 		}; // namespace Rendering
 	}	   // namespace Setting
 } // namespace VTX

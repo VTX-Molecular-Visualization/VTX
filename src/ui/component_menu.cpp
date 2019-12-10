@@ -67,9 +67,9 @@ namespace VTX
 									   "Lambert\0Blinn Phong\0Toon\0" ) )
 					{ VTXApp::get().setRendererShading(); }
 
-					// ImGui::Separator();
+					 ImGui::Separator();
 					// ImGui::Checkbox( LOCALE( "MainMenu.Settings.AA" ), &Setting::Rendering::useAA );
-					// ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &Setting::Rendering::useSSAO );
+					 ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &Setting::Rendering::useSSAO );
 
 					ImGui::EndMenu();
 				}
