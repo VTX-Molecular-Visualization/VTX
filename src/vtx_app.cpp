@@ -81,6 +81,7 @@ namespace VTX
 		_ui->display();
 		ImGuiIO & io = ImGui::GetIO();
 		_renderer->init( *_scene, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 	}
 
 	void VTXApp::_update()
@@ -88,8 +89,8 @@ namespace VTX
 		// Renderer.
 		_chrono.start();
 		ImGuiIO & io = ImGui::GetIO();
-		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-		_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+		//_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+		//_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_renderer->render( *_scene );
 		_chrono.stop();
 		_timeLastRenderer = _chrono.elapsedTime();
