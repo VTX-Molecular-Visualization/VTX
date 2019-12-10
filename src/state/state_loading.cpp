@@ -12,18 +12,15 @@ namespace VTX
 		{
 			Model::ModelMolecule * molecule = new Model::ModelMolecule();
 			Object3D::Scene *	   scene	= &( VTXApp::get().getScene() );
+			IO::ReaderMMTF		   mmtf		= IO::ReaderMMTF();
 
-			VTXApp::get().runThread( new std::thread( [ molecule, scene ] {
-				IO::ReaderMMTF mmtf = IO::ReaderMMTF();
-				if ( mmtf.readFile( IO::Path( DATA_DIR + "4v6x.mmtf" ), *molecule ) )
-
-				{
-					molecule->init();
-					scene->addMolecule( molecule );
-					molecule->printInfos();
-					VTXApp::get().goToState( State::STATE_NAME::VISUALIZATION );
-				}
-			} ) );
+			if ( mmtf.readFile( IO::Path( DATA_DIR + "4v6x.mmtf" ), *molecule ) )
+			{
+				molecule->init();
+				scene->addMolecule( molecule );
+				molecule->printInfos();
+				VTXApp::get().goToState( State::STATE_NAME::VISUALIZATION );
+			}
 		}
 
 		void StateLoading::exit() {}

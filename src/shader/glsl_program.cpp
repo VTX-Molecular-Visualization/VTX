@@ -53,7 +53,7 @@ namespace VTX
 			GLint linked;
 			glLinkProgram( _id );
 			glGetProgramiv( _id, GL_LINK_STATUS, &linked );
-			if ( !linked )
+			if ( linked == GL_FALSE )
 			{
 				std::string error = "Error linking program: ";
 				error += _name;
@@ -81,8 +81,9 @@ namespace VTX
 		{
 			GLint length;
 			glGetProgramiv( _id, GL_INFO_LOG_LENGTH, &length );
+			if ( length == 0 ) { return ""; }
 			std::vector<GLchar> log( length );
-			glGetProgramInfoLog( _id, length, &length, &( log[ 0 ] ) );
+			glGetProgramInfoLog( _id, length, &length, &log[ 0 ] );
 			return std::string( log.begin(), log.end() );
 		}
 

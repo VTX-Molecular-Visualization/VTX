@@ -18,8 +18,8 @@ namespace VTX
 			Transform()	 = default;
 			~Transform() = default;
 
-			const Mat4f & get() const { return _transform; }
-			void		  reset();
+			const Mat4f get() const { return _transform; }
+			void		reset();
 
 			void translate( const Vec3f & );
 			void setTranslation( const Mat4f & );

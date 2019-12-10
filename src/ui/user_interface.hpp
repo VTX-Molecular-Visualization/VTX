@@ -45,9 +45,9 @@ namespace VTX
 			virtual void _draw() override;
 
 		  private:
-			SDL_Window *  _window	 = nullptr;
-			SDL_GLContext _glContext = nullptr;
-			// SDL_DisplayMode _displayMode;
+			SDL_Window *	_window	   = nullptr;
+			SDL_GLContext	_glContext = nullptr;
+			SDL_DisplayMode _displayMode;
 
 			bool _showMenu		= true;
 			bool _showConsole	= true;

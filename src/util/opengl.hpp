@@ -51,16 +51,16 @@ namespace VTX
 
 				switch ( p_severity )
 				{
-				case GL_DEBUG_SEVERITY_HIGH:
-					_severity = "HIGH";
-					std::printf( "[%s][%s] %s: %s\n", _severity, _type, _source, p_msg );
-					break;
-
+				case GL_DEBUG_SEVERITY_HIGH: _severity = "HIGH"; break;
 				case GL_DEBUG_SEVERITY_MEDIUM: _severity = "MEDIUM"; break;
 				case GL_DEBUG_SEVERITY_LOW: _severity = "LOW"; break;
-				case GL_DEBUG_SEVERITY_NOTIFICATION: _severity = "NOTIFICATION"; break;
+				case GL_DEBUG_SEVERITY_NOTIFICATION: _severity = "NOTIFICATION"; return;
 				default: _severity = "UNKNOWN"; break;
 				}
+
+#ifdef _DEBUG
+				std::printf( "[%s][%s] %s: %s\n", _severity, _type, _source, p_msg );
+#endif
 			}
 		} // namespace OpenGL
 	}	  // namespace Util

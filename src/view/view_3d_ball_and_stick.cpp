@@ -9,57 +9,63 @@ namespace VTX
 			VTX_INFO( "Initializing shaders" );
 
 			// Balls.
+
 			Shader::GLSLProgram * program = p_programManager.createProgram( "SphereImpostorGeomShader" );
 			program->attachShader( p_programManager.createShader( "sphereImpostorGeom.vert" ) );
 			program->attachShader( p_programManager.createShader( "sphereImpostorGeomQuad.geom" ) );
 			program->attachShader( p_programManager.createShader( "sphereImpostorDeferred.frag" ) );
 			program->link();
 
-			_uViewMatrix	  = glGetUniformLocation( program->getId(), "uMVMatrix" );
+			_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 			_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
 			_uBallRadiusScale = glGetUniformLocation( program->getId(), "uRadScale" );
 
 			// Sticks.
-			program = p_programManager.createProgram( "CylinderGeom" );
+			/*
+			Shader::GLSLProgram * program = p_programManager.createProgram( "CylinderGeom" );
 			program->attachShader( p_programManager.createShader( "cylinderImpostorGeom.vert" ) );
 			program->attachShader( p_programManager.createShader( "cylinderImpostorGeom.geom" ) );
 			program->attachShader( p_programManager.createShader( "cylinderImpostorDeferred.frag" ) );
 			program->link();
 
-			_uViewMatrix	 = glGetUniformLocation( program->getId(), "uMVMatrix" );
-			_uProjMatrix	 = glGetUniformLocation( program->getId(), "uProjMatrix" );
-			_uCylinderRadius = glGetUniformLocation( program->getId(), "uCylRad" );
+			_uViewModelMatrix2 = glGetUniformLocation( program->getId(), "uMVMatrix" );
+			_uProjMatrix2	   = glGetUniformLocation( program->getId(), "uProjMatrix" );
+			_uCylinderRadius   = glGetUniformLocation( program->getId(), "uCylRad" );
+			*/
 		}
 
 		void View3DBallAndStick::useShaders( Shader::GLSLProgramManager & p_programManager )
 		{
-			VTX_INFO( "Use shader" );
 			p_programManager.getProgram( "SphereImpostorGeomShader" )->use();
-			p_programManager.getProgram( "CylinderGeom" )->use();
+			// p_programManager.getProgram( "CylinderGeom" )->use();
 		}
 
-		void View3DBallAndStick::setCameraMatrices( const Mat4f p_viewMatrix, const Mat4f p_projMatrix ) const
+		void View3DBallAndStick::setUniforms( const Object3D::Camera & p_camera )
 		{
-			VTX_INFO( "Set uniforms" );
-			glUniformMatrix4fv( _uViewMatrix, 1, GL_FALSE, glm::value_ptr( p_viewMatrix ) );
-			glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_projMatrix ) );
-
-			glUniformMatrix4fv( _uViewMatrix2, 1, GL_FALSE, glm::value_ptr( p_viewMatrix ) );
-			glUniformMatrix4fv( _uProjMatrix2, 1, GL_FALSE, glm::value_ptr( p_projMatrix ) );
-
-			// Set at each frame or one time is enough?
+			glUniformMatrix4fv( _uViewModelMatrix,
+								1,
+								GL_FALSE,
+								glm::value_ptr( p_camera.getViewMatrix() * _model->getTransform().get() ) );
+			glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_camera.getProjectionMatrix() ) );
 			glUniform1f( _uBallRadiusScale, 1.0f );
+
+			/*
+			glUniformMatrix4fv( _uViewModelMatrix2,
+								1,
+								GL_FALSE,
+								glm::value_ptr( p_camera.getViewMatrix() * _model->getTransform().get() ) );
+			glUniformMatrix4fv( _uProjMatrix2, 1, GL_FALSE, glm::value_ptr( p_camera.getProjectionMatrix() ) );
 			glUniform1f( _uCylinderRadius, 0.2f );
+			*/
 		}
 
-		void View3DBallAndStick::render( const uint p_time )
+		void View3DBallAndStick::draw()
 		{
-			VTX_INFO( "Draw" );
 			// Draw balls.
 			glDrawArrays( GL_POINTS, 0, _model->getAtomCount() );
 
 			// Draw sticks.
-			glDrawElements( GL_LINES, _model->getBondCount(), GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
+			// glDrawElements( GL_LINES, _model->getBondCount(), GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
 		}
 
 	} // namespace View

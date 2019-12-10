@@ -71,14 +71,16 @@ namespace VTX
 		_ui->receiveEvent( p_event, p_arg );
 	}
 
-	void VTXApp::runThread( std::thread * const p_thread ) { _threads.emplace_back( p_thread ); }
+	// void VTXApp::addThread( std::thread * const p_thread ) { _threads.emplace_back( p_thread ); }
 
 	void VTXApp::setTheme() const { _ui->setTheme(); }
 
 	void VTXApp::initRenderer() const
 	{
-		// TODO: throw exceptionn if renderer null.
-		_renderer->init( *_scene );
+		// Drawn UI to update display size.
+		_ui->display();
+		ImGuiIO & io = ImGui::GetIO();
+		_renderer->init( *_scene, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 	}
 
 	void VTXApp::_update()
@@ -88,7 +90,7 @@ namespace VTX
 		ImGuiIO & io = ImGui::GetIO();
 		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-		_renderer->render( *_scene, 0 );
+		_renderer->render( *_scene );
 		_chrono.stop();
 		_timeLastRenderer = _chrono.elapsedTime();
 

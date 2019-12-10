@@ -17,9 +17,9 @@ namespace VTX
 			RendererDeferred()	= default;
 			~RendererDeferred() = default;
 
-			virtual void init( Object3D::Scene & ) override;
+			virtual void init( Object3D::Scene &, uint, uint ) override;
 			virtual void clear( Object3D::Scene & ) override;
-			virtual void render( Object3D::Scene &, const uint ) override;
+			virtual void render( Object3D::Scene & ) override;
 
 		  private:
 			// Geometry pass.

@@ -19,14 +19,11 @@ namespace VTX
 		{
 			IO::Path path( p_name );
 
-			try
-			{
-				return GLSLProgramManager::EXTENSIONS.at( path.getExtension() );
-			}
-			catch ( const std::exception )
-			{
-				return SHADER_TYPE::INVALID;
-			}
+			if ( GLSLProgramManager::EXTENSIONS.find( path.getExtension() ) != GLSLProgramManager::EXTENSIONS.end() )
+			{ return GLSLProgramManager::EXTENSIONS.at( path.getExtension() ); }
+
+			VTX_WARNING( "Invalid extension: " + p_name );
+			return SHADER_TYPE::INVALID;
 		}
 
 		GLSLProgramManager::~GLSLProgramManager()
@@ -56,11 +53,8 @@ namespace VTX
 
 		void GLSLProgramManager::deleteProgram( const std::string & p_name )
 		{
-			try
-			{
-				_programs.erase( p_name );
-			}
-			catch ( const std::exception )
+			if ( _programs.find( p_name ) != _programs.end() ) { _programs.erase( p_name ); }
+			else
 			{
 				VTX_WARNING( "Program " + p_name + " does not exists" );
 			}
@@ -68,15 +62,10 @@ namespace VTX
 
 		GLSLProgram * const GLSLProgramManager::getProgram( const std::string & p_name )
 		{
-			try
-			{
-				return &( _programs.at( p_name ) );
-			}
-			catch ( const std::exception )
-			{
-				VTX_ERROR( "Program " + p_name + " does not exists" );
-				return nullptr;
-			}
+			if ( _programs.find( p_name ) != _programs.end() ) { return &( _programs.at( p_name ) ); }
+
+			VTX_ERROR( "Program " + p_name + " does not exists" );
+			return nullptr;
 		}
 
 		GLuint GLSLProgramManager::createShader( const IO::Path & p_path )
@@ -108,7 +97,7 @@ namespace VTX
 				glCompileShader( shaderId );
 				GLint compiled;
 				glGetShaderiv( shaderId, GL_COMPILE_STATUS, &compiled );
-				if ( !compiled )
+				if ( compiled == GL_FALSE )
 				{
 					std::string error = "Error compiling shader: ";
 					error += name;
@@ -129,22 +118,19 @@ namespace VTX
 
 		GLuint GLSLProgramManager::getShader( const std::string & p_name ) const
 		{
-			try
-			{
-				return _shaders.at( p_name );
-			}
-			catch ( const std::exception )
-			{
-				return GL_INVALID_INDEX;
-			}
+			if ( _shaders.find( p_name ) != _shaders.end() ) { return _shaders.at( p_name ); }
+
+			VTX_ERROR( "Shader does not exists" );
+			return GL_INVALID_INDEX;
 		}
 
 		std::string GLSLProgramManager::_getShaderErrors( const GLuint p_shader ) const
 		{
 			GLint length;
 			glGetShaderiv( p_shader, GL_INFO_LOG_LENGTH, &length );
+			if ( length == 0 ) { return ""; }
 			std::vector<GLchar> log( length );
-			glGetShaderInfoLog( p_shader, length, &length, &( log[ 0 ] ) );
+			glGetShaderInfoLog( p_shader, length, &length, &log[ 0 ] );
 			return std::string( log.begin(), log.end() );
 		}
 

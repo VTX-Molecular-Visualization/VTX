@@ -19,25 +19,24 @@ namespace VTX
 			View3DBallAndStick()  = default;
 			~View3DBallAndStick() = default;
 
-			void setCameraMatrices( const Mat4f, const Mat4f ) const;
-
+			virtual void		draw() override;
+			virtual void		setupShaders( Shader::GLSLProgramManager & ) override;
+			virtual void		useShaders( Shader::GLSLProgramManager & ) override;
+			virtual void		setUniforms( const Object3D::Camera & ) override;
 			virtual std::string getNameStr() const override
 			{
 				return std::string( magic_enum::enum_name( REPRESENTATION::BALL_AND_STICK ) );
 			};
-			virtual void render( const uint p_time ) override;
-			virtual void setupShaders( Shader::GLSLProgramManager & ) override;
-			virtual void useShaders( Shader::GLSLProgramManager & ) override;
 
 			virtual void notify( Event::EVENT_MODEL ) {};
 
 		  private:
-			GLint _uViewMatrix		= GL_INVALID_INDEX;
-			GLint _uProjMatrix		= GL_INVALID_INDEX;
-			GLint _uViewMatrix2		= GL_INVALID_INDEX;
-			GLint _uProjMatrix2		= GL_INVALID_INDEX;
-			GLint _uBallRadiusScale = GL_INVALID_INDEX;
-			GLint _uCylinderRadius	= GL_INVALID_INDEX;
+			GLint _uViewModelMatrix	 = GL_INVALID_INDEX;
+			GLint _uViewModelMatrix2 = GL_INVALID_INDEX;
+			GLint _uProjMatrix		 = GL_INVALID_INDEX;
+			GLint _uProjMatrix2		 = GL_INVALID_INDEX;
+			GLint _uBallRadiusScale	 = GL_INVALID_INDEX;
+			GLint _uCylinderRadius	 = GL_INVALID_INDEX;
 		};
 	} // namespace View
 } // namespace VTX

@@ -62,20 +62,15 @@ namespace VTX
 
 		const BaseComponent::ComponentSharedPtr BaseComponent::getComponentByName( const COMPONENT_NAME p_name ) const
 		{
-			try
-			{
-				return _components.at( p_name );
-			}
-			catch ( const std::exception )
-			{
-				for ( const PairEnumToComponentSharedPtr pair : _components )
-				{
-					ComponentSharedPtr child = pair.second->getComponentByName( p_name );
-					if ( child != nullptr ) { return child; }
-				}
+			if ( _components.find( p_name ) != _components.end() ) { return _components.at( p_name ); }
 
-				return nullptr;
+			for ( const PairEnumToComponentSharedPtr pair : _components )
+			{
+				ComponentSharedPtr child = pair.second->getComponentByName( p_name );
+				if ( child != nullptr ) { return child; }
 			}
+
+			return nullptr;
 		}
 
 		void BaseComponent::receiveEvent( const Event::EVENT_UI p_event, void * const p_arg )

@@ -33,9 +33,9 @@ namespace VTX
 
 			void setSize( const int, const int );
 
-			virtual void init( Object3D::Scene & )				 = 0;
-			virtual void clear( Object3D::Scene & )				 = 0;
-			virtual void render( Object3D::Scene &, const uint ) = 0;
+			virtual void init( Object3D::Scene &, uint, uint ) = 0;
+			virtual void clear( Object3D::Scene & )			   = 0;
+			virtual void render( Object3D::Scene & )		   = 0;
 
 		  protected:
 			bool					   _isInitialized = false;

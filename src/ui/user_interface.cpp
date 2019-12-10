@@ -3,8 +3,8 @@
 #include "../exceptions.hpp"
 #include "../settings.hpp"
 #include "../style.hpp"
-#include "../util/opengl.hpp"
 #include "../util/logger.hpp"
+#include "../util/opengl.hpp"
 #include "../vtx_app.hpp"
 #include "component_console.hpp"
 #include "component_menu.hpp"
@@ -87,7 +87,7 @@ namespace VTX
 			SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 24 );
 			SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, 8 );
 
-			// SDL_GetCurrentDisplayMode( 0, &m_displayMode );
+			SDL_GetCurrentDisplayMode( 0, &_displayMode );
 
 			std::string title( "VTX v" + std::to_string( VTX_VERSION_MAJOR ) + '.'
 							   + std::to_string( VTX_VERSION_MINOR ) );
@@ -156,7 +156,7 @@ namespace VTX
 			// Setup Platform/Renderer bindings.
 			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
 			{ throw Exception::IMGUIException( "ImGui_ImplSDL2_InitForOpenGL failed" ); }
-			if ( ImGui_ImplOpenGL3_Init() == false )
+			if ( ImGui_ImplOpenGL3_Init( GLSL_VERSION.c_str() ) == false )
 			{ throw Exception::IMGUIException( "ImGui_ImplOpenGL3_Init failed" ); }
 		}
 
@@ -228,13 +228,9 @@ namespace VTX
 				ImGui::RenderPlatformWindowsDefault();
 			}
 
-			/////////////////////////////// Useless?
-			SDL_GL_MakeCurrent( _window, _glContext );
 			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-			// glClear( GL_COLOR_BUFFER_BIT );
-			//////////////////////////////
+			glClear( GL_COLOR_BUFFER_BIT );
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
-
 			SDL_GL_SwapWindow( _window );
 		}
 

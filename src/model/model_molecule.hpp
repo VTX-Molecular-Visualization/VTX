@@ -7,6 +7,7 @@
 
 #include "../defines.hpp"
 #include "../math/aabb.hpp"
+#include "../math/transform.hpp"
 #include "../util/logger.hpp"
 #include "base_model.hpp"
 #include "model_atom.hpp"
@@ -74,6 +75,8 @@ namespace VTX
 			inline uint				   getAtomCount() const { return (uint)_atoms.size(); }
 			inline uint				   getBondCount() const { return (uint)_bonds.size(); }
 
+			inline Math::Transform & getTransform() { return _transform; };
+
 			inline Math::AABB & AABB() { return _aabb; }
 
 			void printInfos() const;
@@ -110,7 +113,8 @@ namespace VTX
 			std::vector<Vec3f> _atomColors	  = std::vector<Vec3f>();
 			std::vector<uint>  _bonds		  = std::vector<uint>();
 
-			Math::AABB _aabb;
+			Math::Transform _transform;
+			Math::AABB		_aabb;
 
 			// Selection.
 			ModelChain *   _selectedChain	= nullptr;

@@ -2,16 +2,18 @@
 #include "../model/model_molecule.hpp"
 #include "../view/view_3d_ball_and_stick.hpp"
 #include "base_renderer.hpp"
-#include <glm/gtc/type_ptr.hpp>
 #include <random>
 
 namespace VTX
 {
 	namespace Renderer
 	{
-		void RendererDeferred::init( Object3D::Scene & p_scene )
+		void RendererDeferred::init( Object3D::Scene & p_scene, uint p_width, uint p_height )
 		{
 			VTX_INFO( "Initializing renderer..." );
+
+			_width	= p_width;
+			_height = p_height;
 
 			// Clear.
 			clear( p_scene );
@@ -21,7 +23,7 @@ namespace VTX
 			_initSsaoPass();
 			_initBlurPass();
 			_initShadingPass();
-			_initAntiAliasingPass();
+			//_initAntiAliasingPass();
 			_initQuadVAO();
 
 			// Init views.
@@ -47,8 +49,9 @@ namespace VTX
 			// glEnable(GL_BLEND);
 			// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			// create G-buffers for deferred shading
+			// Create G-buffers for deferred shading.
 			glGenFramebuffers( 1, &_fboGeo );
+
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboGeo );
 
 			glGenTextures( 1, &_colorNormalCompressedTexture );
@@ -78,6 +81,13 @@ namespace VTX
 			glDrawBuffers( 2, drawBuffers );
 
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+			auto fboStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+			if ( fboStatus != GL_FRAMEBUFFER_COMPLETE )
+				std::cout << "Framebuffer not complete: " << fboStatus << std::endl;
+
+			auto glstatus = glGetError();
+			if ( glstatus != GL_NO_ERROR ) { std::cout << "Error in GL call: " << glstatus << std::endl; }
 		}
 
 		inline void RendererDeferred::_initSsaoPass()
@@ -94,8 +104,8 @@ namespace VTX
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
 			glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _ssaoTexture, 0 );
-			static const GLenum draw_bufferSSAO[] = { GL_COLOR_ATTACHMENT0 };
-			glDrawBuffers( 1, draw_bufferSSAO );
+			static const GLenum drawBufferSSAO[] = { GL_COLOR_ATTACHMENT0 };
+			glDrawBuffers( 1, drawBufferSSAO );
 
 			_ssaoShader = _programManager.createProgram( "SSAO" );
 			_ssaoShader->attachShader( _programManager.createShader( "shading/ssao.frag" ) );
@@ -166,8 +176,8 @@ namespace VTX
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
 			glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _blurTexture, 0 );
-			static const GLenum draw_bufferBlur[] = { GL_COLOR_ATTACHMENT0 };
-			glDrawBuffers( 1, draw_bufferBlur );
+			static const GLenum drawBufferBlur[] = { GL_COLOR_ATTACHMENT0 };
+			glDrawBuffers( 1, drawBufferBlur );
 
 			_blurShader = _programManager.createProgram( "Blur" );
 			_blurShader->attachShader( _programManager.createShader( "shading/blur.frag" ) );
@@ -216,7 +226,7 @@ namespace VTX
 			// Init quad vao/vbo for deferred shading.
 
 			// clang-format off
-			GLfloat m_quadVertices[] =
+			GLfloat quadVertices[] =
 			{
 				-1.0f,  1.0f,
 				-1.0f, -1.0f, 
@@ -228,7 +238,7 @@ namespace VTX
 			// setup plane VAO
 			glGenBuffers( 1, &_quadVBO );
 			glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
-			glBufferData( GL_ARRAY_BUFFER, sizeof( m_quadVertices ), m_quadVertices, GL_STATIC_DRAW );
+			glBufferData( GL_ARRAY_BUFFER, sizeof( quadVertices ), quadVertices, GL_STATIC_DRAW );
 			glGenVertexArrays( 1, &_quadVAO );
 			glBindVertexArray( _quadVAO );
 			glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
@@ -249,11 +259,9 @@ namespace VTX
 			_isInitialized = false;
 		}
 
-		void RendererDeferred::render( Object3D::Scene & p_scene, const uint p_time )
+		void RendererDeferred::render( Object3D::Scene & p_scene )
 		{
 			if ( _isInitialized == false ) { return; }
-
-			VTX_INFO( "Rendering" );
 
 			glEnable( GL_DEPTH_TEST );
 			_geometricPass( p_scene );
@@ -261,12 +269,11 @@ namespace VTX
 			_ssaoPass( p_scene );
 			_blurPass();
 			_shadingPass();
-			_antiAliasingPass();
+			//_antiAliasingPass();
 		};
 
 		inline void RendererDeferred::_geometricPass( Object3D::Scene & p_scene )
 		{
-			VTX_INFO( "Geometric pass" );
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboGeo );
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
@@ -278,20 +285,17 @@ namespace VTX
 				view->bindIBO();
 
 				view->useShaders( _programManager );
-				view->setCameraMatrices( p_scene.getCamera().getViewMatrix(),
-										 p_scene.getCamera().getProjectionMatrix() );
+				view->setUniforms( p_scene.getCamera() );
+				view->draw();
 
-				view->render( 0 );
 				view->unbindIBO();
 				view->unbindVAO();
 			}
-
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 		}
 
 		inline void RendererDeferred::_ssaoPass( Object3D::Scene & p_scene )
 		{
-			VTX_INFO( "SSAO pass" );
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboSSAO );
 			glClear( GL_COLOR_BUFFER_BIT );
 
@@ -326,7 +330,6 @@ namespace VTX
 
 		inline void RendererDeferred::_blurPass()
 		{
-			VTX_INFO( "Blur pass" );
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboBlur );
 			glClear( GL_COLOR_BUFFER_BIT );
 
@@ -346,7 +349,6 @@ namespace VTX
 
 		inline void RendererDeferred::_shadingPass()
 		{
-			VTX_INFO( "Shading pass" );
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 			// glBindFramebuffer(GL_FRAMEBUFFER, m_fboShading);
 
@@ -366,7 +368,6 @@ namespace VTX
 
 		inline void RendererDeferred::_antiAliasingPass()
 		{
-			VTX_INFO( "FXAA pass" );
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 			glActiveTexture( GL_TEXTURE0 );
