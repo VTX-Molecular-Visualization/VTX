@@ -14,17 +14,17 @@ namespace VTX
 	{
 		namespace OpenGL
 		{
-			void APIENTRY debugMessageCallback( GLenum		   p_source,
-												GLenum		   p_type,
-												GLuint		   p_id,
-												GLenum		   p_severity,
-												GLsizei		   p_length,
+			void APIENTRY debugMessageCallback( const GLenum   p_source,
+												const GLenum   p_type,
+												const GLuint   p_id,
+												const GLenum   p_severity,
+												const GLsizei  p_length,
 												const GLchar * p_msg,
 												const void *   p_data )
 			{
-				char * _source;
-				char * _type;
-				char * _severity;
+				const char * _source;
+				const char * _type;
+				const char * _severity;
 
 				switch ( p_source )
 				{
@@ -58,9 +58,7 @@ namespace VTX
 				default: _severity = "UNKNOWN"; break;
 				}
 
-#ifdef _DEBUG
 				std::printf( "[%s][%s] %s: %s\n", _severity, _type, _source, p_msg );
-#endif
 			}
 		} // namespace OpenGL
 	}	  // namespace Util

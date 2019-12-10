@@ -17,8 +17,10 @@ namespace VTX
 
 		void BaseView3DMolecule::_prepare()
 		{
-			uint atomCount = _model->getAtomCount();
-			uint bondCount = _model->getBondCount();
+			uint atomCount	 = _model->getAtomPositions().size();
+			uint colorCount	 = _model->getAtomColors().size();
+			uint radiusCount = _model->getAtomRadius().size();
+			uint bondCount	 = _model->getBonds().size();
 
 			glGenBuffers( 1, &_atomPositionsVBO );
 			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
@@ -29,13 +31,13 @@ namespace VTX
 			glGenBuffers( 1, &_atomColorsVBO );
 			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
 			glBufferData(
-				GL_ARRAY_BUFFER, sizeof( Vec3f ) * atomCount, _model->getAtomColors().data(), GL_STATIC_DRAW );
+				GL_ARRAY_BUFFER, sizeof( Vec3f ) * colorCount, _model->getAtomColors().data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glGenBuffers( 1, &_atomRadiusVBO );
 			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
 			glBufferData(
-				GL_ARRAY_BUFFER, sizeof( float ) * atomCount, _model->getAtomRadius().data(), GL_STATIC_DRAW );
+				GL_ARRAY_BUFFER, sizeof( float ) * radiusCount, _model->getAtomRadius().data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			// ibo

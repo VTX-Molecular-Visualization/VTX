@@ -23,7 +23,7 @@ namespace VTX
 			_initSsaoPass();
 			_initBlurPass();
 			_initShadingPass();
-			//_initAntiAliasingPass();
+			_initAntiAliasingPass();
 			_initQuadVAO();
 
 			// Init views.

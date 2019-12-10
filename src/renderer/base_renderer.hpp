@@ -38,9 +38,9 @@ namespace VTX
 			virtual void render( Object3D::Scene & )		   = 0;
 
 		  protected:
-			bool					   _isInitialized = false;
-			uint					   _width;
-			uint					   _height;
+			bool					   _isInitialized  = false;
+			uint					   _width		   = 0;
+			uint					   _height		   = 0;
 			Shader::GLSLProgramManager _programManager = Shader::GLSLProgramManager();
 		};
 	} // namespace Renderer
