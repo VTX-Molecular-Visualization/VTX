@@ -76,8 +76,9 @@ namespace VTX
 			inline uint				   getBondCount() const { return (uint)_bonds.size(); }
 
 			inline Math::Transform & getTransform() { return _transform; };
+			inline Math::AABB &		 AABB() { return _aabb; }
 
-			inline Math::AABB & AABB() { return _aabb; }
+			void setup3DViews();
 
 			void printInfos() const;
 
@@ -92,7 +93,7 @@ namespace VTX
 			void				 resetSelectedAtom();
 
 			// Views.
-			inline BaseView3DMolecule * getCurrentView3D() { return _currentView3D; };
+			inline std::vector<std::shared_ptr<BaseView3DMolecule>> & getCurrent3DViews() { return _current3DViews; };
 
 		  protected:
 			virtual void _addViews() override final;
@@ -122,7 +123,8 @@ namespace VTX
 			ModelAtom *	   _selectedAtom	= nullptr;
 
 			// Views.
-			BaseView3DMolecule * _currentView3D;
+			std::vector<std::shared_ptr<BaseView3DMolecule>> _current3DViews
+				= std::vector<std::shared_ptr<BaseView3DMolecule>>();
 
 #ifdef _DEBUG
 		  public:

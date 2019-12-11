@@ -7,6 +7,7 @@
 
 #include "renderer/base_renderer.hpp"
 #include "ui/user_interface.hpp"
+#include "view/base_view_3d_molecule.hpp"
 
 namespace VTX
 {
@@ -26,10 +27,11 @@ namespace VTX
 
 		namespace Rendering
 		{
-			extern Renderer::MODE	 mode;
-			extern Renderer::SHADING shading;
-			extern bool				 useAA;
-			extern bool				 useSSAO;
+			extern View::MOLECULE_REPRESENTATION reprensation;
+			extern Renderer::MODE				 mode;
+			extern Renderer::SHADING			 shading;
+			extern bool							 useAA;
+			extern bool							 useSSAO;
 		}; // namespace Rendering
 	}	   // namespace Setting
 } // namespace VTX

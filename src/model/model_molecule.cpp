@@ -1,21 +1,70 @@
 #include "model_molecule.hpp"
 #include "../util/type.hpp"
-#include "../view/view_3d_ball_and_stick.hpp"
+#include "../view/view_3d_molecule_cylinder.hpp"
+#include "../view/view_3d_molecule_sphere.hpp"
 #include "../vtx_app.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
-		ModelMolecule::~ModelMolecule() { _currentView3D = nullptr; }
+		ModelMolecule::~ModelMolecule()
+		{
+			// TODO: memory leak?
+			_current3DViews.clear();
+		}
 
 		void ModelMolecule::_addViews()
 		{
 			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE ) );
+			setup3DViews();
+		}
 
-			View::View3DBallAndStick * view = new View::View3DBallAndStick();
-			_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( view ) ) );
-			_currentView3D = (BaseView3DMolecule *)view;
+		void ModelMolecule::setup3DViews()
+		{
+			// Remove actual views.
+			for ( std::shared_ptr<BaseView3DMolecule> view : _current3DViews )
+			{
+				std::string name = ( (View::BaseView3DMolecule *)view.get() )->getNameStr();
+				try
+				{
+					_views.at( name ).reset();
+					_views.erase( name );
+				}
+				catch ( const std::exception )
+				{
+					VTX_ERROR( "Trying to delete a non existing view: " + name );
+				}
+			}
+			_current3DViews.clear();
+
+			// Create views.
+			switch ( Setting::Rendering::reprensation )
+			{
+				// TODO: refacto in specific method.
+			case View::MOLECULE_REPRESENTATION::BALL_AND_STICK:
+			{
+				// Sphere.
+				View::View3DMoleculeSphere * viewSphere = new View::View3DMoleculeSphere( 0.3f );
+				_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( viewSphere ) ) );
+				_current3DViews.emplace_back( std::shared_ptr<BaseView3DMolecule>( (BaseView3DMolecule *)viewSphere ) );
+				break;
+				// Cylinder.
+				View::View3DMoleculeCylinder * viewCylinder = new View::View3DMoleculeCylinder();
+				_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( viewCylinder ) ) );
+				_current3DViews.emplace_back(
+					std::shared_ptr<BaseView3DMolecule>( (BaseView3DMolecule *)viewCylinder ) );
+			}
+			case View::MOLECULE_REPRESENTATION::VAN_DER_WAALS:
+			{
+				// Sphere.
+				View::View3DMoleculeSphere * view = new View::View3DMoleculeSphere( 1.0f );
+				_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( view ) ) );
+				_current3DViews.emplace_back( std::shared_ptr<BaseView3DMolecule>( (BaseView3DMolecule *)view ) );
+				break;
+			}
+			default: VTX_ERROR( "Unknown representation" ); break;
+			}
 		}
 
 		void ModelMolecule::printInfos() const

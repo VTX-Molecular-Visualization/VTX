@@ -1,7 +1,7 @@
 #include "renderer_deferred.hpp"
 #include "../model/model_molecule.hpp"
 #include "../settings.hpp"
-#include "../view/view_3d_ball_and_stick.hpp"
+#include "../view/base_view_3d_molecule.hpp"
 #include "base_renderer.hpp"
 #include <random>
 
@@ -30,8 +30,10 @@ namespace VTX
 			// Init views.
 			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
-				View::BaseView3DMolecule * view = (View::BaseView3DMolecule *)molecule->getCurrentView3D();
-				view->setupShaders( _programManager );
+				for ( const std::shared_ptr<Model::BaseView3DMolecule> view : molecule->getCurrent3DViews() )
+				{
+					( (View::BaseView3DMolecule *)view.get() )->setupShaders( _programManager );
+				}
 			}
 
 			_isInitialized = true;
@@ -251,12 +253,8 @@ namespace VTX
 
 		void RendererDeferred::clear( Object3D::Scene & p_scene )
 		{
-			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
-			{
-				View::BaseView3DMolecule * view = (View::BaseView3DMolecule *)molecule->getCurrentView3D();
+			// TODO.
 
-				// TODO: delete shaders/programs or let them for further use?
-			}
 			_isInitialized = false;
 		}
 
@@ -281,17 +279,27 @@ namespace VTX
 
 			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
-				View::View3DBallAndStick * view = (View::View3DBallAndStick *)molecule->getCurrentView3D();
+				for ( const std::shared_ptr<Model::BaseView3DMolecule> view : molecule->getCurrent3DViews() )
+				{
+					View::BaseView3DMolecule * v = (View::BaseView3DMolecule *)view.get();
+					v->bind();
+				}
 
-				view->bindVAO();
-				view->bindIBO();
+				for ( const std::shared_ptr<Model::BaseView3DMolecule> view : molecule->getCurrent3DViews() )
+				{
+					View::BaseView3DMolecule * v = (View::BaseView3DMolecule *)view.get();
+					v->bind();
+					v->useShaders( _programManager );
+					v->setCameraUniforms( p_scene.getCamera() );
+					v->draw();
+					v->unbind();
+				}
 
-				view->useShaders( _programManager );
-				view->setUniforms( p_scene.getCamera() );
-				view->draw();
-
-				view->unbindIBO();
-				view->unbindVAO();
+				for ( const std::shared_ptr<Model::BaseView3DMolecule> view : molecule->getCurrent3DViews() )
+				{
+					View::BaseView3DMolecule * v = (View::BaseView3DMolecule *)view.get();
+					v->unbind();
+				}
 			}
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 		}

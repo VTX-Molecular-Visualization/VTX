@@ -52,7 +52,7 @@ namespace VTX
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.SymbolDisplay" ),
 									   (int *)&Setting::UI::symbolDisplayMode,
 									   "Short\0Long\0" ) )
-					{ }
+					{}
 
 					ImGui::Separator();
 
@@ -61,15 +61,19 @@ namespace VTX
 							 LOCALE( "MainMenu.Settings.Render" ), (int *)&Setting::Rendering::mode, "Deferred\0" ) )
 					{}
 					*/
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ),
+									   (int *)&Setting::Rendering::reprensation,
+									   "Ball and stick\0Van der Waals\0" ) )
+					{ VTXApp::get().getScene().setupMoleculeViews(); }
 
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ),
 									   (int *)&Setting::Rendering::shading,
 									   "Lambert\0Blinn Phong\0Toon\0" ) )
 					{ VTXApp::get().setRendererShading(); }
 
-					 ImGui::Separator();
+					ImGui::Separator();
 					// ImGui::Checkbox( LOCALE( "MainMenu.Settings.AA" ), &Setting::Rendering::useAA );
-					 ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &Setting::Rendering::useSSAO );
+					ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &Setting::Rendering::useSSAO );
 
 					ImGui::EndMenu();
 				}

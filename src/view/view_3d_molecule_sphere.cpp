@@ -1,26 +1,21 @@
-#include "base_view_3d_molecule.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "view_3d_molecule_sphere.hpp"
 
 namespace VTX
 {
 	namespace View
 	{
-		BaseView3DMolecule::~BaseView3DMolecule()
+		View3DMoleculeSphere::~View3DMoleculeSphere()
 		{
 			glDeleteBuffers( 1, &_atomPositionsVBO );
-			glDeleteBuffers( 1, &_bondsIBO );
 			glDeleteBuffers( 1, &_atomRadiusVBO );
 			glDeleteBuffers( 1, &_atomColorsVBO );
-			glDeleteVertexArrays( 1, &_vao );
 		}
 
-		void BaseView3DMolecule::_prepare()
+		void View3DMoleculeSphere::_prepare()
 		{
-			uint atomCount	 = _model->getAtomPositions().size();
-			uint colorCount	 = _model->getAtomColors().size();
-			uint radiusCount = _model->getAtomRadius().size();
-			uint bondCount	 = _model->getBonds().size();
+			uint atomCount	 = (uint)_model->getAtomPositions().size();
+			uint colorCount	 = (uint)_model->getAtomColors().size();
+			uint radiusCount = (uint)_model->getAtomRadius().size();
 
 			glGenBuffers( 1, &_atomPositionsVBO );
 			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
@@ -40,17 +35,8 @@ namespace VTX
 				GL_ARRAY_BUFFER, sizeof( float ) * radiusCount, _model->getAtomRadius().data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			// ibo
-			glGenBuffers( 1, &_bondsIBO );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
-			glBufferData(
-				GL_ELEMENT_ARRAY_BUFFER, sizeof( uint ) * bondCount, _model->getBonds().data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-			// vao
 			glGenVertexArrays( 1, &_vao );
 			glBindVertexArray( _vao );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
@@ -67,10 +53,29 @@ namespace VTX
 			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_RADIUS, 1, GL_FLOAT, GL_FALSE, sizeof( float ), 0 );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
 			glBindVertexArray( 0 );
 		}
 
+		void View3DMoleculeSphere::setupShaders( Shader::GLSLProgramManager & p_programManager )
+		{
+			Shader::GLSLProgram * program = p_programManager.createProgram( "SphereImpostorGeomShader" );
+			program->attachShader( p_programManager.createShader( "sphereImpostorGeom.vert" ) );
+			program->attachShader( p_programManager.createShader( "sphereImpostorGeomQuad.geom" ) );
+			program->attachShader( p_programManager.createShader( "sphereImpostorDeferred.frag" ) );
+			program->link();
+
+			_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
+			_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
+			_uRadiusScale	  = glGetUniformLocation( program->getId(), "uRadScale" );
+
+			glUniform1f( _uRadiusScale, _radiusScale );
+		}
+
+		void View3DMoleculeSphere::useShaders( Shader::GLSLProgramManager & p_programManager )
+		{
+			p_programManager.getProgram( "SphereImpostorGeomShader" )->use();
+		}
+
+		void View3DMoleculeSphere::draw() { glDrawArrays( GL_POINTS, 0, _model->getAtomCount() ); }
 	} // namespace View
 } // namespace VTX

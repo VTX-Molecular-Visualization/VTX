@@ -8,14 +8,7 @@ namespace VTX
 {
 	namespace State
 	{
-		StateMachine::~StateMachine()
-		{
-			for ( PairEnumToStateSharedPtr pair : _states )
-			{
-				pair.second.reset();
-			}
-			_states.clear();
-		}
+		StateMachine::~StateMachine() { _states.clear(); }
 
 		void StateMachine::init() { _addStates(); }
 

@@ -7,14 +7,7 @@ namespace VTX
 	{
 		BaseComponent::BaseComponent( bool * const p_show ) : _show( p_show ) {}
 
-		BaseComponent::~BaseComponent()
-		{
-			for ( PairEnumToComponentSharedPtr pair : _components )
-			{
-				pair.second.reset();
-			}
-			_components.clear();
-		}
+		BaseComponent::~BaseComponent() { _components.clear(); }
 
 		void BaseComponent::init()
 		{

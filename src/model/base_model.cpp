@@ -48,7 +48,6 @@ namespace VTX
 			for ( PairStringToViewSharedPtr pair : _views )
 			{
 				pair.second->setModel( nullptr );
-				pair.second.reset();
 			}
 			_views.clear();
 		}

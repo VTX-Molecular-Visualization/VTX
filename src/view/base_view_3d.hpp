@@ -18,10 +18,12 @@ namespace VTX
 		class BaseView3D : public BaseView<T>
 		{
 		  public:
-			virtual void draw()										  = 0;
-			virtual void setupShaders( Shader::GLSLProgramManager & ) = 0;
-			virtual void useShaders( Shader::GLSLProgramManager & )	  = 0;
-			virtual void setUniforms( const Object3D::Camera & )	  = 0;
+			virtual void draw()										   = 0;
+			virtual void setupShaders( Shader::GLSLProgramManager & )  = 0;
+			virtual void useShaders( Shader::GLSLProgramManager & )	   = 0;
+			virtual void setCameraUniforms( const Object3D::Camera & ) = 0;
+			virtual void bind() const								   = 0;
+			virtual void unbind() const								   = 0;
 
 		  private:
 		};
