@@ -5,16 +5,15 @@
 #pragma once
 #endif
 
+#include "../generic/base_event_handler.hpp"
 #include <SDL2/SDL.h>
 
 namespace VTX
 {
 	namespace Controller
 	{
-		class BaseController
+		class BaseController : public Generic::BaseEventHandler<SDL_Event>
 		{
-		  public:
-			virtual void handleEvent( const SDL_Event & ) = 0;
 		};
 	} // namespace Controller
 } // namespace VTX
