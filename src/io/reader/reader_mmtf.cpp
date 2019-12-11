@@ -5,7 +5,9 @@
 #pragma warning( push, 0 )
 #include <mmtf/mmtf.hpp>
 #pragma warning( pop )
+#include "../../util/color.hpp"
 #include "../../util/logger.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 namespace VTX
 {
@@ -68,6 +70,13 @@ namespace VTX
 				chain.setName( data.chainNameList[ chainGlobalIdx ] );
 				chain.setIdFirstResidue( residueGlobalIdx );
 				chain.setResidueCount( data.groupsPerChain[ chainGlobalIdx ] );
+				chain.setColor( Util::Color::randomPastelColor() );
+
+				///////////////
+				chain._fColor[ 0 ] = chain.getColor().x;
+				chain._fColor[ 1 ] = chain.getColor().y;
+				chain._fColor[ 2 ] = chain.getColor().z;
+				//////////////
 
 				// For each residue in the chain.
 				uint residueCount = data.groupsPerChain[ chainGlobalIdx ];
@@ -113,13 +122,21 @@ namespace VTX
 						symbol.has_value() ? atom.setSymbol( symbol.value() )
 										   : p_molecule.addUnknownAtomSymbol( atomSymbol );
 
+						////////////////
+						atom._fColor[ 0 ] = atom.getColor().x;
+						atom._fColor[ 1 ] = atom.getColor().y;
+						atom._fColor[ 2 ] = atom.getColor().z;
+						//////////////
+
 						x = data.xCoordList[ atomGlobalIdx ];
 						y = data.yCoordList[ atomGlobalIdx ];
 						z = data.zCoordList[ atomGlobalIdx ];
 
 						Vec3f & atomPosition = p_molecule.addAtomPosition( Vec3f( x, y, z ) );
 						p_molecule.addAtomRadius( atom.getVdwRadius() );
-						p_molecule.addAtomColor( *atom.getColor() );
+
+						p_molecule.addAtomColor( chain.getColor() );
+						// p_molecule.addAtomColor( atom.getColor() );
 
 						// Extends bounding box along atom position.
 						aabb.extend( atomPosition );

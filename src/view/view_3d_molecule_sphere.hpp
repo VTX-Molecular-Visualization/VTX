@@ -22,9 +22,9 @@ namespace VTX
 			};
 
 			View3DMoleculeSphere( const float p_radiusScale ) : _radiusScale( p_radiusScale ) {}
-			~View3DMoleculeSphere();
+			~View3DMoleculeSphere() = default;
 
-			virtual void		bind() const override { glBindVertexArray( _vao ); }
+			virtual void		bind() const override { glBindVertexArray( _model->getVAO() ); }
 			virtual void		unbind() const override { glBindVertexArray( 0 ); }
 			virtual void		draw() override;
 			virtual void		setupShaders( Shader::GLSLProgramManager & ) override;
@@ -39,13 +39,6 @@ namespace VTX
 
 		  private:
 			float _radiusScale;
-
-			// Buffers.
-			GLuint _atomPositionsVBO = GL_INVALID_VALUE; // Atom positions vbo.
-			GLuint _atomRadiusVBO	 = GL_INVALID_VALUE; // Radii vbo. TODO: compress with position.
-														 // TODO ? use SSBO ? ok for atom colors (CPK/residue/chain)
-														 // but for energy based coloration, useless...
-			GLuint _atomColorsVBO = GL_INVALID_VALUE;	 // Color vbo.
 
 			// Uniforms.
 			GLint _uRadiusScale = GL_INVALID_INDEX;

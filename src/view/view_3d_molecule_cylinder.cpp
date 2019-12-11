@@ -4,12 +4,6 @@ namespace VTX
 {
 	namespace View
 	{
-		View3DMoleculeCylinder::~View3DMoleculeCylinder()
-		{
-			glDeleteBuffers( 1, &_bondsIBO );
-			glDeleteBuffers( 1, &_vao );
-		}
-
 		void View3DMoleculeCylinder::_prepare()
 		{
 			uint bondCount = (uint)_model->getBonds().size();

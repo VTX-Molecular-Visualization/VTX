@@ -24,6 +24,8 @@ namespace VTX
 			inline void				   setId( const uint p_id ) { _id = p_id; };
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
+			inline const Vec3f &	   getColor() const { return _color; }
+			inline void				   setColor( const Vec3f p_color ) { _color = p_color; }
 			inline uint				   getIdFirstResidue() const { return _idFirstResidue; };
 			inline void				   setIdFirstResidue( const uint p_id ) { _idFirstResidue = p_id; };
 			inline uint				   getResidueCount() const { return _residueCount; };
@@ -36,8 +38,12 @@ namespace VTX
 
 			uint		_id				= INVALID_ID;
 			std::string _name			= "";
+			Vec3f		_color			= VEC3F_ZERO;
 			uint		_idFirstResidue = 0;
 			uint		_residueCount	= 0;
+
+		  public:
+			float _fColor[ 3 ];
 		};
 
 	} // namespace Model

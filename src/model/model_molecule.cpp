@@ -8,7 +8,16 @@ namespace VTX
 {
 	namespace Model
 	{
-		ModelMolecule::~ModelMolecule() { _current3DViews.clear(); }
+		ModelMolecule::~ModelMolecule()
+		{
+			_current3DViews.clear();
+
+			glDeleteBuffers( 1, &_vao );
+			glDeleteBuffers( 1, &_atomPositionsVBO );
+			glDeleteBuffers( 1, &_atomRadiusVBO );
+			glDeleteBuffers( 1, &_atomColorsVBO );
+			glDeleteBuffers( 1, &_bondsIBO );
+		}
 
 		void ModelMolecule::_addViews()
 		{

@@ -13,6 +13,7 @@
 #include "model_atom.hpp"
 #include "model_chain.hpp"
 #include "model_residue.hpp"
+#include <GL/gl3w.h>
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <set>
@@ -95,6 +96,13 @@ namespace VTX
 			// Views.
 			std::vector<BaseView3DMolecule *> & getCurrent3DViews() { return _current3DViews; };
 
+			// Buffers.
+			inline GLuint getVAO() const { return _vao; }
+			inline GLuint getAtomPositionsVBO() const { return _atomPositionsVBO; }
+			inline GLuint getAtomRadiusVBO() const { return _atomRadiusVBO; }
+			inline GLuint getAtomColorsVBO() const { return _atomColorsVBO; }
+			inline GLuint getBondsIBO() const { return _bondsIBO; }
+
 		  protected:
 			virtual void _addViews() override final;
 
@@ -122,9 +130,14 @@ namespace VTX
 			ModelResidue * _selectedResidue = nullptr;
 			ModelAtom *	   _selectedAtom	= nullptr;
 
-			// Views.
-			// Use basic pointers because forward declaration.
-			std::vector<BaseView3DMolecule *> _current3DViews = std::vector<BaseView3DMolecule *>();
+			// OpenGL buffers.
+			GLuint _vao				 = GL_INVALID_VALUE; // Vao.
+			GLuint _atomPositionsVBO = GL_INVALID_VALUE; // Atom positions vbo.
+			GLuint _atomRadiusVBO	 = GL_INVALID_VALUE; // Radii vbo. TODO: compress with position.
+														 // TODO ? use SSBO ? ok for atom colors (CPK/residue/chain)
+														 // but for energy based coloration, useless...
+			GLuint _atomColorsVBO = GL_INVALID_VALUE;	 // Color vbo.
+			GLuint _bondsIBO	  = GL_INVALID_VALUE;	 // Bonds ibo.
 
 #ifdef _DEBUG
 		  public:

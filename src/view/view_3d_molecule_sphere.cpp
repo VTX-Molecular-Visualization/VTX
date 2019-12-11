@@ -4,13 +4,6 @@ namespace VTX
 {
 	namespace View
 	{
-		View3DMoleculeSphere::~View3DMoleculeSphere()
-		{
-			glDeleteBuffers( 1, &_atomPositionsVBO );
-			glDeleteBuffers( 1, &_atomRadiusVBO );
-			glDeleteBuffers( 1, &_atomColorsVBO );
-		}
-
 		void View3DMoleculeSphere::_prepare()
 		{
 			uint atomCount	 = (uint)_model->getAtomPositions().size();

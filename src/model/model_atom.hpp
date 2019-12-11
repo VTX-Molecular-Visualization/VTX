@@ -150,7 +150,7 @@ namespace VTX
 			// Static const mapping.
 			static const std::string SYMBOL_NAME[ (int)ATOM_SYMBOL::COUNT ];
 			static const float		 SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ];
-			static const Vec3f *	 SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ];
+			static Vec3f			 SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ];
 
 			inline const ModelMolecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void setMoleculePtr( const ModelMolecule * const p_molecule ) { _moleculePtr = p_molecule; }
@@ -167,7 +167,8 @@ namespace VTX
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
 			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ (int)_symbol ]; }
-			inline const Vec3f *	   getColor() const { return SYMBOL_COLOR[ (int)_symbol ]; }
+			inline const Vec3f &	   getColor() const { return SYMBOL_COLOR[ (int)_symbol ]; }
+			inline void				   setColor( const Vec3f p_color ) { SYMBOL_COLOR[ (int)_symbol ] = p_color; }
 
 			virtual void setSelected( const bool ) override;
 
@@ -178,6 +179,9 @@ namespace VTX
 
 			uint		_id		= INVALID_ID;
 			ATOM_SYMBOL _symbol = ATOM_SYMBOL::UNKNOWN;
+
+		  public:
+			float _fColor[ 3 ];
 		};
 
 	} // namespace Model

@@ -45,9 +45,6 @@ namespace VTX
 			virtual void notify( Event::EVENT_MODEL ) {};
 
 		  protected:
-			// Vao.
-			GLuint _vao = GL_INVALID_VALUE;
-
 			// Uniforms.
 			GLint _uViewModelMatrix = GL_INVALID_INDEX;
 			GLint _uProjMatrix		= GL_INVALID_INDEX;

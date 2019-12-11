@@ -14,6 +14,7 @@ namespace VTX
 			{
 				ImGui::Text( "ID: %d", _model->getId() );
 				ImGui::Text( "Residues: %d", _model->getResidueCount() );
+				if ( ImGui::ColorEdit3( "Color", _model->_fColor ) ) {}
 			}
 			ImGui::PopID();
 		}

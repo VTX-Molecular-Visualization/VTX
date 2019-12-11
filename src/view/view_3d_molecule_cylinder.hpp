@@ -14,7 +14,8 @@ namespace VTX
 		class View3DMoleculeCylinder : public BaseView3DMolecule
 		{
 		  public:
-			~View3DMoleculeCylinder();
+			View3DMoleculeCylinder()  = default;
+			~View3DMoleculeCylinder() = default;
 
 			virtual void bind() const override
 			{
@@ -38,9 +39,6 @@ namespace VTX
 			virtual void _prepare() override;
 
 		  private:
-			// Buffers.
-			GLuint _bondsIBO = GL_INVALID_VALUE; // Bonds ibo.
-
 			// Uniforms.
 			GLint _uRadius = GL_INVALID_INDEX;
 		};
