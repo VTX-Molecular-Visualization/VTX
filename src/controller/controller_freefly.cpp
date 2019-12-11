@@ -5,7 +5,7 @@ namespace VTX
 	namespace Controller
 	{
 		// TODO: move all constants in settings.
-		void ControllerFreeFly::_handleKeyDownEvent( const SDL_Scancode & p_code )
+		void ControllerFreefly::_handleKeyDownEvent( const SDL_Scancode & p_code )
 		{
 			switch ( p_code )
 			{
@@ -21,7 +21,7 @@ namespace VTX
 			}
 		}
 
-		void ControllerFreeFly::_handleMouseButtonDownEvent( const SDL_MouseButtonEvent & p_event )
+		void ControllerFreefly::_handleMouseButtonDownEvent( const SDL_MouseButtonEvent & p_event )
 		{
 			switch ( p_event.button )
 			{
@@ -30,7 +30,7 @@ namespace VTX
 			}
 		}
 
-		void ControllerFreeFly::_handleMouseButtonUpEvent( const SDL_MouseButtonEvent & p_event )
+		void ControllerFreefly::_handleMouseButtonUpEvent( const SDL_MouseButtonEvent & p_event )
 		{
 			switch ( p_event.button )
 			{
@@ -39,7 +39,7 @@ namespace VTX
 			}
 		}
 
-		void ControllerFreeFly::_handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )
+		void ControllerFreefly::_handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )
 		{
 			if ( _mouseLeftPressed )
 			{

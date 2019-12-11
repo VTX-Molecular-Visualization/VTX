@@ -1,10 +1,10 @@
-#include "base_controller.hpp"
+#include "base_keyboard_mouse_controller.hpp"
 
 namespace VTX
 {
 	namespace Controller
 	{
-		void BaseController::handleEvent( const SDL_Event & p_event )
+		void BaseKeyboardMouseController::handleEvent( const SDL_Event & p_event )
 		{
 			switch ( p_event.type )
 			{

@@ -6,13 +6,13 @@
 #endif
 
 #include "../object3d/camera.hpp"
-#include "base_controller.hpp"
+#include "base_keyboard_mouse_controller.hpp"
 
 namespace VTX
 {
 	namespace Controller
 	{
-		class ControllerOrbit : public BaseController
+		class ControllerOrbit : public BaseKeyboardMouseController
 		{
 		  public:
 			ControllerOrbit( Object3D::Camera & p_camera ) : _camera( p_camera ) {}

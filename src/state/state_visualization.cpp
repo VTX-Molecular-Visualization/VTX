@@ -11,7 +11,7 @@ namespace VTX
 			// Init the renderer.
 			VTXApp::get().initRenderer();
 			// Create controller.
-			_controller = new Controller::ControllerFreeFly( VTXApp::get().getScene().getCamera() );
+			_controller = new Controller::ControllerFreefly( VTXApp::get().getScene().getCamera() );
 		}
 
 		void StateVisualization::exit() { delete _controller; }

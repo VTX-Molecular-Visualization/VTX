@@ -14,15 +14,7 @@ namespace VTX
 		class BaseController
 		{
 		  public:
-			void handleEvent( const SDL_Event & );
-
-		  protected:
-			virtual void _handleKeyDownEvent( const SDL_Scancode & ) {};
-			virtual void _handleKeyUpEvent( const SDL_Scancode & ) {};
-			virtual void _handleMouseButtonDownEvent( const SDL_MouseButtonEvent & ) {};
-			virtual void _handleMouseButtonUpEvent( const SDL_MouseButtonEvent & ) {};
-			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & ) {};
-			virtual void _handleMouseWheelEvent( const SDL_MouseWheelEvent & ) {};
+			virtual void handleEvent( const SDL_Event & ) = 0;
 		};
 	} // namespace Controller
 } // namespace VTX

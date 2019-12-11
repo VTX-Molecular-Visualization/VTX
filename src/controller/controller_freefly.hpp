@@ -1,21 +1,21 @@
-#ifndef __VTX_CONTROLLER_FREE_FLY__
-#define __VTX_CONTROLLER_FREE_FLY__
+#ifndef __VTX_CONTROLLER_FREEFLY__
+#define __VTX_CONTROLLER_FREEFLY__
 
 #ifdef _MSC_VER
 #pragma once
 #endif
 
 #include "../object3d/camera.hpp"
-#include "base_controller.hpp"
+#include "base_keyboard_mouse_controller.hpp"
 
 namespace VTX
 {
 	namespace Controller
 	{
-		class ControllerFreeFly : public BaseController
+		class ControllerFreefly : public BaseKeyboardMouseController
 		{
 		  public:
-			ControllerFreeFly( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
+			ControllerFreefly( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
 
 		  protected:
 			virtual void _handleKeyDownEvent( const SDL_Scancode & ) override;
