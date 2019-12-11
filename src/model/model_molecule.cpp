@@ -8,11 +8,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		ModelMolecule::~ModelMolecule()
-		{
-			// TODO: memory leak?
-			_current3DViews.clear();
-		}
+		ModelMolecule::~ModelMolecule() { _current3DViews.clear(); }
 
 		void ModelMolecule::_addViews()
 		{
@@ -23,9 +19,9 @@ namespace VTX
 		void ModelMolecule::setup3DViews()
 		{
 			// Remove actual views.
-			for ( std::shared_ptr<BaseView3DMolecule> view : _current3DViews )
+			for ( BaseView3DMolecule * const view : _current3DViews )
 			{
-				std::string name = ( (View::BaseView3DMolecule *)view.get() )->getNameStr();
+				std::string name = ( (View::BaseView3DMolecule *)view )->getNameStr();
 				try
 				{
 					_views.at( name ).reset();
@@ -47,20 +43,19 @@ namespace VTX
 				// Sphere.
 				View::View3DMoleculeSphere * viewSphere = new View::View3DMoleculeSphere( 0.3f );
 				_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( viewSphere ) ) );
-				_current3DViews.emplace_back( std::shared_ptr<BaseView3DMolecule>( (BaseView3DMolecule *)viewSphere ) );
+				_current3DViews.emplace_back( (BaseView3DMolecule *)viewSphere );
 				break;
 				// Cylinder.
 				View::View3DMoleculeCylinder * viewCylinder = new View::View3DMoleculeCylinder();
 				_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( viewCylinder ) ) );
-				_current3DViews.emplace_back(
-					std::shared_ptr<BaseView3DMolecule>( (BaseView3DMolecule *)viewCylinder ) );
+				_current3DViews.emplace_back( (BaseView3DMolecule *)viewCylinder );
 			}
 			case View::MOLECULE_REPRESENTATION::VAN_DER_WAALS:
 			{
 				// Sphere.
 				View::View3DMoleculeSphere * view = new View::View3DMoleculeSphere( 1.0f );
 				_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( view ) ) );
-				_current3DViews.emplace_back( std::shared_ptr<BaseView3DMolecule>( (BaseView3DMolecule *)view ) );
+				_current3DViews.emplace_back( (BaseView3DMolecule *)view );
 				break;
 			}
 			default: VTX_ERROR( "Unknown representation" ); break;

@@ -34,9 +34,6 @@ namespace VTX
 			BaseView3DMolecule()  = default;
 			~BaseView3DMolecule() = default;
 
-			virtual void bind() const override { glBindVertexArray( _vao ); }
-			virtual void unbind() const override { glBindVertexArray( 0 ); }
-
 			virtual void setCameraUniforms( const Object3D::Camera & p_camera ) override
 			{
 				glUniformMatrix4fv( _uViewModelMatrix,

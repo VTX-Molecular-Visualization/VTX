@@ -24,6 +24,8 @@ namespace VTX
 			View3DMoleculeSphere( const float p_radiusScale ) : _radiusScale( p_radiusScale ) {}
 			~View3DMoleculeSphere();
 
+			virtual void		bind() const override { glBindVertexArray( _vao ); }
+			virtual void		unbind() const override { glBindVertexArray( 0 ); }
 			virtual void		draw() override;
 			virtual void		setupShaders( Shader::GLSLProgramManager & ) override;
 			virtual void		useShaders( Shader::GLSLProgramManager & ) override;

@@ -30,9 +30,9 @@ namespace VTX
 			// Init views.
 			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
-				for ( const std::shared_ptr<Model::BaseView3DMolecule> view : molecule->getCurrent3DViews() )
+				for ( Model::BaseView3DMolecule * const view : molecule->getCurrent3DViews() )
 				{
-					( (View::BaseView3DMolecule *)view.get() )->setupShaders( _programManager );
+					( (View::BaseView3DMolecule *)view )->setupShaders( _programManager );
 				}
 			}
 
@@ -279,15 +279,15 @@ namespace VTX
 
 			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
-				for ( const std::shared_ptr<Model::BaseView3DMolecule> view : molecule->getCurrent3DViews() )
+				for ( Model::BaseView3DMolecule * const view : molecule->getCurrent3DViews() )
 				{
-					View::BaseView3DMolecule * v = (View::BaseView3DMolecule *)view.get();
+					View::BaseView3DMolecule * v = (View::BaseView3DMolecule *)view;
 					v->bind();
 				}
 
-				for ( const std::shared_ptr<Model::BaseView3DMolecule> view : molecule->getCurrent3DViews() )
+				for ( Model::BaseView3DMolecule * const view : molecule->getCurrent3DViews() )
 				{
-					View::BaseView3DMolecule * v = (View::BaseView3DMolecule *)view.get();
+					View::BaseView3DMolecule * v = (View::BaseView3DMolecule *)view;
 					v->bind();
 					v->useShaders( _programManager );
 					v->setCameraUniforms( p_scene.getCamera() );
@@ -295,9 +295,9 @@ namespace VTX
 					v->unbind();
 				}
 
-				for ( const std::shared_ptr<Model::BaseView3DMolecule> view : molecule->getCurrent3DViews() )
+				for ( Model::BaseView3DMolecule * const view : molecule->getCurrent3DViews() )
 				{
-					View::BaseView3DMolecule * v = (View::BaseView3DMolecule *)view.get();
+					View::BaseView3DMolecule * v = (View::BaseView3DMolecule *)view;
 					v->unbind();
 				}
 			}

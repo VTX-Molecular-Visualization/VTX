@@ -93,7 +93,7 @@ namespace VTX
 			void				 resetSelectedAtom();
 
 			// Views.
-			inline std::vector<std::shared_ptr<BaseView3DMolecule>> & getCurrent3DViews() { return _current3DViews; };
+			std::vector<BaseView3DMolecule *> & getCurrent3DViews() { return _current3DViews; };
 
 		  protected:
 			virtual void _addViews() override final;
@@ -123,8 +123,8 @@ namespace VTX
 			ModelAtom *	   _selectedAtom	= nullptr;
 
 			// Views.
-			std::vector<std::shared_ptr<BaseView3DMolecule>> _current3DViews
-				= std::vector<std::shared_ptr<BaseView3DMolecule>>();
+			// Use basic pointers because forward declaration.
+			std::vector<BaseView3DMolecule *> _current3DViews = std::vector<BaseView3DMolecule *>();
 
 #ifdef _DEBUG
 		  public:
