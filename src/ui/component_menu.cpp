@@ -38,6 +38,18 @@ namespace VTX
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Selection" ), _showSelection );
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), _showConsole );
 					ImGui::Separator();
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.CloseAll" ) ) )
+					{
+						*_showScene		= false;
+						*_showSelection = false;
+						*_showConsole	= false;
+					}
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.ShowAll" ) ) )
+					{
+						*_showScene		= true;
+						*_showSelection = true;
+						*_showConsole	= true;
+					}
 					ImGui::EndMenu();
 				}
 

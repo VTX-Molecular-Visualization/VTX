@@ -21,8 +21,6 @@ namespace VTX
 			}
 		}
 
-		void ControllerFreeFly::_handleKeyUpEvent( const SDL_Scancode & p_code ) {}
-
 		void ControllerFreeFly::_handleMouseButtonDownEvent( const SDL_MouseButtonEvent & p_event )
 		{
 			switch ( p_event.button )
@@ -49,8 +47,6 @@ namespace VTX
 				_camera.rotateUp( 0.1f * p_event.yrel );
 			}
 		}
-
-		void ControllerFreeFly::_handleMouseWheelEvent( const SDL_MouseWheelEvent & p_event ) {}
 
 	} // namespace Controller
 } // namespace VTX

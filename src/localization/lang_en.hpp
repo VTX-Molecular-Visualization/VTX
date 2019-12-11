@@ -23,6 +23,8 @@ namespace VTX
 			{ "MainMenu.Display.Scene", "Scene" },
 			{ "MainMenu.Display.Selection", "Selection" },
 			{ "MainMenu.Display.Console", "Console" },
+			{ "MainMenu.Display.CloseAll", "Close all" },
+			{ "MainMenu.Display.ShowAll", "Show all" },
 			{ "MainMenu.Settings", "Options" },
 			{ "MainMenu.Settings.Theme", "Theme" },
 			{ "MainMenu.Settings.SymbolDisplay", "Symbol display" },
