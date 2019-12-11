@@ -16,6 +16,8 @@ namespace VTX
 		class Scene
 		{
 		  public:
+			using VectorModelMoleculePtr = std::vector<Model::ModelMolecule *>;
+
 			Scene() = default;
 			~Scene();
 
@@ -25,8 +27,8 @@ namespace VTX
 			void									   setupMoleculeViews() const;
 
 		  private:
-			Camera								_camera	   = Camera();
-			std::vector<Model::ModelMolecule *> _molecules = std::vector<Model::ModelMolecule *>();
+			Camera				   _camera	  = Camera();
+			VectorModelMoleculePtr _molecules = VectorModelMoleculePtr();
 		};
 	} // namespace Object3D
 } // namespace VTX

@@ -67,13 +67,12 @@ namespace VTX
 			_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 			_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
 			_uRadiusScale	  = glGetUniformLocation( program->getId(), "uRadScale" );
-
-			glUniform1f( _uRadiusScale, _radiusScale );
 		}
 
 		void View3DMoleculeSphere::useShaders( Shader::GLSLProgramManager & p_programManager )
 		{
 			p_programManager.getProgram( "SphereImpostorGeomShader" )->use();
+			glUniform1f( _uRadiusScale, _radiusScale );
 		}
 
 		void View3DMoleculeSphere::draw() { glDrawArrays( GL_POINTS, 0, _model->getAtomCount() ); }

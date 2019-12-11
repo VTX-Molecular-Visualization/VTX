@@ -36,13 +36,12 @@ namespace VTX
 			_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 			_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
 			_uRadius		  = glGetUniformLocation( program->getId(), "uCylRad" );
-
-			glUniform1f( _uRadius, 0.2f );
 		}
 
 		void View3DMoleculeCylinder::useShaders( Shader::GLSLProgramManager & p_programManager )
 		{
 			p_programManager.getProgram( "CylinderGeom" )->use();
+			glUniform1f( _uRadius, 0.2f );
 		}
 
 		void View3DMoleculeCylinder::draw()

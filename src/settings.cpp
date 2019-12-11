@@ -14,7 +14,7 @@ namespace VTX
 
 		namespace Rendering
 		{
-			View::MOLECULE_REPRESENTATION reprensation = View::MOLECULE_REPRESENTATION::BALL_AND_STICK;
+			View::MOLECULE_REPRESENTATION reprensation = View::MOLECULE_REPRESENTATION::VAN_DER_WAALS;
 			Renderer::MODE				  mode		   = Renderer::MODE::DEFERRED;
 			Renderer::SHADING			  shading	   = Renderer::SHADING::LAMBERT;
 			bool						  useAA		   = false;

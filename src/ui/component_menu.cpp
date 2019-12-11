@@ -37,6 +37,7 @@ namespace VTX
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), _showScene );
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Selection" ), _showSelection );
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), _showConsole );
+					ImGui::Separator();
 					ImGui::EndMenu();
 				}
 
@@ -64,7 +65,10 @@ namespace VTX
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ),
 									   (int *)&Setting::Rendering::reprensation,
 									   "Ball and stick\0Van der Waals\0" ) )
-					{ VTXApp::get().getScene().setupMoleculeViews(); }
+					{
+						VTXApp::get().getScene().setupMoleculeViews();
+						VTXApp::get().initRenderer();
+					}
 
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ),
 									   (int *)&Setting::Rendering::shading,

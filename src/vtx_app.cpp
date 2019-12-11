@@ -32,11 +32,11 @@ namespace VTX
 	void VTXApp::start()
 	{
 		VTX_INFO( "Starting application" );
-		VTXApp::_isRunning = true;
 		VTX_INFO( "Application started" );
 		_ui->printInfos();
 
 		_stateMachine->goToState( State::STATE_NAME::LOADING );
+		VTXApp::_isRunning = true;
 
 		while ( VTXApp::_isRunning )
 		{
@@ -77,8 +77,7 @@ namespace VTX
 
 	void VTXApp::initRenderer() const
 	{
-		// Drawn UI to update display size.
-		_ui->display();
+		if ( !VTXApp::_isRunning ) _ui->display(); // Drawn UI a first time to update display size.
 		ImGuiIO & io = ImGui::GetIO();
 		_renderer->init( *_scene, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
