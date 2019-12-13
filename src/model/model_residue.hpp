@@ -61,15 +61,17 @@ namespace VTX
 			inline void					setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
 			inline const std::string &	getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const std::string &	getSymbolShort() const { return SYMBOL_SHORT[ (int)_symbol ]; }
-			inline const Vec3f *		getColor() const { return SYMBOL_COLOR[ (int)_symbol ]; }
-			inline uint					getIdFirstAtom() const { return _idFirstAtom; };
-			inline void					setIdFirstAtom( const uint p_id ) { _idFirstAtom = p_id; };
-			inline uint					getAtomCount() const { return _atomCount; };
-			inline void					setAtomCount( const uint p_count ) { _atomCount = p_count; };
-			inline uint					getIdFirstBond() const { return _idFirstBond; };
-			inline void					setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
-			inline uint					getBondCount() const { return _bondCount; };
-			inline void					setBondCount( const uint p_count ) { _bondCount = p_count; };
+			// inline const Vec3f *		getColor() const { return SYMBOL_COLOR[ (int)_symbol ]; }
+			inline const Vec3f & getColor() const { return _color; }
+			inline void			 setColor( const Vec3f p_color ) { _color = p_color; }
+			inline uint			 getIdFirstAtom() const { return _idFirstAtom; };
+			inline void			 setIdFirstAtom( const uint p_id ) { _idFirstAtom = p_id; };
+			inline uint			 getAtomCount() const { return _atomCount; };
+			inline void			 setAtomCount( const uint p_count ) { _atomCount = p_count; };
+			inline uint			 getIdFirstBond() const { return _idFirstBond; };
+			inline void			 setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
+			inline uint			 getBondCount() const { return _bondCount; };
+			inline void			 setBondCount( const uint p_count ) { _bondCount = p_count; };
 
 			virtual void setSelected( const bool ) override;
 
@@ -79,10 +81,14 @@ namespace VTX
 
 			uint		   _id			= INVALID_ID;
 			RESIDUE_SYMBOL _symbol		= RESIDUE_SYMBOL::UNKNOWN;
+			Vec3f		   _color		= VEC3F_ZERO;
 			uint		   _idFirstAtom = 0;
 			uint		   _atomCount	= 0;
 			uint		   _idFirstBond = 0;
 			uint		   _bondCount	= 0;
+
+		  public:
+			float _fColor[ 3 ];
 		};
 
 	} // namespace Model

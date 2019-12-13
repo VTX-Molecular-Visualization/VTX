@@ -103,6 +103,14 @@ namespace VTX
 					residue.setBondCount( uint( group.bondAtomList.size() ) / 2u ); // 2 index by bond.
 					if ( group.bondAtomList.size() % 2 != 0 ) { VTX_WARNING( "Incorrect number of bonds" ); }
 
+					residue.setColor( Util::Color::randomPastelColor() );
+
+					///////////////
+					residue._fColor[ 0 ] = residue.getColor().x;
+					residue._fColor[ 1 ] = residue.getColor().y;
+					residue._fColor[ 2 ] = residue.getColor().z;
+					//////////////
+
 					// For each atom in the residue.
 					uint atomCount = uint( group.atomNameList.size() );
 					if ( atomCount == 0 ) { VTX_WARNING( "No atoms" ); }
@@ -135,7 +143,8 @@ namespace VTX
 						Vec3f & atomPosition = p_molecule.addAtomPosition( Vec3f( x, y, z ) );
 						p_molecule.addAtomRadius( atom.getVdwRadius() );
 
-						p_molecule.addAtomColor( chain.getColor() );
+						p_molecule.addAtomColor( residue.getColor() );
+						// p_molecule.addAtomColor( chain.getColor() );
 						// p_molecule.addAtomColor( atom.getColor() );
 
 						// Extends bounding box along atom position.
@@ -149,8 +158,8 @@ namespace VTX
 #endif
 					for ( uint boundIdx = 0; boundIdx < bondCount * 2; boundIdx += 2, bondGlobalIdx += 2 )
 					{
-						p_molecule.addBond( bondGlobalIdx + group.bondAtomList[ boundIdx ] );
-						p_molecule.addBond( bondGlobalIdx + group.bondAtomList[ boundIdx + 1u ] );
+						p_molecule.addBond( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx ] );
+						p_molecule.addBond( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx + 1u ] );
 					}
 				}
 			}

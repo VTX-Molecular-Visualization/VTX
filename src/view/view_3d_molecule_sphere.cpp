@@ -35,6 +35,7 @@ namespace VTX
 					_radiusScale = 1.0f;
 					_isActive	 = true;
 					break;
+				case MOLECULE_REPRESENTATION::BOND:
 				default: _isActive = false; break;
 				}
 			}

@@ -25,7 +25,8 @@ namespace VTX
 		enum class MOLECULE_REPRESENTATION : int
 		{
 			BALL_AND_STICK,
-			VAN_DER_WAALS
+			VAN_DER_WAALS,
+			BOND
 		};
 
 		class BaseView3DMolecule : public BaseView3D<Model::ModelMolecule>

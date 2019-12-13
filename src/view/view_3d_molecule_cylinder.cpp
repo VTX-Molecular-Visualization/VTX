@@ -27,6 +27,7 @@ namespace VTX
 			{
 				switch ( Setting::Rendering::representation )
 				{
+				case MOLECULE_REPRESENTATION::BOND:
 				case MOLECULE_REPRESENTATION::BALL_AND_STICK: _isActive = true; break;
 				case MOLECULE_REPRESENTATION::VAN_DER_WAALS:
 				default: _isActive = false; break;
