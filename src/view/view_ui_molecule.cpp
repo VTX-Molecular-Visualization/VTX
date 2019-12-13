@@ -64,7 +64,7 @@ namespace VTX
 															atom.isSelected() ) )
 									{
 										_model->setSelectedAtom( atom.getId() );
-										ImGui::SetItemDefaultFocus();
+										// ImGui::SetItemDefaultFocus();
 									}
 									ImGui::PopID();
 								}

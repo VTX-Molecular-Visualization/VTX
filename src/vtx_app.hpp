@@ -32,7 +32,7 @@ namespace VTX
 		void stop();
 		void goToState( const State::STATE_NAME );
 		void fireUIEvent( const Event::EVENT_UI, void * const ) const;
-		// void addThread( std::thread * const );
+		void addThread( std::thread * const );
 
 		const std::shared_ptr<UI::BaseComponent> getUIComponentByName( const UI::COMPONENT_NAME ) const;
 		void									 setTheme() const;

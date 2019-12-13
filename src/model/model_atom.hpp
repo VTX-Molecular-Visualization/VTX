@@ -152,12 +152,12 @@ namespace VTX
 			static const float		 SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ];
 			static Vec3f			 SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ];
 
-			inline const ModelMolecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void setMoleculePtr( const ModelMolecule * const p_molecule ) { _moleculePtr = p_molecule; }
-			inline const ModelChain * const	  getChainPtr() const { return _chainPtr; }
-			inline void						  setChainPtr( const ModelChain * const p_chain ) { _chainPtr = p_chain; }
-			inline const ModelResidue * const getResiduePtr() const { return _residuePtr; }
-			inline void setResiduePtr( const ModelResidue * const p_residue ) { _residuePtr = p_residue; }
+			inline ModelMolecule * const getMoleculePtr() const { return _moleculePtr; }
+			inline void				  setMoleculePtr( ModelMolecule * const p_molecule ) { _moleculePtr = p_molecule; }
+			inline ModelChain * const getChainPtr() const { return _chainPtr; }
+			inline void				  setChainPtr( ModelChain * const p_chain ) { _chainPtr = p_chain; }
+			inline ModelResidue * const getResiduePtr() const { return _residuePtr; }
+			inline void					setResiduePtr( ModelResidue * const p_residue ) { _residuePtr = p_residue; }
 
 			inline const uint		   getId() const { return _id; };
 			inline void				   setId( const uint p_id ) { _id = p_id; };
@@ -173,9 +173,9 @@ namespace VTX
 			virtual void setSelected( const bool ) override;
 
 		  private:
-			const ModelMolecule * _moleculePtr = nullptr;
-			const ModelChain *	  _chainPtr	   = nullptr;
-			const ModelResidue *  _residuePtr  = nullptr;
+			ModelMolecule * _moleculePtr = nullptr;
+			ModelChain *	_chainPtr	 = nullptr;
+			ModelResidue *	_residuePtr	 = nullptr;
 
 			uint		_id		= INVALID_ID;
 			ATOM_SYMBOL _symbol = ATOM_SYMBOL::UNKNOWN;
