@@ -28,6 +28,7 @@ namespace VTX
 			}
 
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
+			/*
 			if ( ImGui::CollapsingHeader( LOCALE( "Scene.Performance" ), flags ) )
 			{
 				ImGuiIO & io = ImGui::GetIO();
@@ -44,6 +45,7 @@ namespace VTX
 				{
 				}
 			}
+			*/
 
 			_drawComponent( COMPONENT_NAME::VIEW_MOLECULE );
 

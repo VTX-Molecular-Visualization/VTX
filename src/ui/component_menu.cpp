@@ -106,6 +106,9 @@ namespace VTX
 					ImGui::EndMenu();
 				}
 
+				ImGuiIO & io = ImGui::GetIO();
+				ImGui::Text( "FPS: %.0f", io.Framerate );
+
 				ImGui::PopStyleVar();
 				ImGui::EndMainMenuBar();
 			}

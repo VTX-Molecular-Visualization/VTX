@@ -7,8 +7,6 @@ namespace VTX
 	{
 		void ModelAtom::setSelected( const bool p_selected )
 		{
-			VTX_INFO( "SET SELECTEZD : " + std::to_string( p_selected ) );
-
 			_isSelected = p_selected;
 			if ( isSelected() ) { _addView( Util::Type::componentToView<ModelAtom>( UI::COMPONENT_NAME::VIEW_ATOM ) ); }
 			else
