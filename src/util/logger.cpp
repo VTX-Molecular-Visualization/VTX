@@ -26,6 +26,10 @@ namespace VTX
 			log.message = message;
 			log.date	= Time::getNowString();
 
+#ifdef _DEBUG
+			if ( p_level == LEVEL::LOG_LVL_DEBUG ) return;
+#endif
+
 			if ( VTXApp::isRunning() ) { VTXApp::get().fireUIEvent( Event::EVENT_UI::LOG_CONSOLE, &log ); }
 
 #ifdef LOG_LEVEL

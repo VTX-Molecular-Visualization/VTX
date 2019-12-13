@@ -36,7 +36,7 @@ namespace VTX
 
 		GLSLProgram * const GLSLProgramManager::createProgram( const std::string & p_name )
 		{
-			VTX_INFO( "Creating program: " + p_name );
+			VTX_DEBUG( "Creating program: " + p_name );
 
 			if ( _programs.find( p_name ) == _programs.end() )
 			{
@@ -48,7 +48,7 @@ namespace VTX
 				VTX_WARNING( "Program " + p_name + " already exists" );
 			}
 
-			VTX_INFO( "Program created: " + p_name + " / " + std::to_string( _programs[ p_name ].getId() ) );
+			VTX_DEBUG( "Program created: " + p_name + " / " + std::to_string( _programs[ p_name ].getId() ) );
 			return &( _programs[ p_name ] );
 		}
 
@@ -71,7 +71,7 @@ namespace VTX
 
 		GLuint GLSLProgramManager::createShader( const IO::Path & p_path )
 		{
-			VTX_INFO( "Creating shader: " + p_path.getFileName() );
+			VTX_DEBUG( "Creating shader: " + p_path.getFileName() );
 
 			const std::string name = p_path.getFileName();
 			const SHADER_TYPE type = getShaderType( name );
@@ -114,7 +114,9 @@ namespace VTX
 			{
 				VTX_WARNING( "Shader already exists" );
 			}
-			VTX_INFO( "Shader created: " + name + " / " + std::to_string( shaderId ) );
+
+			VTX_DEBUG( "Shader created: " + name + " / " + std::to_string( shaderId ) );
+
 			return shaderId;
 		}
 
