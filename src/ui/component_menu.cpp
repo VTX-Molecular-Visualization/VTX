@@ -84,6 +84,16 @@ namespace VTX
 						}
 					}
 
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ),
+									   (int *)&Setting::Rendering::colorMode,
+									   "Atom\0Residue\0Chain\0" ) )
+					{
+						for ( Model::ModelMolecule * molecule : VTXApp::get().getScene().getMolecules() )
+						{
+							molecule->setColorMode();
+						}
+					}
+
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ),
 									   (int *)&Setting::Rendering::shading,
 									   "Lambert\0Blinn Phong\0Toon\0" ) )

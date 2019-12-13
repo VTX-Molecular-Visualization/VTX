@@ -32,14 +32,13 @@ namespace VTX
 	void VTXApp::start()
 	{
 		VTX_INFO( "Starting application" );
+		VTXApp::_isRunning = true;
+		VTX_INFO( "Application started" );
 
 		_ui->display();
 		_ui->printInfos();
 
 		_stateMachine->goToState( State::STATE_NAME::LOADING );
-		VTXApp::_isRunning = true;
-
-		VTX_INFO( "Application started" );
 
 		while ( VTXApp::_isRunning )
 		{
@@ -74,7 +73,7 @@ namespace VTX
 		_ui->receiveEvent( p_event, p_arg );
 	}
 
-	// void VTXApp::addThread( std::thread * const p_thread ) { _threads.emplace_back( p_thread ); }
+	void VTXApp::addThread( std::thread * const p_thread ) { _threads.emplace_back( p_thread ); }
 
 	void VTXApp::setTheme() const { _ui->setTheme(); }
 

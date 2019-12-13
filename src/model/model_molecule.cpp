@@ -25,6 +25,9 @@ namespace VTX
 			// Create GL buffers.
 			_createBuffers();
 
+			// Set color mode.
+			setColorMode();
+
 			// Set default representation.
 			setRepresentation();
 		}
@@ -39,6 +42,38 @@ namespace VTX
 		}
 
 		void ModelMolecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }
+
+		void ModelMolecule::setColorMode()
+		{
+			_atomColors.clear();
+
+			switch ( Setting::Rendering::colorMode )
+			{
+			case View::MOLECULE_COLOR_MODE::ATOM:
+				for ( ModelAtom atom : _atoms )
+				{
+					_atomColors.emplace_back( atom.getColor() );
+				}
+				break;
+			case View::MOLECULE_COLOR_MODE::RESIDUE:
+				for ( ModelAtom atom : _atoms )
+				{
+					_atomColors.emplace_back( atom.getResiduePtr()->getColor() );
+				}
+				break;
+			case View::MOLECULE_COLOR_MODE::CHAIN:
+				for ( ModelAtom atom : _atoms )
+				{
+					_atomColors.emplace_back( atom.getChainPtr()->getColor() );
+				}
+				break;
+			default: break;
+			}
+
+			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
+			glBufferData( GL_ARRAY_BUFFER, sizeof( Vec3f ) * _atomColors.size(), _atomColors.data(), GL_STATIC_DRAW );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		}
 
 		void ModelMolecule::printInfos() const
 		{

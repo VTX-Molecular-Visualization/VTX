@@ -26,7 +26,7 @@ namespace VTX
 			log.message = message;
 			log.date	= Time::getNowString();
 
-#ifdef _DEBUG
+#ifndef _DEBUG
 			if ( p_level == LEVEL::LOG_LVL_DEBUG ) return;
 #endif
 

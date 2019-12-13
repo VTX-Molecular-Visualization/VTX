@@ -22,6 +22,13 @@ namespace VTX
 			CYLINDER
 		};
 
+		enum class MOLECULE_COLOR_MODE : int
+		{
+			ATOM,
+			RESIDUE,
+			CHAIN
+		};
+
 		enum class MOLECULE_REPRESENTATION : int
 		{
 			BALL_AND_STICK,

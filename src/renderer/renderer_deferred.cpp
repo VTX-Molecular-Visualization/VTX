@@ -28,6 +28,11 @@ namespace VTX
 			//_initAntiAliasingPass();
 			_initQuadVAO();
 
+			for ( Model::ModelMolecule * molecule : p_scene.getMolecules() )
+			{
+				molecule->init();
+			}
+
 			_isInitialized = true;
 			VTX_INFO( "Renderer initialized" );
 		}

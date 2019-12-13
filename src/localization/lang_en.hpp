@@ -29,6 +29,7 @@ namespace VTX
 			{ "MainMenu.Settings.Theme", "Theme" },
 			{ "MainMenu.Settings.SymbolDisplay", "Symbol display" },
 			{ "MainMenu.Settings.Representation", "Representation" },
+			{ "MainMenu.Settings.ColorMode", "Color mode" },
 			{ "MainMenu.Settings.Shading", "Shading" },
 			{ "MainMenu.Settings.AA", "AA" },
 			{ "MainMenu.Settings.SSAO", "SSAO" },

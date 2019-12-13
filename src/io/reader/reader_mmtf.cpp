@@ -143,7 +143,7 @@ namespace VTX
 						Vec3f & atomPosition = p_molecule.addAtomPosition( Vec3f( x, y, z ) );
 						p_molecule.addAtomRadius( atom.getVdwRadius() );
 
-						p_molecule.addAtomColor( residue.getColor() );
+						// p_molecule.addAtomColor( residue.getColor() );
 						// p_molecule.addAtomColor( chain.getColor() );
 						// p_molecule.addAtomColor( atom.getColor() );
 

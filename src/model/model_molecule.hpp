@@ -81,6 +81,7 @@ namespace VTX
 
 			virtual void init() override;
 			void		 setRepresentation();
+			void		 setColorMode();
 
 			void printInfos() const;
 
