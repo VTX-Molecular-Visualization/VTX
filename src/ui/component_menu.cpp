@@ -75,11 +75,13 @@ namespace VTX
 					{}
 					*/
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ),
-									   (int *)&Setting::Rendering::reprensation,
+									   (int *)&Setting::Rendering::representation,
 									   "Ball and stick\0Van der Waals\0" ) )
 					{
-						VTXApp::get().getScene().setupMoleculeViews();
-						VTXApp::get().initRenderer();
+						for ( Model::ModelMolecule * molecule : VTXApp::get().getScene().getMolecules() )
+						{
+							molecule->setRepresentation();
+						}
 					}
 
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ),

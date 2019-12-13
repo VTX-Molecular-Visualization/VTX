@@ -24,7 +24,6 @@ namespace VTX
 			void addMolecule( Model::ModelMolecule * const p_molecule ) { _molecules.emplace_back( p_molecule ); }
 			inline Camera &							   getCamera() { return _camera; }
 			inline std::vector<Model::ModelMolecule *> getMolecules() const { return _molecules; };
-			void									   setupMoleculeViews() const;
 
 		  private:
 			Camera				   _camera	  = Camera();

@@ -79,7 +79,8 @@ namespace VTX
 			inline Math::Transform & getTransform() { return _transform; };
 			inline Math::AABB &		 AABB() { return _aabb; }
 
-			void setup3DViews();
+			virtual void init() override;
+			void		 setRepresentation();
 
 			void printInfos() const;
 
@@ -93,15 +94,9 @@ namespace VTX
 			void				 resetSelectedResidue();
 			void				 resetSelectedAtom();
 
-			// Views.
-			std::vector<BaseView3DMolecule *> & getCurrent3DViews() { return _current3DViews; };
-
-			// Buffers.
-			inline GLuint getVAO() const { return _vao; }
-			inline GLuint getAtomPositionsVBO() const { return _atomPositionsVBO; }
-			inline GLuint getAtomRadiusVBO() const { return _atomRadiusVBO; }
-			inline GLuint getAtomColorsVBO() const { return _atomColorsVBO; }
-			inline GLuint getBondsIBO() const { return _bondsIBO; }
+			void bindBuffers();
+			void unbindBuffers();
+			void draw();
 
 		  protected:
 			virtual void _addViews() override final;
@@ -131,6 +126,13 @@ namespace VTX
 			ModelAtom *	   _selectedAtom	= nullptr;
 
 			// OpenGL buffers.
+			enum ATTRIBUTE_LOCATION
+			{
+				ATOM_POSITION = 0,
+				ATOM_COLOR	  = 1,
+				ATOM_RADIUS	  = 2
+			};
+
 			GLuint _vao				 = GL_INVALID_VALUE; // Vao.
 			GLuint _atomPositionsVBO = GL_INVALID_VALUE; // Atom positions vbo.
 			GLuint _atomRadiusVBO	 = GL_INVALID_VALUE; // Radii vbo. TODO: compress with position.
@@ -138,6 +140,8 @@ namespace VTX
 														 // but for energy based coloration, useless...
 			GLuint _atomColorsVBO = GL_INVALID_VALUE;	 // Color vbo.
 			GLuint _bondsIBO	  = GL_INVALID_VALUE;	 // Bonds ibo.
+
+			void _createBuffers();
 
 #ifdef _DEBUG
 		  public:

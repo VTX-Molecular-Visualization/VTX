@@ -16,6 +16,8 @@ namespace VTX
 
 		enum class EVENT_MODEL
 		{
+			DRAW,
+			CHANGE_REPRESENTATION
 		};
 		/*
 		template<typename T>

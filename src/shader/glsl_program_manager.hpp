@@ -44,9 +44,8 @@ namespace VTX
 			static SHADER_TYPE			 getShaderType( const std::string & );
 
 		  private:
-			GLuint			   _currentProgram = GL_INVALID_INDEX;
-			MapStringToProgram _programs	   = MapStringToProgram();
-			MapStringToGLuint  _shaders		   = MapStringToGLuint();
+			MapStringToProgram _programs = MapStringToProgram();
+			MapStringToGLuint  _shaders	 = MapStringToGLuint();
 
 			std::string _getShaderErrors( const GLuint ) const;
 		};

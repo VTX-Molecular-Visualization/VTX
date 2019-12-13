@@ -13,7 +13,7 @@ namespace VTX
 		class BaseEventHandler
 		{
 		  public:
-			virtual void handleEvent( const T & ) = 0;
+			virtual void handleEvent( const T &, void * const = nullptr ) = 0;
 		};
 	} // namespace Generic
 } // namespace VTX

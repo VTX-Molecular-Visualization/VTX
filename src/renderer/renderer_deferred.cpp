@@ -2,6 +2,7 @@
 #include "../model/model_molecule.hpp"
 #include "../settings.hpp"
 #include "../view/base_view_3d_molecule.hpp"
+#include "../vtx_app.hpp"
 #include "base_renderer.hpp"
 #include <random>
 
@@ -26,15 +27,6 @@ namespace VTX
 			_initShadingPass();
 			//_initAntiAliasingPass();
 			_initQuadVAO();
-
-			// Init views.
-			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
-			{
-				for ( Model::BaseView3DMolecule * const view : molecule->getCurrent3DViews() )
-				{
-					( (View::BaseView3DMolecule *)view )->setupShaders( _programManager );
-				}
-			}
 
 			_isInitialized = true;
 			VTX_INFO( "Renderer initialized" );
@@ -110,8 +102,8 @@ namespace VTX
 			static const GLenum drawBufferSSAO[] = { GL_COLOR_ATTACHMENT0 };
 			glDrawBuffers( 1, drawBufferSSAO );
 
-			_ssaoShader = _programManager.createProgram( "SSAO" );
-			_ssaoShader->attachShader( _programManager.createShader( "shading/ssao.frag" ) );
+			_ssaoShader = VTXApp::get().getProgramManager().createProgram( "SSAO" );
+			_ssaoShader->attachShader( VTXApp::get().getProgramManager().createShader( "shading/ssao.frag" ) );
 			_ssaoShader->link();
 
 			_uProjMatrixLoc = glGetUniformLocation( _ssaoShader->getId(), "uProjMatrix" );
@@ -182,13 +174,15 @@ namespace VTX
 			static const GLenum drawBufferBlur[] = { GL_COLOR_ATTACHMENT0 };
 			glDrawBuffers( 1, drawBufferBlur );
 
-			_blurShader = _programManager.createProgram( "Blur" );
-			_blurShader->attachShader( _programManager.createShader( "shading/blur.frag" ) );
+			_blurShader = VTXApp::get().getProgramManager().createProgram( "Blur" );
+			_blurShader->attachShader( VTXApp::get().getProgramManager().createShader( "shading/blur.frag" ) );
 			_blurShader->link();
 		}
 
 		inline void RendererDeferred::_initShadingPass()
 		{
+			Shader::GLSLProgramManager & programManager = VTXApp::get().getProgramManager();
+
 			glGenFramebuffers( 1, &_fboShading );
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboShading );
 
@@ -203,14 +197,14 @@ namespace VTX
 			glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _shadingTexture, 0 );
 			static const GLenum draw_bufferShading[] = { GL_COLOR_ATTACHMENT0 };
 			glDrawBuffers( 1, draw_bufferShading );
-			_toonShading = _programManager.createProgram( "ToonShading" );
-			_toonShading->attachShader( _programManager.createShader( "shading/toonShading.frag" ) );
+			_toonShading = programManager.createProgram( "ToonShading" );
+			_toonShading->attachShader( programManager.createShader( "shading/toonShading.frag" ) );
 			_toonShading->link();
-			_diffuseShading = _programManager.createProgram( "DiffuseShading" );
-			_diffuseShading->attachShader( _programManager.createShader( "shading/diffuseShading.frag" ) );
+			_diffuseShading = programManager.createProgram( "DiffuseShading" );
+			_diffuseShading->attachShader( programManager.createShader( "shading/diffuseShading.frag" ) );
 			_diffuseShading->link();
-			_blinnPhongShading = _programManager.createProgram( "BlinnPhongShading" );
-			_blinnPhongShading->attachShader( _programManager.createShader( "shading/blinnPhongShading.frag" ) );
+			_blinnPhongShading = programManager.createProgram( "BlinnPhongShading" );
+			_blinnPhongShading->attachShader( programManager.createShader( "shading/blinnPhongShading.frag" ) );
 			_blinnPhongShading->link();
 
 			// Use setting value.
@@ -219,8 +213,8 @@ namespace VTX
 
 		inline void RendererDeferred::_initAntiAliasingPass()
 		{
-			_aaShader = _programManager.createProgram( "AA" );
-			_aaShader->attachShader( _programManager.createShader( "shading/fxaa.frag" ) );
+			_aaShader = VTXApp::get().getProgramManager().createProgram( "AA" );
+			_aaShader->attachShader( VTXApp::get().getProgramManager().createShader( "shading/fxaa.frag" ) );
 			_aaShader->link();
 		}
 
@@ -279,28 +273,9 @@ namespace VTX
 
 			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
-				for ( Model::BaseView3DMolecule * const view : molecule->getCurrent3DViews() )
-				{
-					View::BaseView3DMolecule * v = (View::BaseView3DMolecule *)view;
-					v->bind();
-				}
-
-				for ( Model::BaseView3DMolecule * const view : molecule->getCurrent3DViews() )
-				{
-					View::BaseView3DMolecule * v = (View::BaseView3DMolecule *)view;
-					v->bind();
-					v->useShaders( _programManager );
-					v->setCameraUniforms( p_scene.getCamera() );
-					v->draw();
-					v->unbind();
-				}
-
-				for ( Model::BaseView3DMolecule * const view : molecule->getCurrent3DViews() )
-				{
-					View::BaseView3DMolecule * v = (View::BaseView3DMolecule *)view;
-					v->unbind();
-				}
+				molecule->draw();
 			}
+
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 		}
 

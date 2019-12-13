@@ -18,14 +18,20 @@ namespace VTX
 		class BaseView3D : public BaseView<T>
 		{
 		  public:
-			virtual void draw()										   = 0;
-			virtual void setupShaders( Shader::GLSLProgramManager & )  = 0;
-			virtual void useShaders( Shader::GLSLProgramManager & )	   = 0;
-			virtual void setCameraUniforms( const Object3D::Camera & ) = 0;
-			virtual void bind() const								   = 0;
-			virtual void unbind() const								   = 0;
+		  protected:
+			// Uniforms.
+			GLint _uViewModelMatrix = GL_INVALID_INDEX;
+			GLint _uProjMatrix		= GL_INVALID_INDEX;
 
-		  private:
+			virtual void _draw() = 0;
+			virtual void _setCameraUniforms( const Object3D::Camera & p_camera )
+			{
+				glUniformMatrix4fv( _uViewModelMatrix,
+									1,
+									GL_FALSE,
+									glm::value_ptr( p_camera.getViewMatrix() * _model->getTransform().get() ) );
+				glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_camera.getProjectionMatrix() ) );
+			}
 		};
 	} // namespace View
 } // namespace VTX

@@ -10,8 +10,6 @@ namespace VTX
 	{
 		ModelMolecule::~ModelMolecule()
 		{
-			_current3DViews.clear();
-
 			glDeleteBuffers( 1, &_vao );
 			glDeleteBuffers( 1, &_atomPositionsVBO );
 			glDeleteBuffers( 1, &_atomRadiusVBO );
@@ -19,57 +17,28 @@ namespace VTX
 			glDeleteBuffers( 1, &_bondsIBO );
 		}
 
+		void ModelMolecule::init()
+		{
+			// Add views.
+			BaseModel::init();
+
+			// Create GL buffers.
+			_createBuffers();
+
+			// Set default representation.
+			setRepresentation();
+		}
+
 		void ModelMolecule::_addViews()
 		{
 			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE ) );
-			setup3DViews();
+			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
+				(View::BaseView<BaseModel> *)( new View::View3DMoleculeSphere() ) ) );
+			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
+				(View::BaseView<BaseModel> *)( new View::View3DMoleculeCylinder() ) ) );
 		}
 
-		void ModelMolecule::setup3DViews()
-		{
-			// Remove actual views.
-			for ( BaseView3DMolecule * const view : _current3DViews )
-			{
-				std::string name = ( (View::BaseView3DMolecule *)view )->getNameStr();
-				try
-				{
-					_views.at( name ).reset();
-					_views.erase( name );
-				}
-				catch ( const std::exception )
-				{
-					VTX_ERROR( "Trying to delete a non existing view: " + name );
-				}
-			}
-			_current3DViews.clear();
-
-			// Create views.
-			switch ( Setting::Rendering::reprensation )
-			{
-				// TODO: refacto in specific method.
-			case View::MOLECULE_REPRESENTATION::BALL_AND_STICK:
-			{
-				// Sphere.
-				View::View3DMoleculeSphere * viewSphere = new View::View3DMoleculeSphere( 0.3f );
-				_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( viewSphere ) ) );
-				_current3DViews.emplace_back( (BaseView3DMolecule *)viewSphere );
-				break;
-				// Cylinder.
-				View::View3DMoleculeCylinder * viewCylinder = new View::View3DMoleculeCylinder();
-				_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( viewCylinder ) ) );
-				_current3DViews.emplace_back( (BaseView3DMolecule *)viewCylinder );
-			}
-			case View::MOLECULE_REPRESENTATION::VAN_DER_WAALS:
-			{
-				// Sphere.
-				View::View3DMoleculeSphere * view = new View::View3DMoleculeSphere( 1.0f );
-				_addView( std::shared_ptr<View::BaseView<BaseModel>>( (View::BaseView<BaseModel> *)( view ) ) );
-				_current3DViews.emplace_back( (BaseView3DMolecule *)view );
-				break;
-			}
-			default: VTX_ERROR( "Unknown representation" ); break;
-			}
-		}
+		void ModelMolecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }
 
 		void ModelMolecule::printInfos() const
 		{
@@ -153,6 +122,74 @@ namespace VTX
 				_selectedAtom->setSelected( false );
 				_selectedAtom = nullptr;
 			}
+		}
+
+		void ModelMolecule::_createBuffers()
+		{
+			glGenBuffers( 1, &_atomPositionsVBO );
+			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
+			glBufferData(
+				GL_ARRAY_BUFFER, sizeof( Vec3f ) * _atomPositions.size(), _atomPositions.data(), GL_STATIC_DRAW );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+			glGenBuffers( 1, &_atomColorsVBO );
+			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
+			glBufferData( GL_ARRAY_BUFFER, sizeof( Vec3f ) * _atomColors.size(), _atomColors.data(), GL_STATIC_DRAW );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+			glGenBuffers( 1, &_atomRadiusVBO );
+			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
+			glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * _atomRadius.size(), _atomRadius.data(), GL_STATIC_DRAW );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+			// ibo
+			glGenBuffers( 1, &_bondsIBO );
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( uint ) * _bonds.size(), _bonds.data(), GL_STATIC_DRAW );
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+			// vao
+			glGenVertexArrays( 1, &_vao );
+			glBindVertexArray( _vao );
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
+
+			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
+			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
+			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
+			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_RADIUS, 1, GL_FLOAT, GL_FALSE, sizeof( float ), 0 );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+			glBindVertexArray( 0 );
+		}
+
+		void ModelMolecule::bindBuffers()
+		{
+			glBindVertexArray( _vao );
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
+		}
+
+		void ModelMolecule::unbindBuffers()
+		{
+			glBindVertexArray( 0 );
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+		}
+
+		void ModelMolecule::draw()
+		{
+			bindBuffers();
+			_notifyViews( Event::EVENT_MODEL::DRAW );
+			unbindBuffers();
 		}
 	} // namespace Model
 } // namespace VTX

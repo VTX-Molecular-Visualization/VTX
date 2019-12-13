@@ -114,7 +114,7 @@ namespace VTX
 			{
 				VTX_WARNING( "Shader already exists" );
 			}
-
+			VTX_INFO( "Shader created: " + name + " / " + std::to_string( shaderId ) );
 			return shaderId;
 		}
 

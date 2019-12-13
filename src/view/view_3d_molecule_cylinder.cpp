@@ -1,4 +1,5 @@
 #include "view_3d_molecule_cylinder.hpp"
+#include "../vtx_app.hpp"
 
 namespace VTX
 {
@@ -6,25 +7,11 @@ namespace VTX
 	{
 		void View3DMoleculeCylinder::_prepare()
 		{
-			uint bondCount = (uint)_model->getBonds().size();
-
-			glGenBuffers( 1, &_bondsIBO );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
-			glBufferData(
-				GL_ELEMENT_ARRAY_BUFFER, sizeof( uint ) * bondCount, _model->getBonds().data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-			glGenVertexArrays( 1, &_vao );
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
-		}
-
-		void View3DMoleculeCylinder::setupShaders( Shader::GLSLProgramManager & p_programManager )
-		{
-			Shader::GLSLProgram * program = p_programManager.createProgram( "CylinderGeom" );
-			program->attachShader( p_programManager.createShader( "cylinderImpostorGeom.vert" ) );
-			program->attachShader( p_programManager.createShader( "cylinderImpostorGeom.geom" ) );
-			program->attachShader( p_programManager.createShader( "cylinderImpostorDeferred.frag" ) );
+			Shader::GLSLProgramManager & pm		 = VTXApp::get().getProgramManager();
+			Shader::GLSLProgram *		 program = pm.createProgram( "CylinderGeom" );
+			program->attachShader( pm.createShader( "cylinderImpostorGeom.vert" ) );
+			program->attachShader( pm.createShader( "cylinderImpostorGeom.geom" ) );
+			program->attachShader( pm.createShader( "cylinderImpostorDeferred.frag" ) );
 			program->link();
 
 			_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
@@ -32,14 +19,26 @@ namespace VTX
 			_uRadius		  = glGetUniformLocation( program->getId(), "uCylRad" );
 		}
 
-		void View3DMoleculeCylinder::useShaders( Shader::GLSLProgramManager & p_programManager )
+		void View3DMoleculeCylinder::notify( Event::EVENT_MODEL p_event )
 		{
-			p_programManager.getProgram( "CylinderGeom" )->use();
-			glUniform1f( _uRadius, 0.2f );
-		}
+			BaseView3DMolecule::notify( p_event );
 
-		void View3DMoleculeCylinder::draw()
+			if ( p_event == Event::EVENT_MODEL::CHANGE_REPRESENTATION )
+			{
+				switch ( Setting::Rendering::representation )
+				{
+				case MOLECULE_REPRESENTATION::BALL_AND_STICK: _isActive = true; break;
+				case MOLECULE_REPRESENTATION::VAN_DER_WAALS:
+				default: _isActive = false; break;
+				}
+			}
+		};
+
+		void View3DMoleculeCylinder::_draw()
 		{
+			VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
+			_setCameraUniforms( VTXApp::get().getScene().getCamera() );
+			glUniform1f( _uRadius, 0.2f );
 			glDrawElements( GL_LINES, _model->getBondCount(), GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
 		}
 	} // namespace View

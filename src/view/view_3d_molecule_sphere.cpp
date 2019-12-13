@@ -1,4 +1,5 @@
 #include "view_3d_molecule_sphere.hpp"
+#include "../vtx_app.hpp"
 
 namespace VTX
 {
@@ -6,55 +7,11 @@ namespace VTX
 	{
 		void View3DMoleculeSphere::_prepare()
 		{
-			uint atomCount	 = (uint)_model->getAtomPositions().size();
-			uint colorCount	 = (uint)_model->getAtomColors().size();
-			uint radiusCount = (uint)_model->getAtomRadius().size();
-
-			glGenBuffers( 1, &_atomPositionsVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
-			glBufferData(
-				GL_ARRAY_BUFFER, sizeof( Vec3f ) * atomCount, _model->getAtomPositions().data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glGenBuffers( 1, &_atomColorsVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
-			glBufferData(
-				GL_ARRAY_BUFFER, sizeof( Vec3f ) * colorCount, _model->getAtomColors().data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glGenBuffers( 1, &_atomRadiusVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
-			glBufferData(
-				GL_ARRAY_BUFFER, sizeof( float ) * radiusCount, _model->getAtomRadius().data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glGenVertexArrays( 1, &_vao );
-			glBindVertexArray( _vao );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_RADIUS, 1, GL_FLOAT, GL_FALSE, sizeof( float ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindVertexArray( 0 );
-		}
-
-		void View3DMoleculeSphere::setupShaders( Shader::GLSLProgramManager & p_programManager )
-		{
-			Shader::GLSLProgram * program = p_programManager.createProgram( "SphereImpostorGeomShader" );
-			program->attachShader( p_programManager.createShader( "sphereImpostorGeom.vert" ) );
-			program->attachShader( p_programManager.createShader( "sphereImpostorGeomQuad.geom" ) );
-			program->attachShader( p_programManager.createShader( "sphereImpostorDeferred.frag" ) );
+			Shader::GLSLProgramManager & pm		 = VTXApp::get().getProgramManager();
+			Shader::GLSLProgram *		 program = pm.createProgram( "SphereImpostorGeomShader" );
+			program->attachShader( pm.createShader( "sphereImpostorGeom.vert" ) );
+			program->attachShader( pm.createShader( "sphereImpostorGeomQuad.geom" ) );
+			program->attachShader( pm.createShader( "sphereImpostorDeferred.frag" ) );
 			program->link();
 
 			_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
@@ -62,12 +19,33 @@ namespace VTX
 			_uRadiusScale	  = glGetUniformLocation( program->getId(), "uRadScale" );
 		}
 
-		void View3DMoleculeSphere::useShaders( Shader::GLSLProgramManager & p_programManager )
+		void View3DMoleculeSphere::notify( Event::EVENT_MODEL p_event )
 		{
-			p_programManager.getProgram( "SphereImpostorGeomShader" )->use();
-			glUniform1f( _uRadiusScale, _radiusScale );
-		}
+			BaseView3DMolecule::notify( p_event );
 
-		void View3DMoleculeSphere::draw() { glDrawArrays( GL_POINTS, 0, _model->getAtomCount() ); }
+			if ( p_event == Event::EVENT_MODEL::CHANGE_REPRESENTATION )
+			{
+				switch ( Setting::Rendering::representation )
+				{
+				case MOLECULE_REPRESENTATION::BALL_AND_STICK:
+					_radiusScale = 0.3f;
+					_isActive	 = true;
+					break;
+				case MOLECULE_REPRESENTATION::VAN_DER_WAALS:
+					_radiusScale = 1.0f;
+					_isActive	 = true;
+					break;
+				default: _isActive = false; break;
+				}
+			}
+		};
+
+		void View3DMoleculeSphere::_draw()
+		{
+			VTXApp::get().getProgramManager().getProgram( "SphereImpostorGeomShader" )->use();
+			_setCameraUniforms( VTXApp::get().getScene().getCamera() );
+			glUniform1f( _uRadiusScale, _radiusScale );
+			glDrawArrays( GL_POINTS, 0, _model->getAtomCount() );
+		}
 	} // namespace View
 } // namespace VTX

@@ -27,7 +27,7 @@ namespace VTX
 
 		namespace Rendering
 		{
-			extern View::MOLECULE_REPRESENTATION reprensation;
+			extern View::MOLECULE_REPRESENTATION representation;
 			extern Renderer::MODE				 mode;
 			extern Renderer::SHADING			 shading;
 			extern bool							 useAA;

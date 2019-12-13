@@ -17,26 +17,16 @@ namespace VTX
 			View3DMoleculeCylinder()  = default;
 			~View3DMoleculeCylinder() = default;
 
-			virtual void bind() const override
-			{
-				glBindVertexArray( _bondsIBO );
-				glBindVertexArray( _vao );
-			}
-			virtual void unbind() const override
-			{
-				glBindVertexArray( 0 );
-				glBindVertexArray( 0 );
-			}
-			virtual void		draw() override;
-			virtual void		setupShaders( Shader::GLSLProgramManager & ) override;
-			virtual void		useShaders( Shader::GLSLProgramManager & ) override;
 			virtual std::string getNameStr() const override
 			{
 				return std::string( magic_enum::enum_name( VIEW_3D_MOLECULE::CYLINDER ) );
 			};
 
+			virtual void notify( Event::EVENT_MODEL ) override;
+
 		  protected:
 			virtual void _prepare() override;
+			virtual void _draw() override;
 
 		  private:
 			// Uniforms.

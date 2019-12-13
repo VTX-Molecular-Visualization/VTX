@@ -32,11 +32,14 @@ namespace VTX
 	void VTXApp::start()
 	{
 		VTX_INFO( "Starting application" );
-		VTX_INFO( "Application started" );
+
+		_ui->display();
 		_ui->printInfos();
 
 		_stateMachine->goToState( State::STATE_NAME::LOADING );
 		VTXApp::_isRunning = true;
+
+		VTX_INFO( "Application started" );
 
 		while ( VTXApp::_isRunning )
 		{
@@ -90,8 +93,8 @@ namespace VTX
 		// Renderer.
 		_chrono.start();
 		ImGuiIO & io = ImGui::GetIO();
-		//_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-		//_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+		_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_renderer->render( *_scene );
 		_chrono.stop();
 		_timeLastRenderer = _chrono.elapsedTime();

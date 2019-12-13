@@ -34,20 +34,10 @@ namespace VTX
 			BaseView3DMolecule()  = default;
 			~BaseView3DMolecule() = default;
 
-			virtual void setCameraUniforms( const Object3D::Camera & p_camera ) override
-			{
-				glUniformMatrix4fv( _uViewModelMatrix,
-									1,
-									GL_FALSE,
-									glm::value_ptr( p_camera.getViewMatrix() * _model->getTransform().get() ) );
-				glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_camera.getProjectionMatrix() ) );
-			}
-			virtual void notify( Event::EVENT_MODEL ) {};
+			virtual void notify( Event::EVENT_MODEL p_event ) override;
 
 		  protected:
-			// Uniforms.
-			GLint _uViewModelMatrix = GL_INVALID_INDEX;
-			GLint _uProjMatrix		= GL_INVALID_INDEX;
+			bool _isActive = false;
 		};
 	} // namespace View
 } // namespace VTX

@@ -1,5 +1,6 @@
 #include "glsl_program.hpp"
 #include "../defines.hpp"
+#include <iostream>
 #include <vector>
 
 namespace VTX
@@ -25,7 +26,7 @@ namespace VTX
 			}
 			else
 			{
-				VTX_WARNING( "Shader already created" );
+				VTX_WARNING( "Program already created" );
 			}
 		}
 

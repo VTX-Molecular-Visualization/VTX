@@ -33,24 +33,24 @@ namespace VTX
 			GLuint _quadVBO = GL_INVALID_VALUE;
 
 			// SSAO pass.
+			Shader::GLSLProgram * _ssaoShader	  = nullptr;
 			GLuint				  _fboSSAO		  = GL_INVALID_VALUE;
 			GLuint				  _ssaoTexture	  = GL_INVALID_VALUE;
 			GLuint				  _noiseTexture	  = GL_INVALID_VALUE;
-			Shader::GLSLProgram * _ssaoShader	  = nullptr;
 			GLint				  _uProjMatrixLoc = GL_INVALID_INDEX;
 			GLint				  _uAoKernelLoc	  = GL_INVALID_INDEX;
-			Shader::GLSLProgram * _blurShader	  = nullptr;
 
 			// Blur pass.
-			GLuint _fboBlur		= GL_INVALID_VALUE;
-			GLuint _blurTexture = GL_INVALID_VALUE;
+			Shader::GLSLProgram * _blurShader  = nullptr;
+			GLuint				  _fboBlur	   = GL_INVALID_VALUE;
+			GLuint				  _blurTexture = GL_INVALID_VALUE;
 
 			// Shading pass.
+			Shader::GLSLProgram * _diffuseShading	 = nullptr;
+			Shader::GLSLProgram * _blinnPhongShading = nullptr;
+			Shader::GLSLProgram * _toonShading		 = nullptr;
 			GLuint				  _fboShading		 = GL_INVALID_VALUE;
 			GLuint				  _shadingTexture	 = GL_INVALID_VALUE;
-			Shader::GLSLProgram * _diffuseShading	 = nullptr;
-			Shader::GLSLProgram * _toonShading		 = nullptr;
-			Shader::GLSLProgram * _blinnPhongShading = nullptr;
 
 			Shader::GLSLProgram * _currentShading = nullptr;
 

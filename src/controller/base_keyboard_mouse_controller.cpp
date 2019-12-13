@@ -4,7 +4,7 @@ namespace VTX
 {
 	namespace Controller
 	{
-		void BaseKeyboardMouseController::handleEvent( const SDL_Event & p_event )
+		void BaseKeyboardMouseController::handleEvent( const SDL_Event & p_event, void * const )
 		{
 			switch ( p_event.type )
 			{

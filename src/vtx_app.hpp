@@ -21,7 +21,7 @@ namespace VTX
 	class VTXApp final
 	{
 	  public:
-		static VTXApp & get()
+		inline static VTXApp & get()
 		{
 			static VTXApp instance;
 			return instance;
@@ -39,7 +39,8 @@ namespace VTX
 		void									 initRenderer() const;
 		void									 setRendererShading() const;
 
-		inline Object3D::Scene & getScene() { return *_scene; }
+		inline Object3D::Scene &			getScene() { return *_scene; }
+		inline Shader::GLSLProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
 
 		inline double getTimeTotal() { return _timeTotal; }
 		inline double getTimeLast() { return _timeLast; }
@@ -47,18 +48,17 @@ namespace VTX
 		inline double getTimeLastRenderer() { return _timeLastRenderer; }
 
 	  private:
-		static bool			  _isRunning;
-		Tool::Chrono		  _chrono			= Tool::Chrono();
-		double				  _timeTotal		= 0.f;
-		double				  _timeLast			= 0.f;
-		double				  _timeLastUI		= 0.f;
-		double				  _timeLastRenderer = 0.f;
-		UI::UserInterface *	  _ui				= nullptr;
-		State::StateMachine * _stateMachine		= nullptr;
-		Object3D::Scene *	  _scene			= nullptr;
-		// TODO: use manager to switch, or just switch in render loop?
-		Renderer::BaseRenderer *   _renderer = nullptr;
-		std::vector<std::thread *> _threads	 = std::vector<std::thread *>();
+		static bool				   _isRunning;
+		Tool::Chrono			   _chrono			 = Tool::Chrono();
+		double					   _timeTotal		 = 0.f;
+		double					   _timeLast		 = 0.f;
+		double					   _timeLastUI		 = 0.f;
+		double					   _timeLastRenderer = 0.f;
+		UI::UserInterface *		   _ui				 = nullptr;
+		State::StateMachine *	   _stateMachine	 = nullptr;
+		Object3D::Scene *		   _scene			 = nullptr;
+		Renderer::BaseRenderer *   _renderer		 = nullptr;
+		std::vector<std::thread *> _threads			 = std::vector<std::thread *>();
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;

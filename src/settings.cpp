@@ -14,11 +14,11 @@ namespace VTX
 
 		namespace Rendering
 		{
-			View::MOLECULE_REPRESENTATION reprensation = View::MOLECULE_REPRESENTATION::VAN_DER_WAALS;
-			Renderer::MODE				  mode		   = Renderer::MODE::DEFERRED;
-			Renderer::SHADING			  shading	   = Renderer::SHADING::LAMBERT;
-			bool						  useAA		   = false;
-			bool						  useSSAO	   = false;
+			View::MOLECULE_REPRESENTATION representation = View::MOLECULE_REPRESENTATION::VAN_DER_WAALS;
+			Renderer::MODE				  mode			 = Renderer::MODE::DEFERRED;
+			Renderer::SHADING			  shading		 = Renderer::SHADING::LAMBERT;
+			bool						  useAA			 = false;
+			bool						  useSSAO		 = false;
 		}; // namespace Rendering
 	}	   // namespace Setting
 } // namespace VTX
