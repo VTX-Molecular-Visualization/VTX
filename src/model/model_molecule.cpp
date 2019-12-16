@@ -50,19 +50,19 @@ namespace VTX
 			switch ( Setting::Rendering::colorMode )
 			{
 			case View::MOLECULE_COLOR_MODE::ATOM:
-				for ( ModelAtom atom : _atoms )
+				for ( ModelAtom & atom : _atoms )
 				{
 					_atomColors.emplace_back( atom.getColor() );
 				}
 				break;
 			case View::MOLECULE_COLOR_MODE::RESIDUE:
-				for ( ModelAtom atom : _atoms )
+				for ( ModelAtom & atom : _atoms )
 				{
 					_atomColors.emplace_back( atom.getResiduePtr()->getColor() );
 				}
 				break;
 			case View::MOLECULE_COLOR_MODE::CHAIN:
-				for ( ModelAtom atom : _atoms )
+				for ( ModelAtom & atom : _atoms )
 				{
 					_atomColors.emplace_back( atom.getChainPtr()->getColor() );
 				}

@@ -20,6 +20,8 @@ namespace VTX
 	constexpr int	  OPENGL_VERSION_MAJOR = 4;
 	constexpr int	  OPENGL_VERSION_MINOR = 5;
 	const std::string GLSL_VERSION		   = "#version 450";
+	const bool		  VSYNC				   = 0;
+	const bool		  FULLSCREEN		   = 1;
 
 	constexpr int WINDOWS_WIDTH	 = 1280;
 	constexpr int WINDOWS_HEIGHT = 720;

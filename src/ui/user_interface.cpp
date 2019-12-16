@@ -58,8 +58,8 @@ namespace VTX
 			{
 			case UI::THEME::DARK: ImGui::StyleColorsDark(); break;
 			case UI::THEME::CLASSIC: ImGui::StyleColorsClassic(); break;
-			default:
-			case UI::THEME::LIGHT: ImGui::StyleColorsLight(); break;
+			case UI::THEME::LIGHT:
+			default: ImGui::StyleColorsLight(); break;
 			}
 		}
 
@@ -108,7 +108,7 @@ namespace VTX
 			if ( _glContext == nullptr ) { throw Exception::SDLException( SDL_GetError() ); }
 
 			SDL_GL_MakeCurrent( _window, _glContext );
-			SDL_GL_SetSwapInterval( 0 );
+			SDL_GL_SetSwapInterval( VSYNC );
 		}
 
 		void UserInterface::_initGL()

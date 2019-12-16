@@ -27,6 +27,18 @@ namespace VTX
 			_update();
 		}
 
+		void Camera::rotateAroundLeft( const float p_angle, const Vec3f & p_target )
+		{
+			// TODO.
+			_update();
+		}
+
+		void Camera::rotateAroundUp( const float p_angle, const Vec3f & p_target )
+		{
+			// TODO.
+			_update();
+		}
+
 		void Camera::_update()
 		{
 			const float cosTheta = cosf( _theta );

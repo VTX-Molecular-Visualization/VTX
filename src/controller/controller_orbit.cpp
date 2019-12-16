@@ -8,7 +8,8 @@ namespace VTX
 		{
 			switch ( p_event.button )
 			{
-			case SDL_BUTTON_LEFT: _mouseLeftPressed = true;
+			case SDL_BUTTON_LEFT: _mouseLeftPressed = true; break;
+			case SDL_BUTTON_RIGHT: _mouseRightPressed = true; break;
 			default: break;
 			}
 		}
@@ -28,6 +29,8 @@ namespace VTX
 			if ( _mouseLeftPressed )
 			{
 				// Rotate around.
+				_camera.rotateAroundLeft( 0.1f * p_event.xrel, _target );
+				_camera.rotateAroundUp( 0.1f * p_event.yrel, _target );
 			}
 			else if ( _mouseRightPressed )
 			{

@@ -36,6 +36,8 @@ namespace VTX
 			virtual void moveUp( const float ) final;
 			virtual void rotateLeft( const float ) final;
 			virtual void rotateUp( const float ) final;
+			virtual void rotateAroundLeft( const float, const Vec3f & ) final;
+			virtual void rotateAroundUp( const float, const Vec3f & ) final;
 
 			virtual void printInfo() const;
 

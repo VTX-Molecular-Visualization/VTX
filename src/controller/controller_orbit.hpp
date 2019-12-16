@@ -15,7 +15,9 @@ namespace VTX
 		class ControllerOrbit : public BaseKeyboardMouseController
 		{
 		  public:
-			ControllerOrbit( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
+			ControllerOrbit( Object3D::Camera & p_camera, Vec3f & p_target ) : _camera( p_camera ), _target( p_target )
+			{
+			}
 
 		  protected:
 			virtual void _handleMouseButtonDownEvent( const SDL_MouseButtonEvent & ) override;
@@ -25,6 +27,7 @@ namespace VTX
 
 		  private:
 			Object3D::Camera & _camera;
+			Vec3f			   _target;
 			bool			   _mouseLeftPressed  = false;
 			bool			   _mouseRightPressed = false;
 		};
