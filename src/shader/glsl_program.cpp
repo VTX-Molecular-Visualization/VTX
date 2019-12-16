@@ -43,7 +43,7 @@ namespace VTX
 
 		void GLSLProgram::link()
 		{
-			VTX_INFO( "Linking program " + _name );
+			VTX_DEBUG( "Linking program " + _name );
 
 			if ( _id == GL_INVALID_INDEX )
 			{

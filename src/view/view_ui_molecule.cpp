@@ -41,7 +41,7 @@ namespace VTX
 							ImGui::PushID( residue.getId() );
 							bool residueOpened = ImGui::TreeNodeEx(
 								VTX::Setting::UI::symbolDisplayMode == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
-									? residue.getSymbolShort().c_str()
+									? ( residue.getSymbolShort() + " " + std::to_string( residue.getId() ) ).c_str()
 									: residue.getSymbolName().c_str(),
 								residue.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 							if ( ImGui::IsItemClicked() )
@@ -57,11 +57,13 @@ namespace VTX
 								{
 									Model::ModelAtom & atom = _model->getAtom( residue.getIdFirstAtom() + j );
 									ImGui::PushID( atom.getId() );
-									if ( ImGui::Selectable( VTX::Setting::UI::symbolDisplayMode
-																	== VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
-																? atom.getSymbolStr().c_str()
-																: atom.getSymbolName().c_str(),
-															atom.isSelected() ) )
+									if ( ImGui::Selectable(
+											 VTX::Setting::UI::symbolDisplayMode
+													 == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
+												 ? ( atom.getSymbolStr() + " " + std::to_string( atom.getId() ) )
+													   .c_str()
+												 : atom.getSymbolName().c_str(),
+											 atom.isSelected() ) )
 									{
 										_model->setSelectedAtom( atom.getId() );
 										// ImGui::SetItemDefaultFocus();

@@ -34,7 +34,7 @@ namespace VTX
 			}
 			else if ( _mouseRightPressed )
 			{
-				// Pan the target.
+				// Pan the target?
 			}
 		}
 
