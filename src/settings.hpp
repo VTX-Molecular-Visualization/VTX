@@ -34,6 +34,11 @@ namespace VTX
 			extern bool							 useAA;
 			extern bool							 useSSAO;
 		}; // namespace Rendering
-	}	   // namespace Setting
+
+		namespace Controller
+		{
+			extern bool yAxisInverted;
+		}
+	} // namespace Setting
 } // namespace VTX
 #endif

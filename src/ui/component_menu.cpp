@@ -78,7 +78,7 @@ namespace VTX
 									   (int *)&Setting::Rendering::representation,
 									   "Ball and stick\0Van der Waals\0Bond\0" ) )
 					{
-						for ( Model::ModelMolecule * molecule : VTXApp::get().getScene().getMolecules() )
+						for ( Model::ModelMolecule * const molecule : VTXApp::get().getScene().getMolecules() )
 						{
 							molecule->setRepresentation();
 						}
@@ -88,7 +88,7 @@ namespace VTX
 									   (int *)&Setting::Rendering::colorMode,
 									   "Atom\0Residue\0Chain\0" ) )
 					{
-						for ( Model::ModelMolecule * molecule : VTXApp::get().getScene().getMolecules() )
+						for ( Model::ModelMolecule * const molecule : VTXApp::get().getScene().getMolecules() )
 						{
 							molecule->setColorMode();
 						}
@@ -99,9 +99,12 @@ namespace VTX
 									   "Lambert\0Blinn Phong\0Toon\0" ) )
 					{ VTXApp::get().setRendererShading(); }
 
-					ImGui::Separator();
 					// ImGui::Checkbox( LOCALE( "MainMenu.Settings.AA" ), &Setting::Rendering::useAA );
 					ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &Setting::Rendering::useSSAO );
+
+					ImGui::Separator();
+
+					ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ), &Setting::Controller::yAxisInverted );
 
 					ImGui::EndMenu();
 				}

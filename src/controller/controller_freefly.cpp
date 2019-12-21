@@ -1,4 +1,5 @@
 #include "controller_freefly.hpp"
+#include "../settings.hpp"
 
 namespace VTX
 {
@@ -44,7 +45,7 @@ namespace VTX
 			if ( _mouseLeftPressed )
 			{
 				_camera.rotateLeft( 0.1f * p_event.xrel );
-				_camera.rotateUp( 0.1f * p_event.yrel );
+				_camera.rotateUp( 0.1f * p_event.yrel * ( Setting::Controller::yAxisInverted ? -1.f : 1.f ) );
 			}
 		}
 
