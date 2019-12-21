@@ -11,9 +11,9 @@ namespace VTX
 		ComponentMenu::ComponentMenu( bool * const p_show,
 									  bool * const p_showConsole,
 									  bool * const p_showScene,
-									  bool * const p_showSelection ) :
+									  bool * const p_showInspector ) :
 			BaseComponent( p_show ),
-			_showConsole( p_showConsole ), _showScene( p_showScene ), _showSelection( p_showSelection )
+			_showConsole( p_showConsole ), _showScene( p_showScene ), _showInspector( p_showInspector )
 		{
 		}
 
@@ -35,19 +35,19 @@ namespace VTX
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Display" ), _show ) )
 				{
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), _showScene );
-					ImGui::Checkbox( LOCALE( "MainMenu.Display.Selection" ), _showSelection );
+					ImGui::Checkbox( LOCALE( "MainMenu.Display.Inspector" ), _showInspector );
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), _showConsole );
 					ImGui::Separator();
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.CloseAll" ) ) )
 					{
 						*_showScene		= false;
-						*_showSelection = false;
+						*_showInspector = false;
 						*_showConsole	= false;
 					}
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.ShowAll" ) ) )
 					{
 						*_showScene		= true;
-						*_showSelection = true;
+						*_showInspector = true;
 						*_showConsole	= true;
 					}
 					ImGui::EndMenu();

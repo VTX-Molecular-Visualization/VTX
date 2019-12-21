@@ -7,9 +7,9 @@
 #include "../util/opengl.hpp"
 #include "../vtx_app.hpp"
 #include "component_console.hpp"
+#include "component_inspector.hpp"
 #include "component_menu.hpp"
 #include "component_scene.hpp"
-#include "component_selection.hpp"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_sdl.h"
 #include <iostream>
@@ -66,10 +66,10 @@ namespace VTX
 		void UserInterface::_addComponents()
 		{
 			_addComponent( std::make_shared<ComponentMenu>(
-				ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showSelection ) ) );
+				ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showInspector ) ) );
 			_addComponent( std::make_shared<ComponentConsole>( ComponentConsole( &_showConsole ) ) );
 			_addComponent( std::make_shared<ComponentScene>( ComponentScene( &_showScene ) ) );
-			_addComponent( std::make_shared<ComponentSelection>( ComponentSelection( &_showSelection ) ) );
+			_addComponent( std::make_shared<ComponentInspector>( ComponentInspector( &_showInspector ) ) );
 		}
 
 		void UserInterface::_initSDL2()

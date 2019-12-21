@@ -25,7 +25,7 @@ namespace VTX
 		  private:
 			bool * const _showConsole;
 			bool * const _showScene;
-			bool * const _showSelection;
+			bool * const _showInspector;
 			bool		 _showDialogImport = false;
 		};
 	} // namespace UI

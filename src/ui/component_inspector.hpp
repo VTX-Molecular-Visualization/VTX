@@ -1,5 +1,5 @@
-#ifndef __VTX_COMPONENT_SELECTION__
-#define __VTX_COMPONENT_SELECTION__
+#ifndef __VTX_COMPONENT_INSPECTOR__
+#define __VTX_COMPONENT_INSPECTOR__
 
 #ifdef _MSC_VER
 #pragma once
@@ -14,12 +14,12 @@ namespace VTX
 {
 	namespace UI
 	{
-		class ComponentSelection : public BaseComponent
+		class ComponentInspector : public BaseComponent
 		{
 		  public:
-			ComponentSelection( bool * const );
+			ComponentInspector( bool * const );
 
-			virtual COMPONENT_NAME getName() const override { return COMPONENT_NAME::SELECTION; }
+			virtual COMPONENT_NAME getName() const override { return COMPONENT_NAME::INSPECTOR; }
 
 		  protected:
 			virtual void _addComponents() override;

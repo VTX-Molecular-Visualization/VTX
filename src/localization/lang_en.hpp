@@ -21,7 +21,7 @@ namespace VTX
 			{ "MainMenu.Import.MMTF", "MMTF" },
 			{ "MainMenu.Display", "Display" },
 			{ "MainMenu.Display.Scene", "Scene" },
-			{ "MainMenu.Display.Selection", "Selection" },
+			{ "MainMenu.Display.Inspector", "Inspector" },
 			{ "MainMenu.Display.Console", "Console" },
 			{ "MainMenu.Display.CloseAll", "Close all" },
 			{ "MainMenu.Display.ShowAll", "Show all" },
@@ -43,7 +43,7 @@ namespace VTX
 			{ "Scene.Performance", "Performance" },
 
 			// Selection.
-			{ "Selection.Selection", "Selection" },
+			{ "Inspector.Inspector", "Inspector" },
 
 			// Views.
 			{ "View.Molecule.Data", "Data" }
