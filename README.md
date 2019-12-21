@@ -9,7 +9,7 @@
 ### 3. Integrate VCPKG
     .\vcpkg integrate install
 ### 4. Install project dependencies
-    .\vcpkg install sdl2:x64-windows gl3w:x64-windows glm:x64-windows msgpack:x64-windows
+    .\vcpkg install sdl2:x64-windows gl3w:x64-windows glm:x64-windows msgpack:x64-windows tinyobjloader:x64-windows
 ### 5. Make solution
 Install Visual Studio 2019 latest version with C++ tools.  
 Run cmake_build_VS2019_x64.bat
