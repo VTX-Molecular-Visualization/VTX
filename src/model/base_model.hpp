@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "../math/transform.hpp"
 #include "../view/base_view.hpp"
 #include <map>
 
@@ -33,6 +34,7 @@ namespace VTX
 			virtual void _notifyViews( const Event::EVENT_MODEL ) const final;
 			virtual void _clearViews() final;
 
+			Math::Transform			 _transform;
 			bool					 _isSelected = false;
 			MapStringToViewSharedPtr _views		 = MapStringToViewSharedPtr();
 		};

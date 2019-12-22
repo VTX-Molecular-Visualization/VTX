@@ -7,7 +7,6 @@
 
 #include "../defines.hpp"
 #include "../math/aabb.hpp"
-#include "../math/transform.hpp"
 #include "../util/logger.hpp"
 #include "base_model.hpp"
 #include "model_atom.hpp"
@@ -118,8 +117,7 @@ namespace VTX
 			std::vector<Vec3f> _atomColors	  = std::vector<Vec3f>();
 			std::vector<uint>  _bonds		  = std::vector<uint>();
 
-			Math::Transform _transform;
-			Math::AABB		_aabb;
+			Math::AABB _aabb;
 
 			// Selection.
 			ModelChain *   _selectedChain	= nullptr;
