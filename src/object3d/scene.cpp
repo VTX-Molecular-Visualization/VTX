@@ -4,7 +4,9 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		Scene::~Scene()
+		Scene::~Scene() { clear(); }
+
+		void Scene::clear()
 		{
 			for ( Model::ModelMolecule * molecule : _molecules )
 			{

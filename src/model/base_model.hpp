@@ -32,9 +32,9 @@ namespace VTX
 			void		 _addView( const ViewSharedPtr );
 			virtual void _addViews() {};
 			virtual void _notifyViews( const Event::EVENT_MODEL ) const final;
+			void		 _removeView( const std::string & );
 			virtual void _clearViews() final;
 
-			Math::Transform			 _transform;
 			bool					 _isSelected = false;
 			MapStringToViewSharedPtr _views		 = MapStringToViewSharedPtr();
 		};

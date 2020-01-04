@@ -98,11 +98,14 @@ namespace VTX
 			void unbindBuffers();
 			void draw();
 
+			virtual void setSelected( const bool ) override;
+
 		  protected:
 			virtual void _addViews() override final;
 
 		  private:
 			// Models.
+			Math::Transform			  _transform;
 			std::string				  _name		= "";
 			std::vector<ModelChain>	  _chains	= std::vector<ModelChain>();
 			std::vector<ModelResidue> _residues = std::vector<ModelResidue>();

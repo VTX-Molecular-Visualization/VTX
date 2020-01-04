@@ -1,5 +1,5 @@
 #include "view_ui_molecule.hpp"
-#include "../settings.hpp"
+#include "../vtx_app.hpp"
 
 namespace VTX
 {
@@ -9,76 +9,47 @@ namespace VTX
 
 		void ViewUIMolecule::_draw()
 		{
-			if ( ImGui::CollapsingHeader( LOCALE( "View.Molecule.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
+			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
+			ImGui::PushID( "ViewMolecule" );
+
+			if ( ImGui::CollapsingHeader( "Transform", flags ) )
 			{
-				ImGui::Text( "Chains: %d", _model->getChainCount() );
-				ImGui::Text( "Residues: %d", _model->getResidueCount() );
-				ImGui::Text( "Atoms: %d", _model->getAtomCount() );
-				ImGui::Text( "Bonds: %d", _model->getBondCount() );
+				float *x, *y, *z, *w;
+
+				ImGui::Text( "Translation" );
+				const Mat4f & translation = _model->getTransform().getTranslation();
+				x						  = (float *)&translation[ 0 ];
+				y						  = (float *)&translation[ 1 ];
+				z						  = (float *)&translation[ 2 ];
+				w						  = (float *)&translation[ 3 ];
+				ImGui::InputFloat4( "X", x, 2 );
+				ImGui::InputFloat4( "Y", y, 2 );
+				ImGui::InputFloat4( "Z", z, 2 );
+				ImGui::InputFloat4( "W", w, 2 );
+
+				ImGui::Text( "Rotation" );
+				const Mat4f & rotation = _model->getTransform().getRotation();
+				x					   = (float *)&rotation[ 0 ];
+				y					   = (float *)&rotation[ 1 ];
+				z					   = (float *)&rotation[ 2 ];
+				w					   = (float *)&rotation[ 3 ];
+				ImGui::InputFloat4( "X", x, 2 );
+				ImGui::InputFloat4( "Y", y, 2 );
+				ImGui::InputFloat4( "Z", z, 2 );
+				ImGui::InputFloat4( "W", w, 2 );
+
+				ImGui::Text( "Scale" );
+				const Mat4f & scale = _model->getTransform().getScale();
+				x					= (float *)&scale[ 0 ];
+				y					= (float *)&scale[ 1 ];
+				z					= (float *)&scale[ 2 ];
+				w					= (float *)&scale[ 3 ];
+				ImGui::InputFloat4( "X", x, 2 );
+				ImGui::InputFloat4( "Y", y, 2 );
+				ImGui::InputFloat4( "Z", z, 2 );
+				ImGui::InputFloat4( "W", w, 2 );
 			}
 
-			ImGui::PushID( "ViewMolecule" );
-			if ( ImGui::CollapsingHeader( _model->getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
-			{
-				for ( Model::ModelChain & chain : _model->getChains() )
-				{
-					ImGui::PushID( chain.getId() );
-					bool chainOpened = ImGui::TreeNodeEx(
-						chain.getName().c_str(),
-						chain.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
-					if ( ImGui::IsItemClicked() )
-					{
-						if ( chainOpened )
-							_model->resetSelectedChain();
-						else
-							_model->setSelectedChain( chain.getId() );
-					}
-					if ( chainOpened )
-					{
-						for ( uint i = 0; i < chain.getResidueCount(); ++i )
-						{
-							Model::ModelResidue & residue = _model->getResidue( chain.getIdFirstResidue() + i );
-							ImGui::PushID( residue.getId() );
-							bool residueOpened = ImGui::TreeNodeEx(
-								VTX::Setting::UI::symbolDisplayMode == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
-									? ( residue.getSymbolShort() + " " + std::to_string( residue.getId() ) ).c_str()
-									: residue.getSymbolName().c_str(),
-								residue.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
-							if ( ImGui::IsItemClicked() )
-							{
-								if ( residueOpened )
-									_model->resetSelectedResidue();
-								else
-									_model->setSelectedResidue( residue.getId() );
-							}
-							if ( residueOpened )
-							{
-								for ( uint j = 0; j < residue.getAtomCount(); ++j )
-								{
-									Model::ModelAtom & atom = _model->getAtom( residue.getIdFirstAtom() + j );
-									ImGui::PushID( atom.getId() );
-									if ( ImGui::Selectable(
-											 VTX::Setting::UI::symbolDisplayMode
-													 == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
-												 ? ( atom.getSymbolStr() + " " + std::to_string( atom.getId() ) )
-													   .c_str()
-												 : atom.getSymbolName().c_str(),
-											 atom.isSelected() ) )
-									{
-										_model->setSelectedAtom( atom.getId() );
-										// ImGui::SetItemDefaultFocus();
-									}
-									ImGui::PopID();
-								}
-								ImGui::TreePop();
-							}
-							ImGui::PopID();
-						}
-						ImGui::TreePop();
-					}
-					ImGui::PopID();
-				}
-			}
 			ImGui::PopID();
 		}
 	} // namespace View

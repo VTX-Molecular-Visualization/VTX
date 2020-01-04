@@ -16,14 +16,16 @@ namespace VTX
 		class Scene
 		{
 		  public:
-			using VectorModelMoleculePtr = std::vector<Model::ModelMolecule *>;
+			using MoleculePtr			 = Model::ModelMolecule *;
+			using VectorModelMoleculePtr = std::vector<MoleculePtr>;
 
 			Scene() = default;
 			~Scene();
 
-			void addMolecule( Model::ModelMolecule * const p_molecule ) { _molecules.emplace_back( p_molecule ); }
-			inline Camera &							   getCamera() { return _camera; }
-			inline std::vector<Model::ModelMolecule *> getMolecules() const { return _molecules; };
+			void			clear();
+			void			addMolecule( MoleculePtr const p_molecule ) { _molecules.emplace_back( p_molecule ); }
+			inline Camera & getCamera() { return _camera; }
+			inline std::vector<MoleculePtr> getMolecules() const { return _molecules; };
 
 		  private:
 			Camera				   _camera	  = Camera();

@@ -1,10 +1,10 @@
-#ifndef __VTX_VIEW_UI_MOLECULE__
-#define __VTX_VIEW_UI_MOLECULE__
+#ifndef __VTX_VIEW_UI_MOLECULE_SCENE__
+#define __VTX_VIEW_UI_MOLECULE_SCENE__
 
 #ifdef _MSC_VER
 #pragma once
-
 #endif
+
 #include "../model/model_molecule.hpp"
 #include "base_view_ui.hpp"
 
@@ -12,13 +12,13 @@ namespace VTX
 {
 	namespace View
 	{
-		class ViewUIMolecule : public BaseViewUI<Model::ModelMolecule>
+		class ViewUIMoleculeScene : public BaseViewUI<Model::ModelMolecule>
 		{
 		  public:
-			ViewUIMolecule( bool * const p_show ) : BaseViewUI( p_show ) {}
+			ViewUIMoleculeScene( bool * const p_show ) : BaseViewUI( p_show ) {}
 			virtual void notify( Event::EVENT_MODEL ) override;
 
-			virtual UI::COMPONENT_NAME getName() const override { return UI::COMPONENT_NAME::VIEW_MOLECULE; }
+			virtual UI::COMPONENT_NAME getName() const override { return UI::COMPONENT_NAME::VIEW_MOLECULE_SCENE; }
 
 		  protected:
 			virtual void _draw() override;

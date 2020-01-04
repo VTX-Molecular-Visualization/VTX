@@ -2,7 +2,7 @@
 #include "../defines.hpp"
 #include "../localization/language.hpp"
 #include "../style.hpp"
-#include "../view/view_ui_molecule.hpp"
+#include "../view/view_ui_molecule_scene.hpp"
 #include "../vtx_app.hpp"
 
 namespace VTX
@@ -13,7 +13,7 @@ namespace VTX
 
 		void ComponentScene::_addComponents()
 		{
-			_addComponent( std::make_shared<View::ViewUIMolecule>( View::ViewUIMolecule( _show ) ) );
+			_addComponent( std::make_shared<View::ViewUIMoleculeScene>( View::ViewUIMoleculeScene( _show ) ) );
 		}
 
 		void ComponentScene::_draw()
@@ -47,7 +47,7 @@ namespace VTX
 			}
 			*/
 
-			_drawComponent( COMPONENT_NAME::VIEW_MOLECULE );
+			_drawComponent( COMPONENT_NAME::VIEW_MOLECULE_SCENE );
 
 			ImGui::End();
 		}

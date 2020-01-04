@@ -27,6 +27,7 @@ namespace VTX
 			{
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Menu" ), _show ) )
 				{
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.New" ) ) ) { VTXApp::get().getScene().clear(); }
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) ) { VTXApp::get().stop(); }
 
 					ImGui::EndMenu();

@@ -10,11 +10,13 @@ namespace VTX
 	{
 		ModelMolecule::~ModelMolecule()
 		{
-			glDeleteBuffers( 1, &_vao );
-			glDeleteBuffers( 1, &_atomPositionsVBO );
-			glDeleteBuffers( 1, &_atomRadiusVBO );
-			glDeleteBuffers( 1, &_atomColorsVBO );
-			glDeleteBuffers( 1, &_bondsIBO );
+			return;
+
+			if ( _vao != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vao );
+			if ( _atomPositionsVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomPositionsVBO );
+			if ( _atomRadiusVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomRadiusVBO );
+			if ( _atomColorsVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomColorsVBO );
+			if ( _bondsIBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_bondsIBO );
 		}
 
 		void ModelMolecule::init()
@@ -30,11 +32,14 @@ namespace VTX
 
 			// Set default representation.
 			setRepresentation();
+
+			// Select (tmp).
+			setSelected( true );
 		}
 
 		void ModelMolecule::_addViews()
 		{
-			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE ) );
+			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE_SCENE ) );
 			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
 				(View::BaseView<BaseModel> *)( new View::View3DMoleculeSphere() ) ) );
 			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
@@ -81,6 +86,17 @@ namespace VTX
 			VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: "
 					  + std::to_string( _residues.size() ) + " / Atoms: " + std::to_string( _atoms.size() )
 					  + " / Bonds: " + std::to_string( _bonds.size() ) );
+		}
+
+		void ModelMolecule::setSelected( const bool p_selected )
+		{
+			BaseModel::setSelected( p_selected );
+			if ( isSelected() )
+			{ _addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE ) ); }
+			else
+			{
+				_removeView( std::string( magic_enum::enum_name( UI::COMPONENT_NAME::VIEW_MOLECULE ) ) );
+			}
 		}
 
 		void ModelMolecule::setSelectedChain( const uint p_id )

@@ -35,6 +35,15 @@ namespace VTX
 			}
 		}
 
+		void BaseModel::_removeView( const std::string & p_name )
+		{
+			ViewSharedPtr view = getViewByName( p_name );
+			if ( view == nullptr ) return;
+
+			view->setModel( nullptr );
+			_views.erase( p_name );
+		}
+
 		void BaseModel::_notifyViews( const Event::EVENT_MODEL p_event ) const
 		{
 			for ( PairStringToViewSharedPtr pair : _views )

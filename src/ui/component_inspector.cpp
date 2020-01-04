@@ -4,6 +4,7 @@
 #include "../style.hpp"
 #include "../view/view_ui_atom.hpp"
 #include "../view/view_ui_chain.hpp"
+#include "../view/view_ui_molecule.hpp"
 #include "../view/view_ui_residue.hpp"
 
 namespace VTX
@@ -12,6 +13,7 @@ namespace VTX
 	{
 		ComponentInspector::ComponentInspector( bool * const p_show ) : BaseComponent( p_show )
 		{
+			_addComponent( std::make_shared<View::ViewUIMolecule>( View::ViewUIMolecule( _show ) ) );
 			_addComponent( std::make_shared<View::ViewUIChain>( View::ViewUIChain( _show ) ) );
 			_addComponent( std::make_shared<View::ViewUIResidue>( View::ViewUIResidue( _show ) ) );
 			_addComponent( std::make_shared<View::ViewUIAtom>( View::ViewUIAtom( _show ) ) );

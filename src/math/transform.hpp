@@ -18,18 +18,21 @@ namespace VTX
 			Transform()	 = default;
 			~Transform() = default;
 
-			const Mat4f get() const { return _transform; }
-			void		reset();
+			inline const Mat4f get() const { return _transform; }
+			inline void		   reset();
 
-			void translate( const Vec3f & );
-			void setTranslation( const Mat4f & );
-			void rotate( const float p_angle, const Vec3f & p_axis );
-			void setRotation( const Mat4f & );
-			void scale( const Vec3f & );
-			void setScale( const Mat4f & );
+			inline void			 translate( const Vec3f & );
+			inline const Mat4f & getTranslation() const { return _translation; };
+			inline void			 setTranslation( const Mat4f & );
+			inline void			 rotate( const float p_angle, const Vec3f & p_axis );
+			inline const Mat4f & getRotation() const { return _rotation; };
+			inline void			 setRotation( const Mat4f & );
+			inline void			 scale( const Vec3f & );
+			inline const Mat4f & getScale() const { return _scale; };
+			inline void			 setScale( const Mat4f & );
 
 		  private:
-			void update() { _transform = _translation * _rotation * _scale; }
+			inline void update() { _transform = _translation * _rotation * _scale; }
 
 			Mat4f _transform   = MAT4F_ID;
 			Mat4f _translation = MAT4F_ID;
