@@ -80,7 +80,7 @@ namespace VTX
 				//////////////
 
 				// Loop over faces(polygon)
-				size_t index_offset = 0;
+				size_t indexOffset = 0;
 				for ( size_t f = 0; f < shapes[ s ].mesh.num_face_vertices.size(); f++, ++residueGlobalIdx )
 				{
 					// New residue.
@@ -103,8 +103,8 @@ namespace VTX
 					//////////////
 
 					// Loop over vertices in the face.
-					int fv = shapes[ s ].mesh.num_face_vertices[ f ];
-					for ( size_t v = 0; v < fv; v++, ++atomGlobalIdx )
+					int faceVerticeCount = shapes[ s ].mesh.num_face_vertices[ f ];
+					for ( size_t v = 0; v < faceVerticeCount; v++, ++atomGlobalIdx )
 					{
 						// New atom.
 						Model::ModelAtom & atom = p_molecule.getAtom( atomGlobalIdx );
@@ -115,7 +115,7 @@ namespace VTX
 						atom.setSymbol( Model::ModelAtom::ATOM_SYMBOL::UNKNOWN );
 
 						// access to vertex
-						tinyobj::index_t idx = shapes[ s ].mesh.indices[ index_offset + v ];
+						tinyobj::index_t idx = shapes[ s ].mesh.indices[ indexOffset + v ];
 						tinyobj::real_t	 vx	 = attrib.vertices[ 3 * idx.vertex_index + 0 ];
 						tinyobj::real_t	 vy	 = attrib.vertices[ 3 * idx.vertex_index + 1 ];
 						tinyobj::real_t	 vz	 = attrib.vertices[ 3 * idx.vertex_index + 2 ];
@@ -147,9 +147,9 @@ namespace VTX
 
 						aabb.extend( atomPosition );
 					}
-					index_offset += fv;
+					indexOffset += faceVerticeCount;
 
-					// For each bond in the residue.
+					// Bonds.
 					uint bondCount = residue.getBondCount();
 					for ( uint boundIdx = 0; boundIdx < bondCount * 2u - 1u; boundIdx += 2u, bondGlobalIdx += 2u )
 					{

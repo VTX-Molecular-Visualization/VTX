@@ -33,7 +33,7 @@ namespace VTX
 		{
 			BALL_AND_STICK,
 			VAN_DER_WAALS,
-			BOND
+			STICK
 		};
 
 		class BaseView3DMolecule : public BaseView3D<Model::ModelMolecule>

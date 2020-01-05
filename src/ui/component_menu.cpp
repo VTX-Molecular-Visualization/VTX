@@ -86,7 +86,7 @@ namespace VTX
 
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ),
 									   (int *)&Setting::Rendering::representation,
-									   "Ball and stick\0Van der Waals\0Bond\0" ) )
+									   "Ball and stick\0Van der Waals\0Stick\0" ) )
 					{
 						for ( Model::ModelMolecule * const molecule : VTXApp::get().getScene().getMolecules() )
 						{

@@ -35,7 +35,7 @@ namespace VTX
 					_radiusScale = 1.0f;
 					_isActive	 = true;
 					break;
-				case MOLECULE_REPRESENTATION::BOND:
+				case MOLECULE_REPRESENTATION::STICK:
 					//_radiusScale = 0.1f;
 					_isActive = false;
 					break;
