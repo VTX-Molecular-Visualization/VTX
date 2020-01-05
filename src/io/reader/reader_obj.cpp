@@ -44,13 +44,13 @@ namespace VTX
 			uint		 bondGlobalIdx	  = 0;
 
 			// Reserve memory for vectors to avoid pointer loss.
-			uint chainCount	  = shapes.size();
+			uint chainCount	  = (uint)shapes.size();
 			uint residueCount = 0;
 			uint atomCount	  = 0;
 
 			for ( size_t s = 0; s < chainCount; s++ )
 			{
-				residueCount += shapes[ s ].mesh.num_face_vertices.size();
+				residueCount += (uint)shapes[ s ].mesh.num_face_vertices.size();
 				for ( size_t f = 0; f < shapes[ s ].mesh.num_face_vertices.size(); f++ )
 				{
 					atomCount += shapes[ s ].mesh.num_face_vertices[ f ];
@@ -70,7 +70,7 @@ namespace VTX
 				chain.setId( chainGlobalIdx );
 				chain.setName( shapes[ s ].name );
 				chain.setIdFirstResidue( residueGlobalIdx );
-				chain.setResidueCount( shapes[ s ].mesh.num_face_vertices.size() );
+				chain.setResidueCount( (uint)shapes[ s ].mesh.num_face_vertices.size() );
 				chain.setColor( Util::Color::randomPastelColor() );
 
 				///////////////
