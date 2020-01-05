@@ -36,6 +36,9 @@ namespace VTX
 			{ "MainMenu.Settings.Shading", "Shading" },
 			{ "MainMenu.Settings.AA", "AA" },
 			{ "MainMenu.Settings.SSAO", "SSAO" },
+			{ "MainMenu.Settings.AutoRotateXSpeed", "X rotation speed" },
+			{ "MainMenu.Settings.AutoRotateYSpeed", "Y rotation speed" },
+			{ "MainMenu.Settings.AutoRotateZSpeed", "Z rotation speed" },
 			{ "MainMenu.Settings.InverseYAxis", "Inverse Y axis" },
 
 			// Console.

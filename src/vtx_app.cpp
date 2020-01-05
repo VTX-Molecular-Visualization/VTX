@@ -38,7 +38,11 @@ namespace VTX
 		_ui->display();
 		_ui->printInfos();
 
+#ifdef _DEBUG
+		_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "r2d2_2.obj" ) );
+#else
 		_stateMachine->goToState( State::STATE_NAME::VISUALIZATION );
+#endif
 
 		while ( VTXApp::_isRunning )
 		{
@@ -98,25 +102,21 @@ namespace VTX
 		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_renderer->render( *_scene );
-		_chrono.stop();
-		_timeLastRenderer = _chrono.elapsedTime();
 
 		// UI/machine/events.
-		_chrono.start();
 		SDL_Event event;
 		while ( _ui->pollEvent( event ) )
 		{
 			_handleEvent( event );
 		}
 		_ui->display();
-		_stateMachine->update();
-		_chrono.stop();
-		_timeLastUI = _chrono.elapsedTime();
+		_scene->update( _timeDelta );
+		_stateMachine->update( _timeDelta );
 
 		// Timers.
-		_timeLast = _timeLastUI;
-		_timeLast += _timeLastRenderer;
-		_timeTotal += _timeLast;
+		_chrono.stop();
+		_timeDelta = _chrono.elapsedTime();
+		_timeTotal += _timeDelta;
 	}
 
 	void VTXApp::_handleEvent( const SDL_Event & p_event )

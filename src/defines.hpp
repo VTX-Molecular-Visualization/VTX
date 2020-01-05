@@ -21,17 +21,26 @@ namespace VTX
 	constexpr int	  OPENGL_VERSION_MINOR = 5;
 	const std::string GLSL_VERSION		   = "#version 450";
 	const bool		  VSYNC				   = 0;
-	const bool		  FULLSCREEN		   = 1;
 
-	constexpr int WINDOWS_WIDTH	 = 1280;
-	constexpr int WINDOWS_HEIGHT = 720;
+	// Window.
+	constexpr int WINDOW_WIDTH	= 1280;
+	constexpr int WINDOW_HEIGHT = 720;
 
+	// Camera.
 	constexpr float CAMERA_NEAR	   = 1e-1f;
 	constexpr float CAMERA_FAR	   = 1e4f;
 	constexpr float CAMERA_FOV	   = 60.f;
 	constexpr float CAMERA_FOV_MIN = 10.f;
 	constexpr float CAMERA_FOV_MAX = 90.f;
 
+	// Auto rotate.
+	constexpr float AUTO_ROTATE_SPEED_MIN		= 0.0f;
+	constexpr float AUTO_ROTATE_SPEED_MAX		= 1.0f;
+	constexpr float AUTO_ROTATE_X_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MIN;
+	constexpr float AUTO_ROTATE_Y_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MAX / 2.f;
+	constexpr float AUTO_ROTATE_Z_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MIN;
+
+	// Dirs.
 	const std::string DATA_DIR	 = "../data/";
 	const std::string SHADER_DIR = "../shaders/";
 

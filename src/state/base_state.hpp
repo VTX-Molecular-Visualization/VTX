@@ -6,6 +6,7 @@
 #endif
 
 #include "../controller/base_controller.hpp"
+#include "../generic/base_updatable.hpp"
 
 namespace VTX
 {
@@ -17,7 +18,7 @@ namespace VTX
 			VISUALIZATION
 		};
 
-		class BaseState
+		class BaseState : public Generic::BaseUpdatable, public Generic::BaseEventHandler<SDL_Event>
 		{
 		  public:
 			BaseState() = default;
@@ -25,9 +26,8 @@ namespace VTX
 			virtual STATE_NAME getName() const		 = 0;
 			virtual void	   enter( void * const ) = 0;
 			virtual void	   exit()				 = 0;
-			virtual void	   update() {}
 
-			void handleEvent( const SDL_Event & );
+			virtual void handleEvent( const SDL_Event &, void * const = nullptr ) override;
 
 		  protected:
 			Controller::BaseController * _controller = nullptr;

@@ -1,0 +1,19 @@
+#ifndef __VTX_BASE_UPDATABLE__
+#define __VTX_BASE_UPDATABLE__
+
+#ifdef _MSC_VER
+#pragma once
+#endif
+
+namespace VTX
+{
+	namespace Generic
+	{
+		class BaseUpdatable
+		{
+		  public:
+			virtual void update( const double p_deltaTime ) {};
+		};
+	} // namespace Generic
+} // namespace VTX
+#endif

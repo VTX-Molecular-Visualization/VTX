@@ -14,7 +14,7 @@ namespace VTX
 				ImGui::Text( "Chains: %d", _model->getChainCount() );
 				ImGui::Text( "Residues: %d", _model->getResidueCount() );
 				ImGui::Text( "Atoms: %d", _model->getAtomCount() );
-				ImGui::Text( "Bonds: %d", _model->getBondCount() );
+				ImGui::Text( "Bonds: %d", _model->getBondCount() / 2 );
 			}
 
 			ImGui::PushID( "ViewMolecule" );

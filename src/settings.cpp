@@ -24,7 +24,10 @@ namespace VTX
 
 		namespace Controller
 		{
-			bool yAxisInverted = false;
-		}
-	} // namespace Setting
+			bool  yAxisInverted	   = false;
+			float autoRotateSpeedX = AUTO_ROTATE_X_SPEED_DEFAULT;
+			float autoRotateSpeedY = AUTO_ROTATE_Y_SPEED_DEFAULT;
+			float autoRotateSpeedZ = AUTO_ROTATE_Z_SPEED_DEFAULT;
+		} // namespace Controller
+	}	  // namespace Setting
 } // namespace VTX

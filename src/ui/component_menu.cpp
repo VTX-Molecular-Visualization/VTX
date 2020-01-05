@@ -114,6 +114,18 @@ namespace VTX
 
 					ImGui::Separator();
 
+					ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateXSpeed" ),
+										&Setting::Controller::autoRotateSpeedX,
+										AUTO_ROTATE_SPEED_MIN,
+										AUTO_ROTATE_SPEED_MAX );
+					ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateYSpeed" ),
+										&Setting::Controller::autoRotateSpeedY,
+										AUTO_ROTATE_SPEED_MIN,
+										AUTO_ROTATE_SPEED_MAX );
+					ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateZSpeed" ),
+										&Setting::Controller::autoRotateSpeedZ,
+										AUTO_ROTATE_SPEED_MIN,
+										AUTO_ROTATE_SPEED_MAX );
 					ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ), &Setting::Controller::yAxisInverted );
 
 					ImGui::EndMenu();

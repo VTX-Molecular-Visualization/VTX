@@ -42,23 +42,16 @@ namespace VTX
 		inline Object3D::Scene &			getScene() { return *_scene; }
 		inline Shader::GLSLProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
 
-		inline double getTimeTotal() { return _timeTotal; }
-		inline double getTimeLast() { return _timeLast; }
-		inline double getTimeLastUI() { return _timeLastUI; }
-		inline double getTimeLastRenderer() { return _timeLastRenderer; }
-
 	  private:
 		static bool				   _isRunning;
-		Tool::Chrono			   _chrono			 = Tool::Chrono();
-		double					   _timeTotal		 = 0.f;
-		double					   _timeLast		 = 0.f;
-		double					   _timeLastUI		 = 0.f;
-		double					   _timeLastRenderer = 0.f;
-		UI::UserInterface *		   _ui				 = nullptr;
-		State::StateMachine *	   _stateMachine	 = nullptr;
-		Object3D::Scene *		   _scene			 = nullptr;
-		Renderer::BaseRenderer *   _renderer		 = nullptr;
-		std::vector<std::thread *> _threads			 = std::vector<std::thread *>();
+		Tool::Chrono			   _chrono		 = Tool::Chrono();
+		double					   _timeTotal	 = 0.f;
+		double					   _timeDelta	 = 0.f;
+		UI::UserInterface *		   _ui			 = nullptr;
+		State::StateMachine *	   _stateMachine = nullptr;
+		Object3D::Scene *		   _scene		 = nullptr;
+		Renderer::BaseRenderer *   _renderer	 = nullptr;
+		std::vector<std::thread *> _threads		 = std::vector<std::thread *>();
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;

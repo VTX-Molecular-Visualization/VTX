@@ -98,8 +98,8 @@ namespace VTX
 				title.c_str(),
 				SDL_WINDOWPOS_CENTERED,
 				SDL_WINDOWPOS_CENTERED,
-				WINDOWS_WIDTH,
-				WINDOWS_HEIGHT,
+				WINDOW_WIDTH,
+				WINDOW_HEIGHT,
 				SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI );
 
 			if ( _window == nullptr ) { throw Exception::SDLException( SDL_GetError() ); }

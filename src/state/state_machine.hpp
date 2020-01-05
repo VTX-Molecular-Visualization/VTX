@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "../generic/base_updatable.hpp"
 #include "base_state.hpp"
 #include <magic_enum.hpp>
 #include <map>
@@ -14,7 +15,7 @@ namespace VTX
 {
 	namespace State
 	{
-		class StateMachine
+		class StateMachine : public Generic::BaseUpdatable, public Generic::BaseEventHandler<SDL_Event>
 		{
 		  public:
 			using StateSharedPtr		   = std::shared_ptr<BaseState>;
@@ -25,10 +26,10 @@ namespace VTX
 			virtual ~StateMachine();
 
 			virtual void init();
-			virtual void update() final;
 			void		 goToState( const STATE_NAME, void * const p_arg = nullptr );
 
-			void handleEvent( const SDL_Event & );
+			virtual void handleEvent( const SDL_Event &, void * const = nullptr ) override;
+			virtual void update( const double ) override;
 
 		  protected:
 			virtual void _addState( const StateSharedPtr ) final;

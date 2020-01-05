@@ -8,6 +8,9 @@
 #include "../defines.hpp"
 #include <random>
 
+#undef min
+#undef max
+
 namespace VTX
 {
 	namespace Util

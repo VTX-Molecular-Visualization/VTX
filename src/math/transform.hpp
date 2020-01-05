@@ -19,17 +19,60 @@ namespace VTX
 			~Transform() = default;
 
 			inline const Mat4f get() const { return _transform; }
-			inline void		   reset();
 
-			inline void			 translate( const Vec3f & );
 			inline const Mat4f & getTranslation() const { return _translation; };
-			inline void			 setTranslation( const Mat4f & );
-			inline void			 rotate( const float p_angle, const Vec3f & p_axis );
 			inline const Mat4f & getRotation() const { return _rotation; };
-			inline void			 setRotation( const Mat4f & );
-			inline void			 scale( const Vec3f & );
 			inline const Mat4f & getScale() const { return _scale; };
-			inline void			 setScale( const Mat4f & );
+
+			inline void Transform::reset()
+			{
+				_transform	 = MAT4F_ID;
+				_translation = MAT4F_ID;
+				_rotation	 = MAT4F_ID;
+				_scale		 = MAT4F_ID;
+			}
+
+			inline void Transform::translate( const Vec3f & p_vec )
+			{
+				_translation = glm::translate( _translation, p_vec );
+				update();
+			}
+
+			inline void Transform::setTranslation( const Mat4f & p_mat )
+			{
+				_translation = p_mat;
+				update();
+			}
+
+			inline void Transform::rotate( const float p_angle, const Vec3f & p_axis )
+			{
+				_rotation = glm::rotate( _rotation, p_angle, p_axis );
+				update();
+			}
+
+			inline void Transform::Transform::setRotation( const Mat4f & p_mat )
+			{
+				_rotation = p_mat;
+				update();
+			}
+
+			inline void Transform::scale( const Vec3f & p_vec )
+			{
+				_scale = glm::scale( _scale, p_vec );
+				update();
+			}
+
+			inline void Transform::scale( const float p_scale )
+			{
+				_scale = glm::scale( _scale, Vec3f( p_scale, p_scale, p_scale ) );
+				update();
+			}
+
+			inline void Transform::setScale( const Mat4f & p_mat )
+			{
+				_scale = p_mat;
+				update();
+			}
 
 		  private:
 			inline void update() { _transform = _translation * _rotation * _scale; }

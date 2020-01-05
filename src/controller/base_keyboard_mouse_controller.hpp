@@ -14,7 +14,7 @@ namespace VTX
 		class BaseKeyboardMouseController : public BaseController
 		{
 		  public:
-			virtual void handleEvent( const SDL_Event &, void * const = nullptr ) override;
+			virtual void handleEvent( const SDL_Event &, void * const = nullptr ) override final;
 
 		  protected:
 			virtual void _handleKeyDownEvent( const SDL_Scancode & ) {};

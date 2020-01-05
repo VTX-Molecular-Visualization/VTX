@@ -138,7 +138,7 @@ namespace VTX
 		};
 
 		const float ModelAtom::SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ] = {
-			0.00f, // UNKNOWN	= 0,
+			1.20f, // UNKNOWN	= 0,
 			1.20f, // H			= 1,
 			1.43f, // HE		= 2,
 			2.12f, // LI		= 3,
@@ -259,7 +259,7 @@ namespace VTX
 			0.00f  // UUO		= 118,
 		};
 		Vec3f ModelAtom::SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ] = {
-			COLOR_BLACK,	  // UNKNOWN	= 0,
+			COLOR_WHITE,	  // UNKNOWN	= 0,
 			COLOR_WHITE,	  // H			= 1,
 			COLOR_MAGENTA,	  // HE			= 2,
 			COLOR_MAGENTA,	  // LI			= 3,

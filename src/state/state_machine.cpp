@@ -12,11 +12,6 @@ namespace VTX
 
 		void StateMachine::init() { _addStates(); }
 
-		void StateMachine::update()
-		{
-			if ( _currentState != nullptr ) { _currentState->update(); }
-		}
-
 		void StateMachine::goToState( const STATE_NAME p_name, void * const p_arg )
 		{
 			try
@@ -56,9 +51,14 @@ namespace VTX
 			if ( _currentState != nullptr ) { _currentState->enter( p_arg ); }
 		}
 
-		void StateMachine::handleEvent( const SDL_Event & p_event )
+		void StateMachine::handleEvent( const SDL_Event & p_event, void * const p_arg )
 		{
-			if ( _currentState != nullptr ) { _currentState->handleEvent( p_event ); }
+			if ( _currentState != nullptr ) { _currentState->handleEvent( p_event, p_arg ); }
+		}
+
+		void StateMachine::update( const double p_deltaTime )
+		{
+			if ( _currentState != nullptr ) { _currentState->update( p_deltaTime ); }
 		}
 	}; // namespace State
 };	   // namespace VTX

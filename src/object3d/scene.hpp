@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "../generic/base_updatable.hpp"
 #include "../model/model_molecule.hpp"
 #include "camera.hpp"
 #include <vector>
@@ -13,7 +14,7 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		class Scene
+		class Scene : public Generic::BaseUpdatable
 		{
 		  public:
 			using MoleculePtr			 = Model::ModelMolecule *;
@@ -26,6 +27,8 @@ namespace VTX
 			void			addMolecule( MoleculePtr const p_molecule ) { _molecules.emplace_back( p_molecule ); }
 			inline Camera & getCamera() { return _camera; }
 			inline std::vector<MoleculePtr> getMolecules() const { return _molecules; };
+
+			virtual void update( const double ) override;
 
 		  private:
 			Camera				   _camera	  = Camera();
