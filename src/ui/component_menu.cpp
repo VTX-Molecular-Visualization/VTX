@@ -131,7 +131,7 @@ namespace VTX
 			if ( _openFileDialog && _openFileDialog->ready() )
 			{
 				std::vector<std::string> result = _openFileDialog->result();
-				if ( result.size() ) { VTX_INFO( "Loading file:" + result[ 0 ] ); }
+				if ( result.size() ) { VTXApp::get().goToState( State::STATE_NAME::LOADING, &result[ 0 ] ); }
 				_openFileDialog = nullptr;
 			}
 		}

@@ -8,14 +8,14 @@ namespace VTX
 {
 	namespace State
 	{
-		void StateLoading::enter()
+		void StateLoading::enter( void * const p_arg )
 		{
 			Model::ModelMolecule * molecule = new Model::ModelMolecule();
 			Object3D::Scene *	   scene	= &( VTXApp::get().getScene() );
 
 			// VTXApp::get().addThread( new std::thread( [ molecule, scene ] {
 			IO::ReaderMMTF mmtf = IO::ReaderMMTF();
-			if ( mmtf.readFile( IO::Path( DATA_DIR + "4v6x.mmtf" ), *molecule ) )
+			if ( mmtf.readFile( IO::Path( *(std::string *)p_arg ), *molecule ) )
 			{
 				scene->addMolecule( molecule );
 				molecule->printInfos();

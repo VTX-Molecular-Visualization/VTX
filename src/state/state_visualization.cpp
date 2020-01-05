@@ -6,7 +6,7 @@ namespace VTX
 {
 	namespace State
 	{
-		void StateVisualization::enter()
+		void StateVisualization::enter( void * const )
 		{
 			// Init the renderer.
 			VTXApp::get().initRenderer();

@@ -26,7 +26,7 @@ namespace VTX
 
 			virtual void init();
 			virtual void update() final;
-			void		 goToState( const STATE_NAME );
+			void		 goToState( const STATE_NAME, void * const p_arg = nullptr );
 
 			void handleEvent( const SDL_Event & );
 
@@ -38,7 +38,7 @@ namespace VTX
 			StateSharedPtr			_currentState = nullptr;
 			MapEnumToStateSharedPtr _states		  = MapEnumToStateSharedPtr();
 
-			void _switchState( const StateSharedPtr );
+			void _switchState( const StateSharedPtr, void * const p_arg );
 		};
 	}; // namespace State
 };	   // namespace VTX

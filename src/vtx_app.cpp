@@ -66,7 +66,10 @@ namespace VTX
 		return _ui->getComponentByName( p_name );
 	};
 
-	void VTXApp::goToState( const State::STATE_NAME p_name ) { _stateMachine->goToState( p_name ); }
+	void VTXApp::goToState( const State::STATE_NAME p_name, void * const p_arg )
+	{
+		_stateMachine->goToState( p_name, p_arg );
+	}
 
 	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event, void * const p_arg ) const
 	{

@@ -17,11 +17,11 @@ namespace VTX
 			if ( _currentState != nullptr ) { _currentState->update(); }
 		}
 
-		void StateMachine::goToState( const STATE_NAME p_name )
+		void StateMachine::goToState( const STATE_NAME p_name, void * const p_arg )
 		{
 			try
 			{
-				_switchState( _states.at( p_name ) );
+				_switchState( _states.at( p_name ), p_arg );
 			}
 			catch ( const std::exception )
 			{
@@ -49,11 +49,11 @@ namespace VTX
 			}
 		}
 
-		void StateMachine::_switchState( const StateSharedPtr p_state )
+		void StateMachine::_switchState( const StateSharedPtr p_state, void * const p_arg )
 		{
 			if ( _currentState != nullptr ) { _currentState->exit(); }
 			_currentState = p_state;
-			if ( _currentState != nullptr ) { _currentState->enter(); }
+			if ( _currentState != nullptr ) { _currentState->enter( p_arg ); }
 		}
 
 		void StateMachine::handleEvent( const SDL_Event & p_event )

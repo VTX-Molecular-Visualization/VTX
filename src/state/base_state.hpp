@@ -22,9 +22,9 @@ namespace VTX
 		  public:
 			BaseState() = default;
 
-			virtual STATE_NAME getName() const = 0;
-			virtual void	   enter()		   = 0;
-			virtual void	   exit()		   = 0;
+			virtual STATE_NAME getName() const		 = 0;
+			virtual void	   enter( void * const ) = 0;
+			virtual void	   exit()				 = 0;
 			virtual void	   update() {}
 
 			void handleEvent( const SDL_Event & );
