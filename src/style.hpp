@@ -10,7 +10,7 @@ namespace VTX
 	constexpr char * IMGUI_ID_MAIN_WINDOW	 = "VTXMainWindow";
 	constexpr char * IMGUI_ID_MAIN_DOCKSPACE = "VTXMainDockSpace";
 
-	constexpr bool IMGUI_SHOW_DEMO		  = true;
+	constexpr bool IMGUI_SHOW_DEMO		  = false;
 	constexpr bool IMGUI_ENABLE_VIEWPORTS = true;
 
 	constexpr float IMGUI_STYLE_ROUNDING	   = 0.f;

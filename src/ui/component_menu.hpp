@@ -6,6 +6,7 @@
 #endif
 
 #include "base_component.hpp"
+#include "portable-file-dialogs/portable-file-dialogs.h"
 
 namespace VTX
 {
@@ -27,6 +28,8 @@ namespace VTX
 			bool * const _showScene;
 			bool * const _showInspector;
 			bool		 _showDialogImport = false;
+
+			std::shared_ptr<pfd::open_file> _openFileDialog = nullptr;
 		};
 	} // namespace UI
 } // namespace VTX

@@ -38,7 +38,7 @@ namespace VTX
 		_ui->display();
 		_ui->printInfos();
 
-		_stateMachine->goToState( State::STATE_NAME::LOADING );
+		_stateMachine->goToState( State::STATE_NAME::VISUALIZATION );
 
 		while ( VTXApp::_isRunning )
 		{

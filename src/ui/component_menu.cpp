@@ -25,14 +25,27 @@ namespace VTX
 								 ImVec2( IMGUI_STYLE_MENUBAR_PADDING, IMGUI_STYLE_MENUBAR_PADDING ) );
 			if ( ImGui::BeginMainMenuBar() )
 			{
+				// Main menu.
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Menu" ), _show ) )
 				{
-					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.New" ) ) ) { VTXApp::get().getScene().clear(); }
+					// New.
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.New" ) /*, "Ctrl+N"*/ ) )
+					{ VTXApp::get().getScene().clear(); }
+
+					// Open.
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Open" ) ) )
+					{
+						_openFileDialog
+							= std::make_shared<pfd::open_file>( LOCALE( "MainMenu.Menu.Open.ChooseFile" ), "C:\\" );
+					}
+
+					// Quit.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) ) { VTXApp::get().stop(); }
 
 					ImGui::EndMenu();
 				}
 
+				// Display.
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Display" ), _show ) )
 				{
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), _showScene );
@@ -54,6 +67,7 @@ namespace VTX
 					ImGui::EndMenu();
 				}
 
+				// Settings.
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), _show ) )
 				{
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Theme" ),
@@ -70,11 +84,6 @@ namespace VTX
 
 					ImGui::Separator();
 
-					/*
-					if ( ImGui::Combo(
-							 LOCALE( "MainMenu.Settings.Render" ), (int *)&Setting::Rendering::mode, "Deferred\0" ) )
-					{}
-					*/
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ),
 									   (int *)&Setting::Rendering::representation,
 									   "Ball and stick\0Van der Waals\0Bond\0" ) )
@@ -110,11 +119,20 @@ namespace VTX
 					ImGui::EndMenu();
 				}
 
+				// FPS.
 				ImGuiIO & io = ImGui::GetIO();
 				ImGui::Text( "FPS: %.0f", io.Framerate );
 
 				ImGui::PopStyleVar();
 				ImGui::EndMainMenuBar();
+			}
+
+			// Open file dialog.
+			if ( _openFileDialog && _openFileDialog->ready() )
+			{
+				std::vector<std::string> result = _openFileDialog->result();
+				if ( result.size() ) { VTX_INFO( "Loading file:" + result[ 0 ] ); }
+				_openFileDialog = nullptr;
 			}
 		}
 	} // namespace UI

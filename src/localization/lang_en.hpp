@@ -17,6 +17,8 @@ namespace VTX
 			// Main menu.
 			{ "MainMenu.Menu", "Menu" },
 			{ "MainMenu.Menu.New", "New" },
+			{ "MainMenu.Menu.Open", "Open" },
+			{ "MainMenu.Menu.Open.ChooseFile", "Choose file" },
 			{ "MainMenu.Menu.Quit", "Quit" },
 			{ "MainMenu.Import", "Import" },
 			{ "MainMenu.Import.MMTF", "MMTF" },

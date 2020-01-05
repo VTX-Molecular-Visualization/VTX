@@ -12,6 +12,12 @@ namespace VTX
 	{
 		void RendererDeferred::init( Object3D::Scene & p_scene, uint p_width, uint p_height )
 		{
+			for ( Model::ModelMolecule * molecule : p_scene.getMolecules() )
+			{
+				molecule->init();
+			}
+
+			if ( _isInitialized ) { return; }
 			VTX_INFO( "Initializing renderer..." );
 
 			_width	= p_width;
