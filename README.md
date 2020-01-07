@@ -1,5 +1,6 @@
 # VTX 
 
+[![Build Status](https://travis-ci.com/sguionni/VTX.svg?token=vS9x6LR1bWfHpTq6m8BU&branch=master)](https://travis-ci.com/sguionni/VTX)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/25aeed2cf0e54f45b39496354738bfc4)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sguionni/VTX&amp;utm_campaign=Badge_Grade)
 
 ## WINDOWS VISUAL STUDIO 2019 x64
