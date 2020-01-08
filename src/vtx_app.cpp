@@ -132,6 +132,6 @@ namespace VTX
 		}
 
 		// Propagate to state machine.
-		_stateMachine->handleEvent( p_event );
+		if ( ImGui::IsAnyWindowHovered() == false ) { _stateMachine->handleEvent( p_event ); }
 	}
 } // namespace VTX
