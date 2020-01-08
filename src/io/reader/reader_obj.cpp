@@ -17,7 +17,7 @@ namespace VTX
 
 			Assimp::Importer Importer;
 
-			const aiScene * scene = Importer.ReadFile( p_path.c_str(), 0 );
+			const aiScene * const scene = Importer.ReadFile( p_path.c_str(), 0 );
 			if ( !scene )
 			{
 				VTX_ERROR( "Could not decode file: " + p_path.getFileName() );
@@ -42,7 +42,7 @@ namespace VTX
 
 			for ( uint i = 0; i < chainCount; ++i )
 			{
-				const aiMesh * mesh = scene->mMeshes[ i ];
+				const aiMesh * const mesh = scene->mMeshes[ i ];
 				residueCount += mesh->mNumFaces;
 				atomCount += mesh->mNumVertices;
 			}
@@ -54,8 +54,8 @@ namespace VTX
 			// Loop over meshes.
 			for ( uint chainIdx = 0; chainIdx < chainCount; ++chainIdx, ++chainGlobalIdx )
 			{
-				const aiMesh *	   mesh		= scene->mMeshes[ chainIdx ];
-				const aiMaterial * material = scene->mMaterials[ mesh->mMaterialIndex ];
+				const aiMesh * const	 mesh	  = scene->mMeshes[ chainIdx ];
+				const aiMaterial * const material = scene->mMaterials[ mesh->mMaterialIndex ];
 
 				// New chain.
 				Model::ModelChain & chain = p_molecule.getChain( chainGlobalIdx );

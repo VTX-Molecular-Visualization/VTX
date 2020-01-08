@@ -23,8 +23,9 @@ namespace VTX
 			glReadnPixels( 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, size, buffer.data() );
 
 			// Write image buffer in file.
-			std::string filename = std::string( Util::Time::getTimestamp() );
-			IO::Path	path( SNAPSHOT_DIR + filename + ".jpg" );
+			std::string filename = Util::Time::getTimestamp();
+
+			IO::Path path( SNAPSHOT_DIR + filename + ".jpg" );
 			stbi_flip_vertically_on_write( true );
 			stbi_write_jpg( path.c_str(), width, height, JPG_CHANNELS, buffer.data(), JPG_QUALITY );
 			VTX_INFO( "Snapshot taken: " + path.getFileName() );

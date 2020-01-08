@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include <algorithm>
 #include <chrono>
 #include <ctime>
 #include <iostream>
@@ -32,10 +33,13 @@ namespace VTX
 				return string.substr( 11, string.length() - 17 );
 			}
 
-			static char * getTimestamp()
+			static std::string getTimestamp()
 			{
 				std::time_t result = std::time( nullptr );
-				return std::asctime( std::localtime( &result ) );
+				std::string str	   = std::asctime( std::localtime( &result ) );
+				str.erase( std::remove( str.begin(), str.end(), ':' ), str.end() );
+				str.erase( std::remove( str.begin(), str.end(), '\n' ), str.end() );
+				return str;
 			}
 		} // namespace Time
 	}	  // namespace Util
