@@ -54,10 +54,12 @@ namespace VTX
 
 		void GLSLProgramManager::deleteProgram( const std::string & p_name )
 		{
-			if ( _programs.find( p_name ) != _programs.end() ) { _programs.erase( p_name ); }
-			else
+			_programs.erase( p_name );
+
+			if ( _programs.find( p_name ) == _programs.end() )
 			{
 				VTX_WARNING( "Program " + p_name + " does not exists" );
+				return;
 			}
 		}
 

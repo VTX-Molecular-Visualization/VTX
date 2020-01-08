@@ -23,11 +23,11 @@ Open "_windows/VTX.sln" then set project "VTX" as startup project.
 Install [ClangFormat VS extension](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.ClangFormat).  
 Go to Tools -> Options, then under LLVM/Clang, set the following values:
 - Format On Save
-      - Enable: True
-- Format Options
-      - Fallback Style: LLVM
-      - Sort includes: True
-      - Style: file
+  -  nable: True
+-  ormat Options
+  - Fallback Style: LLVM
+  - Sort includes: True
+  - Style: file
 
 ## LINUX
 
