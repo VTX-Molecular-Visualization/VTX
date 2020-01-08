@@ -48,7 +48,7 @@ namespace VTX
 				VTX_WARNING( "Program " + p_name + " already exists" );
 			}
 
-			VTX_DEBUG( "Program created: " + p_name + " / " + std::to_string( _programs[ p_name ].getId() ) );
+			VTX_DEBUG( "Program created: " + p_name );
 			return &( _programs[ p_name ] );
 		}
 
@@ -108,14 +108,13 @@ namespace VTX
 					VTX_ERROR( error );
 					return GL_INVALID_INDEX;
 				}
-				_shaders[ name ] = _shaders[ name ];
 			}
 			else
 			{
 				VTX_WARNING( "Shader already exists" );
 			}
 
-			VTX_DEBUG( "Shader created: " + name + " / " + std::to_string( shaderId ) );
+			VTX_DEBUG( "Shader created: " + name );
 
 			return shaderId;
 		}
