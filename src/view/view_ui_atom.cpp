@@ -15,9 +15,8 @@ namespace VTX
 			{
 				ImGui::Text( "ID: %d", _model->getId() );
 				ImGui::Text( "Vdw radius: %.2f", _model->getVdwRadius() );
-				if ( ImGui::ColorEdit3( "Color", _model->_fColor ) )
+				if ( ImGui::ColorEdit3( "Color", _model->getColor() ) )
 				{
-					_model->setColor( Vec3f( _model->_fColor[ 0 ], _model->_fColor[ 1 ], _model->_fColor[ 2 ] ) );
 					Setting::Rendering::colorMode = View::MOLECULE_COLOR_MODE::ATOM;
 					_model->getMoleculePtr()->setColorMode();
 				}

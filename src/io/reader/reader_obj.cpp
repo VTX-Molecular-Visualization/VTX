@@ -66,12 +66,6 @@ namespace VTX
 				chain.setResidueCount( mesh->mNumFaces );
 				chain.setColor( Util::Color::randomPastelColor() );
 
-				///////////////
-				chain._fColor[ 0 ] = chain.getColor().x;
-				chain._fColor[ 1 ] = chain.getColor().y;
-				chain._fColor[ 2 ] = chain.getColor().z;
-				//////////////
-
 				// Loop over faces.
 				for ( uint residueIdx = 0; residueIdx < mesh->mNumFaces; ++residueIdx, ++residueGlobalIdx )
 				{
@@ -89,12 +83,6 @@ namespace VTX
 					residue.setBondCount( uint( mesh->mNumFaces ) );
 					residue.setColor( Util::Color::randomPastelColor() );
 
-					///////////////
-					residue._fColor[ 0 ] = residue.getColor().x;
-					residue._fColor[ 1 ] = residue.getColor().y;
-					residue._fColor[ 2 ] = residue.getColor().z;
-					//////////////
-
 					// Loop over vertices in the face.
 					for ( uint atomIdx = 0; atomIdx < face.mNumIndices; ++atomIdx, ++atomGlobalIdx, ++bondGlobalIdx )
 					{
@@ -110,13 +98,9 @@ namespace VTX
 
 						aiColor4D diffuse;
 						if ( aiGetMaterialColor( material, AI_MATKEY_COLOR_DIFFUSE, &diffuse ) == AI_SUCCESS )
-						{ atom.setColor( Vec3f( diffuse.r, diffuse.g, diffuse.b ) ); }
-
-						////////////////
-						atom._fColor[ 0 ] = atom.getColor().x;
-						atom._fColor[ 1 ] = atom.getColor().y;
-						atom._fColor[ 2 ] = atom.getColor().z;
-						//////////////
+						{
+							// atom.setColor( Vec3f( diffuse.r, diffuse.g, diffuse.b ) );
+						}
 
 						const aiVector3D vector = mesh->mVertices[ indice ];
 						Vec3f & atomPosition	= p_molecule.addAtomPosition( Vec3f( vector.x, vector.y, vector.z ) );

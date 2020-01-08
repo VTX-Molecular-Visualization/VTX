@@ -24,12 +24,17 @@ namespace VTX
 			inline void				   setId( const uint p_id ) { _id = p_id; };
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
-			inline const Vec3f &	   getColor() const { return _color; }
-			inline void				   setColor( const Vec3f p_color ) { _color = p_color; }
-			inline uint				   getIdFirstResidue() const { return _idFirstResidue; };
-			inline void				   setIdFirstResidue( const uint p_id ) { _idFirstResidue = p_id; };
-			inline uint				   getResidueCount() const { return _residueCount; };
-			inline void				   setResidueCount( const uint p_count ) { _residueCount = p_count; };
+			inline float * const	   getColor() { return _color; }
+			inline void				   setColor( const Vec3f & p_color )
+			{
+				_color[ 0 ] = p_color.x;
+				_color[ 1 ] = p_color.y;
+				_color[ 2 ] = p_color.z;
+			}
+			inline uint getIdFirstResidue() const { return _idFirstResidue; };
+			inline void setIdFirstResidue( const uint p_id ) { _idFirstResidue = p_id; };
+			inline uint getResidueCount() const { return _residueCount; };
+			inline void setResidueCount( const uint p_count ) { _residueCount = p_count; };
 
 			virtual void setSelected( const bool ) override;
 
@@ -38,13 +43,10 @@ namespace VTX
 
 			uint		_id				= INVALID_ID;
 			std::string _name			= "";
-			Vec3f		_color			= VEC3F_ZERO;
+			float		_color[ 3 ]		= { 0.f, 0.f, 0.f };
 			uint		_idFirstResidue = 0;
 			uint		_residueCount	= 0;
-
-		  public:
-			float _fColor[ 3 ];
-		};
+		}; // namespace Model
 
 	} // namespace Model
 } // namespace VTX

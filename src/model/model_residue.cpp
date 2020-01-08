@@ -67,7 +67,6 @@ namespace VTX
 		};
 
 		const Vec3f * ModelResidue::SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ] = {
-			&COLOR_WHITE
 			// TODO
 		};
 

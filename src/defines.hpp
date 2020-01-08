@@ -76,16 +76,16 @@ namespace VTX
 	const float PIf	  = glm::pi<float>();
 	const float PI_2f = glm::half_pi<float>();
 
-	const Vec3f COLOR_BLACK		 = VEC3F_ZERO;
-	const Vec3f COLOR_WHITE		 = VEC3F_XYZ;
-	const Vec3f COLOR_GREY		 = Vec3f( 0.5f, 0.5f, 0.5f );
-	const Vec3f COLOR_RED		 = Vec3f( 1.0f, 0.13f, 0.0f );
-	const Vec3f COLOR_BLUE		 = Vec3f( 0.13f, 0.2f, 1.0f );
-	const Vec3f COLOR_GREEN_DARK = Vec3f( 0.f, 0.47f, 0.f );
-	const Vec3f COLOR_VIOLET	 = Vec3f( 0.f, 0.47f, 0.f );
-	const Vec3f COLOR_ORANGE	 = Vec3f( 1.f, 0.5f, 0.f );
-	const Vec3f COLOR_YELLOW	 = Vec3f( 1.f, 0.9f, 0.13f );
-	const Vec3f COLOR_MAGENTA	 = Vec3f( 1.f, 0.f, 1.f );
+	constexpr float COLOR_BLACK[ 3 ]	  = { 0.f, 0.f, 0.f };
+	constexpr float COLOR_WHITE[ 3 ]	  = { 1.f, 1.f, 1.f };
+	constexpr float COLOR_GREY[ 3 ]		  = { 0.5f, 0.5f, 0.5f };
+	constexpr float COLOR_RED[ 3 ]		  = { 1.0f, 0.13f, 0.0f };
+	constexpr float COLOR_BLUE[ 3 ]		  = { 0.13f, 0.2f, 1.0f };
+	constexpr float COLOR_GREEN_DARK[ 3 ] = { 0.f, 0.47f, 0.f };
+	constexpr float COLOR_VIOLET[ 3 ]	  = { 0.f, 0.47f, 0.f };
+	constexpr float COLOR_ORANGE[ 3 ]	  = { 1.f, 0.5f, 0.f };
+	constexpr float COLOR_YELLOW[ 3 ]	  = { 1.f, 0.9f, 0.13f };
+	constexpr float COLOR_MAGENTA[ 3 ]	  = { 1.f, 0.f, 1.f };
 
 	constexpr uint INVALID_ID = UINT_MAX;
 } // namespace VTX

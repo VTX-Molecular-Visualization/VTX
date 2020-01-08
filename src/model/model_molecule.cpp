@@ -57,19 +57,24 @@ namespace VTX
 			case View::MOLECULE_COLOR_MODE::ATOM:
 				for ( ModelAtom & atom : _atoms )
 				{
-					_atomColors.emplace_back( atom.getColor() );
+					_atomColors.emplace_back(
+						Vec3f( atom.getColor()[ 0 ], atom.getColor()[ 1 ], atom.getColor()[ 2 ] ) );
 				}
 				break;
 			case View::MOLECULE_COLOR_MODE::RESIDUE:
 				for ( ModelAtom & atom : _atoms )
 				{
-					_atomColors.emplace_back( atom.getResiduePtr()->getColor() );
+					_atomColors.emplace_back( atom.getResiduePtr()->getColor()[ 0 ],
+											  atom.getResiduePtr()->getColor()[ 1 ],
+											  atom.getResiduePtr()->getColor()[ 2 ] );
 				}
 				break;
 			case View::MOLECULE_COLOR_MODE::CHAIN:
 				for ( ModelAtom & atom : _atoms )
 				{
-					_atomColors.emplace_back( atom.getChainPtr()->getColor() );
+					_atomColors.emplace_back( atom.getChainPtr()->getColor()[ 0 ],
+											  atom.getChainPtr()->getColor()[ 1 ],
+											  atom.getChainPtr()->getColor()[ 2 ] );
 				}
 				break;
 			default: break;
