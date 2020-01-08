@@ -167,12 +167,12 @@ namespace VTX
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
 			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ (int)_symbol ]; }
-			inline float * const	   getColor() const { return SYMBOL_COLOR[ (int)_symbol ]; }
+			inline float * const	   getColor() { return _color; }
 			inline void				   setColor( const Vec3f & p_color )
 			{
-				SYMBOL_COLOR[ (int)_symbol ][ 0 ] = p_color.x;
-				SYMBOL_COLOR[ (int)_symbol ][ 1 ] = p_color.y;
-				SYMBOL_COLOR[ (int)_symbol ][ 2 ] = p_color.z;
+				_color[ 0 ] = p_color.x;
+				_color[ 1 ] = p_color.y;
+				_color[ 2 ] = p_color.z;
 			}
 
 			virtual void setSelected( const bool ) override;
@@ -182,8 +182,9 @@ namespace VTX
 			ModelChain *	_chainPtr	 = nullptr;
 			ModelResidue *	_residuePtr	 = nullptr;
 
-			uint		_id		= INVALID_ID;
-			ATOM_SYMBOL _symbol = ATOM_SYMBOL::UNKNOWN;
+			uint		_id			= INVALID_ID;
+			ATOM_SYMBOL _symbol		= ATOM_SYMBOL::UNKNOWN;
+			float		_color[ 3 ] = { 0.f, 0.f, 0.f };
 		};
 
 	} // namespace Model

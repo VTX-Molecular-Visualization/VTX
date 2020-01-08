@@ -61,9 +61,8 @@ namespace VTX
 			inline void					setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
 			inline const std::string &	getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const std::string &	getSymbolShort() const { return SYMBOL_SHORT[ (int)_symbol ]; }
-			// inline const Vec3f *		getColor() const { return SYMBOL_COLOR[ (int)_symbol ]; }
-			inline float * const getColor() { return _color; }
-			inline void			 setColor( const Vec3f & p_color )
+			inline float * const		getColor() { return _color; }
+			inline void					setColor( const Vec3f & p_color )
 			{
 				_color[ 0 ] = p_color.x;
 				_color[ 1 ] = p_color.y;
