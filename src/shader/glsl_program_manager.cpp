@@ -54,13 +54,13 @@ namespace VTX
 
 		void GLSLProgramManager::deleteProgram( const std::string & p_name )
 		{
-			_programs.erase( p_name );
-
 			if ( _programs.find( p_name ) == _programs.end() )
 			{
 				VTX_WARNING( "Program " + p_name + " does not exists" );
 				return;
 			}
+
+			_programs.erase( p_name );
 		}
 
 		GLSLProgram * const GLSLProgramManager::getProgram( const std::string & p_name )
@@ -110,6 +110,7 @@ namespace VTX
 					VTX_ERROR( error );
 					return GL_INVALID_INDEX;
 				}
+				_shaders[ name ] = _shaders[ name ];
 			}
 			else
 			{

@@ -54,7 +54,8 @@ namespace VTX
 			// Loop over meshes.
 			for ( uint chainIdx = 0; chainIdx < chainCount; ++chainIdx, ++chainGlobalIdx )
 			{
-				const aiMesh * mesh = scene->mMeshes[ chainIdx ];
+				const aiMesh *	   mesh		= scene->mMeshes[ chainIdx ];
+				const aiMaterial * material = scene->mMaterials[ mesh->mMaterialIndex ];
 
 				// New chain.
 				Model::ModelChain & chain = p_molecule.getChain( chainGlobalIdx );
@@ -106,6 +107,10 @@ namespace VTX
 						atom.setResiduePtr( &residue );
 						atom.setId( atomGlobalIdx );
 						atom.setSymbol( Model::ModelAtom::ATOM_SYMBOL::UNKNOWN );
+
+						aiColor4D diffuse;
+						if ( aiGetMaterialColor( material, AI_MATKEY_COLOR_DIFFUSE, &diffuse ) == AI_SUCCESS )
+						{ atom.setColor( Vec3f( diffuse.r, diffuse.g, diffuse.b ) ); }
 
 						////////////////
 						atom._fColor[ 0 ] = atom.getColor().x;

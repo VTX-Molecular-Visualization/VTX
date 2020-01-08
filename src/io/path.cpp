@@ -90,9 +90,8 @@ namespace VTX
 				return "";
 			}
 
-			std::stringstream	 s;
-			const std::filebuf * fb = ifs.rdbuf();
-			if ( fb ) { s << fb; }
+			std::stringstream s;
+			s << ifs.rdbuf();
 			ifs.close();
 			return s.str();
 		}
