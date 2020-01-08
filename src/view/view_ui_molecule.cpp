@@ -16,15 +16,26 @@ namespace VTX
 			{
 				float *x, *y, *z;
 
+				ImGui::Text( "Translation" );
+				const Mat4f & translation = _model->getTransform().getTranslation();
+				x						  = (float *)&translation[ 3 ][ 0 ];
+				y						  = (float *)&translation[ 3 ][ 1 ];
+				z						  = (float *)&translation[ 3 ][ 2 ];
+				ImGui::PushID( "Position" );
+				ImGui::InputFloat( "X", x, 1.f );
+				ImGui::InputFloat( "Y", y, 1.f );
+				ImGui::InputFloat( "Z", z, 1.f );
+				ImGui::PopID();
+
 				ImGui::Text( "Scale" );
 				const Mat4f & scale = _model->getTransform().getScale();
 				x					= (float *)&scale[ 0 ][ 0 ];
 				y					= (float *)&scale[ 1 ][ 1 ];
 				z					= (float *)&scale[ 2 ][ 2 ];
 				ImGui::PushID( "Scale" );
-				ImGui::InputFloat( "X", x, 2 );
-				ImGui::InputFloat( "Y", y, 2 );
-				ImGui::InputFloat( "Z", z, 2 );
+				ImGui::InputFloat( "X", x, 1.f );
+				ImGui::InputFloat( "Y", y, 1.f );
+				ImGui::InputFloat( "Z", z, 1.f );
 				ImGui::PopID();
 			}
 

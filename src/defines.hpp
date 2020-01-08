@@ -37,7 +37,7 @@ namespace VTX
 	constexpr float AUTO_ROTATE_SPEED_MIN		= 0.0f;
 	constexpr float AUTO_ROTATE_SPEED_MAX		= 1.0f;
 	constexpr float AUTO_ROTATE_X_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MIN;
-	constexpr float AUTO_ROTATE_Y_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MAX / 4.f;
+	constexpr float AUTO_ROTATE_Y_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MIN;
 	constexpr float AUTO_ROTATE_Z_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MIN;
 
 	// Dirs.
