@@ -41,8 +41,9 @@ namespace VTX
 	constexpr float AUTO_ROTATE_Z_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MIN;
 
 	// Dirs.
-	const std::string DATA_DIR	 = "../data/";
-	const std::string SHADER_DIR = "../shaders/";
+	const std::string DATA_DIR	   = "../data/";
+	const std::string SHADER_DIR   = "../shaders/";
+	const std::string SNAPSHOT_DIR = "../snapshots/";
 
 	// Log.
 	inline void	  VTX_DEBUG( const std::string & p_str ) { VTX::Util::Logger::logDebug( p_str ); }

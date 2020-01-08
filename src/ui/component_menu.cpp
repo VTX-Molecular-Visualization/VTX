@@ -67,6 +67,9 @@ namespace VTX
 					ImGui::EndMenu();
 				}
 
+				// Export
+				if ( ImGui::BeginMenu( LOCALE( "Export.Export" ), _show ) ) {}
+
 				// Settings.
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), _show ) )
 				{

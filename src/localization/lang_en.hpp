@@ -28,6 +28,8 @@ namespace VTX
 			{ "MainMenu.Display.Console", "Console" },
 			{ "MainMenu.Display.CloseAll", "Close all" },
 			{ "MainMenu.Display.ShowAll", "Show all" },
+			{ "MainMenu.Export", "Export" },
+			{ "MainMenu.Export.Snapshot", "Snapshot" },
 			{ "MainMenu.Settings", "Options" },
 			{ "MainMenu.Settings.Theme", "Theme" },
 			{ "MainMenu.Settings.SymbolDisplay", "Symbol display" },
