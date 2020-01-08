@@ -32,5 +32,3 @@ Go to Tools -> Options, then under LLVM/Clang, set the following values:
 ## LINUX
 
 ## MAC OS
-
-

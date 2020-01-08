@@ -54,11 +54,12 @@ namespace VTX
 				case GL_DEBUG_SEVERITY_HIGH: _severity = "HIGH"; break;
 				case GL_DEBUG_SEVERITY_MEDIUM: _severity = "MEDIUM"; break;
 				case GL_DEBUG_SEVERITY_LOW: _severity = "LOW"; break;
-				case GL_DEBUG_SEVERITY_NOTIFICATION: _severity = "NOTIFICATION"; return;
+				case GL_DEBUG_SEVERITY_NOTIFICATION: _severity = "NOTIFICATION"; break;
 				default: _severity = "UNKNOWN"; break;
 				}
 
-				std::printf( "[%s][%s] %s: %s\n", _severity, _type, _source, p_msg );
+				if ( p_severity != GL_DEBUG_SEVERITY_NOTIFICATION )
+				{ std::printf( "[%s][%s] %s: %s\n", _severity, _type, _source, p_msg ); }
 			}
 		} // namespace OpenGL
 	}	  // namespace Util

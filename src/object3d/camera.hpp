@@ -42,13 +42,13 @@ namespace VTX
 			virtual void printInfo() const;
 
 		  protected:
-			float _screenWidth;
-			float _screenHeight;
-			float _near	 = CAMERA_NEAR;
-			float _far	 = CAMERA_FAR;
-			float _fov	 = CAMERA_FOV;
-			float _theta = 0.f;
-			float _phi	 = 4.22369f;
+			float _screenWidth	= 0.f;
+			float _screenHeight = 0.f;
+			float _near			= CAMERA_NEAR;
+			float _far			= CAMERA_FAR;
+			float _fov			= CAMERA_FOV;
+			float _theta		= 0.f;
+			float _phi			= 4.22369f;
 
 			Vec3f _position = VEC3F_ZERO;
 			Vec3f _front	= VEC3F_Z;

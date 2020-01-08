@@ -17,7 +17,7 @@ namespace VTX
 		class BaseViewUI : public UI::BaseComponent, public BaseView<T>
 		{
 		  public:
-			BaseViewUI( bool * const p_show ) : BaseComponent( p_show ) {}
+			explicit BaseViewUI( bool * const p_show ) : BaseComponent( p_show ) {}
 
 			virtual std::string getNameStr() const override
 			{
