@@ -24,6 +24,7 @@ Install [ClangFormat VS extension](https://marketplace.visualstudio.com/items?it
 Go to Tools -> Options, then under LLVM/Clang, set the following values:
 -   Format On Save
     -   Enable: True
+
 -   Format Options
     -   Fallback Style: LLVM
     -   Sort includes: True
