@@ -16,7 +16,7 @@ namespace VTX
 		namespace Type
 		{
 			template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-			std::shared_ptr<View::BaseView<Model::BaseModel>> componentToView( UI::COMPONENT_NAME p_type )
+			static std::shared_ptr<View::BaseView<Model::BaseModel>> componentToView( UI::COMPONENT_NAME p_type )
 			{
 				std::shared_ptr<UI::BaseComponent> component = VTXApp::get().getUIComponentByName( p_type );
 				std::shared_ptr<View::BaseView<T>> view = std::dynamic_pointer_cast<View::BaseView<T>>( component );

@@ -1,5 +1,6 @@
 #include "path.hpp"
 #include "../defines.hpp"
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -78,6 +79,10 @@ namespace VTX
 			{
 				_path.pop_back();
 			}
+
+			// TODO: use regex to remove all characters in one time.
+			_path.erase( std::remove( _path.begin(), _path.end(), ':' ), _path.end() );
+			_path.erase( std::remove( _path.begin(), _path.end(), '\n' ), _path.end() );
 		}
 
 		std::string Path::read( const Path & p_path )

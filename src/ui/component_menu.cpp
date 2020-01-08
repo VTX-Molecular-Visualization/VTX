@@ -1,6 +1,7 @@
 #include "component_menu.hpp"
 #include "../defines.hpp"
 #include "../style.hpp"
+#include "../tool/snapshoter.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
 
@@ -68,7 +69,15 @@ namespace VTX
 				}
 
 				// Export
-				if ( ImGui::BeginMenu( LOCALE( "Export.Export" ), _show ) ) {}
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Export" ), _show ) )
+				{
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Snapshot" ) ) )
+					{
+						Tool::Snapshoter snapshoter;
+						snapshoter.takeSnapshot();
+					}
+					ImGui::EndMenu();
+				}
 
 				// Settings.
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), _show ) )

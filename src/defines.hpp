@@ -13,7 +13,17 @@
 
 namespace VTX
 {
-	// VTX CONFIGURATION.
+	// Types.
+	using uint	= unsigned int;
+	using uchar = unsigned char;
+
+	using Vec2f = glm::vec2;
+	using Vec3f = glm::vec3;
+	using Vec4f = glm::vec4;
+
+	using Mat4f = glm::mat4;
+
+	// VTX.
 	constexpr int VTX_VERSION_MAJOR = 0;
 	constexpr int VTX_VERSION_MINOR = 0;
 
@@ -32,6 +42,10 @@ namespace VTX
 	constexpr float CAMERA_FOV	   = 60.f;
 	constexpr float CAMERA_FOV_MIN = 10.f;
 	constexpr float CAMERA_FOV_MAX = 90.f;
+
+	// Snapshot.
+	constexpr uint JPG_CHANNELS = 3u;
+	constexpr uint JPG_QUALITY	= 100u;
 
 	// Auto rotate.
 	constexpr float AUTO_ROTATE_SPEED_MIN		= 0.0f;
@@ -54,16 +68,6 @@ namespace VTX
 
 	// Localization.
 	inline const char * LOCALE( const char * p_str ) { return VTX::Localization::Language::text( p_str ); }
-
-	// Types.
-	using uint	= unsigned int;
-	using uchar = unsigned char;
-
-	using Vec2f = glm::vec2;
-	using Vec3f = glm::vec3;
-	using Vec4f = glm::vec4;
-
-	using Mat4f = glm::mat4;
 
 	// Constants.
 	const Mat4f MAT4F_ID = Mat4f( 1.f );
