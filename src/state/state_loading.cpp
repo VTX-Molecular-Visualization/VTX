@@ -11,12 +11,24 @@ namespace VTX
 	{
 		void StateLoading::enter( void * const p_arg )
 		{
+			// std::string * path = (std::string *)p_arg;
+			// while ( *path != "\n" )
+			//{
+			//_loadFile( path++ );
+			//}
+			_loadFile( (std::string *)p_arg );
+
+			VTXApp::get().goToState( State::STATE_NAME::VISUALIZATION );
+		}
+
+		void StateLoading::_loadFile( std::string * p_path ) const
+		{
 			Model::ModelMolecule * molecule = new Model::ModelMolecule();
 			Object3D::Scene *	   scene	= &( VTXApp::get().getScene() );
 
 			// VTXApp::get().addThread( new std::thread( [ molecule, scene ] {
 
-			const IO::Path path = IO::Path( *(std::string *)p_arg );
+			const IO::Path path = IO::Path( *p_path );
 
 			// Create factory?
 			IO::BaseReader * reader = nullptr;
@@ -30,11 +42,9 @@ namespace VTX
 			{
 				scene->addMolecule( molecule );
 				molecule->printInfos();
-				VTXApp::get().goToState( State::STATE_NAME::VISUALIZATION );
 			}
 
 			delete reader;
-			//} ) );
 		}
 
 		void StateLoading::exit() {}

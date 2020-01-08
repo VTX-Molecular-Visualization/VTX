@@ -98,9 +98,7 @@ namespace VTX
 
 						aiColor4D diffuse;
 						if ( aiGetMaterialColor( material, AI_MATKEY_COLOR_DIFFUSE, &diffuse ) == AI_SUCCESS )
-						{
-							// atom.setColor( Vec3f( diffuse.r, diffuse.g, diffuse.b ) );
-						}
+						{ atom.setColor( Vec3f( diffuse.r, diffuse.g, diffuse.b ) ); }
 
 						const aiVector3D vector = mesh->mVertices[ indice ];
 						Vec3f & atomPosition	= p_molecule.addAtomPosition( Vec3f( vector.x, vector.y, vector.z ) );

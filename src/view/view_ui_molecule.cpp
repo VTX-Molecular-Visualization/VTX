@@ -12,45 +12,66 @@ namespace VTX
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
 			ImGui::PushID( "ViewMolecule" );
 
-			if ( ImGui::CollapsingHeader( "Transform", flags ) )
+			if ( ImGui::CollapsingHeader( LOCALE( "Inspector.Transform" ), flags ) )
 			{
-				float *x, *y, *z, *w;
+				float *x, *y, *z;
+
+				ImGui::Text( "Scale" );
+				const Mat4f & scale = _model->getTransform().getScale();
+				x					= (float *)&scale[ 0 ][ 0 ];
+				y					= (float *)&scale[ 1 ][ 1 ];
+				z					= (float *)&scale[ 2 ][ 2 ];
+				ImGui::PushID( "Scale" );
+				ImGui::InputFloat( "X", x, 2 );
+				ImGui::InputFloat( "Y", y, 2 );
+				ImGui::InputFloat( "Z", z, 2 );
+				ImGui::PopID();
+			}
+
+#ifdef _DEBUG
+			if ( ImGui::CollapsingHeader( "Transform-debug" ) )
+			{
+				float *x, *y, *z;
+
+				ImGui::PushID( "Debug" );
 
 				ImGui::Text( "Translation" );
 				const Mat4f & translation = _model->getTransform().getTranslation();
 				x						  = (float *)&translation[ 0 ];
 				y						  = (float *)&translation[ 1 ];
 				z						  = (float *)&translation[ 2 ];
-				w						  = (float *)&translation[ 3 ];
-				ImGui::InputFloat4( "X", x, 2 );
-				ImGui::InputFloat4( "Y", y, 2 );
-				ImGui::InputFloat4( "Z", z, 2 );
-				ImGui::InputFloat4( "W", w, 2 );
+				ImGui::PushID( "Translation" );
+				ImGui::InputFloat3( "X", x, 2 );
+				ImGui::InputFloat3( "Y", y, 2 );
+				ImGui::InputFloat3( "Z", z, 2 );
+				ImGui::PopID();
 
 				ImGui::Text( "Rotation" );
 				const Mat4f & rotation = _model->getTransform().getRotation();
 				x					   = (float *)&rotation[ 0 ];
 				y					   = (float *)&rotation[ 1 ];
 				z					   = (float *)&rotation[ 2 ];
-				w					   = (float *)&rotation[ 3 ];
-				ImGui::InputFloat4( "X", x, 2 );
-				ImGui::InputFloat4( "Y", y, 2 );
-				ImGui::InputFloat4( "Z", z, 2 );
-				ImGui::InputFloat4( "W", w, 2 );
+				ImGui::PushID( "Rotation" );
+				ImGui::InputFloat3( "X", x, 2 );
+				ImGui::InputFloat3( "Y", y, 2 );
+				ImGui::InputFloat3( "Z", z, 2 );
+				ImGui::PopID();
 
 				ImGui::Text( "Scale" );
 				const Mat4f & scale = _model->getTransform().getScale();
 				x					= (float *)&scale[ 0 ];
 				y					= (float *)&scale[ 1 ];
 				z					= (float *)&scale[ 2 ];
-				w					= (float *)&scale[ 3 ];
-				ImGui::InputFloat4( "X", x, 2 );
-				ImGui::InputFloat4( "Y", y, 2 );
-				ImGui::InputFloat4( "Z", z, 2 );
-				ImGui::InputFloat4( "W", w, 2 );
-			}
+				ImGui::PushID( "Scale" );
+				ImGui::InputFloat3( "X", x, 2 );
+				ImGui::InputFloat3( "Y", y, 2 );
+				ImGui::InputFloat3( "Z", z, 2 );
+				ImGui::PopID();
 
+				ImGui::PopID();
+			}
 			ImGui::PopID();
+#endif
 		}
 	} // namespace View
 } // namespace VTX

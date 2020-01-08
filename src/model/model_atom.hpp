@@ -170,9 +170,9 @@ namespace VTX
 			inline float * const	   getColor() const { return SYMBOL_COLOR[ (int)_symbol ]; }
 			inline void				   setColor( const Vec3f & p_color )
 			{
-				*( SYMBOL_COLOR[ (int)_symbol ] )	  = p_color.x;
-				*( SYMBOL_COLOR[ (int)_symbol ] + 1 ) = p_color.y;
-				*( SYMBOL_COLOR[ (int)_symbol ] + 2 ) = p_color.z;
+				SYMBOL_COLOR[ (int)_symbol ][ 0 ] = p_color.x;
+				SYMBOL_COLOR[ (int)_symbol ][ 1 ] = p_color.y;
+				SYMBOL_COLOR[ (int)_symbol ][ 2 ] = p_color.z;
 			}
 
 			virtual void setSelected( const bool ) override;

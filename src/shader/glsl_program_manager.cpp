@@ -110,7 +110,6 @@ namespace VTX
 					VTX_ERROR( error );
 					return GL_INVALID_INDEX;
 				}
-				_shaders[ name ] = _shaders[ name ];
 			}
 			else
 			{

@@ -37,7 +37,7 @@ namespace VTX
 	constexpr float AUTO_ROTATE_SPEED_MIN		= 0.0f;
 	constexpr float AUTO_ROTATE_SPEED_MAX		= 1.0f;
 	constexpr float AUTO_ROTATE_X_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MIN;
-	constexpr float AUTO_ROTATE_Y_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MAX / 2.f;
+	constexpr float AUTO_ROTATE_Y_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MAX / 4.f;
 	constexpr float AUTO_ROTATE_Z_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MIN;
 
 	// Dirs.
@@ -76,16 +76,16 @@ namespace VTX
 	const float PIf	  = glm::pi<float>();
 	const float PI_2f = glm::half_pi<float>();
 
-	constexpr float COLOR_BLACK[ 3 ]	  = { 0.f, 0.f, 0.f };
-	constexpr float COLOR_WHITE[ 3 ]	  = { 1.f, 1.f, 1.f };
-	constexpr float COLOR_GREY[ 3 ]		  = { 0.5f, 0.5f, 0.5f };
-	constexpr float COLOR_RED[ 3 ]		  = { 1.0f, 0.13f, 0.0f };
-	constexpr float COLOR_BLUE[ 3 ]		  = { 0.13f, 0.2f, 1.0f };
-	constexpr float COLOR_GREEN_DARK[ 3 ] = { 0.f, 0.47f, 0.f };
-	constexpr float COLOR_VIOLET[ 3 ]	  = { 0.f, 0.47f, 0.f };
-	constexpr float COLOR_ORANGE[ 3 ]	  = { 1.f, 0.5f, 0.f };
-	constexpr float COLOR_YELLOW[ 3 ]	  = { 1.f, 0.9f, 0.13f };
-	constexpr float COLOR_MAGENTA[ 3 ]	  = { 1.f, 0.f, 1.f };
+	static float COLOR_BLACK[ 3 ]	   = { 0.f, 0.f, 0.f };
+	static float COLOR_WHITE[ 3 ]	   = { 1.f, 1.f, 1.f };
+	static float COLOR_GREY[ 3 ]	   = { 0.5f, 0.5f, 0.5f };
+	static float COLOR_RED[ 3 ]		   = { 1.0f, 0.13f, 0.0f };
+	static float COLOR_BLUE[ 3 ]	   = { 0.13f, 0.2f, 1.0f };
+	static float COLOR_GREEN_DARK[ 3 ] = { 0.f, 0.47f, 0.f };
+	static float COLOR_VIOLET[ 3 ]	   = { 0.f, 0.47f, 0.f };
+	static float COLOR_ORANGE[ 3 ]	   = { 1.f, 0.5f, 0.f };
+	static float COLOR_YELLOW[ 3 ]	   = { 1.f, 0.9f, 0.13f };
+	static float COLOR_MAGENTA[ 3 ]	   = { 1.f, 0.f, 1.f };
 
 	constexpr uint INVALID_ID = UINT_MAX;
 } // namespace VTX

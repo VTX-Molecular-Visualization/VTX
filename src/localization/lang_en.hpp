@@ -48,8 +48,9 @@ namespace VTX
 			{ "Scene.Scene", "Scene" },
 			{ "Scene.Performance", "Performance" },
 
-			// Selection.
+			// Inspector.
 			{ "Inspector.Inspector", "Inspector" },
+			{ "Inspector.Transform", "Transform" },
 
 			// Views.
 			{ "View.Molecule.Data", "Data" }
