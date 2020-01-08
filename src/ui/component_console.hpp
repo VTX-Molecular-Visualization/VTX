@@ -17,7 +17,7 @@ namespace VTX
 		class ComponentConsole : public BaseComponent
 		{
 		  public:
-			ComponentConsole( bool * const );
+			explicit ComponentConsole( bool * const );
 
 		  protected:
 			virtual void _draw() override;

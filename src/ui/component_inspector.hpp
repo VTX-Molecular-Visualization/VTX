@@ -17,7 +17,7 @@ namespace VTX
 		class ComponentInspector : public BaseComponent
 		{
 		  public:
-			ComponentInspector( bool * const );
+			explicit ComponentInspector( bool * const );
 
 			virtual COMPONENT_NAME getName() const override { return COMPONENT_NAME::INSPECTOR; }
 

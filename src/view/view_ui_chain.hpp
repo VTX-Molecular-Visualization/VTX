@@ -15,7 +15,7 @@ namespace VTX
 		class ViewUIChain : public BaseViewUI<Model::ModelChain>
 		{
 		  public:
-			ViewUIChain( bool * const p_show ) : BaseViewUI( p_show ) {}
+			explicit ViewUIChain( bool * const p_show ) : BaseViewUI( p_show ) {}
 			virtual void notify( Event::EVENT_MODEL ) override;
 
 			virtual UI::COMPONENT_NAME getName() const override { return UI::COMPONENT_NAME::VIEW_CHAIN; }

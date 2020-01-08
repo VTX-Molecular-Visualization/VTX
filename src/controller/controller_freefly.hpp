@@ -15,7 +15,7 @@ namespace VTX
 		class ControllerFreefly : public BaseKeyboardMouseController
 		{
 		  public:
-			ControllerFreefly( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
+			explicit ControllerFreefly( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
 
 		  protected:
 			virtual void _handleKeyDownEvent( const SDL_Scancode & ) override;

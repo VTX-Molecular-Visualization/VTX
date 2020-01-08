@@ -29,7 +29,6 @@ namespace VTX
 			// Set molecule properties.
 			p_molecule.setName( p_path.getFileNameWithoutExtension() );
 
-			float		 x, y, z;
 			Math::AABB & aabb			  = p_molecule.AABB();
 			uint		 chainGlobalIdx	  = 0;
 			uint		 residueGlobalIdx = 0;
@@ -47,8 +46,6 @@ namespace VTX
 				residueCount += mesh->mNumFaces;
 				atomCount += mesh->mNumVertices;
 			}
-
-			VTX_INFO( std::to_string( atomCount ) );
 
 			p_molecule.getChains().resize( chainCount );
 			p_molecule.getResidues().resize( residueCount );
@@ -98,7 +95,7 @@ namespace VTX
 					//////////////
 
 					// Loop over vertices in the face.
-					for ( uint atomIdx = 0; atomIdx < face.mNumIndices; ++atomIdx, ++atomGlobalIdx )
+					for ( uint atomIdx = 0; atomIdx < face.mNumIndices; ++atomIdx, ++atomGlobalIdx, ++bondGlobalIdx )
 					{
 						uint indice = face.mIndices[ atomIdx ];
 
@@ -121,24 +118,16 @@ namespace VTX
 						p_molecule.addAtomRadius( atom.getVdwRadius() );
 
 						aabb.extend( atomPosition );
-					}
 
-					// Bonds.
-					/*
-					uint bondCount = residue.getBondCount();
-					for ( uint boundIdx = 0; boundIdx < bondCount * 2u - 1u; boundIdx += 2u, bondGlobalIdx += 2u )
-					{
-						p_molecule.addBond( residue.getIdFirstAtom() + boundIdx );
-						p_molecule.addBond( residue.getIdFirstAtom() + boundIdx + 1u );
-
-
-						if ( boundIdx == bondCount * 2u - 2u ) { p_molecule.addBond( residue.getIdFirstAtom() ); }
+						// Bond.
+						p_molecule.addBond( atomGlobalIdx );
+						if ( atomIdx == face.mNumIndices - 1 )
+						{ p_molecule.addBond( ( atomGlobalIdx - face.mNumIndices + 1 ) ); }
 						else
 						{
-							p_molecule.addBond( residue.getIdFirstAtom() + boundIdx + 1u );
+							p_molecule.addBond( ( atomGlobalIdx + 1 ) );
 						}
-
-					}*/
+					}
 				}
 			}
 

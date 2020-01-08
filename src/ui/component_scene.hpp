@@ -14,7 +14,7 @@ namespace VTX
 		class ComponentScene : public BaseComponent
 		{
 		  public:
-			ComponentScene( bool * const );
+			explicit ComponentScene( bool * const );
 
 			virtual COMPONENT_NAME getName() const override { return COMPONENT_NAME::SCENE; }
 
