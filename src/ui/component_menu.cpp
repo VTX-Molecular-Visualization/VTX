@@ -1,4 +1,7 @@
 #include "component_menu.hpp"
+#include "../action/action_change_representation.hpp"
+#include "../action/action_new.hpp"
+#include "../action/action_open.hpp"
 #include "../defines.hpp"
 #include "../style.hpp"
 #include "../tool/snapshoter.hpp"
@@ -31,7 +34,7 @@ namespace VTX
 				{
 					// New.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.New" ) /*, "Ctrl+N"*/ ) )
-					{ VTXApp::get().getScene().clear(); }
+					{ VTXApp::get().runAction( Action::ActionNew() ); }
 
 					// Open.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Open" ) ) )
@@ -99,12 +102,7 @@ namespace VTX
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ),
 									   (int *)&Setting::Rendering::representation,
 									   "Ball and stick\0Van der Waals\0Stick\0" ) )
-					{
-						for ( Model::ModelMolecule * const molecule : VTXApp::get().getScene().getMolecules() )
-						{
-							molecule->setRepresentation();
-						}
-					}
+					{ VTXApp::get().runAction( Action::ActionChangeRepresentation() ); }
 
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ),
 									   (int *)&Setting::Rendering::colorMode,
@@ -155,7 +153,7 @@ namespace VTX
 			if ( _openFileDialog && _openFileDialog->ready() )
 			{
 				std::vector<std::string> result = _openFileDialog->result();
-				if ( result.size() ) { VTXApp::get().goToState( State::STATE_NAME::LOADING, &result[ 0 ] ); }
+				if ( result.size() ) { VTXApp::get().runAction( Action::ActionOpen( result[ 0 ] ) ); }
 				_openFileDialog = nullptr;
 			}
 		}
