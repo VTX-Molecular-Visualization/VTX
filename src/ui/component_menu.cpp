@@ -34,7 +34,7 @@ namespace VTX
 				{
 					// New.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.New" ) /*, "Ctrl+N"*/ ) )
-					{ VTXApp::get().runAction( Action::ActionNew() ); }
+					{ VTXApp::get().runAction( new Action::ActionNew() ); }
 
 					// Open.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Open" ) ) )
@@ -102,7 +102,7 @@ namespace VTX
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ),
 									   (int *)&Setting::Rendering::representation,
 									   "Ball and stick\0Van der Waals\0Stick\0" ) )
-					{ VTXApp::get().runAction( Action::ActionChangeRepresentation() ); }
+					{ VTXApp::get().runAction( new Action::ActionChangeRepresentation() ); }
 
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ),
 									   (int *)&Setting::Rendering::colorMode,
@@ -153,7 +153,7 @@ namespace VTX
 			if ( _openFileDialog && _openFileDialog->ready() )
 			{
 				std::vector<std::string> result = _openFileDialog->result();
-				if ( result.size() ) { VTXApp::get().runAction( Action::ActionOpen( result[ 0 ] ) ); }
+				if ( result.size() ) { VTXApp::get().runAction( new Action::ActionOpen( result[ 0 ] ) ); }
 				_openFileDialog = nullptr;
 			}
 		}

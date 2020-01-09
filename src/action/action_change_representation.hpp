@@ -16,7 +16,7 @@ namespace VTX
 		class ActionChangeRepresentation : public BaseAction
 		{
 		  public:
-			virtual void run() override
+			virtual void execute() override
 			{
 				for ( Model::ModelMolecule * const molecule : VTXApp::get().getScene().getMolecules() )
 				{

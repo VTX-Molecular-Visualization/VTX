@@ -12,7 +12,10 @@ namespace VTX
 		class BaseAction
 		{
 		  public:
-			virtual void run() = 0;
+			virtual void execute() = 0;
+
+		  private:
+			virtual void displayUsage() {}
 		};
 	} // namespace Action
 } // namespace VTX

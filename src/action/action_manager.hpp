@@ -6,6 +6,7 @@
 #endif
 
 #include "base_action.hpp"
+#include <string>
 
 namespace VTX
 {
@@ -14,7 +15,22 @@ namespace VTX
 		class ActionManager
 		{
 		  public:
-			void runAction( BaseAction & p_action ) const { p_action.run(); }
+			void executeAction( BaseAction * const p_action ) const
+			{
+				p_action->execute();
+				delete p_action;
+			}
+			void executeAction( std::string & p_action ) const
+			{
+				// TODO: extract args from string.
+				// TODO: map string to class with variadics (if possible).
+			}
+
+			// bool canUndo()
+			// void undo()
+			// bool canRedo()
+			// void redo()
+			// store the stack of the x last actions
 		};
 	} // namespace Action
 } // namespace VTX

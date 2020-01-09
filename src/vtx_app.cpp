@@ -83,7 +83,7 @@ namespace VTX
 		_ui->receiveEvent( p_event, p_arg );
 	}
 
-	void VTXApp::runAction( Action::BaseAction & p_action ) const { _actionManager->runAction( p_action ); }
+	void VTXApp::runAction( Action::BaseAction * const p_action ) const { _actionManager->executeAction( p_action ); }
 
 	void VTXApp::addThread( std::thread * const p_thread ) { _threads.emplace_back( p_thread ); }
 
