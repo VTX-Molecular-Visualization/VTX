@@ -17,8 +17,9 @@ namespace VTX
 		_ui->init();
 		_stateMachine = new State::StateMachine();
 		_stateMachine->init();
-		_scene	  = new Object3D::Scene();
-		_renderer = new Renderer::RendererDeferred();
+		_scene		   = new Object3D::Scene();
+		_renderer	   = new Renderer::RendererDeferred();
+		_actionManager = new Action::ActionManager();
 	}
 
 	VTXApp::~VTXApp()
@@ -27,6 +28,7 @@ namespace VTX
 		delete _stateMachine;
 		delete _scene;
 		delete _renderer;
+		delete _actionManager;
 	}
 
 	void VTXApp::start()
@@ -80,6 +82,8 @@ namespace VTX
 	{
 		_ui->receiveEvent( p_event, p_arg );
 	}
+
+	void VTXApp::runAction( Action::BaseAction & p_action ) const { _actionManager->runAction( p_action ); }
 
 	void VTXApp::addThread( std::thread * const p_thread ) { _threads.emplace_back( p_thread ); }
 

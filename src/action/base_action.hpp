@@ -11,6 +11,8 @@ namespace VTX
 	{
 		class BaseAction
 		{
+		  public:
+			virtual void run() = 0;
 		};
 	} // namespace Action
 } // namespace VTX

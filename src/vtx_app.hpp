@@ -5,6 +5,8 @@
 #pragma once
 
 #endif
+#include "action/action_manager.hpp"
+#include "action/base_action.hpp"
 #include "event/event.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
@@ -32,6 +34,8 @@ namespace VTX
 		void stop();
 		void goToState( const State::STATE_NAME, void * const = nullptr );
 		void fireUIEvent( const Event::EVENT_UI, void * const = nullptr ) const;
+		void runAction( Action::BaseAction & ) const;
+
 		void addThread( std::thread * const );
 
 		const std::shared_ptr<UI::BaseComponent> getUIComponentByName( const UI::COMPONENT_NAME ) const;
@@ -43,15 +47,17 @@ namespace VTX
 		inline Shader::GLSLProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
 
 	  private:
-		static bool				   _isRunning;
-		Tool::Chrono			   _chrono		 = Tool::Chrono();
-		double					   _timeTotal	 = 0.f;
-		double					   _timeDelta	 = 0.f;
-		UI::UserInterface *		   _ui			 = nullptr;
-		State::StateMachine *	   _stateMachine = nullptr;
-		Object3D::Scene *		   _scene		 = nullptr;
-		Renderer::BaseRenderer *   _renderer	 = nullptr;
-		std::vector<std::thread *> _threads		 = std::vector<std::thread *>();
+		static bool				 _isRunning;
+		Tool::Chrono			 _chrono		= Tool::Chrono();
+		double					 _timeTotal		= 0.f;
+		double					 _timeDelta		= 0.f;
+		UI::UserInterface *		 _ui			= nullptr;
+		State::StateMachine *	 _stateMachine	= nullptr;
+		Object3D::Scene *		 _scene			= nullptr;
+		Renderer::BaseRenderer * _renderer		= nullptr;
+		Action::ActionManager *	 _actionManager = nullptr;
+
+		std::vector<std::thread *> _threads = std::vector<std::thread *>();
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;
