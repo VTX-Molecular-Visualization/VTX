@@ -34,7 +34,8 @@ namespace VTX
 		void stop();
 		void goToState( const State::STATE_NAME, void * const = nullptr );
 		void fireUIEvent( const Event::EVENT_UI, void * const = nullptr ) const;
-		void runAction( Action::BaseAction * const ) const;
+		void action( Action::BaseAction * const ) const;
+		void action( const std::string & ) const;
 
 		void addThread( std::thread * const );
 

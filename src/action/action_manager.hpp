@@ -5,7 +5,9 @@
 #pragma once
 #endif
 
+#include "action_snapshot.hpp"
 #include "base_action.hpp"
+#include <list>
 #include <string>
 
 namespace VTX
@@ -20,17 +22,20 @@ namespace VTX
 				p_action->execute();
 				delete p_action;
 			}
-			void executeAction( std::string & p_action ) const
+			void executeAction( const std::string & p_action ) const
 			{
 				// TODO: extract args from string.
-				// TODO: map string to class with variadics (if possible).
+				// TODO: map string to class with variadics (not possible in cpp,, no reflection).
+				if ( p_action == "snapshot" ) { executeAction( new ActionSnapshot() ); }
 			}
 
 			// bool canUndo()
 			// void undo()
 			// bool canRedo()
 			// void redo()
-			// store the stack of the x last actions
+
+		  private:
+			std::list<BaseAction *> _buffer = std::list<BaseAction *>();
 		};
 	} // namespace Action
 } // namespace VTX

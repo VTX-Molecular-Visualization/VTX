@@ -2,6 +2,7 @@
 #include "../action/action_change_representation.hpp"
 #include "../action/action_new.hpp"
 #include "../action/action_open.hpp"
+#include "../action/action_snapshot.hpp"
 #include "../defines.hpp"
 #include "../style.hpp"
 #include "../tool/snapshoter.hpp"
@@ -34,7 +35,7 @@ namespace VTX
 				{
 					// New.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.New" ) /*, "Ctrl+N"*/ ) )
-					{ VTXApp::get().runAction( new Action::ActionNew() ); }
+					{ VTXApp::get().action( new Action::ActionNew() ); }
 
 					// Open.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Open" ) ) )
@@ -75,10 +76,7 @@ namespace VTX
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Export" ), _show ) )
 				{
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Snapshot" ) ) )
-					{
-						Tool::Snapshoter snapshoter;
-						snapshoter.takeSnapshot();
-					}
+					{ VTXApp::get().action( new Action::ActionSnapshot() ); }
 					ImGui::EndMenu();
 				}
 
@@ -102,7 +100,7 @@ namespace VTX
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ),
 									   (int *)&Setting::Rendering::representation,
 									   "Ball and stick\0Van der Waals\0Stick\0" ) )
-					{ VTXApp::get().runAction( new Action::ActionChangeRepresentation() ); }
+					{ VTXApp::get().action( new Action::ActionChangeRepresentation() ); }
 
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ),
 									   (int *)&Setting::Rendering::colorMode,
@@ -145,6 +143,12 @@ namespace VTX
 				ImGuiIO & io = ImGui::GetIO();
 				ImGui::Text( "FPS: %.0f", io.Framerate );
 
+				// Script.
+				static char			action[ 64 ] = "";
+				ImGuiInputTextFlags flags		 = ImGuiInputTextFlags_EnterReturnsTrue;
+				if ( ImGui::InputText( "Enter action", action, IM_ARRAYSIZE( action ), flags ) )
+				{ VTXApp::get().action( std::string( action ) ); }
+
 				ImGui::PopStyleVar();
 				ImGui::EndMainMenuBar();
 			}
@@ -153,7 +157,7 @@ namespace VTX
 			if ( _openFileDialog && _openFileDialog->ready() )
 			{
 				std::vector<std::string> result = _openFileDialog->result();
-				if ( result.size() ) { VTXApp::get().runAction( new Action::ActionOpen( result[ 0 ] ) ); }
+				if ( result.size() ) { VTXApp::get().action( new Action::ActionOpen( result[ 0 ] ) ); }
 				_openFileDialog = nullptr;
 			}
 		}
