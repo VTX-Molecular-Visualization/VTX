@@ -148,13 +148,10 @@ namespace VTX
 				ImGui::Text( "FPS: %.0f", io.Framerate );
 
 				// Undo.
-				if ( ImGui::Button( "Undo" ) ) { VTXApp::get().undo(); }
-
-				// Script.
-				static char			action[ 64 ] = "";
-				ImGuiInputTextFlags flags		 = ImGuiInputTextFlags_EnterReturnsTrue;
-				if ( ImGui::InputText( "Enter action", action, IM_ARRAYSIZE( action ), flags ) )
-				{ VTXApp::get().action( std::string( action ) ); }
+				if ( VTXApp::get().canUndo() )
+				{
+					if ( ImGui::Button( "Undo" ) ) { VTXApp::get().undo(); }
+				}
 
 				ImGui::PopStyleVar();
 				ImGui::EndMainMenuBar();

@@ -12,9 +12,7 @@ namespace VTX
 		class BaseAction
 		{
 		  public:
-			virtual void execute()	   = 0;
-			virtual bool canBeUndone() = 0;
-			virtual void undo() {};
+			virtual void execute() = 0;
 
 		  private:
 			virtual void displayUsage() {}

@@ -15,7 +15,6 @@ namespace VTX
 		class ActionSnapshot : public BaseAction
 		{
 		  public:
-			virtual bool canBeUndone() override { return false; }
 			virtual void execute() override
 			{
 				Tool::Snapshoter snapshoter;

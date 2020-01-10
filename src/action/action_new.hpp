@@ -15,7 +15,6 @@ namespace VTX
 		class ActionNew : public BaseAction
 		{
 		  public:
-			virtual bool canBeUndone() override { return false; }
 			virtual void execute() override { VTXApp::get().getScene().clear(); };
 		};
 	} // namespace Action

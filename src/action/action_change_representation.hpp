@@ -7,13 +7,13 @@
 
 #include "../model/model_molecule.hpp"
 #include "../vtx_app.hpp"
-#include "base_action.hpp"
+#include "base_action_undonable.hpp"
 
 namespace VTX
 {
 	namespace Action
 	{
-		class ActionChangeRepresentation : public BaseAction
+		class ActionChangeRepresentation : public BaseActionUndonable
 		{
 		  public:
 			ActionChangeRepresentation( View::MOLECULE_REPRESENTATION p_representation ) :
@@ -21,8 +21,6 @@ namespace VTX
 			{
 				_representationOld = Setting::Rendering::representation;
 			}
-
-			virtual bool canBeUndone() override { return true; }
 
 			virtual void execute() override
 			{
