@@ -33,7 +33,8 @@ namespace VTX
 		void ActionManager::executeAction( const std::string & p_action )
 		{
 			// TODO: extract args from string.
-			// TODO: map string to class with variadics (not possible in cpp,, no reflection).
+			// TODO: map string to class with variadics (not possible in cpp, no reflection).
+			// Name action with enum?
 			if ( p_action == "snapshot" ) { executeAction( new ActionSnapshot() ); }
 		}
 

@@ -37,9 +37,13 @@ namespace VTX
 				ImGui::Selectable( ( "[" + log.date + "] " + "[" + log.level + "] " + log.message ).c_str() );
 			}
 
-			// Script.
+			// Scripting.
 			static char action[ 64 ] = "";
-			if ( ImGui::InputText( "Action", action, IM_ARRAYSIZE( action ), ImGuiInputTextFlags_EnterReturnsTrue ) )
+			if ( ImGui::InputText( "##action",
+								   action,
+								   IM_ARRAYSIZE( action ),
+								   ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll
+									   | ImGuiInputTextFlags_NoUndoRedo ) )
 			{ VTXApp::get().action( std::string( action ) ); }
 
 			if ( ImGui::GetScrollY() >= ImGui::GetScrollMaxY() ) { ImGui::SetScrollHereY( 1.0f ); }
