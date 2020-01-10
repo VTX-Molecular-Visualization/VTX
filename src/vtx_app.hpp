@@ -36,6 +36,8 @@ namespace VTX
 		void fireUIEvent( const Event::EVENT_UI, void * const = nullptr ) const;
 		void action( Action::BaseAction * const ) const;
 		void action( const std::string & ) const;
+		bool canUndo() const;
+		void undo() const;
 
 		void addThread( std::thread * const );
 

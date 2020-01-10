@@ -16,13 +16,35 @@ namespace VTX
 		class ActionChangeRepresentation : public BaseAction
 		{
 		  public:
+			ActionChangeRepresentation( View::MOLECULE_REPRESENTATION p_representation ) :
+				_representation( p_representation )
+			{
+				_representationOld = Setting::Rendering::representation;
+			}
+
+			virtual bool canBeUndone() override { return true; }
+
 			virtual void execute() override
 			{
+				Setting::Rendering::representation = _representation;
 				for ( Model::ModelMolecule * const molecule : VTXApp::get().getScene().getMolecules() )
 				{
 					molecule->setRepresentation();
 				}
 			};
+
+			virtual void undo() override
+			{
+				Setting::Rendering::representation = _representationOld;
+				for ( Model::ModelMolecule * const molecule : VTXApp::get().getScene().getMolecules() )
+				{
+					molecule->setRepresentation();
+				}
+			}
+
+		  private:
+			View::MOLECULE_REPRESENTATION _representation;
+			View::MOLECULE_REPRESENTATION _representationOld;
 		};
 	} // namespace Action
 } // namespace VTX

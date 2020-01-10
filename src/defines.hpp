@@ -32,6 +32,8 @@ namespace VTX
 	const std::string GLSL_VERSION		   = "#version 450";
 	const bool		  VSYNC				   = 0;
 
+	const uint ACTION_BUFFER_SIZE = 10;
+
 	// Window.
 	constexpr int WINDOW_WIDTH	= 1280;
 	constexpr int WINDOW_HEIGHT = 720;

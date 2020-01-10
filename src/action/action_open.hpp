@@ -18,6 +18,7 @@ namespace VTX
 		  public:
 			ActionOpen( const std::string & p_path ) : _path( p_path ) {}
 
+			virtual bool canBeUndone() override { return false; }
 			virtual void execute() override { VTXApp::get().goToState( State::STATE_NAME::LOADING, (void *)&_path ); };
 
 		  private:

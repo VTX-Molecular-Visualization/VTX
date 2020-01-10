@@ -97,10 +97,14 @@ namespace VTX
 
 					ImGui::Separator();
 
+					int representation = (int)Setting::Rendering::representation;
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ),
-									   (int *)&Setting::Rendering::representation,
+									   &representation,
 									   "Ball and stick\0Van der Waals\0Stick\0" ) )
-					{ VTXApp::get().action( new Action::ActionChangeRepresentation() ); }
+					{
+						VTXApp::get().action(
+							new Action::ActionChangeRepresentation( (View::MOLECULE_REPRESENTATION)representation ) );
+					}
 
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ),
 									   (int *)&Setting::Rendering::colorMode,
@@ -142,6 +146,9 @@ namespace VTX
 				// FPS.
 				ImGuiIO & io = ImGui::GetIO();
 				ImGui::Text( "FPS: %.0f", io.Framerate );
+
+				// Undo.
+				if ( ImGui::Button( "Undo" ) ) { VTXApp::get().undo(); }
 
 				// Script.
 				static char			action[ 64 ] = "";
