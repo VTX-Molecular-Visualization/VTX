@@ -16,7 +16,7 @@ namespace VTX
 		class ActionOpen : public BaseAction
 		{
 		  public:
-			ActionOpen( const std::string & p_path ) : _path( p_path ) {}
+			explicit ActionOpen( const std::string & p_path ) : _path( p_path ) {}
 
 			virtual void execute() override { VTXApp::get().goToState( State::STATE_NAME::LOADING, (void *)&_path ); };
 

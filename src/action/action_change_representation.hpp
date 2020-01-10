@@ -16,7 +16,7 @@ namespace VTX
 		class ActionChangeRepresentation : public BaseActionUndonable
 		{
 		  public:
-			ActionChangeRepresentation( View::MOLECULE_REPRESENTATION p_representation ) :
+			explicit ActionChangeRepresentation( View::MOLECULE_REPRESENTATION p_representation ) :
 				_representation( p_representation )
 			{
 				_representationOld = Setting::Rendering::representation;
