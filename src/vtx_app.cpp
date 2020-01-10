@@ -87,6 +87,8 @@ namespace VTX
 	void VTXApp::action( const std::string & p_action ) const { _actionManager->executeAction( p_action ); }
 	bool VTXApp::canUndo() const { return _actionManager->canUndo(); }
 	void VTXApp::undo() const { return _actionManager->undo(); }
+	bool VTXApp::canRedo() const { return _actionManager->canRedo(); }
+	void VTXApp::redo() const { return _actionManager->redo(); }
 
 	void VTXApp::addThread( std::thread * const p_thread ) { _threads.emplace_back( p_thread ); }
 

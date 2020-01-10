@@ -7,14 +7,27 @@ namespace VTX
 	{
 		void ActionManager::executeAction( BaseAction * const p_action )
 		{
+			// Execute.
 			p_action->execute();
 
+			// Handle undo.
 			BaseActionUndonable * undonable = dynamic_cast<BaseActionUndonable *>( p_action );
-			if ( undonable != nullptr ) { _handleBuffer( undonable ); }
+			if ( undonable != nullptr )
+			{
+				_bufferUndo.push_front( undonable );
+				_purgeBuffer( undonable );
+			}
 			else
 			{
 				delete p_action;
 			}
+
+			// Clear redo actions.
+			for ( BaseActionUndonable * action : _bufferRedo )
+			{
+				delete action;
+			}
+			_bufferRedo.clear();
 		}
 
 		void ActionManager::executeAction( const std::string & p_action )
@@ -24,26 +37,36 @@ namespace VTX
 			if ( p_action == "snapshot" ) { executeAction( new ActionSnapshot() ); }
 		}
 
-		bool ActionManager::canUndo() const { return _buffer.size() > 0; }
+		bool ActionManager::canUndo() const { return _bufferUndo.size() > 0; }
 
 		void ActionManager::undo()
 		{
 			if ( canUndo() == false ) { return; }
 
 			VTX_DEBUG( "Undo" );
-			_buffer.front()->undo();
-			delete _buffer.front();
-			_buffer.pop_front();
+			_bufferUndo.front()->undo();
+			_bufferRedo.push_front( _bufferUndo.front() );
+			_bufferUndo.pop_front();
 		}
 
-		void ActionManager::_handleBuffer( BaseActionUndonable * const p_action )
+		bool ActionManager::canRedo() const { return _bufferRedo.size() > 0; }
+
+		void ActionManager::redo()
 		{
-			// Push and remove ancients.
-			_buffer.push_front( p_action );
-			while ( _buffer.size() > ACTION_BUFFER_SIZE )
+			if ( canRedo() == false ) { return; }
+
+			VTX_DEBUG( "Redo" );
+			_bufferRedo.front()->redo();
+			_bufferUndo.push_front( _bufferRedo.front() );
+			_bufferRedo.pop_front();
+		}
+
+		void ActionManager::_purgeBuffer( BaseActionUndonable * const p_action )
+		{
+			while ( _bufferUndo.size() > ACTION_BUFFER_SIZE )
 			{
-				delete _buffer.back();
-				_buffer.pop_back();
+				delete _bufferUndo.back();
+				_bufferUndo.pop_back();
 			}
 		}
 	} // namespace Action

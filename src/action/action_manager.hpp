@@ -25,9 +25,10 @@ namespace VTX
 			void redo();
 
 		  private:
-			std::list<BaseActionUndonable *> _buffer = std::list<BaseActionUndonable *>();
+			std::list<BaseActionUndonable *> _bufferUndo = std::list<BaseActionUndonable *>();
+			std::list<BaseActionUndonable *> _bufferRedo = std::list<BaseActionUndonable *>();
 
-			void _handleBuffer( BaseActionUndonable * const );
+			void _purgeBuffer( BaseActionUndonable * const );
 		};
 	} // namespace Action
 } // namespace VTX

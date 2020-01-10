@@ -147,10 +147,14 @@ namespace VTX
 				ImGuiIO & io = ImGui::GetIO();
 				ImGui::Text( "FPS: %.0f", io.Framerate );
 
-				// Undo.
+				// Undo/redo.
 				if ( VTXApp::get().canUndo() )
 				{
 					if ( ImGui::Button( "Undo" ) ) { VTXApp::get().undo(); }
+				}
+				if ( VTXApp::get().canRedo() )
+				{
+					if ( ImGui::Button( "Redo" ) ) { VTXApp::get().redo(); }
 				}
 
 				ImGui::PopStyleVar();

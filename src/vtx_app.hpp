@@ -38,6 +38,8 @@ namespace VTX
 		void action( const std::string & ) const;
 		bool canUndo() const;
 		void undo() const;
+		bool canRedo() const;
+		void redo() const;
 
 		void addThread( std::thread * const );
 
