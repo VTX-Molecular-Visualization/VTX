@@ -55,7 +55,27 @@ namespace VTX
 			{ "Inspector.Transform", "Transform" },
 
 			// Views.
-			{ "View.Molecule.Data", "Data" }
+			{ "View.Molecule.Data", "Data" },
+
+			// Enums.
+			{ "Enum.Theme.Light", "Light" },
+			{ "Enum.Theme.Dark", "Dark" },
+			{ "Enum.Theme.Classic", "Classic" },
+
+			{ "Enum.SymbolDisplay.Short", "Short" },
+			{ "Enum.SymbolDisplay.Long", "Long" },
+
+			{ "Enum.Representation.BallsAndSticks", "Balls and sticks" },
+			{ "Enum.Representation.VanDerWaals", "Van der Waals" },
+			{ "Enum.Representation.Sticks", "Stick" },
+
+			{ "Enum.ColorMode.Atom", "Atom" },
+			{ "Enum.ColorMode.Residue", "Residue" },
+			{ "Enum.ColorMode.Chain", "Chain" },
+
+			{ "Enum.Shading.Lambert", "Lambert" },
+			{ "Enum.Shading.BlinnPhong", "Blinn Phong" },
+			{ "Enum.Shading.Toon", "Toon" },
 		};
 
 	} // namespace Localization

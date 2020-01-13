@@ -1,7 +1,10 @@
 #include "component_menu.hpp"
+#include "../action/action_change_display_mode.hpp"
 #include "../action/action_change_representation.hpp"
+#include "../action/action_change_theme.hpp"
 #include "../action/action_new.hpp"
 #include "../action/action_open.hpp"
+#include "../action/action_quit.hpp"
 #include "../action/action_snapshot.hpp"
 #include "../defines.hpp"
 #include "../style.hpp"
@@ -45,7 +48,8 @@ namespace VTX
 					}
 
 					// Quit.
-					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) ) { VTXApp::get().stop(); }
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
+					{ VTXApp::get().action( new Action::ActionQuit() ); }
 
 					ImGui::EndMenu();
 				}
@@ -83,32 +87,42 @@ namespace VTX
 				// Settings.
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), _show ) )
 				{
-					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Theme" ),
-									   (int *)&Setting::UI::theme,
-									   "Light\0Dark\0Classic\0" ) )
-					{ VTXApp::get().setTheme(); }
+					const char * themes[]
+						= { LOCALE( "Enum.Theme.Light" ), LOCALE( "Enum.Theme.Dark" ), LOCALE( "Enum.Theme.Classic" ) };
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Theme" ), (int *)&Setting::UI::theme, themes, 3 ) )
+					{ VTXApp::get().action( new Action::ActionChangeTheme() ); }
 
 					ImGui::Separator();
 
-					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.SymbolDisplay" ),
-									   (int *)&Setting::UI::symbolDisplayMode,
-									   "Short\0Long\0" ) )
-					{}
+					const char * values[]
+						= { LOCALE( "Enum.SymbolDisplay.Short" ), LOCALE( "Enum.SymbolDisplay.Long" ) };
+					int symbolDisplayMode = (int)Setting::UI::symbolDisplayMode;
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.SymbolDisplay" ), &symbolDisplayMode, values, 2 ) )
+					{
+						VTXApp::get().action( new Action::ActionChangeDisplayMode(
+							(Setting::UI::SYMBOL_DISPLAY_MODE)symbolDisplayMode ) );
+					}
 
 					ImGui::Separator();
 
-					int representation = (int)Setting::Rendering::representation;
-					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ),
-									   &representation,
-									   "Ball and stick\0Van der Waals\0Stick\0" ) )
+					const char * representations[] = { LOCALE( "Enum.Representation.BallsAndSticks" ),
+													   LOCALE( "Enum.Representation.VanDerWaals" ),
+													   LOCALE( "Enum.Representation.Sticks" ) };
+					int			 representation	   = (int)Setting::Rendering::representation;
+					if ( ImGui::Combo(
+							 LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 3 ) )
 					{
 						VTXApp::get().action(
 							new Action::ActionChangeRepresentation( (View::MOLECULE_REPRESENTATION)representation ) );
 					}
 
+					const char * modes[] = { LOCALE( "MainMenu.ColorMode.Atom" ),
+											 LOCALE( "MainMenu.ColorMode.Residue" ),
+											 LOCALE( "MainMenu.ColorMode.Chain" ) };
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ),
 									   (int *)&Setting::Rendering::colorMode,
-									   "Atom\0Residue\0Chain\0" ) )
+									   modes,
+									   3 ) )
 					{
 						for ( Model::ModelMolecule * const molecule : VTXApp::get().getScene().getMolecules() )
 						{
@@ -116,9 +130,11 @@ namespace VTX
 						}
 					}
 
-					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ),
-									   (int *)&Setting::Rendering::shading,
-									   "Lambert\0Blinn Phong\0Toon\0" ) )
+					const char * shadings[] = { LOCALE( "MainMenu.Shading.Lambert" ),
+												LOCALE( "MainMenu.Shading.BlinnPhong" ),
+												LOCALE( "MainMenu.Shading.Toon" ) };
+					if ( ImGui::Combo(
+							 LOCALE( "MainMenu.Settings.Shading" ), (int *)&Setting::Rendering::shading, shadings, 3 ) )
 					{ VTXApp::get().setRendererShading(); }
 
 					// ImGui::Checkbox( LOCALE( "MainMenu.Settings.AA" ), &Setting::Rendering::useAA );
