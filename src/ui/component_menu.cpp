@@ -1,6 +1,8 @@
 #include "component_menu.hpp"
+#include "../action/action_change_color_mode.hpp"
 #include "../action/action_change_display_mode.hpp"
 #include "../action/action_change_representation.hpp"
+#include "../action/action_change_shading.hpp"
 #include "../action/action_change_theme.hpp"
 #include "../action/action_new.hpp"
 #include "../action/action_open.hpp"
@@ -87,6 +89,7 @@ namespace VTX
 				// Settings.
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), _show ) )
 				{
+					// Theme.
 					const char * themes[]
 						= { LOCALE( "Enum.Theme.Light" ), LOCALE( "Enum.Theme.Dark" ), LOCALE( "Enum.Theme.Classic" ) };
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Theme" ), (int *)&Setting::UI::theme, themes, 3 ) )
@@ -94,6 +97,7 @@ namespace VTX
 
 					ImGui::Separator();
 
+					// Symbol display.
 					const char * values[]
 						= { LOCALE( "Enum.SymbolDisplay.Short" ), LOCALE( "Enum.SymbolDisplay.Long" ) };
 					int symbolDisplayMode = (int)Setting::UI::symbolDisplayMode;
@@ -105,6 +109,7 @@ namespace VTX
 
 					ImGui::Separator();
 
+					// Representation.
 					const char * representations[] = { LOCALE( "Enum.Representation.BallsAndSticks" ),
 													   LOCALE( "Enum.Representation.VanDerWaals" ),
 													   LOCALE( "Enum.Representation.Sticks" ) };
@@ -116,32 +121,31 @@ namespace VTX
 							new Action::ActionChangeRepresentation( (View::MOLECULE_REPRESENTATION)representation ) );
 					}
 
-					const char * modes[] = { LOCALE( "MainMenu.ColorMode.Atom" ),
-											 LOCALE( "MainMenu.ColorMode.Residue" ),
-											 LOCALE( "MainMenu.ColorMode.Chain" ) };
-					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ),
-									   (int *)&Setting::Rendering::colorMode,
-									   modes,
-									   3 ) )
+					// Color mode.
+					const char * modes[]   = { LOCALE( "Enum.ColorMode.Atom" ),
+											   LOCALE( "Enum.ColorMode.Residue" ),
+											   LOCALE( "Enum.ColorMode.Chain" ) };
+					int			 colorMode = (int)Setting::Rendering::colorMode;
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ), &colorMode, modes, 3 ) )
 					{
-						for ( Model::ModelMolecule * const molecule : VTXApp::get().getScene().getMolecules() )
-						{
-							molecule->setColorMode();
-						}
+						VTXApp::get().action(
+							new Action::ActionChangeColorMode( (View::MOLECULE_COLOR_MODE)colorMode ) );
 					}
 
-					const char * shadings[] = { LOCALE( "MainMenu.Shading.Lambert" ),
-												LOCALE( "MainMenu.Shading.BlinnPhong" ),
-												LOCALE( "MainMenu.Shading.Toon" ) };
-					if ( ImGui::Combo(
-							 LOCALE( "MainMenu.Settings.Shading" ), (int *)&Setting::Rendering::shading, shadings, 3 ) )
-					{ VTXApp::get().setRendererShading(); }
+					// Shading.
+					const char * shadings[] = { LOCALE( "Enum.Shading.Lambert" ),
+												LOCALE( "Enum.Shading.BlinnPhong" ),
+												LOCALE( "Enum.Shading.Toon" ) };
+					int			 shading	= (int)Setting::Rendering::shading;
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ), &shading, shadings, 3 ) )
+					{ VTXApp::get().action( new Action::ActionChangeShading( (Renderer::SHADING)shading ) ); }
 
-					// ImGui::Checkbox( LOCALE( "MainMenu.Settings.AA" ), &Setting::Rendering::useAA );
+					// SSAO.
 					ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &Setting::Rendering::useSSAO );
 
 					ImGui::Separator();
 
+					// Auto rotate.
 					ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateXSpeed" ),
 										&Setting::Controller::autoRotateSpeedX,
 										AUTO_ROTATE_SPEED_MIN,
@@ -154,6 +158,8 @@ namespace VTX
 										&Setting::Controller::autoRotateSpeedZ,
 										AUTO_ROTATE_SPEED_MIN,
 										AUTO_ROTATE_SPEED_MAX );
+
+					// Invert y axis.
 					ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ), &Setting::Controller::yAxisInverted );
 
 					ImGui::EndMenu();

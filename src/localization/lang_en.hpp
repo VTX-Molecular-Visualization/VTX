@@ -67,7 +67,7 @@ namespace VTX
 
 			{ "Enum.Representation.BallsAndSticks", "Balls and sticks" },
 			{ "Enum.Representation.VanDerWaals", "Van der Waals" },
-			{ "Enum.Representation.Sticks", "Stick" },
+			{ "Enum.Representation.Sticks", "Sticks" },
 
 			{ "Enum.ColorMode.Atom", "Atom" },
 			{ "Enum.ColorMode.Residue", "Residue" },

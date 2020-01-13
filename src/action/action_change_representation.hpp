@@ -7,43 +7,31 @@
 
 #include "../model/model_molecule.hpp"
 #include "../vtx_app.hpp"
-#include "base_action_undonable.hpp"
+#include "base_action.hpp"
 
 namespace VTX
 {
 	namespace Action
 	{
-		class ActionChangeRepresentation : public BaseActionUndonable
+		class ActionChangeRepresentation : public BaseAction
 		{
 		  public:
 			explicit ActionChangeRepresentation( const View::MOLECULE_REPRESENTATION p_representation ) :
-				_representation( p_representation ), _representationOld( Setting::Rendering::representation )
+				_representation( p_representation )
 			{
 			}
 
 			virtual void execute() override
 			{
 				Setting::Rendering::representation = _representation;
-				_setRepresentation();
-			};
-
-			virtual void undo() override
-			{
-				Setting::Rendering::representation = _representationOld;
-				_setRepresentation();
-			}
-
-		  private:
-			View::MOLECULE_REPRESENTATION _representation;
-			View::MOLECULE_REPRESENTATION _representationOld;
-
-			void _setRepresentation() const
-			{
 				for ( Model::ModelMolecule * const molecule : VTXApp::get().getScene().getMolecules() )
 				{
 					molecule->setRepresentation();
 				}
-			}
+			};
+
+		  private:
+			View::MOLECULE_REPRESENTATION _representation;
 		};
 	} // namespace Action
 } // namespace VTX
