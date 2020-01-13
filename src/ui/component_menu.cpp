@@ -1,4 +1,7 @@
 #include "component_menu.hpp"
+#include "../action/action_active_ssao.hpp"
+#include "../action/action_active_y_axis_inversion.hpp"
+#include "../action/action_change_auto_rotate_speed.hpp"
 #include "../action/action_change_color_mode.hpp"
 #include "../action/action_change_display_mode.hpp"
 #include "../action/action_change_representation.hpp"
@@ -141,26 +144,34 @@ namespace VTX
 					{ VTXApp::get().action( new Action::ActionChangeShading( (Renderer::SHADING)shading ) ); }
 
 					// SSAO.
-					ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &Setting::Rendering::useSSAO );
+					bool useSSAO = Setting::Rendering::useSSAO;
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &useSSAO ) )
+					{ VTXApp::get().action( new Action::ActionActiveSSAO( useSSAO ) ); };
 
 					ImGui::Separator();
 
 					// Auto rotate.
-					ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateXSpeed" ),
-										&Setting::Controller::autoRotateSpeedX,
-										AUTO_ROTATE_SPEED_MIN,
-										AUTO_ROTATE_SPEED_MAX );
-					ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateYSpeed" ),
-										&Setting::Controller::autoRotateSpeedY,
-										AUTO_ROTATE_SPEED_MIN,
-										AUTO_ROTATE_SPEED_MAX );
-					ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateZSpeed" ),
-										&Setting::Controller::autoRotateSpeedZ,
-										AUTO_ROTATE_SPEED_MIN,
-										AUTO_ROTATE_SPEED_MAX );
+					Vec3f autoRotateSpeed = Setting::Controller::autoRotateSpeed;
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateXSpeed" ),
+											 &autoRotateSpeed.x,
+											 AUTO_ROTATE_SPEED_MIN,
+											 AUTO_ROTATE_SPEED_MAX ) )
+					{ VTXApp::get().action( new Action::ActionChangeAutoRotateSpeed( autoRotateSpeed ) ); }
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateYSpeed" ),
+											 &autoRotateSpeed.y,
+											 AUTO_ROTATE_SPEED_MIN,
+											 AUTO_ROTATE_SPEED_MAX ) )
+					{ VTXApp::get().action( new Action::ActionChangeAutoRotateSpeed( autoRotateSpeed ) ); }
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateZSpeed" ),
+											 &autoRotateSpeed.z,
+											 AUTO_ROTATE_SPEED_MIN,
+											 AUTO_ROTATE_SPEED_MAX ) )
+					{ VTXApp::get().action( new Action::ActionChangeAutoRotateSpeed( autoRotateSpeed ) ); }
 
 					// Invert y axis.
-					ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ), &Setting::Controller::yAxisInverted );
+					bool invertYAxis = Setting::Controller::yAxisInverted;
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ), &invertYAxis ) )
+					{ VTXApp::get().action( new Action::ActionActiveYAxisInversion( invertYAxis ) ); }
 
 					ImGui::EndMenu();
 				}

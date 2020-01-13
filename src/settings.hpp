@@ -38,9 +38,7 @@ namespace VTX
 		namespace Controller
 		{
 			extern bool	 yAxisInverted;
-			extern float autoRotateSpeedX;
-			extern float autoRotateSpeedY;
-			extern float autoRotateSpeedZ;
+			extern Vec3f autoRotateSpeed;
 		} // namespace Controller
 	}	  // namespace Setting
 } // namespace VTX
