@@ -53,6 +53,9 @@ namespace VTX
 			// Inspector.
 			{ "Inspector.Inspector", "Inspector" },
 			{ "Inspector.Transform", "Transform" },
+			{ "Inspector.Transform.Position", "Position" },
+			{ "Inspector.Transform.Rotation", "Rotation" },
+			{ "Inspector.Transform.Scale", "Scale" },
 
 			// Views.
 			{ "View.Molecule.Data", "Data" },

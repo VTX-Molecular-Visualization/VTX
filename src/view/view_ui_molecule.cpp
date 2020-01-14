@@ -1,4 +1,5 @@
 #include "view_ui_molecule.hpp"
+#include "../action/action_translate.hpp"
 #include "../vtx_app.hpp"
 
 namespace VTX
@@ -14,28 +15,23 @@ namespace VTX
 
 			if ( ImGui::CollapsingHeader( LOCALE( "Inspector.Transform" ), flags ) )
 			{
-				float *x, *y, *z;
-
-				ImGui::Text( "Translation" );
-				const Mat4f & translation = _model->getTransform().getTranslation();
-				x						  = (float *)&translation[ 3 ][ 0 ];
-				y						  = (float *)&translation[ 3 ][ 1 ];
-				z						  = (float *)&translation[ 3 ][ 2 ];
+				ImGui::Text( LOCALE( "Inspector.Transform.Position" ) );
+				const Mat4f & translation = _getModel().getTransform().getTranslation();
 				ImGui::PushID( "Position" );
-				ImGui::InputFloat( "X", x, 1.f );
-				ImGui::InputFloat( "Y", y, 1.f );
-				ImGui::InputFloat( "Z", z, 1.f );
+				float vec[] = { translation[ 3 ][ 0 ], translation[ 3 ][ 1 ], translation[ 3 ][ 2 ] };
+				if ( ImGui::InputFloat3( "Position", vec, 2 ) )
+				{
+					VTXApp::get().action(
+						new Action::ActionTranslate( _getModel(), Vec3f( vec[ 0 ], vec[ 1 ], vec[ 2 ] ) ) );
+				}
+
 				ImGui::PopID();
 
-				ImGui::Text( "Scale" );
-				const Mat4f & scale = _model->getTransform().getScale();
-				x					= (float *)&scale[ 0 ][ 0 ];
-				y					= (float *)&scale[ 1 ][ 1 ];
-				z					= (float *)&scale[ 2 ][ 2 ];
+				ImGui::Text( LOCALE( "Inspector.Transform.Scale" ) );
+				const Mat4f & scale = _getModel().getTransform().getScale();
+				float		  f		= scale[ 0 ][ 0 ];
 				ImGui::PushID( "Scale" );
-				ImGui::InputFloat( "X", x, 1.f );
-				ImGui::InputFloat( "Y", y, 1.f );
-				ImGui::InputFloat( "Z", z, 1.f );
+				ImGui::InputFloat( "Scale", &f, 1.f );
 				ImGui::PopID();
 			}
 

@@ -6,6 +6,7 @@
 #endif
 
 #include "../defines.hpp"
+#include "../generic/base_transformable.hpp"
 #include "../math/aabb.hpp"
 #include "../util/logger.hpp"
 #include "base_model.hpp"
@@ -23,7 +24,7 @@ namespace VTX
 	namespace Model
 	{
 		class BaseView3DMolecule;
-		class ModelMolecule : public BaseModel
+		class ModelMolecule : public BaseModel, public Generic::BaseTransformable
 		{
 		  public:
 			ModelMolecule() = default;
@@ -75,8 +76,7 @@ namespace VTX
 			inline uint				   getAtomCount() const { return (uint)_atoms.size(); }
 			inline uint				   getBondCount() const { return (uint)_bonds.size(); }
 
-			inline Math::Transform & getTransform() { return _transform; };
-			inline Math::AABB &		 AABB() { return _aabb; }
+			inline Math::AABB & AABB() { return _aabb; }
 
 			virtual void init() override;
 			void		 setRepresentation();
@@ -105,7 +105,6 @@ namespace VTX
 
 		  private:
 			// Models.
-			Math::Transform			  _transform;
 			std::string				  _name		= "";
 			std::vector<ModelChain>	  _chains	= std::vector<ModelChain>();
 			std::vector<ModelResidue> _residues = std::vector<ModelResidue>();

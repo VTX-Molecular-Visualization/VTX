@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../model/model_molecule.hpp"
+#include "../generic/base_transformable.hpp"
 #include "../vtx_app.hpp"
 #include "base_action_undonable.hpp"
 
@@ -13,16 +13,24 @@ namespace VTX
 {
 	namespace Action
 	{
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseTransformable, T>::value>>
 		class ActionTranslate : public BaseActionUndonable
 		{
 		  public:
-			explicit ActionTranslate() {}
+			explicit ActionTranslate( T & p_transformable, const Vec3f & p_translation ) :
+				_transformable( p_transformable ), _translation( p_translation ),
+				_translationOld( p_transformable.getTransform().getTranslation() )
+			{
+			}
 
-			virtual void execute() override {};
+			virtual void execute() override { _transformable.getTransform().setTranslation( _translation ); }
 
-			virtual void undo() override {}
+			virtual void undo() override { _transformable.getTransform().setTranslation( _translationOld ); }
 
 		  private:
+			Generic::BaseTransformable & _transformable;
+			const Vec3f					 _translation;
+			const Mat4f					 _translationOld;
 		};
 	} // namespace Action
 } // namespace VTX

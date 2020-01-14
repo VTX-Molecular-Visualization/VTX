@@ -38,6 +38,22 @@ namespace VTX
 				update();
 			}
 
+			inline void Transform::setTranslation( const float p_x, const float p_y, const float p_z )
+			{
+				_translation[ 3 ][ 0 ] = p_x;
+				_translation[ 3 ][ 1 ] = p_y;
+				_translation[ 3 ][ 2 ] = p_z;
+				update();
+			}
+
+			inline void Transform::setTranslation( const Vec3f & p_vec )
+			{
+				_translation[ 3 ][ 0 ] = p_vec.x;
+				_translation[ 3 ][ 1 ] = p_vec.y;
+				_translation[ 3 ][ 2 ] = p_vec.z;
+				update();
+			}
+
 			inline void Transform::setTranslation( const Mat4f & p_mat )
 			{
 				_translation = p_mat;

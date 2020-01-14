@@ -29,7 +29,7 @@ namespace VTX
 				glUniformMatrix4fv( _uViewModelMatrix,
 									1,
 									GL_FALSE,
-									glm::value_ptr( p_camera.getViewMatrix() * _model->getTransform().get() ) );
+									glm::value_ptr( p_camera.getViewMatrix() * _getModel().getTransform().get() ) );
 				glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_camera.getProjectionMatrix() ) );
 			}
 		};

@@ -34,6 +34,7 @@ namespace VTX
 		  protected:
 			T * _model = nullptr;
 
+			virtual T &	 _getModel() final { return *_model; }
 			virtual void _prepare() {};
 		};
 	} // namespace View
