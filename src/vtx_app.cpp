@@ -96,7 +96,7 @@ namespace VTX
 
 	void VTXApp::initRenderer() const
 	{
-		if ( !VTXApp::_isRunning ) _ui->display(); // Drawn UI a first time to update display size.
+		if ( !VTXApp::_isRunning ) { _ui->display(); } // Drawn UI a first time to update display size.
 		ImGuiIO & io = ImGui::GetIO();
 		_renderer->init( *_scene, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
@@ -137,7 +137,7 @@ namespace VTX
 		{
 		case SDL_QUIT: stop(); return;
 		case SDL_WINDOWEVENT:
-			if ( p_event.window.event == SDL_WINDOWEVENT_CLOSE ) stop();
+			if ( p_event.window.event == SDL_WINDOWEVENT_CLOSE ) { stop(); };
 			return;
 		}
 

@@ -16,6 +16,7 @@
 #include "../tool/snapshoter.hpp"
 #include "../util/logger.hpp"
 #include "../vtx_app.hpp"
+#include "imgui/imgui_internal.h"
 
 namespace VTX
 {
@@ -54,7 +55,30 @@ namespace VTX
 
 					// Quit.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
-					{ VTXApp::get().action( new Action::ActionQuit() ); }
+					{
+#ifndef _DEBUG
+						VTXApp::get().action( new Action::ActionQuit() );
+						// ImGui::OpenPopup( "TEST" );
+#else
+						VTXApp::get().action( new Action::ActionQuit() );
+#endif
+					}
+
+					// TOFIX
+					if ( ImGui::BeginPopupModal( "TEST", NULL, ImGuiWindowFlags_AlwaysAutoResize ) )
+					{
+						ImGui::Text(
+							"All those beautiful files will be deleted.\nThis operation cannot be undone!\n\n" );
+						ImGui::Separator();
+						if ( ImGui::Button( "OK", ImVec2( 120, 0 ) ) )
+						{ VTXApp::get().action( new Action::ActionQuit() ); }
+						ImGui::SetItemDefaultFocus();
+						ImGui::SameLine();
+						ImGui::SetItemDefaultFocus();
+						if ( ImGui::Button( "Cancel", ImVec2( 120, 0 ) ) ) { ImGui::CloseCurrentPopup(); }
+
+						ImGui::EndPopup();
+					}
 
 					ImGui::EndMenu();
 				}
@@ -181,14 +205,23 @@ namespace VTX
 				ImGui::Text( "FPS: %.0f", io.Framerate );
 
 				// Undo/redo.
-				if ( VTXApp::get().canUndo() )
+				bool popItem = false;
+				if ( VTXApp::get().canUndo() == false )
 				{
-					if ( ImGui::Button( "Undo" ) ) { VTXApp::get().undo(); }
+					ImGui::PushItemFlag( ImGuiItemFlags_Disabled, true );
+					popItem = true;
 				}
-				if ( VTXApp::get().canRedo() )
+				if ( ImGui::Button( "Undo" ) ) { VTXApp::get().undo(); }
+				if ( popItem ) { ImGui::PopItemFlag(); }
+
+				popItem = false;
+				if ( VTXApp::get().canRedo() == false )
 				{
-					if ( ImGui::Button( "Redo" ) ) { VTXApp::get().redo(); }
+					ImGui::PushItemFlag( ImGuiItemFlags_Disabled, true );
+					popItem = true;
 				}
+				if ( ImGui::Button( "Redo" ) ) { VTXApp::get().redo(); }
+				if ( popItem ) { ImGui::PopItemFlag(); }
 
 				ImGui::PopStyleVar();
 				ImGui::EndMainMenuBar();

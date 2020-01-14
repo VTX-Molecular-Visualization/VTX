@@ -44,7 +44,7 @@ namespace VTX
 		{
 			if ( canUndo() == false ) { return; }
 
-			VTX_DEBUG( "Undo" );
+			VTX_DEBUG( "Undo (" + std::to_string( _bufferUndo.size() - 1 ) + " more)" );
 			_bufferUndo.front()->undo();
 			_bufferRedo.push_front( _bufferUndo.front() );
 			_bufferUndo.pop_front();
@@ -56,7 +56,7 @@ namespace VTX
 		{
 			if ( canRedo() == false ) { return; }
 
-			VTX_DEBUG( "Redo" );
+			VTX_DEBUG( "Redo (" + std::to_string( _bufferRedo.size() - 1 ) + " more)" );
 			_bufferRedo.front()->redo();
 			_bufferUndo.push_front( _bufferRedo.front() );
 			_bufferRedo.pop_front();
