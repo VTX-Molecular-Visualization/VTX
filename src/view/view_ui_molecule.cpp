@@ -1,4 +1,5 @@
 #include "view_ui_molecule.hpp"
+#include "../action/action_scale.hpp"
 #include "../action/action_translate.hpp"
 #include "../vtx_app.hpp"
 
@@ -24,14 +25,13 @@ namespace VTX
 					VTXApp::get().action(
 						new Action::ActionTranslate( _getModel(), Vec3f( vec[ 0 ], vec[ 1 ], vec[ 2 ] ) ) );
 				}
-
 				ImGui::PopID();
 
 				ImGui::Text( LOCALE( "Inspector.Transform.Scale" ) );
-				const Mat4f & scale = _getModel().getTransform().getScale();
-				float		  f		= scale[ 0 ][ 0 ];
+				float scale = _getModel().getTransform().getScale()[ 0 ][ 0 ];
 				ImGui::PushID( "Scale" );
-				ImGui::InputFloat( "Scale", &f, 1.f );
+				if ( ImGui::InputFloat( "Scale", &scale, 1.f ) )
+				{ VTXApp::get().action( new Action::ActionScale( _getModel(), scale ) ); }
 				ImGui::PopID();
 			}
 

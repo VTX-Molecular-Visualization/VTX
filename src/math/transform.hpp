@@ -78,9 +78,19 @@ namespace VTX
 				update();
 			}
 
-			inline void Transform::scale( const float p_scale )
+			inline void Transform::setScale( const Vec3f & p_scale )
 			{
-				_scale = glm::scale( _scale, Vec3f( p_scale, p_scale, p_scale ) );
+				_scale[ 0 ][ 0 ] = p_scale.x;
+				_scale[ 1 ][ 1 ] = p_scale.y;
+				_scale[ 2 ][ 2 ] = p_scale.z;
+				update();
+			}
+
+			inline void Transform::setScale( const float p_scale )
+			{
+				_scale[ 0 ][ 0 ] = p_scale;
+				_scale[ 1 ][ 1 ] = p_scale;
+				_scale[ 2 ][ 2 ] = p_scale;
 				update();
 			}
 
