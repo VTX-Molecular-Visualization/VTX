@@ -19,10 +19,21 @@ namespace VTX
 			~Transform() = default;
 
 			inline const Mat4f get() const { return _transform; }
+			inline Mat4f	   getTranslation() const { return _translation; };
+			inline Mat4f	   getRotation() const { return _rotation; };
+			inline Mat4f	   getScale() const { return _scale; };
 
-			inline const Mat4f & getTranslation() const { return _translation; };
-			inline const Mat4f & getRotation() const { return _rotation; };
-			inline const Mat4f & getScale() const { return _scale; };
+			inline Vec3f getTranslationVector() const
+			{
+				return Vec3f( _translation[ 3 ][ 0 ], _translation[ 3 ][ 1 ], _translation[ 3 ][ 2 ] );
+			};
+
+			inline const Vec3f getRotationVector() const { return Vec3f(); };
+
+			inline Vec3f getScaleVector() const
+			{
+				return Vec3f( _scale[ 0 ][ 0 ], _scale[ 1 ][ 1 ], _scale[ 2 ][ 2 ] );
+			}
 
 			inline void Transform::reset()
 			{

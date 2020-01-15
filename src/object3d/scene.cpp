@@ -14,8 +14,13 @@ namespace VTX
 			{
 				delete molecule;
 			}
-
 			_molecules.clear();
+
+			for ( Object3D::Checkpoint * checkpoint : _checkpoints )
+			{
+				delete checkpoint;
+			}
+			_checkpoints.clear();
 		}
 
 		void Scene::update( const double p_deltaTime )

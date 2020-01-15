@@ -2,6 +2,7 @@
 #include "../action/action_scale.hpp"
 #include "../action/action_translate.hpp"
 #include "../vtx_app.hpp"
+#include <glm/gtx/euler_angles.hpp>
 
 namespace VTX
 {
@@ -17,21 +18,33 @@ namespace VTX
 			if ( ImGui::CollapsingHeader( LOCALE( "Inspector.Transform" ), flags ) )
 			{
 				ImGui::Text( LOCALE( "Inspector.Transform.Position" ) );
-				const Mat4f & translation = _getModel().getTransform().getTranslation();
 				ImGui::PushID( "Position" );
-				float vec[] = { translation[ 3 ][ 0 ], translation[ 3 ][ 1 ], translation[ 3 ][ 2 ] };
-				if ( ImGui::InputFloat3( "Position", vec, 2 ) )
+				Vec3f translation = _getModel().getTransform().getTranslationVector();
+				float t[]		  = { translation.x, translation.y, translation.z };
+				if ( ImGui::InputFloat3( "Position", t, 2 ) )
 				{
-					VTXApp::get().action(
-						new Action::ActionTranslate( _getModel(), Vec3f( vec[ 0 ], vec[ 1 ], vec[ 2 ] ) ) );
+					VTXApp::get().action( new Action::ActionTranslate( _getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
+				}
+				ImGui::PopID();
+
+				ImGui::Text( LOCALE( "Inspector.Transform.Rotation" ) );
+				// const Mat4f & rotation = _getModel().getTransform().getRotation();
+				ImGui::PushID( "Rotation" );
+				// Vec3f angles = glm::eulerAngles(rotation);
+				// float vec[] = { Rotation[ 3 ][ 0 ], translation[ 3 ][ 1 ], translation[ 3 ][ 2 ] };
+				// if ( ImGui::InputFloat3( "Rotation", vec, 2 ) )
+				{
+					// VTXApp::get().action(
+					// new Action::ActionTranslate( _getModel(), Vec3f( vec[ 0 ], vec[ 1 ], vec[ 2 ] ) ) );
 				}
 				ImGui::PopID();
 
 				ImGui::Text( LOCALE( "Inspector.Transform.Scale" ) );
-				float scale = _getModel().getTransform().getScale()[ 0 ][ 0 ];
+				Vec3f scale = _getModel().getTransform().getScaleVector();
+				float s		= scale.x;
 				ImGui::PushID( "Scale" );
-				if ( ImGui::InputFloat( "Scale", &scale, 1.f ) )
-				{ VTXApp::get().action( new Action::ActionScale( _getModel(), scale ) ); }
+				if ( ImGui::InputFloat( "Scale", &s, 1.f ) )
+				{ VTXApp::get().action( new Action::ActionScale( _getModel(), s ) ); }
 				ImGui::PopID();
 			}
 

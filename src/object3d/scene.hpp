@@ -7,6 +7,7 @@
 
 #include "../generic/base_updatable.hpp"
 #include "../model/model_molecule.hpp"
+#include "../object3d/checkpoint.hpp"
 #include "camera.hpp"
 #include <vector>
 
@@ -18,21 +19,28 @@ namespace VTX
 		{
 		  public:
 			using MoleculePtr			 = Model::ModelMolecule *;
+			using CheckpointPtr			 = Object3D::Checkpoint *;
 			using VectorModelMoleculePtr = std::vector<MoleculePtr>;
+			using VectorCheckpointPtr	 = std::vector<CheckpointPtr>;
 
 			Scene() = default;
 			~Scene();
 
-			void			clear();
-			void			addMolecule( MoleculePtr const p_molecule ) { _molecules.emplace_back( p_molecule ); }
-			inline Camera & getCamera() { return _camera; }
-			inline std::vector<MoleculePtr> getMolecules() const { return _molecules; };
+			void clear();
+
+			void addMolecule( MoleculePtr const p_molecule ) { _molecules.emplace_back( p_molecule ); }
+			void addCheckpoint( CheckpointPtr const p_checkpoint ) { _checkpoints.emplace_back( p_checkpoint ); }
+
+			inline Camera &					  getCamera() { return _camera; }
+			inline std::vector<MoleculePtr>	  getMolecules() const { return _molecules; };
+			inline std::vector<CheckpointPtr> getCheckpoints() const { return _checkpoints; };
 
 			virtual void update( const double ) override;
 
 		  private:
-			Camera				   _camera	  = Camera();
-			VectorModelMoleculePtr _molecules = VectorModelMoleculePtr();
+			Camera				   _camera		= Camera();
+			VectorModelMoleculePtr _molecules	= VectorModelMoleculePtr();
+			VectorCheckpointPtr	   _checkpoints = VectorCheckpointPtr();
 		};
 	} // namespace Object3D
 } // namespace VTX
