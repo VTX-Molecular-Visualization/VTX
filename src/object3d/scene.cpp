@@ -10,13 +10,13 @@ namespace VTX
 
 		void Scene::clear()
 		{
-			for ( Model::ModelMolecule * molecule : _molecules )
+			for ( MoleculePtr molecule : _molecules )
 			{
 				delete molecule;
 			}
 			_molecules.clear();
 
-			for ( Object3D::Checkpoint * checkpoint : _checkpoints )
+			for ( CheckpointPtr checkpoint : _checkpoints )
 			{
 				delete checkpoint;
 			}
@@ -25,7 +25,7 @@ namespace VTX
 
 		void Scene::update( const double p_deltaTime )
 		{
-			for ( Model::ModelMolecule * molecule : _molecules )
+			for ( MoleculePtr molecule : _molecules )
 			{
 				Math::Transform & t = molecule->getTransform();
 				t.rotate( (float)p_deltaTime * Setting::Controller::autoRotateSpeed.x, VEC3F_X );

@@ -1,17 +1,18 @@
-#ifndef __VTX_CHECKPOINT__
-#define __VTX_CHECKPOINT__
+#ifndef __VTX_MODEL_CHECKPOINT__
+#define __VTX_MODEL_CHECKPOINT__
 
 #ifdef _MSC_VER
 #pragma once
 #endif
 
 #include "../defines.hpp"
+#include "base_model.hpp"
 
 namespace VTX
 {
-	namespace Object3D
+	namespace Model
 	{
-		class Checkpoint
+		class ModelCheckpoint : public BaseModel
 		{
 		  public:
 			float _time = 0.f;
@@ -20,7 +21,10 @@ namespace VTX
 			float _theta	= 0.f;
 			float _phi		= 4.22369f;
 
+		  protected:
+			virtual void _addViews() override final;
+
 		}; // namespace Camera
-	}	   // namespace Object3D
+	}	   // namespace Model
 } // namespace VTX
 #endif

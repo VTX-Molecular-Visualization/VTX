@@ -39,6 +39,7 @@ namespace VTX
 
 		void ModelMolecule::_addViews()
 		{
+			// TODO: add view to parent component.
 			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE_SCENE ) );
 			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
 				(View::BaseView<BaseModel> *)( new View::View3DMoleculeSphere() ) ) );

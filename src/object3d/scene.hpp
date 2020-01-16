@@ -6,8 +6,8 @@
 #endif
 
 #include "../generic/base_updatable.hpp"
+#include "../model/model_checkpoint.hpp"
 #include "../model/model_molecule.hpp"
-#include "../object3d/checkpoint.hpp"
 #include "camera.hpp"
 #include <vector>
 
@@ -19,7 +19,7 @@ namespace VTX
 		{
 		  public:
 			using MoleculePtr			 = Model::ModelMolecule *;
-			using CheckpointPtr			 = Object3D::Checkpoint *;
+			using CheckpointPtr			 = Model::ModelCheckpoint *;
 			using VectorModelMoleculePtr = std::vector<MoleculePtr>;
 			using VectorCheckpointPtr	 = std::vector<CheckpointPtr>;
 
