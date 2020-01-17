@@ -82,12 +82,11 @@ namespace VTX
 
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-			auto fboStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-			if ( fboStatus != GL_FRAMEBUFFER_COMPLETE )
-				std::cout << "Framebuffer not complete: " << fboStatus << std::endl;
+			GLenum fboStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+			if ( fboStatus != GL_FRAMEBUFFER_COMPLETE ) { VTX_WARNING( "Framebuffer not complete: " + fboStatus ); }
 
-			auto glstatus = glGetError();
-			if ( glstatus != GL_NO_ERROR ) { std::cout << "Error in GL call: " << glstatus << std::endl; }
+			GLenum glstatus = glGetError();
+			if ( glstatus != GL_NO_ERROR ) { VTX_ERROR( "Error in GL call: " + glstatus ); }
 		}
 
 		void RendererDeferred::_initSsaoPass()
