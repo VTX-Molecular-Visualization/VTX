@@ -57,18 +57,18 @@ namespace VTX
 			// Anti-aliasing pass.
 			Shader::GLSLProgram * _aaShader = nullptr;
 
-			inline void _initGeometricPass();
-			inline void _initSsaoPass();
-			inline void _initBlurPass();
-			inline void _initShadingPass();
-			inline void _initAntiAliasingPass();
-			inline void _initQuadVAO();
+			void _initGeometricPass();
+			void _initSsaoPass();
+			void _initBlurPass();
+			void _initShadingPass();
+			void _initAntiAliasingPass();
+			void _initQuadVAO();
 
-			inline void _geometricPass( Object3D::Scene & );
-			inline void _ssaoPass( Object3D::Scene & );
-			inline void _blurPass();
-			inline void _shadingPass();
-			inline void _antiAliasingPass();
+			void _geometricPass( Object3D::Scene & );
+			void _ssaoPass( Object3D::Scene & );
+			void _blurPass();
+			void _shadingPass();
+			void _antiAliasingPass();
 		};
 	} // namespace Renderer
 } // namespace VTX
