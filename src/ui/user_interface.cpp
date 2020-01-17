@@ -6,6 +6,7 @@
 #include "../util/logger.hpp"
 #include "../util/opengl.hpp"
 #include "../vtx_app.hpp"
+#include "component_camera_editor.hpp"
 #include "component_console.hpp"
 #include "component_inspector.hpp"
 #include "component_menu.hpp"
@@ -66,10 +67,11 @@ namespace VTX
 		void UserInterface::_addComponents()
 		{
 			_addComponent( std::make_shared<ComponentMenu>(
-				ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showInspector ) ) );
+				ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showInspector, &_showCameraEditor ) ) );
 			_addComponent( std::make_shared<ComponentConsole>( ComponentConsole( &_showConsole ) ) );
 			_addComponent( std::make_shared<ComponentScene>( ComponentScene( &_showScene ) ) );
 			_addComponent( std::make_shared<ComponentInspector>( ComponentInspector( &_showInspector ) ) );
+			_addComponent( std::make_shared<ComponentCameraEditor>( ComponentCameraEditor( &_showCameraEditor ) ) );
 		}
 
 		void UserInterface::_initSDL2()

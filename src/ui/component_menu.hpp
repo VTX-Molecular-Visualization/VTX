@@ -15,7 +15,7 @@ namespace VTX
 		class ComponentMenu : public BaseComponent
 		{
 		  public:
-			explicit ComponentMenu( bool * const, bool * const, bool * const, bool * const );
+			explicit ComponentMenu( bool * const, bool * const, bool * const, bool * const, bool * const );
 
 			virtual COMPONENT_NAME getName() const override { return COMPONENT_NAME::MENU; }
 
@@ -27,6 +27,7 @@ namespace VTX
 			bool * const _showConsole;
 			bool * const _showScene;
 			bool * const _showInspector;
+			bool * const _showCameraEditor;
 			bool		 _showDialogImport = false;
 
 			std::shared_ptr<pfd::open_file> _openFileDialog = nullptr;

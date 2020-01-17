@@ -49,10 +49,11 @@ namespace VTX
 			SDL_GLContext	_glContext = nullptr;
 			SDL_DisplayMode _displayMode;
 
-			bool _showMenu		= true;
-			bool _showConsole	= true;
-			bool _showScene		= true;
-			bool _showInspector = true;
+			bool _showMenu		   = true;
+			bool _showConsole	   = true;
+			bool _showScene		   = true;
+			bool _showInspector	   = true;
+			bool _showCameraEditor = true;
 
 			void _initSDL2();
 			void _initGL();

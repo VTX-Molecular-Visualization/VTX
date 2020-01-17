@@ -25,9 +25,11 @@ namespace VTX
 		ComponentMenu::ComponentMenu( bool * const p_show,
 									  bool * const p_showConsole,
 									  bool * const p_showScene,
-									  bool * const p_showInspector ) :
+									  bool * const p_showInspector,
+									  bool * const p_showCameraEditor ) :
 			BaseComponent( p_show ),
-			_showConsole( p_showConsole ), _showScene( p_showScene ), _showInspector( p_showInspector )
+			_showConsole( p_showConsole ), _showScene( p_showScene ), _showInspector( p_showInspector ),
+			_showCameraEditor( p_showCameraEditor )
 		{
 		}
 
@@ -89,18 +91,21 @@ namespace VTX
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), _showScene );
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Inspector" ), _showInspector );
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), _showConsole );
+					ImGui::Checkbox( LOCALE( "MainMenu.Display.CameraEditor" ), _showCameraEditor );
 					ImGui::Separator();
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.CloseAll" ) ) )
 					{
-						*_showScene		= false;
-						*_showInspector = false;
-						*_showConsole	= false;
+						*_showScene		   = false;
+						*_showInspector	   = false;
+						*_showConsole	   = false;
+						*_showCameraEditor = false;
 					}
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.ShowAll" ) ) )
 					{
-						*_showScene		= true;
-						*_showInspector = true;
-						*_showConsole	= true;
+						*_showScene		   = true;
+						*_showInspector	   = true;
+						*_showConsole	   = true;
+						*_showCameraEditor = true;
 					}
 					ImGui::EndMenu();
 				}

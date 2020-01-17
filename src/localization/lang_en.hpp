@@ -26,6 +26,7 @@ namespace VTX
 			{ "MainMenu.Display.Scene", "Scene" },
 			{ "MainMenu.Display.Inspector", "Inspector" },
 			{ "MainMenu.Display.Console", "Console" },
+			{ "MainMenu.Display.CameraEditor", "Camera editor" },
 			{ "MainMenu.Display.CloseAll", "Close all" },
 			{ "MainMenu.Display.ShowAll", "Show all" },
 			{ "MainMenu.Export", "Export" },
@@ -49,6 +50,9 @@ namespace VTX
 			// Scene.
 			{ "Scene.Scene", "Scene" },
 			{ "Scene.Performance", "Performance" },
+
+			// Camera editor.
+			{ "CameraEditor.CameraEditor", "Camera editor" },
 
 			// Inspector.
 			{ "Inspector.Inspector", "Inspector" },
