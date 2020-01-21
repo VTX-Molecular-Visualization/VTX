@@ -44,12 +44,13 @@ namespace VTX
 			// Set molecule properties.
 			p_molecule.setName( data.title );
 
-			float		 x, y, z;
-			Math::AABB & aabb			  = p_molecule.AABB();
-			uint		 chainGlobalIdx	  = 0;
-			uint		 residueGlobalIdx = 0;
-			uint		 atomGlobalIdx	  = 0;
-			uint		 bondGlobalIdx	  = 0;
+			float			  x, y, z;
+			Math::AABB &	  aabb			   = p_molecule.AABB();
+			Math::Transform & transform		   = p_molecule.getTransform();
+			uint			  chainGlobalIdx   = 0;
+			uint			  residueGlobalIdx = 0;
+			uint			  atomGlobalIdx	   = 0;
+			uint			  bondGlobalIdx	   = 0;
 
 			// Reserve memory for vectors to avoid pointer loss.
 			p_molecule.getChains().resize( data.numChains );
@@ -198,7 +199,11 @@ namespace VTX
 				VTX_WARNING( "Unknown atom symbols : " + unknownAtomSymbolsStr );
 			}
 
+			// Recenter molecule.
+			transform.translate( -aabb.getCenter() );
+
 			VTX_INFO( "Models created" );
+
 			return true;
 		}
 
