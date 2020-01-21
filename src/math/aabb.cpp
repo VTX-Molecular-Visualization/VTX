@@ -25,5 +25,11 @@ namespace VTX
 			extend( p_center + p_radius );
 		}
 
+		void AABB::translate( const Vec3f & p_translation )
+		{
+			_min += p_translation;
+			_max += p_translation;
+		}
+
 	} // namespace Math
 } // namespace VTX

@@ -200,7 +200,9 @@ namespace VTX
 			}
 
 			// Recenter molecule.
-			transform.translate( -aabb.getCenter() );
+			Vec3f center = aabb.getCenter();
+			transform.translate( -center );
+			aabb.translate( -center );
 
 			VTX_INFO( "Models created" );
 

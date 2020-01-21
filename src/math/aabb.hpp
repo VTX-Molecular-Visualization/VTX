@@ -26,6 +26,8 @@ namespace VTX
 			void extend( const Vec3f & p_point );
 			void extend( const Vec3f & p_center, const float p_radius );
 
+			void translate( const Vec3f & );
+
 			Vec3f getCenter() const { return ( _min + _max ) * 0.5f; }
 			float getRadius() const { return glm::length( _max - _min ) * 0.5f; }
 
