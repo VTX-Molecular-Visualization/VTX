@@ -14,6 +14,17 @@ namespace VTX
 {
 	namespace View
 	{
+		enum class VIEW_NAME : int
+		{
+			UI_MOLECULE_STRUCTURE,
+			UI_MOLECULE_TRANSFORM,
+			UI_CHAIN,
+			UI_RESIDUE,
+			UI_ATOM,
+			D3_CYLINDER,
+			D3_SPHERE
+		};
+
 		class BaseModel;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
@@ -23,8 +34,8 @@ namespace VTX
 			BaseView() = default;
 			virtual ~BaseView() { _model = nullptr; };
 
-			virtual std::string getNameStr() const = 0;
-			virtual void		setModel( T * const p_model ) final
+			virtual VIEW_NAME getViewName() const = 0;
+			virtual void	  setModel( T * const p_model ) final
 			{
 				_model = p_model;
 				if ( _model != nullptr ) _prepare();

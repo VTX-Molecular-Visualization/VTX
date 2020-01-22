@@ -19,14 +19,15 @@ namespace VTX
 		  public:
 			explicit BaseViewUI( bool * const p_show ) : BaseComponent( p_show ) {}
 
-			virtual std::string getNameStr() const override
+			virtual std::string getName() const override
 			{
-				return std::string( magic_enum::enum_name( getName() ) );
+				return std::string( magic_enum::enum_name( getViewName() ) ) + "_" + std::to_string( _model->getId() );
 			}
+
 			virtual void display() override
 			{
 				if ( _show != nullptr && isShown() == false ) { return; }
-				if ( _model == nullptr ) { return; }
+				// if ( _model == nullptr ) { return; }
 				_draw();
 			};
 

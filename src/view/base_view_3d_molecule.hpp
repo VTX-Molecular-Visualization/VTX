@@ -16,12 +16,6 @@ namespace VTX
 {
 	namespace View
 	{
-		enum class VIEW_3D_MOLECULE : int
-		{
-			SPHERE,
-			CYLINDER
-		};
-
 		enum class MOLECULE_COLOR_MODE : int
 		{
 			ATOM,

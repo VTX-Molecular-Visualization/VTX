@@ -16,15 +16,16 @@ namespace VTX
 		class BaseModel
 		{
 		  public:
-			using ViewSharedPtr				= std::shared_ptr<View::BaseView<BaseModel>>;
-			using MapStringToViewSharedPtr	= std::map<const std::string, ViewSharedPtr>;
-			using PairStringToViewSharedPtr = std::pair<const std::string, ViewSharedPtr>;
+			using ViewSharedPtr			  = std::shared_ptr<View::BaseView<BaseModel>>;
+			using MapEnumToViewSharedPtr  = std::map<const View::VIEW_NAME, ViewSharedPtr>;
+			using PairEnumToViewSharedPtr = std::pair<const View::VIEW_NAME, ViewSharedPtr>;
 
 			BaseModel() = default;
 			virtual ~BaseModel();
 
+			uint						getId() const { return _id; }
 			virtual void				init();
-			virtual const ViewSharedPtr getViewByName( const std::string & ) const final;
+			virtual const ViewSharedPtr getViewByName( const View::VIEW_NAME ) const final;
 			bool						isSelected() const { return _isSelected; }
 			virtual void				setSelected( const bool p_selected ) { _isSelected = p_selected; }
 
@@ -32,11 +33,12 @@ namespace VTX
 			void		 _addView( const ViewSharedPtr );
 			virtual void _addViews() {};
 			virtual void _notifyViews( const Event::EVENT_MODEL ) const final;
-			void		 _removeView( const std::string & );
+			void		 _removeView( const View::VIEW_NAME );
 			virtual void _clearViews() final;
 
-			bool					 _isSelected = false;
-			MapStringToViewSharedPtr _views		 = MapStringToViewSharedPtr();
+			uint				   _id		   = 0;
+			bool				   _isSelected = false;
+			MapEnumToViewSharedPtr _views	   = MapEnumToViewSharedPtr();
 		};
 	} // namespace Model
 } // namespace VTX

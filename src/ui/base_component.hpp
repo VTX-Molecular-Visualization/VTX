@@ -23,20 +23,15 @@ namespace VTX
 			CONSOLE,
 			SCENE,
 			INSPECTOR,
-			CAMERA_EDITOR,
-			VIEW_MOLECULE_SCENE,
-			VIEW_MOLECULE,
-			VIEW_CHAIN,
-			VIEW_RESIDUE,
-			VIEW_ATOM
+			CAMERA_EDITOR
 		};
 
 		class BaseComponent
 		{
 		  public:
-			using ComponentSharedPtr		   = std::shared_ptr<BaseComponent>;
-			using MapEnumToComponentSharedPtr  = std::map<COMPONENT_NAME, ComponentSharedPtr>;
-			using PairEnumToComponentSharedPtr = std::pair<COMPONENT_NAME, ComponentSharedPtr>;
+			using ComponentSharedPtr			 = std::shared_ptr<BaseComponent>;
+			using MapStringToComponentSharedPtr	 = std::map<const std::string, ComponentSharedPtr>;
+			using PairStringToComponentSharedPtr = std::pair<const std::string, ComponentSharedPtr>;
 
 			BaseComponent( bool * const );
 			virtual ~BaseComponent();
@@ -48,12 +43,13 @@ namespace VTX
 			virtual const ComponentSharedPtr getComponentByName( const COMPONENT_NAME ) const final;
 			virtual void					 receiveEvent( const Event::EVENT_UI, void * const ) final;
 
-			virtual COMPONENT_NAME getName() const = 0;
+			virtual void		   addComponent( const ComponentSharedPtr ) final;
+			virtual COMPONENT_NAME getComponentName() const = 0;
+			virtual std::string getName() const { return std::string( magic_enum::enum_name( getComponentName() ) ); };
 
 		  protected:
 			bool * _show = nullptr;
 
-			virtual void _addComponent( const ComponentSharedPtr ) final;
 			virtual void _addComponents() {};
 			virtual void _drawComponent( const COMPONENT_NAME );
 			virtual void _drawComponents() final;
@@ -65,9 +61,9 @@ namespace VTX
 			virtual void _draw() = 0;
 
 		  private:
-			bool						_isInitialized = false;
-			MapEnumToComponentSharedPtr _components	   = MapEnumToComponentSharedPtr();
-			std::set<Event::EVENT_UI>	_events		   = std::set<Event::EVENT_UI>();
+			bool						  _isInitialized = false;
+			MapStringToComponentSharedPtr _components	 = MapStringToComponentSharedPtr();
+			std::set<Event::EVENT_UI>	  _events		 = std::set<Event::EVENT_UI>();
 		};
 	} // namespace UI
 } // namespace VTX

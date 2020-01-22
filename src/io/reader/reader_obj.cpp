@@ -29,11 +29,12 @@ namespace VTX
 			// Set molecule properties.
 			p_molecule.setName( p_path.getFileNameWithoutExtension() );
 
-			Math::AABB & aabb			  = p_molecule.AABB();
-			uint		 chainGlobalIdx	  = 0;
-			uint		 residueGlobalIdx = 0;
-			uint		 atomGlobalIdx	  = 0;
-			uint		 bondGlobalIdx	  = 0;
+			Math::AABB &	  aabb			   = p_molecule.AABB();
+			Math::Transform & transform		   = p_molecule.getTransform();
+			uint			  chainGlobalIdx   = 0;
+			uint			  residueGlobalIdx = 0;
+			uint			  atomGlobalIdx	   = 0;
+			uint			  bondGlobalIdx	   = 0;
 
 			// Reserve memory for vectors to avoid pointer loss.
 			uint chainCount	  = scene->mNumMeshes;
@@ -117,6 +118,11 @@ namespace VTX
 					}
 				}
 			}
+
+			// Recenter molecule.
+			Vec3f center = aabb.getCenter();
+			transform.translate( -center );
+			aabb.translate( -center );
 
 			VTX_INFO( "Models created" );
 

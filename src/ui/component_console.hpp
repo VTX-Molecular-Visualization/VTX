@@ -24,7 +24,7 @@ namespace VTX
 			virtual void _registerEventHandlers() override;
 			virtual void _applyEvent( const Event::EVENT_UI, void * const p_arg ) override;
 
-			virtual COMPONENT_NAME getName() const override { return COMPONENT_NAME::CONSOLE; }
+			virtual COMPONENT_NAME getComponentName() const override { return COMPONENT_NAME::CONSOLE; }
 
 		  private:
 			std::list<Util::Logger::Log> _logs = std::list<Util::Logger::Log>();

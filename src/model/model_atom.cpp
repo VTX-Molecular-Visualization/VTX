@@ -8,10 +8,13 @@ namespace VTX
 		void ModelAtom::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { _addView( Util::Type::componentToView<ModelAtom>( UI::COMPONENT_NAME::VIEW_ATOM ) ); }
+			if ( isSelected() )
+			{
+				//_addView( Util::Type::componentToView<ModelAtom>( UI::COMPONENT_NAME::VIEW_ATOM ) );
+			}
 			else
 			{
-				_removeView( std::string( magic_enum::enum_name( UI::COMPONENT_NAME::VIEW_ATOM ) ) );
+				//_removeView( std::string( magic_enum::enum_name( UI::COMPONENT_NAME::VIEW_ATOM ) ) );
 			}
 		}
 

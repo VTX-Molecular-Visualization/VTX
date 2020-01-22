@@ -35,12 +35,12 @@ namespace VTX
 			// std::static_pointer_cast<StateMachine>( p_state )->init();
 			try
 			{
-				_states.try_emplace( p_state->getName(), p_state );
+				_states.try_emplace( p_state->getStateName(), p_state );
 			}
 			catch ( const std::exception )
 			{
 				VTX_WARNING( "A state with this name already exists: "
-							 + std::string( magic_enum::enum_name( p_state->getName() ) ) );
+							 + std::string( magic_enum::enum_name( p_state->getStateName() ) ) );
 			}
 		}
 

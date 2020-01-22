@@ -17,7 +17,7 @@ namespace VTX
 		  public:
 			StateLoading() = default;
 
-			virtual STATE_NAME getName() const override { return STATE_NAME::LOADING; }
+			virtual STATE_NAME getStateName() const override { return STATE_NAME::LOADING; }
 			virtual void	   enter( void * const ) override;
 			virtual void	   exit() override;
 

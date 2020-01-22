@@ -16,7 +16,7 @@ namespace VTX
 		  public:
 			explicit ComponentCameraEditor( bool * const );
 
-			virtual COMPONENT_NAME getName() const override { return COMPONENT_NAME::CAMERA_EDITOR; }
+			virtual COMPONENT_NAME getComponentName() const override { return COMPONENT_NAME::CAMERA_EDITOR; }
 
 		  protected:
 			virtual void _addComponents() override;

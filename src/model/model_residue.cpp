@@ -9,10 +9,12 @@ namespace VTX
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() )
-			{ _addView( Util::Type::componentToView<ModelResidue>( UI::COMPONENT_NAME::VIEW_RESIDUE ) ); }
+			{
+				//_addView( Util::Type::componentToView<ModelResidue>( UI::COMPONENT_NAME::VIEW_RESIDUE ) );
+			}
 			else
 			{
-				_removeView( std::string( magic_enum::enum_name( UI::COMPONENT_NAME::VIEW_RESIDUE ) ) );
+				//_removeView( std::string( magic_enum::enum_name( UI::COMPONENT_NAME::VIEW_RESIDUE ) ) );
 			}
 		}
 

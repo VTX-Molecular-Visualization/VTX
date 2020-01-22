@@ -38,7 +38,7 @@ namespace VTX
 			bool pollEvent( SDL_Event & evt ) const;
 			void setTheme() const;
 
-			virtual COMPONENT_NAME getName() const override { return COMPONENT_NAME::UI; }
+			virtual COMPONENT_NAME getComponentName() const override { return COMPONENT_NAME::UI; }
 
 		  protected:
 			virtual void _addComponents() override;

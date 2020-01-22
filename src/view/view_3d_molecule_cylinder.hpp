@@ -17,10 +17,7 @@ namespace VTX
 			View3DMoleculeCylinder()  = default;
 			~View3DMoleculeCylinder() = default;
 
-			virtual std::string getNameStr() const override
-			{
-				return std::string( magic_enum::enum_name( VIEW_3D_MOLECULE::CYLINDER ) );
-			};
+			virtual VIEW_NAME getViewName() const override { return VIEW_NAME::D3_CYLINDER; };
 
 			virtual void notify( Event::EVENT_MODEL ) override;
 

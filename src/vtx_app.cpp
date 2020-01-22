@@ -42,9 +42,9 @@ namespace VTX
 
 #ifdef _DEBUG
 		//_stateMachine->goToState( State::STATE_NAME::VISUALIZATION );
-		_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "4v6x.mmtf" ) );
+		//_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "4v6x.mmtf" ) );
 		//_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "3j3q.mmtf" ) );
-		//_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "r2d2.obj" ) );
+		_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "r2d2.obj" ) );
 #else
 		_stateMachine->goToState( State::STATE_NAME::VISUALIZATION );
 #endif
@@ -70,10 +70,12 @@ namespace VTX
 		VTXApp::_isRunning = false;
 	}
 
+	/*
 	const std::shared_ptr<UI::BaseComponent> VTXApp::getUIComponentByName( const UI::COMPONENT_NAME p_name ) const
 	{
 		return _ui->getComponentByName( p_name );
 	};
+	*/
 
 	void VTXApp::goToState( const State::STATE_NAME p_name, void * const p_arg )
 	{
@@ -139,8 +141,11 @@ namespace VTX
 		{
 		case SDL_QUIT: stop(); return;
 		case SDL_WINDOWEVENT:
-			if ( p_event.window.event == SDL_WINDOWEVENT_CLOSE ) { stop(); };
-			return;
+			if ( p_event.window.event == SDL_WINDOWEVENT_CLOSE )
+			{
+				stop();
+				return;
+			}
 		}
 
 		// Propagate to state machine.

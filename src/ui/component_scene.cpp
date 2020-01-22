@@ -13,7 +13,7 @@ namespace VTX
 
 		void ComponentScene::_addComponents()
 		{
-			_addComponent( std::make_shared<View::ViewUIMoleculeScene>( View::ViewUIMoleculeScene( _show ) ) );
+			//_addComponent( std::make_shared<View::ViewUIMoleculeScene>( View::ViewUIMoleculeScene( _show ) ) );
 		}
 
 		void ComponentScene::_draw()
@@ -27,7 +27,7 @@ namespace VTX
 				return;
 			}
 
-			_drawComponent( COMPONENT_NAME::VIEW_MOLECULE_SCENE );
+			_drawComponents();
 
 			ImGui::End();
 		}

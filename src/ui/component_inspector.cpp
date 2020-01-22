@@ -13,10 +13,10 @@ namespace VTX
 	{
 		ComponentInspector::ComponentInspector( bool * const p_show ) : BaseComponent( p_show )
 		{
-			_addComponent( std::make_shared<View::ViewUIMolecule>( View::ViewUIMolecule( _show ) ) );
-			_addComponent( std::make_shared<View::ViewUIChain>( View::ViewUIChain( _show ) ) );
-			_addComponent( std::make_shared<View::ViewUIResidue>( View::ViewUIResidue( _show ) ) );
-			_addComponent( std::make_shared<View::ViewUIAtom>( View::ViewUIAtom( _show ) ) );
+			//_addComponent( std::make_shared<View::ViewUIMolecule>( View::ViewUIMolecule( _show ) ) );
+			//_addComponent( std::make_shared<View::ViewUIChain>( View::ViewUIChain( _show ) ) );
+			//_addComponent( std::make_shared<View::ViewUIResidue>( View::ViewUIResidue( _show ) ) );
+			//_addComponent( std::make_shared<View::ViewUIAtom>( View::ViewUIAtom( _show ) ) );
 		}
 
 		void ComponentInspector::_addComponents() {}

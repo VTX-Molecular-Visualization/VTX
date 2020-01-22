@@ -16,7 +16,7 @@ namespace VTX
 		  public:
 			StateVisualization() = default;
 
-			virtual STATE_NAME getName() const override { return STATE_NAME::VISUALIZATION; }
+			virtual STATE_NAME getStateName() const override { return STATE_NAME::VISUALIZATION; }
 			virtual void	   enter( void * const ) override;
 			virtual void	   exit() override;
 		};

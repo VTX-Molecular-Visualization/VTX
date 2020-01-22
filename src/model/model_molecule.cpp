@@ -40,11 +40,11 @@ namespace VTX
 		void ModelMolecule::_addViews()
 		{
 			// TODO: add view to parent component.
-			_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE_SCENE ) );
-			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
-				(View::BaseView<BaseModel> *)( new View::View3DMoleculeSphere() ) ) );
-			_addView( std::shared_ptr<View::BaseView<BaseModel>>(
-				(View::BaseView<BaseModel> *)( new View::View3DMoleculeCylinder() ) ) );
+			//_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE_SCENE ) );
+			_addView(
+				Util::Type::viewPtrToViewSharedPtr( (View::BaseView<BaseModel> *)new View::View3DMoleculeSphere() ) );
+			_addView(
+				Util::Type::viewPtrToViewSharedPtr( (View::BaseView<BaseModel> *)new View::View3DMoleculeCylinder() ) );
 		}
 
 		void ModelMolecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }
@@ -98,10 +98,12 @@ namespace VTX
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() )
-			{ _addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE ) ); }
+			{
+				//_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE ) );
+			}
 			else
 			{
-				_removeView( std::string( magic_enum::enum_name( UI::COMPONENT_NAME::VIEW_MOLECULE ) ) );
+				//_removeView( std::string( magic_enum::enum_name( UI::COMPONENT_NAME::VIEW_MOLECULE ) ) );
 			}
 		}
 

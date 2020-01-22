@@ -17,7 +17,7 @@ namespace VTX
 			_isInitialized = true;
 		}
 
-		void BaseComponent::_addComponent( const ComponentSharedPtr p_component )
+		void BaseComponent::addComponent( const ComponentSharedPtr p_component )
 		{
 			p_component->init();
 			try
@@ -26,8 +26,7 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "A component with this name already exists: "
-							 + std::string( magic_enum::enum_name( p_component->getName() ) ) );
+				VTX_WARNING( "A component with this name already exists: " + p_component->getName() );
 			}
 		}
 
@@ -35,7 +34,7 @@ namespace VTX
 		{
 			try
 			{
-				_components.at( p_name )->display();
+				_components.at( std::string( magic_enum::enum_name( p_name ) ) )->display();
 			}
 			catch ( const std::exception )
 			{
@@ -45,7 +44,7 @@ namespace VTX
 
 		void BaseComponent::_drawComponents()
 		{
-			for ( const PairEnumToComponentSharedPtr pair : _components )
+			for ( const PairStringToComponentSharedPtr pair : _components )
 			{
 				pair.second->display();
 			}
@@ -55,9 +54,10 @@ namespace VTX
 
 		const BaseComponent::ComponentSharedPtr BaseComponent::getComponentByName( const COMPONENT_NAME p_name ) const
 		{
-			if ( _components.find( p_name ) != _components.end() ) { return _components.at( p_name ); }
+			std::string name( magic_enum::enum_name( p_name ) );
+			if ( _components.find( name ) != _components.end() ) { return _components.at( name ); }
 
-			for ( const PairEnumToComponentSharedPtr pair : _components )
+			for ( const PairStringToComponentSharedPtr pair : _components )
 			{
 				ComponentSharedPtr child = pair.second->getComponentByName( p_name );
 				if ( child != nullptr ) { return child; }
@@ -72,7 +72,7 @@ namespace VTX
 			{ _applyEvent( p_event, p_arg ); }
 
 			// Propagate to children.
-			for ( const PairEnumToComponentSharedPtr pair : _components )
+			for ( const PairStringToComponentSharedPtr pair : _components )
 			{
 				pair.second->receiveEvent( p_event, p_arg );
 			}

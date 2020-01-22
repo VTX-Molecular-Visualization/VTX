@@ -17,10 +17,7 @@ namespace VTX
 			View3DMoleculeSphere()	= default;
 			~View3DMoleculeSphere() = default;
 
-			virtual std::string getNameStr() const override
-			{
-				return std::string( magic_enum::enum_name( VIEW_3D_MOLECULE::SPHERE ) );
-			};
+			virtual VIEW_NAME getViewName() const override { return VIEW_NAME::D3_SPHERE; };
 
 			virtual void notify( Event::EVENT_MODEL ) override;
 

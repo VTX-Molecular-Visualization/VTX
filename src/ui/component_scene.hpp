@@ -16,7 +16,7 @@ namespace VTX
 		  public:
 			explicit ComponentScene( bool * const );
 
-			virtual COMPONENT_NAME getName() const override { return COMPONENT_NAME::SCENE; }
+			virtual COMPONENT_NAME getComponentName() const override { return COMPONENT_NAME::SCENE; }
 
 		  protected:
 			virtual void _addComponents() override;

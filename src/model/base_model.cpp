@@ -9,7 +9,7 @@ namespace VTX
 
 		void BaseModel::init() { _addViews(); }
 
-		const BaseModel::ViewSharedPtr BaseModel::getViewByName( const std::string & p_name ) const
+		const BaseModel::ViewSharedPtr BaseModel::getViewByName( const View::VIEW_NAME p_name ) const
 		{
 			try
 			{
@@ -17,7 +17,7 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "View not found: " + p_name );
+				VTX_WARNING( "View not found: " + std::string( magic_enum::enum_name( p_name ) ) );
 				return nullptr;
 			}
 		}
@@ -27,15 +27,16 @@ namespace VTX
 			p_view->setModel( this );
 			try
 			{
-				_views.try_emplace( p_view->getNameStr(), p_view );
+				_views.try_emplace( p_view->getViewName(), p_view );
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "A view with this name already exists: " + p_view->getNameStr() );
+				VTX_WARNING( "A view with this name already exists: "
+							 + std::string( magic_enum::enum_name( p_view->getViewName() ) ) );
 			}
 		}
 
-		void BaseModel::_removeView( const std::string & p_name )
+		void BaseModel::_removeView( const View::VIEW_NAME p_name )
 		{
 			ViewSharedPtr view = getViewByName( p_name );
 			if ( view == nullptr ) return;
@@ -46,7 +47,7 @@ namespace VTX
 
 		void BaseModel::_notifyViews( const Event::EVENT_MODEL p_event ) const
 		{
-			for ( PairStringToViewSharedPtr pair : _views )
+			for ( PairEnumToViewSharedPtr pair : _views )
 			{
 				pair.second->notify( p_event );
 			}
@@ -54,7 +55,7 @@ namespace VTX
 
 		void BaseModel::_clearViews()
 		{
-			for ( PairStringToViewSharedPtr pair : _views )
+			for ( PairEnumToViewSharedPtr pair : _views )
 			{
 				pair.second->setModel( nullptr );
 			}
