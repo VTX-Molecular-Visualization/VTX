@@ -4,6 +4,10 @@ namespace VTX
 {
 	namespace Model
 	{
+		uint BaseModel::_COUNTER = 0;
+
+		BaseModel::BaseModel() { _id = _COUNTER++; }
+
 		BaseModel::~BaseModel() { _clearViews(); }
 
 		void BaseModel::init() { _addViews(); }

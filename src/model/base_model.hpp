@@ -20,7 +20,7 @@ namespace VTX
 			using MapEnumToViewSharedPtr  = std::map<const View::VIEW_NAME, ViewSharedPtr>;
 			using PairEnumToViewSharedPtr = std::pair<const View::VIEW_NAME, ViewSharedPtr>;
 
-			BaseModel() = default;
+			BaseModel();
 			virtual ~BaseModel();
 
 			uint						getId() const { return _id; }
@@ -36,9 +36,12 @@ namespace VTX
 			void		 _removeView( const View::VIEW_NAME );
 			virtual void _clearViews() final;
 
-			uint				   _id		   = 0;
+			uint				   _id		   = 0u;
 			bool				   _isSelected = false;
 			MapEnumToViewSharedPtr _views	   = MapEnumToViewSharedPtr();
+
+		  private:
+			static uint _COUNTER;
 		};
 	} // namespace Model
 } // namespace VTX
