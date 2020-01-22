@@ -7,7 +7,6 @@
 
 #include "../generic/base_updatable.hpp"
 #include "base_state.hpp"
-#include <magic_enum.hpp>
 #include <map>
 #include <memory>
 

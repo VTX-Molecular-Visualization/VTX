@@ -7,7 +7,6 @@
 
 #include "../defines.hpp"
 #include "base_model.hpp"
-#include <magic_enum.hpp>
 
 // IN is previously declared as macro in winmindef.h (used by gl3w)
 #undef IN

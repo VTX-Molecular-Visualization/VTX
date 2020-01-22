@@ -2,7 +2,6 @@
 #include "../defines.hpp"
 #include "state_loading.hpp"
 #include "state_visualization.hpp"
-#include <magic_enum.hpp>
 
 namespace VTX
 {

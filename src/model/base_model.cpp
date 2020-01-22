@@ -1,5 +1,4 @@
 #include "base_model.hpp"
-#include <magic_enum.hpp>
 
 namespace VTX
 {
