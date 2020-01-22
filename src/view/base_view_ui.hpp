@@ -21,7 +21,7 @@ namespace VTX
 
 			virtual std::string getName() const override
 			{
-				return std::string( magic_enum::enum_name( getViewName() ) ) + "_" + std::to_string( _model->getId() );
+				return ENUM_TO_STRING( getViewName() ) + "_" + std::to_string( _model->getId() );
 			}
 
 			virtual void display() override

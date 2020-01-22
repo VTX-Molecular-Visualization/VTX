@@ -45,7 +45,7 @@ namespace VTX
 
 			virtual void		   addComponent( const ComponentSharedPtr ) final;
 			virtual COMPONENT_NAME getComponentName() const = 0;
-			virtual std::string getName() const { return std::string( magic_enum::enum_name( getComponentName() ) ); };
+			virtual std::string	   getName() const { return ENUM_TO_STRING( getComponentName() ); };
 
 		  protected:
 			bool * _show = nullptr;

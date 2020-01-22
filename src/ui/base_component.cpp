@@ -34,11 +34,11 @@ namespace VTX
 		{
 			try
 			{
-				_components.at( std::string( magic_enum::enum_name( p_name ) ) )->display();
+				_components.at( ENUM_TO_STRING( p_name ) )->display();
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "Component not found: " + std::string( magic_enum::enum_name( p_name ) ) );
+				VTX_WARNING( "Component not found: " + ENUM_TO_STRING( p_name ) );
 			}
 		}
 
@@ -54,7 +54,7 @@ namespace VTX
 
 		const BaseComponent::ComponentSharedPtr BaseComponent::getComponentByName( const COMPONENT_NAME p_name ) const
 		{
-			std::string name( magic_enum::enum_name( p_name ) );
+			std::string name = ENUM_TO_STRING( p_name );
 			if ( _components.find( name ) != _components.end() ) { return _components.at( name ); }
 
 			for ( const PairStringToComponentSharedPtr pair : _components )

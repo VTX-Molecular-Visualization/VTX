@@ -20,7 +20,7 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				VTX_ERROR( "State not found: " + std::string( magic_enum::enum_name( p_name ) ) );
+				VTX_ERROR( "State not found: " + ENUM_TO_STRING( p_name ) );
 			}
 		}
 
@@ -39,8 +39,7 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "A state with this name already exists: "
-							 + std::string( magic_enum::enum_name( p_state->getStateName() ) ) );
+				VTX_WARNING( "A state with this name already exists: " + ENUM_TO_STRING( p_state->getStateName() ) );
 			}
 		}
 

@@ -17,7 +17,7 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "View not found: " + std::string( magic_enum::enum_name( p_name ) ) );
+				VTX_WARNING( "View not found: " + ENUM_TO_STRING( p_name ) );
 				return nullptr;
 			}
 		}
@@ -31,8 +31,7 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "A view with this name already exists: "
-							 + std::string( magic_enum::enum_name( p_view->getViewName() ) ) );
+				VTX_WARNING( "A view with this name already exists: " + ENUM_TO_STRING( p_view->getViewName() ) );
 			}
 		}
 
