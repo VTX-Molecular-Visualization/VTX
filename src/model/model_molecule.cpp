@@ -2,6 +2,8 @@
 #include "../util/type.hpp"
 #include "../view/view_3d_molecule_cylinder.hpp"
 #include "../view/view_3d_molecule_sphere.hpp"
+#include "../view/view_ui_molecule.hpp"
+#include "../view/view_ui_molecule_scene.hpp"
 #include "../vtx_app.hpp"
 
 namespace VTX
@@ -39,8 +41,12 @@ namespace VTX
 
 		void ModelMolecule::_addViews()
 		{
-			// TODO: add view to parent component.
-			//_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE_SCENE ) );
+			ViewSharedPtr view
+				= Util::Type::viewPtrToViewSharedPtr( (View::BaseView<BaseModel> *)new View::ViewUIMoleculeScene() );
+			_addView( view );
+			UI::BaseComponent::ComponentSharedPtr comp
+				= VTXApp::get().getUIComponentByName( UI::COMPONENT_NAME::SCENE );
+			comp->addComponent( Util::Type::viewToComponent( view ) );
 			_addView(
 				Util::Type::viewPtrToViewSharedPtr( (View::BaseView<BaseModel> *)new View::View3DMoleculeSphere() ) );
 			_addView(

@@ -22,16 +22,17 @@ namespace VTX
 			CONSOLE,
 			SCENE,
 			INSPECTOR,
-			CAMERA_EDITOR
+			CAMERA_EDITOR,
+			VIEW
 		};
+
+		using ComponentSharedPtr			 = std::shared_ptr<BaseComponent>;
+		using MapStringToComponentSharedPtr	 = std::map<const std::string, ComponentSharedPtr>;
+		using PairStringToComponentSharedPtr = std::pair<const std::string, ComponentSharedPtr>;
 
 		class BaseComponent
 		{
 		  public:
-			using ComponentSharedPtr			 = std::shared_ptr<BaseComponent>;
-			using MapStringToComponentSharedPtr	 = std::map<const std::string, ComponentSharedPtr>;
-			using PairStringToComponentSharedPtr = std::pair<const std::string, ComponentSharedPtr>;
-
 			BaseComponent( bool * const );
 			virtual ~BaseComponent();
 

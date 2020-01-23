@@ -19,7 +19,8 @@ namespace VTX
 		  public:
 			explicit BaseViewUI( bool * const p_show ) : BaseComponent( p_show ) {}
 
-			virtual std::string getName() const override
+			virtual UI::COMPONENT_NAME getComponentName() const override { return UI::COMPONENT_NAME::VIEW; }
+			virtual std::string		   getName() const override
 			{
 				return ENUM_TO_STRING( getViewName() ) + "_" + std::to_string( _model->getId() );
 			}
@@ -27,7 +28,11 @@ namespace VTX
 			virtual void display() override
 			{
 				if ( _show != nullptr && isShown() == false ) { return; }
-				// if ( _model == nullptr ) { return; }
+				if ( _model == nullptr )
+				{
+					VTX_DEBUG( "Trying to display a view without model" );
+					return;
+				}
 				_draw();
 			};
 
