@@ -2,7 +2,7 @@
 #include "io/path.hpp"
 #include "io/reader/reader_mmtf.hpp"
 #include "model/model_molecule.hpp"
-#include "renderer/renderer_deferred.hpp"
+#include "renderer/renderer_gl.hpp"
 #include "ui/imgui/imgui_impl_sdl.h"
 #include <thread>
 
@@ -18,7 +18,7 @@ namespace VTX
 		_stateMachine = new State::StateMachine();
 		_stateMachine->init();
 		_scene		   = new Object3D::Scene();
-		_renderer	   = new Renderer::RendererDeferred();
+		_renderer	   = new Renderer::RendererGL();
 		_actionManager = new Action::ActionManager();
 	}
 

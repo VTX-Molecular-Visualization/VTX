@@ -1,5 +1,6 @@
 #include "base_component.hpp"
-#include <iostream>
+#include "../model/model_molecule.hpp"
+#include "../util/type.hpp"
 
 namespace VTX
 {
@@ -34,6 +35,7 @@ namespace VTX
 		void BaseComponent::addView( const std::shared_ptr<View::BaseView<Model::BaseModel>> p_view )
 		{
 			VTX_DEBUG( "ADD VIEW" );
+			//_addComponent( Util::Type::viewToComponent<Model::ModelMolecule>( p_view ) );
 		}
 
 		void BaseComponent::_drawComponent( const COMPONENT_NAME p_name )

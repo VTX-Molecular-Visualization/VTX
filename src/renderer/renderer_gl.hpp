@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_DEFERRED__
-#define __VTX_RENDERER_DEFERRED__
+#ifndef __VTX_RENDERER_GL__
+#define __VTX_RENDERER_GL__
 
 #ifdef _MSC_VER
 #pragma once
@@ -11,11 +11,11 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		class RendererDeferred : public BaseRenderer
+		class RendererGL : public BaseRenderer
 		{
 		  public:
-			RendererDeferred()	= default;
-			~RendererDeferred() = default;
+			RendererGL()		= default;
+			~RendererGL() = default;
 
 			virtual void init( Object3D::Scene &, uint, uint ) override;
 			virtual void clear( Object3D::Scene & ) override;
