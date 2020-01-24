@@ -10,10 +10,14 @@ namespace VTX
 		{
 			switch ( p_code )
 			{
-			case SDL_SCANCODE_W: _camera.moveFront( 10.f ); break;
-			case SDL_SCANCODE_A: _camera.moveLeft( 10.f ); break;
-			case SDL_SCANCODE_S: _camera.moveFront( -10.f ); break;
-			case SDL_SCANCODE_D: _camera.moveLeft( -10.f ); break;
+			case SDL_SCANCODE_W:
+			case SDL_SCANCODE_UP: _camera.moveFront( 10.f ); break;
+			case SDL_SCANCODE_A:
+			case SDL_SCANCODE_LEFT: _camera.moveLeft( 10.f ); break;
+			case SDL_SCANCODE_S:
+			case SDL_SCANCODE_DOWN: _camera.moveFront( -10.f ); break;
+			case SDL_SCANCODE_D:
+			case SDL_SCANCODE_RIGHT: _camera.moveLeft( -10.f ); break;
 			case SDL_SCANCODE_R: _camera.moveUp( 10.f ); break;
 			case SDL_SCANCODE_F: _camera.moveUp( -10.f ); break;
 			case SDL_SCANCODE_Q: _camera.rotateLeft( -1.f ); break;
