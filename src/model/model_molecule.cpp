@@ -41,12 +41,14 @@ namespace VTX
 
 		void ModelMolecule::_addViews()
 		{
-			ViewSharedPtr view
-				= Util::Type::viewPtrToViewSharedPtr( (View::BaseView<BaseModel> *)new View::ViewUIMoleculeScene() );
-			_addView( view );
-			UI::BaseComponent::ComponentSharedPtr comp
+			std::shared_ptr<View::ViewUIMoleculeScene> view
+				= std::make_shared<View::ViewUIMoleculeScene>( View::ViewUIMoleculeScene() );
+
+			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( view ) );
+			std::shared_ptr<UI::BaseComponent> component
 				= VTXApp::get().getUIComponentByName( UI::COMPONENT_NAME::SCENE );
-			comp->addComponent( Util::Type::viewToComponent( view ) );
+			component->addComponent( Util::Type::viewToComponent<ModelMolecule>( view ) );
+
 			_addView(
 				Util::Type::viewPtrToViewSharedPtr( (View::BaseView<BaseModel> *)new View::View3DMoleculeSphere() ) );
 			_addView(

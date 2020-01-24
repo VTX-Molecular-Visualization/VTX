@@ -26,13 +26,12 @@ namespace VTX
 			VIEW
 		};
 
-		using ComponentSharedPtr			 = std::shared_ptr<BaseComponent>;
-		using MapStringToComponentSharedPtr	 = std::map<const std::string, ComponentSharedPtr>;
-		using PairStringToComponentSharedPtr = std::pair<const std::string, ComponentSharedPtr>;
-
 		class BaseComponent
 		{
 		  public:
+			using MapStringToComponentSharedPtr	 = std::map<std::string, std::shared_ptr<UI::BaseComponent>>;
+			using PairStringToComponentSharedPtr = std::pair<std::string, std::shared_ptr<UI::BaseComponent>>;
+
 			BaseComponent( bool * const );
 			virtual ~BaseComponent();
 
@@ -40,10 +39,10 @@ namespace VTX
 			virtual void init();
 			virtual bool isShown() final { return *_show; }
 
-			virtual const ComponentSharedPtr getComponentByName( const COMPONENT_NAME ) const final;
-			virtual void					 receiveEvent( const Event::EVENT_UI, void * const ) final;
+			virtual const std::shared_ptr<UI::BaseComponent> getComponentByName( const COMPONENT_NAME ) const final;
+			virtual void									 receiveEvent( const Event::EVENT_UI, void * const ) final;
 
-			virtual void		   addComponent( const ComponentSharedPtr ) final;
+			virtual void		   addComponent( const std::shared_ptr<UI::BaseComponent> ) final;
 			virtual COMPONENT_NAME getComponentName() const = 0;
 			virtual std::string	   getName() const { return ENUM_TO_STRING( getComponentName() ); };
 

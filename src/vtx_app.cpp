@@ -70,7 +70,7 @@ namespace VTX
 		VTXApp::_isRunning = false;
 	}
 
-	const UI::BaseComponent::ComponentSharedPtr VTXApp::getUIComponentByName( const UI::COMPONENT_NAME p_name ) const
+	const std::shared_ptr<UI::BaseComponent> VTXApp::getUIComponentByName( const UI::COMPONENT_NAME p_name ) const
 	{
 		return _ui->getComponentByName( p_name );
 	};

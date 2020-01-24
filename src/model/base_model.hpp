@@ -17,8 +17,8 @@ namespace VTX
 		{
 		  public:
 			using ViewSharedPtr			  = std::shared_ptr<View::BaseView<BaseModel>>;
-			using MapEnumToViewSharedPtr  = std::map<const View::VIEW_NAME, ViewSharedPtr>;
-			using PairEnumToViewSharedPtr = std::pair<const View::VIEW_NAME, ViewSharedPtr>;
+			using MapEnumToViewSharedPtr  = std::map<View::VIEW_NAME, ViewSharedPtr>;
+			using PairEnumToViewSharedPtr = std::pair<View::VIEW_NAME, ViewSharedPtr>;
 
 			BaseModel();
 			virtual ~BaseModel();

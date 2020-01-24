@@ -17,7 +17,7 @@ namespace VTX
 			_isInitialized = true;
 		}
 
-		void BaseComponent::addComponent( const ComponentSharedPtr p_component )
+		void BaseComponent::addComponent( const std::shared_ptr<UI::BaseComponent> p_component )
 		{
 			p_component->init();
 			try
@@ -52,14 +52,14 @@ namespace VTX
 
 		void BaseComponent::_registerEventHandler( const Event::EVENT_UI p_event ) { _events.emplace( p_event ); }
 
-		const BaseComponent::ComponentSharedPtr BaseComponent::getComponentByName( const COMPONENT_NAME p_name ) const
+		const std::shared_ptr<UI::BaseComponent> BaseComponent::getComponentByName( const COMPONENT_NAME p_name ) const
 		{
 			std::string name = ENUM_TO_STRING( p_name );
 			if ( _components.find( name ) != _components.end() ) { return _components.at( name ); }
 
 			for ( const PairStringToComponentSharedPtr pair : _components )
 			{
-				ComponentSharedPtr child = pair.second->getComponentByName( p_name );
+				std::shared_ptr<UI::BaseComponent> child = pair.second->getComponentByName( p_name );
 				if ( child != nullptr ) { return child; }
 			}
 
