@@ -19,6 +19,8 @@ namespace VTX
 		  public:
 			using VectorCheckpointPtr = std::vector<Model::ModelCheckpoint *>;
 
+			~ModelPath();
+
 		  protected:
 			virtual void _addViews() override final;
 

@@ -10,17 +10,8 @@ namespace VTX
 
 		void Scene::clear()
 		{
-			for ( MoleculePtr molecule : _molecules )
-			{
-				delete molecule;
-			}
 			_molecules.clear();
-
-			for ( CheckpointPtr checkpoint : _checkpoints )
-			{
-				delete checkpoint;
-			}
-			_checkpoints.clear();
+			_paths.clear();
 		}
 
 		void Scene::update( const double p_deltaTime )
