@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
+#include "../GL/glsl_program_manager.hpp"
 #include "../object3d/scene.hpp"
-#include "../shader/glsl_program_manager.hpp"
 #include <vector>
 
 namespace VTX

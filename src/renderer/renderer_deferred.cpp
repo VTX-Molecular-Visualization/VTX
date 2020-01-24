@@ -340,13 +340,11 @@ namespace VTX
 
 		void RendererDeferred::_shadingPass()
 		{
-			if ( Setting::Rendering::useAA ) 
-			{ 
-				glBindFramebuffer( GL_FRAMEBUFFER, _fboShading ); 
-			} 
-			// glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-			
-
+			if ( Setting::Rendering::useAA ) { glBindFramebuffer( GL_FRAMEBUFFER, _fboShading ); }
+			else
+			{
+				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+			}
 			glActiveTexture( GL_TEXTURE0 );
 			glBindTexture( GL_TEXTURE_2D, _colorNormalCompressedTexture );
 			glActiveTexture( GL_TEXTURE1 );
@@ -363,9 +361,9 @@ namespace VTX
 
 		void RendererDeferred::_antiAliasingPass()
 		{
-			if ( Setting::Rendering::useAA == false ) return;
-
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+			if ( Setting::Rendering::useAA == false ) return;
 
 			glActiveTexture( GL_TEXTURE0 );
 			glBindTexture( GL_TEXTURE_2D, _shadingTexture );

@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "io/path.hpp"
 #include "localization/language.hpp"
 #include "util/logger.hpp"
 #include <glm/glm.hpp>
@@ -31,9 +32,9 @@ namespace VTX
 	constexpr int	  OPENGL_VERSION_MAJOR = 4;
 	constexpr int	  OPENGL_VERSION_MINOR = 5;
 	const std::string GLSL_VERSION		   = "#version 450";
-	const bool		  VSYNC				   = 0;
+	const bool		  VSYNC				   = false;
 
-	const uint ACTION_BUFFER_SIZE = 10;
+	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 
 	// Window.
 	constexpr int WINDOW_WIDTH	= 1280;
@@ -59,7 +60,7 @@ namespace VTX
 
 	// Dirs.
 	const std::string DATA_DIR	   = "../data/";
-	const std::string SHADER_DIR   = "../shaders/";
+	const IO::Path	  SHADER_DIR   = "../src/shaders/";
 	const std::string SNAPSHOT_DIR = "../snapshots/";
 
 	// Log.
