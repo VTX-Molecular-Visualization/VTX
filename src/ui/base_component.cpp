@@ -17,7 +17,7 @@ namespace VTX
 			_isInitialized = true;
 		}
 
-		void BaseComponent::addComponent( const std::shared_ptr<UI::BaseComponent> p_component )
+		void BaseComponent::_addComponent( const std::shared_ptr<UI::BaseComponent> p_component )
 		{
 			VTX_DEBUG( "ADD COMPONENT" );
 			p_component->init();
@@ -29,6 +29,11 @@ namespace VTX
 			{
 				VTX_WARNING( "A component with this name already exists: " + p_component->getName() );
 			}
+		}
+
+		void BaseComponent::addView( const std::shared_ptr<View::BaseView<Model::BaseModel>> p_view )
+		{
+			VTX_DEBUG( "ADD VIEW" );
 		}
 
 		void BaseComponent::_drawComponent( const COMPONENT_NAME p_name )

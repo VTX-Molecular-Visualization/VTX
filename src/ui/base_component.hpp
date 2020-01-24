@@ -7,6 +7,7 @@
 
 #include "../defines.hpp"
 #include "../event/event.hpp"
+#include "../model/base_model.hpp"
 #include "imgui/imgui.h"
 #include <map>
 #include <set>
@@ -42,13 +43,15 @@ namespace VTX
 			virtual const std::shared_ptr<UI::BaseComponent> getComponentByName( const COMPONENT_NAME ) const final;
 			virtual void									 receiveEvent( const Event::EVENT_UI, void * const ) final;
 
-			virtual void		   addComponent( const std::shared_ptr<UI::BaseComponent> ) final;
 			virtual COMPONENT_NAME getComponentName() const = 0;
 			virtual std::string	   getName() const { return ENUM_TO_STRING( getComponentName() ); };
+
+			virtual void addView( const std::shared_ptr<View::BaseView<Model::BaseModel>> );
 
 		  protected:
 			bool * _show = nullptr;
 
+			virtual void _addComponent( const std::shared_ptr<UI::BaseComponent> ) final;
 			virtual void _addComponents() {};
 			virtual void _drawComponent( const COMPONENT_NAME );
 			virtual void _drawComponents() final;

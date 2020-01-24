@@ -50,14 +50,15 @@ namespace VTX
 				= std::make_shared<View::View3DMoleculeCylinder>( View::View3DMoleculeCylinder() );
 
 			// Add views.
-			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( viewUIScene ) );
 			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( view3DSphere ) );
 			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( view3DCylinder ) );
+			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( viewUIScene ) );
 
 			// Attach to component.
 			std::shared_ptr<UI::BaseComponent> component
 				= VTXApp::get().getUIComponentByName( UI::COMPONENT_NAME::SCENE );
-			component->addComponent( Util::Type::viewToComponent<ModelMolecule>( viewUIScene ) );
+			component->addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( viewUIScene ) );
+			// component->addComponent( Util::Type::viewToComponent<ModelMolecule>( viewUIScene ) );
 		}
 
 		void ModelMolecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }

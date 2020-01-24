@@ -66,12 +66,12 @@ namespace VTX
 
 		void UserInterface::_addComponents()
 		{
-			addComponent( std::make_shared<ComponentMenu>(
+			_addComponent( std::make_shared<ComponentMenu>(
 				ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showInspector, &_showCameraEditor ) ) );
-			addComponent( std::make_shared<ComponentConsole>( ComponentConsole( &_showConsole ) ) );
-			addComponent( std::make_shared<ComponentScene>( ComponentScene( &_showScene ) ) );
-			addComponent( std::make_shared<ComponentInspector>( ComponentInspector( &_showInspector ) ) );
-			addComponent( std::make_shared<ComponentCameraEditor>( ComponentCameraEditor( &_showCameraEditor ) ) );
+			_addComponent( std::make_shared<ComponentConsole>( ComponentConsole( &_showConsole ) ) );
+			_addComponent( std::make_shared<ComponentScene>( ComponentScene( &_showScene ) ) );
+			_addComponent( std::make_shared<ComponentInspector>( ComponentInspector( &_showInspector ) ) );
+			_addComponent( std::make_shared<ComponentCameraEditor>( ComponentCameraEditor( &_showCameraEditor ) ) );
 		}
 
 		void UserInterface::_initSDL2()
