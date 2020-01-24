@@ -1,5 +1,5 @@
-#ifndef __VTX_VIEW_UI_MOLECULE_SCENE__
-#define __VTX_VIEW_UI_MOLECULE_SCENE__
+#ifndef __VTX_VIEW_UI_MOLECULE_STRUCTURE__
+#define __VTX_VIEW_UI_MOLECULE_STRUCTURE__
 
 #ifdef _MSC_VER
 #pragma once
@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace View
 	{
-		class ViewUIMoleculeScene : public BaseViewUI<Model::ModelMolecule>
+		class ViewUIMoleculeStructure : public BaseViewUI<Model::ModelMolecule>
 		{
 		  public:
-			explicit ViewUIMoleculeScene() : BaseViewUI( nullptr ) {}
+			explicit ViewUIMoleculeStructure() : BaseViewUI( nullptr ) {}
 			virtual void notify( Event::EVENT_MODEL ) override;
 
 			virtual VIEW_NAME getViewName() const override { return VIEW_NAME::UI_MOLECULE_TRANSFORM; }

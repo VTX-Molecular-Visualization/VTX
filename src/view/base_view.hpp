@@ -37,8 +37,13 @@ namespace VTX
 			virtual VIEW_NAME getViewName() const = 0;
 			virtual void	  setModel( T * const p_model ) final
 			{
+				VTX_DEBUG( "SET MODEL" );
 				_model = p_model;
-				if ( _model != nullptr ) _prepare();
+				if ( _model != nullptr )
+				{
+					VTX_DEBUG( "SET MODEL OK" );
+					_prepare();
+				};
 			}
 			virtual void notify( Event::EVENT_MODEL ) {};
 

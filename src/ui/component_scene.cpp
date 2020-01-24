@@ -2,7 +2,6 @@
 #include "../defines.hpp"
 #include "../localization/language.hpp"
 #include "../style.hpp"
-#include "../view/view_ui_molecule_scene.hpp"
 #include "../vtx_app.hpp"
 
 namespace VTX
@@ -10,11 +9,6 @@ namespace VTX
 	namespace UI
 	{
 		ComponentScene::ComponentScene( bool * const p_show ) : BaseComponent( p_show ) {}
-
-		void ComponentScene::_addComponents()
-		{
-			//_addComponent( std::make_shared<View::ViewUIMoleculeScene>( View::ViewUIMoleculeScene( _show ) ) );
-		}
 
 		void ComponentScene::_draw()
 		{

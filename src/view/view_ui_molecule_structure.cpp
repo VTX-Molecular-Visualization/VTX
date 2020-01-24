@@ -1,13 +1,13 @@
-#include "view_ui_molecule_scene.hpp"
+#include "view_ui_molecule_structure.hpp"
 #include "../settings.hpp"
 
 namespace VTX
 {
 	namespace View
 	{
-		void ViewUIMoleculeScene::notify( Event::EVENT_MODEL p_event ) {}
+		void ViewUIMoleculeStructure::notify( Event::EVENT_MODEL p_event ) {}
 
-		void ViewUIMoleculeScene::_draw()
+		void ViewUIMoleculeStructure::_draw()
 		{
 			if ( ImGui::CollapsingHeader( LOCALE( "View.Molecule.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 			{

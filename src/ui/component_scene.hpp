@@ -19,7 +19,6 @@ namespace VTX
 			virtual COMPONENT_NAME getComponentName() const override { return COMPONENT_NAME::SCENE; }
 
 		  protected:
-			virtual void _addComponents() override;
 			virtual void _draw() override;
 
 		  private:

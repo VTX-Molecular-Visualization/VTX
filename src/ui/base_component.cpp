@@ -19,6 +19,7 @@ namespace VTX
 
 		void BaseComponent::addComponent( const std::shared_ptr<UI::BaseComponent> p_component )
 		{
+			VTX_DEBUG( "ADD COMPONENT" );
 			p_component->init();
 			try
 			{

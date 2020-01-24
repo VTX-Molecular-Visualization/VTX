@@ -35,8 +35,8 @@ namespace VTX
 			template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
 			static std::shared_ptr<UI::BaseComponent> viewToComponent( const std::shared_ptr<View::BaseView<T>> p_view )
 			{
-				/*
 				if ( p_view == nullptr ) VTX_ERROR( "View is null" );
+				/*
 				std::shared_ptr<View::BaseView<Model::BaseModel>> view
 					= std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( p_view );
 				if ( view == nullptr ) VTX_ERROR( "View is null" );
@@ -44,12 +44,6 @@ namespace VTX
 				std::shared_ptr<UI::BaseComponent> component = std::dynamic_pointer_cast<UI::BaseComponent>( p_view );
 				if ( component == nullptr ) VTX_ERROR( "Component is null" );
 				return component;
-			}
-
-			static std::shared_ptr<View::BaseView<Model::BaseModel>> viewPtrToViewSharedPtr(
-				View::BaseView<Model::BaseModel> * p_view )
-			{
-				return std::shared_ptr<View::BaseView<Model::BaseModel>>( p_view );
 			}
 
 		} // namespace Type

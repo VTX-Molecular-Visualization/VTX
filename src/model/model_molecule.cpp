@@ -3,7 +3,7 @@
 #include "../view/view_3d_molecule_cylinder.hpp"
 #include "../view/view_3d_molecule_sphere.hpp"
 #include "../view/view_ui_molecule.hpp"
-#include "../view/view_ui_molecule_scene.hpp"
+#include "../view/view_ui_molecule_structure.hpp"
 #include "../vtx_app.hpp"
 
 namespace VTX
@@ -41,18 +41,23 @@ namespace VTX
 
 		void ModelMolecule::_addViews()
 		{
-			std::shared_ptr<View::ViewUIMoleculeScene> view
-				= std::make_shared<View::ViewUIMoleculeScene>( View::ViewUIMoleculeScene() );
+			// Create views.
+			std::shared_ptr<View::ViewUIMoleculeStructure> viewUIScene
+				= std::make_shared<View::ViewUIMoleculeStructure>( View::ViewUIMoleculeStructure() );
+			std::shared_ptr<View::View3DMoleculeSphere> view3DSphere
+				= std::make_shared<View::View3DMoleculeSphere>( View::View3DMoleculeSphere() );
+			std::shared_ptr<View::View3DMoleculeCylinder> view3DCylinder
+				= std::make_shared<View::View3DMoleculeCylinder>( View::View3DMoleculeCylinder() );
 
-			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( view ) );
+			// Add views.
+			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( viewUIScene ) );
+			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( view3DSphere ) );
+			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( view3DCylinder ) );
+
+			// Attach to component.
 			std::shared_ptr<UI::BaseComponent> component
 				= VTXApp::get().getUIComponentByName( UI::COMPONENT_NAME::SCENE );
-			component->addComponent( Util::Type::viewToComponent<ModelMolecule>( view ) );
-
-			_addView(
-				Util::Type::viewPtrToViewSharedPtr( (View::BaseView<BaseModel> *)new View::View3DMoleculeSphere() ) );
-			_addView(
-				Util::Type::viewPtrToViewSharedPtr( (View::BaseView<BaseModel> *)new View::View3DMoleculeCylinder() ) );
+			component->addComponent( Util::Type::viewToComponent<ModelMolecule>( viewUIScene ) );
 		}
 
 		void ModelMolecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }

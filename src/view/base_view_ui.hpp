@@ -22,6 +22,7 @@ namespace VTX
 			virtual UI::COMPONENT_NAME getComponentName() const override { return UI::COMPONENT_NAME::VIEW; }
 			virtual std::string		   getName() const override
 			{
+				VTX_DEBUG( "ICI" );
 				return ENUM_TO_STRING( getViewName() ) + "_" + std::to_string( _model->getId() );
 			}
 
