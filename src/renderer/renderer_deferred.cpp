@@ -30,7 +30,7 @@ namespace VTX
 			_initSsaoPass();
 			_initBlurPass();
 			_initShadingPass();
-			//_initAntiAliasingPass();
+			_initAntiAliasingPass();
 			_initQuadVAO();
 
 			_isInitialized = true;
@@ -267,7 +267,7 @@ namespace VTX
 
 			_blurPass();
 			_shadingPass();
-			//_antiAliasingPass();
+			_antiAliasingPass();
 		};
 
 		void RendererDeferred::_geometricPass( Object3D::Scene & p_scene )
@@ -340,8 +340,12 @@ namespace VTX
 
 		void RendererDeferred::_shadingPass()
 		{
-			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-			// glBindFramebuffer(GL_FRAMEBUFFER, m_fboShading);
+			if ( Setting::Rendering::useAA ) 
+			{ 
+				glBindFramebuffer( GL_FRAMEBUFFER, _fboShading ); 
+			} 
+			// glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+			
 
 			glActiveTexture( GL_TEXTURE0 );
 			glBindTexture( GL_TEXTURE_2D, _colorNormalCompressedTexture );
@@ -359,6 +363,8 @@ namespace VTX
 
 		void RendererDeferred::_antiAliasingPass()
 		{
+			if ( Setting::Rendering::useAA == false ) return;
+
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 			glActiveTexture( GL_TEXTURE0 );

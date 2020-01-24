@@ -34,7 +34,7 @@ namespace VTX
 		{
 			if ( _id == GL_INVALID_INDEX )
 			{
-				VTX_ERROR( "Can not attach shader : program is not created" );
+				VTX_ERROR( "Cannot attach shader: program is not created" );
 				return;
 			}
 

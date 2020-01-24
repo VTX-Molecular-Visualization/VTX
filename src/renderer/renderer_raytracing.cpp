@@ -9,7 +9,7 @@ namespace VTX
 			
 		}
 
-			void RendererRaytracing::clear( Object3D::Scene & p_scene )
+		void RendererRaytracing::clear( Object3D::Scene & p_scene )
 		{
 
 		}
