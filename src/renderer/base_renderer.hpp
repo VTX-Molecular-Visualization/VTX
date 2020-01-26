@@ -38,13 +38,13 @@ namespace VTX
 			virtual void render( Object3D::Scene & )		   = 0;
 			virtual void setShading()						   = 0;
 
-			inline Shader::GLSLProgramManager & getProgramManager() { return _programManager; }
+			inline GL::GLSLProgramManager & getProgramManager() { return _programManager; }
 
 		  protected:
 			bool					   _isInitialized  = false;
 			uint					   _width		   = 0;
 			uint					   _height		   = 0;
-			Shader::GLSLProgramManager _programManager = Shader::GLSLProgramManager();
+			GL::GLSLProgramManager	   _programManager = GL::GLSLProgramManager();
 		};
 	} // namespace Renderer
 } // namespace VTX

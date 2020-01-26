@@ -49,7 +49,7 @@ namespace VTX
 		void									 setRendererShading() const;
 
 		inline Object3D::Scene &			getScene() { return *_scene; }
-		inline Shader::GLSLProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
+		inline GL::GLSLProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
 
 	  private:
 		static bool				 _isRunning;

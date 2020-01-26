@@ -5,7 +5,7 @@
 
 namespace VTX
 {
-	namespace Shader
+	namespace GL
 	{
 		const GLSLProgramManager::MapStringToEnum GLSLProgramManager::EXTENSIONS
 			= MapStringToEnum( { { "vert", SHADER_TYPE::VERTEX },

@@ -5,7 +5,7 @@
 
 namespace VTX
 {
-	namespace Shader
+	namespace GL
 	{
 		GLSLProgram::~GLSLProgram()
 		{

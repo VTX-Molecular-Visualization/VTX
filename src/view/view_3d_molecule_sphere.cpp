@@ -7,8 +7,8 @@ namespace VTX
 	{
 		void View3DMoleculeSphere::_prepare()
 		{
-			Shader::GLSLProgramManager & pm		 = VTXApp::get().getProgramManager();
-			Shader::GLSLProgram *		 program = pm.createProgram( "SphereImpostorGeomShader" );
+			GL::GLSLProgramManager & pm		 = VTXApp::get().getProgramManager();
+			GL::GLSLProgram *		 program = pm.createProgram( "SphereImpostorGeomShader" );
 			program->attachShader( pm.createShader( "sphereImpostorGeom.vert" ) );
 			program->attachShader( pm.createShader( "sphereImpostorGeomQuad.geom" ) );
 			program->attachShader( pm.createShader( "sphereImpostorDeferred.frag" ) );

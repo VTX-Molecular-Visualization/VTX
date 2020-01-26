@@ -30,7 +30,7 @@ namespace VTX
 			_initSsaoPass();
 			_initBlurPass();
 			_initShadingPass();
-			_initAntiAliasingPass();
+			//_initAntiAliasingPass();
 			_initQuadVAO();
 
 			_isInitialized = true;
@@ -185,7 +185,7 @@ namespace VTX
 
 		void RendererGL::_initShadingPass()
 		{
-			Shader::GLSLProgramManager & programManager = VTXApp::get().getProgramManager();
+			GL::GLSLProgramManager & programManager = VTXApp::get().getProgramManager();
 
 			glGenFramebuffers( 1, &_fboShading );
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboShading );
@@ -267,7 +267,7 @@ namespace VTX
 
 			_blurPass();
 			_shadingPass();
-			_antiAliasingPass();
+			//_antiAliasingPass();
 		};
 
 		void RendererGL::_geometricPass( Object3D::Scene & p_scene )

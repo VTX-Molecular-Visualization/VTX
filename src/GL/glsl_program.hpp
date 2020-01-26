@@ -11,7 +11,7 @@
 
 namespace VTX
 {
-	namespace Shader
+	namespace GL
 	{
 		class GLSLProgram
 		{
