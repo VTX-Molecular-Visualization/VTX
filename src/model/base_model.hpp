@@ -24,6 +24,7 @@ namespace VTX
 			virtual ~BaseModel();
 
 			uint						getId() const { return _id; }
+			void						setId( const uint p_id ) { _id = p_id; }
 			virtual void				init();
 			virtual const ViewSharedPtr getViewByName( const View::VIEW_NAME ) const final;
 			bool						isSelected() const { return _isSelected; }
@@ -36,7 +37,7 @@ namespace VTX
 			void		 _removeView( const View::VIEW_NAME );
 			virtual void _clearViews() final;
 
-			uint				   _id		   = 0u;
+			uint				   _id		   = INVALID_ID;
 			bool				   _isSelected = false;
 			MapEnumToViewSharedPtr _views	   = MapEnumToViewSharedPtr();
 

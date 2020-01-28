@@ -20,8 +20,6 @@ namespace VTX
 			inline ModelMolecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void setMoleculePtr( ModelMolecule * const p_molecule ) { _moleculePtr = p_molecule; }
 
-			inline uint				   getId() const { return _id; };
-			inline void				   setId( const uint p_id ) { _id = p_id; };
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 			inline float * const	   getColor() { return _color; }
@@ -41,7 +39,6 @@ namespace VTX
 		  private:
 			ModelMolecule * _moleculePtr = nullptr;
 
-			uint		_id				= INVALID_ID;
 			std::string _name			= "";
 			float		_color[ 3 ]		= { 0.f, 0.f, 0.f };
 			uint		_idFirstResidue = 0;

@@ -158,8 +158,6 @@ namespace VTX
 			inline ModelResidue * const getResiduePtr() const { return _residuePtr; }
 			inline void					setResiduePtr( ModelResidue * const p_residue ) { _residuePtr = p_residue; }
 
-			inline const uint		   getId() const { return _id; };
-			inline void				   setId( const uint p_id ) { _id = p_id; };
 			inline const ATOM_SYMBOL   getSymbol() const { return _symbol; };
 			inline const std::string   getSymbolStr() const { return ENUM_TO_STRING( _symbol ); };
 			inline void				   setSymbol( const ATOM_SYMBOL p_symbol ) { _symbol = p_symbol; };
@@ -181,7 +179,6 @@ namespace VTX
 			ModelChain *	_chainPtr	 = nullptr;
 			ModelResidue *	_residuePtr	 = nullptr;
 
-			uint		_id			= INVALID_ID;
 			ATOM_SYMBOL _symbol		= ATOM_SYMBOL::UNKNOWN;
 			float		_color[ 3 ] = { 0.f, 0.f, 0.f };
 		};
