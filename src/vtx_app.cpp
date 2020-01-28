@@ -42,9 +42,9 @@ namespace VTX
 
 #ifdef _DEBUG
 		//_stateMachine->goToState( State::STATE_NAME::VISUALIZATION );
-		//_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "4v6x.mmtf" ) );
+		_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "4v6x.mmtf" ) );
 		//_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "3j3q.mmtf" ) );
-		_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "r2d2.obj" ) );
+		//_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "r2d2.obj" ) );
 #else
 		_stateMachine->goToState( State::STATE_NAME::VISUALIZATION );
 #endif

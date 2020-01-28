@@ -32,5 +32,5 @@ Go to Tools -> Options, then under LLVM/Clang, set the following values:
 
 ## LINUX
 
-Pareil mais penser à installer git et GL avant vcpkg.
+Pareil mais penser à installer git, curl, cmake et GL (libgl1-mesa-dev) avant vcpkg.
 ## MAC OS
