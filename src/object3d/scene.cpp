@@ -1,6 +1,6 @@
 #include "scene.hpp"
 #include "../math/transform.hpp"
-#include "../settings.hpp"
+#include "../setting.hpp"
 
 namespace VTX
 {

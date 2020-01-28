@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "../event/event.hpp"
 #include <type_traits>
 #include <utility>

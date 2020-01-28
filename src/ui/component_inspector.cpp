@@ -1,5 +1,5 @@
 #include "component_inspector.hpp"
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "../localization/language.hpp"
 #include "../style.hpp"
 #include "../view/view_ui_atom.hpp"

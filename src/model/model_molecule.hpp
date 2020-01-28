@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "../generic/base_transformable.hpp"
 #include "../math/aabb.hpp"
 #include "../util/logger.hpp"

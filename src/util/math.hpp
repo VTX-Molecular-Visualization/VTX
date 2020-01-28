@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../defines.hpp"
+#include "../define.hpp"
 #include <random>
 
 #undef min

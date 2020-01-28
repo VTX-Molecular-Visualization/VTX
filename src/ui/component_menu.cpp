@@ -11,7 +11,7 @@
 #include "../action/action_open.hpp"
 #include "../action/action_quit.hpp"
 #include "../action/action_snapshot.hpp"
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "../style.hpp"
 #include "../tool/snapshoter.hpp"
 #include "../util/logger.hpp"

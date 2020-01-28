@@ -70,9 +70,6 @@ namespace VTX
 	inline void	  VTX_ERROR( const std::string & p_str ) { VTX::Util::Logger::logError( p_str ); }
 	constexpr int VTX_CONSOLE_SIZE = 80;
 
-// Enum.
-#define ENUM_TO_STRING( E ) std::string( magic_enum::enum_name( E ) )
-
 	// Localization.
 	inline const char * LOCALE( const char * p_str ) { return VTX::Localization::Language::text( p_str ); }
 

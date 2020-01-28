@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "base_model.hpp"
 
 // IN is previously declared as macro in winmindef.h (used by gl3w)

@@ -1,5 +1,5 @@
 #include "component_console.hpp"
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "../event/event.hpp"
 #include "../style.hpp"
 #include "../util/logger.hpp"

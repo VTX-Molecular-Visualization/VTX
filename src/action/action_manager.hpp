@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "base_action_undonable.hpp"
 #include <list>
 #include <string>

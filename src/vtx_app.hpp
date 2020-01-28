@@ -10,7 +10,7 @@
 #include "event/event.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
-#include "settings.hpp"
+#include "setting.hpp"
 #include "state/state_machine.hpp"
 #include "tool/chrono.hpp"
 #include "ui/user_interface.hpp"
@@ -48,7 +48,7 @@ namespace VTX
 		void									 initRenderer() const;
 		void									 setRendererShading() const;
 
-		inline Object3D::Scene &			getScene() { return *_scene; }
+		inline Object3D::Scene &		getScene() { return *_scene; }
 		inline GL::GLSLProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
 
 	  private:

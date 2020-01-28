@@ -1,7 +1,7 @@
 #include "user_interface.hpp"
-#include "../defines.hpp"
-#include "../exceptions.hpp"
-#include "../settings.hpp"
+#include "../define.hpp"
+#include "../exception.hpp"
+#include "../setting.hpp"
 #include "../style.hpp"
 #include "../util/logger.hpp"
 #include "../util/opengl.hpp"
@@ -66,12 +66,12 @@ namespace VTX
 
 		void UserInterface::_addComponents()
 		{
-			_addComponent( std::make_shared<ComponentMenu>(
+			addComponent( std::make_shared<ComponentMenu>(
 				ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showInspector, &_showCameraEditor ) ) );
-			_addComponent( std::make_shared<ComponentConsole>( ComponentConsole( &_showConsole ) ) );
-			_addComponent( std::make_shared<ComponentScene>( ComponentScene( &_showScene ) ) );
-			_addComponent( std::make_shared<ComponentInspector>( ComponentInspector( &_showInspector ) ) );
-			_addComponent( std::make_shared<ComponentCameraEditor>( ComponentCameraEditor( &_showCameraEditor ) ) );
+			addComponent( std::make_shared<ComponentConsole>( ComponentConsole( &_showConsole ) ) );
+			addComponent( std::make_shared<ComponentScene>( ComponentScene( &_showScene ) ) );
+			addComponent( std::make_shared<ComponentInspector>( ComponentInspector( &_showInspector ) ) );
+			addComponent( std::make_shared<ComponentCameraEditor>( ComponentCameraEditor( &_showCameraEditor ) ) );
 		}
 
 		void UserInterface::_initSDL2()

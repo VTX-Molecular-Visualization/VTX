@@ -1,6 +1,6 @@
 #include "snapshoter.hpp"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "../io/path.hpp"
 #include "../ui/imgui/imgui.h"
 #include "../util/time.hpp"

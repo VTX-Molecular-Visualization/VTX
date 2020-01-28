@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "../event/event.hpp"
 #include "../model/base_model.hpp"
 #include "imgui/imgui.h"
@@ -47,11 +47,11 @@ namespace VTX
 			virtual std::string	   getName() const { return ENUM_TO_STRING( getComponentName() ); };
 
 			virtual void addView( const std::shared_ptr<View::BaseView<Model::BaseModel>> );
+			virtual void addComponent( const std::shared_ptr<UI::BaseComponent> ) final;
 
 		  protected:
 			bool * _show = nullptr;
 
-			virtual void _addComponent( const std::shared_ptr<UI::BaseComponent> ) final;
 			virtual void _addComponents() {};
 			virtual void _drawComponent( const COMPONENT_NAME );
 			virtual void _drawComponents() final;

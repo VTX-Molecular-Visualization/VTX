@@ -1,5 +1,5 @@
 #include "component_scene.hpp"
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "../localization/language.hpp"
 #include "../style.hpp"
 #include "../vtx_app.hpp"
