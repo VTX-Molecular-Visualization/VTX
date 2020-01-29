@@ -14,17 +14,10 @@ namespace VTX
 	namespace View
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		class BaseViewUI : public UI::BaseComponent, public BaseView<T>
+		class BaseViewUI : public BaseView<T>
 		{
 		  public:
 			explicit BaseViewUI( bool * const p_show ) : BaseComponent( p_show ) {}
-
-			virtual UI::COMPONENT_NAME getComponentName() const override { return UI::COMPONENT_NAME::VIEW; }
-			virtual std::string		   getName() const override
-			{
-				// return ENUM_TO_STRING( getViewName() ) + "_" + std::to_string( _model->getId() );
-				return ENUM_TO_STRING( getViewName() );
-			}
 
 			virtual void display() override
 			{

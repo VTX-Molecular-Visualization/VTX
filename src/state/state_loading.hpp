@@ -6,7 +6,6 @@
 #endif
 
 #include "base_state.hpp"
-#include <string>
 
 namespace VTX
 {
@@ -17,9 +16,9 @@ namespace VTX
 		  public:
 			StateLoading() = default;
 
-			virtual STATE_NAME getStateName() const override { return STATE_NAME::LOADING; }
-			virtual void	   enter( void * const ) override;
-			virtual void	   exit() override;
+			virtual std::string getName() const override { return ID::State::LOADING; }
+			virtual void		enter( void * const ) override;
+			virtual void		exit() override;
 
 		  private:
 			void _loadFile( std::string * ) const;

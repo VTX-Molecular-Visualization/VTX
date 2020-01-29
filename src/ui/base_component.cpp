@@ -6,47 +6,21 @@ namespace VTX
 {
 	namespace UI
 	{
-		BaseComponent::BaseComponent( bool * const p_show ) : _show( p_show ) {}
-
-		BaseComponent::~BaseComponent() { _components.clear(); }
-
 		void BaseComponent::init()
 		{
-			if ( _isInitialized ) { return; }
-			_addComponents();
+			Generic::HasCollection<Generic::BaseDrawable>::init();
 			_registerEventHandlers();
-			_isInitialized = true;
 		}
 
-		void BaseComponent::addComponent( const std::shared_ptr<UI::BaseComponent> p_component )
-		{
-			VTX_DEBUG( "ADD COMPONENT" );
-			p_component->init();
-			try
-			{
-				_components.try_emplace( p_component->getName(), p_component );
-			}
-			catch ( const std::exception )
-			{
-				VTX_WARNING( "A component with this name already exists: " + p_component->getName() );
-			}
-		}
-
-		void BaseComponent::addView( const std::shared_ptr<View::BaseView<Model::BaseModel>> p_view )
-		{
-			VTX_DEBUG( "ADD VIEW" );
-			addComponent( Util::Type::viewToComponent( p_view ) );
-		}
-
-		void BaseComponent::_drawComponent( const COMPONENT_NAME p_name )
+		void BaseComponent::_drawComponent( const std::string & p_name )
 		{
 			try
 			{
-				_components.at( ENUM_TO_STRING( p_name ) )->display();
+				_components.at( p_name )->display();
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "Component not found: " + ENUM_TO_STRING( p_name ) );
+				VTX_WARNING( "Component not found: " + p_name );
 			}
 		}
 
@@ -60,10 +34,9 @@ namespace VTX
 
 		void BaseComponent::_registerEventHandler( const Event::EVENT_UI p_event ) { _events.emplace( p_event ); }
 
-		const std::shared_ptr<UI::BaseComponent> BaseComponent::getComponentByName( const COMPONENT_NAME p_name ) const
+		const UI::BaseComponent * BaseComponent::getComponentByName( const std::string & p_name ) const
 		{
-			std::string name = ENUM_TO_STRING( p_name );
-			if ( _components.find( name ) != _components.end() ) { return _components.at( name ); }
+			if ( _components.find( p_name ) != _components.end() ) { return _components.at( p_name ); }
 
 			for ( const PairStringToComponentSharedPtr pair : _components )
 			{

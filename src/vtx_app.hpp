@@ -11,7 +11,7 @@
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
 #include "setting.hpp"
-#include "state/state_machine.hpp"
+#include "state/machine.hpp"
 #include "tool/chrono.hpp"
 #include "ui/user_interface.hpp"
 #include "util/logger.hpp"
@@ -32,7 +32,7 @@ namespace VTX
 
 		void start();
 		void stop();
-		void goToState( const State::STATE_NAME, void * const = nullptr );
+		void goToState( const std::string &, void * const = nullptr );
 		void fireUIEvent( const Event::EVENT_UI, void * const = nullptr ) const;
 		void action( Action::BaseAction * const ) const;
 		void action( const std::string & ) const;
@@ -43,7 +43,7 @@ namespace VTX
 
 		void addThread( std::thread * const );
 
-		const std::shared_ptr<UI::BaseComponent> getUIComponentByName( const UI::COMPONENT_NAME ) const;
+		const std::shared_ptr<UI::BaseComponent> getUIComponentByName( const std::string & ) const;
 		void									 setTheme() const;
 		void									 initRenderer() const;
 		void									 setRendererShading() const;
@@ -57,7 +57,7 @@ namespace VTX
 		double					 _timeTotal		= 0.f;
 		double					 _timeDelta		= 0.f;
 		UI::UserInterface *		 _ui			= nullptr;
-		State::StateMachine *	 _stateMachine	= nullptr;
+		State::Machine *		 _stateMachine	= nullptr;
 		Object3D::Scene *		 _scene			= nullptr;
 		Renderer::BaseRenderer * _renderer		= nullptr;
 		Action::ActionManager *	 _actionManager = nullptr;

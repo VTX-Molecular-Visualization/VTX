@@ -4,15 +4,17 @@ namespace VTX
 {
 	namespace Model
 	{
-		uint BaseModel::_COUNTER = 0;
+		// uint BaseModel::_COUNTER = 0;
 
-		BaseModel::BaseModel() { _id = _COUNTER++; }
+		BaseModel::BaseModel()
+		{ /* _id = _COUNTER++;*/
+		}
 
 		BaseModel::~BaseModel() { _clearViews(); }
 
 		void BaseModel::init() { _addViews(); }
 
-		const BaseModel::ViewSharedPtr BaseModel::getViewByName( const View::VIEW_NAME p_name ) const
+		const BaseModel::ViewSharedPtr BaseModel::getViewByName( const std::string & p_name ) const
 		{
 			try
 			{
@@ -20,7 +22,7 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "View not found: " + ENUM_TO_STRING( p_name ) );
+				VTX_WARNING( "View not found: " + p_name );
 				return nullptr;
 			}
 		}
@@ -34,11 +36,11 @@ namespace VTX
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "A view with this name already exists: " + ENUM_TO_STRING( p_view->getViewName() ) );
+				VTX_WARNING( "A view with this name already exists: " + p_view->getViewName() );
 			}
 		}
 
-		void BaseModel::_removeView( const View::VIEW_NAME p_name )
+		void BaseModel::_removeView( const std::string & p_name )
 		{
 			ViewSharedPtr view = getViewByName( p_name );
 			if ( view == nullptr ) return;

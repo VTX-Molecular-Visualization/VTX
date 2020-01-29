@@ -40,7 +40,7 @@ namespace VTX
 
 		UserInterface::~UserInterface() { _disposeAll(); }
 
-		void UserInterface::printInfos() const
+		void UserInterface::print() const
 		{
 			const uchar * glVersion	  = glGetString( GL_VERSION );
 			const uchar * glslVersion = glGetString( GL_SHADING_LANGUAGE_VERSION );

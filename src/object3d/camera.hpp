@@ -6,6 +6,7 @@
 #endif
 
 #include "../define.hpp"
+#include "../generic/base_printable.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtx/string_cast.hpp>
 
@@ -13,7 +14,7 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		class Camera
+		class Camera : public Generic::BasePrintable
 		{
 		  public:
 			Camera() { _update(); };
@@ -39,7 +40,7 @@ namespace VTX
 			virtual void rotateAroundLeft( const float, const Vec3f & ) final;
 			virtual void rotateAroundUp( const float, const Vec3f & ) final;
 
-			virtual void printInfo() const;
+			virtual void print() const override;
 
 		  protected:
 			float _screenWidth	= 0.f;
