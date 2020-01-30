@@ -42,14 +42,12 @@ namespace VTX
 		void ModelMolecule::_addItems()
 		{
 			// Add views.
-			_addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeSphere( this ) ) );
-			_addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeCylinder( this ) ) );
-			_addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMoleculeStructure( this ) ) );
+			addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeSphere( this ) ) );
+			addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeCylinder( this ) ) );
 
-			// Attach to component.
-			UI::BaseComponent * component = VTXApp::get().getUIComponentByName( ID::UI::SCENE );
-			// component->addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( viewUIScene ) );
-			// component->addComponent( Util::Type::viewToComponent<ModelMolecule>( viewUIScene ) );
+			View::ViewUIMoleculeStructure * const viewStructure = new View::ViewUIMoleculeStructure( this );
+			addItem( (View::BaseView<BaseModel> *)viewStructure );
+			VTXApp::get().getUIComponentByName( ID::UI::SCENE )->addItem( viewStructure );
 		}
 
 		void ModelMolecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }
@@ -91,7 +89,7 @@ namespace VTX
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		}
 
-		void ModelMolecule::printInfos() const
+		void ModelMolecule::print() const
 		{
 			VTX_INFO( "Molecule: " + _name );
 			VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: "
@@ -104,11 +102,16 @@ namespace VTX
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() )
 			{
-				//_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE ) );
+				View::ViewUIMolecule * const view = new View::ViewUIMolecule( this );
+				addItem( (View::BaseView<BaseModel> *)view );
+				VTXApp::get().getUIComponentByName( ID::UI::INSPECTOR )->addItem( view );
 			}
 			else
 			{
-				//_removeView( std::string( magic_enum::enum_name( UI::COMPONENT_NAME::VIEW_MOLECULE ) ) );
+				View::ViewUIMolecule * view = (View::ViewUIMolecule *)_getItem( ID::View::UI_MOLECULE );
+				VTXApp::get().getUIComponentByName( ID::UI::INSPECTOR )->removeItem( ID::View::UI_MOLECULE );
+				removeItem( ID::View::UI_MOLECULE );
+				delete view;
 			}
 		}
 

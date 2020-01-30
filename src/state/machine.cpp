@@ -21,8 +21,8 @@ namespace VTX
 
 		void Machine::_addItems()
 		{
-			_addItem( new StateLoading() );
-			_addItem( new StateVisualization() );
+			addItem( new StateLoading() );
+			addItem( new StateVisualization() );
 		}
 
 		void Machine::_switchState( BaseState * const p_state, void * const p_arg )

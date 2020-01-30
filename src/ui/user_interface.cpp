@@ -66,12 +66,11 @@ namespace VTX
 
 		void UserInterface::_addItems()
 		{
-			_addItem(
-				new ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showInspector, &_showCameraEditor ) );
-			_addItem( new ComponentConsole( &_showConsole ) );
-			_addItem( new ComponentScene( &_showScene ) );
-			_addItem( new ComponentInspector( &_showInspector ) );
-			_addItem( new ComponentCameraEditor( &_showCameraEditor ) );
+			addItem( new ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showInspector, &_showCameraEditor ) );
+			addItem( new ComponentConsole( &_showConsole ) );
+			addItem( new ComponentScene( &_showScene ) );
+			addItem( new ComponentInspector( &_showInspector ) );
+			addItem( new ComponentCameraEditor( &_showCameraEditor ) );
 		}
 
 		void UserInterface::_initSDL2()

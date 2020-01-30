@@ -10,7 +10,16 @@ namespace VTX
 
 		void Scene::clear()
 		{
+			for ( Model::ModelMolecule * molecule : _molecules )
+			{
+				delete molecule;
+			}
 			_molecules.clear();
+
+			for ( Model::ModelPath * path : _paths )
+			{
+				delete path;
+			}
 			_paths.clear();
 		}
 

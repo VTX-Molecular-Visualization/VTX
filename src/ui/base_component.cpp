@@ -61,7 +61,8 @@ namespace VTX
 			// Propagate to children.
 			for ( const PairStringToItemPtr pair : _getItems() )
 			{
-				( (BaseComponent *)( pair.second ) )->receiveEvent( p_event, p_arg );
+				BaseComponent * child = dynamic_cast<BaseComponent *>( pair.second );
+				if ( child != nullptr ) { child->receiveEvent( p_event, p_arg ); }
 			}
 		}
 

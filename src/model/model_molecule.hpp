@@ -6,6 +6,7 @@
 #endif
 
 #include "../define.hpp"
+#include "../generic/base_printable.hpp"
 #include "../generic/base_renderable.hpp"
 #include "../generic/base_transformable.hpp"
 #include "../math/aabb.hpp"
@@ -25,11 +26,15 @@ namespace VTX
 	namespace Model
 	{
 		class BaseView3DMolecule;
-		class ModelMolecule : public BaseModel, public Generic::BaseTransformable, public Generic::BaseRenderable
+		class ModelMolecule :
+			public BaseModel,
+			public Generic::BasePrintable,
+			public Generic::BaseTransformable,
+			public Generic::BaseRenderable
 		{
 		  public:
 			ModelMolecule() = default;
-			~ModelMolecule();
+			virtual ~ModelMolecule();
 
 			// Models.
 			inline const std::string & getName() const { return _name; };
@@ -83,7 +88,7 @@ namespace VTX
 			void		 setRepresentation();
 			void		 setColorMode();
 
-			void printInfos() const;
+			virtual void print() const override;
 
 			ModelChain * const	 getSelectedChain() const { return _selectedChain; }
 			ModelResidue * const getSelectedResidue() const { return _selectedResidue; }

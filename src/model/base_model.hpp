@@ -18,6 +18,7 @@ namespace VTX
 		{
 		  public:
 			BaseModel();
+			virtual ~BaseModel() = default;
 
 			uint		 getId() const { return _id; }
 			void		 setId( const uint p_id ) { _id = p_id; }

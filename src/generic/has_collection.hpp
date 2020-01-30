@@ -33,12 +33,7 @@ namespace VTX
 					return nullptr;
 				}
 			}
-
-		  protected:
-			inline MapStringToItemPtr & _getItems() { return _items; }
-			inline T * const			_getItem( const std::string & p_name ) const { return _items.at( p_name ); }
-			virtual void				_addItems() {};
-			void						_addItem( T * const p_item )
+			void addItem( T * const p_item )
 			{
 				( (BaseCollectionable *)p_item )->initItem();
 				try
@@ -50,7 +45,12 @@ namespace VTX
 					VTX_WARNING( "An item with this name already exists: " + ( (BaseNamable *)p_item )->getName() );
 				}
 			}
-			void _removeItem( const std::string & p_name ) { _items.erase( p_name ); }
+			void removeItem( const std::string & p_name ) { _items.erase( p_name ); }
+
+		  protected:
+			inline MapStringToItemPtr & _getItems() { return _items; }
+			inline T * const			_getItem( const std::string & p_name ) const { return _items.at( p_name ); }
+			virtual void				_addItems() {};
 
 		  private:
 			MapStringToItemPtr _items = MapStringToItemPtr();

@@ -4,7 +4,14 @@ namespace VTX
 {
 	namespace Model
 	{
-		ModelPath::~ModelPath() { _checkpoints.clear(); }
+		ModelPath::~ModelPath()
+		{
+			for ( Model::ModelCheckpoint * checkpoint : _checkpoints )
+			{
+				delete checkpoint;
+			}
+			_checkpoints.clear();
+		}
 
 	} // namespace Model
 } // namespace VTX
