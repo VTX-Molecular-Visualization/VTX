@@ -23,7 +23,7 @@ namespace VTX
 		class BaseView : public Generic::BaseDrawable
 		{
 		  public:
-			BaseView( T * const p_model ) : _model( p_model ) {}
+			explicit BaseView( T * const p_model ) : _model( p_model ) {}
 			// virtual void setModel( T * const p_model ) final { _model = p_model; }
 			virtual void notify( Event::EVENT_MODEL ) {};
 
