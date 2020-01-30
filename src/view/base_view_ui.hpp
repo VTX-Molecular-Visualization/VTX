@@ -14,13 +14,10 @@ namespace VTX
 	namespace View
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		class BaseViewUI : public BaseView<T>
+		class BaseViewUI : public BaseView<T>, public Generic::BaseDrawable
 		{
 		  public:
-			explicit BaseViewUI( T * const p_model ) : BaseView( p_model ) { _visible = &_isActive; }
-
-		  private:
-			bool _isActive = true;
+			explicit BaseViewUI( T * const p_model ) : BaseView( p_model ) {}
 		};
 	} // namespace View
 } // namespace VTX

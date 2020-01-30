@@ -40,15 +40,14 @@ namespace VTX
 			virtual void				_addItems() {};
 			void						_addItem( T * const p_item )
 			{
-				p_item->initItem();
+				( (BaseCollectionable *)p_item )->initItem();
 				try
 				{
-					_items.try_emplace( ( (BaseCollectionable *)( p_item ) )->getName(), p_item );
+					_items.try_emplace( ( (BaseNamable *)p_item )->getName(), p_item );
 				}
 				catch ( const std::exception & )
 				{
-					VTX_WARNING( "An item with this name already exists: "
-								 + ( (BaseCollectionable *)( p_item ) )->getName() );
+					VTX_WARNING( "An item with this name already exists: " + ( (BaseNamable *)p_item )->getName() );
 				}
 			}
 			void _removeItem( const std::string & p_name ) { _items.erase( p_name ); }

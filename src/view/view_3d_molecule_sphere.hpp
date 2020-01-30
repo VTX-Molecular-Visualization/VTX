@@ -20,8 +20,7 @@ namespace VTX
 			virtual void		initItem() override;
 			virtual void		notify( Event::EVENT_MODEL ) override;
 
-		  protected:
-			virtual void _draw() override;
+			virtual void render() override;
 
 		  private:
 			float _radiusScale = 0.0f;

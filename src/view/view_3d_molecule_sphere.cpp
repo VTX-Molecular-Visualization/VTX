@@ -29,22 +29,22 @@ namespace VTX
 				{
 				case MOLECULE_REPRESENTATION::BALL_AND_STICK:
 					_radiusScale = 0.3f;
-					setVisible( true );
+					_isActive	 = true;
 					break;
 				case MOLECULE_REPRESENTATION::VAN_DER_WAALS:
 					_radiusScale = 1.0f;
-					setVisible( true );
+					_isActive	 = true;
 					break;
 				case MOLECULE_REPRESENTATION::STICK:
 					//_radiusScale = 0.1f;
-					setVisible( false );
+					_isActive = false;
 					break;
-				default: setVisible( false ); break;
+				default: _isActive = false; break;
 				}
 			}
 		};
 
-		void View3DMoleculeSphere::_draw()
+		void View3DMoleculeSphere::render()
 		{
 			VTXApp::get().getProgramManager().getProgram( "SphereImpostorGeomShader" )->use();
 			_setCameraUniforms( VTXApp::get().getScene().getCamera() );

@@ -6,7 +6,7 @@ namespace VTX
 	{
 		void BaseView3DMolecule::notify( Event::EVENT_MODEL p_event )
 		{
-			if ( p_event == Event::EVENT_MODEL::RENDER ) { draw(); }
+			if ( p_event == Event::EVENT_MODEL::RENDER && _isActive ) { render(); }
 		}
 	} // namespace View
 } // namespace VTX

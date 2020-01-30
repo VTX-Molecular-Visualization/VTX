@@ -44,7 +44,7 @@ namespace VTX
 			// Add views.
 			_addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeSphere( this ) ) );
 			_addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeCylinder( this ) ) );
-			//_addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMoleculeStructure() ) );
+			_addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMoleculeStructure( this ) ) );
 
 			// Attach to component.
 			// std::shared_ptr<UI::BaseComponent> component

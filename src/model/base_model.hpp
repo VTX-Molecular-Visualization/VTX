@@ -19,9 +19,8 @@ namespace VTX
 		  public:
 			BaseModel();
 
-			uint getId() const { return _id; }
-			void setId( const uint p_id ) { _id = p_id; }
-			// virtual const ViewSharedPtr getViewByName( const std::string & ) const final;
+			uint		 getId() const { return _id; }
+			void		 setId( const uint p_id ) { _id = p_id; }
 			bool		 isSelected() const { return _isSelected; }
 			virtual void setSelected( const bool p_selected ) { _isSelected = p_selected; }
 

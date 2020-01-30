@@ -28,14 +28,14 @@ namespace VTX
 				switch ( Setting::Rendering::representation )
 				{
 				case MOLECULE_REPRESENTATION::STICK:
-				case MOLECULE_REPRESENTATION::BALL_AND_STICK: setVisible( true ); break;
+				case MOLECULE_REPRESENTATION::BALL_AND_STICK: _isActive = true; break;
 				case MOLECULE_REPRESENTATION::VAN_DER_WAALS:
-				default: setVisible( false ); break;
+				default: _isActive = false; break;
 				}
 			}
 		};
 
-		void View3DMoleculeCylinder::_draw()
+		void View3DMoleculeCylinder::render()
 		{
 			VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
 			_setCameraUniforms( VTXApp::get().getScene().getCamera() );

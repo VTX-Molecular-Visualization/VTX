@@ -7,8 +7,7 @@
 
 #include "../define.hpp"
 #include "../event/event.hpp"
-#include "../generic/base_drawable.hpp"
-#include "../generic/base_namable.hpp"
+#include "../generic/base_collectionable.hpp"
 #include "../id.hpp"
 #include <type_traits>
 #include <utility>
@@ -20,7 +19,7 @@ namespace VTX
 		class BaseModel;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		class BaseView : public Generic::BaseDrawable
+		class BaseView : public Generic::BaseCollectionable
 		{
 		  public:
 			explicit BaseView( T * const p_model ) : _model( p_model ) {}
