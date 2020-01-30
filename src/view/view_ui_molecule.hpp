@@ -15,7 +15,7 @@ namespace VTX
 		class ViewUIMolecule : public BaseViewUI<Model::ModelMolecule>
 		{
 		  public:
-			explicit ViewUIMolecule( bool * const p_show ) : BaseViewUI( p_show ) {}
+			explicit ViewUIMolecule( Model::ModelMolecule * const p_model ) : BaseViewUI( p_model ) {}
 			virtual void notify( Event::EVENT_MODEL ) override;
 
 			virtual std::string getName() const override { return ID::View::UI_MOLECULE; };

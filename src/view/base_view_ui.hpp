@@ -17,7 +17,10 @@ namespace VTX
 		class BaseViewUI : public BaseView<T>
 		{
 		  public:
-			explicit BaseViewUI( bool * const p_visible ) { _visible = p_visible; }
+			explicit BaseViewUI( T * const p_model ) : BaseView( p_model ) { _visible = &_isActive; }
+
+		  private:
+			bool _isActive = true;
 		};
 	} // namespace View
 } // namespace VTX

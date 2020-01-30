@@ -15,7 +15,7 @@ namespace VTX
 		class ViewUIAtom : public BaseViewUI<Model::ModelAtom>
 		{
 		  public:
-			explicit ViewUIAtom( bool * const p_show ) : BaseViewUI( p_show ) {}
+			explicit ViewUIAtom( Model::ModelAtom * const p_model ) : BaseViewUI( p_model ) {}
 			virtual void notify( Event::EVENT_MODEL ) override;
 
 			virtual std::string getName() const override { return ID::View::UI_ATOM; };

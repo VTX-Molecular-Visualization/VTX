@@ -18,7 +18,7 @@ namespace VTX
 		class BaseView3D : public BaseView<T>
 		{
 		  public:
-			BaseView3D()
+			BaseView3D( T * const p_model ) : BaseView( p_model )
 			{
 				_visible = &_isActive; // Default disabled.
 			}

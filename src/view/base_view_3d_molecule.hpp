@@ -33,6 +33,8 @@ namespace VTX
 		class BaseView3DMolecule : public BaseView3D<Model::ModelMolecule>
 		{
 		  public:
+			explicit BaseView3DMolecule( Model::ModelMolecule * const p_model ) : BaseView3D( p_model ) {}
+
 			virtual void notify( Event::EVENT_MODEL p_event ) override;
 		};
 	} // namespace View
