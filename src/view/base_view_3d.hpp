@@ -18,7 +18,10 @@ namespace VTX
 		class BaseView3D : public BaseView<T>
 		{
 		  public:
-			explicit BaseView3D() { *_visible = true; }
+			BaseView3D()
+			{
+				_visible = &_isActive; // Default disabled.
+			}
 
 		  protected:
 			// Uniforms.
@@ -33,6 +36,9 @@ namespace VTX
 									glm::value_ptr( p_camera.getViewMatrix() * _getModel().getTransform().get() ) );
 				glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_camera.getProjectionMatrix() ) );
 			}
+
+		  private:
+			bool _isActive = false;
 		};
 	} // namespace View
 } // namespace VTX

@@ -22,7 +22,7 @@ namespace VTX
 		class BaseComponent : public Generic::HasCollection<Generic::BaseDrawable>, public Generic::BaseDrawable
 		{
 		  public:
-			BaseComponent( bool * const p_visible ) { _visible = p_visible; }
+			explicit BaseComponent( bool * const p_visible ) { _visible = p_visible; }
 
 			virtual void init() override;
 			virtual void initItem() override;
