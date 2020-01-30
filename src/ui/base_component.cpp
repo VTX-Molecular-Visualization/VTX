@@ -59,7 +59,7 @@ namespace VTX
 			// Propagate to children.
 			for ( const PairStringToItemPtr pair : _getItems() )
 			{
-				// pair.second->receiveEvent( p_event, p_arg );
+				( (BaseComponent *)( pair.second ) )->receiveEvent( p_event, p_arg );
 			}
 		}
 
