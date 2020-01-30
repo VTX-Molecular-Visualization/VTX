@@ -47,8 +47,7 @@ namespace VTX
 			_addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMoleculeStructure( this ) ) );
 
 			// Attach to component.
-			// std::shared_ptr<UI::BaseComponent> component
-			//	= VTXApp::get().getUIComponentByName( UI::COMPONENT_NAME::SCENE );
+			UI::BaseComponent * component = VTXApp::get().getUIComponentByName( ID::UI::SCENE );
 			// component->addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( viewUIScene ) );
 			// component->addComponent( Util::Type::viewToComponent<ModelMolecule>( viewUIScene ) );
 		}

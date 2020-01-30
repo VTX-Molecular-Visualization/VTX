@@ -48,7 +48,7 @@ namespace VTX
 		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "3j3q.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "r2d2.obj" ) );
 #else
-		_stateMachine->goToState( State::STATE_NAME::VISUALIZATION );
+		_stateMachine->goToState( ID::State::VISUALIZATION );
 #endif
 
 		while ( VTXApp::_isRunning )

@@ -43,10 +43,13 @@ namespace VTX
 
 		void addThread( std::thread * const );
 
-		const std::shared_ptr<UI::BaseComponent> getUIComponentByName( const std::string & ) const;
-		void									 setTheme() const;
-		void									 initRenderer() const;
-		void									 setRendererShading() const;
+		UI::BaseComponent * const getUIComponentByName( const std::string & p_name ) const
+		{
+			return _ui->getComponentByName( p_name );
+		}
+		void setTheme() const;
+		void initRenderer() const;
+		void setRendererShading() const;
 
 		inline Object3D::Scene &		getScene() { return *_scene; }
 		inline GL::GLSLProgramManager & getProgramManager() { return _renderer->getProgramManager(); }

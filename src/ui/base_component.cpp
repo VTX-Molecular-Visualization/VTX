@@ -36,20 +36,22 @@ namespace VTX
 
 		void BaseComponent::_registerEventHandler( const Event::EVENT_UI p_event ) { _events.emplace( p_event ); }
 
-		/*
-		const UI::BaseComponent * const BaseComponent::getComponentByName( const std::string & p_name ) const
+		BaseComponent * const BaseComponent::getComponentByName( const std::string & p_name )
 		{
-			if ( _components.find( p_name ) != _components.end() ) { return _components.at( p_name ); }
+			if ( _getItems().find( p_name ) != _getItems().end() ) { return (BaseComponent *)_getItem( p_name ); }
 
-			for ( const PairStringToComponentSharedPtr pair : _components )
+			for ( const PairStringToItemPtr pair : _getItems() )
 			{
-				std::shared_ptr<UI::BaseComponent> child = pair.second->getComponentByName( p_name );
-				if ( child != nullptr ) { return child; }
+				BaseComponent * child = dynamic_cast<BaseComponent *>( pair.second );
+				if ( child != nullptr )
+				{
+					child = child->getComponentByName( p_name );
+					if ( child != nullptr ) { return child; }
+				}
 			}
 
 			return nullptr;
 		}
-		*/
 
 		void BaseComponent::receiveEvent( const Event::EVENT_UI p_event, void * const p_arg )
 		{

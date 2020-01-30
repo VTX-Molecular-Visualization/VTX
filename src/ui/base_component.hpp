@@ -27,7 +27,7 @@ namespace VTX
 			virtual void init() override;
 			virtual void initItem() override;
 
-			// virtual const UI::BaseComponent * getComponentByName( const std::string & ) const final;
+			BaseComponent * const getComponentByName( const std::string & );
 
 			// TODO: refacto
 			virtual void receiveEvent( const Event::EVENT_UI, void * const ) final;
