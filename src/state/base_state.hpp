@@ -20,8 +20,6 @@ namespace VTX
 			public Generic::BaseEventHandler<SDL_Event>
 		{
 		  public:
-			BaseState() = default;
-
 			virtual void enter( void * const ) = 0;
 			virtual void exit()				   = 0;
 

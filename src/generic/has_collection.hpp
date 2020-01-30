@@ -22,25 +22,36 @@ namespace VTX
 			using MapStringToItemPtr  = std::map<std::string, T *>;
 			using PairStringToItemPtr = std::pair<std::string, T *>;
 
-			virtual ~HasCollection() { _items.clear(); }
-			virtual void init() { _addItems(); }
-
-		  protected:
-			MapStringToItemPtr & _getItems() const { return _items; }
-			virtual void		 _addItems() {}
-			virtual void		 _addItem( T * const p_item )
+			virtual ~HasCollection() { clear(); }
+			virtual void	  init() { _addItems(); }
+			virtual void	  clear() { _items.clear(); }
+			virtual T * const findItem( const std::string & p_name )
 			{
-				p_item->init();
-				try
+				if ( _items.find( p_name ) != _items.end() ) { return _items.at( p_name ); }
+				else
 				{
-					_items.try_emplace( p_item->getName(), p_item );
-				}
-				catch ( const std::exception )
-				{
-					VTX_WARNING( "An item with this name already exists: " + p_item->getName() );
+					return nullptr;
 				}
 			}
-			virtual void _removeItem( const std::string & p_name ) { _items.erase( p_name ); }
+
+		  protected:
+			inline MapStringToItemPtr & _getItems() { return _items; }
+			inline T * const			_getItem( const std::string & p_name ) const { return _items.at( p_name ); }
+			virtual void				_addItems() {};
+			void						_addItem( T * const p_item )
+			{
+				p_item->initItem();
+				try
+				{
+					_items.try_emplace( ( (BaseCollectionable *)( p_item ) )->getName(), p_item );
+				}
+				catch ( const std::exception & )
+				{
+					VTX_WARNING( "An item with this name already exists: "
+								 + ( (BaseCollectionable *)( p_item ) )->getName() );
+				}
+			}
+			void _removeItem( const std::string & p_name ) { _items.erase( p_name ); }
 
 		  private:
 			MapStringToItemPtr _items = MapStringToItemPtr();

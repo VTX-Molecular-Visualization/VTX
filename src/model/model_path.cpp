@@ -6,7 +6,5 @@ namespace VTX
 	{
 		ModelPath::~ModelPath() { _checkpoints.clear(); }
 
-		void ModelPath::_addViews() {}
-
 	} // namespace Model
 } // namespace VTX

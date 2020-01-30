@@ -19,7 +19,6 @@ namespace VTX
 			virtual std::string getName() const override { return ID::UI::CAMERA_EDITOR; }
 
 		  protected:
-			virtual void _addComponents() override;
 			virtual void _draw() override;
 
 		  private:

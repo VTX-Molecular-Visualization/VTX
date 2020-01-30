@@ -21,9 +21,6 @@ namespace VTX
 			float _theta	= 0.f;
 			float _phi		= 4.22369f;
 
-		  protected:
-			virtual void _addViews() override final;
-
 		}; // namespace Camera
 	}	   // namespace Model
 } // namespace VTX

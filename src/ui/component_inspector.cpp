@@ -19,14 +19,12 @@ namespace VTX
 			//_addComponent( std::make_shared<View::ViewUIAtom>( View::ViewUIAtom( _show ) ) );
 		}
 
-		void ComponentInspector::_addComponents() {}
-
 		void ComponentInspector::_draw()
 		{
 			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
 			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
 
-			if ( ImGui::Begin( LOCALE( "Inspector.Inspector" ), _show, flags ) == false )
+			if ( ImGui::Begin( LOCALE( "Inspector.Inspector" ), _visible, flags ) == false )
 			{
 				ImGui::End();
 				return;

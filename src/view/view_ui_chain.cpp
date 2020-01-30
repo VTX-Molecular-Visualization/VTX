@@ -11,14 +11,14 @@ namespace VTX
 		{
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
 			ImGui::PushID( "ViewChain" );
-			if ( ImGui::CollapsingHeader( ( "Chain: " + _model->getName() ).c_str(), flags ) )
+			if ( ImGui::CollapsingHeader( ( "Chain: " + _getModel().getName() ).c_str(), flags ) )
 			{
-				ImGui::Text( "ID: %d", _model->getId() );
-				ImGui::Text( "Residues: %d", _model->getResidueCount() );
-				if ( ImGui::ColorEdit3( "Color", _model->getColor() ) )
+				ImGui::Text( "ID: %d", _getModel().getId() );
+				ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
+				if ( ImGui::ColorEdit3( "Color", _getModel().getColor() ) )
 				{
 					Setting::Rendering::colorMode = View::MOLECULE_COLOR_MODE::CHAIN;
-					_model->getMoleculePtr()->setColorMode();
+					_getModel().getMoleculePtr()->setColorMode();
 				}
 			}
 			ImGui::PopID();

@@ -19,7 +19,7 @@ namespace VTX
 		void Logger::_log( const LEVEL p_level, const std::string & p_message )
 		{
 			Log log;
-			log.level = ENUM_TO_STRING( p_level ).substr( 8 );
+			log.level = magic_enum::enum_name( p_level ).substr( 8 );
 			std::string message( p_message );
 			message.erase( std::remove( message.begin(), message.end(), '\n' ), message.end() );
 			log.message = message;

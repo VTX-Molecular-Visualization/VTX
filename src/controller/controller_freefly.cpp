@@ -22,7 +22,7 @@ namespace VTX
 			case SDL_SCANCODE_F: _camera.moveUp( -10.f ); break;
 			case SDL_SCANCODE_Q: _camera.rotateLeft( -1.f ); break;
 			case SDL_SCANCODE_E: _camera.rotateLeft( 1.f ); break;
-			case SDL_SCANCODE_SPACE: _camera.printInfo(); break;
+			case SDL_SCANCODE_SPACE: _camera.print(); break;
 			}
 		}
 

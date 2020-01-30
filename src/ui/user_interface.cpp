@@ -64,14 +64,14 @@ namespace VTX
 			}
 		}
 
-		void UserInterface::_addComponents()
+		void UserInterface::_addItems()
 		{
-			addComponent( std::make_shared<ComponentMenu>(
-				ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showInspector, &_showCameraEditor ) ) );
-			addComponent( std::make_shared<ComponentConsole>( ComponentConsole( &_showConsole ) ) );
-			addComponent( std::make_shared<ComponentScene>( ComponentScene( &_showScene ) ) );
-			addComponent( std::make_shared<ComponentInspector>( ComponentInspector( &_showInspector ) ) );
-			addComponent( std::make_shared<ComponentCameraEditor>( ComponentCameraEditor( &_showCameraEditor ) ) );
+			_addItem(
+				new ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showInspector, &_showCameraEditor ) );
+			_addItem( new ComponentConsole( &_showConsole ) );
+			_addItem( new ComponentScene( &_showScene ) );
+			_addItem( new ComponentInspector( &_showInspector ) );
+			_addItem( new ComponentCameraEditor( &_showCameraEditor ) );
 		}
 
 		void UserInterface::_initSDL2()
@@ -207,7 +207,7 @@ namespace VTX
 										   | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 			// Main begin.
-			ImGui::Begin( IMGUI_ID_MAIN_WINDOW, _show, windowFlags );
+			ImGui::Begin( IMGUI_ID_MAIN_WINDOW, _visible, windowFlags );
 
 			// Docking.
 			ImGuiID			   dockSpaceId	  = ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE );

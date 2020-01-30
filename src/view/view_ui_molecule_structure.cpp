@@ -11,16 +11,16 @@ namespace VTX
 		{
 			if ( ImGui::CollapsingHeader( LOCALE( "View.Molecule.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
-				ImGui::Text( "Chains: %d", _model->getChainCount() );
-				ImGui::Text( "Residues: %d", _model->getResidueCount() );
-				ImGui::Text( "Atoms: %d", _model->getAtomCount() );
-				ImGui::Text( "Bonds: %d", _model->getBondCount() / 2 );
+				ImGui::Text( "Chains: %d", _getModel().getChainCount() );
+				ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
+				ImGui::Text( "Atoms: %d", _getModel().getAtomCount() );
+				ImGui::Text( "Bonds: %d", _getModel().getBondCount() / 2 );
 			}
 
 			ImGui::PushID( "ViewMolecule" );
-			if ( ImGui::CollapsingHeader( _model->getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
+			if ( ImGui::CollapsingHeader( _getModel().getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
-				for ( Model::ModelChain & chain : _model->getChains() )
+				for ( Model::ModelChain & chain : _getModel().getChains() )
 				{
 					ImGui::PushID( chain.getId() );
 					bool chainOpened = ImGui::TreeNodeEx(
@@ -29,15 +29,15 @@ namespace VTX
 					if ( ImGui::IsItemClicked() )
 					{
 						if ( chainOpened )
-							_model->resetSelectedChain();
+							_getModel().resetSelectedChain();
 						else
-							_model->setSelectedChain( chain.getId() );
+							_getModel().setSelectedChain( chain.getId() );
 					}
 					if ( chainOpened )
 					{
 						for ( uint i = 0; i < chain.getResidueCount(); ++i )
 						{
-							Model::ModelResidue & residue = _model->getResidue( chain.getIdFirstResidue() + i );
+							Model::ModelResidue & residue = _getModel().getResidue( chain.getIdFirstResidue() + i );
 							ImGui::PushID( residue.getId() );
 							bool residueOpened = ImGui::TreeNodeEx(
 								VTX::Setting::UI::symbolDisplayMode == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
@@ -47,15 +47,15 @@ namespace VTX
 							if ( ImGui::IsItemClicked() )
 							{
 								if ( residueOpened )
-									_model->resetSelectedResidue();
+									_getModel().resetSelectedResidue();
 								else
-									_model->setSelectedResidue( residue.getId() );
+									_getModel().setSelectedResidue( residue.getId() );
 							}
 							if ( residueOpened )
 							{
 								for ( uint j = 0; j < residue.getAtomCount(); ++j )
 								{
-									Model::ModelAtom & atom = _model->getAtom( residue.getIdFirstAtom() + j );
+									Model::ModelAtom & atom = _getModel().getAtom( residue.getIdFirstAtom() + j );
 									ImGui::PushID( atom.getId() );
 									if ( ImGui::Selectable(
 											 VTX::Setting::UI::symbolDisplayMode
@@ -65,7 +65,7 @@ namespace VTX
 												 : atom.getSymbolName().c_str(),
 											 atom.isSelected() ) )
 									{
-										_model->setSelectedAtom( atom.getId() );
+										_getModel().setSelectedAtom( atom.getId() );
 										// ImGui::SetItemDefaultFocus();
 									}
 									ImGui::PopID();

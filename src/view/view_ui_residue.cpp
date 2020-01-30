@@ -11,14 +11,14 @@ namespace VTX
 		{
 			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
 			ImGui::PushID( "ViewResidue" );
-			if ( ImGui::CollapsingHeader( ( "Residue: " + _model->getSymbolName() ).c_str(), flags ) )
+			if ( ImGui::CollapsingHeader( ( "Residue: " + _getModel().getSymbolName() ).c_str(), flags ) )
 			{
-				ImGui::Text( "ID: %d", _model->getId() );
-				ImGui::Text( "Atoms: %d", _model->getAtomCount() );
-				if ( ImGui::ColorEdit3( "Color", _model->getColor() ) )
+				ImGui::Text( "ID: %d", _getModel().getId() );
+				ImGui::Text( "Atoms: %d", _getModel().getAtomCount() );
+				if ( ImGui::ColorEdit3( "Color", _getModel().getColor() ) )
 				{
 					Setting::Rendering::colorMode = View::MOLECULE_COLOR_MODE::RESIDUE;
-					_model->getMoleculePtr()->setColorMode();
+					_getModel().getMoleculePtr()->setColorMode();
 				}
 			}
 			ImGui::PopID();

@@ -15,7 +15,7 @@ namespace VTX
 			ImGuiWindowFlags flagsWindow = ImGuiWindowFlags_NoCollapse;
 			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
 
-			if ( ImGui::Begin( LOCALE( "Scene.Scene" ), _show, flagsWindow ) == false )
+			if ( ImGui::Begin( LOCALE( "Scene.Scene" ), _visible, flagsWindow ) == false )
 			{
 				ImGui::End();
 				return;

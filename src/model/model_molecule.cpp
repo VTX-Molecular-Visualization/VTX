@@ -39,26 +39,18 @@ namespace VTX
 			setSelected( true );
 		}
 
-		void ModelMolecule::_addViews()
+		void ModelMolecule::_addItems()
 		{
-			// Create views.
-			std::shared_ptr<View::ViewUIMoleculeStructure> viewUIScene
-				= std::make_shared<View::ViewUIMoleculeStructure>( View::ViewUIMoleculeStructure() );
-			std::shared_ptr<View::View3DMoleculeSphere> view3DSphere
-				= std::make_shared<View::View3DMoleculeSphere>( View::View3DMoleculeSphere() );
-			std::shared_ptr<View::View3DMoleculeCylinder> view3DCylinder
-				= std::make_shared<View::View3DMoleculeCylinder>( View::View3DMoleculeCylinder() );
-
 			// Add views.
-			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( view3DSphere ) );
-			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( view3DCylinder ) );
-			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( viewUIScene ) );
+			_addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeSphere() ) );
+			_addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeCylinder() ) );
+			_addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMoleculeStructure() ) );
 
 			// Attach to component.
-			std::shared_ptr<UI::BaseComponent> component
-				= VTXApp::get().getUIComponentByName( UI::COMPONENT_NAME::SCENE );
-			//component->addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( viewUIScene ) );
-			 component->addComponent( Util::Type::viewToComponent<ModelMolecule>( viewUIScene ) );
+			// std::shared_ptr<UI::BaseComponent> component
+			//	= VTXApp::get().getUIComponentByName( UI::COMPONENT_NAME::SCENE );
+			// component->addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( viewUIScene ) );
+			// component->addComponent( Util::Type::viewToComponent<ModelMolecule>( viewUIScene ) );
 		}
 
 		void ModelMolecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }
@@ -258,10 +250,10 @@ namespace VTX
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 		}
 
-		void ModelMolecule::draw()
+		void ModelMolecule::render()
 		{
 			bindBuffers();
-			_notifyViews( Event::EVENT_MODEL::DRAW );
+			_notifyViews( Event::EVENT_MODEL::RENDER );
 			unbindBuffers();
 		}
 	} // namespace Model

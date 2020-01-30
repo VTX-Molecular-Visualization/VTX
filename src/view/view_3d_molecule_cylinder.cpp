@@ -5,7 +5,7 @@ namespace VTX
 {
 	namespace View
 	{
-		void View3DMoleculeCylinder::_prepare()
+		void View3DMoleculeCylinder::initItem()
 		{
 			GL::GLSLProgramManager & pm		 = VTXApp::get().getProgramManager();
 			GL::GLSLProgram *		 program = pm.createProgram( "CylinderGeom" );
@@ -28,9 +28,9 @@ namespace VTX
 				switch ( Setting::Rendering::representation )
 				{
 				case MOLECULE_REPRESENTATION::STICK:
-				case MOLECULE_REPRESENTATION::BALL_AND_STICK: _isActive = true; break;
+				case MOLECULE_REPRESENTATION::BALL_AND_STICK: setVisible( true ); break;
 				case MOLECULE_REPRESENTATION::VAN_DER_WAALS:
-				default: _isActive = false; break;
+				default: setVisible( false ); break;
 				}
 			}
 		};
@@ -40,7 +40,7 @@ namespace VTX
 			VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
 			_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 			glUniform1f( _uRadius, 0.2f );
-			glDrawElements( GL_LINES, _model->getBondCount(), GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
+			glDrawElements( GL_LINES, _getModel().getBondCount(), GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
 		}
 	} // namespace View
 } // namespace VTX

@@ -17,20 +17,7 @@ namespace VTX
 		class BaseViewUI : public BaseView<T>
 		{
 		  public:
-			explicit BaseViewUI( bool * const p_show ) : BaseComponent( p_show ) {}
-
-			virtual void display() override
-			{
-				if ( _show != nullptr && isShown() == false ) { return; }
-				if ( _model == nullptr )
-				{
-					VTX_DEBUG( "Trying to display a view without model" );
-					return;
-				}
-				_draw();
-			};
-
-		  private:
+			explicit BaseViewUI( bool * const p_visible ) { _visible = p_visible; }
 		};
 	} // namespace View
 } // namespace VTX

@@ -33,13 +33,7 @@ namespace VTX
 		class BaseView3DMolecule : public BaseView3D<Model::ModelMolecule>
 		{
 		  public:
-			BaseView3DMolecule()  = default;
-			~BaseView3DMolecule() = default;
-
 			virtual void notify( Event::EVENT_MODEL p_event ) override;
-
-		  protected:
-			bool _isActive = false;
 		};
 	} // namespace View
 } // namespace VTX

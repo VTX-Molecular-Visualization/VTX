@@ -38,8 +38,8 @@ namespace VTX
 		VTXApp::_isRunning = true;
 		VTX_INFO( "Application started" );
 
-		_ui->display();
 		_ui->print();
+		_ui->draw();
 
 #ifdef _DEBUG
 		//_stateMachine->goToState( ID::State::::VISUALIZATION );
@@ -118,7 +118,7 @@ namespace VTX
 		{
 			_handleEvent( event );
 		}
-		_ui->display();
+		_ui->draw();
 		_scene->update( _timeDelta );
 		_stateMachine->update( _timeDelta );
 

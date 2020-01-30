@@ -18,7 +18,7 @@ namespace VTX
 			//}
 			_loadFile( (std::string *)p_arg );
 
-			VTXApp::get().goToState( State::STATE_NAME::VISUALIZATION );
+			VTXApp::get().goToState( ID::State::VISUALIZATION );
 		}
 
 		void StateLoading::_loadFile( std::string * p_path ) const

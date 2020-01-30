@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "../generic/has_collection.hpp"
 #include "../math/transform.hpp"
 #include "../view/base_view.hpp"
 #include <map>
@@ -13,33 +14,22 @@ namespace VTX
 {
 	namespace Model
 	{
-		class BaseModel
+		class BaseModel : public Generic::HasCollection<View::BaseView<BaseModel>>
 		{
 		  public:
-			using ViewSharedPtr			  = std::shared_ptr<View::BaseView<BaseModel>>;
-			using MapEnumToViewSharedPtr  = std::map<std::string, ViewSharedPtr>;
-			using PairEnumToViewSharedPtr = std::pair<std::string, ViewSharedPtr>;
-
 			BaseModel();
-			virtual ~BaseModel();
 
-			uint						getId() const { return _id; }
-			void						setId( const uint p_id ) { _id = p_id; }
-			virtual void				init();
-			virtual const ViewSharedPtr getViewByName( const std::string & ) const final;
-			bool						isSelected() const { return _isSelected; }
-			virtual void				setSelected( const bool p_selected ) { _isSelected = p_selected; }
+			uint getId() const { return _id; }
+			void setId( const uint p_id ) { _id = p_id; }
+			// virtual const ViewSharedPtr getViewByName( const std::string & ) const final;
+			bool		 isSelected() const { return _isSelected; }
+			virtual void setSelected( const bool p_selected ) { _isSelected = p_selected; }
 
 		  protected:
-			void		 _addView( const ViewSharedPtr );
-			virtual void _addViews() {};
-			virtual void _notifyViews( const Event::EVENT_MODEL ) const final;
-			void		 _removeView( const std::string & );
-			virtual void _clearViews() final;
+			virtual void _notifyViews( const Event::EVENT_MODEL ) final;
 
-			uint				   _id		   = INVALID_ID;
-			bool				   _isSelected = false;
-			MapEnumToViewSharedPtr _views	   = MapEnumToViewSharedPtr();
+			uint _id		 = INVALID_ID;
+			bool _isSelected = false;
 
 		  private:
 			static uint _COUNTER;

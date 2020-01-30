@@ -18,7 +18,7 @@ namespace VTX
 			explicit ViewUIMoleculeStructure() : BaseViewUI( nullptr ) {}
 			virtual void notify( Event::EVENT_MODEL ) override;
 
-			virtual VIEW_NAME getViewName() const override { return VIEW_NAME::UI_MOLECULE_TRANSFORM; }
+			virtual std::string getName() const override { return ID::View::UI_MOLECULE_STRUCTURE; }
 
 		  protected:
 			virtual void _draw() override;

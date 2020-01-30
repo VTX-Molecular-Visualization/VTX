@@ -21,9 +21,6 @@ namespace VTX
 
 			~ModelPath();
 
-		  protected:
-			virtual void _addViews() override final;
-
 		  private:
 			VectorCheckpointPtr _checkpoints = VectorCheckpointPtr();
 

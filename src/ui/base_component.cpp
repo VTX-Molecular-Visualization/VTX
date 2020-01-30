@@ -12,13 +12,15 @@ namespace VTX
 			_registerEventHandlers();
 		}
 
+		void BaseComponent::initItem() { init(); }
+
 		void BaseComponent::_drawComponent( const std::string & p_name )
 		{
 			try
 			{
-				_components.at( p_name )->display();
+				_getItem( p_name )->draw();
 			}
-			catch ( const std::exception )
+			catch ( const std::exception & )
 			{
 				VTX_WARNING( "Component not found: " + p_name );
 			}
@@ -26,15 +28,16 @@ namespace VTX
 
 		void BaseComponent::_drawComponents()
 		{
-			for ( const PairStringToComponentSharedPtr pair : _components )
+			for ( const PairStringToItemPtr pair : _getItems() )
 			{
-				pair.second->display();
+				pair.second->draw();
 			}
 		}
 
 		void BaseComponent::_registerEventHandler( const Event::EVENT_UI p_event ) { _events.emplace( p_event ); }
 
-		const UI::BaseComponent * BaseComponent::getComponentByName( const std::string & p_name ) const
+		/*
+		const UI::BaseComponent * const BaseComponent::getComponentByName( const std::string & p_name ) const
 		{
 			if ( _components.find( p_name ) != _components.end() ) { return _components.at( p_name ); }
 
@@ -46,6 +49,7 @@ namespace VTX
 
 			return nullptr;
 		}
+		*/
 
 		void BaseComponent::receiveEvent( const Event::EVENT_UI p_event, void * const p_arg )
 		{
@@ -53,17 +57,11 @@ namespace VTX
 			{ _applyEvent( p_event, p_arg ); }
 
 			// Propagate to children.
-			for ( const PairStringToComponentSharedPtr pair : _components )
+			for ( const PairStringToItemPtr pair : _getItems() )
 			{
-				pair.second->receiveEvent( p_event, p_arg );
+				// pair.second->receiveEvent( p_event, p_arg );
 			}
 		}
-
-		void BaseComponent::display()
-		{
-			if ( _show != nullptr && isShown() == false ) { return; }
-			_draw();
-		};
 
 	} // namespace UI
 } // namespace VTX

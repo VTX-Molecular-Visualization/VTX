@@ -22,7 +22,7 @@ namespace VTX
 			virtual std::string getName() const override { return ID::UI::INSPECTOR; }
 
 		  protected:
-			virtual void _addComponents() override;
+			virtual void _addItems() override {};
 			virtual void _draw() override;
 
 		  private:

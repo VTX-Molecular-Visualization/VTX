@@ -5,7 +5,7 @@ namespace VTX
 {
 	namespace View
 	{
-		void View3DMoleculeSphere::_prepare()
+		void View3DMoleculeSphere::initItem()
 		{
 			GL::GLSLProgramManager & pm		 = VTXApp::get().getProgramManager();
 			GL::GLSLProgram *		 program = pm.createProgram( "SphereImpostorGeomShader" );
@@ -29,17 +29,17 @@ namespace VTX
 				{
 				case MOLECULE_REPRESENTATION::BALL_AND_STICK:
 					_radiusScale = 0.3f;
-					_isActive	 = true;
+					setVisible( true );
 					break;
 				case MOLECULE_REPRESENTATION::VAN_DER_WAALS:
 					_radiusScale = 1.0f;
-					_isActive	 = true;
+					setVisible( true );
 					break;
 				case MOLECULE_REPRESENTATION::STICK:
 					//_radiusScale = 0.1f;
-					_isActive = false;
+					setVisible( false );
 					break;
-				default: _isActive = false; break;
+				default: setVisible( false ); break;
 				}
 			}
 		};
@@ -49,7 +49,7 @@ namespace VTX
 			VTXApp::get().getProgramManager().getProgram( "SphereImpostorGeomShader" )->use();
 			_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 			glUniform1f( _uRadiusScale, _radiusScale );
-			glDrawArrays( GL_POINTS, 0, _model->getAtomCount() );
+			glDrawArrays( GL_POINTS, 0, _getModel().getAtomCount() );
 		}
 	} // namespace View
 } // namespace VTX

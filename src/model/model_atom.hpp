@@ -159,7 +159,7 @@ namespace VTX
 			inline void					setResiduePtr( ModelResidue * const p_residue ) { _residuePtr = p_residue; }
 
 			inline const ATOM_SYMBOL   getSymbol() const { return _symbol; };
-			inline const std::string   getSymbolStr() const { return ENUM_TO_STRING( _symbol ); };
+			inline const std::string   getSymbolStr() const { return "" /*magic_enum::enum_name( _symbol )*/; };
 			inline void				   setSymbol( const ATOM_SYMBOL p_symbol ) { _symbol = p_symbol; };
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }

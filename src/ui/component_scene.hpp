@@ -19,6 +19,7 @@ namespace VTX
 			virtual std::string getName() const override { return ID::UI::SCENE; }
 
 		  protected:
+			virtual void _addItems() override {};
 			virtual void _draw() override;
 
 		  private:

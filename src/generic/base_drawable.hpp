@@ -14,13 +14,19 @@ namespace VTX
 		class BaseDrawable : public BaseCollectionable
 		{
 		  public:
-			virtual void draw();
+			virtual void draw()
+			{
+				if ( _visible == nullptr || isVisible() ) { _draw(); }
+			}
+
+			inline bool isVisible() const { return *_visible; }
+			void		setVisible( const bool p_visible ) { *_visible = p_visible; }
 
 		  protected:
-			virtual void _draw() = 0;
-			virtual void _draw( std::string );
+			bool * _visible = nullptr;
 
-			bool * _show = nullptr;
+		  private:
+			virtual void _draw() = 0;
 		};
 	} // namespace Generic
 } // namespace VTX

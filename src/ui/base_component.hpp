@@ -22,17 +22,21 @@ namespace VTX
 		class BaseComponent : public Generic::HasCollection<Generic::BaseDrawable>, public Generic::BaseDrawable
 		{
 		  public:
-			BaseComponent( bool * const p_show ) { _show = p_show; }
+			BaseComponent( bool * const p_visible ) { _visible = p_visible; }
 
-			virtual void display();
 			virtual void init() override;
+			virtual void initItem() override;
 
-			virtual const UI::BaseComponent * getComponentByName( const std::string & ) const final;
-			virtual void					  receiveEvent( const Event::EVENT_UI, void * const ) final;
+			// virtual const UI::BaseComponent * getComponentByName( const std::string & ) const final;
+
+			// TODO: refacto
+			virtual void receiveEvent( const Event::EVENT_UI, void * const ) final;
 
 		  protected:
 			virtual void _drawComponent( const std::string & );
 			virtual void _drawComponents() final;
+
+			// TODO: refacto
 
 			virtual void _registerEventHandler( const Event::EVENT_UI ) final;
 			virtual void _registerEventHandlers() {};

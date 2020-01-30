@@ -33,8 +33,6 @@ namespace VTX
 		{
 		}
 
-		void ComponentMenu::_addComponents() {}
-
 		void ComponentMenu::_draw()
 		{
 			ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding,
@@ -42,7 +40,7 @@ namespace VTX
 			if ( ImGui::BeginMainMenuBar() )
 			{
 				// Main menu.
-				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Menu" ), _show ) )
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Menu" ), _visible ) )
 				{
 					// New.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.New" ) /*, "Ctrl+N"*/ ) )
@@ -86,7 +84,7 @@ namespace VTX
 				}
 
 				// Display.
-				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Display" ), _show ) )
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Display" ), _visible ) )
 				{
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), _showScene );
 					ImGui::Checkbox( LOCALE( "MainMenu.Display.Inspector" ), _showInspector );
@@ -111,7 +109,7 @@ namespace VTX
 				}
 
 				// Export
-				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Export" ), _show ) )
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Export" ), _visible ) )
 				{
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Snapshot" ) ) )
 					{ VTXApp::get().action( new Action::ActionSnapshot() ); }
@@ -119,7 +117,7 @@ namespace VTX
 				}
 
 				// Settings.
-				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), _show ) )
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), _visible ) )
 				{
 					// Theme.
 					const char * themes[]

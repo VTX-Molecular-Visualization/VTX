@@ -18,12 +18,13 @@ namespace VTX
 		class BaseView3D : public BaseView<T>
 		{
 		  public:
+			explicit BaseView3D() { *_visible = true; }
+
 		  protected:
 			// Uniforms.
 			GLint _uViewModelMatrix = GL_INVALID_INDEX;
 			GLint _uProjMatrix		= GL_INVALID_INDEX;
 
-			virtual void _draw() = 0;
 			virtual void _setCameraUniforms( const Object3D::Camera & p_camera )
 			{
 				glUniformMatrix4fv( _uViewModelMatrix,

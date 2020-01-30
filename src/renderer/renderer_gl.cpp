@@ -277,7 +277,7 @@ namespace VTX
 
 			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
-				molecule->draw();
+				molecule->render();
 			}
 
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );

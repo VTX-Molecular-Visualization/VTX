@@ -7,7 +7,9 @@
 
 #include "../define.hpp"
 #include "../event/event.hpp"
+#include "../generic/base_drawable.hpp"
 #include "../generic/base_namable.hpp"
+#include "../id.hpp"
 #include <type_traits>
 #include <utility>
 
@@ -18,24 +20,17 @@ namespace VTX
 		class BaseModel;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		class BaseView:
+		class BaseView : public Generic::BaseDrawable
 		{
 		  public:
-			BaseView() = default;
-			virtual ~BaseView() { _model = nullptr; };
-
-			virtual void setModel( T * const p_model ) final
-			{
-				_model = p_model;
-				if ( _model != nullptr ) { _prepare(); };
-			}
+			virtual void setModel( T * const p_model ) final { _model = p_model; }
 			virtual void notify( Event::EVENT_MODEL ) {};
 
 		  protected:
-			T * _model = nullptr;
+			virtual T & _getModel() final { return *_model; }
 
-			virtual T &	 _getModel() final { return *_model; }
-			virtual void _prepare() {};
+		  private:
+			T * _model = nullptr;
 		};
 	} // namespace View
 } // namespace VTX

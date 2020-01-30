@@ -13,6 +13,8 @@ namespace VTX
 	{
 		class BaseCollectionable : public BaseNamable
 		{
+		  public:
+			virtual void initItem() {}
 		};
 	} // namespace Generic
 } // namespace VTX
