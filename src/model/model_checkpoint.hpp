@@ -30,6 +30,7 @@ namespace VTX
 			inline const float	 getPhi() const { return _phi; }
 
 		  private:
+			// Duration to go to the next checkpoint.
 			float _duration = 1.f;
 
 			const Vec3f _position = VEC3F_ZERO;

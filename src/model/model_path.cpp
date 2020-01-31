@@ -17,8 +17,9 @@ namespace VTX
 			{
 				total += checkpoint->getDuration();
 			}
+			total -= _checkpoints[ 0 ]->getDuration();
 			return total;
-		}
+		} // namespace Model
 
 		void ModelPath::setSelectedCheckpoint( const uint p_id )
 		{

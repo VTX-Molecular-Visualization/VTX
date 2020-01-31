@@ -23,7 +23,7 @@ namespace VTX
 			~ModelPath();
 
 			void addCheckpoint( const CheckpointPtr p_checkpoint ) { _checkpoints.emplace_back( p_checkpoint ); }
-			VectorCheckpointPtr & getCheckpoints() { return _checkpoints; }
+			inline VectorCheckpointPtr & getCheckpoints() { return _checkpoints; }
 
 			void setSelectedCheckpoint( const uint );
 
