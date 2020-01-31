@@ -77,6 +77,8 @@ namespace VTX
 		  protected:
 			inline MapStringToItemPtr & _getItems() { return _items; }
 			inline T * const			_getItem( const std::string & p_name ) const { return _items.at( p_name ); }
+			inline bool _hasItem( const std::string & p_name ) const { return _items.find( p_name ) != _items.end(); }
+
 			virtual void				_addItems() {};
 
 		  private:

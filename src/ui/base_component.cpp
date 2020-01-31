@@ -16,14 +16,7 @@ namespace VTX
 
 		void BaseComponent::_drawComponent( const std::string & p_name )
 		{
-			try
-			{
-				_getItem( p_name )->draw();
-			}
-			catch ( const std::exception & )
-			{
-				VTX_WARNING( "Component not found: " + p_name );
-			}
+			if ( _hasItem( p_name ) ) { _getItem( p_name )->draw(); }
 		}
 
 		void BaseComponent::_drawComponents()

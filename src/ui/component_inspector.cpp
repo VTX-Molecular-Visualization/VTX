@@ -30,7 +30,10 @@ namespace VTX
 				return;
 			}
 
-			_drawComponents();
+			_drawComponent( ID::View::UI_MOLECULE );
+			_drawComponent( ID::View::UI_CHAIN );
+			_drawComponent( ID::View::UI_RESIDUE );
+			_drawComponent( ID::View::UI_ATOM );
 
 			ImGui::End();
 		}
