@@ -35,7 +35,6 @@ namespace VTX
 			{
 				View::BaseView<BaseModel> * view = (View::BaseView<BaseModel> *)_getItem( p_viewName );
 				removeItem( p_viewName );
-				delete view;
 			}
 
 			uint _id		 = INVALID_ID;

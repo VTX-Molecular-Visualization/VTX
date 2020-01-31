@@ -1,5 +1,6 @@
 #include "model_chain.hpp"
 #include "../util/type.hpp"
+#include "../view/view_ui_chain.hpp"
 
 namespace VTX
 {
@@ -8,13 +9,10 @@ namespace VTX
 		void ModelChain::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() )
-			{
-				//_addView( Util::Type::componentToView<ModelChain>( UI::COMPONENT_NAME::VIEW_CHAIN ) );
-			}
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIChain( this ) ) ); }
 			else
 			{
-				//_removeView( std::string( magic_enum::enum_name( UI::COMPONENT_NAME::VIEW_CHAIN ) ) );
+				_deleteView( ID::View::UI_CHAIN );
 			}
 		}
 	} // namespace Model
