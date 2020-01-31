@@ -1,6 +1,7 @@
 #include "scene.hpp"
 #include "../math/transform.hpp"
 #include "../setting.hpp"
+#include "../util/type.hpp"
 
 namespace VTX
 {
@@ -10,17 +11,9 @@ namespace VTX
 
 		void Scene::clear()
 		{
-			for ( Model::ModelMolecule * molecule : _molecules )
-			{
-				delete molecule;
-			}
-			_molecules.clear();
-
-			for ( Model::ModelPath * path : _paths )
-			{
-				delete path;
-			}
-			_paths.clear();
+			// TOCHECK: Templating auto?
+			Util::Type::clearVector<Model::ModelMolecule>( _molecules );
+			Util::Type::clearVector( _paths );
 		}
 
 		void Scene::update( const double p_deltaTime )

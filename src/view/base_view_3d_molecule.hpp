@@ -34,6 +34,7 @@ namespace VTX
 		{
 		  public:
 			explicit BaseView3DMolecule( Model::ModelMolecule * const p_model ) : BaseView3D( p_model ) {}
+			virtual ~BaseView3DMolecule() {}
 
 			virtual void notify( Event::EVENT_MODEL p_event ) override
 			{

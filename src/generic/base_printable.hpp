@@ -12,6 +12,8 @@ namespace VTX
 		class BasePrintable
 		{
 		  public:
+			virtual ~BasePrintable() = default;
+
 			virtual void print() const = 0;
 		};
 	} // namespace Generic

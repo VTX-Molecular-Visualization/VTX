@@ -17,15 +17,17 @@ namespace VTX
 	namespace View
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		class BaseView3D : public BaseView<T>, public Generic::BaseCollectionable, public Generic::BaseRenderable
+		class BaseView3D : public BaseView<T>, public Generic::BaseRenderable
 		{
 		  public:
 			explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
+			virtual ~BaseView3D() {}
 
 		  protected:
 			// Uniforms.
 			GLint _uViewModelMatrix = GL_INVALID_INDEX;
 			GLint _uProjMatrix		= GL_INVALID_INDEX;
+			bool  _isActive			= false;
 
 			virtual void _setCameraUniforms( const Object3D::Camera & p_camera )
 			{
@@ -35,8 +37,6 @@ namespace VTX
 									glm::value_ptr( p_camera.getViewMatrix() * _getModel().getTransform().get() ) );
 				glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_camera.getProjectionMatrix() ) );
 			}
-
-			bool _isActive = false;
 		};
 	} // namespace View
 } // namespace VTX

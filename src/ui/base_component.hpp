@@ -23,6 +23,7 @@ namespace VTX
 		{
 		  public:
 			explicit BaseComponent( bool * const p_visible ) { _visible = p_visible; }
+			virtual ~BaseComponent() {}
 
 			virtual void init() override;
 			virtual void initItem() override;

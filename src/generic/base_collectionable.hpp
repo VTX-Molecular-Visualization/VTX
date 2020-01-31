@@ -5,16 +5,21 @@
 #pragma once
 #endif
 
-#include "base_namable.hpp"
+#include <string>
 
 namespace VTX
 {
 	namespace Generic
 	{
-		class BaseCollectionable : public BaseNamable
+		class BaseCollectionable
 		{
 		  public:
+			virtual ~BaseCollectionable() = default;
+
 			virtual void initItem() {}
+			virtual void cleanItem() {}
+
+			virtual std::string getName() const = 0;
 		};
 	} // namespace Generic
 } // namespace VTX

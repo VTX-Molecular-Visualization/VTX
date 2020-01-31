@@ -20,10 +20,15 @@ namespace VTX
 			public Generic::BaseEventHandler<SDL_Event>
 		{
 		  public:
+			virtual ~BaseState() {}
+
 			virtual void enter( void * const ) = 0;
 			virtual void exit()				   = 0;
 
-			virtual void handleEvent( const SDL_Event &, void * const = nullptr ) override;
+			virtual void BaseState::handleEvent( const SDL_Event & p_event, void * const p_arg ) override
+			{
+				if ( _controller != nullptr ) { _controller->handleEvent( p_event ); }
+			}
 
 		  protected:
 			Controller::BaseController * _controller = nullptr;

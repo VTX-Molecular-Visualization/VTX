@@ -25,11 +25,11 @@ namespace VTX
 
 	VTXApp::~VTXApp()
 	{
-		delete _ui;
-		delete _stateMachine;
-		delete _scene;
 		delete _renderer;
+		delete _scene;
+		delete _stateMachine;
 		delete _actionManager;
+		delete _ui;
 	}
 
 	void VTXApp::start()

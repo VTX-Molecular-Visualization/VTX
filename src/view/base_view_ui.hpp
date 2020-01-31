@@ -18,12 +18,18 @@ namespace VTX
 		class BaseViewUI : public BaseView<T>, public Generic::BaseDrawable
 		{
 		  public:
-			explicit BaseViewUI( T * const p_model ) : BaseView( p_model )
+			explicit BaseViewUI( T * const p_model ) : BaseView( p_model ) {}
+			virtual ~BaseViewUI() {}
+
+			virtual void initItem() override
 			{
-				VTXApp::get().getUIComponentByName( getComponentParentName() )->addItem( this );
+				VTXApp::get().getUIComponentByName( getComponentParentName() )->addItemRef( this );
 			}
 
-			~BaseViewUI() { VTXApp::get().getUIComponentByName( getComponentParentName() )->removeItem( getName() ); }
+			virtual void cleanItem() override
+			{
+				VTXApp::get().getUIComponentByName( getComponentParentName() )->removeItemRef( getName() );
+			}
 
 			virtual std::string getComponentParentName() const = 0;
 		};

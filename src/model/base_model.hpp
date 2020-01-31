@@ -17,16 +17,20 @@ namespace VTX
 		class BaseModel : public Generic::HasCollection<View::BaseView<BaseModel>>
 		{
 		  public:
-			BaseModel();
-			virtual ~BaseModel() = default;
-
 			uint		 getId() const { return _id; }
 			void		 setId( const uint p_id ) { _id = p_id; }
 			bool		 isSelected() const { return _isSelected; }
 			virtual void setSelected( const bool p_selected ) { _isSelected = p_selected; }
 
 		  protected:
-			virtual void _notifyViews( const Event::EVENT_MODEL ) final;
+			virtual void _notifyViews( const Event::EVENT_MODEL p_event ) final
+			{
+				for ( PairStringToItemPtr pair : _getItems() )
+				{
+					pair.second->notify( p_event );
+				}
+			}
+
 			virtual void _deleteView( const std::string & p_viewName )
 			{
 				View::BaseView<BaseModel> * view = (View::BaseView<BaseModel> *)_getItem( p_viewName );

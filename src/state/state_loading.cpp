@@ -40,8 +40,9 @@ namespace VTX
 
 			if ( reader != nullptr && reader->readFile( path, *molecule ) )
 			{
-				scene->addMolecule( molecule );
+				molecule->init();
 				molecule->print();
+				scene->addMolecule( molecule );
 			}
 
 			delete reader;

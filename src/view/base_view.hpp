@@ -19,10 +19,11 @@ namespace VTX
 		class BaseModel;
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		class BaseView
+		class BaseView : virtual public Generic::BaseCollectionable
 		{
 		  public:
 			explicit BaseView( T * const p_model ) : _model( p_model ) {}
+			virtual ~BaseView() {}
 
 			virtual void notify( Event::EVENT_MODEL ) {};
 

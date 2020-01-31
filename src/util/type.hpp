@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "../model/base_model.hpp"
-#include "../ui/base_component.hpp"
-#include "../vtx_app.hpp"
+#include <map>
+#include <string>
+#include <vector>
 
 namespace VTX
 {
@@ -15,6 +15,26 @@ namespace VTX
 	{
 		namespace Type
 		{
+			template<typename T>
+			void clearVector( std::vector<T *> & p_vector )
+			{
+				for ( T * element : p_vector )
+				{
+					delete element;
+				}
+				p_vector.clear();
+			}
+
+			template<typename T>
+			void clearStringMap( std::map<std::string, T *> & p_map )
+			{
+				for ( std::pair<std::string, T *> pair : p_map )
+				{
+					delete pair.second;
+				}
+				p_map.clear();
+			}
+
 		} // namespace Type
 	}	  // namespace Util
 } // namespace VTX

@@ -11,11 +11,6 @@ namespace VTX
 	{
 		void RendererGL::init( Object3D::Scene & p_scene, uint p_width, uint p_height )
 		{
-			for ( Model::ModelMolecule * molecule : p_scene.getMolecules() )
-			{
-				molecule->init();
-			}
-
 			if ( _isInitialized ) { return; }
 			VTX_INFO( "Initializing renderer..." );
 

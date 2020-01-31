@@ -11,9 +11,11 @@ namespace VTX
 {
 	namespace Generic
 	{
-		class BaseDrawable : public BaseCollectionable
+		class BaseDrawable : virtual public BaseCollectionable
 		{
 		  public:
+			virtual ~BaseDrawable() = default;
+
 			virtual void draw()
 			{
 				if ( _visible == nullptr || isVisible() ) { _draw(); }

@@ -12,6 +12,8 @@ namespace VTX
 		class BaseRenderable
 		{
 		  public:
+			virtual ~BaseRenderable() = default;
+
 			virtual void render() = 0;
 		};
 	} // namespace Generic
