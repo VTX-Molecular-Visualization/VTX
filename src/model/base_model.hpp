@@ -40,9 +40,6 @@ namespace VTX
 
 			uint _id		 = INVALID_ID;
 			bool _isSelected = false;
-
-		  private:
-			static uint _COUNTER;
 		};
 	} // namespace Model
 } // namespace VTX

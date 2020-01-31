@@ -7,6 +7,8 @@ namespace VTX
 {
 	namespace Object3D
 	{
+		Scene::Scene() {}
+
 		Scene::~Scene() { clear(); }
 
 		void Scene::clear()
@@ -18,6 +20,7 @@ namespace VTX
 
 		void Scene::update( const double p_deltaTime )
 		{
+			// TOCHECK: Store BaseTransformable? Object3D super class?
 			for ( MoleculePtr molecule : _molecules )
 			{
 				Math::Transform & t = molecule->getTransform();

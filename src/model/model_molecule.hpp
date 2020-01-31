@@ -34,7 +34,7 @@ namespace VTX
 		{
 		  public:
 			ModelMolecule() = default;
-			virtual ~ModelMolecule();
+			~ModelMolecule();
 
 			// Models.
 			inline const std::string & getName() const { return _name; };

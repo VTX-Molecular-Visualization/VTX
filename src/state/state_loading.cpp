@@ -2,6 +2,7 @@
 #include "../io/reader/reader_mmtf.hpp"
 #include "../io/reader/reader_obj.hpp"
 #include "../model/model_molecule.hpp"
+#include "../model/model_path.hpp"
 #include "../object3d/scene.hpp"
 #include "../vtx_app.hpp"
 
@@ -41,9 +42,15 @@ namespace VTX
 			if ( reader != nullptr && reader->readFile( path, *molecule ) )
 			{
 				molecule->init();
+				molecule->setSelected( true );
 				molecule->print();
 				scene->addMolecule( molecule );
 			}
+
+			Model::ModelPath * p = new Model::ModelPath();
+			p->init();
+			scene->addPath( p );
+			p->setSelected( true );
 
 			delete reader;
 		}

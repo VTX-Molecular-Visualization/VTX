@@ -20,6 +20,10 @@ namespace VTX
 			Camera() { _update(); };
 			virtual ~Camera() = default;
 
+			inline Vec3f & getPosition() { return _position; }
+			inline float   getTheta() { return _theta; }
+			inline float & getPhi() { return _phi; }
+
 			inline Mat4f getViewMatrix() const { return glm::lookAt( _position, _position + _front, _up ); }
 			inline Mat4f getProjectionMatrix() const
 			{
@@ -29,6 +33,14 @@ namespace VTX
 			{
 				_screenWidth  = float( p_width );
 				_screenHeight = float( p_height );
+			}
+
+			inline void set( const Vec3f p_position, const float p_theta, const float p_phi )
+			{
+				_position = p_position;
+				_theta	  = p_theta;
+				_phi	  = p_phi;
+				_update();
 			}
 
 			virtual void zoom( const float ) final;

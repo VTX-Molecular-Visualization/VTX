@@ -34,9 +34,6 @@ namespace VTX
 
 			// Set default representation.
 			setRepresentation();
-
-			// Select (tmp).
-			setSelected( true );
 		}
 
 		void ModelMolecule::_addItems()
@@ -44,10 +41,7 @@ namespace VTX
 			// Add views.
 			addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeSphere( this ) ) );
 			addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeCylinder( this ) ) );
-
-			View::ViewUIMoleculeStructure * const viewStructure = new View::ViewUIMoleculeStructure( this );
-			addItem( (View::BaseView<BaseModel> *)viewStructure );
-			VTXApp::get().getUIComponentByName( ID::UI::SCENE )->addItem( viewStructure );
+			addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMoleculeStructure( this ) ) );
 		}
 
 		void ModelMolecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }
@@ -121,6 +115,7 @@ namespace VTX
 				_selectedChain = nullptr;
 			}
 		}
+
 		void ModelMolecule::setSelectedResidue( const uint p_id )
 		{
 			if ( _selectedResidue != nullptr ) { _selectedResidue->setSelected( false ); }
@@ -136,6 +131,7 @@ namespace VTX
 				_selectedResidue = nullptr;
 			}
 		}
+
 		void ModelMolecule::setSelectedAtom( const uint p_id )
 		{
 			if ( _selectedAtom != nullptr ) { _selectedAtom->setSelected( false ); }

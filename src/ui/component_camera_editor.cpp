@@ -19,8 +19,10 @@ namespace VTX
 				return;
 			}
 
+			_drawComponents();
+
 			ImGui::End();
 		}
-
 	} // namespace UI
+
 } // namespace VTX

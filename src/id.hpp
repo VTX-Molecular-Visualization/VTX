@@ -28,14 +28,17 @@ namespace VTX
 			const std::string UI_CHAIN				= "UI_CHAIN";
 			const std::string UI_RESIDUE			= "UI_RESIDUE";
 			const std::string UI_ATOM				= "UI_ATOM";
-			const std::string D3_CYLINDER			= "3D_CYLINDER";
-			const std::string D3_SPHERE				= "3D_SPHERE";
+			const std::string UI_PATH_LIST			= "UI_PATH_LIST";
+
+			const std::string D3_CYLINDER = "3D_CYLINDER";
+			const std::string D3_SPHERE	  = "3D_SPHERE";
 		} // namespace View
 
 		namespace State
 		{
 			const std::string LOADING		= "LOADING";
 			const std::string VISUALIZATION = "VISUALIZATION";
+			const std::string PLAYING		= "PLAYING";
 		} // namespace State
 	}	  // namespace ID
 
