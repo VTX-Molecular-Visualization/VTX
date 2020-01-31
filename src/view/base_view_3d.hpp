@@ -17,7 +17,7 @@ namespace VTX
 	namespace View
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		class BaseView3D : public BaseView<T>, public Generic::BaseRenderable
+		class BaseView3D : public BaseView<T>, public Generic::BaseCollectionable, public Generic::BaseRenderable
 		{
 		  public:
 			explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}

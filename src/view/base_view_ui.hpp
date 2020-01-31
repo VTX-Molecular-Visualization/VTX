@@ -7,6 +7,7 @@
 
 #include "../model/base_model.hpp"
 #include "../ui/base_component.hpp"
+#include "../vtx_app.hpp"
 #include "base_view.hpp"
 
 namespace VTX
@@ -17,7 +18,14 @@ namespace VTX
 		class BaseViewUI : public BaseView<T>, public Generic::BaseDrawable
 		{
 		  public:
-			explicit BaseViewUI( T * const p_model ) : BaseView( p_model ) {}
+			explicit BaseViewUI( T * const p_model ) : BaseView( p_model )
+			{
+				VTXApp::get().getUIComponentByName( getComponentParentName() )->addItem( this );
+			}
+
+			~BaseViewUI() { VTXApp::get().getUIComponentByName( getComponentParentName() )->removeItem( getName() ); }
+
+			virtual std::string getComponentParentName() const = 0;
 		};
 	} // namespace View
 } // namespace VTX

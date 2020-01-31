@@ -27,6 +27,12 @@ namespace VTX
 
 		  protected:
 			virtual void _notifyViews( const Event::EVENT_MODEL ) final;
+			virtual void _deleteView( const std::string & p_viewName )
+			{
+				View::BaseView<BaseModel> * view = (View::BaseView<BaseModel> *)_getItem( p_viewName );
+				removeItem( p_viewName );
+				delete view;
+			}
 
 			uint _id		 = INVALID_ID;
 			bool _isSelected = false;

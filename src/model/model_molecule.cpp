@@ -100,18 +100,10 @@ namespace VTX
 		void ModelMolecule::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() )
-			{
-				View::ViewUIMolecule * const view = new View::ViewUIMolecule( this );
-				addItem( (View::BaseView<BaseModel> *)view );
-				VTXApp::get().getUIComponentByName( ID::UI::INSPECTOR )->addItem( view );
-			}
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMolecule( this ) ) ); }
 			else
 			{
-				View::ViewUIMolecule * view = (View::ViewUIMolecule *)_getItem( ID::View::UI_MOLECULE );
-				VTXApp::get().getUIComponentByName( ID::UI::INSPECTOR )->removeItem( ID::View::UI_MOLECULE );
-				removeItem( ID::View::UI_MOLECULE );
-				delete view;
+				_deleteView( ID::View::UI_MOLECULE );
 			}
 		}
 

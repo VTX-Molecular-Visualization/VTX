@@ -23,8 +23,15 @@ namespace VTX
 			using PairStringToItemPtr = std::pair<std::string, T *>;
 
 			virtual ~HasCollection() { clear(); }
-			virtual void	  init() { _addItems(); }
-			virtual void	  clear() { _items.clear(); }
+			virtual void init() { _addItems(); }
+			virtual void clear()
+			{
+				for ( PairStringToItemPtr item : _items )
+				{
+					// if ( item.second  ) { delete item.second; }
+				}
+				_items.clear();
+			}
 			virtual T * const findItem( const std::string & p_name )
 			{
 				if ( _items.find( p_name ) != _items.end() ) { return _items.at( p_name ); }
