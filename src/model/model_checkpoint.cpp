@@ -4,7 +4,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		void ModelCheckpoint::_addViews() {}
-
+		uint ModelCheckpoint::COUNTER = 0;
 	} // namespace Model
 } // namespace VTX

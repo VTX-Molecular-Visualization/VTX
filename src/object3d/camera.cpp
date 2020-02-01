@@ -47,7 +47,7 @@ namespace VTX
 			_up					 = glm::cross( _front, _left );
 		}
 
-		void Camera::printInfo() const
+		void Camera::print() const
 		{
 			VTX_INFO( "Position: " + glm::to_string( _position ) );
 			VTX_INFO( "Front: " + glm::to_string( _front ) );

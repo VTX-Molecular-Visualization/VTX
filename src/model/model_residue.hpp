@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "base_model.hpp"
 #include <map>
 
@@ -55,8 +55,6 @@ namespace VTX
 			inline ModelChain * const getChainPtr() const { return _chainPtr; }
 			inline void				  setChainPtr( ModelChain * const p_chain ) { _chainPtr = p_chain; }
 
-			inline const uint			getId() const { return _id; };
-			inline void					setId( const uint p_id ) { _id = p_id; };
 			inline const RESIDUE_SYMBOL getSymbol() const { return _symbol; };
 			inline void					setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
 			inline const std::string &	getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
@@ -83,7 +81,6 @@ namespace VTX
 			ModelMolecule * _moleculePtr = nullptr;
 			ModelChain *	_chainPtr	 = nullptr;
 
-			uint		   _id			= INVALID_ID;
 			RESIDUE_SYMBOL _symbol		= RESIDUE_SYMBOL::UNKNOWN;
 			float		   _color[ 3 ]	= { 0.f, 0.f, 0.f };
 			uint		   _idFirstAtom = 0;

@@ -15,10 +15,11 @@ namespace VTX
 		class ViewUIMolecule : public BaseViewUI<Model::ModelMolecule>
 		{
 		  public:
-			explicit ViewUIMolecule( bool * const p_show ) : BaseViewUI( p_show ) {}
+			explicit ViewUIMolecule( Model::ModelMolecule * const p_model ) : BaseViewUI( p_model ) {}
 			virtual void notify( Event::EVENT_MODEL ) override;
 
-			virtual VIEW_NAME getViewName() const override { return VIEW_NAME::UI_MOLECULE_STRUCTURE; }
+			virtual std::string getName() const override { return ID::View::UI_MOLECULE; };
+			virtual std::string getComponentParentName() const override { return ID::UI::INSPECTOR; };
 
 		  protected:
 			virtual void _draw() override;

@@ -1,5 +1,5 @@
 #include "component_console.hpp"
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "../event/event.hpp"
 #include "../style.hpp"
 #include "../util/logger.hpp"
@@ -27,7 +27,7 @@ namespace VTX
 			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
 			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
 
-			if ( ImGui::Begin( LOCALE( "Console.Console" ), _show, flags ) == false )
+			if ( ImGui::Begin( LOCALE( "Console.Console" ), _visible, flags ) == false )
 			{
 				ImGui::End();
 				return;

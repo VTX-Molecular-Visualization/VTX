@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "../generic/base_printable.hpp"
 #include "base_component.hpp"
 #include <GL/gl3w.h>
 #include <SDL2/SDL.h>
@@ -29,19 +30,19 @@ namespace VTX
 			CLASSIC
 		};
 
-		class UserInterface : public BaseComponent
+		class UserInterface : public BaseComponent, public Generic::BasePrintable
 		{
 		  public:
 			UserInterface();
 			~UserInterface();
-			void printInfos() const;
-			bool pollEvent( SDL_Event & evt ) const;
-			void setTheme() const;
+			virtual void print() const override;
+			bool		 pollEvent( SDL_Event & evt ) const;
+			void		 setTheme() const;
 
-			virtual COMPONENT_NAME getComponentName() const override { return COMPONENT_NAME::UI; }
+			virtual std::string getName() const override { return ID::UI::USER_INTERFACE; }
 
 		  protected:
-			virtual void _addComponents() override;
+			virtual void _addItems() override;
 			virtual void _draw() override;
 
 		  private:

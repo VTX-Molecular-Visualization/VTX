@@ -7,6 +7,7 @@
 
 #include "../model/base_model.hpp"
 #include "../ui/base_component.hpp"
+#include "../vtx_app.hpp"
 #include "base_view.hpp"
 
 namespace VTX
@@ -14,30 +15,23 @@ namespace VTX
 	namespace View
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		class BaseViewUI : public UI::BaseComponent, public BaseView<T>
+		class BaseViewUI : public BaseView<T>, public Generic::BaseDrawable
 		{
 		  public:
-			explicit BaseViewUI( bool * const p_show ) : BaseComponent( p_show ) {}
+			explicit BaseViewUI( T * const p_model ) : BaseView( p_model ) {}
+			virtual ~BaseViewUI() {}
 
-			virtual UI::COMPONENT_NAME getComponentName() const override { return UI::COMPONENT_NAME::VIEW; }
-			virtual std::string		   getName() const override
+			virtual void initItem() override
 			{
-				// return ENUM_TO_STRING( getViewName() ) + "_" + std::to_string( _model->getId() );
-				return ENUM_TO_STRING( getViewName() );
+				VTXApp::get().getUIComponentByName( getComponentParentName() )->addItemRef( this );
 			}
 
-			virtual void display() override
+			virtual void cleanItem() override
 			{
-				if ( _show != nullptr && isShown() == false ) { return; }
-				if ( _model == nullptr )
-				{
-					VTX_DEBUG( "Trying to display a view without model" );
-					return;
-				}
-				_draw();
-			};
+				VTXApp::get().getUIComponentByName( getComponentParentName() )->removeItemRef( getName() );
+			}
 
-		  private:
+			virtual std::string getComponentParentName() const = 0;
 		};
 	} // namespace View
 } // namespace VTX

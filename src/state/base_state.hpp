@@ -6,28 +6,29 @@
 #endif
 
 #include "../controller/base_controller.hpp"
+#include "../generic/base_collectionable.hpp"
 #include "../generic/base_updatable.hpp"
+#include "../id.hpp"
 
 namespace VTX
 {
 	namespace State
 	{
-		enum class STATE_NAME
-		{
-			LOADING,
-			VISUALIZATION
-		};
-
-		class BaseState : public Generic::BaseUpdatable, public Generic::BaseEventHandler<SDL_Event>
+		class BaseState :
+			public Generic::BaseUpdatable,
+			public Generic::BaseCollectionable,
+			public Generic::BaseEventHandler<SDL_Event>
 		{
 		  public:
-			BaseState() = default;
+			virtual ~BaseState() {}
 
-			virtual STATE_NAME getStateName() const	 = 0;
-			virtual void	   enter( void * const ) = 0;
-			virtual void	   exit()				 = 0;
+			virtual void enter( void * const ) = 0;
+			virtual void exit()				   = 0;
 
-			virtual void handleEvent( const SDL_Event &, void * const = nullptr ) override;
+			virtual void BaseState::handleEvent( const SDL_Event & p_event, void * const p_arg ) override
+			{
+				if ( _controller != nullptr ) { _controller->handleEvent( p_event ); }
+			}
 
 		  protected:
 			Controller::BaseController * _controller = nullptr;

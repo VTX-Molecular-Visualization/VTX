@@ -14,16 +14,13 @@ namespace VTX
 		class View3DMoleculeCylinder : public BaseView3DMolecule
 		{
 		  public:
-			View3DMoleculeCylinder()  = default;
-			~View3DMoleculeCylinder() = default;
+			explicit View3DMoleculeCylinder( Model::ModelMolecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 
-			virtual VIEW_NAME getViewName() const override { return VIEW_NAME::D3_CYLINDER; };
+			virtual std::string getName() const override { return ID::View::D3_CYLINDER; }
+			virtual void		initItem() override;
+			virtual void		notify( Event::EVENT_MODEL ) override;
 
-			virtual void notify( Event::EVENT_MODEL ) override;
-
-		  protected:
-			virtual void _prepare() override;
-			virtual void _draw() override;
+			virtual void render() override;
 
 		  private:
 			// Uniforms.

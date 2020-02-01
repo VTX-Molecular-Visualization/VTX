@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "base_model.hpp"
 #include "model_checkpoint.hpp"
 #include <vector>
@@ -17,15 +17,24 @@ namespace VTX
 		class ModelPath : public BaseModel
 		{
 		  public:
-			using VectorCheckpointPtr = std::vector<Model::ModelCheckpoint *>;
+			using CheckpointPtr		  = Model::ModelCheckpoint *;
+			using VectorCheckpointPtr = std::vector<CheckpointPtr>;
 
 			~ModelPath();
 
+			void addCheckpoint( const CheckpointPtr p_checkpoint ) { _checkpoints.emplace_back( p_checkpoint ); }
+			inline VectorCheckpointPtr & getCheckpoints() { return _checkpoints; }
+
+			void setSelectedCheckpoint( const uint );
+
+			float computeTotalTime() const;
+
 		  protected:
-			virtual void _addViews() override final;
+			virtual void _addItems() override final;
 
 		  private:
-			VectorCheckpointPtr _checkpoints = VectorCheckpointPtr();
+			VectorCheckpointPtr _checkpoints		= VectorCheckpointPtr();
+			CheckpointPtr		_selectedCheckpoint = nullptr;
 
 		}; // namespace Camera
 	}	   // namespace Model

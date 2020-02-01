@@ -1,11 +1,11 @@
 #include "glsl_program.hpp"
-#include "../defines.hpp"
+#include "../define.hpp"
 #include <iostream>
 #include <vector>
 
 namespace VTX
 {
-	namespace Shader
+	namespace GL
 	{
 		GLSLProgram::~GLSLProgram()
 		{

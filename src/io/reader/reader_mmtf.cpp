@@ -1,6 +1,6 @@
 #include "reader_mmtf.hpp"
-#include "../../defines.hpp"
-#include "../../exceptions.hpp"
+#include "../../define.hpp"
+#include "../../exception.hpp"
 #pragma warning( push, 0 )
 #include <mmtf/mmtf.hpp>
 #pragma warning( pop )

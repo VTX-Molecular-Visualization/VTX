@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../defines.hpp"
+#include "../define.hpp"
 #include "base_model.hpp"
 
 // IN is previously declared as macro in winmindef.h (used by gl3w)
@@ -158,10 +158,8 @@ namespace VTX
 			inline ModelResidue * const getResiduePtr() const { return _residuePtr; }
 			inline void					setResiduePtr( ModelResidue * const p_residue ) { _residuePtr = p_residue; }
 
-			inline const uint		   getId() const { return _id; };
-			inline void				   setId( const uint p_id ) { _id = p_id; };
 			inline const ATOM_SYMBOL   getSymbol() const { return _symbol; };
-			inline const std::string   getSymbolStr() const { return ENUM_TO_STRING( _symbol ); };
+			inline const std::string   getSymbolStr() const { return "" /*magic_enum::enum_name( _symbol )*/; };
 			inline void				   setSymbol( const ATOM_SYMBOL p_symbol ) { _symbol = p_symbol; };
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
@@ -181,7 +179,6 @@ namespace VTX
 			ModelChain *	_chainPtr	 = nullptr;
 			ModelResidue *	_residuePtr	 = nullptr;
 
-			uint		_id			= INVALID_ID;
 			ATOM_SYMBOL _symbol		= ATOM_SYMBOL::UNKNOWN;
 			float		_color[ 3 ] = { 0.f, 0.f, 0.f };
 		};

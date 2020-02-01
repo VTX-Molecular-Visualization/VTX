@@ -17,10 +17,10 @@ namespace VTX
 		  public:
 			explicit ComponentMenu( bool * const, bool * const, bool * const, bool * const, bool * const );
 
-			virtual COMPONENT_NAME getComponentName() const override { return COMPONENT_NAME::MENU; }
+			virtual std::string getName() const override { return ID::UI::MENU; }
 
 		  protected:
-			virtual void _addComponents() override;
+			virtual void _addItems() override {};
 			virtual void _draw() override;
 
 		  private:

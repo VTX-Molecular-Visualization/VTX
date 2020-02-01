@@ -15,10 +15,11 @@ namespace VTX
 		class ViewUIResidue : public BaseViewUI<Model::ModelResidue>
 		{
 		  public:
-			explicit ViewUIResidue( bool * const p_show ) : BaseViewUI( p_show ) {}
+			explicit ViewUIResidue( Model::ModelResidue * const p_model ) : BaseViewUI( p_model ) {}
 			virtual void notify( Event::EVENT_MODEL ) override;
 
-			virtual VIEW_NAME getViewName() const override { return VIEW_NAME::UI_RESIDUE; }
+			virtual std::string getName() const override { return ID::View::UI_RESIDUE; };
+			virtual std::string getComponentParentName() const override { return ID::UI::INSPECTOR; };
 
 		  protected:
 			virtual void _draw() override;

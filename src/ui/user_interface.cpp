@@ -1,7 +1,7 @@
 #include "user_interface.hpp"
-#include "../defines.hpp"
-#include "../exceptions.hpp"
-#include "../settings.hpp"
+#include "../define.hpp"
+#include "../exception.hpp"
+#include "../setting.hpp"
 #include "../style.hpp"
 #include "../util/logger.hpp"
 #include "../util/opengl.hpp"
@@ -40,7 +40,7 @@ namespace VTX
 
 		UserInterface::~UserInterface() { _disposeAll(); }
 
-		void UserInterface::printInfos() const
+		void UserInterface::print() const
 		{
 			const uchar * glVersion	  = glGetString( GL_VERSION );
 			const uchar * glslVersion = glGetString( GL_SHADING_LANGUAGE_VERSION );
@@ -64,14 +64,13 @@ namespace VTX
 			}
 		}
 
-		void UserInterface::_addComponents()
+		void UserInterface::_addItems()
 		{
-			_addComponent( std::make_shared<ComponentMenu>(
-				ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showInspector, &_showCameraEditor ) ) );
-			_addComponent( std::make_shared<ComponentConsole>( ComponentConsole( &_showConsole ) ) );
-			_addComponent( std::make_shared<ComponentScene>( ComponentScene( &_showScene ) ) );
-			_addComponent( std::make_shared<ComponentInspector>( ComponentInspector( &_showInspector ) ) );
-			_addComponent( std::make_shared<ComponentCameraEditor>( ComponentCameraEditor( &_showCameraEditor ) ) );
+			addItem( new ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showInspector, &_showCameraEditor ) );
+			addItem( new ComponentConsole( &_showConsole ) );
+			addItem( new ComponentScene( &_showScene ) );
+			addItem( new ComponentInspector( &_showInspector ) );
+			addItem( new ComponentCameraEditor( &_showCameraEditor ) );
 		}
 
 		void UserInterface::_initSDL2()
@@ -207,7 +206,7 @@ namespace VTX
 										   | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 			// Main begin.
-			ImGui::Begin( IMGUI_ID_MAIN_WINDOW, _show, windowFlags );
+			ImGui::Begin( IMGUI_ID_MAIN_WINDOW, _visible, windowFlags );
 
 			// Docking.
 			ImGuiID			   dockSpaceId	  = ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE );

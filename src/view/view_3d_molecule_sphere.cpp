@@ -5,10 +5,10 @@ namespace VTX
 {
 	namespace View
 	{
-		void View3DMoleculeSphere::_prepare()
+		void View3DMoleculeSphere::initItem()
 		{
-			Shader::GLSLProgramManager & pm		 = VTXApp::get().getProgramManager();
-			Shader::GLSLProgram *		 program = pm.createProgram( "SphereImpostorGeomShader" );
+			GL::GLSLProgramManager & pm		 = VTXApp::get().getProgramManager();
+			GL::GLSLProgram *		 program = pm.createProgram( "SphereImpostorGeomShader" );
 			program->attachShader( pm.createShader( "sphereImpostorGeom.vert" ) );
 			program->attachShader( pm.createShader( "sphereImpostorGeomQuad.geom" ) );
 			program->attachShader( pm.createShader( "sphereImpostorDeferred.frag" ) );
@@ -44,12 +44,12 @@ namespace VTX
 			}
 		};
 
-		void View3DMoleculeSphere::_draw()
+		void View3DMoleculeSphere::render()
 		{
 			VTXApp::get().getProgramManager().getProgram( "SphereImpostorGeomShader" )->use();
 			_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 			glUniform1f( _uRadiusScale, _radiusScale );
-			glDrawArrays( GL_POINTS, 0, _model->getAtomCount() );
+			glDrawArrays( GL_POINTS, 0, _getModel().getAtomCount() );
 		}
 	} // namespace View
 } // namespace VTX

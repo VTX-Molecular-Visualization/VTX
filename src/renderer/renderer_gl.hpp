@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_DEFERRED__
-#define __VTX_RENDERER_DEFERRED__
+#ifndef __VTX_RENDERER_GL__
+#define __VTX_RENDERER_GL__
 
 #ifdef _MSC_VER
 #pragma once
@@ -11,11 +11,11 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		class RendererDeferred : public BaseRenderer
+		class RendererGL : public BaseRenderer
 		{
 		  public:
-			RendererDeferred()	= default;
-			~RendererDeferred() = default;
+			RendererGL()		= default;
+			~RendererGL() = default;
 
 			virtual void init( Object3D::Scene &, uint, uint ) override;
 			virtual void clear( Object3D::Scene & ) override;
@@ -33,7 +33,7 @@ namespace VTX
 			GLuint _quadVBO = GL_INVALID_VALUE;
 
 			// SSAO pass.
-			Shader::GLSLProgram * _ssaoShader	  = nullptr;
+			GL::GLSLProgram *	  _ssaoShader	  = nullptr;
 			GLuint				  _fboSSAO		  = GL_INVALID_VALUE;
 			GLuint				  _ssaoTexture	  = GL_INVALID_VALUE;
 			GLuint				  _noiseTexture	  = GL_INVALID_VALUE;
@@ -41,21 +41,21 @@ namespace VTX
 			GLint				  _uAoKernelLoc	  = GL_INVALID_INDEX;
 
 			// Blur pass.
-			Shader::GLSLProgram * _blurShader  = nullptr;
+			GL::GLSLProgram *	  _blurShader  = nullptr;
 			GLuint				  _fboBlur	   = GL_INVALID_VALUE;
 			GLuint				  _blurTexture = GL_INVALID_VALUE;
 
 			// Shading pass.
-			Shader::GLSLProgram * _diffuseShading	 = nullptr;
-			Shader::GLSLProgram * _blinnPhongShading = nullptr;
-			Shader::GLSLProgram * _toonShading		 = nullptr;
+			GL::GLSLProgram *	  _diffuseShading	 = nullptr;
+			GL::GLSLProgram *	  _blinnPhongShading = nullptr;
+			GL::GLSLProgram *	  _toonShading		 = nullptr;
 			GLuint				  _fboShading		 = GL_INVALID_VALUE;
 			GLuint				  _shadingTexture	 = GL_INVALID_VALUE;
 
-			Shader::GLSLProgram * _currentShading = nullptr;
+			GL::GLSLProgram * _currentShading = nullptr;
 
 			// Anti-aliasing pass.
-			Shader::GLSLProgram * _aaShader = nullptr;
+			GL::GLSLProgram * _aaShader = nullptr;
 
 			void _initGeometricPass();
 			void _initSsaoPass();

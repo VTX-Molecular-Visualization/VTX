@@ -8,6 +8,7 @@
 #include "../generic/base_updatable.hpp"
 #include "../model/model_molecule.hpp"
 #include "../model/model_path.hpp"
+#include "../util/type.hpp"
 #include "camera.hpp"
 #include <vector>
 
@@ -23,7 +24,7 @@ namespace VTX
 			using VectorMoleculePtr = std::vector<MoleculePtr>;
 			using VectorPathPtr		= std::vector<PathPtr>;
 
-			Scene() = default;
+			Scene();
 			~Scene();
 
 			void clear();

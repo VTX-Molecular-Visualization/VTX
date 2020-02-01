@@ -1,6 +1,6 @@
 #include "reader_obj.hpp"
-#include "../../defines.hpp"
-#include "../../exceptions.hpp"
+#include "../../define.hpp"
+#include "../../exception.hpp"
 #include "../../util/color.hpp"
 #include "../../util/logger.hpp"
 #include <assimp/Importer.hpp>

@@ -2,6 +2,7 @@
 #include "../io/reader/reader_mmtf.hpp"
 #include "../io/reader/reader_obj.hpp"
 #include "../model/model_molecule.hpp"
+#include "../model/model_path.hpp"
 #include "../object3d/scene.hpp"
 #include "../vtx_app.hpp"
 
@@ -18,7 +19,7 @@ namespace VTX
 			//}
 			_loadFile( (std::string *)p_arg );
 
-			VTXApp::get().goToState( State::STATE_NAME::VISUALIZATION );
+			VTXApp::get().goToState( ID::State::VISUALIZATION );
 		}
 
 		void StateLoading::_loadFile( std::string * p_path ) const
@@ -40,9 +41,16 @@ namespace VTX
 
 			if ( reader != nullptr && reader->readFile( path, *molecule ) )
 			{
+				molecule->init();
+				molecule->setSelected( true );
+				molecule->print();
 				scene->addMolecule( molecule );
-				molecule->printInfos();
 			}
+
+			Model::ModelPath * p = new Model::ModelPath();
+			p->init();
+			scene->addPath( p );
+			p->setSelected( true );
 
 			delete reader;
 		}

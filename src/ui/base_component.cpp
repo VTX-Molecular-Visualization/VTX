@@ -1,72 +1,46 @@
 #include "base_component.hpp"
-#include <iostream>
+#include "../model/model_molecule.hpp"
+#include "../util/type.hpp"
 
 namespace VTX
 {
 	namespace UI
 	{
-		BaseComponent::BaseComponent( bool * const p_show ) : _show( p_show ) {}
-
-		BaseComponent::~BaseComponent() { _components.clear(); }
-
 		void BaseComponent::init()
 		{
-			if ( _isInitialized ) { return; }
-			_addComponents();
+			Generic::HasCollection<Generic::BaseDrawable>::init();
 			_registerEventHandlers();
-			_isInitialized = true;
 		}
 
-		void BaseComponent::_addComponent( const std::shared_ptr<UI::BaseComponent> p_component )
-		{
-			VTX_DEBUG( "ADD COMPONENT" );
-			p_component->init();
-			try
-			{
-				_components.try_emplace( p_component->getName(), p_component );
-			}
-			catch ( const std::exception )
-			{
-				VTX_WARNING( "A component with this name already exists: " + p_component->getName() );
-			}
-		}
+		void BaseComponent::initItem() { init(); }
 
-		void BaseComponent::addView( const std::shared_ptr<View::BaseView<Model::BaseModel>> p_view )
+		void BaseComponent::_drawComponent( const std::string & p_name )
 		{
-			VTX_DEBUG( "ADD VIEW" );
-		}
-
-		void BaseComponent::_drawComponent( const COMPONENT_NAME p_name )
-		{
-			try
-			{
-				_components.at( ENUM_TO_STRING( p_name ) )->display();
-			}
-			catch ( const std::exception )
-			{
-				VTX_WARNING( "Component not found: " + ENUM_TO_STRING( p_name ) );
-			}
+			if ( _hasItem( p_name ) ) { _getItem( p_name )->draw(); }
 		}
 
 		void BaseComponent::_drawComponents()
 		{
-			for ( const PairStringToComponentSharedPtr pair : _components )
+			for ( const PairStringToItemPtr pair : _getItems() )
 			{
-				pair.second->display();
+				pair.second->draw();
 			}
 		}
 
 		void BaseComponent::_registerEventHandler( const Event::EVENT_UI p_event ) { _events.emplace( p_event ); }
 
-		const std::shared_ptr<UI::BaseComponent> BaseComponent::getComponentByName( const COMPONENT_NAME p_name ) const
+		BaseComponent * const BaseComponent::getComponentByName( const std::string & p_name )
 		{
-			std::string name = ENUM_TO_STRING( p_name );
-			if ( _components.find( name ) != _components.end() ) { return _components.at( name ); }
+			if ( _getItems().find( p_name ) != _getItems().end() ) { return (BaseComponent *)_getItem( p_name ); }
 
-			for ( const PairStringToComponentSharedPtr pair : _components )
+			for ( const PairStringToItemPtr pair : _getItems() )
 			{
-				std::shared_ptr<UI::BaseComponent> child = pair.second->getComponentByName( p_name );
-				if ( child != nullptr ) { return child; }
+				BaseComponent * child = dynamic_cast<BaseComponent *>( pair.second );
+				if ( child != nullptr )
+				{
+					child = child->getComponentByName( p_name );
+					if ( child != nullptr ) { return child; }
+				}
 			}
 
 			return nullptr;
@@ -78,17 +52,12 @@ namespace VTX
 			{ _applyEvent( p_event, p_arg ); }
 
 			// Propagate to children.
-			for ( const PairStringToComponentSharedPtr pair : _components )
+			for ( const PairStringToItemPtr pair : _getItems() )
 			{
-				pair.second->receiveEvent( p_event, p_arg );
+				BaseComponent * child = dynamic_cast<BaseComponent *>( pair.second );
+				if ( child != nullptr ) { child->receiveEvent( p_event, p_arg ); }
 			}
 		}
-
-		void BaseComponent::display()
-		{
-			if ( _show != nullptr && isShown() == false ) { return; }
-			_draw();
-		};
 
 	} // namespace UI
 } // namespace VTX

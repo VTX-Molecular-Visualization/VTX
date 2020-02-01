@@ -1,8 +1,9 @@
 #include "vtx_app.hpp"
+#include "id.hpp"
 #include "io/path.hpp"
 #include "io/reader/reader_mmtf.hpp"
 #include "model/model_molecule.hpp"
-#include "renderer/renderer_deferred.hpp"
+#include "renderer/renderer_gl.hpp"
 #include "ui/imgui/imgui_impl_sdl.h"
 #include <thread>
 
@@ -15,20 +16,20 @@ namespace VTX
 		VTX_INFO( "Initializing application" );
 		_ui = new UI::UserInterface();
 		_ui->init();
-		_stateMachine = new State::StateMachine();
+		_stateMachine = new State::Machine();
 		_stateMachine->init();
 		_scene		   = new Object3D::Scene();
-		_renderer	   = new Renderer::RendererDeferred();
+		_renderer	   = new Renderer::RendererGL();
 		_actionManager = new Action::ActionManager();
 	}
 
 	VTXApp::~VTXApp()
 	{
-		delete _ui;
-		delete _stateMachine;
-		delete _scene;
 		delete _renderer;
+		delete _scene;
+		delete _stateMachine;
 		delete _actionManager;
+		delete _ui;
 	}
 
 	void VTXApp::start()
@@ -37,16 +38,17 @@ namespace VTX
 		VTXApp::_isRunning = true;
 		VTX_INFO( "Application started" );
 
-		_ui->display();
-		_ui->printInfos();
+		_ui->print();
+		_ui->draw();
 
 #ifdef _DEBUG
-		//_stateMachine->goToState( State::STATE_NAME::VISUALIZATION );
-		//_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "4v6x.mmtf" ) );
-		//_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "3j3q.mmtf" ) );
-		_stateMachine->goToState( State::STATE_NAME::LOADING, &std::string( DATA_DIR + "r2d2.obj" ) );
+		//_stateMachine->goToState( ID::State::::VISUALIZATION );
+		_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "173D.mmtf" ) );
+		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "4v6x.mmtf" ) );
+		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "3j3q.mmtf" ) );
+		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "r2d2.obj" ) );
 #else
-		_stateMachine->goToState( State::STATE_NAME::VISUALIZATION );
+		_stateMachine->goToState( ID::State::VISUALIZATION );
 #endif
 
 		while ( VTXApp::_isRunning )
@@ -70,12 +72,7 @@ namespace VTX
 		VTXApp::_isRunning = false;
 	}
 
-	const std::shared_ptr<UI::BaseComponent> VTXApp::getUIComponentByName( const UI::COMPONENT_NAME p_name ) const
-	{
-		return _ui->getComponentByName( p_name );
-	};
-
-	void VTXApp::goToState( const State::STATE_NAME p_name, void * const p_arg )
+	void VTXApp::goToState( const std::string & p_name, void * const p_arg )
 	{
 		_stateMachine->goToState( p_name, p_arg );
 	}
@@ -121,7 +118,7 @@ namespace VTX
 		{
 			_handleEvent( event );
 		}
-		_ui->display();
+		_ui->draw();
 		_scene->update( _timeDelta );
 		_stateMachine->update( _timeDelta );
 

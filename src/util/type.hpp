@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "../model/base_model.hpp"
-#include "../ui/base_component.hpp"
-#include "../vtx_app.hpp"
+#include <map>
+#include <string>
+#include <vector>
 
 namespace VTX
 {
@@ -15,35 +15,24 @@ namespace VTX
 	{
 		namespace Type
 		{
-			template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-			static std::shared_ptr<View::BaseView<Model::BaseModel>> componentToView(
-				const std::shared_ptr<UI::BaseComponent> p_component )
+			template<typename T>
+			void clearVector( std::vector<T *> & p_vector )
 			{
-				std::shared_ptr<UI::BaseComponent> component
-					= VTXApp::get().getUIComponentByName( UI::COMPONENT_NAME::CONSOLE );
-
-				if ( component == nullptr ) VTX_ERROR( "Component is null" );
-				std::shared_ptr<View::BaseView<Model::BaseModel>> view
-					= std::dynamic_pointer_cast<View::BaseView<T>>( component );
-				if ( view == nullptr ) VTX_ERROR( "View is null" );
-				std::shared_ptr<View::BaseView<Model::BaseModel>> viewCast
-					= std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( view );
-				if ( viewCast == nullptr ) VTX_ERROR( "View is null" );
-				return viewCast;
+				for ( T * element : p_vector )
+				{
+					delete element;
+				}
+				p_vector.clear();
 			}
 
-			template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-			static std::shared_ptr<UI::BaseComponent> viewToComponent( const std::shared_ptr<View::BaseView<T>> p_view )
+			template<typename T>
+			void clearStringMap( std::map<std::string, T *> & p_map )
 			{
-				if ( p_view == nullptr ) VTX_ERROR( "View is null" );
-				/*
-				std::shared_ptr<View::BaseView<Model::BaseModel>> view
-					= std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( p_view );
-				if ( view == nullptr ) VTX_ERROR( "View is null" );
-				*/
-				std::shared_ptr<UI::BaseComponent> component = std::dynamic_pointer_cast<UI::BaseComponent>( p_view );
-				if ( component == nullptr ) VTX_ERROR( "Component is null" );
-				return component;
+				for ( std::pair<std::string, T *> pair : p_map )
+				{
+					delete pair.second;
+				}
+				p_map.clear();
 			}
 
 		} // namespace Type

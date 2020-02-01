@@ -6,6 +6,8 @@
 #endif
 
 #include "../GL/glsl_program_manager.hpp"
+#include "../generic/base_collectionable.hpp"
+#include "../generic/base_renderable.hpp"
 #include "../model/base_model.hpp"
 #include "../object3d/camera.hpp"
 #include "base_view.hpp"
@@ -15,15 +17,18 @@ namespace VTX
 	namespace View
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		class BaseView3D : public BaseView<T>
+		class BaseView3D : public BaseView<T>, public Generic::BaseRenderable
 		{
 		  public:
+			explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
+			virtual ~BaseView3D() {}
+
 		  protected:
 			// Uniforms.
 			GLint _uViewModelMatrix = GL_INVALID_INDEX;
 			GLint _uProjMatrix		= GL_INVALID_INDEX;
+			bool  _isActive			= false;
 
-			virtual void _draw() = 0;
 			virtual void _setCameraUniforms( const Object3D::Camera & p_camera )
 			{
 				glUniformMatrix4fv( _uViewModelMatrix,

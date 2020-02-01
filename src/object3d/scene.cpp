@@ -1,21 +1,26 @@
 #include "scene.hpp"
 #include "../math/transform.hpp"
-#include "../settings.hpp"
+#include "../setting.hpp"
+#include "../util/type.hpp"
 
 namespace VTX
 {
 	namespace Object3D
 	{
+		Scene::Scene() {}
+
 		Scene::~Scene() { clear(); }
 
 		void Scene::clear()
 		{
-			_molecules.clear();
-			_paths.clear();
+			// TOCHECK: Templating auto?
+			Util::Type::clearVector<Model::ModelMolecule>( _molecules );
+			Util::Type::clearVector( _paths );
 		}
 
 		void Scene::update( const double p_deltaTime )
 		{
+			// TOCHECK: Store BaseTransformable? Object3D super class?
 			for ( MoleculePtr molecule : _molecules )
 			{
 				Math::Transform & t = molecule->getTransform();

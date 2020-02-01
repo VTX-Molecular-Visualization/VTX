@@ -5,7 +5,8 @@
 #pragma once
 #endif
 
-#include "../defines.hpp"
+#include "../define.hpp"
+#include "../generic/base_printable.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtx/string_cast.hpp>
 
@@ -13,11 +14,15 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		class Camera
+		class Camera : public Generic::BasePrintable
 		{
 		  public:
 			Camera() { _update(); };
 			virtual ~Camera() = default;
+
+			inline Vec3f & getPosition() { return _position; }
+			inline float   getTheta() { return _theta; }
+			inline float & getPhi() { return _phi; }
 
 			inline Mat4f getViewMatrix() const { return glm::lookAt( _position, _position + _front, _up ); }
 			inline Mat4f getProjectionMatrix() const
@@ -30,6 +35,14 @@ namespace VTX
 				_screenHeight = float( p_height );
 			}
 
+			inline void set( const Vec3f p_position, const float p_theta, const float p_phi )
+			{
+				_position = p_position;
+				_theta	  = p_theta;
+				_phi	  = p_phi;
+				_update();
+			}
+
 			virtual void zoom( const float ) final;
 			virtual void moveFront( const float ) final;
 			virtual void moveLeft( const float ) final;
@@ -39,7 +52,7 @@ namespace VTX
 			virtual void rotateAroundLeft( const float, const Vec3f & ) final;
 			virtual void rotateAroundUp( const float, const Vec3f & ) final;
 
-			virtual void printInfo() const;
+			virtual void print() const override;
 
 		  protected:
 			float _screenWidth	= 0.f;

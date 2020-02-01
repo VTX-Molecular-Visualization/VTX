@@ -1,5 +1,5 @@
 #include "path.hpp"
-#include "../defines.hpp"
+#include "../define.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iostream>

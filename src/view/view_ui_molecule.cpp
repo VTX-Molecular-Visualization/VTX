@@ -56,7 +56,7 @@ namespace VTX
 				ImGui::PushID( "Debug" );
 
 				ImGui::Text( "Translation" );
-				const Mat4f & translation = _model->getTransform().getTranslation();
+				const Mat4f & translation = _getModel().getTransform().getTranslation();
 				x						  = (float *)&translation[ 0 ];
 				y						  = (float *)&translation[ 1 ];
 				z						  = (float *)&translation[ 2 ];
@@ -67,7 +67,7 @@ namespace VTX
 				ImGui::PopID();
 
 				ImGui::Text( "Rotation" );
-				const Mat4f & rotation = _model->getTransform().getRotation();
+				const Mat4f & rotation = _getModel().getTransform().getRotation();
 				x					   = (float *)&rotation[ 0 ];
 				y					   = (float *)&rotation[ 1 ];
 				z					   = (float *)&rotation[ 2 ];
@@ -78,7 +78,7 @@ namespace VTX
 				ImGui::PopID();
 
 				ImGui::Text( "Scale" );
-				const Mat4f & scale = _model->getTransform().getScale();
+				const Mat4f & scale = _getModel().getTransform().getScale();
 				x					= (float *)&scale[ 0 ];
 				y					= (float *)&scale[ 1 ];
 				z					= (float *)&scale[ 2 ];

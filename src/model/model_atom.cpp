@@ -1,5 +1,6 @@
 #include "model_atom.hpp"
 #include "../util/type.hpp"
+#include "../view/view_ui_atom.hpp"
 
 namespace VTX
 {
@@ -8,13 +9,10 @@ namespace VTX
 		void ModelAtom::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() )
-			{
-				//_addView( Util::Type::componentToView<ModelAtom>( UI::COMPONENT_NAME::VIEW_ATOM ) );
-			}
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIAtom( this ) ) ); }
 			else
 			{
-				//_removeView( std::string( magic_enum::enum_name( UI::COMPONENT_NAME::VIEW_ATOM ) ) );
+				_deleteView( ID::View::UI_ATOM );
 			}
 		}
 

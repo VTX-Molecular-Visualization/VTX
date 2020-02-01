@@ -34,31 +34,14 @@ namespace VTX
 
 			// Set default representation.
 			setRepresentation();
-
-			// Select (tmp).
-			setSelected( true );
 		}
 
-		void ModelMolecule::_addViews()
+		void ModelMolecule::_addItems()
 		{
-			// Create views.
-			std::shared_ptr<View::ViewUIMoleculeStructure> viewUIScene
-				= std::make_shared<View::ViewUIMoleculeStructure>( View::ViewUIMoleculeStructure() );
-			std::shared_ptr<View::View3DMoleculeSphere> view3DSphere
-				= std::make_shared<View::View3DMoleculeSphere>( View::View3DMoleculeSphere() );
-			std::shared_ptr<View::View3DMoleculeCylinder> view3DCylinder
-				= std::make_shared<View::View3DMoleculeCylinder>( View::View3DMoleculeCylinder() );
-
 			// Add views.
-			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( view3DSphere ) );
-			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( view3DCylinder ) );
-			_addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( viewUIScene ) );
-
-			// Attach to component.
-			std::shared_ptr<UI::BaseComponent> component
-				= VTXApp::get().getUIComponentByName( UI::COMPONENT_NAME::SCENE );
-			component->addView( std::reinterpret_pointer_cast<View::BaseView<Model::BaseModel>>( viewUIScene ) );
-			// component->addComponent( Util::Type::viewToComponent<ModelMolecule>( viewUIScene ) );
+			addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeSphere( this ) ) );
+			addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeCylinder( this ) ) );
+			addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMoleculeStructure( this ) ) );
 		}
 
 		void ModelMolecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }
@@ -100,7 +83,7 @@ namespace VTX
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		}
 
-		void ModelMolecule::printInfos() const
+		void ModelMolecule::print() const
 		{
 			VTX_INFO( "Molecule: " + _name );
 			VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: "
@@ -111,13 +94,10 @@ namespace VTX
 		void ModelMolecule::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() )
-			{
-				//_addView( Util::Type::componentToView<ModelMolecule>( UI::COMPONENT_NAME::VIEW_MOLECULE ) );
-			}
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMolecule( this ) ) ); }
 			else
 			{
-				//_removeView( std::string( magic_enum::enum_name( UI::COMPONENT_NAME::VIEW_MOLECULE ) ) );
+				_deleteView( ID::View::UI_MOLECULE );
 			}
 		}
 
@@ -135,6 +115,7 @@ namespace VTX
 				_selectedChain = nullptr;
 			}
 		}
+
 		void ModelMolecule::setSelectedResidue( const uint p_id )
 		{
 			if ( _selectedResidue != nullptr ) { _selectedResidue->setSelected( false ); }
@@ -150,6 +131,7 @@ namespace VTX
 				_selectedResidue = nullptr;
 			}
 		}
+
 		void ModelMolecule::setSelectedAtom( const uint p_id )
 		{
 			if ( _selectedAtom != nullptr ) { _selectedAtom->setSelected( false ); }
@@ -258,10 +240,10 @@ namespace VTX
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 		}
 
-		void ModelMolecule::draw()
+		void ModelMolecule::render()
 		{
 			bindBuffers();
-			_notifyViews( Event::EVENT_MODEL::DRAW );
+			_notifyViews( Event::EVENT_MODEL::RENDER );
 			unbindBuffers();
 		}
 	} // namespace Model

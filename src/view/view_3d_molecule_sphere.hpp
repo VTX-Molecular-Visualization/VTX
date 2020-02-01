@@ -14,16 +14,13 @@ namespace VTX
 		class View3DMoleculeSphere : public BaseView3DMolecule
 		{
 		  public:
-			View3DMoleculeSphere()	= default;
-			~View3DMoleculeSphere() = default;
+			explicit View3DMoleculeSphere( Model::ModelMolecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 
-			virtual VIEW_NAME getViewName() const override { return VIEW_NAME::D3_SPHERE; };
+			virtual std::string getName() const override { return ID::View::D3_SPHERE; };
+			virtual void		initItem() override;
+			virtual void		notify( Event::EVENT_MODEL ) override;
 
-			virtual void notify( Event::EVENT_MODEL ) override;
-
-		  protected:
-			virtual void _prepare() override;
-			virtual void _draw() override;
+			virtual void render() override;
 
 		  private:
 			float _radiusScale = 0.0f;

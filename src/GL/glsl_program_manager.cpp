@@ -1,11 +1,11 @@
 #include "glsl_program_manager.hpp"
-#include "../defines.hpp"
-#include "../exceptions.hpp"
+#include "../define.hpp"
+#include "../exception.hpp"
 #include <vector>
 
 namespace VTX
 {
-	namespace Shader
+	namespace GL
 	{
 		const GLSLProgramManager::MapStringToEnum GLSLProgramManager::EXTENSIONS
 			= MapStringToEnum( { { "vert", SHADER_TYPE::VERTEX },

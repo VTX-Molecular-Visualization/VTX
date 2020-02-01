@@ -19,10 +19,10 @@ namespace VTX
 		  public:
 			explicit ComponentInspector( bool * const );
 
-			virtual COMPONENT_NAME getComponentName() const override { return COMPONENT_NAME::INSPECTOR; }
+			virtual std::string getName() const override { return ID::UI::INSPECTOR; }
 
 		  protected:
-			virtual void _addComponents() override;
+			virtual void _addItems() override {};
 			virtual void _draw() override;
 
 		  private:

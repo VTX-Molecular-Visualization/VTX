@@ -31,20 +31,24 @@ namespace VTX
 			BaseRenderer()	= default;
 			~BaseRenderer() = default;
 
-			void setSize( const int, const int );
+			void BaseRenderer::setSize( const int p_width, const int p_height )
+			{
+				_width	= p_width;
+				_height = p_height;
+			}
 
 			virtual void init( Object3D::Scene &, uint, uint ) = 0;
 			virtual void clear( Object3D::Scene & )			   = 0;
 			virtual void render( Object3D::Scene & )		   = 0;
 			virtual void setShading()						   = 0;
 
-			inline Shader::GLSLProgramManager & getProgramManager() { return _programManager; }
+			inline GL::GLSLProgramManager & getProgramManager() { return _programManager; }
 
 		  protected:
-			bool					   _isInitialized  = false;
-			uint					   _width		   = 0;
-			uint					   _height		   = 0;
-			Shader::GLSLProgramManager _programManager = Shader::GLSLProgramManager();
+			bool				   _isInitialized  = false;
+			uint				   _width		   = 0;
+			uint				   _height		   = 0;
+			GL::GLSLProgramManager _programManager = GL::GLSLProgramManager();
 		};
 	} // namespace Renderer
 } // namespace VTX

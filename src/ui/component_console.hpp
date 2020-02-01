@@ -19,12 +19,13 @@ namespace VTX
 		  public:
 			explicit ComponentConsole( bool * const );
 
+			virtual std::string getName() const override { return ID::UI::CONSOLE; }
+
 		  protected:
+			virtual void _addItems() override {}
 			virtual void _draw() override;
 			virtual void _registerEventHandlers() override;
 			virtual void _applyEvent( const Event::EVENT_UI, void * const p_arg ) override;
-
-			virtual COMPONENT_NAME getComponentName() const override { return COMPONENT_NAME::CONSOLE; }
 
 		  private:
 			std::list<Util::Logger::Log> _logs = std::list<Util::Logger::Log>();

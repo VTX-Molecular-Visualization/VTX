@@ -5,10 +5,10 @@ namespace VTX
 {
 	namespace View
 	{
-		void View3DMoleculeCylinder::_prepare()
+		void View3DMoleculeCylinder::initItem()
 		{
-			Shader::GLSLProgramManager & pm		 = VTXApp::get().getProgramManager();
-			Shader::GLSLProgram *		 program = pm.createProgram( "CylinderGeom" );
+			GL::GLSLProgramManager & pm		 = VTXApp::get().getProgramManager();
+			GL::GLSLProgram *		 program = pm.createProgram( "CylinderGeom" );
 			program->attachShader( pm.createShader( "cylinderImpostorGeom.vert" ) );
 			program->attachShader( pm.createShader( "cylinderImpostorGeom.geom" ) );
 			program->attachShader( pm.createShader( "cylinderImpostorDeferred.frag" ) );
@@ -35,12 +35,12 @@ namespace VTX
 			}
 		};
 
-		void View3DMoleculeCylinder::_draw()
+		void View3DMoleculeCylinder::render()
 		{
 			VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
 			_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 			glUniform1f( _uRadius, 0.2f );
-			glDrawElements( GL_LINES, _model->getBondCount(), GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
+			glDrawElements( GL_LINES, _getModel().getBondCount(), GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
 		}
 	} // namespace View
 } // namespace VTX

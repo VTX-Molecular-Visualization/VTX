@@ -14,6 +14,8 @@ namespace VTX
 		class BaseTransformable
 		{
 		  public:
+			virtual ~BaseTransformable() = default;
+
 			inline Math::Transform & getTransform() { return _transform; };
 
 		  protected:

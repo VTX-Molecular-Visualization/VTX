@@ -5,7 +5,9 @@
 #pragma once
 #endif
 
-#include "../defines.hpp"
+#include "../define.hpp"
+#include "../generic/base_printable.hpp"
+#include "../generic/base_renderable.hpp"
 #include "../generic/base_transformable.hpp"
 #include "../math/aabb.hpp"
 #include "../util/logger.hpp"
@@ -24,7 +26,11 @@ namespace VTX
 	namespace Model
 	{
 		class BaseView3DMolecule;
-		class ModelMolecule : public BaseModel, public Generic::BaseTransformable
+		class ModelMolecule :
+			public BaseModel,
+			public Generic::BasePrintable,
+			public Generic::BaseTransformable,
+			public Generic::BaseRenderable
 		{
 		  public:
 			ModelMolecule() = default;
@@ -82,7 +88,7 @@ namespace VTX
 			void		 setRepresentation();
 			void		 setColorMode();
 
-			void printInfos() const;
+			virtual void print() const override;
 
 			ModelChain * const	 getSelectedChain() const { return _selectedChain; }
 			ModelResidue * const getSelectedResidue() const { return _selectedResidue; }
@@ -96,12 +102,13 @@ namespace VTX
 
 			void bindBuffers();
 			void unbindBuffers();
-			void draw();
+
+			virtual void render() override;
 
 			virtual void setSelected( const bool ) override;
 
 		  protected:
-			virtual void _addViews() override final;
+			virtual void _addItems() override final;
 
 		  private:
 			// Models.
