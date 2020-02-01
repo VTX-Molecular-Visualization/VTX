@@ -56,6 +56,7 @@ endif()
 
 # Additionnal includes.
 target_include_directories(VTX PRIVATE ${PATH_LIB})
+target_include_directories(VTX PRIVATE ${PATH_SRC})
 
 # Compiler options #2.
 if(CMAKE_COMPILER_IS_GNUCC)
