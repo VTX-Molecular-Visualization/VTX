@@ -32,8 +32,9 @@ namespace VTX
 			void addMolecule( MoleculePtr const p_molecule ) { _molecules.emplace_back( p_molecule ); }
 			void addPath( PathPtr const p_path ) { _paths.emplace_back( p_path ); }
 
-			inline Camera &			 getCamera() { return _camera; }
-			inline VectorMoleculePtr getMolecules() const { return _molecules; };
+			inline Camera &					 getCamera() { return _camera; }
+			inline VectorMoleculePtr	   &getMolecules() { return _molecules; };
+			inline const VectorMoleculePtr &getMolecules() const { return _molecules; };
 			inline VectorPathPtr	 getPaths() const { return _paths; };
 
 			virtual void update( const double ) override;
