@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../object3d/camera.hpp"
+#include "object3d/camera.hpp"
 #include "base_keyboard_mouse_controller.hpp"
 
 namespace VTX

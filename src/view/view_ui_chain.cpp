@@ -1,5 +1,5 @@
 #include "view_ui_chain.hpp"
-#include "../vtx_app.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

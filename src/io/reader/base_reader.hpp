@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "../../model/model_molecule.hpp"
-#include "../path.hpp"
+#include "model/model_molecule.hpp"
+#include "io/path.hpp"
 
 namespace VTX
 {

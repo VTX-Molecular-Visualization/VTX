@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "../localization/language.hpp"
-#include "../model/model_molecule.hpp"
-#include "../view/base_view.hpp"
+#include "localization/language.hpp"
+#include "model/model_molecule.hpp"
+#include "view/base_view.hpp"
 #include "base_component.hpp"
 
 namespace VTX

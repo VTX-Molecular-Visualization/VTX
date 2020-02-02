@@ -5,11 +5,11 @@
 #pragma once
 #endif
 
-#include "../model/model_checkpoint.hpp"
-#include "../model/model_path.hpp"
-#include "../object3d/camera.hpp"
-#include "../object3d/scene.hpp"
-#include "../vtx_app.hpp"
+#include "model/model_checkpoint.hpp"
+#include "model/model_path.hpp"
+#include "object3d/camera.hpp"
+#include "object3d/scene.hpp"
+#include "vtx_app.hpp"
 #include "base_action.hpp"
 
 namespace VTX

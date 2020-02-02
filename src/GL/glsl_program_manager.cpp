@@ -1,6 +1,6 @@
 #include "glsl_program_manager.hpp"
-#include "../define.hpp"
-#include "../exception.hpp"
+#include "define.hpp"
+#include "exception.hpp"
 #include <vector>
 
 namespace VTX

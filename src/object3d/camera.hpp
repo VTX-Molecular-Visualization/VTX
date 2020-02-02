@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "../define.hpp"
-#include "../generic/base_printable.hpp"
+#include "define.hpp"
+#include "generic/base_printable.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtx/string_cast.hpp>
 
@@ -17,14 +17,24 @@ namespace VTX
 		class Camera : public Generic::BasePrintable
 		{
 		  public:
+			struct CameraConfiguration
+			{
+				Vec3f position = VEC3F_ZERO;
+				float theta	   = 0.f;
+				float phi	   = 4.22369f;
+			};
+
 			Camera() { _update(); };
 			virtual ~Camera() = default;
 
-			inline Vec3f & getPosition() { return _position; }
-			inline float   getTheta() { return _theta; }
-			inline float & getPhi() { return _phi; }
+			inline Vec3f & getPosition() { return _config.position; }
+			inline float   getTheta() { return _config.theta; }
+			inline float & getPhi() { return _config.phi; }
 
-			inline Mat4f getViewMatrix() const { return glm::lookAt( _position, _position + _front, _up ); }
+			inline Mat4f getViewMatrix() const
+			{
+				return glm::lookAt( _config.position, _config.position + _front, _up );
+			}
 			inline Mat4f getProjectionMatrix() const
 			{
 				return glm::perspective( glm::radians( _fov ), _screenWidth / _screenHeight, _near, _far );
@@ -35,11 +45,11 @@ namespace VTX
 				_screenHeight = float( p_height );
 			}
 
-			inline void set( const Vec3f p_position, const float p_theta, const float p_phi )
+			inline void setConfiguration( const CameraConfiguration & p_config )
 			{
-				_position = p_position;
-				_theta	  = p_theta;
-				_phi	  = p_phi;
+				_config.position = p_config.position;
+				_config.theta	 = p_config.theta;
+				_config.phi		 = p_config.phi;
 				_update();
 			}
 
@@ -55,18 +65,16 @@ namespace VTX
 			virtual void print() const override;
 
 		  protected:
-			float _screenWidth	= 0.f;
-			float _screenHeight = 0.f;
-			float _near			= CAMERA_NEAR;
-			float _far			= CAMERA_FAR;
-			float _fov			= CAMERA_FOV;
-			float _theta		= 0.f;
-			float _phi			= 4.22369f;
+			float				_screenWidth  = 0.f;
+			float				_screenHeight = 0.f;
+			float				_near		  = CAMERA_NEAR;
+			float				_far		  = CAMERA_FAR;
+			float				_fov		  = CAMERA_FOV;
+			CameraConfiguration _config;
 
-			Vec3f _position = VEC3F_ZERO;
-			Vec3f _front	= VEC3F_Z;
-			Vec3f _up		= VEC3F_Y;
-			Vec3f _left		= VEC3F_X;
+			Vec3f _front = VEC3F_Z;
+			Vec3f _up	 = VEC3F_Y;
+			Vec3f _left	 = VEC3F_X;
 
 			void _update();
 		}; // namespace Camera

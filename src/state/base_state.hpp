@@ -5,10 +5,10 @@
 #pragma once
 #endif
 
-#include "../controller/base_controller.hpp"
-#include "../generic/base_collectionable.hpp"
-#include "../generic/base_updatable.hpp"
-#include "../id.hpp"
+#include "controller/base_controller.hpp"
+#include "generic/base_collectionable.hpp"
+#include "generic/base_updatable.hpp"
+#include "id.hpp"
 
 namespace VTX
 {

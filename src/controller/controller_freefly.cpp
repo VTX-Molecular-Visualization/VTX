@@ -1,5 +1,5 @@
 #include "controller_freefly.hpp"
-#include "../setting.hpp"
+#include "setting.hpp"
 
 namespace VTX
 {

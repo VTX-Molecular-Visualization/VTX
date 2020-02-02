@@ -1,9 +1,9 @@
 #include "component_console.hpp"
-#include "../define.hpp"
-#include "../event/event.hpp"
-#include "../style.hpp"
-#include "../util/logger.hpp"
-#include "../vtx_app.hpp"
+#include "define.hpp"
+#include "event/event.hpp"
+#include "style.hpp"
+#include "util/logger.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

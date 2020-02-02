@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../io/path.hpp"
+#include "io/path.hpp"
 #include <GL/gl3w.h>
 #include <string>
 

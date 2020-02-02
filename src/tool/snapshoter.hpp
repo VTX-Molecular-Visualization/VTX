@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#include "io/path.hpp"
+
 namespace VTX
 {
 	namespace Tool
@@ -12,7 +14,7 @@ namespace VTX
 		class Snapshoter
 		{
 		  public:
-			void takeSnapshot() const;
+			void takeSnapshot( const IO::Path & p_path ) const;
 
 		  private:
 		};

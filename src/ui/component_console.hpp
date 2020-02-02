@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "../localization/language.hpp"
-#include "../util/logger.hpp"
+#include "localization/language.hpp"
+#include "util/logger.hpp"
 #include "base_component.hpp"
 #include <list>
 

@@ -1,22 +1,22 @@
 #include "component_menu.hpp"
-#include "../action/action_active_ssao.hpp"
-#include "../action/action_active_y_axis_inversion.hpp"
-#include "../action/action_change_auto_rotate_speed.hpp"
-#include "../action/action_change_color_mode.hpp"
-#include "../action/action_change_display_mode.hpp"
-#include "../action/action_change_representation.hpp"
-#include "../action/action_change_shading.hpp"
-#include "../action/action_change_theme.hpp"
-#include "../action/action_new.hpp"
-#include "../action/action_open.hpp"
-#include "../action/action_quit.hpp"
-#include "../action/action_snapshot.hpp"
-#include "../define.hpp"
-#include "../style.hpp"
-#include "../tool/snapshoter.hpp"
-#include "../util/logger.hpp"
-#include "../vtx_app.hpp"
+#include "action/action_active_ssao.hpp"
+#include "action/action_active_y_axis_inversion.hpp"
+#include "action/action_change_auto_rotate_speed.hpp"
+#include "action/action_change_color_mode.hpp"
+#include "action/action_change_display_mode.hpp"
+#include "action/action_change_representation.hpp"
+#include "action/action_change_shading.hpp"
+#include "action/action_change_theme.hpp"
+#include "action/action_export_video.hpp"
+#include "action/action_new.hpp"
+#include "action/action_open.hpp"
+#include "action/action_quit.hpp"
+#include "action/action_snapshot.hpp"
+#include "define.hpp"
 #include "imgui/imgui_internal.h"
+#include "style.hpp"
+#include "util/logger.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -113,6 +113,8 @@ namespace VTX
 				{
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Snapshot" ) ) )
 					{ VTXApp::get().action( new Action::ActionSnapshot() ); }
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Video" ) ) )
+					{ VTXApp::get().action( new Action::ActionExportVideo() ); }
 					ImGui::EndMenu();
 				}
 

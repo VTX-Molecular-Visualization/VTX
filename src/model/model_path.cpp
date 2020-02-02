@@ -1,6 +1,6 @@
 #include "model_path.hpp"
-#include "../util/type.hpp"
-#include "../view/view_ui_path_list.hpp"
+#include "util/type.hpp"
+#include "view/view_ui_path_list.hpp"
 
 namespace VTX
 {

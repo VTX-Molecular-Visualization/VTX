@@ -1,6 +1,6 @@
 #include "base_component.hpp"
-#include "../model/model_molecule.hpp"
-#include "../util/type.hpp"
+#include "model/model_molecule.hpp"
+#include "util/type.hpp"
 
 namespace VTX
 {

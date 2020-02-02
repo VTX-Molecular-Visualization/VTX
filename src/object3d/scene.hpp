@@ -5,10 +5,10 @@
 #pragma once
 #endif
 
-#include "../generic/base_updatable.hpp"
-#include "../model/model_molecule.hpp"
-#include "../model/model_path.hpp"
-#include "../util/type.hpp"
+#include "generic/base_updatable.hpp"
+#include "model/model_molecule.hpp"
+#include "model/model_path.hpp"
+#include "util/type.hpp"
 #include "camera.hpp"
 #include <vector>
 

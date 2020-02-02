@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../model/model_path.hpp"
+#include "model/model_path.hpp"
 #include "base_state.hpp"
 
 namespace VTX

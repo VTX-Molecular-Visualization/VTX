@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../define.hpp"
+#include "define.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
 namespace VTX

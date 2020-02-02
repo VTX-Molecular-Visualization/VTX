@@ -5,12 +5,12 @@
 #pragma once
 #endif
 
-#include "../define.hpp"
-#include "../event/event.hpp"
-#include "../generic/base_drawable.hpp"
-#include "../generic/has_collection.hpp"
-#include "../id.hpp"
-#include "../model/base_model.hpp"
+#include "define.hpp"
+#include "event/event.hpp"
+#include "generic/base_drawable.hpp"
+#include "generic/has_collection.hpp"
+#include "id.hpp"
+#include "model/base_model.hpp"
 #include "imgui/imgui.h"
 #include <map>
 #include <set>

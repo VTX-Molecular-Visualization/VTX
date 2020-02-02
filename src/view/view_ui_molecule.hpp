@@ -5,7 +5,7 @@
 #pragma once
 
 #endif
-#include "../model/model_molecule.hpp"
+#include "model/model_molecule.hpp"
 #include "base_view_ui.hpp"
 
 namespace VTX

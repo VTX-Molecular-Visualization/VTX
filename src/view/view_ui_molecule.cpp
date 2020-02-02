@@ -1,7 +1,7 @@
 #include "view_ui_molecule.hpp"
-#include "../action/action_scale.hpp"
-#include "../action/action_translate.hpp"
-#include "../vtx_app.hpp"
+#include "action/action_scale.hpp"
+#include "action/action_translate.hpp"
+#include "vtx_app.hpp"
 #include <glm/gtx/euler_angles.hpp>
 
 namespace VTX

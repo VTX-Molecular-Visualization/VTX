@@ -1,5 +1,5 @@
 #include "view_ui_molecule_structure.hpp"
-#include "../setting.hpp"
+#include "setting.hpp"
 
 namespace VTX
 {

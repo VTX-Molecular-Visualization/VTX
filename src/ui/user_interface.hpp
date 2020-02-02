@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../generic/base_printable.hpp"
+#include "generic/base_printable.hpp"
 #include "base_component.hpp"
 #include <GL/gl3w.h>
 #include <SDL2/SDL.h>

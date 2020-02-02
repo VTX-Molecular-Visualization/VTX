@@ -1,11 +1,11 @@
 #include "component_inspector.hpp"
-#include "../define.hpp"
-#include "../localization/language.hpp"
-#include "../style.hpp"
-#include "../view/view_ui_atom.hpp"
-#include "../view/view_ui_chain.hpp"
-#include "../view/view_ui_molecule.hpp"
-#include "../view/view_ui_residue.hpp"
+#include "define.hpp"
+#include "localization/language.hpp"
+#include "style.hpp"
+#include "view/view_ui_atom.hpp"
+#include "view/view_ui_chain.hpp"
+#include "view/view_ui_molecule.hpp"
+#include "view/view_ui_residue.hpp"
 
 namespace VTX
 {

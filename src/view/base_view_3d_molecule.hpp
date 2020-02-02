@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../model/model_molecule.hpp"
+#include "model/model_molecule.hpp"
 #include "base_view_3d.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"

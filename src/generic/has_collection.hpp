@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../util/type.hpp"
+#include "util/type.hpp"
 #include "base_collectionable.hpp"
 #include <map>
 #include <string>

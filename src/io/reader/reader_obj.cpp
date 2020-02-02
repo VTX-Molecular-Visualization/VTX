@@ -1,8 +1,8 @@
 #include "reader_obj.hpp"
-#include "../../define.hpp"
-#include "../../exception.hpp"
-#include "../../util/color.hpp"
-#include "../../util/logger.hpp"
+#include "define.hpp"
+#include "exception.hpp"
+#include "util/color.hpp"
+#include "util/logger.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>

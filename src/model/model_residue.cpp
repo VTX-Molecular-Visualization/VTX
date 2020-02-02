@@ -1,6 +1,6 @@
 #include "model_residue.hpp"
-#include "../util/type.hpp"
-#include "../view/view_ui_residue.hpp"
+#include "util/type.hpp"
+#include "view/view_ui_residue.hpp"
 
 namespace VTX
 {

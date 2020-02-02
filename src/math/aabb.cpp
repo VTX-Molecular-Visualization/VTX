@@ -1,6 +1,6 @@
 #include "aabb.hpp"
-#include "../util/logger.hpp"
-#include "../util/math.hpp"
+#include "util/logger.hpp"
+#include "util/math.hpp"
 #include "glm/glm.hpp"
 #include <glm/gtx/string_cast.hpp>
 

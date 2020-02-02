@@ -1,6 +1,6 @@
 #include "model_atom.hpp"
-#include "../util/type.hpp"
-#include "../view/view_ui_atom.hpp"
+#include "util/type.hpp"
+#include "view/view_ui_atom.hpp"
 
 namespace VTX
 {

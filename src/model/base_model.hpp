@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "../generic/has_collection.hpp"
-#include "../math/transform.hpp"
-#include "../view/base_view.hpp"
+#include "generic/has_collection.hpp"
+#include "math/transform.hpp"
+#include "view/base_view.hpp"
 #include <map>
 
 namespace VTX

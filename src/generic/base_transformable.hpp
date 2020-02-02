@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../math/transform.hpp"
+#include "math/transform.hpp"
 
 namespace VTX
 {

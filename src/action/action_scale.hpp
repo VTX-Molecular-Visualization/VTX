@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "../generic/base_transformable.hpp"
-#include "../vtx_app.hpp"
+#include "generic/base_transformable.hpp"
+#include "vtx_app.hpp"
 #include "base_action_undonable.hpp"
 
 namespace VTX

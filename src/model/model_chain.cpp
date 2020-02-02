@@ -1,6 +1,6 @@
 #include "model_chain.hpp"
-#include "../util/type.hpp"
-#include "../view/view_ui_chain.hpp"
+#include "util/type.hpp"
+#include "view/view_ui_chain.hpp"
 
 namespace VTX
 {

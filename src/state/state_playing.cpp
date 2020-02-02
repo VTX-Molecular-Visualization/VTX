@@ -1,9 +1,9 @@
 #include "state_playing.hpp"
-#include "../model/model_path.hpp"
-#include "../object3d/scene.hpp"
-#include "../tool/chrono.hpp"
-#include "../vtx_app.hpp"
-#include <glm/gtx/compatibility.hpp>
+#include "model/model_path.hpp"
+#include "object3d/scene.hpp"
+#include "tool/chrono.hpp"
+#include "util/math.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -63,17 +63,8 @@ namespace VTX
 
 			float value = 1.f - ( ( -( _time - total ) ) / _path->getCheckpoints()[ offset ]->getDuration() );
 
-			float theta	   = glm::lerp( _path->getCheckpoints()[ offset > 0 ? offset - 1 : 0 ]->getTheta(),
-										_path->getCheckpoints()[ offset ]->getTheta(),
-										value );
-			float phi	   = glm::lerp( _path->getCheckpoints()[ offset > 0 ? offset - 1 : 0 ]->getPhi(),
-									_path->getCheckpoints()[ offset ]->getPhi(),
-									value );
-			Vec3f position = glm::lerp( _path->getCheckpoints()[ offset > 0 ? offset - 1 : 0 ]->getPosition(),
-										_path->getCheckpoints()[ offset ]->getPosition(),
-										value );
-
-			VTXApp::get().getScene().getCamera().set( position, theta, phi );
+			VTXApp::get().getScene().getCamera().setConfiguration(
+				Util::Math::lerpCameraConfiguration( _path, offset, value ) );
 		}
 
 	} // namespace State

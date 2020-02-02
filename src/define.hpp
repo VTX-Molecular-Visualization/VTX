@@ -51,6 +51,9 @@ namespace VTX
 	constexpr uint JPG_CHANNELS = 3u;
 	constexpr uint JPG_QUALITY	= 100u;
 
+	// Export video.
+	constexpr uint VIDEO_FPS = 60;
+
 	// Auto rotate.
 	constexpr float AUTO_ROTATE_SPEED_MIN		= 0.0f;
 	constexpr float AUTO_ROTATE_SPEED_MAX		= 1.0f;
@@ -62,6 +65,7 @@ namespace VTX
 	const std::string DATA_DIR	   = "../data/";
 	const IO::Path	  SHADER_DIR   = "../src/shaders/";
 	const std::string SNAPSHOT_DIR = "../snapshots/";
+	const std::string VIDEO_DIR	   = "../videos/";
 
 	// Log.
 	inline void	  VTX_DEBUG( const std::string & p_str ) { VTX::Util::Logger::logDebug( p_str ); }

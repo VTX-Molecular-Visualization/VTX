@@ -5,12 +5,12 @@
 #pragma once
 #endif
 
-#include "../define.hpp"
-#include "../generic/base_printable.hpp"
-#include "../generic/base_renderable.hpp"
-#include "../generic/base_transformable.hpp"
-#include "../math/aabb.hpp"
-#include "../util/logger.hpp"
+#include "define.hpp"
+#include "generic/base_printable.hpp"
+#include "generic/base_renderable.hpp"
+#include "generic/base_transformable.hpp"
+#include "math/aabb.hpp"
+#include "util/logger.hpp"
 #include "base_model.hpp"
 #include "model_atom.hpp"
 #include "model_chain.hpp"

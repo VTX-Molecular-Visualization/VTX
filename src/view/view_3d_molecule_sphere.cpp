@@ -1,5 +1,5 @@
 #include "view_3d_molecule_sphere.hpp"
-#include "../vtx_app.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

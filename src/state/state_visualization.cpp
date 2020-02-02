@@ -1,6 +1,6 @@
 #include "state_visualization.hpp"
-#include "../controller/controller_freefly.hpp"
-#include "../vtx_app.hpp"
+#include "controller/controller_freefly.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

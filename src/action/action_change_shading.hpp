@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../vtx_app.hpp"
+#include "vtx_app.hpp"
 #include "base_action.hpp"
 
 namespace VTX

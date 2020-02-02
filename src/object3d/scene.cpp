@@ -1,7 +1,7 @@
 #include "scene.hpp"
-#include "../math/transform.hpp"
-#include "../setting.hpp"
-#include "../util/type.hpp"
+#include "math/transform.hpp"
+#include "setting.hpp"
+#include "util/type.hpp"
 
 namespace VTX
 {

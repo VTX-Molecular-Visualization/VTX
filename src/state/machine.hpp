@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "../generic/base_updatable.hpp"
-#include "../generic/has_collection.hpp"
+#include "generic/base_updatable.hpp"
+#include "generic/has_collection.hpp"
 #include "base_state.hpp"
 #include <map>
 #include <memory>

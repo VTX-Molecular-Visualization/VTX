@@ -1,10 +1,10 @@
 #include "model_molecule.hpp"
-#include "../util/type.hpp"
-#include "../view/view_3d_molecule_cylinder.hpp"
-#include "../view/view_3d_molecule_sphere.hpp"
-#include "../view/view_ui_molecule.hpp"
-#include "../view/view_ui_molecule_structure.hpp"
-#include "../vtx_app.hpp"
+#include "util/type.hpp"
+#include "view/view_3d_molecule_cylinder.hpp"
+#include "view/view_3d_molecule_sphere.hpp"
+#include "view/view_ui_molecule.hpp"
+#include "view/view_ui_molecule_structure.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

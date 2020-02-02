@@ -1,8 +1,8 @@
 #include "renderer_gl.hpp"
-#include "../model/model_molecule.hpp"
-#include "../setting.hpp"
-#include "../view/base_view_3d_molecule.hpp"
-#include "../vtx_app.hpp"
+#include "model/model_molecule.hpp"
+#include "setting.hpp"
+#include "view/base_view_3d_molecule.hpp"
+#include "vtx_app.hpp"
 #include <random>
 
 namespace VTX

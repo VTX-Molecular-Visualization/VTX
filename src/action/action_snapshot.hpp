@@ -5,8 +5,9 @@
 #pragma once
 #endif
 
-#include "../tool/snapshoter.hpp"
 #include "base_action.hpp"
+#include "tool/snapshoter.hpp"
+#include "util/time.hpp"
 
 namespace VTX
 {
@@ -18,7 +19,12 @@ namespace VTX
 			virtual void execute() override
 			{
 				Tool::Snapshoter snapshoter;
-				snapshoter.takeSnapshot();
+
+				std::string filename = Util::Time::getTimestamp();
+				IO::Path	path( SNAPSHOT_DIR + filename + ".jpg" );
+
+				snapshoter.takeSnapshot( path );
+				VTX_INFO( "Snapshot taken: " + path.getFileName() );
 			};
 		};
 	} // namespace Action

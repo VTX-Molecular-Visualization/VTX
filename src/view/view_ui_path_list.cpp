@@ -1,7 +1,7 @@
 #include "view_ui_path_list.hpp"
-#include "../action/action_checkpoint_create.hpp"
-#include "../action/action_checkpoint_goto.hpp"
-#include "../setting.hpp"
+#include "action/action_checkpoint_create.hpp"
+#include "action/action_checkpoint_goto.hpp"
+#include "setting.hpp"
 #include <string>
 
 namespace VTX

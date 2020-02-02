@@ -1,5 +1,5 @@
 #include "glsl_program.hpp"
-#include "../define.hpp"
+#include "define.hpp"
 #include <iostream>
 #include <vector>
 

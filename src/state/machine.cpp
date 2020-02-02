@@ -1,5 +1,5 @@
 #include "machine.hpp"
-#include "../define.hpp"
+#include "define.hpp"
 #include "state_loading.hpp"
 #include "state_playing.hpp"
 #include "state_visualization.hpp"

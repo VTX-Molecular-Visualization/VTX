@@ -5,10 +5,10 @@
 #pragma once
 #endif
 
-#include "../define.hpp"
-#include "../event/event.hpp"
-#include "../generic/base_collectionable.hpp"
-#include "../id.hpp"
+#include "define.hpp"
+#include "event/event.hpp"
+#include "generic/base_collectionable.hpp"
+#include "id.hpp"
 #include <type_traits>
 #include <utility>
 

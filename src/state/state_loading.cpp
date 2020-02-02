@@ -1,10 +1,10 @@
 #include "state_loading.hpp"
-#include "../io/reader/reader_mmtf.hpp"
-#include "../io/reader/reader_obj.hpp"
-#include "../model/model_molecule.hpp"
-#include "../model/model_path.hpp"
-#include "../object3d/scene.hpp"
-#include "../vtx_app.hpp"
+#include "io/reader/reader_mmtf.hpp"
+#include "io/reader/reader_obj.hpp"
+#include "model/model_molecule.hpp"
+#include "model/model_path.hpp"
+#include "object3d/scene.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

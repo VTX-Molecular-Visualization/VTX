@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../define.hpp"
+#include "define.hpp"
 #include "base_model.hpp"
 #include "model_checkpoint.hpp"
 #include <vector>

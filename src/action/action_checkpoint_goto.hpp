@@ -5,12 +5,12 @@
 #pragma once
 #endif
 
-#include "../model/model_checkpoint.hpp"
-#include "../model/model_path.hpp"
-#include "../object3d/camera.hpp"
-#include "../object3d/scene.hpp"
-#include "../vtx_app.hpp"
 #include "base_action.hpp"
+#include "model/model_checkpoint.hpp"
+#include "model/model_path.hpp"
+#include "object3d/camera.hpp"
+#include "object3d/scene.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -26,7 +26,11 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				_camera.set( _checkpoint.getPosition(), _checkpoint.getTheta(), _checkpoint.getPhi() );
+				Object3D::Camera::CameraConfiguration config;
+				config.position = _checkpoint.getPosition();
+				config.theta	= _checkpoint.getTheta();
+				config.phi		= _checkpoint.getPhi();
+				_camera.setConfiguration( config );
 			}
 
 		  private:

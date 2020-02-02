@@ -1,6 +1,6 @@
 #include "component_camera_editor.hpp"
-#include "../localization/language.hpp"
-#include "../style.hpp"
+#include "localization/language.hpp"
+#include "style.hpp"
 
 namespace VTX
 {
