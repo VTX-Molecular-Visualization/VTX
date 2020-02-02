@@ -40,6 +40,9 @@ namespace VTX
 
 				VTX_DEBUG( "Exporting... total: " + std::to_string( totalFrame ) );
 
+				std::string filename = Util::Time::getTimestamp();
+				ImGuiIO &	io		 = ImGui::GetIO();
+
 				for ( uint frame = 0; frame < totalFrame; ++frame )
 				{
 					float time	= (float)frame / VIDEO_FPS;
@@ -61,10 +64,11 @@ namespace VTX
 					// Update renderer.
 					VTXApp::get().getRenderer().render( VTXApp::get().getScene() );
 
-					// std::string dirname = Util::Time::getTimestamp();
 					IO::Path path( VIDEO_DIR + std::to_string( frame ) + ".jpg" );
 					snapshoter.takeSnapshot( path );
 				}
+
+				//system( "../tool/ffmpeg.exe -r 1/5 -i * -c:v libx264 -vf fps=60 -pix_fmt yuv420p video.mp4" );
 			};
 		};
 	} // namespace Action
