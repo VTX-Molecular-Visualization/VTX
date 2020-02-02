@@ -45,21 +45,10 @@ namespace VTX
 
 				for ( uint frame = 0; frame < totalFrame; ++frame )
 				{
-					float time	= (float)frame / VIDEO_FPS;
-					float total = 0.f;
-
-					uint offset = 0;
-					for ( ; offset < path->getCheckpoints().size(); ++offset )
-					{
-						Model::ModelCheckpoint * checkpoint = path->getCheckpoints()[ offset ];
-						if ( offset >= 1 ) { total += checkpoint->getDuration(); }
-						if ( total >= time ) { break; }
-					}
-
-					float value = 1.f - ( ( -( time - total ) ) / path->getCheckpoints()[ offset ]->getDuration() );
+					float time = (float)frame / VIDEO_FPS;
 
 					VTXApp::get().getScene().getCamera().setConfiguration(
-						Util::Math::lerpCameraConfiguration( path, offset, value ) );
+						path->getCurrentCameraConfiguration( time ) );
 
 					// Update renderer.
 					VTXApp::get().getRenderer().render( VTXApp::get().getScene() );
@@ -68,7 +57,7 @@ namespace VTX
 					snapshoter.takeSnapshot( path );
 				}
 
-				//system( "../tool/ffmpeg.exe -r 1/5 -i * -c:v libx264 -vf fps=60 -pix_fmt yuv420p video.mp4" );
+				// system( "../tool/ffmpeg.exe -r 1/5 -i * -c:v libx264 -vf fps=60 -pix_fmt yuv420p video.mp4" );
 			};
 		};
 	} // namespace Action

@@ -5,8 +5,9 @@
 #pragma once
 #endif
 
-#include "define.hpp"
+#include "../object3d/camera.hpp"
 #include "base_model.hpp"
+#include "define.hpp"
 #include "model_checkpoint.hpp"
 #include <vector>
 
@@ -25,9 +26,9 @@ namespace VTX
 			void addCheckpoint( const CheckpointPtr p_checkpoint ) { _checkpoints.emplace_back( p_checkpoint ); }
 			inline VectorCheckpointPtr & getCheckpoints() { return _checkpoints; }
 
-			void setSelectedCheckpoint( const uint );
-
-			float computeTotalTime() const;
+			void								  setSelectedCheckpoint( const uint );
+			float								  computeTotalTime() const;
+			Object3D::Camera::CameraConfiguration getCurrentCameraConfiguration( float p_time ) const;
 
 		  protected:
 			virtual void _addItems() override final;

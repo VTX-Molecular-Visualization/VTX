@@ -44,27 +44,18 @@ namespace VTX
 			_time += (float)p_deltaTime;
 
 			// Loop.
-			if ( _time >= _totalTime ) { _time = 0.f; }
+			if ( _time >= _totalTime )
+			{
+				VTXApp::get().goToState( ID::State::VISUALIZATION );
+				return;
+			}
 
 			_setCamera();
-		}
+		} // namespace State
 
 		void StatePlaying::_setCamera() const
 		{
-			float total = 0.f;
-
-			uint offset = 0;
-			for ( ; offset < _path->getCheckpoints().size(); ++offset )
-			{
-				Model::ModelCheckpoint * checkpoint = _path->getCheckpoints()[ offset ];
-				if ( offset >= 1 ) { total += checkpoint->getDuration(); }
-				if ( total >= _time ) { break; }
-			}
-
-			float value = 1.f - ( ( -( _time - total ) ) / _path->getCheckpoints()[ offset ]->getDuration() );
-
-			VTXApp::get().getScene().getCamera().setConfiguration(
-				Util::Math::lerpCameraConfiguration( _path, offset, value ) );
+			VTXApp::get().getScene().getCamera().setConfiguration( _path->getCurrentCameraConfiguration( _time ) );
 		}
 
 	} // namespace State
