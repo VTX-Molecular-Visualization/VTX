@@ -55,7 +55,7 @@ namespace VTX
 
 		void StatePlaying::_setCamera() const
 		{
-			VTXApp::get().getScene().getCamera().setConfiguration( _path->getCurrentCameraConfiguration( _time ) );
+			// VTXApp::get().getScene().getCamera().setConfiguration( _path->getCurrentCameraConfiguration( _time ) );
 		}
 
 	} // namespace State

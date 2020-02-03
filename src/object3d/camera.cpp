@@ -4,58 +4,61 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		void Camera::zoom( const float p_delta )
+		void Camera::moveFront( const float p_delta )
 		{
-			_fov = glm::clamp( _fov - p_delta, CAMERA_FOV_MIN, CAMERA_FOV_MAX );
-		}
-
-		void Camera::moveFront( const float p_delta ) { _config.position += p_delta * _front; }
-
-		void Camera::moveLeft( const float p_delta ) { _config.position += p_delta * _left; }
-
-		void Camera::moveUp( const float p_delta ) { _config.position += p_delta * _up; }
-
-		void Camera::rotateLeft( const float p_angle )
-		{
-			_config.phi -= glm::radians( p_angle );
+			_eye += _front * p_delta;
 			_update();
 		}
 
-		void Camera::rotateUp( const float p_angle )
+		void Camera::moveLeft( const float p_delta )
 		{
-			_config.theta -= glm::radians( p_angle );
+			_eye += _left * p_delta;
 			_update();
 		}
 
-		void Camera::rotateAroundLeft( const float p_angle, const Vec3f & p_target )
+		void Camera::moveUp( const float p_delta )
 		{
-			// TODO.
+			_eye += _up * p_delta;
 			_update();
 		}
 
-		void Camera::rotateAroundUp( const float p_angle, const Vec3f & p_target )
+		void Camera::rotateLeft( const float p_delta )
 		{
-			// TODO.
+			_yaw = p_delta;
+			_update();
+		}
+
+		void Camera::rotateUp( const float p_delta )
+		{
+			_pitch = p_delta;
 			_update();
 		}
 
 		void Camera::_update()
 		{
-			const float cosTheta = cosf( _config.theta );
-			_front = Vec3f( cosTheta * sinf( _config.phi ), sinf( _config.theta ), cosTheta * cosf( _config.phi ) );
-			_left  = Vec3f( sinf( _config.phi + PI_2f ), 0.f, cosf( _config.phi + PI_2f ) );
-			_up	   = glm::cross( _front, _left );
-		}
+			Quatf quat = Quatf( glm::vec3( _pitch, _yaw, _roll ) );
 
-		void Camera::print() const
-		{
-			VTX_INFO( "Position: " + glm::to_string( _config.position ) );
-			VTX_INFO( "Front: " + glm::to_string( _front ) );
-			VTX_INFO( "Left: " + glm::to_string( _left ) );
-			VTX_INFO( "Up: " + glm::to_string( _up ) );
-			VTX_INFO( "Phi: " + std::to_string( _config.phi ) );
-			VTX_INFO( "Theta: " + std::to_string( _config.theta ) );
-			VTX_INFO( "Fov: " + std::to_string( _fov ) );
+			_pitch = 0.f;
+			_yaw   = 0.f;
+			_roll  = 0.f;
+
+			_quat			  = quat * _quat;
+			_quat			  = glm::normalize( _quat );
+			Mat4f rotation	  = glm::mat4_cast( _quat );
+			Mat4f translation = Mat4f( 1.0f );
+			translation		  = glm::translate( translation, -_eye );
+			_viewMatrix		  = rotation * translation;
+
+			_front = Vec3f( _viewMatrix[ 0 ][ 2 ], _viewMatrix[ 1 ][ 2 ], _viewMatrix[ 2 ][ 2 ] );
+			_up	   = Vec3f( _viewMatrix[ 0 ][ 1 ], _viewMatrix[ 1 ][ 1 ], _viewMatrix[ 2 ][ 1 ] );
+			_left  = Vec3f( _viewMatrix[ 0 ][ 0 ], _viewMatrix[ 1 ][ 0 ], _viewMatrix[ 2 ][ 0 ] );
+
+			/*
+			_front		= rotation * VEC3F_Z;
+			_left		= rotation * VEC3F_X;
+			_up			= rotation * VEC3F_Y;
+			_viewMatrix = glm::lookAt( _eye, _eye + _front, _up );
+			*/
 		}
 
 	} // namespace Object3D

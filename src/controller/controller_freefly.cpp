@@ -6,27 +6,28 @@ namespace VTX
 	namespace Controller
 	{
 		// TODO: move all constants in settings.
-		void ControllerFreefly::_handleKeyDownEvent( const SDL_Scancode & p_code )
+		void ControllerFreefly::_handleKeyDownEvent( const SDL_Scancode & p_code, const double p_deltaTime )
 		{
 			switch ( p_code )
 			{
 			case SDL_SCANCODE_W:
-			case SDL_SCANCODE_UP: _camera.moveFront( 10.f ); break;
+			case SDL_SCANCODE_UP: _camera.moveFront( CONTROLLER_KEYBOARD_SPEED * p_deltaTime ); break;
 			case SDL_SCANCODE_A:
-			case SDL_SCANCODE_LEFT: _camera.moveLeft( 10.f ); break;
+			case SDL_SCANCODE_LEFT: _camera.moveLeft( CONTROLLER_KEYBOARD_SPEED * p_deltaTime ); break;
 			case SDL_SCANCODE_S:
-			case SDL_SCANCODE_DOWN: _camera.moveFront( -10.f ); break;
+			case SDL_SCANCODE_DOWN: _camera.moveFront( -CONTROLLER_KEYBOARD_SPEED * p_deltaTime ); break;
 			case SDL_SCANCODE_D:
-			case SDL_SCANCODE_RIGHT: _camera.moveLeft( -10.f ); break;
-			case SDL_SCANCODE_R: _camera.moveUp( 10.f ); break;
-			case SDL_SCANCODE_F: _camera.moveUp( -10.f ); break;
-			case SDL_SCANCODE_Q: _camera.rotateLeft( -1.f ); break;
-			case SDL_SCANCODE_E: _camera.rotateLeft( 1.f ); break;
+			case SDL_SCANCODE_RIGHT: _camera.moveLeft( -CONTROLLER_KEYBOARD_SPEED * p_deltaTime ); break;
+			case SDL_SCANCODE_R: _camera.moveUp( CONTROLLER_KEYBOARD_SPEED * p_deltaTime ); break;
+			case SDL_SCANCODE_F: _camera.moveUp( -CONTROLLER_KEYBOARD_SPEED * p_deltaTime ); break;
+			case SDL_SCANCODE_Q: _camera.rotateLeft( -CONTROLLER_MOUSE_SPEED * p_deltaTime ); break;
+			case SDL_SCANCODE_E: _camera.rotateLeft( CONTROLLER_MOUSE_SPEED * p_deltaTime ); break;
 			case SDL_SCANCODE_SPACE: _camera.print(); break;
 			}
 		}
 
-		void ControllerFreefly::_handleMouseButtonDownEvent( const SDL_MouseButtonEvent & p_event )
+		void ControllerFreefly::_handleMouseButtonDownEvent( const SDL_MouseButtonEvent & p_event,
+															 const double				  p_deltaTime )
 		{
 			switch ( p_event.button )
 			{
@@ -35,7 +36,8 @@ namespace VTX
 			}
 		}
 
-		void ControllerFreefly::_handleMouseButtonUpEvent( const SDL_MouseButtonEvent & p_event )
+		void ControllerFreefly::_handleMouseButtonUpEvent( const SDL_MouseButtonEvent & p_event,
+														   const double					p_deltaTime )
 		{
 			switch ( p_event.button )
 			{
@@ -44,12 +46,14 @@ namespace VTX
 			}
 		}
 
-		void ControllerFreefly::_handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )
+		void ControllerFreefly::_handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event,
+														 const double				  p_deltaTime )
 		{
 			if ( _mouseLeftPressed )
 			{
-				_camera.rotateLeft( 0.1f * p_event.xrel );
-				_camera.rotateUp( 0.1f * p_event.yrel * ( Setting::Controller::yAxisInverted ? -1.f : 1.f ) );
+				_camera.rotateLeft( p_deltaTime * CONTROLLER_MOUSE_SPEED * p_event.xrel );
+				_camera.rotateUp( p_deltaTime * CONTROLLER_MOUSE_SPEED * p_event.yrel
+								  * ( Setting::Controller::yAxisInverted ? -1.f : 1.f ) );
 			}
 		}
 

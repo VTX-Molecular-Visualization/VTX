@@ -23,7 +23,10 @@ namespace VTX
 	using Vec3f = glm::vec3;
 	using Vec4f = glm::vec4;
 
+	using Mat3f = glm::mat3;
 	using Mat4f = glm::mat4;
+
+	using Quatf = glm::quat;
 
 	// VTX.
 	constexpr int VTX_VERSION_MAJOR = 0;
@@ -46,6 +49,10 @@ namespace VTX
 	constexpr float CAMERA_FOV	   = 60.f;
 	constexpr float CAMERA_FOV_MIN = 10.f;
 	constexpr float CAMERA_FOV_MAX = 90.f;
+
+	// Controllers.
+	constexpr float CONTROLLER_KEYBOARD_SPEED = 100.f;
+	constexpr float CONTROLLER_MOUSE_SPEED	  = 0.5f;
 
 	// Snapshot.
 	constexpr uint JPG_CHANNELS = 3u;
@@ -86,8 +93,9 @@ namespace VTX
 	const Vec3f VEC3F_Z	   = Vec3f( 0.f, 0.f, 1.f );
 	const Vec3f VEC3F_XYZ  = Vec3f( 1.f, 1.f, 1.f );
 
-	const float PIf	  = glm::pi<float>();
-	const float PI_2f = glm::half_pi<float>();
+	const float PIf	   = glm::pi<float>();
+	const float PI_2f  = glm::half_pi<float>();
+	const float PI_32f = glm::three_over_two_pi<float>();
 
 	static float COLOR_BLACK[ 3 ]	   = { 0.f, 0.f, 0.f };
 	static float COLOR_WHITE[ 3 ]	   = { 1.f, 1.f, 1.f };

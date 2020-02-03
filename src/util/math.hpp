@@ -36,6 +36,7 @@ namespace VTX
 
 			static inline Vec3f randomVec3f() { return Vec3f( dis( gen ), dis( gen ), dis( gen ) ); }
 
+			/*
 			static inline Object3D::Camera::CameraConfiguration lerpCameraConfiguration(
 				Model::ModelPath * const p_path,
 				uint					 p_offset,
@@ -57,10 +58,10 @@ namespace VTX
 				config.phi		= phi;
 
 				return config;
-			}
-
+				*/
 		} // namespace Math
-	}	  // namespace Util
+
+	} // namespace Util
 } // namespace VTX
 
 #endif

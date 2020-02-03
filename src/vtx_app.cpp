@@ -43,12 +43,13 @@ namespace VTX
 
 #ifdef _DEBUG
 		//_stateMachine->goToState( ID::State::::VISUALIZATION );
-		_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "173D.mmtf" ) );
+		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "173D.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "4v6x.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "3j3q.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "r2d2.obj" ) );
+		_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "r2d2.obj" ) );
 #else
-		_stateMachine->goToState( ID::State::VISUALIZATION );
+		_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "r2d2.obj" ) );
+		//_stateMachine->goToState( ID::State::VISUALIZATION );
 #endif
 
 		while ( VTXApp::_isRunning )
@@ -118,9 +119,10 @@ namespace VTX
 		{
 			_handleEvent( event );
 		}
+
 		_ui->draw();
-		_scene->update( _timeDelta );
 		_stateMachine->update( _timeDelta );
+		_scene->update( _timeDelta );
 
 		// Timers.
 		_chrono.stop();
@@ -144,6 +146,6 @@ namespace VTX
 		}
 
 		// Propagate to state machine.
-		if ( ImGui::IsAnyWindowFocused() == false ) { _stateMachine->handleEvent( p_event ); }
+		if ( ImGui::IsAnyWindowFocused() == false ) { _stateMachine->handleEvent( p_event, _timeDelta ); }
 	}
 } // namespace VTX

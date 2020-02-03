@@ -26,9 +26,9 @@ namespace VTX
 			void addCheckpoint( const CheckpointPtr p_checkpoint ) { _checkpoints.emplace_back( p_checkpoint ); }
 			inline VectorCheckpointPtr & getCheckpoints() { return _checkpoints; }
 
-			void								  setSelectedCheckpoint( const uint );
-			float								  computeTotalTime() const;
-			Object3D::Camera::CameraConfiguration getCurrentCameraConfiguration( float p_time ) const;
+			void  setSelectedCheckpoint( const uint );
+			float computeTotalTime() const;
+			// Object3D::Camera::CameraConfiguration getCurrentCameraConfiguration( float p_time ) const;
 
 		  protected:
 			virtual void _addItems() override final;

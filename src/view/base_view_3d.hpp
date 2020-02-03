@@ -6,11 +6,11 @@
 #endif
 
 #include "GL/glsl_program_manager.hpp"
+#include "base_view.hpp"
 #include "generic/base_collectionable.hpp"
 #include "generic/base_renderable.hpp"
 #include "model/base_model.hpp"
 #include "object3d/camera.hpp"
-#include "base_view.hpp"
 
 namespace VTX
 {

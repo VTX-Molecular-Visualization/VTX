@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "object3d/camera.hpp"
 #include "base_keyboard_mouse_controller.hpp"
+#include "object3d/camera.hpp"
 
 namespace VTX
 {
@@ -15,16 +15,16 @@ namespace VTX
 		class ControllerFreefly : public BaseKeyboardMouseController
 		{
 		  public:
-			explicit ControllerFreefly(  Object3D::Camera & p_camera ) : _camera( p_camera ) {}
+			explicit ControllerFreefly( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
 
 		  protected:
-			virtual void _handleKeyDownEvent( const SDL_Scancode & ) override;
-			virtual void _handleMouseButtonDownEvent( const SDL_MouseButtonEvent & ) override;
-			virtual void _handleMouseButtonUpEvent( const SDL_MouseButtonEvent & ) override;
-			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & ) override;
+			virtual void _handleKeyDownEvent( const SDL_Scancode &, const double ) override;
+			virtual void _handleMouseButtonDownEvent( const SDL_MouseButtonEvent &, const double ) override;
+			virtual void _handleMouseButtonUpEvent( const SDL_MouseButtonEvent &, const double ) override;
+			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent &, const double ) override;
 
 		  private:
-			 Object3D::Camera & _camera;
+			Object3D::Camera & _camera;
 			bool			   _mouseLeftPressed = false;
 		};
 	} // namespace Controller

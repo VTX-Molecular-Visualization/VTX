@@ -5,11 +5,11 @@
 #pragma once
 #endif
 
+#include "camera.hpp"
 #include "generic/base_updatable.hpp"
 #include "model/model_molecule.hpp"
 #include "model/model_path.hpp"
 #include "util/type.hpp"
-#include "camera.hpp"
 #include <vector>
 
 namespace VTX
@@ -33,9 +33,9 @@ namespace VTX
 			void addPath( PathPtr const p_path ) { _paths.emplace_back( p_path ); }
 
 			inline Camera &					 getCamera() { return _camera; }
-			inline VectorMoleculePtr	   &getMolecules() { return _molecules; };
-			inline const VectorMoleculePtr &getMolecules() const { return _molecules; };
-			inline VectorPathPtr	 getPaths() const { return _paths; };
+			inline VectorMoleculePtr &		 getMolecules() { return _molecules; };
+			inline const VectorMoleculePtr & getMolecules() const { return _molecules; };
+			inline VectorPathPtr			 getPaths() const { return _paths; };
 
 			virtual void update( const double ) override;
 

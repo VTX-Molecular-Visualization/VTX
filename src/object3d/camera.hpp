@@ -17,25 +17,9 @@ namespace VTX
 		class Camera : public Generic::BasePrintable
 		{
 		  public:
-			struct CameraConfiguration
-			{
-				Vec3f position = VEC3F_ZERO;
-				float theta	   = 0.f;
-				float phi	   = PIf;
-			};
-
 			Camera() { _update(); };
-			virtual ~Camera() = default;
 
-			inline Vec3f & getPosition() { return _config.position; }
-			inline float   getTheta() { return _config.theta; }
-			inline float & getPhi() { return _config.phi; }
-
-			inline Mat4f getViewMatrix() const
-			{
-				return glm::lookAt( _config.position, _config.position + _front, _up );
-			}
-
+			inline Mat4f getViewMatrix() const { return _viewMatrix; }
 			inline Mat4f getProjectionMatrix() const
 			{
 				return glm::perspective( glm::radians( _fov ), _screenWidth / _screenHeight, _near, _far );
@@ -47,38 +31,44 @@ namespace VTX
 				_screenHeight = float( p_height );
 			}
 
-			inline void setConfiguration( const CameraConfiguration & p_config )
+			void moveFront( const float );
+			void moveLeft( const float );
+			void moveUp( const float );
+			void rotateLeft( const float );
+			void rotateUp( const float );
+
+			virtual void print() const override
 			{
-				_config.position = p_config.position;
-				_config.theta	 = p_config.theta;
-				_config.phi		 = p_config.phi;
-				_update();
+				VTX_INFO( "Eye: " + glm::to_string( _eye ) );
+				VTX_INFO( "Front: " + glm::to_string( _front ) );
+				VTX_INFO( "Left: " + glm::to_string( _left ) );
+				VTX_INFO( "Up: " + glm::to_string( _up ) );
+				VTX_INFO( "Pitch: " + std::to_string( _pitch ) );
+				VTX_INFO( "Yaw: " + std::to_string( _yaw ) );
+				VTX_INFO( "Roll: " + std::to_string( _roll ) );
+				VTX_INFO( "Quat: " + glm::to_string( _quat ) );
 			}
 
-			virtual void zoom( const float ) final;
-			virtual void moveFront( const float ) final;
-			virtual void moveLeft( const float ) final;
-			virtual void moveUp( const float ) final;
-			virtual void rotateLeft( const float ) final;
-			virtual void rotateUp( const float ) final;
-			virtual void rotateAroundLeft( const float, const Vec3f & ) final;
-			virtual void rotateAroundUp( const float, const Vec3f & ) final;
+		  private:
+			float _screenWidth	= 0.f;
+			float _screenHeight = 0.f;
+			float _near			= CAMERA_NEAR;
+			float _far			= CAMERA_FAR;
+			float _fov			= CAMERA_FOV;
 
-			virtual void print() const override;
+			Quatf _quat;
+			Vec3f _eye = VEC3F_ZERO;
+			Vec3f _front;
+			Vec3f _left;
+			Vec3f _up;
+			Mat4f _viewMatrix;
 
-		  protected:
-			float				_screenWidth  = 0.f;
-			float				_screenHeight = 0.f;
-			float				_near		  = CAMERA_NEAR;
-			float				_far		  = CAMERA_FAR;
-			float				_fov		  = CAMERA_FOV;
-			CameraConfiguration _config;
-
-			Vec3f _front = VEC3F_Z;
-			Vec3f _up	 = VEC3F_Y;
-			Vec3f _left	 = VEC3F_X;
+			float _pitch = 0.f;
+			float _yaw	 = 0.f;
+			float _roll	 = 0.f;
 
 			void _update();
+
 		}; // namespace Camera
 	}	   // namespace Object3D
 } // namespace VTX

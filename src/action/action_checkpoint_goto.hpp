@@ -26,11 +26,13 @@ namespace VTX
 
 			virtual void execute() override
 			{
+				/*
 				Object3D::Camera::CameraConfiguration config;
 				config.position = _checkpoint.getPosition();
 				config.theta	= _checkpoint.getTheta();
 				config.phi		= _checkpoint.getPhi();
 				_camera.setConfiguration( config );
+				*/
 			}
 
 		  private:

@@ -10,6 +10,7 @@ namespace VTX
 
 		void ModelPath::_addItems() { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIPathList( this ) ) ); }
 
+		/*
 		Object3D::Camera::CameraConfiguration ModelPath::getCurrentCameraConfiguration( float p_time ) const
 		{
 			float total	 = 0.f;
@@ -26,6 +27,7 @@ namespace VTX
 
 			return Util::Math::lerpCameraConfiguration( (ModelPath * const)this, offset, value );
 		}
+		*/
 
 		void ModelPath::setSelectedCheckpoint( const uint p_id )
 		{

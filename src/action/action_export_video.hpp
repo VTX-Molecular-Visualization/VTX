@@ -47,8 +47,8 @@ namespace VTX
 				{
 					float time = (float)frame / VIDEO_FPS;
 
-					VTXApp::get().getScene().getCamera().setConfiguration(
-						path->getCurrentCameraConfiguration( time ) );
+					//					VTXApp::get().getScene().getCamera().setConfiguration(
+					//		path->getCurrentCameraConfiguration( time ) );
 
 					// Update renderer.
 					VTXApp::get().getRenderer().render( VTXApp::get().getScene() );

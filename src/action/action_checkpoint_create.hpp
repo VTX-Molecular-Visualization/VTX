@@ -5,12 +5,12 @@
 #pragma once
 #endif
 
+#include "base_action.hpp"
 #include "model/model_checkpoint.hpp"
 #include "model/model_path.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
-#include "base_action.hpp"
 
 namespace VTX
 {
@@ -23,8 +23,8 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				VTXApp::get().getScene().getPaths()[ 0 ]->addCheckpoint(
-					new Model::ModelCheckpoint( _camera.getPosition(), _camera.getTheta(), _camera.getPhi() ) );
+				// VTXApp::get().getScene().getPaths()[ 0 ]->addCheckpoint(
+				//	new Model::ModelCheckpoint( _camera.getPosition(), _camera.getTheta(), _camera.getPhi() ) );
 			}
 
 		  private:

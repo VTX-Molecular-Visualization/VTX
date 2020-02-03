@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "object3d/camera.hpp"
 #include "base_keyboard_mouse_controller.hpp"
+#include "object3d/camera.hpp"
 
 namespace VTX
 {
@@ -20,10 +20,10 @@ namespace VTX
 			}
 
 		  protected:
-			virtual void _handleMouseButtonDownEvent( const SDL_MouseButtonEvent & ) override;
-			virtual void _handleMouseButtonUpEvent( const SDL_MouseButtonEvent & ) override;
-			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & ) override;
-			virtual void _handleMouseWheelEvent( const SDL_MouseWheelEvent & ) override;
+			virtual void _handleMouseButtonDownEvent( const SDL_MouseButtonEvent &, const double ) override;
+			virtual void _handleMouseButtonUpEvent( const SDL_MouseButtonEvent &, const double ) override;
+			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent &, const double ) override;
+			virtual void _handleMouseWheelEvent( const SDL_MouseWheelEvent &, const double ) override;
 
 		  private:
 			Object3D::Camera & _camera;
