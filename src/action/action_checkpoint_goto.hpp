@@ -19,21 +19,12 @@ namespace VTX
 		class ActionCheckpointGoTo : public BaseAction
 		{
 		  public:
-			explicit ActionCheckpointGoTo( Object3D::Camera & p_camera, Model::ModelCheckpoint p_checkpoint ) :
+			explicit ActionCheckpointGoTo( Object3D::Camera & p_camera, Model::ModelCheckpoint & p_checkpoint ) :
 				_camera( p_camera ), _checkpoint( p_checkpoint )
 			{
 			}
 
-			virtual void execute() override
-			{
-				/*
-				Object3D::Camera::CameraConfiguration config;
-				config.position = _checkpoint.getPosition();
-				config.theta	= _checkpoint.getTheta();
-				config.phi		= _checkpoint.getPhi();
-				_camera.setConfiguration( config );
-				*/
-			}
+			virtual void execute() override { _camera.set( _checkpoint.getPosition(), _checkpoint.getRotation() ); }
 
 		  private:
 			Object3D::Camera &	   _camera;

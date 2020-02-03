@@ -18,9 +18,9 @@ namespace VTX
 					ImGui::PushID( checkpoint->getId() );
 					if ( ImGui::Selectable( "Checkpoint" ) )
 					{
-						// VTXApp::get().action(
-						//	new Action::ActionCheckpointGoTo( VTXApp::get().getScene().getCamera(), *checkpoint ) );
-						//_getModel().setSelectedCheckpoint( checkpoint->getId() );
+						VTXApp::get().action(
+							new Action::ActionCheckpointGoTo( VTXApp::get().getScene().getCamera(), *checkpoint ) );
+						_getModel().setSelectedCheckpoint( checkpoint->getId() );
 					}
 					ImGui::SameLine();
 					ImGui::InputFloat( "", checkpoint->getDurationPtr() );
@@ -29,8 +29,7 @@ namespace VTX
 
 				if ( ImGui::Button( "Add" ) )
 				{
-					// VTXApp::get().action( new Action::ActionCheckpointCreate( VTXApp::get().getScene().getCamera() )
-					// );
+					VTXApp::get().action( new Action::ActionCheckpointCreate( VTXApp::get().getScene().getCamera() ) );
 				}
 				ImGui::SameLine();
 				if ( ImGui::Button( "Play" ) )

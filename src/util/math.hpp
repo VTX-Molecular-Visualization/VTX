@@ -36,29 +36,11 @@ namespace VTX
 
 			static inline Vec3f randomVec3f() { return Vec3f( dis( gen ), dis( gen ), dis( gen ) ); }
 
-			/*
-			static inline Object3D::Camera::CameraConfiguration lerpCameraConfiguration(
-				Model::ModelPath * const p_path,
-				uint					 p_offset,
-				float					 p_value )
+			template<typename T>
+			static inline T lerp( const T & p_lhs, const T & p_rhs, const float p_value )
 			{
-				float theta	   = glm::lerp( p_path->getCheckpoints()[ p_offset > 0 ? p_offset - 1 : 0 ]->getTheta(),
-											p_path->getCheckpoints()[ p_offset ]->getTheta(),
-											p_value );
-				float phi	   = glm::lerp( p_path->getCheckpoints()[ p_offset > 0 ? p_offset - 1 : 0 ]->getPhi(),
-										p_path->getCheckpoints()[ p_offset ]->getPhi(),
-										p_value );
-				Vec3f position = glm::lerp( p_path->getCheckpoints()[ p_offset > 0 ? p_offset - 1 : 0 ]->getPosition(),
-											p_path->getCheckpoints()[ p_offset ]->getPosition(),
-											p_value );
-
-				struct Object3D::Camera::CameraConfiguration config;
-				config.position = position;
-				config.theta	= theta;
-				config.phi		= phi;
-
-				return config;
-				*/
+				return glm::lerp( p_lhs, p_rhs, p_value );
+			}
 		} // namespace Math
 
 	} // namespace Util

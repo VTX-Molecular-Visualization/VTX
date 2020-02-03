@@ -19,8 +19,10 @@ namespace VTX
 		  public:
 			Camera() { _update(); };
 
-			inline Mat4f getViewMatrix() const { return _viewMatrix; }
-			inline Mat4f getProjectionMatrix() const
+			inline Vec3f & getPosition() { return _position; }
+			inline Quatf & getRotation() { return _rotation; }
+			inline Mat4f   getViewMatrix() const { return _viewMatrix; }
+			inline Mat4f   getProjectionMatrix() const
 			{
 				return glm::perspective( glm::radians( _fov ), _screenWidth / _screenHeight, _near, _far );
 			}
@@ -31,23 +33,20 @@ namespace VTX
 				_screenHeight = float( p_height );
 			}
 
+			inline void set( const Vec3f p_position, const Quatf p_rotation )
+			{
+				_position = p_position;
+				_rotation = p_rotation;
+				_update();
+			}
+
 			void moveFront( const float );
 			void moveLeft( const float );
 			void moveUp( const float );
 			void rotateLeft( const float );
 			void rotateUp( const float );
 
-			virtual void print() const override
-			{
-				VTX_INFO( "Eye: " + glm::to_string( _eye ) );
-				VTX_INFO( "Front: " + glm::to_string( _front ) );
-				VTX_INFO( "Left: " + glm::to_string( _left ) );
-				VTX_INFO( "Up: " + glm::to_string( _up ) );
-				VTX_INFO( "Pitch: " + std::to_string( _pitch ) );
-				VTX_INFO( "Yaw: " + std::to_string( _yaw ) );
-				VTX_INFO( "Roll: " + std::to_string( _roll ) );
-				VTX_INFO( "Quat: " + glm::to_string( _quat ) );
-			}
+			virtual void print() const;
 
 		  private:
 			float _screenWidth	= 0.f;
@@ -56,16 +55,16 @@ namespace VTX
 			float _far			= CAMERA_FAR;
 			float _fov			= CAMERA_FOV;
 
-			Quatf _quat;
-			Vec3f _eye = VEC3F_ZERO;
+			Vec3f _position = VEC3F_Z * 50.f;
+			Quatf _rotation = Quatf();
+			float _pitch	= 0.f;
+			float _yaw		= 0.f;
+			float _roll		= 0.f;
+
 			Vec3f _front;
 			Vec3f _left;
 			Vec3f _up;
 			Mat4f _viewMatrix;
-
-			float _pitch = 0.f;
-			float _yaw	 = 0.f;
-			float _roll	 = 0.f;
 
 			void _update();
 

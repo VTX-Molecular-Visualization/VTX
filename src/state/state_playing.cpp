@@ -1,4 +1,5 @@
 #include "state_playing.hpp"
+#include "../model/model_checkpoint.hpp"
 #include "model/model_path.hpp"
 #include "object3d/scene.hpp"
 #include "tool/chrono.hpp"
@@ -55,7 +56,11 @@ namespace VTX
 
 		void StatePlaying::_setCamera() const
 		{
-			// VTXApp::get().getScene().getCamera().setConfiguration( _path->getCurrentCameraConfiguration( _time ) );
+			Model::ModelCheckpoint::CheckpointInterpolationData data
+				= _path->getCurrentCheckpointInterpolationData( _time );
+			VTXApp::get().getScene().getCamera().set(
+				Util::Math::lerp( data.positionLhs, data.positionRhs, data.value ),
+				Util::Math::lerp( data.rotationLhs, data.rotationRhs, data.value ) );
 		}
 
 	} // namespace State

@@ -10,8 +10,8 @@ namespace VTX
 
 		void ModelPath::_addItems() { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIPathList( this ) ) ); }
 
-		/*
-		Object3D::Camera::CameraConfiguration ModelPath::getCurrentCameraConfiguration( float p_time ) const
+		ModelCheckpoint::CheckpointInterpolationData ModelPath::getCurrentCheckpointInterpolationData(
+			float p_time ) const
 		{
 			float total	 = 0.f;
 			uint  offset = 0;
@@ -23,11 +23,15 @@ namespace VTX
 				if ( total >= p_time ) { break; }
 			}
 
-			float value = 1.f - ( ( -( p_time - total ) ) / _checkpoints[ offset ]->getDuration() );
+			ModelCheckpoint::CheckpointInterpolationData data = ModelCheckpoint::CheckpointInterpolationData(
+				_checkpoints[ offset > 0 ? offset - 1 : 0 ]->getPosition(),
+				_checkpoints[ offset > 0 ? offset - 1 : 0 ]->getRotation(),
+				_checkpoints[ offset ]->getPosition(),
+				_checkpoints[ offset ]->getRotation(),
+				1.f - ( ( -( p_time - total ) ) / _checkpoints[ offset ]->getDuration() ) );
 
-			return Util::Math::lerpCameraConfiguration( (ModelPath * const)this, offset, value );
+			return data;
 		}
-		*/
 
 		void ModelPath::setSelectedCheckpoint( const uint p_id )
 		{

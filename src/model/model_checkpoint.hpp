@@ -5,8 +5,9 @@
 #pragma once
 #endif
 
-#include "define.hpp"
 #include "base_model.hpp"
+#include "define.hpp"
+#include <glm/gtc/quaternion.hpp>
 
 namespace VTX
 {
@@ -17,8 +18,27 @@ namespace VTX
 		  public:
 			static uint COUNTER;
 
-			explicit ModelCheckpoint( const Vec3f p_position, const float p_theta, const float p_phi ) :
-				_position( p_position ), _theta( p_theta ), _phi( p_phi )
+			struct CheckpointInterpolationData
+			{
+				explicit CheckpointInterpolationData( const Vec3f & p_positionLhs,
+													  const Quatf & p_rotationLhs,
+													  const Vec3f & p_positionRhs,
+													  const Quatf & p_rotationRhs,
+													  const float	p_value ) :
+					positionLhs( p_positionLhs ),
+					rotationLhs( p_rotationLhs ), positionRhs( p_positionRhs ), rotationRhs( p_rotationRhs ),
+					value( p_value )
+				{
+				}
+				const Vec3f & positionLhs;
+				const Quatf & rotationLhs;
+				const Vec3f & positionRhs;
+				const Quatf & rotationRhs;
+				const float	  value;
+			};
+
+			explicit ModelCheckpoint( const Vec3f & p_position, const Quatf & p_rotation ) :
+				_position( p_position ), _rotation( p_rotation )
 			{
 				_id = COUNTER++;
 			}
@@ -26,16 +46,13 @@ namespace VTX
 			inline float		 getDuration() const { return _duration; }
 			inline float *		 getDurationPtr() { return &_duration; }
 			inline const Vec3f & getPosition() const { return _position; }
-			inline const float	 getTheta() const { return _theta; }
-			inline const float	 getPhi() const { return _phi; }
+			inline const Quatf & getRotation() const { return _rotation; }
 
 		  private:
-			// Duration to go to the next checkpoint.
 			float _duration = 1.f;
 
-			const Vec3f _position = VEC3F_ZERO;
-			const float _theta	  = 0.f;
-			const float _phi	  = 4.22369f;
+			Vec3f _position;
+			Quatf _rotation;
 
 		}; // namespace Camera
 	}	   // namespace Model

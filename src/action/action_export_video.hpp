@@ -45,10 +45,12 @@ namespace VTX
 
 				for ( uint frame = 0; frame < totalFrame; ++frame )
 				{
-					float time = (float)frame / VIDEO_FPS;
-
-					//					VTXApp::get().getScene().getCamera().setConfiguration(
-					//		path->getCurrentCameraConfiguration( time ) );
+					float												time = (float)frame / VIDEO_FPS;
+					Model::ModelCheckpoint::CheckpointInterpolationData data
+						= path->getCurrentCheckpointInterpolationData( time );
+					VTXApp::get().getScene().getCamera().set(
+						Util::Math::lerp( data.positionLhs, data.positionRhs, data.value ),
+						Util::Math::lerp( data.rotationLhs, data.rotationRhs, data.value ) );
 
 					// Update renderer.
 					VTXApp::get().getRenderer().render( VTXApp::get().getScene() );
