@@ -21,7 +21,7 @@ namespace VTX
 			{
 				Vec3f position = VEC3F_ZERO;
 				float theta	   = 0.f;
-				float phi	   = 4.22369f;
+				float phi	   = PIf;
 			};
 
 			Camera() { _update(); };
@@ -35,10 +35,12 @@ namespace VTX
 			{
 				return glm::lookAt( _config.position, _config.position + _front, _up );
 			}
+
 			inline Mat4f getProjectionMatrix() const
 			{
 				return glm::perspective( glm::radians( _fov ), _screenWidth / _screenHeight, _near, _far );
 			}
+
 			inline void setScreenSize( const int p_width, const int p_height )
 			{
 				_screenWidth  = float( p_width );
