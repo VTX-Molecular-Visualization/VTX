@@ -51,7 +51,7 @@ namespace VTX
 	constexpr float CAMERA_FOV_MAX = 90.f;
 
 	// Controllers.
-	constexpr float CONTROLLER_KEYBOARD_SPEED = 100.f;
+	constexpr float CONTROLLER_KEYBOARD_SPEED = 150.f;
 	constexpr float CONTROLLER_MOUSE_SPEED	  = 0.5f;
 
 	// Snapshot.
