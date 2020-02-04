@@ -20,8 +20,8 @@ namespace VTX
 			case SDL_SCANCODE_RIGHT: _camera.moveLeft( CONTROLLER_KEYBOARD_SPEED * (float)p_deltaTime ); break;
 			case SDL_SCANCODE_R: _camera.moveUp( CONTROLLER_KEYBOARD_SPEED * (float)p_deltaTime ); break;
 			case SDL_SCANCODE_F: _camera.moveUp( -CONTROLLER_KEYBOARD_SPEED * (float)p_deltaTime ); break;
-			case SDL_SCANCODE_Q: _camera.rotateLeft( -CONTROLLER_MOUSE_SPEED ); break;
-			case SDL_SCANCODE_E: _camera.rotateLeft( CONTROLLER_MOUSE_SPEED ); break;
+			case SDL_SCANCODE_Q: _camera.rotateLeft( -CONTROLLER_KEYBOARD_SPEED * (float)p_deltaTime ); break;
+			case SDL_SCANCODE_E: _camera.rotateLeft( CONTROLLER_KEYBOARD_SPEED * (float)p_deltaTime ); break;
 			case SDL_SCANCODE_SPACE: _camera.print(); break;
 			}
 		}
@@ -51,8 +51,8 @@ namespace VTX
 		{
 			if ( _mouseLeftPressed )
 			{
-				_camera.rotateLeft( (float)p_deltaTime * CONTROLLER_MOUSE_SPEED * p_event.xrel );
-				_camera.rotateUp( (float)p_deltaTime * CONTROLLER_MOUSE_SPEED * p_event.yrel
+				_camera.rotateLeft( CONTROLLER_MOUSE_SPEED * p_event.xrel );
+				_camera.rotateUp( CONTROLLER_MOUSE_SPEED * p_event.yrel
 								  * ( Setting::Controller::yAxisInverted ? -1.f : 1.f ) );
 			}
 		}

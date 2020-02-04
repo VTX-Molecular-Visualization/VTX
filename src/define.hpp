@@ -52,7 +52,7 @@ namespace VTX
 
 	// Controllers.
 	constexpr float CONTROLLER_KEYBOARD_SPEED = 150.f;
-	constexpr float CONTROLLER_MOUSE_SPEED	  = 0.5f;
+	constexpr float CONTROLLER_MOUSE_SPEED	  = 0.005f;
 
 	// Snapshot.
 	constexpr uint JPG_CHANNELS = 3u;
