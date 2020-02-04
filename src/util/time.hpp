@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#define __STDC_LIB_EXT1__ 1
+
 #include <algorithm>
 #include <chrono>
 #include <ctime>
@@ -36,13 +38,21 @@ namespace VTX
 			static std::string getTimestamp()
 			{
 				std::time_t result = std::time( nullptr );
-				std::string str	   = std::asctime( std::localtime( &result ) );
+#ifdef __STDC_LIB_EXT1__
+				struct tm tm;
+				localtime_s( &tm, &result );
+				char c[ 50 ];
+				asctime_s( c, sizeof c, &tm );
+				std::string str( c );
+#else
+				std::string str = std::asctime( std::localtime( &result ) );
+#endif
 				str.erase( std::remove( str.begin(), str.end(), ':' ), str.end() );
 				str.erase( std::remove( str.begin(), str.end(), '\n' ), str.end() );
 				return str;
-			}
-		} // namespace Time
-	}	  // namespace Util
+			} // namespace Time
+		}	  // namespace Time
+	}		  // namespace Util
 } // namespace VTX
 
 #endif

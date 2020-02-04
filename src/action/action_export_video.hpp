@@ -30,7 +30,7 @@ namespace VTX
 					return;
 				}
 
-				uint totalFrame = VIDEO_FPS * path->computeTotalTime();
+				uint totalFrame = uint( VIDEO_FPS * path->computeTotalTime() );
 
 				if ( totalFrame == 0.f )
 				{
