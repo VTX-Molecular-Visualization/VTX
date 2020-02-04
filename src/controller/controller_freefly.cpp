@@ -20,8 +20,8 @@ namespace VTX
 			case SDL_SCANCODE_RIGHT: _camera.moveLeft( CONTROLLER_KEYBOARD_SPEED * (float)p_deltaTime ); break;
 			case SDL_SCANCODE_R: _camera.moveUp( CONTROLLER_KEYBOARD_SPEED * (float)p_deltaTime ); break;
 			case SDL_SCANCODE_F: _camera.moveUp( -CONTROLLER_KEYBOARD_SPEED * (float)p_deltaTime ); break;
-			case SDL_SCANCODE_Q: _camera.rotateLeft( -CONTROLLER_MOUSE_SPEED * (float)p_deltaTime ); break;
-			case SDL_SCANCODE_E: _camera.rotateLeft( CONTROLLER_MOUSE_SPEED * (float)p_deltaTime ); break;
+			case SDL_SCANCODE_Q: _camera.rotateLeft( -CONTROLLER_MOUSE_SPEED ); break;
+			case SDL_SCANCODE_E: _camera.rotateLeft( CONTROLLER_MOUSE_SPEED ); break;
 			case SDL_SCANCODE_SPACE: _camera.print(); break;
 			}
 		}

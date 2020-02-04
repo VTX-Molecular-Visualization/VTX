@@ -61,9 +61,9 @@ namespace VTX
 			float _yaw		= 0.f;
 			float _roll		= 0.f;
 
-			Vec3f _front;
-			Vec3f _left;
-			Vec3f _up;
+			Vec3f _front = -VEC3F_Z;
+			Vec3f _left	 = -VEC3F_X;
+			Vec3f _up	 = VEC3F_Y;
 			Mat4f _viewMatrix;
 
 			void _update();
