@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "util/type.hpp"
 #include "base_collectionable.hpp"
+#include "util/type.hpp"
 #include <map>
 #include <string>
 #include <type_traits>
@@ -27,7 +27,15 @@ namespace VTX
 
 			virtual void init() { _addItems(); }
 
-			virtual void clear() { Util::Type::clearStringMap( _items ); }
+			virtual void clear()
+			{
+				for ( const PairStringToItemPtr pair : _items )
+				{
+					( (BaseCollectionable *)pair.second )->cleanItem();
+					delete pair.second;
+				}
+				_items.clear();
+			}
 
 			virtual T * const findItem( const std::string & p_name )
 			{
@@ -68,8 +76,8 @@ namespace VTX
 			{
 				BaseCollectionable * item = (BaseCollectionable *)_items.at( p_name );
 				( (BaseCollectionable *)item )->cleanItem();
-				_items.erase( p_name );
 				delete item;
+				_items.erase( p_name );
 			}
 
 			void removeItemRef( const std::string & p_name ) { _items.erase( p_name ); }
@@ -79,7 +87,7 @@ namespace VTX
 			inline T * const			_getItem( const std::string & p_name ) const { return _items.at( p_name ); }
 			inline bool _hasItem( const std::string & p_name ) const { return _items.find( p_name ) != _items.end(); }
 
-			virtual void				_addItems() {};
+			virtual void _addItems() {};
 
 		  private:
 			MapStringToItemPtr _items = MapStringToItemPtr();

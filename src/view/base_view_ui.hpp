@@ -5,10 +5,10 @@
 #pragma once
 #endif
 
+#include "base_view.hpp"
 #include "model/base_model.hpp"
 #include "ui/base_component.hpp"
 #include "vtx_app.hpp"
-#include "base_view.hpp"
 
 namespace VTX
 {

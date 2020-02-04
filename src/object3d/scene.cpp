@@ -13,7 +13,6 @@ namespace VTX
 
 		void Scene::clear()
 		{
-			// TOCHECK: Templating auto?
 			Util::Type::clearVector<Model::ModelMolecule>( _molecules );
 			Util::Type::clearVector( _paths );
 		}
