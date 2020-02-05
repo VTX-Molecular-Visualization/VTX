@@ -62,22 +62,6 @@ namespace VTX
 #endif
 					}
 
-					// TOFIX
-					if ( ImGui::BeginPopupModal( "TEST", NULL, ImGuiWindowFlags_AlwaysAutoResize ) )
-					{
-						ImGui::Text(
-							"All those beautiful files will be deleted.\nThis operation cannot be undone!\n\n" );
-						ImGui::Separator();
-						if ( ImGui::Button( "OK", ImVec2( 120, 0 ) ) )
-						{ VTXApp::get().action( new Action::ActionQuit() ); }
-						ImGui::SetItemDefaultFocus();
-						ImGui::SameLine();
-						ImGui::SetItemDefaultFocus();
-						if ( ImGui::Button( "Cancel", ImVec2( 120, 0 ) ) ) { ImGui::CloseCurrentPopup(); }
-
-						ImGui::EndPopup();
-					}
-
 					ImGui::EndMenu();
 				}
 
