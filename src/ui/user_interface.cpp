@@ -1,18 +1,18 @@
 #include "user_interface.hpp"
-#include "define.hpp"
-#include "exception.hpp"
-#include "setting.hpp"
-#include "style.hpp"
-#include "util/logger.hpp"
-#include "util/opengl.hpp"
-#include "vtx_app.hpp"
 #include "component_camera_editor.hpp"
 #include "component_console.hpp"
 #include "component_inspector.hpp"
 #include "component_menu.hpp"
 #include "component_scene.hpp"
+#include "define.hpp"
+#include "exception.hpp"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_sdl.h"
+#include "setting.hpp"
+#include "style.hpp"
+#include "util/logger.hpp"
+#include "util/opengl.hpp"
+#include "vtx_app.hpp"
 #include <iostream>
 
 namespace VTX
@@ -122,6 +122,7 @@ namespace VTX
 
 #ifdef _DEBUG
 			glEnable( GL_DEBUG_OUTPUT );
+			// glEnable( GL_ARB_gpu_shader_fp64 );
 			glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
 #endif
 		}
