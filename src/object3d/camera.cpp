@@ -6,13 +6,13 @@ namespace VTX
 	{
 		void Camera::moveFront( const float p_delta )
 		{
-			_position -= _front * p_delta;
+			_position += _front * p_delta;
 			_update();
 		}
 
 		void Camera::moveLeft( const float p_delta )
 		{
-			_position -= _left * p_delta;
+			_position += _left * p_delta;
 			_update();
 		}
 

@@ -27,6 +27,9 @@ namespace VTX
 			bool  yAxisInverted = false;
 			Vec3f autoRotateSpeed
 				= Vec3f( AUTO_ROTATE_X_SPEED_DEFAULT, AUTO_ROTATE_Y_SPEED_DEFAULT, AUTO_ROTATE_Z_SPEED_DEFAULT );
+			float translationSpeed		 = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
+			float translationFactorSpeed = CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
+			float rotationSpeed			 = CONTROLLER_ROTATION_SPEED_DEFAULT;
 		} // namespace Controller
 	}	  // namespace Setting
 } // namespace VTX

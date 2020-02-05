@@ -1,7 +1,5 @@
 #include "component_menu.hpp"
 #include "action/action_active_ssao.hpp"
-#include "action/action_active_y_axis_inversion.hpp"
-#include "action/action_change_auto_rotate_speed.hpp"
 #include "action/action_change_color_mode.hpp"
 #include "action/action_change_display_mode.hpp"
 #include "action/action_change_representation.hpp"
@@ -180,27 +178,45 @@ namespace VTX
 					ImGui::Separator();
 
 					// Auto rotate.
-					Vec3f autoRotateSpeed = Setting::Controller::autoRotateSpeed;
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateXSpeed" ),
-											 &autoRotateSpeed.x,
+											 &Setting::Controller::autoRotateSpeed.x,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
-					{ VTXApp::get().action( new Action::ActionChangeAutoRotateSpeed( autoRotateSpeed ) ); }
+					{}
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateYSpeed" ),
-											 &autoRotateSpeed.y,
+											 &Setting::Controller::autoRotateSpeed.y,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
-					{ VTXApp::get().action( new Action::ActionChangeAutoRotateSpeed( autoRotateSpeed ) ); }
+					{}
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateZSpeed" ),
-											 &autoRotateSpeed.z,
+											 &Setting::Controller::autoRotateSpeed.z,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
-					{ VTXApp::get().action( new Action::ActionChangeAutoRotateSpeed( autoRotateSpeed ) ); }
+					{}
+
+					ImGui::Separator();
+
+					// Controller speed.
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.TranslationSpeed" ),
+											 &Setting::Controller::translationSpeed,
+											 CONTROLLER_TRANSLATION_SPEED_MIN,
+											 CONTROLLER_TRANSLATION_SPEED_MAX ) )
+					{}
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.TranslationFactorSpeed" ),
+											 &Setting::Controller::translationFactorSpeed,
+											 CONTROLLER_TRANSLATION_FACTOR_MIN,
+											 CONTROLLER_TRANSLATION_FACTOR_MAX ) )
+					{}
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.RotationSpeed" ),
+											 &Setting::Controller::rotationSpeed,
+											 CONTROLLER_ROTATION_SPEED_MIN,
+											 CONTROLLER_ROTATION_SPEED_MAX ) )
+					{}
 
 					// Invert y axis.
-					bool invertYAxis = Setting::Controller::yAxisInverted;
-					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ), &invertYAxis ) )
-					{ VTXApp::get().action( new Action::ActionActiveYAxisInversion( invertYAxis ) ); }
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ),
+										  &Setting::Controller::yAxisInverted ) )
+					{}
 
 					ImGui::EndMenu();
 				}

@@ -43,6 +43,9 @@ namespace VTX
 			{ "MainMenu.Settings.AutoRotateXSpeed", "X auto rotation speed" },
 			{ "MainMenu.Settings.AutoRotateYSpeed", "Y auto rotation speed" },
 			{ "MainMenu.Settings.AutoRotateZSpeed", "Z auto rotation speed" },
+			{ "MainMenu.Settings.TranslationSpeed", "Translation speed" },
+			{ "MainMenu.Settings.TranslationFactorSpeed", "Translation factor speed" },
+			{ "MainMenu.Settings.RotationSpeed", "Rotation speed" },
 			{ "MainMenu.Settings.InverseYAxis", "Inverse camera Y axis" },
 
 			// Console.

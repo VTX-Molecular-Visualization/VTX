@@ -50,9 +50,19 @@ namespace VTX
 	constexpr float CAMERA_FOV_MIN = 10.f;
 	constexpr float CAMERA_FOV_MAX = 90.f;
 
+	// Camera.
+	// Clamp rotations.
+
 	// Controllers.
-	constexpr float CONTROLLER_KEYBOARD_SPEED = 150.f;
-	constexpr float CONTROLLER_MOUSE_SPEED	  = 0.005f;
+	constexpr float CONTROLLER_TRANSLATION_SPEED_MIN	  = 50.f;
+	constexpr float CONTROLLER_TRANSLATION_SPEED_MAX	  = 300.f;
+	constexpr float CONTROLLER_TRANSLATION_SPEED_DEFAULT  = 150.f;
+	constexpr float CONTROLLER_TRANSLATION_FACTOR_MIN	  = 0.5f;
+	constexpr float CONTROLLER_TRANSLATION_FACTOR_MAX	  = 5.f;
+	constexpr float CONTROLLER_TRANSLATION_FACTOR_DEFAULT = 2.f;
+	constexpr float CONTROLLER_ROTATION_SPEED_MIN		  = 0.001f;
+	constexpr float CONTROLLER_ROTATION_SPEED_MAX		  = 0.01f;
+	constexpr float CONTROLLER_ROTATION_SPEED_DEFAULT	  = 0.005f;
 
 	// Snapshot.
 	constexpr uint JPG_CHANNELS = 3u;
