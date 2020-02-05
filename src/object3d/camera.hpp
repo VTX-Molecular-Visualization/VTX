@@ -40,9 +40,11 @@ namespace VTX
 				_update();
 			}
 
+			void move( const Vec3f & );
 			void moveFront( const float );
 			void moveLeft( const float );
 			void moveUp( const float );
+
 			void rotateLeft( const float );
 			void rotateUp( const float );
 

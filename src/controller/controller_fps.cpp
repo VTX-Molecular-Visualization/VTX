@@ -5,42 +5,26 @@ namespace VTX
 {
 	namespace Controller
 	{
-		void ControllerFPS::_handleKeyDownEvent( const SDL_Scancode & p_code )
+		void ControllerFPS::update( const double p_deltaTime )
 		{
-			switch ( p_code )
-			{
-			case SDL_SCANCODE_W:
-			case SDL_SCANCODE_UP: _camera.moveFront( Setting::Controller::translationSpeed ); break;
-			case SDL_SCANCODE_A:
-			case SDL_SCANCODE_LEFT: _camera.moveLeft( Setting::Controller::translationSpeed ); break;
-			case SDL_SCANCODE_S:
-			case SDL_SCANCODE_DOWN: _camera.moveFront( -Setting::Controller::translationSpeed ); break;
-			case SDL_SCANCODE_D:
-			case SDL_SCANCODE_RIGHT: _camera.moveLeft( -Setting::Controller::translationSpeed ); break;
-			case SDL_SCANCODE_R: _camera.moveUp( Setting::Controller::translationSpeed ); break;
-			case SDL_SCANCODE_F: _camera.moveUp( -Setting::Controller::translationSpeed ); break;
-			case SDL_SCANCODE_Q: _camera.rotateLeft( Setting::Controller::translationSpeed ); break;
-			case SDL_SCANCODE_E: _camera.rotateLeft( Setting::Controller::translationSpeed ); break;
-			case SDL_SCANCODE_SPACE: _camera.print(); break;
-			}
-		}
+			Vec3f translation = Vec3f( 0.f, 0.f, 0.f );
 
-		void ControllerFPS::_handleMouseButtonDownEvent( const SDL_MouseButtonEvent & p_event )
-		{
-			switch ( p_event.button )
-			{
-			case SDL_BUTTON_LEFT: _mouseLeftPressed = true;
-			default: break;
-			}
-		}
+			if ( _isKeyPressed( SDL_SCANCODE_W ) || _isKeyPressed( SDL_SCANCODE_UP ) ) { translation.z++; }
+			if ( _isKeyPressed( SDL_SCANCODE_S ) || _isKeyPressed( SDL_SCANCODE_DOWN ) ) { translation.z--; }
+			if ( _isKeyPressed( SDL_SCANCODE_A ) || _isKeyPressed( SDL_SCANCODE_LEFT ) ) { translation.x++; }
+			if ( _isKeyPressed( SDL_SCANCODE_D ) || _isKeyPressed( SDL_SCANCODE_RIGHT ) ) { translation.x--; }
+			if ( _isKeyPressed( SDL_SCANCODE_R ) ) { translation.y++; }
+			if ( _isKeyPressed( SDL_SCANCODE_F ) ) { translation.y--; }
 
-		void ControllerFPS::_handleMouseButtonUpEvent( const SDL_MouseButtonEvent & p_event )
-		{
-			switch ( p_event.button )
-			{
-			case SDL_BUTTON_LEFT: _mouseLeftPressed = false;
-			default: break;
-			}
+			if ( translation == VEC3F_ZERO ) { return; }
+
+			translation *= Setting::Controller::translationSpeed;
+			translation *= p_deltaTime;
+
+			if ( _isKeyPressed( SDL_SCANCODE_LSHIFT ) ) { translation *= Setting::Controller::translationFactorSpeed; }
+			if ( _isKeyPressed( SDL_SCANCODE_LCTRL ) ) { translation /= Setting::Controller::translationFactorSpeed; }
+
+			_camera.move( translation );
 		}
 
 		void ControllerFPS::_handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )

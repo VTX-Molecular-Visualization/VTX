@@ -6,6 +6,7 @@
 #endif
 
 #include "base_controller.hpp"
+#include <set>
 
 namespace VTX
 {
@@ -25,8 +26,15 @@ namespace VTX
 			}
 
 		  protected:
-			virtual void _handleKeyDownEvent( const SDL_Scancode & ) {};
-			virtual void _handleKeyUpEvent( const SDL_Scancode & ) {};
+			std::set<SDL_Scancode> _pressedButtons = std::set<SDL_Scancode>();
+
+			virtual void _handleKeyDownEvent( const SDL_Scancode & p_key ) { _pressedButtons.emplace( p_key ); };
+			virtual void _handleKeyUpEvent( const SDL_Scancode & p_key ) { _pressedButtons.erase( p_key ); };
+
+			bool _isKeyPressed( const SDL_Scancode & p_key )
+			{
+				return _pressedButtons.find( p_key ) != _pressedButtons.end();
+			}
 		};
 	} // namespace Controller
 } // namespace VTX

@@ -30,6 +30,11 @@ namespace VTX
 				if ( _controller != nullptr ) { _controller->handleEvent( p_event ); }
 			}
 
+			virtual void BaseState::update( const double p_deltaTime ) override
+			{
+				if ( _controller != nullptr ) { _controller->update( p_deltaTime ); }
+			}
+
 		  protected:
 			Controller::BaseController * _controller = nullptr;
 		};

@@ -4,22 +4,30 @@ namespace VTX
 {
 	namespace Object3D
 	{
+		void Camera::move( const Vec3f & p_delta )
+		{
+			_position += _left * p_delta.x;
+			_position += _up * p_delta.y;
+			_position += _front * p_delta.z;
+			_viewMatrix = glm::lookAt( _position, _position + _front, _up );
+		}
+
 		void Camera::moveFront( const float p_delta )
 		{
 			_position += _front * p_delta;
-			_update();
+			_viewMatrix = glm::lookAt( _position, _position + _front, _up );
 		}
 
 		void Camera::moveLeft( const float p_delta )
 		{
 			_position += _left * p_delta;
-			_update();
+			_viewMatrix = glm::lookAt( _position, _position + _front, _up );
 		}
 
 		void Camera::moveUp( const float p_delta )
 		{
 			_position += _up * p_delta;
-			_update();
+			_viewMatrix = glm::lookAt( _position, _position + _front, _up );
 		}
 
 		void Camera::rotateLeft( const float p_delta )

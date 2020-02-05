@@ -24,15 +24,13 @@ namespace VTX
 				BaseMouseController::handleEvent( p_event, p_arg );
 			}
 
+			virtual void update( const double ) override;
+
 		  protected:
-			virtual void _handleKeyDownEvent( const SDL_Scancode & ) override;
-			virtual void _handleMouseButtonDownEvent( const SDL_MouseButtonEvent & ) override;
-			virtual void _handleMouseButtonUpEvent( const SDL_MouseButtonEvent & ) override;
 			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & ) override;
 
 		  private:
 			Object3D::Camera & _camera;
-			bool			   _mouseLeftPressed = false;
 		};
 	} // namespace Controller
 } // namespace VTX

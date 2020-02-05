@@ -6,6 +6,7 @@
 #endif
 
 #include "base_controller.hpp"
+#include <set>
 
 namespace VTX
 {
@@ -27,11 +28,32 @@ namespace VTX
 			}
 
 		  protected:
-			bool _mouseLeftPressed	= false;
-			bool _mouseRightPressed = false;
+			bool _mouseLeftPressed	 = false;
+			bool _mouseRightPressed	 = false;
+			bool _mouseMiddlePressed = false;
 
-			virtual void _handleMouseButtonDownEvent( const SDL_MouseButtonEvent & ) {};
-			virtual void _handleMouseButtonUpEvent( const SDL_MouseButtonEvent & ) {};
+			virtual void _handleMouseButtonDownEvent( const SDL_MouseButtonEvent & p_event )
+			{
+				switch ( p_event.button )
+				{
+				case SDL_BUTTON_LEFT: _mouseLeftPressed = true; break;
+				case SDL_BUTTON_RIGHT: _mouseRightPressed = true; break;
+				case SDL_BUTTON_MIDDLE: _mouseMiddlePressed = true; break;
+				default: break;
+				}
+			};
+
+			virtual void _handleMouseButtonUpEvent( const SDL_MouseButtonEvent & p_event )
+			{
+				switch ( p_event.button )
+				{
+				case SDL_BUTTON_LEFT: _mouseLeftPressed = false; break;
+				case SDL_BUTTON_RIGHT: _mouseRightPressed = false; break;
+				case SDL_BUTTON_MIDDLE: _mouseMiddlePressed = false; break;
+				default: break;
+				}
+			};
+
 			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & ) {};
 			virtual void _handleMouseWheelEvent( const SDL_MouseWheelEvent & ) {};
 		};
