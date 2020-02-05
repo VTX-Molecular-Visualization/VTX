@@ -17,7 +17,7 @@ namespace VTX
 		class Camera : public Generic::BasePrintable
 		{
 		  public:
-			Camera() { _update(); };
+			Camera() { _updateRotation(); };
 
 			inline Vec3f & getPosition() { return _position; }
 			inline Quatf & getRotation() { return _rotation; }
@@ -37,7 +37,7 @@ namespace VTX
 			{
 				_position = p_position;
 				_rotation = p_rotation;
-				_update();
+				_updateRotation();
 			}
 
 			void move( const Vec3f & );
@@ -68,7 +68,8 @@ namespace VTX
 			Vec3f _up	 = VEC3F_Y;
 			Mat4f _viewMatrix;
 
-			void _update();
+			void _updateRotation();
+			void _updateViewMatrix();
 
 		}; // namespace Camera
 	}	   // namespace Object3D

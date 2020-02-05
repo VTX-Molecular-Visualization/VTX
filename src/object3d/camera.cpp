@@ -9,49 +9,51 @@ namespace VTX
 			_position += _left * p_delta.x;
 			_position += _up * p_delta.y;
 			_position += _front * p_delta.z;
-			_viewMatrix = glm::lookAt( _position, _position + _front, _up );
+			_updateViewMatrix();
 		}
 
 		void Camera::moveFront( const float p_delta )
 		{
 			_position += _front * p_delta;
-			_viewMatrix = glm::lookAt( _position, _position + _front, _up );
+			_updateViewMatrix();
 		}
 
 		void Camera::moveLeft( const float p_delta )
 		{
 			_position += _left * p_delta;
-			_viewMatrix = glm::lookAt( _position, _position + _front, _up );
+			_updateViewMatrix();
 		}
 
 		void Camera::moveUp( const float p_delta )
 		{
 			_position += _up * p_delta;
-			_viewMatrix = glm::lookAt( _position, _position + _front, _up );
+			_updateViewMatrix();
 		}
 
 		void Camera::rotateLeft( const float p_delta )
 		{
 			_yaw -= p_delta;
 			_rotation = Quatf( glm::vec3( _pitch, _yaw, _roll ) );
-			_update();
+			_updateRotation();
 		}
 
 		void Camera::rotateUp( const float p_delta )
 		{
 			_pitch -= p_delta;
 			_rotation = Quatf( glm::vec3( _pitch, _yaw, _roll ) );
-			_update();
+			_updateRotation();
 		}
 
-		void Camera::_update()
+		void Camera::_updateRotation()
 		{
 			Mat3f rotation = glm::mat3_cast( _rotation );
 			_front		   = rotation * -VEC3F_Z;
 			_left		   = rotation * -VEC3F_X;
 			_up			   = rotation * VEC3F_Y;
-			_viewMatrix	   = glm::lookAt( _position, _position + _front, _up );
+			_updateViewMatrix();
 		}
+
+		void Camera::_updateViewMatrix() { _viewMatrix = glm::lookAt( _position, _position + _front, _up ); }
 
 		void Camera::print() const
 		{
