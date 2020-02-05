@@ -23,7 +23,7 @@ namespace VTX
 		  public:
 			void goToState( const std::string &, void * const p_arg = nullptr );
 
-			virtual void handleEvent( const SDL_Event &, const double, void * const = nullptr ) override;
+			virtual void handleEvent( const SDL_Event &, void * const = nullptr ) override;
 			virtual void update( const double ) override;
 
 		  protected:

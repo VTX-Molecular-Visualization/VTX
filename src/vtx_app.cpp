@@ -146,6 +146,6 @@ namespace VTX
 		}
 
 		// Propagate to state machine.
-		if ( ImGui::IsAnyWindowFocused() == false ) { _stateMachine->handleEvent( p_event, _timeDelta ); }
+		if ( ImGui::IsAnyWindowFocused() == false ) { _stateMachine->handleEvent( p_event ); }
 	}
 } // namespace VTX

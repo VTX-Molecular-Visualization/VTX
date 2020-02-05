@@ -25,11 +25,9 @@ namespace VTX
 			virtual void enter( void * const ) = 0;
 			virtual void exit()				   = 0;
 
-			virtual void BaseState::handleEvent( const SDL_Event & p_event,
-												 const double	   p_deltaTime,
-												 void * const	   p_arg ) override
+			virtual void BaseState::handleEvent( const SDL_Event & p_event, void * const p_arg ) override
 			{
-				if ( _controller != nullptr ) { _controller->handleEvent( p_event, p_deltaTime ); }
+				if ( _controller != nullptr ) { _controller->handleEvent( p_event ); }
 			}
 
 		  protected:
