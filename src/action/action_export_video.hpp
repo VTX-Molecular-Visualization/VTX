@@ -26,6 +26,7 @@ namespace VTX
 
 				if ( path->getCheckpoints().size() < 2 )
 				{
+					VTX_WARNING( "At least 2 checkpoints needed to play animation" );
 					VTXApp::get().goToState( ID::State::VISUALIZATION );
 					return;
 				}
@@ -35,6 +36,7 @@ namespace VTX
 
 				if ( totalFrame == 0.f )
 				{
+					VTX_WARNING( "Total time must be > 0" );
 					VTXApp::get().goToState( ID::State::VISUALIZATION );
 					return;
 				}
@@ -58,8 +60,8 @@ namespace VTX
 						Util::Math::lerp( data.rotationLhs, data.rotationRhs, data.value ) );
 
 					// Update renderer.
-					VTXApp::get().getRenderer().render( VTXApp::get().getScene() );
-					// VTXApp::get().getUI().draw();
+					VTXApp::get().getUI().draw();
+					VTXApp::get().renderScene();
 					VTXApp::get().getScene().update( 1.f / VIDEO_FPS );
 					std::string counterStr = std::to_string( frame );
 					IO::Path	path( VIDEO_DIR + "snapshot" + std::string( 4 - counterStr.length(), '0' ) + counterStr
