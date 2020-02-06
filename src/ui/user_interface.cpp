@@ -57,9 +57,9 @@ namespace VTX
 		{
 			switch ( Setting::UI::theme )
 			{
-			case UI::THEME::DARK: ImGui::StyleColorsDark(); break;
-			case UI::THEME::CLASSIC: ImGui::StyleColorsClassic(); break;
-			case UI::THEME::LIGHT:
+			case Setting::UI::THEME::DARK: ImGui::StyleColorsDark(); break;
+			case Setting::UI::THEME::CLASSIC: ImGui::StyleColorsClassic(); break;
+			case Setting::UI::THEME::LIGHT:
 			default: ImGui::StyleColorsLight(); break;
 			}
 		}

@@ -94,7 +94,7 @@ namespace VTX
 
 	void VTXApp::initRenderer() const
 	{
-		// if ( !VTXApp::_isRunning ) { _ui->display(); } // Drawn UI a first time to update display size.
+		// if ( !VTXApp::_isRunning ) { _ui->draw(); } // Drawn UI a first time to update display size.
 		ImGuiIO & io = ImGui::GetIO();
 		_renderer->init( *_scene, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
@@ -105,9 +105,10 @@ namespace VTX
 		_chrono.start();
 		ImGuiIO & io = ImGui::GetIO();
 
-		// Render.
-		_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-		_renderer->render( *_scene );
+		// Set size.
+		// TODO: resize.
+		//_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+		//_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 		// Events.
 		SDL_Event event;
@@ -121,10 +122,6 @@ namespace VTX
 
 		// Statemachine.
 		_stateMachine->update( _timeDelta );
-
-		// Scene.
-		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-		_scene->update( _timeDelta );
 
 		// Timers.
 		_chrono.stop();

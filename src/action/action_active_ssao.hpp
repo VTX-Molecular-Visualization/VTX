@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "vtx_app.hpp"
 #include "base_action.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -20,7 +20,7 @@ namespace VTX
 			virtual void execute() override { Setting::Rendering::useSSAO = _active; };
 
 		  private:
-			bool _active;
+			const bool _active;
 		};
 	} // namespace Action
 } // namespace VTX

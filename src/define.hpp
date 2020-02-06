@@ -46,6 +46,15 @@ namespace VTX
 	// Window.
 	constexpr int WINDOW_WIDTH	= 1280;
 	constexpr int WINDOW_HEIGHT = 720;
+	// Full HD.
+	// constexpr int WINDOW_WIDTH	= 1920;
+	// constexpr int WINDOW_HEIGHT = 1080;
+	// 4k
+	// constexpr int WINDOW_WIDTH	= 3840;
+	// constexpr int WINDOW_HEIGHT = 2160;
+	// 4k with 250% scale
+	// constexpr int WINDOW_WIDTH	= 1536;
+	// constexpr int WINDOW_HEIGHT = 864;
 
 	// Camera.
 	constexpr float CAMERA_NEAR	   = 1e-1f;
@@ -69,8 +78,13 @@ namespace VTX
 	constexpr float CONTROLLER_ROTATION_SPEED_DEFAULT	  = 0.005f;
 
 	// Rendering.
+<<<<<<< HEAD
 	constexpr float RENDERER_AO_RADIUS_MIN = 0.f;
 	constexpr float RENDERER_AO_RADIUS_MAX = 200.f;
+=======
+	constexpr float RENDERER_AO_RADIUS_MIN = 1.f;
+	constexpr float RENDERER_AO_RADIUS_MAX = 100.f;
+>>>>>>> 1d65ed6faa750ed778edb8a1867a1e33a02cdf2c
 
 	// Export video.
 	constexpr uint VIDEO_FPS = 60;

@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
+#include "base_action.hpp"
 #include "model/model_molecule.hpp"
 #include "vtx_app.hpp"
-#include "base_action.hpp"
 
 namespace VTX
 {
@@ -21,7 +21,7 @@ namespace VTX
 			virtual void execute() override { Setting::UI::symbolDisplayMode = _mode; };
 
 		  private:
-			Setting::UI::SYMBOL_DISPLAY_MODE _mode;
+			const Setting::UI::SYMBOL_DISPLAY_MODE _mode;
 		};
 	} // namespace Action
 } // namespace VTX

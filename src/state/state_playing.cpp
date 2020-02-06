@@ -43,6 +43,8 @@ namespace VTX
 
 		void StatePlaying::update( const double p_deltaTime )
 		{
+			BaseState::update( p_deltaTime );
+
 			_time += (float)p_deltaTime;
 
 			// Loop.
@@ -53,6 +55,9 @@ namespace VTX
 			}
 
 			_setCamera();
+			VTXApp::get().getScene().update( p_deltaTime );
+			VTXApp::get().renderScene();
+
 		} // namespace State
 
 		void StatePlaying::_setCamera() const

@@ -24,7 +24,7 @@ namespace VTX
 			};
 
 		  private:
-			Renderer::SHADING _shading;
+			const Renderer::SHADING _shading;
 		};
 	} // namespace Action
 } // namespace VTX

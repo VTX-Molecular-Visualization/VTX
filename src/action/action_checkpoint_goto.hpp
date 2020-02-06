@@ -27,8 +27,8 @@ namespace VTX
 			virtual void execute() override { _camera.set( _checkpoint.getPosition(), _checkpoint.getRotation() ); }
 
 		  private:
-			Object3D::Camera &	   _camera;
-			Model::ModelCheckpoint _checkpoint;
+			Object3D::Camera &			 _camera;
+			const Model::ModelCheckpoint _checkpoint;
 		};
 	} // namespace Action
 } // namespace VTX

@@ -19,10 +19,10 @@ namespace VTX
 		  public:
 			Camera() { _updateRotation(); };
 
-			inline Vec3f & getPosition() { return _position; }
-			inline Quatf & getRotation() { return _rotation; }
-			inline Mat4f   getViewMatrix() const { return _viewMatrix; }
-			inline Mat4f   getProjectionMatrix() const
+			inline const Vec3f & getPosition() const { return _position; }
+			inline const Quatf & getRotation() const { return _rotation; }
+			inline Mat4f		 getViewMatrix() const { return _viewMatrix; }
+			inline Mat4f		 getProjectionMatrix() const
 			{
 				return glm::perspective( glm::radians( _fov ), _screenWidth / _screenHeight, _near, _far );
 			}

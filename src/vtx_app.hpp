@@ -44,6 +44,7 @@ namespace VTX
 		void addThread( std::thread * const );
 
 		void initRenderer() const;
+		void renderScene() const { _renderer->render( *_scene ); }
 
 		inline Object3D::Scene &		getScene() { return *_scene; }
 		inline Renderer::BaseRenderer & getRenderer() { return *_renderer; }

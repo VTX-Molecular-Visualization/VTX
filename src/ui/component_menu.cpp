@@ -1,10 +1,16 @@
 #include "component_menu.hpp"
 #include "action/action_active_ssao.hpp"
+#include "action/action_active_y_axis_inversion.hpp"
+#include "action/action_change_ao_radius.hpp"
+#include "action/action_change_auto_rotate_speed.hpp"
 #include "action/action_change_color_mode.hpp"
 #include "action/action_change_display_mode.hpp"
 #include "action/action_change_representation.hpp"
+#include "action/action_change_rotation_speed.hpp"
 #include "action/action_change_shading.hpp"
 #include "action/action_change_theme.hpp"
+#include "action/action_change_translation_factor_speed.hpp"
+#include "action/action_change_translation_speed.hpp"
 #include "action/action_export_video.hpp"
 #include "action/action_new.hpp"
 #include "action/action_open.hpp"
@@ -106,8 +112,9 @@ namespace VTX
 					// Theme.
 					const char * themes[]
 						= { LOCALE( "Enum.Theme.Light" ), LOCALE( "Enum.Theme.Dark" ), LOCALE( "Enum.Theme.Classic" ) };
-					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Theme" ), (int *)&Setting::UI::theme, themes, 3 ) )
-					{ VTXApp::get().action( new Action::ActionChangeTheme() ); }
+					int theme = (int)Setting::UI::theme;
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Theme" ), &theme, themes, 3 ) )
+					{ VTXApp::get().action( new Action::ActionChangeTheme( (Setting::UI::THEME)theme ) ); }
 
 					ImGui::Separator();
 
@@ -159,53 +166,61 @@ namespace VTX
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &useSSAO ) )
 					{ VTXApp::get().action( new Action::ActionActiveSSAO( useSSAO ) ); };
 
+					float aoRadius = Setting::Rendering::aoRadius;
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AORadius" ),
+											 &aoRadius,
+											 RENDERER_AO_RADIUS_MIN,
+											 RENDERER_AO_RADIUS_MAX ) )
+					{ VTXApp::get().action( new Action::ActionChangeAORadius( aoRadius ) ); }
 					ImGui::Separator();
 
 					// Auto rotate.
+					Vec3f autoRotateSpeed = Setting::Controller::autoRotateSpeed;
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateXSpeed" ),
-											 &Setting::Controller::autoRotateSpeed.x,
+											 &autoRotateSpeed.x,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
-					{}
+					{ VTXApp::get().action( new Action::ActionChangeAutoRotateSpeed( autoRotateSpeed ) ); }
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateYSpeed" ),
-											 &Setting::Controller::autoRotateSpeed.y,
+											 &autoRotateSpeed.y,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
-					{}
+					{ VTXApp::get().action( new Action::ActionChangeAutoRotateSpeed( autoRotateSpeed ) ); }
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateZSpeed" ),
-											 &Setting::Controller::autoRotateSpeed.z,
+											 &autoRotateSpeed.z,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
-					{}
+					{ VTXApp::get().action( new Action::ActionChangeAutoRotateSpeed( autoRotateSpeed ) ); }
 
 					ImGui::Separator();
 
 					// Controller speed.
+					float translationSpeed = Setting::Controller::translationSpeed;
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.TranslationSpeed" ),
-											 &Setting::Controller::translationSpeed,
+											 &translationSpeed,
 											 CONTROLLER_TRANSLATION_SPEED_MIN,
 											 CONTROLLER_TRANSLATION_SPEED_MAX ) )
-					{}
+					{ VTXApp::get().action( new Action::ActionChangeTranslationSpeed( translationSpeed ) ); }
+					float translationFactorSpeed = Setting::Controller::translationFactorSpeed;
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.TranslationFactorSpeed" ),
-											 &Setting::Controller::translationFactorSpeed,
+											 &translationFactorSpeed,
 											 CONTROLLER_TRANSLATION_FACTOR_MIN,
 											 CONTROLLER_TRANSLATION_FACTOR_MAX ) )
-					{}
+					{
+						VTXApp::get().action(
+							new Action::ActionChangeTranslationFactorSpeed( translationFactorSpeed ) );
+					}
+					float rotationSpeed = Setting::Controller::rotationSpeed;
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.RotationSpeed" ),
-											 &Setting::Controller::rotationSpeed,
+											 &rotationSpeed,
 											 CONTROLLER_ROTATION_SPEED_MIN,
 											 CONTROLLER_ROTATION_SPEED_MAX ) )
-					{}
-					if ( ImGui::SliderFloat( "AO radius",
-											 &Setting::Rendering::aoRadius,
-											 RENDERER_AO_RADIUS_MIN,
-											 RENDERER_AO_RADIUS_MAX ) )
-					{}
+					{ VTXApp::get().action( new Action::ActionChangeRotationSpeed( rotationSpeed ) ); }
 
 					// Invert y axis.
-					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ),
-										  &Setting::Controller::yAxisInverted ) )
-					{}
+					bool yAxisInverted = Setting::Controller::yAxisInverted;
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ), &yAxisInverted ) )
+					{ VTXApp::get().action( new Action::ActionActiveYAxisInversion( yAxisInverted ) ); }
 
 					ImGui::EndMenu();
 				}

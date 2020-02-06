@@ -40,6 +40,7 @@ namespace VTX
 			{ "MainMenu.Settings.Shading", "Shading" },
 			{ "MainMenu.Settings.AA", "AA" },
 			{ "MainMenu.Settings.SSAO", "SSAO" },
+			{ "MainMenu.Settings.AORadius", "AO radius" },
 			{ "MainMenu.Settings.AutoRotateXSpeed", "X auto rotation speed" },
 			{ "MainMenu.Settings.AutoRotateYSpeed", "Y auto rotation speed" },
 			{ "MainMenu.Settings.AutoRotateZSpeed", "Z auto rotation speed" },
