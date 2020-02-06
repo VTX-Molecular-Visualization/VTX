@@ -8,7 +8,7 @@ namespace VTX
 	{
 		namespace UI
 		{
-			VTX::UI::THEME		theme			  = VTX::UI::THEME::DARK;
+			Setting::UI::THEME	theme			  = Setting::UI::THEME::DARK;
 			SYMBOL_DISPLAY_MODE symbolDisplayMode = SYMBOL_DISPLAY_MODE::SHORT;
 		}; // namespace UI
 

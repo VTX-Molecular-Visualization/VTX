@@ -15,13 +15,20 @@ namespace VTX
 	{
 		namespace UI
 		{
+			enum class THEME : int
+			{
+				LIGHT,
+				DARK,
+				CLASSIC
+			};
+
 			enum class SYMBOL_DISPLAY_MODE : int
 			{
 				SHORT,
 				LONG
 			};
 
-			extern VTX::UI::THEME	   theme;
+			extern THEME			   theme;
 			extern SYMBOL_DISPLAY_MODE symbolDisplayMode;
 		}; // namespace UI
 

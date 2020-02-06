@@ -15,7 +15,16 @@ namespace VTX
 		class ActionChangeTheme : public BaseAction
 		{
 		  public:
-			virtual void execute() override { VTXApp::get().getUI().setTheme(); };
+			ActionChangeTheme( const Setting::UI::THEME p_theme ) : _theme( p_theme ) {}
+
+			virtual void execute() override
+			{
+				Setting::UI::theme = _theme;
+				VTXApp::get().getUI().setTheme();
+			};
+
+		  private:
+			const Setting::UI::THEME _theme;
 		};
 	} // namespace Action
 } // namespace VTX

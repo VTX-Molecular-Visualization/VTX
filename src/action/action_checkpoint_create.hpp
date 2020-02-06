@@ -19,16 +19,20 @@ namespace VTX
 		class ActionCheckpointCreate : public BaseAction
 		{
 		  public:
-			explicit ActionCheckpointCreate( const Object3D::Camera p_camera ) : _camera( p_camera ) {}
+			explicit ActionCheckpointCreate( const Object3D::Camera & p_camera ) :
+				_position( p_camera.getPosition() ), _rotation( p_camera.getRotation() )
+			{
+			}
 
 			virtual void execute() override
 			{
 				VTXApp::get().getScene().getPaths()[ 0 ]->addCheckpoint(
-					new Model::ModelCheckpoint( _camera.getPosition(), _camera.getRotation() ) );
+					new Model::ModelCheckpoint( _position, _rotation ) );
 			}
 
 		  private:
-			Object3D::Camera _camera;
+			const Vec3f _position;
+			const Quatf _rotation;
 		};
 	} // namespace Action
 } // namespace VTX

@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
+#include "base_action.hpp"
 #include "model/model_molecule.hpp"
 #include "vtx_app.hpp"
-#include "base_action.hpp"
 
 namespace VTX
 {
@@ -31,7 +31,7 @@ namespace VTX
 			};
 
 		  private:
-			View::MOLECULE_REPRESENTATION _representation;
+			const View::MOLECULE_REPRESENTATION _representation;
 		};
 	} // namespace Action
 } // namespace VTX
