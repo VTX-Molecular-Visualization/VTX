@@ -23,12 +23,12 @@ namespace VTX
 
 			virtual void initItem() override
 			{
-				VTXApp::get().getUIComponentByName( getComponentParentName() )->addItemRef( this );
+				VTXApp::get().getUI().getComponentByName( getComponentParentName() )->addItemRef( this );
 			}
 
 			virtual void cleanItem() override
 			{
-				VTXApp::get().getUIComponentByName( getComponentParentName() )->removeItemRef( getName() );
+				VTXApp::get().getUI().getComponentByName( getComponentParentName() )->removeItemRef( getName() );
 			}
 
 			virtual std::string getComponentParentName() const = 0;

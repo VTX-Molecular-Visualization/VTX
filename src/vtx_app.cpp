@@ -92,8 +92,6 @@ namespace VTX
 
 	void VTXApp::addThread( std::thread * const p_thread ) { _threads.emplace_back( p_thread ); }
 
-	void VTXApp::setTheme() const { _ui->setTheme(); }
-
 	void VTXApp::initRenderer() const
 	{
 		// if ( !VTXApp::_isRunning ) { _ui->display(); } // Drawn UI a first time to update display size.
@@ -101,8 +99,6 @@ namespace VTX
 		_renderer->init( *_scene, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 	}
-
-	void VTXApp::setRendererShading() const { _renderer->setShading(); }
 
 	void VTXApp::_update()
 	{

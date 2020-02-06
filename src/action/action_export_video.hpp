@@ -60,9 +60,11 @@ namespace VTX
 					// Update renderer.
 					VTXApp::get().getRenderer().render( VTXApp::get().getScene() );
 
-					IO::Path path( VIDEO_DIR + std::to_string( frame ) + ".jpg" );
+					std::string counterStr = std::to_string( frame );
+					IO::Path	path( VIDEO_DIR + "snapshot" + std::string( 4 - counterStr.length(), '0' ) + counterStr
+									  + ".png" );
 					snapshoter.takeSnapshot( path );
-					VTX_INFO(std::to_string((uint)((float)frame * 100 / totalFrame))+"%");
+					VTX_INFO( std::to_string( ( uint )( (float)frame * 100 / totalFrame ) ) + "%" );
 				}
 				chrono.stop();
 				VTX_INFO( "Export finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
