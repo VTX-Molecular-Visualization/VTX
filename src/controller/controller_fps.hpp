@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "../id.hpp"
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
 #include "object3d/camera.hpp"
@@ -24,7 +25,8 @@ namespace VTX
 				BaseMouseController::handleEvent( p_event, p_arg );
 			}
 
-			virtual void update( const double ) override;
+			virtual void		update( const double ) override;
+			virtual std::string getName() const override { return ID::Controller::FPS; }
 
 		  protected:
 			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & ) override;

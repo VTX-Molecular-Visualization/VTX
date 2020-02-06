@@ -11,10 +11,10 @@ namespace VTX
 			// Init the renderer.
 			VTXApp::get().initRenderer();
 			// Create controller.
-			_controller = new Controller::ControllerFPS( VTXApp::get().getScene().getCamera() );
+			addItem( new Controller::ControllerFPS( VTXApp::get().getScene().getCamera() ) );
 		}
 
-		void StateVisualization::exit() { delete _controller; }
+		void StateVisualization::exit() { clear(); }
 
 		void StateVisualization::update( const double p_deltaTime )
 		{

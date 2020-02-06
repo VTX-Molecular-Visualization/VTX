@@ -5,16 +5,19 @@
 #pragma once
 #endif
 
+#include "../generic/has_collection.hpp"
 #include "controller/base_controller.hpp"
 #include "generic/base_collectionable.hpp"
 #include "generic/base_updatable.hpp"
 #include "id.hpp"
+#include <vector>
 
 namespace VTX
 {
 	namespace State
 	{
 		class BaseState :
+			public Generic::HasCollection<Controller::BaseController>,
 			public Generic::BaseUpdatable,
 			public Generic::BaseCollectionable,
 			public Generic::BaseEventHandler<SDL_Event>
@@ -27,16 +30,19 @@ namespace VTX
 
 			virtual void BaseState::handleEvent( const SDL_Event & p_event, void * const p_arg ) override
 			{
-				if ( _controller != nullptr ) { _controller->handleEvent( p_event ); }
+				for ( PairStringToItemPtr controller : _getItems() )
+				{
+					controller.second->handleEvent( p_event );
+				}
 			}
 
 			virtual void BaseState::update( const double p_deltaTime ) override
 			{
-				if ( _controller != nullptr ) { _controller->update( p_deltaTime ); }
+				for ( PairStringToItemPtr controller : _getItems() )
+				{
+					controller.second->update( p_deltaTime );
+				}
 			}
-
-		  protected:
-			Controller::BaseController * _controller = nullptr;
 		};
 	} // namespace State
 } // namespace VTX

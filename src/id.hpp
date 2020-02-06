@@ -40,6 +40,12 @@ namespace VTX
 			const std::string VISUALIZATION = "VISUALIZATION";
 			const std::string PLAYING		= "PLAYING";
 		} // namespace State
+
+		namespace Controller
+		{
+			const std::string FPS	   = "FPS";
+			const std::string SHORTCUT = "SHORCUT";
+		} // namespace Controller
 	}	  // namespace ID
 
 } // namespace VTX
