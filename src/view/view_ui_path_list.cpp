@@ -13,6 +13,14 @@ namespace VTX
 			ImGui::PushID( "ViewPath" );
 			if ( ImGui::CollapsingHeader( "Path", ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
+				if ( ImGui::Button( "Add" ) )
+				{
+					VTXApp::get().action( new Action::ActionCheckpointCreate( VTXApp::get().getScene().getCamera() ) );
+				}
+				ImGui::SameLine();
+				if ( ImGui::Button( "Play" ) )
+				{ VTXApp::get().goToState( ID::State::PLAYING, VTXApp::get().getScene().getPaths()[ 0 ] ); }
+
 				for ( Model::ModelCheckpoint * checkpoint : _getModel().getCheckpoints() )
 				{
 					ImGui::PushID( checkpoint->getId() );
@@ -26,14 +34,6 @@ namespace VTX
 					ImGui::InputFloat( "", checkpoint->getDurationPtr() );
 					ImGui::PopID();
 				}
-
-				if ( ImGui::Button( "Add" ) )
-				{
-					VTXApp::get().action( new Action::ActionCheckpointCreate( VTXApp::get().getScene().getCamera() ) );
-				}
-				ImGui::SameLine();
-				if ( ImGui::Button( "Play" ) )
-				{ VTXApp::get().goToState( ID::State::PLAYING, VTXApp::get().getScene().getPaths()[ 0 ] ); }
 			}
 			ImGui::PopID();
 		}

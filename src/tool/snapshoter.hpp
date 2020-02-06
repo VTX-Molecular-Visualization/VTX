@@ -14,7 +14,7 @@ namespace VTX
 		class Snapshoter
 		{
 		  public:
-			void takeSnapshot( const IO::Path & p_path ) const;
+			bool takeSnapshot( const IO::Path & p_path ) const;
 
 		  private:
 		};

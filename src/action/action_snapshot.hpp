@@ -21,10 +21,13 @@ namespace VTX
 				Tool::Snapshoter snapshoter;
 
 				std::string filename = Util::Time::getTimestamp();
-				IO::Path	path( SNAPSHOT_DIR + filename + ".jpg" );
+				IO::Path	path( SNAPSHOT_DIR + filename + ".png" );
 
-				snapshoter.takeSnapshot( path );
-				VTX_INFO( "Snapshot taken: " + path.getFileName() );
+				if ( snapshoter.takeSnapshot( path ) ) { VTX_INFO( "Snapshot taken: " + path.getFileName() ); }
+				else
+				{
+					VTX_WARNING( "Snapshot failed" );
+				}
 			};
 		};
 	} // namespace Action

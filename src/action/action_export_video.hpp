@@ -62,6 +62,7 @@ namespace VTX
 
 					IO::Path path( VIDEO_DIR + std::to_string( frame ) + ".jpg" );
 					snapshoter.takeSnapshot( path );
+					VTX_INFO(std::to_string((uint)((float)frame * 100 / totalFrame))+"%");
 				}
 				chrono.stop();
 				VTX_INFO( "Export finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
