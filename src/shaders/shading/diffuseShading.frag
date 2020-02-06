@@ -36,7 +36,12 @@ void main()
 	unpackGBuffers(ivec2(gl_FragCoord), fd);
 	
 	const vec3 lightDir = normalize(-fd.camPosition);
-	const float diffuse = dot(fd.normal, lightDir);
+	const float ambient = fd.aoFactor * 0.3;
+	const float diffuse = max(dot(fd.normal, lightDir), 0.f) ;
+	
+	
 	//fragColor = vec4((fd.color - fd.aoFactor) * diffuse, 1.f);
-	fragColor = vec4((fd.color - (1.f - fd.aoFactor)) * diffuse, 1.f);
+	
+	//ambientOcclusion = ((uProjMatrix * vec4(pos, 1.f)).z) / 1e3f; return;
+	fragColor = vec4(fd.color * vec3(fd.aoFactor) * diffuse, 1.f);
 }

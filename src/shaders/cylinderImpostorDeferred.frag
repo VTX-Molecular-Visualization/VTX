@@ -59,7 +59,7 @@ void main()
 							+ gl_DepthRange.near + gl_DepthRange.far)
 						   * 0.5f;
 
-			const vec3 normal = (v0 + camHit - v1v0 * y / d0) / uCylRad;
+			const vec3 normal = normalize((v0 + camHit - v1v0 * y / d0) / uCylRad);
 
 			const vec3 color = colors[int(y > d0 * 0.5f)];
 

@@ -11,9 +11,10 @@ void main()
 	const vec2 texelSize = 1.f / textureSize(aoFactor, 0);
 	const vec2 texPos = gl_FragCoord.xy * texelSize;
 	
-	const vec2 lim = vec2(fma(-uBlurSize, 0.5f, 0.5f));
 
 	float res = 0.f;
+	
+	/*const vec2 lim = vec2(fma(-uBlurSize, 0.5f, 0.5f));
 
 	for (int i = 0; i < uBlurSize; ++i)
 	{
@@ -24,4 +25,19 @@ void main()
 		}
 	}
 	aoBlurredFactor = res / float(uBlurSize * uBlurSize);
+	*/
+
+	float lim  = fma(-uBlurSize, 0.5f, 0.5f);
+	for (int i = 0; i < uBlurSize; ++i)
+	{
+		res += texture(aoFactor, texPos + vec2((lim + i) * texelSize.x, 0.f)).x;
+	}
+	res /= float(uBlurSize);
+	for (int i = 0; i < uBlurSize; ++i)
+	{
+		res += texture(aoFactor, texPos + vec2(0.f), (lim + i) * texelSize.y).x;
+	}
+	res /= float(uBlurSize);
+	aoBlurredFactor = res; 
+	
 }
