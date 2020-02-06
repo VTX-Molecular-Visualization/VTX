@@ -10,7 +10,7 @@ namespace VTX
 
 		void ComponentCameraEditor::_draw()
 		{
-			ImGuiWindowFlags flagsWindow = ImGuiWindowFlags_NoCollapse;
+			ImGuiWindowFlags flagsWindow = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
 			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
 
 			if ( ImGui::Begin( LOCALE( "CameraEditor.CameraEditor" ), _visible, flagsWindow ) == false )

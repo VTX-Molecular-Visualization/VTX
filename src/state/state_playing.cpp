@@ -28,13 +28,14 @@ namespace VTX
 				return;
 			}
 
-			VTX_DEBUG( "Playing... total: " + std::to_string( _totalTime ) );
+			VTX_INFO( "Playing... total: " + std::to_string( _totalTime ) + " seconds" );
 
 			_setCamera();
 		}
 
 		void StatePlaying::exit()
 		{
+			VTX_INFO( "Stop" );
 			_path	   = nullptr;
 			_time	   = 0.f;
 			_totalTime = 0.f;

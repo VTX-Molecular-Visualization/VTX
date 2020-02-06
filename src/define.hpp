@@ -21,12 +21,16 @@ namespace VTX
 
 	using Vec2f = glm::vec2;
 	using Vec3f = glm::vec3;
+	using Vec3d = glm::dvec3;
 	using Vec4f = glm::vec4;
 
 	using Mat3f = glm::mat3;
+	using Mat3d = glm::dmat3;
 	using Mat4f = glm::mat4;
+	using Mat4d = glm::dmat4;
 
 	using Quatf = glm::quat;
+	using Quatd = glm::dquat;
 
 	// VTX.
 	constexpr int VTX_VERSION_MAJOR = 0;
@@ -102,6 +106,7 @@ namespace VTX
 	const Mat4f MAT4F_ID = Mat4f( 1.f );
 
 	const Vec3f VEC3F_ZERO = Vec3f( 0.f, 0.f, 0.f );
+	const Vec3d VEC3D_ZERO = Vec3d( 0.0, 0.0, 0.0 );
 	const Vec3f VEC3F_X	   = Vec3f( 1.f, 0.f, 0.f );
 	const Vec3f VEC3F_Y	   = Vec3f( 0.f, 1.f, 0.f );
 	const Vec3f VEC3F_Z	   = Vec3f( 0.f, 0.f, 1.f );

@@ -12,10 +12,10 @@ namespace VTX
 
 		void ComponentScene::_draw()
 		{
-			ImGuiWindowFlags flagsWindow = ImGuiWindowFlags_NoCollapse;
+			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
 			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
 
-			if ( ImGui::Begin( LOCALE( "Scene.Scene" ), _visible, flagsWindow ) == false )
+			if ( ImGui::Begin( LOCALE( "Scene.Scene" ), _visible, flags ) == false )
 			{
 				ImGui::End();
 				return;

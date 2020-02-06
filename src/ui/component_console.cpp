@@ -24,7 +24,7 @@ namespace VTX
 
 		void ComponentConsole::_draw()
 		{
-			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
+			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
 			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
 
 			if ( ImGui::Begin( LOCALE( "Console.Console" ), _visible, flags ) == false )

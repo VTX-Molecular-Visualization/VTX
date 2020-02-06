@@ -12,18 +12,20 @@ namespace VTX
 {
 	namespace Tool
 	{
-		void Snapshoter::takeSnapshot( const IO::Path & p_path ) const
+		bool Snapshoter::takeSnapshot( const IO::Path & p_path ) const
 		{
 			ImGuiIO &		   io	  = ImGui::GetIO();
 			uint			   width  = (uint)io.DisplaySize.x;
 			uint			   height = (uint)io.DisplaySize.y;
-			uint			   size	  = width * height * JPG_CHANNELS * sizeof( char );
-			std::vector<uchar> buffer( width * height * JPG_CHANNELS );
+			uint			   size	  = width * height * 3 * sizeof( char );
+			std::vector<uchar> buffer( width * height * 3 );
 
 			glReadnPixels( 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, size, buffer.data() );
 
 			stbi_flip_vertically_on_write( true );
-			stbi_write_jpg( p_path.c_str(), width, height, JPG_CHANNELS, buffer.data(), JPG_QUALITY );
+			stbi_write_png_compression_level = 0;
+			return stbi_write_png( p_path.c_str(), width, height, 3, buffer.data(), 0 );
+			// stbi_write_jpg( p_path.c_str(), width, height, 3, buffer.data(), 100 );
 		}
 
 	} // namespace Tool
