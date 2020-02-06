@@ -19,6 +19,8 @@ namespace VTX
 		void StateVisualization::update( const double p_deltaTime )
 		{
 			BaseState::update( p_deltaTime );
+
+			VTXApp::get().getScene().update( p_deltaTime );
 			VTXApp::get().renderScene();
 		}
 

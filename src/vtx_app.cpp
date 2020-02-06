@@ -119,9 +119,6 @@ namespace VTX
 		// UI.
 		_ui->draw();
 
-		// Scene.
-		_scene->update( _timeDelta );
-
 		// Statemachine.
 		_stateMachine->update( _timeDelta );
 

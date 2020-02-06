@@ -55,6 +55,7 @@ namespace VTX
 			}
 
 			_setCamera();
+			VTXApp::get().getScene().update( p_deltaTime );
 			VTXApp::get().renderScene();
 
 		} // namespace State
