@@ -64,6 +64,10 @@ namespace VTX
 	constexpr float CONTROLLER_ROTATION_SPEED_MAX		  = 0.01f;
 	constexpr float CONTROLLER_ROTATION_SPEED_DEFAULT	  = 0.005f;
 
+	// Rendering.
+	constexpr float RENDERER_AO_RADIUS_MIN = 1.f;
+	constexpr float RENDERER_AO_RADIUS_MAX = 100.f;
+
 	// Snapshot.
 	constexpr uint JPG_CHANNELS = 3u;
 	constexpr uint JPG_QUALITY	= 100u;

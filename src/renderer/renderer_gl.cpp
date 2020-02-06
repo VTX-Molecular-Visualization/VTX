@@ -1,4 +1,5 @@
 #include "renderer_gl.hpp"
+#include "glm/gtx/compatibility.hpp"
 #include "model/model_molecule.hpp"
 #include "setting.hpp"
 #include "view/base_view_3d_molecule.hpp"
@@ -57,7 +58,7 @@ namespace VTX
 
 			glGenTextures( 1, &_camSpacePositionsTexture );
 			glBindTexture( GL_TEXTURE_2D, _camSpacePositionsTexture );
-			glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA32F, _width, _height );
+			glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA16F, _width, _height );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -91,13 +92,11 @@ namespace VTX
 
 			glGenTextures( 1, &_ssaoTexture );
 			glBindTexture( GL_TEXTURE_2D, _ssaoTexture );
-			glTexStorage2D( GL_TEXTURE_2D, 1, GL_R32F, _width, _height );
+			glTexImage2D( GL_TEXTURE_2D, 0, GL_RED, _width, _height, 0, GL_RGB, GL_FLOAT, NULL );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-			glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _ssaoTexture, 0 );
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _ssaoTexture, 0 );
 			static const GLenum drawBufferSSAO[] = { GL_COLOR_ATTACHMENT0 };
 			glDrawBuffers( 1, drawBufferSSAO );
 
@@ -107,48 +106,52 @@ namespace VTX
 
 			_uProjMatrixLoc = glGetUniformLocation( _ssaoShader->getId(), "uProjMatrix" );
 			_uAoKernelLoc	= glGetUniformLocation( _ssaoShader->getId(), "uAoKernel" );
+			_uAoRadiusLoc	= glGetUniformLocation( _ssaoShader->getId(), "uAoRadius" );
+			_uKernelSizeLoc = glGetUniformLocation( _ssaoShader->getId(), "uKernelSize" );
+			_uAoIntensityLoc = glGetUniformLocation( _ssaoShader->getId(), "uAoIntensity" );
 
 			// generate random ao kernel
 			std::random_device							 rd;
 			static std::mt19937							 gen( 0 ); // rd());
 			static std::uniform_real_distribution<float> dist( 0.f, 1.f );
-			const uint									 kernelSize = 32;
-			Vec3f										 aoKernel[ kernelSize ];
-			for ( uint i = 0; i < kernelSize; i++ )
+			std::vector<Vec3f>							 aoKernel( _kernelSize );
+
+			// for ( int i = 0; i < _kernelSize; i++ )
+			int i = 0;
+			while ( i < _kernelSize )
 			{
-				// std::cout << "adaptative ? " << std::endl;
-				Vec3f v;
 				// sample on unit hemisphere
-				v.x = 2.f * dist( gen ) - 1.f;
-				v.y = 2.f * dist( gen ) - 1.f;
-				v.z = dist( gen );
-				v	= glm::normalize( v );
+				Vec3f v( dist( gen ) * 2.f - 1.f, dist( gen ) * 2.f - 1.f, dist( gen ) ); // Vec3f([-1;1],[-1;1],[0;1])
+				v = glm::normalize( v );
+				if ( glm::dot( VEC3F_Z, v ) < 0.15 ) continue;
 				// scale sample within the hemisphere
 				v *= dist( gen );
-				// accelerating interpolation (distance from center reduces when
-				// number of points grow up)
-				float scale = float( i ) / float( kernelSize );
-				scale		= 0.1f + 0.9f * scale * scale; // lerp
+				// accelerating interpolation (distance from center reduces when number of points grow up)
+				float scale = float( i ) / float( _kernelSize );
+				scale		= glm::lerp( 0.1f, 1.f, scale * scale );
 				v *= scale;
 				aoKernel[ i ] = v;
+				i++;
 			}
 
 			_ssaoShader->use();
-			glUniform3fv( _uAoKernelLoc, kernelSize, (const GLfloat *)aoKernel );
+			glUniform3fv( _uAoKernelLoc, _kernelSize, (const GLfloat *)aoKernel.data() );
+			glUniform1f( _uAoRadiusLoc, Setting::Rendering::aoRadius );
+			glUniform1i( _uKernelSizeLoc, _kernelSize );
+			glUniform1i( _uAoIntensityLoc, _aoIntensity );
 
 			// generate noise texture
-			const uint		   noiseTextureSize = 128;
-			std::vector<Vec3f> noise( noiseTextureSize * noiseTextureSize );
+			std::vector<Vec3f> noise( _noiseTextureSize * _noiseTextureSize );
 
-			for ( uint i = 0; i < noiseTextureSize * noiseTextureSize; ++i )
+			for ( uint i = 0; i < noise.size(); ++i )
 			{
-				noise[ i ] = Vec3f( dist( gen ), dist( gen ), 0.f );
+				noise[ i ] = Vec3f( dist( gen ) * 2.f - 1.f, dist( gen ) * 2.f - 1.f, 0.f ); // Vec3f([-1;1],[-1;1],0)
 				noise[ i ] = glm::normalize( noise[ i ] );
 			}
 			glGenTextures( 1, &_noiseTexture );
 			glBindTexture( GL_TEXTURE_2D, _noiseTexture );
 			glTexImage2D(
-				GL_TEXTURE_2D, 0, GL_RGB16F, noiseTextureSize, noiseTextureSize, 0, GL_RGB, GL_FLOAT, noise.data() );
+				GL_TEXTURE_2D, 0, GL_RGB16F, _noiseTextureSize, _noiseTextureSize, 0, GL_RGB, GL_FLOAT, noise.data() );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 			// repeat tile over the image
@@ -163,19 +166,24 @@ namespace VTX
 
 			glGenTextures( 1, &_blurTexture );
 			glBindTexture( GL_TEXTURE_2D, _blurTexture );
-			glTexStorage2D( GL_TEXTURE_2D, 1, GL_R32F, _width, _height );
+			glTexImage2D( GL_TEXTURE_2D, 0, GL_RED, _width, _height, 0, GL_RGB, GL_FLOAT, NULL );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-			glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _blurTexture, 0 );
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _blurTexture, 0 );
 			static const GLenum drawBufferBlur[] = { GL_COLOR_ATTACHMENT0 };
 			glDrawBuffers( 1, drawBufferBlur );
 
 			_blurShader = VTXApp::get().getProgramManager().createProgram( "Blur" );
 			_blurShader->attachShader( VTXApp::get().getProgramManager().createShader( "shading/blur.frag" ) );
 			_blurShader->link();
+
+			_uBlurSizeLoc = glGetUniformLocation( _blurShader->getId(), "uBlurSize" );
+
+			_blurShader->use();
+			glUniform1i( _uBlurSizeLoc, _blurSize );
 		}
 
 		void RendererGL::_initShadingPass()
@@ -296,6 +304,8 @@ namespace VTX
 
 			_ssaoShader->use();
 
+			// TODO don't aoRadius update each frame
+			glUniform1f( _uAoRadiusLoc, Setting::Rendering::aoRadius );
 			glUniformMatrix4fv(
 				_uProjMatrixLoc, 1, GL_FALSE, glm::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
 

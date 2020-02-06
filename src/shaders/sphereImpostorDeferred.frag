@@ -39,8 +39,7 @@ void main()
 
 		const vec3 camHit = camImpPos * t;
 
-		// not normalized -> normalize during deferred shading
-		const vec3 normal = camHit - camSpherePos;
+		const vec3 normal = normalize(camHit - camSpherePos);
 
 		const vec2 clipZW = camHit.z * uProjMatrix[2].zw + uProjMatrix[3].zw;
 		const float clipDepth = clipZW.x / clipZW.y;

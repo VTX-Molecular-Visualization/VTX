@@ -212,6 +212,11 @@ namespace VTX
 											 CONTROLLER_ROTATION_SPEED_MIN,
 											 CONTROLLER_ROTATION_SPEED_MAX ) )
 					{}
+					if ( ImGui::SliderFloat( "AO radius",
+											 &Setting::Rendering::aoRadius,
+											 RENDERER_AO_RADIUS_MIN,
+											 RENDERER_AO_RADIUS_MAX ) )
+					{}
 
 					// Invert y axis.
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ),

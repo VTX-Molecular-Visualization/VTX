@@ -14,7 +14,7 @@ namespace VTX
 		class RendererGL : public BaseRenderer
 		{
 		  public:
-			RendererGL()		= default;
+			RendererGL()  = default;
 			~RendererGL() = default;
 
 			virtual void init( Object3D::Scene &, uint, uint ) override;
@@ -33,24 +33,32 @@ namespace VTX
 			GLuint _quadVBO = GL_INVALID_VALUE;
 
 			// SSAO pass.
-			GL::GLSLProgram *	  _ssaoShader	  = nullptr;
-			GLuint				  _fboSSAO		  = GL_INVALID_VALUE;
-			GLuint				  _ssaoTexture	  = GL_INVALID_VALUE;
-			GLuint				  _noiseTexture	  = GL_INVALID_VALUE;
-			GLint				  _uProjMatrixLoc = GL_INVALID_INDEX;
-			GLint				  _uAoKernelLoc	  = GL_INVALID_INDEX;
+			GL::GLSLProgram * _ssaoShader		= nullptr;
+			GLuint			  _fboSSAO			= GL_INVALID_VALUE;
+			GLuint			  _ssaoTexture		= GL_INVALID_VALUE;
+			GLuint			  _noiseTexture		= GL_INVALID_VALUE;
+			GLint			  _uProjMatrixLoc	= GL_INVALID_INDEX;
+			GLint			  _uAoKernelLoc		= GL_INVALID_INDEX;
+			GLint			  _uAoRadiusLoc		= GL_INVALID_INDEX;
+			GLint			  _uKernelSizeLoc	= GL_INVALID_INDEX;
+			GLint			  _uAoIntensityLoc	= GL_INVALID_INDEX;
+			GLint			  _kernelSize		= 512;
+			GLuint			  _noiseTextureSize = _kernelSize;
+			GLint			  _aoIntensity		= 3;
 
 			// Blur pass.
-			GL::GLSLProgram *	  _blurShader  = nullptr;
-			GLuint				  _fboBlur	   = GL_INVALID_VALUE;
-			GLuint				  _blurTexture = GL_INVALID_VALUE;
+			GL::GLSLProgram * _blurShader	= nullptr;
+			GLuint			  _fboBlur		= GL_INVALID_VALUE;
+			GLuint			  _blurTexture	= GL_INVALID_VALUE;
+			GLint			  _uBlurSizeLoc = GL_INVALID_INDEX;
+			GLint			  _blurSize		= 4;
 
 			// Shading pass.
-			GL::GLSLProgram *	  _diffuseShading	 = nullptr;
-			GL::GLSLProgram *	  _blinnPhongShading = nullptr;
-			GL::GLSLProgram *	  _toonShading		 = nullptr;
-			GLuint				  _fboShading		 = GL_INVALID_VALUE;
-			GLuint				  _shadingTexture	 = GL_INVALID_VALUE;
+			GL::GLSLProgram * _diffuseShading	 = nullptr;
+			GL::GLSLProgram * _blinnPhongShading = nullptr;
+			GL::GLSLProgram * _toonShading		 = nullptr;
+			GLuint			  _fboShading		 = GL_INVALID_VALUE;
+			GLuint			  _shadingTexture	 = GL_INVALID_VALUE;
 
 			GL::GLSLProgram * _currentShading = nullptr;
 

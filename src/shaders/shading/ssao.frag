@@ -1,19 +1,23 @@
 #version 450
 
+// Crytek (Crysis) like SSAO
+
 layout(binding = 0) uniform usampler2D gbColorNormal;
 layout(binding = 1) uniform sampler2D gbCamPosition;
 layout(binding = 2) uniform sampler2D noise;
 layout(binding = 3) uniform sampler2D depth;
 
-layout(location = 0) out float aoFactor;
+layout(location = 0) out float ambientOcclusion;
 
 const float BIAS = 0.025f;
-const float SAMPLE_RAD = 1.5f;
-const int KERNEL_SIZE = 32;
-const float INTENSITY = 1.f;
+const vec2 VEC2_05 = vec2(0.5f);
 
 uniform mat4 uProjMatrix;
-uniform vec3 uAoKernel[KERNEL_SIZE];
+uniform vec3 uAoKernel[256];
+uniform float uAoRadius;
+uniform int uKernelSize;
+uniform int uAoIntensity;
+
 
 struct FragmentData
 {
@@ -29,22 +33,26 @@ void unpackGBuffers(const in vec2 texPos, out FragmentData fd)
 
 	const vec2 tmp = unpackHalf2x16(colorNormal.y);
 
-	fd.normal = normalize(vec3(tmp.y, unpackHalf2x16(colorNormal.z)));
+	fd.normal = vec3(tmp.y, unpackHalf2x16(colorNormal.z));
 	fd.camPosition = camPosition.xyz;
 }
 
 void main()
 {
 	const vec2 texSize = textureSize(gbCamPosition, 0);
-	const vec2 noiseScale = texSize / 128.f; // noise tex is 128x128
+	const vec2 noisTextSize = textureSize(noise,0);
+	const vec2 noiseScale = texSize / noisTextSize.x;
 	const vec2 texPos = gl_FragCoord.xy / texSize;
 
 	FragmentData fd;
 	unpackGBuffers(texPos, fd);
-	const vec3 p = fd.camPosition.xyz;
+	const vec3 pos = fd.camPosition.xyz;
 
-	const float rad = abs(p.z) * smoothstep(0.1f, 1.f, abs(p.z) / SAMPLE_RAD);
-	vec3 randomVec = normalize(texture(noise, texPos * noiseScale).xyz);
+	if (pos.z == 0) return; // no need ssao on background
+	
+	const float rad = uAoRadius;// abs(pos.z) * smoothstep(0.1f, 1.f, abs(pos.z) / uAoRadius);
+
+	vec3 randomVec = texture(noise, texPos * noiseScale).xyz;
 	// Gram-Schmidt process
 	vec3 tangent = normalize(randomVec - fd.normal * dot(randomVec, fd.normal));
 	vec3 bitangent = cross(fd.normal, tangent);
@@ -52,25 +60,24 @@ void main()
 
 	float ao = 0.f;
 
-	for (int i = 0; i < KERNEL_SIZE; ++i)
+	for (int i = 0; i < uKernelSize; ++i)
 	{
-		vec3 dir = TBN * uAoKernel[i];
+		// compute sample position
+		vec3 samplePos = TBN * uAoKernel[i] * rad + pos;
 
-		vec3 samplePos = p + dir * rad;
-
+		// projection
 		vec4 offset = uProjMatrix * vec4(samplePos, 1.f);
-		offset.xyz /= offset.w;
-		offset.xyz = offset.xyz * 0.5f + 0.5f;
+		offset.xy /= offset.w;
+		offset.xy = fma(offset.xy, VEC2_05, VEC2_05);
 
+		// get sample depth
 		float sampleDepth = texture(gbCamPosition, offset.xy).z;
-		float diffDepth = sampleDepth - samplePos.z;
 
-		if (sampleDepth < 0.f)
-		{
-			ao += smoothstep(0.f, 1.f, diffDepth - BIAS);
-		}
+		// range check: ignore background 
+		float rangeCheck = sampleDepth == 0 ? 0.f : smoothstep(0.f, 1.f, rad / abs(pos.z - sampleDepth));
+		ao += (sampleDepth >= samplePos.z + BIAS ? 1.f : 0.f) * rangeCheck;
 	}
 
-	ao /= float(KERNEL_SIZE);
-	aoFactor = ao * INTENSITY;
+	ao = 1.f - (ao / uKernelSize);
+	ambientOcclusion = pow(ao, uAoIntensity);
 }

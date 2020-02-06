@@ -33,6 +33,7 @@ namespace VTX
 			extern Renderer::SHADING			 shading;
 			extern bool							 useAA;
 			extern bool							 useSSAO;
+			extern float						 aoRadius;
 		}; // namespace Rendering
 
 		namespace Controller

@@ -25,7 +25,7 @@ void unpackGBuffers(ivec2 px, out FragmentData fd)
 	const vec2 tmp = unpackHalf2x16(colorNormal.y);
 
 	fd.color = vec3(unpackHalf2x16(colorNormal.x), tmp.x);
-	fd.normal = normalize(vec3(tmp.y, unpackHalf2x16(colorNormal.z)));
+	fd.normal = vec3(tmp.y, unpackHalf2x16(colorNormal.z));
 	fd.camPosition = camPosition.xyz;
 	fd.aoFactor = aoFactor;
 }
@@ -34,9 +34,9 @@ void main()
 {
 	FragmentData fd;
 	unpackGBuffers(ivec2(gl_FragCoord), fd);
-
+	
 	const vec3 lightDir = normalize(-fd.camPosition);
 	const float diffuse = dot(fd.normal, lightDir);
-	const vec3 ambient = fd.color * vec3(fd.aoFactor);
-	fragColor = vec4((fd.color - fd.aoFactor) * diffuse, 1.f);
+	//fragColor = vec4((fd.color - fd.aoFactor) * diffuse, 1.f);
+	fragColor = vec4((fd.color - (1.f - fd.aoFactor)) * diffuse, 1.f);
 }
