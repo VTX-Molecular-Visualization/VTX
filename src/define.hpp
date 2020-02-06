@@ -46,6 +46,15 @@ namespace VTX
 	// Window.
 	constexpr int WINDOW_WIDTH	= 1280;
 	constexpr int WINDOW_HEIGHT = 720;
+	// Full HD.
+	// constexpr int WINDOW_WIDTH	= 1920;
+	// constexpr int WINDOW_HEIGHT = 1080;
+	// 4k
+	// constexpr int WINDOW_WIDTH	= 3840;
+	// constexpr int WINDOW_HEIGHT = 2160;
+	// 4k with 250% scale
+	// constexpr int WINDOW_WIDTH	= 1536;
+	// constexpr int WINDOW_HEIGHT = 864;
 
 	// Camera.
 	constexpr float CAMERA_NEAR	   = 1e-1f;

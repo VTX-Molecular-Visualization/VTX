@@ -60,7 +60,7 @@ namespace VTX
 						Util::Math::lerp( data.rotationLhs, data.rotationRhs, data.value ) );
 
 					// Update renderer.
-					VTXApp::get().getUI().draw();
+					// VTXApp::get().getUI().draw();
 					VTXApp::get().renderScene();
 					VTXApp::get().getScene().update( 1.f / VIDEO_FPS );
 					std::string counterStr = std::to_string( frame );
