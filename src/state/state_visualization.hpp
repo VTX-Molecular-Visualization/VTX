@@ -19,6 +19,8 @@ namespace VTX
 			virtual std::string getName() const override { return ID::State::VISUALIZATION; }
 			virtual void		enter( void * const ) override;
 			virtual void		exit() override;
+
+			virtual void update( const double p_deltaTime ) override;
 		};
 	} // namespace State
 } // namespace VTX

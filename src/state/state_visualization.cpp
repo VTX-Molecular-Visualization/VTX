@@ -15,5 +15,12 @@ namespace VTX
 		}
 
 		void StateVisualization::exit() { delete _controller; }
+
+		void StateVisualization::update( const double p_deltaTime )
+		{
+			BaseState::update( p_deltaTime );
+			VTXApp::get().renderScene();
+		}
+
 	} // namespace State
 } // namespace VTX

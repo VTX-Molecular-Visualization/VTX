@@ -105,9 +105,9 @@ namespace VTX
 		_chrono.start();
 		ImGuiIO & io = ImGui::GetIO();
 
-		// Render.
+		// Set size.
+		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-		_renderer->render( *_scene );
 
 		// Events.
 		SDL_Event event;
@@ -119,12 +119,11 @@ namespace VTX
 		// UI.
 		_ui->draw();
 
+		// Scene.
+		_scene->update( _timeDelta );
+
 		// Statemachine.
 		_stateMachine->update( _timeDelta );
-
-		// Scene.
-		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-		_scene->update( _timeDelta );
 
 		// Timers.
 		_chrono.stop();

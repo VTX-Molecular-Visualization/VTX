@@ -72,10 +72,6 @@ namespace VTX
 	constexpr float RENDERER_AO_RADIUS_MIN = 1.f;
 	constexpr float RENDERER_AO_RADIUS_MAX = 100.f;
 
-	// Snapshot.
-	constexpr uint JPG_CHANNELS = 3u;
-	constexpr uint JPG_QUALITY	= 100u;
-
 	// Export video.
 	constexpr uint VIDEO_FPS = 60;
 
