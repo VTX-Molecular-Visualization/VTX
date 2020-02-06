@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "../id.hpp"
 #include "base_keyboard_controller.hpp"
 
 namespace VTX
@@ -17,7 +18,9 @@ namespace VTX
 			explicit ControllerShortcut() {}
 
 		  protected:
-			virtual void _handleKeyDownEvent( const SDL_Scancode & ) override;
+			virtual void _handleKeyPressedEvent( const SDL_Scancode & ) override;
+
+			virtual std::string getName() const override { return ID::Controller::SHORTCUT; }
 
 		  private:
 		};

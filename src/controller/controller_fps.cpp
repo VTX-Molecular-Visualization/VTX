@@ -27,6 +27,11 @@ namespace VTX
 			_camera.move( translation );
 		}
 
+		void ControllerFPS::_handleKeyPressedEvent( const SDL_Scancode & p_key )
+		{
+			if ( p_key == SDL_SCANCODE_SPACE ) { _camera.print(); }
+		}
+
 		void ControllerFPS::_handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )
 		{
 			if ( _mouseLeftPressed )

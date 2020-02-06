@@ -19,7 +19,12 @@ namespace VTX
 			{
 				switch ( p_event.type )
 				{
-				case SDL_KEYDOWN: _handleKeyDownEvent( p_event.key.keysym.scancode ); break;
+				case SDL_KEYDOWN:
+				{
+					_handleKeyDownEvent( p_event.key.keysym.scancode );
+					if ( p_event.key.repeat == 0 ) { _handleKeyPressedEvent( p_event.key.keysym.scancode ); }
+					break;
+				}
 				case SDL_KEYUP: _handleKeyUpEvent( p_event.key.keysym.scancode ); break;
 				default: break;
 				}
@@ -30,6 +35,7 @@ namespace VTX
 
 			virtual void _handleKeyDownEvent( const SDL_Scancode & p_key ) { _pressedButtons.emplace( p_key ); };
 			virtual void _handleKeyUpEvent( const SDL_Scancode & p_key ) { _pressedButtons.erase( p_key ); };
+			virtual void _handleKeyPressedEvent( const SDL_Scancode & p_key ) {}
 
 			bool _isKeyPressed( const SDL_Scancode & p_key )
 			{

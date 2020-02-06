@@ -30,6 +30,7 @@ namespace VTX
 
 		  protected:
 			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & ) override;
+			virtual void _handleKeyPressedEvent( const SDL_Scancode & ) override;
 
 		  private:
 			Object3D::Camera & _camera;
