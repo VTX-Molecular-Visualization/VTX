@@ -48,7 +48,7 @@ namespace VTX
 		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "3j3q.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "r2d2.obj" ) );
 #else
-		_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "3j3q.mmtf" ) );
+		_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "4v6x.mmtf" ) );
 		//_stateMachine->goToState( ID::State::VISUALIZATION );
 #endif
 
@@ -102,22 +102,28 @@ namespace VTX
 
 	void VTXApp::_update()
 	{
-		// Renderer.
 		_chrono.start();
 		ImGuiIO & io = ImGui::GetIO();
-		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+
+		// Render.
 		_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_renderer->render( *_scene );
 
-		// UI/machine/events.
+		// Events.
 		SDL_Event event;
 		while ( _ui->pollEvent( event ) )
 		{
 			_handleEvent( event );
 		}
 
+		// UI.
 		_ui->draw();
+
+		// Statemachine.
 		_stateMachine->update( _timeDelta );
+
+		// Scene.
+		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 		_scene->update( _timeDelta );
 
 		// Timers.

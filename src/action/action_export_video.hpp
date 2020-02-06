@@ -59,7 +59,8 @@ namespace VTX
 
 					// Update renderer.
 					VTXApp::get().getRenderer().render( VTXApp::get().getScene() );
-
+					// VTXApp::get().getUI().draw();
+					VTXApp::get().getScene().update( 1.f / VIDEO_FPS );
 					std::string counterStr = std::to_string( frame );
 					IO::Path	path( VIDEO_DIR + "snapshot" + std::string( 4 - counterStr.length(), '0' ) + counterStr
 									  + ".png" );
