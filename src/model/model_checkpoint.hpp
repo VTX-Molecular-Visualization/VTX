@@ -42,6 +42,11 @@ namespace VTX
 			{
 				_id = COUNTER++;
 			}
+			explicit ModelCheckpoint( const Vec3f & p_position, const Quatf & p_rotation, const float p_duration ) :
+				_position( p_position ), _rotation( p_rotation ), _duration( p_duration )
+			{
+				_id = COUNTER++;
+			}
 
 			inline float		 getDuration() const { return _duration; }
 			inline float *		 getDurationPtr() { return &_duration; }

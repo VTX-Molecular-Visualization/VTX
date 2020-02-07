@@ -1,7 +1,11 @@
 #include "model_path.hpp"
+#include "exception.hpp"
 #include "util/math.hpp"
 #include "util/type.hpp"
 #include "view/view_ui_path_list.hpp"
+#include <fstream>
+#include <sstream>
+
 namespace VTX
 {
 	namespace Model
@@ -31,6 +35,81 @@ namespace VTX
 				1.f - ( ( -( p_time - total ) ) / _checkpoints[ offset ]->getDuration() ) );
 
 			return data;
+		}
+
+		void ModelPath::importPath( const IO::Path & p_file )
+		{
+			VTX_INFO( "Importing view points from " + p_file.str() );
+			std::ifstream file;
+			file.open( p_file );
+
+			if ( !file.is_open() )
+				throw Exception::VTXException( "ModelPath::importPath: cannot open file " + p_file.str() );
+
+			Tool::Chrono chrono = Tool::Chrono();
+			chrono.start();
+			std::string		   line;
+			std::istringstream iss;
+
+			int	  nbViewPoints = 0;
+			float x = 1, y = 1, z = 1, w = 1;
+			Vec3f position;
+			Quatf rotation;
+			float duration;
+			// read first line to get the number of view points
+			std::getline( file, line );
+			iss.str( line );
+			iss >> nbViewPoints;
+			Util::Type::clearVector( _checkpoints );
+
+			for ( int i = 0; i < nbViewPoints; ++i )
+			{
+				std::getline( file, line );
+				iss.clear();
+				iss.str( line );
+
+				iss >> position.x;
+				iss >> position.y;
+				iss >> position.z;
+				// get rotation
+				iss >> rotation.x;
+				iss >> rotation.y;
+				iss >> rotation.z;
+				iss >> rotation.w;
+				// get duration
+				iss >> duration;
+
+				addCheckpoint( new ModelCheckpoint( position, rotation, duration ) );
+			}
+
+			chrono.stop();
+			VTX_INFO( "Import finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
+		}
+
+		void ModelPath::exportPath( const IO::Path & p_file ) const
+		{
+			VTX_INFO( "Exporting " + std::to_string( _checkpoints.size() ) + " view points in " + p_file.c_str() );
+			std::ofstream file;
+			file.open( p_file, std::ios::out | std::ios::trunc );
+
+			if ( !file.is_open() )
+				throw Exception::VTXException( "ModelPath::exportPath: cannot open file " + p_file.str() );
+
+			Tool::Chrono chrono = Tool::Chrono();
+			chrono.start();
+			file << _checkpoints.size() << std::endl;
+			for ( Model::ModelCheckpoint * checkpoint : _checkpoints )
+			{
+				const Vec3f & p = checkpoint->getPosition();
+				const Quatf & r = checkpoint->getRotation();
+				const float & d = checkpoint->getDuration();
+				file << p.x << " " << p.y << " " << p.z << " " << r.x << " " << r.y << " " << r.z << " " << r.w << " "
+					 << d << std::endl;
+			}
+			chrono.stop();
+			VTX_INFO( "Export finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
+
+			file.close();
 		}
 
 		void ModelPath::setSelectedCheckpoint( const uint p_id )

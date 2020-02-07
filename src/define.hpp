@@ -100,6 +100,7 @@ namespace VTX
 	const std::string DATA_DIR	   = "../data/";
 	const IO::Path	  SHADER_DIR   = "../src/shaders/";
 	const std::string SNAPSHOT_DIR = "../snapshots/";
+	const std::string PATHS_DIR	   = "../paths/";
 	const std::string VIDEO_DIR	   = "../videos/";
 
 	// Log.
