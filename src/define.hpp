@@ -79,12 +79,15 @@ namespace VTX
 
 	// Rendering.
 	// TODO: choose relevent constants
-	constexpr float RENDERER_AO_RADIUS_MIN	  = 0.f;
-	constexpr float RENDERER_AO_RADIUS_MAX	  = 200.f;
-	constexpr int	RENDERER_AO_INTENSITY_MIN = 1;
-	constexpr int	RENDERER_AO_INTENSITY_MAX = 10;
-	constexpr int	RENDERER_AO_BLUR_SIZE_MIN = 1;
-	constexpr int	RENDERER_AO_BLUR_SIZE_MAX = 99;
+	constexpr float RENDERER_AO_RADIUS_MIN		  = 0.f;
+	constexpr float RENDERER_AO_RADIUS_MAX		  = 200.f;
+	constexpr float RENDERER_AO_RADIUS_DEFAULT	  = 80.f;
+	constexpr int	RENDERER_AO_INTENSITY_MIN	  = 1;
+	constexpr int	RENDERER_AO_INTENSITY_MAX	  = 10;
+	constexpr int	RENDERER_AO_INTENSITY_DEFAULT = 3;
+	constexpr int	RENDERER_AO_BLUR_SIZE_MIN	  = 1;
+	constexpr int	RENDERER_AO_BLUR_SIZE_MAX	  = 99;
+	constexpr int	RENDERER_AO_BLUR_SIZE_DEFAULT = 9;
 
 	// Export video.
 	constexpr uint VIDEO_FPS = 60;

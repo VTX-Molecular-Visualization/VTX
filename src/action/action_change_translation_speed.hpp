@@ -17,7 +17,11 @@ namespace VTX
 		  public:
 			explicit ActionChangeTranslationSpeed( const float p_speed ) : _speed( p_speed ) {}
 
-			virtual void execute() override { Setting::Controller::translationSpeed = _speed; };
+			virtual void execute() override
+			{
+				Setting::Controller::translationSpeed
+					= glm::clamp( _speed, CONTROLLER_TRANSLATION_SPEED_MIN, CONTROLLER_TRANSLATION_SPEED_MAX );
+			};
 
 		  private:
 			const float _speed;

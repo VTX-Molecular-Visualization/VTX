@@ -17,7 +17,11 @@ namespace VTX
 		  public:
 			explicit ActionChangeRotationSpeed( const float p_speed ) : _speed( p_speed ) {}
 
-			virtual void execute() override { Setting::Controller::rotationSpeed = _speed; };
+			virtual void execute() override
+			{
+				Setting::Controller::rotationSpeed
+					= glm::clamp( _speed, CONTROLLER_ROTATION_SPEED_MIN, CONTROLLER_ROTATION_SPEED_MAX );
+			};
 
 		  private:
 			const float _speed;

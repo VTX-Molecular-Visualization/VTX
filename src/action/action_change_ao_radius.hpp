@@ -17,7 +17,10 @@ namespace VTX
 		  public:
 			explicit ActionChangeAORadius( const float p_radius ) : _radius( p_radius ) {}
 
-			virtual void execute() override { Setting::Rendering::aoRadius = _radius; };
+			virtual void execute() override
+			{
+				Setting::Rendering::aoRadius = glm::clamp( _radius, RENDERER_AO_RADIUS_MIN, RENDERER_AO_RADIUS_MAX );
+			};
 
 		  private:
 			const float _radius;

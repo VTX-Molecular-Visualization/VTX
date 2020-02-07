@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "vtx_app.hpp"
 #include "base_action.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -17,7 +17,11 @@ namespace VTX
 		  public:
 			explicit ActionChangeAutoRotateSpeed( const Vec3f & p_value ) : _value( p_value ) {}
 
-			virtual void execute() override { Setting::Controller::autoRotateSpeed = _value; };
+			virtual void execute() override
+			{
+				Setting::Controller::autoRotateSpeed
+					= glm::clamp( _value, AUTO_ROTATE_SPEED_MIN, AUTO_ROTATE_SPEED_MAX );
+			};
 
 		  private:
 			const Vec3f & _value;
