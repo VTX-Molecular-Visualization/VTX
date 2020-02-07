@@ -29,6 +29,7 @@ namespace VTX
 			return instance;
 		}
 		static bool isRunning() { return VTXApp::_isRunning; }
+		bool		TMP_RENDER = true;
 
 		void start();
 		void stop();

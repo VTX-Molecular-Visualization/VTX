@@ -1,5 +1,6 @@
 #include "view_ui_checkpoint.hpp"
 #include "../action/action_checkpoint_change_duration.hpp"
+#include "../action/action_checkpoint_delete.hpp"
 #include "../action/action_checkpoint_replace.hpp"
 #include "../object3d/scene.hpp"
 #include "vtx_app.hpp"
@@ -22,9 +23,9 @@ namespace VTX
 					VTXApp::get().action(
 						new Action::ActionCheckpointReplace( _getModel(), VTXApp::get().getScene().getCamera() ) );
 				}
-				// TODO
-				// ImGui::SameLine();
-				// if ( ImGui::Button( "Delete" ) ) {}
+				ImGui::SameLine();
+				if ( ImGui::Button( "Delete" ) )
+				{ VTXApp::get().action( new Action::ActionCheckpointDelete( _getModel() ) ); }
 			}
 			ImGui::PopID();
 		}

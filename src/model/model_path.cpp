@@ -80,7 +80,7 @@ namespace VTX
 				// get duration
 				iss >> duration;
 
-				addCheckpoint( new ModelCheckpoint( position, rotation, duration ) );
+				addCheckpoint( new ModelCheckpoint( this, position, rotation, duration ) );
 			}
 
 			chrono.stop();

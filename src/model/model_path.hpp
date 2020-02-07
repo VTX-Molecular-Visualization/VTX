@@ -26,8 +26,11 @@ namespace VTX
 			~ModelPath();
 
 			void addCheckpoint( const CheckpointPtr p_checkpoint ) { _checkpoints.emplace_back( p_checkpoint ); }
-			inline VectorCheckpointPtr &	getCheckpoints() { return _checkpoints; }
-			inline Model::ModelCheckpoint & getCheckpoint( uint p_index ) { return *_checkpoints.at( p_index ); }
+			void removeCheckpoint( const CheckpointPtr p_checkpoint )
+			{
+				_checkpoints.erase( std::find( _checkpoints.begin(), _checkpoints.end(), p_checkpoint ) );
+			}
+			inline VectorCheckpointPtr & getCheckpoints() { return _checkpoints; }
 
 			virtual void								 setSelected( const bool ) override;
 			void										 setSelectedCheckpoint( ModelCheckpoint * const );

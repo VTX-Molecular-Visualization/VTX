@@ -26,8 +26,7 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				VTXApp::get().getScene().getPaths()[ 0 ]->addCheckpoint(
-					new Model::ModelCheckpoint( _position, _rotation ) );
+				_path.addCheckpoint( new Model::ModelCheckpoint( &_path, _position, _rotation ) );
 			}
 
 		  private:

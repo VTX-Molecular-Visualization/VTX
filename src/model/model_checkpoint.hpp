@@ -13,6 +13,7 @@ namespace VTX
 {
 	namespace Model
 	{
+		class ModelPath;
 		class ModelCheckpoint : public BaseModel
 		{
 		  public:
@@ -37,31 +38,36 @@ namespace VTX
 				const float	  value;
 			};
 
-			explicit ModelCheckpoint( const Vec3f & p_position, const Quatf & p_rotation ) :
-				_position( p_position ), _rotation( p_rotation )
+			explicit ModelCheckpoint( ModelPath * const p_path, const Vec3f & p_position, const Quatf & p_rotation ) :
+				_path( p_path ), _position( p_position ), _rotation( p_rotation )
 			{
 				_id = COUNTER++;
 			}
-			explicit ModelCheckpoint( const Vec3f & p_position, const Quatf & p_rotation, const float p_duration ) :
+			explicit ModelCheckpoint( ModelPath * const p_path,
+									  const Vec3f &		p_position,
+									  const Quatf &		p_rotation,
+									  const float		p_duration ) :
+				_path( p_path ),
 				_position( p_position ), _rotation( p_rotation ), _duration( p_duration )
 			{
 				_id = COUNTER++;
 			}
 
-			inline float		 getDuration() const { return _duration; }
-			inline void			 setDuration( const float p_duration ) { _duration = p_duration; }
-			inline const Vec3f & getPosition() const { return _position; }
-			inline const void	 setPosition( const Vec3f & p_position ) { _position = p_position; }
-			inline const Quatf & getRotation() const { return _rotation; }
-			inline const void	 setRotation( const Quatf & p_rotation ) { _rotation = p_rotation; }
+			inline ModelPath * const getPathPtr() const { return _path; }
+			inline float			 getDuration() const { return _duration; }
+			inline void				 setDuration( const float p_duration ) { _duration = p_duration; }
+			inline const Vec3f &	 getPosition() const { return _position; }
+			inline const void		 setPosition( const Vec3f & p_position ) { _position = p_position; }
+			inline const Quatf &	 getRotation() const { return _rotation; }
+			inline const void		 setRotation( const Quatf & p_rotation ) { _rotation = p_rotation; }
 
 			virtual void setSelected( const bool ) override;
 
 		  private:
-			float _duration = 1.f;
-
-			Vec3f _position;
-			Quatf _rotation;
+			ModelPath * const _path;
+			float			  _duration = 1.f;
+			Vec3f			  _position;
+			Quatf			  _rotation;
 
 		}; // namespace Camera
 	}	   // namespace Model

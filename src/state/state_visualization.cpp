@@ -23,7 +23,8 @@ namespace VTX
 			BaseState::update( p_deltaTime );
 
 			VTXApp::get().getScene().update( p_deltaTime );
-			VTXApp::get().renderScene();
+
+			if ( VTXApp::get().TMP_RENDER ) VTXApp::get().renderScene();
 		}
 
 	} // namespace State
