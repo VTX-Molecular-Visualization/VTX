@@ -15,7 +15,8 @@ namespace VTX
 				for ( Model::ModelCheckpoint * const checkpoint : _getModel().getCheckpoints() )
 				{
 					ImGui::PushID( checkpoint->getId() );
-					if ( ImGui::Selectable( "Checkpoint" ) )
+					if ( ImGui::Selectable( ( "Checkpoint " + std::to_string( checkpoint->getId() ) ).c_str() )/*,
+						 checkpoint->isSelected()*/ )
 					{
 						VTXApp::get().action(
 							new Action::ActionCheckpointGoTo( *checkpoint, VTXApp::get().getScene().getCamera() ) );
