@@ -17,7 +17,7 @@ namespace VTX
 		  public:
 			virtual void execute() override
 			{
-				VTXApp::get().getScene().getPaths()[ 0 ]->importPath( PATHS_DIR + "path.txt" );
+				VTXApp::get().getScene().getPaths()[ 0 ]->load( PATHS_DIR + "path.txt" );
 			}
 		};
 	} // namespace Action

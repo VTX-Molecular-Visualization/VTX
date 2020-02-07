@@ -5,10 +5,10 @@
 #pragma once
 #endif
 
+#include "../generic/base_serializable.hpp"
 #include "../object3d/camera.hpp"
 #include "base_model.hpp"
 #include "define.hpp"
-#include "io/path.hpp"
 #include "model_checkpoint.hpp"
 #include <vector>
 
@@ -16,7 +16,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		class ModelPath : public BaseModel
+		class ModelPath : public BaseModel, public Generic::BaseSerializable
 		{
 		  public:
 			using CheckpointPtr		  = Model::ModelCheckpoint *;
@@ -34,9 +34,9 @@ namespace VTX
 			float										 computeTotalTime() const;
 			ModelCheckpoint::CheckpointInterpolationData getCurrentCheckpointInterpolationData( float p_time ) const;
 
-			// temp ?: to generate a good video quickly
-			void importPath( const IO::Path & p_file );
-			void exportPath( const IO::Path & p_file ) const;
+			// TODO: redo implementation.
+			virtual void load( const IO::Path & ) override;
+			virtual void save( const IO::Path & ) const override;
 
 		  protected:
 			virtual void _addItems() override final;

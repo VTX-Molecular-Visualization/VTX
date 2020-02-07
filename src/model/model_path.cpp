@@ -38,7 +38,7 @@ namespace VTX
 			return data;
 		}
 
-		void ModelPath::importPath( const IO::Path & p_file )
+		void ModelPath::load( const IO::Path & p_file )
 		{
 			VTX_INFO( "Importing view points from " + p_file.str() );
 			std::ifstream file;
@@ -87,7 +87,7 @@ namespace VTX
 			VTX_INFO( "Import finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
 		}
 
-		void ModelPath::exportPath( const IO::Path & p_file ) const
+		void ModelPath::save( const IO::Path & p_file ) const
 		{
 			VTX_INFO( "Exporting " + std::to_string( _checkpoints.size() ) + " view points in " + p_file.c_str() );
 			std::ofstream file;
