@@ -49,6 +49,7 @@ namespace VTX
 			}
 
 			inline float		 getDuration() const { return _duration; }
+			inline void			 setDuration( const float p_duration ) { _duration = p_duration; }
 			inline const Vec3f & getPosition() const { return _position; }
 			inline const Quatf & getRotation() const { return _rotation; }
 

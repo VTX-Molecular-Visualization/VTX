@@ -15,12 +15,16 @@ namespace VTX
 		class ActionCheckpointChangeDuration : public BaseAction
 		{
 		  public:
-			explicit ActionCheckpointChangeDuration( const float p_duration ) : _duration( p_duration ) {}
+			explicit ActionCheckpointChangeDuration( Model::ModelCheckpoint & p_checkpoint, const float p_duration ) :
+				_checkpoint( p_checkpoint ), _duration( p_duration )
+			{
+			}
 
-			virtual void execute() override {}
+			virtual void execute() override { _checkpoint.setDuration( _duration ); }
 
 		  private:
-			const float _duration;
+			Model::ModelCheckpoint & _checkpoint;
+			const float				 _duration;
 		};
 	} // namespace Action
 } // namespace VTX
