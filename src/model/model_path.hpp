@@ -8,6 +8,7 @@
 #include "../object3d/camera.hpp"
 #include "base_model.hpp"
 #include "define.hpp"
+#include "io/path.hpp"
 #include "model_checkpoint.hpp"
 #include <vector>
 
@@ -32,6 +33,10 @@ namespace VTX
 			void										 setSelectedCheckpoint( const uint );
 			float										 computeTotalTime() const;
 			ModelCheckpoint::CheckpointInterpolationData getCurrentCheckpointInterpolationData( float p_time ) const;
+
+			// temp ?: to generate a good video quickly
+			void importPath( const IO::Path & p_file );
+			void exportPath( const IO::Path & p_file ) const;
 
 		  protected:
 			virtual void _addItems() override final;

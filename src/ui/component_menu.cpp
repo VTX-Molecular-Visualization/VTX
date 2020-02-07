@@ -13,7 +13,9 @@
 #include "action/action_change_theme.hpp"
 #include "action/action_change_translation_factor_speed.hpp"
 #include "action/action_change_translation_speed.hpp"
+#include "action/action_export_path.hpp"
 #include "action/action_export_video.hpp"
+#include "action/action_import_path.hpp"
 #include "action/action_new.hpp"
 #include "action/action_open.hpp"
 #include "action/action_quit.hpp"
@@ -98,11 +100,39 @@ namespace VTX
 					ImGui::EndMenu();
 				}
 
+				// Import
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Import" ), _visible ) )
+				{
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Import.Path" ) ) )
+					{
+						try
+						{
+							VTXApp::get().action( new Action::ActionImportPath() );
+						}
+						catch ( const std::exception & e )
+						{
+							VTX_WARNING( "Import failed: " + std::string( e.what() ) );
+						}
+					}
+					ImGui::EndMenu();
+				}
+
 				// Export
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Export" ), _visible ) )
 				{
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Snapshot" ) ) )
 					{ VTXApp::get().action( new Action::ActionSnapshot() ); }
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Path" ) ) )
+					{
+						try
+						{
+							VTXApp::get().action( new Action::ActionExportPath() );
+						}
+						catch ( const std::exception & e )
+						{
+							VTX_WARNING( "Export failed: " + std::string( e.what() ) );
+						}
+					}
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Video" ) ) )
 					{ VTXApp::get().action( new Action::ActionExportVideo() ); }
 					ImGui::EndMenu();
