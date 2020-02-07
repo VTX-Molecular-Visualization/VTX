@@ -30,7 +30,7 @@ namespace VTX
 			inline Model::ModelCheckpoint & getCheckpoint( uint p_index ) { return *_checkpoints.at( p_index ); }
 
 			virtual void								 setSelected( const bool ) override;
-			void										 setSelectedCheckpoint( const uint );
+			void										 setSelectedCheckpoint( ModelCheckpoint * const );
 			float										 computeTotalTime() const;
 			ModelCheckpoint::CheckpointInterpolationData getCurrentCheckpointInterpolationData( float p_time ) const;
 

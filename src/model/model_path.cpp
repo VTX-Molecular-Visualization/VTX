@@ -123,12 +123,12 @@ namespace VTX
 			}
 		}
 
-		void ModelPath::setSelectedCheckpoint( const uint p_id )
+		void ModelPath::setSelectedCheckpoint( ModelCheckpoint * const p_checkpoint )
 		{
-			if ( _selectedCheckpoint != nullptr ) { _selectedCheckpoint->setSelected( false ); }
+			if ( _selectedCheckpoint != nullptr ) { p_checkpoint->setSelected( false ); }
 			try
 			{
-				_selectedCheckpoint = _checkpoints.at( p_id );
+				_selectedCheckpoint = p_checkpoint;
 				_selectedCheckpoint->setSelected( true );
 			}
 			catch ( const std::exception )

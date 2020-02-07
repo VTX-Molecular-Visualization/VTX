@@ -31,7 +31,7 @@ namespace VTX
 						if ( chainOpened )
 							_getModel().resetSelectedChain();
 						else
-							_getModel().setSelectedChain( chain.getId() );
+							_getModel().setSelectedChain( &chain );
 					}
 					if ( chainOpened )
 					{
@@ -49,7 +49,7 @@ namespace VTX
 								if ( residueOpened )
 									_getModel().resetSelectedResidue();
 								else
-									_getModel().setSelectedResidue( residue.getId() );
+									_getModel().setSelectedResidue( &residue );
 							}
 							if ( residueOpened )
 							{
@@ -65,7 +65,7 @@ namespace VTX
 												 : atom.getSymbolName().c_str(),
 											 atom.isSelected() ) )
 									{
-										_getModel().setSelectedAtom( atom.getId() );
+										_getModel().setSelectedAtom( &atom );
 										// ImGui::SetItemDefaultFocus();
 									}
 									ImGui::PopID();

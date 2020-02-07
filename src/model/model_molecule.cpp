@@ -101,12 +101,12 @@ namespace VTX
 			}
 		}
 
-		void ModelMolecule::setSelectedChain( const uint p_id )
+		void ModelMolecule::setSelectedChain( ModelChain * const p_chain )
 		{
 			if ( _selectedChain != nullptr ) { _selectedChain->setSelected( false ); }
 			try
 			{
-				_selectedChain = &getChain( p_id );
+				_selectedChain = p_chain;
 				_selectedChain->setSelected( true );
 			}
 			catch ( const std::exception )
@@ -116,14 +116,14 @@ namespace VTX
 			}
 		}
 
-		void ModelMolecule::setSelectedResidue( const uint p_id )
+		void ModelMolecule::setSelectedResidue( ModelResidue * const p_residue )
 		{
 			if ( _selectedResidue != nullptr ) { _selectedResidue->setSelected( false ); }
 			try
 			{
-				_selectedResidue = &getResidue( p_id );
+				_selectedResidue = p_residue;
 				_selectedResidue->setSelected( true );
-				setSelectedChain( _selectedResidue->getChainPtr()->getId() );
+				setSelectedChain( _selectedResidue->getChainPtr() );
 			}
 			catch ( const std::exception )
 			{
@@ -132,14 +132,14 @@ namespace VTX
 			}
 		}
 
-		void ModelMolecule::setSelectedAtom( const uint p_id )
+		void ModelMolecule::setSelectedAtom( ModelAtom * const p_atom )
 		{
 			if ( _selectedAtom != nullptr ) { _selectedAtom->setSelected( false ); }
 			try
 			{
-				_selectedAtom = &getAtom( p_id );
+				_selectedAtom = p_atom;
 				_selectedAtom->setSelected( true );
-				setSelectedResidue( _selectedAtom->getResiduePtr()->getId() );
+				setSelectedResidue( _selectedAtom->getResiduePtr() );
 			}
 			catch ( const std::exception )
 			{

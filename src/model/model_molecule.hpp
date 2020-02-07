@@ -5,16 +5,16 @@
 #pragma once
 #endif
 
+#include "base_model.hpp"
 #include "define.hpp"
 #include "generic/base_printable.hpp"
 #include "generic/base_renderable.hpp"
 #include "generic/base_transformable.hpp"
 #include "math/aabb.hpp"
-#include "util/logger.hpp"
-#include "base_model.hpp"
 #include "model_atom.hpp"
 #include "model_chain.hpp"
 #include "model_residue.hpp"
+#include "util/logger.hpp"
 #include <GL/gl3w.h>
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
@@ -93,9 +93,9 @@ namespace VTX
 			ModelChain * const	 getSelectedChain() const { return _selectedChain; }
 			ModelResidue * const getSelectedResidue() const { return _selectedResidue; }
 			ModelAtom * const	 getSelectedAtom() const { return _selectedAtom; }
-			void				 setSelectedChain( const uint );
-			void				 setSelectedResidue( const uint );
-			void				 setSelectedAtom( const uint );
+			void				 setSelectedChain( ModelChain * const );
+			void				 setSelectedResidue( ModelResidue * const );
+			void				 setSelectedAtom( ModelAtom * const );
 			void				 resetSelectedChain();
 			void				 resetSelectedResidue();
 			void				 resetSelectedAtom();
