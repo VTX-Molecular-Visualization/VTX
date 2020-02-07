@@ -14,7 +14,6 @@ namespace VTX
 			ImGui::PushID( "ViewCheckpoint" );
 			if ( ImGui::CollapsingHeader( ( "Checkpoint: " + std::to_string( _getModel().getId() ) ).c_str(), flags ) )
 			{
-				ImGui::Text( "ID: %d", _getModel().getId() );
 				float duration = _getModel().getDuration();
 				if ( ImGui::InputFloat( "Duration", &duration, 1.f ) )
 				{ VTXApp::get().action( new Action::ActionCheckpointChangeDuration( _getModel(), duration ) ); }

@@ -12,7 +12,7 @@ namespace VTX
 			ImGui::PushID( "ViewPath" );
 			if ( ImGui::CollapsingHeader( ( "Path: " + std::to_string( _getModel().getId() ) ).c_str(), flags ) )
 			{
-				ImGui::Text( "ID: %d", _getModel().getId() );
+				ImGui::Text( "Duration: %f", _getModel().computeTotalTime() );
 				ImGui::Text( "Checkpoints: %d", _getModel().getCheckpoints().size() );
 				if ( ImGui::Button( "Play" ) )
 				{ VTXApp::get().goToState( ID::State::PLAYING, VTXApp::get().getScene().getPaths()[ 0 ] ); }

@@ -141,6 +141,7 @@ namespace VTX
 		float ModelPath::computeTotalTime() const
 		{
 			float total = 0.f;
+			if ( _checkpoints.size() == 0 ) { return total; }
 			for ( Model::ModelCheckpoint * checkpoint : _checkpoints )
 			{
 				total += checkpoint->getDuration();
