@@ -2,7 +2,7 @@
 
 layout(binding = 0) uniform usampler2D gbColorNormal;
 layout(binding = 1) uniform sampler2D gbCamPosition;
-layout(binding = 2) uniform sampler2D gbAOFactor;
+layout(binding = 2) uniform sampler2D gbAmbientOcclusion;
 
 out vec4 fragColor;
 
@@ -11,21 +11,21 @@ struct FragmentData
 	vec3 color;
 	vec3 normal;
 	vec3 camPosition;
-	float aoFactor;
+	float ambientOcclusion;
 };
 
 void unpackGBuffers(ivec2 px, out FragmentData fd)
 {
 	const uvec4 colorNormal = texelFetch(gbColorNormal, px, 0);
 	const vec4 camPosition = texelFetch(gbCamPosition, px, 0);
-	const float aoFactor = texelFetch(gbAOFactor, px, 0).x;
+	const float ambientOcclusion = texelFetch(gbAmbientOcclusion, px, 0).x;
 
 	const vec2 tmp = unpackHalf2x16(colorNormal.y);
 
 	fd.color = vec3(unpackHalf2x16(colorNormal.x), tmp.x);
 	fd.normal = normalize(vec3(tmp.y, unpackHalf2x16(colorNormal.z)));
 	fd.camPosition = camPosition.xyz;
-	fd.aoFactor = aoFactor;
+	fd.ambientOcclusion = ambientOcclusion;
 }
 
 void main()
@@ -46,6 +46,6 @@ void main()
 		factor = 0.55;
 	else if (intensity < 0.95)
 		factor = 0.7;
-
-	fragColor = vec4((fd.color - fd.aoFactor) * factor, 1.f);
+		
+	fragColor = vec4(fd.color * vec3(fd.ambientOcclusion) * factor, 1.f);
 }

@@ -20,8 +20,8 @@ namespace VTX
 			Renderer::SHADING			  shading		 = Renderer::SHADING::LAMBERT;
 			bool						  useAA			 = false;
 			bool						  useSSAO		 = true;
-			float						  aoRadius		 = 1.5f;
-			int							  aoIntensity	 = 4;
+			float						  aoRadius		 = 80.f;
+			int							  aoIntensity	 = 3;
 			int							  aoBlurSize	 = 9;
 		}; // namespace Rendering
 

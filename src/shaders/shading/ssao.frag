@@ -13,10 +13,10 @@ const float BIAS = 0.025f;
 const vec2 VEC2_05 = vec2(0.5f);
 
 uniform mat4 uProjMatrix;
-uniform vec3 uAoKernel[256];
+uniform vec3 uAoKernel[512];
 uniform float uAoRadius;
-uniform int uKernelSize;
 uniform int uAoIntensity;
+uniform int uKernelSize;
 
 
 struct FragmentData
@@ -50,7 +50,7 @@ void main()
 	
 	if (pos.z == 0) return; // no need ssao on background
 	
-	const float rad = uAoRadius;// * smoothstep(0.1f, uAoRadius, uAoRadius / abs(pos.z));//uAoRadius;// abs(pos.z) * smoothstep(0.1f, 1.f, abs(pos.z) / uAoRadius);
+	const float rad = uAoRadius;
 
 	vec3 randomVec = normalize(texture(noise, texPos * noiseScale).xyz);
 	// Gram-Schmidt process
@@ -74,7 +74,7 @@ void main()
 		float sampleDepth = texture(gbCamPosition, offset.xy).z;
 
 		// range check: ignore background 
-		float rangeCheck = sampleDepth == 0 ? 0.f : abs(pos.z - sampleDepth) > 0 ? 1.f : 0.f;//smoothstep(0.f, 1.f, rad / abs(pos.z - sampleDepth));
+		float rangeCheck = smoothstep(0.f, 1.f, rad / abs(pos.z - sampleDepth));
 		ao += (sampleDepth >= samplePos.z + BIAS ? 1.f : 0.f) * rangeCheck;
 	}
 
