@@ -30,6 +30,7 @@ namespace VTX
 			const std::string UI_ATOM				= "UI_ATOM";
 			const std::string UI_PATH_LIST			= "UI_PATH_LIST";
 			const std::string UI_PATH				= "UI_PATH";
+			const std::string UI_CHECKPOINT			= "UI_CHECKPOINT";
 
 			const std::string D3_CYLINDER = "3D_CYLINDER";
 			const std::string D3_SPHERE	  = "3D_SPHERE";

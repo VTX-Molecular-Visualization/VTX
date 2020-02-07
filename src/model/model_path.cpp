@@ -38,16 +38,6 @@ namespace VTX
 			return data;
 		}
 
-		void ModelPath::setSelected( const bool p_selected )
-		{
-			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIPath( this ) ) ); }
-			else
-			{
-				_deleteView( ID::View::UI_PATH );
-			}
-		}
-
 		void ModelPath::importPath( const IO::Path & p_file )
 		{
 			VTX_INFO( "Importing view points from " + p_file.str() );
@@ -121,6 +111,16 @@ namespace VTX
 			VTX_INFO( "Export finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
 
 			file.close();
+		}
+
+		void ModelPath::setSelected( const bool p_selected )
+		{
+			BaseModel::setSelected( p_selected );
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIPath( this ) ) ); }
+			else
+			{
+				_deleteView( ID::View::UI_PATH );
+			}
 		}
 
 		void ModelPath::setSelectedCheckpoint( const uint p_id )
