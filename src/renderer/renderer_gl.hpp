@@ -27,6 +27,7 @@ namespace VTX
 			GLuint _fboGeo						 = GL_INVALID_VALUE;
 			GLuint _colorNormalCompressedTexture = GL_INVALID_VALUE;
 			GLuint _camSpacePositionsTexture	 = GL_INVALID_VALUE;
+			GLuint _depthTexture				 = GL_INVALID_VALUE;
 
 			GLuint _quadVAO = GL_INVALID_VALUE;
 			GLuint _quadVBO = GL_INVALID_VALUE;

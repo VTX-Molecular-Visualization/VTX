@@ -64,8 +64,13 @@ namespace VTX
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
+			glGenTextures( 1, &_depthTexture );
+			glBindTexture( GL_TEXTURE_2D, _depthTexture );
+			glTexStorage2D( GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, _width, _height );
+
 			glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _colorNormalCompressedTexture, 0 );
 			glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, _camSpacePositionsTexture, 0 );
+			glFramebufferTexture( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _depthTexture, 0 );
 
 			static const GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
