@@ -1,15 +1,12 @@
 #version 450
 
-layout(binding = 0) uniform sampler2D image;
+layout( binding = 0 ) uniform sampler2D image;
 
 out vec4 fragColor;
 
-float rgb2lum(const vec3 rgb)
-{
-	return sqrt(dot(rgb, vec3(0.299f, 0.587f, 0.114f)));
-}
+float rgb2lum( const vec3 rgb ) { return sqrt( dot( rgb, vec3( 0.299f, 0.587f, 0.114f ) ) ); }
 
-const float FXAA_SPAN_MAX = 4.f;
+const float FXAA_SPAN_MAX	= 4.f;
 const float FXAA_REDUCE_MIN = 1.f / 128.f;
 const float FXAA_REDUCE_MUL = 1.f / 8.f;
 
@@ -17,47 +14,45 @@ const float FXAA_REDUCE_MUL = 1.f / 8.f;
 
 void main()
 {
-	const vec2 invTexSize = 1.f / textureSize(image, 0);
-	const vec2 texPos = gl_FragCoord.xy * invTexSize;
+	const vec2 invTexSize = 1.f / textureSize( image, 0 );
+	const vec2 texPos	  = gl_FragCoord.xy * invTexSize;
+	fragColor			  = vec4(texture( image, texPos ).xyz, 1.0);
+	return;
 
 	//	fragColor = texture(image, texPos);
 	//	return;
 
 	// get current pixel in rgb and compute luma
-	const vec3 rgbC = texture(image, texPos).xyz;
-	const float lC = rgb2lum(rgbC);
+	const vec3	rgbC = texture( image, texPos ).xyz;
+	const float lC	 = rgb2lum( rgbC );
 
 	// compute luma of 4 neighbours (up-left, up-right, down-left, down-right)
-	const float lUL = rgb2lum(textureOffset(image, texPos, ivec2(1, -1)).xyz);
-	const float lUR = rgb2lum(textureOffset(image, texPos, ivec2(1, 1)).xyz);
-	const float lDL = rgb2lum(textureOffset(image, texPos, ivec2(-1, -1)).xyz);
-	const float lDR = rgb2lum(textureOffset(image, texPos, ivec2(-1, 1)).xyz);
+	const float lUL = rgb2lum( textureOffset( image, texPos, ivec2( 1, -1 ) ).xyz );
+	const float lUR = rgb2lum( textureOffset( image, texPos, ivec2( 1, 1 ) ).xyz );
+	const float lDL = rgb2lum( textureOffset( image, texPos, ivec2( -1, -1 ) ).xyz );
+	const float lDR = rgb2lum( textureOffset( image, texPos, ivec2( -1, 1 ) ).xyz );
 
-	float lMin = min(lC, min(min(lUL, lUR), min(lDL, lDR)));
-	float lMax = max(lC, max(max(lUL, lUR), max(lDL, lDR)));
+	float lMin = min( lC, min( min( lUL, lUR ), min( lDL, lDR ) ) );
+	float lMax = max( lC, max( max( lUL, lUR ), max( lDL, lDR ) ) );
 
-	vec2 dir = vec2(-(lUL + lUR) - (lDL + lDR), (lUL + lDL) - (lUR + lUL));
+	vec2 dir = vec2( -( lUL + lUR ) - ( lDL + lDR ), ( lUL + lDL ) - ( lUR + lUL ) );
 
-	const float dirReduce = max(
-		(lUL + lUR + lDL + lDR) * (0.25f * FXAA_REDUCE_MUL), FXAA_REDUCE_MIN);
-	const float rcpDirMin = 1.f / (min(abs(dir.x), abs(dir.y)) + dirReduce);
+	const float dirReduce = max( ( lUL + lUR + lDL + lDR ) * ( 0.25f * FXAA_REDUCE_MUL ), FXAA_REDUCE_MIN );
+	const float rcpDirMin = 1.f / ( min( abs( dir.x ), abs( dir.y ) ) + dirReduce );
 
-	dir = min(vec2(FXAA_SPAN_MAX, FXAA_SPAN_MAX),
-			  max(vec2(-FXAA_SPAN_MAX, -FXAA_SPAN_MAX), dir * rcpDirMin))
+	dir = min( vec2( FXAA_SPAN_MAX, FXAA_SPAN_MAX ), max( vec2( -FXAA_SPAN_MAX, -FXAA_SPAN_MAX ), dir * rcpDirMin ) )
 		  * invTexSize;
 	/*--------------------------------------------------------*/
 	vec3 rgbA = 0.5f
-				* (texture(image, texPos + dir * (1.f / 3.f - 0.f)).xyz
-				   + texture(image, texPos + dir * (2.f / 3.f - 0.f)).xyz);
+				* ( texture( image, texPos + dir * ( 1.f / 3.f - 0.f ) ).xyz
+					+ texture( image, texPos + dir * ( 2.f / 3.f - 0.f ) ).xyz );
 	vec3 rgbB = rgbA * 0.5f
-				+ 0.25f
-					  * (texture(image, texPos + dir * -0.5f).xyz
-						 + texture(image, texPos + dir * 0.5f).xyz);
-	float lB = rgb2lum(rgbB);
-	if ((lB < lMin) || (lB > lMax))
-		fragColor = vec4(rgbA, 1.f);
+				+ 0.25f * ( texture( image, texPos + dir * -0.5f ).xyz + texture( image, texPos + dir * 0.5f ).xyz );
+	float lB = rgb2lum( rgbB );
+	if ( ( lB < lMin ) || ( lB > lMax ) )
+		fragColor = vec4( rgbA, 1.f );
 	else
-		fragColor = vec4(rgbB, 1.f);
+		fragColor = vec4( rgbB, 1.f );
 }
 
 //// method:

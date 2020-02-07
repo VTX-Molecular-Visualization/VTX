@@ -1,51 +1,51 @@
 #version 450 core
 
-layout(binding = 0) uniform usampler2D gbColorNormal;
-layout(binding = 1) uniform sampler2D gbCamPosition;
-layout(binding = 2) uniform sampler2D gbAmbientOcclusion;
+layout( binding = 0 ) uniform usampler2D gbColorNormal;
+layout( binding = 1 ) uniform sampler2D gbCamPosition;
+layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
 out vec4 fragColor;
 
 struct FragmentData
 {
-	vec3 color;
-	vec3 normal;
-	vec3 camPosition;
+	vec3  color;
+	vec3  normal;
+	vec3  camPosition;
 	float ambientOcclusion;
 };
 
-void unpackGBuffers(ivec2 px, out FragmentData fd)
+void unpackGBuffers( ivec2 px, out FragmentData fd )
 {
-	const uvec4 colorNormal = texelFetch(gbColorNormal, px, 0);
-	const vec4 camPosition = texelFetch(gbCamPosition, px, 0);
-	const float ambientOcclusion = texelFetch(gbAmbientOcclusion, px, 0).x;
+	const uvec4 colorNormal		 = texelFetch( gbColorNormal, px, 0 );
+	const vec4	camPosition		 = texelFetch( gbCamPosition, px, 0 );
+	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, px, 0 ).x;
 
-	const vec2 tmp = unpackHalf2x16(colorNormal.y);
+	const vec2 tmp = unpackHalf2x16( colorNormal.y );
 
-	fd.color = vec3(unpackHalf2x16(colorNormal.x), tmp.x);
-	fd.normal = normalize(vec3(tmp.y, unpackHalf2x16(colorNormal.z)));
-	fd.camPosition = camPosition.xyz;
+	fd.color			= vec3( unpackHalf2x16( colorNormal.x ), tmp.x );
+	fd.normal			= normalize( vec3( tmp.y, unpackHalf2x16( colorNormal.z ) ) );
+	fd.camPosition		= camPosition.xyz;
 	fd.ambientOcclusion = ambientOcclusion;
 }
 
 void main()
 {
 	FragmentData fd;
-	unpackGBuffers(ivec2(gl_FragCoord), fd);
+	unpackGBuffers( ivec2( gl_FragCoord ), fd );
 
 	// light is on the camera
-	const vec3 lightDir = normalize(-fd.camPosition);
-	const float intensity = dot(fd.normal, lightDir);
-	float factor = 1.0;
+	const vec3	lightDir  = normalize( -fd.camPosition );
+	const float intensity = dot( fd.normal, lightDir );
+	float		factor	  = 1.0;
 
-	if (intensity < 0.25)
+	if ( intensity < 0.25 )
 		factor = 0.2;
-	else if (intensity < 0.5)
+	else if ( intensity < 0.5 )
 		factor = 0.4;
-	else if (intensity < 0.75)
+	else if ( intensity < 0.75 )
 		factor = 0.55;
-	else if (intensity < 0.95)
+	else if ( intensity < 0.95 )
 		factor = 0.7;
-		
-	fragColor = vec4(fd.color * vec3(fd.ambientOcclusion) * factor, 1.f);
+
+	fragColor = vec4( fd.color * vec3( fd.ambientOcclusion ) * factor, 1.f );
 }
