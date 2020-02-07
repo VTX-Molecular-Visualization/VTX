@@ -17,6 +17,7 @@ namespace VTX
 				if ( ImGui::Button( "Play" ) )
 				{ VTXApp::get().goToState( ID::State::PLAYING, VTXApp::get().getScene().getPaths()[ 0 ] ); }
 				ImGui::SameLine();
+				if ( ImGui::Button( "Stop" ) ) { VTXApp::get().goToState( ID::State::VISUALIZATION ); }
 				if ( ImGui::Button( "Add checkpoint" ) )
 				{
 					VTXApp::get().action(
