@@ -1,6 +1,8 @@
 #include "component_menu.hpp"
 #include "action/action_active_ssao.hpp"
 #include "action/action_active_y_axis_inversion.hpp"
+#include "action/action_change_ao_blur_size.hpp"
+#include "action/action_change_ao_intensity.hpp"
 #include "action/action_change_ao_radius.hpp"
 #include "action/action_change_auto_rotate_speed.hpp"
 #include "action/action_change_color_mode.hpp"
@@ -172,6 +174,21 @@ namespace VTX
 											 RENDERER_AO_RADIUS_MIN,
 											 RENDERER_AO_RADIUS_MAX ) )
 					{ VTXApp::get().action( new Action::ActionChangeAORadius( aoRadius ) ); }
+
+					int aoIntensity = Setting::Rendering::aoIntensity;
+					if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOIntensity" ),
+										   &aoIntensity,
+										   RENDERER_AO_INTENSITY_MIN,
+										   RENDERER_AO_INTENSITY_MAX ) )
+					{ VTXApp::get().action( new Action::ActionChangeAOIntensity( aoIntensity ) ); }
+					ImGui::Separator();
+
+					int aoBlurSize = Setting::Rendering::aoBlurSize;
+					if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOBlurSize" ),
+										   &aoBlurSize,
+										   RENDERER_AO_BLUR_SIZE_MIN,
+										   RENDERER_AO_BLUR_SIZE_MAX ) )
+					{ VTXApp::get().action( new Action::ActionChangeAOBlurSize( aoBlurSize ) ); }
 					ImGui::Separator();
 
 					// Auto rotate.

@@ -41,6 +41,8 @@ namespace VTX
 			extern bool							 useAA;
 			extern bool							 useSSAO;
 			extern float						 aoRadius;
+			extern int							 aoIntensity;
+			extern int							 aoBlurSize;
 		}; // namespace Rendering
 
 		namespace Controller

@@ -21,6 +21,8 @@ namespace VTX
 			bool						  useAA			 = false;
 			bool						  useSSAO		 = true;
 			float						  aoRadius		 = 1.5f;
+			int							  aoIntensity	 = 4;
+			int							  aoBlurSize	 = 9;
 		}; // namespace Rendering
 
 		namespace Controller

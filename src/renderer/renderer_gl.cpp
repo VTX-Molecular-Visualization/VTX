@@ -104,10 +104,10 @@ namespace VTX
 			_ssaoShader->attachShader( VTXApp::get().getProgramManager().createShader( "shading/ssao.frag" ) );
 			_ssaoShader->link();
 
-			_uProjMatrixLoc = glGetUniformLocation( _ssaoShader->getId(), "uProjMatrix" );
-			_uAoKernelLoc	= glGetUniformLocation( _ssaoShader->getId(), "uAoKernel" );
-			_uAoRadiusLoc	= glGetUniformLocation( _ssaoShader->getId(), "uAoRadius" );
-			_uKernelSizeLoc = glGetUniformLocation( _ssaoShader->getId(), "uKernelSize" );
+			_uProjMatrixLoc	 = glGetUniformLocation( _ssaoShader->getId(), "uProjMatrix" );
+			_uAoKernelLoc	 = glGetUniformLocation( _ssaoShader->getId(), "uAoKernel" );
+			_uAoRadiusLoc	 = glGetUniformLocation( _ssaoShader->getId(), "uAoRadius" );
+			_uKernelSizeLoc	 = glGetUniformLocation( _ssaoShader->getId(), "uKernelSize" );
 			_uAoIntensityLoc = glGetUniformLocation( _ssaoShader->getId(), "uAoIntensity" );
 
 			// generate random ao kernel
@@ -137,8 +137,8 @@ namespace VTX
 			_ssaoShader->use();
 			glUniform3fv( _uAoKernelLoc, _kernelSize, (const GLfloat *)aoKernel.data() );
 			glUniform1f( _uAoRadiusLoc, Setting::Rendering::aoRadius );
+			glUniform1i( _uAoIntensityLoc, Setting::Rendering::aoIntensity );
 			glUniform1i( _uKernelSizeLoc, _kernelSize );
-			glUniform1i( _uAoIntensityLoc, _aoIntensity );
 
 			// generate noise texture
 			std::vector<Vec3f> noise( _noiseTextureSize * _noiseTextureSize );
@@ -183,7 +183,7 @@ namespace VTX
 			_uBlurSizeLoc = glGetUniformLocation( _blurShader->getId(), "uBlurSize" );
 
 			_blurShader->use();
-			glUniform1i( _uBlurSizeLoc, _blurSize );
+			glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
 		}
 
 		void RendererGL::_initShadingPass()
@@ -306,6 +306,8 @@ namespace VTX
 
 			// TODO don't aoRadius update each frame
 			glUniform1f( _uAoRadiusLoc, Setting::Rendering::aoRadius );
+			glUniform1i( _uAoIntensityLoc, Setting::Rendering::aoIntensity );
+
 			glUniformMatrix4fv(
 				_uProjMatrixLoc, 1, GL_FALSE, glm::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
 
@@ -333,6 +335,8 @@ namespace VTX
 			glBindTexture( GL_TEXTURE_2D, _ssaoTexture );
 
 			_blurShader->use();
+			// TODO don't aoRadius update each frame
+			glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
 
 			glBindVertexArray( _quadVAO );
 			glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );

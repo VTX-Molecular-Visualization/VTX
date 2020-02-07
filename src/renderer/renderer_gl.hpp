@@ -42,16 +42,14 @@ namespace VTX
 			GLint			  _uAoRadiusLoc		= GL_INVALID_INDEX;
 			GLint			  _uKernelSizeLoc	= GL_INVALID_INDEX;
 			GLint			  _uAoIntensityLoc	= GL_INVALID_INDEX;
-			GLint			  _kernelSize		= 512;
-			GLuint			  _noiseTextureSize = _kernelSize;
-			GLint			  _aoIntensity		= 3;
+			GLint			  _kernelSize		= 32;
+			GLuint			  _noiseTextureSize = 9;
 
 			// Blur pass.
 			GL::GLSLProgram * _blurShader	= nullptr;
 			GLuint			  _fboBlur		= GL_INVALID_VALUE;
 			GLuint			  _blurTexture	= GL_INVALID_VALUE;
 			GLint			  _uBlurSizeLoc = GL_INVALID_INDEX;
-			GLint			  _blurSize		= 4;
 
 			// Shading pass.
 			GL::GLSLProgram * _diffuseShading	 = nullptr;

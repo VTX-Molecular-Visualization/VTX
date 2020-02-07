@@ -78,8 +78,13 @@ namespace VTX
 	constexpr float CONTROLLER_ROTATION_SPEED_DEFAULT	  = 0.005f;
 
 	// Rendering.
-	constexpr float RENDERER_AO_RADIUS_MIN = 0.f;
-	constexpr float RENDERER_AO_RADIUS_MAX = 200.f;
+	// TODO: choose relevent constants
+	constexpr float RENDERER_AO_RADIUS_MIN	  = 0.f;
+	constexpr float RENDERER_AO_RADIUS_MAX	  = 200.f;
+	constexpr int	RENDERER_AO_INTENSITY_MIN = 1;
+	constexpr int	RENDERER_AO_INTENSITY_MAX = 10;
+	constexpr int	RENDERER_AO_BLUR_SIZE_MIN = 1;
+	constexpr int	RENDERER_AO_BLUR_SIZE_MAX = 99;
 
 	// Export video.
 	constexpr uint VIDEO_FPS = 60;
