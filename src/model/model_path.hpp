@@ -34,6 +34,7 @@ namespace VTX
 
 			virtual void								 setSelected( const bool ) override;
 			void										 setSelectedCheckpoint( ModelCheckpoint * const );
+			void										 resetSelectedCheckpoint();
 			float										 computeTotalTime() const;
 			ModelCheckpoint::CheckpointInterpolationData getCurrentCheckpointInterpolationData( float p_time ) const;
 
