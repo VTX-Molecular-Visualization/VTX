@@ -48,7 +48,7 @@ namespace VTX
 				VTX_WARNING( "Program " + p_name + " already exists" );
 			}
 
-			VTX_DEBUG( "Program created: " + p_name );
+			VTX_DEBUG( "Program " + std::to_string( _programs[ p_name ].getId() ) + " created: " + p_name );
 			return &( _programs[ p_name ] );
 		}
 
@@ -138,5 +138,5 @@ namespace VTX
 			return std::string( log.begin(), log.end() );
 		}
 
-	} // namespace Shader
+	} // namespace GL
 } // namespace VTX
