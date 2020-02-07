@@ -68,8 +68,9 @@ namespace VTX
 			glBindTexture( GL_TEXTURE_2D, _depthTexture );
 			glTexStorage2D( GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, _width, _height );
 
-			glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _colorNormalCompressedTexture, 0 );
-			glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, _camSpacePositionsTexture, 0 );
+			glFramebufferTexture2D(
+				GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _colorNormalCompressedTexture, 0 );
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _camSpacePositionsTexture, 0 );
 			glFramebufferTexture( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _depthTexture, 0 );
 
 			static const GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
@@ -195,13 +196,15 @@ namespace VTX
 
 			glGenTextures( 1, &_shadingTexture );
 			glBindTexture( GL_TEXTURE_2D, _shadingTexture );
-			glTexImage2D( GL_TEXTURE_2D, 1, GL_RGBA32F, _width, _height, 0, GL_RGBA, GL_FLOAT, NULL );
+			glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA32F, _width, _height );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
-			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _shadingTexture, 0 );
+			glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _shadingTexture, 0 );
+
 			static const GLenum draw_bufferShading[] = { GL_COLOR_ATTACHMENT0 };
 			glDrawBuffers( 1, draw_bufferShading );
+
 			_toonShading = programManager.createProgram( "ToonShading" );
 			_toonShading->attachShader( programManager.createShader( "shading/toonShading.frag" ) );
 			_toonShading->link();
@@ -264,8 +267,8 @@ namespace VTX
 			glEnable( GL_DEPTH_TEST );
 			_geometricPass( p_scene );
 			glDisable( GL_DEPTH_TEST );
-			_ssaoPass( p_scene );
 
+			_ssaoPass( p_scene );
 			_blurPass();
 			_shadingPass();
 			//_antiAliasingPass();
@@ -274,7 +277,7 @@ namespace VTX
 		void RendererGL::_geometricPass( Object3D::Scene & p_scene )
 		{
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboGeo );
-			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
 			{
