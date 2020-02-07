@@ -125,7 +125,7 @@ namespace VTX
 
 		void ModelPath::setSelectedCheckpoint( ModelCheckpoint * const p_checkpoint )
 		{
-			if ( _selectedCheckpoint != nullptr ) { p_checkpoint->setSelected( false ); }
+			if ( _selectedCheckpoint != nullptr ) { _selectedCheckpoint->setSelected( false ); }
 			try
 			{
 				_selectedCheckpoint = p_checkpoint;

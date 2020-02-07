@@ -12,13 +12,13 @@ namespace VTX
 			ImGui::PushID( "ViewPathList" );
 			if ( ImGui::CollapsingHeader( "Path", ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
-				for ( Model::ModelCheckpoint * checkpoint : _getModel().getCheckpoints() )
+				for ( Model::ModelCheckpoint * const checkpoint : _getModel().getCheckpoints() )
 				{
 					ImGui::PushID( checkpoint->getId() );
-					if ( ImGui::Selectable( "Checkpoint" ), checkpoint->isSelected() )
+					if ( ImGui::Selectable( "Checkpoint" ) )
 					{
 						VTXApp::get().action(
-							new Action::ActionCheckpointGoTo( VTXApp::get().getScene().getCamera(), *checkpoint ) );
+							new Action::ActionCheckpointGoTo( *checkpoint, VTXApp::get().getScene().getCamera() ) );
 						_getModel().setSelectedCheckpoint( checkpoint );
 					}
 					ImGui::PopID();
