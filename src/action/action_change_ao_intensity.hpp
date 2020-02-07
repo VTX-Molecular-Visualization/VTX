@@ -17,7 +17,12 @@ namespace VTX
 		  public:
 			explicit ActionChangeAOIntensity( const int p_intensity ) : _intensity( p_intensity ) {}
 
-			virtual void execute() override { Setting::Rendering::aoIntensity = _intensity; };
+			virtual void execute() override
+			{
+				Setting::Rendering::aoIntensity =
+
+					glm::clamp( _intensity, RENDERER_AO_INTENSITY_MIN, RENDERER_AO_INTENSITY_MAX );
+			};
 
 		  private:
 			const int _intensity;

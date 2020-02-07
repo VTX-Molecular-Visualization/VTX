@@ -17,7 +17,11 @@ namespace VTX
 		  public:
 			explicit ActionChangeAOBlurSize( const int p_blurSize ) : _blurSize( p_blurSize ) {}
 
-			virtual void execute() override { Setting::Rendering::aoBlurSize = _blurSize; };
+			virtual void execute() override
+			{
+				Setting::Rendering::aoBlurSize
+					= glm::clamp( _blurSize, RENDERER_AO_BLUR_SIZE_MIN, RENDERER_AO_BLUR_SIZE_MAX );
+			};
 
 		  private:
 			const int _blurSize;

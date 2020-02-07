@@ -20,6 +20,7 @@ namespace VTX
 
 			virtual void execute() override
 			{
+				_checkpoint.getPathPtr()->resetSelectedCheckpoint();
 				_checkpoint.getPathPtr()->removeCheckpoint( &_checkpoint );
 				delete &_checkpoint;
 			}

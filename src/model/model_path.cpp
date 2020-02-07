@@ -138,6 +138,15 @@ namespace VTX
 			}
 		}
 
+		void ModelPath::resetSelectedCheckpoint()
+		{
+			if ( _selectedCheckpoint != nullptr )
+			{
+				_selectedCheckpoint->setSelected( false );
+				_selectedCheckpoint = nullptr;
+			}
+		}
+
 		float ModelPath::computeTotalTime() const
 		{
 			float total = 0.f;

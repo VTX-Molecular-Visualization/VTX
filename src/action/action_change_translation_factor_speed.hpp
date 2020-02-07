@@ -17,7 +17,11 @@ namespace VTX
 		  public:
 			explicit ActionChangeTranslationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
 
-			virtual void execute() override { Setting::Controller::translationFactorSpeed = _factor; };
+			virtual void execute() override
+			{
+				Setting::Controller::translationFactorSpeed
+					= glm::clamp( _factor, CONTROLLER_TRANSLATION_FACTOR_MIN, CONTROLLER_TRANSLATION_FACTOR_MAX );
+			};
 
 		  private:
 			const float _factor;
