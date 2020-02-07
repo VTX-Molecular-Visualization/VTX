@@ -34,6 +34,8 @@ namespace VTX
 			_drawComponent( ID::View::UI_CHAIN );
 			_drawComponent( ID::View::UI_RESIDUE );
 			_drawComponent( ID::View::UI_ATOM );
+			ImGui::Separator();
+			_drawComponent( ID::View::UI_PATH );
 
 			ImGui::End();
 		}

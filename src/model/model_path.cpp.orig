@@ -4,8 +4,11 @@
 #include "util/type.hpp"
 #include "view/view_ui_path.hpp"
 #include "view/view_ui_path_list.hpp"
+<<<<<<< HEAD
+=======
 #include <fstream>
 #include <sstream>
+>>>>>>> 5da47092c1345621f7b491584fa62aaa75ea697e
 
 namespace VTX
 {
@@ -38,6 +41,7 @@ namespace VTX
 			return data;
 		}
 
+<<<<<<< HEAD
 		void ModelPath::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
@@ -46,8 +50,7 @@ namespace VTX
 			{
 				_deleteView( ID::View::UI_PATH );
 			}
-		}
-
+=======
 		void ModelPath::importPath( const IO::Path & p_file )
 		{
 			VTX_INFO( "Importing view points from " + p_file.str() );
@@ -121,6 +124,7 @@ namespace VTX
 			VTX_INFO( "Export finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
 
 			file.close();
+>>>>>>> 5da47092c1345621f7b491584fa62aaa75ea697e
 		}
 
 		void ModelPath::setSelectedCheckpoint( const uint p_id )
