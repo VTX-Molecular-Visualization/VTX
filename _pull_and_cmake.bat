@@ -1,4 +1,4 @@
 @ECHO OFF
 git pull
-.\cmake_windows.bat
+.\_cmake.bat
 PAUSE
