@@ -16,9 +16,10 @@ namespace VTX
 				ImGui::Text( "Checkpoints: %d", _getModel().getCheckpoints().size() );
 				if ( ImGui::Button( "Play" ) )
 				{ VTXApp::get().goToState( ID::State::PLAYING, VTXApp::get().getScene().getPaths()[ 0 ] ); }
-				if ( ImGui::Button( "Add CP" ) )
+				if ( ImGui::Button( "Add checkpoint" ) )
 				{
-					VTXApp::get().action( new Action::ActionCheckpointCreate( VTXApp::get().getScene().getCamera() ) );
+					VTXApp::get().action(
+						new Action::ActionCheckpointCreate( _getModel(), VTXApp::get().getScene().getCamera() ) );
 				}
 			}
 			ImGui::PopID();

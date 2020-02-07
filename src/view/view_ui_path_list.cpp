@@ -15,11 +15,11 @@ namespace VTX
 				for ( Model::ModelCheckpoint * checkpoint : _getModel().getCheckpoints() )
 				{
 					ImGui::PushID( checkpoint->getId() );
-					if ( ImGui::Selectable( "Checkpoint" ) )
+					if ( ImGui::Selectable( "Checkpoint" ), checkpoint->isSelected() )
 					{
 						VTXApp::get().action(
 							new Action::ActionCheckpointGoTo( VTXApp::get().getScene().getCamera(), *checkpoint ) );
-						_getModel().setSelectedCheckpoint( checkpoint->getId() );
+						_getModel().setSelectedCheckpoint( checkpoint );
 					}
 					ImGui::PopID();
 				}
