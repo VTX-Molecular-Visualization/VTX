@@ -73,7 +73,7 @@ void main()
 		float sampleDepth = texture( gbCamPosition, offset.xy ).z;
 
 		// range check: ignore background
-		float rangeCheck = smoothstep( 0.f, 1.f, rad / abs( pos.z - sampleDepth ) );
+		float rangeCheck = sampleDepth == 0.f ? 0.f : smoothstep( 0.f, 1.f, rad / abs( pos.z - sampleDepth ) );
 		ao += ( sampleDepth >= samplePos.z + BIAS ? 1.f : 0.f ) * rangeCheck;
 	}
 
