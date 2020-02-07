@@ -7,7 +7,6 @@
 #include <fstream>
 #include <sstream>
 
-
 namespace VTX
 {
 	namespace Model
@@ -47,6 +46,7 @@ namespace VTX
 			{
 				_deleteView( ID::View::UI_PATH );
 			}
+		}
 
 		void ModelPath::importPath( const IO::Path & p_file )
 		{
