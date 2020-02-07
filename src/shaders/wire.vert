@@ -1,7 +1,7 @@
 #version 450
 
-layout(location = 0) in vec3 aSpherePosition;
-layout(location = 1) in vec3 aSphereColor;
+layout( location = 0 ) in vec3 aSpherePosition;
+layout( location = 1 ) in vec3 aSphereColor;
 
 uniform mat4 uMVPMatrix;
 
@@ -11,5 +11,5 @@ void main()
 {
 	sphereColor = aSphereColor;
 
-	gl_Position = uMVPMatrix * vec4(aSpherePosition, 1.f);
+	gl_Position = uMVPMatrix * vec4( aSpherePosition, 1.f );
 }
