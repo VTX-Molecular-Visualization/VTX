@@ -1,7 +1,9 @@
 #include "model_path.hpp"
 #include "util/math.hpp"
 #include "util/type.hpp"
+#include "view/view_ui_path.hpp"
 #include "view/view_ui_path_list.hpp"
+
 namespace VTX
 {
 	namespace Model
@@ -31,6 +33,16 @@ namespace VTX
 				1.f - ( ( -( p_time - total ) ) / _checkpoints[ offset ]->getDuration() ) );
 
 			return data;
+		}
+
+		void ModelPath::setSelected( const bool p_selected )
+		{
+			BaseModel::setSelected( p_selected );
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIPath( this ) ) ); }
+			else
+			{
+				_deleteView( ID::View::UI_PATH );
+			}
 		}
 
 		void ModelPath::setSelectedCheckpoint( const uint p_id )

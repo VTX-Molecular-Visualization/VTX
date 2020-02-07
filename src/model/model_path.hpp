@@ -21,12 +21,14 @@ namespace VTX
 			using CheckpointPtr		  = Model::ModelCheckpoint *;
 			using VectorCheckpointPtr = std::vector<CheckpointPtr>;
 
+			ModelPath() { setId( 0 ); };
 			~ModelPath();
 
 			void addCheckpoint( const CheckpointPtr p_checkpoint ) { _checkpoints.emplace_back( p_checkpoint ); }
 			inline VectorCheckpointPtr &	getCheckpoints() { return _checkpoints; }
 			inline Model::ModelCheckpoint & getCheckpoint( uint p_index ) { return *_checkpoints.at( p_index ); }
 
+			virtual void								 setSelected( const bool ) override;
 			void										 setSelectedCheckpoint( const uint );
 			float										 computeTotalTime() const;
 			ModelCheckpoint::CheckpointInterpolationData getCurrentCheckpointInterpolationData( float p_time ) const;
