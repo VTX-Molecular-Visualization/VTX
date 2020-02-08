@@ -1,4 +1,5 @@
 #include "component_menu.hpp"
+#include "action/action_active_renderer.hpp"
 #include "action/action_active_ssao.hpp"
 #include "action/action_active_y_axis_inversion.hpp"
 #include "action/action_change_ao_blur_size.hpp"
@@ -161,6 +162,11 @@ namespace VTX
 					}
 
 					ImGui::Separator();
+
+					// Active renderer.
+					bool isActive = Setting::Rendering::isActive;
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.Rendering" ), &isActive ) )
+					{ VTXApp::get().action( new Action::ActionActiveRenderer( isActive ) ); };
 
 					// Representation.
 					const char * representations[] = { LOCALE( "Enum.Representation.BallsAndSticks" ),

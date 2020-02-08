@@ -37,6 +37,15 @@ namespace VTX
 			{
 				_position = p_position;
 				_rotation = p_rotation;
+				/*
+				_yaw	  = (float)atan2( 2.0 * ( _rotation.y * _rotation.z + _rotation.w * _rotation.x ),
+									  _rotation.w * _rotation.w - _rotation.x * _rotation.x - _rotation.y * _rotation.y
+										  + _rotation.z * _rotation.z );
+				_pitch	  = (float)asin( -2.0 * ( _rotation.x * _rotation.z - _rotation.w * _rotation.y ) );
+				_roll	  = (float)atan2( 2.0 * ( _rotation.x * _rotation.y + _rotation.w * _rotation.z ),
+									  _rotation.w * _rotation.w + _rotation.x * _rotation.x - _rotation.y * _rotation.y
+										  - _rotation.z * _rotation.z );
+										  */
 				_updateRotation();
 			}
 

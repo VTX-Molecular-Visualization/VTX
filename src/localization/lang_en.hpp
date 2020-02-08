@@ -38,6 +38,7 @@ namespace VTX
 			{ "MainMenu.Settings", "Options" },
 			{ "MainMenu.Settings.Theme", "Theme" },
 			{ "MainMenu.Settings.SymbolDisplay", "Symbol display" },
+			{ "MainMenu.Settings.Rendering", "Rendering" },
 			{ "MainMenu.Settings.Representation", "Representation" },
 			{ "MainMenu.Settings.ColorMode", "Color mode" },
 			{ "MainMenu.Settings.Shading", "Shading" },

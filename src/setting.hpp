@@ -34,6 +34,7 @@ namespace VTX
 
 		namespace Rendering
 		{
+			extern bool							 isActive;
 			extern View::MOLECULE_REPRESENTATION representation;
 			extern View::MOLECULE_COLOR_MODE	 colorMode;
 			extern Renderer::MODE				 mode;

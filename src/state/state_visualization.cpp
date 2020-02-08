@@ -24,7 +24,7 @@ namespace VTX
 
 			VTXApp::get().getScene().update( p_deltaTime );
 
-			if ( VTXApp::get().TMP_RENDER ) VTXApp::get().renderScene();
+			if ( Setting::Rendering::isActive ) { VTXApp::get().renderScene(); }
 		}
 
 	} // namespace State
