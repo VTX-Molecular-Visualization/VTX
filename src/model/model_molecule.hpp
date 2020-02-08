@@ -143,7 +143,7 @@ namespace VTX
 
 			GLuint _vao				 = GL_INVALID_VALUE; // Vao.
 			GLuint _atomPositionsVBO = GL_INVALID_VALUE; // Atom positions vbo.
-			GLuint _atomRadiusVBO	 = GL_INVALID_VALUE; // Radii vbo. TODO: compress with position.
+			GLuint _atomRadiusVBO	 = GL_INVALID_VALUE; // Radii vbo.
 														 // TODO ? use SSBO ? ok for atom colors (CPK/residue/chain)
 														 // but for energy based coloration, useless...
 			GLuint _atomColorsVBO = GL_INVALID_VALUE;	 // Color vbo.
