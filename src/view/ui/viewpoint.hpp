@@ -1,12 +1,12 @@
-#ifndef __VTX_VIEW_UI_CHECKPOINT__
-#define __VTX_VIEW_UI_CHECKPOINT__
+#ifndef __VTX_VIEW_UI_VIEWPOINT__
+#define __VTX_VIEW_UI_VIEWPOINT__
 
 #ifdef _MSC_VER
 #pragma once
 
 #endif
 #include "../base_view_ui.hpp"
-#include "model/checkpoint.hpp"
+#include "model/viewpoint.hpp"
 
 namespace VTX
 {
@@ -14,12 +14,12 @@ namespace VTX
 	{
 		namespace UI
 		{
-			class Checkpoint : public BaseViewUI<Model::Checkpoint>
+			class Viewpoint : public BaseViewUI<Model::Viewpoint>
 			{
 			  public:
-				explicit Checkpoint( Model::Checkpoint * const p_model ) : BaseViewUI( p_model ) {}
+				explicit Viewpoint( Model::Viewpoint * const p_model ) : BaseViewUI( p_model ) {}
 
-				virtual std::string getName() const override { return ID::View::UI_CHECKPOINT; };
+				virtual std::string getName() const override { return ID::View::UI_VIEWPOINT; };
 				virtual std::string getComponentParentName() const override { return ID::UI::INSPECTOR; };
 
 			  protected:
@@ -28,6 +28,6 @@ namespace VTX
 			  private:
 			};
 		} // namespace UI
-	} // namespace View
+	}	  // namespace View
 } // namespace VTX
 #endif

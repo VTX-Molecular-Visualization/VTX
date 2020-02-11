@@ -1,13 +1,13 @@
-#ifndef __VTX_ACTION_CHECKPOINT_CREATE__
-#define __VTX_ACTION_CHECKPOINT_CREATE__
+#ifndef __VTX_ACTION_VIEWPOINT_CREATE__
+#define __VTX_ACTION_VIEWPOINT_CREATE__
 
 #ifdef _MSC_VER
 #pragma once
 #endif
 
 #include "base_action.hpp"
-#include "model/checkpoint.hpp"
 #include "model/path.hpp"
+#include "model/viewpoint.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
@@ -16,17 +16,17 @@ namespace VTX
 {
 	namespace Action
 	{
-		class CheckpointCreate : public BaseAction
+		class ViewpointCreate : public BaseAction
 		{
 		  public:
-			explicit CheckpointCreate( Model::Path & p_path, const Object3D::Camera & p_camera ) :
+			explicit ViewpointCreate( Model::Path & p_path, const Object3D::Camera & p_camera ) :
 				_path( p_path ), _position( p_camera.getPosition() ), _rotation( p_camera.getRotation() )
 			{
 			}
 
 			virtual void execute() override
 			{
-				_path.addCheckpoint( new Model::Checkpoint( &_path, _position, _rotation ) );
+				_path.addViewpoint( new Model::Viewpoint( &_path, _position, _rotation ) );
 			}
 
 		  private:
