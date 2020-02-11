@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "GL/glsl_program_manager.hpp"
+#include "glsl_program_manager.hpp"
 #include "object3d/scene.hpp"
 #include <vector>
 
@@ -42,13 +42,13 @@ namespace VTX
 			virtual void render( Object3D::Scene & )		   = 0;
 			virtual void setShading()						   = 0;
 
-			inline GL::GLSLProgramManager & getProgramManager() { return _programManager; }
+			inline GLSLProgramManager & getProgramManager() { return _programManager; }
 
 		  protected:
-			bool				   _isInitialized  = false;
-			uint				   _width		   = 0;
-			uint				   _height		   = 0;
-			GL::GLSLProgramManager _programManager = GL::GLSLProgramManager();
+			bool			   _isInitialized  = false;
+			uint			   _width		   = 0;
+			uint			   _height		   = 0;
+			GLSLProgramManager _programManager = GLSLProgramManager();
 		};
 	} // namespace Renderer
 } // namespace VTX

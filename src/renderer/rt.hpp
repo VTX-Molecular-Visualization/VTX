@@ -11,11 +11,11 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		class RendererRaytracing : public BaseRenderer
+		class RT : public BaseRenderer
 		{
 		  public:
-			RendererRaytracing() = default;
-			~RendererRaytracing() = default;
+			RT()  = default;
+			~RT() = default;
 
 			virtual void init( Object3D::Scene &, uint, uint ) override;
 			virtual void clear( Object3D::Scene & ) override;

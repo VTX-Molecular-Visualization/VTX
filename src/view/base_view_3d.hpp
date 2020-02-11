@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "GL/glsl_program_manager.hpp"
+#include "../renderer/glsl_program_manager.hpp"
 #include "base_view.hpp"
 #include "generic/base_collectionable.hpp"
 #include "generic/base_renderable.hpp"

@@ -10,7 +10,7 @@
 
 namespace VTX
 {
-	namespace GL
+	namespace Renderer
 	{
 		enum class SHADER_TYPE : int
 		{
@@ -26,9 +26,9 @@ namespace VTX
 		class GLSLProgramManager
 		{
 		  public:
-			using MapStringToEnum	  = std::map<std::string, GL::SHADER_TYPE>;
-			using MapStringToProgram  = std::map<std::string, GL::GLSLProgram>;
-			using PairStringToProgram = std::pair<std::string, GL::GLSLProgram>;
+			using MapStringToEnum	  = std::map<std::string, SHADER_TYPE>;
+			using MapStringToProgram  = std::map<std::string, GLSLProgram>;
+			using PairStringToProgram = std::pair<std::string, GLSLProgram>;
 			using MapStringToGLuint	  = std::map<std::string, GLuint>;
 			using PairStringToGLuint  = std::pair<std::string, GLuint>;
 
@@ -49,7 +49,7 @@ namespace VTX
 
 			std::string _getShaderErrors( const GLuint ) const;
 		};
-	}; // namespace Shader
+	}; // namespace Renderer
 } // namespace VTX
 
 #endif

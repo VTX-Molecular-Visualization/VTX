@@ -46,10 +46,10 @@ namespace VTX
 		void initRenderer() const;
 		void renderScene() const { _renderer->render( *_scene ); }
 
-		inline Object3D::Scene &		getScene() { return *_scene; }
-		inline Renderer::BaseRenderer & getRenderer() { return *_renderer; }
-		inline GL::GLSLProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
-		inline UI::UserInterface &		getUI() { return *_ui; }
+		inline Object3D::Scene &			  getScene() { return *_scene; }
+		inline Renderer::BaseRenderer &		  getRenderer() { return *_renderer; }
+		inline Renderer::GLSLProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
+		inline UI::UserInterface &			  getUI() { return *_ui; }
 
 	  private:
 		static bool				 _isRunning;
@@ -57,7 +57,7 @@ namespace VTX
 		double					 _timeTotal		= 0.f;
 		double					 _timeDelta		= 0.f;
 		UI::UserInterface *		 _ui			= nullptr;
-		State::StateMachine *		 _stateMachine	= nullptr;
+		State::StateMachine *	 _stateMachine	= nullptr;
 		Object3D::Scene *		 _scene			= nullptr;
 		Renderer::BaseRenderer * _renderer		= nullptr;
 		Action::ActionManager *	 _actionManager = nullptr;

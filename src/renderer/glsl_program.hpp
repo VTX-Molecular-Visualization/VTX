@@ -11,7 +11,7 @@
 
 namespace VTX
 {
-	namespace GL
+	namespace Renderer
 	{
 		class GLSLProgram
 		{
@@ -36,7 +36,7 @@ namespace VTX
 
 			friend class GLSLProgramManager;
 		};
-	}; // namespace Shader
+	}; // namespace Renderer
 } // namespace VTX
 
 #endif

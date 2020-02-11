@@ -3,7 +3,7 @@
 #include "io/path.hpp"
 #include "io/reader/reader_mmtf.hpp"
 #include "model/molecule.hpp"
-#include "renderer/renderer_gl.hpp"
+#include "renderer/gl.hpp"
 #include "ui/imgui/imgui_impl_sdl.h"
 #include <thread>
 
@@ -19,7 +19,7 @@ namespace VTX
 		_stateMachine = new State::StateMachine();
 		_stateMachine->init();
 		_scene		   = new Object3D::Scene();
-		_renderer	   = new Renderer::RendererGL();
+		_renderer	   = new Renderer::GL();
 		_actionManager = new Action::ActionManager();
 	}
 

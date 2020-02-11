@@ -1,6 +1,6 @@
 #include "loading.hpp"
-#include "io/reader/reader_mmtf.hpp"
-#include "io/reader/reader_obj.hpp"
+#include "io/reader/mmtf.hpp"
+#include "io/reader/obj.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
 #include "object3d/scene.hpp"
@@ -25,18 +25,18 @@ namespace VTX
 		void Loading::_loadFile( std::string * p_path ) const
 		{
 			Model::Molecule * molecule = new Model::Molecule();
-			Object3D::Scene *	   scene	= &( VTXApp::get().getScene() );
+			Object3D::Scene * scene	   = &( VTXApp::get().getScene() );
 
 			// VTXApp::get().addThread( new std::thread( [ molecule, scene ] {
 
 			const IO::Path path = IO::Path( *p_path );
 
 			// Create factory?
-			IO::BaseReader * reader = nullptr;
-			if ( path.getExtension() == "mmtf" ) { reader = new IO::ReaderMMTF(); }
+			IO::Reader::BaseReader * reader = nullptr;
+			if ( path.getExtension() == "mmtf" ) { reader = new IO::Reader::MMTF(); }
 			else if ( path.getExtension() == "obj" )
 			{
-				reader = new IO::ReaderOBJ();
+				reader = new IO::Reader::OBJ();
 			}
 
 			if ( reader != nullptr && reader->readFile( path, *molecule ) )

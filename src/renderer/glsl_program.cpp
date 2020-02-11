@@ -5,7 +5,7 @@
 
 namespace VTX
 {
-	namespace GL
+	namespace Renderer
 	{
 		GLSLProgram::~GLSLProgram()
 		{
@@ -88,5 +88,5 @@ namespace VTX
 			return std::string( log.begin(), log.end() );
 		}
 
-	} // namespace Shader
+	} // namespace Renderer
 } // namespace VTX

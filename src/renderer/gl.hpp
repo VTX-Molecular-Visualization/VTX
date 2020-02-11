@@ -11,11 +11,11 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		class RendererGL : public BaseRenderer
+		class GL : public BaseRenderer
 		{
 		  public:
-			RendererGL()  = default;
-			~RendererGL() = default;
+			GL()  = default;
+			~GL() = default;
 
 			virtual void init( Object3D::Scene &, uint, uint ) override;
 			virtual void clear( Object3D::Scene & ) override;

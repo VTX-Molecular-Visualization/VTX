@@ -9,8 +9,8 @@ namespace VTX
 		{
 			void Cylinder::initItem()
 			{
-				GL::GLSLProgramManager & pm		 = VTXApp::get().getProgramManager();
-				GL::GLSLProgram *		 program = pm.createProgram( "CylinderGeom" );
+				Renderer::GLSLProgramManager & pm	   = VTXApp::get().getProgramManager();
+				Renderer::GLSLProgram *		   program = pm.createProgram( "CylinderGeom" );
 				program->attachShader( pm.createShader( "cylinderImpostorGeom.vert" ) );
 				program->attachShader( pm.createShader( "cylinderImpostorGeom.geom" ) );
 				program->attachShader( pm.createShader( "cylinderImpostorDeferred.frag" ) );

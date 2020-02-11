@@ -5,19 +5,21 @@
 #pragma once
 #endif
 
-#include "model/molecule.hpp"
 #include "io/path.hpp"
+#include "model/molecule.hpp"
 
 namespace VTX
 {
 	namespace IO
 	{
-		class BaseReader
+		namespace Reader
 		{
-		  public:
-			virtual bool readFile( const Path &, Model::Molecule & ) = 0;
-		};
-
-	} // namespace IO
+			class BaseReader
+			{
+			  public:
+				virtual bool readFile( const Path &, Model::Molecule & ) = 0;
+			};
+		} // namespace Reader
+	}	  // namespace IO
 } // namespace VTX
 #endif
