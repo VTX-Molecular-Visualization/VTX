@@ -11,28 +11,28 @@ namespace VTX
 {
 	namespace Model
 	{
-		Path::~Path() { Util::Type::clearVector( _checkpoints ); }
+		Path::~Path() { Util::Type::clearVector( _viewpoints ); }
 
 		void Path::_addItems() { addItem( (View::BaseView<BaseModel> *)( new View::UI::PathList( this ) ) ); }
 
-		Checkpoint::CheckpointInterpolationData Path::getCurrentCheckpointInterpolationData( float p_time ) const
+		Viewpoint::ViewpointInterpolationData Path::getCurrentViewpointInterpolationData( float p_time ) const
 		{
 			float total	 = 0.f;
 			uint  offset = 0;
 
-			for ( ; offset < _checkpoints.size(); ++offset )
+			for ( ; offset < _viewpoints.size(); ++offset )
 			{
-				Model::Checkpoint * checkpoint = _checkpoints[ offset ];
+				Model::Viewpoint * checkpoint = _viewpoints[ offset ];
 				if ( offset >= 1 ) { total += checkpoint->getDuration(); }
 				if ( total >= p_time ) { break; }
 			}
 
-			Checkpoint::CheckpointInterpolationData data = Checkpoint::CheckpointInterpolationData(
-				_checkpoints[ offset > 0 ? offset - 1 : 0 ]->getPosition(),
-				_checkpoints[ offset > 0 ? offset - 1 : 0 ]->getRotation(),
-				_checkpoints[ offset ]->getPosition(),
-				_checkpoints[ offset ]->getRotation(),
-				1.f - ( ( -( p_time - total ) ) / _checkpoints[ offset ]->getDuration() ) );
+			Viewpoint::ViewpointInterpolationData data = Viewpoint::ViewpointInterpolationData(
+				_viewpoints[ offset > 0 ? offset - 1 : 0 ]->getPosition(),
+				_viewpoints[ offset > 0 ? offset - 1 : 0 ]->getRotation(),
+				_viewpoints[ offset ]->getPosition(),
+				_viewpoints[ offset ]->getRotation(),
+				1.f - ( ( -( p_time - total ) ) / _viewpoints[ offset ]->getDuration() ) );
 
 			return data;
 		}
@@ -60,7 +60,7 @@ namespace VTX
 			std::getline( file, line );
 			iss.str( line );
 			iss >> nbViewPoints;
-			Util::Type::clearVector( _checkpoints );
+			Util::Type::clearVector( _viewpoints );
 
 			for ( int i = 0; i < nbViewPoints; ++i )
 			{
@@ -79,7 +79,7 @@ namespace VTX
 				// get duration
 				iss >> duration;
 
-				addCheckpoint( new Checkpoint( this, position, rotation, duration ) );
+				addViewpoint( new Viewpoint( this, position, rotation, duration ) );
 			}
 
 			chrono.stop();
@@ -88,7 +88,7 @@ namespace VTX
 
 		void Path::save( const IO::Path & p_file ) const
 		{
-			VTX_INFO( "Exporting " + std::to_string( _checkpoints.size() ) + " view points in " + p_file.c_str() );
+			VTX_INFO( "Exporting " + std::to_string( _viewpoints.size() ) + " view points in " + p_file.c_str() );
 			std::ofstream file;
 			file.open( p_file, std::ios::out | std::ios::trunc );
 
@@ -97,8 +97,8 @@ namespace VTX
 
 			Tool::Chrono chrono = Tool::Chrono();
 			chrono.start();
-			file << _checkpoints.size() << std::endl;
-			for ( Model::Checkpoint * checkpoint : _checkpoints )
+			file << _viewpoints.size() << std::endl;
+			for ( Model::Viewpoint * checkpoint : _viewpoints )
 			{
 				const Vec3f & p = checkpoint->getPosition();
 				const Quatf & r = checkpoint->getRotation();
@@ -122,39 +122,39 @@ namespace VTX
 			}
 		}
 
-		void Path::setSelectedCheckpoint( Checkpoint * const p_checkpoint )
+		void Path::setSelectedViewpoint( Viewpoint * const p_checkpoint )
 		{
-			if ( _selectedCheckpoint != nullptr ) { _selectedCheckpoint->setSelected( false ); }
+			if ( _selectedViewpoint != nullptr ) { _selectedViewpoint->setSelected( false ); }
 			try
 			{
-				_selectedCheckpoint = p_checkpoint;
-				_selectedCheckpoint->setSelected( true );
+				_selectedViewpoint = p_checkpoint;
+				_selectedViewpoint->setSelected( true );
 			}
 			catch ( const std::exception )
 			{
 				VTX_WARNING( "Failed to select checkpoint" );
-				_selectedCheckpoint = nullptr;
+				_selectedViewpoint = nullptr;
 			}
 		}
 
-		void Path::resetSelectedCheckpoint()
+		void Path::resetSelectedViewpoint()
 		{
-			if ( _selectedCheckpoint != nullptr )
+			if ( _selectedViewpoint != nullptr )
 			{
-				_selectedCheckpoint->setSelected( false );
-				_selectedCheckpoint = nullptr;
+				_selectedViewpoint->setSelected( false );
+				_selectedViewpoint = nullptr;
 			}
 		}
 
 		float Path::computeTotalTime() const
 		{
 			float total = 0.f;
-			if ( _checkpoints.size() == 0 ) { return total; }
-			for ( Model::Checkpoint * checkpoint : _checkpoints )
+			if ( _viewpoints.size() == 0 ) { return total; }
+			for ( Model::Viewpoint * checkpoint : _viewpoints )
 			{
 				total += checkpoint->getDuration();
 			}
-			total -= _checkpoints[ 0 ]->getDuration();
+			total -= _viewpoints[ 0 ]->getDuration();
 			return total;
 		} // namespace Model
 

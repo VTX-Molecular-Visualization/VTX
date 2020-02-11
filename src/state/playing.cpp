@@ -1,6 +1,4 @@
 #include "playing.hpp"
-#include "../model/checkpoint.hpp"
-#include "model/path.hpp"
 #include "object3d/scene.hpp"
 #include "tool/chrono.hpp"
 #include "util/math.hpp"
@@ -14,7 +12,7 @@ namespace VTX
 		{
 			_path = (Model::Path *)p_arg;
 
-			if ( _path->getCheckpoints().size() < 2 )
+			if ( _path->getViewpoints().size() < 2 )
 			{
 				VTXApp::get().goToState( ID::State::VISUALIZATION );
 				return;
@@ -62,8 +60,7 @@ namespace VTX
 
 		void Playing::_setCamera() const
 		{
-			Model::Checkpoint::CheckpointInterpolationData data
-				= _path->getCurrentCheckpointInterpolationData( _time );
+			Model::Viewpoint::ViewpointInterpolationData data = _path->getCurrentViewpointInterpolationData( _time );
 			VTXApp::get().getScene().getCamera().set(
 				Util::Math::lerp( data.positionLhs, data.positionRhs, data.value ),
 				Util::Math::lerp( data.rotationLhs, data.rotationRhs, data.value ) );

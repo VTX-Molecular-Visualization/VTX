@@ -30,7 +30,7 @@ namespace VTX
 			_drawComponent( ID::View::UI_ATOM );
 			ImGui::Separator();
 			_drawComponent( ID::View::UI_PATH );
-			_drawComponent( ID::View::UI_CHECKPOINT );
+			_drawComponent( ID::View::UI_VIEWPOINT );
 
 			ImGui::End();
 		}

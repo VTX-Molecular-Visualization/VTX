@@ -1,5 +1,5 @@
 #include "path.hpp"
-#include "action/checkpoint_create.hpp"
+#include "action/viewpoint_create.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -15,7 +15,7 @@ namespace VTX
 				if ( ImGui::CollapsingHeader( ( "Path: " + std::to_string( _getModel().getId() ) ).c_str(), flags ) )
 				{
 					ImGui::Text( "Duration: %f", _getModel().computeTotalTime() );
-					ImGui::Text( "Checkpoints: %d", _getModel().getCheckpoints().size() );
+					ImGui::Text( "Checkpoints: %d", _getModel().getViewpoints().size() );
 					if ( ImGui::Button( "Play" ) )
 					{ VTXApp::get().goToState( ID::State::PLAYING, VTXApp::get().getScene().getPaths()[ 0 ] ); }
 					ImGui::SameLine();
@@ -23,7 +23,7 @@ namespace VTX
 					if ( ImGui::Button( "Add checkpoint" ) )
 					{
 						VTXApp::get().action(
-							new Action::CheckpointCreate( _getModel(), VTXApp::get().getScene().getCamera() ) );
+							new Action::ViewpointCreate( _getModel(), VTXApp::get().getScene().getCamera() ) );
 					}
 				}
 				ImGui::PopID();

@@ -9,7 +9,7 @@
 #include "../object3d/camera.hpp"
 #include "base_model.hpp"
 #include "define.hpp"
-#include "checkpoint.hpp"
+#include "viewpoint.hpp"
 #include <vector>
 
 namespace VTX
@@ -19,8 +19,8 @@ namespace VTX
 		class Path : public BaseModel, public Generic::BaseSerializable
 		{
 		  public:
-			using CheckpointPtr		  = Model::Checkpoint *;
-			using VectorCheckpointPtr = std::vector<CheckpointPtr>;
+			using ViewpointPtr		 = Model::Viewpoint *;
+			using VectorViewpointPtr = std::vector<ViewpointPtr>;
 
 			enum class COMPUTATION_MODE : int
 			{
@@ -31,18 +31,18 @@ namespace VTX
 			Path() { setId( 0 ); };
 			~Path();
 
-			void addCheckpoint( const CheckpointPtr p_checkpoint ) { _checkpoints.emplace_back( p_checkpoint ); }
-			void removeCheckpoint( const CheckpointPtr p_checkpoint )
+			void addViewpoint( const ViewpointPtr p_checkpoint ) { _viewpoints.emplace_back( p_checkpoint ); }
+			void removeViewpoint( const ViewpointPtr p_checkpoint )
 			{
-				_checkpoints.erase( std::find( _checkpoints.begin(), _checkpoints.end(), p_checkpoint ) );
+				_viewpoints.erase( std::find( _viewpoints.begin(), _viewpoints.end(), p_checkpoint ) );
 			}
-			inline VectorCheckpointPtr & getCheckpoints() { return _checkpoints; }
+			inline VectorViewpointPtr & getViewpoints() { return _viewpoints; }
 
-			virtual void								 setSelected( const bool ) override;
-			void										 setSelectedCheckpoint( Checkpoint * const );
-			void										 resetSelectedCheckpoint();
-			float										 computeTotalTime() const;
-			Checkpoint::CheckpointInterpolationData getCurrentCheckpointInterpolationData( float p_time ) const;
+			virtual void						  setSelected( const bool ) override;
+			void								  setSelectedViewpoint( Viewpoint * const );
+			void								  resetSelectedViewpoint();
+			float								  computeTotalTime() const;
+			Viewpoint::ViewpointInterpolationData getCurrentViewpointInterpolationData( float p_time ) const;
 
 			// TODO: redo implementation.
 			virtual void load( const IO::Path & ) override;
@@ -52,9 +52,9 @@ namespace VTX
 			virtual void _addItems() override final;
 
 		  private:
-			VectorCheckpointPtr _checkpoints		= VectorCheckpointPtr();
-			COMPUTATION_MODE	_mode				= COMPUTATION_MODE::DURATION;
-			CheckpointPtr		_selectedCheckpoint = nullptr;
+			VectorViewpointPtr _viewpoints		  = VectorViewpointPtr();
+			COMPUTATION_MODE   _mode			  = COMPUTATION_MODE::DURATION;
+			ViewpointPtr	   _selectedViewpoint = nullptr;
 
 		}; // namespace Camera
 	}	   // namespace Model

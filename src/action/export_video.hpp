@@ -24,7 +24,7 @@ namespace VTX
 			{
 				Model::Path * path = VTXApp::get().getScene().getPaths()[ 0 ];
 
-				if ( path->getCheckpoints().size() < 2 )
+				if ( path->getViewpoints().size() < 2 )
 				{
 					VTX_WARNING( "At least 2 checkpoints needed to play animation" );
 					VTXApp::get().goToState( ID::State::VISUALIZATION );
@@ -52,9 +52,9 @@ namespace VTX
 				chrono.start();
 				for ( uint frame = 0; frame < totalFrame; ++frame )
 				{
-					float										   time = (float)frame / VIDEO_FPS;
-					Model::Checkpoint::CheckpointInterpolationData data
-						= path->getCurrentCheckpointInterpolationData( time );
+					float										 time = (float)frame / VIDEO_FPS;
+					Model::Viewpoint::ViewpointInterpolationData data
+						= path->getCurrentViewpointInterpolationData( time );
 					VTXApp::get().getScene().getCamera().set(
 						Util::Math::lerp( data.positionLhs, data.positionRhs, data.value ),
 						Util::Math::lerp( data.rotationLhs, data.rotationRhs, data.value ) );
