@@ -44,19 +44,11 @@ namespace VTX
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 
 	// Window.
-<<<<<<< HEAD
 	constexpr int WINDOW_WIDTH	= 1280;
 	constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
 	// constexpr int WINDOW_WIDTH	= 1920;
 	// constexpr int WINDOW_HEIGHT = 1080;
-=======
-	 constexpr int WINDOW_WIDTH	= 1280;
-	 constexpr int WINDOW_HEIGHT = 720;
-	// Full HD.
-	//constexpr int WINDOW_WIDTH	= 1920;
-	//constexpr int WINDOW_HEIGHT = 1080;
->>>>>>> 51bfa4a8ded70a88175daf2e50c6505461ec0364
 	// 4k
 	// constexpr int WINDOW_WIDTH	= 3840;
 	// constexpr int WINDOW_HEIGHT = 2160;
