@@ -24,18 +24,4 @@ void main()
 		}
 	}
 	ambientOcclusionBlurred = res / float( uBlurSize * uBlurSize );
-
-	// use bilateral blur
-	/*float lim  = fma(-uBlurSize, 0.5f, 0.5f);
-	for (int i = 0; i < uBlurSize; ++i)
-	{
-		res += texture(ambientOcclusionTexture, texPos + vec2((lim + i) * texelSize.x, 0.f)).x;
-	}
-	res /= float(uBlurSize);
-	for (int i = 0; i < uBlurSize; ++i)
-	{
-		res += texture(ambientOcclusionTexture, texPos + vec2(0.f), (lim + i) * texelSize.y).x;
-	}
-	res /= float(uBlurSize);
-	ambientOcclusionBlurred = res; */
 }
