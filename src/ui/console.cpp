@@ -1,4 +1,4 @@
-#include "component_console.hpp"
+#include "console.hpp"
 #include "define.hpp"
 #include "event/event.hpp"
 #include "style.hpp"
@@ -9,11 +9,11 @@ namespace VTX
 {
 	namespace UI
 	{
-		ComponentConsole::ComponentConsole( bool * const p_show ) : BaseComponent( p_show ) {}
+		Console::Console( bool * const p_show ) : BaseComponent( p_show ) {}
 
-		void ComponentConsole::_registerEventHandlers() { _registerEventHandler( VTX::Event::EVENT_UI::LOG_CONSOLE ); }
+		void Console::_registerEventHandlers() { _registerEventHandler( VTX::Event::EVENT_UI::LOG_CONSOLE ); }
 
-		void ComponentConsole::_applyEvent( const Event::EVENT_UI p_event, void * const p_arg )
+		void Console::_applyEvent( const Event::EVENT_UI p_event, void * const p_arg )
 		{
 			if ( p_event == Event::EVENT_UI::LOG_CONSOLE )
 			{
@@ -22,7 +22,7 @@ namespace VTX
 			}
 		}
 
-		void ComponentConsole::_draw()
+		void Console::_draw()
 		{
 			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
 			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
@@ -50,12 +50,12 @@ namespace VTX
 
 			ImGui::End();
 		}
-		void ComponentConsole::_addLog( const Util::Logger::Log & p_log )
+		void Console::_addLog( const Util::Logger::Log & p_log )
 		{
 			_logs.push_back( p_log );
 			if ( _logs.size() > VTX_CONSOLE_SIZE ) { _logs.pop_front(); }
 		}
 
-		void ComponentConsole::_clear() { _logs.clear(); }
+		void Console::_clear() { _logs.clear(); }
 	} // namespace UI
 } // namespace VTX

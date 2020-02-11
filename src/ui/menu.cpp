@@ -1,4 +1,4 @@
-#include "component_menu.hpp"
+#include "menu.hpp"
 #include "action/action_active_renderer.hpp"
 #include "action/action_active_ssao.hpp"
 #include "action/action_active_y_axis_inversion.hpp"
@@ -31,18 +31,18 @@ namespace VTX
 {
 	namespace UI
 	{
-		ComponentMenu::ComponentMenu( bool * const p_show,
-									  bool * const p_showConsole,
-									  bool * const p_showScene,
-									  bool * const p_showInspector,
-									  bool * const p_showCameraEditor ) :
+		Menu::Menu( bool * const p_show,
+					bool * const p_showConsole,
+					bool * const p_showScene,
+					bool * const p_showInspector,
+					bool * const p_showCameraEditor ) :
 			BaseComponent( p_show ),
 			_showConsole( p_showConsole ), _showScene( p_showScene ), _showInspector( p_showInspector ),
 			_showCameraEditor( p_showCameraEditor )
 		{
 		}
 
-		void ComponentMenu::_draw()
+		void Menu::_draw()
 		{
 			ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding,
 								 ImVec2( IMGUI_STYLE_MENUBAR_PADDING, IMGUI_STYLE_MENUBAR_PADDING ) );

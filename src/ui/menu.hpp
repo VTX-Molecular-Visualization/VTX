@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace UI
 	{
-		class ComponentMenu : public BaseComponent
+		class Menu : public BaseComponent
 		{
 		  public:
-			explicit ComponentMenu( bool * const, bool * const, bool * const, bool * const, bool * const );
+			explicit Menu( bool * const, bool * const, bool * const, bool * const, bool * const );
 
 			virtual std::string getName() const override { return ID::UI::MENU; }
 

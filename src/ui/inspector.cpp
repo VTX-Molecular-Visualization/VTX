@@ -1,25 +1,19 @@
-#include "component_inspector.hpp"
+#include "inspector.hpp"
 #include "define.hpp"
 #include "localization/language.hpp"
 #include "style.hpp"
-#include "view/view_ui_atom.hpp"
-#include "view/view_ui_chain.hpp"
-#include "view/view_ui_molecule.hpp"
-#include "view/view_ui_residue.hpp"
+#include "view/ui/atom.hpp"
+#include "view/ui/chain.hpp"
+#include "view/ui/molecule.hpp"
+#include "view/ui/residue.hpp"
 
 namespace VTX
 {
 	namespace UI
 	{
-		ComponentInspector::ComponentInspector( bool * const p_show ) : BaseComponent( p_show )
-		{
-			//_addComponent( std::make_shared<View::ViewUIMolecule>( View::ViewUIMolecule( _show ) ) );
-			//_addComponent( std::make_shared<View::ViewUIChain>( View::ViewUIChain( _show ) ) );
-			//_addComponent( std::make_shared<View::ViewUIResidue>( View::ViewUIResidue( _show ) ) );
-			//_addComponent( std::make_shared<View::ViewUIAtom>( View::ViewUIAtom( _show ) ) );
-		}
+		Inspector::Inspector( bool * const p_show ) : BaseComponent( p_show ) {}
 
-		void ComponentInspector::_draw()
+		void Inspector::_draw()
 		{
 			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
 			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );

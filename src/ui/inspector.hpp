@@ -5,19 +5,19 @@
 #pragma once
 #endif
 
+#include "base_component.hpp"
 #include "localization/language.hpp"
 #include "model/molecule.hpp"
 #include "view/base_view.hpp"
-#include "base_component.hpp"
 
 namespace VTX
 {
 	namespace UI
 	{
-		class ComponentInspector : public BaseComponent
+		class Inspector : public BaseComponent
 		{
 		  public:
-			explicit ComponentInspector( bool * const );
+			explicit Inspector( bool * const );
 
 			virtual std::string getName() const override { return ID::UI::INSPECTOR; }
 

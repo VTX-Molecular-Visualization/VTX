@@ -11,10 +11,10 @@ namespace VTX
 {
 	namespace UI
 	{
-		class ComponentCameraEditor : public BaseComponent
+		class CameraEditor : public BaseComponent
 		{
 		  public:
-			explicit ComponentCameraEditor( bool * const );
+			explicit CameraEditor( bool * const );
 
 			virtual std::string getName() const override { return ID::UI::CAMERA_EDITOR; }
 

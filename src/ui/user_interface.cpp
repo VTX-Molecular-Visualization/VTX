@@ -1,13 +1,13 @@
 #include "user_interface.hpp"
-#include "component_camera_editor.hpp"
-#include "component_console.hpp"
-#include "component_inspector.hpp"
-#include "component_menu.hpp"
-#include "component_scene.hpp"
+#include "camera_editor.hpp"
+#include "console.hpp"
 #include "define.hpp"
 #include "exception.hpp"
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imgui_impl_sdl.h"
+#include "inspector.hpp"
+#include "menu.hpp"
+#include "scene.hpp"
 #include "setting.hpp"
 #include "style.hpp"
 #include "util/logger.hpp"
@@ -66,11 +66,11 @@ namespace VTX
 
 		void UserInterface::_addItems()
 		{
-			addItem( new ComponentMenu( &_showMenu, &_showConsole, &_showScene, &_showInspector, &_showCameraEditor ) );
-			addItem( new ComponentConsole( &_showConsole ) );
-			addItem( new ComponentScene( &_showScene ) );
-			addItem( new ComponentInspector( &_showInspector ) );
-			addItem( new ComponentCameraEditor( &_showCameraEditor ) );
+			addItem( new Menu( &_showMenu, &_showConsole, &_showScene, &_showInspector, &_showCameraEditor ) );
+			addItem( new Console( &_showConsole ) );
+			addItem( new Scene( &_showScene ) );
+			addItem( new Inspector( &_showInspector ) );
+			addItem( new CameraEditor( &_showCameraEditor ) );
 		}
 
 		void UserInterface::_initSDL2()

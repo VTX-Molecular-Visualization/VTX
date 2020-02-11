@@ -11,10 +11,10 @@ namespace VTX
 {
 	namespace UI
 	{
-		class ComponentScene : public BaseComponent
+		class Scene : public BaseComponent
 		{
 		  public:
-			explicit ComponentScene( bool * const );
+			explicit Scene( bool * const );
 
 			virtual std::string getName() const override { return ID::UI::SCENE; }
 

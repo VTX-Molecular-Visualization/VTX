@@ -5,19 +5,19 @@
 #pragma once
 #endif
 
+#include "base_component.hpp"
 #include "localization/language.hpp"
 #include "util/logger.hpp"
-#include "base_component.hpp"
 #include <list>
 
 namespace VTX
 {
 	namespace UI
 	{
-		class ComponentConsole : public BaseComponent
+		class Console : public BaseComponent
 		{
 		  public:
-			explicit ComponentConsole( bool * const );
+			explicit Console( bool * const );
 
 			virtual std::string getName() const override { return ID::UI::CONSOLE; }
 
