@@ -15,12 +15,12 @@ namespace VTX
 				if ( ImGui::CollapsingHeader( ( "Path: " + std::to_string( _getModel().getId() ) ).c_str(), flags ) )
 				{
 					ImGui::Text( "Duration: %f", _getModel().computeTotalTime() );
-					ImGui::Text( "Checkpoints: %d", _getModel().getViewpoints().size() );
+					ImGui::Text( "Viewpoints: %d", _getModel().getViewpoints().size() );
 					if ( ImGui::Button( "Play" ) )
 					{ VTXApp::get().goToState( ID::State::PLAYING, VTXApp::get().getScene().getPaths()[ 0 ] ); }
 					ImGui::SameLine();
 					if ( ImGui::Button( "Stop" ) ) { VTXApp::get().goToState( ID::State::VISUALIZATION ); }
-					if ( ImGui::Button( "Add checkpoint" ) )
+					if ( ImGui::Button( "Add viewpoint" ) )
 					{
 						VTXApp::get().action(
 							new Action::ViewpointCreate( _getModel(), VTXApp::get().getScene().getCamera() ) );
