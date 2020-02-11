@@ -6,16 +6,16 @@
 
 #endif
 #include "base_view_ui.hpp"
-#include "model/model_checkpoint.hpp"
+#include "model/checkpoint.hpp"
 
 namespace VTX
 {
 	namespace View
 	{
-		class ViewUICheckpoint : public BaseViewUI<Model::ModelCheckpoint>
+		class ViewUICheckpoint : public BaseViewUI<Model::Checkpoint>
 		{
 		  public:
-			explicit ViewUICheckpoint( Model::ModelCheckpoint * const p_model ) : BaseViewUI( p_model ) {}
+			explicit ViewUICheckpoint( Model::Checkpoint * const p_model ) : BaseViewUI( p_model ) {}
 
 			virtual std::string getName() const override { return ID::View::UI_CHECKPOINT; };
 			virtual std::string getComponentParentName() const override { return ID::UI::INSPECTOR; };

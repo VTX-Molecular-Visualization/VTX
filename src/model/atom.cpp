@@ -1,4 +1,4 @@
-#include "model_atom.hpp"
+#include "atom.hpp"
 #include "util/type.hpp"
 #include "view/view_ui_atom.hpp"
 
@@ -6,7 +6,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		void ModelAtom::setSelected( const bool p_selected )
+		void Atom::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIAtom( this ) ) ); }
@@ -16,7 +16,7 @@ namespace VTX
 			}
 		}
 
-		const std::string ModelAtom::SYMBOL_NAME[ (int)ATOM_SYMBOL::COUNT ] = {
+		const std::string Atom::SYMBOL_NAME[ (int)ATOM_SYMBOL::COUNT ] = {
 			"Unknown",		 // UNKNOWN = 0,
 			"Hydrogen",		 // H		= 1,
 			"Helium",		 // HE		= 2,
@@ -138,7 +138,7 @@ namespace VTX
 			"Ununoctium"	 // UUO		= 118,
 		};
 
-		const float ModelAtom::SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ] = {
+		const float Atom::SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ] = {
 			1.20f, // UNKNOWN	= 0,
 			1.20f, // H			= 1,
 			1.43f, // HE		= 2,
@@ -259,7 +259,7 @@ namespace VTX
 			0.00f, // UUS		= 117,
 			0.00f  // UUO		= 118,
 		};
-		float * ModelAtom::SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ] = {
+		float * Atom::SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ] = {
 			COLOR_WHITE,	  // UNKNOWN	= 0,
 			COLOR_WHITE,	  // H			= 1,
 			COLOR_MAGENTA,	  // HE			= 2,

@@ -1,4 +1,4 @@
-#include "model_residue.hpp"
+#include "residue.hpp"
 #include "util/type.hpp"
 #include "view/view_ui_residue.hpp"
 
@@ -6,7 +6,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		void ModelResidue::setSelected( const bool p_selected )
+		void Residue::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIResidue( this ) ) ); }
@@ -16,7 +16,7 @@ namespace VTX
 			}
 		}
 
-		const std::string ModelResidue::SYMBOL_NAME[ (int)RESIDUE_SYMBOL::COUNT ] = {
+		const std::string Residue::SYMBOL_NAME[ (int)RESIDUE_SYMBOL::COUNT ] = {
 			"Unknown",		 // UNKWNON,
 			"Alanine",		 // ALA,
 			"Arginine",		 // ARG,
@@ -41,7 +41,7 @@ namespace VTX
 			"Water"			 // HOH,
 		};
 
-		const std::string ModelResidue::SYMBOL_SHORT[ (int)RESIDUE_SYMBOL::COUNT ] = {
+		const std::string Residue::SYMBOL_SHORT[ (int)RESIDUE_SYMBOL::COUNT ] = {
 			"UNKNOWN", // UNKWNON
 			"A",	   // ALA,
 			"R",	   // ARG,
@@ -66,7 +66,7 @@ namespace VTX
 			"HOH",	   // HOH,
 		};
 
-		const Vec3f * ModelResidue::SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ] = {
+		const Vec3f * Residue::SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ] = {
 			// TODO
 		};
 

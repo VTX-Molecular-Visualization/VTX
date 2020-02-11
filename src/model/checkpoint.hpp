@@ -1,5 +1,5 @@
-#ifndef __VTX_MODEL_CHECKPOINT__
-#define __VTX_MODEL_CHECKPOINT__
+#ifndef __VTX_CHECKPOINT__
+#define __VTX_CHECKPOINT__
 
 #ifdef _MSC_VER
 #pragma once
@@ -13,8 +13,8 @@ namespace VTX
 {
 	namespace Model
 	{
-		class ModelPath;
-		class ModelCheckpoint : public BaseModel
+		class Path;
+		class Checkpoint : public BaseModel
 		{
 		  public:
 			static uint COUNTER;
@@ -38,12 +38,12 @@ namespace VTX
 				const float	  value;
 			};
 
-			explicit ModelCheckpoint( ModelPath * const p_path, const Vec3f & p_position, const Quatf & p_rotation ) :
+			explicit Checkpoint( Path * const p_path, const Vec3f & p_position, const Quatf & p_rotation ) :
 				_path( p_path ), _position( p_position ), _rotation( p_rotation )
 			{
 				_id = COUNTER++;
 			}
-			explicit ModelCheckpoint( ModelPath * const p_path,
+			explicit Checkpoint( Path * const p_path,
 									  const Vec3f &		p_position,
 									  const Quatf &		p_rotation,
 									  const float		p_duration ) :
@@ -53,7 +53,7 @@ namespace VTX
 				_id = COUNTER++;
 			}
 
-			inline ModelPath * const getPathPtr() const { return _path; }
+			inline Path * const getPathPtr() const { return _path; }
 			inline float			 getDuration() const { return _duration; }
 			inline void				 setDuration( const float p_duration ) { _duration = p_duration; }
 			inline const Vec3f &	 getPosition() const { return _position; }
@@ -64,7 +64,7 @@ namespace VTX
 			virtual void setSelected( const bool ) override;
 
 		  private:
-			ModelPath * const _path;
+			Path * const _path;
 			float			  _duration = 1.f;
 			Vec3f			  _position;
 			Quatf			  _rotation;

@@ -13,9 +13,9 @@ namespace VTX
 {
 	namespace Model
 	{
-		class ModelMolecule;
-		class ModelChain;
-		class ModelResidue : public BaseModel
+		class Molecule;
+		class Chain;
+		class Residue : public BaseModel
 		{
 		  public:
 			enum class RESIDUE_SYMBOL : int
@@ -50,10 +50,10 @@ namespace VTX
 			static const std::string SYMBOL_SHORT[ (int)RESIDUE_SYMBOL::COUNT ];
 			static const Vec3f *	 SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ];
 
-			inline ModelMolecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void				  setMoleculePtr( ModelMolecule * const p_molecule ) { _moleculePtr = p_molecule; }
-			inline ModelChain * const getChainPtr() const { return _chainPtr; }
-			inline void				  setChainPtr( ModelChain * const p_chain ) { _chainPtr = p_chain; }
+			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
+			inline void				  setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
+			inline Chain * const getChainPtr() const { return _chainPtr; }
+			inline void				  setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
 
 			inline const RESIDUE_SYMBOL getSymbol() const { return _symbol; };
 			inline void					setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
@@ -78,8 +78,8 @@ namespace VTX
 			virtual void setSelected( const bool ) override;
 
 		  private:
-			ModelMolecule * _moleculePtr = nullptr;
-			ModelChain *	_chainPtr	 = nullptr;
+			Molecule * _moleculePtr = nullptr;
+			Chain *	_chainPtr	 = nullptr;
 
 			RESIDUE_SYMBOL _symbol		= RESIDUE_SYMBOL::UNKNOWN;
 			float		   _color[ 3 ]	= { 0.f, 0.f, 0.f };

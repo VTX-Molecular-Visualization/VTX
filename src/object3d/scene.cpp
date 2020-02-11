@@ -13,7 +13,7 @@ namespace VTX
 
 		void Scene::clear()
 		{
-			Util::Type::clearVector<Model::ModelMolecule>( _molecules );
+			Util::Type::clearVector<Model::Molecule>( _molecules );
 			Util::Type::clearVector( _paths );
 		}
 

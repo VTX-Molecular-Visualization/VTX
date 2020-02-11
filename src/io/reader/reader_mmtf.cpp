@@ -12,7 +12,7 @@ namespace VTX
 {
 	namespace IO
 	{
-		bool ReaderMMTF::readFile( const Path & p_path, Model::ModelMolecule & p_molecule )
+		bool ReaderMMTF::readFile( const Path & p_path, Model::Molecule & p_molecule )
 		{
 			VTX_INFO( "Loading " + p_path.getFileName() + "..." );
 
@@ -64,7 +64,7 @@ namespace VTX
 			for ( ; chainGlobalIdx < chainCount; ++chainGlobalIdx )
 			{
 				// New chain.
-				Model::ModelChain & chain = p_molecule.getChain( chainGlobalIdx );
+				Model::Chain & chain = p_molecule.getChain( chainGlobalIdx );
 				chain.setMoleculePtr( &p_molecule );
 				chain.setId( chainGlobalIdx );
 				chain.setName( data.chainNameList[ chainGlobalIdx ] );
@@ -83,12 +83,12 @@ namespace VTX
 					const mmtf::GroupType & group = data.groupList[ data.groupTypeList[ residueGlobalIdx ] ];
 
 					// New residue.
-					Model::ModelResidue & residue = p_molecule.getResidue( residueGlobalIdx );
+					Model::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
 					residue.setMoleculePtr( &p_molecule );
 					residue.setChainPtr( &chain );
 					residue.setId( residueGlobalIdx );
 					const std::string & residueSymbol = group.groupName;
-					std::optional symbol = magic_enum::enum_cast<Model::ModelResidue::RESIDUE_SYMBOL>( residueSymbol );
+					std::optional symbol = magic_enum::enum_cast<Model::Residue::RESIDUE_SYMBOL>( residueSymbol );
 					symbol.has_value() ? residue.setSymbol( symbol.value() )
 									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 					residue.setIdFirstAtom( atomGlobalIdx );
@@ -108,16 +108,16 @@ namespace VTX
 					for ( uint atomIdx = 0; atomIdx < atomCount; ++atomIdx, ++atomGlobalIdx )
 					{
 						// New atom.
-						Model::ModelAtom & atom = p_molecule.getAtom( atomGlobalIdx );
+						Model::Atom & atom = p_molecule.getAtom( atomGlobalIdx );
 						atom.setMoleculePtr( &p_molecule );
 						atom.setChainPtr( &chain );
 						atom.setResiduePtr( &residue );
 						atom.setId( atomGlobalIdx );
 						const std::string & atomSymbol = group.elementList[ atomIdx ];
-						std::optional		symbol = magic_enum::enum_cast<Model::ModelAtom::ATOM_SYMBOL>( atomSymbol );
+						std::optional		symbol = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( atomSymbol );
 						symbol.has_value() ? atom.setSymbol( symbol.value() )
 										   : p_molecule.addUnknownAtomSymbol( atomSymbol );
-						const float * const color = Model::ModelAtom::SYMBOL_COLOR[ (int)atom.getSymbol() ];
+						const float * const color = Model::Atom::SYMBOL_COLOR[ (int)atom.getSymbol() ];
 						atom.setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
 
 						x = data.xCoordList[ atomGlobalIdx ];

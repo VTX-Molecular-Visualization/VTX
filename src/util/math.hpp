@@ -6,7 +6,7 @@
 #endif
 
 #include "define.hpp"
-#include "model/model_path.hpp"
+#include "model/path.hpp"
 #include "object3d/camera.hpp"
 #include <glm/gtx/compatibility.hpp>
 #include <random>

@@ -6,16 +6,16 @@
 
 #endif
 #include "base_view_ui.hpp"
-#include "model/model_path.hpp"
+#include "model/path.hpp"
 
 namespace VTX
 {
 	namespace View
 	{
-		class ViewUIPath : public BaseViewUI<Model::ModelPath>
+		class ViewUIPath : public BaseViewUI<Model::Path>
 		{
 		  public:
-			explicit ViewUIPath( Model::ModelPath * const p_model ) : BaseViewUI( p_model ) {}
+			explicit ViewUIPath( Model::Path * const p_model ) : BaseViewUI( p_model ) {}
 
 			virtual std::string getName() const override { return ID::View::UI_PATH; };
 			virtual std::string getComponentParentName() const override { return ID::UI::INSPECTOR; };

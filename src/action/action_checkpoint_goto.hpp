@@ -6,8 +6,8 @@
 #endif
 
 #include "base_action.hpp"
-#include "model/model_checkpoint.hpp"
-#include "model/model_path.hpp"
+#include "model/checkpoint.hpp"
+#include "model/path.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
@@ -19,7 +19,7 @@ namespace VTX
 		class ActionCheckpointGoTo : public BaseAction
 		{
 		  public:
-			explicit ActionCheckpointGoTo( Model::ModelCheckpoint & p_checkpoint, Object3D::Camera & p_camera ) :
+			explicit ActionCheckpointGoTo( Model::Checkpoint & p_checkpoint, Object3D::Camera & p_camera ) :
 				_checkpoint( p_checkpoint ), _camera( p_camera )
 			{
 			}
@@ -28,7 +28,7 @@ namespace VTX
 
 		  private:
 			Object3D::Camera &		 _camera;
-			Model::ModelCheckpoint & _checkpoint;
+			Model::Checkpoint & _checkpoint;
 		};
 	} // namespace Action
 } // namespace VTX

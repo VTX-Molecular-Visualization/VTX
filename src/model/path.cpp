@@ -1,24 +1,21 @@
-#include "model_path.hpp"
+#include "path.hpp"
 #include "exception.hpp"
 #include "util/math.hpp"
 #include "util/type.hpp"
 #include "view/view_ui_path.hpp"
 #include "view/view_ui_path_list.hpp"
-<<<<<<< HEAD
-=======
 #include <fstream>
 #include <sstream>
->>>>>>> 5da47092c1345621f7b491584fa62aaa75ea697e
 
 namespace VTX
 {
 	namespace Model
 	{
-		ModelPath::~ModelPath() { Util::Type::clearVector( _checkpoints ); }
+		Path::~Path() { Util::Type::clearVector( _checkpoints ); }
 
-		void ModelPath::_addItems() { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIPathList( this ) ) ); }
+		void Path::_addItems() { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIPathList( this ) ) ); }
 
-		ModelCheckpoint::CheckpointInterpolationData ModelPath::getCurrentCheckpointInterpolationData(
+		Checkpoint::CheckpointInterpolationData Path::getCurrentCheckpointInterpolationData(
 			float p_time ) const
 		{
 			float total	 = 0.f;
@@ -26,12 +23,12 @@ namespace VTX
 
 			for ( ; offset < _checkpoints.size(); ++offset )
 			{
-				Model::ModelCheckpoint * checkpoint = _checkpoints[ offset ];
+				Model::Checkpoint * checkpoint = _checkpoints[ offset ];
 				if ( offset >= 1 ) { total += checkpoint->getDuration(); }
 				if ( total >= p_time ) { break; }
 			}
 
-			ModelCheckpoint::CheckpointInterpolationData data = ModelCheckpoint::CheckpointInterpolationData(
+			Checkpoint::CheckpointInterpolationData data = Checkpoint::CheckpointInterpolationData(
 				_checkpoints[ offset > 0 ? offset - 1 : 0 ]->getPosition(),
 				_checkpoints[ offset > 0 ? offset - 1 : 0 ]->getRotation(),
 				_checkpoints[ offset ]->getPosition(),
@@ -41,17 +38,7 @@ namespace VTX
 			return data;
 		}
 
-<<<<<<< HEAD
-		void ModelPath::setSelected( const bool p_selected )
-		{
-			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIPath( this ) ) ); }
-			else
-			{
-				_deleteView( ID::View::UI_PATH );
-			}
-=======
-		void ModelPath::importPath( const IO::Path & p_file )
+		void Path::load( const IO::Path & p_file )
 		{
 			VTX_INFO( "Importing view points from " + p_file.str() );
 			std::ifstream file;
@@ -93,14 +80,14 @@ namespace VTX
 				// get duration
 				iss >> duration;
 
-				addCheckpoint( new ModelCheckpoint( position, rotation, duration ) );
+				addCheckpoint( new Checkpoint( this, position, rotation, duration ) );
 			}
 
 			chrono.stop();
 			VTX_INFO( "Import finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
 		}
 
-		void ModelPath::exportPath( const IO::Path & p_file ) const
+		void Path::save( const IO::Path & p_file ) const
 		{
 			VTX_INFO( "Exporting " + std::to_string( _checkpoints.size() ) + " view points in " + p_file.c_str() );
 			std::ofstream file;
@@ -112,7 +99,7 @@ namespace VTX
 			Tool::Chrono chrono = Tool::Chrono();
 			chrono.start();
 			file << _checkpoints.size() << std::endl;
-			for ( Model::ModelCheckpoint * checkpoint : _checkpoints )
+			for ( Model::Checkpoint * checkpoint : _checkpoints )
 			{
 				const Vec3f & p = checkpoint->getPosition();
 				const Quatf & r = checkpoint->getRotation();
@@ -124,15 +111,24 @@ namespace VTX
 			VTX_INFO( "Export finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
 
 			file.close();
->>>>>>> 5da47092c1345621f7b491584fa62aaa75ea697e
 		}
 
-		void ModelPath::setSelectedCheckpoint( const uint p_id )
+		void Path::setSelected( const bool p_selected )
+		{
+			BaseModel::setSelected( p_selected );
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIPath( this ) ) ); }
+			else
+			{
+				_deleteView( ID::View::UI_PATH );
+			}
+		}
+
+		void Path::setSelectedCheckpoint( Checkpoint * const p_checkpoint )
 		{
 			if ( _selectedCheckpoint != nullptr ) { _selectedCheckpoint->setSelected( false ); }
 			try
 			{
-				_selectedCheckpoint = _checkpoints.at( p_id );
+				_selectedCheckpoint = p_checkpoint;
 				_selectedCheckpoint->setSelected( true );
 			}
 			catch ( const std::exception )
@@ -142,10 +138,20 @@ namespace VTX
 			}
 		}
 
-		float ModelPath::computeTotalTime() const
+		void Path::resetSelectedCheckpoint()
+		{
+			if ( _selectedCheckpoint != nullptr )
+			{
+				_selectedCheckpoint->setSelected( false );
+				_selectedCheckpoint = nullptr;
+			}
+		}
+
+		float Path::computeTotalTime() const
 		{
 			float total = 0.f;
-			for ( Model::ModelCheckpoint * checkpoint : _checkpoints )
+			if ( _checkpoints.size() == 0 ) { return total; }
+			for ( Model::Checkpoint * checkpoint : _checkpoints )
 			{
 				total += checkpoint->getDuration();
 			}

@@ -20,7 +20,7 @@ namespace VTX
 			ImGui::PushID( "ViewMolecule" );
 			if ( ImGui::CollapsingHeader( _getModel().getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
 			{
-				for ( Model::ModelChain & chain : _getModel().getChains() )
+				for ( Model::Chain & chain : _getModel().getChains() )
 				{
 					ImGui::PushID( chain.getId() );
 					bool chainOpened = ImGui::TreeNodeEx(
@@ -37,7 +37,7 @@ namespace VTX
 					{
 						for ( uint i = 0; i < chain.getResidueCount(); ++i )
 						{
-							Model::ModelResidue & residue = _getModel().getResidue( chain.getIdFirstResidue() + i );
+							Model::Residue & residue = _getModel().getResidue( chain.getIdFirstResidue() + i );
 							ImGui::PushID( residue.getId() );
 							bool residueOpened = ImGui::TreeNodeEx(
 								VTX::Setting::UI::symbolDisplayMode == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
@@ -55,7 +55,7 @@ namespace VTX
 							{
 								for ( uint j = 0; j < residue.getAtomCount(); ++j )
 								{
-									Model::ModelAtom & atom = _getModel().getAtom( residue.getIdFirstAtom() + j );
+									Model::Atom & atom = _getModel().getAtom( residue.getIdFirstAtom() + j );
 									ImGui::PushID( atom.getId() );
 									if ( ImGui::Selectable(
 											 VTX::Setting::UI::symbolDisplayMode

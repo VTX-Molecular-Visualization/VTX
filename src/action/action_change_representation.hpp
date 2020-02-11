@@ -6,7 +6,7 @@
 #endif
 
 #include "base_action.hpp"
-#include "model/model_molecule.hpp"
+#include "model/molecule.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -24,7 +24,7 @@ namespace VTX
 			virtual void execute() override
 			{
 				Setting::Rendering::representation = _representation;
-				for ( Model::ModelMolecule * const molecule : VTXApp::get().getScene().getMolecules() )
+				for ( Model::Molecule * const molecule : VTXApp::get().getScene().getMolecules() )
 				{
 					molecule->setRepresentation();
 				}

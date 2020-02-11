@@ -14,7 +14,7 @@ namespace VTX
 		class View3DMoleculeSphere : public BaseView3DMolecule
 		{
 		  public:
-			explicit View3DMoleculeSphere( Model::ModelMolecule * const p_model ) : BaseView3DMolecule( p_model ) {}
+			explicit View3DMoleculeSphere( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 
 			virtual std::string getName() const override { return ID::View::D3_SPHERE; };
 			virtual void		initItem() override;

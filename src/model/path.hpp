@@ -9,17 +9,17 @@
 #include "../object3d/camera.hpp"
 #include "base_model.hpp"
 #include "define.hpp"
-#include "model_checkpoint.hpp"
+#include "checkpoint.hpp"
 #include <vector>
 
 namespace VTX
 {
 	namespace Model
 	{
-		class ModelPath : public BaseModel, public Generic::BaseSerializable
+		class Path : public BaseModel, public Generic::BaseSerializable
 		{
 		  public:
-			using CheckpointPtr		  = Model::ModelCheckpoint *;
+			using CheckpointPtr		  = Model::Checkpoint *;
 			using VectorCheckpointPtr = std::vector<CheckpointPtr>;
 
 			enum class COMPUTATION_MODE : int
@@ -28,8 +28,8 @@ namespace VTX
 				SPEED
 			};
 
-			ModelPath() { setId( 0 ); };
-			~ModelPath();
+			Path() { setId( 0 ); };
+			~Path();
 
 			void addCheckpoint( const CheckpointPtr p_checkpoint ) { _checkpoints.emplace_back( p_checkpoint ); }
 			void removeCheckpoint( const CheckpointPtr p_checkpoint )
@@ -39,10 +39,10 @@ namespace VTX
 			inline VectorCheckpointPtr & getCheckpoints() { return _checkpoints; }
 
 			virtual void								 setSelected( const bool ) override;
-			void										 setSelectedCheckpoint( ModelCheckpoint * const );
+			void										 setSelectedCheckpoint( Checkpoint * const );
 			void										 resetSelectedCheckpoint();
 			float										 computeTotalTime() const;
-			ModelCheckpoint::CheckpointInterpolationData getCurrentCheckpointInterpolationData( float p_time ) const;
+			Checkpoint::CheckpointInterpolationData getCurrentCheckpointInterpolationData( float p_time ) const;
 
 			// TODO: redo implementation.
 			virtual void load( const IO::Path & ) override;

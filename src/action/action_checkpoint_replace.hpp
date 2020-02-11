@@ -7,7 +7,7 @@
 
 #include "../object3d/camera.hpp"
 #include "base_action.hpp"
-#include "model/model_checkpoint.hpp"
+#include "model/checkpoint.hpp"
 
 namespace VTX
 {
@@ -16,7 +16,7 @@ namespace VTX
 		class ActionCheckpointReplace : public BaseAction
 		{
 		  public:
-			explicit ActionCheckpointReplace( Model::ModelCheckpoint & p_checkpoint,
+			explicit ActionCheckpointReplace( Model::Checkpoint & p_checkpoint,
 											  const Object3D::Camera & p_camera ) :
 				_checkpoint( p_checkpoint ),
 				_position( p_camera.getPosition() ), _rotation( p_camera.getRotation() )
@@ -30,7 +30,7 @@ namespace VTX
 			}
 
 		  private:
-			Model::ModelCheckpoint & _checkpoint;
+			Model::Checkpoint & _checkpoint;
 			const Vec3f				 _position;
 			const Quatf				 _rotation;
 		};

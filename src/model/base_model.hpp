@@ -1,5 +1,5 @@
-#ifndef __VTX_BASE_MODEL__
-#define __VTX_BASE_MODEL__
+#ifndef __VTX_BASE__
+#define __VTX_BASE__
 
 #ifdef _MSC_VER
 #pragma once

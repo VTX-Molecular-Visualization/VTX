@@ -1,4 +1,4 @@
-#include "model_molecule.hpp"
+#include "molecule.hpp"
 #include "util/type.hpp"
 #include "view/view_3d_molecule_cylinder.hpp"
 #include "view/view_3d_molecule_sphere.hpp"
@@ -10,7 +10,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		ModelMolecule::~ModelMolecule()
+		Molecule::~Molecule()
 		{
 			return;
 
@@ -21,7 +21,7 @@ namespace VTX
 			if ( _bondsIBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_bondsIBO );
 		}
 
-		void ModelMolecule::init()
+		void Molecule::init()
 		{
 			// Add views.
 			BaseModel::init();
@@ -36,7 +36,7 @@ namespace VTX
 			setRepresentation();
 		}
 
-		void ModelMolecule::_addItems()
+		void Molecule::_addItems()
 		{
 			// Add views.
 			addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeSphere( this ) ) );
@@ -44,23 +44,23 @@ namespace VTX
 			addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMoleculeStructure( this ) ) );
 		}
 
-		void ModelMolecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }
+		void Molecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }
 
-		void ModelMolecule::setColorMode()
+		void Molecule::setColorMode()
 		{
 			_atomColors.clear();
 
 			switch ( Setting::Rendering::colorMode )
 			{
 			case View::MOLECULE_COLOR_MODE::ATOM:
-				for ( ModelAtom & atom : _atoms )
+				for ( Atom & atom : _atoms )
 				{
 					_atomColors.emplace_back(
 						Vec3f( atom.getColor()[ 0 ], atom.getColor()[ 1 ], atom.getColor()[ 2 ] ) );
 				}
 				break;
 			case View::MOLECULE_COLOR_MODE::RESIDUE:
-				for ( ModelAtom & atom : _atoms )
+				for ( Atom & atom : _atoms )
 				{
 					_atomColors.emplace_back( atom.getResiduePtr()->getColor()[ 0 ],
 											  atom.getResiduePtr()->getColor()[ 1 ],
@@ -68,7 +68,7 @@ namespace VTX
 				}
 				break;
 			case View::MOLECULE_COLOR_MODE::CHAIN:
-				for ( ModelAtom & atom : _atoms )
+				for ( Atom & atom : _atoms )
 				{
 					_atomColors.emplace_back( atom.getChainPtr()->getColor()[ 0 ],
 											  atom.getChainPtr()->getColor()[ 1 ],
@@ -83,7 +83,7 @@ namespace VTX
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		}
 
-		void ModelMolecule::print() const
+		void Molecule::print() const
 		{
 			VTX_INFO( "Molecule: " + _name );
 			VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: "
@@ -91,7 +91,7 @@ namespace VTX
 					  + " / Bonds: " + std::to_string( _bonds.size() ) );
 		}
 
-		void ModelMolecule::setSelected( const bool p_selected )
+		void Molecule::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMolecule( this ) ) ); }
@@ -101,7 +101,7 @@ namespace VTX
 			}
 		}
 
-		void ModelMolecule::setSelectedChain( ModelChain * const p_chain )
+		void Molecule::setSelectedChain( Chain * const p_chain )
 		{
 			if ( _selectedChain != nullptr ) { _selectedChain->setSelected( false ); }
 			try
@@ -116,7 +116,7 @@ namespace VTX
 			}
 		}
 
-		void ModelMolecule::setSelectedResidue( ModelResidue * const p_residue )
+		void Molecule::setSelectedResidue( Residue * const p_residue )
 		{
 			if ( _selectedResidue != nullptr ) { _selectedResidue->setSelected( false ); }
 			try
@@ -132,7 +132,7 @@ namespace VTX
 			}
 		}
 
-		void ModelMolecule::setSelectedAtom( ModelAtom * const p_atom )
+		void Molecule::setSelectedAtom( Atom * const p_atom )
 		{
 			if ( _selectedAtom != nullptr ) { _selectedAtom->setSelected( false ); }
 			try
@@ -148,7 +148,7 @@ namespace VTX
 			}
 		}
 
-		void ModelMolecule::resetSelectedChain()
+		void Molecule::resetSelectedChain()
 		{
 			if ( _selectedChain != nullptr )
 			{
@@ -159,7 +159,7 @@ namespace VTX
 			resetSelectedResidue();
 		}
 
-		void ModelMolecule::resetSelectedResidue()
+		void Molecule::resetSelectedResidue()
 		{
 			if ( _selectedResidue != nullptr )
 			{
@@ -170,7 +170,7 @@ namespace VTX
 			resetSelectedAtom();
 		}
 
-		void ModelMolecule::resetSelectedAtom()
+		void Molecule::resetSelectedAtom()
 		{
 			if ( _selectedAtom != nullptr )
 			{
@@ -179,7 +179,7 @@ namespace VTX
 			}
 		}
 
-		void ModelMolecule::_createBuffers()
+		void Molecule::_createBuffers()
 		{
 			glGenBuffers( 1, &_atomPositionsVBO );
 			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
@@ -228,19 +228,19 @@ namespace VTX
 			glBindVertexArray( 0 );
 		}
 
-		void ModelMolecule::bindBuffers()
+		void Molecule::bindBuffers()
 		{
 			glBindVertexArray( _vao );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
 		}
 
-		void ModelMolecule::unbindBuffers()
+		void Molecule::unbindBuffers()
 		{
 			glBindVertexArray( 0 );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 		}
 
-		void ModelMolecule::render()
+		void Molecule::render()
 		{
 			bindBuffers();
 			_notifyViews( Event::EVENT_MODEL::RENDER );

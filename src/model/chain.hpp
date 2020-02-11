@@ -13,12 +13,12 @@ namespace VTX
 {
 	namespace Model
 	{
-		class ModelMolecule;
-		class ModelChain : public BaseModel
+		class Molecule;
+		class Chain : public BaseModel
 		{
 		  public:
-			inline ModelMolecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void setMoleculePtr( ModelMolecule * const p_molecule ) { _moleculePtr = p_molecule; }
+			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
+			inline void setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
 
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
@@ -37,7 +37,7 @@ namespace VTX
 			virtual void setSelected( const bool ) override;
 
 		  private:
-			ModelMolecule * _moleculePtr = nullptr;
+			Molecule * _moleculePtr = nullptr;
 
 			std::string _name			= "";
 			float		_color[ 3 ]		= { 0.f, 0.f, 0.f };

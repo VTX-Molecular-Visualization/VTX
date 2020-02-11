@@ -5,17 +5,17 @@
 #pragma once
 #endif
 
-#include "model/model_residue.hpp"
+#include "model/residue.hpp"
 #include "base_view_ui.hpp"
 
 namespace VTX
 {
 	namespace View
 	{
-		class ViewUIResidue : public BaseViewUI<Model::ModelResidue>
+		class ViewUIResidue : public BaseViewUI<Model::Residue>
 		{
 		  public:
-			explicit ViewUIResidue( Model::ModelResidue * const p_model ) : BaseViewUI( p_model ) {}
+			explicit ViewUIResidue( Model::Residue * const p_model ) : BaseViewUI( p_model ) {}
 			virtual void notify( Event::EVENT_MODEL ) override;
 
 			virtual std::string getName() const override { return ID::View::UI_RESIDUE; };

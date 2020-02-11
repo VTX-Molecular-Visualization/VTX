@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "model/model_molecule.hpp"
+#include "model/molecule.hpp"
 #include "base_view_3d.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -30,10 +30,10 @@ namespace VTX
 			STICK
 		};
 
-		class BaseView3DMolecule : public BaseView3D<Model::ModelMolecule>
+		class BaseView3DMolecule : public BaseView3D<Model::Molecule>
 		{
 		  public:
-			explicit BaseView3DMolecule( Model::ModelMolecule * const p_model ) : BaseView3D( p_model ) {}
+			explicit BaseView3DMolecule( Model::Molecule * const p_model ) : BaseView3D( p_model ) {}
 			virtual ~BaseView3DMolecule() {}
 
 			virtual void notify( Event::EVENT_MODEL p_event ) override

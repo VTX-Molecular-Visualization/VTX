@@ -1,6 +1,6 @@
 #include "state_playing.hpp"
-#include "../model/model_checkpoint.hpp"
-#include "model/model_path.hpp"
+#include "../model/checkpoint.hpp"
+#include "model/path.hpp"
 #include "object3d/scene.hpp"
 #include "tool/chrono.hpp"
 #include "util/math.hpp"
@@ -12,7 +12,7 @@ namespace VTX
 	{
 		void StatePlaying::enter( void * const p_arg )
 		{
-			_path = (Model::ModelPath *)p_arg;
+			_path = (Model::Path *)p_arg;
 
 			if ( _path->getCheckpoints().size() < 2 )
 			{
@@ -62,7 +62,7 @@ namespace VTX
 
 		void StatePlaying::_setCamera() const
 		{
-			Model::ModelCheckpoint::CheckpointInterpolationData data
+			Model::Checkpoint::CheckpointInterpolationData data
 				= _path->getCurrentCheckpointInterpolationData( _time );
 			VTXApp::get().getScene().getCamera().set(
 				Util::Math::lerp( data.positionLhs, data.positionRhs, data.value ),

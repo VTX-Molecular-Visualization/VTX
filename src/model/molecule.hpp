@@ -1,5 +1,5 @@
-#ifndef __VTX_MODEL_MOLECULE__
-#define __VTX_MODEL_MOLECULE__
+#ifndef __VTX_MOLECULE__
+#define __VTX_MOLECULE__
 
 #ifdef _MSC_VER
 #pragma once
@@ -11,9 +11,9 @@
 #include "generic/base_renderable.hpp"
 #include "generic/base_transformable.hpp"
 #include "math/aabb.hpp"
-#include "model_atom.hpp"
-#include "model_chain.hpp"
-#include "model_residue.hpp"
+#include "atom.hpp"
+#include "chain.hpp"
+#include "residue.hpp"
 #include "util/logger.hpp"
 #include <GL/gl3w.h>
 #include <glm/gtx/string_cast.hpp>
@@ -26,30 +26,30 @@ namespace VTX
 	namespace Model
 	{
 		class BaseView3DMolecule;
-		class ModelMolecule :
+		class Molecule :
 			public BaseModel,
 			public Generic::BasePrintable,
 			public Generic::BaseTransformable,
 			public Generic::BaseRenderable
 		{
 		  public:
-			ModelMolecule() = default;
-			~ModelMolecule();
+			Molecule() = default;
+			~Molecule();
 
 			// Models.
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
-			inline ModelChain &	  addChain() { return _chains.emplace_back( ModelChain() ); }
-			inline ModelChain &	  getChain( uint p_idx ) { return _chains[ p_idx ]; }
-			inline ModelResidue & addResidue() { return _residues.emplace_back( ModelResidue() ); }
-			inline ModelResidue & getResidue( uint p_idx ) { return _residues[ p_idx ]; }
-			inline ModelAtom &	  addAtom() { return _atoms.emplace_back( ModelAtom() ); }
-			inline ModelAtom &	  getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
+			inline Chain &	  addChain() { return _chains.emplace_back( Chain() ); }
+			inline Chain &	  getChain( uint p_idx ) { return _chains[ p_idx ]; }
+			inline Residue & addResidue() { return _residues.emplace_back( Residue() ); }
+			inline Residue & getResidue( uint p_idx ) { return _residues[ p_idx ]; }
+			inline Atom &	  addAtom() { return _atoms.emplace_back( Atom() ); }
+			inline Atom &	  getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
 
-			inline std::vector<ModelChain> &   getChains() { return _chains; }
-			inline std::vector<ModelResidue> & getResidues() { return _residues; }
-			inline std::vector<ModelAtom> &	   getAtoms() { return _atoms; }
+			inline std::vector<Chain> &   getChains() { return _chains; }
+			inline std::vector<Residue> & getResidues() { return _residues; }
+			inline std::vector<Atom> &	   getAtoms() { return _atoms; }
 
 			inline std::set<std::string> & getUnknownResidueSymbols() { return _unknownResidueSymbol; }
 			inline std::set<std::string> & getUnknownAtomSymbols() { return _unknownAtomSymbol; }
@@ -90,12 +90,12 @@ namespace VTX
 
 			virtual void print() const override;
 
-			ModelChain * const	 getSelectedChain() const { return _selectedChain; }
-			ModelResidue * const getSelectedResidue() const { return _selectedResidue; }
-			ModelAtom * const	 getSelectedAtom() const { return _selectedAtom; }
-			void				 setSelectedChain( ModelChain * const );
-			void				 setSelectedResidue( ModelResidue * const );
-			void				 setSelectedAtom( ModelAtom * const );
+			Chain * const	 getSelectedChain() const { return _selectedChain; }
+			Residue * const getSelectedResidue() const { return _selectedResidue; }
+			Atom * const	 getSelectedAtom() const { return _selectedAtom; }
+			void				 setSelectedChain( Chain * const );
+			void				 setSelectedResidue( Residue * const );
+			void				 setSelectedAtom( Atom * const );
 			void				 resetSelectedChain();
 			void				 resetSelectedResidue();
 			void				 resetSelectedAtom();
@@ -113,9 +113,9 @@ namespace VTX
 		  private:
 			// Models.
 			std::string				  _name		= "";
-			std::vector<ModelChain>	  _chains	= std::vector<ModelChain>();
-			std::vector<ModelResidue> _residues = std::vector<ModelResidue>();
-			std::vector<ModelAtom>	  _atoms	= std::vector<ModelAtom>();
+			std::vector<Chain>	  _chains	= std::vector<Chain>();
+			std::vector<Residue> _residues = std::vector<Residue>();
+			std::vector<Atom>	  _atoms	= std::vector<Atom>();
 
 			std::set<std::string> _unknownResidueSymbol = std::set<std::string>();
 			std::set<std::string> _unknownAtomSymbol	= std::set<std::string>();
@@ -129,9 +129,9 @@ namespace VTX
 			Math::AABB _aabb;
 
 			// Selection.
-			ModelChain *   _selectedChain	= nullptr;
-			ModelResidue * _selectedResidue = nullptr;
-			ModelAtom *	   _selectedAtom	= nullptr;
+			Chain *   _selectedChain	= nullptr;
+			Residue * _selectedResidue = nullptr;
+			Atom *	   _selectedAtom	= nullptr;
 
 			// OpenGL buffers.
 			enum ATTRIBUTE_LOCATION

@@ -5,17 +5,17 @@
 #pragma once
 #endif
 
-#include "model/model_path.hpp"
+#include "model/path.hpp"
 #include "base_view_ui.hpp"
 
 namespace VTX
 {
 	namespace View
 	{
-		class ViewUIPathList : public BaseViewUI<Model::ModelPath>
+		class ViewUIPathList : public BaseViewUI<Model::Path>
 		{
 		  public:
-			explicit ViewUIPathList( Model::ModelPath * const p_model ) : BaseViewUI( p_model ) {}
+			explicit ViewUIPathList( Model::Path * const p_model ) : BaseViewUI( p_model ) {}
 
 			virtual std::string getName() const override { return ID::View::UI_PATH_LIST; }
 			virtual std::string getComponentParentName() const override { return ID::UI::CAMERA_EDITOR; };

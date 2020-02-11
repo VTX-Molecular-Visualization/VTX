@@ -6,7 +6,7 @@
 #endif
 
 #include "base_action.hpp"
-#include "model/model_molecule.hpp"
+#include "model/molecule.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

@@ -7,8 +7,8 @@
 
 #include "camera.hpp"
 #include "generic/base_updatable.hpp"
-#include "model/model_molecule.hpp"
-#include "model/model_path.hpp"
+#include "model/molecule.hpp"
+#include "model/path.hpp"
 #include "util/type.hpp"
 #include <vector>
 
@@ -19,8 +19,8 @@ namespace VTX
 		class Scene : public Generic::BaseUpdatable
 		{
 		  public:
-			using MoleculePtr		= Model::ModelMolecule *;
-			using PathPtr			= Model::ModelPath *;
+			using MoleculePtr		= Model::Molecule *;
+			using PathPtr			= Model::Path *;
 			using VectorMoleculePtr = std::vector<MoleculePtr>;
 			using VectorPathPtr		= std::vector<PathPtr>;
 

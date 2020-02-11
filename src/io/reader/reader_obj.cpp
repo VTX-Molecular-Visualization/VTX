@@ -11,7 +11,7 @@ namespace VTX
 {
 	namespace IO
 	{
-		bool ReaderOBJ::readFile( const Path & p_path, Model::ModelMolecule & p_molecule )
+		bool ReaderOBJ::readFile( const Path & p_path, Model::Molecule & p_molecule )
 		{
 			VTX_INFO( "Loading " + p_path.getFileName() + "..." );
 
@@ -59,7 +59,7 @@ namespace VTX
 				const aiMaterial * const material = scene->mMaterials[ mesh->mMaterialIndex ];
 
 				// New chain.
-				Model::ModelChain & chain = p_molecule.getChain( chainGlobalIdx );
+				Model::Chain & chain = p_molecule.getChain( chainGlobalIdx );
 				chain.setMoleculePtr( &p_molecule );
 				chain.setId( chainGlobalIdx );
 				chain.setName( mesh->mName.C_Str() );
@@ -73,11 +73,11 @@ namespace VTX
 					const aiFace face = mesh->mFaces[ residueIdx ];
 
 					// New residue.
-					Model::ModelResidue & residue = p_molecule.getResidue( residueGlobalIdx );
+					Model::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
 					residue.setMoleculePtr( &p_molecule );
 					residue.setChainPtr( &chain );
 					residue.setId( residueGlobalIdx );
-					residue.setSymbol( Model::ModelResidue::RESIDUE_SYMBOL::UNKNOWN );
+					residue.setSymbol( Model::Residue::RESIDUE_SYMBOL::UNKNOWN );
 					residue.setIdFirstAtom( atomGlobalIdx );
 					residue.setAtomCount( uint( mesh->mNumVertices ) );
 					residue.setIdFirstBond( bondGlobalIdx );
@@ -90,12 +90,12 @@ namespace VTX
 						uint indice = face.mIndices[ atomIdx ];
 
 						// New atom.
-						Model::ModelAtom & atom = p_molecule.getAtom( atomGlobalIdx );
+						Model::Atom & atom = p_molecule.getAtom( atomGlobalIdx );
 						atom.setMoleculePtr( &p_molecule );
 						atom.setChainPtr( &chain );
 						atom.setResiduePtr( &residue );
 						atom.setId( atomGlobalIdx );
-						atom.setSymbol( Model::ModelAtom::ATOM_SYMBOL::UNKNOWN );
+						atom.setSymbol( Model::Atom::ATOM_SYMBOL::UNKNOWN );
 
 						aiColor4D diffuse;
 						if ( aiGetMaterialColor( material, AI_MATKEY_COLOR_DIFFUSE, &diffuse ) == AI_SUCCESS )

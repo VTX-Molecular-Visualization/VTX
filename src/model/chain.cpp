@@ -1,4 +1,4 @@
-#include "model_chain.hpp"
+#include "chain.hpp"
 #include "util/type.hpp"
 #include "view/view_ui_chain.hpp"
 
@@ -6,7 +6,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		void ModelChain::setSelected( const bool p_selected )
+		void Chain::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIChain( this ) ) ); }

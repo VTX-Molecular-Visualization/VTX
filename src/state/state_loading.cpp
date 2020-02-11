@@ -1,8 +1,8 @@
 #include "state_loading.hpp"
 #include "io/reader/reader_mmtf.hpp"
 #include "io/reader/reader_obj.hpp"
-#include "model/model_molecule.hpp"
-#include "model/model_path.hpp"
+#include "model/molecule.hpp"
+#include "model/path.hpp"
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
 
@@ -24,7 +24,7 @@ namespace VTX
 
 		void StateLoading::_loadFile( std::string * p_path ) const
 		{
-			Model::ModelMolecule * molecule = new Model::ModelMolecule();
+			Model::Molecule * molecule = new Model::Molecule();
 			Object3D::Scene *	   scene	= &( VTXApp::get().getScene() );
 
 			// VTXApp::get().addThread( new std::thread( [ molecule, scene ] {
@@ -48,7 +48,7 @@ namespace VTX
 				scene->addMolecule( molecule );
 			}
 
-			Model::ModelPath * p = new Model::ModelPath();
+			Model::Path * p = new Model::Path();
 			p->init();
 			scene->addPath( p );
 			p->setSelected( true );

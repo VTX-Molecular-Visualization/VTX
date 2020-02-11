@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "model/model_path.hpp"
+#include "model/path.hpp"
 #include "base_state.hpp"
 
 namespace VTX
@@ -23,7 +23,7 @@ namespace VTX
 			virtual void		update( const double ) override;
 
 		  private:
-			Model::ModelPath * _path	  = nullptr;
+			Model::Path * _path	  = nullptr;
 			float			   _time	  = 0.f;
 			float			   _totalTime = 0.f;
 

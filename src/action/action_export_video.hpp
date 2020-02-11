@@ -7,7 +7,7 @@
 
 #include "../tool/chrono.hpp"
 #include "base_action.hpp"
-#include "model/model_path.hpp"
+#include "model/path.hpp"
 #include "tool/snapshoter.hpp"
 #include "util/math.hpp"
 #include "util/time.hpp"
@@ -22,7 +22,7 @@ namespace VTX
 		  public:
 			virtual void execute() override
 			{
-				Model::ModelPath * path = VTXApp::get().getScene().getPaths()[ 0 ];
+				Model::Path * path = VTXApp::get().getScene().getPaths()[ 0 ];
 
 				if ( path->getCheckpoints().size() < 2 )
 				{
@@ -53,7 +53,7 @@ namespace VTX
 				for ( uint frame = 0; frame < totalFrame; ++frame )
 				{
 					float												time = (float)frame / VIDEO_FPS;
-					Model::ModelCheckpoint::CheckpointInterpolationData data
+					Model::Checkpoint::CheckpointInterpolationData data
 						= path->getCurrentCheckpointInterpolationData( time );
 					VTXApp::get().getScene().getCamera().set(
 						Util::Math::lerp( data.positionLhs, data.positionRhs, data.value ),

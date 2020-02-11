@@ -2,7 +2,7 @@
 #include "id.hpp"
 #include "io/path.hpp"
 #include "io/reader/reader_mmtf.hpp"
-#include "model/model_molecule.hpp"
+#include "model/molecule.hpp"
 #include "renderer/renderer_gl.hpp"
 #include "ui/imgui/imgui_impl_sdl.h"
 #include <thread>

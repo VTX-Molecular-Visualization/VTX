@@ -6,7 +6,7 @@
 #endif
 
 #include "base_action.hpp"
-#include "model/model_checkpoint.hpp"
+#include "model/checkpoint.hpp"
 
 namespace VTX
 {
@@ -15,7 +15,7 @@ namespace VTX
 		class ActionCheckpointChangeDuration : public BaseAction
 		{
 		  public:
-			explicit ActionCheckpointChangeDuration( Model::ModelCheckpoint & p_checkpoint, const float p_duration ) :
+			explicit ActionCheckpointChangeDuration( Model::Checkpoint & p_checkpoint, const float p_duration ) :
 				_checkpoint( p_checkpoint ), _duration( p_duration )
 			{
 			}
@@ -23,7 +23,7 @@ namespace VTX
 			virtual void execute() override { _checkpoint.setDuration( _duration ); }
 
 		  private:
-			Model::ModelCheckpoint & _checkpoint;
+			Model::Checkpoint & _checkpoint;
 			const float				 _duration;
 		};
 	} // namespace Action

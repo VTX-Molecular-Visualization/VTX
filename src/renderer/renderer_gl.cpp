@@ -1,6 +1,6 @@
 #include "renderer_gl.hpp"
 #include "glm/gtx/compatibility.hpp"
-#include "model/model_molecule.hpp"
+#include "model/molecule.hpp"
 #include "setting.hpp"
 #include "view/base_view_3d_molecule.hpp"
 #include "vtx_app.hpp"
@@ -279,7 +279,7 @@ namespace VTX
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboGeo );
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-			for ( Model::ModelMolecule * const molecule : p_scene.getMolecules() )
+			for ( Model::Molecule * const molecule : p_scene.getMolecules() )
 			{
 				molecule->render();
 			}

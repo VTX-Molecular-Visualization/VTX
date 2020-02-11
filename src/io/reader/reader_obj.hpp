@@ -14,7 +14,7 @@ namespace VTX
 		class ReaderOBJ : public BaseReader
 		{
 		  public:
-			virtual bool readFile( const Path &, Model::ModelMolecule & ) override;
+			virtual bool readFile( const Path &, Model::Molecule & ) override;
 		};
 
 	} // namespace IO

@@ -6,8 +6,8 @@
 #endif
 
 #include "base_action.hpp"
-#include "model/model_checkpoint.hpp"
-#include "model/model_path.hpp"
+#include "model/checkpoint.hpp"
+#include "model/path.hpp"
 
 namespace VTX
 {
@@ -16,7 +16,7 @@ namespace VTX
 		class ActionCheckpointDelete : public BaseAction
 		{
 		  public:
-			explicit ActionCheckpointDelete( Model::ModelCheckpoint & p_checkpoint ) : _checkpoint( p_checkpoint ) {}
+			explicit ActionCheckpointDelete( Model::Checkpoint & p_checkpoint ) : _checkpoint( p_checkpoint ) {}
 
 			virtual void execute() override
 			{
@@ -26,7 +26,7 @@ namespace VTX
 			}
 
 		  private:
-			Model::ModelCheckpoint & _checkpoint;
+			Model::Checkpoint & _checkpoint;
 		};
 	} // namespace Action
 } // namespace VTX

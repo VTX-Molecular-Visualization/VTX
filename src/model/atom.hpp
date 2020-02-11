@@ -15,10 +15,10 @@ namespace VTX
 {
 	namespace Model
 	{
-		class ModelMolecule;
-		class ModelChain;
-		class ModelResidue;
-		class ModelAtom : public BaseModel
+		class Molecule;
+		class Chain;
+		class Residue;
+		class Atom : public BaseModel
 		{
 		  public:
 			// Sorted by atomic number.
@@ -151,12 +151,12 @@ namespace VTX
 			static const float		 SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ];
 			static float *			 SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ];
 
-			inline ModelMolecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void				  setMoleculePtr( ModelMolecule * const p_molecule ) { _moleculePtr = p_molecule; }
-			inline ModelChain * const getChainPtr() const { return _chainPtr; }
-			inline void				  setChainPtr( ModelChain * const p_chain ) { _chainPtr = p_chain; }
-			inline ModelResidue * const getResiduePtr() const { return _residuePtr; }
-			inline void					setResiduePtr( ModelResidue * const p_residue ) { _residuePtr = p_residue; }
+			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
+			inline void				  setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
+			inline Chain * const getChainPtr() const { return _chainPtr; }
+			inline void				  setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
+			inline Residue * const getResiduePtr() const { return _residuePtr; }
+			inline void					setResiduePtr( Residue * const p_residue ) { _residuePtr = p_residue; }
 
 			inline const ATOM_SYMBOL   getSymbol() const { return _symbol; };
 			inline const std::string   getSymbolStr() const { return "" /*magic_enum::enum_name( _symbol )*/; };
@@ -175,9 +175,9 @@ namespace VTX
 			virtual void setSelected( const bool ) override;
 
 		  private:
-			ModelMolecule * _moleculePtr = nullptr;
-			ModelChain *	_chainPtr	 = nullptr;
-			ModelResidue *	_residuePtr	 = nullptr;
+			Molecule * _moleculePtr = nullptr;
+			Chain *	_chainPtr	 = nullptr;
+			Residue *	_residuePtr	 = nullptr;
 
 			ATOM_SYMBOL _symbol		= ATOM_SYMBOL::UNKNOWN;
 			float		_color[ 3 ] = { 0.f, 0.f, 0.f };
