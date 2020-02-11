@@ -14,15 +14,15 @@ namespace VTX
 				ImGui::PushID( "ViewPathList" );
 				if ( ImGui::CollapsingHeader( "Path", ImGuiTreeNodeFlags_DefaultOpen ) )
 				{
-					for ( Model::Viewpoint * const checkpoint : _getModel().getViewpoints() )
+					for ( Model::Viewpoint * const viewpoint : _getModel().getViewpoints() )
 					{
-						ImGui::PushID( checkpoint->getId() );
-						if ( ImGui::Selectable( ( "Viewpoint " + std::to_string( checkpoint->getId() ) ).c_str() )/*,
-						 checkpoint->isSelected()*/ )
+						ImGui::PushID( viewpoint->getId() );
+						if ( ImGui::Selectable( ( "Viewpoint " + std::to_string( viewpoint->getId() ) ).c_str() )/*,
+						 viewpoint->isSelected()*/ )
 						{
 							VTXApp::get().action(
-								new Action::ViewpointGoTo( *checkpoint, VTXApp::get().getScene().getCamera() ) );
-							_getModel().setSelectedViewpoint( checkpoint );
+								new Action::ViewpointGoTo( *viewpoint, VTXApp::get().getScene().getCamera() ) );
+							_getModel().setSelectedViewpoint( viewpoint );
 						}
 						ImGui::PopID();
 					}

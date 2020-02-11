@@ -31,10 +31,10 @@ namespace VTX
 			Path() { setId( 0 ); };
 			~Path();
 
-			void addViewpoint( const ViewpointPtr p_checkpoint ) { _viewpoints.emplace_back( p_checkpoint ); }
-			void removeViewpoint( const ViewpointPtr p_checkpoint )
+			void addViewpoint( const ViewpointPtr p_viewpoint ) { _viewpoints.emplace_back( p_viewpoint ); }
+			void removeViewpoint( const ViewpointPtr p_viewpoint )
 			{
-				_viewpoints.erase( std::find( _viewpoints.begin(), _viewpoints.end(), p_checkpoint ) );
+				_viewpoints.erase( std::find( _viewpoints.begin(), _viewpoints.end(), p_viewpoint ) );
 			}
 			inline VectorViewpointPtr & getViewpoints() { return _viewpoints; }
 

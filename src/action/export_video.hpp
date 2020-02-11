@@ -26,7 +26,7 @@ namespace VTX
 
 				if ( path->getViewpoints().size() < 2 )
 				{
-					VTX_WARNING( "At least 2 checkpoints needed to play animation" );
+					VTX_WARNING( "At least 2 viewpoints needed to play animation" );
 					VTXApp::get().goToState( ID::State::VISUALIZATION );
 					return;
 				}

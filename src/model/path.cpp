@@ -22,8 +22,8 @@ namespace VTX
 
 			for ( ; offset < _viewpoints.size(); ++offset )
 			{
-				Model::Viewpoint * checkpoint = _viewpoints[ offset ];
-				if ( offset >= 1 ) { total += checkpoint->getDuration(); }
+				Model::Viewpoint * viewpoint = _viewpoints[ offset ];
+				if ( offset >= 1 ) { total += viewpoint->getDuration(); }
 				if ( total >= p_time ) { break; }
 			}
 
@@ -98,11 +98,11 @@ namespace VTX
 			Tool::Chrono chrono = Tool::Chrono();
 			chrono.start();
 			file << _viewpoints.size() << std::endl;
-			for ( Model::Viewpoint * checkpoint : _viewpoints )
+			for ( Model::Viewpoint * viewpoint : _viewpoints )
 			{
-				const Vec3f & p = checkpoint->getPosition();
-				const Quatf & r = checkpoint->getRotation();
-				const float & d = checkpoint->getDuration();
+				const Vec3f & p = viewpoint->getPosition();
+				const Quatf & r = viewpoint->getRotation();
+				const float & d = viewpoint->getDuration();
 				file << p.x << " " << p.y << " " << p.z << " " << r.x << " " << r.y << " " << r.z << " " << r.w << " "
 					 << d << std::endl;
 			}
@@ -122,17 +122,17 @@ namespace VTX
 			}
 		}
 
-		void Path::setSelectedViewpoint( Viewpoint * const p_checkpoint )
+		void Path::setSelectedViewpoint( Viewpoint * const p_viewpoint )
 		{
 			if ( _selectedViewpoint != nullptr ) { _selectedViewpoint->setSelected( false ); }
 			try
 			{
-				_selectedViewpoint = p_checkpoint;
+				_selectedViewpoint = p_viewpoint;
 				_selectedViewpoint->setSelected( true );
 			}
 			catch ( const std::exception )
 			{
-				VTX_WARNING( "Failed to select checkpoint" );
+				VTX_WARNING( "Failed to select viewpoint" );
 				_selectedViewpoint = nullptr;
 			}
 		}
@@ -150,9 +150,9 @@ namespace VTX
 		{
 			float total = 0.f;
 			if ( _viewpoints.size() == 0 ) { return total; }
-			for ( Model::Viewpoint * checkpoint : _viewpoints )
+			for ( Model::Viewpoint * viewpoint : _viewpoints )
 			{
-				total += checkpoint->getDuration();
+				total += viewpoint->getDuration();
 			}
 			total -= _viewpoints[ 0 ]->getDuration();
 			return total;
