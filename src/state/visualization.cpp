@@ -1,6 +1,6 @@
 #include "visualization.hpp"
-#include "controller/controller_fps.hpp"
-#include "controller/controller_shortcut.hpp"
+#include "controller/fps.hpp"
+#include "controller/shortcut.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -12,8 +12,8 @@ namespace VTX
 			// Init the renderer.
 			VTXApp::get().initRenderer();
 			// Create controller.
-			addItem( new Controller::ControllerFPS( VTXApp::get().getScene().getCamera() ) );
-			addItem( new Controller::ControllerShortcut() );
+			addItem( new Controller::FPS( VTXApp::get().getScene().getCamera() ) );
+			addItem( new Controller::Shortcut() );
 		}
 
 		void Visualization::exit() { clear(); }

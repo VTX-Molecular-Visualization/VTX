@@ -1,11 +1,11 @@
-#include "controller_fps.hpp"
+#include "fps.hpp"
 #include "setting.hpp"
 
 namespace VTX
 {
 	namespace Controller
 	{
-		void ControllerFPS::update( const double p_deltaTime )
+		void FPS::update( const double p_deltaTime )
 		{
 			Vec3f translation = Vec3f( 0.f, 0.f, 0.f );
 
@@ -27,12 +27,12 @@ namespace VTX
 			_camera.move( translation );
 		}
 
-		void ControllerFPS::_handleKeyPressedEvent( const SDL_Scancode & p_key )
+		void FPS::_handleKeyPressedEvent( const SDL_Scancode & p_key )
 		{
 			if ( p_key == SDL_SCANCODE_SPACE ) { _camera.print(); }
 		}
 
-		void ControllerFPS::_handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )
+		void FPS::_handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )
 		{
 			if ( _mouseLeftPressed )
 			{

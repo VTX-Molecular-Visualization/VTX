@@ -14,10 +14,10 @@ namespace VTX
 {
 	namespace Controller
 	{
-		class ControllerFPS : public BaseKeyboardController, public BaseMouseController
+		class FPS : public BaseKeyboardController, public BaseMouseController
 		{
 		  public:
-			explicit ControllerFPS( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
+			explicit FPS( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
 
 			virtual void handleEvent( const SDL_Event & p_event, void * const p_arg ) override final
 			{

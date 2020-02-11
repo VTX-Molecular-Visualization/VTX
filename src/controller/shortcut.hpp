@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace Controller
 	{
-		class ControllerShortcut : public BaseKeyboardController
+		class Shortcut : public BaseKeyboardController
 		{
 		  public:
-			explicit ControllerShortcut() {}
+			explicit Shortcut() {}
 
 		  protected:
 			virtual void _handleKeyPressedEvent( const SDL_Scancode & ) override;

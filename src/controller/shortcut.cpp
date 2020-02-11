@@ -1,4 +1,4 @@
-#include "controller_shortcut.hpp"
+#include "shortcut.hpp"
 #include "../action/action_active_renderer.hpp"
 #include "../action/action_checkpoint_create.hpp"
 #include "../define.hpp"
@@ -8,7 +8,7 @@ namespace VTX
 {
 	namespace Controller
 	{
-		void ControllerShortcut::_handleKeyPressedEvent( const SDL_Scancode & p_key )
+		void Shortcut::_handleKeyPressedEvent( const SDL_Scancode & p_key )
 		{
 			switch ( p_key )
 			{
