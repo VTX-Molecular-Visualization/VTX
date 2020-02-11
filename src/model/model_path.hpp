@@ -22,6 +22,12 @@ namespace VTX
 			using CheckpointPtr		  = Model::ModelCheckpoint *;
 			using VectorCheckpointPtr = std::vector<CheckpointPtr>;
 
+			enum class COMPUTATION_MODE : int
+			{
+				DURATION,
+				SPEED
+			};
+
 			ModelPath() { setId( 0 ); };
 			~ModelPath();
 
@@ -47,6 +53,7 @@ namespace VTX
 
 		  private:
 			VectorCheckpointPtr _checkpoints		= VectorCheckpointPtr();
+			COMPUTATION_MODE	_mode				= COMPUTATION_MODE::DURATION;
 			CheckpointPtr		_selectedCheckpoint = nullptr;
 
 		}; // namespace Camera
