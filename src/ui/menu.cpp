@@ -1,26 +1,26 @@
 #include "menu.hpp"
-#include "action/action_active_renderer.hpp"
-#include "action/action_active_ssao.hpp"
-#include "action/action_active_y_axis_inversion.hpp"
-#include "action/action_change_ao_blur_size.hpp"
-#include "action/action_change_ao_intensity.hpp"
-#include "action/action_change_ao_radius.hpp"
-#include "action/action_change_auto_rotate_speed.hpp"
-#include "action/action_change_color_mode.hpp"
-#include "action/action_change_display_mode.hpp"
-#include "action/action_change_representation.hpp"
-#include "action/action_change_rotation_speed.hpp"
-#include "action/action_change_shading.hpp"
-#include "action/action_change_theme.hpp"
-#include "action/action_change_translation_factor_speed.hpp"
-#include "action/action_change_translation_speed.hpp"
-#include "action/action_export_path.hpp"
-#include "action/action_export_video.hpp"
-#include "action/action_import_path.hpp"
-#include "action/action_new.hpp"
-#include "action/action_open.hpp"
-#include "action/action_quit.hpp"
-#include "action/action_snapshot.hpp"
+#include "action/active_renderer.hpp"
+#include "action/active_ssao.hpp"
+#include "action/active_y_axis_inversion.hpp"
+#include "action/change_ao_blur_size.hpp"
+#include "action/change_ao_intensity.hpp"
+#include "action/change_ao_radius.hpp"
+#include "action/change_auto_rotate_speed.hpp"
+#include "action/change_color_mode.hpp"
+#include "action/change_display_mode.hpp"
+#include "action/change_representation.hpp"
+#include "action/change_rotation_speed.hpp"
+#include "action/change_shading.hpp"
+#include "action/change_theme.hpp"
+#include "action/change_translation_factor_speed.hpp"
+#include "action/change_translation_speed.hpp"
+#include "action/export_path.hpp"
+#include "action/export_video.hpp"
+#include "action/import_path.hpp"
+#include "action/new.hpp"
+#include "action/open.hpp"
+#include "action/quit.hpp"
+#include "action/snapshot.hpp"
 #include "define.hpp"
 #include "imgui/imgui_internal.h"
 #include "style.hpp"
@@ -53,7 +53,7 @@ namespace VTX
 				{
 					// New.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.New" ) /*, "Ctrl+N"*/ ) )
-					{ VTXApp::get().action( new Action::ActionNew() ); }
+					{ VTXApp::get().action( new Action::New() ); }
 
 					// Open.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Open" ) ) )
@@ -66,10 +66,10 @@ namespace VTX
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
 					{
 #ifndef _DEBUG
-						VTXApp::get().action( new Action::ActionQuit() );
+						VTXApp::get().action( new Action::Quit() );
 						// ImGui::OpenPopup( "TEST" );
 #else
-						VTXApp::get().action( new Action::ActionQuit() );
+						VTXApp::get().action( new Action::Quit() );
 #endif
 					}
 
@@ -108,7 +108,7 @@ namespace VTX
 					{
 						try
 						{
-							VTXApp::get().action( new Action::ActionImportPath() );
+							VTXApp::get().action( new Action::ImportPath() );
 						}
 						catch ( const std::exception & e )
 						{
@@ -122,12 +122,12 @@ namespace VTX
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Export" ), _visible ) )
 				{
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Snapshot" ) ) )
-					{ VTXApp::get().action( new Action::ActionSnapshot() ); }
+					{ VTXApp::get().action( new Action::Snapshot() ); }
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Path" ) ) )
 					{
 						try
 						{
-							VTXApp::get().action( new Action::ActionExportPath() );
+							VTXApp::get().action( new Action::ExportPath() );
 						}
 						catch ( const std::exception & e )
 						{
@@ -135,7 +135,7 @@ namespace VTX
 						}
 					}
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Video" ) ) )
-					{ VTXApp::get().action( new Action::ActionExportVideo() ); }
+					{ VTXApp::get().action( new Action::ExportVideo() ); }
 					ImGui::EndMenu();
 				}
 
@@ -147,7 +147,7 @@ namespace VTX
 						= { LOCALE( "Enum.Theme.Light" ), LOCALE( "Enum.Theme.Dark" ), LOCALE( "Enum.Theme.Classic" ) };
 					int theme = (int)Setting::UI::theme;
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Theme" ), &theme, themes, 3 ) )
-					{ VTXApp::get().action( new Action::ActionChangeTheme( (Setting::UI::THEME)theme ) ); }
+					{ VTXApp::get().action( new Action::ChangeTheme( (Setting::UI::THEME)theme ) ); }
 
 					ImGui::Separator();
 
@@ -157,8 +157,8 @@ namespace VTX
 					int symbolDisplayMode = (int)Setting::UI::symbolDisplayMode;
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.SymbolDisplay" ), &symbolDisplayMode, values, 2 ) )
 					{
-						VTXApp::get().action( new Action::ActionChangeDisplayMode(
-							(Setting::UI::SYMBOL_DISPLAY_MODE)symbolDisplayMode ) );
+						VTXApp::get().action(
+							new Action::ChangeDisplayMode( (Setting::UI::SYMBOL_DISPLAY_MODE)symbolDisplayMode ) );
 					}
 
 					ImGui::Separator();
@@ -166,7 +166,7 @@ namespace VTX
 					// Active renderer.
 					bool isActive = Setting::Rendering::isActive;
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.Rendering" ), &isActive ) )
-					{ VTXApp::get().action( new Action::ActionActiveRenderer( isActive ) ); };
+					{ VTXApp::get().action( new Action::ActiveRenderer( isActive ) ); };
 
 					// Representation.
 					const char * representations[] = { LOCALE( "Enum.Representation.BallsAndSticks" ),
@@ -177,7 +177,7 @@ namespace VTX
 							 LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 3 ) )
 					{
 						VTXApp::get().action(
-							new Action::ActionChangeRepresentation( (View::MOLECULE_REPRESENTATION)representation ) );
+							new Action::ChangeRepresentation( (View::MOLECULE_REPRESENTATION)representation ) );
 					}
 
 					// Color mode.
@@ -186,10 +186,7 @@ namespace VTX
 											   LOCALE( "Enum.ColorMode.Chain" ) };
 					int			 colorMode = (int)Setting::Rendering::colorMode;
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ), &colorMode, modes, 3 ) )
-					{
-						VTXApp::get().action(
-							new Action::ActionChangeColorMode( (View::MOLECULE_COLOR_MODE)colorMode ) );
-					}
+					{ VTXApp::get().action( new Action::ChangeColorMode( (View::MOLECULE_COLOR_MODE)colorMode ) ); }
 
 					// Shading.
 					const char * shadings[] = { LOCALE( "Enum.Shading.Lambert" ),
@@ -197,26 +194,26 @@ namespace VTX
 												LOCALE( "Enum.Shading.Toon" ) };
 					int			 shading	= (int)Setting::Rendering::shading;
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ), &shading, shadings, 3 ) )
-					{ VTXApp::get().action( new Action::ActionChangeShading( (Renderer::SHADING)shading ) ); }
+					{ VTXApp::get().action( new Action::ChangeShading( (Renderer::SHADING)shading ) ); }
 
 					// SSAO.
 					bool useSSAO = Setting::Rendering::useSSAO;
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &useSSAO ) )
-					{ VTXApp::get().action( new Action::ActionActiveSSAO( useSSAO ) ); };
+					{ VTXApp::get().action( new Action::ActiveSSAO( useSSAO ) ); };
 
 					float aoRadius = Setting::Rendering::aoRadius;
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AORadius" ),
 											 &aoRadius,
 											 RENDERER_AO_RADIUS_MIN,
 											 RENDERER_AO_RADIUS_MAX ) )
-					{ VTXApp::get().action( new Action::ActionChangeAORadius( aoRadius ) ); }
+					{ VTXApp::get().action( new Action::ChangeAORadius( aoRadius ) ); }
 
 					int aoIntensity = Setting::Rendering::aoIntensity;
 					if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOIntensity" ),
 										   &aoIntensity,
 										   RENDERER_AO_INTENSITY_MIN,
 										   RENDERER_AO_INTENSITY_MAX ) )
-					{ VTXApp::get().action( new Action::ActionChangeAOIntensity( aoIntensity ) ); }
+					{ VTXApp::get().action( new Action::ChangeAOIntensity( aoIntensity ) ); }
 					ImGui::Separator();
 
 					int aoBlurSize = Setting::Rendering::aoBlurSize;
@@ -224,7 +221,7 @@ namespace VTX
 										   &aoBlurSize,
 										   RENDERER_AO_BLUR_SIZE_MIN,
 										   RENDERER_AO_BLUR_SIZE_MAX ) )
-					{ VTXApp::get().action( new Action::ActionChangeAOBlurSize( aoBlurSize ) ); }
+					{ VTXApp::get().action( new Action::ChangeAOBlurSize( aoBlurSize ) ); }
 					ImGui::Separator();
 
 					// Auto rotate.
@@ -233,17 +230,17 @@ namespace VTX
 											 &autoRotateSpeed.x,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
-					{ VTXApp::get().action( new Action::ActionChangeAutoRotateSpeed( autoRotateSpeed ) ); }
+					{ VTXApp::get().action( new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) ); }
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateYSpeed" ),
 											 &autoRotateSpeed.y,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
-					{ VTXApp::get().action( new Action::ActionChangeAutoRotateSpeed( autoRotateSpeed ) ); }
+					{ VTXApp::get().action( new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) ); }
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateZSpeed" ),
 											 &autoRotateSpeed.z,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
-					{ VTXApp::get().action( new Action::ActionChangeAutoRotateSpeed( autoRotateSpeed ) ); }
+					{ VTXApp::get().action( new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) ); }
 
 					ImGui::Separator();
 
@@ -253,27 +250,24 @@ namespace VTX
 											 &translationSpeed,
 											 CONTROLLER_TRANSLATION_SPEED_MIN,
 											 CONTROLLER_TRANSLATION_SPEED_MAX ) )
-					{ VTXApp::get().action( new Action::ActionChangeTranslationSpeed( translationSpeed ) ); }
+					{ VTXApp::get().action( new Action::ChangeTranslationSpeed( translationSpeed ) ); }
 					float translationFactorSpeed = Setting::Controller::translationFactorSpeed;
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.TranslationFactorSpeed" ),
 											 &translationFactorSpeed,
 											 CONTROLLER_TRANSLATION_FACTOR_MIN,
 											 CONTROLLER_TRANSLATION_FACTOR_MAX ) )
-					{
-						VTXApp::get().action(
-							new Action::ActionChangeTranslationFactorSpeed( translationFactorSpeed ) );
-					}
+					{ VTXApp::get().action( new Action::ChangeTranslationFactorSpeed( translationFactorSpeed ) ); }
 					float rotationSpeed = Setting::Controller::rotationSpeed;
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.RotationSpeed" ),
 											 &rotationSpeed,
 											 CONTROLLER_ROTATION_SPEED_MIN,
 											 CONTROLLER_ROTATION_SPEED_MAX ) )
-					{ VTXApp::get().action( new Action::ActionChangeRotationSpeed( rotationSpeed ) ); }
+					{ VTXApp::get().action( new Action::ChangeRotationSpeed( rotationSpeed ) ); }
 
 					// Invert y axis.
 					bool yAxisInverted = Setting::Controller::yAxisInverted;
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ), &yAxisInverted ) )
-					{ VTXApp::get().action( new Action::ActionActiveYAxisInversion( yAxisInverted ) ); }
+					{ VTXApp::get().action( new Action::ActiveYAxisInversion( yAxisInverted ) ); }
 
 					ImGui::EndMenu();
 				}
@@ -309,7 +303,7 @@ namespace VTX
 			if ( _openFileDialog && _openFileDialog->ready() )
 			{
 				std::vector<std::string> result = _openFileDialog->result();
-				if ( result.size() ) { VTXApp::get().action( new Action::ActionOpen( result[ 0 ] ) ); }
+				if ( result.size() ) { VTXApp::get().action( new Action::Open( result[ 0 ] ) ); }
 				_openFileDialog = nullptr;
 			}
 		}

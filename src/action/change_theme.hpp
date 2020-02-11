@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionChangeTheme : public BaseAction
+		class ChangeTheme : public BaseAction
 		{
 		  public:
-			ActionChangeTheme( const Setting::UI::THEME p_theme ) : _theme( p_theme ) {}
+			ChangeTheme( const Setting::UI::THEME p_theme ) : _theme( p_theme ) {}
 
 			virtual void execute() override
 			{

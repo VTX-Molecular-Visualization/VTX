@@ -5,19 +5,19 @@
 #pragma once
 #endif
 
+#include "base_action_undonable.hpp"
 #include "generic/base_transformable.hpp"
 #include "vtx_app.hpp"
-#include "base_action_undonable.hpp"
 
 namespace VTX
 {
 	namespace Action
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseTransformable, T>::value>>
-		class ActionScale : public BaseActionUndonable
+		class Scale : public BaseActionUndonable
 		{
 		  public:
-			explicit ActionScale( T & p_transformable, const float p_scale ) :
+			explicit Scale( T & p_transformable, const float p_scale ) :
 				_transformable( p_transformable ), _scale( p_scale ),
 				_scaleOld( p_transformable.getTransform().getScale() )
 			{

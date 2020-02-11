@@ -13,13 +13,11 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionCheckpointReplace : public BaseAction
+		class CheckpointReplace : public BaseAction
 		{
 		  public:
-			explicit ActionCheckpointReplace( Model::Checkpoint & p_checkpoint,
-											  const Object3D::Camera & p_camera ) :
-				_checkpoint( p_checkpoint ),
-				_position( p_camera.getPosition() ), _rotation( p_camera.getRotation() )
+			explicit CheckpointReplace( Model::Checkpoint & p_checkpoint, const Object3D::Camera & p_camera ) :
+				_checkpoint( p_checkpoint ), _position( p_camera.getPosition() ), _rotation( p_camera.getRotation() )
 			{
 			}
 
@@ -31,8 +29,8 @@ namespace VTX
 
 		  private:
 			Model::Checkpoint & _checkpoint;
-			const Vec3f				 _position;
-			const Quatf				 _rotation;
+			const Vec3f			_position;
+			const Quatf			_rotation;
 		};
 	} // namespace Action
 } // namespace VTX

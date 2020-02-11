@@ -12,7 +12,7 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionExportPath : public BaseAction
+		class ExportPath : public BaseAction
 		{
 		  public:
 			virtual void execute() override

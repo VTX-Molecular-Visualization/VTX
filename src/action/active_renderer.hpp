@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionActiveRenderer : public BaseAction
+		class ActiveRenderer : public BaseAction
 		{
 		  public:
-			explicit ActionActiveRenderer( const bool p_active ) : _active( p_active ) {}
+			explicit ActiveRenderer( const bool p_active ) : _active( p_active ) {}
 
 			virtual void execute() override { Setting::Rendering::isActive = _active; };
 

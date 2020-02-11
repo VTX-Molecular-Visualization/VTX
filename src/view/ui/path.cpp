@@ -1,5 +1,5 @@
 #include "path.hpp"
-#include "action/action_checkpoint_create.hpp"
+#include "action/checkpoint_create.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -23,7 +23,7 @@ namespace VTX
 					if ( ImGui::Button( "Add checkpoint" ) )
 					{
 						VTXApp::get().action(
-							new Action::ActionCheckpointCreate( _getModel(), VTXApp::get().getScene().getCamera() ) );
+							new Action::CheckpointCreate( _getModel(), VTXApp::get().getScene().getCamera() ) );
 					}
 				}
 				ImGui::PopID();

@@ -1,6 +1,6 @@
 #include "molecule.hpp"
-#include "action/action_scale.hpp"
-#include "action/action_translate.hpp"
+#include "action/scale.hpp"
+#include "action/translate.hpp"
 #include "vtx_app.hpp"
 #include <glm/gtx/euler_angles.hpp>
 
@@ -24,10 +24,7 @@ namespace VTX
 					Vec3f translation = _getModel().getTransform().getTranslationVector();
 					float t[]		  = { translation.x, translation.y, translation.z };
 					if ( ImGui::InputFloat3( "Position", t, 2 ) )
-					{
-						VTXApp::get().action(
-							new Action::ActionTranslate( _getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
-					}
+					{ VTXApp::get().action( new Action::Translate( _getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) ); }
 					ImGui::PopID();
 
 					ImGui::Text( LOCALE( "Inspector.Transform.Rotation" ) );
@@ -47,7 +44,7 @@ namespace VTX
 					float s		= scale.x;
 					ImGui::PushID( "Scale" );
 					if ( ImGui::InputFloat( "Scale", &s, 1.f ) )
-					{ VTXApp::get().action( new Action::ActionScale( _getModel(), s ) ); }
+					{ VTXApp::get().action( new Action::Scale( _getModel(), s ) ); }
 					ImGui::PopID();
 				}
 

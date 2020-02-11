@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionActiveYAxisInversion : public BaseAction
+		class ActiveYAxisInversion : public BaseAction
 		{
 		  public:
-			explicit ActionActiveYAxisInversion( const bool p_active ) : _active( p_active ) {}
+			explicit ActiveYAxisInversion( const bool p_active ) : _active( p_active ) {}
 
 			virtual void execute() override { Setting::Controller::yAxisInverted = _active; };
 

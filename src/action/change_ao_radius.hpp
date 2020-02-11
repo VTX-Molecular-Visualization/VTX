@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionChangeAORadius : public BaseAction
+		class ChangeAORadius : public BaseAction
 		{
 		  public:
-			explicit ActionChangeAORadius( const float p_radius ) : _radius( p_radius ) {}
+			explicit ChangeAORadius( const float p_radius ) : _radius( p_radius ) {}
 
 			virtual void execute() override
 			{

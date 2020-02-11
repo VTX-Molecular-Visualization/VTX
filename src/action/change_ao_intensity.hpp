@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionChangeAOIntensity : public BaseAction
+		class ChangeAOIntensity : public BaseAction
 		{
 		  public:
-			explicit ActionChangeAOIntensity( const int p_intensity ) : _intensity( p_intensity ) {}
+			explicit ChangeAOIntensity( const int p_intensity ) : _intensity( p_intensity ) {}
 
 			virtual void execute() override
 			{

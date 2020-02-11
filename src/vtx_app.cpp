@@ -1,7 +1,6 @@
 #include "vtx_app.hpp"
 #include "id.hpp"
 #include "io/path.hpp"
-#include "io/reader/reader_mmtf.hpp"
 #include "model/molecule.hpp"
 #include "renderer/gl.hpp"
 #include "ui/imgui/imgui_impl_sdl.h"

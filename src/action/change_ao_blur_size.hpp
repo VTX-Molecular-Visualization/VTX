@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionChangeAOBlurSize : public BaseAction
+		class ChangeAOBlurSize : public BaseAction
 		{
 		  public:
-			explicit ActionChangeAOBlurSize( const int p_blurSize ) : _blurSize( p_blurSize ) {}
+			explicit ChangeAOBlurSize( const int p_blurSize ) : _blurSize( p_blurSize ) {}
 
 			virtual void execute() override
 			{

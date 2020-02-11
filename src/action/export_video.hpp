@@ -17,7 +17,7 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionExportVideo : public BaseAction
+		class ExportVideo : public BaseAction
 		{
 		  public:
 			virtual void execute() override
@@ -52,7 +52,7 @@ namespace VTX
 				chrono.start();
 				for ( uint frame = 0; frame < totalFrame; ++frame )
 				{
-					float												time = (float)frame / VIDEO_FPS;
+					float										   time = (float)frame / VIDEO_FPS;
 					Model::Checkpoint::CheckpointInterpolationData data
 						= path->getCurrentCheckpointInterpolationData( time );
 					VTXApp::get().getScene().getCamera().set(

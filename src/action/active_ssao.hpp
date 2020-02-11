@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionActiveSSAO : public BaseAction
+		class ActiveSSAO : public BaseAction
 		{
 		  public:
-			explicit ActionActiveSSAO( const bool p_active ) : _active( p_active ) {}
+			explicit ActiveSSAO( const bool p_active ) : _active( p_active ) {}
 
 			virtual void execute() override { Setting::Rendering::useSSAO = _active; };
 

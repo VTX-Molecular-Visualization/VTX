@@ -13,10 +13,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionCheckpointDelete : public BaseAction
+		class CheckpointDelete : public BaseAction
 		{
 		  public:
-			explicit ActionCheckpointDelete( Model::Checkpoint & p_checkpoint ) : _checkpoint( p_checkpoint ) {}
+			explicit CheckpointDelete( Model::Checkpoint & p_checkpoint ) : _checkpoint( p_checkpoint ) {}
 
 			virtual void execute() override
 			{

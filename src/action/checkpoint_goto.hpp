@@ -16,10 +16,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionCheckpointGoTo : public BaseAction
+		class CheckpointGoTo : public BaseAction
 		{
 		  public:
-			explicit ActionCheckpointGoTo( Model::Checkpoint & p_checkpoint, Object3D::Camera & p_camera ) :
+			explicit CheckpointGoTo( Model::Checkpoint & p_checkpoint, Object3D::Camera & p_camera ) :
 				_checkpoint( p_checkpoint ), _camera( p_camera )
 			{
 			}
@@ -27,7 +27,7 @@ namespace VTX
 			virtual void execute() override { _camera.set( _checkpoint.getPosition(), _checkpoint.getRotation() ); }
 
 		  private:
-			Object3D::Camera &		 _camera;
+			Object3D::Camera &	_camera;
 			Model::Checkpoint & _checkpoint;
 		};
 	} // namespace Action

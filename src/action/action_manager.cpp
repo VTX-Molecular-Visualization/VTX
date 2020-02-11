@@ -1,5 +1,5 @@
 #include "action_manager.hpp"
-#include "action_snapshot.hpp"
+#include "snapshot.hpp"
 
 namespace VTX
 {
@@ -35,7 +35,7 @@ namespace VTX
 			// TODO: extract args from string.
 			// TODO: map string to class with variadics (not possible in cpp, no reflection).
 			// Name action with enum?
-			if ( p_action == "snapshot" ) { executeAction( new ActionSnapshot() ); }
+			if ( p_action == "snapshot" ) { executeAction( new Snapshot() ); }
 		}
 
 		bool ActionManager::canUndo() const { return _bufferUndo.size() > 0; }

@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionChangeAutoRotateSpeed : public BaseAction
+		class ChangeAutoRotateSpeed : public BaseAction
 		{
 		  public:
-			explicit ActionChangeAutoRotateSpeed( const Vec3f & p_value ) : _value( p_value ) {}
+			explicit ChangeAutoRotateSpeed( const Vec3f & p_value ) : _value( p_value ) {}
 
 			virtual void execute() override
 			{

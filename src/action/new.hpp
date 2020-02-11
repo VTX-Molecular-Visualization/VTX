@@ -5,14 +5,14 @@
 #pragma once
 #endif
 
-#include "vtx_app.hpp"
 #include "base_action.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
 	namespace Action
 	{
-		class ActionNew : public BaseAction
+		class New : public BaseAction
 		{
 		  public:
 			virtual void execute() override { VTXApp::get().getScene().clear(); };

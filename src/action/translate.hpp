@@ -5,19 +5,19 @@
 #pragma once
 #endif
 
+#include "base_action_undonable.hpp"
 #include "generic/base_transformable.hpp"
 #include "vtx_app.hpp"
-#include "base_action_undonable.hpp"
 
 namespace VTX
 {
 	namespace Action
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseTransformable, T>::value>>
-		class ActionTranslate : public BaseActionUndonable
+		class Translate : public BaseActionUndonable
 		{
 		  public:
-			explicit ActionTranslate( T & p_transformable, const Vec3f & p_translation ) :
+			explicit Translate( T & p_transformable, const Vec3f & p_translation ) :
 				_transformable( p_transformable ), _translation( p_translation ),
 				_translationOld( p_transformable.getTransform().getTranslation() )
 			{

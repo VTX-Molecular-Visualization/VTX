@@ -13,10 +13,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionChangeColorMode : public BaseAction
+		class ChangeColorMode : public BaseAction
 		{
 		  public:
-			explicit ActionChangeColorMode( const View::MOLECULE_COLOR_MODE p_mode ) : _mode( p_mode ) {}
+			explicit ChangeColorMode( const View::MOLECULE_COLOR_MODE p_mode ) : _mode( p_mode ) {}
 
 			virtual void execute() override
 			{

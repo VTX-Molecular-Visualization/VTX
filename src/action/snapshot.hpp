@@ -13,7 +13,7 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionSnapshot : public BaseAction
+		class Snapshot : public BaseAction
 		{
 		  public:
 			virtual void execute() override

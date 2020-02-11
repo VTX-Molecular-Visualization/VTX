@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionChangeShading : public BaseAction
+		class ChangeShading : public BaseAction
 		{
 		  public:
-			explicit ActionChangeShading( const Renderer::SHADING p_shading ) : _shading( p_shading ) {}
+			explicit ChangeShading( const Renderer::SHADING p_shading ) : _shading( p_shading ) {}
 
 			virtual void execute() override
 			{

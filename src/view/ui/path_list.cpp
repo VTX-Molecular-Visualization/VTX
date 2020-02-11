@@ -1,5 +1,5 @@
 #include "path_list.hpp"
-#include "action/action_checkpoint_goto.hpp"
+#include "action/checkpoint_goto.hpp"
 #include "setting.hpp"
 #include <string>
 
@@ -21,7 +21,7 @@ namespace VTX
 						 checkpoint->isSelected()*/ )
 						{
 							VTXApp::get().action(
-								new Action::ActionCheckpointGoTo( *checkpoint, VTXApp::get().getScene().getCamera() ) );
+								new Action::CheckpointGoTo( *checkpoint, VTXApp::get().getScene().getCamera() ) );
 							_getModel().setSelectedCheckpoint( checkpoint );
 						}
 						ImGui::PopID();

@@ -13,10 +13,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class ActionChangeRepresentation : public BaseAction
+		class ChangeRepresentation : public BaseAction
 		{
 		  public:
-			explicit ActionChangeRepresentation( const View::MOLECULE_REPRESENTATION p_representation ) :
+			explicit ChangeRepresentation( const View::MOLECULE_REPRESENTATION p_representation ) :
 				_representation( p_representation )
 			{
 			}
