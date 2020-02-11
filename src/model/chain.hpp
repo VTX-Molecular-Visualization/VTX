@@ -1,5 +1,5 @@
-#ifndef __VTX_CHAIN__
-#define __VTX_CHAIN__
+#ifndef __VTX_MODEL_CHAIN__
+#define __VTX_MODEL_CHAIN__
 
 #ifdef _MSC_VER
 #pragma once

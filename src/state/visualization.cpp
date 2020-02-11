@@ -1,4 +1,4 @@
-#include "state_visualization.hpp"
+#include "visualization.hpp"
 #include "controller/controller_fps.hpp"
 #include "controller/controller_shortcut.hpp"
 #include "vtx_app.hpp"
@@ -7,7 +7,7 @@ namespace VTX
 {
 	namespace State
 	{
-		void StateVisualization::enter( void * const )
+		void Visualization::enter( void * const )
 		{
 			// Init the renderer.
 			VTXApp::get().initRenderer();
@@ -16,9 +16,9 @@ namespace VTX
 			addItem( new Controller::ControllerShortcut() );
 		}
 
-		void StateVisualization::exit() { clear(); }
+		void Visualization::exit() { clear(); }
 
-		void StateVisualization::update( const double p_deltaTime )
+		void Visualization::update( const double p_deltaTime )
 		{
 			BaseState::update( p_deltaTime );
 

@@ -16,7 +16,7 @@ namespace VTX
 		VTX_INFO( "Initializing application" );
 		_ui = new UI::UserInterface();
 		_ui->init();
-		_stateMachine = new State::Machine();
+		_stateMachine = new State::StateMachine();
 		_stateMachine->init();
 		_scene		   = new Object3D::Scene();
 		_renderer	   = new Renderer::RendererGL();

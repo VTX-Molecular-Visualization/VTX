@@ -1,5 +1,5 @@
-#ifndef __VTX_MOLECULE__
-#define __VTX_MOLECULE__
+#ifndef __VTX_MODEL_MOLECULE__
+#define __VTX_MODEL_MOLECULE__
 
 #ifdef _MSC_VER
 #pragma once

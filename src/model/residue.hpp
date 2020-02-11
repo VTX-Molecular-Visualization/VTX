@@ -1,5 +1,5 @@
-#ifndef __VTX_RESIDUE__
-#define __VTX_RESIDUE__
+#ifndef __VTX_MODEL_RESIDUE__
+#define __VTX_MODEL_RESIDUE__
 
 #ifdef _MSC_VER
 #pragma once

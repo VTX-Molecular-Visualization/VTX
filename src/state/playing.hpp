@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace State
 	{
-		class StatePlaying : public BaseState
+		class Playing : public BaseState
 		{
 		  public:
-			StatePlaying() = default;
+			Playing() = default;
 
 			virtual std::string getName() const override { return ID::State::PLAYING; }
 			virtual void		enter( void * const ) override;

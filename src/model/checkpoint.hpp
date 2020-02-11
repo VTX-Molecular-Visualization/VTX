@@ -1,5 +1,5 @@
-#ifndef __VTX_CHECKPOINT__
-#define __VTX_CHECKPOINT__
+#ifndef __VTX_MODEL_CHECKPOINT__
+#define __VTX_MODEL_CHECKPOINT__
 
 #ifdef _MSC_VER
 #pragma once

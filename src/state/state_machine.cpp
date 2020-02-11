@@ -1,14 +1,14 @@
-#include "machine.hpp"
+#include "state_machine.hpp"
 #include "define.hpp"
-#include "state_loading.hpp"
-#include "state_playing.hpp"
-#include "state_visualization.hpp"
+#include "loading.hpp"
+#include "playing.hpp"
+#include "visualization.hpp"
 
 namespace VTX
 {
 	namespace State
 	{
-		void Machine::goToState( const std::string & p_name, void * const p_arg )
+		void StateMachine::goToState( const std::string & p_name, void * const p_arg )
 		{
 			try
 			{
@@ -20,26 +20,26 @@ namespace VTX
 			}
 		}
 
-		void Machine::_addItems()
+		void StateMachine::_addItems()
 		{
-			addItem( new StateLoading() );
-			addItem( new StateVisualization() );
-			addItem( new StatePlaying() );
+			addItem( new Loading() );
+			addItem( new Visualization() );
+			addItem( new Playing() );
 		}
 
-		void Machine::_switchState( BaseState * const p_state, void * const p_arg )
+		void StateMachine::_switchState( BaseState * const p_state, void * const p_arg )
 		{
 			if ( _currentState != nullptr ) { _currentState->exit(); }
 			_currentState = p_state;
 			if ( _currentState != nullptr ) { _currentState->enter( p_arg ); }
 		}
 
-		void Machine::handleEvent( const SDL_Event & p_event, void * const p_arg )
+		void StateMachine::handleEvent( const SDL_Event & p_event, void * const p_arg )
 		{
 			if ( _currentState != nullptr ) { _currentState->handleEvent( p_event, p_arg ); }
 		}
 
-		void Machine::update( const double p_deltaTime )
+		void StateMachine::update( const double p_deltaTime )
 		{
 			if ( _currentState != nullptr ) { _currentState->update( p_deltaTime ); }
 		}

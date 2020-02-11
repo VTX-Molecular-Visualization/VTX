@@ -1,4 +1,4 @@
-#include "state_loading.hpp"
+#include "loading.hpp"
 #include "io/reader/reader_mmtf.hpp"
 #include "io/reader/reader_obj.hpp"
 #include "model/molecule.hpp"
@@ -10,7 +10,7 @@ namespace VTX
 {
 	namespace State
 	{
-		void StateLoading::enter( void * const p_arg )
+		void Loading::enter( void * const p_arg )
 		{
 			// std::string * path = (std::string *)p_arg;
 			// while ( *path != "\n" )
@@ -22,7 +22,7 @@ namespace VTX
 			VTXApp::get().goToState( ID::State::VISUALIZATION );
 		}
 
-		void StateLoading::_loadFile( std::string * p_path ) const
+		void Loading::_loadFile( std::string * p_path ) const
 		{
 			Model::Molecule * molecule = new Model::Molecule();
 			Object3D::Scene *	   scene	= &( VTXApp::get().getScene() );
@@ -56,7 +56,7 @@ namespace VTX
 			delete reader;
 		}
 
-		void StateLoading::exit() {}
+		void Loading::exit() {}
 
 	} // namespace State
 } // namespace VTX

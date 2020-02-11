@@ -11,7 +11,7 @@
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
 #include "setting.hpp"
-#include "state/machine.hpp"
+#include "state/state_machine.hpp"
 #include "tool/chrono.hpp"
 #include "ui/user_interface.hpp"
 #include "util/logger.hpp"
@@ -57,7 +57,7 @@ namespace VTX
 		double					 _timeTotal		= 0.f;
 		double					 _timeDelta		= 0.f;
 		UI::UserInterface *		 _ui			= nullptr;
-		State::Machine *		 _stateMachine	= nullptr;
+		State::StateMachine *		 _stateMachine	= nullptr;
 		Object3D::Scene *		 _scene			= nullptr;
 		Renderer::BaseRenderer * _renderer		= nullptr;
 		Action::ActionManager *	 _actionManager = nullptr;

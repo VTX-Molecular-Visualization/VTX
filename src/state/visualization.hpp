@@ -11,10 +11,10 @@ namespace VTX
 {
 	namespace State
 	{
-		class StateVisualization : public BaseState
+		class Visualization : public BaseState
 		{
 		  public:
-			StateVisualization() = default;
+			Visualization() = default;
 
 			virtual std::string getName() const override { return ID::State::VISUALIZATION; }
 			virtual void		enter( void * const ) override;

@@ -1,5 +1,5 @@
-#ifndef __VTX_MACHINE__
-#define __VTX_MACHINE__
+#ifndef __VTX_STATE_MACHINE__
+#define __VTX_STATE_MACHINE__
 
 #ifdef _MSC_VER
 #pragma once
@@ -15,7 +15,7 @@ namespace VTX
 {
 	namespace State
 	{
-		class Machine :
+		class StateMachine :
 			public Generic::BaseUpdatable,
 			public Generic::HasCollection<BaseState>,
 			public Generic::BaseEventHandler<SDL_Event>

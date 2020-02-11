@@ -1,5 +1,5 @@
-#ifndef __VTX_ATOM__
-#define __VTX_ATOM__
+#ifndef __VTX_MODEL_ATOM__
+#define __VTX_MODEL_ATOM__
 
 #ifdef _MSC_VER
 #pragma once

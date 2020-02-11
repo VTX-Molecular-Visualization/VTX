@@ -11,10 +11,10 @@ namespace VTX
 {
 	namespace State
 	{
-		class StateLoading : public BaseState
+		class Loading : public BaseState
 		{
 		  public:
-			StateLoading() = default;
+			Loading() = default;
 
 			virtual std::string getName() const override { return ID::State::LOADING; }
 			virtual void		enter( void * const ) override;

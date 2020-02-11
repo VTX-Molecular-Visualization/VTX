@@ -1,4 +1,4 @@
-#include "state_playing.hpp"
+#include "playing.hpp"
 #include "../model/checkpoint.hpp"
 #include "model/path.hpp"
 #include "object3d/scene.hpp"
@@ -10,7 +10,7 @@ namespace VTX
 {
 	namespace State
 	{
-		void StatePlaying::enter( void * const p_arg )
+		void Playing::enter( void * const p_arg )
 		{
 			_path = (Model::Path *)p_arg;
 
@@ -33,7 +33,7 @@ namespace VTX
 			_setCamera();
 		}
 
-		void StatePlaying::exit()
+		void Playing::exit()
 		{
 			VTX_INFO( "Stop" );
 			_path	   = nullptr;
@@ -41,7 +41,7 @@ namespace VTX
 			_totalTime = 0.f;
 		}
 
-		void StatePlaying::update( const double p_deltaTime )
+		void Playing::update( const double p_deltaTime )
 		{
 			BaseState::update( p_deltaTime );
 
@@ -60,7 +60,7 @@ namespace VTX
 
 		} // namespace State
 
-		void StatePlaying::_setCamera() const
+		void Playing::_setCamera() const
 		{
 			Model::Checkpoint::CheckpointInterpolationData data
 				= _path->getCurrentCheckpointInterpolationData( _time );
