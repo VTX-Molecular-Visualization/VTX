@@ -1,6 +1,6 @@
 #include "chain.hpp"
 #include "util/type.hpp"
-#include "view/view_ui_chain.hpp"
+#include "view/ui/chain.hpp"
 
 namespace VTX
 {
@@ -9,7 +9,7 @@ namespace VTX
 		void Chain::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIChain( this ) ) ); }
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::UI::Chain( this ) ) ); }
 			else
 			{
 				_deleteView( ID::View::UI_CHAIN );

@@ -2,8 +2,8 @@
 #include "exception.hpp"
 #include "util/math.hpp"
 #include "util/type.hpp"
-#include "view/view_ui_path.hpp"
-#include "view/view_ui_path_list.hpp"
+#include "view/ui/path.hpp"
+#include "view/ui/path_list.hpp"
 #include <fstream>
 #include <sstream>
 
@@ -13,10 +13,9 @@ namespace VTX
 	{
 		Path::~Path() { Util::Type::clearVector( _checkpoints ); }
 
-		void Path::_addItems() { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIPathList( this ) ) ); }
+		void Path::_addItems() { addItem( (View::BaseView<BaseModel> *)( new View::UI::PathList( this ) ) ); }
 
-		Checkpoint::CheckpointInterpolationData Path::getCurrentCheckpointInterpolationData(
-			float p_time ) const
+		Checkpoint::CheckpointInterpolationData Path::getCurrentCheckpointInterpolationData( float p_time ) const
 		{
 			float total	 = 0.f;
 			uint  offset = 0;
@@ -116,7 +115,7 @@ namespace VTX
 		void Path::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIPath( this ) ) ); }
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::UI::Path( this ) ) ); }
 			else
 			{
 				_deleteView( ID::View::UI_PATH );

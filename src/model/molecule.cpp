@@ -1,9 +1,9 @@
 #include "molecule.hpp"
 #include "util/type.hpp"
-#include "view/view_3d_molecule_cylinder.hpp"
-#include "view/view_3d_molecule_sphere.hpp"
-#include "view/view_ui_molecule.hpp"
-#include "view/view_ui_molecule_structure.hpp"
+#include "view/d3/cylinder.hpp"
+#include "view/d3/sphere.hpp"
+#include "view/ui/molecule.hpp"
+#include "view/ui/molecule_structure.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -39,9 +39,9 @@ namespace VTX
 		void Molecule::_addItems()
 		{
 			// Add views.
-			addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeSphere( this ) ) );
-			addItem( (View::BaseView<BaseModel> *)( new View::View3DMoleculeCylinder( this ) ) );
-			addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMoleculeStructure( this ) ) );
+			addItem( (View::BaseView<BaseModel> *)( new View::D3::Sphere( this ) ) );
+			addItem( (View::BaseView<BaseModel> *)( new View::D3::Cylinder( this ) ) );
+			addItem( (View::BaseView<BaseModel> *)( new View::UI::MoleculeStructure( this ) ) );
 		}
 
 		void Molecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }
@@ -94,7 +94,7 @@ namespace VTX
 		void Molecule::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIMolecule( this ) ) ); }
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::UI::Molecule( this ) ) ); }
 			else
 			{
 				_deleteView( ID::View::UI_MOLECULE );

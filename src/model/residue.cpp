@@ -1,6 +1,6 @@
 #include "residue.hpp"
 #include "util/type.hpp"
-#include "view/view_ui_residue.hpp"
+#include "view/ui/residue.hpp"
 
 namespace VTX
 {
@@ -9,7 +9,7 @@ namespace VTX
 		void Residue::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIResidue( this ) ) ); }
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::UI::Residue( this ) ) ); }
 			else
 			{
 				_deleteView( ID::View::UI_RESIDUE );

@@ -1,6 +1,6 @@
 #include "atom.hpp"
 #include "util/type.hpp"
-#include "view/view_ui_atom.hpp"
+#include "view/ui/atom.hpp"
 
 namespace VTX
 {
@@ -9,7 +9,7 @@ namespace VTX
 		void Atom::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::ViewUIAtom( this ) ) ); }
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::UI::Atom( this ) ) ); }
 			else
 			{
 				_deleteView( ID::View::UI_ATOM );
