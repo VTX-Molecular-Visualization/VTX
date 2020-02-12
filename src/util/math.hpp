@@ -113,6 +113,13 @@ namespace VTX
 			{
 				return glm::mix( p_lhs, p_rhs, p_value );
 			}
+
+			template<typename T>
+			static inline T catmullRomInterpolation( const T & p_lhs, const T & p_rhs, const float p_value )
+			{
+				T result = T();
+				return result;
+			}
 		} // namespace Math
 
 	} // namespace Util
