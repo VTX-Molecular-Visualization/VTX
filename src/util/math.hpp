@@ -36,31 +36,31 @@ namespace VTX
 
 			static inline Vec3f randomVec3f() { return Vec3f( dis( gen ), dis( gen ), dis( gen ) ); }
 
-			static inline Quatf eulerToQuaternion( const Vec3f & p_angles )
-			{
-				return Quatf( glm::radians( p_angles ) );
-			}
+			static inline Quatf eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
 
 			static inline Quatf eulerToQuaternion( const float p_pitch, const float p_yaw, const float p_roll )
 			{
 				// https://stackoverflow.com/questions/53033620/how-to-convert-euler-angles-to-quaternions-and-get-the-same-euler-angles-back-fr
-				/*
-				double cy = cos( yaw * 0.5 );
-				double sy = sin( yaw * 0.5 );
-				double cp = cos( pitch * 0.5 );
-				double sp = sin( pitch * 0.5 );
-				double cr = cos( roll * 0.5 );
-				double sr = sin( roll * 0.5 );
 
-				Quaternion q;
+				/*
+				float cy = cos( p_yaw * 0.5f );
+				float sy = sin( p_yaw * 0.5f );
+				float cp = cos( p_pitch * 0.5f );
+				float sp = sin( p_pitch * 0.5f );
+				float cr = cos( p_roll * 0.5f );
+				float sr = sin( p_roll * 0.5f );
+
+				Quatf q;
 				q.w = cy * cp * cr + sy * sp * sr;
 				q.x = cy * cp * sr - sy * sp * cr;
 				q.y = sy * cp * sr + cy * sp * cr;
 				q.z = sy * cp * cr - cy * sp * sr;
+
+				return q;
 				*/
 
-				// Same as following:
-				return eulerToQuaternion( glm::vec3( p_pitch, p_yaw, p_roll ) );
+				// Same as following?
+				return eulerToQuaternion( Vec3f( p_pitch, p_yaw, p_roll ) );
 			}
 
 			static inline Vec3f quaternionToEuler( const Quatf & p_quaternion )
@@ -93,8 +93,7 @@ namespace VTX
 				float t3 = 2.f * ( w * z + x * y );
 				float t4 = 1.f - 2.f * ( y * y + z * z );
 
-				return Vec3f(
-					glm::degrees( atan2( t0, t1 ) ), glm::degrees( asin( t2 ) ), glm::degrees( atan2( t3, t4 ) ) );
+				return Vec3f( atan2( t0, t1 ), asin( t2 ), atan2( t3, t4 ) );
 			}
 
 			template<typename T>
