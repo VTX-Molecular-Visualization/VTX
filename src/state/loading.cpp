@@ -44,7 +44,7 @@ namespace VTX
 				molecule->init();
 				molecule->setSelected( true );
 				molecule->print();
-				molecule->getTransform().rotate( glm::radians( 90.f ), VEC3F_Z );
+				// molecule->getTransform().rotate( glm::radians( 90.f ), VEC3F_Z );
 				scene->addMolecule( molecule );
 			}
 
