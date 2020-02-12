@@ -92,6 +92,21 @@ namespace VTX
 		  private:
 			MapStringToItemPtr _items = MapStringToItemPtr();
 		};
+
+		template<typename T,
+				 typename K,
+				 typename = std::enable_if<std::is_base_of<Generic::HasCollection<K>, T>::value>,
+				 typename = std::enable_if<std::is_base_of<Generic::BaseCollectionable, K>::value>>
+		class Factory
+		{
+		  public:
+			static T * const create()
+			{
+				T * const instance = new T();
+				instance->init();
+				return instance;
+			}
+		};
 	} // namespace Generic
 } // namespace VTX
 #endif
