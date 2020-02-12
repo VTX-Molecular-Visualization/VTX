@@ -48,7 +48,7 @@ namespace VTX
 
 		inline Object3D::Scene &			  getScene() { return *_scene; }
 		inline Renderer::BaseRenderer &		  getRenderer() { return *_renderer; }
-		inline Renderer::GLSLProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
+		inline Renderer::GLSL::ProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
 		inline UI::UserInterface &			  getUI() { return *_ui; }
 
 	  private:

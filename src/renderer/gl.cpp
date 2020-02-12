@@ -189,7 +189,7 @@ namespace VTX
 
 		void GL::_initShadingPass()
 		{
-			GLSLProgramManager & programManager = VTXApp::get().getProgramManager();
+			GLSL::ProgramManager & programManager = VTXApp::get().getProgramManager();
 
 			glGenFramebuffers( 1, &_fboShading );
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboShading );
