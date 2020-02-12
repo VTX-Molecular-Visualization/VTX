@@ -7,8 +7,6 @@ namespace VTX
 	{
 		namespace UI
 		{
-			void Residue::notify( Event::EVENT_MODEL p_event ) {}
-
 			void Residue::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;

@@ -21,7 +21,7 @@ namespace VTX
 				_uRadius		  = glGetUniformLocation( program->getId(), "uCylRad" );
 			}
 
-			void Cylinder::notify( Event::EVENT_MODEL p_event )
+			void Cylinder::notify( const Event::EVENT_MODEL & p_event )
 			{
 				BaseView3DMolecule::notify( p_event );
 

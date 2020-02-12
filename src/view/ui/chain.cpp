@@ -7,8 +7,6 @@ namespace VTX
 	{
 		namespace UI
 		{
-			void Chain::notify( Event::EVENT_MODEL p_event ) {}
-
 			void Chain::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;

@@ -20,7 +20,7 @@ namespace VTX
 
 				virtual std::string getName() const override { return ID::View::D3_SPHERE; };
 				virtual void		initItem() override;
-				virtual void		notify( Event::EVENT_MODEL ) override;
+				virtual void		notify( const Event::EVENT_MODEL & ) override;
 
 				virtual void render() override;
 
@@ -30,8 +30,8 @@ namespace VTX
 				// Uniforms.
 				GLint _uRadiusScale = GL_INVALID_INDEX;
 			};
-		} // namespace 3D
-	} // namespace View
+		} // namespace D3
+	}	  // namespace View
 } // namespace VTX
 
 #endif;

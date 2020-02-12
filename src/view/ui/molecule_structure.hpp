@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "model/molecule.hpp"
 #include "../base_view_ui.hpp"
+#include "model/molecule.hpp"
 
 namespace VTX
 {
@@ -19,8 +19,6 @@ namespace VTX
 			  public:
 				explicit MoleculeStructure( Model::Molecule * const p_model ) : BaseViewUI( p_model ) {}
 
-				virtual void notify( Event::EVENT_MODEL ) override;
-
 				virtual std::string getName() const override { return ID::View::UI_MOLECULE_STRUCTURE; }
 				virtual std::string getComponentParentName() const override { return ID::UI::SCENE; };
 
@@ -30,6 +28,6 @@ namespace VTX
 			  private:
 			};
 		} // namespace UI
-	} // namespace View
+	}	  // namespace View
 } // namespace VTX
 #endif

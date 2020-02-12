@@ -21,7 +21,7 @@ namespace VTX
 				_uRadiusScale	  = glGetUniformLocation( program->getId(), "uRadScale" );
 			}
 
-			void Sphere::notify( Event::EVENT_MODEL p_event )
+			void Sphere::notify( const Event::EVENT_MODEL & p_event )
 			{
 				BaseView3DMolecule::notify( p_event );
 

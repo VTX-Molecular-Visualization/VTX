@@ -10,8 +10,6 @@ namespace VTX
 	{
 		namespace UI
 		{
-			void Molecule::notify( Event::EVENT_MODEL p_event ) {}
-
 			void Molecule::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;

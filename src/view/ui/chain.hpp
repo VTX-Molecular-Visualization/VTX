@@ -5,8 +5,8 @@
 #pragma once
 
 #endif
-#include "model/chain.hpp"
 #include "../base_view_ui.hpp"
+#include "model/chain.hpp"
 
 namespace VTX
 {
@@ -18,7 +18,6 @@ namespace VTX
 			{
 			  public:
 				explicit Chain( Model::Chain * const p_model ) : BaseViewUI( p_model ) {}
-				virtual void notify( Event::EVENT_MODEL ) override;
 
 				virtual std::string getName() const override { return ID::View::UI_CHAIN; };
 				virtual std::string getComponentParentName() const override { return ID::UI::INSPECTOR; };
@@ -28,7 +27,7 @@ namespace VTX
 
 			  private:
 			};
-		}
-	} // namespace View
+		} // namespace UI
+	}	  // namespace View
 } // namespace VTX
 #endif

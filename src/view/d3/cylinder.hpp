@@ -20,7 +20,7 @@ namespace VTX
 
 				virtual std::string getName() const override { return ID::View::D3_CYLINDER; }
 				virtual void		initItem() override;
-				virtual void		notify( Event::EVENT_MODEL ) override;
+				virtual void		notify( const Event::EVENT_MODEL & ) override;
 
 				virtual void render() override;
 
@@ -29,7 +29,7 @@ namespace VTX
 				GLint _uRadius = GL_INVALID_INDEX;
 			};
 		} // namespace D3
-	} // namespace View
+	}	  // namespace View
 } // namespace VTX
 
 #endif;

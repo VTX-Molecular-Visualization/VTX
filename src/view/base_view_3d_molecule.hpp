@@ -5,10 +5,10 @@
 #pragma once
 #endif
 
-#include "model/molecule.hpp"
 #include "base_view_3d.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "model/molecule.hpp"
 #include <GL/gl3w.h>
 #include <vector>
 
@@ -36,7 +36,7 @@ namespace VTX
 			explicit BaseView3DMolecule( Model::Molecule * const p_model ) : BaseView3D( p_model ) {}
 			virtual ~BaseView3DMolecule() {}
 
-			virtual void notify( Event::EVENT_MODEL p_event ) override
+			virtual void notify( const Event::EVENT_MODEL & p_event ) override
 			{
 				if ( p_event == Event::EVENT_MODEL::RENDER && _isActive ) { render(); }
 			}

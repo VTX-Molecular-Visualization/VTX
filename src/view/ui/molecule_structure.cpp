@@ -7,8 +7,6 @@ namespace VTX
 	{
 		namespace UI
 		{
-			void MoleculeStructure::notify( Event::EVENT_MODEL p_event ) {}
-
 			void MoleculeStructure::_draw()
 			{
 				if ( ImGui::CollapsingHeader( LOCALE( "View.Molecule.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )

@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "model/residue.hpp"
 #include "../base_view_ui.hpp"
+#include "model/residue.hpp"
 
 namespace VTX
 {
@@ -18,7 +18,6 @@ namespace VTX
 			{
 			  public:
 				explicit Residue( Model::Residue * const p_model ) : BaseViewUI( p_model ) {}
-				virtual void notify( Event::EVENT_MODEL ) override;
 
 				virtual std::string getName() const override { return ID::View::UI_RESIDUE; };
 				virtual std::string getComponentParentName() const override { return ID::UI::INSPECTOR; };
@@ -29,6 +28,6 @@ namespace VTX
 			  private:
 			};
 		} // namespace UI
-	} // namespace View
+	}	  // namespace View
 } // namespace VTX
 #endif

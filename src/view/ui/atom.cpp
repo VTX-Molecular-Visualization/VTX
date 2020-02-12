@@ -7,8 +7,6 @@ namespace VTX
 	{
 		namespace UI
 		{
-			void Atom::notify( Event::EVENT_MODEL p_event ) {}
-
 			void Atom::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
