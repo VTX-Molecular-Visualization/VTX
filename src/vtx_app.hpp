@@ -8,6 +8,7 @@
 #include "action/action_manager.hpp"
 #include "action/base_action.hpp"
 #include "event/event.hpp"
+#include "generic/factories.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
 #include "setting.hpp"
@@ -46,10 +47,10 @@ namespace VTX
 		void initRenderer() const;
 		void renderScene() const { _renderer->render( *_scene ); }
 
-		inline Object3D::Scene &			  getScene() { return *_scene; }
-		inline Renderer::BaseRenderer &		  getRenderer() { return *_renderer; }
+		inline Object3D::Scene &				getScene() { return *_scene; }
+		inline Renderer::BaseRenderer &			getRenderer() { return *_renderer; }
 		inline Renderer::GLSL::ProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
-		inline UI::UserInterface &			  getUI() { return *_ui; }
+		inline UI::UserInterface &				getUI() { return *_ui; }
 
 	  private:
 		static bool				 _isRunning;

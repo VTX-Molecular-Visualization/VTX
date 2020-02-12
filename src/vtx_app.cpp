@@ -13,8 +13,8 @@ namespace VTX
 	VTXApp::VTXApp()
 	{
 		VTX_INFO( "Initializing application" );
-		_ui			   = Generic::Factory<UI::UserInterface, UI::BaseComponent>::create();
-		_stateMachine  = Generic::Factory<State::StateMachine, State::BaseState>::create();
+		_ui			   = Generic::FactoryInitializable<UI::UserInterface>::create();
+		_stateMachine  = Generic::FactoryInitializable<State::StateMachine>::create();
 		_scene		   = new Object3D::Scene();
 		_renderer	   = new Renderer::GL();
 		_actionManager = new Action::ActionManager();

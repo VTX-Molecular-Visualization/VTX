@@ -15,7 +15,7 @@ namespace VTX
 		  public:
 			virtual ~BaseEventHandler() = default;
 
-			virtual void handleEvent( const T & p_eventType, void * const p_arg = nullptr ) = 0;
+			virtual void handleEvent( const T & p_event, void * const p_arg = nullptr ) = 0;
 		};
 	} // namespace Generic
 } // namespace VTX

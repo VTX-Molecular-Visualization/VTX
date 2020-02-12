@@ -48,7 +48,7 @@ namespace VTX
 				scene->addMolecule( molecule );
 			}
 
-			Model::Path * p = Generic::Factory<Model::Path, Model::Viewpoint>::create();
+			Model::Path * p = Generic::FactoryInitializable<Model::Path>::create();
 			scene->addPath( p );
 			p->setSelected( true );
 

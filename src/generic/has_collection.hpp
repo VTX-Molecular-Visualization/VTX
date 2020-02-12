@@ -6,6 +6,7 @@
 #endif
 
 #include "base_collectionable.hpp"
+#include "base_initializable.hpp"
 #include "util/type.hpp"
 #include <map>
 #include <string>
@@ -17,7 +18,7 @@ namespace VTX
 	namespace Generic
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCollectionable, T>::value>>
-		class HasCollection
+		class HasCollection : public BaseInitializable
 		{
 		  public:
 			using MapStringToItemPtr  = std::map<std::string, T *>;
@@ -25,7 +26,7 @@ namespace VTX
 
 			virtual ~HasCollection() { clear(); }
 
-			virtual void init() { _addItems(); }
+			virtual void init() override { _addItems(); }
 
 			virtual void clear()
 			{
@@ -93,20 +94,6 @@ namespace VTX
 			MapStringToItemPtr _items = MapStringToItemPtr();
 		};
 
-		template<typename T,
-				 typename K,
-				 typename = std::enable_if<std::is_base_of<Generic::HasCollection<K>, T>::value>,
-				 typename = std::enable_if<std::is_base_of<Generic::BaseCollectionable, K>::value>>
-		class Factory
-		{
-		  public:
-			static T * const create()
-			{
-				T * const instance = new T();
-				instance->init();
-				return instance;
-			}
-		};
 	} // namespace Generic
 } // namespace VTX
 #endif
