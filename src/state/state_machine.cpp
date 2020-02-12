@@ -1,7 +1,7 @@
 #include "state_machine.hpp"
 #include "define.hpp"
-#include "loading.hpp"
-#include "playing.hpp"
+#include "load.hpp"
+#include "play.hpp"
 #include "visualization.hpp"
 
 namespace VTX
@@ -22,9 +22,9 @@ namespace VTX
 
 		void StateMachine::_addItems()
 		{
-			addItem( new Loading() );
+			addItem( new Load() );
 			addItem( new Visualization() );
-			addItem( new Playing() );
+			addItem( new Play() );
 		}
 
 		void StateMachine::_switchState( BaseState * const p_state, void * const p_arg )

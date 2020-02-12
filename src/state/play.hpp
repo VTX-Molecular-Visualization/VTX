@@ -1,31 +1,31 @@
-#ifndef __VTX_STATE_PLAYING__
-#define __VTX_STATE_PLAYING__
+#ifndef __VTX_STATE_PLAY__
+#define __VTX_STATE_PLAY__
 
 #ifdef _MSC_VER
 #pragma once
 #endif
 
-#include "model/path.hpp"
 #include "base_state.hpp"
+#include "model/path.hpp"
 
 namespace VTX
 {
 	namespace State
 	{
-		class Playing : public BaseState
+		class Play : public BaseState
 		{
 		  public:
-			Playing() = default;
+			Play() = default;
 
-			virtual std::string getName() const override { return ID::State::PLAYING; }
+			virtual std::string getName() const override { return ID::State::PLAY; }
 			virtual void		enter( void * const ) override;
 			virtual void		exit() override;
 			virtual void		update( const double ) override;
 
 		  private:
-			Model::Path * _path	  = nullptr;
-			float			   _time	  = 0.f;
-			float			   _totalTime = 0.f;
+			Model::Path * _path		 = nullptr;
+			float		  _time		 = 0.f;
+			float		  _totalTime = 0.f;
 
 			void _setCamera() const;
 		};

@@ -1,5 +1,5 @@
-#ifndef __VTX_STATE_LOADING__
-#define __VTX_STATE_LOADING__
+#ifndef __VTX_STATE_LOAD__
+#define __VTX_STATE_LOAD__
 
 #ifdef _MSC_VER
 #pragma once
@@ -11,12 +11,12 @@ namespace VTX
 {
 	namespace State
 	{
-		class Loading : public BaseState
+		class Load : public BaseState
 		{
 		  public:
-			Loading() = default;
+			Load() = default;
 
-			virtual std::string getName() const override { return ID::State::LOADING; }
+			virtual std::string getName() const override { return ID::State::LOAD; }
 			virtual void		enter( void * const ) override;
 			virtual void		exit() override;
 

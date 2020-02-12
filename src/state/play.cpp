@@ -1,4 +1,4 @@
-#include "playing.hpp"
+#include "play.hpp"
 #include "object3d/scene.hpp"
 #include "tool/chrono.hpp"
 #include "util/math.hpp"
@@ -8,7 +8,7 @@ namespace VTX
 {
 	namespace State
 	{
-		void Playing::enter( void * const p_arg )
+		void Play::enter( void * const p_arg )
 		{
 			_path = (Model::Path *)p_arg;
 
@@ -31,7 +31,7 @@ namespace VTX
 			_setCamera();
 		}
 
-		void Playing::exit()
+		void Play::exit()
 		{
 			VTX_INFO( "Stop" );
 			_path	   = nullptr;
@@ -39,7 +39,7 @@ namespace VTX
 			_totalTime = 0.f;
 		}
 
-		void Playing::update( const double p_deltaTime )
+		void Play::update( const double p_deltaTime )
 		{
 			BaseState::update( p_deltaTime );
 
@@ -58,7 +58,7 @@ namespace VTX
 
 		} // namespace State
 
-		void Playing::_setCamera() const
+		void Play::_setCamera() const
 		{
 			Model::Viewpoint::ViewpointInterpolationData data = _path->getCurrentViewpointInterpolationData( _time );
 			VTXApp::get().getScene().getCamera().set(

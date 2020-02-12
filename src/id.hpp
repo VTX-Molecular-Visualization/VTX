@@ -38,9 +38,10 @@ namespace VTX
 
 		namespace State
 		{
-			const std::string LOADING		= "LOADING";
+			const std::string LOAD			= "LOAD";
 			const std::string VISUALIZATION = "VISUALIZATION";
-			const std::string PLAYING		= "PLAYING";
+			const std::string PLAY			= "PLAY";
+			const std::string EXPORT		= "EXPORT";
 		} // namespace State
 
 		namespace Controller
