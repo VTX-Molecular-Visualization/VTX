@@ -73,9 +73,9 @@ namespace VTX
 	constexpr float CONTROLLER_TRANSLATION_FACTOR_MIN	  = 1.0f;
 	constexpr float CONTROLLER_TRANSLATION_FACTOR_MAX	  = 5.0f;
 	constexpr float CONTROLLER_TRANSLATION_FACTOR_DEFAULT = 2.0f;
-	constexpr float CONTROLLER_ROTATION_SPEED_MIN		  = 0.05f;
-	constexpr float CONTROLLER_ROTATION_SPEED_MAX		  = 0.5f;
-	constexpr float CONTROLLER_ROTATION_SPEED_DEFAULT	  = 0.1f;
+	constexpr float CONTROLLER_ROTATION_SPEED_MIN		  = 0.001f;
+	constexpr float CONTROLLER_ROTATION_SPEED_MAX		  = 0.01f;
+	constexpr float CONTROLLER_ROTATION_SPEED_DEFAULT	  = 0.005f;
 
 	// Rendering.
 	// TODO: choose relevent constants
