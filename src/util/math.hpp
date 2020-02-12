@@ -6,9 +6,9 @@
 #endif
 
 #include "define.hpp"
-#include "model/path.hpp"
-#include "object3d/camera.hpp"
+#include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtx/compatibility.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <random>
 
 #undef min
@@ -36,10 +36,83 @@ namespace VTX
 
 			static inline Vec3f randomVec3f() { return Vec3f( dis( gen ), dis( gen ), dis( gen ) ); }
 
+			static inline Quatf eulerToQuaternion( const Vec3f & p_angles )
+			{
+				return Quatf( glm::radians( p_angles ) );
+			}
+
+			static inline Quatf eulerToQuaternion( const float p_pitch, const float p_yaw, const float p_roll )
+			{
+				// https://stackoverflow.com/questions/53033620/how-to-convert-euler-angles-to-quaternions-and-get-the-same-euler-angles-back-fr
+				/*
+				double cy = cos( yaw * 0.5 );
+				double sy = sin( yaw * 0.5 );
+				double cp = cos( pitch * 0.5 );
+				double sp = sin( pitch * 0.5 );
+				double cr = cos( roll * 0.5 );
+				double sr = sin( roll * 0.5 );
+
+				Quaternion q;
+				q.w = cy * cp * cr + sy * sp * sr;
+				q.x = cy * cp * sr - sy * sp * cr;
+				q.y = sy * cp * sr + cy * sp * cr;
+				q.z = sy * cp * cr - cy * sp * sr;
+				*/
+
+				// Same as following:
+				return eulerToQuaternion( glm::vec3( p_pitch, p_yaw, p_roll ) );
+			}
+
+			static inline Vec3f quaternionToEuler( const Quatf & p_quaternion )
+			{
+				// https://stackoverflow.com/questions/53033620/how-to-convert-euler-angles-to-quaternions-and-get-the-same-euler-angles-back-fr
+				/*
+				t0 = +2.0 * ( w * x + y * z )
+				t1 = +1.0 - 2.0 * ( x * x + y * y )
+				X = math.degrees( math.atan2( t0, t1 ) )
+
+				t2 = +2.0 * ( w * y - z * x )
+				t2 = +1.0 if t2 > +1.0 else t2
+				t2 = -1.0 if t2 < -1.0 else t2
+				Y = math.degrees( math.asin( t2 ) )
+
+				t3 = +2.0 * ( w * z + x * y )
+				t4 = +1.0 - 2.0 * ( y * y + z * z )
+				Z = math.degrees( math.atan2( t3, t4 ) )
+				*/
+
+				float x = p_quaternion.x;
+				float y = p_quaternion.y;
+				float z = p_quaternion.z;
+				float w = p_quaternion.w;
+
+				float t0 = 2.f * ( w * x + y * z );
+				float t1 = 1.f - 2.f * ( x * x + y * y );
+				float t2 = 2.f * ( w * y - z * x );
+				t2		 = glm::clamp( t2, -1.f, 1.f );
+				float t3 = 2.f * ( w * z + x * y );
+				float t4 = 1.f - 2.f * ( y * y + z * z );
+
+				return Vec3f(
+					glm::degrees( atan2( t0, t1 ) ), glm::degrees( asin( t2 ) ), glm::degrees( atan2( t3, t4 ) ) );
+			}
+
 			template<typename T>
 			static inline T lerp( const T & p_lhs, const T & p_rhs, const float p_value )
 			{
 				return glm::lerp( p_lhs, p_rhs, p_value );
+			}
+
+			template<typename T>
+			static inline T slerp( const T & p_lhs, const T & p_rhs, const float p_value )
+			{
+				return glm::slerp( p_lhs, p_rhs, p_value );
+			}
+
+			template<typename T>
+			static inline T mix( const T & p_lhs, const T & p_rhs, const float p_value )
+			{
+				return glm::mix( p_lhs, p_rhs, p_value );
 			}
 		} // namespace Math
 

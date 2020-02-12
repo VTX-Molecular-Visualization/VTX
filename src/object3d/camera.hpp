@@ -5,10 +5,9 @@
 #pragma once
 #endif
 
+#include "../util/math.hpp"
 #include "define.hpp"
 #include "generic/base_printable.hpp"
-#include "glm/gtc/matrix_transform.hpp"
-#include <glm/gtx/string_cast.hpp>
 
 namespace VTX
 {
@@ -33,19 +32,11 @@ namespace VTX
 				_screenHeight = float( p_height );
 			}
 
-			inline void set( const Vec3f p_position, const Quatf p_rotation )
+			inline void set( const Vec3f & p_position, const Quatf & p_rotation )
 			{
-				_position = p_position;
-				_rotation = p_rotation;
-				/*
-				_yaw	  = (float)atan2( 2.0 * ( _rotation.y * _rotation.z + _rotation.w * _rotation.x ),
-									  _rotation.w * _rotation.w - _rotation.x * _rotation.x - _rotation.y * _rotation.y
-										  + _rotation.z * _rotation.z );
-				_pitch	  = (float)asin( -2.0 * ( _rotation.x * _rotation.z - _rotation.w * _rotation.y ) );
-				_roll	  = (float)atan2( 2.0 * ( _rotation.x * _rotation.y + _rotation.w * _rotation.z ),
-									  _rotation.w * _rotation.w + _rotation.x * _rotation.x - _rotation.y * _rotation.y
-										  - _rotation.z * _rotation.z );
-										  */
+				_position	 = p_position;
+				_rotation	 = p_rotation;
+				_eulerAngles = Util::Math::quaternionToEuler( _rotation );
 				_updateRotation();
 			}
 
@@ -66,11 +57,11 @@ namespace VTX
 			float _far			= CAMERA_FAR;
 			float _fov			= CAMERA_FOV;
 
-			Vec3f _position = VEC3F_Z * 50.f;
-			Quatf _rotation = Quatf();
-			float _pitch	= 0.f;
-			float _yaw		= 0.f;
-			float _roll		= 0.f;
+			Vec3f _position	   = VEC3F_Z * 50.f;
+			Quatf _rotation	   = Quatf();
+			Vec3f _eulerAngles = Vec3f();
+			float _yaw		   = 0.f;
+			float _roll		   = 0.f;
 
 			Vec3f _front = -VEC3F_Z;
 			Vec3f _left	 = -VEC3F_X;

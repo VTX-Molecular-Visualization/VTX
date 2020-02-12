@@ -32,15 +32,15 @@ namespace VTX
 
 		void Camera::rotateLeft( const float p_delta )
 		{
-			_yaw -= p_delta;
-			_rotation = Quatf( glm::vec3( _pitch, _yaw, _roll ) );
+			_eulerAngles.y -= p_delta;
+			_rotation = Util::Math::eulerToQuaternion( _eulerAngles );
 			_updateRotation();
 		}
 
 		void Camera::rotateUp( const float p_delta )
 		{
-			_pitch -= p_delta;
-			_rotation = Quatf( glm::vec3( _pitch, _yaw, _roll ) );
+			_eulerAngles.x -= p_delta;
+			_rotation = Util::Math::eulerToQuaternion( _eulerAngles );
 			_updateRotation();
 		}
 
@@ -59,9 +59,7 @@ namespace VTX
 		{
 			VTX_INFO( "Position: " + glm::to_string( _position ) );
 			VTX_INFO( "Rotation: " + glm::to_string( _rotation ) );
-			VTX_INFO( "Pitch: " + std::to_string( _pitch ) );
-			VTX_INFO( "Yaw: " + std::to_string( _yaw ) );
-			VTX_INFO( "Roll: " + std::to_string( _roll ) );
+			VTX_INFO( "Euler angles: " + glm::to_string( _eulerAngles ) );
 			VTX_INFO( "Front: " + glm::to_string( _front ) );
 			VTX_INFO( "Left: " + glm::to_string( _left ) );
 			VTX_INFO( "Up: " + glm::to_string( _up ) );
