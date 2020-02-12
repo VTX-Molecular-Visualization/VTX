@@ -15,7 +15,7 @@ namespace VTX
 		class PathImport : public BaseAction
 		{
 		  public:
-			PathImport( Model::Path * const p_path ) : _path( p_path ) {}
+			explicit PathImport( Model::Path * const p_path ) : _path( p_path ) {}
 
 			virtual void execute() override { _path->load( PATHS_DIR + "path.txt" ); }
 

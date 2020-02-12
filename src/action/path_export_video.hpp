@@ -16,7 +16,7 @@ namespace VTX
 		class PathExportVideo : public BaseAction
 		{
 		  public:
-			PathExportVideo( Model::Path * const p_path ) : _path( p_path ) {}
+			explicit PathExportVideo( Model::Path * const p_path ) : _path( p_path ) {}
 
 			virtual void execute() override { VTXApp::get().goToState( ID::State::EXPORT, _path ); };
 

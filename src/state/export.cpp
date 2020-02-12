@@ -18,7 +18,7 @@ namespace VTX
 			float totalTime	 = path->computeTotalTime();
 			uint  totalFrame = uint( VIDEO_FPS * totalTime );
 
-			if ( totalFrame == 0.f )
+			if ( totalFrame == 0u )
 			{
 				VTX_WARNING( "Total time must be > 0" );
 				VTXApp::get().goToState( ID::State::VISUALIZATION );
@@ -43,7 +43,7 @@ namespace VTX
 					Util::Math::lerp( data.rotationLhs, data.rotationRhs, data.value ) );
 
 				// Update renderer.
-				// VTXApp::get().getUI().draw();
+				VTXApp::get().getUI().draw();
 				VTXApp::get().renderScene();
 				VTXApp::get().getScene().update( 1.f / VIDEO_FPS );
 				std::string counterStr = std::to_string( frame );

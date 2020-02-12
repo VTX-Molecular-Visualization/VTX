@@ -11,10 +11,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class PlayPath : public BaseAction
+		class PathPlay : public BaseAction
 		{
 		  public:
-			PlayPath( Model::Path * const p_path ) : _path( p_path ) {}
+			explicit PathPlay( Model::Path * const p_path ) : _path( p_path ) {}
 			virtual void execute() override { VTXApp::get().goToState( ID::State::PLAY, _path ); };
 
 		  private:

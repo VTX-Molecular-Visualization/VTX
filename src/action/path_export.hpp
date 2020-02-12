@@ -15,7 +15,7 @@ namespace VTX
 		class PathExport : public BaseAction
 		{
 		  public:
-			PathExport( Model::Path * const p_path ) : _path( p_path ) {}
+			explicit PathExport( Model::Path * const p_path ) : _path( p_path ) {}
 
 			virtual void execute() override { _path->save( PATHS_DIR + "path.txt" ); }
 
