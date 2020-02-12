@@ -31,7 +31,8 @@ namespace VTX
 
 		BaseComponent * const BaseComponent::getComponentByName( const std::string & p_name )
 		{
-			if ( _getItems().find( p_name ) != _getItems().end() ) { return (BaseComponent *)_getItem( p_name ); }
+			if ( _getItems().find( p_name ) != _getItems().end() )
+			{ return static_cast<BaseComponent *>( _getItem( p_name ) ); }
 
 			for ( const PairStringToItemPtr pair : _getItems() )
 			{

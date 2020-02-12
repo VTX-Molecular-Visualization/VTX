@@ -15,7 +15,7 @@ namespace VTX
 		class ChangeTheme : public BaseAction
 		{
 		  public:
-			ChangeTheme( const Setting::UI::THEME p_theme ) : _theme( p_theme ) {}
+			explicit ChangeTheme( const Setting::UI::THEME p_theme ) : _theme( p_theme ) {}
 
 			virtual void execute() override
 			{

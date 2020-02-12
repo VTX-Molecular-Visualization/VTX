@@ -31,7 +31,7 @@ namespace VTX
 			{
 				for ( const PairStringToItemPtr pair : _items )
 				{
-					( (BaseCollectionable *)pair.second )->cleanItem();
+					static_cast<BaseCollectionable *>( pair.second )->cleanItem();
 					delete pair.second;
 				}
 				_items.clear();
@@ -47,10 +47,10 @@ namespace VTX
 			}
 			void addItem( T * const p_item )
 			{
-				( (BaseCollectionable *)p_item )->initItem();
+				static_cast<BaseCollectionable *>( p_item )->initItem();
 				try
 				{
-					_items.try_emplace( ( (BaseCollectionable *)p_item )->getName(), p_item );
+					_items.try_emplace( static_cast<BaseCollectionable *>( p_item )->getName(), p_item );
 				}
 				catch ( const std::exception & )
 				{
@@ -63,18 +63,18 @@ namespace VTX
 			{
 				try
 				{
-					_items.try_emplace( ( (BaseCollectionable *)p_item )->getName(), p_item );
+					_items.try_emplace( static_cast<BaseCollectionable *>( p_item )->getName(), p_item );
 				}
 				catch ( const std::exception & )
 				{
 					VTX_WARNING( "An item with this name already exists: "
-								 + ( (BaseCollectionable *)p_item )->getName() );
+								 + ( static_cast<BaseCollectionable *>( p_item ) )->getName() );
 				}
 			}
 
 			void removeItem( const std::string & p_name )
 			{
-				BaseCollectionable * item = (BaseCollectionable *)_items.at( p_name );
+				BaseCollectionable * item = static_cast<BaseCollectionable *>( _items.at( p_name ) );
 				( (BaseCollectionable *)item )->cleanItem();
 				delete item;
 				_items.erase( p_name );

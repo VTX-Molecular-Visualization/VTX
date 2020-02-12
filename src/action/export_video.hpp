@@ -44,7 +44,7 @@ namespace VTX
 				VTX_INFO( "Exporting... total: " + std::to_string( totalFrame ) + " frames / "
 						  + std::to_string( totalTime ) + " seconds" );
 
-				std::string		 filename	= Util::Time::getTimestamp();
+				//std::string		 filename	= Util::Time::getTimestamp();
 				ImGuiIO &		 io			= ImGui::GetIO();
 				Tool::Snapshoter snapshoter = Tool::Snapshoter();
 				Tool::Chrono	 chrono		= Tool::Chrono();
