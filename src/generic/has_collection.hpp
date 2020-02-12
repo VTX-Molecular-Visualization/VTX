@@ -55,7 +55,7 @@ namespace VTX
 				catch ( const std::exception & )
 				{
 					VTX_WARNING( "An item with this name already exists: "
-								 + ( (BaseCollectionable *)p_item )->getName() );
+								 + static_cast<BaseCollectionable *>( p_item )->getName() );
 				}
 			}
 
@@ -75,7 +75,7 @@ namespace VTX
 			void removeItem( const std::string & p_name )
 			{
 				BaseCollectionable * item = static_cast<BaseCollectionable *>( _items.at( p_name ) );
-				( (BaseCollectionable *)item )->cleanItem();
+				static_cast<BaseCollectionable *>( item )->cleanItem();
 				delete item;
 				_items.erase( p_name );
 			}
