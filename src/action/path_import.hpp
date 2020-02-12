@@ -1,0 +1,27 @@
+#ifndef __VTX_ACTION_PATH_IMPORT__
+#define __VTX_ACTION_PATH_IMPORT__
+
+#ifdef _MSC_VER
+#pragma once
+#endif
+
+#include "base_action.hpp"
+#include "vtx_app.hpp"
+
+namespace VTX
+{
+	namespace Action
+	{
+		class PathImport : public BaseAction
+		{
+		  public:
+			PathImport( Model::Path * const p_path ) : _path( p_path ) {}
+
+			virtual void execute() override { _path->load( PATHS_DIR + "path.txt" ); }
+
+		  private:
+			Model::Path * const _path;
+		};
+	} // namespace Action
+} // namespace VTX
+#endif

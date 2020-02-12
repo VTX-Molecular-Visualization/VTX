@@ -21,8 +21,6 @@ namespace VTX
 			virtual void		enter( void * const ) override;
 			virtual void		exit() override;
 			virtual void		update( const double ) override;
-
-		  private:
 		};
 	} // namespace State
 } // namespace VTX

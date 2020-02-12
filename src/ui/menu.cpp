@@ -14,11 +14,11 @@
 #include "action/change_theme.hpp"
 #include "action/change_translation_factor_speed.hpp"
 #include "action/change_translation_speed.hpp"
-#include "action/export_path.hpp"
-#include "action/export_video.hpp"
-#include "action/import_path.hpp"
 #include "action/new.hpp"
 #include "action/open.hpp"
+#include "action/path_export.hpp"
+#include "action/path_export_video.hpp"
+#include "action/path_import.hpp"
 #include "action/quit.hpp"
 #include "action/snapshot.hpp"
 #include "define.hpp"
@@ -108,7 +108,7 @@ namespace VTX
 					{
 						try
 						{
-							VTXApp::get().action( new Action::ImportPath() );
+							VTXApp::get().action( new Action::PathImport( VTXApp::get().getScene().getPaths()[ 0 ] ) );
 						}
 						catch ( const std::exception & e )
 						{
@@ -127,7 +127,7 @@ namespace VTX
 					{
 						try
 						{
-							VTXApp::get().action( new Action::ExportPath() );
+							VTXApp::get().action( new Action::PathExport( VTXApp::get().getScene().getPaths()[ 0 ] ) );
 						}
 						catch ( const std::exception & e )
 						{
@@ -135,7 +135,9 @@ namespace VTX
 						}
 					}
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Video" ) ) )
-					{ VTXApp::get().action( new Action::ExportVideo() ); }
+					{
+						VTXApp::get().action( new Action::PathExportVideo( VTXApp::get().getScene().getPaths()[ 0 ] ) );
+					}
 					ImGui::EndMenu();
 				}
 

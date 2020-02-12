@@ -1,4 +1,5 @@
 #include "path.hpp"
+#include "action/path_play.hpp"
 #include "action/viewpoint_create.hpp"
 #include "vtx_app.hpp"
 
@@ -17,7 +18,7 @@ namespace VTX
 					ImGui::Text( "Duration: %f", _getModel().computeTotalTime() );
 					ImGui::Text( "Viewpoints: %d", _getModel().getViewpoints().size() );
 					if ( ImGui::Button( "Play" ) )
-					{ VTXApp::get().goToState( ID::State::PLAY, VTXApp::get().getScene().getPaths()[ 0 ] ); }
+					{ VTXApp::get().action( new Action::PlayPath( VTXApp::get().getScene().getPaths()[ 0 ] ) ); }
 					ImGui::SameLine();
 					if ( ImGui::Button( "Stop" ) ) { VTXApp::get().goToState( ID::State::VISUALIZATION ); }
 					if ( ImGui::Button( "Add viewpoint" ) )
