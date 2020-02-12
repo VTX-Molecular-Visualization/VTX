@@ -17,8 +17,7 @@ namespace VTX
 				{
 					ImGui::Text( "Duration: %f", _getModel().computeTotalTime() );
 					ImGui::Text( "Viewpoints: %d", _getModel().getViewpoints().size() );
-					if ( ImGui::Button( "Play" ) )
-					{ VTXApp::get().action( new Action::PathPlay( VTXApp::get().getScene().getPaths()[ 0 ] ) ); }
+					if ( ImGui::Button( "Play" ) ) { VTXApp::get().action( new Action::PathPlay( &_getModel() ) ); }
 					ImGui::SameLine();
 					if ( ImGui::Button( "Stop" ) ) { VTXApp::get().goToState( ID::State::VISUALIZATION ); }
 					if ( ImGui::Button( "Add viewpoint" ) )
