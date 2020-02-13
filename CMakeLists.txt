@@ -39,10 +39,13 @@ find_package(assimp CONFIG REQUIRED)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
 set(CMAKE_SUPPRESS_REGENERATION true)
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 
 
 # Declare executable with source files.
 add_executable(VTX ${HPP} ${CPP})
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VTX)
 
 # Link libs.
 target_link_libraries(VTX PRIVATE SDL2::SDL2 SDL2::SDL2main)

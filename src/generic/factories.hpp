@@ -39,6 +39,6 @@ namespace VTX
 			instance->init();
 			return instance;
 		}
-	}; // namespace Generic
+	} // namespace Generic
 } // namespace VTX
 #endif
