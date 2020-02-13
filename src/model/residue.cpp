@@ -9,10 +9,15 @@ namespace VTX
 		void Residue::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::UI::Residue( this ) ) ); }
+			if ( isSelected() )
+			{
+				addItem(
+					(View::BaseView<BaseModel> *)Generic::FactoryView<Residue, View::UI::Residue>::create( this ) );
+			}
 			else
 			{
-				_deleteView( ID::View::UI_RESIDUE );
+				Generic::FactoryView<Residue, View::UI::Residue>::destroy(
+					(View::UI::Residue *)removeItem( ID::View::UI_RESIDUE ) );
 			}
 		}
 

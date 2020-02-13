@@ -19,7 +19,7 @@ namespace VTX
 {
 	namespace UI
 	{
-		UserInterface::UserInterface() : BaseComponent( nullptr )
+		UserInterface::UserInterface()
 		{
 			VTX_INFO( "Creating user interface" );
 
@@ -66,11 +66,11 @@ namespace VTX
 
 		void UserInterface::_addItems()
 		{
-			addItem( new Menu( &_showMenu, &_showConsole, &_showScene, &_showInspector, &_showCameraEditor ) );
-			addItem( new Console( &_showConsole ) );
-			addItem( new Scene( &_showScene ) );
-			addItem( new Inspector( &_showInspector ) );
-			addItem( new CameraEditor( &_showCameraEditor ) );
+			addItem( Generic::FactoryComponent<Menu>::create() );
+			addItem( Generic::FactoryComponent<Console>::create() );
+			addItem( Generic::FactoryComponent<Scene>::create() );
+			addItem( Generic::FactoryComponent<Inspector>::create() );
+			addItem( Generic::FactoryComponent<CameraEditor>::create() );
 		}
 
 		void UserInterface::_initSDL2()
@@ -207,7 +207,7 @@ namespace VTX
 										   | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 			// Main begin.
-			ImGui::Begin( IMGUI_ID_MAIN_WINDOW, _visible, windowFlags );
+			ImGui::Begin( IMGUI_ID_MAIN_WINDOW, isVisiblePtr(), windowFlags );
 
 			// Docking.
 			ImGuiID			   dockSpaceId	  = ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE );

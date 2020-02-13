@@ -14,8 +14,6 @@ namespace VTX
 		class Scene : public BaseComponent
 		{
 		  public:
-			explicit Scene( bool * const );
-
 			virtual std::string getName() const override { return ID::UI::SCENE; }
 
 		  protected:

@@ -7,7 +7,7 @@ namespace VTX
 	{
 		namespace D3
 		{
-			void Cylinder::initItem()
+			void Cylinder::init()
 			{
 				Renderer::GLSL::ProgramManager & pm		 = VTXApp::get().getProgramManager();
 				Renderer::GLSL::Program *		 program = pm.createProgram( "CylinderGeom" );

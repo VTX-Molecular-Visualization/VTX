@@ -1,8 +1,8 @@
 #include "shortcut.hpp"
-#include "../action/active_renderer.hpp"
-#include "../action/viewpoint_create.hpp"
-#include "../define.hpp"
-#include "../vtx_app.hpp"
+#include "action/active_renderer.hpp"
+#include "action/viewpoint_create.hpp"
+#include "define.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

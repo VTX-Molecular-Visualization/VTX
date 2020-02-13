@@ -1,8 +1,8 @@
 #include "viewpoint.hpp"
-#include "../../action/viewpoint_change_duration.hpp"
-#include "../../action/viewpoint_delete.hpp"
-#include "../../action/viewpoint_replace.hpp"
-#include "../../object3d/scene.hpp"
+#include "action/viewpoint_change_duration.hpp"
+#include "action/viewpoint_delete.hpp"
+#include "action/viewpoint_replace.hpp"
+#include "object3d/scene.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

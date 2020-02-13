@@ -5,8 +5,8 @@
 #pragma once
 
 #endif
-#include "../base_view_ui.hpp"
 #include "model/viewpoint.hpp"
+#include "view/base_view_ui.hpp"
 
 namespace VTX
 {

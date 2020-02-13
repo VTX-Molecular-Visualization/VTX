@@ -14,8 +14,6 @@ namespace VTX
 		class CameraEditor : public BaseComponent
 		{
 		  public:
-			explicit CameraEditor( bool * const );
-
 			virtual std::string getName() const override { return ID::UI::CAMERA_EDITOR; }
 
 		  protected:

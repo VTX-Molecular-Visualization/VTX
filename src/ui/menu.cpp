@@ -31,17 +31,6 @@ namespace VTX
 {
 	namespace UI
 	{
-		Menu::Menu( bool * const p_show,
-					bool * const p_showConsole,
-					bool * const p_showScene,
-					bool * const p_showInspector,
-					bool * const p_showCameraEditor ) :
-			BaseComponent( p_show ),
-			_showConsole( p_showConsole ), _showScene( p_showScene ), _showInspector( p_showInspector ),
-			_showCameraEditor( p_showCameraEditor )
-		{
-		}
-
 		void Menu::_draw()
 		{
 			ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding,
@@ -49,7 +38,8 @@ namespace VTX
 			if ( ImGui::BeginMainMenuBar() )
 			{
 				// Main menu.
-				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Menu" ), _visible ) )
+				// TODO: enable/disable menu.
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Menu" ), isVisiblePtr() ) )
 				{
 					// New.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.New" ) /*, "Ctrl+N"*/ ) )
@@ -77,32 +67,41 @@ namespace VTX
 				}
 
 				// Display.
-				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Display" ), _visible ) )
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Display" ), isVisiblePtr() ) )
 				{
-					ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), _showScene );
-					ImGui::Checkbox( LOCALE( "MainMenu.Display.Inspector" ), _showInspector );
-					ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), _showConsole );
-					ImGui::Checkbox( LOCALE( "MainMenu.Display.CameraEditor" ), _showCameraEditor );
+					bool * showScene = VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->isVisiblePtr();
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), showScene ) ) {}
+					bool * showInspector
+						= VTXApp::get().getUI().getComponentByName( ID::UI::INSPECTOR )->isVisiblePtr();
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Inspector" ), showInspector ) ) {}
+					bool * showConsole = VTXApp::get().getUI().getComponentByName( ID::UI::CONSOLE )->isVisiblePtr();
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), showConsole ) ) {}
+					bool * showCameraEditor
+						= VTXApp::get().getUI().getComponentByName( ID::UI::CAMERA_EDITOR )->isVisiblePtr();
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.CameraEditor" ), showCameraEditor ) ) {}
+
 					ImGui::Separator();
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.CloseAll" ) ) )
 					{
-						*_showScene		   = false;
-						*_showInspector	   = false;
-						*_showConsole	   = false;
-						*_showCameraEditor = false;
+						VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->setVisible( false );
+						VTXApp::get().getUI().getComponentByName( ID::UI::INSPECTOR )->setVisible( false );
+						VTXApp::get().getUI().getComponentByName( ID::UI::CONSOLE )->setVisible( false );
+						VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->setVisible( false );
+						VTXApp::get().getUI().getComponentByName( ID::UI::CAMERA_EDITOR )->setVisible( false );
 					}
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.ShowAll" ) ) )
 					{
-						*_showScene		   = true;
-						*_showInspector	   = true;
-						*_showConsole	   = true;
-						*_showCameraEditor = true;
+						VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->setVisible( true );
+						VTXApp::get().getUI().getComponentByName( ID::UI::INSPECTOR )->setVisible( true );
+						VTXApp::get().getUI().getComponentByName( ID::UI::CONSOLE )->setVisible( true );
+						VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->setVisible( true );
+						VTXApp::get().getUI().getComponentByName( ID::UI::CAMERA_EDITOR )->setVisible( true );
 					}
 					ImGui::EndMenu();
 				}
 
 				// Import
-				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Import" ), _visible ) )
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Import" ), isVisiblePtr() ) )
 				{
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Import.Path" ) ) )
 					{
@@ -119,7 +118,7 @@ namespace VTX
 				}
 
 				// Export
-				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Export" ), _visible ) )
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Export" ), isVisiblePtr() ) )
 				{
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Snapshot" ) ) )
 					{ VTXApp::get().action( new Action::Snapshot() ); }
@@ -142,7 +141,7 @@ namespace VTX
 				}
 
 				// Settings.
-				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), _visible ) )
+				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Settings" ), isVisiblePtr() ) )
 				{
 					// Theme.
 					const char * themes[]

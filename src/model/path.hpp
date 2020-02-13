@@ -5,10 +5,10 @@
 #pragma once
 #endif
 
-#include "../generic/base_serializable.hpp"
-#include "../object3d/camera.hpp"
 #include "base_model.hpp"
 #include "define.hpp"
+#include "generic/base_serializable.hpp"
+#include "object3d/camera.hpp"
 #include "viewpoint.hpp"
 #include <vector>
 

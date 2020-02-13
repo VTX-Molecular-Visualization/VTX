@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "../object3d/camera.hpp"
 #include "base_action.hpp"
 #include "model/viewpoint.hpp"
+#include "object3d/camera.hpp"
 
 namespace VTX
 {

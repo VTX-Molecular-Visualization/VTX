@@ -17,8 +17,6 @@ namespace VTX
 		class Inspector : public BaseComponent
 		{
 		  public:
-			explicit Inspector( bool * const );
-
 			virtual std::string getName() const override { return ID::UI::INSPECTOR; }
 
 		  protected:

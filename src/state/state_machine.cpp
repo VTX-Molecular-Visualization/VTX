@@ -1,6 +1,7 @@
 #include "state_machine.hpp"
 #include "define.hpp"
 #include "export.hpp"
+#include "generic/factories.hpp"
 #include "load.hpp"
 #include "play.hpp"
 #include "visualization.hpp"
@@ -23,10 +24,10 @@ namespace VTX
 
 		void StateMachine::_addItems()
 		{
-			addItem( new Load() );
-			addItem( new Visualization() );
-			addItem( new Play() );
-			addItem( new Export() );
+			addItem( Generic::FactoryState<Load>::create() );
+			addItem( Generic::FactoryState<Visualization>::create() );
+			addItem( Generic::FactoryState<Play>::create() );
+			addItem( Generic::FactoryState<Export>::create() );
 		}
 
 		void StateMachine::_switchState( BaseState * const p_state, void * const p_arg )

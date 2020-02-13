@@ -5,8 +5,8 @@
 #pragma once
 
 #endif
-#include "../base_view_ui.hpp"
 #include "model/path.hpp"
+#include "view/base_view_ui.hpp"
 
 namespace VTX
 {
@@ -28,6 +28,6 @@ namespace VTX
 			  private:
 			};
 		} // namespace UI
-	} // namespace View
+	}	  // namespace View
 } // namespace VTX
 #endif

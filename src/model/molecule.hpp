@@ -5,14 +5,14 @@
 #pragma once
 #endif
 
+#include "atom.hpp"
 #include "base_model.hpp"
+#include "chain.hpp"
 #include "define.hpp"
 #include "generic/base_printable.hpp"
 #include "generic/base_renderable.hpp"
 #include "generic/base_transformable.hpp"
 #include "math/aabb.hpp"
-#include "atom.hpp"
-#include "chain.hpp"
 #include "residue.hpp"
 #include "util/logger.hpp"
 #include <GL/gl3w.h>
@@ -40,16 +40,16 @@ namespace VTX
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
-			inline Chain &	  addChain() { return _chains.emplace_back( Chain() ); }
-			inline Chain &	  getChain( uint p_idx ) { return _chains[ p_idx ]; }
+			inline Chain &	 addChain() { return _chains.emplace_back( Chain() ); }
+			inline Chain &	 getChain( uint p_idx ) { return _chains[ p_idx ]; }
 			inline Residue & addResidue() { return _residues.emplace_back( Residue() ); }
 			inline Residue & getResidue( uint p_idx ) { return _residues[ p_idx ]; }
-			inline Atom &	  addAtom() { return _atoms.emplace_back( Atom() ); }
-			inline Atom &	  getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
+			inline Atom &	 addAtom() { return _atoms.emplace_back( Atom() ); }
+			inline Atom &	 getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
 
-			inline std::vector<Chain> &   getChains() { return _chains; }
+			inline std::vector<Chain> &	  getChains() { return _chains; }
 			inline std::vector<Residue> & getResidues() { return _residues; }
-			inline std::vector<Atom> &	   getAtoms() { return _atoms; }
+			inline std::vector<Atom> &	  getAtoms() { return _atoms; }
 
 			inline std::set<std::string> & getUnknownResidueSymbols() { return _unknownResidueSymbol; }
 			inline std::set<std::string> & getUnknownAtomSymbols() { return _unknownAtomSymbol; }
@@ -90,15 +90,15 @@ namespace VTX
 
 			virtual void print() const override;
 
-			Chain * const	 getSelectedChain() const { return _selectedChain; }
+			Chain * const	getSelectedChain() const { return _selectedChain; }
 			Residue * const getSelectedResidue() const { return _selectedResidue; }
-			Atom * const	 getSelectedAtom() const { return _selectedAtom; }
-			void				 setSelectedChain( Chain * const );
-			void				 setSelectedResidue( Residue * const );
-			void				 setSelectedAtom( Atom * const );
-			void				 resetSelectedChain();
-			void				 resetSelectedResidue();
-			void				 resetSelectedAtom();
+			Atom * const	getSelectedAtom() const { return _selectedAtom; }
+			void			setSelectedChain( Chain * const );
+			void			setSelectedResidue( Residue * const );
+			void			setSelectedAtom( Atom * const );
+			void			resetSelectedChain();
+			void			resetSelectedResidue();
+			void			resetSelectedAtom();
 
 			void bindBuffers();
 			void unbindBuffers();
@@ -112,10 +112,10 @@ namespace VTX
 
 		  private:
 			// Models.
-			std::string				  _name		= "";
-			std::vector<Chain>	  _chains	= std::vector<Chain>();
+			std::string			 _name	   = "";
+			std::vector<Chain>	 _chains   = std::vector<Chain>();
 			std::vector<Residue> _residues = std::vector<Residue>();
-			std::vector<Atom>	  _atoms	= std::vector<Atom>();
+			std::vector<Atom>	 _atoms	   = std::vector<Atom>();
 
 			std::set<std::string> _unknownResidueSymbol = std::set<std::string>();
 			std::set<std::string> _unknownAtomSymbol	= std::set<std::string>();
@@ -129,9 +129,9 @@ namespace VTX
 			Math::AABB _aabb;
 
 			// Selection.
-			Chain *   _selectedChain	= nullptr;
+			Chain *	  _selectedChain   = nullptr;
 			Residue * _selectedResidue = nullptr;
-			Atom *	   _selectedAtom	= nullptr;
+			Atom *	  _selectedAtom	   = nullptr;
 
 			// OpenGL buffers.
 			enum ATTRIBUTE_LOCATION

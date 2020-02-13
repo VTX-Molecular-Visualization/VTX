@@ -9,10 +9,12 @@ namespace VTX
 		void Chain::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::UI::Chain( this ) ) ); }
+			if ( isSelected() )
+			{ addItem( (View::BaseView<BaseModel> *)Generic::FactoryView<Chain, View::UI::Chain>::create( this ) ); }
 			else
 			{
-				_deleteView( ID::View::UI_CHAIN );
+				Generic::FactoryView<Chain, View::UI::Chain>::destroy(
+					(View::UI::Chain *)removeItem( ID::View::UI_CHAIN ) );
 			}
 		}
 	} // namespace Model

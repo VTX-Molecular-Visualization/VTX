@@ -5,10 +5,11 @@
 #pragma once
 #endif
 
-#include "../id.hpp"
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
+#include "id.hpp"
 #include "object3d/camera.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -17,7 +18,8 @@ namespace VTX
 		class FPS : public BaseKeyboardController, public BaseMouseController
 		{
 		  public:
-			explicit FPS( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
+			// TOFIX: Ugly... set the camera in the BaseCollectionable::init()?
+			explicit FPS() : _camera( VTXApp::get().getScene().getCamera() ) {}
 
 			virtual void handleEvent( const SDL_Event & p_event, void * const p_arg ) override final
 			{

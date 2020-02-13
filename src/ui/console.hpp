@@ -17,8 +17,6 @@ namespace VTX
 		class Console : public BaseComponent
 		{
 		  public:
-			explicit Console( bool * const );
-
 			virtual std::string getName() const override { return ID::UI::CONSOLE; }
 
 		  protected:

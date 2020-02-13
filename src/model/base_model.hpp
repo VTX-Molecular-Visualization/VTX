@@ -31,8 +31,6 @@ namespace VTX
 				}
 			}
 
-			virtual void _deleteView( const std::string & p_viewName ) { removeItem( p_viewName ); }
-
 			uint _id		 = INVALID_ID;
 			bool _isSelected = false;
 		};

@@ -15,7 +15,7 @@ namespace VTX
 			if ( undonable != nullptr )
 			{
 				_bufferUndo.push_front( undonable );
-				_purgeBuffer( undonable );
+				_purgeBuffer();
 			}
 			else
 			{
@@ -62,7 +62,7 @@ namespace VTX
 			_bufferRedo.pop_front();
 		}
 
-		void ActionManager::_purgeBuffer( BaseActionUndonable * const p_action )
+		void ActionManager::_purgeBuffer()
 		{
 			while ( _bufferUndo.size() > ACTION_BUFFER_SIZE )
 			{

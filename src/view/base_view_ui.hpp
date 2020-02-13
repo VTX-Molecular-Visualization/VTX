@@ -21,14 +21,14 @@ namespace VTX
 			explicit BaseViewUI( T * const p_model ) : BaseView( p_model ) {}
 			virtual ~BaseViewUI() {}
 
-			virtual void initItem() override
+			virtual void init() override
 			{
-				VTXApp::get().getUI().getComponentByName( getComponentParentName() )->addItemRef( this );
+				VTXApp::get().getUI().getComponentByName( getComponentParentName() )->addItem( this );
 			}
 
-			virtual void cleanItem() override
+			virtual void clean() override
 			{
-				VTXApp::get().getUI().getComponentByName( getComponentParentName() )->removeItemRef( getName() );
+				VTXApp::get().getUI().getComponentByName( getComponentParentName() )->removeItem( getName() );
 			}
 
 			virtual std::string getComponentParentName() const = 0;

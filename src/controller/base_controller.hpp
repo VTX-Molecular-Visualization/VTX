@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "../generic/base_collectionable.hpp"
-#include "../generic/base_updatable.hpp"
+#include "generic/base_collectionable.hpp"
 #include "generic/base_event_handler.hpp"
+#include "generic/base_updatable.hpp"
 #include <SDL2/SDL.h>
 
 namespace VTX

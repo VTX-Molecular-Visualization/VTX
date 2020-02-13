@@ -11,14 +11,12 @@ namespace VTX
 {
 	namespace UI
 	{
-		Inspector::Inspector( bool * const p_show ) : BaseComponent( p_show ) {}
-
 		void Inspector::_draw()
 		{
 			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
 			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
 
-			if ( ImGui::Begin( LOCALE( "Inspector.Inspector" ), _visible, flags ) == false )
+			if ( ImGui::Begin( LOCALE( "Inspector.Inspector" ), isVisiblePtr(), flags ) == false )
 			{
 				ImGui::End();
 				return;

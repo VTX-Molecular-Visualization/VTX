@@ -5,20 +5,19 @@
 #pragma once
 #endif
 
-#include "../define.hpp"
+#include "base_cleanable.hpp"
+#include "base_initializable.hpp"
+#include "define.hpp"
 #include <string>
 
 namespace VTX
 {
 	namespace Generic
 	{
-		class BaseCollectionable
+		class BaseCollectionable : public BaseInitializable, public BaseCleanable
 		{
 		  public:
 			virtual ~BaseCollectionable() = default;
-
-			virtual void initItem() {}
-			virtual void cleanItem() {}
 
 			virtual std::string getName() const = 0;
 		};

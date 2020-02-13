@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../base_view_3d_molecule.hpp"
+#include "view/base_view_3d_molecule.hpp"
 
 namespace VTX
 {
@@ -19,7 +19,7 @@ namespace VTX
 				explicit Cylinder( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 
 				virtual std::string getName() const override { return ID::View::D3_CYLINDER; }
-				virtual void		initItem() override;
+				virtual void		init() override;
 				virtual void		notify( const Event::EVENT_MODEL & ) override;
 
 				virtual void render() override;

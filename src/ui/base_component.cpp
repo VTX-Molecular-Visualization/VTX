@@ -9,10 +9,9 @@ namespace VTX
 		void BaseComponent::init()
 		{
 			Generic::HasCollection<Generic::BaseDrawable>::init();
+			_visible = true;
 			_registerEventHandlers();
 		}
-
-		void BaseComponent::initItem() { init(); }
 
 		void BaseComponent::_drawComponent( const std::string & p_name )
 		{

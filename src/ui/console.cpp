@@ -9,8 +9,6 @@ namespace VTX
 {
 	namespace UI
 	{
-		Console::Console( bool * const p_show ) : BaseComponent( p_show ) {}
-
 		void Console::_registerEventHandlers() { _registerEventHandler( VTX::Event::EVENT_UI::LOG_CONSOLE ); }
 
 		void Console::_applyEvent( const Event::EVENT_UI p_event, void * const p_arg )
@@ -27,7 +25,7 @@ namespace VTX
 			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
 			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
 
-			if ( ImGui::Begin( LOCALE( "Console.Console" ), _visible, flags ) == false )
+			if ( ImGui::Begin( LOCALE( "Console.Console" ), isVisiblePtr(), flags ) == false )
 			{
 				ImGui::End();
 				return;

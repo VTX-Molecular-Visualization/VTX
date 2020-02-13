@@ -7,6 +7,7 @@
 
 #include "base_collectionable.hpp"
 #include "base_initializable.hpp"
+#include "factories.hpp"
 #include "util/type.hpp"
 #include <map>
 #include <string>
@@ -32,8 +33,7 @@ namespace VTX
 			{
 				for ( const PairStringToItemPtr pair : _items )
 				{
-					static_cast<BaseCollectionable *>( pair.second )->cleanItem();
-					delete pair.second;
+					FactoryCollectionable<BaseCollectionable>::destroy( pair.second );
 				}
 				_items.clear();
 			}
@@ -48,7 +48,6 @@ namespace VTX
 			}
 			void addItem( T * const p_item )
 			{
-				static_cast<BaseCollectionable *>( p_item )->initItem();
 				try
 				{
 					_items.try_emplace( static_cast<BaseCollectionable *>( p_item )->getName(), p_item );
@@ -60,28 +59,12 @@ namespace VTX
 				}
 			}
 
-			void addItemRef( T * const p_item )
+			virtual T * removeItem( const std::string & p_name )
 			{
-				try
-				{
-					_items.try_emplace( static_cast<BaseCollectionable *>( p_item )->getName(), p_item );
-				}
-				catch ( const std::exception & )
-				{
-					VTX_WARNING( "An item with this name already exists: "
-								 + ( static_cast<BaseCollectionable *>( p_item ) )->getName() );
-				}
-			}
-
-			void removeItem( const std::string & p_name )
-			{
-				BaseCollectionable * item = static_cast<BaseCollectionable *>( _items.at( p_name ) );
-				static_cast<BaseCollectionable *>( item )->cleanItem();
-				delete item;
+				T * item = _items.at( p_name );
 				_items.erase( p_name );
+				return item;
 			}
-
-			void removeItemRef( const std::string & p_name ) { _items.erase( p_name ); }
 
 		  protected:
 			inline MapStringToItemPtr & _getItems() { return _items; }

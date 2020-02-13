@@ -1,5 +1,5 @@
 #include "export.hpp"
-#include "../tool/snapshoter.hpp"
+#include "tool/snapshoter.hpp"
 #include "vtx_app.hpp"
 namespace VTX
 {

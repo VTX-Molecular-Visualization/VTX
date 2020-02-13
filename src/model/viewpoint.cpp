@@ -1,5 +1,5 @@
 #include "viewpoint.hpp"
-#include "../view/ui/viewpoint.hpp"
+#include "view/ui/viewpoint.hpp"
 
 namespace VTX
 {
@@ -10,11 +10,16 @@ namespace VTX
 		void Viewpoint::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::UI::Viewpoint( this ) ) ); }
+			if ( isSelected() )
+			{
+				addItem(
+					(View::BaseView<BaseModel> *)Generic::FactoryView<Viewpoint, View::UI::Viewpoint>::create( this ) );
+			}
 			else
 			{
-				_deleteView( ID::View::UI_VIEWPOINT );
+				Generic::FactoryView<Viewpoint, View::UI::Viewpoint>::destroy(
+					(View::UI::Viewpoint *)removeItem( ID::View::UI_VIEWPOINT ) );
 			}
-		}
-	} // namespace Model
+		} // namespace Model
+	}	  // namespace Model
 } // namespace VTX

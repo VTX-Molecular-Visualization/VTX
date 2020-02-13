@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "define.hpp"
 #include "base_action_undonable.hpp"
+#include "define.hpp"
 #include <list>
 #include <string>
 
@@ -17,6 +17,8 @@ namespace VTX
 		class ActionManager
 		{
 		  public:
+			using ListActionUndonablePtr = std::list<BaseActionUndonable *>;
+
 			void executeAction( BaseAction * const );
 			void executeAction( const std::string & );
 			bool canUndo() const;
@@ -25,10 +27,10 @@ namespace VTX
 			void redo();
 
 		  private:
-			std::list<BaseActionUndonable *> _bufferUndo = std::list<BaseActionUndonable *>();
-			std::list<BaseActionUndonable *> _bufferRedo = std::list<BaseActionUndonable *>();
+			ListActionUndonablePtr _bufferUndo = ListActionUndonablePtr();
+			ListActionUndonablePtr _bufferRedo = ListActionUndonablePtr();
 
-			void _purgeBuffer( BaseActionUndonable * const );
+			void _purgeBuffer();
 		};
 	} // namespace Action
 } // namespace VTX

@@ -5,10 +5,10 @@
 #pragma once
 #endif
 
-#include "../generic/has_collection.hpp"
 #include "controller/base_controller.hpp"
 #include "generic/base_collectionable.hpp"
 #include "generic/base_updatable.hpp"
+#include "generic/has_collection.hpp"
 #include "id.hpp"
 #include <vector>
 
@@ -35,6 +35,8 @@ namespace VTX
 					controller.second->handleEvent( p_event );
 				}
 			}
+
+			virtual void init() override { HasCollection::init(); }
 
 			virtual void BaseState::update( const double p_deltaTime ) override
 			{

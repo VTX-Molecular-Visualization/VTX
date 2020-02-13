@@ -7,7 +7,7 @@ namespace VTX
 	{
 		namespace D3
 		{
-			void Sphere::initItem()
+			void Sphere::init()
 			{
 				Renderer::GLSL::ProgramManager & pm		 = VTXApp::get().getProgramManager();
 				Renderer::GLSL::Program *		 program = pm.createProgram( "SphereImpostorGeomShader" );

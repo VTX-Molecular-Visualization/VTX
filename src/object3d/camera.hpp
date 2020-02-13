@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "../util/math.hpp"
 #include "define.hpp"
 #include "generic/base_printable.hpp"
+#include "util/math.hpp"
 
 namespace VTX
 {

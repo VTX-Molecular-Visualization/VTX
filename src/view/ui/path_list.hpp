@@ -6,7 +6,7 @@
 #endif
 
 #include "model/path.hpp"
-#include "../base_view_ui.hpp"
+#include "view/base_view_ui.hpp"
 
 namespace VTX
 {
@@ -28,6 +28,6 @@ namespace VTX
 			  private:
 			};
 		} // namespace UI
-	} // namespace View
+	}	  // namespace View
 } // namespace VTX
 #endif

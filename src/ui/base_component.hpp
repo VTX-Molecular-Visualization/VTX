@@ -10,8 +10,8 @@
 #include "generic/base_drawable.hpp"
 #include "generic/has_collection.hpp"
 #include "id.hpp"
-#include "model/base_model.hpp"
 #include "imgui/imgui.h"
+#include "model/base_model.hpp"
 #include <map>
 #include <set>
 
@@ -22,11 +22,9 @@ namespace VTX
 		class BaseComponent : public Generic::HasCollection<Generic::BaseDrawable>, public Generic::BaseDrawable
 		{
 		  public:
-			explicit BaseComponent( bool * const p_visible ) { _visible = p_visible; }
 			virtual ~BaseComponent() {}
 
 			virtual void init() override;
-			virtual void initItem() override;
 
 			BaseComponent * const getComponentByName( const std::string & );
 

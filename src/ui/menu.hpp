@@ -15,20 +15,13 @@ namespace VTX
 		class Menu : public BaseComponent
 		{
 		  public:
-			explicit Menu( bool * const, bool * const, bool * const, bool * const, bool * const );
-
 			virtual std::string getName() const override { return ID::UI::MENU; }
 
 		  protected:
-			virtual void _addItems() override {};
 			virtual void _draw() override;
 
 		  private:
-			bool * const _showConsole;
-			bool * const _showScene;
-			bool * const _showInspector;
-			bool * const _showCameraEditor;
-			bool		 _showDialogImport = false;
+			bool _showDialogImport = false;
 
 			std::shared_ptr<pfd::open_file> _openFileDialog = nullptr;
 		};

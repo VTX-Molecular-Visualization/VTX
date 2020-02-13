@@ -9,10 +9,12 @@ namespace VTX
 		void Atom::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::UI::Atom( this ) ) ); }
+			if ( isSelected() )
+			{ addItem( (View::BaseView<BaseModel> *)Generic::FactoryView<Atom, View::UI::Atom>::create( this ) ); }
 			else
 			{
-				_deleteView( ID::View::UI_ATOM );
+				Generic::FactoryView<Atom, View::UI::Atom>::destroy(
+					(View::UI::Atom *)removeItem( ID::View::UI_ATOM ) );
 			}
 		}
 

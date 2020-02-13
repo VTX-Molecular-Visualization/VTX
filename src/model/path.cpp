@@ -13,7 +13,10 @@ namespace VTX
 	{
 		Path::~Path() { Util::Type::clearVector( _viewpoints ); }
 
-		void Path::_addItems() { addItem( (View::BaseView<BaseModel> *)( new View::UI::PathList( this ) ) ); }
+		void Path::_addItems()
+		{
+			addItem( (View::BaseView<BaseModel> *)Generic::FactoryView<Path, View::UI::PathList>::create( this ) );
+		}
 
 		Viewpoint::ViewpointInterpolationData Path::getCurrentViewpointInterpolationData( float p_time ) const
 		{
@@ -115,10 +118,12 @@ namespace VTX
 		void Path::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)( new View::UI::Path( this ) ) ); }
+			if ( isSelected() )
+			{ addItem( (View::BaseView<BaseModel> *)Generic::FactoryView<Path, View::UI::Path>::create( this ) ); }
 			else
 			{
-				_deleteView( ID::View::UI_PATH );
+				Generic::FactoryView<Path, View::UI::Path>::destroy(
+					(View::UI::Path *)removeItem( ID::View::UI_PATH ) );
 			}
 		}
 
