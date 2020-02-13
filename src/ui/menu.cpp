@@ -1,6 +1,7 @@
 #include "menu.hpp"
 #include "action/active_renderer.hpp"
 #include "action/active_ssao.hpp"
+#include "action/active_ui_component.hpp"
 #include "action/active_y_axis_inversion.hpp"
 #include "action/change_ao_blur_size.hpp"
 #include "action/change_ao_intensity.hpp"
@@ -69,33 +70,37 @@ namespace VTX
 				// Display.
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Display" ), isVisiblePtr() ) )
 				{
-					bool * showScene = VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->isVisiblePtr();
-					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), showScene ) ) {}
-					bool * showInspector
-						= VTXApp::get().getUI().getComponentByName( ID::UI::INSPECTOR )->isVisiblePtr();
-					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Inspector" ), showInspector ) ) {}
-					bool * showConsole = VTXApp::get().getUI().getComponentByName( ID::UI::CONSOLE )->isVisiblePtr();
-					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), showConsole ) ) {}
-					bool * showCameraEditor
-						= VTXApp::get().getUI().getComponentByName( ID::UI::CAMERA_EDITOR )->isVisiblePtr();
-					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.CameraEditor" ), showCameraEditor ) ) {}
+					bool showScene = VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->isVisible();
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), &showScene ) )
+					{ VTXApp::get().action( new Action::ActiveUIComponent( ID::UI::SCENE, showScene ) ); }
+					bool showInspector = VTXApp::get().getUI().getComponentByName( ID::UI::INSPECTOR )->isVisible();
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Inspector" ), &showInspector ) )
+					{ VTXApp::get().action( new Action::ActiveUIComponent( ID::UI::INSPECTOR, showInspector ) ); }
+					bool showConsole = VTXApp::get().getUI().getComponentByName( ID::UI::CONSOLE )->isVisible();
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), &showConsole ) )
+					{ VTXApp::get().action( new Action::ActiveUIComponent( ID::UI::CONSOLE, showConsole ) ); }
+					bool showCameraEditor
+						= VTXApp::get().getUI().getComponentByName( ID::UI::CAMERA_EDITOR )->isVisible();
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.CameraEditor" ), &showCameraEditor ) )
+					{
+						VTXApp::get().action(
+							new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, showCameraEditor ) );
+					}
 
 					ImGui::Separator();
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.CloseAll" ) ) )
 					{
-						VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->setVisible( false );
-						VTXApp::get().getUI().getComponentByName( ID::UI::INSPECTOR )->setVisible( false );
-						VTXApp::get().getUI().getComponentByName( ID::UI::CONSOLE )->setVisible( false );
-						VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->setVisible( false );
-						VTXApp::get().getUI().getComponentByName( ID::UI::CAMERA_EDITOR )->setVisible( false );
+						VTXApp::get().action( new Action::ActiveUIComponent( ID::UI::SCENE, false ) );
+						VTXApp::get().action( new Action::ActiveUIComponent( ID::UI::INSPECTOR, false ) );
+						VTXApp::get().action( new Action::ActiveUIComponent( ID::UI::CONSOLE, false ) );
+						VTXApp::get().action( new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, false ) );
 					}
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.ShowAll" ) ) )
 					{
-						VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->setVisible( true );
-						VTXApp::get().getUI().getComponentByName( ID::UI::INSPECTOR )->setVisible( true );
-						VTXApp::get().getUI().getComponentByName( ID::UI::CONSOLE )->setVisible( true );
-						VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->setVisible( true );
-						VTXApp::get().getUI().getComponentByName( ID::UI::CAMERA_EDITOR )->setVisible( true );
+						VTXApp::get().action( new Action::ActiveUIComponent( ID::UI::SCENE, true ) );
+						VTXApp::get().action( new Action::ActiveUIComponent( ID::UI::INSPECTOR, true ) );
+						VTXApp::get().action( new Action::ActiveUIComponent( ID::UI::CONSOLE, true ) );
+						VTXApp::get().action( new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, true ) );
 					}
 					ImGui::EndMenu();
 				}
