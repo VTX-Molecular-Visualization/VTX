@@ -25,13 +25,13 @@ namespace VTX
 		void Load::_loadFile( std::string * p_path ) const
 		{
 			Model::Molecule * molecule = new Model::Molecule();
-			Object3D::Scene * scene	   = &( VTXApp::get().getScene() );
+			// Model::Molecule * molecule = Generic::FactoryInitializable<Model::Molecule>::create();
+			Object3D::Scene * scene = &( VTXApp::get().getScene() );
 
 			// VTXApp::get().addThread( new std::thread( [ molecule, scene ] {
 
 			const IO::Path path = IO::Path( *p_path );
 
-			// Create factory?
 			IO::Reader::BaseReader * reader = nullptr;
 			if ( path.getExtension() == "mmtf" ) { reader = new IO::Reader::MMTF(); }
 			else if ( path.getExtension() == "obj" )
@@ -48,7 +48,7 @@ namespace VTX
 				scene->addMolecule( molecule );
 			}
 
-			Model::Path * p = Generic::FactoryInitializable<Model::Path>::create();
+			Model::Path * p = Generic::create<Model::Path>();
 			scene->addPath( p );
 			p->setSelected( true );
 

@@ -13,8 +13,7 @@ namespace VTX
 			{ addItem( (View::BaseView<BaseModel> *)Generic::FactoryView<Chain, View::UI::Chain>::create( this ) ); }
 			else
 			{
-				Generic::FactoryView<Chain, View::UI::Chain>::destroy(
-					(View::UI::Chain *)removeItem( ID::View::UI_CHAIN ) );
+				Generic::destroy<View::UI::Chain>( (View::UI::Chain *)removeItem( ID::View::UI_CHAIN ) );
 			}
 		}
 	} // namespace Model

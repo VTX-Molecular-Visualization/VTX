@@ -33,7 +33,7 @@ namespace VTX
 			{
 				for ( const PairStringToItemPtr pair : _items )
 				{
-					FactoryCollectionable<BaseCollectionable>::destroy( pair.second );
+					Generic::destroy<BaseCollectionable>( pair.second );
 				}
 				_items.clear();
 			}

@@ -55,14 +55,7 @@ namespace VTX
 
 					// Quit.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
-					{
-#ifndef _DEBUG
-						VTXApp::get().action( new Action::Quit() );
-						// ImGui::OpenPopup( "TEST" );
-#else
-						VTXApp::get().action( new Action::Quit() );
-#endif
-					}
+					{ VTXApp::get().action( new Action::Quit() ); }
 
 					ImGui::EndMenu();
 				}

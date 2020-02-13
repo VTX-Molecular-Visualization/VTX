@@ -16,8 +16,7 @@ namespace VTX
 			}
 			else
 			{
-				Generic::FactoryView<Residue, View::UI::Residue>::destroy(
-					(View::UI::Residue *)removeItem( ID::View::UI_RESIDUE ) );
+				Generic::destroy<View::UI::Residue>( (View::UI::Residue *)removeItem( ID::View::UI_RESIDUE ) );
 			}
 		}
 

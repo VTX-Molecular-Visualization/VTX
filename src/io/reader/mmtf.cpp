@@ -40,6 +40,7 @@ namespace VTX
 					return false;
 				}
 
+				VTX_INFO( std::to_string( data.numModels ) + " models found" );
 				VTX_INFO( "Creating models..." );
 
 				// Set molecule properties.

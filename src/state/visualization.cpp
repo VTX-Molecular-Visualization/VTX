@@ -13,8 +13,8 @@ namespace VTX
 			// Init the renderer.
 			VTXApp::get().initRenderer();
 			// Create controller.
-			addItem( Generic::FactoryController<Controller::FPS>::create() );
-			addItem( Generic::FactoryController<Controller::Shortcut>::create() );
+			addItem( Generic::create<Controller::FPS>() );
+			addItem( Generic::create<Controller::Shortcut>() );
 		}
 
 		void Visualization::exit() { clear(); }

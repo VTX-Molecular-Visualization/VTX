@@ -24,10 +24,10 @@ namespace VTX
 
 		void StateMachine::_addItems()
 		{
-			addItem( Generic::FactoryState<Load>::create() );
-			addItem( Generic::FactoryState<Visualization>::create() );
-			addItem( Generic::FactoryState<Play>::create() );
-			addItem( Generic::FactoryState<Export>::create() );
+			addItem( Generic::create<Load>() );
+			addItem( Generic::create<Visualization>() );
+			addItem( Generic::create<Play>() );
+			addItem( Generic::create<Export>() );
 		}
 
 		void StateMachine::_switchState( BaseState * const p_state, void * const p_arg )

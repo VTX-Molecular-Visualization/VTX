@@ -102,8 +102,7 @@ namespace VTX
 			}
 			else
 			{
-				Generic::FactoryView<Molecule, View::UI::Molecule>::destroy(
-					(View::UI::Molecule *)removeItem( ID::View::UI_MOLECULE ) );
+				Generic::destroy<View::UI::Molecule>( (View::UI::Molecule *)removeItem( ID::View::UI_MOLECULE ) );
 			}
 		}
 

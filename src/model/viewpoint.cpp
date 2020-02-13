@@ -17,8 +17,7 @@ namespace VTX
 			}
 			else
 			{
-				Generic::FactoryView<Viewpoint, View::UI::Viewpoint>::destroy(
-					(View::UI::Viewpoint *)removeItem( ID::View::UI_VIEWPOINT ) );
+				Generic::destroy<View::UI::Viewpoint>( (View::UI::Viewpoint *)removeItem( ID::View::UI_VIEWPOINT ) );
 			}
 		} // namespace Model
 	}	  // namespace Model

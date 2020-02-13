@@ -66,11 +66,11 @@ namespace VTX
 
 		void UserInterface::_addItems()
 		{
-			addItem( Generic::FactoryComponent<Menu>::create() );
-			addItem( Generic::FactoryComponent<Console>::create() );
-			addItem( Generic::FactoryComponent<Scene>::create() );
-			addItem( Generic::FactoryComponent<Inspector>::create() );
-			addItem( Generic::FactoryComponent<CameraEditor>::create() );
+			addItem( Generic::create<Menu>() );
+			addItem( Generic::create<Console>() );
+			addItem( Generic::create<Scene>() );
+			addItem( Generic::create<Inspector>() );
+			addItem( Generic::create<CameraEditor>() );
 		}
 
 		void UserInterface::_initSDL2()
