@@ -33,16 +33,12 @@ namespace VTX
 				 typename V,
 				 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
 				 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
-		class FactoryView
+		static V * const create( M * const p_model )
 		{
-		  public:
-			static V * const create( M * const p_model )
-			{
-				V * const instance = new V( p_model );
-				instance->init();
-				return instance;
-			}
-		};
-	} // namespace Generic
+			V * const instance = new V( p_model );
+			instance->init();
+			return instance;
+		}
+	}; // namespace Generic
 } // namespace VTX
 #endif

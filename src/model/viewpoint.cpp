@@ -11,10 +11,7 @@ namespace VTX
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() )
-			{
-				addItem(
-					(View::BaseView<BaseModel> *)Generic::FactoryView<Viewpoint, View::UI::Viewpoint>::create( this ) );
-			}
+			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Viewpoint, View::UI::Viewpoint>( this ) ); }
 			else
 			{
 				Generic::destroy<View::UI::Viewpoint>( (View::UI::Viewpoint *)removeItem( ID::View::UI_VIEWPOINT ) );

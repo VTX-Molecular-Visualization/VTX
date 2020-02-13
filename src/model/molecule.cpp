@@ -39,10 +39,10 @@ namespace VTX
 		void Molecule::_addItems()
 		{
 			// Add views.
-			addItem( (View::BaseView<BaseModel> *)Generic::FactoryView<Molecule, View::D3::Sphere>::create( this ) );
-			addItem( (View::BaseView<BaseModel> *)Generic::FactoryView<Molecule, View::D3::Cylinder>::create( this ) );
-			addItem( (View::BaseView<BaseModel> *)Generic::FactoryView<Molecule, View::UI::MoleculeStructure>::create(
-				this ) );
+
+			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::D3::Sphere>( this ) );
+			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::D3::Cylinder>( this ) );
+			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::UI::MoleculeStructure>( this ) );
 		}
 
 		void Molecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }
@@ -96,10 +96,7 @@ namespace VTX
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() )
-			{
-				addItem(
-					(View::BaseView<BaseModel> *)Generic::FactoryView<Molecule, View::UI::Molecule>::create( this ) );
-			}
+			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::UI::Molecule>( this ) ); }
 			else
 			{
 				Generic::destroy<View::UI::Molecule>( (View::UI::Molecule *)removeItem( ID::View::UI_MOLECULE ) );

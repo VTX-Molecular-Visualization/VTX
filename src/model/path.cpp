@@ -15,7 +15,7 @@ namespace VTX
 
 		void Path::_addItems()
 		{
-			addItem( (View::BaseView<BaseModel> *)Generic::FactoryView<Path, View::UI::PathList>::create( this ) );
+			addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::PathList>( this ) );
 		}
 
 		Viewpoint::ViewpointInterpolationData Path::getCurrentViewpointInterpolationData( float p_time ) const
@@ -119,7 +119,7 @@ namespace VTX
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() )
-			{ addItem( (View::BaseView<BaseModel> *)Generic::FactoryView<Path, View::UI::Path>::create( this ) ); }
+			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::Path>( this ) ); }
 			else
 			{
 				Generic::destroy<View::UI::Path>( (View::UI::Path *)removeItem( ID::View::UI_PATH ) );

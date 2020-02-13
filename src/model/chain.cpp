@@ -10,7 +10,7 @@ namespace VTX
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() )
-			{ addItem( (View::BaseView<BaseModel> *)Generic::FactoryView<Chain, View::UI::Chain>::create( this ) ); }
+			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Chain, View::UI::Chain>( this ) ); }
 			else
 			{
 				Generic::destroy<View::UI::Chain>( (View::UI::Chain *)removeItem( ID::View::UI_CHAIN ) );
