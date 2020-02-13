@@ -10,7 +10,6 @@ namespace VTX
 		{
 			Generic::HasCollection<Generic::BaseDrawable>::init();
 			_visible = true;
-			_registerEventHandlers();
 		}
 
 		void BaseComponent::_drawComponent( const std::string & p_name )
@@ -25,8 +24,6 @@ namespace VTX
 				pair.second->draw();
 			}
 		}
-
-		void BaseComponent::_registerEventHandler( const Event::EVENT_UI p_event ) { _events.emplace( p_event ); }
 
 		BaseComponent * const BaseComponent::getComponentByName( const std::string & p_name )
 		{
@@ -44,19 +41,6 @@ namespace VTX
 			}
 
 			return nullptr;
-		}
-
-		void BaseComponent::receiveEvent( const Event::EVENT_UI p_event, void * const p_arg )
-		{
-			if ( std::find( _events.begin(), _events.end(), p_event ) != _events.end() )
-			{ _applyEvent( p_event, p_arg ); }
-
-			// Propagate to children.
-			for ( const PairStringToItemPtr pair : _getItems() )
-			{
-				BaseComponent * child = dynamic_cast<BaseComponent *>( pair.second );
-				if ( child != nullptr ) { child->receiveEvent( p_event, p_arg ); }
-			}
 		}
 
 	} // namespace UI

@@ -3,8 +3,8 @@
 
 #ifdef _MSC_VER
 #pragma once
-
 #endif
+
 #include "action/action_manager.hpp"
 #include "action/base_action.hpp"
 #include "event/event.hpp"
@@ -34,15 +34,12 @@ namespace VTX
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
-		void fireUIEvent( const Event::EVENT_UI, void * const = nullptr ) const;
 		void action( Action::BaseAction * const ) const;
 		void action( const std::string & ) const;
 		bool canUndo() const;
 		void undo() const;
 		bool canRedo() const;
 		void redo() const;
-
-		void addThread( std::thread * const );
 
 		void initRenderer() const;
 		void renderScene() const { _renderer->render( *_scene ); }
@@ -63,15 +60,12 @@ namespace VTX
 		Renderer::BaseRenderer * _renderer		= nullptr;
 		Action::ActionManager *	 _actionManager = nullptr;
 
-		std::vector<std::thread *> _threads = std::vector<std::thread *>();
-
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;
 		VTXApp & operator=( const VTXApp & ) = delete;
 		~VTXApp();
 
 		void _update();
-		void _handleEvent( const SDL_Event & );
 	};
 } // namespace VTX
 

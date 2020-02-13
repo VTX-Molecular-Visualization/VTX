@@ -19,23 +19,11 @@ namespace VTX
 		class BaseState :
 			public Generic::HasCollection<Controller::BaseController>,
 			public Generic::BaseUpdatable,
-			public Generic::BaseCollectionable,
-			public Generic::BaseEventHandler<SDL_Event>
+			public Generic::BaseCollectionable
 		{
 		  public:
-			virtual ~BaseState() {}
-
 			virtual void enter( void * const ) = 0;
 			virtual void exit()				   = 0;
-
-			virtual void BaseState::handleEvent( const SDL_Event & p_event, void * const p_arg ) override
-			{
-				for ( PairStringToItemPtr controller : _getItems() )
-				{
-					controller.second->handleEvent( p_event );
-				}
-			}
-
 			virtual void init() override { HasCollection::init(); }
 
 			virtual void BaseState::update( const double p_deltaTime ) override
@@ -45,7 +33,7 @@ namespace VTX
 					controller.second->update( p_deltaTime );
 				}
 			}
-		};
-	} // namespace State
+		}; // namespace State
+	}	   // namespace State
 } // namespace VTX
 #endif

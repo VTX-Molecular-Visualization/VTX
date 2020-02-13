@@ -22,8 +22,6 @@ namespace VTX
 		  protected:
 			virtual void _addItems() override {}
 			virtual void _draw() override;
-			virtual void _registerEventHandlers() override;
-			virtual void _applyEvent( const Event::EVENT_UI, void * const p_arg ) override;
 
 		  private:
 			std::list<Util::Logger::Log> _logs = std::list<Util::Logger::Log>();

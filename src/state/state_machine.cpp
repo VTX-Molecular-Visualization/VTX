@@ -37,11 +37,6 @@ namespace VTX
 			if ( _currentState != nullptr ) { _currentState->enter( p_arg ); }
 		}
 
-		void StateMachine::handleEvent( const SDL_Event & p_event, void * const p_arg )
-		{
-			if ( _currentState != nullptr ) { _currentState->handleEvent( p_event, p_arg ); }
-		}
-
 		void StateMachine::update( const double p_deltaTime )
 		{
 			if ( _currentState != nullptr ) { _currentState->update( p_deltaTime ); }

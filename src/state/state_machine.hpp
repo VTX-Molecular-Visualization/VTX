@@ -15,15 +15,11 @@ namespace VTX
 {
 	namespace State
 	{
-		class StateMachine :
-			public Generic::BaseUpdatable,
-			public Generic::HasCollection<BaseState>,
-			public Generic::BaseEventHandler<SDL_Event>
+		class StateMachine : public Generic::BaseUpdatable, public Generic::HasCollection<BaseState>
 		{
 		  public:
 			void goToState( const std::string &, void * const p_arg = nullptr );
 
-			virtual void handleEvent( const SDL_Event &, void * const = nullptr ) override;
 			virtual void update( const double ) override;
 
 		  protected:

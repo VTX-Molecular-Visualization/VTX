@@ -6,7 +6,6 @@
 #endif
 
 #include "generic/base_collectionable.hpp"
-#include "generic/base_event_handler.hpp"
 #include "generic/base_updatable.hpp"
 #include <SDL2/SDL.h>
 
@@ -14,10 +13,7 @@ namespace VTX
 {
 	namespace Controller
 	{
-		class BaseController :
-			public Generic::BaseEventHandler<SDL_Event>,
-			public Generic::BaseUpdatable,
-			public Generic::BaseCollectionable
+		class BaseController : public Generic::BaseUpdatable, public Generic::BaseCollectionable
 		{
 		};
 	} // namespace Controller

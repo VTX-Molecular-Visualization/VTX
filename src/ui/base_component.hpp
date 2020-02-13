@@ -25,23 +25,13 @@ namespace VTX
 			virtual ~BaseComponent() {}
 
 			virtual void init() override;
-
 			BaseComponent * const getComponentByName( const std::string & );
-
-			// TODO: refacto
-			virtual void receiveEvent( const Event::EVENT_UI, void * const ) final;
 
 		  protected:
 			virtual void _drawComponent( const std::string & );
 			virtual void _drawComponents() final;
 
-			// TODO: refacto
-
-			virtual void _registerEventHandler( const Event::EVENT_UI ) final;
-			virtual void _registerEventHandlers() {};
-			virtual void _applyEvent( const Event::EVENT_UI, void * const p_arg ) {};
-
-		  private:
+		private:
 			std::set<Event::EVENT_UI> _events = std::set<Event::EVENT_UI>();
 		};
 	} // namespace UI

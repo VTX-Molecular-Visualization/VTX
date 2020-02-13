@@ -59,26 +59,13 @@ namespace VTX
 	void VTXApp::stop()
 	{
 		VTX_INFO( "Stopping application" );
-
-		for ( std::thread * thread : _threads )
-		{
-			thread->join();
-			delete thread;
-		}
-		_threads.clear();
-
-		VTX_INFO( "Application stopped" );
 		VTXApp::_isRunning = false;
+		VTX_INFO( "Application stopped" );
 	}
 
 	void VTXApp::goToState( const std::string & p_name, void * const p_arg )
 	{
 		_stateMachine->goToState( p_name, p_arg );
-	}
-
-	void VTXApp::fireUIEvent( const Event::EVENT_UI p_event, void * const p_arg ) const
-	{
-		_ui->receiveEvent( p_event, p_arg );
 	}
 
 	void VTXApp::action( Action::BaseAction * const p_action ) const { _actionManager->executeAction( p_action ); }
@@ -87,8 +74,6 @@ namespace VTX
 	void VTXApp::undo() const { return _actionManager->undo(); }
 	bool VTXApp::canRedo() const { return _actionManager->canRedo(); }
 	void VTXApp::redo() const { return _actionManager->redo(); }
-
-	void VTXApp::addThread( std::thread * const p_thread ) { _threads.emplace_back( p_thread ); }
 
 	void VTXApp::initRenderer() const
 	{
@@ -112,7 +97,7 @@ namespace VTX
 		SDL_Event event;
 		while ( _ui->pollEvent( event ) )
 		{
-			_handleEvent( event );
+			//_handleEvent( event );
 		}
 
 		// UI.
@@ -127,6 +112,7 @@ namespace VTX
 		_timeTotal += _timeDelta;
 	}
 
+	/*
 	void VTXApp::_handleEvent( const SDL_Event & p_event )
 	{
 		// Quit event.
@@ -145,4 +131,6 @@ namespace VTX
 		// Propagate to state machine.
 		if ( ImGui::IsAnyWindowFocused() == false ) { _stateMachine->handleEvent( p_event ); }
 	}
+	*/
+
 } // namespace VTX

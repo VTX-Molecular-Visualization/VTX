@@ -9,8 +9,7 @@ namespace VTX
 {
 	namespace UI
 	{
-		void Console::_registerEventHandlers() { _registerEventHandler( VTX::Event::EVENT_UI::LOG_CONSOLE ); }
-
+		/*
 		void Console::_applyEvent( const Event::EVENT_UI p_event, void * const p_arg )
 		{
 			if ( p_event == Event::EVENT_UI::LOG_CONSOLE )
@@ -19,6 +18,7 @@ namespace VTX
 				_addLog( *log );
 			}
 		}
+		*/
 
 		void Console::_draw()
 		{

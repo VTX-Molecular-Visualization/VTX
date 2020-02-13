@@ -21,11 +21,13 @@ namespace VTX
 			// TOFIX: Ugly... set the camera in the BaseCollectionable::init()?
 			explicit FPS() : _camera( VTXApp::get().getScene().getCamera() ) {}
 
+			/*
 			virtual void handleEvent( const SDL_Event & p_event, void * const p_arg ) override final
 			{
 				BaseKeyboardController::handleEvent( p_event, p_arg );
 				BaseMouseController::handleEvent( p_event, p_arg );
 			}
+			*/
 
 			virtual void		update( const double ) override;
 			virtual std::string getName() const override { return ID::Controller::FPS; }
