@@ -7,7 +7,7 @@
 
 #include "base_collectionable.hpp"
 #include "base_initializable.hpp"
-#include "factories.hpp"
+#include "factory.hpp"
 #include "util/type.hpp"
 #include <map>
 #include <string>

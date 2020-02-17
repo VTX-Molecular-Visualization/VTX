@@ -1,7 +1,7 @@
 #include "state_machine.hpp"
 #include "define.hpp"
 #include "export.hpp"
-#include "generic/factories.hpp"
+#include "generic/factory.hpp"
 #include "load.hpp"
 #include "play.hpp"
 #include "visualization.hpp"

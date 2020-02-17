@@ -5,15 +5,18 @@
 #pragma once
 #endif
 
+#include "event/base_event_receiver_sdl.hpp"
 #include "generic/base_collectionable.hpp"
 #include "generic/base_updatable.hpp"
-#include <SDL2/SDL.h>
 
 namespace VTX
 {
 	namespace Controller
 	{
-		class BaseController : public Generic::BaseUpdatable, public Generic::BaseCollectionable
+		class BaseController :
+			public Generic::BaseUpdatable,
+			public Generic::BaseCollectionable,
+			public Event::BaseEventReceiverSDL
 		{
 		};
 	} // namespace Controller

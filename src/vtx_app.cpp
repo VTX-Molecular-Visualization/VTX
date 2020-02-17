@@ -18,6 +18,7 @@ namespace VTX
 		_scene		   = new Object3D::Scene();
 		_renderer	   = new Renderer::GL();
 		_actionManager = new Action::ActionManager();
+		_eventManager  = new Event::EventManager();
 	}
 
 	VTXApp::~VTXApp()
@@ -26,6 +27,7 @@ namespace VTX
 		delete _scene;
 		delete _stateMachine;
 		delete _actionManager;
+		delete _eventManager;
 		delete _ui;
 	}
 

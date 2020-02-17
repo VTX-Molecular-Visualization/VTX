@@ -5,14 +5,13 @@
 #pragma once
 #endif
 
+#include <string>
+
 namespace VTX
 {
 	namespace Event
 	{
-		enum class EVENT_UI
-		{
-			LOG_CONSOLE
-		};
+		const std::string LOG_CONSOLE = "LOG_CONSOLE";
 
 		enum class EVENT_MODEL
 		{

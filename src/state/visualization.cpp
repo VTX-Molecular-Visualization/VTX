@@ -1,7 +1,7 @@
 #include "visualization.hpp"
 #include "controller/fps.hpp"
 #include "controller/shortcut.hpp"
-#include "generic/factories.hpp"
+#include "generic/factory.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

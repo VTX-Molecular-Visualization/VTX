@@ -1,5 +1,5 @@
-#ifndef __VTX_BASE_EVENT_HANDLER__
-#define __VTX_BASE_EVENT_HANDLER__
+#ifndef __VTX_BASE_EVENT_RECEIVER__
+#define __VTX_BASE_EVENT_RECEIVER__
 
 #ifdef _MSC_VER
 #pragma once
@@ -7,16 +7,15 @@
 
 namespace VTX
 {
-	namespace Generic
+	namespace Event
 	{
 		template<typename T>
-		class BaseEventHandler
+		class BaseEventReceiver
 		{
 		  public:
-			virtual ~BaseEventHandler() = default;
-
-			virtual void handleEvent( const T & p_event, void * const p_arg = nullptr ) = 0;
+			virtual void registerEvents()												 = 0;
+			virtual void receiveEvent( const T & p_event, void * const p_arg = nullptr ) = 0;
 		};
-	} // namespace Generic
+	} // namespace Event
 } // namespace VTX
 #endif

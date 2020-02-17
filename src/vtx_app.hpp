@@ -7,8 +7,8 @@
 
 #include "action/action_manager.hpp"
 #include "action/base_action.hpp"
-#include "event/event.hpp"
-#include "generic/factories.hpp"
+#include "event/event_manager.hpp"
+#include "generic/factory.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
 #include "setting.hpp"
@@ -48,6 +48,7 @@ namespace VTX
 		inline Renderer::BaseRenderer &			getRenderer() { return *_renderer; }
 		inline Renderer::GLSL::ProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
 		inline UI::UserInterface &				getUI() { return *_ui; }
+		inline Event::EventManager &			getEventManager() { return *_eventManager; }
 
 	  private:
 		static bool				 _isRunning;
@@ -59,6 +60,7 @@ namespace VTX
 		Object3D::Scene *		 _scene			= nullptr;
 		Renderer::BaseRenderer * _renderer		= nullptr;
 		Action::ActionManager *	 _actionManager = nullptr;
+		Event::EventManager *	 _eventManager	= nullptr;
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;

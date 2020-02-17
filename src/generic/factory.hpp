@@ -1,5 +1,5 @@
-#ifndef __VTX_FACTORIES__
-#define __VTX_FACTORIES__
+#ifndef __VTX_FACTORY__
+#define __VTX_FACTORY__
 
 #ifdef _MSC_VER
 #pragma once

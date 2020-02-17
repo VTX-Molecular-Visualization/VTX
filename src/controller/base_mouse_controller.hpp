@@ -15,8 +15,7 @@ namespace VTX
 		class BaseMouseController : virtual public BaseController
 		{
 		  public:
-			/*
-			virtual void handleEvent( const SDL_Event & p_event, void * const ) override
+			virtual void receiveEvent( const SDL_Event & p_event, void * const ) override
 			{
 				switch ( p_event.type )
 				{
@@ -27,7 +26,6 @@ namespace VTX
 				default: break;
 				}
 			}
-			*/
 
 		  protected:
 			bool _mouseLeftPressed	 = false;

@@ -24,15 +24,14 @@ namespace VTX
 		  public:
 			virtual ~BaseComponent() {}
 
-			virtual void init() override;
+			virtual void		  init() override;
 			BaseComponent * const getComponentByName( const std::string & );
 
 		  protected:
 			virtual void _drawComponent( const std::string & );
 			virtual void _drawComponents() final;
 
-		private:
-			std::set<Event::EVENT_UI> _events = std::set<Event::EVENT_UI>();
+		  private:
 		};
 	} // namespace UI
 } // namespace VTX
