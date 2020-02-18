@@ -239,5 +239,7 @@ namespace VTX
 		}
 
 		bool UserInterface::pollEvent( SDL_Event & p_event ) const { return SDL_PollEvent( &p_event ); }
+		void UserInterface::processEvent( SDL_Event & p_event ) const { ImGui_ImplSDL2_ProcessEvent( &p_event ); }
+
 	} // namespace UI
 } // namespace VTX

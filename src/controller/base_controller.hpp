@@ -18,6 +18,9 @@ namespace VTX
 			public Generic::BaseCollectionable,
 			public Event::BaseEventReceiverSDL
 		{
+		  public:
+			virtual void init() override { Event::BaseEventReceiverSDL::registerEvents(); }
+			virtual void clean() override { Event::BaseEventReceiverSDL::unregisterEvents(); }
 		};
 	} // namespace Controller
 } // namespace VTX

@@ -6,21 +6,21 @@
 #endif
 
 #include "base_event_receiver_sdl.hpp"
+#include "generic/base_updatable.hpp"
 #include <set>
 
 namespace VTX
 {
 	namespace Event
 	{
-		class EventManager
+		class EventManager : public Generic::BaseUpdatable
 		{
 		  public:
 			using SetBaseEventReceiverSDLPtr = std::set<BaseEventReceiverSDL *>;
 
-			void registerEventReceiverSDL( BaseEventReceiverSDL * const p_receiver )
-			{
-				_receiversSDL.emplace( p_receiver );
-			}
+			virtual void update( const double p_deltaTime ) override;
+			void		 registerEventReceiverSDL( BaseEventReceiverSDL * const );
+			void		 unregisterEventReceiverSDL( BaseEventReceiverSDL * const );
 
 		  private:
 			SetBaseEventReceiverSDLPtr _receiversSDL = SetBaseEventReceiverSDLPtr();

@@ -3,7 +3,6 @@
 #include "io/path.hpp"
 #include "model/molecule.hpp"
 #include "renderer/gl.hpp"
-#include "ui/imgui/imgui_impl_sdl.h"
 #include <thread>
 
 namespace VTX
@@ -96,16 +95,15 @@ namespace VTX
 		//_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 		// Events.
-		SDL_Event event;
-		while ( _ui->pollEvent( event ) )
-		{
-			//_handleEvent( event );
-		}
 
 		// UI.
 		_ui->draw();
 
-		// Statemachine.
+		// Event manager.
+		// TODO
+		_eventManager->update( _timeDelta );
+
+		// State machine.
 		_stateMachine->update( _timeDelta );
 
 		// Timers.
@@ -113,26 +111,5 @@ namespace VTX
 		_timeDelta = _chrono.elapsedTime();
 		_timeTotal += _timeDelta;
 	}
-
-	/*
-	void VTXApp::_handleEvent( const SDL_Event & p_event )
-	{
-		// Quit event.
-		ImGui_ImplSDL2_ProcessEvent( &p_event );
-		switch ( p_event.type )
-		{
-		case SDL_QUIT: stop(); return;
-		case SDL_WINDOWEVENT:
-			if ( p_event.window.event == SDL_WINDOWEVENT_CLOSE )
-			{
-				stop();
-				return;
-			}
-		}
-
-		// Propagate to state machine.
-		if ( ImGui::IsAnyWindowFocused() == false ) { _stateMachine->handleEvent( p_event ); }
-	}
-	*/
 
 } // namespace VTX
