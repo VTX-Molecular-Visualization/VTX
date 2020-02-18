@@ -21,11 +21,11 @@ namespace VTX
 				_uRadiusScale	  = glGetUniformLocation( program->getId(), "uRadScale" );
 			}
 
-			void Sphere::notify( const Event::EVENT_MODEL & p_event )
+			void Sphere::notify( const Event::VTX_EVENT_MODEL & p_event )
 			{
 				BaseView3DMolecule::notify( p_event );
 
-				if ( p_event == Event::EVENT_MODEL::CHANGE_REPRESENTATION )
+				if ( p_event == Event::VTX_EVENT_MODEL::CHANGE_REPRESENTATION )
 				{
 					switch ( Setting::Rendering::representation )
 					{

@@ -45,7 +45,7 @@ namespace VTX
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::UI::MoleculeStructure>( this ) );
 		}
 
-		void Molecule::setRepresentation() { _notifyViews( Event::EVENT_MODEL::CHANGE_REPRESENTATION ); }
+		void Molecule::setRepresentation() { _notifyViews( Event::VTX_EVENT_MODEL::CHANGE_REPRESENTATION ); }
 
 		void Molecule::setColorMode()
 		{
@@ -245,7 +245,7 @@ namespace VTX
 		void Molecule::render()
 		{
 			bindBuffers();
-			_notifyViews( Event::EVENT_MODEL::RENDER );
+			_notifyViews( Event::VTX_EVENT_MODEL::RENDER );
 			unbindBuffers();
 		}
 	} // namespace Model

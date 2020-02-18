@@ -23,7 +23,7 @@ namespace VTX
 			virtual void setSelected( const bool p_selected ) { _isSelected = p_selected; }
 
 		  protected:
-			virtual void _notifyViews( const Event::EVENT_MODEL p_event ) final
+			virtual void _notifyViews( const Event::VTX_EVENT_MODEL p_event ) final
 			{
 				for ( PairStringToItemPtr pair : _getItems() )
 				{
