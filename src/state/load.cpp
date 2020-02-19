@@ -48,6 +48,7 @@ namespace VTX
 				scene->addMolecule( molecule );
 			}
 
+			// TODO: move that in scene construtor?
 			Model::Path * p = Generic::create<Model::Path>();
 			scene->addPath( p );
 			p->setSelected( true );

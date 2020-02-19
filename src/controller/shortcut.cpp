@@ -10,6 +10,7 @@ namespace VTX
 	{
 		void Shortcut::_handleKeyPressedEvent( const SDL_Scancode & p_key )
 		{
+			// TODO: link with action and UI button.
 			switch ( p_key )
 			{
 			case SDL_SCANCODE_F1:

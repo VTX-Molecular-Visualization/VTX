@@ -1,5 +1,4 @@
 #include "residue.hpp"
-#include "util/type.hpp"
 #include "view/ui/residue.hpp"
 
 namespace VTX
@@ -13,7 +12,7 @@ namespace VTX
 			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Residue, View::UI::Residue>( this ) ); }
 			else
 			{
-				Generic::destroy<View::UI::Residue>( (View::UI::Residue *)removeItem( ID::View::UI_RESIDUE ) );
+				delete removeItem( ID::View::UI_RESIDUE );
 			}
 		}
 

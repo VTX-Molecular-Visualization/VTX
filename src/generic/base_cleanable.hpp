@@ -12,7 +12,8 @@ namespace VTX
 		class BaseCleanable
 		{
 		  public:
-			virtual ~BaseCleanable() = default;
+			// Ensure that items destroyed outside the factory are also cleaned.
+			virtual ~BaseCleanable() { clean(); };
 
 			virtual void clean() {}
 		};

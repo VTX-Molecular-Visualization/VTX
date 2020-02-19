@@ -14,9 +14,9 @@ namespace VTX
 	{
 		class BaseEventReceiverSDL : public BaseEventReceiver<SDL_Event>
 		{
-		  public:
-			virtual void registerEvents() override;
-			virtual void unregisterEvents() override;
+		  protected:
+			virtual void _registerEvents() override;
+			virtual void _unregisterEvents() override;
 		};
 	} // namespace Event
 } // namespace VTX

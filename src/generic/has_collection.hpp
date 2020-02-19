@@ -5,10 +5,10 @@
 #pragma once
 #endif
 
+#include "base_cleanable.hpp"
 #include "base_collectionable.hpp"
 #include "base_initializable.hpp"
 #include "factory.hpp"
-#include "util/type.hpp"
 #include <map>
 #include <string>
 #include <type_traits>
@@ -19,21 +19,19 @@ namespace VTX
 	namespace Generic
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCollectionable, T>::value>>
-		class HasCollection : public BaseInitializable
+		class HasCollection : public BaseInitializable, public BaseCleanable
 		{
 		  public:
 			using MapStringToItemPtr  = std::map<std::string, T *>;
 			using PairStringToItemPtr = std::pair<std::string, T *>;
 
-			virtual ~HasCollection() { clear(); }
-
 			virtual void init() override { _addItems(); }
 
-			virtual void clear()
+			virtual void clean() override
 			{
 				for ( const PairStringToItemPtr pair : _items )
 				{
-					Generic::destroy<BaseCollectionable>( pair.second );
+					delete pair.second;
 				}
 				_items.clear();
 			}
@@ -48,6 +46,7 @@ namespace VTX
 			}
 			void addItem( T * const p_item )
 			{
+				VTX_DEBUG( "Adding item: " + static_cast<BaseCollectionable *>( p_item )->getName() );
 				try
 				{
 					_items.try_emplace( static_cast<BaseCollectionable *>( p_item )->getName(), p_item );
@@ -61,6 +60,7 @@ namespace VTX
 
 			virtual T * removeItem( const std::string & p_name )
 			{
+				VTX_DEBUG( "Removing item: " + p_name );
 				T * item = _items.at( p_name );
 				_items.erase( p_name );
 				return item;

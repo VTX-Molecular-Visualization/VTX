@@ -1,5 +1,6 @@
 #include "state_machine.hpp"
 #include "define.hpp"
+#include "exception.hpp"
 #include "export.hpp"
 #include "generic/factory.hpp"
 #include "load.hpp"
@@ -12,13 +13,11 @@ namespace VTX
 	{
 		void StateMachine::goToState( const std::string & p_name, void * const p_arg )
 		{
-			try
+			VTX_DEBUG( "Go to state: " + p_name );
+			if ( _getItems().find( p_name ) != _getItems().end() ) { _switchState( _getItems().at( p_name ), p_arg ); }
+			else
 			{
-				_switchState( _getItems().at( p_name ), p_arg );
-			}
-			catch ( const std::exception )
-			{
-				VTX_ERROR( "State not found: " + p_name );
+				throw Exception::VTXException( "State not found: " + p_name );
 			}
 		}
 

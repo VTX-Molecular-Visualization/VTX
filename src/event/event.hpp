@@ -11,10 +11,15 @@ namespace VTX
 {
 	namespace Event
 	{
-		// Global system events.
-		const std::string LOG_CONSOLE = "LOG_CONSOLE";
+		// Global system events [n-n].
+		using VTX_EVENT = std::string;
 
-		// Model events for notifier pattern model->views.
+		namespace Global
+		{
+			const VTX_EVENT LOG_CONSOLE = "LOG_CONSOLE";
+		}
+
+		// Model events for notifier pattern (model->views)[1-n].
 		enum class VTX_EVENT_MODEL : int
 		{
 			RENDER,

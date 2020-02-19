@@ -238,8 +238,12 @@ namespace VTX
 			SDL_GL_SwapWindow( _window );
 		}
 
-		bool UserInterface::pollEvent( SDL_Event & p_event ) const { return SDL_PollEvent( &p_event ); }
-		void UserInterface::processEvent( SDL_Event & p_event ) const { ImGui_ImplSDL2_ProcessEvent( &p_event ); }
+		bool UserInterface::getEvent( SDL_Event & p_event ) const
+		{
+			bool hasEvent = SDL_PollEvent( &p_event );
+			if ( hasEvent ) { ImGui_ImplSDL2_ProcessEvent( &p_event ); }
+			return hasEvent;
+		}
 
 	} // namespace UI
 } // namespace VTX

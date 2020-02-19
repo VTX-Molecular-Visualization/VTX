@@ -1,20 +1,16 @@
 #include "scene.hpp"
+#include "generic/factory.hpp"
 #include "math/transform.hpp"
 #include "setting.hpp"
-#include "util/type.hpp"
 
 namespace VTX
 {
 	namespace Object3D
 	{
-		Scene::Scene() {}
-
-		Scene::~Scene() { clear(); }
-
-		void Scene::clear()
+		void Scene::clean()
 		{
-			Util::Type::clearVector<Model::Molecule>( _molecules );
-			Util::Type::clearVector( _paths );
+			Generic::clearVector<Model::Molecule>( _molecules );
+			Generic::clearVector( _paths );
 		}
 
 		void Scene::update( const double p_deltaTime )

@@ -7,16 +7,16 @@
 
 #include "camera.hpp"
 #include "generic/base_updatable.hpp"
+#include "generic/base_cleanable.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
-#include "util/type.hpp"
 #include <vector>
 
 namespace VTX
 {
 	namespace Object3D
 	{
-		class Scene : public Generic::BaseUpdatable
+		class Scene : public Generic::BaseUpdatable, public Generic::BaseCleanable
 		{
 		  public:
 			using MoleculePtr		= Model::Molecule *;
@@ -24,10 +24,7 @@ namespace VTX
 			using VectorMoleculePtr = std::vector<MoleculePtr>;
 			using VectorPathPtr		= std::vector<PathPtr>;
 
-			Scene();
-			~Scene();
-
-			void clear();
+			virtual void clean() override;
 
 			void addMolecule( MoleculePtr const p_molecule ) { _molecules.emplace_back( p_molecule ); }
 			void addPath( PathPtr const p_path ) { _paths.emplace_back( p_path ); }

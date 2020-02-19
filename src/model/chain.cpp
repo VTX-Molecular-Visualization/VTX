@@ -1,5 +1,4 @@
 #include "chain.hpp"
-#include "util/type.hpp"
 #include "view/ui/chain.hpp"
 
 namespace VTX
@@ -13,7 +12,7 @@ namespace VTX
 			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Chain, View::UI::Chain>( this ) ); }
 			else
 			{
-				Generic::destroy<View::UI::Chain>( (View::UI::Chain *)removeItem( ID::View::UI_CHAIN ) );
+				delete (View::UI::Chain *)removeItem( ID::View::UI_CHAIN );
 			}
 		}
 	} // namespace Model

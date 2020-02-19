@@ -5,12 +5,12 @@ namespace VTX
 {
 	namespace Event
 	{
-		void BaseEventReceiverSDL::registerEvents()
+		void BaseEventReceiverSDL::_registerEvents()
 		{
 			VTXApp::get().getEventManager().registerEventReceiverSDL( this );
 		}
 
-		void BaseEventReceiverSDL::unregisterEvents()
+		void BaseEventReceiverSDL::_unregisterEvents()
 		{
 			VTXApp::get().getEventManager().unregisterEventReceiverSDL( this );
 		}

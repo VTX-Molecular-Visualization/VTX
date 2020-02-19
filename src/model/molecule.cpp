@@ -1,5 +1,4 @@
 #include "molecule.hpp"
-#include "util/type.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
 #include "view/ui/molecule.hpp"
@@ -39,7 +38,6 @@ namespace VTX
 		void Molecule::_addItems()
 		{
 			// Add views.
-
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::D3::Sphere>( this ) );
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::D3::Cylinder>( this ) );
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::UI::MoleculeStructure>( this ) );
@@ -94,12 +92,15 @@ namespace VTX
 
 		void Molecule::setSelected( const bool p_selected )
 		{
+			VTX_DEBUG( "SET SELECTED: " + std::to_string( p_selected ) );
 			BaseModel::setSelected( p_selected );
+			VTX_DEBUG( "IS SELECTED: " + std::to_string( isSelected() ) );
 			if ( isSelected() )
 			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::UI::Molecule>( this ) ); }
 			else
 			{
-				Generic::destroy<View::UI::Molecule>( (View::UI::Molecule *)removeItem( ID::View::UI_MOLECULE ) );
+				VTX_DEBUG( "DELETE THAT SHIT" );
+				delete removeItem( ID::View::UI_MOLECULE );
 			}
 		}
 

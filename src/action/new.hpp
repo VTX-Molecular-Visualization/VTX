@@ -15,7 +15,7 @@ namespace VTX
 		class New : public BaseAction
 		{
 		  public:
-			virtual void execute() override { VTXApp::get().getScene().clear(); };
+			virtual void execute() override { VTXApp::get().getScene().clean(); };
 		};
 	} // namespace Action
 } // namespace VTX

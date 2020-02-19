@@ -17,7 +17,7 @@ namespace VTX
 			addItem( Generic::create<Controller::Shortcut>() );
 		}
 
-		void Visualization::exit() { clear(); }
+		void Visualization::exit() { Generic::HasCollection<Controller::BaseController>::clean(); }
 
 		void Visualization::update( const double p_deltaTime )
 		{

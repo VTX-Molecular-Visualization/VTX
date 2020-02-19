@@ -1,7 +1,7 @@
 #include "path.hpp"
 #include "exception.hpp"
+#include "generic/factory.hpp"
 #include "util/math.hpp"
-#include "util/type.hpp"
 #include "view/ui/path.hpp"
 #include "view/ui/path_list.hpp"
 #include <fstream>
@@ -11,7 +11,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		Path::~Path() { Util::Type::clearVector( _viewpoints ); }
+		Path::~Path() { Generic::clearVector( _viewpoints ); }
 
 		void Path::_addItems()
 		{
@@ -63,7 +63,7 @@ namespace VTX
 			std::getline( file, line );
 			iss.str( line );
 			iss >> nbViewPoints;
-			Util::Type::clearVector( _viewpoints );
+			Generic::clearVector( _viewpoints );
 
 			for ( int i = 0; i < nbViewPoints; ++i )
 			{
@@ -122,7 +122,7 @@ namespace VTX
 			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::Path>( this ) ); }
 			else
 			{
-				Generic::destroy<View::UI::Path>( (View::UI::Path *)removeItem( ID::View::UI_PATH ) );
+				delete removeItem( ID::View::UI_PATH );
 			}
 		}
 

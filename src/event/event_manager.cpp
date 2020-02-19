@@ -15,22 +15,38 @@ namespace VTX
 			_receiversSDL.erase( p_receiver );
 		}
 
+		void EventManager::registerEventReceiverVTX( const VTX_EVENT &			  p_event,
+													 BaseEventReceiverVTX * const p_receiver )
+		{
+		}
+
+		void EventManager::unregisterEventReceiverVTX( const VTX_EVENT &			p_event,
+													   BaseEventReceiverVTX * const p_receiver )
+		{
+		}
+
+		void EventManager::fireEvent( const VTX_EVENT & p_event, void * const p_arg ) {}
+
 		void EventManager::update( const double p_deltaTime )
 		{
 			SDL_Event event;
-			while ( VTXApp::get().getUI().pollEvent( event ) )
+			while ( VTXApp::get().getUI().getEvent( event ) )
 			{
-				VTXApp::get().getUI().processEvent( event );
-
 				switch ( event.type )
 				{
-				case SDL_QUIT: VTXApp::get().stop(); return;
+				case SDL_QUIT:
+				{
+					VTXApp::get().stop();
+					return;
+				}
 				case SDL_WINDOWEVENT:
+				{
 					if ( event.window.event == SDL_WINDOWEVENT_CLOSE )
 					{
 						VTXApp::get().stop();
 						return;
 					}
+				}
 				}
 
 				// Propagate.

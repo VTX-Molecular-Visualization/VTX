@@ -1,5 +1,4 @@
 #include "atom.hpp"
-#include "util/type.hpp"
 #include "view/ui/atom.hpp"
 
 namespace VTX
@@ -13,7 +12,7 @@ namespace VTX
 			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Atom, View::UI::Atom>( this ) ); }
 			else
 			{
-				Generic::destroy<View::UI::Atom>( (View::UI::Atom *)removeItem( ID::View::UI_ATOM ) );
+				delete removeItem( ID::View::UI_ATOM );
 			}
 		}
 

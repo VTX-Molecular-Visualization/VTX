@@ -15,7 +15,6 @@ namespace VTX
 		{
 		  public:
 			Load() = default;
-
 			virtual std::string getName() const override { return ID::State::LOAD; }
 			virtual void		enter( void * const ) override;
 			virtual void		exit() override;

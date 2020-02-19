@@ -5,14 +5,20 @@ namespace VTX
 {
 	namespace Event
 	{
-		void BaseEventReceiverVTX::registerEvents()
+		void BaseEventReceiverVTX::_registerEvents()
 		{
-			// VTXApp::get().getEventManager().registerEventReceiverSDL( this );
+			for ( const VTX_EVENT & event : _getEvents() )
+			{
+				VTXApp::get().getEventManager().registerEventReceiverVTX( event, this );
+			}
 		}
 
-		void BaseEventReceiverVTX::unregisterEvents()
+		void BaseEventReceiverVTX::_unregisterEvents()
 		{
-			// VTXApp::get().getEventManager().unregisterEventReceiverSDL( this );
+			for ( const VTX_EVENT & event : _getEvents() )
+			{
+				VTXApp::get().getEventManager().unregisterEventReceiverVTX( event, this );
+			}
 		}
 
 	} // namespace Event

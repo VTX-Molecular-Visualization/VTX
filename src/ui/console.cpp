@@ -9,16 +9,14 @@ namespace VTX
 {
 	namespace UI
 	{
-		/*
-		void Console::_applyEvent( const Event::EVENT_UI p_event, void * const p_arg )
+		void Console::receiveEvent( const Event::VTX_EVENT & p_event, void * const p_arg )
 		{
-			if ( p_event == Event::EVENT_UI::LOG_CONSOLE )
+			if ( p_event == Event::Global::LOG_CONSOLE )
 			{
 				Util::Logger::Log * log = (Util::Logger::Log *)( p_arg );
 				_addLog( *log );
 			}
 		}
-		*/
 
 		void Console::_draw()
 		{

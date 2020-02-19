@@ -1,6 +1,5 @@
 #include "base_component.hpp"
 #include "model/molecule.hpp"
-#include "util/type.hpp"
 
 namespace VTX
 {
@@ -9,7 +8,15 @@ namespace VTX
 		void BaseComponent::init()
 		{
 			Generic::HasCollection<Generic::BaseDrawable>::init();
+			Event::BaseEventReceiverVTX::_registerEvents();
 			_visible = true;
+		}
+
+		void BaseComponent::clean()
+		{
+			_visible = false;
+			Event::BaseEventReceiverVTX::_unregisterEvents();
+			Generic::HasCollection<Generic::BaseDrawable>::clean();
 		}
 
 		void BaseComponent::_drawComponent( const std::string & p_name )

@@ -18,10 +18,15 @@ namespace VTX
 		{
 		  public:
 			virtual std::string getName() const override { return ID::UI::CONSOLE; }
+			virtual void		receiveEvent( const Event::VTX_EVENT & p_event, void * const p_arg = nullptr ) override;
 
 		  protected:
-			virtual void _addItems() override {}
-			virtual void _draw() override;
+			virtual void						  _addItems() override {}
+			virtual void						  _draw() override;
+			virtual std::vector<Event::VTX_EVENT> _getEvents() const override
+			{
+				return std::vector<Event::VTX_EVENT>( { Event::Global::LOG_CONSOLE } );
+			}
 
 		  private:
 			std::list<Util::Logger::Log> _logs = std::list<Util::Logger::Log>();

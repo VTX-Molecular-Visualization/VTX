@@ -29,8 +29,7 @@ namespace VTX
 			UserInterface();
 			~UserInterface();
 			virtual void print() const override;
-			bool		 pollEvent( SDL_Event & evt ) const;
-			void		 processEvent( SDL_Event & evt ) const;
+			bool		 getEvent( SDL_Event & evt ) const;
 			void		 setTheme() const;
 
 			virtual std::string getName() const override { return ID::UI::USER_INTERFACE; }
