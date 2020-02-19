@@ -102,6 +102,7 @@ namespace VTX
 				return glm::lerp( p_lhs, p_rhs, p_value );
 			}
 
+			/*
 			template<typename T>
 			static inline T slerp( const T & p_lhs, const T & p_rhs, const float p_value )
 			{
@@ -113,6 +114,7 @@ namespace VTX
 			{
 				return glm::mix( p_lhs, p_rhs, p_value );
 			}
+			*/
 
 			template<typename T>
 			static inline T catmullRomInterpolation( const T & p_lhs, const T & p_rhs, const float p_value )

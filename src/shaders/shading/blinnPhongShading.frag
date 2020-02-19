@@ -44,7 +44,7 @@ void main()
 	const vec3 colorDiff = ( fd.color ) * diffuse;
 	const vec3 colorSpec = ( vec3( 1.f ) - fd.color ) * spec;
 
-	const vec3 color = colorDiff + colorSpec - fd.ambientOcclusion;
+	const vec3 color = (colorDiff + colorSpec) * fd.ambientOcclusion;
 
 	fragColor = vec4( color, 1.f );
 }
