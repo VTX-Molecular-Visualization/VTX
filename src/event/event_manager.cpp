@@ -18,14 +18,28 @@ namespace VTX
 		void EventManager::registerEventReceiverVTX( const VTX_EVENT &			  p_event,
 													 BaseEventReceiverVTX * const p_receiver )
 		{
+			if ( _receiversVTX.find( p_event ) == _receiversVTX.end() )
+			{ _receiversVTX.try_emplace( p_event, SetBaseEventReceiverVTXPtr() ); }
+
+			_receiversVTX.at( p_event ).emplace( p_receiver );
 		}
 
 		void EventManager::unregisterEventReceiverVTX( const VTX_EVENT &			p_event,
 													   BaseEventReceiverVTX * const p_receiver )
 		{
+			_receiversVTX.at( p_event ).erase( p_receiver );
 		}
 
-		void EventManager::fireEvent( const VTX_EVENT & p_event, void * const p_arg ) {}
+		void EventManager::fireEvent( const VTX_EVENT & p_event, void * const p_arg )
+		{
+			if ( _receiversVTX.find( p_event ) != _receiversVTX.end() )
+			{
+				for ( BaseEventReceiverVTX * const receiver : _receiversVTX.at( p_event ) )
+				{
+					receiver->receiveEvent( p_event, p_arg );
+				}
+			}
+		}
 
 		void EventManager::update( const double p_deltaTime )
 		{

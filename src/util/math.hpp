@@ -60,17 +60,22 @@ namespace VTX
 				*/
 
 				// Exact same thing?
-				return eulerToQuaternion( Vec3f( p_pitch, p_yaw, p_roll ) );
+				Quatf q = eulerToQuaternion( Vec3f( p_pitch, p_yaw, p_roll ) );
+				//q /= (float)q.length();
+				return q;
 			}
 
 			static inline Vec3f quaternionToEuler( const Quatf & p_quaternion )
 			{
 				// https://stackoverflow.com/questions/53033620/how-to-convert-euler-angles-to-quaternions-and-get-the-same-euler-angles-back-fr
 
-				float x = p_quaternion.x;
-				float y = p_quaternion.y;
-				float z = p_quaternion.z;
-				float w = p_quaternion.w;
+				Quatf q = p_quaternion;
+				//q /= (float)q.length();
+
+				float x = q.x;
+				float y = q.y;
+				float z = q.z;
+				float w = q.w;
 
 				float t0 = 2.f * ( w * x + y * z );
 				float t1 = 1.f - 2.f * ( x * x + y * y );

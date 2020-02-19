@@ -11,7 +11,6 @@
 #include "generic/base_updatable.hpp"
 #include <map>
 #include <set>
-#include <vector>
 
 namespace VTX
 {
@@ -20,9 +19,9 @@ namespace VTX
 		class EventManager : public Generic::BaseUpdatable
 		{
 		  public:
-			using SetBaseEventReceiverSDLPtr = std::set<BaseEventReceiverSDL *>;
-			using MapStringVectorBaseEventReceiverVTXPtr
-				= std::map<Event::VTX_EVENT, std::vector<BaseEventReceiverVTX *>>;
+			using SetBaseEventReceiverSDLPtr			 = std::set<BaseEventReceiverSDL *>;
+			using SetBaseEventReceiverVTXPtr			 = std::set<BaseEventReceiverVTX *>;
+			using MapStringVectorBaseEventReceiverVTXPtr = std::map<Event::VTX_EVENT, SetBaseEventReceiverVTXPtr>;
 
 			virtual void update( const double p_deltaTime ) override;
 			void		 registerEventReceiverSDL( BaseEventReceiverSDL * const );
