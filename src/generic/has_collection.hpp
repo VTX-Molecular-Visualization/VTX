@@ -29,9 +29,11 @@ namespace VTX
 
 			virtual void clean() override
 			{
+				VTX_DEBUG( "Cleaning collection" );
 				for ( const PairStringToItemPtr pair : _items )
 				{
-					delete pair.second;
+					VTX_DEBUG( "Removing item: " + pair.first );
+					Generic::destroy<BaseCollectionable>( pair.second );
 				}
 				_items.clear();
 			}

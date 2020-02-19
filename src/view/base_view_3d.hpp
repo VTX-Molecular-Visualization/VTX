@@ -23,6 +23,8 @@ namespace VTX
 			explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
 			virtual ~BaseView3D() {}
 
+			virtual void clean() override {}
+
 		  protected:
 			// Uniforms.
 			GLint _uViewModelMatrix = GL_INVALID_INDEX;

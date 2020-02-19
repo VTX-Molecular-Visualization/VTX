@@ -23,6 +23,13 @@ namespace VTX
 			return instance;
 		}
 
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCleanable, T>::value>>
+		static void destroy( T * p_instance )
+		{
+			p_instance->clean();
+			delete p_instance;
+		}
+
 		template<typename M,
 				 typename V,
 				 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
@@ -34,12 +41,12 @@ namespace VTX
 			return instance;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCleanable, T>::value>>
 		void clearVector( std::vector<T *> & p_vector )
 		{
 			for ( T * element : p_vector )
 			{
-				delete element;
+				destroy<>( element );
 			}
 			p_vector.clear();
 		}

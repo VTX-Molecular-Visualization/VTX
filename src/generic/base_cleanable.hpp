@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#include "define.hpp"
+
 namespace VTX
 {
 	namespace Generic
@@ -12,10 +14,7 @@ namespace VTX
 		class BaseCleanable
 		{
 		  public:
-			// Ensure that items destroyed outside the factory are also cleaned.
-			virtual ~BaseCleanable() { clean(); };
-
-			virtual void clean() {}
+			virtual void clean() {};
 		};
 	} // namespace Generic
 } // namespace VTX

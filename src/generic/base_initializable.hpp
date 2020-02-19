@@ -12,8 +12,6 @@ namespace VTX
 		class BaseInitializable
 		{
 		  public:
-			virtual ~BaseInitializable() = default;
-
 			virtual void init() {}
 		};
 	} // namespace Generic

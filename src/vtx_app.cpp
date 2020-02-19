@@ -16,23 +16,25 @@ namespace VTX
 		_actionManager = new Action::ActionManager();
 		_scene		   = new Object3D::Scene();
 		_renderer	   = new Renderer::GL();
-		_stateMachine  = Generic::create<State::StateMachine>();
 	}
 
 	VTXApp::~VTXApp()
 	{
+		// Respect this order!
+		Generic::destroy<>( _stateMachine );
+		Generic::destroy<>( _scene );
+		Generic::destroy<>( _ui );
+
 		delete _renderer;
 		delete _actionManager;
 		delete _eventManager;
-		delete _scene;
-		delete _stateMachine;
-		delete _ui;
 	}
 
 	void VTXApp::start()
 	{
 		VTX_INFO( "Starting application" );
 
+		_stateMachine	   = Generic::create<State::StateMachine>();
 		_ui				   = Generic::create<UI::UserInterface>();
 		VTXApp::_isRunning = true;
 

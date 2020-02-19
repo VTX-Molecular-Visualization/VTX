@@ -14,7 +14,7 @@ namespace VTX
 			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Viewpoint, View::UI::Viewpoint>( this ) ); }
 			else
 			{
-				delete removeItem( ID::View::UI_VIEWPOINT );
+				Generic::destroy<View::UI::Viewpoint>( (View::UI::Viewpoint *)removeItem( ID::View::UI_VIEWPOINT ) );
 			}
 		} // namespace Model
 	}	  // namespace Model
