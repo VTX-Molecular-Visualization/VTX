@@ -12,7 +12,7 @@ namespace VTX
 			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Residue, View::UI::Residue>( this ) ); }
 			else
 			{
-				Generic::destroy<>( removeItem( ID::View::UI_RESIDUE ) );
+				Generic::destroy( removeItem( ID::View::UI_RESIDUE ) );
 			}
 		}
 

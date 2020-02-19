@@ -9,7 +9,7 @@ namespace VTX
 	{
 		void Scene::clean()
 		{
-			Generic::clearVector<Model::Molecule>( _molecules );
+			Generic::clearVector( _molecules );
 			Generic::clearVector( _paths );
 		}
 

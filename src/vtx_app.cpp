@@ -21,9 +21,9 @@ namespace VTX
 	VTXApp::~VTXApp()
 	{
 		// Respect this order!
-		Generic::destroy<>( _stateMachine );
-		Generic::destroy<>( _scene );
-		Generic::destroy<>( _ui );
+		Generic::destroy( _stateMachine );
+		Generic::destroy( _scene );
+		Generic::destroy( _ui );
 
 		delete _renderer;
 		delete _actionManager;

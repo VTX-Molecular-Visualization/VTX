@@ -46,7 +46,7 @@ namespace VTX
 		{
 			for ( T * element : p_vector )
 			{
-				destroy<>( element );
+				destroy( element );
 			}
 			p_vector.clear();
 		}
@@ -56,7 +56,7 @@ namespace VTX
 		{
 			for ( std::pair<std::string, T *> pair : p_map )
 			{
-				destroy<>( pair.second );
+				destroy( pair.second );
 			}
 			p_map.clear();
 		}
