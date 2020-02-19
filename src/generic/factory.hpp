@@ -51,12 +51,12 @@ namespace VTX
 			p_vector.clear();
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCleanable, T>::value>>
 		void clearStringMap( std::map<std::string, T *> & p_map )
 		{
 			for ( std::pair<std::string, T *> pair : p_map )
 			{
-				delete pair.second;
+				destroy<>( pair.second );
 			}
 			p_map.clear();
 		}

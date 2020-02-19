@@ -122,7 +122,7 @@ namespace VTX
 			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::Path>( this ) ); }
 			else
 			{
-				Generic::destroy<View::UI::Path>( (View::UI::Path *)removeItem( ID::View::UI_PATH ) );
+				Generic::destroy<>( removeItem( ID::View::UI_PATH ) );
 			}
 		}
 

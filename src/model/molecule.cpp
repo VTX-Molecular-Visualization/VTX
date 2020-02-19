@@ -97,7 +97,7 @@ namespace VTX
 			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::UI::Molecule>( this ) ); }
 			else
 			{
-				Generic::destroy<View::UI::Molecule>( (View::UI::Molecule *)removeItem( ID::View::UI_MOLECULE ) );
+				Generic::destroy<>( removeItem( ID::View::UI_MOLECULE ) );
 			}
 		}
 
