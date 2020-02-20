@@ -22,10 +22,11 @@ namespace VTX
 			using ViewpointPtr		 = Model::Viewpoint *;
 			using VectorViewpointPtr = std::vector<ViewpointPtr>;
 
-			enum class COMPUTATION_MODE : int
+			enum class DURATION_MODE : int
 			{
-				DURATION,
-				SPEED
+				CONSTANT_SPEED,
+				PATH,
+				VIEWPOINT
 			};
 
 			Path() { setId( 0 ); };
@@ -36,12 +37,17 @@ namespace VTX
 			{
 				_viewpoints.erase( std::find( _viewpoints.begin(), _viewpoints.end(), p_viewpoint ) );
 			}
+
 			inline VectorViewpointPtr & getViewpoints() { return _viewpoints; }
 
 			virtual void						  setSelected( const bool ) override;
 			void								  setSelectedViewpoint( Viewpoint * const );
 			void								  resetSelectedViewpoint();
-			float								  computeTotalTime() const;
+			inline float						  getDuration() const { return _duration; }
+			inline void							  setDuration( const float p_duration ) { _duration = p_duration; }
+			inline DURATION_MODE				  getDurationMode() const { return _mode; }
+			inline void							  setDurationMode( const DURATION_MODE p_mode ) { _mode = p_mode; }
+			void								  refreshAllDurations();
 			Viewpoint::ViewpointInterpolationData getCurrentViewpointInterpolationData( float p_time ) const;
 
 			// TODO: redo implementation.
@@ -53,7 +59,8 @@ namespace VTX
 
 		  private:
 			VectorViewpointPtr _viewpoints		  = VectorViewpointPtr();
-			COMPUTATION_MODE   _mode			  = COMPUTATION_MODE::DURATION;
+			DURATION_MODE	   _mode			  = DURATION_MODE::PATH;
+			float			   _duration		  = 10.f;
 			ViewpointPtr	   _selectedViewpoint = nullptr;
 
 		}; // namespace Camera

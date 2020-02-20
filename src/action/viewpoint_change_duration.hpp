@@ -20,7 +20,11 @@ namespace VTX
 			{
 			}
 
-			virtual void execute() override { _viewpoint.setDuration( _duration ); }
+			virtual void execute() override
+			{
+				_viewpoint.setDuration( glm::max<float>( _duration, 0.f ) );
+				_viewpoint.getPathPtr()->refreshAllDurations();
+			}
 
 		  private:
 			Model::Viewpoint & _viewpoint;

@@ -9,14 +9,8 @@ namespace VTX
 		{
 			Model::Path * path = (Model::Path *)p_arg;
 
-			if ( path->getViewpoints().size() < 2 )
-			{
-				VTXApp::get().goToState( ID::State::VISUALIZATION );
-				return;
-			}
-
-			float totalTime	 = path->computeTotalTime();
-			uint  totalFrame = uint( VIDEO_FPS * totalTime );
+			float duration	 = path->getDuration();
+			uint  totalFrame = uint( VIDEO_FPS * duration );
 
 			if ( totalFrame == 0u )
 			{
@@ -25,7 +19,7 @@ namespace VTX
 				return;
 			}
 
-			VTX_INFO( "Exporting... total: " + std::to_string( totalFrame ) + " frames / " + std::to_string( totalTime )
+			VTX_INFO( "Exporting... total: " + std::to_string( totalFrame ) + " frames / " + std::to_string( duration )
 					  + " seconds" );
 
 			// std::string		 filename	= Util::Time::getTimestamp();

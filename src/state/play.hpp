@@ -23,9 +23,8 @@ namespace VTX
 			virtual void		update( const double ) override;
 
 		  private:
-			Model::Path * _path		 = nullptr;
-			float		  _time		 = 0.f;
-			float		  _totalTime = 0.f;
+			Model::Path * _path = nullptr;
+			float		  _time = 0.f;
 
 			void _setCamera() const;
 		};

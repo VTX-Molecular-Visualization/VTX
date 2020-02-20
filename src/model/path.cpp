@@ -23,19 +23,20 @@ namespace VTX
 			float total	 = 0.f;
 			uint  offset = 0;
 
-			for ( ; offset < _viewpoints.size(); ++offset )
+			while ( total <= p_time && offset < _viewpoints.size() )
 			{
-				Model::Viewpoint * viewpoint = _viewpoints[ offset ];
-				if ( offset >= 1 ) { total += viewpoint->getDuration(); }
-				if ( total >= p_time ) { break; }
+				total += _viewpoints[ offset++ ]->getDuration();
 			}
+			offset--;
+
+			float value = 1.f - ( ( total - p_time ) / _viewpoints[ offset ]->getDuration() );
 
 			Viewpoint::ViewpointInterpolationData data = Viewpoint::ViewpointInterpolationData(
-				_viewpoints[ offset > 0 ? offset - 1 : 0 ]->getPosition(),
-				_viewpoints[ offset > 0 ? offset - 1 : 0 ]->getRotation(),
-				_viewpoints[ offset ]->getPosition(),
-				_viewpoints[ offset ]->getRotation(),
-				1.f - ( ( -( p_time - total ) ) / _viewpoints[ offset ]->getDuration() ) );
+				_viewpoints[ offset - 1 ]->getPosition(),
+				_viewpoints[ offset - 1 ]->getRotation(),
+				_viewpoints[ offset < _viewpoints.size() ? offset : offset - 1 ]->getPosition(),
+				_viewpoints[ offset < _viewpoints.size() ? offset : offset - 1 ]->getRotation(),
+				glm::min<float>( value, 1.f ) );
 
 			return data;
 		}
@@ -84,7 +85,7 @@ namespace VTX
 
 				addViewpoint( new Viewpoint( this, position, rotation, duration ) );
 			}
-
+			refreshAllDurations();
 			chrono.stop();
 			VTX_INFO( "Import finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
 		}
@@ -150,16 +151,37 @@ namespace VTX
 			}
 		}
 
-		float Path::computeTotalTime() const
+		void Path::refreshAllDurations()
 		{
-			float total = 0.f;
-			if ( _viewpoints.size() == 0 ) { return total; }
-			for ( Model::Viewpoint * viewpoint : _viewpoints )
+			// Force the first to 0.
+			if ( _viewpoints.size() > 0 ) { _viewpoints[ 0 ]->setDuration( 0.f ); }
+
+			// Set same duration for each viewpoint.
+			if ( _mode == DURATION_MODE::PATH )
 			{
-				total += viewpoint->getDuration();
+				float duration = 0.f;
+				if ( _viewpoints.size() >= 2 ) { duration = _duration / (float)( _viewpoints.size() - 1 ); }
+
+				for ( int i = 1; i < _viewpoints.size(); ++i )
+				{
+					Viewpoint * const viewpoint = _viewpoints[ i ];
+					viewpoint->setDuration( duration );
+				}
 			}
-			total -= _viewpoints[ 0 ]->getDuration();
-			return total;
+			// Set the path duration from viewpoint durations.
+			else if ( _mode == DURATION_MODE::VIEWPOINT )
+			{
+				_duration = 0.f;
+				for ( int i = 1; i < _viewpoints.size(); ++i )
+				{
+					Viewpoint * const viewpoint = _viewpoints[ i ];
+					_duration += viewpoint->getDuration();
+				}
+			}
+			else if ( _mode == DURATION_MODE::CONSTANT_SPEED )
+			{
+			}
+
 		} // namespace Model
 
 	} // namespace Model

@@ -27,6 +27,7 @@ namespace VTX
 			virtual void execute() override
 			{
 				_path.addViewpoint( new Model::Viewpoint( &_path, _position, _rotation ) );
+				_path.refreshAllDurations();
 			}
 
 		  private:

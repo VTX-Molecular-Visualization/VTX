@@ -17,7 +17,7 @@ namespace VTX
 					for ( Model::Viewpoint * const viewpoint : _getModel().getViewpoints() )
 					{
 						ImGui::PushID( viewpoint->getId() );
-						if ( ImGui::Selectable( ( "Viewpoint " + std::to_string( viewpoint->getId() ) ).c_str() )/*,
+						if ( ImGui::Selectable( ( LOCALE( "View.Viewpoint" ) + std::to_string( viewpoint->getId() ) ).c_str() )/*,
 						 viewpoint->isSelected()*/ )
 						{
 							VTXApp::get().action(

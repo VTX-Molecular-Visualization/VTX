@@ -73,7 +73,17 @@ namespace VTX
 			{ "Inspector.Transform.Scale", "Scale" },
 
 			// Views.
-			{ "View.Molecule.Data", "Data" },
+			{ "View.Data", "Data" },
+			{ "View.Play", "Play" },
+			{ "View.Stop", "Stop" },
+			{ "View.Path", "Path" },
+			{ "View.Replace", "Replace" },
+			{ "View.Delete", "Delete" },
+			{ "View.Duration", "Duration" },
+			{ "View.Viewpoint", "Viewpoint" },
+			{ "View.Viewpoint.Add", "Add viewpoint" },
+			{ "View.Duration", "Duration" },
+			{ "View.DurationMode", "Mode" },
 
 			// Enums.
 			{ "Enum.Theme.Light", "Light" },
@@ -94,6 +104,10 @@ namespace VTX
 			{ "Enum.Shading.Lambert", "Lambert" },
 			{ "Enum.Shading.BlinnPhong", "Blinn Phong" },
 			{ "Enum.Shading.Toon", "Toon" },
+
+			{ "Enum.DurationMode.Viewpoint", "Viewpoint duration" },
+			{ "Enum.DurationMode.Path", "Path duration" },
+			{ "Enum.DurationMode.ConstantSpeed", "Constant speed" },
 		};
 
 	} // namespace Localization

@@ -9,7 +9,7 @@ namespace VTX
 		{
 			void MoleculeStructure::_draw()
 			{
-				if ( ImGui::CollapsingHeader( LOCALE( "View.Molecule.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
+				if ( ImGui::CollapsingHeader( LOCALE( "View.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 				{
 					ImGui::Text( "Chains: %d", _getModel().getChainCount() );
 					ImGui::Text( "Residues: %d", _getModel().getResidueCount() );

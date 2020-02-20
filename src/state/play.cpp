@@ -12,21 +12,13 @@ namespace VTX
 		{
 			_path = (Model::Path *)p_arg;
 
-			if ( _path->getViewpoints().size() < 2 )
+			if ( _path->getDuration() == 0.f )
 			{
 				VTXApp::get().goToState( ID::State::VISUALIZATION );
 				return;
 			}
 
-			_totalTime = _path->computeTotalTime();
-
-			if ( _totalTime == 0.f )
-			{
-				VTXApp::get().goToState( ID::State::VISUALIZATION );
-				return;
-			}
-
-			VTX_INFO( "Playing... total: " + std::to_string( _totalTime ) + " seconds" );
+			VTX_INFO( "Playing... total: " + std::to_string( _path->getDuration() ) + " seconds" );
 
 			_setCamera();
 		}
@@ -34,9 +26,8 @@ namespace VTX
 		void Play::exit()
 		{
 			VTX_INFO( "Stop" );
-			_path	   = nullptr;
-			_time	   = 0.f;
-			_totalTime = 0.f;
+			_path = nullptr;
+			_time = 0.f;
 		}
 
 		void Play::update( const double p_deltaTime )
@@ -46,7 +37,7 @@ namespace VTX
 			_time += (float)p_deltaTime;
 
 			// Loop.
-			if ( _time >= _totalTime )
+			if ( _time >= _path->getDuration() )
 			{
 				VTXApp::get().goToState( ID::State::VISUALIZATION );
 				return;

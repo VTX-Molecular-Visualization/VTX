@@ -23,6 +23,7 @@ namespace VTX
 				_viewpoint.getPathPtr()->resetSelectedViewpoint();
 				_viewpoint.getPathPtr()->removeViewpoint( &_viewpoint );
 				Generic::destroy<Model::Viewpoint>( &_viewpoint );
+				_viewpoint.getPathPtr()->refreshAllDurations();
 			}
 
 		  private:

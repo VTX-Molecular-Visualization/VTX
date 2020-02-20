@@ -15,19 +15,28 @@ namespace VTX
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
 				ImGui::PushID( "ViewViewpoint" );
-				if ( ImGui::CollapsingHeader( ( "Viewpoint: " + std::to_string( _getModel().getId() ) ).c_str(),
-											  flags ) )
+				if ( ImGui::CollapsingHeader(
+						 ( LOCALE( "View.Viewpoint" ) + std::to_string( _getModel().getId() ) ).c_str(), flags ) )
 				{
-					float duration = _getModel().getDuration();
-					if ( ImGui::InputFloat( "Duration", &duration, 1.f ) )
-					{ VTXApp::get().action( new Action::ViewpointChangeDuration( _getModel(), duration ) ); }
-					if ( ImGui::Button( "Replace" ) )
+					if ( _getModel().getPathPtr()->getDurationMode() == Model::Path::DURATION_MODE::VIEWPOINT )
+					{
+						float duration = _getModel().getDuration();
+						if ( ImGui::InputFloat( LOCALE( "View.Duration" ), &duration, 1.f ) )
+						{ VTXApp::get().action( new Action::ViewpointChangeDuration( _getModel(), duration ) ); }
+					}
+					else
+					{
+						ImGui::Text( "Duration: %f", _getModel().getDuration() );
+					}
+
+					if ( ImGui::Button( LOCALE( "View.Replace" ) ) )
 					{
 						VTXApp::get().action(
 							new Action::ViewpointReplace( _getModel(), VTXApp::get().getScene().getCamera() ) );
 					}
+
 					ImGui::SameLine();
-					if ( ImGui::Button( "Delete" ) )
+					if ( ImGui::Button( LOCALE( "View.Delete" ) ) )
 					{ VTXApp::get().action( new Action::ViewpointDelete( _getModel() ) ); }
 				}
 				ImGui::PopID();
