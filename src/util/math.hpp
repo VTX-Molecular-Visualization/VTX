@@ -61,7 +61,7 @@ namespace VTX
 
 				// Exact same thing?
 				Quatf q = eulerToQuaternion( Vec3f( p_pitch, p_yaw, p_roll ) );
-				//q /= (float)q.length();
+				// q /= (float)q.length();
 				return q;
 			}
 
@@ -70,7 +70,7 @@ namespace VTX
 				// https://stackoverflow.com/questions/53033620/how-to-convert-euler-angles-to-quaternions-and-get-the-same-euler-angles-back-fr
 
 				Quatf q = p_quaternion;
-				//q /= (float)q.length();
+				// q /= (float)q.length();
 
 				float x = q.x;
 				float y = q.y;
@@ -107,10 +107,15 @@ namespace VTX
 			}
 			*/
 
-			template<typename T>
-			static inline T catmullRomInterpolation( const T & p_lhs, const T & p_rhs, const float p_value )
+			static Vec3f catmullRomInterpolation( const Vec3f & p_0,
+												  const Vec3f & p_1,
+												  const Vec3f & p_2,
+												  const Vec3f & p_3,
+												  const float	p_value )
 			{
-				T result = T();
+				Vec3f result;
+				float alpha = 0.5f;
+
 				return result;
 			}
 		} // namespace Math
