@@ -29,6 +29,12 @@ namespace VTX
 				VIEWPOINT
 			};
 
+			enum class INNTERPOLATION_MODE : int
+			{
+				LINEAR,
+				CATMULL_ROM,
+			};
+
 			Path() { setId( 0 ); };
 			~Path();
 
@@ -40,14 +46,16 @@ namespace VTX
 
 			inline VectorViewpointPtr & getViewpoints() { return _viewpoints; }
 
-			virtual void						  setSelected( const bool ) override;
-			void								  setSelectedViewpoint( Viewpoint * const );
-			void								  resetSelectedViewpoint();
-			inline float						  getDuration() const { return _duration; }
-			inline void							  setDuration( const float p_duration ) { _duration = p_duration; }
-			inline DURATION_MODE				  getDurationMode() const { return _mode; }
-			inline void							  setDurationMode( const DURATION_MODE p_mode ) { _mode = p_mode; }
-			void								  refreshAllDurations();
+			virtual void			   setSelected( const bool ) override;
+			void					   setSelectedViewpoint( Viewpoint * const );
+			void					   resetSelectedViewpoint();
+			inline float			   getDuration() const { return _duration; }
+			inline void				   setDuration( const float p_duration ) { _duration = p_duration; }
+			inline DURATION_MODE	   getDurationMode() const { return _modeDuration; }
+			inline void				   setDurationMode( const DURATION_MODE p_mode ) { _modeDuration = p_mode; }
+			inline INNTERPOLATION_MODE getInterpolationMode() const { return _modeInterpolation; }
+			inline void setInterpolationnMode( const INNTERPOLATION_MODE p_mode ) { _modeInterpolation = p_mode; }
+			void		refreshAllDurations();
 			Viewpoint::ViewpointInterpolationData getCurrentViewpointInterpolationData( float p_time ) const;
 
 			// TODO: redo implementation.
@@ -58,10 +66,11 @@ namespace VTX
 			virtual void _addItems() override final;
 
 		  private:
-			VectorViewpointPtr _viewpoints		  = VectorViewpointPtr();
-			DURATION_MODE	   _mode			  = DURATION_MODE::CONSTANT_SPEED;
-			float			   _duration		  = 10.f;
-			ViewpointPtr	   _selectedViewpoint = nullptr;
+			VectorViewpointPtr	_viewpoints		   = VectorViewpointPtr();
+			DURATION_MODE		_modeDuration	   = DURATION_MODE::CONSTANT_SPEED;
+			INNTERPOLATION_MODE _modeInterpolation = INNTERPOLATION_MODE::LINEAR;
+			float				_duration		   = PATH_DEFAULT_DURATION;
+			ViewpointPtr		_selectedViewpoint = nullptr;
 
 		}; // namespace Camera
 	}	   // namespace Model

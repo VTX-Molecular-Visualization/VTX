@@ -89,6 +89,9 @@ namespace VTX
 	constexpr int	RENDERER_AO_BLUR_SIZE_MAX	  = 99;
 	constexpr int	RENDERER_AO_BLUR_SIZE_DEFAULT = 9;
 
+	// Path.
+	constexpr float PATH_DEFAULT_DURATION = 5.f;
+
 	// Export video.
 	constexpr uint VIDEO_FPS = 60;
 

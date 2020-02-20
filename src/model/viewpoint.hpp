@@ -66,7 +66,7 @@ namespace VTX
 
 		  private:
 			Path * const _path;
-			float		 _duration = 1.f;
+			float		 _duration;
 			Vec3f		 _position;
 			Quatf		 _rotation;
 

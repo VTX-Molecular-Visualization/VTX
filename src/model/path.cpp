@@ -82,47 +82,54 @@ namespace VTX
 			if ( _viewpoints.size() > 0 ) { _viewpoints[ 0 ]->setDuration( 0.f ); }
 
 			// Set same duration for each viewpoint.
-			if ( _mode == DURATION_MODE::PATH )
+			if ( _modeDuration == DURATION_MODE::PATH )
 			{
 				float duration = 0.f;
 				if ( _viewpoints.size() >= 2 ) { duration = _duration / (float)( _viewpoints.size() - 1 ); }
 
-				for ( int i = 1; i < _viewpoints.size(); ++i )
+				for ( uint i = 1; i < _viewpoints.size(); ++i )
 				{
 					Viewpoint * const viewpoint = _viewpoints[ i ];
 					viewpoint->setDuration( duration );
 				}
 			}
 			// Set the path duration from viewpoint durations.
-			else if ( _mode == DURATION_MODE::VIEWPOINT )
+			else if ( _modeDuration == DURATION_MODE::VIEWPOINT )
 			{
 				_duration = 0.f;
-				for ( int i = 1; i < _viewpoints.size(); ++i )
+				for ( uint i = 1; i < _viewpoints.size(); ++i )
 				{
 					Viewpoint * const viewpoint = _viewpoints[ i ];
 					_duration += viewpoint->getDuration();
 				}
 			}
 			// Set viewport duration from path duration/distance.
-			else if ( _mode == DURATION_MODE::CONSTANT_SPEED )
+			else if ( _modeDuration == DURATION_MODE::CONSTANT_SPEED )
 			{
-				// Compute total distance.
-				float totalDistance = 0.f;
-				for ( int i = 0; i < _viewpoints.size() - 1; ++i )
+				if ( _modeInterpolation == INNTERPOLATION_MODE::LINEAR )
 				{
-					totalDistance
-						+= glm::distance( _viewpoints[ i ]->getPosition(), _viewpoints[ i + 1u ]->getPosition() );
-				}
+					// Compute total distance.
+					float totalDistance = 0.f;
+					for ( uint i = 0; i < _viewpoints.size() - 1; ++i )
+					{
+						totalDistance
+							+= glm::distance( _viewpoints[ i ]->getPosition(), _viewpoints[ i + 1u ]->getPosition() );
+					}
 
-				//
-				for ( int i = 1; i < _viewpoints.size(); ++i )
+					//
+					for ( uint i = 1; i < _viewpoints.size(); ++i )
+					{
+						Viewpoint * const viewpoint = _viewpoints[ i ];
+						float			  distance
+							= glm::distance( _viewpoints[ i - 1u ]->getPosition(), viewpoint->getPosition() );
+						viewpoint->setDuration( _duration * distance / totalDistance );
+					}
+				}
+				if ( _modeInterpolation == INNTERPOLATION_MODE::CATMULL_ROM )
 				{
-					Viewpoint * const viewpoint = _viewpoints[ i ];
-					float distance = glm::distance( _viewpoints[ i - 1 ]->getPosition(), viewpoint->getPosition() );
-					viewpoint->setDuration( _duration * distance / totalDistance );
+					// TODO.
 				}
 			}
-
 		} // namespace Model
 
 		void Path::load( const IO::Path & p_file )

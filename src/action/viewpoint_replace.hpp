@@ -25,6 +25,7 @@ namespace VTX
 			{
 				_viewpoint.setPosition( _position );
 				_viewpoint.setRotation( _rotation );
+				_viewpoint.getPathPtr()->refreshAllDurations();
 			}
 
 		  private:
