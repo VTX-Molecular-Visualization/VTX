@@ -110,13 +110,14 @@ namespace VTX
 				{
 					// Compute total distance.
 					float totalDistance = 0.f;
-					for ( uint i = 0; i < _viewpoints.size() - 1; ++i )
+					uint  size			= (uint)glm::max<int>( (int)_viewpoints.size() - 1, 0 );
+					for ( uint i = 0; i < size; ++i )
 					{
 						totalDistance
 							+= glm::distance( _viewpoints[ i ]->getPosition(), _viewpoints[ i + 1u ]->getPosition() );
 					}
 
-					//
+					// Compute viewpoint durations.
 					for ( uint i = 1; i < _viewpoints.size(); ++i )
 					{
 						Viewpoint * const viewpoint = _viewpoints[ i ];
