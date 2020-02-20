@@ -59,7 +59,7 @@ namespace VTX
 
 		  private:
 			VectorViewpointPtr _viewpoints		  = VectorViewpointPtr();
-			DURATION_MODE	   _mode			  = DURATION_MODE::PATH;
+			DURATION_MODE	   _mode			  = DURATION_MODE::CONSTANT_SPEED;
 			float			   _duration		  = 10.f;
 			ViewpointPtr	   _selectedViewpoint = nullptr;
 

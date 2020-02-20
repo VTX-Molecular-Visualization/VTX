@@ -12,7 +12,7 @@ namespace VTX
 			float duration	 = path->getDuration();
 			uint  totalFrame = uint( VIDEO_FPS * duration );
 
-			if ( totalFrame == 0u )
+			if ( totalFrame == 0u || path->getViewpoints().size() < 2 )
 			{
 				VTX_WARNING( "Total time must be > 0" );
 				VTXApp::get().goToState( ID::State::VISUALIZATION );

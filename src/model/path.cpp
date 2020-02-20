@@ -41,6 +41,90 @@ namespace VTX
 			return data;
 		}
 
+		void Path::setSelected( const bool p_selected )
+		{
+			BaseModel::setSelected( p_selected );
+			if ( isSelected() )
+			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::Path>( this ) ); }
+			else
+			{
+				Generic::destroy( removeItem( ID::View::UI_PATH ) );
+			}
+		}
+
+		void Path::setSelectedViewpoint( Viewpoint * const p_viewpoint )
+		{
+			if ( _selectedViewpoint != nullptr ) { _selectedViewpoint->setSelected( false ); }
+			try
+			{
+				_selectedViewpoint = p_viewpoint;
+				_selectedViewpoint->setSelected( true );
+			}
+			catch ( const std::exception )
+			{
+				VTX_WARNING( "Failed to select viewpoint" );
+				_selectedViewpoint = nullptr;
+			}
+		}
+
+		void Path::resetSelectedViewpoint()
+		{
+			if ( _selectedViewpoint != nullptr )
+			{
+				_selectedViewpoint->setSelected( false );
+				_selectedViewpoint = nullptr;
+			}
+		}
+
+		void Path::refreshAllDurations()
+		{
+			// Force the first to 0.
+			if ( _viewpoints.size() > 0 ) { _viewpoints[ 0 ]->setDuration( 0.f ); }
+
+			// Set same duration for each viewpoint.
+			if ( _mode == DURATION_MODE::PATH )
+			{
+				float duration = 0.f;
+				if ( _viewpoints.size() >= 2 ) { duration = _duration / (float)( _viewpoints.size() - 1 ); }
+
+				for ( int i = 1; i < _viewpoints.size(); ++i )
+				{
+					Viewpoint * const viewpoint = _viewpoints[ i ];
+					viewpoint->setDuration( duration );
+				}
+			}
+			// Set the path duration from viewpoint durations.
+			else if ( _mode == DURATION_MODE::VIEWPOINT )
+			{
+				_duration = 0.f;
+				for ( int i = 1; i < _viewpoints.size(); ++i )
+				{
+					Viewpoint * const viewpoint = _viewpoints[ i ];
+					_duration += viewpoint->getDuration();
+				}
+			}
+			// Set viewport duration from path duration/distance.
+			else if ( _mode == DURATION_MODE::CONSTANT_SPEED )
+			{
+				// Compute total distance.
+				float totalDistance = 0.f;
+				for ( int i = 0; i < _viewpoints.size() - 1; ++i )
+				{
+					totalDistance
+						+= glm::distance( _viewpoints[ i ]->getPosition(), _viewpoints[ i + 1u ]->getPosition() );
+				}
+
+				//
+				for ( int i = 1; i < _viewpoints.size(); ++i )
+				{
+					Viewpoint * const viewpoint = _viewpoints[ i ];
+					float distance = glm::distance( _viewpoints[ i - 1 ]->getPosition(), viewpoint->getPosition() );
+					viewpoint->setDuration( _duration * distance / totalDistance );
+				}
+			}
+
+		} // namespace Model
+
 		void Path::load( const IO::Path & p_file )
 		{
 			VTX_INFO( "Importing view points from " + p_file.str() );
@@ -115,74 +199,6 @@ namespace VTX
 
 			file.close();
 		}
-
-		void Path::setSelected( const bool p_selected )
-		{
-			BaseModel::setSelected( p_selected );
-			if ( isSelected() )
-			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::Path>( this ) ); }
-			else
-			{
-				Generic::destroy( removeItem( ID::View::UI_PATH ) );
-			}
-		}
-
-		void Path::setSelectedViewpoint( Viewpoint * const p_viewpoint )
-		{
-			if ( _selectedViewpoint != nullptr ) { _selectedViewpoint->setSelected( false ); }
-			try
-			{
-				_selectedViewpoint = p_viewpoint;
-				_selectedViewpoint->setSelected( true );
-			}
-			catch ( const std::exception )
-			{
-				VTX_WARNING( "Failed to select viewpoint" );
-				_selectedViewpoint = nullptr;
-			}
-		}
-
-		void Path::resetSelectedViewpoint()
-		{
-			if ( _selectedViewpoint != nullptr )
-			{
-				_selectedViewpoint->setSelected( false );
-				_selectedViewpoint = nullptr;
-			}
-		}
-
-		void Path::refreshAllDurations()
-		{
-			// Force the first to 0.
-			if ( _viewpoints.size() > 0 ) { _viewpoints[ 0 ]->setDuration( 0.f ); }
-
-			// Set same duration for each viewpoint.
-			if ( _mode == DURATION_MODE::PATH )
-			{
-				float duration = 0.f;
-				if ( _viewpoints.size() >= 2 ) { duration = _duration / (float)( _viewpoints.size() - 1 ); }
-
-				for ( int i = 1; i < _viewpoints.size(); ++i )
-				{
-					Viewpoint * const viewpoint = _viewpoints[ i ];
-					viewpoint->setDuration( duration );
-				}
-			}
-			// Set the path duration from viewpoint durations.
-			else if ( _mode == DURATION_MODE::VIEWPOINT )
-			{
-				_duration = 0.f;
-				for ( int i = 1; i < _viewpoints.size(); ++i )
-				{
-					Viewpoint * const viewpoint = _viewpoints[ i ];
-					_duration += viewpoint->getDuration();
-				}
-			}
-			else if ( _mode == DURATION_MODE::CONSTANT_SPEED )
-			{
-			}
-
-		} // namespace Model
 
 	} // namespace Model
 } // namespace VTX

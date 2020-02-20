@@ -12,7 +12,7 @@ namespace VTX
 		{
 			_path = (Model::Path *)p_arg;
 
-			if ( _path->getDuration() == 0.f )
+			if ( _path->getDuration() == 0.f || _path->getViewpoints().size() < 2 )
 			{
 				VTXApp::get().goToState( ID::State::VISUALIZATION );
 				return;
