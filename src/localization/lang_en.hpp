@@ -83,7 +83,8 @@ namespace VTX
 			{ "View.Viewpoint", "Viewpoint" },
 			{ "View.Viewpoint.Add", "Add viewpoint" },
 			{ "View.Duration", "Duration" },
-			{ "View.DurationMode", "Mode" },
+			{ "View.DurationMode", "Speed mode" },
+			{ "View.InterpolationMode", "Smooth mode" },
 
 			// Enums.
 			{ "Enum.Theme.Light", "Light" },
@@ -108,6 +109,9 @@ namespace VTX
 			{ "Enum.DurationMode.Viewpoint", "Viewpoint duration" },
 			{ "Enum.DurationMode.Path", "Path duration" },
 			{ "Enum.DurationMode.ConstantSpeed", "Constant speed" },
+
+			{ "Enum.InterpolationMode.Linear", "Linear" },
+			{ "Enum.InterpolationMode.CatmullRom", "Catmull-rom" },
 		};
 
 	} // namespace Localization

@@ -20,23 +20,30 @@ namespace VTX
 
 		Model::Viewpoint Path::getInterpolatedViewpoint( float p_time ) const
 		{
-			float total	 = 0.f;
-			uint  offset = 0;
-
-			while ( total <= p_time && offset < _viewpoints.size() )
-			{
-				total += _viewpoints[ offset++ ]->getDuration();
-			}
-			offset--;
-
-			Viewpoint * const lhs	= _viewpoints[ offset - 1 ];
-			Viewpoint * const rhs	= _viewpoints[ offset < _viewpoints.size() ? offset : offset - 1 ];
-			float			  value = 1.f - ( ( total - p_time ) / _viewpoints[ offset ]->getDuration() );
-			value					= glm::min<float>( value, 1.f );
-
 			Viewpoint viewpoint( (Path * const)this );
-			viewpoint.setPosition( Util::Math::lerp( lhs->getPosition(), rhs->getPosition(), value ) );
-			viewpoint.setRotation( Util::Math::lerp( lhs->getRotation(), rhs->getRotation(), value ) );
+
+			if ( _modeInterpolation == INNTERPOLATION_MODE::LINEAR )
+			{
+				float total	 = 0.f;
+				uint  offset = 0;
+
+				while ( total <= p_time && offset < _viewpoints.size() )
+				{
+					total += _viewpoints[ offset++ ]->getDuration();
+				}
+				offset--;
+
+				Viewpoint * const lhs	= _viewpoints[ offset - 1 ];
+				Viewpoint * const rhs	= _viewpoints[ offset < _viewpoints.size() ? offset : offset - 1 ];
+				float			  value = 1.f - ( ( total - p_time ) / _viewpoints[ offset ]->getDuration() );
+				value					= glm::min<float>( value, 1.f );
+
+				viewpoint.setPosition( Util::Math::lerp( lhs->getPosition(), rhs->getPosition(), value ) );
+				viewpoint.setRotation( Util::Math::lerp( lhs->getRotation(), rhs->getRotation(), value ) );
+			}
+			else if ( _modeInterpolation == INNTERPOLATION_MODE::CATMULL_ROM )
+			{
+			}
 
 			return viewpoint;
 		}

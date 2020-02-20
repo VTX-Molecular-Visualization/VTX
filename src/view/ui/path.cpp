@@ -1,6 +1,7 @@
 #include "path.hpp"
 #include "action/path_change_duration.hpp"
 #include "action/path_change_duration_mode.hpp"
+#include "action/path_change_interpolation_mode.hpp"
 #include "action/path_play.hpp"
 #include "action/viewpoint_create.hpp"
 #include "vtx_app.hpp"
@@ -20,16 +21,27 @@ namespace VTX
 				{
 					ImGui::Text( "Viewpoints: %d", _getModel().getViewpoints().size() );
 
-					const char * modes[] = {
+					const char * durationModes[] = {
 						LOCALE( "Enum.DurationMode.ConstantSpeed" ),
 						LOCALE( "Enum.DurationMode.Path" ),
 						LOCALE( "Enum.DurationMode.Viewpoint" ),
 					};
-					int mode = (int)_getModel().getDurationMode();
-					if ( ImGui::Combo( LOCALE( "View.DurationMode" ), &mode, modes, 3 ) )
+					int durationMode = (int)_getModel().getDurationMode();
+					if ( ImGui::Combo( LOCALE( "View.DurationMode" ), &durationMode, durationModes, 3 ) )
 					{
-						VTXApp::get().action(
-							new Action::PathChangeDurationMode( _getModel(), (Model::Path::DURATION_MODE)mode ) );
+						VTXApp::get().action( new Action::PathChangeDurationMode(
+							_getModel(), (Model::Path::DURATION_MODE)durationMode ) );
+					}
+
+					const char * interpolationModes[] = {
+						LOCALE( "Enum.InterpolationMode.Linear" ),
+						LOCALE( "Enum.InterpolationMode.CatmullRom" ),
+					};
+					int interpolationMode = (int)_getModel().getInterpolationMode();
+					if ( ImGui::Combo( LOCALE( "View.InterpolationMode" ), &interpolationMode, interpolationModes, 2 ) )
+					{
+						VTXApp::get().action( new Action::PathChangeInterpolationMode(
+							_getModel(), (Model::Path::INNTERPOLATION_MODE)interpolationMode ) );
 					}
 
 					if ( _getModel().getDurationMode() != Model::Path::DURATION_MODE::VIEWPOINT )

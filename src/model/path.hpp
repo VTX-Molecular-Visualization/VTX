@@ -54,7 +54,7 @@ namespace VTX
 			inline DURATION_MODE	   getDurationMode() const { return _modeDuration; }
 			inline void				   setDurationMode( const DURATION_MODE p_mode ) { _modeDuration = p_mode; }
 			inline INNTERPOLATION_MODE getInterpolationMode() const { return _modeInterpolation; }
-			inline void		 setInterpolationnMode( const INNTERPOLATION_MODE p_mode ) { _modeInterpolation = p_mode; }
+			inline void		 setInterpolationMode( const INNTERPOLATION_MODE p_mode ) { _modeInterpolation = p_mode; }
 			void			 refreshAllDurations();
 			Model::Viewpoint getInterpolatedViewpoint( float p_time ) const;
 
