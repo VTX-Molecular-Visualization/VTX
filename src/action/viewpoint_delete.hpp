@@ -20,10 +20,11 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				_viewpoint.getPathPtr()->resetSelectedViewpoint();
-				_viewpoint.getPathPtr()->removeViewpoint( &_viewpoint );
+				Model::Path * const path = _viewpoint.getPathPtr();
+				path->resetSelectedViewpoint();
+				path->removeViewpoint( &_viewpoint );
+				path->refreshAllDurations();
 				Generic::destroy<Model::Viewpoint>( &_viewpoint );
-				_viewpoint.getPathPtr()->refreshAllDurations();
 			}
 
 		  private:
