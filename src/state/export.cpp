@@ -30,11 +30,9 @@ namespace VTX
 			chrono.start();
 			for ( uint frame = 0; frame < totalFrame; ++frame )
 			{
-				float										 time = (float)frame / VIDEO_FPS;
-				Model::Viewpoint::ViewpointInterpolationData data = path->getCurrentViewpointInterpolationData( time );
-				VTXApp::get().getScene().getCamera().set(
-					Util::Math::lerp( data.positionLhs, data.positionRhs, data.value ),
-					Util::Math::lerp( data.rotationLhs, data.rotationRhs, data.value ) );
+				float			 time	   = (float)frame / VIDEO_FPS;
+				Model::Viewpoint viewpoint = path->getInterpolatedViewpoint( time );
+				VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
 
 				// Update renderer.
 				VTXApp::get().getUI().draw();

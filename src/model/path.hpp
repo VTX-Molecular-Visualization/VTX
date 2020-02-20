@@ -54,9 +54,9 @@ namespace VTX
 			inline DURATION_MODE	   getDurationMode() const { return _modeDuration; }
 			inline void				   setDurationMode( const DURATION_MODE p_mode ) { _modeDuration = p_mode; }
 			inline INNTERPOLATION_MODE getInterpolationMode() const { return _modeInterpolation; }
-			inline void setInterpolationnMode( const INNTERPOLATION_MODE p_mode ) { _modeInterpolation = p_mode; }
-			void		refreshAllDurations();
-			Viewpoint::ViewpointInterpolationData getCurrentViewpointInterpolationData( float p_time ) const;
+			inline void		 setInterpolationnMode( const INNTERPOLATION_MODE p_mode ) { _modeInterpolation = p_mode; }
+			void			 refreshAllDurations();
+			Model::Viewpoint getInterpolatedViewpoint( float p_time ) const;
 
 			// TODO: redo implementation.
 			virtual void load( const IO::Path & ) override;
@@ -71,8 +71,7 @@ namespace VTX
 			INNTERPOLATION_MODE _modeInterpolation = INNTERPOLATION_MODE::LINEAR;
 			float				_duration		   = PATH_DEFAULT_DURATION;
 			ViewpointPtr		_selectedViewpoint = nullptr;
-
-		}; // namespace Camera
-	}	   // namespace Model
+		};
+	} // namespace Model
 } // namespace VTX
 #endif

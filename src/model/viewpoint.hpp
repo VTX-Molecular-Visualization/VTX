@@ -19,24 +19,7 @@ namespace VTX
 		  public:
 			static uint COUNTER;
 
-			struct ViewpointInterpolationData
-			{
-				explicit ViewpointInterpolationData( const Vec3f & p_positionLhs,
-													 const Quatf & p_rotationLhs,
-													 const Vec3f & p_positionRhs,
-													 const Quatf & p_rotationRhs,
-													 const float   p_value ) :
-					positionLhs( p_positionLhs ),
-					rotationLhs( p_rotationLhs ), positionRhs( p_positionRhs ), rotationRhs( p_rotationRhs ),
-					value( p_value )
-				{
-				}
-				const Vec3f & positionLhs;
-				const Quatf & rotationLhs;
-				const Vec3f & positionRhs;
-				const Quatf & rotationRhs;
-				const float	  value;
-			};
+			explicit Viewpoint( Path * const p_path ) : _path( p_path ) {}
 
 			explicit Viewpoint( Path * const p_path, const Vec3f & p_position, const Quatf & p_rotation ) :
 				_path( p_path ), _position( p_position ), _rotation( p_rotation )

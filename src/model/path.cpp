@@ -18,7 +18,7 @@ namespace VTX
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::PathList>( this ) );
 		}
 
-		Viewpoint::ViewpointInterpolationData Path::getCurrentViewpointInterpolationData( float p_time ) const
+		Model::Viewpoint Path::getInterpolatedViewpoint( float p_time ) const
 		{
 			float total	 = 0.f;
 			uint  offset = 0;
@@ -29,16 +29,16 @@ namespace VTX
 			}
 			offset--;
 
-			float value = 1.f - ( ( total - p_time ) / _viewpoints[ offset ]->getDuration() );
+			Viewpoint * const lhs	= _viewpoints[ offset - 1 ];
+			Viewpoint * const rhs	= _viewpoints[ offset < _viewpoints.size() ? offset : offset - 1 ];
+			float			  value = 1.f - ( ( total - p_time ) / _viewpoints[ offset ]->getDuration() );
+			value					= glm::min<float>( value, 1.f );
 
-			Viewpoint::ViewpointInterpolationData data = Viewpoint::ViewpointInterpolationData(
-				_viewpoints[ offset - 1 ]->getPosition(),
-				_viewpoints[ offset - 1 ]->getRotation(),
-				_viewpoints[ offset < _viewpoints.size() ? offset : offset - 1 ]->getPosition(),
-				_viewpoints[ offset < _viewpoints.size() ? offset : offset - 1 ]->getRotation(),
-				glm::min<float>( value, 1.f ) );
+			Viewpoint viewpoint( (Path * const)this );
+			viewpoint.setPosition( Util::Math::lerp( lhs->getPosition(), rhs->getPosition(), value ) );
+			viewpoint.setRotation( Util::Math::lerp( lhs->getRotation(), rhs->getRotation(), value ) );
 
-			return data;
+			return viewpoint;
 		}
 
 		void Path::setSelected( const bool p_selected )

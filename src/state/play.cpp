@@ -51,10 +51,8 @@ namespace VTX
 
 		void Play::_setCamera() const
 		{
-			Model::Viewpoint::ViewpointInterpolationData data = _path->getCurrentViewpointInterpolationData( _time );
-			VTXApp::get().getScene().getCamera().set(
-				Util::Math::lerp( data.positionLhs, data.positionRhs, data.value ),
-				Util::Math::lerp( data.rotationLhs, data.rotationRhs, data.value ) );
+			Model::Viewpoint viewpoint = _path->getInterpolatedViewpoint( _time );
+			VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
 		}
 
 	} // namespace State
