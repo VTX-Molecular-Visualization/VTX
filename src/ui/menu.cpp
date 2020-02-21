@@ -281,7 +281,6 @@ namespace VTX
 				ImGui::PushItemWidth( 100 );
 				if ( ImGui::InputText( LOCALE( "MainMenu.OpenAPI" ), name, IM_ARRAYSIZE( name ) ) )
 				{
-					VTX_DEBUG( name );
 					std::string id = std::string( name );
 					if ( id.size() == 4 ) { VTXApp::get().action( new Action::OpenApi( id ) ); }
 				}
