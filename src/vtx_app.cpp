@@ -44,10 +44,10 @@ namespace VTX
 		_ui->draw();
 
 #ifdef _DEBUG
-		//_stateMachine->goToState( ID::State::VISUALIZATION );
+		_stateMachine->goToState( ID::State::VISUALIZATION );
 		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "173D.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOAD, &std::string( DATA_DIR + "4v6x.mmtf" ) );
-		_stateMachine->goToState( ID::State::LOAD, &std::string( DATA_DIR + "6LU7.mmtf" ) );
+		//_stateMachine->goToState( ID::State::LOAD, &std::string( DATA_DIR + "6LU7.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "3j3q.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOADING, &std::string( DATA_DIR + "r2d2.obj" ) );
 #else

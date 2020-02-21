@@ -17,6 +17,7 @@
 #include "action/change_translation_speed.hpp"
 #include "action/new.hpp"
 #include "action/open.hpp"
+#include "action/open_api.hpp"
 #include "action/path_export.hpp"
 #include "action/path_export_video.hpp"
 #include "action/path_import.hpp"
@@ -272,8 +273,20 @@ namespace VTX
 				}
 
 				// FPS.
-				ImGuiIO & io = ImGui::GetIO();
+				const ImGuiIO & io = ImGui::GetIO();
 				ImGui::Text( "FPS: %.0f", io.Framerate );
+
+				// Open from API.
+				static char name[ 5 ] = "";
+				ImGui::PushItemWidth( 100 );
+				if ( ImGui::InputText( LOCALE( "MainMenu.OpenAPI" ), name, IM_ARRAYSIZE( name ) ) )
+				{
+					VTX_DEBUG( name );
+					std::string id = std::string( name );
+					if ( id.size() == 4 ) { VTXApp::get().action( new Action::OpenApi( id ) ); }
+				}
+
+				ImGui::PopItemWidth();
 
 				// Undo/redo.
 				bool popItem = false;
@@ -282,7 +295,7 @@ namespace VTX
 					ImGui::PushItemFlag( ImGuiItemFlags_Disabled, true );
 					popItem = true;
 				}
-				if ( ImGui::Button( "Undo" ) ) { VTXApp::get().undo(); }
+				if ( ImGui::Button( LOCALE( "MainMenu.Undo" ) ) ) { VTXApp::get().undo(); }
 				if ( popItem ) { ImGui::PopItemFlag(); }
 
 				popItem = false;
@@ -291,7 +304,7 @@ namespace VTX
 					ImGui::PushItemFlag( ImGuiItemFlags_Disabled, true );
 					popItem = true;
 				}
-				if ( ImGui::Button( "Redo" ) ) { VTXApp::get().redo(); }
+				if ( ImGui::Button( LOCALE( "MainMenu.Redo" ) ) ) { VTXApp::get().redo(); }
 				if ( popItem ) { ImGui::PopItemFlag(); }
 
 				ImGui::PopStyleVar();
