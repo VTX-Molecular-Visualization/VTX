@@ -88,16 +88,16 @@ namespace VTX
 				GLuint shaderId = getShader( name );
 				if ( shaderId == GL_INVALID_INDEX )
 				{
-					shaderId			  = glCreateShader( (int)type );
-					const std::string str = IO::Path::read( SHADER_DIR + p_path.str() );
-
-					if ( str.empty() )
+					shaderId			   = glCreateShader( (int)type );
+					IO::Path		  path = IO::Path( SHADER_DIR + p_path.str() );
+					const std::string src  = path.read();
+					if ( src.empty() )
 					{
 						glDeleteShader( shaderId );
 						return GL_INVALID_INDEX;
 					}
 
-					const GLchar * shaderCode = str.c_str();
+					const GLchar * shaderCode = src.c_str();
 					glShaderSource( shaderId, 1, &shaderCode, 0 );
 					glCompileShader( shaderId );
 					GLint compiled;
@@ -140,5 +140,5 @@ namespace VTX
 				return std::string( log.begin(), log.end() );
 			}
 		} // namespace GLSL
-	} // namespace Renderer
+	}	  // namespace Renderer
 } // namespace VTX

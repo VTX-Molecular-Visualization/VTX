@@ -109,6 +109,9 @@ namespace VTX
 	const std::string PATHS_DIR	   = "../paths/";
 	const std::string VIDEO_DIR	   = "../videos/";
 
+	// API.
+	const std::string API_URL_MMTF = "http://mmtf.rcsb.org/v1.0/full/";
+
 	// Log.
 	inline void	  VTX_DEBUG( const std::string & p_str ) { VTX::Util::Logger::logDebug( p_str ); }
 	inline void	  VTX_INFO( const std::string & p_str ) { VTX::Util::Logger::logInfo( p_str ); }

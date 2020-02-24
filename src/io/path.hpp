@@ -42,7 +42,9 @@ namespace VTX
 			friend std::ostream & operator<<( std::ostream &, const Path & );
 			friend std::istream & operator>>( std::istream &, Path & );
 
-			static std::string read( const Path & );
+			virtual std::string read() const;
+			// TODO.
+			virtual void write( const std::string & ) {};
 
 		  private:
 			std::string _path = "";

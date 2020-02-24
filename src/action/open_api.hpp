@@ -5,15 +5,12 @@
 #pragma once
 #endif
 
-#pragma warning( push, 0 )
-//#include <httplib.h>
-#pragma warning( pop )
 #include "base_action.hpp"
+#include "io/path_fake.hpp"
 #include "model/molecule.hpp"
 #include "open.hpp"
 #include "vtx_app.hpp"
-
-#define CPPHTTPLIB_ZLIB_SUPPORT
+#include <curl/curl.h>
 
 namespace VTX
 {
@@ -28,53 +25,46 @@ namespace VTX
 			{
 				try
 				{
-					std::string url = "mmtf.rcsb.org";
-					std::string body;
+					std::string url = API_URL_MMTF + _id;
 					VTX_DEBUG( url );
-					//
-					httplib::Headers headers
-						= { { "Accept-Encoding", "gzip, deflate" },
-							{ "Connection", "keep-alive" },
-							{ "Accept",
-							  "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;"
-							  "q=0.8,application/signed-exchange;v=b3;q=0.9" } };
-					//
-					httplib::Client					   cli( url );
-					std::shared_ptr<httplib::Response> response
-						= cli.Get( ( "/v1.0/full/" + _id ).c_str(),
-								   headers,
-								   /*
-								   [ & ]( const httplib::Response & p_response ) {
-									   VTX_DEBUG( "HANDLER" );
-									   VTX_DEBUG( std::to_string( p_response.status ) );
-									   VTX_DEBUG( std::to_string( p_response.content_length ) );
-									   VTX_DEBUG( p_response.body );
-									   VTX_DEBUG( body );
-									   return true;
-								   },
-								   */
-								   [ & ]( const char * data, uint64_t len ) {
-									   VTX_DEBUG( "DATA" );
-									   body.append( data, len );
-									   VTX_DEBUG( data );
-									   VTX_DEBUG( std::to_string( len ) );
-									   return true;
-								   },
-								   []( uint64_t len, uint64_t total ) {
-									   VTX_DEBUG( "PROGRESS" );
-									   VTX_DEBUG( std::to_string( (int)( ( len / total ) * 100 ) ) + "%" );
-									   return true; // return 'false' if you want to cancel the request.
-								   } );
+					CURL *		curl;
+					CURLcode	result;
+					std::string buffer;
+					curl_global_init( CURL_GLOBAL_DEFAULT );
+					curl = curl_easy_init();
+					if ( curl )
+					{
+						curl_easy_setopt( curl, CURLOPT_URL, url.c_str() );
+						curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, OpenApi::_writeCallback );
+						curl_easy_setopt( curl, CURLOPT_WRITEDATA, &buffer );
+						result = curl_easy_perform( curl );
+						VTX_DEBUG( std::to_string( result ) );
+						if ( result == CURLE_OK )
+						{
+							long code;
+							curl_easy_getinfo( curl, CURLINFO_RESPONSE_CODE, &code );
 
-					if ( response == nullptr ) { VTX_DEBUG( "nullptr" ); }
+							if ( code == 200 )
+							{
+								IO::PathFake path = IO::PathFake( _id + ".mmtf" );
+								VTXApp::get().goToState( ID::State::LOAD, (void *)&path );
+							}
+							else
+							{
+								VTX_ERROR( "Failed to download file" );
+							}
+						}
+						else
+						{
+							VTX_ERROR( "Failed to download file" );
+						}
+						curl_easy_cleanup( curl );
+					}
 					else
 					{
-						VTX_DEBUG( "OK" );
-						VTX_DEBUG( std::to_string( response->status ) );
-						VTX_DEBUG( response->body );
+						VTX_ERROR( "Failed to download file" );
 					}
-					VTX_DEBUG( body );
-					// VTXApp::get().goToState( ID::State::LOAD, (void *)&_id );
+					curl_global_cleanup();
 				}
 				catch ( const std::exception p_e )
 				{
@@ -84,6 +74,13 @@ namespace VTX
 
 		  private:
 			const std::string & _id;
+
+			static size_t _writeCallback( void * p_content, size_t p_size, size_t p_nmemb, void * p_userp )
+			{
+				( (std::string *)p_userp )->append( (char *)p_content, p_size * p_nmemb );
+				return p_size * p_nmemb;
+			}
+
 		}; // namespace Action
 	}	   // namespace Action
 } // namespace VTX

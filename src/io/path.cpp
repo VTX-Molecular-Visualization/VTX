@@ -81,13 +81,13 @@ namespace VTX
 			}
 		}
 
-		std::string Path::read( const Path & p_path )
+		std::string Path::read() const
 		{
-			std::ifstream ifs( p_path, std::ifstream::in );
+			std::ifstream ifs( _path, std::ifstream::in );
 
 			if ( ifs.is_open() == false )
 			{
-				VTX_ERROR( "Could not open file: " + p_path.str() );
+				VTX_ERROR( "Could not open file: " + _path );
 				return "";
 			}
 

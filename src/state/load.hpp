@@ -20,7 +20,7 @@ namespace VTX
 			virtual void		exit() override;
 
 		  private:
-			void _loadFile( std::string * ) const;
+			void _loadFile( const IO::Path & ) const;
 		};
 	} // namespace State
 } // namespace VTX

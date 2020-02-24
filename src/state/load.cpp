@@ -1,4 +1,5 @@
 #include "load.hpp"
+#include "io/path_fake.hpp"
 #include "io/reader/mmtf.hpp"
 #include "io/reader/obj.hpp"
 #include "model/molecule.hpp"
@@ -12,35 +13,48 @@ namespace VTX
 	{
 		void Load::enter( void * const p_arg )
 		{
-			_loadFile( (std::string *)p_arg );
+			IO::Path * const path = (IO::Path *)p_arg;
+			_loadFile( *path );
 
 			VTXApp::get().goToState( ID::State::VISUALIZATION );
 		}
 
-		void Load::_loadFile( std::string * p_path ) const
+		void Load::_loadFile( const IO::Path & p_path ) const
 		{
 			Model::Molecule * molecule = new Model::Molecule();
 			Object3D::Scene * scene	   = &( VTXApp::get().getScene() );
 
-			// VTXApp::get().addThread( new std::thread( [ molecule, scene ] {
-
-			const IO::Path path = IO::Path( *p_path );
-
 			IO::Reader::BaseReader<Model::Molecule> * reader = nullptr;
-			if ( path.getExtension() == "mmtf" ) { reader = new IO::Reader::MMTF(); }
-			else if ( path.getExtension() == "obj" )
+			if ( p_path.getExtension() == "mmtf" ) { reader = new IO::Reader::MMTF(); }
+			else if ( p_path.getExtension() == "obj" )
 			{
 				reader = new IO::Reader::OBJ();
 			}
 
-			if ( reader != nullptr && reader->readFile( path, *molecule ) )
+			const IO::PathFake * fake = dynamic_cast<const IO::PathFake *>( &p_path );
+
+			if ( fake )
 			{
-				molecule->init();
-				molecule->setSelected( true );
-				molecule->print();
-				// molecule->getTransform().rotate( glm::radians( 90.f ), VEC3F_Z );
-				scene->addMolecule( molecule );
+				if ( reader == nullptr || reader->readBuffer( fake->read(), *molecule ) == false )
+				{
+					delete reader;
+					return;
+				}
 			}
+			else
+			{
+				if ( reader == nullptr || reader->readFile( p_path, *molecule ) == false )
+				{
+					delete reader;
+					return;
+				}
+			}
+
+			molecule->init();
+			molecule->setSelected( true );
+			molecule->print();
+			// molecule->getTransform().rotate( glm::radians( 90.f ), VEC3F_Z );
+			scene->addMolecule( molecule );
 
 			// TODO: move that in scene construtor?
 			Model::Path * p = Generic::create<Model::Path>();

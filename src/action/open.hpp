@@ -16,12 +16,12 @@ namespace VTX
 		class Open : public BaseAction
 		{
 		  public:
-			explicit Open( const std::string & p_path ) : _path( p_path ) {}
+			explicit Open( const IO::Path & p_path ) : _path( p_path ) {}
 
 			virtual void execute() override { VTXApp::get().goToState( ID::State::LOAD, (void *)&_path ); };
 
 		  private:
-			const std::string & _path;
+			const IO::Path & _path;
 		};
 	} // namespace Action
 } // namespace VTX
