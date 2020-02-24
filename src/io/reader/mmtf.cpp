@@ -33,7 +33,7 @@ namespace VTX
 			bool MMTF::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule )
 			{
 				mmtf::StructureData data;
-				mmtf::decodeFromBuffer( data, p_buffer.c_str(), sizeof( char ) );
+				mmtf::decodeFromBuffer( data, p_buffer.c_str(), p_buffer.size() );
 
 				return _readStructureData( data, p_molecule );
 			}

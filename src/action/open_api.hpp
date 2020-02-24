@@ -37,8 +37,8 @@ namespace VTX
 						curl_easy_setopt( curl, CURLOPT_URL, url.c_str() );
 						curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, OpenApi::_writeCallback );
 						curl_easy_setopt( curl, CURLOPT_WRITEDATA, &buffer );
+						curl_easy_setopt( curl, CURLOPT_ACCEPT_ENCODING, "gzip" );
 						result = curl_easy_perform( curl );
-						VTX_DEBUG( std::to_string( result ) );
 						if ( result == CURLE_OK )
 						{
 							long code;
@@ -47,6 +47,7 @@ namespace VTX
 							if ( code == 200 )
 							{
 								IO::PathFake path = IO::PathFake( _id + ".mmtf" );
+								path.write( buffer );
 								VTXApp::get().goToState( ID::State::LOAD, (void *)&path );
 							}
 							else
