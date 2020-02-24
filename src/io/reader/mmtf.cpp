@@ -1,9 +1,6 @@
 #include "mmtf.hpp"
 #include "define.hpp"
 #include "exception.hpp"
-#pragma warning( push, 0 )
-#include <mmtf/mmtf.hpp>
-#pragma warning( pop )
 #include "util/color.hpp"
 #include "util/logger.hpp"
 #include <glm/gtc/type_ptr.hpp>
@@ -16,11 +13,9 @@ namespace VTX
 		{
 			bool MMTF::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
-				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
-
-				// Decode MMTF.
 				mmtf::StructureData data;
 
+				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
 				try
 				{
 					mmtf::decodeFromFile( data, p_path.c_str() );
@@ -32,19 +27,32 @@ namespace VTX
 					return false;
 				}
 
+				return _readStructureData( data, p_molecule );
+			}
+
+			bool MMTF::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule )
+			{
+				mmtf::StructureData data;
+				mmtf::decodeFromBuffer( data, p_buffer.c_str(), sizeof( char ) );
+
+				return _readStructureData( data, p_molecule );
+			}
+
+			bool MMTF::_readStructureData( const mmtf::StructureData & p_data, Model::Molecule & p_molecule )
+			{
 				// Check for consistency.
-				if ( data.hasConsistentData( true ) ) { VTX_INFO( "File loaded" ); }
+				if ( p_data.hasConsistentData( true ) ) { VTX_INFO( "File loaded" ); }
 				else
 				{
-					VTX_ERROR( "Inconsistent file: " + p_path.getFileName() );
+					VTX_ERROR( "Inconsistent file" );
 					return false;
 				}
 
-				VTX_INFO( std::to_string( data.numModels ) + " models found" );
+				VTX_INFO( std::to_string( p_data.numModels ) + " models found" );
 				VTX_INFO( "Creating models..." );
 
 				// Set molecule properties.
-				p_molecule.setName( data.title );
+				p_molecule.setName( p_data.title );
 
 				float			  x, y, z;
 				Math::AABB &	  aabb			   = p_molecule.AABB();
@@ -55,11 +63,11 @@ namespace VTX
 				uint			  bondGlobalIdx	   = 0;
 
 				// Reserve memory for vectors to avoid pointer loss.
-				p_molecule.getChains().resize( data.numChains );
-				p_molecule.getResidues().resize( data.numGroups );
-				p_molecule.getAtoms().resize( data.numAtoms );
+				p_molecule.getChains().resize( p_data.numChains );
+				p_molecule.getResidues().resize( p_data.numGroups );
+				p_molecule.getAtoms().resize( p_data.numAtoms );
 
-				uint chainCount = data.chainsPerModel[ 0 ];
+				uint chainCount = p_data.chainsPerModel[ 0 ];
 #ifdef _DEBUG
 				p_molecule.chainCount = chainCount;
 #endif
@@ -70,13 +78,13 @@ namespace VTX
 					Model::Chain & chain = p_molecule.getChain( chainGlobalIdx );
 					chain.setMoleculePtr( &p_molecule );
 					chain.setId( chainGlobalIdx );
-					chain.setName( data.chainNameList[ chainGlobalIdx ] );
+					chain.setName( p_data.chainNameList[ chainGlobalIdx ] );
 					chain.setIdFirstResidue( residueGlobalIdx );
-					chain.setResidueCount( data.groupsPerChain[ chainGlobalIdx ] );
+					chain.setResidueCount( p_data.groupsPerChain[ chainGlobalIdx ] );
 					chain.setColor( Util::Color::randomPastelColor() );
 
 					// For each residue in the chain.
-					uint residueCount = data.groupsPerChain[ chainGlobalIdx ];
+					uint residueCount = p_data.groupsPerChain[ chainGlobalIdx ];
 					if ( residueCount == 0 ) { VTX_WARNING( "No residues" ); }
 #ifdef _DEBUG
 					p_molecule.residueCount += residueCount;
@@ -84,7 +92,7 @@ namespace VTX
 					for ( uint residueLocalIdx = 0; residueLocalIdx < residueCount;
 						  ++residueLocalIdx, ++residueGlobalIdx )
 					{
-						const mmtf::GroupType & group = data.groupList[ data.groupTypeList[ residueGlobalIdx ] ];
+						const mmtf::GroupType & group = p_data.groupList[ p_data.groupTypeList[ residueGlobalIdx ] ];
 
 						// New residue.
 						Model::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
@@ -124,9 +132,9 @@ namespace VTX
 							const float * const color = Model::Atom::SYMBOL_COLOR[ (int)atom.getSymbol() ];
 							atom.setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
 
-							x = data.xCoordList[ atomGlobalIdx ];
-							y = data.yCoordList[ atomGlobalIdx ];
-							z = data.zCoordList[ atomGlobalIdx ];
+							x = p_data.xCoordList[ atomGlobalIdx ];
+							y = p_data.yCoordList[ atomGlobalIdx ];
+							z = p_data.zCoordList[ atomGlobalIdx ];
 
 							Vec3f & atomPosition = p_molecule.addAtomPosition( Vec3f( x, y, z ) );
 							p_molecule.addAtomRadius( atom.getVdwRadius() );
@@ -149,35 +157,37 @@ namespace VTX
 				}
 
 				// Add all atom's bonds.
-				p_molecule.addBonds( data.bondAtomList );
+				p_molecule.addBonds( p_data.bondAtomList );
 
 #ifdef _DEBUG
-				p_molecule.bondCount += (uint)data.bondAtomList.size();
+				p_molecule.bondCount += (uint)p_data.bondAtomList.size();
 #endif
 
 #ifdef _DEBUG
 				if ( p_molecule.getChainCount() != p_molecule.chainCount
-					 || p_molecule.getChainCount() != data.numChains )
+					 || p_molecule.getChainCount() != p_data.numChains )
 				{
 					VTX_ERROR( "Chain count error: " + std::to_string( p_molecule.getChainCount() ) + " / "
-							   + std::to_string( p_molecule.chainCount ) + " / " + std::to_string( data.numChains ) );
+							   + std::to_string( p_molecule.chainCount ) + " / " + std::to_string( p_data.numChains ) );
 				}
 				if ( p_molecule.getResidueCount() != p_molecule.residueCount
-					 || p_molecule.getResidueCount() != data.numGroups )
+					 || p_molecule.getResidueCount() != p_data.numGroups )
 				{
 					VTX_ERROR( "Residue count error: " + std::to_string( p_molecule.getResidueCount() ) + " / "
-							   + std::to_string( p_molecule.residueCount ) + " / " + std::to_string( data.numGroups ) );
+							   + std::to_string( p_molecule.residueCount ) + " / "
+							   + std::to_string( p_data.numGroups ) );
 				}
-				if ( p_molecule.getAtomCount() != p_molecule.atomCount || p_molecule.getAtomCount() != data.numAtoms )
+				if ( p_molecule.getAtomCount() != p_molecule.atomCount || p_molecule.getAtomCount() != p_data.numAtoms )
 				{
 					VTX_ERROR( "Atom count error: " + std::to_string( p_molecule.getAtomCount() ) + " / "
-							   + std::to_string( p_molecule.atomCount ) + " / " + std::to_string( data.numAtoms ) );
+							   + std::to_string( p_molecule.atomCount ) + " / " + std::to_string( p_data.numAtoms ) );
 				}
 				if ( p_molecule.getBondCount() != p_molecule.bondCount
-					 || p_molecule.getBondCount() != data.numBonds * 2 )
+					 || p_molecule.getBondCount() != p_data.numBonds * 2 )
 				{
 					VTX_ERROR( "Bond count error: " + std::to_string( p_molecule.getBondCount() ) + " / "
-							   + std::to_string( p_molecule.bondCount ) + " / " + std::to_string( data.numBonds * 2 ) );
+							   + std::to_string( p_molecule.bondCount ) + " / "
+							   + std::to_string( p_data.numBonds * 2 ) );
 				}
 #endif
 

@@ -6,6 +6,10 @@
 #endif
 
 #include "base_reader.hpp"
+#pragma warning( push, 0 )
+#include <mmtf/mmtf.hpp>
+#pragma warning( pop )
+#include "model/molecule.hpp"
 
 namespace VTX
 {
@@ -13,10 +17,14 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			class MMTF : public BaseReader
+			class MMTF : public BaseReader<Model::Molecule>
 			{
 			  public:
 				virtual bool readFile( const Path &, Model::Molecule & ) override;
+				virtual bool readBuffer( const std::string &, Model::Molecule & ) override;
+
+			  private:
+				bool _readStructureData( const mmtf::StructureData &, Model::Molecule & );
 			};
 		} // namespace Reader
 	}	  // namespace IO

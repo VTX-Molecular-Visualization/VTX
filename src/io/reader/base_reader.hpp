@@ -6,7 +6,6 @@
 #endif
 
 #include "io/path.hpp"
-#include "model/molecule.hpp"
 
 namespace VTX
 {
@@ -14,10 +13,12 @@ namespace VTX
 	{
 		namespace Reader
 		{
+			template<typename T>
 			class BaseReader
 			{
 			  public:
-				virtual bool readFile( const Path &, Model::Molecule & ) = 0;
+				virtual bool readFile( const Path &, T & )			= 0;
+				virtual bool readBuffer( const std::string &, T & ) = 0;
 			};
 		} // namespace Reader
 	}	  // namespace IO

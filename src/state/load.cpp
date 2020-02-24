@@ -12,11 +12,6 @@ namespace VTX
 	{
 		void Load::enter( void * const p_arg )
 		{
-			// std::string * path = (std::string *)p_arg;
-			// while ( *path != "\n" )
-			//{
-			//_loadFile( path++ );
-			//}
 			_loadFile( (std::string *)p_arg );
 
 			VTXApp::get().goToState( ID::State::VISUALIZATION );
@@ -25,14 +20,13 @@ namespace VTX
 		void Load::_loadFile( std::string * p_path ) const
 		{
 			Model::Molecule * molecule = new Model::Molecule();
-			// Model::Molecule * molecule = Generic::FactoryInitializable<Model::Molecule>::create();
-			Object3D::Scene * scene = &( VTXApp::get().getScene() );
+			Object3D::Scene * scene	   = &( VTXApp::get().getScene() );
 
 			// VTXApp::get().addThread( new std::thread( [ molecule, scene ] {
 
 			const IO::Path path = IO::Path( *p_path );
 
-			IO::Reader::BaseReader * reader = nullptr;
+			IO::Reader::BaseReader<Model::Molecule> * reader = nullptr;
 			if ( path.getExtension() == "mmtf" ) { reader = new IO::Reader::MMTF(); }
 			else if ( path.getExtension() == "obj" )
 			{
