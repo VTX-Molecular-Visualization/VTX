@@ -10,7 +10,7 @@
 ### 2. Install VCPKG
     .\bootstrap-vcpkg.bat
 ### 3. Install project dependencies
-    .\vcpkg install sdl2:x64-windows gl3w:x64-windows glm:x64-windows msgpack:x64-windows assimp:x64-windows
+    .\vcpkg install sdl2:x64-windows gl3w:x64-windows glm:x64-windows msgpack:x64-windows assimp:x64-windows curl:x64-windows
 ### 4. Make solution
 Install Visual Studio 2019 latest version with C++ tools.  
 Run cmake_build_VS2019_x64.bat
