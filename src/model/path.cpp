@@ -22,27 +22,38 @@ namespace VTX
 		{
 			Viewpoint viewpoint( (Path * const)this );
 
+			// Find the 4 points.
+			uint  size	 = (uint)_viewpoints.size();
+			float total	 = 0.f;
+			uint  offset = 0;
+
+			// Find the next and previous points.
+			while ( total <= p_time && offset < size )
+			{
+				total += _viewpoints[ offset++ ]->getDuration();
+			}
+			offset--;
+
 			if ( _modeInterpolation == INNTERPOLATION_MODE::LINEAR )
 			{
-				float total	 = 0.f;
-				uint  offset = 0;
+				// Computes value.
+				Viewpoint * const p0	= _viewpoints[ offset - 1 ];
+				Viewpoint * const p1	= _viewpoints[ glm::min<uint>( size - 1, offset ) ];
+				float			  value = 1.f - ( ( total - p_time ) / p1->getDuration() );
 
-				while ( total <= p_time && offset < _viewpoints.size() )
-				{
-					total += _viewpoints[ offset++ ]->getDuration();
-				}
-				offset--;
-
-				Viewpoint * const lhs	= _viewpoints[ offset - 1 ];
-				Viewpoint * const rhs	= _viewpoints[ offset < _viewpoints.size() ? offset : offset - 1 ];
-				float			  value = 1.f - ( ( total - p_time ) / _viewpoints[ offset ]->getDuration() );
-				value					= glm::min<float>( value, 1.f );
-
-				viewpoint.setPosition( Util::Math::lerp( lhs->getPosition(), rhs->getPosition(), value ) );
-				viewpoint.setRotation( Util::Math::lerp( lhs->getRotation(), rhs->getRotation(), value ) );
+				// Lerp.
+				viewpoint.setPosition( Util::Math::lerp( p0->getPosition(), p1->getPosition(), value ) );
+				viewpoint.setRotation( Util::Math::lerp( p0->getRotation(), p1->getRotation(), value ) );
 			}
 			else if ( _modeInterpolation == INNTERPOLATION_MODE::CATMULL_ROM )
 			{
+				// The constant that defines Catmull-rom type (centripetal).
+				const float alpha = 0.5f;
+
+				Viewpoint * const p0 = _viewpoints[ glm::max<uint>( 0, offset - 2 ) ];
+				Viewpoint * const p1 = _viewpoints[ offset - 1 ];
+				Viewpoint * const p2 = _viewpoints[ glm::min<uint>( size - 1, offset ) ];
+				Viewpoint * const p3 = _viewpoints[ glm::min<uint>( size - 1, offset + 1 ) ];
 			}
 
 			return viewpoint;
