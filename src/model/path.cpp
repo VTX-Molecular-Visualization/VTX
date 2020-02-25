@@ -38,7 +38,7 @@ namespace VTX
 			{
 				// Computes value.
 				Viewpoint * const p0	= _viewpoints[ offset - 1 ];
-				Viewpoint * const p1	= _viewpoints[ glm::min<uint>( size - 1, offset ) ];
+				Viewpoint * const p1	= _viewpoints[ glm::min<int>( (int)size - 1, offset ) ];
 				float			  value = 1.f - ( ( total - p_time ) / p1->getDuration() );
 
 				// Lerp.
@@ -47,13 +47,17 @@ namespace VTX
 			}
 			else if ( _modeInterpolation == INNTERPOLATION_MODE::CATMULL_ROM )
 			{
-				// The constant that defines Catmull-rom type (centripetal).
-				const float alpha = 0.5f;
+				VTX_DEBUG( std::to_string( glm::max<int>( 0, (int)offset - 2 ) ) );
+				Viewpoint * const p0	= _viewpoints[ glm::max<int>( 0, (int)offset - 2 ) ];
+				Viewpoint * const p1	= _viewpoints[ offset - 1 ];
+				Viewpoint * const p2	= _viewpoints[ glm::min<int>( (int)size - 1, offset ) ];
+				Viewpoint * const p3	= _viewpoints[ glm::min<int>( (int)size - 1, offset + 1 ) ];
+				float			  value = 1.f - ( ( total - p_time ) / p2->getDuration() );
 
-				Viewpoint * const p0 = _viewpoints[ glm::max<uint>( 0, offset - 2 ) ];
-				Viewpoint * const p1 = _viewpoints[ offset - 1 ];
-				Viewpoint * const p2 = _viewpoints[ glm::min<uint>( size - 1, offset ) ];
-				Viewpoint * const p3 = _viewpoints[ glm::min<uint>( size - 1, offset + 1 ) ];
+				viewpoint.setPosition( Util::Math::catmullRomInterpolation(
+					p0->getPosition(), p1->getPosition(), p2->getPosition(), p3->getPosition(), value ) );
+				viewpoint.setRotation( Util::Math::catmullRomInterpolation(
+					p0->getRotation(), p1->getRotation(), p2->getRotation(), p3->getRotation(), value ) );
 			}
 
 			return viewpoint;
@@ -124,30 +128,29 @@ namespace VTX
 			// Set viewport duration from path duration/distance.
 			else if ( _modeDuration == DURATION_MODE::CONSTANT_SPEED )
 			{
-				if ( _modeInterpolation == INNTERPOLATION_MODE::LINEAR )
+				// if ( _modeInterpolation == INNTERPOLATION_MODE::LINEAR )
+				//{
+				// Compute total distance.
+				float totalDistance = 0.f;
+				uint  size			= (uint)glm::max<int>( (int)_viewpoints.size() - 1, 0 );
+				for ( uint i = 0; i < size; ++i )
 				{
-					// Compute total distance.
-					float totalDistance = 0.f;
-					uint  size			= (uint)glm::max<int>( (int)_viewpoints.size() - 1, 0 );
-					for ( uint i = 0; i < size; ++i )
-					{
-						totalDistance
-							+= glm::distance( _viewpoints[ i ]->getPosition(), _viewpoints[ i + 1u ]->getPosition() );
-					}
+					totalDistance
+						+= glm::distance( _viewpoints[ i ]->getPosition(), _viewpoints[ i + 1u ]->getPosition() );
+				}
 
-					// Compute viewpoint durations.
-					for ( uint i = 1; i < _viewpoints.size(); ++i )
-					{
-						Viewpoint * const viewpoint = _viewpoints[ i ];
-						float			  distance
-							= glm::distance( _viewpoints[ i - 1u ]->getPosition(), viewpoint->getPosition() );
-						viewpoint->setDuration( _duration * distance / totalDistance );
-					}
-				}
-				if ( _modeInterpolation == INNTERPOLATION_MODE::CATMULL_ROM )
+				// Compute viewpoint durations.
+				for ( uint i = 1; i < _viewpoints.size(); ++i )
 				{
-					// TODO.
+					Viewpoint * const viewpoint = _viewpoints[ i ];
+					float distance = glm::distance( _viewpoints[ i - 1u ]->getPosition(), viewpoint->getPosition() );
+					viewpoint->setDuration( _duration * distance / totalDistance );
 				}
+				//}
+				// if ( _modeInterpolation == INNTERPOLATION_MODE::CATMULL_ROM )
+				//{
+				// TODO.
+				//}
 			}
 		} // namespace Model
 

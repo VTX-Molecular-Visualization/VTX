@@ -8,6 +8,7 @@
 #include "define.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtx/compatibility.hpp>
+#include <glm/gtx/spline.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <random>
 
@@ -107,16 +108,14 @@ namespace VTX
 			}
 			*/
 
-			static Vec3f catmullRomInterpolation( const Vec3f & p_0,
-												  const Vec3f & p_1,
-												  const Vec3f & p_2,
-												  const Vec3f & p_3,
-												  const float	p_value )
+			template<typename T>
+			static T catmullRomInterpolation( const T &	  p_p0,
+											  const T &	  p_p1,
+											  const T &	  p_p2,
+											  const T &	  p_p3,
+											  const float p_value )
 			{
-				Vec3f result;
-				float alpha = 0.5f;
-
-				return result;
+				return glm::catmullRom( p_p0, p_p1, p_p2, p_p3, p_value );
 			}
 		} // namespace Math
 

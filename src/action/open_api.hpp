@@ -67,7 +67,7 @@ namespace VTX
 					}
 					curl_global_cleanup();
 				}
-				catch ( const std::exception p_e )
+				catch ( const std::exception & p_e )
 				{
 					VTX_ERROR( p_e.what() );
 				}
