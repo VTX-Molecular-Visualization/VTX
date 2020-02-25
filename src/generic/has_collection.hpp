@@ -29,10 +29,8 @@ namespace VTX
 
 			virtual void clean() override
 			{
-				VTX_DEBUG( "Cleaning collection" );
 				for ( const PairStringToItemPtr pair : _items )
 				{
-					VTX_DEBUG( "Removing item: " + pair.first );
 					Generic::destroy<BaseCollectionable>( pair.second );
 				}
 				_items.clear();
@@ -48,7 +46,6 @@ namespace VTX
 			}
 			void addItem( T * const p_item )
 			{
-				VTX_DEBUG( "Adding item: " + static_cast<BaseCollectionable *>( p_item )->getName() );
 				try
 				{
 					_items.try_emplace( static_cast<BaseCollectionable *>( p_item )->getName(), p_item );
@@ -62,7 +59,6 @@ namespace VTX
 
 			virtual T * removeItem( const std::string & p_name )
 			{
-				VTX_DEBUG( "Removing item: " + p_name );
 				T * item = _items.at( p_name );
 				_items.erase( p_name );
 				return item;

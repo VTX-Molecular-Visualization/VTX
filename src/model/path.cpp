@@ -47,7 +47,6 @@ namespace VTX
 			}
 			else if ( _modeInterpolation == INNTERPOLATION_MODE::CATMULL_ROM )
 			{
-				VTX_DEBUG( std::to_string( glm::max<int>( 0, (int)offset - 2 ) ) );
 				Viewpoint * const p0	= _viewpoints[ glm::max<int>( 0, (int)offset - 2 ) ];
 				Viewpoint * const p1	= _viewpoints[ offset - 1 ];
 				Viewpoint * const p2	= _viewpoints[ glm::min<int>( (int)size - 1, offset ) ];
