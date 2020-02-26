@@ -36,6 +36,7 @@ namespace VTX
 					const char * interpolationModes[] = {
 						LOCALE( "Enum.InterpolationMode.Linear" ),
 						LOCALE( "Enum.InterpolationMode.CatmullRom" ),
+						LOCALE( "Enum.InterpolationMode.Cubic" ),
 					};
 					int interpolationMode = (int)_getModel().getInterpolationMode();
 					if ( ImGui::Combo( LOCALE( "View.InterpolationMode" ), &interpolationMode, interpolationModes, 2 ) )

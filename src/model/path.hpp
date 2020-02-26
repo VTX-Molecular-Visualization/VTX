@@ -33,6 +33,7 @@ namespace VTX
 			{
 				LINEAR,
 				CATMULL_ROM,
+				CUBIC
 			};
 
 			Path() { setId( 0 ); };

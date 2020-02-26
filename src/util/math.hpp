@@ -117,6 +117,16 @@ namespace VTX
 			{
 				return glm::catmullRom( p_p0, p_p1, p_p2, p_p3, p_value );
 			}
+
+			template<typename T>
+			static T cubicInterpolation( const T &	 p_p0,
+										 const T &	 p_p1,
+										 const T &	 p_p2,
+										 const T &	 p_p3,
+										 const float p_value )
+			{
+				return glm::cubic( p_p0, p_p1, p_p2, p_p3, p_value );
+			}
 		} // namespace Math
 
 	} // namespace Util

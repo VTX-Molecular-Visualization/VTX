@@ -214,6 +214,10 @@ namespace VTX
 			ImGuiDockNodeFlags dockSpaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
 			ImGui::DockSpace( dockSpaceId, ImVec2( 0.0f, 0.0f ), dockSpaceFlags );
 
+			// Viewport.
+			SDL_GL_MakeCurrent( _window, _glContext );
+			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+
 			// Draw all components.
 			_drawComponents();
 			if ( IMGUI_SHOW_DEMO ) { ImGui::ShowDemoWindow( NULL ); }
@@ -230,10 +234,7 @@ namespace VTX
 				ImGui::RenderPlatformWindowsDefault();
 			}
 
-			SDL_GL_MakeCurrent( _window, _glContext );
-			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-			// glClearColor( 1.0, 1.0, 1.0, 1.0 );
-			// glClear( GL_COLOR_BUFFER_BIT );
+			// GL.
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
 			SDL_GL_SwapWindow( _window );
 		}
