@@ -37,6 +37,7 @@ namespace VTX
 		{
 			ImGui::PushStyleVar( ImGuiStyleVar_WindowPadding,
 								 ImVec2( IMGUI_STYLE_MENUBAR_PADDING, IMGUI_STYLE_MENUBAR_PADDING ) );
+
 			if ( ImGui::BeginMainMenuBar() )
 			{
 				// Main menu.

@@ -16,9 +16,9 @@ namespace VTX
 	constexpr float IMGUI_STYLE_ROUNDING	   = 0.f;
 	constexpr float IMGUI_STYLE_WINDOW_BORDER  = 0.f;
 	constexpr float IMGUI_STYLE_WINDOW_PADDING = 0.f;
+	constexpr float IMGUI_STYLE_BG_ALPHA	   = 1.f;
 
 	constexpr float IMGUI_STYLE_MENUBAR_PADDING = 8.f;
-
 } // namespace VTX
 
 #endif
