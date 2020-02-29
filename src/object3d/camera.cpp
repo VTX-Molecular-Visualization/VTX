@@ -58,6 +58,12 @@ namespace VTX
 			_updateRotation();
 		}
 
+		void Camera::rotateAround( const Vec3f & p_target, const Vec3f & p_axis, const float p_delta )
+		{
+			//_rotation = Quatd( glm::lookAt( _position, p_target, VEC3F_Z ) );
+			_updateRotation();
+		}
+
 		void Camera::_updateRotation()
 		{
 			_rotation	   = glm::normalize( _rotation );

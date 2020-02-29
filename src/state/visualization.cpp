@@ -1,5 +1,6 @@
 #include "visualization.hpp"
-#include "controller/Freefly.hpp"
+#include "controller/freefly.hpp"
+#include "controller/orbit.hpp"
 #include "controller/shortcut.hpp"
 #include "generic/factory.hpp"
 #include "vtx_app.hpp"

@@ -10,7 +10,6 @@
 #include "util/logger.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <magic_enum.hpp>
 #include <string>
 
 namespace VTX
@@ -73,6 +72,7 @@ namespace VTX
 	constexpr float CONTROLLER_ROTATION_SPEED_MIN		  = 0.001f;
 	constexpr float CONTROLLER_ROTATION_SPEED_MAX		  = 0.01f;
 	constexpr float CONTROLLER_ROTATION_SPEED_DEFAULT	  = 0.005f;
+	constexpr float CONTROLLER_ORBIT_ELASTICITY			  = 8.0f;
 
 	// Rendering.
 	// TODO: choose relevent constants
