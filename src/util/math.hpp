@@ -37,13 +37,13 @@ namespace VTX
 
 			static inline Vec3f randomVec3f() { return Vec3f( dis( gen ), dis( gen ), dis( gen ) ); }
 
-			static inline Quatf eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
+			static inline Quatd eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
 
-			static inline Quatf eulerToQuaternion( const float p_pitch, const float p_yaw, const float p_roll )
+			static inline Quatd eulerToQuaternion( const double p_pitch, const double p_yaw, const double p_roll )
 			{
-				// https://stackoverflow.com/questions/53033620/how-to-convert-euler-angles-to-quaternions-and-get-the-same-euler-angles-back-fr
+				// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
 
-				/*
+				/*9
 				float cy = cos( p_yaw * 0.5f );
 				float sy = sin( p_yaw * 0.5f );
 				float cp = cos( p_pitch * 0.5f );
@@ -61,22 +61,19 @@ namespace VTX
 				*/
 
 				// Exact same thing?
-				Quatf q = eulerToQuaternion( Vec3f( p_pitch, p_yaw, p_roll ) );
-				// q /= (float)q.length();
+				Quatd q = eulerToQuaternion( Vec3d( p_pitch, p_yaw, p_roll ) );
 				return q;
 			}
 
-			static inline Vec3f quaternionToEuler( const Quatf & p_quaternion )
+			static inline Vec3f quaternionToEuler( const Quatd & p_quaternion )
 			{
 				// https://stackoverflow.com/questions/53033620/how-to-convert-euler-angles-to-quaternions-and-get-the-same-euler-angles-back-fr
-
-				Quatf q = p_quaternion;
-				// q /= (float)q.length();
-
-				float x = q.x;
-				float y = q.y;
-				float z = q.z;
-				float w = q.w;
+				/*
+				const Quatf & q = p_quaternion;
+				float		  x = q.x;
+				float		  y = q.y;
+				float		  z = q.z;
+				float		  w = q.w;
 
 				float t0 = 2.f * ( w * x + y * z );
 				float t1 = 1.f - 2.f * ( x * x + y * y );
@@ -86,6 +83,31 @@ namespace VTX
 				float t4 = 1.f - 2.f * ( y * y + z * z );
 
 				return Vec3f( atan2( t0, t1 ), asin( t2 ), atan2( t3, t4 ) );
+				*/
+
+				// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
+
+				const Quatd & q = p_quaternion;
+				Vec3d		  angles;
+
+				// roll (x-axis rotation)
+				double sinr_cosp = 2 * ( q.w * q.x + q.y * q.z );
+				double cosr_cosp = 1 - 2 * ( q.x * q.x + q.y * q.y );
+				angles.z		 = std::atan2( sinr_cosp, cosr_cosp );
+
+				// pitch (y-axis rotation)
+				double sinp = 2 * ( q.w * q.y - q.z * q.x );
+				if ( std::abs( sinp ) >= 1 )
+					angles.x = std::copysign( PI_2f / 2, sinp ); // use 90 degrees if out of range
+				else
+					angles.x = std::asin( sinp );
+
+				// yaw (z-axis rotation)
+				double siny_cosp = 2 * ( q.w * q.z + q.x * q.y );
+				double cosy_cosp = 1 - 2 * ( q.y * q.y + q.z * q.z );
+				angles.y		 = std::atan2( siny_cosp, cosy_cosp );
+
+				return angles;
 			}
 
 			template<typename T>

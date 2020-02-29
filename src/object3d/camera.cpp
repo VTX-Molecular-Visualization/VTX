@@ -32,25 +32,34 @@ namespace VTX
 
 		void Camera::rotateLeft( const float p_delta )
 		{
-			_eulerAngles.y -= p_delta;
-			_rotation = Util::Math::eulerToQuaternion( _eulerAngles );
+			_eulerAngles.y = -p_delta;
+			_rotation	   = _rotation * Util::Math::eulerToQuaternion( _eulerAngles );
 			_updateRotation();
 		}
 
 		void Camera::rotateUp( const float p_delta )
 		{
-			_eulerAngles.x -= p_delta;
-			_rotation = Util::Math::eulerToQuaternion( _eulerAngles );
+			_eulerAngles.x = -p_delta;
+			_rotation	   = _rotation * Util::Math::eulerToQuaternion( _eulerAngles );
+			_updateRotation();
+		}
+
+		void Camera::rotateSide( const float p_delta )
+		{
+			_eulerAngles.z = p_delta;
+			_rotation	   = _rotation * Util::Math::eulerToQuaternion( _eulerAngles );
 			_updateRotation();
 		}
 
 		void Camera::_updateRotation()
 		{
-			Mat3f rotation = glm::mat3_cast( _rotation );
+			_rotation	   = glm::normalize( _rotation );
+			Mat3d rotation = glm::mat3_cast( _rotation );
 			_front		   = rotation * -VEC3F_Z;
 			_left		   = rotation * -VEC3F_X;
 			_up			   = rotation * VEC3F_Y;
 			_updateViewMatrix();
+			_eulerAngles = VEC3F_ZERO;
 		}
 
 		void Camera::_updateViewMatrix() { _viewMatrix = glm::lookAt( _position, _position + _front, _up ); }

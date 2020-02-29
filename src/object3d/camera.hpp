@@ -19,7 +19,7 @@ namespace VTX
 			Camera() { _updateRotation(); };
 
 			inline const Vec3f & getPosition() const { return _position; }
-			inline const Quatf & getRotation() const { return _rotation; }
+			inline const Quatd & getRotation() const { return _rotation; }
 			inline Mat4f		 getViewMatrix() const { return _viewMatrix; }
 			inline Mat4f		 getProjectionMatrix() const
 			{
@@ -47,6 +47,7 @@ namespace VTX
 
 			void rotateLeft( const float );
 			void rotateUp( const float );
+			void rotateSide( const float );
 
 			virtual void print() const;
 
@@ -58,10 +59,8 @@ namespace VTX
 			float _fov			= CAMERA_FOV;
 
 			Vec3f _position	   = VEC3F_Z * 50.f;
-			Quatf _rotation	   = Quatf();
-			Vec3f _eulerAngles = Vec3f();
-			float _yaw		   = 0.f;
-			float _roll		   = 0.f;
+			Quatd _rotation	   = Quatd();
+			Vec3d _eulerAngles = Vec3d();
 
 			Vec3f _front = -VEC3F_Z;
 			Vec3f _left	 = -VEC3F_X;

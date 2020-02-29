@@ -7,7 +7,7 @@ namespace VTX
 	{
 		void FPS::update( const double p_deltaTime )
 		{
-			Vec3f translation = Vec3f( 0.f, 0.f, 0.f );
+			Vec3f translation = VEC3F_ZERO;
 
 			if ( _isKeyPressed( SDL_SCANCODE_W ) || _isKeyPressed( SDL_SCANCODE_UP ) ) { translation.z++; }
 			if ( _isKeyPressed( SDL_SCANCODE_S ) || _isKeyPressed( SDL_SCANCODE_DOWN ) ) { translation.z--; }
@@ -40,6 +40,7 @@ namespace VTX
 				_camera.rotateUp( Setting::Controller::rotationSpeed * p_event.yrel
 								  * ( Setting::Controller::yAxisInverted ? -1.f : 1.f ) );
 			}
+			if ( _mouseRightPressed ) { _camera.rotateSide( Setting::Controller::rotationSpeed * p_event.xrel ); }
 		}
 
 	} // namespace Controller

@@ -57,14 +57,13 @@ namespace VTX
 	// constexpr int WINDOW_HEIGHT = 864;
 
 	// Camera.
-	constexpr float CAMERA_NEAR	   = 1e-1f;
-	constexpr float CAMERA_FAR	   = 1e4f;
-	constexpr float CAMERA_FOV	   = 60.f;
-	constexpr float CAMERA_FOV_MIN = 10.f;
-	constexpr float CAMERA_FOV_MAX = 90.f;
-
-	// Camera.
-	// Clamp rotations.
+	constexpr float CAMERA_NEAR		 = 1e-1f;
+	constexpr float CAMERA_FAR		 = 1e4f;
+	constexpr float CAMERA_FOV		 = 60.f;
+	constexpr float CAMERA_FOV_MIN	 = 10.f;
+	constexpr float CAMERA_FOV_MAX	 = 90.f;
+	constexpr float CAMERA_PITCH_MIN = -89.f;
+	constexpr float CAMERA_PITCH_MAX = -CAMERA_PITCH_MIN;
 
 	// Controllers.
 	constexpr float CONTROLLER_TRANSLATION_SPEED_MIN	  = 50.f;
