@@ -41,7 +41,6 @@ namespace VTX
 			if ( ImGui::BeginMainMenuBar() )
 			{
 				// Main menu.
-				// TODO: enable/disable menu.
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Menu" ), isVisiblePtr() ) )
 				{
 					// New.
