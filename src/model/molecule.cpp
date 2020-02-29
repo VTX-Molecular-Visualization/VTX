@@ -1,4 +1,5 @@
 #include "molecule.hpp"
+#include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
 #include "view/ui/molecule.hpp"
@@ -11,7 +12,9 @@ namespace VTX
 	{
 		Molecule::~Molecule()
 		{
-			return;
+			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
+			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
+			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
 
 			if ( _vao != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vao );
 			if ( _atomPositionsVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomPositionsVBO );
@@ -40,6 +43,7 @@ namespace VTX
 			// Add views.
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::D3::Sphere>( this ) );
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::D3::Cylinder>( this ) );
+			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::D3::Box>( this ) );
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::UI::MoleculeStructure>( this ) );
 		}
 
