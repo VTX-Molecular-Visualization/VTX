@@ -30,21 +30,21 @@ namespace VTX
 			_updateViewMatrix();
 		}
 
-		void Camera::rotateLeft( const float p_delta )
-		{
-			_eulerAngles.y = -p_delta;
-			_rotation	   = _rotation * Util::Math::eulerToQuaternion( _eulerAngles );
-			_updateRotation();
-		}
-
-		void Camera::rotateUp( const float p_delta )
+		void Camera::rotatePitch( const float p_delta )
 		{
 			_eulerAngles.x = -p_delta;
 			_rotation	   = _rotation * Util::Math::eulerToQuaternion( _eulerAngles );
 			_updateRotation();
 		}
 
-		void Camera::rotateSide( const float p_delta )
+		void Camera::rotateYaw( const float p_delta )
+		{
+			_eulerAngles.y = -p_delta;
+			_rotation	   = _rotation * Util::Math::eulerToQuaternion( _eulerAngles );
+			_updateRotation();
+		}
+
+		void Camera::rotateRoll( const float p_delta )
 		{
 			_eulerAngles.z = p_delta;
 			_rotation	   = _rotation * Util::Math::eulerToQuaternion( _eulerAngles );

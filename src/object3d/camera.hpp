@@ -45,9 +45,9 @@ namespace VTX
 			void moveLeft( const float );
 			void moveUp( const float );
 
-			void rotateLeft( const float );
-			void rotateUp( const float );
-			void rotateSide( const float );
+			void rotatePitch( const float );
+			void rotateYaw( const float );
+			void rotateRoll( const float );
 
 			virtual void print() const;
 
@@ -60,7 +60,7 @@ namespace VTX
 
 			Vec3f _position	   = VEC3F_Z * 50.f;
 			Quatd _rotation	   = Quatd();
-			Vec3d _eulerAngles = Vec3d();
+			Vec3d _eulerAngles = Vec3d(); // [pitch, yaw, roll]
 
 			Vec3f _front = -VEC3F_Z;
 			Vec3f _left	 = -VEC3F_X;

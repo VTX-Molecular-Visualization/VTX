@@ -36,11 +36,11 @@ namespace VTX
 		{
 			if ( _mouseLeftPressed )
 			{
-				_camera.rotateLeft( Setting::Controller::rotationSpeed * p_event.xrel );
-				_camera.rotateUp( Setting::Controller::rotationSpeed * p_event.yrel
-								  * ( Setting::Controller::yAxisInverted ? -1.f : 1.f ) );
+				_camera.rotateYaw( Setting::Controller::rotationSpeed * p_event.xrel );
+				_camera.rotatePitch( Setting::Controller::rotationSpeed * p_event.yrel
+									 * ( Setting::Controller::yAxisInverted ? -1.f : 1.f ) );
 			}
-			if ( _mouseRightPressed ) { _camera.rotateSide( Setting::Controller::rotationSpeed * p_event.xrel ); }
+			if ( _mouseRightPressed ) { _camera.rotateRoll( Setting::Controller::rotationSpeed * p_event.xrel ); }
 		}
 
 	} // namespace Controller
