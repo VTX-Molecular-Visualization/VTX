@@ -15,7 +15,7 @@ namespace VTX
 	{
 		enum class MODE : int
 		{
-			DEFERRED
+			GL
 		};
 
 		enum class SHADING : int

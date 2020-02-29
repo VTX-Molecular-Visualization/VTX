@@ -33,30 +33,30 @@ namespace VTX
 			GLuint _quadVBO = GL_INVALID_VALUE;
 
 			// SSAO pass.
-			GLSL::Program * _ssaoShader		= nullptr;
-			GLuint			  _fboSSAO			= GL_INVALID_VALUE;
-			GLuint			  _ssaoTexture		= GL_INVALID_VALUE;
-			GLuint			  _noiseTexture		= GL_INVALID_VALUE;
-			GLint			  _uProjMatrixLoc	= GL_INVALID_INDEX;
-			GLint			  _uAoKernelLoc		= GL_INVALID_INDEX;
-			GLint			  _uAoRadiusLoc		= GL_INVALID_INDEX;
-			GLint			  _uKernelSizeLoc	= GL_INVALID_INDEX;
-			GLint			  _uAoIntensityLoc	= GL_INVALID_INDEX;
-			GLint			  _kernelSize		= 32;
-			GLuint			  _noiseTextureSize = 9;
+			GLSL::Program * _ssaoShader		  = nullptr;
+			GLuint			_fboSSAO		  = GL_INVALID_VALUE;
+			GLuint			_ssaoTexture	  = GL_INVALID_VALUE;
+			GLuint			_noiseTexture	  = GL_INVALID_VALUE;
+			GLint			_uProjMatrixLoc	  = GL_INVALID_INDEX;
+			GLint			_uAoKernelLoc	  = GL_INVALID_INDEX;
+			GLint			_uAoRadiusLoc	  = GL_INVALID_INDEX;
+			GLint			_uKernelSizeLoc	  = GL_INVALID_INDEX;
+			GLint			_uAoIntensityLoc  = GL_INVALID_INDEX;
+			GLint			_kernelSize		  = 32;
+			GLuint			_noiseTextureSize = 9;
 
 			// Blur pass.
-			GLSL::Program * _blurShader	= nullptr;
-			GLuint			  _fboBlur		= GL_INVALID_VALUE;
-			GLuint			  _blurTexture	= GL_INVALID_VALUE;
-			GLint			  _uBlurSizeLoc = GL_INVALID_INDEX;
+			GLSL::Program * _blurShader	  = nullptr;
+			GLuint			_fboBlur	  = GL_INVALID_VALUE;
+			GLuint			_blurTexture  = GL_INVALID_VALUE;
+			GLint			_uBlurSizeLoc = GL_INVALID_INDEX;
 
 			// Shading pass.
-			GLSL::Program * _diffuseShading	 = nullptr;
+			GLSL::Program * _diffuseShading	   = nullptr;
 			GLSL::Program * _blinnPhongShading = nullptr;
-			GLSL::Program * _toonShading		 = nullptr;
-			GLuint			  _fboShading		 = GL_INVALID_VALUE;
-			GLuint			  _shadingTexture	 = GL_INVALID_VALUE;
+			GLSL::Program * _toonShading	   = nullptr;
+			GLuint			_fboShading		   = GL_INVALID_VALUE;
+			GLuint			_shadingTexture	   = GL_INVALID_VALUE;
 
 			GLSL::Program * _currentShading = nullptr;
 

@@ -35,6 +35,7 @@ namespace VTX
 
 			const VTX_ID D3_CYLINDER = "3D_CYLINDER";
 			const VTX_ID D3_SPHERE	 = "3D_SPHERE";
+			const VTX_ID D3_BOX		 = "3D_BOX";
 		} // namespace View
 
 		namespace State

@@ -15,9 +15,9 @@ namespace VTX
 		namespace Rendering
 		{
 			extern bool					  isActive		 = true;
-			View::MOLECULE_REPRESENTATION representation = View::MOLECULE_REPRESENTATION::VAN_DER_WAALS;
+			View::MOLECULE_REPRESENTATION representation = View::MOLECULE_REPRESENTATION::BALL_AND_STICK;
 			View::MOLECULE_COLOR_MODE	  colorMode		 = View::MOLECULE_COLOR_MODE::CHAIN;
-			Renderer::MODE				  mode			 = Renderer::MODE::DEFERRED;
+			Renderer::MODE				  mode			 = Renderer::MODE::GL;
 			Renderer::SHADING			  shading		 = Renderer::SHADING::LAMBERT;
 			bool						  useAA			 = false;
 			bool						  useSSAO		 = true;
