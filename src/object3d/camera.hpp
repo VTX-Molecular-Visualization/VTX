@@ -32,12 +32,23 @@ namespace VTX
 				_screenHeight = float( p_height );
 			}
 
-			inline void set( const Vec3f & p_position, const Quatf & p_rotation )
+			inline void setPosition( const Vec3f & p_position )
 			{
-				_position	 = p_position;
+				_position = p_position;
+				_updateViewMatrix();
+			}
+
+			inline void setRotation( const Quatf & p_rotation )
+			{
 				_rotation	 = p_rotation;
 				_eulerAngles = Util::Math::quaternionToEuler( _rotation );
 				_updateRotation();
+			}
+
+			inline void set( const Vec3f & p_position, const Quatf & p_rotation )
+			{
+				setPosition( p_position );
+				setRotation( p_rotation );
 			}
 
 			void move( const Vec3f & );
@@ -45,6 +56,7 @@ namespace VTX
 			void moveLeft( const float );
 			void moveUp( const float );
 
+			void rotate( const Vec3d & );
 			void rotatePitch( const float );
 			void rotateYaw( const float );
 			void rotateRoll( const float );

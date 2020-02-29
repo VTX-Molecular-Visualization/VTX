@@ -30,6 +30,13 @@ namespace VTX
 			_updateViewMatrix();
 		}
 
+		void Camera::rotate( const Vec3d & p_delta )
+		{
+			_eulerAngles = p_delta;
+			_rotation	 = _rotation * Util::Math::eulerToQuaternion( _eulerAngles );
+			_updateRotation();
+		}
+
 		void Camera::rotatePitch( const float p_delta )
 		{
 			_eulerAngles.x = -p_delta;

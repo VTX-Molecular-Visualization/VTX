@@ -36,9 +36,11 @@ namespace VTX
 		{
 			if ( _mouseLeftPressed )
 			{
-				_camera.rotateYaw( Setting::Controller::rotationSpeed * p_event.xrel );
-				_camera.rotatePitch( Setting::Controller::rotationSpeed * p_event.yrel
-									 * ( Setting::Controller::yAxisInverted ? -1.f : 1.f ) );
+				_camera.rotate( Vec3d( -Setting::Controller::rotationSpeed * p_event.yrel
+										   * ( Setting::Controller::yAxisInverted ? -1.f : 1.f ),
+									   -Setting::Controller::rotationSpeed * p_event.xrel,
+
+									   0.0 ) );
 			}
 			if ( _mouseRightPressed ) { _camera.rotateRoll( Setting::Controller::rotationSpeed * p_event.xrel ); }
 		}
