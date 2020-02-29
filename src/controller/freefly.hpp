@@ -1,5 +1,5 @@
-#ifndef __VTX_CONTROLLER_FPS__
-#define __VTX_CONTROLLER_FPS__
+#ifndef __VTX_CONTROLLER_FREEFLY__
+#define __VTX_CONTROLLER_FREEFLY__
 
 #ifdef _MSC_VER
 #pragma once
@@ -15,11 +15,11 @@ namespace VTX
 {
 	namespace Controller
 	{
-		class FPS : public BaseKeyboardController, public BaseMouseController
+		class Freefly : public BaseKeyboardController, public BaseMouseController
 		{
 		  public:
 			// TOFIX: Ugly... set the camera in the BaseCollectionable::init()?
-			explicit FPS() : _camera( VTXApp::get().getScene().getCamera() ) {}
+			explicit Freefly() : _camera( VTXApp::get().getScene().getCamera() ) {}
 
 			virtual void receiveEvent( const SDL_Event & p_event, void * const p_arg ) override final
 			{
@@ -28,7 +28,7 @@ namespace VTX
 			}
 
 			virtual void		update( const double ) override;
-			virtual std::string getName() const override { return ID::Controller::FPS; }
+			virtual std::string getName() const override { return ID::Controller::FREEFLY; }
 
 		  protected:
 			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & ) override;

@@ -48,7 +48,7 @@ namespace VTX
 
 		namespace Controller
 		{
-			const VTX_ID FPS	  = "FPS";
+			const VTX_ID FREEFLY  = "FPS";
 			const VTX_ID SHORTCUT = "SHORCUT";
 		} // namespace Controller
 	}	  // namespace ID

@@ -1,5 +1,5 @@
 #include "visualization.hpp"
-#include "controller/fps.hpp"
+#include "controller/Freefly.hpp"
 #include "controller/shortcut.hpp"
 #include "generic/factory.hpp"
 #include "vtx_app.hpp"
@@ -13,7 +13,7 @@ namespace VTX
 			// Init the renderer.
 			VTXApp::get().initRenderer();
 			// Create controller.
-			addItem( Generic::create<Controller::FPS>() );
+			addItem( Generic::create<Controller::Freefly>() );
 			addItem( Generic::create<Controller::Shortcut>() );
 		}
 

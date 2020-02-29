@@ -1,11 +1,11 @@
-#include "fps.hpp"
+#include "freefly.hpp"
 #include "setting.hpp"
 
 namespace VTX
 {
 	namespace Controller
 	{
-		void FPS::update( const double p_deltaTime )
+		void Freefly::update( const double p_deltaTime )
 		{
 			Vec3f translation = VEC3F_ZERO;
 
@@ -27,12 +27,12 @@ namespace VTX
 			_camera.move( translation );
 		}
 
-		void FPS::_handleKeyPressedEvent( const SDL_Scancode & p_key )
+		void Freefly::_handleKeyPressedEvent( const SDL_Scancode & p_key )
 		{
 			if ( p_key == SDL_SCANCODE_SPACE ) { _camera.print(); }
 		}
 
-		void FPS::_handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )
+		void Freefly::_handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )
 		{
 			if ( _mouseLeftPressed )
 			{
