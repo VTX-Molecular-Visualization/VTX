@@ -26,7 +26,7 @@ namespace VTX
 					{
 						_run();
 					}
-					catch ( const std::exception p_e )
+					catch ( const std::exception & p_e )
 					{
 						threadException = std::current_exception();
 					}

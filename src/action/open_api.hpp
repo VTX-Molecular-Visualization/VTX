@@ -34,7 +34,7 @@ namespace VTX
 						VTXApp::get().goToState( ID::State::LOAD, (void *)&path );
 					} );
 				}
-				catch ( const std::exception p_e )
+				catch ( const std::exception & p_e )
 				{
 					VTX_ERROR( "File not found" );
 					VTX_DEBUG( p_e.what() );
