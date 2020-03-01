@@ -18,7 +18,7 @@ namespace VTX
 			{ "MainMenu.Menu", "Menu" },
 			{ "MainMenu.Menu.New", "New" },
 			{ "MainMenu.Menu.Open", "Open" },
-			
+
 			{ "MainMenu.Menu.Open.ChooseFile", "Choose file" },
 			{ "MainMenu.Menu.Quit", "Quit" },
 			{ "MainMenu.Import", "Import" },
@@ -59,6 +59,7 @@ namespace VTX
 			{ "MainMenu.OpenAPI", "Open from API" },
 			{ "MainMenu.Undo", "Undo" },
 			{ "MainMenu.Redo", "Redo" },
+
 			// Console.
 			{ "Console.Console", "Console" },
 
@@ -89,6 +90,9 @@ namespace VTX
 			{ "View.Duration", "Duration" },
 			{ "View.DurationMode", "Speed mode" },
 			{ "View.InterpolationMode", "Smooth mode" },
+
+			// Modals.
+			{ "Modal.Loading", "Loading" },
 
 			// Enums.
 			{ "Enum.Theme.Light", "Light" },

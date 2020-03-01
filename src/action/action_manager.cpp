@@ -1,5 +1,6 @@
 #include "action_manager.hpp"
 #include "snapshot.hpp"
+#include <thread>
 
 namespace VTX
 {
@@ -7,7 +8,6 @@ namespace VTX
 	{
 		void ActionManager::executeAction( BaseAction * const p_action )
 		{
-			// Execute.
 			p_action->execute();
 
 			// Handle undo.

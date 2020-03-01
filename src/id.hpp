@@ -20,6 +20,7 @@ namespace VTX
 			const VTX_ID SCENE			= "SCENE";
 			const VTX_ID INSPECTOR		= "INSPECTOR";
 			const VTX_ID CAMERA_EDITOR	= "CAMERA_EDITOR";
+			const VTX_ID PROGRESS_BAR	= "PROGRESS_BAR";
 		} // namespace UI
 
 		namespace View

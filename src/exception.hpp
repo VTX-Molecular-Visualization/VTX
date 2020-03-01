@@ -35,6 +35,12 @@ namespace VTX
 		  public:
 			explicit VTXException( const std::string & p_err ) : std::runtime_error( "[VTX] " + p_err ) {}
 		};
+
+		class HTTPException : public std::runtime_error
+		{
+		  public:
+			explicit HTTPException( const std::string & p_err ) : std::runtime_error( "[HTTP] " + p_err ) {}
+		};
 	} // namespace Exception
 } // namespace VTX
 

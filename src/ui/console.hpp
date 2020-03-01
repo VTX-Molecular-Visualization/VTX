@@ -21,7 +21,6 @@ namespace VTX
 			virtual void		receiveEvent( const Event::VTX_EVENT & p_event, void * const p_arg = nullptr ) override;
 
 		  protected:
-			virtual void						  _addItems() override {}
 			virtual void						  _draw() override;
 			virtual std::vector<Event::VTX_EVENT> _getEvents() const override
 			{
