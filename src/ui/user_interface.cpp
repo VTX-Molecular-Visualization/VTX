@@ -7,6 +7,7 @@
 #include "imgui/imgui_impl_sdl.h"
 #include "inspector.hpp"
 #include "menu.hpp"
+#include "modal/progress_bar.hpp"
 #include "scene.hpp"
 #include "setting.hpp"
 #include "style.hpp"
@@ -66,11 +67,15 @@ namespace VTX
 
 		void UserInterface::_addItems()
 		{
+			// Windows.
 			addItem( Generic::create<Menu>() );
 			addItem( Generic::create<Console>() );
 			addItem( Generic::create<Scene>() );
 			addItem( Generic::create<Inspector>() );
 			addItem( Generic::create<CameraEditor>() );
+
+			// Modals.
+			addItem( Generic::create<Modal::ProgressBar>() );
 		}
 
 		void UserInterface::_initSDL2()
@@ -220,6 +225,8 @@ namespace VTX
 
 			// Draw all components.
 			_drawComponents();
+
+			// Debug.
 			if ( IMGUI_SHOW_DEMO ) { ImGui::ShowDemoWindow( NULL ); }
 
 			// Main end.
