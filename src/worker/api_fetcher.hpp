@@ -5,24 +5,22 @@
 #pragma once
 #endif
 
+#include "base_worker.hpp"
 #include "define.hpp"
-#include "generic/base_runnable.hpp"
 #include "vtx_app.hpp"
 #include <curl/curl.h>
 
 namespace VTX
 {
-	namespace Tool
+	namespace Worker
 	{
-		class ApiFetcher : public Generic::BaseRunnable
+		class ApiFetcher : public Worker::BaseWorker
 		{
 		  public:
 			explicit ApiFetcher( std::string & p_url ) : _url( p_url ) {}
 
 			std::string & getBuffer() { return _buffer; }
-
-		  protected:
-			virtual void _run() override;
+			virtual void  work() override;
 
 		  private:
 			std::string _url;
@@ -43,12 +41,12 @@ namespace VTX
 				float progress = 0.f;
 				if ( p_dltotal > 0.f ) { progress = (float)p_dlnow / (float)p_dltotal; }
 
-				VTXApp::get().getEventManager().fireEventAsync(
+				VTXApp::get().getEventManager().fireEvent(
 					new Event::VTXEventFloat( Event::Global::UPDATE_PROGRESS_BAR, progress ) );
 
 				return 0;
 			}
 		};
-	} // namespace Tool
+	} // namespace Worker
 } // namespace VTX
 #endif

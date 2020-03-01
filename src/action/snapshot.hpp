@@ -6,8 +6,8 @@
 #endif
 
 #include "base_action.hpp"
-#include "tool/snapshoter.hpp"
 #include "util/time.hpp"
+#include "worker/snapshoter.hpp"
 
 namespace VTX
 {
@@ -18,7 +18,7 @@ namespace VTX
 		  public:
 			virtual void execute() override
 			{
-				Tool::Snapshoter snapshoter;
+				Worker::Snapshoter snapshoter;
 
 				std::string filename = Util::Time::getTimestamp();
 				IO::Path	path( SNAPSHOT_DIR + filename + ".png" );

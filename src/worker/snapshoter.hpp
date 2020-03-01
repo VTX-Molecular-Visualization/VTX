@@ -9,7 +9,7 @@
 
 namespace VTX
 {
-	namespace Tool
+	namespace Worker
 	{
 		class Snapshoter
 		{
@@ -18,6 +18,6 @@ namespace VTX
 
 		  private:
 		};
-	} // namespace Tool
+	} // namespace Worker
 } // namespace VTX
 #endif

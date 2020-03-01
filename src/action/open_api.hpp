@@ -6,11 +6,13 @@
 #endif
 
 #include "base_action.hpp"
+#include "exception.hpp"
 #include "io/path_fake.hpp"
 #include "model/molecule.hpp"
 #include "open.hpp"
-#include "tool/api_fetcher.hpp"
 #include "vtx_app.hpp"
+#include "worker/api_fetcher.hpp"
+#include "worker/worker_manager.hpp"
 
 namespace VTX
 {
@@ -23,27 +25,43 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				Tool::ApiFetcher client = Tool::ApiFetcher( API_URL_MMTF + _id );
-				std::string		 id		= _id;
-
+				Worker::ApiFetcher fetcher = Worker::ApiFetcher( API_URL_MMTF + _id );
 				try
 				{
-					client.run( [ &client, &id ]( void ) {
-						IO::PathFake path = IO::PathFake( id + ".mmtf" );
-						path.write( client.getBuffer() );
-						VTXApp::get().goToState( ID::State::LOAD, (void *)&path );
-					} );
+					fetcher.work();
 				}
 				catch ( const std::exception & p_e )
 				{
-					VTX_ERROR( "File not found" );
-					VTX_DEBUG( p_e.what() );
+					VTX_ERROR( p_e.what() );
+					return;
 				}
-			};
 
-		  private:
-			const std::string & _id;
-		}; // namespace Action
-	}	   // namespace Action
+				IO::PathFake path = IO::PathFake( _id + ".mmtf" );
+				path.write( fetcher.getBuffer() );
+				VTXApp::get().goToState( ID::State::LOAD, (void *)&path );
+
+				/*
+				Worker::WorkerManager &		  manager  = VTXApp::get().getWorkerManager();
+				Worker::ApiFetcher *		  fetcher  = new Worker::ApiFetcher( API_URL_MMTF + _id );
+				std::string					  id	   = _id;
+				std::function<void( void )> * callback = new std::function<void( void )>( [ fetcher, &id ]( void ) {
+					VTX_DEBUG( "INVOKE" );
+					// IO::PathFake path = IO::PathFake( id + ".mmtf" );
+					VTX_DEBUG( "CALLBACK" );
+					// path.write( fetcher->getBuffer() );
+					VTX_DEBUG( "DELETE" );
+					delete fetcher;
+					// VTXApp::get().goToState( ID::State::LOAD, (void *)&path );
+				} );
+
+				manager.runWorker( fetcher, callback );
+
+			*/			}
+
+			  private:
+				const std::string & _id;
+		};
+
+	} // namespace Action
 } // namespace VTX
 #endif

@@ -3,10 +3,9 @@
 
 namespace VTX
 {
-	namespace Tool
+	namespace Worker
 	{
-		// THROW EXCEPTIONS.
-		void ApiFetcher::_run()
+		void ApiFetcher::work()
 		{
 			std::string url = _url;
 			CURL *		curl;
@@ -30,26 +29,26 @@ namespace VTX
 
 					if ( code == 200 )
 					{
-						if ( _buffer.empty() ) { throw Exception::VTXException( "Empty buffer" ); }
+						if ( _buffer.empty() ) { throw Exception::HTTPException( "Empty buffer" ); }
 					}
 					else
 					{
-						throw Exception::VTXException( "Protocol error: " + std::to_string( code ) );
+						throw Exception::HTTPException( "Protocol error: " + std::to_string( code ) );
 					}
 				}
 				else
 				{
-					throw Exception::VTXException( "cURL failed: " + std::to_string( result ) );
+					throw Exception::HTTPException( "cURL failed: " + std::to_string( result ) );
 				}
 				curl_easy_cleanup( curl );
 			}
 			else
 			{
-				throw Exception::VTXException( "cURL failed" );
+				throw Exception::HTTPException( "cURL failed" );
 			}
 
 			curl_global_cleanup();
 		}
 
-	} // namespace Tool
+	} // namespace Worker
 } // namespace VTX

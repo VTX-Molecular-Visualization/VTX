@@ -10,7 +10,7 @@
 
 namespace VTX
 {
-	namespace Tool
+	namespace Worker
 	{
 		bool Snapshoter::takeSnapshot( const IO::Path & p_path ) const
 		{
@@ -28,5 +28,5 @@ namespace VTX
 			// stbi_write_jpg( p_path.c_str(), width, height, 3, buffer.data(), 100 );
 		}
 
-	} // namespace Tool
+	} // namespace Worker
 } // namespace VTX

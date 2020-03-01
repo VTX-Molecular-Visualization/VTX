@@ -14,6 +14,7 @@ namespace VTX
 		VTX_INFO( "Initializing application" );
 		_eventManager  = new Event::EventManager();
 		_actionManager = new Action::ActionManager();
+		_workerManager = new Worker::WorkerManager();
 		_scene		   = new Object3D::Scene();
 		_renderer	   = new Renderer::GL();
 	}
@@ -26,6 +27,7 @@ namespace VTX
 		Generic::destroy( _ui );
 
 		delete _renderer;
+		delete _workerManager;
 		delete _actionManager;
 		delete _eventManager;
 	}
@@ -109,6 +111,9 @@ namespace VTX
 
 		// Event manager.
 		_eventManager->update( _timeDelta );
+
+		// Worker manager.
+		_workerManager->update( _timeDelta );
 
 		// State machine.
 		_stateMachine->update( _timeDelta );

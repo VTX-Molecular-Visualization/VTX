@@ -14,6 +14,7 @@ namespace VTX
 			if ( p_event->name == Event::Global::LOG_CONSOLE )
 			{
 				Event::VTXEventLog * event = dynamic_cast<Event::VTXEventLog *>( p_event );
+				// Copy event to keep history.
 				_addLog( *event );
 			}
 		}

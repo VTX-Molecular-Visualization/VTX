@@ -16,6 +16,7 @@
 #include "tool/chrono.hpp"
 #include "ui/user_interface.hpp"
 #include "util/logger.hpp"
+#include "worker/worker_manager.hpp"
 #include <thread>
 #include <vector>
 
@@ -49,6 +50,7 @@ namespace VTX
 		inline Renderer::GLSL::ProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
 		inline UI::UserInterface &				getUI() { return *_ui; }
 		inline Event::EventManager &			getEventManager() { return *_eventManager; }
+		inline Worker::WorkerManager &			getWorkerManager() { return *_workerManager; }
 
 	  private:
 		static bool				 _isRunning;
@@ -61,6 +63,7 @@ namespace VTX
 		Renderer::BaseRenderer * _renderer		= nullptr;
 		Action::ActionManager *	 _actionManager = nullptr;
 		Event::EventManager *	 _eventManager	= nullptr;
+		Worker::WorkerManager *	 _workerManager = nullptr;
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;

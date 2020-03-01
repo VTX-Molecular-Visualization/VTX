@@ -32,8 +32,8 @@ namespace VTX
 			void registerEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
 			void unregisterEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
 
-			void fireEvent( VTXEvent * );
-			void fireEventAsync( VTXEvent * const );
+			void flushEvent( VTXEvent * );
+			void fireEvent( VTXEvent * const );
 
 		  private:
 			SetBaseEventReceiverSDLPtr			   _receiversSDL = SetBaseEventReceiverSDLPtr();

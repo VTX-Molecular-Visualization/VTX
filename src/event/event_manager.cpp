@@ -30,7 +30,7 @@ namespace VTX
 			_receiversVTX.at( p_event ).erase( p_receiver );
 		}
 
-		void EventManager::fireEvent( VTXEvent * p_event )
+		void EventManager::flushEvent( VTXEvent * p_event )
 		{
 			if ( _receiversVTX.find( p_event->name ) != _receiversVTX.end() )
 			{
@@ -43,7 +43,7 @@ namespace VTX
 			delete p_event;
 		}
 
-		void EventManager::fireEventAsync( VTXEvent * const p_event ) { _eventQueue.push( p_event ); }
+		void EventManager::fireEvent( VTXEvent * const p_event ) { _eventQueue.push( p_event ); }
 
 		void EventManager::update( const double p_deltaTime )
 		{
@@ -81,7 +81,7 @@ namespace VTX
 			// VTX.
 			while ( _eventQueue.empty() == false )
 			{
-				fireEvent( _eventQueue.front() );
+				flushEvent( _eventQueue.front() );
 				_eventQueue.pop();
 			}
 		}
