@@ -35,7 +35,7 @@ namespace VTX
 				return Vec3f( a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z );
 			}
 
-			static inline float randomInterpolant() { return dis( rd ); }
+			static inline float randomInterpolant() { return RANDOM ? dis( rd ) : dis( gen ); }
 
 			static inline Vec3f randomVec3f()
 			{

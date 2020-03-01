@@ -39,6 +39,7 @@ namespace VTX
 	constexpr int	  OPENGL_VERSION_MINOR = 5;
 	const std::string GLSL_VERSION		   = "#version 450";
 	const bool		  VSYNC				   = false;
+	const bool		  RANDOM			   = true;
 
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 

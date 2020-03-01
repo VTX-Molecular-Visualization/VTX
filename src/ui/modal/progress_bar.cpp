@@ -33,7 +33,7 @@ namespace VTX
 
 					vMin.x += ImGui::GetWindowPos().x;
 					vMin.y += ImGui::GetWindowPos().y;
-					vMax.x += ImGui::GetWindowPos().x;
+					vMax.x += IMGUI_STYLE_PROGRESS_BAR_SIZE.x * _value;
 					vMax.y += ImGui::GetWindowPos().y;
 
 					ImDrawList * drawList = ImGui::GetForegroundDrawList();
