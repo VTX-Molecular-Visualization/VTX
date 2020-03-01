@@ -20,7 +20,7 @@ namespace VTX
 			{
 			  public:
 				virtual std::string getName() const override { return ID::UI::PROGRESS_BAR; }
-				virtual void receiveEvent( const Event::VTX_EVENT & p_event, void * const p_arg = nullptr ) override;
+				virtual void		receiveEvent( Event::VTXEvent * const p_event ) override;
 
 			  protected:
 				virtual void						  _draw() override;

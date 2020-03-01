@@ -15,17 +15,17 @@ namespace VTX
 		class BaseKeyboardController : virtual public BaseController
 		{
 		  public:
-			virtual void receiveEvent( const SDL_Event & p_event, void * const ) override
+			virtual void receiveEvent( SDL_Event * const p_event ) override
 			{
-				switch ( p_event.type )
+				switch ( p_event->type )
 				{
 				case SDL_KEYDOWN:
 				{
-					_handleKeyDownEvent( p_event.key.keysym.scancode );
-					if ( p_event.key.repeat == 0 ) { _handleKeyPressedEvent( p_event.key.keysym.scancode ); }
+					_handleKeyDownEvent( p_event->key.keysym.scancode );
+					if ( p_event->key.repeat == 0 ) { _handleKeyPressedEvent( p_event->key.keysym.scancode ); }
 					break;
 				}
-				case SDL_KEYUP: _handleKeyUpEvent( p_event.key.keysym.scancode ); break;
+				case SDL_KEYUP: _handleKeyUpEvent( p_event->key.keysym.scancode ); break;
 				default: break;
 				}
 			}

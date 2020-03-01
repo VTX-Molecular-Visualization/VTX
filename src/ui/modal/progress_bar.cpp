@@ -8,13 +8,15 @@ namespace VTX
 	{
 		namespace Modal
 		{
-			void ProgressBar::receiveEvent( const Event::VTX_EVENT & p_event, void * const p_arg )
+			void ProgressBar::receiveEvent( Event::VTXEvent * const p_event )
 			{
-				if ( p_event == Event::Global::UPDATE_PROGRESS_BAR )
+				if ( p_event->name == Event::Global::UPDATE_PROGRESS_BAR )
 				{
-					_value = *(float *)p_arg;
+					_value = dynamic_cast<Event::VTXEventFloat *>( p_event )->arg;
 
 					if ( _value >= 1.f ) { _value = 0.f; }
+
+					VTX_DEBUG( std::to_string( _value * 100 ) + "%" );
 				}
 			}
 

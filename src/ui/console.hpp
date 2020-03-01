@@ -18,7 +18,7 @@ namespace VTX
 		{
 		  public:
 			virtual std::string getName() const override { return ID::UI::CONSOLE; }
-			virtual void		receiveEvent( const Event::VTX_EVENT & p_event, void * const p_arg = nullptr ) override;
+			virtual void		receiveEvent( Event::VTXEvent * const p_event ) override;
 
 		  protected:
 			virtual void						  _draw() override;
@@ -28,9 +28,9 @@ namespace VTX
 			}
 
 		  private:
-			std::list<Util::Logger::Log> _logs = std::list<Util::Logger::Log>();
+			std::list<Event::VTXEventLog> _logs = std::list<Event::VTXEventLog>();
 
-			void _addLog( const Util::Logger::Log & );
+			void _addLog( const Event::VTXEventLog & );
 			void _clear();
 		};
 	} // namespace UI

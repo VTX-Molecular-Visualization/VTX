@@ -10,6 +10,7 @@
 #include "event/event.hpp"
 #include "generic/base_updatable.hpp"
 #include <map>
+#include <queue>
 #include <set>
 
 namespace VTX
@@ -22,17 +23,22 @@ namespace VTX
 			using SetBaseEventReceiverSDLPtr			 = std::set<BaseEventReceiverSDL *>;
 			using SetBaseEventReceiverVTXPtr			 = std::set<BaseEventReceiverVTX *>;
 			using MapStringVectorBaseEventReceiverVTXPtr = std::map<Event::VTX_EVENT, SetBaseEventReceiverVTXPtr>;
+			using QueueVTXEventPtr						 = std::queue<VTXEvent *>;
 
 			virtual void update( const double p_deltaTime ) override;
-			void		 registerEventReceiverSDL( BaseEventReceiverSDL * const );
-			void		 unregisterEventReceiverSDL( BaseEventReceiverSDL * const );
-			void		 registerEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
-			void		 unregisterEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
-			void		 fireEvent( const VTX_EVENT & p_event, void * const p_arg = nullptr );
+
+			void registerEventReceiverSDL( BaseEventReceiverSDL * const );
+			void unregisterEventReceiverSDL( BaseEventReceiverSDL * const );
+			void registerEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
+			void unregisterEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
+
+			void fireEvent( VTXEvent * );
+			void fireEventAsync( VTXEvent * const );
 
 		  private:
 			SetBaseEventReceiverSDLPtr			   _receiversSDL = SetBaseEventReceiverSDLPtr();
 			MapStringVectorBaseEventReceiverVTXPtr _receiversVTX = MapStringVectorBaseEventReceiverVTXPtr();
+			QueueVTXEventPtr					   _eventQueue	 = QueueVTXEventPtr();
 		};
 	} // namespace Event
 } // namespace VTX

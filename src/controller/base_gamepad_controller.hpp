@@ -14,7 +14,7 @@ namespace VTX
 		class BaseGamepadController : public BaseController
 		{
 		  public:
-			virtual void receiveEvent( const SDL_Event &, void * const = nullptr ) override {};
+			virtual void receiveEvent( SDL_Event * const ) override {};
 		};
 	} // namespace Controller
 } // namespace VTX

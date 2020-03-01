@@ -30,19 +30,24 @@ namespace VTX
 			_receiversVTX.at( p_event ).erase( p_receiver );
 		}
 
-		void EventManager::fireEvent( const VTX_EVENT & p_event, void * const p_arg )
+		void EventManager::fireEvent( VTXEvent * p_event )
 		{
-			if ( _receiversVTX.find( p_event ) != _receiversVTX.end() )
+			if ( _receiversVTX.find( p_event->name ) != _receiversVTX.end() )
 			{
-				for ( BaseEventReceiverVTX * const receiver : _receiversVTX.at( p_event ) )
+				for ( BaseEventReceiverVTX * const receiver : _receiversVTX.at( p_event->name ) )
 				{
-					receiver->receiveEvent( p_event, p_arg );
+					receiver->receiveEvent( p_event );
 				}
 			}
+
+			delete p_event;
 		}
+
+		void EventManager::fireEventAsync( VTXEvent * const p_event ) { _eventQueue.push( p_event ); }
 
 		void EventManager::update( const double p_deltaTime )
 		{
+			// SDL.
 			SDL_Event event;
 			while ( VTXApp::get().getUI().getEvent( event ) )
 			{
@@ -68,9 +73,16 @@ namespace VTX
 				{
 					for ( Event::BaseEventReceiverSDL * const receiver : _receiversSDL )
 					{
-						receiver->receiveEvent( event );
+						receiver->receiveEvent( &event );
 					}
 				}
+			}
+
+			// VTX.
+			while ( _eventQueue.empty() == false )
+			{
+				fireEvent( _eventQueue.front() );
+				_eventQueue.pop();
 			}
 		}
 

@@ -20,24 +20,25 @@ namespace VTX
 
 		void Logger::_log( const LEVEL p_level, const std::string & p_message )
 		{
-			Log log;
-			log.level = magic_enum::enum_name( p_level ).substr( 8 );
+			std::string level( magic_enum::enum_name( p_level ).substr( 8 ) );
+			std::string date( Time::getNowString() );
 			std::string message( p_message );
 			message.erase( std::remove( message.begin(), message.end(), '\n' ), message.end() );
-			log.message = message;
-			log.date	= Time::getNowString();
 
 #ifndef _DEBUG
 			if ( p_level == LEVEL::LOG_LVL_DEBUG ) return;
 #endif
 
 			if ( VTXApp::isRunning() )
-			{ VTXApp::get().getEventManager().fireEvent( Event::Global::LOG_CONSOLE, &log ); }
+			{
+				VTXApp::get().getEventManager().fireEvent(
+					new Event::VTXEventLog( Event::Global::LOG_CONSOLE, level, date, message ) );
+			}
 
 #ifdef LOG_LEVEL
 			if ( LOG_LEVEL > p_level ) return;
 #endif
-			std::cout << "[" + log.date + "] " + "[" + log.level + "] " + log.message << std::endl;
+			std::cout << "[" + date + "] " + "[" + level + "] " + message << std::endl;
 		}
 	} // namespace Util
 } // namespace VTX

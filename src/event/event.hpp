@@ -27,6 +27,46 @@ namespace VTX
 			CHANGE_REPRESENTATION
 		};
 
+		// Event structures.
+		struct VTXEvent
+		{
+			VTXEvent( const VTX_EVENT & p_event ) : name( p_event ) {}
+			virtual ~VTXEvent() = default;
+			VTX_EVENT name;
+		};
+
+		template<typename T>
+		struct VTXEventArg : public VTXEvent
+		{
+			VTXEventArg( const VTX_EVENT & p_event, const T p_arg ) : VTXEvent( p_event ), arg( p_arg ) {}
+			const T arg;
+		};
+
+		struct VTXEventFloat : public VTXEventArg<float>
+		{
+			VTXEventFloat( const VTX_EVENT & p_event, const float p_arg ) : VTXEventArg( p_event, p_arg ) {}
+		};
+
+		struct VTXEventString : public VTXEventArg<std::string>
+		{
+			VTXEventString( const VTX_EVENT & p_event, const std::string p_arg ) : VTXEventArg( p_event, p_arg ) {}
+		};
+
+		struct VTXEventLog : public VTXEvent
+		{
+			VTXEventLog( const VTX_EVENT &	 p_event,
+						 const std::string & p_level,
+						 const std::string & p_date,
+						 const std::string & p_message ) :
+				VTXEvent( p_event ),
+				level( p_level ), date( p_date ), message( p_message )
+			{
+			}
+			std::string level;
+			std::string date;
+			std::string message;
+		};
+
 	} // namespace Event
 } // namespace VTX
 #endif

@@ -13,7 +13,7 @@ namespace VTX
 		class BaseEventReceiver
 		{
 		  public:
-			virtual void receiveEvent( const T & p_event, void * const p_arg = nullptr ) {};
+			virtual void receiveEvent( T * const p_event ) {};
 
 		  protected:
 			virtual void _registerEvents()	 = 0;

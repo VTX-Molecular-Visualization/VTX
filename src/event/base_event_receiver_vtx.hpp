@@ -6,24 +6,21 @@
 #endif
 
 #include "base_event_receiver.hpp"
+#include "define.hpp"
 #include "event.hpp"
 #include <string>
 #include <vector>
-#include "define.hpp"
 
 namespace VTX
 {
 	namespace Event
 	{
-		class BaseEventReceiverVTX : public BaseEventReceiver<VTX_EVENT>
+		class BaseEventReceiverVTX : public BaseEventReceiver<VTXEvent>
 		{
 		  protected:
 			virtual void				   _registerEvents() override final;
 			virtual void				   _unregisterEvents() override final;
-			virtual std::vector<VTX_EVENT> _getEvents() const
-			{
-				return std::vector<VTX_EVENT>();
-			}
+			virtual std::vector<VTX_EVENT> _getEvents() const { return std::vector<VTX_EVENT>(); }
 		};
 	} // namespace Event
 } // namespace VTX

@@ -22,13 +22,6 @@ namespace VTX
 				LOG_LVL_ERROR
 			};
 
-			struct Log
-			{
-				std::string level;
-				std::string date;
-				std::string message;
-			};
-
 			static void logDebug( const std::string & );
 			static void logInfo( const std::string & );
 			static void logWarning( const std::string & );

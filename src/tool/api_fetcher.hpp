@@ -42,9 +42,9 @@ namespace VTX
 			{
 				float progress = 0.f;
 				if ( p_dltotal > 0.f ) { progress = (float)p_dlnow / (float)p_dltotal; }
-				VTX_DEBUG( std::to_string( progress * 100 ) + "%" );
 
-				VTXApp::get().getEventManager().fireEvent( Event::Global::UPDATE_PROGRESS_BAR, &progress );
+				VTXApp::get().getEventManager().fireEventAsync(
+					new Event::VTXEventFloat( Event::Global::UPDATE_PROGRESS_BAR, progress ) );
 
 				return 0;
 			}
