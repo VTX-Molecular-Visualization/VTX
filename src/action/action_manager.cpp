@@ -6,7 +6,7 @@ namespace VTX
 {
 	namespace Action
 	{
-		void ActionManager::executeAction( BaseAction * const p_action )
+		void ActionManager::action( BaseAction * const p_action )
 		{
 			p_action->execute();
 
@@ -30,12 +30,12 @@ namespace VTX
 			_bufferRedo.clear();
 		}
 
-		void ActionManager::executeAction( const std::string & p_action )
+		void ActionManager::action( const std::string & p_action )
 		{
 			// TODO: extract args from string.
 			// TODO: map string to class with variadics (not possible in cpp, no reflection).
 			// Name action with enum?
-			if ( p_action == "snapshot" ) { executeAction( new Snapshot() ); }
+			if ( p_action == "snapshot" ) { action( new Snapshot() ); }
 		}
 
 		bool ActionManager::canUndo() const { return _bufferUndo.size() > 0; }

@@ -35,13 +35,6 @@ namespace VTX
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
-		void action( Action::BaseAction * const ) const;
-		void action( const std::string & ) const;
-		bool canUndo() const;
-		void undo() const;
-		bool canRedo() const;
-		void redo() const;
-
 		void initRenderer() const;
 		void renderScene() const { _renderer->render( *_scene ); }
 
@@ -49,6 +42,7 @@ namespace VTX
 		inline Renderer::BaseRenderer &			getRenderer() { return *_renderer; }
 		inline Renderer::GLSL::ProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
 		inline UI::UserInterface &				getUI() { return *_ui; }
+		inline Action::ActionManager &			getActionManager() { return *_actionManager; }
 		inline Event::EventManager &			getEventManager() { return *_eventManager; }
 		inline Worker::WorkerManager &			getWorkerManager() { return *_workerManager; }
 

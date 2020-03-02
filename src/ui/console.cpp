@@ -42,7 +42,7 @@ namespace VTX
 								   IM_ARRAYSIZE( action ),
 								   ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll
 									   | ImGuiInputTextFlags_NoUndoRedo ) )
-			{ VTXApp::get().action( std::string( action ) ); }
+			{ VTXApp::get().getActionManager().action( std::string( action ) ); }
 
 			if ( ImGui::GetScrollY() >= ImGui::GetScrollMaxY() ) { ImGui::SetScrollHereY( 1.0f ); }
 

@@ -29,7 +29,7 @@ namespace VTX
 					int durationMode = (int)_getModel().getDurationMode();
 					if ( ImGui::Combo( LOCALE( "View.DurationMode" ), &durationMode, durationModes, 3 ) )
 					{
-						VTXApp::get().action( new Action::PathChangeDurationMode(
+						VTXApp::get().getActionManager().action( new Action::PathChangeDurationMode(
 							_getModel(), (Model::Path::DURATION_MODE)durationMode ) );
 					}
 
@@ -41,7 +41,7 @@ namespace VTX
 					int interpolationMode = (int)_getModel().getInterpolationMode();
 					if ( ImGui::Combo( LOCALE( "View.InterpolationMode" ), &interpolationMode, interpolationModes, 2 ) )
 					{
-						VTXApp::get().action( new Action::PathChangeInterpolationMode(
+						VTXApp::get().getActionManager().action( new Action::PathChangeInterpolationMode(
 							_getModel(), (Model::Path::INNTERPOLATION_MODE)interpolationMode ) );
 					}
 
@@ -49,7 +49,7 @@ namespace VTX
 					{
 						float duration = _getModel().getDuration();
 						if ( ImGui::InputFloat( LOCALE( "View.Duration" ), &duration, 1.f ) )
-						{ VTXApp::get().action( new Action::PathChangeDuration( _getModel(), duration ) ); }
+						{ VTXApp::get().getActionManager().action( new Action::PathChangeDuration( _getModel(), duration ) ); }
 					}
 					else
 					{
@@ -57,13 +57,13 @@ namespace VTX
 					}
 
 					if ( ImGui::Button( LOCALE( "View.Play" ) ) )
-					{ VTXApp::get().action( new Action::PathPlay( &_getModel() ) ); }
+					{ VTXApp::get().getActionManager().action( new Action::PathPlay( &_getModel() ) ); }
 					ImGui::SameLine();
 					if ( ImGui::Button( LOCALE( "View.Stop" ) ) )
 					{ VTXApp::get().goToState( ID::State::VISUALIZATION ); }
 					if ( ImGui::Button( LOCALE( "View.Viewpoint.Add" ) ) )
 					{
-						VTXApp::get().action(
+						VTXApp::get().getActionManager().action(
 							new Action::ViewpointCreate( _getModel(), VTXApp::get().getScene().getCamera() ) );
 					}
 				}

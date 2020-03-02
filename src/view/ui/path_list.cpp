@@ -25,7 +25,7 @@ namespace VTX
 							+ std::string("s")).c_str()  )/*,
 						 viewpoint->isSelected()*/ )
 						{
-							VTXApp::get().action(
+							VTXApp::get().getActionManager().action(
 								new Action::ViewpointGoTo( *viewpoint, VTXApp::get().getScene().getCamera() ) );
 							_getModel().setSelectedViewpoint( viewpoint );
 						}

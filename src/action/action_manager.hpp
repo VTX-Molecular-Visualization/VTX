@@ -19,8 +19,8 @@ namespace VTX
 		  public:
 			using ListActionUndonablePtr = std::list<BaseActionUndonable *>;
 
-			void executeAction( BaseAction * const );
-			void executeAction( const std::string & );
+			void action( BaseAction * const );
+			void action( const std::string & );
 			bool canUndo() const;
 			void undo();
 			bool canRedo() const;
