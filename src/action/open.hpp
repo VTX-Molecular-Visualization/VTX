@@ -21,7 +21,7 @@ namespace VTX
 			virtual void execute() override { VTXApp::get().goToState( ID::State::LOAD, (void *)&_path ); };
 
 		  private:
-			const IO::Path & _path;
+			const IO::Path _path;
 		};
 	} // namespace Action
 } // namespace VTX
