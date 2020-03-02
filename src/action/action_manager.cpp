@@ -6,36 +6,14 @@ namespace VTX
 {
 	namespace Action
 	{
-		void ActionManager::action( BaseAction * const p_action )
-		{
-			p_action->execute();
+		void ActionManager::execute( BaseAction * const p_action ) { _actionQueue.push( p_action ); }
 
-			// Handle undo.
-			BaseActionUndonable * undonable = dynamic_cast<BaseActionUndonable *>( p_action );
-			if ( undonable != nullptr )
-			{
-				_bufferUndo.push_front( undonable );
-				_purgeBuffer();
-			}
-			else
-			{
-				delete p_action;
-			}
-
-			// Clear redo actions.
-			for ( BaseActionUndonable * action : _bufferRedo )
-			{
-				delete action;
-			}
-			_bufferRedo.clear();
-		}
-
-		void ActionManager::action( const std::string & p_action )
+		void ActionManager::execute( const std::string & p_action )
 		{
 			// TODO: extract args from string.
 			// TODO: map string to class with variadics (not possible in cpp, no reflection).
 			// Name action with enum?
-			if ( p_action == "snapshot" ) { action( new Snapshot() ); }
+			if ( p_action == "snapshot" ) { execute( new Snapshot() ); }
 		}
 
 		bool ActionManager::canUndo() const { return _bufferUndo.size() > 0; }
@@ -60,6 +38,39 @@ namespace VTX
 			_bufferRedo.front()->redo();
 			_bufferUndo.push_front( _bufferRedo.front() );
 			_bufferRedo.pop_front();
+		}
+
+		void ActionManager::update( const double p_deltaTime )
+		{
+			while ( _actionQueue.empty() == false )
+			{
+				_flushAction( _actionQueue.front() );
+				_actionQueue.pop();
+			}
+		}
+
+		void ActionManager::_flushAction( BaseAction * p_action )
+		{
+			p_action->execute();
+
+			// Handle undo.
+			BaseActionUndonable * undonable = dynamic_cast<BaseActionUndonable *>( p_action );
+			if ( undonable != nullptr )
+			{
+				_bufferUndo.push_front( undonable );
+				_purgeBuffer();
+			}
+			else
+			{
+				delete p_action;
+			}
+
+			// Clear redo actions.
+			for ( BaseActionUndonable * action : _bufferRedo )
+			{
+				delete action;
+			}
+			_bufferRedo.clear();
 		}
 
 		void ActionManager::_purgeBuffer()

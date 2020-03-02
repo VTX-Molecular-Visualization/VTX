@@ -15,12 +15,12 @@ namespace VTX
 			switch ( p_key )
 			{
 			case SDL_SCANCODE_F1:
-				VTXApp::get().getActionManager().action( new Action::ViewpointCreate(
+				VTXApp::get().getActionManager().execute( new Action::ViewpointCreate(
 					*VTXApp::get().getScene().getPaths()[ 0 ], VTXApp::get().getScene().getCamera() ) );
 
-			case SDL_SCANCODE_F2: VTXApp::get().getActionManager().action( new Action::New() ); break;
+			case SDL_SCANCODE_F2: VTXApp::get().getActionManager().execute( new Action::New() ); break;
 			case SDL_SCANCODE_F10:
-				VTXApp::get().getActionManager().action( new Action::ActiveRenderer( !Setting::Rendering::isActive ) );
+				VTXApp::get().getActionManager().execute( new Action::ActiveRenderer( !Setting::Rendering::isActive ) );
 				break;
 			default: break;
 			}

@@ -12,6 +12,8 @@ namespace VTX
 	{
 		Molecule::~Molecule()
 		{
+			return;
+
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );

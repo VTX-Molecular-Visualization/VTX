@@ -30,7 +30,7 @@ namespace VTX
 			_receiversVTX.at( p_event ).erase( p_receiver );
 		}
 
-		void EventManager::flushEvent( VTXEvent * p_event )
+		void EventManager::_flushEvent( VTXEvent * p_event )
 		{
 			if ( _receiversVTX.find( p_event->name ) != _receiversVTX.end() )
 			{
@@ -81,7 +81,7 @@ namespace VTX
 			// VTX.
 			while ( _eventQueue.empty() == false )
 			{
-				flushEvent( _eventQueue.front() );
+				_flushEvent( _eventQueue.front() );
 				_eventQueue.pop();
 			}
 		}

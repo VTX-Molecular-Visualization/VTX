@@ -22,7 +22,10 @@ namespace VTX
 					Vec3f translation = _getModel().getTransform().getTranslationVector();
 					float t[]		  = { translation.x, translation.y, translation.z };
 					if ( ImGui::InputFloat3( "Position", t, 2 ) )
-					{ VTXApp::get().getActionManager().action( new Action::Translate( _getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) ); }
+					{
+						VTXApp::get().getActionManager().execute(
+							new Action::Translate( _getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
+					}
 					ImGui::PopID();
 
 					ImGui::Text( LOCALE( "Inspector.Transform.Rotation" ) );
@@ -42,7 +45,7 @@ namespace VTX
 					float s		= scale.x;
 					ImGui::PushID( "Scale" );
 					if ( ImGui::InputFloat( "Scale", &s, 1.f ) )
-					{ VTXApp::get().getActionManager().action( new Action::Scale( _getModel(), s ) ); }
+					{ VTXApp::get().getActionManager().execute( new Action::Scale( _getModel(), s ) ); }
 					ImGui::PopID();
 				}
 

@@ -25,20 +25,21 @@ namespace VTX
 			using MapStringVectorBaseEventReceiverVTXPtr = std::map<Event::VTX_EVENT, SetBaseEventReceiverVTXPtr>;
 			using QueueVTXEventPtr						 = std::queue<VTXEvent *>;
 
-			virtual void update( const double p_deltaTime ) override;
-
 			void registerEventReceiverSDL( BaseEventReceiverSDL * const );
 			void unregisterEventReceiverSDL( BaseEventReceiverSDL * const );
 			void registerEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
 			void unregisterEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
 
-			void flushEvent( VTXEvent * );
 			void fireEvent( VTXEvent * const );
+
+			virtual void update( const double p_deltaTime ) override;
 
 		  private:
 			SetBaseEventReceiverSDLPtr			   _receiversSDL = SetBaseEventReceiverSDLPtr();
 			MapStringVectorBaseEventReceiverVTXPtr _receiversVTX = MapStringVectorBaseEventReceiverVTXPtr();
 			QueueVTXEventPtr					   _eventQueue	 = QueueVTXEventPtr();
+
+			void _flushEvent( VTXEvent * );
 		};
 	} // namespace Event
 } // namespace VTX

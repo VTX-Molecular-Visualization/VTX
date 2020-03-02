@@ -105,6 +105,9 @@ namespace VTX
 		// Event manager.
 		_eventManager->update( _timeDelta );
 
+		// Action manager.
+		_actionManager->update( _timeDelta );
+
 		// Worker manager.
 		_workerManager->update( _timeDelta );
 

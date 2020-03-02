@@ -22,7 +22,10 @@ namespace VTX
 					{
 						float duration = _getModel().getDuration();
 						if ( ImGui::InputFloat( LOCALE( "View.Duration" ), &duration, 1.f ) )
-						{ VTXApp::get().getActionManager().action( new Action::ViewpointChangeDuration( _getModel(), duration ) ); }
+						{
+							VTXApp::get().getActionManager().execute(
+								new Action::ViewpointChangeDuration( _getModel(), duration ) );
+						}
 					}
 					else
 					{
@@ -31,13 +34,13 @@ namespace VTX
 
 					if ( ImGui::Button( LOCALE( "View.Replace" ) ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ViewpointReplace( _getModel(), VTXApp::get().getScene().getCamera() ) );
 					}
 
 					ImGui::SameLine();
 					if ( ImGui::Button( LOCALE( "View.Delete" ) ) )
-					{ VTXApp::get().getActionManager().action( new Action::ViewpointDelete( _getModel() ) ); }
+					{ VTXApp::get().getActionManager().execute( new Action::ViewpointDelete( _getModel() ) ); }
 				}
 				ImGui::PopID();
 			}

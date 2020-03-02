@@ -127,7 +127,7 @@ namespace VTX
 							atom.setResiduePtr( &residue );
 							atom.setId( atomGlobalIdx );
 							const std::string & atomSymbol = group.elementList[ atomIdx ];
-							std::optional		symbol = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( atomSymbol );
+							std::optional symbol = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
 							symbol.has_value() ? atom.setSymbol( symbol.value() )
 											   : p_molecule.addUnknownAtomSymbol( atomSymbol );
 							const float * const color = Model::Atom::SYMBOL_COLOR[ (int)atom.getSymbol() ];

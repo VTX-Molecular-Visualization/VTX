@@ -45,7 +45,7 @@ namespace VTX
 				{
 					// New.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.New" ) /*, "Ctrl+N"*/ ) )
-					{ VTXApp::get().getActionManager().action( new Action::New() ); }
+					{ VTXApp::get().getActionManager().execute( new Action::New() ); }
 
 					// Open.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Open" ) ) )
@@ -56,7 +56,7 @@ namespace VTX
 
 					// Quit.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
-					{ VTXApp::get().getActionManager().action( new Action::Quit() ); }
+					{ VTXApp::get().getActionManager().execute( new Action::Quit() ); }
 
 					ImGui::EndMenu();
 				}
@@ -67,49 +67,50 @@ namespace VTX
 					bool showScene = VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->isVisible();
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), &showScene ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ActiveUIComponent( ID::UI::SCENE, showScene ) );
 					}
 					bool showInspector = VTXApp::get().getUI().getComponentByName( ID::UI::INSPECTOR )->isVisible();
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Inspector" ), &showInspector ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ActiveUIComponent( ID::UI::INSPECTOR, showInspector ) );
 					}
 					bool showConsole = VTXApp::get().getUI().getComponentByName( ID::UI::CONSOLE )->isVisible();
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), &showConsole ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ActiveUIComponent( ID::UI::CONSOLE, showConsole ) );
 					}
 					bool showCameraEditor
 						= VTXApp::get().getUI().getComponentByName( ID::UI::CAMERA_EDITOR )->isVisible();
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.CameraEditor" ), &showCameraEditor ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, showCameraEditor ) );
 					}
 
 					ImGui::Separator();
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.CloseAll" ) ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ActiveUIComponent( ID::UI::SCENE, false ) );
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ActiveUIComponent( ID::UI::INSPECTOR, false ) );
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ActiveUIComponent( ID::UI::CONSOLE, false ) );
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, false ) );
 					}
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.ShowAll" ) ) )
 					{
-						VTXApp::get().getActionManager().action( new Action::ActiveUIComponent( ID::UI::SCENE, true ) );
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
+							new Action::ActiveUIComponent( ID::UI::SCENE, true ) );
+						VTXApp::get().getActionManager().execute(
 							new Action::ActiveUIComponent( ID::UI::INSPECTOR, true ) );
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ActiveUIComponent( ID::UI::CONSOLE, true ) );
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, true ) );
 					}
 					ImGui::EndMenu();
@@ -122,7 +123,7 @@ namespace VTX
 					{
 						try
 						{
-							VTXApp::get().getActionManager().action(
+							VTXApp::get().getActionManager().execute(
 								new Action::PathImport( VTXApp::get().getScene().getPaths()[ 0 ] ) );
 						}
 						catch ( const std::exception & e )
@@ -137,12 +138,12 @@ namespace VTX
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Export" ), isVisiblePtr() ) )
 				{
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Snapshot" ) ) )
-					{ VTXApp::get().getActionManager().action( new Action::Snapshot() ); }
+					{ VTXApp::get().getActionManager().execute( new Action::Snapshot() ); }
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Path" ) ) )
 					{
 						try
 						{
-							VTXApp::get().getActionManager().action(
+							VTXApp::get().getActionManager().execute(
 								new Action::PathExport( VTXApp::get().getScene().getPaths()[ 0 ] ) );
 						}
 						catch ( const std::exception & e )
@@ -152,7 +153,7 @@ namespace VTX
 					}
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Video" ) ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::PathExportVideo( VTXApp::get().getScene().getPaths()[ 0 ] ) );
 					}
 					ImGui::EndMenu();
@@ -167,7 +168,8 @@ namespace VTX
 					int theme = (int)Setting::UI::theme;
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Theme" ), &theme, themes, 3 ) )
 					{
-						VTXApp::get().getActionManager().action( new Action::ChangeTheme( (Setting::UI::THEME)theme ) );
+						VTXApp::get().getActionManager().execute(
+							new Action::ChangeTheme( (Setting::UI::THEME)theme ) );
 					}
 
 					ImGui::Separator();
@@ -178,7 +180,7 @@ namespace VTX
 					int symbolDisplayMode = (int)Setting::UI::symbolDisplayMode;
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.SymbolDisplay" ), &symbolDisplayMode, values, 2 ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ChangeDisplayMode( (Setting::UI::SYMBOL_DISPLAY_MODE)symbolDisplayMode ) );
 					}
 
@@ -187,7 +189,7 @@ namespace VTX
 					// Active renderer.
 					bool isActive = Setting::Rendering::isActive;
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.Rendering" ), &isActive ) )
-					{ VTXApp::get().getActionManager().action( new Action::ActiveRenderer( isActive ) ); };
+					{ VTXApp::get().getActionManager().execute( new Action::ActiveRenderer( isActive ) ); };
 
 					// Representation.
 					const char * representations[] = { LOCALE( "Enum.Representation.BallsAndSticks" ),
@@ -197,7 +199,7 @@ namespace VTX
 					if ( ImGui::Combo(
 							 LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 3 ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ChangeRepresentation( (View::MOLECULE_REPRESENTATION)representation ) );
 					}
 
@@ -208,7 +210,7 @@ namespace VTX
 					int			 colorMode = (int)Setting::Rendering::colorMode;
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ), &colorMode, modes, 3 ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ChangeColorMode( (View::MOLECULE_COLOR_MODE)colorMode ) );
 					}
 
@@ -219,28 +221,28 @@ namespace VTX
 					int			 shading	= (int)Setting::Rendering::shading;
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ), &shading, shadings, 3 ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ChangeShading( (Renderer::SHADING)shading ) );
 					}
 
 					// SSAO.
 					bool useSSAO = Setting::Rendering::useSSAO;
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &useSSAO ) )
-					{ VTXApp::get().getActionManager().action( new Action::ActiveSSAO( useSSAO ) ); };
+					{ VTXApp::get().getActionManager().execute( new Action::ActiveSSAO( useSSAO ) ); };
 
 					float aoRadius = Setting::Rendering::aoRadius;
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AORadius" ),
 											 &aoRadius,
 											 RENDERER_AO_RADIUS_MIN,
 											 RENDERER_AO_RADIUS_MAX ) )
-					{ VTXApp::get().getActionManager().action( new Action::ChangeAORadius( aoRadius ) ); }
+					{ VTXApp::get().getActionManager().execute( new Action::ChangeAORadius( aoRadius ) ); }
 
 					int aoIntensity = Setting::Rendering::aoIntensity;
 					if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOIntensity" ),
 										   &aoIntensity,
 										   RENDERER_AO_INTENSITY_MIN,
 										   RENDERER_AO_INTENSITY_MAX ) )
-					{ VTXApp::get().getActionManager().action( new Action::ChangeAOIntensity( aoIntensity ) ); }
+					{ VTXApp::get().getActionManager().execute( new Action::ChangeAOIntensity( aoIntensity ) ); }
 					ImGui::Separator();
 
 					int aoBlurSize = Setting::Rendering::aoBlurSize;
@@ -248,7 +250,7 @@ namespace VTX
 										   &aoBlurSize,
 										   RENDERER_AO_BLUR_SIZE_MIN,
 										   RENDERER_AO_BLUR_SIZE_MAX ) )
-					{ VTXApp::get().getActionManager().action( new Action::ChangeAOBlurSize( aoBlurSize ) ); }
+					{ VTXApp::get().getActionManager().execute( new Action::ChangeAOBlurSize( aoBlurSize ) ); }
 					ImGui::Separator();
 
 					// Auto rotate.
@@ -258,21 +260,24 @@ namespace VTX
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
 					{
-						VTXApp::get().getActionManager().action( new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) );
+						VTXApp::get().getActionManager().execute(
+							new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) );
 					}
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateYSpeed" ),
 											 &autoRotateSpeed.y,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
 					{
-						VTXApp::get().getActionManager().action( new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) );
+						VTXApp::get().getActionManager().execute(
+							new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) );
 					}
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateZSpeed" ),
 											 &autoRotateSpeed.z,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
 					{
-						VTXApp::get().getActionManager().action( new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) );
+						VTXApp::get().getActionManager().execute(
+							new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) );
 					}
 
 					ImGui::Separator();
@@ -284,7 +289,7 @@ namespace VTX
 											 CONTROLLER_TRANSLATION_SPEED_MIN,
 											 CONTROLLER_TRANSLATION_SPEED_MAX ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ChangeTranslationSpeed( translationSpeed ) );
 					}
 					float translationFactorSpeed = Setting::Controller::translationFactorSpeed;
@@ -293,7 +298,7 @@ namespace VTX
 											 CONTROLLER_TRANSLATION_FACTOR_MIN,
 											 CONTROLLER_TRANSLATION_FACTOR_MAX ) )
 					{
-						VTXApp::get().getActionManager().action(
+						VTXApp::get().getActionManager().execute(
 							new Action::ChangeTranslationFactorSpeed( translationFactorSpeed ) );
 					}
 					float rotationSpeed = Setting::Controller::rotationSpeed;
@@ -301,12 +306,12 @@ namespace VTX
 											 &rotationSpeed,
 											 CONTROLLER_ROTATION_SPEED_MIN,
 											 CONTROLLER_ROTATION_SPEED_MAX ) )
-					{ VTXApp::get().getActionManager().action( new Action::ChangeRotationSpeed( rotationSpeed ) ); }
+					{ VTXApp::get().getActionManager().execute( new Action::ChangeRotationSpeed( rotationSpeed ) ); }
 
 					// Invert y axis.
 					bool yAxisInverted = Setting::Controller::yAxisInverted;
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ), &yAxisInverted ) )
-					{ VTXApp::get().getActionManager().action( new Action::ActiveYAxisInversion( yAxisInverted ) ); }
+					{ VTXApp::get().getActionManager().execute( new Action::ActiveYAxisInversion( yAxisInverted ) ); }
 
 					ImGui::EndMenu();
 				}
@@ -321,7 +326,7 @@ namespace VTX
 				if ( ImGui::InputText( LOCALE( "MainMenu.OpenAPI" ), name, IM_ARRAYSIZE( name ) ) )
 				{
 					std::string id = std::string( name );
-					if ( id.size() == 4 ) { VTXApp::get().getActionManager().action( new Action::OpenApi( id ) ); }
+					if ( id.size() == 4 ) { VTXApp::get().getActionManager().execute( new Action::OpenApi( id ) ); }
 				}
 
 				ImGui::PopItemWidth();
@@ -353,7 +358,7 @@ namespace VTX
 			if ( _openFileDialog && _openFileDialog->ready() )
 			{
 				std::vector<std::string> result = _openFileDialog->result();
-				if ( result.size() ) { VTXApp::get().getActionManager().action( new Action::Open( result[ 0 ] ) ); }
+				if ( result.size() ) { VTXApp::get().getActionManager().execute( new Action::Open( result[ 0 ] ) ); }
 				_openFileDialog = nullptr;
 			}
 		}
