@@ -95,31 +95,26 @@ namespace VTX
 
 	void VTXApp::_update()
 	{
-		_chrono.start();
-
 		// Set size.
 		ImGuiIO & io = ImGui::GetIO();
-		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-		_renderer->setSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 		// Event manager.
-		_eventManager->update( _timeDelta );
+		_eventManager->update( io.DeltaTime );
 
 		// Action manager.
-		_actionManager->update( _timeDelta );
+		_actionManager->update( io.DeltaTime );
 
 		// Worker manager.
-		_workerManager->update( _timeDelta );
+		_workerManager->update( io.DeltaTime );
 
 		// State machine.
-		_stateMachine->update( _timeDelta );
+		_stateMachine->update( io.DeltaTime );
 
 		// UI.
 		_ui->draw();
 
 		// Timers.
-		_chrono.stop();
-		_timeDelta = _chrono.elapsedTime();
+		_timeDelta = io.DeltaTime;
 		_timeTotal += _timeDelta;
 	}
 

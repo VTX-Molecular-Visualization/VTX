@@ -39,6 +39,8 @@ namespace VTX
 			MapStringVectorBaseEventReceiverVTXPtr _receiversVTX = MapStringVectorBaseEventReceiverVTXPtr();
 			QueueVTXEventPtr					   _eventQueue	 = QueueVTXEventPtr();
 
+			void _handlerWindowEvent( const SDL_WindowEvent & );
+
 			void _flushEvent( VTXEvent * );
 		};
 	} // namespace Event

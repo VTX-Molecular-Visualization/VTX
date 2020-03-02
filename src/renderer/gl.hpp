@@ -14,15 +14,18 @@ namespace VTX
 		class GL : public BaseRenderer
 		{
 		  public:
-			GL()  = default;
-			~GL() = default;
+			GL() = default;
+			~GL();
 
 			virtual void init( Object3D::Scene &, uint, uint ) override;
 			virtual void clear( Object3D::Scene & ) override;
 			virtual void render( Object3D::Scene & ) override;
 			virtual void setShading() override;
+			virtual void resize( const uint, const uint ) override;
 
 		  private:
+			Vec4f _backgroundColor = Vec4f( 1.f, 1.f, 1.f, 1.f );
+
 			// Geometry pass.
 			GLuint _fboGeo						 = GL_INVALID_VALUE;
 			GLuint _colorNormalCompressedTexture = GL_INVALID_VALUE;

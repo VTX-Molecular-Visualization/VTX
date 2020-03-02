@@ -1,4 +1,5 @@
 #include "event_manager.hpp"
+#include "action/resize.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -56,15 +57,12 @@ namespace VTX
 				case SDL_QUIT:
 				{
 					VTXApp::get().stop();
-					return;
+					break;
 				}
 				case SDL_WINDOWEVENT:
 				{
-					if ( event.window.event == SDL_WINDOWEVENT_CLOSE )
-					{
-						VTXApp::get().stop();
-						return;
-					}
+					_handlerWindowEvent( event.window );
+					break;
 				}
 				}
 
@@ -83,6 +81,17 @@ namespace VTX
 			{
 				_flushEvent( _eventQueue.front() );
 				_eventQueue.pop();
+			}
+		}
+
+		void EventManager::_handlerWindowEvent( const SDL_WindowEvent & p_event )
+		{
+			switch ( p_event.event )
+			{
+			case SDL_WINDOWEVENT_CLOSE: VTXApp::get().stop(); break;
+			case SDL_WINDOWEVENT_RESIZED:
+				VTXApp::get().getActionManager().execute( new Action::Resize( p_event.data1, p_event.data2 ) );
+				break;
 			}
 		}
 

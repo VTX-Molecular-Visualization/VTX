@@ -10,6 +10,17 @@ namespace VTX
 {
 	namespace Renderer
 	{
+		GL::~GL()
+		{
+			glDeleteTextures( 1, &_colorNormalCompressedTexture );
+			glDeleteTextures( 1, &_camSpacePositionsTexture );
+			glDeleteTextures( 1, &_depthTexture );
+			glDeleteTextures( 1, &_ssaoTexture );
+			glDeleteTextures( 1, &_noiseTexture );
+			glDeleteTextures( 1, &_blurTexture );
+			glDeleteTextures( 1, &_shadingTexture );
+		}
+
 		void GL::init( Object3D::Scene & p_scene, uint p_width, uint p_height )
 		{
 			if ( _isInitialized ) { return; }
@@ -33,12 +44,106 @@ namespace VTX
 			VTX_INFO( "Renderer initialized" );
 		}
 
+		void GL::resize( const uint p_width, const uint p_height )
+		{
+			BaseRenderer::resize( p_width, p_height );
+
+			glDeleteTextures( 1, &_colorNormalCompressedTexture );
+			glDeleteTextures( 1, &_camSpacePositionsTexture );
+			glDeleteTextures( 1, &_depthTexture );
+			glDeleteTextures( 1, &_ssaoTexture );
+			glDeleteTextures( 1, &_noiseTexture );
+			glDeleteTextures( 1, &_blurTexture );
+			glDeleteTextures( 1, &_shadingTexture );
+
+			// Geometric pass.
+			glBindFramebuffer( GL_FRAMEBUFFER, _fboGeo );
+
+			glGenTextures( 1, &_colorNormalCompressedTexture );
+			glBindTexture( GL_TEXTURE_2D, _colorNormalCompressedTexture );
+			glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA32UI, _width, _height );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+
+			glGenTextures( 1, &_camSpacePositionsTexture );
+			glBindTexture( GL_TEXTURE_2D, _camSpacePositionsTexture );
+			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, _width, _height, 0, GL_RGBA, GL_FLOAT, NULL );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+			glGenTextures( 1, &_depthTexture );
+			glBindTexture( GL_TEXTURE_2D, _depthTexture );
+			glTexStorage2D( GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, _width, _height );
+
+			glFramebufferTexture2D(
+				GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _colorNormalCompressedTexture, 0 );
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _camSpacePositionsTexture, 0 );
+			glFramebufferTexture( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _depthTexture, 0 );
+
+			static const GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+
+			glDrawBuffers( 2, drawBuffers );
+
+			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+			GLenum fboStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+			if ( fboStatus != GL_FRAMEBUFFER_COMPLETE ) { VTX_WARNING( "Framebuffer not complete: " + fboStatus ); }
+
+			GLenum glstatus = glGetError();
+			if ( glstatus != GL_NO_ERROR ) { VTX_ERROR( "Error in GL call: " + glstatus ); }
+
+			// SSAO pass.
+			glBindFramebuffer( GL_FRAMEBUFFER, _fboSSAO );
+
+			glGenTextures( 1, &_ssaoTexture );
+			glBindTexture( GL_TEXTURE_2D, _ssaoTexture );
+			glTexImage2D( GL_TEXTURE_2D, 0, GL_RED, _width, _height, 0, GL_RGB, GL_FLOAT, NULL );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _ssaoTexture, 0 );
+			static const GLenum drawBufferSSAO[] = { GL_COLOR_ATTACHMENT0 };
+			glDrawBuffers( 1, drawBufferSSAO );
+
+			// Blur pass.
+			glBindFramebuffer( GL_FRAMEBUFFER, _fboBlur );
+
+			glGenTextures( 1, &_blurTexture );
+			glBindTexture( GL_TEXTURE_2D, _blurTexture );
+			glTexImage2D( GL_TEXTURE_2D, 0, GL_RED, _width, _height, 0, GL_RGB, GL_FLOAT, NULL );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+			glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _blurTexture, 0 );
+			static const GLenum drawBufferBlur[] = { GL_COLOR_ATTACHMENT0 };
+			glDrawBuffers( 1, drawBufferBlur );
+
+			// Shading pass.
+			glBindFramebuffer( GL_FRAMEBUFFER, _fboShading );
+
+			glGenTextures( 1, &_shadingTexture );
+			glBindTexture( GL_TEXTURE_2D, _shadingTexture );
+			glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA32F, _width, _height );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+
+			glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _shadingTexture, 0 );
+
+			static const GLenum draw_bufferShading[] = { GL_COLOR_ATTACHMENT0 };
+			glDrawBuffers( 1, draw_bufferShading );
+		}
+
 		void GL::_initGeometricPass()
 		{
-			VTX_INFO( std::to_string( _width ) + " x " + std::to_string( _height ) );
+			// TODO: remove.
 			glEnable( GL_DEPTH_TEST );
 			glClearDepth( 1.f );
 			glDepthFunc( GL_LESS );
+			// Only when using point sprites.
 			glEnable( GL_PROGRAM_POINT_SIZE );
 			glPointParameteri( GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT );
 			glViewport( 0, 0, _width, _height );
@@ -266,7 +371,7 @@ namespace VTX
 		void GL::_geometricPass( Object3D::Scene & p_scene )
 		{
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboGeo );
-			glClearColor( 1.0, 0, 0, 1.0 );
+			// glClearColor( _backgroundColor.r, _backgroundColor.g, _backgroundColor.b, _backgroundColor.a );
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 			for ( Model::Molecule * const molecule : p_scene.getMolecules() )

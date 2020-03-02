@@ -20,16 +20,14 @@ namespace VTX
 
 			inline const Vec3f & getPosition() const { return _position; }
 			inline const Quatd & getRotation() const { return _rotation; }
-			inline Mat4f		 getViewMatrix() const { return _viewMatrix; }
-			inline Mat4f		 getProjectionMatrix() const
-			{
-				return glm::perspective( glm::radians( _fov ), _screenWidth / _screenHeight, _near, _far );
-			}
+			inline const Mat4f & getViewMatrix() const { return _viewMatrix; }
+			inline const Mat4f & getProjectionMatrix() const { return _projectionMatrix; }
 
 			inline void setScreenSize( const int p_width, const int p_height )
 			{
 				_screenWidth  = float( p_width );
 				_screenHeight = float( p_height );
+				_updateProjectionMatrix();
 			}
 
 			inline void setPosition( const Vec3f & p_position )
@@ -79,9 +77,12 @@ namespace VTX
 			Vec3f _left	 = -VEC3F_X;
 			Vec3f _up	 = VEC3F_Y;
 			Mat4f _viewMatrix;
+			Mat4f _projectionMatrix;
 
 			void _updateRotation();
 			void _updateViewMatrix();
+			// TODO: call it when changing near, far, fov
+			void _updateProjectionMatrix();
 
 		}; // namespace Camera
 	}	   // namespace Object3D

@@ -24,7 +24,7 @@ namespace VTX
 			};
 
 		  private:
-			const Vec3f & _value;
+			const Vec3f _value;
 		};
 	} // namespace Action
 } // namespace VTX

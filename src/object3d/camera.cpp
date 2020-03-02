@@ -77,6 +77,11 @@ namespace VTX
 
 		void Camera::_updateViewMatrix() { _viewMatrix = glm::lookAt( _position, _position + _front, _up ); }
 
+		void Camera::_updateProjectionMatrix()
+		{
+			_projectionMatrix = glm::perspective( glm::radians( _fov ), _screenWidth / _screenHeight, _near, _far );
+		}
+
 		void Camera::print() const
 		{
 			VTX_INFO( "Position: " + glm::to_string( _position ) );

@@ -31,7 +31,7 @@ namespace VTX
 			BaseRenderer()	= default;
 			~BaseRenderer() = default;
 
-			void BaseRenderer::setSize( const int p_width, const int p_height )
+			virtual void BaseRenderer::resize( const uint p_width, const uint p_height )
 			{
 				_width	= p_width;
 				_height = p_height;
@@ -45,9 +45,9 @@ namespace VTX
 			inline GLSL::ProgramManager & getProgramManager() { return _programManager; }
 
 		  protected:
-			bool			   _isInitialized  = false;
-			uint			   _width		   = 0;
-			uint			   _height		   = 0;
+			bool				 _isInitialized	 = false;
+			uint				 _width			 = 0;
+			uint				 _height		 = 0;
 			GLSL::ProgramManager _programManager = GLSL::ProgramManager();
 		};
 	} // namespace Renderer
