@@ -6,6 +6,8 @@ namespace VTX
 {
 	namespace Worker
 	{
+		void WorkerManager::runWorker( BaseWorker * const p_woker ) { p_woker->work(); }
+
 		void WorkerManager::runWorker( BaseWorker * const p_worker, const std::function<void( void )> * p_callback )
 		{
 			_workers.emplace( p_worker, p_callback );

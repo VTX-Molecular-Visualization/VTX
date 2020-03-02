@@ -22,6 +22,9 @@ namespace VTX
 			using VectorThread		   = std::vector<std::thread>;
 
 		  public:
+			// Sync.
+			void runWorker( BaseWorker * const p_woker );
+			// Async.
 			void runWorker( BaseWorker * const p_woker, const std::function<void( void )> * );
 
 			virtual void update( const double p_deltaTime ) override;
