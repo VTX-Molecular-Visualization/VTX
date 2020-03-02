@@ -36,21 +36,31 @@ namespace VTX
 				}
 			}
 
-			Program * const ProgramManager::createProgram( const std::string & p_name )
+			Program * const ProgramManager::createProgram( const std::string &				p_name,
+														   const std::vector<std::string> & p_shaders )
 			{
 				VTX_DEBUG( "Creating program: " + p_name );
 
 				if ( _programs.find( p_name ) == _programs.end() )
 				{
 					_programs[ p_name ] = Program();
-					_programs[ p_name ].create( p_name );
+					Program & program	= _programs[ p_name ];
+					program.create( p_name );
+
+					for ( const std::string & shader : p_shaders )
+					{
+						program.attachShader( _createShader( shader ) );
+					}
+
+					program.link();
+
+					VTX_DEBUG( "Program " + std::to_string( _programs[ p_name ].getId() ) + " created: " + p_name );
 				}
 				else
 				{
 					VTX_WARNING( "Program " + p_name + " already exists" );
 				}
 
-				VTX_DEBUG( "Program " + std::to_string( _programs[ p_name ].getId() ) + " created: " + p_name );
 				return &( _programs[ p_name ] );
 			}
 
@@ -73,7 +83,7 @@ namespace VTX
 				return nullptr;
 			}
 
-			GLuint ProgramManager::createShader( const IO::Path & p_path )
+			GLuint ProgramManager::_createShader( const IO::Path & p_path )
 			{
 				VTX_DEBUG( "Creating shader: " + p_path.getFileName() );
 
@@ -112,13 +122,12 @@ namespace VTX
 						VTX_ERROR( error );
 						return GL_INVALID_INDEX;
 					}
+					VTX_DEBUG( "Shader created: " + name );
 				}
 				else
 				{
 					VTX_WARNING( "Shader already exists" );
 				}
-
-				VTX_DEBUG( "Shader created: " + name );
 
 				return shaderId;
 			}

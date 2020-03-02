@@ -10,11 +10,9 @@ namespace VTX
 			void Sphere::init()
 			{
 				Renderer::GLSL::ProgramManager & pm		 = VTXApp::get().getProgramManager();
-				Renderer::GLSL::Program *		 program = pm.createProgram( "SphereImpostorGeomShader" );
-				program->attachShader( pm.createShader( "sphereImpostorGeom.vert" ) );
-				program->attachShader( pm.createShader( "sphereImpostorGeomQuad.geom" ) );
-				program->attachShader( pm.createShader( "sphereImpostorDeferred.frag" ) );
-				program->link();
+				Renderer::GLSL::Program *		 program = pm.createProgram(
+					   "SphereImpostorGeomShader",
+					   { "sphereImpostorGeom.vert", "sphereImpostorGeomQuad.geom", "sphereImpostorDeferred.frag" } );
 
 				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );

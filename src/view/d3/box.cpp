@@ -9,11 +9,8 @@ namespace VTX
 		{
 			void Box::init()
 			{
-				Renderer::GLSL::ProgramManager & pm		 = VTXApp::get().getProgramManager();
-				Renderer::GLSL::Program *		 program = pm.createProgram( "LineShader" );
-				program->attachShader( pm.createShader( "line.vert" ) );
-				program->attachShader( pm.createShader( "line.frag" ) );
-				program->link();
+				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
+				Renderer::GLSL::Program * program	= pm.createProgram( "LineShader", { "line.vert", "line.frag" } );
 
 				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );

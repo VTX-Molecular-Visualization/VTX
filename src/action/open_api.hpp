@@ -21,14 +21,15 @@ namespace VTX
 		class OpenApi : public BaseAction
 		{
 		  public:
-			explicit OpenApi( const std::string & p_id ) : _id( p_id ) {}
+			explicit OpenApi( const std::string p_id ) : _id( p_id ) {}
 
 			virtual void execute() override
 			{
 				Worker::ApiFetcher fetcher = Worker::ApiFetcher( API_URL_MMTF + _id );
+
 				try
 				{
-					fetcher.work();
+					VTXApp::get().getWorkerManager().runWorker( &fetcher );
 				}
 				catch ( const std::exception & p_e )
 				{
@@ -59,7 +60,7 @@ namespace VTX
 			*/			}
 
 			  private:
-				const std::string & _id;
+				const std::string _id;
 		};
 
 	} // namespace Action

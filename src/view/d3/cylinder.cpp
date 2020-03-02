@@ -10,12 +10,9 @@ namespace VTX
 			void Cylinder::init()
 			{
 				Renderer::GLSL::ProgramManager & pm		 = VTXApp::get().getProgramManager();
-				Renderer::GLSL::Program *		 program = pm.createProgram( "CylinderGeom" );
-				program->attachShader( pm.createShader( "cylinderImpostorGeom.vert" ) );
-				program->attachShader( pm.createShader( "cylinderImpostorGeom.geom" ) );
-				program->attachShader( pm.createShader( "cylinderImpostorDeferred.frag" ) );
-				program->link();
-
+				Renderer::GLSL::Program *		 program = pm.createProgram(
+					   "CylinderGeom",
+					   { "cylinderImpostorGeom.vert", "cylinderImpostorGeom.geom", "cylinderImpostorDeferred.frag" } );
 				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
 				_uRadius		  = glGetUniformLocation( program->getId(), "uCylRad" );

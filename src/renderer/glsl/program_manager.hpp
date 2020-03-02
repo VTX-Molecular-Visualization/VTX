@@ -7,6 +7,7 @@
 
 #include "program.hpp"
 #include <map>
+#include <vector>
 
 namespace VTX
 {
@@ -36,11 +37,11 @@ namespace VTX
 
 				ProgramManager() = default;
 				~ProgramManager();
-				Program * const createProgram( const std::string & );
+				Program * const createProgram( const std::string &, const std::vector<std::string> & );
 				void			deleteProgram( const std::string & );
 				Program * const getProgram( const std::string & );
-				GLuint			createShader( const IO::Path & );
-				GLuint			getShader( const std::string & ) const;
+
+				GLuint getShader( const std::string & ) const;
 
 				static const MapStringToEnum EXTENSIONS;
 				static SHADER_TYPE			 getShaderType( const std::string & );
@@ -49,10 +50,11 @@ namespace VTX
 				MapStringToProgram _programs = MapStringToProgram();
 				MapStringToGLuint  _shaders	 = MapStringToGLuint();
 
+				GLuint		_createShader( const IO::Path & );
 				std::string _getShaderErrors( const GLuint ) const;
 			};
 		} // namespace GLSL
-	} // namespace Renderer
+	}	  // namespace Renderer
 } // namespace VTX
 
 #endif

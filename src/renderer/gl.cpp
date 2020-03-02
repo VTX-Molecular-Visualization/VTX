@@ -101,9 +101,7 @@ namespace VTX
 			static const GLenum drawBufferSSAO[] = { GL_COLOR_ATTACHMENT0 };
 			glDrawBuffers( 1, drawBufferSSAO );
 
-			_ssaoShader = VTXApp::get().getProgramManager().createProgram( "SSAO" );
-			_ssaoShader->attachShader( VTXApp::get().getProgramManager().createShader( "shading/ssao.frag" ) );
-			_ssaoShader->link();
+			_ssaoShader = VTXApp::get().getProgramManager().createProgram( "SSAO", { "shading/ssao.frag" } );
 
 			_uProjMatrixLoc	 = glGetUniformLocation( _ssaoShader->getId(), "uProjMatrix" );
 			_uAoKernelLoc	 = glGetUniformLocation( _ssaoShader->getId(), "uAoKernel" );
@@ -177,9 +175,7 @@ namespace VTX
 			static const GLenum drawBufferBlur[] = { GL_COLOR_ATTACHMENT0 };
 			glDrawBuffers( 1, drawBufferBlur );
 
-			_blurShader = VTXApp::get().getProgramManager().createProgram( "Blur" );
-			_blurShader->attachShader( VTXApp::get().getProgramManager().createShader( "shading/blur.frag" ) );
-			_blurShader->link();
+			_blurShader = VTXApp::get().getProgramManager().createProgram( "Blur", { "shading/blur.frag" } );
 
 			_uBlurSizeLoc = glGetUniformLocation( _blurShader->getId(), "uBlurSize" );
 
@@ -205,15 +201,10 @@ namespace VTX
 			static const GLenum draw_bufferShading[] = { GL_COLOR_ATTACHMENT0 };
 			glDrawBuffers( 1, draw_bufferShading );
 
-			_toonShading = programManager.createProgram( "ToonShading" );
-			_toonShading->attachShader( programManager.createShader( "shading/toonShading.frag" ) );
-			_toonShading->link();
-			_diffuseShading = programManager.createProgram( "DiffuseShading" );
-			_diffuseShading->attachShader( programManager.createShader( "shading/diffuseShading.frag" ) );
-			_diffuseShading->link();
-			_blinnPhongShading = programManager.createProgram( "BlinnPhongShading" );
-			_blinnPhongShading->attachShader( programManager.createShader( "shading/blinnPhongShading.frag" ) );
-			_blinnPhongShading->link();
+			_toonShading	= programManager.createProgram( "ToonShading", { "shading/toonShading.frag" } );
+			_diffuseShading = programManager.createProgram( "DiffuseShading", { "shading/diffuseShading.frag" } );
+			_blinnPhongShading
+				= programManager.createProgram( "BlinnPhongShading", { "shading/blinnPhongShading.frag" } );
 
 			// Use setting value.
 			setShading();
@@ -221,9 +212,7 @@ namespace VTX
 
 		void GL::_initAntiAliasingPass()
 		{
-			_aaShader = VTXApp::get().getProgramManager().createProgram( "AA" );
-			_aaShader->attachShader( VTXApp::get().getProgramManager().createShader( "shading/fxaa.frag" ) );
-			_aaShader->link();
+			_aaShader = VTXApp::get().getProgramManager().createProgram( "AA", { "shading/fxaa.frag" } );
 		}
 
 		void GL::_initQuadVAO()

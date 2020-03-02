@@ -39,7 +39,7 @@ namespace VTX
 				{
 					if ( ( _workers.at( _current ) ) == nullptr ) { VTX_DEBUG( "NULLPTR" ); }
 					VTX_DEBUG( "Invoking thread callback" );
-					( *( _workers.at( _current ) ) )();
+					//( *( _workers.at( _current ) ) )();
 				}
 
 				VTX_DEBUG( "Deleting worker" );
