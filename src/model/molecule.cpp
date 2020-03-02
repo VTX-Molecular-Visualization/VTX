@@ -18,11 +18,11 @@ namespace VTX
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
 
-			if ( _vao != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vao );
 			if ( _atomPositionsVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomPositionsVBO );
 			if ( _atomRadiusVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomRadiusVBO );
 			if ( _atomColorsVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomColorsVBO );
 			if ( _bondsIBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_bondsIBO );
+			if ( _vao != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vao );
 		}
 
 		void Molecule::init()
