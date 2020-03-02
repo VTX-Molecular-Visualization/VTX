@@ -12,17 +12,22 @@ namespace VTX
 	{
 		Molecule::~Molecule()
 		{
-			return;
-
+			glBindVertexArray( _vao );
+			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
+			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
+			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			glBindVertexArray( 0 );
 
 			if ( _atomPositionsVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomPositionsVBO );
 			if ( _atomRadiusVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomRadiusVBO );
 			if ( _atomColorsVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomColorsVBO );
 			if ( _bondsIBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_bondsIBO );
-			if ( _vao != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vao );
+
+			if ( _vao != GL_INVALID_VALUE ) glDeleteVertexArrays( 1, &_vao );
 		}
 
 		void Molecule::init()
