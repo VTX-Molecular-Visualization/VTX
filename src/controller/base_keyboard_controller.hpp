@@ -6,7 +6,7 @@
 #endif
 
 #include "base_controller.hpp"
-#include <unordered_set>
+#include <set>
 
 namespace VTX
 {
@@ -31,7 +31,7 @@ namespace VTX
 			}
 
 		  protected:
-			std::unordered_set<SDL_Scancode> _pressedButtons = std::unordered_set<SDL_Scancode>();
+			std::set<SDL_Scancode> _pressedButtons = std::set<SDL_Scancode>();
 
 			virtual void _handleKeyDownEvent( const SDL_Scancode & p_key ) { _pressedButtons.emplace( p_key ); };
 			virtual void _handleKeyUpEvent( const SDL_Scancode & p_key ) { _pressedButtons.erase( p_key ); };

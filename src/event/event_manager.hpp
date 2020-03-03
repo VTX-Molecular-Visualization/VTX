@@ -11,7 +11,7 @@
 #include "generic/base_updatable.hpp"
 #include <map>
 #include <queue>
-#include <unordered_set>
+#include <set>
 
 namespace VTX
 {
@@ -20,8 +20,8 @@ namespace VTX
 		class EventManager : public Generic::BaseUpdatable
 		{
 		  public:
-			using SetBaseEventReceiverSDLPtr			 = std::unordered_set<BaseEventReceiverSDL *>;
-			using SetBaseEventReceiverVTXPtr			 = std::unordered_set<BaseEventReceiverVTX *>;
+			using SetBaseEventReceiverSDLPtr			 = std::set<BaseEventReceiverSDL *>;
+			using SetBaseEventReceiverVTXPtr			 = std::set<BaseEventReceiverVTX *>;
 			using MapStringVectorBaseEventReceiverVTXPtr = std::map<Event::VTX_EVENT, SetBaseEventReceiverVTXPtr>;
 			using QueueVTXEventPtr						 = std::queue<VTXEvent *>;
 
