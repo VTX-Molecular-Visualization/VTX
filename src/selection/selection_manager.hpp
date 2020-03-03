@@ -6,6 +6,7 @@
 #endif
 
 #include "selection/base_selectable.hpp"
+#include <unordered_set>
 
 namespace VTX
 {
@@ -14,7 +15,13 @@ namespace VTX
 		class SelectionManager
 		{
 		  public:
+			using SetSelectablePtr = std::unordered_set<Generic::BaseSelectable *>;
+
+			void select( Generic::BaseSelectable * const );
+			void unselect( Generic::BaseSelectable * const );
+
 		  private:
+			SetSelectablePtr _selected = SetSelectablePtr();
 		};
 	} // namespace Selection
 } // namespace VTX

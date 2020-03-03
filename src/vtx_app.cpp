@@ -16,8 +16,6 @@ namespace VTX
 		_actionManager	  = new Action::ActionManager();
 		_workerManager	  = new Worker::WorkerManager();
 		_selectionManager = new Selection::SelectionManager();
-		_scene			  = new Object3D::Scene();
-		_renderer		  = new Renderer::GL();
 	}
 
 	VTXApp::~VTXApp()
@@ -38,8 +36,11 @@ namespace VTX
 	{
 		VTX_INFO( "Starting application" );
 
-		_stateMachine	   = Generic::create<State::StateMachine>();
-		_ui				   = Generic::create<UI::UserInterface>();
+		_ui			  = Generic::create<UI::UserInterface>();
+		_stateMachine = Generic::create<State::StateMachine>();
+		_scene		  = new Object3D::Scene();
+		_renderer	  = new Renderer::GL();
+
 		VTXApp::_isRunning = true;
 
 		VTX_INFO( "Application started" );

@@ -1,5 +1,7 @@
 #include "molecule_structure.hpp"
+#include "action/action_manager.hpp"
 #include "action/select.hpp"
+#include "action/unselect.hpp"
 #include "setting.hpp"
 
 namespace VTX
@@ -12,16 +14,13 @@ namespace VTX
 			{
 				ImGui::PushID( ( "ViewMolecule" + std::to_string( _getModel().getId() ) ).c_str() );
 
-				if ( ImGui::CollapsingHeader( LOCALE( "View.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
+				if ( ImGui::CollapsingHeader( _getModel().getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
 				{
 					ImGui::Text( "Chains: %d", _getModel().getChainCount() );
 					ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
 					ImGui::Text( "Atoms: %d", _getModel().getAtomCount() );
 					ImGui::Text( "Bonds: %d", _getModel().getBondCount() / 2 );
-				}
-
-				if ( ImGui::CollapsingHeader( _getModel().getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
-				{
+					ImGui::Separator();
 					for ( Model::Chain & chain : _getModel().getChains() )
 					{
 						ImGui::PushID( chain.getId() );
@@ -31,9 +30,12 @@ namespace VTX
 						if ( ImGui::IsItemClicked() )
 						{
 							if ( chainOpened )
-								_getModel().resetSelectedChain();
+							{ VTXApp::get().getActionManager().execute( new Action::Unselect( chain ) ); }
+
 							else
-								_getModel().setSelectedChain( &chain );
+							{
+								VTXApp::get().getActionManager().execute( new Action::Select( chain ) );
+							}
 						}
 						if ( chainOpened )
 						{
@@ -49,9 +51,11 @@ namespace VTX
 								if ( ImGui::IsItemClicked() )
 								{
 									if ( residueOpened )
-										_getModel().resetSelectedResidue();
+									{ VTXApp::get().getActionManager().execute( new Action::Unselect( residue ) ); }
 									else
-										_getModel().setSelectedResidue( &residue );
+									{
+										VTXApp::get().getActionManager().execute( new Action::Select( residue ) );
+									}
 								}
 								if ( residueOpened )
 								{
@@ -67,8 +71,15 @@ namespace VTX
 													 : atom.getSymbolName().c_str(),
 												 atom.isSelected() ) )
 										{
-											_getModel().setSelectedAtom( &atom );
-											// ImGui::SetItemDefaultFocus();
+											if ( atom.isSelected() )
+											{
+												VTXApp::get().getActionManager().execute(
+													new Action::Unselect( atom ) );
+											}
+											else
+											{
+												VTXApp::get().getActionManager().execute( new Action::Select( atom ) );
+											}
 										}
 										ImGui::PopID();
 									}

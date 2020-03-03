@@ -106,16 +106,6 @@ namespace VTX
 
 			virtual void print() const override;
 
-			Chain * const	getSelectedChain() const { return _selectedChain; }
-			Residue * const getSelectedResidue() const { return _selectedResidue; }
-			Atom * const	getSelectedAtom() const { return _selectedAtom; }
-			void			setSelectedChain( Chain * const );
-			void			setSelectedResidue( Residue * const );
-			void			setSelectedAtom( Atom * const );
-			void			resetSelectedChain();
-			void			resetSelectedResidue();
-			void			resetSelectedAtom();
-
 			void bindBuffers();
 			void unbindBuffers();
 
