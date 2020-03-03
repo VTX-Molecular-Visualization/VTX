@@ -18,9 +18,6 @@ namespace VTX
 			Resize( const uint p_width, const uint p_height ) : _width( p_width ), _height( p_height ) {}
 			virtual void execute() override
 			{
-				VTX_DEBUG( std::to_string( _width ) );
-				VTX_DEBUG( std::to_string( _height ) );
-
 				// Set camera.
 				VTXApp::get().getScene().getCamera().setScreenSize( _width, _height );
 
