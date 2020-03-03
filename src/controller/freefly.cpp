@@ -18,9 +18,10 @@ namespace VTX
 				_deltaMousePosition.x = 0;
 				_deltaMousePosition.y = 0;
 			}
-			else if ( _mouseRightPressed )
+			if ( _mouseRightPressed )
 			{
 				_camera.rotateRoll( Setting::Controller::rotationSpeed * (float)_deltaMousePosition.x );
+				_deltaMousePosition.x = 0;
 			}
 
 			// Translation.
