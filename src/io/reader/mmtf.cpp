@@ -193,7 +193,7 @@ namespace VTX
 #endif
 
 				// Display unknown symbols.
-				std::set<std::string> & unknownResidueSymbols = p_molecule.getUnknownResidueSymbols();
+				std::unordered_set<std::string> & unknownResidueSymbols = p_molecule.getUnknownResidueSymbols();
 				if ( unknownResidueSymbols.empty() == false )
 				{
 					std::string unknownResidueSymbolsStr = "";
@@ -204,7 +204,7 @@ namespace VTX
 					VTX_WARNING( "Unknown residue symbols : " + unknownResidueSymbolsStr );
 				}
 
-				std::set<std::string> & unknownAtomSymbols = p_molecule.getUnknownAtomSymbols();
+				std::unordered_set<std::string> & unknownAtomSymbols = p_molecule.getUnknownAtomSymbols();
 				if ( unknownAtomSymbols.empty() == false )
 				{
 					std::string unknownAtomSymbolsStr = "";

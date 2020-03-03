@@ -18,7 +18,7 @@
 #include <GL/gl3w.h>
 #include <glm/gtx/string_cast.hpp>
 #include <iostream>
-#include <set>
+#include <unordered_set>
 #include <vector>
 
 namespace VTX
@@ -52,8 +52,8 @@ namespace VTX
 			inline std::vector<Residue> & getResidues() { return _residues; }
 			inline std::vector<Atom> &	  getAtoms() { return _atoms; }
 
-			inline std::set<std::string> & getUnknownResidueSymbols() { return _unknownResidueSymbol; }
-			inline std::set<std::string> & getUnknownAtomSymbols() { return _unknownAtomSymbol; }
+			inline std::unordered_set<std::string> & getUnknownResidueSymbols() { return _unknownResidueSymbol; }
+			inline std::unordered_set<std::string> & getUnknownAtomSymbols() { return _unknownAtomSymbol; }
 
 			inline void addUnknownResidueSymbol( const std::string & p_symbol )
 			{
@@ -118,8 +118,8 @@ namespace VTX
 			std::vector<Residue> _residues = std::vector<Residue>();
 			std::vector<Atom>	 _atoms	   = std::vector<Atom>();
 
-			std::set<std::string> _unknownResidueSymbol = std::set<std::string>();
-			std::set<std::string> _unknownAtomSymbol	= std::set<std::string>();
+			std::unordered_set<std::string> _unknownResidueSymbol = std::unordered_set<std::string>();
+			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
 			// Buffers.
 			std::vector<Vec3f> _atomPositions = std::vector<Vec3f>();
