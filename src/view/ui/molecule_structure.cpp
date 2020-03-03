@@ -1,4 +1,5 @@
 #include "molecule_structure.hpp"
+#include "action/select.hpp"
 #include "setting.hpp"
 
 namespace VTX

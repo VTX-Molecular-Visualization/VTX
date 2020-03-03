@@ -1,4 +1,5 @@
 #include "scene.hpp"
+#include "action/select.hpp"
 #include "generic/factory.hpp"
 #include "math/transform.hpp"
 #include "setting.hpp"
@@ -7,6 +8,13 @@ namespace VTX
 {
 	namespace Object3D
 	{
+		Scene::Scene()
+		{
+			Model::Path * path = Generic::create<Model::Path>();
+			addPath( path );
+			VTXApp::get().getActionManager().execute( new Action::Select( *path ) );
+		}
+
 		void Scene::clean()
 		{
 			Generic::clearVector( _molecules );

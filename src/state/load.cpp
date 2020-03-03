@@ -1,4 +1,5 @@
 #include "load.hpp"
+#include "action/select.hpp"
 #include "io/path_fake.hpp"
 #include "io/reader/mmtf.hpp"
 #include "io/reader/obj.hpp"
@@ -51,15 +52,10 @@ namespace VTX
 			}
 
 			molecule->init();
-			molecule->setSelected( true );
-			molecule->print();
-			// molecule->getTransform().rotate( glm::radians( 90.f ), VEC3F_Z );
-			scene->addMolecule( molecule );
 
-			// TODO: move that in scene construtor?
-			Model::Path * p = Generic::create<Model::Path>();
-			scene->addPath( p );
-			p->setSelected( true );
+			VTXApp::get().getActionManager().execute( new Action::Select( *molecule ) );
+			molecule->print();
+			scene->addMolecule( molecule );
 
 			delete reader;
 		}
