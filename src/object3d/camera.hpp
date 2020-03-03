@@ -23,7 +23,7 @@ namespace VTX
 			inline const Mat4f & getViewMatrix() const { return _viewMatrix; }
 			inline const Mat4f & getProjectionMatrix() const { return _projectionMatrix; }
 
-			inline void setScreenSize( const int p_width, const int p_height )
+			inline void setScreenSize( const uint p_width, const uint p_height )
 			{
 				_screenWidth  = float( p_width );
 				_screenHeight = float( p_height );
