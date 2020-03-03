@@ -22,7 +22,7 @@ namespace VTX
 		namespace Math
 		{
 			static std::random_device					 rd;
-			static std::mt19937							 gen( 7937 );
+			static std::mt19937							 gen( RANDOM ? rd() : 7937 );
 			static std::uniform_real_distribution<float> dis( 0.f, 1.f );
 
 			static inline Vec3f min( const Vec3f & a, const Vec3f & b )
@@ -35,7 +35,7 @@ namespace VTX
 				return Vec3f( a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z );
 			}
 
-			static inline float randomInterpolant() { return RANDOM ? dis( rd ) : dis( gen ); }
+			static inline float randomInterpolant() { return dis( gen ); }
 
 			static inline Vec3f randomVec3f()
 			{

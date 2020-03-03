@@ -15,7 +15,8 @@ namespace VTX
 		class BaseWorker
 		{
 		  public:
-			virtual void work() = 0;
+			virtual ~BaseWorker() = default;
+			virtual void work()	  = 0;
 		};
 	} // namespace Worker
 } // namespace VTX

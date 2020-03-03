@@ -17,26 +17,29 @@ namespace VTX
 		class ApiFetcher : public Worker::BaseWorker
 		{
 		  public:
-			explicit ApiFetcher( std::string & p_url ) : _url( p_url ) {}
+			explicit ApiFetcher( const std::string & p_url ) : _url( p_url ) {}
 
-			std::string & getBuffer() { return _buffer; }
-			virtual void  work() override;
+			const std::string & getBuffer() const { return _buffer; }
+			virtual void		work() override;
 
 		  private:
 			std::string _url;
 			std::string _buffer;
 
-			static size_t _writeCallback( void * p_content, size_t p_size, size_t p_nmemb, void * p_userp )
+			static size_t _writeCallback( const void * p_content,
+										  const size_t p_size,
+										  const size_t p_nmemb,
+										  const void * p_userp )
 			{
 				( (std::string *)p_userp )->append( (char *)p_content, p_size * p_nmemb );
 				return p_size * p_nmemb;
 			}
 
-			static int _progressCallback( void *	 p_clientp,
-										  curl_off_t p_dltotal,
-										  curl_off_t p_dlnow,
-										  curl_off_t p_ultotal,
-										  curl_off_t p_ulnow )
+			static int _progressCallback( const void *	   p_clientp,
+										  const curl_off_t p_dltotal,
+										  const curl_off_t p_dlnow,
+										  const curl_off_t p_ultotal,
+										  const curl_off_t p_ulnow )
 			{
 				float progress = 0.f;
 				if ( p_dltotal > 0.f ) { progress = (float)p_dlnow / (float)p_dltotal; }

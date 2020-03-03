@@ -40,6 +40,7 @@ namespace VTX
 		void renderScene() const { _renderer->render( *_scene ); }
 
 		inline Object3D::Scene &				getScene() { return *_scene; }
+		inline const Object3D::Scene &			getScene() const { return *_scene; }
 		inline Renderer::BaseRenderer &			getRenderer() { return *_renderer; }
 		inline Renderer::GLSL::ProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
 		inline UI::UserInterface &				getUI() { return *_ui; }
