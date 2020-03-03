@@ -31,12 +31,12 @@ namespace VTX
 				// Set molecule properties.
 				p_molecule.setName( p_path.getFileNameWithoutExtension() );
 
-				Math::AABB &	  aabb			   = p_molecule.AABB();
-				Math::Transform & transform		   = p_molecule.getTransform();
-				uint			  chainGlobalIdx   = 0;
-				uint			  residueGlobalIdx = 0;
-				uint			  atomGlobalIdx	   = 0;
-				uint			  bondGlobalIdx	   = 0;
+				const Math::AABB & aabb				= p_molecule.AABB();
+				Math::Transform &  transform		= p_molecule.getTransform();
+				uint			   chainGlobalIdx	= 0;
+				uint			   residueGlobalIdx = 0;
+				uint			   atomGlobalIdx	= 0;
+				uint			   bondGlobalIdx	= 0;
 
 				// Reserve memory for vectors to avoid pointer loss.
 				uint chainCount	  = scene->mNumMeshes;
@@ -50,9 +50,9 @@ namespace VTX
 					atomCount += mesh->mNumVertices;
 				}
 
-				p_molecule.getChains().resize( chainCount );
-				p_molecule.getResidues().resize( residueCount );
-				p_molecule.getAtoms().resize( atomCount );
+				p_molecule.resizeChainsVec( chainCount );
+				p_molecule.resizeResiduesVec( residueCount );
+				p_molecule.resizeAtomsVec( atomCount );
 
 				// Loop over meshes.
 				for ( uint chainIdx = 0; chainIdx < chainCount; ++chainIdx, ++chainGlobalIdx )
@@ -105,10 +105,12 @@ namespace VTX
 							{ atom.setColor( Vec3f( diffuse.r, diffuse.g, diffuse.b ) ); }
 
 							const aiVector3D vector = mesh->mVertices[ indice ];
-							Vec3f & atomPosition = p_molecule.addAtomPosition( Vec3f( vector.x, vector.y, vector.z ) );
-							p_molecule.addAtomRadius( atom.getVdwRadius() );
+							p_molecule.addAtomPosition( Vec3f( vector.x, vector.y, vector.z ) );
+							const Vec3f & atomPosition = p_molecule.getAtomPosition( atomGlobalIdx );
+							const float	  atomRadius   = atom.getVdwRadius();
+							p_molecule.addAtomRadius( atomRadius );
 
-							aabb.extend( atomPosition );
+							p_molecule.extendAABB( atomPosition, atomRadius );
 
 							// Bond.
 							p_molecule.addBond( atomGlobalIdx );
@@ -121,11 +123,6 @@ namespace VTX
 						}
 					}
 				}
-
-				// Recenter molecule.
-				Vec3f center = aabb.getCenter();
-				transform.translate( -center );
-				aabb.translate( -center );
 
 				VTX_INFO( "Models created" );
 

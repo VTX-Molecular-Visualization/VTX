@@ -41,19 +41,28 @@ namespace VTX
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
-			inline Chain &	 addChain() { return _chains.emplace_back( Chain() ); }
-			inline Chain &	 getChain( uint p_idx ) { return _chains[ p_idx ]; }
-			inline Residue & addResidue() { return _residues.emplace_back( Residue() ); }
-			inline Residue & getResidue( uint p_idx ) { return _residues[ p_idx ]; }
-			inline Atom &	 addAtom() { return _atoms.emplace_back( Atom() ); }
-			inline Atom &	 getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
+			inline void			   addChain() { _chains.emplace_back( Chain() ); }
+			inline Chain &		   getChain( uint p_idx ) { return _chains[ p_idx ]; }
+			inline const Chain &   getChain( uint p_idx ) const { return _chains[ p_idx ]; }
+			inline void			   addResidue() { _residues.emplace_back( Residue() ); }
+			inline Residue &	   getResidue( uint p_idx ) { return _residues[ p_idx ]; }
+			inline const Residue & getResidue( uint p_idx ) const { return _residues[ p_idx ]; }
+			inline void			   addAtom() { _atoms.emplace_back( Atom() ); }
+			inline Atom &		   getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
+			inline const Atom &	   getAtom( uint p_idx ) const { return _atoms[ p_idx ]; }
 
-			inline std::vector<Chain> &	  getChains() { return _chains; }
-			inline std::vector<Residue> & getResidues() { return _residues; }
-			inline std::vector<Atom> &	  getAtoms() { return _atoms; }
+			inline std::vector<Chain> &			getChains() { return _chains; }
+			inline const std::vector<Chain> &	getChains() const { return _chains; }
+			inline std::vector<Residue> &		getResidues() { return _residues; }
+			inline const std::vector<Residue> & getResidues() const { return _residues; }
+			inline std::vector<Atom> &			getAtoms() { return _atoms; }
+			inline const std::vector<Atom> &	getAtoms() const { return _atoms; }
 
-			inline std::unordered_set<std::string> & getUnknownResidueSymbols() { return _unknownResidueSymbol; }
-			inline std::unordered_set<std::string> & getUnknownAtomSymbols() { return _unknownAtomSymbol; }
+			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
+			{
+				return _unknownResidueSymbol;
+			}
+			inline const std::unordered_set<std::string> & getUnknownAtomSymbols() const { return _unknownAtomSymbol; }
 
 			inline void addUnknownResidueSymbol( const std::string & p_symbol )
 			{
@@ -61,29 +70,35 @@ namespace VTX
 			}
 			inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
 
-			inline Vec3f & addAtomPosition( const Vec3f p_position )
-			{
-				return _atomPositions.emplace_back( p_position );
-			}
-			inline std::vector<Vec3f> & getAtomPositions() { return _atomPositions; };
-			inline void					addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
-			inline float				getAtomRadius( const uint p_idx ) { return _atomRadius[ p_idx ]; }
-			inline std::vector<float> & getAtomRadius() { return _atomRadius; };
-			inline void					addAtomColor( const Vec3f p_color ) { _atomColors.emplace_back( p_color ); }
-			inline Vec3f &				getAtomColor( const uint p_idx ) { return _atomColors[ p_idx ]; }
-			inline std::vector<Vec3f> & getAtomColors() { return _atomColors; };
-			inline void					addBond( const uint p_bond ) { _bonds.emplace_back( p_bond ); }
-			inline void					addBonds( const std::vector<int> & p_bonds )
+			inline const Vec3f & getAtomPosition( const uint p_id ) const { return _atomPositions[ p_id ]; }
+			inline void addAtomPosition( const Vec3f p_position ) { _atomPositions.emplace_back( p_position ); }
+			inline const std::vector<Vec3f> & getAtomPositions() const { return _atomPositions; };
+			inline void		   addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
+			inline const float getAtomRadius( const uint p_idx ) const { return _atomRadius[ p_idx ]; }
+			inline const std::vector<float> & getAtomRadius() const { return _atomRadius; };
+			inline void			 addAtomColor( const Vec3f p_color ) { _atomColors.emplace_back( p_color ); }
+			inline const Vec3f & getAtomColor( const uint p_idx ) const { return _atomColors[ p_idx ]; }
+			inline const std::vector<Vec3f> & getAtomColors() const { return _atomColors; };
+			inline void						  addBond( const uint p_bond ) { _bonds.emplace_back( p_bond ); }
+			inline void						  addBonds( const std::vector<int> & p_bonds )
 			{
 				_bonds.insert( _bonds.end(), p_bonds.begin(), p_bonds.end() );
 			}
-			inline std::vector<uint> & getBonds() { return _bonds; };
-			inline uint				   getChainCount() const { return (uint)_chains.size(); }
-			inline uint				   getResidueCount() const { return (uint)_residues.size(); }
-			inline uint				   getAtomCount() const { return (uint)_atoms.size(); }
-			inline uint				   getBondCount() const { return (uint)_bonds.size(); }
+			inline const std::vector<uint> & getBonds() const { return _bonds; };
+			inline const uint				 getChainCount() const { return (uint)_chains.size(); }
+			inline const uint				 getResidueCount() const { return (uint)_residues.size(); }
+			inline const uint				 getAtomCount() const { return (uint)_atoms.size(); }
+			inline const uint				 getBondCount() const { return (uint)_bonds.size(); }
 
-			inline Math::AABB & AABB() { return _aabb; }
+			inline void resizeChainsVec( const uint s ) { _chains.resize( s ); }
+			inline void resizeResiduesVec( const uint s ) { _residues.resize( s ); }
+			inline void resizeAtomsVec( const uint s ) { _atoms.resize( s ); }
+
+			inline const Math::AABB & AABB() const { return _aabb; }
+			inline void				  extendAABB( const Vec3f & p_position, const float p_radius )
+			{
+				_aabb.extend( p_position, p_radius );
+			}
 
 			virtual void init() override;
 			void		 setRepresentation();
@@ -111,6 +126,7 @@ namespace VTX
 		  protected:
 			virtual void _addItems() override final;
 
+		  private:
 		  private:
 			// Models.
 			std::string			 _name	   = "";

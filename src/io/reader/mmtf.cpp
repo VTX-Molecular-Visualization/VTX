@@ -56,7 +56,6 @@ namespace VTX
 				p_molecule.setName( p_data.title );
 
 				float			  x, y, z;
-				Math::AABB &	  aabb			   = p_molecule.AABB();
 				Math::Transform & transform		   = p_molecule.getTransform();
 				uint			  chainGlobalIdx   = 0;
 				uint			  residueGlobalIdx = 0;
@@ -64,9 +63,9 @@ namespace VTX
 				uint			  bondGlobalIdx	   = 0;
 
 				// Reserve memory for vectors to avoid pointer loss.
-				p_molecule.getChains().resize( p_data.numChains );
-				p_molecule.getResidues().resize( p_data.numGroups );
-				p_molecule.getAtoms().resize( p_data.numAtoms );
+				p_molecule.resizeChainsVec( p_data.numChains );
+				p_molecule.resizeResiduesVec( p_data.numGroups );
+				p_molecule.resizeAtomsVec( p_data.numAtoms );
 
 				uint chainCount = p_data.chainsPerModel[ 0 ];
 #ifdef _DEBUG
@@ -137,11 +136,13 @@ namespace VTX
 							y = p_data.yCoordList[ atomGlobalIdx ];
 							z = p_data.zCoordList[ atomGlobalIdx ];
 
-							Vec3f & atomPosition = p_molecule.addAtomPosition( Vec3f( x, y, z ) );
-							p_molecule.addAtomRadius( atom.getVdwRadius() );
+							p_molecule.addAtomPosition( Vec3f( x, y, z ) );
+							const Vec3f & atomPosition = p_molecule.getAtomPosition( atomGlobalIdx );
+							const float	  atomRadius   = atom.getVdwRadius();
+							p_molecule.addAtomRadius( atomRadius );
 
 							// Extends bounding box along atom position.
-							aabb.extend( atomPosition );
+							p_molecule.extendAABB( atomPosition, atomRadius );
 						}
 
 						// For each bond in the residue.
@@ -193,7 +194,7 @@ namespace VTX
 #endif
 
 				// Display unknown symbols.
-				std::unordered_set<std::string> & unknownResidueSymbols = p_molecule.getUnknownResidueSymbols();
+				const std::unordered_set<std::string> & unknownResidueSymbols = p_molecule.getUnknownResidueSymbols();
 				if ( unknownResidueSymbols.empty() == false )
 				{
 					std::string unknownResidueSymbolsStr = "";
@@ -204,7 +205,7 @@ namespace VTX
 					VTX_WARNING( "Unknown residue symbols : " + unknownResidueSymbolsStr );
 				}
 
-				std::unordered_set<std::string> & unknownAtomSymbols = p_molecule.getUnknownAtomSymbols();
+				const std::unordered_set<std::string> & unknownAtomSymbols = p_molecule.getUnknownAtomSymbols();
 				if ( unknownAtomSymbols.empty() == false )
 				{
 					std::string unknownAtomSymbolsStr = "";
@@ -214,11 +215,6 @@ namespace VTX
 					}
 					VTX_WARNING( "Unknown atom symbols : " + unknownAtomSymbolsStr );
 				}
-
-				// Recenter molecule.
-				Vec3f center = aabb.getCenter();
-				transform.translate( -center );
-				aabb.translate( -center );
 
 				VTX_INFO( "Models created" );
 
