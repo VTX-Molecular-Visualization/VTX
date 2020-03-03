@@ -23,9 +23,9 @@ namespace VTX
 			{
 			}
 
-			virtual void execute() override { _transformable.getTransform().setScale( _scale ); }
+			virtual void execute() override { _transformable.setScale( _scale ); }
 
-			virtual void undo() override { _transformable.getTransform().setScale( _scaleOld ); }
+			virtual void undo() override { _transformable.setScale( _scaleOld ); }
 
 		  private:
 			Generic::BaseTransformable & _transformable;

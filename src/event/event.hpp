@@ -38,7 +38,7 @@ namespace VTX
 		template<typename T>
 		struct VTXEventArg : public VTXEvent
 		{
-			VTXEventArg( const VTX_EVENT & p_event, const T p_arg ) : VTXEvent( p_event ), arg( p_arg ) {}
+			VTXEventArg( const VTX_EVENT & p_event, const T & p_arg ) : VTXEvent( p_event ), arg( p_arg ) {}
 			const T arg;
 		};
 
@@ -49,7 +49,7 @@ namespace VTX
 
 		struct VTXEventString : public VTXEventArg<std::string>
 		{
-			VTXEventString( const VTX_EVENT & p_event, const std::string p_arg ) : VTXEventArg( p_event, p_arg ) {}
+			VTXEventString( const VTX_EVENT & p_event, const std::string & p_arg ) : VTXEventArg( p_event, p_arg ) {}
 		};
 
 		struct VTXEventLog : public VTXEvent

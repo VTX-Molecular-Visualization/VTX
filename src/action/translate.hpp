@@ -23,9 +23,9 @@ namespace VTX
 			{
 			}
 
-			virtual void execute() override { _transformable.getTransform().setTranslation( _translation ); }
+			virtual void execute() override { _transformable.setTranslation( _translation ); }
 
-			virtual void undo() override { _transformable.getTransform().setTranslation( _translationOld ); }
+			virtual void undo() override { _transformable.setTranslation( _translationOld ); }
 
 		  private:
 			Generic::BaseTransformable & _transformable;

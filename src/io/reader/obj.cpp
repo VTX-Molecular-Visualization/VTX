@@ -32,7 +32,6 @@ namespace VTX
 				p_molecule.setName( p_path.getFileNameWithoutExtension() );
 
 				const Math::AABB & aabb				= p_molecule.AABB();
-				Math::Transform &  transform		= p_molecule.getTransform();
 				uint			   chainGlobalIdx	= 0;
 				uint			   residueGlobalIdx = 0;
 				uint			   atomGlobalIdx	= 0;

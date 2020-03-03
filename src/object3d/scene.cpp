@@ -26,10 +26,9 @@ namespace VTX
 			// TOCHECK: Store BaseTransformable? Object3D super class?
 			for ( MoleculePtr molecule : _molecules )
 			{
-				Math::Transform & t = molecule->getTransform();
-				t.rotate( (float)p_deltaTime * Setting::Controller::autoRotateSpeed.x, VEC3F_X );
-				t.rotate( (float)p_deltaTime * Setting::Controller::autoRotateSpeed.y, VEC3F_Y );
-				t.rotate( (float)p_deltaTime * Setting::Controller::autoRotateSpeed.z, VEC3F_Z );
+				molecule->rotate( (float)p_deltaTime * Setting::Controller::autoRotateSpeed.x, VEC3F_X );
+				molecule->rotate( (float)p_deltaTime * Setting::Controller::autoRotateSpeed.y, VEC3F_Y );
+				molecule->rotate( (float)p_deltaTime * Setting::Controller::autoRotateSpeed.z, VEC3F_Z );
 			}
 		}
 
