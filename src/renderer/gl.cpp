@@ -360,8 +360,8 @@ namespace VTX
 			_geometricPass( p_scene );
 			glDisable( GL_DEPTH_TEST );
 
-			/*	_ssaoPass( p_scene );
-				_blurPass();*/
+			_ssaoPass( p_scene );
+			_blurPass();
 			_shadingPass();
 			//_antiAliasingPass();
 		};
