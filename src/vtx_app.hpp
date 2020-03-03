@@ -46,6 +46,7 @@ namespace VTX
 		inline Action::ActionManager &			getActionManager() { return *_actionManager; }
 		inline Event::EventManager &			getEventManager() { return *_eventManager; }
 		inline Worker::WorkerManager &			getWorkerManager() { return *_workerManager; }
+		inline Selection::SelectionManager &	getSelectionManager() { return *_selectionManager; }
 
 	  private:
 		static bool					  _isRunning;

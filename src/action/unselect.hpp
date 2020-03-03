@@ -16,11 +16,11 @@ namespace VTX
 		{
 		  public:
 			Unselect( Generic::BaseSelectable & p_selectable ) : _selectable( p_selectable ) {};
-			virtual void execute() override { _selectable.setSelected( true ); };
+			virtual void execute() override { VTXApp::get().getSelectionManager().unselect( &_selectable ); }
 
 		  private:
 			Generic::BaseSelectable & _selectable;
-		};
-	} // namespace Action
+		}; // namespace VTX
+	}	   // namespace Action
 } // namespace VTX
 #endif

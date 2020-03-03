@@ -20,11 +20,10 @@ namespace VTX
 				explicit Chain( Model::Chain * const p_model ) : BaseViewUI( p_model ) {}
 
 				virtual const std::string & getName() const override { return ID::View::UI_CHAIN; };
-				virtual std::string getComponentParentName() const override { return ID::UI::INSPECTOR; };
+				virtual std::string			getComponentParentName() const override { return ID::UI::INSPECTOR; };
 
 			  protected:
 				virtual void _draw() override;
-				virtual void clean() override { VTX_DEBUG( "REMOVE" ); }
 
 			  private:
 			};

@@ -17,7 +17,7 @@ namespace VTX
 		{
 		  public:
 			Select( Generic::BaseSelectable & p_selectable ) : _selectable( p_selectable ) {};
-			virtual void execute() override { _selectable.setSelected( true ); };
+			virtual void execute() override { VTXApp::get().getSelectionManager().select( &_selectable ); };
 
 		  private:
 			Generic::BaseSelectable & _selectable;

@@ -20,6 +20,8 @@ namespace VTX
 
 	VTXApp::~VTXApp()
 	{
+		VTX_INFO( "Destructing application" );
+
 		// Respect this order!
 		Generic::destroy( _stateMachine );
 		Generic::destroy( _scene );
@@ -30,6 +32,8 @@ namespace VTX
 		delete _workerManager;
 		delete _actionManager;
 		delete _eventManager;
+
+		VTX_INFO( "Application destructed" );
 	}
 
 	void VTXApp::start()
