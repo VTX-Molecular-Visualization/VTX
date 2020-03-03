@@ -28,9 +28,11 @@ namespace VTX
 			}
 
 		  protected:
-			bool _mouseLeftPressed	 = false;
-			bool _mouseRightPressed	 = false;
-			bool _mouseMiddlePressed = false;
+			bool  _mouseLeftPressed	  = false;
+			bool  _mouseRightPressed  = false;
+			bool  _mouseMiddlePressed = false;
+			Vec2i _deltaMousePosition = Vec2i();
+			int _deltaMouseWheel	  = 0;
 
 			virtual void _handleMouseButtonDownEvent( const SDL_MouseButtonEvent & p_event )
 			{
@@ -54,8 +56,15 @@ namespace VTX
 				}
 			};
 
-			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & ) {};
-			virtual void _handleMouseWheelEvent( const SDL_MouseWheelEvent & ) {};
+			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )
+			{
+				_deltaMousePosition.x = p_event.xrel;
+				_deltaMousePosition.y = p_event.yrel;
+			};
+			virtual void _handleMouseWheelEvent( const SDL_MouseWheelEvent & p_event )
+			{
+				_deltaMouseWheel = p_event.y;
+			};
 		};
 	} // namespace Controller
 } // namespace VTX

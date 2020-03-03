@@ -19,6 +19,7 @@ namespace VTX
 	using uchar = unsigned char;
 
 	using Vec2f = glm::vec2;
+	using Vec2i = glm::ivec2;
 	using Vec3f = glm::vec3;
 	using Vec3d = glm::dvec3;
 	using Vec4f = glm::vec4;
