@@ -27,8 +27,8 @@ namespace VTX
 				BaseMouseController::receiveEvent( p_event );
 			}
 
-			virtual void		update( const double ) override;
-			virtual std::string getName() const override { return ID::Controller::ORBIT; }
+			virtual void				update( const double ) override;
+			virtual const std::string & getName() const override { return ID::Controller::ORBIT; }
 
 		  protected:
 			virtual void _handleKeyPressedEvent( const SDL_Scancode & ) override;

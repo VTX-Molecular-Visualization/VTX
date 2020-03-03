@@ -17,7 +17,7 @@ namespace VTX
 		class Inspector : public BaseComponent
 		{
 		  public:
-			virtual std::string getName() const override { return ID::UI::INSPECTOR; }
+			virtual const std::string & getName() const override { return ID::UI::INSPECTOR; }
 
 		  protected:
 			virtual void _draw() override;

@@ -19,7 +19,7 @@ namespace VTX
 			  public:
 				explicit Viewpoint( Model::Viewpoint * const p_model ) : BaseViewUI( p_model ) {}
 
-				virtual std::string getName() const override { return ID::View::UI_VIEWPOINT; };
+				virtual const std::string & getName() const override { return ID::View::UI_VIEWPOINT; };
 				virtual std::string getComponentParentName() const override { return ID::UI::INSPECTOR; };
 
 			  protected:

@@ -15,7 +15,7 @@ namespace VTX
 		class Menu : public BaseComponent
 		{
 		  public:
-			virtual std::string getName() const override { return ID::UI::MENU; }
+			virtual const std::string & getName() const override { return ID::UI::MENU; }
 
 		  protected:
 			virtual void _draw() override;

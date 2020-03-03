@@ -18,7 +18,7 @@ namespace VTX
 			  public:
 				explicit Cylinder( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 
-				virtual std::string getName() const override { return ID::View::D3_CYLINDER; }
+				virtual const std::string & getName() const override { return ID::View::D3_CYLINDER; }
 				virtual void		init() override;
 				virtual void		notify( const Event::VTX_EVENT_MODEL & ) override;
 

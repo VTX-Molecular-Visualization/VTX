@@ -19,7 +19,7 @@ namespace VTX
 			  public:
 				explicit PathList( Model::Path * const p_model ) : BaseViewUI( p_model ) {}
 
-				virtual std::string getName() const override { return ID::View::UI_PATH_LIST; }
+				virtual const std::string & getName() const override { return ID::View::UI_PATH_LIST; }
 				virtual std::string getComponentParentName() const override { return ID::UI::CAMERA_EDITOR; };
 
 			  protected:

@@ -20,7 +20,7 @@ namespace VTX
 		  protected:
 			virtual void _handleKeyPressedEvent( const SDL_Scancode & ) override;
 
-			virtual std::string getName() const override { return ID::Controller::SHORTCUT; }
+			virtual const std::string & getName() const override { return ID::Controller::SHORTCUT; }
 
 		  private:
 		};

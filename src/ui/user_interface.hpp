@@ -32,7 +32,7 @@ namespace VTX
 			bool		 getEvent( SDL_Event & evt ) const;
 			void		 setTheme() const;
 
-			virtual std::string getName() const override { return ID::UI::USER_INTERFACE; }
+			virtual const std::string & getName() const override { return ID::UI::USER_INTERFACE; }
 
 		  protected:
 			virtual void _addItems() override;

@@ -19,7 +19,7 @@ namespace VTX
 			class ProgressBar : public BaseComponent
 			{
 			  public:
-				virtual std::string getName() const override { return ID::UI::PROGRESS_BAR; }
+				virtual const std::string & getName() const override { return ID::UI::PROGRESS_BAR; }
 				virtual void		receiveEvent( const Event::VTXEvent & p_event ) override;
 
 			  protected:

@@ -19,7 +19,7 @@ namespace VTX
 			  public:
 				explicit MoleculeStructure( Model::Molecule * const p_model ) : BaseViewUI( p_model ) {}
 
-				virtual std::string getName() const override { return ID::View::UI_MOLECULE_STRUCTURE; }
+				virtual const std::string & getName() const override { return ID::View::UI_MOLECULE_STRUCTURE; }
 				virtual std::string getComponentParentName() const override { return ID::UI::SCENE; };
 
 			  protected:

@@ -19,7 +19,7 @@ namespace VTX
 			  public:
 				explicit Atom( Model::Atom * const p_model ) : BaseViewUI( p_model ) {}
 
-				virtual std::string getName() const override { return ID::View::UI_ATOM; };
+				virtual const std::string & getName() const override { return ID::View::UI_ATOM; };
 				virtual std::string getComponentParentName() const override { return ID::UI::INSPECTOR; };
 
 			  protected:

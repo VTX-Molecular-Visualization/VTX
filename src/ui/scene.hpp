@@ -14,7 +14,7 @@ namespace VTX
 		class Scene : public BaseComponent
 		{
 		  public:
-			virtual std::string getName() const override { return ID::UI::SCENE; }
+			virtual const std::string & getName() const override { return ID::UI::SCENE; }
 
 		  protected:
 			virtual void _draw() override;
