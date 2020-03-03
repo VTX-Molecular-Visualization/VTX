@@ -31,15 +31,12 @@ namespace VTX
 			virtual std::string getName() const override { return ID::Controller::ORBIT; }
 
 		  protected:
-			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & ) override;
-			virtual void _handleMouseWheelEvent( const SDL_MouseWheelEvent & ) override;
 			virtual void _handleKeyPressedEvent( const SDL_Scancode & ) override;
 
 		  private:
 			Object3D::Camera & _camera;
 			Vec3f			   _target = VEC3F_ZERO;
 
-			float _distance	 = 0.0f;
 			float _velocityX = 0.0f;
 			float _velocityY = 0.0f;
 		};

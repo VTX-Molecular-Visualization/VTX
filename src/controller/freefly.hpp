@@ -31,7 +31,6 @@ namespace VTX
 			virtual std::string getName() const override { return ID::Controller::FREEFLY; }
 
 		  protected:
-			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & ) override;
 			virtual void _handleKeyPressedEvent( const SDL_Scancode & ) override;
 
 		  private:

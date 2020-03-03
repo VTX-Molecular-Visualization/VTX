@@ -7,6 +7,23 @@ namespace VTX
 	{
 		void Freefly::update( const double p_deltaTime )
 		{
+			// Rotation.
+			if ( _mouseLeftPressed )
+			{
+				_camera.rotate( Vec3d( -Setting::Controller::rotationSpeed * (float)_deltaMousePosition.y
+										   * ( Setting::Controller::yAxisInverted ? -1.f : 1.f ),
+									   -Setting::Controller::rotationSpeed * (float)_deltaMousePosition.x,
+
+									   0.0 ) );
+				_deltaMousePosition.x = 0;
+				_deltaMousePosition.y = 0;
+			}
+			else if ( _mouseRightPressed )
+			{
+				_camera.rotateRoll( Setting::Controller::rotationSpeed * (float)_deltaMousePosition.x );
+			}
+
+			// Translation.
 			Vec3f translation = VEC3F_ZERO;
 
 			if ( _isKeyPressed( SDL_SCANCODE_W ) || _isKeyPressed( SDL_SCANCODE_UP ) ) { translation.z++; }
@@ -30,19 +47,6 @@ namespace VTX
 		void Freefly::_handleKeyPressedEvent( const SDL_Scancode & p_key )
 		{
 			if ( p_key == SDL_SCANCODE_SPACE ) { _camera.print(); }
-		}
-
-		void Freefly::_handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )
-		{
-			if ( _mouseLeftPressed )
-			{
-				_camera.rotate( Vec3d( -Setting::Controller::rotationSpeed * p_event.yrel
-										   * ( Setting::Controller::yAxisInverted ? -1.f : 1.f ),
-									   -Setting::Controller::rotationSpeed * p_event.xrel,
-
-									   0.0 ) );
-			}
-			if ( _mouseRightPressed ) { _camera.rotateRoll( Setting::Controller::rotationSpeed * p_event.xrel ); }
 		}
 
 	} // namespace Controller
