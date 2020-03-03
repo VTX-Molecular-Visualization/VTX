@@ -21,7 +21,7 @@ namespace VTX
 			glDeleteTextures( 1, &_shadingTexture );
 		}
 
-		void GL::init( Object3D::Scene & p_scene, uint p_width, uint p_height )
+		void GL::init( const Object3D::Scene & p_scene, const uint p_width, const uint p_height )
 		{
 			if ( _isInitialized ) { return; }
 			VTX_INFO( "Initializing renderer..." );
@@ -143,16 +143,10 @@ namespace VTX
 
 		void GL::_initGeometricPass()
 		{
-			// TODO: remove.
-			glEnable( GL_DEPTH_TEST );
-			glClearDepth( 1.f );
-			glDepthFunc( GL_LESS );
-			// Only when using point sprites.
+			// TODO: Only when using point sprites.
 			glEnable( GL_PROGRAM_POINT_SIZE );
 			glPointParameteri( GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT );
 			glViewport( 0, 0, _width, _height );
-			// glEnable(GL_BLEND);
-			// glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			// Create G-buffers for deferred shading.
 			glGenFramebuffers( 1, &_fboGeo );
@@ -351,14 +345,14 @@ namespace VTX
 			glBindVertexArray( 0 );
 		}
 
-		void GL::clear( Object3D::Scene & p_scene )
+		void GL::clear( const Object3D::Scene & p_scene )
 		{
 			// TODO.
 
 			_isInitialized = false;
 		}
 
-		void GL::render( Object3D::Scene & p_scene )
+		void GL::render( const Object3D::Scene & p_scene )
 		{
 			if ( _isInitialized == false ) { return; }
 
@@ -366,16 +360,15 @@ namespace VTX
 			_geometricPass( p_scene );
 			glDisable( GL_DEPTH_TEST );
 
-			_ssaoPass( p_scene );
-			_blurPass();
+			/*	_ssaoPass( p_scene );
+				_blurPass();*/
 			_shadingPass();
 			//_antiAliasingPass();
 		};
 
-		void GL::_geometricPass( Object3D::Scene & p_scene )
+		void GL::_geometricPass( const Object3D::Scene & p_scene )
 		{
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboGeo );
-			// glClearColor( _backgroundColor.r, _backgroundColor.g, _backgroundColor.b, _backgroundColor.a );
 			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 			for ( Model::Molecule * const molecule : p_scene.getMolecules() )
@@ -386,7 +379,7 @@ namespace VTX
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 		}
 
-		void GL::_ssaoPass( Object3D::Scene & p_scene )
+		void GL::_ssaoPass( const Object3D::Scene & p_scene )
 		{
 			glBindFramebuffer( GL_FRAMEBUFFER, _fboSSAO );
 			glClear( GL_COLOR_BUFFER_BIT );

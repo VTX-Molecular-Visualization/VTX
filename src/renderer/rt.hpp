@@ -17,9 +17,9 @@ namespace VTX
 			RT()  = default;
 			~RT() = default;
 
-			virtual void init( Object3D::Scene &, uint, uint ) override;
-			virtual void clear( Object3D::Scene & ) override;
-			virtual void render( Object3D::Scene & ) override;
+			virtual void init( const Object3D::Scene &, const uint, const uint ) override;
+			virtual void clear( const Object3D::Scene & ) override;
+			virtual void render( const Object3D::Scene & ) override;
 
 		  private:
 		};
