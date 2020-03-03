@@ -15,14 +15,14 @@ namespace VTX
 		class BaseMouseController : virtual public BaseController
 		{
 		  public:
-			virtual void receiveEvent( SDL_Event * const p_event ) override
+			virtual void receiveEvent( const SDL_Event & p_event ) override
 			{
-				switch ( p_event->type )
+				switch ( p_event.type )
 				{
-				case SDL_MOUSEBUTTONDOWN: _handleMouseButtonDownEvent( p_event->button ); break;
-				case SDL_MOUSEBUTTONUP: _handleMouseButtonUpEvent( p_event->button ); break;
-				case SDL_MOUSEMOTION: _handleMouseMotionEvent( p_event->motion ); break;
-				case SDL_MOUSEWHEEL: _handleMouseWheelEvent( p_event->wheel );
+				case SDL_MOUSEBUTTONDOWN: _handleMouseButtonDownEvent( p_event.button ); break;
+				case SDL_MOUSEBUTTONUP: _handleMouseButtonUpEvent( p_event.button ); break;
+				case SDL_MOUSEMOTION: _handleMouseMotionEvent( p_event.motion ); break;
+				case SDL_MOUSEWHEEL: _handleMouseWheelEvent( p_event.wheel );
 				default: break;
 				}
 			}
@@ -32,7 +32,7 @@ namespace VTX
 			bool  _mouseRightPressed  = false;
 			bool  _mouseMiddlePressed = false;
 			Vec2i _deltaMousePosition = Vec2i();
-			int _deltaMouseWheel	  = 0;
+			int	  _deltaMouseWheel	  = 0;
 
 			virtual void _handleMouseButtonDownEvent( const SDL_MouseButtonEvent & p_event )
 			{

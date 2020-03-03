@@ -21,7 +21,7 @@ namespace VTX
 			// TOFIX: Ugly... set the camera in the BaseCollectionable::init()?
 			explicit Orbit() : _camera( VTXApp::get().getScene().getCamera() ) {}
 
-			virtual void receiveEvent( SDL_Event * const p_event ) override final
+			virtual void receiveEvent( const SDL_Event & p_event ) override final
 			{
 				BaseKeyboardController::receiveEvent( p_event );
 				BaseMouseController::receiveEvent( p_event );
