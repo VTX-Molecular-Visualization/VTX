@@ -28,8 +28,8 @@ namespace VTX
 		class BaseRenderer
 		{
 		  public:
-			BaseRenderer()	= default;
-			~BaseRenderer() = default;
+			BaseRenderer()			= default;
+			virtual ~BaseRenderer() = default;
 
 			virtual void BaseRenderer::resize( const uint p_width, const uint p_height )
 			{

@@ -32,7 +32,7 @@ namespace VTX
 				VTXApp::get().getUI().getComponentByName( getComponentParentName() )->removeItem( getName() );
 			}
 
-			virtual std::string getComponentParentName() const = 0;
+			virtual const std::string & getComponentParentName() const = 0;
 		};
 	} // namespace View
 } // namespace VTX
