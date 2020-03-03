@@ -37,7 +37,7 @@ namespace VTX
 			{
 				for ( BaseEventReceiverVTX * const receiver : _receiversVTX.at( p_event->name ) )
 				{
-					receiver->receiveEvent( p_event );
+					receiver->receiveEvent( *p_event );
 				}
 			}
 
@@ -71,7 +71,7 @@ namespace VTX
 				{
 					for ( Event::BaseEventReceiverSDL * const receiver : _receiversSDL )
 					{
-						receiver->receiveEvent( &event );
+						receiver->receiveEvent( event );
 					}
 				}
 			}

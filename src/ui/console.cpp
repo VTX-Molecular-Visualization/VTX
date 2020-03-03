@@ -9,13 +9,13 @@ namespace VTX
 {
 	namespace UI
 	{
-		void Console::receiveEvent( Event::VTXEvent * const p_event )
+		void Console::receiveEvent( const Event::VTXEvent & p_event )
 		{
-			if ( p_event->name == Event::Global::LOG_CONSOLE )
+			if ( p_event.name == Event::Global::LOG_CONSOLE )
 			{
-				Event::VTXEventLog * event = dynamic_cast<Event::VTXEventLog *>( p_event );
+				const Event::VTXEventLog & event = dynamic_cast<const Event::VTXEventLog &>( p_event );
 				// Copy event to keep history.
-				_addLog( *event );
+				_addLog( event );
 			}
 		}
 

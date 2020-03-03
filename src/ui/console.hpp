@@ -18,7 +18,7 @@ namespace VTX
 		{
 		  public:
 			virtual std::string getName() const override { return ID::UI::CONSOLE; }
-			virtual void		receiveEvent( Event::VTXEvent * const p_event ) override;
+			virtual void		receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		  protected:
 			virtual void						  _draw() override;
