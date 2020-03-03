@@ -24,6 +24,7 @@ namespace VTX
 
 			  protected:
 				virtual void _draw() override;
+				virtual void clean() override { VTX_DEBUG( "REMOVE" ); }
 
 			  private:
 			};

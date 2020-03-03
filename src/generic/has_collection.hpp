@@ -59,6 +59,7 @@ namespace VTX
 
 			virtual T * removeItem( const std::string & p_name )
 			{
+				VTX_DEBUG("REMOVE: " + p_name);
 				T * item = _items.at( p_name );
 				_items.erase( p_name );
 				return item;

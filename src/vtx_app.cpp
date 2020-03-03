@@ -12,11 +12,12 @@ namespace VTX
 	VTXApp::VTXApp()
 	{
 		VTX_INFO( "Initializing application" );
-		_eventManager  = new Event::EventManager();
-		_actionManager = new Action::ActionManager();
-		_workerManager = new Worker::WorkerManager();
-		_scene		   = new Object3D::Scene();
-		_renderer	   = new Renderer::GL();
+		_eventManager	  = new Event::EventManager();
+		_actionManager	  = new Action::ActionManager();
+		_workerManager	  = new Worker::WorkerManager();
+		_selectionManager = new Selection::SelectionManager();
+		_scene			  = new Object3D::Scene();
+		_renderer		  = new Renderer::GL();
 	}
 
 	VTXApp::~VTXApp()
@@ -27,6 +28,7 @@ namespace VTX
 		Generic::destroy( _ui );
 
 		delete _renderer;
+		delete _selectionManager;
 		delete _workerManager;
 		delete _actionManager;
 		delete _eventManager;
@@ -48,8 +50,8 @@ namespace VTX
 #ifdef _DEBUG
 		//_stateMachine->goToState( ID::State::VISUALIZATION );
 		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "173D.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "4v6x.mmtf" ) );
-		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6LU7.mmtf" ) );
+		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "4v6x.mmtf" ) );
+		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6LU7.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOADING, &IO::Path( DATA_DIR + "3j3q.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOADING, &IO::Path( DATA_DIR + "r2d2.obj" ) );
 #else

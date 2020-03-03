@@ -26,7 +26,7 @@ namespace VTX
 				VTXApp::get().getUI().getComponentByName( getComponentParentName() )->addItem( this );
 			}
 
-			virtual void clean() override
+			virtual void clean() override 
 			{
 				VTXApp::get().getUI().getComponentByName( getComponentParentName() )->removeItem( getName() );
 			}

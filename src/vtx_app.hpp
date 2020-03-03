@@ -11,6 +11,7 @@
 #include "generic/factory.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
+#include "selection/selection_manager.hpp"
 #include "setting.hpp"
 #include "state/state_machine.hpp"
 #include "tool/chrono.hpp"
@@ -47,17 +48,18 @@ namespace VTX
 		inline Worker::WorkerManager &			getWorkerManager() { return *_workerManager; }
 
 	  private:
-		static bool				 _isRunning;
-		Tool::Chrono			 _chrono		= Tool::Chrono();
-		double					 _timeTotal		= 0.f;
-		double					 _timeDelta		= 0.f;
-		UI::UserInterface *		 _ui			= nullptr;
-		State::StateMachine *	 _stateMachine	= nullptr;
-		Object3D::Scene *		 _scene			= nullptr;
-		Renderer::BaseRenderer * _renderer		= nullptr;
-		Action::ActionManager *	 _actionManager = nullptr;
-		Event::EventManager *	 _eventManager	= nullptr;
-		Worker::WorkerManager *	 _workerManager = nullptr;
+		static bool					  _isRunning;
+		Tool::Chrono				  _chrono			= Tool::Chrono();
+		double						  _timeTotal		= 0.f;
+		double						  _timeDelta		= 0.f;
+		UI::UserInterface *			  _ui				= nullptr;
+		State::StateMachine *		  _stateMachine		= nullptr;
+		Object3D::Scene *			  _scene			= nullptr;
+		Renderer::BaseRenderer *	  _renderer			= nullptr;
+		Action::ActionManager *		  _actionManager	= nullptr;
+		Event::EventManager *		  _eventManager		= nullptr;
+		Worker::WorkerManager *		  _workerManager	= nullptr;
+		Selection::SelectionManager * _selectionManager = nullptr;
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;

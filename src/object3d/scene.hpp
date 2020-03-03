@@ -24,6 +24,8 @@ namespace VTX
 			using VectorMoleculePtr = std::vector<MoleculePtr>;
 			using VectorPathPtr		= std::vector<PathPtr>;
 
+			Scene();
+
 			virtual void clean() override;
 
 			void addMolecule( MoleculePtr const p_molecule ) { _molecules.emplace_back( p_molecule ); }

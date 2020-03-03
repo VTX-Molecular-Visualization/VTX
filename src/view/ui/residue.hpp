@@ -25,7 +25,7 @@ namespace VTX
 			  protected:
 				virtual void _draw() override;
 
-			  private:
+					private:
 			};
 		} // namespace UI
 	}	  // namespace View
