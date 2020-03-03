@@ -6,8 +6,8 @@
 #endif
 
 #include "camera.hpp"
-#include "generic/base_updatable.hpp"
 #include "generic/base_cleanable.hpp"
+#include "generic/base_updatable.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
 #include <vector>
@@ -30,9 +30,10 @@ namespace VTX
 			void addPath( PathPtr const p_path ) { _paths.emplace_back( p_path ); }
 
 			inline Camera &					 getCamera() { return _camera; }
+			inline const Camera &			 getCamera() const { return _camera; }
 			inline VectorMoleculePtr &		 getMolecules() { return _molecules; };
 			inline const VectorMoleculePtr & getMolecules() const { return _molecules; };
-			inline VectorPathPtr			 getPaths() const { return _paths; };
+			inline const VectorPathPtr &	 getPaths() const { return _paths; };
 
 			virtual void update( const double ) override;
 

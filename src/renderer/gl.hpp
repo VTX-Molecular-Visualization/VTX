@@ -17,15 +17,13 @@ namespace VTX
 			GL() = default;
 			~GL();
 
-			virtual void init( Object3D::Scene &, uint, uint ) override;
-			virtual void clear( Object3D::Scene & ) override;
-			virtual void render( Object3D::Scene & ) override;
+			virtual void init( const Object3D::Scene &, const uint, const uint ) override;
+			virtual void clear( const Object3D::Scene & ) override;
+			virtual void render( const Object3D::Scene & ) override;
 			virtual void setShading() override;
 			virtual void resize( const uint, const uint ) override;
 
 		  private:
-			Vec4f _backgroundColor = Vec4f( 1.f, 1.f, 1.f, 1.f );
-
 			// Geometry pass.
 			GLuint _fboGeo						 = GL_INVALID_VALUE;
 			GLuint _colorNormalCompressedTexture = GL_INVALID_VALUE;
@@ -73,8 +71,8 @@ namespace VTX
 			void _initAntiAliasingPass();
 			void _initQuadVAO();
 
-			void _geometricPass( Object3D::Scene & );
-			void _ssaoPass( Object3D::Scene & );
+			void _geometricPass( const Object3D::Scene & );
+			void _ssaoPass( const Object3D::Scene & );
 			void _blurPass();
 			void _shadingPass();
 			void _antiAliasingPass();

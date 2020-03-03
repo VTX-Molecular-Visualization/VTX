@@ -37,10 +37,10 @@ namespace VTX
 				_height = p_height;
 			}
 
-			virtual void init( Object3D::Scene &, uint, uint ) = 0;
-			virtual void clear( Object3D::Scene & )			   = 0;
-			virtual void render( Object3D::Scene & )		   = 0;
-			virtual void setShading()						   = 0;
+			virtual void init( const Object3D::Scene &, const uint, const uint ) = 0;
+			virtual void clear( const Object3D::Scene & )						 = 0;
+			virtual void render( const Object3D::Scene & )						 = 0;
+			virtual void setShading()											 = 0;
 
 			inline GLSL::ProgramManager & getProgramManager() { return _programManager; }
 
