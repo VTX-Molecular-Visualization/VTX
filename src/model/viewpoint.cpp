@@ -5,8 +5,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		uint Viewpoint::COUNTER = 0;
-
 		void Viewpoint::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );

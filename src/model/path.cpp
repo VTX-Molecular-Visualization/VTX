@@ -22,7 +22,6 @@ namespace VTX
 		{
 			Viewpoint viewpoint( (Path * const)this );
 
-			// Find the 4 points.
 			uint  size	 = (uint)_viewpoints.size();
 			float total	 = 0.f;
 			uint  offset = 0;
@@ -75,41 +74,6 @@ namespace VTX
 			return viewpoint;
 		}
 
-		void Path::setSelected( const bool p_selected )
-		{
-			BaseModel::setSelected( p_selected );
-			if ( isSelected() )
-			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::Path>( this ) ); }
-			else
-			{
-				Generic::destroy( removeItem( ID::View::UI_PATH ) );
-			}
-		}
-
-		void Path::setSelectedViewpoint( Viewpoint * const p_viewpoint )
-		{
-			if ( _selectedViewpoint != nullptr ) { _selectedViewpoint->setSelected( false ); }
-			try
-			{
-				_selectedViewpoint = p_viewpoint;
-				_selectedViewpoint->setSelected( true );
-			}
-			catch ( const std::exception )
-			{
-				VTX_WARNING( "Failed to select viewpoint" );
-				_selectedViewpoint = nullptr;
-			}
-		}
-
-		void Path::resetSelectedViewpoint()
-		{
-			if ( _selectedViewpoint != nullptr )
-			{
-				_selectedViewpoint->setSelected( false );
-				_selectedViewpoint = nullptr;
-			}
-		}
-
 		void Path::refreshAllDurations()
 		{
 			// Force the first to 0.
@@ -153,11 +117,27 @@ namespace VTX
 				for ( uint i = 1; i < _viewpoints.size(); ++i )
 				{
 					Viewpoint * const viewpoint = _viewpoints[ i ];
+					if ( totalDistance == 0.f )
+					{
+						viewpoint->setDuration( 0.f );
+						break;
+					}
 					float distance = glm::distance( _viewpoints[ i - 1u ]->getPosition(), viewpoint->getPosition() );
 					viewpoint->setDuration( _duration * distance / totalDistance );
 				}
 			}
 		} // namespace Model
+
+		void Path::setSelected( const bool p_selected )
+		{
+			BaseModel::setSelected( p_selected );
+			if ( isSelected() )
+			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::Path>( this ) ); }
+			else
+			{
+				Generic::destroy( removeItem( ID::View::UI_PATH ) );
+			}
+		}
 
 		void Path::load( const IO::Path & p_file )
 		{

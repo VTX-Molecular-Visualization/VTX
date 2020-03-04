@@ -15,9 +15,13 @@ namespace VTX
 {
 	namespace Model
 	{
-		class BaseModel : public Generic::HasCollection<View::BaseView<BaseModel>>, public Generic::BaseSelectable
+		class BaseModel : public Generic::HasCollection<View::BaseView<BaseModel>>, public Selection::BaseSelectable
 		{
 		  public:
+			inline static uint COUNTER = 0;
+
+			virtual ~BaseModel() = default;
+
 			uint getId() const { return _id; }
 			void setId( const uint p_id ) { _id = p_id; }
 
@@ -30,7 +34,7 @@ namespace VTX
 				}
 			}
 
-			uint _id = INVALID_ID;
+			uint _id = COUNTER++;
 		};
 	} // namespace Model
 } // namespace VTX

@@ -21,7 +21,6 @@ namespace VTX
 			virtual void execute() override
 			{
 				Model::Path * const path = _viewpoint.getPathPtr();
-				path->resetSelectedViewpoint();
 				path->removeViewpoint( &_viewpoint );
 				path->refreshAllDurations();
 				Generic::destroy<Model::Viewpoint>( &_viewpoint );

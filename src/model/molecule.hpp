@@ -33,8 +33,7 @@ namespace VTX
 			public Generic::BaseRenderable
 		{
 		  public:
-			static uint Molecule::COUNTER;
-			Molecule() { _id = COUNTER++; };
+			Molecule() {};
 			~Molecule();
 
 			// Models.

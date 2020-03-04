@@ -4,13 +4,13 @@ namespace VTX
 {
 	namespace Selection
 	{
-		void SelectionManager::select( Generic::BaseSelectable * const p_selectable )
+		void SelectionManager::select( BaseSelectable * const p_selectable )
 		{
 			_selected.emplace( p_selectable );
 			p_selectable->setSelected( true );
 		}
 
-		void SelectionManager::unselect( Generic::BaseSelectable * const p_selectable )
+		void SelectionManager::unselect( BaseSelectable * const p_selectable )
 		{
 			_selected.erase( p_selectable );
 			p_selectable->setSelected( false );

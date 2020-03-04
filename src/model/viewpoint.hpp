@@ -17,14 +17,11 @@ namespace VTX
 		class Viewpoint : public BaseModel
 		{
 		  public:
-			static uint COUNTER;
-
 			explicit Viewpoint( Path * const p_path ) : _path( p_path ) {}
 
 			explicit Viewpoint( Path * const p_path, const Vec3f & p_position, const Quatf & p_rotation ) :
 				_path( p_path ), _position( p_position ), _rotation( p_rotation ), _duration( 0.f )
 			{
-				_id = COUNTER++;
 			}
 			explicit Viewpoint( Path * const  p_path,
 								const Vec3f & p_position,
@@ -33,7 +30,6 @@ namespace VTX
 				_path( p_path ),
 				_position( p_position ), _rotation( p_rotation ), _duration( p_duration )
 			{
-				_id = COUNTER++;
 			}
 
 			inline Path * const getPathPtr() const { return _path; }

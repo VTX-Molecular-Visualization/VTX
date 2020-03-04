@@ -16,11 +16,11 @@ namespace VTX
 		class Select : public BaseAction
 		{
 		  public:
-			Select( Generic::BaseSelectable & p_selectable ) : _selectable( p_selectable ) {};
+			Select( Selection::BaseSelectable & p_selectable ) : _selectable( p_selectable ) {};
 			virtual void execute() override { VTXApp::get().getSelectionManager().select( &_selectable ); };
 
 		  private:
-			Generic::BaseSelectable & _selectable;
+			Selection::BaseSelectable & _selectable;
 		};
 	} // namespace Action
 } // namespace VTX

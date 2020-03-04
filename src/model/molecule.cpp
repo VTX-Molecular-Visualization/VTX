@@ -10,8 +10,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		uint Molecule::COUNTER = 0;
-
 		Molecule::~Molecule()
 		{
 			glBindVertexArray( _vao );

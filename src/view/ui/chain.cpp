@@ -10,7 +10,7 @@ namespace VTX
 			void Chain::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-				ImGui::PushID( "ViewChain" );
+				ImGui::PushID( ( "ViewChain" + std::to_string( _getModel().getId() ) ).c_str() );
 				if ( ImGui::CollapsingHeader( ( "Chain: " + _getModel().getName() ).c_str(), flags ) )
 				{
 					ImGui::Text( "ID: %d", _getModel().getId() );

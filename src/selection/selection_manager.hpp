@@ -15,10 +15,10 @@ namespace VTX
 		class SelectionManager
 		{
 		  public:
-			using SetSelectablePtr = std::unordered_set<Generic::BaseSelectable *>;
+			using SetSelectablePtr = std::unordered_set<BaseSelectable *>;
 
-			void select( Generic::BaseSelectable * const );
-			void unselect( Generic::BaseSelectable * const );
+			void select( BaseSelectable * const );
+			void unselect( BaseSelectable * const );
 
 		  private:
 			SetSelectablePtr _selected = SetSelectablePtr();

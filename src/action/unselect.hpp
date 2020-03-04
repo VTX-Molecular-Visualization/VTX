@@ -15,11 +15,11 @@ namespace VTX
 		class Unselect : public BaseAction
 		{
 		  public:
-			Unselect( Generic::BaseSelectable & p_selectable ) : _selectable( p_selectable ) {};
+			Unselect( Selection::BaseSelectable & p_selectable ) : _selectable( p_selectable ) {};
 			virtual void execute() override { VTXApp::get().getSelectionManager().unselect( &_selectable ); }
 
 		  private:
-			Generic::BaseSelectable & _selectable;
+			Selection::BaseSelectable & _selectable;
 		}; // namespace VTX
 	}	   // namespace Action
 } // namespace VTX

@@ -5,21 +5,27 @@
 #pragma once
 #endif
 
+#include "define.hpp"
+
 namespace VTX
 {
-	namespace Generic
+	namespace Selection
 	{
 		class BaseSelectable
 		{
 		  public:
-			virtual ~BaseSelectable() = default;
+			virtual ~BaseSelectable();
 
-			bool		 isSelected() const { return _isSelected; }
-			virtual void setSelected( const bool p_selected ) { _isSelected = p_selected; }
+			inline bool	 isSelected() const { return _isSelected; }
+			virtual void setSelected( const bool p_selected )
+			{
+				VTX_DEBUG( "setSelected " + std::to_string( p_selected ) );
+				_isSelected = p_selected;
+			}
 
 		  private:
 			bool _isSelected = false;
 		};
-	} // namespace Generic
+	} // namespace Selection
 } // namespace VTX
 #endif

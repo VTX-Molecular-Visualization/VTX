@@ -13,7 +13,7 @@ namespace VTX
 			void Molecule::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-				ImGui::PushID( "ViewMolecule" );
+				ImGui::PushID( ( "ViewMolecule" + std::to_string( _getModel().getId() ) ).c_str() );
 
 				if ( ImGui::CollapsingHeader( LOCALE( "Inspector.Transform" ), flags ) )
 				{
