@@ -1,4 +1,5 @@
 #include "selection_manager.hpp"
+#include <string>
 
 namespace VTX
 {
@@ -6,14 +7,30 @@ namespace VTX
 	{
 		void SelectionManager::select( BaseSelectable * const p_selectable )
 		{
-			_selected.emplace( p_selectable );
-			p_selectable->setSelected( true );
+			try
+			{
+				_selected.emplace( p_selectable );
+				p_selectable->setSelected( true );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Item already selected" );
+				VTX_ERROR( p_e.what() );
+			}
 		}
 
 		void SelectionManager::unselect( BaseSelectable * const p_selectable )
 		{
-			_selected.erase( p_selectable );
-			p_selectable->setSelected( false );
+			try
+			{
+				_selected.erase( p_selectable );
+				p_selectable->setSelected( false );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Item not selected" );
+				VTX_ERROR( p_e.what() );
+			}
 		}
 	} // namespace Selection
 } // namespace VTX
