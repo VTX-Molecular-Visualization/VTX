@@ -12,15 +12,9 @@ namespace VTX
 		{
 			void MoleculeStructure::_draw()
 			{
-				ImGui::PushID( ( "ViewMolecule" + std::to_string( _getModel().getId() ) ).c_str() );
-
+				ImGui::PushID( ( "ViewMoleculeStructure" + std::to_string( _getModel().getId() ) ).c_str() );
 				if ( ImGui::CollapsingHeader( _getModel().getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
 				{
-					ImGui::Text( "Chains: %d", _getModel().getChainCount() );
-					ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
-					ImGui::Text( "Atoms: %d", _getModel().getAtomCount() );
-					ImGui::Text( "Bonds: %d", _getModel().getBondCount() / 2 );
-					ImGui::Separator();
 					for ( Model::Chain * const chain : _getModel().getChains() )
 					{
 						ImGui::PushID( chain->getId() );

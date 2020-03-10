@@ -73,10 +73,6 @@ namespace VTX
 
 			// Inspector.
 			{ "Inspector.Inspector", "Inspector" },
-			{ "Inspector.Transform", "Transform" },
-			{ "Inspector.Transform.Position", "Position" },
-			{ "Inspector.Transform.Rotation", "Rotation" },
-			{ "Inspector.Transform.Scale", "Scale" },
 
 			// Views.
 			{ "View.Data", "Data" },
@@ -91,6 +87,10 @@ namespace VTX
 			{ "View.Duration", "Duration" },
 			{ "View.DurationMode", "Speed mode" },
 			{ "View.InterpolationMode", "Smooth mode" },
+			{ "View.Transform", "Transform" },
+			{ "View.Transform.Position", "Position" },
+			{ "View.Transform.Rotation", "Rotation" },
+			{ "View.Transform.Scale", "Scale" },
 
 			// Modals.
 			{ "Modal.Loading", "Loading" },
