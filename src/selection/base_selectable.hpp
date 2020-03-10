@@ -19,7 +19,6 @@ namespace VTX
 			inline bool	 isSelected() const { return _isSelected; }
 			virtual void setSelected( const bool p_selected )
 			{
-				VTX_DEBUG( "setSelected " + std::to_string( p_selected ) );
 				_isSelected = p_selected;
 			}
 
