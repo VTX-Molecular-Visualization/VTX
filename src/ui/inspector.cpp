@@ -23,15 +23,18 @@ namespace VTX
 				return;
 			}
 
-			_drawComponent( ID::View::UI_MOLECULE );
-			_drawComponent( ID::View::UI_CHAIN );
-			_drawComponent( ID::View::UI_RESIDUE );
-			_drawComponent( ID::View::UI_ATOM );
-			ImGui::Separator();
-			_drawComponent( ID::View::UI_PATH );
-			_drawComponent( ID::View::UI_VIEWPOINT );
+			_drawComponents();
+				/*
+				_drawComponent( ID::View::UI_MOLECULE );
+				_drawComponent( ID::View::UI_CHAIN );
+				_drawComponent( ID::View::UI_RESIDUE );
+				_drawComponent( ID::View::UI_ATOM );
+				ImGui::Separator();
+				_drawComponent( ID::View::UI_PATH );
+				_drawComponent( ID::View::UI_VIEWPOINT );
+				*/
 
-			ImGui::End();
+				ImGui::End();
 		}
 
 	} // namespace UI

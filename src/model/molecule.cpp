@@ -28,6 +28,10 @@ namespace VTX
 			if ( _bondsIBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_bondsIBO );
 
 			if ( _vao != GL_INVALID_VALUE ) glDeleteVertexArrays( 1, &_vao );
+
+			Generic::clearVector<Atom>( _atoms );
+			Generic::clearVector<Residue>( _residues );
+			Generic::clearVector<Chain>( _chains );
 		}
 
 		void Molecule::init()
@@ -63,26 +67,26 @@ namespace VTX
 			switch ( Setting::Rendering::colorMode )
 			{
 			case View::MOLECULE_COLOR_MODE::ATOM:
-				for ( Atom & atom : _atoms )
+				for ( Atom * atom : _atoms )
 				{
 					_atomColors.emplace_back(
-						Vec3f( atom.getColor()[ 0 ], atom.getColor()[ 1 ], atom.getColor()[ 2 ] ) );
+						Vec3f( atom->getColor()[ 0 ], atom->getColor()[ 1 ], atom->getColor()[ 2 ] ) );
 				}
 				break;
 			case View::MOLECULE_COLOR_MODE::RESIDUE:
-				for ( Atom & atom : _atoms )
+				for ( Atom * const atom : _atoms )
 				{
-					_atomColors.emplace_back( atom.getResiduePtr()->getColor()[ 0 ],
-											  atom.getResiduePtr()->getColor()[ 1 ],
-											  atom.getResiduePtr()->getColor()[ 2 ] );
+					_atomColors.emplace_back( atom->getResiduePtr()->getColor()[ 0 ],
+											  atom->getResiduePtr()->getColor()[ 1 ],
+											  atom->getResiduePtr()->getColor()[ 2 ] );
 				}
 				break;
 			case View::MOLECULE_COLOR_MODE::CHAIN:
-				for ( Atom & atom : _atoms )
+				for ( Atom * const atom : _atoms )
 				{
-					_atomColors.emplace_back( atom.getChainPtr()->getColor()[ 0 ],
-											  atom.getChainPtr()->getColor()[ 1 ],
-											  atom.getChainPtr()->getColor()[ 2 ] );
+					_atomColors.emplace_back( atom->getChainPtr()->getColor()[ 0 ],
+											  atom->getChainPtr()->getColor()[ 1 ],
+											  atom->getChainPtr()->getColor()[ 2 ] );
 				}
 				break;
 			default: break;

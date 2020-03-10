@@ -21,27 +21,27 @@ namespace VTX
 					ImGui::Text( "Atoms: %d", _getModel().getAtomCount() );
 					ImGui::Text( "Bonds: %d", _getModel().getBondCount() / 2 );
 					ImGui::Separator();
-					for ( Model::Chain & chain : _getModel().getChains() )
+					for ( Model::Chain * const chain : _getModel().getChains() )
 					{
-						ImGui::PushID( chain.getId() );
+						ImGui::PushID( chain->getId() );
 						bool chainOpened = ImGui::TreeNodeEx(
-							chain.getName().c_str(),
-							chain.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
+							chain->getName().c_str(),
+							chain->isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 						if ( ImGui::IsItemClicked() )
 						{
 							if ( chainOpened )
-							{ VTXApp::get().getActionManager().execute( new Action::Unselect( chain ) ); }
+							{ VTXApp::get().getActionManager().execute( new Action::Unselect( *chain ) ); }
 
 							else
 							{
-								VTXApp::get().getActionManager().execute( new Action::Select( chain ) );
+								VTXApp::get().getActionManager().execute( new Action::Select( *chain ) );
 							}
 						}
 						if ( chainOpened )
 						{
-							for ( uint i = 0; i < chain.getResidueCount(); ++i )
+							for ( uint i = 0; i < chain->getResidueCount(); ++i )
 							{
-								Model::Residue & residue = _getModel().getResidue( chain.getIdFirstResidue() + i );
+								Model::Residue & residue = _getModel().getResidue( chain->getIdFirstResidue() + i );
 								ImGui::PushID( residue.getId() );
 								bool residueOpened = ImGui::TreeNodeEx(
 									VTX::Setting::UI::symbolDisplayMode == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT

@@ -22,11 +22,10 @@ namespace VTX
 						ImGui::PushID( viewpoint->getId() );
 						if ( ImGui::Selectable( ( std::to_string( ++i ) 
 							+ std::string(" - ") 
-							//+ glm::to_string(viewpoint->getPosition() )   
-							//+ std::string(" - ") 
+							+ glm::to_string(viewpoint->getPosition() )   
+							+ std::string(" - ") 
 							+ std::to_string(viewpoint->getDuration()) 
-							+ std::string("s")).c_str()  )/*,
-						 viewpoint->isSelected()*/ )
+							+ std::string("s")).c_str()  ) )
 						{
 							VTXApp::get().getActionManager().execute(
 								new Action::ViewpointGoTo( *viewpoint, VTXApp::get().getScene().getCamera() ) );
@@ -38,7 +37,6 @@ namespace VTX
 								VTXApp::get().getActionManager().execute( new Action::Select( *viewpoint ) );
 							}
 						}
-
 						ImGui::PopID();
 					}
 				}
