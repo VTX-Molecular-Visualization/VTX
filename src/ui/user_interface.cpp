@@ -65,6 +65,9 @@ namespace VTX
 			}
 		}
 
+		void UserInterface::setVSync( const bool p_vsync ) { SDL_GL_SetSwapInterval( p_vsync );
+		}
+
 		void UserInterface::_addItems()
 		{
 			// Windows.
@@ -114,7 +117,7 @@ namespace VTX
 			if ( _glContext == nullptr ) { throw Exception::SDLException( SDL_GetError() ); }
 
 			SDL_GL_MakeCurrent( _window, _glContext );
-			SDL_GL_SetSwapInterval( VSYNC );
+			SDL_GL_SetSwapInterval( VSYNC_DEFAULT );
 		}
 
 		void UserInterface::_initGL()

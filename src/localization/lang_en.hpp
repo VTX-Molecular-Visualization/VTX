@@ -44,6 +44,7 @@ namespace VTX
 			{ "MainMenu.Settings.ColorMode", "Color mode" },
 			{ "MainMenu.Settings.Shading", "Shading" },
 			{ "MainMenu.Settings.AA", "AA" },
+			{ "MainMenu.Settings.VSync", "VSync" },
 			{ "MainMenu.Settings.SSAO", "SSAO" },
 			{ "MainMenu.Settings.AORadius", "AO radius" },
 			{ "MainMenu.Settings.AOIntensity", "AO intensity" },

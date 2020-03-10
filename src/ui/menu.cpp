@@ -1,6 +1,7 @@
 #include "menu.hpp"
 #include "action/active_renderer.hpp"
 #include "action/active_ssao.hpp"
+#include "action/active_vertical_sync.hpp"
 #include "action/active_ui_component.hpp"
 #include "action/active_y_axis_inversion.hpp"
 #include "action/change_ao_blur_size.hpp"
@@ -224,6 +225,11 @@ namespace VTX
 						VTXApp::get().getActionManager().execute(
 							new Action::ChangeShading( (Renderer::SHADING)shading ) );
 					}
+
+					// VSYNC.
+					bool useVSync= Setting::Rendering::useVSync;
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.VSync" ), &useVSync ) )
+					{ VTXApp::get().getActionManager().execute( new Action::ActiveVerticalSync( useVSync ) ); };
 
 					// SSAO.
 					bool useSSAO = Setting::Rendering::useSSAO;

@@ -6,7 +6,6 @@
 #endif
 
 #include "base_action.hpp"
-#include "selection/base_selectable.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
