@@ -11,7 +11,6 @@ namespace VTX
 			{
 				_selected.emplace( p_selectable );
 				p_selectable->setSelected( true );
-				VTX_DEBUG(std::to_string(_selected.size()));
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -24,9 +23,8 @@ namespace VTX
 		{
 			try
 			{
-				_selected.erase( p_selectable );
 				p_selectable->setSelected( false );
-				VTX_DEBUG( std::to_string( _selected.size() ) );
+				_selected.erase( p_selectable );
 			}
 			catch ( const std::exception & p_e )
 			{
