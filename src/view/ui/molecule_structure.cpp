@@ -13,7 +13,20 @@ namespace VTX
 			void MoleculeStructure::_draw()
 			{
 				ImGui::PushID( ( "ViewMoleculeStructure" + std::to_string( _getModel().getId() ) ).c_str() );
-				if ( ImGui::CollapsingHeader( _getModel().getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
+				bool moleculeOpened = ImGui::TreeNodeEx(
+					_getModel().getName().c_str(),
+					_getModel().isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
+				if ( ImGui::IsItemClicked() )
+				{
+					if ( moleculeOpened )
+					{ VTXApp::get().getActionManager().execute( new Action::Unselect( _getModel() ) ); }
+
+					else
+					{
+						VTXApp::get().getActionManager().execute( new Action::Select( _getModel() ) );
+					}
+				}
+				if ( moleculeOpened )
 				{
 					for ( Model::Chain * const chain : _getModel().getChains() )
 					{
@@ -85,6 +98,7 @@ namespace VTX
 						}
 						ImGui::PopID();
 					}
+					ImGui::TreePop();
 				}
 				ImGui::PopID();
 			}
