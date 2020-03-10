@@ -49,9 +49,9 @@ namespace VTX
 					atomCount += mesh->mNumVertices;
 				}
 
-				p_molecule.resizeChainsVec( chainCount );
-				p_molecule.resizeResiduesVec( residueCount );
-				p_molecule.resizeAtomsVec( atomCount );
+				p_molecule.addChains( chainCount );
+				p_molecule.addResidues( residueCount );
+				p_molecule.addAtoms( atomCount );
 
 				// Loop over meshes.
 				for ( uint chainIdx = 0; chainIdx < chainCount; ++chainIdx, ++chainGlobalIdx )

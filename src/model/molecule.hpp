@@ -89,21 +89,21 @@ namespace VTX
 			inline const uint				 getAtomCount() const { return (uint)_atoms.size(); }
 			inline const uint				 getBondCount() const { return (uint)_bonds.size(); }
 
-			inline void resizeChainsVec( const uint s )
+			inline void addChains( const uint s )
 			{
 				for ( uint i = 0; i < s; ++i )
 				{
 					addChain();
 				}
 			}
-			inline void resizeResiduesVec( const uint s )
+			inline void addResidues( const uint s )
 			{
 				for ( uint i = 0; i < s; ++i )
 				{
 					addResidue();
 				}
 			}
-			inline void resizeAtomsVec( const uint s )
+			inline void addAtoms( const uint s )
 			{
 				for ( uint i = 0; i < s; ++i )
 				{
