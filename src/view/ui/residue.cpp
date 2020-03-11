@@ -1,4 +1,6 @@
 #include "residue.hpp"
+#include "action/change_color_mode.hpp"
+#include "action/colorable_change_color.hpp "
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -15,10 +17,13 @@ namespace VTX
 				{
 					ImGui::Text( "ID: %d", _getModel().getId() );
 					ImGui::Text( "Atoms: %d", _getModel().getAtomCount() );
-					if ( ImGui::ColorEdit3( "Color", _getModel().getColor() ) )
+					Vec3f color = _getModel().getColor();
+					if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
 					{
-						Setting::Rendering::colorMode = View::MOLECULE_COLOR_MODE::RESIDUE;
-						_getModel().getMoleculePtr()->setColorMode();
+						VTXApp::get().getActionManager().execute(
+							new Action::ColorableChangeColor( _getModel(), color ) );
+						VTXApp::get().getActionManager().execute(
+							new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::RESIDUE ) );
 					}
 				}
 				ImGui::PopID();

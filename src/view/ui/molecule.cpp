@@ -1,6 +1,6 @@
 #include "molecule.hpp"
 #include "action/scale.hpp"
-#include "action/translate.hpp"
+#include "action/transformable_translate.hpp"
 #include "vtx_app.hpp"
 #include <glm/gtx/euler_angles.hpp>
 
@@ -31,7 +31,7 @@ namespace VTX
 						if ( ImGui::InputFloat3( "Position", t, 2 ) )
 						{
 							VTXApp::get().getActionManager().execute(
-								new Action::Translate( _getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
+								new Action::TransformableTranslate( _getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
 						}
 						ImGui::PopID();
 						ImGui::Text( LOCALE( "View.Transform.Scale" ) );

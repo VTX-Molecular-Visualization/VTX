@@ -5,8 +5,9 @@
 #pragma once
 #endif
 
-#include "define.hpp"
 #include "base_model.hpp"
+#include "define.hpp"
+#include "generic/base_colorable.hpp"
 #include <map>
 
 namespace VTX
@@ -15,7 +16,7 @@ namespace VTX
 	{
 		class Molecule;
 		class Chain;
-		class Residue : public BaseModel
+		class Residue : public BaseModel, public Generic::BaseColorable
 		{
 		  public:
 			enum class RESIDUE_SYMBOL : int
@@ -51,38 +52,30 @@ namespace VTX
 			static const Vec3f *	 SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ];
 
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void				  setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
-			inline Chain * const getChainPtr() const { return _chainPtr; }
-			inline void				  setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
+			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
+			inline Chain * const	getChainPtr() const { return _chainPtr; }
+			inline void				setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
 
 			inline const RESIDUE_SYMBOL getSymbol() const { return _symbol; };
 			inline void					setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
 			inline const std::string &	getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const std::string &	getSymbolShort() const { return SYMBOL_SHORT[ (int)_symbol ]; }
-			inline float * const		getColor() { return _color; }
-			inline void					setColor( const Vec3f & p_color )
-			{
-				_color[ 0 ] = p_color.x;
-				_color[ 1 ] = p_color.y;
-				_color[ 2 ] = p_color.z;
-			}
-			inline uint getIdFirstAtom() const { return _idFirstAtom; };
-			inline void setIdFirstAtom( const uint p_id ) { _idFirstAtom = p_id; };
-			inline uint getAtomCount() const { return _atomCount; };
-			inline void setAtomCount( const uint p_count ) { _atomCount = p_count; };
-			inline uint getIdFirstBond() const { return _idFirstBond; };
-			inline void setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
-			inline uint getBondCount() const { return _bondCount; };
-			inline void setBondCount( const uint p_count ) { _bondCount = p_count; };
+			inline uint					getIdFirstAtom() const { return _idFirstAtom; };
+			inline void					setIdFirstAtom( const uint p_id ) { _idFirstAtom = p_id; };
+			inline uint					getAtomCount() const { return _atomCount; };
+			inline void					setAtomCount( const uint p_count ) { _atomCount = p_count; };
+			inline uint					getIdFirstBond() const { return _idFirstBond; };
+			inline void					setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
+			inline uint					getBondCount() const { return _bondCount; };
+			inline void					setBondCount( const uint p_count ) { _bondCount = p_count; };
 
 			virtual void setSelected( const bool ) override;
 
 		  private:
 			Molecule * _moleculePtr = nullptr;
-			Chain *	_chainPtr	 = nullptr;
+			Chain *	   _chainPtr	= nullptr;
 
 			RESIDUE_SYMBOL _symbol		= RESIDUE_SYMBOL::UNKNOWN;
-			float		   _color[ 3 ]	= { 0.f, 0.f, 0.f };
 			uint		   _idFirstAtom = 0;
 			uint		   _atomCount	= 0;
 			uint		   _idFirstBond = 0;

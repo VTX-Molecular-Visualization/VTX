@@ -5,8 +5,9 @@
 #pragma once
 #endif
 
-#include "define.hpp"
 #include "base_model.hpp"
+#include "define.hpp"
+#include "generic/base_colorable.hpp"
 #include <iostream>
 
 namespace VTX
@@ -14,25 +15,18 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class Chain : public BaseModel
+		class Chain : public BaseModel, public Generic::BaseColorable
 		{
 		  public:
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
+			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
 
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
-			inline float * const	   getColor() { return _color; }
-			inline void				   setColor( const Vec3f & p_color )
-			{
-				_color[ 0 ] = p_color.x;
-				_color[ 1 ] = p_color.y;
-				_color[ 2 ] = p_color.z;
-			}
-			inline uint getIdFirstResidue() const { return _idFirstResidue; };
-			inline void setIdFirstResidue( const uint p_id ) { _idFirstResidue = p_id; };
-			inline uint getResidueCount() const { return _residueCount; };
-			inline void setResidueCount( const uint p_count ) { _residueCount = p_count; };
+			inline uint				   getIdFirstResidue() const { return _idFirstResidue; };
+			inline void				   setIdFirstResidue( const uint p_id ) { _idFirstResidue = p_id; };
+			inline uint				   getResidueCount() const { return _residueCount; };
+			inline void				   setResidueCount( const uint p_count ) { _residueCount = p_count; };
 
 			virtual void setSelected( const bool ) override;
 
@@ -40,7 +34,6 @@ namespace VTX
 			Molecule * _moleculePtr = nullptr;
 
 			std::string _name			= "";
-			float		_color[ 3 ]		= { 0.f, 0.f, 0.f };
 			uint		_idFirstResidue = 0;
 			uint		_residueCount	= 0;
 		}; // namespace Model

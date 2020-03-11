@@ -1,5 +1,5 @@
-#ifndef __VTX_ACTION_TRANSLATE__
-#define __VTX_ACTION_TRANSLATE__
+#ifndef __VTX_ACTION_TRANSFORMABLE_TRANSLATE__
+#define __VTX_ACTION_TRANSFORMABLE_TRANSLATE__
 
 #ifdef _MSC_VER
 #pragma once
@@ -14,10 +14,10 @@ namespace VTX
 	namespace Action
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseTransformable, T>::value>>
-		class Translate : public BaseActionUndonable
+		class TransformableTranslate : public BaseActionUndonable
 		{
 		  public:
-			explicit Translate( T & p_transformable, const Vec3f & p_translation ) :
+			explicit TransformableTranslate( T & p_transformable, const Vec3f & p_translation ) :
 				_transformable( p_transformable ), _translation( p_translation ),
 				_translationOld( p_transformable.getTransform().getTranslation() )
 			{

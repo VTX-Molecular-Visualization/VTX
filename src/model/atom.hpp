@@ -7,6 +7,7 @@
 
 #include "base_model.hpp"
 #include "define.hpp"
+#include "generic/base_colorable.hpp"
 
 namespace VTX
 {
@@ -15,7 +16,7 @@ namespace VTX
 		class Molecule;
 		class Chain;
 		class Residue;
-		class Atom : public BaseModel
+		class Atom : public BaseModel, public Generic::BaseColorable
 		{
 		  public:
 			// Sorted by atomic number.
@@ -162,13 +163,6 @@ namespace VTX
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
 			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ (int)_symbol ]; }
-			inline float * const	   getColor() { return _color; }
-			inline void				   setColor( const Vec3f & p_color )
-			{
-				_color[ 0 ] = p_color.x;
-				_color[ 1 ] = p_color.y;
-				_color[ 2 ] = p_color.z;
-			}
 
 			virtual void setSelected( const bool ) override;
 
@@ -177,8 +171,7 @@ namespace VTX
 			Chain *	   _chainPtr	= nullptr;
 			Residue *  _residuePtr	= nullptr;
 
-			ATOM_SYMBOL _symbol		= ATOM_SYMBOL::UNKNOWN;
-			float		_color[ 3 ] = { 0.f, 0.f, 0.f };
+			ATOM_SYMBOL _symbol = ATOM_SYMBOL::UNKNOWN;
 		};
 
 	} // namespace Model

@@ -39,17 +39,17 @@ namespace VTX
 	constexpr int	  OPENGL_VERSION_MAJOR = 4;
 	constexpr int	  OPENGL_VERSION_MINOR = 5;
 	const std::string GLSL_VERSION		   = "#version 450";
-	const bool		  VSYNC_DEFAULT				   = true;
+	const bool		  VSYNC_DEFAULT		   = true;
 	const bool		  RANDOM			   = false;
 
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 
 	// Window.
-	// constexpr int WINDOW_WIDTH	= 1280;
-	// constexpr int WINDOW_HEIGHT = 720;
+	constexpr int WINDOW_WIDTH	= 1280;
+	constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
-	constexpr int WINDOW_WIDTH	= 1920;
-	constexpr int WINDOW_HEIGHT = 1080;
+	// constexpr int WINDOW_WIDTH	= 1920;
+	// constexpr int WINDOW_HEIGHT = 1080;
 	// 4k
 	// constexpr int WINDOW_WIDTH	= 3840;
 	// constexpr int WINDOW_HEIGHT = 2160;
