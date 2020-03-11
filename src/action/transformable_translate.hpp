@@ -13,13 +13,13 @@ namespace VTX
 {
 	namespace Action
 	{
-		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseTransformable, T>::value>>
 		class TransformableTranslate : public BaseActionUndonable
 		{
 		  public:
-			explicit TransformableTranslate( T & p_transformable, const Vec3f & p_translation ) :
-				_transformable( p_transformable ), _translation( p_translation ),
-				_translationOld( p_transformable.getTransform().getTranslation() )
+			explicit TransformableTranslate( Generic::BaseTransformable & p_transformable,
+											 const Vec3f &				  p_translation ) :
+				_transformable( p_transformable ),
+				_translation( p_translation ), _translationOld( p_transformable.getTransform().getTranslation() )
 			{
 			}
 

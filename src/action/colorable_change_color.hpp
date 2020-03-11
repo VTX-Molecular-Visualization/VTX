@@ -12,11 +12,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseColorable, T>::value>>
 		class ColorableChangeColor : public BaseAction
 		{
 		  public:
-			explicit ColorableChangeColor( T & p_colorable, const Vec3f & p_color ) :
+			explicit ColorableChangeColor( Generic::BaseColorable & p_colorable, const Vec3f & p_color ) :
 				_colorable( p_colorable ), _color( p_color )
 			{
 			}
