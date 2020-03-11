@@ -15,11 +15,15 @@ namespace VTX
 {
 	namespace Model
 	{
-		class BaseModel : public Generic::HasCollection<View::BaseView<BaseModel>>, public Generic::BaseSelectable
+		class BaseModel : public Generic::HasCollection<View::BaseView<BaseModel>>, public Selection::BaseSelectable
 		{
 		  public:
-			uint getId() const { return _id; }
-			void setId( const uint p_id ) { _id = p_id; }
+			inline static long COUNTER = 0;
+
+			virtual ~BaseModel() = default;
+
+			long getId() const { return _id; }
+			void setId( const long p_id ) { _id = p_id; }
 
 		  protected:
 			virtual void _notifyViews( const Event::VTX_EVENT_MODEL p_event ) final
@@ -30,7 +34,7 @@ namespace VTX
 				}
 			}
 
-			uint _id = INVALID_ID;
+			long _id = COUNTER++;
 		};
 	} // namespace Model
 } // namespace VTX

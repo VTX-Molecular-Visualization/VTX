@@ -10,7 +10,7 @@ namespace VTX
 			void Atom::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-				ImGui::PushID( "ViewAtom" );
+				ImGui::PushID( ( "ViewAtom" + std::to_string( _getModel().getId() ) ).c_str() );
 				if ( ImGui::CollapsingHeader( ( "Atom: " + _getModel().getSymbolName() ).c_str(), flags ) )
 				{
 					ImGui::Text( "ID: %d", _getModel().getId() );

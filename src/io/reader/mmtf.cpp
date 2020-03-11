@@ -62,9 +62,9 @@ namespace VTX
 				uint  bondGlobalIdx	   = 0;
 
 				// Reserve memory for vectors to avoid pointer loss.
-				p_molecule.resizeChainsVec( p_data.numChains );
-				p_molecule.resizeResiduesVec( p_data.numGroups );
-				p_molecule.resizeAtomsVec( p_data.numAtoms );
+				p_molecule.addChains( p_data.numChains );
+				p_molecule.addResidues( p_data.numGroups );
+				p_molecule.addAtoms( p_data.numAtoms );
 
 				uint chainCount = p_data.chainsPerModel[ 0 ];
 #ifdef _DEBUG

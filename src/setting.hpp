@@ -39,6 +39,7 @@ namespace VTX
 			extern View::MOLECULE_COLOR_MODE	 colorMode;
 			extern Renderer::MODE				 mode;
 			extern Renderer::SHADING			 shading;
+			extern bool							 useVSync;
 			extern bool							 useAA;
 			extern bool							 useSSAO;
 			extern float						 aoRadius;

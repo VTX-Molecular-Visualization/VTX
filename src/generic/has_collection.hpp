@@ -44,7 +44,20 @@ namespace VTX
 					return nullptr;
 				}
 			}
-			void addItem( T * const p_item )
+
+			void addItem( const std::string& p_name, T * const p_item )
+			{
+				try
+				{
+					_items.try_emplace( p_name, p_item );
+				}
+				catch ( const std::exception & )
+				{
+					VTX_WARNING( "An item with this name already exists: " + p_name );
+				}
+			}
+
+			void addItem(T * const p_item )
 			{
 				try
 				{
@@ -59,7 +72,6 @@ namespace VTX
 
 			virtual T * removeItem( const std::string & p_name )
 			{
-				VTX_DEBUG( "REMOVE: " + p_name );
 				T * item = _items.at( p_name );
 				_items.erase( p_name );
 				return item;

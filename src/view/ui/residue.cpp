@@ -10,7 +10,7 @@ namespace VTX
 			void Residue::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-				ImGui::PushID( "ViewResidue" );
+				ImGui::PushID( ( "ViewResidue" + std::to_string( _getModel().getId() ) ).c_str() );
 				if ( ImGui::CollapsingHeader( ( "Residue: " + _getModel().getSymbolName() ).c_str(), flags ) )
 				{
 					ImGui::Text( "ID: %d", _getModel().getId() );

@@ -29,7 +29,6 @@ namespace VTX
 				Model::Viewpoint * const viewpoint = new Model::Viewpoint( &_path, _position, _rotation );
 				_path.addViewpoint( viewpoint );
 				_path.refreshAllDurations();
-				_path.setSelectedViewpoint( viewpoint );
 			}
 
 		  private:

@@ -36,7 +36,6 @@ namespace VTX
 				CUBIC
 			};
 
-			Path() { setId( 0 ); };
 			~Path();
 
 			void addViewpoint( const ViewpointPtr p_viewpoint ) { _viewpoints.emplace_back( p_viewpoint ); }
@@ -47,9 +46,6 @@ namespace VTX
 
 			inline VectorViewpointPtr & getViewpoints() { return _viewpoints; }
 
-			virtual void			   setSelected( const bool ) override;
-			void					   setSelectedViewpoint( Viewpoint * const );
-			void					   resetSelectedViewpoint();
 			inline float			   getDuration() const { return _duration; }
 			inline void				   setDuration( const float p_duration ) { _duration = p_duration; }
 			inline DURATION_MODE	   getDurationMode() const { return _modeDuration; }
@@ -58,6 +54,8 @@ namespace VTX
 			inline void		 setInterpolationMode( const INNTERPOLATION_MODE p_mode ) { _modeInterpolation = p_mode; }
 			void			 refreshAllDurations();
 			Model::Viewpoint getInterpolatedViewpoint( float p_time ) const;
+
+			virtual void setSelected( const bool ) override;
 
 			// TODO: redo implementation.
 			virtual void load( const IO::Path & ) override;
@@ -71,7 +69,6 @@ namespace VTX
 			DURATION_MODE		_modeDuration	   = DURATION_MODE::CONSTANT_SPEED;
 			INNTERPOLATION_MODE _modeInterpolation = INNTERPOLATION_MODE::LINEAR;
 			float				_duration		   = PATH_DEFAULT_DURATION;
-			ViewpointPtr		_selectedViewpoint = nullptr;
 		};
 	} // namespace Model
 } // namespace VTX

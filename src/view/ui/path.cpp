@@ -15,9 +15,8 @@ namespace VTX
 			void Path::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-				ImGui::PushID( "ViewPath" );
-				if ( ImGui::CollapsingHeader( ( LOCALE( "View.Path" ) + std::to_string( _getModel().getId() ) ).c_str(),
-											  flags ) )
+				ImGui::PushID( ( "ViewPath" + std::to_string( _getModel().getId() ) ).c_str() );
+				if ( ImGui::CollapsingHeader( LOCALE( "View.Path" ), flags ) )
 				{
 					ImGui::Text( "Viewpoints: %d", _getModel().getViewpoints().size() );
 

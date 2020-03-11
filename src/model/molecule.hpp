@@ -33,30 +33,29 @@ namespace VTX
 			public Generic::BaseRenderable
 		{
 		  public:
-			static uint Molecule::COUNTER;
-			Molecule() { _id = COUNTER++; };
+			Molecule() {};
 			~Molecule();
 
 			// Models.
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
-			inline void			   addChain() { _chains.emplace_back( Chain() ); }
-			inline Chain &		   getChain( uint p_idx ) { return _chains[ p_idx ]; }
-			inline const Chain &   getChain( uint p_idx ) const { return _chains[ p_idx ]; }
-			inline void			   addResidue() { _residues.emplace_back( Residue() ); }
-			inline Residue &	   getResidue( uint p_idx ) { return _residues[ p_idx ]; }
-			inline const Residue & getResidue( uint p_idx ) const { return _residues[ p_idx ]; }
-			inline void			   addAtom() { _atoms.emplace_back( Atom() ); }
-			inline Atom &		   getAtom( uint p_idx ) { return _atoms[ p_idx ]; }
-			inline const Atom &	   getAtom( uint p_idx ) const { return _atoms[ p_idx ]; }
+			inline void			   addChain() { _chains.emplace_back( new Chain() ); }
+			inline Chain &		   getChain( uint p_idx ) { return *_chains[ p_idx ]; }
+			inline const Chain &   getChain( uint p_idx ) const { return *_chains[ p_idx ]; }
+			inline void			   addResidue() { _residues.emplace_back( new Residue() ); }
+			inline Residue &	   getResidue( uint p_idx ) { return *_residues[ p_idx ]; }
+			inline const Residue & getResidue( uint p_idx ) const { return *_residues[ p_idx ]; }
+			inline void			   addAtom() { _atoms.emplace_back( new Atom() ); }
+			inline Atom &		   getAtom( uint p_idx ) { return *_atoms[ p_idx ]; }
+			inline const Atom &	   getAtom( uint p_idx ) const { return *_atoms[ p_idx ]; }
 
-			inline std::vector<Chain> &			getChains() { return _chains; }
-			inline const std::vector<Chain> &	getChains() const { return _chains; }
-			inline std::vector<Residue> &		getResidues() { return _residues; }
-			inline const std::vector<Residue> & getResidues() const { return _residues; }
-			inline std::vector<Atom> &			getAtoms() { return _atoms; }
-			inline const std::vector<Atom> &	getAtoms() const { return _atoms; }
+			inline std::vector<Chain *> &		  getChains() { return _chains; }
+			inline const std::vector<Chain *> &	  getChains() const { return _chains; }
+			inline std::vector<Residue *> &		  getResidues() { return _residues; }
+			inline const std::vector<Residue *> & getResidues() const { return _residues; }
+			inline std::vector<Atom *> &		  getAtoms() { return _atoms; }
+			inline const std::vector<Atom *> &	  getAtoms() const { return _atoms; }
 
 			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
 			{
@@ -90,9 +89,27 @@ namespace VTX
 			inline const uint				 getAtomCount() const { return (uint)_atoms.size(); }
 			inline const uint				 getBondCount() const { return (uint)_bonds.size(); }
 
-			inline void resizeChainsVec( const uint s ) { _chains.resize( s ); }
-			inline void resizeResiduesVec( const uint s ) { _residues.resize( s ); }
-			inline void resizeAtomsVec( const uint s ) { _atoms.resize( s ); }
+			inline void addChains( const uint s )
+			{
+				for ( uint i = 0; i < s; ++i )
+				{
+					addChain();
+				}
+			}
+			inline void addResidues( const uint s )
+			{
+				for ( uint i = 0; i < s; ++i )
+				{
+					addResidue();
+				}
+			}
+			inline void addAtoms( const uint s )
+			{
+				for ( uint i = 0; i < s; ++i )
+				{
+					addAtom();
+				}
+			}
 
 			inline const Math::AABB & AABB() const { return _aabb; }
 			inline void				  extendAABB( const Vec3f & p_position, const float p_radius )
@@ -119,10 +136,10 @@ namespace VTX
 		  private:
 		  private:
 			// Models.
-			std::string			 _name	   = "";
-			std::vector<Chain>	 _chains   = std::vector<Chain>();
-			std::vector<Residue> _residues = std::vector<Residue>();
-			std::vector<Atom>	 _atoms	   = std::vector<Atom>();
+			std::string			   _name	 = "";
+			std::vector<Chain *>   _chains	 = std::vector<Chain *>();
+			std::vector<Residue *> _residues = std::vector<Residue *>();
+			std::vector<Atom *>	   _atoms	 = std::vector<Atom *>();
 
 			std::unordered_set<std::string> _unknownResidueSymbol = std::unordered_set<std::string>();
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();

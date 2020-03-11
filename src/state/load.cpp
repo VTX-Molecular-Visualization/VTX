@@ -52,10 +52,9 @@ namespace VTX
 			}
 
 			molecule->init();
-
-			VTXApp::get().getActionManager().execute( new Action::Select( *molecule ) );
 			molecule->print();
 			scene->addMolecule( molecule );
+			// VTXApp::get().getActionManager().execute( new Action::Select( *molecule ) );
 
 			delete reader;
 		}

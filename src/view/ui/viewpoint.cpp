@@ -14,9 +14,8 @@ namespace VTX
 			void Viewpoint::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-				ImGui::PushID( "ViewViewpoint" );
-				if ( ImGui::CollapsingHeader(
-						 ( LOCALE( "View.Viewpoint" ) + std::to_string( _getModel().getId() ) ).c_str(), flags ) )
+				ImGui::PushID( ( "ViewViewpoint" + std::to_string( _getModel().getId() ) ).c_str() );
+				if ( ImGui::CollapsingHeader( LOCALE( "View.Viewpoint" ), flags ) )
 				{
 					if ( _getModel().getPathPtr()->getDurationMode() == Model::Path::DURATION_MODE::VIEWPOINT )
 					{

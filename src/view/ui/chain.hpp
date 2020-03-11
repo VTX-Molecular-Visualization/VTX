@@ -22,9 +22,9 @@ namespace VTX
 				virtual const std::string & getName() const override { return ID::View::UI_CHAIN; };
 				virtual const std::string & getComponentParentName() const override { return ID::UI::INSPECTOR; };
 
+
 			  protected:
 				virtual void _draw() override;
-				virtual void clean() override { VTX_DEBUG( "REMOVE" ); }
 
 			  private:
 			};

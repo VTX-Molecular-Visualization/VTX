@@ -1,5 +1,6 @@
 #include "molecule_structure.hpp"
 #include "action/action_manager.hpp"
+#include "action/molecule_delete.hpp"
 #include "action/select.hpp"
 #include "action/unselect.hpp"
 #include "setting.hpp"
@@ -12,36 +13,49 @@ namespace VTX
 		{
 			void MoleculeStructure::_draw()
 			{
-				ImGui::PushID( ( "ViewMolecule" + std::to_string( _getModel().getId() ) ).c_str() );
-
-				if ( ImGui::CollapsingHeader( _getModel().getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
+				ImGui::PushID( ( "ViewMoleculeStructure" + std::to_string( _getModel().getId() ) ).c_str() );
+				bool moleculeOpened = ImGui::TreeNodeEx(
+					_getModel().getName().c_str(),
+					_getModel().isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
+				if ( ImGui::BeginPopupContextItem() )
 				{
-					ImGui::Text( "Chains: %d", _getModel().getChainCount() );
-					ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
-					ImGui::Text( "Atoms: %d", _getModel().getAtomCount() );
-					ImGui::Text( "Bonds: %d", _getModel().getBondCount() / 2 );
-					ImGui::Separator();
-					for ( Model::Chain & chain : _getModel().getChains() )
+					if ( ImGui::MenuItem( LOCALE( "View.Delete" ) ) )
+					{ VTXApp::get().getActionManager().execute( new Action::MoleculeDelete( _getModel() ) ); }
+					ImGui::EndPopup();
+				}
+				if ( ImGui::IsItemClicked() )
+				{
+					if ( moleculeOpened )
+					{ VTXApp::get().getActionManager().execute( new Action::Unselect( _getModel() ) ); }
+
+					else
 					{
-						ImGui::PushID( chain.getId() );
+						VTXApp::get().getActionManager().execute( new Action::Select( _getModel() ) );
+					}
+				}
+				if ( moleculeOpened )
+				{
+					for ( Model::Chain * const chain : _getModel().getChains() )
+					{
+						ImGui::PushID( chain->getId() );
 						bool chainOpened = ImGui::TreeNodeEx(
-							chain.getName().c_str(),
-							chain.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
+							chain->getName().c_str(),
+							chain->isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 						if ( ImGui::IsItemClicked() )
 						{
 							if ( chainOpened )
-							{ VTXApp::get().getActionManager().execute( new Action::Unselect( chain ) ); }
+							{ VTXApp::get().getActionManager().execute( new Action::Unselect( *chain ) ); }
 
 							else
 							{
-								VTXApp::get().getActionManager().execute( new Action::Select( chain ) );
+								VTXApp::get().getActionManager().execute( new Action::Select( *chain ) );
 							}
 						}
 						if ( chainOpened )
 						{
-							for ( uint i = 0; i < chain.getResidueCount(); ++i )
+							for ( uint i = 0; i < chain->getResidueCount(); ++i )
 							{
-								Model::Residue & residue = _getModel().getResidue( chain.getIdFirstResidue() + i );
+								Model::Residue & residue = _getModel().getResidue( chain->getIdFirstResidue() + i );
 								ImGui::PushID( residue.getId() );
 								bool residueOpened = ImGui::TreeNodeEx(
 									VTX::Setting::UI::symbolDisplayMode == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
@@ -91,6 +105,7 @@ namespace VTX
 						}
 						ImGui::PopID();
 					}
+					ImGui::TreePop();
 				}
 				ImGui::PopID();
 			}

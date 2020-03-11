@@ -29,6 +29,10 @@ namespace VTX
 			virtual void clean() override;
 
 			void addMolecule( MoleculePtr const p_molecule ) { _molecules.emplace_back( p_molecule ); }
+			void removeMolecule( MoleculePtr const p_molecule )
+			{
+				_molecules.erase( std::find( _molecules.begin(), _molecules.end(), p_molecule ) );
+			}
 			void addPath( PathPtr const p_path ) { _paths.emplace_back( p_path ); }
 
 			inline Camera &					 getCamera() { return _camera; }

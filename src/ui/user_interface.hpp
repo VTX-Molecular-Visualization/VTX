@@ -31,6 +31,7 @@ namespace VTX
 			virtual void print() const override;
 			bool		 getEvent( SDL_Event & evt ) const;
 			void		 setTheme() const;
+			void		 setVSync( const bool );
 
 			virtual const std::string & getName() const override { return ID::UI::USER_INTERFACE; }
 
