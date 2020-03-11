@@ -8,7 +8,7 @@ namespace VTX
 	{
 		BaseSelectable::~BaseSelectable()
 		{
-			if ( isSelected() ) { VTXApp::get().getActionManager().execute( new Action::Unselect( *this ) ); }
+			if ( isSelected() ) { VTXApp::get().getSelectionManager().unselect( this ); }
 		}
 	} // namespace Selection
 } // namespace VTX

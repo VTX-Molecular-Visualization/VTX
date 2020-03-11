@@ -1,5 +1,6 @@
 #include "molecule_structure.hpp"
 #include "action/action_manager.hpp"
+#include "action/molecule_delete.hpp"
 #include "action/select.hpp"
 #include "action/unselect.hpp"
 #include "setting.hpp"
@@ -16,6 +17,12 @@ namespace VTX
 				bool moleculeOpened = ImGui::TreeNodeEx(
 					_getModel().getName().c_str(),
 					_getModel().isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
+				if ( ImGui::BeginPopupContextItem() )
+				{
+					if ( ImGui::MenuItem( LOCALE( "View.Delete" ) ) )
+					{ VTXApp::get().getActionManager().execute( new Action::MoleculeDelete( _getModel() ) ); }
+					ImGui::EndPopup();
+				}
 				if ( ImGui::IsItemClicked() )
 				{
 					if ( moleculeOpened )
