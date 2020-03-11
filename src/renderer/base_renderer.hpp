@@ -42,7 +42,8 @@ namespace VTX
 			virtual void render( const Object3D::Scene & )						 = 0;
 			virtual void setShading()											 = 0;
 
-			inline GLSL::ProgramManager & getProgramManager() { return _programManager; }
+			inline GLSL::ProgramManager &		getProgramManager() { return _programManager; }
+			inline const GLSL::ProgramManager & getProgramManager() const { return _programManager; }
 
 		  protected:
 			bool				 _isInitialized	 = false;

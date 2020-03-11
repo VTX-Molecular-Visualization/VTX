@@ -39,14 +39,23 @@ namespace VTX
 		void initRenderer() const;
 		void renderScene() const { _renderer->render( *_scene ); }
 
-		inline Object3D::Scene &				getScene() { return *_scene; }
-		inline const Object3D::Scene &			getScene() const { return *_scene; }
-		inline Renderer::BaseRenderer &			getRenderer() { return *_renderer; }
-		inline Renderer::GLSL::ProgramManager & getProgramManager() { return _renderer->getProgramManager(); }
-		inline UI::UserInterface &				getUI() { return *_ui; }
-		inline Action::ActionManager &			getActionManager() { return *_actionManager; }
-		inline Event::EventManager &			getEventManager() { return *_eventManager; }
-		inline Worker::WorkerManager &			getWorkerManager() { return *_workerManager; }
+		inline Object3D::Scene &					  getScene() { return *_scene; }
+		inline const Object3D::Scene &				  getScene() const { return *_scene; }
+		inline Renderer::BaseRenderer &				  getRenderer() { return *_renderer; }
+		inline const Renderer::BaseRenderer &		  getRenderer() const { return *_renderer; }
+		inline Renderer::GLSL::ProgramManager &		  getProgramManager() { return _renderer->getProgramManager(); }
+		inline const Renderer::GLSL::ProgramManager & getProgramManager() const
+		{
+			return _renderer->getProgramManager();
+		}
+		inline UI::UserInterface &			 getUI() { return *_ui; }
+		inline const UI::UserInterface &	 getUI() const { return *_ui; }
+		inline Action::ActionManager &		 getActionManager() { return *_actionManager; }
+		inline const Action::ActionManager & getActionManager() const { return *_actionManager; }
+		inline Event::EventManager &		 getEventManager() { return *_eventManager; }
+		inline const Event::EventManager &	 getEventManager() const { return *_eventManager; }
+		inline Worker::WorkerManager &		 getWorkerManager() { return *_workerManager; }
+		inline const Worker::WorkerManager & getWorkerManager() const { return *_workerManager; }
 
 	  private:
 		static bool					  _isRunning;
