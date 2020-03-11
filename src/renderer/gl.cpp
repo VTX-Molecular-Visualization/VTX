@@ -19,6 +19,11 @@ namespace VTX
 			glDeleteTextures( 1, &_noiseTexture );
 			glDeleteTextures( 1, &_blurTexture );
 			glDeleteTextures( 1, &_shadingTexture );
+
+			glDeleteFramebuffers( 1, &_fboGeo );
+			glDeleteFramebuffers( 1, &_fboSSAO );
+			glDeleteFramebuffers( 1, &_fboBlur );
+			glDeleteFramebuffers( 1, &_fboShading );
 		}
 
 		void GL::init( const Object3D::Scene & p_scene, const uint p_width, const uint p_height )
@@ -54,7 +59,6 @@ namespace VTX
 				glDeleteTextures( 1, &_camSpacePositionsTexture );
 				glDeleteTextures( 1, &_depthTexture );
 				glDeleteTextures( 1, &_ssaoTexture );
-				glDeleteTextures( 1, &_noiseTexture );
 				glDeleteTextures( 1, &_blurTexture );
 				glDeleteTextures( 1, &_shadingTexture );
 
@@ -102,7 +106,7 @@ namespace VTX
 
 				glGenTextures( 1, &_ssaoTexture );
 				glBindTexture( GL_TEXTURE_2D, _ssaoTexture );
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_RED, _width, _height, 0, GL_RGB, GL_FLOAT, NULL );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, _width, _height, 0, GL_RED, GL_FLOAT, NULL );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
@@ -115,7 +119,7 @@ namespace VTX
 
 				glGenTextures( 1, &_blurTexture );
 				glBindTexture( GL_TEXTURE_2D, _blurTexture );
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_RED, _width, _height, 0, GL_RGB, GL_FLOAT, NULL );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, _width, _height, 0, GL_RED, GL_FLOAT, NULL );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -196,7 +200,7 @@ namespace VTX
 
 			glGenTextures( 1, &_ssaoTexture );
 			glBindTexture( GL_TEXTURE_2D, _ssaoTexture );
-			glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, _width, _height, 0, GL_RGB, GL_FLOAT, NULL );
+			glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, _width, _height, 0, GL_RED, GL_FLOAT, NULL );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
@@ -268,7 +272,7 @@ namespace VTX
 
 			glGenTextures( 1, &_blurTexture );
 			glBindTexture( GL_TEXTURE_2D, _blurTexture );
-			glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, _width, _height, 0, GL_RGB, GL_FLOAT, NULL );
+			glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, _width, _height, 0, GL_RED, GL_FLOAT, NULL );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
