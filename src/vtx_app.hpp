@@ -56,6 +56,8 @@ namespace VTX
 		inline const Event::EventManager &	 getEventManager() const { return *_eventManager; }
 		inline Worker::WorkerManager &		 getWorkerManager() { return *_workerManager; }
 		inline const Worker::WorkerManager & getWorkerManager() const { return *_workerManager; }
+		inline Selection::SelectionManager & getSelectionManager() { return *_selectionManager; }
+		inline const Selection::SelectionManager & getSelectionManager() const { return *_selectionManager; }
 
 	  private:
 		static bool					  _isRunning;
