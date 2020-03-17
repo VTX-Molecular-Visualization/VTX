@@ -12,7 +12,6 @@ namespace VTX
 		{
 			Model::Path * path = Generic::create<Model::Path>();
 			addPath( path );
-			// VTXApp::get().getActionManager().execute( new Action::Select( *path ) );
 		}
 
 		void Scene::clean()

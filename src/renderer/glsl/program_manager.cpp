@@ -58,7 +58,7 @@ namespace VTX
 				}
 				else
 				{
-					VTX_WARNING( "Program " + p_name + " already exists" );
+					VTX_DEBUG( "Program " + p_name + " already exists" );
 				}
 
 				return &( _programs[ p_name ] );
@@ -126,7 +126,7 @@ namespace VTX
 				}
 				else
 				{
-					VTX_WARNING( "Shader already exists" );
+					VTX_DEBUG( "Shader already exists" );
 				}
 
 				return shaderId;
