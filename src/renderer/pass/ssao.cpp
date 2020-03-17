@@ -90,7 +90,12 @@ namespace VTX
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 			}
 
-			void SSAO::clear() {}
+			void SSAO::clean()
+			{
+				glDeleteFramebuffers( 1, &_fboSSAO );
+				glDeleteTextures( 1, &_ssaoTexture );
+				glDeleteTextures( 1, &_noiseTexture );
+			}
 
 			void SSAO::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{

@@ -1,4 +1,5 @@
 #include "gl.hpp"
+#include "generic/factory.hpp"
 #include "glm/gtx/compatibility.hpp"
 #include "model/molecule.hpp"
 #include "setting.hpp"
@@ -12,20 +13,11 @@ namespace VTX
 	{
 		GL::~GL()
 		{
-			/*
-			glDeleteTextures( 1, &_colorNormalCompressedTexture );
-			glDeleteTextures( 1, &_camSpacePositionsTexture );
-			glDeleteTextures( 1, &_depthTexture );
-			glDeleteTextures( 1, &_ssaoTexture );
-			glDeleteTextures( 1, &_noiseTexture );
-			glDeleteTextures( 1, &_blurTexture );
-			glDeleteTextures( 1, &_shadingTexture );
-
-			glDeleteFramebuffers( 1, &_fboGeo );
-			glDeleteFramebuffers( 1, &_fboSSAO );
-			glDeleteFramebuffers( 1, &_fboBlur );
-			glDeleteFramebuffers( 1, &_fboShading );
-			*/
+			Generic::destroy( _passGeometric );
+			Generic::destroy( _passSSAO );
+			Generic::destroy( _passBlur );
+			Generic::destroy( _passShading );
+			Generic::destroy( _passFXAA );
 		}
 
 		void GL::init( const uint p_width, const uint p_height )
@@ -36,10 +28,10 @@ namespace VTX
 			BaseRenderer::resize( _width, _height );
 
 			// Init pass.
-			_passGeometric.init( _programManager, p_width, p_height );
-			_passSSAO.init( _programManager, p_width, p_height );
-			_passBlur.init( _programManager, p_width, p_height );
-			_passShading.init( _programManager, p_width, p_height );
+			_passGeometric->init( _programManager, p_width, p_height );
+			_passSSAO->init( _programManager, p_width, p_height );
+			_passBlur->init( _programManager, p_width, p_height );
+			_passShading->init( _programManager, p_width, p_height );
 
 			// Init VAO.
 			_initQuadVAO();
@@ -49,6 +41,21 @@ namespace VTX
 
 		void GL::resize( const uint p_width, const uint p_height )
 		{
+			if ( p_width != _width || p_height != _height )
+			{
+				_passGeometric->clean();
+				_passSSAO->clean();
+				_passBlur->clean();
+				_passShading->clean();
+
+				BaseRenderer::resize( _width, _height );
+
+				_passGeometric->init( _programManager, p_width, p_height );
+				_passSSAO->init( _programManager, p_width, p_height );
+				_passBlur->init( _programManager, p_width, p_height );
+				_passShading->init( _programManager, p_width, p_height );
+			}
+
 			/*
 			if ( p_width != _width || p_height != _height )
 			{
@@ -159,7 +166,7 @@ namespace VTX
 			};
 			// clang-format on
 
-			// setup plane VAO
+			// Setup plane VAO.
 			glGenBuffers( 1, &_quadVBO );
 			glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
 			glBufferData( GL_ARRAY_BUFFER, sizeof( quadVertices ), quadVertices, GL_STATIC_DRAW );
@@ -175,14 +182,13 @@ namespace VTX
 		void GL::render( const Object3D::Scene & p_scene )
 		{
 			glEnable( GL_DEPTH_TEST );
-			_passGeometric.render( p_scene, *this );
+			_passGeometric->render( p_scene, *this );
 			glDisable( GL_DEPTH_TEST );
-
-			_passSSAO.render( p_scene, *this );
-			_passBlur.render( p_scene, *this );
-			_passShading.render( p_scene, *this );
+			_passSSAO->render( p_scene, *this );
+			_passBlur->render( p_scene, *this );
+			_passShading->render( p_scene, *this );
 		};
 
-		void GL::setShading() { _passShading.set(); }
+		void GL::setShading() { _passShading->set(); }
 	} // namespace Renderer
 } // namespace VTX

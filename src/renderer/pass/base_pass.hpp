@@ -6,6 +6,7 @@
 #endif
 
 #include "define.hpp"
+#include "generic/base_cleanable.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/glsl/program_manager.hpp"
 #include <GL/gl3w.h>
@@ -18,14 +19,13 @@ namespace VTX
 
 		namespace Pass
 		{
-			class BasePass
+			class BasePass : public Generic::BaseCleanable
 			{
 			  public:
-				BasePass()			= default;
-				virtual ~BasePass() = default;
+				BasePass() = default;
+				virtual ~BasePass() {};
 
 				virtual void init( GLSL::ProgramManager &, const uint, const uint )	 = 0;
-				virtual void clear()												 = 0;
 				virtual void render( const Object3D::Scene &, const Renderer::GL & ) = 0;
 
 			  private:

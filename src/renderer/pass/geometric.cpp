@@ -56,7 +56,13 @@ namespace VTX
 				if ( glstatus != GL_NO_ERROR ) { VTX_ERROR( "Error in GL call: " + glstatus ); }
 			}
 
-			void Geometric::clear() {}
+			void Geometric::clean()
+			{
+				glDeleteFramebuffers( 1, &_fboGeo );
+				glDeleteTextures( 1, &_depthTexture );
+				glDeleteTextures( 1, &_colorNormalCompressedTexture );
+				glDeleteTextures( 1, &_camSpacePositionsTexture );
+			}
 
 			void Geometric::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{

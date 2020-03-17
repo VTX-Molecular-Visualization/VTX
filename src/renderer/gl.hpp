@@ -27,21 +27,21 @@ namespace VTX
 			virtual void setShading() override;
 			virtual void resize( const uint, const uint ) override;
 
-			inline const Pass::Geometric & getPassGeometric() const { return _passGeometric; }
-			inline const Pass::SSAO &	   getPassSSAO() const { return _passSSAO; }
-			inline const Pass::Blur &	   getPassBlur() const { return _passBlur; }
-			inline const Pass::Shading &   getPassShading() const { return _passShading; }
-			inline const Pass::FXAA &	   getPassFXAA() const { return _passFXAA; }
+			inline const Pass::Geometric & getPassGeometric() const { return *_passGeometric; }
+			inline const Pass::SSAO &	   getPassSSAO() const { return *_passSSAO; }
+			inline const Pass::Blur &	   getPassBlur() const { return *_passBlur; }
+			inline const Pass::Shading &   getPassShading() const { return *_passShading; }
+			inline const Pass::FXAA &	   getPassFXAA() const { return *_passFXAA; }
 
 			inline const GLuint & getQuadVAO() const { return _quadVAO; }
 			inline const GLuint & getQuadVBO() const { return _quadVBO; }
 
 		  private:
-			Pass::Geometric _passGeometric = Pass::Geometric();
-			Pass::SSAO		_passSSAO	   = Pass::SSAO();
-			Pass::Blur		_passBlur	   = Pass::Blur();
-			Pass::Shading	_passShading   = Pass::Shading();
-			Pass::FXAA		_passFXAA	   = Pass::FXAA();
+			Pass::Geometric * _passGeometric = new Pass::Geometric();
+			Pass::SSAO *	  _passSSAO		 = new Pass::SSAO();
+			Pass::Blur *	  _passBlur		 = new Pass::Blur();
+			Pass::Shading *	  _passShading	 = new Pass::Shading();
+			Pass::FXAA *	  _passFXAA		 = new Pass::FXAA();
 
 			GLuint _quadVAO = GL_INVALID_VALUE;
 			GLuint _quadVBO = GL_INVALID_VALUE;

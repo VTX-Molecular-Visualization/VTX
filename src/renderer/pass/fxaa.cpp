@@ -12,7 +12,7 @@ namespace VTX
 				_aaShader = p_programManager.createProgram( "AA", { "shading/fxaa.frag" } );
 			}
 
-			void FXAA::clear() {}
+			void FXAA::clean() {}
 
 			void FXAA::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{
