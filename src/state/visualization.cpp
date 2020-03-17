@@ -11,8 +11,6 @@ namespace VTX
 	{
 		void Visualization::enter( void * const )
 		{
-			// Init the renderer.
-			VTXApp::get().initRenderer();
 			// Create controller.
 			addItem( Generic::create<Controller::Freefly>() );
 			addItem( Generic::create<Controller::Shortcut>() );

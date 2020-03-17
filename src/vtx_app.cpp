@@ -40,10 +40,17 @@ namespace VTX
 	{
 		VTX_INFO( "Starting application" );
 
-		_ui			  = Generic::create<UI::UserInterface>();
+		_ui = Generic::create<UI::UserInterface>();
+		_ui->draw(); // Draw the first frame to update screen size.
+		ImGuiIO & io = ImGui::GetIO();
+
 		_stateMachine = Generic::create<State::StateMachine>();
-		_scene		  = new Object3D::Scene();
-		_renderer	  = new Renderer::GL();
+
+		_scene = new Object3D::Scene();
+		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+
+		_renderer = new Renderer::GL();
+		_renderer->init( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 		VTXApp::_isRunning = true;
 
@@ -91,14 +98,6 @@ namespace VTX
 			VTX_ERROR( p_e.what() );
 			stop();
 		}
-	}
-
-	void VTXApp::initRenderer() const
-	{
-		// if ( !VTXApp::_isRunning ) { _ui->draw(); } // Drawn UI a first time to update display size.
-		ImGuiIO & io = ImGui::GetIO();
-		_renderer->init( *_scene, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
-		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 	}
 
 	void VTXApp::_update()

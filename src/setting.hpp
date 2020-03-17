@@ -6,6 +6,7 @@
 #endif
 
 #include "renderer/base_renderer.hpp"
+#include "renderer/pass/shading.hpp"
 #include "ui/user_interface.hpp"
 #include "view/base_view_3d_molecule.hpp"
 

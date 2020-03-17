@@ -6,6 +6,11 @@
 #endif
 
 #include "base_renderer.hpp"
+#include "pass/blur.hpp"
+#include "pass/fxaa.hpp"
+#include "pass/geometric.hpp"
+#include "pass/shading.hpp"
+#include "pass/ssao.hpp"
 
 namespace VTX
 {
@@ -17,65 +22,31 @@ namespace VTX
 			GL() = default;
 			~GL();
 
-			virtual void init( const Object3D::Scene &, const uint, const uint ) override;
-			virtual void clear( const Object3D::Scene & ) override;
+			virtual void init( const uint, const uint ) override;
 			virtual void render( const Object3D::Scene & ) override;
 			virtual void setShading() override;
 			virtual void resize( const uint, const uint ) override;
 
+			inline const Pass::Geometric & getPassGeometric() const { return _passGeometric; }
+			inline const Pass::SSAO &	   getPassSSAO() const { return _passSSAO; }
+			inline const Pass::Blur &	   getPassBlur() const { return _passBlur; }
+			inline const Pass::Shading &   getPassShading() const { return _passShading; }
+			inline const Pass::FXAA &	   getPassFXAA() const { return _passFXAA; }
+
+			inline const GLuint & getQuadVAO() const { return _quadVAO; }
+			inline const GLuint & getQuadVBO() const { return _quadVBO; }
+
 		  private:
-			// Geometry pass.
-			GLuint _fboGeo						 = GL_INVALID_VALUE;
-			GLuint _colorNormalCompressedTexture = GL_INVALID_VALUE;
-			GLuint _camSpacePositionsTexture	 = GL_INVALID_VALUE;
-			GLuint _depthTexture				 = GL_INVALID_VALUE;
+			Pass::Geometric _passGeometric = Pass::Geometric();
+			Pass::SSAO		_passSSAO	   = Pass::SSAO();
+			Pass::Blur		_passBlur	   = Pass::Blur();
+			Pass::Shading	_passShading   = Pass::Shading();
+			Pass::FXAA		_passFXAA	   = Pass::FXAA();
 
 			GLuint _quadVAO = GL_INVALID_VALUE;
 			GLuint _quadVBO = GL_INVALID_VALUE;
 
-			// SSAO pass.
-			GLSL::Program * _ssaoShader		  = nullptr;
-			GLuint			_fboSSAO		  = GL_INVALID_VALUE;
-			GLuint			_ssaoTexture	  = GL_INVALID_VALUE;
-			GLuint			_noiseTexture	  = GL_INVALID_VALUE;
-			GLint			_uProjMatrixLoc	  = GL_INVALID_INDEX;
-			GLint			_uAoKernelLoc	  = GL_INVALID_INDEX;
-			GLint			_uAoRadiusLoc	  = GL_INVALID_INDEX;
-			GLint			_uKernelSizeLoc	  = GL_INVALID_INDEX;
-			GLint			_uAoIntensityLoc  = GL_INVALID_INDEX;
-			GLint			_kernelSize		  = 32;
-			GLuint			_noiseTextureSize = 9;
-
-			// Blur pass.
-			GLSL::Program * _blurShader	  = nullptr;
-			GLuint			_fboBlur	  = GL_INVALID_VALUE;
-			GLuint			_blurTexture  = GL_INVALID_VALUE;
-			GLint			_uBlurSizeLoc = GL_INVALID_INDEX;
-
-			// Shading pass.
-			GLSL::Program * _diffuseShading	   = nullptr;
-			GLSL::Program * _blinnPhongShading = nullptr;
-			GLSL::Program * _toonShading	   = nullptr;
-			GLuint			_fboShading		   = GL_INVALID_VALUE;
-			GLuint			_shadingTexture	   = GL_INVALID_VALUE;
-
-			GLSL::Program * _currentShading = nullptr;
-
-			// Anti-aliasing pass.
-			GLSL::Program * _aaShader = nullptr;
-
-			void _initGeometricPass();
-			void _initSsaoPass();
-			void _initBlurPass();
-			void _initShadingPass();
-			void _initAntiAliasingPass();
 			void _initQuadVAO();
-
-			void _geometricPass( const Object3D::Scene & );
-			void _ssaoPass( const Object3D::Scene & );
-			void _blurPass();
-			void _shadingPass();
-			void _antiAliasingPass();
 		};
 	} // namespace Renderer
 } // namespace VTX

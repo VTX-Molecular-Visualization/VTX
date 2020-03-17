@@ -36,7 +36,6 @@ namespace VTX
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
-		void initRenderer() const;
 		void renderScene() const { _renderer->render( *_scene ); }
 
 		inline Object3D::Scene &					  getScene() { return *_scene; }
@@ -48,15 +47,15 @@ namespace VTX
 		{
 			return _renderer->getProgramManager();
 		}
-		inline UI::UserInterface &			 getUI() { return *_ui; }
-		inline const UI::UserInterface &	 getUI() const { return *_ui; }
-		inline Action::ActionManager &		 getActionManager() { return *_actionManager; }
-		inline const Action::ActionManager & getActionManager() const { return *_actionManager; }
-		inline Event::EventManager &		 getEventManager() { return *_eventManager; }
-		inline const Event::EventManager &	 getEventManager() const { return *_eventManager; }
-		inline Worker::WorkerManager &		 getWorkerManager() { return *_workerManager; }
-		inline const Worker::WorkerManager & getWorkerManager() const { return *_workerManager; }
-		inline Selection::SelectionManager & getSelectionManager() { return *_selectionManager; }
+		inline UI::UserInterface &				   getUI() { return *_ui; }
+		inline const UI::UserInterface &		   getUI() const { return *_ui; }
+		inline Action::ActionManager &			   getActionManager() { return *_actionManager; }
+		inline const Action::ActionManager &	   getActionManager() const { return *_actionManager; }
+		inline Event::EventManager &			   getEventManager() { return *_eventManager; }
+		inline const Event::EventManager &		   getEventManager() const { return *_eventManager; }
+		inline Worker::WorkerManager &			   getWorkerManager() { return *_workerManager; }
+		inline const Worker::WorkerManager &	   getWorkerManager() const { return *_workerManager; }
+		inline Selection::SelectionManager &	   getSelectionManager() { return *_selectionManager; }
 		inline const Selection::SelectionManager & getSelectionManager() const { return *_selectionManager; }
 
 	  private:

@@ -16,7 +16,18 @@ namespace VTX
 			class Geometric : public BasePass
 			{
 			  public:
+				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
+				virtual void clear() override;
+				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
+
+				inline const GLuint & getColorNormalCompressedTexture() const { return _colorNormalCompressedTexture; }
+				inline const GLuint & getCamSpacePositionsTexture() const { return _camSpacePositionsTexture; }
+
 			  private:
+				GLuint _fboGeo						 = GL_INVALID_VALUE;
+				GLuint _colorNormalCompressedTexture = GL_INVALID_VALUE;
+				GLuint _camSpacePositionsTexture	 = GL_INVALID_VALUE;
+				GLuint _depthTexture				 = GL_INVALID_VALUE;
 			};
 		} // namespace Pass
 
