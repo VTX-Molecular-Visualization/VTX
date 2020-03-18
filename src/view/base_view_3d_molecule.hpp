@@ -20,7 +20,8 @@ namespace VTX
 		{
 			ATOM,
 			RESIDUE,
-			CHAIN
+			CHAIN,
+			PROTEIN
 		};
 
 		enum class MOLECULE_REPRESENTATION : int

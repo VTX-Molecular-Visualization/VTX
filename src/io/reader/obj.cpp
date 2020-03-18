@@ -30,6 +30,7 @@ namespace VTX
 
 				// Set molecule properties.
 				p_molecule.setName( p_path.getFileNameWithoutExtension() );
+				p_molecule.setColor( Util::Color::randomPastelColor() );
 
 				const Math::AABB & aabb				= p_molecule.AABB();
 				uint			   chainGlobalIdx	= 0;

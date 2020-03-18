@@ -207,9 +207,10 @@ namespace VTX
 					// Color mode.
 					const char * modes[]   = { LOCALE( "Enum.ColorMode.Atom" ),
 											   LOCALE( "Enum.ColorMode.Residue" ),
-											   LOCALE( "Enum.ColorMode.Chain" ) };
+											   LOCALE( "Enum.ColorMode.Chain" ),
+											   LOCALE( "Enum.ColorMode.Protein" ) };
 					int			 colorMode = (int)Setting::Rendering::colorMode;
-					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ), &colorMode, modes, 3 ) )
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ), &colorMode, modes, 4 ) )
 					{
 						VTXApp::get().getActionManager().execute(
 							new Action::ChangeColorMode( (View::MOLECULE_COLOR_MODE)colorMode ) );

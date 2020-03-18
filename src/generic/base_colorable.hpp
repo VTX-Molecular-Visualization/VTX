@@ -17,7 +17,7 @@ namespace VTX
 			inline const Vec3f & getColor() const { return _color; }
 			inline void			 setColor( const Vec3f & p_color ) { _color = p_color; }
 
-		  private:
+		  protected:
 			Vec3f _color = VEC3D_ZERO;
 		};
 	} // namespace Generic
