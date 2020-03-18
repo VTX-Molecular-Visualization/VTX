@@ -110,6 +110,7 @@ namespace VTX
 			{ "Enum.ColorMode.Atom", "Atom" },
 			{ "Enum.ColorMode.Residue", "Residue" },
 			{ "Enum.ColorMode.Chain", "Chain" },
+			{ "Enum.ColorMode.Protein", "Protein" },
 
 			{ "Enum.Shading.Lambert", "Lambert" },
 			{ "Enum.Shading.BlinnPhong", "Blinn Phong" },

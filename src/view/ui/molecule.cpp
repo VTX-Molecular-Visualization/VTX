@@ -1,4 +1,6 @@
 #include "molecule.hpp"
+#include "action/change_color_mode.hpp"
+#include "action/colorable_change_color.hpp"
 #include "action/scale.hpp"
 #include "action/transformable_translate.hpp"
 #include "vtx_app.hpp"
@@ -15,6 +17,20 @@ namespace VTX
 				ImGui::PushID( ( "ViewMolecule" + std::to_string( _getModel().getId() ) ).c_str() );
 				if ( ImGui::CollapsingHeader( _getModel().getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
 				{
+					if ( ImGui::CollapsingHeader( "Color :", ImGuiTreeNodeFlags_DefaultOpen ) )
+					{
+						Vec3f color = _getModel().getColor();
+						if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
+						{
+							VTXApp::get().getActionManager().execute(
+								new Action::ColorableChangeColor( _getModel(), color ) );
+							if ( Setting::Rendering::colorMode == View::MOLECULE_COLOR_MODE::PROTEIN )
+							{
+								VTXApp::get().getActionManager().execute(
+									new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN ) );
+							}
+						}
+					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 					{
 						ImGui::Text( "Chains: %d", _getModel().getChainCount() );

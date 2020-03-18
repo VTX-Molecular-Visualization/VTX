@@ -62,31 +62,32 @@ namespace VTX
 
 		void Molecule::setColorMode()
 		{
-			_atomColors.clear();
+			if ( _atomColors.empty() ) _atomColors.resize( _atoms.size() );
 
 			switch ( Setting::Rendering::colorMode )
 			{
 			case View::MOLECULE_COLOR_MODE::ATOM:
-				for ( Atom * atom : _atoms )
+				for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 				{
-					_atomColors.emplace_back(
-						Vec3f( atom->getColor()[ 0 ], atom->getColor()[ 1 ], atom->getColor()[ 2 ] ) );
+					_atomColors[ i ] = _atoms[ i ]->getColor();
 				}
 				break;
 			case View::MOLECULE_COLOR_MODE::RESIDUE:
-				for ( Atom * const atom : _atoms )
+				for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 				{
-					_atomColors.emplace_back( atom->getResiduePtr()->getColor()[ 0 ],
-											  atom->getResiduePtr()->getColor()[ 1 ],
-											  atom->getResiduePtr()->getColor()[ 2 ] );
+					_atomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor();
 				}
 				break;
 			case View::MOLECULE_COLOR_MODE::CHAIN:
-				for ( Atom * const atom : _atoms )
+				for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 				{
-					_atomColors.emplace_back( atom->getChainPtr()->getColor()[ 0 ],
-											  atom->getChainPtr()->getColor()[ 1 ],
-											  atom->getChainPtr()->getColor()[ 2 ] );
+					_atomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
+				}
+				break;
+			case View::MOLECULE_COLOR_MODE::PROTEIN:
+				for ( uint i = 0; i < uint( _atoms.size() ); ++i )
+				{
+					_atomColors[ i ] = _color;
 				}
 				break;
 			default: break;

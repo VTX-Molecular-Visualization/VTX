@@ -30,7 +30,8 @@ namespace VTX
 			public BaseModel,
 			public Generic::BasePrintable,
 			public Generic::BaseTransformable,
-			public Generic::BaseRenderable
+			public Generic::BaseRenderable,
+			public Generic::BaseColorable
 		{
 		  public:
 			using AtomPositionsFrame = std::vector<Vec3f>;

@@ -54,6 +54,7 @@ namespace VTX
 
 				// Set molecule properties.
 				p_molecule.setName( p_data.title );
+				p_molecule.setColor( Util::Color::randomPastelColor() );
 
 				float x, y, z;
 				uint  chainGlobalIdx   = 0;
