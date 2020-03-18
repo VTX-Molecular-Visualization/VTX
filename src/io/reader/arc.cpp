@@ -8,7 +8,11 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			bool ARC::readFile( const Path & p_path, Model::Molecule & p_molecule ) { return false; }
+			bool ARC::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			{
+				chemfiles::Trajectory trajectory( p_path );
+				return true;
+			}
 
 			bool ARC::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule ) { return false; }
 
