@@ -3,8 +3,6 @@
 #include "console.hpp"
 #include "define.hpp"
 #include "exception.hpp"
-#include "imgui/imgui_impl_opengl3.h"
-#include "imgui/imgui_impl_sdl.h"
 #include "inspector.hpp"
 #include "menu.hpp"
 #include "modal/progress_bar.hpp"
@@ -14,6 +12,8 @@
 #include "util/logger.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
+#include <imgui/imgui_impl_opengl3.h>
+#include <imgui/imgui_impl_sdl.h>
 #include <iostream>
 
 namespace VTX
@@ -65,8 +65,7 @@ namespace VTX
 			}
 		}
 
-		void UserInterface::setVSync( const bool p_vsync ) { SDL_GL_SetSwapInterval( p_vsync );
-		}
+		void UserInterface::setVSync( const bool p_vsync ) { SDL_GL_SetSwapInterval( p_vsync ); }
 
 		void UserInterface::_addItems()
 		{

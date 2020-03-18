@@ -6,7 +6,7 @@
 #endif
 
 #include "base_component.hpp"
-#include "portable-file-dialogs/portable-file-dialogs.h"
+#include "portable-file-dialogs.h"
 
 namespace VTX
 {

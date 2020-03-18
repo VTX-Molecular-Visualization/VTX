@@ -6,7 +6,7 @@
 #endif
 
 #include "base_event_receiver.hpp"
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 namespace VTX
 {

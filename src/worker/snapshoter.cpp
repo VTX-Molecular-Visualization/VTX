@@ -2,9 +2,9 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "define.hpp"
 #include "io/path.hpp"
-#include "ui/imgui/imgui.h"
 #include "util/time.hpp"
-#include <gl/gl3w.h>
+#include <GL/gl3w.h>
+#include <imgui/imgui.h>
 #include <stb/stb_image_write.h>
 #include <vector>
 

@@ -8,7 +8,7 @@
 #include "base_component.hpp"
 #include "generic/base_printable.hpp"
 #include <GL/gl3w.h>
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 // GL error callback return type.
 typedef void( APIENTRY * DEBUGPROC )( GLenum		 p_source,
