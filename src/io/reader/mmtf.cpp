@@ -66,6 +66,9 @@ namespace VTX
 				p_molecule.addResidues( p_data.numGroups );
 				p_molecule.addAtoms( p_data.numAtoms );
 
+				p_molecule.addAtomPositionFrame();
+				Model::Molecule::AtomPositionsFrame & frame = p_molecule.getAtomPositionFrame( 0 );
+
 				uint chainCount = p_data.chainsPerModel[ 0 ];
 #ifdef _DEBUG
 				p_molecule.chainCount = chainCount;
@@ -116,6 +119,7 @@ namespace VTX
 #ifdef _DEBUG
 						p_molecule.atomCount += atomCount;
 #endif
+
 						for ( uint atomIdx = 0; atomIdx < atomCount; ++atomIdx, ++atomGlobalIdx )
 						{
 							// New atom.
@@ -135,8 +139,8 @@ namespace VTX
 							y = p_data.yCoordList[ atomGlobalIdx ];
 							z = p_data.zCoordList[ atomGlobalIdx ];
 
-							p_molecule.addAtomPosition( Vec3f( x, y, z ) );
-							const Vec3f & atomPosition = p_molecule.getAtomPosition( atomGlobalIdx );
+							frame.emplace_back( Vec3f( x, y, z ) );
+							const Vec3f & atomPosition = frame[ atomGlobalIdx ];
 							const float	  atomRadius   = atom.getVdwRadius();
 							p_molecule.addAtomRadius( atomRadius );
 

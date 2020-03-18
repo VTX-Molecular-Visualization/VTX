@@ -33,6 +33,8 @@ namespace VTX
 			public Generic::BaseRenderable
 		{
 		  public:
+			using AtomPositionsFrame = std::vector<Vec3f>;
+
 			Molecule() {};
 			~Molecule();
 
@@ -69,9 +71,23 @@ namespace VTX
 			}
 			inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
 
-			inline const Vec3f & getAtomPosition( const uint p_id ) const { return _atomPositions[ p_id ]; }
-			inline void addAtomPosition( const Vec3f p_position ) { _atomPositions.emplace_back( p_position ); }
-			inline const std::vector<Vec3f> & getAtomPositions() const { return _atomPositions; };
+			inline void addAtomPositionFrame() { _atomPositionsFrames.emplace_back( AtomPositionsFrame() ); }
+			inline void addAtomPositionFrame( const AtomPositionsFrame p_frame )
+			{
+				_atomPositionsFrames.emplace_back( p_frame );
+			}
+			inline const AtomPositionsFrame & getAtomPositionFrame( const uint p_frame ) const
+			{
+				return _atomPositionsFrames[ p_frame ];
+			};
+			inline AtomPositionsFrame & getAtomPositionFrame( const uint p_frame )
+			{
+				return _atomPositionsFrames[ p_frame ];
+			};
+			inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames( const uint p_frame ) const
+			{
+				return _atomPositionsFrames;
+			};
 			inline void		   addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
 			inline const float getAtomRadius( const uint p_idx ) const { return _atomRadius[ p_idx ]; }
 			inline const std::vector<float> & getAtomRadius() const { return _atomRadius; };
@@ -145,10 +161,10 @@ namespace VTX
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
 			// Buffers.
-			std::vector<Vec3f> _atomPositions = std::vector<Vec3f>();
-			std::vector<float> _atomRadius	  = std::vector<float>();
-			std::vector<Vec3f> _atomColors	  = std::vector<Vec3f>();
-			std::vector<uint>  _bonds		  = std::vector<uint>();
+			std::vector<AtomPositionsFrame> _atomPositionsFrames = std::vector<AtomPositionsFrame>();
+			std::vector<float>				_atomRadius			 = std::vector<float>();
+			std::vector<Vec3f>				_atomColors			 = std::vector<Vec3f>();
+			std::vector<uint>				_bonds				 = std::vector<uint>();
 
 			Math::AABB _aabb;
 

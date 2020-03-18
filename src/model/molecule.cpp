@@ -120,8 +120,10 @@ namespace VTX
 		{
 			glGenBuffers( 1, &_atomPositionsVBO );
 			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
-			glBufferData(
-				GL_ARRAY_BUFFER, sizeof( Vec3f ) * _atomPositions.size(), _atomPositions.data(), GL_STATIC_DRAW );
+			glBufferData( GL_ARRAY_BUFFER,
+						  sizeof( Vec3f ) * _atomPositionsFrames[ 0 ].size(),
+						  _atomPositionsFrames[ 0 ].data(),
+						  GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glGenBuffers( 1, &_atomColorsVBO );

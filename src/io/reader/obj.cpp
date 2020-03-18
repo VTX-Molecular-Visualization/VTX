@@ -53,6 +53,9 @@ namespace VTX
 				p_molecule.addResidues( residueCount );
 				p_molecule.addAtoms( atomCount );
 
+				p_molecule.addAtomPositionFrame();
+				Model::Molecule::AtomPositionsFrame & frame = p_molecule.getAtomPositionFrame( 0 );
+
 				// Loop over meshes.
 				for ( uint chainIdx = 0; chainIdx < chainCount; ++chainIdx, ++chainGlobalIdx )
 				{
@@ -104,8 +107,8 @@ namespace VTX
 							{ atom.setColor( Vec3f( diffuse.r, diffuse.g, diffuse.b ) ); }
 
 							const aiVector3D vector = mesh->mVertices[ indice ];
-							p_molecule.addAtomPosition( Vec3f( vector.x, vector.y, vector.z ) );
-							const Vec3f & atomPosition = p_molecule.getAtomPosition( atomGlobalIdx );
+							frame.emplace_back( Vec3f( vector.x, vector.y, vector.z ) );
+							const Vec3f & atomPosition = frame[ atomGlobalIdx ];
 							const float	  atomRadius   = atom.getVdwRadius();
 							p_molecule.addAtomRadius( atomRadius );
 
