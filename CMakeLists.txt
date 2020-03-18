@@ -48,6 +48,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 link_directories(${PATH_LIB}/SDL2/lib/x64)
 link_directories(${PATH_LIB}/assimp/lib/x64)
 link_directories(${PATH_LIB}/curl/lib/x64)
+link_directories(${PATH_LIB}/chemfiles/lib/x64)
 
 if(WIN32)
 	
@@ -66,6 +67,7 @@ target_link_libraries(VTX PRIVATE IrrXML)
 target_link_libraries(VTX PRIVATE zlib)
 target_link_libraries(VTX PRIVATE zlibstatic)
 target_link_libraries(VTX PRIVATE libcurl)
+target_link_libraries(VTX PRIVATE chemfiles)
 
 if(WIN32)
 	# Add specific libs.
@@ -92,6 +94,7 @@ target_include_directories(VTX PRIVATE ${PATH_LIB}/msgpack)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/SDL2/include)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/assimp/include)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/curl/include)
+target_include_directories(VTX PRIVATE ${PATH_LIB}/chemfiles/include)
 
 # Compiler options #2.
 if(CMAKE_COMPILER_IS_GNUCC)

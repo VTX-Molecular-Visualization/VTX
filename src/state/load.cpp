@@ -1,6 +1,7 @@
 #include "load.hpp"
 #include "action/select.hpp"
 #include "io/path_fake.hpp"
+#include "io/reader/arc.hpp"
 #include "io/reader/mmtf.hpp"
 #include "io/reader/obj.hpp"
 #include "model/molecule.hpp"
@@ -30,6 +31,10 @@ namespace VTX
 			else if ( p_path.getExtension() == "obj" )
 			{
 				reader = new IO::Reader::OBJ();
+			}
+			else if ( p_path.getExtension() == "arc" )
+			{
+				reader = new IO::Reader::ARC();
 			}
 
 			const IO::PathFake * fake = dynamic_cast<const IO::PathFake *>( &p_path );
