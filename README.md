@@ -4,19 +4,12 @@
 
 ## WINDOWS VISUAL STUDIO 2019 x64
 
-### 1. Get VCPKG from  Github
-    git clone https://github.com/microsoft/vcpkg.git
-    cd vcpkg
-### 2. Install VCPKG
-    .\bootstrap-vcpkg.bat
-### 3. Install project dependencies
-    .\vcpkg install sdl2:x64-windows gl3w:x64-windows glm:x64-windows msgpack:x64-windows assimp:x64-windows curl:x64-windows
-### 4. Make solution
+### 1. Make solution
 Install Visual Studio 2019 latest version with C++ tools.  
-Run cmake_build_VS2019_x64.bat
-### 5. Open solution
-Open "_windows/VTX.sln" then set project "VTX" as startup project.
-### 6. Install/configure ClangFormat
+Run _cmake.bat
+### 2. Open solution
+Open "_windows/VTX.sln".
+### 3. Install/configure ClangFormat
 Install [ClangFormat VS extension](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.ClangFormat).  
 Go to Tools -> Options, then under LLVM/Clang, set the following values:
 -   Format On Save
@@ -29,6 +22,6 @@ Go to Tools -> Options, then under LLVM/Clang, set the following values:
 
 ## LINUX
 
-Pareil mais penser à installer git, curl, cmake et GL (libgl1-mesa-dev) avant vcpkg.
+git curl cmake GL (libgl1-mesa-dev)
 
 ## MAC OS
