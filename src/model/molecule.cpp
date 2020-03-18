@@ -42,6 +42,9 @@ namespace VTX
 			// Create GL buffers.
 			_createBuffers();
 
+			// Set frame.
+			if ( getFrameCount() > 0 ) { setFrame( 0 ); }
+
 			// Set color mode.
 			setColorMode();
 
@@ -98,6 +101,24 @@ namespace VTX
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		}
 
+		void Molecule::setFrame( const uint p_frameIdx )
+		{
+			if ( p_frameIdx > getFrameCount() )
+			{
+				VTX_WARNING( "Frame " + std::to_string( p_frameIdx )
+							 + " does not exists / Count: " + std::to_string( getFrameCount() ) );
+				return;
+			}
+
+			_currentFrame = p_frameIdx;
+
+			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
+			glBufferData( GL_ARRAY_BUFFER,
+						  sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
+						  _atomPositionsFrames[ _currentFrame ].data(),
+						  GL_STATIC_DRAW );
+		}
+
 		void Molecule::print() const
 		{
 			VTX_INFO( "Molecule: " + _name );
@@ -120,16 +141,17 @@ namespace VTX
 		void Molecule::_createBuffers()
 		{
 			glGenBuffers( 1, &_atomPositionsVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
-			glBufferData( GL_ARRAY_BUFFER,
-						  sizeof( Vec3f ) * _atomPositionsFrames[ 0 ].size(),
-						  _atomPositionsFrames[ 0 ].data(),
-						  GL_STATIC_DRAW );
+			// glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
+			// glBufferData( GL_ARRAY_BUFFER,
+			//			  sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
+			//			  _atomPositionsFrames[ _currentFrame ].data(),
+			//			  GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glGenBuffers( 1, &_atomColorsVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
-			glBufferData( GL_ARRAY_BUFFER, sizeof( Vec3f ) * _atomColors.size(), _atomColors.data(), GL_STATIC_DRAW );
+			// glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
+			// glBufferData( GL_ARRAY_BUFFER, sizeof( Vec3f ) * _atomColors.size(), _atomColors.data(), GL_STATIC_DRAW
+			// );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glGenBuffers( 1, &_atomRadiusVBO );

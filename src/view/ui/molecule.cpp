@@ -1,6 +1,7 @@
 #include "molecule.hpp"
 #include "action/change_color_mode.hpp"
 #include "action/colorable_change_color.hpp"
+#include "action/molecule_change_frame.hpp"
 #include "action/scale.hpp"
 #include "action/transformable_translate.hpp"
 #include "vtx_app.hpp"
@@ -37,6 +38,16 @@ namespace VTX
 						ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
 						ImGui::Text( "Atoms: %d", _getModel().getAtomCount() );
 						ImGui::Text( "Bonds: %d", _getModel().getBondCount() / 2 );
+						if ( _getModel().getFrameCount() > 1 )
+						{
+							ImGui::Text( "Frames: %d", _getModel().getFrameCount() );
+							int frame = _getModel().getCurrentFrame();
+							if ( ImGui::SliderInt( "Frame", &frame, 0, _getModel().getFrameCount() - 1 ) )
+							{
+								VTXApp::get().getActionManager().execute(
+									new Action::MoleculeChangeFrame( _getModel(), (uint)frame ) );
+							}
+						}
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Transform" ) ) )
 					{

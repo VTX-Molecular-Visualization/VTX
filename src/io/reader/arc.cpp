@@ -14,13 +14,13 @@ namespace VTX
 			{
 				chemfiles::Trajectory trajectory( p_path );
 				VTX_INFO( std::to_string( trajectory.nsteps() ) + " frames" );
-				chemfiles::Frame frame = trajectory.read();
 
+				if ( trajectory.nsteps() == 0 ) { return false; }
+
+				chemfiles::Frame					 frame	   = trajectory.read();
 				chemfiles::span<chemfiles::Vector3D> positions = frame.positions();
 
-				p_molecule.addAtomPositionFrame();
-				Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( 0 );
-
+				p_molecule.setName( "TEST MD" );
 				p_molecule.addChains( 1 );
 				Model::Chain & chain = p_molecule.getChain( 0 );
 				chain.setMoleculePtr( &p_molecule );
@@ -37,26 +37,40 @@ namespace VTX
 				residue.setColor( Util::Color::randomPastelColor() );
 				p_molecule.addAtoms( uint( positions.size() ) );
 
-				// TODO: Loop over frames.
-
-				// Test only the first frame
-				VTX_INFO( std::to_string( frame.size() ) + " atoms in the frame" );
-				for ( uint i = 0; i < positions.size(); ++i )
+				// First frame.
+				VTX_DEBUG( "Frame 0" );
+				p_molecule.addAtomPositionFrame();
+				Model::Molecule::AtomPositionsFrame & firstMoleculeFrame = p_molecule.getAtomPositionFrame( 0 );
+				for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
 				{
-					Model::Atom & atom = p_molecule.getAtom( i );
+					Model::Atom & atom = p_molecule.getAtom( positionIdx );
 					atom.setMoleculePtr( &p_molecule );
 					atom.setChainPtr( &chain );
 					atom.setResiduePtr( &residue );
 					atom.setColor( Util::Color::randomPastelColor() );
-
-					chemfiles::Vector3D & position = positions[ i ];
-					moleculeFrame.emplace_back( Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] ) );
 					p_molecule.addAtomRadius( 1.20f );
-
-					const Vec3f & atomPosition = moleculeFrame[ i ];
+					chemfiles::Vector3D & position = positions[ positionIdx ];
+					firstMoleculeFrame.emplace_back( Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] ) );
+					const Vec3f & atomPosition = firstMoleculeFrame[ positionIdx ];
 					const float	  atomRadius   = 1.20f;
-					// VTX_DEBUG( glm::to_string( atomPosition ) );
 					p_molecule.extendAABB( atomPosition, atomRadius );
+				}
+
+				// Fill other frames.
+				for ( uint frameIdx = 1; frameIdx < trajectory.nsteps(); ++frameIdx )
+				{
+					p_molecule.addAtomPositionFrame();
+					VTX_DEBUG( "Frame " + std::to_string( frameIdx ) );
+					Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
+
+					frame	  = trajectory.read_step( frameIdx );
+					positions = frame.positions();
+
+					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
+					{
+						chemfiles::Vector3D & position = positions[ positionIdx ];
+						moleculeFrame.emplace_back( Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] ) );
+					}
 				}
 
 				return true;

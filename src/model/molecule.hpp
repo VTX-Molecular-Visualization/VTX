@@ -89,6 +89,8 @@ namespace VTX
 			{
 				return _atomPositionsFrames;
 			};
+			inline const uint  getCurrentFrame() const { return _currentFrame; }
+			inline const uint  getFrameCount() const { return (uint)_atomPositionsFrames.size(); }
 			inline void		   addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
 			inline const float getAtomRadius( const uint p_idx ) const { return _atomRadius[ p_idx ]; }
 			inline const std::vector<float> & getAtomRadius() const { return _atomRadius; };
@@ -137,6 +139,7 @@ namespace VTX
 			virtual void init() override;
 			void		 setRepresentation();
 			void		 setColorMode();
+			void		 setFrame( uint );
 
 			virtual void print() const override;
 
@@ -169,11 +172,6 @@ namespace VTX
 
 			Math::AABB _aabb;
 
-			// Selection.
-			Chain *	  _selectedChain   = nullptr;
-			Residue * _selectedResidue = nullptr;
-			Atom *	  _selectedAtom	   = nullptr;
-
 			// OpenGL buffers.
 			enum ATTRIBUTE_LOCATION
 			{
@@ -189,6 +187,8 @@ namespace VTX
 														 // but for energy based coloration, useless...
 			GLuint _atomColorsVBO = GL_INVALID_VALUE;	 // Color vbo.
 			GLuint _bondsIBO	  = GL_INVALID_VALUE;	 // Bonds ibo.
+
+			uint _currentFrame = 0;
 
 			void _createBuffers();
 
