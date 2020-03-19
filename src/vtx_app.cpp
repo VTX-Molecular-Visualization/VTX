@@ -63,11 +63,11 @@ namespace VTX
 		//_stateMachine->goToState( ID::State::VISUALIZATION );
 		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "173D.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "4v6x.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6LU7.mmtf" ) );
+		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6LU7.mmtf" ) );
 		//->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6LU7.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOADING, &IO::Path( DATA_DIR + "3j3q.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOADING, &IO::Path( DATA_DIR + "r2d2.obj" ) );
-		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "dhfr2.arc" ) );
+		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "dhfr2.arc" ) );
 #else
 		//_stateMachine->goToState( ID::State::LOADING, &IO::Path( DATA_DIR + "4v6x.mmtf" ) );
 		_stateMachine->goToState( ID::State::VISUALIZATION );
@@ -106,6 +106,9 @@ namespace VTX
 		// Set size.
 		ImGuiIO & io = ImGui::GetIO();
 
+		// State machine.
+		_stateMachine->update( io.DeltaTime );
+
 		// Event manager.
 		_eventManager->update( io.DeltaTime );
 
@@ -114,9 +117,6 @@ namespace VTX
 
 		// Worker manager.
 		_workerManager->update( io.DeltaTime );
-
-		// State machine.
-		_stateMachine->update( io.DeltaTime );
 
 		// UI.
 		_ui->draw();
