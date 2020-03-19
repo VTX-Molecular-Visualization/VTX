@@ -61,8 +61,6 @@ namespace VTX
 	  private:
 		static bool					  _isRunning;
 		Tool::Chrono				  _chrono			= Tool::Chrono();
-		double						  _timeTotal		= 0.f;
-		double						  _timeDelta		= 0.f;
 		UI::UserInterface *			  _ui				= nullptr;
 		State::StateMachine *		  _stateMachine		= nullptr;
 		Object3D::Scene *			  _scene			= nullptr;

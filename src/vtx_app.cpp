@@ -103,27 +103,22 @@ namespace VTX
 
 	void VTXApp::_update()
 	{
-		// Set size.
-		ImGuiIO & io = ImGui::GetIO();
+		float deltaTIme = ImGui::GetIO().DeltaTime;
 
 		// State machine.
-		_stateMachine->update( io.DeltaTime );
+		_stateMachine->update( deltaTIme );
 
 		// Event manager.
-		_eventManager->update( io.DeltaTime );
+		_eventManager->update( deltaTIme );
 
 		// Action manager.
-		_actionManager->update( io.DeltaTime );
+		_actionManager->update( deltaTIme );
 
 		// Worker manager.
-		_workerManager->update( io.DeltaTime );
+		_workerManager->update( deltaTIme );
 
 		// UI.
 		_ui->draw();
-
-		// Timers.
-		_timeDelta = io.DeltaTime;
-		_timeTotal += _timeDelta;
 	}
 
 } // namespace VTX
