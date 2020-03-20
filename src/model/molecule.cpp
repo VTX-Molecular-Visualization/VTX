@@ -103,7 +103,7 @@ namespace VTX
 
 		void Molecule::setFrame( const uint p_frameIdx )
 		{
-			VTX_DEBUG( "Set frame: " + std::to_string( p_frameIdx ) );
+			VTX_INFO( "Set frame: " + std::to_string( p_frameIdx ) );
 			if ( p_frameIdx > getFrameCount() )
 			{
 				VTX_WARNING( "Frame " + std::to_string( p_frameIdx )
@@ -213,7 +213,7 @@ namespace VTX
 		uint Molecule::getNextFrame( const float p_deltaTime )
 		{
 			_currentFrame += p_deltaTime * (float)_fps;
-			if ( _currentFrame > getFrameCount() - 1 ) { _currentFrame -= getFrameCount(); }
+			if ( _currentFrame > getFrameCount() ) { _currentFrame = 0.f; }
 			return uint( _currentFrame );
 		}
 	} // namespace Model

@@ -31,6 +31,7 @@ namespace VTX
 				if ( molecule->isPlaying() == false ) { break; }
 				uint currentFrame = molecule->getCurrentFrame();
 				uint nextFrame	  = molecule->getNextFrame( float( p_deltaTime ) );
+				// VTX_INFO( std::to_string( nextFrame ) );
 				if ( nextFrame != currentFrame ) { molecule->setFrame( nextFrame ); }
 			}
 
