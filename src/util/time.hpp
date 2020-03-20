@@ -50,9 +50,9 @@ namespace VTX
 				str.erase( std::remove( str.begin(), str.end(), ':' ), str.end() );
 				str.erase( std::remove( str.begin(), str.end(), '\n' ), str.end() );
 				return str;
-			} // namespace Time
-		}	  // namespace Time
-	}		  // namespace Util
+			}
+		} // namespace Time
+	}	  // namespace Util
 } // namespace VTX
 
 #endif

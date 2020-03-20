@@ -30,6 +30,7 @@ namespace VTX
 				uint _primsOffset = 0;	 // leaf
 				uint _secondChildOffset; // interior
 			};
+			// TODO: uint16 is sufficient ?
 			uint16_t _splitAxis;   // interior node: xyz
 			uint16_t _nbPrims = 0; // 0 -> interior node
 		};

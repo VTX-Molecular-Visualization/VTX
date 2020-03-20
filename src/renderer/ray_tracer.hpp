@@ -15,6 +15,8 @@ namespace VTX
 	{
 		class RayTracer : public BaseRenderer
 		{
+			class CameraRayTracing;
+
 		  public:
 			RayTracer()	 = default;
 			~RayTracer() = default;
@@ -25,23 +27,31 @@ namespace VTX
 			virtual void resize( const uint, const uint ) override;
 
 		  private:
+			void _renderTiles( std::vector<uchar> &		p_image,
+							   const CameraRayTracing & p_camera,
+							   const uint				p_nbPixelSamples,
+							   const uint				p_threadId,
+							   const uint				p_nbTilesX,
+							   const uint				p_nbTilesY,
+							   const uint				p_nbTiles,
+							   std::atomic<uint> &		p_nextTile );
+
 			void _renderTile( std::vector<uchar> &	   p_image,
-							  const Object3D::Camera & p_camera,
+							  const CameraRayTracing & p_camera,
 							  const uint			   p_nbPixelSamples,
 							  const uint			   p_taskIndex,
-							  const uint			   p_threadIndex,
-							  const uint			   p_numTilesX,
-							  const uint			   p_numTilesY );
+							  const uint			   p_nbTilesX,
+							  const uint			   p_nbTilesY );
 
-			Vec3f _renderPixel( const Object3D::Camera & p_camera,
+			Vec3f _renderPixel( const CameraRayTracing & p_camera,
 								const float				 p_x,
 								const float				 p_y,
 								const uint				 p_nbPixelSamples );
 
 		  private:
-			const uint TILE_SIZE = 16;
+			static const uint TILE_SIZE;
 
-			Vec3f _backgroundColor = VEC3F_ZERO;
+			Vec3f _backgroundColor = VEC3F_XYZ * 0.3f;
 
 			BVH _bvh;
 		};
