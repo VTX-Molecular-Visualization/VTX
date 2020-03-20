@@ -103,6 +103,7 @@ namespace VTX
 
 		void Molecule::setFrame( const uint p_frameIdx )
 		{
+			VTX_DEBUG( "Set frame: " + std::to_string( p_frameIdx ) );
 			if ( p_frameIdx > getFrameCount() )
 			{
 				VTX_WARNING( "Frame " + std::to_string( p_frameIdx )
@@ -110,12 +111,12 @@ namespace VTX
 				return;
 			}
 
-			_currentFrame = p_frameIdx;
+			_currentFrame = float( p_frameIdx );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
 			glBufferData( GL_ARRAY_BUFFER,
-						  sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
-						  _atomPositionsFrames[ _currentFrame ].data(),
+						  sizeof( Vec3f ) * _atomPositionsFrames[ uint( _currentFrame ) ].size(),
+						  _atomPositionsFrames[ uint( _currentFrame ) ].data(),
 						  GL_STATIC_DRAW );
 		}
 
@@ -207,6 +208,13 @@ namespace VTX
 			bindBuffers();
 			_notifyViews( Event::VTX_EVENT_MODEL::RENDER );
 			unbindBuffers();
+		}
+
+		uint Molecule::getNextFrame( const float p_deltaTime )
+		{
+			_currentFrame += p_deltaTime * (float)_fps;
+			if ( _currentFrame > getFrameCount() - 1 ) { _currentFrame -= getFrameCount(); }
+			return uint( _currentFrame );
 		}
 	} // namespace Model
 } // namespace VTX

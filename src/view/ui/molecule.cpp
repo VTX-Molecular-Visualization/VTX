@@ -1,7 +1,9 @@
 #include "molecule.hpp"
 #include "action/change_color_mode.hpp"
 #include "action/colorable_change_color.hpp"
+#include "action/molecule_change_fps.hpp"
 #include "action/molecule_change_frame.hpp"
+#include "action/molecule_change_is_playing.hpp"
 #include "action/transformable_rotate.hpp"
 #include "action/transformable_set_scale.hpp"
 #include "action/transformable_set_translation.hpp"
@@ -32,10 +34,33 @@ namespace VTX
 						{
 							ImGui::Text( "Frames: %d", _getModel().getFrameCount() );
 							int frame = _getModel().getCurrentFrame();
-							if ( ImGui::SliderInt( "Frame", &frame, 0, _getModel().getFrameCount() - 1 ) )
+							if ( ImGui::SliderInt(
+									 LOCALE( "View.Frame" ), &frame, 0, _getModel().getFrameCount() - 1 ) )
 							{
 								VTXApp::get().getActionManager().execute(
-									new Action::MoleculeChangeFrame( _getModel(), (uint)frame ) );
+									new Action::MoleculeChangeFrame( _getModel(), frame ) );
+							}
+							if ( ImGui::InputInt( LOCALE( "##FrameInput" ), &frame, 1 ) )
+							{
+								VTXApp::get().getActionManager().execute(
+									new Action::MoleculeChangeFrame( _getModel(), frame ) );
+							}
+							bool isPlaying = _getModel().isPlaying();
+							if ( ImGui::Checkbox( LOCALE( "View.Play" ), &isPlaying ) )
+							{
+								VTXApp::get().getActionManager().execute(
+									new Action::MoleculeChangeIsPlaying( _getModel(), isPlaying ) );
+							}
+							int fps = _getModel().getFPS();
+							if ( ImGui::SliderInt( LOCALE( "View.FPS" ), &fps, 0, _getModel().getFrameCount() - 1 ) )
+							{
+								VTXApp::get().getActionManager().execute(
+									new Action::MoleculeChangeFPS( _getModel(), fps ) );
+							}
+							if ( ImGui::InputInt( LOCALE( "##FPSInput" ), &fps, 1 ) )
+							{
+								VTXApp::get().getActionManager().execute(
+									new Action::MoleculeChangeFPS( _getModel(), fps ) );
 							}
 						}
 					}

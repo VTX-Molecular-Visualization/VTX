@@ -80,6 +80,8 @@ namespace VTX
 			{ "View.Stop", "Stop" },
 			{ "View.Loop", "Loop" },
 			{ "View.Path", "Path" },
+			{ "View.Frame", "Frame" },
+			{ "View.FPS", "FPS" },
 			{ "View.Replace", "Replace" },
 			{ "View.Delete", "Delete" },
 			{ "View.Duration", "Duration" },

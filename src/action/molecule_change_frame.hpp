@@ -15,16 +15,19 @@ namespace VTX
 		class MoleculeChangeFrame : public BaseAction
 		{
 		  public:
-			explicit MoleculeChangeFrame( Model::Molecule & p_molecule, const uint p_frame ) :
+			explicit MoleculeChangeFrame( Model::Molecule & p_molecule, const int p_frame ) :
 				_molecule( p_molecule ), _frame( p_frame )
 			{
 			}
 
-			virtual void execute() override { _molecule.setFrame( _frame ); }
+			virtual void execute() override
+			{
+				_molecule.setFrame( glm::max<int>( 0, glm::min<int>( _frame, _molecule.getFrameCount() - 1 ) ) );
+			}
 
 		  private:
 			Model::Molecule & _molecule;
-			const uint		  _frame;
+			const int		  _frame;
 		};
 	} // namespace Action
 } // namespace VTX

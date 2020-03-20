@@ -23,17 +23,25 @@ namespace VTX
 		void Scene::update( const double p_deltaTime )
 		{
 			// TOCHECK: do that in state or in scene?
+			// (let that here instead of doing the exact same things in states for the moment)
+
+			// Dynamic.
+			for ( MoleculePtr const molecule : _molecules )
+			{
+				uint currentFrame = molecule->getCurrentFrame();
+				uint nextFrame	  = molecule->getNextFrame( float( p_deltaTime ) );
+				if ( nextFrame != currentFrame ) { molecule->setFrame( nextFrame ); }
+			}
+
+			// Auto rotate.
 			if ( Setting::Controller::autoRotateSpeed.x != 0.f || Setting::Controller::autoRotateSpeed.y != 0.f
 				 || Setting::Controller::autoRotateSpeed.z != 0.f )
 			{
 				for ( MoleculePtr const molecule : _molecules )
 				{
-					VTXApp::get().getActionManager().execute( new Action::TransformableRotate(
-						*molecule, (float)p_deltaTime * Setting::Controller::autoRotateSpeed.x, VEC3F_X ) );
-					VTXApp::get().getActionManager().execute( new Action::TransformableRotate(
-						*molecule, (float)p_deltaTime * Setting::Controller::autoRotateSpeed.y, VEC3F_Y ) );
-					VTXApp::get().getActionManager().execute( new Action::TransformableRotate(
-						*molecule, (float)p_deltaTime * Setting::Controller::autoRotateSpeed.z, VEC3F_Z ) );
+					molecule->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.x, VEC3F_X );
+					molecule->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.y, VEC3F_Y );
+					molecule->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.z, VEC3F_Z );
 				}
 			}
 		}
