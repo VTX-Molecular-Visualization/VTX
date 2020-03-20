@@ -21,7 +21,7 @@ namespace VTX
 		class OpenApi : public BaseAction
 		{
 		  public:
-			explicit OpenApi( const std::string p_id ) : _id( p_id ) {}
+			explicit OpenApi( const std::string & p_id ) : _id( p_id ) {}
 
 			virtual void execute() override
 			{

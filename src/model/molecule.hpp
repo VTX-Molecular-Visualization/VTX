@@ -73,7 +73,7 @@ namespace VTX
 			inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
 
 			inline void addAtomPositionFrame() { _atomPositionsFrames.emplace_back( AtomPositionsFrame() ); }
-			inline void addAtomPositionFrame( const AtomPositionsFrame p_frame )
+			inline void addAtomPositionFrame( const AtomPositionsFrame & p_frame )
 			{
 				_atomPositionsFrames.emplace_back( p_frame );
 			}
