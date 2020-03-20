@@ -30,8 +30,12 @@ namespace VTX
 			{
 				if ( molecule->isPlaying() == false ) { break; }
 				uint currentFrame = molecule->getCurrentFrame();
-				uint nextFrame	  = molecule->getNextFrame( float( p_deltaTime ) );
-				if ( nextFrame != currentFrame ) { molecule->setFrame( nextFrame ); }
+				if ( molecule->getFPS() == 0 ) { molecule->setFrame( ( ++currentFrame ) % molecule->getFrameCount() ); }
+				else
+				{
+					uint nextFrame = molecule->getNextFrame( float( p_deltaTime ) );
+					if ( nextFrame != currentFrame ) { molecule->setFrame( nextFrame ); }
+				}
 			}
 
 			// Auto rotate.
