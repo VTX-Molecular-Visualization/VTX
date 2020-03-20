@@ -30,5 +30,7 @@ namespace VTX
 			};
 		};
 	} // namespace Localization
+
+	inline const char * LOCALE( const char * p_str ) { return VTX::Localization::Language::text( p_str ); }
 } // namespace VTX
 #endif

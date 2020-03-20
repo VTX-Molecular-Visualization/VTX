@@ -7,6 +7,7 @@
 
 #include "base_cleanable.hpp"
 #include "base_initializable.hpp"
+#include <map>
 #include <type_traits>
 #include <utility>
 #include <vector>

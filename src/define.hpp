@@ -5,8 +5,6 @@
 #pragma once
 #endif
 
-#include "io/path.hpp"
-#include "localization/language.hpp"
 #include "util/logger.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
@@ -103,7 +101,7 @@ namespace VTX
 
 	// Dirs.
 	const std::string DATA_DIR	   = "../data/";
-	const IO::Path	  SHADER_DIR   = "../src/shaders/";
+	const std::string SHADER_DIR   = "../src/shaders/";
 	const std::string SNAPSHOT_DIR = "../snapshots/";
 	const std::string PATHS_DIR	   = "../paths/";
 	const std::string VIDEO_DIR	   = "../videos/";
@@ -117,9 +115,6 @@ namespace VTX
 	inline void	  VTX_WARNING( const std::string & p_str ) { VTX::Util::Logger::logWarning( p_str ); }
 	inline void	  VTX_ERROR( const std::string & p_str ) { VTX::Util::Logger::logError( p_str ); }
 	constexpr int VTX_CONSOLE_SIZE = 80;
-
-	// Localization.
-	inline const char * LOCALE( const char * p_str ) { return VTX::Localization::Language::text( p_str ); }
 
 	// Constants.
 	const Mat4f MAT4F_ID = Mat4f( 1.f );

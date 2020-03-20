@@ -6,6 +6,7 @@
 #endif
 
 #include "base_state.hpp"
+#include "io/path.hpp"
 
 namespace VTX
 {
