@@ -18,27 +18,16 @@ namespace VTX
 				ImGui::PushID( ( "ViewMolecule" + std::to_string( _getModel().getId() ) ).c_str() );
 				if ( ImGui::CollapsingHeader( _getModel().getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
 				{
-					if ( ImGui::CollapsingHeader( "Color :", ImGuiTreeNodeFlags_DefaultOpen ) )
-					{
-						Vec3f color = _getModel().getColor();
-						if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
-						{
-							VTXApp::get().getActionManager().execute(
-								new Action::ColorableChangeColor( _getModel(), color ) );
-							if ( Setting::Rendering::colorMode == View::MOLECULE_COLOR_MODE::PROTEIN )
-							{
-								VTXApp::get().getActionManager().execute(
-									new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN ) );
-							}
-						}
-					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 					{
 						ImGui::Text( "Chains: %d", _getModel().getChainCount() );
 						ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
 						ImGui::Text( "Atoms: %d", _getModel().getAtomCount() );
 						ImGui::Text( "Bonds: %d", _getModel().getBondCount() / 2 );
-						if ( _getModel().getFrameCount() > 1 )
+					}
+					if ( _getModel().getFrameCount() > 1 )
+					{
+						if ( ImGui::CollapsingHeader( LOCALE( "View.Dynamic" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 						{
 							ImGui::Text( "Frames: %d", _getModel().getFrameCount() );
 							int frame = _getModel().getCurrentFrame();
@@ -51,25 +40,33 @@ namespace VTX
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Transform" ) ) )
 					{
-						ImGui::Text( LOCALE( "View.Transform.Position" ) );
 						ImGui::PushID( "Position" );
 						Vec3f translation = _getModel().getTransform().getTranslationVector();
 						float t[]		  = { translation.x, translation.y, translation.z };
-						if ( ImGui::InputFloat3( "Position", t, 2 ) )
+						if ( ImGui::InputFloat3( LOCALE( "View.Transform.Position" ), t, 2 ) )
 						{
 							VTXApp::get().getActionManager().execute(
 								new Action::TransformableTranslate( _getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
 						}
 						ImGui::PopID();
-						ImGui::Text( LOCALE( "View.Transform.Scale" ) );
 						Vec3f scale = _getModel().getTransform().getScaleVector();
 						float s		= scale.x;
 						ImGui::PushID( "Scale" );
-						if ( ImGui::InputFloat( "Scale", &s, 1.f ) )
+						if ( ImGui::InputFloat( LOCALE( "View.Transform.Scale" ), &s, 1.f ) )
 						{ VTXApp::get().getActionManager().execute( new Action::Scale( _getModel(), s ) ); }
 						ImGui::PopID();
 					}
-
+					if ( ImGui::CollapsingHeader( LOCALE( "View.Color" ) ) )
+					{
+						Vec3f color = _getModel().getColor();
+						if ( ImGui::ColorEdit3( LOCALE( "View.Color" ), (float *)&color ) )
+						{
+							VTXApp::get().getActionManager().execute(
+								new Action::ColorableChangeColor( _getModel(), color ) );
+							VTXApp::get().getActionManager().execute(
+								new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN ) );
+						}
+					}
 #ifdef _DEBUG
 					if ( ImGui::CollapsingHeader( "Transform-debug" ) )
 					{

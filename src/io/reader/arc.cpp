@@ -58,7 +58,7 @@ namespace VTX
 					p_molecule.addAtoms( uint( positions.size() ) );
 
 					// First frame.
-					VTX_DEBUG( "Frame 0" );
+					VTX_INFO( "Frame 0" );
 					p_molecule.addAtomPositionFrame();
 					Model::Molecule::AtomPositionsFrame & firstMoleculeFrame = p_molecule.getAtomPositionFrame( 0 );
 					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
@@ -89,7 +89,7 @@ namespace VTX
 					for ( uint frameIdx = 1; frameIdx < trajectory.nsteps(); ++frameIdx )
 					{
 						p_molecule.addAtomPositionFrame();
-						VTX_DEBUG( "Frame " + std::to_string( frameIdx ) );
+						VTX_INFO( "Frame " + std::to_string( frameIdx ) );
 						Model::Molecule::AtomPositionsFrame & moleculeFrame
 							= p_molecule.getAtomPositionFrame( frameIdx );
 

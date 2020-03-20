@@ -83,6 +83,7 @@ namespace VTX
 			{ "View.Replace", "Replace" },
 			{ "View.Delete", "Delete" },
 			{ "View.Duration", "Duration" },
+			{ "View.Color", "Color" },
 			{ "View.Viewpoint", "Viewpoint" },
 			{ "View.Viewpoint.Add", "Add viewpoint" },
 			{ "View.Duration", "Duration" },
@@ -92,6 +93,7 @@ namespace VTX
 			{ "View.Transform.Position", "Position" },
 			{ "View.Transform.Rotation", "Rotation" },
 			{ "View.Transform.Scale", "Scale" },
+			{ "View.Dynamic", "Dynamic" },
 
 			// Modals.
 			{ "Modal.Loading", "Loading" },
