@@ -103,7 +103,6 @@ namespace VTX
 
 		void Molecule::setFrame( const uint p_frameIdx )
 		{
-			VTX_INFO( "Set frame: " + std::to_string( p_frameIdx ) );
 			if ( p_frameIdx > getFrameCount() )
 			{
 				VTX_WARNING( "Frame " + std::to_string( p_frameIdx )
