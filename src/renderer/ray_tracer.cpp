@@ -70,7 +70,7 @@ namespace VTX
 			VTX_INFO( "Render Frame" );
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
-			const uint nbPixelSamples = 32;
+			const uint nbPixelSamples = 1;
 
 			uint			   size = _width * _height * 3 * sizeof( char );
 			std::vector<uchar> pixels( _width * _height * 3 );

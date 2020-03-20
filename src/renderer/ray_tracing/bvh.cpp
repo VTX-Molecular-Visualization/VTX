@@ -13,6 +13,7 @@ Adapted from PBRTv3 BVHAccel : https://github.com/mmp/pbrt-v3
 #include "tool/chrono.hpp"
 #include "util/math.hpp"
 #include <algorithm>
+#include <thread>
 
 namespace VTX
 {
@@ -32,7 +33,7 @@ namespace VTX
 				if ( _child1 != nullptr ) delete _child1;
 			}
 			// Constructor for leaves
-			BVHBuildNode( const uint p_idFirstPrim, uint p_nbPrims, const Math::AABB & p_aabb ) :
+			BVHBuildNode( const uint p_idFirstPrim, const uint p_nbPrims, const Math::AABB & p_aabb ) :
 				_idFirstPrim( p_idFirstPrim ), _nbPrims( p_nbPrims ), _aabb( p_aabb )
 			{
 				++leafNodes;
@@ -101,8 +102,7 @@ namespace VTX
 			}
 
 			// copy input primitive
-			_primitives = p_prims;
-			// std::copy( p_prims.begin(), p_prims.end(), std::back_inserter( _primitives ) );
+			_primitives	 = p_prims;
 			_maxPrimLeaf = p_maxPrimsLeaf;
 			_splitMethod = p_splitMethod;
 
@@ -166,8 +166,6 @@ namespace VTX
 				const LBVHNode & node = _nodes[ currentNodeIndex ];
 				// Check ray against BVH node
 				if ( node._aabb.intersect( rayPos, invDir, isDirNeg, tMin, tMax ) )
-				/*const float t = node._aabb.intersect( rayPos, invDir, isDirNeg, tMin, tMax );
-				if ( t != -1.f )*/
 				{
 					if ( node._nbPrims > 0 )
 					{
@@ -401,15 +399,43 @@ namespace VTX
 
 			// Define primitives Morton indices
 			std::vector<MortonPrim> mortonPrims( p_primsInfo.size() );
+			const uint				mortonBits	= 10;
+			const uint				mortonScale = 1 << mortonBits;
+
+			// init parallel
+			const uint				 nbThreads = std::thread::hardware_concurrency();
+			std::vector<std::thread> threadPool;
+			threadPool.reserve( nbThreads );
+
+			for ( uint i = 0; i < nbThreads; ++i )
+			{
+				threadPool.emplace_back(
+					std::thread( [ nbThreads, &mortonPrims, mortonScale, &p_primsInfo, &aabb, i ]() {
+						uint id = i;
+						while ( id < p_primsInfo.size() )
+						{
+							mortonPrims[ id ]._idPrimitive = p_primsInfo[ id ]._idPrimitive;
+							const Vec3f centroidOffset	   = aabb.offset( p_primsInfo[ id ]._centroid );
+							mortonPrims[ id ]._code
+								= Util::Math::encodeMorton3( centroidOffset * float( mortonScale ) );
+							id += nbThreads;
+						}
+					} ) );
+			}
+			for ( std::thread & t : threadPool )
+			{
+				t.join();
+			}
+			threadPool.clear();
+
+			/*
 			// TODO: make it parallel
 			for ( uint i = 0; i < uint( p_primsInfo.size() ); ++i )
 			{
-				const uint mortonBits		  = 10;
-				const uint mortonScale		  = 1 << mortonBits;
 				mortonPrims[ i ]._idPrimitive = p_primsInfo[ i ]._idPrimitive;
 				const Vec3f centroidOffset	  = aabb.offset( p_primsInfo[ i ]._centroid );
 				mortonPrims[ i ]._code		  = Util::Math::encodeMorton3( centroidOffset * float( mortonScale ) );
-			}
+			}*/
 
 			// Sort Morton primitives
 			radixSort( &mortonPrims );
@@ -435,22 +461,57 @@ namespace VTX
 			std::atomic<uint> atomicOutPrimOffset = 0;
 			p_outPrims.resize( _primitives.size() );
 
-			// TODO: make it parallel
-			for ( uint i = 0; i < uint( treelets.size() ); ++i )
+			for ( uint i = 0; i < nbThreads; ++i )
 			{
-				uint		  nodesCreated	= 0;
-				const uint	  firstBitIndex = 29 - 12;
-				LBVHTreelet & treelet		= treelets[ i ];
-				treelet._buildNodes			= _emitLBVHRecursive( treelet._buildNodes,
-														  p_primsInfo,
-														  &mortonPrims[ treelet._idBegin ],
-														  treelet._nbPrims,
-														  nodesCreated,
-														  p_outPrims,
-														  atomicOutPrimOffset,
-														  firstBitIndex );
-				atomicTotalNodes += nodesCreated;
+				threadPool.emplace_back( std::thread( [ this,
+														nbThreads,
+														&treelets,
+														&p_primsInfo,
+														&mortonPrims,
+														&p_outPrims,
+														&atomicOutPrimOffset,
+														&atomicTotalNodes,
+														i ]() {
+					uint id = i;
+					while ( id < treelets.size() )
+					{
+						uint		  nodesCreated	= 0;
+						const uint	  firstBitIndex = 29 - 12;
+						LBVHTreelet & treelet		= treelets[ id ];
+						treelet._buildNodes			= _emitLBVHRecursive( treelet._buildNodes,
+																  p_primsInfo,
+																  &mortonPrims[ treelet._idBegin ],
+																  treelet._nbPrims,
+																  nodesCreated,
+																  p_outPrims,
+																  atomicOutPrimOffset,
+																  firstBitIndex );
+						atomicTotalNodes += nodesCreated;
+						id += nbThreads;
+					}
+				} ) );
 			}
+			for ( std::thread & t : threadPool )
+			{
+				t.join();
+			}
+
+			//// TODO: make it parallel
+			// for ( uint i = 0; i < uint( treelets.size() ); ++i )
+			//{
+			//	uint		  nodesCreated	= 0;
+			//	const uint	  firstBitIndex = 29 - 12;
+			//	LBVHTreelet & treelet		= treelets[ i ];
+			//	treelet._buildNodes			= _emitLBVHRecursive( treelet._buildNodes,
+			//											  p_primsInfo,
+			//											  &mortonPrims[ treelet._idBegin ],
+			//											  treelet._nbPrims,
+			//											  nodesCreated,
+			//											  p_outPrims,
+			//											  atomicOutPrimOffset,
+			//											  firstBitIndex );
+			//	atomicTotalNodes += nodesCreated;
+			//}
 			p_totalNodes = atomicTotalNodes;
 
 			// Build a SAH BVH upper the LBVH treelets
