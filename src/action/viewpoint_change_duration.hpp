@@ -22,7 +22,7 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				_viewpoint.setDuration( glm::max<float>( _duration, 0.f ) );
+				_viewpoint.setDuration( Util::Math::max<float>( _duration, 0.f ) );
 				_viewpoint.getPathPtr()->refreshAllDurations();
 			}
 

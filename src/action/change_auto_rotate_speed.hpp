@@ -20,7 +20,7 @@ namespace VTX
 			virtual void execute() override
 			{
 				Setting::Controller::autoRotateSpeed
-					= glm::clamp( _value, AUTO_ROTATE_SPEED_MIN, AUTO_ROTATE_SPEED_MAX );
+					= Util::Math::clamp( _value, AUTO_ROTATE_SPEED_MIN, AUTO_ROTATE_SPEED_MAX );
 			};
 
 		  private:

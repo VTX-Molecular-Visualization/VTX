@@ -33,8 +33,9 @@ namespace VTX
 					{
 						ImGui::PushID( viewpoint->getId() );
 						if ( ImGui::Selectable( ( std::to_string( ++i ) + std::string( " - " )
-												  + glm::to_string( viewpoint->getPosition() ) + std::string( " - " )
-												  + std::to_string( viewpoint->getDuration() ) + std::string( "s" ) )
+												  + Util::Math::to_string( viewpoint->getPosition() )
+												  + std::string( " - " ) + std::to_string( viewpoint->getDuration() )
+												  + std::string( "s" ) )
 													.c_str() ) )
 						{
 							VTXApp::get().getActionManager().execute(

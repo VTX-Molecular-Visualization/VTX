@@ -25,14 +25,100 @@ namespace VTX
 			static std::mt19937							 gen( RANDOM ? rd() : 7937 );
 			static std::uniform_real_distribution<float> dis( 0.f, 1.f );
 
-			static inline Vec3f min( const Vec3f & a, const Vec3f & b )
+			template<typename T>
+			static inline T min( const T & p_lhs, const T & p_rhs )
 			{
-				return Vec3f( a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y, a.z < b.z ? a.z : b.z );
+				return glm::min( p_lhs, p_rhs );
 			}
 
-			static inline Vec3f max( const Vec3f & a, const Vec3f & b )
+			template<typename T>
+			static inline T max( const T & p_lhs, const T & p_rhs )
 			{
-				return Vec3f( a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z );
+				return glm::max( p_lhs, p_rhs );
+			}
+
+			template<typename T1, typename T2>
+			static inline T1 clamp( const T1 & p_value, const T2 & p_min, const T2 & p_max )
+			{
+				return glm::clamp( p_value, p_min, p_max );
+			}
+
+			template<typename T>
+			static inline auto length( const T & p_value )
+			{
+				return glm::length( p_value );
+			}
+
+			template<typename T1, typename T2>
+			static inline T1 translate( const T1 & p_value, const T2 & p_translation )
+			{
+				return glm::translate( p_value, p_translation );
+			}
+
+			template<typename T1, typename T2>
+			static inline T1 rotate( const T1 & p_value, const T2 & p_rotation, const Vec3f & p_axis )
+			{
+				return glm::rotate( p_value, p_rotation, p_axis );
+			}
+
+			template<typename T1, typename T2>
+			static inline T1 scale( const T1 & p_value, const T2 & p_scale )
+			{
+				return glm::scale( p_value, p_scale );
+			}
+
+			template<typename T>
+			static inline auto distance( const T & p_lhs, const T & p_rhs )
+			{
+				return glm::distance( p_lhs, p_rhs );
+			}
+
+			template<typename T>
+			static inline T normalize( const T & p_value )
+			{
+				return glm::normalize( p_value );
+			}
+
+			template<typename T>
+			static inline auto lookAt( const T & p_value, const T & p_target, const T & p_axis )
+			{
+				return glm::lookAt( p_value, p_target, p_axis );
+			}
+
+			template<typename T>
+			static inline auto dot( const T & p_lhs, const T & p_rhs )
+			{
+				return glm::dot( p_lhs, p_rhs );
+			}
+
+			template<typename T>
+			static inline auto castMat3( const T & p_value )
+			{
+				return glm::mat3_cast( p_value );
+			}
+
+			template<typename T>
+			static inline T radians( const T & p_value )
+			{
+				return glm::radians( p_value );
+			}
+
+			template<typename T>
+			static inline auto perspective( const T p_fov, const T p_aspect, const T p_near, const T p_far )
+			{
+				return glm::perspective( p_fov, p_aspect, p_near, p_far );
+			}
+
+			template<typename T>
+			static inline std::string to_string( const T & p_value )
+			{
+				return glm::to_string( p_value );
+			}
+
+			template<typename T>
+			static inline auto value_ptr( const T & p_value )
+			{
+				return glm::value_ptr( p_value );
 			}
 
 			static inline float randomInterpolant() { return dis( gen ); }
@@ -42,7 +128,7 @@ namespace VTX
 				return Vec3f( randomInterpolant(), randomInterpolant(), randomInterpolant() );
 			}
 
-			static inline Quatd eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
+			static inline Quatd eulerToQuaternion( const Vec3f & p_angles ) { return Quatd( p_angles ); }
 
 			static inline Quatd eulerToQuaternion( const double p_pitch, const double p_yaw, const double p_roll )
 			{
@@ -100,7 +186,7 @@ namespace VTX
 			}
 
 			template<typename T>
-			static inline T lerp( const T & p_lhs, const T & p_rhs, const float p_value )
+			static inline T linearInterpolation( const T & p_lhs, const T & p_rhs, const float p_value )
 			{
 				return glm::lerp( p_lhs, p_rhs, p_value );
 			}

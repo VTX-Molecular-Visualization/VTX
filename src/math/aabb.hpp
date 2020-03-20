@@ -6,6 +6,7 @@
 #endif
 
 #include "define.hpp"
+#include "util/math.hpp"
 
 namespace VTX
 {
@@ -29,7 +30,7 @@ namespace VTX
 			void translate( const Vec3f & );
 
 			Vec3f getCenter() const { return ( _min + _max ) * 0.5f; }
-			float getRadius() const { return glm::length( _max - _min ) * 0.5f; }
+			float getRadius() const { return Util::Math::length( _max - _min ) * 0.5f; }
 
 		  private:
 			Vec3f _min = Vec3f( FLT_MAX );

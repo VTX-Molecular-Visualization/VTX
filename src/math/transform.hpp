@@ -7,6 +7,7 @@
 
 #include "define.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "util/math.hpp"
 
 namespace VTX
 {
@@ -45,7 +46,7 @@ namespace VTX
 
 			inline void Transform::translate( const Vec3f & p_vec )
 			{
-				_translation = glm::translate( _translation, p_vec );
+				_translation = Util::Math::translate( _translation, p_vec );
 				update();
 			}
 
@@ -71,7 +72,7 @@ namespace VTX
 
 			inline void Transform::rotate( const float p_angle, const Vec3f & p_axis )
 			{
-				_rotation = glm::rotate( _rotation, p_angle, p_axis );
+				_rotation = Util::Math::rotate( _rotation, p_angle, p_axis );
 				update();
 			}
 
@@ -95,7 +96,7 @@ namespace VTX
 
 			inline void Transform::scale( const Vec3f & p_vec )
 			{
-				_scale = glm::scale( _scale, p_vec );
+				_scale = Util::Math::scale( _scale, p_vec );
 				update();
 			}
 

@@ -45,13 +45,13 @@ namespace VTX
 					// sample on unit hemisphere
 					Vec3f v(
 						dist( gen ) * 2.f - 1.f, dist( gen ) * 2.f - 1.f, dist( gen ) ); // Vec3f([-1;1],[-1;1],[0;1])
-					v = glm::normalize( v );
-					if ( glm::dot( VEC3F_Z, v ) < 0.15 ) continue;
+					v = Util::Math::normalize( v );
+					if ( Util::Math::dot( VEC3F_Z, v ) < 0.15 ) continue;
 					// scale sample within the hemisphere
 					v *= dist( gen );
 					// accelerating interpolation (distance from center reduces when number of points grow up)
 					float scale = float( i ) / float( _kernelSize );
-					scale		= glm::lerp( 0.1f, 1.f, scale * scale );
+					scale		= Util::Math::linearInterpolation( 0.1f, 1.f, scale * scale );
 					v *= scale;
 					aoKernel[ i ] = v;
 					i++;
@@ -70,7 +70,7 @@ namespace VTX
 				{
 					noise[ i ]
 						= Vec3f( dist( gen ) * 2.f - 1.f, dist( gen ) * 2.f - 1.f, 0.f ); // Vec3f([-1;1],[-1;1],0)
-					noise[ i ] = glm::normalize( noise[ i ] );
+					noise[ i ] = Util::Math::normalize( noise[ i ] );
 				}
 				glGenTextures( 1, &_noiseTexture );
 				glBindTexture( GL_TEXTURE_2D, _noiseTexture );
@@ -117,8 +117,10 @@ namespace VTX
 				glUniform1f( _uAoRadiusLoc, Setting::Rendering::aoRadius );
 				glUniform1i( _uAoIntensityLoc, Setting::Rendering::aoIntensity );
 
-				glUniformMatrix4fv(
-					_uProjMatrixLoc, 1, GL_FALSE, glm::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
+				glUniformMatrix4fv( _uProjMatrixLoc,
+									1,
+									GL_FALSE,
+									Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );
 				glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );

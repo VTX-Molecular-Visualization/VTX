@@ -22,7 +22,7 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				_molecule.setFPS( glm::max<int>( 0, glm::min<int>( _fps, _molecule.getFrameCount() - 1 ) ) );
+				_molecule.setFPS( Util::Math::clamp( _fps, 0, (int)_molecule.getFrameCount() - 1 ) );
 			}
 
 		  private:

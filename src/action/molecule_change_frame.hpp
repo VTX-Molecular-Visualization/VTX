@@ -22,7 +22,7 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				_molecule.setFrame( glm::max<int>( 0, glm::min<int>( _frame, _molecule.getFrameCount() - 1 ) ) );
+				_molecule.setFrame( Util::Math::clamp( _frame, 0, (int)_molecule.getFrameCount() - 1 ) );
 			}
 
 		  private:
