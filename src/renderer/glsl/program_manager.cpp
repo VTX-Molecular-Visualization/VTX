@@ -1,6 +1,7 @@
 #include "program_manager.hpp"
 #include "define.hpp"
 #include "exception.hpp"
+#include "util/logger.hpp"
 #include <vector>
 
 namespace VTX

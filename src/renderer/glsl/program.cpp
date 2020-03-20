@@ -1,5 +1,6 @@
 #include "program.hpp"
 #include "define.hpp"
+#include "util/logger.hpp"
 #include <iostream>
 #include <vector>
 
@@ -90,5 +91,5 @@ namespace VTX
 				return std::string( log.begin(), log.end() );
 			}
 		} // namespace GLSL
-	} // namespace Renderer
+	}	  // namespace Renderer
 } // namespace VTX

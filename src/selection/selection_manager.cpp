@@ -1,4 +1,5 @@
 #include "selection_manager.hpp"
+#include "util/logger.hpp"
 #include <string>
 
 namespace VTX

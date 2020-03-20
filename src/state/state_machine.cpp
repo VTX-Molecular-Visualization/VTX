@@ -5,6 +5,7 @@
 #include "generic/factory.hpp"
 #include "load.hpp"
 #include "play.hpp"
+#include "util/logger.hpp"
 #include "visualization.hpp"
 
 namespace VTX

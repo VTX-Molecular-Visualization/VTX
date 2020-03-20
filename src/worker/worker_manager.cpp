@@ -1,5 +1,6 @@
 #include "worker_manager.hpp"
 #include "define.hpp"
+#include "util/logger.hpp"
 #include <thread>
 
 namespace VTX

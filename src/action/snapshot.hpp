@@ -6,6 +6,7 @@
 #endif
 
 #include "base_action.hpp"
+#include "util/logger.hpp"
 #include "util/time.hpp"
 #include "worker/snapshoter.hpp"
 

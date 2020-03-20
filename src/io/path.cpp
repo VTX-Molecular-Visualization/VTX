@@ -1,5 +1,6 @@
 #include "path.hpp"
 #include "define.hpp"
+#include "util/logger.hpp"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
