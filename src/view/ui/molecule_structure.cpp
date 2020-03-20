@@ -20,17 +20,17 @@ namespace VTX
 				if ( ImGui::BeginPopupContextItem() )
 				{
 					if ( ImGui::MenuItem( LOCALE( "View.Delete" ) ) )
-					{ VTXApp::get().getActionManager().execute( new Action::MoleculeDelete( _getModel() ) ); }
+					{ VTX_ACTION( new Action::MoleculeDelete( _getModel() ) ); }
 					ImGui::EndPopup();
 				}
 				if ( ImGui::IsItemClicked() )
 				{
 					if ( moleculeOpened )
-					{ VTXApp::get().getActionManager().execute( new Action::SelectableUnselect( _getModel() ) ); }
+					{ VTX_ACTION( new Action::SelectableUnselect( _getModel() ) ); }
 
 					else
 					{
-						VTXApp::get().getActionManager().execute( new Action::SelectableSelect( _getModel() ) );
+						VTX_ACTION( new Action::SelectableSelect( _getModel() ) );
 					}
 				}
 				if ( moleculeOpened )
@@ -44,11 +44,11 @@ namespace VTX
 						if ( ImGui::IsItemClicked() )
 						{
 							if ( chainOpened )
-							{ VTXApp::get().getActionManager().execute( new Action::SelectableUnselect( *chain ) ); }
+							{ VTX_ACTION( new Action::SelectableUnselect( *chain ) ); }
 
 							else
 							{
-								VTXApp::get().getActionManager().execute( new Action::SelectableSelect( *chain ) );
+								VTX_ACTION( new Action::SelectableSelect( *chain ) );
 							}
 						}
 						if ( chainOpened )
@@ -66,12 +66,12 @@ namespace VTX
 								{
 									if ( residueOpened )
 									{
-										VTXApp::get().getActionManager().execute(
+										VTX_ACTION(
 											new Action::SelectableUnselect( residue ) );
 									}
 									else
 									{
-										VTXApp::get().getActionManager().execute(
+										VTX_ACTION(
 											new Action::SelectableSelect( residue ) );
 									}
 								}
@@ -91,12 +91,12 @@ namespace VTX
 										{
 											if ( atom.isSelected() )
 											{
-												VTXApp::get().getActionManager().execute(
+												VTX_ACTION(
 													new Action::SelectableUnselect( atom ) );
 											}
 											else
 											{
-												VTXApp::get().getActionManager().execute(
+												VTX_ACTION(
 													new Action::SelectableSelect( atom ) );
 											}
 										}

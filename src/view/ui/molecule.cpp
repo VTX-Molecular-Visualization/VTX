@@ -37,29 +37,29 @@ namespace VTX
 							if ( ImGui::SliderInt(
 									 LOCALE( "View.Frame" ), &frame, 0, _getModel().getFrameCount() - 1 ) )
 							{
-								VTXApp::get().getActionManager().execute(
+								VTX_ACTION(
 									new Action::MoleculeChangeFrame( _getModel(), frame ) );
 							}
 							if ( ImGui::InputInt( LOCALE( "##FrameInput" ), &frame, 1 ) )
 							{
-								VTXApp::get().getActionManager().execute(
+								VTX_ACTION(
 									new Action::MoleculeChangeFrame( _getModel(), frame ) );
 							}
 							bool isPlaying = _getModel().isPlaying();
 							if ( ImGui::Checkbox( LOCALE( "View.Play" ), &isPlaying ) )
 							{
-								VTXApp::get().getActionManager().execute(
+								VTX_ACTION(
 									new Action::MoleculeChangeIsPlaying( _getModel(), isPlaying ) );
 							}
 							int fps = _getModel().getFPS();
 							if ( ImGui::SliderInt( LOCALE( "View.FPS" ), &fps, 0, _getModel().getFrameCount() - 1 ) )
 							{
-								VTXApp::get().getActionManager().execute(
+								VTX_ACTION(
 									new Action::MoleculeChangeFPS( _getModel(), fps ) );
 							}
 							if ( ImGui::InputInt( LOCALE( "##FPSInput" ), &fps, 1 ) )
 							{
-								VTXApp::get().getActionManager().execute(
+								VTX_ACTION(
 									new Action::MoleculeChangeFPS( _getModel(), fps ) );
 							}
 						}
@@ -71,7 +71,7 @@ namespace VTX
 						float t[]		  = { translation.x, translation.y, translation.z };
 						if ( ImGui::InputFloat3( LOCALE( "View.Transform.Position" ), t, 2 ) )
 						{
-							VTXApp::get().getActionManager().execute( new Action::TransformableSetTranslation(
+							VTX_ACTION( new Action::TransformableSetTranslation(
 								_getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
 						}
 						ImGui::PopID();
@@ -81,7 +81,7 @@ namespace VTX
 						float r[]	   = { rotation.x, rotation.y, rotation.z };
 						if ( ImGui::InputFloat3( LOCALE( "View.Transform.Rotation" ), t, 2 ) )
 						{
-							// VTXApp::get().getActionManager().execute(
+							// VTX_ACTION(
 							//	new Action::TransformableRotate( _getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
 						}
 						ImGui::PopID();
@@ -91,7 +91,7 @@ namespace VTX
 						float s		= scale.x;
 						if ( ImGui::InputFloat( LOCALE( "View.Transform.Scale" ), &s, 1.f ) )
 						{
-							VTXApp::get().getActionManager().execute(
+							VTX_ACTION(
 								new Action::TransformableSetScale( _getModel(), s ) );
 						}
 						ImGui::PopID();
@@ -101,9 +101,9 @@ namespace VTX
 						Vec3f color = _getModel().getColor();
 						if ( ImGui::ColorEdit3( LOCALE( "View.Color" ), (float *)&color ) )
 						{
-							VTXApp::get().getActionManager().execute(
+							VTX_ACTION(
 								new Action::ColorableChangeColor( _getModel(), color ) );
-							VTXApp::get().getActionManager().execute(
+							VTX_ACTION(
 								new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN ) );
 						}
 					}

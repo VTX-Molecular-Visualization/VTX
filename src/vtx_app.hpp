@@ -77,6 +77,16 @@ namespace VTX
 
 		void _update();
 	};
+
+	inline void VTX_EVENT( VTX::Event::VTXEvent * const p_event )
+	{
+		VTXApp::get().getEventManager().fireEvent( p_event );
+	}
+	inline void VTX_ACTION( VTX::Action::BaseAction * const p_action )
+	{
+		VTXApp::get().getActionManager().execute( p_action );
+	}
+	inline void VTX_ACTION( std::string & p_action ) { VTXApp::get().getActionManager().execute( p_action ); }
 } // namespace VTX
 
 #endif

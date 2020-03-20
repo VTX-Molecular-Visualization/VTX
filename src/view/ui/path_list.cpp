@@ -19,11 +19,11 @@ namespace VTX
 				if ( ImGui::IsItemClicked() )
 				{
 					if ( pathOpened )
-					{ VTXApp::get().getActionManager().execute( new Action::SelectableUnselect( _getModel() ) ); }
+					{ VTX_ACTION( new Action::SelectableUnselect( _getModel() ) ); }
 
 					else
 					{
-						VTXApp::get().getActionManager().execute( new Action::SelectableSelect( _getModel() ) );
+						VTX_ACTION( new Action::SelectableSelect( _getModel() ) );
 					}
 				}
 				if ( pathOpened )
@@ -38,17 +38,17 @@ namespace VTX
 												  + std::string( "s" ) )
 													.c_str() ) )
 						{
-							VTXApp::get().getActionManager().execute(
+							VTX_ACTION(
 								new Action::ViewpointGoTo( *viewpoint, VTXApp::get().getScene().getCamera() ) );
 
 							if ( viewpoint->isSelected() )
 							{
-								VTXApp::get().getActionManager().execute(
+								VTX_ACTION(
 									new Action::SelectableUnselect( *viewpoint ) );
 							}
 							else
 							{
-								VTXApp::get().getActionManager().execute( new Action::SelectableSelect( *viewpoint ) );
+								VTX_ACTION( new Action::SelectableSelect( *viewpoint ) );
 							}
 						}
 						ImGui::PopID();

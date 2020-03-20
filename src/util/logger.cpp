@@ -30,10 +30,7 @@ namespace VTX
 #endif
 
 			if ( VTXApp::isRunning() )
-			{
-				VTXApp::get().getEventManager().fireEvent(
-					new Event::VTXEventLog( Event::Global::LOG_CONSOLE, level, date, message ) );
-			}
+			{ VTX_EVENT( new Event::VTXEventLog( Event::Global::LOG_CONSOLE, level, date, message ) ); }
 
 #ifdef LOG_LEVEL
 			if ( LOG_LEVEL > p_level ) return;

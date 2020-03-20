@@ -44,5 +44,6 @@ namespace VTX
 			void _flushEvent( VTXEvent * );
 		};
 	} // namespace Event
+
 } // namespace VTX
 #endif

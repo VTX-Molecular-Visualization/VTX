@@ -44,8 +44,7 @@ namespace VTX
 				float progress = 0.f;
 				if ( p_dltotal > 0.f ) { progress = (float)p_dlnow / (float)p_dltotal; }
 
-				VTXApp::get().getEventManager().fireEvent(
-					new Event::VTXEventFloat( Event::Global::UPDATE_PROGRESS_BAR, progress ) );
+				VTX_EVENT( new Event::VTXEventFloat( Event::Global::UPDATE_PROGRESS_BAR, progress ) );
 
 				return 0;
 			}

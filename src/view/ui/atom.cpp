@@ -20,9 +20,9 @@ namespace VTX
 					Vec3f color = _getModel().getColor();
 					if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
 					{
-						VTXApp::get().getActionManager().execute(
+						VTX_ACTION(
 							new Action::ColorableChangeColor( _getModel(), color ) );
-						VTXApp::get().getActionManager().execute(
+						VTX_ACTION(
 							new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::ATOM ) );
 					}
 				}
