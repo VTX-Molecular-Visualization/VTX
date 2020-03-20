@@ -1,5 +1,4 @@
 #include "load.hpp"
-#include "action/select.hpp"
 #include "io/path_fake.hpp"
 #include "io/reader/arc.hpp"
 #include "io/reader/mmtf.hpp"

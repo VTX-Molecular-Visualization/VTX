@@ -1,6 +1,6 @@
 #include "path_list.hpp"
-#include "action/select.hpp"
-#include "action/unselect.hpp"
+#include "action/selectable_select.hpp"
+#include "action/selectable_unselect.hpp"
 #include "action/viewpoint_goto.hpp"
 #include "setting.hpp"
 #include <string>
@@ -19,11 +19,11 @@ namespace VTX
 				if ( ImGui::IsItemClicked() )
 				{
 					if ( pathOpened )
-					{ VTXApp::get().getActionManager().execute( new Action::Unselect( _getModel() ) ); }
+					{ VTXApp::get().getActionManager().execute( new Action::SelectableUnselect( _getModel() ) ); }
 
 					else
 					{
-						VTXApp::get().getActionManager().execute( new Action::Select( _getModel() ) );
+						VTXApp::get().getActionManager().execute( new Action::SelectableSelect( _getModel() ) );
 					}
 				}
 				if ( pathOpened )
@@ -41,10 +41,13 @@ namespace VTX
 								new Action::ViewpointGoTo( *viewpoint, VTXApp::get().getScene().getCamera() ) );
 
 							if ( viewpoint->isSelected() )
-							{ VTXApp::get().getActionManager().execute( new Action::Unselect( *viewpoint ) ); }
+							{
+								VTXApp::get().getActionManager().execute(
+									new Action::SelectableUnselect( *viewpoint ) );
+							}
 							else
 							{
-								VTXApp::get().getActionManager().execute( new Action::Select( *viewpoint ) );
+								VTXApp::get().getActionManager().execute( new Action::SelectableSelect( *viewpoint ) );
 							}
 						}
 						ImGui::PopID();

@@ -1,5 +1,5 @@
 #include "scene.hpp"
-#include "action/select.hpp"
+#include "action/transformable_rotate.hpp"
 #include "generic/factory.hpp"
 #include "math/transform.hpp"
 #include "setting.hpp"
@@ -22,12 +22,15 @@ namespace VTX
 
 		void Scene::update( const double p_deltaTime )
 		{
-			// TOCHECK: Store BaseTransformable? Object3D super class?
-			for ( MoleculePtr molecule : _molecules )
+			// TOCHECK: do that in state or in scene?
+			for ( MoleculePtr const molecule : _molecules )
 			{
-				molecule->rotate( (float)p_deltaTime * Setting::Controller::autoRotateSpeed.x, VEC3F_X );
-				molecule->rotate( (float)p_deltaTime * Setting::Controller::autoRotateSpeed.y, VEC3F_Y );
-				molecule->rotate( (float)p_deltaTime * Setting::Controller::autoRotateSpeed.z, VEC3F_Z );
+				VTXApp::get().getActionManager().execute( new Action::TransformableRotate(
+					*molecule, (float)p_deltaTime * Setting::Controller::autoRotateSpeed.x, VEC3F_X ) );
+				VTXApp::get().getActionManager().execute( new Action::TransformableRotate(
+					*molecule, (float)p_deltaTime * Setting::Controller::autoRotateSpeed.y, VEC3F_Y ) );
+				VTXApp::get().getActionManager().execute( new Action::TransformableRotate(
+					*molecule, (float)p_deltaTime * Setting::Controller::autoRotateSpeed.z, VEC3F_Z ) );
 			}
 		}
 

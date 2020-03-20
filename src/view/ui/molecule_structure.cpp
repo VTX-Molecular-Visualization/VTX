@@ -1,8 +1,8 @@
 #include "molecule_structure.hpp"
 #include "action/action_manager.hpp"
 #include "action/molecule_delete.hpp"
-#include "action/select.hpp"
-#include "action/unselect.hpp"
+#include "action/selectable_select.hpp"
+#include "action/selectable_unselect.hpp"
 #include "setting.hpp"
 
 namespace VTX
@@ -26,11 +26,11 @@ namespace VTX
 				if ( ImGui::IsItemClicked() )
 				{
 					if ( moleculeOpened )
-					{ VTXApp::get().getActionManager().execute( new Action::Unselect( _getModel() ) ); }
+					{ VTXApp::get().getActionManager().execute( new Action::SelectableUnselect( _getModel() ) ); }
 
 					else
 					{
-						VTXApp::get().getActionManager().execute( new Action::Select( _getModel() ) );
+						VTXApp::get().getActionManager().execute( new Action::SelectableSelect( _getModel() ) );
 					}
 				}
 				if ( moleculeOpened )
@@ -44,11 +44,11 @@ namespace VTX
 						if ( ImGui::IsItemClicked() )
 						{
 							if ( chainOpened )
-							{ VTXApp::get().getActionManager().execute( new Action::Unselect( *chain ) ); }
+							{ VTXApp::get().getActionManager().execute( new Action::SelectableUnselect( *chain ) ); }
 
 							else
 							{
-								VTXApp::get().getActionManager().execute( new Action::Select( *chain ) );
+								VTXApp::get().getActionManager().execute( new Action::SelectableSelect( *chain ) );
 							}
 						}
 						if ( chainOpened )
@@ -65,10 +65,14 @@ namespace VTX
 								if ( ImGui::IsItemClicked() )
 								{
 									if ( residueOpened )
-									{ VTXApp::get().getActionManager().execute( new Action::Unselect( residue ) ); }
+									{
+										VTXApp::get().getActionManager().execute(
+											new Action::SelectableUnselect( residue ) );
+									}
 									else
 									{
-										VTXApp::get().getActionManager().execute( new Action::Select( residue ) );
+										VTXApp::get().getActionManager().execute(
+											new Action::SelectableSelect( residue ) );
 									}
 								}
 								if ( residueOpened )
@@ -88,11 +92,12 @@ namespace VTX
 											if ( atom.isSelected() )
 											{
 												VTXApp::get().getActionManager().execute(
-													new Action::Unselect( atom ) );
+													new Action::SelectableUnselect( atom ) );
 											}
 											else
 											{
-												VTXApp::get().getActionManager().execute( new Action::Select( atom ) );
+												VTXApp::get().getActionManager().execute(
+													new Action::SelectableSelect( atom ) );
 											}
 										}
 										ImGui::PopID();

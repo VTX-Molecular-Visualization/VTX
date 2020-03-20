@@ -2,7 +2,7 @@
 #include "action/change_color_mode.hpp"
 #include "action/colorable_change_color.hpp"
 #include "action/molecule_change_frame.hpp"
-#include "action/scale.hpp"
+#include "action/transformable_scale.hpp"
 #include "action/transformable_translate.hpp"
 #include "vtx_app.hpp"
 #include <glm/gtx/euler_angles.hpp>
@@ -53,7 +53,10 @@ namespace VTX
 						float s		= scale.x;
 						ImGui::PushID( "Scale" );
 						if ( ImGui::InputFloat( LOCALE( "View.Transform.Scale" ), &s, 1.f ) )
-						{ VTXApp::get().getActionManager().execute( new Action::Scale( _getModel(), s ) ); }
+						{
+							VTXApp::get().getActionManager().execute(
+								new Action::TransformableScale( _getModel(), s ) );
+						}
 						ImGui::PopID();
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Color" ) ) )

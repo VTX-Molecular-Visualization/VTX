@@ -1,5 +1,5 @@
-#ifndef __VTX_ACTION_SELECT__
-#define __VTX_ACTION_SELECT__
+#ifndef __VTX_ACTION_SELECTABLE_SELECT__
+#define __VTX_ACTION_SELECTABLE_SELECT__
 
 #ifdef _MSC_VER
 #pragma once
@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class Select : public BaseAction
+		class SelectableSelect : public BaseAction
 		{
 		  public:
-			Select( Selection::BaseSelectable & p_selectable ) : _selectable( p_selectable ) {};
+			SelectableSelect( Selection::BaseSelectable & p_selectable ) : _selectable( p_selectable ) {};
 			virtual void execute() override { VTXApp::get().getSelectionManager().select( &_selectable ); };
 
 		  private:
