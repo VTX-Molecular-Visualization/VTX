@@ -100,9 +100,13 @@ target_include_directories(VTX PRIVATE ${PATH_LIB}/chemfiles/include)
 if(CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(VTX PRIVATE "-Wall -Wextra")
 elseif(MSVC)
+	#General.
     target_compile_options(VTX PRIVATE "/W3")  # Warning level 3.
 	target_compile_options(VTX PRIVATE "/WX")  # Warnings as errors.
 	target_compile_options(VTX PRIVATE "/MP")  # Multicore compilation.
-	target_compile_options(VTX PRIVATE "/Ot")  # Speed.
 	target_compile_options(VTX PRIVATE "/sdl") # SDL check.
+	#Optimizaion.
+	target_compile_options(VTX PRIVATE "/Ot")  # Favor speed.
+	#Code Generation.
+	target_compile_options(VTX PRIVATE "/fp:fast") # Floating Point Model.
 endif()
