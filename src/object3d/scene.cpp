@@ -28,6 +28,7 @@ namespace VTX
 			// Dynamic.
 			for ( MoleculePtr const molecule : _molecules )
 			{
+				if ( molecule->isPlaying() == false ) { break; }
 				uint currentFrame = molecule->getCurrentFrame();
 				uint nextFrame	  = molecule->getNextFrame( float( p_deltaTime ) );
 				if ( nextFrame != currentFrame ) { molecule->setFrame( nextFrame ); }
