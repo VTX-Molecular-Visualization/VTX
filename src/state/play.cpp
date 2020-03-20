@@ -39,8 +39,12 @@ namespace VTX
 			// Loop.
 			if ( _time >= _path->getDuration() )
 			{
-				VTXApp::get().goToState( ID::State::VISUALIZATION );
-				return;
+				if ( _path->isLooping() ) { _time = 0.f; }
+				else
+				{
+					VTXApp::get().goToState( ID::State::VISUALIZATION );
+					return;
+				}
 			}
 
 			_setCamera();

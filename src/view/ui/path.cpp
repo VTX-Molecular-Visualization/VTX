@@ -2,6 +2,7 @@
 #include "action/path_change_duration.hpp"
 #include "action/path_change_duration_mode.hpp"
 #include "action/path_change_interpolation_mode.hpp"
+#include "action/path_change_is_looping.hpp"
 #include "action/path_play.hpp"
 #include "action/viewpoint_create.hpp"
 #include "vtx_app.hpp"
@@ -63,6 +64,13 @@ namespace VTX
 					ImGui::SameLine();
 					if ( ImGui::Button( LOCALE( "View.Stop" ) ) )
 					{ VTXApp::get().goToState( ID::State::VISUALIZATION ); }
+					ImGui::SameLine();
+					bool isLooping = _getModel().isLooping();
+					if ( ImGui::Checkbox( LOCALE( "View.Loop" ), &isLooping ) )
+					{
+						VTXApp::get().getActionManager().execute(
+							new Action::PathChangeIsLooping( _getModel(), isLooping ) );
+					}
 					if ( ImGui::Button( LOCALE( "View.Viewpoint.Add" ) ) )
 					{
 						VTXApp::get().getActionManager().execute(

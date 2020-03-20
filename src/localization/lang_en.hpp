@@ -78,6 +78,7 @@ namespace VTX
 			{ "View.Data", "Data" },
 			{ "View.Play", "Play" },
 			{ "View.Stop", "Stop" },
+			{ "View.Loop", "Loop" },
 			{ "View.Path", "Path" },
 			{ "View.Replace", "Replace" },
 			{ "View.Delete", "Delete" },

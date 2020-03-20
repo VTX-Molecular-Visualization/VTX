@@ -52,6 +52,8 @@ namespace VTX
 			inline void				   setDurationMode( const DURATION_MODE p_mode ) { _modeDuration = p_mode; }
 			inline INNTERPOLATION_MODE getInterpolationMode() const { return _modeInterpolation; }
 			inline void		 setInterpolationMode( const INNTERPOLATION_MODE p_mode ) { _modeInterpolation = p_mode; }
+			inline bool		 isLooping() const { return _isLooping; }
+			inline void		 setIsLooping( const bool p_isLooping ) { _isLooping = p_isLooping; }
 			void			 refreshAllDurations();
 			Model::Viewpoint getInterpolatedViewpoint( float p_time ) const;
 
@@ -69,6 +71,7 @@ namespace VTX
 			DURATION_MODE		_modeDuration	   = DURATION_MODE::CONSTANT_SPEED;
 			INNTERPOLATION_MODE _modeInterpolation = INNTERPOLATION_MODE::LINEAR;
 			float				_duration		   = PATH_DEFAULT_DURATION;
+			bool				_isLooping		   = false;
 		};
 	} // namespace Model
 } // namespace VTX
