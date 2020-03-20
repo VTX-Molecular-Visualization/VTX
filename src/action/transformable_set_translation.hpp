@@ -1,5 +1,5 @@
-#ifndef __VTX_ACTION_TRANSFORMABLE_TRANSLATE__
-#define __VTX_ACTION_TRANSFORMABLE_TRANSLATE__
+#ifndef __VTX_ACTION_TRANSFORMABLE_SET_TRANSLATION__
+#define __VTX_ACTION_TRANSFORMABLE_SET_TRANSLATION__
 
 #ifdef _MSC_VER
 #pragma once
@@ -13,11 +13,11 @@ namespace VTX
 {
 	namespace Action
 	{
-		class TransformableTranslate : public BaseActionUndonable
+		class TransformableSetTranslation : public BaseActionUndonable
 		{
 		  public:
-			explicit TransformableTranslate( Generic::BaseTransformable & p_transformable,
-											 const Vec3f &				  p_translation ) :
+			explicit TransformableSetTranslation( Generic::BaseTransformable & p_transformable,
+												  const Vec3f &				   p_translation ) :
 				_transformable( p_transformable ),
 				_translation( p_translation ), _translationOld( p_transformable.getTransform().getTranslation() )
 			{

@@ -59,9 +59,7 @@ namespace VTX
 
 			inline void Transform::setTranslation( const Vec3f & p_vec )
 			{
-				_translation[ 3 ][ 0 ] = p_vec.x;
-				_translation[ 3 ][ 1 ] = p_vec.y;
-				_translation[ 3 ][ 2 ] = p_vec.z;
+				setTranslation( p_vec.x, p_vec.y, p_vec.z );
 				update();
 			}
 
@@ -74,6 +72,18 @@ namespace VTX
 			inline void Transform::rotate( const float p_angle, const Vec3f & p_axis )
 			{
 				_rotation = glm::rotate( _rotation, p_angle, p_axis );
+				update();
+			}
+
+			inline void Transform::setRotation( const float p_x, const float p_y, const float p_z )
+			{
+				// TODO
+				update();
+			}
+
+			inline void Transform::setRotation( const Vec3f & p_vec )
+			{
+				setRotation( p_vec.x, p_vec.y, p_vec.z );
 				update();
 			}
 

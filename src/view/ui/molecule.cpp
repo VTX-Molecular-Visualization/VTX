@@ -2,8 +2,9 @@
 #include "action/change_color_mode.hpp"
 #include "action/colorable_change_color.hpp"
 #include "action/molecule_change_frame.hpp"
-#include "action/transformable_scale.hpp"
-#include "action/transformable_translate.hpp"
+#include "action/transformable_rotate.hpp"
+#include "action/transformable_set_scale.hpp"
+#include "action/transformable_set_translation.hpp"
 #include "vtx_app.hpp"
 #include <glm/gtx/euler_angles.hpp>
 
@@ -45,17 +46,28 @@ namespace VTX
 						float t[]		  = { translation.x, translation.y, translation.z };
 						if ( ImGui::InputFloat3( LOCALE( "View.Transform.Position" ), t, 2 ) )
 						{
-							VTXApp::get().getActionManager().execute(
-								new Action::TransformableTranslate( _getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
+							VTXApp::get().getActionManager().execute( new Action::TransformableSetTranslation(
+								_getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
 						}
 						ImGui::PopID();
+						/*
+						ImGui::PushID( "Rotation" );
+						Vec3f rotation = _getModel().getTransform().getRotationVector();
+						float r[]	   = { rotation.x, rotation.y, rotation.z };
+						if ( ImGui::InputFloat3( LOCALE( "View.Transform.Rotation" ), t, 2 ) )
+						{
+							// VTXApp::get().getActionManager().execute(
+							//	new Action::TransformableRotate( _getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
+						}
+						ImGui::PopID();
+						*/
+						ImGui::PushID( "Scale" );
 						Vec3f scale = _getModel().getTransform().getScaleVector();
 						float s		= scale.x;
-						ImGui::PushID( "Scale" );
 						if ( ImGui::InputFloat( LOCALE( "View.Transform.Scale" ), &s, 1.f ) )
 						{
 							VTXApp::get().getActionManager().execute(
-								new Action::TransformableScale( _getModel(), s ) );
+								new Action::TransformableSetScale( _getModel(), s ) );
 						}
 						ImGui::PopID();
 					}
