@@ -25,7 +25,7 @@ namespace VTX
 			VTX_INFO( "Initializing renderer..." );
 
 			// Set size.
-			BaseRenderer::resize( _width, _height );
+			BaseRenderer::resize( p_width, p_height );
 
 			// Init pass.
 			_passGeometric->init( _programManager, p_width, p_height );
@@ -179,7 +179,7 @@ namespace VTX
 			glBindVertexArray( 0 );
 		}
 
-		void GL::render( const Object3D::Scene & p_scene )
+		void GL::renderFrame( const Object3D::Scene & p_scene )
 		{
 			glEnable( GL_DEPTH_TEST );
 			_passGeometric->render( p_scene, *this );

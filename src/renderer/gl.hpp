@@ -23,7 +23,7 @@ namespace VTX
 			~GL();
 
 			virtual void init( const uint, const uint ) override;
-			virtual void render( const Object3D::Scene & ) override;
+			virtual void renderFrame( const Object3D::Scene & ) override;
 			virtual void setShading() override;
 			virtual void resize( const uint, const uint ) override;
 

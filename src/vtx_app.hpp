@@ -36,7 +36,7 @@ namespace VTX
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
-		void renderScene() const { _renderer->render( *_scene ); }
+		void renderScene() const { _renderer->renderFrame( *_scene ); }
 
 		inline Object3D::Scene &					  getScene() { return *_scene; }
 		inline const Object3D::Scene &				  getScene() const { return *_scene; }

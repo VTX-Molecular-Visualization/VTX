@@ -10,6 +10,7 @@
 #include "util/logger.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <limits>
 #include <string>
 
 namespace VTX
@@ -21,6 +22,7 @@ namespace VTX
 	using Vec2f = glm::vec2;
 	using Vec2i = glm::ivec2;
 	using Vec3f = glm::vec3;
+	using Vec3i = glm::ivec3;
 	using Vec3d = glm::dvec3;
 	using Vec4f = glm::vec4;
 
@@ -122,7 +124,13 @@ namespace VTX
 	inline const char * LOCALE( const char * p_str ) { return VTX::Localization::Language::text( p_str ); }
 
 	// Constants.
-	const Mat4f MAT4F_ID = Mat4f( 1.f );
+	const float FLOAT_MIN = std::numeric_limits<float>::lowest();
+	const float FLOAT_MAX = std::numeric_limits<float>::max();
+
+	const float PIf		= glm::pi<float>();
+	const float PI_2f	= glm::half_pi<float>();
+	const float PI_32f	= glm::three_over_two_pi<float>();
+	const float INV_PIf = glm::one_over_pi<float>();
 
 	const Vec3f VEC3F_ZERO = Vec3f( 0.f, 0.f, 0.f );
 	const Vec3d VEC3D_ZERO = Vec3d( 0.0, 0.0, 0.0 );
@@ -130,10 +138,10 @@ namespace VTX
 	const Vec3f VEC3F_Y	   = Vec3f( 0.f, 1.f, 0.f );
 	const Vec3f VEC3F_Z	   = Vec3f( 0.f, 0.f, 1.f );
 	const Vec3f VEC3F_XYZ  = Vec3f( 1.f, 1.f, 1.f );
+	const Vec3f VEC3F_MIN  = Vec3f( FLOAT_MIN );
+	const Vec3f VEC3F_MAX  = Vec3f( FLOAT_MAX );
 
-	const float PIf	   = glm::pi<float>();
-	const float PI_2f  = glm::half_pi<float>();
-	const float PI_32f = glm::three_over_two_pi<float>();
+	const Mat4f MAT4F_ID = Mat4f( 1.f );
 
 	static float COLOR_BLACK[ 3 ]	   = { 0.f, 0.f, 0.f };
 	static float COLOR_WHITE[ 3 ]	   = { 1.f, 1.f, 1.f };

@@ -1,4 +1,8 @@
 #include "molecule.hpp"
+#include "renderer/ray_tracing/materials/diffuse_material.hpp"
+#include "renderer/ray_tracing/materials/flat_color_material.hpp"
+#include "renderer/ray_tracing/primitives/cylinder.hpp"
+#include "renderer/ray_tracing/primitives/sphere.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
@@ -32,6 +36,18 @@ namespace VTX
 			Generic::clearVector<Atom>( _atoms );
 			Generic::clearVector<Residue>( _residues );
 			Generic::clearVector<Chain>( _chains );
+
+			// RT clean
+			for ( Renderer::BasePrimitive * prim : _rtPrimitives )
+			{
+				delete prim;
+			}
+			_rtPrimitives.clear();
+			for ( Renderer::BaseMaterial * mtl : _rtMaterials )
+			{
+				delete mtl;
+			}
+			_rtMaterials.clear();
 		}
 
 		void Molecule::init()
@@ -44,6 +60,9 @@ namespace VTX
 
 			// Set color mode.
 			setColorMode();
+
+			// Create RT data
+			_createRTData();
 
 			// Set default representation.
 			setRepresentation();
@@ -166,6 +185,61 @@ namespace VTX
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
 			glBindVertexArray( 0 );
+		}
+
+		void Molecule::_createRTData()
+		{
+			const uint nbAtoms = getAtomCount();
+			const uint nbBonds = getBondCount() / 2;
+			_rtPrimitives.resize( nbAtoms + nbBonds );
+
+			const std::vector<Vec3f> & positions = getAtomPositionFrame( 0 );
+
+			uint idPrimitive = 0;
+			uint cptAtoms	 = 0;
+			uint cptBonds	 = 0;
+
+			_rtMaterials.emplace_back( new Renderer::DiffuseMaterial( VEC3F_XYZ ) );
+
+			// Add atoms and bonds of each residue
+			for ( uint i = 0; i < getResidueCount(); ++i )
+			{
+				// TODO: remove material duplication + only allow chain colors
+				const Model::Residue & r = getResidue( i );
+				_rtMaterials.emplace_back( new Renderer::DiffuseMaterial( r.getChainPtr()->getColor() ) );
+
+				const uint idFirstAtomRes = r.getIdFirstAtom();
+				const uint nbAtomsRes	  = r.getAtomCount();
+				const uint idFirstBondRes = r.getIdFirstBond();
+				const uint nbBondsRes	  = r.getBondCount();
+
+				for ( uint j = idFirstAtomRes; j < idFirstAtomRes + nbAtomsRes; ++j )
+				{
+					_rtPrimitives[ idPrimitive ]
+						= new Renderer::Sphere( positions[ j ], getAtomRadius( j ) * 0.3f, _rtMaterials.back() );
+					idPrimitive++;
+					cptAtoms++;
+				}
+				for ( uint j = idFirstBondRes; j < idFirstBondRes + nbBondsRes * 2; j += 2 )
+				{
+					const Vec3f & a1 = positions[ getBond( j ) ];
+					const Vec3f & a2 = positions[ getBond( j + 1 ) ];
+
+					_rtPrimitives[ idPrimitive ] = new Renderer::Cylinder( a1, a2, 0.2f, _rtMaterials.front() );
+					idPrimitive++;
+					cptBonds++;
+				}
+			}
+
+			// Add bonds out of residues
+			for ( ; cptBonds < nbBonds; cptBonds++ )
+			{
+				const Vec3f & a1 = positions[ getBond( cptBonds * 2 ) ];
+				const Vec3f & a2 = positions[ getBond( cptBonds * 2 + 1 ) ];
+
+				_rtPrimitives[ idPrimitive ] = new Renderer::Cylinder( a1, a2, 0.2f, _rtMaterials.front() );
+				idPrimitive++;
+			}
 		}
 
 		void Molecule::bindBuffers()

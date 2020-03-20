@@ -13,6 +13,8 @@
 #include "generic/base_renderable.hpp"
 #include "generic/base_transformable.hpp"
 #include "math/aabb.hpp"
+#include "renderer/ray_tracing/materials/base_material.hpp"
+#include "renderer/ray_tracing/primitives/base_primitive.hpp"
 #include "residue.hpp"
 #include "util/logger.hpp"
 #include <GL/gl3w.h>
@@ -100,6 +102,7 @@ namespace VTX
 			{
 				_bonds.insert( _bonds.end(), p_bonds.begin(), p_bonds.end() );
 			}
+			inline const uint				 getBond( const uint p_idx ) const { return _bonds[ p_idx ]; }
 			inline const std::vector<uint> & getBonds() const { return _bonds; };
 			inline const uint				 getChainCount() const { return (uint)_chains.size(); }
 			inline const uint				 getResidueCount() const { return (uint)_residues.size(); }
@@ -192,6 +195,16 @@ namespace VTX
 
 			void _createBuffers();
 
+			// ============================================ Ray tracing data
+		  public:
+			const std::vector<Renderer::BasePrimitive *> & getRTPrimitives() const { return _rtPrimitives; }
+
+		  private:
+			std::vector<Renderer::BasePrimitive *> _rtPrimitives;
+			std::vector<Renderer::BaseMaterial *>  _rtMaterials;
+
+			void _createRTData();
+			// ============================================
 #ifdef _DEBUG
 		  public:
 			// Validation.

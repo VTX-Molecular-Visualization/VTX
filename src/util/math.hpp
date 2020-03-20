@@ -25,22 +25,21 @@ namespace VTX
 			static std::mt19937							 gen( RANDOM ? rd() : 7937 );
 			static std::uniform_real_distribution<float> dis( 0.f, 1.f );
 
-			static inline Vec3f min( const Vec3f & a, const Vec3f & b )
+			template<typename T>
+			static inline T min( const T & a, const T & b )
 			{
-				return Vec3f( a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y, a.z < b.z ? a.z : b.z );
+				return glm::min( a, b );
 			}
 
-			static inline Vec3f max( const Vec3f & a, const Vec3f & b )
+			template<typename T>
+			static inline T max( const T & a, const T & b )
 			{
-				return Vec3f( a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y, a.z > b.z ? a.z : b.z );
+				return glm::max( a, b );
 			}
 
-			static inline float randomInterpolant() { return dis( gen ); }
+			static inline float randomFloat() { return dis( gen ); }
 
-			static inline Vec3f randomVec3f()
-			{
-				return Vec3f( randomInterpolant(), randomInterpolant(), randomInterpolant() );
-			}
+			static inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
 			static inline Quatd eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
 
@@ -153,6 +152,28 @@ namespace VTX
 										 const float p_value )
 			{
 				return glm::cubic( p_p0, p_p1, p_p2, p_p3, p_value );
+			}
+
+			// Morton utils
+			static uint leftShift3( uint x )
+			{
+				assert( x <= ( 1 << 10 ) );
+
+				if ( x == ( 1 << 10 ) ) --x;
+				x = ( x | ( x << 16 ) ) & 0x30000ff; // x = ---- --98 ---- ---- ---- ---- 7654 3210
+				x = ( x | ( x << 8 ) ) & 0x300f00f;	 // x = ---- --98 ---- ---- 7654 ---- ---- 3210
+				x = ( x | ( x << 4 ) ) & 0x30c30c3;	 // x = ---- --98 ---- 76-- --54 ---- 32-- --10
+				x = ( x | ( x << 2 ) ) & 0x9249249;	 // x = ---- 9--8 --7- -6-- 5--4 --3- -2-- 1--0return x;
+				return x;
+			}
+
+			static uint encodeMorton3( const Vec3f & v )
+			{
+				assert( v.x >= 0 );
+				assert( v.y >= 0 );
+				assert( v.z >= 0 );
+				return ( leftShift3( uint( v.z ) ) << 2 ) | ( leftShift3( uint( v.y ) ) << 1 )
+					   | leftShift3( uint( v.x ) );
 			}
 		} // namespace Math
 

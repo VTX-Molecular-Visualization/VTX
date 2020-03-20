@@ -48,7 +48,7 @@ namespace VTX
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassSSAO().getSSAOTexture() );
 
 				_blurShader->use();
-				// TODO don't aoRadius update each frame
+				// TODO don't update aoBlurSize each frame
 				glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );
