@@ -11,7 +11,7 @@ namespace VTX
 			Intersection intersection;
 			Vec3f		 Li = VEC3F_ZERO;
 
-			if ( p_scene._bvh.intersect( p_ray, p_tMin, p_tMax, intersection ) )
+			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
 				// create orthonormal basis around around hit normal
 				Mat3f TBN = Util::Math::createOrthonormalBasis( -intersection._normal );
@@ -28,7 +28,7 @@ namespace VTX
 					// transform in local coordinates systems
 					Vec3f aoDir = TBN * sample;
 
-					if ( !p_scene._bvh.intersectAny( Ray( intersection._point, aoDir ), 1e-3f, aoRadius ) )
+					if ( !p_scene.intersectAny( Ray( intersection._point, aoDir ), 1e-3f, aoRadius ) )
 					{
 						// u is cos(theta) <=> dot(n, aoDir)
 						ao += u / pdf;
@@ -37,8 +37,7 @@ namespace VTX
 				ao /= aoSamples;
 				// shade primitive
 				// point light on camera
-				Li += ao * intersection._primitive->getMaterial()->shade( p_ray, intersection, -p_ray.getDirection() )
-					  / Util::Math::max( 1.f, intersection._distance * 0.05f );
+				Li += ao;
 			}
 			else
 			{

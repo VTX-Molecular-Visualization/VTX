@@ -53,7 +53,7 @@ namespace VTX
 		_renderer = new Renderer::GL();
 		_renderer->init( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
-		VTXApp::_isRunning = true;
+		VTXApp::_isRunning = false;
 
 		VTX_INFO( "Application started" );
 
@@ -69,9 +69,9 @@ namespace VTX
 		//_stateMachine->goToState( ID::State::LOADING, &IO::Path( DATA_DIR + "r2d2.obj" ) );
 		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "dhfr2.arc" ) );
 #else
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "173D.mmtf" ) );
+		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "173D.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "3j3q.mmtf" ) );
-		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "4v6x.mmtf" ) );
+		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "4v6x.mmtf" ) );
 		//_stateMachine->goToState( ID::State::VISUALIZATION );
 #endif
 

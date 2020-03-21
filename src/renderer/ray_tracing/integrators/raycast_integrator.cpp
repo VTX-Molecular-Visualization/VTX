@@ -12,7 +12,7 @@ namespace VTX
 			Intersection intersection;
 			Vec3f		 Li = VEC3F_ZERO;
 
-			if ( p_scene._bvh.intersect( p_ray, p_tMin, p_tMax, intersection ) )
+			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
 				// shade primitive
 				// point light on camera

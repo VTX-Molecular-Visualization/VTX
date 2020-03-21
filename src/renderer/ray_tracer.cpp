@@ -1,6 +1,8 @@
 #include "ray_tracer.hpp"
 #include "ray_tracing/integrators/ao_integrator.hpp"
+#include "ray_tracing/integrators/direct_lighting_integrator.hpp"
 #include "ray_tracing/integrators/raycast_integrator.hpp"
+#include "ray_tracing/lights/point_light.hpp"
 #include "ray_tracing/materials/flat_color_material.hpp"
 #include "ray_tracing/primitives/cylinder.hpp"
 #include "ray_tracing/primitives/sphere.hpp"
@@ -63,10 +65,15 @@ namespace VTX
 
 			// TODO: add options for splitMethod and maxPrimsLeaf
 			const uint maxPrimsLeaf = 8;
-			_scene._bvh.build( mol->getRTPrimitives(), maxPrimsLeaf, BVH::SplitMethod::SAH );
+			_scene.buildBVH( mol->getRTPrimitives(), maxPrimsLeaf, BVH::SplitMethod::SAH );
+			_scene.addLight( new PointLight( //
+				VTXApp::get().getScene().getCamera().getPosition() + Vec3f( 1.f, 0.f, -8.f ),
+				VEC3F_XYZ,
+				50.f ) );
 
 			//_integrator = new AOIntegrator;
-			_integrator = new RayCastIntegrator;
+			//_integrator = new RayCastIntegrator;
+			_integrator = new DirectLightingIntegrator;
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -222,7 +229,14 @@ namespace VTX
 
 				const Vec3f Li = _integrator->Li( ray, _scene, 1e-3f, FLOAT_MAX );
 
-				color += Li;
+				// TODO: remove, only to identify the point light (uggly)
+				if ( Sphere( dynamic_cast<PointLight *>( _scene.getLights()[ 0 ] )->_position,
+							 0.3f,
+							 new FlatColorMaterial( Vec3f( 1.f, 1.f, 0.f ) ) )
+						 .intersect( ray, 1e-3f, FLOAT_MAX, Intersection() ) )
+				{ color = Vec3f( 1.f, 1.f, 0.f ); }
+				else
+					color += Li;
 			}
 			return glm::clamp( color / float( p_nbPixelSamples ), VEC3F_ZERO, VEC3F_XYZ );
 		}

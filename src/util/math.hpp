@@ -38,7 +38,7 @@ namespace VTX
 			}
 
 			template<typename T>
-			static inline T dot( const T & a, const T & b )
+			static inline auto dot( const T & a, const T & b )
 			{
 				return glm::dot( a, b );
 			}

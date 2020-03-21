@@ -15,11 +15,24 @@ namespace VTX
 			Intersection intersection;
 			Vec3f		 Li = VEC3F_ZERO;
 
-			if ( p_scene._bvh.intersect( p_ray, p_tMin, p_tMax, intersection ) )
+			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
-				// shade primitive
-				// point light on camera
-				Li = intersection._primitive->getMaterial()->shade( p_ray, intersection, -p_ray.getDirection() );
+				// compute direct lighting from all lights in the scene
+				for ( const BaseLight * light : p_scene.getLights() )
+				{
+					const Vec3f lightDir		   = light->sample( intersection._point );
+					const float lightDistSqr	   = Util::Math::dot( lightDir, lightDir );
+					const float lightDist		   = sqrtf( lightDistSqr );
+					const Vec3f lightDirNormalized = lightDir / lightDist;
+
+					const Ray shadowRay( intersection._point, lightDirNormalized );
+
+					if ( !p_scene.intersectAny( shadowRay, 1e-3f, lightDist ) )
+					{
+						Li += intersection._primitive->getMaterial()->shade( p_ray, intersection, lightDirNormalized )
+							  * light->getColor();
+					}
+				}
 			}
 			else
 			{

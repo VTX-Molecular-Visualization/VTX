@@ -25,7 +25,7 @@ namespace VTX
 
 		  protected:
 			// TODO: static
-			const Vec3f _backgroundColor = VEC3F_ZERO;
+			const Vec3f _backgroundColor = Vec3f( 0.f, 0.7f, 1.f );
 		};
 
 	} // namespace Renderer
