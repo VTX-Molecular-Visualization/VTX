@@ -13,6 +13,11 @@ namespace VTX
 {
 	namespace Renderer
 	{
+		struct Scene
+		{
+			BVH _bvh;
+		};
+
 		class RayTracer : public BaseRenderer
 		{
 			class CameraRayTracing;
@@ -52,8 +57,7 @@ namespace VTX
 			static const uint TILE_SIZE;
 
 			Vec3f _backgroundColor = VEC3F_ZERO;
-
-			BVH _bvh;
+			Scene _scene;
 		};
 	} // namespace Renderer
 } // namespace VTX

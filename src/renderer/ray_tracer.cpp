@@ -61,7 +61,7 @@ namespace VTX
 
 			// TODO: add options for splitMethod and maxPrimsLeaf
 			const uint maxPrimsLeaf = 8;
-			_bvh.build( mol->getRTPrimitives(), maxPrimsLeaf, BVH::SplitMethod::SAH );
+			_scene._bvh.build( mol->getRTPrimitives(), maxPrimsLeaf, BVH::SplitMethod::SAH );
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -145,7 +145,6 @@ namespace VTX
 									  std::atomic<uint> &	   p_nextTileId )
 		{
 			uint taskId = p_threadId;
-
 			while ( taskId < p_nbTiles )
 			{
 				const uint tileY = taskId / p_nbTilesX;
@@ -221,7 +220,7 @@ namespace VTX
 				float		 tMin = 1e-3f;
 				float		 tMax = FLT_MAX;
 				Intersection intersection;
-				if ( _bvh.intersect( ray, tMin, tMax, intersection ) )
+				if ( _scene._bvh.intersect( ray, tMin, tMax, intersection ) )
 				{
 					// create orthonormal basis around around hit normal
 					Mat3f TBN = Util::Math::createOrthonormalBasis( -intersection._normal );
@@ -238,7 +237,7 @@ namespace VTX
 						// transform in local coordinates systems
 						Vec3f aoDir = TBN * sample;
 
-						if ( !_bvh.intersectAny( Ray( intersection._point, aoDir ), tMin, aoRadius ) )
+						if ( !_scene._bvh.intersectAny( Ray( intersection._point, aoDir ), tMin, aoRadius ) )
 						{
 							// u is cos(theta) <=> dot(n, aoDir)
 							ao += u / pdf;
