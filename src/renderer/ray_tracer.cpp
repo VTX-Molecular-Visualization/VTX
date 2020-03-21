@@ -212,10 +212,9 @@ namespace VTX
 				Intersection intersection;
 				if ( _bvh.intersect( ray, tMin, tMax, intersection ) )
 				{
-					// create local coordinates systems around hit normal
-					const Vec3f & n = intersection._normal;
-					Vec3f		  t, b;
-					Util::Math::createOrthonormalBasis( n, t, b );
+					// create orthonormal basis around around hit normal
+					const Vec3f & n	  = intersection._normal;
+					Mat3f		  TBN = Util::Math::createOrthonormalBasis( n );
 
 					const uint	aoSamples = 32;
 					const float aoRadius  = 20.f;
@@ -226,9 +225,7 @@ namespace VTX
 						Vec3f sample = Util::Sampler::uniformHemisphere( u, v );
 						float pdf	 = Util::Sampler::uniformHemispherePdf();
 						// transform in local coordinates systems
-						Vec3f aoDir = Vec3f( sample.x * t.x + sample.y * b.x + sample.z * n.x,
-											 sample.x * t.y + sample.y * b.y + sample.z * n.y,
-											 sample.x * t.z + sample.y * b.z + sample.z * n.z );
+						Vec3f aoDir = TBN * sample;
 
 						if ( !_bvh.intersectAny( Ray( intersection._point, glm::normalize( aoDir ) ), tMin, aoRadius ) )
 						{
@@ -239,7 +236,7 @@ namespace VTX
 					color /= aoSamples;
 					// shade primitive
 					// point light on camera
-					// color *= intersection._primitive->getMaterial()->shade( ray, intersection, -ray.getDirection() );
+					// color = intersection._primitive->getMaterial()->shade( ray, intersection, -ray.getDirection() );
 				}
 				else
 				{

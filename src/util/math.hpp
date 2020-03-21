@@ -183,12 +183,13 @@ namespace VTX
 			}
 
 			// p_n (normal) must be normalized
-			static void createOrthonormalBasis( const Vec3f & p_n, Vec3f & p_t, Vec3f & p_b )
+			static Mat3f createOrthonormalBasis( const Vec3f & p_n )
 			{
-				p_t = fabsf( p_n.x ) > fabsf( p_n.y )
-						  ? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )
-						  : Vec3f( 0.f, -p_n.z, p_n.y ) / sqrtf( p_n.y * p_n.y + p_n.z * p_n.z );
-				p_b = cross( p_n, p_t );
+				Vec3f t = fabsf( p_n.x ) > fabsf( p_n.y )
+							  ? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )
+							  : Vec3f( 0.f, -p_n.z, p_n.y ) / sqrtf( p_n.y * p_n.y + p_n.z * p_n.z );
+				Vec3f b = cross( p_n, t );
+				return Mat3f( t, b, p_n );
 			}
 		} // namespace Math
 
