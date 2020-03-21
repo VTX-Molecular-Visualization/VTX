@@ -6,18 +6,13 @@
 #endif
 
 #include "base_renderer.hpp"
-#include "ray_tracing/bvh.hpp"
+#include "ray_tracing/rtScene.hpp"
 #include <vector>
 
 namespace VTX
 {
 	namespace Renderer
 	{
-		struct Scene
-		{
-			BVH _bvh;
-		};
-
 		class RayTracer : public BaseRenderer
 		{
 			class CameraRayTracing;
