@@ -1,4 +1,6 @@
 #include "ray_tracer.hpp"
+#include "ray_tracing/integrators/ao_integrator.hpp"
+#include "ray_tracing/integrators/raycast_integrator.hpp"
 #include "ray_tracing/materials/flat_color_material.hpp"
 #include "ray_tracing/primitives/cylinder.hpp"
 #include "ray_tracing/primitives/sphere.hpp"
@@ -63,6 +65,9 @@ namespace VTX
 			const uint maxPrimsLeaf = 8;
 			_scene._bvh.build( mol->getRTPrimitives(), maxPrimsLeaf, BVH::SplitMethod::SAH );
 
+			//_integrator = new AOIntegrator;
+			_integrator = new RayCastIntegrator;
+
 			VTX_INFO( "Ray tracer initialized" );
 		}
 
@@ -71,7 +76,7 @@ namespace VTX
 			VTX_INFO( "Render Frame" );
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
-			const uint nbPixelSamples = 8;
+			const uint nbPixelSamples = 1;
 
 			uint			   size = _width * _height * 3 * sizeof( char );
 			std::vector<uchar> pixels( _width * _height * 3 );
@@ -215,45 +220,9 @@ namespace VTX
 
 				const Ray ray = p_camera.generateRay( sx, sy );
 
-				BasePrimitive * primHit = nullptr;
+				const Vec3f Li = _integrator->Li( ray, _scene, 1e-3f, FLOAT_MAX );
 
-				float		 tMin = 1e-3f;
-				float		 tMax = FLT_MAX;
-				Intersection intersection;
-				if ( _scene._bvh.intersect( ray, tMin, tMax, intersection ) )
-				{
-					// create orthonormal basis around around hit normal
-					Mat3f TBN = Util::Math::createOrthonormalBasis( -intersection._normal );
-
-					const uint	aoSamples = 32;
-					const float aoRadius  = 20.f;
-					float		ao		  = 0.f;
-					for ( uint i = 0; i < aoSamples; ++i )
-					{
-						float u		 = Util::Math::randomFloat();
-						float v		 = Util::Math::randomFloat();
-						Vec3f sample = Util::Sampler::uniformHemisphere( u, v );
-						float pdf	 = Util::Sampler::uniformHemispherePdf();
-						// transform in local coordinates systems
-						Vec3f aoDir = TBN * sample;
-
-						if ( !_scene._bvh.intersectAny( Ray( intersection._point, aoDir ), tMin, aoRadius ) )
-						{
-							// u is cos(theta) <=> dot(n, aoDir)
-							ao += u / pdf;
-						}
-					}
-					ao /= aoSamples;
-					// shade primitive
-					// point light on camera
-					color += ao
-							 * intersection._primitive->getMaterial()->shade( ray, intersection, -ray.getDirection() )
-							 / Util::Math::max( 1.f, intersection._distance * 0.05f );
-				}
-				else
-				{
-					color += _backgroundColor;
-				}
+				color += Li;
 			}
 			return glm::clamp( color / float( p_nbPixelSamples ), VEC3F_ZERO, VEC3F_XYZ );
 		}

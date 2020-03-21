@@ -6,6 +6,7 @@
 #endif
 
 #include "base_renderer.hpp"
+#include "ray_tracing/integrators/base_integrator.hpp"
 #include "ray_tracing/rtScene.hpp"
 #include <vector>
 
@@ -51,7 +52,8 @@ namespace VTX
 		  private:
 			static const uint TILE_SIZE;
 
-			Vec3f _backgroundColor = VEC3F_ZERO;
+			BaseIntegrator * _integrator = nullptr;
+
 			Scene _scene;
 		};
 	} // namespace Renderer
