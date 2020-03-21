@@ -49,7 +49,7 @@ namespace VTX
 			Vec3f _dv;
 		};
 
-		const uint RayTracer::TILE_SIZE = 64;
+		const uint RayTracer::TILE_SIZE = 32;
 
 		void RayTracer::init( const uint p_width, const uint p_height )
 		{
@@ -61,7 +61,7 @@ namespace VTX
 
 			// TODO: add options for splitMethod and maxPrimsLeaf
 			const uint maxPrimsLeaf = 8;
-			_bvh.build( mol->getRTPrimitives(), maxPrimsLeaf, BVH::SplitMethod::HLBVH );
+			_bvh.build( mol->getRTPrimitives(), maxPrimsLeaf, BVH::SplitMethod::SAH );
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -71,7 +71,7 @@ namespace VTX
 			VTX_INFO( "Render Frame" );
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
-			const uint nbPixelSamples = 1;
+			const uint nbPixelSamples = 8;
 
 			uint			   size = _width * _height * 3 * sizeof( char );
 			std::vector<uchar> pixels( _width * _height * 3 );
@@ -93,12 +93,22 @@ namespace VTX
 
 			chrono.start();
 
+			std::atomic<uint> nextTileId = nbThreads;
+
 			for ( uint i = 0; i < nbThreads; ++i )
 			{
-				threadPool.emplace_back( std::thread(
-					[ this, nbThreads, &pixels, &camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles ]() {
-						_renderTiles( pixels, camera, nbPixelSamples, i, nbThreads, nbTilesX, nbTilesY, nbTiles );
-					} ) );
+				threadPool.emplace_back( std::thread( [ this,
+														nbThreads,
+														&pixels,
+														&camera,
+														nbPixelSamples,
+														i,
+														nbTilesX,
+														nbTilesY,
+														nbTiles,
+														&nextTileId ]() {
+					_renderTiles( pixels, camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, nextTileId );
+				} ) );
 			}
 			for ( std::thread & t : threadPool )
 			{
@@ -129,17 +139,17 @@ namespace VTX
 									  const CameraRayTracing & p_camera,
 									  const uint			   p_nbPixelSamples,
 									  const uint			   p_threadId,
-									  const uint			   p_nbThreads,
 									  const uint			   p_nbTilesX,
 									  const uint			   p_nbTilesY,
-									  const uint			   p_nbTiles )
+									  const uint			   p_nbTiles,
+									  std::atomic<uint> &	   p_nextTileId )
 		{
-			uint taskIndex = p_threadId;
+			uint taskId = p_threadId;
 
-			while ( taskIndex < p_nbTiles )
+			while ( taskId < p_nbTiles )
 			{
-				const uint tileY = taskIndex / p_nbTilesX;
-				const uint tileX = taskIndex - tileY * p_nbTilesX;
+				const uint tileY = taskId / p_nbTilesX;
+				const uint tileX = taskId - tileY * p_nbTilesX;
 				const uint x0	 = tileX * TILE_SIZE;
 				const uint x1	 = Util::Math::min( x0 + TILE_SIZE, _width );
 				const uint y0	 = tileY * TILE_SIZE;
@@ -156,7 +166,8 @@ namespace VTX
 						p_image[ pixelId + 2 ] = uchar( color.b * 255 );
 					}
 				}
-				taskIndex += p_nbThreads;
+
+				taskId = p_nextTileId++;
 			}
 		}
 
@@ -213,11 +224,11 @@ namespace VTX
 				if ( _bvh.intersect( ray, tMin, tMax, intersection ) )
 				{
 					// create orthonormal basis around around hit normal
-					const Vec3f & n	  = intersection._normal;
-					Mat3f		  TBN = Util::Math::createOrthonormalBasis( n );
+					Mat3f TBN = Util::Math::createOrthonormalBasis( -intersection._normal );
 
 					const uint	aoSamples = 32;
 					const float aoRadius  = 20.f;
+					float		ao		  = 0.f;
 					for ( uint i = 0; i < aoSamples; ++i )
 					{
 						float u		 = Util::Math::randomFloat();
@@ -227,16 +238,18 @@ namespace VTX
 						// transform in local coordinates systems
 						Vec3f aoDir = TBN * sample;
 
-						if ( !_bvh.intersectAny( Ray( intersection._point, glm::normalize( aoDir ) ), tMin, aoRadius ) )
+						if ( !_bvh.intersectAny( Ray( intersection._point, aoDir ), tMin, aoRadius ) )
 						{
 							// u is cos(theta) <=> dot(n, aoDir)
-							color += Vec3f( u / pdf );
+							ao += u / pdf;
 						}
 					}
-					color /= aoSamples;
+					ao /= aoSamples;
 					// shade primitive
 					// point light on camera
-					// color = intersection._primitive->getMaterial()->shade( ray, intersection, -ray.getDirection() );
+					color += ao
+							 * intersection._primitive->getMaterial()->shade( ray, intersection, -ray.getDirection() )
+							 / Util::Math::max( 1.f, intersection._distance * 0.05f );
 				}
 				else
 				{

@@ -38,9 +38,27 @@ namespace VTX
 			}
 
 			template<typename T>
+			static inline T dot( const T & a, const T & b )
+			{
+				return glm::dot( a, b );
+			}
+
+			template<typename T>
 			static inline T cross( const T & a, const T & b )
 			{
 				return glm::cross( a, b );
+			}
+
+			template<typename T>
+			static inline auto length( const T & p_value )
+			{
+				return glm::length( p_value );
+			}
+
+			template<typename T>
+			static inline T normalize( const T & p_value )
+			{
+				return glm::normalize( p_value );
 			}
 
 			static inline float randomFloat() { return dis( gen ); }

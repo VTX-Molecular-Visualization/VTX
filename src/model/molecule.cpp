@@ -199,14 +199,14 @@ namespace VTX
 			uint cptAtoms	 = 0;
 			uint cptBonds	 = 0;
 
-			_rtMaterials.emplace_back( new Renderer::DiffuseMaterial( VEC3F_XYZ ) );
+			_rtMaterials.emplace_back( new Renderer::FlatColorMaterial( VEC3F_XYZ ) );
 
 			// Add atoms and bonds of each residue
 			for ( uint i = 0; i < getResidueCount(); ++i )
 			{
 				// TODO: remove material duplication + only allow chain colors
 				const Model::Residue & r = getResidue( i );
-				_rtMaterials.emplace_back( new Renderer::DiffuseMaterial( r.getChainPtr()->getColor() ) );
+				_rtMaterials.emplace_back( new Renderer::FlatColorMaterial( r.getChainPtr()->getColor() ) );
 
 				const uint idFirstAtomRes = r.getIdFirstAtom();
 				const uint nbAtomsRes	  = r.getAtomCount();

@@ -31,10 +31,10 @@ namespace VTX
 							   const CameraRayTracing & p_camera,
 							   const uint				p_nbPixelSamples,
 							   const uint				p_threadId,
-							   const uint				p_nbThreads,
 							   const uint				p_nbTilesX,
 							   const uint				p_nbTilesY,
-							   const uint				p_nbTiles );
+							   const uint				p_nbTiles,
+							   std::atomic<uint> &		p_nextTileId );
 
 			void _renderTile( std::vector<uchar> &	   p_image,
 							  const CameraRayTracing & p_camera,
@@ -51,7 +51,7 @@ namespace VTX
 		  private:
 			static const uint TILE_SIZE;
 
-			Vec3f _backgroundColor = VEC3F_XYZ * 0.3f;
+			Vec3f _backgroundColor = VEC3F_ZERO;
 
 			BVH _bvh;
 		};
