@@ -31,10 +31,10 @@ namespace VTX
 							   const CameraRayTracing & p_camera,
 							   const uint				p_nbPixelSamples,
 							   const uint				p_threadId,
+							   const uint				p_nbThreads,
 							   const uint				p_nbTilesX,
 							   const uint				p_nbTilesY,
-							   const uint				p_nbTiles,
-							   std::atomic<uint> &		p_nextTile );
+							   const uint				p_nbTiles );
 
 			void _renderTile( std::vector<uchar> &	   p_image,
 							  const CameraRayTracing & p_camera,

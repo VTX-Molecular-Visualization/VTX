@@ -127,10 +127,11 @@ namespace VTX
 	const float FLOAT_MIN = std::numeric_limits<float>::lowest();
 	const float FLOAT_MAX = std::numeric_limits<float>::max();
 
-	const float PIf		= glm::pi<float>();
-	const float PI_2f	= glm::half_pi<float>();
-	const float PI_32f	= glm::three_over_two_pi<float>();
-	const float INV_PIf = glm::one_over_pi<float>();
+	const float PIf		 = glm::pi<float>();
+	const float PI_2f	 = glm::half_pi<float>();
+	const float PI_32f	 = glm::three_over_two_pi<float>();
+	const float INV_PIf	 = glm::one_over_pi<float>();
+	const float INV_2PIf = glm::two_over_pi<float>();
 
 	const Vec3f VEC3F_ZERO = Vec3f( 0.f, 0.f, 0.f );
 	const Vec3d VEC3D_ZERO = Vec3d( 0.0, 0.0, 0.0 );

@@ -3,6 +3,7 @@
 #include "ray_tracing/primitives/cylinder.hpp"
 #include "ray_tracing/primitives/sphere.hpp"
 #include "tool/chrono.hpp"
+#include "util/sampler.hpp"
 #include "vtx_app.hpp"
 #include <atomic>
 #include <stb/stb_image_write.h>
@@ -92,12 +93,11 @@ namespace VTX
 
 			chrono.start();
 
-			std::atomic<uint> nextTile = nbThreads;
 			for ( uint i = 0; i < nbThreads; ++i )
 			{
 				threadPool.emplace_back( std::thread(
-					[ this, &pixels, &camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, &nextTile ]() {
-						_renderTiles( pixels, camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, nextTile );
+					[ this, nbThreads, &pixels, &camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles ]() {
+						_renderTiles( pixels, camera, nbPixelSamples, i, nbThreads, nbTilesX, nbTilesY, nbTiles );
 					} ) );
 			}
 			for ( std::thread & t : threadPool )
@@ -129,10 +129,10 @@ namespace VTX
 									  const CameraRayTracing & p_camera,
 									  const uint			   p_nbPixelSamples,
 									  const uint			   p_threadId,
+									  const uint			   p_nbThreads,
 									  const uint			   p_nbTilesX,
 									  const uint			   p_nbTilesY,
-									  const uint			   p_nbTiles,
-									  std::atomic<uint> &	   p_nextTile )
+									  const uint			   p_nbTiles )
 		{
 			uint taskIndex = p_threadId;
 
@@ -156,7 +156,7 @@ namespace VTX
 						p_image[ pixelId + 2 ] = uchar( color.b * 255 );
 					}
 				}
-				taskIndex = p_nextTile++;
+				taskIndex += p_nbThreads;
 			}
 		}
 
@@ -212,9 +212,36 @@ namespace VTX
 				Intersection intersection;
 				if ( _bvh.intersect( ray, tMin, tMax, intersection ) )
 				{
+					// create local coordinates systems around hit normal
+					const Vec3f & n = intersection._normal;
+					const Vec3f	  t = fabsf( n.x ) > fabsf( n.y )
+										? Vec3f( n.z, 0.f, -n.x ) / sqrtf( n.x * n.x + n.z * n.z )
+										: Vec3f( 0.f, -n.z, n.y ) / sqrtf( n.y * n.y + n.z * n.z );
+					const Vec3f b = glm::cross( n, t );
+
+					const uint	aoSamples = 32;
+					const float aoRadius  = 20.f;
+					for ( uint i = 0; i < aoSamples; ++i )
+					{
+						float u		 = Util::Math::randomFloat();
+						float v		 = Util::Math::randomFloat();
+						Vec3f sample = Util::Sampler::uniformHemisphere( u, v );
+						float pdf	 = Util::Sampler::uniformHemispherePdf();
+						// transform in local coordinates systems
+						Vec3f aoDir = Vec3f( sample.x * t.x + sample.y * b.x + sample.z * n.x,
+											 sample.x * t.y + sample.y * b.y + sample.z * n.y,
+											 sample.x * t.z + sample.y * b.z + sample.z * n.z );
+
+						if ( !_bvh.intersectAny( Ray( intersection._point, glm::normalize( aoDir ) ), tMin, aoRadius ) )
+						{
+							// u is cos(theta) <=> dot(n, aoDir)
+							color += Vec3f( u / pdf );
+						}
+					}
+					color /= aoSamples;
 					// shade primitive
 					// point light on camera
-					color += intersection._primitive->getMaterial()->shade( ray, intersection, -ray.getDirection() );
+					// color *= intersection._primitive->getMaterial()->shade( ray, intersection, -ray.getDirection() );
 				}
 				else
 				{

@@ -206,6 +206,66 @@ namespace VTX
 			return hit;
 		}
 
+		bool BVH::intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const
+		{
+			if ( _nodes.empty() ) return false;
+
+			const Vec3f & rayDir = p_ray.getDirection();
+			const Vec3f & rayPos = p_ray.getOrigin();
+
+			const Vec3f invDir = 1.f / rayDir;
+
+			const Vec3i isDirNeg = { invDir.x < 0.f, invDir.y < 0.f, invDir.z < 0.f };
+
+			float tMin = p_tMin;
+			float tMax = p_tMax;
+
+			// Follow ray through BVH nodes to find primitive intersections
+			int toVisitOffset = 0, currentNodeIndex = 0;
+			int nodesToVisit[ 64 ];
+			while ( true )
+			{
+				const LBVHNode & node = _nodes[ currentNodeIndex ];
+				// Check ray against BVH node
+				if ( node._aabb.intersect( rayPos, invDir, isDirNeg, tMin, tMax ) )
+				{
+					if ( node._nbPrims > 0 )
+					{
+						// Intersect ray with primitives in leaf BVH node
+						for ( int i = 0; i < node._nbPrims; ++i )
+						{
+							// TODO: remove Intersection() -> make intersectAny for primitives
+							if ( _primitives[ node._primsOffset + i ]->intersect( p_ray, tMin, tMax, Intersection() ) )
+							{ return true; }
+						}
+						if ( toVisitOffset == 0 ) break;
+						currentNodeIndex = nodesToVisit[ --toVisitOffset ];
+					}
+					else
+					{
+						// Put far BVH node on _nodesToVisit_ stack, advance to near
+						// node
+						if ( isDirNeg[ node._splitAxis ] )
+						{
+							nodesToVisit[ toVisitOffset++ ] = currentNodeIndex + 1;
+							currentNodeIndex				= node._secondChildOffset;
+						}
+						else
+						{
+							nodesToVisit[ toVisitOffset++ ] = node._secondChildOffset;
+							currentNodeIndex				= currentNodeIndex + 1;
+						}
+					}
+				}
+				else
+				{
+					if ( toVisitOffset == 0 ) break;
+					currentNodeIndex = nodesToVisit[ --toVisitOffset ];
+				}
+			}
+			return false;
+		}
+
 		// Build using approximate SAH
 		BVHBuildNode * BVH::_buildSAHRecursive( std::vector<BVHPrimInfo> &	   p_primsInfo,
 												const uint					   p_begin,

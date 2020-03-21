@@ -56,6 +56,9 @@ namespace VTX
 							const float	   p_tMax,
 							Intersection & p_intersection ) const;
 
+			// return true if any intersection is found
+			bool intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const;
+
 		  private:
 			BVHBuildNode * _buildSAHRecursive( std::vector<BVHPrimInfo> &	  p_primsInfo,
 											   const uint					  p_begin,
