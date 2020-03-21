@@ -37,6 +37,12 @@ namespace VTX
 				return glm::max( a, b );
 			}
 
+			template<typename T>
+			static inline T cross( const T & a, const T & b )
+			{
+				return glm::cross( a, b );
+			}
+
 			static inline float randomFloat() { return dis( gen ); }
 
 			static inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
@@ -155,25 +161,34 @@ namespace VTX
 			}
 
 			// Morton utils
-			static uint leftShift3( uint x )
+			static uint leftShift3( uint p_x )
 			{
-				assert( x <= ( 1 << 10 ) );
+				assert( p_x <= ( 1 << 10 ) );
 
-				if ( x == ( 1 << 10 ) ) --x;
-				x = ( x | ( x << 16 ) ) & 0x30000ff; // x = ---- --98 ---- ---- ---- ---- 7654 3210
-				x = ( x | ( x << 8 ) ) & 0x300f00f;	 // x = ---- --98 ---- ---- 7654 ---- ---- 3210
-				x = ( x | ( x << 4 ) ) & 0x30c30c3;	 // x = ---- --98 ---- 76-- --54 ---- 32-- --10
-				x = ( x | ( x << 2 ) ) & 0x9249249;	 // x = ---- 9--8 --7- -6-- 5--4 --3- -2-- 1--0return x;
-				return x;
+				if ( p_x == ( 1 << 10 ) ) --p_x;
+				p_x = ( p_x | ( p_x << 16 ) ) & 0x30000ff; // x = ---- --98 ---- ---- ---- ---- 7654 3210
+				p_x = ( p_x | ( p_x << 8 ) ) & 0x300f00f;  // x = ---- --98 ---- ---- 7654 ---- ---- 3210
+				p_x = ( p_x | ( p_x << 4 ) ) & 0x30c30c3;  // x = ---- --98 ---- 76-- --54 ---- 32-- --10
+				p_x = ( p_x | ( p_x << 2 ) ) & 0x9249249;  // x = ---- 9--8 --7- -6-- 5--4 --3- -2-- 1--0return x;
+				return p_x;
 			}
 
-			static uint encodeMorton3( const Vec3f & v )
+			static uint encodeMorton3( const Vec3f & p_v )
 			{
-				assert( v.x >= 0 );
-				assert( v.y >= 0 );
-				assert( v.z >= 0 );
-				return ( leftShift3( uint( v.z ) ) << 2 ) | ( leftShift3( uint( v.y ) ) << 1 )
-					   | leftShift3( uint( v.x ) );
+				assert( p_v.x >= 0 );
+				assert( p_v.y >= 0 );
+				assert( p_v.z >= 0 );
+				return ( leftShift3( uint( p_v.z ) ) << 2 ) | ( leftShift3( uint( p_v.y ) ) << 1 )
+					   | leftShift3( uint( p_v.x ) );
+			}
+
+			// p_n (normal) must be normalized
+			static void createOrthonormalBasis( const Vec3f & p_n, Vec3f & p_t, Vec3f & p_b )
+			{
+				p_t = fabsf( p_n.x ) > fabsf( p_n.y )
+						  ? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )
+						  : Vec3f( 0.f, -p_n.z, p_n.y ) / sqrtf( p_n.y * p_n.y + p_n.z * p_n.z );
+				p_b = cross( p_n, p_t );
 			}
 		} // namespace Math
 

@@ -214,10 +214,8 @@ namespace VTX
 				{
 					// create local coordinates systems around hit normal
 					const Vec3f & n = intersection._normal;
-					const Vec3f	  t = fabsf( n.x ) > fabsf( n.y )
-										? Vec3f( n.z, 0.f, -n.x ) / sqrtf( n.x * n.x + n.z * n.z )
-										: Vec3f( 0.f, -n.z, n.y ) / sqrtf( n.y * n.y + n.z * n.z );
-					const Vec3f b = glm::cross( n, t );
+					Vec3f		  t, b;
+					Util::Math::createOrthonormalBasis( n, t, b );
 
 					const uint	aoSamples = 32;
 					const float aoRadius  = 20.f;
