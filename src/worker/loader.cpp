@@ -1,42 +1,32 @@
-#include "load.hpp"
+#include "loader.hpp"
 #include "io/path_fake.hpp"
 #include "io/reader/arc.hpp"
 #include "io/reader/mmtf.hpp"
 #include "io/reader/obj.hpp"
 #include "model/molecule.hpp"
-#include "model/path.hpp"
-#include "object3d/scene.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
 {
-	namespace State
+	namespace Worker
 	{
-		void Load::enter( void * const p_arg )
-		{
-			IO::Path * const path = (IO::Path *)p_arg;
-			_loadFile( *path );
-
-			VTXApp::get().goToState( ID::State::VISUALIZATION );
-		}
-
-		void Load::_loadFile( const IO::Path & p_path ) const
+		void Loader::work()
 		{
 			Model::Molecule * molecule = new Model::Molecule();
 			Object3D::Scene * scene	   = &( VTXApp::get().getScene() );
 
 			IO::Reader::BaseReader<Model::Molecule> * reader = nullptr;
-			if ( p_path.getExtension() == "mmtf" ) { reader = new IO::Reader::MMTF(); }
-			else if ( p_path.getExtension() == "obj" )
+			if ( _path->getExtension() == "mmtf" ) { reader = new IO::Reader::MMTF(); }
+			else if ( _path->getExtension() == "obj" )
 			{
 				reader = new IO::Reader::OBJ();
 			}
-			else if ( p_path.getExtension() == "arc" )
+			else if ( _path->getExtension() == "arc" )
 			{
 				reader = new IO::Reader::ARC();
 			}
 
-			const IO::PathFake * fake = dynamic_cast<const IO::PathFake *>( &p_path );
+			const IO::PathFake * fake = dynamic_cast<const IO::PathFake *>( _path );
 
 			if ( fake )
 			{
@@ -48,7 +38,7 @@ namespace VTX
 			}
 			else
 			{
-				if ( reader == nullptr || reader->readFile( p_path, *molecule ) == false )
+				if ( reader == nullptr || reader->readFile( *_path, *molecule ) == false )
 				{
 					delete reader;
 					return;
@@ -62,7 +52,5 @@ namespace VTX
 			delete reader;
 		}
 
-		void Load::exit() {}
-
-	} // namespace State
+	} // namespace Worker
 } // namespace VTX

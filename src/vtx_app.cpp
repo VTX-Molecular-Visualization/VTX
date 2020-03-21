@@ -1,4 +1,5 @@
 #include "vtx_app.hpp"
+#include "action/open.hpp"
 #include "id.hpp"
 #include "io/path.hpp"
 #include "model/molecule.hpp"
@@ -44,34 +45,31 @@ namespace VTX
 		_ui->draw(); // Draw the first frame to update screen size.
 		ImGuiIO & io = ImGui::GetIO();
 
-		_stateMachine = Generic::create<State::StateMachine>();
-
 		_scene = new Object3D::Scene();
 		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 		_renderer = new Renderer::GL();
 		_renderer->init( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
+		_stateMachine = Generic::create<State::StateMachine>();
+		_stateMachine->goToState( ID::State::VISUALIZATION );
+
 		VTXApp::_isRunning = true;
 
 		VTX_INFO( "Application started" );
-
 		_ui->print();
-		_ui->draw();
 
 #ifdef _DEBUG
-		//_stateMachine->goToState( ID::State::VISUALIZATION );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "173D.mmtf" ) );
-		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "4v6x.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6LU7.mmtf" ) );
-		//->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6LU7.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOADING, &IO::Path( DATA_DIR + "3j3q.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOADING, &IO::Path( DATA_DIR + "r2d2.obj" ) );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "dhfr2.arc" ) );
+		// VTX_ACTION( new Action::Open(DATA_DIR + "173D.mmtf" ) );
+		VTX_ACTION( new Action::Open( DATA_DIR + "4v6x.mmtf" ) );
+		// VTX_ACTION( new Action::Open(DATA_DIR + "6LU7.mmtf" ) );
+		// VTX_ACTION( new Action::Open(DATA_DIR + "6LU7.mmtf" ) );
+		// VTX_ACTION( new Action::Open(DATA_DIR + "3j3q.mmtf" ) );
+		// VTX_ACTION( new Action::Open(DATA_DIR + "r2d2.obj" ) );
+		// VTX_ACTION( new Action::Open(DATA_DIR + "dhfr2.arc" ) );
 #else
-		//_stateMachine->goToState( ID::State::LOADING, &IO::Path( DATA_DIR + "4v6x.mmtf" ) );
-		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "dhfr2.arc" ) );
-		//_stateMachine->goToState( ID::State::VISUALIZATION );
+		// VTX_ACTION( new Action::Open(DATA_DIR + "4v6x.mmtf" ) );
+		VTX_ACTION( new Action::Open( DATA_DIR + "dhfr2.arc" ) );
 #endif
 
 		while ( VTXApp::_isRunning )

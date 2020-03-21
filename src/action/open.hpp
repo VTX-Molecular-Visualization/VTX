@@ -8,6 +8,7 @@
 #include "base_action.hpp"
 #include "model/molecule.hpp"
 #include "vtx_app.hpp"
+#include "worker/loader.hpp"
 
 namespace VTX
 {
@@ -16,12 +17,13 @@ namespace VTX
 		class Open : public BaseAction
 		{
 		  public:
-			explicit Open( const IO::Path & p_path ) : _path( p_path ) {}
+			explicit Open( const std::string & p_path ) : _path( new IO::Path( p_path ) ) {}
+			explicit Open( const IO::Path * const p_path ) : _path( p_path ) {}
 
-			virtual void execute() override { VTXApp::get().goToState( ID::State::LOAD, (void *)&_path ); };
+			virtual void execute() override { VTX_WORKER( new Worker::Loader( _path ) ); };
 
 		  private:
-			const IO::Path _path;
+			const IO::Path * _path;
 		};
 	} // namespace Action
 } // namespace VTX

@@ -17,6 +17,7 @@
 #include "tool/chrono.hpp"
 #include "ui/user_interface.hpp"
 #include "util/logger.hpp"
+#include "worker/loader.hpp"
 #include "worker/worker_manager.hpp"
 #include <thread>
 #include <vector>
@@ -87,6 +88,10 @@ namespace VTX
 		VTXApp::get().getActionManager().execute( p_action );
 	}
 	inline void VTX_ACTION( std::string & p_action ) { VTXApp::get().getActionManager().execute( p_action ); }
+	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker )
+	{
+		VTXApp::get().getWorkerManager().run( p_worker );
+	}
 } // namespace VTX
 
 #endif

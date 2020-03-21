@@ -23,9 +23,9 @@ namespace VTX
 
 		  public:
 			// Sync.
-			void runWorker( BaseWorker * const p_woker );
+			void run( BaseWorker * const p_woker );
 			// Async.
-			void runWorker( BaseWorker * const p_woker, const std::function<void( void )> * );
+			void run( BaseWorker * const p_woker, const std::function<void( void )> * );
 
 			virtual void update( const double p_deltaTime ) override;
 

@@ -3,7 +3,6 @@
 #include "exception.hpp"
 #include "export.hpp"
 #include "generic/factory.hpp"
-#include "load.hpp"
 #include "play.hpp"
 #include "util/logger.hpp"
 #include "visualization.hpp"
@@ -24,7 +23,6 @@ namespace VTX
 
 		void StateMachine::_addItems()
 		{
-			addItem( Generic::create<Load>() );
 			addItem( Generic::create<Visualization>() );
 			addItem( Generic::create<Play>() );
 			addItem( Generic::create<Export>() );
