@@ -21,9 +21,9 @@ namespace VTX
 			virtual void execute() override
 			{
 				Setting::Rendering::colorMode = _mode;
-				for ( Model::Molecule * const molecule : VTXApp::get().getScene().getMolecules() )
+				for ( const Object3D::Scene::PairMoleculePtrFloat pair : VTXApp::get().getScene().getMolecules() )
 				{
-					molecule->setColorMode();
+					pair.first->setColorMode();
 				}
 			};
 

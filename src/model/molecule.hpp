@@ -89,8 +89,7 @@ namespace VTX
 			{
 				return _atomPositionsFrames;
 			};
-			inline const uint  getCurrentFrame() const { return uint( _currentFrame ); }
-			inline const uint  getFrameCount() const { return (uint)_atomPositionsFrames.size(); }
+
 			inline void		   addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
 			inline const float getAtomRadius( const uint p_idx ) const { return _atomRadius[ p_idx ]; }
 			inline const std::vector<float> & getAtomRadius() const { return _atomRadius; };
@@ -136,18 +135,18 @@ namespace VTX
 				_aabb.extend( p_position, p_radius );
 			}
 
-			virtual void init() override;
-			void		 setRepresentation();
-			void		 setColorMode();
-			inline uint	 getFrame() const { return uint( _currentFrame ); }
-			void		 setFrame( uint );
-			inline uint	 getFPS() const { return _fps; }
-			void		 setFPS( const uint p_fps ) { _fps = p_fps; }
-			inline bool	 isPlaying() const { return _isPlaying; }
-			inline void	 setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
-			uint		 getNextFrame( const float );
-			inline bool	 showSolvant() const { return _showSolvant; }
-			inline void	 setShowSolvant( const bool p_showSolvant ) { _showSolvant = p_showSolvant; }
+			virtual void	  init() override;
+			void			  setRepresentation();
+			void			  setColorMode();
+			inline uint		  getFrame() const { return _currentFrame; }
+			void			  setFrame( uint );
+			inline const uint getFrameCount() const { return (uint)_atomPositionsFrames.size(); }
+			inline uint		  getFPS() const { return _fps; }
+			void			  setFPS( const uint p_fps ) { _fps = p_fps; }
+			inline bool		  isPlaying() const { return _isPlaying; }
+			inline void		  setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
+			inline bool		  showSolvant() const { return _showSolvant; }
+			inline void		  setShowSolvant( const bool p_showSolvant ) { _showSolvant = p_showSolvant; }
 
 			virtual void print() const override;
 
@@ -196,9 +195,9 @@ namespace VTX
 			GLuint _atomColorsVBO = GL_INVALID_VALUE;	 // Color vbo.
 			GLuint _bondsIBO	  = GL_INVALID_VALUE;	 // Bonds ibo.
 
-			float _currentFrame = 0.f;
-			bool  _isPlaying	= true;
-			uint  _fps			= 1u;
+			uint _currentFrame = 0u;
+			bool _isPlaying	   = true;
+			uint _fps		   = 1u;
 
 			bool _showSolvant = true;
 

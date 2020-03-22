@@ -66,9 +66,9 @@ namespace VTX
 		// VTX_ACTION( new Action::Open(DATA_DIR + "6LU7.mmtf" ) );
 		// VTX_ACTION( new Action::Open(DATA_DIR + "3j3q.mmtf" ) );
 		// VTX_ACTION( new Action::Open(DATA_DIR + "r2d2.obj" ) );
-		// VTX_ACTION( new Action::Open(DATA_DIR + "dhfr2.arc" ) );
+		// VTX_ACTION( new Action::Open( DATA_DIR + "dhfr2.arc" ) );
 #else
-		// VTX_ACTION( new Action::Open(DATA_DIR + "4v6x.mmtf" ) );
+		// VTX_ACTION( new Action::Open( DATA_DIR + "4v6x.mmtf" ) );
 		VTX_ACTION( new Action::Open( DATA_DIR + "dhfr2.arc" ) );
 #endif
 

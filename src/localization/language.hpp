@@ -22,7 +22,7 @@ namespace VTX
 				{
 					return values.at( p_key );
 				}
-				catch ( const std::exception )
+				catch ( const std::exception & )
 				{
 					// Use key as text if not translated.
 					return p_key;

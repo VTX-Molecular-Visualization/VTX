@@ -76,6 +76,7 @@ namespace VTX
 
 			// Views.
 			{ "View.Data", "Data" },
+			{ "View.Options", "Options" },
 			{ "View.Play", "Play" },
 			{ "View.Stop", "Stop" },
 			{ "View.Loop", "Loop" },

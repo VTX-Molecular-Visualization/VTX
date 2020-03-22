@@ -4,6 +4,7 @@
 #include "action/molecule_change_fps.hpp"
 #include "action/molecule_change_frame.hpp"
 #include "action/molecule_change_is_playing.hpp"
+#include "action/molecule_change_show_solvant.hpp"
 #include "action/transformable_rotate.hpp"
 #include "action/transformable_set_scale.hpp"
 #include "action/transformable_set_translation.hpp"
@@ -34,14 +35,14 @@ namespace VTX
 													  ImGuiTreeNodeFlags_DefaultOpen ) )
 						{
 							ImGui::Text( "Frames: %d", _getModel().getFrameCount() );
-							int frame = _getModel().getCurrentFrame();
+							int frame = int( _getModel().getFrame() );
 							if ( ImGui::SliderInt(
 									 LOCALE( "View.Frame" ), &frame, 0, _getModel().getFrameCount() - 1 ) )
 							{ VTX_ACTION( new Action::MoleculeChangeFrame( _getModel(), frame ) ); }
-							if ( ImGui::InputInt( LOCALE( "##FrameInput" ), &frame, 1 ) )
+							if ( ImGui::InputInt( "##FrameInput", &frame, 1 ) )
 							{ VTX_ACTION( new Action::MoleculeChangeFrame( _getModel(), frame ) ); }
 							bool isPlaying = _getModel().isPlaying();
-							if ( ImGui::Checkbox( LOCALE( "View.Play" ), &isPlaying ) )
+							if ( ImGui::Checkbox( "View.Play", &isPlaying ) )
 							{ VTX_ACTION( new Action::MoleculeChangeIsPlaying( _getModel(), isPlaying ) ); }
 							int fps = _getModel().getFPS();
 							if ( ImGui::SliderInt( LOCALE( "View.FPS" ), &fps, 0, _getModel().getFrameCount() - 1 ) )
@@ -79,7 +80,7 @@ namespace VTX
 						{ VTX_ACTION( new Action::TransformableSetScale( _getModel(), s ) ); }
 						ImGui::PopID();
 					}
-					if ( ImGui::CollapsingHeader( LOCALE( "View.Color" ) ) )
+					if ( ImGui::CollapsingHeader( LOCALE( "View.Options" ) ) )
 					{
 						Vec3f color = _getModel().getColor();
 						if ( ImGui::ColorEdit3( LOCALE( "View.Color" ), (float *)&color ) )
@@ -87,6 +88,9 @@ namespace VTX
 							VTX_ACTION( new Action::ColorableChangeColor( _getModel(), color ) );
 							VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN ) );
 						}
+						bool showSolvant = _getModel().showSolvant();
+						if ( ImGui::Checkbox( LOCALE( "View.Molecule.Solvant" ), &showSolvant ) )
+						{ VTX_ACTION( new Action::MoleculeChangeShowSolvant( _getModel(), showSolvant ) ); }
 					}
 #ifdef _DEBUG
 					if ( ImGui::CollapsingHeader( "Transform-debug" ) )

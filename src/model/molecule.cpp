@@ -1,11 +1,11 @@
 #include "molecule.hpp"
+#include "util/color.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
 #include "view/ui/molecule.hpp"
 #include "view/ui/molecule_structure.hpp"
 #include "vtx_app.hpp"
-#include "util/color.hpp"
 
 namespace VTX
 {
@@ -47,7 +47,7 @@ namespace VTX
 			if ( getFrameCount() > 0 ) { setFrame( 0 ); }
 
 			// Set color mode.
-			setColor( Util::Color::randomPastelColor());
+			setColor( Util::Color::randomPastelColor() );
 			setColorMode();
 
 			// Set default representation.
@@ -112,12 +112,12 @@ namespace VTX
 				return;
 			}
 
-			_currentFrame = float( p_frameIdx );
+			_currentFrame = p_frameIdx;
 
 			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
 			glBufferData( GL_ARRAY_BUFFER,
-						  sizeof( Vec3f ) * _atomPositionsFrames[ uint( _currentFrame ) ].size(),
-						  _atomPositionsFrames[ uint( _currentFrame ) ].data(),
+						  sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
+						  _atomPositionsFrames[ _currentFrame ].data(),
 						  GL_STATIC_DRAW );
 		}
 
@@ -209,13 +209,6 @@ namespace VTX
 			bindBuffers();
 			_notifyViews( Event::VTX_EVENT_MODEL::RENDER );
 			unbindBuffers();
-		}
-
-		uint Molecule::getNextFrame( const float p_deltaTime )
-		{
-			_currentFrame += p_deltaTime * (float)_fps;
-			if ( _currentFrame > getFrameCount() ) { _currentFrame = 0.f; }
-			return uint( _currentFrame );
 		}
 	} // namespace Model
 } // namespace VTX
