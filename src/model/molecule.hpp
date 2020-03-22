@@ -146,6 +146,8 @@ namespace VTX
 			inline bool	 isPlaying() const { return _isPlaying; }
 			inline void	 setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
 			uint		 getNextFrame( const float );
+			inline bool	 showSolvant() const { return _showSolvant; }
+			inline void	 setShowSolvant( const bool p_showSolvant ) { _showSolvant = p_showSolvant; }
 
 			virtual void print() const override;
 
@@ -197,6 +199,8 @@ namespace VTX
 			float _currentFrame = 0.f;
 			bool  _isPlaying	= true;
 			uint  _fps			= 1u;
+
+			bool _showSolvant = true;
 
 			void _createBuffers();
 

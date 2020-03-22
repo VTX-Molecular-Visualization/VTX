@@ -5,6 +5,7 @@
 #include "view/ui/molecule.hpp"
 #include "view/ui/molecule_structure.hpp"
 #include "vtx_app.hpp"
+#include "util/color.hpp"
 
 namespace VTX
 {
@@ -46,6 +47,7 @@ namespace VTX
 			if ( getFrameCount() > 0 ) { setFrame( 0 ); }
 
 			// Set color mode.
+			setColor( Util::Color::randomPastelColor());
 			setColorMode();
 
 			// Set default representation.
