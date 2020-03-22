@@ -59,7 +59,7 @@ namespace VTX
 			if ( Setting::Controller::autoRotateSpeed.x != 0.f || Setting::Controller::autoRotateSpeed.y != 0.f
 				 || Setting::Controller::autoRotateSpeed.z != 0.f )
 			{
-				for ( const PairMoleculePtrFloat pair : _molecules )
+				for ( const PairMoleculePtrFloat & pair : _molecules )
 				{
 					pair.first->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.x, VEC3F_X );
 					pair.first->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.y, VEC3F_Y );

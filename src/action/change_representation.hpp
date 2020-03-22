@@ -24,7 +24,7 @@ namespace VTX
 			virtual void execute() override
 			{
 				Setting::Rendering::representation = _representation;
-				for ( const Object3D::Scene::PairMoleculePtrFloat pair : VTXApp::get().getScene().getMolecules() )
+				for ( const Object3D::Scene::PairMoleculePtrFloat & pair : VTXApp::get().getScene().getMolecules() )
 				{
 					pair.first->setRepresentation();
 				}

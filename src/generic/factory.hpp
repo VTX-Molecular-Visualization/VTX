@@ -65,7 +65,7 @@ namespace VTX
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCleanable, T>::value>, typename V>
 		void clearMapAsValue( std::map<V, T *> & p_map )
 		{
-			for ( std::pair<V, T *> pair : p_map )
+			for ( std::pair<const V, T *> & pair : p_map )
 			{
 				destroy( pair.second );
 			}

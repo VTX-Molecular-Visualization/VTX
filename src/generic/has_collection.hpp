@@ -23,13 +23,13 @@ namespace VTX
 		{
 		  public:
 			using MapStringToItemPtr  = std::map<std::string, T *>;
-			using PairStringToItemPtr = std::pair<std::string, T *>;
+			using PairStringToItemPtr = std::pair<const std::string, T *>;
 
 			virtual void init() override { _addItems(); }
 
 			virtual void clean() override
 			{
-				for ( const PairStringToItemPtr pair : _items )
+				for ( const PairStringToItemPtr & pair : _items )
 				{
 					Generic::destroy<BaseCollectionable>( pair.second );
 				}
@@ -45,7 +45,7 @@ namespace VTX
 				}
 			}
 
-			void addItem( const std::string& p_name, T * const p_item )
+			void addItem( const std::string & p_name, T * const p_item )
 			{
 				try
 				{
@@ -57,7 +57,7 @@ namespace VTX
 				}
 			}
 
-			void addItem(T * const p_item )
+			void addItem( T * const p_item )
 			{
 				try
 				{

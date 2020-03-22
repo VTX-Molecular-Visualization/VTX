@@ -69,7 +69,7 @@ namespace VTX
 				glBindFramebuffer( GL_FRAMEBUFFER, _fboGeo );
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-				for ( const Object3D::Scene::PairMoleculePtrFloat pair : p_scene.getMolecules() )
+				for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 				{
 					pair.first->render();
 				}

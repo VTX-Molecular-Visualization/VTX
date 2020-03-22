@@ -31,7 +31,7 @@ namespace VTX
 
 			ProgramManager::~ProgramManager()
 			{
-				for ( const PairStringToGLuint pair : _shaders )
+				for ( const PairStringToGLuint & pair : _shaders )
 				{
 					glDeleteShader( pair.second );
 				}

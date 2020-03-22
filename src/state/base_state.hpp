@@ -29,7 +29,7 @@ namespace VTX
 
 			virtual void BaseState::update( const double p_deltaTime ) override
 			{
-				for ( PairStringToItemPtr controller : _getItems() )
+				for ( const PairStringToItemPtr & controller : _getItems() )
 				{
 					controller.second->update( p_deltaTime );
 				}

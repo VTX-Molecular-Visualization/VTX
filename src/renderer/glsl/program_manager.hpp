@@ -31,9 +31,9 @@ namespace VTX
 			  public:
 				using MapStringToEnum	  = std::map<std::string, SHADER_TYPE>;
 				using MapStringToProgram  = std::map<std::string, Program>;
-				using PairStringToProgram = std::pair<std::string, Program>;
+				using PairStringToProgram = std::pair<const std::string, Program>;
 				using MapStringToGLuint	  = std::map<std::string, GLuint>;
-				using PairStringToGLuint  = std::pair<std::string, GLuint>;
+				using PairStringToGLuint  = std::pair<const std::string, GLuint>;
 
 				ProgramManager() = default;
 				~ProgramManager();

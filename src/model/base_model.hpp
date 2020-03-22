@@ -28,7 +28,7 @@ namespace VTX
 		  protected:
 			virtual void _notifyViews( const Event::VTX_EVENT_MODEL p_event ) final
 			{
-				for ( PairStringToItemPtr pair : _getItems() )
+				for ( PairStringToItemPtr & pair : _getItems() )
 				{
 					pair.second->notify( p_event );
 				}

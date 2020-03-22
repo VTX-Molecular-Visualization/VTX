@@ -26,7 +26,7 @@ namespace VTX
 
 		void BaseComponent::_drawComponents()
 		{
-			for ( const PairStringToItemPtr pair : _getItems() )
+			for ( const PairStringToItemPtr & pair : _getItems() )
 			{
 				pair.second->draw();
 			}
@@ -37,7 +37,7 @@ namespace VTX
 			if ( _getItems().find( p_name ) != _getItems().end() )
 			{ return static_cast<BaseComponent *>( _getItem( p_name ) ); }
 
-			for ( const PairStringToItemPtr pair : _getItems() )
+			for ( const PairStringToItemPtr & pair : _getItems() )
 			{
 				BaseComponent * child = dynamic_cast<BaseComponent *>( pair.second );
 				if ( child != nullptr )
