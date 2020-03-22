@@ -137,6 +137,7 @@ namespace VTX
 			if ( root != nullptr ) delete root;
 
 			chrono.stop();
+			_isBuilt = true;
 			VTX_INFO( "BVH built in " + std::to_string( chrono.elapsedTime() ) );
 		}
 

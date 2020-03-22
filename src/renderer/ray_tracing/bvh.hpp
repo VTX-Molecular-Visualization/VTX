@@ -46,6 +46,9 @@ namespace VTX
 			BVH()  = default;
 			~BVH() = default;
 
+			const bool		   isBuilt() const { return _isBuilt; }
+			const Math::AABB & getAABB() const { return _nodes[ 0 ]._aabb; }
+
 			void build( const std::vector<BasePrimitive *> & p_prims,
 						const uint							 p_maxPrimsLeaf,
 						const SplitMethod					 p_splitMethod );
@@ -92,6 +95,8 @@ namespace VTX
 			SplitMethod					 _splitMethod = SplitMethod::SAH;
 
 			std::vector<LBVHNode> _nodes;
+
+			bool _isBuilt = false;
 		};
 
 	} // namespace Renderer

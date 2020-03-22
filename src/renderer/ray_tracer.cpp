@@ -3,8 +3,11 @@
 #include "ray_tracing/integrators/direct_lighting_integrator.hpp"
 #include "ray_tracing/integrators/raycast_integrator.hpp"
 #include "ray_tracing/lights/point_light.hpp"
+#include "ray_tracing/materials/diffuse_material.hpp"
 #include "ray_tracing/materials/flat_color_material.hpp"
 #include "ray_tracing/primitives/cylinder.hpp"
+#include "ray_tracing/primitives/molecule_ball_and_stick.hpp"
+#include "ray_tracing/primitives/plane.hpp"
 #include "ray_tracing/primitives/sphere.hpp"
 #include "tool/chrono.hpp"
 #include "util/sampler.hpp"
@@ -23,6 +26,8 @@ namespace VTX
 			CameraRayTracing( const Object3D::Camera & p_camera, const uint p_width, const uint p_height ) :
 				_pos( p_camera.getPosition() ), _width( p_width ), _height( p_height )
 			{
+				_pos = Vec3f( 0.f, 0.f, 50.f );
+
 				const Vec3f & camFront = p_camera.getFront();
 				const Vec3f & camLeft  = p_camera.getLeft();
 				const Vec3f & camUp	   = p_camera.getUp();
@@ -61,15 +66,13 @@ namespace VTX
 
 			BaseRenderer::resize( p_width, p_height );
 
-			const Model::Molecule * mol = VTXApp::get().getScene().getMolecules()[ 0 ];
+			_scene.addObject( new MoleculeBallAndStick( VTXApp::get().getScene().getMolecules()[ 0 ] ) );
 
-			// TODO: add options for splitMethod and maxPrimsLeaf
-			const uint maxPrimsLeaf = 8;
-			_scene.buildBVH( mol->getRTPrimitives(), maxPrimsLeaf, BVH::SplitMethod::SAH );
-			_scene.addLight( new PointLight( //
-				VTXApp::get().getScene().getCamera().getPosition() + Vec3f( 1.f, 0.f, -8.f ),
-				VEC3F_XYZ,
-				50.f ) );
+			_scene.addObject( new Plane( VEC3F_Y, -12.f, new DiffuseMaterial( VEC3F_XYZ * 0.9f ) ) );
+
+			// derière 173d
+			//_scene.addLight( new PointLight( Vec3f( 10.f, 20.f, 0.f ), VEC3F_XYZ, 50.f ) );
+			_scene.addLight( new PointLight( Vec3f( 10.f, 20.f, 20.f ), VEC3F_XYZ, 50.f ) );
 
 			//_integrator = new AOIntegrator;
 			//_integrator = new RayCastIntegrator;
@@ -83,7 +86,7 @@ namespace VTX
 			VTX_INFO( "Render Frame" );
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
-			const uint nbPixelSamples = 1;
+			const uint nbPixelSamples = 32;
 
 			uint			   size = _width * _height * 3 * sizeof( char );
 			std::vector<uchar> pixels( _width * _height * 3 );
@@ -222,21 +225,14 @@ namespace VTX
 			for ( uint s = 0; s < p_nbPixelSamples; s++ )
 			{
 				// first sample in pixel center
-				const float sx = s == 0 ? p_x : p_x + Util::Math::randomFloat();
-				const float sy = s == 0 ? p_y : p_y + Util::Math::randomFloat();
+				const float sx = s == 0 ? p_x : p_x + Util::Math::randomFloat() - 0.5f;
+				const float sy = s == 0 ? p_y : p_y + Util::Math::randomFloat() - 0.5f;
 
 				const Ray ray = p_camera.generateRay( sx, sy );
 
 				const Vec3f Li = _integrator->Li( ray, _scene, 1e-3f, FLOAT_MAX );
 
-				// TODO: remove, only to identify the point light (uggly)
-				if ( Sphere( dynamic_cast<PointLight *>( _scene.getLights()[ 0 ] )->_position,
-							 0.3f,
-							 new FlatColorMaterial( Vec3f( 1.f, 1.f, 0.f ) ) )
-						 .intersect( ray, 1e-3f, FLOAT_MAX, Intersection() ) )
-				{ color = Vec3f( 1.f, 1.f, 0.f ); }
-				else
-					color += Li;
+				color += Li;
 			}
 			return glm::clamp( color / float( p_nbPixelSamples ), VEC3F_ZERO, VEC3F_XYZ );
 		}

@@ -61,6 +61,12 @@ namespace VTX
 				return glm::normalize( p_value );
 			}
 
+			template<typename T>
+			static inline T faceForward( const T & p_vec, const T & p_view )
+			{
+				return dot( p_view, p_vec ) > 0.f ? -p_vec : p_vec;
+			}
+
 			static inline float randomFloat() { return dis( gen ); }
 
 			static inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }

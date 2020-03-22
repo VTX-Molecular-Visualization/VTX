@@ -195,16 +195,6 @@ namespace VTX
 
 			void _createBuffers();
 
-			// ============================================ Ray tracing data
-		  public:
-			const std::vector<Renderer::BasePrimitive *> & getRTPrimitives() const { return _rtPrimitives; }
-
-		  private:
-			std::vector<Renderer::BasePrimitive *> _rtPrimitives;
-			std::vector<Renderer::BaseMaterial *>  _rtMaterials;
-
-			void _createRTData();
-			// ============================================
 #ifdef _DEBUG
 		  public:
 			// Validation.

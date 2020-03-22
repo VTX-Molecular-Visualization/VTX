@@ -19,7 +19,7 @@ namespace VTX
 			Cylinder( const Vec3f & p_v0, const Vec3f & p_v1, const float p_radius, BaseMaterial * const p_mtl ) :
 				BasePrimitive( p_mtl ), _v0( p_v0 ), _v1( p_v1 ), _radius( p_radius )
 			{
-				computeAABB();
+				_computeAABB();
 			}
 			Cylinder( const Cylinder & p_node ) = default;			  // copy constructor
 			Cylinder( Cylinder && p_ray )		= default;			  // move constructor
@@ -27,14 +27,6 @@ namespace VTX
 			Cylinder & operator=( Cylinder && p_ray ) = default;	  // = move
 
 			const float radius() const { return _radius; }
-
-			void computeAABB() override
-			{
-				const Vec3f v = _v1 - _v0;
-				const Vec3f e = _radius * sqrt( 1.f - v * v / dot( v, v ) );
-
-				_aabb = Math::AABB( Util::Math::min( _v0 - e, _v1 - e ), Util::Math::max( _v0 + e, _v1 + e ) );
-			}
 
 			bool intersect( const Ray &	   p_ray,
 							const float	   p_tMin,
@@ -66,11 +58,21 @@ namespace VTX
 				if ( y < 0.f || y > d0 ) { return false; }
 
 				p_intersection._point	  = p_ray.getPointAtT( t );
-				p_intersection._normal	  = ( ov0 + t * d - v * y / d0 ) / _radius;
+				const Vec3f normal		  = ( ov0 + t * d - v * y / d0 ) / _radius;
+				p_intersection._normal	  = Util::Math::faceForward( normal, d );
 				p_intersection._distance  = t;
 				p_intersection._primitive = this;
 
 				return true;
+			}
+
+		  private:
+			void _computeAABB() override
+			{
+				const Vec3f v = _v1 - _v0;
+				const Vec3f e = _radius * sqrt( 1.f - v * v / dot( v, v ) );
+
+				_aabb = Math::AABB( Util::Math::min( _v0 - e, _v1 - e ), Util::Math::max( _v0 + e, _v1 + e ) );
 			}
 
 		  private:

@@ -18,7 +18,7 @@ namespace VTX
 			Sphere( const Vec3f & p_center, const float p_radius, BaseMaterial * const p_mtl ) :
 				BasePrimitive( p_mtl ), _center( p_center ), _radius( p_radius )
 			{
-				computeAABB();
+				_computeAABB();
 			}
 			Sphere( const Sphere & p_node ) = default;			  // copy constructor
 			Sphere( Sphere && p_ray )		= default;			  // move constructor
@@ -30,8 +30,6 @@ namespace VTX
 
 			Vec3f getVecMin() const { return _center - _radius; }
 			Vec3f getVecMax() const { return _center + _radius; }
-
-			void computeAABB() override { _aabb = Math::AABB( getVecMin(), getVecMax() ); }
 
 			bool intersect( const Ray &	   p_ray,
 							const float	   p_tMin,
@@ -56,12 +54,16 @@ namespace VTX
 				if ( t < p_tMin || t > p_tMax ) { return false; }
 
 				p_intersection._point	  = p_ray.getPointAtT( t );
-				p_intersection._normal	  = ( p_intersection._point - _center ) / _radius;
+				const Vec3f normal		  = ( p_intersection._point - _center ) / _radius;
+				p_intersection._normal	  = Util::Math::faceForward( normal, d );
 				p_intersection._distance  = t;
 				p_intersection._primitive = this;
 
 				return true;
 			}
+
+		  private:
+			void _computeAABB() override { _aabb = Math::AABB( getVecMin(), getVecMax() ); }
 
 		  private:
 			Vec3f _center = VEC3F_ZERO;

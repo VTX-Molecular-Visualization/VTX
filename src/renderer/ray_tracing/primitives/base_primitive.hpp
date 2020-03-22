@@ -7,14 +7,13 @@
 
 #include "../intersection.hpp"
 #include "../materials/base_material.hpp"
-#include "../ray.hpp"
-#include "math/aabb.hpp"
+#include "base_object_3D.hpp"
 
 namespace VTX
 {
 	namespace Renderer
 	{
-		class BasePrimitive
+		class BasePrimitive : public BaseObject3D
 		{
 		  public:
 			BasePrimitive( BaseMaterial * const p_mtl ) : _material( p_mtl ) {}
@@ -23,16 +22,22 @@ namespace VTX
 			const BaseMaterial * getMaterial() const { return _material; }
 			const Math::AABB &	 getAABB() const { return _aabb; }
 
-			virtual void computeAABB() = 0;
-
 			virtual bool intersect( const Ray &	   p_ray,
 									const float	   p_tMin,
 									const float	   p_tMax,
 									Intersection & p_intersection ) const = 0;
 
+			virtual bool intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const
+			{
+				// TODO: add a methode to avoid this Intersection()
+				return intersect( p_ray, p_tMin, p_tMax, Intersection() );
+			}
+
+		  private:
+			virtual void _computeAABB() = 0;
+
 		  protected:
 			BaseMaterial * _material = nullptr;
-			Math::AABB	   _aabb;
 		};
 	} // namespace Renderer
 } // namespace VTX
