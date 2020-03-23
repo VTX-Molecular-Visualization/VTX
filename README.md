@@ -3,6 +3,7 @@
 -   Install Visual C++: https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads
 -   Download last release: https://github.com/sguionni/VTX/releases
 -   Extract archive and run bin/VTX.exe
+-   Report bugs or anything else here: https://github.com/sguionni/VTX/issues
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/25aeed2cf0e54f45b39496354738bfc4)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sguionni/VTX&amp;utm_campaign=Badge_Grade)
 
