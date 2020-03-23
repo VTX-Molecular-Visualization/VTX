@@ -2,10 +2,10 @@
 
 ## USER GUIDE
 
--     Install Visual C++: [https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads]
--     Download last release (VTX.rar in assets): [https://github.com/sguionni/VTX/releases]
+-     Install Visual C++: [link](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
+-     Download last release (VTX.rar in assets): [link](https://github.com/sguionni/VTX/releases)
 -     Extract archive and run bin/VTX.exe
--     Report bugs or anything else by creating a new issue: [https://github.com/sguionni/VTX/issues]
+-     Report bugs or anything else by creating a new issue: [link](https://github.com/sguionni/VTX/issues)
 
 ## DEV GUIDE
 
