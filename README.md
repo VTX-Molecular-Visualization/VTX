@@ -1,24 +1,25 @@
-# VTX USER GUIDE
+# VTX
 
--   Install Visual C++: https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads
--   Download last release (VTX.rar in assets): https://github.com/sguionni/VTX/releases
--   Extract archive and run bin/VTX.exe
--   Report bugs or anything else by creating a new issue: https://github.com/sguionni/VTX/issues
+## USER GUIDE
 
+-     Install Visual C++: [https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads]
+-     Download last release (VTX.rar in assets): [https://github.com/sguionni/VTX/releases]
+-     Extract archive and run bin/VTX.exe
+-     Report bugs or anything else by creating a new issue: [https://github.com/sguionni/VTX/issues]
 
+## DEV GUIDE
 
-# VTX DEV GUIDE
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/25aeed2cf0e54f45b39496354738bfc4)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sguionni/VTX&amp;utm_campaign=Badge_Grade)
 
-## WINDOWS VISUAL STUDIO 2019 x64
+### WINDOWS VISUAL STUDIO 2019 x64
 
-### 1. Make solution
--   Install Visual Studio 2019 latest version with C++ tools.  
--   Run _cmake.bat
+#### 1. Make solution
+-     Install Visual Studio 2019 latest version with C++ tools.  
+-     Run _cmake.bat
 
-### 2. Open solution
+#### 2. Open solution
 Open "_windows/VTX.sln".
-### 3. Install/configure ClangFormat
+#### 3. Install/configure ClangFormat
 Install [ClangFormat VS extension](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.ClangFormat).  
 Go to Tools -> Options, then under LLVM/Clang, set the following values:
 -   Format On Save
@@ -29,13 +30,13 @@ Go to Tools -> Options, then under LLVM/Clang, set the following values:
     -   Sort includes: True
     -   Style: file
 
-## LINUX
+### LINUX
 
 git curl cmake GL (libgl1-mesa-dev)
 
-## MAC OS
+### MAC OS
 
-## Some architecture points
+### Some architecture points
 - Action is designed to be undoable and launched by scripts. All menu items have to throw an action. An action can change the application state or stack workers.
 - State is an application state with its enabled/disabled UI components and its controllers (mouse, keyboard...). For example the visualization state handles the FPS camera controler, refresh the renderer and update the scene each frame.
 - Workers are functionalities that can be threaded, for example taking a snapshot or parse a file to load.
