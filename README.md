@@ -1,7 +1,7 @@
 # VTX USER GUIDE
 
-Install Visual C++: https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads
-Run bin/VTX.exe
+-   Install Visual C++: https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads
+-   Run bin/VTX.exe
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/25aeed2cf0e54f45b39496354738bfc4)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sguionni/VTX&amp;utm_campaign=Badge_Grade)
 
@@ -10,8 +10,9 @@ Run bin/VTX.exe
 ## WINDOWS VISUAL STUDIO 2019 x64
 
 ### 1. Make solution
-Install Visual Studio 2019 latest version with C++ tools.  
-Run _cmake.bat
+-   Install Visual Studio 2019 latest version with C++ tools.  
+-   Run _cmake.bat
+
 ### 2. Open solution
 Open "_windows/VTX.sln".
 ### 3. Install/configure ClangFormat
