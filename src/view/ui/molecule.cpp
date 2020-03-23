@@ -5,6 +5,7 @@
 #include "action/molecule_change_frame.hpp"
 #include "action/molecule_change_is_playing.hpp"
 #include "action/molecule_change_show_solvant.hpp"
+#include "action/selectable_unselect.hpp"
 #include "action/transformable_rotate.hpp"
 #include "action/transformable_set_scale.hpp"
 #include "action/transformable_set_translation.hpp"
@@ -20,8 +21,9 @@ namespace VTX
 			void Molecule::_draw()
 			{
 				ImGui::PushID( ( "ViewMolecule" + std::to_string( _getModel().getId() ) ).c_str() );
-				if ( ImGui::CollapsingHeader( _getModel().getName().c_str(),
-											  ImGuiTreeNodeFlags_DefaultOpen ) )
+				bool notClosed = true;
+				if ( ImGui::CollapsingHeader(
+						 _getModel().getName().c_str(), &notClosed, ImGuiTreeNodeFlags_DefaultOpen ) )
 				{
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 					{
@@ -137,6 +139,7 @@ namespace VTX
 					}
 #endif
 				}
+				if ( notClosed == false ) { VTX_ACTION( new Action::SelectableUnselect( _getModel() ) ); }
 				ImGui::PopID();
 			}
 		} // namespace UI
