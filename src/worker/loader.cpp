@@ -15,6 +15,8 @@ namespace VTX
 			Model::Molecule * molecule = new Model::Molecule();
 			Object3D::Scene * scene	   = &( VTXApp::get().getScene() );
 
+			molecule->setName( _path->getFileName() );
+
 			IO::Reader::BaseReader<Model::Molecule> * reader = nullptr;
 			if ( _path->getExtension() == "mmtf" ) { reader = new IO::Reader::MMTF(); }
 			else if ( _path->getExtension() == "obj" )

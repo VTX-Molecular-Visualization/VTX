@@ -32,10 +32,7 @@ namespace VTX
 					const std::vector<chemfiles::Residue> & residues = topology.residues();
 					const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
 
-					if ( frame.get( "name" ) )
-						p_molecule.setName( frame.get( "name" )->as_string() );
-					else
-						p_molecule.setName( "Unknown (.arc file)" );
+					if ( frame.get( "name" ) ) { p_molecule.setName( frame.get( "name" )->as_string() ); }
 
 					// Seems that .arc does not provide information about chains or residues...
 					p_molecule.addChains( 1 );
