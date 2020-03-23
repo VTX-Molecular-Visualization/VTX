@@ -1,5 +1,6 @@
 #include "molecule_ball_and_stick.hpp"
 #include "../materials/diffuse_material.hpp"
+#include "../materials/phong_material.hpp"
 #include "cylinder.hpp"
 #include "sphere.hpp"
 
@@ -21,14 +22,16 @@ namespace VTX
 			uint cptAtoms	 = 0;
 			uint cptBonds	 = 0;
 
-			_materials.emplace_back( new Renderer::DiffuseMaterial( VEC3F_XYZ ) );
+			_materials.emplace_back( new DiffuseMaterial( VEC3F_XYZ, VEC3F_XYZ ) );
+			//_materials.emplace_back( new PhongMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
+			_materials.emplace_back( new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
 
 			// Add atoms and bonds of each residue
 			for ( uint i = 0; i < p_molecule->getResidueCount(); ++i )
 			{
 				// TODO: remove material duplication + only allow chain colors
 				const Model::Residue & r = p_molecule->getResidue( i );
-				_materials.emplace_back( new DiffuseMaterial( r.getChainPtr()->getColor() ) );
+				//_materials.emplace_back( new DiffuseMaterial( r.getChainPtr()->getColor() ) );
 
 				const uint idFirstAtomRes = r.getIdFirstAtom();
 				const uint nbAtomsRes	  = r.getAtomCount();
@@ -37,8 +40,8 @@ namespace VTX
 
 				for ( uint j = idFirstAtomRes; j < idFirstAtomRes + nbAtomsRes; ++j )
 				{
-					primitives[ idPrimitive ] = new Renderer::Sphere(
-						positions[ j ], p_molecule->getAtomRadius( j ) * 0.3f, _materials.back() );
+					primitives[ idPrimitive ]
+						= new Renderer::Sphere( positions[ j ], p_molecule->getAtomRadius( j ), _materials.back() );
 					idPrimitive++;
 					cptAtoms++;
 				}

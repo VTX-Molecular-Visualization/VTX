@@ -19,14 +19,16 @@ namespace VTX
 			{
 			}
 
-			Vec3f sample( const Vec3f & p_point ) const override
+			LightSample sample( const Vec3f & p_point ) const override
 			{
-				// This is not normalized to use length in integrator if need
-				return _position - p_point;
+				const Vec3f dir	  = _position - p_point;
+				const float dist2 = Util::Math::dot( dir, dir );
+				const float dist  = sqrtf( dist2 );
+
+				return LightSample( dir / dist, dist, ( _color * _power ) / dist2, 1.f );
 			}
 
-			// TODO: back to private !
-		  public:
+		  private:
 			Vec3f _position;
 		};
 	} // namespace Renderer

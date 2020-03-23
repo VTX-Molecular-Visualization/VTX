@@ -20,7 +20,7 @@ namespace VTX
 			{
 			}
 			Plane( const Vec3f & p_pt, const Vec3f & p_n, BaseMaterial * const p_mtl ) :
-				BasePrimitive( p_mtl ), _n( p_n ), _d( Util::Math::dot( p_pt, _n ) )
+				BasePrimitive( p_mtl ), _n( Util::Math::normalize( p_n ) ), _d( Util::Math::dot( p_pt, _n ) )
 			{
 			}
 

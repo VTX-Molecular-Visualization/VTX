@@ -62,6 +62,18 @@ namespace VTX
 			}
 
 			template<typename T>
+			static inline T reflect( const T & p_v1, const T & p_v2 )
+			{
+				return glm::reflect( p_v1, p_v2 );
+			}
+
+			template<typename T>
+			static inline T pow( const T & p_value, const T & p_exp )
+			{
+				return glm::pow( p_value, p_exp );
+			}
+
+			template<typename T>
 			static inline T faceForward( const T & p_vec, const T & p_view )
 			{
 				return dot( p_view, p_vec ) > 0.f ? -p_vec : p_vec;

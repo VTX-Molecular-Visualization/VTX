@@ -15,10 +15,13 @@ namespace VTX
 		class DiffuseMaterial : public BaseMaterial
 		{
 		  public:
-			DiffuseMaterial( const Vec3f & p_kd ) : _kd( p_kd ) {}
+			DiffuseMaterial( const Vec3f & p_color, const Vec3f & p_kd = VEC3F_XYZ ) :
+				BaseMaterial( p_color ), _kd( p_kd )
+			{
+			}
 			Vec3f shade( const Ray & p_ray, const Intersection & p_hit, const Vec3f & p_lightDir ) const override
 			{
-				return _kd * Util::Math::max( 0.f, glm::dot( p_hit._normal, p_lightDir ) );
+				return _color * _kd * Util::Math::max( 0.f, glm::dot( p_hit._normal, p_lightDir ) );
 			}
 
 		  private:

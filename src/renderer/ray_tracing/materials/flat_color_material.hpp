@@ -14,14 +14,13 @@ namespace VTX
 		class FlatColorMaterial : public BaseMaterial
 		{
 		  public:
-			FlatColorMaterial( const Vec3f & p_color ) : _color( p_color ) {}
+			FlatColorMaterial( const Vec3f & p_color ) : BaseMaterial( p_color ) {}
 			Vec3f shade( const Ray & p_ray, const Intersection & p_hit, const Vec3f & p_lightDir ) const override
 			{
 				return _color;
 			}
 
 		  private:
-			Vec3f _color = VEC3F_ZERO;
 		};
 	} // namespace Renderer
 } // namespace VTX

@@ -69,11 +69,16 @@ namespace VTX
 		//_stateMachine->goToState( ID::State::LOADING, &IO::Path( DATA_DIR + "r2d2.obj" ) );
 		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "dhfr2.arc" ) );
 #else
-		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "173D.mmtf" ) );
+		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6vxx.mmtf" ) );
+		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "173D.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "3j3q.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "4v6x.mmtf" ) );
 		//_stateMachine->goToState( ID::State::VISUALIZATION );
 #endif
+
+		Vec3f _u		 = VEC3F_X; // vectors adjacent to the corner
+		Vec3f _v		 = VEC3F_Z;
+		Vec3f _invNormal = Util::Math::cross( _v, _u );
 
 		Renderer::RayTracer * rt = new Renderer::RayTracer();
 		rt->init( (int)io.DisplaySize.x, (int)io.DisplaySize.y );

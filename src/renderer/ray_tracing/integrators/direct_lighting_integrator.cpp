@@ -17,22 +17,19 @@ namespace VTX
 
 			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
+				const BaseMaterial * mtl = intersection._primitive->getMaterial();
+
 				// compute direct lighting from all lights in the scene
 				for ( const BaseLight * light : p_scene.getLights() )
 				{
-					const Vec3f lightDir		   = light->sample( intersection._point );
-					const float lightDistSqr	   = Util::Math::dot( lightDir, lightDir );
-					const float lightDist		   = sqrtf( lightDistSqr );
-					const Vec3f lightDirNormalized = lightDir / lightDist;
+					const LightSample ls = light->sample( intersection._point );
 
-					const Ray shadowRay( intersection._point, lightDirNormalized );
+					const Ray shadowRay( intersection._point, ls._dir );
 
-					if ( !p_scene.intersectAny( shadowRay, 1e-3f, lightDist ) )
-					{
-						Li += intersection._primitive->getMaterial()->shade( p_ray, intersection, lightDirNormalized )
-							  * light->getColor();
-					}
+					if ( !p_scene.intersectAny( shadowRay, 1e-3f, FLT_MAX ) )
+					{ Li += 0.9f * mtl->shade( p_ray, intersection, ls._dir ) * ls._radiance; }
 				}
+				Li += 0.1f * mtl->getColor();
 			}
 			else
 			{

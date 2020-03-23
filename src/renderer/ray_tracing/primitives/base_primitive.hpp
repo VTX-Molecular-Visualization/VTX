@@ -30,7 +30,7 @@ namespace VTX
 			virtual bool intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const
 			{
 				// TODO: add a methode to avoid this Intersection()
-				return intersect( p_ray, p_tMin, p_tMax, Intersection() );
+				return intersect( p_ray, p_tMin, p_tMax, Intersection( VEC3F_ZERO, VEC3F_ZERO, FLOAT_MAX, nullptr ) );
 			}
 
 		  private:

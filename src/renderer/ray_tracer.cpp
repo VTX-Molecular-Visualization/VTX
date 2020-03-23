@@ -2,6 +2,7 @@
 #include "ray_tracing/integrators/ao_integrator.hpp"
 #include "ray_tracing/integrators/direct_lighting_integrator.hpp"
 #include "ray_tracing/integrators/raycast_integrator.hpp"
+#include "ray_tracing/lights/directional_light.hpp"
 #include "ray_tracing/lights/point_light.hpp"
 #include "ray_tracing/materials/diffuse_material.hpp"
 #include "ray_tracing/materials/flat_color_material.hpp"
@@ -26,12 +27,19 @@ namespace VTX
 			CameraRayTracing( const Object3D::Camera & p_camera, const uint p_width, const uint p_height ) :
 				_pos( p_camera.getPosition() ), _width( p_width ), _height( p_height )
 			{
-				_pos = Vec3f( 0.f, 0.f, 50.f );
+				//[10:24:31][ INFO ] Position :
+				_pos = Vec3f( 302.771790f, 378.963623f, 195.313385f );
 
-				const Vec3f & camFront = p_camera.getFront();
+				const Vec3f & camFront = Vec3f( -0.514253f, -0.857623f, -0.005213f );
+				const Vec3f & camLeft  = Vec3f( 0.857589f, -0.514279f, 0.007590f );
+				const Vec3f & camUp	   = Vec3f( -0.009190f, -0.000568f, 0.999958f );
+
+				const float camFov = p_camera.getFov();
+
+				/*const Vec3f & camFront = p_camera.getFront();
 				const Vec3f & camLeft  = p_camera.getLeft();
 				const Vec3f & camUp	   = p_camera.getUp();
-				const float	  camFov   = p_camera.getFov();
+				const float	  camFov   = p_camera.getFov();*/
 
 				const float ratio	   = float( _width ) / _height;
 				const float halfHeight = tan( glm::radians( camFov ) * 0.5f );
@@ -68,11 +76,15 @@ namespace VTX
 
 			_scene.addObject( new MoleculeBallAndStick( VTXApp::get().getScene().getMolecules()[ 0 ] ) );
 
-			_scene.addObject( new Plane( VEC3F_Y, -12.f, new DiffuseMaterial( VEC3F_XYZ * 0.9f ) ) );
+			_scene.addObject( new Plane( -Vec3f( -0.009190f, -0.000568f, 0.999958f ),
+										 300.f, //
+										 new DiffuseMaterial( Vec3f( 1.f, 0.7f, 0.f ) ) ) );
 
 			// derière 173d
 			//_scene.addLight( new PointLight( Vec3f( 10.f, 20.f, 0.f ), VEC3F_XYZ, 50.f ) );
-			_scene.addLight( new PointLight( Vec3f( 10.f, 20.f, 20.f ), VEC3F_XYZ, 50.f ) );
+			//_scene.addLight( new PointLight(
+			//	Vec3f( 202.771790f, 378.963623f, 295.313385f ) /*Vec3f( 10.f, 20.f, 25.f )*/, VEC3F_XYZ, 50000.f ) );
+			_scene.addLight( new DirectionalLight( Vec3f( 10.f, 1.f, 3.f ), VEC3F_XYZ ) );
 
 			//_integrator = new AOIntegrator;
 			//_integrator = new RayCastIntegrator;
