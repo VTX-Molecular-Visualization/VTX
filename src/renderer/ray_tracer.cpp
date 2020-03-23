@@ -4,6 +4,7 @@
 #include "ray_tracing/integrators/raycast_integrator.hpp"
 #include "ray_tracing/lights/directional_light.hpp"
 #include "ray_tracing/lights/point_light.hpp"
+#include "ray_tracing/lights/quad_light.hpp"
 #include "ray_tracing/materials/diffuse_material.hpp"
 #include "ray_tracing/materials/flat_color_material.hpp"
 #include "ray_tracing/primitives/cylinder.hpp"
@@ -80,11 +81,17 @@ namespace VTX
 										 300.f, //
 										 new DiffuseMaterial( Vec3f( 1.f, 0.7f, 0.f ) ) ) );
 
+			//_scene.addObject( new Sphere( Vec3f( 100.f, 250.f, 300.f ), // z350
+			//							  50.f,							//
+			//							  new DiffuseMaterial( Vec3f( 0.f, 0.7f, 1.f ) ) ) );
+
 			// derière 173d
-			//_scene.addLight( new PointLight( Vec3f( 10.f, 20.f, 0.f ), VEC3F_XYZ, 50.f ) );
+			_scene.addLight( new PointLight( Vec3f( 600.f, 200.f, 400.f ), VEC3F_XYZ, 90000.f ) );
 			//_scene.addLight( new PointLight(
 			//	Vec3f( 202.771790f, 378.963623f, 295.313385f ) /*Vec3f( 10.f, 20.f, 25.f )*/, VEC3F_XYZ, 50000.f ) );
-			_scene.addLight( new DirectionalLight( Vec3f( 10.f, 1.f, 3.f ), VEC3F_XYZ ) );
+			//_scene.addLight( new DirectionalLight( Vec3f( 10.f, 1.f, 3.f ), VEC3F_XYZ ) );
+			_scene.addLight(
+				new QuadLight( Vec3f( 200.f, 400.f, 400.f ), VEC3F_Y * 60.f, VEC3F_X * 60.f, VEC3F_XYZ, 50.f ) );
 
 			//_integrator = new AOIntegrator;
 			//_integrator = new RayCastIntegrator;

@@ -23,7 +23,7 @@ namespace VTX
 
 			virtual LightSample sample( const Vec3f & p_point ) const = 0;
 
-			const float getPdf() const { return _pdf; }
+			const bool isSurface() const { return _isSurface; }
 
 		  protected:
 			Vec3f _color = VEC3F_XYZ;
@@ -31,6 +31,8 @@ namespace VTX
 			float _power = 1.f;
 
 			float _pdf = 1.f;
+
+			bool _isSurface = false;
 		};
 	} // namespace Renderer
 } // namespace VTX
