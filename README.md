@@ -1,6 +1,11 @@
-# VTX 
+# VTX USER GUIDE
+
+Install Visual C++: https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads
+Run bin/VTX.exe
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/25aeed2cf0e54f45b39496354738bfc4)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sguionni/VTX&amp;utm_campaign=Badge_Grade)
+
+# VTX DEV GUIDE
 
 ## WINDOWS VISUAL STUDIO 2019 x64
 
