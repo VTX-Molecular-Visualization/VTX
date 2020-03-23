@@ -14,8 +14,8 @@
 ### WINDOWS VISUAL STUDIO 2019 x64
 
 #### 1. Make solution
-- Install Visual Studio 2019 latest version with C++ tools.  
-- Run _cmake.bat
+-   Install Visual Studio 2019 latest version with C++ tools.  
+-   Run _cmake.bat
 
 #### 2. Open solution
 Open "_windows/VTX.sln".
