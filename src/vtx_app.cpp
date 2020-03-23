@@ -69,7 +69,7 @@ namespace VTX
 		// VTX_ACTION( new Action::Open( DATA_DIR + "dhfr2.arc" ) );
 #else
 		// VTX_ACTION( new Action::Open( DATA_DIR + "4v6x.mmtf" ) );
-		VTX_ACTION( new Action::Open( DATA_DIR + "dhfr2.arc" ) );
+		// VTX_ACTION( new Action::Open( DATA_DIR + "dhfr2.arc" ) );
 #endif
 
 		while ( VTXApp::_isRunning )

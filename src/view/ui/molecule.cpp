@@ -20,7 +20,8 @@ namespace VTX
 			void Molecule::_draw()
 			{
 				ImGui::PushID( ( "ViewMolecule" + std::to_string( _getModel().getId() ) ).c_str() );
-				if ( ImGui::CollapsingHeader( _getModel().getName().c_str(), ImGuiTreeNodeFlags_DefaultOpen ) )
+				if ( ImGui::CollapsingHeader( _getModel().getName().c_str(),
+											  ImGuiTreeNodeFlags_DefaultOpen ) )
 				{
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 					{
