@@ -2,10 +2,10 @@
 
 ## USER GUIDE
 
--     Install Visual C++: [link](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
--     Download last release (VTX.rar in assets): [link](https://github.com/sguionni/VTX/releases)
--     Extract archive and run bin/VTX.exe
--     Report bugs or anything else by creating a new issue: [link](https://github.com/sguionni/VTX/issues)
+- Install Visual C++: [link](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
+- Download last release (VTX.rar in assets): [link](https://github.com/sguionni/VTX/releases)
+- Extract archive and run bin/VTX.exe
+- Report bugs or anything else by creating a new issue: [link](https://github.com/sguionni/VTX/issues)
 
 ## DEV GUIDE
 
@@ -14,8 +14,8 @@
 ### WINDOWS VISUAL STUDIO 2019 x64
 
 #### 1. Make solution
--     Install Visual Studio 2019 latest version with C++ tools.  
--     Run _cmake.bat
+- Install Visual Studio 2019 latest version with C++ tools.  
+- Run _cmake.bat
 
 #### 2. Open solution
 Open "_windows/VTX.sln".
