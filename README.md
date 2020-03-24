@@ -13,14 +13,14 @@
 -   ZSQD or arrows keys to move the camera
 -   Hold left mouse and move to look around
 -   Hold right mouse and move to rotate on the side
--   Right clic on molecule to open context menu
+-   Right clic on molecule name in scene to open context menu
+-   Left clic on item in the scene view to open details in inspector view
 
 ### FEATURES
 
--   Supported files: .mmtf and .arc 
+-   Supported files: .mmtf and .arc
 -   Open multiple molecules
--   Export snaposhot (saved in snapshots/ folders
--   
+-   Export snaposhot (saved in snapshots/ folders)
 
 ### FEATURES IN DEVELOPPEMENT
 
