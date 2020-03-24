@@ -48,9 +48,9 @@ namespace VTX
 
 				const float sqrtDelta = sqrtf( delta );
 
-				// TODO: warning
-				// check only the first intersection ! will be problematic with eg glass materials
 				float t = ( -b - sqrtDelta ) / a;
+				if ( t > p_tMax ) { return false; }				  // first intersection too far
+				if ( t < p_tMin ) { t = ( -b + sqrtDelta ) / a; } // first intersection too near, check second one
 				if ( t < p_tMin || t > p_tMax ) { return false; }
 
 				p_intersection._point	  = p_ray.getPointAtT( t );
