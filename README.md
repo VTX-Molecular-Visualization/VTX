@@ -7,7 +7,26 @@
 -   Extract archive and run bin/VTX.exe
 -   Report bugs or anything else by creating a new issue: [link](https://github.com/sguionni/VTX/issues)
 
-## DEV GUIDE
+### CONTROLS
+
+-   ZSQD or arrows keys to move the camera
+-   Hold left mouse and move to look around
+-   Hold right mouse and move to rotate on the side
+-   Right clic on molecule to open context menu
+
+### FEATURES
+
+-   Supported files: .mmtf and .arc 
+-   Open multiple molecules
+-   Export snaposhot (saved in snapshots/ folders
+-   
+
+### FEATURES IN DEVELOPPEMENT
+
+-   Video export only exports a batch of snapshots, we need to use ffmpeg to build the video (not in ths release for the moment)
+-   Undo/redo not totally implemented, just some actions can be undone  
+
+## DEVELOPPER GUIDE
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/25aeed2cf0e54f45b39496354738bfc4)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sguionni/VTX&amp;utm_campaign=Badge_Grade)
 
