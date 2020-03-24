@@ -5,7 +5,8 @@
 -   Install Visual C++: [link](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
 -   Download last release (VTX.rar in assets): [link](https://github.com/sguionni/VTX/releases)
 -   Extract archive and run bin/VTX.exe
--   Report bugs or anything else by creating a new issue: [link](https://github.com/sguionni/VTX/issues)
+-   Report bugs, features, ideas or anything else by creating a new issue: [link](https://github.com/sguionni/VTX/issues)
+-   Issues labeled "Discussion" need to be discuted together, let's debate!
 
 ### CONTROLS
 
