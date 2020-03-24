@@ -13,8 +13,8 @@
 -   ZSQD or arrows keys to move the camera
 -   Hold left mouse and move to look around
 -   Hold right mouse and move to rotate on the side
--   Right clic on molecule name in scene to open context menu
--   Left clic on item in the scene view to open details in inspector view
+-   Right click on molecule name in scene to open context menu
+-   Left click on item in the scene view to open details in inspector view
 
 ### FEATURES
 
