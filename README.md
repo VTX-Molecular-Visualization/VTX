@@ -24,7 +24,7 @@
 
 ### FEATURES IN DEVELOPPEMENT
 
--   Video export only exports a batch of snapshots, we need to use ffmpeg to build the video (not in ths release for the moment)
+-   Video export only exports a batch of snapshots, we need to use ffmpeg to build the video (not in the release for the moment)
 -   Undo/redo not totally implemented, just some actions can be undone  
 
 ## DEVELOPPER GUIDE
