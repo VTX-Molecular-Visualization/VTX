@@ -17,6 +17,8 @@ namespace VTX
 			Model::Molecule * molecule = new Model::Molecule();
 			Object3D::Scene * scene	   = &( VTXApp::get().getScene() );
 
+			molecule->setFileName( _path->getFileNameWithoutExtension() );
+
 			molecule->setName( _path->getFileName() );
 
 			IO::Reader::BaseReader<Model::Molecule> * reader = nullptr;

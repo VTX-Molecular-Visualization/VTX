@@ -45,7 +45,6 @@ namespace VTX
 				VTX_INFO( "Creating models..." );
 
 				// Set molecule properties.
-				p_molecule.setFileName( p_path.getFileNameWithoutExtension() );
 				if ( frame.get( "name" ) ) { p_molecule.setName( frame.get( "name" )->as_string() ); }
 				p_molecule.setColor( Util::Color::randomPastelColor() );
 
@@ -75,96 +74,88 @@ namespace VTX
 					VTX_DEBUG( propResidue );
 				}
 
-				// Get residue by chain.
-				using vectorResidueId					= std::vector<uint64_t>;
-				using mapChainIdToResidueId				= std::unordered_map<std::string, vectorResidueId>;
-				mapChainIdToResidueId mapChainToResidue = mapChainIdToResidueId();
-				size_t				  atomsInResidues	= 0;
-				for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
-				{
-					const chemfiles::Residue & residue = residues[ residueIdx ];
-					const std::string &		   chain   = residue.properties().get( "chainname" ).value().as_string();
-					if ( mapChainToResidue.find( chain ) == mapChainToResidue.end() )
-					{ mapChainToResidue.emplace( chain, vectorResidueId() ); }
-					mapChainToResidue.at( chain ).push_back( residueIdx );
-					atomsInResidues += residue.size();
-				}
-
-				VTX_DEBUG( "Atoms in residues: " + std::to_string( atomsInResidues ) );
-				VTX_DEBUG( "Total atoms: " + std::to_string( frame.size() ) );
-
-				if ( frame.size() != atomsInResidues ) { VTX_WARNING( "Some atoms are not in a residue" ); }
-
 				// Create models.
 				p_molecule.addAtomPositionFrame();
 				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 
-				uint chainModelId	= 0;
-				uint residueModelId = 0;
-				uint atomModelId	= 0;
+				uint chainModelId = -1;
+				uint atomModelId  = 0;
 
-				for ( std::pair<std::string, vectorResidueId> pair : mapChainToResidue )
+				Model::Chain * modelChain;
+				std::string	   lastChainName = "";
+				for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 				{
-					const std::string & chainId	   = pair.first;
-					vectorResidueId &	residueIds = pair.second;
+					const chemfiles::Residue & residue = residues[ residueIdx ];
 
-					// Create chain.
-					p_molecule.addChain();
-					Model::Chain & modelChain = p_molecule.getChain( chainModelId );
-					modelChain.setId( chainModelId );
-					modelChain.setName( chainId );
-					modelChain.setMoleculePtr( &p_molecule );
-					modelChain.setIdFirstResidue( residueModelId );
-					modelChain.setResidueCount( uint( residueIds.size() ) );
-					modelChain.setColor( Util::Color::randomPastelColor() );
+					// Check if chain name changed.
+					// TODO: check if optional exist.
+					const std::string chainName = residue.properties().get( "chainname" ).value().as_string();
 
-					for ( size_t residueId : residueIds )
+					if ( chainName != lastChainName )
 					{
-						const chemfiles::Residue & residue = residues[ residueId ];
+						// Create chain.
+						p_molecule.addChain();
+						chainModelId++;
+						modelChain = &p_molecule.getChain( chainModelId );
+						modelChain->setId( chainModelId );
+						modelChain->setName( chainName );
+						modelChain->setMoleculePtr( &p_molecule );
+						modelChain->setIdFirstResidue( residueIdx );
+						modelChain->setResidueCount( 0 );
+						modelChain->setColor( Util::Color::randomPastelColor() );
 
-						// Create residue.
-						p_molecule.addResidue();
-						Model::Residue & modelResidue = p_molecule.getResidue( residueModelId );
-						modelResidue.setId( residueModelId );
-						modelResidue.setMoleculePtr( &p_molecule );
-						modelResidue.setChainPtr( &modelChain );
-						modelResidue.setIdFirstAtom( atomModelId );
-						modelResidue.setAtomCount( uint( residue.size() ) );
-						modelResidue.setColor( Util::Color::randomPastelColor() );
-
-						for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
-						{
-							const size_t			atomId = *it;
-							const chemfiles::Atom & atom   = topology[ atomId ];
-
-							// Create atom.
-							p_molecule.addAtom();
-							Model::Atom & modelAtom = p_molecule.getAtom( atomModelId );
-							modelAtom.setId( atomModelId );
-							modelAtom.setMoleculePtr( &p_molecule );
-							modelAtom.setChainPtr( &modelChain );
-							modelAtom.setResiduePtr( &modelResidue );
-							const float * const color = Model::Atom::SYMBOL_COLOR[ (int)modelAtom.getSymbol() ];
-							modelAtom.setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
-							const float atomRadius = modelAtom.getVdwRadius();
-							p_molecule.addAtomRadius( atomRadius );
-							const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
-							const chemfiles::Vector3D &					 position  = positions[ atomId ];
-							modelFrame.push_back( Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] ) );
-
-							atomModelId++;
-						}
-						residueModelId++;
+						lastChainName = chainName;
 					}
-					chainModelId++;
-				}
 
-				// Isolated atoms?
-				std::vector<size_t> isolatedAtom = std::vector<size_t>();
-				for ( size_t i = 0; i < topology.size(); ++i )
-				{
-					std::experimental::optional<const chemfiles::Residue &> residue = topology.residue_for_atom( i );
-					if ( residue == std::experimental::nullopt ) { VTX_WARNING( "Atom without residue found" ); }
+					modelChain = &p_molecule.getChain( chainModelId );
+					modelChain->setResidueCount( modelChain->getResidueCount() + 1 );
+
+					// Create residue.
+					p_molecule.addResidue();
+					Model::Residue & modelResidue = p_molecule.getResidue( residueIdx );
+					modelResidue.setId( residueIdx );
+					modelResidue.setMoleculePtr( &p_molecule );
+					modelResidue.setChainPtr( modelChain );
+					modelResidue.setIdFirstAtom( atomModelId );
+					modelResidue.setAtomCount( uint( residue.size() ) );
+					modelResidue.setColor( Util::Color::randomPastelColor() );
+					const std::string & residueSymbol = residue.name();
+					std::optional		symbol = magic_enum::enum_cast<Model::Residue::RESIDUE_SYMBOL>( residueSymbol );
+					symbol.has_value() ? modelResidue.setSymbol( symbol.value() )
+									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
+
+					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
+					{
+						const size_t			atomId = *it;
+						const chemfiles::Atom & atom   = topology[ atomId ];
+
+						// Create atom.
+						p_molecule.addAtom();
+						Model::Atom & modelAtom = p_molecule.getAtom( atomModelId );
+						modelAtom.setId( atomModelId );
+						modelAtom.setMoleculePtr( &p_molecule );
+						modelAtom.setChainPtr( modelChain );
+						modelAtom.setResiduePtr( &modelResidue );
+						const float * const color = Model::Atom::SYMBOL_COLOR[ (int)modelAtom.getSymbol() ];
+						modelAtom.setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
+						const std::string & atomSymbol = atom.name();
+						std::optional		symbol
+							= magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol.substr( 0, 1 ) );
+						symbol.has_value() ? modelAtom.setSymbol( symbol.value() )
+										   : p_molecule.addUnknownAtomSymbol( atomSymbol );
+
+						const float atomRadius = modelAtom.getVdwRadius();
+
+						const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
+						const chemfiles::Vector3D &					 position  = positions[ atomId ];
+						Vec3f atomPosition = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
+						modelFrame.push_back( atomPosition );
+
+						p_molecule.addAtomRadius( atomRadius );
+						p_molecule.extendAABB( atomPosition, atomRadius );
+
+						atomModelId++;
+					}
 				}
 
 				// Bonds.
