@@ -20,7 +20,7 @@
 
 -   Supported files: .mmtf and .arc
 -   Open multiple molecules
--   Export snaposhot (saved in snapshots/ folders)
+-   Export snapshot (saved in snapshots/ folders)
 
 ### FEATURES IN DEVELOPPEMENT
 

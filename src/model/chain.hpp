@@ -33,7 +33,7 @@ namespace VTX
 		  private:
 			Molecule * _moleculePtr = nullptr;
 
-			std::string _name			= "";
+			std::string _name			= "unknown";
 			uint		_idFirstResidue = 0;
 			uint		_residueCount	= 0;
 		}; // namespace Model

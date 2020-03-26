@@ -15,7 +15,7 @@ namespace VTX
 			{
 				ImGui::PushID( ( "ViewMoleculeStructure" + std::to_string( _getModel().getId() ) ).c_str() );
 				bool moleculeOpened = ImGui::TreeNodeEx(
-					_getModel().getName().c_str(),
+					(_getModel().getFileName() + " " + _getModel().getName()).c_str(),
 					_getModel().isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 				if ( ImGui::BeginPopupContextItem() )
 				{

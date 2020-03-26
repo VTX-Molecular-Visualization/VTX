@@ -61,12 +61,13 @@ namespace VTX
 
 #ifdef _DEBUG
 		// VTX_ACTION( new Action::Open(DATA_DIR + "173D.mmtf" ) );
-		VTX_ACTION( new Action::Open( DATA_DIR + "4v6x.mmtf" ) );
+		// VTX_ACTION( new Action::Open( DATA_DIR + "4v6x.mmtf" ) );
 		// VTX_ACTION( new Action::Open(DATA_DIR + "6LU7.mmtf" ) );
 		// VTX_ACTION( new Action::Open(DATA_DIR + "6LU7.mmtf" ) );
 		// VTX_ACTION( new Action::Open(DATA_DIR + "3j3q.mmtf" ) );
 		// VTX_ACTION( new Action::Open(DATA_DIR + "r2d2.obj" ) );
 		// VTX_ACTION( new Action::Open( DATA_DIR + "dhfr2.arc" ) );
+		// VTX_ACTION( new Action::Open( DATA_DIR + "6lzg.pdb" ) );
 #else
 		// VTX_ACTION( new Action::Open( DATA_DIR + "4v6x.mmtf" ) );
 		// VTX_ACTION( new Action::Open( DATA_DIR + "dhfr2.arc" ) );

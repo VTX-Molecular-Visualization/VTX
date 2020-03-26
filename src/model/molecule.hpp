@@ -42,6 +42,8 @@ namespace VTX
 			// Models.
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
+			inline const std::string & getFileName() const { return _fileName; };
+			inline void				   setFileName( const std::string & p_fileName ) { _fileName = p_fileName; };
 
 			inline void			   addChain() { _chains.emplace_back( new Chain() ); }
 			inline Chain &		   getChain( uint p_idx ) { return *_chains[ p_idx ]; }
@@ -107,6 +109,13 @@ namespace VTX
 			inline const uint				 getAtomCount() const { return (uint)_atoms.size(); }
 			inline const uint				 getBondCount() const { return (uint)_bonds.size(); }
 
+			inline void addAtomPositionFrames( const uint s )
+			{
+				for ( uint i = 0; i < s; ++i )
+				{
+					addAtomPositionFrame();
+				}
+			}
 			inline void addChains( const uint s )
 			{
 				for ( uint i = 0; i < s; ++i )
@@ -163,7 +172,8 @@ namespace VTX
 		  private:
 		  private:
 			// Models.
-			std::string			   _name	 = "";
+			std::string			   _fileName = "";
+			std::string			   _name	 = "unknown";
 			std::vector<Chain *>   _chains	 = std::vector<Chain *>();
 			std::vector<Residue *> _residues = std::vector<Residue *>();
 			std::vector<Atom *>	   _atoms	 = std::vector<Atom *>();

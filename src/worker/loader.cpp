@@ -3,6 +3,7 @@
 #include "io/reader/arc.hpp"
 #include "io/reader/mmtf.hpp"
 #include "io/reader/obj.hpp"
+#include "io/reader/pdb.hpp"
 #include "model/molecule.hpp"
 #include "vtx_app.hpp"
 
@@ -18,20 +19,27 @@ namespace VTX
 			molecule->setName( _path->getFileName() );
 
 			IO::Reader::BaseReader<Model::Molecule> * reader = nullptr;
-			if ( _path->getExtension() == "mmtf" ) { reader = new IO::Reader::MMTF(); }
+
+			if ( _path->getExtension() == "mmtf" ) { reader = new IO::Reader::PDB(); }
+			else if ( _path->getExtension() == "pdb" )
+			{
+				reader = new IO::Reader::PDB();
+			}
 			else if ( _path->getExtension() == "obj" )
 			{
 				reader = new IO::Reader::OBJ();
 			}
 			else if ( _path->getExtension() == "arc" )
 			{
-				reader = new IO::Reader::ARC();
+				reader = new IO::Reader::PDB();
 			}
 
 			const IO::PathFake * fake = dynamic_cast<const IO::PathFake *>( _path );
 
 			if ( fake )
 			{
+				delete reader;
+				reader = new IO::Reader::MMTF();
 				if ( reader == nullptr || reader->readBuffer( fake->read(), *molecule ) == false )
 				{
 					delete reader;
@@ -46,6 +54,8 @@ namespace VTX
 					return;
 				}
 			}
+
+			// TODO: delete mol if parsing failed.
 
 			molecule->init();
 			molecule->print();
