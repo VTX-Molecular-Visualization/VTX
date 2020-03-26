@@ -18,13 +18,13 @@ namespace VTX
 
 				chemfiles::Trajectory trajectory( p_path, 'r' );
 
+				VTX_DEBUG( std::to_string( trajectory.nsteps() ) + " frames" );
+
 				if ( trajectory.nsteps() == 0 )
 				{
 					VTX_WARNING( "Empty trajectory" );
 					return false;
 				}
-
-				VTX_INFO( "Creating models..." );
 
 				chemfiles::Frame						frame	 = trajectory.read();
 				const chemfiles::Topology &				topology = frame.topology();
@@ -41,6 +41,8 @@ namespace VTX
 							   + " != " + std::to_string( topology.size() ) );
 					return false;
 				}
+
+				VTX_INFO( "Creating models..." );
 
 				// Set molecule properties.
 				p_molecule.setFileName( p_path.getFileNameWithoutExtension() );
@@ -93,12 +95,9 @@ namespace VTX
 
 				if ( frame.size() != atomsInResidues ) { VTX_WARNING( "Some atoms are not in a residue" ); }
 
-				// Map chemfiles id -> model id.
-				std::map<size_t, uint> mapAtomIdToModelId	 = std::map<size_t, uint>();
-				std::map<size_t, uint> mapResidueIdToModelId = std::map<size_t, uint>();
-
 				// Create models.
-				p_molecule.addAtomPositionFrames( uint( trajectory.nsteps() ) );
+				p_molecule.addAtomPositionFrame();
+				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 
 				uint chainModelId	= 0;
 				uint residueModelId = 0;
@@ -122,7 +121,6 @@ namespace VTX
 					for ( size_t residueId : residueIds )
 					{
 						const chemfiles::Residue & residue = residues[ residueId ];
-						mapResidueIdToModelId.emplace( residueId, residueModelId );
 
 						// Create residue.
 						p_molecule.addResidue();
@@ -134,11 +132,10 @@ namespace VTX
 						modelResidue.setAtomCount( uint( residue.size() ) );
 						modelResidue.setColor( Util::Color::randomPastelColor() );
 
-						for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); ++it )
+						for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 						{
 							const size_t			atomId = *it;
 							const chemfiles::Atom & atom   = topology[ atomId ];
-							mapAtomIdToModelId.emplace( atomId, atomModelId );
 
 							// Create atom.
 							p_molecule.addAtom();
@@ -151,16 +148,9 @@ namespace VTX
 							modelAtom.setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
 							const float atomRadius = modelAtom.getVdwRadius();
 							p_molecule.addAtomRadius( atomRadius );
-
-							for ( uint frameIdx = 0; frameIdx < trajectory.nsteps(); ++frameIdx )
-							{
-								Model::Molecule::AtomPositionsFrame & modelFrame
-									= p_molecule.getAtomPositionFrame( frameIdx );
-								frame = trajectory.read_step( frameIdx );
-								const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
-								const chemfiles::Vector3D &					 position  = positions[ atomId ];
-								modelFrame.push_back( Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] ) );
-							}
+							const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
+							const chemfiles::Vector3D &					 position  = positions[ atomId ];
+							modelFrame.push_back( Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] ) );
 
 							atomModelId++;
 						}
@@ -182,16 +172,8 @@ namespace VTX
 				{
 					const chemfiles::Bond & bond = bonds[ boundIdx ];
 
-					if ( mapAtomIdToModelId.count( bond[ 0 ] ) == 0 || mapAtomIdToModelId.count( bond[ 1 ] ) == 0 )
-					{
-						VTX_DEBUG( "Atom ids for bond not found: " + std::to_string( bond[ 0 ] ) + " "
-								   + std::to_string( bond[ 1 ] ) );
-					}
-					else
-					{
-						p_molecule.addBond( mapAtomIdToModelId.at( bond[ 0 ] ) );
-						p_molecule.addBond( mapAtomIdToModelId.at( bond[ 1 ] ) );
-					}
+					p_molecule.addBond( uint( bond[ 0 ] ) );
+					p_molecule.addBond( uint( bond[ 1 ] ) );
 				}
 
 				return true;

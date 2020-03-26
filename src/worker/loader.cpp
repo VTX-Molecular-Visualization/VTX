@@ -4,6 +4,7 @@
 #include "io/reader/mmtf.hpp"
 #include "io/reader/obj.hpp"
 #include "io/reader/pdb.hpp"
+#include "io/reader/prm.hpp"
 #include "model/molecule.hpp"
 #include "vtx_app.hpp"
 
@@ -20,7 +21,7 @@ namespace VTX
 
 			IO::Reader::BaseReader<Model::Molecule> * reader = nullptr;
 
-			if ( _path->getExtension() == "mmtf" ) { reader = new IO::Reader::PDB(); }
+			if ( _path->getExtension() == "mmtf" ) { reader = new IO::Reader::MMTF(); }
 			else if ( _path->getExtension() == "pdb" )
 			{
 				reader = new IO::Reader::PDB();
@@ -31,11 +32,13 @@ namespace VTX
 			}
 			else if ( _path->getExtension() == "arc" )
 			{
-				reader = new IO::Reader::PDB();
+				reader = new IO::Reader::ARC();
+			}
+			else if ( _path->getExtension() == "prm" )
+			{
 			}
 
 			const IO::PathFake * fake = dynamic_cast<const IO::PathFake *>( _path );
-
 			if ( fake )
 			{
 				delete reader;
