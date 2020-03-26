@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "base_renderer.hpp"
+#include "../base_renderer.hpp"
 #include "pass/blur.hpp"
 #include "pass/fxaa.hpp"
 #include "pass/geometric.hpp"

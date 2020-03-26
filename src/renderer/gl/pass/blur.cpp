@@ -1,5 +1,5 @@
 #include "blur.hpp"
-#include "renderer/gl.hpp"
+#include "renderer/gl/gl.hpp"
 #include "setting.hpp"
 
 namespace VTX

@@ -10,7 +10,7 @@
 #include "generic/base_renderable.hpp"
 #include "model/base_model.hpp"
 #include "object3d/camera.hpp"
-#include "renderer/glsl/program_manager.hpp"
+#include "renderer/gl/program_manager.hpp"
 
 namespace VTX
 {

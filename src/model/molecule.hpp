@@ -13,8 +13,6 @@
 #include "generic/base_renderable.hpp"
 #include "generic/base_transformable.hpp"
 #include "math/aabb.hpp"
-#include "renderer/ray_tracing/materials/base_material.hpp"
-#include "renderer/ray_tracing/primitives/base_primitive.hpp"
 #include "residue.hpp"
 #include "util/logger.hpp"
 #include <GL/gl3w.h>
@@ -131,7 +129,7 @@ namespace VTX
 				}
 			}
 
-			inline const Math::AABB & AABB() const { return _aabb; }
+			inline const Math::AABB & getAABB() const { return _aabb; }
 			inline void				  extendAABB( const Vec3f & p_position, const float p_radius )
 			{
 				_aabb.extend( p_position, p_radius );

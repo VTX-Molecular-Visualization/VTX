@@ -1,16 +1,16 @@
 #include "ray_tracer.hpp"
-#include "ray_tracing/integrators/ao_integrator.hpp"
-#include "ray_tracing/integrators/direct_lighting_integrator.hpp"
-#include "ray_tracing/integrators/raycast_integrator.hpp"
-#include "ray_tracing/lights/directional_light.hpp"
-#include "ray_tracing/lights/point_light.hpp"
-#include "ray_tracing/lights/quad_light.hpp"
-#include "ray_tracing/materials/diffuse_material.hpp"
-#include "ray_tracing/materials/flat_color_material.hpp"
-#include "ray_tracing/primitives/cylinder.hpp"
-#include "ray_tracing/primitives/molecule_ball_and_stick.hpp"
-#include "ray_tracing/primitives/plane.hpp"
-#include "ray_tracing/primitives/sphere.hpp"
+#include "integrators/ao_integrator.hpp"
+#include "integrators/direct_lighting_integrator.hpp"
+#include "integrators/raycast_integrator.hpp"
+#include "lights/directional_light.hpp"
+#include "lights/point_light.hpp"
+#include "lights/quad_light.hpp"
+#include "materials/diffuse_material.hpp"
+#include "materials/flat_color_material.hpp"
+#include "primitives/cylinder.hpp"
+#include "primitives/molecule_ball_and_stick.hpp"
+#include "primitives/plane.hpp"
+#include "primitives/sphere.hpp"
 #include "tool/chrono.hpp"
 #include "util/sampler.hpp"
 #include "vtx_app.hpp"
@@ -28,19 +28,34 @@ namespace VTX
 			CameraRayTracing( const Object3D::Camera & p_camera, const uint p_width, const uint p_height ) :
 				_pos( p_camera.getPosition() ), _width( p_width ), _height( p_height )
 			{
-				//[10:24:31][ INFO ] Position :
-				_pos = Vec3f( 302.771790f, 378.963623f, 195.313385f );
+				// 6m17
+				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
 
-				const Vec3f & camFront = Vec3f( -0.514253f, -0.857623f, -0.005213f );
-				const Vec3f & camLeft  = Vec3f( 0.857589f, -0.514279f, 0.007590f );
-				const Vec3f & camUp	   = Vec3f( -0.009190f, -0.000568f, 0.999958f );
+				Vec3f camFront = Vec3f( 0.920292f, -0.380027f, 0.092962f );
+				Vec3f camLeft  = Vec3f( 0.071878f, -0.069334f, -0.995001f );
+				Vec3f camUp	   = Vec3f( 0.384572f, 0.922373f, -0.036492f );*/
 
-				const float camFov = p_camera.getFov();
+				// 6vsb
+				_pos = Vec3f( 93.404381f, 176.164490f, 253.466934f );
+
+				Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
+				Vec3f camLeft  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
+				Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
+
+				//_pos = Vec3f( 302.771790f, 378.963623f, 195.313385f );
+
+				// const Vec3f & camFront = Vec3f( -0.514253f, -0.857623f, -0.005213f );
+				////_pos += camFront * 45.f;
+				//_pos += camFront * 150.f;
+				// const Vec3f & camLeft = Vec3f( 0.857589f, -0.514279f, 0.007590f );
+				// const Vec3f & camUp	  = Vec3f( -0.009190f, -0.000568f, 0.999958f );
+
+				// const float camFov = p_camera.getFov();
 
 				/*const Vec3f & camFront = p_camera.getFront();
 				const Vec3f & camLeft  = p_camera.getLeft();
-				const Vec3f & camUp	   = p_camera.getUp();
-				const float	  camFov   = p_camera.getFov();*/
+				const Vec3f & camUp	   = p_camera.getUp();*/
+				const float camFov = p_camera.getFov();
 
 				const float ratio	   = float( _width ) / _height;
 				const float halfHeight = tan( glm::radians( camFov ) * 0.5f );
@@ -74,24 +89,40 @@ namespace VTX
 			VTX_INFO( "Initializing ray tracer (only first molecule)..." );
 
 			BaseRenderer::resize( p_width, p_height );
-
 			_scene.addObject( new MoleculeBallAndStick( VTXApp::get().getScene().getMolecules()[ 0 ] ) );
 
-			_scene.addObject( new Plane( -Vec3f( -0.009190f, -0.000568f, 0.999958f ),
-										 300.f, //
-										 new DiffuseMaterial( Vec3f( 1.f, 0.7f, 0.f ) ) ) );
+			//_scene.addObject( new Sphere( VEC3F_ZERO, 10.f, new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) ) );
 
-			//_scene.addObject( new Sphere( Vec3f( 100.f, 250.f, 300.f ), // z350
-			//							  50.f,							//
-			//							  new DiffuseMaterial( Vec3f( 0.f, 0.7f, 1.f ) ) ) );
+			//_scene.addObject( new Plane( -Vec3f( -0.009190f, -0.000568f, 0.999958f ),
+			//							 300.f, //
+			//							 new DiffuseMaterial( Vec3f( 1.5f, 0.6f, 0.8f ) ) ) );
+			//
 
-			// derière 173d
-			_scene.addLight( new PointLight( Vec3f( 600.f, 200.f, 400.f ), VEC3F_XYZ, 90000.f ) );
-			//_scene.addLight( new PointLight(
-			//	Vec3f( 202.771790f, 378.963623f, 295.313385f ) /*Vec3f( 10.f, 20.f, 25.f )*/, VEC3F_XYZ, 50000.f ) );
-			//_scene.addLight( new DirectionalLight( Vec3f( 10.f, 1.f, 3.f ), VEC3F_XYZ ) );
-			_scene.addLight(
-				new QuadLight( Vec3f( 200.f, 400.f, 400.f ), VEC3F_Y * 60.f, VEC3F_X * 60.f, VEC3F_XYZ, 50.f ) );
+			//_scene.addLight( new PointLight( Vec3f( 316.f, 192.f, 190.f ), VEC3F_XYZ, 5000.f ) );
+
+			_scene.addObject( new Plane( Vec3f( 0.327533f, -0.944138f, 0.036398f ),
+										 0.f, //
+										 new DiffuseMaterial( Vec3f( 0.5f, 0.6f, 0.8f ) ) ) );
+
+			//_scene.addLight( new PointLight( Vec3f( 121.587879f, 209.315125f, 171.231781f ), VEC3F_XYZ, 30000.f ) );
+			//_scene.addLight( new PointLight( Vec3f( 600.f, 200.f, 400.f ), VEC3F_XYZ, 180000.f ) );
+			////_scene.addLight( new DirectionalLight( Vec3f( 10.f, 1.f, 3.f ), VEC3F_XYZ ) );
+			//_scene.addLight(
+			//	new QuadLight( Vec3f( 200.f, 400.f, 400.f ), VEC3F_Y * 60.f, VEC3F_X * 60.f, VEC3F_XYZ, 50.f ) );
+
+			// 6VSB
+			_scene.addLight( new QuadLight( Vec3f( -450.f, -200.f, -38.f ),
+											Vec3f( 0.327533f, -0.944138f, 0.036398f ) * 80.f,
+											-Vec3f( 0.112113f, 0.077086f, 0.990701f ) * 80.f,
+											VEC3F_XYZ,
+											200.f ) );
+
+			//// 6M17
+			//_scene.addLight( new QuadLight( Vec3f( 0.f, 500.f, 188.f ),
+			//								Vec3f( 0.920292f, -0.680027f, 0.092962f ) * 60.f,
+			//								-Vec3f( 0.071878f, -0.069334f, -0.995001f ) * 60.f,
+			//								VEC3F_XYZ,
+			//								50.f ) );
 
 			//_integrator = new AOIntegrator;
 			//_integrator = new RayCastIntegrator;
@@ -127,6 +158,12 @@ namespace VTX
 
 			chrono.start();
 
+			//#pragma omp parallel for
+			//			for ( int i = 0; i < int( nbTiles ); ++i )
+			//			{
+			//				_renderTile( pixels, camera, nbPixelSamples, uint( i ), nbTilesX, nbTilesY );
+			//			}
+
 			std::atomic<uint> nextTileId = nbThreads;
 
 			for ( uint i = 0; i < nbThreads; ++i )
@@ -148,12 +185,6 @@ namespace VTX
 			{
 				t.join();
 			}
-
-			//#pragma omp parallel for
-			//			for ( int i = 0; i < int( nbTiles ); ++i )
-			//			{
-			//				_renderTile( pixels, camera, nbPixelSamples, uint( i ), nbTilesX, nbTilesY );
-			//			}
 
 			chrono.stop();
 
@@ -192,8 +223,9 @@ namespace VTX
 				{
 					for ( uint x = x0; x < x1; ++x )
 					{
-						const Vec3f color	   = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
-						const uint	pixelId	   = ( x + y * _width ) * 3;
+						const Vec3f color = Util::Math::pow(
+							_renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples ), 1.f / _gamma );
+						const uint pixelId	   = ( x + y * _width ) * 3;
 						p_image[ pixelId ]	   = uchar( color.r * 255 );
 						p_image[ pixelId + 1 ] = uchar( color.g * 255 );
 						p_image[ pixelId + 2 ] = uchar( color.b * 255 );
@@ -222,8 +254,9 @@ namespace VTX
 			{
 				for ( uint x = x0; x < x1; ++x )
 				{
-					const Vec3f color	   = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
-					const uint	pixelId	   = ( x + y * _width ) * 3;
+					const Vec3f color = Util::Math::pow(
+						_renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples ), 1.f / _gamma );
+					const uint pixelId	   = ( x + y * _width ) * 3;
 					p_image[ pixelId ]	   = uchar( color.r * 255 );
 					p_image[ pixelId + 1 ] = uchar( color.g * 255 );
 					p_image[ pixelId + 2 ] = uchar( color.b * 255 );
@@ -238,14 +271,12 @@ namespace VTX
 		{
 			Vec3f color = VEC3F_ZERO;
 
-			// TODO: make a camera for ray tracing
-
 			// sampling ray within a pixel for anti-aliasing
 			for ( uint s = 0; s < p_nbPixelSamples; s++ )
 			{
 				// first sample in pixel center
-				const float sx = s == 0 ? p_x : p_x + Util::Math::randomFloat() - 0.5f;
-				const float sy = s == 0 ? p_y : p_y + Util::Math::randomFloat() - 0.5f;
+				const float sx = s == 0 ? p_x : p_x + Util::Math::randomFloat();
+				const float sy = s == 0 ? p_y : p_y + Util::Math::randomFloat();
 
 				const Ray ray = p_camera.generateRay( sx, sy );
 

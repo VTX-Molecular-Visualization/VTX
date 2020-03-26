@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "base_renderer.hpp"
-#include "ray_tracing/integrators/base_integrator.hpp"
-#include "ray_tracing/rtScene.hpp"
+#include "../base_renderer.hpp"
+#include "integrators/base_integrator.hpp"
+#include "rtScene.hpp"
 #include <vector>
 
 namespace VTX
@@ -55,6 +55,9 @@ namespace VTX
 			BaseIntegrator * _integrator = nullptr;
 
 			Scene _scene;
+
+			// TODO: keep gamma as Vec3f ?
+			Vec3f _gamma = Vec3f( 1.f );
 		};
 	} // namespace Renderer
 } // namespace VTX

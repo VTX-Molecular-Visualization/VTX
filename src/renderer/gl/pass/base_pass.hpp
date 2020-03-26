@@ -8,7 +8,7 @@
 #include "define.hpp"
 #include "generic/base_cleanable.hpp"
 #include "object3d/scene.hpp"
-#include "renderer/glsl/program_manager.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include <GL/gl3w.h>
 
 namespace VTX

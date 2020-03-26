@@ -1,8 +1,4 @@
 #include "molecule.hpp"
-#include "renderer/ray_tracing/materials/diffuse_material.hpp"
-#include "renderer/ray_tracing/materials/flat_color_material.hpp"
-#include "renderer/ray_tracing/primitives/cylinder.hpp"
-#include "renderer/ray_tracing/primitives/sphere.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"

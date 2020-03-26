@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "glsl/program_manager.hpp"
+#include "gl/program_manager.hpp"
 #include "object3d/scene.hpp"
 #include <vector>
 

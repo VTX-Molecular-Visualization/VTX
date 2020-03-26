@@ -109,4 +109,5 @@ elseif(MSVC)
 	target_compile_options(VTX PRIVATE "/Ot")  # Favor speed.
 	#Code Generation.
 	target_compile_options(VTX PRIVATE "/fp:fast") # Floating Point Model.
+	add_definitions(_CRT_SECURE_NO_WARNINGS)
 endif()

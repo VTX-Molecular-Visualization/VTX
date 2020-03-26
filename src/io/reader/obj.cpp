@@ -32,11 +32,10 @@ namespace VTX
 				p_molecule.setName( p_path.getFileNameWithoutExtension() );
 				p_molecule.setColor( Util::Color::randomPastelColor() );
 
-				const Math::AABB & aabb				= p_molecule.AABB();
-				uint			   chainGlobalIdx	= 0;
-				uint			   residueGlobalIdx = 0;
-				uint			   atomGlobalIdx	= 0;
-				uint			   bondGlobalIdx	= 0;
+				uint chainGlobalIdx	  = 0;
+				uint residueGlobalIdx = 0;
+				uint atomGlobalIdx	  = 0;
+				uint bondGlobalIdx	  = 0;
 
 				// Reserve memory for vectors to avoid pointer loss.
 				uint chainCount	  = scene->mNumMeshes;

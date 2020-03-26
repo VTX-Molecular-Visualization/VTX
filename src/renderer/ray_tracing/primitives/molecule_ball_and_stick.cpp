@@ -1,5 +1,6 @@
 #include "molecule_ball_and_stick.hpp"
 #include "../materials/diffuse_material.hpp"
+#include "../materials/flat_color_material.hpp"
 #include "../materials/phong_material.hpp"
 #include "cylinder.hpp"
 #include "sphere.hpp"
@@ -10,8 +11,13 @@ namespace VTX
 	{
 		MoleculeBallAndStick::MoleculeBallAndStick( Model::Molecule * p_molecule )
 		{
-			const uint nbAtoms = p_molecule->getAtomCount();
-			const uint nbBonds = p_molecule->getBondCount() / 2;
+			const uint		   nbAtoms	= p_molecule->getAtomCount();
+			const uint		   nbBonds	= p_molecule->getBondCount() / 2;
+			const Math::AABB & aabb		= p_molecule->getAABB();
+			const Vec3f		   centroid = aabb.centroid();
+			std::cout << "centroid " << centroid.x << " - " << centroid.y << " - " << centroid.z << std::endl;
+			std::cout << "min " << aabb._min.x << " - " << aabb._min.y << " - " << aabb._min.z << std::endl;
+			std::cout << "min " << aabb._max.x << " - " << aabb._max.y << " - " << aabb._max.z << std::endl;
 
 			std::vector<Renderer::BasePrimitive *> primitives;
 			primitives.resize( nbAtoms + nbBonds );
@@ -24,14 +30,14 @@ namespace VTX
 
 			_materials.emplace_back( new DiffuseMaterial( VEC3F_XYZ, VEC3F_XYZ ) );
 			//_materials.emplace_back( new PhongMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
-			_materials.emplace_back( new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
+			//_materials.emplace_back( new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
 
 			// Add atoms and bonds of each residue
 			for ( uint i = 0; i < p_molecule->getResidueCount(); ++i )
 			{
 				// TODO: remove material duplication + only allow chain colors
 				const Model::Residue & r = p_molecule->getResidue( i );
-				//_materials.emplace_back( new DiffuseMaterial( r.getChainPtr()->getColor() ) );
+				_materials.emplace_back( new DiffuseMaterial( r.getChainPtr()->getColor() ) );
 
 				const uint idFirstAtomRes = r.getIdFirstAtom();
 				const uint nbAtomsRes	  = r.getAtomCount();
