@@ -78,17 +78,14 @@ namespace VTX
 		//_stateMachine->goToState( ID::State::VISUALIZATION );
 #endif
 
-		Vec3f _u		 = VEC3F_X; // vectors adjacent to the corner
-		Vec3f _v		 = VEC3F_Z;
-		Vec3f _invNormal = Util::Math::cross( _v, _u );
-
 		/*Renderer::RayTracer * rt = new Renderer::RayTracer();
-		rt->init( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+		rt->init( int(io.DisplaySize.x), int(io.DisplaySize.y) );
 		rt->renderFrame( *_scene );
 		delete rt;*/
 
 		Renderer::OptixRayTracer * ort = new Renderer::OptixRayTracer();
-		ort->init( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+		ort->init( int( io.DisplaySize.x ), int( io.DisplaySize.y ) );
+		ort->renderFrame( *_scene );
 		delete ort;
 
 		while ( VTXApp::_isRunning )

@@ -6,19 +6,19 @@
 #endif
 
 #include "define.hpp"
-#include <cuda_runtime.h>
 #include <optix.h>
-#include <optix_function_table_definition.h>
 #include <optix_stubs.h>
 
-#define OPTIX_HANDLE_ERROR( p_res )                                                             \
-	{                                                                                           \
-		const OptixResult res = ( p_res );                                                      \
-		if ( res != cudaSuccess )                                                               \
-		{                                                                                       \
-			fprintf( stderr, "Optix error (code %d): %s  (line %d)\n", res, #p_res, __LINE__ ); \
-			exit( EXIT_FAILURE );                                                               \
-		}                                                                                       \
+// TODO: remove macro
+#define OPTIX_HANDLE_ERROR( p_res )                                                           \
+	{                                                                                         \
+		const OptixResult res = ( p_res );                                                    \
+		if ( res != cudaSuccess )                                                             \
+		{                                                                                     \
+			std::stringstream message;                                                        \
+			message << "Optix error (code " << res << "): " << #p_res << "line " << __LINE__; \
+			throw std::runtime_error( message.str() );                                        \
+		}                                                                                     \
 	}
 
 #endif
