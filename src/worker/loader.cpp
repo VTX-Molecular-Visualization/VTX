@@ -17,6 +17,19 @@ namespace VTX
 			Model::Molecule * moleculeTopology = nullptr;
 			Model::Molecule * moleculeDynamic  = nullptr;
 
+			// Check properties file.
+			IO::Reader::PRMFile prm;
+			for ( const IO::Path * path : _paths )
+			{
+				if ( path->getExtension() == "prm" )
+				{
+					IO::Reader::PRM reader = IO::Reader::PRM();
+					reader.readFile( *path, prm );
+				}
+			}
+
+			// Load all files.
+			// If dynamic found, merge with latest toplogy molecule.
 			for ( const IO::Path * path : _paths )
 			{
 				VTX_INFO( "File " + path->getFileName() );
@@ -26,6 +39,7 @@ namespace VTX
 				if ( reader != nullptr )
 				{
 					molecule = new Model::Molecule();
+					molecule->setPRM( prm );
 					if ( _loadMolecule( molecule, reader, path ) == false ) { delete molecule; }
 					else
 					{

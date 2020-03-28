@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "IO/reader/prm.hpp"
 #include "atom.hpp"
 #include "base_model.hpp"
 #include "chain.hpp"
@@ -44,6 +45,8 @@ namespace VTX
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 			inline const std::string & getFileName() const { return _fileName; };
 			inline void				   setFileName( const std::string & p_fileName ) { _fileName = p_fileName; };
+			inline const IO::Reader::PRMFile & getPRM() const { return _prm; };
+			inline void						   setPRM( const IO::Reader::PRMFile & p_prm ) { _prm = p_prm; };
 
 			inline void			   addChain() { _chains.emplace_back( new Chain() ); }
 			inline Chain &		   getChain( uint p_idx ) { return *_chains[ p_idx ]; }
@@ -181,6 +184,7 @@ namespace VTX
 		  private:
 			// Models.
 			std::string			   _fileName = "";
+			IO::Reader::PRMFile	   _prm;
 			std::string			   _name	 = "unknown";
 			std::vector<Chain *>   _chains	 = std::vector<Chain *>();
 			std::vector<Residue *> _residues = std::vector<Residue *>();

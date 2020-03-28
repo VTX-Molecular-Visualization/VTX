@@ -6,6 +6,8 @@
 #endif
 
 #include "base_reader.hpp"
+#include "define.hpp"
+#include <vector>
 
 namespace VTX
 {
@@ -15,6 +17,7 @@ namespace VTX
 		{
 			struct PRMFile
 			{
+				std::vector<uint> waterIds = std::vector<uint>();
 			};
 
 			class PRM : public BaseReader<PRMFile>
