@@ -65,6 +65,9 @@ namespace VTX
 			inline std::vector<Atom *> &		  getAtoms() { return _atoms; }
 			inline const std::vector<Atom *> &	  getAtoms() const { return _atoms; }
 
+			uint getIdFirstAtomSolvant() const { return _idFirstAtomSolvant; }
+			void setIdFirstAtomSolvant( uint p_id ) { _idFirstAtomSolvant = p_id; }
+
 			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
 			{
 				return _unknownResidueSymbol;
@@ -221,7 +224,8 @@ namespace VTX
 			bool _isPlaying	   = true;
 			uint _fps		   = 1u;
 
-			bool _showSolvant = true;
+			uint _idFirstAtomSolvant = INT_MAX;
+			bool _showSolvant		 = true;
 
 			void _createBuffers();
 

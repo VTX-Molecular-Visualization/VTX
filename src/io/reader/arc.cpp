@@ -2,6 +2,7 @@
 #undef INFINITE
 #include "define.hpp"
 #include "util/color.hpp"
+#include <algorithm>
 #include <chemfiles.hpp>
 #include <magic_enum.hpp>
 
@@ -34,6 +35,19 @@ namespace VTX
 
 					if ( frame.get( "name" ) ) { p_molecule.setName( frame.get( "name" )->as_string() ); }
 
+					if ( frame.size() > 0 )
+					{
+						std::string propAtom
+							= std::to_string( frame[ 0 ].properties().size() ) + " properties in atoms:";
+						for ( chemfiles::property_map::iterator it = frame[ 0 ].properties().begin();
+							  it != frame[ 0 ].properties().end();
+							  ++it )
+						{
+							propAtom += " " + it->first;
+						}
+						VTX_DEBUG( propAtom );
+					}
+
 					// Seems that .arc does not provide information about chains or residues...
 					p_molecule.addChains( 1 );
 					Model::Chain & chain = p_molecule.getChain( 0 );
@@ -60,8 +74,9 @@ namespace VTX
 					Model::Molecule::AtomPositionsFrame & firstMoleculeFrame = p_molecule.getAtomPositionFrame( 0 );
 					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
 					{
-						const chemfiles::Atom & atom	  = frame[ positionIdx ];
-						Model::Atom &			modelAtom = p_molecule.getAtom( positionIdx );
+						const chemfiles::Atom & atom = frame[ positionIdx ];
+						uint		  atomType		 = uint( atom.properties().get( "atom_type" ).value().as_double() );
+						Model::Atom & modelAtom		 = p_molecule.getAtom( positionIdx );
 						modelAtom.setMoleculePtr( &p_molecule );
 						modelAtom.setChainPtr( &chain );
 						modelAtom.setResiduePtr( &residue );
@@ -80,8 +95,16 @@ namespace VTX
 						p_molecule.addAtomRadius( atomRadius );
 
 						p_molecule.extendAABB( atomPosition, atomRadius );
-					}
 
+						if ( p_molecule.getIdFirstAtomSolvant() == INT_MAX )
+						{
+							if ( std::find( p_molecule.getPRM().solvantIds.begin(),
+											p_molecule.getPRM().solvantIds.end(),
+											atomType )
+								 != p_molecule.getPRM().solvantIds.end() )
+							{ p_molecule.setIdFirstAtomSolvant( positionIdx ); }
+						}
+					}
 					// Fill other frames.
 					for ( uint frameIdx = 1; frameIdx < 2 /*trajectory.nsteps()*/; ++frameIdx )
 					{

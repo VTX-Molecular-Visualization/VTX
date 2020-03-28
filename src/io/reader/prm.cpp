@@ -32,8 +32,7 @@ namespace VTX
 						iss.str( line );
 						iss >> str;
 						iss >> id;
-						VTX_DEBUG( std::to_string( id ) );
-						p_prm.waterIds.push_back( id );
+						p_prm.solvantIds.push_back( id );
 					}
 				}
 

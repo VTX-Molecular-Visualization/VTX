@@ -17,7 +17,7 @@ namespace VTX
 		{
 			struct PRMFile
 			{
-				std::vector<uint> waterIds = std::vector<uint>();
+				std::vector<uint> solvantIds = std::vector<uint>();
 			};
 
 			class PRM : public BaseReader<PRMFile>
