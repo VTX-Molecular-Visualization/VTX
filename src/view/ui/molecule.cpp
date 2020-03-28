@@ -91,9 +91,12 @@ namespace VTX
 							VTX_ACTION( new Action::ColorableChangeColor( _getModel(), color ) );
 							VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN ) );
 						}
-						bool showSolvant = _getModel().showSolvant();
-						if ( ImGui::Checkbox( LOCALE( "View.Molecule.Solvant" ), &showSolvant ) )
-						{ VTX_ACTION( new Action::MoleculeChangeShowSolvant( _getModel(), showSolvant ) ); }
+						if ( _getModel().getIdFirstAtomSolvant() != INT_MAX )
+						{
+							bool showSolvant = _getModel().showSolvant();
+							if ( ImGui::Checkbox( LOCALE( "View.Molecule.Solvant" ), &showSolvant ) )
+							{ VTX_ACTION( new Action::MoleculeChangeShowSolvant( _getModel(), showSolvant ) ); }
+						}
 					}
 #ifdef _DEBUG
 					if ( ImGui::CollapsingHeader( "Transform-debug" ) )

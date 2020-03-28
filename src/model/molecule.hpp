@@ -67,6 +67,8 @@ namespace VTX
 
 			uint getIdFirstAtomSolvant() const { return _idFirstAtomSolvant; }
 			void setIdFirstAtomSolvant( uint p_id ) { _idFirstAtomSolvant = p_id; }
+			uint getIdFirstBondSolvant() const { return _idFirstBondSolvant; }
+			void setIdFirstBondSolvant( uint p_id ) { _idFirstBondSolvant = p_id; }
 
 			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
 			{
@@ -225,6 +227,7 @@ namespace VTX
 			uint _fps		   = 1u;
 
 			uint _idFirstAtomSolvant = INT_MAX;
+			uint _idFirstBondSolvant = INT_MAX;
 			bool _showSolvant		 = true;
 
 			void _createBuffers();

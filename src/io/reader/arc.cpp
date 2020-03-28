@@ -102,7 +102,10 @@ namespace VTX
 											p_molecule.getPRM().solvantIds.end(),
 											atomType )
 								 != p_molecule.getPRM().solvantIds.end() )
-							{ p_molecule.setIdFirstAtomSolvant( positionIdx ); }
+							{
+								VTX_DEBUG( "First solvant atom found: " + std::to_string( positionIdx ) );
+								p_molecule.setIdFirstAtomSolvant( positionIdx );
+							}
 						}
 					}
 					// Fill other frames.
@@ -127,8 +130,13 @@ namespace VTX
 					for ( uint boundIdx = 0; boundIdx < uint( bonds.size() ); ++boundIdx )
 					{
 						const chemfiles::Bond & bond = bonds[ boundIdx ];
+
 						p_molecule.addBond( uint( bond[ 0 ] ) );
 						p_molecule.addBond( uint( bond[ 1 ] ) );
+
+						if ( uint( bond[ 0 ] ) == p_molecule.getIdFirstAtomSolvant()
+							 || uint( bond[ 1 ] ) == p_molecule.getIdFirstAtomSolvant() )
+						{ p_molecule.setIdFirstBondSolvant( boundIdx ); }
 					}
 				}
 				catch ( const std::exception & p_e )

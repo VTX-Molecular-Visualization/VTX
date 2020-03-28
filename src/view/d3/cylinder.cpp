@@ -36,10 +36,12 @@ namespace VTX
 
 			void Cylinder::render()
 			{
+				uint count
+					= _getModel().showSolvant() ? _getModel().getBondCount() : _getModel().getIdFirstBondSolvant();
 				VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 				glUniform1f( _uRadius, 0.2f );
-				glDrawElements( GL_LINES, _getModel().getBondCount(), GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
+				glDrawElements( GL_LINES, count, GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
 			}
 		} // namespace D3
 	}	  // namespace View

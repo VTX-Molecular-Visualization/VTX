@@ -46,10 +46,12 @@ namespace VTX
 
 			void Sphere::render()
 			{
+				uint count
+					= _getModel().showSolvant() ? _getModel().getAtomCount() : _getModel().getIdFirstAtomSolvant();
 				VTXApp::get().getProgramManager().getProgram( "SphereImpostorGeomShader" )->use();
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 				glUniform1f( _uRadiusScale, _radiusScale );
-				glDrawArrays( GL_POINTS, 0, _getModel().getAtomCount() );
+				glDrawArrays( GL_POINTS, 0, count );
 			}
 		} // namespace D3
 	}	  // namespace View
