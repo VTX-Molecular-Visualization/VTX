@@ -150,6 +150,8 @@ namespace VTX
 			static const float		 SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ];
 			static float *			 SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ];
 
+			inline uint				getIndex() const { return _index; };
+			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
 			inline Chain * const	getChainPtr() const { return _chainPtr; }
@@ -167,6 +169,7 @@ namespace VTX
 			virtual void setSelected( const bool ) override;
 
 		  private:
+			uint	   _index		= 0;
 			Molecule * _moleculePtr = nullptr;
 			Chain *	   _chainPtr	= nullptr;
 			Residue *  _residuePtr	= nullptr;

@@ -80,7 +80,7 @@ namespace VTX
 					// New chain.
 					Model::Chain & chain = p_molecule.getChain( chainGlobalIdx );
 					chain.setMoleculePtr( &p_molecule );
-					chain.setId( chainGlobalIdx );
+					chain.setIndex( chainGlobalIdx );
 					chain.setName( p_data.chainNameList[ chainGlobalIdx ] );
 					chain.setIdFirstResidue( residueGlobalIdx );
 					chain.setResidueCount( p_data.groupsPerChain[ chainGlobalIdx ] );
@@ -101,7 +101,7 @@ namespace VTX
 						Model::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
 						residue.setMoleculePtr( &p_molecule );
 						residue.setChainPtr( &chain );
-						residue.setId( residueGlobalIdx );
+						residue.setIndex( residueGlobalIdx );
 						const std::string & residueSymbol = group.groupName;
 						std::optional symbol = magic_enum::enum_cast<Model::Residue::RESIDUE_SYMBOL>( residueSymbol );
 						symbol.has_value() ? residue.setSymbol( symbol.value() )
@@ -128,7 +128,7 @@ namespace VTX
 							atom.setMoleculePtr( &p_molecule );
 							atom.setChainPtr( &chain );
 							atom.setResiduePtr( &residue );
-							atom.setId( atomGlobalIdx );
+							atom.setIndex( atomGlobalIdx );
 							const std::string & atomSymbol = group.elementList[ atomIdx ];
 							std::optional symbol = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
 							symbol.has_value() ? atom.setSymbol( symbol.value() )

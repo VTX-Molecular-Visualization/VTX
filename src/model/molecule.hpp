@@ -79,6 +79,12 @@ namespace VTX
 			{
 				_atomPositionsFrames.emplace_back( p_frame );
 			}
+
+			inline void seAtomPositionFrames( std::vector<AtomPositionsFrame> & p_frame )
+			{
+				_atomPositionsFrames.clear();
+				_atomPositionsFrames = p_frame;
+			}
 			inline const AtomPositionsFrame & getAtomPositionFrame( const uint p_frame ) const
 			{
 				return _atomPositionsFrames[ p_frame ];
@@ -87,10 +93,11 @@ namespace VTX
 			{
 				return _atomPositionsFrames[ p_frame ];
 			};
-			inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames( const uint p_frame ) const
+			inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const
 			{
 				return _atomPositionsFrames;
 			};
+			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; };
 
 			inline void		   addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
 			inline const float getAtomRadius( const uint p_idx ) const { return _atomRadius[ p_idx ]; }
@@ -144,18 +151,19 @@ namespace VTX
 				_aabb.extend( p_position, p_radius );
 			}
 
-			virtual void	  init() override;
-			void			  setRepresentation();
-			void			  setColorMode();
-			inline uint		  getFrame() const { return _currentFrame; }
-			void			  setFrame( uint );
-			inline const uint getFrameCount() const { return (uint)_atomPositionsFrames.size(); }
-			inline uint		  getFPS() const { return _fps; }
-			void			  setFPS( const uint p_fps ) { _fps = p_fps; }
-			inline bool		  isPlaying() const { return _isPlaying; }
-			inline void		  setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
-			inline bool		  showSolvant() const { return _showSolvant; }
-			inline void		  setShowSolvant( const bool p_showSolvant ) { _showSolvant = p_showSolvant; }
+			virtual void						   init() override;
+			void								   setRepresentation();
+			void								   setColorMode();
+			inline uint							   getFrame() const { return _currentFrame; }
+			inline std::vector<AtomPositionsFrame> getFrames() const { return _atomPositionsFrames; }
+			void								   setFrame( uint );
+			inline const uint					   getFrameCount() const { return (uint)_atomPositionsFrames.size(); }
+			inline uint							   getFPS() const { return _fps; }
+			void								   setFPS( const uint p_fps ) { _fps = p_fps; }
+			inline bool							   isPlaying() const { return _isPlaying; }
+			inline void							   setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
+			inline bool							   showSolvant() const { return _showSolvant; }
+			inline void setShowSolvant( const bool p_showSolvant ) { _showSolvant = p_showSolvant; }
 
 			virtual void print() const override;
 

@@ -6,7 +6,9 @@
 #endif
 
 #include "base_worker.hpp"
-#include "model/path.hpp"
+#include "io/path.hpp"
+#include "io/reader/base_reader.hpp"
+#include "model/molecule.hpp"
 
 namespace VTX
 {
@@ -15,13 +17,20 @@ namespace VTX
 		class Loader : public Worker::BaseWorker
 		{
 		  public:
-			explicit Loader( const IO::Path * const p_path ) : _path( p_path ) {}
-			~Loader() { delete _path; }
+			explicit Loader( const std::vector<IO::Path *> & p_paths ) : _paths( p_paths ) {}
+			~Loader() { _paths.clear(); }
 
 			virtual void work() override;
 
 		  private:
-			const IO::Path * _path;
+			std::vector<IO::Path *> _paths;
+
+			bool									  _isTopology( const IO::Path * const ) const;
+			bool									  _isDynamic( const IO::Path * const ) const;
+			IO::Reader::BaseReader<Model::Molecule> * _createReader( const IO::Path * const ) const;
+			bool									  _loadMolecule( Model::Molecule * const,
+																	 IO::Reader::BaseReader<Model::Molecule> * const,
+																	 const IO::Path * const ) const;
 		};
 	} // namespace Worker
 } // namespace VTX

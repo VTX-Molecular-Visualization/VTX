@@ -66,7 +66,7 @@ namespace VTX
 					// New chain.
 					Model::Chain & chain = p_molecule.getChain( chainGlobalIdx );
 					chain.setMoleculePtr( &p_molecule );
-					chain.setId( chainGlobalIdx );
+					chain.setIndex( chainGlobalIdx );
 					chain.setName( mesh->mName.C_Str() );
 					chain.setIdFirstResidue( residueGlobalIdx );
 					chain.setResidueCount( mesh->mNumFaces );
@@ -81,7 +81,7 @@ namespace VTX
 						Model::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
 						residue.setMoleculePtr( &p_molecule );
 						residue.setChainPtr( &chain );
-						residue.setId( residueGlobalIdx );
+						residue.setIndex( residueGlobalIdx );
 						residue.setSymbol( Model::Residue::RESIDUE_SYMBOL::UNKNOWN );
 						residue.setIdFirstAtom( atomGlobalIdx );
 						residue.setAtomCount( uint( mesh->mNumVertices ) );
@@ -100,7 +100,7 @@ namespace VTX
 							atom.setMoleculePtr( &p_molecule );
 							atom.setChainPtr( &chain );
 							atom.setResiduePtr( &residue );
-							atom.setId( atomGlobalIdx );
+							atom.setIndex( atomGlobalIdx );
 							atom.setSymbol( Model::Atom::ATOM_SYMBOL::UNKNOWN );
 
 							aiColor4D diffuse;

@@ -65,7 +65,7 @@ namespace VTX
 						modelAtom.setMoleculePtr( &p_molecule );
 						modelAtom.setChainPtr( &chain );
 						modelAtom.setResiduePtr( &residue );
-						modelAtom.setId( positionIdx );
+						modelAtom.setIndex( positionIdx );
 						const std::string & atomSymbol = atom.name();
 						std::optional symbol = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
 						symbol.has_value() ? modelAtom.setSymbol( symbol.value() )
@@ -83,7 +83,7 @@ namespace VTX
 					}
 
 					// Fill other frames.
-					for ( uint frameIdx = 1; frameIdx < trajectory.nsteps(); ++frameIdx )
+					for ( uint frameIdx = 1; frameIdx < 2 /*trajectory.nsteps()*/; ++frameIdx )
 					{
 						p_molecule.addAtomPositionFrame();
 						VTX_INFO( "Frame " + std::to_string( frameIdx ) );

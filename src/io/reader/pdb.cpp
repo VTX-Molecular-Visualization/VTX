@@ -93,11 +93,12 @@ namespace VTX
 
 					if ( chainName != lastChainName )
 					{
+						VTX_DEBUG( chainName );
 						// Create chain.
 						p_molecule.addChain();
 						chainModelId++;
 						modelChain = &p_molecule.getChain( chainModelId );
-						modelChain->setId( chainModelId );
+						modelChain->setIndex( chainModelId );
 						modelChain->setName( chainName );
 						modelChain->setMoleculePtr( &p_molecule );
 						modelChain->setIdFirstResidue( residueIdx );
@@ -113,7 +114,7 @@ namespace VTX
 					// Create residue.
 					p_molecule.addResidue();
 					Model::Residue & modelResidue = p_molecule.getResidue( residueIdx );
-					modelResidue.setId( residueIdx );
+					modelResidue.setIndex( residueIdx );
 					modelResidue.setMoleculePtr( &p_molecule );
 					modelResidue.setChainPtr( modelChain );
 					modelResidue.setIdFirstAtom( atomModelId );
@@ -132,7 +133,7 @@ namespace VTX
 						// Create atom.
 						p_molecule.addAtom();
 						Model::Atom & modelAtom = p_molecule.getAtom( atomModelId );
-						modelAtom.setId( atomModelId );
+						modelAtom.setIndex( atomModelId );
 						modelAtom.setMoleculePtr( &p_molecule );
 						modelAtom.setChainPtr( modelChain );
 						modelAtom.setResiduePtr( &modelResidue );

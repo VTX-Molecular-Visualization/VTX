@@ -37,7 +37,7 @@ namespace VTX
 					return;
 				}
 
-				IO::PathFake * const path = new IO::PathFake( _id + ".mmtf" );
+				IO::PathFake * path = new IO::PathFake( _id + ".mmtf" );
 				path->write( fetcher.getBuffer() );
 				VTX_ACTION( new Action::Open( path ) );
 

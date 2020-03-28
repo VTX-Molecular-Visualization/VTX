@@ -51,13 +51,12 @@ namespace VTX
 					// Open.
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Open" ) ) )
 					{
-						_openFileDialog
-							= std::make_shared<pfd::open_file>( LOCALE( "MainMenu.Menu.Open.ChooseFile" ), "C:\\" );
+						_openFileDialog = std::shared_ptr<pfd::open_file>( new pfd::open_file(
+							LOCALE( "MainMenu.Menu.Open.ChooseFile" ), "C://", { "All Files", "*" }, true ) );
 					}
 
 					// Quit.
-					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
-					{ VTX_ACTION( new Action::Quit() ); }
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) ) { VTX_ACTION( new Action::Quit() ); }
 
 					ImGui::EndMenu();
 				}
@@ -67,52 +66,32 @@ namespace VTX
 				{
 					bool showScene = VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->isVisible();
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), &showScene ) )
-					{
-						VTX_ACTION(
-							new Action::ActiveUIComponent( ID::UI::SCENE, showScene ) );
-					}
+					{ VTX_ACTION( new Action::ActiveUIComponent( ID::UI::SCENE, showScene ) ); }
 					bool showInspector = VTXApp::get().getUI().getComponentByName( ID::UI::INSPECTOR )->isVisible();
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Inspector" ), &showInspector ) )
-					{
-						VTX_ACTION(
-							new Action::ActiveUIComponent( ID::UI::INSPECTOR, showInspector ) );
-					}
+					{ VTX_ACTION( new Action::ActiveUIComponent( ID::UI::INSPECTOR, showInspector ) ); }
 					bool showConsole = VTXApp::get().getUI().getComponentByName( ID::UI::CONSOLE )->isVisible();
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), &showConsole ) )
-					{
-						VTX_ACTION(
-							new Action::ActiveUIComponent( ID::UI::CONSOLE, showConsole ) );
-					}
+					{ VTX_ACTION( new Action::ActiveUIComponent( ID::UI::CONSOLE, showConsole ) ); }
 					bool showCameraEditor
 						= VTXApp::get().getUI().getComponentByName( ID::UI::CAMERA_EDITOR )->isVisible();
 					if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.CameraEditor" ), &showCameraEditor ) )
-					{
-						VTX_ACTION(
-							new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, showCameraEditor ) );
-					}
+					{ VTX_ACTION( new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, showCameraEditor ) ); }
 
 					ImGui::Separator();
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.CloseAll" ) ) )
 					{
-						VTX_ACTION(
-							new Action::ActiveUIComponent( ID::UI::SCENE, false ) );
-						VTX_ACTION(
-							new Action::ActiveUIComponent( ID::UI::INSPECTOR, false ) );
-						VTX_ACTION(
-							new Action::ActiveUIComponent( ID::UI::CONSOLE, false ) );
-						VTX_ACTION(
-							new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, false ) );
+						VTX_ACTION( new Action::ActiveUIComponent( ID::UI::SCENE, false ) );
+						VTX_ACTION( new Action::ActiveUIComponent( ID::UI::INSPECTOR, false ) );
+						VTX_ACTION( new Action::ActiveUIComponent( ID::UI::CONSOLE, false ) );
+						VTX_ACTION( new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, false ) );
 					}
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.ShowAll" ) ) )
 					{
-						VTX_ACTION(
-							new Action::ActiveUIComponent( ID::UI::SCENE, true ) );
-						VTX_ACTION(
-							new Action::ActiveUIComponent( ID::UI::INSPECTOR, true ) );
-						VTX_ACTION(
-							new Action::ActiveUIComponent( ID::UI::CONSOLE, true ) );
-						VTX_ACTION(
-							new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, true ) );
+						VTX_ACTION( new Action::ActiveUIComponent( ID::UI::SCENE, true ) );
+						VTX_ACTION( new Action::ActiveUIComponent( ID::UI::INSPECTOR, true ) );
+						VTX_ACTION( new Action::ActiveUIComponent( ID::UI::CONSOLE, true ) );
+						VTX_ACTION( new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, true ) );
 					}
 					ImGui::EndMenu();
 				}
@@ -124,8 +103,7 @@ namespace VTX
 					{
 						try
 						{
-							VTX_ACTION(
-								new Action::PathImport( VTXApp::get().getScene().getPaths()[ 0 ] ) );
+							VTX_ACTION( new Action::PathImport( VTXApp::get().getScene().getPaths()[ 0 ] ) );
 						}
 						catch ( const std::exception & e )
 						{
@@ -144,8 +122,7 @@ namespace VTX
 					{
 						try
 						{
-							VTX_ACTION(
-								new Action::PathExport( VTXApp::get().getScene().getPaths()[ 0 ] ) );
+							VTX_ACTION( new Action::PathExport( VTXApp::get().getScene().getPaths()[ 0 ] ) );
 						}
 						catch ( const std::exception & e )
 						{
@@ -153,10 +130,7 @@ namespace VTX
 						}
 					}
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Video" ) ) )
-					{
-						VTX_ACTION(
-							new Action::PathExportVideo( VTXApp::get().getScene().getPaths()[ 0 ] ) );
-					}
+					{ VTX_ACTION( new Action::PathExportVideo( VTXApp::get().getScene().getPaths()[ 0 ] ) ); }
 					ImGui::EndMenu();
 				}
 
@@ -168,10 +142,7 @@ namespace VTX
 						= { LOCALE( "Enum.Theme.Light" ), LOCALE( "Enum.Theme.Dark" ), LOCALE( "Enum.Theme.Classic" ) };
 					int theme = (int)Setting::UI::theme;
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Theme" ), &theme, themes, 3 ) )
-					{
-						VTX_ACTION(
-							new Action::ChangeTheme( (Setting::UI::THEME)theme ) );
-					}
+					{ VTX_ACTION( new Action::ChangeTheme( (Setting::UI::THEME)theme ) ); }
 
 					ImGui::Separator();
 
@@ -200,8 +171,7 @@ namespace VTX
 					if ( ImGui::Combo(
 							 LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 3 ) )
 					{
-						VTX_ACTION(
-							new Action::ChangeRepresentation( (View::MOLECULE_REPRESENTATION)representation ) );
+						VTX_ACTION( new Action::ChangeRepresentation( (View::MOLECULE_REPRESENTATION)representation ) );
 					}
 
 					// Color mode.
@@ -211,10 +181,7 @@ namespace VTX
 											   LOCALE( "Enum.ColorMode.Protein" ) };
 					int			 colorMode = (int)Setting::Rendering::colorMode;
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ), &colorMode, modes, 4 ) )
-					{
-						VTX_ACTION(
-							new Action::ChangeColorMode( (View::MOLECULE_COLOR_MODE)colorMode ) );
-					}
+					{ VTX_ACTION( new Action::ChangeColorMode( (View::MOLECULE_COLOR_MODE)colorMode ) ); }
 
 					// Shading.
 					const char * shadings[] = { LOCALE( "Enum.Shading.Lambert" ),
@@ -222,10 +189,7 @@ namespace VTX
 												LOCALE( "Enum.Shading.Toon" ) };
 					int			 shading	= (int)Setting::Rendering::shading;
 					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ), &shading, shadings, 3 ) )
-					{
-						VTX_ACTION(
-							new Action::ChangeShading( (Renderer::SHADING)shading ) );
-					}
+					{ VTX_ACTION( new Action::ChangeShading( (Renderer::SHADING)shading ) ); }
 
 					// VSYNC.
 					bool useVSync = Setting::Rendering::useVSync;
@@ -266,26 +230,17 @@ namespace VTX
 											 &autoRotateSpeed.x,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
-					{
-						VTX_ACTION(
-							new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) );
-					}
+					{ VTX_ACTION( new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) ); }
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateYSpeed" ),
 											 &autoRotateSpeed.y,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
-					{
-						VTX_ACTION(
-							new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) );
-					}
+					{ VTX_ACTION( new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) ); }
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateZSpeed" ),
 											 &autoRotateSpeed.z,
 											 AUTO_ROTATE_SPEED_MIN,
 											 AUTO_ROTATE_SPEED_MAX ) )
-					{
-						VTX_ACTION(
-							new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) );
-					}
+					{ VTX_ACTION( new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) ); }
 
 					ImGui::Separator();
 
@@ -295,19 +250,13 @@ namespace VTX
 											 &translationSpeed,
 											 CONTROLLER_TRANSLATION_SPEED_MIN,
 											 CONTROLLER_TRANSLATION_SPEED_MAX ) )
-					{
-						VTX_ACTION(
-							new Action::ChangeTranslationSpeed( translationSpeed ) );
-					}
+					{ VTX_ACTION( new Action::ChangeTranslationSpeed( translationSpeed ) ); }
 					float translationFactorSpeed = Setting::Controller::translationFactorSpeed;
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.TranslationFactorSpeed" ),
 											 &translationFactorSpeed,
 											 CONTROLLER_TRANSLATION_FACTOR_MIN,
 											 CONTROLLER_TRANSLATION_FACTOR_MAX ) )
-					{
-						VTX_ACTION(
-							new Action::ChangeTranslationFactorSpeed( translationFactorSpeed ) );
-					}
+					{ VTX_ACTION( new Action::ChangeTranslationFactorSpeed( translationFactorSpeed ) ); }
 					float rotationSpeed = Setting::Controller::rotationSpeed;
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.RotationSpeed" ),
 											 &rotationSpeed,
@@ -364,8 +313,14 @@ namespace VTX
 			// Open file dialog.
 			if ( _openFileDialog && _openFileDialog->ready() )
 			{
-				std::vector<std::string> result = _openFileDialog->result();
-				if ( result.size() ) { VTX_ACTION( new Action::Open( result[ 0 ] ) ); }
+				std::vector<std::string> files = _openFileDialog->result();
+				VTX_DEBUG( std::to_string( files.size() ) + " selected" );
+				std::vector<IO::Path *> paths = std::vector<IO::Path *>();
+				for ( std::string & file : files )
+				{
+					paths.emplace_back( new IO::Path( file ) );
+				}
+				if ( paths.size() ) { VTX_ACTION( new Action::Open( paths ) ); }
 				_openFileDialog = nullptr;
 			}
 		}

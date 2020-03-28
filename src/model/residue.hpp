@@ -51,6 +51,8 @@ namespace VTX
 			static const std::string SYMBOL_SHORT[ (int)RESIDUE_SYMBOL::COUNT ];
 			static const Vec3f *	 SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ];
 
+			inline uint				getIndex() const { return _index; };
+			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
 			inline Chain * const	getChainPtr() const { return _chainPtr; }
@@ -72,6 +74,7 @@ namespace VTX
 			virtual void setSelected( const bool ) override;
 
 		  private:
+			uint	   _index		= 0;
 			Molecule * _moleculePtr = nullptr;
 			Chain *	   _chainPtr	= nullptr;
 
