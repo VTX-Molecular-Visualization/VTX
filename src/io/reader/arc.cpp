@@ -109,7 +109,7 @@ namespace VTX
 						}
 					}
 					// Fill other frames.
-					for ( uint frameIdx = 1; frameIdx < 2 /*trajectory.nsteps()*/; ++frameIdx )
+					for ( uint frameIdx = 1; frameIdx < trajectory.nsteps(); ++frameIdx )
 					{
 						p_molecule.addAtomPositionFrame();
 						VTX_INFO( "Frame " + std::to_string( frameIdx ) );
