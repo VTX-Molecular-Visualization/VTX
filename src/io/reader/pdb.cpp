@@ -137,13 +137,13 @@ namespace VTX
 						modelAtom.setMoleculePtr( &p_molecule );
 						modelAtom.setChainPtr( modelChain );
 						modelAtom.setResiduePtr( &modelResidue );
-						std::string	  atomSymbol = atom.name();
+						std::string	  atomSymbol = atom.type();
 						std::optional symbol	 = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
-						while ( symbol.has_value() == false && atomSymbol.size() > 0 )
-						{
-							atomSymbol = atomSymbol.substr( 0, atomSymbol.size() - 1 );
-							symbol	   = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
-						}
+						// while ( symbol.has_value() == false && atomSymbol.size() > 0 )
+						//{
+						//	atomSymbol = atomSymbol.substr( 0, atomSymbol.size() - 1 );
+						//	symbol	   = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
+						//}
 						// std::optional symbol
 						//	= magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol.substr( 0, 1 ) );
 						symbol.has_value() ? modelAtom.setSymbol( symbol.value() )
