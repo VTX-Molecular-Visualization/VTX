@@ -81,6 +81,12 @@ namespace VTX
 				uint chainModelId = -1;
 				uint atomModelId  = 0;
 
+				p_molecule.getAtoms().resize( frame.size() );
+				p_molecule.getAtomPositionFrame( 0 ).resize( frame.size() );
+				for (uint i = 0; i < uint(frame.size()); ++i) {
+					p_molecule.getAtoms()[ i ] = new Model::Atom;
+				}
+
 				Model::Chain * modelChain;
 				std::string	   lastChainName = "";
 				for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
@@ -127,13 +133,13 @@ namespace VTX
 
 					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 					{
-						const size_t			atomId = *it;
+						const uint			atomId = uint(*it);
 						const chemfiles::Atom & atom   = topology[ atomId ];
 
 						// Create atom.
-						p_molecule.addAtom();
-						Model::Atom & modelAtom = p_molecule.getAtom( atomModelId );
-						modelAtom.setIndex( atomModelId );
+						//p_molecule.addAtom();
+						Model::Atom & modelAtom = p_molecule.getAtom( atomId );
+						modelAtom.setIndex( atomId );
 						modelAtom.setMoleculePtr( &p_molecule );
 						modelAtom.setChainPtr( modelChain );
 						modelAtom.setResiduePtr( &modelResidue );
@@ -154,7 +160,8 @@ namespace VTX
 						const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 						const chemfiles::Vector3D &					 position  = positions[ atomId ];
 						Vec3f atomPosition = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
-						modelFrame.push_back( atomPosition );
+						//modelFrame.push_back( atomPosition );
+						modelFrame[ atomId ] = atomPosition;
 
 						atomModelId++;
 					}
@@ -167,9 +174,35 @@ namespace VTX
 					p_molecule.addBond();
 					Model::Bond & modelBond = p_molecule.getBond( boundIdx );
 
+					//std::cout << bonds.size() << std::endl;
+					if ( bond[ 0 ] < 0 || bond[ 0 ] >= p_molecule.getAtomCount() )
+						std::cout << "===============> 0 : " << bond[ 0 ] << std::endl;
+
+					if ( bond[ 1 ] < 0 || bond[ 1 ] >= p_molecule.getAtomCount() )
+						std::cout << "===============> 1 : " <<  bond[ 1 ] << std::endl;
+
 					modelBond.setIndexFirstAtom( uint( bond[ 0 ] ) );
 					modelBond.setIndexSecondAtom( uint( bond[ 1 ] ) );
+
+					/*const Vec3f & p1 = p_molecule.getAtomPositionFrame( 0 )[ bond[ 0 ] ];
+					const Vec3f & p2 = p_molecule.getAtomPositionFrame( 0 )[ bond[ 1 ] ];
+
+					if ( Util::Math::length( p1 - p2 ) > 100.f )
+					{ 
+						const Model::Atom & a1 = p_molecule.getAtom( uint(bond[ 0 ]) );
+						const Model::Atom & a2 = p_molecule.getAtom( uint(bond[ 1 ]) );
+						std::cout << "=============================" << std::endl;
+						std::cout << a1.getSymbolName() << " - " << a2.getSymbolName() << std::endl;
+						std::cout << a1.getResiduePtr()->getSymbolName() << " - " << a2.getResiduePtr()->getSymbolName()
+								  << std::endl;
+					}*/
 				}
+
+				std::cout << "=============================" << std::endl;
+				std::cout << "=============================" << std::endl;
+				std::cout << "=============================" << std::endl;
+				std::cout << "=============================" << std::endl;
+				std::cout << "=============================" << std::endl;
 
 				return true;
 			}
