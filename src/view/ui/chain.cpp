@@ -15,7 +15,7 @@ namespace VTX
 				ImGui::PushID( ( "ViewChain" + std::to_string( _getModel().getId() ) ).c_str() );
 				if ( ImGui::CollapsingHeader( ( "Chain: " + _getModel().getName() ).c_str(), flags ) )
 				{
-					ImGui::Text( "ID: %d", _getModel().getId() );
+					ImGui::Text( "ID: %d", _getModel().getIndex() );
 					ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
 					Vec3f color = _getModel().getColor();
 					if ( ImGui::ColorEdit3( "Color", (float *)&color ) )

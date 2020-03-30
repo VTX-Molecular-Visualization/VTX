@@ -166,6 +166,9 @@ namespace VTX
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
 			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ (int)_symbol ]; }
 
+			inline bool isSolvant() const { return _isSolvant; }
+			inline void setIsSolvant( const bool p_isSolvant ) { _isSolvant = p_isSolvant; }
+
 			virtual void setSelected( const bool ) override;
 
 		  private:
@@ -173,6 +176,7 @@ namespace VTX
 			Molecule * _moleculePtr = nullptr;
 			Chain *	   _chainPtr	= nullptr;
 			Residue *  _residuePtr	= nullptr;
+			bool	   _isSolvant	= false;
 
 			ATOM_SYMBOL _symbol = ATOM_SYMBOL::UNKNOWN;
 		};

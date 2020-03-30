@@ -59,7 +59,7 @@ namespace VTX
 								ImGui::PushID( residue.getId() );
 								bool residueOpened = ImGui::TreeNodeEx(
 									VTX::Setting::UI::symbolDisplayMode == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
-										? ( residue.getSymbolShort() + " " + std::to_string( residue.getId() ) ).c_str()
+										? ( residue.getSymbolShort() + " " + std::to_string( residue.getIndex() ) ).c_str()
 										: residue.getSymbolName().c_str(),
 									residue.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 								if ( ImGui::IsItemClicked() )
@@ -84,7 +84,7 @@ namespace VTX
 										if ( ImGui::Selectable(
 												 VTX::Setting::UI::symbolDisplayMode
 														 == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
-													 ? ( atom.getSymbolStr() + " " + std::to_string( atom.getId() ) )
+													 ? ( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) )
 														   .c_str()
 													 : atom.getSymbolName().c_str(),
 												 atom.isSelected() ) )
