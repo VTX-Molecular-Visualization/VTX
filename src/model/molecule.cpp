@@ -48,7 +48,9 @@ namespace VTX
 
 			// Set color mode.
 			setColor( Util::Color::randomPastelColor() );
-			setColorMode();
+
+			_fillBufferAtoms();
+			_fillBufferBonds();
 
 			// Set default representation.
 			setRepresentation();
@@ -65,43 +67,7 @@ namespace VTX
 
 		void Molecule::setRepresentation() { _notifyViews( Event::VTX_EVENT_MODEL::CHANGE_REPRESENTATION ); }
 
-		void Molecule::setColorMode()
-		{
-			if ( _atomColors.empty() ) _atomColors.resize( _atoms.size() );
-
-			switch ( Setting::Rendering::colorMode )
-			{
-			case View::MOLECULE_COLOR_MODE::ATOM:
-				for ( uint i = 0; i < uint( _atoms.size() ); ++i )
-				{
-					_atomColors[ i ] = _atoms[ i ]->getColor();
-				}
-				break;
-			case View::MOLECULE_COLOR_MODE::RESIDUE:
-				for ( uint i = 0; i < uint( _atoms.size() ); ++i )
-				{
-					_atomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor();
-				}
-				break;
-			case View::MOLECULE_COLOR_MODE::CHAIN:
-				for ( uint i = 0; i < uint( _atoms.size() ); ++i )
-				{
-					_atomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
-				}
-				break;
-			case View::MOLECULE_COLOR_MODE::PROTEIN:
-				for ( uint i = 0; i < uint( _atoms.size() ); ++i )
-				{
-					_atomColors[ i ] = _color;
-				}
-				break;
-			default: break;
-			}
-
-			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
-			glBufferData( GL_ARRAY_BUFFER, sizeof( Vec3f ) * _atomColors.size(), _atomColors.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-		}
+		void Molecule::setColorMode() { _fillBufferAtomColors(); }
 
 		void Molecule::setFrame( const uint p_frameIdx )
 		{
@@ -113,12 +79,91 @@ namespace VTX
 			}
 
 			_currentFrame = p_frameIdx;
+			_fillBufferAtoms();
+		}
+
+		void Molecule::_fillBufferAtoms()
+		{
+			_bufferAtomPosition.clear();
+			_bufferAtomRadius.clear();
+
+			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
+			{
+				if ( _showSolvant == false && _atoms[ i ]->isSolvant() ) { continue; }
+
+				_bufferAtomPosition.emplace_back( _atomPositionsFrames[ _currentFrame ][ i ] );
+				_bufferAtomRadius.emplace_back( _atoms[ i ]->getVdwRadius() );
+			}
 
 			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
 			glBufferData( GL_ARRAY_BUFFER,
-						  sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
-						  _atomPositionsFrames[ _currentFrame ].data(),
+						  sizeof( Vec3f ) * _bufferAtomPosition.size(),
+						  _bufferAtomPosition.data(),
 						  GL_STATIC_DRAW );
+
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
+			glBufferData(
+				GL_ARRAY_BUFFER, sizeof( float ) * _bufferAtomRadius.size(), _bufferAtomRadius.data(), GL_STATIC_DRAW );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+			_fillBufferAtomColors();
+		}
+
+		void Molecule::_fillBufferAtomColors()
+		{
+			_bufferAtomColors.clear();
+
+			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
+			{
+				if ( _showSolvant == false && _atoms[ i ]->isSolvant() ) { continue; }
+
+				switch ( Setting::Rendering::colorMode )
+				{
+				case View::MOLECULE_COLOR_MODE::ATOM: _bufferAtomColors.push_back( _atoms[ i ]->getColor() ); break;
+				case View::MOLECULE_COLOR_MODE::RESIDUE:
+					_bufferAtomColors.push_back( _atoms[ i ]->getResiduePtr()->getColor() );
+					break;
+				case View::MOLECULE_COLOR_MODE::CHAIN:
+					_bufferAtomColors.push_back( _atoms[ i ]->getChainPtr()->getColor() );
+					break;
+				case View::MOLECULE_COLOR_MODE::PROTEIN: _bufferAtomColors.push_back( _color ); break;
+
+				default: break;
+				}
+			}
+
+			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
+			glBufferData(
+				GL_ARRAY_BUFFER, sizeof( Vec3f ) * _bufferAtomColors.size(), _bufferAtomColors.data(), GL_STATIC_DRAW );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		}
+
+		void Molecule::_fillBufferBonds()
+		{
+			_bufferBonds.clear();
+
+			uint counterSolvant = 0;
+			for ( uint i = 0; i < _bonds.size(); ++i )
+			{
+				if ( _showSolvant == false )
+				{
+					if ( _atoms[ _bonds[ i ]->getIndexFirstAtom() ]->isSolvant()
+						 || _atoms[ _bonds[ i ]->getIndexSecondAtom() ]->isSolvant() )
+					{
+						counterSolvant++;
+						continue;
+					}
+				}
+
+				_bufferBonds.emplace_back( _bonds[ i ]->getIndexFirstAtom() - counterSolvant );
+				_bufferBonds.emplace_back( _bonds[ i ]->getIndexSecondAtom() - counterSolvant );
+			}
+
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
+			glBufferData(
+				GL_ELEMENT_ARRAY_BUFFER, sizeof( uint ) * _bufferBonds.size(), _bufferBonds.data(), GL_STATIC_DRAW );
+			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 		}
 
 		void Molecule::print() const
@@ -157,14 +202,15 @@ namespace VTX
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glGenBuffers( 1, &_atomRadiusVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
-			glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * _atomRadius.size(), _atomRadius.data(), GL_STATIC_DRAW );
+			// glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
+			// glBufferData( GL_ARRAY_BUFFER, sizeof( float ) * _atomRadius.size(), _atomRadius.data(), GL_STATIC_DRAW
+			// );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			// ibo
 			glGenBuffers( 1, &_bondsIBO );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
-			glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( uint ) * _bonds.size(), _bonds.data(), GL_STATIC_DRAW );
+			// glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
+			// glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof( uint ) * _bonds.size(), _bonds.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
 			// vao

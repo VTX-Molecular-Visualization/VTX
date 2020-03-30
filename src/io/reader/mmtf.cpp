@@ -62,11 +62,6 @@ namespace VTX
 				uint  atomGlobalIdx	   = 0;
 				uint  bondGlobalIdx	   = 0;
 
-				// Reserve memory for vectors to avoid pointer loss.
-				p_molecule.addChains( p_data.numChains );
-				p_molecule.addResidues( p_data.numGroups );
-				p_molecule.addAtoms( p_data.numAtoms );
-
 				p_molecule.addAtomPositionFrame();
 				Model::Molecule::AtomPositionsFrame & frame = p_molecule.getAtomPositionFrame( 0 );
 
@@ -78,6 +73,7 @@ namespace VTX
 				for ( ; chainGlobalIdx < chainCount; ++chainGlobalIdx )
 				{
 					// New chain.
+					p_molecule.addChain();
 					Model::Chain & chain = p_molecule.getChain( chainGlobalIdx );
 					chain.setMoleculePtr( &p_molecule );
 					chain.setIndex( chainGlobalIdx );
@@ -98,6 +94,7 @@ namespace VTX
 						const mmtf::GroupType & group = p_data.groupList[ p_data.groupTypeList[ residueGlobalIdx ] ];
 
 						// New residue.
+						p_molecule.addResidue();
 						Model::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
 						residue.setMoleculePtr( &p_molecule );
 						residue.setChainPtr( &chain );
@@ -108,8 +105,8 @@ namespace VTX
 										   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 						residue.setIdFirstAtom( atomGlobalIdx );
 						residue.setAtomCount( uint( group.atomNameList.size() ) );
-						residue.setIdFirstBond( bondGlobalIdx );
-						residue.setBondCount( uint( group.bondAtomList.size() ) / 2u ); // 2 index by bond.
+						// residue.setIdFirstBond( bondGlobalIdx );
+						// residue.setBondCount( uint( group.bondAtomList.size() ) / 2u ); // 2 index by bond.
 						if ( group.bondAtomList.size() % 2 != 0 ) { VTX_WARNING( "Incorrect number of bonds" ); }
 
 						residue.setColor( Util::Color::randomPastelColor() );
@@ -124,6 +121,7 @@ namespace VTX
 						for ( uint atomIdx = 0; atomIdx < atomCount; ++atomIdx, ++atomGlobalIdx )
 						{
 							// New atom.
+							p_molecule.addAtom();
 							Model::Atom & atom = p_molecule.getAtom( atomGlobalIdx );
 							atom.setMoleculePtr( &p_molecule );
 							atom.setChainPtr( &chain );
@@ -143,27 +141,26 @@ namespace VTX
 							frame.emplace_back( Vec3f( x, y, z ) );
 							const Vec3f & atomPosition = frame[ atomGlobalIdx ];
 							const float	  atomRadius   = atom.getVdwRadius();
-							p_molecule.addAtomRadius( atomRadius );
-
-							// Extends bounding box along atom position.
-							p_molecule.extendAABB( atomPosition, atomRadius );
 						}
 
 						// For each bond in the residue.
-						uint bondCount = residue.getBondCount();
+						uint bondCount = uint( group.bondAtomList.size() ) / 2u;
 #ifdef _DEBUG
 						p_molecule.bondCount += bondCount * 2;
 #endif
 						for ( uint boundIdx = 0; boundIdx < bondCount * 2; boundIdx += 2, bondGlobalIdx += 2 )
 						{
-							p_molecule.addBond( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx ] );
-							p_molecule.addBond( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx + 1u ] );
+							p_molecule.addBond();
+							// Model::Bond & bond = p_molecule.getAtom( atomGlobalIdx );
+
+							// p_molecule.addBond( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx ] );
+							// p_molecule.addBond( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx + 1u ] );
 						}
 					}
 				}
 
 				// Add all atom's bonds.
-				p_molecule.addBonds( p_data.bondAtomList );
+				// p_molecule.addBonds( p_data.bondAtomList );
 
 #ifdef _DEBUG
 				p_molecule.bondCount += (uint)p_data.bondAtomList.size();

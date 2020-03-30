@@ -27,7 +27,7 @@ namespace VTX
 					if ( line.rfind( "atom", 0 ) != 0 ) { continue; }
 					if ( line.find( "Water", 0 ) != std::string::npos )
 					{
-						VTX_DEBUG( line );
+						VTX_INFO( line );
 						iss.clear();
 						iss.str( line );
 						iss >> str;

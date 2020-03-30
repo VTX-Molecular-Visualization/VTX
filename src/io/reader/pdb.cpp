@@ -140,7 +140,8 @@ namespace VTX
 						const float * const color = Model::Atom::SYMBOL_COLOR[ (int)modelAtom.getSymbol() ];
 						modelAtom.setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
 						const std::string & atomSymbol = atom.name();
-						std::optional		symbol
+						// VTX_INFO( atomSymbol );
+						std::optional symbol
 							= magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol.substr( 0, 1 ) );
 						symbol.has_value() ? modelAtom.setSymbol( symbol.value() )
 										   : p_molecule.addUnknownAtomSymbol( atomSymbol );
@@ -152,9 +153,6 @@ namespace VTX
 						Vec3f atomPosition = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
 						modelFrame.push_back( atomPosition );
 
-						p_molecule.addAtomRadius( atomRadius );
-						p_molecule.extendAABB( atomPosition, atomRadius );
-
 						atomModelId++;
 					}
 				}
@@ -163,9 +161,11 @@ namespace VTX
 				for ( uint boundIdx = 0; boundIdx < uint( bonds.size() ); ++boundIdx )
 				{
 					const chemfiles::Bond & bond = bonds[ boundIdx ];
+					p_molecule.addBond();
+					Model::Bond & modelBond = p_molecule.getBond( boundIdx );
 
-					p_molecule.addBond( uint( bond[ 0 ] ) );
-					p_molecule.addBond( uint( bond[ 1 ] ) );
+					modelBond.setIndexFirstAtom( uint( bond[ 0 ] ) );
+					modelBond.setIndexSecondAtom( uint( bond[ 1 ] ) );
 				}
 
 				return true;

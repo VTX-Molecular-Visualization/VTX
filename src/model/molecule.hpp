@@ -8,6 +8,7 @@
 #include "IO/reader/prm.hpp"
 #include "atom.hpp"
 #include "base_model.hpp"
+#include "bond.hpp"
 #include "chain.hpp"
 #include "define.hpp"
 #include "generic/base_printable.hpp"
@@ -48,27 +49,26 @@ namespace VTX
 			inline const IO::Reader::PRMFile & getPRM() const { return _prm; };
 			inline void						   setPRM( const IO::Reader::PRMFile & p_prm ) { _prm = p_prm; };
 
-			inline void			   addChain() { _chains.emplace_back( new Chain() ); }
-			inline Chain &		   getChain( uint p_idx ) { return *_chains[ p_idx ]; }
-			inline const Chain &   getChain( uint p_idx ) const { return *_chains[ p_idx ]; }
-			inline void			   addResidue() { _residues.emplace_back( new Residue() ); }
-			inline Residue &	   getResidue( uint p_idx ) { return *_residues[ p_idx ]; }
-			inline const Residue & getResidue( uint p_idx ) const { return *_residues[ p_idx ]; }
-			inline void			   addAtom() { _atoms.emplace_back( new Atom() ); }
-			inline Atom &		   getAtom( uint p_idx ) { return *_atoms[ p_idx ]; }
-			inline const Atom &	   getAtom( uint p_idx ) const { return *_atoms[ p_idx ]; }
-
+			inline void							  addChain() { _chains.emplace_back( new Chain() ); }
+			inline Chain &						  getChain( uint p_idx ) { return *_chains[ p_idx ]; }
+			inline const Chain &				  getChain( uint p_idx ) const { return *_chains[ p_idx ]; }
 			inline std::vector<Chain *> &		  getChains() { return _chains; }
 			inline const std::vector<Chain *> &	  getChains() const { return _chains; }
+			inline void							  addResidue() { _residues.emplace_back( new Residue() ); }
+			inline Residue &					  getResidue( uint p_idx ) { return *_residues[ p_idx ]; }
+			inline const Residue &				  getResidue( uint p_idx ) const { return *_residues[ p_idx ]; }
 			inline std::vector<Residue *> &		  getResidues() { return _residues; }
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
+			inline void							  addAtom() { _atoms.emplace_back( new Atom() ); }
+			inline Atom &						  getAtom( uint p_idx ) { return *_atoms[ p_idx ]; }
+			inline const Atom &					  getAtom( uint p_idx ) const { return *_atoms[ p_idx ]; }
 			inline std::vector<Atom *> &		  getAtoms() { return _atoms; }
 			inline const std::vector<Atom *> &	  getAtoms() const { return _atoms; }
-
-			uint getIdFirstAtomSolvant() const { return _idFirstAtomSolvant; }
-			void setIdFirstAtomSolvant( uint p_id ) { _idFirstAtomSolvant = p_id; }
-			uint getIdFirstBondSolvant() const { return _idFirstBondSolvant; }
-			void setIdFirstBondSolvant( uint p_id ) { _idFirstBondSolvant = p_id; }
+			inline void							  addBond() { _bonds.emplace_back( new Bond() ); }
+			inline Bond &						  getBond( uint p_idx ) { return *_bonds[ p_idx ]; }
+			inline const Bond &					  getBond( uint p_idx ) const { return *_bonds[ p_idx ]; }
+			inline std::vector<Bond *> &		  getBonds() { return _bonds; }
+			inline const std::vector<Bond *> &	  getBonds() const { return _bonds; }
 
 			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
 			{
@@ -107,57 +107,25 @@ namespace VTX
 			};
 			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; };
 
-			inline void		   addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
-			inline const float getAtomRadius( const uint p_idx ) const { return _atomRadius[ p_idx ]; }
-			inline const std::vector<float> & getAtomRadius() const { return _atomRadius; };
-			inline void			 addAtomColor( const Vec3f p_color ) { _atomColors.emplace_back( p_color ); }
-			inline const Vec3f & getAtomColor( const uint p_idx ) const { return _atomColors[ p_idx ]; }
-			inline const std::vector<Vec3f> & getAtomColors() const { return _atomColors; };
-			inline void						  addBond( const uint p_bond ) { _bonds.emplace_back( p_bond ); }
-			inline void						  addBonds( const std::vector<int> & p_bonds )
-			{
-				_bonds.insert( _bonds.end(), p_bonds.begin(), p_bonds.end() );
-			}
-			inline const std::vector<uint> & getBonds() const { return _bonds; };
-			inline const uint				 getChainCount() const { return (uint)_chains.size(); }
-			inline const uint				 getResidueCount() const { return (uint)_residues.size(); }
-			inline const uint				 getAtomCount() const { return (uint)_atoms.size(); }
-			inline const uint				 getBondCount() const { return (uint)_bonds.size(); }
+			// inline void		   addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
+			// inline const float				  getAtomRadius( const uint p_idx ) const { return _atomRadius[ p_idx ];
+			// } inline const std::vector<float> & getAtomRadius() const { return _atomRadius; }; inline void
+			// addAtomColor( const Vec3f p_color ) { _atomColors.emplace_back( p_color ); }
+			// inline const Vec3f &			  getAtomColor( const uint p_idx ) const { return _atomColors[ p_idx ]; }
+			// inline const std::vector<Vec3f> & getAtomColors() const { return _atomColors; };
+			// inline void addBond( const uint p_bond ) { _bonds.emplace_back( p_bond ); }
+			// inline void addBonds( const std::vector<int> & p_bonds )
+			//{
+			//	_bonds.insert( _bonds.end(), p_bonds.begin(), p_bonds.end() );
+			//}
+			// inline const std::vector<uint> & getBonds() const { return _bonds; };
+			inline const uint getChainCount() const { return (uint)_chains.size(); }
+			inline const uint getResidueCount() const { return (uint)_residues.size(); }
+			inline const uint getAtomCount() const { return (uint)_atoms.size(); }
+			inline const uint getBondCount() const { return (uint)_bonds.size(); }
 
-			inline void addAtomPositionFrames( const uint s )
-			{
-				for ( uint i = 0; i < s; ++i )
-				{
-					addAtomPositionFrame();
-				}
-			}
-			inline void addChains( const uint s )
-			{
-				for ( uint i = 0; i < s; ++i )
-				{
-					addChain();
-				}
-			}
-			inline void addResidues( const uint s )
-			{
-				for ( uint i = 0; i < s; ++i )
-				{
-					addResidue();
-				}
-			}
-			inline void addAtoms( const uint s )
-			{
-				for ( uint i = 0; i < s; ++i )
-				{
-					addAtom();
-				}
-			}
-
-			inline const Math::AABB & AABB() const { return _aabb; }
-			inline void				  extendAABB( const Vec3f & p_position, const float p_radius )
-			{
-				_aabb.extend( p_position, p_radius );
-			}
+			inline const uint getBufferAtomCount() const { return (uint)_bufferAtomPosition.size(); }
+			inline const uint getBufferBondCount() const { return (uint)_bufferBonds.size(); }
 
 			virtual void						   init() override;
 			void								   setRepresentation();
@@ -171,7 +139,12 @@ namespace VTX
 			inline bool							   isPlaying() const { return _isPlaying; }
 			inline void							   setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
 			inline bool							   showSolvant() const { return _showSolvant; }
-			inline void setShowSolvant( const bool p_showSolvant ) { _showSolvant = p_showSolvant; }
+			inline void							   setShowSolvant( const bool p_showSolvant )
+			{
+				_showSolvant = p_showSolvant;
+				_fillBufferAtoms();
+				_fillBufferBonds();
+			}
 
 			virtual void print() const override;
 
@@ -188,23 +161,23 @@ namespace VTX
 		  private:
 		  private:
 			// Models.
-			std::string			   _fileName = "";
-			IO::Reader::PRMFile	   _prm;
-			std::string			   _name	 = "unknown";
-			std::vector<Chain *>   _chains	 = std::vector<Chain *>();
-			std::vector<Residue *> _residues = std::vector<Residue *>();
-			std::vector<Atom *>	   _atoms	 = std::vector<Atom *>();
+			std::string						_fileName = "";
+			IO::Reader::PRMFile				_prm;
+			std::string						_name				 = "unknown";
+			std::vector<Chain *>			_chains				 = std::vector<Chain *>();
+			std::vector<Residue *>			_residues			 = std::vector<Residue *>();
+			std::vector<Atom *>				_atoms				 = std::vector<Atom *>();
+			std::vector<Bond *>				_bonds				 = std::vector<Bond *>();
+			std::vector<AtomPositionsFrame> _atomPositionsFrames = std::vector<AtomPositionsFrame>();
 
 			std::unordered_set<std::string> _unknownResidueSymbol = std::unordered_set<std::string>();
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
 			// Buffers.
-			std::vector<AtomPositionsFrame> _atomPositionsFrames = std::vector<AtomPositionsFrame>();
-			std::vector<float>				_atomRadius			 = std::vector<float>();
-			std::vector<Vec3f>				_atomColors			 = std::vector<Vec3f>();
-			std::vector<uint>				_bonds				 = std::vector<uint>();
-
-			Math::AABB _aabb;
+			AtomPositionsFrame _bufferAtomPosition = AtomPositionsFrame();
+			std::vector<float> _bufferAtomRadius   = std::vector<float>();
+			std::vector<Vec3f> _bufferAtomColors   = std::vector<Vec3f>();
+			std::vector<uint>  _bufferBonds		   = std::vector<uint>();
 
 			// OpenGL buffers.
 			enum ATTRIBUTE_LOCATION
@@ -226,11 +199,12 @@ namespace VTX
 			bool _isPlaying	   = true;
 			uint _fps		   = 1u;
 
-			uint _idFirstAtomSolvant = INT_MAX;
-			uint _idFirstBondSolvant = INT_MAX;
-			bool _showSolvant		 = true;
+			bool _showSolvant = true;
 
 			void _createBuffers();
+			void _fillBufferAtoms();
+			void _fillBufferAtomColors();
+			void _fillBufferBonds();
 
 #ifdef _DEBUG
 		  public:

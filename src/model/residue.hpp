@@ -66,10 +66,10 @@ namespace VTX
 			inline void					setIdFirstAtom( const uint p_id ) { _idFirstAtom = p_id; };
 			inline uint					getAtomCount() const { return _atomCount; };
 			inline void					setAtomCount( const uint p_count ) { _atomCount = p_count; };
-			inline uint					getIdFirstBond() const { return _idFirstBond; };
-			inline void					setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
-			inline uint					getBondCount() const { return _bondCount; };
-			inline void					setBondCount( const uint p_count ) { _bondCount = p_count; };
+			// inline uint					getIdFirstBond() const { return _idFirstBond; };
+			// inline void					setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
+			// inline uint getBondCount() const { return _bondCount; };
+			// inline void setBondCount( const uint p_count ) { _bondCount = p_count; };
 
 			virtual void setSelected( const bool ) override;
 
@@ -81,8 +81,8 @@ namespace VTX
 			RESIDUE_SYMBOL _symbol		= RESIDUE_SYMBOL::UNKNOWN;
 			uint		   _idFirstAtom = 0;
 			uint		   _atomCount	= 0;
-			uint		   _idFirstBond = 0;
-			uint		   _bondCount	= 0;
+			// uint		   _idFirstBond = 0;
+			// uint		   _bondCount	= 0;
 		};
 
 	} // namespace Model

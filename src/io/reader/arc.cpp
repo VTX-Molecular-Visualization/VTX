@@ -49,24 +49,22 @@ namespace VTX
 					}
 
 					// Seems that .arc does not provide information about chains or residues...
-					p_molecule.addChains( 1 );
+					p_molecule.addChain();
 					Model::Chain & chain = p_molecule.getChain( 0 );
 					chain.setMoleculePtr( &p_molecule );
 					chain.setIdFirstResidue( 0 );
 					chain.setResidueCount( 1 );
 					chain.setColor( Util::Color::randomPastelColor() );
 
-					p_molecule.addResidues( 1 );
+					p_molecule.addResidue();
 					Model::Residue & residue = p_molecule.getResidue( 0 );
 					residue.setMoleculePtr( &p_molecule );
 					residue.setChainPtr( &chain );
 					residue.setIdFirstAtom( 0 );
 					residue.setAtomCount( uint( positions.size() ) );
-					residue.setIdFirstBond( 0 );
-					residue.setBondCount( uint( bonds.size() ) );
+					// residue.setIdFirstBond( 0 );
+					// residue.setBondCount( uint( bonds.size() ) );
 					residue.setColor( Util::Color::randomPastelColor() );
-
-					p_molecule.addAtoms( uint( positions.size() ) );
 
 					// First frame.
 					VTX_INFO( "Frame 0" );
@@ -75,8 +73,9 @@ namespace VTX
 					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
 					{
 						const chemfiles::Atom & atom = frame[ positionIdx ];
-						uint		  atomType		 = uint( atom.properties().get( "atom_type" ).value().as_double() );
-						Model::Atom & modelAtom		 = p_molecule.getAtom( positionIdx );
+						uint atomType				 = uint( atom.properties().get( "atom_type" ).value().as_double() );
+						p_molecule.addAtom();
+						Model::Atom & modelAtom = p_molecule.getAtom( positionIdx );
 						modelAtom.setMoleculePtr( &p_molecule );
 						modelAtom.setChainPtr( &chain );
 						modelAtom.setResiduePtr( &residue );
@@ -92,21 +91,12 @@ namespace VTX
 						firstMoleculeFrame.emplace_back( Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] ) );
 						const Vec3f & atomPosition = firstMoleculeFrame[ positionIdx ];
 						const float	  atomRadius   = modelAtom.getVdwRadius();
-						p_molecule.addAtomRadius( atomRadius );
 
-						p_molecule.extendAABB( atomPosition, atomRadius );
-
-						if ( p_molecule.getIdFirstAtomSolvant() == INT_MAX )
-						{
-							if ( std::find( p_molecule.getPRM().solvantIds.begin(),
-											p_molecule.getPRM().solvantIds.end(),
-											atomType )
-								 != p_molecule.getPRM().solvantIds.end() )
-							{
-								VTX_DEBUG( "First solvant atom found: " + std::to_string( positionIdx ) );
-								p_molecule.setIdFirstAtomSolvant( positionIdx );
-							}
-						}
+						if ( std::find( p_molecule.getPRM().solvantIds.begin(),
+										p_molecule.getPRM().solvantIds.end(),
+										atomType )
+							 != p_molecule.getPRM().solvantIds.end() )
+						{ modelAtom.setIsSolvant( true ); }
 					}
 					// Fill other frames.
 					for ( uint frameIdx = 1; frameIdx < trajectory.nsteps(); ++frameIdx )
@@ -130,13 +120,11 @@ namespace VTX
 					for ( uint boundIdx = 0; boundIdx < uint( bonds.size() ); ++boundIdx )
 					{
 						const chemfiles::Bond & bond = bonds[ boundIdx ];
+						p_molecule.addBond();
+						Model::Bond & modelBond = p_molecule.getBond( boundIdx );
 
-						p_molecule.addBond( uint( bond[ 0 ] ) );
-						p_molecule.addBond( uint( bond[ 1 ] ) );
-
-						if ( uint( bond[ 0 ] ) == p_molecule.getIdFirstAtomSolvant()
-							 || uint( bond[ 1 ] ) == p_molecule.getIdFirstAtomSolvant() )
-						{ p_molecule.setIdFirstBondSolvant( boundIdx ); }
+						modelBond.setIndexFirstAtom( uint( bond[ 0 ] ) );
+						modelBond.setIndexSecondAtom( uint( bond[ 1 ] ) );
 					}
 				}
 				catch ( const std::exception & p_e )
