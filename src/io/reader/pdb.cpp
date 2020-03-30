@@ -83,7 +83,8 @@ namespace VTX
 
 				p_molecule.getAtoms().resize( frame.size() );
 				p_molecule.getAtomPositionFrame( 0 ).resize( frame.size() );
-				for (uint i = 0; i < uint(frame.size()); ++i) {
+				for ( uint i = 0; i < uint( frame.size() ); ++i )
+				{
 					p_molecule.getAtoms()[ i ] = new Model::Atom;
 				}
 
@@ -123,7 +124,7 @@ namespace VTX
 					modelResidue.setIndex( residueIdx );
 					modelResidue.setMoleculePtr( &p_molecule );
 					modelResidue.setChainPtr( modelChain );
-					modelResidue.setIdFirstAtom( uint(*residue.begin()) );
+					modelResidue.setIdFirstAtom( uint( *residue.begin() ) );
 					modelResidue.setAtomCount( uint( residue.size() ) );
 					modelResidue.setColor( Util::Color::randomPastelColor() );
 					const std::string & residueSymbol = residue.name();
@@ -133,11 +134,11 @@ namespace VTX
 
 					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 					{
-						const uint			atomId = uint(*it);
+						const uint				atomId = uint( *it );
 						const chemfiles::Atom & atom   = topology[ atomId ];
 
 						// Create atom.
-						//p_molecule.addAtom();
+						// p_molecule.addAtom();
 						Model::Atom & modelAtom = p_molecule.getAtom( atomId );
 						modelAtom.setIndex( atomId );
 						modelAtom.setMoleculePtr( &p_molecule );
@@ -160,7 +161,7 @@ namespace VTX
 						const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 						const chemfiles::Vector3D &					 position  = positions[ atomId ];
 						Vec3f atomPosition = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
-						//modelFrame.push_back( atomPosition );
+						// modelFrame.push_back( atomPosition );
 						modelFrame[ atomId ] = atomPosition;
 
 						//atomModelId++;
@@ -174,12 +175,12 @@ namespace VTX
 					p_molecule.addBond();
 					Model::Bond & modelBond = p_molecule.getBond( boundIdx );
 
-					//std::cout << bonds.size() << std::endl;
+					// std::cout << bonds.size() << std::endl;
 					if ( bond[ 0 ] < 0 || bond[ 0 ] >= p_molecule.getAtomCount() )
 						std::cout << "===============> 0 : " << bond[ 0 ] << std::endl;
 
 					if ( bond[ 1 ] < 0 || bond[ 1 ] >= p_molecule.getAtomCount() )
-						std::cout << "===============> 1 : " <<  bond[ 1 ] << std::endl;
+						std::cout << "===============> 1 : " << bond[ 1 ] << std::endl;
 
 					modelBond.setIndexFirstAtom( uint( bond[ 0 ] ) );
 					modelBond.setIndexSecondAtom( uint( bond[ 1 ] ) );
@@ -188,7 +189,7 @@ namespace VTX
 					const Vec3f & p2 = p_molecule.getAtomPositionFrame( 0 )[ bond[ 1 ] ];
 
 					if ( Util::Math::length( p1 - p2 ) > 100.f )
-					{ 
+					{
 						const Model::Atom & a1 = p_molecule.getAtom( uint(bond[ 0 ]) );
 						const Model::Atom & a2 = p_molecule.getAtom( uint(bond[ 1 ]) );
 						std::cout << "=============================" << std::endl;
