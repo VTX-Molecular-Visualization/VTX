@@ -137,16 +137,19 @@ namespace VTX
 						modelAtom.setMoleculePtr( &p_molecule );
 						modelAtom.setChainPtr( modelChain );
 						modelAtom.setResiduePtr( &modelResidue );
+						std::string	  atomSymbol = atom.name();
+						std::optional symbol	 = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
+						while ( symbol.has_value() == false && atomSymbol.size() > 0 )
+						{
+							atomSymbol = atomSymbol.substr( 0, atomSymbol.size() - 1 );
+							symbol	   = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
+						}
+						// std::optional symbol
+						//	= magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol.substr( 0, 1 ) );
+						symbol.has_value() ? modelAtom.setSymbol( symbol.value() )
+										   : p_molecule.addUnknownAtomSymbol( atom.name() );
 						const float * const color = Model::Atom::SYMBOL_COLOR[ (int)modelAtom.getSymbol() ];
 						modelAtom.setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
-						const std::string & atomSymbol = atom.name();
-						// VTX_INFO( atomSymbol );
-						std::optional symbol
-							= magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol.substr( 0, 1 ) );
-						symbol.has_value() ? modelAtom.setSymbol( symbol.value() )
-										   : p_molecule.addUnknownAtomSymbol( atomSymbol );
-
-						const float atomRadius = modelAtom.getVdwRadius();
 
 						const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 						const chemfiles::Vector3D &					 position  = positions[ atomId ];

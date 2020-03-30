@@ -200,29 +200,6 @@ namespace VTX
 				}
 #endif
 
-				// Display unknown symbols.
-				const std::unordered_set<std::string> & unknownResidueSymbols = p_molecule.getUnknownResidueSymbols();
-				if ( unknownResidueSymbols.empty() == false )
-				{
-					std::string unknownResidueSymbolsStr = "";
-					for ( std::string symbol : unknownResidueSymbols )
-					{
-						unknownResidueSymbolsStr += symbol + " ";
-					}
-					VTX_WARNING( "Unknown residue symbols : " + unknownResidueSymbolsStr );
-				}
-
-				const std::unordered_set<std::string> & unknownAtomSymbols = p_molecule.getUnknownAtomSymbols();
-				if ( unknownAtomSymbols.empty() == false )
-				{
-					std::string unknownAtomSymbolsStr = "";
-					for ( std::string symbol : unknownAtomSymbols )
-					{
-						unknownAtomSymbolsStr += symbol + " ";
-					}
-					VTX_WARNING( "Unknown atom symbols : " + unknownAtomSymbolsStr );
-				}
-
 				VTX_INFO( "Models created" );
 
 				return true;

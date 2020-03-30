@@ -172,6 +172,29 @@ namespace VTX
 			VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: "
 					  + std::to_string( _residues.size() ) + " / Atoms: " + std::to_string( _atoms.size() )
 					  + " / Bonds: " + std::to_string( _bonds.size() ) );
+
+			// Display unknown symbols.
+			const std::unordered_set<std::string> & unknownResidueSymbols = getUnknownResidueSymbols();
+			if ( unknownResidueSymbols.empty() == false )
+			{
+				std::string unknownResidueSymbolsStr = "";
+				for ( std::string symbol : unknownResidueSymbols )
+				{
+					unknownResidueSymbolsStr += symbol + " ";
+				}
+				VTX_WARNING( "Unknown residue symbols : " + unknownResidueSymbolsStr );
+			}
+
+			const std::unordered_set<std::string> & unknownAtomSymbols = getUnknownAtomSymbols();
+			if ( unknownAtomSymbols.empty() == false )
+			{
+				std::string unknownAtomSymbolsStr = "";
+				for ( std::string symbol : unknownAtomSymbols )
+				{
+					unknownAtomSymbolsStr += symbol + " ";
+				}
+				VTX_WARNING( "Unknown atom symbols : " + unknownAtomSymbolsStr );
+			}
 		}
 
 		void Molecule::setSelected( const bool p_selected )
