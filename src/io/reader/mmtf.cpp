@@ -146,24 +146,32 @@ namespace VTX
 						// For each bond in the residue.
 						uint bondCount = uint( group.bondAtomList.size() ) / 2u;
 #ifdef _DEBUG
-						p_molecule.bondCount += bondCount * 2;
+						p_molecule.bondCount += bondCount;
 #endif
-						for ( uint boundIdx = 0; boundIdx < bondCount * 2; boundIdx += 2, bondGlobalIdx += 2 )
+						for ( uint boundIdx = 0; boundIdx < bondCount * 2; boundIdx += 2, bondGlobalIdx++ )
 						{
 							p_molecule.addBond();
-							// Model::Bond & bond = p_molecule.getAtom( atomGlobalIdx );
+							Model::Bond & bond = p_molecule.getBond( bondGlobalIdx );
 
-							// p_molecule.addBond( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx ] );
-							// p_molecule.addBond( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx + 1u ] );
+							bond.setIndexFirstAtom( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx ] );
+							bond.setIndexSecondAtom( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx + 1 ] );
 						}
 					}
 				}
 
 				// Add all atom's bonds.
-				// p_molecule.addBonds( p_data.bondAtomList );
+				uint bondCount = uint( p_data.bondAtomList.size() ) / 2u;
+				for ( uint boundIdx = 0; boundIdx < bondCount * 2; boundIdx += 2, ++bondGlobalIdx )
+				{
+					p_molecule.addBond();
+					Model::Bond & bond = p_molecule.getBond( bondGlobalIdx );
+
+					bond.setIndexFirstAtom( p_data.bondAtomList[ boundIdx ] );
+					bond.setIndexSecondAtom( p_data.bondAtomList[ boundIdx + 1 ] );
+				}
 
 #ifdef _DEBUG
-				p_molecule.bondCount += (uint)p_data.bondAtomList.size();
+				p_molecule.bondCount += (uint)p_data.bondAtomList.size() / 2u;
 #endif
 
 #ifdef _DEBUG
@@ -185,12 +193,10 @@ namespace VTX
 					VTX_ERROR( "Atom count error: " + std::to_string( p_molecule.getAtomCount() ) + " / "
 							   + std::to_string( p_molecule.atomCount ) + " / " + std::to_string( p_data.numAtoms ) );
 				}
-				if ( p_molecule.getBondCount() != p_molecule.bondCount
-					 || p_molecule.getBondCount() != p_data.numBonds * 2 )
+				if ( p_molecule.getBondCount() != p_molecule.bondCount || p_molecule.getBondCount() != p_data.numBonds )
 				{
 					VTX_ERROR( "Bond count error: " + std::to_string( p_molecule.getBondCount() ) + " / "
-							   + std::to_string( p_molecule.bondCount ) + " / "
-							   + std::to_string( p_data.numBonds * 2 ) );
+							   + std::to_string( p_molecule.bondCount ) + " / " + std::to_string( p_data.numBonds ) );
 				}
 #endif
 
