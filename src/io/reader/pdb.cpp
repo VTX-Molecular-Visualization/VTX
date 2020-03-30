@@ -79,7 +79,7 @@ namespace VTX
 				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 
 				uint chainModelId = -1;
-				uint atomModelId  = 0;
+				//uint atomModelId  = 0;
 
 				p_molecule.getAtoms().resize( frame.size() );
 				p_molecule.getAtomPositionFrame( 0 ).resize( frame.size() );
@@ -123,7 +123,7 @@ namespace VTX
 					modelResidue.setIndex( residueIdx );
 					modelResidue.setMoleculePtr( &p_molecule );
 					modelResidue.setChainPtr( modelChain );
-					modelResidue.setIdFirstAtom( atomModelId );
+					modelResidue.setIdFirstAtom( uint(*residue.begin()) );
 					modelResidue.setAtomCount( uint( residue.size() ) );
 					modelResidue.setColor( Util::Color::randomPastelColor() );
 					const std::string & residueSymbol = residue.name();
@@ -163,7 +163,7 @@ namespace VTX
 						//modelFrame.push_back( atomPosition );
 						modelFrame[ atomId ] = atomPosition;
 
-						atomModelId++;
+						//atomModelId++;
 					}
 				}
 
