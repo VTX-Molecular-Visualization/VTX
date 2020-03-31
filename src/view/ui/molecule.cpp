@@ -4,7 +4,8 @@
 #include "action/molecule_change_fps.hpp"
 #include "action/molecule_change_frame.hpp"
 #include "action/molecule_change_is_playing.hpp"
-#include "action/molecule_change_show_solvant.hpp"
+#include "action/molecule_change_show_ion.hpp"
+#include "action/molecule_change_show_solvent.hpp"
 #include "action/selectable_unselect.hpp"
 #include "action/transformable_rotate.hpp"
 #include "action/transformable_set_scale.hpp"
@@ -91,11 +92,17 @@ namespace VTX
 							VTX_ACTION( new Action::ColorableChangeColor( _getModel(), color ) );
 							VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN ) );
 						}
-						if ( _getModel().getPRM().solvantIds.size() > 0 )
+						if ( _getModel().getPRM().SolventIds.size() > 0 )
 						{
-							bool showSolvant = _getModel().showSolvant();
-							if ( ImGui::Checkbox( LOCALE( "View.Molecule.Solvant" ), &showSolvant ) )
-							{ VTX_ACTION( new Action::MoleculeChangeShowSolvant( _getModel(), showSolvant ) ); }
+							bool showSolvent = _getModel().showSolvent();
+							if ( ImGui::Checkbox( LOCALE( "View.Molecule.Solvent" ), &showSolvent ) )
+							{ VTX_ACTION( new Action::MoleculeChangeShowSolvent( _getModel(), showSolvent ) ); }
+						}
+						if ( _getModel().getPRM().ionIds.size() > 0 )
+						{
+							bool showIon = _getModel().showIon();
+							if ( ImGui::Checkbox( LOCALE( "View.Molecule.Ion" ), &showIon ) )
+							{ VTX_ACTION( new Action::MoleculeChangeShowIon( _getModel(), showIon ) ); }
 						}
 					}
 #ifdef _DEBUG

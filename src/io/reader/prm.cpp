@@ -25,14 +25,23 @@ namespace VTX
 				{
 					// Read only line starting with "atom".
 					if ( line.rfind( "atom", 0 ) != 0 ) { continue; }
-					if ( line.find( "Water", 0 ) != std::string::npos )
+					else if ( line.find( "Water", 0 ) != std::string::npos )
 					{
 						VTX_INFO( line );
 						iss.clear();
 						iss.str( line );
 						iss >> str;
 						iss >> id;
-						p_prm.solvantIds.push_back( id );
+						p_prm.SolventIds.push_back( id );
+					}
+					else if ( line.find( "Ion", 0 ) != std::string::npos )
+					{
+						VTX_INFO( line );
+						iss.clear();
+						iss.str( line );
+						iss >> str;
+						iss >> id;
+						p_prm.ionIds.push_back( id );
 					}
 				}
 

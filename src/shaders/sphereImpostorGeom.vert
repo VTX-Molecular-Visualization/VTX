@@ -1,8 +1,9 @@
 #version 450
 
-layout( location = 0 ) in vec3 aSpherePos;
-layout( location = 1 ) in vec3 aSphereColor;
+layout( location = 0 ) in vec3  aSpherePos;
+layout( location = 1 ) in vec3  aSphereColor;
 layout( location = 2 ) in float aSphereRad;
+layout( location = 3 ) in uint  aSphereVis;
 
 uniform mat4  uMVMatrix;
 uniform mat4  uProjMatrix;
@@ -12,6 +13,7 @@ out vec3	   vCamImpPos;	  // impostor position in cam space
 flat out vec3  vCamSpherePos; // sphere impostor in cam space
 flat out vec3  vSphereColor;
 flat out float vSphereRad;
+flat out uint  vSphereVis;
 // impostor vectors
 flat out vec3  vImpU;
 flat out vec3  vImpV;
@@ -22,6 +24,7 @@ void main()
 	vCamSpherePos = vec3( uMVMatrix * vec4( aSpherePos, 1.f ) );
 	vSphereColor  = aSphereColor;
 	vSphereRad	  = aSphereRad * uRadScale;
+	vSphereVis    = aSphereVis;
 
 	vDotCamSpherePos		  = dot( vCamSpherePos, vCamSpherePos );
 	const float dSphereCenter = sqrt( vDotCamSpherePos );

@@ -92,11 +92,17 @@ namespace VTX
 						const Vec3f & atomPosition = firstMoleculeFrame[ positionIdx ];
 						const float	  atomRadius   = modelAtom.getVdwRadius();
 
-						if ( std::find( p_molecule.getPRM().solvantIds.begin(),
-										p_molecule.getPRM().solvantIds.end(),
+						if ( std::find( p_molecule.getPRM().SolventIds.begin(),
+										p_molecule.getPRM().SolventIds.end(),
 										atomType )
-							 != p_molecule.getPRM().solvantIds.end() )
-						{ modelAtom.setIsSolvant( true ); }
+							 != p_molecule.getPRM().SolventIds.end() )
+						{ modelAtom.setType( Model::Atom::ATOM_TYPE::Solvent ); }
+						else if ( std::find(
+									  p_molecule.getPRM().ionIds.begin(), p_molecule.getPRM().ionIds.end(), atomType )
+								  != p_molecule.getPRM().ionIds.end() )
+						{
+							modelAtom.setType( Model::Atom::ATOM_TYPE::ION );
+						}
 					}
 					// Fill other frames.
 					for ( uint frameIdx = 1; frameIdx < trajectory.nsteps(); ++frameIdx )

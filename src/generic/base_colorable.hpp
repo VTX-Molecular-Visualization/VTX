@@ -6,6 +6,7 @@
 #endif
 
 #include "define.hpp"
+#include "util/color.hpp"
 
 namespace VTX
 {
@@ -18,7 +19,7 @@ namespace VTX
 			inline void			 setColor( const Vec3f & p_color ) { _color = p_color; }
 
 		  protected:
-			Vec3f _color = VEC3D_ZERO;
+			Vec3f _color = Util::Color::randomPastelColor();
 		};
 	} // namespace Generic
 } // namespace VTX

@@ -40,7 +40,7 @@ namespace VTX
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 				glUniform1f( _uRadius, 0.2f );
 				glDrawElements(
-					GL_LINES, _getModel().getBufferBondCount(), GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
+					GL_LINES, _getModel().getBondCount() * 2, GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
 			}
 		} // namespace D3
 	}	  // namespace View

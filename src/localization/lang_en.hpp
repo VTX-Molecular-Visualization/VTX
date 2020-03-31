@@ -97,7 +97,8 @@ namespace VTX
 			{ "View.Transform.Rotation", "Rotation" },
 			{ "View.Transform.Scale", "Scale" },
 			{ "View.Molecule.Dynamic", "Dynamic" },
-			{ "View.Molecule.Solvant", "Solvant" },
+			{ "View.Molecule.Solvent", "Solvent" },
+			{ "View.Molecule.Ion", "Ion" },
 
 			// Modals.
 			{ "Modal.Loading", "Loading" },

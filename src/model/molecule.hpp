@@ -107,25 +107,10 @@ namespace VTX
 			};
 			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; };
 
-			// inline void		   addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
-			// inline const float				  getAtomRadius( const uint p_idx ) const { return _atomRadius[ p_idx ];
-			// } inline const std::vector<float> & getAtomRadius() const { return _atomRadius; }; inline void
-			// addAtomColor( const Vec3f p_color ) { _atomColors.emplace_back( p_color ); }
-			// inline const Vec3f &			  getAtomColor( const uint p_idx ) const { return _atomColors[ p_idx ]; }
-			// inline const std::vector<Vec3f> & getAtomColors() const { return _atomColors; };
-			// inline void addBond( const uint p_bond ) { _bonds.emplace_back( p_bond ); }
-			// inline void addBonds( const std::vector<int> & p_bonds )
-			//{
-			//	_bonds.insert( _bonds.end(), p_bonds.begin(), p_bonds.end() );
-			//}
-			// inline const std::vector<uint> & getBonds() const { return _bonds; };
 			inline const uint getChainCount() const { return (uint)_chains.size(); }
 			inline const uint getResidueCount() const { return (uint)_residues.size(); }
 			inline const uint getAtomCount() const { return (uint)_atoms.size(); }
 			inline const uint getBondCount() const { return (uint)_bonds.size(); }
-
-			inline const uint getBufferAtomCount() const { return (uint)_bufferAtomPosition.size(); }
-			inline const uint getBufferBondCount() const { return (uint)_bufferBonds.size(); }
 
 			virtual void						   init() override;
 			void								   setRepresentation();
@@ -138,12 +123,17 @@ namespace VTX
 			void								   setFPS( const uint p_fps ) { _fps = p_fps; }
 			inline bool							   isPlaying() const { return _isPlaying; }
 			inline void							   setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
-			inline bool							   showSolvant() const { return _showSolvant; }
-			inline void							   setShowSolvant( const bool p_showSolvant )
+			inline bool							   showSolvent() const { return _showSolvent; }
+			inline void							   setShowSolvent( const bool p_showSolvent )
 			{
-				_showSolvant = p_showSolvant;
-				_fillBufferAtoms();
-				_fillBufferBonds();
+				_showSolvent = p_showSolvent;
+				_fillBufferAtomVisibilities();
+			}
+			inline bool showIon() const { return _showIon; }
+			inline void setShowIon( const bool p_showIon )
+			{
+				_showIon = p_showIon;
+				_fillBufferAtomVisibilities();
 			}
 
 			virtual void print() const override;
@@ -174,36 +164,40 @@ namespace VTX
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
 			// Buffers.
-			AtomPositionsFrame _bufferAtomPosition = AtomPositionsFrame();
-			std::vector<float> _bufferAtomRadius   = std::vector<float>();
-			std::vector<Vec3f> _bufferAtomColors   = std::vector<Vec3f>();
-			std::vector<uint>  _bufferBonds		   = std::vector<uint>();
+			std::vector<Vec3f> _bufferAtomPositions	   = std::vector<Vec3f>();
+			std::vector<float> _bufferAtomRadius	   = std::vector<float>();
+			std::vector<Vec3f> _bufferAtomColors	   = std::vector<Vec3f>();
+			std::vector<uint>  _bufferAtomVisibilities = std::vector<uint>();
+			std::vector<uint>  _bufferBonds			   = std::vector<uint>();
 
 			// OpenGL buffers.
 			enum ATTRIBUTE_LOCATION
 			{
-				ATOM_POSITION = 0,
-				ATOM_COLOR	  = 1,
-				ATOM_RADIUS	  = 2
+				ATOM_POSITION	= 0,
+				ATOM_COLOR		= 1,
+				ATOM_RADIUS		= 2,
+				ATOM_VISIBILITY = 3,
 			};
 
-			GLuint _vao				 = GL_INVALID_VALUE; // Vao.
-			GLuint _atomPositionsVBO = GL_INVALID_VALUE; // Atom positions vbo.
-			GLuint _atomRadiusVBO	 = GL_INVALID_VALUE; // Radii vbo.
-														 // TODO ? use SSBO ? ok for atom colors (CPK/residue/chain)
-														 // but for energy based coloration, useless...
-			GLuint _atomColorsVBO = GL_INVALID_VALUE;	 // Color vbo.
-			GLuint _bondsIBO	  = GL_INVALID_VALUE;	 // Bonds ibo.
+			GLuint _vao					= GL_INVALID_VALUE;
+			GLuint _atomPositionsVBO	= GL_INVALID_VALUE;
+			GLuint _atomRadiusVBO		= GL_INVALID_VALUE;
+			GLuint _atomColorsVBO		= GL_INVALID_VALUE;
+			GLuint _atomVisibilitiesVBO = GL_INVALID_VALUE;
+			GLuint _bondsIBO			= GL_INVALID_VALUE;
 
 			uint _currentFrame = 0u;
 			bool _isPlaying	   = true;
 			uint _fps		   = 1u;
 
-			bool _showSolvant = true;
+			bool _showSolvent = true;
+			bool _showIon	  = true;
 
 			void _createBuffers();
-			void _fillBufferAtoms();
+			void _fillBufferAtomPositions();
+			void _fillBufferAtomRadius();
 			void _fillBufferAtomColors();
+			void _fillBufferAtomVisibilities();
 			void _fillBufferBonds();
 
 #ifdef _DEBUG

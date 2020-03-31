@@ -7,6 +7,7 @@ uniform mat4  uProjMatrix;
 uniform float uCylRad;
 
 flat in vec3 vVertexColor[]; // on color per atom
+flat in uint vVertexVis[]; // on color per atom
 
 smooth out vec3 impPos;
 flat out vec3	cylCenter;
@@ -16,6 +17,11 @@ flat out vec3	colors[ 2 ];
 // all is done in cam space
 void main()
 {
+	if(vVertexVis[0] == 0 || vVertexVis[1] == 0)
+	{
+		return;
+	}
+
 	colors[ 0 ] = vVertexColor[ 0 ];
 	colors[ 1 ] = vVertexColor[ 1 ];
 

@@ -1,9 +1,9 @@
 #include "loader.hpp"
 #include "io/path_fake.hpp"
 #include "io/reader/arc.hpp"
+#include "io/reader/chemfiles.hpp"
 #include "io/reader/mmtf.hpp"
 #include "io/reader/obj.hpp"
-#include "io/reader/pdb.hpp"
 #include "io/reader/prm.hpp"
 #include "vtx_app.hpp"
 
@@ -73,7 +73,7 @@ namespace VTX
 		bool Loader::_isTopology( const IO::Path * const p_path ) const
 		{
 			std::string extension = p_path->getExtension();
-			return ( ( extension == "pdb" ) || ( extension == "mmtf" ) );
+			return ( ( extension == "pdb" ) || ( extension == "mmtf" ) || ( extension == "xyz" ) );
 		}
 
 		bool Loader::_isDynamic( const IO::Path * const p_path ) const
@@ -88,7 +88,7 @@ namespace VTX
 			if ( extension == "mmtf" ) { return new IO::Reader::MMTF(); }
 			else if ( extension == "pdb" )
 			{
-				return new IO::Reader::PDB();
+				return new IO::Reader::Chemfiles();
 			}
 			else if ( extension == "obj" )
 			{
@@ -97,6 +97,10 @@ namespace VTX
 			else if ( extension == "arc" )
 			{
 				return new IO::Reader::ARC();
+			}
+			else if ( extension == "xyz" )
+			{
+				return new IO::Reader::Chemfiles();
 			}
 			return nullptr;
 		}

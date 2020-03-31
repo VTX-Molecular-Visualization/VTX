@@ -1,4 +1,4 @@
-#include "pdb.hpp"
+#include "chemfiles.hpp"
 #undef INFINITE
 #include "util/color.hpp"
 #include <chemfiles.hpp>
@@ -12,7 +12,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			bool PDB::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			bool Chemfiles::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
 
@@ -79,7 +79,7 @@ namespace VTX
 				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 
 				uint chainModelId = -1;
-				//uint atomModelId  = 0;
+				// uint atomModelId  = 0;
 
 				p_molecule.getAtoms().resize( frame.size() );
 				p_molecule.getAtomPositionFrame( 0 ).resize( frame.size() );
@@ -138,7 +138,6 @@ namespace VTX
 						const chemfiles::Atom & atom   = topology[ atomId ];
 
 						// Create atom.
-						// p_molecule.addAtom();
 						Model::Atom & modelAtom = p_molecule.getAtom( atomId );
 						modelAtom.setIndex( atomId );
 						modelAtom.setMoleculePtr( &p_molecule );
@@ -146,13 +145,6 @@ namespace VTX
 						modelAtom.setResiduePtr( &modelResidue );
 						std::string	  atomSymbol = atom.type();
 						std::optional symbol	 = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
-						// while ( symbol.has_value() == false && atomSymbol.size() > 0 )
-						//{
-						//	atomSymbol = atomSymbol.substr( 0, atomSymbol.size() - 1 );
-						//	symbol	   = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
-						//}
-						// std::optional symbol
-						//	= magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol.substr( 0, 1 ) );
 						symbol.has_value() ? modelAtom.setSymbol( symbol.value() )
 										   : p_molecule.addUnknownAtomSymbol( atom.name() );
 						const float * const color = Model::Atom::SYMBOL_COLOR[ (int)modelAtom.getSymbol() ];
@@ -160,11 +152,8 @@ namespace VTX
 
 						const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 						const chemfiles::Vector3D &					 position  = positions[ atomId ];
-						Vec3f atomPosition = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
-						// modelFrame.push_back( atomPosition );
+						Vec3f atomPosition	 = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
 						modelFrame[ atomId ] = atomPosition;
-
-						//atomModelId++;
 					}
 				}
 
@@ -175,40 +164,14 @@ namespace VTX
 					p_molecule.addBond();
 					Model::Bond & modelBond = p_molecule.getBond( boundIdx );
 
-					// std::cout << bonds.size() << std::endl;
-					if ( bond[ 0 ] < 0 || bond[ 0 ] >= p_molecule.getAtomCount() )
-						std::cout << "===============> 0 : " << bond[ 0 ] << std::endl;
-
-					if ( bond[ 1 ] < 0 || bond[ 1 ] >= p_molecule.getAtomCount() )
-						std::cout << "===============> 1 : " << bond[ 1 ] << std::endl;
-
 					modelBond.setIndexFirstAtom( uint( bond[ 0 ] ) );
 					modelBond.setIndexSecondAtom( uint( bond[ 1 ] ) );
-
-					/*const Vec3f & p1 = p_molecule.getAtomPositionFrame( 0 )[ bond[ 0 ] ];
-					const Vec3f & p2 = p_molecule.getAtomPositionFrame( 0 )[ bond[ 1 ] ];
-
-					if ( Util::Math::length( p1 - p2 ) > 100.f )
-					{
-						const Model::Atom & a1 = p_molecule.getAtom( uint(bond[ 0 ]) );
-						const Model::Atom & a2 = p_molecule.getAtom( uint(bond[ 1 ]) );
-						std::cout << "=============================" << std::endl;
-						std::cout << a1.getSymbolName() << " - " << a2.getSymbolName() << std::endl;
-						std::cout << a1.getResiduePtr()->getSymbolName() << " - " << a2.getResiduePtr()->getSymbolName()
-								  << std::endl;
-					}*/
 				}
-
-				std::cout << "=============================" << std::endl;
-				std::cout << "=============================" << std::endl;
-				std::cout << "=============================" << std::endl;
-				std::cout << "=============================" << std::endl;
-				std::cout << "=============================" << std::endl;
 
 				return true;
 			}
 
-			bool PDB::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule ) { return false; }
+			bool Chemfiles::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule ) { return false; }
 
 		} // namespace Reader
 	}	  // namespace IO

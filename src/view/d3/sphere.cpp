@@ -49,7 +49,7 @@ namespace VTX
 				VTXApp::get().getProgramManager().getProgram( "SphereImpostorGeomShader" )->use();
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 				glUniform1f( _uRadiusScale, _radiusScale );
-				glDrawArrays( GL_POINTS, 0, _getModel().getBufferAtomCount() );
+				glDrawArrays( GL_POINTS, 0, _getModel().getAtomCount() );
 			}
 		} // namespace D3
 	}	  // namespace View

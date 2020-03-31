@@ -1,5 +1,5 @@
-#ifndef __VTX_READER_PDB__
-#define __VTX_READER_PDB__
+#ifndef __VTX_READER_CHEMFILES__
+#define __VTX_READER_CHEMFILES__
 
 #ifdef _MSC_VER
 #pragma once
@@ -14,7 +14,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			class PDB : public BaseReader<Model::Molecule>
+			class Chemfiles : public BaseReader<Model::Molecule>
 			{
 			  public:
 				virtual bool readFile( const Path &, Model::Molecule & ) override;
