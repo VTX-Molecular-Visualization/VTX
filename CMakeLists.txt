@@ -18,8 +18,8 @@ foreach(SRC IN ITEMS ${HPP})
     source_group("Headers${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
-# Get all .cpp.
-file(GLOB_RECURSE CPP ${PATH_SRC}/*.cpp ${PATH_SRC}/*.vert ${PATH_SRC}/*.frag ${PATH_SRC}/*.geom)
+# Get all C++, GLSL and CUDA sources.
+file(GLOB_RECURSE CPP ${PATH_SRC}/*.cpp ${PATH_SRC}/*.vert ${PATH_SRC}/*.frag ${PATH_SRC}/*.geom ${PATH_SRC}/*.cu)
 foreach(SRC IN ITEMS ${CPP})
     get_filename_component(SRC_PATH "${SRC}" PATH)
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
@@ -49,6 +49,7 @@ link_directories(${PATH_LIB}/SDL2/lib/x64)
 link_directories(${PATH_LIB}/assimp/lib/x64)
 link_directories(${PATH_LIB}/curl/lib/x64)
 link_directories(${PATH_LIB}/chemfiles/lib/x64)
+
 
 if(WIN32)
 	
@@ -109,5 +110,4 @@ elseif(MSVC)
 	target_compile_options(VTX PRIVATE "/Ot")  # Favor speed.
 	#Code Generation.
 	target_compile_options(VTX PRIVATE "/fp:fast") # Floating Point Model.
-	add_definitions(_CRT_SECURE_NO_WARNINGS)
 endif()

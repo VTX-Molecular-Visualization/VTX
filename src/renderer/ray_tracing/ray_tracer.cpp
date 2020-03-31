@@ -88,7 +88,8 @@ namespace VTX
 		{
 			VTX_INFO( "Initializing ray tracer (only first molecule)..." );
 
-			BaseRenderer::resize( p_width, p_height );
+			resize( p_width, p_height );
+
 			_scene.addObject( new MoleculeBallAndStick( VTXApp::get().getScene().getMolecules()[ 0 ] ) );
 
 			//_scene.addObject( new Sphere( VEC3F_ZERO, 10.f, new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) ) );
@@ -198,7 +199,7 @@ namespace VTX
 
 		void RayTracer::setShading() {}
 
-		void RayTracer::resize( const uint, const uint ) { BaseRenderer::resize( _width, _height ); }
+		void RayTracer::resize( const uint p_width, const uint p_height ) { BaseRenderer::resize( p_width, p_height ); }
 
 		void RayTracer::_renderTiles( std::vector<uchar> &	   p_image,
 									  const CameraRayTracing & p_camera,

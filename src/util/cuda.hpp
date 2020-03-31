@@ -24,17 +24,17 @@
 		}                                                                                                        \
 	} while ( 0 )
 
-#define CUDA_SYNCHRONIZE_HANDLE_ERROR()                                      \
-	do                                                                       \
-	{                                                                        \
-		cudaDeviceSynchronize();                                             \
-		const cudaError_t res = cudaGetLastError();                          \
-		if ( res != cudaSuccess )                                            \
-		{                                                                    \
-			std::stringstream message;                                       \
-			message << "CUDA Synchronize error " << cudaGetErrorName( res ); \
-			throw std::runtime_error( message.str() );                       \
-		}                                                                    \
+#define CUDA_SYNCHRONIZE_HANDLE_ERROR()                                        \
+	do                                                                         \
+	{                                                                          \
+		cudaDeviceSynchronize();                                               \
+		const cudaError_t res = cudaGetLastError();                            \
+		if ( res != cudaSuccess )                                              \
+		{                                                                      \
+			std::stringstream message;                                         \
+			message << "CUDA Synchronize error " << cudaGetErrorString( res ); \
+			throw std::runtime_error( message.str() );                         \
+		}                                                                      \
 	} while ( 0 )
 
 // TODO: remove marco !

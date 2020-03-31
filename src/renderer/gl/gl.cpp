@@ -25,7 +25,7 @@ namespace VTX
 			VTX_INFO( "Initializing renderer..." );
 
 			// Set size.
-			BaseRenderer::resize( p_width, p_height );
+			resize( p_width, p_height );
 
 			// Init pass.
 			_passGeometric->init( _programManager, p_width, p_height );
@@ -48,12 +48,12 @@ namespace VTX
 				_passBlur->clean();
 				_passShading->clean();
 
-				BaseRenderer::resize( _width, _height );
+				BaseRenderer::resize( p_width, p_height );
 
-				_passGeometric->init( _programManager, p_width, p_height );
-				_passSSAO->init( _programManager, p_width, p_height );
-				_passBlur->init( _programManager, p_width, p_height );
-				_passShading->init( _programManager, p_width, p_height );
+				_passGeometric->init( _programManager, _width, _height );
+				_passSSAO->init( _programManager, _width, _height );
+				_passBlur->init( _programManager, _width, _height );
+				_passShading->init( _programManager, _width, _height );
 			}
 
 			/*

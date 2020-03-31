@@ -1,84 +1,158 @@
 
-#include "optix_launch_parameters.hpp"
+#include "device_math_vec.hpp"
+#include "optix_parameters.hpp"
 #include <optix_device.h>
 
 namespace VTX
 {
 	namespace Renderer
 	{
-		/*! launch parameters in constant memory, filled in by optix upon
-			optixLaunch (this gets filled in from the buffer we pass to
-			optixLaunch) */
-		extern "C" __constant__ OptixLaunchParameters params;
+		extern "C" __constant__ Optix::LaunchParameters params;
 
-		//------------------------------------------------------------------------------
-		// closest hit and anyhit programs for radiance-type rays.
-		//
-		// Note eventually we will have to create one pair of those for each
-		// ray type and each geometry type we want to render; but this
-		// simple example doesn't use any actual geometries yet, so we only
-		// create a single, dummy, set of them (we do have to have at leasts
-		// one group of them to set up the SBT)
-		//------------------------------------------------------------------------------
-
-		extern "C" __global__ void __closesthit__radiance()
-		{ /*! for this simple example, this will remain empty */
-		}
-
-		extern "C" __global__ void __anyhit__radiance()
-		{ /*! for this simple example, this will remain empty */
-		}
-
-		//------------------------------------------------------------------------------
-		// miss program that gets called for any ray that did not have a
-		// valid intersection
-		//
-		// as with the anyhit/closest hit programs, in this example we only
-		// need to have _some_ dummy function to set up a valid SBT
-		// ------------------------------------------------------------------------------
-
-		extern "C" __global__ void __miss__radiance()
-		{ /*! for this simple example, this will remain empty */
-		}
-
-		//------------------------------------------------------------------------------
-		// ray gen program - the actual rendering happens in here
-		//------------------------------------------------------------------------------
-		extern "C" __global__ void __raygen__renderFrame()
+		static __forceinline__ __device__ void setPayload( const float3 &p )
 		{
-			if ( params._frameId == 0 && optixGetLaunchIndex().x == 0 && optixGetLaunchIndex().y == 0 )
+			optixSetPayload_0( float_as_int( p.x ) );
+			optixSetPayload_1( float_as_int( p.y ) );
+			optixSetPayload_2( float_as_int( p.z ) );
+		}
+
+		static __forceinline__ __device__ float3 getPayload()
+		{
+			return make_float3( int_as_float( optixGetPayload_0() ),
+								int_as_float( optixGetPayload_1() ),
+								int_as_float( optixGetPayload_2() ) );
+		}
+
+		__forceinline__ __device__ uchar4 make_color( const float3 & c )
+		{
+			return make_uchar4( static_cast<uint8_t>( clamp( c.x, 0.f, 1.f ) * 255.f ),
+								static_cast<uint8_t>( clamp( c.y, 0.f, 1.f ) * 255.f ),
+								static_cast<uint8_t>( clamp( c.z, 0.f, 1.f ) * 255.f ),
+								255u );
+		}
+
+
+		extern "C" __global__ void __closesthit__()
+		{
+			const float3 shadingNormal = make_float3( int_as_float( optixGetAttribute_0() ),
+													   int_as_float( optixGetAttribute_1() ),
+													   int_as_float( optixGetAttribute_2() ) );
+			setPayload(normalize( optixTransformNormalFromObjectToWorldSpace( shadingNormal ) ) * 0.5f + 0.5f );
+		}
+
+		// extern "C" __global__ void __anyhit__() {}
+
+		extern "C" __global__ void __miss__()
+		{
+			Optix::MissData * data = reinterpret_cast<Optix::MissData *>( optixGetSbtDataPointer() );
+			float3	   payload = getPayload();
+			setPayload( data->_colorBackground );
+		}
+
+		extern "C" __global__ void __intersection__sphere()
+		{
+			Optix::HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
+
+			// primitive data
+			const int	   id	  = optixGetPrimitiveIndex();
+			const float3 & center = data->_positions[ id ];
+			const float	   radius = data->_radii[ id ];
+
+			const float3 & o	 = optixGetObjectRayOrigin();
+			const float3 & d	 = optixGetObjectRayDirection();
+			const float3   oc	 = o - center;
+			const float	   a	 = dot( d, d );
+			const float	   b	 = dot( oc, d );
+			const float	   c	 = dot( oc, oc ) - radius * radius;
+			const float	   delta = b * b - a * c;
+
+			if ( delta > 0.f )
 			{
-				// we could of course also have used optixGetLaunchDims to query
-				// the launch size, but accessing the params here
-				// makes sure they're not getting optimized away (because
-				// otherwise they'd not get used)
-				printf( "############################################\n" );
-				printf( "Hello world from OptiX 7 raygen program!\n(within a %ix%i-sized launch)\n",
-						params._frameBufferDim.x,
-						params._frameBufferDim.y );
-				printf( "############################################\n" );
+				const float sqrtDelta = sqrtf( delta );
+
+				float t = ( -b - sqrtDelta ) / a;
+				const float tMin = optixGetRayTmin();
+				const float tMax = optixGetRayTmax();
+				if ( t <= tMax )
+				{													// first intersection not too far
+					if ( t < tMin ) { t = ( -b + sqrtDelta ) / a; } // first intersection too near, check second one
+					if ( t >= tMin && t <= tMax )					// t is within the interval
+					{
+						const float3 point	= o + d * t;
+						const float3 normal = ( point - center ) / radius;
+
+						unsigned int p0 = float_as_int( normal.x );
+						unsigned int p1 = float_as_int( normal.y );
+						unsigned int p2 = float_as_int( normal.z );
+
+						optixReportIntersection( t, 0, p0, p1, p2 );
+					}
+				}
 			}
+		}
 
-			// ------------------------------------------------------------------
-			// for this example, produce a simple test pattern:
-			// ------------------------------------------------------------------
+		static __forceinline__ __device__ void trace( const OptixTraversableHandle & th,
+													  const float3 				 rayOrigin,
+													  const float3 				 rayDirection,
+													  const float					 tMin,
+													  const float					 tMax,
+													  float3 *						 perRayData )
+		{
+			uint32_t p0, p1, p2;
+			p0 = float_as_int( perRayData->x );
+			p1 = float_as_int( perRayData->y );
+			p2 = float_as_int( perRayData->z );
 
-			// compute a test pattern based on pixel ID
-			const int ix = optixGetLaunchIndex().x;
-			const int iy = optixGetLaunchIndex().y;
+			optixTrace( th, // GAS
+						rayOrigin,
+						rayDirection,
+						tMin,
+						tMax,
+						0.f, // ray time
+						OptixVisibilityMask( 1 ),
+						OPTIX_RAY_FLAG_NONE,
+						0, // SBT offset
+						0, // SBT stride
+						0, // miss SBT index
+						p0,
+						p1,
+						p2 );
 
-			const int r = ( ix % 256 );
-			const int g = ( iy % 256 );
-			const int b = ( ( ix + iy ) % 256 );
+			perRayData->x = int_as_float( p0 );
+			perRayData->y = int_as_float( p1 );
+			perRayData->z = int_as_float( p2 );
+		}
 
-			// convert to 32-bit rgba value (we explicitly set alpha to 0xff
-			// to make stb_image_write happy ...
-			const uint32_t rgba = 0xff000000 | ( r << 0 ) | ( g << 8 ) | ( b << 16 );
+		extern "C" __global__ void __raygen__()
+		{
+			const uint3 id	= optixGetLaunchIndex();
+			const uint3 dim = optixGetLaunchDimensions();
 
-			// and write to frame buffer ...
-			const uint32_t frameBufferId				   = ix + iy * params._frameBufferDim.x;
-			params._colorBuffer[ frameBufferId ] = rgba;
+			const Optix::RayGeneratorData * data
+				= reinterpret_cast<Optix::RayGeneratorData *>( optixGetSbtDataPointer() );
+
+			// camera data
+			const float3 & origin = data->_camera._position;
+			const float3 & front  = data->_camera._front;
+			const float3 & du	  = data->_camera._du;
+			const float3 & dv	  = data->_camera._dv;
+
+			const float2 d = make_float2( float( id.x ) / float( dim.x ), float( id.y ) / float( dim.y ) ) * 2.f - 1.f;
+
+			const float3 rayDir = normalize( origin + du * d.x + dv * d.y + front );
+
+			const uint32_t frameBufferId = id.x + id.y * dim.x;
+
+			float3 normal;
+
+			trace( params._traversable, // GAS
+				   origin,
+				   rayDir,
+				   1e-3f, // tMin
+				   1e16f, // tMax
+				   &normal );
+
+			params._frame._pixels[ frameBufferId ] = make_color( normal );
 		}
 	} // namespace Renderer
-
 } // namespace VTX

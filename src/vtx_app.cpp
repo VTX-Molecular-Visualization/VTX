@@ -78,15 +78,18 @@ namespace VTX
 		//_stateMachine->goToState( ID::State::VISUALIZATION );
 #endif
 
-		/*Renderer::RayTracer * rt = new Renderer::RayTracer();
-		rt->init( int(io.DisplaySize.x), int(io.DisplaySize.y) );
-		rt->renderFrame( *_scene );
-		delete rt;*/
-
+#define OPTIX_DEFINED
+#ifdef OPTIX_DEFINED
 		Renderer::OptixRayTracer * ort = new Renderer::OptixRayTracer();
 		ort->init( int( io.DisplaySize.x ), int( io.DisplaySize.y ) );
 		ort->renderFrame( *_scene );
 		delete ort;
+#else
+		Renderer::RayTracer * rt = new Renderer::RayTracer();
+		rt->init( int( io.DisplaySize.x ), int( io.DisplaySize.y ) );
+		rt->renderFrame( *_scene );
+		delete rt;
+#endif
 
 		while ( VTXApp::_isRunning )
 		{

@@ -7,7 +7,7 @@
 
 #include "../base_renderer.hpp"
 #include "cuda_buffer.hpp"
-#include "optix_launch_parameters.hpp"
+#include "optix_parameters.hpp"
 #include "optix_util.hpp"
 #include "util/cuda.hpp"
 #include <vector>
@@ -35,12 +35,24 @@ namespace VTX
 			void _createOptixRayGeneratorPrograms();
 			void _createOptixMissPrograms();
 			void _createOptixHitGroupPrograms();
+			// create GAS
+			OptixTraversableHandle _buildGAS();
 			// create pipeline from programs
 			void _createOptixPipeline();
-			// create shader binding tablea
+			// create shader binding table
 			void _createOptixShaderBindingTable();
 
 		  private:
+			const Vec3f _backgroundColor = Vec3f( 0.5f, 0.5f, 0.5f );
+
+			// model
+			std::vector<float3> _sphereCenters;
+			std::vector<float>	_sphereRadii;
+			std::vector<float3> _sphereColors;
+			CudaBuffer			_sphereCentersDevBuffer;
+			CudaBuffer			_sphereRadiiDevBuffer;
+			CudaBuffer			_sphereColorsDevBuffer;
+			CudaBuffer			_gasOutputBuffer;
 			// CUDA data
 			int			   _bestDeviceId = -1;
 			cudaDeviceProp _deviceProperties;
@@ -68,8 +80,8 @@ namespace VTX
 			OptixShaderBindingTable _shaderBindingTable = {};
 
 			// launch parameters host/device
-			OptixLaunchParameters _launchParameters;
-			CudaBuffer			  _launchParametersBuffer;
+			Optix::LaunchParameters _launchParameters;
+			CudaBuffer				_launchParametersBuffer;
 
 			CudaBuffer _colorBuffer;
 		};

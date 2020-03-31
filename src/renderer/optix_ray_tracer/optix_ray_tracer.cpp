@@ -12,32 +12,40 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		struct __align__( OPTIX_SBT_RECORD_ALIGNMENT ) RayGeneratorRecord
+		static void context_log_cb( unsigned int level, const char * tag, const char * message, void * )
 		{
-			__align__( OPTIX_SBT_RECORD_ALIGNMENT ) char header[ OPTIX_SBT_RECORD_HEADER_SIZE ];
-
-			void * _data;
-		};
-
-		struct __align__( OPTIX_SBT_RECORD_ALIGNMENT ) MissRecord
-		{
-			__align__( OPTIX_SBT_RECORD_ALIGNMENT ) char header[ OPTIX_SBT_RECORD_HEADER_SIZE ];
-
-			void * _data;
-		};
-
-		struct __align__( OPTIX_SBT_RECORD_ALIGNMENT ) HitGroupRecord
-		{
-			__align__( OPTIX_SBT_RECORD_ALIGNMENT ) char header[ OPTIX_SBT_RECORD_HEADER_SIZE ];
-
-			uint _objectId;
-		};
+			fprintf( stderr, "[%2d][%12s]: %s\n", (int)level, tag, message );
+		}
 
 		VTX::Renderer::OptixRayTracer::~OptixRayTracer()
 		{
+			_sphereCentersDevBuffer.free();
+			_sphereRadiiDevBuffer.free();
+			_gasOutputBuffer.free();
+
 			_rayGeneratorRecordsBuffer.free();
 			_missRecordsBuffer.free();
 			_hitGroupRecordsBuffer.free();
+
+			optixPipelineDestroy( _optixPipeline );
+
+			for ( const OptixProgramGroup & g : _rayGeneratorPrograms )
+			{
+				optixProgramGroupDestroy( g );
+			}
+			for ( const OptixProgramGroup & g : _missPrograms )
+			{
+				optixProgramGroupDestroy( g );
+			}
+			for ( const OptixProgramGroup & g : _hitGroupPrograms )
+			{
+				optixProgramGroupDestroy( g );
+			}
+
+			optixModuleDestroy( _optixModule );
+			optixDeviceContextDestroy( _optixContext );
+			cuStreamDestroy( _cudaStream );
+			cuCtxDestroy( _cudaContext );
 		}
 
 		void OptixRayTracer::init( const uint p_width, const uint p_height )
@@ -45,6 +53,19 @@ namespace VTX
 			VTX_INFO( "Initializing OptiX ray tracer (only first molecule)..." );
 
 			resize( p_width, p_height );
+
+			// init scene on host and device !!!
+			_sphereCenters.emplace_back( make_float3( 1.f, 0.f, -6.f ) );
+			_sphereCentersDevBuffer.malloc( _sphereCenters.size() * sizeof( float3 ) );
+			_sphereCentersDevBuffer.memcpyHostToDevice( _sphereCenters.data(), _sphereCenters.size() );
+
+			_sphereRadii.emplace_back( 1.5f );
+			_sphereRadiiDevBuffer.malloc( _sphereRadii.size() * sizeof( float ) );
+			_sphereRadiiDevBuffer.memcpyHostToDevice( _sphereRadii.data(), _sphereRadii.size() );
+
+			_sphereColors.emplace_back( make_float3( 1.f, 0.f, 0.f ) );
+			_sphereColorsDevBuffer.malloc( _sphereColors.size() * sizeof( float3 ) );
+			_sphereColorsDevBuffer.memcpyHostToDevice( _sphereColors.data(), _sphereColors.size() );
 
 			try
 			{
@@ -66,6 +87,9 @@ namespace VTX
 				VTX_INFO( "_createOptixHitGroupPrograms..." );
 				_createOptixHitGroupPrograms();
 
+				VTX_INFO( "_buildGAS..." );
+				_launchParameters._traversable = _buildGAS();
+
 				VTX_INFO( "_createOptixPipeline..." );
 				_createOptixPipeline();
 
@@ -85,7 +109,7 @@ namespace VTX
 
 		void OptixRayTracer::renderFrame( const Object3D::Scene & p_scene )
 		{
-			if ( _launchParameters._frameBufferDim.x == 0 || _launchParameters._frameBufferDim.y == 0 ) return;
+			if ( _launchParameters._frame._width == 0 || _launchParameters._frame._height == 0 ) return;
 
 			VTX_INFO( "Render Frame" );
 
@@ -95,15 +119,15 @@ namespace VTX
 
 			chrono.start();
 			_launchParametersBuffer.memcpyHostToDevice( &_launchParameters, 1 );
-			_launchParameters._frameId++;
+			_launchParameters._frame._id++;
 
 			OPTIX_HANDLE_ERROR( optixLaunch( _optixPipeline,
 											 _cudaStream,
 											 _launchParametersBuffer.getDevicePtr(),
 											 _launchParametersBuffer._size,
 											 &_shaderBindingTable,
-											 _launchParameters._frameBufferDim.x,
-											 _launchParameters._frameBufferDim.y,
+											 _launchParameters._frame._width,
+											 _launchParameters._frame._height,
 											 1 ) );
 
 			chrono.stop();
@@ -111,7 +135,7 @@ namespace VTX
 			const double time = chrono.elapsedTime();
 
 			VTX_INFO( "Rendering time: " + std::to_string( time ) );
-			VTX_INFO( "Save image as: test RT.png" );
+			VTX_INFO( "Save image as: test Optix.png" );
 
 			// sync - make sure the frame is rendered before we download and
 			// display (obviously, for a high-performance application you
@@ -119,11 +143,12 @@ namespace VTX
 			// example, this will have to do)
 			CUDA_SYNCHRONIZE_HANDLE_ERROR();
 
-			std::vector<uchar> pixels( _width * _height * 4 );
-			_colorBuffer.memcpyDeviceToHost(
-				(uint *)( pixels.data() ), _launchParameters._frameBufferDim.x * _launchParameters._frameBufferDim.y );
+			std::vector<uchar4> pixels( _width * _height );
+			_colorBuffer.memcpyDeviceToHost( (uchar4 *)( pixels.data() ),
+											 _launchParameters._frame._width * _launchParameters._frame._height );
 
 			stbi_write_png( "test Optix.png", _width, _height, 4, pixels.data(), 0 );
+			VTX_INFO( "Saved" );
 		}
 
 		void OptixRayTracer::setShading() {}
@@ -132,8 +157,9 @@ namespace VTX
 		{
 			BaseRenderer::resize( p_width, p_height );
 			_colorBuffer.resize( _width * _height * sizeof( uint ) );
-			_launchParameters._frameBufferDim = { _width, _height };
-			_launchParameters._colorBuffer	  = (uint *)( _colorBuffer.getDevicePtr() );
+			_launchParameters._frame._width	 = _width;
+			_launchParameters._frame._height = _height;
+			_launchParameters._frame._pixels = (uchar4 *)( _colorBuffer.getDevicePtr() );
 		}
 
 		void OptixRayTracer::_initOptix()
@@ -166,13 +192,14 @@ namespace VTX
 			if ( res != CUDA_SUCCESS ) { throw std::runtime_error( "Error getting CUDA context:" + res ); }
 
 			OPTIX_HANDLE_ERROR( optixDeviceContextCreate( _cudaContext, 0, &_optixContext ) );
-			// TODO: log ?
+			OPTIX_HANDLE_ERROR( optixDeviceContextSetLogCallback( _optixContext, context_log_cb, nullptr, 4 ) );
 		}
 
 		void OptixRayTracer::_createOptixModule()
 		{
 			// TODO: why 50 ? fix that
-			_optixModuleCompileOptions.maxRegisterCount = 50;
+			_optixModuleCompileOptions					= {};
+			_optixModuleCompileOptions.maxRegisterCount = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
 			_optixModuleCompileOptions.optLevel			= OPTIX_COMPILE_OPTIMIZATION_LEVEL_3;
 			_optixModuleCompileOptions.debugLevel		= OPTIX_COMPILE_DEBUG_LEVEL_NONE;
 
@@ -182,15 +209,15 @@ namespace VTX
 			// 3 payload registers (R G B output)
 			_optixPipelineCompileOptions.numPayloadValues = 3;
 			// How much storage, in 32b words, to make available for the attributes.
-			// The minimum number is 2. Values
-			// below that will automatically be changed to 2. [2..8]
-			_optixPipelineCompileOptions.numAttributeValues = 2;
-			_optixPipelineCompileOptions.exceptionFlags		= OPTIX_EXCEPTION_FLAG_NONE;
+			// Here 3 for normal
+			_optixPipelineCompileOptions.numAttributeValues = 3;
+			_optixPipelineCompileOptions.exceptionFlags		= OPTIX_EXCEPTION_FLAG_DEBUG;
 			// name of the struct used as parameter variable on device code
 			_optixPipelineCompileOptions.pipelineLaunchParamsVariableName = "params";
 
+			_optixPipelineLinkOptions						 = {};
 			_optixPipelineLinkOptions.overrideUsesMotionBlur = false;
-			_optixPipelineLinkOptions.maxTraceDepth			 = 2;
+			_optixPipelineLinkOptions.maxTraceDepth			 = 1;
 			_optixPipelineLinkOptions.debugLevel			 = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
 
 #define NVRTC_DOES_NOT_WORK
@@ -297,7 +324,7 @@ namespace VTX
 			OptixProgramGroupDesc	 programDescription = {};
 			programDescription.kind						= OPTIX_PROGRAM_GROUP_KIND_RAYGEN;
 			programDescription.raygen.module			= _optixModule;
-			programDescription.raygen.entryFunctionName = "__raygen__renderFrame";
+			programDescription.raygen.entryFunctionName = "__raygen__";
 
 			char   log[ 2048 ];
 			size_t sizeof_log = sizeof( log );
@@ -325,7 +352,7 @@ namespace VTX
 			OptixProgramGroupDesc	 programDescription = {};
 			programDescription.kind						= OPTIX_PROGRAM_GROUP_KIND_MISS;
 			programDescription.miss.module				= _optixModule;
-			programDescription.miss.entryFunctionName	= "__miss__radiance";
+			programDescription.miss.entryFunctionName	= "__miss__";
 
 			char   log[ 2048 ];
 			size_t sizeof_log = sizeof( log );
@@ -349,10 +376,13 @@ namespace VTX
 			programDescription.kind						= OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
 			// closest hit
 			programDescription.hitgroup.moduleCH			= _optixModule;
-			programDescription.hitgroup.entryFunctionNameCH = "__closesthit__radiance";
+			programDescription.hitgroup.entryFunctionNameCH = "__closesthit__";
 			// any hit
-			programDescription.hitgroup.moduleAH			= _optixModule;
-			programDescription.hitgroup.entryFunctionNameAH = "__anyhit__radiance";
+			programDescription.hitgroup.moduleAH			= nullptr; //_optixModule;
+			programDescription.hitgroup.entryFunctionNameAH = nullptr; //"__anyhit__";
+			// intersection
+			programDescription.hitgroup.moduleIS			= _optixModule;
+			programDescription.hitgroup.entryFunctionNameIS = "__intersection__sphere";
 
 			char   log[ 2048 ];
 			size_t sizeof_log = sizeof( log );
@@ -364,6 +394,89 @@ namespace VTX
 				VTX_INFO( "optixProgramGroupCreate (_createOptixHitGroupPrograms) log :" );
 				VTX_INFO( log );
 			}
+		}
+
+		OptixTraversableHandle Renderer::OptixRayTracer::_buildGAS()
+		{
+			// create AABB buffer from sphere
+			std::vector<OptixAabb> aabbs;
+			aabbs.resize( _sphereCenters.size() );
+			for ( uint i = 0; i < uint( _sphereCenters.size() ); ++i )
+			{
+				const float3 & c = _sphereCenters[ i ];
+				const float	   r = _sphereRadii[ i ];
+				aabbs[ i ]		 = { c.x - r, c.y - r, c.z - r, c.x + r, c.y + r, c.z + r };
+			}
+			CudaBuffer aabbsBuffer;
+			aabbsBuffer.malloc( aabbs.size() * sizeof( OptixAabb ) );
+			aabbsBuffer.memcpyHostToDevice( aabbs.data(), aabbs.size() );
+
+			OptixBuildInput aabbInput		  = {};
+			CUdeviceptr		devPtr			  = aabbsBuffer.getDevicePtr();
+			aabbInput.type					  = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
+			aabbInput.aabbArray.aabbBuffers	  = &devPtr;
+			aabbInput.aabbArray.numPrimitives = uint( aabbsBuffer._size );
+
+			uint32_t aabbInputFlags[ 1 ]	  = { OPTIX_GEOMETRY_FLAG_NONE };
+			aabbInput.aabbArray.flags		  = aabbInputFlags;
+			aabbInput.aabbArray.numSbtRecords = 1;
+
+			// build gas
+			OptixTraversableHandle gasHandle;
+			OptixAccelBuildOptions accelOptions = {};
+			accelOptions.buildFlags				= OPTIX_BUILD_FLAG_ALLOW_COMPACTION;
+			accelOptions.operation				= OPTIX_BUILD_OPERATION_BUILD;
+			accelOptions.motionOptions.numKeys	= 0;
+
+			OptixAccelBufferSizes gasBufferSizes;
+			OPTIX_HANDLE_ERROR(
+				optixAccelComputeMemoryUsage( _optixContext, &accelOptions, &aabbInput, 1, &gasBufferSizes ) );
+			CudaBuffer tempBufferGAS;
+			tempBufferGAS.malloc( gasBufferSizes.tempSizeInBytes );
+
+			// non-compact output
+			CudaBuffer tempOutputGasCompacted;
+			size_t	   compactSizeOffset = ( ( gasBufferSizes.outputSizeInBytes + 8ull - 1ull ) / 8ull ) * 8ull;
+			tempOutputGasCompacted.malloc( compactSizeOffset + 8 );
+
+			OptixAccelEmitDesc emitProperties = {};
+			emitProperties.type				  = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
+			emitProperties.result
+				= ( CUdeviceptr )( (char *)( tempOutputGasCompacted.getDevicePtr() ) + compactSizeOffset );
+
+			OPTIX_HANDLE_ERROR( optixAccelBuild( _optixContext,
+												 0,
+												 &accelOptions,
+												 &aabbInput,
+												 1,
+												 tempBufferGAS.getDevicePtr(),
+												 gasBufferSizes.tempSizeInBytes,
+												 tempOutputGasCompacted.getDevicePtr(),
+												 gasBufferSizes.outputSizeInBytes,
+												 &gasHandle,
+												 &emitProperties,
+												 1 ) );
+
+			tempBufferGAS.free();
+			aabbsBuffer.free();
+
+			size_t compactedGasSize;
+			CUDA_HANDLE_ERROR( cudaMemcpy(
+				&compactedGasSize, (void *)emitProperties.result, sizeof( size_t ), cudaMemcpyDeviceToHost ) );
+
+			if ( compactedGasSize < gasBufferSizes.outputSizeInBytes )
+			{
+				_gasOutputBuffer.malloc( compactedGasSize );
+				OPTIX_HANDLE_ERROR( optixAccelCompact(
+					_optixContext, 0, gasHandle, _gasOutputBuffer.getDevicePtr(), compactedGasSize, &gasHandle ) );
+				tempOutputGasCompacted.free();
+			}
+			else
+			{
+				_gasOutputBuffer = tempOutputGasCompacted;
+			}
+
+			return gasHandle;
 		}
 
 		void OptixRayTracer::_createOptixPipeline()
@@ -423,17 +536,32 @@ namespace VTX
 
 		void OptixRayTracer::_createOptixShaderBindingTable()
 		{
+			_shaderBindingTable = {};
 			// create ray generator records buffer on device
 			{
-				std::vector<RayGeneratorRecord> rayGeneratorRecords;
+				std::vector<Optix::RayGeneratorRecord> rayGeneratorRecords;
 				for ( const OptixProgramGroup & g : _rayGeneratorPrograms )
 				{
-					RayGeneratorRecord r;
+					Optix::RayGeneratorRecord r;
+					Vec3f					  front( 0.f, 0.f, 1.f );
+
+					Vec3f		up( 0.f, 1.f, 0.f );
+					float		fov		   = 60.f;
+					float		ratio	   = float( _width ) / _height;
+					const float halfHeight = tan( glm::radians( fov ) * 0.5f );
+					const float halfWidth  = ratio * halfHeight;
+					Vec3f		u		   = Util::Math::normalize( Util::Math::cross( front, up ) ) * halfWidth;
+					Vec3f		v		   = Util::Math::normalize( Util::Math::cross( u, front ) ) * halfHeight;
+
+					r._data._camera._position = make_float3( 0.f, 0.f, 0.f );
+					r._data._camera._front	  = make_float3( 0.f, 0.f, -1.f );
+					r._data._camera._du		  = make_float3( u.x, u.y, u.z );
+					r._data._camera._dv		  = make_float3( v.x, v.y, v.z );
+
 					OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( g, &r ) );
-					r._data = nullptr; // nothing for this test
 					rayGeneratorRecords.emplace_back( r );
 				}
-				_rayGeneratorRecordsBuffer.malloc( rayGeneratorRecords.size() * sizeof( RayGeneratorRecord ) );
+				_rayGeneratorRecordsBuffer.malloc( rayGeneratorRecords.size() * sizeof( Optix::RayGeneratorRecord ) );
 				_rayGeneratorRecordsBuffer.memcpyHostToDevice( rayGeneratorRecords.data(), rayGeneratorRecords.size() );
 
 				_shaderBindingTable.raygenRecord = _rayGeneratorRecordsBuffer.getDevicePtr();
@@ -441,19 +569,20 @@ namespace VTX
 
 			// create miss records buffer on device
 			{
-				std::vector<MissRecord> missRecords;
+				std::vector<Optix::MissRecord> missRecords;
 				for ( const OptixProgramGroup & g : _missPrograms )
 				{
-					MissRecord r;
+					Optix::MissRecord r;
+					r._data._colorBackground
+						= make_float3( _backgroundColor.r, _backgroundColor.g, _backgroundColor.b );
 					OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( g, &r ) );
-					r._data = nullptr; // nothing for this test
 					missRecords.emplace_back( r );
 				}
-				_missRecordsBuffer.malloc( missRecords.size() * sizeof( MissRecord ) );
+				_missRecordsBuffer.malloc( missRecords.size() * sizeof( Optix::MissRecord ) );
 				_missRecordsBuffer.memcpyHostToDevice( missRecords.data(), missRecords.size() );
 
 				_shaderBindingTable.missRecordBase			= _missRecordsBuffer.getDevicePtr();
-				_shaderBindingTable.missRecordStrideInBytes = sizeof( MissRecord );
+				_shaderBindingTable.missRecordStrideInBytes = sizeof( Optix::MissRecord );
 				_shaderBindingTable.missRecordCount			= int( missRecords.size() );
 			}
 
@@ -461,21 +590,24 @@ namespace VTX
 			{
 				// in this test no object
 				// but create dummy one to avoid null pointer
-				uint						nbObjects = 1;
-				std::vector<HitGroupRecord> hitGroupRecords;
+				uint							   nbObjects = 1;
+				std::vector<Optix::HitGroupRecord> hitGroupRecords;
 				for ( uint i = 0; i < nbObjects; ++i )
 				{
-					int			   objectType = 0;
-					HitGroupRecord r;
+					int objectType = 0;
+
+					Optix::HitGroupRecord r;
+					r._data._positions = (float3 *)( _sphereCentersDevBuffer.getDevicePtr() );
+					r._data._radii	   = (float *)( _sphereRadiiDevBuffer.getDevicePtr() );
+					r._data._colors	   = (float3 *)( _sphereColorsDevBuffer.getDevicePtr() );
 					OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _hitGroupPrograms[ objectType ], &r ) );
-					r._objectId = i;
 					hitGroupRecords.push_back( r );
 				}
-				_hitGroupRecordsBuffer.malloc( hitGroupRecords.size() * sizeof( HitGroupRecord ) );
+				_hitGroupRecordsBuffer.malloc( hitGroupRecords.size() * sizeof( Optix::HitGroupRecord ) );
 				_hitGroupRecordsBuffer.memcpyHostToDevice( hitGroupRecords.data(), hitGroupRecords.size() );
 
 				_shaderBindingTable.hitgroupRecordBase			= _hitGroupRecordsBuffer.getDevicePtr();
-				_shaderBindingTable.hitgroupRecordStrideInBytes = sizeof( HitGroupRecord );
+				_shaderBindingTable.hitgroupRecordStrideInBytes = sizeof( Optix::HitGroupRecord );
 				_shaderBindingTable.hitgroupRecordCount			= int( hitGroupRecords.size() );
 			}
 		}
