@@ -21,6 +21,7 @@ namespace VTX
 		{
 			_sphereCentersDevBuffer.free();
 			_sphereRadiiDevBuffer.free();
+			_sphereCentersDevBuffer.free();
 			_gasOutputBuffer.free();
 
 			_rayGeneratorRecordsBuffer.free();
@@ -54,16 +55,37 @@ namespace VTX
 
 			resize( p_width, p_height );
 
+			_sphereCentersDevBuffer.free();
+			_sphereRadiiDevBuffer.free();
+			_sphereCentersDevBuffer.free();
+			_gasOutputBuffer.free();
+
+			_rayGeneratorRecordsBuffer.free();
+			_missRecordsBuffer.free();
+			_hitGroupRecordsBuffer.free();
+
 			// init scene on host and device !!!
-			_sphereCenters.emplace_back( make_float3( 1.f, 0.f, -6.f ) );
+			const Model::Molecule & mol		= *( VTXApp::get().getScene().getMolecules()[ 0 ] );
+			const uint				nbAtoms = mol.getAtomCount();
+			_sphereCenters.resize( nbAtoms );
+			_sphereRadii.resize( nbAtoms );
+			_sphereColors.resize( nbAtoms );
+			for ( uint i = 0; i < nbAtoms; ++i )
+			{
+				const Vec3f & p		= mol.getAtomPositionFrame( 0 )[ i ];
+				const float	  r		= mol.getAtomRadius( i );
+				const Vec3f & c		= mol.getAtomColor( i );
+				_sphereCenters[ i ] = make_float3( p.x, p.y, p.z );
+				_sphereRadii[ i ]	= r;
+				_sphereColors[ i ]	= make_float3( c.x, c.y, c.z );
+			}
+
 			_sphereCentersDevBuffer.malloc( _sphereCenters.size() * sizeof( float3 ) );
 			_sphereCentersDevBuffer.memcpyHostToDevice( _sphereCenters.data(), _sphereCenters.size() );
 
-			_sphereRadii.emplace_back( 1.5f );
 			_sphereRadiiDevBuffer.malloc( _sphereRadii.size() * sizeof( float ) );
 			_sphereRadiiDevBuffer.memcpyHostToDevice( _sphereRadii.data(), _sphereRadii.size() );
 
-			_sphereColors.emplace_back( make_float3( 1.f, 0.f, 0.f ) );
 			_sphereColorsDevBuffer.malloc( _sphereColors.size() * sizeof( float3 ) );
 			_sphereColorsDevBuffer.memcpyHostToDevice( _sphereColors.data(), _sphereColors.size() );
 
@@ -200,7 +222,7 @@ namespace VTX
 			// TODO: why 50 ? fix that
 			_optixModuleCompileOptions					= {};
 			_optixModuleCompileOptions.maxRegisterCount = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
-			_optixModuleCompileOptions.optLevel			= OPTIX_COMPILE_OPTIMIZATION_LEVEL_3;
+			_optixModuleCompileOptions.optLevel			= OPTIX_COMPILE_OPTIMIZATION_LEVEL_1;
 			_optixModuleCompileOptions.debugLevel		= OPTIX_COMPILE_DEBUG_LEVEL_NONE;
 
 			_optixPipelineCompileOptions = {};
@@ -543,20 +565,36 @@ namespace VTX
 				for ( const OptixProgramGroup & g : _rayGeneratorPrograms )
 				{
 					Optix::RayGeneratorRecord r;
-					Vec3f					  front( 0.f, 0.f, 1.f );
 
-					Vec3f		up( 0.f, 1.f, 0.f );
+					Vec3f camPos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
+					Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
+					Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
+
 					float		fov		   = 60.f;
 					float		ratio	   = float( _width ) / _height;
 					const float halfHeight = tan( glm::radians( fov ) * 0.5f );
 					const float halfWidth  = ratio * halfHeight;
-					Vec3f		u		   = Util::Math::normalize( Util::Math::cross( front, up ) ) * halfWidth;
-					Vec3f		v		   = Util::Math::normalize( Util::Math::cross( u, front ) ) * halfHeight;
+					Vec3f		u		   = Util::Math::normalize( Util::Math::cross( camFront, camUp ) ) * halfWidth;
+					Vec3f		v		   = -Util::Math::normalize( Util::Math::cross( u, camFront ) ) * halfHeight;
 
-					r._data._camera._position = make_float3( 0.f, 0.f, 0.f );
-					r._data._camera._front	  = make_float3( 0.f, 0.f, -1.f );
+					r._data._camera._position = make_float3( camPos.x, camPos.y, camPos.z );
+					r._data._camera._front	  = make_float3( camFront.x, camFront.y, camFront.z );
 					r._data._camera._du		  = make_float3( u.x, u.y, u.z );
 					r._data._camera._dv		  = make_float3( v.x, v.y, v.z );
+
+					// Vec3f		front( 0.f, 0.f, 1.f );
+					// Vec3f		up( 0.f, 1.f, 0.f );
+					// float		fov		   = 60.f;
+					// float		ratio	   = float( _width ) / _height;
+					// const float halfHeight = tan( glm::radians( fov ) * 0.5f );
+					// const float halfWidth  = ratio * halfHeight;
+					// Vec3f		u		   = Util::Math::normalize( Util::Math::cross( front, up ) ) * halfWidth;
+					// Vec3f		v		   = Util::Math::normalize( Util::Math::cross( u, front ) ) * halfHeight;
+
+					/*r._data._camera._position = make_float3( 0.f, 0.f, 5.f );
+					r._data._camera._front	  = make_float3( 0.f, 0.f, -1.f );
+					r._data._camera._du		  = make_float3( u.x, u.y, u.z );
+					r._data._camera._dv		  = make_float3( v.x, v.y, v.z );*/
 
 					OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( g, &r ) );
 					rayGeneratorRecords.emplace_back( r );
