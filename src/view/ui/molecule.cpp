@@ -92,7 +92,7 @@ namespace VTX
 							VTX_ACTION( new Action::ColorableChangeColor( _getModel(), color ) );
 							VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN ) );
 						}
-						if ( _getModel().getPRM().SolventIds.size() > 0 )
+						if ( _getModel().getPRM().solventIds.size() > 0 )
 						{
 							bool showSolvent = _getModel().showSolvent();
 							if ( ImGui::Checkbox( LOCALE( "View.Molecule.Solvent" ), &showSolvent ) )

@@ -32,7 +32,7 @@ namespace VTX
 						iss.str( line );
 						iss >> str;
 						iss >> id;
-						p_prm.SolventIds.push_back( id );
+						p_prm.solventIds.push_back( id );
 					}
 					else if ( line.find( "Ion", 0 ) != std::string::npos )
 					{

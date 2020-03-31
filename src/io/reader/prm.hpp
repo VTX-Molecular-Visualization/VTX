@@ -17,7 +17,7 @@ namespace VTX
 		{
 			struct PRMFile
 			{
-				std::vector<uint> SolventIds = std::vector<uint>();
+				std::vector<uint> solventIds = std::vector<uint>();
 				std::vector<uint> ionIds = std::vector<uint>();
 			};
 
