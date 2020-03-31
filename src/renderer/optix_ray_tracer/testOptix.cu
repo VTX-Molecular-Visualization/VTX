@@ -39,9 +39,9 @@ namespace VTX
 													  int_as_float( optixGetAttribute_1() ),
 													  int_as_float( optixGetAttribute_2() ) );
 			const int	 id		= optixGetPrimitiveIndex();
-			const float3 color	= data->_colors[ id ];
-			const float3 rayDir = optixGetWorldRayDirection();
-			const float	 radiance = 0.2f + 0.8f * fabsf( dot( rayDir, normal ) );
+			const float3 &color	= data->_colors[ id ];
+			const float3 &rayDir = optixGetWorldRayDirection();
+			const float	 radiance = fabsf( dot( rayDir, normal ) );
 
 
 			setPayload( color * radiance );
@@ -58,8 +58,8 @@ namespace VTX
 		}
 
 		static __forceinline__ __device__ void trace( const OptixTraversableHandle & th,
-													  const float3					 rayOrigin,
-													  const float3					 rayDirection,
+													  const float3					 &rayOrigin,
+													  const float3					 &rayDirection,
 													  const float					 tMin,
 													  const float					 tMax,
 													  float3 *						 perRayData )
@@ -91,8 +91,8 @@ namespace VTX
 
 		extern "C" __global__ void __raygen__()
 		{
-			const uint3 id	= optixGetLaunchIndex();
-			const uint3 dim = optixGetLaunchDimensions();
+			const uint3 &id	= optixGetLaunchIndex();
+			const uint3 &dim = optixGetLaunchDimensions();
 
 			const Optix::RayGeneratorData * data
 				= reinterpret_cast<Optix::RayGeneratorData *>( optixGetSbtDataPointer() );

@@ -21,7 +21,7 @@ namespace VTX
 		{
 			_sphereCentersDevBuffer.free();
 			_sphereRadiiDevBuffer.free();
-			_sphereCentersDevBuffer.free();
+			_sphereColorsDevBuffer.free();
 			_gasOutputBuffer.free();
 
 			_rayGeneratorRecordsBuffer.free();
@@ -57,7 +57,7 @@ namespace VTX
 
 			_sphereCentersDevBuffer.free();
 			_sphereRadiiDevBuffer.free();
-			_sphereCentersDevBuffer.free();
+			_sphereColorsDevBuffer.free();
 			_gasOutputBuffer.free();
 
 			_rayGeneratorRecordsBuffer.free();
@@ -137,26 +137,36 @@ namespace VTX
 
 			// start rendering
 			// TODO: replace by ChronoGPU
-			Tool::Chrono chrono;
+			// Tool::Chrono chrono;
 
-			chrono.start();
+			// chrono.start();
+			cudaEvent_t start, stop;
+			float		elapsedTime;
+			CUDA_HANDLE_ERROR( cudaEventCreate( &start ) );
+			CUDA_HANDLE_ERROR( cudaEventCreate( &stop ) );
+
 			_launchParametersBuffer.memcpyHostToDevice( &_launchParameters, 1 );
 			_launchParameters._frame._id++;
+
+			CUDA_HANDLE_ERROR( cudaEventRecord( start, 0 ) );
 
 			OPTIX_HANDLE_ERROR( optixLaunch( _optixPipeline,
 											 _cudaStream,
 											 _launchParametersBuffer.getDevicePtr(),
-											 _launchParametersBuffer._size,
+											 _launchParametersBuffer._sizeInBytes,
 											 &_shaderBindingTable,
 											 _launchParameters._frame._width,
 											 _launchParameters._frame._height,
 											 1 ) );
 
-			chrono.stop();
+			// chrono.stop();
+			CUDA_HANDLE_ERROR( cudaEventRecord( stop, 0 ) );
+			CUDA_HANDLE_ERROR( cudaEventSynchronize( stop ) );
+			// const double time = chrono.elapsedTime();
+			CUDA_HANDLE_ERROR( cudaEventElapsedTime( &elapsedTime, start, stop ) );
 
-			const double time = chrono.elapsedTime();
-
-			VTX_INFO( "Rendering time: " + std::to_string( time ) );
+			// VTX_INFO( "Rendering time: " + std::to_string( time ) );
+			VTX_INFO( "Rendering time: " + std::to_string( elapsedTime ) );
 			VTX_INFO( "Save image as: test Optix.png" );
 
 			// sync - make sure the frame is rendered before we download and
@@ -222,7 +232,7 @@ namespace VTX
 			// TODO: why 50 ? fix that
 			_optixModuleCompileOptions					= {};
 			_optixModuleCompileOptions.maxRegisterCount = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
-			_optixModuleCompileOptions.optLevel			= OPTIX_COMPILE_OPTIMIZATION_LEVEL_1;
+			_optixModuleCompileOptions.optLevel			= OPTIX_COMPILE_OPTIMIZATION_LEVEL_3;
 			_optixModuleCompileOptions.debugLevel		= OPTIX_COMPILE_DEBUG_LEVEL_NONE;
 
 			_optixPipelineCompileOptions = {};
@@ -437,9 +447,9 @@ namespace VTX
 			CUdeviceptr		devPtr			  = aabbsBuffer.getDevicePtr();
 			aabbInput.type					  = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
 			aabbInput.aabbArray.aabbBuffers	  = &devPtr;
-			aabbInput.aabbArray.numPrimitives = uint( aabbsBuffer._size );
+			aabbInput.aabbArray.numPrimitives = uint( aabbs.size() );
 
-			uint32_t aabbInputFlags[ 1 ]	  = { OPTIX_GEOMETRY_FLAG_NONE };
+			uint32_t aabbInputFlags[ 1 ]	  = { OPTIX_GEOMETRY_FLAG_DISABLE_ANYHIT };
 			aabbInput.aabbArray.flags		  = aabbInputFlags;
 			aabbInput.aabbArray.numSbtRecords = 1;
 
