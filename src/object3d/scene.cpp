@@ -32,7 +32,7 @@ namespace VTX
 				float			  time	   = pair.second;
 
 				uint frameCount = molecule->getFrameCount();
-				if ( molecule->isPlaying() == false || frameCount < 2 ) { break; }
+				if ( molecule->isPlaying() == false || frameCount < 2 ) { continue; }
 
 				uint frame = molecule->getFrame();
 				uint fps   = molecule->getFPS();
