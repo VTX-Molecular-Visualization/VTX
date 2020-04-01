@@ -1,4 +1,4 @@
-#include "mmtf.hpp"
+#include "lib_mmtf.hpp"
 #include "define.hpp"
 #include "exception.hpp"
 #include "util/color.hpp"
@@ -12,7 +12,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			bool MMTF::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			bool LibMMTF::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				mmtf::StructureData data;
 
@@ -31,7 +31,7 @@ namespace VTX
 				return _readStructureData( data, p_molecule );
 			}
 
-			bool MMTF::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule )
+			bool LibMMTF::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule )
 			{
 				mmtf::StructureData data;
 				mmtf::decodeFromBuffer( data, p_buffer.c_str(), p_buffer.size() );
@@ -39,7 +39,7 @@ namespace VTX
 				return _readStructureData( data, p_molecule );
 			}
 
-			bool MMTF::_readStructureData( const mmtf::StructureData & p_data, Model::Molecule & p_molecule )
+			bool LibMMTF::_readStructureData( const mmtf::StructureData & p_data, Model::Molecule & p_molecule )
 			{
 				// Check for consistency.
 				if ( p_data.hasConsistentData( true ) ) { VTX_INFO( "File loaded" ); }

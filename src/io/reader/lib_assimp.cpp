@@ -1,4 +1,4 @@
-#include "obj.hpp"
+#include "lib_assimp.hpp"
 #include "define.hpp"
 #include "exception.hpp"
 #include "util/color.hpp"
@@ -13,7 +13,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			bool OBJ::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			bool LibAssimp::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
 

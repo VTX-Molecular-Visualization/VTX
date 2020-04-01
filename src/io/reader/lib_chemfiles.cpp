@@ -1,4 +1,4 @@
-#include "chemfiles.hpp"
+#include "lib_chemfiles.hpp"
 #undef INFINITE
 #include "util/color.hpp"
 #include <chemfiles.hpp>
@@ -12,7 +12,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			bool Chemfiles::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			bool LibChemfiles::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
 
@@ -85,7 +85,18 @@ namespace VTX
 				p_molecule.getAtomPositionFrame( 0 ).resize( frame.size() );
 				for ( uint i = 0; i < uint( frame.size() ); ++i )
 				{
-					p_molecule.getAtoms()[ i ] = new Model::Atom;
+					p_molecule.getAtoms()[ i ] = new Model::Atom();
+				}
+
+				// If no residue, create a fake one.
+				if ( residues.size() == 0 )
+				{
+					chemfiles::Residue residue = chemfiles::Residue( "" );
+					for ( uint i = 0; i < frame.size(); ++i )
+					{
+						residue.add_atom( i );
+					}
+					frame.add_residue( residue );
 				}
 
 				Model::Chain * modelChain;
@@ -95,10 +106,17 @@ namespace VTX
 					const chemfiles::Residue & residue = residues[ residueIdx ];
 
 					// Check if chain name changed.
-					// TODO: check if optional exist.
-					const std::string chainName = residue.properties().get( "chainname" ).value().as_string();
+					std::string chainName = "";
+					try
+					{
+						chainName = residue.properties().get( "chainname" ).value().as_string();
+					}
+					catch ( const std::exception & )
+					{
+						chainName = "";
+					}
 
-					if ( chainName != lastChainName )
+					if ( chainName != lastChainName || p_molecule.getChainCount() == 0 )
 					{
 						VTX_DEBUG( chainName );
 						// Create chain.
@@ -106,11 +124,10 @@ namespace VTX
 						chainModelId++;
 						modelChain = &p_molecule.getChain( chainModelId );
 						modelChain->setIndex( chainModelId );
-						modelChain->setName( chainName );
+						if ( chainName != "" ) { modelChain->setName( chainName ); }
 						modelChain->setMoleculePtr( &p_molecule );
 						modelChain->setIdFirstResidue( residueIdx );
 						modelChain->setResidueCount( 0 );
-						modelChain->setColor( Util::Color::randomPastelColor() );
 
 						lastChainName = chainName;
 					}
@@ -126,7 +143,6 @@ namespace VTX
 					modelResidue.setChainPtr( modelChain );
 					modelResidue.setIdFirstAtom( uint( *residue.begin() ) );
 					modelResidue.setAtomCount( uint( residue.size() ) );
-					modelResidue.setColor( Util::Color::randomPastelColor() );
 					const std::string & residueSymbol = residue.name();
 					std::optional		symbol = magic_enum::enum_cast<Model::Residue::RESIDUE_SYMBOL>( residueSymbol );
 					symbol.has_value() ? modelResidue.setSymbol( symbol.value() )
@@ -134,8 +150,16 @@ namespace VTX
 
 					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 					{
-						const uint				atomId = uint( *it );
-						const chemfiles::Atom & atom   = topology[ atomId ];
+						const uint				atomId	 = uint( *it );
+						const chemfiles::Atom & atom	 = topology[ atomId ];
+						uint					atomType = -1;
+						try
+						{
+							atomType = uint( atom.properties().get( "atom_type" ).value().as_double() );
+						}
+						catch ( const std::exception & )
+						{
+						}
 
 						// Create atom.
 						Model::Atom & modelAtom = p_molecule.getAtom( atomId );
@@ -154,6 +178,35 @@ namespace VTX
 						const chemfiles::Vector3D &					 position  = positions[ atomId ];
 						Vec3f atomPosition	 = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
 						modelFrame[ atomId ] = atomPosition;
+
+						if ( std::find( p_molecule.getPRM().solventIds.begin(),
+										p_molecule.getPRM().solventIds.end(),
+										atomType )
+							 != p_molecule.getPRM().solventIds.end() )
+						{ modelAtom.setType( Model::Atom::ATOM_TYPE::Solvent ); }
+						else if ( std::find(
+									  p_molecule.getPRM().ionIds.begin(), p_molecule.getPRM().ionIds.end(), atomType )
+								  != p_molecule.getPRM().ionIds.end() )
+						{
+							modelAtom.setType( Model::Atom::ATOM_TYPE::ION );
+						}
+					}
+				}
+
+				// Fill other frames.
+				for ( uint frameIdx = 1; frameIdx < trajectory.nsteps(); ++frameIdx )
+				{
+					p_molecule.addAtomPositionFrame();
+					VTX_INFO( "Frame " + std::to_string( frameIdx ) );
+					Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
+
+					frame												   = trajectory.read_step( frameIdx );
+					const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
+
+					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
+					{
+						const chemfiles::Vector3D & position = positions[ positionIdx ];
+						moleculeFrame.emplace_back( Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] ) );
 					}
 				}
 
@@ -171,7 +224,10 @@ namespace VTX
 				return true;
 			}
 
-			bool Chemfiles::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule ) { return false; }
+			bool LibChemfiles::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule )
+			{
+				return false;
+			}
 
 		} // namespace Reader
 	}	  // namespace IO

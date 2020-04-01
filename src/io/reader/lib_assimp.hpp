@@ -1,5 +1,5 @@
-#ifndef __VTX_READER_CHEMFILES__
-#define __VTX_READER_CHEMFILES__
+#ifndef __VTX_READER_LIB_ASSIMP__
+#define __VTX_READER_LIB_ASSIMP__
 
 #ifdef _MSC_VER
 #pragma once
@@ -14,13 +14,11 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			class Chemfiles : public BaseReader<Model::Molecule>
+			class LibAssimp : public BaseReader<Model::Molecule>
 			{
 			  public:
 				virtual bool readFile( const Path &, Model::Molecule & ) override;
-				virtual bool readBuffer( const std::string &, Model::Molecule & ) override;
-
-			  private:
+				virtual bool readBuffer( const std::string &, Model::Molecule & ) override { return false; }
 			};
 		} // namespace Reader
 	}	  // namespace IO

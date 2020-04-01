@@ -1,9 +1,8 @@
 #include "loader.hpp"
 #include "io/path_fake.hpp"
-#include "io/reader/arc.hpp"
-#include "io/reader/chemfiles.hpp"
-#include "io/reader/mmtf.hpp"
-#include "io/reader/obj.hpp"
+#include "io/reader/lib_assimp.hpp"
+#include "io/reader/lib_chemfiles.hpp"
+#include "io/reader/lib_mmtf.hpp"
 #include "io/reader/prm.hpp"
 #include "vtx_app.hpp"
 
@@ -85,22 +84,22 @@ namespace VTX
 		IO::Reader::BaseReader<Model::Molecule> * Loader::_createReader( const IO::Path * const p_path ) const
 		{
 			std::string extension = p_path->getExtension();
-			if ( extension == "mmtf" ) { return new IO::Reader::MMTF(); }
+			if ( extension == "mmtf" ) { return new IO::Reader::LibMMTF(); }
 			else if ( extension == "pdb" )
 			{
-				return new IO::Reader::Chemfiles();
+				return new IO::Reader::LibChemfiles();
 			}
 			else if ( extension == "obj" )
 			{
-				return new IO::Reader::OBJ();
+				return new IO::Reader::LibAssimp();
 			}
 			else if ( extension == "arc" )
 			{
-				return new IO::Reader::ARC();
+				return new IO::Reader::LibChemfiles();
 			}
 			else if ( extension == "xyz" )
 			{
-				return new IO::Reader::Chemfiles();
+				return new IO::Reader::LibChemfiles();
 			}
 			return nullptr;
 		}
