@@ -112,19 +112,18 @@ namespace VTX
 			inline const uint getAtomCount() const { return (uint)_atoms.size(); }
 			inline const uint getBondCount() const { return (uint)_bonds.size(); }
 
-			virtual void						   init() override;
-			void								   setRepresentation();
-			void								   setColorMode();
-			inline uint							   getFrame() const { return _currentFrame; }
-			inline std::vector<AtomPositionsFrame> getFrames() const { return _atomPositionsFrames; }
-			void								   setFrame( uint );
-			inline const uint					   getFrameCount() const { return (uint)_atomPositionsFrames.size(); }
-			inline uint							   getFPS() const { return _fps; }
-			void								   setFPS( const uint p_fps ) { _fps = p_fps; }
-			inline bool							   isPlaying() const { return _isPlaying; }
-			inline void							   setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
-			inline bool							   showSolvent() const { return _showSolvent; }
-			inline void							   setShowSolvent( const bool p_showSolvent )
+			virtual void	  init() override;
+			void			  setRepresentation();
+			void			  setColorMode();
+			inline uint		  getFrame() const { return _currentFrame; }
+			void			  setFrame( uint );
+			inline const uint getFrameCount() const { return (uint)_atomPositionsFrames.size(); }
+			inline uint		  getFPS() const { return _fps; }
+			void			  setFPS( const uint p_fps ) { _fps = p_fps; }
+			inline bool		  isPlaying() const { return _isPlaying; }
+			inline void		  setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
+			inline bool		  showSolvent() const { return _showSolvent; }
+			inline void		  setShowSolvent( const bool p_showSolvent )
 			{
 				_showSolvent = p_showSolvent;
 				_fillBufferAtomVisibilities();
@@ -135,20 +134,22 @@ namespace VTX
 				_showIon = p_showIon;
 				_fillBufferAtomVisibilities();
 			}
+			inline bool hasTopology() const { return getResidueCount() > 1; }
+			inline bool hasDynamic() const { return getFrameCount() > 1; }
 
 			virtual void print() const override;
 
 			void bindBuffers();
 			void unbindBuffers();
 
-			virtual void render() override;
+			void merge( const Molecule & );
 
+			virtual void render() override;
 			virtual void setSelected( const bool ) override;
 
 		  protected:
 			virtual void _addItems() override final;
 
-		  private:
 		  private:
 			// Models.
 			std::string						_fileName = "";

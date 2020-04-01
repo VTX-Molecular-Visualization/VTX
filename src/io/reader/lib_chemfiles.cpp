@@ -18,7 +18,7 @@ namespace VTX
 
 				chemfiles::Trajectory trajectory( p_path, 'r' );
 
-				VTX_DEBUG( std::to_string( trajectory.nsteps() ) + " frames" );
+				VTX_INFO( std::to_string( trajectory.nsteps() ) + " frames" );
 
 				if ( trajectory.nsteps() == 0 )
 				{
@@ -31,9 +31,9 @@ namespace VTX
 				const std::vector<chemfiles::Residue> & residues = topology.residues();
 				const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
 
-				VTX_DEBUG( std::to_string( frame.size() ) + " atoms" );
-				VTX_DEBUG( std::to_string( residues.size() ) + " residues" );
-				VTX_DEBUG( std::to_string( bonds.size() ) + " bonds" );
+				VTX_INFO( std::to_string( frame.size() ) + " atoms" );
+				VTX_INFO( std::to_string( residues.size() ) + " residues" );
+				VTX_INFO( std::to_string( bonds.size() ) + " bonds" );
 
 				if ( frame.size() != topology.size() )
 				{

@@ -12,9 +12,7 @@ namespace VTX
 	{
 		void Loader::work()
 		{
-			Model::Molecule * molecule		   = nullptr;
-			Model::Molecule * moleculeTopology = nullptr;
-			Model::Molecule * moleculeDynamic  = nullptr;
+			Model::Molecule * molecule = nullptr;
 
 			// Check properties file.
 			IO::Reader::PRMFile prm;
@@ -42,23 +40,6 @@ namespace VTX
 					if ( _loadMolecule( molecule, reader, path ) == false ) { delete molecule; }
 					else
 					{
-						if ( _isTopology( path ) ) { moleculeTopology = molecule; }
-						else if ( _isDynamic( path ) )
-						{
-							moleculeDynamic = molecule;
-						}
-
-						if ( moleculeTopology != nullptr && moleculeDynamic != nullptr )
-						{
-							VTXApp::get().getScene().removeMolecule( moleculeTopology );
-							VTXApp::get().getScene().removeMolecule( moleculeDynamic );
-							molecule = moleculeTopology;
-							molecule->seAtomPositionFrames( moleculeDynamic->getAtomPositionFrames() );
-							Generic::destroy( moleculeDynamic );
-							moleculeTopology = nullptr;
-							moleculeDynamic	 = nullptr;
-						}
-
 						molecule->init();
 						molecule->print();
 						VTXApp::get().getScene().addMolecule( molecule );
@@ -67,18 +48,6 @@ namespace VTX
 				}
 				delete path;
 			}
-		}
-
-		bool Loader::_isTopology( const IO::Path * const p_path ) const
-		{
-			std::string extension = p_path->getExtension();
-			return ( ( extension == "pdb" ) || ( extension == "mmtf" ) || ( extension == "xyz" ) );
-		}
-
-		bool Loader::_isDynamic( const IO::Path * const p_path ) const
-		{
-			std::string extension = p_path->getExtension();
-			return ( extension == "arc" );
 		}
 
 		IO::Reader::BaseReader<Model::Molecule> * Loader::_createReader( const IO::Path * const p_path ) const

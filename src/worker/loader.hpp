@@ -25,8 +25,6 @@ namespace VTX
 		  private:
 			std::vector<IO::Path *> _paths;
 
-			bool									  _isTopology( const IO::Path * const ) const;
-			bool									  _isDynamic( const IO::Path * const ) const;
 			IO::Reader::BaseReader<Model::Molecule> * _createReader( const IO::Path * const ) const;
 			bool									  _loadMolecule( Model::Molecule * const,
 																	 IO::Reader::BaseReader<Model::Molecule> * const,
