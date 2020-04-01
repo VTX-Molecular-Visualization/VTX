@@ -142,7 +142,7 @@ namespace VTX
 			void bindBuffers();
 			void unbindBuffers();
 
-			void merge( const Molecule & );
+			bool mergeTopology( const Molecule & );
 
 			virtual void render() override;
 			virtual void setSelected( const bool ) override;

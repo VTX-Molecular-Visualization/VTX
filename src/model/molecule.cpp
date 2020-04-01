@@ -283,5 +283,94 @@ namespace VTX
 			_notifyViews( Event::VTX_EVENT_MODEL::RENDER );
 			unbindBuffers();
 		}
+
+		bool Molecule::mergeTopology( const Molecule & p_molecule )
+		{
+			if ( p_molecule.getAtomCount() > getAtomCount() )
+			{
+				VTX_ERROR( "Too many atoms in topology model" );
+				return false;
+			}
+			else if ( getAtomCount() > p_molecule.getAtomCount() )
+			{
+				VTX_WARNING( "Topology model has less atoms than dynamic one (maybe solvent not present)" );
+			}
+
+			// Clear topology.
+			Generic::clearVector<Chain>( _chains );
+			Generic::clearVector<Residue>( _residues );
+
+			// Create models.
+			_chains.resize( p_molecule.getChainCount() );
+			for ( uint i = 0; i < p_molecule.getChainCount(); ++i )
+			{
+				getChains()[ i ] = new Chain();
+			}
+			_residues.resize( p_molecule.getResidueCount() );
+			for ( uint i = 0; i < p_molecule.getResidueCount(); ++i )
+			{
+				getResidues()[ i ] = new Residue();
+			}
+
+			setName( p_molecule.getName() );
+			// Loop over other molecule chains.
+			for ( uint chainIndex = 0; chainIndex < p_molecule.getChainCount(); ++chainIndex )
+			{
+				const Chain &  otherChain = p_molecule.getChain( chainIndex );
+				Model::Chain & modelChain = getChain( chainIndex );
+				modelChain.setIndex( otherChain.getIndex() );
+				modelChain.setMoleculePtr( this );
+				modelChain.setName( otherChain.getName() );
+				modelChain.setIdFirstResidue( otherChain.getIdFirstResidue() );
+				modelChain.setResidueCount( otherChain.getResidueCount() );
+
+				for ( uint residueIndex = 0; residueIndex < otherChain.getResidueCount(); ++residueIndex )
+				{
+					const Residue & otherResidue
+						= p_molecule.getResidue( otherChain.getIdFirstResidue() + residueIndex );
+					Model::Residue & modelResidue = getResidue( otherChain.getIdFirstResidue() + residueIndex );
+					modelResidue.setIndex( otherResidue.getIndex() );
+					modelResidue.setMoleculePtr( this );
+					modelResidue.setChainPtr( &modelChain );
+					modelResidue.setIdFirstAtom( otherResidue.getIdFirstAtom() );
+					modelResidue.setAtomCount( otherResidue.getAtomCount() );
+					modelResidue.setSymbol( otherResidue.getSymbol() );
+
+					for ( uint atomIndex = 0; atomIndex < otherResidue.getAtomCount(); ++atomIndex )
+					{
+						const Atom &  otherAtom = p_molecule.getAtom( otherResidue.getIdFirstAtom() + atomIndex );
+						Model::Atom & modelAtom = getAtom( otherResidue.getIdFirstAtom() + atomIndex );
+						modelAtom.setIndex( otherAtom.getIndex() );
+						modelAtom.setResiduePtr( &modelResidue );
+						modelAtom.setChainPtr( &modelChain );
+					}
+				}
+			}
+
+			// Loop over other atoms.
+			if ( getAtomCount() > p_molecule.getAtomCount() )
+			{
+				addChain();
+				addResidue();
+				Model::Chain &	 modelChain	  = getChain( getChainCount() - 1 );
+				Model::Residue & modelResidue = getResidue( getResidueCount() - 1 );
+				modelChain.setIndex( getChainCount() - 1 );
+				modelChain.setIdFirstResidue( getResidueCount() - 1 );
+				modelChain.setResidueCount( 1 );
+				modelResidue.setIndex( getResidueCount() - 1 );
+				modelResidue.setChainPtr( &modelChain );
+				modelResidue.setIdFirstAtom( p_molecule.getAtomCount() );
+				modelResidue.setAtomCount( getAtomCount() - p_molecule.getAtomCount() );
+
+				for ( uint atomIndex = 0; atomIndex < modelResidue.getAtomCount(); ++atomIndex )
+				{
+					Model::Atom & modelAtom = getAtom( modelResidue.getIdFirstAtom() + atomIndex );
+					modelAtom.setChainPtr( &modelChain );
+					modelAtom.setResiduePtr( &modelResidue );
+				}
+			}
+
+			return true;
+		}
 	} // namespace Model
 } // namespace VTX

@@ -194,6 +194,7 @@ namespace VTX
 				}
 
 				// Fill other frames.
+				// TODO: user resize()
 				for ( uint frameIdx = 1; frameIdx < trajectory.nsteps(); ++frameIdx )
 				{
 					p_molecule.addAtomPositionFrame();
