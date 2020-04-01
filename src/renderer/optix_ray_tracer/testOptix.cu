@@ -39,13 +39,12 @@ namespace VTX
 													  int_as_float( optixGetAttribute_1() ),
 													  int_as_float( optixGetAttribute_2() ) );
 			const int	 id		= optixGetPrimitiveIndex();
-			const float3 &color	= data->_colors[ id ];
+			const float3 &color	= data->_spheres[ id ]._color;
 			const float3 &rayDir = optixGetWorldRayDirection();
 			const float	 radiance = fabsf( dot( rayDir, normal ) );
 
 
 			setPayload( color * radiance );
-			//setPayload( normalize( optixTransformNormalFromObjectToWorldSpace( normal ) ) * 0.5f + 0.5f );
 		}
 
 		//extern "C" __global__ void __anyhit__() {}
@@ -127,39 +126,50 @@ namespace VTX
 
 			// primitive data
 			const int	   id	  = optixGetPrimitiveIndex();
-			const float3 & center = data->_positions[ id ];
-			const float	   radius = data->_radii[ id ];
-
-			const float3 & o	 = optixGetObjectRayOrigin();
-			const float3 & d	 = optixGetObjectRayDirection();
-			const float3   oc	 = o - center;
-			const float	   b	 = dot( oc, d );
-			const float	   c	 = dot( oc, oc ) - radius * radius;
-			const float	   delta = b * b - c;
-
-			if ( delta > 0.f )
+			
+			Optix::Intersection hit;
+			if (data->_spheres[id].intersect(
+				optixGetObjectRayOrigin(), optixGetObjectRayDirection(), optixGetRayTmin(), optixGetRayTmax(), hit))
 			{
-				const float sqrtDelta = sqrtf( delta );
+				unsigned int p0 = float_as_int( hit._normal.x );
+				unsigned int p1 = float_as_int( hit._normal.y );
+				unsigned int p2 = float_as_int( hit._normal.z );
 
-				float		t	 = ( -b - sqrtDelta ) ;
-				const float tMin = optixGetRayTmin();
-				const float tMax = optixGetRayTmax();
-				if ( t <= tMax )
-				{													// first intersection not too far
-					if ( t < tMin ) { t = ( -b + sqrtDelta ); } // first intersection too near, check second one
-					if ( t >= tMin && t <= tMax )					// t is within the interval
-					{
-						const float3 point	= o + d * t;
-						const float3 normal = ( point - center ) / radius;
-
-						unsigned int p0 = float_as_int( normal.x );
-						unsigned int p1 = float_as_int( normal.y );
-						unsigned int p2 = float_as_int( normal.z );
-
-						optixReportIntersection( t, 0, p0, p1, p2 );
-					}
-				}
+				optixReportIntersection( hit._t, 0, p0, p1, p2 );
 			}
+			//const float3 & center = data->_spheres[ id ]._center;
+			//const float	   radius = data->_spheres[ id ]._radius;
+
+			//const float3 & o	 = optixGetObjectRayOrigin();
+			//const float3 & d	 = optixGetObjectRayDirection();
+			//const float3   oc	 = o - center;
+			//const float	   b	 = dot( oc, d );
+			//const float	   c	 = dot( oc, oc ) - radius * radius;
+			//const float	   delta = b * b - c;
+
+			//if ( delta > 0.f )
+			//{
+			//	const float sqrtDelta = sqrtf( delta );
+
+			//	float		t	 = ( -b - sqrtDelta ) ;
+			//	const float tMin = optixGetRayTmin();
+			//	const float tMax = optixGetRayTmax();
+			//	if ( t <= tMax )
+			//	{													// first intersection not too far
+			//		if ( t < tMin ) { t = ( -b + sqrtDelta ); } // first intersection too near, check second one
+			//		if ( t >= tMin && t <= tMax )					// t is within the interval
+			//		{
+			//			const float3 point	= o + d * t;
+			//			const float3 normal = ( point - center ) / radius;
+
+			//			unsigned int p0 = float_as_int( normal.x );
+			//			unsigned int p1 = float_as_int( normal.y );
+			//			unsigned int p2 = float_as_int( normal.z );
+
+			//			optixReportIntersection( t, 0, p0, p1, p2 );
+			//		}
+			//	}
+			//}
 		}
 	} // namespace Renderer
 } // namespace VTX

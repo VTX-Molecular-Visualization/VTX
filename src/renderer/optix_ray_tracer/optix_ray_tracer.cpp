@@ -4,6 +4,7 @@
 #include "vtx_app.hpp"
 #include <atomic>
 #include <fstream>
+#include <nvtx3/nvToolsExt.h>
 #include <optix_function_table_definition.h>
 #include <stb/stb_image_write.h>
 #include <thread>
@@ -19,9 +20,7 @@ namespace VTX
 
 		VTX::Renderer::OptixRayTracer::~OptixRayTracer()
 		{
-			_sphereCentersDevBuffer.free();
-			_sphereRadiiDevBuffer.free();
-			_sphereColorsDevBuffer.free();
+			_spheresDevBuffer.free();
 			_gasOutputBuffer.free();
 
 			_rayGeneratorRecordsBuffer.free();
@@ -55,9 +54,7 @@ namespace VTX
 
 			resize( p_width, p_height );
 
-			_sphereCentersDevBuffer.free();
-			_sphereRadiiDevBuffer.free();
-			_sphereColorsDevBuffer.free();
+			_spheresDevBuffer.free();
 			_gasOutputBuffer.free();
 
 			_rayGeneratorRecordsBuffer.free();
@@ -67,27 +64,21 @@ namespace VTX
 			// init scene on host and device !!!
 			const Model::Molecule & mol		= *( VTXApp::get().getScene().getMolecules()[ 0 ] );
 			const uint				nbAtoms = mol.getAtomCount();
-			_sphereCenters.resize( nbAtoms );
-			_sphereRadii.resize( nbAtoms );
-			_sphereColors.resize( nbAtoms );
+			std::cout << "nbAtoms " << nbAtoms << std::endl;
+			std::cout << "size " << nbAtoms * sizeof( Optix::Sphere ) << std::endl;
+			_spheres.resize( nbAtoms );
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
-				const Vec3f & p		= mol.getAtomPositionFrame( 0 )[ i ];
-				const float	  r		= mol.getAtomRadius( i );
-				const Vec3f & c		= mol.getAtomColor( i );
-				_sphereCenters[ i ] = make_float3( p.x, p.y, p.z );
-				_sphereRadii[ i ]	= r;
-				_sphereColors[ i ]	= make_float3( c.x, c.y, c.z );
+				const Vec3f & p		  = mol.getAtomPositionFrame( 0 )[ i ];
+				const float	  r		  = mol.getAtomRadius( i );
+				const Vec3f & c		  = mol.getAtomColor( i );
+				_spheres[ i ]._center = make_float3( p.x, p.y, p.z );
+				_spheres[ i ]._radius = r;
+				_spheres[ i ]._color  = make_float3( c.x, c.y, c.z );
 			}
 
-			_sphereCentersDevBuffer.malloc( _sphereCenters.size() * sizeof( float3 ) );
-			_sphereCentersDevBuffer.memcpyHostToDevice( _sphereCenters.data(), _sphereCenters.size() );
-
-			_sphereRadiiDevBuffer.malloc( _sphereRadii.size() * sizeof( float ) );
-			_sphereRadiiDevBuffer.memcpyHostToDevice( _sphereRadii.data(), _sphereRadii.size() );
-
-			_sphereColorsDevBuffer.malloc( _sphereColors.size() * sizeof( float3 ) );
-			_sphereColorsDevBuffer.memcpyHostToDevice( _sphereColors.data(), _sphereColors.size() );
+			_spheresDevBuffer.malloc( _spheres.size() * sizeof( Optix::Sphere ) );
+			_spheresDevBuffer.memcpyHostToDevice( _spheres.data(), _spheres.size() );
 
 			try
 			{
@@ -135,11 +126,6 @@ namespace VTX
 
 			VTX_INFO( "Render Frame" );
 
-			// start rendering
-			// TODO: replace by ChronoGPU
-			// Tool::Chrono chrono;
-
-			// chrono.start();
 			cudaEvent_t start, stop;
 			float		elapsedTime;
 			CUDA_HANDLE_ERROR( cudaEventCreate( &start ) );
@@ -150,6 +136,7 @@ namespace VTX
 
 			CUDA_HANDLE_ERROR( cudaEventRecord( start, 0 ) );
 
+			nvtxRangePushA( "OptiX" );
 			OPTIX_HANDLE_ERROR( optixLaunch( _optixPipeline,
 											 _cudaStream,
 											 _launchParametersBuffer.getDevicePtr(),
@@ -158,14 +145,13 @@ namespace VTX
 											 _launchParameters._frame._width,
 											 _launchParameters._frame._height,
 											 1 ) );
+			nvtxRangePop();
 
 			// chrono.stop();
 			CUDA_HANDLE_ERROR( cudaEventRecord( stop, 0 ) );
 			CUDA_HANDLE_ERROR( cudaEventSynchronize( stop ) );
-			// const double time = chrono.elapsedTime();
 			CUDA_HANDLE_ERROR( cudaEventElapsedTime( &elapsedTime, start, stop ) );
 
-			// VTX_INFO( "Rendering time: " + std::to_string( time ) );
 			VTX_INFO( "Rendering time: " + std::to_string( elapsedTime ) );
 			VTX_INFO( "Save image as: test Optix.png" );
 
@@ -188,7 +174,7 @@ namespace VTX
 		void OptixRayTracer::resize( const uint p_width, const uint p_height )
 		{
 			BaseRenderer::resize( p_width, p_height );
-			_colorBuffer.resize( _width * _height * sizeof( uint ) );
+			_colorBuffer.realloc( _width * _height * sizeof( uint ) );
 			_launchParameters._frame._width	 = _width;
 			_launchParameters._frame._height = _height;
 			_launchParameters._frame._pixels = (uchar4 *)( _colorBuffer.getDevicePtr() );
@@ -433,11 +419,12 @@ namespace VTX
 		{
 			// create AABB buffer from sphere
 			std::vector<OptixAabb> aabbs;
-			aabbs.resize( _sphereCenters.size() );
-			for ( uint i = 0; i < uint( _sphereCenters.size() ); ++i )
+			// aabbs.resize( _sphereCenters.size() );
+			aabbs.resize( _spheres.size() );
+			for ( uint i = 0; i < uint( _spheres.size() ); ++i )
 			{
-				const float3 & c = _sphereCenters[ i ];
-				const float	   r = _sphereRadii[ i ];
+				const float3 & c = _spheres[ i ]._center;
+				const float	   r = _spheres[ i ]._radius;
 				aabbs[ i ]		 = { c.x - r, c.y - r, c.z - r, c.x + r, c.y + r, c.z + r };
 			}
 			CudaBuffer aabbsBuffer;
@@ -646,9 +633,10 @@ namespace VTX
 					int objectType = 0;
 
 					Optix::HitGroupRecord r;
-					r._data._positions = (float3 *)( _sphereCentersDevBuffer.getDevicePtr() );
+					/*r._data._positions = (float3 *)( _sphereCentersDevBuffer.getDevicePtr() );
 					r._data._radii	   = (float *)( _sphereRadiiDevBuffer.getDevicePtr() );
-					r._data._colors	   = (float3 *)( _sphereColorsDevBuffer.getDevicePtr() );
+					r._data._colors	   = (float3 *)( _sphereColorsDevBuffer.getDevicePtr() );*/
+					r._data._spheres = (Optix::Sphere *)( _spheresDevBuffer.getDevicePtr() );
 					OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _hitGroupPrograms[ objectType ], &r ) );
 					hitGroupRecords.push_back( r );
 				}

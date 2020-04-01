@@ -46,13 +46,10 @@ namespace VTX
 			const Vec3f _backgroundColor = Vec3f( 0.5f, 0.5f, 0.5f );
 
 			// model
-			std::vector<float3> _sphereCenters;
-			std::vector<float>	_sphereRadii;
-			std::vector<float3> _sphereColors;
-			CudaBuffer			_sphereCentersDevBuffer;
-			CudaBuffer			_sphereRadiiDevBuffer;
-			CudaBuffer			_sphereColorsDevBuffer;
-			CudaBuffer			_gasOutputBuffer;
+			std::vector<Optix::Sphere> _spheres;
+			CudaBuffer				   _spheresDevBuffer;
+
+			CudaBuffer _gasOutputBuffer;
 			// CUDA data
 			int			   _bestDeviceId = -1;
 			cudaDeviceProp _deviceProperties;

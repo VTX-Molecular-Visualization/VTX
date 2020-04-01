@@ -49,7 +49,7 @@ namespace VTX
 					cudaMemcpy( (void *)p_b, _devicePtr, p_count * sizeof( T ), cudaMemcpyDeviceToHost ) );
 			}
 
-			void resize( const size_t p_size )
+			void realloc( const size_t p_size )
 			{
 				if ( _devicePtr != nullptr ) { free(); }
 				malloc( p_size );
