@@ -38,7 +38,7 @@ namespace VTX
 			{
 				VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
-				glUniform1f( _uRadius, 0.2f );
+				glUniform1f( _uRadius, 0.15f );
 				glDrawElements(
 					GL_LINES, _getModel().getBondCount() * 2, GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
 			}

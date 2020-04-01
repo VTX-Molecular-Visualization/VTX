@@ -7,7 +7,8 @@ layout( location = 3 ) in uint  aSphereVis;
 
 uniform mat4  uMVMatrix;
 uniform mat4  uProjMatrix;
-uniform float uRadScale = 1.f;
+uniform float uRadiusFixed = 1.f;
+uniform bool uIsRadiusFixed = false;
 
 out vec3	   vCamImpPos;	  // impostor position in cam space
 flat out vec3  vCamSpherePos; // sphere impostor in cam space
@@ -23,7 +24,7 @@ void main()
 {
 	vCamSpherePos = vec3( uMVMatrix * vec4( aSpherePos, 1.f ) );
 	vSphereColor  = aSphereColor;
-	vSphereRad	  = aSphereRad * uRadScale;
+	vSphereRad	  = uIsRadiusFixed ? uRadiusFixed : aSphereRad;
 	vSphereVis    = aSphereVis;
 
 	vDotCamSpherePos		  = dot( vCamSpherePos, vCamSpherePos );
