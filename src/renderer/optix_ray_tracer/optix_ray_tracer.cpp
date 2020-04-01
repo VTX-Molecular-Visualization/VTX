@@ -240,10 +240,11 @@ namespace VTX
 			_optixPipelineCompileOptions.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS;
 			// 3 payload registers (R G B output)
 			_optixPipelineCompileOptions.numPayloadValues = 3;
+			_optixPipelineCompileOptions.usesMotionBlur	  = false;
 			// How much storage, in 32b words, to make available for the attributes.
 			// Here 3 for normal
 			_optixPipelineCompileOptions.numAttributeValues = 3;
-			_optixPipelineCompileOptions.exceptionFlags		= OPTIX_EXCEPTION_FLAG_DEBUG;
+			_optixPipelineCompileOptions.exceptionFlags		= OPTIX_EXCEPTION_FLAG_NONE;
 			// name of the struct used as parameter variable on device code
 			_optixPipelineCompileOptions.pipelineLaunchParamsVariableName = "params";
 
