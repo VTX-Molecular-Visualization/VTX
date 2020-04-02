@@ -128,7 +128,7 @@ namespace VTX
 					const float3 vMin = minV( _v0 - e, _v1 - e );
 					const float3 vMax = maxV( _v0 + e, _v1 + e );
 
-					return { vMin.x, vMin.z, vMin.z, vMax.x, vMax.y, vMax.z };
+					return { vMin.x, vMin.y, vMin.z, vMax.x, vMax.y, vMax.z };
 				}
 
 				// TODO: uniformize intersects
@@ -177,7 +177,7 @@ namespace VTX
 
 			struct HitGroupData
 			{
-				// Sphere *   _spheres;
+				Sphere *   _spheres;
 				Cylinder * _cylinders;
 			};
 

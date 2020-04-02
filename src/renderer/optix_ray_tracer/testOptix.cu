@@ -31,7 +31,7 @@ namespace VTX
 								255u );
 		}
 
-		extern "C" __global__ void __closesthit__()
+		extern "C" __global__ void __closesthit__sphere()
 		{
 			Optix::HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
 
@@ -39,11 +39,25 @@ namespace VTX
 													  int_as_float( optixGetAttribute_1() ),
 													  int_as_float( optixGetAttribute_2() ) );
 			const int	 id		= optixGetPrimitiveIndex();
-			//const float3 & color	= data->_spheres[ id ]._color;
-			const float3 & color	= data->_cylinders[ id ]._color;
+			const float3 & color	= data->_spheres[ id ]._color;
 			const float3 &rayDir = optixGetWorldRayDirection();
 			const float	 radiance = fabsf( dot( rayDir, normal ) );
 
+
+			setPayload( color * radiance );
+		}
+
+		extern "C" __global__ void __closesthit__cylinder()
+		{
+			Optix::HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
+
+			const float3   normal = make_float3( int_as_float( optixGetAttribute_0() ),
+												 int_as_float( optixGetAttribute_1() ),
+												 int_as_float( optixGetAttribute_2() ) );
+			const int	   id	  = optixGetPrimitiveIndex();
+			const float3 & color	= data->_cylinders[ id ]._color;
+			const float3 & rayDir	= optixGetWorldRayDirection();
+			const float	   radiance = fabsf( dot( rayDir, normal ) );
 
 			setPayload( color * radiance );
 		}
@@ -115,30 +129,30 @@ namespace VTX
 				   origin,
 				   rayDir,
 				   1e-3f, // tMin
-				   1e16f, // tMax
+				   1e32f, // tMax
 				   &normal );
 
 			params._frame._pixels[ frameBufferId ] = make_color( normal );
 		}
 
-		//extern "C" __global__ void __intersection__sphere()
-		//{
-		//	Optix::HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
+		extern "C" __global__ void __intersection__sphere()
+		{
+			Optix::HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
 
-		//	// primitive data
-		//	const int	   id	  = optixGetPrimitiveIndex();
-		//	
-		//	Optix::Intersection hit;
-		//	if (data->_spheres[id].intersect(
-		//		optixGetObjectRayOrigin(), optixGetObjectRayDirection(), optixGetRayTmin(), optixGetRayTmax(), hit))
-		//	{
-		//		unsigned int p0 = float_as_int( hit._normal.x );
-		//		unsigned int p1 = float_as_int( hit._normal.y );
-		//		unsigned int p2 = float_as_int( hit._normal.z );
+			// primitive data
+			const int	   id	  = optixGetPrimitiveIndex();
+			
+			Optix::Intersection hit;
+			if (data->_spheres[id].intersect(
+				optixGetObjectRayOrigin(), optixGetObjectRayDirection(), optixGetRayTmin(), optixGetRayTmax(), hit))
+			{
+				unsigned int p0 = float_as_int( hit._normal.x );
+				unsigned int p1 = float_as_int( hit._normal.y );
+				unsigned int p2 = float_as_int( hit._normal.z );
 
-		//		optixReportIntersection( hit._t, 0, p0, p1, p2 );
-		//	}
-		//}
+				optixReportIntersection( hit._t, 0, p0, p1, p2 );
+			}
+		}
 
 		extern "C" __global__ void __intersection__cylinder()
 		{
@@ -148,7 +162,6 @@ namespace VTX
 			const int id = optixGetPrimitiveIndex();
 
 			Optix::Intersection hit;
-			//if ( data->_spheres[ id ].intersect( optixGetObjectRayOrigin(),
 			if ( data->_cylinders[ id ].intersect( optixGetObjectRayOrigin(),
 												 optixGetObjectRayDirection(),
 												 optixGetRayTmin(),

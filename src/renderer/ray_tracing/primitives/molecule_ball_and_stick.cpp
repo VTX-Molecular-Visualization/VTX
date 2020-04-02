@@ -11,8 +11,9 @@ namespace VTX
 	{
 		MoleculeBallAndStick::MoleculeBallAndStick( Model::Molecule * p_molecule )
 		{
-			const uint		   nbAtoms	= p_molecule->getAtomCount();
-			const uint		   nbBonds	= p_molecule->getBondCount();
+			const uint nbAtoms = p_molecule->getAtomCount();
+			const uint nbBonds = p_molecule->getBondCount();
+			// TODO: seems that molecule does not compute aabb anymore
 			const Math::AABB & aabb		= p_molecule->getAABB();
 			const Vec3f		   centroid = aabb.centroid();
 			std::cout << "centroid " << centroid.x << " - " << centroid.y << " - " << centroid.z << std::endl;
@@ -36,8 +37,8 @@ namespace VTX
 
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
-				primitives[ idPrimitive ]
-					= new Renderer::Sphere( positions[ i ], p_molecule->getAtomRadius( i ), _materials.back() );
+				primitives[ idPrimitive ] = new Renderer::Sphere(
+					positions[ i ], /*p_molecule->getAtomRadius( i )*/ 0.4f, _materials.back() );
 				idPrimitive++;
 			}
 
@@ -46,7 +47,7 @@ namespace VTX
 				const Model::Bond & bond  = p_molecule->getBond( i );
 				const Vec3f &		a1	  = atomPositions[ bond.getIndexFirstAtom() ];
 				const Vec3f &		a2	  = atomPositions[ bond.getIndexSecondAtom() ];
-				primitives[ idPrimitive ] = new Renderer::Cylinder( a1, a2, 0.2f, _materials.front() );
+				primitives[ idPrimitive ] = new Renderer::Cylinder( a1, a2, 0.15f, _materials.front() );
 				idPrimitive++;
 			}
 

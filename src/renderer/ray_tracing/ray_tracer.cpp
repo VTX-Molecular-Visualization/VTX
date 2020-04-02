@@ -28,12 +28,11 @@ namespace VTX
 			CameraRayTracing( const Object3D::Camera & p_camera, const uint p_width, const uint p_height ) :
 				_pos( p_camera.getPosition() ), _width( p_width ), _height( p_height )
 			{
-				// 6m17
-				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
-
-				Vec3f camFront = Vec3f( 0.920292f, -0.380027f, 0.092962f );
-				Vec3f camLeft  = Vec3f( 0.071878f, -0.069334f, -0.995001f );
-				Vec3f camUp	   = Vec3f( 0.384572f, 0.922373f, -0.036492f );*/
+				// spike_closed_glycans_lipids_amarolab
+				/*_pos		   = Vec3f( 12.950272f, -375.106812f, 119.278503f );
+				Vec3f camFront = Vec3f( -0.016405f, 0.999115f, -0.038744f );
+				Vec3f camLeft  = Vec3f( -0.999817f, -0.016773f, -0.009176f );
+				Vec3f camUp	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
 
 				// 6vsb
 				_pos = Vec3f( 93.404381f, 176.164490f, 253.466934f );
@@ -41,6 +40,13 @@ namespace VTX
 				Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
 				Vec3f camLeft  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
 				Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
+
+				// 6m17
+				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
+
+				Vec3f camFront = Vec3f( 0.920292f, -0.380027f, 0.092962f );
+				Vec3f camLeft  = Vec3f( 0.071878f, -0.069334f, -0.995001f );
+				Vec3f camUp	   = Vec3f( 0.384572f, 0.922373f, -0.036492f );*/
 
 				//_pos = Vec3f( 302.771790f, 378.963623f, 195.313385f );
 
@@ -191,7 +197,7 @@ namespace VTX
 
 			const double time = chrono.elapsedTime();
 
-			VTX_INFO( "Rendering time: " + std::to_string( time ) );
+			VTX_INFO( "Rendering time: " + std::to_string( time * 1000. ) + "ms" );
 			VTX_INFO( "Save image as: test RT.png" );
 
 			stbi_write_png( "test RT.png", _width, _height, 3, pixels.data(), 0 );

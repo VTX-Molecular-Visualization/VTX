@@ -61,30 +61,17 @@ namespace VTX
 		VTX_INFO( "Application started" );
 		_ui->print();
 
-#ifdef _DEBUG
-		// IO::Path path = DATA_DIR + "6vsb.mmtf";
-		VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "6vsb.mmtf" ) ) );
-		// VTX_ACTION( new Action::Open( DATA_DIR + "4v6x.mmtf" ) );
-		// VTX_ACTION( new Action::Open(DATA_DIR + "6LU7.mmtf" ) );
-		// VTX_ACTION( new Action::Open(DATA_DIR + "6LU7.mmtf" ) );
-		// VTX_ACTION( new Action::Open(DATA_DIR + "3j3q.mmtf" ) );
-		// VTX_ACTION( new Action::Open(DATA_DIR + "r2d2.obj" ) );
-		// VTX_ACTION( new Action::Open( DATA_DIR + "dhfr2.arc" ) );
-		// VTX_ACTION( new Action::Open( DATA_DIR + "6lzg.pdb" ) );
-#else
-		IO::Path path = DATA_DIR + "6vsb.mmtf";
-		VTX_ACTION( new Action::Open( &path ) );
-		// VTX_ACTION( new Action::Open( DATA_DIR + "dhfr2.arc" ) );
-#endif
-
 #define RT_ENABLED
 #ifdef RT_ENABLED
 		VTXApp::_isRunning = false;
+		IO::Path * path	   = new IO::Path( DATA_DIR + "6vsb.mmtf" );
+		// IO::Path * path	   = new IO::Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
+		VTX_ACTION( new Action::Open( path ) );
 
 		_actionManager->update( 0.f );
 		_workerManager->update( 0.f );
 
-//#define OPTIX_DEFINED
+#define OPTIX_DEFINED
 #ifdef OPTIX_DEFINED
 		Renderer::OptixRayTracer * ort = new Renderer::OptixRayTracer();
 		ort->init( int( io.DisplaySize.x ), int( io.DisplaySize.y ) );

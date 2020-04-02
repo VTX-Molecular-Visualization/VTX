@@ -10,6 +10,8 @@
 #include <stb/stb_image_write.h>
 #include <thread>
 
+//#define SPHERES
+
 namespace VTX
 {
 	namespace Renderer
@@ -65,19 +67,19 @@ namespace VTX
 			_hitGroupRecordsBuffer.free();
 
 			// init scene on host and device !!!
-			const std::map<Model::Molecule *, float> & mols	   = VTXApp::get().getScene().getMolecules();
-			const Model::Molecule *					   mol	   = mols.begin()->first;
-			const uint								   nbAtoms = mol->getAtomCount();
-			const uint								   nbBonds = mol->getBondCount() / 2;
+			const Model::Molecule * mol		= VTXApp::get().getScene().getMolecules().begin()->first;
+			const uint				nbAtoms = mol->getAtomCount();
+			const uint				nbBonds = mol->getBondCount();
 			std::cout << "nbAtoms " << nbAtoms << "(size on GPU: " << nbAtoms * sizeof( Optix::Sphere ) << ")"
 					  << std::endl;
 			std::cout << "nbBonds " << nbBonds << "(size on GPU: " << nbBonds * sizeof( Optix::Cylinder ) << ")"
 					  << std::endl;
 			_spheres.resize( nbAtoms );
 			_cylinders.resize( nbBonds );
+			const std::vector<Vec3f> & atomPositions = mol->getAtomPositionFrame( 0 );
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
-				const Vec3f & p		  = mol->getAtomPositionFrame( 0 )[ i ];
+				const Vec3f & p		  = atomPositions[ i ];
 				const float	  r		  = mol->getAtomRadius( i );
 				const Vec3f & c		  = mol->getAtomColor( i );
 				_spheres[ i ]._center = make_float3( p.x, p.y, p.z );
@@ -85,21 +87,24 @@ namespace VTX
 				_spheres[ i ]._color  = make_float3( c.x, c.y, c.z );
 			}
 
-			for ( uint i = 0; i < nbBonds; i++ )
+			for ( uint i = 0; i < nbBonds; ++i )
 			{
 				const Model::Bond & bond = mol->getBond( i );
-				const Vec3f &		p0	 = mol->getAtomPositionFrame( 0 )[ bond.getIndexFirstAtom() ];
-				const Vec3f &		p1	 = mol->getAtomPositionFrame( 0 )[ bond.getIndexSecondAtom() ];
+				const Vec3f &		p0	 = atomPositions[ bond.getIndexFirstAtom() ];
+				const Vec3f &		p1	 = atomPositions[ bond.getIndexSecondAtom() ];
 				_cylinders[ i ]._v0		 = make_float3( p0.x, p0.y, p0.z );
 				_cylinders[ i ]._v1		 = make_float3( p1.x, p1.y, p1.z );
 				const Vec3f c			 = Util::Color::randomPastelColor();
 				_cylinders[ i ]._color	 = make_float3( c.x, c.y, c.z );
 			}
 
-			/*_spheresDevBuffer.malloc( _spheres.size() * sizeof( Optix::Sphere ) );
-			_spheresDevBuffer.memcpyHostToDevice( _spheres.data(), _spheres.size() );*/
+#ifdef SPHERES
+			_spheresDevBuffer.malloc( _spheres.size() * sizeof( Optix::Sphere ) );
+			_spheresDevBuffer.memcpyHostToDevice( _spheres.data(), _spheres.size() );
+#else
 			_cylindersDevBuffer.malloc( _cylinders.size() * sizeof( Optix::Cylinder ) );
 			_cylindersDevBuffer.memcpyHostToDevice( _cylinders.data(), _cylinders.size() );
+#endif
 
 			try
 			{
@@ -168,7 +173,6 @@ namespace VTX
 											 1 ) );
 			nvtxRangePop();
 
-			// chrono.stop();
 			CUDA_HANDLE_ERROR( cudaEventRecord( stop, 0 ) );
 			CUDA_HANDLE_ERROR( cudaEventSynchronize( stop ) );
 			CUDA_HANDLE_ERROR( cudaEventElapsedTime( &elapsedTime, start, stop ) );
@@ -325,7 +329,7 @@ namespace VTX
 			nvrtcDestroyProgram( &program );
 
 			delete cu;
-#endif
+#else
 			// read .ptx
 			const std::string file = "../src/renderer/optix_ray_tracer/testOptix.ptx";
 			std::ifstream	  ifs( file, std::ios::binary | std::ios::ate );
@@ -337,6 +341,7 @@ namespace VTX
 			ifs.seekg( 0, std::ios::beg );
 			ifs.read( ptx, ptxSize );
 			ifs.close();
+#endif
 
 			char   log[ 2048 ];
 			size_t sizeof_log = sizeof( log );
@@ -415,15 +420,22 @@ namespace VTX
 			OptixProgramGroupDesc	 programDescription = {};
 			programDescription.kind						= OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
 			// closest hit
-			programDescription.hitgroup.moduleCH			= _optixModule;
-			programDescription.hitgroup.entryFunctionNameCH = "__closesthit__";
+			programDescription.hitgroup.moduleCH = _optixModule;
 			// any hit
+#ifdef SPHERES
+			programDescription.hitgroup.entryFunctionNameCH = "__closesthit__sphere";
+#else
+			programDescription.hitgroup.entryFunctionNameCH = "__closesthit__cylinder";
+#endif
 			programDescription.hitgroup.moduleAH			= nullptr; //_optixModule;
 			programDescription.hitgroup.entryFunctionNameAH = nullptr; //"__anyhit__";
 			// intersection
 			programDescription.hitgroup.moduleIS = _optixModule;
-			// programDescription.hitgroup.entryFunctionNameIS = "__intersection__sphere";
+#ifdef SPHERES
+			programDescription.hitgroup.entryFunctionNameIS = "__intersection__sphere";
+#else
 			programDescription.hitgroup.entryFunctionNameIS = "__intersection__cylinder";
+#endif
 
 			char   log[ 2048 ];
 			size_t sizeof_log = sizeof( log );
@@ -441,17 +453,20 @@ namespace VTX
 		{
 			// create AABB buffer from sphere
 			std::vector<OptixAabb> aabbs;
-			/*aabbs.resize( _spheres.size() );
+
+#ifdef SPHERES
+			aabbs.resize( _spheres.size() );
 			for ( uint i = 0; i < uint( _spheres.size() ); ++i )
 			{
 				aabbs[ i ] = _spheres[ i ].aabb();
-			}*/
-
+			}
+#else
 			aabbs.resize( _cylinders.size() );
 			for ( uint i = 0; i < uint( _cylinders.size() ); ++i )
 			{
 				aabbs[ i ] = _cylinders[ i ].aabb();
 			}
+#endif
 			CudaBuffer aabbsBuffer;
 			aabbsBuffer.malloc( aabbs.size() * sizeof( OptixAabb ) );
 			aabbsBuffer.memcpyHostToDevice( aabbs.data(), aabbs.size() );
@@ -589,6 +604,10 @@ namespace VTX
 				{
 					Optix::RayGeneratorRecord r;
 
+					// spike_closed_glycans_lipids_amarolab
+					/*Vec3f camPos   = Vec3f( 12.950272f, -375.106812f, 119.278503f );
+					Vec3f camFront = Vec3f( -0.016405f, 0.999115f, -0.038744f );
+					Vec3f camUp	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
 					// 6vsb
 					Vec3f camPos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
 					Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
@@ -645,8 +664,11 @@ namespace VTX
 					int objectType = 0;
 
 					Optix::HitGroupRecord r;
-					/*r._data._spheres = (Optix::Sphere *)( _spheresDevBuffer.getDevicePtr() );*/
+#ifdef SPHERES
+					r._data._spheres = (Optix::Sphere *)( _spheresDevBuffer.getDevicePtr() );
+#else
 					r._data._cylinders = (Optix::Cylinder *)( _cylindersDevBuffer.getDevicePtr() );
+#endif
 					OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _hitGroupPrograms[ objectType ], &r ) );
 					hitGroupRecords.push_back( r );
 				}

@@ -43,7 +43,7 @@ namespace VTX
 			void _createOptixShaderBindingTable();
 
 		  private:
-			const Vec3f _backgroundColor = Vec3f( 0.5f, 0.5f, 0.5f );
+			const Vec3f _backgroundColor = Vec3f( 0.f, 0.f, 0.f );
 
 			// model
 			std::vector<Optix::Sphere>	 _spheres;
