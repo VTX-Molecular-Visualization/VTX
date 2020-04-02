@@ -1,6 +1,8 @@
 #include "action_manager.hpp"
+#include "change_representation.hpp"
 #include "snapshot.hpp"
-#include <thread>
+#include <magic_enum.hpp>
+#include <sstream>
 
 namespace VTX
 {
@@ -10,10 +12,44 @@ namespace VTX
 
 		void ActionManager::execute( const std::string & p_action )
 		{
-			// TODO: extract args from string.
-			// TODO: map string to class with variadics (not possible in cpp, no reflection).
-			// Name action with enum?
-			if ( p_action == "snapshot" ) { execute( new Snapshot() ); }
+			std::istringstream		 iss( p_action );
+			std::string				 word;
+			std::vector<std::string> words = std::vector<std::string>();
+			while ( iss >> word )
+			{
+				words.emplace_back( word );
+			}
+
+			if ( words.size() == 0 ) { VTX_ERROR( "Empty action string" ); }
+
+			std::string & command = words[ 0 ];
+			BaseAction *  action  = nullptr;
+
+			if ( command == "snapshot" ) { action = new Snapshot(); }
+			else if ( command == "change_representation" )
+			{
+				action = new ChangeRepresentation();
+			}
+
+			if ( action != nullptr )
+			{
+				try
+				{
+					action->setParameters( words );
+				}
+				catch ( const std::exception & )
+				{
+					action->displayUsage();
+					delete action;
+					return;
+				}
+
+				execute( action );
+			}
+			else
+			{
+				VTX_ERROR( "Action not found" );
+			}
 		}
 
 		bool ActionManager::canUndo() const { return _bufferUndo.size() > 0; }

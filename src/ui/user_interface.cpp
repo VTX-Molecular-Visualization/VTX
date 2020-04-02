@@ -97,10 +97,10 @@ namespace VTX
 
 			SDL_GetCurrentDisplayMode( 0, &_displayMode );
 
-			std::string title( "VTX v" + std::to_string( VTX_VERSION_MAJOR ) + '.'
-							   + std::to_string( VTX_VERSION_MINOR ) );
+			std::string title( "VTX v" + std::to_string( VTX_VERSION_MAJOR ) + '.' + std::to_string( VTX_VERSION_MINOR )
+							   + '.' + std::to_string( VTX_VERSION_REVISION ) );
 #if _DEBUG
-			title += " (DEV)";
+			title += " (DEBUG)";
 #endif
 			_window = SDL_CreateWindow(
 				title.c_str(),

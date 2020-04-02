@@ -55,7 +55,8 @@ namespace VTX
 			inline bool		 isLooping() const { return _isLooping; }
 			inline void		 setIsLooping( const bool p_isLooping ) { _isLooping = p_isLooping; }
 			void			 refreshAllDurations();
-			Model::Viewpoint getInterpolatedViewpoint( float p_time ) const;
+			Model::Viewpoint getInterpolatedViewpoint( const float p_time ) const;
+			const std::vector<std::string> * const getCurrentActions( const float p_time );
 
 			virtual void setSelected( const bool ) override;
 

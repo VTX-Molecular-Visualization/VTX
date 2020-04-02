@@ -8,6 +8,7 @@
 #include "base_action.hpp"
 #include "model/molecule.hpp"
 #include "vtx_app.hpp"
+#include <magic_enum.hpp>
 
 namespace VTX
 {
@@ -16,9 +17,17 @@ namespace VTX
 		class ChangeRepresentation : public BaseAction
 		{
 		  public:
+			explicit ChangeRepresentation() {}
+
 			explicit ChangeRepresentation( const View::MOLECULE_REPRESENTATION p_representation ) :
 				_representation( p_representation )
 			{
+			}
+
+			virtual void setParameters( std::vector<std::string> & p_parameters ) override
+			{
+				// std::string & representation = p_parameters.at( 1 );
+				_representation = magic_enum::enum_cast<View::MOLECULE_REPRESENTATION>( p_parameters.at( 1 ) ).value();
 			}
 
 			virtual void execute() override
@@ -30,8 +39,10 @@ namespace VTX
 				}
 			};
 
+			virtual void displayUsage() override { VTX_INFO( "BALL_AND_STICK|VAN_DER_WAALS|STICK" ); }
+
 		  private:
-			const View::MOLECULE_REPRESENTATION _representation;
+			View::MOLECULE_REPRESENTATION _representation = Setting::Rendering::representation;
 		};
 	} // namespace Action
 } // namespace VTX

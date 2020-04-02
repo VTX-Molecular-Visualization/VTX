@@ -8,6 +8,7 @@
 #include "base_action_undonable.hpp"
 #include "define.hpp"
 #include "generic/base_updatable.hpp"
+#include <functional>
 #include <list>
 #include <queue>
 #include <string>

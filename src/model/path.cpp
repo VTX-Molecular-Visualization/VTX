@@ -17,7 +17,24 @@ namespace VTX
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::PathList>( this ) );
 		}
 
-		Model::Viewpoint Path::getInterpolatedViewpoint( float p_time ) const
+		const std::vector<std::string> * const Path::getCurrentActions( const float p_time )
+		{
+			Viewpoint viewpoint( (Path * const)this );
+
+			uint  size	 = (uint)_viewpoints.size();
+			float total	 = 0.f;
+			uint  offset = 0;
+
+			// Find the next and previous points.
+			while ( total <= p_time && offset < size )
+			{
+				total += _viewpoints[ offset++ ]->getDuration();
+			}
+			offset--;
+			return &_viewpoints[ offset - 1 ]->getActions();
+		}
+
+		Model::Viewpoint Path::getInterpolatedViewpoint( const float p_time ) const
 		{
 			Viewpoint viewpoint( (Path * const)this );
 

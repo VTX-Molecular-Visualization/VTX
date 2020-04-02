@@ -17,6 +17,8 @@ namespace VTX
 		class Snapshot : public BaseAction
 		{
 		  public:
+			virtual void setParameters( std::vector<std::string> & p_parameters ) override {}
+
 			virtual void execute() override
 			{
 				Worker::Snapshoter snapshoter;
@@ -30,6 +32,8 @@ namespace VTX
 					VTX_WARNING( "Snapshot failed" );
 				}
 			};
+
+			virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 		};
 	} // namespace Action
 } // namespace VTX

@@ -22,6 +22,11 @@
 -   Open multiple molecules
 -   Export snapshot (saved in snapshots/ folders)
 
+### SCRIPTABLE ACTIONS
+
+-   snapshot
+-   change_representation BALL_AND_STICK|VAN_DER_WAALS|STICK
+
 ### FEATURES IN DEVELOPPEMENT
 
 -   Video export only exports a batch of snapshots, we need to use ffmpeg to build the video (not in the release for the moment)

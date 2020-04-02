@@ -26,8 +26,9 @@ namespace VTX
 		void Play::exit()
 		{
 			VTX_INFO( "Stop" );
-			_path = nullptr;
-			_time = 0.f;
+			_path	 = nullptr;
+			_actions = nullptr;
+			_time	 = 0.f;
 		}
 
 		void Play::update( const double p_deltaTime )
@@ -39,7 +40,11 @@ namespace VTX
 			// Loop.
 			if ( _time >= _path->getDuration() )
 			{
-				if ( _path->isLooping() ) { _time = 0.f; }
+				if ( _path->isLooping() )
+				{
+					_time	 = 0.f;
+					_actions = nullptr;
+				}
 				else
 				{
 					VTXApp::get().goToState( ID::State::VISUALIZATION );
@@ -48,6 +53,7 @@ namespace VTX
 			}
 
 			_setCamera();
+			_executeActions();
 			VTXApp::get().getScene().update( p_deltaTime );
 			VTXApp::get().renderScene();
 
@@ -57,6 +63,18 @@ namespace VTX
 		{
 			Model::Viewpoint viewpoint = _path->getInterpolatedViewpoint( _time );
 			VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
+		}
+
+		void Play::_executeActions()
+		{
+			if ( _actions != _path->getCurrentActions( _time ) )
+			{
+				_actions = _path->getCurrentActions( _time );
+				for ( const std::string & action : *_actions )
+				{
+					VTX_ACTION( action );
+				}
+			}
 		}
 
 	} // namespace State

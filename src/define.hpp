@@ -30,8 +30,9 @@ namespace VTX
 	using Quatd = glm::dquat;
 
 	// VTX.
-	constexpr int VTX_VERSION_MAJOR = 0;
-	constexpr int VTX_VERSION_MINOR = 0;
+	constexpr int VTX_VERSION_MAJOR	   = 0;
+	constexpr int VTX_VERSION_MINOR	   = 0;
+	constexpr int VTX_VERSION_REVISION = 3;
 
 	constexpr int	  OPENGL_VERSION_MAJOR = 4;
 	constexpr int	  OPENGL_VERSION_MINOR = 5;
