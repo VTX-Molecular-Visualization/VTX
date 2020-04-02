@@ -2,6 +2,7 @@
 #include "action/path_change_duration.hpp"
 #include "action/path_change_duration_mode.hpp"
 #include "action/path_change_interpolation_mode.hpp"
+#include "action/path_change_is_looping.hpp"
 #include "action/path_play.hpp"
 #include "action/viewpoint_create.hpp"
 #include "vtx_app.hpp"
@@ -28,7 +29,7 @@ namespace VTX
 					int durationMode = (int)_getModel().getDurationMode();
 					if ( ImGui::Combo( LOCALE( "View.DurationMode" ), &durationMode, durationModes, 3 ) )
 					{
-						VTXApp::get().getActionManager().execute( new Action::PathChangeDurationMode(
+						VTX_ACTION( new Action::PathChangeDurationMode(
 							_getModel(), (Model::Path::DURATION_MODE)durationMode ) );
 					}
 
@@ -40,7 +41,7 @@ namespace VTX
 					int interpolationMode = (int)_getModel().getInterpolationMode();
 					if ( ImGui::Combo( LOCALE( "View.InterpolationMode" ), &interpolationMode, interpolationModes, 2 ) )
 					{
-						VTXApp::get().getActionManager().execute( new Action::PathChangeInterpolationMode(
+						VTX_ACTION( new Action::PathChangeInterpolationMode(
 							_getModel(), (Model::Path::INNTERPOLATION_MODE)interpolationMode ) );
 					}
 
@@ -49,7 +50,7 @@ namespace VTX
 						float duration = _getModel().getDuration();
 						if ( ImGui::InputFloat( LOCALE( "View.Duration" ), &duration, 1.f ) )
 						{
-							VTXApp::get().getActionManager().execute(
+							VTX_ACTION(
 								new Action::PathChangeDuration( _getModel(), duration ) );
 						}
 					}
@@ -59,13 +60,20 @@ namespace VTX
 					}
 
 					if ( ImGui::Button( LOCALE( "View.Play" ) ) )
-					{ VTXApp::get().getActionManager().execute( new Action::PathPlay( &_getModel() ) ); }
+					{ VTX_ACTION( new Action::PathPlay( &_getModel() ) ); }
 					ImGui::SameLine();
 					if ( ImGui::Button( LOCALE( "View.Stop" ) ) )
 					{ VTXApp::get().goToState( ID::State::VISUALIZATION ); }
+					ImGui::SameLine();
+					bool isLooping = _getModel().isLooping();
+					if ( ImGui::Checkbox( LOCALE( "View.Loop" ), &isLooping ) )
+					{
+						VTX_ACTION(
+							new Action::PathChangeIsLooping( _getModel(), isLooping ) );
+					}
 					if ( ImGui::Button( LOCALE( "View.Viewpoint.Add" ) ) )
 					{
-						VTXApp::get().getActionManager().execute(
+						VTX_ACTION(
 							new Action::ViewpointCreate( _getModel(), VTXApp::get().getScene().getCamera() ) );
 					}
 				}

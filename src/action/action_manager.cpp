@@ -59,18 +59,19 @@ namespace VTX
 			{
 				_bufferUndo.push_front( undonable );
 				_purgeBuffer();
+
+				// TOCHECK: clear all redo actions? Only when same action? Always?
+				// Clear redo actions.
+				for ( BaseActionUndonable * action : _bufferRedo )
+				{
+					delete action;
+				}
+				_bufferRedo.clear();
 			}
 			else
 			{
 				delete p_action;
 			}
-
-			// Clear redo actions.
-			for ( BaseActionUndonable * action : _bufferRedo )
-			{
-				delete action;
-			}
-			_bufferRedo.clear();
 		}
 
 		void ActionManager::_purgeBuffer()

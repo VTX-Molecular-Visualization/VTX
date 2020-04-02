@@ -1,4 +1,5 @@
 #include "camera.hpp"
+#include "util/logger.hpp"
 
 namespace VTX
 {
@@ -60,14 +61,14 @@ namespace VTX
 
 		void Camera::rotateAround( const Vec3f & p_target, const Vec3f & p_axis, const float p_delta )
 		{
-			//_rotation = Quatd( glm::lookAt( _position, p_target, VEC3F_Z ) );
+			//_rotation = Quatd( Util::Math::lookAt( _position, p_target, VEC3F_Z ) );
 			_updateRotation();
 		}
 
 		void Camera::_updateRotation()
 		{
-			_rotation	   = glm::normalize( _rotation );
-			Mat3d rotation = glm::mat3_cast( _rotation );
+			_rotation	   = Util::Math::normalize( _rotation );
+			Mat3d rotation = Util::Math::castMat3( _rotation );
 			_front		   = rotation * -VEC3F_Z;
 			_left		   = rotation * -VEC3F_X;
 			_up			   = rotation * VEC3F_Y;
@@ -75,21 +76,22 @@ namespace VTX
 			_eulerAngles = VEC3F_ZERO;
 		}
 
-		void Camera::_updateViewMatrix() { _viewMatrix = glm::lookAt( _position, _position + _front, _up ); }
+		void Camera::_updateViewMatrix() { _viewMatrix = Util::Math::lookAt( _position, _position + _front, _up ); }
 
 		void Camera::_updateProjectionMatrix()
 		{
-			_projectionMatrix = glm::perspective( glm::radians( _fov ), _screenWidth / _screenHeight, _near, _far );
+			_projectionMatrix
+				= Util::Math::perspective( Util::Math::radians( _fov ), _screenWidth / _screenHeight, _near, _far );
 		}
 
 		void Camera::print() const
 		{
-			VTX_INFO( "Position: " + glm::to_string( _position ) );
-			VTX_INFO( "Rotation: " + glm::to_string( _rotation ) );
-			VTX_INFO( "Euler angles: " + glm::to_string( _eulerAngles ) );
-			VTX_INFO( "Front: " + glm::to_string( _front ) );
-			VTX_INFO( "Left: " + glm::to_string( _left ) );
-			VTX_INFO( "Up: " + glm::to_string( _up ) );
+			VTX_INFO( "Position: " + Util::Math::to_string( _position ) );
+			VTX_INFO( "Rotation: " + Util::Math::to_string( _rotation ) );
+			VTX_INFO( "Euler angles: " + Util::Math::to_string( _eulerAngles ) );
+			VTX_INFO( "Front: " + Util::Math::to_string( _front ) );
+			VTX_INFO( "Left: " + Util::Math::to_string( _left ) );
+			VTX_INFO( "Up: " + Util::Math::to_string( _up ) );
 		}
 
 	} // namespace Object3D

@@ -8,8 +8,6 @@ namespace VTX
 	{
 		void Orbit::update( const double p_deltaTime )
 		{
-			
-
 			if ( _deltaMouseWheel != 0.f )
 			{
 				float distance = Setting::Controller::translationSpeed * _deltaMouseWheel * 0.01f;
@@ -22,8 +20,10 @@ namespace VTX
 
 			if ( _velocityX != 0.f ) { _camera.rotateAround( _target, VEC3F_Y, _velocityX ); }
 
-			_velocityX = Util::Math::lerp( _velocityX, 0.f, (float)p_deltaTime * CONTROLLER_ORBIT_ELASTICITY );
-			_velocityY = Util::Math::lerp( _velocityY, 0.f, (float)p_deltaTime * CONTROLLER_ORBIT_ELASTICITY );
+			_velocityX
+				= Util::Math::linearInterpolation( _velocityX, 0.f, (float)p_deltaTime * CONTROLLER_ORBIT_ELASTICITY );
+			_velocityY
+				= Util::Math::linearInterpolation( _velocityY, 0.f, (float)p_deltaTime * CONTROLLER_ORBIT_ELASTICITY );
 
 			if ( _mouseLeftPressed )
 			{

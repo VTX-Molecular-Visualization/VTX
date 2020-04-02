@@ -76,12 +76,17 @@ namespace VTX
 
 			// Views.
 			{ "View.Data", "Data" },
+			{ "View.Options", "Options" },
 			{ "View.Play", "Play" },
 			{ "View.Stop", "Stop" },
+			{ "View.Loop", "Loop" },
 			{ "View.Path", "Path" },
+			{ "View.Frame", "Frame" },
+			{ "View.FPS", "FPS" },
 			{ "View.Replace", "Replace" },
 			{ "View.Delete", "Delete" },
 			{ "View.Duration", "Duration" },
+			{ "View.Color", "Color" },
 			{ "View.Viewpoint", "Viewpoint" },
 			{ "View.Viewpoint.Add", "Add viewpoint" },
 			{ "View.Duration", "Duration" },
@@ -91,6 +96,9 @@ namespace VTX
 			{ "View.Transform.Position", "Position" },
 			{ "View.Transform.Rotation", "Rotation" },
 			{ "View.Transform.Scale", "Scale" },
+			{ "View.Molecule.Dynamic", "Dynamic" },
+			{ "View.Molecule.Solvent", "Solvent" },
+			{ "View.Molecule.Ion", "Ion" },
 
 			// Modals.
 			{ "Modal.Loading", "Loading" },

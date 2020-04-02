@@ -20,7 +20,7 @@ namespace VTX
 			virtual void execute() override
 			{
 				Setting::Rendering::aoBlurSize
-					= glm::clamp( _blurSize, RENDERER_AO_BLUR_SIZE_MIN, RENDERER_AO_BLUR_SIZE_MAX );
+					= Util::Math::clamp( _blurSize, RENDERER_AO_BLUR_SIZE_MIN, RENDERER_AO_BLUR_SIZE_MAX );
 			};
 
 		  private:

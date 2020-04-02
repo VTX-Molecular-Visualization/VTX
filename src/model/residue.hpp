@@ -51,6 +51,8 @@ namespace VTX
 			static const std::string SYMBOL_SHORT[ (int)RESIDUE_SYMBOL::COUNT ];
 			static const Vec3f *	 SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ];
 
+			inline uint				getIndex() const { return _index; };
+			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
 			inline Chain * const	getChainPtr() const { return _chainPtr; }
@@ -64,22 +66,23 @@ namespace VTX
 			inline void					setIdFirstAtom( const uint p_id ) { _idFirstAtom = p_id; };
 			inline uint					getAtomCount() const { return _atomCount; };
 			inline void					setAtomCount( const uint p_count ) { _atomCount = p_count; };
-			inline uint					getIdFirstBond() const { return _idFirstBond; };
-			inline void					setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
-			inline uint					getBondCount() const { return _bondCount; };
-			inline void					setBondCount( const uint p_count ) { _bondCount = p_count; };
+			// inline uint					getIdFirstBond() const { return _idFirstBond; };
+			// inline void					setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
+			// inline uint getBondCount() const { return _bondCount; };
+			// inline void setBondCount( const uint p_count ) { _bondCount = p_count; };
 
 			virtual void setSelected( const bool ) override;
 
 		  private:
+			uint	   _index		= 0;
 			Molecule * _moleculePtr = nullptr;
 			Chain *	   _chainPtr	= nullptr;
 
 			RESIDUE_SYMBOL _symbol		= RESIDUE_SYMBOL::UNKNOWN;
 			uint		   _idFirstAtom = 0;
 			uint		   _atomCount	= 0;
-			uint		   _idFirstBond = 0;
-			uint		   _bondCount	= 0;
+			// uint		   _idFirstBond = 0;
+			// uint		   _bondCount	= 0;
 		};
 
 	} // namespace Model

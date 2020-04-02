@@ -12,6 +12,7 @@
 #include "generic/has_collection.hpp"
 #include "id.hpp"
 #include "imgui/imgui.h"
+#include "localization/language.hpp"
 #include "model/base_model.hpp"
 #include <map>
 #include <set>

@@ -89,9 +89,7 @@ namespace VTX
 			switch ( p_event.event )
 			{
 			case SDL_WINDOWEVENT_CLOSE: VTXApp::get().stop(); break;
-			case SDL_WINDOWEVENT_RESIZED:
-				VTXApp::get().getActionManager().execute( new Action::Resize( p_event.data1, p_event.data2 ) );
-				break;
+			case SDL_WINDOWEVENT_RESIZED: VTX_ACTION( new Action::Resize( p_event.data1, p_event.data2 ) ); break;
 			}
 		}
 

@@ -21,7 +21,7 @@ namespace VTX
 		class OpenApi : public BaseAction
 		{
 		  public:
-			explicit OpenApi( const std::string p_id ) : _id( p_id ) {}
+			explicit OpenApi( const std::string & p_id ) : _id( p_id ) {}
 
 			virtual void execute() override
 			{
@@ -29,7 +29,7 @@ namespace VTX
 
 				try
 				{
-					VTXApp::get().getWorkerManager().runWorker( &fetcher );
+					VTX_WORKER( &fetcher );
 				}
 				catch ( const std::exception & p_e )
 				{
@@ -37,9 +37,9 @@ namespace VTX
 					return;
 				}
 
-				IO::PathFake path = IO::PathFake( _id + ".mmtf" );
-				path.write( fetcher.getBuffer() );
-				VTXApp::get().goToState( ID::State::LOAD, (void *)&path );
+				IO::PathFake * path = new IO::PathFake( _id + ".mmtf" );
+				path->write( fetcher.getBuffer() );
+				VTX_ACTION( new Action::Open( path ) );
 
 				/*
 				Worker::WorkerManager &		  manager  = VTXApp::get().getWorkerManager();

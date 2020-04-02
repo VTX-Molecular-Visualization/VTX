@@ -5,9 +5,6 @@
 #pragma once
 #endif
 
-#include "io/path.hpp"
-#include "localization/language.hpp"
-#include "util/logger.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <limits>
@@ -47,11 +44,11 @@ namespace VTX
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 
 	// Window.
-	constexpr int WINDOW_WIDTH	= 1280;
-	constexpr int WINDOW_HEIGHT = 720;
+	// constexpr int WINDOW_WIDTH	= 1280;
+	// constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
-	// constexpr int WINDOW_WIDTH	= 1920;
-	// constexpr int WINDOW_HEIGHT = 1080;
+	constexpr int WINDOW_WIDTH	= 1920;
+	constexpr int WINDOW_HEIGHT = 1080;
 	// 4k
 	// constexpr int WINDOW_WIDTH	= 3840;
 	// constexpr int WINDOW_HEIGHT = 2160;
@@ -105,7 +102,7 @@ namespace VTX
 
 	// Dirs.
 	const std::string DATA_DIR	   = "../data/";
-	const IO::Path	  SHADER_DIR   = "../src/shaders/";
+	const std::string SHADER_DIR   = "../src/shaders/";
 	const std::string SNAPSHOT_DIR = "../snapshots/";
 	const std::string PATHS_DIR	   = "../paths/";
 	const std::string VIDEO_DIR	   = "../videos/";
@@ -114,14 +111,7 @@ namespace VTX
 	const std::string API_URL_MMTF = "http://mmtf.rcsb.org/v1.0/full/";
 
 	// Log.
-	inline void	  VTX_DEBUG( const std::string & p_str ) { VTX::Util::Logger::logDebug( p_str ); }
-	inline void	  VTX_INFO( const std::string & p_str ) { VTX::Util::Logger::logInfo( p_str ); }
-	inline void	  VTX_WARNING( const std::string & p_str ) { VTX::Util::Logger::logWarning( p_str ); }
-	inline void	  VTX_ERROR( const std::string & p_str ) { VTX::Util::Logger::logError( p_str ); }
 	constexpr int VTX_CONSOLE_SIZE = 80;
-
-	// Localization.
-	inline const char * LOCALE( const char * p_str ) { return VTX::Localization::Language::text( p_str ); }
 
 	// Constants.
 	const float FLOAT_MIN = std::numeric_limits<float>::lowest();

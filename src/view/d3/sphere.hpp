@@ -25,10 +25,12 @@ namespace VTX
 				virtual void render() override;
 
 			  private:
-				float _radiusScale = 0.0f;
+				float _radiusFixed = 1.f;
+				bool  _isRadiusFixed = false;
 
 				// Uniforms.
-				GLint _uRadiusScale = GL_INVALID_INDEX;
+				GLint _uIsRadiusFixed = GL_INVALID_INDEX;
+				GLint _uRadiusFixed = GL_INVALID_INDEX;
 			};
 		} // namespace D3
 	}	  // namespace View

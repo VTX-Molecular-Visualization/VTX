@@ -33,11 +33,13 @@ namespace VTX
 
 			virtual void _setCameraUniforms( const Object3D::Camera & p_camera )
 			{
-				glUniformMatrix4fv( _uViewModelMatrix,
-									1,
-									GL_FALSE,
-									glm::value_ptr( p_camera.getViewMatrix() * _getModel().getTransform().get() ) );
-				glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, glm::value_ptr( p_camera.getProjectionMatrix() ) );
+				glUniformMatrix4fv(
+					_uViewModelMatrix,
+					1,
+					GL_FALSE,
+					Util::Math::value_ptr( p_camera.getViewMatrix() * _getModel().getTransform().get() ) );
+				glUniformMatrix4fv(
+					_uProjMatrix, 1, GL_FALSE, Util::Math::value_ptr( p_camera.getProjectionMatrix() ) );
 			}
 		};
 	} // namespace View

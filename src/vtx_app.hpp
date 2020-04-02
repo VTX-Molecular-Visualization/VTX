@@ -17,6 +17,7 @@
 #include "tool/chrono.hpp"
 #include "ui/user_interface.hpp"
 #include "util/logger.hpp"
+#include "worker/loader.hpp"
 #include "worker/worker_manager.hpp"
 #include <thread>
 #include <vector>
@@ -61,8 +62,6 @@ namespace VTX
 	  private:
 		static bool					  _isRunning;
 		Tool::Chrono				  _chrono			= Tool::Chrono();
-		double						  _timeTotal		= 0.f;
-		double						  _timeDelta		= 0.f;
 		UI::UserInterface *			  _ui				= nullptr;
 		State::StateMachine *		  _stateMachine		= nullptr;
 		Object3D::Scene *			  _scene			= nullptr;
@@ -79,6 +78,20 @@ namespace VTX
 
 		void _update();
 	};
+
+	inline void VTX_EVENT( VTX::Event::VTXEvent * const p_event )
+	{
+		VTXApp::get().getEventManager().fireEvent( p_event );
+	}
+	inline void VTX_ACTION( VTX::Action::BaseAction * const p_action )
+	{
+		VTXApp::get().getActionManager().execute( p_action );
+	}
+	inline void VTX_ACTION( std::string & p_action ) { VTXApp::get().getActionManager().execute( p_action ); }
+	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker )
+	{
+		VTXApp::get().getWorkerManager().run( p_worker );
+	}
 } // namespace VTX
 
 #endif

@@ -1,6 +1,7 @@
 #include "program_manager.hpp"
 #include "define.hpp"
 #include "exception.hpp"
+#include "util/logger.hpp"
 #include <vector>
 
 namespace VTX
@@ -30,7 +31,7 @@ namespace VTX
 
 			ProgramManager::~ProgramManager()
 			{
-				for ( const PairStringToGLuint pair : _shaders )
+				for ( const PairStringToGLuint & pair : _shaders )
 				{
 					glDeleteShader( pair.second );
 				}

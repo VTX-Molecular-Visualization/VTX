@@ -1,0 +1,33 @@
+#ifndef __VTX_MODEL_BOND__
+#define __VTX_MODEL_BOND__
+
+#ifdef _MSC_VER
+#pragma once
+#endif
+
+#include "base_model.hpp"
+
+namespace VTX
+{
+	namespace Model
+	{
+		class Molecule;
+		class Bond : public BaseModel
+		{
+		  public:
+			inline uint				getIndexFirstAtom() const { return _indexFirstAtom; };
+			inline void				setIndexFirstAtom( const uint p_index ) { _indexFirstAtom = p_index; };
+			inline uint				getIndexSecondAtom() const { return _indexSecondAtom; };
+			inline void				setIndexSecondAtom( const uint p_index ) { _indexSecondAtom = p_index; };
+			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
+			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
+
+		  private:
+			uint	   _indexFirstAtom	= 0;
+			uint	   _indexSecondAtom = 0;
+			Molecule * _moleculePtr		= nullptr;
+		};
+
+	} // namespace Model
+} // namespace VTX
+#endif

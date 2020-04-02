@@ -7,6 +7,7 @@
 
 #include "base_cleanable.hpp"
 #include "base_initializable.hpp"
+#include <map>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -51,10 +52,20 @@ namespace VTX
 			p_vector.clear();
 		}
 
-		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCleanable, T>::value>>
-		void clearStringMap( std::map<std::string, T *> & p_map )
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCleanable, T>::value>, typename V>
+		void clearMapAsKey( std::map<T *, V> & p_map )
 		{
-			for ( std::pair<std::string, T *> pair : p_map )
+			for ( std::pair<T *, V> pair : p_map )
+			{
+				destroy( pair.first );
+			}
+			p_map.clear();
+		}
+
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCleanable, T>::value>, typename V>
+		void clearMapAsValue( std::map<V, T *> & p_map )
+		{
+			for ( std::pair<const V, T *> & pair : p_map )
 			{
 				destroy( pair.second );
 			}

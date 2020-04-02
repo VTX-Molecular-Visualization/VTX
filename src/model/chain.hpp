@@ -18,6 +18,8 @@ namespace VTX
 		class Chain : public BaseModel, public Generic::BaseColorable
 		{
 		  public:
+			inline uint				getIndex() const { return _index; };
+			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
 
@@ -31,9 +33,10 @@ namespace VTX
 			virtual void setSelected( const bool ) override;
 
 		  private:
+			uint	   _index		= 0;
 			Molecule * _moleculePtr = nullptr;
 
-			std::string _name			= "";
+			std::string _name			= "unknown";
 			uint		_idFirstResidue = 0;
 			uint		_residueCount	= 0;
 		}; // namespace Model

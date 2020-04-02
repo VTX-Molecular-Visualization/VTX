@@ -26,21 +26,99 @@ namespace VTX
 			static std::uniform_real_distribution<float> dis( 0.f, 1.f );
 
 			template<typename T>
-			static inline T min( const T & a, const T & b )
+			static inline T min( const T & p_lhs, const T & p_rhs )
 			{
-				return glm::min( a, b );
+				return glm::min( p_lhs, p_rhs );
 			}
 
 			template<typename T>
-			static inline T max( const T & a, const T & b )
+			static inline T max( const T & p_lhs, const T & p_rhs )
 			{
-				return glm::max( a, b );
+				return glm::max( p_lhs, p_rhs );
+			}
+
+			template<typename T1, typename T2>
+			static inline T1 clamp( const T1 & p_value, const T2 & p_min, const T2 & p_max )
+			{
+				return glm::clamp( p_value, p_min, p_max );
 			}
 
 			template<typename T>
-			static inline auto dot( const T & a, const T & b )
+			static inline auto length( const T & p_value )
 			{
-				return glm::dot( a, b );
+				return glm::length( p_value );
+			}
+
+			template<typename T1, typename T2>
+			static inline T1 translate( const T1 & p_value, const T2 & p_translation )
+			{
+				return glm::translate( p_value, p_translation );
+			}
+
+			template<typename T1, typename T2>
+			static inline T1 rotate( const T1 & p_value, const T2 & p_rotation, const Vec3f & p_axis )
+			{
+				return glm::rotate( p_value, p_rotation, p_axis );
+			}
+
+			template<typename T1, typename T2>
+			static inline T1 scale( const T1 & p_value, const T2 & p_scale )
+			{
+				return glm::scale( p_value, p_scale );
+			}
+
+			template<typename T>
+			static inline auto distance( const T & p_lhs, const T & p_rhs )
+			{
+				return glm::distance( p_lhs, p_rhs );
+			}
+
+			template<typename T>
+			static inline T normalize( const T & p_value )
+			{
+				return glm::normalize( p_value );
+			}
+
+			template<typename T>
+			static inline auto lookAt( const T & p_value, const T & p_target, const T & p_axis )
+			{
+				return glm::lookAt( p_value, p_target, p_axis );
+			}
+
+			template<typename T>
+			static inline auto dot( const T & p_lhs, const T & p_rhs )
+			{
+				return glm::dot( p_lhs, p_rhs );
+			}
+
+			template<typename T>
+			static inline auto castMat3( const T & p_value )
+			{
+				return glm::mat3_cast( p_value );
+			}
+
+			template<typename T>
+			static inline T radians( const T & p_value )
+			{
+				return glm::radians( p_value );
+			}
+
+			template<typename T>
+			static inline auto perspective( const T p_fov, const T p_aspect, const T p_near, const T p_far )
+			{
+				return glm::perspective( p_fov, p_aspect, p_near, p_far );
+			}
+
+			template<typename T>
+			static inline std::string to_string( const T & p_value )
+			{
+				return glm::to_string( p_value );
+			}
+
+			template<typename T>
+			static inline auto value_ptr( const T & p_value )
+			{
+				return glm::value_ptr( p_value );
 			}
 
 			template<typename T>
@@ -55,6 +133,7 @@ namespace VTX
 				return glm::length( p_value );
 			}
 
+<<<<<<< HEAD
 			template<typename T>
 			static inline T normalize( const T & p_value )
 			{
@@ -84,12 +163,14 @@ namespace VTX
 			static inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
 			static inline Quatd eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
+=======
+			static inline Quatd eulerToQuaternion( const Vec3f & p_angles ) { return Quatd( p_angles ); }
+>>>>>>> origin/dev
 
 			static inline Quatd eulerToQuaternion( const double p_pitch, const double p_yaw, const double p_roll )
 			{
 				// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
-
-				/*9
+				/*
 				float cy = cos( p_yaw * 0.5f );
 				float sy = sin( p_yaw * 0.5f );
 				float cp = cos( p_pitch * 0.5f );
@@ -105,50 +186,35 @@ namespace VTX
 
 				return q;
 				*/
-
-				// Exact same thing?
+				// Same thing did by glm.
 				Quatd q = eulerToQuaternion( Vec3d( p_pitch, p_yaw, p_roll ) );
 				return q;
 			}
 
 			static inline Vec3f quaternionToEuler( const Quatd & p_quaternion )
 			{
-				// https://stackoverflow.com/questions/53033620/how-to-convert-euler-angles-to-quaternions-and-get-the-same-euler-angles-back-fr
-				/*
-				const Quatf & q = p_quaternion;
-				float		  x = q.x;
-				float		  y = q.y;
-				float		  z = q.z;
-				float		  w = q.w;
-
-				float t0 = 2.f * ( w * x + y * z );
-				float t1 = 1.f - 2.f * ( x * x + y * y );
-				float t2 = 2.f * ( w * y - z * x );
-				t2		 = glm::clamp( t2, -1.f, 1.f );
-				float t3 = 2.f * ( w * z + x * y );
-				float t4 = 1.f - 2.f * ( y * y + z * z );
-
-				return Vec3f( atan2( t0, t1 ), asin( t2 ), atan2( t3, t4 ) );
-				*/
-
 				// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
-
 				const Quatd & q = p_quaternion;
 				Vec3d		  angles;
 
-				// roll (x-axis rotation)
+				// Roll (x-axis rotation).
 				double sinr_cosp = 2 * ( q.w * q.x + q.y * q.z );
 				double cosr_cosp = 1 - 2 * ( q.x * q.x + q.y * q.y );
 				angles.z		 = std::atan2( sinr_cosp, cosr_cosp );
 
-				// pitch (y-axis rotation)
+				// Pitch (y-axis rotation)
 				double sinp = 2 * ( q.w * q.y - q.z * q.x );
 				if ( std::abs( sinp ) >= 1 )
-					angles.x = std::copysign( PI_2f / 2, sinp ); // use 90 degrees if out of range
+				{
+					// Use 90 degrees if out of range.
+					angles.x = std::copysign( PI_2f / 2, sinp );
+				}
 				else
+				{
 					angles.x = std::asin( sinp );
+				}
 
-				// yaw (z-axis rotation)
+				// Yaw (z-axis rotation).
 				double siny_cosp = 2 * ( q.w * q.z + q.x * q.y );
 				double cosy_cosp = 1 - 2 * ( q.y * q.y + q.z * q.z );
 				angles.y		 = std::atan2( siny_cosp, cosy_cosp );
@@ -157,24 +223,10 @@ namespace VTX
 			}
 
 			template<typename T>
-			static inline T lerp( const T & p_lhs, const T & p_rhs, const float p_value )
+			static inline T linearInterpolation( const T & p_lhs, const T & p_rhs, const float p_value )
 			{
 				return glm::lerp( p_lhs, p_rhs, p_value );
 			}
-
-			/*
-			template<typename T>
-			static inline T slerp( const T & p_lhs, const T & p_rhs, const float p_value )
-			{
-				return glm::slerp( p_lhs, p_rhs, p_value );
-			}
-
-			template<typename T>
-			static inline T mix( const T & p_lhs, const T & p_rhs, const float p_value )
-			{
-				return glm::mix( p_lhs, p_rhs, p_value );
-			}
-			*/
 
 			template<typename T>
 			static T catmullRomInterpolation( const T &	  p_p0,

@@ -1,4 +1,4 @@
-#include "mmtf.hpp"
+#include "lib_mmtf.hpp"
 #include "define.hpp"
 #include "exception.hpp"
 #include "util/color.hpp"
@@ -12,7 +12,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			bool MMTF::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			bool LibMMTF::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				mmtf::StructureData data;
 
@@ -31,7 +31,7 @@ namespace VTX
 				return _readStructureData( data, p_molecule );
 			}
 
-			bool MMTF::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule )
+			bool LibMMTF::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule )
 			{
 				mmtf::StructureData data;
 				mmtf::decodeFromBuffer( data, p_buffer.c_str(), p_buffer.size() );
@@ -39,7 +39,7 @@ namespace VTX
 				return _readStructureData( data, p_molecule );
 			}
 
-			bool MMTF::_readStructureData( const mmtf::StructureData & p_data, Model::Molecule & p_molecule )
+			bool LibMMTF::_readStructureData( const mmtf::StructureData & p_data, Model::Molecule & p_molecule )
 			{
 				// Check for consistency.
 				if ( p_data.hasConsistentData( true ) ) { VTX_INFO( "File loaded" ); }
@@ -62,11 +62,6 @@ namespace VTX
 				uint  atomGlobalIdx	   = 0;
 				uint  bondGlobalIdx	   = 0;
 
-				// Reserve memory for vectors to avoid pointer loss.
-				p_molecule.addChains( p_data.numChains );
-				p_molecule.addResidues( p_data.numGroups );
-				p_molecule.addAtoms( p_data.numAtoms );
-
 				p_molecule.addAtomPositionFrame();
 				Model::Molecule::AtomPositionsFrame & frame = p_molecule.getAtomPositionFrame( 0 );
 
@@ -78,9 +73,10 @@ namespace VTX
 				for ( ; chainGlobalIdx < chainCount; ++chainGlobalIdx )
 				{
 					// New chain.
+					p_molecule.addChain();
 					Model::Chain & chain = p_molecule.getChain( chainGlobalIdx );
 					chain.setMoleculePtr( &p_molecule );
-					chain.setId( chainGlobalIdx );
+					chain.setIndex( chainGlobalIdx );
 					chain.setName( p_data.chainNameList[ chainGlobalIdx ] );
 					chain.setIdFirstResidue( residueGlobalIdx );
 					chain.setResidueCount( p_data.groupsPerChain[ chainGlobalIdx ] );
@@ -98,18 +94,19 @@ namespace VTX
 						const mmtf::GroupType & group = p_data.groupList[ p_data.groupTypeList[ residueGlobalIdx ] ];
 
 						// New residue.
+						p_molecule.addResidue();
 						Model::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
 						residue.setMoleculePtr( &p_molecule );
 						residue.setChainPtr( &chain );
-						residue.setId( residueGlobalIdx );
+						residue.setIndex( residueGlobalIdx );
 						const std::string & residueSymbol = group.groupName;
 						std::optional symbol = magic_enum::enum_cast<Model::Residue::RESIDUE_SYMBOL>( residueSymbol );
 						symbol.has_value() ? residue.setSymbol( symbol.value() )
 										   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 						residue.setIdFirstAtom( atomGlobalIdx );
 						residue.setAtomCount( uint( group.atomNameList.size() ) );
-						residue.setIdFirstBond( bondGlobalIdx );
-						residue.setBondCount( uint( group.bondAtomList.size() ) / 2u ); // 2 index by bond.
+						// residue.setIdFirstBond( bondGlobalIdx );
+						// residue.setBondCount( uint( group.bondAtomList.size() ) / 2u ); // 2 index by bond.
 						if ( group.bondAtomList.size() % 2 != 0 ) { VTX_WARNING( "Incorrect number of bonds" ); }
 
 						residue.setColor( Util::Color::randomPastelColor() );
@@ -124,11 +121,12 @@ namespace VTX
 						for ( uint atomIdx = 0; atomIdx < atomCount; ++atomIdx, ++atomGlobalIdx )
 						{
 							// New atom.
+							p_molecule.addAtom();
 							Model::Atom & atom = p_molecule.getAtom( atomGlobalIdx );
 							atom.setMoleculePtr( &p_molecule );
 							atom.setChainPtr( &chain );
 							atom.setResiduePtr( &residue );
-							atom.setId( atomGlobalIdx );
+							atom.setIndex( atomGlobalIdx );
 							const std::string & atomSymbol = group.elementList[ atomIdx ];
 							std::optional symbol = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
 							symbol.has_value() ? atom.setSymbol( symbol.value() )
@@ -143,30 +141,37 @@ namespace VTX
 							frame.emplace_back( Vec3f( x, y, z ) );
 							const Vec3f & atomPosition = frame[ atomGlobalIdx ];
 							const float	  atomRadius   = atom.getVdwRadius();
-							p_molecule.addAtomRadius( atomRadius );
-
-							// Extends bounding box along atom position.
-							p_molecule.extendAABB( atomPosition, atomRadius );
 						}
 
 						// For each bond in the residue.
-						uint bondCount = residue.getBondCount();
+						uint bondCount = uint( group.bondAtomList.size() ) / 2u;
 #ifdef _DEBUG
-						p_molecule.bondCount += bondCount * 2;
+						p_molecule.bondCount += bondCount;
 #endif
-						for ( uint boundIdx = 0; boundIdx < bondCount * 2; boundIdx += 2, bondGlobalIdx += 2 )
+						for ( uint boundIdx = 0; boundIdx < bondCount * 2; boundIdx += 2, bondGlobalIdx++ )
 						{
-							p_molecule.addBond( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx ] );
-							p_molecule.addBond( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx + 1u ] );
+							p_molecule.addBond();
+							Model::Bond & bond = p_molecule.getBond( bondGlobalIdx );
+
+							bond.setIndexFirstAtom( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx ] );
+							bond.setIndexSecondAtom( residue.getIdFirstAtom() + group.bondAtomList[ boundIdx + 1 ] );
 						}
 					}
 				}
 
 				// Add all atom's bonds.
-				p_molecule.addBonds( p_data.bondAtomList );
+				uint bondCount = uint( p_data.bondAtomList.size() ) / 2u;
+				for ( uint boundIdx = 0; boundIdx < bondCount * 2; boundIdx += 2, ++bondGlobalIdx )
+				{
+					p_molecule.addBond();
+					Model::Bond & bond = p_molecule.getBond( bondGlobalIdx );
+
+					bond.setIndexFirstAtom( p_data.bondAtomList[ boundIdx ] );
+					bond.setIndexSecondAtom( p_data.bondAtomList[ boundIdx + 1 ] );
+				}
 
 #ifdef _DEBUG
-				p_molecule.bondCount += (uint)p_data.bondAtomList.size();
+				p_molecule.bondCount += (uint)p_data.bondAtomList.size() / 2u;
 #endif
 
 #ifdef _DEBUG
@@ -188,37 +193,12 @@ namespace VTX
 					VTX_ERROR( "Atom count error: " + std::to_string( p_molecule.getAtomCount() ) + " / "
 							   + std::to_string( p_molecule.atomCount ) + " / " + std::to_string( p_data.numAtoms ) );
 				}
-				if ( p_molecule.getBondCount() != p_molecule.bondCount
-					 || p_molecule.getBondCount() != p_data.numBonds * 2 )
+				if ( p_molecule.getBondCount() != p_molecule.bondCount || p_molecule.getBondCount() != p_data.numBonds )
 				{
 					VTX_ERROR( "Bond count error: " + std::to_string( p_molecule.getBondCount() ) + " / "
-							   + std::to_string( p_molecule.bondCount ) + " / "
-							   + std::to_string( p_data.numBonds * 2 ) );
+							   + std::to_string( p_molecule.bondCount ) + " / " + std::to_string( p_data.numBonds ) );
 				}
 #endif
-
-				// Display unknown symbols.
-				const std::unordered_set<std::string> & unknownResidueSymbols = p_molecule.getUnknownResidueSymbols();
-				if ( unknownResidueSymbols.empty() == false )
-				{
-					std::string unknownResidueSymbolsStr = "";
-					for ( std::string symbol : unknownResidueSymbols )
-					{
-						unknownResidueSymbolsStr += symbol + " ";
-					}
-					VTX_WARNING( "Unknown residue symbols : " + unknownResidueSymbolsStr );
-				}
-
-				const std::unordered_set<std::string> & unknownAtomSymbols = p_molecule.getUnknownAtomSymbols();
-				if ( unknownAtomSymbols.empty() == false )
-				{
-					std::string unknownAtomSymbolsStr = "";
-					for ( std::string symbol : unknownAtomSymbols )
-					{
-						unknownAtomSymbolsStr += symbol + " ";
-					}
-					VTX_WARNING( "Unknown atom symbols : " + unknownAtomSymbolsStr );
-				}
 
 				VTX_INFO( "Models created" );
 

@@ -1,8 +1,8 @@
 #include "molecule_structure.hpp"
 #include "action/action_manager.hpp"
 #include "action/molecule_delete.hpp"
-#include "action/select.hpp"
-#include "action/unselect.hpp"
+#include "action/selectable_select.hpp"
+#include "action/selectable_unselect.hpp"
 #include "setting.hpp"
 
 namespace VTX
@@ -15,22 +15,22 @@ namespace VTX
 			{
 				ImGui::PushID( ( "ViewMoleculeStructure" + std::to_string( _getModel().getId() ) ).c_str() );
 				bool moleculeOpened = ImGui::TreeNodeEx(
-					_getModel().getName().c_str(),
+					(_getModel().getFileName() + " " + _getModel().getName()).c_str(),
 					_getModel().isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 				if ( ImGui::BeginPopupContextItem() )
 				{
 					if ( ImGui::MenuItem( LOCALE( "View.Delete" ) ) )
-					{ VTXApp::get().getActionManager().execute( new Action::MoleculeDelete( _getModel() ) ); }
+					{ VTX_ACTION( new Action::MoleculeDelete( _getModel() ) ); }
 					ImGui::EndPopup();
 				}
 				if ( ImGui::IsItemClicked() )
 				{
 					if ( moleculeOpened )
-					{ VTXApp::get().getActionManager().execute( new Action::Unselect( _getModel() ) ); }
+					{ VTX_ACTION( new Action::SelectableUnselect( _getModel() ) ); }
 
 					else
 					{
-						VTXApp::get().getActionManager().execute( new Action::Select( _getModel() ) );
+						VTX_ACTION( new Action::SelectableSelect( _getModel() ) );
 					}
 				}
 				if ( moleculeOpened )
@@ -44,11 +44,11 @@ namespace VTX
 						if ( ImGui::IsItemClicked() )
 						{
 							if ( chainOpened )
-							{ VTXApp::get().getActionManager().execute( new Action::Unselect( *chain ) ); }
+							{ VTX_ACTION( new Action::SelectableUnselect( *chain ) ); }
 
 							else
 							{
-								VTXApp::get().getActionManager().execute( new Action::Select( *chain ) );
+								VTX_ACTION( new Action::SelectableSelect( *chain ) );
 							}
 						}
 						if ( chainOpened )
@@ -59,16 +59,20 @@ namespace VTX
 								ImGui::PushID( residue.getId() );
 								bool residueOpened = ImGui::TreeNodeEx(
 									VTX::Setting::UI::symbolDisplayMode == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
-										? ( residue.getSymbolShort() + " " + std::to_string( residue.getId() ) ).c_str()
+										? ( residue.getSymbolShort() + " " + std::to_string( residue.getIndex() ) ).c_str()
 										: residue.getSymbolName().c_str(),
 									residue.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 								if ( ImGui::IsItemClicked() )
 								{
 									if ( residueOpened )
-									{ VTXApp::get().getActionManager().execute( new Action::Unselect( residue ) ); }
+									{
+										VTX_ACTION(
+											new Action::SelectableUnselect( residue ) );
+									}
 									else
 									{
-										VTXApp::get().getActionManager().execute( new Action::Select( residue ) );
+										VTX_ACTION(
+											new Action::SelectableSelect( residue ) );
 									}
 								}
 								if ( residueOpened )
@@ -80,19 +84,20 @@ namespace VTX
 										if ( ImGui::Selectable(
 												 VTX::Setting::UI::symbolDisplayMode
 														 == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
-													 ? ( atom.getSymbolStr() + " " + std::to_string( atom.getId() ) )
+													 ? ( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) )
 														   .c_str()
 													 : atom.getSymbolName().c_str(),
 												 atom.isSelected() ) )
 										{
 											if ( atom.isSelected() )
 											{
-												VTXApp::get().getActionManager().execute(
-													new Action::Unselect( atom ) );
+												VTX_ACTION(
+													new Action::SelectableUnselect( atom ) );
 											}
 											else
 											{
-												VTXApp::get().getActionManager().execute( new Action::Select( atom ) );
+												VTX_ACTION(
+													new Action::SelectableSelect( atom ) );
 											}
 										}
 										ImGui::PopID();

@@ -19,7 +19,8 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				Setting::Rendering::aoRadius = glm::clamp( _radius, RENDERER_AO_RADIUS_MIN, RENDERER_AO_RADIUS_MAX );
+				Setting::Rendering::aoRadius
+					= Util::Math::clamp( _radius, RENDERER_AO_RADIUS_MIN, RENDERER_AO_RADIUS_MAX );
 			};
 
 		  private:

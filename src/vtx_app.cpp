@@ -1,4 +1,5 @@
 #include "vtx_app.hpp"
+#include "action/open.hpp"
 #include "id.hpp"
 #include "io/path.hpp"
 #include "model/molecule.hpp"
@@ -46,20 +47,19 @@ namespace VTX
 		_ui->draw(); // Draw the first frame to update screen size.
 		ImGuiIO & io = ImGui::GetIO();
 
-		_stateMachine = Generic::create<State::StateMachine>();
-
 		_scene = new Object3D::Scene();
 		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 		_renderer = new Renderer::GL();
 		_renderer->init( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
+		_stateMachine = Generic::create<State::StateMachine>();
+		_stateMachine->goToState( ID::State::VISUALIZATION );
+
 		VTXApp::_isRunning = true;
 
 		VTX_INFO( "Application started" );
-
 		_ui->print();
-		_ui->draw();
 
 #ifdef _DEBUG
 		//_stateMachine->goToState( ID::State::VISUALIZATION );
@@ -128,27 +128,22 @@ namespace VTX
 
 	void VTXApp::_update()
 	{
-		// Set size.
-		ImGuiIO & io = ImGui::GetIO();
-
-		// Event manager.
-		_eventManager->update( io.DeltaTime );
-
-		// Action manager.
-		_actionManager->update( io.DeltaTime );
-
-		// Worker manager.
-		_workerManager->update( io.DeltaTime );
+		float deltaTIme = ImGui::GetIO().DeltaTime;
 
 		// State machine.
-		_stateMachine->update( io.DeltaTime );
+		_stateMachine->update( deltaTIme );
+
+		// Event manager.
+		_eventManager->update( deltaTIme );
+
+		// Action manager.
+		_actionManager->update( deltaTIme );
+
+		// Worker manager.
+		_workerManager->update( deltaTIme );
 
 		// UI.
 		_ui->draw();
-
-		// Timers.
-		_timeDelta = io.DeltaTime;
-		_timeTotal += _timeDelta;
 	}
 
 } // namespace VTX

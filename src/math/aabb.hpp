@@ -6,6 +6,7 @@
 #endif
 
 #include "define.hpp"
+#include "util/math.hpp"
 
 namespace VTX
 {

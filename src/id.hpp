@@ -41,7 +41,6 @@ namespace VTX
 
 		namespace State
 		{
-			const VTX_ID LOAD		   = "LOAD";
 			const VTX_ID VISUALIZATION = "VISUALIZATION";
 			const VTX_ID PLAY		   = "PLAY";
 			const VTX_ID EXPORT		   = "EXPORT";

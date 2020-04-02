@@ -144,12 +144,21 @@ namespace VTX
 				COUNT
 			};
 
+			enum class ATOM_TYPE : int
+			{
+				NORMAL,
+				Solvent,
+				ION
+			};
+
 			// Static const mapping.
 			static const std::string SYMBOL_STR[ (int)ATOM_SYMBOL::COUNT ];
 			static const std::string SYMBOL_NAME[ (int)ATOM_SYMBOL::COUNT ];
 			static const float		 SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ];
 			static float *			 SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ];
 
+			inline uint				getIndex() const { return _index; };
+			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
 			inline Chain * const	getChainPtr() const { return _chainPtr; }
@@ -164,12 +173,17 @@ namespace VTX
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
 			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ (int)_symbol ]; }
 
+			inline ATOM_TYPE getType() const { return _type; }
+			inline void		 setType( const ATOM_TYPE p_type ) { _type = p_type; }
+
 			virtual void setSelected( const bool ) override;
 
 		  private:
+			uint	   _index		= 0;
 			Molecule * _moleculePtr = nullptr;
 			Chain *	   _chainPtr	= nullptr;
 			Residue *  _residuePtr	= nullptr;
+			ATOM_TYPE  _type		= ATOM_TYPE::NORMAL;
 
 			ATOM_SYMBOL _symbol = ATOM_SYMBOL::UNKNOWN;
 		};

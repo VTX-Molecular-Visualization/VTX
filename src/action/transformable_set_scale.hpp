@@ -1,5 +1,5 @@
-#ifndef __VTX_ACTION_SCALE__
-#define __VTX_ACTION_SCALE__
+#ifndef __VTX_ACTION_TRANSFORMABLE_SET_SCALE__
+#define __VTX_ACTION_TRANSFORMABLE_SET_SCALE__
 
 #ifdef _MSC_VER
 #pragma once
@@ -14,10 +14,10 @@ namespace VTX
 	namespace Action
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseTransformable, T>::value>>
-		class Scale : public BaseActionUndonable
+		class TransformableSetScale : public BaseActionUndonable
 		{
 		  public:
-			explicit Scale( T & p_transformable, const float p_scale ) :
+			explicit TransformableSetScale( T & p_transformable, const float p_scale ) :
 				_transformable( p_transformable ), _scale( p_scale ),
 				_scaleOld( p_transformable.getTransform().getScale() )
 			{

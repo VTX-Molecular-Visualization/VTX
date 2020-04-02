@@ -1,4 +1,4 @@
-#include "obj.hpp"
+#include "lib_assimp.hpp"
 #include "define.hpp"
 #include "exception.hpp"
 #include "util/color.hpp"
@@ -13,7 +13,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			bool OBJ::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			bool LibAssimp::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
 
@@ -49,10 +49,6 @@ namespace VTX
 					atomCount += mesh->mNumVertices;
 				}
 
-				p_molecule.addChains( chainCount );
-				p_molecule.addResidues( residueCount );
-				p_molecule.addAtoms( atomCount );
-
 				p_molecule.addAtomPositionFrame();
 				Model::Molecule::AtomPositionsFrame & frame = p_molecule.getAtomPositionFrame( 0 );
 
@@ -63,9 +59,10 @@ namespace VTX
 					const aiMaterial * const material = scene->mMaterials[ mesh->mMaterialIndex ];
 
 					// New chain.
+					p_molecule.addChain();
 					Model::Chain & chain = p_molecule.getChain( chainGlobalIdx );
 					chain.setMoleculePtr( &p_molecule );
-					chain.setId( chainGlobalIdx );
+					chain.setIndex( chainGlobalIdx );
 					chain.setName( mesh->mName.C_Str() );
 					chain.setIdFirstResidue( residueGlobalIdx );
 					chain.setResidueCount( mesh->mNumFaces );
@@ -77,15 +74,16 @@ namespace VTX
 						const aiFace face = mesh->mFaces[ residueIdx ];
 
 						// New residue.
+						p_molecule.addResidue();
 						Model::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
 						residue.setMoleculePtr( &p_molecule );
 						residue.setChainPtr( &chain );
-						residue.setId( residueGlobalIdx );
+						residue.setIndex( residueGlobalIdx );
 						residue.setSymbol( Model::Residue::RESIDUE_SYMBOL::UNKNOWN );
 						residue.setIdFirstAtom( atomGlobalIdx );
 						residue.setAtomCount( uint( mesh->mNumVertices ) );
-						residue.setIdFirstBond( bondGlobalIdx );
-						residue.setBondCount( uint( mesh->mNumFaces ) );
+						// residue.setIdFirstBond( bondGlobalIdx );
+						// residue.setBondCount( uint( mesh->mNumFaces ) );
 						residue.setColor( Util::Color::randomPastelColor() );
 
 						// Loop over vertices in the face.
@@ -95,11 +93,12 @@ namespace VTX
 							uint indice = face.mIndices[ atomIdx ];
 
 							// New atom.
+							p_molecule.addAtom();
 							Model::Atom & atom = p_molecule.getAtom( atomGlobalIdx );
 							atom.setMoleculePtr( &p_molecule );
 							atom.setChainPtr( &chain );
 							atom.setResiduePtr( &residue );
-							atom.setId( atomGlobalIdx );
+							atom.setIndex( atomGlobalIdx );
 							atom.setSymbol( Model::Atom::ATOM_SYMBOL::UNKNOWN );
 
 							aiColor4D diffuse;
@@ -110,18 +109,14 @@ namespace VTX
 							frame.emplace_back( Vec3f( vector.x, vector.y, vector.z ) );
 							const Vec3f & atomPosition = frame[ atomGlobalIdx ];
 							const float	  atomRadius   = atom.getVdwRadius();
-							p_molecule.addAtomRadius( atomRadius );
-
-							p_molecule.extendAABB( atomPosition, atomRadius );
 
 							// Bond.
-							p_molecule.addBond( atomGlobalIdx );
-							if ( atomIdx == face.mNumIndices - 1 )
-							{ p_molecule.addBond( ( atomGlobalIdx - face.mNumIndices + 1 ) ); }
-							else
-							{
-								p_molecule.addBond( ( atomGlobalIdx + 1 ) );
-							}
+							p_molecule.addBond();
+							Model::Bond & bond = p_molecule.getBond( atomGlobalIdx );
+							bond.setIndexFirstAtom( atomGlobalIdx );
+							bond.setIndexSecondAtom( ( atomIdx == face.mNumIndices - 1 )
+														 ? ( atomGlobalIdx - face.mNumIndices + 1 )
+														 : ( atomGlobalIdx + 1 ) );
 						}
 					}
 				}

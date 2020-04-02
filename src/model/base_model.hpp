@@ -23,12 +23,11 @@ namespace VTX
 			virtual ~BaseModel() = default;
 
 			long getId() const { return _id; }
-			void setId( const long p_id ) { _id = p_id; }
 
 		  protected:
 			virtual void _notifyViews( const Event::VTX_EVENT_MODEL p_event ) final
 			{
-				for ( PairStringToItemPtr pair : _getItems() )
+				for ( PairStringToItemPtr & pair : _getItems() )
 				{
 					pair.second->notify( p_event );
 				}

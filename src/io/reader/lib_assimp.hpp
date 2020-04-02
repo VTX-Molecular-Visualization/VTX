@@ -1,5 +1,5 @@
-#ifndef __VTX_READER_OBJ__
-#define __VTX_READER_OBJ__
+#ifndef __VTX_READER_LIB_ASSIMP__
+#define __VTX_READER_LIB_ASSIMP__
 
 #ifdef _MSC_VER
 #pragma once
@@ -14,7 +14,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			class OBJ : public BaseReader<Model::Molecule>
+			class LibAssimp : public BaseReader<Model::Molecule>
 			{
 			  public:
 				virtual bool readFile( const Path &, Model::Molecule & ) override;

@@ -1,7 +1,6 @@
 #include "path.hpp"
 #include "exception.hpp"
 #include "generic/factory.hpp"
-#include "util/math.hpp"
 #include "view/ui/path.hpp"
 #include "view/ui/path_list.hpp"
 #include <fstream>
@@ -37,19 +36,19 @@ namespace VTX
 			{
 				// Computes value.
 				Viewpoint * const p0	= _viewpoints[ offset - 1 ];
-				Viewpoint * const p1	= _viewpoints[ glm::min<int>( (int)size - 1, offset ) ];
+				Viewpoint * const p1	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset ) ];
 				float			  value = 1.f - ( ( total - p_time ) / p1->getDuration() );
 
 				// Lerp.
-				viewpoint.setPosition( Util::Math::lerp( p0->getPosition(), p1->getPosition(), value ) );
-				viewpoint.setRotation( Util::Math::lerp( p0->getRotation(), p1->getRotation(), value ) );
+				viewpoint.setPosition( Util::Math::linearInterpolation( p0->getPosition(), p1->getPosition(), value ) );
+				viewpoint.setRotation( Util::Math::linearInterpolation( p0->getRotation(), p1->getRotation(), value ) );
 			}
 			else if ( _modeInterpolation == INNTERPOLATION_MODE::CATMULL_ROM )
 			{
-				Viewpoint * const p0	= _viewpoints[ glm::max<int>( 0, (int)offset - 2 ) ];
+				Viewpoint * const p0	= _viewpoints[ Util::Math::max<int>( 0, (int)offset - 2 ) ];
 				Viewpoint * const p1	= _viewpoints[ offset - 1 ];
-				Viewpoint * const p2	= _viewpoints[ glm::min<int>( (int)size - 1, offset ) ];
-				Viewpoint * const p3	= _viewpoints[ glm::min<int>( (int)size - 1, offset + 1 ) ];
+				Viewpoint * const p2	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset ) ];
+				Viewpoint * const p3	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset + 1 ) ];
 				float			  value = 1.f - ( ( total - p_time ) / p2->getDuration() );
 
 				viewpoint.setPosition( Util::Math::catmullRomInterpolation(
@@ -59,10 +58,10 @@ namespace VTX
 			}
 			else if ( _modeInterpolation == INNTERPOLATION_MODE::CUBIC )
 			{
-				Viewpoint * const p0	= _viewpoints[ glm::max<int>( 0, (int)offset - 2 ) ];
+				Viewpoint * const p0	= _viewpoints[ Util::Math::max<int>( 0, (int)offset - 2 ) ];
 				Viewpoint * const p1	= _viewpoints[ offset - 1 ];
-				Viewpoint * const p2	= _viewpoints[ glm::min<int>( (int)size - 1, offset ) ];
-				Viewpoint * const p3	= _viewpoints[ glm::min<int>( (int)size - 1, offset + 1 ) ];
+				Viewpoint * const p2	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset ) ];
+				Viewpoint * const p3	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset + 1 ) ];
 				float			  value = 1.f - ( ( total - p_time ) / p2->getDuration() );
 
 				viewpoint.setPosition( Util::Math::cubicInterpolation(
@@ -106,11 +105,11 @@ namespace VTX
 			{
 				// Compute total distance.
 				float totalDistance = 0.f;
-				uint  size			= (uint)glm::max<int>( (int)_viewpoints.size() - 1, 0 );
+				uint  size			= (uint)Util::Math::max<int>( (int)_viewpoints.size() - 1, 0 );
 				for ( uint i = 0; i < size; ++i )
 				{
-					totalDistance
-						+= glm::distance( _viewpoints[ i ]->getPosition(), _viewpoints[ i + 1u ]->getPosition() );
+					totalDistance += Util::Math::distance( _viewpoints[ i ]->getPosition(),
+														   _viewpoints[ i + 1u ]->getPosition() );
 				}
 
 				// Compute viewpoint durations.
@@ -122,7 +121,8 @@ namespace VTX
 						viewpoint->setDuration( 0.f );
 						break;
 					}
-					float distance = glm::distance( _viewpoints[ i - 1u ]->getPosition(), viewpoint->getPosition() );
+					float distance
+						= Util::Math::distance( _viewpoints[ i - 1u ]->getPosition(), viewpoint->getPosition() );
 					viewpoint->setDuration( _duration * distance / totalDistance );
 				}
 			}

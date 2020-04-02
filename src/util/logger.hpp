@@ -32,6 +32,11 @@ namespace VTX
 			static void _log( const LEVEL, const std::string & );
 		};
 	} // namespace Util
+
+	inline void VTX_DEBUG( const std::string & p_str ) { VTX::Util::Logger::logDebug( p_str ); }
+	inline void VTX_INFO( const std::string & p_str ) { VTX::Util::Logger::logInfo( p_str ); }
+	inline void VTX_WARNING( const std::string & p_str ) { VTX::Util::Logger::logWarning( p_str ); }
+	inline void VTX_ERROR( const std::string & p_str ) { VTX::Util::Logger::logError( p_str ); }
 } // namespace VTX
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef __VTX_ACTION_UNSELECT__
-#define __VTX_ACTION_UNSELECT__
+#ifndef __VTX_ACTION_SELECTABLE_UNSELECT__
+#define __VTX_ACTION_SELECTABLE_UNSELECT__
 
 #ifdef _MSC_VER
 #pragma once
@@ -12,10 +12,10 @@ namespace VTX
 {
 	namespace Action
 	{
-		class Unselect : public BaseAction
+		class SelectableUnselect : public BaseAction
 		{
 		  public:
-			Unselect( Selection::BaseSelectable & p_selectable ) : _selectable( p_selectable ) {};
+			SelectableUnselect( Selection::BaseSelectable & p_selectable ) : _selectable( p_selectable ) {};
 			virtual void execute() override { VTXApp::get().getSelectionManager().unselect( &_selectable ); }
 
 		  private:

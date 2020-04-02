@@ -19,9 +19,8 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				Setting::Rendering::aoIntensity =
-
-					glm::clamp( _intensity, RENDERER_AO_INTENSITY_MIN, RENDERER_AO_INTENSITY_MAX );
+				Setting::Rendering::aoIntensity
+					= Util::Math::clamp( _intensity, RENDERER_AO_INTENSITY_MIN, RENDERER_AO_INTENSITY_MAX );
 			};
 
 		  private:

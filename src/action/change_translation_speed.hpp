@@ -20,7 +20,7 @@ namespace VTX
 			virtual void execute() override
 			{
 				Setting::Controller::translationSpeed
-					= glm::clamp( _speed, CONTROLLER_TRANSLATION_SPEED_MIN, CONTROLLER_TRANSLATION_SPEED_MAX );
+					= Util::Math::clamp( _speed, CONTROLLER_TRANSLATION_SPEED_MIN, CONTROLLER_TRANSLATION_SPEED_MAX );
 			};
 
 		  private:

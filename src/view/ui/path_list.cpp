@@ -1,6 +1,6 @@
 #include "path_list.hpp"
-#include "action/select.hpp"
-#include "action/unselect.hpp"
+#include "action/selectable_select.hpp"
+#include "action/selectable_unselect.hpp"
 #include "action/viewpoint_goto.hpp"
 #include "setting.hpp"
 #include <string>
@@ -19,11 +19,11 @@ namespace VTX
 				if ( ImGui::IsItemClicked() )
 				{
 					if ( pathOpened )
-					{ VTXApp::get().getActionManager().execute( new Action::Unselect( _getModel() ) ); }
+					{ VTX_ACTION( new Action::SelectableUnselect( _getModel() ) ); }
 
 					else
 					{
-						VTXApp::get().getActionManager().execute( new Action::Select( _getModel() ) );
+						VTX_ACTION( new Action::SelectableSelect( _getModel() ) );
 					}
 				}
 				if ( pathOpened )
@@ -33,18 +33,22 @@ namespace VTX
 					{
 						ImGui::PushID( viewpoint->getId() );
 						if ( ImGui::Selectable( ( std::to_string( ++i ) + std::string( " - " )
-												  + glm::to_string( viewpoint->getPosition() ) + std::string( " - " )
-												  + std::to_string( viewpoint->getDuration() ) + std::string( "s" ) )
+												  + Util::Math::to_string( viewpoint->getPosition() )
+												  + std::string( " - " ) + std::to_string( viewpoint->getDuration() )
+												  + std::string( "s" ) )
 													.c_str() ) )
 						{
-							VTXApp::get().getActionManager().execute(
+							VTX_ACTION(
 								new Action::ViewpointGoTo( *viewpoint, VTXApp::get().getScene().getCamera() ) );
 
 							if ( viewpoint->isSelected() )
-							{ VTXApp::get().getActionManager().execute( new Action::Unselect( *viewpoint ) ); }
+							{
+								VTX_ACTION(
+									new Action::SelectableUnselect( *viewpoint ) );
+							}
 							else
 							{
-								VTXApp::get().getActionManager().execute( new Action::Select( *viewpoint ) );
+								VTX_ACTION( new Action::SelectableSelect( *viewpoint ) );
 							}
 						}
 						ImGui::PopID();

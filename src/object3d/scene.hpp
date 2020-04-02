@@ -19,34 +19,32 @@ namespace VTX
 		class Scene : public Generic::BaseUpdatable, public Generic::BaseCleanable
 		{
 		  public:
-			using MoleculePtr		= Model::Molecule *;
-			using PathPtr			= Model::Path *;
-			using VectorMoleculePtr = std::vector<MoleculePtr>;
-			using VectorPathPtr		= std::vector<PathPtr>;
+			using MoleculePtr		   = Model::Molecule *;
+			using PathPtr			   = Model::Path *;
+			using MapMoleculePtrFloat  = std::map<MoleculePtr, float>;
+			using PairMoleculePtrFloat = std::pair<const MoleculePtr, float>;
+			using VectorPathPtr		   = std::vector<PathPtr>;
 
 			Scene();
 
 			virtual void clean() override;
 
-			void addMolecule( MoleculePtr const p_molecule ) { _molecules.emplace_back( p_molecule ); }
-			void removeMolecule( MoleculePtr const p_molecule )
-			{
-				_molecules.erase( std::find( _molecules.begin(), _molecules.end(), p_molecule ) );
-			}
+			void addMolecule( MoleculePtr const p_molecule ) { _molecules.emplace( p_molecule, 0.f ); }
+			void removeMolecule( MoleculePtr const p_molecule ) { _molecules.erase( p_molecule ); }
 			void addPath( PathPtr const p_path ) { _paths.emplace_back( p_path ); }
 
-			inline Camera &					 getCamera() { return _camera; }
-			inline const Camera &			 getCamera() const { return _camera; }
-			inline VectorMoleculePtr &		 getMolecules() { return _molecules; };
-			inline const VectorMoleculePtr & getMolecules() const { return _molecules; };
-			inline const VectorPathPtr &	 getPaths() const { return _paths; };
+			inline Camera &					   getCamera() { return _camera; }
+			inline const Camera &			   getCamera() const { return _camera; }
+			inline MapMoleculePtrFloat &	   getMolecules() { return _molecules; };
+			inline const MapMoleculePtrFloat & getMolecules() const { return _molecules; };
+			inline const VectorPathPtr &	   getPaths() const { return _paths; };
 
 			virtual void update( const double ) override;
 
 		  private:
-			Camera			  _camera	 = Camera();
-			VectorMoleculePtr _molecules = VectorMoleculePtr();
-			VectorPathPtr	  _paths	 = VectorPathPtr();
+			Camera				_camera	   = Camera();
+			MapMoleculePtrFloat _molecules = MapMoleculePtrFloat();
+			VectorPathPtr		_paths	   = VectorPathPtr();
 		};
 	} // namespace Object3D
 } // namespace VTX
