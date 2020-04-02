@@ -1,5 +1,6 @@
 #include "optix_ray_tracer.hpp"
 #include "tool/chrono.hpp"
+#include "util/color.hpp"
 #include "util/sampler.hpp"
 #include "vtx_app.hpp"
 #include <atomic>
@@ -21,6 +22,7 @@ namespace VTX
 		VTX::Renderer::OptixRayTracer::~OptixRayTracer()
 		{
 			_spheresDevBuffer.free();
+			_cylindersDevBuffer.free();
 			_gasOutputBuffer.free();
 
 			_rayGeneratorRecordsBuffer.free();
@@ -55,6 +57,7 @@ namespace VTX
 			resize( p_width, p_height );
 
 			_spheresDevBuffer.free();
+			_cylindersDevBuffer.free();
 			_gasOutputBuffer.free();
 
 			_rayGeneratorRecordsBuffer.free();
@@ -64,9 +67,13 @@ namespace VTX
 			// init scene on host and device !!!
 			const Model::Molecule & mol		= *( VTXApp::get().getScene().getMolecules()[ 0 ] );
 			const uint				nbAtoms = mol.getAtomCount();
-			std::cout << "nbAtoms " << nbAtoms << std::endl;
-			std::cout << "size " << nbAtoms * sizeof( Optix::Sphere ) << std::endl;
+			const uint				nbBonds = mol.getBondCount() / 2;
+			std::cout << "nbAtoms " << nbAtoms << "(size on GPU: " << nbAtoms * sizeof( Optix::Sphere ) << ")"
+					  << std::endl;
+			std::cout << "nbBonds " << nbBonds << "(size on GPU: " << nbBonds * sizeof( Optix::Cylinder ) << ")"
+					  << std::endl;
 			_spheres.resize( nbAtoms );
+			_cylinders.resize( nbBonds );
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
 				const Vec3f & p		  = mol.getAtomPositionFrame( 0 )[ i ];
@@ -77,8 +84,24 @@ namespace VTX
 				_spheres[ i ]._color  = make_float3( c.x, c.y, c.z );
 			}
 
-			_spheresDevBuffer.malloc( _spheres.size() * sizeof( Optix::Sphere ) );
-			_spheresDevBuffer.memcpyHostToDevice( _spheres.data(), _spheres.size() );
+			for ( uint i = 0; i < nbBonds; i++ )
+			{
+				const uint	  i0	   = 2 * i;
+				const uint	  i1	   = i0 + 1;
+				const uint	  b0	   = mol.getBond( i0 );
+				const uint	  b1	   = mol.getBond( i1 );
+				const Vec3f & p0	   = mol.getAtomPositionFrame( 0 )[ b0 ];
+				const Vec3f & p1	   = mol.getAtomPositionFrame( 0 )[ b1 ];
+				_cylinders[ i ]._v0	   = make_float3( p0.x, p0.y, p0.z );
+				_cylinders[ i ]._v1	   = make_float3( p1.x, p1.y, p1.z );
+				const Vec3f c		   = Util::Color::randomPastelColor();
+				_cylinders[ i ]._color = make_float3( c.x, c.y, c.z );
+			}
+
+			/*_spheresDevBuffer.malloc( _spheres.size() * sizeof( Optix::Sphere ) );
+			_spheresDevBuffer.memcpyHostToDevice( _spheres.data(), _spheres.size() );*/
+			_cylindersDevBuffer.malloc( _cylinders.size() * sizeof( Optix::Cylinder ) );
+			_cylindersDevBuffer.memcpyHostToDevice( _cylinders.data(), _cylinders.size() );
 
 			try
 			{
@@ -136,7 +159,7 @@ namespace VTX
 
 			CUDA_HANDLE_ERROR( cudaEventRecord( start, 0 ) );
 
-			nvtxRangePushA( "OptiX" );
+			nvtxRangePushA( "OptiX" ); // for profiling, when knowing how it works :-p
 			OPTIX_HANDLE_ERROR( optixLaunch( _optixPipeline,
 											 _cudaStream,
 											 _launchParametersBuffer.getDevicePtr(),
@@ -400,8 +423,9 @@ namespace VTX
 			programDescription.hitgroup.moduleAH			= nullptr; //_optixModule;
 			programDescription.hitgroup.entryFunctionNameAH = nullptr; //"__anyhit__";
 			// intersection
-			programDescription.hitgroup.moduleIS			= _optixModule;
-			programDescription.hitgroup.entryFunctionNameIS = "__intersection__sphere";
+			programDescription.hitgroup.moduleIS = _optixModule;
+			// programDescription.hitgroup.entryFunctionNameIS = "__intersection__sphere";
+			programDescription.hitgroup.entryFunctionNameIS = "__intersection__cylinder";
 
 			char   log[ 2048 ];
 			size_t sizeof_log = sizeof( log );
@@ -419,13 +443,16 @@ namespace VTX
 		{
 			// create AABB buffer from sphere
 			std::vector<OptixAabb> aabbs;
-			// aabbs.resize( _sphereCenters.size() );
-			aabbs.resize( _spheres.size() );
+			/*aabbs.resize( _spheres.size() );
 			for ( uint i = 0; i < uint( _spheres.size() ); ++i )
 			{
-				const float3 & c = _spheres[ i ]._center;
-				const float	   r = _spheres[ i ]._radius;
-				aabbs[ i ]		 = { c.x - r, c.y - r, c.z - r, c.x + r, c.y + r, c.z + r };
+				aabbs[ i ] = _spheres[ i ].aabb();
+			}*/
+
+			aabbs.resize( _cylinders.size() );
+			for ( uint i = 0; i < uint( _cylinders.size() ); ++i )
+			{
+				aabbs[ i ] = _cylinders[ i ].aabb();
 			}
 			CudaBuffer aabbsBuffer;
 			aabbsBuffer.malloc( aabbs.size() * sizeof( OptixAabb ) );
@@ -564,6 +591,7 @@ namespace VTX
 				{
 					Optix::RayGeneratorRecord r;
 
+					// 6vsb
 					Vec3f camPos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
 					Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
 					Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
@@ -579,20 +607,6 @@ namespace VTX
 					r._data._camera._front	  = make_float3( camFront.x, camFront.y, camFront.z );
 					r._data._camera._du		  = make_float3( u.x, u.y, u.z );
 					r._data._camera._dv		  = make_float3( v.x, v.y, v.z );
-
-					// Vec3f		front( 0.f, 0.f, 1.f );
-					// Vec3f		up( 0.f, 1.f, 0.f );
-					// float		fov		   = 60.f;
-					// float		ratio	   = float( _width ) / _height;
-					// const float halfHeight = tan( glm::radians( fov ) * 0.5f );
-					// const float halfWidth  = ratio * halfHeight;
-					// Vec3f		u		   = Util::Math::normalize( Util::Math::cross( front, up ) ) * halfWidth;
-					// Vec3f		v		   = Util::Math::normalize( Util::Math::cross( u, front ) ) * halfHeight;
-
-					/*r._data._camera._position = make_float3( 0.f, 0.f, 5.f );
-					r._data._camera._front	  = make_float3( 0.f, 0.f, -1.f );
-					r._data._camera._du		  = make_float3( u.x, u.y, u.z );
-					r._data._camera._dv		  = make_float3( v.x, v.y, v.z );*/
 
 					OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( g, &r ) );
 					rayGeneratorRecords.emplace_back( r );
@@ -633,10 +647,8 @@ namespace VTX
 					int objectType = 0;
 
 					Optix::HitGroupRecord r;
-					/*r._data._positions = (float3 *)( _sphereCentersDevBuffer.getDevicePtr() );
-					r._data._radii	   = (float *)( _sphereRadiiDevBuffer.getDevicePtr() );
-					r._data._colors	   = (float3 *)( _sphereColorsDevBuffer.getDevicePtr() );*/
-					r._data._spheres = (Optix::Sphere *)( _spheresDevBuffer.getDevicePtr() );
+					/*r._data._spheres = (Optix::Sphere *)( _spheresDevBuffer.getDevicePtr() );*/
+					r._data._cylinders = (Optix::Cylinder *)( _cylindersDevBuffer.getDevicePtr() );
 					OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _hitGroupPrograms[ objectType ], &r ) );
 					hitGroupRecords.push_back( r );
 				}

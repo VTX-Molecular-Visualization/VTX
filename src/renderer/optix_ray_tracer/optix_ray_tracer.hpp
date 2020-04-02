@@ -46,8 +46,10 @@ namespace VTX
 			const Vec3f _backgroundColor = Vec3f( 0.5f, 0.5f, 0.5f );
 
 			// model
-			std::vector<Optix::Sphere> _spheres;
-			CudaBuffer				   _spheresDevBuffer;
+			std::vector<Optix::Sphere>	 _spheres;
+			CudaBuffer					 _spheresDevBuffer;
+			std::vector<Optix::Cylinder> _cylinders;
+			CudaBuffer					 _cylindersDevBuffer;
 
 			CudaBuffer _gasOutputBuffer;
 			// CUDA data

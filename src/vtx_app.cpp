@@ -54,7 +54,7 @@ namespace VTX
 		_renderer = new Renderer::GL();
 		_renderer->init( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
-		VTXApp::_isRunning = false;
+		VTXApp::_isRunning = true;
 
 		VTX_INFO( "Application started" );
 
@@ -63,7 +63,9 @@ namespace VTX
 
 #ifdef _DEBUG
 		//_stateMachine->goToState( ID::State::VISUALIZATION );
-		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "173D.mmtf" ) );
+		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "173D.mmtf" ) );
+		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6vsb.mmtf" ) );
+		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6vsb.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "4v6x.mmtf" ) );
 		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6LU7.mmtf" ) );
 		//->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6LU7.mmtf" ) );
@@ -78,6 +80,10 @@ namespace VTX
 		//_stateMachine->goToState( ID::State::VISUALIZATION );
 #endif
 
+#define RT_ENABLED
+#ifdef RT_ENABLED
+		VTXApp::_isRunning = false;
+
 #define OPTIX_DEFINED
 #ifdef OPTIX_DEFINED
 		Renderer::OptixRayTracer * ort = new Renderer::OptixRayTracer();
@@ -89,6 +95,7 @@ namespace VTX
 		rt->init( int( io.DisplaySize.x ), int( io.DisplaySize.y ) );
 		rt->renderFrame( *_scene );
 		delete rt;
+#endif
 #endif
 
 		while ( VTXApp::_isRunning )
