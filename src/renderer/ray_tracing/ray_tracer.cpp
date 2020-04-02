@@ -90,7 +90,7 @@ namespace VTX
 
 			resize( p_width, p_height );
 
-			_scene.addObject( new MoleculeBallAndStick( VTXApp::get().getScene().getMolecules()[ 0 ] ) );
+			_scene.addObject( new MoleculeBallAndStick( VTXApp::get().getScene().getMolecules().begin()->first ) );
 
 			//_scene.addObject( new Sphere( VEC3F_ZERO, 10.f, new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) ) );
 

@@ -70,6 +70,9 @@ namespace VTX
 			inline std::vector<Bond *> &		  getBonds() { return _bonds; }
 			inline const std::vector<Bond *> &	  getBonds() const { return _bonds; }
 
+			inline const float	 getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
+			inline const Vec3f & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
+
 			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
 			{
 				return _unknownResidueSymbol;
@@ -105,40 +108,18 @@ namespace VTX
 			{
 				return _atomPositionsFrames;
 			};
-<<<<<<< HEAD
-			inline void		   addAtomRadius( const float p_radius ) { _atomRadius.emplace_back( p_radius ); }
-			inline const float getAtomRadius( const uint p_idx ) const { return _atomRadius[ p_idx ]; }
-			inline const std::vector<float> & getAtomRadius() const { return _atomRadius; };
-			inline void			 addAtomColor( const Vec3f p_color ) { _atomColors.emplace_back( p_color ); }
-			inline const Vec3f & getAtomColor( const uint p_idx ) const { return _atomColors[ p_idx ]; }
-			inline const std::vector<Vec3f> & getAtomColors() const { return _atomColors; };
-			inline void						  addBond( const uint p_bond ) { _bonds.emplace_back( p_bond ); }
-			inline void						  addBonds( const std::vector<int> & p_bonds )
-			{
-				_bonds.insert( _bonds.end(), p_bonds.begin(), p_bonds.end() );
-			}
-			inline const uint				 getBond( const uint p_idx ) const { return _bonds[ p_idx ]; }
-			inline const std::vector<uint> & getBonds() const { return _bonds; };
-			inline const uint				 getChainCount() const { return (uint)_chains.size(); }
-			inline const uint				 getResidueCount() const { return (uint)_residues.size(); }
-			inline const uint				 getAtomCount() const { return (uint)_atoms.size(); }
-			inline const uint				 getBondCount() const { return (uint)_bonds.size(); }
-
-			inline void addChains( const uint s )
-			{
-				for ( uint i = 0; i < s; ++i )
-				{
-					addChain();
-				}
-			}
-			inline void addResidues( const uint s )
-=======
 			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; };
 
 			inline const uint getChainCount() const { return (uint)_chains.size(); }
 			inline const uint getResidueCount() const { return (uint)_residues.size(); }
 			inline const uint getAtomCount() const { return (uint)_atoms.size(); }
 			inline const uint getBondCount() const { return (uint)_bonds.size(); }
+
+			inline const Math::AABB & getAABB() const { return _aabb; }
+			inline void				  extendAABB( const Vec3f & p_position, const float p_radius )
+			{
+				_aabb.extend( p_position, p_radius );
+			}
 
 			virtual void	  init() override;
 			void			  setRepresentation();
@@ -152,7 +133,6 @@ namespace VTX
 			inline void		  setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
 			inline bool		  showSolvent() const { return _showSolvent; }
 			inline void		  setShowSolvent( const bool p_showSolvent )
->>>>>>> origin/dev
 			{
 				_showSolvent = p_showSolvent;
 				_fillBufferAtomVisibilities();
@@ -163,21 +143,9 @@ namespace VTX
 				_showIon = p_showIon;
 				_fillBufferAtomVisibilities();
 			}
-<<<<<<< HEAD
 
-			inline const Math::AABB & getAABB() const { return _aabb; }
-			inline void				  extendAABB( const Vec3f & p_position, const float p_radius )
-			{
-				_aabb.extend( p_position, p_radius );
-			}
-
-			virtual void init() override;
-			void		 setRepresentation();
-			void		 setColorMode();
-=======
 			inline bool hasTopology() const { return getResidueCount() > 1; }
 			inline bool hasDynamic() const { return getFrameCount() > 1; }
->>>>>>> origin/dev
 
 			virtual void print() const override;
 
@@ -212,6 +180,8 @@ namespace VTX
 			std::vector<Vec3f> _bufferAtomColors	   = std::vector<Vec3f>();
 			std::vector<uint>  _bufferAtomVisibilities = std::vector<uint>();
 			std::vector<uint>  _bufferBonds			   = std::vector<uint>();
+
+			Math::AABB _aabb;
 
 			// OpenGL buffers.
 			enum ATTRIBUTE_LOCATION

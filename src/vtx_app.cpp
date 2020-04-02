@@ -62,29 +62,29 @@ namespace VTX
 		_ui->print();
 
 #ifdef _DEBUG
-		//_stateMachine->goToState( ID::State::VISUALIZATION );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "173D.mmtf" ) );
-		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6vsb.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6vsb.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "4v6x.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6LU7.mmtf" ) );
-		//->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6LU7.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOADING, &IO::Path( DATA_DIR + "r2d2.obj" ) );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "dhfr2.arc" ) );
+		// IO::Path path = DATA_DIR + "6vsb.mmtf";
+		VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "6vsb.mmtf" ) ) );
+		// VTX_ACTION( new Action::Open( DATA_DIR + "4v6x.mmtf" ) );
+		// VTX_ACTION( new Action::Open(DATA_DIR + "6LU7.mmtf" ) );
+		// VTX_ACTION( new Action::Open(DATA_DIR + "6LU7.mmtf" ) );
+		// VTX_ACTION( new Action::Open(DATA_DIR + "3j3q.mmtf" ) );
+		// VTX_ACTION( new Action::Open(DATA_DIR + "r2d2.obj" ) );
+		// VTX_ACTION( new Action::Open( DATA_DIR + "dhfr2.arc" ) );
+		// VTX_ACTION( new Action::Open( DATA_DIR + "6lzg.pdb" ) );
 #else
-		_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6vsb.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "6m17.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "173D.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "3j3q.mmtf" ) );
-		//_stateMachine->goToState( ID::State::LOAD, &IO::Path( DATA_DIR + "4v6x.mmtf" ) );
-		//_stateMachine->goToState( ID::State::VISUALIZATION );
+		IO::Path path = DATA_DIR + "6vsb.mmtf";
+		VTX_ACTION( new Action::Open( &path ) );
+		// VTX_ACTION( new Action::Open( DATA_DIR + "dhfr2.arc" ) );
 #endif
 
 #define RT_ENABLED
 #ifdef RT_ENABLED
 		VTXApp::_isRunning = false;
 
-#define OPTIX_DEFINED
+		_actionManager->update( 0.f );
+		_workerManager->update( 0.f );
+
+//#define OPTIX_DEFINED
 #ifdef OPTIX_DEFINED
 		Renderer::OptixRayTracer * ort = new Renderer::OptixRayTracer();
 		ort->init( int( io.DisplaySize.x ), int( io.DisplaySize.y ) );

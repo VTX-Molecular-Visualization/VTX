@@ -65,9 +65,10 @@ namespace VTX
 			_hitGroupRecordsBuffer.free();
 
 			// init scene on host and device !!!
-			const Model::Molecule & mol		= *( VTXApp::get().getScene().getMolecules()[ 0 ] );
-			const uint				nbAtoms = mol.getAtomCount();
-			const uint				nbBonds = mol.getBondCount() / 2;
+			const std::map<Model::Molecule *, float> & mols	   = VTXApp::get().getScene().getMolecules();
+			const Model::Molecule *					   mol	   = mols.begin()->first;
+			const uint								   nbAtoms = mol->getAtomCount();
+			const uint								   nbBonds = mol->getBondCount() / 2;
 			std::cout << "nbAtoms " << nbAtoms << "(size on GPU: " << nbAtoms * sizeof( Optix::Sphere ) << ")"
 					  << std::endl;
 			std::cout << "nbBonds " << nbBonds << "(size on GPU: " << nbBonds * sizeof( Optix::Cylinder ) << ")"
@@ -76,9 +77,9 @@ namespace VTX
 			_cylinders.resize( nbBonds );
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
-				const Vec3f & p		  = mol.getAtomPositionFrame( 0 )[ i ];
-				const float	  r		  = mol.getAtomRadius( i );
-				const Vec3f & c		  = mol.getAtomColor( i );
+				const Vec3f & p		  = mol->getAtomPositionFrame( 0 )[ i ];
+				const float	  r		  = mol->getAtomRadius( i );
+				const Vec3f & c		  = mol->getAtomColor( i );
 				_spheres[ i ]._center = make_float3( p.x, p.y, p.z );
 				_spheres[ i ]._radius = r;
 				_spheres[ i ]._color  = make_float3( c.x, c.y, c.z );
@@ -86,16 +87,13 @@ namespace VTX
 
 			for ( uint i = 0; i < nbBonds; i++ )
 			{
-				const uint	  i0	   = 2 * i;
-				const uint	  i1	   = i0 + 1;
-				const uint	  b0	   = mol.getBond( i0 );
-				const uint	  b1	   = mol.getBond( i1 );
-				const Vec3f & p0	   = mol.getAtomPositionFrame( 0 )[ b0 ];
-				const Vec3f & p1	   = mol.getAtomPositionFrame( 0 )[ b1 ];
-				_cylinders[ i ]._v0	   = make_float3( p0.x, p0.y, p0.z );
-				_cylinders[ i ]._v1	   = make_float3( p1.x, p1.y, p1.z );
-				const Vec3f c		   = Util::Color::randomPastelColor();
-				_cylinders[ i ]._color = make_float3( c.x, c.y, c.z );
+				const Model::Bond & bond = mol->getBond( i );
+				const Vec3f &		p0	 = mol->getAtomPositionFrame( 0 )[ bond.getIndexFirstAtom() ];
+				const Vec3f &		p1	 = mol->getAtomPositionFrame( 0 )[ bond.getIndexSecondAtom() ];
+				_cylinders[ i ]._v0		 = make_float3( p0.x, p0.y, p0.z );
+				_cylinders[ i ]._v1		 = make_float3( p1.x, p1.y, p1.z );
+				const Vec3f c			 = Util::Color::randomPastelColor();
+				_cylinders[ i ]._color	 = make_float3( c.x, c.y, c.z );
 			}
 
 			/*_spheresDevBuffer.malloc( _spheres.size() * sizeof( Optix::Sphere ) );

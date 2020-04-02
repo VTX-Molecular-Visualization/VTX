@@ -128,19 +128,6 @@ namespace VTX
 			}
 
 			template<typename T>
-			static inline auto length( const T & p_value )
-			{
-				return glm::length( p_value );
-			}
-
-<<<<<<< HEAD
-			template<typename T>
-			static inline T normalize( const T & p_value )
-			{
-				return glm::normalize( p_value );
-			}
-
-			template<typename T>
 			static inline T reflect( const T & p_v1, const T & p_v2 )
 			{
 				return glm::reflect( p_v1, p_v2 );
@@ -163,9 +150,6 @@ namespace VTX
 			static inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
 			static inline Quatd eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
-=======
-			static inline Quatd eulerToQuaternion( const Vec3f & p_angles ) { return Quatd( p_angles ); }
->>>>>>> origin/dev
 
 			static inline Quatd eulerToQuaternion( const double p_pitch, const double p_yaw, const double p_roll )
 			{
