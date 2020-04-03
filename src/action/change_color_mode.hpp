@@ -8,6 +8,7 @@
 #include "base_action.hpp"
 #include "model/molecule.hpp"
 #include "vtx_app.hpp"
+#include <magic_enum.hpp>
 
 namespace VTX
 {
@@ -16,7 +17,13 @@ namespace VTX
 		class ChangeColorMode : public BaseAction
 		{
 		  public:
+			explicit ChangeColorMode() {}
 			explicit ChangeColorMode( const View::MOLECULE_COLOR_MODE p_mode ) : _mode( p_mode ) {}
+
+			virtual void setParameters( std::vector<std::string> & p_parameters ) override
+			{
+				_mode = magic_enum::enum_cast<View::MOLECULE_COLOR_MODE>( p_parameters.at( 1 ) ).value();
+			}
 
 			virtual void execute() override
 			{
@@ -27,8 +34,10 @@ namespace VTX
 				}
 			};
 
+			virtual void displayUsage() override { VTX_INFO( "ATOM|RESIDUE|CHAIN|PROTEIN" ); }
+
 		  private:
-			const View::MOLECULE_COLOR_MODE _mode;
+			View::MOLECULE_COLOR_MODE _mode;
 		};
 	} // namespace Action
 } // namespace VTX

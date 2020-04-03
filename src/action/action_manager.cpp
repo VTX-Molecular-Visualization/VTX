@@ -1,5 +1,8 @@
 #include "action_manager.hpp"
+#include "change_auto_rotate_speed.hpp"
+#include "change_color_mode.hpp"
 #include "change_representation.hpp"
+#include "change_shading.hpp"
 #include "snapshot.hpp"
 #include <magic_enum.hpp>
 #include <sstream>
@@ -25,10 +28,23 @@ namespace VTX
 			std::string & command = words[ 0 ];
 			BaseAction *  action  = nullptr;
 
+			// TODO: map with ids.
 			if ( command == "snapshot" ) { action = new Snapshot(); }
 			else if ( command == "change_representation" )
 			{
 				action = new ChangeRepresentation();
+			}
+			else if ( command == "change_auto_rotate_speed" )
+			{
+				action = new ChangeAutoRotateSpeed();
+			}
+			else if ( command == "change_shading" )
+			{
+				action = new ChangeShading();
+			}
+			else if ( command == "change_color_mode" )
+			{
+				action = new ChangeColorMode();
 			}
 
 			if ( action != nullptr )

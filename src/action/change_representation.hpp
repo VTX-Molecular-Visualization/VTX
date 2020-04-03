@@ -18,7 +18,6 @@ namespace VTX
 		{
 		  public:
 			explicit ChangeRepresentation() {}
-
 			explicit ChangeRepresentation( const View::MOLECULE_REPRESENTATION p_representation ) :
 				_representation( p_representation )
 			{
@@ -26,7 +25,6 @@ namespace VTX
 
 			virtual void setParameters( std::vector<std::string> & p_parameters ) override
 			{
-				// std::string & representation = p_parameters.at( 1 );
 				_representation = magic_enum::enum_cast<View::MOLECULE_REPRESENTATION>( p_parameters.at( 1 ) ).value();
 			}
 
