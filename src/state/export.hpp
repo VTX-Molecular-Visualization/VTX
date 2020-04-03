@@ -23,9 +23,10 @@ namespace VTX
 			virtual void				update( const double ) override;
 
 		  private:
-			Model::Path * _path		  = nullptr;
-			uint		  _frame	  = 0u;
-			uint		  _frameCount = 0u;
+			Model::Path *					 _path		 = nullptr;
+			const std::vector<std::string> * _actions	 = nullptr;
+			uint							 _frame		 = 0u;
+			uint							 _frameCount = 0u;
 		};
 	} // namespace State
 } // namespace VTX

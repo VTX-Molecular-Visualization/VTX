@@ -27,6 +27,7 @@ namespace VTX
 		void Export::exit()
 		{
 			_path		= nullptr;
+			_actions	= nullptr;
 			_frame		= 0u;
 			_frameCount = 0u;
 		}
@@ -37,6 +38,16 @@ namespace VTX
 
 			float			 time	   = (float)_frame / VIDEO_FPS;
 			Model::Viewpoint viewpoint = _path->getInterpolatedViewpoint( time );
+
+			// Action.
+			if ( _actions != _path->getCurrentActions( time ) )
+			{
+				_actions = _path->getCurrentActions( time );
+				for ( const std::string & action : *_actions )
+				{
+					VTX_ACTION( action, true );
+				}
+			}
 
 			// Update renderer.
 			VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );

@@ -72,7 +72,7 @@ namespace VTX
 				_actions = _path->getCurrentActions( _time );
 				for ( const std::string & action : *_actions )
 				{
-					VTX_ACTION( action );
+					VTX_ACTION( action, true );
 				}
 			}
 		}

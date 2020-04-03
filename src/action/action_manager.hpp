@@ -23,8 +23,8 @@ namespace VTX
 			using ListActionUndonablePtr = std::list<BaseActionUndonable *>;
 			using QueueVTXActionPtr		 = std::queue<BaseAction *>;
 
-			void execute( BaseAction * const );
-			void execute( const std::string & );
+			void execute( BaseAction * const, const bool = false );
+			void execute( const std::string &, const bool = false );
 			bool canUndo() const;
 			void undo();
 			bool canRedo() const;
