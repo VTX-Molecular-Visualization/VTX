@@ -21,6 +21,11 @@ namespace VTX
 			virtual void				enter( void * const ) override;
 			virtual void				exit() override;
 			virtual void				update( const double ) override;
+
+		  private:
+			Model::Path * _path		  = nullptr;
+			uint		  _frame	  = 0u;
+			uint		  _frameCount = 0u;
 		};
 	} // namespace State
 } // namespace VTX

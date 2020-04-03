@@ -42,6 +42,8 @@ namespace VTX
 			float total	 = 0.f;
 			uint  offset = 0;
 
+			VTX_DEBUG( std::to_string( p_time ) );
+
 			// Find the next and previous points.
 			while ( total <= p_time && offset < size )
 			{
