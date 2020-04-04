@@ -2,6 +2,7 @@
 #include "action/viewpoint_add_action.hpp"
 #include "action/viewpoint_change_duration.hpp"
 #include "action/viewpoint_delete.hpp"
+#include "action/viewpoint_delete_action.hpp"
 #include "action/viewpoint_replace.hpp"
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
@@ -39,15 +40,23 @@ namespace VTX
 					{ VTX_ACTION( new Action::ViewpointDelete( _getModel() ) ); }
 
 					ImGui::Text( LOCALE( "View.Actions" ) );
-					for ( const std::string & action : _getModel().getActions() )
+
+					uint i = 0;
+					for ( std::vector<std::string>::const_iterator & action = _getModel().getActions().begin();
+						  action != _getModel().getActions().end();
+						  ++action )
 					{
-						ImGui::Text( action.c_str() );
+						ImGui::PushID( ( "ViewViewpointAction" + std::to_string( i ) ).c_str() );
+						ImGui::Text( ( *action ).c_str() );
+						if ( ImGui::Button( LOCALE( "View.Delete" ) ) )
+						{ VTX_ACTION( new Action::ViewpointDeleteAction( _getModel(), action ) ); }
+						i++;
+						ImGui::PopID();
 					}
-					static char action[ 255 ] = "";
 					ImGui::PushItemWidth( 255 );
 					if ( ImGui::InputText(
-							 "##Add", action, IM_ARRAYSIZE( action ), ImGuiInputTextFlags_EnterReturnsTrue ) )
-					{ VTX_ACTION( new Action::ViewpointAddAction( _getModel(), std::string( action ) ) ); }
+							 "##Add", _action, IM_ARRAYSIZE( _action ), ImGuiInputTextFlags_EnterReturnsTrue ) )
+					{ VTX_ACTION( new Action::ViewpointAddAction( _getModel(), std::string( _action ) ) ); }
 
 					ImGui::PopItemWidth();
 				}

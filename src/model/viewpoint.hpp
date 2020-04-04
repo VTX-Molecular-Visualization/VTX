@@ -43,6 +43,10 @@ namespace VTX
 
 			inline const std::vector<std::string> & getActions() const { return _actions; }
 			inline void addAction( const std::string & p_action ) { _actions.emplace_back( p_action ); }
+			inline void removeAction( const std::vector<std::string>::const_iterator & p_action )
+			{
+				_actions.erase( p_action );
+			}
 
 			virtual void setSelected( const bool ) override;
 

@@ -26,6 +26,7 @@ namespace VTX
 				virtual void _draw() override;
 
 			  private:
+				char _action[ 64 ] = "";
 			};
 		} // namespace UI
 	}	  // namespace View
