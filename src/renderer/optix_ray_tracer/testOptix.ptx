@@ -17,7 +17,7 @@
 
 )
 {
-	.reg .f32 	%f<21>;
+	.reg .f32 	%f<17>;
 	.reg .b32 	%r<9>;
 	.reg .b64 	%rd<9>;
 
@@ -59,21 +59,23 @@
 	fma.rn.ftz.f32 	%f9, %f6, %f3, %f8;
 	abs.ftz.f32 	%f10, %f9;
 	ld.u16 	%r8, [%rd6+14];
-	mul.wide.u32 	%rd7, %r8, 16;
+	mul.wide.u32 	%rd7, %r8, 12;
 	add.s64 	%rd8, %rd3, %rd7;
-	ld.global.v4.f32 	{%f11, %f12, %f13, %f14}, [%rd8];
-	mul.ftz.f32 	%f18, %f10, %f11;
-	mul.ftz.f32 	%f19, %f10, %f12;
-	mul.ftz.f32 	%f20, %f10, %f13;
-	mov.b32 	 %r5, %f18;
+	ld.global.f32 	%f11, [%rd8];
+	mul.ftz.f32 	%f12, %f10, %f11;
+	ld.global.f32 	%f13, [%rd8+4];
+	mul.ftz.f32 	%f14, %f10, %f13;
+	ld.global.f32 	%f15, [%rd8+8];
+	mul.ftz.f32 	%f16, %f10, %f15;
+	mov.b32 	 %r5, %f12;
 	// inline asm
 	call _optix_set_payload_0, (%r5);
 	// inline asm
-	mov.b32 	 %r6, %f19;
+	mov.b32 	 %r6, %f14;
 	// inline asm
 	call _optix_set_payload_1, (%r6);
 	// inline asm
-	mov.b32 	 %r7, %f20;
+	mov.b32 	 %r7, %f16;
 	// inline asm
 	call _optix_set_payload_2, (%r7);
 	// inline asm
@@ -86,8 +88,8 @@
 )
 {
 	.reg .f32 	%f<17>;
-	.reg .b32 	%r<8>;
-	.reg .b64 	%rd<5>;
+	.reg .b32 	%r<9>;
+	.reg .b64 	%rd<9>;
 
 
 	// inline asm
@@ -108,7 +110,11 @@
 	// inline asm
 	call (%r4), _optix_read_primitive_idx, ();
 	// inline asm
-	ld.u64 	%rd2, [%rd1+8];
+	ld.const.u64 	%rd2, [params+16];
+	cvta.to.global.u64 	%rd3, %rd2;
+	ld.u64 	%rd4, [%rd1+8];
+	mul.wide.s32 	%rd5, %r4, 32;
+	add.s64 	%rd6, %rd4, %rd5;
 	// inline asm
 	call (%f1), _optix_get_world_ray_direction_x, ();
 	// inline asm
@@ -122,13 +128,14 @@
 	fma.rn.ftz.f32 	%f8, %f4, %f1, %f7;
 	fma.rn.ftz.f32 	%f9, %f6, %f3, %f8;
 	abs.ftz.f32 	%f10, %f9;
-	mul.wide.s32 	%rd3, %r4, 64;
-	add.s64 	%rd4, %rd2, %rd3;
-	ld.f32 	%f11, [%rd4+28];
+	ld.u16 	%r8, [%rd6+28];
+	mul.wide.u32 	%rd7, %r8, 12;
+	add.s64 	%rd8, %rd3, %rd7;
+	ld.global.f32 	%f11, [%rd8];
 	mul.ftz.f32 	%f12, %f10, %f11;
-	ld.f32 	%f13, [%rd4+32];
+	ld.global.f32 	%f13, [%rd8+4];
 	mul.ftz.f32 	%f14, %f10, %f13;
-	ld.f32 	%f15, [%rd4+36];
+	ld.global.f32 	%f15, [%rd8+8];
 	mul.ftz.f32 	%f16, %f10, %f15;
 	mov.b32 	 %r5, %f12;
 	// inline asm
@@ -423,7 +430,7 @@ BB4_6:
 	// inline asm
 	call (%f32), _optix_get_ray_tmax, ();
 	// inline asm
-	mul.wide.s32 	%rd3, %r7, 64;
+	mul.wide.s32 	%rd3, %r7, 32;
 	add.s64 	%rd4, %rd2, %rd3;
 	ld.v4.f32 	{%f34, %f35, %f36, %f37}, [%rd4];
 	sub.ftz.f32 	%f6, %f25, %f34;

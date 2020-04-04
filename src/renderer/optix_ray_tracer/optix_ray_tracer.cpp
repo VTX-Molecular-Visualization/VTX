@@ -11,7 +11,7 @@
 #include <thread>
 #include <unordered_set>
 
-#define SPHERES
+// #define SPHERES
 
 namespace VTX
 {
@@ -78,7 +78,7 @@ namespace VTX
 			_spheres.resize( nbAtoms );
 			_cylinders.resize( nbBonds );
 			const std::vector<Vec3f> & atomPositions = mol->getAtomPositionFrame( 0 );
-			std::vector<float4>		   colors;
+			std::vector<float3>		   colors;
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
 				const Vec3f & p		  = atomPositions[ i ];
@@ -87,21 +87,22 @@ namespace VTX
 				_spheres[ i ]._center = make_float3( p.x, p.y, p.z );
 				_spheres[ i ]._radius = r;
 				uint colorId		  = INVALID_ID;
-				for ( uint i = 0; i < uint( colors.size() ); ++i )
+				for ( uint j = 0; j < uint( colors.size() ); ++j )
 				{
-					if ( colors[ i ].x == c.x && colors[ i ].y == c.y && colors[ i ].z == c.z )
+					if ( colors[ j ].x == c.x && colors[ j ].y == c.y && colors[ j ].z == c.z )
 					{
-						colorId = i;
+						colorId = j;
 						break;
 					}
 				}
 				if ( colorId == INVALID_ID )
 				{
 					colorId = uint( colors.size() );
-					colors.emplace_back( make_float4( c.x, c.y, c.z, 1.f ) );
+					colors.emplace_back( make_float3( c.x, c.y, c.z ) );
 				}
 				_spheres[ i ]._colorId = colorId;
 			}
+
 			for ( uint i = 0; i < nbBonds; ++i )
 			{
 				const Model::Bond & bond = mol->getBond( i );
@@ -109,18 +110,19 @@ namespace VTX
 				const Vec3f &		p1	 = atomPositions[ bond.getIndexSecondAtom() ];
 				_cylinders[ i ]._v0		 = make_float3( p0.x, p0.y, p0.z );
 				_cylinders[ i ]._v1		 = make_float3( p1.x, p1.y, p1.z );
+				_cylinders[ i ]._colorId = _spheres[ bond.getIndexFirstAtom() ]._colorId;
 			}
 
 #ifdef SPHERES
 			_spheresDevBuffer.malloc( _spheres.size() * sizeof( Optix::Sphere ) );
 			_spheresDevBuffer.memcpyHostToDevice( _spheres.data(), _spheres.size() );
-			_colorsDevBuffer.malloc( colors.size() * sizeof( float4 ) );
-			_colorsDevBuffer.memcpyHostToDevice( colors.data(), colors.size() );
-			_launchParameters._colors = (float4 *)( _colorsDevBuffer.getDevicePtr() );
 #else
 			_cylindersDevBuffer.malloc( _cylinders.size() * sizeof( Optix::Cylinder ) );
 			_cylindersDevBuffer.memcpyHostToDevice( _cylinders.data(), _cylinders.size() );
 #endif
+			_colorsDevBuffer.malloc( colors.size() * sizeof( float3 ) );
+			_colorsDevBuffer.memcpyHostToDevice( colors.data(), colors.size() );
+			_launchParameters._colors = (float3 *)( _colorsDevBuffer.getDevicePtr() );
 
 			try
 			{

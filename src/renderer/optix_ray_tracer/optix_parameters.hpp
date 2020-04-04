@@ -26,7 +26,7 @@ namespace VTX
 					uint32_t _id	 = 0;
 				} _frame;
 
-				float4 * _colors;
+				float3 * _colors;
 
 				OptixTraversableHandle _traversable = 0ull;
 			};
@@ -110,7 +110,7 @@ namespace VTX
 			};
 
 			// TODO: useful align ?
-			struct __align__( 64 ) Cylinder
+			struct __align__( 32 ) Cylinder
 			{
 				Cylinder() = default;
 
@@ -162,11 +162,11 @@ namespace VTX
 					return true;
 				}
 
-				float3 _v0;
-				float3 _v1;
-				float  _radius		 = 0.15f;
-				float3 _color		 = { 1.f, 1.f, 1.f };
-				float  _padding[ 6 ] = { 0.f, 0.f, 0.f, 0.f, 0.f, 0.f };
+				float3	 _v0;
+				float3	 _v1;
+				float	 _radius  = 0.15f;
+				uint16_t _colorId = 0;
+				uint16_t _padding;
 			};
 
 			struct HitGroupData

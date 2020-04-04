@@ -9,13 +9,6 @@ namespace VTX
 	{
 		extern "C" __constant__ Optix::LaunchParameters params;
 
-		static __forceinline__ __device__ void setPayload( const float & p0, const float & p1, const float & p2 )
-		{
-			optixSetPayload_0( float_as_int( p0 ) );
-			optixSetPayload_1( float_as_int( p1 ) );
-			optixSetPayload_2( float_as_int( p2 ) );
-		}
-
 		static __forceinline__ __device__ void setPayload( const float3 & p )
 		{
 			optixSetPayload_0( float_as_int( p.x ) );
@@ -46,12 +39,12 @@ namespace VTX
 													  int_as_float( optixGetAttribute_1() ),
 													  int_as_float( optixGetAttribute_2() ) );
 			const int	 id		= optixGetPrimitiveIndex();
-			const float4 & color	= params._colors[data->_spheres[ id ]._colorId];
+			const float3 & color	= params._colors[data->_spheres[ id ]._colorId];
 			const float3 &rayDir = optixGetWorldRayDirection();
 			const float	 radiance = fabsf( dot( rayDir, normal ) );
 
 
-			setPayload( color.x * radiance, color.y * radiance, color.z * radiance );
+			setPayload( color * radiance);
 		}
 
 		extern "C" __global__ void __closesthit__cylinder()
@@ -62,7 +55,7 @@ namespace VTX
 												 int_as_float( optixGetAttribute_1() ),
 												 int_as_float( optixGetAttribute_2() ) );
 			const int	   id	  = optixGetPrimitiveIndex();
-			const float3 & color	= data->_cylinders[ id ]._color;
+			const float3 & color	= params._colors[data->_cylinders[ id ]._colorId];
 			const float3 & rayDir	= optixGetWorldRayDirection();
 			const float	   radiance = fabsf( dot( rayDir, normal ) );
 
