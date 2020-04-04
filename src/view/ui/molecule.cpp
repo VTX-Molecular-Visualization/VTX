@@ -49,7 +49,7 @@ namespace VTX
 							if ( ImGui::Checkbox( LOCALE( "View.Play" ), &isPlaying ) )
 							{ VTX_ACTION( new Action::MoleculeChangeIsPlaying( _getModel(), isPlaying ) ); }
 							int fps = _getModel().getFPS();
-							if ( ImGui::SliderInt( LOCALE( "View.FPS" ), &fps, 0, _getModel().getFrameCount() - 1 ) )
+							if ( ImGui::SliderInt( LOCALE( "View.FPS" ), &fps, 0, VIDEO_FPS ) )
 							{ VTX_ACTION( new Action::MoleculeChangeFPS( _getModel(), fps ) ); }
 							if ( ImGui::InputInt( "##FPSInput", &fps, 1 ) )
 							{ VTX_ACTION( new Action::MoleculeChangeFPS( _getModel(), fps ) ); }
