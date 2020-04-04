@@ -6,6 +6,7 @@
 #endif
 
 #include <cuda.h>
+#include <cuda_fp16.h>
 
 #ifdef __CUDACC__
 #define VTX_HOST_DEVICE __host__ __device__

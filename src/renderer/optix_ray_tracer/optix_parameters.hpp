@@ -16,15 +16,17 @@ namespace VTX
 	{
 		namespace Optix
 		{
-			struct LaunchParameters
+			struct __align__( 32 ) LaunchParameters
 			{
 				struct
 				{
 					uchar4 * _pixels = nullptr;
-					uint32_t _width	 = 0;
-					uint32_t _height = 0;
+					uint16_t _width	 = 0;
+					uint16_t _height = 0;
 					uint32_t _id	 = 0;
 				} _frame;
+
+				float4 * _colors;
 
 				OptixTraversableHandle _traversable = 0ull;
 			};
@@ -55,19 +57,16 @@ namespace VTX
 			};
 
 			// TODO: useful align ?
-			struct __align__( 32 ) Sphere
+			struct __align__( 16 ) Sphere
 			{
-				Sphere() = default;
-				Sphere( const float3 & p_center, const float p_radius, const float3 & p_color ) :
-					_center( p_center ), _radius( p_radius ), _color( p_color )
-				{
-				}
+				Sphere()  = default;
 				~Sphere() = default;
 
 				VTX_INLINE_HOST_DEVICE OptixAabb aabb() const
 				{
-					return { _center.x - _radius, _center.y - _radius, _center.z - _radius,
-							 _center.x + _radius, _center.y + _radius, _center.z + _radius };
+					const float radius = float( _radius );
+					return { _center.x - radius, _center.y - radius, _center.z - radius,
+							 _center.x + radius, _center.y + radius, _center.z + radius };
 				}
 
 				// TODO: uniformize intersects
@@ -77,10 +76,11 @@ namespace VTX
 													   const float	  p_tMax,
 													   Intersection & p_hit ) const
 				{
-					const float3 oc	   = p_origin - _center;
-					const float	 b	   = dot( oc, p_direction );
-					const float	 c	   = dot( oc, oc ) - _radius * _radius;
-					const float	 delta = b * b - c;
+					const float3 oc		= p_origin - _center;
+					const float	 radius = float( _radius );
+					const float	 b		= dot( oc, p_direction );
+					const float	 c		= dot( oc, oc ) - radius * radius;
+					const float	 delta	= b * b - c;
 
 					if ( delta > 0.f )
 					{
@@ -95,7 +95,7 @@ namespace VTX
 							{
 								p_hit._t	  = t;
 								p_hit._point  = p_origin + p_direction * p_hit._t;
-								p_hit._normal = ( p_hit._point - _center ) / _radius;
+								p_hit._normal = ( p_hit._point - _center ) / radius;
 
 								return true;
 							}
@@ -104,21 +104,15 @@ namespace VTX
 					return false;
 				}
 
-				float3 _center	= { 0.f, 0.f, 0.f };
-				float  _radius	= 0.f;
-				float3 _color	= { 0.f, 0.f, 0.f };
-				float  _padding = 1.f;
+				float3	 _center  = { 0.f, 0.f, 0.f };
+				half	 _radius  = 0.f;
+				uint16_t _colorId = 0;
 			};
 
 			// TODO: useful align ?
 			struct __align__( 64 ) Cylinder
 			{
 				Cylinder() = default;
-
-				Cylinder( const float3 & p_v0, const float3 & p_v1, const float p_radius ) :
-					_v0( p_v0 ), _v1( p_v1 ), _radius( p_radius )
-				{
-				}
 
 				VTX_INLINE_HOST_DEVICE OptixAabb aabb() const
 				{

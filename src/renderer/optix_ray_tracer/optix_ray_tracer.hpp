@@ -51,6 +51,8 @@ namespace VTX
 			std::vector<Optix::Cylinder> _cylinders;
 			CudaBuffer					 _cylindersDevBuffer;
 
+			CudaBuffer _colorsDevBuffer;
+
 			CudaBuffer _gasOutputBuffer;
 			// CUDA data
 			int			   _bestDeviceId = -1;
@@ -82,7 +84,7 @@ namespace VTX
 			Optix::LaunchParameters _launchParameters;
 			CudaBuffer				_launchParametersBuffer;
 
-			CudaBuffer _colorBuffer;
+			CudaBuffer _pixelsBuffer;
 		};
 	} // namespace Renderer
 } // namespace VTX
