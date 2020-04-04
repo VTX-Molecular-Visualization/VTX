@@ -28,6 +28,8 @@ namespace VTX
 				_diffuseShading = p_programManager.createProgram( "DiffuseShading", { "shading/diffuseShading.frag" } );
 				_blinnPhongShading
 					= p_programManager.createProgram( "BlinnPhongShading", { "shading/blinnPhongShading.frag" } );
+				_flatColorShading
+					= p_programManager.createProgram( "FlatColorShading", { "shading/flatColorShading.frag" } );
 
 				// Use setting value.
 				set();
@@ -64,6 +66,7 @@ namespace VTX
 				{
 				case SHADING::TOON: _currentShading = _toonShading; break;
 				case SHADING::BLINN_PHONG: _currentShading = _blinnPhongShading; break;
+				case SHADING::FLAT_COLOR: _currentShading = _flatColorShading; break;
 				case SHADING::LAMBERT:
 				default: _currentShading = _diffuseShading;
 				}

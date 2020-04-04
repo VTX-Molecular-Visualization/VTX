@@ -29,7 +29,7 @@ namespace VTX
 				VTXApp::get().getRenderer().setShading();
 			};
 
-			virtual void displayUsage() override { VTX_INFO( "LAMBERT|BLINN_PHONG|TOON" ); }
+			virtual void displayUsage() override { VTX_INFO( "LAMBERT|BLINN_PHONG|TOON|FLAT_COLOR" ); }
 
 		  private:
 			Renderer::SHADING _shading = Setting::Rendering::shading;

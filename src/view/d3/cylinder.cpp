@@ -29,6 +29,7 @@ namespace VTX
 					case MOLECULE_REPRESENTATION::STICK:
 					case MOLECULE_REPRESENTATION::BALL_AND_STICK: _isActive = true; break;
 					case MOLECULE_REPRESENTATION::VAN_DER_WAALS:
+					case MOLECULE_REPRESENTATION::SAS:
 					default: _isActive = false; break;
 					}
 				}

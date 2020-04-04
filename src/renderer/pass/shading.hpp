@@ -15,7 +15,8 @@ namespace VTX
 		{
 			LAMBERT = 0,
 			BLINN_PHONG,
-			TOON
+			TOON,
+			FLAT_COLOR
 		};
 
 		namespace Pass
@@ -34,6 +35,7 @@ namespace VTX
 				GLSL::Program * _diffuseShading	   = nullptr;
 				GLSL::Program * _blinnPhongShading = nullptr;
 				GLSL::Program * _toonShading	   = nullptr;
+				GLSL::Program * _flatColorShading  = nullptr;
 				GLuint			_fboShading		   = GL_INVALID_VALUE;
 				GLuint			_shadingTexture	   = GL_INVALID_VALUE;
 

@@ -37,7 +37,7 @@ namespace VTX
 				}
 			};
 
-			virtual void displayUsage() override { VTX_INFO( "BALL_AND_STICK|VAN_DER_WAALS|STICK" ); }
+			virtual void displayUsage() override { VTX_INFO( "BALL_AND_STICK|VAN_DER_WAALS|STICK|SAS" ); }
 
 		  private:
 			View::MOLECULE_REPRESENTATION _representation = Setting::Rendering::representation;

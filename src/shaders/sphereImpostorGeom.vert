@@ -7,6 +7,7 @@ layout( location = 3 ) in uint  aSphereVis;
 
 uniform mat4  uMVMatrix;
 uniform mat4  uProjMatrix;
+uniform float uRadiusAdd = 0.f; // TODO: for SAS ?
 uniform float uRadiusFixed = 1.f;
 uniform bool uIsRadiusFixed = false;
 
@@ -24,7 +25,7 @@ void main()
 {
 	vCamSpherePos = vec3( uMVMatrix * vec4( aSpherePos, 1.f ) );
 	vSphereColor  = aSphereColor;
-	vSphereRad	  = uIsRadiusFixed ? uRadiusFixed : aSphereRad;
+	vSphereRad	  = uIsRadiusFixed ? uRadiusFixed : aSphereRad + uRadiusAdd;
 	vSphereVis    = aSphereVis;
 
 	vDotCamSpherePos		  = dot( vCamSpherePos, vCamSpherePos );
