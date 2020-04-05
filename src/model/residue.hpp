@@ -8,6 +8,7 @@
 #include "base_model.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
+#include "generic/base_visible.hpp"
 #include <map>
 
 namespace VTX
@@ -16,7 +17,7 @@ namespace VTX
 	{
 		class Molecule;
 		class Chain;
-		class Residue : public BaseModel, public Generic::BaseColorable
+		class Residue : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
 		{
 		  public:
 			enum class RESIDUE_SYMBOL : int

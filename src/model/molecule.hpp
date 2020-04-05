@@ -14,6 +14,7 @@
 #include "generic/base_printable.hpp"
 #include "generic/base_renderable.hpp"
 #include "generic/base_transformable.hpp"
+#include "generic/base_visible.hpp"
 #include "math/aabb.hpp"
 #include "residue.hpp"
 #include "util/logger.hpp"
@@ -33,7 +34,8 @@ namespace VTX
 			public Generic::BasePrintable,
 			public Generic::BaseTransformable,
 			public Generic::BaseRenderable,
-			public Generic::BaseColorable
+			public Generic::BaseColorable,
+			public Generic::BaseVisible
 		{
 		  public:
 			using AtomPositionsFrame = std::vector<Vec3f>;
