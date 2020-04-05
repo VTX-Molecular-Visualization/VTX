@@ -8,7 +8,6 @@
 #include "base_model.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
-#include "generic/base_visible.hpp"
 
 namespace VTX
 {
@@ -17,7 +16,7 @@ namespace VTX
 		class Molecule;
 		class Chain;
 		class Residue;
-		class Atom : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
+		class Atom : public BaseModel, public Generic::BaseColorable
 		{
 		  public:
 			// Sorted by atomic number.

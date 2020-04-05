@@ -44,7 +44,8 @@ namespace VTX
 				_viewpoints.erase( std::find( _viewpoints.begin(), _viewpoints.end(), p_viewpoint ) );
 			}
 
-			inline VectorViewpointPtr & getViewpoints() { return _viewpoints; }
+			inline VectorViewpointPtr &		  getViewpoints() { return _viewpoints; }
+			inline const VectorViewpointPtr & getViewpoints() const { return _viewpoints; }
 
 			inline float			   getDuration() const { return _duration; }
 			inline void				   setDuration( const float p_duration ) { _duration = p_duration; }

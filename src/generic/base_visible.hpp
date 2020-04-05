@@ -14,7 +14,7 @@ namespace VTX
 		  public:
 			inline bool	  isVisible() const { return _visible; }
 			inline bool * isVisiblePtr() { return &_visible; }
-			void		  setVisible( const bool p_visible ) { _visible = p_visible; }
+			virtual void  setVisible( const bool p_visible ) { _visible = p_visible; }
 
 		  protected:
 			bool _visible = true;
