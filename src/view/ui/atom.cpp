@@ -17,6 +17,7 @@ namespace VTX
 				{
 					ImGui::Text( "ID: %d", _getModel().getIndex() );
 					ImGui::Text( "Vdw radius: %.2f", _getModel().getVdwRadius() );
+					/*
 					Vec3f color = _getModel().getColor();
 					if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
 					{
@@ -25,6 +26,7 @@ namespace VTX
 						VTX_ACTION(
 							new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::ATOM ) );
 					}
+					*/
 				}
 				ImGui::PopID();
 			}

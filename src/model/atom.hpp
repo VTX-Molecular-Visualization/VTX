@@ -155,7 +155,7 @@ namespace VTX
 			static const std::string SYMBOL_STR[ (int)ATOM_SYMBOL::COUNT ];
 			static const std::string SYMBOL_NAME[ (int)ATOM_SYMBOL::COUNT ];
 			static const float		 SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ];
-			static float *			 SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ];
+			static uint				 SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ][ 3 ];
 
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
