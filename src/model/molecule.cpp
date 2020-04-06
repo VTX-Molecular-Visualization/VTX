@@ -122,7 +122,14 @@ namespace VTX
 			{
 				switch ( Setting::Rendering::colorMode )
 				{
-				case View::MOLECULE_COLOR_MODE::ATOM: _bufferAtomColors[ i ] = _atoms[ i ]->getColor(); break;
+				case View::MOLECULE_COLOR_MODE::ATOM:
+					if ( _atoms[ i ]->getSymbol() == Atom::ATOM_SYMBOL::A_C )
+					{ _bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor(); }
+					else
+					{
+						_bufferAtomColors[ i ] = _atoms[ i ]->getColor();
+					}
+					break;
 				case View::MOLECULE_COLOR_MODE::RESIDUE:
 					_bufferAtomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor();
 					break;
