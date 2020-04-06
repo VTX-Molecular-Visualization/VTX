@@ -44,7 +44,8 @@ namespace VTX
 			"Tryptophan",	 // TRP,
 			"Tyrosine",		 // TYR,
 			"Valine",		 // VAL,
-			"Water"			 // HOH,
+			"?",			 // ASX,
+			"?",			 // GLX
 		};
 
 		const std::string Residue::SYMBOL_SHORT[ (int)RESIDUE_SYMBOL::COUNT ] = {
@@ -69,12 +70,8 @@ namespace VTX
 			"W",	   // TRP,
 			"Y",	   // TYR,
 			"V",	   // VAL,
-			"HOH",	   // HOH,
+			"?",	   // ASX,
+			"?",	   // GLX
 		};
-
-		const Vec3f * Residue::SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ] = {
-			// TODO
-		};
-
 	} // namespace Model
 } // namespace VTX

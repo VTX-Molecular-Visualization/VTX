@@ -43,14 +43,14 @@ namespace VTX
 				TRP,
 				TYR,
 				VAL,
-				HOH,
+				ASX,
+				GLX,
 				COUNT
 			};
 
 			// Static const mapping.
 			static const std::string SYMBOL_NAME[ (int)RESIDUE_SYMBOL::COUNT ];
 			static const std::string SYMBOL_SHORT[ (int)RESIDUE_SYMBOL::COUNT ];
-			static const Vec3f *	 SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ];
 
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
