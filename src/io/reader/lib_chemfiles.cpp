@@ -183,7 +183,7 @@ namespace VTX
 										p_molecule.getPRM().solventIds.end(),
 										atomType )
 							 != p_molecule.getPRM().solventIds.end() )
-						{ modelAtom.setType( Model::Atom::ATOM_TYPE::Solvent ); }
+						{ modelAtom.setType( Model::Atom::ATOM_TYPE::SOLVENT ); }
 						else if ( std::find(
 									  p_molecule.getPRM().ionIds.begin(), p_molecule.getPRM().ionIds.end(), atomType )
 								  != p_molecule.getPRM().ionIds.end() )

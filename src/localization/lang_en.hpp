@@ -100,6 +100,7 @@ namespace VTX
 			{ "View.Molecule.Solvent", "Solvent" },
 			{ "View.Molecule.Ion", "Ion" },
 			{ "View.Actions", "Actions" },
+			{ "View.Visible", "Visible" },
 
 			// Modals.
 			{ "Modal.Loading", "Loading" },

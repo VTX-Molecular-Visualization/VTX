@@ -16,6 +16,12 @@ namespace VTX
 			}
 		}
 
+		void Residue::setVisible( const bool p_visible )
+		{
+			Generic::BaseVisible::setVisible( p_visible );
+			_moleculePtr->refreshVisibility();
+		}
+
 		const std::string Residue::SYMBOL_NAME[ (int)RESIDUE_SYMBOL::COUNT ] = {
 			"Unknown",		 // UNKWNON,
 			"Alanine",		 // ALA,

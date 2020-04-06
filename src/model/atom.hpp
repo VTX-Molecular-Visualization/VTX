@@ -147,7 +147,7 @@ namespace VTX
 			enum class ATOM_TYPE : int
 			{
 				NORMAL,
-				Solvent,
+				SOLVENT,
 				ION
 			};
 

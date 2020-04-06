@@ -73,6 +73,7 @@ namespace VTX
 			// inline void setBondCount( const uint p_count ) { _bondCount = p_count; };
 
 			virtual void setSelected( const bool ) override;
+			virtual void setVisible( const bool ) override;
 
 		  private:
 			uint	   _index		= 0;
