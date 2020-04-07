@@ -32,8 +32,9 @@ namespace VTX
 	using Quatd = glm::dquat;
 
 	// VTX.
-	constexpr int VTX_VERSION_MAJOR = 0;
-	constexpr int VTX_VERSION_MINOR = 0;
+	constexpr int VTX_VERSION_MAJOR	   = 0;
+	constexpr int VTX_VERSION_MINOR	   = 0;
+	constexpr int VTX_VERSION_REVISION = 3;
 
 	constexpr int	  OPENGL_VERSION_MAJOR = 4;
 	constexpr int	  OPENGL_VERSION_MINOR = 5;
@@ -133,17 +134,6 @@ namespace VTX
 	const Vec3f VEC3F_MAX  = Vec3f( FLOAT_MAX );
 
 	const Mat4f MAT4F_ID = Mat4f( 1.f );
-
-	static float COLOR_BLACK[ 3 ]	   = { 0.f, 0.f, 0.f };
-	static float COLOR_WHITE[ 3 ]	   = { 1.f, 1.f, 1.f };
-	static float COLOR_GREY[ 3 ]	   = { 0.5f, 0.5f, 0.5f };
-	static float COLOR_RED[ 3 ]		   = { 1.0f, 0.13f, 0.0f };
-	static float COLOR_BLUE[ 3 ]	   = { 0.13f, 0.2f, 1.0f };
-	static float COLOR_GREEN_DARK[ 3 ] = { 0.f, 0.47f, 0.f };
-	static float COLOR_VIOLET[ 3 ]	   = { 0.f, 0.47f, 0.f };
-	static float COLOR_ORANGE[ 3 ]	   = { 1.f, 0.5f, 0.f };
-	static float COLOR_YELLOW[ 3 ]	   = { 1.f, 0.9f, 0.13f };
-	static float COLOR_MAGENTA[ 3 ]	   = { 1.f, 0.f, 1.f };
 
 	constexpr uint INVALID_ID = UINT_MAX;
 } // namespace VTX

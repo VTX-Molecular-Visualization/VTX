@@ -6,12 +6,13 @@
 #endif
 
 #include "base_collectionable.hpp"
+#include "base_visible.hpp"
 
 namespace VTX
 {
 	namespace Generic
 	{
-		class BaseDrawable : virtual public BaseCollectionable
+		class BaseDrawable : virtual public BaseCollectionable, public BaseVisible
 		{
 		  public:
 			virtual ~BaseDrawable() = default;
@@ -20,13 +21,6 @@ namespace VTX
 			{
 				if ( isVisible() ) { _draw(); }
 			}
-
-			inline bool	  isVisible() const { return _visible; }
-			inline bool * isVisiblePtr() { return &_visible; }
-			void		  setVisible( const bool p_visible ) { _visible = p_visible; }
-
-		  protected:
-			bool _visible = true;
 
 		  private:
 			virtual void _draw() = 0;

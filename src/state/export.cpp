@@ -1,57 +1,71 @@
 #include "export.hpp"
+#include "action/snapshot.hpp"
 #include "vtx_app.hpp"
-#include "worker/snapshoter.hpp"
 namespace VTX
 {
 	namespace State
 	{
+		// Action loop
 		void Export::enter( void * const p_arg )
 		{
-			Model::Path * path = (Model::Path *)p_arg;
+			_path = (Model::Path *)p_arg;
 
-			float duration	 = path->getDuration();
-			uint  totalFrame = uint( VIDEO_FPS * duration );
+			float duration = _path->getDuration();
+			_frameCount	   = uint( VIDEO_FPS * duration );
 
-			if ( totalFrame == 0u || path->getViewpoints().size() < 2 )
+			if ( _frameCount == 0u || _path->getViewpoints().size() < 2 )
 			{
 				VTX_WARNING( "Total time must be > 0" );
 				VTXApp::get().goToState( ID::State::VISUALIZATION );
 				return;
 			}
 
-			VTX_INFO( "Exporting... total: " + std::to_string( totalFrame ) + " frames / " + std::to_string( duration )
+			VTX_INFO( "Exporting... total: " + std::to_string( _frameCount ) + " frames / " + std::to_string( duration )
 					  + " seconds" );
-
-			// std::string		 filename	= Util::Time::getTimestamp();
-			ImGuiIO &		   io		  = ImGui::GetIO();
-			Worker::Snapshoter snapshoter = Worker::Snapshoter();
-			Tool::Chrono	   chrono	  = Tool::Chrono();
-
-			chrono.start();
-			for ( uint frame = 0; frame < totalFrame; ++frame )
-			{
-				float			 time	   = (float)frame / VIDEO_FPS;
-				Model::Viewpoint viewpoint = path->getInterpolatedViewpoint( time );
-				VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
-
-				// Update renderer.
-				VTXApp::get().getUI().draw();
-				VTXApp::get().renderScene();
-				VTXApp::get().getScene().update( 1.f / VIDEO_FPS );
-				std::string counterStr = std::to_string( frame );
-				IO::Path	path( VIDEO_DIR + "snapshot" + std::string( 4 - counterStr.length(), '0' ) + counterStr
-								  + ".png" );
-				snapshoter.takeSnapshot( path );
-				VTX_INFO( std::to_string( ( uint )( (float)frame * 100 / totalFrame ) ) + "%" );
-			}
-			chrono.stop();
-			VTX_INFO( "Export finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
-			VTXApp::get().goToState( ID::State::VISUALIZATION );
 		}
 
-		void Export::exit() {}
+		void Export::exit()
+		{
+			_path		= nullptr;
+			_actions	= nullptr;
+			_frame		= 0u;
+			_frameCount = 0u;
+		}
 
-		void Export::update( const double p_deltaTime ) {}
+		void Export::update( const double p_deltaTime )
+		{
+			BaseState::update( p_deltaTime );
+
+			float			 time	   = (float)_frame / VIDEO_FPS;
+			Model::Viewpoint viewpoint = _path->getInterpolatedViewpoint( time );
+
+			// Action.
+			if ( _actions != _path->getCurrentActions( time ) )
+			{
+				_actions = _path->getCurrentActions( time );
+				for ( const std::string & action : *_actions )
+				{
+					VTX_ACTION( action, true );
+				}
+			}
+
+			// Update renderer.
+			VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
+			VTXApp::get().getScene().update( 1.f / VIDEO_FPS );
+			VTXApp::get().renderScene();
+
+			std::string counterStr = std::to_string( _frame );
+			VTX_ACTION( new Action::Snapshot( VIDEO_DIR + "snapshot" + std::string( 4 - counterStr.length(), '0' )
+											  + counterStr ) );
+
+			VTX_INFO( std::to_string( ( uint )( (float)_frame * 100 / _frameCount ) ) + "%" );
+
+			if ( _frame == _frameCount ) { VTXApp::get().goToState( ID::State::VISUALIZATION ); }
+			else
+			{
+				_frame++;
+			}
+		}
 
 	} // namespace State
 } // namespace VTX

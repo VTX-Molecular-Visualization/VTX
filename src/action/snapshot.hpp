@@ -17,19 +17,27 @@ namespace VTX
 		class Snapshot : public BaseAction
 		{
 		  public:
+			Snapshot() {}
+			Snapshot( std::string & p_fileName ) : _fileName( p_fileName ) {}
+
+			virtual void setParameters( std::vector<std::string> & p_parameters ) override {}
+
 			virtual void execute() override
 			{
 				Worker::Snapshoter snapshoter;
 
-				std::string filename = Util::Time::getTimestamp();
-				IO::Path	path( SNAPSHOT_DIR + filename + ".png" );
-
+				IO::Path path( _fileName + ".png" );
 				if ( snapshoter.takeSnapshot( path ) ) { VTX_INFO( "Snapshot taken: " + path.getFileName() ); }
 				else
 				{
 					VTX_WARNING( "Snapshot failed" );
 				}
 			};
+
+			virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
+
+		  private:
+			std::string _fileName = SNAPSHOT_DIR + Util::Time::getTimestamp();
 		};
 	} // namespace Action
 } // namespace VTX

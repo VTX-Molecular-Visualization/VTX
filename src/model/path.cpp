@@ -3,6 +3,7 @@
 #include "generic/factory.hpp"
 #include "view/ui/path.hpp"
 #include "view/ui/path_list.hpp"
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 
@@ -17,7 +18,24 @@ namespace VTX
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::PathList>( this ) );
 		}
 
-		Model::Viewpoint Path::getInterpolatedViewpoint( float p_time ) const
+		const std::vector<std::string> * const Path::getCurrentActions( const float p_time )
+		{
+			Viewpoint viewpoint( (Path * const)this );
+
+			uint  size	 = (uint)_viewpoints.size();
+			float total	 = 0.f;
+			uint  offset = 0;
+
+			// Find the next and previous points.
+			while ( total <= p_time && offset < size )
+			{
+				total += _viewpoints[ offset++ ]->getDuration();
+			}
+			offset--;
+			return &_viewpoints[ offset - 1 ]->getActions();
+		}
+
+		Model::Viewpoint Path::getInterpolatedViewpoint( const float p_time ) const
 		{
 			Viewpoint viewpoint( (Path * const)this );
 
@@ -182,6 +200,14 @@ namespace VTX
 				iss >> duration;
 
 				addViewpoint( new Viewpoint( this, position, rotation, duration ) );
+
+				std::string action;
+				while ( iss.eof() == false )
+				{
+					iss >> action;
+					std::replace( action.begin(), action.end(), '-', ' ' );
+					getViewpoints()[ i ]->addAction( action );
+				}
 			}
 			refreshAllDurations();
 			chrono.stop();
@@ -206,7 +232,15 @@ namespace VTX
 				const Quatf & r = viewpoint->getRotation();
 				const float & d = viewpoint->getDuration();
 				file << p.x << " " << p.y << " " << p.z << " " << r.x << " " << r.y << " " << r.z << " " << r.w << " "
-					 << d << std::endl;
+					 << d;
+
+				for ( std::string action : viewpoint->getActions() )
+				{
+					std::replace( action.begin(), action.end(), ' ', '-' );
+					file << " " << action;
+				}
+
+				file << std::endl;
 			}
 			chrono.stop();
 			VTX_INFO( "Export finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );

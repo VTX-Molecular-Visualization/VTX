@@ -1,19 +1,78 @@
 #include "action_manager.hpp"
+#include "change_auto_rotate_speed.hpp"
+#include "change_color_mode.hpp"
+#include "change_representation.hpp"
+#include "change_shading.hpp"
 #include "snapshot.hpp"
-#include <thread>
+#include <magic_enum.hpp>
+#include <sstream>
 
 namespace VTX
 {
 	namespace Action
 	{
-		void ActionManager::execute( BaseAction * const p_action ) { _actionQueue.push( p_action ); }
-
-		void ActionManager::execute( const std::string & p_action )
+		void ActionManager::execute( BaseAction * const p_action, const bool p_force )
 		{
-			// TODO: extract args from string.
-			// TODO: map string to class with variadics (not possible in cpp, no reflection).
-			// Name action with enum?
-			if ( p_action == "snapshot" ) { execute( new Snapshot() ); }
+			if ( p_force ) { _flushAction( p_action ); }
+			else
+			{
+				_actionQueue.push( p_action );
+			}
+		}
+
+		void ActionManager::execute( const std::string & p_action, const bool p_force )
+		{
+			std::istringstream		 iss( p_action );
+			std::string				 word;
+			std::vector<std::string> words = std::vector<std::string>();
+			while ( iss >> word )
+			{
+				words.emplace_back( word );
+			}
+
+			if ( words.size() == 0 ) { VTX_ERROR( "Empty action string" ); }
+
+			std::string & command = words[ 0 ];
+			BaseAction *  action  = nullptr;
+
+			// TODO: map with ids.
+			if ( command == "snapshot" ) { action = new Snapshot(); }
+			else if ( command == "change_representation" )
+			{
+				action = new ChangeRepresentation();
+			}
+			else if ( command == "change_auto_rotate_speed" )
+			{
+				action = new ChangeAutoRotateSpeed();
+			}
+			else if ( command == "change_shading" )
+			{
+				action = new ChangeShading();
+			}
+			else if ( command == "change_color_mode" )
+			{
+				action = new ChangeColorMode();
+			}
+
+			if ( action != nullptr )
+			{
+				try
+				{
+					action->setParameters( words );
+				}
+				catch ( const std::exception & )
+				{
+					action->displayUsage();
+					delete action;
+					return;
+				}
+
+				execute( action, p_force );
+			}
+			else
+			{
+				VTX_ERROR( "Action not found" );
+			}
 		}
 
 		bool ActionManager::canUndo() const { return _bufferUndo.size() > 0; }

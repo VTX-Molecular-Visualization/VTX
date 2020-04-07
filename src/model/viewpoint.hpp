@@ -44,13 +44,21 @@ namespace VTX
 			inline const Quatf & getRotation() const { return _rotation; }
 			inline const void	 setRotation( const Quatf & p_rotation ) { _rotation = p_rotation; }
 
+			inline const std::vector<std::string> & getActions() const { return _actions; }
+			inline void addAction( const std::string & p_action ) { _actions.emplace_back( p_action ); }
+			inline void removeAction( const std::vector<std::string>::const_iterator & p_action )
+			{
+				_actions.erase( p_action );
+			}
+
 			virtual void setSelected( const bool ) override;
 
 		  private:
-			Path * const _path;
-			Vec3f		 _position;
-			Quatf		 _rotation;
-			float		 _duration;
+			Path * const			 _path;
+			float					 _duration;
+			Vec3f					 _position;
+			Quatf					 _rotation;
+			std::vector<std::string> _actions = std::vector<std::string>();
 
 		}; // namespace Camera
 	}	   // namespace Model

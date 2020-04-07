@@ -23,10 +23,12 @@ namespace VTX
 			virtual void				update( const double ) override;
 
 		  private:
-			Model::Path * _path = nullptr;
-			float		  _time = 0.f;
+			Model::Path *					 _path	  = nullptr;
+			const std::vector<std::string> * _actions = nullptr;
+			float							 _time	  = 0.f;
 
 			void _setCamera() const;
+			void _executeActions();
 		};
 	} // namespace State
 } // namespace VTX

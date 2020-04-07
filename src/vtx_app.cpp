@@ -44,10 +44,11 @@ namespace VTX
 		VTX_INFO( "Starting application" );
 
 		_ui = Generic::create<UI::UserInterface>();
-		_ui->draw(); // Draw the first frame to update screen size.
-		ImGuiIO & io = ImGui::GetIO();
 
 		_scene = new Object3D::Scene();
+
+		_ui->draw(); // Draw the first frame to update screen size.
+		ImGuiIO & io = ImGui::GetIO();
 		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 		_renderer = new Renderer::GL();

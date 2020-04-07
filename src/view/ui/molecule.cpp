@@ -10,6 +10,7 @@
 #include "action/transformable_rotate.hpp"
 #include "action/transformable_set_scale.hpp"
 #include "action/transformable_set_translation.hpp"
+#include "action/visible_change_visibility.hpp"
 #include "vtx_app.hpp"
 #include <glm/gtx/euler_angles.hpp>
 
@@ -26,6 +27,9 @@ namespace VTX
 				if ( ImGui::CollapsingHeader(
 						 _getModel().getName().c_str(), &notClosed, ImGuiTreeNodeFlags_DefaultOpen ) )
 				{
+					bool isVisible = _getModel().isVisible();
+					if ( ImGui::Checkbox( LOCALE( "View.Visible" ), &isVisible ) )
+					{ VTX_ACTION( new Action::VisibleChangeVisibility( _getModel(), isVisible ) ); }
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 					{
 						ImGui::Text( "Chains: %d", _getModel().getChainCount() );
@@ -49,7 +53,7 @@ namespace VTX
 							if ( ImGui::Checkbox( LOCALE( "View.Play" ), &isPlaying ) )
 							{ VTX_ACTION( new Action::MoleculeChangeIsPlaying( _getModel(), isPlaying ) ); }
 							int fps = _getModel().getFPS();
-							if ( ImGui::SliderInt( LOCALE( "View.FPS" ), &fps, 0, _getModel().getFrameCount() - 1 ) )
+							if ( ImGui::SliderInt( LOCALE( "View.FPS" ), &fps, 0, VIDEO_FPS ) )
 							{ VTX_ACTION( new Action::MoleculeChangeFPS( _getModel(), fps ) ); }
 							if ( ImGui::InputInt( "##FPSInput", &fps, 1 ) )
 							{ VTX_ACTION( new Action::MoleculeChangeFPS( _getModel(), fps ) ); }

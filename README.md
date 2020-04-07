@@ -22,6 +22,16 @@
 -   Open multiple molecules
 -   Export snapshot (saved in snapshots/ folders)
 
+### SCRIPTABLE ACTIONS
+
+-   command <param|param1 param2 ...|...>
+
+-   snapshot
+-   change_representation BALL_AND_STICK|VAN_DER_WAALS|STICK
+-   change_shading <LAMBERT|BLINN_PHONG|TOON>
+-   change_color_mode <ATOM|RESIDUE|CHAIN|PROTEIN>
+-   change_auto_rotate_speed <f f f|f>
+
 ### FEATURES IN DEVELOPPEMENT
 
 -   Video export only exports a batch of snapshots, we need to use ffmpeg to build the video (not in the release for the moment)

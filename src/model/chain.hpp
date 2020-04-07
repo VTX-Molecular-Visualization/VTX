@@ -8,6 +8,7 @@
 #include "base_model.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
+#include "generic/base_visible.hpp"
 #include <iostream>
 
 namespace VTX
@@ -15,7 +16,7 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class Chain : public BaseModel, public Generic::BaseColorable
+		class Chain : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
 		{
 		  public:
 			inline uint				getIndex() const { return _index; };
@@ -31,6 +32,7 @@ namespace VTX
 			inline void				   setResidueCount( const uint p_count ) { _residueCount = p_count; };
 
 			virtual void setSelected( const bool ) override;
+			virtual void setVisible( const bool ) override;
 
 		  private:
 			uint	   _index		= 0;

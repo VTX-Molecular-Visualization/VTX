@@ -17,6 +17,7 @@ namespace VTX
 				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
 				_uRadiusFixed	  = glGetUniformLocation( program->getId(), "uRadiusFixed" );
+				_uRadiusAdd		  = glGetUniformLocation( program->getId(), "uRadiusAdd" );
 				_uIsRadiusFixed	  = glGetUniformLocation( program->getId(), "uIsRadiusFixed" );
 			}
 
@@ -29,17 +30,25 @@ namespace VTX
 					switch ( Setting::Rendering::representation )
 					{
 					case MOLECULE_REPRESENTATION::BALL_AND_STICK:
-						_radiusFixed = 0.4f;
+						_radiusFixed   = 0.4f;
+						_radiusAdd	   = 0.f;
 						_isRadiusFixed = true;
-						_isActive	 = true;
+						_isActive	   = true;
 						break;
 					case MOLECULE_REPRESENTATION::VAN_DER_WAALS:
 						_isRadiusFixed = false;
-						_isActive	 = true;
+						_radiusAdd	   = 0.f;
+						_isActive	   = true;
 						break;
 					case MOLECULE_REPRESENTATION::STICK:
 						_radiusFixed   = 0.15f;
+						_radiusAdd	   = 0.f;
 						_isRadiusFixed = true;
+						_isActive	   = true;
+						break;
+					case MOLECULE_REPRESENTATION::SAS:
+						_isRadiusFixed = false;
+						_radiusAdd	   = 1.4f;
 						_isActive	   = true;
 						break;
 					default: _isActive = false; break;
@@ -52,6 +61,7 @@ namespace VTX
 				VTXApp::get().getProgramManager().getProgram( "SphereImpostorGeomShader" )->use();
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 				glUniform1f( _uRadiusFixed, _radiusFixed );
+				glUniform1f( _uRadiusAdd, _radiusAdd );
 				glUniform1ui( _uIsRadiusFixed, _isRadiusFixed );
 				glDrawArrays( GL_POINTS, 0, _getModel().getAtomCount() );
 			}

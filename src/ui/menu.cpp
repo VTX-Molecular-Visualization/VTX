@@ -166,10 +166,11 @@ namespace VTX
 					// Representation.
 					const char * representations[] = { LOCALE( "Enum.Representation.BallsAndSticks" ),
 													   LOCALE( "Enum.Representation.VanDerWaals" ),
-													   LOCALE( "Enum.Representation.Sticks" ) };
+													   LOCALE( "Enum.Representation.Sticks" ),
+													   LOCALE( "Enum.Representation.SAS" ) };
 					int			 representation	   = (int)Setting::Rendering::representation;
 					if ( ImGui::Combo(
-							 LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 3 ) )
+							 LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 4 ) )
 					{
 						VTX_ACTION( new Action::ChangeRepresentation( (View::MOLECULE_REPRESENTATION)representation ) );
 					}
@@ -186,9 +187,10 @@ namespace VTX
 					// Shading.
 					const char * shadings[] = { LOCALE( "Enum.Shading.Lambert" ),
 												LOCALE( "Enum.Shading.BlinnPhong" ),
-												LOCALE( "Enum.Shading.Toon" ) };
+												LOCALE( "Enum.Shading.Toon" ),
+												LOCALE( "Enum.Shading.FlatColor" ) };
 					int			 shading	= (int)Setting::Rendering::shading;
-					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ), &shading, shadings, 3 ) )
+					if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ), &shading, shadings, 4 ) )
 					{ VTX_ACTION( new Action::ChangeShading( (Renderer::SHADING)shading ) ); }
 
 					// VSYNC.
@@ -305,6 +307,21 @@ namespace VTX
 				}
 				if ( ImGui::Button( LOCALE( "MainMenu.Redo" ) ) ) { VTXApp::get().getActionManager().redo(); }
 				if ( popItem ) { ImGui::PopItemFlag(); }
+
+				if ( VTXApp::get().getScene().getMolecules().size() == 2 )
+				{
+					Model::Molecule * m1 = ( *( VTXApp::get().getScene().getMolecules().begin() ) ).first;
+					Model::Molecule * m2 = ( *( ++VTXApp::get().getScene().getMolecules().begin() ) ).first;
+
+					if ( m1->hasTopology() && m2->hasDynamic() && m2->hasTopology() == false )
+					{
+						if ( ImGui::Button( "Merge" ) ) { m2->mergeTopology( *m1 ); }
+					}
+					else if ( m2->hasTopology() && m1->hasDynamic() && m1->hasTopology() == false )
+					{
+						if ( ImGui::Button( "Merge" ) ) { m1->mergeTopology( *m2 ); }
+					}
+				}
 
 				ImGui::PopStyleVar();
 				ImGui::EndMainMenuBar();

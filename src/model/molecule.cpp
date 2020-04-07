@@ -122,7 +122,14 @@ namespace VTX
 			{
 				switch ( Setting::Rendering::colorMode )
 				{
-				case View::MOLECULE_COLOR_MODE::ATOM: _bufferAtomColors[ i ] = _atoms[ i ]->getColor(); break;
+				case View::MOLECULE_COLOR_MODE::ATOM:
+					if ( _atoms[ i ]->getSymbol() == Atom::ATOM_SYMBOL::A_C )
+					{ _bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor(); }
+					else
+					{
+						_bufferAtomColors[ i ] = _atoms[ i ]->getColor();
+					}
+					break;
 				case View::MOLECULE_COLOR_MODE::RESIDUE:
 					_bufferAtomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor();
 					break;
@@ -146,12 +153,30 @@ namespace VTX
 			_bufferAtomVisibilities.resize( _atoms.size() );
 			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 			{
-				if ( _showSolvent == false && _atoms[ i ]->getType() == Atom::ATOM_TYPE::Solvent )
-				{ _bufferAtomVisibilities[ i ] = 0u; }
-				else if ( _showIon == false && _atoms[ i ]->getType() == Atom::ATOM_TYPE::ION )
+				Atom * const atom = _atoms[ i ];
+				// Molecule not visible.
+				if ( isVisible() == false ) { _bufferAtomVisibilities[ i ] = 0u; }
+				// Residue not visible.
+				else if ( atom->getResiduePtr()->isVisible() == false )
 				{
 					_bufferAtomVisibilities[ i ] = 0u;
 				}
+				// Chain not visible.
+				else if ( atom->getChainPtr()->isVisible() == false )
+				{
+					_bufferAtomVisibilities[ i ] = 0u;
+				}
+				// Solvent hidden.
+				else if ( _showSolvent == false && atom->getType() == Atom::ATOM_TYPE::SOLVENT )
+				{
+					_bufferAtomVisibilities[ i ] = 0u;
+				}
+				// Ion hidden.
+				else if ( _showIon == false && atom->getType() == Atom::ATOM_TYPE::ION )
+				{
+					_bufferAtomVisibilities[ i ] = 0u;
+				}
+				// Ok!
 				else
 				{
 					_bufferAtomVisibilities[ i ] = 1u;
@@ -221,6 +246,12 @@ namespace VTX
 			{
 				Generic::destroy( removeItem( ID::View::UI_MOLECULE ) );
 			}
+		}
+
+		void Molecule::setVisible( const bool p_visible )
+		{
+			Generic::BaseVisible::setVisible( p_visible );
+			refreshVisibility();
 		}
 
 		void Molecule::_createBuffers()

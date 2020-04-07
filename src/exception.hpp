@@ -41,6 +41,12 @@ namespace VTX
 		  public:
 			explicit HTTPException( const std::string & p_err ) : std::runtime_error( "[HTTP] " + p_err ) {}
 		};
+
+		class NotImplementedException : public std::runtime_error
+		{
+		  public:
+			explicit NotImplementedException() : std::runtime_error( "[VTX] feature not implemented" ) {}
+		};
 	} // namespace Exception
 } // namespace VTX
 

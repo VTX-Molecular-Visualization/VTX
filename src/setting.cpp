@@ -19,7 +19,7 @@ namespace VTX
 			View::MOLECULE_COLOR_MODE	  colorMode		 = View::MOLECULE_COLOR_MODE::CHAIN;
 			Renderer::MODE				  mode			 = Renderer::MODE::GL;
 			Renderer::SHADING			  shading		 = Renderer::SHADING::LAMBERT;
-			bool						  useVSync = true;
+			bool						  useVSync		 = true;
 			bool						  useAA			 = false;
 			bool						  useSSAO		 = true;
 			float						  aoRadius		 = RENDERER_AO_RADIUS_DEFAULT;

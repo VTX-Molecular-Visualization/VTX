@@ -5,6 +5,10 @@
 #pragma once
 #endif
 
+#include "exception.hpp"
+#include <string>
+#include <vector>
+
 namespace VTX
 {
 	namespace Action
@@ -13,9 +17,13 @@ namespace VTX
 		{
 		  public:
 			virtual void execute() = 0;
-
-		  private:
+			virtual void setParameters( std::vector<std::string> & p_parameters )
+			{
+				throw Exception::NotImplementedException();
+			}
 			virtual void displayUsage() {}
+
+		  protected:
 		};
 	} // namespace Action
 } // namespace VTX

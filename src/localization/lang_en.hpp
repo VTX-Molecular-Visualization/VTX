@@ -99,6 +99,8 @@ namespace VTX
 			{ "View.Molecule.Dynamic", "Dynamic" },
 			{ "View.Molecule.Solvent", "Solvent" },
 			{ "View.Molecule.Ion", "Ion" },
+			{ "View.Actions", "Actions" },
+			{ "View.Visible", "Visible" },
 
 			// Modals.
 			{ "Modal.Loading", "Loading" },
@@ -114,6 +116,7 @@ namespace VTX
 			{ "Enum.Representation.BallsAndSticks", "Balls and sticks" },
 			{ "Enum.Representation.VanDerWaals", "Van der Waals" },
 			{ "Enum.Representation.Sticks", "Sticks" },
+			{ "Enum.Representation.SAS", "SAS" },
 
 			{ "Enum.ColorMode.Atom", "Atom" },
 			{ "Enum.ColorMode.Residue", "Residue" },
@@ -123,6 +126,7 @@ namespace VTX
 			{ "Enum.Shading.Lambert", "Lambert" },
 			{ "Enum.Shading.BlinnPhong", "Blinn Phong" },
 			{ "Enum.Shading.Toon", "Toon" },
+			{ "Enum.Shading.FlatColor", "Flat Color" },
 
 			{ "Enum.DurationMode.Viewpoint", "Viewpoint duration" },
 			{ "Enum.DurationMode.Path", "Path duration" },

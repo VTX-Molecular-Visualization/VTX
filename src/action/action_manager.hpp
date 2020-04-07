@@ -8,6 +8,7 @@
 #include "base_action_undonable.hpp"
 #include "define.hpp"
 #include "generic/base_updatable.hpp"
+#include <functional>
 #include <list>
 #include <queue>
 #include <string>
@@ -22,8 +23,8 @@ namespace VTX
 			using ListActionUndonablePtr = std::list<BaseActionUndonable *>;
 			using QueueVTXActionPtr		 = std::queue<BaseAction *>;
 
-			void execute( BaseAction * const );
-			void execute( const std::string & );
+			void execute( BaseAction * const, const bool = false );
+			void execute( const std::string &, const bool = false );
 			bool canUndo() const;
 			void undo();
 			bool canRedo() const;

@@ -8,6 +8,7 @@
 #include "base_model.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
+#include "generic/base_visible.hpp"
 #include <map>
 
 namespace VTX
@@ -16,7 +17,7 @@ namespace VTX
 	{
 		class Molecule;
 		class Chain;
-		class Residue : public BaseModel, public Generic::BaseColorable
+		class Residue : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
 		{
 		  public:
 			enum class RESIDUE_SYMBOL : int
@@ -42,14 +43,14 @@ namespace VTX
 				TRP,
 				TYR,
 				VAL,
-				HOH,
+				ASX,
+				GLX,
 				COUNT
 			};
 
 			// Static const mapping.
 			static const std::string SYMBOL_NAME[ (int)RESIDUE_SYMBOL::COUNT ];
 			static const std::string SYMBOL_SHORT[ (int)RESIDUE_SYMBOL::COUNT ];
-			static const Vec3f *	 SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ];
 
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
@@ -72,6 +73,7 @@ namespace VTX
 			// inline void setBondCount( const uint p_count ) { _bondCount = p_count; };
 
 			virtual void setSelected( const bool ) override;
+			virtual void setVisible( const bool ) override;
 
 		  private:
 			uint	   _index		= 0;
