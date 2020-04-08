@@ -186,7 +186,8 @@ namespace VTX
 			Residue *	_residuePtr	 = nullptr;
 			ATOM_TYPE	_type		 = ATOM_TYPE::NORMAL;
 			ATOM_SYMBOL _symbol		 = ATOM_SYMBOL::UNKNOWN;
-			std::string _name		 = "";
+			// /!\ Names PDB != MMTF (CA and C1 for alpha carbon).
+			std::string _name = "";
 		};
 
 	} // namespace Model
