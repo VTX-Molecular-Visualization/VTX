@@ -22,6 +22,17 @@ namespace VTX
 			_moleculePtr->refreshVisibility();
 		}
 
+		const Atom * const Residue::findFirstAtomByName( const std::string & p_name ) const
+		{
+			for ( uint i = 0; i < _atomCount; ++i )
+			{
+				const Atom & atom = _moleculePtr->getAtom( _idFirstAtom + i );
+				if ( atom.getName() == p_name ) { return &atom; }
+			}
+
+			return nullptr;
+		}
+
 		const std::string Residue::SYMBOL_NAME[ (int)RESIDUE_SYMBOL::COUNT ] = {
 			"Unknown",		 // UNKWNON,
 			"Alanine",		 // ALA,

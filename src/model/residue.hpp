@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "atom.hpp"
 #include "base_model.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
@@ -82,6 +83,7 @@ namespace VTX
 			{
 				_secondaryStructure = p_structure;
 			};
+			const Atom * const findFirstAtomByName( const std::string & ) const;
 			// inline uint					getIdFirstBond() const { return _idFirstBond; };
 			// inline void					setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
 			// inline uint getBondCount() const { return _bondCount; };

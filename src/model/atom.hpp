@@ -157,7 +157,7 @@ namespace VTX
 			static const float		 SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ];
 			static uint				 SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ][ 3 ];
 
-			inline uint				getIndex() const { return _index; };
+			inline const uint		getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }

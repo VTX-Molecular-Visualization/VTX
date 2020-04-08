@@ -204,6 +204,8 @@ namespace VTX
 			void _fillBufferAtomVisibilities();
 			void _fillBufferBonds();
 
+			void _computeSecondaryStructure();
+
 #ifdef _DEBUG
 		  public:
 			// Validation.

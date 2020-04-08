@@ -54,6 +54,9 @@ namespace VTX
 			_fillBufferAtomVisibilities();
 			_fillBufferBonds();
 
+			// Compute seconndary structure meshes.
+			_computeSecondaryStructure();
+
 			// Set default representation.
 			setRepresentation();
 		}
@@ -204,6 +207,49 @@ namespace VTX
 			glBufferData(
 				GL_ELEMENT_ARRAY_BUFFER, sizeof( uint ) * _bufferBonds.size(), _bufferBonds.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+		}
+
+		void Molecule::_computeSecondaryStructure()
+		{
+			std::vector<int>   residueCountPerChain = std::vector<int>();
+			std::vector<float> positionsCA_O		= std::vector<float>();
+			std::vector<char>  seccondaryStruct		= std::vector<char>();
+
+			for ( const Chain * const chain : _chains )
+			{
+				int residueCount = 0;
+
+				for ( uint i = 0; i < chain->getResidueCount(); ++i )
+				{
+					const Residue *						 residue		 = _residues[ chain->getIdFirstResidue() + i ];
+					const Residue::SECONDARY_STRUCTURE & secondaryStruct = residue->getSecondaryStructure();
+
+					if ( secondaryStruct != Residue::SECONDARY_STRUCTURE::NONE )
+					{
+						const Atom * const atomCA = residue->findFirstAtomByName( "CA" );
+						const Atom * const atomO  = residue->findFirstAtomByName( "O" );
+
+						if ( atomCA == nullptr || atomO == nullptr ) { VTX_ERROR( "CA or O not found in residue" ); }
+						else
+						{
+							residueCount++;
+
+							// Push alpha carbon and oxygen positions.
+							Vec3f & positionCA = _bufferAtomPositions[ atomCA->getIndex() ];
+							Vec3f & positionO  = _bufferAtomPositions[ atomO->getIndex() ];
+							positionsCA_O.push_back( positionCA.x );
+							positionsCA_O.push_back( positionCA.y );
+							positionsCA_O.push_back( positionCA.y );
+							positionsCA_O.push_back( positionO.x );
+							positionsCA_O.push_back( positionO.y );
+							positionsCA_O.push_back( positionO.y );
+						}
+					}
+				}
+
+				// Push residue count.
+				if ( residueCount > 0 ) { residueCountPerChain.push_back( residueCount ); }
+			}
 		}
 
 		void Molecule::print() const
