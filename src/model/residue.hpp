@@ -51,7 +51,7 @@ namespace VTX
 
 			enum class SECONDARY_STRUCTURE : int
 			{
-				NONE,
+				COIL,
 				SHEET,
 				TURN,
 				HELIX_ALPHA,
@@ -100,7 +100,7 @@ namespace VTX
 			RESIDUE_SYMBOL		_symbol				= RESIDUE_SYMBOL::UNKNOWN;
 			uint				_idFirstAtom		= 0;
 			uint				_atomCount			= 0;
-			SECONDARY_STRUCTURE _secondaryStructure = SECONDARY_STRUCTURE::NONE;
+			SECONDARY_STRUCTURE _secondaryStructure = SECONDARY_STRUCTURE::COIL;
 			// uint		   _idFirstBond = 0;
 			// uint		   _bondCount	= 0;
 		};

@@ -213,7 +213,7 @@ namespace VTX
 		{
 			std::vector<int>   residueCountPerChain = std::vector<int>();
 			std::vector<float> positionsCA_O		= std::vector<float>();
-			std::vector<char>  seccondaryStruct		= std::vector<char>();
+			std::vector<char>  secondaryStructures	= std::vector<char>();
 
 			for ( const Chain * const chain : _chains )
 			{
@@ -224,25 +224,31 @@ namespace VTX
 					const Residue *						 residue		 = _residues[ chain->getIdFirstResidue() + i ];
 					const Residue::SECONDARY_STRUCTURE & secondaryStruct = residue->getSecondaryStructure();
 
-					if ( secondaryStruct != Residue::SECONDARY_STRUCTURE::NONE )
+					const Atom * const atomCA = residue->findFirstAtomByName( "CA" );
+					const Atom * const atomO  = residue->findFirstAtomByName( "O" );
+
+					if ( atomCA == nullptr || atomO == nullptr ) { VTX_ERROR( "CA or O not found in residue" ); }
+					else
 					{
-						const Atom * const atomCA = residue->findFirstAtomByName( "CA" );
-						const Atom * const atomO  = residue->findFirstAtomByName( "O" );
+						residueCount++;
 
-						if ( atomCA == nullptr || atomO == nullptr ) { VTX_ERROR( "CA or O not found in residue" ); }
-						else
+						// Push alpha carbon and oxygen positions.
+						Vec3f & positionCA = _bufferAtomPositions[ atomCA->getIndex() ];
+						Vec3f & positionO  = _bufferAtomPositions[ atomO->getIndex() ];
+						positionsCA_O.push_back( positionCA.x );
+						positionsCA_O.push_back( positionCA.y );
+						positionsCA_O.push_back( positionCA.y );
+						positionsCA_O.push_back( positionO.x );
+						positionsCA_O.push_back( positionO.y );
+						positionsCA_O.push_back( positionO.y );
+
+						switch ( secondaryStruct )
 						{
-							residueCount++;
-
-							// Push alpha carbon and oxygen positions.
-							Vec3f & positionCA = _bufferAtomPositions[ atomCA->getIndex() ];
-							Vec3f & positionO  = _bufferAtomPositions[ atomO->getIndex() ];
-							positionsCA_O.push_back( positionCA.x );
-							positionsCA_O.push_back( positionCA.y );
-							positionsCA_O.push_back( positionCA.y );
-							positionsCA_O.push_back( positionO.x );
-							positionsCA_O.push_back( positionO.y );
-							positionsCA_O.push_back( positionO.y );
+						case Residue::SECONDARY_STRUCTURE::HELIX_3_10:
+						case Residue::SECONDARY_STRUCTURE::HELIX_PI:
+						case Residue::SECONDARY_STRUCTURE::HELIX_ALPHA: secondaryStructures.push_back( 1 ); break;
+						case Residue::SECONDARY_STRUCTURE::SHEET: secondaryStructures.push_back( 2 ); break;
+						default: secondaryStructures.push_back( 0 ); break;
 						}
 					}
 				}
