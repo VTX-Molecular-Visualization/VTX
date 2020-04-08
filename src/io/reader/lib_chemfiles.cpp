@@ -169,12 +169,15 @@ namespace VTX
 						modelAtom.setResiduePtr( &modelResidue );
 						std::string	  atomSymbol = atom.type();
 						std::optional symbol	 = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
+
 						symbol.has_value() ? modelAtom.setSymbol( symbol.value() )
-										   : p_molecule.addUnknownAtomSymbol( atom.name() );
+										   : p_molecule.addUnknownAtomSymbol( atom.type() );
 						const uint * const colorStatic = Model::Atom::SYMBOL_COLOR[ (int)modelAtom.getSymbol() ];
 						const float		   color[ 3 ]  = { float( colorStatic[ 0 ] ) / 100.f,
 												   float( colorStatic[ 1 ] ) / 100.f,
 												   float( colorStatic[ 1 ] ) / 100.f };
+
+						modelAtom.setName( atom.name() );
 						modelAtom.setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
 
 						const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
@@ -182,6 +185,7 @@ namespace VTX
 						Vec3f atomPosition	 = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
 						modelFrame[ atomId ] = atomPosition;
 
+						// Check PRM.
 						if ( std::find( p_molecule.getPRM().solventIds.begin(),
 										p_molecule.getPRM().solventIds.end(),
 										atomType )

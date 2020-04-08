@@ -135,6 +135,7 @@ namespace VTX
 							const float		   color[ 3 ]  = { float( colorStatic[ 0 ] ) / 100.f,
 													   float( colorStatic[ 1 ] ) / 100.f,
 													   float( colorStatic[ 1 ] ) / 100.f };
+							atom.setName( group.atomNameList[ atomIdx ] );
 							atom.setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
 
 							x = p_data.xCoordList[ atomGlobalIdx ];
