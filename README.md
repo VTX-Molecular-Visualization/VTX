@@ -25,13 +25,13 @@
 
 ### SCRIPTABLE ACTIONS
 
--   command <param|param1 param2 ...|...>
+command < param | param1 param2 ... | ... >
 
 -   snapshot
--   change_representation BALL_AND_STICK|VAN_DER_WAALS|STICK
--   change_shading <LAMBERT|BLINN_PHONG|TOON>
--   change_color_mode <ATOM|RESIDUE|CHAIN|PROTEIN>
--   change_auto_rotate_speed <f f f|f>
+-   change_representation < BALL_AND_STICK | VAN_DER_WAALS | STICK | SAS >
+-   change_shading < LAMBERT | BLINN_PHONG | TOON  FLAT_COLOR >
+-   change_color_mode < ATOM | RESIDUE | CHAIN | PROTEIN >
+-   change_auto_rotate_speed < x y z | xyz > (float values between 0.0 and 1.0)
 
 ### FEATURES IN DEVELOPPEMENT
 
@@ -43,12 +43,16 @@
 ### WINDOWS VISUAL STUDIO 2019 x64
 
 #### 1. Make solution
+
 -   Install Visual Studio 2019 latest version with C++ tools.  
 -   Run _cmake.bat
 
 #### 2. Open solution
+
 Open "_windows/VTX.sln".
+
 #### 3. Install/configure ClangFormat
+
 Install [ClangFormat VS extension](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.ClangFormat).  
 Go to Tools -> Options, then under LLVM/Clang, set the following values:
 -   Format On Save
@@ -66,6 +70,7 @@ git curl cmake GL (libgl1-mesa-dev)
 ### MAC OS
 
 ### Some architecture points
+
 -   Action is designed to be undoable and launched by scripts. All menu items have to throw an action. An action can change the application state or stack workers.
 -   State is an application state with its enabled/disabled UI components and its controllers (mouse, keyboard...). For example the visualization state handles the FPS camera controler, refresh the renderer and update the scene each frame.
 -   Workers are functionalities that can be threaded, for example taking a snapshot or parse a file to load.
