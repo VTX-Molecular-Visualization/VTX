@@ -29,7 +29,7 @@ command < param | param1 param2 ... | ... >
 
 -   snapshot
 -   change_representation < BALL_AND_STICK | VAN_DER_WAALS | STICK | SAS >
--   change_shading < LAMBERT | BLINN_PHONG | TOON  FLAT_COLOR >
+-   change_shading < LAMBERT | BLINN_PHONG | TOON | FLAT_COLOR >
 -   change_color_mode < ATOM | RESIDUE | CHAIN | PROTEIN >
 -   change_auto_rotate_speed < x y z | xyz > (float values between 0.0 and 1.0)
 
