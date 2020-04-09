@@ -48,7 +48,7 @@ namespace VTX
 			_createBuffers();
 
 			// Fill buffers.
-			_fillBufferAtomPositions();
+			_fillBufferAtomPositions( true ); // true = is first frame
 			_fillBufferAtomRadius();
 			_fillBufferAtomColors();
 			_fillBufferAtomVisibilities();
@@ -81,23 +81,25 @@ namespace VTX
 			}
 
 			_currentFrame = p_frameIdx;
-			_fillBufferAtomPositions();
+			_fillBufferAtomPositions( false ); // false = not first frame
 		}
 
-		void Molecule::_fillBufferAtomPositions()
+		void Molecule::_fillBufferAtomPositions( const bool p_firstFrame )
 		{
-			_bufferAtomPositions.resize( _atoms.size() );
-			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
+			if ( p_firstFrame )
 			{
-				_bufferAtomPositions[ i ] = _atomPositionsFrames[ _currentFrame ][ i ];
+				glNamedBufferData( _atomPositionsVBO,
+								   sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
+								   _atomPositionsFrames[ _currentFrame ].data(),
+								   GL_STATIC_DRAW );
 			}
-
-			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
-			glBufferData( GL_ARRAY_BUFFER,
-						  sizeof( Vec3f ) * _bufferAtomPositions.size(),
-						  _bufferAtomPositions.data(),
-						  GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			else
+			{
+				glNamedBufferSubData( _atomPositionsVBO,
+									  0,
+									  sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
+									  _atomPositionsFrames[ _currentFrame ].data() );
+			}
 		}
 
 		void Molecule::_fillBufferAtomRadius()
@@ -108,10 +110,8 @@ namespace VTX
 				_bufferAtomRadius[ i ] = _atoms[ i ]->getVdwRadius();
 			}
 
-			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
-			glBufferData(
-				GL_ARRAY_BUFFER, sizeof( float ) * _bufferAtomRadius.size(), _bufferAtomRadius.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			glNamedBufferData(
+				_atomRadiusVBO, sizeof( float ) * _bufferAtomRadius.size(), _bufferAtomRadius.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferAtomColors()
@@ -142,10 +142,8 @@ namespace VTX
 				}
 			}
 
-			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
-			glBufferData(
-				GL_ARRAY_BUFFER, sizeof( Vec3f ) * _bufferAtomColors.size(), _bufferAtomColors.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			glNamedBufferData(
+				_atomColorsVBO, sizeof( Vec3f ) * _bufferAtomColors.size(), _bufferAtomColors.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()
@@ -183,12 +181,10 @@ namespace VTX
 				}
 			}
 
-			glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
-			glBufferData( GL_ARRAY_BUFFER,
-						  sizeof( uint ) * _bufferAtomVisibilities.size(),
-						  _bufferAtomVisibilities.data(),
-						  GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			glNamedBufferData( _atomVisibilitiesVBO,
+							   sizeof( uint ) * _bufferAtomVisibilities.size(),
+							   _bufferAtomVisibilities.data(),
+							   GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferBonds()
@@ -200,10 +196,7 @@ namespace VTX
 				_bufferBonds[ 2u * i + 1u ] = _bonds[ i ]->getIndexSecondAtom();
 			}
 
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
-			glBufferData(
-				GL_ELEMENT_ARRAY_BUFFER, sizeof( uint ) * _bufferBonds.size(), _bufferBonds.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			glNamedBufferData( _bondsIBO, sizeof( uint ) * _bufferBonds.size(), _bufferBonds.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::print() const
