@@ -178,7 +178,6 @@ namespace VTX
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
 			// Buffers.
-			std::vector<Vec3f> _bufferAtomPositions	   = std::vector<Vec3f>();
 			std::vector<float> _bufferAtomRadius	   = std::vector<float>();
 			std::vector<Vec3f> _bufferAtomColors	   = std::vector<Vec3f>();
 			std::vector<uint>  _bufferAtomVisibilities = std::vector<uint>();
@@ -210,11 +209,14 @@ namespace VTX
 			bool _showIon	  = true;
 
 			void _createBuffers();
-			void _fillBufferAtomPositions();
+			void _initBufferAtomPositions() const;
+			void _updateBufferAtomPositions() const;
 			void _fillBufferAtomRadius();
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();
 			void _fillBufferBonds();
+
+			void _computeSecondaryStructure();
 
 #ifdef _DEBUG
 		  public:

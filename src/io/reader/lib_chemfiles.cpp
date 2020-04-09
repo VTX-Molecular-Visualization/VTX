@@ -107,6 +107,7 @@ namespace VTX
 
 					// Check if chain name changed.
 					std::string chainName = "";
+
 					try
 					{
 						chainName = residue.properties().get( "chainname" ).value().as_string();
@@ -118,7 +119,6 @@ namespace VTX
 
 					if ( chainName != lastChainName || p_molecule.getChainCount() == 0 )
 					{
-						VTX_DEBUG( chainName );
 						// Create chain.
 						p_molecule.addChain();
 						chainModelId++;
@@ -148,6 +148,33 @@ namespace VTX
 					symbol.has_value() ? modelResidue.setSymbol( symbol.value() )
 									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 
+					try
+					{
+						std::string secondaryStructure
+							= residue.properties().get( "secondary_structure" ).value().as_string();
+						if ( secondaryStructure == "extended" )
+						{ modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::SHEET ); }
+						else if ( secondaryStructure == "turn" )
+						{
+							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::TURN );
+						}
+						else if ( secondaryStructure == "alpha helix" )
+						{
+							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX_ALPHA );
+						}
+						else if ( secondaryStructure == "pi helix" )
+						{
+							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX_PI );
+						}
+						else if ( secondaryStructure == "3-10 helix" )
+						{
+							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX_3_10 );
+						}
+					}
+					catch ( const std::exception & )
+					{
+					}
+
 					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 					{
 						const uint				atomId	 = uint( *it );
@@ -169,12 +196,15 @@ namespace VTX
 						modelAtom.setResiduePtr( &modelResidue );
 						std::string	  atomSymbol = atom.type();
 						std::optional symbol	 = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
+
 						symbol.has_value() ? modelAtom.setSymbol( symbol.value() )
-										   : p_molecule.addUnknownAtomSymbol( atom.name() );
+										   : p_molecule.addUnknownAtomSymbol( atom.type() );
 						const uint * const colorStatic = Model::Atom::SYMBOL_COLOR[ (int)modelAtom.getSymbol() ];
 						const float		   color[ 3 ]  = { float( colorStatic[ 0 ] ) / 100.f,
 												   float( colorStatic[ 1 ] ) / 100.f,
 												   float( colorStatic[ 1 ] ) / 100.f };
+
+						modelAtom.setName( atom.name() );
 						modelAtom.setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
 
 						const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
@@ -182,6 +212,7 @@ namespace VTX
 						Vec3f atomPosition	 = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
 						modelFrame[ atomId ] = atomPosition;
 
+						// Check PRM.
 						if ( std::find( p_molecule.getPRM().solventIds.begin(),
 										p_molecule.getPRM().solventIds.end(),
 										atomType )

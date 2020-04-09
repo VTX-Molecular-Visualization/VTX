@@ -1,5 +1,5 @@
-#ifndef __VTX_DEFINES__
-#define __VTX_DEFINES__
+#ifndef __VTX_DEFINE__
+#define __VTX_DEFINE__
 
 #ifdef _MSC_VER
 #pragma once
@@ -34,7 +34,7 @@ namespace VTX
 	// VTX.
 	constexpr int VTX_VERSION_MAJOR	   = 0;
 	constexpr int VTX_VERSION_MINOR	   = 0;
-	constexpr int VTX_VERSION_REVISION = 3;
+	constexpr int VTX_VERSION_REVISION = 4;
 
 	constexpr int	  OPENGL_VERSION_MAJOR = 4;
 	constexpr int	  OPENGL_VERSION_MINOR = 5;

@@ -1,4 +1,5 @@
 #include "molecule.hpp"
+#include "cartoon/ribbon.hpp"
 #include "util/color.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
@@ -48,11 +49,14 @@ namespace VTX
 			_createBuffers();
 
 			// Fill buffers.
-			_fillBufferAtomPositions();
+			_initBufferAtomPositions(); // true = is first frame
 			_fillBufferAtomRadius();
 			_fillBufferAtomColors();
 			_fillBufferAtomVisibilities();
 			_fillBufferBonds();
+
+			// Compute seconndary structure meshes.
+			_computeSecondaryStructure();
 
 			// Set default representation.
 			setRepresentation();
@@ -81,23 +85,24 @@ namespace VTX
 			}
 
 			_currentFrame = p_frameIdx;
-			_fillBufferAtomPositions();
+			_updateBufferAtomPositions();
 		}
 
-		void Molecule::_fillBufferAtomPositions()
+		void Molecule::_initBufferAtomPositions() const
 		{
-			_bufferAtomPositions.resize( _atoms.size() );
-			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
-			{
-				_bufferAtomPositions[ i ] = _atomPositionsFrames[ _currentFrame ][ i ];
-			}
+			glNamedBufferData( _atomPositionsVBO,
+							   sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
+							   _atomPositionsFrames[ _currentFrame ].data(),
+							   // static data ? buffer will never be modified : buffer will be updated each X frames
+							   _atomPositionsFrames.size() == 1 ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW );
+		}
 
-			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
-			glBufferData( GL_ARRAY_BUFFER,
-						  sizeof( Vec3f ) * _bufferAtomPositions.size(),
-						  _bufferAtomPositions.data(),
-						  GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		void Molecule::_updateBufferAtomPositions() const
+		{
+			glNamedBufferSubData( _atomPositionsVBO,
+								  0,
+								  sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
+								  _atomPositionsFrames[ _currentFrame ].data() );
 		}
 
 		void Molecule::_fillBufferAtomRadius()
@@ -108,10 +113,8 @@ namespace VTX
 				_bufferAtomRadius[ i ] = _atoms[ i ]->getVdwRadius();
 			}
 
-			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
-			glBufferData(
-				GL_ARRAY_BUFFER, sizeof( float ) * _bufferAtomRadius.size(), _bufferAtomRadius.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			glNamedBufferData(
+				_atomRadiusVBO, sizeof( float ) * _bufferAtomRadius.size(), _bufferAtomRadius.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferAtomColors()
@@ -142,10 +145,8 @@ namespace VTX
 				}
 			}
 
-			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
-			glBufferData(
-				GL_ARRAY_BUFFER, sizeof( Vec3f ) * _bufferAtomColors.size(), _bufferAtomColors.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			glNamedBufferData(
+				_atomColorsVBO, sizeof( Vec3f ) * _bufferAtomColors.size(), _bufferAtomColors.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()
@@ -183,12 +184,10 @@ namespace VTX
 				}
 			}
 
-			glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
-			glBufferData( GL_ARRAY_BUFFER,
-						  sizeof( uint ) * _bufferAtomVisibilities.size(),
-						  _bufferAtomVisibilities.data(),
-						  GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			glNamedBufferData( _atomVisibilitiesVBO,
+							   sizeof( uint ) * _bufferAtomVisibilities.size(),
+							   _bufferAtomVisibilities.data(),
+							   GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferBonds()
@@ -200,10 +199,7 @@ namespace VTX
 				_bufferBonds[ 2u * i + 1u ] = _bonds[ i ]->getIndexSecondAtom();
 			}
 
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
-			glBufferData(
-				GL_ELEMENT_ARRAY_BUFFER, sizeof( uint ) * _bufferBonds.size(), _bufferBonds.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			glNamedBufferData( _bondsIBO, sizeof( uint ) * _bufferBonds.size(), _bufferBonds.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::print() const
@@ -403,5 +399,15 @@ namespace VTX
 
 			return true;
 		}
-	} // namespace Model
+
+		void Molecule::_computeSecondaryStructure()
+		{
+			return;
+			for ( const Chain * const chain : getChains() )
+			{
+				Cartoon::createChainMesh( *chain );
+			}
+
+		} // namespace Model
+	}	  // namespace Model
 } // namespace VTX

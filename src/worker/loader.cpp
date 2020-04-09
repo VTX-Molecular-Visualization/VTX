@@ -46,6 +46,10 @@ namespace VTX
 					}
 					delete reader;
 				}
+				else
+				{
+					VTX_ERROR( "File not supported" );
+				}
 				delete path;
 			}
 		}
@@ -67,6 +71,10 @@ namespace VTX
 				return new IO::Reader::LibChemfiles();
 			}
 			else if ( extension == "xyz" )
+			{
+				return new IO::Reader::LibChemfiles();
+			}
+			else if ( extension == "dcd" )
 			{
 				return new IO::Reader::LibChemfiles();
 			}
