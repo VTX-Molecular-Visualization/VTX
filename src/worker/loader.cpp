@@ -38,7 +38,9 @@ namespace VTX
 					{
 						molecule = new Model::Molecule();
 						molecule->setPRM( prm );
-						if ( _loadMolecule( molecule, reader, path ) == false ) { delete molecule; }
+						if ( _loadMolecule( molecule, reader, path ) == false ) {
+							VTX_ERROR( "Error creating models" );
+							delete molecule; }
 						else
 						{
 							molecule->init();
