@@ -93,7 +93,8 @@ namespace VTX
 			glNamedBufferData( _atomPositionsVBO,
 							   sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
 							   _atomPositionsFrames[ _currentFrame ].data(),
-							   GL_STATIC_DRAW );
+							   // static data ? buffer will never be modified : buffer will be updated each X frames
+							   _atomPositionsFrames.size() == 1 ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW );
 		}
 
 		void Molecule::_updateBufferAtomPositions() const
