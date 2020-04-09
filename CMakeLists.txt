@@ -61,6 +61,8 @@ add_executable(VTX ${HPP} ${CPP} ${LIB})
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VTX)
 
 # Link libs.
+target_link_libraries(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.2/lib/x64/cudart_static.lib")
+target_link_libraries(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.2/lib/x64/cuda.lib")
 target_link_libraries(VTX PRIVATE SDL2)
 target_link_libraries(VTX PRIVATE SDL2main)
 target_link_libraries(VTX PRIVATE assimp-vc142-mt)
@@ -88,6 +90,9 @@ if(WIN32)
 endif()
 
 # Includes directories.
+# TODO: no absolute paths for CUDA and OptiX
+target_include_directories(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.2/include")
+target_include_directories(VTX PRIVATE "C:/ProgramData/NVIDIA Corporation/OptiX SDK 7.0.0/include")
 target_include_directories(VTX PRIVATE ${PATH_SRC})
 target_include_directories(VTX PRIVATE ${PATH_LIB})
 target_include_directories(VTX PRIVATE ${PATH_LIB}/GL)
@@ -110,4 +115,7 @@ elseif(MSVC)
 	target_compile_options(VTX PRIVATE "/Ot")  # Favor speed.
 	#Code Generation.
 	target_compile_options(VTX PRIVATE "/fp:fast") # Floating Point Model.
+	#Preprocessor definitions
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+	add_definitions(-DNOMINMAX)
 endif()
