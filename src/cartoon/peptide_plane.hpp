@@ -23,7 +23,7 @@ namespace VTX
 			{
 				const Model::Atom * const CA1 = p_residue1.findFirstAtomByName( "CA" );
 				const Model::Atom * const O1  = p_residue1.findFirstAtomByName( "O" );
-				const Model::Atom * const CA2 = p_residue1.findFirstAtomByName( "CA" );
+				const Model::Atom * const CA2 = p_residue2.findFirstAtomByName( "CA" );
 
 				// What to do?
 				if ( CA1 == nullptr || O1 == nullptr || CA2 == nullptr )
