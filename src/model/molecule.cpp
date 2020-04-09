@@ -1,4 +1,5 @@
 #include "molecule.hpp"
+#include "cartoon/ribbon.hpp"
 #include "util/color.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
@@ -53,6 +54,9 @@ namespace VTX
 			_fillBufferAtomColors();
 			_fillBufferAtomVisibilities();
 			_fillBufferBonds();
+
+			// Compute seconndary structure meshes.
+			_computeSecondaryStructure();
 
 			// Set default representation.
 			setRepresentation();
@@ -396,5 +400,15 @@ namespace VTX
 
 			return true;
 		}
-	} // namespace Model
+
+		void Molecule::_computeSecondaryStructure()
+		{
+			return;
+			for ( const Chain * const chain : getChains() )
+			{
+				Cartoon::createChainMesh( *chain );
+			}
+
+		} // namespace Model
+	}	  // namespace Model
 } // namespace VTX

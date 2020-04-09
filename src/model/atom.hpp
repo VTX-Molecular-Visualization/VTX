@@ -157,7 +157,7 @@ namespace VTX
 			static const float		 SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ];
 			static uint				 SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ][ 3 ];
 
-			inline uint				getIndex() const { return _index; };
+			inline const uint		getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
@@ -172,20 +172,22 @@ namespace VTX
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
 			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ (int)_symbol ]; }
-
-			inline ATOM_TYPE getType() const { return _type; }
-			inline void		 setType( const ATOM_TYPE p_type ) { _type = p_type; }
+			inline ATOM_TYPE		   getType() const { return _type; }
+			inline void				   setType( const ATOM_TYPE p_type ) { _type = p_type; }
+			inline const std::string & getName() const { return _name; };
+			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
 			virtual void setSelected( const bool ) override;
 
 		  private:
-			uint	   _index		= 0;
-			Molecule * _moleculePtr = nullptr;
-			Chain *	   _chainPtr	= nullptr;
-			Residue *  _residuePtr	= nullptr;
-			ATOM_TYPE  _type		= ATOM_TYPE::NORMAL;
-
-			ATOM_SYMBOL _symbol = ATOM_SYMBOL::UNKNOWN;
+			uint		_index		 = 0;
+			Molecule *	_moleculePtr = nullptr;
+			Chain *		_chainPtr	 = nullptr;
+			Residue *	_residuePtr	 = nullptr;
+			ATOM_TYPE	_type		 = ATOM_TYPE::NORMAL;
+			ATOM_SYMBOL _symbol		 = ATOM_SYMBOL::UNKNOWN;
+			// /!\ Names PDB != MMTF (CA and C1 for alpha carbon).
+			std::string _name = "";
 		};
 
 	} // namespace Model
