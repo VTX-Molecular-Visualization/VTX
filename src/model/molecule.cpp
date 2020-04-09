@@ -1,4 +1,5 @@
 #include "molecule.hpp"
+#include "cartoon/ribbon.hpp"
 #include "util/color.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
@@ -209,55 +210,6 @@ namespace VTX
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 		}
 
-		void Molecule::_computeSecondaryStructure()
-		{
-			std::vector<int>   residueCountPerChain = std::vector<int>();
-			std::vector<float> positionsCA_O		= std::vector<float>();
-			std::vector<char>  secondaryStructures	= std::vector<char>();
-
-			for ( const Chain * const chain : _chains )
-			{
-				int residueCount = 0;
-
-				for ( uint i = 0; i < chain->getResidueCount(); ++i )
-				{
-					const Residue *						 residue		 = _residues[ chain->getIdFirstResidue() + i ];
-					const Residue::SECONDARY_STRUCTURE & secondaryStruct = residue->getSecondaryStructure();
-
-					const Atom * const atomCA = residue->findFirstAtomByName( "CA" );
-					const Atom * const atomO  = residue->findFirstAtomByName( "O" );
-
-					if ( atomCA == nullptr || atomO == nullptr ) { VTX_ERROR( "CA or O not found in residue" ); }
-					else
-					{
-						residueCount++;
-
-						// Push alpha carbon and oxygen positions.
-						Vec3f & positionCA = _bufferAtomPositions[ atomCA->getIndex() ];
-						Vec3f & positionO  = _bufferAtomPositions[ atomO->getIndex() ];
-						positionsCA_O.push_back( positionCA.x );
-						positionsCA_O.push_back( positionCA.y );
-						positionsCA_O.push_back( positionCA.y );
-						positionsCA_O.push_back( positionO.x );
-						positionsCA_O.push_back( positionO.y );
-						positionsCA_O.push_back( positionO.y );
-
-						switch ( secondaryStruct )
-						{
-						case Residue::SECONDARY_STRUCTURE::HELIX_3_10:
-						case Residue::SECONDARY_STRUCTURE::HELIX_PI:
-						case Residue::SECONDARY_STRUCTURE::HELIX_ALPHA: secondaryStructures.push_back( 1 ); break;
-						case Residue::SECONDARY_STRUCTURE::SHEET: secondaryStructures.push_back( 2 ); break;
-						default: secondaryStructures.push_back( 0 ); break;
-						}
-					}
-				}
-
-				// Push residue count.
-				if ( residueCount > 0 ) { residueCountPerChain.push_back( residueCount ); }
-			}
-		}
-
 		void Molecule::print() const
 		{
 			VTX_INFO( "Molecule: " + _name );
@@ -455,5 +407,14 @@ namespace VTX
 
 			return true;
 		}
-	} // namespace Model
+
+		void Molecule::_computeSecondaryStructure()
+		{
+			for ( const Chain * const chain : getChains() )
+			{
+				Cartoon::createChainMesh( *chain );
+			}
+
+		} // namespace Model
+	}	  // namespace Model
 } // namespace VTX

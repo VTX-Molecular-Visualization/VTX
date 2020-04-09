@@ -86,6 +86,12 @@ namespace VTX
 			}
 
 			template<typename T>
+			static inline auto cross( const T & p_lhs, const T & p_rhs )
+			{
+				return glm::cross( p_lhs, p_rhs );
+			}
+
+			template<typename T>
 			static inline auto dot( const T & p_lhs, const T & p_rhs )
 			{
 				return glm::dot( p_lhs, p_rhs );
