@@ -49,7 +49,7 @@ namespace VTX
 			_createBuffers();
 
 			// Fill buffers.
-			_fillBufferAtomPositions( true ); // true = is first frame
+			_initBufferAtomPositions(); // true = is first frame
 			_fillBufferAtomRadius();
 			_fillBufferAtomColors();
 			_fillBufferAtomVisibilities();
@@ -85,25 +85,23 @@ namespace VTX
 			}
 
 			_currentFrame = p_frameIdx;
-			_fillBufferAtomPositions( false ); // false = not first frame
+			_updateBufferAtomPositions();
 		}
 
-		void Molecule::_fillBufferAtomPositions( const bool p_firstFrame )
+		void Molecule::_initBufferAtomPositions() const
 		{
-			if ( p_firstFrame )
-			{
-				glNamedBufferData( _atomPositionsVBO,
-								   sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
-								   _atomPositionsFrames[ _currentFrame ].data(),
-								   GL_STATIC_DRAW );
-			}
-			else
-			{
-				glNamedBufferSubData( _atomPositionsVBO,
-									  0,
-									  sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
-									  _atomPositionsFrames[ _currentFrame ].data() );
-			}
+			glNamedBufferData( _atomPositionsVBO,
+							   sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
+							   _atomPositionsFrames[ _currentFrame ].data(),
+							   GL_STATIC_DRAW );
+		}
+
+		void Molecule::_updateBufferAtomPositions() const
+		{
+			glNamedBufferSubData( _atomPositionsVBO,
+								  0,
+								  sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
+								  _atomPositionsFrames[ _currentFrame ].data() );
 		}
 
 		void Molecule::_fillBufferAtomRadius()

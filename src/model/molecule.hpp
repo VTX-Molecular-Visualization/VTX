@@ -197,7 +197,8 @@ namespace VTX
 			bool _showIon	  = true;
 
 			void _createBuffers();
-			void _fillBufferAtomPositions( const bool p_firstFrame );
+			void _initBufferAtomPositions() const;
+			void _updateBufferAtomPositions() const;
 			void _fillBufferAtomRadius();
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();
