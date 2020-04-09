@@ -26,30 +26,38 @@ namespace VTX
 			}
 
 			// Load all files.
-			// If dynamic found, merge with latest toplogy molecule.
 			for ( const IO::Path * path : _paths )
 			{
 				VTX_INFO( "File " + path->getFileName() );
 
-				IO::Reader::BaseReader<Model::Molecule> * reader = _createReader( path );
-
-				if ( reader != nullptr )
+				try
 				{
-					molecule = new Model::Molecule();
-					molecule->setPRM( prm );
-					if ( _loadMolecule( molecule, reader, path ) == false ) { delete molecule; }
+					IO::Reader::BaseReader<Model::Molecule> * reader = _createReader( path );
+
+					if ( reader != nullptr )
+					{
+						molecule = new Model::Molecule();
+						molecule->setPRM( prm );
+						if ( _loadMolecule( molecule, reader, path ) == false ) { delete molecule; }
+						else
+						{
+							molecule->init();
+							molecule->print();
+							VTXApp::get().getScene().addMolecule( molecule );
+						}
+						delete reader;
+					}
 					else
 					{
-						molecule->init();
-						molecule->print();
-						VTXApp::get().getScene().addMolecule( molecule );
+						VTX_ERROR( "File not supported" );
 					}
-					delete reader;
 				}
-				else
+				catch(const std::exception & p_e)
 				{
-					VTX_ERROR( "File not supported" );
+					VTX_ERROR( "Error loading file" );		
+					VTX_ERROR( p_e.what() );	
 				}
+				
 				delete path;
 			}
 		}
