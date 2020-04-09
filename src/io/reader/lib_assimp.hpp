@@ -6,8 +6,8 @@
 #endif
 
 #include "base_reader.hpp"
-#include "model/molecule.hpp"
 #include "model/mesh_triangle.hpp"
+#include "model/molecule.hpp"
 
 namespace VTX
 {
@@ -18,8 +18,9 @@ namespace VTX
 			class LibAssimp : public BaseReader<Model::Molecule>, public BaseReader<Model::MeshTriangle>
 			{
 			  public:
-				virtual bool readFile( const Path &, Model::MeshTriangle & ) override { return false; }
+				virtual bool readFile( const Path &, Model::MeshTriangle & ) override;
 				virtual bool readBuffer( const std::string &, Model::MeshTriangle & ) override { return false; }
+
 				virtual bool readFile( const Path &, Model::Molecule & ) override;
 				virtual bool readBuffer( const std::string &, Model::Molecule & ) override { return false; }
 			};

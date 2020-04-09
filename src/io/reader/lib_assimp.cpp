@@ -13,6 +13,70 @@ namespace VTX
 	{
 		namespace Reader
 		{
+			bool LibAssimp::readFile( const Path & p_path, Model::MeshTriangle & p_mesh )
+			{
+				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
+
+				Assimp::Importer Importer;
+
+				const aiScene * const scene = Importer.ReadFile( p_path.c_str(), aiProcess_Triangulate );
+				if ( !scene )
+				{
+					VTX_ERROR( "Could not decode file: " + p_path.getFileName() );
+					return false;
+				}
+
+				const uint nbMeshes	   = scene->mNumMeshes;
+				uint	   nbTriangles = 0;
+				uint	   nbVertices  = 0;
+
+				for ( uint i = 0; i < nbMeshes; ++i )
+				{
+					const aiMesh * const mesh = scene->mMeshes[ i ];
+					nbTriangles += mesh->mNumFaces;
+					nbVertices += mesh->mNumVertices;
+				}
+
+				p_mesh.getTriangles().resize( nbTriangles );
+				p_mesh.getVertices().resize( nbVertices );
+
+				uint currentTriangle = 0;
+				uint currentVertex	 = 0;
+
+				for ( uint m = 0; m < nbMeshes; ++m )
+				{
+					const aiMesh * const	 mesh	  = scene->mMeshes[ m ];
+					const aiMaterial * const material = scene->mMaterials[ mesh->mMaterialIndex ];
+
+					for ( uint f = 0; f < mesh->mNumFaces; ++f, ++currentTriangle )
+					{
+						const aiFace face = mesh->mFaces[ f ];
+
+						Model::MeshTriangle::Triangle & tri = p_mesh.getTriangle( currentTriangle );
+
+						// triangulated ! :-)
+						for ( uint v = 0; v < 3; ++v )
+						{
+							const uint idV = face.mIndices[ v ];
+							tri._v[ v ]	   = idV;
+						}
+					}
+
+					for ( uint v = 0; v < mesh->mNumVertices; ++v, ++currentVertex )
+					{
+						Vec3f & vertex = p_mesh.getVertice( currentVertex );
+						vertex.x	   = mesh->mVertices[ v ].x;
+						vertex.y	   = mesh->mVertices[ v ].y;
+						vertex.z	   = mesh->mVertices[ v ].z;
+					}
+				}
+
+				VTX_INFO( "Models created: " + std::to_string( p_mesh.getVertices().size() ) + " vertices for "
+						  + std::to_string( p_mesh.getTriangles().size() ) + " faces" );
+
+				return true;
+			}
+
 			bool LibAssimp::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
