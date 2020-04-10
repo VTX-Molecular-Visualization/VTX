@@ -116,11 +116,7 @@ namespace VTX
 			inline const uint getAtomCount() const { return (uint)_atoms.size(); }
 			inline const uint getBondCount() const { return (uint)_bonds.size(); }
 
-			inline const Math::AABB & getAABB() const { return _aabb; }
-			inline void				  extendAABB( const Vec3f & p_position, const float p_radius )
-			{
-				_aabb.extend( p_position, p_radius );
-			}
+			inline const Math::AABB & getGlobalPositionsAABB() const { return _globalPositionsAABB; }
 
 			virtual void	  init() override;
 			void			  setRepresentation();
@@ -162,6 +158,8 @@ namespace VTX
 		  protected:
 			virtual void _addItems() override final;
 
+			void _computeGlobalPositionsAABB();
+
 		  private:
 			// Models.
 			std::string						_fileName = "";
@@ -182,7 +180,9 @@ namespace VTX
 			std::vector<uint>  _bufferAtomVisibilities = std::vector<uint>();
 			std::vector<uint>  _bufferBonds			   = std::vector<uint>();
 
-			Math::AABB _aabb;
+			// Global AABB of atom positions (taking into account each frame).
+			// TODO: find better name
+			Math::AABB _globalPositionsAABB;
 
 			// OpenGL buffers.
 			enum ATTRIBUTE_LOCATION

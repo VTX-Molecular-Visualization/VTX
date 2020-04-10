@@ -14,11 +14,11 @@ namespace VTX
 			const uint nbAtoms = p_molecule->getAtomCount();
 			const uint nbBonds = p_molecule->getBondCount();
 			// TODO: seems that molecule does not compute aabb anymore
-			const Math::AABB & aabb		= p_molecule->getAABB();
+			const Math::AABB & aabb		= p_molecule->getGlobalPositionsAABB();
 			const Vec3f		   centroid = aabb.centroid();
 			std::cout << "centroid " << centroid.x << " - " << centroid.y << " - " << centroid.z << std::endl;
 			std::cout << "min " << aabb._min.x << " - " << aabb._min.y << " - " << aabb._min.z << std::endl;
-			std::cout << "min " << aabb._max.x << " - " << aabb._max.y << " - " << aabb._max.z << std::endl;
+			std::cout << "max " << aabb._max.x << " - " << aabb._max.y << " - " << aabb._max.z << std::endl;
 
 			std::vector<Renderer::BasePrimitive *> primitives;
 			primitives.resize( nbAtoms + nbBonds );
@@ -122,7 +122,7 @@ namespace VTX
 			const Vec3f		   centroid2 = aabb.centroid();
 			std::cout << "centroid2 " << centroid2.x << " - " << centroid2.y << " - " << centroid2.z << std::endl;
 			std::cout << "min2 " << aabb2._min.x << " - " << aabb2._min.y << " - " << aabb2._min.z << std::endl;
-			std::cout << "min2 " << aabb2._max.x << " - " << aabb2._max.y << " - " << aabb2._max.z << std::endl;
+			std::cout << "max2 " << aabb2._max.x << " - " << aabb2._max.y << " - " << aabb2._max.z << std::endl;
 		}
 	} // namespace Renderer
 } // namespace VTX

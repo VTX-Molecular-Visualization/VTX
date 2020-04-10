@@ -45,6 +45,9 @@ namespace VTX
 			// Add views.
 			BaseModel::init();
 
+			// Compute global AABB of atom positions (taking into account each frame).
+			_computeGlobalPositionsAABB();
+
 			// Create GL buffers.
 			_createBuffers();
 
@@ -69,6 +72,17 @@ namespace VTX
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::D3::Cylinder>( this ) );
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::D3::Box>( this ) );
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::UI::MoleculeStructure>( this ) );
+		}
+
+		void Molecule::_computeGlobalPositionsAABB()
+		{
+			for ( AtomPositionsFrame frame : _atomPositionsFrames )
+			{
+				for ( Vec3f pos : frame )
+				{
+					_globalPositionsAABB.extend( pos );
+				}
+			}
 		}
 
 		void Molecule::setRepresentation() { _notifyViews( Event::VTX_EVENT_MODEL::CHANGE_REPRESENTATION ); }
