@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "exception.hpp"
 #include "io/path.hpp"
 
 namespace VTX
@@ -17,8 +18,10 @@ namespace VTX
 			class BaseReader
 			{
 			  public:
-				virtual bool readFile( const Path &, T & )			= 0;
-				virtual bool readBuffer( const std::string &, T & ) = 0;
+				virtual ~BaseReader() = default;
+
+				virtual void readFile( const Path &, T & )			= 0;
+				virtual void readBuffer( const std::string &, T & ) = 0;
 			};
 		} // namespace Reader
 	}	  // namespace IO

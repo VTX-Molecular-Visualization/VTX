@@ -20,11 +20,11 @@ namespace VTX
 			class LibMMTF : public BaseReader<Model::Molecule>
 			{
 			  public:
-				virtual bool readFile( const Path &, Model::Molecule & ) override;
-				virtual bool readBuffer( const std::string &, Model::Molecule & ) override;
+				virtual void readFile( const Path &, Model::Molecule & ) override;
+				virtual void readBuffer( const std::string &, Model::Molecule & ) override;
 
 			  private:
-				bool _readStructureData( const mmtf::StructureData &, Model::Molecule & );
+				void _readStructureData( const mmtf::StructureData &, Model::Molecule & );
 			};
 		} // namespace Reader
 	}	  // namespace IO

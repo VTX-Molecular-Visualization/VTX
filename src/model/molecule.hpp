@@ -30,7 +30,6 @@ namespace VTX
 		class BaseView3DMolecule;
 		class Molecule :
 			public BaseModel,
-			public Generic::BasePrintable,
 			public Generic::BaseTransformable,
 			public Generic::BaseRenderable,
 			public Generic::BaseColorable,

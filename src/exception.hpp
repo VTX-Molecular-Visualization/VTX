@@ -42,6 +42,12 @@ namespace VTX
 			explicit HTTPException( const std::string & p_err ) : std::runtime_error( "[HTTP] " + p_err ) {}
 		};
 
+		class IOException : public std::runtime_error
+		{
+		  public:
+			explicit IOException( const std::string & p_err ) : std::runtime_error( "[IO] " + p_err ) {}
+		};
+
 		class NotImplementedException : public std::runtime_error
 		{
 		  public:

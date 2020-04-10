@@ -9,7 +9,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			bool PRM::readFile( const Path & p_path, PRMFile & p_prm )
+			void PRM::readFile( const Path & p_path, PRMFile & p_prm )
 			{
 				std::ifstream	   file;
 				std::string		   line;
@@ -19,7 +19,7 @@ namespace VTX
 
 				file.open( p_path );
 
-				if ( !file.is_open() ) { return false; }
+				if ( !file.is_open() ) { throw Exception::IOException( "Cannot open file" ); }
 
 				while ( getline( file, line ) )
 				{
@@ -44,11 +44,7 @@ namespace VTX
 						p_prm.ionIds.push_back( id );
 					}
 				}
-
-				return true;
 			}
-
-			bool PRM::readBuffer( const std::string & p_buffer, PRMFile & p_prm ) { return false; }
 
 		} // namespace Reader
 	}	  // namespace IO

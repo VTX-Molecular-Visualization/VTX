@@ -3,8 +3,8 @@
 
 #include "define.hpp"
 #include "model/chain.hpp"
+#include "model/mesh_triangle.hpp"
 #include "model/residue.hpp"
-#include "object3d/mesh_triangle.hpp"
 #include "peptide_plane.hpp"
 #include "util/math.hpp"
 
@@ -26,10 +26,10 @@ namespace VTX
 
 		void createChainMesh( const Model::Chain & p_chain )
 		{
-			const Model::Molecule &				molecule	 = *p_chain.getMoleculePtr();
-			std::vector<Object3D::MeshTriangle> chainMeshes	 = std::vector<Object3D::MeshTriangle>();
-			std::vector<Cartoon::PeptidePlane>	planes		 = std::vector<Cartoon::PeptidePlane>();
-			int									residueCount = p_chain.getResidueCount();
+			const Model::Molecule &			   molecule		= *p_chain.getMoleculePtr();
+			std::vector<Model::MeshTriangle>   chainMeshes	= std::vector<Model::MeshTriangle>();
+			std::vector<Cartoon::PeptidePlane> planes		= std::vector<Cartoon::PeptidePlane>();
+			int								   residueCount = p_chain.getResidueCount();
 
 			// TODO: c'est de la merde.
 			for ( int i = -1; i < residueCount; ++i )
