@@ -18,6 +18,8 @@ namespace VTX
 			class BaseReader
 			{
 			  public:
+				virtual ~BaseReader() = default;
+
 				virtual void readFile( const Path &, T & )			= 0;
 				virtual void readBuffer( const std::string &, T & ) = 0;
 			};

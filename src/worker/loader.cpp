@@ -78,8 +78,8 @@ namespace VTX
 						VTX_ERROR( "Error loading file" );
 						VTX_ERROR( p_e.what() );
 					}
-					// ???
-					//delete reader;
+
+					delete reader;
 				}
 
 				delete path;
