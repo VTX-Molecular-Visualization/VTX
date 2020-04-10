@@ -132,7 +132,15 @@ namespace VTX
 						}
 					}
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Video" ) ) )
-					{ VTX_ACTION( new Action::PathExportVideo( VTXApp::get().getScene().getPaths()[ 0 ] ) ); }
+					{
+						VTX_ACTION( new Action::PathExportVideo( VTXApp::get().getScene().getPaths()[ 0 ],
+																 Worker::Snapshoter::MODE::GL ) );
+					}
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.VideoRT" ) ) )
+					{
+						VTX_ACTION( new Action::PathExportVideo( VTXApp::get().getScene().getPaths()[ 0 ],
+																 Worker::Snapshoter::MODE::RT ) );
+					}
 					ImGui::EndMenu();
 				}
 
@@ -315,11 +323,11 @@ namespace VTX
 					Model::Molecule * m1 = ( *( VTXApp::get().getScene().getMolecules().begin() ) ).first;
 					Model::Molecule * m2 = ( *( ++VTXApp::get().getScene().getMolecules().begin() ) ).first;
 
-					if ( m1->hasTopology() && m2->hasDynamic() && m2->hasTopology() == false )
+					if ( m1->hasTopology() && m2->hasTopology() == false )
 					{
 						if ( ImGui::Button( "Merge" ) ) { m2->mergeTopology( *m1 ); }
 					}
-					else if ( m2->hasTopology() && m1->hasDynamic() && m1->hasTopology() == false )
+					else if ( m2->hasTopology() && m1->hasTopology() == false )
 					{
 						if ( ImGui::Button( "Merge" ) ) { m1->mergeTopology( *m2 ); }
 					}

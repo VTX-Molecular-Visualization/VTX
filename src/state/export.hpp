@@ -7,6 +7,7 @@
 
 #include "base_state.hpp"
 #include "model/path.hpp"
+#include "worker/snapshoter.hpp"
 
 namespace VTX
 {
@@ -15,6 +16,12 @@ namespace VTX
 		class Export : public BaseState
 		{
 		  public:
+			struct Arg
+			{
+				Worker::Snapshoter::MODE mode;
+				Model::Path *			 path;
+			};
+
 			Export() = default;
 
 			virtual const std::string & getName() const override { return ID::State::EXPORT; }
@@ -23,7 +30,7 @@ namespace VTX
 			virtual void				update( const double ) override;
 
 		  private:
-			Model::Path *					 _path		 = nullptr;
+			Arg								 _arg;
 			const std::vector<std::string> * _actions	 = nullptr;
 			uint							 _frame		 = 0u;
 			uint							 _frameCount = 0u;
