@@ -304,7 +304,18 @@ namespace VTX
 				}
 				uint splitDim = centroidsAABB.largestAxis();
 
-				if ( nbPrimitives <= 2 )
+				if ( centroidsAABB._max[ splitDim ] == centroidsAABB._min[ splitDim ] )
+				{
+					// Create leaf _BVHBuildNode_
+					uint idFirstPrimitive = uint(p_outPrims.size());
+					for ( uint i = p_begin; i < p_end; ++i )
+					{
+						int idPrim = p_primsInfo[ i ]._idPrimitive;
+						p_outPrims.emplace_back( _primitives[ idPrim ] );
+					}
+					return new BVHBuildNode( idFirstPrimitive, nbPrimitives, aabb );
+				}
+				else if ( nbPrimitives <= 2 )
 				{
 					const uint idSplit = ( p_begin + p_end ) / 2;
 					std::nth_element( &p_primsInfo[ p_begin ],
