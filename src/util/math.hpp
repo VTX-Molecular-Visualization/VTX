@@ -86,15 +86,15 @@ namespace VTX
 			}
 
 			template<typename T>
-			static inline auto cross( const T & p_lhs, const T & p_rhs )
-			{
-				return glm::cross( p_lhs, p_rhs );
-			}
-
-			template<typename T>
 			static inline auto dot( const T & p_lhs, const T & p_rhs )
 			{
 				return glm::dot( p_lhs, p_rhs );
+			}
+
+			template<typename T>
+			static inline T cross( const T & p_lhs, const T & p_rhs )
+			{
+				return glm::cross( p_lhs, p_rhs );
 			}
 
 			template<typename T>
@@ -125,12 +125,6 @@ namespace VTX
 			static inline auto value_ptr( const T & p_value )
 			{
 				return glm::value_ptr( p_value );
-			}
-
-			template<typename T>
-			static inline T cross( const T & a, const T & b )
-			{
-				return glm::cross( a, b );
 			}
 
 			template<typename T>
