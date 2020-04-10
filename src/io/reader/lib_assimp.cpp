@@ -67,14 +67,10 @@ namespace VTX
 
 			void LibAssimp::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
-				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
-
 				Assimp::Importer Importer;
 
 				const aiScene * const scene = Importer.ReadFile( p_path.c_str(), 0 );
 				if ( !scene ) { throw Exception::IOException( "File has not scene" ); }
-
-				VTX_INFO( "Creating models..." );
 
 				// Set molecule properties.
 				p_molecule.setName( p_path.getFileNameWithoutExtension() );

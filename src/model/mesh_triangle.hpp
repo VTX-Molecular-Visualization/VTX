@@ -38,6 +38,8 @@ namespace VTX
 			const Vec3f &			   getVertice( uint p_idx ) const { return _vertices[ p_idx ]; }
 			Vec3f &					   getVertice( uint p_idx ) { return _vertices[ p_idx ]; }
 
+			virtual void print() const override;
+
 		  private:
 			std::vector<Triangle> _triangles;
 			std::vector<Vec3f>	  _vertices;
