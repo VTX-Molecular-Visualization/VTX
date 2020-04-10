@@ -27,6 +27,8 @@ namespace VTX
 			virtual void setShading() override;
 			virtual void resize( const uint, const uint ) override;
 
+			const inline std::vector<uchar> & getPixels() const { return _pixels; }
+
 		  private:
 			void _renderTiles( std::vector<uchar> &		p_image,
 							   const CameraRayTracing & p_camera,
@@ -51,10 +53,10 @@ namespace VTX
 
 		  private:
 			static const uint TILE_SIZE;
+			BaseIntegrator *  _integrator = nullptr;
 
-			BaseIntegrator * _integrator = nullptr;
-
-			Scene _scene;
+			Scene			   _scene;
+			std::vector<uchar> _pixels = std::vector<uchar>();
 
 			// TODO: keep gamma as Vec3f ?
 			Vec3f _gamma = Vec3f( 1.f );

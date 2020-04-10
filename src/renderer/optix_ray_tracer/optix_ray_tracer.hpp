@@ -27,6 +27,8 @@ namespace VTX
 			virtual void setShading() override;
 			virtual void resize( const uint, const uint ) override;
 
+			const inline std::vector<uchar4> & getPixels() const { return _pixels; }
+
 		  private:
 			void _initOptix();
 			void _createOptixContext();
@@ -43,7 +45,8 @@ namespace VTX
 			void _createOptixShaderBindingTable();
 
 		  private:
-			const Vec3f _backgroundColor = Vec3f( 0.f, 0.f, 0.f );
+			std::vector<uchar4> _pixels			 = std::vector<uchar4>();
+			const Vec3f			_backgroundColor = Vec3f( 0.f, 0.f, 0.f );
 
 			// model
 			std::vector<Optix::Sphere>	 _spheres;

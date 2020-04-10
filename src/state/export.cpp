@@ -55,8 +55,9 @@ namespace VTX
 			VTXApp::get().renderScene();
 
 			std::string counterStr = std::to_string( _frame );
-			VTX_ACTION( new Action::Snapshot( VIDEO_DIR + "snapshot" + std::string( 4 - counterStr.length(), '0' )
-											  + counterStr ) );
+			VTX_ACTION( new Action::Snapshot(
+				Worker::Snapshoter::MODE::GL,
+				VIDEO_DIR + "snapshot" + std::string( 4 - counterStr.length(), '0' ) + counterStr ) );
 
 			VTX_INFO( std::to_string( ( uint )( (float)_frame * 100 / _frameCount ) ) + "%" );
 

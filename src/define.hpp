@@ -105,6 +105,7 @@ namespace VTX
 	const std::string DATA_DIR	   = "../data/";
 	const std::string SHADER_DIR   = "../src/shaders/";
 	const std::string SNAPSHOT_DIR = "../snapshots/";
+	const std::string RENDER_DIR   = "../renders/";
 	const std::string PATHS_DIR	   = "../paths/";
 	const std::string VIDEO_DIR	   = "../videos/";
 

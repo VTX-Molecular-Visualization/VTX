@@ -17,8 +17,11 @@ namespace VTX
 		class Snapshot : public BaseAction
 		{
 		  public:
-			Snapshot() {}
-			Snapshot( std::string & p_fileName ) : _fileName( p_fileName ) {}
+			Snapshot( Worker::Snapshoter::MODE p_mode ) : _mode( p_mode ) {}
+			Snapshot( Worker::Snapshoter::MODE p_mode, std::string & p_fileName ) :
+				_mode( p_mode ), _fileName( p_fileName )
+			{
+			}
 
 			virtual void setParameters( std::vector<std::string> & p_parameters ) override {}
 
@@ -26,8 +29,15 @@ namespace VTX
 			{
 				Worker::Snapshoter snapshoter;
 
-				IO::Path path( _fileName + ".png" );
-				if ( snapshoter.takeSnapshot( path ) ) { VTX_INFO( "Snapshot taken: " + path.getFileName() ); }
+				IO::Path path( _mode == Worker::Snapshoter::MODE::GL ? SNAPSHOT_DIR + _fileName + ".png"
+																	 : RENDER_DIR + _fileName + ".png" );
+
+				if ( _mode == Worker::Snapshoter::MODE::GL && snapshoter.takeSnapshotGL( path ) )
+				{ VTX_INFO( "Snapshot taken: " + path.getFileName() ); }
+				else if ( _mode == Worker::Snapshoter::MODE::RT && snapshoter.takeSnapshotRT( path ) )
+				{
+					VTX_INFO( "Render computed: " + path.getFileName() );
+				}
 				else
 				{
 					VTX_WARNING( "Snapshot failed" );
@@ -37,7 +47,8 @@ namespace VTX
 			virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 
 		  private:
-			std::string _fileName = SNAPSHOT_DIR + Util::Time::getTimestamp();
+			Worker::Snapshoter::MODE _mode;
+			std::string				 _fileName = Util::Time::getTimestamp();
 		};
 	} // namespace Action
 } // namespace VTX

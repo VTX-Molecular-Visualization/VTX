@@ -204,11 +204,10 @@ namespace VTX
 			// example, this will have to do)
 			CUDA_SYNCHRONIZE_HANDLE_ERROR();
 
-			std::vector<uchar4> pixels( _width * _height );
-			_pixelsBuffer.memcpyDeviceToHost( (uchar4 *)( pixels.data() ),
+			_pixels.resize( _width * _height );
+			_pixelsBuffer.memcpyDeviceToHost( (uchar4 *)( _pixels.data() ),
 											  _launchParameters._frame._width * _launchParameters._frame._height );
 
-			stbi_write_png( "test Optix.png", _width, _height, 4, pixels.data(), 0 );
 			VTX_INFO( "Saved" );
 		}
 

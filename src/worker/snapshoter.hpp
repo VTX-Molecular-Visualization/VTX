@@ -14,7 +14,14 @@ namespace VTX
 		class Snapshoter
 		{
 		  public:
-			bool takeSnapshot( const IO::Path & p_path ) const;
+			enum class MODE : int
+			{
+				GL,
+				RT
+			};
+
+			bool takeSnapshotGL( const IO::Path & p_path ) const;
+			bool takeSnapshotRT( const IO::Path & p_path ) const;
 
 		  private:
 		};

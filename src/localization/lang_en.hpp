@@ -34,6 +34,7 @@ namespace VTX
 			{ "MainMenu.Import.Path", "Path" },
 			{ "MainMenu.Export", "Export" },
 			{ "MainMenu.Export.Snapshot", "Snapshot" },
+			{ "MainMenu.Export.Render", "Render" },
 			{ "MainMenu.Export.Path", "Path" },
 			{ "MainMenu.Export.Video", "Video" },
 			{ "MainMenu.Settings", "Options" },

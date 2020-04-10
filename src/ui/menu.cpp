@@ -117,7 +117,9 @@ namespace VTX
 				if ( ImGui::BeginMenu( LOCALE( "MainMenu.Export" ), isVisiblePtr() ) )
 				{
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Snapshot" ) ) )
-					{ VTX_ACTION( new Action::Snapshot() ); }
+					{ VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::GL ) ); }
+					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Render" ) ) )
+					{ VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) ); }
 					if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Path" ) ) )
 					{
 						try

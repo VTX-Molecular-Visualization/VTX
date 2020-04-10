@@ -2,7 +2,10 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "define.hpp"
 #include "io/path.hpp"
+#include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
+#include "renderer/ray_tracing/ray_tracer.hpp"
 #include "util/time.hpp"
+#include "vtx_app.hpp"
 #include <GL/gl3w.h>
 #include <imgui/imgui.h>
 #include <stb/stb_image_write.h>
@@ -12,7 +15,7 @@ namespace VTX
 {
 	namespace Worker
 	{
-		bool Snapshoter::takeSnapshot( const IO::Path & p_path ) const
+		bool Snapshoter::takeSnapshotGL( const IO::Path & p_path ) const
 		{
 			ImGuiIO &		   io	  = ImGui::GetIO();
 			uint			   width  = (uint)io.DisplaySize.x;
@@ -26,6 +29,34 @@ namespace VTX
 			stbi_write_png_compression_level = 0;
 			return stbi_write_png( p_path.c_str(), width, height, 3, buffer.data(), 0 );
 			// stbi_write_jpg( p_path.c_str(), width, height, 3, buffer.data(), 100 );
+		}
+
+		bool Snapshoter::takeSnapshotRT( const IO::Path & p_path ) const
+		{
+			ImGuiIO & io	 = ImGui::GetIO();
+			uint	  width	 = (uint)io.DisplaySize.x;
+			uint	  height = (uint)io.DisplaySize.y;
+
+//#define OPTIX_DEFINED
+#ifdef OPTIX_DEFINED
+			Renderer::OptixRayTracer * ort = new Renderer::OptixRayTracer();
+			ort->init( int( io.DisplaySize.x ), int( io.DisplaySize.y ) );
+			ort->renderFrame( VTXApp::get().getScene() );
+			const std::vector<uchar4> & pixels = ort->getPixels();
+			stbi_write_png_compression_level   = 0;
+			bool res						   = stbi_write_png( p_path.c_str(), width, height, 4, pixels.data(), 0 );
+			delete ort;
+			return res;
+#else
+			Renderer::RayTracer * rt = new Renderer::RayTracer();
+			rt->init( int( width ), int( height ) );
+			rt->renderFrame( VTXApp::get().getScene() );
+			const std::vector<uchar> & pixels = rt->getPixels();
+			stbi_write_png_compression_level  = 0;
+			bool res						  = stbi_write_png( p_path.c_str(), width, height, 3, pixels.data(), 0 );
+			delete rt;
+			return res;
+#endif
 		}
 
 	} // namespace Worker

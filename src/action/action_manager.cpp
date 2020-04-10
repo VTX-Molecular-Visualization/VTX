@@ -36,7 +36,7 @@ namespace VTX
 			BaseAction *  action  = nullptr;
 
 			// TODO: map with ids.
-			if ( command == "snapshot" ) { action = new Snapshot(); }
+			if ( command == "snapshot" ) { action = new Snapshot( Worker::Snapshoter::MODE::GL ); }
 			else if ( command == "change_representation" )
 			{
 				action = new ChangeRepresentation();

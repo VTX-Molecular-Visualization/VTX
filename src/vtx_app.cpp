@@ -1,12 +1,10 @@
 #include "vtx_app.hpp"
 #include "action/open.hpp"
+#include "action/snapshot.hpp"
 #include "id.hpp"
 #include "io/path.hpp"
 #include "model/molecule.hpp"
 #include "renderer/gl/gl.hpp"
-#include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
-#include "renderer/ray_tracing/ray_tracer.hpp"
-#include <thread>
 
 namespace VTX
 {
@@ -62,29 +60,11 @@ namespace VTX
 		VTX_INFO( "Application started" );
 		_ui->print();
 
-#define RT_ENABLED
-#ifdef RT_ENABLED
-		VTXApp::_isRunning = false;
-		IO::Path * path	   = new IO::Path( DATA_DIR + "6vsb.mmtf" );
+		IO::Path * path = new IO::Path( DATA_DIR + "6vsb.mmtf" );
 		// IO::Path * path	   = new IO::Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
 		VTX_ACTION( new Action::Open( path ) );
-
-		_actionManager->update( 0.f );
-		_workerManager->update( 0.f );
-
-#define OPTIX_DEFINED
-#ifdef OPTIX_DEFINED
-		Renderer::OptixRayTracer * ort = new Renderer::OptixRayTracer();
-		ort->init( int( io.DisplaySize.x ), int( io.DisplaySize.y ) );
-		ort->renderFrame( *_scene );
-		delete ort;
-#else
-		Renderer::RayTracer * rt = new Renderer::RayTracer();
-		rt->init( int( io.DisplaySize.x ), int( io.DisplaySize.y ) );
-		rt->renderFrame( *_scene );
-		delete rt;
-#endif
-#endif
+		// VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
+		//_isRunning = false;
 
 		while ( VTXApp::_isRunning )
 		{

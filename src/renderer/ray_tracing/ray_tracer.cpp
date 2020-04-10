@@ -35,11 +35,11 @@ namespace VTX
 				Vec3f camUp	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
 
 				// 6vsb
-				_pos = Vec3f( 93.404381f, 176.164490f, 253.466934f );
+				//_pos = Vec3f( 93.404381f, 176.164490f, 253.466934f );
 
-				Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
-				Vec3f camLeft  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
-				Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
+				// Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
+				// Vec3f camLeft  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
+				// Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
 
 				// 6m17
 				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
@@ -58,10 +58,10 @@ namespace VTX
 
 				// const float camFov = p_camera.getFov();
 
-				/*const Vec3f & camFront = p_camera.getFront();
+				const Vec3f & camFront = p_camera.getFront();
 				const Vec3f & camLeft  = p_camera.getLeft();
-				const Vec3f & camUp	   = p_camera.getUp();*/
-				const float camFov = p_camera.getFov();
+				const Vec3f & camUp	   = p_camera.getUp();
+				const float	  camFov   = p_camera.getFov();
 
 				const float ratio	   = float( _width ) / _height;
 				const float halfHeight = tan( glm::radians( camFov ) * 0.5f );
@@ -145,8 +145,8 @@ namespace VTX
 
 			const uint nbPixelSamples = 1;
 
-			uint			   size = _width * _height * 3 * sizeof( char );
-			std::vector<uchar> pixels( _width * _height * 3 );
+			uint size = _width * _height * 3 * sizeof( char );
+			_pixels.resize( _width * _height * 3 );
 
 			// init data for tiled rendering
 			const uint nbTilesX = ( _width + TILE_SIZE - 1 ) / TILE_SIZE;
@@ -175,18 +175,10 @@ namespace VTX
 
 			for ( uint i = 0; i < nbThreads; ++i )
 			{
-				threadPool.emplace_back( std::thread( [ this,
-														nbThreads,
-														&pixels,
-														&camera,
-														nbPixelSamples,
-														i,
-														nbTilesX,
-														nbTilesY,
-														nbTiles,
-														&nextTileId ]() {
-					_renderTiles( pixels, camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, nextTileId );
-				} ) );
+				threadPool.emplace_back( std::thread(
+					[ this, nbThreads, &camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, &nextTileId ]() {
+						_renderTiles( _pixels, camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, nextTileId );
+					} ) );
 			}
 			for ( std::thread & t : threadPool )
 			{
@@ -198,9 +190,6 @@ namespace VTX
 			const double time = chrono.elapsedTime();
 
 			VTX_INFO( "Rendering time: " + std::to_string( time * 1000. ) + "ms" );
-			VTX_INFO( "Save image as: test RT.png" );
-
-			stbi_write_png( "test RT.png", _width, _height, 3, pixels.data(), 0 );
 		}
 
 		void RayTracer::setShading() {}
