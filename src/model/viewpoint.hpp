@@ -7,7 +7,6 @@
 
 #include "base_model.hpp"
 #include "define.hpp"
-#include <glm/gtc/quaternion.hpp>
 
 namespace VTX
 {

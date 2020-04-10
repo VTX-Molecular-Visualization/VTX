@@ -6,7 +6,6 @@
 #endif
 
 #include "base_view_3d.hpp"
-#include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include "model/molecule.hpp"
 #include <GL/gl3w.h>

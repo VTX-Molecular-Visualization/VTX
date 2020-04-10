@@ -632,7 +632,7 @@ namespace VTX
 
 					float		fov		   = 60.f;
 					float		ratio	   = float( _width ) / _height;
-					const float halfHeight = tan( glm::radians( fov ) * 0.5f );
+					const float halfHeight = tan( Util::Math::radians( fov ) * 0.5f );
 					const float halfWidth  = ratio * halfHeight;
 					Vec3f		u		   = Util::Math::normalize( Util::Math::cross( camFront, camUp ) ) * halfWidth;
 					Vec3f		v		   = -Util::Math::normalize( Util::Math::cross( u, camFront ) ) * halfHeight;

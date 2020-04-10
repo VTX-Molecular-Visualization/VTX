@@ -64,7 +64,7 @@ namespace VTX
 				const float	  camFov   = p_camera.getFov();
 
 				const float ratio	   = float( _width ) / _height;
-				const float halfHeight = tan( glm::radians( camFov ) * 0.5f );
+				const float halfHeight = tan( Util::Math::radians( camFov ) * 0.5f );
 				const float halfWidth  = ratio * halfHeight;
 				_downLeftCorner		   = _pos + halfWidth * camLeft - halfHeight * camUp + camFront;
 				_du					   = -2.f * halfWidth * camLeft;
@@ -74,7 +74,7 @@ namespace VTX
 			Ray generateRay( const float p_sx, const float p_sy ) const
 			{
 				return Ray( _pos,
-							glm::normalize( _downLeftCorner + ( p_sx / _width ) * _du
+							Util::Math::normalize( _downLeftCorner + ( p_sx / _width ) * _du
 											+ ( ( _height - p_sy ) / _height ) * _dv - _pos ) );
 			}
 
@@ -107,9 +107,9 @@ namespace VTX
 
 			//_scene.addLight( new PointLight( Vec3f( 316.f, 192.f, 190.f ), VEC3F_XYZ, 5000.f ) );
 
-			_scene.addObject( new Plane( Vec3f( 0.327533f, -0.944138f, 0.036398f ),
-										 0.f, //
-										 new DiffuseMaterial( Vec3f( 0.5f, 0.6f, 0.8f ) ) ) );
+			//_scene.addObject( new Plane( Vec3f( 0.327533f, -0.944138f, 0.036398f ),
+			//							 0.f, //
+			//							 new DiffuseMaterial( Vec3f( 0.5f, 0.6f, 0.8f ) ) ) );
 
 			//_scene.addLight( new PointLight( Vec3f( 121.587879f, 209.315125f, 171.231781f ), VEC3F_XYZ, 30000.f ) );
 			//_scene.addLight( new PointLight( Vec3f( 600.f, 200.f, 400.f ), VEC3F_XYZ, 180000.f ) );
@@ -280,7 +280,7 @@ namespace VTX
 
 				color += Li;
 			}
-			return glm::clamp( color / float( p_nbPixelSamples ), VEC3F_ZERO, VEC3F_XYZ );
+			return Util::Math::clamp( color / float( p_nbPixelSamples ), VEC3F_ZERO, VEC3F_XYZ );
 		}
 
 	} // namespace Renderer

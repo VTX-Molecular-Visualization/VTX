@@ -19,7 +19,6 @@
 #include "residue.hpp"
 #include "util/logger.hpp"
 #include <GL/gl3w.h>
-#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 #include <unordered_set>
 #include <vector>

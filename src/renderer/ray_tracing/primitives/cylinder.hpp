@@ -38,13 +38,13 @@ namespace VTX
 				const Vec3f	  ov0 = o - _v0;
 				const Vec3f	  v	  = _v1 - _v0;
 
-				const float d0 = glm::dot( v, v );
-				const float d1 = glm::dot( v, d );
-				const float d2 = glm::dot( v, ov0 );
+				const float d0 = Util::Math::dot( v, v );
+				const float d1 = Util::Math::dot( v, d );
+				const float d2 = Util::Math::dot( v, ov0 );
 
 				const float a = d0 - d1 * d1;
-				const float b = d0 * glm::dot( ov0, d ) - d2 * d1;
-				const float c = d0 * glm::dot( ov0, ov0 ) - d2 * d2 - _radius * _radius * d0;
+				const float b = d0 * Util::Math::dot( ov0, d ) - d2 * d1;
+				const float c = d0 * Util::Math::dot( ov0, ov0 ) - d2 * d2 - _radius * _radius * d0;
 
 				const float h = b * b - a * c;
 

@@ -1,8 +1,6 @@
 #include "aabb.hpp"
-#include "glm/glm.hpp"
 #include "util/logger.hpp"
 #include "util/math.hpp"
-#include <glm/gtx/string_cast.hpp>
 
 namespace VTX
 {

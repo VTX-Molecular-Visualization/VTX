@@ -33,20 +33,42 @@ namespace VTX
 			//_materials.emplace_back( new PhongMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
 			_materials.emplace_back( new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
 
-			const std::vector<Vec3f> & atomPositions = p_molecule->getAtomPositionFrame( 0 );
+			std::map<Model::Chain *, Vec3f> mapColors;
+			const std::vector<Vec3f>		predefColors = {
+				   Vec3f( 0.145f, 0.886f, 0.906f ), // bleu clair
+				   Vec3f( 1.f, 0.247f, 0.4f ),		// rouge clair
+				   Vec3f( 0.969f, 0.772f, 0.172f )	// jaune ocre
+			};
+			uint idColor = 0;
 
+			const std::vector<Vec3f> & atomPositions = p_molecule->getAtomPositionFrame( 0 );
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
+				Model::Chain * chainPtr = p_molecule->getAtom( i ).getChainPtr();
+				if ( mapColors.find( chainPtr ) == mapColors.end() )
+				{
+					if ( idColor < uint( predefColors.size() ) )
+					{
+						mapColors[ chainPtr ] = predefColors[ idColor++ ];
+						if ( idColor < 1 ) idColor++;
+					}
+					else
+					{
+						mapColors[ chainPtr ] = chainPtr->getColor();
+					}
+				}
+				const Vec3f & color		  = mapColors[ chainPtr ];
 				primitives[ idPrimitive ] = new Renderer::Sphere(
-					positions[ i ], /*p_molecule->getAtomRadius( i )*/ 0.4f, _materials.back() );
+					positions[ i ], p_molecule->getAtomRadius( i ) /*0.4f*/, new DiffuseMaterial( color ) );
 				idPrimitive++;
 			}
 
 			for ( uint i = 0; i < nbBonds; ++i )
 			{
-				const Model::Bond & bond  = p_molecule->getBond( i );
-				const Vec3f &		a1	  = atomPositions[ bond.getIndexFirstAtom() ];
-				const Vec3f &		a2	  = atomPositions[ bond.getIndexSecondAtom() ];
+				const Model::Bond & bond = p_molecule->getBond( i );
+				const Vec3f &		a1	 = atomPositions[ bond.getIndexFirstAtom() ];
+				const Vec3f &		a2	 = atomPositions[ bond.getIndexSecondAtom() ];
+
 				primitives[ idPrimitive ] = new Renderer::Cylinder( a1, a2, 0.15f, _materials.front() );
 				idPrimitive++;
 			}
@@ -96,6 +118,11 @@ namespace VTX
 			// TODO: add options for splitMethod and maxPrimsLeaf
 			const uint maxPrimsLeaf = 8;
 			_bvh.build( primitives, maxPrimsLeaf, BVH::SplitMethod::SAH );
+			const Math::AABB & aabb2	 = _bvh.getAABB();
+			const Vec3f		   centroid2 = aabb.centroid();
+			std::cout << "centroid2 " << centroid2.x << " - " << centroid2.y << " - " << centroid2.z << std::endl;
+			std::cout << "min2 " << aabb2._min.x << " - " << aabb2._min.y << " - " << aabb2._min.z << std::endl;
+			std::cout << "min2 " << aabb2._max.x << " - " << aabb2._max.y << " - " << aabb2._max.z << std::endl;
 		}
 	} // namespace Renderer
 } // namespace VTX

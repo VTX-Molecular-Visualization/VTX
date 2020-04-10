@@ -33,7 +33,7 @@ namespace VTX
 			void translate( const Vec3f & );
 
 			Vec3f diagonal() const { return _max - _min; }
-			float diameter() const { return glm::length( diagonal() ); }
+			float diameter() const { return Util::Math::length( diagonal() ); }
 			float radius() const { return diameter() * 0.5f; }
 			Vec3f centroid() const { return ( _min + _max ) * 0.5f; }
 			uint  largestAxis() const

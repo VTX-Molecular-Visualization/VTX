@@ -20,10 +20,6 @@ namespace VTX
 			{
 				_computeAABB();
 			}
-			Sphere( const Sphere & p_node ) = default;			  // copy constructor
-			Sphere( Sphere && p_ray )		= default;			  // move constructor
-			Sphere & operator=( const Sphere & p_ray ) = default; // = copy
-			Sphere & operator=( Sphere && p_ray ) = default;	  // = move
 
 			const Vec3f & centroid() const { return _center; }
 			const float	  radius() const { return _radius; }
@@ -39,9 +35,9 @@ namespace VTX
 				const Vec3f & o		= p_ray.getOrigin();
 				const Vec3f & d		= p_ray.getDirection();
 				const Vec3f	  oc	= o - _center;
-				const float	  a		= glm::dot( d, d );
-				const float	  b		= glm::dot( oc, d );
-				const float	  c		= glm::dot( oc, oc ) - _radius * _radius;
+				const float	  a		= Util::Math::dot( d, d );
+				const float	  b		= Util::Math::dot( oc, d );
+				const float	  c		= Util::Math::dot( oc, oc ) - _radius * _radius;
 				const float	  delta = b * b - a * c;
 
 				if ( delta < 0.f ) return false;

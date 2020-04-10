@@ -12,7 +12,6 @@
 #include "action/transformable_set_translation.hpp"
 #include "action/visible_change_visibility.hpp"
 #include "vtx_app.hpp"
-#include <glm/gtx/euler_angles.hpp>
 
 namespace VTX
 {

@@ -3,7 +3,6 @@
 #include "exception.hpp"
 #include "util/color.hpp"
 #include "util/logger.hpp"
-#include <glm/gtc/type_ptr.hpp>
 #include <magic_enum.hpp>
 
 namespace VTX
