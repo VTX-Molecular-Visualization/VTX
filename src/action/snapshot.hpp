@@ -47,8 +47,8 @@ namespace VTX
 			virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 
 		  private:
-			Worker::Snapshoter::MODE _mode;
-			std::string				 _fileName = Util::Time::getTimestamp();
+			const Worker::Snapshoter::MODE _mode;
+			std::string					   _fileName = Util::Time::getTimestamp();
 		};
 	} // namespace Action
 } // namespace VTX

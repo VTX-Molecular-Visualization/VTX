@@ -37,6 +37,7 @@ namespace VTX
 			{ "MainMenu.Export.Render", "Render" },
 			{ "MainMenu.Export.Path", "Path" },
 			{ "MainMenu.Export.Video", "Video" },
+			{ "MainMenu.Export.VideoRT", "Video RT" },
 			{ "MainMenu.Settings", "Options" },
 			{ "MainMenu.Settings.Theme", "Theme" },
 			{ "MainMenu.Settings.SymbolDisplay", "Symbol display" },

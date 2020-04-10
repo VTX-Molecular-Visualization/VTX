@@ -8,12 +8,12 @@ namespace VTX
 		// Action loop
 		void Export::enter( void * const p_arg )
 		{
-			_path = (Model::Path *)p_arg;
+			_arg = *(Arg *)p_arg;
 
-			float duration = _path->getDuration();
+			float duration = _arg.path->getDuration();
 			_frameCount	   = uint( VIDEO_FPS * duration );
 
-			if ( _frameCount == 0u || _path->getViewpoints().size() < 2 )
+			if ( _frameCount == 0u || _arg.path->getViewpoints().size() < 2 )
 			{
 				VTX_WARNING( "Total time must be > 0" );
 				VTXApp::get().goToState( ID::State::VISUALIZATION );
@@ -26,7 +26,6 @@ namespace VTX
 
 		void Export::exit()
 		{
-			_path		= nullptr;
 			_actions	= nullptr;
 			_frame		= 0u;
 			_frameCount = 0u;
@@ -37,12 +36,12 @@ namespace VTX
 			BaseState::update( p_deltaTime );
 
 			float			 time	   = (float)_frame / VIDEO_FPS;
-			Model::Viewpoint viewpoint = _path->getInterpolatedViewpoint( time );
+			Model::Viewpoint viewpoint = _arg.path->getInterpolatedViewpoint( time );
 
 			// Action.
-			if ( _actions != _path->getCurrentActions( time ) )
+			if ( _actions != _arg.path->getCurrentActions( time ) )
 			{
-				_actions = _path->getCurrentActions( time );
+				_actions = _arg.path->getCurrentActions( time );
 				for ( const std::string & action : *_actions )
 				{
 					VTX_ACTION( action, true );
@@ -56,8 +55,7 @@ namespace VTX
 
 			std::string counterStr = std::to_string( _frame );
 			VTX_ACTION( new Action::Snapshot(
-				Worker::Snapshoter::MODE::GL,
-				VIDEO_DIR + "snapshot" + std::string( 4 - counterStr.length(), '0' ) + counterStr ) );
+				_arg.mode, VIDEO_DIR + "snapshot" + std::string( 4 - counterStr.length(), '0' ) + counterStr ) );
 
 			VTX_INFO( std::to_string( ( uint )( (float)_frame * 100 / _frameCount ) ) + "%" );
 
