@@ -1,6 +1,5 @@
 #include "lib_mmtf.hpp"
 #include "define.hpp"
-#include "exception.hpp"
 #include "util/color.hpp"
 #include "util/logger.hpp"
 #include <glm/gtc/type_ptr.hpp>
@@ -12,26 +11,14 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			bool LibMMTF::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			void LibMMTF::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				mmtf::StructureData data;
-
-				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
-				try
-				{
-					mmtf::decodeFromFile( data, p_path.c_str() );
-				}
-				catch ( const std::exception & p_e )
-				{
-					VTX_ERROR( "Could not decode file: " + p_path.getFileName() );
-					VTX_ERROR( p_e.what() );
-					return false;
-				}
-
+				mmtf::decodeFromFile( data, p_path.c_str() );
 				return _readStructureData( data, p_molecule );
 			}
 
-			bool LibMMTF::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule )
+			void LibMMTF::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule )
 			{
 				mmtf::StructureData data;
 				mmtf::decodeFromBuffer( data, p_buffer.c_str(), p_buffer.size() );
@@ -39,18 +26,11 @@ namespace VTX
 				return _readStructureData( data, p_molecule );
 			}
 
-			bool LibMMTF::_readStructureData( const mmtf::StructureData & p_data, Model::Molecule & p_molecule )
+			void LibMMTF::_readStructureData( const mmtf::StructureData & p_data, Model::Molecule & p_molecule )
 			{
 				// Check for consistency.
-				if ( p_data.hasConsistentData( true ) ) { VTX_INFO( "File loaded" ); }
-				else
-				{
-					VTX_ERROR( "Inconsistent file" );
-					return false;
-				}
-
-				VTX_INFO( std::to_string( p_data.numModels ) + " models found" );
-				VTX_INFO( "Creating models..." );
+				if ( p_data.hasConsistentData( true ) == false )
+				{ throw Exception::IOException( "File is not consistent" ); }
 
 				// Set molecule properties.
 				p_molecule.setName( p_data.title );
@@ -203,10 +183,6 @@ namespace VTX
 							   + std::to_string( p_molecule.bondCount ) + " / " + std::to_string( p_data.numBonds ) );
 				}
 #endif
-
-				VTX_INFO( "Models created" );
-
-				return true;
 			}
 
 		} // namespace Reader

@@ -1,6 +1,5 @@
 #include "lib_assimp.hpp"
 #include "define.hpp"
-#include "exception.hpp"
 #include "util/color.hpp"
 #include "util/logger.hpp"
 #include <assimp/Importer.hpp>
@@ -13,18 +12,12 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			bool LibAssimp::readFile( const Path & p_path, Model::MeshTriangle & p_mesh )
+			void LibAssimp::readFile( const Path & p_path, Model::MeshTriangle & p_mesh )
 			{
-				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
-
 				Assimp::Importer Importer;
 
 				const aiScene * const scene = Importer.ReadFile( p_path.c_str(), aiProcess_Triangulate );
-				if ( !scene )
-				{
-					VTX_ERROR( "Could not decode file: " + p_path.getFileName() );
-					return false;
-				}
+				if ( !scene ) { throw Exception::IOException( "File has not scene" ); }
 
 				const uint nbMeshes	   = scene->mNumMeshes;
 				uint	   nbTriangles = 0;
@@ -70,25 +63,16 @@ namespace VTX
 						vertex.z	   = mesh->mVertices[ v ].z;
 					}
 				}
-
-				VTX_INFO( "Models created: " + std::to_string( p_mesh.getVertices().size() ) + " vertices for "
-						  + std::to_string( p_mesh.getTriangles().size() ) + " faces" );
-
-				return true;
 			}
 
-			bool LibAssimp::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			void LibAssimp::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
 
 				Assimp::Importer Importer;
 
 				const aiScene * const scene = Importer.ReadFile( p_path.c_str(), 0 );
-				if ( !scene )
-				{
-					VTX_ERROR( "Could not decode file: " + p_path.getFileName() );
-					return false;
-				}
+				if ( !scene ) { throw Exception::IOException( "File has not scene" ); }
 
 				VTX_INFO( "Creating models..." );
 
@@ -184,10 +168,6 @@ namespace VTX
 						}
 					}
 				}
-
-				VTX_INFO( "Models created" );
-
-				return true;
 			} // namespace IO
 		}	  // namespace Reader
 	}		  // namespace IO

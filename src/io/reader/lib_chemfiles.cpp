@@ -12,19 +12,13 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			bool LibChemfiles::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			void LibChemfiles::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
-				VTX_INFO( "Loading " + p_path.getFileName() + "..." );
-
 				chemfiles::Trajectory trajectory( p_path, 'r' );
 
-				VTX_INFO( std::to_string( trajectory.nsteps() ) + " frames" );
+				VTX_INFO( std::to_string( trajectory.nsteps() ) + " frames found" );
 
-				if ( trajectory.nsteps() == 0 )
-				{
-					VTX_WARNING( "Empty trajectory" );
-					return false;
-				}
+				if ( trajectory.nsteps() == 0 ) { throw Exception::IOException( "Trajectory is empty" ); }
 
 				chemfiles::Frame						frame	 = trajectory.read();
 				const chemfiles::Topology &				topology = frame.topology();
@@ -35,14 +29,7 @@ namespace VTX
 				VTX_INFO( std::to_string( residues.size() ) + " residues" );
 				VTX_INFO( std::to_string( bonds.size() ) + " bonds" );
 
-				if ( frame.size() != topology.size() )
-				{
-					VTX_ERROR( "Data count missmatch : " + std::to_string( frame.size() )
-							   + " != " + std::to_string( topology.size() ) );
-					return false;
-				}
-
-				VTX_INFO( "Creating models..." );
+				if ( frame.size() != topology.size() ) { throw Exception::IOException( "Data count missmatch" ); }
 
 				// Set molecule properties.
 				if ( frame.get( "name" ) ) { p_molecule.setName( frame.get( "name" )->as_string() ); }
@@ -255,13 +242,6 @@ namespace VTX
 					modelBond.setIndexFirstAtom( uint( bond[ 0 ] ) );
 					modelBond.setIndexSecondAtom( uint( bond[ 1 ] ) );
 				}
-
-				return true;
-			}
-
-			bool LibChemfiles::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule )
-			{
-				return false;
 			}
 
 		} // namespace Reader

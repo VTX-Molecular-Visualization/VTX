@@ -8,6 +8,7 @@
 #include "base_worker.hpp"
 #include "io/path.hpp"
 #include "io/reader/base_reader.hpp"
+#include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 
 namespace VTX
@@ -17,6 +18,13 @@ namespace VTX
 		class Loader : public Worker::BaseWorker
 		{
 		  public:
+			enum MODE : int
+			{
+				UNKNOWN,
+				MOLECULE,
+				MESH
+			};
+
 			explicit Loader( const std::vector<IO::Path *> & p_paths ) : _paths( p_paths ) {}
 			~Loader() { _paths.clear(); }
 
@@ -25,10 +33,14 @@ namespace VTX
 		  private:
 			std::vector<IO::Path *> _paths;
 
-			IO::Reader::BaseReader<Model::Molecule> * _createReader( const IO::Path * const ) const;
-			bool									  _loadMolecule( Model::Molecule * const,
-																	 IO::Reader::BaseReader<Model::Molecule> * const,
-																	 const IO::Path * const ) const;
+			void _loadMolecule( Model::Molecule * const,
+								IO::Reader::BaseReader<Model::Molecule> * const,
+								const IO::Path * const ) const;
+			void _loadMesh( Model::MeshTriangle * const,
+							IO::Reader::BaseReader<Model::MeshTriangle> * const,
+							const IO::Path * const ) const;
+
+			MODE _getMode( const IO::Path & ) const;
 		};
 	} // namespace Worker
 } // namespace VTX
