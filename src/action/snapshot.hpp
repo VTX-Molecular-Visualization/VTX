@@ -48,7 +48,7 @@ namespace VTX
 
 		  private:
 			const Worker::Snapshoter::MODE _mode;
-			std::string					   _fileName = Util::Time::getTimestamp();
+			const std::string			   _fileName = Util::Time::getTimestamp();
 		};
 	} // namespace Action
 } // namespace VTX
