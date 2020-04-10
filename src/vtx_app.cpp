@@ -67,7 +67,7 @@ namespace VTX
 		VTX_ACTION( new Action::Open( path ) );
 		_actionManager->update( 0.f );
 		_workerManager->update( 0.f );
-		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) ;
+		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
 		_isRunning = false;
 #endif
 
