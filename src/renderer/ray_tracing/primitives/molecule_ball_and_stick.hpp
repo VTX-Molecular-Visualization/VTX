@@ -15,7 +15,7 @@ namespace VTX
 		class MoleculeBallAndStick : public BaseObject3D
 		{
 		  public:
-			MoleculeBallAndStick( Model::Molecule * p_molecule );
+			MoleculeBallAndStick( const Model::Molecule * p_molecule );
 			~MoleculeBallAndStick()
 			{
 				for ( Renderer::BaseMaterial * mtl : _materials )

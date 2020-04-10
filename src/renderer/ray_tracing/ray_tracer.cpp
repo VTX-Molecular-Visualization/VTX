@@ -11,6 +11,7 @@
 #include "primitives/molecule_ball_and_stick.hpp"
 #include "primitives/plane.hpp"
 #include "primitives/sphere.hpp"
+#include "primitives/triangleMesh.hpp"
 #include "tool/chrono.hpp"
 #include "util/sampler.hpp"
 #include "vtx_app.hpp"
@@ -35,11 +36,11 @@ namespace VTX
 				Vec3f camUp	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
 
 				// 6vsb
-				//_pos = Vec3f( 93.404381f, 176.164490f, 253.466934f );
+				/*_pos = Vec3f( 93.404381f, 176.164490f, 253.466934f );
 
-				// Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
-				// Vec3f camLeft  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
-				// Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
+				Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
+				Vec3f camLeft  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
+				Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );*/
 
 				// 6m17
 				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
@@ -56,13 +57,11 @@ namespace VTX
 				// const Vec3f & camLeft = Vec3f( 0.857589f, -0.514279f, 0.007590f );
 				// const Vec3f & camUp	  = Vec3f( -0.009190f, -0.000568f, 0.999958f );
 
-				// const float camFov = p_camera.getFov();
-
 				const Vec3f & camFront = p_camera.getFront();
 				const Vec3f & camLeft  = p_camera.getLeft();
 				const Vec3f & camUp	   = p_camera.getUp();
-				const float	  camFov   = p_camera.getFov();
 
+				const float camFov	   = p_camera.getFov();
 				const float ratio	   = float( _width ) / _height;
 				const float halfHeight = tan( Util::Math::radians( camFov ) * 0.5f );
 				const float halfWidth  = ratio * halfHeight;
@@ -75,7 +74,7 @@ namespace VTX
 			{
 				return Ray( _pos,
 							Util::Math::normalize( _downLeftCorner + ( p_sx / _width ) * _du
-											+ ( ( _height - p_sy ) / _height ) * _dv - _pos ) );
+												   + ( ( _height - p_sy ) / _height ) * _dv - _pos ) );
 			}
 
 		  private:
@@ -96,7 +95,15 @@ namespace VTX
 
 			resize( p_width, p_height );
 
-			_scene.addObject( new MoleculeBallAndStick( VTXApp::get().getScene().getMolecules().begin()->first ) );
+//#define TEST_TRIANGLE_MESH
+#ifdef TEST_TRIANGLE_MESH
+			_scene.addObject( new TriangleMesh( DATA_DIR + "Bunny.obj" ) );
+#else
+
+			for ( std::pair<const Model::Molecule *, float> pairMol : VTXApp::get().getScene().getMolecules() )
+			{
+				_scene.addObject( new MoleculeBallAndStick( pairMol.first ) );
+			}
 
 			//_scene.addObject( new Sphere( VEC3F_ZERO, 10.f, new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) ) );
 
@@ -131,6 +138,7 @@ namespace VTX
 			//								VEC3F_XYZ,
 			//								50.f ) );
 
+#endif
 			//_integrator = new AOIntegrator;
 			_integrator = new RayCastIntegrator;
 			//_integrator = new DirectLightingIntegrator;

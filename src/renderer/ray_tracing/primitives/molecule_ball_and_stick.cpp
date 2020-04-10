@@ -9,7 +9,7 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		MoleculeBallAndStick::MoleculeBallAndStick( Model::Molecule * p_molecule )
+		MoleculeBallAndStick::MoleculeBallAndStick( const Model::Molecule * p_molecule )
 		{
 			const uint nbAtoms = p_molecule->getAtomCount();
 			const uint nbBonds = p_molecule->getBondCount();
