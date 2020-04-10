@@ -33,13 +33,8 @@ namespace VTX
 		  private:
 			std::vector<IO::Path *> _paths;
 
-			void _loadMolecule( Model::Molecule * const,
-								IO::Reader::BaseReader<Model::Molecule> * const,
-								const IO::Path * const ) const;
-			void _loadMesh( Model::MeshTriangle * const,
-							IO::Reader::BaseReader<Model::MeshTriangle> * const,
-							const IO::Path * const ) const;
-
+			template<typename T>
+			void _load( T * const, IO::Reader::BaseReader<T> * const, const IO::Path * const ) const;
 			MODE _getMode( const IO::Path & ) const;
 		};
 	} // namespace Worker

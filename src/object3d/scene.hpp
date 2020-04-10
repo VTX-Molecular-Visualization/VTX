@@ -35,6 +35,7 @@ namespace VTX
 			void addMolecule( MoleculePtr const p_molecule ) { _molecules.emplace( p_molecule, 0.f ); }
 			void removeMolecule( MoleculePtr const p_molecule ) { _molecules.erase( p_molecule ); }
 			void addPath( PathPtr const p_path ) { _paths.emplace_back( p_path ); }
+			void addMesh( MeshTrianglePtr const p_mesh ) { _meshes.emplace_back( p_mesh ); }
 
 			inline Camera &						 getCamera() { return _camera; }
 			inline const Camera &				 getCamera() const { return _camera; }

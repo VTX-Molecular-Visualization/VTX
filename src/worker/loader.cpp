@@ -32,7 +32,7 @@ namespace VTX
 				VTX_INFO( "Loading " + path->getFileName() );
 				MODE mode = _getMode( *path );
 
-				if ( mode == MODE::UNKNOWN ) {}
+				if ( mode == MODE::UNKNOWN ) { VTX_ERROR("Format not supported"); }
 				else if ( mode == MODE::MOLECULE )
 				{
 					// Create reader.
@@ -50,9 +50,7 @@ namespace VTX
 					// Load.
 					try
 					{
-						_loadMolecule( molecule, reader, path );
-						molecule->init();
-						molecule->print();
+						_load( molecule, reader, path );
 						VTXApp::get().getScene().addMolecule( molecule );
 					}
 					catch ( const std::exception & p_e )
@@ -64,6 +62,26 @@ namespace VTX
 
 					delete reader;
 				}
+				else if ( mode == MODE::MESH )
+				{
+					IO::Reader::BaseReader<Model::MeshTriangle> * reader = new IO::Reader::LibAssimp();
+					Model::MeshTriangle *						  mesh = new Model::MeshTriangle();
+
+					try
+					{
+						_load( mesh, reader, path );
+						VTXApp::get().getScene().addMesh( mesh );
+					}
+					catch ( const std::exception & p_e )
+					{
+						delete mesh;
+						VTX_ERROR( "Error loading file" );
+						VTX_ERROR( p_e.what() );
+					}
+					// ???
+					//delete reader;
+				}
+
 				delete path;
 
 				chrono.stop();
@@ -71,28 +89,19 @@ namespace VTX
 			}
 		}
 
-		void Loader::_loadMolecule( Model::Molecule * const							p_molecule,
-									IO::Reader::BaseReader<Model::Molecule> * const p_reader,
-									const IO::Path * const							p_path ) const
+		template<typename T>
+		void Loader::_load( T * const						  p_data,
+							IO::Reader::BaseReader<T> * const p_reader,
+							const IO::Path * const			  p_path ) const
 		{
 			const IO::PathFake * fake = dynamic_cast<const IO::PathFake *>( p_path );
-			if ( fake ) { return p_reader->readBuffer( fake->read(), *p_molecule ); }
+			if ( fake ) { p_reader->readBuffer( fake->read(), *p_data ); }
 			else
 			{
-				return p_reader->readFile( *p_path, *p_molecule );
+				p_reader->readFile( *p_path, *p_data );
 			}
-		}
-
-		void Loader::_loadMesh( Model::MeshTriangle * const							p_mesh,
-								IO::Reader::BaseReader<Model::MeshTriangle> * const p_reader,
-								const IO::Path * const								p_path ) const
-		{
-			const IO::PathFake * fake = dynamic_cast<const IO::PathFake *>( p_path );
-			if ( fake ) { return p_reader->readBuffer( fake->read(), *p_mesh ); }
-			else
-			{
-				return p_reader->readFile( *p_path, *p_mesh );
-			}
+			p_data->init();
+			p_data->print();
 		}
 
 		Loader::MODE Loader::_getMode( const IO::Path & p_path ) const
