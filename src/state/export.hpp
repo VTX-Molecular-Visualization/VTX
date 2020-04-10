@@ -30,6 +30,7 @@ namespace VTX
 			virtual void				update( const double ) override;
 
 		  private:
+			std::string						 _directoryName;
 			Arg								 _arg;
 			const std::vector<std::string> * _actions	 = nullptr;
 			uint							 _frame		 = 0u;
