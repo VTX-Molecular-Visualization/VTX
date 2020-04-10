@@ -60,6 +60,7 @@ namespace VTX
 				const Vec3f & camFront = p_camera.getFront();
 				const Vec3f & camLeft  = p_camera.getLeft();
 				const Vec3f & camUp	   = p_camera.getUp();
+				//_pos -= camFront * 10.f;
 
 				const float camFov	   = p_camera.getFov();
 				const float ratio	   = float( _width ) / _height;
@@ -95,11 +96,6 @@ namespace VTX
 
 			resize( p_width, p_height );
 
-//#define TEST_TRIANGLE_MESH
-#ifdef TEST_TRIANGLE_MESH
-			_scene.addObject( new TriangleMesh( DATA_DIR + "Bunny.obj" ) );
-#else
-
 			for ( std::pair<const Model::Molecule *, float> pairMol : VTXApp::get().getScene().getMolecules() )
 			{
 				_scene.addObject( new MoleculeBallAndStick( pairMol.first ) );
@@ -125,11 +121,11 @@ namespace VTX
 			//	new QuadLight( Vec3f( 200.f, 400.f, 400.f ), VEC3F_Y * 60.f, VEC3F_X * 60.f, VEC3F_XYZ, 50.f ) );
 
 			// 6VSB
-			_scene.addLight( new QuadLight( Vec3f( -450.f, -200.f, -38.f ),
+			/*_scene.addLight( new QuadLight( Vec3f( -450.f, -200.f, -38.f ),
 											Vec3f( 0.327533f, -0.944138f, 0.036398f ) * 80.f,
 											-Vec3f( 0.112113f, 0.077086f, 0.990701f ) * 80.f,
 											VEC3F_XYZ,
-											200.f ) );
+											200.f ) );*/
 
 			//// 6M17
 			//_scene.addLight( new QuadLight( Vec3f( 0.f, 500.f, 188.f ),
@@ -138,7 +134,6 @@ namespace VTX
 			//								VEC3F_XYZ,
 			//								50.f ) );
 
-#endif
 			//_integrator = new AOIntegrator;
 			_integrator = new RayCastIntegrator;
 			//_integrator = new DirectLightingIntegrator;
@@ -162,7 +157,11 @@ namespace VTX
 			const uint nbTiles	= nbTilesX * nbTilesY;
 
 			// init parallel
-			const uint				 nbThreads = std::thread::hardware_concurrency();
+#ifdef _DEBUG
+			const uint nbThreads = 1;
+#else
+			const uint nbThreads = std::thread::hardware_concurrency();
+#endif
 			std::vector<std::thread> threadPool;
 			threadPool.reserve( nbThreads );
 

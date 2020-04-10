@@ -307,7 +307,7 @@ namespace VTX
 				if ( centroidsAABB._max[ splitDim ] == centroidsAABB._min[ splitDim ] )
 				{
 					// Create leaf _BVHBuildNode_
-					uint idFirstPrimitive = uint(p_outPrims.size());
+					uint idFirstPrimitive = uint( p_outPrims.size() );
 					for ( uint i = p_begin; i < p_end; ++i )
 					{
 						int idPrim = p_primsInfo[ i ]._idPrimitive;
