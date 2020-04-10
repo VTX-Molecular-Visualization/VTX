@@ -17,13 +17,13 @@ namespace VTX
 		class Snapshot : public BaseAction
 		{
 		  public:
-			Snapshot( Worker::Snapshoter::MODE p_mode ) : _mode( p_mode ) {}
-			Snapshot( Worker::Snapshoter::MODE p_mode, std::string & p_fileName ) :
+			Snapshot( const Worker::Snapshoter::MODE p_mode ) : _mode( p_mode ) {}
+			Snapshot( const Worker::Snapshoter::MODE p_mode, const std::string & p_fileName ) :
 				_mode( p_mode ), _fileName( p_fileName )
 			{
 			}
 
-			virtual void setParameters( std::vector<std::string> & p_parameters ) override {}
+			virtual void setParameters( const std::vector<std::string> & p_parameters ) override {}
 
 			virtual void execute() override
 			{

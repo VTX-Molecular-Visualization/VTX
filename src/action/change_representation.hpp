@@ -23,7 +23,7 @@ namespace VTX
 			{
 			}
 
-			virtual void setParameters( std::vector<std::string> & p_parameters ) override
+			virtual void setParameters( const std::vector<std::string> & p_parameters ) override
 			{
 				_representation = magic_enum::enum_cast<View::MOLECULE_REPRESENTATION>( p_parameters.at( 1 ) ).value();
 			}

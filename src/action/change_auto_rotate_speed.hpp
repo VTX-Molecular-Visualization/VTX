@@ -18,7 +18,7 @@ namespace VTX
 			explicit ChangeAutoRotateSpeed() {}
 			explicit ChangeAutoRotateSpeed( const Vec3f & p_value ) : _value( p_value ) {}
 
-			virtual void setParameters( std::vector<std::string> & p_parameters ) override
+			virtual void setParameters( const std::vector<std::string> & p_parameters ) override
 			{
 				if ( p_parameters.size() == 2 )
 				{
