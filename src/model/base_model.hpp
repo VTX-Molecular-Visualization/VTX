@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "generic/base_printable.hpp"
 #include "generic/has_collection.hpp"
 #include "math/transform.hpp"
 #include "selection/base_selectable.hpp"
@@ -15,7 +16,10 @@ namespace VTX
 {
 	namespace Model
 	{
-		class BaseModel : public Generic::HasCollection<View::BaseView<BaseModel>>, public Selection::BaseSelectable
+		class BaseModel :
+			public Generic::HasCollection<View::BaseView<BaseModel>>,
+			public Selection::BaseSelectable,
+			public Generic::BasePrintable
 		{
 		  public:
 			inline static long COUNTER = 0;

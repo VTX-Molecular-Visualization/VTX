@@ -18,14 +18,17 @@ namespace VTX
 			struct PRMFile
 			{
 				std::vector<uint> solventIds = std::vector<uint>();
-				std::vector<uint> ionIds = std::vector<uint>();
+				std::vector<uint> ionIds	 = std::vector<uint>();
 			};
 
 			class PRM : public BaseReader<PRMFile>
 			{
 			  public:
-				virtual bool readFile( const Path &, PRMFile & ) override;
-				virtual bool readBuffer( const std::string &, PRMFile & ) override;
+				virtual void readFile( const Path &, PRMFile & ) override;
+				virtual void readBuffer( const std::string &, PRMFile & ) override
+				{
+					throw Exception::NotImplementedException();
+				};
 
 			  private:
 			};

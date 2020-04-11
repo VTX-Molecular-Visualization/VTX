@@ -19,9 +19,9 @@ namespace VTX
 			View::MOLECULE_COLOR_MODE	  colorMode		 = View::MOLECULE_COLOR_MODE::CHAIN;
 			Renderer::MODE				  mode			 = Renderer::MODE::GL;
 			Renderer::SHADING			  shading		 = Renderer::SHADING::LAMBERT;
-			bool						  useVSync		 = true;
-			bool						  useAA			 = false;
-			bool						  useSSAO		 = true;
+			bool						  useVSync		 = VSYNC_DEFAULT;
+			bool						  useAA			 = SSAO_DEFAULT;
+			bool						  useSSAO		 = AA_DEFAULT;
 			float						  aoRadius		 = RENDERER_AO_RADIUS_DEFAULT;
 			int							  aoIntensity	 = RENDERER_AO_INTENSITY_DEFAULT;
 			int							  aoBlurSize	 = RENDERER_AO_BLUR_SIZE_DEFAULT;
