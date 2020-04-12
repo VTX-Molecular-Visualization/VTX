@@ -1,15 +1,16 @@
-#ifndef __MESH_TRIANGLE__
-#define __MESH_TRIANGLE__
+#ifndef __MODEL_MESH_TRIANGLE__
+#define __MODEL_MESH_TRIANGLE__
 
 #include "base_model.hpp"
 #include "define.hpp"
+#include "generic/base_transformable.hpp"
 #include <vector>
 
 namespace VTX
 {
 	namespace Model
 	{
-		class MeshTriangle : public BaseModel
+		class MeshTriangle : public BaseModel, public Generic::BaseTransformable
 		{
 		  public:
 			struct Triangle
