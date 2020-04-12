@@ -8,7 +8,7 @@
 #include "base_view.hpp"
 #include "generic/base_collectionable.hpp"
 #include "generic/base_renderable.hpp"
-#include "model/base_model.hpp"
+#include "model/base_model_3d.hpp"
 #include "object3d/camera.hpp"
 #include "renderer/gl/program_manager.hpp"
 
@@ -16,7 +16,7 @@ namespace VTX
 {
 	namespace View
 	{
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel3D, T>::value>>
 		class BaseView3D : public BaseView<T>, public Generic::BaseRenderable
 		{
 		  public:

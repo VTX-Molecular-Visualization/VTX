@@ -7,14 +7,10 @@
 
 #include "IO/reader/prm.hpp"
 #include "atom.hpp"
-#include "base_model.hpp"
+#include "base_model_3d.hpp"
 #include "bond.hpp"
 #include "chain.hpp"
 #include "define.hpp"
-#include "generic/base_printable.hpp"
-#include "generic/base_renderable.hpp"
-#include "generic/base_transformable.hpp"
-#include "generic/base_visible.hpp"
 #include "math/aabb.hpp"
 #include "residue.hpp"
 #include "util/logger.hpp"
@@ -28,12 +24,7 @@ namespace VTX
 	namespace Model
 	{
 		class BaseView3DMolecule;
-		class Molecule :
-			public BaseModel,
-			public Generic::BaseTransformable,
-			public Generic::BaseRenderable,
-			public Generic::BaseColorable,
-			public Generic::BaseVisible
+		class Molecule : public BaseModel3D, public Generic::BaseColorable
 		{
 		  public:
 			using AtomPositionsFrame = std::vector<Vec3f>;
