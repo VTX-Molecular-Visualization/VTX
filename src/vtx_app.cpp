@@ -60,8 +60,14 @@ namespace VTX
 		VTX_INFO( "Application started" );
 		_ui->print();
 
-//#define RT_TEST
-#ifdef RT_TEST
+#define AUTO_OPEN
+#ifdef AUTO_OPEN
+		IO::Path * path = new IO::Path( DATA_DIR + "r2d2_2.obj" );
+		VTX_ACTION( new Action::Open( path ) );
+#endif
+
+//#define RT_ENABLED
+#ifdef RT_ENABLED
 		// IO::Path * path	   = new IO::Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
 		IO::Path * path = new IO::Path( DATA_DIR + "6vsb.mmtf" );
 		VTX_ACTION( new Action::Open( path ) );

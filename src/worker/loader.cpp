@@ -32,7 +32,7 @@ namespace VTX
 				VTX_INFO( "Loading " + path->getFileName() );
 				MODE mode = _getMode( *path );
 
-				if ( mode == MODE::UNKNOWN ) { VTX_ERROR("Format not supported"); }
+				if ( mode == MODE::UNKNOWN ) { VTX_ERROR( "Format not supported" ); }
 				else if ( mode == MODE::MOLECULE )
 				{
 					// Create reader.
@@ -65,7 +65,7 @@ namespace VTX
 				else if ( mode == MODE::MESH )
 				{
 					IO::Reader::BaseReader<Model::MeshTriangle> * reader = new IO::Reader::LibAssimp();
-					Model::MeshTriangle *						  mesh = new Model::MeshTriangle();
+					Model::MeshTriangle *						  mesh	 = new Model::MeshTriangle();
 
 					try
 					{
