@@ -57,10 +57,16 @@ namespace VTX
 				// const Vec3f & camLeft = Vec3f( 0.857589f, -0.514279f, 0.007590f );
 				// const Vec3f & camUp	  = Vec3f( -0.009190f, -0.000568f, 0.999958f );
 
+				// 6VSB_2nd931.obj
+				/*_pos = Vec3f( 0.f, 0.f, 200.f );
+				const Vec3f & camFront = Util::Math::normalize( Vec3f( -14.541f, 14.0144f, 41.9241f ) - _pos );
+				Vec3f		  camUp	   = p_camera.getUp();
+				Vec3f		  camLeft  = Util::Math::cross( camUp, camFront );
+				camUp				   = Util::Math::cross( camLeft, camUp );*/
+
 				const Vec3f & camFront = p_camera.getFront();
 				const Vec3f & camLeft  = p_camera.getLeft();
 				const Vec3f & camUp	   = p_camera.getUp();
-				//_pos -= camFront * 10.f;
 
 				const float camFov	   = p_camera.getFov();
 				const float ratio	   = float( _width ) / _height;
@@ -96,10 +102,18 @@ namespace VTX
 
 			resize( p_width, p_height );
 
-			for ( std::pair<const Model::Molecule *, float> pairMol : VTXApp::get().getScene().getMolecules() )
+			// 6VSB_2nd931.obj
+			//_scene.addObject( new TriangleMesh( DATA_DIR + "6VSB_2nd931.obj" ) );
+			//_scene.addObject( new Plane( VEC3F_Y,
+			//							 -90.f, //
+			//							 new DiffuseMaterial( Vec3f( 0.5f, 0.6f, 0.8f ) ) ) );
+			//_scene.addLight(
+			//	new QuadLight( Vec3f( 200.f, 400.f, 300.f ), VEC3F_X * 80.f, VEC3F_Z * 80.f, VEC3F_XYZ, 100.f ) );
+
+			/*for ( std::pair<const Model::Molecule *, float> pairMol : VTXApp::get().getScene().getMolecules() )
 			{
 				_scene.addObject( new MoleculeBallAndStick( pairMol.first ) );
-			}
+			}*/
 
 			//_scene.addObject( new Sphere( VEC3F_ZERO, 10.f, new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) ) );
 
@@ -135,8 +149,8 @@ namespace VTX
 			//								50.f ) );
 
 			//_integrator = new AOIntegrator;
-			_integrator = new RayCastIntegrator;
-			//_integrator = new DirectLightingIntegrator;
+			//_integrator = new RayCastIntegrator;
+			_integrator = new DirectLightingIntegrator;
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -146,7 +160,7 @@ namespace VTX
 			VTX_INFO( "Render Frame" );
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
-			const uint nbPixelSamples = 1;
+			const uint nbPixelSamples = 256;
 
 			uint size = _width * _height * 3 * sizeof( char );
 			_pixels.resize( _width * _height * 3 );
@@ -215,6 +229,7 @@ namespace VTX
 			uint taskId = p_threadId;
 			while ( taskId < p_nbTiles )
 			{
+				std::cout << taskId << " / " << p_nbTiles << std::endl;
 				const uint tileY = taskId / p_nbTilesX;
 				const uint tileX = taskId - tileY * p_nbTilesX;
 				const uint x0	 = tileX * TILE_SIZE;
