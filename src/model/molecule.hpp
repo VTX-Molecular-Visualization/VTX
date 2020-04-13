@@ -5,16 +5,15 @@
 #pragma once
 #endif
 
-#include "IO/reader/prm.hpp"
 #include "atom.hpp"
 #include "base_model_3d.hpp"
 #include "bond.hpp"
 #include "chain.hpp"
 #include "define.hpp"
+#include "io/reader/prm.hpp"
 #include "math/aabb.hpp"
 #include "residue.hpp"
 #include "util/logger.hpp"
-#include <GL/gl3w.h>
 #include <iostream>
 #include <unordered_set>
 #include <vector>
@@ -136,12 +135,11 @@ namespace VTX
 
 			virtual void print() const override;
 
-			void bindBuffers();
-			void unbindBuffers();
+			virtual void bindBuffers() override;
+			virtual void unbindBuffers() override;
 
 			bool		 mergeTopology( const Molecule & );
 			inline void	 refreshVisibility() { _fillBufferAtomVisibilities(); }
-			virtual void render() override;
 			virtual void setSelected( const bool ) override;
 			virtual void setVisible( const bool ) override;
 

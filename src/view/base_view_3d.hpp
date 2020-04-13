@@ -11,6 +11,7 @@
 #include "model/base_model_3d.hpp"
 #include "object3d/camera.hpp"
 #include "renderer/gl/program_manager.hpp"
+#include "util/math.hpp"
 
 namespace VTX
 {
@@ -40,6 +41,11 @@ namespace VTX
 					Util::Math::value_ptr( p_camera.getViewMatrix() * _getModel().getTransform().get() ) );
 				glUniformMatrix4fv(
 					_uProjMatrix, 1, GL_FALSE, Util::Math::value_ptr( p_camera.getProjectionMatrix() ) );
+			}
+
+			virtual void notify( const Event::VTX_EVENT_MODEL & p_event ) override
+			{
+				if ( p_event == Event::VTX_EVENT_MODEL::RENDER && _isActive ) { render(); }
 			}
 		};
 	} // namespace View

@@ -9,6 +9,7 @@
 #include "generic/base_transformable.hpp"
 #include "generic/base_visible.hpp"
 #include "model/base_model.hpp"
+#include <GL/gl3w.h>
 
 namespace VTX
 {
@@ -22,6 +23,16 @@ namespace VTX
 		{
 		  public:
 			virtual ~BaseModel3D() = default;
+
+			virtual void render()
+			{
+				bindBuffers();
+				_notifyViews( Event::VTX_EVENT_MODEL::RENDER );
+				unbindBuffers();
+			}
+
+			virtual void bindBuffers()	 = 0;
+			virtual void unbindBuffers() = 0;
 		};
 	} // namespace Model
 } // namespace VTX

@@ -31,7 +31,6 @@ namespace VTX
 			if ( _atomColorsVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomColorsVBO );
 			if ( _atomVisibilitiesVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomVisibilitiesVBO );
 			if ( _bondsIBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_bondsIBO );
-
 			if ( _vao != GL_INVALID_VALUE ) glDeleteVertexArrays( 1, &_vao );
 
 			Generic::clearVector<Atom>( _atoms );
@@ -316,13 +315,6 @@ namespace VTX
 		{
 			glBindVertexArray( 0 );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-		}
-
-		void Molecule::render()
-		{
-			bindBuffers();
-			_notifyViews( Event::VTX_EVENT_MODEL::RENDER );
-			unbindBuffers();
 		}
 
 		bool Molecule::mergeTopology( const Molecule & p_molecule )

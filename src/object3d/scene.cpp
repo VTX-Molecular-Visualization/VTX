@@ -17,6 +17,7 @@ namespace VTX
 		void Scene::clean()
 		{
 			Generic::clearMapAsKey( _molecules );
+			Generic::clearVector( _meshes );
 			Generic::clearVector( _paths );
 		}
 
@@ -64,6 +65,13 @@ namespace VTX
 					pair.first->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.x, VEC3F_X );
 					pair.first->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.y, VEC3F_Y );
 					pair.first->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.z, VEC3F_Z );
+				}
+
+				for ( const MeshTrianglePtr & mesh : _meshes )
+				{
+					mesh->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.x, VEC3F_X );
+					mesh->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.y, VEC3F_Y );
+					mesh->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.z, VEC3F_Z );
 				}
 			}
 		} // namespace Object3D

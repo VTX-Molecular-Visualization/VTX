@@ -73,6 +73,10 @@ namespace VTX
 				{
 					pair.first->render();
 				}
+				for ( const Object3D::Scene::MeshTrianglePtr & mesh : p_scene.getMeshes() )
+				{
+					mesh->render();
+				}
 
 				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 			}

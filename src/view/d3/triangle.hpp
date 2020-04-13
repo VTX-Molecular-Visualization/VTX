@@ -1,5 +1,5 @@
-#ifndef __VTX_VIEW_3D_TRIANGLE_MESH__
-#define __VTX_VIEW_3D_TRIANGLE_MESH__
+#ifndef __VTX_VIEW_3D_MESH_TRIANGLE__
+#define __VTX_VIEW_3D_MESH_TRIANGLE__
 
 #ifdef _MSC_VER
 #pragma once
@@ -21,7 +21,6 @@ namespace VTX
 
 				virtual const std::string & getName() const override { return ID::View::D3_TRIANGLE; };
 				virtual void				init() override;
-				virtual void				notify( const Event::VTX_EVENT_MODEL & ) override;
 
 				virtual void render() override;
 

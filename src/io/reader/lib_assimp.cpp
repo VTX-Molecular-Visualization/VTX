@@ -30,8 +30,8 @@ namespace VTX
 					nbVertices += mesh->mNumVertices;
 				}
 
-				p_mesh.getTriangles().resize( nbTriangles );
 				p_mesh.getVertices().resize( nbVertices );
+				p_mesh.getIndices().resize( nbTriangles * 3u );
 
 				uint currentTriangle = 0;
 				uint currentVertex	 = 0;
@@ -45,13 +45,13 @@ namespace VTX
 					{
 						const aiFace face = mesh->mFaces[ f ];
 
-						Model::MeshTriangle::Triangle & tri = p_mesh.getTriangle( currentTriangle );
+						// Model::MeshTriangle::Triangle & tri = p_mesh.getTriangle( currentTriangle );
 
-						// triangulated ! :-)
 						for ( uint v = 0; v < 3; ++v )
 						{
-							const uint idV = face.mIndices[ v ];
-							tri._v[ v ]	   = idV;
+							// const uint idV								 = face.mIndices[ v ];
+							// tri._v[ v ]									 = idV;
+							p_mesh.getIndice( currentTriangle * 3u + v ) = face.mIndices[ v ];
 						}
 					}
 

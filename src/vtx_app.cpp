@@ -62,7 +62,7 @@ namespace VTX
 
 #define AUTO_OPEN
 #ifdef AUTO_OPEN
-		IO::Path * path = new IO::Path( DATA_DIR + "4v6x.mmtf" );
+		IO::Path * path = new IO::Path( DATA_DIR + "r2d2_2.obj" );
 		VTX_ACTION( new Action::Open( path ) );
 #endif
 
