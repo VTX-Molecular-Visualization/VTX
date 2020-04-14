@@ -408,7 +408,6 @@ namespace VTX
 
 		void Molecule::_computeSecondaryStructure()
 		{
-			return;
 			for ( const Chain * const chain : getChains() )
 			{
 				Cartoon::createChainMesh( *chain );

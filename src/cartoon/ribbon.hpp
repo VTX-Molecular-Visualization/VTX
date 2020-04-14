@@ -26,12 +26,14 @@ namespace VTX
 
 		void createChainMesh( const Model::Chain & p_chain )
 		{
+			VTX_DEBUG( "createChainMesh" );
+
 			const Model::Molecule &			   molecule		= *p_chain.getMoleculePtr();
 			std::vector<Model::MeshTriangle>   chainMeshes	= std::vector<Model::MeshTriangle>();
 			std::vector<Cartoon::PeptidePlane> planes		= std::vector<Cartoon::PeptidePlane>();
 			int								   residueCount = p_chain.getResidueCount();
 
-			// TODO: c'est de la merde.
+			// Create peptide planes.
 			for ( int i = -1; i < residueCount; ++i )
 			{
 				int id	= i;
@@ -81,7 +83,7 @@ namespace VTX
 				planes.emplace_back( plane );
 			}
 
-			// Hummmm... c pour fère tourné lol?
+			// Flip planes.
 			Vec3f previousPlane = VEC3D_ZERO;
 			for ( uint i = 0; i < planes.size(); i++ )
 			{
