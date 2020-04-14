@@ -16,7 +16,8 @@ namespace VTX
 			{
 				Assimp::Importer Importer;
 
-				const aiScene * const scene = Importer.ReadFile( p_path.c_str(), aiProcess_Triangulate );
+				const aiScene * const scene
+					= Importer.ReadFile( p_path.c_str(), aiProcess_Triangulate | aiProcess_GenNormals );
 				if ( !scene ) { throw Exception::IOException( "File has not scene" ); }
 
 				const uint nbMeshes	   = scene->mNumMeshes;
@@ -31,6 +32,8 @@ namespace VTX
 				}
 
 				p_mesh.getVertices().resize( nbVertices );
+				p_mesh.getNormals().resize( nbVertices );
+				p_mesh.getColors().resize( nbVertices );
 				p_mesh.getIndices().resize( nbTriangles * 3u );
 
 				uint currentTriangle = 0;
@@ -61,6 +64,16 @@ namespace VTX
 						vertex.x	   = mesh->mVertices[ v ].x;
 						vertex.y	   = mesh->mVertices[ v ].y;
 						vertex.z	   = mesh->mVertices[ v ].z;
+
+						Vec3f & normale = p_mesh.getNormal( currentVertex );
+						normale.x		= mesh->mNormals[ v ].x;
+						normale.y		= mesh->mNormals[ v ].y;
+						normale.z		= mesh->mNormals[ v ].z;
+
+						Vec3f & color = p_mesh.getColor( currentVertex );
+						color.x		  = 1.f;
+						color.y		  = 0.5f;
+						color.z		  = 0.f;
 					}
 				}
 			}

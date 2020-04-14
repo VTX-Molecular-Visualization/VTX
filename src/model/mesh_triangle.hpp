@@ -45,6 +45,16 @@ namespace VTX
 			inline const Vec3f &			  getVertice( uint p_idx ) const { return _vertices[ p_idx ]; }
 			inline Vec3f &					  getVertice( uint p_idx ) { return _vertices[ p_idx ]; }
 
+			inline const std::vector<Vec3f> & getNormals() const { return _normals; }
+			inline std::vector<Vec3f> &		  getNormals() { return _normals; }
+			inline const Vec3f &			  getNormal( uint p_idx ) const { return _normals[ p_idx ]; }
+			inline Vec3f &					  getNormal( uint p_idx ) { return _normals[ p_idx ]; }
+
+			inline const std::vector<Vec3f> & getColors() const { return _colors; }
+			inline std::vector<Vec3f> &		  getColors() { return _colors; }
+			inline const Vec3f &			  getColor( uint p_idx ) const { return _colors[ p_idx ]; }
+			inline Vec3f &					  getColor( uint p_idx ) { return _colors[ p_idx ]; }
+
 			inline const std::vector<uint> & getIndices() const { return _indices; }
 			inline std::vector<uint> &		 getIndices() { return _indices; }
 			inline const uint &				 getIndice( uint p_idx ) const { return _indices[ p_idx ]; }
@@ -62,13 +72,15 @@ namespace VTX
 			enum ATTRIBUTE_LOCATION
 			{
 				VERTEX_POSITION = 0,
+				VERTEX_NORMAL	= 1,
 				VERTEX_COLOR	= 2,
 			};
 
 			// std::vector<Triangle> _triangles;
 			std::vector<Vec3f> _vertices;
 			GLuint			   _vboPositions = GL_INVALID_VALUE;
-
+			std::vector<Vec3f> _normals;
+			GLuint			   _vboNormals = GL_INVALID_VALUE;
 			std::vector<Vec3f> _colors;
 			GLuint			   _vboColors = GL_INVALID_VALUE;
 
