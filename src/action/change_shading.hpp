@@ -18,7 +18,7 @@ namespace VTX
 			explicit ChangeShading() {}
 			explicit ChangeShading( const Renderer::SHADING p_shading ) : _shading( p_shading ) {}
 
-			virtual void setParameters( std::vector<std::string> & p_parameters ) override
+			virtual void setParameters( const std::vector<std::string> & p_parameters ) override
 			{
 				_shading = magic_enum::enum_cast<Renderer::SHADING>( p_parameters.at( 1 ) ).value();
 			}

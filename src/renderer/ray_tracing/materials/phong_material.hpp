@@ -16,9 +16,9 @@ namespace VTX
 		{
 		  public:
 			PhongMaterial( const Vec3f & p_color,
-						   const Vec3f & p_kd  = VEC3F_XYZ * 0.3f,
-						   const Vec3f & p_ks  = VEC3F_XYZ * 0.7f,
-						   const float	 p_exp = 10.f ) :
+						   const Vec3f & p_kd  = VEC3F_XYZ * 0.4f,
+						   const Vec3f & p_ks  = VEC3F_XYZ * 0.6f,
+						   const float	 p_exp = 50.f ) :
 				BaseMaterial( p_color ),
 				_kd( p_kd ), _ks( p_ks ), _exp( p_exp )
 			{

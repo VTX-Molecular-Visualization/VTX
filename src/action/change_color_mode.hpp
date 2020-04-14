@@ -20,7 +20,7 @@ namespace VTX
 			explicit ChangeColorMode() {}
 			explicit ChangeColorMode( const View::MOLECULE_COLOR_MODE p_mode ) : _mode( p_mode ) {}
 
-			virtual void setParameters( std::vector<std::string> & p_parameters ) override
+			virtual void setParameters( const std::vector<std::string> & p_parameters ) override
 			{
 				_mode = magic_enum::enum_cast<View::MOLECULE_COLOR_MODE>( p_parameters.at( 1 ) ).value();
 			}

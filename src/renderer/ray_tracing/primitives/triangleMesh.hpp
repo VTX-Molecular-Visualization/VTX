@@ -68,11 +68,14 @@ namespace VTX
 							Intersection & p_intersection ) const
 			{
 				// Moller-Trumbore
-				const Vec3f & o = p_ray.getOrigin();
-				const Vec3f & d = p_ray.getDirection();
+				const Vec3f & o	 = p_ray.getOrigin();
+				const Vec3f & d	 = p_ray.getDirection();
+				const Vec3f & v0 = _refMesh->_vertices[ _v0 ];
+				const Vec3f & v1 = _refMesh->_vertices[ _v1 ];
+				const Vec3f & v2 = _refMesh->_vertices[ _v2 ];
 
-				const Vec3f edge1 = _refMesh->_vertices[ 1 ] - _refMesh->_vertices[ 0 ];
-				const Vec3f edge2 = _refMesh->_vertices[ 2 ] - _refMesh->_vertices[ 0 ];
+				const Vec3f edge1 = v1 - v0;
+				const Vec3f edge2 = v2 - v0;
 
 				const Vec3f pVec = Util::Math::cross( d, edge2 );
 				const float det	 = Util::Math::dot( edge1, pVec );
@@ -81,13 +84,13 @@ namespace VTX
 
 				const float invDet = 1.f / det;
 
-				const Vec3f tVec = o - _refMesh->_vertices[ 0 ];
+				const Vec3f tVec = o - v0;
 
 				const float u = Util::Math::dot( tVec, pVec ) * invDet;
 				if ( u < 0.f || u > 1.f ) return false;
 
 				const Vec3f qVec = Util::Math::cross( tVec, edge1 );
-				const float v	 = Util::Math::dot( edge2, qVec ) * invDet;
+				const float v	 = Util::Math::dot( d, qVec ) * invDet;
 				if ( v < 0.f || u + v > 1.f ) return false;
 
 				const float t = Util::Math::dot( edge2, qVec ) * invDet;
@@ -95,12 +98,12 @@ namespace VTX
 				if ( t < p_tMin || t > p_tMax ) { return false; }
 
 				p_intersection._point	  = p_ray.getPointAtT( t );
-				const Vec3f normal		  = Util::Math::cross(edge1, edge2);
+				const Vec3f normal		  = Util::Math::normalize( Util::Math::cross( edge1, edge2 ) );
 				p_intersection._normal	  = Util::Math::faceForward( normal, d );
 				p_intersection._distance  = t;
 				p_intersection._primitive = this;
 
-				return false;
+				return true;
 			}
 
 		  private:
