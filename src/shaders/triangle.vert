@@ -33,7 +33,7 @@ void main()
 	// gl_Position = uMVPMatrix * vertexPosition;
 
 	position = uProjMatrix * uMVMatrix * vec4( aVertexPosition, 1.f );
-	normal	 = aVertexNormal;
+	normal	 = (transpose(inverse(uMVMatrix)) * vec4(aVertexNormal, 1.f)).xyz;
 	color	 = aVertexColor;
 
 	gl_Position = position;
