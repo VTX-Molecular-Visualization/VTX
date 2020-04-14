@@ -1,5 +1,5 @@
-#ifndef __MODEL_MODEL_MESH_TRIANGLE__
-#define __MODEL_MODEL_MESH_TRIANGLE__
+#ifndef __MODEL_MESH_TRIANGLE__
+#define __MODEL_MESH_TRIANGLE__
 
 #ifdef _MSC_VER
 #pragma once
@@ -59,23 +59,23 @@ namespace VTX
 			virtual void _addItems() override final;
 
 		  private:
-			// std::vector<Triangle> _triangles;
-			std::vector<Vec3f> _vertices;
-			std::vector<uint>  _indices;
-
-			// Buffers.
-			std::vector<float> _bufferAtomRadius = std::vector<float>();
-			std::vector<uint>  _bufferAtomColors = std::vector<uint>();
-
 			enum ATTRIBUTE_LOCATION
 			{
 				VERTEX_POSITION = 0,
-				VERTEX_COLOR	= 1
+				VERTEX_COLOR	= 2,
 			};
 
+			// std::vector<Triangle> _triangles;
+			std::vector<Vec3f> _vertices;
+			GLuint			   _vboPositions = GL_INVALID_VALUE;
+
+			std::vector<Vec3f> _colors;
+			GLuint			   _vboColors = GL_INVALID_VALUE;
+
+			std::vector<uint> _indices;
+			GLuint			  _ibo = GL_INVALID_VALUE;
+
 			GLuint _vao = GL_INVALID_VALUE;
-			GLuint _vbo = GL_INVALID_VALUE;
-			GLuint _ibo = GL_INVALID_VALUE;
 		};
 	} // namespace Model
 } // namespace VTX

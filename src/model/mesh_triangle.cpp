@@ -9,13 +9,13 @@ namespace VTX
 		MeshTriangle::~MeshTriangle()
 		{
 			glBindVertexArray( _vao );
-			glBindBuffer( GL_ARRAY_BUFFER, _vbo );
+			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_POSITION );
 			// glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_COLOR );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 			glBindVertexArray( 0 );
 
-			if ( _vbo != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vbo );
+			if ( _vboPositions != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vboPositions );
 			if ( _ibo != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_ibo );
 			if ( _vao != GL_INVALID_VALUE ) glDeleteVertexArrays( 1, &_vao );
 		}
@@ -25,8 +25,8 @@ namespace VTX
 			BaseModel::init();
 
 			// VBO.
-			glGenBuffers( 1, &_vbo );
-			glBindBuffer( GL_ARRAY_BUFFER, _vbo );
+			glGenBuffers( 1, &_vboPositions );
+			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
 			glBufferData( GL_ARRAY_BUFFER, _vertices.size() * sizeof( Vec3f ), _vertices.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
@@ -42,7 +42,7 @@ namespace VTX
 			glBindVertexArray( _vao );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
 
-			glBindBuffer( GL_ARRAY_BUFFER, _vbo );
+			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_POSITION );
 			glVertexAttribPointer( ATTRIBUTE_LOCATION::VERTEX_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
 
