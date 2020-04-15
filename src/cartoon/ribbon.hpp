@@ -24,6 +24,42 @@ namespace VTX
 		const float arrowHeight	   = 0.5f;
 		const float tubeSize	   = 0.25f;
 
+		bool diffPP( const int p_id1, const int p_id2 )
+		{
+			int diff = 1;
+			if ( p_id1 < 0 && p_id2 > 0 ) { diff = 2; }
+			if ( p_id2 - p_id1 > diff ) { return true; }
+			return false;
+		}
+
+		bool discontinuity( const PeptidePlane & p_pp1,
+							const PeptidePlane & p_pp2,
+							const PeptidePlane & p_pp3,
+							const PeptidePlane & p_pp4 )
+		{
+			if ( diffPP( p_pp1.getResidue1().getIndex(), p_pp1.getResidue2().getIndex() )
+				 || diffPP( p_pp1.getResidue2().getIndex(), p_pp1.getResidue3().getIndex() ) )
+			{ return true; }
+			if ( diffPP( p_pp2.getResidue1().getIndex(), p_pp2.getResidue2().getIndex() )
+				 || diffPP( p_pp2.getResidue2().getIndex(), p_pp2.getResidue3().getIndex() ) )
+			{ return true; }
+			if ( diffPP( p_pp3.getResidue1().getIndex(), p_pp3.getResidue2().getIndex() )
+				 || diffPP( p_pp3.getResidue2().getIndex(), p_pp3.getResidue3().getIndex() ) )
+			{ return true; }
+			if ( diffPP( p_pp4.getResidue1().getIndex(), p_pp4.getResidue2().getIndex() )
+				 || diffPP( p_pp4.getResidue2().getIndex(), p_pp4.getResidue3().getIndex() ) )
+			{ return true; }
+
+			return false;
+		}
+
+		Model::MeshTriangle createSegmentMesh()
+		{
+			Model::MeshTriangle mesh = Model::MeshTriangle();
+
+			return mesh;
+		}
+
 		void createChainMesh( const Model::Chain & p_chain )
 		{
 			VTX_DEBUG( "createChainMesh" );
@@ -93,8 +129,20 @@ namespace VTX
 			}
 
 			// ??
-			// uint n = planes.size() - 3;
+			uint n = uint( planes.size() ) - 3u;
+			for ( uint i = 0; i < n; i++ )
+			{
+				PeptidePlane & pp1 = planes[ i ];
+				PeptidePlane & pp2 = planes[ i + 1 ];
+				PeptidePlane & pp3 = planes[ i + 2 ];
+				PeptidePlane & pp4 = planes[ i + 3 ];
+
+				if ( discontinuity( pp1, pp2, pp3, pp4 ) ) { continue; }
+
+				// createSegmentMesh( i, n, pp1, pp2, pp3, pp4 );
+			}
 		}
+
 	} // namespace Cartoon
 } // namespace VTX
 

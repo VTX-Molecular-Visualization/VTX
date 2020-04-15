@@ -33,9 +33,9 @@ namespace VTX
 				}
 
 				const Model::Molecule * const molecule	  = p_residue1.getMoleculePtr();
-				Vec3f						  positionCA1 = molecule->getAtomPositionFrame( 0 )[ CA1->getIndex() ];
-				Vec3f						  positionO1  = molecule->getAtomPositionFrame( 0 )[ O1->getIndex() ];
-				Vec3f						  positionCA2 = molecule->getAtomPositionFrame( 0 )[ CA2->getIndex() ];
+				const Vec3f &				  positionCA1 = molecule->getAtomPositionFrame( 0 )[ CA1->getIndex() ];
+				const Vec3f &				  positionO1  = molecule->getAtomPositionFrame( 0 )[ O1->getIndex() ];
+				const Vec3f &				  positionCA2 = molecule->getAtomPositionFrame( 0 )[ CA2->getIndex() ];
 
 				_position = ( positionCA1 + positionCA2 ) / 2.0f;
 				_forward  = Util::Math::normalize( positionCA2 - positionCA1 );
@@ -44,6 +44,10 @@ namespace VTX
 				_side	 = Util::Math::normalize( Util::Math::cross( _normal, _forward ) );
 				_isValid = true;
 			}
+
+			inline const Model::Residue & getResidue1() const { return _residue1; }
+			inline const Model::Residue & getResidue2() const { return _residue2; }
+			inline const Model::Residue & getResidue3() const { return _residue3; }
 
 			const Vec3f getPostion() const { return _position; }
 			void		setPostion( const Vec3f & p_position ) { _position = p_position; }
