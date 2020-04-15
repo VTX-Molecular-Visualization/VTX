@@ -53,7 +53,12 @@ namespace VTX
 			return false;
 		}
 
-		Model::MeshTriangle createSegmentMesh()
+		Model::MeshTriangle createSegmentMesh( const int			p_curi,
+											   const int			p_n,
+											   const PeptidePlane & p_pp1,
+											   const PeptidePlane & p_pp2,
+											   const PeptidePlane & p_pp3,
+											   const PeptidePlane & p_pp4 )
 		{
 			Model::MeshTriangle mesh = Model::MeshTriangle();
 
@@ -68,6 +73,8 @@ namespace VTX
 			std::vector<Model::MeshTriangle>   chainMeshes	= std::vector<Model::MeshTriangle>();
 			std::vector<Cartoon::PeptidePlane> planes		= std::vector<Cartoon::PeptidePlane>();
 			int								   residueCount = p_chain.getResidueCount();
+
+			if ( residueCount < 2 ) { return; }
 
 			// Create peptide planes.
 			for ( int i = -1; i < residueCount; ++i )
