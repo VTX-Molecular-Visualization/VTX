@@ -8,7 +8,7 @@
 #include "materials/diffuse_material.hpp"
 #include "materials/flat_color_material.hpp"
 #include "primitives/cylinder.hpp"
-#include "primitives/molecule_ball_and_stick.hpp"
+#include "primitives/molecule_rt.hpp"
 #include "primitives/plane.hpp"
 #include "primitives/sphere.hpp"
 #include "primitives/triangleMesh.hpp"
@@ -111,6 +111,7 @@ namespace VTX
 		{
 			VTX_INFO( "Render Frame" );
 			_initScene( p_scene );
+
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
 			const uint nbPixelSamples = 1;
@@ -175,7 +176,7 @@ namespace VTX
 			_scene.clean();
 			for ( std::pair<const Model::Molecule *, float> pairMol : p_scene.getMolecules() )
 			{
-				_scene.addObject( new MoleculeBallAndStick( pairMol.first ) );
+				_scene.addObject( new MoleculeRT( pairMol.first ) );
 			}
 
 			// 6VSB_2nd931.obj

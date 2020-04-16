@@ -1,5 +1,5 @@
-#ifndef __VTX_RENDERER_RAY_TRACER_MOLECULE_BALL_AND_STICK__
-#define __VTX_RENDERER_RAY_TRACER_MOLECULE_BALL_AND_STICK__
+#ifndef __VTX_RENDERER_RAY_TRACER_MOLECULE_RT__
+#define __VTX_RENDERER_RAY_TRACER_MOLECULE_RT__
 
 #ifdef _MSC_VER
 #pragma once
@@ -12,11 +12,11 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		class MoleculeBallAndStick : public BaseObject3D
+		class MoleculeRT : public BaseObject3D
 		{
 		  public:
-			MoleculeBallAndStick( const Model::Molecule * p_molecule );
-			~MoleculeBallAndStick()
+			MoleculeRT( const Model::Molecule * p_molecule );
+			~MoleculeRT()
 			{
 				for ( Renderer::BaseMaterial * mtl : _materials )
 				{

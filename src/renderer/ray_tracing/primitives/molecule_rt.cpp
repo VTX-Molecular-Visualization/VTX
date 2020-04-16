@@ -1,21 +1,29 @@
-#include "molecule_ball_and_stick.hpp"
+#include "molecule_rt.hpp"
 #include "../materials/diffuse_material.hpp"
 #include "../materials/flat_color_material.hpp"
 #include "../materials/phong_material.hpp"
 #include "cylinder.hpp"
+#include "setting.hpp"
 #include "sphere.hpp"
 
 namespace VTX
 {
 	namespace Renderer
 	{
-		MoleculeBallAndStick::MoleculeBallAndStick( const Model::Molecule * p_molecule )
+		MoleculeRT::MoleculeRT( const Model::Molecule * p_molecule )
 		{
+			const View::MOLECULE_REPRESENTATION rep = Setting::Rendering::representation;
+
 			const uint nbAtoms = p_molecule->getAtomCount();
 			const uint nbBonds = p_molecule->getBondCount();
 
 			std::vector<Renderer::BasePrimitive *> primitives;
-			primitives.resize( nbAtoms + nbBonds );
+			if ( rep == View::MOLECULE_REPRESENTATION::BALL_AND_STICK || rep == View::MOLECULE_REPRESENTATION::STICK )
+			{ primitives.resize( nbAtoms + nbBonds ); }
+			else
+			{
+				primitives.resize( nbAtoms );
+			}
 
 			uint idPrimitive = 0;
 			uint cptAtoms	 = 0;
@@ -43,6 +51,8 @@ namespace VTX
 				tAtomPositions[ i ] = Vec3f( tPos.x, tPos.y, tPos.z );
 			}
 
+			float radius = rep == View::MOLECULE_REPRESENTATION::BALL_AND_STICK ? 0.4f : 0.15f;
+
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
 				Model::Chain * chainPtr = p_molecule->getAtom( i ).getChainPtr();
@@ -60,18 +70,23 @@ namespace VTX
 				}
 				const Vec3f & color		  = mapColors[ chainPtr ];
 				primitives[ idPrimitive ] = new Renderer::Sphere(
-					tAtomPositions[ i ], p_molecule->getAtomRadius( i ) /*0.4f*/, new DiffuseMaterial( color ) );
+					tAtomPositions[ i ],
+					rep == View::MOLECULE_REPRESENTATION::VAN_DER_WAALS ? p_molecule->getAtomRadius( i ) : radius,
+					new DiffuseMaterial( color ) );
 				idPrimitive++;
 			}
 
-			for ( uint i = 0; i < nbBonds; ++i )
+			if ( rep == View::MOLECULE_REPRESENTATION::BALL_AND_STICK || rep == View::MOLECULE_REPRESENTATION::STICK )
 			{
-				const Model::Bond & bond = p_molecule->getBond( i );
-				const Vec3f &		a1	 = tAtomPositions[ bond.getIndexFirstAtom() ];
-				const Vec3f &		a2	 = tAtomPositions[ bond.getIndexSecondAtom() ];
+				for ( uint i = 0; i < nbBonds; ++i )
+				{
+					const Model::Bond & bond = p_molecule->getBond( i );
+					const Vec3f &		a1	 = tAtomPositions[ bond.getIndexFirstAtom() ];
+					const Vec3f &		a2	 = tAtomPositions[ bond.getIndexSecondAtom() ];
 
-				primitives[ idPrimitive ] = new Renderer::Cylinder( a1, a2, 0.15f, _materials.front() );
-				idPrimitive++;
+					primitives[ idPrimitive ] = new Renderer::Cylinder( a1, a2, 0.15f, _materials.front() );
+					idPrimitive++;
+				}
 			}
 
 			// TODO: we don't have bond per residu... :-(

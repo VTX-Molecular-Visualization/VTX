@@ -8,7 +8,7 @@
 #include "define.hpp"
 #include "lights/base_light.hpp"
 #include "primitives/base_object_3D.hpp"
-#include "primitives/molecule_ball_and_stick.hpp"
+#include "primitives/molecule_rt.hpp"
 
 namespace VTX
 {
