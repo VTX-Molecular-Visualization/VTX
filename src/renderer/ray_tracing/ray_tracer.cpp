@@ -37,10 +37,10 @@ namespace VTX
 				Vec3f camUp	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
 
 				// 6vsb
-				/*_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
+				_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
 				_front = Vec3f( 0.938164f, 0.320407f, -0.131098f );
 				_left  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
-				_up	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );*/
+				_up	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
 
 				// 6m17
 				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
@@ -96,55 +96,9 @@ namespace VTX
 
 		void RayTracer::init( const uint p_width, const uint p_height )
 		{
-			VTX_INFO( "Initializing ray tracer (only first molecule)..." );
+			VTX_INFO( "Initializing ray tracer..." );
 
 			resize( p_width, p_height );
-
-			// 6VSB_2nd931.obj
-			//_scene.addObject( new TriangleMesh( DATA_DIR + "6VSB_2nd931.obj" ) );
-			//_scene.addObject( new Plane( VEC3F_Y,
-			//							 -90.f, //
-			//							 new DiffuseMaterial( Vec3f( 0.5f, 0.6f, 0.8f ) ) ) );
-			//_scene.addLight(
-			//	new QuadLight( Vec3f( 200.f, 400.f, 300.f ), VEC3F_X * 80.f, VEC3F_Z * 80.f, VEC3F_XYZ, 100.f ) );
-
-			for ( std::pair<const Model::Molecule *, float> pairMol : VTXApp::get().getScene().getMolecules() )
-			{
-				_scene.addObject( new MoleculeBallAndStick( pairMol.first ) );
-			}
-
-			//_scene.addObject( new Sphere( VEC3F_ZERO, 10.f, new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) ) );
-
-			//_scene.addObject( new Plane( -Vec3f( -0.009190f, -0.000568f, 0.999958f ),
-			//							 300.f, //
-			//							 new DiffuseMaterial( Vec3f( 1.5f, 0.6f, 0.8f ) ) ) );
-			//
-
-			//_scene.addLight( new PointLight( Vec3f( 316.f, 192.f, 190.f ), VEC3F_XYZ, 5000.f ) );
-
-			//_scene.addObject( new Plane( Vec3f( 0.327533f, -0.944138f, 0.036398f ),
-			//							 0.f, //
-			//							 new DiffuseMaterial( Vec3f( 0.5f, 0.6f, 0.8f ) ) ) );
-
-			//_scene.addLight( new PointLight( Vec3f( 121.587879f, 209.315125f, 171.231781f ), VEC3F_XYZ, 30000.f ) );
-			//_scene.addLight( new PointLight( Vec3f( 600.f, 200.f, 400.f ), VEC3F_XYZ, 180000.f ) );
-			////_scene.addLight( new DirectionalLight( Vec3f( 10.f, 1.f, 3.f ), VEC3F_XYZ ) );
-			//_scene.addLight(
-			//	new QuadLight( Vec3f( 200.f, 400.f, 400.f ), VEC3F_Y * 60.f, VEC3F_X * 60.f, VEC3F_XYZ, 50.f ) );
-
-			// 6VSB
-			/*_scene.addLight( new QuadLight( Vec3f( -450.f, -200.f, -38.f ),
-											Vec3f( 0.327533f, -0.944138f, 0.036398f ) * 80.f,
-											-Vec3f( 0.112113f, 0.077086f, 0.990701f ) * 80.f,
-											VEC3F_XYZ,
-											200.f ) );*/
-
-			//// 6M17
-			//_scene.addLight( new QuadLight( Vec3f( 0.f, 500.f, 188.f ),
-			//								Vec3f( 0.920292f, -0.680027f, 0.092962f ) * 60.f,
-			//								-Vec3f( 0.071878f, -0.069334f, -0.995001f ) * 60.f,
-			//								VEC3F_XYZ,
-			//								50.f ) );
 
 			//_integrator = new AOIntegrator;
 			_integrator = new RayCastIntegrator;
@@ -156,6 +110,7 @@ namespace VTX
 		void RayTracer::renderFrame( const Object3D::Scene & p_scene )
 		{
 			VTX_INFO( "Render Frame" );
+			_initScene( p_scene );
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
 			const uint nbPixelSamples = 1;
@@ -214,6 +169,56 @@ namespace VTX
 		void RayTracer::setShading() {}
 
 		void RayTracer::resize( const uint p_width, const uint p_height ) { BaseRenderer::resize( p_width, p_height ); }
+
+		void RayTracer::_initScene( const Object3D::Scene & p_scene )
+		{
+			_scene.clean();
+			for ( std::pair<const Model::Molecule *, float> pairMol : p_scene.getMolecules() )
+			{
+				_scene.addObject( new MoleculeBallAndStick( pairMol.first ) );
+			}
+
+			// 6VSB_2nd931.obj
+			//_scene.addObject( new TriangleMesh( DATA_DIR + "6VSB_2nd931.obj" ) );
+			//_scene.addObject( new Plane( VEC3F_Y,
+			//							 -90.f, //
+			//							 new DiffuseMaterial( Vec3f( 0.5f, 0.6f, 0.8f ) ) ) );
+			//_scene.addLight(
+			//	new QuadLight( Vec3f( 200.f, 400.f, 300.f ), VEC3F_X * 80.f, VEC3F_Z * 80.f, VEC3F_XYZ, 100.f ) );
+
+			//_scene.addObject( new Sphere( VEC3F_ZERO, 10.f, new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) ) );
+
+			//_scene.addObject( new Plane( -Vec3f( -0.009190f, -0.000568f, 0.999958f ),
+			//							 300.f, //
+			//							 new DiffuseMaterial( Vec3f( 1.5f, 0.6f, 0.8f ) ) ) );
+			//
+
+			//_scene.addLight( new PointLight( Vec3f( 316.f, 192.f, 190.f ), VEC3F_XYZ, 5000.f ) );
+
+			//_scene.addObject( new Plane( Vec3f( 0.327533f, -0.944138f, 0.036398f ),
+			//							 0.f, //
+			//							 new DiffuseMaterial( Vec3f( 0.5f, 0.6f, 0.8f ) ) ) );
+
+			//_scene.addLight( new PointLight( Vec3f( 121.587879f, 209.315125f, 171.231781f ), VEC3F_XYZ, 30000.f ) );
+			//_scene.addLight( new PointLight( Vec3f( 600.f, 200.f, 400.f ), VEC3F_XYZ, 180000.f ) );
+			////_scene.addLight( new DirectionalLight( Vec3f( 10.f, 1.f, 3.f ), VEC3F_XYZ ) );
+			//_scene.addLight(
+			//	new QuadLight( Vec3f( 200.f, 400.f, 400.f ), VEC3F_Y * 60.f, VEC3F_X * 60.f, VEC3F_XYZ, 50.f ) );
+
+			// 6VSB
+			/*_scene.addLight( new QuadLight( Vec3f( -450.f, -200.f, -38.f ),
+											Vec3f( 0.327533f, -0.944138f, 0.036398f ) * 80.f,
+											-Vec3f( 0.112113f, 0.077086f, 0.990701f ) * 80.f,
+											VEC3F_XYZ,
+											200.f ) );*/
+
+			//// 6M17
+			//_scene.addLight( new QuadLight( Vec3f( 0.f, 500.f, 188.f ),
+			//								Vec3f( 0.920292f, -0.680027f, 0.092962f ) * 60.f,
+			//								-Vec3f( 0.071878f, -0.069334f, -0.995001f ) * 60.f,
+			//								VEC3F_XYZ,
+			//								50.f ) );
+		}
 
 		void RayTracer::_renderTiles( std::vector<uchar> &	   p_image,
 									  const CameraRayTracing & p_camera,

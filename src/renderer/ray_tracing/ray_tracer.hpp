@@ -30,6 +30,8 @@ namespace VTX
 			const inline std::vector<uchar> & getPixels() const { return _pixels; }
 
 		  private:
+			void _initScene( const Object3D::Scene & );
+
 			void _renderTiles( std::vector<uchar> &		p_image,
 							   const CameraRayTracing & p_camera,
 							   const uint				p_nbPixelSamples,

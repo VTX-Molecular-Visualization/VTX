@@ -17,7 +17,7 @@ namespace VTX
 			std::vector<Renderer::BasePrimitive *> primitives;
 			primitives.resize( nbAtoms + nbBonds );
 
-			const std::vector<Vec3f> & positions = p_molecule->getAtomPositionFrame( 0 );
+			const std::vector<Vec3f> & positions = p_molecule->getAtomPositionFrame( p_molecule->getFrame() );
 
 			uint idPrimitive = 0;
 			uint cptAtoms	 = 0;

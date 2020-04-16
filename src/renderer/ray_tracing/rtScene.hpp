@@ -33,6 +33,19 @@ namespace VTX
 
 			const std::vector<BaseLight *> & getLights() const { return _lights; }
 
+			void clean()
+			{
+				for ( BaseLight * light : _lights )
+				{
+					delete light;
+				}
+
+				for ( BaseObject3D * object : _objects )
+				{
+					delete object;
+				}
+			}
+
 			// returns nearest intersection if exists
 			bool intersect( const Ray &	   p_ray,
 							const float	   p_tMin,
