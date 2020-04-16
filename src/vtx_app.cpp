@@ -72,7 +72,7 @@ namespace VTX
 		// IO::Path * path	   = new IO::Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
 		IO::Path * path = new IO::Path( DATA_DIR + "6vsb.mmtf" );
 		VTX_ACTION( new Action::Open( path ) );
-		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT, "test_rt" ) );
+		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
 		_actionManager->update( 0.f );
 		_workerManager->update( 0.f );
 		_isRunning = false;

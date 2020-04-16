@@ -27,7 +27,8 @@ namespace VTX
 		{
 		  public:
 			CameraRayTracing( const Object3D::Camera & p_camera, const uint p_width, const uint p_height ) :
-				_pos( p_camera.getPosition() ), _width( p_width ), _height( p_height )
+				_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ),
+				_left( p_camera.getLeft() ), _width( p_width ), _height( p_height )
 			{
 				// spike_closed_glycans_lipids_amarolab
 				/*_pos		   = Vec3f( 12.950272f, -375.106812f, 119.278503f );
@@ -36,11 +37,10 @@ namespace VTX
 				Vec3f camUp	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
 
 				// 6vsb
-				/*_pos = Vec3f( 93.404381f, 176.164490f, 253.466934f );
-
-				Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
-				Vec3f camLeft  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
-				Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );*/
+				/*_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
+				_front = Vec3f( 0.938164f, 0.320407f, -0.131098f );
+				_left  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
+				_up	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );*/
 
 				// 6m17
 				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
@@ -64,32 +64,30 @@ namespace VTX
 				Vec3f		  camLeft  = Util::Math::cross( camUp, camFront );
 				camUp				   = Util::Math::cross( camLeft, camUp );*/
 
-				const Vec3f & camFront = p_camera.getFront();
-				const Vec3f & camLeft  = p_camera.getLeft();
-				const Vec3f & camUp	   = p_camera.getUp();
-
 				const float camFov	   = p_camera.getFov();
 				const float ratio	   = float( _width ) / _height;
 				const float halfHeight = tan( Util::Math::radians( camFov ) * 0.5f );
 				const float halfWidth  = ratio * halfHeight;
-				_downLeftCorner		   = _pos + halfWidth * camLeft - halfHeight * camUp + camFront;
-				_du					   = -2.f * halfWidth * camLeft;
-				_dv					   = 2.f * halfHeight * camUp;
+
+				_du = Util::Math::normalize( Util::Math::cross( _front, _up ) ) * halfWidth;
+				_dv = Util::Math::normalize( Util::Math::cross( _left, _front ) ) * halfHeight;
 			}
 
 			Ray generateRay( const float p_sx, const float p_sy ) const
 			{
-				return Ray( _pos,
-							Util::Math::normalize( _downLeftCorner + ( p_sx / _width ) * _du
-												   + ( ( _height - p_sy ) / _height ) * _dv - _pos ) );
+				const Vec2f d = Vec2f( p_sx / _width, p_sy / _height ) * 2.f - 1.f;
+				return Ray( _pos, Util::Math::normalize( ( _du * d.x + _dv * d.y + _front ) ) );
 			}
 
 		  private:
 			Vec3f _pos;
-			uint  _width;
-			uint  _height;
+			Vec3f _front;
+			Vec3f _up;
+			Vec3f _left;
 
-			Vec3f _downLeftCorner;
+			uint _width;
+			uint _height;
+
 			Vec3f _du;
 			Vec3f _dv;
 		};
@@ -110,10 +108,10 @@ namespace VTX
 			//_scene.addLight(
 			//	new QuadLight( Vec3f( 200.f, 400.f, 300.f ), VEC3F_X * 80.f, VEC3F_Z * 80.f, VEC3F_XYZ, 100.f ) );
 
-			/*for ( std::pair<const Model::Molecule *, float> pairMol : VTXApp::get().getScene().getMolecules() )
+			for ( std::pair<const Model::Molecule *, float> pairMol : VTXApp::get().getScene().getMolecules() )
 			{
 				_scene.addObject( new MoleculeBallAndStick( pairMol.first ) );
-			}*/
+			}
 
 			//_scene.addObject( new Sphere( VEC3F_ZERO, 10.f, new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) ) );
 
@@ -149,8 +147,8 @@ namespace VTX
 			//								50.f ) );
 
 			//_integrator = new AOIntegrator;
-			//_integrator = new RayCastIntegrator;
-			_integrator = new DirectLightingIntegrator;
+			_integrator = new RayCastIntegrator;
+			//_integrator = new DirectLightingIntegrator;
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -160,7 +158,7 @@ namespace VTX
 			VTX_INFO( "Render Frame" );
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
-			const uint nbPixelSamples = 256;
+			const uint nbPixelSamples = 1;
 
 			uint size = _width * _height * 3 * sizeof( char );
 			_pixels.resize( _width * _height * 3 );

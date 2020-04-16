@@ -11,7 +11,7 @@
 #include <thread>
 #include <unordered_set>
 
-// #define SPHERES
+#define SPHERES
 
 namespace VTX
 {
@@ -628,14 +628,16 @@ namespace VTX
 					// 6vsb
 					Vec3f camPos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
 					Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
+					Vec3f camLeft  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
 					Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
 
 					float		fov		   = 60.f;
 					float		ratio	   = float( _width ) / _height;
 					const float halfHeight = tan( Util::Math::radians( fov ) * 0.5f );
 					const float halfWidth  = ratio * halfHeight;
-					Vec3f		u		   = Util::Math::normalize( Util::Math::cross( camFront, camUp ) ) * halfWidth;
-					Vec3f		v		   = -Util::Math::normalize( Util::Math::cross( u, camFront ) ) * halfHeight;
+
+					Vec3f u = Util::Math::normalize( Util::Math::cross( camFront, camUp ) ) * halfWidth;
+					Vec3f v = Util::Math::normalize( Util::Math::cross( camLeft, camFront ) ) * halfHeight;
 
 					r._data._camera._position = make_float3( camPos.x, camPos.y, camPos.z );
 					r._data._camera._front	  = make_float3( camFront.x, camFront.y, camFront.z );
