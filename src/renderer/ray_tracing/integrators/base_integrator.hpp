@@ -6,7 +6,7 @@
 #endif
 
 #include "../ray.hpp"
-#include "../rtScene.hpp"
+#include "../rt_scene.hpp"
 #include "define.hpp"
 
 namespace VTX

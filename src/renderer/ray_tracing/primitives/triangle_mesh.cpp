@@ -1,4 +1,4 @@
-#include "triangleMesh.hpp"
+#include "triangle_mesh.hpp"
 #include "../materials/diffuse_material.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -46,8 +46,8 @@ namespace VTX
 					const aiFace face = mesh->mFaces[ f ];
 
 					_triangles[ currentTriangle ] = new Triangle();
-					Triangle & tri = *((Triangle *)_triangles[ currentTriangle ]);
-					tri._refMesh   = this;
+					Triangle & tri				  = *( (Triangle *)_triangles[ currentTriangle ] );
+					tri._refMesh				  = this;
 					// triangulated ! :-)
 					for ( uint v = 0; v < 3; ++v )
 					{
@@ -66,7 +66,7 @@ namespace VTX
 				}
 			}
 			// compute AABB for each triangle
-			for (uint i = 0; i < uint(_triangles.size()); ++i) 
+			for ( uint i = 0; i < uint( _triangles.size() ); ++i )
 			{
 				Triangle & tri = *( (Triangle *)_triangles[ i ] );
 				tri._computeAABB();

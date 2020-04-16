@@ -7,7 +7,7 @@
 
 #include "../base_renderer.hpp"
 #include "integrators/base_integrator.hpp"
-#include "rtScene.hpp"
+#include "rt_scene.hpp"
 #include <vector>
 
 namespace VTX

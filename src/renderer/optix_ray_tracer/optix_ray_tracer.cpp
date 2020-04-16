@@ -288,7 +288,7 @@ namespace VTX
 			// First try to compile with NVRTC, does not work
 
 			// read .cu
-			const std::string file = "../src/renderer/optix_ray_tracer/testOptix.cu";
+			const std::string file = "../src/renderer/optix_ray_tracer/test_optix.cu";
 			std::ifstream	  ifs( file, std::ios::binary | std::ios::ate );
 			if ( !ifs.is_open() ) { throw std::runtime_error( "Cannot open file " + file ); }
 
@@ -302,7 +302,7 @@ namespace VTX
 			std::cout << "========> " << size << std::endl;
 
 			nvrtcProgram program;
-			NVRTC_HANDLE_ERROR( nvrtcCreateProgram( &program, cu, "testOptix.cu", 0, nullptr, nullptr ) );
+			NVRTC_HANDLE_ERROR( nvrtcCreateProgram( &program, cu, "test_optix.cu", 0, nullptr, nullptr ) );
 
 			const std::string vtxIncludesDir = std::string( "-I ../.." );
 			const std::string cudaIncludesDir
@@ -348,7 +348,7 @@ namespace VTX
 			delete cu;
 #else
 			// read .ptx
-			const std::string file = "../src/renderer/optix_ray_tracer/testOptix.ptx";
+			const std::string file = "../src/renderer/optix_ray_tracer/test_optix.ptx";
 			std::ifstream	  ifs( file, std::ios::binary | std::ios::ate );
 			if ( !ifs.is_open() ) { throw std::runtime_error( "Cannot open file " + file ); }
 

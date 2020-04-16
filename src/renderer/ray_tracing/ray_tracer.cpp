@@ -11,7 +11,7 @@
 #include "primitives/molecule_rt.hpp"
 #include "primitives/plane.hpp"
 #include "primitives/sphere.hpp"
-#include "primitives/triangleMesh.hpp"
+#include "primitives/triangle_mesh.hpp"
 #include "tool/chrono.hpp"
 #include "util/sampler.hpp"
 #include "vtx_app.hpp"
