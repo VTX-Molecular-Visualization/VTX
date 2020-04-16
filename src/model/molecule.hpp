@@ -81,7 +81,7 @@ namespace VTX
 				_atomPositionsFrames.emplace_back( p_frame );
 			}
 
-			inline void seAtomPositionFrames( std::vector<AtomPositionsFrame> & p_frame )
+			inline void setAtomPositionFrames( std::vector<AtomPositionsFrame> & p_frame )
 			{
 				_atomPositionsFrames.clear();
 				_atomPositionsFrames = p_frame;
