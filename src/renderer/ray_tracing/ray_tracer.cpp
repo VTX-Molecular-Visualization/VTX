@@ -37,10 +37,10 @@ namespace VTX
 				Vec3f camUp	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
 
 				// 6vsb
-				_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
+				/*_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
 				_front = Vec3f( 0.938164f, 0.320407f, -0.131098f );
 				_left  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
-				_up	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
+				_up	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );*/
 
 				// 6m17
 				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
@@ -232,7 +232,7 @@ namespace VTX
 			uint taskId = p_threadId;
 			while ( taskId < p_nbTiles )
 			{
-				std::cout << taskId << " / " << p_nbTiles << std::endl;
+				// std::cout << taskId << " / " << p_nbTiles << std::endl;
 				const uint tileY = taskId / p_nbTilesX;
 				const uint tileX = taskId - tileY * p_nbTilesX;
 				const uint x0	 = tileX * TILE_SIZE;
