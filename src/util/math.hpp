@@ -234,7 +234,7 @@ namespace VTX
 			}
 
 			// Morton utils
-			static uint leftShift3( uint p_x )
+			static inline uint leftShift3( uint p_x )
 			{
 				assert( p_x <= ( 1 << 10 ) );
 
@@ -242,11 +242,11 @@ namespace VTX
 				p_x = ( p_x | ( p_x << 16 ) ) & 0x30000ff; // x = ---- --98 ---- ---- ---- ---- 7654 3210
 				p_x = ( p_x | ( p_x << 8 ) ) & 0x300f00f;  // x = ---- --98 ---- ---- 7654 ---- ---- 3210
 				p_x = ( p_x | ( p_x << 4 ) ) & 0x30c30c3;  // x = ---- --98 ---- 76-- --54 ---- 32-- --10
-				p_x = ( p_x | ( p_x << 2 ) ) & 0x9249249;  // x = ---- 9--8 --7- -6-- 5--4 --3- -2-- 1--0return x;
+				p_x = ( p_x | ( p_x << 2 ) ) & 0x9249249;  // x = ---- 9--8 --7- -6-- 5--4 --3- -2-- 1--0;
 				return p_x;
 			}
 
-			static uint encodeMorton3( const Vec3f & p_v )
+			static inline uint encodeMorton3( const Vec3f & p_v )
 			{
 				assert( p_v.x >= 0 );
 				assert( p_v.y >= 0 );
@@ -256,7 +256,7 @@ namespace VTX
 			}
 
 			// p_n (normal) must be normalized
-			static Mat3f createOrthonormalBasis( const Vec3f & p_n )
+			static inline Mat3f createOrthonormalBasis( const Vec3f & p_n )
 			{
 				Vec3f t = fabsf( p_n.x ) > fabsf( p_n.y )
 							  ? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )

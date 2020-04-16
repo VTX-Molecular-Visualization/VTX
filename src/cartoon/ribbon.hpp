@@ -62,6 +62,42 @@ namespace VTX
 		{
 			Model::MeshTriangle mesh = Model::MeshTriangle();
 
+			// Transition.
+			const Model::Residue::SECONDARY_STRUCTURE type0 = p_pp2.getResidue1().getSecondaryStructure();
+
+			const Model::Residue::SECONDARY_STRUCTURE t1 = p_pp2.getResidue1().getSecondaryStructure();
+			const Model::Residue::SECONDARY_STRUCTURE t2 = p_pp2.getResidue2().getSecondaryStructure();
+			const Model::Residue::SECONDARY_STRUCTURE t3 = p_pp2.getResidue3().getSecondaryStructure();
+
+			Model::Residue::SECONDARY_STRUCTURE type1 = t2;
+			Model::Residue::SECONDARY_STRUCTURE type2 = t2;
+
+			if ( t2 > t1 && t2 == t3 ) { type1 = t1; }
+			if ( t2 > t3 && t1 == t2 ) { type2 = t3; }
+
+			// Colors.
+			Vec3f c1;
+			Vec3f c2;
+			switch ( type1 )
+			{
+			case Model::Residue::SECONDARY_STRUCTURE::HELIX: c1 = Vec3f( 1.0f, 0.71f, 0.2f ); break;
+			case Model::Residue::SECONDARY_STRUCTURE::SHEET: c1 = Vec3f( 0.96f, 0.45f, 0.21f ); break;
+			default: c1 = Vec3f( 0.02f, 0.47f, 0.47f ); break;
+			}
+			switch ( type2 )
+			{
+			case Model::Residue::SECONDARY_STRUCTURE::HELIX: c2 = Vec3f( 1.0f, 0.71f, 0.2f ); break;
+			case Model::Residue::SECONDARY_STRUCTURE::SHEET: c2 = Vec3f( 0.96f, 0.45f, 0.21f ); break;
+			default: c2 = Vec3f( 0.02f, 0.47f, 0.47f ); break;
+			}
+			if ( type1 == Model::Residue::SECONDARY_STRUCTURE::SHEET ) { c2 = c1; }
+
+			// Profiles.
+			std::vector<Vec3f> profile1( p_n );
+			std::vector<Vec3f> profile2( p_n );
+			int				   lenProf1 = profileDetail;
+			int				   lenProf2 = profileDetail;
+
 			return mesh;
 		}
 
@@ -146,7 +182,7 @@ namespace VTX
 
 				if ( discontinuity( pp1, pp2, pp3, pp4 ) ) { continue; }
 
-				// createSegmentMesh( i, n, pp1, pp2, pp3, pp4 );
+				createSegmentMesh( i, n, pp1, pp2, pp3, pp4 );
 			}
 		}
 

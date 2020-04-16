@@ -143,19 +143,19 @@ namespace VTX
 						{ modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::SHEET ); }
 						else if ( secondaryStructure == "turn" )
 						{
-							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::TURN );
+							// modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::TURN );
 						}
 						else if ( secondaryStructure == "alpha helix" )
 						{
-							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX_ALPHA );
+							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
 						}
 						else if ( secondaryStructure == "pi helix" )
 						{
-							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX_PI );
+							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
 						}
 						else if ( secondaryStructure == "3-10 helix" )
 						{
-							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX_3_10 );
+							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
 						}
 					}
 					catch ( const std::exception & )
