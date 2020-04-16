@@ -28,16 +28,16 @@ namespace VTX
 		  public:
 			using AtomPositionsFrame = std::vector<Vec3f>;
 
-			Molecule() {};
+			Molecule() = default;
 			~Molecule();
 
 			// Models.
-			inline const std::string & getName() const { return _name; };
-			inline void				   setName( const std::string & p_name ) { _name = p_name; };
-			inline const std::string & getFileName() const { return _fileName; };
-			inline void				   setFileName( const std::string & p_fileName ) { _fileName = p_fileName; };
-			inline const IO::Reader::PRMFile & getPRM() const { return _prm; };
-			inline void						   setPRM( const IO::Reader::PRMFile & p_prm ) { _prm = p_prm; };
+			inline const std::string &		   getName() const { return _name; }
+			inline void						   setName( const std::string & p_name ) { _name = p_name; }
+			inline const std::string &		   getFileName() const { return _fileName; }
+			inline void						   setFileName( const std::string & p_fileName ) { _fileName = p_fileName; }
+			inline const IO::Reader::PRMFile & getPRM() const { return _prm; }
+			inline void						   setPRM( const IO::Reader::PRMFile & p_prm ) { _prm = p_prm; }
 
 			inline void							  addChain() { _chains.emplace_back( new Chain() ); }
 			inline Chain &						  getChain( uint p_idx ) { return *_chains[ p_idx ]; }
@@ -98,7 +98,7 @@ namespace VTX
 			{
 				return _atomPositionsFrames;
 			}
-			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; };
+			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; }
 
 			inline const uint getChainCount() const { return (uint)_chains.size(); }
 			inline const uint getResidueCount() const { return (uint)_residues.size(); }
