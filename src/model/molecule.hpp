@@ -89,15 +89,15 @@ namespace VTX
 			inline const AtomPositionsFrame & getAtomPositionFrame( const uint p_frame ) const
 			{
 				return _atomPositionsFrames[ p_frame ];
-			};
+			}
 			inline AtomPositionsFrame & getAtomPositionFrame( const uint p_frame )
 			{
 				return _atomPositionsFrames[ p_frame ];
-			};
+			}
 			inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const
 			{
 				return _atomPositionsFrames;
-			};
+			}
 			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; };
 
 			inline const uint getChainCount() const { return (uint)_chains.size(); }
