@@ -35,18 +35,17 @@ namespace VTX
 				const Vec3f & o		= p_ray.getOrigin();
 				const Vec3f & d		= p_ray.getDirection();
 				const Vec3f	  oc	= o - _center;
-				const float	  a		= Util::Math::dot( d, d );
 				const float	  b		= Util::Math::dot( oc, d );
 				const float	  c		= Util::Math::dot( oc, oc ) - _radius * _radius;
-				const float	  delta = b * b - a * c;
+				const float	  delta = b * b - c;
 
 				if ( delta < 0.f ) return false;
 
 				const float sqrtDelta = sqrtf( delta );
 
-				float t = ( -b - sqrtDelta ) / a;
-				if ( t > p_tMax ) { return false; }				  // first intersection too far
-				if ( t < p_tMin ) { t = ( -b + sqrtDelta ) / a; } // first intersection too near, check second one
+				float t = -b - sqrtDelta;
+				if ( t > p_tMax ) { return false; }		  // first intersection too far
+				if ( t < p_tMin ) { t = -b + sqrtDelta; } // first intersection too near, check second one
 				if ( t < p_tMin || t > p_tMax ) { return false; }
 
 				p_intersection._point	  = p_ray.getPointAtT( t );
