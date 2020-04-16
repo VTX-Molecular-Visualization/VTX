@@ -17,8 +17,6 @@ namespace VTX
 			std::vector<Renderer::BasePrimitive *> primitives;
 			primitives.resize( nbAtoms + nbBonds );
 
-			const std::vector<Vec3f> & positions = p_molecule->getAtomPositionFrame( p_molecule->getFrame() );
-
 			uint idPrimitive = 0;
 			uint cptAtoms	 = 0;
 			uint cptBonds	 = 0;
@@ -35,7 +33,16 @@ namespace VTX
 			};
 			uint idColor = 0;
 
-			const std::vector<Vec3f> & atomPositions = p_molecule->getAtomPositionFrame( 0 );
+			const std::vector<Vec3f> & atomPositions = p_molecule->getAtomPositionFrame( p_molecule->getFrame() );
+			const Mat4f &			   transform	 = p_molecule->getTransform().get();
+			std::vector<Vec3f>		   tAtomPositions;
+			tAtomPositions.resize( nbAtoms );
+			for ( uint i = 0; i < nbAtoms; ++i )
+			{
+				const Vec4f tPos	= transform * Vec4f( atomPositions[ i ], 1.f );
+				tAtomPositions[ i ] = Vec3f( tPos.x, tPos.y, tPos.z );
+			}
+
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
 				Model::Chain * chainPtr = p_molecule->getAtom( i ).getChainPtr();
@@ -53,15 +60,15 @@ namespace VTX
 				}
 				const Vec3f & color		  = mapColors[ chainPtr ];
 				primitives[ idPrimitive ] = new Renderer::Sphere(
-					positions[ i ], p_molecule->getAtomRadius( i ) /*0.4f*/, new DiffuseMaterial( color ) );
+					tAtomPositions[ i ], p_molecule->getAtomRadius( i ) /*0.4f*/, new DiffuseMaterial( color ) );
 				idPrimitive++;
 			}
 
 			for ( uint i = 0; i < nbBonds; ++i )
 			{
 				const Model::Bond & bond = p_molecule->getBond( i );
-				const Vec3f &		a1	 = atomPositions[ bond.getIndexFirstAtom() ];
-				const Vec3f &		a2	 = atomPositions[ bond.getIndexSecondAtom() ];
+				const Vec3f &		a1	 = tAtomPositions[ bond.getIndexFirstAtom() ];
+				const Vec3f &		a2	 = tAtomPositions[ bond.getIndexSecondAtom() ];
 
 				primitives[ idPrimitive ] = new Renderer::Cylinder( a1, a2, 0.15f, _materials.front() );
 				idPrimitive++;
