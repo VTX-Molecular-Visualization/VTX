@@ -37,10 +37,10 @@ namespace VTX
 			uint	  width	 = (uint)io.DisplaySize.x;
 			uint	  height = (uint)io.DisplaySize.y;
 
-//#define OPTIX_DEFINED
+#define OPTIX_DEFINED
 #ifdef OPTIX_DEFINED
 			Renderer::OptixRayTracer * ort = new Renderer::OptixRayTracer();
-			ort->init( int( io.DisplaySize.x ), int( io.DisplaySize.y ) );
+			ort->init( width, height );
 			ort->renderFrame( VTXApp::get().getScene() );
 			const std::vector<uchar4> & pixels = ort->getPixels();
 			stbi_write_png_compression_level   = 0;
@@ -49,7 +49,7 @@ namespace VTX
 			return res;
 #else
 			Renderer::RayTracer * rt = new Renderer::RayTracer();
-			rt->init( int( width ), int( height ) );
+			rt->init( width, height );
 			rt->renderFrame( VTXApp::get().getScene() );
 			const std::vector<uchar> & pixels = rt->getPixels();
 			stbi_write_png_compression_level  = 0;
