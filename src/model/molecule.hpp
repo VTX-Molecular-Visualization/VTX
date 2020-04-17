@@ -40,25 +40,30 @@ namespace VTX
 			inline void						   setPRM( const IO::Reader::PRMFile & p_prm ) { _prm = p_prm; }
 
 			inline void							  addChain() { _chains.emplace_back( new Chain() ); }
-			inline Chain &						  getChain( uint p_idx ) { return *_chains[ p_idx ]; }
-			inline const Chain &				  getChain( uint p_idx ) const { return *_chains[ p_idx ]; }
+			inline Chain &						  getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
+			inline const Chain &				  getChain( const uint p_idx ) const { return *_chains[ p_idx ]; }
 			inline std::vector<Chain *> &		  getChains() { return _chains; }
 			inline const std::vector<Chain *> &	  getChains() const { return _chains; }
 			inline void							  addResidue() { _residues.emplace_back( new Residue() ); }
-			inline Residue &					  getResidue( uint p_idx ) { return *_residues[ p_idx ]; }
-			inline const Residue &				  getResidue( uint p_idx ) const { return *_residues[ p_idx ]; }
+			inline Residue &					  getResidue( const uint p_idx ) { return *_residues[ p_idx ]; }
+			inline const Residue &				  getResidue( const uint p_idx ) const { return *_residues[ p_idx ]; }
 			inline std::vector<Residue *> &		  getResidues() { return _residues; }
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
 			inline void							  addAtom() { _atoms.emplace_back( new Atom() ); }
-			inline Atom &						  getAtom( uint p_idx ) { return *_atoms[ p_idx ]; }
-			inline const Atom &					  getAtom( uint p_idx ) const { return *_atoms[ p_idx ]; }
+			inline Atom &						  getAtom( const uint p_idx ) { return *_atoms[ p_idx ]; }
+			inline const Atom &					  getAtom( const uint p_idx ) const { return *_atoms[ p_idx ]; }
 			inline std::vector<Atom *> &		  getAtoms() { return _atoms; }
 			inline const std::vector<Atom *> &	  getAtoms() const { return _atoms; }
 			inline void							  addBond() { _bonds.emplace_back( new Bond() ); }
-			inline Bond &						  getBond( uint p_idx ) { return *_bonds[ p_idx ]; }
-			inline const Bond &					  getBond( uint p_idx ) const { return *_bonds[ p_idx ]; }
+			inline Bond &						  getBond( const uint p_idx ) { return *_bonds[ p_idx ]; }
+			inline const Bond &					  getBond( const uint p_idx ) const { return *_bonds[ p_idx ]; }
 			inline std::vector<Bond *> &		  getBonds() { return _bonds; }
 			inline const std::vector<Bond *> &	  getBonds() const { return _bonds; }
+
+			inline const bool isAtomVisible( const uint p_idx ) const
+			{
+				return bool( _bufferAtomVisibilities[ p_idx ] );
+			}
 
 			inline const float	 getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
 			inline const Vec3f & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
@@ -81,7 +86,7 @@ namespace VTX
 				_atomPositionsFrames.emplace_back( p_frame );
 			}
 
-			inline void setAtomPositionFrames( std::vector<AtomPositionsFrame> & p_frame )
+			inline void setAtomPositionFrames( const std::vector<AtomPositionsFrame> & p_frame )
 			{
 				_atomPositionsFrames.clear();
 				_atomPositionsFrames = p_frame;
@@ -100,10 +105,10 @@ namespace VTX
 			}
 			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; }
 
-			inline const uint getChainCount() const { return (uint)_chains.size(); }
-			inline const uint getResidueCount() const { return (uint)_residues.size(); }
-			inline const uint getAtomCount() const { return (uint)_atoms.size(); }
-			inline const uint getBondCount() const { return (uint)_bonds.size(); }
+			inline const uint getChainCount() const { return uint( _chains.size() ); }
+			inline const uint getResidueCount() const { return uint( _residues.size() ); }
+			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
+			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
 			inline const Math::AABB & getGlobalPositionsAABB() const { return _globalPositionsAABB; }
 
@@ -111,8 +116,8 @@ namespace VTX
 			void			  setRepresentation();
 			void			  setColorMode();
 			inline uint		  getFrame() const { return _currentFrame; }
-			void			  setFrame( uint );
-			inline const uint getFrameCount() const { return (uint)_atomPositionsFrames.size(); }
+			void			  setFrame( const uint );
+			inline const uint getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
 			inline uint		  getFPS() const { return _fps; }
 			void			  setFPS( const uint p_fps ) { _fps = p_fps; }
 			inline bool		  isPlaying() const { return _isPlaying; }
@@ -130,6 +135,7 @@ namespace VTX
 				_fillBufferAtomVisibilities();
 			}
 
+			// At least one residue
 			inline bool hasTopology() const { return getResidueCount() > 1; }
 			inline bool hasDynamic() const { return getFrameCount() > 1; }
 
