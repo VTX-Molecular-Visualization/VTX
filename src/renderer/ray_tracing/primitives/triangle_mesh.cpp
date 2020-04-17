@@ -14,7 +14,8 @@ namespace VTX
 			Assimp::Importer importer;
 
 			// Read scene and triangulate meshes
-			const aiScene * const scene = importer.ReadFile( meshToLoad.c_str(), aiProcess_Triangulate );
+			const aiScene * const scene
+				= importer.ReadFile( meshToLoad.c_str(), aiProcess_Triangulate | aiProcess_GenNormals );
 
 			if ( scene == nullptr ) { throw std::runtime_error( "Cannot import file: " + meshToLoad.str() ); }
 
@@ -32,6 +33,7 @@ namespace VTX
 
 			_triangles.resize( nbTriangles );
 			_vertices.resize( nbVertices );
+			_normals.resize( nbVertices );
 
 			uint currentTriangle = 0;
 			uint currentVertex	 = 0;
@@ -63,6 +65,11 @@ namespace VTX
 					vertex.x	   = mesh->mVertices[ v ].x;
 					vertex.y	   = mesh->mVertices[ v ].y;
 					vertex.z	   = mesh->mVertices[ v ].z;
+
+					Vec3f & normal = _normals[ currentVertex ];
+					normal.x	   = mesh->mNormals[ v ].x;
+					normal.y	   = mesh->mNormals[ v ].y;
+					normal.z	   = mesh->mNormals[ v ].z;
 				}
 			}
 			// compute AABB for each triangle

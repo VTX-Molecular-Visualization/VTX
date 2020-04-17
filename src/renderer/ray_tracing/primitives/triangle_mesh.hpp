@@ -52,6 +52,7 @@ namespace VTX
 			BVH									  _bvh;
 			std::vector<BasePrimitive *>		  _triangles;
 			std::vector<Vec3f>					  _vertices;
+			std::vector<Vec3f>					  _normals;
 			std::vector<Renderer::BaseMaterial *> _materials;
 		};
 
@@ -91,14 +92,15 @@ namespace VTX
 
 				const Vec3f qVec = Util::Math::cross( tVec, edge1 );
 				const float v	 = Util::Math::dot( d, qVec ) * invDet;
-				if ( v < 0.f || u + v > 1.f ) return false;
+				const float w	 = 1.f - u - v;
+				if ( v < 0.f || w < 0.f ) return false;
 
 				const float t = Util::Math::dot( edge2, qVec ) * invDet;
 
 				if ( t < p_tMin || t > p_tMax ) { return false; }
 
 				p_intersection._point	  = p_ray.getPointAtT( t );
-				const Vec3f normal		  = Util::Math::normalize( Util::Math::cross( edge1, edge2 ) );
+				const Vec3f normal		  = _interpolateNormal( u, v, w );
 				p_intersection._normal	  = Util::Math::faceForward( normal, d );
 				p_intersection._distance  = t;
 				p_intersection._primitive = this;
@@ -107,6 +109,13 @@ namespace VTX
 			}
 
 		  private:
+			Vec3f _interpolateNormal( const float p_u, const float p_v, const float p_w ) const
+			{
+				// should not be necessary to normalize, but for safety...
+				return Util::Math::normalize( _refMesh->_normals[ _v0 ] * p_w + _refMesh->_normals[ _v1 ] * p_u
+											  + _refMesh->_normals[ _v2 ] * p_v );
+			}
+
 			void _computeAABB()
 			{
 				_aabb.extend( _refMesh->_vertices[ _v0 ] );
