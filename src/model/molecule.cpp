@@ -1,5 +1,6 @@
 #include "molecule.hpp"
 #include "cartoon/ribbon.hpp"
+#include "model/ribbons.hpp"
 #include "util/color.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
@@ -408,11 +409,14 @@ namespace VTX
 
 		void Molecule::_computeSecondaryStructure()
 		{
+			Ribbons r = Ribbons( *this );
+
+			/*
 			for ( const Chain * const chain : getChains() )
 			{
 				Cartoon::createChainMesh( *chain );
 			}
-
+			*/
 		} // namespace Model
 	}	  // namespace Model
 } // namespace VTX
