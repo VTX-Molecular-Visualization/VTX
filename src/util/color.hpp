@@ -13,7 +13,7 @@ namespace VTX
 	{
 		namespace Color
 		{
-			static inline Vec3f randomPastelColor() { return Math::randomVec3f() * 0.5f + 0.5f; }
+			inline Vec3f randomPastelColor() { return Math::randomVec3f() * 0.5f + 0.5f; }
 		} // namespace Color
 	}	  // namespace Util
 } // namespace VTX

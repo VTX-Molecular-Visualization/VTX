@@ -14,13 +14,13 @@ namespace VTX
 	{
 		namespace OpenGL
 		{
-			void APIENTRY debugMessageCallback( const GLenum   p_source,
-												const GLenum   p_type,
-												const GLuint   p_id,
-												const GLenum   p_severity,
-												const GLsizei  p_length,
-												const GLchar * p_msg,
-												const void *   p_data )
+			static void APIENTRY debugMessageCallback( const GLenum	  p_source,
+													   const GLenum	  p_type,
+													   const GLuint	  p_id,
+													   const GLenum	  p_severity,
+													   const GLsizei  p_length,
+													   const GLchar * p_msg,
+													   const void *	  p_data )
 			{
 				std::string source;
 				std::string type;

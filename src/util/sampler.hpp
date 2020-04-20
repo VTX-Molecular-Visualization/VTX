@@ -14,7 +14,7 @@ namespace VTX
 	{
 		namespace Sampler
 		{
-			static inline Vec3f uniformHemisphere( const float p_u, const float p_v )
+			inline Vec3f uniformHemisphere( const float p_u, const float p_v )
 			{
 				const float cosTheta = p_u;
 				const float phi		 = 2.f * PIf * p_v;

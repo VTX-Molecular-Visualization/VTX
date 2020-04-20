@@ -29,168 +29,166 @@ namespace VTX
 			static std::uniform_real_distribution<float> dis( 0.f, 1.f );
 
 			template<typename T>
-			static inline T min( const T & p_lhs, const T & p_rhs )
+			inline T min( const T & p_lhs, const T & p_rhs )
 			{
 				return glm::min( p_lhs, p_rhs );
 			}
 
 			template<typename T>
-			static inline T max( const T & p_lhs, const T & p_rhs )
+			inline T max( const T & p_lhs, const T & p_rhs )
 			{
 				return glm::max( p_lhs, p_rhs );
 			}
 
 			template<typename T1, typename T2>
-			static inline T1 clamp( const T1 & p_value, const T2 & p_min, const T2 & p_max )
+			inline T1 clamp( const T1 & p_value, const T2 & p_min, const T2 & p_max )
 			{
 				return glm::clamp( p_value, p_min, p_max );
 			}
 
 			template<typename T1, typename T2>
-			static inline T1 translate( const T1 & p_value, const T2 & p_translation )
+			inline T1 translate( const T1 & p_value, const T2 & p_translation )
 			{
 				return glm::translate( p_value, p_translation );
 			}
 
 			template<typename T1, typename T2>
-			static inline T1 rotate( const T1 & p_value, const T2 & p_rotation, const Vec3f & p_axis )
+			inline T1 rotate( const T1 & p_value, const T2 & p_rotation, const Vec3f & p_axis )
 			{
 				return glm::rotate( p_value, p_rotation, p_axis );
 			}
 
 			template<typename T1, typename T2>
-			static inline T1 scale( const T1 & p_value, const T2 & p_scale )
+			inline T1 scale( const T1 & p_value, const T2 & p_scale )
 			{
 				return glm::scale( p_value, p_scale );
 			}
 
-			static inline uint factorial( const uint & p_value ) { return glm::factorial( p_value ); }
+			inline uint factorial( const uint & p_value ) { return glm::factorial( p_value ); }
 
 			template<int L, typename T>
-			static inline T distance( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
+			inline T distance( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
 			{
 				return glm::distance( p_lhs, p_rhs );
 			}
 
 			template<int L, typename T>
-			static inline T length( const glm::vec<L, T> & p_value )
+			inline T length( const glm::vec<L, T> & p_value )
 			{
 				return glm::length( p_value );
 			}
 
 			template<typename T>
-			static inline void normalizeSelf( T & p_value )
+			inline void normalizeSelf( T & p_value )
 			{
 				p_value = glm::normalize( p_value );
 			}
 
 			template<typename T>
-			static inline T normalize( const T & p_value )
+			inline T normalize( const T & p_value )
 			{
 				return glm::normalize( p_value );
 			}
 
 			template<int L, typename T>
-			static inline T dot( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
+			inline T dot( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
 			{
 				return glm::dot( p_lhs, p_rhs );
 			}
 
 			template<typename T>
-			static inline T cross( const T & p_lhs, const T & p_rhs )
+			inline T cross( const T & p_lhs, const T & p_rhs )
 			{
 				return glm::cross( p_lhs, p_rhs );
 			}
 
 			template<int L, typename T>
-			static inline T angle( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
+			inline T angle( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
 			{
 				return glm::angle( p_lhs, p_rhs );
 			}
 
 			template<typename T>
-			static inline glm::mat<3, 3, T> castMat3( const glm::qua<T> & p_value )
+			inline glm::mat<3, 3, T> castMat3( const glm::qua<T> & p_value )
 			{
 				return glm::mat3_cast( p_value );
 			}
 
 			template<typename T>
-			static inline T degrees( const T & p_value )
+			inline T degrees( const T & p_value )
 			{
 				return glm::degrees( p_value );
 			}
 
 			template<typename T>
-			static inline T radians( const T & p_value )
+			inline T radians( const T & p_value )
 			{
 				return glm::radians( p_value );
 			}
 
 			template<typename T>
-			static inline glm::tmat4x4<T> lookAt( const glm::tvec3<T> & p_value,
-												  const glm::tvec3<T> & p_target,
-												  const glm::tvec3<T> & p_axis )
+			inline glm::tmat4x4<T> lookAt( const glm::tvec3<T> & p_value,
+										   const glm::tvec3<T> & p_target,
+										   const glm::tvec3<T> & p_axis )
 			{
 				return glm::lookAt( p_value, p_target, p_axis );
 			}
 
 			template<typename T>
-			static inline glm::tmat4x4<T> perspective( const T p_fov, const T p_aspect, const T p_near, const T p_far )
+			inline glm::tmat4x4<T> perspective( const T p_fov, const T p_aspect, const T p_near, const T p_far )
 			{
 				return glm::perspective( p_fov, p_aspect, p_near, p_far );
 			}
 
 			template<typename T>
-			static inline std::string to_string( const T & p_value )
+			inline std::string to_string( const T & p_value )
 			{
 				return glm::to_string( p_value );
 			}
 
 			template<int L, typename T>
-			static inline T const * value_ptr( const glm::vec<L, T> & p_value )
+			inline T const * value_ptr( const glm::vec<L, T> & p_value )
 			{
 				return glm::value_ptr( p_value );
 			}
 
 			template<int L, typename T>
-			static inline T const * value_ptr( const glm::mat<L, L, T> & p_value )
+			inline T const * value_ptr( const glm::mat<L, L, T> & p_value )
 			{
 				return glm::value_ptr( p_value );
 			}
 
 			template<typename T>
-			static inline T reflect( const T & p_vi, const T & p_vn )
+			inline T reflect( const T & p_vi, const T & p_vn )
 			{
 				return glm::reflect( p_vi, p_vn );
 			}
 
 			template<int L, typename T>
-			static inline glm::vec<L, T> refract( const glm::vec<L, T> & p_vi,
-												  const glm::vec<L, T> & p_vn,
-												  const T &				 p_eta )
+			inline glm::vec<L, T> refract( const glm::vec<L, T> & p_vi, const glm::vec<L, T> & p_vn, const T & p_eta )
 			{
 				return glm::refract( p_vi, p_vn, p_eta );
 			}
 
 			template<typename T>
-			static inline T pow( const T & p_value, const T & p_exp )
+			inline T pow( const T & p_value, const T & p_exp )
 			{
 				return glm::pow( p_value, p_exp );
 			}
 
 			template<typename T>
-			static inline T faceForward( const T & p_vec, const T & p_view )
+			inline T faceForward( const T & p_vec, const T & p_view )
 			{
 				return glm::faceforward( p_vec, p_view, p_vec );
 			}
 
-			static inline float randomFloat() { return dis( gen ); }
+			inline float randomFloat() { return dis( gen ); }
 
-			static inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
+			inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
-			static inline Quatd eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
+			inline Quatd eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
 
-			static inline Quatd eulerToQuaternion( const double p_pitch, const double p_yaw, const double p_roll )
+			inline Quatd eulerToQuaternion( const double p_pitch, const double p_yaw, const double p_roll )
 			{
 				// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
 				/*
@@ -214,7 +212,7 @@ namespace VTX
 				return q;
 			}
 
-			static inline Vec3f quaternionToEuler( const Quatd & p_quaternion )
+			inline Vec3f quaternionToEuler( const Quatd & p_quaternion )
 			{
 				// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
 				const Quatd & q = p_quaternion;
@@ -246,33 +244,33 @@ namespace VTX
 			}
 
 			template<typename T>
-			static inline T linearInterpolation( const T & p_lhs, const T & p_rhs, const float p_value )
+			inline T linearInterpolation( const T & p_lhs, const T & p_rhs, const float p_value )
 			{
 				return glm::lerp( p_lhs, p_rhs, p_value );
 			}
 
 			template<typename T>
-			static inline T catmullRomInterpolation( const T &	 p_p0,
-													 const T &	 p_p1,
-													 const T &	 p_p2,
-													 const T &	 p_p3,
-													 const float p_value )
+			inline T catmullRomInterpolation( const T &	  p_p0,
+											  const T &	  p_p1,
+											  const T &	  p_p2,
+											  const T &	  p_p3,
+											  const float p_value )
 			{
 				return glm::catmullRom( p_p0, p_p1, p_p2, p_p3, p_value );
 			}
 
 			template<typename T>
-			static inline T cubicInterpolation( const T &	p_p0,
-												const T &	p_p1,
-												const T &	p_p2,
-												const T &	p_p3,
-												const float p_value )
+			inline T cubicInterpolation( const T &	 p_p0,
+										 const T &	 p_p1,
+										 const T &	 p_p2,
+										 const T &	 p_p3,
+										 const float p_value )
 			{
 				return glm::cubic( p_p0, p_p1, p_p2, p_p3, p_value );
 			}
 
 			// Morton utils
-			static inline uint leftShift3( uint p_x )
+			inline uint leftShift3( uint p_x )
 			{
 				assert( p_x <= ( 1 << 10 ) );
 
@@ -284,7 +282,7 @@ namespace VTX
 				return p_x;
 			}
 
-			static inline uint encodeMorton3( const Vec3f & p_v )
+			inline uint encodeMorton3( const Vec3f & p_v )
 			{
 				assert( p_v.x >= 0 );
 				assert( p_v.y >= 0 );
@@ -294,7 +292,7 @@ namespace VTX
 			}
 
 			// p_n (normal) must be normalized
-			static inline Mat3f createOrthonormalBasis( const Vec3f & p_n )
+			inline Mat3f createOrthonormalBasis( const Vec3f & p_n )
 			{
 				Vec3f t = fabsf( p_n.x ) > fabsf( p_n.y )
 							  ? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )
@@ -336,7 +334,7 @@ namespace VTX
 				return a;
 			}
 
-			static Vec3f linearComb( const float   p_scalar0,
+			inline Vec3f linearComb( const float   p_scalar0,
 									 const Vec3f & p_vector0,
 									 const float   p_scalar1,
 									 const Vec3f & p_vector1 )
