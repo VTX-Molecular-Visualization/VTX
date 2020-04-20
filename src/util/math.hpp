@@ -44,12 +44,6 @@ namespace VTX
 				return glm::clamp( p_value, p_min, p_max );
 			}
 
-			template<typename T>
-			static inline auto length( const T & p_value )
-			{
-				return glm::length( p_value );
-			}
-
 			template<typename T1, typename T2>
 			static inline T1 translate( const T1 & p_value, const T2 & p_translation )
 			{
@@ -68,10 +62,16 @@ namespace VTX
 				return glm::scale( p_value, p_scale );
 			}
 
-			template<typename T>
-			static inline auto distance( const T & p_lhs, const T & p_rhs )
+			template<int L, typename T>
+			static inline T distance( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
 			{
 				return glm::distance( p_lhs, p_rhs );
+			}
+
+			template<int L, typename T>
+			static inline T length( const glm::vec<L, T> & p_value )
+			{
+				return glm::length( p_value );
 			}
 
 			template<typename T>
@@ -80,14 +80,8 @@ namespace VTX
 				return glm::normalize( p_value );
 			}
 
-			template<typename T>
-			static inline auto lookAt( const T & p_value, const T & p_target, const T & p_axis )
-			{
-				return glm::lookAt( p_value, p_target, p_axis );
-			}
-
-			template<typename T>
-			static inline auto dot( const T & p_lhs, const T & p_rhs )
+			template<int L, typename T>
+			static inline T dot( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
 			{
 				return glm::dot( p_lhs, p_rhs );
 			}
@@ -99,7 +93,7 @@ namespace VTX
 			}
 
 			template<typename T>
-			static inline auto castMat3( const T & p_value )
+			static inline glm::mat<3, 3, T> castMat3( const glm::qua<T> & p_value )
 			{
 				return glm::mat3_cast( p_value );
 			}
@@ -111,7 +105,15 @@ namespace VTX
 			}
 
 			template<typename T>
-			static inline auto perspective( const T p_fov, const T p_aspect, const T p_near, const T p_far )
+			static inline glm::tmat4x4<T> lookAt( const glm::tvec3<T> & p_value,
+												  const glm::tvec3<T> & p_target,
+												  const glm::tvec3<T> & p_axis )
+			{
+				return glm::lookAt( p_value, p_target, p_axis );
+			}
+
+			template<typename T>
+			static inline glm::tmat4x4<T> perspective( const T p_fov, const T p_aspect, const T p_near, const T p_far )
 			{
 				return glm::perspective( p_fov, p_aspect, p_near, p_far );
 			}
@@ -122,16 +124,30 @@ namespace VTX
 				return glm::to_string( p_value );
 			}
 
-			template<typename T>
-			static inline auto value_ptr( const T & p_value )
+			template<int L, typename T>
+			static inline T const * value_ptr( const glm::vec<L, T> & p_value )
+			{
+				return glm::value_ptr( p_value );
+			}
+
+			template<int L, typename T>
+			static inline T const * value_ptr( const glm::mat<L, L, T> & p_value )
 			{
 				return glm::value_ptr( p_value );
 			}
 
 			template<typename T>
-			static inline T reflect( const T & p_v1, const T & p_v2 )
+			static inline T reflect( const T & p_vi, const T & p_vn )
 			{
-				return glm::reflect( p_v1, p_v2 );
+				return glm::reflect( p_vi, p_vn );
+			}
+
+			template<int L, typename T>
+			static inline glm::vec<L, T> refract( const glm::vec<L, T> & p_vi,
+												  const glm::vec<L, T> & p_vn,
+												  const T &				 p_eta )
+			{
+				return glm::refract( p_vi, p_vn, p_eta );
 			}
 
 			template<typename T>
@@ -143,7 +159,7 @@ namespace VTX
 			template<typename T>
 			static inline T faceForward( const T & p_vec, const T & p_view )
 			{
-				return dot( p_view, p_vec ) > 0.f ? -p_vec : p_vec;
+				return glm::faceforward( p_vec, p_view, p_vec );
 			}
 
 			static inline float randomFloat() { return dis( gen ); }
