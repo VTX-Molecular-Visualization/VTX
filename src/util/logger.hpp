@@ -5,15 +5,14 @@
 #pragma once
 #endif
 
-#include <iostream>
+#include <string>
 
 namespace VTX
 {
 	namespace Util
 	{
-		class Logger
+		namespace Logger
 		{
-		  public:
 			enum class LEVEL
 			{
 				LOG_LVL_DEBUG,
@@ -22,16 +21,15 @@ namespace VTX
 				LOG_LVL_ERROR
 			};
 
-			static void logDebug( const std::string & );
-			static void logInfo( const std::string & );
-			static void logWarning( const std::string & );
-			static void logError( const std::string & );
+			void log( const LEVEL, const std::string & );
 
-		  private:
-			Logger() = default;
-			static void _log( const LEVEL, const std::string & );
-		};
-	} // namespace Util
+			inline void logDebug( const std::string & p_debug ) { log( LEVEL::LOG_LVL_DEBUG, p_debug ); }
+			inline void logInfo( const std::string & p_info ) { log( LEVEL::LOG_LVL_INFO, p_info ); }
+			inline void logWarning( const std::string & p_warning ) { log( LEVEL::LOG_LVL_WARNING, p_warning ); }
+			inline void logError( const std::string & p_error ) { log( LEVEL::LOG_LVL_ERROR, p_error ); }
+
+		}; // namespace Logger
+	}	   // namespace Util
 
 	inline void VTX_DEBUG( const std::string & p_str ) { VTX::Util::Logger::logDebug( p_str ); }
 	inline void VTX_INFO( const std::string & p_str ) { VTX::Util::Logger::logInfo( p_str ); }
