@@ -1,6 +1,6 @@
 #include "molecule_rt.hpp"
-#include "../materials/diffuse_material.hpp"
 #include "../materials/flat_color_material.hpp"
+#include "../materials/matte.hpp"
 #include "../materials/phong_material.hpp"
 #include "cylinder.hpp"
 #include "setting.hpp"
@@ -29,9 +29,9 @@ namespace VTX
 			uint cptAtoms	 = 0;
 			uint cptBonds	 = 0;
 
-			_materials.emplace_back( new DiffuseMaterial( VEC3F_XYZ, VEC3F_XYZ ) );
-			//_materials.emplace_back( new PhongMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
-			_materials.emplace_back( new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
+			_materials.emplace_back( new MatteMaterial( VEC3F_XYZ ) );
+			//_materials.emplace_back( new PhongMaterial( Vec3f( 0.2f, 0.f, 0.f ), Vec3f( 0.8f, 0.f, 0.f ) ) );
+			//_materials.emplace_back( new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
 
 			std::map<Model::Chain *, Vec3f> mapColors;
 			const std::vector<Vec3f>		predefColors = {
@@ -56,6 +56,7 @@ namespace VTX
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
 				Model::Chain * chainPtr = p_molecule->getAtom( i ).getChainPtr();
+
 				if ( mapColors.find( chainPtr ) == mapColors.end() )
 				{
 					if ( idColor < uint( predefColors.size() ) )
@@ -72,7 +73,9 @@ namespace VTX
 				primitives[ idPrimitive ] = new Renderer::Sphere(
 					tAtomPositions[ i ],
 					rep == View::MOLECULE_REPRESENTATION::VAN_DER_WAALS ? p_molecule->getAtomRadius( i ) : radius,
-					new DiffuseMaterial( color ) );
+					new MatteMaterial( color ) );
+				// new PhongMaterial( 0.4f * color, 0.6f * color ) );
+				// new FlatColorMaterial( color ) );
 				idPrimitive++;
 			}
 

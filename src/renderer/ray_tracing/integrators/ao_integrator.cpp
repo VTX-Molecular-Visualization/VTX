@@ -14,7 +14,7 @@ namespace VTX
 			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
 				// create orthonormal basis around around hit normal
-				Mat3f TBN = Util::Math::createOrthonormalBasis( -intersection._normal );
+				Mat3f TBN = Util::Math::createOrthonormalBasis( intersection._normal );
 
 				const uint	aoSamples = 32;
 				const float aoRadius  = 20.f;
@@ -27,8 +27,9 @@ namespace VTX
 					float pdf	 = Util::Sampler::uniformHemispherePdf();
 					// transform in local coordinates systems
 					Vec3f aoDir = TBN * sample;
-
-					if ( !p_scene.intersectAny( Ray( intersection._point, aoDir ), 1e-3f, aoRadius ) )
+					Ray	  aoRay( intersection._point, aoDir );
+					aoRay.offset( intersection._normal );
+					if ( !p_scene.intersectAny( aoRay, 1e-3f, aoRadius ) )
 					{
 						// u is cos(theta) <=> dot(n, aoDir)
 						ao += u / pdf;

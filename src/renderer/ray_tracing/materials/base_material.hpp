@@ -6,6 +6,7 @@
 #endif
 
 #include "../intersection.hpp"
+#include "../lights/light_sample.hpp"
 #include "../ray.hpp"
 
 namespace VTX
@@ -15,15 +16,12 @@ namespace VTX
 		class BaseMaterial
 		{
 		  public:
-			explicit BaseMaterial( const Vec3f & p_color ) : _color( p_color ) {}
+			BaseMaterial()			= default;
 			virtual ~BaseMaterial() = default;
 
-			const Vec3f & getColor() const { return _color; }
-
-			virtual Vec3f shade( const Ray & p_ray, const Intersection & p_hit, const Vec3f & p_lightDir ) const = 0;
-
-		  protected:
-			Vec3f _color;
+			virtual Vec3f shade( const Ray &		  p_ray,
+								 const Intersection & p_hit,
+								 const LightSample &  p_lightDirSample ) const = 0;
 		};
 	} // namespace Renderer
 } // namespace VTX

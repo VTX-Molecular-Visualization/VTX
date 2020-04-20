@@ -26,7 +26,33 @@ namespace VTX
 			const Vec3f & getOrigin() const { return _origin; }
 			const Vec3f & getDirection() const { return _direction; }
 
+			// See:
+			// Wächter C., Binder N. (2019)
+			// A Fast and Robust Method for Avoiding Self-Intersection.
+			// In: Haines E., Akenine-Möller T. (eds) Ray Tracing Gems. Apress, Berkeley, CA
+			void offset( const Vec3f p_normal )
+			{
+				int of_i[ 3 ] = { int( intScale() * p_normal.x ),
+								  int( intScale() * p_normal.y ),
+								  int( intScale() * p_normal.z ) };
+				int ip_i[ 3 ]
+					= { *reinterpret_cast<const int *>( &_origin.x ) + ( ( _origin.x < 0 ) ? -of_i[ 0 ] : of_i[ 0 ] ),
+						*reinterpret_cast<const int *>( &_origin.y ) + ( ( _origin.y < 0 ) ? -of_i[ 1 ] : of_i[ 1 ] ),
+						*reinterpret_cast<const int *>( &_origin.z ) + ( ( _origin.z < 0 ) ? -of_i[ 2 ] : of_i[ 2 ] ) };
+				float p_i[ 3 ] = { *reinterpret_cast<const float *>( &ip_i[ 0 ] ),
+								   *reinterpret_cast<const float *>( &ip_i[ 1 ] ),
+								   *reinterpret_cast<const float *>( &ip_i[ 2 ] ) };
+				_origin = Vec3f( fabsf( _origin.x ) < origin() ? _origin.x + floatScale() * p_normal.x : p_i[ 0 ],
+								 fabsf( _origin.y ) < origin() ? _origin.y + floatScale() * p_normal.y : p_i[ 1 ],
+								 fabsf( _origin.z ) < origin() ? _origin.z + floatScale() * p_normal.z : p_i[ 2 ] );
+			}
+
 			Vec3f getPointAtT( const float p_t ) const { return _origin + _direction * p_t; }
+
+		  private:
+			constexpr float origin() { return 1.f / 32.f; }
+			constexpr float floatScale() { return 1.f / 65536.f; }
+			constexpr float intScale() { return 256.f; }
 
 		  private:
 			Vec3f _origin	 = VEC3F_ZERO;

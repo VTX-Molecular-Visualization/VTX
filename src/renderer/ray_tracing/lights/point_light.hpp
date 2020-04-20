@@ -25,7 +25,7 @@ namespace VTX
 				const float dist2 = Util::Math::dot( dir, dir );
 				const float dist  = sqrtf( dist2 );
 
-				return LightSample( dir / dist, dist, ( _color * _power ) / dist2, 1.f );
+				return LightSample( dir / dist, dist, ( _color * _power ) / dist2, _pdf );
 			}
 
 		  private:

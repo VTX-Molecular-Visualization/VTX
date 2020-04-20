@@ -1,5 +1,5 @@
 #include "triangle_mesh.hpp"
-#include "../materials/diffuse_material.hpp"
+#include "../materials/matte.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -22,7 +22,7 @@ namespace VTX
 			const uint nbMeshes	   = scene->mNumMeshes;
 			uint	   nbTriangles = 0;
 			uint	   nbVertices  = 0;
-			_materials.emplace_back( new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
+			_materials.emplace_back( new MatteMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
 
 			for ( uint i = 0; i < nbMeshes; ++i )
 			{

@@ -22,21 +22,24 @@ namespace VTX
 				// compute direct lighting from all lights in the scene
 				for ( const BaseLight * light : p_scene.getLights() )
 				{
-					const uint nbLightSamples = light->isSurface() ? 126 : 1;
+					const uint nbLightSamples = light->isSurface() ? 1 : 1;
 
 					Vec3f lightContrib = VEC3F_ZERO;
 					for ( uint i = 0; i < nbLightSamples; ++i )
 					{
 						const LightSample ls = light->sample( intersection._point );
 
-						const Ray shadowRay( intersection._point, ls._dir );
+						Ray shadowRay( intersection._point, ls._dir );
+						shadowRay.offset( intersection._normal );
 
-						if ( !p_scene.intersectAny( shadowRay, 1e-3f, ls._distance ) )
-						{ lightContrib += 0.9f * mtl->shade( p_ray, intersection, ls._dir ) * ls._radiance; }
+						const float cosTheta = Util::Math::max( 0.f, Util::Math::dot( intersection._normal, ls._dir ) );
+
+						if ( !p_scene.intersectAny( shadowRay, 1e-3f, ls._distance - 1e-3f ) )
+						{ lightContrib += mtl->shade( p_ray, intersection, ls ) * ls._radiance * cosTheta; }
 					}
 					Li += lightContrib / float( nbLightSamples );
 				}
-				Li += 0.1f * mtl->getColor();
+				// Li += 0.1f * mtl->getColor();
 			}
 			else
 			{

@@ -16,7 +16,11 @@ namespace VTX
 			{
 				// shade primitive
 				// point light on camera
-				Li = intersection._primitive->getMaterial()->shade( p_ray, intersection, -p_ray.getDirection() );
+				LightSample ls( -p_ray.getDirection(), Util::Math::length( p_ray.getDirection() ), VEC3F_XYZ, 1.f );
+
+				const float cosTheta = Util::Math::dot( intersection._normal, ls._dir );
+
+				Li = intersection._primitive->getMaterial()->shade( p_ray, intersection, ls ) * cosTheta;
 			}
 			else
 			{
