@@ -35,7 +35,7 @@ namespace VTX
 
 		  private:
 			Vec3f _kd		 = VEC3F_XYZ;
-			float _roughness = 0.f;
+			float _roughness = 0.f; // [0, 2PI]
 		};
 	} // namespace Renderer
 } // namespace VTX

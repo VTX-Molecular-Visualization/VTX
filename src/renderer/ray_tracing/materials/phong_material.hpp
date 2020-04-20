@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "../brdfs/blinn_phong.hpp"
 #include "../brdfs/lambert.hpp"
 #include "../brdfs/phong.hpp"
 #include "base_material.hpp"
@@ -30,8 +31,8 @@ namespace VTX
 			{
 				const Vec3f diffuse = BRDF::Lambert::fr( p_hit, -p_ray.getDirection(), p_lightSample._dir, _kd );
 				const Vec3f specular
-					= BRDF::Phong::fr( p_hit, -p_ray.getDirection(), p_lightSample._dir, _ks, _shininess );
-
+					//= BRDF::Phong::fr( p_hit, -p_ray.getDirection(), p_lightSample._dir, _ks, _shininess );
+					= BRDF::BlinnPhong::fr( p_hit, -p_ray.getDirection(), p_lightSample._dir, _ks, _shininess );
 				return diffuse + specular;
 			}
 
