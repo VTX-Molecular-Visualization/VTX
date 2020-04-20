@@ -9,8 +9,10 @@
 #include "glm/gtc/type_ptr.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/compatibility.hpp>
+#include <glm/gtx/integer.hpp>
 #include <glm/gtx/spline.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/vector_angle.hpp>
 #include <random>
 
 #undef min
@@ -62,6 +64,8 @@ namespace VTX
 				return glm::scale( p_value, p_scale );
 			}
 
+			static inline uint factorial( const uint & p_value ) { return glm::factorial( p_value ); }
+
 			template<int L, typename T>
 			static inline T distance( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
 			{
@@ -72,6 +76,12 @@ namespace VTX
 			static inline T length( const glm::vec<L, T> & p_value )
 			{
 				return glm::length( p_value );
+			}
+
+			template<typename T>
+			static inline void normalizeSelf( T & p_value )
+			{
+				p_value = glm::normalize( p_value );
 			}
 
 			template<typename T>
@@ -92,10 +102,22 @@ namespace VTX
 				return glm::cross( p_lhs, p_rhs );
 			}
 
+			template<int L, typename T>
+			static inline T angle( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
+			{
+				return glm::angle( p_lhs, p_rhs );
+			}
+
 			template<typename T>
 			static inline glm::mat<3, 3, T> castMat3( const glm::qua<T> & p_value )
 			{
 				return glm::mat3_cast( p_value );
+			}
+
+			template<typename T>
+			static inline T degrees( const T & p_value )
+			{
+				return glm::degrees( p_value );
 			}
 
 			template<typename T>
@@ -280,13 +302,46 @@ namespace VTX
 				Vec3f b = cross( p_n, t );
 				return Mat3f( t, b, p_n );
 			}
-			static inline Vec3f ellipse( const float p_w, const float p_h, const float p_t )
-			{
-				float a = p_t * 2.0f * PIf + PIf / 4.0f;
-				float x = cosf( a ) * p_w / 2.0f;
-				float y = sinf( a ) * p_h / 2.0f;
 
-				return Vec3f( x, y, 0.f );
+			template<typename T>
+			static float torsionalAngle( const T & p_at0, const T & p_at1, const T & p_at2, const T & p_at3 )
+			{
+				Vec3f r01 = p_at0 - p_at1;
+				Vec3f r32 = p_at3 - p_at2;
+				Vec3f r12 = p_at1 - p_at2;
+
+				Vec3f p = cross( r12, r01 );
+				Vec3f q = cross( r12, r32 );
+				Vec3f r = cross( r12, q );
+
+				float u = dot( q, q );
+				float v = dot( r, r );
+
+				float a;
+				if ( u <= 0.f || v <= 0.f ) { a = 360.f; }
+				else
+				{
+					float u1 = dot( p, q );
+					float v1 = dot( p, r );
+
+					u = u1 / std::sqrt( u );
+					v = v1 / std::sqrt( v );
+
+					if ( std::abs( u ) > 0.01f || std::abs( v ) > 0.01f ) { a = degrees( std::atan2( v, u ) ); }
+					else
+					{
+						a = 360.f;
+					}
+				}
+				return a;
+			}
+
+			static Vec3f linearComb( const float   p_scalar0,
+									 const Vec3f & p_vector0,
+									 const float   p_scalar1,
+									 const Vec3f & p_vector1 )
+			{
+				return p_scalar0 * p_vector0 + p_scalar1 * p_vector1;
 			}
 
 		} // namespace Math
