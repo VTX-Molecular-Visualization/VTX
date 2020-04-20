@@ -73,7 +73,7 @@ namespace VTX
 				primitives[ idPrimitive ] = new Renderer::Sphere(
 					tAtomPositions[ i ],
 					rep == View::MOLECULE_REPRESENTATION::VAN_DER_WAALS ? p_molecule->getAtomRadius( i ) : radius,
-					new MatteMaterial( color ) );
+					new MatteMaterial( color, 0.3f ) );
 				// new PhongMaterial( 0.4f * color, 0.6f * color ) );
 				// new FlatColorMaterial( color ) );
 				idPrimitive++;

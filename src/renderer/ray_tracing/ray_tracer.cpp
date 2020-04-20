@@ -5,7 +5,6 @@
 #include "lights/directional_light.hpp"
 #include "lights/point_light.hpp"
 #include "lights/quad_light.hpp"
-#include "materials/diffuse_material.hpp"
 #include "materials/flat_color_material.hpp"
 #include "primitives/cylinder.hpp"
 #include "primitives/molecule_rt.hpp"
@@ -31,16 +30,17 @@ namespace VTX
 				_left( p_camera.getLeft() ), _width( p_width ), _height( p_height )
 			{
 				// spike_closed_glycans_lipids_amarolab
-				/*_pos		   = Vec3f( 12.950272f, -375.106812f, 119.278503f );
-				Vec3f camFront = Vec3f( -0.016405f, 0.999115f, -0.038744f );
-				Vec3f camLeft  = Vec3f( -0.999817f, -0.016773f, -0.009176f );
-				Vec3f camUp	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
+				/*_pos   = Vec3f( 12.950272f, -375.106812f, 119.278503f );
+				_front = Vec3f( -0.016405f, 0.999115f, -0.038744f );
+				_left  = Vec3f( -0.999817f, -0.016773f, -0.009176f );
+				_up	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
 
 				// 6vsb
-				/*_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
+				_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
 				_front = Vec3f( 0.938164f, 0.320407f, -0.131098f );
 				_left  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
-				_up	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );*/
+				_up	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
+				_pos += 50.f * _front;
 
 				// 6m17
 				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
@@ -64,6 +64,8 @@ namespace VTX
 				Vec3f		  camLeft  = Util::Math::cross( camUp, camFront );
 				camUp				   = Util::Math::cross( camLeft, camUp );*/
 
+				//_pos.z += 10.f;
+
 				const float camFov	   = p_camera.getFov();
 				const float ratio	   = float( _width ) / _height;
 				const float halfHeight = tan( Util::Math::radians( camFov ) * 0.5f );
@@ -71,6 +73,12 @@ namespace VTX
 
 				_du = Util::Math::normalize( Util::Math::cross( _front, _up ) ) * halfWidth;
 				_dv = Util::Math::normalize( Util::Math::cross( _left, _front ) ) * halfHeight;
+
+				std::cout << "Camera RT" << std::endl;
+				std::cout << "- pos   : " << _pos.x << " / " << _pos.y << " / " << _pos.z << std::endl;
+				std::cout << "- front : " << _front.x << " / " << _front.y << " / " << _front.z << std::endl;
+				std::cout << "- up    : " << _up.x << " / " << _up.y << " / " << _up.z << std::endl;
+				std::cout << "- left  : " << _left.x << " / " << _left.y << " / " << _left.z << std::endl;
 			}
 
 			Ray generateRay( const float p_sx, const float p_sy ) const
@@ -139,7 +147,6 @@ namespace VTX
 			Tool::Chrono chrono;
 
 			chrono.start();
-
 			//#pragma omp parallel for
 			//			for ( int i = 0; i < int( nbTiles ); ++i )
 			//			{
@@ -178,7 +185,7 @@ namespace VTX
 			{
 				_scene.addObject( new MoleculeRT( pairMol.first ) );
 			}
-
+			//_scene.addObject( new TriangleMesh( DATA_DIR + "Bunny.obj" ) );
 			// 6VSB_2nd931.obj
 			//_scene.addObject( new TriangleMesh( DATA_DIR + "6VSB_2nd931.obj" ) );
 			//_scene.addObject( new Plane( VEC3F_Y,
@@ -202,11 +209,12 @@ namespace VTX
 
 			//_scene.addLight( new PointLight( Vec3f( 121.587879f, 209.315125f, 171.231781f ), VEC3F_XYZ, 30000.f ) );
 			//_scene.addLight( new PointLight( Vec3f( 600.f, 200.f, 400.f ), VEC3F_XYZ, 180000.f ) );
-			////_scene.addLight( new DirectionalLight( Vec3f( 10.f, 1.f, 3.f ), VEC3F_XYZ ) );
-			//_scene.addLight(
-			//	new QuadLight( Vec3f( 200.f, 400.f, 400.f ), VEC3F_Y * 60.f, VEC3F_X * 60.f, VEC3F_XYZ, 50.f ) );
+
+			/*	_scene.addLight(
+					new QuadLight( Vec3f( 200.f, 400.f, 400.f ), VEC3F_Y * 60.f, VEC3F_X * 60.f, VEC3F_XYZ, 50.f ) );*/
 
 			// 6VSB
+			_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 90.f ), VEC3F_XYZ, 300000.f ) );
 			/*_scene.addLight( new QuadLight( Vec3f( -450.f, -200.f, -38.f ),
 											Vec3f( 0.327533f, -0.944138f, 0.036398f ) * 80.f,
 											-Vec3f( 0.112113f, 0.077086f, 0.990701f ) * 80.f,
