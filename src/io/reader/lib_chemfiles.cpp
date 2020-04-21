@@ -224,6 +224,20 @@ namespace VTX
 						{
 							modelAtom.setType( Model::Atom::ATOM_TYPE::ION );
 						}
+
+						// Check PSF.
+						if ( std::find( p_molecule.getPSF().solventResidueSymbols.begin(),
+										p_molecule.getPSF().solventResidueSymbols.end(),
+										residueSymbol )
+							 != p_molecule.getPSF().solventResidueSymbols.end() )
+						{ modelAtom.setType( Model::Atom::ATOM_TYPE::SOLVENT ); }
+						else if ( std::find( p_molecule.getPSF().ionResidueSymbols.begin(),
+											 p_molecule.getPSF().ionResidueSymbols.end(),
+											 residueSymbol )
+								  != p_molecule.getPSF().ionResidueSymbols.end() )
+						{
+							modelAtom.setType( Model::Atom::ATOM_TYPE::ION );
+						}
 					}
 				}
 

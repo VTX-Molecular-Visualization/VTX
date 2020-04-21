@@ -95,13 +95,15 @@ namespace VTX
 							VTX_ACTION( new Action::ColorableChangeColor( _getModel(), color ) );
 							VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN ) );
 						}
-						if ( _getModel().getPRM().solventIds.size() > 0 )
+						if ( _getModel().getPRM().solventIds.size() > 0
+							 || _getModel().getPSF().solventResidueSymbols.size() > 0 )
 						{
 							bool showSolvent = _getModel().showSolvent();
 							if ( ImGui::Checkbox( LOCALE( "View.Molecule.Solvent" ), &showSolvent ) )
 							{ VTX_ACTION( new Action::MoleculeChangeShowSolvent( _getModel(), showSolvent ) ); }
 						}
-						if ( _getModel().getPRM().ionIds.size() > 0 )
+						if ( _getModel().getPRM().ionIds.size() > 0
+							 || _getModel().getPSF().ionResidueSymbols.size() > 0 )
 						{
 							bool showIon = _getModel().showIon();
 							if ( ImGui::Checkbox( LOCALE( "View.Molecule.Ion" ), &showIon ) )
