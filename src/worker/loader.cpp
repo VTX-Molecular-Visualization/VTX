@@ -4,6 +4,7 @@
 #include "io/reader/lib_chemfiles.hpp"
 #include "io/reader/lib_mmtf.hpp"
 #include "io/reader/prm.hpp"
+#include "io/reader/psf.hpp"
 #include "tool/chrono.hpp"
 #include "vtx_app.hpp"
 
@@ -13,14 +14,20 @@ namespace VTX
 	{
 		void Loader::work()
 		{
-			// Load PRM file firstly.
+			// Load PRM or PSF file firstly.
 			IO::Reader::PRMFile prm;
+			IO::Reader::PSFFile psf;
 			for ( const IO::Path * path : _paths )
 			{
 				if ( path->getExtension() == "prm" )
 				{
 					IO::Reader::PRM reader = IO::Reader::PRM();
 					reader.readFile( *path, prm );
+				}
+				else if ( path->getExtension() == "psf" )
+				{
+					IO::Reader::PSF reader = IO::Reader::PSF();
+					reader.readFile( *path, psf );
 				}
 			}
 
@@ -46,6 +53,7 @@ namespace VTX
 					// Set PRM.
 					Model::Molecule * molecule = new Model::Molecule();
 					molecule->setPRM( prm );
+					molecule->setPSF( psf );
 
 					// Load.
 					try

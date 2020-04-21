@@ -11,6 +11,7 @@
 #include "chain.hpp"
 #include "define.hpp"
 #include "io/reader/prm.hpp"
+#include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
 #include "residue.hpp"
 #include "util/logger.hpp"
@@ -38,6 +39,8 @@ namespace VTX
 			inline void						   setFileName( const std::string & p_fileName ) { _fileName = p_fileName; }
 			inline const IO::Reader::PRMFile & getPRM() const { return _prm; }
 			inline void						   setPRM( const IO::Reader::PRMFile & p_prm ) { _prm = p_prm; }
+			inline const IO::Reader::PSFFile & getPSF() const { return _psf; }
+			inline void						   setPSF( const IO::Reader::PSFFile & p_psf ) { _psf = p_psf; }
 
 			inline void							  addChain() { _chains.emplace_back( new Chain() ); }
 			inline Chain &						  getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
@@ -158,6 +161,7 @@ namespace VTX
 			// Models.
 			std::string						_fileName = "";
 			IO::Reader::PRMFile				_prm;
+			IO::Reader::PSFFile				_psf;
 			std::string						_name				 = "unknown";
 			std::vector<Chain *>			_chains				 = std::vector<Chain *>();
 			std::vector<Residue *>			_residues			 = std::vector<Residue *>();
