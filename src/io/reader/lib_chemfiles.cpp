@@ -94,6 +94,7 @@ namespace VTX
 
 					// Check if chain name changed.
 					std::string chainName = "";
+					std::string chainId	  = "";
 
 					try
 					{
@@ -103,9 +104,18 @@ namespace VTX
 					{
 						chainName = "";
 					}
+					try
+					{
+						chainId = residue.properties().get( "chainid" ).value().as_string();
+					}
+					catch ( const std::exception & )
+					{
+						chainId = "";
+					}
 
 					if ( chainName != lastChainName || p_molecule.getChainCount() == 0 )
 					{
+						VTX_INFO( chainName + " / " + chainId );
 						// Create chain.
 						p_molecule.addChain();
 						chainModelId++;
@@ -181,8 +191,11 @@ namespace VTX
 						modelAtom.setMoleculePtr( &p_molecule );
 						modelAtom.setChainPtr( modelChain );
 						modelAtom.setResiduePtr( &modelResidue );
-						std::string	  atomSymbol = atom.type();
-						std::optional symbol	 = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
+						std::string atomSymbol = atom.type();
+
+						// VTX_INFO( atom.name() + " " + atom.type() );
+
+						std::optional symbol = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
 
 						symbol.has_value() ? modelAtom.setSymbol( symbol.value() )
 										   : p_molecule.addUnknownAtomSymbol( atom.type() );
