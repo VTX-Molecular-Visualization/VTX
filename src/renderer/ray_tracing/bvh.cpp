@@ -501,15 +501,6 @@ namespace VTX
 			}
 			threadPool.clear();
 
-			/*
-			// TODO: make it parallel
-			for ( uint i = 0; i < uint( p_primsInfo.size() ); ++i )
-			{
-				mortonPrims[ i ]._idPrimitive = p_primsInfo[ i ]._idPrimitive;
-				const Vec3f centroidOffset	  = aabb.offset( p_primsInfo[ i ]._centroid );
-				mortonPrims[ i ]._code		  = Util::Math::encodeMorton3( centroidOffset * float( mortonScale ) );
-			}*/
-
 			// Sort Morton primitives
 			radixSort( &mortonPrims );
 
@@ -569,22 +560,6 @@ namespace VTX
 				t.join();
 			}
 
-			//// TODO: make it parallel
-			// for ( uint i = 0; i < uint( treelets.size() ); ++i )
-			//{
-			//	uint		  nodesCreated	= 0;
-			//	const uint	  firstBitIndex = 29 - 12;
-			//	LBVHTreelet & treelet		= treelets[ i ];
-			//	treelet._buildNodes			= _emitLBVHRecursive( treelet._buildNodes,
-			//											  p_primsInfo,
-			//											  &mortonPrims[ treelet._idBegin ],
-			//											  treelet._nbPrims,
-			//											  nodesCreated,
-			//											  p_outPrims,
-			//											  atomicOutPrimOffset,
-			//											  firstBitIndex );
-			//	atomicTotalNodes += nodesCreated;
-			//}
 			p_totalNodes = atomicTotalNodes;
 
 			// Build a SAH BVH upper the LBVH treelets

@@ -25,6 +25,9 @@ namespace VTX
 				_ks( p_ks ), _shininess( p_shininess )
 			{
 			}
+
+			Vec3f getColor() const override { return _kd; }
+
 			Vec3f shade( const Ray &		  p_ray,
 						 const Intersection & p_hit,
 						 const LightSample &  p_lightSample ) const override

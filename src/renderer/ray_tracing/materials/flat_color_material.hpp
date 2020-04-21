@@ -15,6 +15,9 @@ namespace VTX
 		{
 		  public:
 			FlatColorMaterial( const Vec3f & p_color ) : _color( p_color ) {}
+
+			Vec3f getColor() const override { return _color; }
+
 			Vec3f shade( const Ray &		  p_ray,
 						 const Intersection & p_hit,
 						 const LightSample &  p_lightSample ) const override

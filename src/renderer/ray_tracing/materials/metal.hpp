@@ -17,6 +17,9 @@ namespace VTX
 		{
 		  public:
 			MetalMaterial( const Vec3f & p_f0, const float p_shininess ) : _f0( p_f0 ), _shininess( p_shininess ) {}
+
+			Vec3f getColor() const override { return _f0; }
+
 			Vec3f shade( const Ray &		  p_ray,
 						 const Intersection & p_hit,
 						 const LightSample &  p_lightSample ) const override

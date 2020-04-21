@@ -20,6 +20,9 @@ namespace VTX
 			MatteMaterial( const Vec3f & p_kd, const float p_roughness = 0.f ) : _kd( p_kd ), _roughness( p_roughness )
 			{
 			}
+
+			Vec3f getColor() const override { return _kd; }
+
 			Vec3f shade( const Ray &		  p_ray,
 						 const Intersection & p_hit,
 						 const LightSample &  p_lightSample ) const override
