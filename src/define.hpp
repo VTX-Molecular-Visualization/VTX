@@ -41,18 +41,18 @@ namespace VTX
 	const std::string GLSL_VERSION		   = "#version 450";
 	const bool		  VSYNC_DEFAULT		   = true;
 
-	const bool		  SSAO_DEFAULT		   = true;
-	const bool		  AA_DEFAULT		   = true;
-	const bool		  RANDOM			   = true;
+	const bool SSAO_DEFAULT = true;
+	const bool AA_DEFAULT	= true;
+	const bool RANDOM		= false;
 
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 
 	// Window.
-	//constexpr int WINDOW_WIDTH = 1280;
-	//constexpr int WINDOW_HEIGHT = 720;
+	constexpr int WINDOW_WIDTH	= 1280;
+	constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
-	constexpr int WINDOW_WIDTH	= 1920;
-	constexpr int WINDOW_HEIGHT = 1080;
+	/*constexpr int WINDOW_WIDTH	= 1920;
+	constexpr int WINDOW_HEIGHT = 1080;*/
 	// 4k
 	// constexpr int WINDOW_WIDTH	= 3840;
 	// constexpr int WINDOW_HEIGHT = 2160;
@@ -121,10 +121,12 @@ namespace VTX
 	// Constants.
 	const float FLOAT_MIN = std::numeric_limits<float>::lowest();
 	const float FLOAT_MAX = std::numeric_limits<float>::max();
+	const float FLOAT_INF = std::numeric_limits<float>::infinity();
 
 	const float PIf		 = glm::pi<float>();
 	const float PI_2f	 = glm::half_pi<float>();
 	const float PI_32f	 = glm::three_over_two_pi<float>();
+	const float TWO_PIf	 = glm::two_pi<float>();
 	const float INV_PIf	 = glm::one_over_pi<float>();
 	const float INV_2PIf = glm::two_over_pi<float>();
 
