@@ -266,17 +266,17 @@ namespace VTX
 
 				// The x coordinates must be flipped, but the original vectors can't be
 				// modified because they will be reused in the next iteration.
-				S1P0 = Vec3f( -pointSide10.x, pointSide10.y, pointSide10.z );
-				S1P1 = Vec3f( -pointSide11.x, pointSide11.y, pointSide11.z );
+				S1P0 = Vec3f( pointSide10.x, pointSide10.y, pointSide10.z );
+				S1P1 = Vec3f( pointSide11.x, pointSide11.y, pointSide11.z );
 
-				S2P0 = Vec3f( -pointSide20.x, pointSide20.y, pointSide20.z );
-				S2P1 = Vec3f( -pointSide21.x, pointSide21.y, pointSide21.z );
+				S2P0 = Vec3f( pointSide20.x, pointSide20.y, pointSide20.z );
+				S2P1 = Vec3f( pointSide21.x, pointSide21.y, pointSide21.z );
 
-				CP0 = Vec3f( -pointCenter0.x, pointCenter0.y, pointCenter0.z );
-				CP1 = Vec3f( -pointCenter1.x, pointCenter1.y, pointCenter1.z );
+				CP0 = Vec3f( pointCenter0.x, pointCenter0.y, pointCenter0.z );
+				CP1 = Vec3f( pointCenter1.x, pointCenter1.y, pointCenter1.z );
 
-				norm0 = Vec3f( -normal0.x, normal0.y, normal0.z );
-				norm1 = Vec3f( -normal1.x, normal1.y, normal1.z );
+				norm0 = Vec3f( normal0.x, normal0.y, normal0.z );
+				norm1 = Vec3f( normal1.x, normal1.y, normal1.z );
 
 				// Left and right may be reversed, but either way,
 				// these normals point outwards from the ribbons, horizontally.
