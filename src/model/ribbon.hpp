@@ -27,7 +27,7 @@ namespace VTX
 			static constexpr float STRAND_WIDTH		 = 1.7f;
 			static constexpr float COIL_WIDTH		 = 0.3f;
 
-			static constexpr uint RIBBON_DETAILS = 10;
+			static constexpr uint DETAIL_LEVEL = 10;
 
 			Ribbon( const Molecule & );
 

@@ -241,12 +241,9 @@ namespace VTX
 			Util::Math::normalizeSelf( normal1 );
 
 			Vec3f leftNormal0, leftNormal1, rightNormal0, rightNormal1;
-			for ( uint step = 1; step <= RIBBON_DETAILS; ++step )
+			for ( uint step = 1; step <= DETAIL_LEVEL; ++step )
 			{
-				// Replace 1 by 2/5/10 to generate less triangles.
-				if ( step % 1 != 0 ) { continue; }
-
-				t = ( 1.f / (float)RIBBON_DETAILS ) * (float)step;
+				t = ( 1.f / (float)DETAIL_LEVEL ) * (float)step;
 
 				// The geometry of the previous iteration is saved
 				pointSide10	 = pointSide11;
