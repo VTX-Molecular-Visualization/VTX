@@ -197,10 +197,11 @@ namespace VTX
 
 			if ( p_ss == Residue::SECONDARY_STRUCTURE::HELIX )
 			{
+				int handedness = 1;
 				// When residue i is contained in a helix, the control point is moved away
 				// from the helix axis, along the C direction.
 				p0	 = po_splineCenter.getPoint( 3u );
-				cpt0 = Util::Math::linearComb( 1.f, p0, /*handedness **/ HELIX_DIAM, C );
+				cpt0 = Util::Math::linearComb( 1.f, p0, float( handedness ) * HELIX_DIAM, C );
 				po_splineCenter.setPoint( 3, cpt0 );
 			}
 
