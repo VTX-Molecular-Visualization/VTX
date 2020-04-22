@@ -215,11 +215,11 @@ namespace VTX
 			po_flipTestV = D;
 		}
 
-		void Ribbon::_computeTriangleMesh( const Math::BSpline & p_splineCenter,
-										   const Math::BSpline & p_splineSide1,
-										   const Math::BSpline & p_splineSide2,
-										   const Vec3f &		 p_color,
-										   uint &				 po_vIndex )
+		void Ribbon::_computeTriangleMesh( Math::BSpline & p_splineCenter,
+										   Math::BSpline & p_splineSide1,
+										   Math::BSpline & p_splineSide2,
+										   const Vec3f &   p_color,
+										   uint &		   po_vIndex )
 		{
 			Vec3f pointCenter0, pointCenter1;
 			Vec3f pointSide10, pointSide11, pointSide20, pointSide21;

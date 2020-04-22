@@ -44,11 +44,7 @@ namespace VTX
 									Math::BSpline &,
 									Math::BSpline & );
 
-			void _computeTriangleMesh( const Math::BSpline &,
-									   const Math::BSpline &,
-									   const Math::BSpline &,
-									   const Vec3f &,
-									   uint & );
+			void _computeTriangleMesh( Math::BSpline &, Math::BSpline &, Math::BSpline &, const Vec3f &, uint & );
 		};
 
 	} // namespace Model
