@@ -6,7 +6,6 @@ namespace VTX
 	{
 		Ribbon::Ribbon( const Molecule & p_molecule )
 		{
-			glEnable( GL_CULL_FACE );
 			VTX_DEBUG( "Building secondary structure..." );
 
 			const Molecule::AtomPositionsFrame & positions = p_molecule.getAtomPositionFrame( 0 );
