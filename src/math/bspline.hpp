@@ -25,8 +25,8 @@ namespace VTX
 				_points[ p_pos ] = p_point;
 				_updateMatrix3();
 			}
-			inline const Vec3f getPoint( const uint p_pos ) const { return _points[ p_pos ]; }
-			inline void		   copyPoint( const uint p_src, const uint p_dest )
+			inline const Vec3f & getPoint( const uint p_pos ) const { return _points[ p_pos ]; }
+			inline void			 copyPoint( const uint p_src, const uint p_dest )
 			{
 				_points[ p_dest ] = _points[ p_src ];
 				_updateMatrix3();
@@ -42,63 +42,29 @@ namespace VTX
 			}
 
 			// Calculates the point on the cubic spline corresponding to the parameter value t in [0, 1].
-			const Vec3f getPoint( const float p_t ) const
+			Vec3f computePoint( const float p_t ) const
 			{
-				// return Util::Math::catmullRomInterpolation(
-				//	_points[ 0 ], _points[ 1 ], _points[ 2 ], _points[ 3 ], p_t );
+				Vec4f tmp = Vec4f();
 
-				float s;
-				int	  i, j, k;
-				Vec4f tmp	= Vec4f();
-				Vec3f point = Vec3f();
-
-				for ( i = 0; i < 4; i++ )
+				for ( int i = 0; i < 4; i++ )
 				{
 					tmp[ i ] = std::pow( p_t, 3 - i );
 				}
 
-				for ( j = 0; j < 3; j++ )
-				{
-					s = 0;
-					for ( k = 0; k < 4; k++ )
-					{
-						s += tmp[ k ] * _mat[ k ][ j ];
-					}
-
-					point[ j ] = s;
-				}
-
-				return point;
+				return _mat * tmp;
 			}
 
 			// Calculates the tangent vector of the spline at t.
-			const Vec3f getTangent( const float p_t ) const
+			Vec3f computeTangent( const float p_t ) const
 			{
-				float s;
-				int	  i, j, k;
-				Vec4f tmp	  = Vec4f();
-				Vec3f tangent = Vec3f();
+				Vec4f tmp = Vec4f();
 
-				for ( i = 0; i < 4; i++ )
+				for ( int i = 0; i < 3; i++ )
 				{
-					if ( i < 3 ) { tmp[ i ] = ( 3 - i ) * std::pow( p_t, 2 - i ); }
-					else
-					{
-						tmp[ i ] = 0.f;
-					}
+					tmp[ i ] = ( 3 - i ) * std::pow( p_t, 2 - i );
 				}
 
-				for ( j = 0; j < 3; j++ )
-				{
-					s = 0;
-					for ( k = 0; k < 4; k++ )
-					{
-						s += tmp[ k ] * _mat[ k ][ j ];
-					}
-					tangent[ j ] = s;
-				}
-
-				return tangent;
+				return _mat * tmp;
 			}
 
 			void _updateMatrix3()

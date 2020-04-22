@@ -1,5 +1,5 @@
 #include "ribbon.hpp"
-
+#include <iostream>
 namespace VTX
 {
 	namespace Model
@@ -229,12 +229,12 @@ namespace VTX
 			float t = 0.f;
 
 			// The initial geometry is generated
-			pointCenter1 = p_splineCenter.getPoint( 0.f );
-			pointSide11	 = p_splineSide1.getPoint( 0.f );
-			pointSide21	 = p_splineSide2.getPoint( 0.f );
+			pointCenter1 = p_splineCenter.computePoint( 0.f );
+			pointSide11	 = p_splineSide1.computePoint( 0.f );
+			pointSide21	 = p_splineSide2.computePoint( 0.f );
 
 			// The tangents at the three previous points are the same
-			tangent = p_splineSide2.getTangent( 0.f );
+			tangent = p_splineSide2.computeTangent( 0.f );
 
 			// Vector transversal to the ribbon
 			transversal = pointSide11 - pointSide21;
@@ -253,12 +253,12 @@ namespace VTX
 				normal0		 = normal1;
 
 				// The new geometry is generated
-				pointSide11	 = p_splineSide1.getPoint( t );
-				pointCenter1 = p_splineCenter.getPoint( t );
-				pointSide21	 = p_splineSide2.getPoint( t );
+				pointSide11	 = p_splineSide1.computePoint( t );
+				pointCenter1 = p_splineCenter.computePoint( t );
+				pointSide21	 = p_splineSide2.computePoint( t );
 
 				// The tangents at the three previous points are the same
-				tangent = p_splineSide2.getTangent( t );
+				tangent = p_splineSide2.computeTangent( t );
 
 				// Vector transversal to the ribbon
 				transversal = pointSide11 - pointSide21;
