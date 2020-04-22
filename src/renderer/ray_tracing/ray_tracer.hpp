@@ -61,7 +61,7 @@ namespace VTX
 			std::vector<uchar> _pixels = std::vector<uchar>();
 
 			// TODO: keep gamma as Vec3f ?
-			Vec3f _gamma = Vec3f( 1.f );
+			Vec3f _gamma = Vec3f( 1.2f );
 		};
 	} // namespace Renderer
 } // namespace VTX

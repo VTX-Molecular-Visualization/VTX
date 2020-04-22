@@ -6,6 +6,7 @@
 #include "lights/point_light.hpp"
 #include "lights/quad_light.hpp"
 #include "materials/flat_color_material.hpp"
+#include "materials/matte.hpp"
 #include "primitives/cylinder.hpp"
 #include "primitives/molecule_rt.hpp"
 #include "primitives/plane.hpp"
@@ -35,12 +36,23 @@ namespace VTX
 				_left  = Vec3f( -0.999817f, -0.016773f, -0.009176f );
 				_up	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
 
+				// spike_closed_cleaved_full_amarolab
+				//_pos   = Vec3f( 0.f, -370.006958f, 215.602661f );
+				//_front = Vec3f( 0.000138f, 0.954886f, -0.296973f );
+				//_left  = Vec3f( -0.999969f, 0.002475f, 0.007492f );
+				//_up	   = Vec3f( 0.007889f, 0.296962f, 0.954857f );
+
+				_pos   = Vec3f( 0.f, -390.106812f, 110.278503f );
+				_front = Vec3f( 0.f, 1.f, 0.f );
+				_left  = Vec3f( -1.f, 0.f, 0.f );
+				_up	   = Vec3f( 0.f, 0.f, 1.f );
+
 				// 6vsb
-				_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
+				/*_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
 				_front = Vec3f( 0.938164f, 0.320407f, -0.131098f );
 				_left  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
 				_up	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
-				_pos += 50.f * _front;
+				_pos += 50.f * _front;*/
 
 				// 6m17
 				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
@@ -109,8 +121,8 @@ namespace VTX
 			resize( p_width, p_height );
 
 			//_integrator = new AOIntegrator;
-			_integrator = new RayCastIntegrator;
-			//_integrator = new DirectLightingIntegrator;
+			//_integrator = new RayCastIntegrator;
+			_integrator = new DirectLightingIntegrator;
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -122,7 +134,7 @@ namespace VTX
 
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
-			const uint nbPixelSamples = 1;
+			const uint nbPixelSamples = 128;
 
 			uint size = _width * _height * 3 * sizeof( char );
 			_pixels.resize( _width * _height * 3 );
@@ -185,6 +197,25 @@ namespace VTX
 			{
 				_scene.addObject( new MoleculeRT( pairMol.first ) );
 			}
+
+			// spike_closed_cleaved_full_amarolab
+			//_scene.addObject( new Plane( VEC3F_Z,
+			//							 -320.f,													//
+			//							 new MatteMaterial( Vec3f( 0.5f, 0.6f, 0.8f ) * PIf, 0.5f ) //
+			//							 // new MatteMaterial( Vec3f( 1.5f ), 0.3f ) //
+			//							 ) );
+			_scene.addObject( new Plane( Vec3f( 0.f, 0.f, 0.999207f ),
+										 -300.f, //
+										 new MatteMaterial( Vec3f( 0.5f, 0.6f, 0.8f ), 0.5f ) ) );
+			_scene.addLight( new QuadLight(
+				Vec3f( -400.f, -800.f, 600.f ), VEC3F_Y * 80.f, VEC3F_X * 80.f, VEC3F_XYZ, 170.f * PIf ) );
+
+			/*_scene.addLight(
+				new QuadLight( Vec3f( -500.f, -700.f, 600.f ), VEC3F_Y * 120.f, VEC3F_X * 120.f, VEC3F_XYZ, 150.f ) );*/
+			/*_scene.addLight(
+				new QuadLight( Vec3f( 500.f, -700.f, 600.f ), VEC3F_Y * 120.f, VEC3F_X * 120.f, VEC3F_XYZ, 150.f ) );*/
+			// ====================================================
+
 			//_scene.addObject( new TriangleMesh( DATA_DIR + "Bunny.obj" ) );
 			// 6VSB_2nd931.obj
 			//_scene.addObject( new TriangleMesh( DATA_DIR + "6VSB_2nd931.obj" ) );
@@ -214,7 +245,9 @@ namespace VTX
 					new QuadLight( Vec3f( 200.f, 400.f, 400.f ), VEC3F_Y * 60.f, VEC3F_X * 60.f, VEC3F_XYZ, 50.f ) );*/
 
 			// 6VSB
-			_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 90.f ), VEC3F_XYZ, 300000.f ) );
+			/*_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 90.f ), VEC3F_XYZ, 1000000.f ) );
+			_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 300.f ), VEC3F_XYZ, 1000000.f ) );*/
+			//_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 90.f ), VEC3F_XYZ, 1000000.f ) );
 			/*_scene.addLight( new QuadLight( Vec3f( -450.f, -200.f, -38.f ),
 											Vec3f( 0.327533f, -0.944138f, 0.036398f ) * 80.f,
 											-Vec3f( 0.112113f, 0.077086f, 0.990701f ) * 80.f,
@@ -241,7 +274,7 @@ namespace VTX
 			uint taskId = p_threadId;
 			while ( taskId < p_nbTiles )
 			{
-				// std::cout << taskId << " / " << p_nbTiles << std::endl;
+				std::cout << taskId << " / " << p_nbTiles << std::endl;
 				const uint tileY = taskId / p_nbTilesX;
 				const uint tileX = taskId - tileY * p_nbTilesX;
 				const uint x0	 = tileX * TILE_SIZE;

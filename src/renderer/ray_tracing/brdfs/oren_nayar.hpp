@@ -32,8 +32,8 @@ namespace VTX
 					const float A = 1.f - 0.5f * ( roughness2 / ( roughness2 + 0.57f ) );
 					const float B = 0.45f * ( roughness2 / ( roughness2 + 0.09f ) );
 
-					const float cosThetaO = Util::Math::dot( p_hit._normal, p_wo );
-					const float cosThetaI = Util::Math::dot( p_hit._normal, p_wi );
+					const float cosThetaO = Util::Math::clamp( Util::Math::dot( p_hit._normal, p_wo ), 0.f, 1.f );
+					const float cosThetaI = Util::Math::clamp( Util::Math::dot( p_hit._normal, p_wi ), 0.f, 1.f );
 
 					// projections in the plane orthogonal to the normal
 					const Vec3f woTB = Util::Math::normalize( p_wo - p_hit._normal * cosThetaO );

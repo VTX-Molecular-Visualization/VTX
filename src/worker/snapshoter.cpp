@@ -37,7 +37,7 @@ namespace VTX
 			uint	  width	 = (uint)io.DisplaySize.x;
 			uint	  height = (uint)io.DisplaySize.y;
 
-#define OPTIX_DEFINED
+//#define OPTIX_DEFINED
 #ifdef OPTIX_DEFINED
 			Renderer::OptixRayTracer * ort = new Renderer::OptixRayTracer();
 			ort->init( width, height );
