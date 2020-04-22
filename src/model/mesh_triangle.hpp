@@ -68,7 +68,6 @@ namespace VTX
 		  protected:
 			virtual void _addItems() override final;
 
-		  private:
 			enum ATTRIBUTE_LOCATION
 			{
 				VERTEX_POSITION = 0,
@@ -78,16 +77,16 @@ namespace VTX
 
 			// std::vector<Triangle> _triangles;
 			std::vector<Vec3f> _vertices;
-			GLuint			   _vboPositions = GL_INVALID_VALUE;
 			std::vector<Vec3f> _normals;
-			GLuint			   _vboNormals = GL_INVALID_VALUE;
 			std::vector<Vec3f> _colors;
-			GLuint			   _vboColors = GL_INVALID_VALUE;
+			std::vector<uint>  _indices;
 
-			std::vector<uint> _indices;
-			GLuint			  _ibo = GL_INVALID_VALUE;
-
-			GLuint _vao = GL_INVALID_VALUE;
+		  private:
+			GLuint _vboPositions = GL_INVALID_VALUE;
+			GLuint _vboNormals	 = GL_INVALID_VALUE;
+			GLuint _vboColors	 = GL_INVALID_VALUE;
+			GLuint _ibo			 = GL_INVALID_VALUE;
+			GLuint _vao			 = GL_INVALID_VALUE;
 		};
 	} // namespace Model
 } // namespace VTX

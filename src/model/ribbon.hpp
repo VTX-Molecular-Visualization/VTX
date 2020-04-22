@@ -1,5 +1,5 @@
-#ifndef __VTX_MODEL_RIBBONS__
-#define __VTX_MODEL_RIBBONS__
+#ifndef __VTX_MODEL_RIBBON__
+#define __VTX_MODEL_RIBBON__
 
 #ifdef _MSC_VER
 #pragma once
@@ -15,13 +15,9 @@ namespace VTX
 {
 	namespace Model
 	{
-		class Ribbons : public MeshTriangle
+		class Ribbon : public MeshTriangle
 		{
 		  public:
-			// TODO: move in settings, or modifiable member.
-			static constexpr uint RIBBON_DETAIL = 4u;
-			static constexpr uint RENDER_MODE	= 1u;
-
 			static constexpr float HELIX_DIAM  = 1.8f;
 			static constexpr float THICKNESS   = 0.3f;
 			static constexpr float ARROW_WIDTH = 1.8f;
@@ -31,19 +27,9 @@ namespace VTX
 			static constexpr float STRAND_WIDTH		 = 1.7f;
 			static constexpr float COIL_WIDTH		 = 0.3f;
 
-			/*
-			static constexpr Vec3f HELIX_COLOR	= Vec3f( 1.f, 0.f, 0.f );
-			static constexpr Vec3f STRAND_COLOR = Vec3f( 0.f, 0.f, 1.f );
-			static constexpr Vec3f COIL_COLOR	= Vec3f( 1.f, 1.f, 1.f );
+			static constexpr uint RIBBON_DETAILS = 10;
 
-			static constexpr Vec3f CHAIN_COLOR_A = Vec3f( 10.f / 256.f, 3.f / 256.f, 200.f / 256.f );
-			static constexpr Vec3f CHAIN_COLOR_B = Vec3f( 10.f / 256.f, 170.f / 256.f, 34.f / 256.f );
-			static constexpr Vec3f CHAIN_COLOR_C = Vec3f( 0.f, 150.f / 256.f, 150.f / 256.f );
-			static constexpr Vec3f CHAIN_COLOR_D = Vec3f( 0.f, 180.f / 256.f, 0.f );
-			static constexpr Vec3f CHAIN_COLOR_E = Vec3f( 0.f, 170.f / 256.f, 200.f / 256.f );
-			*/
-
-			Ribbons( const Molecule & );
+			Ribbon( const Molecule & );
 
 		  private:
 			static constexpr int LHANDED = -1;
@@ -57,6 +43,12 @@ namespace VTX
 									Math::BSpline &,
 									Math::BSpline &,
 									Math::BSpline & );
+
+			void _computeTriangleMesh( const Math::BSpline &,
+									   const Math::BSpline &,
+									   const Math::BSpline &,
+									   const Vec3f &,
+									   uint & );
 		};
 
 	} // namespace Model

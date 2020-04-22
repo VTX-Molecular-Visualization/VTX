@@ -24,6 +24,7 @@ namespace VTX
 	namespace Model
 	{
 		class BaseView3DMolecule;
+		class Ribbon;
 		class Molecule : public BaseModel3D, public Generic::BaseColorable
 		{
 		  public:
@@ -181,6 +182,9 @@ namespace VTX
 			// Global AABB of atom positions (taking into account each frame).
 			// TODO: find better name
 			Math::AABB _globalPositionsAABB;
+
+			// Secondary structure.
+			Ribbon * _ribbon = nullptr;
 
 			// OpenGL buffers.
 			enum ATTRIBUTE_LOCATION

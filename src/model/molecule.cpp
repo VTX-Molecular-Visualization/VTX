@@ -1,6 +1,5 @@
 #include "molecule.hpp"
-#include "cartoon/ribbon.hpp"
-#include "model/ribbons.hpp"
+#include "model/ribbon.hpp"
 #include "util/color.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
@@ -38,6 +37,9 @@ namespace VTX
 			Generic::clearVector<Residue>( _residues );
 			Generic::clearVector<Chain>( _chains );
 			Generic::clearVector<Bond>( _bonds );
+
+			VTXApp::get().getScene().removeMesh( _ribbon );
+			Generic::destroy( _ribbon );
 		}
 
 		void Molecule::init()
@@ -409,7 +411,10 @@ namespace VTX
 
 		void Molecule::_computeSecondaryStructure()
 		{
-			Ribbons r = Ribbons( *this );
+			setVisible( false );
+			_ribbon = Generic::create<Ribbon, Molecule>( *this );
+			_ribbon->print();
+			VTXApp::get().getScene().addMesh( _ribbon );
 
 			/*
 			for ( const Chain * const chain : getChains() )

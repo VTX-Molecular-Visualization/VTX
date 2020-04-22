@@ -16,7 +16,6 @@
 #include "state/state_machine.hpp"
 #include "tool/chrono.hpp"
 #include "ui/user_interface.hpp"
-#include "util/logger.hpp"
 #include "worker/loader.hpp"
 #include "worker/worker_manager.hpp"
 #include <thread>
