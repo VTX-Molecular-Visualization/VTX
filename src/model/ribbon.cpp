@@ -89,9 +89,9 @@ namespace VTX
 										   splineSide1,
 										   splineSide2 );
 
-						Vec3f p2 = splineCenter.getPoint( 2u );
-						Vec3f p3 = splineCenter.getPoint( 3u );
-						Vec3f p1 = Util::Math::linearComb( 2.f, p2, -1.f, p3 );
+						const Vec3f & p2 = splineCenter.getPoint( 2u );
+						const Vec3f & p3 = splineCenter.getPoint( 3u );
+						const Vec3f	  p1 = Util::Math::linearComb( 2.f, p2, -1.f, p3 );
 
 						splineCenter.setPoint( 1, p1 );
 						splineSide1.setPoint( 1,
@@ -99,7 +99,7 @@ namespace VTX
 						splineSide2.setPoint(
 							1, Util::Math::linearComb( 1.f, p1, -RIBBON_WIDTH[ int( ss ) ], flipTestV ) );
 
-						Vec3f p0 = Util::Math::linearComb( 2.f, p1, -1.f, p2 );
+						const Vec3f p0 = Util::Math::linearComb( 2.f, p1, -1.f, p2 );
 
 						splineCenter.setPoint( 0, p0 );
 						splineSide1.setPoint( 0,
@@ -115,10 +115,10 @@ namespace VTX
 
 						if ( ( residueIdx == residueCount - 1 ) || ( residueIdx == residueCount - 2 ) )
 						{
-							Vec3f p1 = splineCenter.getPoint( 1u );
-							Vec3f p2 = splineCenter.getPoint( 2u );
+							const Vec3f & p1 = splineCenter.getPoint( 1u );
+							const Vec3f & p2 = splineCenter.getPoint( 2u );
 
-							Vec3f p3 = Util::Math::linearComb( 2.f, p2, -1.f, p1 );
+							const Vec3f p3 = Util::Math::linearComb( 2.f, p2, -1.f, p1 );
 
 							splineCenter.setPoint( 3, p3 );
 							splineSide1.setPoint(
