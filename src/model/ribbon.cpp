@@ -186,7 +186,8 @@ namespace VTX
 			Util::Math::normalizeSelf( D );
 
 			// Flipping test (to avoid self crossing in the strands).
-			if ( ( p_ss != Residue::SECONDARY_STRUCTURE::HELIX ) && ( 90.f < Util::Math::angle( po_flipTestV, D ) ) )
+			if ( ( p_ss != Residue::SECONDARY_STRUCTURE::HELIX )
+				 && ( Util::Math::radians( 90.f ) < Util::Math::angle( po_flipTestV, D ) ) )
 			{
 				D = D * -1.f; // flip detected, the plane vector is inverted
 			}
