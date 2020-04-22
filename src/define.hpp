@@ -7,6 +7,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
+#include <glm/gtx/spline.hpp>
 #include <limits>
 #include <string>
 
@@ -23,10 +24,11 @@ namespace VTX
 	using Vec3d = glm::dvec3;
 	using Vec4f = glm::vec4;
 
-	using Mat3f = glm::mat3;
-	using Mat3d = glm::dmat3;
-	using Mat4f = glm::mat4;
-	using Mat4d = glm::dmat4;
+	using Mat3f	 = glm::mat3;
+	using Mat43f = glm::mat4x3;
+	using Mat3d	 = glm::dmat3;
+	using Mat4f	 = glm::mat4;
+	using Mat4d	 = glm::dmat4;
 
 	using Quatf = glm::quat;
 	using Quatd = glm::dquat;
@@ -41,15 +43,15 @@ namespace VTX
 	const std::string GLSL_VERSION		   = "#version 450";
 	const bool		  VSYNC_DEFAULT		   = true;
 
-	const bool		  SSAO_DEFAULT		   = true;
-	const bool		  AA_DEFAULT		   = true;
-	const bool		  RANDOM			   = true;
+	const bool SSAO_DEFAULT = true;
+	const bool AA_DEFAULT	= true;
+	const bool RANDOM		= true;
 
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 
 	// Window.
-	//constexpr int WINDOW_WIDTH = 1280;
-	//constexpr int WINDOW_HEIGHT = 720;
+	// constexpr int WINDOW_WIDTH = 1280;
+	// constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
 	constexpr int WINDOW_WIDTH	= 1920;
 	constexpr int WINDOW_HEIGHT = 1080;
