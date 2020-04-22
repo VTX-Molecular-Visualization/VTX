@@ -243,7 +243,7 @@ namespace VTX
 			Vec3f leftNormal0, leftNormal1, rightNormal0, rightNormal1;
 			for ( uint step = 1; step <= DETAIL_LEVEL; ++step )
 			{
-				t = ( 1.f / (float)DETAIL_LEVEL ) * (float)step;
+				t = float( step ) / float( DETAIL_LEVEL );
 
 				// The geometry of the previous iteration is saved
 				pointSide10	 = pointSide11;

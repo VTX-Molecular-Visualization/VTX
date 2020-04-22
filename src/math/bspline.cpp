@@ -4,9 +4,9 @@ namespace VTX
 {
 	namespace Math
 	{
-		const Mat4f BSpline::BSPLINE_MATRIX = { { -1.f / 6.f, 1.f / 2.0f, -1.f / 2.f, 1.f / 6.f },
-												{ 1.f / 2.f, -1.f, 1.f / 2.f, 0.f },
-												{ -1.f / 2.f, 0.f, 1.f / 2.f, 0.f },
+		const Mat4f BSpline::BSPLINE_MATRIX = { { -1.f / 6.f, 0.5f, -0.5f, 1.f / 6.f },
+												{ 0.5f, -1.f, 0.5f, 0.f },
+												{ -0.5f, 0.f, 0.5f, 0.f },
 												{ 1.f / 6.f, 2.f / 3.f, 1.f / 6.f, 0.f } };
 
 		void BSpline::shiftPoints( const uint p_offset )
@@ -21,13 +21,12 @@ namespace VTX
 		void BSpline::_updateMatrix3()
 		{
 			float s;
-			int	  i, j, k;
-			for ( i = 0; i < 4; i++ )
+			for ( int i = 0; i < 4; i++ )
 			{
-				for ( j = 0; j < 3; j++ )
+				for ( int j = 0; j < 3; j++ )
 				{
 					s = 0;
-					for ( k = 0; k < 4; k++ )
+					for ( int k = 0; k < 4; k++ )
 					{
 						s += BSPLINE_MATRIX[ i ][ k ] * _points[ k ][ j ];
 					}
