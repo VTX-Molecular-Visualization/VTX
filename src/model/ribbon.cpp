@@ -225,7 +225,6 @@ namespace VTX
 			Vec3f pointCenter0, pointCenter1;
 			Vec3f pointSide10, pointSide11, pointSide20, pointSide21;
 			Vec3f transversal, tangent, normal0, normal1;
-			Vec3f CP0, CP1, S1P0, S1P1, S2P0, S2P1, norm0, norm1;
 			float t = 0.f;
 
 			// The initial geometry is generated
@@ -265,133 +264,119 @@ namespace VTX
 				normal1		= Util::Math::cross( transversal, tangent );
 				Util::Math::normalizeSelf( normal1 );
 
-				// The x coordinates must be flipped, but the original vectors can't be
-				// modified because they will be reused in the next iteration.
-				S1P0 = Vec3f( pointSide10.x, pointSide10.y, pointSide10.z );
-				S1P1 = Vec3f( pointSide11.x, pointSide11.y, pointSide11.z );
-
-				S2P0 = Vec3f( pointSide20.x, pointSide20.y, pointSide20.z );
-				S2P1 = Vec3f( pointSide21.x, pointSide21.y, pointSide21.z );
-
-				CP0 = Vec3f( pointCenter0.x, pointCenter0.y, pointCenter0.z );
-				CP1 = Vec3f( pointCenter1.x, pointCenter1.y, pointCenter1.z );
-
-				norm0 = Vec3f( normal0.x, normal0.y, normal0.z );
-				norm1 = Vec3f( normal1.x, normal1.y, normal1.z );
-
 				// Left and right may be reversed, but either way,
 				// these normals point outwards from the ribbons, horizontally.
-				leftNormal0 = Util::Math::normalize( S1P0 - CP0 );
-				leftNormal1 = Util::Math::normalize( S1P1 - CP1 );
+				leftNormal0 = Util::Math::normalize( pointSide10 - pointCenter0 );
+				leftNormal1 = Util::Math::normalize( pointSide11 - pointCenter1 );
 
-				rightNormal0 = Util::Math::normalize( S2P0 - CP0 );
-				rightNormal1 = Util::Math::normalize( S2P1 - CP1 );
+				rightNormal0 = Util::Math::normalize( pointSide20 - pointCenter0 );
+				rightNormal1 = Util::Math::normalize( pointSide21 - pointCenter1 );
 
 				// The (Sid1Point0, Sid1Point1, CentPoint1) triangle is added.
-				_vertices.push_back( S1P0 );
-				_normals.push_back( -norm0 );
+				_vertices.push_back( pointSide10 );
+				_normals.push_back( -normal0 );
 
-				_vertices.push_back( S1P1 );
-				_normals.push_back( -norm1 );
+				_vertices.push_back( pointSide11 );
+				_normals.push_back( -normal1 );
 
-				_vertices.push_back( CP1 );
-				_normals.push_back( -norm1 );
+				_vertices.push_back( pointCenter1 );
+				_normals.push_back( -normal1 );
 
 				// and duplicated above
-				_vertices.push_back( S1P0 + THICKNESS * norm0 );
-				_normals.push_back( norm0 );
+				_vertices.push_back( pointSide10 + THICKNESS * normal0 );
+				_normals.push_back( normal0 );
 
-				_vertices.push_back( S1P1 + THICKNESS * norm1 );
-				_normals.push_back( norm1 );
+				_vertices.push_back( pointSide11 + THICKNESS * normal1 );
+				_normals.push_back( normal1 );
 
-				_vertices.push_back( CP1 + THICKNESS * norm1 );
-				_normals.push_back( norm1 );
+				_vertices.push_back( pointCenter1 + THICKNESS * normal1 );
+				_normals.push_back( normal1 );
 
 				// The (Sid1Point0, CentPoint1, CentPoint0) triangle is added.
-				_vertices.push_back( S1P0 );
-				_normals.push_back( -norm0 );
+				_vertices.push_back( pointSide10 );
+				_normals.push_back( -normal0 );
 
-				_vertices.push_back( CP1 );
-				_normals.push_back( -norm1 );
+				_vertices.push_back( pointCenter1 );
+				_normals.push_back( -normal1 );
 
-				_vertices.push_back( CP0 );
-				_normals.push_back( -norm0 );
+				_vertices.push_back( pointCenter0 );
+				_normals.push_back( -normal0 );
 
 				// and duplicated above
-				_vertices.push_back( S1P0 + THICKNESS * norm0 );
-				_normals.push_back( norm0 );
+				_vertices.push_back( pointSide10 + THICKNESS * normal0 );
+				_normals.push_back( normal0 );
 
-				_vertices.push_back( CP1 + THICKNESS * norm1 );
-				_normals.push_back( norm1 );
+				_vertices.push_back( pointCenter1 + THICKNESS * normal1 );
+				_normals.push_back( normal1 );
 
-				_vertices.push_back( CP0 + THICKNESS * norm0 );
-				_normals.push_back( norm0 );
+				_vertices.push_back( pointCenter0 + THICKNESS * normal0 );
+				_normals.push_back( normal0 );
 
 				// (Sid2Point0, Sid2Point1, CentPoint1) triangle is added.
-				_vertices.push_back( S2P0 );
-				_normals.push_back( -norm0 );
+				_vertices.push_back( pointSide20 );
+				_normals.push_back( -normal0 );
 
-				_vertices.push_back( S2P1 );
-				_normals.push_back( -norm1 );
+				_vertices.push_back( pointSide21 );
+				_normals.push_back( -normal1 );
 
-				_vertices.push_back( CP1 );
-				_normals.push_back( -norm1 );
+				_vertices.push_back( pointCenter1 );
+				_normals.push_back( -normal1 );
 
 				// and duplicated above
-				_vertices.push_back( S2P0 + THICKNESS * norm0 );
-				_normals.push_back( norm0 );
+				_vertices.push_back( pointSide20 + THICKNESS * normal0 );
+				_normals.push_back( normal0 );
 
-				_vertices.push_back( S2P1 + THICKNESS * norm1 );
-				_normals.push_back( norm1 );
+				_vertices.push_back( pointSide21 + THICKNESS * normal1 );
+				_normals.push_back( normal1 );
 
-				_vertices.push_back( CP1 + THICKNESS * norm1 );
-				_normals.push_back( norm1 );
+				_vertices.push_back( pointCenter1 + THICKNESS * normal1 );
+				_normals.push_back( normal1 );
 
 				// (Sid2Point0, CentPoint1, CentPoint0) triangle is added.
-				_vertices.push_back( S2P0 );
-				_normals.push_back( -norm0 );
+				_vertices.push_back( pointSide20 );
+				_normals.push_back( -normal0 );
 
-				_vertices.push_back( CP1 );
-				_normals.push_back( -norm1 );
+				_vertices.push_back( pointCenter1 );
+				_normals.push_back( -normal1 );
 
-				_vertices.push_back( CP0 );
-				_normals.push_back( -norm0 );
+				_vertices.push_back( pointCenter0 );
+				_normals.push_back( -normal0 );
 
 				// and duplicated above
-				_vertices.push_back( S2P0 + THICKNESS * norm0 );
-				_normals.push_back( norm0 );
+				_vertices.push_back( pointSide20 + THICKNESS * normal0 );
+				_normals.push_back( normal0 );
 
-				_vertices.push_back( CP1 + THICKNESS * norm1 );
-				_normals.push_back( norm1 );
+				_vertices.push_back( pointCenter1 + THICKNESS * normal1 );
+				_normals.push_back( normal1 );
 
-				_vertices.push_back( CP0 + THICKNESS * norm0 );
-				_normals.push_back( norm0 );
+				_vertices.push_back( pointCenter0 + THICKNESS * normal0 );
+				_normals.push_back( normal0 );
 
 				// Duplicating the side vertices and giving them the proper normals
 				// for the sides of the thick ribbons
-				_vertices.push_back( S1P0 );
+				_vertices.push_back( pointSide10 );
 				_normals.push_back( leftNormal0 );
 
-				_vertices.push_back( S1P1 );
+				_vertices.push_back( pointSide11 );
 				_normals.push_back( leftNormal1 );
 
-				_vertices.push_back( S2P0 );
+				_vertices.push_back( pointSide20 );
 				_normals.push_back( rightNormal0 );
 
-				_vertices.push_back( S2P1 );
+				_vertices.push_back( pointSide21 );
 				_normals.push_back( rightNormal1 );
 
 				// and duplicating them again, this time raising them as well
-				_vertices.push_back( S1P0 + THICKNESS * norm0 );
+				_vertices.push_back( pointSide10 + THICKNESS * normal0 );
 				_normals.push_back( leftNormal0 );
 
-				_vertices.push_back( S1P1 + THICKNESS * norm1 );
+				_vertices.push_back( pointSide11 + THICKNESS * normal1 );
 				_normals.push_back( leftNormal1 );
 
-				_vertices.push_back( S2P0 + THICKNESS * norm0 );
+				_vertices.push_back( pointSide20 + THICKNESS * normal0 );
 				_normals.push_back( rightNormal0 );
 
-				_vertices.push_back( S2P1 + THICKNESS * norm1 );
+				_vertices.push_back( pointSide21 + THICKNESS * normal1 );
 				_normals.push_back( rightNormal1 );
 
 				// Colors.
