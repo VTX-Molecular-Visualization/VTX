@@ -6,7 +6,7 @@ namespace VTX
 	{
 		Ribbon::Ribbon( const Molecule & p_molecule )
 		{
-			// glEnable( GL_CULL_FACE );
+			glEnable( GL_CULL_FACE );
 			VTX_DEBUG( "Building secondary structure..." );
 
 			const Molecule::AtomPositionsFrame & positions = p_molecule.getAtomPositionFrame( 0 );
@@ -289,83 +289,83 @@ namespace VTX
 
 				// The (Sid1Point0, Sid1Point1, CentPoint1) triangle is added.
 				_vertices.push_back( S1P0 );
-				_normals.push_back( norm0 );
+				_normals.push_back( -norm0 );
 
 				_vertices.push_back( S1P1 );
-				_normals.push_back( norm1 );
+				_normals.push_back( -norm1 );
 
 				_vertices.push_back( CP1 );
-				_normals.push_back( norm1 );
+				_normals.push_back( -norm1 );
 
 				// and duplicated above
 				_vertices.push_back( S1P0 + THICKNESS * norm0 );
-				_normals.push_back( -norm0 );
+				_normals.push_back( norm0 );
 
 				_vertices.push_back( S1P1 + THICKNESS * norm1 );
-				_normals.push_back( -norm1 );
+				_normals.push_back( norm1 );
 
 				_vertices.push_back( CP1 + THICKNESS * norm1 );
-				_normals.push_back( -norm1 );
+				_normals.push_back( norm1 );
 
 				// The (Sid1Point0, CentPoint1, CentPoint0) triangle is added.
 				_vertices.push_back( S1P0 );
-				_normals.push_back( norm0 );
+				_normals.push_back( -norm0 );
 
 				_vertices.push_back( CP1 );
-				_normals.push_back( norm1 );
+				_normals.push_back( -norm1 );
 
 				_vertices.push_back( CP0 );
-				_normals.push_back( norm0 );
+				_normals.push_back( -norm0 );
 
 				// and duplicated above
 				_vertices.push_back( S1P0 + THICKNESS * norm0 );
-				_normals.push_back( -norm0 );
+				_normals.push_back( norm0 );
 
 				_vertices.push_back( CP1 + THICKNESS * norm1 );
-				_normals.push_back( -norm1 );
+				_normals.push_back( norm1 );
 
 				_vertices.push_back( CP0 + THICKNESS * norm0 );
-				_normals.push_back( -norm0 );
+				_normals.push_back( norm0 );
 
 				// (Sid2Point0, Sid2Point1, CentPoint1) triangle is added.
 				_vertices.push_back( S2P0 );
-				_normals.push_back( norm0 );
+				_normals.push_back( -norm0 );
 
 				_vertices.push_back( S2P1 );
-				_normals.push_back( norm1 );
+				_normals.push_back( -norm1 );
 
 				_vertices.push_back( CP1 );
-				_normals.push_back( norm1 );
+				_normals.push_back( -norm1 );
 
 				// and duplicated above
 				_vertices.push_back( S2P0 + THICKNESS * norm0 );
-				_normals.push_back( -norm0 );
+				_normals.push_back( norm0 );
 
 				_vertices.push_back( S2P1 + THICKNESS * norm1 );
-				_normals.push_back( -norm1 );
+				_normals.push_back( norm1 );
 
 				_vertices.push_back( CP1 + THICKNESS * norm1 );
-				_normals.push_back( -norm1 );
+				_normals.push_back( norm1 );
 
 				// (Sid2Point0, CentPoint1, CentPoint0) triangle is added.
 				_vertices.push_back( S2P0 );
-				_normals.push_back( norm0 );
+				_normals.push_back( -norm0 );
 
 				_vertices.push_back( CP1 );
-				_normals.push_back( norm1 );
+				_normals.push_back( -norm1 );
 
 				_vertices.push_back( CP0 );
-				_normals.push_back( norm0 );
+				_normals.push_back( -norm0 );
 
 				// and duplicated above
 				_vertices.push_back( S2P0 + THICKNESS * norm0 );
-				_normals.push_back( -norm0 );
+				_normals.push_back( norm0 );
 
 				_vertices.push_back( CP1 + THICKNESS * norm1 );
-				_normals.push_back( -norm1 );
+				_normals.push_back( norm1 );
 
 				_vertices.push_back( CP0 + THICKNESS * norm0 );
-				_normals.push_back( -norm0 );
+				_normals.push_back( norm0 );
 
 				// Duplicating the side vertices and giving them the proper normals
 				// for the sides of the thick ribbons

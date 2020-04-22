@@ -414,6 +414,6 @@ namespace VTX
 			_ribbon = Generic::create<Ribbon, Molecule>( *this );
 			_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
-		} // namespace Model
-	}	  // namespace Model
+		}
+	} // namespace Model
 } // namespace VTX
