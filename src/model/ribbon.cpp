@@ -37,7 +37,7 @@ namespace VTX
 					// First residue
 					if ( residueIdx == 0 )
 					{
-						const Residue & residue2 = p_molecule.getResidue( idxFirstResidue + 1 );
+						const Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
 
 						const Model::Atom * CA1 = residue.findFirstAtomByName( "CA" );
 						const Model::Atom * OX1 = residue.findFirstAtomByName( "O" );
@@ -59,14 +59,14 @@ namespace VTX
 										   residue.getSecondaryStructure(),
 										   flipTestV,
 										   splineCenter,
-										   splineCenter,
+										   splineSide1,
 										   splineSide2 );
 
 						splineSide1.copyPoint( 3, 2 );
 						splineCenter.copyPoint( 3, 2 );
 						splineSide2.copyPoint( 3, 2 );
 
-						const Residue & residue3 = p_molecule.getResidue( idxFirstResidue + 2 );
+						const Residue & residue3 = p_molecule.getResidue( idxFirstResidue + residueIdx + 2 );
 
 						const Model::Atom * OX2 = residue2.findFirstAtomByName( "O" );
 						const Model::Atom * CA3 = residue3.findFirstAtomByName( "CA" );
@@ -186,8 +186,7 @@ namespace VTX
 			Util::Math::normalizeSelf( D );
 
 			// Flipping test (to avoid self crossing in the strands).
-			if ( ( p_ss != Residue::SECONDARY_STRUCTURE::HELIX )
-				 && ( Util::Math::radians( 90.f ) < Util::Math::angle( po_flipTestV, D ) ) )
+			if ( ( p_ss != Residue::SECONDARY_STRUCTURE::HELIX ) && ( PI_2f < Util::Math::angle( po_flipTestV, D ) ) )
 			{
 				D = D * -1.f; // flip detected, the plane vector is inverted
 			}
