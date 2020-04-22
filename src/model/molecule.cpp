@@ -411,17 +411,9 @@ namespace VTX
 
 		void Molecule::_computeSecondaryStructure()
 		{
-			setVisible( false );
 			_ribbon = Generic::create<Ribbon, Molecule>( *this );
 			_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
-
-			/*
-			for ( const Chain * const chain : getChains() )
-			{
-				Cartoon::createChainMesh( *chain );
-			}
-			*/
 		} // namespace Model
 	}	  // namespace Model
 } // namespace VTX
