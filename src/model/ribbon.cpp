@@ -10,15 +10,16 @@ namespace VTX
 
 			const Molecule::AtomPositionsFrame & positions = p_molecule.getAtomPositionFrame( 0 );
 
-			Vec3f		  flipTestV	   = VEC3F_ZERO;
-			Math::BSpline splineCenter = Math::BSpline();
-			Math::BSpline splineSide1  = Math::BSpline();
-			Math::BSpline splineSide2  = Math::BSpline();
-			uint		  vIndex	   = 0;
+			uint vIndex = 0;
 
 			// Loop over chains.
 			for ( uint chainIdx = 0; chainIdx < p_molecule.getChainCount(); ++chainIdx )
 			{
+				Vec3f		  flipTestV	   = VEC3F_ZERO;
+				Math::BSpline splineCenter = Math::BSpline();
+				Math::BSpline splineSide1  = Math::BSpline();
+				Math::BSpline splineSide2  = Math::BSpline();
+
 				VTX_DEBUG( "Building secondary structure... chain " + std::to_string( chainIdx ) );
 				const Chain & chain			  = p_molecule.getChain( chainIdx );
 				const Vec3f & chainColor	  = chain.getColor();
@@ -34,7 +35,7 @@ namespace VTX
 					const Residue::SECONDARY_STRUCTURE ss	   = residue.getSecondaryStructure();
 
 					// First residue
-					if ( residueGlobalIdx == 0 )
+					if ( residueIdx == 0 )
 					{
 						const Residue & residue2 = p_molecule.getResidue( idxFirstResidue + 1 );
 
