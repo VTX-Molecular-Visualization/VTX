@@ -64,6 +64,8 @@ namespace VTX
 			inline std::vector<Bond *> &		  getBonds() { return _bonds; }
 			inline const std::vector<Bond *> &	  getBonds() const { return _bonds; }
 
+			inline const Ribbon & getRibbon() const { return *_ribbon; }
+
 			inline const bool isAtomVisible( const uint p_idx ) const
 			{
 				return bool( _bufferAtomVisibilities[ p_idx ] );
