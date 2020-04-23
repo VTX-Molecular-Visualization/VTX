@@ -1,6 +1,7 @@
 #include "molecule.hpp"
 #include "model/ribbon.hpp"
 #include "util/color.hpp"
+#include "util/molecule.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
@@ -33,10 +34,10 @@ namespace VTX
 			if ( _bondsIBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_bondsIBO );
 			if ( _vao != GL_INVALID_VALUE ) glDeleteVertexArrays( 1, &_vao );
 
-			Generic::clearVector<Atom>( _atoms );
-			Generic::clearVector<Residue>( _residues );
-			Generic::clearVector<Chain>( _chains );
-			Generic::clearVector<Bond>( _bonds );
+			Generic::clearVector( _atoms );
+			Generic::clearVector( _residues );
+			Generic::clearVector( _chains );
+			Generic::clearVector( _bonds );
 
 			VTXApp::get().getScene().removeMesh( _ribbon );
 			Generic::destroy( _ribbon );
@@ -60,8 +61,9 @@ namespace VTX
 			_fillBufferAtomVisibilities();
 			_fillBufferBonds();
 
-			// Compute seconndary structure meshes.
-			_computeSecondaryStructure();
+			// Compute and create seconndary structure.
+			Util::Molecule::computeSecondaryStructure( this );
+			_createSecondaryStructure();
 
 			// Set default representation.
 			setRepresentation();
@@ -70,10 +72,10 @@ namespace VTX
 		void Molecule::_addItems()
 		{
 			// Add views.
-			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::D3::Sphere>( this ) );
-			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::D3::Cylinder>( this ) );
-			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::D3::Box>( this ) );
-			addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::UI::MoleculeStructure>( this ) );
+			addItem( (View::BaseView<BaseModel> *)Generic::create<View::D3::Sphere>( this ) );
+			addItem( (View::BaseView<BaseModel> *)Generic::create<View::D3::Cylinder>( this ) );
+			addItem( (View::BaseView<BaseModel> *)Generic::create<View::D3::Box>( this ) );
+			addItem( (View::BaseView<BaseModel> *)Generic::create<View::UI::MoleculeStructure>( this ) );
 		}
 
 		void Molecule::_computeGlobalPositionsAABB()
@@ -102,7 +104,7 @@ namespace VTX
 
 			_currentFrame = p_frameIdx;
 			_updateBufferAtomPositions();
-			_computeSecondaryStructure();
+			_createSecondaryStructure();
 		}
 
 		void Molecule::_initBufferAtomPositions() const
@@ -253,8 +255,7 @@ namespace VTX
 		void Molecule::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() )
-			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Molecule, View::UI::Molecule>( this ) ); }
+			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)Generic::create<View::UI::Molecule>( this ) ); }
 			else
 			{
 				Generic::destroy( removeItem( ID::View::UI_MOLECULE ) );
@@ -334,8 +335,8 @@ namespace VTX
 			}
 
 			// Clear topology.
-			Generic::clearVector<Chain>( _chains );
-			Generic::clearVector<Residue>( _residues );
+			Generic::clearVector( _chains );
+			Generic::clearVector( _residues );
 
 			// Create models.
 			_chains.resize( p_molecule.getChainCount() );
@@ -410,10 +411,10 @@ namespace VTX
 			return true;
 		}
 
-		void Molecule::_computeSecondaryStructure()
+		void Molecule::_createSecondaryStructure()
 		{
 			Tool::Chrono chrono;
-			
+
 			if ( _ribbon != nullptr )
 			{
 				VTXApp::get().getScene().removeMesh( _ribbon );
@@ -424,7 +425,7 @@ namespace VTX
 			//_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
 			chrono.stop();
-			//VTX_INFO("SS computed in " + std::to_string( chrono.elapsedTime()) + "s");
+			// VTX_INFO("SS computed in " + std::to_string( chrono.elapsedTime()) + "s");
 		}
 	} // namespace Model
 } // namespace VTX

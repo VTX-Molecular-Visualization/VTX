@@ -165,10 +165,10 @@ namespace VTX
 										const Vec3f &					   p_OX0Pos,
 										const Vec3f &					   p_CA1Pos,
 										const Residue::SECONDARY_STRUCTURE p_ss,
-										Vec3f &							   po_flipTestV,
-										Math::BSpline &					   po_splineCenter,
-										Math::BSpline &					   po_splineSide1,
-										Math::BSpline &					   po_splineSide2 )
+										Vec3f &							   p_flipTestV,
+										Math::BSpline &					   p_splineCenter,
+										Math::BSpline &					   p_splineSide1,
+										Math::BSpline &					   p_splineSide2 )
 		{
 			Vec3f A, B, C, D, p0, cpt0, cpt1, cpt2;
 
@@ -186,41 +186,41 @@ namespace VTX
 			Util::Math::normalizeSelf( D );
 
 			// Flipping test (to avoid self crossing in the strands).
-			if ( ( p_ss != Residue::SECONDARY_STRUCTURE::HELIX ) && ( Util::Math::dot( po_flipTestV, D ) < 0.f ) )
+			if ( ( p_ss != Residue::SECONDARY_STRUCTURE::HELIX ) && ( Util::Math::dot( p_flipTestV, D ) < 0.f ) )
 			{
 				D = D * -1.f; // flip detected, the plane vector is inverted
 			}
 
 			// The central control point is constructed
 			cpt0 = Util::Math::linearComb( 0.5f, p_CA0Pos, 0.5f, p_CA1Pos );
-			po_splineCenter.setPoint( 3, cpt0 );
+			p_splineCenter.setPoint( 3, cpt0 );
 
 			if ( p_ss == Residue::SECONDARY_STRUCTURE::HELIX )
 			{
 				int handedness = 1;
 				// When residue i is contained in a helix, the control point is moved away
 				// from the helix axis, along the C direction.
-				p0	 = po_splineCenter.getPoint( 3u );
+				p0	 = p_splineCenter.getPoint( 3u );
 				cpt0 = Util::Math::linearComb( 1.f, p0, float( handedness ) * HELIX_DIAM, C );
-				po_splineCenter.setPoint( 3, cpt0 );
+				p_splineCenter.setPoint( 3, cpt0 );
 			}
 
 			// The control points for the side ribbons are constructed.
 			cpt1 = Util::Math::linearComb( 1.f, cpt0, RIBBON_WIDTH[ int( p_ss ) ], D );
-			po_splineSide1.setPoint( 3, cpt1 );
+			p_splineSide1.setPoint( 3, cpt1 );
 
 			cpt2 = Util::Math::linearComb( 1.f, cpt0, -RIBBON_WIDTH[ int( p_ss ) ], D );
-			po_splineSide2.setPoint( 3, cpt2 );
+			p_splineSide2.setPoint( 3, cpt2 );
 
 			// Saving the plane vector (for the flipping test in the next call)
-			po_flipTestV = D;
+			p_flipTestV = D;
 		}
 
 		void Ribbon::_computeTriangleMesh( Math::BSpline & p_splineCenter,
 										   Math::BSpline & p_splineSide1,
 										   Math::BSpline & p_splineSide2,
 										   const Vec3f &   p_color,
-										   uint &		   po_vIndex )
+										   uint &		   p_vIndex )
 		{
 			Vec3f pointCenter0, pointCenter1;
 			Vec3f pointSide10, pointSide11, pointSide20, pointSide21;
@@ -388,26 +388,26 @@ namespace VTX
 				// Triangle indices.
 				for ( uint t = 0; t < 24; ++t )
 				{
-					_indices.push_back( po_vIndex + t );
+					_indices.push_back( p_vIndex + t );
 				}
 
-				_indices.push_back( po_vIndex + 24 );
-				_indices.push_back( po_vIndex + 25 );
-				_indices.push_back( po_vIndex + 28 );
+				_indices.push_back( p_vIndex + 24 );
+				_indices.push_back( p_vIndex + 25 );
+				_indices.push_back( p_vIndex + 28 );
 
-				_indices.push_back( po_vIndex + 25 );
-				_indices.push_back( po_vIndex + 28 );
-				_indices.push_back( po_vIndex + 29 );
+				_indices.push_back( p_vIndex + 25 );
+				_indices.push_back( p_vIndex + 28 );
+				_indices.push_back( p_vIndex + 29 );
 
-				_indices.push_back( po_vIndex + 26 );
-				_indices.push_back( po_vIndex + 27 );
-				_indices.push_back( po_vIndex + 30 );
+				_indices.push_back( p_vIndex + 26 );
+				_indices.push_back( p_vIndex + 27 );
+				_indices.push_back( p_vIndex + 30 );
 
-				_indices.push_back( po_vIndex + 27 );
-				_indices.push_back( po_vIndex + 30 );
-				_indices.push_back( po_vIndex + 31 );
+				_indices.push_back( p_vIndex + 27 );
+				_indices.push_back( p_vIndex + 30 );
+				_indices.push_back( p_vIndex + 31 );
 
-				po_vIndex += 32;
+				p_vIndex += 32;
 			}
 		}
 

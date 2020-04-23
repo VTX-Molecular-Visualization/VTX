@@ -219,7 +219,7 @@ namespace VTX
 			void _fillBufferAtomVisibilities();
 			void _fillBufferBonds();
 
-			void _computeSecondaryStructure();
+			void _createSecondaryStructure();
 
 #ifdef _DEBUG
 		  public:
