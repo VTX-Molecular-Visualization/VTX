@@ -8,7 +8,7 @@ namespace VTX
 		{
 			VTX_DEBUG( "Building secondary structure..." );
 
-			const Molecule::AtomPositionsFrame & positions = p_molecule.getAtomPositionFrame( 0 );
+			const Molecule::AtomPositionsFrame & positions = p_molecule.getAtomPositionFrame( p_molecule.getFrame() );
 
 			uint vIndex = 0;
 
