@@ -1,5 +1,5 @@
-#ifndef __VTX_CUDA__
-#define __VTX_CUDA__
+#ifndef __VTX_UTIL_CUDA__
+#define __VTX_UTIL_CUDA__
 
 #ifdef _MSC_VER
 #pragma once

@@ -1,5 +1,5 @@
-#ifndef __VTX_GL_DEBUG__
-#define __VTX_GL_DEBUG__
+#ifndef __VTX_UTIL_OPENGL__
+#define __VTX_UTIL_OPENGL__
 
 #ifdef _MSC_VER
 #pragma once

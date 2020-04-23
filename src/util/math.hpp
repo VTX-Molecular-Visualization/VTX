@@ -1,5 +1,5 @@
-#ifndef __VTX__MATH__
-#define __VTX__MATH__
+#ifndef __VTX__UTIL_MATH__
+#define __VTX__UTIL_MATH__
 
 #ifdef _MSC_VER
 #pragma once

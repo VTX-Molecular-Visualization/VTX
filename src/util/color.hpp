@@ -1,5 +1,5 @@
-#ifndef __VTX_COLOR__
-#define __VTX_COLOR__
+#ifndef __VTX_UTIL_COLOR__
+#define __VTX_UTIL_COLOR__
 
 #ifdef _MSC_VER
 #pragma once

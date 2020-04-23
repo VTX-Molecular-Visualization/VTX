@@ -1,5 +1,5 @@
-#ifndef __VTX_SAMPLER__
-#define __VTX_SAMPLER__
+#ifndef __VTX_UTIL_SAMPLER__
+#define __VTX_UTIL_SAMPLER__
 
 #ifdef _MSC_VER
 #pragma once

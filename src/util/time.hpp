@@ -1,5 +1,5 @@
-#ifndef __VTX_TIME__
-#define __VTX_TIME__
+#ifndef __VTX_UTIL_TIME__
+#define __VTX_UTIL_TIME__
 
 #ifdef _MSC_VER
 #pragma once

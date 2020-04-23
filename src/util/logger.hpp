@@ -1,5 +1,5 @@
-#ifndef __VTX_LOGGER__
-#define __VTX_LOGGER__
+#ifndef __VTX_UTIL_LOGGER__
+#define __VTX_UTIL_LOGGER__
 
 #ifdef _MSC_VER
 #pragma once
