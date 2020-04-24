@@ -24,15 +24,14 @@ namespace VTX
 		VTX_INFO( "Destructing application" );
 
 		// Respect this order!
-		Generic::destroy( _stateMachine );
-		Generic::destroy( _scene );
-		Generic::destroy( _ui );
-
-		delete _renderer;
-		delete _selectionManager;
-		delete _workerManager;
-		delete _actionManager;
-		delete _eventManager;
+		if ( _stateMachine != nullptr ) { Generic::destroy( _stateMachine ); }
+		if ( _scene != nullptr ) { Generic::destroy( _scene ); }
+		if ( _ui != nullptr ) { Generic::destroy( _ui ); }
+		if ( _renderer != nullptr ) { delete _renderer; }
+		if ( _selectionManager != nullptr ) { delete _selectionManager; }
+		if ( _workerManager != nullptr ) { delete _workerManager; }
+		if ( _actionManager != nullptr ) { delete _actionManager; }
+		if ( _eventManager != nullptr ) { delete _eventManager; }
 
 		VTX_INFO( "Application destructed" );
 	}
@@ -64,7 +63,8 @@ namespace VTX
 #ifdef AUTO_OPEN
 		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "r2d2_2.obj" ) ) );
 		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "4v6x.mmtf" ) ) );
-		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "4jjt.pdb" ) ) );
+		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "6vsb.pdb" ) ) );
+		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "4hhb.pdb" ) ) );
 #endif
 
 //#define RT_ENABLED
