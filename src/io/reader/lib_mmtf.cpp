@@ -121,7 +121,7 @@ namespace VTX
 							y = p_data.yCoordList[ atomGlobalIdx ];
 							z = p_data.zCoordList[ atomGlobalIdx ];
 
-							frame.emplace_back( Vec3f( x, y, z ) );
+							frame.emplace_back( x, y, z );
 							const Vec3f & atomPosition = frame[ atomGlobalIdx ];
 							const float	  atomRadius   = atom.getVdwRadius();
 						}

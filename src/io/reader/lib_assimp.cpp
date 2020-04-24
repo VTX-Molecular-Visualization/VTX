@@ -163,7 +163,7 @@ namespace VTX
 							{ atom.setColor( Vec3f( diffuse.r, diffuse.g, diffuse.b ) ); }
 
 							const aiVector3D vector = mesh->mVertices[ indice ];
-							frame.emplace_back( Vec3f( vector.x, vector.y, vector.z ) );
+							frame.emplace_back( vector.x, vector.y, vector.z );
 							const Vec3f & atomPosition = frame[ atomGlobalIdx ];
 							const float	  atomRadius   = atom.getVdwRadius();
 

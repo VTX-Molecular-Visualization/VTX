@@ -255,7 +255,7 @@ namespace VTX
 					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
 					{
 						const chemfiles::Vector3D & position = positions[ positionIdx ];
-						moleculeFrame.emplace_back( Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] ) );
+						moleculeFrame.emplace_back( position[ 0 ], position[ 1 ], position[ 2 ] );
 					}
 				}
 
