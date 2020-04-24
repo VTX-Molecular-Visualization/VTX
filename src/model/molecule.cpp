@@ -39,8 +39,11 @@ namespace VTX
 			Generic::clearVector( _chains );
 			Generic::clearVector( _bonds );
 
-			VTXApp::get().getScene().removeMesh( _ribbon );
-			Generic::destroy( _ribbon );
+			if ( _ribbon != nullptr )
+			{
+				VTXApp::get().getScene().removeMesh( _ribbon );
+				Generic::destroy( _ribbon );
+			}
 		}
 
 		void Molecule::init()

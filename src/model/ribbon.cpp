@@ -26,6 +26,8 @@ namespace VTX
 				uint		  residueCount	  = chain.getResidueCount();
 				uint		  idxFirstResidue = chain.getIdFirstResidue();
 
+				if ( residueCount < 3 ) { continue; }
+
 				// Loop over residues
 				uint residueGlobalIdx = 0;
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx, ++residueGlobalIdx )
@@ -238,9 +240,12 @@ namespace VTX
 			// Vector transversal to the ribbon
 			transversal = pointSide11 - pointSide21;
 			normal1		= Util::Math::cross( transversal, tangent );
+
 			Util::Math::normalizeSelf( normal1 );
 
 			Vec3f leftNormal0, leftNormal1, rightNormal0, rightNormal1;
+
+			// TODO: resize vectors at the begning.
 			for ( uint step = 1; step <= DETAIL_LEVEL; ++step )
 			{
 				t = float( step ) / float( DETAIL_LEVEL );

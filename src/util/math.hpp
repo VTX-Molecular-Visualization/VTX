@@ -83,18 +83,24 @@ namespace VTX
 			inline void normalizeSelf( T & p_value )
 			{
 #ifdef _DEBUG
-				if ( length( p_value ) == 0.f ) { throw Exception::MathException( "Cannot normalize 0 vector" ); }
-#endif
+				T value = glm::normalize( p_value );
+				if ( std::isnan( value.x ) ) { throw Exception::MathException( "Normalized value NaN" ); }
+				p_value = value;
+#else
 				p_value = glm::normalize( p_value );
+#endif
 			}
 
 			template<typename T>
 			inline T normalize( const T & p_value )
 			{
 #ifdef _DEBUG
-				if ( length( p_value ) == 0.f ) { throw Exception::MathException( "Cannot normalize 0 vector" ); }
-#endif
+				T value = glm::normalize( p_value );
+				if ( std::isnan( value.x ) ) { throw Exception::MathException( "Normalized value NaN" ); }
+				return value;
+#else
 				return glm::normalize( p_value );
+#endif
 			}
 
 			template<int L, typename T>
