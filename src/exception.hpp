@@ -48,6 +48,12 @@ namespace VTX
 			explicit IOException( const std::string & p_err ) : std::runtime_error( "[IO] " + p_err ) {}
 		};
 
+		class MathException : public std::runtime_error
+		{
+		  public:
+			explicit MathException( const std::string & p_err ) : std::runtime_error( "[MATH] " + p_err ) {}
+		};
+
 		class NotImplementedException : public std::runtime_error
 		{
 		  public:

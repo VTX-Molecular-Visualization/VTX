@@ -6,6 +6,7 @@
 #endif
 
 #include "define.hpp"
+#include "exception.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/compatibility.hpp>
@@ -81,12 +82,18 @@ namespace VTX
 			template<typename T>
 			inline void normalizeSelf( T & p_value )
 			{
+#ifdef _DEBUG
+				if ( length( p_value ) == 0.f ) { throw Exception::MathException( "Cannot normalize 0 vector" ); }
+#endif
 				p_value = glm::normalize( p_value );
 			}
 
 			template<typename T>
 			inline T normalize( const T & p_value )
 			{
+#ifdef _DEBUG
+				if ( length( p_value ) == 0.f ) { throw Exception::MathException( "Cannot normalize 0 vector" ); }
+#endif
 				return glm::normalize( p_value );
 			}
 
