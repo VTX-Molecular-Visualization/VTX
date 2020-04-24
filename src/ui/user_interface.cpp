@@ -116,7 +116,7 @@ namespace VTX
 			if ( _glContext == nullptr ) { throw Exception::SDLException( SDL_GetError() ); }
 
 			SDL_GL_MakeCurrent( _window, _glContext );
-			setVSync(Setting::Rendering::useVSync);
+			setVSync( Setting::Rendering::useVSync );
 		}
 
 		void UserInterface::_initGL()
