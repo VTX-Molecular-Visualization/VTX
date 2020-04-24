@@ -516,7 +516,7 @@ namespace VTX
 					uint		   nbPrimitives = end - begin;
 					uint		   maxBVHNodes	= 2 * nbPrimitives;
 					BVHBuildNode * nodes		= new BVHBuildNode[ maxBVHNodes ];
-					treelets.emplace_back( LBVHTreelet( begin, nbPrimitives, nodes ) );
+					treelets.emplace_back( begin, nbPrimitives, nodes );
 					begin = end;
 				}
 			}
