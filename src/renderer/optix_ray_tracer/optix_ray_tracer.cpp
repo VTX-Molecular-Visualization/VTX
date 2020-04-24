@@ -689,7 +689,7 @@ namespace VTX
 					r._data._cylinders = (Optix::Cylinder *)( _cylindersDevBuffer.getDevicePtr() );
 #endif
 					OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _hitGroupPrograms[ objectType ], &r ) );
-					hitGroupRecords.push_back( r );
+					hitGroupRecords.emplace_back( r );
 				}
 				_hitGroupRecordsBuffer.malloc( hitGroupRecords.size() * sizeof( Optix::HitGroupRecord ) );
 				_hitGroupRecordsBuffer.memcpyHostToDevice( hitGroupRecords.data(), hitGroupRecords.size() );
