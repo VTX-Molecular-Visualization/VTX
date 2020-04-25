@@ -29,16 +29,18 @@ namespace VTX
 				if ( residueCount < 3 ) { continue; }
 
 				// Loop over residues
-				uint residueGlobalIdx = 0;
-				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx, ++residueGlobalIdx )
+				uint residueValidCount = 0;
+				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
 					VTX_DEBUG( "Building secondary structure... residue " + std::to_string( residueIdx ) );
 					const Residue &					   residue = p_molecule.getResidue( idxFirstResidue + residueIdx );
 					const Residue::SECONDARY_STRUCTURE ss	   = residue.getSecondaryStructure();
 
 					// First residue
-					if ( residueIdx == 0 )
+					if ( residueValidCount == 0 )
 					{
+						if ( residueIdx > residueCount - 2 ) { continue; }
+
 						const Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
 
 						const Model::Atom * CA1 = residue.findFirstAtomByName( "CA" );
@@ -111,6 +113,8 @@ namespace VTX
 					}
 					else
 					{
+						if ( residueIdx > residueCount - 2 ) { continue; }
+
 						splineCenter.shiftPoints();
 						splineSide1.shiftPoints();
 						splineSide2.shiftPoints();
@@ -159,6 +163,8 @@ namespace VTX
 					}
 
 					_computeTriangleMesh( splineCenter, splineSide1, splineSide2, chainColor, vIndex );
+
+					residueValidCount++;
 				}
 			}
 		}
