@@ -48,7 +48,7 @@ namespace VTX
 							const Model::Atom * N1	= residue.findFirstAtomByName( "N" );
 							const Model::Atom * CA1 = residue.findFirstAtomByName( "CA" );
 							const Model::Atom * C1	= residue.findFirstAtomByName( "C" );
-							const Model::Atom * N2	= residue0.findFirstAtomByName( "N" );
+							const Model::Atom * N2	= residue2.findFirstAtomByName( "N" );
 
 							if ( C0 == nullptr || N1 == nullptr || CA1 == nullptr || C1 == nullptr || N2 == nullptr )
 							{
@@ -69,20 +69,21 @@ namespace VTX
 						}
 					}
 
-					uint  firstHelixIdx	  = 0u;
-					uint  RHelixCount	  = 0u;
-					uint  LHelixCount	  = 0u;
-					uint  firstStrandIdx  = 0u;
-					uint  strandCount	  = 0u;
-					float extension		  = 0.f;
-					float strandExtension = 0.f;
+					uint firstHelixIdx	= 0u;
+					uint RHelixCount	= 0u;
+					uint LHelixCount	= 0u;
+					uint firstStrandIdx = 0u;
+					uint strandCount	= 0u;
 
 					for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 					{
+						// VTX_DEBUG( std::to_string( phi[ residueIdx ] ) + " / " + std::to_string( psi[ residueIdx ] )
+						// );
+
 						// Right-handed helix
 						if ( ( Util::Math::distance( Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
 													 Vec2f( -PIf / 3.f, -PIf / 4.f ) )
-							   < ( PIf / 6.f + extension ) )
+							   < ( PIf / 6.f ) )
 							 && ( residueIdx < residueCount - 1 ) )
 						{
 							if ( RHelixCount == 0 ) { firstHelixIdx = residueIdx; }
@@ -105,7 +106,7 @@ namespace VTX
 						// Left-handed helix
 						if ( ( Util::Math::distance( Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
 													 Vec2f( PIf / 3.f, PIf / 4.f ) )
-							   < ( PIf / 6.f + extension ) )
+							   < ( PIf / 6.f ) )
 							 && ( residueIdx < residueCount - 1 ) )
 						{
 							if ( LHelixCount == 0 ) { firstHelixIdx = residueIdx; }
@@ -129,7 +130,7 @@ namespace VTX
 						if ( ( Util::Math::distance(
 								   Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
 								   Vec2f( -Util::Math::radians( 110.f ), Util::Math::radians( 130.f ) ) )
-							   < ( PIf / 6.f + extension + strandExtension ) )
+							   < ( PIf / 6.f ) )
 							 && ( residueIdx < residueCount - 1 ) )
 						{
 							if ( strandCount == 0 ) { firstStrandIdx = residueIdx; }
@@ -148,6 +149,8 @@ namespace VTX
 							}
 							strandCount = 0;
 						}
+
+						// Already default value.
 
 						Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + residueIdx );
 						// residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::COIL );
