@@ -39,6 +39,7 @@ namespace VTX
 									const Vec3f &,
 									const Vec3f &,
 									const Residue::SECONDARY_STRUCTURE,
+									const Residue::HANDEDNESS,
 									Vec3f &,
 									Math::BSpline &,
 									Math::BSpline &,

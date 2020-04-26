@@ -65,6 +65,7 @@ namespace VTX
 										   positionOX1,
 										   positionCA2,
 										   residue.getSecondaryStructure(),
+										   residue.getHandedness(),
 										   flipTestV,
 										   splineCenter,
 										   splineSide1,
@@ -92,6 +93,7 @@ namespace VTX
 										   positionOX2,
 										   positionCA3,
 										   residue.getSecondaryStructure(),
+										   residue.getHandedness(),
 										   flipTestV,
 										   splineCenter,
 										   splineSide1,
@@ -159,6 +161,7 @@ namespace VTX
 											   positionOX2,
 											   positionCA3,
 											   residue.getSecondaryStructure(),
+											   residue.getHandedness(),
 											   flipTestV,
 											   splineCenter,
 											   splineSide1,
@@ -180,6 +183,7 @@ namespace VTX
 										const Vec3f &					   p_OX0Pos,
 										const Vec3f &					   p_CA1Pos,
 										const Residue::SECONDARY_STRUCTURE p_ss,
+										const Residue::HANDEDNESS		   p_handedness,
 										Vec3f &							   p_flipTestV,
 										Math::BSpline &					   p_splineCenter,
 										Math::BSpline &					   p_splineSide1,
@@ -212,11 +216,10 @@ namespace VTX
 
 			if ( p_ss == Residue::SECONDARY_STRUCTURE::HELIX )
 			{
-				int handedness = 1;
 				// When residue i is contained in a helix, the control point is moved away
 				// from the helix axis, along the C direction.
 				p0	 = p_splineCenter.getPoint( 3u );
-				cpt0 = Util::Math::linearComb( 1.f, p0, float( handedness ) * HELIX_DIAM, C );
+				cpt0 = Util::Math::linearComb( 1.f, p0, float( p_handedness ) * HELIX_DIAM, C );
 				p_splineCenter.setPoint( 3, cpt0 );
 			}
 
