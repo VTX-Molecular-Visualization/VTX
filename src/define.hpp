@@ -45,16 +45,16 @@ namespace VTX
 
 	const bool SSAO_DEFAULT = true;
 	const bool AA_DEFAULT	= true;
-	const bool RANDOM		= false;
+	const bool RANDOM		= true;
 
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 
 	// Window.
-	constexpr int WINDOW_WIDTH	= 1280;
-	constexpr int WINDOW_HEIGHT = 720;
+	// constexpr int WINDOW_WIDTH	= 1280;
+	// constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
-	/*constexpr int WINDOW_WIDTH	= 1920;
-	constexpr int WINDOW_HEIGHT = 1080;*/
+	constexpr int WINDOW_WIDTH	= 1920;
+	constexpr int WINDOW_HEIGHT = 1080;
 	// 4k
 	// constexpr int WINDOW_WIDTH	= 3840;
 	// constexpr int WINDOW_HEIGHT = 2160;
@@ -127,6 +127,7 @@ namespace VTX
 
 	const float PIf		 = glm::pi<float>();
 	const float PI_2f	 = glm::half_pi<float>();
+	const float PI_4f	 = glm::quarter_pi<float>();
 	const float PI_32f	 = glm::three_over_two_pi<float>();
 	const float TWO_PIf	 = glm::two_pi<float>();
 	const float INV_PIf	 = glm::one_over_pi<float>();

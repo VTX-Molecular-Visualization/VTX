@@ -1,11 +1,15 @@
 #include "ribbon.hpp"
+#include "tool/chrono.hpp"
 #include <iostream>
+
 namespace VTX
 {
 	namespace Model
 	{
 		Ribbon::Ribbon( const Molecule & p_molecule )
 		{
+			Tool::Chrono chrono;
+			chrono.start();
 			VTX_DEBUG( "Building secondary structure..." );
 
 			const Molecule::AtomPositionsFrame & positions = p_molecule.getAtomPositionFrame( p_molecule.getFrame() );
@@ -49,7 +53,7 @@ namespace VTX
 
 						if ( CA1 == nullptr || OX1 == nullptr || CA2 == nullptr )
 						{
-							VTX_DEBUG( "Failed to get atoms for peptide plane" );
+							VTX_DEBUG( "Failed to get atoms" );
 							continue;
 						}
 
@@ -77,7 +81,7 @@ namespace VTX
 
 						if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 						{
-							VTX_DEBUG( "Failed to get atoms for peptide plane" );
+							VTX_DEBUG( "Failed to get atoms" );
 							continue;
 						}
 
@@ -143,7 +147,7 @@ namespace VTX
 
 							if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 							{
-								VTX_DEBUG( "Failed to get atoms for peptide plane" );
+								VTX_DEBUG( "Failed to get atoms" );
 								continue;
 							}
 
@@ -167,6 +171,9 @@ namespace VTX
 					residueValidCount++;
 				}
 			}
+
+			chrono.stop();
+			VTX_DEBUG( "SS created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
 		void Ribbon::_addControlPoints( const Vec3f &					   p_CA0Pos,

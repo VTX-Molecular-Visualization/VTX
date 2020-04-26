@@ -65,7 +65,7 @@ namespace VTX
 			_fillBufferBonds();
 
 			// Compute and create seconndary structure.
-			Util::Molecule::computeSecondaryStructure( this );
+			Util::Molecule::computeSecondaryStructure( *this );
 			_createSecondaryStructure();
 
 			// Set default representation.
@@ -416,19 +416,14 @@ namespace VTX
 
 		void Molecule::_createSecondaryStructure()
 		{
-			Tool::Chrono chrono;
-
 			if ( _ribbon != nullptr )
 			{
 				VTXApp::get().getScene().removeMesh( _ribbon );
 				Generic::destroy( _ribbon );
 			}
-			chrono.start();
+
 			_ribbon = Generic::create<Ribbon, Molecule>( *this );
-			//_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
-			chrono.stop();
-			// VTX_INFO("SS computed in " + std::to_string( chrono.elapsedTime()) + "s");
 		}
 	} // namespace Model
 } // namespace VTX

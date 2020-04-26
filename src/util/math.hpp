@@ -329,7 +329,7 @@ namespace VTX
 				float v = dot( r, r );
 
 				float a;
-				if ( u <= 0.f || v <= 0.f ) { a = 360.f; }
+				if ( u <= 0.f || v <= 0.f ) { a = TWO_PIf; }
 				else
 				{
 					float u1 = dot( p, q );
@@ -338,10 +338,10 @@ namespace VTX
 					u = u1 / std::sqrt( u );
 					v = v1 / std::sqrt( v );
 
-					if ( std::abs( u ) > 0.01f || std::abs( v ) > 0.01f ) { a = degrees( std::atan2( v, u ) ); }
+					if ( std::abs( u ) > 0.01f || std::abs( v ) > 0.01f ) { a =  std::atan2( v, u ); }
 					else
 					{
-						a = 360.f;
+						a = TWO_PIf;
 					}
 				}
 				return a;

@@ -145,16 +145,17 @@ namespace VTX
 					symbol.has_value() ? modelResidue.setSymbol( symbol.value() )
 									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 
+					/*
 					try
 					{
 						std::string secondaryStructure
 							= residue.properties().get( "secondary_structure" ).value().as_string();
 						if ( secondaryStructure == "extended" )
-						{ modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::SHEET ); }
-						else if ( secondaryStructure == "turn" )
-						{
-							// modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::TURN );
-						}
+						{ modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND ); }
+						// else if ( secondaryStructure == "turn" )
+						//{
+						// modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::TURN );
+						//}
 						else if ( secondaryStructure == "alpha helix" )
 						{
 							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
@@ -171,6 +172,7 @@ namespace VTX
 					catch ( const std::exception & )
 					{
 					}
+					*/
 
 					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 					{

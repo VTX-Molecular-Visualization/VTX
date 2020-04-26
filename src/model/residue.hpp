@@ -51,10 +51,15 @@ namespace VTX
 
 			enum class SECONDARY_STRUCTURE : int
 			{
-				// TURN,
 				COIL,
 				HELIX,
-				SHEET
+				STRAND
+			};
+
+			enum class HANDEDNESS : int
+			{
+				LEFT  = -1,
+				RIGHT = 1
 			};
 
 			// Static const mapping.
@@ -81,7 +86,9 @@ namespace VTX
 			{
 				_secondaryStructure = p_structure;
 			};
-			const Atom * const findFirstAtomByName( const std::string & ) const;
+			inline const HANDEDNESS getHandedness() const { return _handedness; };
+			inline void				setHandedness( const HANDEDNESS p_handedness ) { _handedness = p_handedness; };
+			const Atom * const		findFirstAtomByName( const std::string & ) const;
 			// inline uint					getIdFirstBond() const { return _idFirstBond; };
 			// inline void					setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
 			// inline uint getBondCount() const { return _bondCount; };
@@ -99,6 +106,7 @@ namespace VTX
 			uint				_idFirstAtom		= 0;
 			uint				_atomCount			= 0;
 			SECONDARY_STRUCTURE _secondaryStructure = SECONDARY_STRUCTURE::COIL;
+			HANDEDNESS			_handedness			= HANDEDNESS::RIGHT;
 			// uint		   _idFirstBond = 0;
 			// uint		   _bondCount	= 0;
 		};
