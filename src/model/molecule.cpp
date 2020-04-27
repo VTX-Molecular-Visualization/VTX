@@ -67,7 +67,7 @@ namespace VTX
 			// Compute seconndary structure if not loaded.
 			if ( _secondaryStructureLoadedFromFile == false ) { Util::Molecule::computeSecondaryStructure( *this ); }
 			// Create secondary structure mesh.
-			_createSecondaryStructure();
+			createSecondaryStructure();
 
 			// Set default representation.
 			setRepresentation();
@@ -108,7 +108,7 @@ namespace VTX
 
 			_currentFrame = p_frameIdx;
 			_updateBufferAtomPositions();
-			_createSecondaryStructure();
+			createSecondaryStructure();
 		}
 
 		void Molecule::_initBufferAtomPositions() const
@@ -415,7 +415,7 @@ namespace VTX
 			return true;
 		}
 
-		void Molecule::_createSecondaryStructure()
+		void Molecule::createSecondaryStructure()
 		{
 			if ( _ribbon != nullptr )
 			{
@@ -424,7 +424,7 @@ namespace VTX
 			}
 
 			_ribbon = Generic::create<Ribbon, Molecule>( *this );
-			_ribbon->print();
+			//_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
 		}
 	} // namespace Model

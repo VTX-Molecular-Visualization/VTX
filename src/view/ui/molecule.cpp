@@ -6,6 +6,7 @@
 #include "action/molecule_change_is_playing.hpp"
 #include "action/molecule_change_show_ion.hpp"
 #include "action/molecule_change_show_solvent.hpp"
+#include "action/molecule_compute_secondary_structure.hpp"
 #include "action/selectable_unselect.hpp"
 #include "action/transformable_rotate.hpp"
 #include "action/transformable_set_scale.hpp"
@@ -31,10 +32,18 @@ namespace VTX
 					{ VTX_ACTION( new Action::VisibleChangeVisibility( _getModel(), isVisible ) ); }
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 					{
-						ImGui::Text( "Chains: %d", _getModel().getChainCount() );
-						ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
-						ImGui::Text( "Atoms: %d", _getModel().getAtomCount() );
-						ImGui::Text( "Bonds: %d", _getModel().getBondCount() / 2 );
+						ImGui::Text( LOCALE( "View.Chains%Count" ), _getModel().getChainCount() );
+						ImGui::Text( LOCALE( "View.Residues%Count" ), _getModel().getResidueCount() );
+						ImGui::Text( LOCALE( "View.Atoms%Count" ), _getModel().getAtomCount() );
+						ImGui::Text( LOCALE( "View.Bonds%Count" ), _getModel().getBondCount() / 2 );
+						ImGui::Text( LOCALE( "View.SecondaryStructure%State" ),
+									 _getModel().secondaryStructureLoadedFromFile() ? LOCALE( "View.Loaded" )
+																					: LOCALE( "View.Computed" ) );
+						if ( _getModel().secondaryStructureLoadedFromFile() )
+						{
+							if ( ImGui::Button( LOCALE( "View.Compute" ) ) )
+							{ VTX_ACTION( new Action::MoleculeComputeSecondaryStructure( _getModel() ) ); }
+						}
 					}
 					if ( _getModel().getFrameCount() > 1 )
 					{

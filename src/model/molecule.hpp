@@ -160,6 +160,8 @@ namespace VTX
 			virtual void setSelected( const bool ) override;
 			virtual void setVisible( const bool ) override;
 
+			void createSecondaryStructure();
+
 		  protected:
 			virtual void _addItems() override final;
 
@@ -225,8 +227,6 @@ namespace VTX
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();
 			void _fillBufferBonds();
-
-			void _createSecondaryStructure();
 
 #ifdef _DEBUG
 		  public:

@@ -22,6 +22,7 @@ namespace VTX
 
 				const Model::Molecule::AtomPositionsFrame & positions
 					= p_molecule.getAtomPositionFrame( p_molecule.getFrame() );
+				p_molecule.setSecondaryStructureLoadedFromFile( false );
 
 				for ( uint chainIdx = 0; chainIdx < p_molecule.getChainCount(); ++chainIdx )
 				{

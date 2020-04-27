@@ -78,6 +78,14 @@ namespace VTX
 
 			// Views.
 			{ "View.Data", "Data" },
+			{ "View.Chain", "Chain" },
+			{ "View.Chains%Count", "Chains: %d" },
+			{ "View.Residue", "Residue" },
+			{ "View.Residues%Count", "Residues: %d" },
+			{ "View.Atom", "Atom" },
+			{ "View.Atoms%Count", "Atoms: %d" },
+			{ "View.Bond", "Bond" },
+			{ "View.Bonds%Count", "Bonds: %d" },
 			{ "View.Options", "Options" },
 			{ "View.Play", "Play" },
 			{ "View.Stop", "Stop" },
@@ -103,6 +111,11 @@ namespace VTX
 			{ "View.Molecule.Ion", "Ion" },
 			{ "View.Actions", "Actions" },
 			{ "View.Visible", "Visible" },
+			{ "View.SecondaryStructure", "Secondary Structure" },
+			{ "View.SecondaryStructure%State", "Secondary Structure: %s" },
+			{ "View.Loaded", "Loaded" },
+			{ "View.Computed", "Computed" },
+			{ "View.Compute", "Compute" },
 
 			// Modals.
 			{ "Modal.Loading", "Loading" },
