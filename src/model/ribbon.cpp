@@ -10,7 +10,7 @@ namespace VTX
 		{
 			Tool::Chrono chrono;
 			chrono.start();
-			VTX_DEBUG( "Building secondary structure..." );
+			VTX_DEBUG( "Creating secondary structure..." );
 
 			const Molecule::AtomPositionsFrame & positions = p_molecule.getAtomPositionFrame( p_molecule.getFrame() );
 
@@ -24,7 +24,7 @@ namespace VTX
 				Math::BSpline splineSide1  = Math::BSpline();
 				Math::BSpline splineSide2  = Math::BSpline();
 
-				VTX_DEBUG( "Building secondary structure... chain " + std::to_string( chainIdx ) );
+				// VTX_DEBUG( "Building secondary structure... chain " + std::to_string( chainIdx ) );
 				const Chain & chain			  = p_molecule.getChain( chainIdx );
 				const Vec3f & chainColor	  = chain.getColor();
 				uint		  residueCount	  = chain.getResidueCount();
@@ -36,7 +36,7 @@ namespace VTX
 				uint residueValidCount = 0;
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
-					VTX_DEBUG( "Building secondary structure... residue " + std::to_string( residueIdx ) );
+					// VTX_DEBUG( "Building secondary structure... residue " + std::to_string( residueIdx ) );
 					const Residue &					   residue = p_molecule.getResidue( idxFirstResidue + residueIdx );
 					const Residue::SECONDARY_STRUCTURE ss	   = residue.getSecondaryStructure();
 
@@ -53,7 +53,7 @@ namespace VTX
 
 						if ( CA1 == nullptr || OX1 == nullptr || CA2 == nullptr )
 						{
-							VTX_DEBUG( "Failed to get atoms" );
+							// VTX_DEBUG( "Failed to get atoms" );
 							continue;
 						}
 
@@ -82,7 +82,7 @@ namespace VTX
 
 						if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 						{
-							VTX_DEBUG( "Failed to get atoms" );
+							// VTX_DEBUG( "Failed to get atoms" );
 							continue;
 						}
 
@@ -149,7 +149,7 @@ namespace VTX
 
 							if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 							{
-								VTX_DEBUG( "Failed to get atoms" );
+								// VTX_DEBUG( "Failed to get atoms" );
 								continue;
 							}
 
@@ -176,7 +176,7 @@ namespace VTX
 			}
 
 			chrono.stop();
-			VTX_DEBUG( "SS created in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			VTX_DEBUG( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
 		void Ribbon::_addControlPoints( const Vec3f &					   p_CA0Pos,

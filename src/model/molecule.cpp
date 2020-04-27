@@ -64,8 +64,9 @@ namespace VTX
 			_fillBufferAtomVisibilities();
 			_fillBufferBonds();
 
-			// Compute and create seconndary structure.
-			Util::Molecule::computeSecondaryStructure( *this );
+			// Compute seconndary structure if not loaded.
+			if ( _secondaryStructureLoadedFromFile == false ) { Util::Molecule::computeSecondaryStructure( *this ); }
+			// Create secondary structure mesh.
 			_createSecondaryStructure();
 
 			// Set default representation.
@@ -423,6 +424,7 @@ namespace VTX
 			}
 
 			_ribbon = Generic::create<Ribbon, Molecule>( *this );
+			_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
 		}
 	} // namespace Model

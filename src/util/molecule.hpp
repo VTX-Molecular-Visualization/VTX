@@ -52,7 +52,7 @@ namespace VTX
 
 							if ( C0 == nullptr || N1 == nullptr || CA1 == nullptr || C1 == nullptr || N2 == nullptr )
 							{
-								VTX_DEBUG( "Failed to get atoms" );
+								// VTX_DEBUG( "Failed to get atoms" );
 								continue;
 							}
 
@@ -159,7 +159,7 @@ namespace VTX
 				}
 
 				chrono.stop();
-				VTX_DEBUG( "SS computed in " + std::to_string( chrono.elapsedTime() ) + "s" );
+				VTX_DEBUG( "Secondary structure computed in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 		} // namespace Molecule
 	}	  // namespace Util

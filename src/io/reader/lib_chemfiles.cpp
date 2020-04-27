@@ -145,7 +145,6 @@ namespace VTX
 					symbol.has_value() ? modelResidue.setSymbol( symbol.value() )
 									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 
-					/*
 					try
 					{
 						std::string secondaryStructure
@@ -168,11 +167,13 @@ namespace VTX
 						{
 							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
 						}
+
+						if ( p_molecule.secondaryStructureLoadedFromFile() == false )
+						{ p_molecule.setSecondaryStructureLoadedFromFile( true ); }
 					}
 					catch ( const std::exception & )
 					{
 					}
-					*/
 
 					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 					{

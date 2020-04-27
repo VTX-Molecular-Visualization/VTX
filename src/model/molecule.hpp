@@ -140,6 +140,11 @@ namespace VTX
 				_showIon = p_showIon;
 				_fillBufferAtomVisibilities();
 			}
+			inline bool secondaryStructureLoadedFromFile() const { return _secondaryStructureLoadedFromFile; }
+			inline void setSecondaryStructureLoadedFromFile( const bool p_secondaryStructureLoadedFromFile )
+			{
+				_secondaryStructureLoadedFromFile = p_secondaryStructureLoadedFromFile;
+			}
 
 			// At least one residue
 			inline bool hasTopology() const { return getResidueCount() > 1; }
@@ -210,6 +215,8 @@ namespace VTX
 
 			bool _showSolvent = true;
 			bool _showIon	  = true;
+
+			bool _secondaryStructureLoadedFromFile = false;
 
 			void _createBuffers();
 			void _initBufferAtomPositions() const;
