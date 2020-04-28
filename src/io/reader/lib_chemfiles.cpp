@@ -150,12 +150,24 @@ namespace VTX
 						std::string secondaryStructure
 							= residue.properties().get( "secondary_structure" ).value().as_string();
 						if ( secondaryStructure == "extended" )
-						{ modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND ); }
-						// else if ( secondaryStructure == "turn" )
-						//{
-						// modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::TURN );
-						//}
+						{
+							VTX_WARNING( "SHEET FOUND" );
+							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
+						}
+						else if ( secondaryStructure == "turn" )
+						{
+							VTX_WARNING( "TURN FOUND" );
+							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
+						}
 						else if ( secondaryStructure == "alpha helix" )
+						{
+							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+						}
+						else if ( secondaryStructure == "omega helix" )
+						{
+							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+						}
+						else if ( secondaryStructure == "gamma helix" )
 						{
 							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
 						}

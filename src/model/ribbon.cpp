@@ -432,5 +432,13 @@ namespace VTX
 			}
 		}
 
+		void Ribbon::_computeTriangleMeshArrow( Math::BSpline & p_splineCenter,
+												Math::BSpline & p_splineSide1,
+												Math::BSpline & p_splineSide2,
+												const Vec3f &	p_color,
+												uint &			p_vIndex )
+		{
+		}
+
 	} // namespace Model
 } // namespace VTX
