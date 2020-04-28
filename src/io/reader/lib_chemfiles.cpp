@@ -145,46 +145,47 @@ namespace VTX
 					symbol.has_value() ? modelResidue.setSymbol( symbol.value() )
 									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 
-					try
+					// PDB only.
+					// TODO: modify chemfiles to load handedness!
+					if ( p_path.getExtension() == "pdb" )
 					{
-						std::string secondaryStructure
-							= residue.properties().get( "secondary_structure" ).value().as_string();
-						if ( secondaryStructure == "extended" )
+						try
 						{
-							VTX_WARNING( "SHEET FOUND" );
-							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
-						}
-						else if ( secondaryStructure == "turn" )
-						{
-							VTX_WARNING( "TURN FOUND" );
-							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
-						}
-						else if ( secondaryStructure == "alpha helix" )
-						{
-							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
-						}
-						else if ( secondaryStructure == "omega helix" )
-						{
-							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
-						}
-						else if ( secondaryStructure == "gamma helix" )
-						{
-							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
-						}
-						else if ( secondaryStructure == "pi helix" )
-						{
-							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
-						}
-						else if ( secondaryStructure == "3-10 helix" )
-						{
-							modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
-						}
+							std::string secondaryStructure
+								= residue.properties().get( "secondary_structure" ).value().as_string();
+							if ( secondaryStructure == "extended" )
+							{ modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND ); }
+							else if ( secondaryStructure == "turn" )
+							{
+								VTX_WARNING( "TURN FOUND" );
+							}
+							else if ( secondaryStructure == "alpha helix" )
+							{
+								modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+							}
+							else if ( secondaryStructure == "omega helix" )
+							{
+								modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+							}
+							else if ( secondaryStructure == "gamma helix" )
+							{
+								modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+							}
+							else if ( secondaryStructure == "pi helix" )
+							{
+								modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+							}
+							else if ( secondaryStructure == "3-10 helix" )
+							{
+								modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+							}
 
-						if ( p_molecule.secondaryStructureLoadedFromFile() == false )
-						{ p_molecule.setSecondaryStructureLoadedFromFile( true ); }
-					}
-					catch ( const std::exception & )
-					{
+							if ( p_molecule.secondaryStructureLoadedFromFile() == false )
+							{ p_molecule.setSecondaryStructureLoadedFromFile( true ); }
+						}
+						catch ( const std::exception & )
+						{
+						}
 					}
 
 					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )

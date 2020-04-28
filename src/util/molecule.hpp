@@ -144,7 +144,6 @@ namespace VTX
 								for ( uint k = firstStrandIdx; k < residueIdx; k++ )
 								{
 									Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + k );
-									VTX_WARNING( "STRAND FOUND" );
 									residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
 									residue.setHandedness( Model::Residue::HANDEDNESS::RIGHT );
 								}
@@ -153,9 +152,9 @@ namespace VTX
 						}
 
 						// ????
-						Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + residueIdx );
-						residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::COIL );
-						residue.setHandedness( Model::Residue::HANDEDNESS::RIGHT );
+						// Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + residueIdx );
+						// residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::COIL );
+						// residue.setHandedness( Model::Residue::HANDEDNESS::RIGHT );
 					}
 				}
 
