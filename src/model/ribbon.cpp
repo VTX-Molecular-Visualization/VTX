@@ -169,7 +169,16 @@ namespace VTX
 						}
 					}
 
-					_computeTriangleMesh( splineCenter, splineSide1, splineSide2, chainColor, vIndex );
+					// Is arrow if previous == STRAND and current is last or != STRAND.
+					bool isArrow
+						= ( residueIdx > 0 )
+						  && ( p_molecule.getResidue( idxFirstResidue + residueIdx + 1 ).getSecondaryStructure()
+							   == Residue::SECONDARY_STRUCTURE::STRAND )
+						  && ( ( residueIdx == residueCount - 1 )
+							   || p_molecule.getResidue( idxFirstResidue + residueIdx ).getSecondaryStructure()
+									  != Residue::SECONDARY_STRUCTURE::STRAND );
+
+					_computeTriangleMesh( splineCenter, splineSide1, splineSide2, chainColor, isArrow, vIndex );
 
 					residueValidCount++;
 				}
@@ -238,10 +247,13 @@ namespace VTX
 										   Math::BSpline & p_splineSide1,
 										   Math::BSpline & p_splineSide2,
 										   const Vec3f &   p_color,
+										   const bool	   p_isArrow,
 										   uint &		   p_vIndex )
 		{
 			Vec3f pointCenter0, pointCenter1;
 			Vec3f pointSide10, pointSide11, pointSide20, pointSide21;
+			Vec3f vecLeft0, vecRight0, vecLeft1, vecRight1;
+			Vec3f forward, diagLeft0, diagRight0, diagLeft1, diagRight1;
 			Vec3f transversal, tangent, normal0, normal1;
 			float t = 0.f;
 
@@ -261,10 +273,15 @@ namespace VTX
 
 			Vec3f leftNormal0, leftNormal1, rightNormal0, rightNormal1;
 
-			// TODO: resize vectors at the begning.
+			float extraWidthFactor	 = p_isArrow ? ARROW_WIDTH : 0.f;
+			float pointOneAdjustment = p_isArrow ? 0.1f * ARROW_WIDTH : 0.f;
+			float pointOneWidthFactor;
+
 			for ( uint step = 1; step <= DETAIL_LEVEL; ++step )
 			{
 				t = float( step ) / float( DETAIL_LEVEL );
+
+				pointOneWidthFactor = extraWidthFactor - pointOneAdjustment;
 
 				// The geometry of the previous iteration is saved
 				pointSide10	 = pointSide11;
@@ -287,34 +304,39 @@ namespace VTX
 
 				// Left and right may be reversed, but either way,
 				// these normals point outwards from the ribbons, horizontally.
-				leftNormal0 = Util::Math::normalize( pointSide10 - pointCenter0 );
-				leftNormal1 = Util::Math::normalize( pointSide11 - pointCenter1 );
+				vecLeft0  = pointSide10 - pointCenter0;
+				vecLeft1  = pointSide11 - pointCenter1;
+				vecRight0 = pointSide20 - pointCenter0;
+				vecRight1 = pointSide21 - pointCenter1;
 
-				rightNormal0 = Util::Math::normalize( pointSide20 - pointCenter0 );
-				rightNormal1 = Util::Math::normalize( pointSide21 - pointCenter1 );
+				leftNormal0 = Util::Math::normalize( vecLeft0 );
+				leftNormal1 = Util::Math::normalize( vecLeft1 );
+
+				rightNormal0 = Util::Math::normalize( vecRight0 );
+				rightNormal1 = Util::Math::normalize( vecRight1 );
 
 				// The (Sid1Point0, Sid1Point1, CentPoint1) triangle is added.
-				_vertices.emplace_back( pointSide10 );
+				_vertices.emplace_back( pointSide10 + extraWidthFactor * leftNormal0 );
 				_normals.emplace_back( -normal0 );
 
-				_vertices.emplace_back( pointSide11 );
+				_vertices.emplace_back( pointSide11 + pointOneWidthFactor * leftNormal1 );
 				_normals.emplace_back( -normal1 );
 
 				_vertices.emplace_back( pointCenter1 );
 				_normals.emplace_back( -normal1 );
 
 				// and duplicated above
-				_vertices.emplace_back( pointSide10 + THICKNESS * normal0 );
+				_vertices.emplace_back( pointSide10 + THICKNESS * normal0 + extraWidthFactor * leftNormal0 );
 				_normals.emplace_back( normal0 );
 
-				_vertices.emplace_back( pointSide11 + THICKNESS * normal1 );
+				_vertices.emplace_back( pointSide11 + THICKNESS * normal1 + pointOneWidthFactor * leftNormal1 );
 				_normals.emplace_back( normal1 );
 
 				_vertices.emplace_back( pointCenter1 + THICKNESS * normal1 );
 				_normals.emplace_back( normal1 );
 
 				// The (Sid1Point0, CentPoint1, CentPoint0) triangle is added.
-				_vertices.emplace_back( pointSide10 );
+				_vertices.emplace_back( pointSide10 + extraWidthFactor * leftNormal0 );
 				_normals.emplace_back( -normal0 );
 
 				_vertices.emplace_back( pointCenter1 );
@@ -324,7 +346,7 @@ namespace VTX
 				_normals.emplace_back( -normal0 );
 
 				// and duplicated above
-				_vertices.emplace_back( pointSide10 + THICKNESS * normal0 );
+				_vertices.emplace_back( pointSide10 + THICKNESS * normal0 + extraWidthFactor * leftNormal0 );
 				_normals.emplace_back( normal0 );
 
 				_vertices.emplace_back( pointCenter1 + THICKNESS * normal1 );
@@ -334,27 +356,27 @@ namespace VTX
 				_normals.emplace_back( normal0 );
 
 				// (Sid2Point0, Sid2Point1, CentPoint1) triangle is added.
-				_vertices.emplace_back( pointSide20 );
+				_vertices.emplace_back( pointSide20 + extraWidthFactor * rightNormal0 );
 				_normals.emplace_back( -normal0 );
 
-				_vertices.emplace_back( pointSide21 );
+				_vertices.emplace_back( pointSide21 + pointOneWidthFactor * rightNormal1 );
 				_normals.emplace_back( -normal1 );
 
 				_vertices.emplace_back( pointCenter1 );
 				_normals.emplace_back( -normal1 );
 
 				// and duplicated above
-				_vertices.emplace_back( pointSide20 + THICKNESS * normal0 );
+				_vertices.emplace_back( pointSide20 + THICKNESS * normal0 + extraWidthFactor * rightNormal0 );
 				_normals.emplace_back( normal0 );
 
-				_vertices.emplace_back( pointSide21 + THICKNESS * normal1 );
+				_vertices.emplace_back( pointSide21 + THICKNESS * normal1 + pointOneWidthFactor * rightNormal1 );
 				_normals.emplace_back( normal1 );
 
 				_vertices.emplace_back( pointCenter1 + THICKNESS * normal1 );
 				_normals.emplace_back( normal1 );
 
 				// (Sid2Point0, CentPoint1, CentPoint0) triangle is added.
-				_vertices.emplace_back( pointSide20 );
+				_vertices.emplace_back( pointSide20 + extraWidthFactor * rightNormal0 );
 				_normals.emplace_back( -normal0 );
 
 				_vertices.emplace_back( pointCenter1 );
@@ -364,7 +386,7 @@ namespace VTX
 				_normals.emplace_back( -normal0 );
 
 				// and duplicated above
-				_vertices.emplace_back( pointSide20 + THICKNESS * normal0 );
+				_vertices.emplace_back( pointSide20 + THICKNESS * normal0 + extraWidthFactor * rightNormal0 );
 				_normals.emplace_back( normal0 );
 
 				_vertices.emplace_back( pointCenter1 + THICKNESS * normal1 );
@@ -375,30 +397,50 @@ namespace VTX
 
 				// Duplicating the side vertices and giving them the proper normals
 				// for the sides of the thick ribbons
-				_vertices.emplace_back( pointSide10 );
-				_normals.emplace_back( leftNormal0 );
-
-				_vertices.emplace_back( pointSide11 );
-				_normals.emplace_back( leftNormal1 );
-
-				_vertices.emplace_back( pointSide20 );
-				_normals.emplace_back( rightNormal0 );
-
-				_vertices.emplace_back( pointSide21 );
-				_normals.emplace_back( rightNormal1 );
-
+				_vertices.emplace_back( pointSide10 + extraWidthFactor * leftNormal0 );
+				_vertices.emplace_back( pointSide11 + pointOneWidthFactor * leftNormal1 );
+				_vertices.emplace_back( pointSide20 + extraWidthFactor * rightNormal0 );
+				_vertices.emplace_back( pointSide21 + pointOneWidthFactor * rightNormal1 );
 				// and duplicating them again, this time raising them as well
-				_vertices.emplace_back( pointSide10 + THICKNESS * normal0 );
-				_normals.emplace_back( leftNormal0 );
+				_vertices.emplace_back( pointSide10 + THICKNESS * normal0 + extraWidthFactor * leftNormal0 );
+				_vertices.emplace_back( pointSide11 + THICKNESS * normal1 + pointOneWidthFactor * leftNormal1 );
+				_vertices.emplace_back( pointSide20 + THICKNESS * normal0 + extraWidthFactor * rightNormal0 );
+				_vertices.emplace_back( pointSide21 + THICKNESS * normal1 + pointOneWidthFactor * rightNormal1 );
 
-				_vertices.emplace_back( pointSide11 + THICKNESS * normal1 );
-				_normals.emplace_back( leftNormal1 );
+				if ( p_isArrow )
+				{
+					forward				= pointCenter1 - pointCenter0;
+					float forwardLength = Util::Math ::length( forward );
 
-				_vertices.emplace_back( pointSide20 + THICKNESS * normal0 );
-				_normals.emplace_back( rightNormal0 );
+					diagLeft0  = Util::Math::normalize( forwardLength * forward
+														+ ( Util::Math ::length( vecLeft0 ) + ARROW_WIDTH ) * vecLeft0 );
+					diagLeft1  = Util::Math::normalize( forwardLength * forward
+														+ ( Util::Math ::length( vecLeft1 ) + ARROW_WIDTH ) * vecLeft1 );
+					diagRight0 = Util::Math::normalize(
+						forwardLength * forward + ( Util::Math ::length( vecRight0 ) + ARROW_WIDTH ) * vecRight0 );
+					diagRight1 = Util::Math::normalize(
+						forwardLength * forward + ( Util::Math ::length( vecRight1 ) + ARROW_WIDTH ) * vecRight1 );
 
-				_vertices.emplace_back( pointSide21 + THICKNESS * normal1 );
-				_normals.emplace_back( rightNormal1 );
+					_normals.emplace_back( diagLeft0 );
+					_normals.emplace_back( diagLeft1 );
+					_normals.emplace_back( diagRight0 );
+					_normals.emplace_back( diagRight1 );
+					_normals.emplace_back( diagLeft0 );
+					_normals.emplace_back( diagLeft1 );
+					_normals.emplace_back( diagRight0 );
+					_normals.emplace_back( diagRight1 );
+				}
+				else
+				{
+					_normals.emplace_back( leftNormal0 );
+					_normals.emplace_back( leftNormal1 );
+					_normals.emplace_back( rightNormal0 );
+					_normals.emplace_back( rightNormal1 );
+					_normals.emplace_back( leftNormal0 );
+					_normals.emplace_back( leftNormal1 );
+					_normals.emplace_back( rightNormal0 );
+					_normals.emplace_back( rightNormal1 );
+				}
 
 				// Colors.
 				for ( uint t = 0; t < 32; ++t )
@@ -428,16 +470,10 @@ namespace VTX
 				_indices.emplace_back( p_vIndex + 30 );
 				_indices.emplace_back( p_vIndex + 31 );
 
+				extraWidthFactor = extraWidthFactor - pointOneAdjustment;
+
 				p_vIndex += 32;
 			}
-		}
-
-		void Ribbon::_computeTriangleMeshArrow( Math::BSpline & p_splineCenter,
-												Math::BSpline & p_splineSide1,
-												Math::BSpline & p_splineSide2,
-												const Vec3f &	p_color,
-												uint &			p_vIndex )
-		{
 		}
 
 	} // namespace Model

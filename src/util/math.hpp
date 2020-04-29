@@ -11,6 +11,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/compatibility.hpp>
 #include <glm/gtx/integer.hpp>
+#include <glm/gtx/norm.hpp>
 #include <glm/gtx/spline.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
@@ -338,7 +339,7 @@ namespace VTX
 					u = u1 / std::sqrt( u );
 					v = v1 / std::sqrt( v );
 
-					if ( std::abs( u ) > 0.01f || std::abs( v ) > 0.01f ) { a =  std::atan2( v, u ); }
+					if ( std::abs( u ) > 0.01f || std::abs( v ) > 0.01f ) { a = std::atan2( v, u ); }
 					else
 					{
 						a = TWO_PIf;

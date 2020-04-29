@@ -78,9 +78,6 @@ namespace VTX
 
 					for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 					{
-						// VTX_DEBUG( std::to_string( phi[ residueIdx ] ) + " / " + std::to_string( psi[ residueIdx ] )
-						// );
-
 						// Right-handed helix
 						if ( ( Util::Math::distance( Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
 													 Vec2f( -PIf / 3.f, -PIf / 4.f ) )
@@ -156,6 +153,26 @@ namespace VTX
 						// residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::COIL );
 						// residue.setHandedness( Model::Residue::HANDEDNESS::RIGHT );
 					}
+
+					// ????
+					/*
+					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
+					{
+						Model::Residue & residue0 = p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
+						Model::Residue & residue  = p_molecule.getResidue( idxFirstResidue + residueIdx );
+						Model::Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
+
+						if ( ( residue0.getSecondaryStructure() == Model::Residue::SECONDARY_STRUCTURE::HELIX )
+							 && ( residue2.getSecondaryStructure() == Model::Residue::SECONDARY_STRUCTURE::HELIX ) )
+						{ residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX ); }
+						else if ( ( residue0.getSecondaryStructure() == Model::Residue::SECONDARY_STRUCTURE::STRAND )
+								  && ( residue2.getSecondaryStructure()
+									   == Model::Residue::SECONDARY_STRUCTURE::STRAND ) )
+						{
+							residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
+						}
+					}
+					*/
 				}
 
 				chrono.stop();

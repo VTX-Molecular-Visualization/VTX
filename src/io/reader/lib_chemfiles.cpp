@@ -157,7 +157,7 @@ namespace VTX
 							{ modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND ); }
 							else if ( secondaryStructure == "turn" )
 							{
-								VTX_WARNING( "TURN FOUND" );
+								modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::COIL );
 							}
 							else if ( secondaryStructure == "alpha helix" )
 							{
