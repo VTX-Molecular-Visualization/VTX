@@ -1,31 +1,47 @@
-# Secondary structure
+# Secondary structure notes
 
-## Helix identification in PDB
+## PDB format
 
-switch (helix_type) {
-  case 1: // Treat right and left handed helixes the same.
-  case 6:
-  	"alpha helix";
-    	break;
-  case 2:
-  case 7:
-   	"omega helix";
-    	break;
-  case 3:
-  	"pi helix";
-    	break;
-  case 4:
-  case 8:
-   	"gamma helix";
-    	break;
-  case 5:
-   	"3-10 helix";
-    	break;
-  default:
-    break;
-  }
+### Data types
 
+3 data types possible, here is the mapping from PDB type to SS type:
 
+- HELIX -> HELIX
 
-If type > 5, helix is right-handed.
+- SHEET -> STRAND
 
+- TURN -> COIL
+
+### HELIX idendification code
+
+- 1 = left alpha
+
+- 2 = left omega
+
+- 3 = left pi
+
+- 4 = left gamma
+
+- 5 = 3-10
+
+- 6 = right alpha
+
+- 7 = right omega
+
+- 8 = right gamma 
+
+## Stride algorithm
+
+### From UnityMol
+
+On récupère les atomes :
+
+- C du résidu précédent (C0)
+- N, CA, C du résident courant (N1, CA1, C1)
+- N du résidu suivant (N2)
+
+On calcule l'angle dièdre entre C0 N1 CA1 C1.
+
+On calcule l'angle dièdre entre N1 CA1 C1 N2.
+
+Pour le premier résidu, l'angle est défini à 90°.

@@ -1,0 +1,229 @@
+private void GenerateFlatRibbon(List<Vector3> vertices, List<Vector3> normals, List<int> triangles)
+	{
+		Vector3 CentPoint0, CentPoint1, Sid1Point0, Sid1Point1, Sid2Point0, Sid2Point1,
+				Transversal, Tangent, Normal0, Normal1;
+		Vector3 CP0, CP1, S1P0, S1P1, S2P0, S2P1, Norm0, Norm1;
+		int ui;
+		float u = 0f; // needs to be assigned
+		CentPoint0 = CentPoint1 = Sid1Point0 = Sid1Point1 = Sid2Point0 = Sid2Point1 = Transversal = Tangent = Normal0 = Normal1 = Vector3.zero;
+		CP0 = CP1 = S1P0 = S1P1 = S2P0 = S2P1 = Norm0 = Norm1 = Vector3.zero;
+		// The initial geometry is generated
+		splineSide1.Feval(0f, out Sid1Point1);
+		splineCenter.Feval(0f, out CentPoint1);
+		splineSide2.Feval(0f, out Sid2Point1);
+
+		// The tangents at the three previous points are the same
+		splineSide2.Deval(0f, out Tangent);
+
+		// Vector transversal to the ribbon
+		Transversal = Sid1Point1 - Sid2Point1;
+		Normal1 = Vector3.Cross(Transversal, Tangent);
+		Normal1.Normalize();
+
+		Vector3 leftNormal0, leftNormal1, rightNormal0, rightNormal1;
+		for (ui = 1; ui <= 10; ui++)
+		{
+			if (ui % uspacing == 0)
+			{
+				u = 0.1f * (float)ui;
+
+				// The geometry of the previous iteration is saved
+				Sid1Point0 = Sid1Point1;
+				CentPoint0 = CentPoint1;
+				Sid2Point0 = Sid2Point1;
+				Normal0 = Normal1;
+
+				// The new geometry is generated
+				splineSide1.Feval(u, out Sid1Point1);
+				splineCenter.Feval(u, out CentPoint1);
+				splineSide2.Feval(u, out Sid2Point1);
+
+				// The tangents at the three previous points are the same
+				splineSide2.Deval(u, out Tangent);
+				// Vector transversal to the ribbon
+				Transversal = Sid1Point1 - Sid2Point1;
+				Normal1 = Vector3.Cross(Transversal, Tangent);
+				Normal1.Normalize();
+
+				// The x coordinates must be flipped, but the original vectors can't be
+				// modified because they will be reused in the next iteration.
+				S1P0 = new Vector3(-Sid1Point0.x, Sid1Point0.y, Sid1Point0.z);
+				S1P1 = new Vector3(-Sid1Point1.x, Sid1Point1.y, Sid1Point1.z);
+
+				S2P0 = new Vector3(-Sid2Point0.x, Sid2Point0.y, Sid2Point0.z);
+				S2P1 = new Vector3(-Sid2Point1.x, Sid2Point1.y, Sid2Point1.z);
+
+				CP0 = new Vector3(-CentPoint0.x, CentPoint0.y, CentPoint0.z);
+				CP1 = new Vector3(-CentPoint1.x, CentPoint1.y, CentPoint1.z);
+
+				Norm0 = new Vector3(-Normal0.x, Normal0.y, Normal0.z);
+				Norm1 = new Vector3(-Normal1.x, Normal1.y, Normal1.z);
+
+				// Left and right may be reversed, but either way,
+				// these normals point outwards from the ribbons, horizontally.
+				leftNormal0 = (S1P0 - CP0).normalized;
+				leftNormal1 = (S1P1 - CP1).normalized;
+
+				rightNormal0 = (S2P0 - CP0).normalized;
+				rightNormal1 = (S2P1 - CP1).normalized;
+
+				// The (Sid1Point0, Sid1Point1, CentPoint1) triangle is added.
+				vertices.Add(S1P0);
+				normals.Add(Norm0);
+
+				vertices.Add(S1P1);
+				normals.Add(Norm1);
+
+				vertices.Add(CP1);
+				normals.Add(Norm1);
+
+				triangles.Add(vIndex);
+				triangles.Add(vIndex + 1);
+				triangles.Add(vIndex + 2);
+
+				// and duplicated above
+				vertices.Add(S1P0 + THICKNESS * Norm0);
+				normals.Add(-Norm0);
+
+				vertices.Add(S1P1 + THICKNESS * Norm1);
+				normals.Add(-Norm1);
+
+				vertices.Add(CP1 + THICKNESS * Norm1);
+				normals.Add(-Norm1);
+
+				triangles.Add(vIndex + 3);
+				triangles.Add(vIndex + 4);
+				triangles.Add(vIndex + 5);
+
+				// The (Sid1Point0, CentPoint1, CentPoint0) triangle is added.
+				vertices.Add(S1P0);
+				normals.Add(Norm0);
+
+				vertices.Add(CP1);
+				normals.Add(Norm1);
+
+				vertices.Add(CP0);
+				normals.Add(Norm0);
+
+				triangles.Add(vIndex + 6);
+				triangles.Add(vIndex + 7);
+				triangles.Add(vIndex + 8);
+
+				// and duplicated above
+				vertices.Add(S1P0 + THICKNESS * Norm0);
+				normals.Add(-Norm0);
+
+				vertices.Add(CP1 + THICKNESS * Norm1);
+				normals.Add(-Norm1);
+
+				vertices.Add(CP0 + THICKNESS * Norm0);
+				normals.Add(-Norm0);
+
+				triangles.Add(vIndex + 9);
+				triangles.Add(vIndex + 10);
+				triangles.Add(vIndex + 11);
+
+				// (Sid2Point0, Sid2Point1, CentPoint1) triangle is added.
+				vertices.Add(S2P0);
+				normals.Add(Norm0);
+
+				vertices.Add(S2P1);
+				normals.Add(Norm1);
+
+				vertices.Add(CP1);
+				normals.Add(Norm1);
+
+				triangles.Add(vIndex + 12);
+				triangles.Add(vIndex + 13);
+				triangles.Add(vIndex + 14);
+
+				// and duplicated above
+				vertices.Add(S2P0 + THICKNESS * Norm0);
+				normals.Add(-Norm0);
+
+				vertices.Add(S2P1 + THICKNESS * Norm1);
+				normals.Add(-Norm1);
+
+				vertices.Add(CP1 + THICKNESS * Norm1);
+				normals.Add(-Norm1);
+
+				triangles.Add(vIndex + 15);
+				triangles.Add(vIndex + 16);
+				triangles.Add(vIndex + 17);
+
+				// (Sid2Point0, CentPoint1, CentPoint0) triangle is added.
+				vertices.Add(S2P0);
+				normals.Add(Norm0);
+
+				vertices.Add(CP1);
+				normals.Add(Norm1);
+
+				vertices.Add(CP0);
+				normals.Add(Norm0);
+
+				triangles.Add(vIndex + 18);
+				triangles.Add(vIndex + 19);
+				triangles.Add(vIndex + 20);
+
+				// and duplicated above
+				vertices.Add(S2P0 + THICKNESS * Norm0);
+				normals.Add(-Norm0);
+
+				vertices.Add(CP1 + THICKNESS * Norm1);
+				normals.Add(-Norm1);
+
+				vertices.Add(CP0 + THICKNESS * Norm0);
+				normals.Add(-Norm0);
+
+				triangles.Add(vIndex + 21);
+				triangles.Add(vIndex + 22);
+				triangles.Add(vIndex + 23);
+
+				// Duplicating the side vertices and giving them the proper normals
+				// for the sides of the thick ribbons
+				vertices.Add(S1P0);
+				normals.Add(leftNormal0);
+
+				vertices.Add(S1P1);
+				normals.Add(leftNormal1);
+
+				vertices.Add(S2P0);
+				normals.Add(rightNormal0);
+
+				vertices.Add(S2P1);
+				normals.Add(rightNormal1);
+
+				// and duplicating them again, this time raising them as well
+				vertices.Add(S1P0 + THICKNESS * Norm0);
+				normals.Add(leftNormal0);
+
+				vertices.Add(S1P1 + THICKNESS * Norm1);
+				normals.Add(leftNormal1);
+
+				vertices.Add(S2P0 + THICKNESS * Norm0);
+				normals.Add(rightNormal0);
+
+				vertices.Add(S2P1 + THICKNESS * Norm1);
+				normals.Add(rightNormal1);
+
+				// Side triangles
+				triangles.Add(vIndex + 24);
+				triangles.Add(vIndex + 25);
+				triangles.Add(vIndex + 28);
+
+				triangles.Add(vIndex + 25);
+				triangles.Add(vIndex + 28);
+				triangles.Add(vIndex + 29);
+
+				triangles.Add(vIndex + 26);
+				triangles.Add(vIndex + 27);
+				triangles.Add(vIndex + 30);
+
+				triangles.Add(vIndex + 27);
+				triangles.Add(vIndex + 30);
+				triangles.Add(vIndex + 31);
+
+				vIndex += 32;
+			}
+		}
+	} // End of GenerateFlatRibbons
