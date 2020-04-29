@@ -42,13 +42,13 @@ namespace VTX
 						else
 						{
 							const Model::Residue & residue0 = p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
-							const Model::Residue & residue	= p_molecule.getResidue( idxFirstResidue + residueIdx );
+							const Model::Residue & residue1	= p_molecule.getResidue( idxFirstResidue + residueIdx );
 							const Model::Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
 
 							const Model::Atom * C0	= residue0.findFirstAtomByName( "C" );
-							const Model::Atom * N1	= residue.findFirstAtomByName( "N" );
-							const Model::Atom * CA1 = residue.findFirstAtomByName( "CA" );
-							const Model::Atom * C1	= residue.findFirstAtomByName( "C" );
+							const Model::Atom * N1	= residue1.findFirstAtomByName( "N" );
+							const Model::Atom * CA1 = residue1.findFirstAtomByName( "CA" );
+							const Model::Atom * C1	= residue1.findFirstAtomByName( "C" );
 							const Model::Atom * N2	= residue2.findFirstAtomByName( "N" );
 
 							if ( C0 == nullptr || N1 == nullptr || CA1 == nullptr || C1 == nullptr || N2 == nullptr )

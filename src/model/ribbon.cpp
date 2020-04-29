@@ -37,8 +37,8 @@ namespace VTX
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
 					// VTX_DEBUG( "Building secondary structure... residue " + std::to_string( residueIdx ) );
-					const Residue &					   residue = p_molecule.getResidue( idxFirstResidue + residueIdx );
-					const Residue::SECONDARY_STRUCTURE ss	   = residue.getSecondaryStructure();
+					const Residue &					   residue1 = p_molecule.getResidue( idxFirstResidue + residueIdx );
+					const Residue::SECONDARY_STRUCTURE ss	   = residue1.getSecondaryStructure();
 
 					// First residue
 					if ( residueValidCount == 0 )
@@ -47,8 +47,8 @@ namespace VTX
 
 						const Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
 
-						const Model::Atom * CA1 = residue.findFirstAtomByName( "CA" );
-						const Model::Atom * OX1 = residue.findFirstAtomByName( "O" );
+						const Model::Atom * CA1 = residue1.findFirstAtomByName( "CA" );
+						const Model::Atom * OX1 = residue1.findFirstAtomByName( "O" );
 						const Model::Atom * CA2 = residue2.findFirstAtomByName( "CA" );
 
 						if ( CA1 == nullptr || OX1 == nullptr || CA2 == nullptr )
@@ -64,8 +64,8 @@ namespace VTX
 						_addControlPoints( positionCA1,
 										   positionOX1,
 										   positionCA2,
-										   residue.getSecondaryStructure(),
-										   residue.getHandedness(),
+										   residue1.getSecondaryStructure(),
+										   residue1.getHandedness(),
 										   flipTestV,
 										   splineCenter,
 										   splineSide1,
@@ -92,8 +92,8 @@ namespace VTX
 						_addControlPoints( positionCA2,
 										   positionOX2,
 										   positionCA3,
-										   residue.getSecondaryStructure(),
-										   residue.getHandedness(),
+										   residue1.getSecondaryStructure(),
+										   residue1.getHandedness(),
 										   flipTestV,
 										   splineCenter,
 										   splineSide1,
@@ -160,8 +160,8 @@ namespace VTX
 							_addControlPoints( positionCA2,
 											   positionOX2,
 											   positionCA3,
-											   residue.getSecondaryStructure(),
-											   residue.getHandedness(),
+											   residue1.getSecondaryStructure(),
+											   residue1.getHandedness(),
 											   flipTestV,
 											   splineCenter,
 											   splineSide1,
