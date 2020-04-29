@@ -11,7 +11,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/compatibility.hpp>
 #include <glm/gtx/integer.hpp>
-#include <glm/gtx/norm.hpp>
 #include <glm/gtx/spline.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
@@ -83,25 +82,17 @@ namespace VTX
 			template<typename T>
 			inline void normalizeSelf( T & p_value )
 			{
-#ifdef _DEBUG
-				T value = glm::normalize( p_value );
-				if ( std::isnan( value.x ) ) { throw Exception::MathException( "Normalized value NaN" ); }
-				p_value = value;
-#else
+				assert( std::isnan( glm::normalize( p_value ).x ) );
 				p_value = glm::normalize( p_value );
-#endif
+
 			}
 
 			template<typename T>
 			inline T normalize( const T & p_value )
 			{
-#ifdef _DEBUG
-				T value = glm::normalize( p_value );
-				if ( std::isnan( value.x ) ) { throw Exception::MathException( "Normalized value NaN" ); }
-				return value;
-#else
+				assert( std::isnan( glm::normalize( p_value ).x ) );
 				return glm::normalize( p_value );
-#endif
+
 			}
 
 			template<int L, typename T>
