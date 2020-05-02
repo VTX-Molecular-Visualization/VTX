@@ -171,7 +171,7 @@ namespace VTX
 
 					// Is arrow if previous == STRAND and current is last or != STRAND.
 					bool isArrow
-						= ( residueIdx > 0 )
+						= ARROW && ( residueIdx > 0 )
 						  && ( p_molecule.getResidue( idxFirstResidue + residueIdx + 1 ).getSecondaryStructure()
 							   == Residue::SECONDARY_STRUCTURE::STRAND )
 						  && ( ( residueIdx == residueCount - 1 )
@@ -322,83 +322,83 @@ namespace VTX
 
 				// The (Sid1Point0, Sid1Point1, CentPoint1) triangle is added.
 				_vertices.emplace_back( pointSide10 + extraWidthFactor * leftNormal0 ); // 0
-				_normals.emplace_back( -normal0 );
+				_normals.emplace_back( -normal0 );										// 0
 
 				_vertices.emplace_back( pointSide11 + pointOneWidthFactor * leftNormal1 ); // 1
-				_normals.emplace_back( -normal1 );
+				_normals.emplace_back( -normal1 );										   // 1
 
 				_vertices.emplace_back( pointCenter1 ); // 2
-				_normals.emplace_back( -normal1 );
+				_normals.emplace_back( -normal1 );		// 2
 
 				// and duplicated above
 				_vertices.emplace_back( pointSide10 + THICKNESS * normal0 + extraWidthFactor * leftNormal0 ); // 3
-				_normals.emplace_back( normal0 );
+				_normals.emplace_back( normal0 );															  // 3
 
 				_vertices.emplace_back( pointSide11 + THICKNESS * normal1 + pointOneWidthFactor * leftNormal1 ); // 4
-				_normals.emplace_back( normal1 );
+				_normals.emplace_back( normal1 );																 // 4
 
 				_vertices.emplace_back( pointCenter1 + THICKNESS * normal1 ); // 5
-				_normals.emplace_back( normal1 );
+				_normals.emplace_back( normal1 );							  // 5
 
 				// The (Sid1Point0, CentPoint1, CentPoint0) triangle is added.
 				_vertices.emplace_back( pointSide10 + extraWidthFactor * leftNormal0 ); // 6
-				_normals.emplace_back( -normal0 );
+				_normals.emplace_back( -normal0 );										// 6
 
 				_vertices.emplace_back( pointCenter1 ); // 7
-				_normals.emplace_back( -normal1 );
+				_normals.emplace_back( -normal1 );		// 7
 
 				_vertices.emplace_back( pointCenter0 ); // 8
-				_normals.emplace_back( -normal0 );
+				_normals.emplace_back( -normal0 );		// 8
 
 				// and duplicated above
 				_vertices.emplace_back( pointSide10 + THICKNESS * normal0 + extraWidthFactor * leftNormal0 ); // 9
-				_normals.emplace_back( normal0 );
+				_normals.emplace_back( normal0 );															  // 9
 
 				_vertices.emplace_back( pointCenter1 + THICKNESS * normal1 ); // 10
-				_normals.emplace_back( normal1 );
+				_normals.emplace_back( normal1 );							  // 10
 
 				_vertices.emplace_back( pointCenter0 + THICKNESS * normal0 ); // 11
-				_normals.emplace_back( normal0 );
+				_normals.emplace_back( normal0 );							  // 11
 
 				// (Sid2Point0, Sid2Point1, CentPoint1) triangle is added.
 				_vertices.emplace_back( pointSide20 + extraWidthFactor * rightNormal0 ); // 12
-				_normals.emplace_back( -normal0 );
+				_normals.emplace_back( -normal0 );										 // 12
 
 				_vertices.emplace_back( pointSide21 + pointOneWidthFactor * rightNormal1 ); // 13
-				_normals.emplace_back( -normal1 );
+				_normals.emplace_back( -normal1 );											// 13
 
 				_vertices.emplace_back( pointCenter1 ); // 14
-				_normals.emplace_back( -normal1 );
+				_normals.emplace_back( -normal1 );		// 14
 
 				// and duplicated above
 				_vertices.emplace_back( pointSide20 + THICKNESS * normal0 + extraWidthFactor * rightNormal0 ); // 15
-				_normals.emplace_back( normal0 );
+				_normals.emplace_back( normal0 );															   // 15
 
 				_vertices.emplace_back( pointSide21 + THICKNESS * normal1 + pointOneWidthFactor * rightNormal1 ); // 16
-				_normals.emplace_back( normal1 );
+				_normals.emplace_back( normal1 );																  // 16
 
 				_vertices.emplace_back( pointCenter1 + THICKNESS * normal1 ); // 17
-				_normals.emplace_back( normal1 );
+				_normals.emplace_back( normal1 );							  // 17
 
 				// (Sid2Point0, CentPoint1, CentPoint0) triangle is added.
 				_vertices.emplace_back( pointSide20 + extraWidthFactor * rightNormal0 ); // 18
-				_normals.emplace_back( -normal0 );
+				_normals.emplace_back( -normal0 );										 // 18
 
 				_vertices.emplace_back( pointCenter1 ); // 19
-				_normals.emplace_back( -normal1 );
+				_normals.emplace_back( -normal1 );		// 19
 
 				_vertices.emplace_back( pointCenter0 ); // 20
-				_normals.emplace_back( -normal0 );
+				_normals.emplace_back( -normal0 );		// 20
 
 				// and duplicated above
 				_vertices.emplace_back( pointSide20 + THICKNESS * normal0 + extraWidthFactor * rightNormal0 ); // 21
-				_normals.emplace_back( normal0 );
+				_normals.emplace_back( normal0 );															   // 21
 
 				_vertices.emplace_back( pointCenter1 + THICKNESS * normal1 ); // 22
-				_normals.emplace_back( normal1 );
+				_normals.emplace_back( normal1 );							  // 22
 
 				_vertices.emplace_back( pointCenter0 + THICKNESS * normal0 ); // 23
-				_normals.emplace_back( normal0 );
+				_normals.emplace_back( normal0 );							  // 23
 
 				// Duplicating the side vertices and giving them the proper normals
 				// for the sides of the thick ribbons
@@ -427,25 +427,25 @@ namespace VTX
 					diagRight1 = Util::Math::normalize(
 						forwardLength * forward + ( Util::Math ::length( vecRight1 ) + ARROW_WIDTH ) * vecRight1 );
 
-					_normals.emplace_back( diagLeft0 );
-					_normals.emplace_back( diagLeft1 );
-					_normals.emplace_back( diagRight0 );
-					_normals.emplace_back( diagRight1 );
-					_normals.emplace_back( diagLeft0 );
-					_normals.emplace_back( diagLeft1 );
-					_normals.emplace_back( diagRight0 );
-					_normals.emplace_back( diagRight1 );
+					_normals.emplace_back( diagLeft0 );	 // 24
+					_normals.emplace_back( diagLeft1 );	 // 25
+					_normals.emplace_back( diagRight0 ); // 26
+					_normals.emplace_back( diagRight1 ); // 27
+					_normals.emplace_back( diagLeft0 );	 // 28
+					_normals.emplace_back( diagLeft1 );	 // 29
+					_normals.emplace_back( diagRight0 ); // 30
+					_normals.emplace_back( diagRight1 ); // 31
 				}
 				else
 				{
-					_normals.emplace_back( leftNormal0 );
-					_normals.emplace_back( leftNormal1 );
-					_normals.emplace_back( rightNormal0 );
-					_normals.emplace_back( rightNormal1 );
-					_normals.emplace_back( leftNormal0 );
-					_normals.emplace_back( leftNormal1 );
-					_normals.emplace_back( rightNormal0 );
-					_normals.emplace_back( rightNormal1 );
+					_normals.emplace_back( leftNormal0 );  // 24
+					_normals.emplace_back( leftNormal1 );  // 25
+					_normals.emplace_back( rightNormal0 ); // 26
+					_normals.emplace_back( rightNormal1 ); // 27
+					_normals.emplace_back( leftNormal0 );  // 28
+					_normals.emplace_back( leftNormal1 );  // 29
+					_normals.emplace_back( rightNormal0 ); // 30
+					_normals.emplace_back( rightNormal1 ); // 31
 				}
 
 				// Colors.
