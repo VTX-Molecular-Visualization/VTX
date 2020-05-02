@@ -32,20 +32,44 @@ namespace VTX
 							const float	   p_tMax,
 							Intersection & p_intersection ) const override
 			{
-				const Vec3f & o		= p_ray.getOrigin();
-				const Vec3f & d		= p_ray.getDirection();
-				const Vec3f	  oc	= o - _center;
-				const float	  b		= Util::Math::dot( oc, d );
-				const float	  c		= Util::Math::dot( oc, oc ) - _radius * _radius;
-				const float	  delta = b * b - c;
+				const Vec3f & o = p_ray.getOrigin();
+				const Vec3f & d = p_ray.getDirection();
+
+#define HEARN_BAKER
+#ifdef HEARN_BAKER
+				const Vec3f oc	  = o - _center;
+				const float b	  = Util::Math::dot( oc, d );
+				const float r2	  = _radius * _radius;
+				const Vec3f ocd	  = oc - b * d;
+				const float delta = r2 - Util::Math::dot( ocd, ocd );
+
+				if ( delta < 0.f ) return false;
+
+				const float sqrtDelta = sqrtf( delta );
+
+				const float q = ( b > 0.f ) ? -b - sqrtDelta : -b + sqrtDelta;
+
+				const float c = Util::Math::dot( oc, oc ) - r2;
+
+				float t = c / q;
+				if ( t > p_tMax ) { return false; } // first intersection too far
+				if ( t < p_tMin ) { t = q; }		// first intersection too near, check second one
+				if ( t < p_tMin || t > p_tMax ) { return false; }
+#else
+				const Vec3f oc	  = o - _center;
+				const float b	  = Util::Math::dot( oc, d );
+				const float c	  = Util::Math::dot( oc, oc ) - _radius * _radius;
+				const float delta = b * b - c;
 
 				if ( delta < 0.f ) return false;
 
 				const float sqrtDelta = sqrtf( delta );
 
 				float t = -b - sqrtDelta;
+				if ( t > p_tMax ) { return false; }		  // first intersection too far
+				if ( t < p_tMin ) { t = -b + sqrtDelta; } // first intersection too near, check second one
 				if ( t < p_tMin || t > p_tMax ) { return false; }
-
+#endif
 				p_intersection._point	  = p_ray.getPointAtT( t );
 				const Vec3f normal		  = ( p_intersection._point - _center ) / _radius;
 				p_intersection._normal	  = Util::Math::faceForward( normal, d );
