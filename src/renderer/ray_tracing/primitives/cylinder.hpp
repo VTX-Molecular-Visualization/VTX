@@ -51,8 +51,6 @@ namespace VTX
 				if ( h < 0.f ) { return false; }
 
 				float t = ( -b - sqrt( h ) ) / a;
-				if ( t > p_tMax ) { return false; }				  // first intersection too far
-				if ( t < p_tMin ) { t = ( -b + sqrt( h ) ) / a; } // first intersection too near, check second one
 				if ( t < p_tMin || t > p_tMax ) { return false; }
 
 				const float y = d2 + t * d1;

@@ -16,7 +16,7 @@ namespace VTX
 			{
 				// shade primitive
 				// point light on camera
-				LightSample ls( -p_ray.getDirection(), Util::Math::length( p_ray.getDirection() ), VEC3F_XYZ, 1.f );
+				LightSample ls( -p_ray.getDirection(), 1.f, VEC3F_XYZ, 1.f );
 
 				const float cosTheta = Util::Math::dot( intersection._normal, ls._dir );
 

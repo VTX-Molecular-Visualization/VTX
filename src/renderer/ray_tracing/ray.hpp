@@ -32,19 +32,17 @@ namespace VTX
 			// In: Haines E., Akenine-Möller T. (eds) Ray Tracing Gems. Apress, Berkeley, CA
 			void offset( const Vec3f p_normal )
 			{
-				int of_i[ 3 ] = { int( intScale() * p_normal.x ),
-								  int( intScale() * p_normal.y ),
-								  int( intScale() * p_normal.z ) };
-				int ip_i[ 3 ]
-					= { *reinterpret_cast<const int *>( &_origin.x ) + ( ( _origin.x < 0 ) ? -of_i[ 0 ] : of_i[ 0 ] ),
-						*reinterpret_cast<const int *>( &_origin.y ) + ( ( _origin.y < 0 ) ? -of_i[ 1 ] : of_i[ 1 ] ),
-						*reinterpret_cast<const int *>( &_origin.z ) + ( ( _origin.z < 0 ) ? -of_i[ 2 ] : of_i[ 2 ] ) };
-				float p_i[ 3 ] = { *reinterpret_cast<const float *>( &ip_i[ 0 ] ),
-								   *reinterpret_cast<const float *>( &ip_i[ 1 ] ),
-								   *reinterpret_cast<const float *>( &ip_i[ 2 ] ) };
-				_origin = Vec3f( fabsf( _origin.x ) < origin() ? _origin.x + floatScale() * p_normal.x : p_i[ 0 ],
-								 fabsf( _origin.y ) < origin() ? _origin.y + floatScale() * p_normal.y : p_i[ 1 ],
-								 fabsf( _origin.z ) < origin() ? _origin.z + floatScale() * p_normal.z : p_i[ 2 ] );
+				Vec3i of_i = p_normal * intScale();
+				Vec3i ip_i( *reinterpret_cast<const int *>( &_origin.x ) + ( ( _origin.x < 0 ) ? -of_i.x : of_i.x ),
+							*reinterpret_cast<const int *>( &_origin.y ) + ( ( _origin.y < 0 ) ? -of_i.y : of_i.y ),
+							*reinterpret_cast<const int *>( &_origin.z ) + ( ( _origin.z < 0 ) ? -of_i.z : of_i.z ) );
+
+				Vec3f p_i( *reinterpret_cast<const float *>( &ip_i[ 0 ] ),
+						   *reinterpret_cast<const float *>( &ip_i[ 1 ] ),
+						   *reinterpret_cast<const float *>( &ip_i[ 2 ] ) );
+				_origin = Vec3f( fabsf( _origin.x ) < origin() ? _origin.x + floatScale() * p_normal.x : p_i.x,
+								 fabsf( _origin.y ) < origin() ? _origin.y + floatScale() * p_normal.y : p_i.y,
+								 fabsf( _origin.z ) < origin() ? _origin.z + floatScale() * p_normal.z : p_i.z );
 			}
 
 			Vec3f getPointAtT( const float p_t ) const { return _origin + _direction * p_t; }

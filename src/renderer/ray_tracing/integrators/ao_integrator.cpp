@@ -16,29 +16,24 @@ namespace VTX
 				// create orthonormal basis around around hit normal
 				Mat3f TBN = Util::Math::createOrthonormalBasis( intersection._normal );
 
-				const uint	aoSamples = 32;
-				const float aoRadius  = 20.f;
-				float		ao		  = 0.f;
-				for ( uint i = 0; i < aoSamples; ++i )
+				float ao = 0.f;
+				for ( uint i = 0; i < _nbSamples; ++i )
 				{
-					float u		 = Util::Math::randomFloat();
-					float v		 = Util::Math::randomFloat();
-					Vec3f sample = Util::Sampler::uniformHemisphere( u, v );
-					float pdf	 = Util::Sampler::uniformHemispherePdf();
+					float u = Util::Math::randomFloat();
+					float v = Util::Math::randomFloat();
+
+					Vec3f sampleDir = Util::Sampler::cosineWeightedHemisphere( u, v );
+					float samplePdf = Util::Sampler::cosineWeightedHemispherePDF( sampleDir.z );
+
 					// transform in local coordinates systems
-					Vec3f aoDir = TBN * sample;
+					Vec3f aoDir = TBN * sampleDir;
 					Ray	  aoRay( intersection._point, aoDir );
 					aoRay.offset( intersection._normal );
-					if ( !p_scene.intersectAny( aoRay, 1e-3f, aoRadius ) )
-					{
-						// u is cos(theta) <=> dot(n, aoDir)
-						ao += u / pdf;
-					}
+
+					if ( !p_scene.intersectAny( aoRay, SHADOW_EPS, _radius - SHADOW_EPS ) )
+						ao += sampleDir.z / samplePdf;
 				}
-				ao /= aoSamples;
-				// shade primitive
-				// point light on camera
-				Li += ao;
+				Li += powf( ao / _nbSamples, _intensity );
 			}
 			else
 			{

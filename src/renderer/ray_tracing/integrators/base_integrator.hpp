@@ -16,6 +16,7 @@ namespace VTX
 		class BaseIntegrator
 		{
 		  public:
+			BaseIntegrator()		  = default;
 			virtual ~BaseIntegrator() = default;
 
 			virtual Vec3f Li( const Ray &	p_ray,
@@ -29,6 +30,8 @@ namespace VTX
 										 //	= Vec3f( 1.5f ) * 0.1f;
 				= Vec3f( 0.5f, 0.6f, 0.8f ) * 0.1f;
 			//( 0.7f, 0.7f, 0.7f );
+
+			static constexpr float SHADOW_EPS = 0.00001f;
 		};
 
 	} // namespace Renderer

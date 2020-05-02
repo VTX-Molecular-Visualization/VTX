@@ -44,8 +44,6 @@ namespace VTX
 				const float sqrtDelta = sqrtf( delta );
 
 				float t = -b - sqrtDelta;
-				if ( t > p_tMax ) { return false; }		  // first intersection too far
-				if ( t < p_tMin ) { t = -b + sqrtDelta; } // first intersection too near, check second one
 				if ( t < p_tMin || t > p_tMax ) { return false; }
 
 				p_intersection._point	  = p_ray.getPointAtT( t );

@@ -14,9 +14,19 @@ namespace VTX
 		class AOIntegrator : public BaseIntegrator
 		{
 		  public:
+			AOIntegrator() = default;
+			AOIntegrator( const float p_radius, const float p_intensity, const uint p_nbSamples ) :
+				_radius( Util::Math::max( 0.f, p_radius ) ), _intensity( Util::Math::max( 1.f, p_intensity ) ),
+				_nbSamples( Util::Math::max( 1u, p_nbSamples ) )
+			{
+			}
+
 			Vec3f Li( const Ray & p_ray, const Scene & p_scene, const float p_tMin, const float p_tMax ) const override;
 
 		  private:
+			float _radius	 = 50.f;
+			float _intensity = 1.f;
+			uint  _nbSamples = 1024;
 		};
 
 	} // namespace Renderer
