@@ -23,7 +23,7 @@ namespace VTX
 								 const Vec3f &		  p_f0,
 								 const float		  p_shininess )
 				{
-					const Vec3f h = ( p_wo + p_wi ) * 0.5f;
+					const Vec3f h = Util::Math::normalize( p_wo + p_wi );
 
 					const float HdotN = Util::Math::dot( h, p_hit._normal );
 					const float OdotH = Util::Math::dot( p_wo, h );
