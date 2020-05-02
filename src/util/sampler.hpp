@@ -33,7 +33,7 @@ namespace VTX
 				return Vec3f( sqrtCosTheta * cosf( phi ), sqrtCosTheta * sinf( phi ), z );
 			}
 
-			inline float cosineWeightedHemispherePDF( const float cosTheta ) { return cosTheta * INV_PIf; }
+			inline float cosineWeightedHemispherePdf( const float cosTheta ) { return cosTheta * INV_PIf; }
 
 		} // namespace Sampler
 	}	  // namespace Util
