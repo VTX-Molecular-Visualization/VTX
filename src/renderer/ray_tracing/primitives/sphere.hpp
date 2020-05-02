@@ -35,8 +35,12 @@ namespace VTX
 				const Vec3f & o = p_ray.getOrigin();
 				const Vec3f & d = p_ray.getDirection();
 
-#define HEARN_BAKER
-#ifdef HEARN_BAKER
+				// Use Hearn and Baker ray/sphere intersection equation for small spheres
+				// + William et al. more stable quadratic solution
+				// See:
+				// Haines E., Günther J., Akenine-Möller T. (2019)
+				// Precision Improvements for Ray/Sphere Intersection.
+				// In: Haines E., Akenine-Möller T. (eds) Ray Tracing Gems. Apress, Berkeley, CA
 				const Vec3f oc	  = o - _center;
 				const float b	  = Util::Math::dot( oc, d );
 				const float r2	  = _radius * _radius;
@@ -47,7 +51,7 @@ namespace VTX
 
 				const float sqrtDelta = sqrtf( delta );
 
-				const float q = ( b > 0.f ) ? -b - sqrtDelta : -b + sqrtDelta;
+				const float q = ( b > 0.f ) ? -sqrtDelta - b : sqrtDelta - b;
 
 				const float c = Util::Math::dot( oc, oc ) - r2;
 
@@ -55,21 +59,7 @@ namespace VTX
 				if ( t > p_tMax ) { return false; } // first intersection too far
 				if ( t < p_tMin ) { t = q; }		// first intersection too near, check second one
 				if ( t < p_tMin || t > p_tMax ) { return false; }
-#else
-				const Vec3f oc	  = o - _center;
-				const float b	  = Util::Math::dot( oc, d );
-				const float c	  = Util::Math::dot( oc, oc ) - _radius * _radius;
-				const float delta = b * b - c;
 
-				if ( delta < 0.f ) return false;
-
-				const float sqrtDelta = sqrtf( delta );
-
-				float t = -b - sqrtDelta;
-				if ( t > p_tMax ) { return false; }		  // first intersection too far
-				if ( t < p_tMin ) { t = -b + sqrtDelta; } // first intersection too near, check second one
-				if ( t < p_tMin || t > p_tMax ) { return false; }
-#endif
 				p_intersection._point	  = p_ray.getPointAtT( t );
 				const Vec3f normal		  = ( p_intersection._point - _center ) / _radius;
 				p_intersection._normal	  = Util::Math::faceForward( normal, d );
