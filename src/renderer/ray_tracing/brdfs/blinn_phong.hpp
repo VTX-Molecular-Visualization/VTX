@@ -22,7 +22,8 @@ namespace VTX
 								 const Vec3f &		  p_albedo,
 								 const float &		  p_shininess )
 				{
-					const Vec3f h = ( p_wo + p_wi ) * 0.5f;
+					const Vec3f h = Util::Math::normalize( p_wo + p_wi );
+
 					return p_albedo
 						   * Util::Math::pow( Util::Math::max( 0.f, Util::Math::dot( h, p_hit._normal ) ),
 											  p_shininess );
