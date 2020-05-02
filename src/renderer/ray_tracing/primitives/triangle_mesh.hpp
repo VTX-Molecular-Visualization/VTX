@@ -7,6 +7,7 @@
 
 #include "../bvh.hpp"
 #include "io/path.hpp"
+#include "model/molecule.hpp"
 
 namespace VTX
 {
@@ -19,7 +20,9 @@ namespace VTX
 		  public:
 			friend Triangle;
 			TriangleMesh() = default;
-			TriangleMesh( const IO::Path & meshToLoad );
+			explicit TriangleMesh( const IO::Path & meshToLoad );
+			explicit TriangleMesh( const Model::Molecule * p_molecule );
+
 			~TriangleMesh()
 			{
 				for ( Renderer::BaseMaterial * mtl : _materials )
@@ -46,6 +49,7 @@ namespace VTX
 			void _computeAABB() override
 			{
 				if ( _bvh.isBuilt() ) _aabb = _bvh.getAABB();
+				// TODO: else compute it !
 			}
 
 		  private:
@@ -62,6 +66,10 @@ namespace VTX
 			friend class TriangleMesh;
 
 			Triangle() = default;
+			Triangle( const uint p_v0, const uint p_v1, const uint p_v2, TriangleMesh * p_refMesh ) :
+				_v0( p_v0 ), _v1( p_v1 ), _v2( p_v2 ), _refMesh( p_refMesh )
+			{
+			}
 
 			bool intersect( const Ray &	   p_ray,
 							const float	   p_tMin,

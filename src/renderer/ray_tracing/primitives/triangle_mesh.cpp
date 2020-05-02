@@ -1,5 +1,6 @@
 #include "triangle_mesh.hpp"
 #include "../materials/matte.hpp"
+#include "model/ribbon.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -85,11 +86,37 @@ namespace VTX
 
 			const uint maxPrimsLeaf = 8;
 			_bvh.build( _triangles, maxPrimsLeaf, BVH::SplitMethod::SAH );
-			const Math::AABB & aabb2	 = _bvh.getAABB();
-			const Vec3f		   centroid2 = aabb2.centroid();
-			std::cout << "centroid2 " << centroid2.x << " - " << centroid2.y << " - " << centroid2.z << std::endl;
-			std::cout << "min2 " << aabb2._min.x << " - " << aabb2._min.y << " - " << aabb2._min.z << std::endl;
-			std::cout << "min2 " << aabb2._max.x << " - " << aabb2._max.y << " - " << aabb2._max.z << std::endl;
+		}
+
+		TriangleMesh::TriangleMesh( const Model::Molecule * p_molecule )
+		{
+			const Model::Ribbon & ribbon	   = p_molecule->getRibbon();
+			_vertices						   = ribbon.getVertices();
+			_normals						   = ribbon.getNormals();
+			const std::vector<Vec3f> & colors  = ribbon.getColors();
+			const std::vector<uint> &  indices = ribbon.getIndices();
+
+			_materials.emplace_back( new MatteMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
+
+			_triangles.reserve( indices.size() / 3 );
+			// TODO: once again, do not duplicate materials !
+			for ( uint i = 0; i < uint( indices.size() ); i += 3 )
+			{
+				// const uint idTri	= i / 3;
+				_triangles.emplace_back( new Triangle( indices[ i ], indices[ i + 1 ], indices[ i + 2 ], this ) );
+				Triangle & tri = *( (Triangle *)_triangles.back() );
+				tri._material  = _materials.back();
+			}
+
+			// compute AABB for each triangle
+			for ( uint i = 0; i < uint( _triangles.size() ); ++i )
+			{
+				Triangle & tri = *( (Triangle *)_triangles[ i ] );
+				tri._computeAABB();
+			}
+
+			const uint maxPrimsLeaf = 8;
+			_bvh.build( _triangles, maxPrimsLeaf, BVH::SplitMethod::SAH );
 		}
 	} // namespace Renderer
 } // namespace VTX

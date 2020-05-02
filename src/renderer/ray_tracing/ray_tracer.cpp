@@ -42,17 +42,18 @@ namespace VTX
 				//_left  = Vec3f( -0.999969f, 0.002475f, 0.007492f );
 				//_up	   = Vec3f( 0.007889f, 0.296962f, 0.954857f );
 
-				_pos   = Vec3f( 0.f, -390.106812f, 110.278503f );
+				/*_pos   = Vec3f( 0.f, -390.106812f, 110.278503f );
 				_front = Vec3f( 0.f, 1.f, 0.f );
 				_left  = Vec3f( -1.f, 0.f, 0.f );
-				_up	   = Vec3f( 0.f, 0.f, 1.f );
+				_up	   = Vec3f( 0.f, 0.f, 1.f );*/
+				//_pos += 150.f * _front;
 
 				// 6vsb
-				/*_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
+				_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
 				_front = Vec3f( 0.938164f, 0.320407f, -0.131098f );
 				_left  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
 				_up	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
-				_pos += 50.f * _front;*/
+				//_pos += 50.f * _front;
 
 				// 6m17
 				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
@@ -120,9 +121,9 @@ namespace VTX
 
 			resize( p_width, p_height );
 
+			_integrator = new RayCastIntegrator;
+			//_integrator = new DirectLightingIntegrator;
 			//_integrator = new AOIntegrator;
-			//_integrator = new RayCastIntegrator;
-			_integrator = new DirectLightingIntegrator;
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -134,7 +135,7 @@ namespace VTX
 
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
-			const uint nbPixelSamples = 128;
+			const uint nbPixelSamples = 1;
 
 			uint size = _width * _height * 3 * sizeof( char );
 			_pixels.resize( _width * _height * 3 );
@@ -193,30 +194,39 @@ namespace VTX
 		void RayTracer::_initScene( const Object3D::Scene & p_scene )
 		{
 			_scene.clean();
+			//_scene.addObject( new TriangleMesh( DATA_DIR + "Bunny.obj" ) );
+
+#define RIBBON_TEST
+#ifdef RIBBON_TEST
+			for ( std::pair<const Model::Molecule *, float> pairMol : p_scene.getMolecules() )
+			{
+				_scene.addObject( new TriangleMesh( pairMol.first ) );
+			}
+#else
 			for ( std::pair<const Model::Molecule *, float> pairMol : p_scene.getMolecules() )
 			{
 				_scene.addObject( new MoleculeRT( pairMol.first ) );
 			}
+#endif
 
+			//
+			//
+			// ====================================================
 			// spike_closed_cleaved_full_amarolab
 			//_scene.addObject( new Plane( VEC3F_Z,
 			//							 -320.f,													//
 			//							 new MatteMaterial( Vec3f( 0.5f, 0.6f, 0.8f ) * PIf, 0.5f ) //
 			//							 // new MatteMaterial( Vec3f( 1.5f ), 0.3f ) //
 			//							 ) );
-			_scene.addObject( new Plane( Vec3f( 0.f, 0.f, 0.999207f ),
-										 -300.f, //
-										 new MatteMaterial( Vec3f( 0.5f, 0.6f, 0.8f ), 0.5f ) ) );
-			_scene.addLight( new QuadLight(
-				Vec3f( -400.f, -800.f, 600.f ), VEC3F_Y * 80.f, VEC3F_X * 80.f, VEC3F_XYZ, 170.f * PIf ) );
-
-			/*_scene.addLight(
-				new QuadLight( Vec3f( -500.f, -700.f, 600.f ), VEC3F_Y * 120.f, VEC3F_X * 120.f, VEC3F_XYZ, 150.f ) );*/
-			/*_scene.addLight(
-				new QuadLight( Vec3f( 500.f, -700.f, 600.f ), VEC3F_Y * 120.f, VEC3F_X * 120.f, VEC3F_XYZ, 150.f ) );*/
+			//_scene.addObject( new Plane( Vec3f( 0.f, 0.f, 0.999207f ),
+			//							 -300.f, //
+			//							 new MatteMaterial( Vec3f( 0.5f, 0.6f, 0.8f ), 0.5f ) ) );
+			//_scene.addLight( new QuadLight(
+			//	Vec3f( -400.f, -800.f, 600.f ), VEC3F_Y * 80.f, VEC3F_X * 80.f, VEC3F_XYZ, 170.f * PIf ) );
 			// ====================================================
+			//
+			//
 
-			//_scene.addObject( new TriangleMesh( DATA_DIR + "Bunny.obj" ) );
 			// 6VSB_2nd931.obj
 			//_scene.addObject( new TriangleMesh( DATA_DIR + "6VSB_2nd931.obj" ) );
 			//_scene.addObject( new Plane( VEC3F_Y,
@@ -274,7 +284,7 @@ namespace VTX
 			uint taskId = p_threadId;
 			while ( taskId < p_nbTiles )
 			{
-				std::cout << taskId << " / " << p_nbTiles << std::endl;
+				//	std::cout << p_threadId << " : " << taskId << " / " << p_nbTiles << std::endl;
 				const uint tileY = taskId / p_nbTilesX;
 				const uint tileX = taskId - tileY * p_nbTilesX;
 				const uint x0	 = tileX * TILE_SIZE;
@@ -343,7 +353,7 @@ namespace VTX
 
 				const Ray ray = p_camera.generateRay( sx, sy );
 
-				const Vec3f Li = _integrator->Li( ray, _scene, 1e-3f, FLOAT_MAX );
+				const Vec3f Li = _integrator->Li( ray, _scene, 0.f, FLOAT_MAX );
 
 				color += Li;
 			}

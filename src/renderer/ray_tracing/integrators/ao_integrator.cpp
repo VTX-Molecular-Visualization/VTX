@@ -23,7 +23,7 @@ namespace VTX
 					float v = Util::Math::randomFloat();
 
 					Vec3f sampleDir = Util::Sampler::cosineWeightedHemisphere( u, v );
-					float samplePdf = Util::Sampler::cosineWeightedHemispherePDF( sampleDir.z );
+					float samplePdf = Util::Sampler::cosineWeightedHemispherePdf( sampleDir.z );
 
 					// transform in local coordinates systems
 					Vec3f aoDir = TBN * sampleDir;
