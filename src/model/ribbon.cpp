@@ -38,7 +38,7 @@ namespace VTX
 				{
 					// VTX_DEBUG( "Building secondary structure... residue " + std::to_string( residueIdx ) );
 					const Residue &					   residue1 = p_molecule.getResidue( idxFirstResidue + residueIdx );
-					const Residue::SECONDARY_STRUCTURE ss	   = residue1.getSecondaryStructure();
+					const Residue::SECONDARY_STRUCTURE ss		= residue1.getSecondaryStructure();
 
 					// First residue
 					if ( residueValidCount == 0 )
@@ -184,8 +184,13 @@ namespace VTX
 				}
 			}
 
+			_vertices.shrink_to_fit();
+			_normals.shrink_to_fit();
+			_colors.shrink_to_fit();
+			_indices.shrink_to_fit();
+
 			chrono.stop();
-			VTX_DEBUG( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
 		void Ribbon::_addControlPoints( const Vec3f &					   p_CA0Pos,
