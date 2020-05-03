@@ -45,16 +45,20 @@ namespace VTX
 
 	const bool SSAO_DEFAULT = true;
 	const bool AA_DEFAULT	= true;
-	const bool RANDOM		= true;
+	const bool RANDOM		= false;
 
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 
 	// Window.
-	// constexpr int WINDOW_WIDTH	= 1280;
-	// constexpr int WINDOW_HEIGHT = 720;
+	// 360p.
+	// constexpr int WINDOW_WIDTH	= 640;
+	// constexpr int WINDOW_HEIGHT = 320;
+	// 720p.
+	constexpr int WINDOW_WIDTH	= 1280;
+	constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
-	constexpr int WINDOW_WIDTH	= 1920;
-	constexpr int WINDOW_HEIGHT = 1080;
+	// constexpr int WINDOW_WIDTH	= 1920;
+	// constexpr int WINDOW_HEIGHT = 1080;
 	// 4k
 	// constexpr int WINDOW_WIDTH	= 3840;
 	// constexpr int WINDOW_HEIGHT = 2160;
@@ -131,7 +135,7 @@ namespace VTX
 	const float PI_32f	 = glm::three_over_two_pi<float>();
 	const float TWO_PIf	 = glm::two_pi<float>();
 	const float INV_PIf	 = glm::one_over_pi<float>();
-	const float INV_2PIf = glm::two_over_pi<float>();
+	const float INV_2PIf = glm::one_over_two_pi<float>();
 
 	const Vec3f VEC3F_ZERO = Vec3f( 0.f, 0.f, 0.f );
 	const Vec3d VEC3D_ZERO = Vec3d( 0.0, 0.0, 0.0 );
@@ -142,6 +146,7 @@ namespace VTX
 	const Vec3f VEC3F_MIN  = Vec3f( FLOAT_MIN );
 	const Vec3f VEC3F_MAX  = Vec3f( FLOAT_MAX );
 
+	const Mat3f MAT3F_ID = Mat3f( 1.f );
 	const Mat4f MAT4F_ID = Mat4f( 1.f );
 
 	constexpr uint INVALID_ID = UINT_MAX;
