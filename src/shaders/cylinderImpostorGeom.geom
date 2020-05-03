@@ -30,7 +30,7 @@ void main()
 	cylVert[1]	  = gl_in[ 1 ].gl_Position.xyz;
 	cylCenter = ( cylVert[0] + cylVert[1] ) * 0.5f;
 
-	// compupte normalized view vector
+	// compute normalized view vector
 	const float dCenter = length( cylCenter );
 	const vec3	view	= cylCenter / dCenter;
 
