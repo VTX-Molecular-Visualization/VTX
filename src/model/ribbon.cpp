@@ -279,7 +279,7 @@ namespace VTX
 			Vec3f leftNormal0, leftNormal1, rightNormal0, rightNormal1;
 
 			float extraWidthFactor	 = p_isArrow ? ARROW_WIDTH : 0.f;
-			float pointOneAdjustment = p_isArrow ? 0.1f * ARROW_WIDTH : 0.f;
+			float pointOneAdjustment = p_isArrow ? ARROW_WIDTH / float( DETAIL_LEVEL ) : 0.f;
 			float pointOneWidthFactor;
 
 			for ( uint step = 1; step <= DETAIL_LEVEL; ++step )
@@ -416,16 +416,16 @@ namespace VTX
 				if ( p_isArrow )
 				{
 					forward				= pointCenter1 - pointCenter0;
-					float forwardLength = Util::Math ::length( forward );
+					float forwardLength = Util::Math::length( forward );
 
 					diagLeft0  = Util::Math::normalize( forwardLength * forward
-														+ ( Util::Math ::length( vecLeft0 ) + ARROW_WIDTH ) * vecLeft0 );
+														+ ( Util::Math::length( vecLeft0 ) + ARROW_WIDTH ) * vecLeft0 );
 					diagLeft1  = Util::Math::normalize( forwardLength * forward
-														+ ( Util::Math ::length( vecLeft1 ) + ARROW_WIDTH ) * vecLeft1 );
+														+ ( Util::Math::length( vecLeft1 ) + ARROW_WIDTH ) * vecLeft1 );
 					diagRight0 = Util::Math::normalize(
-						forwardLength * forward + ( Util::Math ::length( vecRight0 ) + ARROW_WIDTH ) * vecRight0 );
+						forwardLength * forward + ( Util::Math::length( vecRight0 ) + ARROW_WIDTH ) * vecRight0 );
 					diagRight1 = Util::Math::normalize(
-						forwardLength * forward + ( Util::Math ::length( vecRight1 ) + ARROW_WIDTH ) * vecRight1 );
+						forwardLength * forward + ( Util::Math::length( vecRight1 ) + ARROW_WIDTH ) * vecRight1 );
 
 					_normals.emplace_back( diagLeft0 );	 // 24
 					_normals.emplace_back( diagLeft1 );	 // 25
