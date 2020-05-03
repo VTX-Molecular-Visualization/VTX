@@ -33,7 +33,7 @@ namespace VTX
 
 				// Set molecule properties.
 				if ( frame.get( "name" ) ) { p_molecule.setName( frame.get( "name" )->as_string() ); }
-				p_molecule.setColor( Util::Color::randomPastelColor() );
+				p_molecule.setColor( Util::Color::randomPastel() );
 
 				// Check properties, same for all atoms/residues?
 				if ( frame.size() > 0 )

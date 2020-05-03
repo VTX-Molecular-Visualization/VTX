@@ -87,7 +87,7 @@ namespace VTX
 
 				// Set molecule properties.
 				p_molecule.setName( p_path.getFileNameWithoutExtension() );
-				p_molecule.setColor( Util::Color::randomPastelColor() );
+				p_molecule.setColor( Util::Color::randomPastel() );
 
 				uint chainGlobalIdx	  = 0;
 				uint residueGlobalIdx = 0;
@@ -123,7 +123,7 @@ namespace VTX
 					chain.setName( mesh->mName.C_Str() );
 					chain.setIdFirstResidue( residueGlobalIdx );
 					chain.setResidueCount( mesh->mNumFaces );
-					chain.setColor( Util::Color::randomPastelColor() );
+					chain.setColor( Util::Color::randomPastel() );
 
 					// Loop over faces.
 					for ( uint residueIdx = 0; residueIdx < mesh->mNumFaces; ++residueIdx, ++residueGlobalIdx )
@@ -141,7 +141,7 @@ namespace VTX
 						residue.setAtomCount( uint( mesh->mNumVertices ) );
 						// residue.setIdFirstBond( bondGlobalIdx );
 						// residue.setBondCount( uint( mesh->mNumFaces ) );
-						residue.setColor( Util::Color::randomPastelColor() );
+						residue.setColor( Util::Color::randomPastel() );
 
 						// Loop over vertices in the face.
 						for ( uint atomIdx = 0; atomIdx < face.mNumIndices;

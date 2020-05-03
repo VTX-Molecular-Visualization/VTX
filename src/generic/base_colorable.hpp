@@ -19,7 +19,7 @@ namespace VTX
 			inline void			 setColor( const Vec3f & p_color ) { _color = p_color; }
 
 		  protected:
-			Vec3f _color = Util::Color::randomPastelColor();
+			Vec3f _color = Util::Color::randomPastel();
 		};
 	} // namespace Generic
 } // namespace VTX
