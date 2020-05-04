@@ -1,5 +1,6 @@
 #include "molecule_structure.hpp"
 #include "action/action_manager.hpp"
+#include "action/chain_change_visibility.hpp"
 #include "action/molecule_delete.hpp"
 #include "action/selectable_select.hpp"
 #include "action/selectable_unselect.hpp"
@@ -15,18 +16,19 @@ namespace VTX
 			{
 				ImGui::PushID( ( "ViewMoleculeStructure" + std::to_string( _getModel().getId() ) ).c_str() );
 				bool moleculeOpened = ImGui::TreeNodeEx(
-					(_getModel().getFileName() + " " + _getModel().getName()).c_str(),
+					( _getModel().getFileName() + " " + _getModel().getName() ).c_str(),
 					_getModel().isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
+				// Context menu.
 				if ( ImGui::BeginPopupContextItem() )
 				{
 					if ( ImGui::MenuItem( LOCALE( "View.Delete" ) ) )
 					{ VTX_ACTION( new Action::MoleculeDelete( _getModel() ) ); }
 					ImGui::EndPopup();
 				}
+				// Context menu END.
 				if ( ImGui::IsItemClicked() )
 				{
-					if ( moleculeOpened )
-					{ VTX_ACTION( new Action::SelectableUnselect( _getModel() ) ); }
+					if ( moleculeOpened ) { VTX_ACTION( new Action::SelectableUnselect( _getModel() ) ); }
 
 					else
 					{
@@ -41,10 +43,41 @@ namespace VTX
 						bool chainOpened = ImGui::TreeNodeEx(
 							chain->getName().c_str(),
 							chain->isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
+						// Context menu.
+						if ( ImGui::BeginPopupContextItem() )
+						{
+							if ( chain->isVisible() == false )
+							{
+								if ( ImGui::MenuItem( LOCALE( "View.Show" ) ) )
+								{
+									VTX_ACTION( new Action::ChainChangeVisibility(
+										*chain, Action::ChainChangeVisibility::VISIBILITY_MODE::SHOW ) );
+								}
+							}
+							else
+							{
+								if ( ImGui::MenuItem( LOCALE( "View.Hide" ) ) )
+								{
+									VTX_ACTION( new Action::ChainChangeVisibility(
+										*chain, Action::ChainChangeVisibility::VISIBILITY_MODE::HIDE ) );
+								}
+							}
+							if ( ImGui::MenuItem( LOCALE( "View.Solo" ) ) )
+							{
+								VTX_ACTION( new Action::ChainChangeVisibility(
+									*chain, Action::ChainChangeVisibility::VISIBILITY_MODE::SOLO ) );
+							}
+							if ( ImGui::MenuItem( LOCALE( "View.All" ) ) )
+							{
+								VTX_ACTION( new Action::ChainChangeVisibility(
+									*chain, Action::ChainChangeVisibility::VISIBILITY_MODE::ALL ) );
+							}
+							ImGui::EndPopup();
+						}
+						// Context menu END.
 						if ( ImGui::IsItemClicked() )
 						{
-							if ( chainOpened )
-							{ VTX_ACTION( new Action::SelectableUnselect( *chain ) ); }
+							if ( chainOpened ) { VTX_ACTION( new Action::SelectableUnselect( *chain ) ); }
 
 							else
 							{
@@ -59,20 +92,16 @@ namespace VTX
 								ImGui::PushID( residue.getId() );
 								bool residueOpened = ImGui::TreeNodeEx(
 									VTX::Setting::UI::symbolDisplayMode == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
-										? ( residue.getSymbolShort() + " " + std::to_string( residue.getIndex() ) ).c_str()
+										? ( residue.getSymbolShort() + " " + std::to_string( residue.getIndex() ) )
+											  .c_str()
 										: residue.getSymbolName().c_str(),
 									residue.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 								if ( ImGui::IsItemClicked() )
 								{
-									if ( residueOpened )
-									{
-										VTX_ACTION(
-											new Action::SelectableUnselect( residue ) );
-									}
+									if ( residueOpened ) { VTX_ACTION( new Action::SelectableUnselect( residue ) ); }
 									else
 									{
-										VTX_ACTION(
-											new Action::SelectableSelect( residue ) );
+										VTX_ACTION( new Action::SelectableSelect( residue ) );
 									}
 								}
 								if ( residueOpened )
@@ -90,14 +119,10 @@ namespace VTX
 												 atom.isSelected() ) )
 										{
 											if ( atom.isSelected() )
-											{
-												VTX_ACTION(
-													new Action::SelectableUnselect( atom ) );
-											}
+											{ VTX_ACTION( new Action::SelectableUnselect( atom ) ); }
 											else
 											{
-												VTX_ACTION(
-													new Action::SelectableSelect( atom ) );
+												VTX_ACTION( new Action::SelectableSelect( atom ) );
 											}
 										}
 										ImGui::PopID();

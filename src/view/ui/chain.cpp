@@ -1,7 +1,7 @@
 #include "chain.hpp"
+#include "action/chain_change_visibility.hpp"
 #include "action/change_color_mode.hpp"
 #include "action/colorable_change_color.hpp"
-#include "action/visible_change_visibility.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -18,7 +18,10 @@ namespace VTX
 				{
 					bool isVisible = _getModel().isVisible();
 					if ( ImGui::Checkbox( LOCALE( "View.Visible" ), &isVisible ) )
-					{ VTX_ACTION( new Action::VisibleChangeVisibility( _getModel(), isVisible ) ); }
+					{
+						VTX_ACTION( new Action::ChainChangeVisibility(
+							_getModel(), Action::VisibleChangeVisibility::VISIBILITY_MODE::TOGGLE ) );
+					}
 					ImGui::Text( "ID: %d", _getModel().getIndex() );
 					ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
 					Vec3f color = _getModel().getColor();

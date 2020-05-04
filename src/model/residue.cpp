@@ -16,12 +16,6 @@ namespace VTX
 			}
 		}
 
-		void Residue::setVisible( const bool p_visible )
-		{
-			Generic::BaseVisible::setVisible( p_visible );
-			_moleculePtr->refreshVisibility();
-		}
-
 		const Atom * const Residue::findFirstAtomByName( const std::string & p_name ) const
 		{
 			for ( uint i = 0; i < _atomCount; ++i )

@@ -15,11 +15,5 @@ namespace VTX
 				Generic::destroy( removeItem( ID::View::UI_CHAIN ) );
 			}
 		}
-
-		void Chain::setVisible( const bool p_visible )
-		{
-			Generic::BaseVisible::setVisible( p_visible );
-			_moleculePtr->refreshVisibility();
-		}
 	} // namespace Model
 } // namespace VTX

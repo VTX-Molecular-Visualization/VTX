@@ -29,7 +29,10 @@ namespace VTX
 				{
 					bool isVisible = _getModel().isVisible();
 					if ( ImGui::Checkbox( LOCALE( "View.Visible" ), &isVisible ) )
-					{ VTX_ACTION( new Action::VisibleChangeVisibility( _getModel(), isVisible ) ); }
+					{
+						VTX_ACTION( new Action::VisibleChangeVisibility(
+							_getModel(), (Action::VisibleChangeVisibility::VISIBILITY_MODE)isVisible ) );
+					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 					{
 						ImGui::Text( LOCALE( "View.Chains%Count" ), _getModel().getChainCount() );

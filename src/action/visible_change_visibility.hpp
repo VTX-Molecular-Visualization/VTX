@@ -16,16 +16,36 @@ namespace VTX
 		class VisibleChangeVisibility : public BaseAction
 		{
 		  public:
-			explicit VisibleChangeVisibility( Generic::BaseVisible & p_visible, const bool p_visibility ) :
-				_visible( p_visible ), _visibility( p_visibility )
+			enum class VISIBILITY_MODE : int
+			{
+				HIDE = 0,
+				SHOW,
+				TOGGLE,
+				SOLO,
+				ALL
+			};
+
+			explicit VisibleChangeVisibility( Generic::BaseVisible & p_visible, const VISIBILITY_MODE p_mode ) :
+				_visible( p_visible ), _mode( p_mode )
 			{
 			}
 
-			virtual void execute() override { _visible.setVisible( _visibility ); }
+			virtual void execute() override
+			{
+				switch ( _mode )
+				{
+				case VISIBILITY_MODE::SHOW:
+				case VISIBILITY_MODE::SOLO:
+				case VISIBILITY_MODE::ALL: _visible.setVisible( true ); break;
+				case VISIBILITY_MODE::HIDE: _visible.setVisible( false ); break;
+				case VISIBILITY_MODE::TOGGLE: _visible.setVisible( !_visible.isVisible() ); break;
+				default: break;
+				}
+			}
 
-		  private:
+		  protected:
 			Generic::BaseVisible & _visible;
-			const bool			   _visibility;
+			const VISIBILITY_MODE  _mode;
 		};
 	} // namespace Action
 } // namespace VTX

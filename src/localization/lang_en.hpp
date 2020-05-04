@@ -116,6 +116,10 @@ namespace VTX
 			{ "View.Loaded", "Loaded" },
 			{ "View.Computed", "Computed" },
 			{ "View.Compute", "Compute" },
+			{ "View.Show", "Show" },
+			{ "View.Hide", "Hide" },
+			{ "View.Solo", "Solo" },
+			{ "View.All", "All" },
 
 			// Modals.
 			{ "Modal.Loading", "Loading" },
