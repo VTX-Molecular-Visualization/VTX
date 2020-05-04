@@ -2,6 +2,7 @@
 #include "action/action_manager.hpp"
 #include "action/chain_change_visibility.hpp"
 #include "action/molecule_delete.hpp"
+#include "action/residue_change_visibility.hpp"
 #include "action/selectable_select.hpp"
 #include "action/selectable_unselect.hpp"
 #include "setting.hpp"
@@ -96,6 +97,38 @@ namespace VTX
 											  .c_str()
 										: residue.getSymbolName().c_str(),
 									residue.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
+								// Context menu.
+								if ( ImGui::BeginPopupContextItem() )
+								{
+									if ( residue.isVisible() == false )
+									{
+										if ( ImGui::MenuItem( LOCALE( "View.Show" ) ) )
+										{
+											VTX_ACTION( new Action::ResidueChangeVisibility(
+												residue, Action::ResidueChangeVisibility::VISIBILITY_MODE::SHOW ) );
+										}
+									}
+									else
+									{
+										if ( ImGui::MenuItem( LOCALE( "View.Hide" ) ) )
+										{
+											VTX_ACTION( new Action::ResidueChangeVisibility(
+												residue, Action::ResidueChangeVisibility::VISIBILITY_MODE::HIDE ) );
+										}
+									}
+									if ( ImGui::MenuItem( LOCALE( "View.Solo" ) ) )
+									{
+										VTX_ACTION( new Action::ResidueChangeVisibility(
+											residue, Action::ResidueChangeVisibility::VISIBILITY_MODE::SOLO ) );
+									}
+									if ( ImGui::MenuItem( LOCALE( "View.All" ) ) )
+									{
+										VTX_ACTION( new Action::ResidueChangeVisibility(
+											residue, Action::ResidueChangeVisibility::VISIBILITY_MODE::ALL ) );
+									}
+									ImGui::EndPopup();
+								}
+								// Context menu END.
 								if ( ImGui::IsItemClicked() )
 								{
 									if ( residueOpened ) { VTX_ACTION( new Action::SelectableUnselect( residue ) ); }
