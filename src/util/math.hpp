@@ -82,17 +82,15 @@ namespace VTX
 			template<typename T>
 			inline void normalizeSelf( T & p_value )
 			{
-				assert( std::isnan( glm::normalize( p_value ).x ) == false);
+				assert( glm::length( p_value ) != 0.0 );
 				p_value = glm::normalize( p_value );
-
 			}
 
 			template<typename T>
 			inline T normalize( const T & p_value )
 			{
-				assert( std::isnan( glm::normalize( p_value ).x ) == false );
+				assert( glm::length( p_value ) != 0.0 );
 				return glm::normalize( p_value );
-
 			}
 
 			template<int L, typename T>

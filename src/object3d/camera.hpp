@@ -75,7 +75,7 @@ namespace VTX
 			float _fov			= CAMERA_FOV;
 
 			Vec3f _position	   = VEC3F_Z * 50.f;
-			Quatd _rotation	   = Quatd();
+			Quatd _rotation	   = Quatd( 1.0, { 0.0, 0.0, 0.0 } );
 			Vec3d _eulerAngles = Vec3d(); // [pitch, yaw, roll]
 
 			Vec3f _front = -VEC3F_Z;

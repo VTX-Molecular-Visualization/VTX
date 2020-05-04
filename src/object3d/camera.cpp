@@ -67,11 +67,12 @@ namespace VTX
 
 		void Camera::_updateRotation()
 		{
-			Util::Math::normalizeSelf( _rotation );
 			Mat3d rotation = Util::Math::castMat3( _rotation );
-			_front		   = rotation * -VEC3F_Z;
-			_left		   = rotation * -VEC3F_X;
-			_up			   = rotation * VEC3F_Y;
+
+			_front = rotation * -VEC3F_Z;
+			_left  = rotation * -VEC3F_X;
+			_up	   = rotation * VEC3F_Y;
+
 			_updateViewMatrix();
 			_eulerAngles = VEC3F_ZERO;
 		}
