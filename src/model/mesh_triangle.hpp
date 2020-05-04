@@ -55,6 +55,11 @@ namespace VTX
 			inline const Vec3f &			  getColor( uint p_idx ) const { return _colors[ p_idx ]; }
 			inline Vec3f &					  getColor( uint p_idx ) { return _colors[ p_idx ]; }
 
+			inline const std::vector<uint> & getVisibilities() const { return _visibilities; }
+			inline std::vector<uint> &		 getVisibilities() { return _visibilities; }
+			inline const uint &				 getVisibilitie( uint p_idx ) const { return _visibilities[ p_idx ]; }
+			inline uint &					 getVisibilitie( uint p_idx ) { return _visibilities[ p_idx ]; }
+
 			inline const std::vector<uint> & getIndices() const { return _indices; }
 			inline std::vector<uint> &		 getIndices() { return _indices; }
 			inline const uint &				 getIndice( uint p_idx ) const { return _indices[ p_idx ]; }
@@ -70,23 +75,26 @@ namespace VTX
 
 			enum ATTRIBUTE_LOCATION
 			{
-				VERTEX_POSITION = 0,
-				VERTEX_NORMAL	= 1,
-				VERTEX_COLOR	= 2,
+				VERTEX_POSITION	  = 0,
+				VERTEX_NORMAL	  = 1,
+				VERTEX_COLOR	  = 2,
+				VERTEX_VISIBILITY = 3,
 			};
 
 			// std::vector<Triangle> _triangles;
 			std::vector<Vec3f> _vertices;
 			std::vector<Vec3f> _normals;
 			std::vector<Vec3f> _colors;
-			std::vector<uint>  _indices;
+			std::vector<uint>  _visibilities;
 
-		  private:
-			GLuint _vboPositions = GL_INVALID_VALUE;
-			GLuint _vboNormals	 = GL_INVALID_VALUE;
-			GLuint _vboColors	 = GL_INVALID_VALUE;
-			GLuint _ibo			 = GL_INVALID_VALUE;
-			GLuint _vao			 = GL_INVALID_VALUE;
+			std::vector<uint> _indices;
+
+			GLuint _vboPositions	= GL_INVALID_VALUE;
+			GLuint _vboNormals		= GL_INVALID_VALUE;
+			GLuint _vboColors		= GL_INVALID_VALUE;
+			GLuint _vboVisibilities = GL_INVALID_VALUE;
+			GLuint _ibo				= GL_INVALID_VALUE;
+			GLuint _vao				= GL_INVALID_VALUE;
 		};
 	} // namespace Model
 } // namespace VTX

@@ -178,15 +178,19 @@ namespace VTX
 							   || p_molecule.getResidue( idxFirstResidue + residueIdx ).getSecondaryStructure()
 									  != Residue::SECONDARY_STRUCTURE::STRAND );
 
+					_mapResidueIdxToVertexIdx.emplace( residue1.getIndex(), vIndex );
 					_computeTriangleMesh( splineCenter, splineSide1, splineSide2, chainColor, isArrow, vIndex );
 
 					residueValidCount++;
 				}
 			}
 
+			_visibilities.resize( _vertices.size(), 1u );
+
 			_vertices.shrink_to_fit();
 			_normals.shrink_to_fit();
 			_colors.shrink_to_fit();
+			_visibilities.shrink_to_fit();
 			_indices.shrink_to_fit();
 
 			chrono.stop();
@@ -490,6 +494,38 @@ namespace VTX
 				p_vIndex += 32;
 				extraWidthFactor = extraWidthFactor - pointOneAdjustment;
 			}
+		} // namespace Model
+
+		void Ribbon::refreshVisibility( const Molecule & p_molecule )
+		{
+			_visibilities.resize( _vertices.size() );
+			uint count = 0;
+
+			for ( Chain * const chain : p_molecule.getChains() )
+			{
+				for ( uint i = 0; i < chain->getResidueCount(); ++i )
+				{
+					const Residue & residue = p_molecule.getResidue( chain->getIdFirstResidue() + i );
+					bool			show	= p_molecule.isVisible() && chain->isVisible() && residue.isVisible();
+
+					if ( _mapResidueIdxToVertexIdx.find( residue.getIndex() ) != _mapResidueIdxToVertexIdx.end() )
+					{
+						for ( uint j = 0; j < 32 * DETAIL_LEVEL; ++j, ++count )
+						{
+							_visibilities[ _mapResidueIdxToVertexIdx[ residue.getIndex() ] + j ] = show;
+						}
+					}
+				}
+			}
+
+			if ( _vertices.size() != count )
+			{
+				VTX_WARNING( "VBO size missmatch: " + std::to_string( _vertices.size() ) + " / "
+							 + std::to_string( count ) );
+			}
+
+			glNamedBufferData(
+				_vboVisibilities, sizeof( uint ) * _visibilities.size(), _visibilities.data(), GL_STATIC_DRAW );
 		}
 
 	} // namespace Model

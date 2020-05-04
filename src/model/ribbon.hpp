@@ -10,6 +10,7 @@
 #include "model/molecule.hpp"
 #include "util/logger.hpp"
 #include "util/math.hpp"
+#include <map>
 
 namespace VTX
 {
@@ -32,9 +33,13 @@ namespace VTX
 
 			Ribbon( const Molecule & );
 
+			void refreshVisibility( const Molecule & );
+
 		  private:
 			static constexpr int LHANDED = -1;
 			static constexpr int RHANDED = 1;
+
+			std::map<uint, uint> _mapResidueIdxToVertexIdx = std::map<uint, uint>();
 
 			void _addControlPoints( const Vec3f &,
 									const Vec3f &,

@@ -272,6 +272,12 @@ namespace VTX
 			refreshVisibility();
 		}
 
+		void Molecule::refreshVisibility()
+		{
+			_fillBufferAtomVisibilities();
+			if ( _ribbon != nullptr ) { _ribbon->refreshVisibility( *this ); }
+		}
+
 		void Molecule::_createBuffers()
 		{
 			glGenBuffers( 1, &_atomPositionsVBO );

@@ -15,12 +15,15 @@ namespace VTX
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_NORMAL );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_COLOR );
+			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
+			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 			glBindVertexArray( 0 );
 
 			if ( _vboPositions != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vboPositions );
 			if ( _vboNormals != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vboNormals );
 			if ( _vboColors != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vboColors );
+			if ( _vboVisibilities != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vboVisibilities );
 			if ( _ibo != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_ibo );
 			if ( _vao != GL_INVALID_VALUE ) glDeleteVertexArrays( 1, &_vao );
 		}
@@ -43,6 +46,12 @@ namespace VTX
 			glGenBuffers( 1, &_vboColors );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
 			glBufferData( GL_ARRAY_BUFFER, _colors.size() * sizeof( Vec3f ), _colors.data(), GL_STATIC_DRAW );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+			glGenBuffers( 1, &_vboVisibilities );
+			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
+			glBufferData(
+				GL_ARRAY_BUFFER, _visibilities.size() * sizeof( uint ), _visibilities.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			// IBO.
@@ -68,6 +77,11 @@ namespace VTX
 			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_COLOR );
 			glVertexAttribPointer( ATTRIBUTE_LOCATION::VERTEX_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+
+			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
+			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
+			glVertexAttribPointer(
+				ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 

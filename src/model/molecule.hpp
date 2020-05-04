@@ -155,8 +155,9 @@ namespace VTX
 			virtual void bindBuffers() override;
 			virtual void unbindBuffers() override;
 
-			bool		 mergeTopology( const Molecule & );
-			inline void	 refreshVisibility() { _fillBufferAtomVisibilities(); }
+			bool mergeTopology( const Molecule & );
+			void refreshVisibility();
+
 			virtual void setSelected( const bool ) override;
 			virtual void setVisible( const bool ) override;
 
