@@ -185,7 +185,7 @@ namespace VTX
 				}
 			}
 
-			_visibilities.resize( _vertices.size(), 1u );
+			refreshVisibility( p_molecule );
 
 			_vertices.shrink_to_fit();
 			_normals.shrink_to_fit();
