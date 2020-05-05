@@ -149,10 +149,10 @@ namespace VTX
 					// TODO: modify chemfiles to load handedness!
 					if ( p_path.getExtension() == "pdb" )
 					{
-						try
+						std::string secondaryStructure
+							= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
+						if ( secondaryStructure != "" )
 						{
-							std::string secondaryStructure
-								= residue.properties().get( "secondary_structure" ).value().as_string();
 							if ( secondaryStructure == "extended" )
 							{ modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND ); }
 							else if ( secondaryStructure == "turn" )
@@ -183,23 +183,14 @@ namespace VTX
 							if ( p_molecule.secondaryStructureLoadedFromFile() == false )
 							{ p_molecule.setSecondaryStructureLoadedFromFile( true ); }
 						}
-						catch ( const std::exception & )
-						{
-						}
 					}
 
 					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 					{
-						const uint				atomId	 = uint( *it );
-						const chemfiles::Atom & atom	 = topology[ atomId ];
-						uint					atomType = -1;
-						try
-						{
-							atomType = uint( atom.properties().get( "atom_type" ).value().as_double() );
-						}
-						catch ( const std::exception & )
-						{
-						}
+						const uint				atomId = uint( *it );
+						const chemfiles::Atom & atom   = topology[ atomId ];
+						uint					atomType;
+						atomType = uint( atom.properties().get( "atom_type" ).value_or( -1 ).as_double() );
 
 						// Create atom.
 						Model::Atom & modelAtom = p_molecule.getAtom( atomId );
@@ -229,16 +220,20 @@ namespace VTX
 						modelFrame[ atomId ] = atomPosition;
 
 						// Check PRM.
-						if ( std::find( p_molecule.getPRM().solventIds.begin(),
-										p_molecule.getPRM().solventIds.end(),
-										atomType )
-							 != p_molecule.getPRM().solventIds.end() )
-						{ modelAtom.setType( Model::Atom::ATOM_TYPE::SOLVENT ); }
-						else if ( std::find(
-									  p_molecule.getPRM().ionIds.begin(), p_molecule.getPRM().ionIds.end(), atomType )
-								  != p_molecule.getPRM().ionIds.end() )
+						if ( atomType != -1 )
 						{
-							modelAtom.setType( Model::Atom::ATOM_TYPE::ION );
+							if ( std::find( p_molecule.getPRM().solventIds.begin(),
+											p_molecule.getPRM().solventIds.end(),
+											atomType )
+								 != p_molecule.getPRM().solventIds.end() )
+							{ modelAtom.setType( Model::Atom::ATOM_TYPE::SOLVENT ); }
+							else if ( std::find( p_molecule.getPRM().ionIds.begin(),
+												 p_molecule.getPRM().ionIds.end(),
+												 atomType )
+									  != p_molecule.getPRM().ionIds.end() )
+							{
+								modelAtom.setType( Model::Atom::ATOM_TYPE::ION );
+							}
 						}
 
 						// Check PSF.
