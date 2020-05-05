@@ -14,6 +14,14 @@ namespace VTX
 		{
 			void LibChemfiles::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
+#ifdef _DEBUG
+				chemfiles::warning_callback_t callback = []( const std::string & p_log ) { VTX_WARNING( p_log ); };
+#else
+				chemfiles::warning_callback_t callback = []( const std::string & ) {};
+#endif
+
+				chemfiles::set_warning_callback( callback );
+
 				chemfiles::Trajectory trajectory( p_path, 'r' );
 
 				VTX_INFO( std::to_string( trajectory.nsteps() ) + " frames found" );
@@ -24,10 +32,6 @@ namespace VTX
 				const chemfiles::Topology &				topology = frame.topology();
 				const std::vector<chemfiles::Residue> & residues = topology.residues();
 				const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
-
-				VTX_INFO( std::to_string( frame.size() ) + " atoms" );
-				VTX_INFO( std::to_string( residues.size() ) + " residues" );
-				VTX_INFO( std::to_string( bonds.size() ) + " bonds" );
 
 				if ( frame.size() != topology.size() ) { throw Exception::IOException( "Data count missmatch" ); }
 
@@ -64,6 +68,7 @@ namespace VTX
 				// If no residue, create a fake one.
 				if ( residues.size() == 0 )
 				{
+					VTX_INFO( "No residues found" );
 					chemfiles::Residue residue = chemfiles::Residue( "" );
 					for ( uint i = 0; i < frame.size(); ++i )
 					{
@@ -109,7 +114,6 @@ namespace VTX
 
 					if ( chainName != lastChainName || p_molecule.getChainCount() == 0 )
 					{
-						VTX_INFO( chainName + " / " + chainId );
 						// Create chain.
 						p_molecule.addChain();
 						chainModelId++;
