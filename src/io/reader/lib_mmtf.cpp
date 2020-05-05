@@ -110,12 +110,9 @@ namespace VTX
 							std::optional symbol = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
 							symbol.has_value() ? atom.setSymbol( symbol.value() )
 											   : p_molecule.addUnknownAtomSymbol( atomSymbol );
-							const uint * const colorStatic = Model::Atom::SYMBOL_COLOR[ (int)atom.getSymbol() ];
-							const float		   color[ 3 ]  = { float( colorStatic[ 0 ] ) / 255.f,
-													   float( colorStatic[ 1 ] ) / 255.f,
-													   float( colorStatic[ 1 ] ) / 255.f };
+
 							atom.setName( group.atomNameList[ atomIdx ] );
-							atom.setColor( Color( *color, *( color + 1 ), *( color + 2 ) ) );
+							atom.setColor( Model::Atom::SYMBOL_COLOR[ (int)atom.getSymbol() ] );
 
 							x = p_data.xCoordList[ atomGlobalIdx ];
 							y = p_data.yCoordList[ atomGlobalIdx ];

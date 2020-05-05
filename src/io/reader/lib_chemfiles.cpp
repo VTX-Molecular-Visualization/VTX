@@ -205,13 +205,9 @@ namespace VTX
 
 						symbol.has_value() ? modelAtom->setSymbol( symbol.value() )
 										   : p_molecule.addUnknownAtomSymbol( atom.type() );
-						const uint * const colorStatic = Model::Atom::SYMBOL_COLOR[ (int)modelAtom->getSymbol() ];
-						const float		   color[ 3 ]  = { float( colorStatic[ 0 ] ) / 255.f,
-												   float( colorStatic[ 1 ] ) / 255.f,
-												   float( colorStatic[ 1 ] ) / 255.f };
 
 						modelAtom->setName( atom.name() );
-						modelAtom->setColor( Color( *color, *( color + 1 ), *( color + 2 ) ) );
+						modelAtom->setColor( Model::Atom::SYMBOL_COLOR[ (int)modelAtom->getSymbol() ] );
 
 						const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 						const chemfiles::Vector3D &					 position  = positions[ atomId ];

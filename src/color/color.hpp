@@ -13,6 +13,10 @@ namespace VTX
 	{
 		Color() = default;
 		Color( const float p_r, const float p_g, const float p_b ) : _r( p_r ), _g( p_g ), _b( p_b ) {}
+		Color( const int p_r, const int p_g, const int p_b ) : _r( p_r / 255.f ), _g( p_g / 255.f ), _b( p_b / 255.f )
+		{
+		}
+		Color( const Color & p_c ) : _r( p_c._r ), _g( p_c._g ), _b( p_c._b ) {}
 
 		inline Color & operator=( const Color & p_c )
 		{
