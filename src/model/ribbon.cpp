@@ -26,7 +26,7 @@ namespace VTX
 
 				// VTX_DEBUG( "Building secondary structure... chain " + std::to_string( chainIdx ) );
 				const Chain & chain			  = p_molecule.getChain( chainIdx );
-				const Vec3f & chainColor	  = chain.getColor();
+				const Color & chainColor	  = chain.getColor();
 				uint		  residueCount	  = chain.getResidueCount();
 				uint		  idxFirstResidue = chain.getIdFirstResidue();
 
@@ -255,7 +255,7 @@ namespace VTX
 		void Ribbon::_computeTriangleMesh( Math::BSpline & p_splineCenter,
 										   Math::BSpline & p_splineSide1,
 										   Math::BSpline & p_splineSide2,
-										   const Vec3f &   p_color,
+										   const Color &   p_color,
 										   const bool	   p_isArrow,
 										   uint &		   p_vIndex )
 		{

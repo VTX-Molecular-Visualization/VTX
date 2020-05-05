@@ -19,16 +19,16 @@ namespace VTX
 			BaseIntegrator()		  = default;
 			virtual ~BaseIntegrator() = default;
 
-			virtual Vec3f Li( const Ray &	p_ray,
+			virtual Color Li( const Ray &	p_ray,
 							  const Scene & p_scene,
 							  const float	p_tMin,
 							  const float	p_tMax ) const = 0;
 
 		  protected:
 			// TODO: static
-			const Vec3f _backgroundColor //
+			const Color _backgroundColor //
 										 //	= Vec3f( 1.5f ) * 0.1f;
-				= Vec3f( 0.5f, 0.6f, 0.8f ) * 0.1f;
+				= Color( 0.5f, 0.6f, 0.8f ) * 0.05f;
 			//( 0.7f, 0.7f, 0.7f );
 
 			static constexpr float SHADOW_EPS = 0.00001f;

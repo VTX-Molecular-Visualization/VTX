@@ -16,11 +16,11 @@ namespace VTX
 		class MetalMaterial : public BaseMaterial
 		{
 		  public:
-			MetalMaterial( const Vec3f & p_f0, const float p_shininess ) : _f0( p_f0 ), _shininess( p_shininess ) {}
+			MetalMaterial( const Color & p_f0, const float p_shininess ) : _f0( p_f0 ), _shininess( p_shininess ) {}
 
-			Vec3f getColor() const override { return _f0; }
+			Color getColor() const override { return _f0; }
 
-			Vec3f shade( const Ray &		  p_ray,
+			Color shade( const Ray &		  p_ray,
 						 const Intersection & p_hit,
 						 const LightSample &  p_lightSample ) const override
 			{
@@ -30,14 +30,14 @@ namespace VTX
 
 			static MetalMaterial * createAluminium()
 			{
-				return new MetalMaterial( Vec3f( 0.913f, 0.922f, 0.924f ), 128.f );
+				return new MetalMaterial( Color( 0.913f, 0.922f, 0.924f ), 128.f );
 			}
-			static MetalMaterial * createCopper() { return new MetalMaterial( Vec3f( 0.955f, 0.638f, 0.538f ), 32.f ); }
-			static MetalMaterial * createGold() { return new MetalMaterial( Vec3f( 1.022f, 0.782f, 0.344f ), 64.f ); }
-			static MetalMaterial * createZinc() { return new MetalMaterial( Vec3f( 0.644f, 0.824f, 0.850f ), 64.f ); }
+			static MetalMaterial * createCopper() { return new MetalMaterial( Color( 0.955f, 0.638f, 0.538f ), 32.f ); }
+			static MetalMaterial * createGold() { return new MetalMaterial( Color( 1.022f, 0.782f, 0.344f ), 64.f ); }
+			static MetalMaterial * createZinc() { return new MetalMaterial( Color( 0.644f, 0.824f, 0.850f ), 64.f ); }
 
 		  private:
-			Vec3f _f0		 = VEC3F_XYZ;
+			Color _f0		 = Color::white;
 			float _shininess = 64.f;
 		};
 	} // namespace Renderer

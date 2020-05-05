@@ -17,13 +17,14 @@ namespace VTX
 													  // View::MOLECULE_REPRESENTATION::SAS;
 				View::MOLECULE_REPRESENTATION::VAN_DER_WAALS;
 			// View::MOLECULE_REPRESENTATION::BALL_AND_STICK;
+			// View::MOLECULE_REPRESENTATION::STICK;
 			// Setting::Rendering::representation;
 
 			const uint nbAtoms = p_molecule->getAtomCount();
 			const uint nbBonds = p_molecule->getBondCount();
+
 			// show only what is visible
 			// we assume that solvent and ions don't have bonds... chilled :-)
-
 			std::vector<Renderer::BasePrimitive *> primitives;
 			if ( rep == View::MOLECULE_REPRESENTATION::BALL_AND_STICK || rep == View::MOLECULE_REPRESENTATION::STICK )
 			{ primitives.reserve( nbAtoms + nbBonds ); }
@@ -32,7 +33,7 @@ namespace VTX
 				primitives.reserve( nbAtoms );
 			}
 
-			_materials.emplace_back( new MatteMaterial( VEC3F_XYZ ) );
+			//_materials.emplace_back( new MatteMaterial( VEC3F_XYZ ) );
 			//_materials.emplace_back( new PhongMaterial( Vec3f( 0.2f, 0.f, 0.f ), Vec3f( 0.8f, 0.f, 0.f ) ) );
 			//_materials.emplace_back( new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
 
@@ -45,56 +46,29 @@ namespace VTX
 
 			std::map<Model::Chain *, BaseMaterial *> mapMtls;
 
-			const Vec3f jaune( 0.969f, 0.772f, 0.172f );
-			const Vec3f rouge( 1.f, 0.247f, 0.4f ); //( 1.f, 0.2f, 0.2f );
-			const Vec3f vert( 0.2f, 1.f, 0.2f );
-			const Vec3f bleu( 0.145f, 0.886f, 0.906f );
-			const Vec3f blanc( 2.f );
-			const Vec3f noir( 0.3f );
-			float		roughness = 0.3f;
-			float		shininess = 2.f;
-			// multi-color
+			float roughness = 0.3f;
+			float shininess = 32.f;
+
+			for ( uint i = 0; i < Color::predefinedColors.size(); ++i )
+			{
+				_materials.emplace_back( new MatteMaterial( Color::predefinedColors[ i ], roughness ) );
+			}
+
+			// =====================================
+			// for arte video
+			// =====================================
+			// prot rouge
 			// const std::vector<BaseMaterial *> predefMtls = {
 			//	new PhongMaterial( 0.4f * jaune,
 			//					   0.6f * jaune,
-			//					   shininess ), // jaune ocre
-			//	// new MatteMaterial( Vec3f( 0.969f, 0.772f, 0.172f ), roughness ), // jaune ocre
-			//	new MatteMaterial( vert, roughness ),  // vert clair
+			//					   shininess ),									   // jaune ocre
+			//	new MatteMaterial( rouge, roughness ), // rouge clair
 			//	new MatteMaterial( blanc, 0.5f ),	   // blanc qui pète
 			//	new MatteMaterial( rouge, roughness ), // rouge clair
-			//	new MatteMaterial( bleu, roughness )   // bleu clair
+			//	new MatteMaterial( rouge, roughness )  // rouge clair
 			//};
-			// prot noire
-			// const std::vector<BaseMaterial *> predefMtls = {
-			//	new PhongMaterial( 0.4f * jaune,
-			//					   0.6f * jaune,
-			//					   shininess ), // jaune ocre
-			//	new MatteMaterial( noir, roughness ), // rouge clair
-			//	new MatteMaterial( blanc, 0.5f ),	  // blanc qui pète
-			//	new MatteMaterial( noir, roughness ), // rouge clair
-			//	new MatteMaterial( noir, roughness )  // rouge clair
-			//};
-			// prot rouge
-			const std::vector<BaseMaterial *> predefMtls = {
-				new PhongMaterial( 0.4f * jaune,
-								   0.6f * jaune,
-								   shininess ),		   // jaune ocre
-				new MatteMaterial( rouge, roughness ), // rouge clair
-				new MatteMaterial( blanc, 0.5f ),	   // blanc qui pète
-				new MatteMaterial( rouge, roughness ), // rouge clair
-				new MatteMaterial( rouge, roughness )  // rouge clair
-			};
-			// prot verte
-			// const std::vector<BaseMaterial *> predefMtls = {
-			//	new PhongMaterial( 0.4f * jaune,
-			//					   0.6f * jaune,
-			//					   shininess ), // jaune ocre
-			//	// new MatteMaterial( Vec3f( 0.969f, 0.772f, 0.172f ), roughness ), // jaune ocre
-			//	new MatteMaterial( vert, roughness ), // vert clair
-			//	new MatteMaterial( blanc, 0.5f ),	  // blanc qui pète
-			//	new MatteMaterial( vert, roughness ), // vert clair
-			//	new MatteMaterial( vert, roughness )  // vert clair
-			//};
+			// =====================================
+
 			uint idColor = 0;
 
 			const std::vector<Vec3f> & atomPositions = p_molecule->getAtomPositionFrame( p_molecule->getFrame() );
@@ -107,8 +81,9 @@ namespace VTX
 				tAtomPositions[ i ] = Vec3f( tPos.x, tPos.y, tPos.z );
 			}
 
-			float radius = rep == View::MOLECULE_REPRESENTATION::BALL_AND_STICK ? 0.4f : 0.15f;
+			float radius = rep == View::MOLECULE_REPRESENTATION::BALL_AND_STICK ? 0.4f : 0.25f;
 
+			std::cout << "=========> " << Color::predefinedColors.size() << std::endl;
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
 				if ( p_molecule->isAtomVisible( i ) )
@@ -117,14 +92,11 @@ namespace VTX
 
 					if ( mapMtls.find( chainPtr ) == mapMtls.end() )
 					{
-						if ( idColor < uint( predefMtls.size() ) )
-						{
-							mapMtls[ chainPtr ] = predefMtls[ idColor++ ];
-							if ( idColor < 1 ) idColor++;
-						}
+						// if ( idColor > 45 ) break;
+						if ( idColor < uint( _materials.size() ) ) { mapMtls[ chainPtr ] = _materials[ idColor++ ]; }
 						else
 						{
-							mapMtls[ chainPtr ] = new MatteMaterial( chainPtr->getColor(), 0.3f );
+							mapMtls[ chainPtr ] = new MatteMaterial( chainPtr->getColor(), roughness );
 						}
 					}
 
@@ -154,7 +126,7 @@ namespace VTX
 					const Vec3f &		a2	 = tAtomPositions[ bond.getIndexSecondAtom() ];
 
 					primitives.emplace_back( new Renderer::Cylinder(
-						a1, a2, 0.15f, mapMtls[ p_molecule->getAtom( bond.getIndexFirstAtom() ).getChainPtr() ] ) );
+						a1, a2, 0.25f, mapMtls[ p_molecule->getAtom( bond.getIndexFirstAtom() ).getChainPtr() ] ) );
 				}
 			}
 

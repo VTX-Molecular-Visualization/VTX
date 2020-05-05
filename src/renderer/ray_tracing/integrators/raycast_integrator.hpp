@@ -15,7 +15,7 @@ namespace VTX
 		class RayCastIntegrator : public BaseIntegrator
 		{
 		  public:
-			Vec3f Li( const Ray & p_ray, const Scene & p_scene, const float p_tMin, const float p_tMax ) const override;
+			Color Li( const Ray & p_ray, const Scene & p_scene, const float p_tMin, const float p_tMax ) const override;
 
 		  private:
 		};

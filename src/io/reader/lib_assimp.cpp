@@ -1,6 +1,6 @@
 #include "lib_assimp.hpp"
+#include "color/color.hpp"
 #include "define.hpp"
-#include "util/color.hpp"
 #include "util/logger.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -70,10 +70,11 @@ namespace VTX
 						normale.y		= mesh->mNormals[ v ].y;
 						normale.z		= mesh->mNormals[ v ].z;
 
-						Vec3f & color = p_mesh.getColor( currentVertex );
-						color.x		  = 1.f;
-						color.y		  = 0.5f;
-						color.z		  = 0.f;
+						// TODO: read mtl if exists !
+						Color & color = p_mesh.getColor( currentVertex );
+						color._r	  = 1.f;
+						color._g	  = 0.5f;
+						color._b	  = 0.f;
 					}
 				}
 			}
@@ -87,7 +88,7 @@ namespace VTX
 
 				// Set molecule properties.
 				p_molecule.setName( p_path.getFileNameWithoutExtension() );
-				p_molecule.setColor( Util::Color::randomPastel() );
+				p_molecule.setColor( Color::randomPastel() );
 
 				uint chainGlobalIdx	  = 0;
 				uint residueGlobalIdx = 0;
@@ -123,7 +124,7 @@ namespace VTX
 					chain.setName( mesh->mName.C_Str() );
 					chain.setIdFirstResidue( residueGlobalIdx );
 					chain.setResidueCount( mesh->mNumFaces );
-					chain.setColor( Util::Color::randomPastel() );
+					chain.setColor( Color::randomPastel() );
 
 					// Loop over faces.
 					for ( uint residueIdx = 0; residueIdx < mesh->mNumFaces; ++residueIdx, ++residueGlobalIdx )
@@ -141,7 +142,7 @@ namespace VTX
 						residue.setAtomCount( uint( mesh->mNumVertices ) );
 						// residue.setIdFirstBond( bondGlobalIdx );
 						// residue.setBondCount( uint( mesh->mNumFaces ) );
-						residue.setColor( Util::Color::randomPastel() );
+						residue.setColor( Color::randomPastel() );
 
 						// Loop over vertices in the face.
 						for ( uint atomIdx = 0; atomIdx < face.mNumIndices;
@@ -160,7 +161,7 @@ namespace VTX
 
 							aiColor4D diffuse;
 							if ( aiGetMaterialColor( material, AI_MATKEY_COLOR_DIFFUSE, &diffuse ) == AI_SUCCESS )
-							{ atom.setColor( Vec3f( diffuse.r, diffuse.g, diffuse.b ) ); }
+							{ atom.setColor( Color( diffuse.r, diffuse.g, diffuse.b ) ); }
 
 							const aiVector3D vector = mesh->mVertices[ indice ];
 							frame.emplace_back( vector.x, vector.y, vector.z );

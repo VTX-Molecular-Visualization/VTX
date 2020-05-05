@@ -15,7 +15,7 @@ namespace VTX
 		class ColorableChangeColor : public BaseAction
 		{
 		  public:
-			explicit ColorableChangeColor( Generic::BaseColorable & p_colorable, const Vec3f & p_color ) :
+			explicit ColorableChangeColor( Generic::BaseColorable & p_colorable, const Color & p_color ) :
 				_colorable( p_colorable ), _color( p_color )
 			{
 			}
@@ -24,7 +24,7 @@ namespace VTX
 
 		  private:
 			Generic::BaseColorable & _colorable;
-			const Vec3f				 _color;
+			const Color				 _color;
 		};
 	} // namespace Action
 } // namespace VTX

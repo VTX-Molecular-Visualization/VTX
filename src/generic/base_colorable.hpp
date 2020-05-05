@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
+#include "color/color.hpp"
 #include "define.hpp"
-#include "util/color.hpp"
 
 namespace VTX
 {
@@ -15,11 +15,11 @@ namespace VTX
 		class BaseColorable
 		{
 		  public:
-			inline const Vec3f & getColor() const { return _color; }
-			inline void			 setColor( const Vec3f & p_color ) { _color = p_color; }
+			inline const Color & getColor() const { return _color; }
+			inline void			 setColor( const Color & p_color ) { _color = p_color; }
 
 		  protected:
-			Vec3f _color = Util::Color::randomPastel();
+			Color _color = Color::randomPastel();
 		};
 	} // namespace Generic
 } // namespace VTX

@@ -1,6 +1,6 @@
 #include "lib_chemfiles.hpp"
 #undef INFINITE
-#include "util/color.hpp"
+#include "color/color.hpp"
 #include <chemfiles.hpp>
 #include <magic_enum.hpp>
 #include <unordered_map>
@@ -33,7 +33,7 @@ namespace VTX
 
 				// Set molecule properties.
 				if ( frame.get( "name" ) ) { p_molecule.setName( frame.get( "name" )->as_string() ); }
-				p_molecule.setColor( Util::Color::randomPastel() );
+				p_molecule.setColor( Color::randomPastel() );
 
 				// Check properties, same for all atoms/residues?
 				if ( frame.size() > 0 )
@@ -207,7 +207,7 @@ namespace VTX
 												   float( colorStatic[ 1 ] ) / 255.f };
 
 						modelAtom->setName( atom.name() );
-						modelAtom->setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
+						modelAtom->setColor( Color( *color, *( color + 1 ), *( color + 2 ) ) );
 
 						const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 						const chemfiles::Vector3D &					 position  = positions[ atomId ];

@@ -8,6 +8,7 @@
 #include "../intersection.hpp"
 #include "../lights/light_sample.hpp"
 #include "../ray.hpp"
+#include "color/color.hpp"
 
 namespace VTX
 {
@@ -19,9 +20,9 @@ namespace VTX
 			BaseMaterial()			= default;
 			virtual ~BaseMaterial() = default;
 
-			virtual Vec3f getColor() const = 0;
+			virtual Color getColor() const = 0;
 
-			virtual Vec3f shade( const Ray &		  p_ray,
+			virtual Color shade( const Ray &		  p_ray,
 								 const Intersection & p_hit,
 								 const LightSample &  p_lightDirSample ) const = 0;
 		};

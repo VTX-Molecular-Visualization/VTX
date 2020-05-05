@@ -14,7 +14,7 @@ namespace VTX
 		class PointLight : public BaseLight
 		{
 		  public:
-			PointLight( const Vec3f & p_position, const Vec3f & p_color, const float p_power ) :
+			PointLight( const Vec3f & p_position, const Color & p_color, const float p_power ) :
 				BaseLight( p_color, p_power ), _position( p_position )
 			{
 			}
@@ -25,7 +25,7 @@ namespace VTX
 				const float dist2 = Util::Math::dot( dir, dir );
 				const float dist  = sqrtf( dist2 );
 
-				return LightSample( dir / dist, dist, ( _color * _power ) / dist2, _pdf );
+				return LightSample( Util::Math::normalize( dir ), dist, ( _color * _power ) / dist2, _pdf );
 			}
 
 		  private:
