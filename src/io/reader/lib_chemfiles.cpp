@@ -73,7 +73,7 @@ namespace VTX
 				}
 
 				// Create models.
-				p_molecule.addAtomPositionFrame();
+				p_molecule.getFrames().resize( trajectory.nsteps() );
 				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 				p_molecule.getResidues().resize( topology.residues().size() );
 				p_molecule.getAtoms().resize( frame.size() );
@@ -248,20 +248,18 @@ namespace VTX
 				}
 
 				// Fill other frames.
-				// TODO: use resize()
 				for ( uint frameIdx = 1; frameIdx < trajectory.nsteps(); ++frameIdx )
 				{
-					p_molecule.addAtomPositionFrame();
 					VTX_INFO( "Frame " + std::to_string( frameIdx ) );
 					Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
 
 					frame												   = trajectory.read_step( frameIdx );
 					const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
-
+					moleculeFrame.resize( positions.size() );
 					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
 					{
 						const chemfiles::Vector3D & position = positions[ positionIdx ];
-						moleculeFrame.emplace_back( position[ 0 ], position[ 1 ], position[ 2 ] );
+						moleculeFrame[ positionIdx ]		 = { position[ 0 ], position[ 1 ], position[ 2 ] };
 					}
 				}
 
@@ -269,9 +267,8 @@ namespace VTX
 				p_molecule.getBonds().resize( bonds.size() );
 				for ( uint boundIdx = 0; boundIdx < uint( bonds.size() ); ++boundIdx )
 				{
-					const chemfiles::Bond & bond = bonds[ boundIdx ];
-					p_molecule.addBond();
-					Model::Bond * modelBond			  = new Model::Bond();
+					const chemfiles::Bond & bond	  = bonds[ boundIdx ];
+					Model::Bond *			modelBond = new Model::Bond();
 					p_molecule.getBonds()[ boundIdx ] = modelBond;
 
 					modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );

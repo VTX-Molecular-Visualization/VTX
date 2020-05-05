@@ -118,11 +118,13 @@ namespace VTX
 
 			inline const Math::AABB & getGlobalPositionsAABB() const { return _globalPositionsAABB; }
 
-			virtual void	  init() override;
-			void			  setRepresentation();
-			void			  setColorMode();
-			inline uint		  getFrame() const { return _currentFrame; }
-			void			  setFrame( const uint );
+			virtual void								   init() override;
+			void										   setRepresentation();
+			void										   setColorMode();
+			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
+			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
+			inline uint									   getFrame() const { return _currentFrame; }
+			void										   setFrame( const uint );
 			inline const uint getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
 			inline uint		  getFPS() const { return _fps; }
 			void			  setFPS( const uint p_fps ) { _fps = p_fps; }
