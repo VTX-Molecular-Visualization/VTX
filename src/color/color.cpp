@@ -2,6 +2,12 @@
 
 namespace VTX
 {
+	std::ostream & operator<<( std::ostream & p_os, const Color & p_c )
+	{
+		p_os << p_c._r << " - " << p_c._g << " - " << p_c._b << std::endl;
+		return p_os;
+	}
+
 	const Color Color::black( 0.f, 0.f, 0.f );
 	const Color Color::white( 1.f, 1.f, 1.f );
 	const Color Color::red( 1.f, 0.f, 0.f );

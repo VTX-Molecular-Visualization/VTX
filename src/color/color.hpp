@@ -86,16 +86,17 @@ namespace VTX
 
 		// TODO: check if better to reuse x= operators...
 		inline Color operator+( const Color & p_c ) const { return Color( _r + p_c._r, _g + p_c._g, _b + p_c._b ); }
-		inline Color operator+( const float & p_f ) const { return Color( _r + p_f, _g + p_f, _b + p_f ); }
 		inline Color operator-( const Color & p_c ) const { return Color( _r - p_c._r, _g - p_c._g, _b - p_c._b ); }
-		inline Color operator-( const float & p_f ) const { return Color( _r - p_f, _g - p_f, _b - p_f ); }
 		inline Color operator*( const Color & p_c ) const { return Color( _r * p_c._r, _g * p_c._g, _b * p_c._b ); }
-		inline Color operator*( const float & p_f ) const { return Color( _r * p_f, _g * p_f, _b * p_f ); }
 		inline Color operator/( const Color & p_c ) const
 		{
 			assert( p_c._r != 0.f && p_c._g != 0.f && p_c._b != 0.f );
 			return Color( _r / p_c._r, _g / p_c._g, _b / p_c._b );
 		}
+
+		inline Color operator+( const float & p_f ) const { return Color( _r + p_f, _g + p_f, _b + p_f ); }
+		inline Color operator-( const float & p_f ) const { return Color( _r - p_f, _g - p_f, _b - p_f ); }
+		inline Color operator*( const float & p_f ) const { return Color( _r * p_f, _g * p_f, _b * p_f ); }
 		inline Color operator/( const float & p_f ) const
 		{
 			assert( p_f != 0.f );
@@ -126,16 +127,18 @@ namespace VTX
 		inline void saturate()
 		{
 			_r = Util::Math::clamp( _r, 0.f, 1.f );
-			_g = Util::Math::clamp( _r, 0.f, 1.f );
-			_b = Util::Math::clamp( _r, 0.f, 1.f );
+			_g = Util::Math::clamp( _g, 0.f, 1.f );
+			_b = Util::Math::clamp( _b, 0.f, 1.f );
 		}
 
 		inline void applyGamma( const float & p_gamma )
 		{
 			_r = powf( _r, p_gamma );
-			_g = powf( _b, p_gamma );
+			_g = powf( _g, p_gamma );
 			_b = powf( _b, p_gamma );
 		}
+
+		friend std::ostream & operator<<( std::ostream & p_os, const Color & p_c );
 
 		static const Color black;
 		static const Color white;
