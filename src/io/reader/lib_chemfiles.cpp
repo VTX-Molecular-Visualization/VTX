@@ -61,20 +61,6 @@ namespace VTX
 					VTX_DEBUG( propResidue );
 				}
 
-				// Create models.
-				p_molecule.addAtomPositionFrame();
-				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
-
-				uint chainModelId = -1;
-				// uint atomModelId  = 0;
-
-				p_molecule.getAtoms().resize( frame.size() );
-				p_molecule.getAtomPositionFrame( 0 ).resize( frame.size() );
-				for ( uint i = 0; i < uint( frame.size() ); ++i )
-				{
-					p_molecule.getAtoms()[ i ] = new Model::Atom();
-				}
-
 				// If no residue, create a fake one.
 				if ( residues.size() == 0 )
 				{
@@ -86,8 +72,16 @@ namespace VTX
 					frame.add_residue( residue );
 				}
 
+				// Create models.
+				p_molecule.addAtomPositionFrame();
+				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
+				p_molecule.getResidues().resize( topology.residues().size() );
+				p_molecule.getAtoms().resize( frame.size() );
+				modelFrame.resize( frame.size() );
+
 				Model::Chain * modelChain;
 				std::string	   lastChainName = "";
+				uint		   chainModelId	 = -1;
 				for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 				{
 					const chemfiles::Residue & residue = residues[ residueIdx ];
@@ -133,16 +127,16 @@ namespace VTX
 					modelChain->setResidueCount( modelChain->getResidueCount() + 1 );
 
 					// Create residue.
-					p_molecule.addResidue();
-					Model::Residue & modelResidue = p_molecule.getResidue( residueIdx );
-					modelResidue.setIndex( residueIdx );
-					modelResidue.setMoleculePtr( &p_molecule );
-					modelResidue.setChainPtr( modelChain );
-					modelResidue.setIdFirstAtom( uint( *residue.begin() ) );
-					modelResidue.setAtomCount( uint( residue.size() ) );
+					Model::Residue * modelResidue		   = new Model::Residue();
+					p_molecule.getResidues()[ residueIdx ] = modelResidue;
+					modelResidue->setIndex( residueIdx );
+					modelResidue->setMoleculePtr( &p_molecule );
+					modelResidue->setChainPtr( modelChain );
+					modelResidue->setIdFirstAtom( uint( *residue.begin() ) );
+					modelResidue->setAtomCount( uint( residue.size() ) );
 					const std::string & residueSymbol = residue.name();
 					std::optional		symbol = magic_enum::enum_cast<Model::Residue::RESIDUE_SYMBOL>( residueSymbol );
-					symbol.has_value() ? modelResidue.setSymbol( symbol.value() )
+					symbol.has_value() ? modelResidue->setSymbol( symbol.value() )
 									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 
 					// PDB only.
@@ -154,30 +148,30 @@ namespace VTX
 						if ( secondaryStructure != "" )
 						{
 							if ( secondaryStructure == "extended" )
-							{ modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND ); }
+							{ modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND ); }
 							else if ( secondaryStructure == "turn" )
 							{
-								modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::COIL );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::COIL );
 							}
 							else if ( secondaryStructure == "alpha helix" )
 							{
-								modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
 							}
 							else if ( secondaryStructure == "omega helix" )
 							{
-								modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
 							}
 							else if ( secondaryStructure == "gamma helix" )
 							{
-								modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
 							}
 							else if ( secondaryStructure == "pi helix" )
 							{
-								modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
 							}
 							else if ( secondaryStructure == "3-10 helix" )
 							{
-								modelResidue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
 							}
 
 							if ( p_molecule.secondaryStructureLoadedFromFile() == false )
@@ -193,26 +187,30 @@ namespace VTX
 						atomType = uint( atom.properties().get( "atom_type" ).value_or( -1 ).as_double() );
 
 						// Create atom.
-						Model::Atom & modelAtom = p_molecule.getAtom( atomId );
-						modelAtom.setIndex( atomId );
-						modelAtom.setMoleculePtr( &p_molecule );
-						modelAtom.setChainPtr( modelChain );
-						modelAtom.setResiduePtr( &modelResidue );
+						Model::Atom * modelAtom = p_molecule.getAtoms()[ atomId ];
+						modelAtom				= new Model::Atom();
+
+						Model::Atom * modelAtom			= new Model::Atom();
+						p_molecule.getAtoms()[ atomId ] = modelAtom;
+						modelAtom->setIndex( atomId );
+						modelAtom->setMoleculePtr( &p_molecule );
+						modelAtom->setChainPtr( modelChain );
+						modelAtom->setResiduePtr( modelResidue );
 						std::string atomSymbol = atom.type();
 
 						// VTX_INFO( atom.name() + " " + atom.type() );
 
 						std::optional symbol = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
 
-						symbol.has_value() ? modelAtom.setSymbol( symbol.value() )
+						symbol.has_value() ? modelAtom->setSymbol( symbol.value() )
 										   : p_molecule.addUnknownAtomSymbol( atom.type() );
-						const uint * const colorStatic = Model::Atom::SYMBOL_COLOR[ (int)modelAtom.getSymbol() ];
+						const uint * const colorStatic = Model::Atom::SYMBOL_COLOR[ (int)modelAtom->getSymbol() ];
 						const float		   color[ 3 ]  = { float( colorStatic[ 0 ] ) / 100.f,
 												   float( colorStatic[ 1 ] ) / 100.f,
 												   float( colorStatic[ 1 ] ) / 100.f };
 
-						modelAtom.setName( atom.name() );
-						modelAtom.setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
+						modelAtom->setName( atom.name() );
+						modelAtom->setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
 
 						const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 						const chemfiles::Vector3D &					 position  = positions[ atomId ];
@@ -226,13 +224,13 @@ namespace VTX
 											p_molecule.getPRM().solventIds.end(),
 											atomType )
 								 != p_molecule.getPRM().solventIds.end() )
-							{ modelAtom.setType( Model::Atom::ATOM_TYPE::SOLVENT ); }
+							{ modelAtom->setType( Model::Atom::ATOM_TYPE::SOLVENT ); }
 							else if ( std::find( p_molecule.getPRM().ionIds.begin(),
 												 p_molecule.getPRM().ionIds.end(),
 												 atomType )
 									  != p_molecule.getPRM().ionIds.end() )
 							{
-								modelAtom.setType( Model::Atom::ATOM_TYPE::ION );
+								modelAtom->setType( Model::Atom::ATOM_TYPE::ION );
 							}
 						}
 
@@ -241,19 +239,19 @@ namespace VTX
 										p_molecule.getPSF().solventResidueSymbols.end(),
 										residueSymbol )
 							 != p_molecule.getPSF().solventResidueSymbols.end() )
-						{ modelAtom.setType( Model::Atom::ATOM_TYPE::SOLVENT ); }
+						{ modelAtom->setType( Model::Atom::ATOM_TYPE::SOLVENT ); }
 						else if ( std::find( p_molecule.getPSF().ionResidueSymbols.begin(),
 											 p_molecule.getPSF().ionResidueSymbols.end(),
 											 residueSymbol )
 								  != p_molecule.getPSF().ionResidueSymbols.end() )
 						{
-							modelAtom.setType( Model::Atom::ATOM_TYPE::ION );
+							modelAtom->setType( Model::Atom::ATOM_TYPE::ION );
 						}
 					}
 				}
 
 				// Fill other frames.
-				// TODO: user resize()
+				// TODO: use resize()
 				for ( uint frameIdx = 1; frameIdx < trajectory.nsteps(); ++frameIdx )
 				{
 					p_molecule.addAtomPositionFrame();
@@ -271,14 +269,16 @@ namespace VTX
 				}
 
 				// Bonds.
+				p_molecule.getBonds().resize( bonds.size() );
 				for ( uint boundIdx = 0; boundIdx < uint( bonds.size() ); ++boundIdx )
 				{
 					const chemfiles::Bond & bond = bonds[ boundIdx ];
 					p_molecule.addBond();
-					Model::Bond & modelBond = p_molecule.getBond( boundIdx );
+					Model::Bond * modelBond			  = new Model::Bond();
+					p_molecule.getBonds()[ boundIdx ] = modelBond;
 
-					modelBond.setIndexFirstAtom( uint( bond[ 0 ] ) );
-					modelBond.setIndexSecondAtom( uint( bond[ 1 ] ) );
+					modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
+					modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
 				}
 			}
 
