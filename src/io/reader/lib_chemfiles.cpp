@@ -187,9 +187,6 @@ namespace VTX
 						atomType = uint( atom.properties().get( "atom_type" ).value_or( -1 ).as_double() );
 
 						// Create atom.
-						Model::Atom * modelAtom = p_molecule.getAtoms()[ atomId ];
-						modelAtom				= new Model::Atom();
-
 						Model::Atom * modelAtom			= new Model::Atom();
 						p_molecule.getAtoms()[ atomId ] = modelAtom;
 						modelAtom->setIndex( atomId );
