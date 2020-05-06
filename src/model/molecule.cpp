@@ -67,10 +67,12 @@ namespace VTX
 				_fillBufferBonds();
 
 				// Compute seconndary structure if not loaded.
+				/*
 				if ( _secondaryStructureLoadedFromFile == false )
 				{ Util::Molecule::computeSecondaryStructure( *this ); }
 				// Create secondary structure mesh.
-				// createSecondaryStructure();
+				 createSecondaryStructure();
+				 */
 			}
 
 			// Set default representation.
