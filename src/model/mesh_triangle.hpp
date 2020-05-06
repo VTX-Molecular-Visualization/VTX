@@ -6,7 +6,7 @@
 #endif
 
 #include "base_model_3d.hpp"
-#include "color/color.hpp"
+#include "color/rgb.hpp"
 #include "define.hpp"
 #include <vector>
 

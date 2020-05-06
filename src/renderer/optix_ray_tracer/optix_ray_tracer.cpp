@@ -1,5 +1,5 @@
 #include "optix_ray_tracer.hpp"
-#include "color/color.hpp"
+#include "color/rgb.hpp"
 #include "tool/chrono.hpp"
 #include "util/sampler.hpp"
 #include "vtx_app.hpp"

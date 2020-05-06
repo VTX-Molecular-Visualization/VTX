@@ -1,4 +1,4 @@
-#include "color.hpp"
+#include "rgb.hpp"
 
 namespace VTX
 {
