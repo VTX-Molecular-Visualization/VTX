@@ -1,5 +1,5 @@
 #include "lib_assimp.hpp"
-#include "color/color.hpp"
+#include "color/rgb.hpp"
 #include "define.hpp"
 #include "util/logger.hpp"
 #include <assimp/Importer.hpp>

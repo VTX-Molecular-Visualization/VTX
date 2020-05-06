@@ -1,5 +1,5 @@
 #include "lib_mmtf.hpp"
-#include "color/color.hpp"
+#include "color/rgb.hpp"
 #include "define.hpp"
 #include "util/logger.hpp"
 #include <magic_enum.hpp>

@@ -1,5 +1,5 @@
 #include "lib_chemfiles.hpp"
-#include "color/color.hpp"
+#include "color/rgb.hpp"
 #include <algorithm>
 #include <magic_enum.hpp>
 #include <unordered_map>

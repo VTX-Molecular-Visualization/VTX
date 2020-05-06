@@ -1,5 +1,5 @@
 #include "molecule.hpp"
-#include "color/color.hpp"
+#include "color/rgb.hpp"
 #include "model/ribbon.hpp"
 #include "util/molecule.hpp"
 #include "view/d3/box.hpp"

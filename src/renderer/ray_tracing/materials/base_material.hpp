@@ -8,7 +8,7 @@
 #include "../intersection.hpp"
 #include "../lights/light_sample.hpp"
 #include "../ray.hpp"
-#include "color/color.hpp"
+#include "color/rgb.hpp"
 
 namespace VTX
 {

@@ -136,10 +136,11 @@ namespace VTX
 
 		void RayTracer::renderFrame( const Object3D::Scene & p_scene )
 		{
-			VTX_INFO( "Render Frame" );
+			VTX_INFO( "Init Scene" );
 			_initScene( p_scene );
-
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
+
+			VTX_INFO( "Render frame" );
 
 			const uint nbPixelSamples = 1;
 
@@ -163,14 +164,10 @@ namespace VTX
 			VTX_INFO( "Nb threads: " + std::to_string( nbThreads ) );
 
 			// start rendering
+			_progressBar.start( nbTiles, 50 );
 			Tool::Chrono chrono;
 
 			chrono.start();
-			//#pragma omp parallel for
-			//			for ( int i = 0; i < int( nbTiles ); ++i )
-			//			{
-			//				_renderTile( pixels, camera, nbPixelSamples, uint( i ), nbTilesX, nbTilesY );
-			//			}
 
 			std::atomic<uint> nextTileId = nbThreads;
 
@@ -187,6 +184,7 @@ namespace VTX
 			}
 
 			chrono.stop();
+			_progressBar.stop();
 
 			const double time = chrono.elapsedTime();
 
@@ -302,7 +300,6 @@ namespace VTX
 			uint taskId = p_threadId;
 			while ( taskId < p_nbTiles )
 			{
-				std::cout << p_threadId << " : " << taskId << " / " << p_nbTiles << std::endl;
 				const uint tileY = taskId / p_nbTilesX;
 				const uint tileX = taskId - tileY * p_nbTilesX;
 				const uint x0	 = tileX * TILE_SIZE;
@@ -324,34 +321,7 @@ namespace VTX
 				}
 
 				taskId = p_nextTileId++;
-			}
-		}
-
-		void RayTracer::_renderTile( std::vector<uchar> &	  p_image,
-									 const CameraRayTracing & p_camera,
-									 const uint				  p_nbPixelSamples,
-									 const uint				  p_taskIndex,
-									 const uint				  p_nbTilesX,
-									 const uint				  p_nbTilesY )
-		{
-			const uint tileY = p_taskIndex / p_nbTilesX;
-			const uint tileX = p_taskIndex - tileY * p_nbTilesX;
-			const uint x0	 = tileX * TILE_SIZE;
-			const uint x1	 = Util::Math::min( x0 + TILE_SIZE, _width );
-			const uint y0	 = tileY * TILE_SIZE;
-			const uint y1	 = Util::Math::min( y0 + TILE_SIZE, _height );
-
-			for ( uint y = y0; y < y1; ++y )
-			{
-				for ( uint x = x0; x < x1; ++x )
-				{
-					Color::Rgb color = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
-					color.applyGamma( _gamma );
-					const uint pixelId	   = ( x + y * _width ) * 3;
-					p_image[ pixelId ]	   = uchar( color.getR() * 255 );
-					p_image[ pixelId + 1 ] = uchar( color.getG() * 255 );
-					p_image[ pixelId + 2 ] = uchar( color.getB() * 255 );
-				}
+				_progressBar.next();
 			}
 		}
 

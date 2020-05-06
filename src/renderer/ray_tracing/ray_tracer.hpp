@@ -6,6 +6,7 @@
 #endif
 
 #include "../base_renderer.hpp"
+#include "console_progress_bar.hpp"
 #include "integrators/base_integrator.hpp"
 #include "rt_scene.hpp"
 #include <vector>
@@ -41,13 +42,6 @@ namespace VTX
 							   const uint				p_nbTiles,
 							   std::atomic<uint> &		p_nextTileId );
 
-			void _renderTile( std::vector<uchar> &	   p_image,
-							  const CameraRayTracing & p_camera,
-							  const uint			   p_nbPixelSamples,
-							  const uint			   p_taskIndex,
-							  const uint			   p_nbTilesX,
-							  const uint			   p_nbTilesY );
-
 			Color::Rgb _renderPixel( const CameraRayTracing & p_camera,
 									 const float			  p_x,
 									 const float			  p_y,
@@ -63,6 +57,8 @@ namespace VTX
 
 			// TODO: keep gamma as float ?
 			float _gamma = 1.3f;
+
+			ConsoleProgressBar _progressBar;
 		};
 	} // namespace Renderer
 } // namespace VTX
