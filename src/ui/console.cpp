@@ -32,7 +32,24 @@ namespace VTX
 			}
 			for ( const Event::VTXEventLog & log : _logs )
 			{
+				bool popColor = false;
+				if ( log.level == "ERROR" )
+				{
+					ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.f, 0.f, 0.f, 1.f ) );
+					popColor = true;
+				}
+				if ( log.level == "WARNING" )
+				{
+					ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 1.f, 1.f, 0.f, 1.f ) );
+					popColor = true;
+				}
+				if ( log.level == "DEBUG" )
+				{
+					ImGui::PushStyleColor( ImGuiCol_Text, ImVec4( 0.f, 1.f, 0.f, 1.f ) );
+					popColor = true;
+				}
 				ImGui::Selectable( ( "[" + log.date + "] " + "[" + log.level + "] " + log.message ).c_str() );
+				if ( popColor ) { ImGui::PopStyleColor(); }
 			}
 
 			// Scripting.
