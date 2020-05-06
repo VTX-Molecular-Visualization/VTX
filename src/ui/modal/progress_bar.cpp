@@ -14,9 +14,8 @@ namespace VTX
 				{
 					_value = dynamic_cast<const Event::VTXEventFloat &>( p_event ).arg;
 
+					if ( _value != 0.f ) { VTX_DEBUG( std::to_string( _value * 100 ) + "%" ); }
 					if ( _value >= 1.f ) { _value = 0.f; }
-
-					VTX_DEBUG( std::to_string( _value * 100 ) + "%" );
 				}
 			}
 
