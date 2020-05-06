@@ -17,9 +17,8 @@ namespace VTX
 #ifdef _DEBUG
 				chemfiles::warning_callback_t callback = []( const std::string & p_log ) { VTX_WARNING( p_log ); };
 #else
-				chemfiles::warning_callback_t callback = []( const std::string & ) {};
+				chemfiles::warning_callback_t callback = []( const std::string & p_log ) { VTX_WARNING( p_log ); };
 #endif
-
 				chemfiles::set_warning_callback( callback );
 
 				chemfiles::Trajectory trajectory( p_path, 'r' );

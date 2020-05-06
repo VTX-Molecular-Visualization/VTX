@@ -30,6 +30,7 @@ namespace VTX
 				uint		  residueCount	  = chain.getResidueCount();
 				uint		  idxFirstResidue = chain.getIdFirstResidue();
 
+				// Not enought residues.
 				if ( residueCount < 3 ) { continue; }
 
 				// Loop over residues
@@ -43,23 +44,29 @@ namespace VTX
 					// First residue
 					if ( residueValidCount == 0 )
 					{
-						if ( residueIdx > residueCount - 2 ) { continue; }
+						// Avoid crash when not engouth valid residues to start the mesh.
+						if ( residueIdx >= residueCount - 2 ) { continue; }
 
 						const Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
+						const Residue & residue3 = p_molecule.getResidue( idxFirstResidue + residueIdx + 2 );
 
 						const Model::Atom * CA1 = residue1.findFirstAtomByName( "CA" );
 						const Model::Atom * OX1 = residue1.findFirstAtomByName( "O" );
 						const Model::Atom * CA2 = residue2.findFirstAtomByName( "CA" );
+						const Model::Atom * OX2 = residue2.findFirstAtomByName( "O" );
+						const Model::Atom * CA3 = residue3.findFirstAtomByName( "CA" );
 
-						if ( CA1 == nullptr || OX1 == nullptr || CA2 == nullptr )
+						if ( CA1 == nullptr || OX1 == nullptr || CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 						{
-							// VTX_DEBUG( "Failed to get atoms" );
+							// VTX_WARNING( "Failed to get atoms for first residue" );
 							continue;
 						}
 
 						const Vec3f & positionCA1 = positions[ CA1->getIndex() ];
 						const Vec3f & positionOX1 = positions[ OX1->getIndex() ];
 						const Vec3f & positionCA2 = positions[ CA2->getIndex() ];
+						const Vec3f & positionOX2 = positions[ OX2->getIndex() ];
+						const Vec3f & positionCA3 = positions[ CA3->getIndex() ];
 
 						_addControlPoints( positionCA1,
 										   positionOX1,
@@ -74,20 +81,6 @@ namespace VTX
 						splineSide1.copyPoint( 3, 2 );
 						splineCenter.copyPoint( 3, 2 );
 						splineSide2.copyPoint( 3, 2 );
-
-						const Residue & residue3 = p_molecule.getResidue( idxFirstResidue + residueIdx + 2 );
-
-						const Model::Atom * OX2 = residue2.findFirstAtomByName( "O" );
-						const Model::Atom * CA3 = residue3.findFirstAtomByName( "CA" );
-
-						if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
-						{
-							// VTX_DEBUG( "Failed to get atoms" );
-							continue;
-						}
-
-						const Vec3f & positionOX2 = positions[ OX2->getIndex() ];
-						const Vec3f & positionCA3 = positions[ CA3->getIndex() ];
 
 						_addControlPoints( positionCA2,
 										   positionOX2,
@@ -119,13 +112,14 @@ namespace VTX
 					}
 					else
 					{
-						if ( residueIdx > residueCount - 2 ) { continue; }
+						// Hum?
+						// if ( residueIdx > residueCount - 2 ) { continue; }
 
 						splineCenter.shiftPoints();
 						splineSide1.shiftPoints();
 						splineSide2.shiftPoints();
 
-						if ( ( residueIdx == residueCount - 1 ) || ( residueIdx == residueCount - 2 ) )
+						if ( residueIdx >= residueCount - 2 )
 						{
 							const Vec3f & p1 = splineCenter.getPoint( 1u );
 							const Vec3f & p2 = splineCenter.getPoint( 2u );
@@ -149,7 +143,7 @@ namespace VTX
 
 							if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 							{
-								// VTX_DEBUG( "Failed to get atoms" );
+								VTX_WARNING( "Failed to get atoms" );
 								continue;
 							}
 
