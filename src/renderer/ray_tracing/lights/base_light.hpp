@@ -26,7 +26,7 @@ namespace VTX
 			const bool isSurface() const { return _isSurface; }
 
 		  protected:
-			Color::Rgb _color = Color::Rgb::white;
+			Color::Rgb _color = Color::Rgb::WHITE;
 			// TODO: keep it ?
 			float _power = 1.f;
 

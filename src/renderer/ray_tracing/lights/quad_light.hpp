@@ -41,7 +41,7 @@ namespace VTX
 
 				const float		 cosDir	  = Util::Math::dot( _invNormal, direction );
 				const float		 pdf	  = _pdf * ( dist * dist ) / fabsf( cosDir );
-				const Color::Rgb radiance = cosDir > 0.f ? _color * _power / pdf : Color::Rgb::black;
+				const Color::Rgb radiance = cosDir > 0.f ? _color * _power / pdf : Color::Rgb::BLACK;
 
 				return LightSample( direction, dist, radiance, pdf );
 			}

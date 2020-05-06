@@ -25,7 +25,7 @@ namespace VTX
 
 			Vec3f	   _dir		 = VEC3F_ZERO;		  // normalized direction toward light source
 			float	   _distance = 0.f;				  // dir length
-			Color::Rgb _radiance = Color::Rgb::black; // radiance at given point divided by pdf
+			Color::Rgb _radiance = Color::Rgb::BLACK; // radiance at given point divided by pdf
 			float	   _pdf		 = 1.f;
 		};
 	} // namespace Renderer

@@ -48,7 +48,7 @@ namespace VTX
 			}
 
 		  private:
-			Color::Rgb _f0		  = Color::Rgb::white;
+			Color::Rgb _f0		  = Color::Rgb::WHITE;
 			float	   _shininess = 64.f;
 		};
 	} // namespace Renderer

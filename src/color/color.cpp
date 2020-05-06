@@ -10,14 +10,14 @@ namespace VTX
 			return p_os;
 		}
 
-		const Rgb Rgb::black( 0.f, 0.f, 0.f );
-		const Rgb Rgb::white( 1.f, 1.f, 1.f );
-		const Rgb Rgb::red( 1.f, 0.f, 0.f );
-		const Rgb Rgb::green( 0.f, 1.f, 0.f );
-		const Rgb Rgb::blue( 0.f, 0.f, 1.f );
-		const Rgb Rgb::yellow( 1.f, 1.f, 0.f );
-		const Rgb Rgb::magenta( 1.f, 0.f, 1.f );
-		const Rgb Rgb::cyan( 0.f, 1.f, 1.f );
+		const Rgb Rgb::BLACK( 0.f, 0.f, 0.f );
+		const Rgb Rgb::WHITE( 1.f, 1.f, 1.f );
+		const Rgb Rgb::RED( 1.f, 0.f, 0.f );
+		const Rgb Rgb::GREEN( 0.f, 1.f, 0.f );
+		const Rgb Rgb::BLUE( 0.f, 0.f, 1.f );
+		const Rgb Rgb::YELLOW( 1.f, 1.f, 0.f );
+		const Rgb Rgb::MAGENTA( 1.f, 0.f, 1.f );
+		const Rgb Rgb::CYAN( 0.f, 1.f, 1.f );
 
 		// TODO: only used in CPU ray tracing mode for the moment...
 		const std::vector<Rgb> Rgb::predefined = {

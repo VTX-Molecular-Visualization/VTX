@@ -223,13 +223,13 @@ namespace VTX
 				Vec3f( 400.f, 800.f, 550.f ),
 				VEC3F_Y * 80.f,
 				VEC3F_X * 80.f,
-				Color::Rgb::white,
+				Color::Rgb::WHITE,
 				70.f * PIf ) );
 			_scene.addLight( new QuadLight( //
 				Vec3f( 800.f, 120.f, 550.f ),
 				VEC3F_Y * 80.f,
 				VEC3F_X * 80.f,
-				Color::Rgb::white,
+				Color::Rgb::WHITE,
 				70.f * PIf ) );
 
 			//
@@ -360,7 +360,7 @@ namespace VTX
 											const float				 p_y,
 											const uint				 p_nbPixelSamples )
 		{
-			Color::Rgb color = Color::Rgb::black;
+			Color::Rgb color = Color::Rgb::BLACK;
 
 			// sampling ray within a pixel for anti-aliasing
 			for ( uint s = 0; s < p_nbPixelSamples; s++ )

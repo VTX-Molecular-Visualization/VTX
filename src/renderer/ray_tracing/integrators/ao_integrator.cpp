@@ -12,7 +12,7 @@ namespace VTX
 									 const float   p_tMax ) const
 		{
 			Intersection intersection;
-			Color::Rgb	 Li = Color::Rgb::black;
+			Color::Rgb	 Li = Color::Rgb::BLACK;
 
 			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{

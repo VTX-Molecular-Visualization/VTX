@@ -13,7 +13,7 @@ namespace VTX
 		{
 			// TODO: for now only the same as RaycastIntegrator
 			Intersection intersection;
-			Color::Rgb	 Li = Color::Rgb::black;
+			Color::Rgb	 Li = Color::Rgb::BLACK;
 
 			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
@@ -24,7 +24,7 @@ namespace VTX
 				{
 					const uint nbLightSamples = light->isSurface() ? 32 : 1;
 
-					Color::Rgb lightContrib = Color::Rgb::black;
+					Color::Rgb lightContrib = Color::Rgb::BLACK;
 					for ( uint i = 0; i < nbLightSamples; ++i )
 					{
 						const LightSample ls = light->sample( intersection._point );

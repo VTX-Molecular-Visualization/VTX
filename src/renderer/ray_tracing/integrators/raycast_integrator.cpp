@@ -10,13 +10,13 @@ namespace VTX
 										  const float	p_tMax ) const
 		{
 			Intersection intersection;
-			Color::Rgb	 Li = Color::Rgb::black;
+			Color::Rgb	 Li = Color::Rgb::BLACK;
 
 			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
 				// shade primitive
 				// point light on camera
-				LightSample ls( -p_ray.getDirection(), 1.f, Color::Rgb::white, 1.f );
+				LightSample ls( -p_ray.getDirection(), 1.f, Color::Rgb::WHITE, 1.f );
 
 				const float cosTheta = Util::Math::dot( intersection._normal, ls._dir );
 

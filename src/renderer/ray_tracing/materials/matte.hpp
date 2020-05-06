@@ -38,7 +38,7 @@ namespace VTX
 			}
 
 		  private:
-			Color::Rgb _kd		  = Color::Rgb::white;
+			Color::Rgb _kd		  = Color::Rgb::WHITE;
 			float	   _roughness = 0.f; // [0, 2PI]
 		};
 	} // namespace Renderer

@@ -150,14 +150,14 @@ namespace VTX
 
 			friend std::ostream & operator<<( std::ostream & p_os, const Rgb & p_c );
 
-			static const Rgb black;
-			static const Rgb white;
-			static const Rgb red;
-			static const Rgb green;
-			static const Rgb blue;
-			static const Rgb yellow;
-			static const Rgb magenta;
-			static const Rgb cyan;
+			static const Rgb BLACK;
+			static const Rgb WHITE;
+			static const Rgb RED;
+			static const Rgb GREEN;
+			static const Rgb BLUE;
+			static const Rgb YELLOW;
+			static const Rgb MAGENTA;
+			static const Rgb CYAN;
 
 			static const std::vector<Rgb> predefined;
 

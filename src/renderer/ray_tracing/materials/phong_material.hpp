@@ -37,8 +37,8 @@ namespace VTX
 			}
 
 		  private:
-			Color::Rgb _kd		  = Color::Rgb::white * 0.5f;
-			Color::Rgb _ks		  = Color::Rgb::white * 0.5f;
+			Color::Rgb _kd		  = Color::Rgb::WHITE * 0.5f;
+			Color::Rgb _ks		  = Color::Rgb::WHITE * 0.5f;
 			float	   _shininess = 8.f;
 		};
 	} // namespace Renderer
