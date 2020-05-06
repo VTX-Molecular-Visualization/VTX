@@ -383,7 +383,7 @@ namespace VTX
 		};
 
 		// http://jmol.sourceforge.net/jscolors/#Jmolcolors
-		Color::Rgb Atom::SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ] = {
+		const Color::Rgb Atom::SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ] = {
 			{ 255, 255, 255 }, // UNKNOWN		= 0,
 			{ 255, 255, 255 }, // H				= 1,
 			{ 217, 255, 255 }, // HE			= 2,

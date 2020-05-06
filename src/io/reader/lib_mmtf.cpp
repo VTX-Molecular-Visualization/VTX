@@ -31,7 +31,9 @@ namespace VTX
 			{
 				// Check for consistency.
 				if ( p_data.hasConsistentData( true ) == false )
-				{ throw Exception::IOException( "File is not consistent" ); }
+				{
+					throw Exception::IOException( "File is not consistent" );
+				}
 
 				// Set molecule properties.
 				p_molecule.setName( p_data.title );
@@ -65,7 +67,10 @@ namespace VTX
 
 					// For each residue in the chain.
 					uint residueCount = p_data.groupsPerChain[ chainGlobalIdx ];
-					if ( residueCount == 0 ) { VTX_WARNING( "No residues" ); }
+					if ( residueCount == 0 )
+					{
+						VTX_WARNING( "No residues" );
+					}
 #ifdef _DEBUG
 					p_molecule.residueCount += residueCount;
 #endif
@@ -84,17 +89,22 @@ namespace VTX
 						std::optional symbol = magic_enum::enum_cast<Model::Residue::RESIDUE_SYMBOL>( residueSymbol );
 						symbol.has_value() ? residue.setSymbol( symbol.value() )
 										   : p_molecule.addUnknownResidueSymbol( residueSymbol );
+						residue.setColor( Model::Residue::SYMBOL_COLOR[ int( residue.getSymbol() ) ] );
 						residue.setIdFirstAtom( atomGlobalIdx );
 						residue.setAtomCount( uint( group.atomNameList.size() ) );
 						// residue.setIdFirstBond( bondGlobalIdx );
 						// residue.setBondCount( uint( group.bondAtomList.size() ) / 2u ); // 2 index by bond.
-						if ( group.bondAtomList.size() % 2 != 0 ) { VTX_WARNING( "Incorrect number of bonds" ); }
-
-						residue.setColor( Color::Rgb::randomPastel() );
+						if ( group.bondAtomList.size() % 2 != 0 )
+						{
+							VTX_WARNING( "Incorrect number of bonds" );
+						}
 
 						// For each atom in the residue.
 						uint atomCount = uint( group.atomNameList.size() );
-						if ( atomCount == 0 ) { VTX_WARNING( "No atoms" ); }
+						if ( atomCount == 0 )
+						{
+							VTX_WARNING( "No atoms" );
+						}
 #ifdef _DEBUG
 						p_molecule.atomCount += atomCount;
 #endif
