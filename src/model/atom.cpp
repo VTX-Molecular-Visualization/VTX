@@ -9,7 +9,9 @@ namespace VTX
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() )
-			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Atom, View::UI::Atom>( this ) ); }
+			{
+				addItem( (View::BaseView<BaseModel> *)Generic::create<Atom, View::UI::Atom>( this ) );
+			}
 			else
 			{
 				Generic::destroy( removeItem( ID::View::UI_ATOM ) );
@@ -382,9 +384,9 @@ namespace VTX
 			0.00f  // UUO		= 118,
 		};
 
-		// http://jmol.sourceforge.net/jscolors/#Jmolcolors
+		// CPK by http://jmol.sourceforge.net/jscolors/#Jmolcolors
 		const Color::Rgb Atom::SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ] = {
-			{ 255, 255, 255 }, // UNKNOWN		= 0,
+			{ 250, 22, 145 },  // UNKNOWN		= 0,
 			{ 255, 255, 255 }, // H				= 1,
 			{ 217, 255, 255 }, // HE			= 2,
 			{ 204, 128, 255 }, // LI			= 3,

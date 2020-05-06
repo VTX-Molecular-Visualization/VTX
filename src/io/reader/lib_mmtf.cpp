@@ -63,7 +63,7 @@ namespace VTX
 					chain.setName( p_data.chainNameList[ chainGlobalIdx ] );
 					chain.setIdFirstResidue( residueGlobalIdx );
 					chain.setResidueCount( p_data.groupsPerChain[ chainGlobalIdx ] );
-					chain.setColor( Color::Rgb::randomPastel() );
+					chain.setColor( Model::Chain::getChainIdColor( p_data.chainIdList[ chainGlobalIdx ] ) );
 
 					// For each residue in the chain.
 					uint residueCount = p_data.groupsPerChain[ chainGlobalIdx ];

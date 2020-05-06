@@ -123,8 +123,8 @@ namespace VTX
 					const chemfiles::Residue & residue = residues[ residueIdx ];
 
 					// Check if chain name changed.
-					std::string chainName = residue.properties().get( "chainname" ).value_or( "" ).as_string();
-					std::string chainId	  = residue.properties().get( "chainid" ).value_or( "" ).as_string();
+					const std::string chainName = residue.properties().get( "chainname" ).value_or( "" ).as_string();
+					const std::string chainId	= residue.properties().get( "chainid" ).value_or( "" ).as_string();
 
 					if ( chainName != lastChainName || p_molecule.getChainCount() == 0 )
 					{
@@ -140,6 +140,7 @@ namespace VTX
 						modelChain->setMoleculePtr( &p_molecule );
 						modelChain->setIdFirstResidue( residueIdx );
 						modelChain->setResidueCount( 0 );
+						modelChain->setColor( Model::Chain::getChainIdColor( chainId ) );
 
 						lastChainName = chainName;
 					}

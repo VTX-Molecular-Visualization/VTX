@@ -19,10 +19,18 @@ namespace VTX
 		class Chain : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
 		{
 		  public:
+			// one color per chain id + 1 unknown
+			static const uint		NB_COLORS = 26;
+			static const Color::Rgb CHAIN_ID_COLOR_ATOM[ NB_COLORS ];
+			static const Color::Rgb CHAIN_ID_COLOR_HETATM[ NB_COLORS ];
+			static const Color::Rgb CHAIN_ID_UNKNOWN_COLOR;
+
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
+
+			static Color::Rgb getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
 
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
