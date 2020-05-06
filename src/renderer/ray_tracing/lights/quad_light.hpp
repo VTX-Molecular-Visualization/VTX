@@ -18,7 +18,7 @@ namespace VTX
 			QuadLight( const Vec3f & p_position,
 					   const Vec3f & p_u,
 					   const Vec3f & p_v,
-					   const Vec3f & p_color,
+					   const Color & p_color,
 					   const float	 p_power ) :
 				BaseLight( p_color, p_power ),
 				_position( p_position ), _u( p_u ), _v( p_v )
@@ -31,19 +31,17 @@ namespace VTX
 
 			LightSample sample( const Vec3f & p_point ) const override
 			{
-				// This is not normalized to use length in integrator if need
-
 				const float ru = Util::Math::randomFloat();
 				const float rv = Util::Math::randomFloat();
 
 				const Vec3f position  = _position + ru * _u + rv * _v;
 				Vec3f		direction = position - p_point;
 				const float dist	  = Util::Math::length( direction );
-				direction /= dist;
+				Util::Math::normalizeSelf( direction );
 
 				const float cosDir	 = Util::Math::dot( _invNormal, direction );
 				const float pdf		 = _pdf * ( dist * dist ) / fabsf( cosDir );
-				const Vec3f radiance = cosDir > 0.f ? _color * _power / pdf : VEC3F_ZERO;
+				const Color radiance = cosDir > 0.f ? _color * _power / pdf : Color::black;
 
 				return LightSample( direction, dist, radiance, pdf );
 			}

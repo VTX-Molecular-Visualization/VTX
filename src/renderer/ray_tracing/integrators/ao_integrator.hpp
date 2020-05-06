@@ -21,12 +21,12 @@ namespace VTX
 			{
 			}
 
-			Vec3f Li( const Ray & p_ray, const Scene & p_scene, const float p_tMin, const float p_tMax ) const override;
+			Color Li( const Ray & p_ray, const Scene & p_scene, const float p_tMin, const float p_tMax ) const override;
 
 		  private:
-			float _radius	 = 50.f;
+			float _radius	 = 20.f;
 			float _intensity = 1.f;
-			uint  _nbSamples = 1024;
+			uint  _nbSamples = 32;
 		};
 
 	} // namespace Renderer

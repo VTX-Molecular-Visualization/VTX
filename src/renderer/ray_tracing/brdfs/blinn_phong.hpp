@@ -16,10 +16,10 @@ namespace VTX
 		{
 			namespace BlinnPhong
 			{
-				inline Vec3f fr( const Intersection & p_hit,
+				inline Color fr( const Intersection & p_hit,
 								 const Vec3f &		  p_wo,
 								 const Vec3f &		  p_wi,
-								 const Vec3f &		  p_albedo,
+								 const Color &		  p_albedo,
 								 const float &		  p_shininess )
 				{
 					const Vec3f h = Util::Math::normalize( p_wo + p_wi );

@@ -6,10 +6,10 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		Vec3f AOIntegrator::Li( const Ray & p_ray, const Scene & p_scene, const float p_tMin, const float p_tMax ) const
+		Color AOIntegrator::Li( const Ray & p_ray, const Scene & p_scene, const float p_tMin, const float p_tMax ) const
 		{
 			Intersection intersection;
-			Vec3f		 Li = VEC3F_ZERO;
+			Color		 Li = Color::black;
 
 			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
@@ -26,14 +26,14 @@ namespace VTX
 					float samplePdf = Util::Sampler::cosineWeightedHemispherePdf( sampleDir.z );
 
 					// transform in local coordinates systems
-					Vec3f aoDir = TBN * sampleDir;
+					Vec3f aoDir = Util::Math::normalize( TBN * sampleDir );
 					Ray	  aoRay( intersection._point, aoDir );
 					aoRay.offset( intersection._normal );
 
 					if ( !p_scene.intersectAny( aoRay, SHADOW_EPS, _radius - SHADOW_EPS ) )
 						ao += sampleDir.z / samplePdf;
 				}
-				Li += powf( ao / _nbSamples, _intensity );
+				Li += intersection._primitive->getMaterial()->getColor() * powf( ao / _nbSamples, _intensity );
 			}
 			else
 			{

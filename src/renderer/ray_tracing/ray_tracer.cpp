@@ -30,6 +30,12 @@ namespace VTX
 				_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ),
 				_left( p_camera.getLeft() ), _width( p_width ), _height( p_height )
 			{
+				// Molecule of the month may 20 : 3jb9
+				_pos   = Vec3f( 491.377930f, 375.845001f, 223.546844f );
+				_front = Vec3f( -0.844256f, -0.535781f, 0.013080f );
+				_left  = Vec3f( 0.532688f, -0.836197f, 0.130456f );
+				_up	   = Vec3f( -0.058959f, 0.117106f, 0.991368f );
+
 				// spike_closed_glycans_lipids_amarolab
 				/*_pos   = Vec3f( 12.950272f, -375.106812f, 119.278503f );
 				_front = Vec3f( -0.016405f, 0.999115f, -0.038744f );
@@ -49,11 +55,11 @@ namespace VTX
 				//_pos += 150.f * _front;
 
 				// 6vsb
-				_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
+				/*_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
 				_front = Vec3f( 0.938164f, 0.320407f, -0.131098f );
 				_left  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
 				_up	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
-				//_pos += 50.f * _front;
+				_pos += 70.f * _front;*/
 
 				// 6m17
 				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
@@ -121,9 +127,9 @@ namespace VTX
 
 			resize( p_width, p_height );
 
-			_integrator = new RayCastIntegrator;
-			//_integrator = new DirectLightingIntegrator;
-			//_integrator = new AOIntegrator;
+			//_integrator = new RayCastIntegrator;
+			_integrator	  = new DirectLightingIntegrator;
+			_aoIntegrator = new AOIntegrator;
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -135,7 +141,7 @@ namespace VTX
 
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
-			const uint nbPixelSamples = 1;
+			const uint nbPixelSamples = 32;
 
 			uint size = _width * _height * 3 * sizeof( char );
 			_pixels.resize( _width * _height * 3 );
@@ -196,7 +202,7 @@ namespace VTX
 			_scene.clean();
 			//_scene.addObject( new TriangleMesh( DATA_DIR + "Bunny.obj" ) );
 
-#define RIBBON_TEST
+//#define RIBBON_TEST
 #ifdef RIBBON_TEST
 			for ( std::pair<const Model::Molecule *, float> pairMol : p_scene.getMolecules() )
 			{
@@ -209,15 +215,27 @@ namespace VTX
 			}
 #endif
 
+			// Molecule of the month may 20 : 3jb9
+			_scene.addObject( new Plane( Vec3f( -0.058959f, 0.117106f, 0.991368f ),
+										 -400.f, //
+										 new MatteMaterial( Color( 0.5f, 0.6f, 0.8f ), 12.f ) ) );
+			_scene.addLight( new QuadLight( //
+				Vec3f( 400.f, 800.f, 550.f ),
+				VEC3F_Y * 80.f,
+				VEC3F_X * 80.f,
+				Color::white,
+				70.f * PIf ) );
+			_scene.addLight( new QuadLight( //
+				Vec3f( 800.f, 120.f, 550.f ),
+				VEC3F_Y * 80.f,
+				VEC3F_X * 80.f,
+				Color::white,
+				70.f * PIf ) );
+
 			//
 			//
 			// ====================================================
 			// spike_closed_cleaved_full_amarolab
-			//_scene.addObject( new Plane( VEC3F_Z,
-			//							 -320.f,													//
-			//							 new MatteMaterial( Vec3f( 0.5f, 0.6f, 0.8f ) * PIf, 0.5f ) //
-			//							 // new MatteMaterial( Vec3f( 1.5f ), 0.3f ) //
-			//							 ) );
 			//_scene.addObject( new Plane( Vec3f( 0.f, 0.f, 0.999207f ),
 			//							 -300.f, //
 			//							 new MatteMaterial( Vec3f( 0.5f, 0.6f, 0.8f ), 0.5f ) ) );
@@ -255,9 +273,9 @@ namespace VTX
 					new QuadLight( Vec3f( 200.f, 400.f, 400.f ), VEC3F_Y * 60.f, VEC3F_X * 60.f, VEC3F_XYZ, 50.f ) );*/
 
 			// 6VSB
-			/*_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 90.f ), VEC3F_XYZ, 1000000.f ) );
-			_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 300.f ), VEC3F_XYZ, 1000000.f ) );*/
 			//_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 90.f ), VEC3F_XYZ, 1000000.f ) );
+			/*_scene.addLight( new PointLight( Vec3f( 150.f, -200.f, 300.f ), VEC3F_XYZ, 1000000.f ) );*/
+			//_scene.addLight( new PointLight( Vec3f( -450.f, -200.f, -38.f ), VEC3F_XYZ, 1000000.f ) );
 			/*_scene.addLight( new QuadLight( Vec3f( -450.f, -200.f, -38.f ),
 											Vec3f( 0.327533f, -0.944138f, 0.036398f ) * 80.f,
 											-Vec3f( 0.112113f, 0.077086f, 0.990701f ) * 80.f,
@@ -284,7 +302,7 @@ namespace VTX
 			uint taskId = p_threadId;
 			while ( taskId < p_nbTiles )
 			{
-				//	std::cout << p_threadId << " : " << taskId << " / " << p_nbTiles << std::endl;
+				std::cout << p_threadId << " : " << taskId << " / " << p_nbTiles << std::endl;
 				const uint tileY = taskId / p_nbTilesX;
 				const uint tileX = taskId - tileY * p_nbTilesX;
 				const uint x0	 = tileX * TILE_SIZE;
@@ -296,12 +314,12 @@ namespace VTX
 				{
 					for ( uint x = x0; x < x1; ++x )
 					{
-						const Vec3f color = Util::Math::pow(
-							_renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples ), 1.f / _gamma );
+						Color color = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
+						color.applyGamma( _gamma );
 						const uint pixelId	   = ( x + y * _width ) * 3;
-						p_image[ pixelId ]	   = uchar( color.r * 255 );
-						p_image[ pixelId + 1 ] = uchar( color.g * 255 );
-						p_image[ pixelId + 2 ] = uchar( color.b * 255 );
+						p_image[ pixelId ]	   = uchar( color._r * 255 );
+						p_image[ pixelId + 1 ] = uchar( color._g * 255 );
+						p_image[ pixelId + 2 ] = uchar( color._b * 255 );
 					}
 				}
 
@@ -327,22 +345,22 @@ namespace VTX
 			{
 				for ( uint x = x0; x < x1; ++x )
 				{
-					const Vec3f color = Util::Math::pow(
-						_renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples ), 1.f / _gamma );
+					Color color = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
+					color.applyGamma( _gamma );
 					const uint pixelId	   = ( x + y * _width ) * 3;
-					p_image[ pixelId ]	   = uchar( color.r * 255 );
-					p_image[ pixelId + 1 ] = uchar( color.g * 255 );
-					p_image[ pixelId + 2 ] = uchar( color.b * 255 );
+					p_image[ pixelId ]	   = uchar( color._r * 255 );
+					p_image[ pixelId + 1 ] = uchar( color._g * 255 );
+					p_image[ pixelId + 2 ] = uchar( color._b * 255 );
 				}
 			}
 		}
 
-		Vec3f RayTracer::_renderPixel( const CameraRayTracing & p_camera,
+		Color RayTracer::_renderPixel( const CameraRayTracing & p_camera,
 									   const float				p_x,
 									   const float				p_y,
 									   const uint				p_nbPixelSamples )
 		{
-			Vec3f color = VEC3F_ZERO;
+			Color color = Color::black;
 
 			// sampling ray within a pixel for anti-aliasing
 			for ( uint s = 0; s < p_nbPixelSamples; s++ )
@@ -353,11 +371,17 @@ namespace VTX
 
 				const Ray ray = p_camera.generateRay( sx, sy );
 
-				const Vec3f Li = _integrator->Li( ray, _scene, 0.f, FLOAT_MAX );
+				const Color Li = _integrator->Li( ray, _scene, 0.f, FLOAT_INF );
+				const Color ao = _aoIntegrator->Li( ray, _scene, 0.f, FLOAT_INF );
 
-				color += Li;
+				const float directFactor = 0.95f;
+				const float aoFactor	 = 0.05f;
+
+				color += Li * directFactor + ao * aoFactor;
 			}
-			return Util::Math::clamp( color / float( p_nbPixelSamples ), VEC3F_ZERO, VEC3F_XYZ );
+			color /= float( p_nbPixelSamples );
+			color.saturate();
+			return color;
 		}
 
 	} // namespace Renderer

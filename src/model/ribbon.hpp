@@ -54,7 +54,7 @@ namespace VTX
 			void _computeTriangleMesh( Math::BSpline &,
 									   Math::BSpline &,
 									   Math::BSpline &,
-									   const Vec3f &,
+									   const Color &,
 									   const bool,
 									   uint & );
 		};

@@ -1,11 +1,10 @@
 #include "optix_ray_tracer.hpp"
+#include "color/color.hpp"
 #include "tool/chrono.hpp"
-#include "util/color.hpp"
 #include "util/sampler.hpp"
 #include "vtx_app.hpp"
 #include <atomic>
 #include <fstream>
-#include <nvtx3/nvToolsExt.h>
 #include <optix_function_table_definition.h>
 #include <stb/stb_image_write.h>
 #include <thread>
@@ -83,13 +82,13 @@ namespace VTX
 			{
 				const Vec3f & p		  = atomPositions[ i ];
 				const float	  r		  = mol->getAtomRadius( i );
-				const Vec3f & c		  = mol->getAtomColor( i );
+				const Color & c		  = mol->getAtomColor( i );
 				_spheres[ i ]._center = make_float3( p.x, p.y, p.z );
 				_spheres[ i ]._radius = r;
 				uint colorId		  = INVALID_ID;
 				for ( uint j = 0; j < uint( colors.size() ); ++j )
 				{
-					if ( colors[ j ].x == c.x && colors[ j ].y == c.y && colors[ j ].z == c.z )
+					if ( colors[ j ].x == c._r && colors[ j ].y == c._g && colors[ j ].z == c._b )
 					{
 						colorId = j;
 						break;
@@ -98,7 +97,7 @@ namespace VTX
 				if ( colorId == INVALID_ID )
 				{
 					colorId = uint( colors.size() );
-					colors.emplace_back( make_float3( c.x, c.y, c.z ) );
+					colors.emplace_back( make_float3( c._r, c._g, c._b ) );
 				}
 				_spheres[ i ]._colorId = colorId;
 			}
@@ -158,6 +157,7 @@ namespace VTX
 			catch ( const std::exception & e )
 			{
 				VTX_ERROR( e.what() );
+				exit( EXIT_FAILURE );
 				// TODO: handle it ! :-)
 			}
 
@@ -180,7 +180,6 @@ namespace VTX
 
 			CUDA_HANDLE_ERROR( cudaEventRecord( start, 0 ) );
 
-			nvtxRangePushA( "OptiX" ); // for profiling, when knowing how it works :-p
 			OPTIX_HANDLE_ERROR( optixLaunch( _optixPipeline,
 											 _cudaStream,
 											 _launchParametersBuffer.getDevicePtr(),
@@ -189,7 +188,6 @@ namespace VTX
 											 _launchParameters._frame._width,
 											 _launchParameters._frame._height,
 											 1 ) );
-			nvtxRangePop();
 
 			CUDA_HANDLE_ERROR( cudaEventRecord( stop, 0 ) );
 			CUDA_HANDLE_ERROR( cudaEventSynchronize( stop ) );
@@ -306,26 +304,29 @@ namespace VTX
 
 			const std::string vtxIncludesDir = std::string( "-I ../.." );
 			const std::string cudaIncludesDir
-				= std::string( "-I C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.2/include" );
+				= std::string( "-I C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.2/include/" );
 			const std::string optixIncludesDir
 				= std::string( "-I C:/ProgramData/NVIDIA Corporation/OptiX SDK 7.0.0/include/" );
-			const std::string ucrtIncludesDir
-				= std::string( "-I C:/Program Files (x86)/Windows Kits/10/Include/10.0.18362.0/ucrt" );
-			const std::string vcIncludesDir = std::string(
-				"-I C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/include" );
+			/*	const std::string ucrtIncludesDir
+					= std::string( "-I C:/Program Files (x86)/Windows Kits/10/Include/10.0.18362.0/ucrt" );
+				const std::string vcIncludesDir = std::string(
+					"-I C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.25.28610/include"
+			   );*/
 
-			const char * compileOptions[]
-				= { "--gpu-architecture=compute_30", // TODO: 3.0 ? 7.5 for rtx but we will need without rtx too I guess
-					"--use_fast_math",
-					"--std=c++11",
-					"-D_WIN64",
-					vtxIncludesDir.c_str(),
-					cudaIncludesDir.c_str(),
-					optixIncludesDir.c_str(),
-					ucrtIncludesDir.c_str(),
-					vcIncludesDir.c_str() };
+			const std::vector<const char *> compileOptions = {
+				"--gpu-architecture=compute_30", // TODO: 3.0 ? 7.5 for rtx but we will need without rtx too I guess
+				"--use_fast_math",
+				"--std=c++11",
+				"-DWin_64",
+				vtxIncludesDir.c_str(),
+				cudaIncludesDir.c_str(),
+				optixIncludesDir.c_str() /*,
+				 ucrtIncludesDir.c_str(),
+				 vcIncludesDir.c_str()*/
+			};
 
-			nvrtcResult compileRes = nvrtcCompileProgram( program, 9, compileOptions );
+			nvrtcResult compileRes
+				= nvrtcCompileProgram( program, int( compileOptions.size() ), compileOptions.data() );
 
 			// get compilation log
 			size_t logSize;
@@ -333,6 +334,10 @@ namespace VTX
 			std::string log;
 			log.resize( logSize );
 			NVRTC_HANDLE_ERROR( nvrtcGetProgramLog( program, log.data() ) );
+
+			std::cout << "================== LOG NVRTC" << std::endl;
+			std::cout << log << std::endl;
+			std::cout << "============================" << std::endl;
 
 			if ( compileRes != NVRTC_SUCCESS )
 			{
@@ -342,10 +347,22 @@ namespace VTX
 
 			std::string ptx;
 			NVRTC_HANDLE_ERROR( nvrtcGetPTX( program, ptx.data() ) );
+			uint ptxSize = uint( ptx.size() );
+
+			char   logOptix[ 2048 ];
+			size_t sizeof_log = sizeof( logOptix );
+			OPTIX_HANDLE_ERROR( optixModuleCreateFromPTX( _optixContext,
+														  &_optixModuleCompileOptions,
+														  &_optixPipelineCompileOptions,
+														  ptx.c_str(),
+														  ptxSize,
+														  logOptix,
+														  &sizeof_log,
+														  &_optixModule ) );
 
 			nvrtcDestroyProgram( &program );
 
-			delete cu;
+			delete[] cu;
 #else
 			// read .ptx
 			const std::string file = "../src/renderer/optix_ray_tracer/test_optix.ptx";
@@ -358,7 +375,6 @@ namespace VTX
 			ifs.seekg( 0, std::ios::beg );
 			ifs.read( ptx, ptxSize );
 			ifs.close();
-#endif
 
 			char   log[ 2048 ];
 			size_t sizeof_log = sizeof( log );
@@ -370,6 +386,10 @@ namespace VTX
 														  log,
 														  &sizeof_log,
 														  &_optixModule ) );
+
+			delete[] ptx;
+#endif
+
 			if ( sizeof_log > 1 )
 			{
 				VTX_INFO( "optixModuleCreateFromPTX (_createOptixModule) log :" );

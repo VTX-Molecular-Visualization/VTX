@@ -101,7 +101,7 @@ namespace VTX
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Options" ) ) )
 					{
-						Vec3f color = _getModel().getColor();
+						Color color = _getModel().getColor();
 						if ( ImGui::ColorEdit3( LOCALE( "View.Color" ), (float *)&color ) )
 						{
 							VTX_ACTION( new Action::ColorableChangeColor( _getModel(), color ) );

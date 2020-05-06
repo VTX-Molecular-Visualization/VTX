@@ -33,9 +33,9 @@ namespace VTX
 			void offset( const Vec3f p_normal )
 			{
 				Vec3i of_i = p_normal * intScale();
-				Vec3i ip_i( *reinterpret_cast<const int *>( &_origin.x ) + ( ( _origin.x < 0 ) ? -of_i.x : of_i.x ),
-							*reinterpret_cast<const int *>( &_origin.y ) + ( ( _origin.y < 0 ) ? -of_i.y : of_i.y ),
-							*reinterpret_cast<const int *>( &_origin.z ) + ( ( _origin.z < 0 ) ? -of_i.z : of_i.z ) );
+				Vec3i ip_i( *reinterpret_cast<const int *>( &_origin.x ) + ( ( _origin.x < 0.f ) ? -of_i.x : of_i.x ),
+							*reinterpret_cast<const int *>( &_origin.y ) + ( ( _origin.y < 0.f ) ? -of_i.y : of_i.y ),
+							*reinterpret_cast<const int *>( &_origin.z ) + ( ( _origin.z < 0.f ) ? -of_i.z : of_i.z ) );
 
 				Vec3f p_i( *reinterpret_cast<const float *>( &ip_i[ 0 ] ),
 						   *reinterpret_cast<const float *>( &ip_i[ 1 ] ),

@@ -1,6 +1,6 @@
 #include "lib_mmtf.hpp"
+#include "color/color.hpp"
 #include "define.hpp"
-#include "util/color.hpp"
 #include "util/logger.hpp"
 #include <magic_enum.hpp>
 
@@ -33,7 +33,7 @@ namespace VTX
 
 				// Set molecule properties.
 				p_molecule.setName( p_data.title );
-				p_molecule.setColor( Util::Color::randomPastel() );
+				p_molecule.setColor( Color::randomPastel() );
 
 				float x, y, z;
 				uint  chainGlobalIdx   = 0;
@@ -59,7 +59,7 @@ namespace VTX
 					chain.setName( p_data.chainNameList[ chainGlobalIdx ] );
 					chain.setIdFirstResidue( residueGlobalIdx );
 					chain.setResidueCount( p_data.groupsPerChain[ chainGlobalIdx ] );
-					chain.setColor( Util::Color::randomPastel() );
+					chain.setColor( Color::randomPastel() );
 
 					// For each residue in the chain.
 					uint residueCount = p_data.groupsPerChain[ chainGlobalIdx ];
@@ -88,7 +88,7 @@ namespace VTX
 						// residue.setBondCount( uint( group.bondAtomList.size() ) / 2u ); // 2 index by bond.
 						if ( group.bondAtomList.size() % 2 != 0 ) { VTX_WARNING( "Incorrect number of bonds" ); }
 
-						residue.setColor( Util::Color::randomPastel() );
+						residue.setColor( Color::randomPastel() );
 
 						// For each atom in the residue.
 						uint atomCount = uint( group.atomNameList.size() );
@@ -110,12 +110,9 @@ namespace VTX
 							std::optional symbol = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
 							symbol.has_value() ? atom.setSymbol( symbol.value() )
 											   : p_molecule.addUnknownAtomSymbol( atomSymbol );
-							const uint * const colorStatic = Model::Atom::SYMBOL_COLOR[ (int)atom.getSymbol() ];
-							const float		   color[ 3 ]  = { float( colorStatic[ 0 ] ) / 255.f,
-													   float( colorStatic[ 1 ] ) / 255.f,
-													   float( colorStatic[ 1 ] ) / 255.f };
+
 							atom.setName( group.atomNameList[ atomIdx ] );
-							atom.setColor( Vec3f( *color, *( color + 1 ), *( color + 2 ) ) );
+							atom.setColor( Model::Atom::SYMBOL_COLOR[ (int)atom.getSymbol() ] );
 
 							x = p_data.xCoordList[ atomGlobalIdx ];
 							y = p_data.yCoordList[ atomGlobalIdx ];

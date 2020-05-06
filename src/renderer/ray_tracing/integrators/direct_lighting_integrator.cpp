@@ -6,14 +6,14 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		Vec3f DirectLightingIntegrator::Li( const Ray &	  p_ray,
+		Color DirectLightingIntegrator::Li( const Ray &	  p_ray,
 											const Scene & p_scene,
 											const float	  p_tMin,
 											const float	  p_tMax ) const
 		{
 			// TODO: for now only the same as RaycastIntegrator
 			Intersection intersection;
-			Vec3f		 Li = VEC3F_ZERO;
+			Color		 Li = Color::black;
 
 			if ( p_scene.intersect( p_ray, p_tMin, p_tMax, intersection ) )
 			{
@@ -24,7 +24,7 @@ namespace VTX
 				{
 					const uint nbLightSamples = light->isSurface() ? 32 : 1;
 
-					Vec3f lightContrib = VEC3F_ZERO;
+					Color lightContrib = Color::black;
 					for ( uint i = 0; i < nbLightSamples; ++i )
 					{
 						const LightSample ls = light->sample( intersection._point );
@@ -37,9 +37,9 @@ namespace VTX
 						if ( !p_scene.intersectAny( shadowRay, SHADOW_EPS, ls._distance - SHADOW_EPS ) )
 						{ lightContrib += mtl->shade( p_ray, intersection, ls ) * ls._radiance * cosTheta; }
 					}
-					Li += 0.9f * lightContrib / float( nbLightSamples );
+					Li += /*0.9f **/ lightContrib / float( nbLightSamples );
 				}
-				Li += 0.1f * mtl->getColor();
+				// Li += 0.1f * mtl->getColor();
 			}
 			else
 			{

@@ -16,10 +16,10 @@ namespace VTX
 		{
 			namespace Lambert
 			{
-				inline Vec3f fr( const Intersection & p_hit,
+				inline Color fr( const Intersection & p_hit,
 								 const Vec3f &		  p_wo,
 								 const Vec3f &		  p_wi,
-								 const Vec3f &		  p_albedo )
+								 const Color &		  p_albedo )
 				{
 					return p_albedo * INV_PIf;
 				}

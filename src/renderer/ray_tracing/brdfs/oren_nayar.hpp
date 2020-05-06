@@ -20,11 +20,11 @@ namespace VTX
 			// Proceedings of the 21st Annual Conference on Computer Graphics and Interactive Techniques
 			namespace OrenNayar
 			{
-				// TODO: optimize it ! acos/sin/tan/normalize can be removed...
-				inline Vec3f fr( const Intersection & p_hit,
+				// TODO: optimize it ! acos/sin/tan can be removed...
+				inline Color fr( const Intersection & p_hit,
 								 const Vec3f &		  p_wo,
 								 const Vec3f &		  p_wi,
-								 const Vec3f &		  p_albedo,
+								 const Color &		  p_albedo,
 								 const float		  p_roughness )
 				{
 					const float roughness2 = p_roughness * p_roughness;

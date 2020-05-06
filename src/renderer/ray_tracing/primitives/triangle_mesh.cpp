@@ -1,5 +1,7 @@
 #include "triangle_mesh.hpp"
+#include "../materials/flat_color_material.hpp"
 #include "../materials/matte.hpp"
+#include "../materials/phong_material.hpp"
 #include "model/ribbon.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -23,7 +25,7 @@ namespace VTX
 			const uint nbMeshes	   = scene->mNumMeshes;
 			uint	   nbTriangles = 0;
 			uint	   nbVertices  = 0;
-			_materials.emplace_back( new MatteMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
+			_materials.emplace_back( new MatteMaterial( Color( 0.8f, 0.f, 0.f ) ) );
 
 			for ( uint i = 0; i < nbMeshes; ++i )
 			{
@@ -93,19 +95,33 @@ namespace VTX
 			const Model::Ribbon & ribbon	   = p_molecule->getRibbon();
 			_vertices						   = ribbon.getVertices();
 			_normals						   = ribbon.getNormals();
-			const std::vector<Vec3f> & colors  = ribbon.getColors();
+			const std::vector<Color> & colors  = ribbon.getColors();
 			const std::vector<uint> &  indices = ribbon.getIndices();
 
-			_materials.emplace_back( new MatteMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
-
 			_triangles.reserve( indices.size() / 3 );
-			// TODO: once again, do not duplicate materials !
+
 			for ( uint i = 0; i < uint( indices.size() ); i += 3 )
 			{
-				// const uint idTri	= i / 3;
+				uint idMtl = INVALID_ID;
+				for ( uint m = 0; m < uint( _materials.size() ); ++m )
+				{
+					if ( _materials[ m ]->getColor() == colors[ indices[ i ] ] )
+					{
+						idMtl = m;
+						break;
+					}
+				}
+				if ( idMtl == INVALID_ID )
+				{
+					_materials.emplace_back( //
+											 // new MatteMaterial( colors[ indices[ i ] ], 0.3f ) );
+						new PhongMaterial( colors[ indices[ i ] ], colors[ indices[ i ] ], 64.f ) );
+					idMtl = uint( _materials.size() - 1 );
+				}
+
 				_triangles.emplace_back( new Triangle( indices[ i ], indices[ i + 1 ], indices[ i + 2 ], this ) );
 				Triangle & tri = *( (Triangle *)_triangles.back() );
-				tri._material  = _materials.back();
+				tri._material  = _materials[ idMtl ];
 			}
 
 			// compute AABB for each triangle
@@ -115,7 +131,7 @@ namespace VTX
 				tri._computeAABB();
 			}
 
-			const uint maxPrimsLeaf = 8;
+			const uint maxPrimsLeaf = 256;
 			_bvh.build( _triangles, maxPrimsLeaf, BVH::SplitMethod::SAH );
 		}
 	} // namespace Renderer

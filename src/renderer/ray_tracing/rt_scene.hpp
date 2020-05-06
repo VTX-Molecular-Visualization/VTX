@@ -31,6 +31,7 @@ namespace VTX
 				}
 			}
 
+			const BaseObject3D *			 getObject( const uint p_id ) const { return _objects[ p_id ]; }
 			const std::vector<BaseLight *> & getLights() const { return _lights; }
 
 			void clean()
@@ -44,6 +45,8 @@ namespace VTX
 				{
 					delete object;
 				}
+
+				_aabb.invalidate();
 			}
 
 			// returns nearest intersection if exists
@@ -77,13 +80,18 @@ namespace VTX
 				return false;
 			}
 
-			void addObject( BaseObject3D * p_object ) { _objects.emplace_back( p_object ); }
+			void addObject( BaseObject3D * p_object )
+			{
+				_objects.emplace_back( p_object );
+				_aabb.extend( p_object->getAABB() );
+			}
 
 			void addLight( BaseLight * p_light ) { _lights.emplace_back( p_light ); }
 
 		  private:
 			std::vector<BaseObject3D *> _objects;
 			std::vector<BaseLight *>	_lights;
+			Math::AABB					_aabb;
 		};
 	} // namespace Renderer
 } // namespace VTX

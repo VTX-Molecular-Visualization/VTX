@@ -17,10 +17,10 @@ namespace VTX
 			namespace CookTorrance
 			{
 				// TODO: GGX or other ?
-				inline Vec3f fr( const Intersection & p_hit,
+				inline Color fr( const Intersection & p_hit,
 								 const Vec3f &		  p_wo,
 								 const Vec3f &		  p_wi,
-								 const Vec3f &		  p_f0,
+								 const Color &		  p_f0,
 								 const float		  p_shininess )
 				{
 					const Vec3f h = Util::Math::normalize( p_wo + p_wi );
@@ -40,9 +40,9 @@ namespace VTX
 					// F = f0 + (1 - f0) * (1-IdotH)^5
 					const float _IdotH	= 1.f - Util::Math::dot( p_wi, h );
 					const float _IdotH2 = _IdotH * _IdotH;
-					const Vec3f F		= p_f0 + ( 1.f - p_f0 ) * _IdotH2 * _IdotH2 * _IdotH;
+					const Color F		= p_f0 + ( 1.f - p_f0 ) * _IdotH2 * _IdotH2 * _IdotH;
 
-					return ( D * G * F ) / ( 4.f * cosThetaO * cosThetaI );
+					return ( F * D * G ) / ( 4.f * cosThetaO * cosThetaI );
 				}
 			} // namespace CookTorrance
 

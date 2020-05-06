@@ -72,7 +72,7 @@ namespace VTX
 			}
 
 			inline const float	 getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
-			inline const Vec3f & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
+			inline const Color & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 
 			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
 			{
@@ -187,7 +187,7 @@ namespace VTX
 
 			// Buffers.
 			std::vector<float> _bufferAtomRadius	   = std::vector<float>();
-			std::vector<Vec3f> _bufferAtomColors	   = std::vector<Vec3f>();
+			std::vector<Color> _bufferAtomColors	   = std::vector<Color>();
 			std::vector<uint>  _bufferAtomVisibilities = std::vector<uint>();
 			std::vector<uint>  _bufferBonds			   = std::vector<uint>();
 

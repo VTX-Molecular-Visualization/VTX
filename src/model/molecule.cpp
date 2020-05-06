@@ -1,6 +1,6 @@
 #include "molecule.hpp"
+#include "color/color.hpp"
 #include "model/ribbon.hpp"
-#include "util/color.hpp"
 #include "util/molecule.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"

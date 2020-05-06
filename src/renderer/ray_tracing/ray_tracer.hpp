@@ -48,20 +48,21 @@ namespace VTX
 							  const uint			   p_nbTilesX,
 							  const uint			   p_nbTilesY );
 
-			Vec3f _renderPixel( const CameraRayTracing & p_camera,
+			Color _renderPixel( const CameraRayTracing & p_camera,
 								const float				 p_x,
 								const float				 p_y,
 								const uint				 p_nbPixelSamples );
 
 		  private:
 			static const uint TILE_SIZE;
-			BaseIntegrator *  _integrator = nullptr;
+			BaseIntegrator *  _integrator	= nullptr;
+			BaseIntegrator *  _aoIntegrator = nullptr;
 
 			Scene			   _scene;
 			std::vector<uchar> _pixels = std::vector<uchar>();
 
-			// TODO: keep gamma as Vec3f ?
-			Vec3f _gamma = Vec3f( 1.2f );
+			// TODO: keep gamma as float ?
+			float _gamma = 1.3f;
 		};
 	} // namespace Renderer
 } // namespace VTX
