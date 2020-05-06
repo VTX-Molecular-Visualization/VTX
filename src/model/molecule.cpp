@@ -58,16 +58,20 @@ namespace VTX
 			_createBuffers();
 
 			// Fill buffers.
-			_initBufferAtomPositions(); // true = is first frame
-			_fillBufferAtomRadius();
-			_fillBufferAtomColors();
-			_fillBufferAtomVisibilities();
-			_fillBufferBonds();
+			if ( _atomPositionsFrames.size() > 0 )
+			{
+				_initBufferAtomPositions(); // true = is first frame
+				_fillBufferAtomRadius();
+				_fillBufferAtomColors();
+				_fillBufferAtomVisibilities();
+				_fillBufferBonds();
 
-			// Compute seconndary structure if not loaded.
-			if ( _secondaryStructureLoadedFromFile == false ) { Util::Molecule::computeSecondaryStructure( *this ); }
-			// Create secondary structure mesh.
-			createSecondaryStructure();
+				// Compute seconndary structure if not loaded.
+				if ( _secondaryStructureLoadedFromFile == false )
+				{ Util::Molecule::computeSecondaryStructure( *this ); }
+				// Create secondary structure mesh.
+				// createSecondaryStructure();
+			}
 
 			// Set default representation.
 			setRepresentation();
