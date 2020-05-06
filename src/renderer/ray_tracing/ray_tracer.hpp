@@ -48,10 +48,10 @@ namespace VTX
 							  const uint			   p_nbTilesX,
 							  const uint			   p_nbTilesY );
 
-			Color _renderPixel( const CameraRayTracing & p_camera,
-								const float				 p_x,
-								const float				 p_y,
-								const uint				 p_nbPixelSamples );
+			Color::Rgb _renderPixel( const CameraRayTracing & p_camera,
+									 const float			  p_x,
+									 const float			  p_y,
+									 const uint				  p_nbPixelSamples );
 
 		  private:
 			static const uint TILE_SIZE;

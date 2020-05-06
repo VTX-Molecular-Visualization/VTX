@@ -15,11 +15,11 @@ namespace VTX
 		class QuadLight : public BaseLight
 		{
 		  public:
-			QuadLight( const Vec3f & p_position,
-					   const Vec3f & p_u,
-					   const Vec3f & p_v,
-					   const Color & p_color,
-					   const float	 p_power ) :
+			QuadLight( const Vec3f &	  p_position,
+					   const Vec3f &	  p_u,
+					   const Vec3f &	  p_v,
+					   const Color::Rgb & p_color,
+					   const float		  p_power ) :
 				BaseLight( p_color, p_power ),
 				_position( p_position ), _u( p_u ), _v( p_v )
 			{
@@ -39,9 +39,9 @@ namespace VTX
 				const float dist	  = Util::Math::length( direction );
 				Util::Math::normalizeSelf( direction );
 
-				const float cosDir	 = Util::Math::dot( _invNormal, direction );
-				const float pdf		 = _pdf * ( dist * dist ) / fabsf( cosDir );
-				const Color radiance = cosDir > 0.f ? _color * _power / pdf : Color::black;
+				const float		 cosDir	  = Util::Math::dot( _invNormal, direction );
+				const float		 pdf	  = _pdf * ( dist * dist ) / fabsf( cosDir );
+				const Color::Rgb radiance = cosDir > 0.f ? _color * _power / pdf : Color::Rgb::BLACK;
 
 				return LightSample( direction, dist, radiance, pdf );
 			}

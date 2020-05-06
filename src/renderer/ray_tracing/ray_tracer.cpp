@@ -127,9 +127,9 @@ namespace VTX
 
 			resize( p_width, p_height );
 
-			//_integrator = new RayCastIntegrator;
-			_integrator	  = new DirectLightingIntegrator;
-			_aoIntegrator = new AOIntegrator;
+			_integrator = new RayCastIntegrator;
+			//_integrator	  = new DirectLightingIntegrator;
+			//_aoIntegrator = new AOIntegrator;
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -141,7 +141,7 @@ namespace VTX
 
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
-			const uint nbPixelSamples = 32;
+			const uint nbPixelSamples = 1;
 
 			uint size = _width * _height * 3 * sizeof( char );
 			_pixels.resize( _width * _height * 3 );
@@ -218,18 +218,18 @@ namespace VTX
 			// Molecule of the month may 20 : 3jb9
 			_scene.addObject( new Plane( Vec3f( -0.058959f, 0.117106f, 0.991368f ),
 										 -400.f, //
-										 new MatteMaterial( Color( 0.5f, 0.6f, 0.8f ), 12.f ) ) );
+										 new MatteMaterial( Color::Rgb( 0.5f, 0.6f, 0.8f ), 12.f ) ) );
 			_scene.addLight( new QuadLight( //
 				Vec3f( 400.f, 800.f, 550.f ),
 				VEC3F_Y * 80.f,
 				VEC3F_X * 80.f,
-				Color::white,
+				Color::Rgb::WHITE,
 				70.f * PIf ) );
 			_scene.addLight( new QuadLight( //
 				Vec3f( 800.f, 120.f, 550.f ),
 				VEC3F_Y * 80.f,
 				VEC3F_X * 80.f,
-				Color::white,
+				Color::Rgb::WHITE,
 				70.f * PIf ) );
 
 			//
@@ -314,12 +314,12 @@ namespace VTX
 				{
 					for ( uint x = x0; x < x1; ++x )
 					{
-						Color color = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
+						Color::Rgb color = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
 						color.applyGamma( _gamma );
 						const uint pixelId	   = ( x + y * _width ) * 3;
-						p_image[ pixelId ]	   = uchar( color._r * 255 );
-						p_image[ pixelId + 1 ] = uchar( color._g * 255 );
-						p_image[ pixelId + 2 ] = uchar( color._b * 255 );
+						p_image[ pixelId ]	   = uchar( color.getR() * 255 );
+						p_image[ pixelId + 1 ] = uchar( color.getG() * 255 );
+						p_image[ pixelId + 2 ] = uchar( color.getB() * 255 );
 					}
 				}
 
@@ -345,22 +345,22 @@ namespace VTX
 			{
 				for ( uint x = x0; x < x1; ++x )
 				{
-					Color color = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
+					Color::Rgb color = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
 					color.applyGamma( _gamma );
 					const uint pixelId	   = ( x + y * _width ) * 3;
-					p_image[ pixelId ]	   = uchar( color._r * 255 );
-					p_image[ pixelId + 1 ] = uchar( color._g * 255 );
-					p_image[ pixelId + 2 ] = uchar( color._b * 255 );
+					p_image[ pixelId ]	   = uchar( color.getR() * 255 );
+					p_image[ pixelId + 1 ] = uchar( color.getG() * 255 );
+					p_image[ pixelId + 2 ] = uchar( color.getB() * 255 );
 				}
 			}
 		}
 
-		Color RayTracer::_renderPixel( const CameraRayTracing & p_camera,
-									   const float				p_x,
-									   const float				p_y,
-									   const uint				p_nbPixelSamples )
+		Color::Rgb RayTracer::_renderPixel( const CameraRayTracing & p_camera,
+											const float				 p_x,
+											const float				 p_y,
+											const uint				 p_nbPixelSamples )
 		{
-			Color color = Color::black;
+			Color::Rgb color = Color::Rgb::BLACK;
 
 			// sampling ray within a pixel for anti-aliasing
 			for ( uint s = 0; s < p_nbPixelSamples; s++ )
@@ -371,13 +371,15 @@ namespace VTX
 
 				const Ray ray = p_camera.generateRay( sx, sy );
 
-				const Color Li = _integrator->Li( ray, _scene, 0.f, FLOAT_INF );
-				const Color ao = _aoIntegrator->Li( ray, _scene, 0.f, FLOAT_INF );
+				const Color::Rgb Li = _integrator->Li( ray, _scene, 0.f, FLOAT_INF );
+				/*const Color ao = _aoIntegrator->Li( ray, _scene, 0.f, FLOAT_INF );
 
 				const float directFactor = 0.95f;
 				const float aoFactor	 = 0.05f;
 
-				color += Li * directFactor + ao * aoFactor;
+				color += Li * directFactor + ao * aoFactor;*/
+
+				color += Li;
 			}
 			color /= float( p_nbPixelSamples );
 			color.saturate();

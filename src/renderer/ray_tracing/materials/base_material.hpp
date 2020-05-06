@@ -20,11 +20,11 @@ namespace VTX
 			BaseMaterial()			= default;
 			virtual ~BaseMaterial() = default;
 
-			virtual Color getColor() const = 0;
+			virtual Color::Rgb getColor() const = 0;
 
-			virtual Color shade( const Ray &		  p_ray,
-								 const Intersection & p_hit,
-								 const LightSample &  p_lightDirSample ) const = 0;
+			virtual Color::Rgb shade( const Ray &		   p_ray,
+									  const Intersection & p_hit,
+									  const LightSample &  p_lightDirSample ) const = 0;
 		};
 	} // namespace Renderer
 } // namespace VTX

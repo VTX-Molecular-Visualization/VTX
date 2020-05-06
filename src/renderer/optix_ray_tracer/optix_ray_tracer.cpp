@@ -80,15 +80,15 @@ namespace VTX
 			std::vector<float3>		   colors;
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
-				const Vec3f & p		  = atomPositions[ i ];
-				const float	  r		  = mol->getAtomRadius( i );
-				const Color & c		  = mol->getAtomColor( i );
+				const Vec3f &	   p  = atomPositions[ i ];
+				const float		   r  = mol->getAtomRadius( i );
+				const Color::Rgb & c  = mol->getAtomColor( i );
 				_spheres[ i ]._center = make_float3( p.x, p.y, p.z );
 				_spheres[ i ]._radius = r;
 				uint colorId		  = INVALID_ID;
 				for ( uint j = 0; j < uint( colors.size() ); ++j )
 				{
-					if ( colors[ j ].x == c._r && colors[ j ].y == c._g && colors[ j ].z == c._b )
+					if ( colors[ j ].x == c.getR() && colors[ j ].y == c.getG() && colors[ j ].z == c.getB() )
 					{
 						colorId = j;
 						break;
@@ -97,7 +97,7 @@ namespace VTX
 				if ( colorId == INVALID_ID )
 				{
 					colorId = uint( colors.size() );
-					colors.emplace_back( make_float3( c._r, c._g, c._b ) );
+					colors.emplace_back( make_float3( c.getR(), c.getG(), c.getB() ) );
 				}
 				_spheres[ i ]._colorId = colorId;
 			}

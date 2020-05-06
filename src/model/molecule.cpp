@@ -174,8 +174,10 @@ namespace VTX
 				}
 			}
 
-			glNamedBufferData(
-				_atomColorsVBO, sizeof( Vec3f ) * _bufferAtomColors.size(), _bufferAtomColors.data(), GL_STATIC_DRAW );
+			glNamedBufferData( _atomColorsVBO,
+							   sizeof( Color::Rgb ) * _bufferAtomColors.size(),
+							   _bufferAtomColors.data(),
+							   GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()

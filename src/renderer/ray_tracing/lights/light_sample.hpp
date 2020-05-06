@@ -14,15 +14,19 @@ namespace VTX
 	{
 		struct LightSample
 		{
-			LightSample( const Vec3f & p_dir, const float p_distance, const Color & p_radiance, const float p_pdf ) :
-				_dir( p_dir ), _distance( p_distance ), _radiance( p_radiance ), _pdf( p_pdf )
+			LightSample( const Vec3f &		p_dir,
+						 const float		p_distance,
+						 const Color::Rgb & p_radiance,
+						 const float		p_pdf ) :
+				_dir( p_dir ),
+				_distance( p_distance ), _radiance( p_radiance ), _pdf( p_pdf )
 			{
 			}
 
-			Vec3f _dir		= VEC3F_ZERO;	// normalized direction toward light source
-			float _distance = 0.f;			// dir length
-			Color _radiance = Color::black; // radiance at given point divided by pdf
-			float _pdf		= 1.f;
+			Vec3f	   _dir		 = VEC3F_ZERO;		  // normalized direction toward light source
+			float	   _distance = 0.f;				  // dir length
+			Color::Rgb _radiance = Color::Rgb::BLACK; // radiance at given point divided by pdf
+			float	   _pdf		 = 1.f;
 		};
 	} // namespace Renderer
 } // namespace VTX

@@ -15,11 +15,11 @@ namespace VTX
 		class BaseColorable
 		{
 		  public:
-			inline const Color & getColor() const { return _color; }
-			inline void			 setColor( const Color & p_color ) { _color = p_color; }
+			inline const Color::Rgb & getColor() const { return _color; }
+			inline void				  setColor( const Color::Rgb & p_color ) { _color = p_color; }
 
 		  protected:
-			Color _color = Color::randomPastel();
+			Color::Rgb _color = Color::Rgb::randomPastel();
 		};
 	} // namespace Generic
 } // namespace VTX
