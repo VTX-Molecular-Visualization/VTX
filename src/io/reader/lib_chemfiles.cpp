@@ -126,22 +126,8 @@ namespace VTX
 					std::string chainName = "";
 					std::string chainId	  = "";
 
-					try
-					{
-						chainName = residue.properties().get( "chainname" ).value().as_string();
-					}
-					catch ( const std::exception & )
-					{
-						chainName = "";
-					}
-					try
-					{
-						chainId = residue.properties().get( "chainid" ).value().as_string();
-					}
-					catch ( const std::exception & )
-					{
-						chainId = "";
-					}
+					chainName = residue.properties().get( "chainname" ).value_or( "" ).as_string();
+					chainId	  = residue.properties().get( "chainid" ).value_or( "" ).as_string();
 
 					if ( chainName != lastChainName || p_molecule.getChainCount() == 0 )
 					{
