@@ -21,6 +21,12 @@ namespace VTX
 			AABB( const Vec3f & p_min, const Vec3f & p_max );
 			AABB( const Vec3f & p_center, const float p_radius );
 
+			void invalidate()
+			{
+				_min = VEC3F_MAX;
+				_max = VEC3F_MIN;
+			}
+
 			bool isValid() const { return ( ( _min.x <= _max.x ) && ( _min.y <= _max.y ) && ( _min.z <= _max.z ) ); }
 
 			inline const Vec3f & getMin() const { return _min; }
