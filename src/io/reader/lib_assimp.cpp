@@ -18,7 +18,10 @@ namespace VTX
 
 				const aiScene * const scene
 					= Importer.ReadFile( p_path.c_str(), aiProcess_Triangulate | aiProcess_GenNormals );
-				if ( !scene ) { throw Exception::IOException( "File has not scene" ); }
+				if ( !scene )
+				{
+					throw Exception::IOException( "File has not scene" );
+				}
 
 				const uint nbMeshes	   = scene->mNumMeshes;
 				uint	   nbTriangles = 0;
@@ -34,6 +37,7 @@ namespace VTX
 				p_mesh.getVertices().resize( nbVertices );
 				p_mesh.getNormals().resize( nbVertices );
 				p_mesh.getColors().resize( nbVertices );
+				p_mesh.getVisibilities().resize( nbVertices, true );
 				p_mesh.getIndices().resize( nbTriangles * 3u );
 
 				uint currentTriangle = 0;
@@ -84,7 +88,10 @@ namespace VTX
 				Assimp::Importer Importer;
 
 				const aiScene * const scene = Importer.ReadFile( p_path.c_str(), 0 );
-				if ( !scene ) { throw Exception::IOException( "File has not scene" ); }
+				if ( !scene )
+				{
+					throw Exception::IOException( "File has not scene" );
+				}
 
 				// Set molecule properties.
 				p_molecule.setName( p_path.getFileNameWithoutExtension() );
@@ -140,8 +147,6 @@ namespace VTX
 						residue.setSymbol( Model::Residue::RESIDUE_SYMBOL::UNKNOWN );
 						residue.setIdFirstAtom( atomGlobalIdx );
 						residue.setAtomCount( uint( mesh->mNumVertices ) );
-						// residue.setIdFirstBond( bondGlobalIdx );
-						// residue.setBondCount( uint( mesh->mNumFaces ) );
 						residue.setColor( Color::Rgb::randomPastel() );
 
 						// Loop over vertices in the face.
@@ -161,7 +166,9 @@ namespace VTX
 
 							aiColor4D diffuse;
 							if ( aiGetMaterialColor( material, AI_MATKEY_COLOR_DIFFUSE, &diffuse ) == AI_SUCCESS )
-							{ atom.setColor( Color::Rgb( diffuse.r, diffuse.g, diffuse.b ) ); }
+							{
+								atom.setColor( Color::Rgb( diffuse.r, diffuse.g, diffuse.b ) );
+							}
 
 							const aiVector3D vector = mesh->mVertices[ indice ];
 							frame.emplace_back( vector.x, vector.y, vector.z );
