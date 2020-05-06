@@ -123,11 +123,8 @@ namespace VTX
 					const chemfiles::Residue & residue = residues[ residueIdx ];
 
 					// Check if chain name changed.
-					std::string chainName = "";
-					std::string chainId	  = "";
-
-					chainName = residue.properties().get( "chainname" ).value_or( "" ).as_string();
-					chainId	  = residue.properties().get( "chainid" ).value_or( "" ).as_string();
+					std::string chainName = residue.properties().get( "chainname" ).value_or( "" ).as_string();
+					std::string chainId	  = residue.properties().get( "chainid" ).value_or( "" ).as_string();
 
 					if ( chainName != lastChainName || p_molecule.getChainCount() == 0 )
 					{
@@ -164,6 +161,11 @@ namespace VTX
 									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 
 					modelResidue->setColor( Model::Residue::SYMBOL_COLOR[ int( modelResidue->getSymbol() ) ] );
+
+					bool isStandard = residue.properties().get( "is_standard_pdb" ).value_or( true ).as_bool();
+					modelResidue->setType( isStandard ? Model::Residue::RESIDUE_TYPE::NORMAL
+													  : Model::Residue::RESIDUE_TYPE::LIGAND );
+
 					// PDB only.
 					// TODO: modify chemfiles to load handedness!
 					if ( p_extension == "pdb" )
