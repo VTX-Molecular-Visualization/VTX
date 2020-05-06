@@ -1,7 +1,5 @@
 #include "lib_chemfiles.hpp"
-#undef INFINITE
 #include "color/color.hpp"
-#include <chemfiles.hpp>
 #include <magic_enum.hpp>
 #include <unordered_map>
 #include <vector>
@@ -14,20 +12,33 @@ namespace VTX
 		{
 			void LibChemfiles::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
+				prepareChemfiles();
+				chemfiles::Trajectory trajectory( p_path );
+
+				readTrajectory( trajectory, p_molecule, p_path.getExtension() );
+			}
+
+			void LibChemfiles::readBuffer( const std::string &, Model::Molecule & p_molecule ) { prepareChemfiles(); }
+
+			void LibChemfiles::prepareChemfiles() const
+			{
 #ifdef _DEBUG
 				chemfiles::warning_callback_t callback = []( const std::string & p_log ) { VTX_WARNING( p_log ); };
 #else
 				chemfiles::warning_callback_t callback = []( const std::string & p_log ) { VTX_WARNING( p_log ); };
 #endif
 				chemfiles::set_warning_callback( callback );
+			}
 
-				chemfiles::Trajectory trajectory( p_path, 'r' );
+			void LibChemfiles::readTrajectory( chemfiles::Trajectory & p_trajectory,
+											   Model::Molecule &	   p_molecule,
+											   const std::string &	   p_extension ) const
+			{
+				VTX_INFO( std::to_string( p_trajectory.nsteps() ) + " frames found" );
 
-				VTX_INFO( std::to_string( trajectory.nsteps() ) + " frames found" );
+				if ( p_trajectory.nsteps() == 0 ) { throw Exception::IOException( "Trajectory is empty" ); }
 
-				if ( trajectory.nsteps() == 0 ) { throw Exception::IOException( "Trajectory is empty" ); }
-
-				chemfiles::Frame						frame	 = trajectory.read();
+				chemfiles::Frame						frame	 = p_trajectory.read();
 				const chemfiles::Topology &				topology = frame.topology();
 				const std::vector<chemfiles::Residue> & residues = topology.residues();
 				const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
@@ -77,7 +88,7 @@ namespace VTX
 				}
 
 				// Create models.
-				p_molecule.getFrames().resize( trajectory.nsteps() );
+				p_molecule.getFrames().resize( p_trajectory.nsteps() );
 				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 				p_molecule.getResidues().resize( topology.residues().size() );
 				p_molecule.getAtoms().resize( frame.size() );
@@ -144,7 +155,7 @@ namespace VTX
 
 					// PDB only.
 					// TODO: modify chemfiles to load handedness!
-					if ( p_path.getExtension() == "pdb" )
+					if ( p_extension == "pdb" )
 					{
 						std::string secondaryStructure
 							= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
@@ -247,12 +258,12 @@ namespace VTX
 				}
 
 				// Fill other frames.
-				for ( uint frameIdx = 1; frameIdx < trajectory.nsteps(); ++frameIdx )
+				for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )
 				{
 					VTX_INFO( "Frame " + std::to_string( frameIdx ) );
 					Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
 
-					frame												   = trajectory.read_step( frameIdx );
+					frame												   = p_trajectory.read_step( frameIdx );
 					const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 					moleculeFrame.resize( positions.size() );
 					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )

@@ -7,6 +7,8 @@
 
 #include "base_reader.hpp"
 #include "model/molecule.hpp"
+#undef INFINITE
+#include <chemfiles.hpp>
 
 namespace VTX
 {
@@ -18,12 +20,11 @@ namespace VTX
 			{
 			  public:
 				virtual void readFile( const Path &, Model::Molecule & ) override;
-				virtual void readBuffer( const std::string &, Model::Molecule & ) override
-				{
-					throw Exception::NotImplementedException();
-				};
+				virtual void readBuffer( const std::string &, Model::Molecule & ) override;
 
 			  private:
+				void prepareChemfiles() const;
+				void readTrajectory( chemfiles::Trajectory &, Model::Molecule &, const std::string & ) const;
 			};
 		} // namespace Reader
 	}	  // namespace IO
