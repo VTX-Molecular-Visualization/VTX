@@ -20,8 +20,8 @@ namespace VTX
 			  public:
 				virtual ~BaseReader() = default;
 
-				virtual void readFile( const Path &, T & )			= 0;
-				virtual void readBuffer( const std::string &, T & ) = 0;
+				virtual void readFile( const Path &, T & )													  = 0;
+				virtual void readBuffer( const std::string & p_buffer, const std::string & p_extension, T & ) = 0;
 			};
 		} // namespace Reader
 	}	  // namespace IO

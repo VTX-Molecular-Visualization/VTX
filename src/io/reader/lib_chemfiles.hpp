@@ -20,7 +20,7 @@ namespace VTX
 			{
 			  public:
 				virtual void readFile( const Path &, Model::Molecule & ) override;
-				virtual void readBuffer( const std::string &, Model::Molecule & ) override;
+				virtual void readBuffer( const std::string &, const std::string &, Model::Molecule & ) override;
 
 			  private:
 				void prepareChemfiles() const;

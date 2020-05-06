@@ -18,7 +18,7 @@ namespace VTX
 		class Loader : public Worker::BaseWorker
 		{
 		  public:
-			enum MODE : int
+			enum class MODE : int
 			{
 				UNKNOWN,
 				MOLECULE,

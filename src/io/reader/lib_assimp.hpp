@@ -19,13 +19,13 @@ namespace VTX
 			{
 			  public:
 				virtual void readFile( const Path &, Model::MeshTriangle & ) override;
-				virtual void readBuffer( const std::string &, Model::MeshTriangle & ) override
+				virtual void readBuffer( const std::string &, const std::string &, Model::MeshTriangle & ) override
 				{
 					throw Exception::NotImplementedException();
 				}
 
 				virtual void readFile( const Path &, Model::Molecule & ) override;
-				virtual void readBuffer( const std::string &, Model::Molecule & ) override
+				virtual void readBuffer( const std::string &, const std::string &, Model::Molecule & ) override
 				{
 					throw Exception::NotImplementedException();
 				}

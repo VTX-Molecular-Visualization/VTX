@@ -63,9 +63,9 @@ namespace VTX
 					}
 					catch ( const std::exception & p_e )
 					{
-						delete molecule;
 						VTX_ERROR( "Error loading file" );
 						VTX_ERROR( p_e.what() );
+						delete molecule;
 					}
 
 					delete reader;
@@ -103,7 +103,7 @@ namespace VTX
 							const IO::Path * const			  p_path ) const
 		{
 			const IO::PathFake * fake = dynamic_cast<const IO::PathFake *>( p_path );
-			if ( fake ) { p_reader->readBuffer( fake->read(), *p_data ); }
+			if ( fake ) { p_reader->readBuffer( fake->read(), p_path->getExtension(), *p_data ); }
 			else
 			{
 				p_reader->readFile( *p_path, *p_data );
@@ -116,6 +116,10 @@ namespace VTX
 		{
 			std::string extension = p_path.getExtension();
 			if ( extension == "mmtf" ) { return MODE::MOLECULE; }
+			else if ( extension == "cif" )
+			{
+				return MODE::MOLECULE;
+			}
 			else if ( extension == "pdb" )
 			{
 				return MODE::MOLECULE;

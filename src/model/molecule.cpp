@@ -60,7 +60,7 @@ namespace VTX
 			// Fill buffers.
 			if ( _atomPositionsFrames.size() > 0 )
 			{
-				_initBufferAtomPositions(); // true = is first frame
+				_initBufferAtomPositions();
 				_fillBufferAtomRadius();
 				_fillBufferAtomColors();
 				_fillBufferAtomVisibilities();

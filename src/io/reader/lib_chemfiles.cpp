@@ -1,5 +1,6 @@
 #include "lib_chemfiles.hpp"
 #include "color/color.hpp"
+#include <algorithm>
 #include <magic_enum.hpp>
 #include <unordered_map>
 #include <vector>
@@ -13,12 +14,22 @@ namespace VTX
 			void LibChemfiles::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				prepareChemfiles();
-				chemfiles::Trajectory trajectory( p_path );
-
+				chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path );
 				readTrajectory( trajectory, p_molecule, p_path.getExtension() );
 			}
 
-			void LibChemfiles::readBuffer( const std::string &, Model::Molecule & p_molecule ) { prepareChemfiles(); }
+			void LibChemfiles::readBuffer( const std::string & p_buffer,
+										   const std::string & p_extension,
+										   Model::Molecule &   p_molecule )
+			{
+				std::string extension = p_extension;
+				std::transform( extension.begin(), extension.end(), extension.begin(), toupper );
+
+				prepareChemfiles();
+				chemfiles::Trajectory trajectory
+					= chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), extension );
+				readTrajectory( trajectory, p_molecule, p_extension );
+			}
 
 			void LibChemfiles::prepareChemfiles() const
 			{

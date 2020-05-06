@@ -25,7 +25,7 @@ namespace VTX
 			{
 			  public:
 				virtual void readFile( const Path &, PRMFile & ) override;
-				virtual void readBuffer( const std::string &, PRMFile & ) override
+				virtual void readBuffer( const std::string &, const std::string &, PRMFile & ) override
 				{
 					throw Exception::NotImplementedException();
 				};

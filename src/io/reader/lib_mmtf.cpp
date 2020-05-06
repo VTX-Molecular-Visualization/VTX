@@ -17,7 +17,9 @@ namespace VTX
 				return _readStructureData( data, p_molecule );
 			}
 
-			void LibMMTF::readBuffer( const std::string & p_buffer, Model::Molecule & p_molecule )
+			void LibMMTF::readBuffer( const std::string & p_buffer,
+									  const std::string & p_extension,
+									  Model::Molecule &	  p_molecule )
 			{
 				mmtf::StructureData data;
 				mmtf::decodeFromBuffer( data, p_buffer.c_str(), p_buffer.size() );

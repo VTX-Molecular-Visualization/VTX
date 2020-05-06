@@ -21,7 +21,9 @@ namespace VTX
 			{
 			  public:
 				[[deprecated]] virtual void readFile( const Path &, Model::Molecule & ) override;
-				[[deprecated]] virtual void readBuffer( const std::string &, Model::Molecule & ) override;
+				[[deprecated]] virtual void readBuffer( const std::string &,
+														const std::string &,
+														Model::Molecule & ) override;
 
 			  private:
 				void _readStructureData( const mmtf::StructureData &, Model::Molecule & );
