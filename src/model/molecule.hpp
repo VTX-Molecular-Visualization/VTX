@@ -13,6 +13,7 @@
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
+#include "model/configuration/molecule.hpp"
 #include "residue.hpp"
 #include "util/logger.hpp"
 #include <iostream>
@@ -23,6 +24,10 @@ namespace VTX
 {
 	namespace Model
 	{
+		struct MoleculeConfiguration
+		{
+		};
+
 		class BaseView3DMolecule;
 		class Ribbon;
 		class Molecule : public BaseModel3D, public Generic::BaseColorable
@@ -33,15 +38,16 @@ namespace VTX
 			Molecule() = default;
 			~Molecule();
 
+			// Configuration.
+			inline const Configuration::Molecule & getConfiguration() const { return _configuration; }
+			inline Configuration::Molecule &	   getConfiguration() { return _configuration; }
+			inline void setConfiguration( const Configuration::Molecule & p_config ) { _configuration = p_config; }
+
 			// Models.
-			inline const std::string &		   getName() const { return _name; }
-			inline void						   setName( const std::string & p_name ) { _name = p_name; }
-			inline const std::string &		   getFileName() const { return _fileName; }
-			inline void						   setFileName( const std::string & p_fileName ) { _fileName = p_fileName; }
-			inline const IO::Reader::PRMFile & getPRM() const { return _prm; }
-			inline void						   setPRM( const IO::Reader::PRMFile & p_prm ) { _prm = p_prm; }
-			inline const IO::Reader::PSFFile & getPSF() const { return _psf; }
-			inline void						   setPSF( const IO::Reader::PSFFile & p_psf ) { _psf = p_psf; }
+			inline const std::string & getName() const { return _name; }
+			inline void				   setName( const std::string & p_name ) { _name = p_name; }
+			inline const std::string & getFileName() const { return _fileName; }
+			inline void				   setFileName( const std::string & p_fileName ) { _fileName = p_fileName; }
 
 			inline void							  addChain() { _chains.emplace_back( new Chain() ); }
 			inline Chain &						  getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
@@ -142,11 +148,6 @@ namespace VTX
 				_showIon = p_showIon;
 				_fillBufferAtomVisibilities();
 			}
-			inline bool secondaryStructureLoadedFromFile() const { return _secondaryStructureLoadedFromFile; }
-			inline void setSecondaryStructureLoadedFromFile( const bool p_secondaryStructureLoadedFromFile )
-			{
-				_secondaryStructureLoadedFromFile = p_secondaryStructureLoadedFromFile;
-			}
 
 			// At least one residue
 			inline bool hasTopology() const { return getResidueCount() > 1; }
@@ -171,10 +172,11 @@ namespace VTX
 			void _computeGlobalPositionsAABB();
 
 		  private:
+			// Configuration.
+			Configuration::Molecule _configuration = Configuration::Molecule();
+
 			// Models.
-			std::string						_fileName = "";
-			IO::Reader::PRMFile				_prm;
-			IO::Reader::PSFFile				_psf;
+			std::string						_fileName			 = "";
 			std::string						_name				 = "unknown";
 			std::vector<Chain *>			_chains				 = std::vector<Chain *>();
 			std::vector<Residue *>			_residues			 = std::vector<Residue *>();
@@ -220,8 +222,6 @@ namespace VTX
 
 			bool _showSolvent = true;
 			bool _showIon	  = true;
-
-			bool _secondaryStructureLoadedFromFile = false;
 
 			void _createBuffers();
 			void _initBufferAtomPositions() const;

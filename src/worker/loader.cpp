@@ -15,19 +15,17 @@ namespace VTX
 		void Loader::work()
 		{
 			// Load PRM or PSF file firstly.
-			IO::Reader::PRMFile prm;
-			IO::Reader::PSFFile psf;
 			for ( const IO::Path * path : _paths )
 			{
 				if ( path->getExtension() == "prm" )
 				{
 					IO::Reader::PRM reader = IO::Reader::PRM();
-					reader.readFile( *path, prm );
+					// reader.readFile( *path, prm );
 				}
 				else if ( path->getExtension() == "psf" )
 				{
 					IO::Reader::PSF reader = IO::Reader::PSF();
-					reader.readFile( *path, psf );
+					// reader.readFile( *path, psf );
 				}
 			}
 
@@ -39,12 +37,18 @@ namespace VTX
 				VTX_INFO( "Loading " + path->getFileName() );
 				MODE mode = _getMode( *path );
 
-				if ( mode == MODE::UNKNOWN ) { VTX_ERROR( "Format not supported" ); }
+				if ( mode == MODE::UNKNOWN )
+				{
+					VTX_ERROR( "Format not supported" );
+				}
 				else if ( mode == MODE::MOLECULE )
 				{
 					// Create reader.
 					IO::Reader::BaseReader<Model::Molecule> * reader;
-					if ( path->getExtension() == "mmtf" ) { reader = new IO::Reader::LibMMTF(); }
+					if ( path->getExtension() == "mmtf" )
+					{
+						reader = new IO::Reader::LibMMTF();
+					}
 					else
 					{
 						reader = new IO::Reader::LibChemfiles();
@@ -52,8 +56,8 @@ namespace VTX
 
 					// Set PRM.
 					Model::Molecule * molecule = new Model::Molecule();
-					molecule->setPRM( prm );
-					molecule->setPSF( psf );
+					// molecule->setPRM( prm );
+					// molecule->setPSF( psf );
 
 					// Load.
 					try
@@ -103,7 +107,10 @@ namespace VTX
 							const IO::Path * const			  p_path ) const
 		{
 			const IO::PathFake * fake = dynamic_cast<const IO::PathFake *>( p_path );
-			if ( fake ) { p_reader->readBuffer( fake->read(), p_path->getExtension(), *p_data ); }
+			if ( fake )
+			{
+				p_reader->readBuffer( fake->read(), p_path->getExtension(), *p_data );
+			}
 			else
 			{
 				p_reader->readFile( *p_path, *p_data );
@@ -115,24 +122,17 @@ namespace VTX
 		Loader::MODE Loader::_getMode( const IO::Path & p_path ) const
 		{
 			std::string extension = p_path.getExtension();
-			if ( extension == "mmtf" ) { return MODE::MOLECULE; }
-			else if ( extension == "cif" )
+
+			if ( extension == "prm" )
 			{
-				return MODE::MOLECULE;
+				return MODE::MOLECULE_CONFIG_PRM;
 			}
-			else if ( extension == "pdb" )
+			else if ( extension == "psm" )
 			{
-				return MODE::MOLECULE;
+				return MODE::MOLECULE_CONFIG_PSM;
 			}
-			else if ( extension == "arc" )
-			{
-				return MODE::MOLECULE;
-			}
-			else if ( extension == "xyz" )
-			{
-				return MODE::MOLECULE;
-			}
-			else if ( extension == "dcd" )
+			else if ( extension == "pdb" || extension == "mmtf" || extension == "cif" || extension == "arc"
+					  || extension == "xyz" || extension == "dcd" )
 			{
 				return MODE::MOLECULE;
 			}

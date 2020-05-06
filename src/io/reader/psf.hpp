@@ -5,8 +5,9 @@
 #pragma once
 #endif
 
-#include "base_reader.hpp"
+#include "base_reader_line.hpp"
 #include "define.hpp"
+#include "model/configuration/molecule.hpp"
 #include <set>
 
 namespace VTX
@@ -15,22 +16,13 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			struct PSFFile
+			class PSF : public BaseReaderLine<Model::Configuration::Molecule>
 			{
-				std::set<std::string> solventResidueSymbols = std::set<std::string>();
-				std::set<std::string> ionResidueSymbols		= std::set<std::string>();
-			};
-
-			class PSF : public BaseReader<PSFFile>
-			{
-			  public:
-				virtual void readFile( const Path &, PSFFile & ) override;
-				virtual void readBuffer( const std::string &, const std::string &, PSFFile & ) override
-				{
-					throw Exception::NotImplementedException();
-				};
+			  protected:
+				virtual void _readLine( const std::string &, Model::Configuration::Molecule & ) override;
 
 			  private:
+				std::string _readSymbol( const std::string & ) const;
 			};
 		} // namespace Reader
 	}	  // namespace IO

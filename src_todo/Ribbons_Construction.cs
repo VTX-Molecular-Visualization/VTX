@@ -187,7 +187,7 @@ public class Ribbons {
 
             AddControlPoints(ca0, ox0, ca1, ss, handedness);
             splineSide1.CopyCPoints(3, 2);
-            splineCenter.CopyCPoints(3, 2);
+            splineCenter.CopyCPoints(3, 2);n fichier
             splineSide2.CopyCPoints(3, 2);
 
             res0 = residueDicts[res + 1];

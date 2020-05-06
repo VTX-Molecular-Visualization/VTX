@@ -47,17 +47,27 @@ namespace VTX
 			{
 				VTX_INFO( std::to_string( p_trajectory.nsteps() ) + " frames found" );
 
-				if ( p_trajectory.nsteps() == 0 ) { throw Exception::IOException( "Trajectory is empty" ); }
+				if ( p_trajectory.nsteps() == 0 )
+				{
+					throw Exception::IOException( "Trajectory is empty" );
+				}
 
 				chemfiles::Frame						frame	 = p_trajectory.read();
 				const chemfiles::Topology &				topology = frame.topology();
 				const std::vector<chemfiles::Residue> & residues = topology.residues();
 				const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
+				Model::Configuration::Molecule			config	 = p_molecule.getConfiguration();
 
-				if ( frame.size() != topology.size() ) { throw Exception::IOException( "Data count missmatch" ); }
+				if ( frame.size() != topology.size() )
+				{
+					throw Exception::IOException( "Data count missmatch" );
+				}
 
 				// Set molecule properties.
-				if ( frame.get( "name" ) ) { p_molecule.setName( frame.get( "name" )->as_string() ); }
+				if ( frame.get( "name" ) )
+				{
+					p_molecule.setName( frame.get( "name" )->as_string() );
+				}
 				p_molecule.setColor( Color::Rgb::randomPastel() );
 
 				// Check properties, same for all atoms/residues?
@@ -140,7 +150,10 @@ namespace VTX
 						chainModelId++;
 						modelChain = &p_molecule.getChain( chainModelId );
 						modelChain->setIndex( chainModelId );
-						if ( chainName != "" ) { modelChain->setName( chainName ); }
+						if ( chainName != "" )
+						{
+							modelChain->setName( chainName );
+						}
 						modelChain->setMoleculePtr( &p_molecule );
 						modelChain->setIdFirstResidue( residueIdx );
 						modelChain->setResidueCount( 0 );
@@ -173,7 +186,9 @@ namespace VTX
 						if ( secondaryStructure != "" )
 						{
 							if ( secondaryStructure == "extended" )
-							{ modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND ); }
+							{
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
+							}
 							else if ( secondaryStructure == "turn" )
 							{
 								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::COIL );
@@ -199,8 +214,10 @@ namespace VTX
 								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
 							}
 
-							if ( p_molecule.secondaryStructureLoadedFromFile() == false )
-							{ p_molecule.setSecondaryStructureLoadedFromFile( true ); }
+							if ( config.isSecondaryStructureLoadedFromFile == false )
+							{
+								config.isSecondaryStructureLoadedFromFile = true;
+							}
 						}
 					}
 
@@ -236,32 +253,32 @@ namespace VTX
 						modelFrame[ atomId ] = atomPosition;
 
 						// Check PRM.
+						// TODO: look for a better way to do this.
 						if ( atomType != -1 )
 						{
-							if ( std::find( p_molecule.getPRM().solventIds.begin(),
-											p_molecule.getPRM().solventIds.end(),
-											atomType )
-								 != p_molecule.getPRM().solventIds.end() )
-							{ modelAtom->setType( Model::Atom::ATOM_TYPE::SOLVENT ); }
-							else if ( std::find( p_molecule.getPRM().ionIds.begin(),
-												 p_molecule.getPRM().ionIds.end(),
-												 atomType )
-									  != p_molecule.getPRM().ionIds.end() )
+							if ( std::find( config.solventAtomIds.begin(), config.solventAtomIds.end(), atomType )
+								 != config.solventAtomIds.end() )
+							{
+								modelAtom->setType( Model::Atom::ATOM_TYPE::SOLVENT );
+							}
+							else if ( std::find( config.ionAtomIds.begin(), config.ionAtomIds.end(), atomType )
+									  != config.ionAtomIds.end() )
 							{
 								modelAtom->setType( Model::Atom::ATOM_TYPE::ION );
 							}
 						}
 
 						// Check PSF.
-						if ( std::find( p_molecule.getPSF().solventResidueSymbols.begin(),
-										p_molecule.getPSF().solventResidueSymbols.end(),
+						if ( std::find( config.solventResidueSymbols.begin(),
+										config.solventResidueSymbols.end(),
 										residueSymbol )
-							 != p_molecule.getPSF().solventResidueSymbols.end() )
-						{ modelAtom->setType( Model::Atom::ATOM_TYPE::SOLVENT ); }
-						else if ( std::find( p_molecule.getPSF().ionResidueSymbols.begin(),
-											 p_molecule.getPSF().ionResidueSymbols.end(),
-											 residueSymbol )
-								  != p_molecule.getPSF().ionResidueSymbols.end() )
+							 != config.solventResidueSymbols.end() )
+						{
+							modelAtom->setType( Model::Atom::ATOM_TYPE::SOLVENT );
+						}
+						else if ( std::find(
+									  config.ionResidueSymbols.begin(), config.ionResidueSymbols.end(), residueSymbol )
+								  != config.ionResidueSymbols.end() )
 						{
 							modelAtom->setType( Model::Atom::ATOM_TYPE::ION );
 						}

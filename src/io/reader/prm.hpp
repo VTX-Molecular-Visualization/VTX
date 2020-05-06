@@ -5,8 +5,9 @@
 #pragma once
 #endif
 
-#include "base_reader.hpp"
+#include "base_reader_line.hpp"
 #include "define.hpp"
+#include "model/configuration/molecule.hpp"
 #include <vector>
 
 namespace VTX
@@ -15,22 +16,13 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			struct PRMFile
+			class PRM : public BaseReaderLine<Model::Configuration::Molecule>
 			{
-				std::vector<uint> solventIds = std::vector<uint>();
-				std::vector<uint> ionIds	 = std::vector<uint>();
-			};
-
-			class PRM : public BaseReader<PRMFile>
-			{
-			  public:
-				virtual void readFile( const Path &, PRMFile & ) override;
-				virtual void readBuffer( const std::string &, const std::string &, PRMFile & ) override
-				{
-					throw Exception::NotImplementedException();
-				};
+			  protected:
+				virtual void _readLine( const std::string &, Model::Configuration::Molecule & ) override;
 
 			  private:
+				uint _readId( const std::string & ) const;
 			};
 		} // namespace Reader
 	}	  // namespace IO

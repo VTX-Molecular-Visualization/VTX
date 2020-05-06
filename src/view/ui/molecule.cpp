@@ -22,6 +22,8 @@ namespace VTX
 		{
 			void Molecule::_draw()
 			{
+				Model::Configuration::Molecule config = _getModel().getConfiguration();
+
 				ImGui::PushID( ( "ViewMolecule" + std::to_string( _getModel().getId() ) ).c_str() );
 				bool notClosed = true;
 				if ( ImGui::CollapsingHeader(
@@ -40,12 +42,14 @@ namespace VTX
 						ImGui::Text( LOCALE( "View.Atoms%Count" ), _getModel().getAtomCount() );
 						ImGui::Text( LOCALE( "View.Bonds%Count" ), _getModel().getBondCount() / 2 );
 						ImGui::Text( LOCALE( "View.SecondaryStructure%State" ),
-									 _getModel().secondaryStructureLoadedFromFile() ? LOCALE( "View.Loaded" )
-																					: LOCALE( "View.Computed" ) );
-						if ( _getModel().secondaryStructureLoadedFromFile() )
+									 config.isSecondaryStructureLoadedFromFile ? LOCALE( "View.Loaded" )
+																			   : LOCALE( "View.Computed" ) );
+						if ( config.isSecondaryStructureLoadedFromFile )
 						{
 							if ( ImGui::Button( LOCALE( "View.Compute" ) ) )
-							{ VTX_ACTION( new Action::MoleculeComputeSecondaryStructure( _getModel() ) ); }
+							{
+								VTX_ACTION( new Action::MoleculeComputeSecondaryStructure( _getModel() ) );
+							}
 						}
 					}
 					if ( _getModel().getFrameCount() > 1 )
@@ -57,17 +61,27 @@ namespace VTX
 							int frame = int( _getModel().getFrame() );
 							if ( ImGui::SliderInt(
 									 LOCALE( "View.Frame" ), &frame, 0, _getModel().getFrameCount() - 1 ) )
-							{ VTX_ACTION( new Action::MoleculeChangeFrame( _getModel(), frame ) ); }
+							{
+								VTX_ACTION( new Action::MoleculeChangeFrame( _getModel(), frame ) );
+							}
 							if ( ImGui::InputInt( "##FrameInput", &frame, 1 ) )
-							{ VTX_ACTION( new Action::MoleculeChangeFrame( _getModel(), frame ) ); }
+							{
+								VTX_ACTION( new Action::MoleculeChangeFrame( _getModel(), frame ) );
+							}
 							bool isPlaying = _getModel().isPlaying();
 							if ( ImGui::Checkbox( LOCALE( "View.Play" ), &isPlaying ) )
-							{ VTX_ACTION( new Action::MoleculeChangeIsPlaying( _getModel(), isPlaying ) ); }
+							{
+								VTX_ACTION( new Action::MoleculeChangeIsPlaying( _getModel(), isPlaying ) );
+							}
 							int fps = _getModel().getFPS();
 							if ( ImGui::SliderInt( LOCALE( "View.FPS" ), &fps, 0, VIDEO_FPS ) )
-							{ VTX_ACTION( new Action::MoleculeChangeFPS( _getModel(), fps ) ); }
+							{
+								VTX_ACTION( new Action::MoleculeChangeFPS( _getModel(), fps ) );
+							}
 							if ( ImGui::InputInt( "##FPSInput", &fps, 1 ) )
-							{ VTX_ACTION( new Action::MoleculeChangeFPS( _getModel(), fps ) ); }
+							{
+								VTX_ACTION( new Action::MoleculeChangeFPS( _getModel(), fps ) );
+							}
 						}
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Transform" ) ) )
@@ -96,7 +110,9 @@ namespace VTX
 						Vec3f scale = _getModel().getTransform().getScaleVector();
 						float s		= scale.x;
 						if ( ImGui::InputFloat( LOCALE( "View.Transform.Scale" ), &s, 1.f ) )
-						{ VTX_ACTION( new Action::TransformableSetScale( _getModel(), s ) ); }
+						{
+							VTX_ACTION( new Action::TransformableSetScale( _getModel(), s ) );
+						}
 						ImGui::PopID();
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Options" ) ) )
@@ -107,19 +123,21 @@ namespace VTX
 							VTX_ACTION( new Action::ColorableChangeColor( _getModel(), color ) );
 							VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN ) );
 						}
-						if ( _getModel().getPRM().solventIds.size() > 0
-							 || _getModel().getPSF().solventResidueSymbols.size() > 0 )
+						if ( config.solventAtomIds.size() > 0 || config.solventResidueSymbols.size() > 0 )
 						{
 							bool showSolvent = _getModel().showSolvent();
 							if ( ImGui::Checkbox( LOCALE( "View.Molecule.Solvent" ), &showSolvent ) )
-							{ VTX_ACTION( new Action::MoleculeChangeShowSolvent( _getModel(), showSolvent ) ); }
+							{
+								VTX_ACTION( new Action::MoleculeChangeShowSolvent( _getModel(), showSolvent ) );
+							}
 						}
-						if ( _getModel().getPRM().ionIds.size() > 0
-							 || _getModel().getPSF().ionResidueSymbols.size() > 0 )
+						if ( config.ionAtomIds.size() > 0 || config.ionResidueSymbols.size() > 0 )
 						{
 							bool showIon = _getModel().showIon();
 							if ( ImGui::Checkbox( LOCALE( "View.Molecule.Ion" ), &showIon ) )
-							{ VTX_ACTION( new Action::MoleculeChangeShowIon( _getModel(), showIon ) ); }
+							{
+								VTX_ACTION( new Action::MoleculeChangeShowIon( _getModel(), showIon ) );
+							}
 						}
 					}
 #ifdef _DEBUG
@@ -166,7 +184,10 @@ namespace VTX
 					}
 #endif
 				}
-				if ( notClosed == false ) { VTX_ACTION( new Action::SelectableUnselect( _getModel() ) ); }
+				if ( notClosed == false )
+				{
+					VTX_ACTION( new Action::SelectableUnselect( _getModel() ) );
+				}
 				ImGui::PopID();
 			}
 		} // namespace UI

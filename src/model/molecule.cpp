@@ -27,12 +27,18 @@ namespace VTX
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 			glBindVertexArray( 0 );
 
-			if ( _atomPositionsVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomPositionsVBO );
-			if ( _atomRadiusVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomRadiusVBO );
-			if ( _atomColorsVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomColorsVBO );
-			if ( _atomVisibilitiesVBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_atomVisibilitiesVBO );
-			if ( _bondsIBO != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_bondsIBO );
-			if ( _vao != GL_INVALID_VALUE ) glDeleteVertexArrays( 1, &_vao );
+			if ( _atomPositionsVBO != GL_INVALID_VALUE )
+				glDeleteBuffers( 1, &_atomPositionsVBO );
+			if ( _atomRadiusVBO != GL_INVALID_VALUE )
+				glDeleteBuffers( 1, &_atomRadiusVBO );
+			if ( _atomColorsVBO != GL_INVALID_VALUE )
+				glDeleteBuffers( 1, &_atomColorsVBO );
+			if ( _atomVisibilitiesVBO != GL_INVALID_VALUE )
+				glDeleteBuffers( 1, &_atomVisibilitiesVBO );
+			if ( _bondsIBO != GL_INVALID_VALUE )
+				glDeleteBuffers( 1, &_bondsIBO );
+			if ( _vao != GL_INVALID_VALUE )
+				glDeleteVertexArrays( 1, &_vao );
 
 			Generic::clearVector( _atoms );
 			Generic::clearVector( _residues );
@@ -156,7 +162,9 @@ namespace VTX
 				{
 				case View::MOLECULE_COLOR_MODE::ATOM:
 					if ( _atoms[ i ]->getSymbol() == Atom::ATOM_SYMBOL::A_C )
-					{ _bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor(); }
+					{
+						_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
+					}
 					else
 					{
 						_bufferAtomColors[ i ] = _atoms[ i ]->getColor();
@@ -187,7 +195,10 @@ namespace VTX
 			{
 				Atom * const atom = _atoms[ i ];
 				// Molecule not visible.
-				if ( isVisible() == false ) { _bufferAtomVisibilities[ i ] = 0u; }
+				if ( isVisible() == false )
+				{
+					_bufferAtomVisibilities[ i ] = 0u;
+				}
 				// Residue not visible.
 				else if ( atom->getResiduePtr()->isVisible() == false )
 				{
@@ -235,6 +246,7 @@ namespace VTX
 
 		void Molecule::print() const
 		{
+			// TODO: add more infos in debug (solvents, ions, ss...).
 			VTX_INFO( "Molecule: " + _name );
 			VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: "
 					  + std::to_string( _residues.size() ) + " / Atoms: " + std::to_string( _atoms.size() )
@@ -267,7 +279,10 @@ namespace VTX
 		void Molecule::setSelected( const bool p_selected )
 		{
 			BaseModel::setSelected( p_selected );
-			if ( isSelected() ) { addItem( (View::BaseView<BaseModel> *)Generic::create<View::UI::Molecule>( this ) ); }
+			if ( isSelected() )
+			{
+				addItem( (View::BaseView<BaseModel> *)Generic::create<View::UI::Molecule>( this ) );
+			}
 			else
 			{
 				Generic::destroy( removeItem( ID::View::UI_MOLECULE ) );
@@ -283,7 +298,10 @@ namespace VTX
 		void Molecule::refreshVisibility()
 		{
 			_fillBufferAtomVisibilities();
-			if ( _ribbon != nullptr ) { _ribbon->refreshVisibility( *this ); }
+			if ( _ribbon != nullptr )
+			{
+				_ribbon->refreshVisibility( *this );
+			}
 		}
 
 		void Molecule::_createBuffers()

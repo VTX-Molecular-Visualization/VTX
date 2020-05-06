@@ -22,7 +22,7 @@ namespace VTX
 
 				const Model::Molecule::AtomPositionsFrame & positions
 					= p_molecule.getAtomPositionFrame( p_molecule.getFrame() );
-				p_molecule.setSecondaryStructureLoadedFromFile( false );
+				p_molecule.getConfiguration().isSecondaryStructureLoadedFromFile = false;
 
 				for ( uint chainIdx = 0; chainIdx < p_molecule.getChainCount(); ++chainIdx )
 				{
@@ -42,7 +42,7 @@ namespace VTX
 						else
 						{
 							const Model::Residue & residue0 = p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
-							const Model::Residue & residue1	= p_molecule.getResidue( idxFirstResidue + residueIdx );
+							const Model::Residue & residue1 = p_molecule.getResidue( idxFirstResidue + residueIdx );
 							const Model::Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
 
 							const Model::Atom * C0	= residue0.findFirstAtomByName( "C" );
@@ -84,7 +84,10 @@ namespace VTX
 							   < ( PIf / 6.f ) )
 							 && ( residueIdx < residueCount - 1 ) )
 						{
-							if ( RHelixCount == 0 ) { firstHelixIdx = residueIdx; }
+							if ( RHelixCount == 0 )
+							{
+								firstHelixIdx = residueIdx;
+							}
 							RHelixCount++;
 						}
 						else
@@ -107,7 +110,10 @@ namespace VTX
 							   < ( PIf / 6.f ) )
 							 && ( residueIdx < residueCount - 1 ) )
 						{
-							if ( LHelixCount == 0 ) { firstHelixIdx = residueIdx; }
+							if ( LHelixCount == 0 )
+							{
+								firstHelixIdx = residueIdx;
+							}
 							LHelixCount++;
 						}
 						else
@@ -131,7 +137,10 @@ namespace VTX
 							   < ( PIf / 6.f ) )
 							 && ( residueIdx < residueCount - 1 ) )
 						{
-							if ( strandCount == 0 ) { firstStrandIdx = residueIdx; }
+							if ( strandCount == 0 )
+							{
+								firstStrandIdx = residueIdx;
+							}
 							strandCount++;
 						}
 						else

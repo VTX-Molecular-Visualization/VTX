@@ -20,9 +20,11 @@ namespace VTX
 		  public:
 			enum class MODE : int
 			{
-				UNKNOWN,
+				MOLECULE_CONFIG_PRM = 0,
+				MOLECULE_CONFIG_PSM,
 				MOLECULE,
-				MESH
+				MESH,
+				UNKNOWN,
 			};
 
 			explicit Loader( const std::vector<IO::Path *> & p_paths ) : _paths( p_paths ) {}
