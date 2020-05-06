@@ -25,7 +25,7 @@ namespace VTX
 			const uint nbMeshes	   = scene->mNumMeshes;
 			uint	   nbTriangles = 0;
 			uint	   nbVertices  = 0;
-			_materials.emplace_back( new MatteMaterial( Color( 0.8f, 0.f, 0.f ) ) );
+			_materials.emplace_back( new MatteMaterial( Color::Rgb( 0.8f, 0.f, 0.f ) ) );
 
 			for ( uint i = 0; i < nbMeshes; ++i )
 			{
@@ -92,11 +92,11 @@ namespace VTX
 
 		TriangleMesh::TriangleMesh( const Model::Molecule * p_molecule )
 		{
-			const Model::Ribbon & ribbon	   = p_molecule->getRibbon();
-			_vertices						   = ribbon.getVertices();
-			_normals						   = ribbon.getNormals();
-			const std::vector<Color> & colors  = ribbon.getColors();
-			const std::vector<uint> &  indices = ribbon.getIndices();
+			const Model::Ribbon & ribbon			= p_molecule->getRibbon();
+			_vertices								= ribbon.getVertices();
+			_normals								= ribbon.getNormals();
+			const std::vector<Color::Rgb> & colors	= ribbon.getColors();
+			const std::vector<uint> &		indices = ribbon.getIndices();
 
 			_triangles.reserve( indices.size() / 3 );
 

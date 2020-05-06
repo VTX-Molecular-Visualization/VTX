@@ -18,28 +18,28 @@ namespace VTX
 		class PhongMaterial : public BaseMaterial
 		{
 		  public:
-			PhongMaterial( const Color & p_kd, const Color & p_ks, const float p_shininess ) :
+			PhongMaterial( const Color::Rgb & p_kd, const Color::Rgb & p_ks, const float p_shininess ) :
 				_kd( p_kd ), _ks( p_ks ), _shininess( p_shininess )
 			{
 			}
 
-			Color getColor() const override { return _kd; }
+			Color::Rgb getColor() const override { return _kd; }
 
-			Color shade( const Ray &		  p_ray,
-						 const Intersection & p_hit,
-						 const LightSample &  p_lightSample ) const override
+			Color::Rgb shade( const Ray &		   p_ray,
+							  const Intersection & p_hit,
+							  const LightSample &  p_lightSample ) const override
 			{
-				const Color diffuse = BRDF::Lambert::fr( p_hit, -p_ray.getDirection(), p_lightSample._dir, _kd );
-				const Color specular
+				const Color::Rgb diffuse = BRDF::Lambert::fr( p_hit, -p_ray.getDirection(), p_lightSample._dir, _kd );
+				const Color::Rgb specular
 					//= BRDF::Phong::fr( p_hit, -p_ray.getDirection(), p_lightSample._dir, _ks, _shininess );
 					= BRDF::BlinnPhong::fr( p_hit, -p_ray.getDirection(), p_lightSample._dir, _ks, _shininess );
 				return diffuse + specular;
 			}
 
 		  private:
-			Color _kd		 = Color::white * 0.5f;
-			Color _ks		 = Color::white * 0.5f;
-			float _shininess = 8.f;
+			Color::Rgb _kd		  = Color::Rgb::white * 0.5f;
+			Color::Rgb _ks		  = Color::Rgb::white * 0.5f;
+			float	   _shininess = 8.f;
 		};
 	} // namespace Renderer
 } // namespace VTX

@@ -71,8 +71,8 @@ namespace VTX
 				return bool( _bufferAtomVisibilities[ p_idx ] );
 			}
 
-			inline const float	 getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
-			inline const Color & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
+			inline const float		  getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
+			inline const Color::Rgb & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 
 			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
 			{
@@ -186,10 +186,10 @@ namespace VTX
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
 			// Buffers.
-			std::vector<float> _bufferAtomRadius	   = std::vector<float>();
-			std::vector<Color> _bufferAtomColors	   = std::vector<Color>();
-			std::vector<uint>  _bufferAtomVisibilities = std::vector<uint>();
-			std::vector<uint>  _bufferBonds			   = std::vector<uint>();
+			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
+			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
+			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
+			std::vector<uint>		_bufferBonds			= std::vector<uint>();
 
 			// Global AABB of atom positions (taking into account each frame).
 			// TODO: find better name

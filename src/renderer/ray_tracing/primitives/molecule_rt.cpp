@@ -49,9 +49,9 @@ namespace VTX
 			float roughness = 0.3f;
 			float shininess = 32.f;
 
-			for ( uint i = 0; i < Color::predefinedColors.size(); ++i )
+			for ( uint i = 0; i < Color::Rgb::predefined.size(); ++i )
 			{
-				_materials.emplace_back( new MatteMaterial( Color::predefinedColors[ i ], roughness ) );
+				_materials.emplace_back( new MatteMaterial( Color::Rgb::predefined[ i ], roughness ) );
 			}
 
 			// =====================================
@@ -83,7 +83,7 @@ namespace VTX
 
 			float radius = rep == View::MOLECULE_REPRESENTATION::BALL_AND_STICK ? 0.4f : 0.25f;
 
-			std::cout << "=========> " << Color::predefinedColors.size() << std::endl;
+			std::cout << "=========> " << Color::Rgb::predefined.size() << std::endl;
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
 				if ( p_molecule->isAtomVisible( i ) )

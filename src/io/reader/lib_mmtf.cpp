@@ -33,7 +33,7 @@ namespace VTX
 
 				// Set molecule properties.
 				p_molecule.setName( p_data.title );
-				p_molecule.setColor( Color::randomPastel() );
+				p_molecule.setColor( Color::Rgb::randomPastel() );
 
 				float x, y, z;
 				uint  chainGlobalIdx   = 0;
@@ -59,7 +59,7 @@ namespace VTX
 					chain.setName( p_data.chainNameList[ chainGlobalIdx ] );
 					chain.setIdFirstResidue( residueGlobalIdx );
 					chain.setResidueCount( p_data.groupsPerChain[ chainGlobalIdx ] );
-					chain.setColor( Color::randomPastel() );
+					chain.setColor( Color::Rgb::randomPastel() );
 
 					// For each residue in the chain.
 					uint residueCount = p_data.groupsPerChain[ chainGlobalIdx ];
@@ -88,7 +88,7 @@ namespace VTX
 						// residue.setBondCount( uint( group.bondAtomList.size() ) / 2u ); // 2 index by bond.
 						if ( group.bondAtomList.size() % 2 != 0 ) { VTX_WARNING( "Incorrect number of bonds" ); }
 
-						residue.setColor( Color::randomPastel() );
+						residue.setColor( Color::Rgb::randomPastel() );
 
 						// For each atom in the residue.
 						uint atomCount = uint( group.atomNameList.size() );

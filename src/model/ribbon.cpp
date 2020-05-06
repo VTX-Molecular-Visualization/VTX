@@ -25,10 +25,10 @@ namespace VTX
 				Math::BSpline splineSide2  = Math::BSpline();
 
 				// VTX_DEBUG( "Building secondary structure... chain " + std::to_string( chainIdx ) );
-				const Chain & chain			  = p_molecule.getChain( chainIdx );
-				const Color & chainColor	  = chain.getColor();
-				uint		  residueCount	  = chain.getResidueCount();
-				uint		  idxFirstResidue = chain.getIdFirstResidue();
+				const Chain &	   chain		   = p_molecule.getChain( chainIdx );
+				const Color::Rgb & chainColor	   = chain.getColor();
+				uint			   residueCount	   = chain.getResidueCount();
+				uint			   idxFirstResidue = chain.getIdFirstResidue();
 
 				// Not enought residues.
 				if ( residueCount < 3 ) { continue; }
@@ -246,12 +246,12 @@ namespace VTX
 			p_flipTestV = D;
 		}
 
-		void Ribbon::_computeTriangleMesh( Math::BSpline & p_splineCenter,
-										   Math::BSpline & p_splineSide1,
-										   Math::BSpline & p_splineSide2,
-										   const Color &   p_color,
-										   const bool	   p_isArrow,
-										   uint &		   p_vIndex )
+		void Ribbon::_computeTriangleMesh( Math::BSpline &	  p_splineCenter,
+										   Math::BSpline &	  p_splineSide1,
+										   Math::BSpline &	  p_splineSide2,
+										   const Color::Rgb & p_color,
+										   const bool		  p_isArrow,
+										   uint &			  p_vIndex )
 		{
 			Vec3f pointCenter0, pointCenter1;
 			Vec3f pointSide10, pointSide11, pointSide20, pointSide21;

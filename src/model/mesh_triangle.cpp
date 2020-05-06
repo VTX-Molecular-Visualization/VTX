@@ -45,7 +45,7 @@ namespace VTX
 
 			glGenBuffers( 1, &_vboColors );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
-			glBufferData( GL_ARRAY_BUFFER, _colors.size() * sizeof( Color ), _colors.data(), GL_STATIC_DRAW );
+			glBufferData( GL_ARRAY_BUFFER, _colors.size() * sizeof( Color::Rgb ), _colors.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glGenBuffers( 1, &_vboVisibilities );
@@ -76,7 +76,7 @@ namespace VTX
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_COLOR );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::VERTEX_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color ), 0 );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::VERTEX_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );

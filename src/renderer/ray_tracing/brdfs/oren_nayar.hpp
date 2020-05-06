@@ -21,11 +21,11 @@ namespace VTX
 			namespace OrenNayar
 			{
 				// TODO: optimize it ! acos/sin/tan can be removed...
-				inline Color fr( const Intersection & p_hit,
-								 const Vec3f &		  p_wo,
-								 const Vec3f &		  p_wi,
-								 const Color &		  p_albedo,
-								 const float		  p_roughness )
+				inline Color::Rgb fr( const Intersection & p_hit,
+									  const Vec3f &		   p_wo,
+									  const Vec3f &		   p_wi,
+									  const Color::Rgb &   p_albedo,
+									  const float		   p_roughness )
 				{
 					const float roughness2 = p_roughness * p_roughness;
 					// 0.33 is replaced by 0.57 to better approximate surface interreflection
@@ -47,7 +47,6 @@ namespace VTX
 					const float alpha  = Util::Math::max( thetaO, thetaI );
 					const float beta   = Util::Math::min( thetaO, thetaI );
 					const float C	   = sinf( alpha ) * tanf( beta );
-
 					return p_albedo * INV_PIf * ( A + B * gamma * C );
 				}
 			} // namespace OrenNayar
