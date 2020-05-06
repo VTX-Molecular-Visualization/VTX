@@ -19,7 +19,7 @@ namespace VTX
 			inline void				  setColor( const Color::Rgb & p_color ) { _color = p_color; }
 
 		  protected:
-			Color::Rgb _color = Color::Rgb::randomPastel();
+			Color::Rgb _color = Color::Rgb::random();
 		};
 	} // namespace Generic
 } // namespace VTX

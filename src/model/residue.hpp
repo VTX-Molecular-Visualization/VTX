@@ -63,8 +63,10 @@ namespace VTX
 			};
 
 			// Static const mapping.
+			static const std::string SYMBOL_STR[ (int)RESIDUE_SYMBOL::COUNT ];
+			static const std::string SYMBOL_SHORT_STR[ (int)RESIDUE_SYMBOL::COUNT ];
 			static const std::string SYMBOL_NAME[ (int)RESIDUE_SYMBOL::COUNT ];
-			static const std::string SYMBOL_SHORT[ (int)RESIDUE_SYMBOL::COUNT ];
+			static const Color::Rgb	 SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ];
 
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
@@ -74,9 +76,10 @@ namespace VTX
 			inline void				setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
 
 			inline const RESIDUE_SYMBOL		 getSymbol() const { return _symbol; };
+			inline const std::string &		 getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; }
 			inline void						 setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
 			inline const std::string &		 getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
-			inline const std::string &		 getSymbolShort() const { return SYMBOL_SHORT[ (int)_symbol ]; }
+			inline const std::string &		 getSymbolShort() const { return SYMBOL_SHORT_STR[ (int)_symbol ]; }
 			inline uint						 getIdFirstAtom() const { return _idFirstAtom; };
 			inline void						 setIdFirstAtom( const uint p_id ) { _idFirstAtom = p_id; };
 			inline uint						 getAtomCount() const { return _atomCount; };
@@ -89,10 +92,6 @@ namespace VTX
 			inline const HANDEDNESS getHandedness() const { return _handedness; };
 			inline void				setHandedness( const HANDEDNESS p_handedness ) { _handedness = p_handedness; };
 			const Atom * const		findFirstAtomByName( const std::string & ) const;
-			// inline uint					getIdFirstBond() const { return _idFirstBond; };
-			// inline void					setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
-			// inline uint getBondCount() const { return _bondCount; };
-			// inline void setBondCount( const uint p_count ) { _bondCount = p_count; };
 
 			virtual void setSelected( const bool ) override;
 

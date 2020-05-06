@@ -164,6 +164,7 @@ namespace VTX
 					symbol.has_value() ? modelResidue->setSymbol( symbol.value() )
 									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 
+					modelResidue->setColor( Model::Residue::SYMBOL_COLOR[ int( modelResidue->getSymbol() ) ] );
 					// PDB only.
 					// TODO: modify chemfiles to load handedness!
 					if ( p_extension == "pdb" )
@@ -228,7 +229,7 @@ namespace VTX
 										   : p_molecule.addUnknownAtomSymbol( atom.type() );
 
 						modelAtom->setName( atom.name() );
-						modelAtom->setColor( Model::Atom::SYMBOL_COLOR[ (int)modelAtom->getSymbol() ] );
+						modelAtom->setColor( Model::Atom::SYMBOL_COLOR[ int( modelAtom->getSymbol() ) ] );
 
 						const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 						const chemfiles::Vector3D &					 position  = positions[ atomId ];
