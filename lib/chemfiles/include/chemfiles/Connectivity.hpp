@@ -45,8 +45,8 @@ public:
     Bond(size_t i, size_t j);
 
     ~Bond() = default;
-    Bond(Bond&&) = default;
-    Bond& operator=(Bond&&) = default;
+    Bond(Bond&&) noexcept = default;
+    Bond& operator=(Bond&&) noexcept = default;
     Bond(const Bond&) = default;
     Bond& operator=(const Bond&) = default;
 
@@ -110,8 +110,8 @@ public:
     Angle(size_t i, size_t j, size_t k);
 
     ~Angle() = default;
-    Angle(Angle&&) = default;
-    Angle& operator=(Angle&&) = default;
+    Angle(Angle&&) noexcept = default;
+    Angle& operator=(Angle&&) noexcept = default;
     Angle(const Angle&) = default;
     Angle& operator=(const Angle&) = default;
 
@@ -176,8 +176,8 @@ public:
     Dihedral(size_t i, size_t j, size_t k, size_t m);
 
     ~Dihedral() = default;
-    Dihedral(Dihedral&&) = default;
-    Dihedral& operator=(Dihedral&&) = default;
+    Dihedral(Dihedral&&) noexcept = default;
+    Dihedral& operator=(Dihedral&&) noexcept = default;
     Dihedral(const Dihedral&) = default;
     Dihedral& operator=(const Dihedral&) = default;
 
@@ -247,8 +247,8 @@ public:
     Improper(size_t i, size_t j, size_t k, size_t m);
 
     ~Improper() = default;
-    Improper(Improper&&) = default;
-    Improper& operator=(Improper&&) = default;
+    Improper(Improper&&) noexcept = default;
+    Improper& operator=(Improper&&) noexcept = default;
     Improper(const Improper&) = default;
     Improper& operator=(const Improper&) = default;
 

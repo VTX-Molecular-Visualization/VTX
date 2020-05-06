@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "chemfiles/File.hpp"
 #include "chemfiles/Format.hpp"
@@ -16,24 +17,36 @@
 
 namespace chemfiles {
 class Frame;
+class MemoryBuffer;
 
 /// [mmCIF] (Crystallographic Information Framework) for MacroMolecules
 ///
 /// [mmCIF]: http://mmcif.wwpdb.org/
 class mmCIFFormat final: public Format {
 public:
-    mmCIFFormat(std::string path, File::Mode mode, File::Compression compression);
+    mmCIFFormat(std::string path, File::Mode mode, File::Compression compression) :
+        file_(std::move(path), mode, compression), models_(0), atoms_(0) {
+        init_();
+    }
+
+    mmCIFFormat(std::shared_ptr<MemoryBuffer> memory, File::Mode mode, File::Compression compression) :
+        file_(std::move(memory), mode, compression), models_(0), atoms_(0) {
+        init_();
+    }
 
     void read_step(size_t step, Frame& frame) override;
     void read(Frame& frame) override;
     void write(const Frame& frame) override;
     size_t nsteps() override;
 private:
+    /// Initialize important variables
+    void init_();
+    /// Underlying file representation
     TextFile file_;
     /// Map of STAR records to their index
     std::map<std::string, size_t> atom_site_map_;
     /// Map of residues, indexed by residue id and chainid.
-    std::map< std::pair<std::string, size_t>, Residue> residues_;
+    std::map<std::pair<std::string, size_t>, Residue> residues_;
     /// Set to true if the file is based on fractional coordinates.
     /// Set to false if the file is based on cartn coordinates.
     bool uses_fract_;

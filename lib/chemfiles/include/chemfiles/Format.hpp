@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "chemfiles/exports.h"
 
@@ -16,6 +17,7 @@
 
 namespace chemfiles {
 class Frame;
+class MemoryBuffer;
 
 /// The `Format` class defines the interface to implement in order to add a new
 /// format to chemfiles.
@@ -26,11 +28,14 @@ class Frame;
 class CHFL_EXPORT Format {
 public:
     Format() = default;
-    virtual ~Format() noexcept = default;
+    virtual ~Format() = default;
+
+    // Delete all move and copy constructors.
+    // Format should only be used behind an std::unique_ptr
     Format(const Format&) = delete;
     Format& operator=(const Format&) = delete;
-    Format(Format&&) = default;
-    Format& operator=(Format&&) = default;
+    Format(Format&&) = delete;
+    Format& operator=(Format&&) = delete;
 
     /// Read a specific `step` from the trajectory file.
     ///
@@ -155,6 +160,7 @@ FormatInfo format_information() {
 class TextFormat: public Format {
 public:
     TextFormat(std::string path, File::Mode mode, File::Compression compression);
+    TextFormat(std::shared_ptr<MemoryBuffer> memory, File::Mode mode, File::Compression compression);
     virtual ~TextFormat() override = default;
 
     void read_step(size_t step, Frame& frame) override;

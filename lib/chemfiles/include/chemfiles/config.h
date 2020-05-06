@@ -8,11 +8,11 @@
 /// An integer containing the major (x.0.0) version number
 #define CHEMFILES_VERSION_MAJOR 0
 /// An integer containing the minor (0.y.0) version number
-#define CHEMFILES_VERSION_MINOR 9
+#define CHEMFILES_VERSION_MINOR 10
 /// An integer containing the patch (0.0.z) version number
-#define CHEMFILES_VERSION_PATCH 3
+#define CHEMFILES_VERSION_PATCH 0
 /// The full version of chemfiles ("x.y.z"), as a string
-#define CHEMFILES_VERSION "0.9.3"
+#define CHEMFILES_VERSION "0.10.0-dev"
 
 /// thread_local implementation
 #ifdef __cplusplus

@@ -4,6 +4,12 @@
 #ifndef CHEMFILES_BZ2_FILES_HPP
 #define CHEMFILES_BZ2_FILES_HPP
 
+#include <cstdio>
+#include <cstdint>
+#include <string>
+#include <vector>
+#include <functional>
+
 #include <bzlib.h>
 
 #include "chemfiles/File.hpp"
@@ -31,13 +37,15 @@ private:
     File::Mode mode_;
     /// Store the right function to close the stream
     std::function<int(bz_stream*)> stream_end_;
-    /// lzma stream used both for reading and writing. Reading is done using
-    /// lzma_stream_decoder, and writing using lzma_easy_encoder.
+    /// bzip2 stream used both for reading and writing.
     bz_stream stream_;
     /// compressed data buffer, straight out from the file when reading, to be
     /// written to the file when writing.
     std::vector<char> buffer_;
 };
+
+/// Inflates BZIP2 data from the `src` buffer
+std::vector<char> bz2inflate_in_place(const char* src, size_t size);
 
 }
 

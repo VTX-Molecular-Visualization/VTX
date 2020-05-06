@@ -9,19 +9,22 @@
 #include <stack>
 #include <vector>
 #include <string>
+#include <memory>
 #include <unordered_map>
 
 #include "chemfiles/File.hpp"
 #include "chemfiles/Format.hpp"
 #include "chemfiles/Residue.hpp"
 #include "chemfiles/Connectivity.hpp"
+
 #include "chemfiles/string_view.hpp"
+#include "chemfiles/external/optional.hpp"
 
 namespace chemfiles {
 class Atom;
 class Frame;
 class Topology;
-
+class MemoryBuffer;
 
 /// [SMI] file format reader and writer.
 ///
@@ -30,6 +33,9 @@ class SMIFormat final: public TextFormat {
 public:
     SMIFormat(const std::string& path, File::Mode mode, File::Compression compression):
         TextFormat(std::move(path), mode, compression) {}
+
+    SMIFormat(std::shared_ptr<MemoryBuffer> memory, File::Mode mode, File::Compression compression) :
+        TextFormat(std::move(memory), mode, compression) {}
 
     void read_next(Frame& frame) override;
     void write_next(const Frame& frame) override;
@@ -40,7 +46,10 @@ private:
     Atom& add_atom(Topology& topo, string_view atom_name);
 
     /// [for reading] adds an atom defined by the string `smiles` starting at position i
-    void process_property_list(Topology& topo, string_view smiles, size_t& i);
+    void process_property_list(Topology& topo, string_view smiles);
+
+    /// [for reading] Opens and closes a ring with id `ring_id`
+    void check_ring_(Topology& topology, size_t ring_id);
 
     /// [for reading] Stores location of a branching path
     std::stack<size_t, std::vector<size_t>> branch_point_;
@@ -65,17 +74,8 @@ private:
     /// [for writing] Should we add a '.' after the current molecule
     bool first_atom_;
 
-    /// [for writing] writes a single atom to the internal file
-    /// this function is recursive
-    void write_atom(const Frame& frame,
-        std::vector<bool>& hit_atoms,
-        size_t current_atom, size_t previous_atom);
-
     /// [for writing] stores the graph of the topology
     std::vector<std::vector<size_t>> adj_list_;
-
-    /// [for writing] stores how many branches need to be closed
-    size_t branch_stack_;
 
     /// [for writing] stores locations of ring closures. This is ordered
     /// to ensure rings get printed in numeric order (where possible)

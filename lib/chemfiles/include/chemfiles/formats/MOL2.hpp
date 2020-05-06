@@ -6,14 +6,17 @@
 
 #include <cstdint>
 #include <string>
+#include <memory>
 #include <unordered_map>
 
 #include "chemfiles/File.hpp"
 #include "chemfiles/Format.hpp"
-#include "chemfiles/Residue.hpp"  // IWYU pragma: keep
+#include "chemfiles/external/optional.hpp"
 
 namespace chemfiles {
 class Frame;
+class Residue;
+class MemoryBuffer;
 
 /// [MOL2][MOL2] file format reader and writer.
 ///
@@ -25,6 +28,9 @@ class MOL2Format final: public TextFormat {
 public:
     MOL2Format(std::string path, File::Mode mode, File::Compression compression):
         TextFormat(std::move(path), mode, compression) {}
+
+    MOL2Format(std::shared_ptr<MemoryBuffer> memory, File::Mode mode, File::Compression compression) :
+        TextFormat(std::move(memory), mode, compression) {}
 
     void read_next(Frame& frame) override;
     void write_next(const Frame& frame) override;

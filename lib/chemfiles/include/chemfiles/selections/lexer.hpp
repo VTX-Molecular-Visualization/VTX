@@ -9,7 +9,8 @@
 #include <cstdint>
 #include <cassert>
 
-#include <chemfiles/Error.hpp>
+#include "chemfiles/Error.hpp"
+#include "chemfiles/string_view.hpp"
 
 namespace chemfiles {
 namespace selections {
@@ -17,7 +18,7 @@ namespace selections {
 using Variable = uint8_t;
 
 /// Check that a given string is a valid identifier
-bool is_ident(const std::string& string);
+bool is_ident(string_view string);
 
 /// A token in the selection stream
 class Token {
@@ -79,7 +80,7 @@ public:
     ~Token() = default;
     Token(const Token&) = default;
     Token& operator=(const Token&) = default;
-    Token(Token&&) = default;
+    Token(Token&&) noexcept = default;
     Token& operator=(Token&&) = default;
 
     /// Create an identifier token with `data` name
@@ -173,6 +174,12 @@ class Tokenizer {
 public:
     /// Create a new Tokenizer from the given `input`
     Tokenizer(std::string input): input_(std::move(input)) {}
+
+    ~Tokenizer() = default;
+    Tokenizer(const Tokenizer&) = default;
+    Tokenizer& operator=(const Tokenizer&) = default;
+    Tokenizer(Tokenizer&&) noexcept = default;
+    Tokenizer& operator=(Tokenizer&&) = default;
 
     /// Convert the `input` string to a stream of tokens
     ///

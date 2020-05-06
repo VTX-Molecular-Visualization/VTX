@@ -7,13 +7,16 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include <memory>
 
 #include "chemfiles/File.hpp"
 #include "chemfiles/Format.hpp"
 #include "chemfiles/Residue.hpp"
+#include "chemfiles/external/optional.hpp"
 
 namespace chemfiles {
 class Frame;
+class MemoryBuffer;
 
 /// [GRO] file format reader and writer.
 ///
@@ -22,6 +25,9 @@ class GROFormat final: public TextFormat {
 public:
     GROFormat(std::string path, File::Mode mode, File::Compression compression):
         TextFormat(std::move(path), mode, compression) {}
+
+    GROFormat(std::shared_ptr<MemoryBuffer> memory, File::Mode mode, File::Compression compression) :
+        TextFormat(std::move(memory), mode, compression) {}
 
     void read_next(Frame& frame) override;
     void write_next(const Frame& frame) override;

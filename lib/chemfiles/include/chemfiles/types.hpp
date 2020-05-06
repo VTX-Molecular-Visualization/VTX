@@ -9,7 +9,7 @@
 #include <cfloat>
 #include <cmath>
 
-#include <chemfiles/Error.hpp>
+#include "chemfiles/Error.hpp"
 
 namespace chemfiles {
 
@@ -41,8 +41,8 @@ public:
     ~Vector3D() = default;
     Vector3D(const Vector3D&) = default;
     Vector3D& operator=(const Vector3D&) = default;
-    Vector3D(Vector3D&&) = default;
-    Vector3D& operator=(Vector3D&&) = default;
+    Vector3D(Vector3D&&) noexcept = default;
+    Vector3D& operator=(Vector3D&&) noexcept = default;
 
     using super::operator[];
 
@@ -212,8 +212,8 @@ public:
     ~Matrix3D() = default;
     Matrix3D(const Matrix3D&) = default;
     Matrix3D& operator=(const Matrix3D&) = default;
-    Matrix3D(Matrix3D&&) = default;
-    Matrix3D& operator=(Matrix3D&&) = default;
+    Matrix3D(Matrix3D&&) noexcept = default;
+    Matrix3D& operator=(Matrix3D&&) noexcept = default;
 
     using super::operator[];
 
@@ -226,6 +226,7 @@ public:
     ///
     /// @throw Error if the matrix is not inversible (i.e. if the determinant
     ///              is zero)
+    ///
     /// @example{matrix3d/invert.cpp}
     Matrix3D invert() const;
 

@@ -9,14 +9,17 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <memory>
 
 #include "chemfiles/File.hpp"
 #include "chemfiles/Format.hpp"
 #include "chemfiles/Residue.hpp"
 #include "chemfiles/string_view.hpp"
+#include "chemfiles/external/optional.hpp"
 
 namespace chemfiles {
 class Frame;
+class MemoryBuffer;
 
 /// [PDB][PDB] file format reader and writer.
 ///
@@ -29,7 +32,10 @@ public:
     PDBFormat(std::string path, File::Mode mode, File::Compression compression):
         TextFormat(std::move(path), mode, compression) {}
 
-    ~PDBFormat() noexcept override;
+    PDBFormat(std::shared_ptr<MemoryBuffer> memory, File::Mode mode, File::Compression compression) :
+        TextFormat(std::move(memory), mode, compression) {}
+
+    ~PDBFormat() override;
 
     void read_next(Frame& frame) override;
     void write_next(const Frame& frame) override;

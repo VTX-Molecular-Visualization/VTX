@@ -4,16 +4,20 @@
 #ifndef CHEMFILES_FORMAT_MMTF_HPP
 #define CHEMFILES_FORMAT_MMTF_HPP
 
+#include <cstdint>
 #include <string>
+#include <vector>
+#include <memory>
 
 #include <mmtf/structure_data.hpp>
 
 #include "chemfiles/File.hpp"
 #include "chemfiles/Format.hpp"
-#include "chemfiles/Residue.hpp"
 
 namespace chemfiles {
 class Frame;
+class Residue;
+class MemoryBuffer;
 
 /// [MMTF][MMTF] file format reader and writer.
 ///
@@ -24,12 +28,9 @@ class Frame;
 class MMTFFormat final: public Format {
 public:
     MMTFFormat(std::string path, File::Mode mode, File::Compression compression);
+    MMTFFormat(std::shared_ptr<MemoryBuffer> memory, File::Mode mode, File::Compression compression);
 
     ~MMTFFormat() override;
-    MMTFFormat(const MMTFFormat&) = delete;
-    MMTFFormat& operator=(const MMTFFormat&) = delete;
-    MMTFFormat(MMTFFormat&&) = default;
-    MMTFFormat& operator=(MMTFFormat&&) = default;
 
     void read_step(size_t step, Frame& frame) override;
     void read(Frame& frame) override;
@@ -37,6 +38,10 @@ public:
     size_t nsteps() override;
 
 private:
+
+    /// Perform the MMTF decoding steps
+    void decode(const char* data, size_t size, const std::string& source);
+
     /// add a single residue to the structure_, using the data from the frame
     void add_residue_to_structure(const Frame& frame, const Residue& residue);
 

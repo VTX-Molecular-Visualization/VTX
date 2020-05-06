@@ -4,9 +4,9 @@
 #ifndef CHEMFILES_NC_FILE_HPP
 #define CHEMFILES_NC_FILE_HPP
 
+#include <cassert>
 #include <vector>
 #include <string>
-#include <cassert>
 
 #include <netcdf.h>
 #include <fmt/format.h>
@@ -53,11 +53,16 @@ namespace nc {
         /// Get the dimensions size for this variable
         std::vector<size_t> dimmensions() const;
 
-        /// Get the attribute `name`.
-        std::string attribute(const std::string& name) const;
-        /// Add an attribute with the given `value` and `name`.
-        void add_attribute(const std::string& name, const std::string& value);
-    protected:
+        /// Get the string attribute `name`.
+        std::string string_attribute(const std::string& name) const;
+        /// Get the float attribute `name`.
+        float float_attribute(const std::string& name) const;
+        /// Add a string attribute with the given `value` and `name`.
+        void add_string_attribute(const std::string& name, const std::string& value);
+        /// Check if an attribute exists
+        bool attribute_exists(const std::string& name) const;
+
+      protected:
         netcdf_id_t file_id_;
         netcdf_id_t var_id_;
     };
@@ -95,9 +100,9 @@ namespace nc {
 class NcFile final: public File {
 public:
     NcFile(std::string path, File::Mode mode);
-    ~NcFile() noexcept override;
-    NcFile(NcFile&&) = default;
-    NcFile& operator=(NcFile&&) = delete;
+    ~NcFile() override;
+    NcFile(NcFile&&) noexcept = default;
+    NcFile& operator=(NcFile&&) = default;
     NcFile(NcFile const&) = delete;
     NcFile& operator=(NcFile const&) = delete;
 

@@ -13,12 +13,12 @@ extern "C" {
 #include <vector>
 
 #include "chemfiles/File.hpp"
+#include "chemfiles/Frame.hpp"
 #include "chemfiles/Format.hpp"
 #include "chemfiles/Topology.hpp"   // IWYU pragma: keep
 #include "chemfiles/external/optional.hpp"
 
 namespace chemfiles {
-class Frame;
 
 /// List all the VMD molfile plugins enabled. For more documentation about VMD
 /// molfile plugins, please see:
@@ -56,11 +56,7 @@ template <MolfileFormat F>
 class Molfile final: public Format {
 public:
     Molfile(std::string path, File::Mode mode, File::Compression compression);
-    ~Molfile() noexcept override;
-    Molfile(const Molfile&) = delete;
-    Molfile& operator=(const Molfile&) = delete;
-    Molfile(Molfile&&) = default;
-    Molfile& operator=(Molfile&&) = default;
+    ~Molfile() override;
 
     void read(Frame& frame) override;
     void read_step(size_t step, Frame& frame) override;
