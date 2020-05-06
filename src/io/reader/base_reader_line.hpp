@@ -30,10 +30,11 @@ namespace VTX
 					if ( !file.is_open() )
 					{
 						throw Exception::IOException( "Cannot open file" );
-						while ( getline( file, line ) )
-						{
-							_readLine( line, p_data );
-						}
+					}
+
+					while ( getline( file, line ) )
+					{
+						_readLine( line, p_data );
 					}
 				}
 

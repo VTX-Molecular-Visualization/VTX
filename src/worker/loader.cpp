@@ -14,18 +14,21 @@ namespace VTX
 	{
 		void Loader::work()
 		{
+			Model::Configuration::Molecule config = Model::Configuration::Molecule();
+
 			// Load PRM or PSF file firstly.
+			// TODO: remove from list.
 			for ( const IO::Path * path : _paths )
 			{
 				if ( path->getExtension() == "prm" )
 				{
 					IO::Reader::PRM reader = IO::Reader::PRM();
-					// reader.readFile( *path, prm );
+					reader.readFile( *path, config );
 				}
 				else if ( path->getExtension() == "psf" )
 				{
 					IO::Reader::PSF reader = IO::Reader::PSF();
-					// reader.readFile( *path, psf );
+					reader.readFile( *path, config );
 				}
 			}
 
@@ -45,6 +48,7 @@ namespace VTX
 				{
 					// Create reader.
 					IO::Reader::BaseReader<Model::Molecule> * reader;
+					// Will be removed.
 					if ( path->getExtension() == "mmtf" )
 					{
 						reader = new IO::Reader::LibMMTF();
@@ -56,8 +60,7 @@ namespace VTX
 
 					// Set PRM.
 					Model::Molecule * molecule = new Model::Molecule();
-					// molecule->setPRM( prm );
-					// molecule->setPSF( psf );
+					molecule->setConfiguration( config );
 
 					// Load.
 					try
@@ -123,16 +126,8 @@ namespace VTX
 		{
 			std::string extension = p_path.getExtension();
 
-			if ( extension == "prm" )
-			{
-				return MODE::MOLECULE_CONFIG_PRM;
-			}
-			else if ( extension == "psm" )
-			{
-				return MODE::MOLECULE_CONFIG_PSM;
-			}
-			else if ( extension == "pdb" || extension == "mmtf" || extension == "cif" || extension == "arc"
-					  || extension == "xyz" || extension == "dcd" )
+			if ( extension == "pdb" || extension == "mmtf" || extension == "cif" || extension == "arc"
+				 || extension == "xyz" || extension == "dcd" )
 			{
 				return MODE::MOLECULE;
 			}

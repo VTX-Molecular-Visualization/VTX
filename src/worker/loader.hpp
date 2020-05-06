@@ -20,8 +20,6 @@ namespace VTX
 		  public:
 			enum class MODE : int
 			{
-				MOLECULE_CONFIG_PRM = 0,
-				MOLECULE_CONFIG_PSM,
 				MOLECULE,
 				MESH,
 				UNKNOWN,
