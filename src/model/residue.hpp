@@ -21,6 +21,12 @@ namespace VTX
 		class Residue : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
 		{
 		  public:
+			enum class TYPE : int
+			{
+				STANDARD,
+				NON_STANDARD
+			};
+
 			enum class SYMBOL : int
 			{
 				UNKNOWN,
@@ -68,6 +74,8 @@ namespace VTX
 			static const std::string SYMBOL_NAME[ (int)SYMBOL::COUNT ];
 			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
 
+			inline TYPE				getType() const { return _type; }
+			inline void				setType( const TYPE p_type ) { _type = p_type; }
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
@@ -97,6 +105,7 @@ namespace VTX
 			virtual void setSelected( const bool ) override;
 
 		  private:
+			TYPE	   _type		= TYPE::STANDARD;
 			uint	   _index		= 0;
 			Molecule * _moleculePtr = nullptr;
 			Chain *	   _chainPtr	= nullptr;
@@ -107,8 +116,6 @@ namespace VTX
 			uint				_atomCount			= 0;
 			SECONDARY_STRUCTURE _secondaryStructure = SECONDARY_STRUCTURE::COIL;
 			HANDEDNESS			_handedness			= HANDEDNESS::RIGHT;
-			// uint		   _idFirstBond = 0;
-			// uint		   _bondCount	= 0;
 		};
 
 	} // namespace Model

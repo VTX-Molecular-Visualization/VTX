@@ -116,8 +116,9 @@ namespace VTX
 				modelFrame.resize( frame.size() );
 
 				Model::Chain * modelChain;
-				std::string	   lastChainName = "";
-				uint		   chainModelId	 = -1;
+				std::string	   lastChainName   = "";
+				uint		   chainModelId	   = -1;
+				bool		   chainIsStandard = true;
 				for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 				{
 					const chemfiles::Residue & residue = residues[ residueIdx ];
@@ -163,11 +164,9 @@ namespace VTX
 
 					modelResidue->setColor( Model::Residue::SYMBOL_COLOR[ int( modelResidue->getSymbol() ) ] );
 
-					/*
 					bool isStandard = residue.properties().get( "is_standard_pdb" ).value_or( true ).as_bool();
-					modelResidue->setType( isStandard ? Model::Residue::RESIDUE_TYPE::NORMAL
-													  : Model::Residue::RESIDUE_TYPE::LIGAND );
-													  */
+					modelResidue->setType( isStandard ? Model::Residue::TYPE::STANDARD
+													  : Model::Residue::TYPE::NON_STANDARD );
 
 					// PDB only.
 					// TODO: modify chemfiles to load handedness!
