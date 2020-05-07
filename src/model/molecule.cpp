@@ -120,7 +120,7 @@ namespace VTX
 
 			_currentFrame = p_frameIdx;
 			_updateBufferAtomPositions();
-			createSecondaryStructure();
+			//createSecondaryStructure();
 		}
 
 		void Molecule::_initBufferAtomPositions() const
