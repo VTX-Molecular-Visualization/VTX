@@ -7,4 +7,5 @@ cmake*
 *.dir/
 Debug/
 Release/
+RelWithDebInfo/
 imgui.ini
