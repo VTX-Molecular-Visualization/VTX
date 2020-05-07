@@ -22,7 +22,7 @@ namespace VTX
 		{
 			void Molecule::_draw()
 			{
-				Model::Configuration::Molecule config = _getModel().getConfiguration();
+				Model::Configuration::Molecule & config = _getModel().getConfiguration();
 
 				ImGui::PushID( ( "ViewMolecule" + std::to_string( _getModel().getId() ) ).c_str() );
 				bool notClosed = true;
