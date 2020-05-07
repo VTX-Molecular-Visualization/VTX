@@ -27,15 +27,13 @@ namespace VTX
 			// we assume that solvent and ions don't have bonds... chilled :-)
 			std::vector<Renderer::BasePrimitive *> primitives;
 			if ( rep == View::MOLECULE_REPRESENTATION::BALL_AND_STICK || rep == View::MOLECULE_REPRESENTATION::STICK )
-			{ primitives.reserve( nbAtoms + nbBonds ); }
+			{
+				primitives.reserve( nbAtoms + nbBonds );
+			}
 			else
 			{
 				primitives.reserve( nbAtoms );
 			}
-
-			//_materials.emplace_back( new MatteMaterial( VEC3F_XYZ ) );
-			//_materials.emplace_back( new PhongMaterial( Vec3f( 0.2f, 0.f, 0.f ), Vec3f( 0.8f, 0.f, 0.f ) ) );
-			//_materials.emplace_back( new DiffuseMaterial( Vec3f( 0.8f, 0.f, 0.f ) ) );
 
 			// std::map<Model::Chain *, Vec3f> mapColors;
 			// const std::vector<Vec3f>		predefColors = {
@@ -43,17 +41,6 @@ namespace VTX
 			//	   Vec3f( 1.f, 0.247f, 0.4f ),		// rouge clair
 			//	   Vec3f( 0.969f, 0.772f, 0.172f )	// jaune ocre
 			//};
-
-			std::map<Model::Chain *, BaseMaterial *> mapMtls;
-
-			float roughness = 0.3f;
-			float shininess = 32.f;
-
-			for ( uint i = 0; i < Color::Rgb::predefined.size(); ++i )
-			{
-				_materials.emplace_back( new MatteMaterial( Color::Rgb::predefined[ i ], roughness ) );
-			}
-
 			// =====================================
 			// for arte video
 			// =====================================
@@ -69,6 +56,11 @@ namespace VTX
 			//};
 			// =====================================
 
+			std::map<Model::Chain *, BaseMaterial *> mapMtls;
+
+			float roughness = 0.3f;
+			float shininess = 32.f;
+
 			uint idColor = 0;
 
 			const std::vector<Vec3f> & atomPositions = p_molecule->getAtomPositionFrame( p_molecule->getFrame() );
@@ -83,7 +75,6 @@ namespace VTX
 
 			float radius = rep == View::MOLECULE_REPRESENTATION::BALL_AND_STICK ? 0.4f : 0.25f;
 
-			std::cout << "=========> " << Color::Rgb::predefined.size() << std::endl;
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
 				if ( p_molecule->isAtomVisible( i ) )
@@ -92,28 +83,19 @@ namespace VTX
 
 					if ( mapMtls.find( chainPtr ) == mapMtls.end() )
 					{
-						// if ( idColor > 45 ) break;
-						if ( idColor < uint( _materials.size() ) ) { mapMtls[ chainPtr ] = _materials[ idColor++ ]; }
-						else
-						{
-							mapMtls[ chainPtr ] = new MatteMaterial( chainPtr->getColor(), roughness );
-						}
+						_materials.emplace_back( //
+							new MatteMaterial( chainPtr->getColor(), 0.3f ) );
+						// new PhongMaterial( chainPtr->getColor() * 0.7f, chainPtr->getColor() * 0.3f, 64.f ) );
+						mapMtls[ chainPtr ] = _materials.back();
 					}
 
-					BaseMaterial * mtl = mapMtls[ chainPtr ];
 					primitives.emplace_back( new Renderer::Sphere( tAtomPositions[ i ],
 																   rep == View::MOLECULE_REPRESENTATION::VAN_DER_WAALS
 																	   ? p_molecule->getAtomRadius( i )
 																	   : rep == View::MOLECULE_REPRESENTATION::SAS
 																			 ? p_molecule->getAtomRadius( i ) + 1.4f
 																			 : radius,
-																   mtl ) );
-					// new PhongMaterial( 0.4f * color, 0.6f * color ) ) );
-					// new FlatColorMaterial( color ) ) );
-					// MetalMaterial::createAluminium() ) );
-					// MetalMaterial::createCopper() ) );
-					// MetalMaterial::createGold() ) );
-					// MetalMaterial::createZinc() ) );
+																   mapMtls[ chainPtr ] ) );
 				}
 			}
 

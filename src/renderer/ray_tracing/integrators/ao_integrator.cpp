@@ -22,11 +22,11 @@ namespace VTX
 				float ao = 0.f;
 				for ( uint i = 0; i < _nbSamples; ++i )
 				{
-					float u = Util::Math::randomFloat();
+					float u = Util::Math::randomFloat(); // cos theta
 					float v = Util::Math::randomFloat();
 
 					Vec3f sampleDir = Util::Sampler::cosineWeightedHemisphere( u, v );
-					float samplePdf = Util::Sampler::cosineWeightedHemispherePdf( sampleDir.z );
+					float samplePdf = Util::Sampler::cosineWeightedHemispherePdf( u );
 
 					// transform in local coordinates systems
 					Vec3f aoDir = Util::Math::normalize( TBN * sampleDir );
@@ -34,13 +34,13 @@ namespace VTX
 					aoRay.offset( intersection._normal );
 
 					if ( !p_scene.intersectAny( aoRay, SHADOW_EPS, _radius - SHADOW_EPS ) )
-						ao += sampleDir.z / samplePdf;
+						ao += u / samplePdf;
 				}
-				Li += intersection._primitive->getMaterial()->getColor() * powf( ao / _nbSamples, _intensity );
+				Li = intersection._primitive->getMaterial()->getColor() * ( ao / _nbSamples ) * INV_PIf;
 			}
 			else
 			{
-				Li += _backgroundColor;
+				Li = _backgroundColor;
 			}
 			return Li;
 		}

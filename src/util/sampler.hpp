@@ -14,16 +14,18 @@ namespace VTX
 	{
 		namespace Sampler
 		{
+			// Uniform hemisphere sampling: z is up
 			inline Vec3f uniformHemisphere( const float p_u, const float p_v )
 			{
 				const float cosTheta = p_u;
-				const float phi		 = 2.f * PIf * p_v;
-				const float sinTheta = sqrtf( Util::Math::max( 1.f - cosTheta * cosTheta, 0.f ) );
+				const float phi		 = TWO_PIf * p_v;
+				const float sinTheta = sqrtf( 1.f - cosTheta * cosTheta );
 				return Vec3f( cosf( phi ) * sinTheta, sinf( phi ) * sinTheta, cosTheta );
 			}
 
 			inline float uniformHemispherePdf() { return INV_2PIf; }
 
+			// Cosine weighted hemisphere samping: z is up
 			inline Vec3f cosineWeightedHemisphere( const float p_u, const float p_v )
 			{
 				const float sqrtCosTheta = sqrtf( p_u );
@@ -33,7 +35,7 @@ namespace VTX
 				return Vec3f( sqrtCosTheta * cosf( phi ), sqrtCosTheta * sinf( phi ), z );
 			}
 
-			inline float cosineWeightedHemispherePdf( const float cosTheta ) { return cosTheta * INV_PIf; }
+			inline float cosineWeightedHemispherePdf( const float p_cosTheta ) { return p_cosTheta * INV_PIf; }
 
 		} // namespace Sampler
 	}	  // namespace Util
