@@ -9,7 +9,9 @@ namespace VTX
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() )
-			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Residue, View::UI::Residue>( this ) ); }
+			{
+				addItem( (View::BaseView<BaseModel> *)Generic::create<Residue, View::UI::Residue>( this ) );
+			}
 			else
 			{
 				Generic::destroy( removeItem( ID::View::UI_RESIDUE ) );
@@ -21,13 +23,16 @@ namespace VTX
 			for ( uint i = 0; i < _atomCount; ++i )
 			{
 				const Atom & atom = _moleculePtr->getAtom( _idFirstAtom + i );
-				if ( atom.getName() == p_name ) { return &atom; }
+				if ( atom.getName() == p_name )
+				{
+					return &atom;
+				}
 			}
 
 			return nullptr;
 		}
 
-		const std::string Residue::SYMBOL_STR[ (int)RESIDUE_SYMBOL::COUNT ] = {
+		const std::string Residue::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {
 			"UNKNOWN", // UNKWNON,
 			"ALA",	   // ALA,
 			"ARG",	   // ARG,
@@ -53,7 +58,7 @@ namespace VTX
 			"GLX"	   // GLX
 		};
 
-		const std::string Residue::SYMBOL_SHORT_STR[ (int)RESIDUE_SYMBOL::COUNT ] = {
+		const std::string Residue::SYMBOL_SHORT_STR[ (int)SYMBOL::COUNT ] = {
 			"UNKNOWN", // UNKWNON
 			"A",	   // ALA,
 			"R",	   // ARG,
@@ -79,7 +84,7 @@ namespace VTX
 			"?",	   // GLX
 		};
 
-		const std::string Residue::SYMBOL_NAME[ (int)RESIDUE_SYMBOL::COUNT ] = {
+		const std::string Residue::SYMBOL_NAME[ (int)SYMBOL::COUNT ] = {
 			"Unknown",		 // UNKWNON,
 			"Alanine",		 // ALA,
 			"Arginine",		 // ARG,
@@ -106,7 +111,7 @@ namespace VTX
 		};
 
 		// http://jmol.sourceforge.net/jscolors/#Jmolcolors : Protein "amino" colors
-		const Color::Rgb Residue::SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ] = {
+		const Color::Rgb Residue::SYMBOL_COLOR[ (int)SYMBOL::COUNT ] = {
 			{ 190, 160, 110 }, // UNKWNON,
 			{ 200, 200, 200 }, // ALA,
 			{ 20, 90, 255 },   // ARG,

@@ -86,7 +86,7 @@ namespace VTX
 						residue.setChainPtr( &chain );
 						residue.setIndex( residueGlobalIdx );
 						const std::string & residueSymbol = group.groupName;
-						std::optional symbol = magic_enum::enum_cast<Model::Residue::RESIDUE_SYMBOL>( residueSymbol );
+						std::optional		symbol = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
 						symbol.has_value() ? residue.setSymbol( symbol.value() )
 										   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 						residue.setColor( Model::Residue::SYMBOL_COLOR[ int( residue.getSymbol() ) ] );
@@ -119,7 +119,7 @@ namespace VTX
 							atom.setResiduePtr( &residue );
 							atom.setIndex( atomGlobalIdx );
 							const std::string & atomSymbol = group.elementList[ atomIdx ];
-							std::optional symbol = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
+							std::optional symbol = magic_enum::enum_cast<Model::Atom::SYMBOL>( "A_" + atomSymbol );
 							symbol.has_value() ? atom.setSymbol( symbol.value() )
 											   : p_molecule.addUnknownAtomSymbol( atomSymbol );
 

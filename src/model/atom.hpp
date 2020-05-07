@@ -20,7 +20,7 @@ namespace VTX
 		{
 		  public:
 			// Sorted by atomic number.
-			enum class ATOM_SYMBOL : int
+			enum class SYMBOL : int
 			{
 				UNKNOWN = 0,
 				A_H		= 1,
@@ -144,7 +144,7 @@ namespace VTX
 				COUNT
 			};
 
-			enum class ATOM_TYPE : int
+			enum class TYPE : int
 			{
 				NORMAL,
 				SOLVENT,
@@ -152,10 +152,10 @@ namespace VTX
 			};
 
 			// Static const mapping.
-			static const std::string SYMBOL_STR[ (int)ATOM_SYMBOL::COUNT ];
-			static const std::string SYMBOL_NAME[ (int)ATOM_SYMBOL::COUNT ];
-			static const float		 SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ];
-			static const Color::Rgb	 SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ];
+			static const std::string SYMBOL_STR[ (int)SYMBOL::COUNT ];
+			static const std::string SYMBOL_NAME[ (int)SYMBOL::COUNT ];
+			static const float		 SYMBOL_VDW_RADIUS[ (int)SYMBOL::COUNT ];
+			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
 
 			inline const uint		getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
@@ -166,26 +166,26 @@ namespace VTX
 			inline Residue * const	getResiduePtr() const { return _residuePtr; }
 			inline void				setResiduePtr( Residue * const p_residue ) { _residuePtr = p_residue; }
 
-			inline const ATOM_SYMBOL   getSymbol() const { return _symbol; };
+			inline const SYMBOL		   getSymbol() const { return _symbol; };
 			inline const std::string & getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; };
-			inline void				   setSymbol( const ATOM_SYMBOL p_symbol ) { _symbol = p_symbol; };
+			inline void				   setSymbol( const SYMBOL p_symbol ) { _symbol = p_symbol; };
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
 			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ (int)_symbol ]; }
-			inline ATOM_TYPE		   getType() const { return _type; }
-			inline void				   setType( const ATOM_TYPE p_type ) { _type = p_type; }
+			inline TYPE				   getType() const { return _type; }
+			inline void				   setType( const TYPE p_type ) { _type = p_type; }
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
 			virtual void setSelected( const bool ) override;
 
 		  private:
-			uint		_index		 = 0;
-			Molecule *	_moleculePtr = nullptr;
-			Chain *		_chainPtr	 = nullptr;
-			Residue *	_residuePtr	 = nullptr;
-			ATOM_TYPE	_type		 = ATOM_TYPE::NORMAL;
-			ATOM_SYMBOL _symbol		 = ATOM_SYMBOL::UNKNOWN;
+			uint	   _index		= 0;
+			Molecule * _moleculePtr = nullptr;
+			Chain *	   _chainPtr	= nullptr;
+			Residue *  _residuePtr	= nullptr;
+			TYPE	   _type		= TYPE::NORMAL;
+			SYMBOL	   _symbol		= SYMBOL::UNKNOWN;
 			// /!\ Names PDB != MMTF (CA and C1 for alpha carbon).
 			std::string _name = "";
 		};

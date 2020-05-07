@@ -144,7 +144,7 @@ namespace VTX
 						residue.setMoleculePtr( &p_molecule );
 						residue.setChainPtr( &chain );
 						residue.setIndex( residueGlobalIdx );
-						residue.setSymbol( Model::Residue::RESIDUE_SYMBOL::UNKNOWN );
+						residue.setSymbol( Model::Residue::SYMBOL::UNKNOWN );
 						residue.setIdFirstAtom( atomGlobalIdx );
 						residue.setAtomCount( uint( mesh->mNumVertices ) );
 						residue.setColor( Color::Rgb::randomPastel() );
@@ -162,7 +162,7 @@ namespace VTX
 							atom.setChainPtr( &chain );
 							atom.setResiduePtr( &residue );
 							atom.setIndex( atomGlobalIdx );
-							atom.setSymbol( Model::Atom::ATOM_SYMBOL::UNKNOWN );
+							atom.setSymbol( Model::Atom::SYMBOL::UNKNOWN );
 
 							aiColor4D diffuse;
 							if ( aiGetMaterialColor( material, AI_MATKEY_COLOR_DIFFUSE, &diffuse ) == AI_SUCCESS )

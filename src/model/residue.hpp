@@ -21,7 +21,7 @@ namespace VTX
 		class Residue : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
 		{
 		  public:
-			enum class RESIDUE_SYMBOL : int
+			enum class SYMBOL : int
 			{
 				UNKNOWN,
 				ALA,
@@ -63,10 +63,10 @@ namespace VTX
 			};
 
 			// Static const mapping.
-			static const std::string SYMBOL_STR[ (int)RESIDUE_SYMBOL::COUNT ];
-			static const std::string SYMBOL_SHORT_STR[ (int)RESIDUE_SYMBOL::COUNT ];
-			static const std::string SYMBOL_NAME[ (int)RESIDUE_SYMBOL::COUNT ];
-			static const Color::Rgb	 SYMBOL_COLOR[ (int)RESIDUE_SYMBOL::COUNT ];
+			static const std::string SYMBOL_STR[ (int)SYMBOL::COUNT ];
+			static const std::string SYMBOL_SHORT_STR[ (int)SYMBOL::COUNT ];
+			static const std::string SYMBOL_NAME[ (int)SYMBOL::COUNT ];
+			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
 
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
@@ -75,11 +75,11 @@ namespace VTX
 			inline Chain * const	getChainPtr() const { return _chainPtr; }
 			inline void				setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
 
-			inline const RESIDUE_SYMBOL getSymbol() const { return _symbol; };
-			inline const std::string &	getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; }
-			inline void					setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
-			inline const std::string &	getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
-			inline const std::string &	getSymbolShort() const { return SYMBOL_SHORT_STR[ (int)_symbol ]; }
+			inline const SYMBOL		   getSymbol() const { return _symbol; };
+			inline const std::string & getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; }
+			inline void				   setSymbol( const SYMBOL p_type ) { _symbol = p_type; };
+			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
+			inline const std::string & getSymbolShort() const { return SYMBOL_SHORT_STR[ (int)_symbol ]; }
 
 			inline uint						 getIdFirstAtom() const { return _idFirstAtom; };
 			inline void						 setIdFirstAtom( const uint p_id ) { _idFirstAtom = p_id; };
@@ -101,7 +101,7 @@ namespace VTX
 			Molecule * _moleculePtr = nullptr;
 			Chain *	   _chainPtr	= nullptr;
 
-			RESIDUE_SYMBOL _symbol = RESIDUE_SYMBOL::UNKNOWN;
+			SYMBOL _symbol = SYMBOL::UNKNOWN;
 
 			uint				_idFirstAtom		= 0;
 			uint				_atomCount			= 0;

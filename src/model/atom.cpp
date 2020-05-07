@@ -18,7 +18,7 @@ namespace VTX
 			}
 		}
 
-		const std::string Atom::SYMBOL_STR[ (int)ATOM_SYMBOL::COUNT ] = {
+		const std::string Atom::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {
 			"UNKNOWN", // UNKNOWN = 0,
 			"H",	   // H			= 1,
 			"HE",	   // HE		= 2,
@@ -140,7 +140,7 @@ namespace VTX
 			"UUO"	   // UUO		= 118,
 		};
 
-		const std::string Atom::SYMBOL_NAME[ (int)ATOM_SYMBOL::COUNT ] = {
+		const std::string Atom::SYMBOL_NAME[ (int)SYMBOL::COUNT ] = {
 			"Unknown",		 // UNKNOWN = 0,
 			"Hydrogen",		 // H		= 1,
 			"Helium",		 // HE		= 2,
@@ -262,7 +262,7 @@ namespace VTX
 			"Ununoctium"	 // UUO		= 118,
 		};
 
-		const float Atom::SYMBOL_VDW_RADIUS[ (int)ATOM_SYMBOL::COUNT ] = {
+		const float Atom::SYMBOL_VDW_RADIUS[ (int)SYMBOL::COUNT ] = {
 			1.20f, // UNKNOWN	= 0,
 			1.20f, // H			= 1,
 			1.43f, // HE		= 2,
@@ -385,7 +385,7 @@ namespace VTX
 		};
 
 		// CPK by http://jmol.sourceforge.net/jscolors/#Jmolcolors
-		const Color::Rgb Atom::SYMBOL_COLOR[ (int)ATOM_SYMBOL::COUNT ] = {
+		const Color::Rgb Atom::SYMBOL_COLOR[ (int)SYMBOL::COUNT ] = {
 			{ 250, 22, 145 },  // UNKNOWN		= 0,
 			{ 255, 255, 255 }, // H				= 1,
 			{ 217, 255, 255 }, // HE			= 2,

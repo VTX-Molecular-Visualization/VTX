@@ -120,7 +120,7 @@ namespace VTX
 
 			_currentFrame = p_frameIdx;
 			_updateBufferAtomPositions();
-			//createSecondaryStructure();
+			// createSecondaryStructure();
 		}
 
 		void Molecule::_initBufferAtomPositions() const
@@ -161,7 +161,7 @@ namespace VTX
 				switch ( Setting::Rendering::colorMode )
 				{
 				case View::MOLECULE_COLOR_MODE::ATOM:
-					if ( _atoms[ i ]->getSymbol() == Atom::ATOM_SYMBOL::A_C )
+					if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
 					{
 						_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
 					}
@@ -210,12 +210,12 @@ namespace VTX
 					_bufferAtomVisibilities[ i ] = 0u;
 				}
 				// Solvent hidden.
-				else if ( _showSolvent == false && atom->getType() == Atom::ATOM_TYPE::SOLVENT )
+				else if ( _showSolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
 				{
 					_bufferAtomVisibilities[ i ] = 0u;
 				}
 				// Ion hidden.
-				else if ( _showIon == false && atom->getType() == Atom::ATOM_TYPE::ION )
+				else if ( _showIon == false && atom->getType() == Atom::TYPE::ION )
 				{
 					_bufferAtomVisibilities[ i ] = 0u;
 				}

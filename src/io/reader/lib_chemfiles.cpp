@@ -157,7 +157,7 @@ namespace VTX
 					modelResidue->setIdFirstAtom( uint( *residue.begin() ) );
 					modelResidue->setAtomCount( uint( residue.size() ) );
 					const std::string & residueSymbol = residue.name();
-					std::optional		symbol = magic_enum::enum_cast<Model::Residue::RESIDUE_SYMBOL>( residueSymbol );
+					std::optional		symbol		  = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
 					symbol.has_value() ? modelResidue->setSymbol( symbol.value() )
 									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 
@@ -231,7 +231,7 @@ namespace VTX
 
 						// VTX_INFO( atom.name() + " " + atom.type() );
 
-						std::optional symbol = magic_enum::enum_cast<Model::Atom::ATOM_SYMBOL>( "A_" + atomSymbol );
+						std::optional symbol = magic_enum::enum_cast<Model::Atom::SYMBOL>( "A_" + atomSymbol );
 
 						symbol.has_value() ? modelAtom->setSymbol( symbol.value() )
 										   : p_molecule.addUnknownAtomSymbol( atom.type() );
@@ -251,12 +251,12 @@ namespace VTX
 							if ( std::find( config.solventAtomIds.begin(), config.solventAtomIds.end(), atomType )
 								 != config.solventAtomIds.end() )
 							{
-								modelAtom->setType( Model::Atom::ATOM_TYPE::SOLVENT );
+								modelAtom->setType( Model::Atom::TYPE::SOLVENT );
 							}
 							else if ( std::find( config.ionAtomIds.begin(), config.ionAtomIds.end(), atomType )
 									  != config.ionAtomIds.end() )
 							{
-								modelAtom->setType( Model::Atom::ATOM_TYPE::ION );
+								modelAtom->setType( Model::Atom::TYPE::ION );
 							}
 						}
 
@@ -266,13 +266,13 @@ namespace VTX
 										residueSymbol )
 							 != config.solventResidueSymbols.end() )
 						{
-							modelAtom->setType( Model::Atom::ATOM_TYPE::SOLVENT );
+							modelAtom->setType( Model::Atom::TYPE::SOLVENT );
 						}
 						else if ( std::find(
 									  config.ionResidueSymbols.begin(), config.ionResidueSymbols.end(), residueSymbol )
 								  != config.ionResidueSymbols.end() )
 						{
-							modelAtom->setType( Model::Atom::ATOM_TYPE::ION );
+							modelAtom->setType( Model::Atom::TYPE::ION );
 						}
 					}
 				}
