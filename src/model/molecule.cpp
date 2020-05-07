@@ -73,12 +73,16 @@ namespace VTX
 				_fillBufferBonds();
 
 				// Compute seconndary structure if not loaded.
-				
+
 				if ( _configuration.isSecondaryStructureLoadedFromFile == false )
-				{ Util::Molecule::computeSecondaryStructure( *this ); }
-				// Create secondary structure mesh.
-				 createSecondaryStructure();
-				 
+				{
+					// Util::Molecule::computeSecondaryStructure( *this );
+				}
+				else
+				{
+					// Create secondary structure mesh.
+					createSecondaryStructure();
+				}
 			}
 
 			// Set default representation.
@@ -120,7 +124,6 @@ namespace VTX
 
 			_currentFrame = p_frameIdx;
 			_updateBufferAtomPositions();
-			 createSecondaryStructure();
 		}
 
 		void Molecule::_initBufferAtomPositions() const
