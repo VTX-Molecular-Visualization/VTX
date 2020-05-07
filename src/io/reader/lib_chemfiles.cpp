@@ -56,7 +56,7 @@ namespace VTX
 				const chemfiles::Topology &				topology = frame.topology();
 				const std::vector<chemfiles::Residue> & residues = topology.residues();
 				const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
-				Model::Configuration::Molecule			config	 = p_molecule.getConfiguration();
+				Model::Configuration::Molecule &		config	 = p_molecule.getConfiguration();
 
 				if ( frame.size() != topology.size() )
 				{
