@@ -17,7 +17,22 @@ namespace VTX
 			Model::Configuration::Molecule config = Model::Configuration::Molecule();
 
 			// Load PRM or PSF file firstly.
-			// TODO: remove from list.
+			for ( std::vector<IO::Path *>::iterator it = _paths.begin(); it != _paths.end(); it++ )
+			{
+				if ( ( *it )->getExtension() == "prm" )
+				{
+					IO::Reader::PRM reader = IO::Reader::PRM();
+					reader.readFile( **it, config );
+					_paths.erase( it-- );
+				}
+				else if ( ( *it )->getExtension() == "psf" )
+				{
+					IO::Reader::PSF reader = IO::Reader::PSF();
+					reader.readFile( **it, config );
+					_paths.erase( it-- );
+				}
+			}
+
 			for ( const IO::Path * path : _paths )
 			{
 				if ( path->getExtension() == "prm" )
@@ -52,6 +67,7 @@ namespace VTX
 					if ( path->getExtension() == "mmtf" )
 					{
 						reader = new IO::Reader::LibMMTF();
+						// reader = new IO::Reader::LibChemfiles();
 					}
 					else
 					{
