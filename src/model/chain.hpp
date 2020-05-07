@@ -19,12 +19,20 @@ namespace VTX
 		class Chain : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
 		{
 		  public:
+			enum class TYPE : int
+			{
+				NORMAL,
+				LIGAND
+			};
+
 			// one color per chain id + 1 unknown
 			static const uint		NB_COLORS = 26;
 			static const Color::Rgb CHAIN_ID_COLOR_ATOM[ NB_COLORS ];
 			static const Color::Rgb CHAIN_ID_COLOR_HETATM[ NB_COLORS ];
 			static const Color::Rgb CHAIN_ID_UNKNOWN_COLOR;
 
+			inline TYPE				getType() const { return _type; }
+			inline void				setType( const TYPE p_type ) { _type = p_type; }
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
@@ -42,6 +50,7 @@ namespace VTX
 			virtual void setSelected( const bool ) override;
 
 		  private:
+			TYPE	   _type		= TYPE::NORMAL;
 			uint	   _index		= 0;
 			Molecule * _moleculePtr = nullptr;
 

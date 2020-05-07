@@ -163,9 +163,11 @@ namespace VTX
 
 					modelResidue->setColor( Model::Residue::SYMBOL_COLOR[ int( modelResidue->getSymbol() ) ] );
 
+					/*
 					bool isStandard = residue.properties().get( "is_standard_pdb" ).value_or( true ).as_bool();
 					modelResidue->setType( isStandard ? Model::Residue::RESIDUE_TYPE::NORMAL
 													  : Model::Residue::RESIDUE_TYPE::LIGAND );
+													  */
 
 					// PDB only.
 					// TODO: modify chemfiles to load handedness!

@@ -49,12 +49,6 @@ namespace VTX
 				COUNT
 			};
 
-			enum class RESIDUE_TYPE : int
-			{
-				NORMAL,
-				LIGAND
-			};
-
 			enum class SECONDARY_STRUCTURE : int
 			{
 				COIL,
@@ -81,13 +75,12 @@ namespace VTX
 			inline Chain * const	getChainPtr() const { return _chainPtr; }
 			inline void				setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
 
-			inline const RESIDUE_SYMBOL		 getSymbol() const { return _symbol; };
-			inline const std::string &		 getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; }
-			inline void						 setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
-			inline const std::string &		 getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
-			inline const std::string &		 getSymbolShort() const { return SYMBOL_SHORT_STR[ (int)_symbol ]; }
-			inline RESIDUE_TYPE				 getType() const { return _type; }
-			inline void						 setType( const RESIDUE_TYPE p_type ) { _type = p_type; }
+			inline const RESIDUE_SYMBOL getSymbol() const { return _symbol; };
+			inline const std::string &	getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; }
+			inline void					setSymbol( const RESIDUE_SYMBOL p_type ) { _symbol = p_type; };
+			inline const std::string &	getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
+			inline const std::string &	getSymbolShort() const { return SYMBOL_SHORT_STR[ (int)_symbol ]; }
+
 			inline uint						 getIdFirstAtom() const { return _idFirstAtom; };
 			inline void						 setIdFirstAtom( const uint p_id ) { _idFirstAtom = p_id; };
 			inline uint						 getAtomCount() const { return _atomCount; };
@@ -108,8 +101,8 @@ namespace VTX
 			Molecule * _moleculePtr = nullptr;
 			Chain *	   _chainPtr	= nullptr;
 
-			RESIDUE_SYMBOL		_symbol				= RESIDUE_SYMBOL::UNKNOWN;
-			RESIDUE_TYPE		_type				= RESIDUE_TYPE::NORMAL;
+			RESIDUE_SYMBOL _symbol = RESIDUE_SYMBOL::UNKNOWN;
+
 			uint				_idFirstAtom		= 0;
 			uint				_atomCount			= 0;
 			SECONDARY_STRUCTURE _secondaryStructure = SECONDARY_STRUCTURE::COIL;
