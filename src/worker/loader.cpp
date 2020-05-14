@@ -33,20 +33,6 @@ namespace VTX
 				}
 			}
 
-			for ( const IO::Path * path : _paths )
-			{
-				if ( path->getExtension() == "prm" )
-				{
-					IO::Reader::PRM reader = IO::Reader::PRM();
-					reader.readFile( *path, config );
-				}
-				else if ( path->getExtension() == "psf" )
-				{
-					IO::Reader::PSF reader = IO::Reader::PSF();
-					reader.readFile( *path, config );
-				}
-			}
-
 			// Load all files.
 			Tool::Chrono chrono;
 			for ( const IO::Path * path : _paths )
