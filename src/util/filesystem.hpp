@@ -49,15 +49,14 @@ namespace VTX
 
 			static const IO::Path EXECUTABLE_FILE = getExecutableFile();
 			static const IO::Path EXECUTABLE_DIR  = EXECUTABLE_FILE.getDirectory();
-			static const IO::Path SHADERS_DIR	  = EXECUTABLE_DIR + "/../shaders";
-			static const IO::Path SNAPSHOTS_DIR	  = EXECUTABLE_DIR + "/../snapshots";
-			static const IO::Path RENDERS_DIR	  = EXECUTABLE_DIR + "/../renders";
-			static const IO::Path PATHS_DIR		  = EXECUTABLE_DIR + "/../paths";
-			static const IO::Path VIDEOS_DIR	  = EXECUTABLE_DIR + "/../videos";
+			static const IO::Path SHADERS_DIR	  = EXECUTABLE_DIR + "/../../shaders";
+			static const IO::Path SNAPSHOTS_DIR	  = EXECUTABLE_DIR + "/../../snapshots";
+			static const IO::Path RENDERS_DIR	  = EXECUTABLE_DIR + "/../../renders";
+			static const IO::Path PATHS_DIR		  = EXECUTABLE_DIR + "/../../paths";
+			static const IO::Path VIDEOS_DIR	  = EXECUTABLE_DIR + "/../../videos";
 
 			inline IO::Path * const getDataPath( const std::string & p_filename )
 			{
-				// std::filesystem::create_directories( DATA_DIR );
 				return new IO::Path( DATA_DIR + "/" + p_filename );
 			}
 

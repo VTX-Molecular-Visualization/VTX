@@ -89,8 +89,8 @@ namespace VTX
 		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "r2d2_2.obj" ) ) );
 		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "4v6x.mmtf" ) ) );
 		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "6vsb.mmtf" ) ) );
-		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "4hhb.pdb" ) ) );
-		VTX_ACTION( new Action::Open( Util::Filesystem::getDataPath( "3jb9.pdb" ) ) );
+		VTX_ACTION( new Action::Open( Util::Filesystem::getDataPath( "4hhb.pdb" ) ) );
+		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPath( "3jb9.pdb" ) ) );
 #endif
 
 //#define RT_ENABLED

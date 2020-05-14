@@ -18,33 +18,26 @@ namespace VTX
 		class Snapshot : public BaseAction
 		{
 		  public:
-			Snapshot( const Worker::Snapshoter::MODE p_mode ) : _mode( p_mode ) {}
-			Snapshot( const Worker::Snapshoter::MODE p_mode, const std::string & p_fileName ) :
-				_mode( p_mode ), _fileName( p_fileName )
+			explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const IO::Path & p_path ) :
+				_mode( p_mode ), _path( p_path )
 			{
 			}
-
-			virtual void setParameters( const std::vector<std::string> & p_parameters ) override {}
 
 			virtual void execute() override
 			{
 				Worker::Snapshoter snapshoter;
 
-				const IO::Path & path = _mode == Worker::Snapshoter::MODE::GL
-											? Util::Filesystem::getSnapshotsPath( _fileName + ".png" )
-											: Util::Filesystem::getRendersPath( _fileName + ".png" );
-
-				if ( _mode == Worker::Snapshoter::MODE::GL && snapshoter.takeSnapshotGL( path ) )
+				if ( _mode == Worker::Snapshoter::MODE::GL && snapshoter.takeSnapshotGL( _path ) )
 				{
-					VTX_INFO( "Snapshot taken: " + path.getFileName() );
+					VTX_INFO( "Snapshot taken: " + _path.getFileName() );
 				}
-				else if ( _mode == Worker::Snapshoter::MODE::RT && snapshoter.takeSnapshotRT( path ) )
+				else if ( _mode == Worker::Snapshoter::MODE::RT && snapshoter.takeSnapshotRT( _path ) )
 				{
-					VTX_INFO( "Render computed: " + path.getFileName() );
+					VTX_INFO( "Render computed: " + _path.getFileName() );
 				}
 				else
 				{
-					VTX_WARNING( "Snapshot failed" );
+					VTX_WARNING( "Failed: " + _path.str() );
 				}
 			};
 
@@ -52,7 +45,7 @@ namespace VTX
 
 		  private:
 			const Worker::Snapshoter::MODE _mode;
-			const std::string			   _fileName = Util::Time::getTimestamp();
+			const IO::Path				   _path;
 		};
 	} // namespace Action
 } // namespace VTX

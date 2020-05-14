@@ -11,7 +11,8 @@ namespace VTX
 		// Action loop
 		void Export::enter( void * const p_arg )
 		{
-			_arg = *(Arg *)p_arg;
+			_arg		   = *(Arg *)p_arg;
+			_directoryName = Util::Time::getTimestamp();
 
 			float duration = _arg.path->getDuration();
 			_frameCount	   = uint( VIDEO_FPS * duration );
@@ -60,7 +61,7 @@ namespace VTX
 			std::string fileName   = "video" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
 
 			VTX_ACTION( new Action::Snapshot( _arg.mode,
-											  Util::Filesystem::getVideosPath( _directoryName, "video" + fileName ) ) );
+											  Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ) );
 
 			VTX_INFO( std::to_string( ( uint )( (float)_frame * 100 / _frameCount ) ) + "%" );
 

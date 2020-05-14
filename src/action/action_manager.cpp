@@ -13,7 +13,10 @@ namespace VTX
 	{
 		void ActionManager::execute( BaseAction * const p_action, const bool p_flush )
 		{
-			if ( p_flush ) { _flushAction( p_action ); }
+			if ( p_flush )
+			{
+				_flushAction( p_action );
+			}
 			else
 			{
 				_actionQueue.push( p_action );
@@ -30,13 +33,20 @@ namespace VTX
 				words.emplace_back( word );
 			}
 
-			if ( words.size() == 0 ) { VTX_ERROR( "Empty action string" ); }
+			if ( words.size() == 0 )
+			{
+				VTX_ERROR( "Empty action string" );
+			}
 
 			std::string & command = words[ 0 ];
 			BaseAction *  action  = nullptr;
 
 			// TODO: map with ids.
-			if ( command == "snapshot" ) { action = new Snapshot( Worker::Snapshoter::MODE::GL ); }
+			if ( command == "snapshot" )
+			{
+				action = new Snapshot( Worker::Snapshoter::MODE::GL,
+									   Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) );
+			}
 			else if ( command == "change_representation" )
 			{
 				action = new ChangeRepresentation();
@@ -79,7 +89,10 @@ namespace VTX
 
 		void ActionManager::undo()
 		{
-			if ( canUndo() == false ) { return; }
+			if ( canUndo() == false )
+			{
+				return;
+			}
 
 			VTX_DEBUG( "Undo (" + std::to_string( _bufferUndo.size() - 1 ) + " more)" );
 			_bufferUndo.front()->undo();
@@ -91,7 +104,10 @@ namespace VTX
 
 		void ActionManager::redo()
 		{
-			if ( canRedo() == false ) { return; }
+			if ( canRedo() == false )
+			{
+				return;
+			}
 
 			VTX_DEBUG( "Redo (" + std::to_string( _bufferRedo.size() - 1 ) + " more)" );
 			_bufferRedo.front()->redo();
