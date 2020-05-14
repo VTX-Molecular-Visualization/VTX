@@ -28,7 +28,7 @@ namespace VTX
 			float							 _time	  = 0.f;
 
 			void _setCamera() const;
-			void _executeActions();
+			void _executeActions( const float p_time );
 		};
 	} // namespace State
 } // namespace VTX

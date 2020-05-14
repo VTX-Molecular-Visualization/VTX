@@ -40,6 +40,8 @@ namespace VTX
 			// Loop.
 			if ( _time >= _path->getDuration() )
 			{
+				_executeActions( _path->getDuration() );
+
 				if ( _path->isLooping() )
 				{
 					_time	 = 0.f;
@@ -53,7 +55,7 @@ namespace VTX
 			}
 
 			_setCamera();
-			_executeActions();
+			_executeActions( _time );
 			VTXApp::get().getScene().update( p_deltaTime );
 			VTXApp::get().renderScene();
 
@@ -65,11 +67,11 @@ namespace VTX
 			VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
 		}
 
-		void Play::_executeActions()
+		void Play::_executeActions( const float p_time )
 		{
-			if ( _actions != _path->getCurrentActions( _time ) )
+			if ( _actions != _path->getCurrentActions( p_time ) )
 			{
-				_actions = _path->getCurrentActions( _time );
+				_actions = _path->getCurrentActions( p_time );
 				for ( const std::string & action : *_actions )
 				{
 					VTX_ACTION( action, true );

@@ -20,11 +20,15 @@ namespace VTX
 
 		const std::vector<std::string> * const Path::getCurrentActions( const float p_time )
 		{
-			Viewpoint viewpoint( (Path * const)this );
-
 			uint  size	 = (uint)_viewpoints.size();
 			float total	 = 0.f;
 			uint  offset = 0;
+
+			// Get the last actions.
+			if ( p_time >= _duration )
+			{
+				return &_viewpoints[ size - 1 ]->getActions();
+			}
 
 			// Find the next and previous points.
 			while ( total <= p_time && offset < size )
@@ -94,13 +98,19 @@ namespace VTX
 		void Path::refreshAllDurations()
 		{
 			// Force the first to 0.
-			if ( _viewpoints.size() > 0 ) { _viewpoints[ 0 ]->setDuration( 0.f ); }
+			if ( _viewpoints.size() > 0 )
+			{
+				_viewpoints[ 0 ]->setDuration( 0.f );
+			}
 
 			// Set same duration for each viewpoint.
 			if ( _modeDuration == DURATION_MODE::PATH )
 			{
 				float duration = 0.f;
-				if ( _viewpoints.size() >= 2 ) { duration = _duration / (float)( _viewpoints.size() - 1 ); }
+				if ( _viewpoints.size() >= 2 )
+				{
+					duration = _duration / (float)( _viewpoints.size() - 1 );
+				}
 
 				for ( uint i = 1; i < _viewpoints.size(); ++i )
 				{
@@ -150,7 +160,9 @@ namespace VTX
 		{
 			BaseModel::setSelected( p_selected );
 			if ( isSelected() )
-			{ addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::Path>( this ) ); }
+			{
+				addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::Path>( this ) );
+			}
 			else
 			{
 				Generic::destroy( removeItem( ID::View::UI_PATH ) );
