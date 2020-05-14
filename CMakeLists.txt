@@ -130,5 +130,8 @@ elseif(MSVC)
 	#Preprocessor definitions
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-DNOMINMAX)
+endif()
+
+if(WIN32)
 	add_definitions(-DCHEMFILES_WINDOWS)	
 endif()
