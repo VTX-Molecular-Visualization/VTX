@@ -7,6 +7,7 @@ project(VTX)
 # Create paths.
 set(PATH_SRC "src")
 set(PATH_LIB "lib")
+set(PATH_LIB_SRC "lib_src")
 set(CONFIGS "Debug;Release;RelWithDebInfo")
 
 message("Copying all sources...")
@@ -32,10 +33,10 @@ foreach(SRC IN ITEMS ${CPP})
 endforeach()
 
 # Get libs.
-file(GLOB_RECURSE LIB ${PATH_LIB}/*.hpp ${PATH_LIB}/*.h ${PATH_LIB}/*.inl ${PATH_LIB}/*.c ${PATH_LIB}/*.cpp)
+file(GLOB_RECURSE LIB ${PATH_LIB_SRC}/*.hpp ${PATH_LIB_SRC}/*.h ${PATH_LIB_SRC}/*.inl ${PATH_LIB_SRC}/*.c ${PATH_LIB_SRC}/*.cpp)
 foreach(SRC IN ITEMS ${LIB})
     get_filename_component(SRC_PATH "${SRC}" PATH)
-    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_LIB}" "${SRC_PATH}")
+    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
     source_group("Libs${GROUP_PATH}" FILES "${SRC}")
@@ -105,7 +106,8 @@ target_include_directories(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing To
 target_include_directories(VTX PRIVATE "C:/ProgramData/NVIDIA Corporation/OptiX SDK 7.0.0/include")
 target_include_directories(VTX PRIVATE ${PATH_SRC})
 target_include_directories(VTX PRIVATE ${PATH_LIB})
-target_include_directories(VTX PRIVATE ${PATH_LIB}/GL)
+target_include_directories(VTX PRIVATE ${PATH_LIB_SRC})
+target_include_directories(VTX PRIVATE ${PATH_LIB_SRC}/GL)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/msgpack)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/SDL2/include)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/assimp/include)
@@ -128,4 +130,5 @@ elseif(MSVC)
 	#Preprocessor definitions
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-DNOMINMAX)
+	add_definitions(-DCHEMFILES_WINDOWS)	
 endif()
