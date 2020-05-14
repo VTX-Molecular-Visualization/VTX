@@ -2,7 +2,6 @@
 #include "io/path_fake.hpp"
 #include "io/reader/lib_assimp.hpp"
 #include "io/reader/lib_chemfiles.hpp"
-#include "io/reader/lib_mmtf.hpp"
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "tool/chrono.hpp"
@@ -52,8 +51,7 @@ namespace VTX
 					// Will be removed.
 					if ( path->getExtension() == "mmtf" )
 					{
-						reader = new IO::Reader::LibMMTF();
-						// reader = new IO::Reader::LibChemfiles();
+						reader = new IO::Reader::LibChemfiles();
 					}
 					else
 					{

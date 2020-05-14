@@ -10,6 +10,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
+			/*
 			void LibMMTF::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				mmtf::StructureData data;
@@ -192,7 +193,7 @@ namespace VTX
 				}
 #endif
 			}
-
+			*/
 		} // namespace Reader
 	}	  // namespace IO
 } // namespace VTX
