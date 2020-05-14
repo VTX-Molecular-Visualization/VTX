@@ -1,5 +1,0 @@
-@ECHO OFF
-ECHO [VTX] GENERATING VIDEO
-..\ffmpeg.exe -f image2 -framerate 60 -i video%06d.png -vcodec libx264 -crf 10 video.mp4
-ECHO [VTX] DONE
-PAUSE

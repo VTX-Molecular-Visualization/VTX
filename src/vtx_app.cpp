@@ -63,7 +63,7 @@ namespace VTX
 
 	void VTXApp::start()
 	{
-		VTX_INFO( "Starting application" );
+		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.str() );
 
 		_ui = Generic::create<UI::UserInterface>();
 

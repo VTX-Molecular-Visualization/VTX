@@ -8,4 +8,5 @@ cmake*
 Debug/
 Release/
 RelWithDebInfo/
+build/
 imgui.ini

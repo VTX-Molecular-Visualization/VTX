@@ -7,6 +7,15 @@
 
 #include "io/path.hpp"
 #include <filesystem>
+#ifdef _WIN32
+#include <direct.h>
+#include <windows.h>
+#define GetCurrentDir _getcwd
+#else
+#include <limits.h>
+#include <unistd.h>
+#define GetCurrentDir getcwd
+#endif
 
 namespace VTX
 {
@@ -14,16 +23,41 @@ namespace VTX
 	{
 		namespace Filesystem
 		{
-			const std::string DATA_DIR		= "../data";
-			const std::string SHADERS_DIR	= "../src/shaders";
-			const std::string SNAPSHOTS_DIR = "../snapshots";
-			const std::string RENDERS_DIR	= "../renders";
-			const std::string PATHS_DIR		= "../paths";
-			const std::string VIDEOS_DIR	= "../videos";
+			static const IO::Path DATA_DIR = "../data";
+
+			inline const IO::Path getCurrentDir()
+			{
+				char buff[ FILENAME_MAX ];
+				GetCurrentDir( buff, FILENAME_MAX );
+				IO::Path currentWorkingDir( buff );
+				return currentWorkingDir;
+			}
+
+			inline const IO::Path getExecutableFile()
+			{
+#ifdef _WIN32
+				wchar_t path[ MAX_PATH ] = { 0 };
+				GetModuleFileNameW( NULL, path, MAX_PATH );
+				IO::Path exe( std::filesystem::path( path ).string() );
+				return exe;
+#else
+				char	result[ PATH_MAX ];
+				ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
+				return std::string( result, ( count > 0 ) ? count : 0 );
+#endif
+			}
+
+			static const IO::Path EXECUTABLE_FILE = getExecutableFile();
+			static const IO::Path EXECUTABLE_DIR  = EXECUTABLE_FILE.getDirectory();
+			static const IO::Path SHADERS_DIR	  = EXECUTABLE_DIR + "/../shaders";
+			static const IO::Path SNAPSHOTS_DIR	  = EXECUTABLE_DIR + "/../snapshots";
+			static const IO::Path RENDERS_DIR	  = EXECUTABLE_DIR + "/../renders";
+			static const IO::Path PATHS_DIR		  = EXECUTABLE_DIR + "/../paths";
+			static const IO::Path VIDEOS_DIR	  = EXECUTABLE_DIR + "/../videos";
 
 			inline IO::Path * const getDataPath( const std::string & p_filename )
 			{
-				std::filesystem::create_directories( DATA_DIR );
+				// std::filesystem::create_directories( DATA_DIR );
 				return new IO::Path( DATA_DIR + "/" + p_filename );
 			}
 
@@ -34,19 +68,19 @@ namespace VTX
 
 			inline const IO::Path getSnapshotsPath( const std::string & p_filename )
 			{
-				std::filesystem::create_directories( SNAPSHOTS_DIR );
+				std::filesystem::create_directories( SNAPSHOTS_DIR.str() );
 				return IO::Path( SNAPSHOTS_DIR + "/" + p_filename );
 			}
 
 			inline const IO::Path getRendersPath( const std::string & p_filename )
 			{
-				std::filesystem::create_directories( RENDERS_DIR );
+				std::filesystem::create_directories( RENDERS_DIR.str() );
 				return IO::Path( RENDERS_DIR + "/" + p_filename );
 			}
 
 			inline const IO::Path getPathsPath( const std::string & p_filename )
 			{
-				std::filesystem::create_directories( PATHS_DIR );
+				std::filesystem::create_directories( PATHS_DIR.str() );
 				return IO::Path( PATHS_DIR + "/" + p_filename );
 			}
 
