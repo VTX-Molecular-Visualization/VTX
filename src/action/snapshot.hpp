@@ -6,6 +6,7 @@
 #endif
 
 #include "base_action.hpp"
+#include "util./filesystem.hpp"
 #include "util/logger.hpp"
 #include "util/time.hpp"
 #include "worker/snapshoter.hpp"
@@ -29,11 +30,14 @@ namespace VTX
 			{
 				Worker::Snapshoter snapshoter;
 
-				IO::Path path( _mode == Worker::Snapshoter::MODE::GL ? SNAPSHOT_DIR + _fileName + ".png"
-																	 : RENDER_DIR + _fileName + ".png" );
+				const IO::Path & path = _mode == Worker::Snapshoter::MODE::GL
+											? Util::Filesystem::getSnapshotsPath( _fileName + ".png" )
+											: Util::Filesystem::getRendersPath( _fileName + ".png" );
 
 				if ( _mode == Worker::Snapshoter::MODE::GL && snapshoter.takeSnapshotGL( path ) )
-				{ VTX_INFO( "Snapshot taken: " + path.getFileName() ); }
+				{
+					VTX_INFO( "Snapshot taken: " + path.getFileName() );
+				}
 				else if ( _mode == Worker::Snapshoter::MODE::RT && snapshoter.takeSnapshotRT( path ) )
 				{
 					VTX_INFO( "Render computed: " + path.getFileName() );

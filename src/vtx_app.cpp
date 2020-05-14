@@ -5,6 +5,7 @@
 #include "io/path.hpp"
 #include "model/molecule.hpp"
 #include "renderer/gl/gl.hpp"
+#include "util/filesystem.hpp"
 
 namespace VTX
 {
@@ -24,14 +25,38 @@ namespace VTX
 		VTX_INFO( "Destructing application" );
 
 		// Respect this order!
-		if ( _stateMachine != nullptr ) { Generic::destroy( _stateMachine ); }
-		if ( _scene != nullptr ) { Generic::destroy( _scene ); }
-		if ( _ui != nullptr ) { Generic::destroy( _ui ); }
-		if ( _renderer != nullptr ) { delete _renderer; }
-		if ( _selectionManager != nullptr ) { delete _selectionManager; }
-		if ( _workerManager != nullptr ) { delete _workerManager; }
-		if ( _actionManager != nullptr ) { delete _actionManager; }
-		if ( _eventManager != nullptr ) { delete _eventManager; }
+		if ( _stateMachine != nullptr )
+		{
+			Generic::destroy( _stateMachine );
+		}
+		if ( _scene != nullptr )
+		{
+			Generic::destroy( _scene );
+		}
+		if ( _ui != nullptr )
+		{
+			Generic::destroy( _ui );
+		}
+		if ( _renderer != nullptr )
+		{
+			delete _renderer;
+		}
+		if ( _selectionManager != nullptr )
+		{
+			delete _selectionManager;
+		}
+		if ( _workerManager != nullptr )
+		{
+			delete _workerManager;
+		}
+		if ( _actionManager != nullptr )
+		{
+			delete _actionManager;
+		}
+		if ( _eventManager != nullptr )
+		{
+			delete _eventManager;
+		}
 
 		VTX_INFO( "Application destructed" );
 	}
@@ -63,8 +88,9 @@ namespace VTX
 #ifdef AUTO_OPEN
 		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "r2d2_2.obj" ) ) );
 		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "4v6x.mmtf" ) ) );
-		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "6vsb.pdb" ) ) );
+		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "6vsb.mmtf" ) ) );
 		// VTX_ACTION( new Action::Open( new IO::Path( DATA_DIR + "4hhb.pdb" ) ) );
+		VTX_ACTION( new Action::Open( Util::Filesystem::getDataPath( "3jb9.pdb" ) ) );
 #endif
 
 //#define RT_ENABLED

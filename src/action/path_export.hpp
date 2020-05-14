@@ -6,6 +6,7 @@
 #endif
 
 #include "base_action.hpp"
+#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -17,7 +18,7 @@ namespace VTX
 		  public:
 			explicit PathExport( Model::Path * const p_path ) : _path( p_path ) {}
 
-			virtual void execute() override { _path->save( PATHS_DIR + "path.txt" ); }
+			virtual void execute() override { _path->save( Util::Filesystem::getPathsPath( "path.txt" ) ); }
 
 		  private:
 			Model::Path * const _path;

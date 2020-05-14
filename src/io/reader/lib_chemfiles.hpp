@@ -7,7 +7,6 @@
 
 #include "base_reader.hpp"
 #include "model/molecule.hpp"
-#undef INFINITE
 #include <chemfiles.hpp>
 
 namespace VTX

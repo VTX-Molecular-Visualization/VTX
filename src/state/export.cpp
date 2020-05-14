@@ -1,8 +1,8 @@
 #include "export.hpp"
 #include "action/snapshot.hpp"
+#include "util/filesystem.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
-#include <filesystem>
 
 namespace VTX
 {
@@ -12,9 +12,6 @@ namespace VTX
 		void Export::enter( void * const p_arg )
 		{
 			_arg = *(Arg *)p_arg;
-
-			_directoryName = Util::Time::getTimestamp();
-			std::filesystem::create_directories( VIDEO_DIR + _directoryName );
 
 			float duration = _arg.path->getDuration();
 			_frameCount	   = uint( VIDEO_FPS * duration );
@@ -60,13 +57,17 @@ namespace VTX
 			VTXApp::get().renderScene();
 
 			std::string counterStr = std::to_string( _frame );
+			std::string fileName   = "video" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
+
 			VTX_ACTION( new Action::Snapshot( _arg.mode,
-											  VIDEO_DIR + _directoryName + "/" + "video"
-												  + std::string( 6 - counterStr.length(), '0' ) + counterStr ) );
+											  Util::Filesystem::getVideosPath( _directoryName, "video" + fileName ) ) );
 
 			VTX_INFO( std::to_string( ( uint )( (float)_frame * 100 / _frameCount ) ) + "%" );
 
-			if ( _frame == _frameCount ) { VTXApp::get().goToState( ID::State::VISUALIZATION ); }
+			if ( _frame == _frameCount )
+			{
+				VTXApp::get().goToState( ID::State::VISUALIZATION );
+			}
 			else
 			{
 				_frame++;

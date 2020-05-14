@@ -1,6 +1,7 @@
 #include "program_manager.hpp"
 #include "define.hpp"
 #include "exception.hpp"
+#include "util/filesystem.hpp"
 #include "util/logger.hpp"
 #include <vector>
 
@@ -23,7 +24,9 @@ namespace VTX
 				IO::Path path( p_name );
 
 				if ( ProgramManager::EXTENSIONS.find( path.getExtension() ) != ProgramManager::EXTENSIONS.end() )
-				{ return ProgramManager::EXTENSIONS.at( path.getExtension() ); }
+				{
+					return ProgramManager::EXTENSIONS.at( path.getExtension() );
+				}
 
 				VTX_WARNING( "Invalid extension: " + p_name );
 				return SHADER_TYPE::INVALID;
@@ -78,7 +81,10 @@ namespace VTX
 
 			Program * const ProgramManager::getProgram( const std::string & p_name )
 			{
-				if ( _programs.find( p_name ) != _programs.end() ) { return &( _programs.at( p_name ) ); }
+				if ( _programs.find( p_name ) != _programs.end() )
+				{
+					return &( _programs.at( p_name ) );
+				}
 
 				VTX_ERROR( "Program " + p_name + " does not exists" );
 				return nullptr;
@@ -100,7 +106,7 @@ namespace VTX
 				if ( shaderId == GL_INVALID_INDEX )
 				{
 					shaderId			   = glCreateShader( (int)type );
-					IO::Path		  path = IO::Path( SHADER_DIR + p_path.str() );
+					IO::Path		  path = Util::Filesystem::getShadersPath( p_path );
 					const std::string src  = path.read();
 					if ( src.empty() )
 					{
@@ -135,7 +141,10 @@ namespace VTX
 
 			GLuint ProgramManager::getShader( const std::string & p_name ) const
 			{
-				if ( _shaders.find( p_name ) != _shaders.end() ) { return _shaders.at( p_name ); }
+				if ( _shaders.find( p_name ) != _shaders.end() )
+				{
+					return _shaders.at( p_name );
+				}
 
 				return GL_INVALID_INDEX;
 			}
@@ -144,7 +153,10 @@ namespace VTX
 			{
 				GLint length;
 				glGetShaderiv( p_shader, GL_INFO_LOG_LENGTH, &length );
-				if ( length == 0 ) { return ""; }
+				if ( length == 0 )
+				{
+					return "";
+				}
 				std::vector<GLchar> log( length );
 				glGetShaderInfoLog( p_shader, length, &length, &log[ 0 ] );
 				return std::string( log.begin(), log.end() );

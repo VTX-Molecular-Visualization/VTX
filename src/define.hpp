@@ -54,11 +54,11 @@ namespace VTX
 	// constexpr int WINDOW_WIDTH	= 640;
 	// constexpr int WINDOW_HEIGHT = 320;
 	// 720p.
-	constexpr int WINDOW_WIDTH	= 1280;
-	constexpr int WINDOW_HEIGHT = 720;
+	// constexpr int WINDOW_WIDTH	= 1280;
+	// constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
-	// constexpr int WINDOW_WIDTH	= 1920;
-	// constexpr int WINDOW_HEIGHT = 1080;
+	constexpr int WINDOW_WIDTH	= 1920;
+	constexpr int WINDOW_HEIGHT = 1080;
 	// 4k
 	// constexpr int WINDOW_WIDTH	= 3840;
 	// constexpr int WINDOW_HEIGHT = 2160;
@@ -109,14 +109,6 @@ namespace VTX
 	constexpr float AUTO_ROTATE_X_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MIN;
 	constexpr float AUTO_ROTATE_Y_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MIN;
 	constexpr float AUTO_ROTATE_Z_SPEED_DEFAULT = AUTO_ROTATE_SPEED_MIN;
-
-	// Dirs.
-	const std::string DATA_DIR	   = "../data/";
-	const std::string SHADER_DIR   = "../src/shaders/";
-	const std::string SNAPSHOT_DIR = "../snapshots/";
-	const std::string RENDER_DIR   = "../renders/";
-	const std::string PATHS_DIR	   = "../paths/";
-	const std::string VIDEO_DIR	   = "../videos/";
 
 	// API.
 	const std::string API_URL_MMTF = "http://mmtf.rcsb.org/v1.0/full/";

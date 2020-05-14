@@ -154,6 +154,9 @@ namespace VTX
 			{ "Enum.InterpolationMode.Linear", "Linear" },
 			{ "Enum.InterpolationMode.CatmullRom", "Catmull-rom" },
 			{ "Enum.InterpolationMode.Cubic", "Cubic" },
+
+			{ "Enum.API.MMTF", "MMTF" },
+			{ "Enum.API.PDB", "PDB" },
 		};
 
 	} // namespace Localization
