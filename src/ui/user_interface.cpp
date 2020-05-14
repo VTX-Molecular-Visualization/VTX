@@ -9,6 +9,7 @@
 #include "scene.hpp"
 #include "setting.hpp"
 #include "style.hpp"
+#include "util/filesystem.hpp"
 #include "util/logger.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
@@ -85,7 +86,9 @@ namespace VTX
 			VTX_INFO( "Initializing SDL2" );
 
 			if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER ) != 0 )
-			{ throw Exception::SDLException( SDL_GetError() ); }
+			{
+				throw Exception::SDLException( SDL_GetError() );
+			}
 
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_FLAGS, 0 );
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
@@ -110,10 +113,16 @@ namespace VTX
 				WINDOW_HEIGHT,
 				SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI );
 
-			if ( _window == nullptr ) { throw Exception::SDLException( SDL_GetError() ); }
+			if ( _window == nullptr )
+			{
+				throw Exception::SDLException( SDL_GetError() );
+			}
 
 			_glContext = SDL_GL_CreateContext( _window );
-			if ( _glContext == nullptr ) { throw Exception::SDLException( SDL_GetError() ); }
+			if ( _glContext == nullptr )
+			{
+				throw Exception::SDLException( SDL_GetError() );
+			}
 
 			SDL_GL_MakeCurrent( _window, _glContext );
 			setVSync( Setting::Rendering::useVSync );
@@ -122,10 +131,15 @@ namespace VTX
 		void UserInterface::_initGL()
 		{
 			VTX_INFO( "Initializing OpenGL" );
-			if ( gl3wInit() ) { throw Exception::GLException( "gl3wInit() failed" ); }
+			if ( gl3wInit() )
+			{
+				throw Exception::GLException( "gl3wInit() failed" );
+			}
 
 			if ( !gl3wIsSupported( OPENGL_VERSION_MAJOR, OPENGL_VERSION_MINOR ) )
-			{ throw Exception::GLException( "OpenGL version not supported" ); }
+			{
+				throw Exception::GLException( "OpenGL version not supported" );
+			}
 
 #ifdef _DEBUG
 			glEnable( GL_DEBUG_OUTPUT );
@@ -138,7 +152,10 @@ namespace VTX
 		{
 			VTX_INFO( "Initializing IMGUI" );
 
-			if ( !IMGUI_CHECKVERSION() ) { throw Exception::IMGUIException( "IMGUI_CHECKVERSION() failed" ); }
+			if ( !IMGUI_CHECKVERSION() )
+			{
+				throw Exception::IMGUIException( "IMGUI_CHECKVERSION() failed" );
+			}
 
 			ImGui::CreateContext();
 
@@ -149,7 +166,10 @@ namespace VTX
 
 			// Configuration.
 			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-			if ( IMGUI_ENABLE_VIEWPORTS ) { io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable; }
+			if ( IMGUI_ENABLE_VIEWPORTS )
+			{
+				io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+			}
 
 			// Style.
 			setTheme();
@@ -162,11 +182,18 @@ namespace VTX
 			ImGui::GetStyle().WindowBorderSize	= IMGUI_STYLE_WINDOW_BORDER;
 			ImGui::GetStyle().WindowPadding		= ImVec2( IMGUI_STYLE_WINDOW_PADDING, IMGUI_STYLE_WINDOW_PADDING );
 
+			// .ini location.
+			io.IniFilename = Util::Filesystem::IMGUI_INI_FILE.c_str();
+
 			// Setup Platform/Renderer bindings.
 			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
-			{ throw Exception::IMGUIException( "ImGui_ImplSDL2_InitForOpenGL failed" ); }
+			{
+				throw Exception::IMGUIException( "ImGui_ImplSDL2_InitForOpenGL failed" );
+			}
 			if ( ImGui_ImplOpenGL3_Init( GLSL_VERSION.c_str() ) == false )
-			{ throw Exception::IMGUIException( "ImGui_ImplOpenGL3_Init failed" ); }
+			{
+				throw Exception::IMGUIException( "ImGui_ImplOpenGL3_Init failed" );
+			}
 		}
 
 		void UserInterface::_disposeAll()
@@ -178,8 +205,14 @@ namespace VTX
 
 		void UserInterface::_disposeSDL2()
 		{
-			if ( _glContext ) { SDL_GL_DeleteContext( _glContext ); }
-			if ( _window ) { SDL_DestroyWindow( _window ); }
+			if ( _glContext )
+			{
+				SDL_GL_DeleteContext( _glContext );
+			}
+			if ( _window )
+			{
+				SDL_DestroyWindow( _window );
+			}
 			SDL_Quit();
 		}
 
@@ -190,7 +223,10 @@ namespace VTX
 			ImGui_ImplOpenGL3_Shutdown();
 			ImGui_ImplSDL2_Shutdown();
 
-			if ( ImGui::GetCurrentContext() != nullptr ) { ImGui::DestroyContext(); }
+			if ( ImGui::GetCurrentContext() != nullptr )
+			{
+				ImGui::DestroyContext();
+			}
 		}
 
 		void UserInterface::_draw()
@@ -229,7 +265,10 @@ namespace VTX
 			_drawComponents();
 
 			// Debug.
-			if ( IMGUI_SHOW_DEMO ) { ImGui::ShowDemoWindow( NULL ); }
+			if ( IMGUI_SHOW_DEMO )
+			{
+				ImGui::ShowDemoWindow( NULL );
+			}
 
 			// Main end.
 			ImGui::End();
@@ -251,7 +290,10 @@ namespace VTX
 		bool UserInterface::getEvent( SDL_Event & p_event ) const
 		{
 			bool hasEvent = SDL_PollEvent( &p_event );
-			if ( hasEvent ) { ImGui_ImplSDL2_ProcessEvent( &p_event ); }
+			if ( hasEvent )
+			{
+				ImGui_ImplSDL2_ProcessEvent( &p_event );
+			}
 			return hasEvent;
 		}
 

@@ -54,6 +54,7 @@ namespace VTX
 			static const IO::Path RENDERS_DIR	  = EXECUTABLE_DIR + "/../../renders";
 			static const IO::Path PATHS_DIR		  = EXECUTABLE_DIR + "/../../paths";
 			static const IO::Path VIDEOS_DIR	  = EXECUTABLE_DIR + "/../../videos";
+			static const IO::Path IMGUI_INI_FILE  = EXECUTABLE_DIR + "/../../imgui.ini";
 
 			inline IO::Path * const getDataPath( const std::string & p_filename )
 			{
