@@ -28,6 +28,7 @@ namespace VTX
 		if ( _stateMachine != nullptr )
 		{
 			Generic::destroy( _stateMachine );
+
 		}
 		if ( _scene != nullptr )
 		{
