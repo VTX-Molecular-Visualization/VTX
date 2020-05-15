@@ -1,6 +1,8 @@
 # VTX
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/25aeed2cf0e54f45b39496354738bfc4)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sguionni/VTX&amp;utm_campaign=Badge_Grade)
+
 Master: ![C/C++ CI](https://github.com/sguionni/VTX/workflows/C/C++%20CI/badge.svg?branch=master)
+
 Dev: ![C/C++ CI](https://github.com/sguionni/VTX/workflows/C/C++%20CI/badge.svg?branch=dev)
 
 ## USER GUIDE
