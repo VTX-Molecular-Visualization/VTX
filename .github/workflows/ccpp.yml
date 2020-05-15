@@ -1,0 +1,42 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master, dev ]
+  pull_request:
+    branches: [ master, dev ]
+
+jobs:
+  job:
+    name: ${{ matrix.os }}-${{ matrix.cxx }}-build
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        name: [windows-msvc]
+        # For Windows msvc, for Linux and macOS let's use the clang compiler, use gcc for Linux.
+        include:
+          - name: windows-msvc
+            os: windows-latest
+            cxx: cl.exe
+            cc: cl.exe
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - uses: lukka/get-cmake@latest
+    
+    - uses: ilammy/msvc-dev-cmd@v1
+    
+    - uses: lukka/set-shell-env@v1
+      with:
+        CXX: ${{ matrix.cxx }}
+        CC: ${{ matrix.cc }}
+    
+    - name: configure and build
+      uses: lukka/run-cmake@v2
+      with:
+        cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
+        cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+        cmakeAppendedArgs: '-B "_windows" -G "Visual Studio 16 2019" -DCMAKE_GENERATOR_PLATFORM=x64 --clean-first .'
+        buildWithCMakeArgs: '--build _windows --config Release'
