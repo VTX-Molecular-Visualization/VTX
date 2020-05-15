@@ -7,7 +7,9 @@
 
 #include "base_reader.hpp"
 #include "model/molecule.hpp"
+#pragma warning( push, 0 )
 #include <chemfiles.hpp>
+#pragma warning( pop )
 
 namespace VTX
 {
