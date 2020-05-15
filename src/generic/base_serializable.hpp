@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "io/path.hpp"
+
 
 namespace VTX
 {
@@ -16,8 +16,8 @@ namespace VTX
 		  public:
 			virtual ~BaseSerializable() = default;
 
-			virtual void load( const IO::Path & )		= 0;
-			virtual void save( const IO::Path & ) const = 0;
+			virtual void load( const Path & )		= 0;
+			virtual void save( const Path & ) const = 0;
 		};
 	} // namespace Generic
 } // namespace VTX

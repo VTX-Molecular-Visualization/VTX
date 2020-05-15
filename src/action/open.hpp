@@ -18,14 +18,14 @@ namespace VTX
 		class Open : public BaseAction
 		{
 		  public:
-			// explicit Open( const std::string & p_path ) { _paths.emplace_back( new IO::Path( p_path ) ); }
-			explicit Open( IO::Path * p_path ) { _paths.emplace_back( p_path ); }
-			explicit Open( const std::vector<IO::Path *> & p_path ) : _paths( p_path ) {}
+			// explicit Open( const std::string & p_path ) { _paths.emplace_back( new Path( p_path ) ); }
+			explicit Open( Path * p_path ) { _paths.emplace_back( p_path ); }
+			explicit Open( const std::vector<Path *> & p_path ) : _paths( p_path ) {}
 
 			virtual void execute() override { VTX_WORKER( new Worker::Loader( _paths ) ); };
 
 		  private:
-			std::vector<IO::Path *> _paths = std::vector<IO::Path *>();
+			std::vector<Path *> _paths = std::vector<Path *>();
 		};
 	} // namespace Action
 } // namespace VTX

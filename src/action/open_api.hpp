@@ -7,7 +7,6 @@
 
 #include "base_action.hpp"
 #include "exception.hpp"
-#include "io/path_fake.hpp"
 #include "model/molecule.hpp"
 #include "open.hpp"
 #include "vtx_app.hpp"
@@ -37,9 +36,9 @@ namespace VTX
 					return;
 				}
 
-				IO::PathFake * path = new IO::PathFake( _id + ".mmtf" );
-				path->write( fetcher.getBuffer() );
-				VTX_ACTION( new Action::Open( path ) );
+				// PathFake * path = new PathFake( _id + ".mmtf" );
+				// path->write( fetcher.getBuffer() );
+				// VTX_ACTION( new Action::Open( path ) );
 
 				/*
 				Worker::WorkerManager &		  manager  = VTXApp::get().getWorkerManager();
@@ -47,7 +46,7 @@ namespace VTX
 				std::string					  id	   = _id;
 				std::function<void( void )> * callback = new std::function<void( void )>( [ fetcher, &id ]( void ) {
 					VTX_DEBUG( "INVOKE" );
-					// IO::PathFake path = IO::PathFake( id + ".mmtf" );
+					// PathFake path = PathFake( id + ".mmtf" );
 					VTX_DEBUG( "CALLBACK" );
 					// path.write( fetcher->getBuffer() );
 					VTX_DEBUG( "DELETE" );

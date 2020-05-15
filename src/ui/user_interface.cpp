@@ -184,7 +184,6 @@ namespace VTX
 
 			// .ini location.
 			io.IniFilename = Util::Filesystem::IMGUI_INI_FILE.c_str();
-
 			// Setup Platform/Renderer bindings.
 			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
 			{

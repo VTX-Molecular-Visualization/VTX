@@ -1,5 +1,4 @@
 #include "loader.hpp"
-#include "io/path_fake.hpp"
 #include "io/reader/lib_assimp.hpp"
 #include "io/reader/lib_chemfiles.hpp"
 #include "io/reader/prm.hpp"
@@ -16,15 +15,15 @@ namespace VTX
 			Model::Configuration::Molecule config = Model::Configuration::Molecule();
 
 			// Load PRM or PSF file firstly.
-			for ( std::vector<IO::Path *>::iterator it = _paths.begin(); it != _paths.end(); it++ )
+			for ( std::vector<Path *>::iterator it = _paths.begin(); it != _paths.end(); it++ )
 			{
-				if ( ( *it )->getExtension() == "prm" )
+				if ( ( *it )->extension() == ".prm" )
 				{
 					IO::Reader::PRM reader = IO::Reader::PRM();
 					reader.readFile( **it, config );
 					_paths.erase( it-- );
 				}
-				else if ( ( *it )->getExtension() == "psf" )
+				else if ( ( *it )->extension() == ".psf" )
 				{
 					IO::Reader::PSF reader = IO::Reader::PSF();
 					reader.readFile( **it, config );
@@ -34,10 +33,10 @@ namespace VTX
 
 			// Load all files.
 			Tool::Chrono chrono;
-			for ( const IO::Path * path : _paths )
+			for ( const Path * path : _paths )
 			{
 				chrono.start();
-				VTX_INFO( "Loading " + path->getFileName() );
+				VTX_INFO( "Loading " + path->filename().string() );
 				MODE mode = _getMode( *path );
 
 				if ( mode == MODE::UNKNOWN )
@@ -49,7 +48,7 @@ namespace VTX
 					// Create reader.
 					IO::Reader::BaseReader<Model::Molecule> * reader;
 					// Will be removed.
-					if ( path->getExtension() == "mmtf" )
+					if ( path->extension() == ".mmtf" )
 					{
 						reader = new IO::Reader::LibChemfiles();
 					}
@@ -107,14 +106,14 @@ namespace VTX
 		template<typename T>
 		void Loader::_load( T * const						  p_data,
 							IO::Reader::BaseReader<T> * const p_reader,
-							const IO::Path * const			  p_path ) const
+							const Path * const				  p_path ) const
 		{
-			const IO::PathFake * fake = dynamic_cast<const IO::PathFake *>( p_path );
-			if ( fake )
-			{
-				p_reader->readBuffer( fake->read(), p_path->getExtension(), *p_data );
-			}
-			else
+			// const PathFake * fake = dynamic_cast<const PathFake *>( p_path );
+			// if ( fake )
+			//{
+			//	p_reader->readBuffer( fake->read(), p_path->getExtension(), *p_data );
+			//}
+			// else
 			{
 				p_reader->readFile( *p_path, *p_data );
 			}
@@ -122,16 +121,16 @@ namespace VTX
 			p_data->print();
 		}
 
-		Loader::MODE Loader::_getMode( const IO::Path & p_path ) const
+		Loader::MODE Loader::_getMode( const Path & p_path ) const
 		{
-			std::string extension = p_path.getExtension();
+			Path extension = p_path.extension();
 
-			if ( extension == "pdb" || extension == "mmtf" || extension == "cif" || extension == "arc"
-				 || extension == "xyz" || extension == "dcd" )
+			if ( extension == ".pdb" || extension == ".mmtf" || extension == ".cif" || extension == ".arc"
+				 || extension == ".xyz" || extension == ".dcd" )
 			{
 				return MODE::MOLECULE;
 			}
-			else if ( extension == "obj" )
+			else if ( extension == ".obj" )
 			{
 				return MODE::MESH;
 			}

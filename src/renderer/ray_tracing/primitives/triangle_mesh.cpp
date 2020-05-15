@@ -12,15 +12,18 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		TriangleMesh::TriangleMesh( const IO::Path & meshToLoad )
+		TriangleMesh::TriangleMesh( const Path & meshToLoad )
 		{
 			Assimp::Importer importer;
 
 			// Read scene and triangulate meshes
 			const aiScene * const scene
-				= importer.ReadFile( meshToLoad.c_str(), aiProcess_Triangulate | aiProcess_GenNormals );
+				= importer.ReadFile( meshToLoad.string(), aiProcess_Triangulate | aiProcess_GenNormals );
 
-			if ( scene == nullptr ) { throw std::runtime_error( "Cannot import file: " + meshToLoad.str() ); }
+			if ( scene == nullptr )
+			{
+				throw std::runtime_error( "Cannot import file: " + meshToLoad.string() );
+			}
 
 			const uint nbMeshes	   = scene->mNumMeshes;
 			uint	   nbTriangles = 0;

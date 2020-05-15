@@ -2,7 +2,6 @@
 #include "action/open.hpp"
 #include "action/snapshot.hpp"
 #include "id.hpp"
-#include "io/path.hpp"
 #include "model/molecule.hpp"
 #include "renderer/gl/gl.hpp"
 #include "util/filesystem.hpp"
@@ -63,7 +62,7 @@ namespace VTX
 
 	void VTXApp::start()
 	{
-		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.str() );
+		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
 
 		_ui = Generic::create<UI::UserInterface>();
 
@@ -95,8 +94,8 @@ namespace VTX
 
 //#define RT_ENABLED
 #ifdef RT_ENABLED
-		// IO::Path * path	   = new IO::Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
-		IO::Path * path = new IO::Path( DATA_DIR + "6vsb.mmtf" );
+		// Path * path	   = new Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
+		Path * path = new Path( DATA_DIR + "6vsb.mmtf" );
 		VTX_ACTION( new Action::Open( path ) );
 		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
 		_actionManager->update( 0.f );

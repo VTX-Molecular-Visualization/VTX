@@ -62,8 +62,8 @@ namespace VTX
 			virtual void setSelected( const bool ) override;
 
 			// TODO: redo implementation.
-			virtual void load( const IO::Path & ) override;
-			virtual void save( const IO::Path & ) const override;
+			virtual void load( const std::filesystem::path & ) override;
+			virtual void save( const std::filesystem::path & ) const override;
 
 		  protected:
 			virtual void _addItems() override final;

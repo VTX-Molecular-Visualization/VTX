@@ -6,7 +6,7 @@
 #endif
 
 #include "../bvh.hpp"
-#include "io/path.hpp"
+
 #include "model/molecule.hpp"
 
 namespace VTX
@@ -20,7 +20,7 @@ namespace VTX
 		  public:
 			friend Triangle;
 			TriangleMesh() = default;
-			explicit TriangleMesh( const IO::Path & meshToLoad );
+			explicit TriangleMesh( const Path & meshToLoad );
 			explicit TriangleMesh( const Model::Molecule * p_molecule );
 
 			~TriangleMesh()

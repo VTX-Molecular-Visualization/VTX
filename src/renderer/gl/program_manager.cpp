@@ -12,23 +12,22 @@ namespace VTX
 		namespace GLSL
 		{
 			const ProgramManager::MapStringToEnum ProgramManager::EXTENSIONS
-				= MapStringToEnum( { { "vert", SHADER_TYPE::VERTEX },
-									 { "geom", SHADER_TYPE::GEOMETRY },
-									 { "frag", SHADER_TYPE::FRAGMENT },
-									 { "comp", SHADER_TYPE::COMPUTE },
-									 { "tesc", SHADER_TYPE::TESS_CONTROL },
-									 { "tese", SHADER_TYPE::TESS_EVALUATION } } );
+				= MapStringToEnum( { { ".vert", SHADER_TYPE::VERTEX },
+									 { ".geom", SHADER_TYPE::GEOMETRY },
+									 { ".frag", SHADER_TYPE::FRAGMENT },
+									 { ".comp", SHADER_TYPE::COMPUTE },
+									 { ".tesc", SHADER_TYPE::TESS_CONTROL },
+									 { ".tese", SHADER_TYPE::TESS_EVALUATION } } );
 
-			SHADER_TYPE ProgramManager::getShaderType( const std::string & p_name )
+			SHADER_TYPE ProgramManager::getShaderType( const Path & p_name )
 			{
-				IO::Path path( p_name );
-
-				if ( ProgramManager::EXTENSIONS.find( path.getExtension() ) != ProgramManager::EXTENSIONS.end() )
+				std::string extension = p_name.extension().string();
+				if ( ProgramManager::EXTENSIONS.find( extension ) != ProgramManager::EXTENSIONS.end() )
 				{
-					return ProgramManager::EXTENSIONS.at( path.getExtension() );
+					return ProgramManager::EXTENSIONS.at( extension );
 				}
 
-				VTX_WARNING( "Invalid extension: " + p_name );
+				VTX_WARNING( "Invalid extension: " + extension );
 				return SHADER_TYPE::INVALID;
 			}
 
@@ -90,11 +89,11 @@ namespace VTX
 				return nullptr;
 			}
 
-			GLuint ProgramManager::_createShader( const IO::Path & p_path )
+			GLuint ProgramManager::_createShader( const Path & p_path )
 			{
-				VTX_DEBUG( "Creating shader: " + p_path.getFileName() );
+				VTX_DEBUG( "Creating shader: " + p_path.filename().string() );
 
-				const std::string name = p_path.getFileName();
+				const std::string name = p_path.filename().string();
 				const SHADER_TYPE type = getShaderType( name );
 				if ( type == SHADER_TYPE::INVALID )
 				{
@@ -106,8 +105,8 @@ namespace VTX
 				if ( shaderId == GL_INVALID_INDEX )
 				{
 					shaderId			   = glCreateShader( (int)type );
-					IO::Path		  path = Util::Filesystem::getShadersPath( p_path );
-					const std::string src  = path.read();
+					Path			  path = Util::Filesystem::getShadersPath( p_path.string() );
+					const std::string src  = Util::Filesystem::readPath( path );
 					if ( src.empty() )
 					{
 						glDeleteShader( shaderId );

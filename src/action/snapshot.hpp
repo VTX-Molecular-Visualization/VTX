@@ -18,7 +18,7 @@ namespace VTX
 		class Snapshot : public BaseAction
 		{
 		  public:
-			explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const IO::Path & p_path ) :
+			explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const Path & p_path ) :
 				_mode( p_mode ), _path( p_path )
 			{
 			}
@@ -29,15 +29,15 @@ namespace VTX
 
 				if ( _mode == Worker::Snapshoter::MODE::GL && snapshoter.takeSnapshotGL( _path ) )
 				{
-					VTX_INFO( "Snapshot taken: " + _path.getFileName() );
+					VTX_INFO( "Snapshot taken: " + _path.filename().string() );
 				}
 				else if ( _mode == Worker::Snapshoter::MODE::RT && snapshoter.takeSnapshotRT( _path ) )
 				{
-					VTX_INFO( "Render computed: " + _path.getFileName() );
+					VTX_INFO( "Render computed: " + _path.filename().string() );
 				}
 				else
 				{
-					VTX_WARNING( "Failed: " + _path.str() );
+					VTX_WARNING( "Failed: " + _path.string() );
 				}
 			};
 
@@ -45,7 +45,7 @@ namespace VTX
 
 		  private:
 			const Worker::Snapshoter::MODE _mode;
-			const IO::Path				   _path;
+			const Path					   _path;
 		};
 	} // namespace Action
 } // namespace VTX

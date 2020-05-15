@@ -14,8 +14,8 @@ namespace VTX
 			void LibChemfiles::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				prepareChemfiles();
-				chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path );
-				readTrajectory( trajectory, p_molecule, p_path.getExtension() );
+				chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string() );
+				readTrajectory( trajectory, p_molecule, p_path.extension().string() );
 			}
 
 			void LibChemfiles::readBuffer( const std::string & p_buffer,

@@ -417,10 +417,10 @@ namespace VTX
 			{
 				std::vector<std::string> files = _openFileDialog->result();
 				VTX_DEBUG( std::to_string( files.size() ) + " selected" );
-				std::vector<IO::Path *> paths = std::vector<IO::Path *>();
+				std::vector<Path *> paths = std::vector<Path *>();
 				for ( std::string & file : files )
 				{
-					paths.emplace_back( new IO::Path( file ) );
+					paths.emplace_back( new Path( file ) );
 				}
 				if ( paths.size() )
 				{

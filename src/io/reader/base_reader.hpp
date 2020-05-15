@@ -6,7 +6,7 @@
 #endif
 
 #include "exception.hpp"
-#include "io/path.hpp"
+#include "define.hpp"
 
 namespace VTX
 {

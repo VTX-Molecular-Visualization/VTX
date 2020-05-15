@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include <filesystem>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtx/spline.hpp>
@@ -32,6 +33,8 @@ namespace VTX
 
 	using Quatf = glm::quat;
 	using Quatd = glm::dquat;
+
+	using Path = std::filesystem::path;
 
 	// VTX.
 	constexpr int VTX_VERSION_MAJOR	   = 0;

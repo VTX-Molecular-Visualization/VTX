@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "io/path.hpp"
+#include "define.hpp"
 
 namespace VTX
 {
@@ -20,8 +20,8 @@ namespace VTX
 				RT
 			};
 
-			bool takeSnapshotGL( const IO::Path & p_path ) const;
-			bool takeSnapshotRT( const IO::Path & p_path ) const;
+			bool takeSnapshotGL( const Path & p_path ) const;
+			bool takeSnapshotRT( const Path & p_path ) const;
 
 		  private:
 		};

@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "define.hpp"
 #include "program.hpp"
 #include <map>
 #include <vector>
@@ -44,13 +45,13 @@ namespace VTX
 				GLuint getShader( const std::string & ) const;
 
 				static const MapStringToEnum EXTENSIONS;
-				static SHADER_TYPE			 getShaderType( const std::string & );
+				static SHADER_TYPE			 getShaderType( const Path & );
 
 			  private:
 				MapStringToProgram _programs = MapStringToProgram();
 				MapStringToGLuint  _shaders	 = MapStringToGLuint();
 
-				GLuint		_createShader( const IO::Path & );
+				GLuint		_createShader( const Path & );
 				std::string _getShaderErrors( const GLuint ) const;
 			};
 		} // namespace GLSL

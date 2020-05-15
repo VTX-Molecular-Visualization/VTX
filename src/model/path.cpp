@@ -169,14 +169,14 @@ namespace VTX
 			}
 		}
 
-		void Path::load( const IO::Path & p_file )
+		void Path::load( const std::filesystem::path & p_file )
 		{
-			VTX_INFO( "Importing view points from " + p_file.str() );
+			VTX_INFO( "Importing view points from " + p_file.string() );
 			std::ifstream file;
 			file.open( p_file );
 
 			if ( !file.is_open() )
-				throw Exception::VTXException( "ModelPath::importPath: cannot open file " + p_file.str() );
+				throw Exception::VTXException( "ModelPath::importPath: cannot open file " + p_file.string() );
 
 			Tool::Chrono chrono = Tool::Chrono();
 			chrono.start();
@@ -226,14 +226,14 @@ namespace VTX
 			VTX_INFO( "Import finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
 		}
 
-		void Path::save( const IO::Path & p_file ) const
+		void Path::save( const std::filesystem::path & p_file ) const
 		{
-			VTX_INFO( "Exporting " + std::to_string( _viewpoints.size() ) + " view points in " + p_file.c_str() );
+			VTX_INFO( "Exporting " + std::to_string( _viewpoints.size() ) + " view points in " + p_file.string() );
 			std::ofstream file;
 			file.open( p_file, std::ios::out | std::ios::trunc );
 
 			if ( !file.is_open() )
-				throw Exception::VTXException( "ModelPath::exportPath: cannot open file " + p_file.str() );
+				throw Exception::VTXException( "ModelPath::exportPath: cannot open file " + p_file.string() );
 
 			Tool::Chrono chrono = Tool::Chrono();
 			chrono.start();

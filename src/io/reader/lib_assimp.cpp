@@ -17,7 +17,7 @@ namespace VTX
 				Assimp::Importer Importer;
 
 				const aiScene * const scene
-					= Importer.ReadFile( p_path.c_str(), aiProcess_Triangulate | aiProcess_GenNormals );
+					= Importer.ReadFile( p_path.string(), aiProcess_Triangulate | aiProcess_GenNormals );
 				if ( !scene )
 				{
 					throw Exception::IOException( "File has not scene" );
@@ -87,14 +87,14 @@ namespace VTX
 			{
 				Assimp::Importer Importer;
 
-				const aiScene * const scene = Importer.ReadFile( p_path.c_str(), 0 );
+				const aiScene * const scene = Importer.ReadFile( p_path.string(), 0 );
 				if ( !scene )
 				{
 					throw Exception::IOException( "File has not scene" );
 				}
 
 				// Set molecule properties.
-				p_molecule.setName( p_path.getFileNameWithoutExtension() );
+				p_molecule.setName( p_path.stem().string() );
 				p_molecule.setColor( Color::Rgb::randomPastel() );
 
 				uint chainGlobalIdx	  = 0;
