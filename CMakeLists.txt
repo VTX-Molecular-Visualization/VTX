@@ -8,6 +8,7 @@ project(VTX)
 set(PATH_SRC "src")
 set(PATH_LIB "lib")
 set(PATH_LIB_SRC "lib_src")
+set(PATH_WINDOWS_RESOURCE "_windows/resource/VTX.rc")
 set(CONFIGS "Debug;Release;RelWithDebInfo")
 
 message("Copying all sources...")
@@ -58,7 +59,7 @@ link_directories(${PATH_LIB}/curl/lib/x64)
 link_directories(${PATH_LIB}/chemfiles/lib/x64)
 
 # Declare executable with source files.
-add_executable(VTX ${HPP} ${CPP} ${LIB})
+add_executable(VTX ${HPP} ${CPP} ${LIB} ${PATH_WINDOWS_RESOURCE})
 # Set default startup project.
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VTX)
 
