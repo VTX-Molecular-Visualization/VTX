@@ -38,5 +38,6 @@ jobs:
       with:
         cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
         cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-        cmakeAppendedArgs: '-B "_windows" -G "Visual Studio 16 2019" -DCMAKE_GENERATOR_PLATFORM=x64 --clean-first .'
-        buildWithCMakeArgs: '_windows --config Release'
+        #cmakeAppendedArgs: '-B "_windows" -G "Visual Studio 16 2019" -DCMAKE_GENERATOR_PLATFORM=x64 --clean-first .'
+        buildWithCMakeArgs: '--config Release'
+        #buildDirectory: '${{ github.workspace }}/_windows/'
