@@ -33,11 +33,9 @@ jobs:
         CXX: ${{ matrix.cxx }}
         CC: ${{ matrix.cc }}
     
-    - name: configure and build
+    - name: CMake configure and build
       uses: lukka/run-cmake@v2
       with:
         cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
         cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-        #cmakeAppendedArgs: '-B "_windows" -G "Visual Studio 16 2019" -DCMAKE_GENERATOR_PLATFORM=x64 --clean-first .'
         buildWithCMakeArgs: '--config Release'
-        #buildDirectory: '${{ github.workspace }}/_windows/'
