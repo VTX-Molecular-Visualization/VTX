@@ -54,6 +54,45 @@ END
 // remains consistent on all systems.
 IDI_ICON1               ICON                    "..\\..\\asset\\logo.ico"
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,0,4,0
+ PRODUCTVERSION 0,0,4,0
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000904b0"
+        BEGIN
+            VALUE "CompanyName", "CNAM / Limoges University"
+            VALUE "FileDescription", "High performance molecular visualization software"
+            VALUE "FileVersion", "0.0.4.0"
+            VALUE "InternalName", "VTX"
+            VALUE "LegalCopyright", "Copyright (C) 2020"
+            VALUE "OriginalFilename", "VTX.rc"
+            VALUE "ProductName", "VTX"
+            VALUE "ProductVersion", "0.0.4.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x9, 1200
+    END
+END
+
 #endif    // French (France) resources
 /////////////////////////////////////////////////////////////////////////////
 
