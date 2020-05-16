@@ -30,13 +30,11 @@ jobs:
     - name: CMake debug
       uses: lukka/run-cmake@v2
       with:
-        cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
         cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
         buildWithCMakeArgs: '--config Debug'
         
     - name: CMake release
       uses: lukka/run-cmake@v2
       with:
-        cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
         cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
         buildWithCMakeArgs: '--config Release'
