@@ -33,18 +33,16 @@ jobs:
         CXX: ${{ matrix.cxx }}
         CC: ${{ matrix.cc }}
     
-    - name: CMake configure
+    - name: CMake debug
       uses: lukka/run-cmake@v2
       with:
         cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
         cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-    
-    - name: CMake build debug
-      uses: lukka/run-cmake@v2
-      with:
         buildWithCMakeArgs: '--config Debug'
         
-    - name: CMake build release
+    - name: CMake release
       uses: lukka/run-cmake@v2
       with:
+        cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
+        cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
         buildWithCMakeArgs: '--config Release'
