@@ -2,10 +2,10 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ master ]
+    branches: []
   pull_request:
-    branches: [ master ]
-
+    branches: []
+    
 jobs:
   job:
     name: ${{ matrix.os }}-${{ matrix.cxx }}-build
@@ -33,9 +33,18 @@ jobs:
         CXX: ${{ matrix.cxx }}
         CC: ${{ matrix.cc }}
     
-    - name: CMake configure and build
+    - name: CMake configure
       uses: lukka/run-cmake@v2
       with:
         cmakeListsOrSettingsJson: CMakeListsTxtAdvanced
         cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+    
+    - name: CMake build debug
+      uses: lukka/run-cmake@v2
+      with:
+        buildWithCMakeArgs: '--config Debug'
+        
+    - name: CMake build release
+      uses: lukka/run-cmake@v2
+      with:
         buildWithCMakeArgs: '--config Release'
