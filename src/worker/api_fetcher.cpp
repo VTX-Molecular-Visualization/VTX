@@ -16,7 +16,7 @@ namespace VTX
 			{
 				curl_easy_setopt( curl, CURLOPT_URL, url.c_str() );
 				curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, ApiFetcher::_writeCallback );
-				curl_easy_setopt( curl, CURLOPT_WRITEDATA, &_buffer );
+				curl_easy_setopt( curl, CURLOPT_WRITEDATA, _buffer );
 				curl_easy_setopt( curl, CURLOPT_NOPROGRESS, FALSE );
 				curl_easy_setopt( curl, CURLOPT_XFERINFOFUNCTION, ApiFetcher::_progressCallback );
 				curl_easy_setopt( curl, CURLOPT_ACCEPT_ENCODING, "gzip" );
@@ -29,7 +29,10 @@ namespace VTX
 
 					if ( code == 200 )
 					{
-						if ( _buffer.empty() ) { throw Exception::HTTPException( "Empty buffer" ); }
+						if ( _buffer->empty() )
+						{
+							throw Exception::HTTPException( "Empty buffer" );
+						}
 					}
 					else
 					{

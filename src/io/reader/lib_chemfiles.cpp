@@ -22,7 +22,7 @@ namespace VTX
 										   const std::string & p_extension,
 										   Model::Molecule &   p_molecule )
 			{
-				std::string extension = p_extension;
+				std::string extension = p_extension.substr( 1, p_extension.size() );
 				std::transform( extension.begin(), extension.end(), extension.begin(), toupper );
 
 				prepareChemfiles();

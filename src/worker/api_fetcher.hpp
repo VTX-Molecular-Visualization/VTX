@@ -19,12 +19,13 @@ namespace VTX
 		  public:
 			explicit ApiFetcher( const std::string & p_url ) : _url( p_url ) {}
 
-			const std::string & getBuffer() const { return _buffer; }
-			virtual void		work() override;
+			std::string * getBuffer() const { return _buffer; }
+			virtual void  work() override;
 
 		  private:
 			std::string _url;
-			std::string _buffer;
+			// Buffer need to be deleted manually in the callback to avoid copy.
+			std::string * _buffer = new std::string();
 
 			static size_t _writeCallback( const void * p_content,
 										  const size_t p_size,
@@ -42,7 +43,10 @@ namespace VTX
 										  const curl_off_t p_ulnow )
 			{
 				float progress = 0.f;
-				if ( p_dltotal > 0.f ) { progress = (float)p_dlnow / (float)p_dltotal; }
+				if ( p_dltotal > 0.f )
+				{
+					progress = (float)p_dlnow / (float)p_dltotal;
+				}
 
 				VTX_EVENT( new Event::VTXEventFloat( Event::Global::UPDATE_PROGRESS_BAR, progress ) );
 

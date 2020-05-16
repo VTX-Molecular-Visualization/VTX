@@ -36,9 +36,11 @@ namespace VTX
 					return;
 				}
 
-				// PathFake * path = new PathFake( _id + ".mmtf" );
-				// path->write( fetcher.getBuffer() );
-				// VTX_ACTION( new Action::Open( path ) );
+				std::map<Path *, std::string *> mapBuffers = std::map<Path *, std::string *>();
+				Path *							path	   = new Path( _id + ".mmtf" );
+
+				mapBuffers.emplace( path, fetcher.getBuffer() );
+				VTX_WORKER( new Worker::Loader( mapBuffers ) );
 
 				/*
 				Worker::WorkerManager &		  manager  = VTXApp::get().getWorkerManager();

@@ -18,7 +18,6 @@ namespace VTX
 		class Open : public BaseAction
 		{
 		  public:
-			// explicit Open( const std::string & p_path ) { _paths.emplace_back( new Path( p_path ) ); }
 			explicit Open( Path * p_path ) { _paths.emplace_back( p_path ); }
 			explicit Open( const std::vector<Path *> & p_path ) : _paths( p_path ) {}
 

@@ -46,16 +46,7 @@ namespace VTX
 				else if ( mode == MODE::MOLECULE )
 				{
 					// Create reader.
-					IO::Reader::BaseReader<Model::Molecule> * reader;
-					// Will be removed.
-					if ( path->extension() == ".mmtf" )
-					{
-						reader = new IO::Reader::LibChemfiles();
-					}
-					else
-					{
-						reader = new IO::Reader::LibChemfiles();
-					}
+					IO::Reader::BaseReader<Model::Molecule> * reader = new IO::Reader::LibChemfiles();
 
 					// Set PRM.
 					Model::Molecule * molecule = new Model::Molecule();
@@ -64,7 +55,9 @@ namespace VTX
 					// Load.
 					try
 					{
-						_load( molecule, reader, path );
+						reader->readFile( *path, *molecule );
+						molecule->init();
+						molecule->print();
 						VTXApp::get().getScene().addMolecule( molecule );
 					}
 					catch ( const std::exception & p_e )
@@ -83,7 +76,9 @@ namespace VTX
 
 					try
 					{
-						_load( mesh, reader, path );
+						reader->readFile( *path, *mesh );
+						mesh->init();
+						mesh->print();
 						VTXApp::get().getScene().addMesh( mesh );
 					}
 					catch ( const std::exception & p_e )
@@ -101,24 +96,48 @@ namespace VTX
 				chrono.stop();
 				VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
-		}
 
-		template<typename T>
-		void Loader::_load( T * const						  p_data,
-							IO::Reader::BaseReader<T> * const p_reader,
-							const Path * const				  p_path ) const
-		{
-			// const PathFake * fake = dynamic_cast<const PathFake *>( p_path );
-			// if ( fake )
-			//{
-			//	p_reader->readBuffer( fake->read(), p_path->getExtension(), *p_data );
-			//}
-			// else
+			// Load all buffers.
+			for ( const std::pair<Path *, std::string *> & pair : _mapFileNameBuffer )
 			{
-				p_reader->readFile( *p_path, *p_data );
+				chrono.start();
+				VTX_INFO( "Loading " + pair.first->filename().string() );
+				MODE mode = _getMode( *pair.first );
+
+				if ( mode != MODE::MOLECULE )
+				{
+					VTX_ERROR( "Format not supported" );
+				}
+				else
+				{
+					// Create reader.
+					IO::Reader::BaseReader<Model::Molecule> * reader   = new IO::Reader::LibChemfiles();
+					Model::Molecule *						  molecule = new Model::Molecule();
+
+					// Load.
+					try
+					{
+						reader->readBuffer( *pair.second, pair.first->extension().string(), *molecule );
+						molecule->init();
+						molecule->print();
+						VTXApp::get().getScene().addMolecule( molecule );
+					}
+					catch ( const std::exception & p_e )
+					{
+						VTX_ERROR( "Error loading file" );
+						VTX_ERROR( p_e.what() );
+						delete molecule;
+					}
+
+					delete reader;
+				}
+
+				delete pair.first;
+				delete pair.second;
+
+				chrono.stop();
+				VTX_INFO( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
-			p_data->init();
-			p_data->print();
 		}
 
 		Loader::MODE Loader::_getMode( const Path & p_path ) const
