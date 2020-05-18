@@ -110,8 +110,6 @@ message("Copying binaries to build folders... DONE")
 
 # Includes directories.
 # TODO: no absolute paths for CUDA and OptiX
-target_include_directories(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.2/include")
-target_include_directories(VTX PRIVATE "C:/ProgramData/NVIDIA Corporation/OptiX SDK 7.0.0/include")
 target_include_directories(VTX PRIVATE ${PATH_SRC})
 target_include_directories(VTX PRIVATE ${PATH_LIB})
 target_include_directories(VTX PRIVATE ${PATH_LIB_SRC})
@@ -142,4 +140,11 @@ endif()
 
 if(WIN32)
 	add_definitions(-DCHEMFILES_WINDOWS)	
+endif()
+
+if(WIN32)
+	add_definitions(-DCUDA_DEFINED)
+	add_definitions(-DOPTIX_DEFINED)
+	target_include_directories(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.2/include")
+	target_include_directories(VTX PRIVATE "C:/ProgramData/NVIDIA Corporation/OptiX SDK 7.0.0/include")
 endif()
