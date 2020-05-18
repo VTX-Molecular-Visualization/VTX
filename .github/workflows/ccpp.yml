@@ -1,8 +1,9 @@
 name: C/C++ CI
 
 on:
-  schedule:
-    - cron: "* 0 * * *"
+  push:
+    branches:
+      - master
    
 jobs:
   job:
