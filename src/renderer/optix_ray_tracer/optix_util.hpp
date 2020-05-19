@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#ifdef OPTIX_DEFINED
+
 #include "define.hpp"
 #include <optix.h>
 #include <optix_stubs.h>
@@ -21,4 +23,5 @@
 		}                                                                                     \
 	}
 
+#endif
 #endif

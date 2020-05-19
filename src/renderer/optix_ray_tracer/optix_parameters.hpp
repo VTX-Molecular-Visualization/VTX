@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#ifdef OPTIX_DEFINED
+
 #include "device_math_vec.hpp"
 #include <cuda_runtime.h>
 #include <optix.h>
@@ -90,7 +92,9 @@ namespace VTX
 						if ( t <= p_tMax )
 						{ // first intersection not too far
 							if ( t < p_tMin )
-							{ t = ( -b + sqrtDelta ); }		  // first intersection too near, check second one
+							{
+								t = ( -b + sqrtDelta );
+							}								  // first intersection too near, check second one
 							if ( t >= p_tMin && t <= p_tMax ) // t is within the interval
 							{
 								p_hit._t	  = t;
@@ -145,15 +149,30 @@ namespace VTX
 
 					const float h = b * b - a * c;
 
-					if ( h < 0.f ) { return false; }
+					if ( h < 0.f )
+					{
+						return false;
+					}
 
 					float t = ( -b - sqrtf( h ) ) / a;
-					if ( t > p_tMax ) { return false; }				   // first intersection too far
-					if ( t < p_tMin ) { t = ( -b + sqrtf( h ) ) / a; } // first intersection too near, check second one
-					if ( t < p_tMin || t > p_tMax ) { return false; }
+					if ( t > p_tMax )
+					{
+						return false;
+					} // first intersection too far
+					if ( t < p_tMin )
+					{
+						t = ( -b + sqrtf( h ) ) / a;
+					} // first intersection too near, check second one
+					if ( t < p_tMin || t > p_tMax )
+					{
+						return false;
+					}
 
 					const float y = d2 + t * d1;
-					if ( y < 0.f || y > d0 ) { return false; }
+					if ( y < 0.f || y > d0 )
+					{
+						return false;
+					}
 
 					p_hit._t	  = t;
 					p_hit._point  = p_origin + p_direction * p_hit._t;
@@ -190,4 +209,5 @@ namespace VTX
 	}	  // namespace Renderer
 } // namespace VTX
 
+#endif
 #endif

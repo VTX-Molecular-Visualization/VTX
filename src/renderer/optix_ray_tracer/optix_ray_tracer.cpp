@@ -1,3 +1,5 @@
+#ifdef OPTIX_DEFINED
+
 #include "optix_ray_tracer.hpp"
 #include "color/rgb.hpp"
 #include "tool/chrono.hpp"
@@ -166,7 +168,8 @@ namespace VTX
 
 		void OptixRayTracer::renderFrame( const Object3D::Scene & p_scene )
 		{
-			if ( _launchParameters._frame._width == 0 || _launchParameters._frame._height == 0 ) return;
+			if ( _launchParameters._frame._width == 0 || _launchParameters._frame._height == 0 )
+				return;
 
 			VTX_INFO( "Render Frame" );
 
@@ -235,7 +238,9 @@ namespace VTX
 					  << std::endl;
 
 			if ( false /*TODO: check what compute capability we need*/ )
-			{ throw std::runtime_error( "no CUDA capable device is detected with compute capability >= X.Y" ); }
+			{
+				throw std::runtime_error( "no CUDA capable device is detected with compute capability >= X.Y" );
+			}
 
 			OPTIX_HANDLE_ERROR( optixInit() );
 		}
@@ -247,7 +252,10 @@ namespace VTX
 
 			CUresult res = cuCtxGetCurrent( &_cudaContext );
 
-			if ( res != CUDA_SUCCESS ) { throw std::runtime_error( "Error getting CUDA context:" + res ); }
+			if ( res != CUDA_SUCCESS )
+			{
+				throw std::runtime_error( "Error getting CUDA context:" + res );
+			}
 
 			OPTIX_HANDLE_ERROR( optixDeviceContextCreate( _cudaContext, 0, &_optixContext ) );
 			OPTIX_HANDLE_ERROR( optixDeviceContextSetLogCallback( _optixContext, context_log_cb, nullptr, 4 ) );
@@ -288,7 +296,10 @@ namespace VTX
 			// read .cu
 			const std::string file = "../src/renderer/optix_ray_tracer/test_optix.cu";
 			std::ifstream	  ifs( file, std::ios::binary | std::ios::ate );
-			if ( !ifs.is_open() ) { throw std::runtime_error( "Cannot open file " + file ); }
+			if ( !ifs.is_open() )
+			{
+				throw std::runtime_error( "Cannot open file " + file );
+			}
 
 			uint   size = uint( ifs.tellg() );
 			char * cu	= new char[ size + 1 ];
@@ -367,7 +378,10 @@ namespace VTX
 			// read .ptx
 			const std::string file = "../src/renderer/optix_ray_tracer/test_optix.ptx";
 			std::ifstream	  ifs( file, std::ios::binary | std::ios::ate );
-			if ( !ifs.is_open() ) { throw std::runtime_error( "Cannot open file " + file ); }
+			if ( !ifs.is_open() )
+			{
+				throw std::runtime_error( "Cannot open file " + file );
+			}
 
 			uint   ptxSize = uint( ifs.tellg() );
 			char * ptx	   = new char[ ptxSize + 1 ];
@@ -722,3 +736,5 @@ namespace VTX
 
 	} // namespace Renderer
 } // namespace VTX
+
+#endif

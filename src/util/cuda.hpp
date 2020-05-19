@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#ifdef CUDA_DEFINED
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <nvrtc.h>
@@ -63,7 +64,10 @@ namespace VTX
 				int nbDevices;
 				CUDA_HANDLE_ERROR( cudaGetDeviceCount( &nbDevices ) );
 
-				if ( nbDevices == 0 ) { throw std::runtime_error( "Cannot find CUDA capable device" ); }
+				if ( nbDevices == 0 )
+				{
+					throw std::runtime_error( "Cannot find CUDA capable device" );
+				}
 
 				// Choose best device
 				int			   currentDev = 0;
@@ -86,5 +90,5 @@ namespace VTX
 		} // namespace CUDA
 	}	  // namespace Util
 } // namespace VTX
-
+#endif
 #endif

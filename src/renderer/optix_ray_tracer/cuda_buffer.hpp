@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#ifdef OPTIX_DEFINED
+
 #include "define.hpp"
 #include "util/cuda.hpp"
 
@@ -51,7 +53,10 @@ namespace VTX
 
 			void realloc( const size_t p_size )
 			{
-				if ( _devicePtr != nullptr ) { free(); }
+				if ( _devicePtr != nullptr )
+				{
+					free();
+				}
 				malloc( p_size );
 			}
 
@@ -60,4 +65,5 @@ namespace VTX
 		};
 	} // namespace Renderer
 } // namespace VTX
+#endif
 #endif

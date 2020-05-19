@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#ifdef OPTIX_DEFINED
+
 #include "../base_renderer.hpp"
 #include "cuda_buffer.hpp"
 #include "optix_parameters.hpp"
@@ -92,4 +94,5 @@ namespace VTX
 	} // namespace Renderer
 } // namespace VTX
 
+#endif
 #endif
