@@ -72,7 +72,7 @@ namespace VTX
 				_fillBufferAtomVisibilities();
 				_fillBufferBonds();
 
-				// Compute seconndary structure if not loaded.
+				// Compute secondary structure if not loaded.
 
 				if ( _configuration.isSecondaryStructureLoadedFromFile == false )
 				{

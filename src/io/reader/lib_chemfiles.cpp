@@ -170,7 +170,7 @@ namespace VTX
 
 					// PDB only.
 					// TODO: modify chemfiles to load handedness!
-					if ( p_extension == "pdb" )
+					if ( p_extension == ".pdb" )
 					{
 						std::string secondaryStructure
 							= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
