@@ -43,7 +43,7 @@ namespace VTX
 			ort->renderFrame( VTXApp::get().getScene() );
 			const std::vector<uchar4> & pixels = ort->getPixels();
 			stbi_write_png_compression_level   = 0;
-			bool res						   = stbi_write_png( p_path.c_str(), width, height, 4, pixels.data(), 0 );
+			bool res = stbi_write_png( p_path.string().c_str(), width, height, 4, pixels.data(), 0 );
 			delete ort;
 			return res;
 #else

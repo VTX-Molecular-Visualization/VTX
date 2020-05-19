@@ -89,7 +89,7 @@ namespace VTX
 	constexpr float CONTROLLER_ORBIT_ELASTICITY			  = 8.0f;
 
 	// Rendering.
-	// TODO: choose relevent constants
+	// TODO: choose relevant constants
 	constexpr float RENDERER_AO_RADIUS_MIN		  = 0.f;
 	constexpr float RENDERER_AO_RADIUS_MAX		  = 200.f;
 	constexpr float RENDERER_AO_RADIUS_DEFAULT	  = 32.f;
