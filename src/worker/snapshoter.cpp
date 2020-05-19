@@ -1,8 +1,10 @@
 #include "snapshoter.hpp"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "define.hpp"
+#ifdef CUDA_DEFINED
 #include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
 #include "renderer/ray_tracing/ray_tracer.hpp"
+#endif
 #include "util/time.hpp"
 #include "vtx_app.hpp"
 #include <GL/gl3w.h>
@@ -36,7 +38,7 @@ namespace VTX
 			uint	  width	 = (uint)io.DisplaySize.x;
 			uint	  height = (uint)io.DisplaySize.y;
 
-//#define OPTIX_DEFINED
+#ifdef CUDA_DEFINED
 #ifdef OPTIX_DEFINED
 			Renderer::OptixRayTracer * ort = new Renderer::OptixRayTracer();
 			ort->init( width, height );
@@ -55,6 +57,9 @@ namespace VTX
 			bool res = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
 			delete rt;
 			return res;
+#endif
+#else
+			return false;
 #endif
 		}
 

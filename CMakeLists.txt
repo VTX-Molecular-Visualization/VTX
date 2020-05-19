@@ -142,6 +142,7 @@ if(WIN32)
 	add_definitions(-DCHEMFILES_WINDOWS)	
 endif()
 
+# TODO: find cuda and optix.
 if(WIN32)
 	add_definitions(-DCUDA_DEFINED)
 	add_definitions(-DOPTIX_DEFINED)

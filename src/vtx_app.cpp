@@ -83,7 +83,7 @@ namespace VTX
 		VTX_INFO( "Application started" );
 		_ui->print();
 
-#define AUTO_OPEN
+//#define AUTO_OPEN
 #ifdef AUTO_OPEN
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "r2d2_2.obj" ) ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "4v6x.mmtf" ) ) );
