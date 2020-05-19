@@ -143,7 +143,7 @@ if(WIN32)
 endif()
 
 # TODO: find cuda and optix.
-if(WIN32)
+if(WIN322)
 	add_definitions(-DCUDA_DEFINED)
 	add_definitions(-DOPTIX_DEFINED)
 	target_include_directories(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.2/include")
