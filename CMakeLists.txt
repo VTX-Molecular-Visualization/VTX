@@ -11,6 +11,13 @@ set(PATH_LIB_SRC "lib_src")
 set(PATH_WINDOWS_RESOURCE "_windows/resource/VTX.rc")
 set(CONFIGS "Debug;Release;RelWithDebInfo")
 
+message("Downloading depdendencies...")
+
+# Download dependencies.
+
+# Extract all.
+
+message("Downloading depdendencies... DONE")
 message("Copying all sources...")
 
 # Get all .hpp.
@@ -73,8 +80,6 @@ target_link_libraries(VTX PRIVATE zlibstatic)
 target_link_libraries(VTX PRIVATE libcurl)
 target_link_libraries(VTX PRIVATE chemfiles)
 
-message("Copying binaries to build folders...")
-
 if(WIN32)
 	# Add specific libs.
 	target_link_libraries(VTX PRIVATE ws2_32)
@@ -104,10 +109,7 @@ if(WIN32)
 
 endif()
 
-message("Copying binaries to build folders... DONE")
-
 # Includes directories.
-# TODO: no absolute paths for CUDA and OptiX
 target_include_directories(VTX PRIVATE ${PATH_SRC})
 target_include_directories(VTX PRIVATE ${PATH_LIB})
 target_include_directories(VTX PRIVATE ${PATH_LIB_SRC})
