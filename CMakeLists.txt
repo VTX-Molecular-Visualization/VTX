@@ -20,21 +20,18 @@ set(ZIP_LIB_SRC "lib_src.zip")
 if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${PATH_LIB})
   if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${ZIP_LIB})
     file(DOWNLOAD https://www.simonguionniere.com/private/VTX/${ZIP_LIB} ${CMAKE_SOURCE_DIR}/${ZIP_LIB} SHOW_PROGRESS)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${CMAKE_SOURCE_DIR}/${ZIP_LIB} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB})
+	file(REMOVE ${CMAKE_SOURCE_DIR}/${ZIP_LIB})
   endif()
 endif()
 
 if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
   if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC})
     file(DOWNLOAD https://www.simonguionniere.com/private/VTX/${ZIP_LIB_SRC} ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC} SHOW_PROGRESS)
+	execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
+	file(REMOVE ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC})
   endif()
 endif()
-
-# Extract all.
-execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${CMAKE_SOURCE_DIR}/${ZIP_LIB} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB})
-execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
-
-# Remove .zip.
-file(REMOVE ${CMAKE_SOURCE_DIR}/${ZIP_LIB} ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC})
 
 message("Downloading depdendencies... DONE")
 message("Copying all sources...")
@@ -162,7 +159,7 @@ if(WIN32)
 endif()
 
 # TODO: find cuda and optix.
-if(WIN322)
+if(WIN32)
 	add_definitions(-DCUDA_DEFINED)
 	add_definitions(-DOPTIX_DEFINED)
 	target_include_directories(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v10.2/include")
