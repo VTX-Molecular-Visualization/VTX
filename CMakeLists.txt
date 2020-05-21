@@ -8,7 +8,7 @@ project(VTX)
 set(PATH_SRC "src")
 set(PATH_LIB "lib")
 set(PATH_LIB_SRC "lib_src")
-set(PATH_WINDOWS_RESOURCE "_windows/resource/VTX.rc")
+set(PATH_WINDOWS_RESOURCE "_windows/resource")
 set(CONFIGS "Debug;Release;RelWithDebInfo")
 
 message("Downloading depdendencies...")
@@ -37,8 +37,8 @@ message("Downloading depdendencies... DONE")
 message("Copying all sources...")
 
 # Get all .hpp.
-file(GLOB_RECURSE HPP ${PATH_SRC}/*.hpp ${PATH_SRC}/*.h)
-foreach(SRC IN ITEMS ${HPP})
+file(GLOB_RECURSE HEADERS ${PATH_SRC}/*.hpp ${PATH_SRC}/*.h)
+foreach(SRC IN ITEMS ${HEADERS})
     get_filename_component(SRC_PATH "${SRC}" PATH)
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
@@ -47,8 +47,8 @@ foreach(SRC IN ITEMS ${HPP})
 endforeach()
 
 # Get all C++, GLSL and CUDA sources.
-file(GLOB_RECURSE CPP ${PATH_SRC}/*.cpp ${PATH_SRC}/*.vert ${PATH_SRC}/*.frag ${PATH_SRC}/*.geom ${PATH_SRC}/*.cu)
-foreach(SRC IN ITEMS ${CPP})
+file(GLOB_RECURSE SOURCES ${PATH_SRC}/*.cpp ${PATH_SRC}/*.vert ${PATH_SRC}/*.frag ${PATH_SRC}/*.geom ${PATH_SRC}/*.cu)
+foreach(SRC IN ITEMS ${SOURCES})
     get_filename_component(SRC_PATH "${SRC}" PATH)
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
@@ -57,13 +57,23 @@ foreach(SRC IN ITEMS ${CPP})
 endforeach()
 
 # Get libs.
-file(GLOB_RECURSE LIB ${PATH_LIB_SRC}/*.hpp ${PATH_LIB_SRC}/*.h ${PATH_LIB_SRC}/*.inl ${PATH_LIB_SRC}/*.c ${PATH_LIB_SRC}/*.cpp)
-foreach(SRC IN ITEMS ${LIB})
+file(GLOB_RECURSE LIBS ${PATH_LIB_SRC}/*.hpp ${PATH_LIB_SRC}/*.h ${PATH_LIB_SRC}/*.inl ${PATH_LIB_SRC}/*.c ${PATH_LIB_SRC}/*.cpp)
+foreach(SRC IN ITEMS ${LIBS})
     get_filename_component(SRC_PATH "${SRC}" PATH)
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
     source_group("Libs${GROUP_PATH}" FILES "${SRC}")
+endforeach()
+
+# Get all resources.
+file(GLOB_RECURSE RESOURCES ${PATH_WINDOWS_RESOURCE}/*.rc)
+foreach(SRC IN ITEMS ${RESOURCES})
+    get_filename_component(SRC_PATH "${SRC}" PATH)
+    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_WINDOWS_RESOURCE}" "${SRC_PATH}")
+    string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
+	# Create group to make visual studio filters.
+    source_group("Resources${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
 message("Copying all sources... DONE")
@@ -82,9 +92,9 @@ link_directories(${PATH_LIB}/curl/lib/x64)
 link_directories(${PATH_LIB}/chemfiles/lib/x64)
 
 # Declare executable with source files.
-add_executable(VTX ${HPP} ${CPP} ${LIB} ${PATH_WINDOWS_RESOURCE})
-# Set default startup project.
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VTX)
+add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES})
+
+
 
 # Link libs.
 target_link_libraries(VTX PRIVATE SDL2)
@@ -119,7 +129,6 @@ if(WIN32)
 	
 	# Copy shaders to build directoy.
 	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${PATH_SRC}/shader ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../shaders)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${PATH_SRC}/shader/shading ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../shaders/shading)
 	
 	# Copy config files.
 	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/config ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/..)
@@ -153,6 +162,10 @@ elseif(MSVC)
 	#Preprocessor definitions
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-DNOMINMAX)
+	
+	# Set default startup project.
+	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VTX)
+	set_target_properties(VTX PROPERTIES VS_GLOBAL_DisableFastUpToDateCheck true)
 endif()
 
 if(WIN32)
