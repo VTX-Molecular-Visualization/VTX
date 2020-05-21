@@ -260,8 +260,8 @@ namespace VTX
 			ImGui::DockSpace( dockSpaceId, ImVec2( 0.0f, 0.0f ), dockSpaceFlags );
 
 			// Viewport.
-			 SDL_GL_MakeCurrent( _window, _glContext );
-			 glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+			SDL_GL_MakeCurrent( _window, _glContext );
+			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 			// Draw all components.
 			_drawComponents();

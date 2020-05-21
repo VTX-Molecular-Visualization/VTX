@@ -19,17 +19,20 @@ namespace VTX
 				return;
 			}
 
-			ImVec2 pos = ImGui::GetCursorScreenPos();
+			ImVec2 position = ImGui::GetWindowPos();
+			ImVec2 min		= ImGui::GetWindowContentRegionMin();
+			ImVec2 max		= ImGui::GetWindowContentRegionMax();
+
+			min.x += position.x;
+			min.y += position.y;
+			max.x += position.x;
+			max.y += position.y;
 
 #pragma warning( push )
 #pragma warning( disable : 4312 )
 			Renderer::GL * r = (Renderer::GL *)&( VTXApp::get().getRenderer() );
 			ImGui::GetWindowDrawList()->AddImage(
-				(void *)r->getRenderedTexture(),
-				ImVec2( ImGui::GetItemRectMin().x + pos.x, ImGui::GetItemRectMin().y + pos.y ),
-				ImVec2( pos.x + 800 / 2, pos.y + 600 / 2 ),
-				ImVec2( 0, 1 ),
-				ImVec2( 1, 0 ) );
+				(void *)r->getRenderedTexture(), min, max, ImVec2( 0, 1 ), ImVec2( 1, 0 ) );
 #pragma warning( pop )
 			ImGui::End();
 		}

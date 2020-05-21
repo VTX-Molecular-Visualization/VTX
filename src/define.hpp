@@ -57,11 +57,11 @@ namespace VTX
 	// constexpr int WINDOW_WIDTH	= 640;
 	// constexpr int WINDOW_HEIGHT = 320;
 	// 720p.
-	 constexpr int WINDOW_WIDTH	= 1280;
-	 constexpr int WINDOW_HEIGHT = 720;
+	// constexpr int WINDOW_WIDTH	= 1280;
+	// constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
-	//constexpr int WINDOW_WIDTH	= 1920;
-	//constexpr int WINDOW_HEIGHT = 1080;
+	constexpr int WINDOW_WIDTH	= 1920;
+	constexpr int WINDOW_HEIGHT = 1080;
 	// 4k
 	// constexpr int WINDOW_WIDTH	= 3840;
 	// constexpr int WINDOW_HEIGHT = 2160;
