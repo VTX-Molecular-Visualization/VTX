@@ -21,6 +21,8 @@ namespace VTX
 			virtual void _draw() override;
 
 		  private:
+			uint _width	 = 0;
+			uint _height = 0;
 		};
 	} // namespace UI
 } // namespace VTX

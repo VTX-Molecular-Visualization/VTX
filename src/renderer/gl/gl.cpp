@@ -26,7 +26,7 @@ namespace VTX
 			// glClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
 
 			// Set size.
-			resize( p_width, p_height );
+			BaseRenderer::resize( p_width, p_height );
 
 			// Init pass.
 			_passGeometric->init( _programManager, p_width, p_height );
@@ -87,6 +87,8 @@ namespace VTX
 
 		void GL::renderFrame( const Object3D::Scene & p_scene )
 		{
+			glViewport( 0, 0, _width, _height );
+
 			glEnable( GL_DEPTH_TEST );
 			_passGeometric->render( p_scene, *this );
 			glDisable( GL_DEPTH_TEST );

@@ -20,7 +20,9 @@ namespace VTX
 													 BaseEventReceiverVTX * const p_receiver )
 		{
 			if ( _receiversVTX.find( p_event ) == _receiversVTX.end() )
-			{ _receiversVTX.try_emplace( p_event, SetBaseEventReceiverVTXPtr() ); }
+			{
+				_receiversVTX.try_emplace( p_event, SetBaseEventReceiverVTXPtr() );
+			}
 
 			_receiversVTX.at( p_event ).emplace( p_receiver );
 		}
@@ -66,13 +68,15 @@ namespace VTX
 				}
 				}
 
+				// TODO: propagate to each receiver with hovered window info?
+
 				// Propagate.
-				//if ( ImGui::IsAnyWindowFocused() == false )
+				// if ( ImGui::IsAnyWindowFocused() == false )
 				//{
-					for ( Event::BaseEventReceiverSDL * const receiver : _receiversSDL )
-					{
-						receiver->receiveEvent( event );
-					}
+				for ( Event::BaseEventReceiverSDL * const receiver : _receiversSDL )
+				{
+					receiver->receiveEvent( event );
+				}
 				//}
 			}
 
@@ -88,8 +92,11 @@ namespace VTX
 		{
 			switch ( p_event.event )
 			{
-			case SDL_WINDOWEVENT_CLOSE: VTXApp::get().stop(); break;
-			case SDL_WINDOWEVENT_RESIZED: VTX_ACTION( new Action::Resize( p_event.data1, p_event.data2 ) ); break;
+			case SDL_WINDOWEVENT_CLOSE:
+				VTXApp::get().stop();
+				break;
+				// case SDL_WINDOWEVENT_RESIZED: VTX_ACTION( new Action::Resize( p_event.data1, p_event.data2 ) );
+				// break;
 			}
 		}
 

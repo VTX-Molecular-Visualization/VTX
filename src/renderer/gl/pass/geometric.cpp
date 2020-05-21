@@ -12,7 +12,6 @@ namespace VTX
 				// TODO: Only when using point sprites.
 				glEnable( GL_PROGRAM_POINT_SIZE );
 				glPointParameteri( GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT );
-				glViewport( 0, 0, p_width, p_height );
 
 				// Create G-buffers for deferred shading.
 				glGenFramebuffers( 1, &_fboGeo );
@@ -50,10 +49,16 @@ namespace VTX
 				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 				GLenum fboStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
-				if ( fboStatus != GL_FRAMEBUFFER_COMPLETE ) { VTX_WARNING( "Framebuffer not complete: " + fboStatus ); }
+				if ( fboStatus != GL_FRAMEBUFFER_COMPLETE )
+				{
+					VTX_WARNING( "Framebuffer not complete: " + fboStatus );
+				}
 
 				GLenum glstatus = glGetError();
-				if ( glstatus != GL_NO_ERROR ) { VTX_ERROR( "Error in GL call: " + glstatus ); }
+				if ( glstatus != GL_NO_ERROR )
+				{
+					VTX_ERROR( "Error in GL call: " + glstatus );
+				}
 			}
 
 			void Geometric::clean()
