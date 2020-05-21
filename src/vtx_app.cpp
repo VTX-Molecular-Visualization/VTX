@@ -1,5 +1,6 @@
 #include "vtx_app.hpp"
 #include "action/open.hpp"
+#include "action/open_api.hpp"
 #include "action/snapshot.hpp"
 #include "id.hpp"
 #include "model/molecule.hpp"
@@ -83,12 +84,12 @@ namespace VTX
 		VTX_INFO( "Application started" );
 		_ui->print();
 
-//#define AUTO_OPEN
+#define AUTO_OPEN
 #ifdef AUTO_OPEN
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "r2d2_2.obj" ) ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "4v6x.mmtf" ) ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr("6vsb.mmtf" ) ) );
-		VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
+		VTX_ACTION( new Action::OpenApi( "4hhb" ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "3jb9.pdb" ) ) );
 #endif
 
@@ -133,19 +134,19 @@ namespace VTX
 
 	void VTXApp::_update()
 	{
-		float deltaTIme = ImGui::GetIO().DeltaTime;
+		float deltaTime = ImGui::GetIO().DeltaTime;
 
 		// State machine.
-		_stateMachine->update( deltaTIme );
+		_stateMachine->update( deltaTime );
 
 		// Event manager.
-		_eventManager->update( deltaTIme );
+		_eventManager->update( deltaTime );
 
 		// Action manager.
-		_actionManager->update( deltaTIme );
+		_actionManager->update( deltaTime );
 
 		// Worker manager.
-		_workerManager->update( deltaTIme );
+		_workerManager->update( deltaTime );
 
 		// UI.
 		_ui->draw();

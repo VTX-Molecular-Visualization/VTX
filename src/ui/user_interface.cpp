@@ -187,6 +187,7 @@ namespace VTX
 			io.IniFilename = Util::Filesystem::IMGUI_INI_FILE.c_str();
 
 			// Setup Platform/Renderer bindings.
+
 			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
 			{
 				throw Exception::IMGUIException( "ImGui_ImplSDL2_InitForOpenGL failed" );
@@ -259,8 +260,8 @@ namespace VTX
 			ImGui::DockSpace( dockSpaceId, ImVec2( 0.0f, 0.0f ), dockSpaceFlags );
 
 			// Viewport.
-			SDL_GL_MakeCurrent( _window, _glContext );
-			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+			 SDL_GL_MakeCurrent( _window, _glContext );
+			 glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 			// Draw all components.
 			_drawComponents();
@@ -284,6 +285,7 @@ namespace VTX
 			}
 
 			// GL.
+			glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 			ImGui_ImplOpenGL3_RenderDrawData( ImGui::GetDrawData() );
 			SDL_GL_SwapWindow( _window );
 		}

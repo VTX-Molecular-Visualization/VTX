@@ -67,13 +67,13 @@ namespace VTX
 				}
 
 				// Propagate.
-				if ( ImGui::IsAnyWindowFocused() == false )
-				{
+				//if ( ImGui::IsAnyWindowFocused() == false )
+				//{
 					for ( Event::BaseEventReceiverSDL * const receiver : _receiversSDL )
 					{
 						receiver->receiveEvent( event );
 					}
-				}
+				//}
 			}
 
 			// VTX.
