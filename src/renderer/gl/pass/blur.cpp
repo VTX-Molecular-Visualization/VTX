@@ -45,6 +45,8 @@ namespace VTX
 
 				glActiveTexture( GL_TEXTURE0 );
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassSSAO().getSSAOTexture() );
+				glActiveTexture( GL_TEXTURE1 );
+				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getDepthTexture() );
 
 				_blurShader->use();
 				// TODO don't update aoBlurSize each frame

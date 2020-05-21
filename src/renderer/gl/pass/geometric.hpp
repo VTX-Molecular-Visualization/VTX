@@ -22,6 +22,7 @@ namespace VTX
 
 				inline const GLuint & getColorNormalCompressedTexture() const { return _colorNormalCompressedTexture; }
 				inline const GLuint & getCamSpacePositionsTexture() const { return _camSpacePositionsTexture; }
+				inline const GLuint & getDepthTexture() const { return _depthTexture; }
 
 			  private:
 				GLuint _fboGeo						 = GL_INVALID_VALUE;
