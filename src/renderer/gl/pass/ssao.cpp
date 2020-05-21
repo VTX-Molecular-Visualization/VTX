@@ -1,6 +1,7 @@
 #include "ssao.hpp"
 #include "renderer/gl/gl.hpp"
 #include "setting.hpp"
+#include "util/sampler.hpp"
 #include <random>
 
 namespace VTX
@@ -33,29 +34,21 @@ namespace VTX
 				_uAoIntensityLoc = glGetUniformLocation( _ssaoShader->getId(), "uAoIntensity" );
 
 				// generate random ao kernel
-				std::random_device							 rd;
-				static std::mt19937							 gen( 0 ); // rd());
-				static std::uniform_real_distribution<float> dist( 0.f, 1.f );
-				std::vector<Vec3f>							 aoKernel( _kernelSize );
+				std::vector<Vec3f> aoKernel( _kernelSize );
 
-				// for ( int i = 0; i < _kernelSize; i++ )
-				int i = 0;
-				while ( i < _kernelSize )
+				for ( int i = 0; i < _kernelSize; i++ )
 				{
 					// sample on unit hemisphere
-					Vec3f v(
-						dist( gen ) * 2.f - 1.f, dist( gen ) * 2.f - 1.f, dist( gen ) ); // Vec3f([-1;1],[-1;1],[0;1])
-					v = Util::Math::normalize( v );
-					if ( Util::Math::dot( VEC3F_Z, v ) < 0.15 )
-						continue;
+					Vec3f v = Util::Sampler::cosineWeightedHemisphere( Util::Math::randomFloat(),
+																	   Util::Math::randomFloat() );
+
 					// scale sample within the hemisphere
-					v *= dist( gen );
+					v *= Util::Math::randomFloat();
 					// accelerating interpolation (distance from center reduces when number of points grow up)
 					float scale = float( i ) / float( _kernelSize );
-					scale		= Util::Math::linearInterpolation( 0.1f, 1.f, scale * scale );
+					scale		= Util::Math::linearInterpolation( 0.01f, 1.f, scale * scale );
 					v *= scale;
 					aoKernel[ i ] = v;
-					i++;
 				}
 
 				_ssaoShader->use();
@@ -69,8 +62,9 @@ namespace VTX
 
 				for ( uint i = 0; i < noise.size(); ++i )
 				{
-					noise[ i ]
-						= Vec3f( dist( gen ) * 2.f - 1.f, dist( gen ) * 2.f - 1.f, 0.f ); // Vec3f([-1;1],[-1;1],0)
+					noise[ i ] = Vec3f( Util::Math::randomFloat() * 2.f - 1.f,
+										Util::Math::randomFloat() * 2.f - 1.f,
+										0.f ); // Vec3f([-1;1],[-1;1],0)
 					noise[ i ] = Util::Math::normalize( noise[ i ] );
 				}
 				glGenTextures( 1, &_noiseTexture );

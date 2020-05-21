@@ -51,18 +51,18 @@ void main()
 
 	const float rad = uAoRadius;
 
-	vec3 randomVec = normalize( texture( noise, texPos * noiseScale ).xyz );
+	const vec3 randomVec = normalize( texture( noise, texPos * noiseScale ).xyz );
 	// Gram-Schmidt process
-	vec3 tangent   = normalize( randomVec - fd.normal * dot( randomVec, fd.normal ) );
-	vec3 bitangent = cross( fd.normal, tangent );
-	mat3 TBN	   = mat3( tangent, bitangent, fd.normal );
+	const vec3 tangent   = normalize( randomVec - fd.normal * dot( randomVec, fd.normal ) );
+	const vec3 bitangent = cross( fd.normal, tangent );
+	const mat3 TBN	   = mat3( tangent, bitangent, fd.normal );
 
 	float ao = 0.f;
 
 	for ( int i = 0; i < uKernelSize; ++i )
 	{
 		// compute sample position
-		vec3 samplePos = TBN * uAoKernel[ i ] * rad + pos;
+		const vec3 samplePos = TBN * uAoKernel[ i ] * rad + pos;
 
 		// projection
 		vec4 offset = uProjMatrix * vec4( samplePos, 1.f );
@@ -73,7 +73,7 @@ void main()
 		float sampleDepth = texture( gbCamPosition, offset.xy ).z;
 
 		// range check: ignore background
-		float rangeCheck = sampleDepth == 0.f ? 0.f : smoothstep( 0.f, 1.f, rad / abs( pos.z - sampleDepth ) );
+		const float rangeCheck = sampleDepth == 0.f ? 0.f : smoothstep( 0.f, 1.f, ( rad * rad ) / abs( pos.z - sampleDepth ) );
 		ao += ( sampleDepth >= samplePos.z + BIAS ? 1.f : 0.f ) * rangeCheck;
 	}
 

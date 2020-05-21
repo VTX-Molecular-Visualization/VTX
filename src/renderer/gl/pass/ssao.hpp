@@ -32,8 +32,8 @@ namespace VTX
 				GLint			_uAoRadiusLoc	  = GL_INVALID_INDEX;
 				GLint			_uKernelSizeLoc	  = GL_INVALID_INDEX;
 				GLint			_uAoIntensityLoc  = GL_INVALID_INDEX;
-				GLint			_kernelSize		  = 32;
-				GLuint			_noiseTextureSize = 9;
+				GLint			_kernelSize		  = 64;
+				GLuint			_noiseTextureSize = 64;
 			};
 		} // namespace Pass
 
