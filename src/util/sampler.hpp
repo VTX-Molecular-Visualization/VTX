@@ -28,11 +28,10 @@ namespace VTX
 			// Cosine weighted hemisphere samping: z is up
 			inline Vec3f cosineWeightedHemisphere( const float p_u, const float p_v )
 			{
-				const float sqrtCosTheta = sqrtf( p_u );
-				const float phi			 = TWO_PIf * p_v;
-				const float z			 = sqrtf( 1.f - p_u );
-
-				return Vec3f( sqrtCosTheta * cosf( phi ), sqrtCosTheta * sinf( phi ), z );
+				const float cosTheta = sqrtf( p_u );
+				const float sinTheta = sqrtf( 1.f - p_u );
+				const float phi		 = TWO_PIf * p_v;
+				return Vec3f( cosf( phi ) * sinTheta, sinf( phi ) * sinTheta, cosTheta );
 			}
 
 			inline float cosineWeightedHemispherePdf( const float p_cosTheta ) { return p_cosTheta * INV_PIf; }
