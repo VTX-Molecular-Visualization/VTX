@@ -6,6 +6,7 @@
 #include "inspector.hpp"
 #include "menu.hpp"
 #include "modal/progress_bar.hpp"
+#include "render.hpp"
 #include "scene.hpp"
 #include "setting.hpp"
 #include "style.hpp"
@@ -72,6 +73,7 @@ namespace VTX
 		{
 			// Windows.
 			addItem( Generic::create<Menu>() );
+			addItem( Generic::create<Render>() );
 			addItem( Generic::create<Console>() );
 			addItem( Generic::create<Scene>() );
 			addItem( Generic::create<Inspector>() );
@@ -143,7 +145,6 @@ namespace VTX
 
 #ifdef _DEBUG
 			glEnable( GL_DEBUG_OUTPUT );
-			// glEnable( GL_ARB_gpu_shader_fp64 );
 			glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
 #endif
 		}
@@ -184,6 +185,7 @@ namespace VTX
 
 			// .ini location.
 			io.IniFilename = Util::Filesystem::IMGUI_INI_FILE.c_str();
+
 			// Setup Platform/Renderer bindings.
 			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
 			{

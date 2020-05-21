@@ -33,6 +33,7 @@ namespace VTX
 			virtual void init( const uint, const uint )			= 0;
 			virtual void renderFrame( const Object3D::Scene & ) = 0;
 			virtual void setShading()							= 0;
+			virtual void activeSSAO( const bool ) {}
 
 			inline GLSL::ProgramManager &		getProgramManager() { return _programManager; }
 			inline const GLSL::ProgramManager & getProgramManager() const { return _programManager; }

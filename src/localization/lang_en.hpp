@@ -63,6 +63,9 @@ namespace VTX
 			{ "MainMenu.Undo", "Undo" },
 			{ "MainMenu.Redo", "Redo" },
 
+			// Render.
+			{ "Render.Render", "Render" },
+
 			// Console.
 			{ "Console.Console", "Console" },
 

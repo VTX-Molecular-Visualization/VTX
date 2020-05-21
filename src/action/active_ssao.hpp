@@ -17,7 +17,11 @@ namespace VTX
 		  public:
 			explicit ActiveSSAO( const bool p_active ) : _active( p_active ) {}
 
-			virtual void execute() override { Setting::Rendering::useSSAO = _active; };
+			virtual void execute() override
+			{
+				Setting::Rendering::useSSAO = _active;
+				VTXApp::get().getRenderer().activeSSAO( _active );
+			};
 
 		  private:
 			const bool _active;

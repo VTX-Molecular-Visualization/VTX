@@ -42,7 +42,6 @@ namespace VTX
 			void Blur::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{
 				glBindFramebuffer( GL_FRAMEBUFFER, _fboBlur );
-				glClear( GL_COLOR_BUFFER_BIT );
 
 				glActiveTexture( GL_TEXTURE0 );
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassSSAO().getSSAOTexture() );
@@ -55,9 +54,7 @@ namespace VTX
 				glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 				glBindVertexArray( 0 );
 
-				// TODO Needed ?
-				glActiveTexture( GL_TEXTURE0 );
-				glBindTexture( GL_TEXTURE_2D, 0 );
+				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 			}
 
 		} // namespace Pass

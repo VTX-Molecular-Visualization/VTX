@@ -43,14 +43,13 @@ namespace VTX
 
 			void Shading::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{
-				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-				// glBindFramebuffer( GL_FRAMEBUFFER, _fboShading );
-
 				glActiveTexture( GL_TEXTURE0 );
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getColorNormalCompressedTexture() );
 				glActiveTexture( GL_TEXTURE1 );
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getCamSpacePositionsTexture() );
+
 				glActiveTexture( GL_TEXTURE2 );
+				// If SSAO/Blur disabled, texture is previoulsy cleared.
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassBlur().getBlurTexture() );
 
 				_currentShading->use();

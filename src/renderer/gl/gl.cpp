@@ -23,6 +23,8 @@ namespace VTX
 		{
 			VTX_INFO( "Initializing renderer..." );
 
+			// glClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
+
 			// Set size.
 			resize( p_width, p_height );
 
@@ -88,11 +90,24 @@ namespace VTX
 			glEnable( GL_DEPTH_TEST );
 			_passGeometric->render( p_scene, *this );
 			glDisable( GL_DEPTH_TEST );
-			_passSSAO->render( p_scene, *this );
-			_passBlur->render( p_scene, *this );
+
+			if ( Setting::Rendering::useSSAO )
+			{
+				_passSSAO->render( p_scene, *this );
+				_passBlur->render( p_scene, *this );
+			}
+
 			_passShading->render( p_scene, *this );
 		};
 
 		void GL::setShading() { _passShading->set(); }
+
+		void GL::activeSSAO( const bool p_active )
+		{
+			if ( p_active == false )
+			{
+				_passBlur->clearTexture();
+			}
+		}
 	} // namespace Renderer
 } // namespace VTX

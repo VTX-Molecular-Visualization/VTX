@@ -46,7 +46,8 @@ namespace VTX
 					Vec3f v(
 						dist( gen ) * 2.f - 1.f, dist( gen ) * 2.f - 1.f, dist( gen ) ); // Vec3f([-1;1],[-1;1],[0;1])
 					v = Util::Math::normalize( v );
-					if ( Util::Math::dot( VEC3F_Z, v ) < 0.15 ) continue;
+					if ( Util::Math::dot( VEC3F_Z, v ) < 0.15 )
+						continue;
 					// scale sample within the hemisphere
 					v *= dist( gen );
 					// accelerating interpolation (distance from center reduces when number of points grow up)
@@ -102,8 +103,6 @@ namespace VTX
 				glBindFramebuffer( GL_FRAMEBUFFER, _fboSSAO );
 				glClear( GL_COLOR_BUFFER_BIT );
 
-				if ( Setting::Rendering::useSSAO == false ) return;
-
 				glActiveTexture( GL_TEXTURE0 );
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getColorNormalCompressedTexture() );
 				glActiveTexture( GL_TEXTURE1 );
@@ -135,6 +134,8 @@ namespace VTX
 				glBindTexture( GL_TEXTURE_2D, 0 );
 				glActiveTexture( GL_TEXTURE3 );
 				glBindTexture( GL_TEXTURE_2D, 0 );
+
+				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 			}
 
 		} // namespace Pass

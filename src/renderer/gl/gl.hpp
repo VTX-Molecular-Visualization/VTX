@@ -25,6 +25,7 @@ namespace VTX
 			virtual void init( const uint, const uint ) override;
 			virtual void renderFrame( const Object3D::Scene & ) override;
 			virtual void setShading() override;
+			virtual void activeSSAO( const bool ) override;
 			virtual void resize( const uint, const uint ) override;
 
 			inline const Pass::Geometric & getPassGeometric() const { return *_passGeometric; }
@@ -35,6 +36,8 @@ namespace VTX
 
 			inline const GLuint & getQuadVAO() const { return _quadVAO; }
 			inline const GLuint & getQuadVBO() const { return _quadVBO; }
+
+			inline const GLuint & getRenderedTexture() const { return _passShading->getShadingTexture(); }
 
 		  private:
 			Pass::Geometric * _passGeometric = new Pass::Geometric();

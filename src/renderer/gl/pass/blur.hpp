@@ -22,6 +22,12 @@ namespace VTX
 
 				inline const GLuint & getBlurTexture() const { return _blurTexture; }
 
+				void clearTexture()
+				{
+					float clearColor[ 4 ] = { 0.f, 0.f, 0.f, 0.f };
+					glClearTexImage( _blurTexture, 0, GL_BGRA, GL_UNSIGNED_BYTE, &clearColor );
+				}
+
 			  private:
 				GLSL::Program * _blurShader	  = nullptr;
 				GLuint			_fboBlur	  = GL_INVALID_VALUE;
