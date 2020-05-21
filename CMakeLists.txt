@@ -93,8 +93,8 @@ link_directories(${PATH_LIB}/chemfiles/lib/x64)
 
 # Declare executable with source files.
 add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES})
-# Set default startup project.
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VTX)
+
+
 
 # Link libs.
 target_link_libraries(VTX PRIVATE SDL2)
@@ -162,6 +162,10 @@ elseif(MSVC)
 	#Preprocessor definitions
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-DNOMINMAX)
+	
+	# Set default startup project.
+	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VTX)
+	set_target_properties(VTX PROPERTIES VS_GLOBAL_DisableFastUpToDateCheck true)
 endif()
 
 if(WIN32)
