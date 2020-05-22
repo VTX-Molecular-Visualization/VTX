@@ -73,11 +73,11 @@ namespace VTX
 		{
 			// Windows.
 			addItem( Generic::create<Menu>() );
-			addItem( Generic::create<Window::Render>() );
 			addItem( Generic::create<Window::Console>() );
 			addItem( Generic::create<Window::Scene>() );
 			addItem( Generic::create<Window::Inspector>() );
 			addItem( Generic::create<Window::CameraEditor>() );
+			addItem( Generic::create<Window::Render>() );
 
 			// Modals.
 			addItem( Generic::create<Modal::ProgressBar>() );
@@ -187,7 +187,6 @@ namespace VTX
 			io.IniFilename = Util::Filesystem::IMGUI_INI_FILE.c_str();
 
 			// Setup Platform/Renderer bindings.
-
 			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )
 			{
 				throw Exception::IMGUIException( "ImGui_ImplSDL2_InitForOpenGL failed" );

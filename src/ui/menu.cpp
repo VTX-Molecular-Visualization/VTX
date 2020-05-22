@@ -98,6 +98,13 @@ namespace VTX
 			// Display.
 			if ( ImGui::BeginMenu( LOCALE( "MainMenu.Display" ), isVisiblePtr() ) )
 			{
+				bool showRender = VTXApp::get().getUI().getComponentByName( ID::UI::RENDER )->isVisible();
+				if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Render" ), &showRender ) )
+				{
+					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::RENDER, showRender ) );
+				}
+				ImGui::Separator();
+				ImGui::Separator();
 				bool showScene = VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->isVisible();
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), &showScene ) )
 				{

@@ -24,6 +24,7 @@ namespace VTX
 			{ "MainMenu.Import", "Import" },
 			{ "MainMenu.Import.MMTF", "MMTF" },
 			{ "MainMenu.Display", "Display" },
+			{ "MainMenu.Display.Render", "Render" },
 			{ "MainMenu.Display.Scene", "Scene" },
 			{ "MainMenu.Display.Inspector", "Inspector" },
 			{ "MainMenu.Display.Console", "Console" },
