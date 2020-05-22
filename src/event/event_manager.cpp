@@ -68,8 +68,6 @@ namespace VTX
 				}
 				}
 
-				// TODO: propagate to each receiver with hovered window info?
-
 				// Propagate.
 				// if ( ImGui::IsAnyWindowFocused() == false )
 				//{
