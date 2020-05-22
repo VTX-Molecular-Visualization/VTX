@@ -39,7 +39,7 @@ void main()
 
 			const float depthDiff = ( depth - depthCenter ) * uBlurSharpness;
 
-			const float w		  = exp2( fma( -( i * j ), blurFalloff, -depthDiff * depthDiff ) );
+			const float w = exp2( fma( -( i * j ), blurFalloff, -depthDiff * depthDiff ) );
 
 			res += ao * w;
 			weight += w;
