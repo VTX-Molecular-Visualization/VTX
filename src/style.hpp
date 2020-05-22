@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#include <imgui/imgui.h>
+
 namespace VTX
 {
 	constexpr char * IMGUI_ID_MAIN_WINDOW	 = "VTXMainWindow";

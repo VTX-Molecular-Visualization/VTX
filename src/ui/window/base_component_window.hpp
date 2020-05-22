@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "ui/base_component.hpp"
 #include "localization/language.hpp"
 #include "style.hpp"
+#include "ui/base_component.hpp"
 
 namespace VTX
 {
@@ -23,13 +23,10 @@ namespace VTX
 			  protected:
 				virtual bool _drawHeader();
 				virtual void _drawContent();
-				virtual void _drawFooter();
 
 				virtual void _draw() override;
-
-			  private:
 			};
 		} // namespace Window
-	} // namespace UI
+	}	  // namespace UI
 } // namespace VTX
 #endif

@@ -12,29 +12,22 @@ namespace VTX
 				ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
 				ImGui::SetNextWindowBgAlpha( IMGUI_STYLE_BG_ALPHA );
 
-				if ( ImGui::Begin( getTitle(), isVisiblePtr(), flags ) == false )
-				{
-					ImGui::End();
-					return false;
-				}
-
-				return true;
+				return ImGui::Begin( getTitle(), isVisiblePtr(), flags );
 			}
 
 			void BaseComponentWindow::_drawContent() { _drawComponents(); }
-
-			void BaseComponentWindow::_drawFooter() { ImGui::End(); }
 
 			void BaseComponentWindow::_draw()
 			{
 				if ( _drawHeader() == false )
 				{
+					ImGui::End();
 					return;
 				}
 
 				_drawContent();
-				_drawFooter();
+				ImGui::End();
 			}
 		} // namespace Window
-	} // namespace UI
+	}	  // namespace UI
 } // namespace VTX
