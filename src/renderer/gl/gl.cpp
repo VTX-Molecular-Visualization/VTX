@@ -1,7 +1,6 @@
 #include "gl.hpp"
 #include "generic/factory.hpp"
 #include "model/molecule.hpp"
-#include "setting.hpp"
 #include "view/base_view_3d_molecule.hpp"
 #include "vtx_app.hpp"
 #include <random>

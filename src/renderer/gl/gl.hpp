@@ -11,6 +11,7 @@
 #include "pass/geometric.hpp"
 #include "pass/shading.hpp"
 #include "pass/ssao.hpp"
+#include "setting.hpp"
 
 namespace VTX
 {
@@ -37,7 +38,10 @@ namespace VTX
 			inline const GLuint & getQuadVAO() const { return _quadVAO; }
 			inline const GLuint & getQuadVBO() const { return _quadVBO; }
 
-			inline const GLuint & getRenderedTexture() const { return _passShading->getShadingTexture(); }
+			inline const GLuint & getRenderedTexture() const
+			{
+				return Setting::Rendering::useAA ? _passFXAA->getAATexture() : _passShading->getShadingTexture();
+			}
 
 		  private:
 			Pass::Geometric * _passGeometric = new Pass::Geometric();

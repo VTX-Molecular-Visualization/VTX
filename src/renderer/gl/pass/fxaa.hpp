@@ -20,7 +20,11 @@ namespace VTX
 				virtual void clean() override;
 				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
 
+				inline const GLuint & getAATexture() const { return _texture; }
+
 			  private:
+				GLuint			_fboAA = GL_INVALID_VALUE;
+				GLuint			_texture = GL_INVALID_VALUE;
 				GLSL::Program * _aaShader = nullptr;
 			};
 		} // namespace Pass
