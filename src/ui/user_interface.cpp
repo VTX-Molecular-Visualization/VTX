@@ -1,13 +1,13 @@
 #include "user_interface.hpp"
-#include "camera_editor.hpp"
-#include "console.hpp"
+#include "window/camera_editor.hpp"
+#include "window/console.hpp"
 #include "define.hpp"
 #include "exception.hpp"
-#include "inspector.hpp"
+#include "window/inspector.hpp"
 #include "menu.hpp"
 #include "modal/progress_bar.hpp"
-#include "render.hpp"
-#include "scene.hpp"
+#include "window/render.hpp"
+#include "window/scene.hpp"
 #include "setting.hpp"
 #include "style.hpp"
 #include "util/filesystem.hpp"
@@ -73,11 +73,11 @@ namespace VTX
 		{
 			// Windows.
 			addItem( Generic::create<Menu>() );
-			addItem( Generic::create<Render>() );
-			addItem( Generic::create<Console>() );
-			addItem( Generic::create<Scene>() );
-			addItem( Generic::create<Inspector>() );
-			addItem( Generic::create<CameraEditor>() );
+			addItem( Generic::create<Window::Render>() );
+			addItem( Generic::create<Window::Console>() );
+			addItem( Generic::create<Window::Scene>() );
+			addItem( Generic::create<Window::Inspector>() );
+			addItem( Generic::create<Window::CameraEditor>() );
 
 			// Modals.
 			addItem( Generic::create<Modal::ProgressBar>() );
