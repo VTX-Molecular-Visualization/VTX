@@ -27,10 +27,12 @@ namespace VTX
 
 				_blurShader = p_programManager.createProgram( "Blur", { "shading/blur.frag" } );
 
-				_uBlurSizeLoc = glGetUniformLocation( _blurShader->getId(), "uBlurSize" );
+				_uBlurSizeLoc	   = glGetUniformLocation( _blurShader->getId(), "uBlurSize" );
+				_uBlurSharpnessLoc = glGetUniformLocation( _blurShader->getId(), "uBlurSharpness" );
 
 				_blurShader->use();
 				glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
+				glUniform1i( _uBlurSharpnessLoc, Setting::Rendering::aoBlurSharpness );
 			}
 
 			void Blur::clean()
@@ -49,8 +51,9 @@ namespace VTX
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getDepthTexture() );
 
 				_blurShader->use();
-				// TODO don't update aoBlurSize each frame
+				// TODO don't update aoBlurSize/aoBlurSharpness each frame
 				glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
+				glUniform1i( _uBlurSharpnessLoc, Setting::Rendering::aoBlurSharpness );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );
 				glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );

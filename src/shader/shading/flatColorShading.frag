@@ -3,7 +3,7 @@
 layout( binding = 0 ) uniform usampler2D gbColorNormal;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
-// layout(location = 0) out vec4 image;
+uniform float uAoFactor;
 
 out vec4 fragColor;
 
@@ -29,6 +29,7 @@ void main()
 	FragmentData fd;
 	unpackGBuffers( ivec2( gl_FragCoord ), fd );
 
-	// this is not correct but results in a nice shading
-	fragColor = vec4( fd.color * vec3( fd.ambientOcclusion ), 1.f );
+	const float colorFactor = 1.f - uAoFactor;
+
+	fragColor = vec4( fd.color * ( colorFactor + uAoFactor * fd.ambientOcclusion ), 1.f );
 }

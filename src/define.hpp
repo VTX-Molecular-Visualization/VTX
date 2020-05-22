@@ -47,8 +47,8 @@ namespace VTX
 	const bool		  VSYNC_DEFAULT		   = true;
 
 	const bool SSAO_DEFAULT = true;
-	const bool AA_DEFAULT	= true;
-	const bool RANDOM		= false;
+	const bool AA_DEFAULT	= false;
+	const bool RANDOM		= true;
 
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 
@@ -57,11 +57,11 @@ namespace VTX
 	// constexpr int WINDOW_WIDTH	= 640;
 	// constexpr int WINDOW_HEIGHT = 320;
 	// 720p.
-	// constexpr int WINDOW_WIDTH	= 1280;
-	// constexpr int WINDOW_HEIGHT = 720;
+	constexpr int WINDOW_WIDTH	= 1280;
+	constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
-	constexpr int WINDOW_WIDTH	= 1920;
-	constexpr int WINDOW_HEIGHT = 1080;
+	/*constexpr int WINDOW_WIDTH	= 1920;
+	constexpr int WINDOW_HEIGHT = 1080;*/
 	// 4k
 	// constexpr int WINDOW_WIDTH	= 3840;
 	// constexpr int WINDOW_HEIGHT = 2160;
@@ -90,15 +90,19 @@ namespace VTX
 
 	// Rendering.
 	// TODO: choose relevant constants
-	constexpr float RENDERER_AO_RADIUS_MIN		  = 0.f;
-	constexpr float RENDERER_AO_RADIUS_MAX		  = 200.f;
-	constexpr float RENDERER_AO_RADIUS_DEFAULT	  = 32.f;
-	constexpr int	RENDERER_AO_INTENSITY_MIN	  = 1;
-	constexpr int	RENDERER_AO_INTENSITY_MAX	  = 10;
-	constexpr int	RENDERER_AO_INTENSITY_DEFAULT = 2;
-	constexpr int	RENDERER_AO_BLUR_SIZE_MIN	  = 1;
-	constexpr int	RENDERER_AO_BLUR_SIZE_MAX	  = 99;
-	constexpr int	RENDERER_AO_BLUR_SIZE_DEFAULT = 9;
+	constexpr float RENDERER_AO_RADIUS_MIN			   = 0.f;
+	constexpr float RENDERER_AO_RADIUS_MAX			   = 200.f;
+	constexpr float RENDERER_AO_RADIUS_DEFAULT		   = 32.f;
+	constexpr int	RENDERER_AO_INTENSITY_MIN		   = 1;
+	constexpr int	RENDERER_AO_INTENSITY_MAX		   = 10;
+	constexpr int	RENDERER_AO_INTENSITY_DEFAULT	   = 5;
+	constexpr float RENDERER_AO_FACTOR_DEFAULT		   = 0.5f;
+	constexpr int	RENDERER_AO_BLUR_SIZE_MIN		   = 1;
+	constexpr int	RENDERER_AO_BLUR_SIZE_MAX		   = 99;
+	constexpr int	RENDERER_AO_BLUR_SIZE_DEFAULT	   = 9;
+	constexpr int	RENDERER_AO_BLUR_SHARPNESS_MIN	   = 1;
+	constexpr int	RENDERER_AO_BLUR_SHARPNESS_MAX	   = 32;
+	constexpr int	RENDERER_AO_BLUR_SHARPNESS_DEFAULT = 8;
 
 	// Path.
 	constexpr float PATH_DEFAULT_DURATION = 5.f;

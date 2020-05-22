@@ -41,11 +41,13 @@ namespace VTX
 			extern Renderer::MODE				 mode;
 			extern Renderer::SHADING			 shading;
 			extern bool							 useVSync;
-			extern bool							 useAA;
 			extern bool							 useSSAO;
 			extern float						 aoRadius;
 			extern int							 aoIntensity;
+			extern float						 aoFactor;
 			extern int							 aoBlurSize;
+			extern int							 aoBlurSharpness;
+			extern bool							 useAA;
 		}; // namespace Rendering
 
 		namespace Controller

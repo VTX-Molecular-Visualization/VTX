@@ -5,7 +5,7 @@ uniform float uCylRad;
 
 smooth in vec3 impPos;
 flat in vec3   cylCenter;
-flat in vec3   cylVert[2];
+flat in vec3   cylVert[ 2 ];
 flat in vec3   colors[ 2 ];
 
 // 3 16 bits for color
@@ -19,8 +19,8 @@ layout( location = 1 ) out vec4 outCamPosition;
 // only consider cylinder body
 void main()
 {
-	const vec3 v1v0	  = cylVert[1] - cylVert[0];
-	const vec3 v0	  = -cylVert[0];
+	const vec3 v1v0	  = cylVert[ 1 ] - cylVert[ 0 ];
+	const vec3 v0	  = -cylVert[ 0 ];
 	const vec3 rayDir = normalize( impPos );
 
 	const float d0 = dot( v1v0, v1v0 );
@@ -33,7 +33,10 @@ void main()
 
 	const float h = b * b - a * c;
 
-	if ( h < 0.f ) { discard; }
+	if ( h < 0.f )
+	{
+		discard;
+	}
 	else
 	{
 		// consider only the first intersection
@@ -41,7 +44,10 @@ void main()
 
 		const float y = d2 + t * d1;
 
-		if ( y < 0.f || y > d0 ) { discard; }
+		if ( y < 0.f || y > d0 )
+		{
+			discard;
+		}
 		else
 		{
 			const vec3 camHit = rayDir * t;
@@ -63,7 +69,7 @@ void main()
 			colorNormal.w = 0; // padding
 
 			camPosition.xyz = camHit;
-			camPosition.w	= 60.f; // specular // TODO materials...
+			camPosition.w	= 64.f; // specular shininess
 
 			outColorNormal = colorNormal;
 			outCamPosition = camPosition;

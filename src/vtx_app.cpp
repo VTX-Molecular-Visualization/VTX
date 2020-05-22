@@ -134,7 +134,7 @@ namespace VTX
 
 	void VTXApp::_update()
 	{
-		float deltaTime = ImGui::GetIO().DeltaTime;
+		const float deltaTime = ImGui::GetIO().DeltaTime;
 
 		// State machine.
 		_stateMachine->update( deltaTime );

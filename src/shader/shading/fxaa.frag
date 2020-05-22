@@ -16,11 +16,6 @@ void main()
 {
 	const vec2 invTexSize = 1.f / textureSize( image, 0 );
 	const vec2 texPos	  = gl_FragCoord.xy * invTexSize;
-	fragColor			  = vec4(texture( image, texPos ).xyz, 1.0);
-	return;
-
-	//	fragColor = texture(image, texPos);
-	//	return;
 
 	// get current pixel in rgb and compute luma
 	const vec3	rgbC = texture( image, texPos ).xyz;

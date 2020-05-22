@@ -14,17 +14,19 @@ namespace VTX
 
 		namespace Rendering
 		{
-			extern bool					  isActive		 = true;
-			View::MOLECULE_REPRESENTATION representation = View::MOLECULE_REPRESENTATION::BALL_AND_STICK;
-			View::MOLECULE_COLOR_MODE	  colorMode		 = View::MOLECULE_COLOR_MODE::CHAIN;
-			Renderer::MODE				  mode			 = Renderer::MODE::GL;
-			Renderer::SHADING			  shading		 = Renderer::SHADING::LAMBERT;
-			bool						  useVSync		 = VSYNC_DEFAULT;
-			bool						  useAA			 = SSAO_DEFAULT;
-			bool						  useSSAO		 = AA_DEFAULT;
-			float						  aoRadius		 = RENDERER_AO_RADIUS_DEFAULT;
-			int							  aoIntensity	 = RENDERER_AO_INTENSITY_DEFAULT;
-			int							  aoBlurSize	 = RENDERER_AO_BLUR_SIZE_DEFAULT;
+			extern bool					  isActive		  = true;
+			View::MOLECULE_REPRESENTATION representation  = View::MOLECULE_REPRESENTATION::VAN_DER_WAALS;
+			View::MOLECULE_COLOR_MODE	  colorMode		  = View::MOLECULE_COLOR_MODE::CHAIN;
+			Renderer::MODE				  mode			  = Renderer::MODE::GL;
+			Renderer::SHADING			  shading		  = Renderer::SHADING::BLINN_PHONG;
+			bool						  useVSync		  = VSYNC_DEFAULT;
+			bool						  useSSAO		  = SSAO_DEFAULT;
+			float						  aoRadius		  = RENDERER_AO_RADIUS_DEFAULT;
+			int							  aoIntensity	  = RENDERER_AO_INTENSITY_DEFAULT;
+			float						  aoFactor		  = RENDERER_AO_FACTOR_DEFAULT;
+			int							  aoBlurSize	  = RENDERER_AO_BLUR_SIZE_DEFAULT;
+			int							  aoBlurSharpness = RENDERER_AO_BLUR_SHARPNESS_DEFAULT;
+			bool						  useAA			  = AA_DEFAULT;
 		}; // namespace Rendering
 
 		namespace Controller

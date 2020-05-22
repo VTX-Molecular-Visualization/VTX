@@ -6,6 +6,13 @@ layout( binding = 1 ) uniform sampler2D depthTexture;
 layout( location = 0 ) out float ambientOcclusionBlurred;
 
 uniform int uBlurSize;
+uniform int uBlurSharpness;
+
+// TODO: pass clip infos in uniform (zNear, zFar, zDiff = zFar - zNear)
+float linearizeDepth( const float zNear, const float zFar, const float depth )
+{
+	return ( zNear * zFar ) / ( zFar - depth * ( zFar - zNear ) );
+}
 
 void main()
 {
@@ -13,7 +20,7 @@ void main()
 	const vec2 texCoord	 = gl_FragCoord.xy * texelSize;
 
 	const float aoCenter	= texture( ambientOcclusionTexture, texCoord ).x;
-	const float depthCenter = texture( depthTexture, texCoord ).x;
+	const float depthCenter = linearizeDepth( 1e-1f, 1e4f, texture( depthTexture, texCoord ).x );
 	const float blurSigma	= uBlurSize * 0.5f;
 	const float blurFalloff = 1.f / ( 2.f * blurSigma * blurSigma );
 
@@ -28,10 +35,11 @@ void main()
 		{
 			const vec2	uv	  = fma( ( lim + vec2( i, j ) ), texelSize, texCoord );
 			const float ao	  = texture( ambientOcclusionTexture, uv ).x;
-			const float depth = texture( depthTexture, uv ).x;
+			const float depth = linearizeDepth( 1e-1f, 1e4f, texture( depthTexture, uv ).x );
 
-			const float depthDiff = ( depth - depthCenter ) * 1e4f;
-			const float w		  = exp2( fma(-( i * j ), blurFalloff, - depthDiff * depthDiff ));
+			const float depthDiff = ( depth - depthCenter ) * uBlurSharpness;
+
+			const float w = exp2( fma( -( i * j ), blurFalloff, -depthDiff * depthDiff ) );
 
 			res += ao * w;
 			weight += w;
