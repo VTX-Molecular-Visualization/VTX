@@ -90,16 +90,19 @@ namespace VTX
 
 	// Rendering.
 	// TODO: choose relevant constants
-	constexpr float RENDERER_AO_RADIUS_MIN		  = 0.f;
-	constexpr float RENDERER_AO_RADIUS_MAX		  = 200.f;
-	constexpr float RENDERER_AO_RADIUS_DEFAULT	  = 32.f;
-	constexpr int	RENDERER_AO_INTENSITY_MIN	  = 1;
-	constexpr int	RENDERER_AO_INTENSITY_MAX	  = 10;
-	constexpr int	RENDERER_AO_INTENSITY_DEFAULT = 5;
-	constexpr int	RENDERER_AO_BLUR_SIZE_MIN	  = 1;
-	constexpr int	RENDERER_AO_BLUR_SIZE_MAX	  = 99;
-	constexpr int	RENDERER_AO_BLUR_SIZE_DEFAULT = 9;
-	constexpr float RENDERER_AO_FACTOR_DEFAULT	  = 0.5f;
+	constexpr float RENDERER_AO_RADIUS_MIN			   = 0.f;
+	constexpr float RENDERER_AO_RADIUS_MAX			   = 200.f;
+	constexpr float RENDERER_AO_RADIUS_DEFAULT		   = 32.f;
+	constexpr int	RENDERER_AO_INTENSITY_MIN		   = 1;
+	constexpr int	RENDERER_AO_INTENSITY_MAX		   = 10;
+	constexpr int	RENDERER_AO_INTENSITY_DEFAULT	   = 5;
+	constexpr float RENDERER_AO_FACTOR_DEFAULT		   = 0.5f;
+	constexpr int	RENDERER_AO_BLUR_SIZE_MIN		   = 1;
+	constexpr int	RENDERER_AO_BLUR_SIZE_MAX		   = 99;
+	constexpr int	RENDERER_AO_BLUR_SIZE_DEFAULT	   = 9;
+	constexpr int	RENDERER_AO_BLUR_SHARPNESS_MIN	   = 1;
+	constexpr int	RENDERER_AO_BLUR_SHARPNESS_MAX	   = 32;
+	constexpr int	RENDERER_AO_BLUR_SHARPNESS_DEFAULT = 8;
 
 	// Path.
 	constexpr float PATH_DEFAULT_DURATION = 5.f;

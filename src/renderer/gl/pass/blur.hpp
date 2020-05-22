@@ -29,10 +29,11 @@ namespace VTX
 				}
 
 			  private:
-				GLSL::Program * _blurShader	  = nullptr;
-				GLuint			_fboBlur	  = GL_INVALID_VALUE;
-				GLuint			_blurTexture  = GL_INVALID_VALUE;
-				GLint			_uBlurSizeLoc = GL_INVALID_INDEX;
+				GLSL::Program * _blurShader		   = nullptr;
+				GLuint			_fboBlur		   = GL_INVALID_VALUE;
+				GLuint			_blurTexture	   = GL_INVALID_VALUE;
+				GLint			_uBlurSizeLoc	   = GL_INVALID_INDEX;
+				GLint			_uBlurSharpnessLoc = GL_INVALID_INDEX;
 			};
 		} // namespace Pass
 

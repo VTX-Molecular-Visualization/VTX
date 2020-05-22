@@ -6,7 +6,7 @@ layout( binding = 1 ) uniform sampler2D depthTexture;
 layout( location = 0 ) out float ambientOcclusionBlurred;
 
 uniform int uBlurSize;
-uniform float blurSharpness = 8.f;
+uniform int uBlurSharpness;
 
 // TODO: pass clip infos in uniform (zNear, zFar, zDiff = zFar - zNear)
 float linearizeDepth( const float zNear, const float zFar, const float depth )
@@ -37,7 +37,7 @@ void main()
 			const float ao	  = texture( ambientOcclusionTexture, uv ).x;
 			const float depth = linearizeDepth( 1e-1f, 1e4f, texture( depthTexture, uv ).x );
 
-			const float depthDiff = ( depth - depthCenter ) * blurSharpness;
+			const float depthDiff = ( depth - depthCenter ) * uBlurSharpness;
 
 			const float w		  = exp2( fma( -( i * j ), blurFalloff, -depthDiff * depthDiff ) );
 
