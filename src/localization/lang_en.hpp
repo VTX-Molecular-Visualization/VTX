@@ -51,6 +51,7 @@ namespace VTX
 			{ "MainMenu.Settings.AORadius", "AO radius" },
 			{ "MainMenu.Settings.AOIntensity", "AO intensity" },
 			{ "MainMenu.Settings.AOBlurSize", "AO blur size" },
+			{ "MainMenu.Settings.AOFactor", "AO factor" },
 			{ "MainMenu.Settings.AutoRotateXSpeed", "X auto rotation speed" },
 			{ "MainMenu.Settings.AutoRotateYSpeed", "Y auto rotation speed" },
 			{ "MainMenu.Settings.AutoRotateZSpeed", "Z auto rotation speed" },

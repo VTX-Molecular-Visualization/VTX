@@ -54,6 +54,8 @@ namespace VTX
 
 				_currentShading->use();
 
+				glUniform1f( _uAoFactorLoc, Setting::Rendering::useSSAO ? Setting::Rendering::aoFactor : 0.f );
+
 				glBindVertexArray( p_renderer.getQuadVAO() );
 				glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 				glBindVertexArray( 0 );
@@ -69,6 +71,7 @@ namespace VTX
 				case SHADING::LAMBERT:
 				default: _currentShading = _diffuseShading;
 				}
+				_uAoFactorLoc = glGetUniformLocation( _currentShading->getId(), "uAoFactor" );
 			}
 
 		} // namespace Pass

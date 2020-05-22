@@ -54,7 +54,7 @@ void main()
 		colorNormal.w = 0; // padding
 
 		camPosition.xyz = camHit;
-		camPosition.w	= 60.f; // specular
+		camPosition.w	= 64.f; // specular shininess
 
 		outColorNormal = colorNormal;
 		outCamPosition = camPosition;

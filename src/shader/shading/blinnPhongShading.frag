@@ -4,6 +4,9 @@ layout( binding = 0 ) uniform usampler2D gbColorNormal;
 layout( binding = 1 ) uniform sampler2D gbCamPosition;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
+uniform float uAoFactor;
+uniform float uSpecularFactor = 0.6f;
+
 out vec4 fragColor;
 
 struct FragmentData
@@ -11,7 +14,7 @@ struct FragmentData
 	vec3  color;
 	vec3  normal;
 	vec3  camPosition;
-	float specular;
+	float shininess;
 	float ambientOcclusion;
 };
 
@@ -26,7 +29,7 @@ void unpackGBuffers( ivec2 px, out FragmentData fd )
 	fd.color			= vec3( unpackHalf2x16( colorNormal.x ), tmp.x );
 	fd.normal			= normalize( vec3( tmp.y, unpackHalf2x16( colorNormal.z ) ) );
 	fd.camPosition		= camPosition.xyz;
-	fd.specular			= camPosition.w;
+	fd.shininess		= camPosition.w;
 	fd.ambientOcclusion = ambientOcclusion;
 }
 
@@ -35,16 +38,18 @@ void main()
 	FragmentData fd;
 	unpackGBuffers( ivec2( gl_FragCoord ), fd );
 
-	const vec3	lightDir = normalize( -fd.camPosition );
-	const float diffuse	 = dot( fd.normal, lightDir );
+	const vec3	lightDir	= normalize( -fd.camPosition );
+	const float lightFactor = 1.f - uAoFactor;
+
+	const float diffuse = 1.f - uSpecularFactor;
+
 	const vec3	h		 = normalize( lightDir - fd.camPosition );
-	const float spec	 = pow( max( dot( fd.normal, h ), 0.f ), fd.specular );
+	const float specular = uSpecularFactor * pow( max( dot( h, fd.normal ), 0.f ), fd.shininess );
 
-	// TODO compute well ^^
-	const vec3 colorDiff = ( fd.color ) * diffuse;
-	const vec3 colorSpec = ( vec3( 1.f ) - fd.color ) * spec;
+	const float ao = uAoFactor * fd.ambientOcclusion;
 
-	const vec3 color = (colorDiff + colorSpec) * fd.ambientOcclusion;
+	const float cosTheta = max( dot( fd.normal, lightDir ), 0.f );
+	const float lighting = lightFactor * ( diffuse + specular ) * cosTheta;
 
-	fragColor = vec4( color, 1.f );
+	fragColor = vec4( fd.color * ( lighting + ao ), 1.f );
 }

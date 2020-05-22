@@ -5,6 +5,7 @@
 #include "action/active_vertical_sync.hpp"
 #include "action/active_y_axis_inversion.hpp"
 #include "action/change_ao_blur_size.hpp"
+#include "action/change_ao_factor.hpp"
 #include "action/change_ao_intensity.hpp"
 #include "action/change_ao_radius.hpp"
 #include "action/change_auto_rotate_speed.hpp"
@@ -273,6 +274,13 @@ namespace VTX
 										   RENDERER_AO_BLUR_SIZE_MAX ) )
 					{
 						VTX_ACTION( new Action::ChangeAOBlurSize( aoBlurSize ) );
+					}
+					ImGui::Separator();
+
+					float aoFactor = Setting::Rendering::aoFactor;
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AOFactor" ), &aoFactor, 0.f, 1.f ) )
+					{
+						VTX_ACTION( new Action::ChangeAOFactor( aoFactor ) );
 					}
 					ImGui::Separator();
 

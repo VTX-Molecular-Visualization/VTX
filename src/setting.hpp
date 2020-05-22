@@ -46,6 +46,7 @@ namespace VTX
 			extern float						 aoRadius;
 			extern int							 aoIntensity;
 			extern int							 aoBlurSize;
+			extern float						 aoFactor;
 		}; // namespace Rendering
 
 		namespace Controller
