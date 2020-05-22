@@ -5,21 +5,17 @@
 #pragma once
 
 #endif
-#include "base_component.hpp"
+#include "base_component_window.hpp"
 
 namespace VTX
 {
 	namespace UI
 	{
-		class CameraEditor : public BaseComponent
+		class CameraEditor : public BaseComponentWindow
 		{
 		  public:
 			virtual const std::string & getName() const override { return ID::UI::CAMERA_EDITOR; }
-
-		  protected:
-			virtual void _draw() override;
-
-		  private:
+			virtual const char *		getTitle() const override { return LOCALE( "CameraEditor.CameraEditor" ); }
 		};
 	} // namespace UI
 } // namespace VTX

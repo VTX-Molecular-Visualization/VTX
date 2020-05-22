@@ -3,23 +3,19 @@
 
 #ifdef _MSC_VER
 #pragma once
-
 #endif
-#include "base_component.hpp"
+
+#include "base_component_window.hpp"
 
 namespace VTX
 {
 	namespace UI
 	{
-		class Scene : public BaseComponent
+		class Scene : public BaseComponentWindow
 		{
 		  public:
 			virtual const std::string & getName() const override { return ID::UI::SCENE; }
-
-		  protected:
-			virtual void _draw() override;
-
-		  private:
+			virtual const char *		getTitle() const override { return LOCALE( "Scene.Scene" ); }
 		};
 	} // namespace UI
 } // namespace VTX

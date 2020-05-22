@@ -19,17 +19,8 @@ namespace VTX
 			}
 		}
 
-		void Console::_draw()
+		void Console::_drawContent()
 		{
-			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
-			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
-			ImGui::SetNextWindowBgAlpha( IMGUI_STYLE_BG_ALPHA );
-
-			if ( ImGui::Begin( LOCALE( "Console.Console" ), isVisiblePtr(), flags ) == false )
-			{
-				ImGui::End();
-				return;
-			}
 			for ( const Event::VTXEventLog & log : _logs )
 			{
 				bool popColor = false;
@@ -49,7 +40,10 @@ namespace VTX
 					popColor = true;
 				}
 				ImGui::Selectable( ( "[" + log.date + "] " + "[" + log.level + "] " + log.message ).c_str() );
-				if ( popColor ) { ImGui::PopStyleColor(); }
+				if ( popColor )
+				{
+					ImGui::PopStyleColor();
+				}
 			}
 
 			// Scripting.
@@ -59,16 +53,22 @@ namespace VTX
 								   IM_ARRAYSIZE( action ),
 								   ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll
 									   | ImGuiInputTextFlags_NoUndoRedo ) )
-			{ VTX_ACTION( std::string( action ) ); }
+			{
+				VTX_ACTION( std::string( action ) );
+			}
 
-			if ( ImGui::GetScrollY() >= ImGui::GetScrollMaxY() ) { ImGui::SetScrollHereY( 1.0f ); }
-
-			ImGui::End();
+			if ( ImGui::GetScrollY() >= ImGui::GetScrollMaxY() )
+			{
+				ImGui::SetScrollHereY( 1.0f );
+			}
 		}
 		void Console::_addLog( const Event::VTXEventLog & p_log )
 		{
 			_logs.emplace_back( p_log );
-			if ( _logs.size() > VTX_CONSOLE_SIZE ) { _logs.pop_front(); }
+			if ( _logs.size() > VTX_CONSOLE_SIZE )
+			{
+				_logs.pop_front();
+			}
 		}
 
 		void Console::_clear() { _logs.clear(); }

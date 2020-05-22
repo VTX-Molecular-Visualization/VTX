@@ -8,18 +8,8 @@ namespace VTX
 {
 	namespace UI
 	{
-		void Render::_draw()
+		void Render::_drawContent()
 		{
-			ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
-			ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
-			ImGui::SetNextWindowBgAlpha( IMGUI_STYLE_BG_ALPHA );
-
-			if ( ImGui::Begin( LOCALE( "Render.Render" ), isVisiblePtr(), flags ) == false )
-			{
-				ImGui::End();
-				return;
-			}
-
 			ImVec2 position = ImGui::GetWindowPos();			  // Window position.
 			ImVec2 size		= ImGui::GetWindowSize();			  // Window size with bar.
 			ImVec2 min		= ImGui::GetWindowContentRegionMin(); // Content region min (window without bar/border).
@@ -35,6 +25,11 @@ namespace VTX
 				VTX_ACTION( new Action::Resize( _width, _height ) );
 			}
 
+			if ( ImGui::IsWindowFocused() )
+			{
+				VTX_DEBUG( "FOCUSED" );
+			}
+
 #pragma warning( push )
 #pragma warning( disable : 4312 )
 			Renderer::GL * r = (Renderer::GL *)&( VTXApp::get().getRenderer() );
@@ -44,7 +39,6 @@ namespace VTX
 												  ImVec2( 0, 1 ),
 												  ImVec2( 1, 0 ) );
 #pragma warning( pop )
-			ImGui::End();
 		}
 
 	} // namespace UI

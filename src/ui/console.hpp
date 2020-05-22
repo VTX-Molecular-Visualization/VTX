@@ -5,8 +5,7 @@
 #pragma once
 #endif
 
-#include "base_component.hpp"
-#include "localization/language.hpp"
+#include "base_component_window.hpp"
 #include "util/logger.hpp"
 #include <list>
 
@@ -14,14 +13,15 @@ namespace VTX
 {
 	namespace UI
 	{
-		class Console : public BaseComponent
+		class Console : public BaseComponentWindow
 		{
 		  public:
 			virtual const std::string & getName() const override { return ID::UI::CONSOLE; }
+			virtual const char *		getTitle() const override { return LOCALE( "Console.Console" ); }
 			virtual void				receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		  protected:
-			virtual void						  _draw() override;
+			virtual void						  _drawContent() override;
 			virtual std::vector<Event::VTX_EVENT> _getEvents() const override
 			{
 				return std::vector<Event::VTX_EVENT>( { Event::Global::LOG_CONSOLE } );

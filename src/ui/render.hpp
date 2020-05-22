@@ -5,20 +5,20 @@
 #pragma once
 #endif
 
-#include "base_component.hpp"
-#include "localization/language.hpp"
+#include "base_component_window.hpp"
 
 namespace VTX
 {
 	namespace UI
 	{
-		class Render : public BaseComponent
+		class Render : public BaseComponentWindow
 		{
 		  public:
 			virtual const std::string & getName() const override { return ID::UI::RENDER; }
+			virtual const char *		getTitle() const override { return LOCALE( "Render.Render" ); }
 
 		  protected:
-			virtual void _draw() override;
+			virtual void _drawContent() override;
 
 		  private:
 			uint _width	 = 0;

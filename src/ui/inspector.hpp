@@ -5,24 +5,17 @@
 #pragma once
 #endif
 
-#include "base_component.hpp"
-#include "localization/language.hpp"
-#include "model/molecule.hpp"
-#include "view/base_view.hpp"
+#include "base_component_window.hpp"
 
 namespace VTX
 {
 	namespace UI
 	{
-		class Inspector : public BaseComponent
+		class Inspector : public BaseComponentWindow
 		{
 		  public:
 			virtual const std::string & getName() const override { return ID::UI::INSPECTOR; }
-
-		  protected:
-			virtual void _draw() override;
-
-		  private:
+			virtual const char *		getTitle() const override { return LOCALE( "Inspector.Inspector" ); }
 		};
 	} // namespace UI
 } // namespace VTX
