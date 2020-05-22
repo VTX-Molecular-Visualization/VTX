@@ -15,19 +15,7 @@ namespace VTX
 				return ImGui::Begin( getTitle(), isVisiblePtr(), flags );
 			}
 
-			void BaseComponentWindow::_drawContent() { _drawComponents(); }
-
-			void BaseComponentWindow::_draw()
-			{
-				if ( _drawHeader() == false )
-				{
-					ImGui::End();
-					return;
-				}
-
-				_drawContent();
-				ImGui::End();
-			}
+			void BaseComponentWindow::_drawFooter() { ImGui::End(); }
 		} // namespace Window
 	}	  // namespace UI
 } // namespace VTX

@@ -19,9 +19,26 @@ namespace VTX
 			Generic::HasCollection<Generic::BaseDrawable>::clean();
 		}
 
+		void BaseComponent::_draw()
+		{
+			if ( _drawHeader() == false )
+			{
+				_drawFooter();
+				return;
+			}
+
+			_drawContent();
+			_drawFooter();
+		}
+
+		void BaseComponent::_drawContent() { _drawComponents(); }
+
 		void BaseComponent::_drawComponent( const std::string & p_name )
 		{
-			if ( _hasItem( p_name ) ) { _getItem( p_name )->draw(); }
+			if ( _hasItem( p_name ) )
+			{
+				_getItem( p_name )->draw();
+			}
 		}
 
 		void BaseComponent::_drawComponents()
@@ -35,7 +52,9 @@ namespace VTX
 		BaseComponent * const BaseComponent::getComponentByName( const std::string & p_name )
 		{
 			if ( _getItems().find( p_name ) != _getItems().end() )
-			{ return static_cast<BaseComponent *>( _getItem( p_name ) ); }
+			{
+				return static_cast<BaseComponent *>( _getItem( p_name ) );
+			}
 
 			for ( const PairStringToItemPtr & pair : _getItems() )
 			{
@@ -43,7 +62,10 @@ namespace VTX
 				if ( child != nullptr )
 				{
 					child = child->getComponentByName( p_name );
-					if ( child != nullptr ) { return child; }
+					if ( child != nullptr )
+					{
+						return child;
+					}
 				}
 			}
 

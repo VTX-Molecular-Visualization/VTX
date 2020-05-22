@@ -35,6 +35,10 @@ namespace VTX
 			BaseComponent * const getComponentByName( const std::string & );
 
 		  protected:
+			virtual bool _drawHeader() = 0;
+			virtual void _drawContent();
+			virtual void _drawFooter() = 0;
+			virtual void _draw() override;
 			virtual void _drawComponent( const std::string & );
 			virtual void _drawComponents() final;
 

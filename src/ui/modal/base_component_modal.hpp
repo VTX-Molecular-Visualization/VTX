@@ -1,5 +1,5 @@
-#ifndef __VTX_BASE_COMPONENT_WINDOW__
-#define __VTX_BASE_COMPONENT_WINDOW__
+#ifndef __VTX_BASE_COMPONENT_MODAL__
+#define __VTX_BASE_COMPONENT_MODAL__
 
 #ifdef _MSC_VER
 #pragma once
@@ -13,9 +13,9 @@ namespace VTX
 {
 	namespace UI
 	{
-		namespace Window
+		namespace Modal
 		{
-			class BaseComponentWindow : public BaseComponent
+			class BaseComponentModal : public BaseComponent
 			{
 			  public:
 				virtual const char * getTitle() const = 0;
@@ -24,7 +24,7 @@ namespace VTX
 				virtual bool _drawHeader() override;
 				virtual void _drawFooter() override;
 			};
-		} // namespace Window
+		} // namespace Modal
 	}	  // namespace UI
 } // namespace VTX
 #endif

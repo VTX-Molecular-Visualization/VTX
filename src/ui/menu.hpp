@@ -18,7 +18,9 @@ namespace VTX
 			virtual const std::string & getName() const override { return ID::UI::MENU; }
 
 		  protected:
-			virtual void _draw() override;
+			virtual bool _drawHeader() override;
+			virtual void _drawContent() override;
+			virtual void _drawFooter() override;
 
 		  private:
 			bool _showDialogImport = false;

@@ -37,6 +37,10 @@ namespace VTX
 
 		  protected:
 			virtual void _addItems() override;
+
+			virtual bool _drawHeader() override;
+			virtual void _drawContent() override;
+			virtual void _drawFooter() override;
 			virtual void _draw() override;
 
 		  private:

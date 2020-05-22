@@ -1,19 +1,19 @@
 #include "user_interface.hpp"
-#include "window/camera_editor.hpp"
-#include "window/console.hpp"
 #include "define.hpp"
 #include "exception.hpp"
-#include "window/inspector.hpp"
 #include "menu.hpp"
 #include "modal/progress_bar.hpp"
-#include "window/render.hpp"
-#include "window/scene.hpp"
 #include "setting.hpp"
 #include "style.hpp"
 #include "util/filesystem.hpp"
 #include "util/logger.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
+#include "window/camera_editor.hpp"
+#include "window/console.hpp"
+#include "window/inspector.hpp"
+#include "window/render.hpp"
+#include "window/scene.hpp"
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_sdl.h>
 #include <iostream>
@@ -231,7 +231,7 @@ namespace VTX
 			}
 		}
 
-		void UserInterface::_draw()
+		bool UserInterface::_drawHeader()
 		{
 			ImGuiIO & io = ImGui::GetIO();
 
@@ -252,16 +252,23 @@ namespace VTX
 										   | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 			// Main begin.
-			ImGui::Begin( IMGUI_ID_MAIN_WINDOW, isVisiblePtr(), windowFlags );
+			return ImGui::Begin( IMGUI_ID_MAIN_WINDOW, isVisiblePtr(), windowFlags );
+		}
+
+		void UserInterface::_drawFooter() { ImGui::End(); }
+
+		void UserInterface::_drawContent()
+		{
+			ImGuiIO & io = ImGui::GetIO();
+
+			// Viewport.
+			SDL_GL_MakeCurrent( _window, _glContext );
+			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 			// Docking.
 			ImGuiID			   dockSpaceId	  = ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE );
 			ImGuiDockNodeFlags dockSpaceFlags = ImGuiDockNodeFlags_PassthruCentralNode | ImGuiWindowFlags_NoBackground;
 			ImGui::DockSpace( dockSpaceId, ImVec2( 0.0f, 0.0f ), dockSpaceFlags );
-
-			// Viewport.
-			SDL_GL_MakeCurrent( _window, _glContext );
-			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 			// Draw all components.
 			_drawComponents();
@@ -271,13 +278,22 @@ namespace VTX
 			{
 				ImGui::ShowDemoWindow( NULL );
 			}
+		}
 
-			// Main end.
-			ImGui::End();
+		void UserInterface::_draw()
+		{
+			if ( _drawHeader() == false )
+			{
+				_drawFooter();
+				return;
+			}
+
+			_drawContent();
+			_drawFooter();
 
 			// Render.
 			ImGui::Render();
-
+			ImGuiIO & io = ImGui::GetIO();
 			if ( io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable )
 			{
 				ImGui::UpdatePlatformWindows();
