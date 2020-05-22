@@ -133,19 +133,19 @@ namespace VTX
 
 	void VTXApp::_update()
 	{
-		float deltaTIme = ImGui::GetIO().DeltaTime;
+		const float deltaTime = ImGui::GetIO().DeltaTime;
 
 		// State machine.
-		_stateMachine->update( deltaTIme );
+		_stateMachine->update( deltaTime );
 
 		// Event manager.
-		_eventManager->update( deltaTIme );
+		_eventManager->update( deltaTime );
 
 		// Action manager.
-		_actionManager->update( deltaTIme );
+		_actionManager->update( deltaTime );
 
 		// Worker manager.
-		_workerManager->update( deltaTIme );
+		_workerManager->update( deltaTime );
 
 		// UI.
 		_ui->draw();
