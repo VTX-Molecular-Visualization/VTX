@@ -33,6 +33,7 @@ namespace VTX
 			_passSSAO->init( _programManager, p_width, p_height );
 			_passBlur->init( _programManager, p_width, p_height );
 			_passShading->init( _programManager, p_width, p_height );
+			_passFXAA->init( _programManager, p_width, p_height );
 
 			// Init VAO.
 			_initQuadVAO();
@@ -48,6 +49,7 @@ namespace VTX
 				_passSSAO->clean();
 				_passBlur->clean();
 				_passShading->clean();
+				_passFXAA->clean();
 
 				BaseRenderer::resize( p_width, p_height );
 
@@ -55,6 +57,7 @@ namespace VTX
 				_passSSAO->init( _programManager, _width, _height );
 				_passBlur->init( _programManager, _width, _height );
 				_passShading->init( _programManager, _width, _height );
+				_passFXAA->init( _programManager, p_width, p_height );
 			}
 		}
 
@@ -98,6 +101,11 @@ namespace VTX
 			}
 
 			_passShading->render( p_scene, *this );
+
+			if ( Setting::Rendering::useAA )
+			{
+				_passFXAA->render( p_scene, *this );
+			}
 		};
 
 		void GL::setShading() { _passShading->set(); }

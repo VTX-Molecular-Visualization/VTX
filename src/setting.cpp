@@ -20,13 +20,13 @@ namespace VTX
 			Renderer::MODE				  mode			  = Renderer::MODE::GL;
 			Renderer::SHADING			  shading		  = Renderer::SHADING::BLINN_PHONG;
 			bool						  useVSync		  = VSYNC_DEFAULT;
-			bool						  useAA			  = SSAO_DEFAULT;
-			bool						  useSSAO		  = AA_DEFAULT;
+			bool						  useSSAO		  = SSAO_DEFAULT;
 			float						  aoRadius		  = RENDERER_AO_RADIUS_DEFAULT;
 			int							  aoIntensity	  = RENDERER_AO_INTENSITY_DEFAULT;
 			float						  aoFactor		  = RENDERER_AO_FACTOR_DEFAULT;
 			int							  aoBlurSize	  = RENDERER_AO_BLUR_SIZE_DEFAULT;
 			int							  aoBlurSharpness = RENDERER_AO_BLUR_SHARPNESS_DEFAULT;
+			bool						  useAA			  = AA_DEFAULT;
 		}; // namespace Rendering
 
 		namespace Controller

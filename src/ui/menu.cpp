@@ -1,4 +1,5 @@
 #include "menu.hpp"
+#include "action/active_aa.hpp"
 #include "action/active_renderer.hpp"
 #include "action/active_ssao.hpp"
 #include "action/active_ui_component.hpp"
@@ -266,14 +267,12 @@ namespace VTX
 					{
 						VTX_ACTION( new Action::ChangeAOIntensity( aoIntensity ) );
 					}
-					ImGui::Separator();
 
 					float aoFactor = Setting::Rendering::aoFactor;
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AOFactor" ), &aoFactor, 0.f, 1.f ) )
 					{
 						VTX_ACTION( new Action::ChangeAOFactor( aoFactor ) );
 					}
-					ImGui::Separator();
 
 					int aoBlurSize = Setting::Rendering::aoBlurSize;
 					if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOBlurSize" ),
@@ -283,8 +282,6 @@ namespace VTX
 					{
 						VTX_ACTION( new Action::ChangeAOBlurSize( aoBlurSize ) );
 					}
-					ImGui::Separator();
-
 					int aoBlurSharpness = Setting::Rendering::aoBlurSharpness;
 					if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOBlurSharpness" ),
 										   &aoBlurSharpness,
@@ -293,6 +290,14 @@ namespace VTX
 					{
 						VTX_ACTION( new Action::ChangeAOBlurSharpness( aoBlurSharpness ) );
 					}
+					ImGui::Separator();
+
+					// AA.
+					bool useAA = Setting::Rendering::useAA;
+					if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.AA" ), &useAA ) )
+					{
+						VTX_ACTION( new Action::ActiveAA( useAA ) );
+					};
 					ImGui::Separator();
 
 					// Auto rotate.
