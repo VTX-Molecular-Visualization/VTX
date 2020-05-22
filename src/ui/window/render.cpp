@@ -27,11 +27,6 @@ namespace VTX
 					VTX_ACTION( new Action::Resize( _width, _height ) );
 				}
 
-				if ( ImGui::IsWindowFocused() )
-				{
-					VTX_DEBUG( "FOCUSED" );
-				}
-
 #pragma warning( push )
 #pragma warning( disable : 4312 )
 				Renderer::GL * r = (Renderer::GL *)&( VTXApp::get().getRenderer() );
@@ -43,5 +38,5 @@ namespace VTX
 #pragma warning( pop )
 			}
 		} // namespace Window
-	} // namespace UI
+	}	  // namespace UI
 } // namespace VTX

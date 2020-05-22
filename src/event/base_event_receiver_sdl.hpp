@@ -6,7 +6,9 @@
 #endif
 
 #include "base_event_receiver.hpp"
+#include "id.hpp"
 #include <SDL.h>
+#include <vector>
 
 namespace VTX
 {
@@ -15,8 +17,9 @@ namespace VTX
 		class BaseEventReceiverSDL : public BaseEventReceiver<SDL_Event>
 		{
 		  protected:
-			virtual void _registerEvents() override;
-			virtual void _unregisterEvents() override;
+			virtual void					_registerEvents() override final;
+			virtual void					_unregisterEvents() override final;
+			virtual std::vector<ID::VTX_ID> _getWindowsID() const { return std::vector<ID::VTX_ID>(); }
 		};
 	} // namespace Event
 } // namespace VTX

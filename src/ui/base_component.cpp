@@ -1,5 +1,6 @@
 #include "base_component.hpp"
 #include "model/molecule.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -28,6 +29,13 @@ namespace VTX
 			}
 
 			_drawContent();
+
+			// Handle selection.
+			if ( ImGui::IsWindowFocused() )
+			{
+				VTXApp::get().getUI().setCurrentWindow( getName() );
+			}
+
 			_drawFooter();
 		}
 

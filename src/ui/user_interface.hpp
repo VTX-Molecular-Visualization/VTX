@@ -7,6 +7,7 @@
 
 #include "base_component.hpp"
 #include "generic/base_printable.hpp"
+#include "util/logger.hpp"
 #include <GL/gl3w.h>
 #include <SDL.h>
 
@@ -35,6 +36,16 @@ namespace VTX
 
 			virtual const std::string & getName() const override { return ID::UI::USER_INTERFACE; }
 
+			inline const ID::VTX_ID getCurrentWindow() const { return _currentWindow; }
+			inline void				setCurrentWindow( const ID::VTX_ID & p_id )
+			{
+				if ( p_id != _currentWindow )
+				{
+					VTX_DEBUG( "New focus: " + p_id );
+					_currentWindow = p_id;
+				}
+			}
+
 		  protected:
 			virtual void _addItems() override;
 
@@ -47,6 +58,8 @@ namespace VTX
 			SDL_Window *	_window	   = nullptr;
 			SDL_GLContext	_glContext = nullptr;
 			SDL_DisplayMode _displayMode;
+
+			ID::VTX_ID _currentWindow = ID::UI::USER_INTERFACE;
 
 			void _initSDL2();
 			void _initGL();

@@ -31,7 +31,11 @@ namespace VTX
 			virtual const std::string & getName() const override { return ID::Controller::ORBIT; }
 
 		  protected:
-			virtual void _handleKeyPressedEvent( const SDL_Scancode & ) override;
+			virtual void					_handleKeyPressedEvent( const SDL_Scancode & ) override;
+			virtual std::vector<ID::VTX_ID> _getWindowsID() const override
+			{
+				return std::vector<ID::VTX_ID>( { ID::UI::RENDER } );
+			}
 
 		  private:
 			Object3D::Camera & _camera;

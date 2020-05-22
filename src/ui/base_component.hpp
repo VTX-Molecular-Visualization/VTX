@@ -39,7 +39,7 @@ namespace VTX
 			virtual void _drawContent();
 			virtual void _drawFooter() = 0;
 			virtual void _draw() override;
-			virtual void _drawComponent( const std::string & );
+			virtual void _drawComponent( const std::string & ) final;
 			virtual void _drawComponents() final;
 
 		  private:

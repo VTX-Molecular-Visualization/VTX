@@ -8,12 +8,29 @@ namespace VTX
 	{
 		void EventManager::registerEventReceiverSDL( BaseEventReceiverSDL * const p_receiver )
 		{
-			_receiversSDL.emplace( p_receiver );
+			_receiversSDLGlobal.emplace( p_receiver );
 		}
 
 		void EventManager::unregisterEventReceiverSDL( BaseEventReceiverSDL * const p_receiver )
 		{
-			_receiversSDL.erase( p_receiver );
+			_receiversSDLGlobal.erase( p_receiver );
+		}
+
+		void EventManager::registerEventReceiverSDL( const ID::VTX_ID &			  p_windowId,
+													 BaseEventReceiverSDL * const p_receiver )
+		{
+			if ( _receiversSDL.find( p_windowId ) == _receiversSDL.end() )
+			{
+				_receiversSDL.try_emplace( p_windowId, SetBaseEventReceiverSDLPtr() );
+			}
+
+			_receiversSDL.at( p_windowId ).emplace( p_receiver );
+		}
+
+		void EventManager::unregisterEventReceiverSDL( const ID::VTX_ID &			p_windowId,
+													   BaseEventReceiverSDL * const p_receiver )
+		{
+			_receiversSDL.at( p_windowId ).erase( p_receiver );
 		}
 
 		void EventManager::registerEventReceiverVTX( const VTX_EVENT &			  p_event,
@@ -31,19 +48,6 @@ namespace VTX
 													   BaseEventReceiverVTX * const p_receiver )
 		{
 			_receiversVTX.at( p_event ).erase( p_receiver );
-		}
-
-		void EventManager::_flushEvent( VTXEvent * p_event )
-		{
-			if ( _receiversVTX.find( p_event->name ) != _receiversVTX.end() )
-			{
-				for ( BaseEventReceiverVTX * const receiver : _receiversVTX.at( p_event->name ) )
-				{
-					receiver->receiveEvent( *p_event );
-				}
-			}
-
-			delete p_event;
 		}
 
 		void EventManager::fireEvent( VTXEvent * const p_event ) { _eventQueue.push( p_event ); }
@@ -68,20 +72,34 @@ namespace VTX
 				}
 				}
 
-				// Propagate.
-				// if ( ImGui::IsAnyWindowFocused() == false )
-				//{
-				for ( Event::BaseEventReceiverSDL * const receiver : _receiversSDL )
+				// Propagate to receivers.
+				for ( Event::BaseEventReceiverSDL * const receiver : _receiversSDLGlobal )
 				{
 					receiver->receiveEvent( event );
 				}
-				//}
+
+				const ID::VTX_ID & id = VTXApp::get().getUI().getCurrentWindow();
+				if ( _receiversSDL.find( id ) != _receiversSDL.end() )
+				{
+					for ( BaseEventReceiverSDL * const receiver : _receiversSDL.at( id ) )
+					{
+						receiver->receiveEvent( event );
+					}
+				}
 			}
 
 			// VTX.
 			while ( _eventQueue.empty() == false )
 			{
-				_flushEvent( _eventQueue.front() );
+				VTXEvent * const event = _eventQueue.front();
+				if ( _receiversVTX.find( event->name ) != _receiversVTX.end() )
+				{
+					for ( BaseEventReceiverVTX * const receiver : _receiversVTX.at( event->name ) )
+					{
+						receiver->receiveEvent( *event );
+					}
+				}
+				delete event;
 				_eventQueue.pop();
 			}
 		}
