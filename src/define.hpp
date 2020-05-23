@@ -47,7 +47,7 @@ namespace VTX
 	const bool		  VSYNC_DEFAULT		   = true;
 
 	const bool SSAO_DEFAULT = true;
-	const bool AA_DEFAULT	= false;
+	const bool AA_DEFAULT	= true;
 	const bool RANDOM		= true;
 
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
