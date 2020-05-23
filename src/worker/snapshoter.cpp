@@ -23,10 +23,10 @@ namespace VTX
 			const uint width  = renderer.getWidth();
 			const uint height = renderer.getHeight();
 
-			uint			   size = width * height * 3 * sizeof( char );
-			std::vector<uchar> image( width * height * 3 );
+			std::vector<uchar> image( width * height * 4 );
 			glBindFramebuffer( GL_FRAMEBUFFER, renderer.getRenderedFBO() );
-			glReadnPixels( 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, size, image.data() );
+			glViewport( 0, 0, width, height );
+			glReadnPixels( 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, GLsizei( image.size() ), image.data() );
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 			// const GLuint & texture = renderer.getRenderedTexture();
@@ -40,7 +40,7 @@ namespace VTX
 
 			stbi_flip_vertically_on_write( true );
 			stbi_write_png_compression_level = 0;
-			return stbi_write_png( p_path.string().c_str(), width, height, 3, image.data(), 0 );
+			return stbi_write_png( p_path.string().c_str(), width, height, 4, image.data(), 0 );
 			// stbi_write_jpg( p_path.c_str(), width, height, 3, buffer.data(), 100 );
 			// return false;
 		}
