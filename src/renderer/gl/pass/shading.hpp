@@ -30,6 +30,7 @@ namespace VTX
 				void		 set();
 
 				inline const GLuint & getShadingTexture() const { return _shadingTexture; }
+				inline const GLuint & getShadingFbo() const { return _fboShading; }
 
 			  private:
 				GLSL::Program * _diffuseShading	   = nullptr;

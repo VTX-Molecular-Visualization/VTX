@@ -24,6 +24,9 @@ namespace VTX
 			BaseRenderer()			= default;
 			virtual ~BaseRenderer() = default;
 
+			inline const uint getWidth() const { return _width; }
+			inline const uint getHeight() const { return _height; }
+
 			virtual void BaseRenderer::resize( const uint p_width, const uint p_height )
 			{
 				_width	= p_width;
@@ -33,7 +36,7 @@ namespace VTX
 			virtual void init( const uint, const uint )			= 0;
 			virtual void renderFrame( const Object3D::Scene & ) = 0;
 			virtual void setShading()							= 0;
-			// TODO: why ?
+			// TODO: why ? because SSAO and AA in RT.
 			virtual void activeSSAO( const bool ) {}
 			virtual void activeAA( const bool ) {}
 

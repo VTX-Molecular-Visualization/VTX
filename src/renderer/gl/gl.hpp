@@ -42,6 +42,10 @@ namespace VTX
 			{
 				return Setting::Rendering::useAA ? _passFXAA->getAATexture() : _passShading->getShadingTexture();
 			}
+			inline const GLuint & getRenderedFBO() const
+			{
+				return Setting::Rendering::useAA ? _passFXAA->getAAFbo() : _passShading->getShadingFbo();
+			}
 
 		  private:
 			Pass::Geometric * _passGeometric = new Pass::Geometric();

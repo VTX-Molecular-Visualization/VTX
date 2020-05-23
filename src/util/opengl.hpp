@@ -58,7 +58,7 @@ namespace VTX
 				default: severity = "UNKNOWN"; break;
 				}
 
-				std::string message( "[" + severity + "] [" + type + "] " + source + ": " + p_msg );
+				std::string message( "[OPENGL] [" + severity + "] [" + type + "] " + source + ": " + p_msg );
 
 				switch ( p_severity )
 				{

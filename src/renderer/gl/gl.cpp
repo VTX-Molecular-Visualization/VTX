@@ -56,7 +56,7 @@ namespace VTX
 				_passSSAO->init( _programManager, _width, _height );
 				_passBlur->init( _programManager, _width, _height );
 				_passShading->init( _programManager, _width, _height );
-				_passFXAA->init( _programManager, p_width, p_height );
+				_passFXAA->init( _programManager, _width, _height );
 			}
 		}
 

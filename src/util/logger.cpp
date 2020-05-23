@@ -20,14 +20,18 @@ namespace VTX
 				message.erase( std::remove( message.begin(), message.end(), '\n' ), message.end() );
 
 #ifndef _DEBUG
-				if ( p_level == LEVEL::LOG_LVL_DEBUG ) return;
+				if ( p_level == LEVEL::LOG_LVL_DEBUG )
+					return;
 #endif
 
 				if ( VTXApp::isRunning() )
-				{ VTX_EVENT( new Event::VTXEventLog( Event::Global::LOG_CONSOLE, level, date, message ) ); }
+				{
+					VTX_EVENT( new Event::VTXEventLog( Event::Global::LOG_CONSOLE, level, date, message ) );
+				}
 
 #ifdef LOG_LEVEL
-				if ( LOG_LEVEL > p_level ) return;
+				if ( LOG_LEVEL > p_level )
+					return;
 #endif
 				std::cout << "[" + date + "] " + "[" + level + "] " + message << std::endl;
 			}
