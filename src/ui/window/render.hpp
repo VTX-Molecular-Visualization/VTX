@@ -20,6 +20,7 @@ namespace VTX
 				virtual const char *		getTitle() const override { return LOCALE( "Render.Render" ); }
 
 			  protected:
+				virtual bool _drawHeader() override;
 				virtual void _drawContent() override;
 
 			  private:
@@ -27,6 +28,6 @@ namespace VTX
 				uint _height = 0;
 			};
 		} // namespace Window
-	} // namespace UI
+	}	  // namespace UI
 } // namespace VTX
 #endif

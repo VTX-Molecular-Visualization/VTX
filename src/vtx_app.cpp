@@ -69,7 +69,6 @@ namespace VTX
 
 		_scene = new Object3D::Scene();
 
-		_ui->draw(); // Draw the first frame to update screen size.
 		ImGuiIO & io = ImGui::GetIO();
 		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 

@@ -10,6 +10,15 @@ namespace VTX
 	{
 		namespace Window
 		{
+			bool Render::_drawHeader()
+			{
+				ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse;
+				ImGui::SetNextWindowDockID( ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
+				ImGui::SetNextWindowBgAlpha( IMGUI_STYLE_BG_ALPHA );
+
+				return ImGui::Begin( getTitle(), isVisiblePtr(), flags );
+			}
+
 			void Render::_drawContent()
 			{
 				ImVec2 position = ImGui::GetWindowPos();			  // Window position.
