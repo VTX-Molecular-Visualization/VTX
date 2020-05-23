@@ -12,8 +12,8 @@ out vec4 fragColor;
 const float EDGE_THRESHOLD
 	//= 1.f / 3.f; // too little
 	// = 1.f / 4.f; // low quality
-	//= 1.f / 8.f; // high quality
-	= 1.f / 16.f; // overkill
+	= 1.f / 8.f; // high quality
+	//= 1.f / 16.f; // overkill
 
 // trims the algorithm from processing darks.
 const float EDGE_THRESHOLD_MIN

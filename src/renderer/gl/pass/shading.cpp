@@ -21,10 +21,9 @@ namespace VTX
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-				glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _shadingTexture, 0 );
+				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _shadingTexture, 0 );
 
-				static const GLenum draw_bufferShading[] = { GL_COLOR_ATTACHMENT0 };
-				glDrawBuffers( 1, draw_bufferShading );
+				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 				_toonShading	= p_programManager.createProgram( "ToonShading", { "shading/toonShading.frag" } );
 				_diffuseShading = p_programManager.createProgram( "DiffuseShading", { "shading/diffuseShading.frag" } );

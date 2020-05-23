@@ -22,8 +22,8 @@ namespace VTX
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
 				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _ssaoTexture, 0 );
-				static const GLenum drawBufferSSAO[] = { GL_COLOR_ATTACHMENT0 };
-				glDrawBuffers( 1, drawBufferSSAO );
+
+				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 				_ssaoShader = p_programManager.createProgram( "SSAO", { "shading/ssao.frag" } );
 
@@ -106,7 +106,7 @@ namespace VTX
 
 				_ssaoShader->use();
 
-				// TODO don't aoRadius update each frame
+				// TODO don't aoRadius/aoIntensity/PorjMatrix update each frame
 				glUniform1f( _uAoRadiusLoc, Setting::Rendering::aoRadius );
 				glUniform1i( _uAoIntensityLoc, Setting::Rendering::aoIntensity );
 
