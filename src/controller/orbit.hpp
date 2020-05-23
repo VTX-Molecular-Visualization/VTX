@@ -32,7 +32,7 @@ namespace VTX
 
 		  protected:
 			virtual void					_handleKeyPressedEvent( const SDL_Scancode & ) override;
-			virtual std::vector<ID::VTX_ID> _getWindowsID() const override
+			virtual std::vector<ID::VTX_ID> _getUIItems() const override
 			{
 				return std::vector<ID::VTX_ID>( { ID::UI::RENDER } );
 			}

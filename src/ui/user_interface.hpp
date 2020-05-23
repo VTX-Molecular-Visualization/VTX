@@ -36,13 +36,13 @@ namespace VTX
 
 			virtual const std::string & getName() const override { return ID::UI::USER_INTERFACE; }
 
-			inline const ID::VTX_ID getCurrentWindow() const { return _currentWindow; }
-			inline void				setCurrentWindow( const ID::VTX_ID & p_id )
+			inline const ID::VTX_ID getCurrentItem() const { return _currentItem; }
+			inline void				setCurrentItem( const ID::VTX_ID & p_id )
 			{
-				if ( p_id != _currentWindow )
+				if ( p_id != _currentItem )
 				{
 					VTX_DEBUG( "New focus: " + p_id );
-					_currentWindow = p_id;
+					_currentItem = p_id;
 				}
 			}
 
@@ -59,7 +59,7 @@ namespace VTX
 			SDL_GLContext	_glContext = nullptr;
 			SDL_DisplayMode _displayMode;
 
-			ID::VTX_ID _currentWindow = ID::UI::USER_INTERFACE;
+			ID::VTX_ID _currentItem = ID::UI::USER_INTERFACE;
 
 			void _initSDL2();
 			void _initGL();

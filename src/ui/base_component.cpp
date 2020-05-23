@@ -33,7 +33,7 @@ namespace VTX
 			// Handle selection.
 			if ( ImGui::IsWindowFocused() )
 			{
-				VTXApp::get().getUI().setCurrentWindow( getName() );
+				VTXApp::get().getUI().setCurrentItem( getName() );
 			}
 
 			_drawFooter();

@@ -7,13 +7,13 @@ namespace VTX
 	{
 		void BaseEventReceiverSDL::_registerEvents()
 		{
-			if ( _getWindowsID().empty() )
+			if ( _getUIItems().empty() )
 			{
 				VTXApp::get().getEventManager().registerEventReceiverSDL( this );
 			}
 			else
 			{
-				for ( const ID::VTX_ID & id : _getWindowsID() )
+				for ( const ID::VTX_ID & id : _getUIItems() )
 				{
 					VTXApp::get().getEventManager().registerEventReceiverSDL( id, this );
 				}
@@ -22,13 +22,13 @@ namespace VTX
 
 		void BaseEventReceiverSDL::_unregisterEvents()
 		{
-			if ( _getWindowsID().empty() )
+			if ( _getUIItems().empty() )
 			{
 				VTXApp::get().getEventManager().unregisterEventReceiverSDL( this );
 			}
 			else
 			{
-				for ( const ID::VTX_ID & id : _getWindowsID() )
+				for ( const ID::VTX_ID & id : _getUIItems() )
 				{
 					VTXApp::get().getEventManager().unregisterEventReceiverSDL( id, this );
 				}

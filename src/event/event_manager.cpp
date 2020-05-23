@@ -78,7 +78,7 @@ namespace VTX
 					receiver->receiveEvent( event );
 				}
 
-				const ID::VTX_ID & id = VTXApp::get().getUI().getCurrentWindow();
+				const ID::VTX_ID & id = VTXApp::get().getUI().getCurrentItem();
 				if ( _receiversSDL.find( id ) != _receiversSDL.end() )
 				{
 					for ( BaseEventReceiverSDL * const receiver : _receiversSDL.at( id ) )

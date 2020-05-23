@@ -19,7 +19,7 @@ namespace VTX
 		  protected:
 			virtual void					_registerEvents() override final;
 			virtual void					_unregisterEvents() override final;
-			virtual std::vector<ID::VTX_ID> _getWindowsID() const { return std::vector<ID::VTX_ID>(); }
+			virtual std::vector<ID::VTX_ID> _getUIItems() const { return std::vector<ID::VTX_ID>(); }
 		};
 	} // namespace Event
 } // namespace VTX
