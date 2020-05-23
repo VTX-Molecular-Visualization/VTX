@@ -25,7 +25,6 @@ namespace VTX
 
 			std::vector<uchar> image( width * height * 4 );
 			glBindFramebuffer( GL_FRAMEBUFFER, renderer.getRenderedFBO() );
-			glViewport( 0, 0, width, height );
 			glReadnPixels( 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, GLsizei( image.size() ), image.data() );
 			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
