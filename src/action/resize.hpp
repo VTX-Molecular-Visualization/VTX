@@ -22,7 +22,7 @@ namespace VTX
 				VTXApp::get().getScene().getCamera().setScreenSize( _width, _height );
 
 				// Resize renderer.
-				VTXApp::get().getRenderer().resize( _width, _height );
+				VTXApp::get().getRendererGL().resize( _width, _height );
 			};
 
 		  private:

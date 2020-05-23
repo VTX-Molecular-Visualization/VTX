@@ -26,7 +26,7 @@ namespace VTX
 			virtual void execute() override
 			{
 				Setting::Rendering::shading = _shading;
-				VTXApp::get().getRenderer().setShading();
+				VTXApp::get().getRendererGL().setShading();
 			};
 
 			virtual void displayUsage() override { VTX_INFO( "LAMBERT|BLINN_PHONG|TOON|FLAT_COLOR" ); }

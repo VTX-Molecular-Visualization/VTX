@@ -20,7 +20,7 @@ namespace VTX
 			virtual void execute() override
 			{
 				Setting::Rendering::useAA = _active;
-				VTXApp::get().getRenderer().activeAA( _active );
+				VTXApp::get().getRendererGL().activeAA( _active );
 			};
 
 		  private:

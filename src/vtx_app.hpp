@@ -10,7 +10,7 @@
 #include "event/event_manager.hpp"
 #include "generic/factory.hpp"
 #include "object3d/scene.hpp"
-#include "renderer/base_renderer.hpp"
+#include "renderer/gl/gl.hpp"
 #include "selection/selection_manager.hpp"
 #include "setting.hpp"
 #include "state/state_machine.hpp"
@@ -36,16 +36,16 @@ namespace VTX
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
-		void renderScene() const { _renderer->renderFrame( *_scene ); }
+		void renderScene() const { _rendererGL->renderFrame( *_scene ); }
 
 		inline Object3D::Scene &					  getScene() { return *_scene; }
 		inline const Object3D::Scene &				  getScene() const { return *_scene; }
-		inline Renderer::BaseRenderer &				  getRenderer() { return *_renderer; }
-		inline const Renderer::BaseRenderer &		  getRenderer() const { return *_renderer; }
-		inline Renderer::GLSL::ProgramManager &		  getProgramManager() { return _renderer->getProgramManager(); }
+		inline Renderer::GL &						  getRendererGL() { return *_rendererGL; }
+		inline const Renderer::GL &					  getRendererGL() const { return *_rendererGL; }
+		inline Renderer::GLSL::ProgramManager &		  getProgramManager() { return _rendererGL->getProgramManager(); }
 		inline const Renderer::GLSL::ProgramManager & getProgramManager() const
 		{
-			return _renderer->getProgramManager();
+			return _rendererGL->getProgramManager();
 		}
 		inline UI::UserInterface &				   getUI() { return *_ui; }
 		inline const UI::UserInterface &		   getUI() const { return *_ui; }
@@ -64,7 +64,7 @@ namespace VTX
 		UI::UserInterface *			  _ui				= nullptr;
 		State::StateMachine *		  _stateMachine		= nullptr;
 		Object3D::Scene *			  _scene			= nullptr;
-		Renderer::BaseRenderer *	  _renderer			= nullptr;
+		Renderer::GL *				  _rendererGL		= nullptr;
 		Action::ActionManager *		  _actionManager	= nullptr;
 		Event::EventManager *		  _eventManager		= nullptr;
 		Worker::WorkerManager *		  _workerManager	= nullptr;
