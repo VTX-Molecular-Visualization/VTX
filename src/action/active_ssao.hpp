@@ -20,7 +20,7 @@ namespace VTX
 			virtual void execute() override
 			{
 				Setting::Rendering::useSSAO = _active;
-				VTXApp::get().getRenderer().activeSSAO( _active );
+				VTXApp::get().getRendererGL().activeSSAO( _active );
 			};
 
 		  private:

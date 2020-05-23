@@ -37,9 +37,9 @@ namespace VTX
 		{
 			Generic::destroy( _ui );
 		}
-		if ( _renderer != nullptr )
+		if ( _rendererGL != nullptr )
 		{
-			delete _renderer;
+			delete _rendererGL;
 		}
 		if ( _selectionManager != nullptr )
 		{
@@ -73,8 +73,8 @@ namespace VTX
 		ImGuiIO & io = ImGui::GetIO();
 		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
-		_renderer = new Renderer::GL();
-		_renderer->init( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+		_rendererGL = new Renderer::GL();
+		_rendererGL->init( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 		_stateMachine = Generic::create<State::StateMachine>();
 		_stateMachine->goToState( ID::State::VISUALIZATION );
