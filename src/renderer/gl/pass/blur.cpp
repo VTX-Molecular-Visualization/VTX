@@ -15,7 +15,7 @@ namespace VTX
 
 				glGenTextures( 1, &_blurTexture );
 				glBindTexture( GL_TEXTURE_2D, _blurTexture );
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, p_width, p_height, 0, GL_RED, GL_FLOAT, NULL );
+				glTexStorage2D( GL_TEXTURE_2D, 1, GL_R16F, p_width, p_height );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -26,6 +26,7 @@ namespace VTX
 				glDrawBuffers( 1, drawBufferBlur );
 
 				_blurShader = p_programManager.createProgram( "Blur", { "shading/blur.frag" } );
+				//_blurShader = p_programManager.createProgram( "Blur", { "shading/bilateral_blur.frag" } );
 
 				_uBlurSizeLoc	   = glGetUniformLocation( _blurShader->getId(), "uBlurSize" );
 				_uBlurSharpnessLoc = glGetUniformLocation( _blurShader->getId(), "uBlurSharpness" );

@@ -13,7 +13,7 @@ namespace VTX
 				glBindFramebuffer( GL_FRAMEBUFFER, _fboAA );
 				glGenTextures( 1, &_texture );
 				glBindTexture( GL_TEXTURE_2D, _texture );
-				glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA32F, p_width, p_height );
+				glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA16F, p_width, p_height );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 				glFramebufferTexture( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _texture, 0 );

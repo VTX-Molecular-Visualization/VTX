@@ -15,7 +15,7 @@ namespace VTX
 
 				glGenTextures( 1, &_shadingTexture );
 				glBindTexture( GL_TEXTURE_2D, _shadingTexture );
-				glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA32F, p_width, p_height );
+				glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA16F, p_width, p_height );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
