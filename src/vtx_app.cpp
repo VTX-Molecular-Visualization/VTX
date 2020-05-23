@@ -69,11 +69,10 @@ namespace VTX
 
 		_scene = new Object3D::Scene();
 
-		ImGuiIO & io = ImGui::GetIO();
-		_scene->getCamera().setScreenSize( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+		_scene->getCamera().setScreenSize( WINDOW_WIDTH, WINDOW_HEIGHT );
 
 		_rendererGL = new Renderer::GL();
-		_rendererGL->init( (int)io.DisplaySize.x, (int)io.DisplaySize.y );
+		_rendererGL->init( WINDOW_WIDTH, WINDOW_HEIGHT );
 
 		_stateMachine = Generic::create<State::StateMachine>();
 		_stateMachine->goToState( ID::State::VISUALIZATION );
