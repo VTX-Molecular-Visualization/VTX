@@ -40,7 +40,7 @@ void main()
 {
 	const vec2 texSize		= textureSize( gbCamPosition, 0 );
 	const vec2 noisTextSize = textureSize( noise, 0 );
-	const vec2 noiseScale	= texSize / noisTextSize.x;
+	const vec2 noiseScale	= texSize / noisTextSize;
 	const vec2 texPos		= gl_FragCoord.xy / texSize;
 
 	FragmentData fd;
