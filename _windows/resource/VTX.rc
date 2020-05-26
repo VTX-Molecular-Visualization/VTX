@@ -84,7 +84,7 @@ BEGIN
             VALUE "LegalCopyright", "Copyright (C) 2020"
             VALUE "OriginalFilename", "VTX.rc"
             VALUE "ProductName", "VTX"
-            VALUE "ProductVersion", "0.0.4.0"
+            VALUE "ProductVersion", "0.0.5.0"
         END
     END
     BLOCK "VarFileInfo"
