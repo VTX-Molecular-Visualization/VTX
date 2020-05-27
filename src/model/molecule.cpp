@@ -459,6 +459,7 @@ namespace VTX
 			}
 
 			_ribbon = Generic::create<Ribbon, Molecule>( *this );
+			_ribbon->refreshVisibility( *this );
 			_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
 		}

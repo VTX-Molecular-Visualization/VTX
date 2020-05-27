@@ -20,12 +20,18 @@ namespace VTX
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 			glBindVertexArray( 0 );
 
-			if ( _vboPositions != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vboPositions );
-			if ( _vboNormals != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vboNormals );
-			if ( _vboColors != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vboColors );
-			if ( _vboVisibilities != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_vboVisibilities );
-			if ( _ibo != GL_INVALID_VALUE ) glDeleteBuffers( 1, &_ibo );
-			if ( _vao != GL_INVALID_VALUE ) glDeleteVertexArrays( 1, &_vao );
+			if ( _vboPositions != GL_INVALID_VALUE )
+				glDeleteBuffers( 1, &_vboPositions );
+			if ( _vboNormals != GL_INVALID_VALUE )
+				glDeleteBuffers( 1, &_vboNormals );
+			if ( _vboColors != GL_INVALID_VALUE )
+				glDeleteBuffers( 1, &_vboColors );
+			if ( _vboVisibilities != GL_INVALID_VALUE )
+				glDeleteBuffers( 1, &_vboVisibilities );
+			if ( _ibo != GL_INVALID_VALUE )
+				glDeleteBuffers( 1, &_ibo );
+			if ( _vao != GL_INVALID_VALUE )
+				glDeleteVertexArrays( 1, &_vao );
 		}
 
 		void MeshTriangle::init()

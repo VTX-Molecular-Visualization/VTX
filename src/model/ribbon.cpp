@@ -198,8 +198,6 @@ namespace VTX
 				}
 			}
 
-			refreshVisibility( p_molecule );
-
 			_vertices.shrink_to_fit();
 			_normals.shrink_to_fit();
 			_colors.shrink_to_fit();
