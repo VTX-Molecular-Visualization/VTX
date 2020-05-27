@@ -1,6 +1,4 @@
 #include "setting.hpp"
-#include "renderer/base_renderer.hpp"
-#include "ui/user_interface.hpp"
 
 namespace VTX
 {
