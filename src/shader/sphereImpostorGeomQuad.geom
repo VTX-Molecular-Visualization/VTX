@@ -5,7 +5,6 @@ layout( triangle_strip, max_vertices = 4 ) out;
 
 uniform mat4 uProjMatrix;
 
-smooth in vec3 vCamImpPos[];	// impostor position in cam space
 flat in vec3   vCamSpherePos[]; // sphere impostor in cam space
 flat in vec3   vSphereColor[];
 flat in float  vSphereRad[];
@@ -24,7 +23,7 @@ flat out float	dotCamSpherePos;
 void main()
 {
 	if ( vSphereVis[ 0 ] == 0 ) { return; }
-
+	
 	// Output vertex position
 	camSpherePos	= vCamSpherePos[ 0 ];
 	sphereColor		= vSphereColor[ 0 ];
