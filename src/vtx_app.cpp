@@ -57,8 +57,6 @@ namespace VTX
 		{
 			delete _eventManager;
 		}
-
-		VTX_INFO( "Application destructed" );
 	}
 
 	void VTXApp::start()
