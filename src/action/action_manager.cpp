@@ -126,7 +126,15 @@ namespace VTX
 
 		void ActionManager::_flushAction( BaseAction * p_action )
 		{
-			p_action->execute();
+			try
+			{
+				p_action->execute();
+			}
+			catch (const std::exception & p_e)
+			{
+				VTX_ERROR(p_e.what());
+			}
+			
 
 			// Handle undo.
 			BaseActionUndonable * undonable = dynamic_cast<BaseActionUndonable *>( p_action );
