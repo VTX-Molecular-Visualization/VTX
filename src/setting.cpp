@@ -1,6 +1,4 @@
 #include "setting.hpp"
-#include "renderer/base_renderer.hpp"
-#include "ui/user_interface.hpp"
 
 namespace VTX
 {
@@ -26,7 +24,15 @@ namespace VTX
 			float						  aoFactor		  = RENDERER_AO_FACTOR_DEFAULT;
 			int							  aoBlurSize	  = RENDERER_AO_BLUR_SIZE_DEFAULT;
 			int							  aoBlurSharpness = RENDERER_AO_BLUR_SHARPNESS_DEFAULT;
+			bool						  useContourLines = CONTOUR_LINES_DEFAULT;
 			bool						  useAA			  = AA_DEFAULT;
+
+			// Camera.
+			float camNear = CAMERA_NEAR_DEFAULT;
+			float camFar  = CAMERA_FAR_DEFAULT;
+			float camFov  = CAMERA_FOV_DEFAULT;
+
+			Color::Rgb contourLineColor = Color::Rgb::WHITE;
 		}; // namespace Rendering
 
 		namespace Controller

@@ -10,8 +10,8 @@ namespace VTX
 			void Geometric::init( GLSL::ProgramManager & p_programManager, const uint p_width, const uint p_height )
 			{
 				// TODO: Only when using point sprites.
-				glEnable( GL_PROGRAM_POINT_SIZE );
-				glPointParameteri( GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT );
+				/*glEnable( GL_PROGRAM_POINT_SIZE );
+				glPointParameteri( GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT );*/
 
 				// Create G-buffers for deferred shading.
 				glGenFramebuffers( 1, &_fboGeo );

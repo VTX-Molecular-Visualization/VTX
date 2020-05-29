@@ -30,9 +30,11 @@ namespace VTX
 				bool  _isRadiusFixed = false;
 
 				// Uniforms.
-				GLint _uIsRadiusFixed = GL_INVALID_INDEX;
-				GLint _uRadiusAdd	  = GL_INVALID_INDEX;
-				GLint _uRadiusFixed	  = GL_INVALID_INDEX;
+				GLint _uIsRadiusFixedLoc = GL_INVALID_INDEX;
+				GLint _uRadiusAddLoc	 = GL_INVALID_INDEX;
+				GLint _uRadiusFixedLoc	 = GL_INVALID_INDEX;
+				GLint _uZNearLoc		 = GL_INVALID_INDEX;
+				GLint _uZFarLoc			 = GL_INVALID_INDEX;
 			};
 		} // namespace D3
 	}	  // namespace View

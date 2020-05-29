@@ -33,14 +33,20 @@ namespace VTX
 				float			  time	   = pair.second;
 
 				uint frameCount = molecule->getFrameCount();
-				if ( molecule->isPlaying() == false || frameCount < 2 ) { continue; }
+				if ( molecule->isPlaying() == false || frameCount < 2 )
+				{
+					continue;
+				}
 
 				uint frame = molecule->getFrame();
 				uint fps   = molecule->getFPS();
 
 				uint nextFrame = frame;
 
-				if ( fps == 0u ) { molecule->setFrame( ++nextFrame % frameCount ); }
+				if ( fps == 0u )
+				{
+					molecule->setFrame( ++nextFrame % frameCount );
+				}
 				else
 				{
 					time += float( p_deltaTime );
@@ -52,7 +58,10 @@ namespace VTX
 					}
 
 					pair.second = time;
-					if ( nextFrame != frame ) { molecule->setFrame( nextFrame % frameCount ); }
+					if ( nextFrame != frame )
+					{
+						molecule->setFrame( nextFrame % frameCount );
+					}
 				}
 			}
 

@@ -16,7 +16,7 @@ namespace VTX
 		class Camera : public Generic::BasePrintable
 		{
 		  public:
-			Camera() { _updateRotation(); };
+			Camera();
 
 			inline const Vec3f & getPosition() const { return _position; }
 			inline const Quatd & getRotation() const { return _rotation; }
@@ -26,6 +26,8 @@ namespace VTX
 			inline const Vec3f & getFront() const { return _front; }
 			inline const Vec3f & getLeft() const { return _left; }
 			inline const Vec3f & getUp() const { return _up; }
+			inline const float	 getNear() const { return _near; }
+			inline const float	 getFar() const { return _far; }
 			inline const float	 getFov() const { return _fov; }
 
 			inline void setScreenSize( const uint p_width, const uint p_height )
@@ -54,6 +56,24 @@ namespace VTX
 				setRotation( p_rotation );
 			}
 
+			inline void setNear( const float p_near )
+			{
+				// Avoid too little value.
+				_near = Util::Math::max( 1e-1f, p_near );
+				_updateProjectionMatrix();
+			}
+			inline void setFar( const float p_far )
+			{
+				// Avoid too little value.
+				_far = Util::Math::max( 1e-1f, p_far );
+				_updateProjectionMatrix();
+			}
+			inline void setFov( const float p_fov )
+			{
+				_fov = p_fov;
+				_updateProjectionMatrix();
+			}
+
 			void move( const Vec3f & );
 			void moveFront( const float );
 			void moveLeft( const float );
@@ -70,9 +90,9 @@ namespace VTX
 		  private:
 			float _screenWidth	= 0.f;
 			float _screenHeight = 0.f;
-			float _near			= CAMERA_NEAR;
-			float _far			= CAMERA_FAR;
-			float _fov			= CAMERA_FOV;
+			float _near			= 1e-1f;
+			float _far			= 1e4f;
+			float _fov			= 60.f;
 
 			Vec3f _position	   = VEC3F_Z * 50.f;
 			Quatd _rotation	   = Quatd( 1.0, { 0.0, 0.0, 0.0 } );
@@ -86,7 +106,6 @@ namespace VTX
 
 			void _updateRotation();
 			void _updateViewMatrix();
-			// TODO: call it when changing near, far, fov
 			void _updateProjectionMatrix();
 
 		}; // namespace Camera

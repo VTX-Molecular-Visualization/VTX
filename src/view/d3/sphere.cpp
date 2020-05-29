@@ -14,11 +14,13 @@ namespace VTX
 					   "SphereImpostorGeomShader",
 					   { "sphereImpostorGeom.vert", "sphereImpostorGeomQuad.geom", "sphereImpostorDeferred.frag" } );
 
-				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
-				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
-				_uRadiusFixed	  = glGetUniformLocation( program->getId(), "uRadiusFixed" );
-				_uRadiusAdd		  = glGetUniformLocation( program->getId(), "uRadiusAdd" );
-				_uIsRadiusFixed	  = glGetUniformLocation( program->getId(), "uIsRadiusFixed" );
+				_uViewModelMatrix  = glGetUniformLocation( program->getId(), "uMVMatrix" );
+				_uProjMatrix	   = glGetUniformLocation( program->getId(), "uProjMatrix" );
+				_uRadiusFixedLoc   = glGetUniformLocation( program->getId(), "uRadiusFixed" );
+				_uRadiusAddLoc	   = glGetUniformLocation( program->getId(), "uRadiusAdd" );
+				_uIsRadiusFixedLoc = glGetUniformLocation( program->getId(), "uIsRadiusFixed" );
+				_uZNearLoc		   = glGetUniformLocation( program->getId(), "uZNear" );
+				_uZFarLoc		   = glGetUniformLocation( program->getId(), "uZFar" );
 			}
 
 			void Sphere::notify( const Event::VTX_EVENT_MODEL & p_event )
@@ -59,10 +61,17 @@ namespace VTX
 			void Sphere::render()
 			{
 				VTXApp::get().getProgramManager().getProgram( "SphereImpostorGeomShader" )->use();
-				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
-				glUniform1f( _uRadiusFixed, _radiusFixed );
-				glUniform1f( _uRadiusAdd, _radiusAdd );
-				glUniform1ui( _uIsRadiusFixed, _isRadiusFixed );
+				// TODO: do not update each frame
+				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
+				glUniform1f( _uRadiusFixedLoc, _radiusFixed );
+				glUniform1f( _uRadiusAddLoc, _radiusAdd );
+				glUniform1ui( _uIsRadiusFixedLoc, _isRadiusFixed );
+				// Do not use camera near/far !
+				// Because Setting::Rendering::near/far can be 0 (with GL_DEPTH_CLAMP)
+				// And camera near/far is min 1e-1f to avoid rasterization artifacts
+				glUniform1f( _uZNearLoc, Setting::Rendering::camNear );
+				glUniform1f( _uZFarLoc, Setting::Rendering::camFar );
+				_setCameraUniforms( cam );
 				glDrawArrays( GL_POINTS, 0, _getModel().getAtomCount() );
 			}
 		} // namespace D3

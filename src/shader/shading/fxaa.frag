@@ -23,8 +23,8 @@ const float EDGE_THRESHOLD_MIN
 
 // sub-pixel aliasing removal
 const float QUALITY_SUBPIXEL
-	//= 1.f; // upper limit (softer)
-	= 0.75f; // default amount of filtering
+	= 1.f; // upper limit (softer)
+	//= 0.75f; // default amount of filtering
 			 //= 0.5f; // lower limit (sharper, less sub-pixel aliasing removal)
 			 //= 0.25f; // almost off
 			 //= 0.f;					 // completely off

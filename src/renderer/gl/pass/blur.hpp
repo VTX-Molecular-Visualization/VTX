@@ -36,7 +36,8 @@ namespace VTX
 				GLuint			_texture		   = GL_INVALID_VALUE;
 				GLint			_uBlurSizeLoc	   = GL_INVALID_INDEX;
 				GLint			_uBlurSharpnessLoc = GL_INVALID_INDEX;
-				GLint			_uInvTexSize	   = GL_INVALID_INDEX;
+				GLint			_uInvTexSizeLoc	   = GL_INVALID_INDEX;
+				GLint			_uClipInfoLoc	   = GL_INVALID_INDEX;
 			};
 		} // namespace Pass
 

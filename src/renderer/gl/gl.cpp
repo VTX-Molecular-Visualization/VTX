@@ -91,6 +91,16 @@ namespace VTX
 		{
 			glViewport( 0, 0, _width, _height );
 
+			// TODO: do not change each frame
+			if ( Setting::Rendering::camNear == 0.f )
+			{
+				glEnable( GL_DEPTH_CLAMP );
+			}
+			else
+			{
+				glDisable( GL_DEPTH_CLAMP );
+			}
+
 			glEnable( GL_DEPTH_TEST );
 			_passGeometric->render( p_scene, *this );
 			glDisable( GL_DEPTH_TEST );
