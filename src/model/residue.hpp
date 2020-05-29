@@ -9,6 +9,7 @@
 #include "base_model.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
+#include "generic/base_representable.hpp"
 #include "generic/base_visible.hpp"
 #include <map>
 
@@ -18,7 +19,11 @@ namespace VTX
 	{
 		class Molecule;
 		class Chain;
-		class Residue : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
+		class Residue :
+			public BaseModel,
+			public Generic::BaseColorable,
+			public Generic::BaseVisible,
+			public Generic::BaseRepresentable
 		{
 		  public:
 			enum class TYPE : int
@@ -103,6 +108,7 @@ namespace VTX
 			const Atom * const		findFirstAtomByName( const std::string & ) const;
 
 			virtual void setSelected( const bool ) override;
+			virtual void setRepresentation( const Generic::REPRESENTATION ) override;
 
 		  private:
 			TYPE	   _type		= TYPE::STANDARD;

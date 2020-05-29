@@ -21,49 +21,40 @@ namespace VTX
 				_uIsRadiusFixed	  = glGetUniformLocation( program->getId(), "uIsRadiusFixed" );
 			}
 
-			void Sphere::notify( const Event::VTX_EVENT_MODEL & p_event )
+			void Sphere::render( const Generic::REPRESENTATION p_representation, const std::map<uint, uint> & p_mapIdx )
 			{
-				BaseView3DMolecule::notify( p_event );
-
-				if ( p_event == Event::VTX_EVENT_MODEL::CHANGE_REPRESENTATION )
+				switch ( p_representation )
 				{
-					switch ( Setting::Rendering::representation )
-					{
-					case MOLECULE_REPRESENTATION::BALL_AND_STICK:
-						_radiusFixed   = 0.4f;
-						_radiusAdd	   = 0.f;
-						_isRadiusFixed = true;
-						_isActive	   = true;
-						break;
-					case MOLECULE_REPRESENTATION::VAN_DER_WAALS:
-						_isRadiusFixed = false;
-						_radiusAdd	   = 0.f;
-						_isActive	   = true;
-						break;
-					case MOLECULE_REPRESENTATION::STICK:
-						_radiusFixed   = 0.15f;
-						_radiusAdd	   = 0.f;
-						_isRadiusFixed = true;
-						_isActive	   = true;
-						break;
-					case MOLECULE_REPRESENTATION::SAS:
-						_isRadiusFixed = false;
-						_radiusAdd	   = 1.4f;
-						_isActive	   = true;
-						break;
-					default: _isActive = false; break;
-					}
+				case Generic::REPRESENTATION::BALL_AND_STICK:
+					_radiusFixed   = 0.4f;
+					_radiusAdd	   = 0.f;
+					_isRadiusFixed = true;
+					break;
+				case Generic::REPRESENTATION::VAN_DER_WAALS:
+					_isRadiusFixed = false;
+					_radiusAdd	   = 0.f;
+					break;
+				case Generic::REPRESENTATION::STICK:
+					_radiusFixed   = 0.15f;
+					_radiusAdd	   = 0.f;
+					_isRadiusFixed = true;
+					break;
+				case Generic::REPRESENTATION::SAS:
+					_isRadiusFixed = false;
+					_radiusAdd	   = 1.4f;
+					break;
+				default: return;
 				}
-			};
 
-			void Sphere::render()
-			{
-				VTXApp::get().getProgramManager().getProgram( "SphereImpostorGeomShader" )->use();
-				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
-				glUniform1f( _uRadiusFixed, _radiusFixed );
-				glUniform1f( _uRadiusAdd, _radiusAdd );
-				glUniform1ui( _uIsRadiusFixed, _isRadiusFixed );
-				glDrawArrays( GL_POINTS, 0, _getModel().getAtomCount() );
+				for ( const std::pair<uint, uint> & pair : p_mapIdx )
+				{
+					VTXApp::get().getProgramManager().getProgram( "SphereImpostorGeomShader" )->use();
+					_setCameraUniforms( VTXApp::get().getScene().getCamera() );
+					glUniform1f( _uRadiusFixed, _radiusFixed );
+					glUniform1f( _uRadiusAdd, _radiusAdd );
+					glUniform1ui( _uIsRadiusFixed, _isRadiusFixed );
+					glDrawArrays( GL_POINTS, pair.first, pair.second );
+				}
 			}
 		} // namespace D3
 	}	  // namespace View

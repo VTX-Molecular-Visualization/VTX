@@ -1,4 +1,5 @@
 #include "residue.hpp"
+#include "util/molecule.hpp"
 #include "view/ui/residue.hpp"
 
 namespace VTX
@@ -16,6 +17,12 @@ namespace VTX
 			{
 				Generic::destroy( removeItem( ID::View::UI_RESIDUE ) );
 			}
+		}
+
+		void Residue::setRepresentation( const Generic::REPRESENTATION p_representation )
+		{
+			Generic::BaseRepresentable::setRepresentation( p_representation );
+			Util::Molecule::refreshRepresentationState( *getMoleculePtr() );
 		}
 
 		const Atom * const Residue::findFirstAtomByName( const std::string & p_name ) const

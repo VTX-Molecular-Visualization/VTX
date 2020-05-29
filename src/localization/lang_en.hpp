@@ -138,6 +138,7 @@ namespace VTX
 			{ "Enum.SymbolDisplay.Short", "Short" },
 			{ "Enum.SymbolDisplay.Long", "Long" },
 
+			{ "Enum.Representation.Inherited", "Inherited" },
 			{ "Enum.Representation.BallsAndSticks", "Balls and sticks" },
 			{ "Enum.Representation.VanDerWaals", "Van der Waals" },
 			{ "Enum.Representation.Sticks", "Sticks" },

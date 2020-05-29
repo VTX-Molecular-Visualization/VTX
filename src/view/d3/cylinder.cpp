@@ -18,30 +18,32 @@ namespace VTX
 				_uRadius		  = glGetUniformLocation( program->getId(), "uCylRad" );
 			}
 
-			void Cylinder::notify( const Event::VTX_EVENT_MODEL & p_event )
+			void Cylinder::render( const Generic::REPRESENTATION p_representation,
+								   const std::map<uint, uint> &	 p_mapIdx )
 			{
-				BaseView3DMolecule::notify( p_event );
+				return;
 
-				if ( p_event == Event::VTX_EVENT_MODEL::CHANGE_REPRESENTATION )
+				switch ( p_representation )
 				{
-					switch ( Setting::Rendering::representation )
-					{
-					case MOLECULE_REPRESENTATION::STICK:
-					case MOLECULE_REPRESENTATION::BALL_AND_STICK: _isActive = true; break;
-					case MOLECULE_REPRESENTATION::VAN_DER_WAALS:
-					case MOLECULE_REPRESENTATION::SAS:
-					default: _isActive = false; break;
-					}
+				case Generic::REPRESENTATION::STICK:
+				case Generic::REPRESENTATION::BALL_AND_STICK: break;
+				case Generic::REPRESENTATION::VAN_DER_WAALS:
+				case Generic::REPRESENTATION::SAS:
+				default: return;
 				}
-			};
 
-			void Cylinder::render()
-			{
-				VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
-				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
-				glUniform1f( _uRadius, 0.15f );
-				glDrawElements(
-					GL_LINES, _getModel().getBondCount() * 2, GL_UNSIGNED_INT, (void *)( 0 * sizeof( uint ) ) );
+				for ( const std::pair<uint, uint> & pair : p_mapIdx )
+				{
+					VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
+					_setCameraUniforms( VTXApp::get().getScene().getCamera() );
+					glUniform1f( _uRadius, 0.15f );
+					glDrawRangeElements( GL_LINES,
+										 0,
+										 _getModel().getBondCount(),
+										 _getModel().getBondCount() * 2,
+										 GL_UNSIGNED_INT,
+										 NULL );
+				}
 			}
 		} // namespace D3
 	}	  // namespace View

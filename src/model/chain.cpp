@@ -1,4 +1,5 @@
 #include "chain.hpp"
+#include "util/molecule.hpp"
 #include "view/ui/chain.hpp"
 
 namespace VTX
@@ -91,6 +92,12 @@ namespace VTX
 			{
 				Generic::destroy( removeItem( ID::View::UI_CHAIN ) );
 			}
-		} // namespace Model
-	}	  // namespace Model
+		}
+
+		void Chain::setRepresentation( const Generic::REPRESENTATION p_representation )
+		{
+			Generic::BaseRepresentable::setRepresentation( p_representation );
+			Util::Molecule::refreshRepresentationState( *getMoleculePtr() );
+		}
+	} // namespace Model
 } // namespace VTX

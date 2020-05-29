@@ -15,7 +15,6 @@ namespace VTX
 
 				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
-				_isActive		  = true;
 			}
 
 			void Triangle::render()

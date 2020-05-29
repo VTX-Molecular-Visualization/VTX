@@ -20,9 +20,8 @@ namespace VTX
 
 				virtual const std::string & getName() const override { return ID::View::D3_SPHERE; };
 				virtual void				init() override;
-				virtual void				notify( const Event::VTX_EVENT_MODEL & ) override;
 
-				virtual void render() override;
+				virtual void render( const Generic::REPRESENTATION, const std::map<uint, uint> & ) override;
 
 			  private:
 				float _radiusFixed	 = 1.f;

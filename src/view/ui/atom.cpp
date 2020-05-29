@@ -1,6 +1,6 @@
 #include "atom.hpp"
+#include "action/atom_change_color.hpp"
 #include "action/change_color_mode.hpp"
-#include "action/colorable_change_color.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

@@ -236,10 +236,10 @@ namespace VTX
 												   LOCALE( "Enum.Representation.VanDerWaals" ),
 												   LOCALE( "Enum.Representation.Sticks" ),
 												   LOCALE( "Enum.Representation.SAS" ) };
-				int			 representation	   = (int)Setting::Rendering::representation;
+				int			 representation	   = (int)Setting::Rendering::representation - 1;
 				if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 4 ) )
 				{
-					VTX_ACTION( new Action::ChangeRepresentation( (View::MOLECULE_REPRESENTATION)representation ) );
+					VTX_ACTION( new Action::ChangeRepresentation( ( Generic::REPRESENTATION )( representation + 1 ) ) );
 				}
 
 				// Color mode.
@@ -250,7 +250,7 @@ namespace VTX
 				int			 colorMode = (int)Setting::Rendering::colorMode;
 				if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ), &colorMode, modes, 4 ) )
 				{
-					VTX_ACTION( new Action::ChangeColorMode( (View::MOLECULE_COLOR_MODE)colorMode ) );
+					VTX_ACTION( new Action::ChangeColorMode( (Generic::COLOR_MODE)colorMode ) );
 				}
 
 				// Shading.

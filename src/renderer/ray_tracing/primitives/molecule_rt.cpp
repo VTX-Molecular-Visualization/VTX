@@ -13,11 +13,11 @@ namespace VTX
 	{
 		MoleculeRT::MoleculeRT( const Model::Molecule * p_molecule )
 		{
-			const View::MOLECULE_REPRESENTATION rep = //
-													  // View::MOLECULE_REPRESENTATION::SAS;
-				View::MOLECULE_REPRESENTATION::VAN_DER_WAALS;
-			// View::MOLECULE_REPRESENTATION::BALL_AND_STICK;
-			// View::MOLECULE_REPRESENTATION::STICK;
+			const Generic::REPRESENTATION rep = //
+												// Generic::REPRESENTATION::SAS;
+				Generic::REPRESENTATION::VAN_DER_WAALS;
+			// Generic::REPRESENTATION::BALL_AND_STICK;
+			// Generic::REPRESENTATION::STICK;
 			// Setting::Rendering::representation;
 
 			const uint nbAtoms = p_molecule->getAtomCount();
@@ -26,7 +26,7 @@ namespace VTX
 			// show only what is visible
 			// we assume that solvent and ions don't have bonds... chilled :-)
 			std::vector<Renderer::BasePrimitive *> primitives;
-			if ( rep == View::MOLECULE_REPRESENTATION::BALL_AND_STICK || rep == View::MOLECULE_REPRESENTATION::STICK )
+			if ( rep == Generic::REPRESENTATION::BALL_AND_STICK || rep == Generic::REPRESENTATION::STICK )
 			{
 				primitives.reserve( nbAtoms + nbBonds );
 			}
@@ -73,7 +73,7 @@ namespace VTX
 				tAtomPositions[ i ] = Vec3f( tPos.x, tPos.y, tPos.z );
 			}
 
-			float radius = rep == View::MOLECULE_REPRESENTATION::BALL_AND_STICK ? 0.4f : 0.25f;
+			float radius = rep == Generic::REPRESENTATION::BALL_AND_STICK ? 0.4f : 0.25f;
 
 			for ( uint i = 0; i < nbAtoms; ++i )
 			{
@@ -89,17 +89,16 @@ namespace VTX
 						mapMtls[ chainPtr ] = _materials.back();
 					}
 
-					primitives.emplace_back( new Renderer::Sphere( tAtomPositions[ i ],
-																   rep == View::MOLECULE_REPRESENTATION::VAN_DER_WAALS
-																	   ? p_molecule->getAtomRadius( i )
-																	   : rep == View::MOLECULE_REPRESENTATION::SAS
-																			 ? p_molecule->getAtomRadius( i ) + 1.4f
-																			 : radius,
-																   mapMtls[ chainPtr ] ) );
+					primitives.emplace_back( new Renderer::Sphere(
+						tAtomPositions[ i ],
+						rep == Generic::REPRESENTATION::VAN_DER_WAALS
+							? p_molecule->getAtomRadius( i )
+							: rep == Generic::REPRESENTATION::SAS ? p_molecule->getAtomRadius( i ) + 1.4f : radius,
+						mapMtls[ chainPtr ] ) );
 				}
 			}
 
-			if ( rep == View::MOLECULE_REPRESENTATION::BALL_AND_STICK || rep == View::MOLECULE_REPRESENTATION::STICK )
+			if ( rep == Generic::REPRESENTATION::BALL_AND_STICK || rep == Generic::REPRESENTATION::STICK )
 			{
 				for ( uint i = 0; i < nbBonds; ++i )
 				{

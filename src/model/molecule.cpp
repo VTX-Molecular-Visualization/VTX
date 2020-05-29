@@ -85,8 +85,7 @@ namespace VTX
 				}
 			}
 
-			// Set default representation.
-			setRepresentation();
+			Util::Molecule::refreshRepresentationState( *this );
 		}
 
 		void Molecule::_addItems()
@@ -94,7 +93,6 @@ namespace VTX
 			// Add views.
 			addItem( (View::BaseView<BaseModel> *)Generic::create<View::D3::Sphere>( this ) );
 			addItem( (View::BaseView<BaseModel> *)Generic::create<View::D3::Cylinder>( this ) );
-			addItem( (View::BaseView<BaseModel> *)Generic::create<View::D3::Box>( this ) );
 			addItem( (View::BaseView<BaseModel> *)Generic::create<View::UI::MoleculeStructure>( this ) );
 		}
 
@@ -108,8 +106,6 @@ namespace VTX
 				}
 			}
 		}
-
-		void Molecule::setRepresentation() { _notifyViews( Event::VTX_EVENT_MODEL::CHANGE_REPRESENTATION ); }
 
 		void Molecule::setColorMode() { _fillBufferAtomColors(); }
 
@@ -163,7 +159,7 @@ namespace VTX
 			{
 				switch ( Setting::Rendering::colorMode )
 				{
-				case View::MOLECULE_COLOR_MODE::ATOM:
+				case Generic::COLOR_MODE::ATOM:
 					if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
 					{
 						_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
@@ -173,13 +169,11 @@ namespace VTX
 						_bufferAtomColors[ i ] = _atoms[ i ]->getColor();
 					}
 					break;
-				case View::MOLECULE_COLOR_MODE::RESIDUE:
+				case Generic::COLOR_MODE::RESIDUE:
 					_bufferAtomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor();
 					break;
-				case View::MOLECULE_COLOR_MODE::CHAIN:
-					_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
-					break;
-				case View::MOLECULE_COLOR_MODE::PROTEIN: _bufferAtomColors[ i ] = _color; break;
+				case Generic::COLOR_MODE::CHAIN: _bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor(); break;
+				case Generic::COLOR_MODE::PROTEIN: _bufferAtomColors[ i ] = _color; break;
 
 				default: break;
 				}
@@ -290,6 +284,12 @@ namespace VTX
 			{
 				Generic::destroy( removeItem( ID::View::UI_MOLECULE ) );
 			}
+		}
+
+		void Molecule::setRepresentation( const Generic::REPRESENTATION p_representation )
+		{
+			Generic::BaseRepresentable::setRepresentation( p_representation );
+			Util::Molecule::refreshRepresentationState( *this );
 		}
 
 		void Molecule::setVisible( const bool p_visible )

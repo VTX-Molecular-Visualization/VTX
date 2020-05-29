@@ -6,6 +6,7 @@
 #endif
 
 #include "model/molecule.hpp"
+#include "setting.hpp"
 #include "tool/chrono.hpp"
 
 namespace VTX
@@ -187,6 +188,73 @@ namespace VTX
 				chrono.stop();
 				VTX_DEBUG( "Secondary structure computed in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
+
+			static void refreshRepresentationState( Model::Molecule & p_molecule )
+			{
+				// Sort atom ranges by rep.
+				Model::Molecule::RepresentationState & state = p_molecule.getRepresentationState();
+				state.clear();
+				state.emplace( Generic::REPRESENTATION::BALL_AND_STICK, std::map<uint, uint>() );
+				state.emplace( Generic::REPRESENTATION::VAN_DER_WAALS, std::map<uint, uint>() );
+				state.emplace( Generic::REPRESENTATION::STICK, std::map<uint, uint>() );
+				state.emplace( Generic::REPRESENTATION::SAS, std::map<uint, uint>() );
+
+				for ( const Model::Residue * const residue : p_molecule.getResidues() )
+				{
+					std::pair<uint, uint> pair = std::pair( residue->getIdFirstAtom(), residue->getAtomCount() );
+					if ( residue->getRepresentation() != Generic::REPRESENTATION::INHERITED )
+					{
+						state[ residue->getRepresentation() ].emplace( pair );
+					}
+					else if ( residue->getChainPtr()->getRepresentation() != Generic::REPRESENTATION::INHERITED )
+					{
+						state[ residue->getChainPtr()->getRepresentation() ].emplace( pair );
+					}
+					else if ( residue->getMoleculePtr()->getRepresentation() != Generic::REPRESENTATION::INHERITED )
+					{
+						state[ residue->getMoleculePtr()->getRepresentation() ].emplace( pair );
+					}
+					else
+					{
+						state[ Setting::Rendering::representation ].emplace( pair );
+					}
+				}
+
+				// Merge ranges.
+				for ( std::pair<const Generic::REPRESENTATION, std::map<uint, uint>> & pair : state )
+				{
+					std::map<uint, uint> & map = pair.second;
+
+					if ( map.size() < 2 )
+					{
+						continue;
+					}
+
+					VTX_DEBUG( "Before merge: " + std::to_string( map.size() ) );
+
+					std::map<uint, uint>::iterator itFirst	= map.begin();
+					std::map<uint, uint>::iterator itSecond = map.begin();
+					itSecond++;
+					while ( itSecond != map.end() )
+					{
+						if ( itSecond->first == itFirst->first + itFirst->second )
+						{
+							itFirst->second = itFirst->second + itSecond->second;
+							pair.second.erase( itSecond );
+							itSecond = itFirst;
+							itSecond++;
+						}
+						else
+						{
+							itFirst++;
+							itSecond++;
+						}
+					}
+
+					VTX_DEBUG( "After merge: " + std::to_string( map.size() ) );
+				}
+			}
+
 		} // namespace Molecule
 	}	  // namespace Util
 } // namespace VTX

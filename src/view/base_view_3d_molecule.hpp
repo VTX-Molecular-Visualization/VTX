@@ -7,33 +7,30 @@
 
 #include "base_view_3d.hpp"
 #include "model/molecule.hpp"
+#include <map>
 #include <vector>
 
 namespace VTX
 {
 	namespace View
 	{
-		enum class MOLECULE_COLOR_MODE : int
-		{
-			ATOM,
-			RESIDUE,
-			CHAIN,
-			PROTEIN
-		};
-
-		enum class MOLECULE_REPRESENTATION : int
-		{
-			BALL_AND_STICK,
-			VAN_DER_WAALS,
-			STICK,
-			SAS
-		};
-
 		class BaseView3DMolecule : public BaseView3D<Model::Molecule>
 		{
 		  public:
 			explicit BaseView3DMolecule( Model::Molecule * const p_model ) : BaseView3D( p_model ) {}
 			virtual ~BaseView3DMolecule() {}
+
+			virtual inline void render() final
+			{
+				for ( const std::pair<const Generic::REPRESENTATION, std::map<uint, uint>> & pair :
+					  _getModel().getRepresentationState() )
+				{
+					render( pair.first, pair.second );
+				}
+			}
+
+			// TODO.
+			virtual void render( const Generic::REPRESENTATION, const std::map<uint, uint> & ) = 0;
 		};
 	} // namespace View
 } // namespace VTX

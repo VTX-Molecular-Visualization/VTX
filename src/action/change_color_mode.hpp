@@ -18,11 +18,11 @@ namespace VTX
 		{
 		  public:
 			explicit ChangeColorMode() {}
-			explicit ChangeColorMode( const View::MOLECULE_COLOR_MODE p_mode ) : _mode( p_mode ) {}
+			explicit ChangeColorMode( const Generic::COLOR_MODE p_mode ) : _mode( p_mode ) {}
 
 			virtual void setParameters( const std::vector<std::string> & p_parameters ) override
 			{
-				_mode = magic_enum::enum_cast<View::MOLECULE_COLOR_MODE>( p_parameters.at( 1 ) ).value();
+				_mode = magic_enum::enum_cast<Generic::COLOR_MODE>( p_parameters.at( 1 ) ).value();
 			}
 
 			virtual void execute() override
@@ -37,7 +37,7 @@ namespace VTX
 			virtual void displayUsage() override { VTX_INFO( "ATOM|RESIDUE|CHAIN|PROTEIN" ); }
 
 		  private:
-			View::MOLECULE_COLOR_MODE _mode;
+			Generic::COLOR_MODE _mode;
 		};
 	} // namespace Action
 } // namespace VTX

@@ -8,7 +8,6 @@
 #include "renderer/base_renderer.hpp"
 #include "renderer/gl/pass/shading.hpp"
 #include "ui/user_interface.hpp"
-#include "view/base_view_3d_molecule.hpp"
 
 namespace VTX
 {
@@ -35,19 +34,19 @@ namespace VTX
 
 		namespace Rendering
 		{
-			extern bool							 isActive;
-			extern View::MOLECULE_REPRESENTATION representation;
-			extern View::MOLECULE_COLOR_MODE	 colorMode;
-			extern Renderer::MODE				 mode;
-			extern Renderer::SHADING			 shading;
-			extern bool							 useVSync;
-			extern bool							 useSSAO;
-			extern float						 aoRadius;
-			extern int							 aoIntensity;
-			extern float						 aoFactor;
-			extern int							 aoBlurSize;
-			extern int							 aoBlurSharpness;
-			extern bool							 useAA;
+			extern bool					   isActive;
+			extern Generic::REPRESENTATION representation;
+			extern Generic::COLOR_MODE	   colorMode;
+			extern Renderer::MODE		   mode;
+			extern Renderer::SHADING	   shading;
+			extern bool					   useVSync;
+			extern bool					   useSSAO;
+			extern float				   aoRadius;
+			extern int					   aoIntensity;
+			extern float				   aoFactor;
+			extern int					   aoBlurSize;
+			extern int					   aoBlurSharpness;
+			extern bool					   useAA;
 		}; // namespace Rendering
 
 		namespace Controller

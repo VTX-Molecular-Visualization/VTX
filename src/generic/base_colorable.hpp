@@ -12,11 +12,19 @@ namespace VTX
 {
 	namespace Generic
 	{
+		enum class COLOR_MODE : int
+		{
+			ATOM,
+			RESIDUE,
+			CHAIN,
+			PROTEIN
+		};
+
 		class BaseColorable
 		{
 		  public:
 			inline const Color::Rgb & getColor() const { return _color; }
-			inline void				  setColor( const Color::Rgb & p_color ) { _color = p_color; }
+			inline virtual void		  setColor( const Color::Rgb & p_color ) { _color = p_color; }
 
 		  protected:
 			Color::Rgb _color = Color::Rgb::random();

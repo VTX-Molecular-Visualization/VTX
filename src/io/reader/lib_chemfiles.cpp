@@ -142,7 +142,6 @@ namespace VTX
 						modelChain->setIdFirstResidue( residueIdx );
 						modelChain->setResidueCount( 0 );
 						modelChain->setColor( Model::Chain::getChainIdColor( chainId ) );
-
 						lastChainName = chainName;
 					}
 

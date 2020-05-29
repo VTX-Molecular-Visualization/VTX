@@ -14,18 +14,9 @@ namespace VTX
 
 				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
-
-				_isActive = true;
 			}
 
-			void Box::notify( const Event::VTX_EVENT_MODEL & p_event )
-			{
-				BaseView3DMolecule::notify( p_event );
-
-				if ( p_event == Event::VTX_EVENT_MODEL::CHANGE_REPRESENTATION ) {}
-			};
-
-			void Box::render()
+			void Box::render( const Generic::REPRESENTATION, const std::map<uint, uint> & )
 			{
 				VTXApp::get().getProgramManager().getProgram( "LineShader" )->use();
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );

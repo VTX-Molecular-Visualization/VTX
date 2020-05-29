@@ -23,8 +23,7 @@ namespace VTX
 		// Model events for notifier pattern (model->views)[1-n].
 		enum class VTX_EVENT_MODEL : int
 		{
-			RENDER,
-			CHANGE_REPRESENTATION
+			RENDER
 		};
 
 		// Event structures.

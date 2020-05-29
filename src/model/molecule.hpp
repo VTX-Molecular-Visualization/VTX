@@ -10,6 +10,7 @@
 #include "bond.hpp"
 #include "chain.hpp"
 #include "define.hpp"
+#include "generic/base_representable.hpp"
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
@@ -17,23 +18,22 @@
 #include "residue.hpp"
 #include "util/logger.hpp"
 #include <iostream>
+#include <map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 namespace VTX
 {
 	namespace Model
 	{
-		struct MoleculeConfiguration
-		{
-		};
-
 		class BaseView3DMolecule;
 		class Ribbon;
-		class Molecule : public BaseModel3D, public Generic::BaseColorable
+		class Molecule : public BaseModel3D, public Generic::BaseColorable, public Generic::BaseRepresentable
 		{
 		  public:
-			using AtomPositionsFrame = std::vector<Vec3f>;
+			using AtomPositionsFrame  = std::vector<Vec3f>;
+			using RepresentationState = std::map<const Generic::REPRESENTATION, std::map<uint, uint>>;
 
 			Molecule() = default;
 			~Molecule();
@@ -42,6 +42,10 @@ namespace VTX
 			inline const Configuration::Molecule & getConfiguration() const { return _configuration; }
 			inline Configuration::Molecule &	   getConfiguration() { return _configuration; }
 			inline void setConfiguration( const Configuration::Molecule & p_config ) { _configuration = p_config; }
+
+			// Representation.
+			inline const RepresentationState & getRepresentationState() const { return _representationState; }
+			inline RepresentationState &	   getRepresentationState() { return _representationState; }
 
 			// Models.
 			inline const std::string & getName() const { return _name; }
@@ -125,7 +129,6 @@ namespace VTX
 			inline const Math::AABB & getGlobalPositionsAABB() const { return _globalPositionsAABB; }
 
 			virtual void								   init() override;
-			void										   setRepresentation();
 			void										   setColorMode();
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
@@ -163,6 +166,7 @@ namespace VTX
 
 			virtual void setSelected( const bool ) override;
 			virtual void setVisible( const bool ) override;
+			virtual void setRepresentation( const Generic::REPRESENTATION ) override;
 
 			void createSecondaryStructure();
 
@@ -174,6 +178,9 @@ namespace VTX
 		  private:
 			// Configuration.
 			Configuration::Molecule _configuration = Configuration::Molecule();
+
+			// Representation.
+			RepresentationState _representationState = RepresentationState();
 
 			// Models.
 			std::string						_fileName			 = "";
@@ -239,7 +246,7 @@ namespace VTX
 			uint atomCount	  = 0;
 			uint bondCount	  = 0;
 #endif
-		};
-	} // namespace Model
+		}; // namespace Model
+	}	   // namespace Model
 } // namespace VTX
 #endif

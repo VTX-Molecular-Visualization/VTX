@@ -8,6 +8,7 @@
 #include "base_model.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
+#include "generic/base_representable.hpp"
 #include "generic/base_visible.hpp"
 #include <iostream>
 
@@ -16,7 +17,11 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class Chain : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
+		class Chain :
+			public BaseModel,
+			public Generic::BaseColorable,
+			public Generic::BaseVisible,
+			public Generic::BaseRepresentable
 		{
 		  public:
 			enum class TYPE : int
@@ -48,6 +53,7 @@ namespace VTX
 			inline void				   setResidueCount( const uint p_count ) { _residueCount = p_count; };
 
 			virtual void setSelected( const bool ) override;
+			virtual void setRepresentation( const Generic::REPRESENTATION ) override;
 
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;

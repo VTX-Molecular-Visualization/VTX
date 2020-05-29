@@ -1,9 +1,10 @@
 #include "molecule.hpp"
 #include "action/change_color_mode.hpp"
-#include "action/colorable_change_color.hpp"
+#include "action/molecule_change_color.hpp"
 #include "action/molecule_change_fps.hpp"
 #include "action/molecule_change_frame.hpp"
 #include "action/molecule_change_is_playing.hpp"
+#include "action/molecule_change_representation.hpp"
 #include "action/molecule_change_show_ion.hpp"
 #include "action/molecule_change_show_solvent.hpp"
 #include "action/molecule_compute_secondary_structure.hpp"
@@ -120,8 +121,8 @@ namespace VTX
 						Color::Rgb color = _getModel().getColor();
 						if ( ImGui::ColorEdit3( LOCALE( "View.Color" ), (float *)&color ) )
 						{
-							VTX_ACTION( new Action::ColorableChangeColor( _getModel(), color ) );
-							VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN ) );
+							VTX_ACTION( new Action::MoleculeChangeColor( _getModel(), color ) );
+							// VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN ) );
 						}
 						if ( config.solventAtomIds.size() > 0 || config.solventResidueSymbols.size() > 0 )
 						{
@@ -183,6 +184,20 @@ namespace VTX
 						ImGui::PopID();
 					}
 #endif
+
+					// Representation.
+					const char * representations[] = { LOCALE( "Enum.Representation.Inherited" ),
+													   LOCALE( "Enum.Representation.BallsAndSticks" ),
+													   LOCALE( "Enum.Representation.VanDerWaals" ),
+													   LOCALE( "Enum.Representation.Sticks" ),
+													   LOCALE( "Enum.Representation.SAS" ) };
+					int			 representation	   = (int)_getModel().getRepresentation();
+					if ( ImGui::Combo(
+							 LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 5 ) )
+					{
+						VTX_ACTION( new Action::MoleculeChangeRepresentation(
+							_getModel(), (Generic::REPRESENTATION)representation ) );
+					}
 				}
 				if ( notClosed == false )
 				{

@@ -30,7 +30,6 @@ namespace VTX
 			// Uniforms.
 			GLint _uViewModelMatrix = GL_INVALID_INDEX;
 			GLint _uProjMatrix		= GL_INVALID_INDEX;
-			bool  _isActive			= false;
 
 			virtual void _setCameraUniforms( const Object3D::Camera & p_camera )
 			{
@@ -45,7 +44,10 @@ namespace VTX
 
 			virtual void notify( const Event::VTX_EVENT_MODEL & p_event ) override
 			{
-				if ( p_event == Event::VTX_EVENT_MODEL::RENDER && _isActive ) { render(); }
+				if ( p_event == Event::VTX_EVENT_MODEL::RENDER )
+				{
+					render();
+				}
 			}
 		};
 	} // namespace View
