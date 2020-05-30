@@ -25,7 +25,6 @@ namespace VTX
 								 const std::map<uint, uint> &  p_mapRangeAtoms,
 								 const std::map<uint, uint> &  p_mapRangeBonds )
 			{
-				return;
 				switch ( p_representation )
 				{
 				case Generic::REPRESENTATION::BALL_AND_STICK:

@@ -119,6 +119,10 @@ namespace VTX
 				std::string	   lastChainName   = "";
 				uint		   chainModelId	   = -1;
 				bool		   chainIsStandard = true;
+
+				std::map<uint, std::vector<const chemfiles::Bond *>> mapResidueBonds
+					= std::map<uint, std::vector<const chemfiles::Bond *>>();
+
 				for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 				{
 					const chemfiles::Residue & residue = residues[ residueIdx ];
@@ -166,6 +170,8 @@ namespace VTX
 					bool isStandard = residue.properties().get( "is_standard_pdb" ).value_or( true ).as_bool();
 					modelResidue->setType( isStandard ? Model::Residue::TYPE::STANDARD
 													  : Model::Residue::TYPE::NON_STANDARD );
+
+					mapResidueBonds.emplace( modelResidue->getIndex(), std::vector<const chemfiles::Bond *>() );
 
 					// PDB only.
 					// TODO: modify chemfiles to load handedness!
@@ -294,8 +300,7 @@ namespace VTX
 				// Bonds.
 				// Sort by residus.
 				// Map with residue index to keep the order.
-				std::map<uint, std::vector<const chemfiles::Bond *>> mapResidueBonds
-					= std::map<uint, std::vector<const chemfiles::Bond *>>();
+
 				std::vector<const chemfiles::Bond *> bondsExtraResidues = std::vector<const chemfiles::Bond *>();
 				for ( uint boundIdx = 0; boundIdx < uint( bonds.size() ); ++boundIdx )
 				{
@@ -310,10 +315,6 @@ namespace VTX
 					if ( residueStart == residueEnd )
 					{
 						// Create vector if needed.
-						if ( mapResidueBonds.find( residueStart->getIndex() ) == mapResidueBonds.end() )
-						{
-							mapResidueBonds.emplace( residueStart->getIndex(), std::vector<const chemfiles::Bond *>() );
-						}
 						mapResidueBonds[ residueStart->getIndex() ].emplace_back( &bond );
 					}
 					else
@@ -332,8 +333,6 @@ namespace VTX
 					Model::Residue &							 residue	 = p_molecule.getResidue( pair.first );
 					const std::vector<const chemfiles::Bond *> & vectorBonds = pair.second;
 
-					VTX_DEBUG( std::to_string( residue.getIndex() ) + " / " + std::to_string( counter ) + " / "
-							   + std::to_string( vectorBonds.size() ) );
 					residue.setIdFirstBond( counter );
 					residue.setBondCount( uint( vectorBonds.size() ) );
 
@@ -346,6 +345,11 @@ namespace VTX
 						modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
 						modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
 					}
+				}
+
+				for ( auto extra : bondsExtraResidues )
+				{
+					// Model::Residue & residue = p_molecule.getResidue( extra );
 				}
 			}
 

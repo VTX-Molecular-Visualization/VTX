@@ -226,25 +226,32 @@ namespace VTX
 					std::pair<uint, uint> rangeAtoms = std::pair( residue->getIdFirstAtom(), residue->getAtomCount() );
 					std::pair<uint, uint> rangeBonds = std::pair( residue->getIdFirstBond(), residue->getBondCount() );
 
+					Generic::REPRESENTATION rep;
 					if ( residue->getRepresentation() != Generic::REPRESENTATION::INHERITED )
 					{
-						state[ residue->getRepresentation() ].atoms.emplace( rangeAtoms );
-						state[ residue->getRepresentation() ].bonds.emplace( rangeBonds );
+						rep = residue->getRepresentation();
 					}
 					else if ( residue->getChainPtr()->getRepresentation() != Generic::REPRESENTATION::INHERITED )
 					{
-						state[ residue->getChainPtr()->getRepresentation() ].atoms.emplace( rangeAtoms );
-						state[ residue->getChainPtr()->getRepresentation() ].bonds.emplace( rangeBonds );
+						rep = residue->getChainPtr()->getRepresentation();
 					}
 					else if ( residue->getMoleculePtr()->getRepresentation() != Generic::REPRESENTATION::INHERITED )
 					{
-						state[ residue->getMoleculePtr()->getRepresentation() ].atoms.emplace( rangeAtoms );
-						state[ residue->getMoleculePtr()->getRepresentation() ].bonds.emplace( rangeBonds );
+						rep = residue->getMoleculePtr()->getRepresentation();
 					}
 					else
 					{
-						state[ Setting::Rendering::representation ].atoms.emplace( rangeAtoms );
-						state[ Setting::Rendering::representation ].bonds.emplace( rangeBonds );
+						rep = Setting::Rendering::representation;
+					}
+
+					// Check size to avoid map overriding with same first index.
+					if ( rangeAtoms.second > 0 )
+					{
+						state[ rep ].atoms.emplace( rangeAtoms );
+					}
+					if ( rangeBonds.second > 0 )
+					{
+						state[ rep ].bonds.emplace( rangeBonds );
 					}
 				}
 
