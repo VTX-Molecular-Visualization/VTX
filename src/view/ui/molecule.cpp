@@ -41,7 +41,7 @@ namespace VTX
 						ImGui::Text( LOCALE( "View.Chains%Count" ), _getModel().getChainCount() );
 						ImGui::Text( LOCALE( "View.Residues%Count" ), _getModel().getResidueCount() );
 						ImGui::Text( LOCALE( "View.Atoms%Count" ), _getModel().getAtomCount() );
-						ImGui::Text( LOCALE( "View.Bonds%Count" ), _getModel().getBondCount() / 2 );
+						ImGui::Text( LOCALE( "View.Bonds%Count" ), _getModel().getBondCount() );
 						ImGui::Text( LOCALE( "View.SecondaryStructure%State" ),
 									 config.isSecondaryStructureLoadedFromFile ? LOCALE( "View.Loaded" )
 																			   : LOCALE( "View.Computed" ) );
