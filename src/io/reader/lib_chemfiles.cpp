@@ -292,15 +292,60 @@ namespace VTX
 				}
 
 				// Bonds.
-				p_molecule.getBonds().resize( bonds.size() );
+				// Sort by residus.
+				// Map with residue index to keep the order.
+				std::map<uint, std::vector<const chemfiles::Bond *>> mapResidueBonds
+					= std::map<uint, std::vector<const chemfiles::Bond *>>();
+				std::vector<const chemfiles::Bond *> bondsExtraResidues = std::vector<const chemfiles::Bond *>();
 				for ( uint boundIdx = 0; boundIdx < uint( bonds.size() ); ++boundIdx )
 				{
-					const chemfiles::Bond & bond	  = bonds[ boundIdx ];
-					Model::Bond *			modelBond = new Model::Bond();
-					p_molecule.getBonds()[ boundIdx ] = modelBond;
+					const chemfiles::Bond & bond = bonds[ boundIdx ];
 
-					modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
-					modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
+					uint bondStart = uint( bond[ 0 ] );
+					uint bondEnd   = uint( bond[ 1 ] );
+
+					Model::Residue * residueStart = p_molecule.getAtom( bondStart ).getResiduePtr();
+					Model::Residue * residueEnd	  = p_molecule.getAtom( bondEnd ).getResiduePtr();
+
+					if ( residueStart == residueEnd )
+					{
+						// Create vector if needed.
+						if ( mapResidueBonds.find( residueStart->getIndex() ) == mapResidueBonds.end() )
+						{
+							mapResidueBonds.emplace( residueStart->getIndex(), std::vector<const chemfiles::Bond *>() );
+						}
+						mapResidueBonds[ residueStart->getIndex() ].emplace_back( &bond );
+					}
+					else
+					{
+						bondsExtraResidues.emplace_back( &bond );
+					}
+				}
+
+				VTX_ERROR( std::to_string( bondsExtraResidues.size() ) + " bonds extra residues excluded" );
+
+				// Create models.
+				uint counter = 0;
+				p_molecule.getBonds().resize( bonds.size() - bondsExtraResidues.size() );
+				for ( const std::pair<uint, std::vector<const chemfiles::Bond *>> & pair : mapResidueBonds )
+				{
+					Model::Residue &							 residue	 = p_molecule.getResidue( pair.first );
+					const std::vector<const chemfiles::Bond *> & vectorBonds = pair.second;
+
+					VTX_DEBUG( std::to_string( residue.getIndex() ) + " / " + std::to_string( counter ) + " / "
+							   + std::to_string( vectorBonds.size() ) );
+					residue.setIdFirstBond( counter );
+					residue.setBondCount( uint( vectorBonds.size() ) );
+
+					for ( uint i = 0; i < vectorBonds.size(); ++i, ++counter )
+					{
+						const chemfiles::Bond & bond	  = *vectorBonds[ i ];
+						Model::Bond *			modelBond = new Model::Bond();
+						p_molecule.getBonds()[ counter ]  = modelBond;
+
+						modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
+						modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
+					}
 				}
 			}
 

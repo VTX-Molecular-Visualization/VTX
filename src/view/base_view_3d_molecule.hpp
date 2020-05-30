@@ -22,15 +22,19 @@ namespace VTX
 
 			virtual inline void render() final
 			{
-				for ( const std::pair<const Generic::REPRESENTATION, std::map<uint, uint>> & pair :
+				// Render atoms.
+				for ( const std::pair<const Generic::REPRESENTATION, Model::Molecule::RepresentationStruct> & pair :
 					  _getModel().getRepresentationState() )
 				{
-					render( pair.first, pair.second );
+					render( pair.first, pair.second.atoms, pair.second.bonds );
 				}
 			}
 
 			// TODO.
-			virtual void render( const Generic::REPRESENTATION, const std::map<uint, uint> & ) = 0;
+			virtual void render( const Generic::REPRESENTATION,
+								 const std::map<uint, uint> &,
+								 const std::map<uint, uint> & )
+				= 0;
 		};
 	} // namespace View
 } // namespace VTX

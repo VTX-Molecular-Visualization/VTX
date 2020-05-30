@@ -32,8 +32,16 @@ namespace VTX
 		class Molecule : public BaseModel3D, public Generic::BaseColorable, public Generic::BaseRepresentable
 		{
 		  public:
-			using AtomPositionsFrame  = std::vector<Vec3f>;
-			using RepresentationState = std::map<const Generic::REPRESENTATION, std::map<uint, uint>>;
+			using AtomPositionsFrame = std::vector<Vec3f>;
+			using MapRange			 = std::map<uint, uint>;
+
+			struct RepresentationStruct
+			{
+				MapRange atoms = MapRange();
+				MapRange bonds = MapRange();
+			};
+
+			using RepresentationState = std::map<const Generic::REPRESENTATION, RepresentationStruct>;
 
 			Molecule() = default;
 			~Molecule();

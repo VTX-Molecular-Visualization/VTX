@@ -19,10 +19,9 @@ namespace VTX
 			}
 
 			void Cylinder::render( const Generic::REPRESENTATION p_representation,
-								   const std::map<uint, uint> &	 p_mapIdx )
+								   const std::map<uint, uint> &	 p_mapRangeAtoms,
+								   const std::map<uint, uint> &	 p_mapRangeBonds )
 			{
-				return;
-
 				switch ( p_representation )
 				{
 				case Generic::REPRESENTATION::STICK:
@@ -32,17 +31,16 @@ namespace VTX
 				default: return;
 				}
 
-				for ( const std::pair<uint, uint> & pair : p_mapIdx )
+				VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
+				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
+				glUniform1f( _uRadius, 0.15f );
+
+				for ( const std::pair<uint, uint> & pair : p_mapRangeBonds )
 				{
-					VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
-					_setCameraUniforms( VTXApp::get().getScene().getCamera() );
-					glUniform1f( _uRadius, 0.15f );
-					glDrawRangeElements( GL_LINES,
-										 0,
-										 _getModel().getBondCount(),
-										 _getModel().getBondCount() * 2,
-										 GL_UNSIGNED_INT,
-										 NULL );
+					uint start = uint( pair.first );
+					// glDrawElements( GL_LINES, pair.second * 2, GL_UNSIGNED_INT, (void *)( NULL ) );
+					glDrawRangeElements(
+						GL_LINES, pair.first, pair.first + pair.second, pair.second * 2, GL_UNSIGNED_INT, NULL );
 				}
 			}
 		} // namespace D3

@@ -189,69 +189,85 @@ namespace VTX
 				VTX_DEBUG( "Secondary structure computed in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
-			static void refreshRepresentationState( Model::Molecule & p_molecule )
+			static void mergeRanges( std::map<uint, uint> & p_ranges )
 			{
-				// Sort atom ranges by rep.
-				Model::Molecule::RepresentationState & state = p_molecule.getRepresentationState();
-				state.clear();
-				state.emplace( Generic::REPRESENTATION::BALL_AND_STICK, std::map<uint, uint>() );
-				state.emplace( Generic::REPRESENTATION::VAN_DER_WAALS, std::map<uint, uint>() );
-				state.emplace( Generic::REPRESENTATION::STICK, std::map<uint, uint>() );
-				state.emplace( Generic::REPRESENTATION::SAS, std::map<uint, uint>() );
-
-				for ( const Model::Residue * const residue : p_molecule.getResidues() )
+				std::map<uint, uint>::iterator itFirst	= p_ranges.begin();
+				std::map<uint, uint>::iterator itSecond = p_ranges.begin();
+				itSecond++;
+				while ( itSecond != p_ranges.end() )
 				{
-					std::pair<uint, uint> pair = std::pair( residue->getIdFirstAtom(), residue->getAtomCount() );
-					if ( residue->getRepresentation() != Generic::REPRESENTATION::INHERITED )
+					if ( itSecond->first == itFirst->first + itFirst->second )
 					{
-						state[ residue->getRepresentation() ].emplace( pair );
-					}
-					else if ( residue->getChainPtr()->getRepresentation() != Generic::REPRESENTATION::INHERITED )
-					{
-						state[ residue->getChainPtr()->getRepresentation() ].emplace( pair );
-					}
-					else if ( residue->getMoleculePtr()->getRepresentation() != Generic::REPRESENTATION::INHERITED )
-					{
-						state[ residue->getMoleculePtr()->getRepresentation() ].emplace( pair );
+						itFirst->second = itFirst->second + itSecond->second;
+						p_ranges.erase( itSecond );
+						itSecond = itFirst;
+						itSecond++;
 					}
 					else
 					{
-						state[ Setting::Rendering::representation ].emplace( pair );
+						itFirst++;
+						itSecond++;
+					}
+				}
+			}
+
+			static void refreshRepresentationState( Model::Molecule & p_molecule )
+			{
+				// Sort ranges by rep.
+				Model::Molecule::RepresentationState & state = p_molecule.getRepresentationState();
+				state.clear();
+				state.emplace( Generic::REPRESENTATION::BALL_AND_STICK, Model::Molecule::RepresentationStruct() );
+				state.emplace( Generic::REPRESENTATION::VAN_DER_WAALS, Model::Molecule::RepresentationStruct() );
+				state.emplace( Generic::REPRESENTATION::STICK, Model::Molecule::RepresentationStruct() );
+				state.emplace( Generic::REPRESENTATION::SAS, Model::Molecule::RepresentationStruct() );
+
+				for ( const Model::Residue * const residue : p_molecule.getResidues() )
+				{
+					std::pair<uint, uint> rangeAtoms = std::pair( residue->getIdFirstAtom(), residue->getAtomCount() );
+					std::pair<uint, uint> rangeBonds = std::pair( residue->getIdFirstBond(), residue->getBondCount() );
+
+					if ( residue->getRepresentation() != Generic::REPRESENTATION::INHERITED )
+					{
+						state[ residue->getRepresentation() ].atoms.emplace( rangeAtoms );
+						state[ residue->getRepresentation() ].bonds.emplace( rangeBonds );
+					}
+					else if ( residue->getChainPtr()->getRepresentation() != Generic::REPRESENTATION::INHERITED )
+					{
+						state[ residue->getChainPtr()->getRepresentation() ].atoms.emplace( rangeAtoms );
+						state[ residue->getChainPtr()->getRepresentation() ].bonds.emplace( rangeBonds );
+					}
+					else if ( residue->getMoleculePtr()->getRepresentation() != Generic::REPRESENTATION::INHERITED )
+					{
+						state[ residue->getMoleculePtr()->getRepresentation() ].atoms.emplace( rangeAtoms );
+						state[ residue->getMoleculePtr()->getRepresentation() ].bonds.emplace( rangeBonds );
+					}
+					else
+					{
+						state[ Setting::Rendering::representation ].atoms.emplace( rangeAtoms );
+						state[ Setting::Rendering::representation ].bonds.emplace( rangeBonds );
 					}
 				}
 
-				// Merge ranges.
-				for ( std::pair<const Generic::REPRESENTATION, std::map<uint, uint>> & pair : state )
+				// Merge  ranges.
+				for ( std::pair<const Generic::REPRESENTATION, Model::Molecule::RepresentationStruct> & pair : state )
 				{
-					std::map<uint, uint> & map = pair.second;
-
-					if ( map.size() < 2 )
+					// Atoms.
+					std::map<uint, uint> & rangeAtoms = pair.second.atoms;
+					if ( rangeAtoms.size() > 1 )
 					{
-						continue;
+						VTX_DEBUG( "Before merging atoms: " + std::to_string( rangeAtoms.size() ) );
+						mergeRanges( rangeAtoms );
+						VTX_DEBUG( "After merging atoms: " + std::to_string( rangeAtoms.size() ) );
 					}
 
-					VTX_DEBUG( "Before merge: " + std::to_string( map.size() ) );
-
-					std::map<uint, uint>::iterator itFirst	= map.begin();
-					std::map<uint, uint>::iterator itSecond = map.begin();
-					itSecond++;
-					while ( itSecond != map.end() )
+					// Bonds.
+					std::map<uint, uint> & rangeBonds = pair.second.bonds;
+					if ( rangeBonds.size() > 1 )
 					{
-						if ( itSecond->first == itFirst->first + itFirst->second )
-						{
-							itFirst->second = itFirst->second + itSecond->second;
-							pair.second.erase( itSecond );
-							itSecond = itFirst;
-							itSecond++;
-						}
-						else
-						{
-							itFirst++;
-							itSecond++;
-						}
+						VTX_DEBUG( "Before merging bonds: " + std::to_string( rangeBonds.size() ) );
+						mergeRanges( rangeBonds );
+						VTX_DEBUG( "After merging bonds: " + std::to_string( rangeBonds.size() ) );
 					}
-
-					VTX_DEBUG( "After merge: " + std::to_string( map.size() ) );
 				}
 			}
 
