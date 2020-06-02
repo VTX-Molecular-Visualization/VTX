@@ -11,6 +11,8 @@
 #include "action/change_ao_intensity.hpp"
 #include "action/change_ao_radius.hpp"
 #include "action/change_auto_rotate_speed.hpp"
+#include "action/change_camera_clip.hpp"
+#include "action/change_camera_fov.hpp"
 #include "action/change_color_mode.hpp"
 #include "action/change_display_mode.hpp"
 #include "action/change_representation.hpp"
@@ -263,6 +265,26 @@ namespace VTX
 				if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ), &shading, shadings, 4 ) )
 				{
 					VTX_ACTION( new Action::ChangeShading( (Renderer::SHADING)shading ) );
+				}
+
+				// Camera.
+				float camNear = Setting::Rendering::camNear;
+				if ( ImGui::SliderFloat(
+						 LOCALE( "MainMenu.Settings.CamNear" ), &camNear, CAMERA_NEAR_FAR_MIN, CAMERA_NEAR_FAR_MAX ) )
+				{
+					VTX_ACTION( new Action::ChangeCameraClip( camNear, Setting::Rendering::camFar ) );
+				}
+				float camFar = Setting::Rendering::camFar;
+				if ( ImGui::SliderFloat(
+						 LOCALE( "MainMenu.Settings.CamFar" ), &camFar, CAMERA_NEAR_FAR_MIN, CAMERA_NEAR_FAR_MAX ) )
+				{
+					VTX_ACTION( new Action::ChangeCameraClip( Setting::Rendering::camNear, camFar ) );
+				}
+				float camFov = Setting::Rendering::camFov;
+				if ( ImGui::SliderFloat(
+						 LOCALE( "MainMenu.Settings.CamFov" ), &camFov, CAMERA_FOV_MIN, CAMERA_FOV_MAX ) )
+				{
+					VTX_ACTION( new Action::ChangeCameraFov( camFov ) );
 				}
 
 				// VSYNC.

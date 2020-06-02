@@ -1,10 +1,19 @@
 #include "camera.hpp"
+#include "setting.hpp"
 #include "util/logger.hpp"
 
 namespace VTX
 {
 	namespace Object3D
 	{
+		// TODO? (20_05_27): _near, _far, _fov must be initialized in cpp because setting.hpp cannot be included in hpp
+		Camera::Camera() :
+			_near( Util::Math::max( 1e-1f, Setting::Rendering::camNear ) ), // Avoid to little value.
+			_far( Util::Math::max( _near, Setting::Rendering::camFar ) ), _fov( Setting::Rendering::camFov )
+		{
+			_updateRotation();
+		}
+
 		void Camera::move( const Vec3f & p_delta )
 		{
 			_position += _left * p_delta.x;

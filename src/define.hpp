@@ -46,9 +46,10 @@ namespace VTX
 	const std::string GLSL_VERSION		   = "#version 450";
 	const bool		  VSYNC_DEFAULT		   = true;
 
-	const bool SSAO_DEFAULT = true;
-	const bool AA_DEFAULT	= true;
-	const bool RANDOM		= true;
+	const bool SSAO_DEFAULT			 = true;
+	const bool CONTOUR_LINES_DEFAULT = false; // Not implemented yet.
+	const bool AA_DEFAULT			 = true;
+	const bool RANDOM				 = false; // Keep it false for dev branch.
 
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 
@@ -57,11 +58,11 @@ namespace VTX
 	// constexpr int WINDOW_WIDTH	= 640;
 	// constexpr int WINDOW_HEIGHT = 320;
 	// 720p.
-	// constexpr int WINDOW_WIDTH	= 1280;
-	// constexpr int WINDOW_HEIGHT = 720;
+	constexpr int WINDOW_WIDTH	= 1280;
+	constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
-	constexpr int WINDOW_WIDTH	= 1920;
-	constexpr int WINDOW_HEIGHT = 1080;
+	// constexpr int WINDOW_WIDTH	= 1920;
+	// constexpr int WINDOW_HEIGHT = 1080;
 	// 4k
 	// constexpr int WINDOW_WIDTH	= 3840;
 	// constexpr int WINDOW_HEIGHT = 2160;
@@ -70,11 +71,13 @@ namespace VTX
 	// constexpr int WINDOW_HEIGHT = 864;
 
 	// Camera.
-	constexpr float CAMERA_NEAR	   = 1e-1f;
-	constexpr float CAMERA_FAR	   = 1e4f;
-	constexpr float CAMERA_FOV	   = 60.f;
-	constexpr float CAMERA_FOV_MIN = 10.f;
-	constexpr float CAMERA_FOV_MAX = 90.f;
+	constexpr float CAMERA_NEAR_DEFAULT = 0.f;
+	constexpr float CAMERA_FAR_DEFAULT	= 1e4f;
+	constexpr float CAMERA_NEAR_FAR_MIN = 0.f;
+	constexpr float CAMERA_NEAR_FAR_MAX = 1e4f;
+	constexpr float CAMERA_FOV_DEFAULT	= 60.f;
+	constexpr float CAMERA_FOV_MIN		= 10.f;
+	constexpr float CAMERA_FOV_MAX		= 90.f;
 
 	// Controllers.
 	constexpr float CONTROLLER_TRANSLATION_SPEED_MIN	  = 50.f;
@@ -91,7 +94,7 @@ namespace VTX
 	// Rendering.
 	// TODO: choose relevant constants
 	constexpr float RENDERER_AO_RADIUS_MIN			   = 0.f;
-	constexpr float RENDERER_AO_RADIUS_MAX			   = 200.f;
+	constexpr float RENDERER_AO_RADIUS_MAX			   = 1000.f;
 	constexpr float RENDERER_AO_RADIUS_DEFAULT		   = 32.f;
 	constexpr int	RENDERER_AO_INTENSITY_MIN		   = 1;
 	constexpr int	RENDERER_AO_INTENSITY_MAX		   = 10;

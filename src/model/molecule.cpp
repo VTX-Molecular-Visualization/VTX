@@ -76,13 +76,11 @@ namespace VTX
 
 				if ( _configuration.isSecondaryStructureLoadedFromFile == false )
 				{
-					// Util::Molecule::computeSecondaryStructure( *this );
+					Util::Molecule::computeSecondaryStructure( *this );
 				}
-				else
-				{
-					// Create secondary structure mesh.
-					createSecondaryStructure();
-				}
+
+				// Create secondary structure mesh.
+				createSecondaryStructure();
 			}
 
 			Util::Molecule::refreshRepresentationState( *this );
