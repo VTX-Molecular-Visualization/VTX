@@ -1,8 +1,8 @@
 #include "residue.hpp"
 #include "action/change_color_mode.hpp"
 #include "action/residue_change_color.hpp "
-#include "action/residue_change_representation.hpp"
 #include "action/visible_change_visibility.hpp"
+#include "util/ui.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -33,19 +33,7 @@ namespace VTX
 						VTX_ACTION( new Action::ResidueChangeColor( _getModel(), color ) );
 						// VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::RESIDUE ) );
 					}
-					// Representation.
-					const char * representations[] = { LOCALE( "Enum.Representation.Inherited" ),
-													   LOCALE( "Enum.Representation.BallsAndSticks" ),
-													   LOCALE( "Enum.Representation.VanDerWaals" ),
-													   LOCALE( "Enum.Representation.Sticks" ),
-													   LOCALE( "Enum.Representation.SAS" ) };
-					int			 representation	   = (int)_getModel().getRepresentation();
-					if ( ImGui::Combo(
-							 LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 5 ) )
-					{
-						VTX_ACTION( new Action::ResidueChangeRepresentation(
-							_getModel(), (Generic::REPRESENTATION)representation ) );
-					}
+					Util::UI::drawRepresentations( _getModel() );
 				}
 				ImGui::PopID();
 			}

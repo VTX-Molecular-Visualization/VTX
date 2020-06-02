@@ -13,7 +13,7 @@ namespace VTX
 		namespace Rendering
 		{
 			extern bool				isActive		= true;
-			Generic::REPRESENTATION representation	= Generic::REPRESENTATION::VAN_DER_WAALS;
+			Generic::REPRESENTATION representation	= Generic::REPRESENTATION::BALL_AND_STICK;
 			Generic::COLOR_MODE		colorMode		= Generic::COLOR_MODE::CHAIN;
 			Renderer::MODE			mode			= Renderer::MODE::GL;
 			Renderer::SHADING		shading			= Renderer::SHADING::BLINN_PHONG;

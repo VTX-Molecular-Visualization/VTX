@@ -112,7 +112,8 @@ namespace VTX
 			const Atom * const		findFirstAtomByName( const std::string & ) const;
 
 			virtual void setSelected( const bool ) override;
-			virtual void setRepresentation( const Generic::REPRESENTATION ) override;
+			virtual void addRepresentation( const Generic::REPRESENTATION ) override;
+			virtual void removeRepresentation( const Generic::REPRESENTATION ) override;
 
 		  private:
 			TYPE	   _type		= TYPE::STANDARD;

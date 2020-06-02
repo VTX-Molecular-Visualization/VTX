@@ -30,7 +30,6 @@ namespace VTX
 				}
 			}
 
-			// TODO.
 			virtual void render( const Generic::REPRESENTATION,
 								 const std::map<uint, uint> &,
 								 const std::map<uint, uint> & )

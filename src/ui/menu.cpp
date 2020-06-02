@@ -235,11 +235,12 @@ namespace VTX
 				const char * representations[] = { LOCALE( "Enum.Representation.BallsAndSticks" ),
 												   LOCALE( "Enum.Representation.VanDerWaals" ),
 												   LOCALE( "Enum.Representation.Sticks" ),
-												   LOCALE( "Enum.Representation.SAS" ) };
-				int			 representation	   = (int)Setting::Rendering::representation - 1;
-				if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 4 ) )
+												   LOCALE( "Enum.Representation.SAS" ),
+												   LOCALE( "Enum.Representation.Cartoon" ) };
+				int			 representation	   = (int)Setting::Rendering::representation;
+				if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 5 ) )
 				{
-					VTX_ACTION( new Action::ChangeRepresentation( ( Generic::REPRESENTATION )( representation + 1 ) ) );
+					VTX_ACTION( new Action::ChangeRepresentation( ( Generic::REPRESENTATION )( representation ) ) );
 				}
 
 				// Color mode.

@@ -226,32 +226,46 @@ namespace VTX
 					std::pair<uint, uint> rangeAtoms = std::pair( residue->getIdFirstAtom(), residue->getAtomCount() );
 					std::pair<uint, uint> rangeBonds = std::pair( residue->getIdFirstBond(), residue->getBondCount() );
 
-					Generic::REPRESENTATION rep;
-					if ( residue->getRepresentation() != Generic::REPRESENTATION::INHERITED )
+					const std::set<Generic::REPRESENTATION> * representations = nullptr;
+
+					if ( residue->getRepresentations().size() > 0 )
 					{
-						rep = residue->getRepresentation();
+						representations = &residue->getRepresentations();
 					}
-					else if ( residue->getChainPtr()->getRepresentation() != Generic::REPRESENTATION::INHERITED )
+					else if ( residue->getChainPtr()->getRepresentations().size() > 0 )
 					{
-						rep = residue->getChainPtr()->getRepresentation();
+						representations = &residue->getChainPtr()->getRepresentations();
 					}
-					else if ( residue->getMoleculePtr()->getRepresentation() != Generic::REPRESENTATION::INHERITED )
+					else if ( residue->getMoleculePtr()->getRepresentations().size() > 0 )
 					{
-						rep = residue->getMoleculePtr()->getRepresentation();
+						representations = &residue->getMoleculePtr()->getRepresentations();
+					}
+
+					if ( representations != nullptr )
+					{
+						for ( const Generic::REPRESENTATION representation : *representations )
+						{
+							// Check size to avoid map overriding with same first index.
+							if ( rangeAtoms.second > 0 )
+							{
+								state[ representation ].atoms.emplace( rangeAtoms );
+							}
+							if ( rangeBonds.second > 0 )
+							{
+								state[ representation ].bonds.emplace( rangeBonds );
+							}
+						}
 					}
 					else
 					{
-						rep = Setting::Rendering::representation;
-					}
-
-					// Check size to avoid map overriding with same first index.
-					if ( rangeAtoms.second > 0 )
-					{
-						state[ rep ].atoms.emplace( rangeAtoms );
-					}
-					if ( rangeBonds.second > 0 )
-					{
-						state[ rep ].bonds.emplace( rangeBonds );
+						if ( rangeAtoms.second > 0 )
+						{
+							state[ Setting::Rendering::representation ].atoms.emplace( rangeAtoms );
+						}
+						if ( rangeBonds.second > 0 )
+						{
+							state[ Setting::Rendering::representation ].bonds.emplace( rangeBonds );
+						}
 					}
 				}
 

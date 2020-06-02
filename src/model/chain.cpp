@@ -94,9 +94,15 @@ namespace VTX
 			}
 		}
 
-		void Chain::setRepresentation( const Generic::REPRESENTATION p_representation )
+		void Chain::addRepresentation( const Generic::REPRESENTATION p_representation )
 		{
-			Generic::BaseRepresentable::setRepresentation( p_representation );
+			Generic::BaseRepresentable::addRepresentation( p_representation );
+			Util::Molecule::refreshRepresentationState( *getMoleculePtr() );
+		}
+
+		void Chain::removeRepresentation( const Generic::REPRESENTATION p_representation )
+		{
+			Generic::BaseRepresentable::removeRepresentation( p_representation );
 			Util::Molecule::refreshRepresentationState( *getMoleculePtr() );
 		}
 	} // namespace Model

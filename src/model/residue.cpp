@@ -19,9 +19,15 @@ namespace VTX
 			}
 		}
 
-		void Residue::setRepresentation( const Generic::REPRESENTATION p_representation )
+		void Residue::addRepresentation( const Generic::REPRESENTATION p_representation )
 		{
-			Generic::BaseRepresentable::setRepresentation( p_representation );
+			Generic::BaseRepresentable::addRepresentation( p_representation );
+			Util::Molecule::refreshRepresentationState( *getMoleculePtr() );
+		}
+
+		void Residue::removeRepresentation( const Generic::REPRESENTATION p_representation )
+		{
+			Generic::BaseRepresentable::removeRepresentation( p_representation );
 			Util::Molecule::refreshRepresentationState( *getMoleculePtr() );
 		}
 

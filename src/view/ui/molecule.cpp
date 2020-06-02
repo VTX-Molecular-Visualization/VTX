@@ -4,7 +4,6 @@
 #include "action/molecule_change_fps.hpp"
 #include "action/molecule_change_frame.hpp"
 #include "action/molecule_change_is_playing.hpp"
-#include "action/molecule_change_representation.hpp"
 #include "action/molecule_change_show_ion.hpp"
 #include "action/molecule_change_show_solvent.hpp"
 #include "action/molecule_compute_secondary_structure.hpp"
@@ -13,6 +12,7 @@
 #include "action/transformable_set_scale.hpp"
 #include "action/transformable_set_translation.hpp"
 #include "action/visible_change_visibility.hpp"
+#include "util/ui.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -185,19 +185,7 @@ namespace VTX
 					}
 #endif
 
-					// Representation.
-					const char * representations[] = { LOCALE( "Enum.Representation.Inherited" ),
-													   LOCALE( "Enum.Representation.BallsAndSticks" ),
-													   LOCALE( "Enum.Representation.VanDerWaals" ),
-													   LOCALE( "Enum.Representation.Sticks" ),
-													   LOCALE( "Enum.Representation.SAS" ) };
-					int			 representation	   = (int)_getModel().getRepresentation();
-					if ( ImGui::Combo(
-							 LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 5 ) )
-					{
-						VTX_ACTION( new Action::MoleculeChangeRepresentation(
-							_getModel(), (Generic::REPRESENTATION)representation ) );
-					}
+					Util::UI::drawRepresentations( _getModel() );
 				}
 				if ( notClosed == false )
 				{

@@ -174,7 +174,8 @@ namespace VTX
 
 			virtual void setSelected( const bool ) override;
 			virtual void setVisible( const bool ) override;
-			virtual void setRepresentation( const Generic::REPRESENTATION ) override;
+			virtual void addRepresentation( const Generic::REPRESENTATION ) override;
+			virtual void removeRepresentation( const Generic::REPRESENTATION ) override;
 
 			void createSecondaryStructure();
 

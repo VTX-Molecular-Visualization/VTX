@@ -99,6 +99,7 @@ namespace VTX
 			{ "View.Path", "Path" },
 			{ "View.Frame", "Frame" },
 			{ "View.FPS", "FPS" },
+			{ "View.Add", "Add" },
 			{ "View.Replace", "Replace" },
 			{ "View.Delete", "Delete" },
 			{ "View.Duration", "Duration" },
@@ -126,6 +127,7 @@ namespace VTX
 			{ "View.Hide", "Hide" },
 			{ "View.Solo", "Solo" },
 			{ "View.All", "All" },
+			{ "View.Representation", "Representation" },
 
 			// Modals.
 			{ "Modal.Loading", "Loading" },
@@ -138,11 +140,11 @@ namespace VTX
 			{ "Enum.SymbolDisplay.Short", "Short" },
 			{ "Enum.SymbolDisplay.Long", "Long" },
 
-			{ "Enum.Representation.Inherited", "Inherited" },
 			{ "Enum.Representation.BallsAndSticks", "Balls and sticks" },
 			{ "Enum.Representation.VanDerWaals", "Van der Waals" },
 			{ "Enum.Representation.Sticks", "Sticks" },
 			{ "Enum.Representation.SAS", "SAS" },
+			{ "Enum.Representation.Cartoon", "Cartoon" },
 
 			{ "Enum.ColorMode.Atom", "Atom" },
 			{ "Enum.ColorMode.Residue", "Residue" },

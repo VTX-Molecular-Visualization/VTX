@@ -53,7 +53,8 @@ namespace VTX
 			inline void				   setResidueCount( const uint p_count ) { _residueCount = p_count; };
 
 			virtual void setSelected( const bool ) override;
-			virtual void setRepresentation( const Generic::REPRESENTATION ) override;
+			virtual void addRepresentation( const Generic::REPRESENTATION ) override;
+			virtual void removeRepresentation( const Generic::REPRESENTATION ) override;
 
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;

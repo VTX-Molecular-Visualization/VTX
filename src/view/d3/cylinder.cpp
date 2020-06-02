@@ -37,6 +37,7 @@ namespace VTX
 
 				for ( const std::pair<uint, uint> & pair : p_mapRangeBonds )
 				{
+					// VTX_DEBUG( std::to_string( pair.first ) + " / " + std::to_string( pair.second ) );
 					uint start = uint( pair.first );
 					// glDrawElements( GL_LINES, pair.second * 2, GL_UNSIGNED_INT, (void *)( NULL ) );
 					glDrawRangeElements(
