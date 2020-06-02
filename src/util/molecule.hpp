@@ -6,6 +6,7 @@
 #endif
 
 #include "model/molecule.hpp"
+#include "model/ribbon.hpp"
 #include "setting.hpp"
 #include "tool/chrono.hpp"
 
@@ -225,6 +226,8 @@ namespace VTX
 				{
 					std::pair<uint, uint> rangeAtoms = std::pair( residue->getIdFirstAtom(), residue->getAtomCount() );
 					std::pair<uint, uint> rangeBonds = std::pair( residue->getIdFirstBond(), residue->getBondCount() );
+					std::pair<uint, uint> rangeTriangles
+						= p_molecule.getRibbon().getRangeByResidue( residue->getIndex() );
 
 					const std::set<Generic::REPRESENTATION> * representations = nullptr;
 
@@ -254,6 +257,10 @@ namespace VTX
 							{
 								state[ representation ].bonds.emplace( rangeBonds );
 							}
+							if ( rangeTriangles.second > 0 )
+							{
+								state[ representation ].triangles.emplace( rangeTriangles );
+							}
 						}
 					}
 					else
@@ -265,6 +272,10 @@ namespace VTX
 						if ( rangeBonds.second > 0 )
 						{
 							state[ Setting::Rendering::representation ].bonds.emplace( rangeBonds );
+						}
+						if ( rangeTriangles.second > 0 )
+						{
+							state[ Setting::Rendering::representation ].triangles.emplace( rangeTriangles );
 						}
 					}
 				}
@@ -288,6 +299,15 @@ namespace VTX
 						VTX_DEBUG( "Before merging bonds: " + std::to_string( rangeBonds.size() ) );
 						mergeRanges( rangeBonds );
 						VTX_DEBUG( "After merging bonds: " + std::to_string( rangeBonds.size() ) );
+					}
+
+					// Triangles.
+					std::map<uint, uint> & rangeTriangle = pair.second.triangles;
+					if ( rangeTriangle.size() > 1 )
+					{
+						VTX_DEBUG( "Before merging triangles: " + std::to_string( rangeTriangle.size() ) );
+						mergeRanges( rangeTriangle );
+						VTX_DEBUG( "After merging triangles: " + std::to_string( rangeTriangle.size() ) );
 					}
 				}
 			}

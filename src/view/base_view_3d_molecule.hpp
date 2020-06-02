@@ -8,7 +8,6 @@
 #include "base_view_3d.hpp"
 #include "model/molecule.hpp"
 #include <map>
-#include <vector>
 
 namespace VTX
 {
@@ -26,14 +25,11 @@ namespace VTX
 				for ( const std::pair<const Generic::REPRESENTATION, Model::Molecule::RepresentationStruct> & pair :
 					  _getModel().getRepresentationState() )
 				{
-					render( pair.first, pair.second.atoms, pair.second.bonds );
+					render( pair.first );
 				}
 			}
 
-			virtual void render( const Generic::REPRESENTATION,
-								 const std::map<uint, uint> &,
-								 const std::map<uint, uint> & )
-				= 0;
+			virtual void render( const Generic::REPRESENTATION ) = 0;
 		};
 	} // namespace View
 } // namespace VTX

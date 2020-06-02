@@ -34,6 +34,16 @@ namespace VTX
 			return instance;
 		}
 
+		template<typename T,
+				 typename Q,
+				 typename = std::enable_if<std::is_base_of<Generic::BaseInitializable, T>::value>>
+		static T * const create( Q * const p_param )
+		{
+			T * const instance = new T( p_param );
+			instance->init();
+			return instance;
+		}
+
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCleanable, T>::value>>
 		static void destroy( T * p_instance )
 		{

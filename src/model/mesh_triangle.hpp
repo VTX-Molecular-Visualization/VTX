@@ -72,7 +72,7 @@ namespace VTX
 			virtual void unbindBuffers() override;
 
 		  protected:
-			virtual void _addItems() override final;
+			virtual void _addItems() override;
 
 			enum ATTRIBUTE_LOCATION
 			{

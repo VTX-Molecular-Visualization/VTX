@@ -23,9 +23,7 @@ namespace VTX
 				_uZFarLoc		   = glGetUniformLocation( program->getId(), "uZFar" );
 			}
 
-			void Sphere::render( const Generic::REPRESENTATION p_representation,
-								 const std::map<uint, uint> &  p_mapRangeAtoms,
-								 const std::map<uint, uint> &  p_mapRangeBonds )
+			void Sphere::render( const Generic::REPRESENTATION p_representation )
 			{
 				switch ( p_representation )
 				{
@@ -61,8 +59,9 @@ namespace VTX
 				glUniform1f( _uZNearLoc, Setting::Rendering::camNear );
 				glUniform1f( _uZFarLoc, Setting::Rendering::camFar );
 				_setCameraUniforms( cam );
-				
-				for ( const std::pair<uint, uint> & pair : p_mapRangeAtoms )
+
+				for ( const std::pair<uint, uint> & pair :
+					  _getModel().getRepresentationState()[ p_representation ].atoms )
 				{
 					glDrawArrays( GL_POINTS, pair.first, pair.second );
 				}

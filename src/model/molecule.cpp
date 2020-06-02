@@ -5,6 +5,7 @@
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
+#include "view/d3/triangle_ribbon.hpp"
 #include "view/ui/molecule.hpp"
 #include "view/ui/molecule_structure.hpp"
 #include "vtx_app.hpp"
@@ -307,7 +308,7 @@ namespace VTX
 			_fillBufferAtomVisibilities();
 			if ( _ribbon != nullptr )
 			{
-				_ribbon->refreshVisibility( *this );
+				_ribbon->refreshVisibility();
 			}
 		}
 
@@ -462,8 +463,8 @@ namespace VTX
 				Generic::destroy( _ribbon );
 			}
 
-			_ribbon = Generic::create<Ribbon, Molecule>( *this );
-			_ribbon->refreshVisibility( *this );
+			_ribbon = Generic::create<Ribbon, Molecule>( this );
+			_ribbon->refreshVisibility();
 			_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
 		}

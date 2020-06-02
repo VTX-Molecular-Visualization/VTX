@@ -37,8 +37,9 @@ namespace VTX
 
 			struct RepresentationStruct
 			{
-				MapRange atoms = MapRange();
-				MapRange bonds = MapRange();
+				MapRange atoms	   = MapRange();
+				MapRange bonds	   = MapRange();
+				MapRange triangles = MapRange();
 			};
 
 			using RepresentationState = std::map<const Generic::REPRESENTATION, RepresentationStruct>;
@@ -83,6 +84,7 @@ namespace VTX
 			inline const std::vector<Bond *> &	  getBonds() const { return _bonds; }
 
 			inline const Ribbon & getRibbon() const { return *_ribbon; }
+			inline Ribbon &		  getRibbon() { return *_ribbon; }
 
 			inline const bool isAtomVisible( const uint p_idx ) const
 			{

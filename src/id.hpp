@@ -35,10 +35,11 @@ namespace VTX
 			const VTX_ID UI_PATH			   = "UI_PATH";
 			const VTX_ID UI_VIEWPOINT		   = "UI_VIEWPOINT";
 
-			const VTX_ID D3_CYLINDER = "3D_CYLINDER";
-			const VTX_ID D3_SPHERE	 = "3D_SPHERE";
-			const VTX_ID D3_BOX		 = "3D_BOX";
-			const VTX_ID D3_TRIANGLE = "3D_TRIANGLE";
+			const VTX_ID D3_CYLINDER		= "3D_CYLINDER";
+			const VTX_ID D3_SPHERE			= "3D_SPHERE";
+			const VTX_ID D3_BOX				= "3D_BOX";
+			const VTX_ID D3_TRIANGLE		= "3D_TRIANGLE";
+			const VTX_ID D3_TRIANGLE_RIBBON = "3D_TRIANGLE_RIBBON";
 		} // namespace View
 
 		namespace State

@@ -18,28 +18,21 @@ namespace VTX
 				_uRadius		  = glGetUniformLocation( program->getId(), "uCylRad" );
 			}
 
-			void Cylinder::render( const Generic::REPRESENTATION p_representation,
-								   const std::map<uint, uint> &	 p_mapRangeAtoms,
-								   const std::map<uint, uint> &	 p_mapRangeBonds )
+			void Cylinder::render( const Generic::REPRESENTATION p_representation )
 			{
 				switch ( p_representation )
 				{
 				case Generic::REPRESENTATION::STICK:
 				case Generic::REPRESENTATION::BALL_AND_STICK: break;
-				case Generic::REPRESENTATION::VAN_DER_WAALS:
-				case Generic::REPRESENTATION::SAS:
 				default: return;
 				}
 
-				VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
-				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
-				glUniform1f( _uRadius, 0.15f );
-
-				for ( const std::pair<uint, uint> & pair : p_mapRangeBonds )
+				for ( const std::pair<uint, uint> & pair :
+					  _getModel().getRepresentationState()[ p_representation ].bonds )
 				{
-					// VTX_DEBUG( std::to_string( pair.first ) + " / " + std::to_string( pair.second ) );
-					uint start = uint( pair.first );
-					// glDrawElements( GL_LINES, pair.second * 2, GL_UNSIGNED_INT, (void *)( NULL ) );
+					VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
+					_setCameraUniforms( VTXApp::get().getScene().getCamera() );
+					glUniform1f( _uRadius, 0.15f );
 					glDrawRangeElements(
 						GL_LINES, pair.first, pair.first + pair.second, pair.second * 2, GL_UNSIGNED_INT, NULL );
 				}

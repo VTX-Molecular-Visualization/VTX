@@ -1,22 +1,23 @@
 #include "ribbon.hpp"
 #include "tool/chrono.hpp"
+#include "view/d3/triangle_ribbon.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
-		Ribbon::Ribbon( const Molecule & p_molecule )
+		Ribbon::Ribbon( Molecule * const p_molecule ) : _molecule( p_molecule )
 		{
 			Tool::Chrono chrono;
 			chrono.start();
 			VTX_DEBUG( "Creating secondary structure..." );
 
-			const Molecule::AtomPositionsFrame & positions = p_molecule.getAtomPositionFrame( p_molecule.getFrame() );
+			const Molecule::AtomPositionsFrame & positions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
 
 			uint vIndex = 0;
 
 			// Loop over chains.
-			for ( uint chainIdx = 0; chainIdx < p_molecule.getChainCount(); ++chainIdx )
+			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
 				Vec3f		  flipTestV	   = VEC3F_ZERO;
 				Math::BSpline splineCenter = Math::BSpline();
@@ -24,7 +25,7 @@ namespace VTX
 				Math::BSpline splineSide2  = Math::BSpline();
 
 				// VTX_DEBUG( "Building secondary structure... chain " + std::to_string( chainIdx ) );
-				const Chain &	   chain		   = p_molecule.getChain( chainIdx );
+				const Chain &	   chain		   = _molecule->getChain( chainIdx );
 				const Color::Rgb & chainColor	   = chain.getColor();
 				uint			   residueCount	   = chain.getResidueCount();
 				uint			   idxFirstResidue = chain.getIdFirstResidue();
@@ -40,7 +41,7 @@ namespace VTX
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
 					// VTX_DEBUG( "Building secondary structure... residue " + std::to_string( residueIdx ) );
-					const Residue &					   residue1 = p_molecule.getResidue( idxFirstResidue + residueIdx );
+					const Residue &					   residue1 = _molecule->getResidue( idxFirstResidue + residueIdx );
 					const Residue::SECONDARY_STRUCTURE ss		= residue1.getSecondaryStructure();
 
 					// First residue
@@ -52,7 +53,7 @@ namespace VTX
 							continue;
 						}
 
-						const Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
+						const Residue & residue2 = _molecule->getResidue( idxFirstResidue + residueIdx + 1 );
 
 						const Model::Atom * CA1 = residue1.findFirstAtomByName( "CA" );
 						const Model::Atom * OX1 = residue1.findFirstAtomByName( "O" );
@@ -82,7 +83,7 @@ namespace VTX
 						splineCenter.copyPoint( 3, 2 );
 						splineSide2.copyPoint( 3, 2 );
 
-						const Residue & residue3 = p_molecule.getResidue( idxFirstResidue + residueIdx + 2 );
+						const Residue & residue3 = _molecule->getResidue( idxFirstResidue + residueIdx + 2 );
 
 						const Model::Atom * OX2 = residue2.findFirstAtomByName( "O" );
 						const Model::Atom * CA3 = residue3.findFirstAtomByName( "CA" );
@@ -153,8 +154,8 @@ namespace VTX
 						}
 						else
 						{
-							const Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
-							const Residue & residue3 = p_molecule.getResidue( idxFirstResidue + residueIdx + 2 );
+							const Residue & residue2 = _molecule->getResidue( idxFirstResidue + residueIdx + 1 );
+							const Residue & residue3 = _molecule->getResidue( idxFirstResidue + residueIdx + 2 );
 
 							const Model::Atom * CA2 = residue2.findFirstAtomByName( "CA" );
 							const Model::Atom * OX2 = residue2.findFirstAtomByName( "O" );
@@ -185,10 +186,10 @@ namespace VTX
 					// Is arrow if previous == STRAND and current is last or != STRAND.
 					bool isArrow
 						= ARROW && ( residueIdx > 0 )
-						  && ( p_molecule.getResidue( idxFirstResidue + residueIdx + 1 ).getSecondaryStructure()
+						  && ( _molecule->getResidue( idxFirstResidue + residueIdx + 1 ).getSecondaryStructure()
 							   == Residue::SECONDARY_STRUCTURE::STRAND )
 						  && ( ( residueIdx == residueCount - 1 )
-							   || p_molecule.getResidue( idxFirstResidue + residueIdx ).getSecondaryStructure()
+							   || _molecule->getResidue( idxFirstResidue + residueIdx ).getSecondaryStructure()
 									  != Residue::SECONDARY_STRUCTURE::STRAND );
 
 					_mapResidueIdxToVertexIdx.emplace( residue1.getIndex(), vIndex );
@@ -507,17 +508,17 @@ namespace VTX
 			}
 		} // namespace Model
 
-		void Ribbon::refreshVisibility( const Molecule & p_molecule )
+		void Ribbon::refreshVisibility()
 		{
 			_visibilities.resize( _vertices.size() );
 			uint count = 0;
 
-			for ( Chain * const chain : p_molecule.getChains() )
+			for ( Chain * const chain : _molecule->getChains() )
 			{
 				for ( uint i = 0; i < chain->getResidueCount(); ++i )
 				{
-					const Residue & residue = p_molecule.getResidue( chain->getIdFirstResidue() + i );
-					bool			show	= p_molecule.isVisible() && chain->isVisible() && residue.isVisible();
+					const Residue & residue = _molecule->getResidue( chain->getIdFirstResidue() + i );
+					bool			show	= _molecule->isVisible() && chain->isVisible() && residue.isVisible();
 
 					if ( _mapResidueIdxToVertexIdx.find( residue.getIndex() ) != _mapResidueIdxToVertexIdx.end() )
 					{
@@ -537,6 +538,11 @@ namespace VTX
 
 			glNamedBufferData(
 				_vboVisibilities, sizeof( uint ) * _visibilities.size(), _visibilities.data(), GL_STATIC_DRAW );
+		}
+
+		void Ribbon::_addItems()
+		{
+			addItem( (View::BaseView<BaseModel> *)Generic::create<View::D3::TriangleRibbon>( this ) );
 		}
 
 	} // namespace Model

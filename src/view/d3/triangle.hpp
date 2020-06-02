@@ -23,8 +23,6 @@ namespace VTX
 				virtual void				init() override;
 
 				virtual void render() override;
-
-			  private:
 			};
 		} // namespace D3
 	}	  // namespace View
