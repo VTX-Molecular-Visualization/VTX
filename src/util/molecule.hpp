@@ -224,6 +224,13 @@ namespace VTX
 
 				for ( const Model::Residue * const residue : p_molecule.getResidues() )
 				{
+					// Skip hidden items.
+					if ( residue->isVisible() == false || residue->getChainPtr()->isVisible() == false
+						 || residue->getMoleculePtr()->isVisible() == false )
+					{
+						continue;
+					}
+
 					std::pair<uint, uint> rangeAtoms = std::pair( residue->getIdFirstAtom(), residue->getAtomCount() );
 					std::pair<uint, uint> rangeBonds = std::pair( residue->getIdFirstBond(), residue->getBondCount() );
 					std::pair<uint, uint> rangeTriangles

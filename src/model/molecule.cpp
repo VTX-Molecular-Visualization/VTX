@@ -74,7 +74,6 @@ namespace VTX
 				_fillBufferBonds();
 
 				// Compute secondary structure if not loaded.
-
 				if ( _configuration.isSecondaryStructureLoadedFromFile == false )
 				{
 					Util::Molecule::computeSecondaryStructure( *this );
@@ -310,6 +309,7 @@ namespace VTX
 			{
 				_ribbon->refreshVisibility();
 			}
+			Util::Molecule::refreshRepresentationState( *this );
 		}
 
 		void Molecule::_createBuffers()
