@@ -35,20 +35,20 @@ namespace VTX
 
 		namespace Rendering
 		{
-			extern bool							 isActive;
-			extern View::MOLECULE_REPRESENTATION representation;
-			extern View::MOLECULE_COLOR_MODE	 colorMode;
-			extern Renderer::MODE				 mode;
-			extern Renderer::SHADING			 shading;
-			extern bool							 useVSync;
-			extern bool							 useSSAO;
-			extern float						 aoRadius;
-			extern int							 aoIntensity;
-			extern float						 aoFactor;
-			extern int							 aoBlurSize;
-			extern int							 aoBlurSharpness;
-			extern bool							 useContourLines;
-			extern bool							 useAA;
+			extern bool					   isActive;
+			extern Generic::REPRESENTATION representation;
+			extern Generic::COLOR_MODE	   colorMode;
+			extern Renderer::MODE		   mode;
+			extern Renderer::SHADING	   shading;
+			extern bool					   useVSync;
+			extern bool					   useSSAO;
+			extern float				   aoRadius;
+			extern int					   aoIntensity;
+			extern float				   aoFactor;
+			extern int					   aoBlurSize;
+			extern int					   aoBlurSharpness;
+			extern bool					   useContourLines;
+			extern bool					   useAA;
 
 			// Camera.
 			extern float camNear;
