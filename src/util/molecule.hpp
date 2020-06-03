@@ -231,6 +231,15 @@ namespace VTX
 						continue;
 					}
 
+					if ( p_molecule.showSolvent() == false && residue->getAtomType() == Model::Atom::TYPE::SOLVENT )
+					{
+						continue;
+					}
+					if ( p_molecule.showIon() == false && residue->getAtomType() == Model::Atom::TYPE::ION )
+					{
+						continue;
+					}
+
 					std::pair<uint, uint> rangeAtoms = std::pair( residue->getIdFirstAtom(), residue->getAtomCount() );
 					std::pair<uint, uint> rangeBonds = std::pair( residue->getIdFirstBond(), residue->getBondCount() );
 					std::pair<uint, uint> rangeTriangles
