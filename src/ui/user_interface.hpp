@@ -36,13 +36,20 @@ namespace VTX
 
 			virtual const std::string & getName() const override { return ID::UI::USER_INTERFACE; }
 
-			inline const ID::VTX_ID getCurrentItem() const { return _currentItem; }
-			inline void				setCurrentItem( const ID::VTX_ID & p_id )
+			inline const ID::VTX_ID getFocusedWindow() const { return _focusedWindow; }
+			inline void				setFocusedWindow( const ID::VTX_ID & p_id )
 			{
-				if ( p_id != _currentItem )
+				if ( p_id != _focusedWindow )
 				{
-					VTX_DEBUG( "New focus: " + p_id );
-					_currentItem = p_id;
+					_focusedWindow = p_id;
+				}
+			}
+			inline const ID::VTX_ID getHoveredWindow() const { return _hoveredWindow; }
+			inline void				setHoveredWindow( const ID::VTX_ID & p_id )
+			{
+				if ( p_id != _hoveredWindow )
+				{
+					_hoveredWindow = p_id;
 				}
 			}
 
@@ -59,7 +66,8 @@ namespace VTX
 			SDL_GLContext	_glContext = nullptr;
 			SDL_DisplayMode _displayMode;
 
-			ID::VTX_ID _currentItem = ID::UI::USER_INTERFACE;
+			ID::VTX_ID _focusedWindow = ID::UI::USER_INTERFACE;
+			ID::VTX_ID _hoveredWindow = ID::UI::USER_INTERFACE;
 
 			void _initSDL2();
 			void _initGL();

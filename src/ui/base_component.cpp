@@ -30,10 +30,14 @@ namespace VTX
 
 			_drawContent();
 
-			// Handle selection.
+			// Handle focus.
 			if ( ImGui::IsWindowFocused() )
 			{
-				VTXApp::get().getUI().setCurrentItem( getName() );
+				VTXApp::get().getUI().setFocusedWindow( getName() );
+			}
+			if ( ImGui::IsWindowHovered() )
+			{
+				VTXApp::get().getUI().setHoveredWindow( getName() );
 			}
 
 			_drawFooter();
