@@ -153,13 +153,13 @@ namespace VTX
 			inline void		  setShowSolvent( const bool p_showSolvent )
 			{
 				_showSolvent = p_showSolvent;
-				_fillBufferAtomVisibilities();
+				refreshVisibility();
 			}
 			inline bool showIon() const { return _showIon; }
 			inline void setShowIon( const bool p_showIon )
 			{
 				_showIon = p_showIon;
-				_fillBufferAtomVisibilities();
+				refreshVisibility();
 			}
 
 			// At least one residue

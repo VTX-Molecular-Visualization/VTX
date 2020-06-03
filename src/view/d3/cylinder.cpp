@@ -27,15 +27,15 @@ namespace VTX
 				default: return;
 				}
 
+				VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
+				glUniform1f( _uRadius, 0.15f );
+				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
+
 				for ( const std::pair<uint, uint> & pair :
 					  _getModel().getRepresentationState()[ p_representation ].bonds )
 				{
-					VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
-					glUniform1f( _uRadius, 0.15f );
-					_setCameraUniforms( VTXApp::get().getScene().getCamera() );					
-
-					glDrawRangeElements(
-						GL_LINES, pair.first, pair.first + pair.second, pair.second * 2, GL_UNSIGNED_INT, NULL );
+					glDrawElements(
+						GL_LINES, pair.second * 2, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) * 2 ) );
 				}
 			}
 		} // namespace D3

@@ -70,7 +70,7 @@ namespace VTX
 				_initBufferAtomPositions();
 				_fillBufferAtomRadius();
 				_fillBufferAtomColors();
-				_fillBufferAtomVisibilities();
+				//_fillBufferAtomVisibilities(); // Done after.
 				_fillBufferBonds();
 
 				// Compute secondary structure if not loaded.
@@ -81,9 +81,8 @@ namespace VTX
 
 				// Create secondary structure mesh.
 				createSecondaryStructure();
+				refreshVisibility();
 			}
-
-			Util::Molecule::refreshRepresentationState( *this );
 		}
 
 		void Molecule::_addItems()
@@ -309,6 +308,7 @@ namespace VTX
 			{
 				_ribbon->refreshVisibility();
 			}
+			// Refresh representation state to remove invisible items.
 			Util::Molecule::refreshRepresentationState( *this );
 		}
 
@@ -464,7 +464,6 @@ namespace VTX
 			}
 
 			_ribbon = Generic::create<Ribbon, Molecule>( this );
-			_ribbon->refreshVisibility();
 			_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
 		}
