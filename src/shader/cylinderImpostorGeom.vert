@@ -13,7 +13,8 @@ flat out uint vVertexVis;
 void main()
 {
 	vVertexColor = aVertexColor;
-	vVertexVis   = aVertexVis;
+	vVertexVis	 = aVertexVis;
 
+	// Vertex position in view space.
 	gl_Position = uMVMatrix * vec4( aVertexPosition, 1.f );
 }

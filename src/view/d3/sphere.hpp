@@ -32,8 +32,6 @@ namespace VTX
 				GLint _uIsRadiusFixedLoc = GL_INVALID_INDEX;
 				GLint _uRadiusAddLoc	 = GL_INVALID_INDEX;
 				GLint _uRadiusFixedLoc	 = GL_INVALID_INDEX;
-				GLint _uZNearLoc		 = GL_INVALID_INDEX;
-				GLint _uZFarLoc			 = GL_INVALID_INDEX;
 			};
 		} // namespace D3
 	}	  // namespace View

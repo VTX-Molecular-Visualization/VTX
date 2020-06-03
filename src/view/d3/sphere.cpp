@@ -19,8 +19,6 @@ namespace VTX
 				_uRadiusFixedLoc   = glGetUniformLocation( program->getId(), "uRadiusFixed" );
 				_uRadiusAddLoc	   = glGetUniformLocation( program->getId(), "uRadiusAdd" );
 				_uIsRadiusFixedLoc = glGetUniformLocation( program->getId(), "uIsRadiusFixed" );
-				_uZNearLoc		   = glGetUniformLocation( program->getId(), "uZNear" );
-				_uZFarLoc		   = glGetUniformLocation( program->getId(), "uZFar" );
 			}
 
 			void Sphere::render( const Generic::REPRESENTATION p_representation )
@@ -49,16 +47,11 @@ namespace VTX
 				}
 
 				VTXApp::get().getProgramManager().getProgram( "SphereImpostorGeomShader" )->use();
-				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
 				glUniform1f( _uRadiusFixedLoc, _radiusFixed );
 				glUniform1f( _uRadiusAddLoc, _radiusAdd );
 				glUniform1ui( _uIsRadiusFixedLoc, _isRadiusFixed );
-				// Do not use camera near/far !
-				// Because Setting::Rendering::near/far can be 0 (with GL_DEPTH_CLAMP)
-				// And camera near/far is min 1e-1f to avoid rasterization artifacts
-				glUniform1f( _uZNearLoc, Setting::Rendering::camNear );
-				glUniform1f( _uZFarLoc, Setting::Rendering::camFar );
-				_setCameraUniforms( cam );
+				
+				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 
 				for ( const std::pair<uint, uint> & pair :
 					  _getModel().getRepresentationState()[ p_representation ].atoms )

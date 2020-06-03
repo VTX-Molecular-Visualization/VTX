@@ -6,80 +6,86 @@ layout( triangle_strip, max_vertices = 4 ) out;
 uniform mat4  uProjMatrix;
 uniform float uCylRad;
 
-flat in vec3 vVertexColor[]; // on color per atom
-flat in uint vVertexVis[]; // on color per atom
+flat in vec3 vVertexColor[]; // One color per atom.
+flat in uint vVertexVis[];
 
-smooth out vec3 impPos;
-flat out vec3	cylCenter;
-flat out vec3	cylVert[ 2 ];
+smooth out vec3 viewImpPos;		  // Impostor position in view space.
+flat out vec3	viewCylVert[ 2 ]; // Cylinder vertices position in view space.
 flat out vec3	colors[ 2 ];
 
-// all is done in cam space
+void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
+{
+	viewImpPos	= v1;
+	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	EmitVertex();
+
+	viewImpPos	= v2;
+	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	EmitVertex();
+
+	viewImpPos	= v3;
+	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	EmitVertex();
+
+	viewImpPos	= v4;
+	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	EmitVertex();
+
+	EndPrimitive();
+}
+
 void main()
 {
-	if(vVertexVis[0] == 0 || vVertexVis[1] == 0)
+	// Do not emit primitive if cylinder is not visible.
+	if ( vVertexVis[ 0 ] == 0 || vVertexVis[ 1 ] == 0 )
 	{
 		return;
 	}
 
-	colors[ 0 ] = vVertexColor[ 0 ];
-	colors[ 1 ] = vVertexColor[ 1 ];
+	// Output data.
+	viewCylVert[ 0 ] = gl_in[ 0 ].gl_Position.xyz;
+	viewCylVert[ 1 ] = gl_in[ 1 ].gl_Position.xyz;
+	colors[ 0 ]		 = vVertexColor[ 0 ];
+	colors[ 1 ]		 = vVertexColor[ 1 ];
 
-	// two vertices
-	cylVert[0]	  = gl_in[ 0 ].gl_Position.xyz;
-	cylVert[1]	  = gl_in[ 1 ].gl_Position.xyz;
-	cylCenter = ( cylVert[0] + cylVert[1] ) * 0.5f;
-
-	// compute normalized view vector
-	const float dCenter = length( cylCenter );
-	const vec3	view	= cylCenter / dCenter;
-
-	// compute cylinder coordinates system with 'x' orthogonal to 'view'
-	const vec3 z = normalize( cylVert[1] - cylVert[0] );
-	const vec3 x = normalize( cross( view, z ) );
-	const vec3 y = cross( x, z ); // no need to normalize
-
-	vec3 v0, v1;
-	if ( cylVert[0].z > cylVert[1].z )
+	// Flip is vertex 0 is farther than vertex 1.
+	vec3 viewImpPos0, viewImpPos1;
+	if ( viewCylVert[ 0 ].z < viewCylVert[ 1 ].z )
 	{
-		v0 = cylVert[0];
-		v1 = cylVert[1];
+		viewImpPos0 = viewCylVert[ 1 ];
+		viewImpPos1 = viewCylVert[ 0 ];
 	}
 	else
 	{
-		v0 = cylVert[1];
-		v1 = cylVert[0];
+		viewImpPos0 = viewCylVert[ 0 ];
+		viewImpPos1 = viewCylVert[ 1 ];
 	}
 
-	// compute impostor vertices
-	const float dV0 = length( v0 );
-	const float dV1 = length( v1 );
+	// Compute normalized view vector to cylinder center.
+	const vec3 view = normalize( ( viewImpPos0 + viewImpPos1 ) * 0.5f );
 
-	float sinAngle = uCylRad / dV0;
-	float angle	   = asin( sinAngle );
+	// Compute cylinder coordinates system with 'x' orthogonal to 'view'.
+	const vec3 z = normalize( viewImpPos1 - viewImpPos0 );
+	const vec3 x = normalize( cross( view, z ) );
+	const vec3 y = cross( x, z ); // no need to normalize
 
-	const vec3 y1 = y * uCylRad;
-	const vec3 x2 = x * uCylRad * cos( angle );
-	const vec3 y2 = y1 * sinAngle;
+	// Compute impostor construction vectors.
+	const float dV0 = length( viewImpPos0 );
+	const float dV1 = length( viewImpPos1 );
 
-	impPos		= v0 + x2 + y2;
-	gl_Position = uProjMatrix * vec4( impPos, 1.f );
-	EmitVertex();
+	const float sinAngle = uCylRad / dV0;
+	float		angle	 = asin( sinAngle );
+	const vec3	y1		 = y * uCylRad;
+	const vec3	x2		 = x * uCylRad * cos( angle );
+	const vec3	y2		 = y1 * sinAngle;
+	angle				 = asin( uCylRad / dV1 );
+	const vec3 x3		 = x * ( dV1 - uCylRad ) * tan( angle );
 
-	impPos		= v0 - x2 + y2;
-	gl_Position = uProjMatrix * vec4( impPos, 1.f );
-	EmitVertex();
+	// Compute impostors vertices.
+	const vec3 v1 = viewImpPos0 - x2 + y2;
+	const vec3 v2 = viewImpPos0 + x2 + y2;
+	const vec3 v3 = viewImpPos1 - x3 + y1;
+	const vec3 v4 = viewImpPos1 + x3 + y1;
 
-	angle		  = asin( uCylRad / dV1 );
-	const vec3 x3 = x * ( dV1 - uCylRad ) * tan( angle );
-
-	impPos		= v1 + x3 + y1;
-	gl_Position = uProjMatrix * vec4( impPos, 1.f );
-	EmitVertex();
-
-	impPos		= v1 - x3 + y1;
-	gl_Position = uProjMatrix * vec4( impPos, 1.f );
-	EmitVertex();
-
-	EndPrimitive();
+	emitQuad( v1, v2, v3, v4 );
 }
