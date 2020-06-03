@@ -278,27 +278,27 @@ namespace VTX
 										residueSymbol )
 							 != config.solventResidueSymbols.end() )
 						{
+							solventCounter++;
 							modelAtom->setType( Model::Atom::TYPE::SOLVENT );
 						}
 						else if ( std::find(
 									  config.ionResidueSymbols.begin(), config.ionResidueSymbols.end(), residueSymbol )
 								  != config.ionResidueSymbols.end() )
 						{
+							ionCounter++;
 							modelAtom->setType( Model::Atom::TYPE::ION );
 						}
 					}
 
-					// Check residue full of solvent/ion (not needed because atom_type is in arc file that have no
-					// residues).
-					// TODO: do this during merge with topology, but split there into multiple residues?
+					// Check residue full of solvent/ion.
+					// This is working only with pdb/psf files,
+					// not with arc/prm because arc do not contains topology.
 					if ( solventCounter == residue.size() )
 					{
-						VTX_DEBUG( "Found a residue full of solvents" );
 						modelResidue->setAtomType( Model::Atom::TYPE::SOLVENT );
 					}
 					else if ( ionCounter == residue.size() )
 					{
-						VTX_DEBUG( "Found a residue full of ions" );
 						modelResidue->setAtomType( Model::Atom::TYPE::ION );
 					}
 				}
