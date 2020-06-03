@@ -97,8 +97,11 @@ namespace VTX
 				}
 
 				// If no residue, create a fake one.
+				// TODO: check file format instead of residue count?
+				bool hasTopology = true;
 				if ( residues.size() == 0 )
 				{
+					hasTopology = false;
 					VTX_INFO( "No residues found" );
 					chemfiles::Residue residue = chemfiles::Residue( "" );
 					for ( uint i = 0; i < frame.size(); ++i )
@@ -217,6 +220,9 @@ namespace VTX
 						}
 					}
 
+					uint solventCounter = 0;
+					uint ionCounter		= 0;
+
 					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 					{
 						const uint				atomId = uint( *it );
@@ -255,11 +261,13 @@ namespace VTX
 							if ( std::find( config.solventAtomIds.begin(), config.solventAtomIds.end(), atomType )
 								 != config.solventAtomIds.end() )
 							{
+								solventCounter++;
 								modelAtom->setType( Model::Atom::TYPE::SOLVENT );
 							}
 							else if ( std::find( config.ionAtomIds.begin(), config.ionAtomIds.end(), atomType )
 									  != config.ionAtomIds.end() )
 							{
+								ionCounter++;
 								modelAtom->setType( Model::Atom::TYPE::ION );
 							}
 						}
@@ -278,6 +286,20 @@ namespace VTX
 						{
 							modelAtom->setType( Model::Atom::TYPE::ION );
 						}
+					}
+
+					// Check residue full of solvent/ion (not needed because atom_type is in arc file that have no
+					// residues).
+					// TODO: do this during merge with topology, but split there into multiple residues?
+					if ( solventCounter == residue.size() )
+					{
+						VTX_DEBUG( "Found a residue full of solvents" );
+						modelResidue->setAtomType( Model::Atom::TYPE::SOLVENT );
+					}
+					else if ( ionCounter == residue.size() )
+					{
+						VTX_DEBUG( "Found a residue full of ions" );
+						modelResidue->setAtomType( Model::Atom::TYPE::ION );
 					}
 				}
 
@@ -300,7 +322,6 @@ namespace VTX
 				// Bonds.
 				// Sort by residus.
 				// Map with residue index to keep the order.
-
 				std::vector<const chemfiles::Bond *> bondsExtraResidues = std::vector<const chemfiles::Bond *>();
 				for ( uint boundIdx = 0; boundIdx < uint( bonds.size() ); ++boundIdx )
 				{

@@ -102,6 +102,8 @@ namespace VTX
 			inline void						 setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
 			inline uint						 getBondCount() const { return _bondCount; };
 			inline void						 setBondCount( const uint p_count ) { _bondCount = p_count; };
+			inline Atom::TYPE				 getAtomType() const { return _atomType; }
+			inline void						 setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
 			inline const SECONDARY_STRUCTURE getSecondaryStructure() const { return _secondaryStructure; };
 			inline void						 setSecondaryStructure( const SECONDARY_STRUCTURE p_structure )
 			{
@@ -127,6 +129,7 @@ namespace VTX
 			uint				_atomCount			= 0;
 			uint				_idFirstBond		= 0;
 			uint				_bondCount			= 0;
+			Atom::TYPE			_atomType			= Atom::TYPE::NORMAL; // Set to ion only if residue is full of ions.
 			SECONDARY_STRUCTURE _secondaryStructure = SECONDARY_STRUCTURE::COIL;
 			HANDEDNESS			_handedness			= HANDEDNESS::RIGHT;
 		};
