@@ -29,6 +29,7 @@ namespace VTX
 
 			// Init pass.
 			_passGeometric->init( _programManager, p_width, p_height );
+			_passLinearizeDepth->init( _programManager, _width, _height );
 			_passSSAO->init( _programManager, p_width, p_height );
 			_passBlur->init( _programManager, p_width, p_height );
 			_passShading->init( _programManager, p_width, p_height );
@@ -45,6 +46,7 @@ namespace VTX
 			if ( p_width != _width || p_height != _height )
 			{
 				_passGeometric->clean();
+				_passLinearizeDepth->clean();
 				_passSSAO->clean();
 				_passBlur->clean();
 				_passShading->clean();
@@ -53,6 +55,7 @@ namespace VTX
 				BaseRenderer::resize( p_width, p_height );
 
 				_passGeometric->init( _programManager, _width, _height );
+				_passLinearizeDepth->init( _programManager, _width, _height );
 				_passSSAO->init( _programManager, _width, _height );
 				_passBlur->init( _programManager, _width, _height );
 				_passShading->init( _programManager, _width, _height );
@@ -104,6 +107,8 @@ namespace VTX
 			glEnable( GL_DEPTH_TEST );
 			_passGeometric->render( p_scene, *this );
 			glDisable( GL_DEPTH_TEST );
+
+			_passLinearizeDepth->render( p_scene, *this );
 
 			if ( Setting::Rendering::useSSAO )
 			{

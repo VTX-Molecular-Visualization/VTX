@@ -44,10 +44,9 @@ namespace VTX
 
 				_blurShader = p_programManager.createProgram( "Blur", { "shading/bilateral_blur.frag" } );
 
-				_uBlurSizeLoc	   = glGetUniformLocation( _blurShader->getId(), "uBlurSize" );
-				_uBlurSharpnessLoc = glGetUniformLocation( _blurShader->getId(), "uBlurSharpness" );
-				_uInvTexSizeLoc	   = glGetUniformLocation( _blurShader->getId(), "uInvTexSize" );
-				_uClipInfoLoc	   = glGetUniformLocation( _blurShader->getId(), "uClipInfo" );
+				_uBlurSizeLoc			 = glGetUniformLocation( _blurShader->getId(), "uBlurSize" );
+				_uBlurSharpnessLoc		 = glGetUniformLocation( _blurShader->getId(), "uBlurSharpness" );
+				_uInvDirectionTexSizeLoc = glGetUniformLocation( _blurShader->getId(), "uInvDirectionTexSize" );
 
 				_blurShader->use();
 				glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
@@ -70,18 +69,13 @@ namespace VTX
 				glActiveTexture( GL_TEXTURE0 );
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassSSAO().getSSAOTexture() );
 				glActiveTexture( GL_TEXTURE1 );
-				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getDepthTexture() );
+				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassLinearizeDepth().getTexture() );
 
 				_blurShader->use();
 				// TODO don't update each frame
 				glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
 				glUniform1i( _uBlurSharpnessLoc, Setting::Rendering::aoBlurSharpness );
-				glUniform2f( _uInvTexSizeLoc, 1.f / p_renderer.getWidth(), 0.f );
-				const Object3D::Camera & cam	 = VTXApp::get().getScene().getCamera();
-				const float				 camNear = Util::Math::max( 1e-1f, cam.getNear() );
-				const float				 camFar	 = cam.getFar();
-				// clipInfo.w: 0 = orhto ; 1 = perspective
-				glUniform4f( _uClipInfoLoc, camNear * camFar, camFar, camFar - camNear, 1.f );
+				glUniform2f( _uInvDirectionTexSizeLoc, 1.f / p_renderer.getWidth(), 0.f );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );
 
@@ -101,9 +95,9 @@ namespace VTX
 				glActiveTexture( GL_TEXTURE0 );
 				glBindTexture( GL_TEXTURE_2D, _textureTmp );
 				glActiveTexture( GL_TEXTURE1 );
-				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getDepthTexture() );
+				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassLinearizeDepth().getTexture() );
 
-				glUniform2f( _uInvTexSizeLoc, 0.f, 1.f / p_renderer.getHeight() );
+				glUniform2f( _uInvDirectionTexSizeLoc, 0.f, 1.f / p_renderer.getHeight() );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );
 
