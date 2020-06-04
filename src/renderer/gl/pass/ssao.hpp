@@ -29,7 +29,6 @@ namespace VTX
 				GLuint			_noiseTexture	  = GL_INVALID_VALUE;
 				GLint			_uProjMatrixLoc	  = GL_INVALID_INDEX;
 				GLint			_uAoKernelLoc	  = GL_INVALID_INDEX;
-				GLint			_uAoRadiusLoc	  = GL_INVALID_INDEX;
 				GLint			_uKernelSizeLoc	  = GL_INVALID_INDEX;
 				GLint			_uAoIntensityLoc  = GL_INVALID_INDEX;
 				GLint			_kernelSize		  = 64;

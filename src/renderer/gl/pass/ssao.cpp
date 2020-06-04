@@ -29,7 +29,6 @@ namespace VTX
 
 				_uProjMatrixLoc	 = glGetUniformLocation( _program->getId(), "uProjMatrix" );
 				_uAoKernelLoc	 = glGetUniformLocation( _program->getId(), "uAoKernel" );
-				_uAoRadiusLoc	 = glGetUniformLocation( _program->getId(), "uAoRadius" );
 				_uKernelSizeLoc	 = glGetUniformLocation( _program->getId(), "uKernelSize" );
 				_uAoIntensityLoc = glGetUniformLocation( _program->getId(), "uAoIntensity" );
 
@@ -53,7 +52,6 @@ namespace VTX
 
 				_program->use();
 				glUniform3fv( _uAoKernelLoc, _kernelSize, (const GLfloat *)aoKernel.data() );
-				glUniform1f( _uAoRadiusLoc, Setting::Rendering::aoRadius );
 				glUniform1i( _uAoIntensityLoc, Setting::Rendering::aoIntensity );
 				glUniform1i( _uKernelSizeLoc, _kernelSize );
 
@@ -106,8 +104,7 @@ namespace VTX
 
 				_program->use();
 
-				// TODO don't aoRadius/aoIntensity/PorjMatrix update each frame
-				glUniform1f( _uAoRadiusLoc, Setting::Rendering::aoRadius );
+				// TODO don't update each frame
 				glUniform1i( _uAoIntensityLoc, Setting::Rendering::aoIntensity );
 
 				glUniformMatrix4fv( _uProjMatrixLoc,

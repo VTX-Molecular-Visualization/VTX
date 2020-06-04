@@ -43,7 +43,6 @@ namespace VTX
 			extern Renderer::SHADING			 shading;
 			extern bool							 useVSync;
 			extern bool							 useSSAO;
-			extern float						 aoRadius;
 			extern int							 aoIntensity;
 			extern float						 aoFactor;
 			extern int							 aoBlurSize;

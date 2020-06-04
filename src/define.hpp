@@ -93,9 +93,6 @@ namespace VTX
 
 	// Rendering.
 	// TODO: choose relevant constants
-	constexpr float RENDERER_AO_RADIUS_MIN			   = 0.f;
-	constexpr float RENDERER_AO_RADIUS_MAX			   = 1000.f;
-	constexpr float RENDERER_AO_RADIUS_DEFAULT		   = 32.f;
 	constexpr int	RENDERER_AO_INTENSITY_MIN		   = 1;
 	constexpr int	RENDERER_AO_INTENSITY_MAX		   = 10;
 	constexpr int	RENDERER_AO_INTENSITY_DEFAULT	   = 5;

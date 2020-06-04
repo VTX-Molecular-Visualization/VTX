@@ -5,7 +5,6 @@
 layout( binding = 0 ) uniform usampler2D gbColorNormal;
 layout( binding = 1 ) uniform sampler2D gbCamPosition;
 layout( binding = 2 ) uniform sampler2D noise;
-layout( binding = 3 ) uniform sampler2D depth;
 
 layout( location = 0 ) out float ambientOcclusion;
 
@@ -13,14 +12,12 @@ const float BIAS	= 0.025f;
 const vec2	VEC2_05 = vec2( 0.5f );
 
 uniform mat4  uProjMatrix;
-uniform vec3  uAoKernel[ 512 ];
-uniform float uAoRadius;
+uniform vec3  uAoKernel[ 512 ]; // TODO: better use texture no ? ;-)
 uniform int	  uAoIntensity;
 uniform int	  uKernelSize;
 
 struct FragmentData
 {
-	// vec3 color;
 	vec3 normal;
 	vec3 camPosition;
 };
@@ -47,9 +44,9 @@ void main()
 	unpackGBuffers( texPos, fd );
 	const vec3 pos = fd.camPosition.xyz;
 
-	if ( pos.z == 0 ) return; // no need ssao on background
+	if ( pos.z > 0.f ) return; // no need ssao on background
 
-	const float rad = uAoRadius;
+	const float rad = -pos.z;
 
 	const vec3 randomVec = normalize( texture( noise, texPos * noiseScale ).xyz );
 	// Gram-Schmidt process
@@ -73,7 +70,7 @@ void main()
 		float sampleDepth = texture( gbCamPosition, offset.xy ).z;
 
 		// range check: ignore background
-		const float rangeCheck = sampleDepth == 0.f ? 0.f : smoothstep( 0.f, 1.f, ( rad * rad ) / abs( pos.z - sampleDepth ) );
+		const float rangeCheck = sampleDepth == 0.f ? 0.f : smoothstep( 0.f, 1.f, rad / abs( pos.z - sampleDepth ) );
 		ao += ( sampleDepth >= samplePos.z + BIAS ? 1.f : 0.f ) * rangeCheck;
 	}
 

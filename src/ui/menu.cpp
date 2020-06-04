@@ -9,7 +9,6 @@
 #include "action/change_ao_blur_size.hpp"
 #include "action/change_ao_factor.hpp"
 #include "action/change_ao_intensity.hpp"
-#include "action/change_ao_radius.hpp"
 #include "action/change_auto_rotate_speed.hpp"
 #include "action/change_camera_clip.hpp"
 #include "action/change_camera_fov.hpp"
@@ -299,15 +298,6 @@ namespace VTX
 				{
 					VTX_ACTION( new Action::ActiveSSAO( useSSAO ) );
 				};
-
-				float aoRadius = Setting::Rendering::aoRadius;
-				if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AORadius" ),
-										 &aoRadius,
-										 RENDERER_AO_RADIUS_MIN,
-										 RENDERER_AO_RADIUS_MAX ) )
-				{
-					VTX_ACTION( new Action::ChangeAORadius( aoRadius ) );
-				}
 
 				int aoIntensity = Setting::Rendering::aoIntensity;
 				if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOIntensity" ),
