@@ -12,6 +12,7 @@ namespace VTX
 		GL::~GL()
 		{
 			Generic::destroy( _passGeometric );
+			Generic::destroy( _passLinearizeDepth );
 			Generic::destroy( _passSSAO );
 			Generic::destroy( _passBlur );
 			Generic::destroy( _passShading );
