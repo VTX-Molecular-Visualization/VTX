@@ -23,7 +23,7 @@ namespace VTX
 				inline const GLuint & getTexture() const { return _texture; }
 
 			  private:
-				GLSL::Program * _shader		  = nullptr;
+				GLSL::Program * _program	  = nullptr;
 				GLuint			_fbo		  = GL_INVALID_VALUE;
 				GLuint			_texture	  = GL_INVALID_VALUE;
 				GLint			_uClipInfoLoc = GL_INVALID_INDEX;

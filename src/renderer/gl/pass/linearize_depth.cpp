@@ -28,9 +28,9 @@ namespace VTX
 
 				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-				_shader = p_programManager.createProgram( "LinearizeDepth", { "shading/linearize_depth.frag" } );
+				_program = p_programManager.createProgram( "LinearizeDepth", { "shading/linearize_depth.frag" } );
 
-				_uClipInfoLoc = glGetUniformLocation( _shader->getId(), "uClipInfo" );
+				_uClipInfoLoc = glGetUniformLocation( _program->getId(), "uClipInfo" );
 			}
 
 			void LinearizeDepth::clean()
@@ -46,7 +46,7 @@ namespace VTX
 				glActiveTexture( GL_TEXTURE0 );
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getDepthTexture() );
 
-				_shader->use();
+				_program->use();
 				// TODO don't update each frame
 				const Object3D::Camera & cam	 = VTXApp::get().getScene().getCamera();
 				const float				 camNear = cam.getNear();

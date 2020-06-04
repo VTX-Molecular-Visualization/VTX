@@ -14,9 +14,9 @@ namespace VTX
 				glPointParameteri( GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT );*/
 
 				// Create G-buffers for deferred shading.
-				glGenFramebuffers( 1, &_fboGeo );
+				glGenFramebuffers( 1, &_fbo );
 
-				glBindFramebuffer( GL_FRAMEBUFFER, _fboGeo );
+				glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
 				glGenTextures( 1, &_colorNormalCompressedTexture );
 				glBindTexture( GL_TEXTURE_2D, _colorNormalCompressedTexture );
@@ -63,7 +63,7 @@ namespace VTX
 
 			void Geometric::clean()
 			{
-				glDeleteFramebuffers( 1, &_fboGeo );
+				glDeleteFramebuffers( 1, &_fbo );
 				glDeleteTextures( 1, &_depthTexture );
 				glDeleteTextures( 1, &_colorNormalCompressedTexture );
 				glDeleteTextures( 1, &_camSpacePositionsTexture );
@@ -71,7 +71,7 @@ namespace VTX
 
 			void Geometric::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{
-				glBindFramebuffer( GL_FRAMEBUFFER, _fboGeo );
+				glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 				for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )

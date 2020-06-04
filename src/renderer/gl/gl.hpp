@@ -42,11 +42,11 @@ namespace VTX
 
 			inline const GLuint & getRenderedTexture() const
 			{
-				return Setting::Rendering::useAA ? _passFXAA->getAATexture() : _passShading->getShadingTexture();
+				return Setting::Rendering::useAA ? _passFXAA->getTexture() : _passShading->getTexture();
 			}
 			inline const GLuint & getRenderedFBO() const
 			{
-				return Setting::Rendering::useAA ? _passFXAA->getAAFbo() : _passShading->getShadingFbo();
+				return Setting::Rendering::useAA ? _passFXAA->getFbo() : _passShading->getFbo();
 			}
 
 		  private:

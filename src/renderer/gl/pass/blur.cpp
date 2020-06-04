@@ -12,18 +12,18 @@ namespace VTX
 			void Blur::init( GLSL::ProgramManager & p_programManager, const uint p_width, const uint p_height )
 			{
 				// first pass fbo/texture
-				glGenFramebuffers( 1, &_fboTmp );
-				glBindFramebuffer( GL_FRAMEBUFFER, _fboTmp );
+				glGenFramebuffers( 1, &_fboFirstPass );
+				glBindFramebuffer( GL_FRAMEBUFFER, _fboFirstPass );
 
-				glGenTextures( 1, &_textureTmp );
-				glBindTexture( GL_TEXTURE_2D, _textureTmp );
+				glGenTextures( 1, &_textureFirstPass );
+				glBindTexture( GL_TEXTURE_2D, _textureFirstPass );
 				glTexStorage2D( GL_TEXTURE_2D, 1, GL_R16F, p_width, p_height );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textureTmp, 0 );
+				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textureFirstPass, 0 );
 
 				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
@@ -42,21 +42,21 @@ namespace VTX
 
 				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-				_blurShader = p_programManager.createProgram( "Blur", { "shading/bilateral_blur.frag" } );
+				_program = p_programManager.createProgram( "Blur", { "shading/bilateral_blur.frag" } );
 
-				_uBlurSizeLoc			 = glGetUniformLocation( _blurShader->getId(), "uBlurSize" );
-				_uBlurSharpnessLoc		 = glGetUniformLocation( _blurShader->getId(), "uBlurSharpness" );
-				_uInvDirectionTexSizeLoc = glGetUniformLocation( _blurShader->getId(), "uInvDirectionTexSize" );
+				_uBlurSizeLoc			 = glGetUniformLocation( _program->getId(), "uBlurSize" );
+				_uBlurSharpnessLoc		 = glGetUniformLocation( _program->getId(), "uBlurSharpness" );
+				_uInvDirectionTexSizeLoc = glGetUniformLocation( _program->getId(), "uInvDirectionTexSize" );
 
-				_blurShader->use();
+				_program->use();
 				glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
 				glUniform1i( _uBlurSharpnessLoc, Setting::Rendering::aoBlurSharpness );
 			}
 
 			void Blur::clean()
 			{
-				glDeleteFramebuffers( 1, &_fboTmp );
-				glDeleteTextures( 1, &_textureTmp );
+				glDeleteFramebuffers( 1, &_fboFirstPass );
+				glDeleteTextures( 1, &_textureFirstPass );
 				glDeleteFramebuffers( 1, &_fbo );
 				glDeleteTextures( 1, &_texture );
 			}
@@ -64,14 +64,14 @@ namespace VTX
 			void Blur::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{
 				// TODO: clean up !!!!!!!!!!!!!!!
-				glBindFramebuffer( GL_FRAMEBUFFER, _fboTmp );
+				glBindFramebuffer( GL_FRAMEBUFFER, _fboFirstPass );
 
 				glActiveTexture( GL_TEXTURE0 );
-				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassSSAO().getSSAOTexture() );
+				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassSSAO().getTexture() );
 				glActiveTexture( GL_TEXTURE1 );
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassLinearizeDepth().getTexture() );
 
-				_blurShader->use();
+				_program->use();
 				// TODO don't update each frame
 				glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
 				glUniform1i( _uBlurSharpnessLoc, Setting::Rendering::aoBlurSharpness );
@@ -93,7 +93,7 @@ namespace VTX
 				glBindTexture( GL_TEXTURE_2D, 0 );
 
 				glActiveTexture( GL_TEXTURE0 );
-				glBindTexture( GL_TEXTURE_2D, _textureTmp );
+				glBindTexture( GL_TEXTURE_2D, _textureFirstPass );
 				glActiveTexture( GL_TEXTURE1 );
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassLinearizeDepth().getTexture() );
 
