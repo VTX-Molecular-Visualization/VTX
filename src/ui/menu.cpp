@@ -5,7 +5,6 @@
 #include "action/active_ui_component.hpp"
 #include "action/active_vertical_sync.hpp"
 #include "action/active_y_axis_inversion.hpp"
-#include "action/change_ao_blur_sharpness.hpp"
 #include "action/change_ao_blur_size.hpp"
 #include "action/change_ao_factor.hpp"
 #include "action/change_ao_intensity.hpp"
@@ -321,14 +320,6 @@ namespace VTX
 									   RENDERER_AO_BLUR_SIZE_MAX ) )
 				{
 					VTX_ACTION( new Action::ChangeAOBlurSize( aoBlurSize ) );
-				}
-				int aoBlurSharpness = Setting::Rendering::aoBlurSharpness;
-				if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOBlurSharpness" ),
-									   &aoBlurSharpness,
-									   RENDERER_AO_BLUR_SHARPNESS_MIN,
-									   RENDERER_AO_BLUR_SHARPNESS_MAX ) )
-				{
-					VTX_ACTION( new Action::ChangeAOBlurSharpness( aoBlurSharpness ) );
 				}
 				ImGui::Separator();
 

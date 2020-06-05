@@ -46,7 +46,6 @@ namespace VTX
 			extern int							 aoIntensity;
 			extern float						 aoFactor;
 			extern int							 aoBlurSize;
-			extern int							 aoBlurSharpness;
 			extern bool							 useContourLines;
 			extern bool							 useAA;
 

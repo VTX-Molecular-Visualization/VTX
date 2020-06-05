@@ -44,12 +44,11 @@ void main()
 	unpackGBuffers( texPos, fd );
 	const vec3 pos = fd.camPosition.xyz;
 
-	if ( pos.z > 0.f ) return; // no need ssao on background
-
+	// Adapt sharpness wrt depth: the deeper the fragment is, the larger the radius is.
 	const float rad = -pos.z;
 
 	const vec3 randomVec = normalize( texture( noise, texPos * noiseScale ).xyz );
-	// Gram-Schmidt process
+	// Gram-Schmidt process.
 	const vec3 tangent   = normalize( randomVec - fd.normal * dot( randomVec, fd.normal ) );
 	const vec3 bitangent = cross( fd.normal, tangent );
 	const mat3 TBN	   = mat3( tangent, bitangent, fd.normal );
@@ -58,18 +57,18 @@ void main()
 
 	for ( int i = 0; i < uKernelSize; ++i )
 	{
-		// compute sample position
+		// Compute sample position.
 		const vec3 samplePos = TBN * uAoKernel[ i ] * rad + pos;
 
-		// projection
+		// Project sample position.
 		vec4 offset = uProjMatrix * vec4( samplePos, 1.f );
 		offset.xy /= offset.w;
 		offset.xy = fma( offset.xy, VEC2_05, VEC2_05 );
 
-		// get sample depth
+		// Get sample depth.
 		float sampleDepth = texture( gbCamPosition, offset.xy ).z;
 
-		// range check: ignore background
+		// Range check: ignore background.
 		const float rangeCheck = sampleDepth == 0.f ? 0.f : smoothstep( 0.f, 1.f, rad / abs( pos.z - sampleDepth ) );
 		ao += ( sampleDepth >= samplePos.z + BIAS ? 1.f : 0.f ) * rangeCheck;
 	}
