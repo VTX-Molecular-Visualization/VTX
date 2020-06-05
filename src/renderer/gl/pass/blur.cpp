@@ -45,12 +45,10 @@ namespace VTX
 				_program = p_programManager.createProgram( "Blur", { "shading/bilateral_blur.frag" } );
 
 				_uBlurSizeLoc			 = glGetUniformLocation( _program->getId(), "uBlurSize" );
-				_uBlurSharpnessLoc		 = glGetUniformLocation( _program->getId(), "uBlurSharpness" );
 				_uInvDirectionTexSizeLoc = glGetUniformLocation( _program->getId(), "uInvDirectionTexSize" );
 
 				_program->use();
 				glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
-				glUniform1i( _uBlurSharpnessLoc, Setting::Rendering::aoBlurSharpness );
 			}
 
 			void Blur::clean()
@@ -74,7 +72,6 @@ namespace VTX
 				_program->use();
 				// TODO don't update each frame
 				glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
-				glUniform1i( _uBlurSharpnessLoc, Setting::Rendering::aoBlurSharpness );
 				glUniform2f( _uInvDirectionTexSizeLoc, 1.f / p_renderer.getWidth(), 0.f );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );

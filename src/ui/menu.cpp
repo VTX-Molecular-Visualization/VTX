@@ -254,8 +254,8 @@ namespace VTX
 				}
 
 				// Shading.
-				const char * shadings[] = { LOCALE( "Enum.Shading.Lambert" ),
-											LOCALE( "Enum.Shading.BlinnPhong" ),
+				const char * shadings[] = { LOCALE( "Enum.Shading.Diffuse" ),
+											LOCALE( "Enum.Shading.Glossy" ),
 											LOCALE( "Enum.Shading.Toon" ),
 											LOCALE( "Enum.Shading.FlatColor" ) };
 				int			 shading	= (int)Setting::Rendering::shading;

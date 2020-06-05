@@ -15,7 +15,7 @@ namespace VTX
 
 				glGenTextures( 1, &_texture );
 				glBindTexture( GL_TEXTURE_2D, _texture );
-				glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA16F, p_width, p_height );
+				glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA8, p_width, p_height );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -25,12 +25,11 @@ namespace VTX
 
 				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-				_toonShading	= p_programManager.createProgram( "ToonShading", { "shading/toonShading.frag" } );
-				_diffuseShading = p_programManager.createProgram( "DiffuseShading", { "shading/diffuseShading.frag" } );
-				_blinnPhongShading
-					= p_programManager.createProgram( "BlinnPhongShading", { "shading/blinnPhongShading.frag" } );
-				_flatColorShading
-					= p_programManager.createProgram( "FlatColorShading", { "shading/flatColorShading.frag" } );
+				_toonShading = p_programManager.createProgram( "ToonShading", { "shading/shading_toon.frag" } );
+				_diffuseShading
+					= p_programManager.createProgram( "DiffuseShading", { "shading/shading_diffuse.frag" } );
+				_glossyShading = p_programManager.createProgram( "GlossyShading", { "shading/shading_glossy.frag" } );
+				_flatShading   = p_programManager.createProgram( "FlatShading", { "shading/shading_flat.frag" } );
 
 				// Use setting value.
 				set();
@@ -70,9 +69,9 @@ namespace VTX
 				switch ( Setting::Rendering::shading )
 				{
 				case SHADING::TOON: _currentShading = _toonShading; break;
-				case SHADING::BLINN_PHONG: _currentShading = _blinnPhongShading; break;
-				case SHADING::FLAT_COLOR: _currentShading = _flatColorShading; break;
-				case SHADING::LAMBERT:
+				case SHADING::GLOSSY: _currentShading = _glossyShading; break;
+				case SHADING::FLAT_COLOR: _currentShading = _flatShading; break;
+				case SHADING::DIFFUSE:
 				default: _currentShading = _diffuseShading;
 				}
 				_uAoFactorLoc = glGetUniformLocation( _currentShading->getId(), "uAoFactor" );

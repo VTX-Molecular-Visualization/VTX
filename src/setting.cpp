@@ -16,7 +16,7 @@ namespace VTX
 			View::MOLECULE_REPRESENTATION representation  = View::MOLECULE_REPRESENTATION::VAN_DER_WAALS;
 			View::MOLECULE_COLOR_MODE	  colorMode		  = View::MOLECULE_COLOR_MODE::CHAIN;
 			Renderer::MODE				  mode			  = Renderer::MODE::GL;
-			Renderer::SHADING			  shading		  = Renderer::SHADING::LAMBERT;
+			Renderer::SHADING			  shading		  = Renderer::SHADING::DIFFUSE;
 			bool						  useVSync		  = VSYNC_DEFAULT;
 			bool						  useSSAO		  = SSAO_DEFAULT;
 			int							  aoIntensity	  = RENDERER_AO_INTENSITY_DEFAULT;
