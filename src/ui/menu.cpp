@@ -6,7 +6,6 @@
 #include "action/active_vertical_sync.hpp"
 #include "action/active_y_axis_inversion.hpp"
 #include "action/change_ao_blur_size.hpp"
-#include "action/change_ao_factor.hpp"
 #include "action/change_ao_intensity.hpp"
 #include "action/change_auto_rotate_speed.hpp"
 #include "action/change_camera_clip.hpp"
@@ -305,12 +304,6 @@ namespace VTX
 									   RENDERER_AO_INTENSITY_MAX ) )
 				{
 					VTX_ACTION( new Action::ChangeAOIntensity( aoIntensity ) );
-				}
-
-				float aoFactor = Setting::Rendering::aoFactor;
-				if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AOFactor" ), &aoFactor, 0.f, 1.f ) )
-				{
-					VTX_ACTION( new Action::ChangeAOFactor( aoFactor ) );
 				}
 
 				int aoBlurSize = Setting::Rendering::aoBlurSize;

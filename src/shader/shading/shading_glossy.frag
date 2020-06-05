@@ -4,8 +4,7 @@ layout( binding = 0 ) uniform usampler2D gbColorNormal;
 layout( binding = 1 ) uniform sampler2D gbCamPosition;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
-uniform float uAoFactor;
-uniform float uSpecularFactor = 0.6f;
+uniform float uSpecularFactor = 0.4f;
 
 out vec4 fragColor;
 
@@ -38,18 +37,18 @@ void main()
 	FragmentData fd;
 	unpackGBuffers( ivec2( gl_FragCoord ), fd );
 
-	const vec3	lightDir	= normalize( -fd.camPosition );
-	const float lightFactor = 1.f - uAoFactor;
+	// Light on camera.
+	const vec3 lightDir = normalize( -fd.camPosition );
 
+	// Shader does not produce energy ! ;-)
 	const float diffuse = 1.f - uSpecularFactor;
 
+	// Blinn-Phong.
 	const vec3	h		 = normalize( lightDir - fd.camPosition );
 	const float specular = uSpecularFactor * pow( max( dot( h, fd.normal ), 0.f ), fd.shininess );
 
-	const float ao = uAoFactor * fd.ambientOcclusion;
-
 	const float cosTheta = max( dot( fd.normal, lightDir ), 0.f );
-	const float lighting = lightFactor * ( diffuse + specular ) * cosTheta;
+	const float lighting = ( diffuse + specular ) * cosTheta;
 
-	fragColor = vec4( fd.color * ( lighting + ao ), 1.f );
+	fragColor = vec4( fd.color * lighting * fd.ambientOcclusion, 1.f );
 }

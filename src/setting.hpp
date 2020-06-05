@@ -44,7 +44,6 @@ namespace VTX
 			extern bool							 useVSync;
 			extern bool							 useSSAO;
 			extern int							 aoIntensity;
-			extern float						 aoFactor;
 			extern int							 aoBlurSize;
 			extern bool							 useContourLines;
 			extern bool							 useAA;

@@ -20,7 +20,6 @@ namespace VTX
 			bool						  useVSync		  = VSYNC_DEFAULT;
 			bool						  useSSAO		  = SSAO_DEFAULT;
 			int							  aoIntensity	  = RENDERER_AO_INTENSITY_DEFAULT;
-			float						  aoFactor		  = RENDERER_AO_FACTOR_DEFAULT;
 			int							  aoBlurSize	  = RENDERER_AO_BLUR_SIZE_DEFAULT;
 			bool						  useContourLines = CONTOUR_LINES_DEFAULT;
 			bool						  useAA			  = AA_DEFAULT;

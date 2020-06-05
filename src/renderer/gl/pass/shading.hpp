@@ -39,7 +39,6 @@ namespace VTX
 				GLSL::Program * _flatShading	= nullptr;
 				GLuint			_fbo			= GL_INVALID_VALUE;
 				GLuint			_texture		= GL_INVALID_VALUE;
-				GLint			_uAoFactorLoc	= GL_INVALID_INDEX;
 
 				GLSL::Program * _currentShading = nullptr;
 			};

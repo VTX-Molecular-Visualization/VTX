@@ -52,7 +52,6 @@ namespace VTX
 			{ "MainMenu.Settings.CamFov", "FOV" },
 			{ "MainMenu.Settings.SSAO", "SSAO" },
 			{ "MainMenu.Settings.AOIntensity", "AO intensity" },
-			{ "MainMenu.Settings.AOFactor", "AO factor" },
 			{ "MainMenu.Settings.AOBlurSize", "AO blur size" },
 			{ "MainMenu.Settings.AA", "Anti-aliasing" },
 			{ "MainMenu.Settings.AutoRotateXSpeed", "X auto rotation speed" },

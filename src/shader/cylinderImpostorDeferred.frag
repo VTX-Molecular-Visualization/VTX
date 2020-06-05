@@ -55,7 +55,7 @@ void main()
 		colorNormal.w	  = 0; // padding
 
 		outColorNormal	= colorNormal;
-		outViewPosition = vec4( viewImpPos, 64.f ); // w = specular shininess;
+		outViewPosition = vec4( viewImpPos, 32.f ); // w = specular shininess;
 
 		gl_FragDepth = computeDepth( viewImpPos );
 #else
@@ -82,7 +82,7 @@ void main()
 			colorNormal.w	  = 0; // padding
 
 			outColorNormal	= colorNormal;
-			outViewPosition = vec4( viewImpPos, 64.f ); // w = specular shininess;
+			outViewPosition = vec4( viewImpPos, 32.f ); // w = specular shininess;
 
 			gl_FragDepth = computeDepth( viewImpPos );
 #else
@@ -110,7 +110,7 @@ void main()
 
 			// Output data
 			outColorNormal	= colorNormal;
-			outViewPosition = vec4( hit, 64.f ); // w = specular shininess
+			outViewPosition = vec4( hit, 32.f ); // w = specular shininess
 		}
 	}
 }
