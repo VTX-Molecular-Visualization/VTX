@@ -105,6 +105,8 @@ namespace VTX
 		{
 			VTX_INFO( "Faces: " + std::to_string( _indices.size() / 3 ) );
 			VTX_INFO( "Vertices: " + std::to_string( _vertices.size() ) );
+			VTX_INFO( "Normals: " + std::to_string( _normals.size() ) );
+			VTX_INFO( "Indices: " + std::to_string( _indices.size() ) );
 		}
 
 		void MeshTriangle::bindBuffers()

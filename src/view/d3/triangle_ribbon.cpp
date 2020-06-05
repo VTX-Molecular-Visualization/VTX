@@ -22,14 +22,12 @@ namespace VTX
 				VTXApp::get().getProgramManager().getProgram( "TriangleGeomShader" )->use();
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 
-				// VTX_DEBUG( "==============" );
 				for ( const std::pair<uint, uint> & pair :
 					  _getModel()
 						  .getMolecule()
 						  ->getRepresentationState()[ Generic::REPRESENTATION::CARTOON ]
 						  .triangles )
 				{
-					// VTX_DEBUG( std::to_string( pair.first ) + " / " + std::to_string( pair.second ) );
 					glDrawElements(
 						GL_TRIANGLES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
 				}

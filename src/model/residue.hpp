@@ -108,10 +108,10 @@ namespace VTX
 			// inline void						 setIdFirstExtraBond( const uint p_id ) { _idFirstExtraBond = p_id; };
 			// inline uint						 getExtraBondCount() const { return _extraBondCount; };
 			// inline void						 setExtraBondCount( const uint p_count ) { _extraBondCount = p_count; };
-			inline uint getIndexFirstVertex() const { return _indexRibbonFirstVertex; };
-			inline void setIndexFirstVertex( const uint p_id ) { _indexRibbonFirstVertex = p_id; };
-			inline uint getVertexCount() const { return _ribbonVertexCount; };
-			inline void setVertexCount( const uint p_count ) { _ribbonVertexCount = p_count; };
+			inline uint getIndexRibbonFirstVertex() const { return _indexRibbonFirstVertex; };
+			inline void setIndexRibbonFirstVertex( const uint p_id ) { _indexRibbonFirstVertex = p_id; };
+			inline uint getRibbonVertexCount() const { return _ribbonVertexCount; };
+			inline void setRibbonVertexCount( const uint p_count ) { _ribbonVertexCount = p_count; };
 
 			inline uint getIndiceRibbonFirstTriangle() const { return _indiceRibbonFirstTriangle; };
 			inline void setIndiceRibbonFirstTriangle( const uint p_id ) { _indiceRibbonFirstTriangle = p_id; };

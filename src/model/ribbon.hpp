@@ -34,8 +34,8 @@ namespace VTX
 
 			Ribbon( Molecule * const );
 
-			inline Molecule * const		 getMolecule() const { return _molecule; }
-			void						 refreshVisibility();
+			inline Molecule * const getMolecule() const { return _molecule; }
+			void					refreshVisibility();
 
 		  protected:
 			// Don't use default Triangle view, use Triangle Ribbbon to override some features.
@@ -45,7 +45,7 @@ namespace VTX
 			static constexpr int LHANDED = -1;
 			static constexpr int RHANDED = 1;
 
-			Molecule * const	 _molecule;
+			Molecule * const _molecule;
 
 			void _addControlPoints( const Vec3f &,
 									const Vec3f &,
@@ -62,6 +62,7 @@ namespace VTX
 									   Math::BSpline &,
 									   const Color::Rgb &,
 									   const bool,
+									   uint &,
 									   uint & );
 		};
 

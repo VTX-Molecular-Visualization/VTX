@@ -14,7 +14,8 @@ namespace VTX
 
 			const Molecule::AtomPositionsFrame & positions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
 
-			uint vIndex = 0;
+			uint vIndex	 = 0;
+			uint vIndice = 0;
 
 			// Loop over chains.
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
@@ -41,7 +42,7 @@ namespace VTX
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
 					// VTX_DEBUG( "Building secondary structure... residue " + std::to_string( residueIdx ) );
-					const Residue &					   residue1 = _molecule->getResidue( idxFirstResidue + residueIdx );
+					Residue &						   residue1 = _molecule->getResidue( idxFirstResidue + residueIdx );
 					const Residue::SECONDARY_STRUCTURE ss		= residue1.getSecondaryStructure();
 
 					// First residue
@@ -229,7 +230,17 @@ namespace VTX
 							   || _molecule->getResidue( idxFirstResidue + residueIdx ).getSecondaryStructure()
 									  != Residue::SECONDARY_STRUCTURE::STRAND );
 
-					_computeTriangleMesh( splineCenter, splineSide1, splineSide2, chainColor, isArrow, vIndex );
+					residue1.setIndexRibbonFirstVertex( vIndex );
+					residue1.setIndiceRibbonFirstTriangle( vIndice );
+
+					uint indice = vIndice;
+					uint index	= vIndex;
+
+					_computeTriangleMesh(
+						splineCenter, splineSide1, splineSide2, chainColor, isArrow, vIndex, vIndice );
+
+					residue1.setRibbonVertexCount( vIndex - index );
+					residue1.setIndiceRibbonTriangleCount( vIndice - indice );
 
 					residueValidCount++;
 				}
@@ -267,8 +278,15 @@ namespace VTX
 			// Vector contained in the peptide plane (perpendicular to its direction).
 			D = Util::Math::cross( C, A );
 
-			Util::Math::normalizeSelf( C );
-			Util::Math::normalizeSelf( D );
+			if ( Util::Math::length( C ) != 0.f )
+			{
+				Util::Math::normalizeSelf( C );
+			}
+
+			if ( Util::Math::length( D ) != 0.f )
+			{
+				Util::Math::normalizeSelf( D );
+			}
 
 			// Flipping test (to avoid self crossing in the strands).
 			if ( ( p_ss != Residue::SECONDARY_STRUCTURE::HELIX ) && ( Util::Math::dot( p_flipTestV, D ) < 0.f ) )
@@ -305,7 +323,8 @@ namespace VTX
 										   Math::BSpline &	  p_splineSide2,
 										   const Color::Rgb & p_color,
 										   const bool		  p_isArrow,
-										   uint &			  p_vIndex )
+										   uint &			  p_vIndex,
+										   uint &			  p_vIndice )
 		{
 			Vec3f pointCenter0, pointCenter1;
 			Vec3f pointSide10, pointSide11, pointSide20, pointSide21;
@@ -326,7 +345,10 @@ namespace VTX
 			transversal = pointSide11 - pointSide21;
 			normal1		= Util::Math::cross( transversal, tangent );
 
-			Util::Math::normalizeSelf( normal1 );
+			if ( Util::Math::length( normal1 ) != 0.f )
+			{
+				Util::Math::normalizeSelf( normal1 );
+			}
 
 			Vec3f leftNormal0, leftNormal1, rightNormal0, rightNormal1;
 
@@ -357,7 +379,10 @@ namespace VTX
 				// Vector transversal to the ribbon
 				transversal = pointSide11 - pointSide21;
 				normal1		= Util::Math::cross( transversal, tangent );
-				Util::Math::normalizeSelf( normal1 );
+				if ( Util::Math::length( normal1 ) != 0.f )
+				{
+					Util::Math::normalizeSelf( normal1 );
+				}
 
 				// Left and right may be reversed, but either way,
 				// these normals point outwards from the ribbons, horizontally.
@@ -366,11 +391,23 @@ namespace VTX
 				vecRight0 = pointSide20 - pointCenter0;
 				vecRight1 = pointSide21 - pointCenter1;
 
-				leftNormal0 = Util::Math::normalize( vecLeft0 );
-				leftNormal1 = Util::Math::normalize( vecLeft1 );
+				if ( Util::Math::length( vecLeft0 ) != 0.f )
+				{
+					leftNormal0 = Util::Math::normalize( vecLeft0 );
+				}
+				if ( Util::Math::length( vecLeft1 ) != 0.f )
+				{
+					leftNormal1 = Util::Math::normalize( vecLeft1 );
+				}
 
-				rightNormal0 = Util::Math::normalize( vecRight0 );
-				rightNormal1 = Util::Math::normalize( vecRight1 );
+				if ( Util::Math::length( vecRight0 ) != 0.f )
+				{
+					rightNormal0 = Util::Math::normalize( vecRight0 );
+				}
+				if ( Util::Math::length( vecRight1 ) != 0.f )
+				{
+					rightNormal1 = Util::Math::normalize( vecRight1 );
+				}
 
 				// The (Sid1Point0, Sid1Point1, CentPoint1) triangle is added.
 				_vertices.emplace_back( pointSide10 + extraWidthFactor * leftNormal0 ); // 0
@@ -537,9 +574,12 @@ namespace VTX
 					_indices.emplace_back( p_vIndex + 26 );
 					_indices.emplace_back( p_vIndex + 28 );
 					_indices.emplace_back( p_vIndex + 30 );
+
+					p_vIndice += 6;
 				}
 
 				p_vIndex += 32;
+				p_vIndice += 36;
 				extraWidthFactor = extraWidthFactor - pointOneAdjustment;
 			}
 		} // namespace Model
@@ -556,14 +596,9 @@ namespace VTX
 					const Residue & residue = _molecule->getResidue( chain->getIndexFirstResidue() + i );
 					bool			show	= _molecule->isVisible() && chain->isVisible() && residue.isVisible();
 
-					for ( uint i = 0; i < residue.getVertexCount(); ++i, ++count )
+					for ( uint i = 0; i < residue.getRibbonVertexCount(); ++i, ++count )
 					{
-						_visibilities[ residue.getIndexFirstVertex() + i ] = show;
-					}
-
-					// for ( uint j = 0; j < 32 * DETAIL_LEVEL; ++j, ++count )
-					{
-						//_visibilities.at( _mapResidueIdxToVertexIdx[ residue.getIndex() ] + j ) = show;
+						_visibilities[ residue.getIndexRibbonFirstVertex() + i ] = show;
 					}
 				}
 			}
