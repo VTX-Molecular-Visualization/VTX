@@ -16,6 +16,7 @@ namespace VTX
 			Generic::destroy( _passSSAO );
 			Generic::destroy( _passBlur );
 			Generic::destroy( _passShading );
+			Generic::destroy( _passOutline );
 			Generic::destroy( _passFXAA );
 		}
 
@@ -34,6 +35,7 @@ namespace VTX
 			_passSSAO->init( _programManager, p_width, p_height );
 			_passBlur->init( _programManager, p_width, p_height );
 			_passShading->init( _programManager, p_width, p_height );
+			_passOutline->init( _programManager, p_width, p_height );
 			_passFXAA->init( _programManager, p_width, p_height );
 
 			// Init VAO.
@@ -46,11 +48,13 @@ namespace VTX
 		{
 			if ( p_width != _width || p_height != _height )
 			{
+				// TODO: do not destroy/construct all !!!
 				_passGeometric->clean();
 				_passLinearizeDepth->clean();
 				_passSSAO->clean();
 				_passBlur->clean();
 				_passShading->clean();
+				_passOutline->clean();
 				_passFXAA->clean();
 
 				BaseRenderer::resize( p_width, p_height );
@@ -60,6 +64,7 @@ namespace VTX
 				_passSSAO->init( _programManager, _width, _height );
 				_passBlur->init( _programManager, _width, _height );
 				_passShading->init( _programManager, _width, _height );
+				_passOutline->init( _programManager, p_width, p_height );
 				_passFXAA->init( _programManager, _width, _height );
 			}
 		}
@@ -118,6 +123,11 @@ namespace VTX
 			}
 
 			_passShading->render( p_scene, *this );
+
+			if ( Setting::Rendering::useOutline )
+			{
+				_passOutline->render( p_scene, *this );
+			}
 
 			if ( Setting::Rendering::useAA )
 			{

@@ -35,7 +35,9 @@ namespace VTX
 				glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
 				glActiveTexture( GL_TEXTURE0 );
-				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassShading().getTexture() );
+				glBindTexture( GL_TEXTURE_2D,
+							   Setting::Rendering::useOutline ? p_renderer.getPassOutline().getTexture()
+															  : p_renderer.getPassShading().getTexture() );
 
 				_program->use();
 

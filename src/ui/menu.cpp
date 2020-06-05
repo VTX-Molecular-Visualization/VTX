@@ -1,5 +1,6 @@
 #include "menu.hpp"
 #include "action/active_aa.hpp"
+#include "action/active_outline.hpp"
 #include "action/active_renderer.hpp"
 #include "action/active_ssao.hpp"
 #include "action/active_ui_component.hpp"
@@ -314,6 +315,14 @@ namespace VTX
 				{
 					VTX_ACTION( new Action::ChangeAOBlurSize( aoBlurSize ) );
 				}
+				ImGui::Separator();
+
+				// Outline.
+				bool useOutline = Setting::Rendering::useOutline;
+				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.Outline" ), &useOutline ) )
+				{
+					VTX_ACTION( new Action::ActiveOutline( useOutline ) );
+				};
 				ImGui::Separator();
 
 				// AA.

@@ -10,6 +10,7 @@
 #include "pass/fxaa.hpp"
 #include "pass/geometric.hpp"
 #include "pass/linearize_depth.hpp"
+#include "pass/outline.hpp"
 #include "pass/shading.hpp"
 #include "pass/ssao.hpp"
 #include "setting.hpp"
@@ -35,6 +36,7 @@ namespace VTX
 			inline const Pass::SSAO &			getPassSSAO() const { return *_passSSAO; }
 			inline const Pass::Blur &			getPassBlur() const { return *_passBlur; }
 			inline const Pass::Shading &		getPassShading() const { return *_passShading; }
+			inline const Pass::Outline &		getPassOutline() const { return *_passOutline; }
 			inline const Pass::FXAA &			getPassFXAA() const { return *_passFXAA; }
 
 			inline const GLuint & getQuadVAO() const { return _quadVAO; }
@@ -42,11 +44,15 @@ namespace VTX
 
 			inline const GLuint & getRenderedTexture() const
 			{
-				return Setting::Rendering::useAA ? _passFXAA->getTexture() : _passShading->getTexture();
+				return Setting::Rendering::useAA
+						   ? _passFXAA->getTexture()
+						   : Setting::Rendering::useOutline ? _passOutline->getTexture() : _passShading->getTexture();
 			}
 			inline const GLuint & getRenderedFBO() const
 			{
-				return Setting::Rendering::useAA ? _passFXAA->getFbo() : _passShading->getFbo();
+				return Setting::Rendering::useAA
+						   ? _passFXAA->getFbo()
+						   : Setting::Rendering::useOutline ? _passOutline->getFbo() : _passShading->getFbo();
 			}
 
 		  private:
@@ -55,6 +61,7 @@ namespace VTX
 			Pass::SSAO *		   _passSSAO		   = new Pass::SSAO();
 			Pass::Blur *		   _passBlur		   = new Pass::Blur();
 			Pass::Shading *		   _passShading		   = new Pass::Shading();
+			Pass::Outline *		   _passOutline		   = new Pass::Outline();
 			Pass::FXAA *		   _passFXAA		   = new Pass::FXAA();
 
 			GLuint _quadVAO = GL_INVALID_VALUE;

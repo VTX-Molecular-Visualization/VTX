@@ -46,10 +46,10 @@ namespace VTX
 	const std::string GLSL_VERSION		   = "#version 450";
 	const bool		  VSYNC_DEFAULT		   = true;
 
-	const bool SSAO_DEFAULT			 = true;
-	const bool CONTOUR_LINES_DEFAULT = false; // Not implemented yet.
-	const bool AA_DEFAULT			 = true;
-	const bool RANDOM				 = false; // Keep it false for dev branch.
+	const bool SSAO_DEFAULT	   = true;
+	const bool OUTLINE_DEFAULT = false; // WIP
+	const bool AA_DEFAULT	   = true;
+	const bool RANDOM		   = false; // Keep it false for dev branch.
 
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 

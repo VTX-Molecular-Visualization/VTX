@@ -12,24 +12,24 @@ namespace VTX
 
 		namespace Rendering
 		{
-			extern bool					  isActive		  = true;
-			View::MOLECULE_REPRESENTATION representation  = View::MOLECULE_REPRESENTATION::VAN_DER_WAALS;
-			View::MOLECULE_COLOR_MODE	  colorMode		  = View::MOLECULE_COLOR_MODE::CHAIN;
-			Renderer::MODE				  mode			  = Renderer::MODE::GL;
-			Renderer::SHADING			  shading		  = Renderer::SHADING::DIFFUSE;
-			bool						  useVSync		  = VSYNC_DEFAULT;
-			bool						  useSSAO		  = SSAO_DEFAULT;
-			int							  aoIntensity	  = RENDERER_AO_INTENSITY_DEFAULT;
-			int							  aoBlurSize	  = RENDERER_AO_BLUR_SIZE_DEFAULT;
-			bool						  useContourLines = CONTOUR_LINES_DEFAULT;
-			bool						  useAA			  = AA_DEFAULT;
+			extern bool					  isActive		 = true;
+			View::MOLECULE_REPRESENTATION representation = View::MOLECULE_REPRESENTATION::VAN_DER_WAALS;
+			View::MOLECULE_COLOR_MODE	  colorMode		 = View::MOLECULE_COLOR_MODE::CHAIN;
+			Renderer::MODE				  mode			 = Renderer::MODE::GL;
+			Renderer::SHADING			  shading		 = Renderer::SHADING::DIFFUSE;
+			bool						  useVSync		 = VSYNC_DEFAULT;
+			bool						  useSSAO		 = SSAO_DEFAULT;
+			int							  aoIntensity	 = RENDERER_AO_INTENSITY_DEFAULT;
+			int							  aoBlurSize	 = RENDERER_AO_BLUR_SIZE_DEFAULT;
+			bool						  useOutline	 = OUTLINE_DEFAULT;
+			bool						  useAA			 = AA_DEFAULT;
 
 			// Camera.
 			float camNear = CAMERA_NEAR_DEFAULT;
 			float camFar  = CAMERA_FAR_DEFAULT;
 			float camFov  = CAMERA_FOV_DEFAULT;
 
-			Color::Rgb contourLineColor = Color::Rgb::WHITE;
+			Color::Rgb outlineColor = Color::Rgb::WHITE;
 		}; // namespace Rendering
 
 		namespace Controller

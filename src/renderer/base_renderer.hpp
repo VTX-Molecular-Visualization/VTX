@@ -38,6 +38,7 @@ namespace VTX
 			virtual void setShading()							= 0;
 			// TODO: why ? because SSAO and AA in RT.
 			virtual void activeSSAO( const bool ) {}
+			virtual void activeOutline( const bool ) {}
 			virtual void activeAA( const bool ) {}
 
 			inline GLSL::ProgramManager &		getProgramManager() { return _programManager; }
