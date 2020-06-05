@@ -21,6 +21,11 @@ namespace VTX
 			virtual void				exit() override;
 
 			virtual void update( const double p_deltaTime ) override;
+
+			void toggleController();
+
+		  private:
+			ID::VTX_ID _controller = ID::Controller::FREEFLY;
 		};
 	} // namespace State
 } // namespace VTX

@@ -86,7 +86,10 @@ namespace VTX
 			_eulerAngles = VEC3F_ZERO;
 		}
 
-		void Camera::_updateViewMatrix() { _viewMatrix = Util::Math::lookAt( _position, _position + _front, _up ); }
+		void Camera::_updateViewMatrix()
+		{
+			//VTX_DEBUG( "UPDATE CAMERA VM" );
+			_viewMatrix = Util::Math::lookAt( _position, _position + _front, _up ); }
 
 		void Camera::_updateProjectionMatrix()
 		{

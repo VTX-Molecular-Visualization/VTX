@@ -34,8 +34,7 @@ namespace VTX
 				for ( const std::pair<uint, uint> & pair :
 					  _getModel().getRepresentationState()[ p_representation ].bonds )
 				{
-					glDrawElements(
-						GL_LINES, pair.second * 2, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) * 2 ) );
+					glDrawElements( GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
 				}
 			}
 		} // namespace D3

@@ -30,7 +30,7 @@ namespace VTX
 				{
 					const Model::Chain & chain			 = p_molecule.getChain( chainIdx );
 					uint				 residueCount	 = chain.getResidueCount();
-					uint				 idxFirstResidue = chain.getIdFirstResidue();
+					uint				 idxFirstResidue = chain.getIndexFirstResidue();
 					std::vector<float>	 phi			 = std::vector<float>( residueCount );
 					std::vector<float>	 psi			 = std::vector<float>( residueCount );
 
@@ -240,10 +240,12 @@ namespace VTX
 						continue;
 					}
 
-					std::pair<uint, uint> rangeAtoms = std::pair( residue->getIdFirstAtom(), residue->getAtomCount() );
-					std::pair<uint, uint> rangeBonds = std::pair( residue->getIdFirstBond(), residue->getBondCount() );
+					std::pair<uint, uint> rangeAtoms
+						= std::pair( residue->getIndexFirstAtom(), residue->getAtomCount() );
+					std::pair<uint, uint> rangeBonds
+						= std::pair( residue->getIndiceFirstBond(), residue->getBondIndiceCount() );
 					std::pair<uint, uint> rangeTriangles
-						= p_molecule.getRibbon().getRangeByResidue( residue->getIndex() );
+						= std::pair( residue->getIndiceRibbonFirstTriangle(), residue->getIndiceRibbonTriangleCount() );
 
 					const std::set<Generic::REPRESENTATION> * representations = nullptr;
 
@@ -303,27 +305,27 @@ namespace VTX
 					std::map<uint, uint> & rangeAtoms = pair.second.atoms;
 					if ( rangeAtoms.size() > 1 )
 					{
-						VTX_DEBUG( "Before merging atoms: " + std::to_string( rangeAtoms.size() ) );
+						VTX_INFO( "Before merging atoms: " + std::to_string( rangeAtoms.size() ) );
 						mergeRanges( rangeAtoms );
-						VTX_DEBUG( "After merging atoms: " + std::to_string( rangeAtoms.size() ) );
+						VTX_INFO( "After merging atoms: " + std::to_string( rangeAtoms.size() ) );
 					}
 
 					// Bonds.
 					std::map<uint, uint> & rangeBonds = pair.second.bonds;
 					if ( rangeBonds.size() > 1 )
 					{
-						VTX_DEBUG( "Before merging bonds: " + std::to_string( rangeBonds.size() ) );
+						VTX_INFO( "Before merging bonds: " + std::to_string( rangeBonds.size() ) );
 						mergeRanges( rangeBonds );
-						VTX_DEBUG( "After merging bonds: " + std::to_string( rangeBonds.size() ) );
+						VTX_INFO( "After merging bonds: " + std::to_string( rangeBonds.size() ) );
 					}
 
 					// Triangles.
 					std::map<uint, uint> & rangeTriangle = pair.second.triangles;
 					if ( rangeTriangle.size() > 1 )
 					{
-						VTX_DEBUG( "Before merging triangles: " + std::to_string( rangeTriangle.size() ) );
+						VTX_INFO( "Before merging triangles: " + std::to_string( rangeTriangle.size() ) );
 						mergeRanges( rangeTriangle );
-						VTX_DEBUG( "After merging triangles: " + std::to_string( rangeTriangle.size() ) );
+						VTX_INFO( "After merging triangles: " + std::to_string( rangeTriangle.size() ) );
 					}
 				}
 			}

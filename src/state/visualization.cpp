@@ -24,7 +24,22 @@ namespace VTX
 
 			VTXApp::get().getScene().update( p_deltaTime );
 
-			if ( Setting::Rendering::isActive ) { VTXApp::get().renderScene(); }
+			if ( Setting::Rendering::isActive )
+			{
+				VTXApp::get().renderScene();
+			}
+		}
+
+		void Visualization::toggleController()
+		{
+			if ( _controller == ID::Controller::FREEFLY )
+			{
+				_controller = ID::Controller::ORBIT;
+			}
+			else
+			{
+				_controller = ID::Controller::FREEFLY;
+			}
 		}
 
 	} // namespace State

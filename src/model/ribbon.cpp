@@ -10,7 +10,7 @@ namespace VTX
 		{
 			Tool::Chrono chrono;
 			chrono.start();
-			VTX_DEBUG( "Creating secondary structure..." );
+			VTX_INFO( "Creating secondary structure..." );
 
 			const Molecule::AtomPositionsFrame & positions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
 
@@ -28,7 +28,7 @@ namespace VTX
 				const Chain &	   chain		   = _molecule->getChain( chainIdx );
 				const Color::Rgb & chainColor	   = chain.getColor();
 				uint			   residueCount	   = chain.getResidueCount();
-				uint			   idxFirstResidue = chain.getIdFirstResidue();
+				uint			   idxFirstResidue = chain.getIndexFirstResidue();
 
 				// Not enought residues.
 				if ( residueCount < 3 )
@@ -61,13 +61,27 @@ namespace VTX
 
 						if ( CA1 == nullptr || OX1 == nullptr || CA2 == nullptr )
 						{
-							// VTX_WARNING( "Failed to get atoms for first residue" );
-							continue;
+							VTX_WARNING( "Failed to get atoms for first residue" );
+							// continue;
 						}
 
-						const Vec3f & positionCA1 = positions[ CA1->getIndex() ];
-						const Vec3f & positionOX1 = positions[ OX1->getIndex() ];
-						const Vec3f & positionCA2 = positions[ CA2->getIndex() ];
+						Vec3f positionCA1;
+						if ( CA1 != nullptr )
+							positionCA1 = positions[ CA1->getIndex() ];
+						else
+							positionCA1 = VEC3F_ZERO;
+
+						Vec3f positionOX1;
+						if ( OX1 != nullptr )
+							positionOX1 = positions[ OX1->getIndex() ];
+						else
+							positionOX1 = VEC3F_ZERO;
+
+						Vec3f positionCA2;
+						if ( CA2 != nullptr )
+							positionCA2 = positions[ CA2->getIndex() ];
+						else
+							positionCA2 = VEC3F_ZERO;
 
 						_addControlPoints( positionCA1,
 										   positionOX1,
@@ -90,12 +104,21 @@ namespace VTX
 
 						if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 						{
-							// VTX_DEBUG( "Failed to get atoms" );
-							continue;
+							VTX_WARNING( "Failed to get atoms" );
+							// continue;
 						}
 
-						const Vec3f & positionOX2 = positions[ OX2->getIndex() ];
-						const Vec3f & positionCA3 = positions[ CA3->getIndex() ];
+						Vec3f positionOX2;
+						if ( OX2 != nullptr )
+							positionOX2 = positions[ OX2->getIndex() ];
+						else
+							positionOX2 = VEC3F_ZERO;
+
+						Vec3f positionCA3;
+						if ( CA3 != nullptr )
+							positionCA3 = positions[ CA3->getIndex() ];
+						else
+							positionCA3 = VEC3F_ZERO;
 
 						_addControlPoints( positionCA2,
 										   positionOX2,
@@ -164,12 +187,26 @@ namespace VTX
 							if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 							{
 								VTX_WARNING( "Failed to get atoms" );
-								continue;
+								// continue;
 							}
 
-							const Vec3f & positionCA2 = positions[ CA2->getIndex() ];
-							const Vec3f & positionOX2 = positions[ OX2->getIndex() ];
-							const Vec3f & positionCA3 = positions[ CA3->getIndex() ];
+							Vec3f positionCA2;
+							if ( CA2 != nullptr )
+								positionCA2 = positions[ CA2->getIndex() ];
+							else
+								positionCA2 = VEC3F_ZERO;
+
+							Vec3f positionOX2;
+							if ( OX2 != nullptr )
+								positionOX2 = positions[ OX2->getIndex() ];
+							else
+								positionOX2 = VEC3F_ZERO;
+
+							Vec3f positionCA3;
+							if ( CA3 != nullptr )
+								positionCA3 = positions[ CA3->getIndex() ];
+							else
+								positionCA3 = VEC3F_ZERO;
 
 							_addControlPoints( positionCA2,
 											   positionOX2,
@@ -192,7 +229,6 @@ namespace VTX
 							   || _molecule->getResidue( idxFirstResidue + residueIdx ).getSecondaryStructure()
 									  != Residue::SECONDARY_STRUCTURE::STRAND );
 
-					_mapResidueIdxToVertexIdx.emplace( residue1.getIndex(), vIndex );
 					_computeTriangleMesh( splineCenter, splineSide1, splineSide2, chainColor, isArrow, vIndex );
 
 					residueValidCount++;
@@ -517,15 +553,17 @@ namespace VTX
 			{
 				for ( uint i = 0; i < chain->getResidueCount(); ++i )
 				{
-					const Residue & residue = _molecule->getResidue( chain->getIdFirstResidue() + i );
+					const Residue & residue = _molecule->getResidue( chain->getIndexFirstResidue() + i );
 					bool			show	= _molecule->isVisible() && chain->isVisible() && residue.isVisible();
 
-					if ( _mapResidueIdxToVertexIdx.find( residue.getIndex() ) != _mapResidueIdxToVertexIdx.end() )
+					for ( uint i = 0; i < residue.getVertexCount(); ++i, ++count )
 					{
-						for ( uint j = 0; j < 32 * DETAIL_LEVEL; ++j, ++count )
-						{
-							_visibilities[ _mapResidueIdxToVertexIdx[ residue.getIndex() ] + j ] = show;
-						}
+						_visibilities[ residue.getIndexFirstVertex() + i ] = show;
+					}
+
+					// for ( uint j = 0; j < 32 * DETAIL_LEVEL; ++j, ++count )
+					{
+						//_visibilities.at( _mapResidueIdxToVertexIdx[ residue.getIndex() ] + j ) = show;
 					}
 				}
 			}

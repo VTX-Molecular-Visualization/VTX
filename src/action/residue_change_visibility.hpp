@@ -30,11 +30,11 @@ namespace VTX
 					for ( uint i = 0; i < residue.getChainPtr()->getResidueCount(); ++i )
 					{
 						residue.getMoleculePtr()
-							->getResidue( residue.getChainPtr()->getIdFirstResidue() + i )
+							->getResidue( residue.getChainPtr()->getIndexFirstResidue() + i )
 							.setVisible(
 								_mode == VISIBILITY_MODE::ALL
 								|| ( _mode == VISIBILITY_MODE::SOLO
-									 && residue.getChainPtr()->getIdFirstResidue() + i == residue.getIndex() ) );
+									 && residue.getChainPtr()->getIndexFirstResidue() + i == residue.getIndex() ) );
 					}
 				}
 

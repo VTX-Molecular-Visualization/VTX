@@ -36,10 +36,6 @@ namespace VTX
 
 			inline Molecule * const		 getMolecule() const { return _molecule; }
 			void						 refreshVisibility();
-			inline std::pair<uint, uint> getRangeByResidue( const uint p_index )
-			{
-				return std::pair( _mapResidueIdxToVertexIdx[ p_index ], 32 * DETAIL_LEVEL );
-			}
 
 		  protected:
 			// Don't use default Triangle view, use Triangle Ribbbon to override some features.
@@ -50,7 +46,6 @@ namespace VTX
 			static constexpr int RHANDED = 1;
 
 			Molecule * const	 _molecule;
-			std::map<uint, uint> _mapResidueIdxToVertexIdx = std::map<uint, uint>();
 
 			void _addControlPoints( const Vec3f &,
 									const Vec3f &,

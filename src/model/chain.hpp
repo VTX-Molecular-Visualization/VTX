@@ -47,8 +47,8 @@ namespace VTX
 
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
-			inline uint				   getIdFirstResidue() const { return _idFirstResidue; };
-			inline void				   setIdFirstResidue( const uint p_id ) { _idFirstResidue = p_id; };
+			inline uint				   getIndexFirstResidue() const { return _indexFirstResidue; };
+			inline void				   setIndexFirstResidue( const uint p_id ) { _indexFirstResidue = p_id; };
 			inline uint				   getResidueCount() const { return _residueCount; };
 			inline void				   setResidueCount( const uint p_count ) { _residueCount = p_count; };
 
@@ -61,9 +61,9 @@ namespace VTX
 			uint	   _index		= 0;
 			Molecule * _moleculePtr = nullptr;
 
-			std::string _name			= "unknown";
-			uint		_idFirstResidue = 0;
-			uint		_residueCount	= 0;
+			std::string _name			   = "unknown";
+			uint		_indexFirstResidue = 0;
+			uint		_residueCount	   = 0;
 		}; // namespace Model
 
 	} // namespace Model

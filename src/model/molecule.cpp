@@ -76,11 +76,11 @@ namespace VTX
 				// Compute secondary structure if not loaded.
 				if ( _configuration.isSecondaryStructureLoadedFromFile == false )
 				{
-					Util::Molecule::computeSecondaryStructure( *this );
+					// Util::Molecule::computeSecondaryStructure( *this );
 				}
 
 				// Create secondary structure mesh.
-				createSecondaryStructure();
+				// createSecondaryStructure();
 				refreshVisibility();
 			}
 		}
@@ -403,25 +403,25 @@ namespace VTX
 				modelChain.setIndex( otherChain.getIndex() );
 				modelChain.setMoleculePtr( this );
 				modelChain.setName( otherChain.getName() );
-				modelChain.setIdFirstResidue( otherChain.getIdFirstResidue() );
+				modelChain.setIndexFirstResidue( otherChain.getIndexFirstResidue() );
 				modelChain.setResidueCount( otherChain.getResidueCount() );
 
 				for ( uint residueIndex = 0; residueIndex < otherChain.getResidueCount(); ++residueIndex )
 				{
 					const Residue & otherResidue
-						= p_molecule.getResidue( otherChain.getIdFirstResidue() + residueIndex );
-					Model::Residue & modelResidue = getResidue( otherChain.getIdFirstResidue() + residueIndex );
+						= p_molecule.getResidue( otherChain.getIndexFirstResidue() + residueIndex );
+					Model::Residue & modelResidue = getResidue( otherChain.getIndexFirstResidue() + residueIndex );
 					modelResidue.setIndex( otherResidue.getIndex() );
 					modelResidue.setMoleculePtr( this );
 					modelResidue.setChainPtr( &modelChain );
-					modelResidue.setIdFirstAtom( otherResidue.getIdFirstAtom() );
+					modelResidue.setIndexFirstAtom( otherResidue.getIndexFirstAtom() );
 					modelResidue.setAtomCount( otherResidue.getAtomCount() );
 					modelResidue.setSymbol( otherResidue.getSymbol() );
 
 					for ( uint atomIndex = 0; atomIndex < otherResidue.getAtomCount(); ++atomIndex )
 					{
-						const Atom &  otherAtom = p_molecule.getAtom( otherResidue.getIdFirstAtom() + atomIndex );
-						Model::Atom & modelAtom = getAtom( otherResidue.getIdFirstAtom() + atomIndex );
+						const Atom &  otherAtom = p_molecule.getAtom( otherResidue.getIndexFirstAtom() + atomIndex );
+						Model::Atom & modelAtom = getAtom( otherResidue.getIndexFirstAtom() + atomIndex );
 						modelAtom.setIndex( otherAtom.getIndex() );
 						modelAtom.setResiduePtr( &modelResidue );
 						modelAtom.setChainPtr( &modelChain );
@@ -437,16 +437,16 @@ namespace VTX
 				Model::Chain &	 modelChain	  = getChain( getChainCount() - 1 );
 				Model::Residue & modelResidue = getResidue( getResidueCount() - 1 );
 				modelChain.setIndex( getChainCount() - 1 );
-				modelChain.setIdFirstResidue( getResidueCount() - 1 );
+				modelChain.setIndexFirstResidue( getResidueCount() - 1 );
 				modelChain.setResidueCount( 1 );
 				modelResidue.setIndex( getResidueCount() - 1 );
 				modelResidue.setChainPtr( &modelChain );
-				modelResidue.setIdFirstAtom( p_molecule.getAtomCount() );
+				modelResidue.setIndexFirstAtom( p_molecule.getAtomCount() );
 				modelResidue.setAtomCount( getAtomCount() - p_molecule.getAtomCount() );
 
 				for ( uint atomIndex = 0; atomIndex < modelResidue.getAtomCount(); ++atomIndex )
 				{
-					Model::Atom & modelAtom = getAtom( modelResidue.getIdFirstAtom() + atomIndex );
+					Model::Atom & modelAtom = getAtom( modelResidue.getIndexFirstAtom() + atomIndex );
 					modelAtom.setChainPtr( &modelChain );
 					modelAtom.setResiduePtr( &modelResidue );
 				}

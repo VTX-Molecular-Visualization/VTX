@@ -35,7 +35,7 @@ namespace VTX
 		{
 			for ( uint i = 0; i < _atomCount; ++i )
 			{
-				const Atom & atom = _moleculePtr->getAtom( _idFirstAtom + i );
+				const Atom & atom = _moleculePtr->getAtom( _indexFirstAtom + i );
 				if ( atom.getName() == p_name )
 				{
 					return &atom;

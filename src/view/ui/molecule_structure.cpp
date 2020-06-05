@@ -23,13 +23,18 @@ namespace VTX
 				if ( ImGui::BeginPopupContextItem() )
 				{
 					if ( ImGui::MenuItem( LOCALE( "View.Delete" ) ) )
-					{ VTX_ACTION( new Action::MoleculeDelete( _getModel() ) ); }
+					{
+						VTX_ACTION( new Action::MoleculeDelete( _getModel() ) );
+					}
 					ImGui::EndPopup();
 				}
 				// Context menu END.
 				if ( ImGui::IsItemClicked() )
 				{
-					if ( moleculeOpened ) { VTX_ACTION( new Action::SelectableUnselect( _getModel() ) ); }
+					if ( moleculeOpened )
+					{
+						VTX_ACTION( new Action::SelectableUnselect( _getModel() ) );
+					}
 
 					else
 					{
@@ -78,7 +83,10 @@ namespace VTX
 						// Context menu END.
 						if ( ImGui::IsItemClicked() )
 						{
-							if ( chainOpened ) { VTX_ACTION( new Action::SelectableUnselect( *chain ) ); }
+							if ( chainOpened )
+							{
+								VTX_ACTION( new Action::SelectableUnselect( *chain ) );
+							}
 
 							else
 							{
@@ -89,7 +97,7 @@ namespace VTX
 						{
 							for ( uint i = 0; i < chain->getResidueCount(); ++i )
 							{
-								Model::Residue & residue = _getModel().getResidue( chain->getIdFirstResidue() + i );
+								Model::Residue & residue = _getModel().getResidue( chain->getIndexFirstResidue() + i );
 								ImGui::PushID( residue.getId() );
 								bool residueOpened = ImGui::TreeNodeEx(
 									VTX::Setting::UI::symbolDisplayMode == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
@@ -131,7 +139,10 @@ namespace VTX
 								// Context menu END.
 								if ( ImGui::IsItemClicked() )
 								{
-									if ( residueOpened ) { VTX_ACTION( new Action::SelectableUnselect( residue ) ); }
+									if ( residueOpened )
+									{
+										VTX_ACTION( new Action::SelectableUnselect( residue ) );
+									}
 									else
 									{
 										VTX_ACTION( new Action::SelectableSelect( residue ) );
@@ -141,7 +152,7 @@ namespace VTX
 								{
 									for ( uint j = 0; j < residue.getAtomCount(); ++j )
 									{
-										Model::Atom & atom = _getModel().getAtom( residue.getIdFirstAtom() + j );
+										Model::Atom & atom = _getModel().getAtom( residue.getIndexFirstAtom() + j );
 										ImGui::PushID( atom.getId() );
 										if ( ImGui::Selectable(
 												 VTX::Setting::UI::symbolDisplayMode
@@ -152,7 +163,9 @@ namespace VTX
 												 atom.isSelected() ) )
 										{
 											if ( atom.isSelected() )
-											{ VTX_ACTION( new Action::SelectableUnselect( atom ) ); }
+											{
+												VTX_ACTION( new Action::SelectableUnselect( atom ) );
+											}
 											else
 											{
 												VTX_ACTION( new Action::SelectableSelect( atom ) );

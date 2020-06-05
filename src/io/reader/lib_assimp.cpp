@@ -129,7 +129,7 @@ namespace VTX
 					chain.setMoleculePtr( &p_molecule );
 					chain.setIndex( chainGlobalIdx );
 					chain.setName( mesh->mName.C_Str() );
-					chain.setIdFirstResidue( residueGlobalIdx );
+					chain.setIndexFirstResidue( residueGlobalIdx );
 					chain.setResidueCount( mesh->mNumFaces );
 					chain.setColor( Color::Rgb::randomPastel() );
 
@@ -145,7 +145,7 @@ namespace VTX
 						residue.setChainPtr( &chain );
 						residue.setIndex( residueGlobalIdx );
 						residue.setSymbol( Model::Residue::SYMBOL::UNKNOWN );
-						residue.setIdFirstAtom( atomGlobalIdx );
+						residue.setIndexFirstAtom( atomGlobalIdx );
 						residue.setAtomCount( uint( mesh->mNumVertices ) );
 						residue.setColor( Color::Rgb::randomPastel() );
 

@@ -94,14 +94,30 @@ namespace VTX
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const std::string & getSymbolShort() const { return SYMBOL_SHORT_STR[ (int)_symbol ]; }
 
-			inline uint						 getIdFirstAtom() const { return _idFirstAtom; };
-			inline void						 setIdFirstAtom( const uint p_id ) { _idFirstAtom = p_id; };
-			inline uint						 getAtomCount() const { return _atomCount; };
-			inline void						 setAtomCount( const uint p_count ) { _atomCount = p_count; };
-			inline uint						 getIdFirstBond() const { return _idFirstBond; };
-			inline void						 setIdFirstBond( const uint p_id ) { _idFirstBond = p_id; };
-			inline uint						 getBondCount() const { return _bondCount; };
-			inline void						 setBondCount( const uint p_count ) { _bondCount = p_count; };
+			inline uint getIndexFirstAtom() const { return _indexFirstAtom; };
+			inline void setIndexFirstAtom( const uint p_id ) { _indexFirstAtom = p_id; };
+			inline uint getAtomCount() const { return _atomCount; };
+			inline void setAtomCount( const uint p_count ) { _atomCount = p_count; };
+			inline uint getIndexFirstBond() const { return _indexFirstBond; };
+			inline void setIndexFirstBond( const uint p_id ) { _indexFirstBond = p_id; };
+			inline uint getBondCount() const { return _bondCount; };
+			inline void setBondCount( const uint p_count ) { _bondCount = p_count; };
+			inline uint getIndiceFirstBond() const { return _indexFirstBond * 2; };
+			inline uint getBondIndiceCount() const { return _bondCount * 2; };
+			// inline uint						 getIdFirstExtraBond() const { return _idFirstExtraBond; };
+			// inline void						 setIdFirstExtraBond( const uint p_id ) { _idFirstExtraBond = p_id; };
+			// inline uint						 getExtraBondCount() const { return _extraBondCount; };
+			// inline void						 setExtraBondCount( const uint p_count ) { _extraBondCount = p_count; };
+			inline uint getIndexFirstVertex() const { return _indexRibbonFirstVertex; };
+			inline void setIndexFirstVertex( const uint p_id ) { _indexRibbonFirstVertex = p_id; };
+			inline uint getVertexCount() const { return _ribbonVertexCount; };
+			inline void setVertexCount( const uint p_count ) { _ribbonVertexCount = p_count; };
+
+			inline uint getIndiceRibbonFirstTriangle() const { return _indiceRibbonFirstTriangle; };
+			inline void setIndiceRibbonFirstTriangle( const uint p_id ) { _indiceRibbonFirstTriangle = p_id; };
+			inline uint getIndiceRibbonTriangleCount() const { return _indiceRibbonTriangleCount; };
+			inline void setIndiceRibbonTriangleCount( const uint p_count ) { _indiceRibbonTriangleCount = p_count; };
+
 			inline Atom::TYPE				 getAtomType() const { return _atomType; }
 			inline void						 setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
 			inline const SECONDARY_STRUCTURE getSecondaryStructure() const { return _secondaryStructure; };
@@ -125,11 +141,17 @@ namespace VTX
 
 			SYMBOL _symbol = SYMBOL::UNKNOWN;
 
-			uint				_idFirstAtom		= 0;
-			uint				_atomCount			= 0;
-			uint				_idFirstBond		= 0;
-			uint				_bondCount			= 0;
-			Atom::TYPE			_atomType			= Atom::TYPE::NORMAL; // Set to ion only if residue is full of ions.
+			uint _indexFirstAtom = 0;
+			uint _atomCount		 = 0;
+			uint _indexFirstBond = 0;
+			uint _bondCount		 = 0;
+			// uint				_idFirstExtraBond	= 0;
+			// uint				_extraBondCount		= 0;
+			uint				_indexRibbonFirstVertex	   = 0;
+			uint				_ribbonVertexCount		   = 0;
+			uint				_indiceRibbonFirstTriangle = 0;
+			uint				_indiceRibbonTriangleCount = 0;
+			Atom::TYPE			_atomType			= Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
 			SECONDARY_STRUCTURE _secondaryStructure = SECONDARY_STRUCTURE::COIL;
 			HANDEDNESS			_handedness			= HANDEDNESS::RIGHT;
 		};

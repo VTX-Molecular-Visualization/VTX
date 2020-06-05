@@ -146,7 +146,7 @@ namespace VTX
 							modelChain->setName( chainName );
 						}
 						modelChain->setMoleculePtr( &p_molecule );
-						modelChain->setIdFirstResidue( residueIdx );
+						modelChain->setIndexFirstResidue( residueIdx );
 						modelChain->setResidueCount( 0 );
 						modelChain->setColor( Model::Chain::getChainIdColor( chainId ) );
 						lastChainName = chainName;
@@ -161,7 +161,7 @@ namespace VTX
 					modelResidue->setIndex( residueIdx );
 					modelResidue->setMoleculePtr( &p_molecule );
 					modelResidue->setChainPtr( modelChain );
-					modelResidue->setIdFirstAtom( uint( *residue.begin() ) );
+					modelResidue->setIndexFirstAtom( uint( *residue.begin() ) );
 					modelResidue->setAtomCount( uint( residue.size() ) );
 					const std::string & residueSymbol = residue.name();
 					std::optional		symbol		  = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
@@ -354,7 +354,7 @@ namespace VTX
 					Model::Residue &							 residue	 = p_molecule.getResidue( pair.first );
 					const std::vector<const chemfiles::Bond *> & vectorBonds = pair.second;
 
-					residue.setIdFirstBond( counter );
+					residue.setIndexFirstBond( counter );
 					residue.setBondCount( uint( vectorBonds.size() ) );
 
 					for ( uint i = 0; i < vectorBonds.size(); ++i, ++counter )
