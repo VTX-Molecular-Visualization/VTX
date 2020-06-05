@@ -25,7 +25,7 @@ void unpackGBuffers( ivec2 px, out FragmentData fd )
 void main()
 {
 	FragmentData fd;
-	unpackGBuffers( ivec2( gl_FragCoord ), fd );
+	unpackGBuffers( ivec2( gl_FragCoord.xy ), fd );
 
 	fragColor = vec4( fd.color * fd.ambientOcclusion, 1.f );
 }
