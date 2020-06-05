@@ -47,7 +47,7 @@ namespace VTX
 	const bool		  VSYNC_DEFAULT		   = true;
 
 	const bool SSAO_DEFAULT	   = true;
-	const bool OUTLINE_DEFAULT = false; // WIP
+	const bool OUTLINE_DEFAULT = false;
 	const bool AA_DEFAULT	   = true;
 	const bool RANDOM		   = false; // Keep it false for dev branch.
 
