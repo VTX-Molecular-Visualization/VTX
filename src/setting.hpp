@@ -42,12 +42,9 @@ namespace VTX
 			extern Renderer::SHADING	   shading;
 			extern bool					   useVSync;
 			extern bool					   useSSAO;
-			extern float				   aoRadius;
 			extern int					   aoIntensity;
-			extern float				   aoFactor;
 			extern int					   aoBlurSize;
-			extern int					   aoBlurSharpness;
-			extern bool					   useContourLines;
+			extern bool					   useOutline;
 			extern bool					   useAA;
 
 			// Camera.
@@ -55,7 +52,7 @@ namespace VTX
 			extern float camFar;
 			extern float camFov;
 
-			extern Color::Rgb contourLineColor;
+			extern Color::Rgb outlineColor;
 		}; // namespace Rendering
 
 		namespace Controller

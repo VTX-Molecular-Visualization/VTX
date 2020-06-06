@@ -51,11 +51,9 @@ namespace VTX
 			{ "MainMenu.Settings.CamFar", "Far clip" },
 			{ "MainMenu.Settings.CamFov", "FOV" },
 			{ "MainMenu.Settings.SSAO", "SSAO" },
-			{ "MainMenu.Settings.AORadius", "AO radius" },
 			{ "MainMenu.Settings.AOIntensity", "AO intensity" },
-			{ "MainMenu.Settings.AOFactor", "AO factor" },
 			{ "MainMenu.Settings.AOBlurSize", "AO blur size" },
-			{ "MainMenu.Settings.AOBlurSharpness", "AO blur sharpness" },
+			{ "MainMenu.Settings.Outline", "Outline" },
 			{ "MainMenu.Settings.AA", "Anti-aliasing" },
 			{ "MainMenu.Settings.AutoRotateXSpeed", "X auto rotation speed" },
 			{ "MainMenu.Settings.AutoRotateYSpeed", "Y auto rotation speed" },
@@ -156,8 +154,8 @@ namespace VTX
 			{ "Enum.ColorMode.Chain", "Chain" },
 			{ "Enum.ColorMode.Protein", "Protein" },
 
-			{ "Enum.Shading.Lambert", "Lambert" },
-			{ "Enum.Shading.BlinnPhong", "Blinn Phong" },
+			{ "Enum.Shading.Diffuse", "Diffuse" },
+			{ "Enum.Shading.Glossy", "Glossy" },
 			{ "Enum.Shading.Toon", "Toon" },
 			{ "Enum.Shading.FlatColor", "Flat Color" },
 

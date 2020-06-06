@@ -1,5 +1,5 @@
-#ifndef __VTX_PASS_FXAA__
-#define __VTX_PASS_FXAA__
+#ifndef __VTX_PASS_OUTLINE__
+#define __VTX_PASS_OUTLINE__
 
 #ifdef _MSC_VER
 #pragma once
@@ -13,7 +13,7 @@ namespace VTX
 	{
 		namespace Pass
 		{
-			class FXAA : public BasePass
+			class Outline : public BasePass
 			{
 			  public:
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
@@ -24,9 +24,11 @@ namespace VTX
 				inline const GLuint & getFbo() const { return _fbo; }
 
 			  private:
-				GLSL::Program * _program = nullptr;
-				GLuint			_fbo	 = GL_INVALID_VALUE;
-				GLuint			_texture = GL_INVALID_VALUE;
+				GLuint			_fbo			= GL_INVALID_VALUE;
+				GLuint			_texture		= GL_INVALID_VALUE;
+				GLSL::Program * _program		= nullptr;
+				GLint			_uProjMatrixLoc = GL_INVALID_INDEX;
+				GLint			_uLineColorLoc	= GL_INVALID_INDEX;
 			};
 		} // namespace Pass
 

@@ -3,8 +3,6 @@
 layout( binding = 0 ) uniform usampler2D gbColorNormal;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
-uniform float uAoFactor;
-
 out vec4 fragColor;
 
 struct FragmentData
@@ -27,9 +25,7 @@ void unpackGBuffers( ivec2 px, out FragmentData fd )
 void main()
 {
 	FragmentData fd;
-	unpackGBuffers( ivec2( gl_FragCoord ), fd );
+	unpackGBuffers( ivec2( gl_FragCoord.xy ), fd );
 
-	const float colorFactor = 1.f - uAoFactor;
-
-	fragColor = vec4( fd.color * ( colorFactor + uAoFactor * fd.ambientOcclusion ), 1.f );
+	fragColor = vec4( fd.color * fd.ambientOcclusion, 1.f );
 }

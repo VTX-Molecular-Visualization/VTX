@@ -20,7 +20,7 @@ namespace VTX
 				virtual void clean() override;
 				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
 
-				inline const GLuint & getBlurTexture() const { return _texture; }
+				inline const GLuint & getTexture() const { return _texture; }
 
 				void clearTexture()
 				{
@@ -29,15 +29,13 @@ namespace VTX
 				}
 
 			  private:
-				GLSL::Program * _blurShader		   = nullptr;
-				GLuint			_fboTmp			   = GL_INVALID_VALUE;
-				GLuint			_fbo			   = GL_INVALID_VALUE;
-				GLuint			_textureTmp		   = GL_INVALID_VALUE;
-				GLuint			_texture		   = GL_INVALID_VALUE;
-				GLint			_uBlurSizeLoc	   = GL_INVALID_INDEX;
-				GLint			_uBlurSharpnessLoc = GL_INVALID_INDEX;
-				GLint			_uInvTexSizeLoc	   = GL_INVALID_INDEX;
-				GLint			_uClipInfoLoc	   = GL_INVALID_INDEX;
+				GLSL::Program * _program				 = nullptr;
+				GLuint			_fboFirstPass			 = GL_INVALID_VALUE;
+				GLuint			_fbo					 = GL_INVALID_VALUE;
+				GLuint			_textureFirstPass		 = GL_INVALID_VALUE;
+				GLuint			_texture				 = GL_INVALID_VALUE;
+				GLint			_uBlurSizeLoc			 = GL_INVALID_INDEX;
+				GLint			_uInvDirectionTexSizeLoc = GL_INVALID_INDEX;
 			};
 		} // namespace Pass
 

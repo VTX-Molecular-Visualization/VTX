@@ -25,7 +25,7 @@ namespace VTX
 				inline const GLuint & getDepthTexture() const { return _depthTexture; }
 
 			  private:
-				GLuint _fboGeo						 = GL_INVALID_VALUE;
+				GLuint _fbo							 = GL_INVALID_VALUE;
 				GLuint _colorNormalCompressedTexture = GL_INVALID_VALUE;
 				GLuint _camSpacePositionsTexture	 = GL_INVALID_VALUE;
 				GLuint _depthTexture				 = GL_INVALID_VALUE;

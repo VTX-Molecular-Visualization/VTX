@@ -13,8 +13,8 @@ namespace VTX
 	{
 		enum class SHADING : int
 		{
-			LAMBERT = 0,
-			BLINN_PHONG,
+			DIFFUSE = 0,
+			GLOSSY,
 			TOON,
 			FLAT_COLOR
 		};
@@ -29,17 +29,16 @@ namespace VTX
 				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
 				void		 set();
 
-				inline const GLuint & getShadingTexture() const { return _shadingTexture; }
-				inline const GLuint & getShadingFbo() const { return _fboShading; }
+				inline const GLuint & getTexture() const { return _texture; }
+				inline const GLuint & getFbo() const { return _fbo; }
 
 			  private:
-				GLSL::Program * _diffuseShading	   = nullptr;
-				GLSL::Program * _blinnPhongShading = nullptr;
-				GLSL::Program * _toonShading	   = nullptr;
-				GLSL::Program * _flatColorShading  = nullptr;
-				GLuint			_fboShading		   = GL_INVALID_VALUE;
-				GLuint			_shadingTexture	   = GL_INVALID_VALUE;
-				GLint			_uAoFactorLoc	   = GL_INVALID_INDEX;
+				GLSL::Program * _diffuseShading = nullptr;
+				GLSL::Program * _glossyShading	= nullptr;
+				GLSL::Program * _toonShading	= nullptr;
+				GLSL::Program * _flatShading	= nullptr;
+				GLuint			_fbo			= GL_INVALID_VALUE;
+				GLuint			_texture		= GL_INVALID_VALUE;
 
 				GLSL::Program * _currentShading = nullptr;
 			};

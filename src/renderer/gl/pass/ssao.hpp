@@ -20,16 +20,15 @@ namespace VTX
 				virtual void clean() override;
 				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
 
-				inline const GLuint & getSSAOTexture() const { return _ssaoTexture; }
+				inline const GLuint & getTexture() const { return _texture; }
 
 			  private:
-				GLSL::Program * _ssaoShader		  = nullptr;
-				GLuint			_fboSSAO		  = GL_INVALID_VALUE;
-				GLuint			_ssaoTexture	  = GL_INVALID_VALUE;
+				GLSL::Program * _program		  = nullptr;
+				GLuint			_fbo			  = GL_INVALID_VALUE;
+				GLuint			_texture		  = GL_INVALID_VALUE;
 				GLuint			_noiseTexture	  = GL_INVALID_VALUE;
 				GLint			_uProjMatrixLoc	  = GL_INVALID_INDEX;
 				GLint			_uAoKernelLoc	  = GL_INVALID_INDEX;
-				GLint			_uAoRadiusLoc	  = GL_INVALID_INDEX;
 				GLint			_uKernelSizeLoc	  = GL_INVALID_INDEX;
 				GLint			_uAoIntensityLoc  = GL_INVALID_INDEX;
 				GLint			_kernelSize		  = 64;

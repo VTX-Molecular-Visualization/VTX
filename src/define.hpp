@@ -46,10 +46,10 @@ namespace VTX
 	const std::string GLSL_VERSION		   = "#version 450";
 	const bool		  VSYNC_DEFAULT		   = true;
 
-	const bool SSAO_DEFAULT			 = true;
-	const bool CONTOUR_LINES_DEFAULT = false; // Not implemented yet.
-	const bool AA_DEFAULT			 = true;
-	const bool RANDOM				 = false; // Keep it false for dev branch.
+	const bool SSAO_DEFAULT	   = true;
+	const bool OUTLINE_DEFAULT = false;
+	const bool AA_DEFAULT	   = true;
+	const bool RANDOM		   = false; // Keep it false for dev branch.
 
 	const uint ACTION_BUFFER_SIZE = 10; // For undo/redo
 
@@ -93,19 +93,12 @@ namespace VTX
 
 	// Rendering.
 	// TODO: choose relevant constants
-	constexpr float RENDERER_AO_RADIUS_MIN			   = 0.f;
-	constexpr float RENDERER_AO_RADIUS_MAX			   = 1000.f;
-	constexpr float RENDERER_AO_RADIUS_DEFAULT		   = 32.f;
-	constexpr int	RENDERER_AO_INTENSITY_MIN		   = 1;
-	constexpr int	RENDERER_AO_INTENSITY_MAX		   = 10;
-	constexpr int	RENDERER_AO_INTENSITY_DEFAULT	   = 5;
-	constexpr float RENDERER_AO_FACTOR_DEFAULT		   = 0.5f;
-	constexpr int	RENDERER_AO_BLUR_SIZE_MIN		   = 1;
-	constexpr int	RENDERER_AO_BLUR_SIZE_MAX		   = 99;
-	constexpr int	RENDERER_AO_BLUR_SIZE_DEFAULT	   = 9;
-	constexpr int	RENDERER_AO_BLUR_SHARPNESS_MIN	   = 1;
-	constexpr int	RENDERER_AO_BLUR_SHARPNESS_MAX	   = 32;
-	constexpr int	RENDERER_AO_BLUR_SHARPNESS_DEFAULT = 8;
+	constexpr int RENDERER_AO_INTENSITY_MIN		= 1;
+	constexpr int RENDERER_AO_INTENSITY_MAX		= 10;
+	constexpr int RENDERER_AO_INTENSITY_DEFAULT = 5;
+	constexpr int RENDERER_AO_BLUR_SIZE_MIN		= 1;
+	constexpr int RENDERER_AO_BLUR_SIZE_MAX		= 99;
+	constexpr int RENDERER_AO_BLUR_SIZE_DEFAULT = 17;
 
 	// Path.
 	constexpr float PATH_DEFAULT_DURATION = 5.f;

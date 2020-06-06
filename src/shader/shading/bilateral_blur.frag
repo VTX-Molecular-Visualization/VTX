@@ -1,64 +1,58 @@
 #version 450
 
 layout( binding = 0 ) uniform sampler2D inputTexture;
-layout( binding = 1 ) uniform sampler2D depthTexture;
+layout( binding = 1 ) uniform sampler2D linearDepthTexture;
 
-layout( location = 0 ) out float ambientOcclusionBlurred;
+layout( location = 0 ) out float blurred;
 
-uniform int	  uBlurSize;
-uniform int	  uBlurSharpness;
-uniform vec2  uInvTexSize;
-uniform vec4 uClipInfo;
+uniform int	 uBlurSize;
+uniform int	 uBlurSharpness;
+uniform vec2 uInvDirectionTexSize; // (1/width, 0) or (0, 1/height).
 
-// TODO: implement ortho cam ! if clipInfo[3] == 0
-// clipInfo = (zNear * zfar, zFar, zFar - zNear, isPerspective)
-float linearizeDepth( const vec4 clipInfo, const float depth )
-{
-	// ortho:
-	// perspective: ( zNear * zFar ) / ( zFar - depth * ( zFar - zNear ) );
-	return  clipInfo[0] / (clipInfo[1] - depth * clipInfo[2]);
-}
-
-// TODO: check sharpness utility
 void main()
 {
 	const vec2 texelSize = 1.f / textureSize( inputTexture, 0 );
 	const vec2 texCoord	 = gl_FragCoord.xy * texelSize;
 
-	const float aoCenter	= texture( inputTexture, texCoord ).x;
-	const float depthCenter = linearizeDepth( uClipInfo, texture( depthTexture, texCoord ).x );
+	const float inputCenter = texture( inputTexture, texCoord ).x;
+	const float depthCenter = texture( linearDepthTexture, texCoord ).x;
 	const float blurSigma	= uBlurSize * 0.5f;
 	const float blurFalloff = 1.f / ( 2.f * blurSigma * blurSigma );
 
-	float res	 = aoCenter;
+	// Adapt sharpness wrt depth: the deeper the fragment is, the stronger the sharpness is.  
+	const float sharpness = max(1.f, 64.f / depthCenter);
+
+	float res	 = inputCenter;
 	float weight = 1.f;
 
+	// Compute blur contribution on each side in the given direction.
 	for ( float i = 1.f; i <= uBlurSize; ++i )
 	{
-		const vec2	uv	  = texCoord + i * uInvTexSize;
-		const float ao	  = texture( inputTexture, uv ).x;
-		const float depth = linearizeDepth( uClipInfo, texture( depthTexture, uv ).x );
+		const vec2	uv			 = texCoord + i * uInvDirectionTexSize;
+		const float inputCurrent = texture( inputTexture, uv ).x;
+		const float depthCurrent = texture( linearDepthTexture, uv ).x;
 
-		const float depthDiff = ( depth - depthCenter ) * uBlurSharpness;
+		const float depthDiff = ( depthCurrent - depthCenter ) * sharpness;
 
 		const float w = exp2( fma( -( i * i ), blurFalloff, -depthDiff * depthDiff ) );
 
-		res += ao * w;
+		res += inputCurrent * w;
 		weight += w;
 	}
 	for ( float i = 1.f; i <= uBlurSize; ++i )
 	{
-		const vec2	uv	  = texCoord - i * uInvTexSize;
-		const float ao	  = texture( inputTexture, uv ).x;
-		const float depth = linearizeDepth( uClipInfo, texture( depthTexture, uv ).x );
+		const vec2	uv			 = texCoord - i * uInvDirectionTexSize;
+		const float inputCurrent = texture( inputTexture, uv ).x;
+		const float depthCurrent = texture( linearDepthTexture, uv ).x;
 
-		const float depthDiff = ( depth - depthCenter ) * uBlurSharpness;
+		const float depthDiff = ( depthCurrent - depthCenter ) * sharpness;
 
 		const float w = exp2( fma( -( i * i ), blurFalloff, -depthDiff * depthDiff ) );
 
-		res += ao * w;
+		res += inputCurrent * w;
 		weight += w;
 	}
-
-	ambientOcclusionBlurred = res / weight;
+	
+	// Apply blur. 
+	blurred = res / weight;
 }

@@ -12,9 +12,11 @@ namespace VTX
 		GL::~GL()
 		{
 			Generic::destroy( _passGeometric );
+			Generic::destroy( _passLinearizeDepth );
 			Generic::destroy( _passSSAO );
 			Generic::destroy( _passBlur );
 			Generic::destroy( _passShading );
+			Generic::destroy( _passOutline );
 			Generic::destroy( _passFXAA );
 		}
 
@@ -29,9 +31,11 @@ namespace VTX
 
 			// Init pass.
 			_passGeometric->init( _programManager, p_width, p_height );
+			_passLinearizeDepth->init( _programManager, _width, _height );
 			_passSSAO->init( _programManager, p_width, p_height );
 			_passBlur->init( _programManager, p_width, p_height );
 			_passShading->init( _programManager, p_width, p_height );
+			_passOutline->init( _programManager, p_width, p_height );
 			_passFXAA->init( _programManager, p_width, p_height );
 
 			// Init VAO.
@@ -44,18 +48,23 @@ namespace VTX
 		{
 			if ( p_width != _width || p_height != _height )
 			{
+				// TODO: do not destroy/construct all !!!
 				_passGeometric->clean();
+				_passLinearizeDepth->clean();
 				_passSSAO->clean();
 				_passBlur->clean();
 				_passShading->clean();
+				_passOutline->clean();
 				_passFXAA->clean();
 
 				BaseRenderer::resize( p_width, p_height );
 
 				_passGeometric->init( _programManager, _width, _height );
+				_passLinearizeDepth->init( _programManager, _width, _height );
 				_passSSAO->init( _programManager, _width, _height );
 				_passBlur->init( _programManager, _width, _height );
 				_passShading->init( _programManager, _width, _height );
+				_passOutline->init( _programManager, p_width, p_height );
 				_passFXAA->init( _programManager, _width, _height );
 			}
 		}
@@ -105,6 +114,8 @@ namespace VTX
 			_passGeometric->render( p_scene, *this );
 			glDisable( GL_DEPTH_TEST );
 
+			_passLinearizeDepth->render( p_scene, *this );
+
 			if ( Setting::Rendering::useSSAO )
 			{
 				_passSSAO->render( p_scene, *this );
@@ -112,6 +123,11 @@ namespace VTX
 			}
 
 			_passShading->render( p_scene, *this );
+
+			if ( Setting::Rendering::useOutline )
+			{
+				_passOutline->render( p_scene, *this );
+			}
 
 			if ( Setting::Rendering::useAA )
 			{

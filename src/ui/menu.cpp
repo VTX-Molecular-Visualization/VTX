@@ -1,15 +1,13 @@
 #include "menu.hpp"
 #include "action/active_aa.hpp"
+#include "action/active_outline.hpp"
 #include "action/active_renderer.hpp"
 #include "action/active_ssao.hpp"
 #include "action/active_ui_component.hpp"
 #include "action/active_vertical_sync.hpp"
 #include "action/active_y_axis_inversion.hpp"
-#include "action/change_ao_blur_sharpness.hpp"
 #include "action/change_ao_blur_size.hpp"
-#include "action/change_ao_factor.hpp"
 #include "action/change_ao_intensity.hpp"
-#include "action/change_ao_radius.hpp"
 #include "action/change_auto_rotate_speed.hpp"
 #include "action/change_camera_clip.hpp"
 #include "action/change_camera_fov.hpp"
@@ -257,8 +255,8 @@ namespace VTX
 				}
 
 				// Shading.
-				const char * shadings[] = { LOCALE( "Enum.Shading.Lambert" ),
-											LOCALE( "Enum.Shading.BlinnPhong" ),
+				const char * shadings[] = { LOCALE( "Enum.Shading.Diffuse" ),
+											LOCALE( "Enum.Shading.Glossy" ),
 											LOCALE( "Enum.Shading.Toon" ),
 											LOCALE( "Enum.Shading.FlatColor" ) };
 				int			 shading	= (int)Setting::Rendering::shading;
@@ -301,15 +299,6 @@ namespace VTX
 					VTX_ACTION( new Action::ActiveSSAO( useSSAO ) );
 				};
 
-				float aoRadius = Setting::Rendering::aoRadius;
-				if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AORadius" ),
-										 &aoRadius,
-										 RENDERER_AO_RADIUS_MIN,
-										 RENDERER_AO_RADIUS_MAX ) )
-				{
-					VTX_ACTION( new Action::ChangeAORadius( aoRadius ) );
-				}
-
 				int aoIntensity = Setting::Rendering::aoIntensity;
 				if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOIntensity" ),
 									   &aoIntensity,
@@ -317,12 +306,6 @@ namespace VTX
 									   RENDERER_AO_INTENSITY_MAX ) )
 				{
 					VTX_ACTION( new Action::ChangeAOIntensity( aoIntensity ) );
-				}
-
-				float aoFactor = Setting::Rendering::aoFactor;
-				if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AOFactor" ), &aoFactor, 0.f, 1.f ) )
-				{
-					VTX_ACTION( new Action::ChangeAOFactor( aoFactor ) );
 				}
 
 				int aoBlurSize = Setting::Rendering::aoBlurSize;
@@ -333,14 +316,14 @@ namespace VTX
 				{
 					VTX_ACTION( new Action::ChangeAOBlurSize( aoBlurSize ) );
 				}
-				int aoBlurSharpness = Setting::Rendering::aoBlurSharpness;
-				if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOBlurSharpness" ),
-									   &aoBlurSharpness,
-									   RENDERER_AO_BLUR_SHARPNESS_MIN,
-									   RENDERER_AO_BLUR_SHARPNESS_MAX ) )
+				ImGui::Separator();
+
+				// Outline.
+				bool useOutline = Setting::Rendering::useOutline;
+				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.Outline" ), &useOutline ) )
 				{
-					VTX_ACTION( new Action::ChangeAOBlurSharpness( aoBlurSharpness ) );
-				}
+					VTX_ACTION( new Action::ActiveOutline( useOutline ) );
+				};
 				ImGui::Separator();
 
 				// AA.

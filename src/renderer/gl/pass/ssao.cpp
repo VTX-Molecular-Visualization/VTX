@@ -12,26 +12,25 @@ namespace VTX
 		{
 			void SSAO::init( GLSL::ProgramManager & p_programManager, const uint p_width, const uint p_height )
 			{
-				glGenFramebuffers( 1, &_fboSSAO );
-				glBindFramebuffer( GL_FRAMEBUFFER, _fboSSAO );
+				glGenFramebuffers( 1, &_fbo );
+				glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
-				glGenTextures( 1, &_ssaoTexture );
-				glBindTexture( GL_TEXTURE_2D, _ssaoTexture );
+				glGenTextures( 1, &_texture );
+				glBindTexture( GL_TEXTURE_2D, _texture );
 				glTexStorage2D( GL_TEXTURE_2D, 1, GL_R16F, p_width, p_height );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
-				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _ssaoTexture, 0 );
+				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0 );
 
 				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-				_ssaoShader = p_programManager.createProgram( "SSAO", { "shading/ssao.frag" } );
+				_program = p_programManager.createProgram( "SSAO", { "shading/ssao.frag" } );
 
-				_uProjMatrixLoc	 = glGetUniformLocation( _ssaoShader->getId(), "uProjMatrix" );
-				_uAoKernelLoc	 = glGetUniformLocation( _ssaoShader->getId(), "uAoKernel" );
-				_uAoRadiusLoc	 = glGetUniformLocation( _ssaoShader->getId(), "uAoRadius" );
-				_uKernelSizeLoc	 = glGetUniformLocation( _ssaoShader->getId(), "uKernelSize" );
-				_uAoIntensityLoc = glGetUniformLocation( _ssaoShader->getId(), "uAoIntensity" );
+				_uProjMatrixLoc	 = glGetUniformLocation( _program->getId(), "uProjMatrix" );
+				_uAoKernelLoc	 = glGetUniformLocation( _program->getId(), "uAoKernel" );
+				_uKernelSizeLoc	 = glGetUniformLocation( _program->getId(), "uKernelSize" );
+				_uAoIntensityLoc = glGetUniformLocation( _program->getId(), "uAoIntensity" );
 
 				// generate random ao kernel
 				std::vector<Vec3f> aoKernel( _kernelSize );
@@ -51,9 +50,8 @@ namespace VTX
 					aoKernel[ i ] = v;
 				}
 
-				_ssaoShader->use();
+				_program->use();
 				glUniform3fv( _uAoKernelLoc, _kernelSize, (const GLfloat *)aoKernel.data() );
-				glUniform1f( _uAoRadiusLoc, Setting::Rendering::aoRadius );
 				glUniform1i( _uAoIntensityLoc, Setting::Rendering::aoIntensity );
 				glUniform1i( _uKernelSizeLoc, _kernelSize );
 
@@ -87,14 +85,14 @@ namespace VTX
 
 			void SSAO::clean()
 			{
-				glDeleteFramebuffers( 1, &_fboSSAO );
-				glDeleteTextures( 1, &_ssaoTexture );
+				glDeleteFramebuffers( 1, &_fbo );
+				glDeleteTextures( 1, &_texture );
 				glDeleteTextures( 1, &_noiseTexture );
 			}
 
 			void SSAO::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{
-				glBindFramebuffer( GL_FRAMEBUFFER, _fboSSAO );
+				glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 				glClear( GL_COLOR_BUFFER_BIT );
 
 				glActiveTexture( GL_TEXTURE0 );
@@ -104,10 +102,9 @@ namespace VTX
 				glActiveTexture( GL_TEXTURE2 );
 				glBindTexture( GL_TEXTURE_2D, _noiseTexture );
 
-				_ssaoShader->use();
+				_program->use();
 
-				// TODO don't aoRadius/aoIntensity/PorjMatrix update each frame
-				glUniform1f( _uAoRadiusLoc, Setting::Rendering::aoRadius );
+				// TODO don't update each frame
 				glUniform1i( _uAoIntensityLoc, Setting::Rendering::aoIntensity );
 
 				glUniformMatrix4fv( _uProjMatrixLoc,

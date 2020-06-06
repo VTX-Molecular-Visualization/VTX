@@ -4,8 +4,6 @@ layout( binding = 0 ) uniform usampler2D gbColorNormal;
 layout( binding = 1 ) uniform sampler2D gbCamPosition;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
-uniform float uAoFactor;
-
 out vec4 fragColor;
 
 struct FragmentData
@@ -25,7 +23,7 @@ void unpackGBuffers( ivec2 px, out FragmentData fd )
 	const vec2 tmp = unpackHalf2x16( colorNormal.y );
 
 	fd.color			= vec3( unpackHalf2x16( colorNormal.x ), tmp.x );
-	fd.normal			= vec3( tmp.y, unpackHalf2x16( colorNormal.z ) );
+	fd.normal			= normalize( vec3( tmp.y, unpackHalf2x16( colorNormal.z ) ) );
 	fd.camPosition		= camPosition.xyz;
 	fd.ambientOcclusion = ambientOcclusion;
 }
@@ -33,16 +31,22 @@ void unpackGBuffers( ivec2 px, out FragmentData fd )
 void main()
 {
 	FragmentData fd;
-	unpackGBuffers( ivec2( gl_FragCoord ), fd );
+	unpackGBuffers( ivec2( gl_FragCoord.xy ), fd );
+	
+	// Light on camera.
+	const vec3 lightDir = normalize( -fd.camPosition );
 
-	const vec3	lightDir	= normalize( -fd.camPosition );
-	const float lightFactor = 1.f - uAoFactor;
+	const float intensity = dot( fd.normal, lightDir );
+	float		lighting  = 1.f;
 
-	const float ao = uAoFactor * fd.ambientOcclusion;
+	if ( intensity < 0.25f )
+		lighting = 0.2f;
+	else if ( intensity < 0.5f )
+		lighting = 0.4f;
+	else if ( intensity < 0.75f )
+		lighting = 0.55f;
+	else if ( intensity < 0.95f )
+		lighting = 0.7f;
 
-	const float cosTheta = max( dot( fd.normal, lightDir ), 0.f );
-
-	const float diffuse = lightFactor * cosTheta;
-
-	fragColor = vec4( fd.color * ( diffuse + ao ), 1.f );
+	fragColor = vec4( fd.color * lighting * fd.ambientOcclusion, 1.f );
 }
