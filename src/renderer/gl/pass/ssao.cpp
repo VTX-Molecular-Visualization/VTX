@@ -20,6 +20,8 @@ namespace VTX
 				glTexStorage2D( GL_TEXTURE_2D, 1, GL_R16F, p_width, p_height );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
 				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0 );
 
@@ -93,7 +95,6 @@ namespace VTX
 			void SSAO::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{
 				glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
-				glClear( GL_COLOR_BUFFER_BIT );
 
 				glActiveTexture( GL_TEXTURE0 );
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getColorNormalCompressedTexture() );
