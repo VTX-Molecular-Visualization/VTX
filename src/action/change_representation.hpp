@@ -18,15 +18,9 @@ namespace VTX
 		class ChangeRepresentation : public BaseAction
 		{
 		  public:
-			explicit ChangeRepresentation() {}
 			explicit ChangeRepresentation( const Generic::REPRESENTATION p_representation ) :
 				_representation( p_representation )
 			{
-			}
-
-			virtual void setParameters( const std::vector<std::string> & p_parameters ) override
-			{
-				_representation = magic_enum::enum_cast<Generic::REPRESENTATION>( p_parameters.at( 1 ) ).value();
 			}
 
 			virtual void execute() override
@@ -41,7 +35,7 @@ namespace VTX
 			virtual void displayUsage() override { VTX_INFO( "BALL_AND_STICK|VAN_DER_WAALS|STICK|SAS" ); }
 
 		  private:
-			Generic::REPRESENTATION _representation = Setting::Rendering::representation;
+			const Generic::REPRESENTATION _representation;
 		};
 	} // namespace Action
 } // namespace VTX

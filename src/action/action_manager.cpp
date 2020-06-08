@@ -1,4 +1,5 @@
 #include "action_manager.hpp"
+#include "action/representable.hpp"
 #include "change_auto_rotate_speed.hpp"
 #include "change_color_mode.hpp"
 #include "change_representation.hpp"
@@ -42,41 +43,92 @@ namespace VTX
 			BaseAction *  action  = nullptr;
 
 			// TODO: map with ids.
-			if ( command == "snapshot" )
+			try
 			{
-				action = new Snapshot( Worker::Snapshoter::MODE::GL,
-									   Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) );
-			}
-			else if ( command == "change_representation" )
-			{
-				action = new ChangeRepresentation();
-			}
-			else if ( command == "change_auto_rotate_speed" )
-			{
-				action = new ChangeAutoRotateSpeed();
-			}
-			else if ( command == "change_shading" )
-			{
-				action = new ChangeShading();
-			}
-			else if ( command == "change_color_mode" )
-			{
-				action = new ChangeColorMode();
-			}
-
-			if ( action != nullptr )
-			{
-				try
+				if ( command == "snapshot" )
 				{
-					action->setParameters( words );
+					action = new Snapshot( Worker::Snapshoter::MODE::GL,
+										   Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) );
 				}
-				catch ( const std::exception & )
+				else if ( command == "change_representation" )
+				{
+					action = new ChangeRepresentation(
+						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+				}
+				else if ( command == "change_auto_rotate_speed" )
+				{
+					if ( words.size() == 2 )
+					{
+						action = new ChangeAutoRotateSpeed( Vec3f(
+							std::stof( words.at( 1 ) ), std::stof( words.at( 1 ) ), std::stof( words.at( 1 ) ) ) );
+					}
+					else
+					{
+						action = new ChangeAutoRotateSpeed( Vec3f(
+							std::stof( words.at( 1 ) ), std::stof( words.at( 2 ) ), std::stof( words.at( 3 ) ) ) );
+					}
+				}
+				else if ( command == "change_shading" )
+				{
+					action = new ChangeShading( magic_enum::enum_cast<Renderer::SHADING>( words.at( 1 ) ).value() );
+				}
+				else if ( command == "change_color_mode" )
+				{
+					action = new ChangeColorMode( magic_enum::enum_cast<Generic::COLOR_MODE>( words.at( 1 ) ).value() );
+				}
+				else if ( command == "add_representation_molecule" )
+				{
+					action = new RepresentableAddRepresentation(
+						*( *VTXApp::get().getScene().getMolecules().begin() ).first,
+						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+				}
+				else if ( command == "remove_representation_molecule" )
+				{
+					action = new RepresentableRemoveRepresentation(
+						*( *VTXApp::get().getScene().getMolecules().begin() ).first,
+						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+				}
+				else if ( command == "add_representation_chain" )
+				{
+					action = new RepresentableAddRepresentation(
+						*( *VTXApp::get().getScene().getMolecules().begin() )
+							 .first->getChains()[ std::stoi( words.at( 2 ) ) ],
+						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+				}
+				else if ( command == "remove_representation_chain" )
+				{
+					action = new RepresentableRemoveRepresentation(
+						*( *VTXApp::get().getScene().getMolecules().begin() )
+							 .first->getChains()[ std::stoi( words.at( 2 ) ) ],
+						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+				}
+				else if ( command == "add_representation_residue" )
+				{
+					action = new RepresentableAddRepresentation(
+						*( *VTXApp::get().getScene().getMolecules().begin() )
+							 .first->getResidues()[ std::stoi( words.at( 2 ) ) ],
+						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+				}
+				else if ( command == "remove_representation_residue" )
+				{
+					action = new RepresentableRemoveRepresentation(
+						*( *VTXApp::get().getScene().getMolecules().begin() )
+							 .first->getResidues()[ std::stoi( words.at( 2 ) ) ],
+						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+				}
+			}
+			catch ( const std::exception & )
+			{
+				if ( action != nullptr )
 				{
 					action->displayUsage();
 					delete action;
 					return;
 				}
+			}
 
+			if ( action != nullptr )
+			{
 				execute( action, p_flush );
 			}
 			else
@@ -130,11 +182,10 @@ namespace VTX
 			{
 				p_action->execute();
 			}
-			catch (const std::exception & p_e)
+			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR(p_e.what());
+				VTX_ERROR( p_e.what() );
 			}
-			
 
 			// Handle undo.
 			BaseActionUndonable * undonable = dynamic_cast<BaseActionUndonable *>( p_action );

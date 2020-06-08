@@ -17,10 +17,6 @@ namespace VTX
 		{
 		  public:
 			virtual void execute() = 0;
-			virtual void setParameters( const std::vector<std::string> & p_parameters )
-			{
-				throw Exception::NotImplementedException();
-			}
 			virtual void displayUsage() {}
 
 		  protected:

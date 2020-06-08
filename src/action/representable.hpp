@@ -22,8 +22,6 @@ namespace VTX
 			{
 			}
 
-			virtual void execute() override { _representable.addRepresentation( _representation ); };
-
 		  protected:
 			Generic::BaseRepresentable &  _representable;
 			const Generic::REPRESENTATION _representation;

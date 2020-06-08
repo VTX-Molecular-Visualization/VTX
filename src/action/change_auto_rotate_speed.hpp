@@ -15,24 +15,7 @@ namespace VTX
 		class ChangeAutoRotateSpeed : public BaseAction
 		{
 		  public:
-			explicit ChangeAutoRotateSpeed() {}
 			explicit ChangeAutoRotateSpeed( const Vec3f & p_value ) : _value( p_value ) {}
-
-			virtual void setParameters( const std::vector<std::string> & p_parameters ) override
-			{
-				if ( p_parameters.size() == 2 )
-				{
-					_value = Vec3f( std::stof( p_parameters[ 1 ] ),
-									std::stof( p_parameters[ 1 ] ),
-									std::stof( p_parameters[ 1 ] ) );
-				}
-				else
-				{
-					_value = Vec3f( std::stof( p_parameters[ 1 ] ),
-									std::stof( p_parameters[ 2 ] ),
-									std::stof( p_parameters[ 3 ] ) );
-				}
-			}
 
 			virtual void execute() override
 			{
@@ -43,7 +26,7 @@ namespace VTX
 			virtual void displayUsage() override { VTX_INFO( "f f f|f" ); }
 
 		  private:
-			Vec3f _value = Setting::Controller::autoRotateSpeed;
+			const Vec3f _value;
 		};
 	} // namespace Action
 } // namespace VTX

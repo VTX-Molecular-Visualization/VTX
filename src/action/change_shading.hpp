@@ -15,13 +15,7 @@ namespace VTX
 		class ChangeShading : public BaseAction
 		{
 		  public:
-			explicit ChangeShading() {}
-			explicit ChangeShading( const Renderer::SHADING p_shading ) : _shading( p_shading ) {}
-
-			virtual void setParameters( const std::vector<std::string> & p_parameters ) override
-			{
-				_shading = magic_enum::enum_cast<Renderer::SHADING>( p_parameters.at( 1 ) ).value();
-			}
+			ChangeShading( const Renderer::SHADING p_shading ) : _shading( p_shading ) {}
 
 			virtual void execute() override
 			{
@@ -32,7 +26,7 @@ namespace VTX
 			virtual void displayUsage() override { VTX_INFO( "DIFFUSE|GLOSSY|TOON|FLAT_COLOR" ); }
 
 		  private:
-			Renderer::SHADING _shading = Setting::Rendering::shading;
+			const Renderer::SHADING _shading;
 		};
 	} // namespace Action
 } // namespace VTX
