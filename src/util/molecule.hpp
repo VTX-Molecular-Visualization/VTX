@@ -222,7 +222,7 @@ namespace VTX
 				state.emplace( Generic::REPRESENTATION::STICK, Model::Molecule::RepresentationStruct() );
 				state.emplace( Generic::REPRESENTATION::SAS, Model::Molecule::RepresentationStruct() );
 
-				for ( const Model::Residue * const residue : p_molecule.getResidues() )
+				for ( Model::Residue * const residue : p_molecule.getResidues() )
 				{
 					// Skip hidden items.
 					if ( residue->isVisible() == false || residue->getChainPtr()->isVisible() == false
@@ -279,6 +279,14 @@ namespace VTX
 							{
 								state[ representation ].triangles.emplace( rangeTriangles );
 							}
+							for ( uint indexBond : residue->getIndexExtraBondStart() )
+							{
+								state[ representation ].bonds.emplace( indexBond * 2, 2 );
+							}
+							for ( uint indexBond : residue->getIndexExtraBondEnd() )
+							{
+								state[ representation ].bonds.emplace( indexBond * 2, 2 );
+							}
 						}
 					}
 					else
@@ -295,8 +303,18 @@ namespace VTX
 						{
 							state[ Setting::Rendering::representation ].triangles.emplace( rangeTriangles );
 						}
+						for ( uint indexBond : residue->getIndexExtraBondStart() )
+						{
+							state[ Setting::Rendering::representation ].bonds.emplace( indexBond * 2, 2 );
+						}
+						for ( uint indexBond : residue->getIndexExtraBondEnd() )
+						{
+							state[ Setting::Rendering::representation ].bonds.emplace( indexBond * 2, 2 );
+						}
 					}
 				}
+
+				//
 
 				// Merge  ranges.
 				for ( std::pair<const Generic::REPRESENTATION, Model::Molecule::RepresentationStruct> & pair : state )
@@ -305,9 +323,9 @@ namespace VTX
 					std::map<uint, uint> & rangeAtoms = pair.second.atoms;
 					if ( rangeAtoms.size() > 1 )
 					{
-						VTX_INFO( "Before merging atoms: " + std::to_string( rangeAtoms.size() ) );
+						// VTX_INFO( "Before merging atoms: " + std::to_string( rangeAtoms.size() ) );
 						mergeRanges( rangeAtoms );
-						VTX_INFO( "After merging atoms: " + std::to_string( rangeAtoms.size() ) );
+						// VTX_INFO( "After merging atoms: " + std::to_string( rangeAtoms.size() ) );
 					}
 
 					// Bonds.
@@ -323,9 +341,9 @@ namespace VTX
 					std::map<uint, uint> & rangeTriangle = pair.second.triangles;
 					if ( rangeTriangle.size() > 1 )
 					{
-						VTX_INFO( "Before merging triangles: " + std::to_string( rangeTriangle.size() ) );
+						// VTX_INFO( "Before merging triangles: " + std::to_string( rangeTriangle.size() ) );
 						mergeRanges( rangeTriangle );
-						VTX_INFO( "After merging triangles: " + std::to_string( rangeTriangle.size() ) );
+						// VTX_INFO( "After merging triangles: " + std::to_string( rangeTriangle.size() ) );
 					}
 				}
 			}

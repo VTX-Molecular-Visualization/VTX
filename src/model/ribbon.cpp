@@ -62,7 +62,7 @@ namespace VTX
 
 						if ( CA1 == nullptr || OX1 == nullptr || CA2 == nullptr )
 						{
-							VTX_WARNING( "Failed to get atoms for first residue" );
+							VTX_DEBUG( "Failed to get atoms for first residue" );
 							// continue;
 						}
 
@@ -105,7 +105,7 @@ namespace VTX
 
 						if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 						{
-							VTX_WARNING( "Failed to get atoms" );
+							VTX_DEBUG( "Failed to get atoms" );
 							// continue;
 						}
 
@@ -187,7 +187,7 @@ namespace VTX
 
 							if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 							{
-								VTX_WARNING( "Failed to get atoms" );
+								VTX_DEBUG( "Failed to get atoms" );
 								// continue;
 							}
 

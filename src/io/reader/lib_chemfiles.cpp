@@ -344,11 +344,9 @@ namespace VTX
 					}
 				}
 
-				VTX_ERROR( std::to_string( bondsExtraResidues.size() ) + " bonds extra residues excluded" );
-
 				// Create models.
 				uint counter = 0;
-				p_molecule.getBonds().resize( bonds.size() - bondsExtraResidues.size() );
+				p_molecule.getBonds().resize( bonds.size() );
 				for ( const std::pair<uint, std::vector<const chemfiles::Bond *>> & pair : mapResidueBonds )
 				{
 					Model::Residue &							 residue	 = p_molecule.getResidue( pair.first );
@@ -368,9 +366,24 @@ namespace VTX
 					}
 				}
 
-				for ( auto extra : bondsExtraResidues )
+				// Bonds between residues.
+				for ( uint i = 0; i < bondsExtraResidues.size(); ++i, ++counter )
 				{
-					// Model::Residue & residue = p_molecule.getResidue( extra );
+					const chemfiles::Bond & bond	  = *bondsExtraResidues[ i ];
+					Model::Bond *			modelBond = new Model::Bond();
+					p_molecule.getBonds()[ counter ]  = modelBond;
+
+					uint bondStart = uint( bond[ 0 ] );
+					uint bondEnd   = uint( bond[ 1 ] );
+
+					Model::Residue * residueStart = p_molecule.getAtom( bondStart ).getResiduePtr();
+					Model::Residue * residueEnd	  = p_molecule.getAtom( bondEnd ).getResiduePtr();
+
+					modelBond->setIndexFirstAtom( bondStart );
+					modelBond->setIndexSecondAtom( bondEnd );
+
+					residueStart->getIndexExtraBondStart().emplace_back( counter );
+					residueEnd->getIndexExtraBondEnd().emplace_back( counter );
 				}
 			}
 

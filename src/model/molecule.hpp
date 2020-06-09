@@ -194,13 +194,14 @@ namespace VTX
 			RepresentationState _representationState = RepresentationState();
 
 			// Models.
-			std::string						_fileName			 = "";
-			std::string						_name				 = "unknown";
-			std::vector<Chain *>			_chains				 = std::vector<Chain *>();
-			std::vector<Residue *>			_residues			 = std::vector<Residue *>();
-			std::vector<Atom *>				_atoms				 = std::vector<Atom *>();
-			std::vector<Bond *>				_bonds				 = std::vector<Bond *>();
-			std::vector<AtomPositionsFrame> _atomPositionsFrames = std::vector<AtomPositionsFrame>();
+			std::string						_fileName					= "";
+			std::string						_name						= "unknown";
+			std::vector<Chain *>			_chains						= std::vector<Chain *>();
+			std::vector<Residue *>			_residues					= std::vector<Residue *>();
+			std::vector<Atom *>				_atoms						= std::vector<Atom *>();
+			std::vector<Bond *>				_bonds						= std::vector<Bond *>();
+			std::vector<AtomPositionsFrame> _atomPositionsFrames		= std::vector<AtomPositionsFrame>();
+			uint							_indexFirstBondExtraResidue = 0;
 
 			std::unordered_set<std::string> _unknownResidueSymbol = std::unordered_set<std::string>();
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
