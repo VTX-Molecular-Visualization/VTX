@@ -11,13 +11,13 @@ namespace VTX
 	{
 		GL::~GL()
 		{
-			Generic::destroy( _passGeometric );
-			Generic::destroy( _passLinearizeDepth );
-			Generic::destroy( _passSSAO );
-			Generic::destroy( _passBlur );
-			Generic::destroy( _passShading );
-			Generic::destroy( _passOutline );
-			Generic::destroy( _passFXAA );
+			delete _passGeometric;
+			delete _passLinearizeDepth;
+			delete _passSSAO;
+			delete _passBlur;
+			delete _passShading;
+			delete _passOutline;
+			delete _passFXAA;
 		}
 
 		void GL::init( const uint p_width, const uint p_height )

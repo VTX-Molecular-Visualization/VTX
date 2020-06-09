@@ -16,9 +16,9 @@ namespace VTX
 			class Geometric : public BasePass
 			{
 			  public:
+				virtual ~Geometric();
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
 				virtual void resize( const uint, const uint ) override;
-				virtual void clean() override;
 				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
 
 				inline const GLuint & getColorNormalCompressedTexture() const { return _colorNormalCompressedTexture; }

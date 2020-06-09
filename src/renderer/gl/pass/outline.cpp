@@ -8,6 +8,12 @@ namespace VTX
 	{
 		namespace Pass
 		{
+			Outline::~Outline()
+			{
+				glDeleteFramebuffers( 1, &_fbo );
+				glDeleteTextures( 1, &_texture );
+			}
+
 			void Outline::init( GLSL::ProgramManager & p_programManager, const uint p_width, const uint p_height )
 			{
 				glGenFramebuffers( 1, &_fbo );
@@ -40,12 +46,6 @@ namespace VTX
 			{
 				glBindTexture( GL_TEXTURE_2D, _texture );
 				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
-			}
-
-			void Outline::clean()
-			{
-				glDeleteFramebuffers( 1, &_fbo );
-				glDeleteTextures( 1, &_texture );
 			}
 
 			void Outline::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )

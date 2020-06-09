@@ -6,7 +6,6 @@
 #endif
 
 #include "define.hpp"
-#include "generic/base_cleanable.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/gl/program_manager.hpp"
 #include <GL/gl3w.h>
@@ -19,8 +18,7 @@ namespace VTX
 
 		namespace Pass
 		{
-			// TODO: useful to inherit from BaseCleanable ?
-			class BasePass : public Generic::BaseCleanable
+			class BasePass
 			{
 			  public:
 				BasePass() = default;

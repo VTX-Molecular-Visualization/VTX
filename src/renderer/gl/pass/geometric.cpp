@@ -7,6 +7,14 @@ namespace VTX
 	{
 		namespace Pass
 		{
+			Geometric::~Geometric()
+			{
+				glDeleteFramebuffers( 1, &_fbo );
+				glDeleteTextures( 1, &_colorNormalCompressedTexture );
+				glDeleteTextures( 1, &_camSpacePositionsTexture );
+				glDeleteTextures( 1, &_depthTexture );
+			}
+
 			void Geometric::init( GLSL::ProgramManager & p_programManager, const uint p_width, const uint p_height )
 			{
 				// TODO: Only when using point sprites.
@@ -95,14 +103,6 @@ namespace VTX
 							  GL_DEPTH_COMPONENT,
 							  GL_FLOAT,
 							  nullptr );
-			}
-
-			void Geometric::clean()
-			{
-				glDeleteFramebuffers( 1, &_fbo );
-				glDeleteTextures( 1, &_depthTexture );
-				glDeleteTextures( 1, &_colorNormalCompressedTexture );
-				glDeleteTextures( 1, &_camSpacePositionsTexture );
 			}
 
 			void Geometric::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )

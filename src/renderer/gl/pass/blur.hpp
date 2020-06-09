@@ -16,9 +16,9 @@ namespace VTX
 			class Blur : public BasePass
 			{
 			  public:
+				virtual ~Blur();
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
 				virtual void resize( const uint, const uint ) override;
-				virtual void clean() override;
 				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
 
 				inline const GLuint & getTexture() const { return _texture; }
