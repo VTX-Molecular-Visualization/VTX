@@ -11,6 +11,7 @@
 #include "action/change_auto_rotate_speed.hpp"
 #include "action/change_background_color.hpp"
 #include "action/change_camera_clip.hpp"
+#include "action/change_camera_controller.hpp"
 #include "action/change_camera_fov.hpp"
 #include "action/change_camera_projection.hpp"
 #include "action/change_color_mode.hpp"
@@ -459,6 +460,7 @@ namespace VTX
 				ImGui::PopItemFlag();
 			}
 
+			// Merge.
 			if ( VTXApp::get().getScene().getMolecules().size() == 2 )
 			{
 				Model::Molecule * m1 = ( *( VTXApp::get().getScene().getMolecules().begin() ) ).first;
@@ -478,6 +480,12 @@ namespace VTX
 						m1->mergeTopology( *m2 );
 					}
 				}
+			}
+
+			// Camera.
+			if ( ImGui::Button( LOCALE( "MainMenu.Camera" ) ) )
+			{
+				VTX_ACTION( new Action::ChangeCameraController() );
 			}
 		}
 	} // namespace UI

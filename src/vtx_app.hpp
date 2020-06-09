@@ -49,6 +49,8 @@ namespace VTX
 		}
 		inline UI::UserInterface &				   getUI() { return *_ui; }
 		inline const UI::UserInterface &		   getUI() const { return *_ui; }
+		inline State::StateMachine &			   getStateMachine() { return *_stateMachine; }
+		inline const State::StateMachine &		   getStateMachine() const { return *_stateMachine; }
 		inline Action::ActionManager &			   getActionManager() { return *_actionManager; }
 		inline const Action::ActionManager &	   getActionManager() const { return *_actionManager; }
 		inline Event::EventManager &			   getEventManager() { return *_eventManager; }

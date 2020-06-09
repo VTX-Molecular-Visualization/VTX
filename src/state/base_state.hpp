@@ -31,6 +31,10 @@ namespace VTX
 			{
 				for ( const PairStringToItemPtr & controller : _getItems() )
 				{
+					if ( controller.second->isActive() == false )
+					{
+						continue;
+					}
 					controller.second->update( p_deltaTime );
 				}
 			}

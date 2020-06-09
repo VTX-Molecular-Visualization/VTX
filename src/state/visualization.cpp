@@ -12,8 +12,11 @@ namespace VTX
 		void Visualization::enter( void * const )
 		{
 			// Create controller.
+			addItem( Generic::create<Controller::Freefly>() );
 			addItem( Generic::create<Controller::Orbit>() );
 			addItem( Generic::create<Controller::Shortcut>() );
+
+			_getItem( ID::Controller::ORBIT )->setActive( false );
 		}
 
 		void Visualization::exit() { Generic::HasCollection<Controller::BaseController>::clean(); }
@@ -32,6 +35,8 @@ namespace VTX
 
 		void Visualization::toggleController()
 		{
+			_getItem( _controller )->setActive( false );
+
 			if ( _controller == ID::Controller::FREEFLY )
 			{
 				_controller = ID::Controller::ORBIT;
@@ -40,6 +45,7 @@ namespace VTX
 			{
 				_controller = ID::Controller::FREEFLY;
 			}
+			_getItem( _controller )->setActive( true );
 		}
 
 	} // namespace State

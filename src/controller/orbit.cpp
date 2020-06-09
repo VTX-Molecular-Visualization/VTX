@@ -39,6 +39,8 @@ namespace VTX
 				deltaDistance--;
 			}
 
+			// Pan target with wheel button.
+
 			// Update.
 			if ( deltaDistance != 0.f )
 			{
