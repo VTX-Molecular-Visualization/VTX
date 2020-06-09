@@ -12,7 +12,7 @@ namespace VTX
 		void Visualization::enter( void * const )
 		{
 			// Create controller.
-			addItem( Generic::create<Controller::Freefly>() );
+			addItem( Generic::create<Controller::Orbit>() );
 			addItem( Generic::create<Controller::Shortcut>() );
 		}
 

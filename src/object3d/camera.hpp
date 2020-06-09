@@ -84,7 +84,6 @@ namespace VTX
 			void rotatePitch( const float );
 			void rotateYaw( const float );
 			void rotateRoll( const float );
-			void rotateAround( const Vec3f &, const Vec3f &, const float );
 
 			void setPerspective( const bool p_perspective )
 			{

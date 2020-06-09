@@ -41,6 +41,12 @@ namespace VTX
 				return glm::max( p_lhs, p_rhs );
 			}
 
+			template<typename T>
+			inline T abs( const T & p_value )
+			{
+				return glm::abs( p_value );
+			}
+
 			template<typename T1, typename T2>
 			inline T1 clamp( const T1 & p_value, const T2 & p_min, const T2 & p_max )
 			{

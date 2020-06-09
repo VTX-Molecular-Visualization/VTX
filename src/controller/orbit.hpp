@@ -41,8 +41,13 @@ namespace VTX
 			Object3D::Camera & _camera;
 			Vec3f			   _target = VEC3F_ZERO;
 
-			float _velocityX = 0.0f;
-			float _velocityY = 0.0f;
+			float _distance		 = 100.f;
+			float _velocityX	 = 0.f;
+			float _velocityY	 = 0.f;
+			float _rotationXAxis = 0.f;
+			float _rotationYAxis = 0.f;
+
+			bool _needUpdate = true;
 		};
 	} // namespace Controller
 } // namespace VTX
