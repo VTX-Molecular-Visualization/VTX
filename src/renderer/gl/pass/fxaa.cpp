@@ -14,14 +14,23 @@ namespace VTX
 
 				glGenTextures( 1, &_texture );
 				glBindTexture( GL_TEXTURE_2D, _texture );
-				glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA16F, p_width, p_height );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
+
 				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0 );
 
 				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 				_program = p_programManager.createProgram( "AA", { "shading/fxaa.frag" } );
+			}
+
+			void FXAA::resize( const uint p_width, const uint p_height )
+			{
+				glBindTexture( GL_TEXTURE_2D, _texture );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
 			}
 
 			void FXAA::clean()

@@ -19,6 +19,7 @@ namespace VTX
 
 		namespace Pass
 		{
+			// TODO: useful to inherit from BaseCleanable ?
 			class BasePass : public Generic::BaseCleanable
 			{
 			  public:
@@ -26,6 +27,7 @@ namespace VTX
 				virtual ~BasePass() {};
 
 				virtual void init( GLSL::ProgramManager &, const uint, const uint )	 = 0;
+				virtual void resize( const uint, const uint )						 = 0;
 				virtual void render( const Object3D::Scene &, const Renderer::GL & ) = 0;
 
 			  private:

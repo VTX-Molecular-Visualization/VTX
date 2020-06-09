@@ -18,12 +18,12 @@ namespace VTX
 
 				glGenTextures( 1, &_texture );
 				glBindTexture( GL_TEXTURE_2D, _texture );
-				glTexStorage2D( GL_TEXTURE_2D, 1, GL_R32F, p_width, p_height );
 				// TODO: LINEAR useful ?
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_R16F, p_width, p_height, 0, GL_RED, GL_FLOAT, nullptr );
 
 				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0 );
 
@@ -32,6 +32,12 @@ namespace VTX
 				_program = p_programManager.createProgram( "LinearizeDepth", { "shading/linearize_depth.frag" } );
 
 				_uClipInfoLoc = glGetUniformLocation( _program->getId(), "uClipInfo" );
+			}
+
+			void LinearizeDepth::resize( const uint p_width, const uint p_height )
+			{
+				glBindTexture( GL_TEXTURE_2D, _texture );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_R16F, p_width, p_height, 0, GL_RED, GL_FLOAT, nullptr );
 			}
 
 			void LinearizeDepth::clean()

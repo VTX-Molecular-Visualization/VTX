@@ -17,11 +17,11 @@ namespace VTX
 
 				glGenTextures( 1, &_texture );
 				glBindTexture( GL_TEXTURE_2D, _texture );
-				glTexStorage2D( GL_TEXTURE_2D, 1, GL_R16F, p_width, p_height );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_R16F, p_width, p_height, 0, GL_RED, GL_FLOAT, nullptr );
 
 				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0 );
 
@@ -69,6 +69,11 @@ namespace VTX
 				}
 				glGenTextures( 1, &_noiseTexture );
 				glBindTexture( GL_TEXTURE_2D, _noiseTexture );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				// repeat tile over the image
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 				glTexImage2D( GL_TEXTURE_2D,
 							  0,
 							  GL_RGB16F,
@@ -78,11 +83,12 @@ namespace VTX
 							  GL_RGB,
 							  GL_FLOAT,
 							  noise.data() );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-				// repeat tile over the image
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+			}
+
+			void SSAO::resize( const uint p_width, const uint p_height )
+			{
+				glBindTexture( GL_TEXTURE_2D, _texture );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_R16F, p_width, p_height, 0, GL_RED, GL_FLOAT, nullptr );
 			}
 
 			void SSAO::clean()
