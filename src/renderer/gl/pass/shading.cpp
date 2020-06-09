@@ -56,6 +56,10 @@ namespace VTX
 
 				_currentShading->use();
 
+				// TODO: do not update each frame
+				const Color::Rgb & bgColor = Setting::Rendering::backgroundColor;
+				glUniform3f( _uBackgroundColorLoc, bgColor.getR(), bgColor.getG(), bgColor.getB() );
+
 				glBindVertexArray( p_renderer.getQuadVAO() );
 				glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 				glBindVertexArray( 0 );
@@ -72,6 +76,9 @@ namespace VTX
 				case SHADING::DIFFUSE:
 				default: _currentShading = _diffuseShading;
 				}
+
+				_currentShading->use();
+				_uBackgroundColorLoc = glGetUniformLocation( _currentShading->getId(), "uBackgroundColor" );
 			}
 
 		} // namespace Pass

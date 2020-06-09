@@ -53,6 +53,7 @@ namespace VTX
 			extern float camFov;
 			extern bool	 camPerspective;
 
+			extern Color::Rgb backgroundColor;
 			extern Color::Rgb outlineColor;
 		}; // namespace Rendering
 

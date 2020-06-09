@@ -30,7 +30,8 @@ namespace VTX
 			float camFov		 = CAMERA_FOV_DEFAULT;
 			bool  camPerspective = CAMERA_PERSPECTIVE_DEFAULT;
 
-			Color::Rgb outlineColor = Color::Rgb::WHITE;
+			Color::Rgb backgroundColor = Color::Rgb::BLACK;
+			Color::Rgb outlineColor	   = Color::Rgb::WHITE;
 		}; // namespace Rendering
 
 		namespace Controller

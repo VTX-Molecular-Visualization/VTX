@@ -9,6 +9,7 @@
 #include "action/change_ao_blur_size.hpp"
 #include "action/change_ao_intensity.hpp"
 #include "action/change_auto_rotate_speed.hpp"
+#include "action/change_background_color.hpp"
 #include "action/change_camera_clip.hpp"
 #include "action/change_camera_fov.hpp"
 #include "action/change_camera_projection.hpp"
@@ -231,6 +232,13 @@ namespace VTX
 				{
 					VTX_ACTION( new Action::ActiveRenderer( isActive ) );
 				};
+
+				// Background color.
+				Color::Rgb & bgColor = Setting::Rendering::backgroundColor;
+				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.BackgroundColor" ), (float *)&bgColor ) )
+				{
+					VTX_ACTION( new Action::ChangeBackgroundColor( bgColor ) );
+				}
 
 				// Representation.
 				const char * representations[] = { LOCALE( "Enum.Representation.BallsAndSticks" ),

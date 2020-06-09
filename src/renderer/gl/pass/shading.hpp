@@ -40,6 +40,8 @@ namespace VTX
 				GLuint			_fbo			= GL_INVALID_VALUE;
 				GLuint			_texture		= GL_INVALID_VALUE;
 
+				GLint _uBackgroundColorLoc = GL_INVALID_INDEX;
+
 				GLSL::Program * _currentShading = nullptr;
 			};
 		} // namespace Pass

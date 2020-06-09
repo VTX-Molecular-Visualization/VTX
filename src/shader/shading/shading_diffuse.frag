@@ -4,6 +4,8 @@ layout( binding = 0 ) uniform usampler2D gbColorNormal;
 layout( binding = 1 ) uniform sampler2D gbCamPosition;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
+uniform vec3 uBackgroundColor;
+
 out vec4 fragColor;
 
 struct FragmentData
@@ -32,6 +34,12 @@ void main()
 {
 	FragmentData fd;
 	unpackGBuffers( ivec2( gl_FragCoord.xy ), fd );
+
+	if ( fd.normal.x == 0.f && fd.normal.y == 0.f && fd.normal.z == 0.f )
+	{
+		fragColor = vec4(uBackgroundColor, 1.f);
+		return;
+	}
 
 	// Light on camera.
 	const vec3 lightDir = normalize( -fd.camPosition );
