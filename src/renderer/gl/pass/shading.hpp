@@ -24,8 +24,9 @@ namespace VTX
 			class Shading : public BasePass
 			{
 			  public:
+				virtual ~Shading();
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
-				virtual void clean() override;
+				virtual void resize( const uint, const uint ) override;
 				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
 				void		 set();
 
@@ -39,6 +40,8 @@ namespace VTX
 				GLSL::Program * _flatShading	= nullptr;
 				GLuint			_fbo			= GL_INVALID_VALUE;
 				GLuint			_texture		= GL_INVALID_VALUE;
+
+				GLint _uBackgroundColorLoc = GL_INVALID_INDEX;
 
 				GLSL::Program * _currentShading = nullptr;
 			};

@@ -138,9 +138,20 @@ namespace VTX
 			}
 
 			template<typename T>
-			inline glm::tmat4x4<T> perspective( const T p_fov, const T p_aspect, const T p_near, const T p_far )
+			inline glm::tmat4x4<T> perspective( const T & p_fov, const T & p_aspect, const T & p_near, const T & p_far )
 			{
 				return glm::perspective( p_fov, p_aspect, p_near, p_far );
+			}
+
+			template<typename T>
+			inline glm::tmat4x4<T> ortho( const T & p_left,
+										  const T & p_right,
+										  const T & p_bottom,
+										  const T & p_top,
+										  const T & p_near,
+										  const T & p_far )
+			{
+				return glm::ortho( p_left, p_right, p_bottom, p_top, p_near, p_far );
 			}
 
 			template<typename T>
@@ -191,7 +202,7 @@ namespace VTX
 
 			inline Quatd eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
 
-			inline Quatd eulerToQuaternion( const double p_pitch, const double p_yaw, const double p_roll )
+			inline Quatd eulerToQuaternion( const double & p_pitch, const double & p_yaw, const double & p_roll )
 			{
 				// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
 				/*
@@ -211,8 +222,7 @@ namespace VTX
 				return q;
 				*/
 				// Same thing did by glm.
-				Quatd q = eulerToQuaternion( Vec3d( p_pitch, p_yaw, p_roll ) );
-				return q;
+				return eulerToQuaternion( Vec3d( p_pitch, p_yaw, p_roll ) );
 			}
 
 			inline Vec3f quaternionToEuler( const Quatd & p_quaternion )
@@ -222,12 +232,12 @@ namespace VTX
 				Vec3d		  angles;
 
 				// Roll (x-axis rotation).
-				double sinr_cosp = 2 * ( q.w * q.x + q.y * q.z );
-				double cosr_cosp = 1 - 2 * ( q.x * q.x + q.y * q.y );
-				angles.z		 = std::atan2( sinr_cosp, cosr_cosp );
+				const double sinr_cosp = 2 * ( q.w * q.x + q.y * q.z );
+				const double cosr_cosp = 1 - 2 * ( q.x * q.x + q.y * q.y );
+				angles.z			   = std::atan2( sinr_cosp, cosr_cosp );
 
-				// Pitch (y-axis rotation)
-				double sinp = 2 * ( q.w * q.y - q.z * q.x );
+				// Pitch (y-axis rotation).
+				const double sinp = 2 * ( q.w * q.y - q.z * q.x );
 				if ( std::abs( sinp ) >= 1 )
 				{
 					// Use 90 degrees if out of range.
@@ -239,9 +249,9 @@ namespace VTX
 				}
 
 				// Yaw (z-axis rotation).
-				double siny_cosp = 2 * ( q.w * q.z + q.x * q.y );
-				double cosy_cosp = 1 - 2 * ( q.y * q.y + q.z * q.z );
-				angles.y		 = std::atan2( siny_cosp, cosy_cosp );
+				const double siny_cosp = 2 * ( q.w * q.z + q.x * q.y );
+				const double cosy_cosp = 1 - 2 * ( q.y * q.y + q.z * q.z );
+				angles.y			   = std::atan2( siny_cosp, cosy_cosp );
 
 				return angles;
 			}
@@ -277,7 +287,10 @@ namespace VTX
 			{
 				assert( p_x <= ( 1 << 10 ) );
 
-				if ( p_x == ( 1 << 10 ) ) --p_x;
+				if ( p_x == ( 1 << 10 ) )
+				{
+					--p_x;
+				}
 				p_x = ( p_x | ( p_x << 16 ) ) & 0x30000ff; // x = ---- --98 ---- ---- ---- ---- 7654 3210
 				p_x = ( p_x | ( p_x << 8 ) ) & 0x300f00f;  // x = ---- --98 ---- ---- 7654 ---- ---- 3210
 				p_x = ( p_x | ( p_x << 4 ) ) & 0x30c30c3;  // x = ---- --98 ---- 76-- --54 ---- 32-- --10
@@ -297,38 +310,44 @@ namespace VTX
 			// p_n (normal) must be normalized
 			inline Mat3f createOrthonormalBasis( const Vec3f & p_n )
 			{
-				Vec3f t = fabsf( p_n.x ) > fabsf( p_n.y )
-							  ? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )
-							  : Vec3f( 0.f, -p_n.z, p_n.y ) / sqrtf( p_n.y * p_n.y + p_n.z * p_n.z );
-				Vec3f b = cross( p_n, t );
+				const Vec3f t = fabsf( p_n.x ) > fabsf( p_n.y )
+									? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )
+									: Vec3f( 0.f, -p_n.z, p_n.y ) / sqrtf( p_n.y * p_n.y + p_n.z * p_n.z );
+				const Vec3f b = cross( p_n, t );
 				return Mat3f( t, b, p_n );
 			}
 
 			template<typename T>
 			static float torsionalAngle( const T & p_at0, const T & p_at1, const T & p_at2, const T & p_at3 )
 			{
-				Vec3f r01 = p_at0 - p_at1;
-				Vec3f r32 = p_at3 - p_at2;
-				Vec3f r12 = p_at1 - p_at2;
+				const Vec3f r01 = p_at0 - p_at1;
+				const Vec3f r32 = p_at3 - p_at2;
+				const Vec3f r12 = p_at1 - p_at2;
 
-				Vec3f p = cross( r12, r01 );
-				Vec3f q = cross( r12, r32 );
-				Vec3f r = cross( r12, q );
+				const Vec3f p = cross( r12, r01 );
+				const Vec3f q = cross( r12, r32 );
+				const Vec3f r = cross( r12, q );
 
 				float u = dot( q, q );
 				float v = dot( r, r );
 
 				float a;
-				if ( u <= 0.f || v <= 0.f ) { a = TWO_PIf; }
+				if ( u <= 0.f || v <= 0.f )
+				{
+					a = TWO_PIf;
+				}
 				else
 				{
-					float u1 = dot( p, q );
-					float v1 = dot( p, r );
+					const float u1 = dot( p, q );
+					const float v1 = dot( p, r );
 
-					u = u1 / std::sqrt( u );
-					v = v1 / std::sqrt( v );
+					u = u1 / std::sqrtf( u );
+					v = v1 / std::sqrtf( v );
 
-					if ( std::abs( u ) > 0.01f || std::abs( v ) > 0.01f ) { a = std::atan2( v, u ); }
+					if ( std::abs( u ) > 0.01f || std::abs( v ) > 0.01f )
+					{
+						a = std::atan2( v, u );
+					}
 					else
 					{
 						a = TWO_PIf;

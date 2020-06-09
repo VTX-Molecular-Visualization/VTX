@@ -25,11 +25,13 @@ namespace VTX
 			bool					useAA		   = AA_DEFAULT;
 
 			// Camera.
-			float camNear = CAMERA_NEAR_DEFAULT;
-			float camFar  = CAMERA_FAR_DEFAULT;
-			float camFov  = CAMERA_FOV_DEFAULT;
+			float camNear		 = CAMERA_NEAR_DEFAULT;
+			float camFar		 = CAMERA_FAR_DEFAULT;
+			float camFov		 = CAMERA_FOV_DEFAULT;
+			bool  camPerspective = CAMERA_PERSPECTIVE_DEFAULT;
 
-			Color::Rgb outlineColor = Color::Rgb::WHITE;
+			Color::Rgb backgroundColor = Color::Rgb::BLACK;
+			Color::Rgb outlineColor	   = Color::Rgb::WHITE;
 		}; // namespace Rendering
 
 		namespace Controller

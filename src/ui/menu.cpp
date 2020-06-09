@@ -9,8 +9,10 @@
 #include "action/change_ao_blur_size.hpp"
 #include "action/change_ao_intensity.hpp"
 #include "action/change_auto_rotate_speed.hpp"
+#include "action/change_background_color.hpp"
 #include "action/change_camera_clip.hpp"
 #include "action/change_camera_fov.hpp"
+#include "action/change_camera_projection.hpp"
 #include "action/change_color_mode.hpp"
 #include "action/change_display_mode.hpp"
 #include "action/change_representation.hpp"
@@ -231,6 +233,13 @@ namespace VTX
 					VTX_ACTION( new Action::ActiveRenderer( isActive ) );
 				};
 
+				// Background color.
+				Color::Rgb & bgColor = Setting::Rendering::backgroundColor;
+				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.BackgroundColor" ), (float *)&bgColor ) )
+				{
+					VTX_ACTION( new Action::ChangeBackgroundColor( bgColor ) );
+				}
+
 				// Representation.
 				const char * representations[] = { LOCALE( "Enum.Representation.BallsAndSticks" ),
 												   LOCALE( "Enum.Representation.VanDerWaals" ),
@@ -284,6 +293,11 @@ namespace VTX
 				{
 					VTX_ACTION( new Action::ChangeCameraFov( camFov ) );
 				}
+				bool camPerspective = Setting::Rendering::camPerspective;
+				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.CamPerspective" ), &camPerspective ) )
+				{
+					VTX_ACTION( new Action::ChangeCameraProjection( camPerspective ) );
+				};
 
 				// VSYNC.
 				bool useVSync = Setting::Rendering::useVSync;

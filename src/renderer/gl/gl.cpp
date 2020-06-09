@@ -11,13 +11,13 @@ namespace VTX
 	{
 		GL::~GL()
 		{
-			Generic::destroy( _passGeometric );
-			Generic::destroy( _passLinearizeDepth );
-			Generic::destroy( _passSSAO );
-			Generic::destroy( _passBlur );
-			Generic::destroy( _passShading );
-			Generic::destroy( _passOutline );
-			Generic::destroy( _passFXAA );
+			delete _passGeometric;
+			delete _passLinearizeDepth;
+			delete _passSSAO;
+			delete _passBlur;
+			delete _passShading;
+			delete _passOutline;
+			delete _passFXAA;
 		}
 
 		void GL::init( const uint p_width, const uint p_height )
@@ -48,24 +48,15 @@ namespace VTX
 		{
 			if ( p_width != _width || p_height != _height )
 			{
-				// TODO: do not destroy/construct all !!!
-				_passGeometric->clean();
-				_passLinearizeDepth->clean();
-				_passSSAO->clean();
-				_passBlur->clean();
-				_passShading->clean();
-				_passOutline->clean();
-				_passFXAA->clean();
-
 				BaseRenderer::resize( p_width, p_height );
 
-				_passGeometric->init( _programManager, _width, _height );
-				_passLinearizeDepth->init( _programManager, _width, _height );
-				_passSSAO->init( _programManager, _width, _height );
-				_passBlur->init( _programManager, _width, _height );
-				_passShading->init( _programManager, _width, _height );
-				_passOutline->init( _programManager, p_width, p_height );
-				_passFXAA->init( _programManager, _width, _height );
+				_passGeometric->resize( _width, _height );
+				_passLinearizeDepth->resize( _width, _height );
+				_passSSAO->resize( _width, _height );
+				_passBlur->resize( _width, _height );
+				_passShading->resize( _width, _height );
+				_passOutline->resize( _width, _height );
+				_passFXAA->resize( _width, _height );
 			}
 		}
 

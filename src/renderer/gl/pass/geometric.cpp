@@ -7,6 +7,14 @@ namespace VTX
 	{
 		namespace Pass
 		{
+			Geometric::~Geometric()
+			{
+				glDeleteFramebuffers( 1, &_fbo );
+				glDeleteTextures( 1, &_colorNormalCompressedTexture );
+				glDeleteTextures( 1, &_camSpacePositionsTexture );
+				glDeleteTextures( 1, &_depthTexture );
+			}
+
 			void Geometric::init( GLSL::ProgramManager & p_programManager, const uint p_width, const uint p_height )
 			{
 				// TODO: Only when using point sprites.
@@ -20,21 +28,36 @@ namespace VTX
 
 				glGenTextures( 1, &_colorNormalCompressedTexture );
 				glBindTexture( GL_TEXTURE_2D, _colorNormalCompressedTexture );
-				glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA32UI, p_width, p_height );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-
-				glGenTextures( 1, &_camSpacePositionsTexture );
-				glBindTexture( GL_TEXTURE_2D, _camSpacePositionsTexture );
-				glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA16F, p_width, p_height );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				glTexImage2D(
+					GL_TEXTURE_2D, 0, GL_RGBA32UI, p_width, p_height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, nullptr );
+
+				glGenTextures( 1, &_camSpacePositionsTexture );
+				glBindTexture( GL_TEXTURE_2D, _camSpacePositionsTexture );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
 
 				glGenTextures( 1, &_depthTexture );
 				glBindTexture( GL_TEXTURE_2D, _depthTexture );
-				glTexStorage2D( GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT32F, p_width, p_height );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				glTexImage2D( GL_TEXTURE_2D,
+							  0,
+							  GL_DEPTH_COMPONENT32F,
+							  p_width,
+							  p_height,
+							  0,
+							  GL_DEPTH_COMPONENT,
+							  GL_FLOAT,
+							  nullptr );
 
 				glFramebufferTexture2D(
 					GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _colorNormalCompressedTexture, 0 );
@@ -61,12 +84,25 @@ namespace VTX
 				}
 			}
 
-			void Geometric::clean()
+			void Geometric::resize( const uint p_width, const uint p_height )
 			{
-				glDeleteFramebuffers( 1, &_fbo );
-				glDeleteTextures( 1, &_depthTexture );
-				glDeleteTextures( 1, &_colorNormalCompressedTexture );
-				glDeleteTextures( 1, &_camSpacePositionsTexture );
+				glBindTexture( GL_TEXTURE_2D, _colorNormalCompressedTexture );
+				glTexImage2D(
+					GL_TEXTURE_2D, 0, GL_RGBA32UI, p_width, p_height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, nullptr );
+
+				glBindTexture( GL_TEXTURE_2D, _camSpacePositionsTexture );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
+
+				glBindTexture( GL_TEXTURE_2D, _depthTexture );
+				glTexImage2D( GL_TEXTURE_2D,
+							  0,
+							  GL_DEPTH_COMPONENT32F,
+							  p_width,
+							  p_height,
+							  0,
+							  GL_DEPTH_COMPONENT,
+							  GL_FLOAT,
+							  nullptr );
 			}
 
 			void Geometric::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )

@@ -8,6 +8,12 @@ namespace VTX
 	{
 		namespace Pass
 		{
+			Outline::~Outline()
+			{
+				glDeleteFramebuffers( 1, &_fbo );
+				glDeleteTextures( 1, &_texture );
+			}
+
 			void Outline::init( GLSL::ProgramManager & p_programManager, const uint p_width, const uint p_height )
 			{
 				glGenFramebuffers( 1, &_fbo );
@@ -15,11 +21,11 @@ namespace VTX
 
 				glGenTextures( 1, &_texture );
 				glBindTexture( GL_TEXTURE_2D, _texture );
-				glTexStorage2D( GL_TEXTURE_2D, 1, GL_RGBA16F, p_width, p_height );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
 
 				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0 );
 
@@ -36,10 +42,10 @@ namespace VTX
 				glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );
 			}
 
-			void Outline::clean()
+			void Outline::resize( const uint p_width, const uint p_height )
 			{
-				glDeleteFramebuffers( 1, &_fbo );
-				glDeleteTextures( 1, &_texture );
+				glBindTexture( GL_TEXTURE_2D, _texture );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
 			}
 
 			void Outline::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )

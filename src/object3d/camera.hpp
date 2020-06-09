@@ -34,6 +34,7 @@ namespace VTX
 			{
 				_screenWidth  = float( p_width );
 				_screenHeight = float( p_height );
+				_aspectRatio  = _screenWidth / _screenHeight;
 				_updateProjectionMatrix();
 			}
 
@@ -85,11 +86,18 @@ namespace VTX
 			void rotateRoll( const float );
 			void rotateAround( const Vec3f &, const Vec3f &, const float );
 
+			void setPerspective( const bool p_perspective )
+			{
+				_isPerspective = p_perspective;
+				_updateProjectionMatrix();
+			}
+
 			virtual void print() const;
 
 		  private:
-			float _screenWidth	= 0.f;
-			float _screenHeight = 0.f;
+			float _screenWidth	= 1.f;
+			float _screenHeight = 1.f;
+			float _aspectRatio	= 1.f;
 			float _near			= 1e-1f;
 			float _far			= 1e4f;
 			float _fov			= 60.f;
@@ -103,11 +111,11 @@ namespace VTX
 			Vec3f _up	 = VEC3F_Y;
 			Mat4f _viewMatrix;
 			Mat4f _projectionMatrix;
+			bool  _isPerspective = true;
 
 			void _updateRotation();
 			void _updateViewMatrix();
 			void _updateProjectionMatrix();
-
 		}; // namespace Camera
 	}	   // namespace Object3D
 } // namespace VTX

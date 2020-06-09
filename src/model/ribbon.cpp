@@ -582,7 +582,7 @@ namespace VTX
 				p_vIndice += 36;
 				extraWidthFactor = extraWidthFactor - pointOneAdjustment;
 			}
-		} // namespace Model
+		}
 
 		void Ribbon::refreshVisibility()
 		{

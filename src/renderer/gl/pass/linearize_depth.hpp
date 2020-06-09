@@ -16,8 +16,9 @@ namespace VTX
 			class LinearizeDepth : public BasePass
 			{
 			  public:
+				virtual ~LinearizeDepth();
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
-				virtual void clean() override;
+				virtual void resize( const uint, const uint ) override;
 				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
 
 				inline const GLuint & getTexture() const { return _texture; }

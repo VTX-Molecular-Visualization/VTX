@@ -9,7 +9,8 @@ namespace VTX
 		// TODO? (20_05_27): _near, _far, _fov must be initialized in cpp because setting.hpp cannot be included in hpp
 		Camera::Camera() :
 			_near( Util::Math::max( 1e-1f, Setting::Rendering::camNear ) ), // Avoid to little value.
-			_far( Util::Math::max( _near, Setting::Rendering::camFar ) ), _fov( Setting::Rendering::camFov )
+			_far( Util::Math::max( _near, Setting::Rendering::camFar ) ), _fov( Setting::Rendering::camFov ),
+			_isPerspective( Setting::Rendering::camPerspective )
 		{
 			_updateRotation();
 		}
@@ -86,15 +87,18 @@ namespace VTX
 			_eulerAngles = VEC3F_ZERO;
 		}
 
-		void Camera::_updateViewMatrix()
-		{
-			//VTX_DEBUG( "UPDATE CAMERA VM" );
-			_viewMatrix = Util::Math::lookAt( _position, _position + _front, _up ); }
+		void Camera::_updateViewMatrix() { _viewMatrix = Util::Math::lookAt( _position, _position + _front, _up ); }
 
 		void Camera::_updateProjectionMatrix()
 		{
-			_projectionMatrix
-				= Util::Math::perspective( Util::Math::radians( _fov ), _screenWidth / _screenHeight, _near, _far );
+			// if ( _isPerspective )
+			//{
+			_projectionMatrix = Util::Math::perspective( Util::Math::radians( _fov ), _aspectRatio, _near, _far );
+			//}
+			// else // Ortho.
+			//{
+			//	// TODO !
+			//}
 		}
 
 		void Camera::print() const

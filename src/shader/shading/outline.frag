@@ -23,7 +23,7 @@ void main()
 	
 	// Compute threshold wrt depth
 	// TODO: allow the user to control it
-	const float threshold = 0.1f * max( 1.f, depthCenter );
+	const float threshold = 0.05f * max( 1.f, depthCenter );
 
 	// Compute depth difference in cross: no need abs because squared for edge depth.
 	const float depthDiff0 = depthNW - depthSE;
