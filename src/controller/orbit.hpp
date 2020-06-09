@@ -29,6 +29,7 @@ namespace VTX
 
 			virtual void				update( const double ) override;
 			virtual const std::string & getName() const override { return ID::Controller::ORBIT; }
+			virtual void				setActive( const bool p_active ) override;
 
 		  protected:
 			virtual void					_handleKeyPressedEvent( const SDL_Scancode & ) override;

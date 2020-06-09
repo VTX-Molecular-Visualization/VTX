@@ -36,9 +36,25 @@ namespace VTX
 				_items.clear();
 			}
 
-			virtual T * const findItem( const std::string & p_name )
+			T * const findItem( const std::string & p_name )
 			{
-				if ( _items.find( p_name ) != _items.end() ) { return _items.at( p_name ); }
+				if ( _items.find( p_name ) != _items.end() )
+				{
+					return _items.at( p_name );
+				}
+				else
+				{
+					return nullptr;
+				}
+			}
+
+			template<typename T2, typename = std::enable_if<std::is_base_of<T, T2>::value>>
+			T2 * const findItem( const std::string & p_name )
+			{
+				if ( _items.find( p_name ) != _items.end() )
+				{
+					return (T2 *)_items.at( p_name );
+				}
 				else
 				{
 					return nullptr;
@@ -70,7 +86,7 @@ namespace VTX
 				}
 			}
 
-			virtual T * removeItem( const std::string & p_name )
+			T * removeItem( const std::string & p_name )
 			{
 				T * item = _items.at( p_name );
 				_items.erase( p_name );

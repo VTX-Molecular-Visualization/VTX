@@ -6,6 +6,20 @@ namespace VTX
 {
 	namespace Controller
 	{
+		void Orbit::setActive( const bool p_active )
+		{
+			BaseController::setActive( p_active );
+			if ( p_active )
+			{
+				_needUpdate = true;
+			}
+			else
+			{
+				_velocityX = 0.f;
+				_velocityY = 0.f;
+			}
+		}
+
 		void Orbit::update( const double p_deltaTime )
 		{
 			// Wheel.

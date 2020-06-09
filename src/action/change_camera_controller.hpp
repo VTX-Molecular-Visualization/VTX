@@ -20,8 +20,9 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				// TOCHECK: ugly?
-				( (State::Visualization *)VTXApp::get().getStateMachine().findItem( ID::State::VISUALIZATION ) )
+				VTXApp::get()
+					.getStateMachine()
+					.findItem<State::Visualization>( ID::State::VISUALIZATION )
 					->toggleController();
 			};
 
