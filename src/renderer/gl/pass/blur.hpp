@@ -22,10 +22,10 @@ namespace VTX
 
 				inline const GLuint & getTexture() const { return _texture; }
 
-				void clearTexture()
+				void clearTexture() const
 				{
-					float clearColor[ 4 ] = { 0.f, 0.f, 0.f, 1.f };
-					glClearTexImage( _texture, 0, GL_RGBA, GL_UNSIGNED_BYTE, &clearColor );
+					float clearColor = 1.f;
+					glClearTexImage( _texture, 0, GL_RED, GL_FLOAT, &clearColor );
 				}
 
 			  private:
