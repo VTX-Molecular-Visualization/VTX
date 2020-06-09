@@ -19,7 +19,7 @@ void main()
 	const float blurSigma	= uBlurSize * 0.5f;
 	const float blurFalloff = 1.f / ( 2.f * blurSigma * blurSigma );
 
-	// Adapt sharpness wrt depth: the deeper the fragment is, the stronger the sharpness is.  
+	// Adapt sharpness wrt depth: the deeper the fragment is, the weaker the sharpness is.  
 	const float sharpness = max(1.f, 64.f / depthCenter);
 
 	float res	 = inputCenter;
