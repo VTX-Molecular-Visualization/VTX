@@ -58,11 +58,11 @@ namespace VTX
 	// constexpr int WINDOW_WIDTH	= 640;
 	// constexpr int WINDOW_HEIGHT = 320;
 	// 720p.
-	// constexpr int WINDOW_WIDTH	= 1280;
-	// constexpr int WINDOW_HEIGHT = 720;
+	constexpr int WINDOW_WIDTH	= 1280;
+	constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
-	constexpr int WINDOW_WIDTH	= 1920;
-	constexpr int WINDOW_HEIGHT = 1080;
+	// constexpr int WINDOW_WIDTH	= 1920;
+	// constexpr int WINDOW_HEIGHT = 1080;
 	// 4k
 	// constexpr int WINDOW_WIDTH	= 3840;
 	// constexpr int WINDOW_HEIGHT = 2160;
@@ -71,13 +71,14 @@ namespace VTX
 	// constexpr int WINDOW_HEIGHT = 864;
 
 	// Camera.
-	constexpr float CAMERA_NEAR_DEFAULT = 0.f;
-	constexpr float CAMERA_FAR_DEFAULT	= 1e4f;
-	constexpr float CAMERA_NEAR_FAR_MIN = 0.f;
-	constexpr float CAMERA_NEAR_FAR_MAX = 1e4f;
-	constexpr float CAMERA_FOV_DEFAULT	= 60.f;
-	constexpr float CAMERA_FOV_MIN		= 10.f;
-	constexpr float CAMERA_FOV_MAX		= 90.f;
+	constexpr float CAMERA_NEAR_DEFAULT		   = 0.f;
+	constexpr float CAMERA_FAR_DEFAULT		   = 1e4f;
+	constexpr float CAMERA_NEAR_FAR_MIN		   = 0.f;
+	constexpr float CAMERA_NEAR_FAR_MAX		   = 1e4f;
+	constexpr float CAMERA_FOV_DEFAULT		   = 60.f;
+	constexpr float CAMERA_FOV_MIN			   = 10.f;
+	constexpr float CAMERA_FOV_MAX			   = 90.f;
+	constexpr bool	CAMERA_PERSPECTIVE_DEFAULT = true;
 
 	// Controllers.
 	constexpr float CONTROLLER_TRANSLATION_SPEED_MIN	  = 50.f;

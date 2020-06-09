@@ -11,6 +11,7 @@
 #include "action/change_auto_rotate_speed.hpp"
 #include "action/change_camera_clip.hpp"
 #include "action/change_camera_fov.hpp"
+#include "action/change_camera_projection.hpp"
 #include "action/change_color_mode.hpp"
 #include "action/change_display_mode.hpp"
 #include "action/change_representation.hpp"
@@ -284,6 +285,11 @@ namespace VTX
 				{
 					VTX_ACTION( new Action::ChangeCameraFov( camFov ) );
 				}
+				bool camPerspective = Setting::Rendering::camPerspective;
+				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.CamPerspective" ), &camPerspective ) )
+				{
+					VTX_ACTION( new Action::ChangeCameraProjection( camPerspective ) );
+				};
 
 				// VSYNC.
 				bool useVSync = Setting::Rendering::useVSync;
