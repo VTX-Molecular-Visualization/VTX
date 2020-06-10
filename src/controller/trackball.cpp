@@ -40,12 +40,21 @@ namespace VTX
 				_deltaMousePosition.x = 0;
 				_deltaMousePosition.y = 0;
 			}
-
 			// Mouse right.
-			if ( _mouseRightPressed )
+			else if ( _mouseRightPressed )
 			{
-				deltaVelocity.z		  = -(float)_deltaMousePosition.x;
+				deltaVelocity.z		  = -(float)_deltaMousePosition.x * 0.1f;
 				_deltaMousePosition.x = 0;
+			}
+			// Pan target with wheel button.
+			else if ( _mouseMiddlePressed )
+			{
+				float deltaX = (float)_deltaMousePosition.x;
+				float deltaY = (float)_deltaMousePosition.y;
+
+				_target = _target + _rotation * ( ( -VEC3F_X * deltaX + VEC3F_Y * deltaY ) * 0.1f );
+
+				_needUpdate = true;
 			}
 
 			// Keyboard.
@@ -74,9 +83,7 @@ namespace VTX
 				deltaVelocity.z = 0.5f;
 			}
 
-			// Pan target with wheel button.
-
-			// Update.
+			// Set values from settings.
 			if ( deltaDistance != 0.f )
 			{
 				deltaDistance *= Setting::Controller::translationSpeed;
@@ -89,7 +96,6 @@ namespace VTX
 					deltaDistance /= Setting::Controller::translationFactorSpeed;
 				}
 
-				_distance	= Util::Math::clamp( _distance - deltaDistance, 10.f, 1000.f );
 				_needUpdate = true;
 			}
 			if ( deltaVelocity.x != 0.f )
@@ -105,11 +111,12 @@ namespace VTX
 			{
 				_velocity.z += Setting::Controller::rotationSpeed * deltaVelocity.z;
 			}
-
 			_needUpdate |= _velocity != VEC3F_ZERO;
 
+			// Update if needed.
 			if ( _needUpdate )
 			{
+				_distance	   = Util::Math::clamp( _distance - deltaDistance, 10.f, 1000.f );
 				Quatf rotation = Quatf( Vec3f( -_velocity.y, _velocity.x, -_velocity.z ) );
 				_rotation	   = _rotation * rotation;
 				Vec3f position = _rotation * Vec3f( 0.f, 0.f, _distance ) + _target;

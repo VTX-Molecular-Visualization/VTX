@@ -47,7 +47,7 @@ namespace VTX
 			Object3D::Camera & _camera;
 
 			Vec3f _target	= VEC3F_ZERO;
-			float _distance = 100.f;
+			float _distance = 0.f;
 			Vec3f _velocity = VEC3F_ZERO;
 			Quatf _rotation = Quatf( 1.0, { 0.0, 0.0, 0.0 } );
 
