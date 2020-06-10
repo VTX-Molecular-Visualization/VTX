@@ -20,7 +20,7 @@ namespace VTX
 			}
 			else
 			{
-				_actionQueue.push( p_action );
+				_actionQueue.emplace( p_action );
 			}
 		}
 

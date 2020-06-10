@@ -50,7 +50,7 @@ namespace VTX
 			_receiversVTX.at( p_event ).erase( p_receiver );
 		}
 
-		void EventManager::fireEvent( VTXEvent * const p_event ) { _eventQueue.push( p_event ); }
+		void EventManager::fireEvent( VTXEvent * const p_event ) { _eventQueue.emplace( p_event ); }
 
 		void EventManager::update( const double p_deltaTime )
 		{
