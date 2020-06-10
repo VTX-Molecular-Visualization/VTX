@@ -52,6 +52,24 @@ namespace VTX
 			{
 				deltaDistance--;
 			}
+			if ( _isKeyPressed( SDL_SCANCODE_A ) || _isKeyPressed( SDL_SCANCODE_LEFT ) )
+			{
+				deltaVelocityX = -Setting::Controller::rotationSpeed * 10.f;
+			}
+			if ( _isKeyPressed( SDL_SCANCODE_D ) || _isKeyPressed( SDL_SCANCODE_RIGHT ) )
+			{
+				deltaVelocityX = Setting::Controller::rotationSpeed * 10.f;
+			}
+			if ( _isKeyPressed( SDL_SCANCODE_R ) )
+			{
+				deltaVelocityY
+					= Setting::Controller::rotationSpeed * 10.f * ( Setting::Controller::yAxisInverted ? -1.f : 1.f );
+			}
+			if ( _isKeyPressed( SDL_SCANCODE_F ) )
+			{
+				deltaVelocityY
+					= -Setting::Controller::rotationSpeed * 10.f * ( Setting::Controller::yAxisInverted ? -1.f : 1.f );
+			}
 
 			// Pan target with wheel button.
 
@@ -86,7 +104,6 @@ namespace VTX
 			{
 				_rotationYAxis += _velocityX;
 				_rotationXAxis -= _velocityY;
-				_rotationXAxis = Util::Math::clamp( _rotationXAxis, -PI_2f, PI_2f );
 
 				Quatf rotation = Quatf( Vec3f( _rotationXAxis, _rotationYAxis, 0.f ) );
 				Vec3f position = rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
