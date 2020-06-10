@@ -12,6 +12,8 @@ namespace VTX
 			if ( p_active )
 			{
 				_needUpdate = true;
+				_target		= VTXApp::get().getScene().getAABB().centroid();
+				_distance	= VTXApp::get().getScene().getAABB().diameter();
 			}
 			else
 			{

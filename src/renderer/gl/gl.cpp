@@ -24,8 +24,6 @@ namespace VTX
 		{
 			VTX_INFO( "Initializing renderer..." );
 
-			// glClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
-
 			// Set size.
 			BaseRenderer::resize( p_width, p_height );
 

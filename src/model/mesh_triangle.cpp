@@ -38,6 +38,8 @@ namespace VTX
 		{
 			BaseModel::init();
 
+			_computeAABB();
+
 			// VBO.
 			glGenBuffers( 1, &_vboPositions );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );

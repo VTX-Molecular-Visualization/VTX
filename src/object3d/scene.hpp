@@ -32,13 +32,28 @@ namespace VTX
 
 			virtual void clean() override;
 
-			void addMolecule( MoleculePtr const p_molecule ) { _molecules.emplace( p_molecule, 0.f ); }
-			void removeMolecule( MoleculePtr const p_molecule ) { _molecules.erase( p_molecule ); }
+			inline const Math::AABB & getAABB() const { return _aabb; }
+
+			void addMolecule( MoleculePtr const p_molecule )
+			{
+				_molecules.emplace( p_molecule, 0.f );
+				_aabb.extend( p_molecule->getGlobalPositionsAABB() );
+			}
+			void removeMolecule( MoleculePtr const p_molecule )
+			{
+				_molecules.erase( p_molecule );
+				_computeAABB();
+			}
 			void addPath( PathPtr const p_path ) { _paths.emplace_back( p_path ); }
-			void addMesh( MeshTrianglePtr const p_mesh ) { _meshes.emplace_back( p_mesh ); }
+			void addMesh( MeshTrianglePtr const p_mesh )
+			{
+				_meshes.emplace_back( p_mesh );
+				_aabb.extend( p_mesh->getAABB() );
+			}
 			void removeMesh( MeshTrianglePtr const p_mesh )
 			{
 				_meshes.erase( std::find( _meshes.begin(), _meshes.end(), p_mesh ) );
+				_computeAABB();
 			}
 
 			inline Camera &						 getCamera() { return _camera; }
@@ -51,7 +66,22 @@ namespace VTX
 			virtual void update( const double ) override;
 
 		  private:
-			Camera				  _camera	 = Camera();
+			void _computeAABB()
+			{
+				_aabb.invalidate();
+				for ( const PairMoleculePtrFloat mol : _molecules )
+				{
+					_aabb.extend( mol.first->getGlobalPositionsAABB() );
+				}
+				for ( const MeshTrianglePtr mesh : _meshes )
+				{
+					_aabb.extend( mesh->getAABB() );
+				}
+			}
+
+		  private:
+			Camera				  _camera = Camera();
+			Math::AABB			  _aabb;
 			MapMoleculePtrFloat	  _molecules = MapMoleculePtrFloat();
 			VectorPathPtr		  _paths	 = VectorPathPtr();
 			VectorMeshTrianglePtr _meshes	 = VectorMeshTrianglePtr();

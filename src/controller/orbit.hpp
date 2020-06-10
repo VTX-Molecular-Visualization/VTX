@@ -19,7 +19,16 @@ namespace VTX
 		{
 		  public:
 			// TOFIX: Ugly... set the camera in the BaseCollectionable::init()?
-			explicit Orbit() : _camera( VTXApp::get().getScene().getCamera() ) {}
+			explicit Orbit() :
+				_camera( VTXApp::get().getScene().getCamera() ),
+				_target( VTXApp::get().getScene().getAABB().centroid() ),
+				_distance( VTXApp::get().getScene().getAABB().diameter() )
+			{
+				Quatf rotation = Quatf( Vec3f( _rotationXAxis, _rotationYAxis, 0.f ) );
+				Vec3f position = rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
+
+				_camera.set( position, rotation );
+			}
 
 			virtual void receiveEvent( const SDL_Event & p_event ) override final
 			{

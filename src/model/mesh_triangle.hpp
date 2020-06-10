@@ -8,6 +8,7 @@
 #include "base_model_3d.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "math/aabb.hpp"
 #include <vector>
 
 namespace VTX
@@ -66,6 +67,8 @@ namespace VTX
 			inline const uint &				 getIndice( uint p_idx ) const { return _indices[ p_idx ]; }
 			inline uint &					 getIndice( uint p_idx ) { return _indices[ p_idx ]; }
 
+			inline const Math::AABB & getAABB() const { return _aabb; }
+
 			virtual void print() const override;
 			virtual void init() override;
 			virtual void bindBuffers() override;
@@ -73,6 +76,15 @@ namespace VTX
 
 		  protected:
 			virtual void _addItems() override;
+
+			void _computeAABB()
+			{
+				_aabb.invalidate();
+				for ( const Vec3f & v : _vertices )
+				{
+					_aabb.extend( v );
+				}
+			}
 
 			enum ATTRIBUTE_LOCATION
 			{
@@ -89,6 +101,8 @@ namespace VTX
 			std::vector<uint>		_visibilities;
 
 			std::vector<uint> _indices;
+
+			Math::AABB _aabb;
 
 			GLuint _vboPositions	= GL_INVALID_VALUE;
 			GLuint _vboNormals		= GL_INVALID_VALUE;

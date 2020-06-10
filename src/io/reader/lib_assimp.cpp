@@ -185,7 +185,7 @@ namespace VTX
 						}
 					}
 				}
-			} // namespace IO
-		}	  // namespace Reader
-	}		  // namespace IO
+			}
+		} // namespace Reader
+	}	  // namespace IO
 } // namespace VTX

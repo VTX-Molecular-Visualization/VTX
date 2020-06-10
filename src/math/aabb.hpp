@@ -39,8 +39,8 @@ namespace VTX
 			void translate( const Vec3f & );
 
 			Vec3f diagonal() const { return _max - _min; }
-			float diameter() const { return Util::Math::length( diagonal() ); }
-			float radius() const { return diameter() * 0.5f; }
+			float diameter() const { return isValid() ? Util::Math::length( diagonal() ) : 0.f; }
+			float radius() const { return isValid() ? diameter() * 0.5f : 0.f; }
 			Vec3f centroid() const { return ( _min + _max ) * 0.5f; }
 			uint  largestAxis() const
 			{
@@ -61,15 +61,19 @@ namespace VTX
 			Vec3f offset( const Vec3f & p_pt ) const
 			{
 				Vec3f o = p_pt - _min;
-				if ( _max.x > _min.x ) o.x /= _max.x - _min.x;
-				if ( _max.y > _min.y ) o.y /= _max.y - _min.y;
-				if ( _max.z > _min.z ) o.z /= _max.z - _min.z;
+				if ( _max.x > _min.x )
+					o.x /= _max.x - _min.x;
+				if ( _max.y > _min.y )
+					o.y /= _max.y - _min.y;
+				if ( _max.z > _min.z )
+					o.z /= _max.z - _min.z;
 				return o;
 			}
 			float offset( const Vec3f & p_pt, const uint p_dim ) const
 			{
 				float o = p_pt[ p_dim ] - _min[ p_dim ];
-				if ( _max[ p_dim ] > _min[ p_dim ] ) o /= _max[ p_dim ] - _min[ p_dim ];
+				if ( _max[ p_dim ] > _min[ p_dim ] )
+					o /= _max[ p_dim ] - _min[ p_dim ];
 				return o;
 			}
 
