@@ -1,7 +1,7 @@
 #include "visualization.hpp"
 #include "controller/freefly.hpp"
-#include "controller/orbit.hpp"
 #include "controller/shortcut.hpp"
+#include "controller/trackball.hpp"
 #include "generic/factory.hpp"
 #include "vtx_app.hpp"
 
@@ -13,10 +13,10 @@ namespace VTX
 		{
 			// Create controller.
 			addItem( Generic::create<Controller::Freefly>() );
-			addItem( Generic::create<Controller::Orbit>() );
+			addItem( Generic::create<Controller::Trackball>() );
 			addItem( Generic::create<Controller::Shortcut>() );
 
-			_getItem( ID::Controller::ORBIT )->setActive( false );
+			_getItem( ID::Controller::TRACKBALL )->setActive( false );
 		}
 
 		void Visualization::exit() { Generic::HasCollection<Controller::BaseController>::clean(); }
@@ -39,7 +39,7 @@ namespace VTX
 
 			if ( _controller == ID::Controller::FREEFLY )
 			{
-				_controller = ID::Controller::ORBIT;
+				_controller = ID::Controller::TRACKBALL;
 			}
 			else
 			{

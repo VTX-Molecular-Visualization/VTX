@@ -100,6 +100,18 @@ namespace VTX
 			}
 
 			template<int L, typename T>
+			inline glm::vec<L, bool> lessThan( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
+			{
+				return glm::lessThan( p_lhs, p_rhs );
+			}
+
+			template<int L, typename T>
+			inline glm::vec<L, bool> greaterThan( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
+			{
+				return glm::greaterThan( p_lhs, p_rhs );
+			}
+
+			template<int L, typename T>
 			inline T dot( const glm::vec<L, T> & p_lhs, const glm::vec<L, T> & p_rhs )
 			{
 				return glm::dot( p_lhs, p_rhs );

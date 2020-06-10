@@ -1,5 +1,5 @@
-#ifndef __VTX_CONTROLLER_ORBIT__
-#define __VTX_CONTROLLER_ORBIT__
+#ifndef __VTX_CONTROLLER_TRACKBALL__
+#define __VTX_CONTROLLER_TRACKBALL__
 
 #ifdef _MSC_VER
 #pragma once
@@ -15,11 +15,11 @@ namespace VTX
 {
 	namespace Controller
 	{
-		class Orbit : public BaseKeyboardController, public BaseMouseController
+		class Trackball : public BaseKeyboardController, public BaseMouseController
 		{
 		  public:
 			// TOFIX: Ugly... set the camera in the BaseCollectionable::init()?
-			explicit Orbit() :
+			explicit Trackball() :
 				_camera( VTXApp::get().getScene().getCamera() ),
 				_target( VTXApp::get().getScene().getAABB().centroid() ),
 				_distance( VTXApp::get().getScene().getAABB().diameter() )
@@ -33,7 +33,7 @@ namespace VTX
 			}
 
 			virtual void				update( const double ) override;
-			virtual const std::string & getName() const override { return ID::Controller::ORBIT; }
+			virtual const std::string & getName() const override { return ID::Controller::TRACKBALL; }
 			virtual void				setActive( const bool p_active ) override;
 
 		  protected:
@@ -45,13 +45,11 @@ namespace VTX
 
 		  private:
 			Object3D::Camera & _camera;
-			Vec3f			   _target = VEC3F_ZERO;
 
-			float _distance		 = 100.f;
-			float _velocityX	 = 0.f;
-			float _velocityY	 = 0.f;
-			float _rotationXAxis = 0.f;
-			float _rotationYAxis = 0.f;
+			Vec3f _target	= VEC3F_ZERO;
+			float _distance = 100.f;
+			Vec3f _velocity = VEC3F_ZERO;
+			Quatf _rotation = Quatf( 1.0, { 0.0, 0.0, 0.0 } );
 
 			bool _needUpdate = true;
 		};

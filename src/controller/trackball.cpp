@@ -1,4 +1,4 @@
-#include "orbit.hpp"
+#include "trackball.hpp"
 #include "setting.hpp"
 #include "util/math.hpp"
 
@@ -6,7 +6,7 @@ namespace VTX
 {
 	namespace Controller
 	{
-		void Orbit::setActive( const bool p_active )
+		void Trackball::setActive( const bool p_active )
 		{
 			BaseController::setActive( p_active );
 			if ( p_active )
@@ -17,12 +17,11 @@ namespace VTX
 			}
 			else
 			{
-				_velocityX = 0.f;
-				_velocityY = 0.f;
+				_velocity = VEC3F_ZERO;
 			}
 		}
 
-		void Orbit::update( const double p_deltaTime )
+		void Trackball::update( const double p_deltaTime )
 		{
 			// Wheel.
 			float deltaDistance = 0.f;
@@ -43,6 +42,14 @@ namespace VTX
 
 				_deltaMousePosition.x = 0;
 				_deltaMousePosition.y = 0;
+			}
+
+			// Mouse right.
+			float deltaVelocityZ = 0.f;
+			if ( _mouseRightPressed )
+			{
+				deltaVelocityZ		  = -Setting::Controller::rotationSpeed * (float)_deltaMousePosition.x;
+				_deltaMousePosition.x = 0;
 			}
 
 			// Keyboard.
@@ -92,52 +99,47 @@ namespace VTX
 			}
 			if ( deltaVelocityX != 0.f )
 			{
-				_velocityX += Setting::Controller::rotationSpeed * deltaVelocityX * 5.f;
+				_velocity.x += Setting::Controller::rotationSpeed * deltaVelocityX * 5.f;
 			}
 			if ( deltaVelocityY != 0.f )
 			{
-				_velocityY += Setting::Controller::rotationSpeed * deltaVelocityY * 5.f;
+				_velocity.y += Setting::Controller::rotationSpeed * deltaVelocityY * 5.f;
+			}
+			if ( deltaVelocityZ != 0.f )
+			{
+				_velocity.z += Setting::Controller::rotationSpeed * deltaVelocityZ * 5.f;
 			}
 
-			_needUpdate |= _velocityX != 0.f;
-			_needUpdate |= _velocityY != 0.f;
+			_needUpdate |= _velocity != VEC3F_ZERO;
 
 			if ( _needUpdate )
 			{
-				_rotationYAxis += _velocityX;
-				_rotationXAxis -= _velocityY;
+				Quatf rotation = Quatf( Vec3f( -_velocity.y, _velocity.x, -_velocity.z ) );
+				_rotation	   = _rotation * rotation;
+				Vec3f position = _rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
 
-				Quatf rotation = Quatf( Vec3f( _rotationXAxis, _rotationYAxis, 0.f ) );
-				Vec3f position = rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
-
-				_camera.set( position, rotation );
+				_camera.set( position, _rotation );
 				_needUpdate = false;
 			}
 
 			// Handle elasticity.
-			if ( _velocityX != 0.f )
+			if ( _velocity != VEC3F_ZERO )
 			{
-				_velocityX = Util::Math::linearInterpolation(
-					_velocityX, 0.f, (float)p_deltaTime * CONTROLLER_ELASTICITY_FACTOR );
+				_velocity = Util::Math::linearInterpolation(
+					_velocity, VEC3F_ZERO, (float)p_deltaTime * CONTROLLER_ELASTICITY_FACTOR );
 
-				if ( !_mouseLeftPressed && Util::Math::abs( _velocityX ) < CONTROLLER_ELASTICITY_THRESHOLD )
+				Vec3f::bool_type res = Util::Math::lessThan( Util::Math::abs( _velocity ),
+															 Vec3f( CONTROLLER_ELASTICITY_THRESHOLD,
+																	CONTROLLER_ELASTICITY_THRESHOLD,
+																	CONTROLLER_ELASTICITY_THRESHOLD ) );
+				if ( !_mouseLeftPressed && res.x && res.y && res.z )
 				{
-					_velocityX = 0.f;
-				}
-			}
-			if ( _velocityY != 0.f )
-			{
-				_velocityY = Util::Math::linearInterpolation(
-					_velocityY, 0.f, (float)p_deltaTime * CONTROLLER_ELASTICITY_FACTOR );
-
-				if ( !_mouseLeftPressed && Util::Math::abs( _velocityY ) < CONTROLLER_ELASTICITY_THRESHOLD )
-				{
-					_velocityY = 0.f;
+					_velocity = VEC3F_ZERO;
 				}
 			}
 		}
 
-		void Orbit::_handleKeyPressedEvent( const SDL_Scancode & p_key )
+		void Trackball::_handleKeyPressedEvent( const SDL_Scancode & p_key )
 		{
 			if ( p_key == SDL_SCANCODE_SPACE )
 			{

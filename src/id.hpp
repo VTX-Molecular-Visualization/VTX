@@ -51,9 +51,10 @@ namespace VTX
 
 		namespace Controller
 		{
-			const VTX_ID FREEFLY  = "FREEFLY";
-			const VTX_ID ORBIT	  = "ORBIT";
-			const VTX_ID SHORTCUT = "SHORCUT";
+			const VTX_ID FREEFLY   = "FREEFLY";
+			const VTX_ID TRACKBALL = "TRACKBALL";
+			const VTX_ID ORBIT	   = "ORBIT";
+			const VTX_ID SHORTCUT  = "SHORCUT";
 		} // namespace Controller
 	}	  // namespace ID
 

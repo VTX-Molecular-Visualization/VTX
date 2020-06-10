@@ -58,11 +58,11 @@ namespace VTX
 	// constexpr int WINDOW_WIDTH	= 640;
 	// constexpr int WINDOW_HEIGHT = 320;
 	// 720p.
-	constexpr int WINDOW_WIDTH	= 1280;
-	constexpr int WINDOW_HEIGHT = 720;
+	// constexpr int WINDOW_WIDTH	= 1280;
+	// constexpr int WINDOW_HEIGHT = 720;
 	// Full HD.
-	// constexpr int WINDOW_WIDTH	= 1920;
-	// constexpr int WINDOW_HEIGHT = 1080;
+	constexpr int WINDOW_WIDTH	= 1920;
+	constexpr int WINDOW_HEIGHT = 1080;
 	// 4k
 	// constexpr int WINDOW_WIDTH	= 3840;
 	// constexpr int WINDOW_HEIGHT = 2160;
@@ -90,8 +90,8 @@ namespace VTX
 	constexpr float CONTROLLER_ROTATION_SPEED_MIN		  = 0.001f;
 	constexpr float CONTROLLER_ROTATION_SPEED_MAX		  = 0.01f;
 	constexpr float CONTROLLER_ROTATION_SPEED_DEFAULT	  = 0.005f;
-	constexpr float CONTROLLER_ORBIT_ELASTICITY_FACTOR	  = 4.0f;
-	constexpr float CONTROLLER_ORBIT_ELASTICITY_THRESHOLD = 1e-3f;
+	constexpr float CONTROLLER_ELASTICITY_FACTOR		  = 4.0f;
+	constexpr float CONTROLLER_ELASTICITY_THRESHOLD		  = 1e-3f;
 
 	// Rendering.
 	// TODO: choose relevant constants
