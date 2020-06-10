@@ -37,21 +37,9 @@ namespace VTX
 			virtual const std::string & getName() const override { return ID::UI::USER_INTERFACE; }
 
 			inline const ID::VTX_ID getFocusedWindow() const { return _focusedWindow; }
-			inline void				setFocusedWindow( const ID::VTX_ID & p_id )
-			{
-				if ( p_id != _focusedWindow )
-				{
-					_focusedWindow = p_id;
-				}
-			}
+			inline void				setFocusedWindow( const ID::VTX_ID & p_id ) { _focusedWindow = p_id; }
 			inline const ID::VTX_ID getHoveredWindow() const { return _hoveredWindow; }
-			inline void				setHoveredWindow( const ID::VTX_ID & p_id )
-			{
-				if ( p_id != _hoveredWindow )
-				{
-					_hoveredWindow = p_id;
-				}
-			}
+			inline void				setHoveredWindow( const ID::VTX_ID & p_id ) { _hoveredWindow = p_id; }
 
 		  protected:
 			virtual void _addItems() override;

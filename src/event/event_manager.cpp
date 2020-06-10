@@ -78,10 +78,25 @@ namespace VTX
 					receiver->receiveEvent( event );
 				}
 
-				const ID::VTX_ID & id = VTXApp::get().getUI().getFocusedWindow();
-				if ( _receiversSDL.find( id ) != _receiversSDL.end() )
+				// Then other
+				const ID::VTX_ID & focused = VTXApp::get().getUI().getFocusedWindow();
+				const ID::VTX_ID & hovered = VTXApp::get().getUI().getHoveredWindow();
+
+				// If mouse or key up, propagate to all.
+				if ( event.type == SDL_KEYUP || event.type == SDL_MOUSEBUTTONUP )
 				{
-					for ( BaseEventReceiverSDL * const receiver : _receiversSDL.at( id ) )
+					for ( const std::pair<ID::VTX_ID, SetBaseEventReceiverSDLPtr> & receiverSDL : _receiversSDL )
+					{
+						for ( BaseEventReceiverSDL * const receiver : receiverSDL.second )
+						{
+							receiver->receiveEvent( event );
+						}
+					}
+				}
+				// Else propagate to subscribers.
+				else if ( _receiversSDL.find( hovered ) != _receiversSDL.end() )
+				{
+					for ( BaseEventReceiverSDL * const receiver : _receiversSDL.at( hovered ) )
 					{
 						receiver->receiveEvent( event );
 					}

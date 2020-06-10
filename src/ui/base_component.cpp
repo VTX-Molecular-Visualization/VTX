@@ -31,11 +31,11 @@ namespace VTX
 			_drawContent();
 
 			// Handle focus.
-			if ( ImGui::IsWindowFocused() )
+			if ( ImGui::IsWindowFocused() && VTXApp::get().getUI().getFocusedWindow() != getName() )
 			{
 				VTXApp::get().getUI().setFocusedWindow( getName() );
 			}
-			if ( ImGui::IsWindowHovered() )
+			if ( ImGui::IsWindowHovered() && VTXApp::get().getUI().getHoveredWindow() != getName() )
 			{
 				VTXApp::get().getUI().setHoveredWindow( getName() );
 			}

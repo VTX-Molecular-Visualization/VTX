@@ -71,8 +71,10 @@ namespace VTX
 
 		void UserInterface::_addItems()
 		{
-			// Windows.
+			// Menu.
 			addItem( Generic::create<Menu>() );
+
+			// Windows.
 			addItem( Generic::create<Window::Console>() );
 			addItem( Generic::create<Window::Scene>() );
 			addItem( Generic::create<Window::Inspector>() );
