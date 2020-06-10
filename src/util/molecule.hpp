@@ -332,9 +332,9 @@ namespace VTX
 					std::map<uint, uint> & rangeBonds = pair.second.bonds;
 					if ( rangeBonds.size() > 1 )
 					{
-						VTX_INFO( "Before merging bonds: " + std::to_string( rangeBonds.size() ) );
+						// VTX_INFO( "Before merging bonds: " + std::to_string( rangeBonds.size() ) );
 						mergeRanges( rangeBonds );
-						VTX_INFO( "After merging bonds: " + std::to_string( rangeBonds.size() ) );
+						// VTX_INFO( "After merging bonds: " + std::to_string( rangeBonds.size() ) );
 					}
 
 					// Triangles.
