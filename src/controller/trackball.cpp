@@ -27,57 +27,51 @@ namespace VTX
 			float deltaDistance = 0.f;
 			if ( _deltaMouseWheel != 0.f )
 			{
-				deltaDistance	 = Setting::Controller::translationSpeed * _deltaMouseWheel * 0.01f;
+				deltaDistance	 = _deltaMouseWheel * 0.01f;
 				_deltaMouseWheel = 0;
 			}
 
 			// Mouse left.
-			float deltaVelocityX = 0.f;
-			float deltaVelocityY = 0.f;
+			Vec3f deltaVelocity = VEC3F_ZERO;
 			if ( _mouseLeftPressed )
 			{
-				deltaVelocityX = -Setting::Controller::rotationSpeed * (float)_deltaMousePosition.x;
-				deltaVelocityY = Setting::Controller::rotationSpeed * (float)_deltaMousePosition.y
-								 * ( Setting::Controller::yAxisInverted ? -1.f : 1.f );
-
+				deltaVelocity.x		  = -(float)_deltaMousePosition.x * 0.1f;
+				deltaVelocity.y		  = (float)_deltaMousePosition.y * 0.1f;
 				_deltaMousePosition.x = 0;
 				_deltaMousePosition.y = 0;
 			}
 
 			// Mouse right.
-			float deltaVelocityZ = 0.f;
 			if ( _mouseRightPressed )
 			{
-				deltaVelocityZ		  = -Setting::Controller::rotationSpeed * (float)_deltaMousePosition.x;
+				deltaVelocity.z		  = -(float)_deltaMousePosition.x;
 				_deltaMousePosition.x = 0;
 			}
 
 			// Keyboard.
 			if ( _isKeyPressed( SDL_SCANCODE_W ) || _isKeyPressed( SDL_SCANCODE_UP ) )
 			{
-				deltaDistance++;
+				deltaDistance = 0.01f;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_S ) || _isKeyPressed( SDL_SCANCODE_DOWN ) )
 			{
-				deltaDistance--;
+				deltaDistance = -0.01f;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_A ) || _isKeyPressed( SDL_SCANCODE_LEFT ) )
 			{
-				deltaVelocityX = -Setting::Controller::rotationSpeed * 10.f;
+				deltaVelocity.x = 0.5f;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_D ) || _isKeyPressed( SDL_SCANCODE_RIGHT ) )
 			{
-				deltaVelocityX = Setting::Controller::rotationSpeed * 10.f;
+				deltaVelocity.x = -0.5f;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_R ) )
 			{
-				deltaVelocityY
-					= Setting::Controller::rotationSpeed * 10.f * ( Setting::Controller::yAxisInverted ? -1.f : 1.f );
+				deltaVelocity.y = -0.5f;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_F ) )
 			{
-				deltaVelocityY
-					= -Setting::Controller::rotationSpeed * 10.f * ( Setting::Controller::yAxisInverted ? -1.f : 1.f );
+				deltaVelocity.z = 0.5f;
 			}
 
 			// Pan target with wheel button.
@@ -85,6 +79,7 @@ namespace VTX
 			// Update.
 			if ( deltaDistance != 0.f )
 			{
+				deltaDistance *= Setting::Controller::translationSpeed;
 				if ( _isKeyPressed( SDL_SCANCODE_LSHIFT ) )
 				{
 					deltaDistance *= Setting::Controller::translationFactorSpeed;
@@ -97,17 +92,18 @@ namespace VTX
 				_distance	= Util::Math::clamp( _distance - deltaDistance, 10.f, 1000.f );
 				_needUpdate = true;
 			}
-			if ( deltaVelocityX != 0.f )
+			if ( deltaVelocity.x != 0.f )
 			{
-				_velocity.x += Setting::Controller::rotationSpeed * deltaVelocityX * 5.f;
+				_velocity.x += Setting::Controller::rotationSpeed * deltaVelocity.x;
 			}
-			if ( deltaVelocityY != 0.f )
+			if ( deltaVelocity.y != 0.f )
 			{
-				_velocity.y += Setting::Controller::rotationSpeed * deltaVelocityY * 5.f;
+				_velocity.y += Setting::Controller::rotationSpeed * deltaVelocity.y
+							   * ( Setting::Controller::yAxisInverted ? -1.f : 1.f );
 			}
-			if ( deltaVelocityZ != 0.f )
+			if ( deltaVelocity.z != 0.f )
 			{
-				_velocity.z += Setting::Controller::rotationSpeed * deltaVelocityZ * 5.f;
+				_velocity.z += Setting::Controller::rotationSpeed * deltaVelocity.z;
 			}
 
 			_needUpdate |= _velocity != VEC3F_ZERO;
