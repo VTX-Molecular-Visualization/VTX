@@ -8,6 +8,7 @@
 #include "action/active_y_axis_inversion.hpp"
 #include "action/change_ao_blur_size.hpp"
 #include "action/change_ao_intensity.hpp"
+#include "action/change_atoms_bonds_radius.hpp"
 #include "action/change_auto_rotate_speed.hpp"
 #include "action/change_background_color.hpp"
 #include "action/change_camera_clip.hpp"
@@ -251,6 +252,40 @@ namespace VTX
 				if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 5 ) )
 				{
 					VTX_ACTION( new Action::ChangeRepresentation( ( Generic::REPRESENTATION )( representation ) ) );
+				}
+
+				// Allow to control bonds radius if the representation show them.
+				if ( representation == int( Generic::REPRESENTATION::BALL_AND_STICK ) )
+				{
+					float atomsRadius = Setting::MoleculeView::atomsRadiusFixed;
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AtomsRadius" ),
+											 &atomsRadius,
+											 ATOMS_BONDS_RADIUS_MIN,
+											 ATOMS_BONDS_RADIUS_MAX ) )
+					{
+						VTX_ACTION(
+							new Action::ChangeAtomsBondsRadius( atomsRadius, Setting::MoleculeView::bondsRadius ) );
+					}
+					float bondsRadius = Setting::MoleculeView::bondsRadius;
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.BondsRadius" ),
+											 &bondsRadius,
+											 ATOMS_BONDS_RADIUS_MIN,
+											 ATOMS_BONDS_RADIUS_MAX ) )
+					{
+						VTX_ACTION( new Action::ChangeAtomsBondsRadius( Setting::MoleculeView::atomsRadiusFixed,
+																		bondsRadius ) );
+					}
+				}
+				else if ( representation == int( Generic::REPRESENTATION::STICK ) )
+				{
+					float bondsRadius = Setting::MoleculeView::bondsRadius;
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.BondsRadius" ),
+											 &bondsRadius,
+											 ATOMS_BONDS_RADIUS_MIN,
+											 ATOMS_BONDS_RADIUS_MAX ) )
+					{
+						VTX_ACTION( new Action::ChangeAtomsBondsRadius( bondsRadius, bondsRadius ) );
+					}
 				}
 
 				// Color mode.

@@ -28,7 +28,7 @@ namespace VTX
 				switch ( p_representation )
 				{
 				case Generic::REPRESENTATION::BALL_AND_STICK:
-					_radiusFixed   = 0.4f;
+					_radiusFixed   = Setting::MoleculeView::atomsRadiusFixed;
 					_radiusAdd	   = 0.f;
 					_isRadiusFixed = true;
 					break;
@@ -37,7 +37,7 @@ namespace VTX
 					_radiusAdd	   = 0.f;
 					break;
 				case Generic::REPRESENTATION::STICK:
-					_radiusFixed   = 0.15f;
+					_radiusFixed   = Setting::MoleculeView::bondsRadius;
 					_radiusAdd	   = 0.f;
 					_isRadiusFixed = true;
 					break;

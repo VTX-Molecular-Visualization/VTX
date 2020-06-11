@@ -45,6 +45,8 @@ namespace VTX
 			{ "MainMenu.Settings.Rendering", "Rendering" },
 			{ "MainMenu.Settings.BackgroundColor", "Background color" },
 			{ "MainMenu.Settings.Representation", "Representation" },
+			{ "MainMenu.Settings.AtomsRadius", "Atoms radius" },
+			{ "MainMenu.Settings.BondsRadius", "Bonds radius" },
 			{ "MainMenu.Settings.ColorMode", "Color mode" },
 			{ "MainMenu.Settings.Shading", "Shading" },
 			{ "MainMenu.Settings.CamNear", "Near clip" },
