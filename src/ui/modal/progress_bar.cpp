@@ -14,10 +14,8 @@ namespace VTX
 				{
 					_value = dynamic_cast<const Event::VTXEventFloat &>( p_event ).arg;
 
-					if ( _value != 0.f )
-					{
-						VTX_INFO( std::to_string( uint( _value * 100 ) ) + "%" );
-					}
+					VTX_INFO( std::to_string( uint( _value * 100 ) ) + "%" );
+
 					if ( _value >= 1.f )
 					{
 						_value = 0.f;
@@ -28,17 +26,9 @@ namespace VTX
 			bool ProgressBar::_drawHeader()
 			{
 				// Open it.
-				if ( _isOpened == false && _value != 0.f )
+				if ( _value != 0.f )
 				{
-					VTX_DEBUG( "SHOW" );
-					_isOpened = true;
 					ImGui::OpenPopup( getTitle() );
-				}
-				else if ( _isOpened && _value == 0.f )
-				{
-					VTX_DEBUG( "HIDE" );
-					_isOpened = false;
-					ImGui::CloseCurrentPopup();
 				}
 
 				ImGui::PushStyleVar( ImGuiStyleVar_WindowMinSize, IMGUI_STYLE_PROGRESS_BAR_SIZE );
@@ -60,6 +50,11 @@ namespace VTX
 
 				ImDrawList * drawList = ImGui::GetForegroundDrawList();
 				drawList->AddRectFilled( min, max, IMGUI_STYLE_PROGRESS_BAR_COLOR );
+
+				if ( _value == 0.f )
+				{
+					ImGui::CloseCurrentPopup();
+				}
 
 				// Called here instead of ProgressBar::_drawFooter() because global
 				// footer need to be displayed only when content is displayed...

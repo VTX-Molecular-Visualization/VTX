@@ -13,6 +13,8 @@
 #include <queue>
 #include <string>
 
+#define DELAY_ACTIONS
+
 namespace VTX
 {
 	namespace Action

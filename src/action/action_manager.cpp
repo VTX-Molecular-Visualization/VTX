@@ -20,7 +20,11 @@ namespace VTX
 			}
 			else
 			{
+#ifdef DELAY_ACTIONS
 				_actionQueue.emplace( p_action );
+#else
+				_flushAction( p_action );
+#endif
 			}
 		}
 

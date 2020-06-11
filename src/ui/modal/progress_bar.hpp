@@ -31,8 +31,7 @@ namespace VTX
 				}
 
 			  private:
-				float _value	= 0.f;
-				bool  _isOpened = false;
+				float _value = 0.f;
 			};
 		} // namespace Modal
 	}	  // namespace UI
