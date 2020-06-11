@@ -50,7 +50,14 @@ namespace VTX
 			_receiversVTX.at( p_event ).erase( p_receiver );
 		}
 
-		void EventManager::fireEvent( VTXEvent * const p_event ) { _eventQueue.emplace( p_event ); }
+		void EventManager::fireEvent( VTXEvent * const p_event )
+		{
+#ifdef DELAY_EVENTS
+			_eventQueue.emplace( p_event );
+#else
+			_flushVTXEvent( p_event );
+#endif
+		}
 
 		void EventManager::update( const double p_deltaTime )
 		{
@@ -107,27 +114,28 @@ namespace VTX
 			while ( _eventQueue.empty() == false )
 			{
 				VTXEvent * const event = _eventQueue.front();
-				if ( _receiversVTX.find( event->name ) != _receiversVTX.end() )
-				{
-					for ( BaseEventReceiverVTX * const receiver : _receiversVTX.at( event->name ) )
-					{
-						receiver->receiveEvent( *event );
-					}
-				}
-				delete event;
+				_flushVTXEvent( event );
 				_eventQueue.pop();
 			}
+		}
+
+		void EventManager::_flushVTXEvent( VTXEvent * p_event )
+		{
+			if ( _receiversVTX.find( p_event->name ) != _receiversVTX.end() )
+			{
+				for ( BaseEventReceiverVTX * const receiver : _receiversVTX.at( p_event->name ) )
+				{
+					receiver->receiveEvent( *p_event );
+				}
+			}
+			delete p_event;
 		}
 
 		void EventManager::_handlerWindowEvent( const SDL_WindowEvent & p_event )
 		{
 			switch ( p_event.event )
 			{
-			case SDL_WINDOWEVENT_CLOSE:
-				VTXApp::get().stop();
-				break;
-				// case SDL_WINDOWEVENT_RESIZED: VTX_ACTION( new Action::Resize( p_event.data1, p_event.data2 ) );
-				// break;
+			case SDL_WINDOWEVENT_CLOSE: VTXApp::get().stop(); break;
 			}
 		}
 

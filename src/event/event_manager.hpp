@@ -14,6 +14,8 @@
 #include <queue>
 #include <set>
 
+#define DELAY_EVENTS
+
 namespace VTX
 {
 	namespace Event
@@ -51,6 +53,7 @@ namespace VTX
 			QueueVTXEventPtr _eventQueue = QueueVTXEventPtr();
 
 			void _handlerWindowEvent( const SDL_WindowEvent & );
+			void _flushVTXEvent( VTXEvent * const );
 		};
 	} // namespace Event
 

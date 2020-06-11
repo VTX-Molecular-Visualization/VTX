@@ -93,7 +93,7 @@ namespace VTX
 	{
 		VTXApp::get().getActionManager().execute( p_action, p_force );
 	}
-	// TMP: will be deleted when all workers will be threaded.
+	// TODO: will be deleted when all workers will be threaded.
 	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker )
 	{
 		VTXApp::get().getWorkerManager().run( p_worker );
