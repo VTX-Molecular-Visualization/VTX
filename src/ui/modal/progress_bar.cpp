@@ -16,7 +16,7 @@ namespace VTX
 
 					if ( _value != 0.f )
 					{
-						VTX_DEBUG( std::to_string( _value * 100 ) + "%" );
+						VTX_INFO( std::to_string( _value * 100 ) + "%" );
 					}
 					if ( _value >= 1.f )
 					{
@@ -27,34 +27,34 @@ namespace VTX
 
 			bool ProgressBar::_drawHeader()
 			{
-				ImGui::PushStyleVar( ImGuiStyleVar_WindowMinSize, IMGUI_STYLE_PROGRESS_BAR_SIZE );
-				return BaseComponentModal::_drawHeader();
-			}
-
-			void ProgressBar::_drawFooter()
-			{
-				ImGui::PopStyleVar();
-
 				// Open it.
 				if ( _value != 0.f )
 				{
 					ImGui::OpenPopup( getTitle() );
-					BaseComponentModal::_drawFooter();
 				}
+				ImGui::PushStyleVar( ImGuiStyleVar_WindowMinSize, IMGUI_STYLE_PROGRESS_BAR_SIZE );
+				return BaseComponentModal::_drawHeader();
 			}
+
+			void ProgressBar::_drawFooter() { ImGui::PopStyleVar(); }
 
 			void ProgressBar::_drawContent()
 			{
-				ImVec2 vMin = ImGui::GetWindowContentRegionMin();
-				ImVec2 vMax = ImGui::GetWindowContentRegionMax();
+				ImVec2 position = ImGui::GetWindowPos();
+				ImVec2 min		= ImGui::GetWindowContentRegionMin();
+				ImVec2 max		= ImGui::GetWindowContentRegionMax();
 
-				vMin.x += ImGui::GetWindowPos().x;
-				vMin.y += ImGui::GetWindowPos().y;
-				vMax.x += IMGUI_STYLE_PROGRESS_BAR_SIZE.x * _value;
-				vMax.y += ImGui::GetWindowPos().y;
+				min.x += position.x;
+				min.y += position.y;
+				max.x = min.x + _value * IMGUI_STYLE_PROGRESS_BAR_SIZE.x;
+				max.y += position.y;
 
 				ImDrawList * drawList = ImGui::GetForegroundDrawList();
-				drawList->AddRectFilled( vMin, vMax, IMGUI_STYLE_PROGRESS_BAR_COLOR );
+				drawList->AddRectFilled( min, max, IMGUI_STYLE_PROGRESS_BAR_COLOR );
+
+				// Called here instead of ProgressBar::_drawFooter() because global
+				// footer need to be displayed only when content is displayed...
+				BaseComponentModal::_drawFooter();
 			}
 		} // namespace Modal
 	}	  // namespace UI
