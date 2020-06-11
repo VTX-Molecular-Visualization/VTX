@@ -25,7 +25,9 @@ namespace VTX
 				virtual void render() override;
 
 			  private:
-				GLint _uNormalMatrix = GL_INVALID_INDEX;
+				GLint _uModelViewMatrix = GL_INVALID_INDEX;
+				GLint _uProjMatrix		= GL_INVALID_INDEX;
+				GLint _uNormalMatrix	= GL_INVALID_INDEX;
 			};
 		} // namespace D3
 	}	  // namespace View

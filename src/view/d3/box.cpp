@@ -1,4 +1,5 @@
 #include "box.hpp"
+#include "util/math.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -19,7 +20,14 @@ namespace VTX
 			void Box::render( const Generic::REPRESENTATION )
 			{
 				VTXApp::get().getProgramManager().getProgram( "LineShader" )->use();
-				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
+
+				// TODO: do not upadte each frame !
+				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
+				glUniformMatrix4fv( _uModelViewMatrix,
+									1,
+									GL_FALSE,
+									Util::Math::value_ptr( cam.getViewMatrix() * _getModel().getTransform().get() ) );
+				glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 			}
 		} // namespace D3
 	}	  // namespace View

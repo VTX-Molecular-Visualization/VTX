@@ -1,50 +1,47 @@
 #version 450 core
 
 layout( binding = 0 ) uniform usampler2D gbColorNormal;
-layout( binding = 1 ) uniform sampler2D gbCamPosition;
+layout( binding = 1 ) uniform sampler2D gbViewPosition;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
 uniform vec3 uBackgroundColor;
 
 out vec4 fragColor;
 
-struct FragmentData
+struct UnpackedData
 {
-	vec3  color;
-	vec3  normal;
-	vec3  camPosition;
-	float ambientOcclusion;
+	vec3 color;
+	vec3 normal;
 };
 
-void unpackGBuffers( ivec2 px, out FragmentData fd )
+void unpackGBuffers( ivec2 px, out UnpackedData data )
 {
 	const uvec4 colorNormal		 = texelFetch( gbColorNormal, px, 0 );
-	const vec4	camPosition		 = texelFetch( gbCamPosition, px, 0 );
-	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, px, 0 ).x;
 
 	const vec2 tmp = unpackHalf2x16( colorNormal.y );
-
-	fd.color			= vec3( unpackHalf2x16( colorNormal.x ), tmp.x );
-	fd.normal			= vec3( tmp.y, unpackHalf2x16( colorNormal.z ) );
-	fd.camPosition		= camPosition.xyz;
-	fd.ambientOcclusion = ambientOcclusion;
+	data.color	   = vec3( unpackHalf2x16( colorNormal.x ), tmp.x );
+	data.normal	   = vec3( tmp.y, unpackHalf2x16( colorNormal.z ) );
 }
 
 void main()
 {
-	FragmentData fd;
-	unpackGBuffers( ivec2( gl_FragCoord.xy ), fd );
+	const ivec2 texCoord = ivec2( gl_FragCoord.xy );
 
-	if ( fd.normal.x == 0.f && fd.normal.y == 0.f && fd.normal.z == 0.f )
+	UnpackedData data;
+	unpackGBuffers( texCoord, data );
+
+	if ( data.normal.x == 0.f && data.normal.y == 0.f && data.normal.z == 0.f )
 	{
 		fragColor = vec4( uBackgroundColor, 1.f );
 		return;
 	}
 
-	// Light on camera.
-	const vec3 lightDir = normalize( -fd.camPosition );
+	const vec3 viewPosition = texelFetch( gbViewPosition, texCoord, 0 ).xyz;
 
-	const float intensity = dot( fd.normal, lightDir );
+	// Light on camera.
+	const vec3 lightDir = normalize( -viewPosition );
+
+	const float intensity = dot( data.normal, lightDir );
 	float		lighting  = 1.f;
 
 	if ( intensity < 0.25f )
@@ -56,5 +53,7 @@ void main()
 	else if ( intensity < 0.95f )
 		lighting = 0.7f;
 
-	fragColor = vec4( fd.color * lighting * fd.ambientOcclusion, 1.f );
+	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, texCoord, 0 ).x;
+
+	fragColor = vec4( data.color * lighting * ambientOcclusion, 1.f );
 }

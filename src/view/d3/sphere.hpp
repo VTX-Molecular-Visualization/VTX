@@ -29,6 +29,8 @@ namespace VTX
 				bool  _isRadiusFixed = false;
 
 				// Uniforms.
+				GLint _uModelViewMatrix	 = GL_INVALID_INDEX;
+				GLint _uProjMatrix		 = GL_INVALID_INDEX;
 				GLint _uIsRadiusFixedLoc = GL_INVALID_INDEX;
 				GLint _uRadiusAddLoc	 = GL_INVALID_INDEX;
 				GLint _uRadiusFixedLoc	 = GL_INVALID_INDEX;

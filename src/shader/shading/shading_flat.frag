@@ -7,35 +7,35 @@ uniform vec3 uBackgroundColor;
 
 out vec4 fragColor;
 
-struct FragmentData
+struct UnpackedData
 {
-	vec3  color;
-	vec3  normal;
-	float ambientOcclusion;
+	vec3 color;
+	vec3 normal;
 };
 
-void unpackGBuffers( ivec2 px, out FragmentData fd )
+void unpackGBuffers( ivec2 px, out UnpackedData data )
 {
-	const uvec4 colorNormal		 = texelFetch( gbColorNormal, px, 0 );
-	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, px, 0 ).x;
+	const uvec4 colorNormal = texelFetch( gbColorNormal, px, 0 );
 
 	const vec2 tmp = unpackHalf2x16( colorNormal.y );
-
-	fd.color			= vec3( unpackHalf2x16( colorNormal.x ), tmp.x );
-	fd.normal			= vec3( tmp.y, unpackHalf2x16( colorNormal.z ) );
-	fd.ambientOcclusion = ambientOcclusion;
+	data.color	   = vec3( unpackHalf2x16( colorNormal.x ), tmp.x );
+	data.normal	   = vec3( tmp.y, unpackHalf2x16( colorNormal.z ) );
 }
 
 void main()
 {
-	FragmentData fd;
-	unpackGBuffers( ivec2( gl_FragCoord.xy ), fd );
-	
-	if ( fd.normal.x == 0.f && fd.normal.y == 0.f && fd.normal.z == 0.f )
+	const ivec2 texCoord = ivec2( gl_FragCoord.xy );
+
+	UnpackedData data;
+	unpackGBuffers( texCoord, data );
+
+	if ( data.normal.x == 0.f && data.normal.y == 0.f && data.normal.z == 0.f )
 	{
-		fragColor = vec4(uBackgroundColor, 1.f);
+		fragColor = vec4( uBackgroundColor, 1.f );
 		return;
 	}
 
-	fragColor = vec4( fd.color * fd.ambientOcclusion, 1.f );
+	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, texCoord, 0 ).x;
+
+	fragColor = vec4( data.color * ambientOcclusion, 1.f );
 }

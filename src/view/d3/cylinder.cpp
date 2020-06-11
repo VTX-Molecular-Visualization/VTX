@@ -27,8 +27,15 @@ namespace VTX
 				}
 
 				VTXApp::get().getProgramManager().getProgram( "Cylinder" )->use();
+
+				// TODO: do not upadte each frame !
+				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
+				glUniformMatrix4fv( _uModelViewMatrix,
+									1,
+									GL_FALSE,
+									Util::Math::value_ptr( cam.getViewMatrix() * _getModel().getTransform().get() ) );
+				glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 				glUniform1f( _uRadius, 0.15f );
-				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 
 				for ( const std::pair<uint, uint> & pair :
 					  _getModel().getRepresentationState()[ p_representation ].bonds )
