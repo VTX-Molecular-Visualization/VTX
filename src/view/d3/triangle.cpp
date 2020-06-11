@@ -11,15 +11,15 @@ namespace VTX
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
 				Renderer::GLSL::Program *		 program
-					= pm.createProgram( "TriangleGeomShader", { "triangle.vert", "triangle.frag" } );
+					= pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
 
-				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
+				_uModelViewMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
 			}
 
 			void Triangle::render()
 			{
-				VTXApp::get().getProgramManager().getProgram( "TriangleGeomShader" )->use();
+				VTXApp::get().getProgramManager().getProgram( "Triangle" )->use();
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 				glDrawElements( GL_TRIANGLES, uint( _getModel().getIndices().size() ), GL_UNSIGNED_INT, 0 );
 			}

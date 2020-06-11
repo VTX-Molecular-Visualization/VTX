@@ -9,11 +9,10 @@ namespace VTX
 		{
 			void Cylinder::init()
 			{
-				Renderer::GLSL::ProgramManager & pm		 = VTXApp::get().getProgramManager();
-				Renderer::GLSL::Program *		 program = pm.createProgram(
-					   "Cylinder",
-					   { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
-				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
+				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
+				Renderer::GLSL::Program *		 program
+					= pm.createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
+				_uModelViewMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
 				_uRadius		  = glGetUniformLocation( program->getId(), "uCylRad" );
 			}
