@@ -10,9 +10,9 @@ namespace VTX
 	{
 		void WorkerManager::run( BaseWorker * const p_woker ) { p_woker->work(); }
 
-		void WorkerManager::run( BaseWorker * const		 p_worker,
-								 const CallbackSuccess * p_success,
-								 const CallbackError *	 p_error )
+		void WorkerManager::run( BaseWorker * const			   p_worker,
+								 const CallbackSuccess * const p_success,
+								 const CallbackError * const   p_error )
 		{
 			_worker			 = p_worker;
 			_success		 = p_success;

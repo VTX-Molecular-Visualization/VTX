@@ -138,6 +138,8 @@ namespace VTX
 				chrono.stop();
 				VTX_INFO( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
+
+			_isFinished = true;
 		}
 
 		Loader::MODE Loader::_getMode( const Path & p_path ) const

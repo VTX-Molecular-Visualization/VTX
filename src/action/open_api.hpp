@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "action/open.hpp"
 #include "base_action.hpp"
 #include "exception.hpp"
 #include "model/molecule.hpp"
@@ -29,16 +30,17 @@ namespace VTX
 				std::string id	 = _id;
 				Path *		path = new Path( id + ".mmtf" );
 
-				std::function<void( void )> * success = new std::function<void( void )>( [ fetcher, path ]( void ) {
+				const Worker::CallbackSuccess * success = new Worker::CallbackSuccess( [ fetcher, path ]( void ) {
 					std::map<Path *, std::string *> mapBuffers = std::map<Path *, std::string *>();
 					mapBuffers.emplace( path, fetcher->getBuffer() );
-					// TODO: another thread here to load the file.
-					VTX_WORKER( new Worker::Loader( mapBuffers ) );
 					delete fetcher;
+
+					// Open the buffer.
+					VTX_ACTION( new Action::Open( mapBuffers ) );
 				} );
 
-				std::function<void( const std::exception & )> * error
-					= new std::function<void( const std::exception & )>( [ fetcher ]( const std::exception & p_e ) {
+				const Worker::CallbackError * error
+					= new Worker::CallbackError( [ fetcher ]( const std::exception & p_e ) {
 						  VTX_ERROR( p_e.what() );
 						  delete fetcher->getBuffer();
 						  delete fetcher;

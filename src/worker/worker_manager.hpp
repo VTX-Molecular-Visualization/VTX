@@ -12,16 +12,16 @@ namespace VTX
 {
 	namespace Worker
 	{
+		using CallbackSuccess = std::function<void( void )>;
+		using CallbackError	  = std::function<void( const std::exception & )>;
+
 		class WorkerManager : public Generic::BaseUpdatable
 		{
-			using CallbackSuccess = std::function<void( void )>;
-			using CallbackError	  = std::function<void( const std::exception & )>;
-
 		  public:
 			// Sync.
 			void run( BaseWorker * const p_woker );
 			// Async.
-			void run( BaseWorker * const p_woker, const CallbackSuccess *, const CallbackError * );
+			void run( BaseWorker * const p_woker, const CallbackSuccess * const, const CallbackError * const );
 
 			virtual void update( const double p_deltaTime ) override;
 

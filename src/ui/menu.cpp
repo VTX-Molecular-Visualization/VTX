@@ -430,6 +430,7 @@ namespace VTX
 			ImGui::PopItemWidth();
 
 			// Undo/redo.
+			/*
 			bool popItem = false;
 			if ( VTXApp::get().getActionManager().canUndo() == false )
 			{
@@ -459,6 +460,7 @@ namespace VTX
 			{
 				ImGui::PopItemFlag();
 			}
+			*/
 
 			// Merge.
 			if ( VTXApp::get().getScene().getMolecules().size() == 2 )
