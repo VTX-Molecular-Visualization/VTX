@@ -93,9 +93,14 @@ namespace VTX
 	{
 		VTXApp::get().getActionManager().execute( p_action, p_force );
 	}
+	// TMP: will be deleted when all workers will be threaded.
 	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker )
 	{
 		VTXApp::get().getWorkerManager().run( p_worker );
+	}
+	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker, const std::function<void( void )> * p_callback )
+	{
+		VTXApp::get().getWorkerManager().run( p_worker, p_callback );
 	}
 } // namespace VTX
 

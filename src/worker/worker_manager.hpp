@@ -19,7 +19,6 @@ namespace VTX
 		{
 			using MapWorkerPtrCallback = std::map<BaseWorker *, const std::function<void( void )> *>;
 			using QueueWorkerPtr	   = std::queue<BaseWorker *>;
-			using VectorThread		   = std::vector<std::thread>;
 
 		  public:
 			// Sync.
@@ -33,10 +32,11 @@ namespace VTX
 			// TODO: manages multiple threads and worker queue.
 			MapWorkerPtrCallback _workers = MapWorkerPtrCallback();
 			// QueueWorkerPtr		 _queue	  = QueueWorkerPtr();
+
+			// TODO: multiple current threads.
 			BaseWorker * _current = nullptr;
 
-			// VectorThread		 _threads		  = VectorThread( std::thread::hardware_concurrency() - 1 );
-			std::thread		   _thread			= std::thread();
+			// TODO: one excetion by thread (or worker).
 			std::exception_ptr _threadException = nullptr;
 		};
 	} // namespace Worker

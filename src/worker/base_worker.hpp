@@ -15,8 +15,14 @@ namespace VTX
 		class BaseWorker
 		{
 		  public:
-			virtual ~BaseWorker() = default;
-			virtual void work()	  = 0;
+			virtual ~BaseWorker()	   = default;
+			virtual void		work() = 0;
+			inline const bool	isFinished() const { return _isFinished; }
+			virtual const float getProgress() const { return _progress; }
+
+		  protected:
+			bool  _isFinished = false;
+			float _progress	  = 0.f; // The thread % [0-1]
 		};
 	} // namespace Worker
 } // namespace VTX

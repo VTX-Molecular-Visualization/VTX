@@ -24,44 +24,23 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				Worker::ApiFetcher fetcher = Worker::ApiFetcher( API_URL_MMTF + _id );
+				Worker::ApiFetcher * const fetcher = new Worker::ApiFetcher( API_URL_MMTF + _id );
 
-				try
-				{
-					VTX_WORKER( &fetcher );
-				}
-				catch ( const std::exception & p_e )
-				{
-					VTX_ERROR( p_e.what() );
-					return;
-				}
-
-				std::map<Path *, std::string *> mapBuffers = std::map<Path *, std::string *>();
-				Path *							path	   = new Path( _id + ".mmtf" );
-
-				mapBuffers.emplace( path, fetcher.getBuffer() );
-				VTX_WORKER( new Worker::Loader( mapBuffers ) );
-
-				/*
-				Worker::WorkerManager &		  manager  = VTXApp::get().getWorkerManager();
-				Worker::ApiFetcher *		  fetcher  = new Worker::ApiFetcher( API_URL_MMTF + _id );
 				std::string					  id	   = _id;
-				std::function<void( void )> * callback = new std::function<void( void )>( [ fetcher, &id ]( void ) {
-					VTX_DEBUG( "INVOKE" );
-					// PathFake path = PathFake( id + ".mmtf" );
-					VTX_DEBUG( "CALLBACK" );
-					// path.write( fetcher->getBuffer() );
-					VTX_DEBUG( "DELETE" );
+				Path *						  path	   = new Path( id + ".mmtf" );
+				std::function<void( void )> * callback = new std::function<void( void )>( [ fetcher, path ]( void ) {
+					std::map<Path *, std::string *> mapBuffers = std::map<Path *, std::string *>();
+					mapBuffers.emplace( path, fetcher->getBuffer() );
+					// TODO: another thread here to load the file.
+					VTX_WORKER( new Worker::Loader( mapBuffers ) );
 					delete fetcher;
-					// VTXApp::get().goToState( ID::State::LOAD, (void *)&path );
 				} );
 
-				manager.runWorker( fetcher, callback );
+				VTX_WORKER( fetcher, callback );
+			}
 
-			*/			}
-
-			  private:
-				const std::string _id;
+		  private:
+			const std::string _id;
 		};
 
 	} // namespace Action

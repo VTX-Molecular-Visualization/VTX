@@ -22,7 +22,7 @@ namespace VTX
 
 	constexpr float IMGUI_STYLE_MENUBAR_PADDING = 8.f;
 
-	constexpr float IMGUI_STYLE_PROGRESS_BG_ALPHA  = 0.5f;
+	constexpr float IMGUI_STYLE_MODAL_BG_ALPHA	   = 0.5f;
 	static ImColor	IMGUI_STYLE_PROGRESS_BAR_COLOR = ImColor( 150, 150, 150 );
 	static ImVec2	IMGUI_STYLE_PROGRESS_BAR_SIZE  = ImVec2( 600, 70 );
 

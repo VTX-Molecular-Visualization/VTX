@@ -31,25 +31,37 @@ namespace VTX
 					{
 						if ( _buffer->empty() )
 						{
+							_isFinished = true;
+							curl_easy_cleanup( curl );
+							curl_global_cleanup();
 							throw Exception::HTTPException( "Empty buffer" );
 						}
 					}
 					else
 					{
+						_isFinished = true;
+						curl_easy_cleanup( curl );
+						curl_global_cleanup();
 						throw Exception::HTTPException( "Protocol error: " + std::to_string( code ) );
 					}
 				}
 				else
 				{
+					_isFinished = true;
+					curl_easy_cleanup( curl );
+					curl_global_cleanup();
 					throw Exception::HTTPException( "cURL failed: " + std::to_string( result ) );
 				}
 				curl_easy_cleanup( curl );
 			}
 			else
 			{
+				_isFinished = true;
+				curl_global_cleanup();
 				throw Exception::HTTPException( "cURL failed" );
 			}
 
+			_isFinished = true;
 			curl_global_cleanup();
 		}
 

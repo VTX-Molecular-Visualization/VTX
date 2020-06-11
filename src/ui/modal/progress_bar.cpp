@@ -16,7 +16,7 @@ namespace VTX
 
 					if ( _value != 0.f )
 					{
-						VTX_INFO( std::to_string( _value * 100 ) + "%" );
+						VTX_INFO( std::to_string( uint( _value * 100 ) ) + "%" );
 					}
 					if ( _value >= 1.f )
 					{
@@ -28,10 +28,19 @@ namespace VTX
 			bool ProgressBar::_drawHeader()
 			{
 				// Open it.
-				if ( _value != 0.f )
+				if ( _isOpened == false && _value != 0.f )
 				{
+					VTX_DEBUG( "SHOW" );
+					_isOpened = true;
 					ImGui::OpenPopup( getTitle() );
 				}
+				else if ( _isOpened && _value == 0.f )
+				{
+					VTX_DEBUG( "HIDE" );
+					_isOpened = false;
+					ImGui::CloseCurrentPopup();
+				}
+
 				ImGui::PushStyleVar( ImGuiStyleVar_WindowMinSize, IMGUI_STYLE_PROGRESS_BAR_SIZE );
 				return BaseComponentModal::_drawHeader();
 			}

@@ -17,10 +17,13 @@ namespace VTX
 		class ApiFetcher : public Worker::BaseWorker
 		{
 		  public:
+			static inline float PROGRESS = 0.f;
+
 			explicit ApiFetcher( const std::string & p_url ) : _url( p_url ) {}
 
-			std::string * getBuffer() const { return _buffer; }
-			virtual void  work() override;
+			std::string *		getBuffer() const { return _buffer; }
+			virtual void		work() override;
+			virtual const float getProgress() const override { return PROGRESS; }
 
 		  private:
 			std::string _url;
@@ -42,13 +45,11 @@ namespace VTX
 										  const curl_off_t p_ultotal,
 										  const curl_off_t p_ulnow )
 			{
-				float progress = 0.f;
+				PROGRESS = 0.f;
 				if ( p_dltotal > 0.f )
 				{
-					progress = (float)p_dlnow / (float)p_dltotal;
+					PROGRESS = (float)p_dlnow / (float)p_dltotal;
 				}
-
-				VTX_EVENT( new Event::VTXEventFloat( Event::Global::UPDATE_PROGRESS_BAR, progress ) );
 
 				return 0;
 			}
