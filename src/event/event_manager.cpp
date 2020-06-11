@@ -52,11 +52,13 @@ namespace VTX
 
 		void EventManager::fireEvent( VTXEvent * const p_event )
 		{
+			_lock();
 #ifdef DELAY_EVENTS
 			_eventQueue.emplace( p_event );
 #else
 			_flushVTXEvent( p_event );
 #endif
+			_unlock();
 		}
 
 		void EventManager::update( const double p_deltaTime )
@@ -111,12 +113,14 @@ namespace VTX
 			}
 
 			// VTX.
+			_lock();
 			while ( _eventQueue.empty() == false )
 			{
 				VTXEvent * const event = _eventQueue.front();
 				_flushVTXEvent( event );
 				_eventQueue.pop();
 			}
+			_unlock();
 		}
 
 		void EventManager::_flushVTXEvent( VTXEvent * p_event )

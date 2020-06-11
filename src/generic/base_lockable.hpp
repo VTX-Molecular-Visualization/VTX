@@ -1,0 +1,29 @@
+#ifndef __VTX_BASE_LOCKABLE__
+#define __VTX_BASE_LOCKABLE__
+
+#ifdef _MSC_VER
+#pragma once
+#endif
+
+#include "util/logger.hpp"
+#include <mutex>
+
+namespace VTX
+{
+	namespace Generic
+	{
+		class BaseLocakble
+		{
+		  public:
+			virtual ~BaseLocakble() = default;
+
+		  protected:
+			inline void _lock() { _mutex.lock(); }
+			inline void _unlock() { _mutex.unlock(); }
+
+		  private:
+			std::mutex _mutex;
+		};
+	} // namespace Generic
+} // namespace VTX
+#endif

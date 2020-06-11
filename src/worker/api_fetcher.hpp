@@ -51,6 +51,8 @@ namespace VTX
 					PROGRESS = (float)p_dlnow / (float)p_dltotal;
 				}
 
+				VTX_INFO( std::to_string( uint( PROGRESS * 100 ) ) + "%" );
+
 				return 0;
 			}
 		};

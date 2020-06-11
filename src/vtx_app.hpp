@@ -98,9 +98,11 @@ namespace VTX
 	{
 		VTXApp::get().getWorkerManager().run( p_worker );
 	}
-	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker, const std::function<void( void )> * p_callback )
+	inline void VTX_WORKER( VTX::Worker::BaseWorker * const						  p_worker,
+							const std::function<void( void )> *					  p_success,
+							const std::function<void( const std::exception & )> * p_error )
 	{
-		VTXApp::get().getWorkerManager().run( p_worker, p_callback );
+		VTXApp::get().getWorkerManager().run( p_worker, p_success, p_error );
 	}
 } // namespace VTX
 

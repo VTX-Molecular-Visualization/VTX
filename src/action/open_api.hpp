@@ -26,9 +26,10 @@ namespace VTX
 			{
 				Worker::ApiFetcher * const fetcher = new Worker::ApiFetcher( API_URL_MMTF + _id );
 
-				std::string					  id	   = _id;
-				Path *						  path	   = new Path( id + ".mmtf" );
-				std::function<void( void )> * callback = new std::function<void( void )>( [ fetcher, path ]( void ) {
+				std::string id	 = _id;
+				Path *		path = new Path( id + ".mmtf" );
+
+				std::function<void( void )> * success = new std::function<void( void )>( [ fetcher, path ]( void ) {
 					std::map<Path *, std::string *> mapBuffers = std::map<Path *, std::string *>();
 					mapBuffers.emplace( path, fetcher->getBuffer() );
 					// TODO: another thread here to load the file.
@@ -36,7 +37,14 @@ namespace VTX
 					delete fetcher;
 				} );
 
-				VTX_WORKER( fetcher, callback );
+				std::function<void( const std::exception & )> * error
+					= new std::function<void( const std::exception & )>( [ fetcher ]( const std::exception & p_e ) {
+						  VTX_ERROR( p_e.what() );
+						  delete fetcher->getBuffer();
+						  delete fetcher;
+					  } );
+
+				VTX_WORKER( fetcher, success, error );
 			}
 
 		  private:

@@ -14,8 +14,6 @@ namespace VTX
 				{
 					_value = dynamic_cast<const Event::VTXEventFloat &>( p_event ).arg;
 
-					VTX_INFO( std::to_string( uint( _value * 100 ) ) + "%" );
-
 					if ( _value >= 1.f )
 					{
 						_value = 0.f;

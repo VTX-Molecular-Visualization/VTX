@@ -3,7 +3,6 @@
 #include "time.hpp"
 #include "vtx_app.hpp"
 #include <algorithm>
-#include <iostream>
 #include <magic_enum.hpp>
 
 namespace VTX

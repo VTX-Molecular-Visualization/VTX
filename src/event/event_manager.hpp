@@ -8,6 +8,7 @@
 #include "base_event_receiver_sdl.hpp"
 #include "base_event_receiver_vtx.hpp"
 #include "event/event.hpp"
+#include "generic/base_lockable.hpp"
 #include "generic/base_updatable.hpp"
 #include "id.hpp"
 #include <map>
@@ -20,7 +21,7 @@ namespace VTX
 {
 	namespace Event
 	{
-		class EventManager : public Generic::BaseUpdatable
+		class EventManager : public Generic::BaseUpdatable, public Generic::BaseLocakble
 		{
 		  public:
 			using SetBaseEventReceiverSDLPtr			 = std::set<BaseEventReceiverSDL *>;

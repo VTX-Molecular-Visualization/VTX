@@ -7,9 +7,6 @@
 
 #include "base_worker.hpp"
 #include "generic/base_updatable.hpp"
-#include <map>
-#include <queue>
-#include <vector>
 
 namespace VTX
 {
@@ -17,27 +14,24 @@ namespace VTX
 	{
 		class WorkerManager : public Generic::BaseUpdatable
 		{
-			using MapWorkerPtrCallback = std::map<BaseWorker *, const std::function<void( void )> *>;
-			using QueueWorkerPtr	   = std::queue<BaseWorker *>;
+			using CallbackSuccess = std::function<void( void )>;
+			using CallbackError	  = std::function<void( const std::exception & )>;
 
 		  public:
 			// Sync.
 			void run( BaseWorker * const p_woker );
 			// Async.
-			void run( BaseWorker * const p_woker, const std::function<void( void )> * );
+			void run( BaseWorker * const p_woker, const CallbackSuccess *, const CallbackError * );
 
 			virtual void update( const double p_deltaTime ) override;
 
 		  private:
-			// TODO: manages multiple threads and worker queue.
-			MapWorkerPtrCallback _workers = MapWorkerPtrCallback();
-			// QueueWorkerPtr		 _queue	  = QueueWorkerPtr();
+			BaseWorker *			_worker = nullptr;
+			const CallbackSuccess * _success;
+			const CallbackError *	_error;
+			std::exception_ptr		_threadException = nullptr;
 
-			// TODO: multiple current threads.
-			BaseWorker * _current = nullptr;
-
-			// TODO: one excetion by thread (or worker).
-			std::exception_ptr _threadException = nullptr;
+			void _clean();
 		};
 	} // namespace Worker
 } // namespace VTX

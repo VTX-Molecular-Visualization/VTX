@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include <iostream>
 #include <string>
 
 namespace VTX
@@ -18,7 +19,7 @@ namespace VTX
 				LOG_LVL_DEBUG,
 				LOG_LVL_INFO,
 				LOG_LVL_WARNING,
-				LOG_LVL_ERROR
+				LOG_LVL_ERROR,
 			};
 
 			void log( const LEVEL, const std::string & );
@@ -35,6 +36,8 @@ namespace VTX
 	inline void VTX_INFO( const std::string & p_str ) { VTX::Util::Logger::logInfo( p_str ); }
 	inline void VTX_WARNING( const std::string & p_str ) { VTX::Util::Logger::logWarning( p_str ); }
 	inline void VTX_ERROR( const std::string & p_str ) { VTX::Util::Logger::logError( p_str ); }
+	// Only in VS console, not in VTX!
+	inline void VTX_CONSOLE( const std::string & p_str ) { std::cout << p_str << std::endl; }
 } // namespace VTX
 
 #endif
