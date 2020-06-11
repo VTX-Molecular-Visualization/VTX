@@ -8,7 +8,7 @@ flat in vec3   vColor;
 // 3 16 bits for normal
 // 1 32 bits for padding
 layout( location = 0 ) out uvec4 outColorNormal;
-// 3 32 bits for position in cam space
+// 3 32 bits for position in view space
 // 1 32 bits for specular
 layout( location = 1 ) out vec4 outViewPosition;
 

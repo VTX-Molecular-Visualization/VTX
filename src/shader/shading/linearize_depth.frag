@@ -17,7 +17,5 @@ float linearizeDepth( const vec4 clipInfo, const float depth )
 
 void main()
 {
-	const vec2 texelSize = 1.f / textureSize( depthTexture, 0 );
-	const vec2 texCoord	 = gl_FragCoord.xy * texelSize;
-	linearDepth = linearizeDepth( uClipInfo, texture( depthTexture, texCoord ).x );
+	linearDepth = linearizeDepth( uClipInfo, texelFetch( depthTexture, ivec2( gl_FragCoord.xy ), 0 ).x );
 }
