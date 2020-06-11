@@ -9,12 +9,11 @@ namespace VTX
 		{
 			void Sphere::init()
 			{
-				Renderer::GLSL::ProgramManager & pm		 = VTXApp::get().getProgramManager();
-				Renderer::GLSL::Program *		 program = pm.createProgram(
-					   "SphereImpostorGeomShader",
-					   { "sphereImpostorGeom.vert", "sphereImpostorGeomQuad.geom", "sphereImpostorDeferred.frag" } );
+				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
+				Renderer::GLSL::Program *		 program
+					= pm.createProgram( "Sphere", { "sphere.vert", "sphere.geom", "sphere.frag" } );
 
-				_uViewModelMatrix  = glGetUniformLocation( program->getId(), "uMVMatrix" );
+				_uModelViewMatrix  = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	   = glGetUniformLocation( program->getId(), "uProjMatrix" );
 				_uRadiusFixedLoc   = glGetUniformLocation( program->getId(), "uRadiusFixed" );
 				_uRadiusAddLoc	   = glGetUniformLocation( program->getId(), "uRadiusAdd" );
@@ -46,11 +45,11 @@ namespace VTX
 				default: return;
 				}
 
-				VTXApp::get().getProgramManager().getProgram( "SphereImpostorGeomShader" )->use();
+				VTXApp::get().getProgramManager().getProgram( "Sphere" )->use();
 				glUniform1f( _uRadiusFixedLoc, _radiusFixed );
 				glUniform1f( _uRadiusAddLoc, _radiusAdd );
 				glUniform1ui( _uIsRadiusFixedLoc, _isRadiusFixed );
-				
+
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 
 				for ( const std::pair<uint, uint> & pair :

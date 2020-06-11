@@ -80,7 +80,15 @@ namespace VTX
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_F ) )
 			{
+				deltaVelocity.y = 0.5f;
+			}
+			if ( _isKeyPressed( SDL_SCANCODE_Q ) )
+			{
 				deltaVelocity.z = 0.5f;
+			}
+			if ( _isKeyPressed( SDL_SCANCODE_E ) )
+			{
+				deltaVelocity.z = -0.5f;
 			}
 
 			// Set values from settings.
@@ -116,7 +124,7 @@ namespace VTX
 			// Update if needed.
 			if ( _needUpdate )
 			{
-				_distance	   = Util::Math::clamp( _distance - deltaDistance, 10.f, 1000.f );
+				_distance	   = Util::Math::clamp( _distance - deltaDistance, 0.1f, 10000.f );
 				Quatf rotation = Quatf( Vec3f( -_velocity.y, _velocity.x, -_velocity.z ) );
 				_rotation	   = _rotation * rotation;
 				Vec3f position = _rotation * Vec3f( 0.f, 0.f, _distance ) + _target;

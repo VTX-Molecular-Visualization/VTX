@@ -11,16 +11,27 @@ namespace VTX
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
 				Renderer::GLSL::Program *		 program
-					= pm.createProgram( "TriangleGeomShader", { "triangle.vert", "triangle.frag" } );
+					= pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
 
-				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
+				_uModelViewMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
+				_uNormalMatrix	  = glGetUniformLocation( program->getId(), "uNormalMatrix" );
 			}
 
 			void Triangle::render()
 			{
-				VTXApp::get().getProgramManager().getProgram( "TriangleGeomShader" )->use();
+				VTXApp::get().getProgramManager().getProgram( "Triangle" )->use();
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
+
+				// TODO: MV is already computed in _setCameraUniforms !
+				const Mat4f MVMatrix
+					= VTXApp::get().getScene().getCamera().getViewMatrix() * _getModel().getTransform().get();
+
+				glUniformMatrix4fv( _uNormalMatrix,
+									1,
+									GL_FALSE,
+									Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
+
 				glDrawElements( GL_TRIANGLES, uint( _getModel().getIndices().size() ), GL_UNSIGNED_INT, 0 );
 			}
 		} // namespace D3

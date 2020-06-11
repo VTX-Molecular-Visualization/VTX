@@ -12,7 +12,7 @@ namespace VTX
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
 				Renderer::GLSL::Program * program	= pm.createProgram( "LineShader", { "line.vert", "line.frag" } );
 
-				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
+				_uModelViewMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
 			}
 

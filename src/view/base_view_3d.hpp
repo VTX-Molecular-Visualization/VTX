@@ -28,13 +28,13 @@ namespace VTX
 
 		  protected:
 			// Uniforms.
-			GLint _uViewModelMatrix = GL_INVALID_INDEX;
+			GLint _uModelViewMatrix = GL_INVALID_INDEX;
 			GLint _uProjMatrix		= GL_INVALID_INDEX;
 
 			virtual void _setCameraUniforms( const Object3D::Camera & p_camera )
 			{
 				glUniformMatrix4fv(
-					_uViewModelMatrix,
+					_uModelViewMatrix,
 					1,
 					GL_FALSE,
 					Util::Math::value_ptr( p_camera.getViewMatrix() * _getModel().getTransform().get() ) );
