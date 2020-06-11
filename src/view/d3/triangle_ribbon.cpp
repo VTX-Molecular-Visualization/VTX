@@ -15,12 +15,22 @@ namespace VTX
 
 				_uModelViewMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
+				_uNormalMatrix	  = glGetUniformLocation( program->getId(), "uNormalMatrix" );
 			}
 
 			void TriangleRibbon::render()
 			{
 				VTXApp::get().getProgramManager().getProgram( "Triangle" )->use();
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
+
+				// TODO: MV is already computed in _setCameraUniforms !
+				const Mat4f MVMatrix
+					= VTXApp::get().getScene().getCamera().getViewMatrix() * _getModel().getTransform().get();
+
+				glUniformMatrix4fv( _uNormalMatrix,
+									1,
+									GL_FALSE,
+									Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
 
 				for ( const std::pair<uint, uint> & pair :
 					  _getModel()

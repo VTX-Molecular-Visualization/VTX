@@ -173,6 +173,18 @@ namespace VTX
 			}
 
 			template<typename T>
+			inline glm::tmat4x4<T> transpose( const glm::tmat4x4<T> & mat )
+			{
+				return glm::transpose( mat );
+			}
+
+			template<typename T>
+			inline glm::tmat4x4<T> inverse( const glm::tmat4x4<T> & mat )
+			{
+				return glm::inverse( mat );
+			}
+
+			template<typename T>
 			inline std::string to_string( const T & p_value )
 			{
 				return glm::to_string( p_value );
