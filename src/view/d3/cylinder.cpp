@@ -11,8 +11,8 @@ namespace VTX
 			{
 				Renderer::GLSL::ProgramManager & pm		 = VTXApp::get().getProgramManager();
 				Renderer::GLSL::Program *		 program = pm.createProgram(
-					   "CylinderGeom",
-					   { "cylinderImpostorGeom.vert", "cylinderImpostorGeom.geom", "cylinderImpostorDeferred.frag" } );
+					   "Cylinder",
+					   { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
 				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
 				_uRadius		  = glGetUniformLocation( program->getId(), "uCylRad" );
@@ -27,7 +27,7 @@ namespace VTX
 				default: return;
 				}
 
-				VTXApp::get().getProgramManager().getProgram( "CylinderGeom" )->use();
+				VTXApp::get().getProgramManager().getProgram( "Cylinder" )->use();
 				glUniform1f( _uRadius, 0.15f );
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 

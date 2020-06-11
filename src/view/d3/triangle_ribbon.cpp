@@ -11,7 +11,7 @@ namespace VTX
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
 				Renderer::GLSL::Program *		 program
-					= pm.createProgram( "TriangleGeomShader", { "triangle.vert", "triangle.frag" } );
+					= pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
 
 				_uViewModelMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
 				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
@@ -19,7 +19,7 @@ namespace VTX
 
 			void TriangleRibbon::render()
 			{
-				VTXApp::get().getProgramManager().getProgram( "TriangleGeomShader" )->use();
+				VTXApp::get().getProgramManager().getProgram( "Triangle" )->use();
 				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 
 				for ( const std::pair<uint, uint> & pair :
