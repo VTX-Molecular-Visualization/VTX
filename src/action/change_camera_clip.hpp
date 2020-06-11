@@ -19,11 +19,8 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				const float newNear = Util::Math::clamp( _near, CAMERA_NEAR_FAR_MIN, CAMERA_NEAR_FAR_MAX );
-				const float newFar	= Util::Math::clamp( _far, CAMERA_NEAR_FAR_MIN, CAMERA_NEAR_FAR_MAX );
-
-				Setting::Rendering::camNear = Util::Math::min( newNear, newFar );
-				Setting::Rendering::camFar	= Util::Math::max( newNear, newFar );
+				Setting::Rendering::camNear = Util::Math::min( _near, _far );
+				Setting::Rendering::camFar	= Util::Math::max( _near, _far );
 
 				VTXApp::get().getScene().getCamera().setNear( Setting::Rendering::camNear );
 				VTXApp::get().getScene().getCamera().setFar( Setting::Rendering::camFar );
