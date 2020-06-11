@@ -27,21 +27,6 @@ namespace VTX
 			virtual void clean() override {}
 
 		  protected:
-			// Uniforms.
-			GLint _uModelViewMatrix = GL_INVALID_INDEX;
-			GLint _uProjMatrix		= GL_INVALID_INDEX;
-
-			virtual void _setCameraUniforms( const Object3D::Camera & p_camera )
-			{
-				glUniformMatrix4fv(
-					_uModelViewMatrix,
-					1,
-					GL_FALSE,
-					Util::Math::value_ptr( p_camera.getViewMatrix() * _getModel().getTransform().get() ) );
-				glUniformMatrix4fv(
-					_uProjMatrix, 1, GL_FALSE, Util::Math::value_ptr( p_camera.getProjectionMatrix() ) );
-			}
-
 			virtual void notify( const Event::VTX_EVENT_MODEL & p_event ) override
 			{
 				if ( p_event == Event::VTX_EVENT_MODEL::RENDER )

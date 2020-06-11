@@ -21,11 +21,12 @@ namespace VTX
 			void TriangleRibbon::render()
 			{
 				VTXApp::get().getProgramManager().getProgram( "Triangle" )->use();
-				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 
-				// TODO: MV is already computed in _setCameraUniforms !
-				const Mat4f MVMatrix
-					= VTXApp::get().getScene().getCamera().getViewMatrix() * _getModel().getTransform().get();
+				// TODO: do not upadte each frame !
+				const Object3D::Camera & cam	  = VTXApp::get().getScene().getCamera();
+				const Mat4f				 MVMatrix = cam.getViewMatrix() * _getModel().getTransform().get();
+				glUniformMatrix4fv( _uModelViewMatrix, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
+				glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 
 				glUniformMatrix4fv( _uNormalMatrix,
 									1,

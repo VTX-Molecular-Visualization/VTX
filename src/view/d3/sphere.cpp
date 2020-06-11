@@ -46,11 +46,18 @@ namespace VTX
 				}
 
 				VTXApp::get().getProgramManager().getProgram( "Sphere" )->use();
+
+				// TODO: do not upadte each frame !
+				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
+				glUniformMatrix4fv( _uModelViewMatrix,
+									1,
+									GL_FALSE,
+									Util::Math::value_ptr( cam.getViewMatrix() * _getModel().getTransform().get() ) );
+				glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
+
 				glUniform1f( _uRadiusFixedLoc, _radiusFixed );
 				glUniform1f( _uRadiusAddLoc, _radiusAdd );
 				glUniform1ui( _uIsRadiusFixedLoc, _isRadiusFixed );
-
-				_setCameraUniforms( VTXApp::get().getScene().getCamera() );
 
 				for ( const std::pair<uint, uint> & pair :
 					  _getModel().getRepresentationState()[ p_representation ].atoms )

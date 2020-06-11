@@ -25,7 +25,9 @@ namespace VTX
 
 			  private:
 				// Uniforms.
-				GLint _uRadius = GL_INVALID_INDEX;
+				GLint _uModelViewMatrix = GL_INVALID_INDEX;
+				GLint _uProjMatrix		= GL_INVALID_INDEX;
+				GLint _uRadius			= GL_INVALID_INDEX;
 			};
 		} // namespace D3
 	}	  // namespace View
