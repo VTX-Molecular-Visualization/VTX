@@ -7,17 +7,20 @@ namespace VTX
 	{
 		namespace D3
 		{
-			void Sphere::init()
+			Renderer::GLSL::Program * Sphere::createProgram()
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
-				Renderer::GLSL::Program *		 program
-					= pm.createProgram( "Sphere", { "sphere.vert", "sphere.geom", "sphere.frag" } );
+				return pm.createProgram( "Sphere", { "sphere.vert", "sphere.geom", "sphere.frag" } );
+			}
 
-				_uModelViewMatrix  = glGetUniformLocation( program->getId(), "uMVMatrix" );
-				_uProjMatrix	   = glGetUniformLocation( program->getId(), "uProjMatrix" );
-				_uRadiusFixedLoc   = glGetUniformLocation( program->getId(), "uRadiusFixed" );
-				_uRadiusAddLoc	   = glGetUniformLocation( program->getId(), "uRadiusAdd" );
-				_uIsRadiusFixedLoc = glGetUniformLocation( program->getId(), "uIsRadiusFixed" );
+			void Sphere::setUniFormLocations()
+			{
+				assert( _program != nullptr );
+				_uModelViewMatrixLoc = glGetUniformLocation( _program->getId(), "uMVMatrix" );
+				_uProjMatrixLoc		 = glGetUniformLocation( _program->getId(), "uProjMatrix" );
+				_uRadiusFixedLoc	 = glGetUniformLocation( _program->getId(), "uRadiusFixed" );
+				_uRadiusAddLoc		 = glGetUniformLocation( _program->getId(), "uRadiusAdd" );
+				_uIsRadiusFixedLoc	 = glGetUniformLocation( _program->getId(), "uIsRadiusFixed" );
 			}
 
 			void Sphere::render( const Generic::REPRESENTATION p_representation )
@@ -45,15 +48,15 @@ namespace VTX
 				default: return;
 				}
 
-				VTXApp::get().getProgramManager().getProgram( "Sphere" )->use();
+				_program->use();
 
 				// TODO: do not upadte each frame !
 				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
-				glUniformMatrix4fv( _uModelViewMatrix,
+				glUniformMatrix4fv( _uModelViewMatrixLoc,
 									1,
 									GL_FALSE,
 									Util::Math::value_ptr( cam.getViewMatrix() * _getModel().getTransform().get() ) );
-				glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
+				glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 
 				glUniform1f( _uRadiusFixedLoc, _radiusFixed );
 				glUniform1f( _uRadiusAddLoc, _radiusAdd );

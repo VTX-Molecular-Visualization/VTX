@@ -18,14 +18,16 @@ namespace VTX
 			  public:
 				explicit Box( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 
-				virtual const std::string & getName() const override { return ID::View::D3_SPHERE; };
-				virtual void				init() override;
+				virtual const std::string &		  getName() const override { return ID::View::D3_SPHERE; };
+				virtual Renderer::GLSL::Program * createProgram() override;
+				virtual void					  setUniFormLocations() override;
 
 				virtual void render( const Generic::REPRESENTATION ) override;
 
 			  private:
-				GLint _uModelViewMatrix = GL_INVALID_INDEX;
-				GLint _uProjMatrix		= GL_INVALID_INDEX;
+				// Uniforms.
+				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
+				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
 			};
 		} // namespace D3
 	}	  // namespace View
