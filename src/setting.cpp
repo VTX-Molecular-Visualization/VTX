@@ -34,6 +34,12 @@ namespace VTX
 			Color::Rgb outlineColor	   = Color::Rgb::WHITE;
 		}; // namespace Rendering
 
+		namespace MoleculeView
+		{
+			float atomsRadiusFixed = ATOMS_RADIUS_FIXED_DEFAULT;
+			float bondsRadius	   = BONDS_RADIUS_DEFAULT;
+		} // namespace MoleculeView
+
 		namespace Controller
 		{
 			bool  yAxisInverted = false;

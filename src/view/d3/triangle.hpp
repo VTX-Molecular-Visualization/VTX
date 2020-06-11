@@ -20,14 +20,17 @@ namespace VTX
 				explicit Triangle( Model::MeshTriangle * const p_model ) : BaseView3D( p_model ) {}
 
 				virtual const std::string & getName() const override { return ID::View::D3_TRIANGLE; };
-				virtual void				init() override;
+
+				virtual void createProgram() override;
+				virtual void setUniFormLocations() override;
 
 				virtual void render() override;
 
 			  private:
-				GLint _uModelViewMatrix = GL_INVALID_INDEX;
-				GLint _uProjMatrix		= GL_INVALID_INDEX;
-				GLint _uNormalMatrix	= GL_INVALID_INDEX;
+				// Uniforms.
+				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
+				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
+				GLint _uNormalMatrixLoc	   = GL_INVALID_INDEX;
 			};
 		} // namespace D3
 	}	  // namespace View

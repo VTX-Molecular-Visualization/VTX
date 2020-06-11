@@ -24,9 +24,18 @@ namespace VTX
 			explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
 			virtual ~BaseView3D() {}
 
+			virtual void init() override
+			{
+				createProgram();
+				setUniFormLocations();
+			}
+			virtual void createProgram()	   = 0;
+			virtual void setUniFormLocations() = 0;
 			virtual void clean() override {}
 
 		  protected:
+			Renderer::GLSL::Program * _program = nullptr;
+
 			virtual void notify( const Event::VTX_EVENT_MODEL & p_event ) override
 			{
 				if ( p_event == Event::VTX_EVENT_MODEL::RENDER )

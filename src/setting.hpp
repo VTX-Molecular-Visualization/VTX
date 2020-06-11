@@ -57,6 +57,12 @@ namespace VTX
 			extern Color::Rgb outlineColor;
 		}; // namespace Rendering
 
+		namespace MoleculeView
+		{
+			extern float atomsRadiusFixed;
+			extern float bondsRadius;
+		}; // namespace MoleculeView
+
 		namespace Controller
 		{
 			extern bool	 yAxisInverted;

@@ -8,26 +8,31 @@ namespace VTX
 	{
 		namespace D3
 		{
-			void Box::init()
+			void Box::createProgram()
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
-				Renderer::GLSL::Program * program	= pm.createProgram( "LineShader", { "line.vert", "line.frag" } );
 
-				_uModelViewMatrix = glGetUniformLocation( program->getId(), "uMVMatrix" );
-				_uProjMatrix	  = glGetUniformLocation( program->getId(), "uProjMatrix" );
+				_program = pm.createProgram( "LineShader", { "line.vert", "line.frag" } );
+			}
+
+			void Box::setUniFormLocations()
+			{
+				assert( _program != nullptr );
+				_uModelViewMatrixLoc = glGetUniformLocation( _program->getId(), "uMVMatrix" );
+				_uProjMatrixLoc		 = glGetUniformLocation( _program->getId(), "uProjMatrix" );
 			}
 
 			void Box::render( const Generic::REPRESENTATION )
 			{
-				VTXApp::get().getProgramManager().getProgram( "LineShader" )->use();
+				_program->use();
 
 				// TODO: do not upadte each frame !
 				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
-				glUniformMatrix4fv( _uModelViewMatrix,
+				glUniformMatrix4fv( _uModelViewMatrixLoc,
 									1,
 									GL_FALSE,
 									Util::Math::value_ptr( cam.getViewMatrix() * _getModel().getTransform().get() ) );
-				glUniformMatrix4fv( _uProjMatrix, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
+				glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 			}
 		} // namespace D3
 	}	  // namespace View

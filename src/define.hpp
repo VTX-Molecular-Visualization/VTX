@@ -96,11 +96,17 @@ namespace VTX
 	// Rendering.
 	// TODO: choose relevant constants
 	constexpr int RENDERER_AO_INTENSITY_MIN		= 1;
-	constexpr int RENDERER_AO_INTENSITY_MAX		= 10;
+	constexpr int RENDERER_AO_INTENSITY_MAX		= 20;
 	constexpr int RENDERER_AO_INTENSITY_DEFAULT = 5;
 	constexpr int RENDERER_AO_BLUR_SIZE_MIN		= 1;
 	constexpr int RENDERER_AO_BLUR_SIZE_MAX		= 99;
 	constexpr int RENDERER_AO_BLUR_SIZE_DEFAULT = 17;
+
+	// Molecule view settings
+	constexpr float ATOMS_RADIUS_FIXED_DEFAULT = 0.4f; // Used for B&S, Sticks...
+	constexpr float BONDS_RADIUS_DEFAULT	   = 0.15f;
+	constexpr float ATOMS_BONDS_RADIUS_MIN	   = 0.f;
+	constexpr float ATOMS_BONDS_RADIUS_MAX	   = 1.f;
 
 	// Path.
 	constexpr float PATH_DEFAULT_DURATION = 5.f;

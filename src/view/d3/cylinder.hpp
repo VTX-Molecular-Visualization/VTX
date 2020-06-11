@@ -19,15 +19,17 @@ namespace VTX
 				explicit Cylinder( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 
 				virtual const std::string & getName() const override { return ID::View::D3_CYLINDER; }
-				virtual void				init() override;
+
+				virtual void createProgram() override;
+				virtual void setUniFormLocations() override;
 
 				virtual void render( const Generic::REPRESENTATION ) override;
 
 			  private:
 				// Uniforms.
-				GLint _uModelViewMatrix = GL_INVALID_INDEX;
-				GLint _uProjMatrix		= GL_INVALID_INDEX;
-				GLint _uRadius			= GL_INVALID_INDEX;
+				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
+				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
+				GLint _uRadiusLoc		   = GL_INVALID_INDEX;
 			};
 		} // namespace D3
 	}	  // namespace View

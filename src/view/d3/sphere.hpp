@@ -19,7 +19,9 @@ namespace VTX
 				explicit Sphere( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 
 				virtual const std::string & getName() const override { return ID::View::D3_SPHERE; };
-				virtual void				init() override;
+
+				virtual void createProgram() override;
+				virtual void setUniFormLocations() override;
 
 				virtual void render( const Generic::REPRESENTATION ) override;
 
@@ -29,11 +31,11 @@ namespace VTX
 				bool  _isRadiusFixed = false;
 
 				// Uniforms.
-				GLint _uModelViewMatrix	 = GL_INVALID_INDEX;
-				GLint _uProjMatrix		 = GL_INVALID_INDEX;
-				GLint _uIsRadiusFixedLoc = GL_INVALID_INDEX;
-				GLint _uRadiusAddLoc	 = GL_INVALID_INDEX;
-				GLint _uRadiusFixedLoc	 = GL_INVALID_INDEX;
+				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
+				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
+				GLint _uIsRadiusFixedLoc   = GL_INVALID_INDEX;
+				GLint _uRadiusAddLoc	   = GL_INVALID_INDEX;
+				GLint _uRadiusFixedLoc	   = GL_INVALID_INDEX;
 			};
 		} // namespace D3
 	}	  // namespace View
