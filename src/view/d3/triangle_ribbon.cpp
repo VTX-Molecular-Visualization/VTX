@@ -7,10 +7,10 @@ namespace VTX
 	{
 		namespace D3
 		{
-			Renderer::GLSL::Program * TriangleRibbon::createProgram()
+			void TriangleRibbon::createProgram()
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
-				return pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
+				_program = pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
 			}
 
 			void TriangleRibbon::setUniFormLocations()

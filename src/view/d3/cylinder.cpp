@@ -7,10 +7,10 @@ namespace VTX
 	{
 		namespace D3
 		{
-			Renderer::GLSL::Program * Cylinder::createProgram()
+			void Cylinder::createProgram()
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
-				return pm.createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
+				_program = pm.createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
 			}
 
 			void Cylinder::setUniFormLocations()

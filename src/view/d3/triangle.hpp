@@ -19,9 +19,10 @@ namespace VTX
 			  public:
 				explicit Triangle( Model::MeshTriangle * const p_model ) : BaseView3D( p_model ) {}
 
-				virtual const std::string &		  getName() const override { return ID::View::D3_TRIANGLE; };
-				virtual Renderer::GLSL::Program * createProgram() override;
-				virtual void					  setUniFormLocations() override;
+				virtual const std::string & getName() const override { return ID::View::D3_TRIANGLE; };
+
+				virtual void createProgram() override;
+				virtual void setUniFormLocations() override;
 
 				virtual void render() override;
 

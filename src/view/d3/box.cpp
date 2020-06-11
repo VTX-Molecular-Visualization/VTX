@@ -8,10 +8,11 @@ namespace VTX
 	{
 		namespace D3
 		{
-			Renderer::GLSL::Program * Box::createProgram()
+			void Box::createProgram()
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
-				return pm.createProgram( "LineShader", { "line.vert", "line.frag" } );
+
+				_program = pm.createProgram( "LineShader", { "line.vert", "line.frag" } );
 			}
 
 			void Box::setUniFormLocations()

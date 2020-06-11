@@ -7,10 +7,10 @@ namespace VTX
 	{
 		namespace D3
 		{
-			Renderer::GLSL::Program * Sphere::createProgram()
+			void Sphere::createProgram()
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
-				return pm.createProgram( "Sphere", { "sphere.vert", "sphere.geom", "sphere.frag" } );
+				_program = pm.createProgram( "Sphere", { "sphere.vert", "sphere.geom", "sphere.frag" } );
 			}
 
 			void Sphere::setUniFormLocations()

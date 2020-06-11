@@ -18,9 +18,10 @@ namespace VTX
 			  public:
 				explicit Cylinder( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 
-				virtual const std::string &		  getName() const override { return ID::View::D3_CYLINDER; }
-				virtual Renderer::GLSL::Program * createProgram() override;
-				virtual void					  setUniFormLocations() override;
+				virtual const std::string & getName() const override { return ID::View::D3_CYLINDER; }
+
+				virtual void createProgram() override;
+				virtual void setUniFormLocations() override;
 
 				virtual void render( const Generic::REPRESENTATION ) override;
 

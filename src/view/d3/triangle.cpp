@@ -7,10 +7,10 @@ namespace VTX
 	{
 		namespace D3
 		{
-			Renderer::GLSL::Program * Triangle::createProgram()
+			void Triangle::createProgram()
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
-				return pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
+				_program = pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
 			}
 
 			void Triangle::setUniFormLocations()
@@ -30,7 +30,6 @@ namespace VTX
 				const Mat4f				 MVMatrix = cam.getViewMatrix() * _getModel().getTransform().get();
 				glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
 				glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
-
 				glUniformMatrix4fv( _uNormalMatrixLoc,
 									1,
 									GL_FALSE,
