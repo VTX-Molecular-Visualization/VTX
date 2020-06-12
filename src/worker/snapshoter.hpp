@@ -17,11 +17,13 @@ namespace VTX
 			enum class MODE : int
 			{
 				GL,
-				RT
+				RT_CPU,
+				RT_OPTIX
 			};
 
 			bool takeSnapshotGL( const Path & p_path ) const;
-			bool takeSnapshotRT( const Path & p_path ) const;
+			bool takeSnapshotRTCPU( const Path & p_path ) const;
+			bool takeSnapshotRTOptix( const Path & p_path ) const;
 
 		  private:
 		};

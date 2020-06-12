@@ -174,10 +174,16 @@ namespace VTX
 						Worker::Snapshoter::MODE::GL,
 						Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) ) );
 				}
-				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Render" ) ) )
+				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.RenderCPU" ) ) )
 				{
 					VTX_ACTION( new Action::Snapshot(
-						Worker::Snapshoter::MODE::RT,
+						Worker::Snapshoter::MODE::RT_CPU,
+						Util::Filesystem::getRendersPath( Util::Time::getTimestamp() + ".png" ) ) );
+				}
+				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.RenderOptix" ) ) )
+				{
+					VTX_ACTION( new Action::Snapshot(
+						Worker::Snapshoter::MODE::RT_OPTIX,
 						Util::Filesystem::getRendersPath( Util::Time::getTimestamp() + ".png" ) ) );
 				}
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Path" ) ) )
@@ -199,7 +205,7 @@ namespace VTX
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.VideoRT" ) ) )
 				{
 					VTX_ACTION( new Action::PathExportVideo( VTXApp::get().getScene().getPaths()[ 0 ],
-															 Worker::Snapshoter::MODE::RT ) );
+															 Worker::Snapshoter::MODE::RT_CPU ) );
 				}
 				ImGui::EndMenu();
 			}

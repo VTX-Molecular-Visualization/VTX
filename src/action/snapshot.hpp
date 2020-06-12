@@ -31,7 +31,11 @@ namespace VTX
 				{
 					VTX_INFO( "Snapshot taken: " + _path.filename().string() );
 				}
-				else if ( _mode == Worker::Snapshoter::MODE::RT && snapshoter.takeSnapshotRT( _path ) )
+				else if ( _mode == Worker::Snapshoter::MODE::RT_CPU && snapshoter.takeSnapshotRTCPU( _path ) )
+				{
+					VTX_INFO( "Render computed: " + _path.filename().string() );
+				}
+				else if ( _mode == Worker::Snapshoter::MODE::RT_OPTIX && snapshoter.takeSnapshotRTOptix( _path ) )
 				{
 					VTX_INFO( "Render computed: " + _path.filename().string() );
 				}

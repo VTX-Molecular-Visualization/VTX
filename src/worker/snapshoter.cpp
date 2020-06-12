@@ -44,14 +44,31 @@ namespace VTX
 			// return false;
 		}
 
-		bool Snapshoter::takeSnapshotRT( const Path & p_path ) const
+		bool Snapshoter::takeSnapshotRTCPU( const Path & p_path ) const
 		{
-			ImGuiIO & io	 = ImGui::GetIO();
-			uint	  width	 = (uint)io.DisplaySize.x;
-			uint	  height = (uint)io.DisplaySize.y;
+			const Renderer::GL & renderer = VTXApp::get().getRendererGL();
 
-#ifdef CUDA_DEFINED
-#ifdef OPTIX_DEFINED
+			const uint width  = renderer.getWidth();
+			const uint height = renderer.getHeight();
+
+			Renderer::RayTracer * rt = new Renderer::RayTracer();
+			rt->init( width, height );
+			rt->renderFrame( VTXApp::get().getScene() );
+			const std::vector<uchar> & pixels = rt->getPixels();
+			stbi_write_png_compression_level  = 0;
+			bool res = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
+			delete rt;
+			return res;
+		}
+
+		bool Snapshoter::takeSnapshotRTOptix( const Path & p_path ) const
+		{
+			const Renderer::GL & renderer = VTXApp::get().getRendererGL();
+
+			const uint width  = renderer.getWidth();
+			const uint height = renderer.getHeight();
+
+#if defined( CUDA_DEFINED ) && defined( OPTIX_DEFINED )
 			Renderer::OptixRayTracer * ort = new Renderer::OptixRayTracer();
 			ort->init( width, height );
 			ort->renderFrame( VTXApp::get().getScene() );
@@ -61,16 +78,7 @@ namespace VTX
 			delete ort;
 			return res;
 #else
-			Renderer::RayTracer * rt = new Renderer::RayTracer();
-			rt->init( width, height );
-			rt->renderFrame( VTXApp::get().getScene() );
-			const std::vector<uchar> & pixels = rt->getPixels();
-			stbi_write_png_compression_level  = 0;
-			bool res = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
-			delete rt;
-			return res;
-#endif
-#else
+			VTX_WARNING( "Optix unavailable!" );
 			return false;
 #endif
 		}
