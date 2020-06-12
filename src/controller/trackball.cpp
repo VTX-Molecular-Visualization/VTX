@@ -49,11 +49,12 @@ namespace VTX
 			// Pan target with wheel button.
 			else if ( _mouseMiddlePressed )
 			{
-				float deltaX = (float)_deltaMousePosition.x;
-				float deltaY = (float)_deltaMousePosition.y;
+				float deltaX		  = (float)_deltaMousePosition.x;
+				float deltaY		  = (float)_deltaMousePosition.y;
+				_deltaMousePosition.x = 0;
+				_deltaMousePosition.y = 0;
 
-				_target = _target + _rotation * ( ( -VEC3F_X * deltaX + VEC3F_Y * deltaY ) * 0.1f );
-
+				_target		= _target + _rotation * ( ( -VEC3F_X * deltaX + VEC3F_Y * deltaY ) * 0.1f );
 				_needUpdate = true;
 			}
 
@@ -95,6 +96,8 @@ namespace VTX
 			if ( deltaDistance != 0.f )
 			{
 				deltaDistance *= Setting::Controller::translationSpeed;
+				deltaDistance *= (float)p_deltaTime * 144.f;
+
 				if ( _isKeyPressed( SDL_SCANCODE_LSHIFT ) )
 				{
 					deltaDistance *= Setting::Controller::translationFactorSpeed;
