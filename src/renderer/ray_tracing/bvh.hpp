@@ -30,8 +30,8 @@ namespace VTX
 				uint _primsOffset = 0;	 // if leaf
 				uint _secondChildOffset; // if inner node
 			};
+			uint16_t _splitAxis = 0;
 			// TODO: uint16 is sufficient ?
-			uint16_t _splitAxis;
 			uint16_t _nbPrims = 0;
 		};
 

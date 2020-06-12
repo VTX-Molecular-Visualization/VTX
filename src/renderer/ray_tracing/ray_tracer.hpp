@@ -56,7 +56,7 @@ namespace VTX
 			std::vector<uchar> _pixels = std::vector<uchar>();
 
 			// TODO: keep gamma as float ?
-			float _gamma = 1.3f;
+			float _gamma = 1.f;
 
 			ConsoleProgressBar _progressBar;
 		};

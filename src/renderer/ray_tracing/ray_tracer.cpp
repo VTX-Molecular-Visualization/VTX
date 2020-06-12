@@ -30,11 +30,29 @@ namespace VTX
 				_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ),
 				_left( p_camera.getLeft() ), _width( p_width ), _height( p_height )
 			{
+				//
+				//
+				// ====================================================
+				// Spike_ACE2.pdb
+				/*_pos   = Vec3f( -62.360699f, 270.402008f, -6.388180f );
+				_front = Vec3f( 0.216708f, -0.974968f, 0.048667f );
+				_left  = Vec3f( -0.976223f, -0.216183f, 0.015855f );
+				_up	   = Vec3f( -0.004926f, -0.050945f, -0.998636f );*/
+				// ====================================================
+				//
+				//
+
+				//
+				//
+				// ====================================================
 				// Molecule of the month may 20 : 3jb9
-				_pos   = Vec3f( 491.377930f, 375.845001f, 223.546844f );
+				/*_pos   = Vec3f( 491.377930f, 375.845001f, 223.546844f );
 				_front = Vec3f( -0.844256f, -0.535781f, 0.013080f );
 				_left  = Vec3f( 0.532688f, -0.836197f, 0.130456f );
-				_up	   = Vec3f( -0.058959f, 0.117106f, 0.991368f );
+				_up	   = Vec3f( -0.058959f, 0.117106f, 0.991368f );*/
+				// ====================================================
+				//
+				//
 
 				// spike_closed_glycans_lipids_amarolab
 				/*_pos   = Vec3f( 12.950272f, -375.106812f, 119.278503f );
@@ -42,11 +60,17 @@ namespace VTX
 				_left  = Vec3f( -0.999817f, -0.016773f, -0.009176f );
 				_up	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
 
+				//
+				//
+				// ====================================================
 				// spike_closed_cleaved_full_amarolab
 				//_pos   = Vec3f( 0.f, -370.006958f, 215.602661f );
 				//_front = Vec3f( 0.000138f, 0.954886f, -0.296973f );
 				//_left  = Vec3f( -0.999969f, 0.002475f, 0.007492f );
 				//_up	   = Vec3f( 0.007889f, 0.296962f, 0.954857f );
+				// ====================================================
+				//
+				//
 
 				/*_pos   = Vec3f( 0.f, -390.106812f, 110.278503f );
 				_front = Vec3f( 0.f, 1.f, 0.f );
@@ -54,19 +78,25 @@ namespace VTX
 				_up	   = Vec3f( 0.f, 0.f, 1.f );*/
 				//_pos += 150.f * _front;
 
-				// 6vsb
-				/*_pos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
-				_front = Vec3f( 0.938164f, 0.320407f, -0.131098f );
-				_left  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
-				_up	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
-				_pos += 70.f * _front;*/
+				/*Position:
+				vec3(421.417175, 245.391190, 208.967499)[08:45:19][ INFO ] Rotation :
+					dquat(0.467604, { 0.477807, 0.537256, 0.514095 })[08:45:19][ INFO ] Euler angles :
+					dvec3(0.000000, 0.000000, 0.000000)[08:45:19][ INFO ] Front :
+					vec3(-0.993723, -0.105553, 0.033887)[08:45:19][ INFO ] Left :
+					vec3(0.105876, -0.994196, 0.011171)[08:45:19][ INFO ] Up :
+					vec3( 0.032623, 0.014814, 0.999251 )*/
 
-				// 6m17
-				/*_pos = Vec3f( 21.587879f, 209.315125f, 178.231781f );
-
-				Vec3f camFront = Vec3f( 0.920292f, -0.380027f, 0.092962f );
-				Vec3f camLeft  = Vec3f( 0.071878f, -0.069334f, -0.995001f );
-				Vec3f camUp	   = Vec3f( 0.384572f, 0.922373f, -0.036492f );*/
+				//
+				//
+				// ====================================================
+				// 6VSB
+				/*_pos   = Vec3f( 421.417175f, 245.391190f, 208.967499f );
+				_front = Vec3f( -0.993723f, -0.105553f, 0.033887f );
+				_left  = Vec3f( 0.105876f, -0.994196f, 0.011171f );
+				_up	   = Vec3f( 0.032623f, 0.014814f, 0.999251f );*/
+				// ====================================================
+				//
+				//
 
 				//_pos = Vec3f( 302.771790f, 378.963623f, 195.313385f );
 
@@ -129,7 +159,7 @@ namespace VTX
 
 			_integrator = new RayCastIntegrator;
 			//_integrator	  = new DirectLightingIntegrator;
-			//_aoIntegrator = new AOIntegrator;
+			//_aoIntegrator = new AOIntegrator( 50.f, 12 );
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -213,22 +243,52 @@ namespace VTX
 			}
 #endif
 
+			//
+			//
+			// ====================================================
+			// Spike_ACE2.pdb
+			//_scene.addObject( new Plane( Vec3f( -0.004926f, -0.050945f, -0.998636f ),
+			//							 -110.f, //
+			//							 new MatteMaterial( Color::Rgb( 0.5f, 0.6f, 0.8f ), 12.f ) ) );
+			//_scene.addLight( new QuadLight( //
+			//	Vec3f( -0.495502f, -0.856499f, -3.2335f ) + Vec3f( -280.f, 300.f, -300.f ),
+			//	-VEC3F_X * 80.f,
+			//	-VEC3F_Y * 80.f,
+			//	Color::Rgb::WHITE,
+			//	80.f * PIf ) );
+			//_scene.addLight( new QuadLight( //
+			//	Vec3f( -0.495502f, -0.856499f, -3.2335f ) + Vec3f( 200.f, 300.f, -300.f ),
+			//	VEC3F_X * 80.f,
+			//	VEC3F_Y * 80.f,
+			//	Color::Rgb::WHITE,
+			//	80.f * PIf ) );
+
+			// ====================================================
+			//
+			//
+
+			//
+			//
+			// ====================================================
 			// Molecule of the month may 20 : 3jb9
-			_scene.addObject( new Plane( Vec3f( -0.058959f, 0.117106f, 0.991368f ),
-										 -400.f, //
-										 new MatteMaterial( Color::Rgb( 0.5f, 0.6f, 0.8f ), 12.f ) ) );
-			_scene.addLight( new QuadLight( //
-				Vec3f( 400.f, 800.f, 550.f ),
-				VEC3F_Y * 80.f,
-				VEC3F_X * 80.f,
-				Color::Rgb::WHITE,
-				70.f * PIf ) );
-			_scene.addLight( new QuadLight( //
-				Vec3f( 800.f, 120.f, 550.f ),
-				VEC3F_Y * 80.f,
-				VEC3F_X * 80.f,
-				Color::Rgb::WHITE,
-				70.f * PIf ) );
+			//_scene.addObject( new Plane( Vec3f( -0.058959f, 0.117106f, 0.991368f ),
+			//							 -400.f, //
+			//							 new MatteMaterial( Color::Rgb( 0.5f, 0.6f, 0.8f ), 12.f ) ) );
+			//_scene.addLight( new QuadLight( //
+			//	Vec3f( 400.f, 800.f, 550.f ),
+			//	VEC3F_Y * 80.f,
+			//	VEC3F_X * 80.f,
+			//	Color::Rgb::WHITE,
+			//	70.f * PIf ) );
+			//_scene.addLight( new QuadLight( //
+			//	Vec3f( 800.f, 120.f, 550.f ),
+			//	VEC3F_Y * 80.f,
+			//	VEC3F_X * 80.f,
+			//	Color::Rgb::WHITE,
+			//	70.f * PIf ) );
+			// ====================================================
+			//
+			//
 
 			//
 			//
@@ -238,7 +298,20 @@ namespace VTX
 			//							 -300.f, //
 			//							 new MatteMaterial( Vec3f( 0.5f, 0.6f, 0.8f ), 0.5f ) ) );
 			//_scene.addLight( new QuadLight(
-			//	Vec3f( -400.f, -800.f, 600.f ), VEC3F_Y * 80.f, VEC3F_X * 80.f, VEC3F_XYZ, 170.f * PIf ) );
+			//	Vec3f( -400.f, -800.f, 600.f ), VEC3F_Y * 80.f, VEC3F_X * 80.f, Color::Rgb::WHITE, 170.f * PIf ) );
+			// ====================================================
+			//
+			//
+
+			//
+			//
+			// ====================================================
+			// 6VSB
+			//_scene.addObject( new Plane( Vec3f( 0.032623f, 0.014814f, 0.999251f ),
+			//							 -315.f, //
+			//							 new MatteMaterial( Color::Rgb( 0.5f, 0.6f, 0.8f ), 12.f ) ) );
+			//_scene.addLight( new QuadLight(
+			//	Vec3f( 500.f, 400.f, 450.f ), VEC3F_Y * 80.f, VEC3F_X * 80.f, Color::Rgb::WHITE, 80.f * PIf ) );
 			// ====================================================
 			//
 			//
@@ -279,13 +352,6 @@ namespace VTX
 											-Vec3f( 0.112113f, 0.077086f, 0.990701f ) * 80.f,
 											VEC3F_XYZ,
 											200.f ) );*/
-
-			//// 6M17
-			//_scene.addLight( new QuadLight( Vec3f( 0.f, 500.f, 188.f ),
-			//								Vec3f( 0.920292f, -0.680027f, 0.092962f ) * 60.f,
-			//								-Vec3f( 0.071878f, -0.069334f, -0.995001f ) * 60.f,
-			//								VEC3F_XYZ,
-			//								50.f ) );
 		}
 
 		void RayTracer::_renderTiles( std::vector<uchar> &	   p_image,
@@ -342,16 +408,17 @@ namespace VTX
 				const Ray ray = p_camera.generateRay( sx, sy );
 
 				const Color::Rgb Li = _integrator->Li( ray, _scene, 0.f, FLOAT_INF );
-				/*const Color ao = _aoIntegrator->Li( ray, _scene, 0.f, FLOAT_INF );
+				// const Color::Rgb ao = _aoIntegrator->Li( ray, _scene, 0.f, FLOAT_INF );
 
-				const float directFactor = 0.95f;
-				const float aoFactor	 = 0.05f;
+				const float directFactor = 0.4f;
+				const float aoFactor	 = 1.f - directFactor;
 
-				color += Li * directFactor + ao * aoFactor;*/
+				// color += Li * directFactor + ao * aoFactor;
 
 				color += Li;
 			}
 			color /= float( p_nbPixelSamples );
+
 			color.saturate();
 			return color;
 		}

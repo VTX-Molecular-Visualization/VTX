@@ -35,34 +35,33 @@ namespace VTX
 		{
 			Optix::HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
 
-			const float3 normal = make_float3( int_as_float( optixGetAttribute_0() ),
-													  int_as_float( optixGetAttribute_1() ),
-													  int_as_float( optixGetAttribute_2() ) );
-			const int	 id		= optixGetPrimitiveIndex();
-			const float3 & color	= params._colors[data->_spheres[ id ]._colorId];
-			const float3 &rayDir = optixGetWorldRayDirection();
-			const float	 radiance = fabsf( dot( rayDir, normal ) );
-
-
-			setPayload( color * radiance);
-		}
-
-		extern "C" __global__ void __closesthit__cylinder()
-		{
-			Optix::HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
-
-			const float3   normal = make_float3( int_as_float( optixGetAttribute_0() ),
-												 int_as_float( optixGetAttribute_1() ),
-												 int_as_float( optixGetAttribute_2() ) );
-			const int	   id	  = optixGetPrimitiveIndex();
-			const float3 & color	= params._colors[data->_cylinders[ id ]._colorId];
+			const float3   normal	= make_float3( int_as_float( optixGetAttribute_0() ),
+											   int_as_float( optixGetAttribute_1() ),
+											   int_as_float( optixGetAttribute_2() ) );
+			const int	   id		= optixGetPrimitiveIndex();
+			const float3 & color	= params._colors[ data->_spheres[ id ]._colorId ];
 			const float3 & rayDir	= optixGetWorldRayDirection();
 			const float	   radiance = fabsf( dot( rayDir, normal ) );
 
 			setPayload( color * radiance );
 		}
 
-		//extern "C" __global__ void __anyhit__() {}
+		extern "C" __global__ void __closesthit__cylinder()
+		{
+			Optix::HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
+
+			const float3   normal	= make_float3( int_as_float( optixGetAttribute_0() ),
+											   int_as_float( optixGetAttribute_1() ),
+											   int_as_float( optixGetAttribute_2() ) );
+			const int	   id		= optixGetPrimitiveIndex();
+			const float3 & color	= params._colors[ data->_cylinders[ id ]._colorId ];
+			const float3 & rayDir	= optixGetWorldRayDirection();
+			const float	   radiance = fabsf( dot( rayDir, normal ) );
+
+			setPayload( color * radiance );
+		}
+
+		// extern "C" __global__ void __anyhit__() {}
 
 		extern "C" __global__ void __miss__()
 		{
@@ -72,8 +71,8 @@ namespace VTX
 		}
 
 		static __forceinline__ __device__ void trace( const OptixTraversableHandle & th,
-													  const float3					 &rayOrigin,
-													  const float3					 &rayDirection,
+													  const float3 &				 rayOrigin,
+													  const float3 &				 rayDirection,
 													  const float					 tMin,
 													  const float					 tMax,
 													  float3 *						 perRayData )
@@ -105,8 +104,8 @@ namespace VTX
 
 		extern "C" __global__ void __raygen__()
 		{
-			const uint3 &id	= optixGetLaunchIndex();
-			const uint3 &dim = optixGetLaunchDimensions();
+			const uint3 & id  = optixGetLaunchIndex();
+			const uint3 & dim = optixGetLaunchDimensions();
 
 			const Optix::RayGeneratorData * data
 				= reinterpret_cast<Optix::RayGeneratorData *>( optixGetSbtDataPointer() );
@@ -140,11 +139,14 @@ namespace VTX
 			Optix::HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
 
 			// primitive data
-			const int	   id	  = optixGetPrimitiveIndex();
-			
+			const int id = optixGetPrimitiveIndex();
+
 			Optix::Intersection hit;
-			if (data->_spheres[id].intersect(
-				optixGetObjectRayOrigin(), optixGetObjectRayDirection(), optixGetRayTmin(), optixGetRayTmax(), hit))
+			if ( data->_spheres[ id ].intersect( optixGetObjectRayOrigin(),
+												 optixGetObjectRayDirection(),
+												 optixGetRayTmin(),
+												 optixGetRayTmax(),
+												 hit ) )
 			{
 				unsigned int p0 = float_as_int( hit._normal.x );
 				unsigned int p1 = float_as_int( hit._normal.y );
@@ -163,10 +165,10 @@ namespace VTX
 
 			Optix::Intersection hit;
 			if ( data->_cylinders[ id ].intersect( optixGetObjectRayOrigin(),
-												 optixGetObjectRayDirection(),
-												 optixGetRayTmin(),
-												 optixGetRayTmax(),
-												 hit ) )
+												   optixGetObjectRayDirection(),
+												   optixGetRayTmin(),
+												   optixGetRayTmax(),
+												   hit ) )
 			{
 				unsigned int p0 = float_as_int( hit._normal.x );
 				unsigned int p1 = float_as_int( hit._normal.y );

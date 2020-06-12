@@ -660,15 +660,19 @@ namespace VTX
 					Vec3f camFront = Vec3f( -0.016405f, 0.999115f, -0.038744f );
 					Vec3f camUp	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
 					// 6vsb
-					Vec3f camPos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
+					/*Vec3f camPos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
 					Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
 					Vec3f camLeft  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
-					Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );
-
-					float		fov		   = 60.f;
-					float		ratio	   = float( _width ) / _height;
-					const float halfHeight = tan( Util::Math::radians( fov ) * 0.5f );
-					const float halfWidth  = ratio * halfHeight;
+					Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );*/
+					const Object3D::Camera & cam		= VTXApp::get().getScene().getCamera();
+					Vec3f					 camPos		= cam.getPosition();
+					Vec3f					 camFront	= cam.getFront();
+					Vec3f					 camLeft	= cam.getLeft();
+					Vec3f					 camUp		= cam.getUp();
+					float					 fov		= cam.getFov();
+					float					 ratio		= float( _width ) / _height;
+					const float				 halfHeight = tan( Util::Math::radians( fov ) * 0.5f );
+					const float				 halfWidth	= ratio * halfHeight;
 
 					Vec3f u = Util::Math::normalize( Util::Math::cross( camFront, camUp ) ) * halfWidth;
 					Vec3f v = Util::Math::normalize( Util::Math::cross( camLeft, camFront ) ) * halfHeight;
