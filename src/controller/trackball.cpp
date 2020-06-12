@@ -35,28 +35,25 @@ namespace VTX
 			Vec3f deltaVelocity = VEC3F_ZERO;
 			if ( _mouseLeftPressed )
 			{
-				deltaVelocity.x		  = -(float)_deltaMousePosition.x * 15.f;
-				deltaVelocity.y		  = (float)_deltaMousePosition.y * 15.f;
-				_deltaMousePosition.x = 0;
-				_deltaMousePosition.y = 0;
+				deltaVelocity.x = -(float)_deltaMousePosition.x * 15.f;
+				deltaVelocity.y = (float)_deltaMousePosition.y * 15.f;
 			}
 			// Mouse right.
 			else if ( _mouseRightPressed )
 			{
-				deltaVelocity.z		  = -(float)_deltaMousePosition.x * 15.f;
-				_deltaMousePosition.x = 0;
+				deltaVelocity.z = -(float)_deltaMousePosition.x * 15.f;
 			}
 			// Pan target with wheel button.
 			else if ( _mouseMiddlePressed )
 			{
-				float deltaX		  = (float)_deltaMousePosition.x * 0.1f;
-				float deltaY		  = (float)_deltaMousePosition.y * 0.1f;
-				_deltaMousePosition.x = 0;
-				_deltaMousePosition.y = 0;
+				float deltaX = (float)_deltaMousePosition.x * 0.1f;
+				float deltaY = (float)_deltaMousePosition.y * 0.1f;
 
 				_target		= _target + _rotation * ( -VEC3F_X * deltaX + VEC3F_Y * deltaY );
 				_needUpdate = true;
 			}
+			_deltaMousePosition.x = 0;
+			_deltaMousePosition.y = 0;
 
 			// Keyboard.
 			if ( _isKeyPressed( SDL_SCANCODE_W ) || _isKeyPressed( SDL_SCANCODE_UP ) )
