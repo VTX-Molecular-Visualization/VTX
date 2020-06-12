@@ -127,8 +127,9 @@ namespace VTX
 			// Update if needed.
 			if ( _needUpdate )
 			{
-				_distance	   = Util::Math::clamp( _distance - deltaDistance, 0.1f, 10000.f );
-				Quatf rotation = Quatf( Vec3f( -_velocity.y, _velocity.x, -_velocity.z ) );
+				_distance = Util::Math::clamp( _distance - deltaDistance, 0.1f, 10000.f );
+
+				Quatf rotation = Quatf( Vec3f( -_velocity.y, _velocity.x, -_velocity.z ) * (float)p_deltaTime * 144.f );
 				_rotation	   = _rotation * rotation;
 				Vec3f position = _rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
 
