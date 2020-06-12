@@ -87,7 +87,7 @@ namespace VTX
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Open" ) ) )
 				{
 					_openFileDialog = std::shared_ptr<pfd::open_file>( new pfd::open_file(
-						LOCALE( "MainMenu.Menu.Open.ChooseFile" ), "C://", { "All Files", "*" }, true ) );
+						LOCALE( "MainMenu.Menu.Open.ChooseFile" ), "C://", { "All Files", "*" }, pfd::opt::multiselect ) );
 				}
 
 				// Quit.

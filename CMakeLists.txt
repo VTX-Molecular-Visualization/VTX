@@ -156,7 +156,10 @@ elseif(MSVC)
 	target_compile_options(VTX PRIVATE "/MP")  # Multicore compilation.
 	target_compile_options(VTX PRIVATE "/sdl") # SDL check.
 	#Optimizaion.
+	target_compile_options(VTX PRIVATE "/Ob2") # Innlinne function expansion.
 	target_compile_options(VTX PRIVATE "/Ot")  # Favor speed.
+	target_compile_options(VTX PRIVATE "/Oi")  # Intrinsic functions.
+	target_compile_options(VTX PRIVATE "/GL")  # Whole program optimization.
 	#Code Generation.
 	target_compile_options(VTX PRIVATE "/fp:fast") # Floating Point Model.
 	#Preprocessor definitions
@@ -166,10 +169,6 @@ elseif(MSVC)
 	# Set default startup project.
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VTX)
 	set_target_properties(VTX PROPERTIES VS_GLOBAL_DisableFastUpToDateCheck true)
-endif()
-
-if(WIN32)
-	add_definitions(-DCHEMFILES_WINDOWS)	
 endif()
 
 # TODO: find cuda and optix.
