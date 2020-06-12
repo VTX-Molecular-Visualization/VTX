@@ -49,12 +49,12 @@ namespace VTX
 			// Pan target with wheel button.
 			else if ( _mouseMiddlePressed )
 			{
-				float deltaX		  = (float)_deltaMousePosition.x;
-				float deltaY		  = (float)_deltaMousePosition.y;
+				float deltaX		  = (float)_deltaMousePosition.x * 0.1f;
+				float deltaY		  = (float)_deltaMousePosition.y * 0.1f;
 				_deltaMousePosition.x = 0;
 				_deltaMousePosition.y = 0;
 
-				_target		= _target + _rotation * ( ( -VEC3F_X * deltaX + VEC3F_Y * deltaY ) * 0.1f );
+				_target		= _target + _rotation * ( -VEC3F_X * deltaX + VEC3F_Y * deltaY );
 				_needUpdate = true;
 			}
 
@@ -69,27 +69,27 @@ namespace VTX
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_A ) || _isKeyPressed( SDL_SCANCODE_LEFT ) )
 			{
-				deltaVelocity.x = 0.5f;
+				deltaVelocity.x = 0.5f * (float)p_deltaTime * 144.f;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_D ) || _isKeyPressed( SDL_SCANCODE_RIGHT ) )
 			{
-				deltaVelocity.x = -0.5f;
+				deltaVelocity.x = -0.5f * (float)p_deltaTime * 144.f;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_R ) )
 			{
-				deltaVelocity.y = -0.5f;
+				deltaVelocity.y = -0.5f * (float)p_deltaTime * 144.f;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_F ) )
 			{
-				deltaVelocity.y = 0.5f;
+				deltaVelocity.y = 0.5f * (float)p_deltaTime * 144.f;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_Q ) )
 			{
-				deltaVelocity.z = 0.5f;
+				deltaVelocity.z = 0.5f * (float)p_deltaTime * 144.f;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_E ) )
 			{
-				deltaVelocity.z = -0.5f;
+				deltaVelocity.z = -0.5f * (float)p_deltaTime * 144.f;
 			}
 
 			// Set values from settings.
@@ -109,19 +109,15 @@ namespace VTX
 
 				_needUpdate = true;
 			}
-			if ( deltaVelocity.x != 0.f )
+
+			if ( deltaVelocity != VEC3F_ZERO )
 			{
 				_velocity.x += Setting::Controller::rotationSpeed * deltaVelocity.x;
-			}
-			if ( deltaVelocity.y != 0.f )
-			{
 				_velocity.y += Setting::Controller::rotationSpeed * deltaVelocity.y
 							   * ( Setting::Controller::yAxisInverted ? -1.f : 1.f );
-			}
-			if ( deltaVelocity.z != 0.f )
-			{
 				_velocity.z += Setting::Controller::rotationSpeed * deltaVelocity.z;
 			}
+
 			_needUpdate |= _velocity != VEC3F_ZERO;
 
 			// Update if needed.

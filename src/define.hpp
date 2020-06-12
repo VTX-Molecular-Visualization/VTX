@@ -91,7 +91,7 @@ namespace VTX
 	constexpr float CONTROLLER_ROTATION_SPEED_MAX		  = 0.01f;
 	constexpr float CONTROLLER_ROTATION_SPEED_DEFAULT	  = 0.005f;
 	constexpr float CONTROLLER_ELASTICITY_FACTOR		  = 4.0f;
-	constexpr float CONTROLLER_ELASTICITY_THRESHOLD		  = 1e-3f;
+	constexpr float CONTROLLER_ELASTICITY_THRESHOLD		  = 1e-4f;
 
 	// Rendering.
 	// TODO: choose relevant constants
