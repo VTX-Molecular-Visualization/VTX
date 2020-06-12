@@ -35,15 +35,15 @@ namespace VTX
 			Vec3f deltaVelocity = VEC3F_ZERO;
 			if ( _mouseLeftPressed )
 			{
-				deltaVelocity.x		  = -(float)_deltaMousePosition.x * 0.1f;
-				deltaVelocity.y		  = (float)_deltaMousePosition.y * 0.1f;
+				deltaVelocity.x		  = -(float)_deltaMousePosition.x * 15.f;
+				deltaVelocity.y		  = (float)_deltaMousePosition.y * 15.f;
 				_deltaMousePosition.x = 0;
 				_deltaMousePosition.y = 0;
 			}
 			// Mouse right.
 			else if ( _mouseRightPressed )
 			{
-				deltaVelocity.z		  = -(float)_deltaMousePosition.x * 0.1f;
+				deltaVelocity.z		  = -(float)_deltaMousePosition.x * 15.f;
 				_deltaMousePosition.x = 0;
 			}
 			// Pan target with wheel button.
@@ -61,35 +61,35 @@ namespace VTX
 			// Keyboard.
 			if ( _isKeyPressed( SDL_SCANCODE_W ) || _isKeyPressed( SDL_SCANCODE_UP ) )
 			{
-				deltaDistance = 0.01f * (float)p_deltaTime * 144.f;
+				deltaDistance = 1.5f * (float)p_deltaTime;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_S ) || _isKeyPressed( SDL_SCANCODE_DOWN ) )
 			{
-				deltaDistance = -0.01f * (float)p_deltaTime * 144.f;
+				deltaDistance = -1.5f * (float)p_deltaTime;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_A ) || _isKeyPressed( SDL_SCANCODE_LEFT ) )
 			{
-				deltaVelocity.x = 0.5f * (float)p_deltaTime * 144.f;
+				deltaVelocity.x = 1e4f * (float)p_deltaTime;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_D ) || _isKeyPressed( SDL_SCANCODE_RIGHT ) )
 			{
-				deltaVelocity.x = -0.5f * (float)p_deltaTime * 144.f;
+				deltaVelocity.x = -1e4f * (float)p_deltaTime;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_R ) )
 			{
-				deltaVelocity.y = -0.5f * (float)p_deltaTime * 144.f;
+				deltaVelocity.y = -1e4f * (float)p_deltaTime;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_F ) )
 			{
-				deltaVelocity.y = 0.5f * (float)p_deltaTime * 144.f;
+				deltaVelocity.y = 1e4f * (float)p_deltaTime;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_Q ) )
 			{
-				deltaVelocity.z = 0.5f * (float)p_deltaTime * 144.f;
+				deltaVelocity.z = 1e4f * (float)p_deltaTime;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_E ) )
 			{
-				deltaVelocity.z = -0.5f * (float)p_deltaTime * 144.f;
+				deltaVelocity.z = -1e4f * (float)p_deltaTime;
 			}
 
 			// Set values from settings.
@@ -124,7 +124,7 @@ namespace VTX
 			{
 				_distance = Util::Math::clamp( _distance - deltaDistance, 0.1f, 10000.f );
 
-				Quatf rotation = Quatf( Vec3f( -_velocity.y, _velocity.x, -_velocity.z ) * (float)p_deltaTime * 144.f );
+				Quatf rotation = Quatf( Vec3f( -_velocity.y, _velocity.x, -_velocity.z ) * (float)p_deltaTime );
 				_rotation	   = _rotation * rotation;
 				Vec3f position = _rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
 
