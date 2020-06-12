@@ -61,11 +61,11 @@ namespace VTX
 			// Keyboard.
 			if ( _isKeyPressed( SDL_SCANCODE_W ) || _isKeyPressed( SDL_SCANCODE_UP ) )
 			{
-				deltaDistance = 0.01f;
+				deltaDistance = 0.01f * (float)p_deltaTime * 144.f;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_S ) || _isKeyPressed( SDL_SCANCODE_DOWN ) )
 			{
-				deltaDistance = -0.01f;
+				deltaDistance = -0.01f * (float)p_deltaTime * 144.f;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_A ) || _isKeyPressed( SDL_SCANCODE_LEFT ) )
 			{
@@ -96,7 +96,6 @@ namespace VTX
 			if ( deltaDistance != 0.f )
 			{
 				deltaDistance *= Setting::Controller::translationSpeed;
-				deltaDistance *= (float)p_deltaTime * 144.f;
 
 				if ( _isKeyPressed( SDL_SCANCODE_LSHIFT ) )
 				{
