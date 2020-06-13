@@ -24,6 +24,18 @@ namespace VTX
 			explicit GLException( const std::string & p_err ) : std::runtime_error( "[GL] " + p_err ) {}
 		};
 
+		class OptixException : public std::runtime_error
+		{
+		  public:
+			explicit OptixException( const std::string & p_err ) : std::runtime_error( "[OPTIX] " + p_err ) {}
+		};
+
+		class CudaException : public std::runtime_error
+		{
+		  public:
+			explicit CudaException( const std::string & p_err ) : std::runtime_error( "[CUDA] " + p_err ) {}
+		};
+
 		class IMGUIException : public std::runtime_error
 		{
 		  public:

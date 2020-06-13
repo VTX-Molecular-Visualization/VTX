@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "exception.hpp"
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <nvrtc.h>
@@ -22,29 +23,29 @@
 #endif
 
 // TODO: remove marco !
-#define CUDA_HANDLE_ERROR( p_res )                                                                               \
-	do                                                                                                           \
-	{                                                                                                            \
-		const cudaError_t res = p_res;                                                                           \
-		if ( res != cudaSuccess )                                                                                \
-		{                                                                                                        \
-			std::stringstream message;                                                                           \
-			message << "CUDA Error " << cudaGetErrorName( p_res ) << " (" << cudaGetErrorString( p_res ) << ")"; \
-			throw std::runtime_error( message.str() );                                                           \
-		}                                                                                                        \
+#define CUDA_HANDLE_ERROR( p_res )                                                                          \
+	do                                                                                                      \
+	{                                                                                                       \
+		const cudaError_t res = p_res;                                                                      \
+		if ( res != cudaSuccess )                                                                           \
+		{                                                                                                   \
+			std::stringstream message;                                                                      \
+			message << "Error " << cudaGetErrorName( p_res ) << " (" << cudaGetErrorString( p_res ) << ")"; \
+			throw Exception::CudaException( message.str() );                                                \
+		}                                                                                                   \
 	} while ( 0 )
 
-#define CUDA_SYNCHRONIZE_HANDLE_ERROR()                                        \
-	do                                                                         \
-	{                                                                          \
-		cudaDeviceSynchronize();                                               \
-		const cudaError_t res = cudaGetLastError();                            \
-		if ( res != cudaSuccess )                                              \
-		{                                                                      \
-			std::stringstream message;                                         \
-			message << "CUDA Synchronize error " << cudaGetErrorString( res ); \
-			throw std::runtime_error( message.str() );                         \
-		}                                                                      \
+#define CUDA_SYNCHRONIZE_HANDLE_ERROR()                                   \
+	do                                                                    \
+	{                                                                     \
+		cudaDeviceSynchronize();                                          \
+		const cudaError_t res = cudaGetLastError();                       \
+		if ( res != cudaSuccess )                                         \
+		{                                                                 \
+			std::stringstream message;                                    \
+			message << "Synchronize error " << cudaGetErrorString( res ); \
+			throw Exception::CudaException( message.str() );              \
+		}                                                                 \
 	} while ( 0 )
 
 // TODO: remove marco !
