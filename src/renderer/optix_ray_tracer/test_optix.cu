@@ -1,11 +1,16 @@
 
+#include "cuda/random.hpp"
 #include "optix_parameters.hpp"
 #include <optix_device.h>
+
+#define NB_PIXEL_SAMPLES 16
 
 namespace VTX
 {
 	namespace Renderer
 	{
+		using namespace CUDA;
+
 		extern "C" __constant__ Optix::LaunchParameters params;
 
 		static __forceinline__ __device__ void setPayload( const float3 & p )
@@ -45,7 +50,7 @@ namespace VTX
 			setPayload( color * radiance );
 		}
 
-		extern "C" __global__ void __closesthit__cylinder()
+		/*extern "C" __global__ void __closesthit__cylinder()
 		{
 			Optix::HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
 
@@ -58,7 +63,7 @@ namespace VTX
 			const float	   radiance = fabsf( dot( rayDir, normal ) );
 
 			setPayload( color * radiance );
-		}
+		}*/
 
 		// extern "C" __global__ void __anyhit__() {}
 
@@ -103,33 +108,46 @@ namespace VTX
 
 		extern "C" __global__ void __raygen__()
 		{
-			const uint3 & id  = optixGetLaunchIndex();
-			const uint3 & dim = optixGetLaunchDimensions();
+			const int idx  = optixGetLaunchIndex().x;
+			const int idy  = optixGetLaunchIndex().y;
+			const int dimx = optixGetLaunchDimensions().x;
+			const int dimy = optixGetLaunchDimensions().y;
 
 			const Optix::RayGeneratorData * data
 				= reinterpret_cast<Optix::RayGeneratorData *>( optixGetSbtDataPointer() );
 
 			// camera data
-			const float3 & origin = data->_camera._position;
-			const float3 & front  = data->_camera._front;
-			const float3 & du	  = data->_camera._du;
-			const float3 & dv	  = data->_camera._dv;
+			const float3 & origin	 = data->_camera._position;
+			const float3 & front	 = data->_camera._front;
+			const float3 & du		 = data->_camera._du;
+			const float3 & dv		 = data->_camera._dv;
+			const int	   nbSamples = data->_nbSamples;
 
-			const uint32_t frameBufferId = id.x + id.y * dim.x;
+			uint32_t seed = tea<4>( idy * dimx + idx, 0 ); 
 
 			float3 color;
+			for ( int i = 0; i < nbSamples; ++i )
+			{
+				const float2 d
+					= make_float2( ( idx + rnd( seed ) ) / float( dimx ), ( idy + rnd( seed ) ) / float( dimy ) )
+						  * 2.f
+					  - 1.f;
+				float3 c;
+				const float3 rayDir = normalize( front + du * d.x + dv * d.y );
 
-			const float2 d = make_float2( float( id.x ) / float( dim.x ), float( id.y ) / float( dim.y ) ) * 2.f - 1.f;
-			const float3 rayDir = normalize( du * d.x + dv * d.y + front );
+				trace( params._traversable, // GAS
+					   origin,
+					   rayDir,
+					   1e-1f, // tMin
+					   1e4f,  // tMax
+					   &c );
+				color.x += c.x;
+				color.y += c.y;
+				color.z += c.z;
+			}
 
-			trace( params._traversable, // GAS
-				   origin,
-				   rayDir,
-				   1e-1f, // tMin
-				   1e4f, // tMax
-				   &color );
-
-			params._frame._pixels[ frameBufferId ] = make_color( color );
+			const uint32_t frameBufferId		   = idx + idy * dimx;
+			params._frame._pixels[ frameBufferId ] = make_color( color / nbSamples );
 		}
 
 		extern "C" __global__ void __intersection__sphere()
@@ -154,26 +172,26 @@ namespace VTX
 			}
 		}
 
-		extern "C" __global__ void __intersection__cylinder()
-		{
-			Optix::HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
+		// extern "C" __global__ void __intersection__cylinder()
+		//{
+		//	Optix::HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
 
-			// primitive data
-			const int id = optixGetPrimitiveIndex();
+		//	// primitive data
+		//	const int id = optixGetPrimitiveIndex();
 
-			Optix::Intersection hit;
-			if ( data->_cylinders[ id ].intersect( optixGetObjectRayOrigin(),
-												   optixGetObjectRayDirection(),
-												   optixGetRayTmin(),
-												   optixGetRayTmax(),
-												   hit ) )
-			{
-				unsigned int p0 = float_as_int( hit._normal.x );
-				unsigned int p1 = float_as_int( hit._normal.y );
-				unsigned int p2 = float_as_int( hit._normal.z );
+		//	Optix::Intersection hit;
+		//	if ( data->_cylinders[ id ].intersect( optixGetObjectRayOrigin(),
+		//										   optixGetObjectRayDirection(),
+		//										   optixGetRayTmin(),
+		//										   optixGetRayTmax(),
+		//										   hit ) )
+		//	{
+		//		unsigned int p0 = float_as_int( hit._normal.x );
+		//		unsigned int p1 = float_as_int( hit._normal.y );
+		//		unsigned int p2 = float_as_int( hit._normal.z );
 
-				optixReportIntersection( hit._t, 0, p0, p1, p2 );
-			}
-		}
+		//		optixReportIntersection( hit._t, 0, p0, p1, p2 );
+		//	}
+		//}
 	} // namespace Renderer
 } // namespace VTX

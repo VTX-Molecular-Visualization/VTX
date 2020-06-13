@@ -8,11 +8,10 @@
 #ifdef OPTIX_DEFINED
 
 #include "../base_renderer.hpp"
-#include "cuda_buffer.hpp"
+#include "cuda/buffer.hpp"
 #include "optix_parameters.hpp"
 #include "optix_util.hpp"
 #include "rt_scene_optix.hpp"
-#include "util/cuda.hpp"
 #include <vector>
 
 namespace VTX
@@ -52,11 +51,11 @@ namespace VTX
 			const Vec3f			_backgroundColor = Vec3f( 0.f, 0.f, 0.f );
 
 			// model
-			Optix::Scene				 _scene;
-			std::vector<Optix::Cylinder> _cylinders;
-			CudaBuffer					 _cylindersDevBuffer;
+			Optix::Scene _scene;
+			/*std::vector<Optix::Cylinder> _cylinders;
+			CUDA::Buffer				 _cylindersDevBuffer;*/
 
-			CudaBuffer _gasOutputBuffer;
+			CUDA::Buffer _gasOutputBuffer;
 			// CUDA data
 			int			   _bestDeviceId = -1;
 			cudaDeviceProp _deviceProperties;
@@ -74,20 +73,20 @@ namespace VTX
 
 			// vectors for program groups
 			std::vector<OptixProgramGroup> _rayGeneratorPrograms;
-			CudaBuffer					   _rayGeneratorRecordsBuffer;
+			CUDA::Buffer				   _rayGeneratorRecordsBuffer;
 			std::vector<OptixProgramGroup> _missPrograms;
-			CudaBuffer					   _missRecordsBuffer;
+			CUDA::Buffer				   _missRecordsBuffer;
 			std::vector<OptixProgramGroup> _hitGroupPrograms;
-			CudaBuffer					   _hitGroupRecordsBuffer;
+			CUDA::Buffer				   _hitGroupRecordsBuffer;
 
 			// shader binding table (SBT)
 			OptixShaderBindingTable _shaderBindingTable = {};
 
 			// launch parameters host/device
 			Optix::LaunchParameters _launchParameters;
-			CudaBuffer				_launchParametersBuffer;
+			CUDA::Buffer			_launchParametersBuffer;
 
-			CudaBuffer _pixelsBuffer;
+			CUDA::Buffer _pixelsBuffer;
 		};
 	} // namespace Renderer
 } // namespace VTX

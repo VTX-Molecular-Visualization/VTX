@@ -7,14 +7,14 @@
 
 #ifdef OPTIX_DEFINED
 
-#include "define.hpp"
-#include "util/cuda.hpp"
+#include "cuda/common.hpp"
+#include <assert.h>
 
 namespace VTX
 {
-	namespace Renderer
+	namespace CUDA
 	{
-		struct CudaBuffer
+		struct Buffer
 		{
 			inline CUdeviceptr getDevicePtr() const { return CUdeviceptr( _devicePtr ); }
 
@@ -62,7 +62,7 @@ namespace VTX
 			void * _devicePtr	= nullptr;
 			size_t _sizeInBytes = 0;
 		};
-	} // namespace Renderer
+	} // namespace CUDA
 } // namespace VTX
 #endif
 #endif

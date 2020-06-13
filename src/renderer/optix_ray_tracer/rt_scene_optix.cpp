@@ -8,10 +8,25 @@ namespace VTX
 		{
 			Scene::~Scene() { _spheresDevBuffer.free(); }
 
-			void Scene::add( const Model::Molecule * p_molecule )
+			void Scene::add( const Model::Molecule * p_molecule, const Generic::REPRESENTATION p_representation )
 			{
-				// TODO: only handle spheres...
-				const uint nbAtoms = p_molecule->getAtomCount();
+				// TODO: only handle spheres and the first frame for the moment...
+				switch ( p_representation )
+				{
+				case Generic::REPRESENTATION::VAN_DER_WAALS:
+				case Generic::REPRESENTATION::SAS: _addSpheres( p_molecule, p_representation ); break;
+				case Generic::REPRESENTATION::BALL_AND_STICK:
+				case Generic::REPRESENTATION::STICK:
+				case Generic::REPRESENTATION::CARTOON:
+				default: VTX_WARNING( "Not implemented" ); break;
+				}
+			}
+
+			void Scene::_addSpheres( const Model::Molecule *	   p_molecule,
+									 const Generic::REPRESENTATION p_representation )
+			{
+				const float radiusAdd = p_representation == Generic::REPRESENTATION::SAS ? 1.4f : 0.f;
+				const uint	nbAtoms	  = p_molecule->getAtomCount();
 				std::cout << "Adding " << nbAtoms << "(size on GPU: " << nbAtoms * sizeof( Optix::Sphere ) << ")"
 						  << std::endl;
 
@@ -24,9 +39,9 @@ namespace VTX
 				for ( uint i = 0; i < nbAtoms; ++i )
 				{
 					const Vec3f &	   p  = atomPositions[ i ];
-					const float		   r  = p_molecule->getAtomRadius( i );
+					const float		   r  = p_molecule->getAtomRadius( i ) + radiusAdd;
 					const Color::Rgb & c  = p_molecule->getAtomColor( i );
-					_spheres[ i ]._center = make_float3( p.x, p.y, p.z );
+					_spheres[ i ]._center = { p.x, p.y, p.z };
 					_spheres[ i ]._radius = r;
 					uint colorId		  = INVALID_ID;
 					for ( uint j = 0; j < uint( colors.size() ); ++j )

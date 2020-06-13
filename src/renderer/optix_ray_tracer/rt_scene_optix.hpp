@@ -7,7 +7,7 @@
 
 #ifdef OPTIX_DEFINED
 
-#include "cuda_buffer.hpp"
+#include "cuda/buffer.hpp"
 #include "model/molecule.hpp"
 #include "sphere.hpp"
 #include <vector>
@@ -25,16 +25,19 @@ namespace VTX
 				~Scene();
 
 				const std::vector<Sphere> & getSpheres() const { return _spheres; }
-				const CudaBuffer &			getSpheresDevBuffer() { return _spheresDevBuffer; }
-				const CudaBuffer &			getColorsDevBuffer() const { return _colorsDevBuffer; }
+				const CUDA::Buffer &		getSpheresDevBuffer() { return _spheresDevBuffer; }
+				const CUDA::Buffer &		getColorsDevBuffer() const { return _colorsDevBuffer; }
 
-				void add( const Model::Molecule * p_molecule );
+				void add( const Model::Molecule * p_molecule, const Generic::REPRESENTATION p_representation );
+
+			  private:
+				void _addSpheres( const Model::Molecule * p_molecule, const Generic::REPRESENTATION p_representation );
 
 			  private:
 				std::vector<Sphere> _spheres;
-				CudaBuffer			_spheresDevBuffer;
+				CUDA::Buffer		_spheresDevBuffer;
 
-				CudaBuffer _colorsDevBuffer;
+				CUDA::Buffer _colorsDevBuffer;
 			};
 		} // namespace Optix
 	}	  // namespace Renderer

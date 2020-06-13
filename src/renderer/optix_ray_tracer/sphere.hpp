@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "device_math_vec.hpp"
+#include "cuda/vec.hpp"
 #include <cuda_runtime.h>
 #include <optix.h>
 
@@ -15,26 +15,24 @@ namespace VTX
 	{
 		namespace Optix
 		{
-			// TODO: useful align ?
-			// TODO: move from here
-			struct __align__( 32 ) Intersection
+			using namespace CUDA;
+
+			struct Intersection
 			{
 				float3 _point;
 				float  _t;
 				float3 _normal;
-				float  _padding = 1.f;
 			};
 
-			struct __align__( 16 ) Sphere
+			struct Sphere
 			{
 				Sphere()  = default;
 				~Sphere() = default;
 
 				VTX_INLINE_HOST_DEVICE OptixAabb aabb() const
 				{
-					const float radius = float( _radius );
-					return { _center.x - radius, _center.y - radius, _center.z - radius,
-							 _center.x + radius, _center.y + radius, _center.z + radius };
+					return { _center.x - _radius, _center.y - _radius, _center.z - _radius,
+							 _center.x + _radius, _center.y + _radius, _center.z + _radius };
 				}
 
 				// TODO: uniformize intersects
@@ -74,9 +72,9 @@ namespace VTX
 					return false;
 				}
 
-				float3	 _center  = { 0.f, 0.f, 0.f };
-				half	 _radius  = 0.f;
-				uint16_t _colorId = 0;
+				float3 _center	= { 0.f, 0.f, 0.f };
+				float  _radius	= 0.f;
+				int	   _colorId = 0;
 			};
 		} // namespace Optix
 	}	  // namespace Renderer

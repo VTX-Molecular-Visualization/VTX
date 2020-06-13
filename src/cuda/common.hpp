@@ -1,16 +1,25 @@
-#ifndef __VTX_UTIL_CUDA__
-#define __VTX_UTIL_CUDA__
+#ifndef __VTX_UTIL_CUDA_COMMON__
+#define __VTX_UTIL_CUDA_COMMON__
 
 #ifdef _MSC_VER
 #pragma once
 #endif
 
-#ifdef CUDA_DEFINED
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <nvrtc.h>
 #include <sstream>
 #include <stdexcept>
+
+#ifdef __CUDACC__
+#define VTX_HOST_DEVICE __host__ __device__
+#define VTX_INLINE_DEVICE __forceinline__ __device__
+#define VTX_INLINE_HOST_DEVICE __forceinline__ __host__ __device__
+#else
+#define VTX_HOST_DEVICE
+#define VTX_INLINE_DEVICE inline
+#define VTX_INLINE_HOST_DEVICE inline
+#endif
 
 // TODO: remove marco !
 #define CUDA_HANDLE_ERROR( p_res )                                                                               \
@@ -54,41 +63,37 @@
 
 namespace VTX
 {
-	namespace Util
+	namespace CUDA
 	{
-		namespace CUDA
+		static const int chooseBestDevice()
 		{
-			static const int chooseBestDevice()
+			// Get number of CUDA capable devices
+			int nbDevices;
+			CUDA_HANDLE_ERROR( cudaGetDeviceCount( &nbDevices ) );
+
+			if ( nbDevices == 0 )
 			{
-				// Get number of CUDA capable devices
-				int nbDevices;
-				CUDA_HANDLE_ERROR( cudaGetDeviceCount( &nbDevices ) );
-
-				if ( nbDevices == 0 )
-				{
-					throw std::runtime_error( "Cannot find CUDA capable device" );
-				}
-
-				// Choose best device
-				int			   currentDev = 0;
-				int			   bestDev	  = -1;
-				int			   bestMajor  = 0;
-				cudaDeviceProp propDev;
-
-				while ( currentDev < nbDevices )
-				{
-					cudaGetDeviceProperties( &propDev, currentDev );
-					if ( propDev.major > bestMajor )
-					{
-						bestDev	  = currentDev;
-						bestMajor = propDev.major;
-					}
-					++currentDev;
-				}
-				return bestDev;
+				throw std::runtime_error( "Cannot find CUDA capable device" );
 			}
-		} // namespace CUDA
-	}	  // namespace Util
+
+			// Choose best device
+			int			   currentDev = 0;
+			int			   bestDev	  = -1;
+			int			   bestMajor  = 0;
+			cudaDeviceProp propDev;
+
+			while ( currentDev < nbDevices )
+			{
+				cudaGetDeviceProperties( &propDev, currentDev );
+				if ( propDev.major > bestMajor )
+				{
+					bestDev	  = currentDev;
+					bestMajor = propDev.major;
+				}
+				++currentDev;
+			}
+			return bestDev;
+		}
+	} // namespace CUDA
 } // namespace VTX
-#endif
 #endif
