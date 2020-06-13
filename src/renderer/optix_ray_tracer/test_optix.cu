@@ -1,5 +1,4 @@
 
-#include "device_math_vec.hpp"
 #include "optix_parameters.hpp"
 #include <optix_device.h>
 
@@ -116,22 +115,21 @@ namespace VTX
 			const float3 & du	  = data->_camera._du;
 			const float3 & dv	  = data->_camera._dv;
 
-			const float2 d = make_float2( float( id.x ) / float( dim.x ), float( id.y ) / float( dim.y ) ) * 2.f - 1.f;
-
-			const float3 rayDir = normalize( du * d.x + dv * d.y + front );
-
 			const uint32_t frameBufferId = id.x + id.y * dim.x;
 
-			float3 normal;
+			float3 color;
+
+			const float2 d = make_float2( float( id.x ) / float( dim.x ), float( id.y ) / float( dim.y ) ) * 2.f - 1.f;
+			const float3 rayDir = normalize( du * d.x + dv * d.y + front );
 
 			trace( params._traversable, // GAS
 				   origin,
 				   rayDir,
-				   1e-3f, // tMin
-				   1e32f, // tMax
-				   &normal );
+				   1e-1f, // tMin
+				   1e4f, // tMax
+				   &color );
 
-			params._frame._pixels[ frameBufferId ] = make_color( normal );
+			params._frame._pixels[ frameBufferId ] = make_color( color );
 		}
 
 		extern "C" __global__ void __intersection__sphere()

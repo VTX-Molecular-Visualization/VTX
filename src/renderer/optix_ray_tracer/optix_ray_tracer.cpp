@@ -12,7 +12,7 @@
 #include <thread>
 #include <unordered_set>
 
-#define SPHERES
+#define SPHERES 1
 
 namespace VTX
 {
@@ -25,7 +25,6 @@ namespace VTX
 
 		VTX::Renderer::OptixRayTracer::~OptixRayTracer()
 		{
-			_spheresDevBuffer.free();
 			_cylindersDevBuffer.free();
 			_gasOutputBuffer.free();
 
@@ -60,7 +59,6 @@ namespace VTX
 
 			resize( p_width, p_height );
 
-			_spheresDevBuffer.free();
 			_cylindersDevBuffer.free();
 			_gasOutputBuffer.free();
 
@@ -69,18 +67,18 @@ namespace VTX
 			_hitGroupRecordsBuffer.free();
 
 			// init scene on host and device !!!
-			const Model::Molecule * mol		= VTXApp::get().getScene().getMolecules().begin()->first;
-			const uint				nbAtoms = mol->getAtomCount();
-			const uint				nbBonds = mol->getBondCount();
+			const Model::Molecule * mol = VTXApp::get().getScene().getMolecules().begin()->first;
+			_scene.add( mol );
+			const uint nbAtoms = mol->getAtomCount();
+			const uint nbBonds = mol->getBondCount();
 			std::cout << "nbAtoms " << nbAtoms << "(size on GPU: " << nbAtoms * sizeof( Optix::Sphere ) << ")"
 					  << std::endl;
 			std::cout << "nbBonds " << nbBonds << "(size on GPU: " << nbBonds * sizeof( Optix::Cylinder ) << ")"
 					  << std::endl;
-			_spheres.resize( nbAtoms );
 			_cylinders.resize( nbBonds );
 			const std::vector<Vec3f> & atomPositions = mol->getAtomPositionFrame( 0 );
 			std::vector<float3>		   colors;
-			for ( uint i = 0; i < nbAtoms; ++i )
+			/*for ( uint i = 0; i < nbAtoms; ++i )
 			{
 				const Vec3f &	   p  = atomPositions[ i ];
 				const float		   r  = mol->getAtomRadius( i );
@@ -102,7 +100,7 @@ namespace VTX
 					colors.emplace_back( make_float3( c.getR(), c.getG(), c.getB() ) );
 				}
 				_spheres[ i ]._colorId = colorId;
-			}
+			}*/
 
 			for ( uint i = 0; i < nbBonds; ++i )
 			{
@@ -111,19 +109,15 @@ namespace VTX
 				const Vec3f &		p1	 = atomPositions[ bond.getIndexSecondAtom() ];
 				_cylinders[ i ]._v0		 = make_float3( p0.x, p0.y, p0.z );
 				_cylinders[ i ]._v1		 = make_float3( p1.x, p1.y, p1.z );
-				_cylinders[ i ]._colorId = _spheres[ bond.getIndexFirstAtom() ]._colorId;
+				_cylinders[ i ]._colorId = 0; //_spheres[ bond.getIndexFirstAtom() ]._colorId;
 			}
 
 #ifdef SPHERES
-			_spheresDevBuffer.malloc( _spheres.size() * sizeof( Optix::Sphere ) );
-			_spheresDevBuffer.memcpyHostToDevice( _spheres.data(), _spheres.size() );
 #else
 			_cylindersDevBuffer.malloc( _cylinders.size() * sizeof( Optix::Cylinder ) );
 			_cylindersDevBuffer.memcpyHostToDevice( _cylinders.data(), _cylinders.size() );
 #endif
-			_colorsDevBuffer.malloc( colors.size() * sizeof( float3 ) );
-			_colorsDevBuffer.memcpyHostToDevice( colors.data(), colors.size() );
-			_launchParameters._colors = (float3 *)( _colorsDevBuffer.getDevicePtr() );
+			_launchParameters._colors = (float3 *)( _scene.getColorsDevBuffer().getDevicePtr() );
 
 			try
 			{
@@ -178,10 +172,10 @@ namespace VTX
 			CUDA_HANDLE_ERROR( cudaEventCreate( &start ) );
 			CUDA_HANDLE_ERROR( cudaEventCreate( &stop ) );
 
+			CUDA_HANDLE_ERROR( cudaEventRecord( start, 0 ) );
+
 			_launchParametersBuffer.memcpyHostToDevice( &_launchParameters, 1 );
 			_launchParameters._frame._id++;
-
-			CUDA_HANDLE_ERROR( cudaEventRecord( start, 0 ) );
 
 			OPTIX_HANDLE_ERROR( optixLaunch( _optixPipeline,
 											 _cudaStream,
@@ -205,7 +199,6 @@ namespace VTX
 			// example, this will have to do)
 			CUDA_SYNCHRONIZE_HANDLE_ERROR();
 
-			_pixels.resize( _width * _height );
 			_pixelsBuffer.memcpyDeviceToHost( (uchar4 *)( _pixels.data() ),
 											  _launchParameters._frame._width * _launchParameters._frame._height );
 
@@ -217,6 +210,7 @@ namespace VTX
 		void OptixRayTracer::resize( const uint p_width, const uint p_height )
 		{
 			BaseRenderer::resize( p_width, p_height );
+			_pixels.resize( _width * _height );
 			_pixelsBuffer.realloc( _width * _height * sizeof( uint ) );
 			_launchParameters._frame._width	 = _width;
 			_launchParameters._frame._height = _height;
@@ -506,10 +500,11 @@ namespace VTX
 			std::vector<OptixAabb> aabbs;
 
 #ifdef SPHERES
-			aabbs.resize( _spheres.size() );
-			for ( uint i = 0; i < uint( _spheres.size() ); ++i )
+			const std::vector<Optix::Sphere> & spheres = _scene.getSpheres();
+			aabbs.resize( spheres.size() );
+			for ( uint i = 0; i < uint( spheres.size() ); ++i )
 			{
-				aabbs[ i ] = _spheres[ i ].aabb();
+				aabbs[ i ] = spheres[ i ].aabb();
 			}
 #else
 			aabbs.resize( _cylinders.size() );
@@ -722,7 +717,7 @@ namespace VTX
 
 					Optix::HitGroupRecord r;
 #ifdef SPHERES
-					r._data._spheres = (Optix::Sphere *)( _spheresDevBuffer.getDevicePtr() );
+					r._data._spheres = (Optix::Sphere *)( _scene.getSpheresDevBuffer().getDevicePtr() );
 #else
 					r._data._cylinders = (Optix::Cylinder *)( _cylindersDevBuffer.getDevicePtr() );
 #endif

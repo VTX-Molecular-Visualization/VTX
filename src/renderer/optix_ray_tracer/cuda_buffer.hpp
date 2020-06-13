@@ -38,7 +38,6 @@ namespace VTX
 				assert( _devicePtr != nullptr );
 				assert( _sizeInBytes == p_count * sizeof( T ) );
 				CUDA_HANDLE_ERROR(
-
 					cudaMemcpy( _devicePtr, (void *)p_b, p_count * sizeof( T ), cudaMemcpyHostToDevice ) );
 			}
 

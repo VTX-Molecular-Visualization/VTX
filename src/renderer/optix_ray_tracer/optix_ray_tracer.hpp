@@ -11,6 +11,7 @@
 #include "cuda_buffer.hpp"
 #include "optix_parameters.hpp"
 #include "optix_util.hpp"
+#include "rt_scene_optix.hpp"
 #include "util/cuda.hpp"
 #include <vector>
 
@@ -51,12 +52,9 @@ namespace VTX
 			const Vec3f			_backgroundColor = Vec3f( 0.f, 0.f, 0.f );
 
 			// model
-			std::vector<Optix::Sphere>	 _spheres;
-			CudaBuffer					 _spheresDevBuffer;
+			Optix::Scene				 _scene;
 			std::vector<Optix::Cylinder> _cylinders;
 			CudaBuffer					 _cylindersDevBuffer;
-
-			CudaBuffer _colorsDevBuffer;
 
 			CudaBuffer _gasOutputBuffer;
 			// CUDA data

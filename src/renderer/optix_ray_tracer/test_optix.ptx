@@ -202,6 +202,7 @@
 	// inline asm
 	call (%r5), _optix_get_launch_dimension_y, ();
 	// inline asm
+	mad.lo.s32 	%r18, %r4, %r2, %r1;
 	cvt.rn.f32.u32	%f10, %r1;
 	cvt.rn.f32.u32	%f11, %r4;
 	div.approx.ftz.f32 	%f12, %f10, %f11;
@@ -238,18 +239,17 @@
 	mul.ftz.f32 	%f4, %f31, %f39;
 	mul.ftz.f32 	%f5, %f33, %f39;
 	mul.ftz.f32 	%f6, %f35, %f39;
-	mad.lo.s32 	%r18, %r4, %r2, %r1;
 	ld.const.u64 	%rd2, [params+24];
 	ld.f32 	%f1, [%rd1];
 	ld.f32 	%f2, [%rd1+4];
 	ld.f32 	%f3, [%rd1+8];
-	mov.u32 	%r10, 1;
+	mov.u32 	%r13, 1;
 	mov.u32 	%r14, 0;
 	mov.f32 	%f7, 0f3A83126F;
 	mov.f32 	%f8, 0f749DC5AE;
 	mov.f32 	%f9, 0f00000000;
 	// inline asm
-	call (%r7, %r8, %r9), _optix_trace_3, (%rd2, %f1, %f2, %f3, %f4, %f5, %f6, %f7, %f8, %f9, %r10, %r14, %r14, %r14, %r14, %r19, %r20, %r21);
+	call (%r7, %r8, %r9), _optix_trace_3, (%rd2, %f1, %f2, %f3, %f4, %f5, %f6, %f7, %f8, %f9, %r13, %r14, %r14, %r13, %r14, %r19, %r20, %r21);
 	// inline asm
 	mov.b32 	 %f40, %r7;
 	mov.b32 	 %f41, %r8;

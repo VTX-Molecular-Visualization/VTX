@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#ifdef OPTIX_DEFINED
+//#ifdef OPTIX_DEFINED
 
 #include <cuda.h>
 #include <cuda_fp16.h>
@@ -144,5 +144,5 @@ namespace VTX
 	} // namespace Renderer
 } // namespace VTX
 
-#endif
+//#endif
 #endif
