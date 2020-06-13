@@ -15,12 +15,8 @@ namespace VTX
 			void LibChemfiles::readFile( const Path & p_path, Model::Molecule & p_molecule )
 			{
 				prepareChemfiles();
-				Tool::Chrono chrono;
-				chrono.start();
 				chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string() );
 				readTrajectory( trajectory, p_molecule, p_path.extension().string() );
-				chrono.stop();
-				VTX_INFO( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
 			void LibChemfiles::readBuffer( const std::string & p_buffer,
@@ -30,13 +26,9 @@ namespace VTX
 				std::string extension = p_extension.substr( 1, p_extension.size() );
 				std::transform( extension.begin(), extension.end(), extension.begin(), toupper );
 				prepareChemfiles();
-				Tool::Chrono chrono;
-				chrono.start();
 				chemfiles::Trajectory trajectory
 					= chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), extension );
 				readTrajectory( trajectory, p_molecule, p_extension );
-				chrono.stop();
-				VTX_INFO( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
 			void LibChemfiles::prepareChemfiles() const
@@ -60,7 +52,11 @@ namespace VTX
 					throw Exception::IOException( "Trajectory is empty" );
 				}
 
-				chemfiles::Frame						frame	 = p_trajectory.read();
+				Tool::Chrono chrono;
+				chrono.start();
+				chemfiles::Frame frame = p_trajectory.read();
+				chrono.stop();
+				VTX_INFO( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
 				const chemfiles::Topology &				topology = frame.topology();
 				const std::vector<chemfiles::Residue> & residues = topology.residues();
 				const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();

@@ -156,7 +156,6 @@ elseif(MSVC)
 	target_compile_options(VTX PRIVATE "/MP")  # Multicore compilation.
 	target_compile_options(VTX PRIVATE "/sdl") # SDL check.
 	#Optimizaion.
-	target_compile_options(VTX PRIVATE "/O2")  # Maximize speed.
 	target_compile_options(VTX PRIVATE "/Ob2") # Inline function expansion.
 	target_compile_options(VTX PRIVATE "/Ot")  # Favor speed.
 	target_compile_options(VTX PRIVATE "/Oi")  # Intrinsic functions.
