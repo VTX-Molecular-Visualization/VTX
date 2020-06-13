@@ -7,11 +7,8 @@
 
 //#ifndef OPTIX_DEFINED
 
-#include "cuda/vec.hpp"
+#include "cylinder.hpp"
 #include "sphere.hpp"
-#include <cuda_runtime.h>
-#include <optix.h>
-#include <stdint.h>
 
 namespace VTX::Renderer::Optix
 {
@@ -22,7 +19,7 @@ namespace VTX::Renderer::Optix
 		RAY_TYPE_COUNT
 	};
 
-	struct __align__( 32 ) LaunchParameters
+	struct LaunchParameters
 	{
 		struct
 		{
@@ -55,19 +52,10 @@ namespace VTX::Renderer::Optix
 		float3 _colorBackground;
 	};
 
-	// TODO: useful align ?
-	// struct __align__( 32 ) Cylinder
-	//{
-	//	Cylinder() = default;
-
-	//
-	//	uint16_t _padding;
-	//};
-
 	struct HitGroupData
 	{
-		Optix::Sphere * _spheres;
-		// Cylinder *		_cylinders;
+		Sphere *   _spheres;
+		Cylinder * _cylinders;
 	};
 
 	template<typename T>
@@ -78,9 +66,9 @@ namespace VTX::Renderer::Optix
 		T _data;
 	};
 
-	using RayGeneratorRecord = Record<Optix::RayGeneratorData>;
-	using MissRecord		 = Record<Optix::MissData>;
-	using HitGroupRecord	 = Record<Optix::HitGroupData>;
+	using RayGeneratorRecord = Record<RayGeneratorData>;
+	using MissRecord		 = Record<MissData>;
+	using HitGroupRecord	 = Record<HitGroupData>;
 
 } // namespace VTX::Renderer::Optix
 

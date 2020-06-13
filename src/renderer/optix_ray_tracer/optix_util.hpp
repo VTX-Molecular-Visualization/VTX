@@ -19,7 +19,7 @@
 		{                                                                                     \
 			std::stringstream message;                                                        \
 			message << "Optix error (code " << res << "): " << #p_res << "line " << __LINE__; \
-			throw std::runtime_error( message.str() );                                        \
+			throw Exception::OptixException( message.str() );                                 \
 		}                                                                                     \
 	}
 

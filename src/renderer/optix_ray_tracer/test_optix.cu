@@ -2,6 +2,7 @@
 #include "cuda/random.hpp"
 #include "optix_parameters.hpp"
 #include <optix_device.h>
+#include <device_functions.h>
 
 #define NB_PIXEL_SAMPLES 16
 
@@ -48,7 +49,7 @@ namespace VTX::Renderer::Optix
 		setPayload( color * radiance );
 	}
 
-	/*extern "C" __global__ void __closesthit__cylinder()
+	extern "C" __global__ void __closesthit__cylinder()
 	{
 		HitGroupData * data = reinterpret_cast<HitGroupData *>( optixGetSbtDataPointer() );
 
@@ -61,7 +62,7 @@ namespace VTX::Renderer::Optix
 		const float	   radiance = fabsf( dot( rayDir, normal ) );
 
 		setPayload( color * radiance );
-	}*/
+	}
 
 	// extern "C" __global__ void __anyhit__() {}
 
@@ -148,7 +149,7 @@ namespace VTX::Renderer::Optix
 
 	extern "C" __global__ void __intersection__sphere()
 	{
-		HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
+		HitGroupData * data = reinterpret_cast<HitGroupData *>( optixGetSbtDataPointer() );
 
 		// primitive data
 		const int id = optixGetPrimitiveIndex();
@@ -165,25 +166,25 @@ namespace VTX::Renderer::Optix
 		}
 	}
 
-	// extern "C" __global__ void __intersection__cylinder()
-	//{
-	//	HitGroupData * data = reinterpret_cast<Optix::HitGroupData *>( optixGetSbtDataPointer() );
+	 extern "C" __global__ void __intersection__cylinder()
+	{
+		HitGroupData * data = reinterpret_cast<HitGroupData *>( optixGetSbtDataPointer() );
 
-	//	// primitive data
-	//	const int id = optixGetPrimitiveIndex();
+		// primitive data
+		const int id = optixGetPrimitiveIndex();
 
-	//	Intersection hit;
-	//	if ( data->_cylinders[ id ].intersect( optixGetObjectRayOrigin(),
-	//										   optixGetObjectRayDirection(),
-	//										   optixGetRayTmin(),
-	//										   optixGetRayTmax(),
-	//										   hit ) )
-	//	{
-	//		unsigned int p0 = float_as_int( hit._normal.x );
-	//		unsigned int p1 = float_as_int( hit._normal.y );
-	//		unsigned int p2 = float_as_int( hit._normal.z );
+		Intersection hit;
+		if ( data->_cylinders[ id ].intersect( optixGetObjectRayOrigin(),
+											   optixGetObjectRayDirection(),
+											   optixGetRayTmin(),
+											   optixGetRayTmax(),
+											   hit ) )
+		{
+			unsigned int p0 = float_as_int( hit._normal.x );
+			unsigned int p1 = float_as_int( hit._normal.y );
+			unsigned int p2 = float_as_int( hit._normal.z );
 
-	//		optixReportIntersection( hit._t, 0, p0, p1, p2 );
-	//	}
-	//}
+			optixReportIntersection( hit._t, 0, p0, p1, p2 );
+		}
+	}
 } // namespace VTX::Renderer::Optix

@@ -12,7 +12,7 @@
 #include <thread>
 #include <unordered_set>
 
-#define SPHERES 1
+//#define SPHERES
 
 namespace VTX::Renderer::Optix
 {
@@ -23,7 +23,6 @@ namespace VTX::Renderer::Optix
 
 	OptixRayTracer::~OptixRayTracer()
 	{
-		//_cylindersDevBuffer.free();
 		_gasOutputBuffer.free();
 
 		_rayGeneratorRecordsBuffer.free();
@@ -57,7 +56,6 @@ namespace VTX::Renderer::Optix
 
 		resize( p_width, p_height );
 
-		//_cylindersDevBuffer.free();
 		_gasOutputBuffer.free();
 
 		_rayGeneratorRecordsBuffer.free();
@@ -67,54 +65,8 @@ namespace VTX::Renderer::Optix
 		// init scene on host and device !!!
 		const Model::Molecule * mol = VTXApp::get().getScene().getMolecules().begin()->first;
 		_scene.add( mol, Setting::Rendering::representation );
-		const uint nbAtoms = mol->getAtomCount();
-		// const uint nbBonds = mol->getBondCount();
-		std::cout << "nbAtoms " << nbAtoms << "(size on GPU: " << nbAtoms * sizeof( Optix::Sphere ) << ")" << std::endl;
-		/*std::cout << "nbBonds " << nbBonds << "(size on GPU: " << nbBonds * sizeof( Optix::Cylinder ) << ")"
-				  << std::endl;
-		_cylinders.resize( nbBonds );*/
-		const std::vector<Vec3f> & atomPositions = mol->getAtomPositionFrame( 0 );
-		std::vector<float3>		   colors;
-		/*for ( uint i = 0; i < nbAtoms; ++i )
-		{
-			const Vec3f &	   p  = atomPositions[ i ];
-			const float		   r  = mol->getAtomRadius( i );
-			const Color::Rgb & c  = mol->getAtomColor( i );
-			_spheres[ i ]._center = make_float3( p.x, p.y, p.z );
-			_spheres[ i ]._radius = r;
-			uint colorId		  = INVALID_ID;
-			for ( uint j = 0; j < uint( colors.size() ); ++j )
-			{
-				if ( colors[ j ].x == c.getR() && colors[ j ].y == c.getG() && colors[ j ].z == c.getB() )
-				{
-					colorId = j;
-					break;
-				}
-			}
-			if ( colorId == INVALID_ID )
-			{
-				colorId = uint( colors.size() );
-				colors.emplace_back( make_float3( c.getR(), c.getG(), c.getB() ) );
-			}
-			_spheres[ i ]._colorId = colorId;
-		}*/
 
-		// for ( uint i = 0; i < nbBonds; ++i )
-		//{
-		//	const Model::Bond & bond = mol->getBond( i );
-		//	const Vec3f &		p0	 = atomPositions[ bond.getIndexFirstAtom() ];
-		//	const Vec3f &		p1	 = atomPositions[ bond.getIndexSecondAtom() ];
-		//	_cylinders[ i ]._v0		 = make_float3( p0.x, p0.y, p0.z );
-		//	_cylinders[ i ]._v1		 = make_float3( p1.x, p1.y, p1.z );
-		//	_cylinders[ i ]._colorId = 0; //_spheres[ bond.getIndexFirstAtom() ]._colorId;
-		//}
-
-#ifdef SPHERES
-#else
-		/*_cylindersDevBuffer.malloc( _cylinders.size() * sizeof( Optix::Cylinder ) );
-		_cylindersDevBuffer.memcpyHostToDevice( _cylinders.data(), _cylinders.size() );*/
-#endif
-		_launchParameters._colors = (float3 *)( _scene.getColorsDevBuffer().getDevicePtr() );
+		_launchParameters._colors = (float3 *)( _scene.getColorsDevPtr() );
 
 		try
 		{
@@ -460,7 +412,7 @@ namespace VTX::Renderer::Optix
 #ifdef SPHERES
 		programDescription.hitgroup.entryFunctionNameCH = "__closesthit__sphere";
 #else
-		// programDescription.hitgroup.entryFunctionNameCH = "__closesthit__cylinder";
+		programDescription.hitgroup.entryFunctionNameCH = "__closesthit__cylinder";
 #endif
 		programDescription.hitgroup.moduleAH			= nullptr; //_optixModule;
 		programDescription.hitgroup.entryFunctionNameAH = nullptr; //"__anyhit__";
@@ -469,7 +421,7 @@ namespace VTX::Renderer::Optix
 #ifdef SPHERES
 		programDescription.hitgroup.entryFunctionNameIS = "__intersection__sphere";
 #else
-		// programDescription.hitgroup.entryFunctionNameIS = "__intersection__cylinder";
+		programDescription.hitgroup.entryFunctionNameIS = "__intersection__cylinder";
 #endif
 
 		char   log[ 2048 ];
@@ -490,18 +442,19 @@ namespace VTX::Renderer::Optix
 		std::vector<OptixAabb> aabbs;
 
 #ifdef SPHERES
-		const std::vector<Optix::Sphere> & spheres = _scene.getSpheres();
+		const std::vector<Sphere> & spheres = _scene.getSpheres();
 		aabbs.resize( spheres.size() );
 		for ( uint i = 0; i < uint( spheres.size() ); ++i )
 		{
 			aabbs[ i ] = spheres[ i ].aabb();
 		}
 #else
-		/*aabbs.resize( _cylinders.size() );
-		for ( uint i = 0; i < uint( _cylinders.size() ); ++i )
+		const std::vector<Cylinder> & cylinders			= _scene.getCylinders();
+		aabbs.resize( cylinders.size() );
+		for ( uint i = 0; i < uint( cylinders.size() ); ++i )
 		{
-			aabbs[ i ] = _cylinders[ i ].aabb();
-		}*/
+			aabbs[ i ] = cylinders[ i ].aabb();
+		}
 #endif
 		CUDA::Buffer aabbsBuffer;
 		aabbsBuffer.malloc( aabbs.size() * sizeof( OptixAabb ) );
@@ -635,20 +588,11 @@ namespace VTX::Renderer::Optix
 		_shaderBindingTable = {};
 		// create ray generator records buffer on device
 		{
-			std::vector<Optix::RayGeneratorRecord> rayGeneratorRecords;
+			std::vector<RayGeneratorRecord> rayGeneratorRecords;
 			for ( const OptixProgramGroup & g : _rayGeneratorPrograms )
 			{
-				Optix::RayGeneratorRecord r;
+				RayGeneratorRecord r;
 
-				// spike_closed_glycans_lipids_amarolab
-				/*Vec3f camPos   = Vec3f( 12.950272f, -375.106812f, 119.278503f );
-				Vec3f camFront = Vec3f( -0.016405f, 0.999115f, -0.038744f );
-				Vec3f camUp	   = Vec3f( -0.009818f, 0.038586f, 0.999207f );*/
-				// 6vsb
-				/*Vec3f camPos   = Vec3f( 93.404381f, 176.164490f, 253.466934f );
-				Vec3f camFront = Vec3f( 0.938164f, 0.320407f, -0.131098f );
-				Vec3f camLeft  = Vec3f( 0.112113f, 0.077086f, 0.990701f );
-				Vec3f camUp	   = Vec3f( 0.327533f, -0.944138f, 0.036398f );*/
 				const Object3D::Camera & cam		= VTXApp::get().getScene().getCamera();
 				Vec3f					 camPos		= cam.getPosition();
 				Vec3f					 camFront	= cam.getFront();
@@ -671,7 +615,7 @@ namespace VTX::Renderer::Optix
 				OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( g, &r ) );
 				rayGeneratorRecords.emplace_back( r );
 			}
-			_rayGeneratorRecordsBuffer.malloc( rayGeneratorRecords.size() * sizeof( Optix::RayGeneratorRecord ) );
+			_rayGeneratorRecordsBuffer.malloc( rayGeneratorRecords.size() * sizeof( RayGeneratorRecord ) );
 			_rayGeneratorRecordsBuffer.memcpyHostToDevice( rayGeneratorRecords.data(), rayGeneratorRecords.size() );
 
 			_shaderBindingTable.raygenRecord = _rayGeneratorRecordsBuffer.getDevicePtr();
@@ -679,44 +623,44 @@ namespace VTX::Renderer::Optix
 
 		// create miss records buffer on device
 		{
-			std::vector<Optix::MissRecord> missRecords;
+			std::vector<MissRecord> missRecords;
 			for ( const OptixProgramGroup & g : _missPrograms )
 			{
-				Optix::MissRecord r;
+				MissRecord r;
 				r._data._colorBackground = make_float3( _backgroundColor.r, _backgroundColor.g, _backgroundColor.b );
 				OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( g, &r ) );
 				missRecords.emplace_back( r );
 			}
-			_missRecordsBuffer.malloc( missRecords.size() * sizeof( Optix::MissRecord ) );
+			_missRecordsBuffer.malloc( missRecords.size() * sizeof( MissRecord ) );
 			_missRecordsBuffer.memcpyHostToDevice( missRecords.data(), missRecords.size() );
 
 			_shaderBindingTable.missRecordBase			= _missRecordsBuffer.getDevicePtr();
-			_shaderBindingTable.missRecordStrideInBytes = sizeof( Optix::MissRecord );
+			_shaderBindingTable.missRecordStrideInBytes = sizeof( MissRecord );
 			_shaderBindingTable.missRecordCount			= int( missRecords.size() );
 		}
 
 		// create hitgroup records buffer on device
 		{
-			uint							   nbObjects = 1;
-			std::vector<Optix::HitGroupRecord> hitGroupRecords;
+			uint						nbObjects = 1;
+			std::vector<HitGroupRecord> hitGroupRecords;
 			for ( uint i = 0; i < nbObjects; ++i )
 			{
 				int objectType = 0;
 
-				Optix::HitGroupRecord r;
+				HitGroupRecord r;
 #ifdef SPHERES
-				r._data._spheres = (Optix::Sphere *)( _scene.getSpheresDevBuffer().getDevicePtr() );
+				r._data._spheres = (Sphere *)( _scene.getSpheresDevPtr() );
 #else
-				// r._data._cylinders = (Optix::Cylinder *)( _cylindersDevBuffer.getDevicePtr() );
+				r._data._cylinders = (Cylinder *)( _scene.getCylindersDevPtr() );
 #endif
 				OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _hitGroupPrograms[ objectType ], &r ) );
 				hitGroupRecords.emplace_back( r );
 			}
-			_hitGroupRecordsBuffer.malloc( hitGroupRecords.size() * sizeof( Optix::HitGroupRecord ) );
+			_hitGroupRecordsBuffer.malloc( hitGroupRecords.size() * sizeof( HitGroupRecord ) );
 			_hitGroupRecordsBuffer.memcpyHostToDevice( hitGroupRecords.data(), hitGroupRecords.size() );
 
 			_shaderBindingTable.hitgroupRecordBase			= _hitGroupRecordsBuffer.getDevicePtr();
-			_shaderBindingTable.hitgroupRecordStrideInBytes = sizeof( Optix::HitGroupRecord );
+			_shaderBindingTable.hitgroupRecordStrideInBytes = sizeof( HitGroupRecord );
 			_shaderBindingTable.hitgroupRecordCount			= int( hitGroupRecords.size() );
 		}
 	}

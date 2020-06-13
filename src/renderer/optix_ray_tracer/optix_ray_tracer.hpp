@@ -50,8 +50,6 @@ namespace VTX::Renderer::Optix
 
 		// model
 		Optix::Scene _scene;
-		/*std::vector<Optix::Cylinder> _cylinders;
-		CUDA::Buffer				 _cylindersDevBuffer;*/
 
 		CUDA::Buffer _gasOutputBuffer;
 		// CUDA data
