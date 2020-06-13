@@ -61,39 +61,36 @@
 		}                                                                                       \
 	} while ( 0 )
 
-namespace VTX
+namespace VTX::CUDA
 {
-	namespace CUDA
+	static const int chooseBestDevice()
 	{
-		static const int chooseBestDevice()
+		// Get number of CUDA capable devices
+		int nbDevices;
+		CUDA_HANDLE_ERROR( cudaGetDeviceCount( &nbDevices ) );
+
+		if ( nbDevices == 0 )
 		{
-			// Get number of CUDA capable devices
-			int nbDevices;
-			CUDA_HANDLE_ERROR( cudaGetDeviceCount( &nbDevices ) );
-
-			if ( nbDevices == 0 )
-			{
-				throw std::runtime_error( "Cannot find CUDA capable device" );
-			}
-
-			// Choose best device
-			int			   currentDev = 0;
-			int			   bestDev	  = -1;
-			int			   bestMajor  = 0;
-			cudaDeviceProp propDev;
-
-			while ( currentDev < nbDevices )
-			{
-				cudaGetDeviceProperties( &propDev, currentDev );
-				if ( propDev.major > bestMajor )
-				{
-					bestDev	  = currentDev;
-					bestMajor = propDev.major;
-				}
-				++currentDev;
-			}
-			return bestDev;
+			throw std::runtime_error( "Cannot find CUDA capable device" );
 		}
-	} // namespace CUDA
-} // namespace VTX
+
+		// Choose best device
+		int			   currentDev = 0;
+		int			   bestDev	  = -1;
+		int			   bestMajor  = 0;
+		cudaDeviceProp propDev;
+
+		while ( currentDev < nbDevices )
+		{
+			cudaGetDeviceProperties( &propDev, currentDev );
+			if ( propDev.major > bestMajor )
+			{
+				bestDev	  = currentDev;
+				bestMajor = propDev.major;
+			}
+			++currentDev;
+		}
+		return bestDev;
+	}
+} // namespace VTX::CUDA
 #endif

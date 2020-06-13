@@ -5,78 +5,65 @@
 #pragma once
 #endif
 
-#include "cuda/vec.hpp"
-#include <cuda_runtime.h>
+#include "intersection.hpp"
 #include <optix.h>
 
-namespace VTX
+namespace VTX::Renderer::Optix
 {
-	namespace Renderer
+	using namespace CUDA; // mandatory to use operator on floatX, etc.
+
+	struct Sphere
 	{
-		namespace Optix
+		Sphere()  = default;
+		~Sphere() = default;
+
+		VTX_INLINE_HOST_DEVICE OptixAabb aabb() const
 		{
-			using namespace CUDA;
+			return { _center.x - _radius, _center.y - _radius, _center.z - _radius,
+					 _center.x + _radius, _center.y + _radius, _center.z + _radius };
+		}
 
-			struct Intersection
+		// TODO: uniformize intersects
+		VTX_INLINE_HOST_DEVICE bool intersect( const float3 & p_origin,
+											   const float3 & p_direction,
+											   const float	  p_tMin,
+											   const float	  p_tMax,
+											   Intersection & p_hit ) const
+		{
+			const float3 oc		= p_origin - _center;
+			const float	 radius = float( _radius );
+			const float	 b		= dot( oc, p_direction );
+			const float	 c		= dot( oc, oc ) - radius * radius;
+			const float	 delta	= b * b - c;
+
+			if ( delta > 0.f )
 			{
-				float3 _point;
-				float  _t;
-				float3 _normal;
-			};
+				const float sqrtDelta = sqrtf( delta );
 
-			struct Sphere
-			{
-				Sphere()  = default;
-				~Sphere() = default;
-
-				VTX_INLINE_HOST_DEVICE OptixAabb aabb() const
-				{
-					return { _center.x - _radius, _center.y - _radius, _center.z - _radius,
-							 _center.x + _radius, _center.y + _radius, _center.z + _radius };
-				}
-
-				// TODO: uniformize intersects
-				VTX_INLINE_HOST_DEVICE bool intersect( const float3 & p_origin,
-													   const float3 & p_direction,
-													   const float	  p_tMin,
-													   const float	  p_tMax,
-													   Intersection & p_hit ) const
-				{
-					const float3 oc		= p_origin - _center;
-					const float	 radius = float( _radius );
-					const float	 b		= dot( oc, p_direction );
-					const float	 c		= dot( oc, oc ) - radius * radius;
-					const float	 delta	= b * b - c;
-
-					if ( delta > 0.f )
+				float t = ( -b - sqrtDelta );
+				if ( t <= p_tMax )
+				{ // first intersection not too far
+					if ( t < p_tMin )
 					{
-						const float sqrtDelta = sqrtf( delta );
+						t = ( -b + sqrtDelta );
+					}								  // first intersection too near, check second one
+					if ( t >= p_tMin && t <= p_tMax ) // t is within the interval
+					{
+						p_hit._t	  = t;
+						p_hit._point  = p_origin + p_direction * p_hit._t;
+						p_hit._normal = ( p_hit._point - _center ) / radius;
 
-						float t = ( -b - sqrtDelta );
-						if ( t <= p_tMax )
-						{ // first intersection not too far
-							if ( t < p_tMin )
-							{
-								t = ( -b + sqrtDelta );
-							}								  // first intersection too near, check second one
-							if ( t >= p_tMin && t <= p_tMax ) // t is within the interval
-							{
-								p_hit._t	  = t;
-								p_hit._point  = p_origin + p_direction * p_hit._t;
-								p_hit._normal = ( p_hit._point - _center ) / radius;
-
-								return true;
-							}
-						}
+						return true;
 					}
-					return false;
 				}
+			}
+			return false;
+		}
 
-				float3 _center	= { 0.f, 0.f, 0.f };
-				float  _radius	= 0.f;
-				int	   _colorId = 0;
-			};
-		} // namespace Optix
-	}	  // namespace Renderer
-} // namespace VTX
+		float3 _center	= { 0.f, 0.f, 0.f };
+		float  _radius	= 0.f;
+		int	   _colorId = 0;
+	};
+
+} // namespace VTX::Renderer::Optix
 #endif

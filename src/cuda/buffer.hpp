@@ -10,59 +10,54 @@
 #include "cuda/common.hpp"
 #include <assert.h>
 
-namespace VTX
+namespace VTX::CUDA
 {
-	namespace CUDA
+	struct Buffer
 	{
-		struct Buffer
+		inline CUdeviceptr getDevicePtr() const { return CUdeviceptr( _devicePtr ); }
+
+		void malloc( const size_t p_size )
 		{
-			inline CUdeviceptr getDevicePtr() const { return CUdeviceptr( _devicePtr ); }
+			assert( _devicePtr == nullptr );
+			_sizeInBytes = p_size;
+			CUDA_HANDLE_ERROR( cudaMalloc( (void **)&_devicePtr, _sizeInBytes ) );
+		}
 
-			void malloc( const size_t p_size )
+		void free()
+		{
+			CUDA_HANDLE_ERROR( cudaFree( _devicePtr ) );
+			_devicePtr	 = nullptr;
+			_sizeInBytes = 0;
+		}
+
+		template<typename T>
+		void memcpyHostToDevice( const T * p_b, const size_t p_count )
+		{
+			assert( _devicePtr != nullptr );
+			assert( _sizeInBytes == p_count * sizeof( T ) );
+			CUDA_HANDLE_ERROR( cudaMemcpy( _devicePtr, (void *)p_b, p_count * sizeof( T ), cudaMemcpyHostToDevice ) );
+		}
+
+		template<typename T>
+		void memcpyDeviceToHost( T * p_b, const size_t p_count )
+		{
+			assert( _devicePtr != nullptr );
+			assert( _sizeInBytes == p_count * sizeof( T ) );
+			CUDA_HANDLE_ERROR( cudaMemcpy( (void *)p_b, _devicePtr, p_count * sizeof( T ), cudaMemcpyDeviceToHost ) );
+		}
+
+		void realloc( const size_t p_size )
+		{
+			if ( _devicePtr != nullptr )
 			{
-				assert( _devicePtr == nullptr );
-				_sizeInBytes = p_size;
-				CUDA_HANDLE_ERROR( cudaMalloc( (void **)&_devicePtr, _sizeInBytes ) );
+				free();
 			}
+			malloc( p_size );
+		}
 
-			void free()
-			{
-				CUDA_HANDLE_ERROR( cudaFree( _devicePtr ) );
-				_devicePtr	 = nullptr;
-				_sizeInBytes = 0;
-			}
-
-			template<typename T>
-			void memcpyHostToDevice( const T * p_b, const size_t p_count )
-			{
-				assert( _devicePtr != nullptr );
-				assert( _sizeInBytes == p_count * sizeof( T ) );
-				CUDA_HANDLE_ERROR(
-					cudaMemcpy( _devicePtr, (void *)p_b, p_count * sizeof( T ), cudaMemcpyHostToDevice ) );
-			}
-
-			template<typename T>
-			void memcpyDeviceToHost( T * p_b, const size_t p_count )
-			{
-				assert( _devicePtr != nullptr );
-				assert( _sizeInBytes == p_count * sizeof( T ) );
-				CUDA_HANDLE_ERROR(
-					cudaMemcpy( (void *)p_b, _devicePtr, p_count * sizeof( T ), cudaMemcpyDeviceToHost ) );
-			}
-
-			void realloc( const size_t p_size )
-			{
-				if ( _devicePtr != nullptr )
-				{
-					free();
-				}
-				malloc( p_size );
-			}
-
-			void * _devicePtr	= nullptr;
-			size_t _sizeInBytes = 0;
-		};
-	} // namespace CUDA
-} // namespace VTX
+		void * _devicePtr	= nullptr;
+		size_t _sizeInBytes = 0;
+	};
+} // namespace VTX::CUDA
 #endif
 #endif

@@ -12,36 +12,30 @@
 #include "sphere.hpp"
 #include <vector>
 
-namespace VTX
+namespace VTX::Renderer::Optix
 {
-	namespace Renderer
+	class Scene
 	{
-		namespace Optix
-		{
-			class Scene
-			{
-			  public:
-				Scene() = default;
-				~Scene();
+	  public:
+		Scene() = default;
+		~Scene();
 
-				const std::vector<Sphere> & getSpheres() const { return _spheres; }
-				const CUDA::Buffer &		getSpheresDevBuffer() { return _spheresDevBuffer; }
-				const CUDA::Buffer &		getColorsDevBuffer() const { return _colorsDevBuffer; }
+		const std::vector<Sphere> & getSpheres() const { return _spheres; }
+		const CUDA::Buffer &		getSpheresDevBuffer() { return _spheresDevBuffer; }
+		const CUDA::Buffer &		getColorsDevBuffer() const { return _colorsDevBuffer; }
 
-				void add( const Model::Molecule * p_molecule, const Generic::REPRESENTATION p_representation );
+		void add( const Model::Molecule * p_molecule, const Generic::REPRESENTATION p_representation );
 
-			  private:
-				void _addSpheres( const Model::Molecule * p_molecule, const Generic::REPRESENTATION p_representation );
+	  private:
+		void _addSpheres( const Model::Molecule * p_molecule, const Generic::REPRESENTATION p_representation );
 
-			  private:
-				std::vector<Sphere> _spheres;
-				CUDA::Buffer		_spheresDevBuffer;
+	  private:
+		std::vector<Sphere> _spheres;
+		CUDA::Buffer		_spheresDevBuffer;
 
-				CUDA::Buffer _colorsDevBuffer;
-			};
-		} // namespace Optix
-	}	  // namespace Renderer
-} // namespace VTX
+		CUDA::Buffer _colorsDevBuffer;
+	};
+} // namespace VTX::Renderer::Optix
 
 #endif
 #endif

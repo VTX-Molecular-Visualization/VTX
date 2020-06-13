@@ -14,82 +14,79 @@
 #include "rt_scene_optix.hpp"
 #include <vector>
 
-namespace VTX
+namespace VTX::Renderer::Optix
 {
-	namespace Renderer
+	class OptixRayTracer : public BaseRenderer
 	{
-		class OptixRayTracer : public BaseRenderer
-		{
-		  public:
-			OptixRayTracer() = default;
-			~OptixRayTracer();
+	  public:
+		OptixRayTracer() = default;
+		~OptixRayTracer();
 
-			virtual void init( const uint, const uint ) override;
-			virtual void renderFrame( const Object3D::Scene & ) override;
-			virtual void setShading() override;
-			virtual void resize( const uint, const uint ) override;
+		virtual void init( const uint, const uint ) override;
+		virtual void renderFrame( const Object3D::Scene & ) override;
+		virtual void setShading() override;
+		virtual void resize( const uint, const uint ) override;
 
-			const inline std::vector<uchar4> & getPixels() const { return _pixels; }
+		const inline std::vector<uchar4> & getPixels() const { return _pixels; }
 
-		  private:
-			void _initOptix();
-			void _createOptixContext();
-			void _createOptixModule();
-			// setup optix programs
-			void _createOptixRayGeneratorPrograms();
-			void _createOptixMissPrograms();
-			void _createOptixHitGroupPrograms();
-			// create GAS
-			OptixTraversableHandle _buildGAS();
-			// create pipeline from programs
-			void _createOptixPipeline();
-			// create shader binding table
-			void _createOptixShaderBindingTable();
+	  private:
+		void _initOptix();
+		void _createOptixContext();
+		void _createOptixModule();
+		// setup optix programs
+		void _createOptixRayGeneratorPrograms();
+		void _createOptixMissPrograms();
+		void _createOptixHitGroupPrograms();
+		// create GAS
+		OptixTraversableHandle _buildGAS();
+		// create pipeline from programs
+		void _createOptixPipeline();
+		// create shader binding table
+		void _createOptixShaderBindingTable();
 
-		  private:
-			std::vector<uchar4> _pixels			 = std::vector<uchar4>();
-			const Vec3f			_backgroundColor = Vec3f( 0.f, 0.f, 0.f );
+	  private:
+		std::vector<uchar4> _pixels			 = std::vector<uchar4>();
+		const Vec3f			_backgroundColor = Vec3f( 0.f, 0.f, 0.f );
 
-			// model
-			Optix::Scene _scene;
-			/*std::vector<Optix::Cylinder> _cylinders;
-			CUDA::Buffer				 _cylindersDevBuffer;*/
+		// model
+		Optix::Scene _scene;
+		/*std::vector<Optix::Cylinder> _cylinders;
+		CUDA::Buffer				 _cylindersDevBuffer;*/
 
-			CUDA::Buffer _gasOutputBuffer;
-			// CUDA data
-			int			   _bestDeviceId = -1;
-			cudaDeviceProp _deviceProperties;
-			CUcontext	   _cudaContext;
-			CUstream	   _cudaStream;
+		CUDA::Buffer _gasOutputBuffer;
+		// CUDA data
+		int			   _bestDeviceId = -1;
+		cudaDeviceProp _deviceProperties;
+		CUcontext	   _cudaContext;
+		CUstream	   _cudaStream;
 
-			// OptiX data
-			OptixDeviceContext _optixContext;
-			// optix module contains gpu programs used
-			OptixModule					_optixModule;
-			OptixModuleCompileOptions	_optixModuleCompileOptions;
-			OptixPipeline				_optixPipeline;
-			OptixPipelineCompileOptions _optixPipelineCompileOptions;
-			OptixPipelineLinkOptions	_optixPipelineLinkOptions;
+		// OptiX data
+		OptixDeviceContext _optixContext;
+		// optix module contains gpu programs used
+		OptixModule					_optixModule;
+		OptixModuleCompileOptions	_optixModuleCompileOptions;
+		OptixPipeline				_optixPipeline;
+		OptixPipelineCompileOptions _optixPipelineCompileOptions;
+		OptixPipelineLinkOptions	_optixPipelineLinkOptions;
 
-			// vectors for program groups
-			std::vector<OptixProgramGroup> _rayGeneratorPrograms;
-			CUDA::Buffer				   _rayGeneratorRecordsBuffer;
-			std::vector<OptixProgramGroup> _missPrograms;
-			CUDA::Buffer				   _missRecordsBuffer;
-			std::vector<OptixProgramGroup> _hitGroupPrograms;
-			CUDA::Buffer				   _hitGroupRecordsBuffer;
+		// vectors for program groups
+		std::vector<OptixProgramGroup> _rayGeneratorPrograms;
+		CUDA::Buffer				   _rayGeneratorRecordsBuffer;
+		std::vector<OptixProgramGroup> _missPrograms;
+		CUDA::Buffer				   _missRecordsBuffer;
+		std::vector<OptixProgramGroup> _hitGroupPrograms;
+		CUDA::Buffer				   _hitGroupRecordsBuffer;
 
-			// shader binding table (SBT)
-			OptixShaderBindingTable _shaderBindingTable = {};
+		// shader binding table (SBT)
+		OptixShaderBindingTable _shaderBindingTable = {};
 
-			// launch parameters host/device
-			Optix::LaunchParameters _launchParameters;
-			CUDA::Buffer			_launchParametersBuffer;
+		// launch parameters host/device
+		Optix::LaunchParameters _launchParameters;
+		CUDA::Buffer			_launchParametersBuffer;
 
-			CUDA::Buffer _pixelsBuffer;
-		};
-	} // namespace Renderer
-} // namespace VTX
+		CUDA::Buffer _pixelsBuffer;
+	};
+} // namespace VTX::Renderer::Optix
 
 #endif
 #endif
