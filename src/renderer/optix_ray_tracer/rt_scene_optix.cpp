@@ -32,16 +32,17 @@ namespace VTX::Renderer::Optix
 
 		const std::vector<Vec3f> & atomPositions = p_molecule->getAtomPositionFrame( 0 );
 
-		_spheres.resize( nbAtoms );
+		const uint offset = uint( _spheres.size() );
+		_spheres.resize( offset + nbAtoms );
 
 		for ( uint i = 0; i < nbAtoms; ++i )
 		{
-			const Vec3f &	   p  = atomPositions[ i ];
-			const float		   r  = p_molecule->getAtomRadius( i ) + radiusAdd;
-			const Color::Rgb & c  = p_molecule->getAtomColor( i );
-			_spheres[ i ]._center = { p.x, p.y, p.z };
-			_spheres[ i ]._radius = r;
-			uint colorId		  = INVALID_ID;
+			const Vec3f &	   p		   = atomPositions[ i ];
+			const float		   r		   = p_molecule->getAtomRadius( i ) + radiusAdd;
+			const Color::Rgb & c		   = p_molecule->getAtomColor( i );
+			_spheres[ i + offset ]._center = { p.x, p.y, p.z };
+			_spheres[ i + offset ]._radius = r;
+			uint colorId				   = INVALID_ID;
 			for ( uint j = 0; j < uint( _colors.size() ); ++j )
 			{
 				if ( _colors[ j ].x == c.getR() && _colors[ j ].y == c.getG() && _colors[ j ].z == c.getB() )
@@ -55,7 +56,7 @@ namespace VTX::Renderer::Optix
 				colorId = uint( _colors.size() );
 				_colors.emplace_back( make_float3( c.getR(), c.getG(), c.getB() ) );
 			}
-			_spheres[ i ]._colorId = colorId;
+			_spheres[ i + offset ]._colorId = colorId;
 		}
 		_spheresDevBuffer.malloc( _spheres.size() * sizeof( Sphere ) );
 		_spheresDevBuffer.memcpyHostToDevice( _spheres.data(), _spheres.size() );
@@ -72,18 +73,19 @@ namespace VTX::Renderer::Optix
 
 		const std::vector<Vec3f> & atomPositions = p_molecule->getAtomPositionFrame( 0 );
 
-		_cylinders.resize( nbBonds );
+		const uint offset = uint( _cylinders.size() );
+		_cylinders.resize( offset + nbBonds );
 
 		for ( uint i = 0; i < nbBonds; ++i )
 		{
-			const Model::Bond & bond = p_molecule->getBond( i );
-			const Vec3f &		p0	 = atomPositions[ bond.getIndexFirstAtom() ];
-			const Vec3f &		p1	 = atomPositions[ bond.getIndexSecondAtom() ];
-			const Color::Rgb &	c	 = p_molecule->getAtomColor( bond.getIndexFirstAtom() );
-			_cylinders[ i ]._v0		 = { p0.x, p0.y, p0.z };
-			_cylinders[ i ]._v1		 = { p1.x, p1.y, p1.z };
-			_cylinders[ i ]._radius	 = Setting::MoleculeView::bondsRadius;
-			uint colorId			 = INVALID_ID;
+			const Model::Bond & bond		 = p_molecule->getBond( i );
+			const Vec3f &		p0			 = atomPositions[ bond.getIndexFirstAtom() ];
+			const Vec3f &		p1			 = atomPositions[ bond.getIndexSecondAtom() ];
+			const Color::Rgb &	c			 = p_molecule->getAtomColor( bond.getIndexFirstAtom() );
+			_cylinders[ i + offset ]._v0	 = { p0.x, p0.y, p0.z };
+			_cylinders[ i + offset ]._v1	 = { p1.x, p1.y, p1.z };
+			_cylinders[ i + offset ]._radius = Setting::MoleculeView::bondsRadius;
+			uint colorId					 = INVALID_ID;
 			for ( uint j = 0; j < uint( _colors.size() ); ++j )
 			{
 				if ( _colors[ j ].x == c.getR() && _colors[ j ].y == c.getG() && _colors[ j ].z == c.getB() )
@@ -97,7 +99,7 @@ namespace VTX::Renderer::Optix
 				colorId = uint( _colors.size() );
 				_colors.emplace_back( make_float3( c.getR(), c.getG(), c.getB() ) );
 			}
-			_cylinders[ i ]._colorId = colorId;
+			_cylinders[ i + offset ]._colorId = colorId;
 		}
 		_cylindersDevBuffer.malloc( _cylinders.size() * sizeof( Cylinder ) );
 		_cylindersDevBuffer.memcpyHostToDevice( _cylinders.data(), _cylinders.size() );

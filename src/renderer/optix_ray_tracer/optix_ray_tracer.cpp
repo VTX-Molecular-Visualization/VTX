@@ -25,24 +25,15 @@ namespace VTX::Renderer::Optix
 	{
 		_gasOutputBuffer.free();
 
-		_rayGeneratorRecordsBuffer.free();
-		_missRecordsBuffer.free();
-		_hitGroupRecordsBuffer.free();
+		_rayGeneratorRecordBuffer.free();
+		_missRecordBuffer.free();
+		_hitGroupRecordBuffer.free();
 
 		optixPipelineDestroy( _optixPipeline );
 
-		for ( const OptixProgramGroup & g : _rayGeneratorPrograms )
-		{
-			optixProgramGroupDestroy( g );
-		}
-		for ( const OptixProgramGroup & g : _missPrograms )
-		{
-			optixProgramGroupDestroy( g );
-		}
-		for ( const OptixProgramGroup & g : _hitGroupPrograms )
-		{
-			optixProgramGroupDestroy( g );
-		}
+		optixProgramGroupDestroy( _rayGeneratorProgram );
+		optixProgramGroupDestroy( _missProgram );
+		optixProgramGroupDestroy( _hitGroupProgram );
 
 		optixModuleDestroy( _optixModule );
 		optixDeviceContextDestroy( _optixContext );
@@ -58,9 +49,9 @@ namespace VTX::Renderer::Optix
 
 		_gasOutputBuffer.free();
 
-		_rayGeneratorRecordsBuffer.free();
-		_missRecordsBuffer.free();
-		_hitGroupRecordsBuffer.free();
+		_rayGeneratorRecordBuffer.free();
+		_missRecordBuffer.free();
+		_hitGroupRecordBuffer.free();
 
 		// init scene on host and device !!!
 		const Model::Molecule * mol = VTXApp::get().getScene().getMolecules().begin()->first;
@@ -354,9 +345,6 @@ namespace VTX::Renderer::Optix
 
 	void OptixRayTracer::_createOptixRayGeneratorPrograms()
 	{
-		// only one ray generator program
-		_rayGeneratorPrograms.resize( 1 );
-
 		OptixProgramGroupOptions programOptions		= {};
 		OptixProgramGroupDesc	 programDescription = {};
 		programDescription.kind						= OPTIX_PROGRAM_GROUP_KIND_RAYGEN;
@@ -366,7 +354,7 @@ namespace VTX::Renderer::Optix
 		char   log[ 2048 ];
 		size_t sizeof_log = sizeof( log );
 		OPTIX_HANDLE_ERROR( optixProgramGroupCreate(
-			_optixContext, &programDescription, 1, &programOptions, log, &sizeof_log, &_rayGeneratorPrograms[ 0 ] ) );
+			_optixContext, &programDescription, 1, &programOptions, log, &sizeof_log, &_rayGeneratorProgram ) );
 
 		if ( sizeof_log > 1 )
 		{
@@ -377,9 +365,6 @@ namespace VTX::Renderer::Optix
 
 	void OptixRayTracer::_createOptixMissPrograms()
 	{
-		// only one miss program
-		_missPrograms.resize( 1 );
-
 		OptixProgramGroupOptions programOptions		= {};
 		OptixProgramGroupDesc	 programDescription = {};
 		programDescription.kind						= OPTIX_PROGRAM_GROUP_KIND_MISS;
@@ -389,7 +374,7 @@ namespace VTX::Renderer::Optix
 		char   log[ 2048 ];
 		size_t sizeof_log = sizeof( log );
 		OPTIX_HANDLE_ERROR( optixProgramGroupCreate(
-			_optixContext, &programDescription, 1, &programOptions, log, &sizeof_log, &_missPrograms[ 0 ] ) );
+			_optixContext, &programDescription, 1, &programOptions, log, &sizeof_log, &_missProgram ) );
 
 		if ( sizeof_log > 1 )
 		{
@@ -400,9 +385,6 @@ namespace VTX::Renderer::Optix
 
 	void OptixRayTracer::_createOptixHitGroupPrograms()
 	{
-		// only one hit group program
-		_hitGroupPrograms.resize( 1 );
-
 		OptixProgramGroupOptions programOptions		= {};
 		OptixProgramGroupDesc	 programDescription = {};
 		programDescription.kind						= OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
@@ -427,7 +409,7 @@ namespace VTX::Renderer::Optix
 		char   log[ 2048 ];
 		size_t sizeof_log = sizeof( log );
 		OPTIX_HANDLE_ERROR( optixProgramGroupCreate(
-			_optixContext, &programDescription, 1, &programOptions, log, &sizeof_log, &_hitGroupPrograms[ 0 ] ) );
+			_optixContext, &programDescription, 1, &programOptions, log, &sizeof_log, &_hitGroupProgram ) );
 
 		if ( sizeof_log > 1 )
 		{
@@ -532,18 +514,9 @@ namespace VTX::Renderer::Optix
 	{
 		std::vector<OptixProgramGroup> programGroups;
 
-		for ( const OptixProgramGroup & g : _rayGeneratorPrograms )
-		{
-			programGroups.emplace_back( g );
-		}
-		for ( const OptixProgramGroup & g : _missPrograms )
-		{
-			programGroups.emplace_back( g );
-		}
-		for ( const OptixProgramGroup & g : _hitGroupPrograms )
-		{
-			programGroups.emplace_back( g );
-		}
+		programGroups.emplace_back( _rayGeneratorProgram );
+		programGroups.emplace_back( _missProgram );
+		programGroups.emplace_back( _hitGroupProgram );
 
 		char   log[ 2048 ];
 		size_t sizeof_log = sizeof( log );
@@ -588,80 +561,68 @@ namespace VTX::Renderer::Optix
 		_shaderBindingTable = {};
 		// create ray generator records buffer on device
 		{
-			std::vector<RayGeneratorRecord> rayGeneratorRecords;
-			for ( const OptixProgramGroup & g : _rayGeneratorPrograms )
-			{
-				RayGeneratorRecord r;
+			RayGeneratorRecord r;
 
-				const Object3D::Camera & cam		= VTXApp::get().getScene().getCamera();
-				Vec3f					 camPos		= cam.getPosition();
-				Vec3f					 camFront	= cam.getFront();
-				Vec3f					 camLeft	= cam.getLeft();
-				Vec3f					 camUp		= cam.getUp();
-				float					 fov		= cam.getFov();
-				float					 ratio		= float( _width ) / _height;
-				const float				 halfHeight = tan( Util::Math::radians( fov ) * 0.5f );
-				const float				 halfWidth	= ratio * halfHeight;
+			const Object3D::Camera & cam		= VTXApp::get().getScene().getCamera();
+			Vec3f					 camPos		= cam.getPosition();
+			Vec3f					 camFront	= cam.getFront();
+			Vec3f					 camLeft	= cam.getLeft();
+			Vec3f					 camUp		= cam.getUp();
+			float					 fov		= cam.getFov();
+			float					 ratio		= float( _width ) / _height;
+			const float				 halfHeight = tan( Util::Math::radians( fov ) * 0.5f );
+			const float				 halfWidth	= ratio * halfHeight;
 
-				Vec3f u = Util::Math::normalize( Util::Math::cross( camFront, camUp ) ) * halfWidth;
-				Vec3f v = Util::Math::normalize( Util::Math::cross( camLeft, camFront ) ) * halfHeight;
+			Vec3f u = Util::Math::normalize( Util::Math::cross( camFront, camUp ) ) * halfWidth;
+			Vec3f v = Util::Math::normalize( Util::Math::cross( camLeft, camFront ) ) * halfHeight;
 
-				r._data._camera._position = make_float3( camPos.x, camPos.y, camPos.z );
-				r._data._camera._front	  = make_float3( camFront.x, camFront.y, camFront.z );
-				r._data._camera._du		  = make_float3( u.x, u.y, u.z );
-				r._data._camera._dv		  = make_float3( v.x, v.y, v.z );
-				r._data._nbSamples		  = 32;
+			r._data._camera._position = make_float3( camPos.x, camPos.y, camPos.z );
+			r._data._camera._front	  = make_float3( camFront.x, camFront.y, camFront.z );
+			r._data._camera._du		  = make_float3( u.x, u.y, u.z );
+			r._data._camera._dv		  = make_float3( v.x, v.y, v.z );
+			r._data._nbSamples		  = 32;
 
-				OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( g, &r ) );
-				rayGeneratorRecords.emplace_back( r );
-			}
-			_rayGeneratorRecordsBuffer.malloc( rayGeneratorRecords.size() * sizeof( RayGeneratorRecord ) );
-			_rayGeneratorRecordsBuffer.memcpyHostToDevice( rayGeneratorRecords.data(), rayGeneratorRecords.size() );
+			OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _rayGeneratorProgram, &r ) );
 
-			_shaderBindingTable.raygenRecord = _rayGeneratorRecordsBuffer.getDevicePtr();
+			_rayGeneratorRecordBuffer.malloc( sizeof( RayGeneratorRecord ) );
+			_rayGeneratorRecordBuffer.memcpyHostToDevice( &r, 1 );
+
+			_shaderBindingTable.raygenRecord = _rayGeneratorRecordBuffer.getDevicePtr();
 		}
 
 		// create miss records buffer on device
 		{
-			std::vector<MissRecord> missRecords;
-			for ( const OptixProgramGroup & g : _missPrograms )
-			{
-				MissRecord r;
-				r._data._colorBackground = make_float3( _backgroundColor.r, _backgroundColor.g, _backgroundColor.b );
-				OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( g, &r ) );
-				missRecords.emplace_back( r );
-			}
-			_missRecordsBuffer.malloc( missRecords.size() * sizeof( MissRecord ) );
-			_missRecordsBuffer.memcpyHostToDevice( missRecords.data(), missRecords.size() );
+			MissRecord r;
+			r._data._colorBackground = make_float3( Setting::Rendering::backgroundColor.getR(),
+													Setting::Rendering::backgroundColor.getG(),
+													Setting::Rendering::backgroundColor.getB() );
 
-			_shaderBindingTable.missRecordBase			= _missRecordsBuffer.getDevicePtr();
+			OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _missProgram, &r ) );
+
+			_missRecordBuffer.malloc( sizeof( MissRecord ) );
+			_missRecordBuffer.memcpyHostToDevice( &r, 1 );
+
+			_shaderBindingTable.missRecordBase			= _missRecordBuffer.getDevicePtr();
 			_shaderBindingTable.missRecordStrideInBytes = sizeof( MissRecord );
-			_shaderBindingTable.missRecordCount			= int( missRecords.size() );
+			_shaderBindingTable.missRecordCount			= 1;
 		}
 
 		// create hitgroup records buffer on device
 		{
-			uint						nbObjects = 1;
-			std::vector<HitGroupRecord> hitGroupRecords;
-			for ( uint i = 0; i < nbObjects; ++i )
-			{
-				int objectType = 0;
-
-				HitGroupRecord r;
+			HitGroupRecord r;
 #ifdef SPHERES
-				r._data._spheres = (Sphere *)( _scene.getSpheresDevPtr() );
+			r._data._spheres = (Sphere *)( _scene.getSpheresDevPtr() );
 #else
-				r._data._cylinders = (Cylinder *)( _scene.getCylindersDevPtr() );
+			r._data._cylinders = (Cylinder *)( _scene.getCylindersDevPtr() );
 #endif
-				OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _hitGroupPrograms[ objectType ], &r ) );
-				hitGroupRecords.emplace_back( r );
-			}
-			_hitGroupRecordsBuffer.malloc( hitGroupRecords.size() * sizeof( HitGroupRecord ) );
-			_hitGroupRecordsBuffer.memcpyHostToDevice( hitGroupRecords.data(), hitGroupRecords.size() );
+			OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _hitGroupProgram, &r ) );
 
-			_shaderBindingTable.hitgroupRecordBase			= _hitGroupRecordsBuffer.getDevicePtr();
+			_hitGroupRecordBuffer.malloc( sizeof( HitGroupRecord ) );
+			_hitGroupRecordBuffer.memcpyHostToDevice( &r, 1 );
+
+			_shaderBindingTable.hitgroupRecordBase			= _hitGroupRecordBuffer.getDevicePtr();
 			_shaderBindingTable.hitgroupRecordStrideInBytes = sizeof( HitGroupRecord );
-			_shaderBindingTable.hitgroupRecordCount			= int( hitGroupRecords.size() );
+			_shaderBindingTable.hitgroupRecordCount			= 1;
 		}
 	}
 } // namespace VTX::Renderer::Optix

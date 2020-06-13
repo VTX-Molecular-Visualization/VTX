@@ -67,13 +67,13 @@ namespace VTX::Renderer::Optix
 		OptixPipelineCompileOptions _optixPipelineCompileOptions;
 		OptixPipelineLinkOptions	_optixPipelineLinkOptions;
 
-		// vectors for program groups
-		std::vector<OptixProgramGroup> _rayGeneratorPrograms;
-		CUDA::Buffer				   _rayGeneratorRecordsBuffer;
-		std::vector<OptixProgramGroup> _missPrograms;
-		CUDA::Buffer				   _missRecordsBuffer;
-		std::vector<OptixProgramGroup> _hitGroupPrograms;
-		CUDA::Buffer				   _hitGroupRecordsBuffer;
+		// Program groups
+		OptixProgramGroup _rayGeneratorProgram;
+		CUDA::Buffer	  _rayGeneratorRecordBuffer;
+		OptixProgramGroup _missProgram;
+		CUDA::Buffer	  _missRecordBuffer;
+		OptixProgramGroup _hitGroupProgram;
+		CUDA::Buffer	  _hitGroupRecordBuffer;
 
 		// shader binding table (SBT)
 		OptixShaderBindingTable _shaderBindingTable = {};
