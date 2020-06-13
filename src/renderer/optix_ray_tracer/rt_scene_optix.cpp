@@ -17,7 +17,10 @@ namespace VTX::Renderer::Optix
 		case Generic::REPRESENTATION::VAN_DER_WAALS:
 		case Generic::REPRESENTATION::SAS: _addSpheres( p_molecule, p_representation ); break;
 		case Generic::REPRESENTATION::BALL_AND_STICK:
-		case Generic::REPRESENTATION::STICK: _addCylinders( p_molecule, p_representation ); break;
+		case Generic::REPRESENTATION::STICK:
+			_addSpheres( p_molecule, p_representation );
+			_addCylinders( p_molecule, p_representation );
+			break;
 		case Generic::REPRESENTATION::CARTOON:
 		default: VTX_WARNING( "Not implemented" ); break;
 		}
@@ -37,8 +40,11 @@ namespace VTX::Renderer::Optix
 
 		for ( uint i = 0; i < nbAtoms; ++i )
 		{
-			const Vec3f &	   p		   = atomPositions[ i ];
-			const float		   r		   = p_molecule->getAtomRadius( i ) + radiusAdd;
+			const Vec3f & p = atomPositions[ i ];
+			const float	  r = ( p_representation == Generic::REPRESENTATION::BALL_AND_STICK
+								|| p_representation == Generic::REPRESENTATION::STICK )
+								? Setting::MoleculeView::atomsRadiusFixed
+								: p_molecule->getAtomRadius( i ) + radiusAdd;
 			const Color::Rgb & c		   = p_molecule->getAtomColor( i );
 			_spheres[ i + offset ]._center = { p.x, p.y, p.z };
 			_spheres[ i + offset ]._radius = r;

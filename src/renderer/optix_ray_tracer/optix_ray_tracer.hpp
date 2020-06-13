@@ -36,7 +36,8 @@ namespace VTX::Renderer::Optix
 		// setup optix programs
 		void _createOptixRayGeneratorPrograms();
 		void _createOptixMissPrograms();
-		void _createOptixHitGroupPrograms();
+		void _createOptixHitGroupSpherePrograms();
+		void _createOptixHitGroupCylinderPrograms();
 		// create GAS
 		OptixTraversableHandle _buildGAS();
 		// create pipeline from programs
@@ -72,11 +73,15 @@ namespace VTX::Renderer::Optix
 		CUDA::Buffer	  _rayGeneratorRecordBuffer;
 		OptixProgramGroup _missProgram;
 		CUDA::Buffer	  _missRecordBuffer;
-		OptixProgramGroup _hitGroupProgram;
-		CUDA::Buffer	  _hitGroupRecordBuffer;
+		OptixProgramGroup _hitGroupSphereProgram;
+		OptixProgramGroup _hitGroupCylinderProgram;
+		CUDA::Buffer	  _hitGroupRecordsBuffer;
 
 		// shader binding table (SBT)
 		OptixShaderBindingTable _shaderBindingTable = {};
+		uint					_nbSbtRecords		= 0;
+		std::vector<uint>		_sbtIndex;
+		CUDA::Buffer			_sbtIndexBuffer;
 
 		// launch parameters host/device
 		Optix::LaunchParameters _launchParameters;

@@ -54,8 +54,11 @@ namespace VTX::Renderer::Optix
 
 	struct HitGroupData
 	{
-		Sphere *   _spheres;
-		Cylinder * _cylinders;
+		union
+		{
+			Sphere *   _spheres;
+			Cylinder * _cylinders;
+		};
 	};
 
 	template<typename T>
