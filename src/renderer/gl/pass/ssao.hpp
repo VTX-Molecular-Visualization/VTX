@@ -16,6 +16,7 @@ namespace VTX
 			class SSAO : public BasePass
 			{
 			  public:
+				SSAO();
 				virtual ~SSAO();
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
 				virtual void resize( const uint, const uint ) override;

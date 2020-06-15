@@ -15,12 +15,12 @@ void main()
 
 	// Get current pixel depth.
 	const float depthCenter = texture( linearDepthTexture, texCoord ).x;
-	// Get cross neighbor depth 
-	const float depthNW		= textureOffset( linearDepthTexture, texCoord, ivec2( -1, -1 ) ).x;
-	const float depthNE		= textureOffset( linearDepthTexture, texCoord, ivec2( -1, 1 ) ).x;
-	const float depthSE		= textureOffset( linearDepthTexture, texCoord, ivec2( 1, 1 ) ).x;
-	const float depthSW		= textureOffset( linearDepthTexture, texCoord, ivec2( 1, -1 ) ).x;
-	
+	// Get cross neighbor depth
+	const float depthNW = textureOffset( linearDepthTexture, texCoord, ivec2( -1, -1 ) ).x;
+	const float depthNE = textureOffset( linearDepthTexture, texCoord, ivec2( -1, 1 ) ).x;
+	const float depthSE = textureOffset( linearDepthTexture, texCoord, ivec2( 1, 1 ) ).x;
+	const float depthSW = textureOffset( linearDepthTexture, texCoord, ivec2( 1, -1 ) ).x;
+
 	// Compute threshold wrt depth
 	// TODO: allow the user to control it
 	const float threshold = 0.05f * max( 1.f, depthCenter );

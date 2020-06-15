@@ -23,11 +23,11 @@ namespace VTX::Renderer::Optix
 
 	OptixRayTracer::~OptixRayTracer()
 	{
-		_gasOutputBuffer.free();
-
 		_rayGeneratorRecordBuffer.free();
 		_missRecordBuffer.free();
 		_hitGroupRecordsBuffer.free();
+		_gasOutputBuffer.free();
+		_launchParametersBuffer.free();
 
 		optixPipelineDestroy( _optixPipeline );
 
@@ -54,7 +54,6 @@ namespace VTX::Renderer::Optix
 		_missRecordBuffer.free();
 		_hitGroupRecordsBuffer.free();
 
-		// init scene on host and device !!!
 		const Model::Molecule * mol = VTXApp::get().getScene().getMolecules().begin()->first;
 		_scene.add( mol, Setting::Rendering::representation );
 
@@ -154,8 +153,8 @@ namespace VTX::Renderer::Optix
 		BaseRenderer::resize( p_width, p_height );
 		_pixels.resize( _width * _height );
 		_pixelsBuffer.realloc( _width * _height * sizeof( uint ) );
-		_launchParameters._frame._width	 = _width;
-		_launchParameters._frame._height = _height;
+		_launchParameters._frame._width	 = uint16_t( _width );
+		_launchParameters._frame._height = uint16_t( _height );
 		_launchParameters._frame._pixels = (uchar4 *)( _pixelsBuffer.getDevicePtr() );
 	}
 
@@ -586,12 +585,6 @@ namespace VTX::Renderer::Optix
 													   /* [in] The maximum depth of a traversable graph
 														  passed to trace. */
 													   1 ) );
-
-		if ( sizeof_log > 1 )
-		{
-			VTX_INFO( "optixPipelineSetStackSize (_createOptixHitGroupPrograms) log :" );
-			VTX_INFO( log );
-		}
 	}
 
 	void OptixRayTracer::_createOptixShaderBindingTable()
@@ -641,7 +634,7 @@ namespace VTX::Renderer::Optix
 			_missRecordBuffer.memcpyHostToDevice( &r, 1 );
 
 			_shaderBindingTable.missRecordBase			= _missRecordBuffer.getDevicePtr();
-			_shaderBindingTable.missRecordStrideInBytes = sizeof( MissRecord );
+			_shaderBindingTable.missRecordStrideInBytes = static_cast<uint>( sizeof( MissRecord ) );
 			_shaderBindingTable.missRecordCount			= 1;
 		}
 
@@ -666,8 +659,8 @@ namespace VTX::Renderer::Optix
 			_hitGroupRecordsBuffer.memcpyHostToDevice( records.data(), records.size() );
 
 			_shaderBindingTable.hitgroupRecordBase			= _hitGroupRecordsBuffer.getDevicePtr();
-			_shaderBindingTable.hitgroupRecordStrideInBytes = sizeof( HitGroupRecord );
-			_shaderBindingTable.hitgroupRecordCount			= int( records.size() );
+			_shaderBindingTable.hitgroupRecordStrideInBytes = static_cast<uint>( sizeof( HitGroupRecord ) );
+			_shaderBindingTable.hitgroupRecordCount			= static_cast<uint>( records.size() );
 		}
 	}
 } // namespace VTX::Renderer::Optix

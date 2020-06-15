@@ -17,10 +17,10 @@ namespace VTX::Renderer::Optix
 		case Generic::REPRESENTATION::VAN_DER_WAALS:
 		case Generic::REPRESENTATION::SAS: _addSpheres( p_molecule, p_representation ); break;
 		case Generic::REPRESENTATION::BALL_AND_STICK:
-		case Generic::REPRESENTATION::STICK:
 			_addSpheres( p_molecule, p_representation );
 			_addCylinders( p_molecule, p_representation );
 			break;
+		case Generic::REPRESENTATION::STICK: _addCylinders( p_molecule, p_representation ); break;
 		case Generic::REPRESENTATION::CARTOON:
 		default: VTX_WARNING( "Not implemented" ); break;
 		}
