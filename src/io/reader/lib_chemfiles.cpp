@@ -130,6 +130,7 @@ namespace VTX
 				std::map<uint, std::vector<const chemfiles::Bond *>> mapResidueBonds
 					= std::map<uint, std::vector<const chemfiles::Bond *>>();
 
+				int oldIndexInChain = INT_MIN;
 				for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 				{
 					const chemfiles::Residue & residue = residues[ residueIdx ];
@@ -153,7 +154,8 @@ namespace VTX
 						modelChain->setIndexFirstResidue( residueIdx );
 						modelChain->setResidueCount( 0 );
 						modelChain->setColor( Model::Chain::getChainIdColor( chainId ) );
-						lastChainName = chainName;
+						lastChainName	= chainName;
+						oldIndexInChain = INT_MIN;
 					}
 
 					modelChain = &p_molecule.getChain( chainModelId );
@@ -163,6 +165,7 @@ namespace VTX
 					Model::Residue * modelResidue		   = new Model::Residue();
 					p_molecule.getResidues()[ residueIdx ] = modelResidue;
 					modelResidue->setIndex( residueIdx );
+
 					modelResidue->setMoleculePtr( &p_molecule );
 					modelResidue->setChainPtr( modelChain );
 					modelResidue->setIndexFirstAtom( uint( *residue.begin() ) );
@@ -177,6 +180,12 @@ namespace VTX
 					bool isStandard = residue.properties().get( "is_standard_pdb" ).value_or( true ).as_bool();
 					modelResidue->setType( isStandard ? Model::Residue::TYPE::STANDARD
 													  : Model::Residue::TYPE::NON_STANDARD );
+
+					// Check residue index in chain.
+					int indexInChain = (int)residue.id().value_or( INT_MIN );
+					assert( oldIndexInChain <= indexInChain );
+					modelResidue->setIndexInOriginalChain( indexInChain );
+					oldIndexInChain = indexInChain;
 
 					mapResidueBonds.emplace( modelResidue->getIndex(), std::vector<const chemfiles::Bond *>() );
 

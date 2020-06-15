@@ -57,6 +57,13 @@ namespace VTX
 
 						const Residue & residue2 = _molecule->getResidue( idxFirstResidue + residueIdx + 1 );
 
+						// Check missing residues.
+						if ( residue2.getIndexInOriginalChain() != residue1.getIndexInOriginalChain() + 1 )
+						{
+							VTX_DEBUG( "Missing residue at the begining of chain: " + chain.getName() );
+							continue;
+						}
+
 						const Model::Atom * CA1 = residue1.findFirstAtomByName( "CA" );
 						const Model::Atom * OX1 = residue1.findFirstAtomByName( "O" );
 						const Model::Atom * CA2 = residue2.findFirstAtomByName( "CA" );
@@ -101,18 +108,19 @@ namespace VTX
 
 						const Residue & residue3 = _molecule->getResidue( idxFirstResidue + residueIdx + 2 );
 
+						// Check missing residues.
+						if ( residue3.getIndexInOriginalChain() != residue2.getIndexInOriginalChain() + 1 )
+						{
+							VTX_DEBUG( "Missing residue at the begining of chain: " + chain.getName() );
+							continue;
+						}
+
 						const Model::Atom * OX2 = residue2.findFirstAtomByName( "O" );
 						const Model::Atom * CA3 = residue3.findFirstAtomByName( "CA" );
 
 						if ( OX2 == nullptr || CA3 == nullptr )
 						{
-							VTX_DEBUG( "Failed to get atoms in chain: " + chain.getName() );
-							// Split the chain and create new splines.
-							residueValidCount		   = 0;
-							Vec3f		  flipTestV	   = VEC3F_ZERO; // ?
-							Math::BSpline splineCenter = Math::BSpline();
-							Math::BSpline splineSide1  = Math::BSpline();
-							Math::BSpline splineSide2  = Math::BSpline();
+							VTX_DEBUG( "Failed to get atoms for first residue in chain: " + chain.getName() );
 							continue;
 						}
 
@@ -158,11 +166,6 @@ namespace VTX
 					}
 					else
 					{
-						if ( residueIdx > residueCount - 2 )
-						{
-							continue;
-						}
-
 						splineCenter.shiftPoints();
 						splineSide1.shiftPoints();
 						splineSide2.shiftPoints();
@@ -185,14 +188,32 @@ namespace VTX
 							const Residue & residue2 = _molecule->getResidue( idxFirstResidue + residueIdx + 1 );
 							const Residue & residue3 = _molecule->getResidue( idxFirstResidue + residueIdx + 2 );
 
+							// Check missing residues.
+							if ( residue3.getIndexInOriginalChain() != residue2.getIndexInOriginalChain() + 1 )
+							{
+								VTX_DEBUG( "Missing residue in the middle of chain: " + chain.getName() );
+								// Split the chain and create new splines.
+								residueValidCount = 0;
+								flipTestV		  = VEC3F_ZERO; // ?
+								splineCenter	  = Math::BSpline();
+								splineSide1		  = Math::BSpline();
+								splineSide2		  = Math::BSpline();
+								continue;
+							}
+
 							const Model::Atom * CA2 = residue2.findFirstAtomByName( "CA" );
 							const Model::Atom * OX2 = residue2.findFirstAtomByName( "O" );
 							const Model::Atom * CA3 = residue3.findFirstAtomByName( "CA" );
 
 							if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 							{
-								VTX_DEBUG( "Failed to get atoms" );
+								VTX_DEBUG( "Failed to get atoms in chain: " + chain.getName() );
+								// Split the chain and create new splines.
 								residueValidCount = 0;
+								flipTestV		  = VEC3F_ZERO; // ?
+								splineCenter	  = Math::BSpline();
+								splineSide1		  = Math::BSpline();
+								splineSide2		  = Math::BSpline();
 								continue;
 							}
 
