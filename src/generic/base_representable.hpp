@@ -17,7 +17,8 @@ namespace VTX
 			VAN_DER_WAALS,
 			STICK,
 			SAS,
-			CARTOON
+			CARTOON,
+			COUNT
 		};
 
 		class BaseRepresentable

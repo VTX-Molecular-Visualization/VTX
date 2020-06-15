@@ -157,9 +157,11 @@ elseif(MSVC)
 	target_compile_options(VTX PRIVATE "/sdl") # SDL check.
 	
 	#Optimization.
+	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/O2>")
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/Ob2>")
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/Ot>")
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/Oi>")
+	target_compile_options(VTX PRIVATE "$<$<CONFIG:RelWithDebInfo>:/O2>")
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:RelWithDebInfo>:/Ob2>")
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:RelWithDebInfo>:/Ot>")
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:RelWithDebInfo>:/Oi>")

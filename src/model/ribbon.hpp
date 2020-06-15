@@ -22,7 +22,7 @@ namespace VTX
 			static constexpr float HELIX_DIAM  = 1.8f;
 			static constexpr float THICKNESS   = 0.3f;
 			static constexpr float ARROW_WIDTH = 1.8f;
-			static constexpr bool  ARROW	   = false;
+			static constexpr bool  ARROW	   = true;
 
 			// Move to config.
 			static constexpr float RIBBON_WIDTH[ 3 ] = { 0.3f, 1.5f, 1.7f };

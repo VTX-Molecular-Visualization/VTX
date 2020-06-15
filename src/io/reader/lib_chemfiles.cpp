@@ -227,6 +227,10 @@ namespace VTX
 					uint solventCounter = 0;
 					uint ionCounter		= 0;
 
+					if ( residue.size() == 0 )
+					{
+						VTX_WARNING( "Empty residue found" );
+					}
 					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 					{
 						const uint				atomId = uint( *it );
