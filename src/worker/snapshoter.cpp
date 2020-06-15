@@ -69,7 +69,7 @@ namespace VTX
 			const uint height = renderer.getHeight();
 
 #if defined( CUDA_DEFINED ) && defined( OPTIX_DEFINED )
-			Renderer::OptixRayTracer * ort = new Renderer::OptixRayTracer();
+			Renderer::Optix::OptixRayTracer * ort = new Renderer::Optix::OptixRayTracer();
 			ort->init( width, height );
 			ort->renderFrame( VTXApp::get().getScene() );
 			const std::vector<uchar4> & pixels = ort->getPixels();
