@@ -10,6 +10,7 @@ namespace VTX
 	{
 		namespace Pass
 		{
+			SSAO::SSAO() : _kernelSize( 16 ) {}
 			SSAO::~SSAO()
 			{
 				glDeleteFramebuffers( 1, &_fbo );
@@ -28,7 +29,7 @@ namespace VTX
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_R16F, p_width, p_height, 0, GL_RED, GL_FLOAT, nullptr );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, p_width, p_height, 0, GL_RED, GL_FLOAT, nullptr );
 
 				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0 );
 
@@ -95,7 +96,7 @@ namespace VTX
 			void SSAO::resize( const uint p_width, const uint p_height )
 			{
 				glBindTexture( GL_TEXTURE_2D, _texture );
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_R16F, p_width, p_height, 0, GL_RED, GL_FLOAT, nullptr );
+				glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, p_width, p_height, 0, GL_RED, GL_FLOAT, nullptr );
 			}
 
 			void SSAO::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
