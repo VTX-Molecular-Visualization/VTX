@@ -12,17 +12,28 @@
 
 ### CONTROLS
 
+#### Freefly
+
 -   ZSQD or arrows keys to move the camera
--   Hold left mouse and move to look around
--   Hold right mouse and move to rotate on the side
+-   Hold left mouse button and move to look around
+-   Hold right mouse button and move to rotate on the side
 -   Right click on item name in scene to open context menu
 -   Left click on item in the scene view to open details in inspector view
 
-### FEATURES
+#### Trackball
 
--   Supported files: .pdb, .mmtf and .arc
--   Open multiple molecules
--   Export snapshot (saved in snapshots/ folders)
+- Hold left/right mouse button and move to rotate the scene
+- Hold wheel button and move to translate the rotation center
+- Use wheel to zoom
+- QDAERF to rotate
+- ZS to zoom
+
+### SHORTCUTS
+
+- F1: Add camera viewpoint at current position
+- F2: Clear all and create an empty scene
+- F3: Toggle camera controls
+- F4: Switch representation
 
 ### SCRIPTABLE ACTIONS
 
@@ -34,10 +45,15 @@ command < param | param1 param2 ... | ... >
 -   change_color_mode < ATOM | RESIDUE | CHAIN | PROTEIN >
 -   change_auto_rotate_speed < x y z | xyz > (float values between 0.0 and 1.0)
 
-### FEATURES IN DEVELOPPEMENT
+## CHANGELOG
 
--   Video export only exports a batch of snapshots, we need to use ffmpeg to build the video (not in the release for the moment: ffmpeg.exe -f image2 -framerate 60 -i video%06d.png -vcodec libx264 -crf 10 video.mp4
--   Undo/redo not totally implemented, just some actions can be undone  
+### 0.0.5
+
+- Multi representation
+- Trackball controls
+- Adaptive SSAO
+- Background color
+- Options to change bond and atom radius
 
 ## DEVELOPPER GUIDE
 
@@ -66,9 +82,13 @@ Go to Tools -> Options, then under LLVM/Clang, set the following values:
 
 ### LINUX
 
+// TODO
+
 git curl cmake GL (libgl1-mesa-dev)
 
 ### MAC OS
+
+// TODO
 
 ### Some architecture points
 
