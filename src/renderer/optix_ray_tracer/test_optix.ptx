@@ -121,7 +121,7 @@
 	// inline asm
 	ld.const.u64 	%rd2, [params+16];
 	cvta.to.global.u64 	%rd3, %rd2;
-	ld.u64 	%rd4, [%rd1+8];
+	ld.u64 	%rd4, [%rd1];
 	mul.wide.s32 	%rd5, %r4, 32;
 	add.s64 	%rd6, %rd4, %rd5;
 	ld.u32 	%r8, [%rd6+28];
@@ -836,7 +836,7 @@ BB4_6:
 	// inline asm
 	call (%r7), _optix_read_primitive_idx, ();
 	// inline asm
-	ld.u64 	%rd2, [%rd1+8];
+	ld.u64 	%rd2, [%rd1];
 	// inline asm
 	call (%f25), _optix_get_object_ray_origin_x, ();
 	// inline asm
