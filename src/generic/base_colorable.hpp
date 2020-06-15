@@ -17,7 +17,8 @@ namespace VTX
 			ATOM,
 			RESIDUE,
 			CHAIN,
-			PROTEIN
+			PROTEIN,
+			COUNT
 		};
 
 		class BaseColorable

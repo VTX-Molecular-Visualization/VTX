@@ -16,7 +16,8 @@ namespace VTX
 			DIFFUSE = 0,
 			GLOSSY,
 			TOON,
-			FLAT_COLOR
+			FLAT_COLOR,
+			COUNT
 		};
 
 		namespace Pass
