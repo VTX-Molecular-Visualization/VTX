@@ -52,6 +52,7 @@ command < param | param1 param2 ... | ... >
 - Multi representation
 - Trackball controls
 - Adaptive SSAO
+- Outline shader
 - Background color
 - Options to change bond and atom radius
 
