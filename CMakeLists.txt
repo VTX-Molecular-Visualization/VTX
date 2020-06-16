@@ -155,12 +155,20 @@ elseif(MSVC)
 	target_compile_options(VTX PRIVATE "/WX")  # Warnings as errors.
 	target_compile_options(VTX PRIVATE "/MP")  # Multicore compilation.
 	target_compile_options(VTX PRIVATE "/sdl") # SDL check.
-	#Optimizaion.
-	target_compile_options(VTX PRIVATE "/Ob2") # Inline function expansion.
-	target_compile_options(VTX PRIVATE "/Ot")  # Favor speed.
-	target_compile_options(VTX PRIVATE "/Oi")  # Intrinsic functions.
+	
+	#Optimization.
+	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/O2>")
+	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/Ob2>")
+	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/Ot>")
+	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/Oi>")
+	target_compile_options(VTX PRIVATE "$<$<CONFIG:RelWithDebInfo>:/O2>")
+	target_compile_options(VTX PRIVATE "$<$<CONFIG:RelWithDebInfo>:/Ob2>")
+	target_compile_options(VTX PRIVATE "$<$<CONFIG:RelWithDebInfo>:/Ot>")
+	target_compile_options(VTX PRIVATE "$<$<CONFIG:RelWithDebInfo>:/Oi>")
+	
 	#Code Generation.
 	target_compile_options(VTX PRIVATE "/fp:fast") # Floating Point Model.
+	
 	#Preprocessor definitions
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-DNOMINMAX)

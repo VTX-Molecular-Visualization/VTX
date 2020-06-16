@@ -51,10 +51,18 @@ namespace VTX
 						// Avoid crash when not engouth valid residues to start the mesh.
 						if ( residueIdx >= residueCount - 2 )
 						{
+							// Skip until next chain.
 							continue;
 						}
 
 						const Residue & residue2 = _molecule->getResidue( idxFirstResidue + residueIdx + 1 );
+
+						// Check missing residues.
+						if ( residue2.getIndexInOriginalChain() != residue1.getIndexInOriginalChain() + 1 )
+						{
+							VTX_DEBUG( "Missing residue at the begining of chain: " + chain.getName() );
+							continue;
+						}
 
 						const Model::Atom * CA1 = residue1.findFirstAtomByName( "CA" );
 						const Model::Atom * OX1 = residue1.findFirstAtomByName( "O" );
@@ -62,8 +70,8 @@ namespace VTX
 
 						if ( CA1 == nullptr || OX1 == nullptr || CA2 == nullptr )
 						{
-							VTX_DEBUG( "Failed to get atoms for first residue" );
-							// continue;
+							VTX_DEBUG( "Failed to get atoms for first residue in chain: " + chain.getName() );
+							continue;
 						}
 
 						Vec3f positionCA1;
@@ -100,13 +108,20 @@ namespace VTX
 
 						const Residue & residue3 = _molecule->getResidue( idxFirstResidue + residueIdx + 2 );
 
+						// Check missing residues.
+						if ( residue3.getIndexInOriginalChain() != residue2.getIndexInOriginalChain() + 1 )
+						{
+							VTX_DEBUG( "Missing residue at the begining of chain: " + chain.getName() );
+							continue;
+						}
+
 						const Model::Atom * OX2 = residue2.findFirstAtomByName( "O" );
 						const Model::Atom * CA3 = residue3.findFirstAtomByName( "CA" );
 
-						if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
+						if ( OX2 == nullptr || CA3 == nullptr )
 						{
-							VTX_DEBUG( "Failed to get atoms" );
-							// continue;
+							VTX_DEBUG( "Failed to get atoms for first residue in chain: " + chain.getName() );
+							continue;
 						}
 
 						Vec3f positionOX2;
@@ -151,14 +166,6 @@ namespace VTX
 					}
 					else
 					{
-						// Hum?
-						/*
-						if ( residueIdx > residueCount - 2 )
-						{
-							continue;
-						}
-						*/
-
 						splineCenter.shiftPoints();
 						splineSide1.shiftPoints();
 						splineSide2.shiftPoints();
@@ -181,14 +188,33 @@ namespace VTX
 							const Residue & residue2 = _molecule->getResidue( idxFirstResidue + residueIdx + 1 );
 							const Residue & residue3 = _molecule->getResidue( idxFirstResidue + residueIdx + 2 );
 
+							// Check missing residues.
+							if ( residue3.getIndexInOriginalChain() != residue2.getIndexInOriginalChain() + 1 )
+							{
+								VTX_DEBUG( "Missing residue in the middle of chain: " + chain.getName() );
+								// Split the chain and create new splines.
+								residueValidCount = 0;
+								flipTestV		  = VEC3F_ZERO; // ?
+								splineCenter	  = Math::BSpline();
+								splineSide1		  = Math::BSpline();
+								splineSide2		  = Math::BSpline();
+								continue;
+							}
+
 							const Model::Atom * CA2 = residue2.findFirstAtomByName( "CA" );
 							const Model::Atom * OX2 = residue2.findFirstAtomByName( "O" );
 							const Model::Atom * CA3 = residue3.findFirstAtomByName( "CA" );
 
 							if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 							{
-								VTX_DEBUG( "Failed to get atoms" );
-								// continue;
+								VTX_DEBUG( "Failed to get atoms in chain: " + chain.getName() );
+								// Split the chain and create new splines.
+								residueValidCount = 0;
+								flipTestV		  = VEC3F_ZERO; // ?
+								splineCenter	  = Math::BSpline();
+								splineSide1		  = Math::BSpline();
+								splineSide2		  = Math::BSpline();
+								continue;
 							}
 
 							Vec3f positionCA2;
@@ -223,11 +249,11 @@ namespace VTX
 
 					// Is arrow if previous == STRAND and current is last or != STRAND.
 					bool isArrow
-						= ARROW && ( residueIdx > 0 )
-						  && ( _molecule->getResidue( idxFirstResidue + residueIdx + 1 ).getSecondaryStructure()
+						= ARROW && ( residueIdx >= 0 )
+						  && ( _molecule->getResidue( idxFirstResidue + residueIdx ).getSecondaryStructure()
 							   == Residue::SECONDARY_STRUCTURE::STRAND )
 						  && ( ( residueIdx == residueCount - 1 )
-							   || _molecule->getResidue( idxFirstResidue + residueIdx ).getSecondaryStructure()
+							   || _molecule->getResidue( idxFirstResidue + residueIdx + 1 ).getSecondaryStructure()
 									  != Residue::SECONDARY_STRUCTURE::STRAND );
 
 					residue1.setIndexRibbonFirstVertex( vIndex );
@@ -243,8 +269,8 @@ namespace VTX
 					residue1.setIndiceRibbonTriangleCount( vIndice - indice );
 
 					residueValidCount++;
-				}
-			}
+				} // namespace Model
+			}	  // namespace VTX
 
 			_vertices.shrink_to_fit();
 			_normals.shrink_to_fit();

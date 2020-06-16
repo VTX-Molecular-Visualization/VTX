@@ -1,0 +1,3 @@
+cmake --build . --config Release
+
+cmake -DCMAKE_CXX_FLAGS="/O2 /Ob2 /Ot /Oi /fp:fast" -DCMAKE_C_FLAGS="/O2 /Ob2 /Ot /Oi /fp:fast" ..

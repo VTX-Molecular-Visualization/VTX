@@ -16,7 +16,7 @@ namespace VTX
 			addItem( Generic::create<Controller::Trackball>() );
 			addItem( Generic::create<Controller::Shortcut>() );
 
-			_getItem( ID::Controller::TRACKBALL )->setActive( false );
+			getItem( ID::Controller::TRACKBALL )->setActive( false );
 		}
 
 		void Visualization::exit() { Generic::HasCollection<Controller::BaseController>::clean(); }
@@ -35,7 +35,7 @@ namespace VTX
 
 		void Visualization::toggleController()
 		{
-			_getItem( _controller )->setActive( false );
+			getItem( _controller )->setActive( false );
 
 			if ( _controller == ID::Controller::FREEFLY )
 			{
@@ -45,7 +45,7 @@ namespace VTX
 			{
 				_controller = ID::Controller::FREEFLY;
 			}
-			_getItem( _controller )->setActive( true );
+			getItem( _controller )->setActive( true );
 		}
 
 	} // namespace State

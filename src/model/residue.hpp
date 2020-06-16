@@ -83,6 +83,8 @@ namespace VTX
 			inline void				setType( const TYPE p_type ) { _type = p_type; }
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
+			inline int				getIndexInOriginalChain() const { return _indexInOriginalChain; };
+			inline void				setIndexInOriginalChain( const int p_index ) { _indexInOriginalChain = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
 			inline Chain * const	getChainPtr() const { return _chainPtr; }
@@ -135,10 +137,11 @@ namespace VTX
 			virtual void removeRepresentation( const Generic::REPRESENTATION ) override;
 
 		  private:
-			TYPE	   _type		= TYPE::STANDARD;
-			uint	   _index		= 0;
-			Molecule * _moleculePtr = nullptr;
-			Chain *	   _chainPtr	= nullptr;
+			TYPE	   _type				 = TYPE::STANDARD;
+			uint	   _index				 = 0;
+			int		   _indexInOriginalChain = INT_MIN;
+			Molecule * _moleculePtr			 = nullptr;
+			Chain *	   _chainPtr			 = nullptr;
 
 			SYMBOL _symbol = SYMBOL::UNKNOWN;
 
