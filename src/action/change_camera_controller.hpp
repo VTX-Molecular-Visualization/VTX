@@ -22,7 +22,7 @@ namespace VTX
 			{
 				VTXApp::get()
 					.getStateMachine()
-					.findItem<State::Visualization>( ID::State::VISUALIZATION )
+					.getItem<State::Visualization>( ID::State::VISUALIZATION )
 					->toggleController();
 			};
 

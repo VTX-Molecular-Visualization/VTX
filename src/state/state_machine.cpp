@@ -14,7 +14,10 @@ namespace VTX
 		void StateMachine::goToState( const std::string & p_name, void * const p_arg )
 		{
 			VTX_DEBUG( "Go to state: " + p_name );
-			if ( _getItems().find( p_name ) != _getItems().end() ) { _switchState( _getItems().at( p_name ), p_arg ); }
+			if ( hasItem( p_name ) )
+			{
+				_switchState( getItem( p_name ), p_arg );
+			}
 			else
 			{
 				throw Exception::VTXException( "State not found: " + p_name );
@@ -30,14 +33,23 @@ namespace VTX
 
 		void StateMachine::_switchState( BaseState * const p_state, void * const p_arg )
 		{
-			if ( _currentState != nullptr ) { _currentState->exit(); }
+			if ( _currentState != nullptr )
+			{
+				_currentState->exit();
+			}
 			_currentState = p_state;
-			if ( _currentState != nullptr ) { _currentState->enter( p_arg ); }
+			if ( _currentState != nullptr )
+			{
+				_currentState->enter( p_arg );
+			}
 		}
 
 		void StateMachine::update( const double p_deltaTime )
 		{
-			if ( _currentState != nullptr ) { _currentState->update( p_deltaTime ); }
+			if ( _currentState != nullptr )
+			{
+				_currentState->update( p_deltaTime );
+			}
 		}
 	}; // namespace State
 };	   // namespace VTX

@@ -47,25 +47,29 @@ namespace VTX
 
 		void BaseComponent::_drawComponent( const std::string & p_name )
 		{
-			if ( _hasItem( p_name ) )
+			if ( hasItem( p_name ) )
 			{
-				_getItem( p_name )->draw();
+				getItem( p_name )->draw();
+			}
+			else
+			{
+				VTX_DEBUG( "Unknown component: " + p_name );
 			}
 		}
 
 		void BaseComponent::_drawComponents()
 		{
-			for ( const PairStringToItemPtr & pair : _getItems() )
+			for ( const std::string & key : _getOrderedKeys() )
 			{
-				pair.second->draw();
+				getItem( key )->draw();
 			}
 		}
 
 		BaseComponent * const BaseComponent::getComponentByName( const std::string & p_name )
 		{
-			if ( _getItems().find( p_name ) != _getItems().end() )
+			if ( hasItem( p_name ) )
 			{
-				return static_cast<BaseComponent *>( _getItem( p_name ) );
+				return static_cast<BaseComponent *>( getItem( p_name ) );
 			}
 
 			for ( const PairStringToItemPtr & pair : _getItems() )
