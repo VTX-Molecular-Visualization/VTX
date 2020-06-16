@@ -200,8 +200,13 @@ namespace VTX::Renderer::Optix
 		// TODO: why 50 ? fix that
 		_optixModuleCompileOptions					= {};
 		_optixModuleCompileOptions.maxRegisterCount = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
+#ifdef _DEBUG
+		_optixModuleCompileOptions.optLevel	  = OPTIX_COMPILE_OPTIMIZATION_LEVEL_0;
+		_optixModuleCompileOptions.debugLevel = OPTIX_COMPILE_DEBUG_LEVEL_FULL;
+#else
 		_optixModuleCompileOptions.optLevel			= OPTIX_COMPILE_OPTIMIZATION_LEVEL_3;
 		_optixModuleCompileOptions.debugLevel		= OPTIX_COMPILE_DEBUG_LEVEL_NONE;
+#endif
 
 		_optixPipelineCompileOptions = {};
 		// we use only one GAS (geometry acceleration structure)
@@ -210,9 +215,13 @@ namespace VTX::Renderer::Optix
 		_optixPipelineCompileOptions.numPayloadValues = 3;
 		_optixPipelineCompileOptions.usesMotionBlur	  = false;
 		// How much storage, in 32b words, to make available for the attributes.
-		// Here 3 for normal
-		_optixPipelineCompileOptions.numAttributeValues = 3;
-		_optixPipelineCompileOptions.exceptionFlags		= OPTIX_EXCEPTION_FLAG_NONE;
+		// Here 3 for normal + 1 for color id
+		_optixPipelineCompileOptions.numAttributeValues = 4;
+#ifdef _DEBUG
+		_optixPipelineCompileOptions.exceptionFlags = OPTIX_EXCEPTION_FLAG_DEBUG;
+#else
+		_optixPipelineCompileOptions.exceptionFlags = OPTIX_EXCEPTION_FLAG_NONE;
+#endif
 		// name of the struct used as parameter variable on device code
 		_optixPipelineCompileOptions.pipelineLaunchParamsVariableName = "params";
 
@@ -440,16 +449,124 @@ namespace VTX::Renderer::Optix
 
 	OptixTraversableHandle OptixRayTracer::_buildGAS()
 	{
+#define TEST
+#ifdef TEST
+		// TODO: compact gas ?
+
+		std::vector<OptixBuildInput> buildInputs;
+
+		OptixAccelBuildOptions accelOptions = {};
+		accelOptions.buildFlags				= OPTIX_BUILD_FLAG_NONE;
+		accelOptions.operation				= OPTIX_BUILD_OPERATION_BUILD;
+		accelOptions.motionOptions.numKeys	= 0;
+
+		// Set up spheres input if any.
+		const std::vector<Sphere> & spheres = _scene.getSpheres();
+		if ( !spheres.empty() )
+		{
+			std::vector<OptixAabb> spheresAabb;
+			spheresAabb.reserve( spheres.size() );
+
+			for ( uint i = 0; i < uint( spheres.size() ); ++i )
+			{
+				spheresAabb.emplace_back( spheres[ i ].aabb() );
+			}
+
+			CUDA::Buffer d_spheresAabb;
+			d_spheresAabb.malloc( spheresAabb.size() * sizeof( OptixAabb ) );
+			d_spheresAabb.memcpyHostToDevice( spheresAabb.data(), spheresAabb.size() );
+			CUdeviceptr d_spheresAabbPtr = d_spheresAabb.getDevicePtr();
+
+			buildInputs.emplace_back( OptixBuildInput() );
+			OptixBuildInputCustomPrimitiveArray & spheresInput		= buildInputs.back().aabbArray;
+			uint32_t							  spheresInputFlags = { OPTIX_GEOMETRY_FLAG_DISABLE_ANYHIT };
+
+			buildInputs.back().type					 = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
+			spheresInput.flags						 = &spheresInputFlags;
+			spheresInput.aabbBuffers				 = &d_spheresAabbPtr;
+			spheresInput.numPrimitives				 = uint( spheres.size() );
+			spheresInput.numSbtRecords				 = 1;
+			spheresInput.sbtIndexOffsetSizeInBytes	 = sizeof( int );
+			spheresInput.sbtIndexOffsetStrideInBytes = sizeof( int );
+			spheresInput.sbtIndexOffsetBuffer		 = 0;
+		}
+
+		// Set up cylinders input if any.
+		const std::vector<Cylinder> & cylinders = _scene.getCylinders();
+		if ( !cylinders.empty() )
+		{
+			std::vector<OptixAabb> cylindersAabb;
+			cylindersAabb.reserve( cylinders.size() );
+
+			for ( uint i = 0; i < uint( cylinders.size() ); ++i )
+			{
+				cylindersAabb.emplace_back( cylinders[ i ].aabb() );
+			}
+
+			CUDA::Buffer d_cylindersAabb;
+			d_cylindersAabb.malloc( cylindersAabb.size() * sizeof( OptixAabb ) );
+			d_cylindersAabb.memcpyHostToDevice( cylindersAabb.data(), cylindersAabb.size() );
+			CUdeviceptr d_cylindersAabbPtr = d_cylindersAabb.getDevicePtr();
+
+			buildInputs.emplace_back( OptixBuildInput() );
+			OptixBuildInputCustomPrimitiveArray & cylindersInput	  = buildInputs.back().aabbArray;
+			uint32_t							  cylindersInputFlags = { OPTIX_GEOMETRY_FLAG_DISABLE_ANYHIT };
+
+			buildInputs.back().type					   = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
+			cylindersInput.flags					   = &cylindersInputFlags;
+			cylindersInput.aabbBuffers				   = &d_cylindersAabbPtr;
+			cylindersInput.numPrimitives			   = uint( cylinders.size() );
+			cylindersInput.numSbtRecords			   = 1;
+			cylindersInput.sbtIndexOffsetSizeInBytes   = sizeof( int );
+			cylindersInput.sbtIndexOffsetStrideInBytes = sizeof( int );
+			cylindersInput.sbtIndexOffsetBuffer		   = 0;
+		}
+
+		// Compute GAS memory.
+		OptixAccelBufferSizes bufferSizes;
+		OPTIX_HANDLE_ERROR( optixAccelComputeMemoryUsage(
+			_optixContext, &accelOptions, buildInputs.data(), uint( buildInputs.size() ), &bufferSizes ) );
+		CUDA::Buffer d_gasOutput;
+		d_gasOutput.malloc( bufferSizes.outputSizeInBytes );
+		CUDA::Buffer d_temp;
+		d_temp.malloc( bufferSizes.tempSizeInBytes );
+
+		// Get GAS AABB.
+		CUDA::Buffer d_gasAABB;
+		d_gasAABB.malloc( sizeof( OptixAabb ) );
+
+		// Build GAS.
+		OptixAccelEmitDesc emitProperty;
+		emitProperty.type	= OPTIX_PROPERTY_TYPE_AABBS;
+		emitProperty.result = d_gasAABB.getDevicePtr();
+
+		OptixTraversableHandle gasHandle;
+		OPTIX_HANDLE_ERROR( optixAccelBuild( _optixContext,
+											 0,
+											 &accelOptions,
+											 buildInputs.data(),
+											 uint( buildInputs.size() ),
+											 d_temp.getDevicePtr(),
+											 bufferSizes.tempSizeInBytes,
+											 d_gasOutput.getDevicePtr(),
+											 bufferSizes.outputSizeInBytes,
+											 &gasHandle,
+											 &emitProperty,
+											 1 ) );
+
+		d_gasAABB.memcpyDeviceToHost( &_gasAABB, 1 );
+
+		return gasHandle;
+#else
 		// create AABB buffer from sphere
 		std::vector<OptixAabb> aabbs;
 
 		const std::vector<Sphere> & spheres = _scene.getSpheres();
 		if ( !spheres.empty() )
 		{
-			aabbs.resize( spheres.size() );
 			for ( uint i = 0; i < uint( spheres.size() ); ++i )
 			{
-				aabbs[ i ] = spheres[ i ].aabb();
+				aabbs.emplace_back( spheres[ i ].aabb() );
 			}
 			_nbSbtRecords++;
 			_sbtIndex.emplace_back( uint( _sbtIndex.size() ) );
@@ -458,11 +575,9 @@ namespace VTX::Renderer::Optix
 		const std::vector<Cylinder> & cylinders = _scene.getCylinders();
 		if ( !cylinders.empty() )
 		{
-			const uint offset = uint( aabbs.size() );
-			aabbs.resize( offset + cylinders.size() );
 			for ( uint i = 0; i < uint( cylinders.size() ); ++i )
 			{
-				aabbs[ i + offset ] = cylinders[ i ].aabb();
+				aabbs.emplace_back( cylinders[ i ].aabb() );
 			}
 			_nbSbtRecords++;
 			_sbtIndex.emplace_back( uint( _sbtIndex.size() ) );
@@ -485,7 +600,7 @@ namespace VTX::Renderer::Optix
 		aabbInput.aabbArray.numSbtRecords			  = _nbSbtRecords;
 		aabbInput.aabbArray.numPrimitives			  = uint( aabbs.size() );
 		aabbInput.aabbArray.sbtIndexOffsetBuffer	  = _sbtIndexBuffer.getDevicePtr();
-		aabbInput.aabbArray.sbtIndexOffsetSizeInBytes = sizeof( uint );
+		aabbInput.aabbArray.sbtIndexOffsetSizeInBytes = sizeof( uint32_t );
 		aabbInput.aabbArray.primitiveIndexOffset	  = 0;
 
 		// build gas
@@ -544,24 +659,25 @@ namespace VTX::Renderer::Optix
 		}
 
 		return gasHandle;
+#endif
 	}
 
 	void OptixRayTracer::_createOptixPipeline()
 	{
-		std::vector<OptixProgramGroup> programGroups;
+		_programGroups = { _rayGeneratorProgram, _missProgram };
 
-		programGroups.emplace_back( _rayGeneratorProgram );
-		programGroups.emplace_back( _missProgram );
-		programGroups.emplace_back( _hitGroupSphereProgram );
-		programGroups.emplace_back( _hitGroupCylinderProgram );
+		if ( !_scene.getSpheres().empty() )
+			_programGroups.emplace_back( _hitGroupSphereProgram );
+		if ( !_scene.getCylinders().empty() )
+			_programGroups.emplace_back( _hitGroupCylinderProgram );
 
 		char   log[ 2048 ];
 		size_t sizeof_log = sizeof( log );
 		OPTIX_HANDLE_ERROR( optixPipelineCreate( _optixContext,
 												 &_optixPipelineCompileOptions,
 												 &_optixPipelineLinkOptions,
-												 programGroups.data(),
-												 int( programGroups.size() ),
+												 _programGroups.data(),
+												 int( _programGroups.size() ),
 												 log,
 												 &sizeof_log,
 												 &_optixPipeline ) );
@@ -611,7 +727,7 @@ namespace VTX::Renderer::Optix
 			r._data._camera._front	  = make_float3( camFront.x, camFront.y, camFront.z );
 			r._data._camera._du		  = make_float3( u.x, u.y, u.z );
 			r._data._camera._dv		  = make_float3( v.x, v.y, v.z );
-			r._data._nbSamples		  = 32;
+			r._data._nbSamples		  = 1;
 
 			OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _rayGeneratorProgram, &r ) );
 
@@ -634,33 +750,34 @@ namespace VTX::Renderer::Optix
 			_missRecordBuffer.memcpyHostToDevice( &r, 1 );
 
 			_shaderBindingTable.missRecordBase			= _missRecordBuffer.getDevicePtr();
-			_shaderBindingTable.missRecordStrideInBytes = static_cast<uint>( sizeof( MissRecord ) );
+			_shaderBindingTable.missRecordStrideInBytes = sizeof( MissRecord );
 			_shaderBindingTable.missRecordCount			= 1;
 		}
 
 		// create hitgroup records buffer on device
 		{
+			// TODO: warning 0/1 for test
 			std::vector<HitGroupRecord> records;
 			if ( !_scene.getSpheres().empty() )
 			{
 				HitGroupRecord r;
 				r._data._spheres = (Sphere *)( _scene.getSpheresDevPtr() );
 				records.emplace_back( r );
-				OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _hitGroupSphereProgram, &records.back() ) );
+				OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _hitGroupSphereProgram, &records[ 0 ] ) );
 			}
 			if ( !_scene.getCylinders().empty() )
 			{
 				HitGroupRecord r;
 				r._data._cylinders = (Cylinder *)( _scene.getCylindersDevPtr() );
 				records.emplace_back( r );
-				OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _hitGroupCylinderProgram, &records.back() ) );
+				OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _hitGroupCylinderProgram, &records[ 1 ] ) );
 			}
 			_hitGroupRecordsBuffer.malloc( records.size() * sizeof( HitGroupRecord ) );
 			_hitGroupRecordsBuffer.memcpyHostToDevice( records.data(), records.size() );
 
 			_shaderBindingTable.hitgroupRecordBase			= _hitGroupRecordsBuffer.getDevicePtr();
-			_shaderBindingTable.hitgroupRecordStrideInBytes = static_cast<uint>( sizeof( HitGroupRecord ) );
-			_shaderBindingTable.hitgroupRecordCount			= static_cast<uint>( records.size() );
+			_shaderBindingTable.hitgroupRecordStrideInBytes = sizeof( HitGroupRecord );
+			_shaderBindingTable.hitgroupRecordCount			= uint( records.size() );
 		}
 	}
 } // namespace VTX::Renderer::Optix

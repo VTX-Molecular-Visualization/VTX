@@ -49,10 +49,10 @@ namespace VTX::Renderer::Optix
 					}								  // first intersection too near, check second one
 					if ( t >= p_tMin && t <= p_tMax ) // t is within the interval
 					{
-						p_hit._t	  = t;
-						p_hit._point  = p_origin + p_direction * p_hit._t;
-						p_hit._normal = ( p_hit._point - _center ) / radius;
-
+						p_hit._t	   = t;
+						p_hit._point   = p_origin + p_direction * p_hit._t;
+						p_hit._normal  = ( p_hit._point - _center ) / radius;
+						p_hit._colorId = _colorId;
 						return true;
 					}
 				}
@@ -63,6 +63,7 @@ namespace VTX::Renderer::Optix
 		float3 _center	= { 0.f, 0.f, 0.f };
 		float  _radius	= 0.f;
 		int	   _colorId = 0;
+		float3 _pad;
 	};
 
 } // namespace VTX::Renderer::Optix
