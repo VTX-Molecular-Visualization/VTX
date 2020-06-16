@@ -93,7 +93,7 @@ void main()
 		{
 			// Compute hit point and normal (always in view space)
 			const vec3 hit	  = rayDir * t;
-			const vec3 normal = ( v0 + hit - v1v0 * y / d0 ) / uCylRad;
+			const vec3 normal = normalize( v0 + hit - v1v0 * y / d0 );
 
 			// Fill depth buffer
 			gl_FragDepth = computeDepth( hit );
