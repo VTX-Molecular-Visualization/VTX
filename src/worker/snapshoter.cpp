@@ -3,8 +3,8 @@
 #include "define.hpp"
 #ifdef CUDA_DEFINED
 #include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
-#include "renderer/ray_tracing/ray_tracer.hpp"
 #endif
+#include "renderer/ray_tracing/ray_tracer.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
 #include <GL/gl3w.h>

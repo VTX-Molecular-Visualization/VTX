@@ -1,6 +1,7 @@
 #include "rt_scene_optix.hpp"
 #include "setting.hpp"
 
+#ifdef OPTIX_DEFINED
 namespace VTX::Renderer::Optix
 {
 	Scene::~Scene()
@@ -114,3 +115,4 @@ namespace VTX::Renderer::Optix
 		_colorsDevBuffer.memcpyHostToDevice( _colors.data(), _colors.size() );
 	}
 } // namespace VTX::Renderer::Optix
+#endif
