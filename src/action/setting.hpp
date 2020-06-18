@@ -24,10 +24,17 @@ namespace VTX
 				explicit Load() {}
 				virtual void execute() override
 				{
+					const Path & path = Util::Filesystem::SETTING_JSON_FILE;
+					if ( Util::Filesystem::exists( path ) == false )
+					{
+						VTX_INFO( "No settings file found" );
+						return;
+					}
+
 					IO::Reader::Setting reader = IO::Reader::Setting();
 					try
 					{
-						reader.readFile( Util::Filesystem::SETTING_JSON_FILE, VTX_SETTING() );
+						reader.readFile( path, VTX_SETTING() );
 						VTX_INFO( "Settings loaded " );
 					}
 					catch ( const std::exception & p_e )

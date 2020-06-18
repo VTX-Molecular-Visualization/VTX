@@ -1,6 +1,7 @@
 #include "vtx_app.hpp"
 #include "action/open.hpp"
 #include "action/open_api.hpp"
+#include "action/setting.hpp"
 #include "action/snapshot.hpp"
 #include "id.hpp"
 #include "model/molecule.hpp"
@@ -74,6 +75,8 @@ namespace VTX
 
 		_stateMachine = Generic::create<State::StateMachine>();
 		_stateMachine->goToState( ID::State::VISUALIZATION );
+
+		VTX_ACTION( new Action::Setting::Load() );
 
 		VTXApp::_isRunning = true;
 
