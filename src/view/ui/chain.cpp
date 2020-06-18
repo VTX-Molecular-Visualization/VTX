@@ -1,7 +1,6 @@
 #include "chain.hpp"
 #include "action/chain_change_color.hpp"
 #include "action/chain_change_visibility.hpp"
-#include "action/change_color_mode.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
 

@@ -19,8 +19,6 @@ namespace VTX
 			{
 			  public:
 				virtual ~BaseWriterJson() = default;
-
-				virtual void writeFile( const Path & p_path, T & p_data ) override {}
 			};
 		} // namespace Writer
 	}	  // namespace IO

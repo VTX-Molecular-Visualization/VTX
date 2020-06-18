@@ -186,7 +186,7 @@ namespace VTX
 				= ImVec2( Style::IMGUI_STYLE_WINDOW_PADDING, Style::IMGUI_STYLE_WINDOW_PADDING );
 
 			// .ini location.
-			io.IniFilename = Util::Filesystem::IMGUI_INI_FILE.string().c_str();
+			io.IniFilename = Util::Filesystem::IMGUI_INI_FILE.c_str();
 
 			// Setup Platform/Renderer bindings.
 			if ( ImGui_ImplSDL2_InitForOpenGL( _window, _glContext ) == false )

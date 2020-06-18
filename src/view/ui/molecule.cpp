@@ -1,5 +1,4 @@
 #include "molecule.hpp"
-#include "action/change_color_mode.hpp"
 #include "action/molecule_change_color.hpp"
 #include "action/molecule_change_fps.hpp"
 #include "action/molecule_change_frame.hpp"

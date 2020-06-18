@@ -14,6 +14,11 @@ namespace VTX
 	{
 		static std::map<std::string, const char *> values = {
 
+			{ "Load", "Load" },
+			{ "Save", "Save" },
+
+			// TODO: remove extended keys, juste translate.
+
 			// Main menu.
 			{ "MainMenu.Menu", "Menu" },
 			{ "MainMenu.Menu.New", "New" },

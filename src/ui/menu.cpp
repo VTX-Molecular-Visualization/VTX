@@ -1,29 +1,6 @@
 #include "menu.hpp"
-#include "action/active_aa.hpp"
-#include "action/active_outline.hpp"
-#include "action/active_renderer.hpp"
-#include "action/active_ssao.hpp"
 #include "action/active_ui_component.hpp"
-#include "action/active_vertical_sync.hpp"
-#include "action/active_y_axis_inversion.hpp"
-#include "action/change_ao_blur_size.hpp"
-#include "action/change_ao_intensity.hpp"
-#include "action/change_atoms_radius.hpp"
-#include "action/change_auto_rotate_speed.hpp"
-#include "action/change_background_color.hpp"
-#include "action/change_bonds_radius.hpp"
-#include "action/change_camera_clip.hpp"
 #include "action/change_camera_controller.hpp"
-#include "action/change_camera_fov.hpp"
-#include "action/change_camera_projection.hpp"
-#include "action/change_color_mode.hpp"
-#include "action/change_display_mode.hpp"
-#include "action/change_representation.hpp"
-#include "action/change_rotation_speed.hpp"
-#include "action/change_shading.hpp"
-#include "action/change_theme.hpp"
-#include "action/change_translation_factor_speed.hpp"
-#include "action/change_translation_speed.hpp"
 #include "action/new.hpp"
 #include "action/open.hpp"
 #include "action/open_api.hpp"
@@ -31,6 +8,7 @@
 #include "action/path_export_video.hpp"
 #include "action/path_import.hpp"
 #include "action/quit.hpp"
+#include "action/setting.hpp"
 #include "action/snapshot.hpp"
 #include "define.hpp"
 #include "imgui/imgui_internal.h"
@@ -223,7 +201,7 @@ namespace VTX
 				int theme = (int)VTX_SETTING().theme;
 				if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Theme" ), &theme, themes, 3 ) )
 				{
-					VTX_ACTION( new Action::ChangeTheme( (Style::THEME)theme ) );
+					VTX_ACTION( new Action::Setting::ChangeTheme( (Style::THEME)theme ) );
 				}
 
 				ImGui::Separator();
@@ -233,7 +211,8 @@ namespace VTX
 				int			 symbolDisplayMode = (int)VTX_SETTING().symbolDisplayMode;
 				if ( ImGui::Combo( LOCALE( "MainMenu.Settings.SymbolDisplay" ), &symbolDisplayMode, values, 2 ) )
 				{
-					VTX_ACTION( new Action::ChangeDisplayMode( (Style::SYMBOL_DISPLAY_MODE)symbolDisplayMode ) );
+					VTX_ACTION(
+						new Action::Setting::ChangeDisplayMode( (Style::SYMBOL_DISPLAY_MODE)symbolDisplayMode ) );
 				}
 
 				ImGui::Separator();
@@ -242,14 +221,14 @@ namespace VTX
 				bool isActive = VTX_SETTING().activeRenderer;
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.Rendering" ), &isActive ) )
 				{
-					VTX_ACTION( new Action::ActiveRenderer( isActive ) );
+					VTX_ACTION( new Action::Setting::ActiveRenderer( isActive ) );
 				};
 
 				// Background color.
 				Color::Rgb & bgColor = VTX_SETTING().backgroundColor;
 				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.BackgroundColor" ), (float *)&bgColor ) )
 				{
-					VTX_ACTION( new Action::ChangeBackgroundColor( bgColor ) );
+					VTX_ACTION( new Action::Setting::ChangeBackgroundColor( bgColor ) );
 				}
 
 				// Representation.
@@ -261,7 +240,8 @@ namespace VTX
 				int			 representation	   = (int)VTX_SETTING().representation;
 				if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Representation" ), &representation, representations, 5 ) )
 				{
-					VTX_ACTION( new Action::ChangeRepresentation( ( Generic::REPRESENTATION )( representation ) ) );
+					VTX_ACTION(
+						new Action::Setting::ChangeRepresentation( ( Generic::REPRESENTATION )( representation ) ) );
 				}
 
 				// Allow to control bonds radius if the representation show them.
@@ -273,7 +253,7 @@ namespace VTX
 											 Setting::ATOMS_RADIUS_MIN,
 											 Setting::ATOMS_RADIUS_MAX ) )
 					{
-						VTX_ACTION( new Action::ChangeAtomsRadius( atomsRadius ) );
+						VTX_ACTION( new Action::Setting::ChangeAtomsRadius( atomsRadius ) );
 					}
 				}
 				if ( representation == int( Generic::REPRESENTATION::STICK )
@@ -285,7 +265,7 @@ namespace VTX
 											 Setting::BONDS_RADIUS_MIN,
 											 Setting::BONDS_RADIUS_MAX ) )
 					{
-						VTX_ACTION( new Action::ChangeBondsRadius( bondsRadius ) );
+						VTX_ACTION( new Action::Setting::ChangeBondsRadius( bondsRadius ) );
 					}
 				}
 
@@ -297,7 +277,7 @@ namespace VTX
 				int			 colorMode = (int)VTX_SETTING().colorMode;
 				if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ), &colorMode, modes, 4 ) )
 				{
-					VTX_ACTION( new Action::ChangeColorMode( (Generic::COLOR_MODE)colorMode ) );
+					VTX_ACTION( new Action::Setting::ChangeColorMode( (Generic::COLOR_MODE)colorMode ) );
 				}
 
 				// Shading.
@@ -308,7 +288,7 @@ namespace VTX
 				int			 shading	= (int)VTX_SETTING().shading;
 				if ( ImGui::Combo( LOCALE( "MainMenu.Settings.Shading" ), &shading, shadings, 4 ) )
 				{
-					VTX_ACTION( new Action::ChangeShading( (Renderer::SHADING)shading ) );
+					VTX_ACTION( new Action::Setting::ChangeShading( (Renderer::SHADING)shading ) );
 				}
 
 				// Camera.
@@ -318,7 +298,7 @@ namespace VTX
 										 Setting::CAMERA_NEAR_MIN,
 										 Setting::CAMERA_NEAR_MAX ) )
 				{
-					VTX_ACTION( new Action::ChangeCameraClip( camNear, VTX_SETTING().cameraFar ) );
+					VTX_ACTION( new Action::Setting::ChangeCameraClip( camNear, VTX_SETTING().cameraFar ) );
 				}
 				float camFar = VTX_SETTING().cameraFar;
 				if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.CamFar" ),
@@ -326,7 +306,7 @@ namespace VTX
 										 Setting::CAMERA_FAR_MIN,
 										 Setting::CAMERA_FAR_MAX ) )
 				{
-					VTX_ACTION( new Action::ChangeCameraClip( VTX_SETTING().cameraNear, camFar ) );
+					VTX_ACTION( new Action::Setting::ChangeCameraClip( VTX_SETTING().cameraNear, camFar ) );
 				}
 				float camFov = VTX_SETTING().cameraFov;
 				if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.CamFov" ),
@@ -334,26 +314,26 @@ namespace VTX
 										 Setting::CAMERA_FOV_MIN,
 										 Setting::CAMERA_FOV_MAX ) )
 				{
-					VTX_ACTION( new Action::ChangeCameraFov( camFov ) );
+					VTX_ACTION( new Action::Setting::ChangeCameraFov( camFov ) );
 				}
 				bool camPerspective = VTX_SETTING().cameraPerspective;
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.CamPerspective" ), &camPerspective ) )
 				{
-					VTX_ACTION( new Action::ChangeCameraProjection( camPerspective ) );
+					VTX_ACTION( new Action::Setting::ChangeCameraProjection( camPerspective ) );
 				};
 
 				// VSYNC.
 				bool useVSync = VTX_SETTING().activeVSync;
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.VSync" ), &useVSync ) )
 				{
-					VTX_ACTION( new Action::ActiveVerticalSync( useVSync ) );
+					VTX_ACTION( new Action::Setting::ActiveVerticalSync( useVSync ) );
 				};
 
 				// SSAO.
 				bool useSSAO = VTX_SETTING().activeAO;
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &useSSAO ) )
 				{
-					VTX_ACTION( new Action::ActiveSSAO( useSSAO ) );
+					VTX_ACTION( new Action::Setting::ActiveAO( useSSAO ) );
 				};
 
 				int aoIntensity = VTX_SETTING().aoIntensity;
@@ -362,7 +342,7 @@ namespace VTX
 									   Setting::AO_INTENSITY_MIN,
 									   Setting::AO_INTENSITY_MAX ) )
 				{
-					VTX_ACTION( new Action::ChangeAOIntensity( aoIntensity ) );
+					VTX_ACTION( new Action::Setting::ChangeAOIntensity( aoIntensity ) );
 				}
 
 				int aoBlurSize = VTX_SETTING().aoBlurSize;
@@ -371,7 +351,7 @@ namespace VTX
 									   Setting::AO_BLUR_SIZE_MIN,
 									   Setting::AO_BLUR_SIZE_MAX ) )
 				{
-					VTX_ACTION( new Action::ChangeAOBlurSize( aoBlurSize ) );
+					VTX_ACTION( new Action::Setting::ChangeAOBlurSize( aoBlurSize ) );
 				}
 				ImGui::Separator();
 
@@ -379,7 +359,7 @@ namespace VTX
 				bool useOutline = VTX_SETTING().activeOutline;
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.Outline" ), &useOutline ) )
 				{
-					VTX_ACTION( new Action::ActiveOutline( useOutline ) );
+					VTX_ACTION( new Action::Setting::ActiveOutline( useOutline ) );
 				};
 				ImGui::Separator();
 
@@ -387,7 +367,7 @@ namespace VTX
 				bool useAA = VTX_SETTING().activeAA;
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.AA" ), &useAA ) )
 				{
-					VTX_ACTION( new Action::ActiveAA( useAA ) );
+					VTX_ACTION( new Action::Setting::ActiveAA( useAA ) );
 				};
 				ImGui::Separator();
 
@@ -398,21 +378,21 @@ namespace VTX
 										 Setting::AUTO_ROTATE_SPEED_MIN,
 										 Setting::AUTO_ROTATE_SPEED_MAX ) )
 				{
-					VTX_ACTION( new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) );
+					VTX_ACTION( new Action::Setting::ChangeAutoRotateSpeed( autoRotateSpeed ) );
 				}
 				if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateYSpeed" ),
 										 &autoRotateSpeed.y,
 										 Setting::AUTO_ROTATE_SPEED_MIN,
 										 Setting::AUTO_ROTATE_SPEED_MAX ) )
 				{
-					VTX_ACTION( new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) );
+					VTX_ACTION( new Action::Setting::ChangeAutoRotateSpeed( autoRotateSpeed ) );
 				}
 				if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AutoRotateZSpeed" ),
 										 &autoRotateSpeed.z,
 										 Setting::AUTO_ROTATE_SPEED_MIN,
 										 Setting::AUTO_ROTATE_SPEED_MAX ) )
 				{
-					VTX_ACTION( new Action::ChangeAutoRotateSpeed( autoRotateSpeed ) );
+					VTX_ACTION( new Action::Setting::ChangeAutoRotateSpeed( autoRotateSpeed ) );
 				}
 
 				ImGui::Separator();
@@ -424,7 +404,7 @@ namespace VTX
 										 Setting::CONTROLLER_TRANSLATION_SPEED_MIN,
 										 Setting::CONTROLLER_TRANSLATION_SPEED_MAX ) )
 				{
-					VTX_ACTION( new Action::ChangeTranslationSpeed( translationSpeed ) );
+					VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( translationSpeed ) );
 				}
 				float translationFactorSpeed = VTX_SETTING().translationFactorSpeed;
 				if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.TranslationFactorSpeed" ),
@@ -432,7 +412,7 @@ namespace VTX
 										 Setting::CONTROLLER_TRANSLATION_FACTOR_MIN,
 										 Setting::CONTROLLER_TRANSLATION_FACTOR_MAX ) )
 				{
-					VTX_ACTION( new Action::ChangeTranslationFactorSpeed( translationFactorSpeed ) );
+					VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed( translationFactorSpeed ) );
 				}
 				float rotationSpeed = VTX_SETTING().rotationSpeed;
 				if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.RotationSpeed" ),
@@ -440,14 +420,28 @@ namespace VTX
 										 Setting::CONTROLLER_ROTATION_SPEED_MIN,
 										 Setting::CONTROLLER_ROTATION_SPEED_MAX ) )
 				{
-					VTX_ACTION( new Action::ChangeRotationSpeed( rotationSpeed ) );
+					VTX_ACTION( new Action::Setting::ChangeRotationSpeed( rotationSpeed ) );
 				}
 
 				// Invert y axis.
 				bool yAxisInverted = VTX_SETTING().yAxisInverted;
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.InverseYAxis" ), &yAxisInverted ) )
 				{
-					VTX_ACTION( new Action::ActiveYAxisInversion( yAxisInverted ) );
+					VTX_ACTION( new Action::Setting::ActiveYAxisInversion( yAxisInverted ) );
+				}
+
+				ImGui::Separator();
+
+				// New.
+				if ( ImGui::MenuItem( LOCALE( "Load" ) ) )
+				{
+					VTX_ACTION( new Action::Setting::Load() );
+				}
+
+				// New.
+				if ( ImGui::MenuItem( LOCALE( "Save" ) ) )
+				{
+					VTX_ACTION( new Action::Setting::Save() );
 				}
 
 				ImGui::EndMenu();

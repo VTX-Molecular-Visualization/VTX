@@ -60,9 +60,9 @@ namespace VTX
 	const float Setting::CONTROLLER_ELASTICITY_THRESHOLD	   = 1e-4f;
 
 	// Auto rotate.
+	const float Setting::AUTO_ROTATE_SPEED_DEFAULT = 0.0f;
 	const float Setting::AUTO_ROTATE_SPEED_MIN	   = 0.0f;
 	const float Setting::AUTO_ROTATE_SPEED_MAX	   = 1.0f;
-	const float Setting::AUTO_ROTATE_SPEED_DEFAULT = 0.0f;
 
 	// Video.
 	const float Setting::PATH_DURATION_DEFAULT = 5.f;

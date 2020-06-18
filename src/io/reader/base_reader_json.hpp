@@ -6,6 +6,8 @@
 #endif
 
 #include "base_reader.hpp"
+#include "exception.hpp"
+#include <nlohmann/json.hpp>
 
 namespace VTX
 {
@@ -18,8 +20,6 @@ namespace VTX
 			{
 			  public:
 				virtual ~BaseReaderJson() = default;
-
-				virtual void readFile( const Path & p_path, T & p_data ) override {}
 			};
 		} // namespace Reader
 	}	  // namespace IO

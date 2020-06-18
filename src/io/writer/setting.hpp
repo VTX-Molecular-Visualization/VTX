@@ -6,7 +6,7 @@
 #endif
 
 #include "base_writer_json.hpp"
-#include "setting.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -14,8 +14,12 @@ namespace VTX
 	{
 		namespace Writer
 		{
-			class Setting : public BaseWriterJson<Setting>
+			class Setting : public BaseWriterJson<VTX::Setting>
 			{
+			  public:
+				virtual ~Setting() = default;
+
+				virtual void writeFile( const Path & p_path, const VTX::Setting & p_data ) override;
 			};
 		} // namespace Writer
 	}	  // namespace IO

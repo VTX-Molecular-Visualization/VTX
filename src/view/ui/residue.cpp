@@ -1,5 +1,4 @@
 #include "residue.hpp"
-#include "action/change_color_mode.hpp"
 #include "action/residue_change_color.hpp "
 #include "action/visible_change_visibility.hpp"
 #include "util/ui.hpp"

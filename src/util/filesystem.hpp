@@ -49,15 +49,15 @@ namespace VTX
 #endif
 			}
 
-			static const Path EXECUTABLE_FILE	= getExecutableFile();
-			static const Path EXECUTABLE_DIR	= EXECUTABLE_FILE.parent_path();
-			static const Path SHADERS_DIR		= Path( EXECUTABLE_DIR.string() + "/../../shaders" );
-			static const Path SNAPSHOTS_DIR		= Path( EXECUTABLE_DIR.string() + "/../../snapshots" );
-			static const Path RENDERS_DIR		= Path( EXECUTABLE_DIR.string() + "/../../renders" );
-			static const Path PATHS_DIR			= Path( EXECUTABLE_DIR.string() + "/../../paths" );
-			static const Path VIDEOS_DIR		= Path( EXECUTABLE_DIR.string() + "/../../videos" );
-			static const Path IMGUI_INI_FILE	= Path( EXECUTABLE_DIR.string() + "/../../imgui.ini" );
-			static const Path SETTING_JSON_FILE = Path( EXECUTABLE_DIR.string() + "/../../setting.json" );
+			static const Path		 EXECUTABLE_FILE   = getExecutableFile();
+			static const Path		 EXECUTABLE_DIR	   = EXECUTABLE_FILE.parent_path();
+			static const Path		 SHADERS_DIR	   = Path( EXECUTABLE_DIR.string() + "/../../shaders" );
+			static const Path		 SNAPSHOTS_DIR	   = Path( EXECUTABLE_DIR.string() + "/../../snapshots" );
+			static const Path		 RENDERS_DIR	   = Path( EXECUTABLE_DIR.string() + "/../../renders" );
+			static const Path		 PATHS_DIR		   = Path( EXECUTABLE_DIR.string() + "/../../paths" );
+			static const Path		 VIDEOS_DIR		   = Path( EXECUTABLE_DIR.string() + "/../../videos" );
+			static const std::string IMGUI_INI_FILE	   = Path( EXECUTABLE_DIR.string() + "/../../imgui.ini" ).string();
+			static const Path		 SETTING_JSON_FILE = Path( EXECUTABLE_DIR.string() + "/../../setting.json" );
 
 			inline Path * const getDataPathPtr( const std::string & p_filename )
 			{
@@ -96,10 +96,18 @@ namespace VTX
 
 			inline const std::string readPath( const Path & p_path )
 			{
-				std::ifstream	f( p_path, std::ios::in | std::ios::binary );
+				std::ifstream file;
+				file.open( p_path, std::ios::in );
+
+				if ( !file.is_open() )
+				{
+					throw Exception::VTXException( "Cannot open file " + p_path.string() );
+				}
+
 				const uintmax_t size = std::filesystem::file_size( p_path );
 				std::string		result( size, '\0' );
-				f.read( result.data(), size );
+				file.read( result.data(), size );
+				file.close();
 
 				return result;
 			}

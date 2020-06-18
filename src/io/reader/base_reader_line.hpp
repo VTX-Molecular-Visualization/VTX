@@ -22,6 +22,7 @@ namespace VTX
 
 				virtual void readFile( const Path & p_path, T & p_data ) override final
 				{
+					// TODO: move stream opening in filesystem.hpp?
 					std::ifstream file;
 					std::string	  line;
 

@@ -6,7 +6,7 @@
 #endif
 
 #include "base_reader_json.hpp"
-#include "setting.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -14,8 +14,12 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			class Setting : public BaseReaderJson<Setting>
+			class Setting : public BaseReaderJson<VTX::Setting>
 			{
+			  public:
+				virtual ~Setting() = default;
+
+				virtual void readFile( const Path &, VTX::Setting & p_data ) override;
 			};
 		} // namespace Reader
 	}	  // namespace IO
