@@ -1,6 +1,5 @@
 #include "blur.hpp"
 #include "renderer/gl/gl.hpp"
-#include "setting.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -56,7 +55,7 @@ namespace VTX
 				_uInvDirectionTexSizeLoc = glGetUniformLocation( _program->getId(), "uInvDirectionTexSize" );
 
 				_program->use();
-				glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
+				glUniform1i( _uBlurSizeLoc, VTX_SETTING().aoBlurSize );
 			}
 
 			void Blur::resize( const uint p_width, const uint p_height )
@@ -80,7 +79,7 @@ namespace VTX
 
 				_program->use();
 				// TODO don't update each frame
-				glUniform1i( _uBlurSizeLoc, Setting::Rendering::aoBlurSize );
+				glUniform1i( _uBlurSizeLoc, VTX_SETTING().aoBlurSize );
 				glUniform2f( _uInvDirectionTexSizeLoc, 1.f / p_renderer.getWidth(), 0.f );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );

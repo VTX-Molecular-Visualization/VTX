@@ -15,16 +15,16 @@ namespace VTX
 		class ChangeTheme : public BaseAction
 		{
 		  public:
-			explicit ChangeTheme( const Setting::UI::THEME p_theme ) : _theme( p_theme ) {}
+			explicit ChangeTheme( const Style::THEME p_theme ) : _theme( p_theme ) {}
 
 			virtual void execute() override
 			{
-				Setting::UI::theme = _theme;
+				VTX_SETTING().theme = _theme;
 				VTXApp::get().getUI().setTheme();
 			};
 
 		  private:
-			const Setting::UI::THEME _theme;
+			const Style::THEME _theme;
 		};
 	} // namespace Action
 } // namespace VTX

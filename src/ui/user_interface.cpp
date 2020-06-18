@@ -3,7 +3,6 @@
 #include "exception.hpp"
 #include "menu.hpp"
 #include "modal/progress_bar.hpp"
-#include "setting.hpp"
 #include "style.hpp"
 #include "util/filesystem.hpp"
 #include "util/logger.hpp"
@@ -58,11 +57,11 @@ namespace VTX
 
 		void UserInterface::setTheme() const
 		{
-			switch ( Setting::UI::theme )
+			switch ( VTX_SETTING().theme )
 			{
-			case Setting::UI::THEME::DARK: ImGui::StyleColorsDark(); break;
-			case Setting::UI::THEME::CLASSIC: ImGui::StyleColorsClassic(); break;
-			case Setting::UI::THEME::LIGHT:
+			case Style::THEME::DARK: ImGui::StyleColorsDark(); break;
+			case Style::THEME::CLASSIC: ImGui::StyleColorsClassic(); break;
+			case Style::THEME::LIGHT:
 			default: ImGui::StyleColorsLight(); break;
 			}
 		}
@@ -113,8 +112,8 @@ namespace VTX
 				title.c_str(),
 				SDL_WINDOWPOS_CENTERED,
 				SDL_WINDOWPOS_CENTERED,
-				WINDOW_WIDTH,
-				WINDOW_HEIGHT,
+				VTX_SETTING().WINDOW_WIDTH_DEFAULT,
+				VTX_SETTING().WINDOW_HEIGHT_DEFAULT,
 				SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI );
 
 			if ( _window == nullptr )
@@ -129,7 +128,7 @@ namespace VTX
 			}
 
 			SDL_GL_MakeCurrent( _window, _glContext );
-			setVSync( Setting::Rendering::useVSync );
+			setVSync( VTX_SETTING().activeVSync );
 		}
 
 		void UserInterface::_initGL()
@@ -169,21 +168,22 @@ namespace VTX
 
 			// Configuration.
 			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-			if ( IMGUI_ENABLE_VIEWPORTS )
+			if ( Style::IMGUI_ENABLE_VIEWPORTS )
 			{
 				io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 			}
 
 			// Style.
 			setTheme();
-			ImGui::GetStyle().WindowRounding	= IMGUI_STYLE_ROUNDING;
-			ImGui::GetStyle().ChildRounding		= IMGUI_STYLE_ROUNDING;
-			ImGui::GetStyle().FrameRounding		= IMGUI_STYLE_ROUNDING;
-			ImGui::GetStyle().GrabRounding		= IMGUI_STYLE_ROUNDING;
-			ImGui::GetStyle().PopupRounding		= IMGUI_STYLE_ROUNDING;
-			ImGui::GetStyle().ScrollbarRounding = IMGUI_STYLE_ROUNDING;
-			ImGui::GetStyle().WindowBorderSize	= IMGUI_STYLE_WINDOW_BORDER;
-			ImGui::GetStyle().WindowPadding		= ImVec2( IMGUI_STYLE_WINDOW_PADDING, IMGUI_STYLE_WINDOW_PADDING );
+			ImGui::GetStyle().WindowRounding	= Style::IMGUI_STYLE_ROUNDING;
+			ImGui::GetStyle().ChildRounding		= Style::IMGUI_STYLE_ROUNDING;
+			ImGui::GetStyle().FrameRounding		= Style::IMGUI_STYLE_ROUNDING;
+			ImGui::GetStyle().GrabRounding		= Style::IMGUI_STYLE_ROUNDING;
+			ImGui::GetStyle().PopupRounding		= Style::IMGUI_STYLE_ROUNDING;
+			ImGui::GetStyle().ScrollbarRounding = Style::IMGUI_STYLE_ROUNDING;
+			ImGui::GetStyle().WindowBorderSize	= Style::IMGUI_STYLE_WINDOW_BORDER;
+			ImGui::GetStyle().WindowPadding
+				= ImVec2( Style::IMGUI_STYLE_WINDOW_PADDING, Style::IMGUI_STYLE_WINDOW_PADDING );
 
 			// .ini location.
 			io.IniFilename = Util::Filesystem::IMGUI_INI_FILE.c_str();
@@ -253,7 +253,7 @@ namespace VTX
 										   | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
 
 			// Main begin.
-			return ImGui::Begin( IMGUI_ID_MAIN_WINDOW, isVisiblePtr(), windowFlags );
+			return ImGui::Begin( Style::IMGUI_ID_MAIN_WINDOW, isVisiblePtr(), windowFlags );
 		}
 
 		void UserInterface::_drawFooter() { ImGui::End(); }
@@ -267,7 +267,7 @@ namespace VTX
 			glViewport( 0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y );
 
 			// Docking.
-			ImGuiID			   dockSpaceId	  = ImGui::GetID( IMGUI_ID_MAIN_DOCKSPACE );
+			ImGuiID			   dockSpaceId	  = ImGui::GetID( Style::IMGUI_ID_MAIN_DOCKSPACE );
 			ImGuiDockNodeFlags dockSpaceFlags = ImGuiDockNodeFlags_PassthruCentralNode | ImGuiWindowFlags_NoBackground;
 			ImGui::DockSpace( dockSpaceId, ImVec2( 0.0f, 0.0f ), dockSpaceFlags );
 
@@ -275,7 +275,7 @@ namespace VTX
 			_drawComponents();
 
 			// Debug.
-			if ( IMGUI_SHOW_DEMO )
+			if ( Style::IMGUI_SHOW_DEMO )
 			{
 				ImGui::ShowDemoWindow( NULL );
 			}

@@ -1,53 +1,75 @@
 #include "setting.hpp"
+#include "renderer/gl/pass/shading.hpp"
 
 namespace VTX
 {
-	namespace Setting
-	{
-		namespace UI
-		{
-			Setting::UI::THEME	theme			  = Setting::UI::THEME::DARK;
-			SYMBOL_DISPLAY_MODE symbolDisplayMode = SYMBOL_DISPLAY_MODE::SHORT;
-		}; // namespace UI
+	// UI.
+	const Style::THEME				 Setting::THEME_DEFAULT				  = Style::THEME::DARK;
+	const Style::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT = Style::SYMBOL_DISPLAY_MODE::SHORT;
+	const int						 Setting::WINDOW_WIDTH_DEFAULT		  = 1280;
+	const int						 Setting::WINDOW_HEIGHT_DEFAULT		  = 720;
 
-		namespace Rendering
-		{
-			extern bool				isActive	   = true;
-			Generic::REPRESENTATION representation = Generic::REPRESENTATION::VAN_DER_WAALS;
-			Generic::COLOR_MODE		colorMode	   = Generic::COLOR_MODE::CHAIN;
-			Renderer::MODE			mode		   = Renderer::MODE::GL;
-			Renderer::SHADING		shading		   = Renderer::SHADING::DIFFUSE;
-			bool					useVSync	   = VSYNC_DEFAULT;
-			bool					useSSAO		   = SSAO_DEFAULT;
-			int						aoIntensity	   = RENDERER_AO_INTENSITY_DEFAULT;
-			int						aoBlurSize	   = RENDERER_AO_BLUR_SIZE_DEFAULT;
-			bool					useOutline	   = OUTLINE_DEFAULT;
-			bool					useAA		   = AA_DEFAULT;
+	// Rendering.
+	const bool					  Setting::ACTIVE_RENDERER_DEFAULT	= true;
+	const Generic::REPRESENTATION Setting::REPRESENTATION_DEFAULT	= Generic::REPRESENTATION::VAN_DER_WAALS;
+	const float					  Setting::ATOMS_RADIUS_DEFAULT		= 0.4f;
+	const float					  Setting::ATOMS_RADIUS_MIN			= 0.f;
+	const float					  Setting::ATOMS_RADIUS_MAX			= 1.f;
+	const float					  Setting::BONDS_RADIUS_DEFAULT		= 0.15f;
+	const float					  Setting::BONDS_RADIUS_MIN			= 0.f;
+	const float					  Setting::BONDS_RADIUS_MAX			= 1.f;
+	const Generic::COLOR_MODE	  Setting::COLOR_MODE_DEFAULT		= Generic::COLOR_MODE::CHAIN;
+	const Renderer::SHADING		  Setting::SHADING_DEFAULT			= Renderer::SHADING::DIFFUSE;
+	const bool					  Setting::ACTIVE_VSYNC_DEFAULT		= true;
+	const bool					  Setting::ACTIVE_AO_DEFAULT		= true;
+	const int					  Setting::AO_INTENSITY_DEFAULT		= 5;
+	const int					  Setting::AO_INTENSITY_MIN			= 1;
+	const int					  Setting::AO_INTENSITY_MAX			= 20;
+	const int					  Setting::AO_BLUR_SIZE_DEFAULT		= 17;
+	const int					  Setting::AO_BLUR_SIZE_MIN			= 1;
+	const int					  Setting::AO_BLUR_SIZE_MAX			= 99;
+	const bool					  Setting::ACTIVE_AA_DEFAULT		= true;
+	const bool					  Setting::ACTIVE_OUTLINE_DEFAULT	= false;
+	const Color::Rgb			  Setting::OUTLINE_COLOR_DEFAULT	= Color::Rgb::WHITE;
+	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT = Color::Rgb::BLACK;
 
-			// Camera.
-			float camNear		 = CAMERA_NEAR_DEFAULT;
-			float camFar		 = CAMERA_FAR_DEFAULT;
-			float camFov		 = CAMERA_FOV_DEFAULT;
-			bool  camPerspective = CAMERA_PERSPECTIVE_DEFAULT;
+	// Camera.
+	const float Setting::CAMERA_NEAR_DEFAULT		= 0.f;
+	const float Setting::CAMERA_NEAR_MIN			= 0.f;
+	const float Setting::CAMERA_NEAR_MAX			= 1e4f;
+	const float Setting::CAMERA_FAR_DEFAULT			= 1e4f;
+	const float Setting::CAMERA_FAR_MIN				= 0.f;
+	const float Setting::CAMERA_FAR_MAX				= 1e4f;
+	const float Setting::CAMERA_FOV_DEFAULT			= 45.f;
+	const float Setting::CAMERA_FOV_MIN				= 10.f;
+	const float Setting::CAMERA_FOV_MAX				= 90.f;
+	const bool	Setting::CAMERA_PERSPECTIVE_DEFAULT = true;
 
-			Color::Rgb backgroundColor = Color::Rgb::BLACK;
-			Color::Rgb outlineColor	   = Color::Rgb::WHITE;
-		}; // namespace Rendering
+	// Controllers.
+	const float Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT  = 150.f;
+	const float Setting::CONTROLLER_TRANSLATION_SPEED_MIN	   = 50.f;
+	const float Setting::CONTROLLER_TRANSLATION_SPEED_MAX	   = 300.f;
+	const float Setting::CONTROLLER_TRANSLATION_FACTOR_DEFAULT = 2.0f;
+	const float Setting::CONTROLLER_TRANSLATION_FACTOR_MIN	   = 1.0f;
+	const float Setting::CONTROLLER_TRANSLATION_FACTOR_MAX	   = 5.0f;
+	const float Setting::CONTROLLER_ROTATION_SPEED_DEFAULT	   = 0.005f;
+	const float Setting::CONTROLLER_ROTATION_SPEED_MIN		   = 0.001f;
+	const float Setting::CONTROLLER_ROTATION_SPEED_MAX		   = 0.01f;
+	const bool	Setting::CONTROLLER_Y_AXIS_INVERTED			   = false;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR		   = 4.0f;
+	const float Setting::CONTROLLER_ELASTICITY_THRESHOLD	   = 1e-4f;
 
-		namespace MoleculeView
-		{
-			float atomsRadiusFixed = ATOMS_RADIUS_FIXED_DEFAULT;
-			float bondsRadius	   = BONDS_RADIUS_DEFAULT;
-		} // namespace MoleculeView
+	// Auto rotate.
+	const float Setting::AUTO_ROTATE_SPEED_MIN	   = 0.0f;
+	const float Setting::AUTO_ROTATE_SPEED_MAX	   = 1.0f;
+	const float Setting::AUTO_ROTATE_SPEED_DEFAULT = 0.0f;
 
-		namespace Controller
-		{
-			bool  yAxisInverted = false;
-			Vec3f autoRotateSpeed
-				= Vec3f( AUTO_ROTATE_X_SPEED_DEFAULT, AUTO_ROTATE_Y_SPEED_DEFAULT, AUTO_ROTATE_Z_SPEED_DEFAULT );
-			float translationSpeed		 = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
-			float translationFactorSpeed = CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
-			float rotationSpeed			 = CONTROLLER_ROTATION_SPEED_DEFAULT;
-		} // namespace Controller
-	}	  // namespace Setting
+	// Video.
+	const float Setting::PATH_DURATION_DEFAULT = 5.f;
+	const uint	Setting::VIDEO_FPS_DEFAULT	   = 60;
+
+	// Misc.
+	const int  Setting::CONSOLE_SIZE	   = 80;
+	const uint Setting::ACTION_BUFFER_SIZE = 10;
+
 } // namespace VTX

@@ -1,7 +1,7 @@
 #include "ssao.hpp"
 #include "renderer/gl/gl.hpp"
-#include "setting.hpp"
 #include "util/sampler.hpp"
+#include "vtx_app.hpp"
 #include <random>
 
 namespace VTX
@@ -62,7 +62,7 @@ namespace VTX
 
 				_program->use();
 				glUniform3fv( _uAoKernelLoc, _kernelSize, (const GLfloat *)aoKernel.data() );
-				glUniform1i( _uAoIntensityLoc, Setting::Rendering::aoIntensity );
+				glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
 				glUniform1i( _uKernelSizeLoc, _kernelSize );
 
 				// generate noise texture
@@ -113,7 +113,7 @@ namespace VTX
 				_program->use();
 
 				// TODO don't update each frame
-				glUniform1i( _uAoIntensityLoc, Setting::Rendering::aoIntensity );
+				glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
 
 				glUniformMatrix4fv( _uProjMatrixLoc,
 									1,

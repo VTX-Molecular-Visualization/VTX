@@ -19,7 +19,7 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				Setting::Rendering::useOutline = _active;
+				VTX_SETTING().activeOutline = _active;
 				VTXApp::get().getRendererGL().activeOutline( _active );
 			};
 

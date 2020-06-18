@@ -19,8 +19,8 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				Setting::Controller::rotationSpeed
-					= Util::Math::clamp( _speed, CONTROLLER_ROTATION_SPEED_MIN, CONTROLLER_ROTATION_SPEED_MAX );
+				VTX_SETTING().rotationSpeed = Util::Math::clamp(
+					_speed, Setting::CONTROLLER_ROTATION_SPEED_MIN, Setting::CONTROLLER_ROTATION_SPEED_MAX );
 			};
 
 		  private:

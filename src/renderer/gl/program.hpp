@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-
+#include "define.hpp"
 #include <GL/gl3w.h>
 #include <string>
 
@@ -39,7 +39,7 @@ namespace VTX
 				friend class ProgramManager;
 			};
 		} // namespace GLSL
-	} // namespace Renderer
+	}	  // namespace Renderer
 } // namespace VTX
 
 #endif

@@ -16,12 +16,12 @@ namespace VTX
 		class ChangeDisplayMode : public BaseAction
 		{
 		  public:
-			explicit ChangeDisplayMode( const Setting::UI::SYMBOL_DISPLAY_MODE p_mode ) : _mode( p_mode ) {}
+			explicit ChangeDisplayMode( const Style::SYMBOL_DISPLAY_MODE p_mode ) : _mode( p_mode ) {}
 
-			virtual void execute() override { Setting::UI::symbolDisplayMode = _mode; };
+			virtual void execute() override { VTX_SETTING().symbolDisplayMode = _mode; };
 
 		  private:
-			const Setting::UI::SYMBOL_DISPLAY_MODE _mode;
+			const Style::SYMBOL_DISPLAY_MODE _mode;
 		};
 	} // namespace Action
 } // namespace VTX

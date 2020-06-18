@@ -39,7 +39,7 @@ namespace VTX
 									GL_FALSE,
 									Util::Math::value_ptr( cam.getViewMatrix() * _getModel().getTransform().get() ) );
 				glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
-				glUniform1f( _uRadiusLoc, Setting::MoleculeView::bondsRadius );
+				glUniform1f( _uRadiusLoc, VTX_SETTING().bondsRadius );
 
 				for ( const std::pair<uint, uint> & pair :
 					  _getModel().getRepresentationState()[ p_representation ].bonds )

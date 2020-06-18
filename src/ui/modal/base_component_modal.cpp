@@ -8,7 +8,7 @@ namespace VTX
 		{
 			bool BaseComponentModal::_drawHeader()
 			{
-				ImGui::SetNextWindowBgAlpha( IMGUI_STYLE_MODAL_BG_ALPHA );
+				ImGui::SetNextWindowBgAlpha( Style::IMGUI_STYLE_MODAL_BG_ALPHA );
 				return ImGui::BeginPopupModal( getTitle(),
 											   nullptr,
 											   ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoDocking

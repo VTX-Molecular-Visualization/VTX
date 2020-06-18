@@ -19,7 +19,7 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				Setting::Rendering::shading = _shading;
+				VTX_SETTING().shading = _shading;
 				VTXApp::get().getRendererGL().setShading();
 			};
 

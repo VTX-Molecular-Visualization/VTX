@@ -19,8 +19,8 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				Setting::Controller::translationSpeed
-					= Util::Math::clamp( _speed, CONTROLLER_TRANSLATION_SPEED_MIN, CONTROLLER_TRANSLATION_SPEED_MAX );
+				VTX_SETTING().translationSpeed = Util::Math::clamp(
+					_speed, Setting::CONTROLLER_TRANSLATION_SPEED_MIN, Setting::CONTROLLER_TRANSLATION_SPEED_MAX );
 			};
 
 		  private:

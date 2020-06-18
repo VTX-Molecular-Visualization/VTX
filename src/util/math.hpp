@@ -6,7 +6,6 @@
 #endif
 
 #include "define.hpp"
-#include "exception.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/compatibility.hpp>
@@ -16,15 +15,18 @@
 #include <glm/gtx/vector_angle.hpp>
 #include <random>
 
-#undef min
-#undef max
-
 namespace VTX
 {
 	namespace Util
 	{
 		namespace Math
 		{
+#ifdef _DEBUG
+			constexpr bool RANDOM = false;
+#else
+			constexpr bool RANDOM = true;
+#endif
+
 			static std::random_device					 rd;
 			static std::mt19937							 gen( RANDOM ? rd() : 7937 );
 			static std::uniform_real_distribution<float> dis( 0.f, 1.f );

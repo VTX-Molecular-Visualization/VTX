@@ -9,6 +9,7 @@
 #include "define.hpp"
 #include "generic/base_serializable.hpp"
 #include "object3d/camera.hpp"
+#include "setting.hpp"
 #include "viewpoint.hpp"
 #include <vector>
 
@@ -72,7 +73,7 @@ namespace VTX
 			VectorViewpointPtr	_viewpoints		   = VectorViewpointPtr();
 			DURATION_MODE		_modeDuration	   = DURATION_MODE::CONSTANT_SPEED;
 			INNTERPOLATION_MODE _modeInterpolation = INNTERPOLATION_MODE::LINEAR;
-			float				_duration		   = PATH_DEFAULT_DURATION;
+			float				_duration		   = Setting::PATH_DURATION_DEFAULT;
 			bool				_isLooping		   = false;
 		};
 	} // namespace Model

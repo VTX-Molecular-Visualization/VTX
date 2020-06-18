@@ -17,7 +17,7 @@ namespace VTX
 		  public:
 			explicit ActiveYAxisInversion( const bool p_active ) : _active( p_active ) {}
 
-			virtual void execute() override { Setting::Controller::yAxisInverted = _active; };
+			virtual void execute() override { VTX_SETTING().yAxisInverted = _active; };
 
 		  private:
 			const bool _active;

@@ -27,7 +27,7 @@ namespace VTX
 
 			VTXApp::get().getScene().update( p_deltaTime );
 
-			if ( Setting::Rendering::isActive )
+			if ( VTX_SETTING().activeRenderer)
 			{
 				VTXApp::get().renderScene();
 			}

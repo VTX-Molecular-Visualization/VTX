@@ -17,7 +17,7 @@ namespace VTX
 		  public:
 			explicit ActiveRenderer( const bool p_active ) : _active( p_active ) {}
 
-			virtual void execute() override { Setting::Rendering::isActive = _active; };
+			virtual void execute() override { VTX_SETTING().activeRenderer = _active; }
 
 		  private:
 			const bool _active;

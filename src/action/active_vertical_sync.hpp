@@ -19,8 +19,8 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				Setting::Rendering::useVSync = _active;
-				VTXApp::get().getUI().setVSync( Setting::Rendering::useVSync );
+				VTX_SETTING().activeVSync = _active;
+				VTXApp::get().getUI().setVSync( VTX_SETTING().activeVSync );
 			};
 
 		  private:

@@ -1,5 +1,4 @@
 #include "freefly.hpp"
-#include "setting.hpp"
 
 namespace VTX
 {
@@ -10,9 +9,9 @@ namespace VTX
 			// Rotation.
 			if ( _mouseLeftPressed )
 			{
-				_camera.rotate( Vec3d( -Setting::Controller::rotationSpeed * (float)_deltaMousePosition.y
-										   * ( Setting::Controller::yAxisInverted ? -1.f : 1.f ),
-									   -Setting::Controller::rotationSpeed * (float)_deltaMousePosition.x,
+				_camera.rotate( Vec3d( -VTX_SETTING().rotationSpeed * (float)_deltaMousePosition.y
+										   * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f ),
+									   -VTX_SETTING().rotationSpeed * (float)_deltaMousePosition.x,
 
 									   0.f ) );
 				_deltaMousePosition.x = 0;
@@ -20,7 +19,7 @@ namespace VTX
 			}
 			if ( _mouseRightPressed )
 			{
-				_camera.rotateRoll( Setting::Controller::rotationSpeed * (float)_deltaMousePosition.x );
+				_camera.rotateRoll( VTX_SETTING().rotationSpeed * (float)_deltaMousePosition.x );
 				_deltaMousePosition.x = 0;
 			}
 
@@ -57,16 +56,16 @@ namespace VTX
 				return;
 			}
 
-			translation *= Setting::Controller::translationSpeed;
+			translation *= VTX_SETTING().translationSpeed;
 			translation *= p_deltaTime;
 
 			if ( _isKeyPressed( SDL_SCANCODE_LSHIFT ) )
 			{
-				translation *= Setting::Controller::translationFactorSpeed;
+				translation *= VTX_SETTING().translationFactorSpeed;
 			}
 			if ( _isKeyPressed( SDL_SCANCODE_LCTRL ) )
 			{
-				translation /= Setting::Controller::translationFactorSpeed;
+				translation /= VTX_SETTING().translationFactorSpeed;
 			}
 
 			_camera.move( translation );

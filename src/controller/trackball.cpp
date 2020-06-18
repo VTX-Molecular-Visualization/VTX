@@ -1,5 +1,4 @@
 #include "trackball.hpp"
-#include "setting.hpp"
 #include "util/math.hpp"
 
 namespace VTX
@@ -92,15 +91,15 @@ namespace VTX
 			// Set values from settings.
 			if ( deltaDistance != 0.f )
 			{
-				deltaDistance *= Setting::Controller::translationSpeed;
+				deltaDistance *= VTX_SETTING().translationSpeed;
 
 				if ( _isKeyPressed( SDL_SCANCODE_LSHIFT ) )
 				{
-					deltaDistance *= Setting::Controller::translationFactorSpeed;
+					deltaDistance *= VTX_SETTING().translationFactorSpeed;
 				}
 				if ( _isKeyPressed( SDL_SCANCODE_LCTRL ) )
 				{
-					deltaDistance /= Setting::Controller::translationFactorSpeed;
+					deltaDistance /= VTX_SETTING().translationFactorSpeed;
 				}
 
 				_needUpdate = true;
@@ -108,10 +107,10 @@ namespace VTX
 
 			if ( deltaVelocity != VEC3F_ZERO )
 			{
-				_velocity.x += Setting::Controller::rotationSpeed * deltaVelocity.x;
-				_velocity.y += Setting::Controller::rotationSpeed * deltaVelocity.y
-							   * ( Setting::Controller::yAxisInverted ? -1.f : 1.f );
-				_velocity.z += Setting::Controller::rotationSpeed * deltaVelocity.z;
+				_velocity.x += VTX_SETTING().rotationSpeed * deltaVelocity.x;
+				_velocity.y
+					+= VTX_SETTING().rotationSpeed * deltaVelocity.y * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f );
+				_velocity.z += VTX_SETTING().rotationSpeed * deltaVelocity.z;
 			}
 
 			_needUpdate |= _velocity != VEC3F_ZERO;
@@ -125,6 +124,14 @@ namespace VTX
 				_rotation	   = _rotation * rotation;
 				Vec3f position = _rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
 
+				/*
+				// Orbit.
+				_rotationYAxis += _velocityX;
+				_rotationXAxis -= _velocityY;
+
+				Quatf rotation = Quatf( Vec3f( _rotationXAxis, _rotationYAxis, 0.f ) );
+				Vec3f position = rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
+				*/
 				_camera.set( position, _rotation );
 				_needUpdate = false;
 			}
@@ -133,12 +140,12 @@ namespace VTX
 			if ( _velocity != VEC3F_ZERO )
 			{
 				_velocity = Util::Math::linearInterpolation(
-					_velocity, VEC3F_ZERO, (float)p_deltaTime * CONTROLLER_ELASTICITY_FACTOR );
+					_velocity, VEC3F_ZERO, (float)p_deltaTime * Setting::CONTROLLER_ELASTICITY_FACTOR );
 
 				Vec3f::bool_type res = Util::Math::lessThan( Util::Math::abs( _velocity ),
-															 Vec3f( CONTROLLER_ELASTICITY_THRESHOLD,
-																	CONTROLLER_ELASTICITY_THRESHOLD,
-																	CONTROLLER_ELASTICITY_THRESHOLD ) );
+															 Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD,
+																	Setting::CONTROLLER_ELASTICITY_THRESHOLD,
+																	Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
 				if ( !_mouseLeftPressed && res.x && res.y && res.z )
 				{
 					_velocity = VEC3F_ZERO;

@@ -7,8 +7,8 @@
 
 #include "model/molecule.hpp"
 #include "model/ribbon.hpp"
-#include "setting.hpp"
 #include "tool/chrono.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -293,23 +293,23 @@ namespace VTX
 					{
 						if ( rangeAtoms.second > 0 )
 						{
-							state[ Setting::Rendering::representation ].atoms.emplace( rangeAtoms );
+							state[ VTX_SETTING().representation ].atoms.emplace( rangeAtoms );
 						}
 						if ( rangeBonds.second > 0 )
 						{
-							state[ Setting::Rendering::representation ].bonds.emplace( rangeBonds );
+							state[ VTX_SETTING().representation ].bonds.emplace( rangeBonds );
 						}
 						if ( rangeTriangles.second > 0 )
 						{
-							state[ Setting::Rendering::representation ].triangles.emplace( rangeTriangles );
+							state[ VTX_SETTING().representation ].triangles.emplace( rangeTriangles );
 						}
 						for ( uint indexBond : residue->getIndexExtraBondStart() )
 						{
-							state[ Setting::Rendering::representation ].bonds.emplace( indexBond * 2, 2 );
+							state[ VTX_SETTING().representation ].bonds.emplace( indexBond * 2, 2 );
 						}
 						for ( uint indexBond : residue->getIndexExtraBondEnd() )
 						{
-							state[ Setting::Rendering::representation ].bonds.emplace( indexBond * 2, 2 );
+							state[ VTX_SETTING().representation ].bonds.emplace( indexBond * 2, 2 );
 						}
 					}
 				}

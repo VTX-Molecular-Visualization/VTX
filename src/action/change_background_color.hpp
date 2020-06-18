@@ -17,7 +17,7 @@ namespace VTX
 		  public:
 			explicit ChangeBackgroundColor( const Color::Rgb & p_color ) : _color( p_color ) {}
 
-			virtual void execute() override { Setting::Rendering::backgroundColor = _color; };
+			virtual void execute() override { VTX_SETTING().backgroundColor = _color; };
 
 		  private:
 			const Color::Rgb _color;

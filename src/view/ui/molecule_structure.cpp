@@ -5,7 +5,6 @@
 #include "action/residue_change_visibility.hpp"
 #include "action/selectable_select.hpp"
 #include "action/selectable_unselect.hpp"
-#include "setting.hpp"
 
 namespace VTX
 {
@@ -103,7 +102,7 @@ namespace VTX
 								Model::Residue & residue = _getModel().getResidue( chain->getIndexFirstResidue() + i );
 								ImGui::PushID( residue.getId() );
 								bool residueOpened = ImGui::TreeNodeEx(
-									VTX::Setting::UI::symbolDisplayMode == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
+									VTX_SETTING().symbolDisplayMode == Style::SYMBOL_DISPLAY_MODE::SHORT
 										? ( residue.getSymbolShort() + " " + std::to_string( residue.getIndex() ) )
 											  .c_str()
 										: residue.getSymbolName().c_str(),
@@ -158,8 +157,7 @@ namespace VTX
 										Model::Atom & atom = _getModel().getAtom( residue.getIndexFirstAtom() + j );
 										ImGui::PushID( atom.getId() );
 										if ( ImGui::Selectable(
-												 VTX::Setting::UI::symbolDisplayMode
-														 == VTX::Setting::UI::SYMBOL_DISPLAY_MODE::SHORT
+												 VTX_SETTING().symbolDisplayMode == Style::SYMBOL_DISPLAY_MODE::SHORT
 													 ? ( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) )
 														   .c_str()
 													 : atom.getSymbolName().c_str(),

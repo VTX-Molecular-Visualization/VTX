@@ -20,6 +20,19 @@ namespace VTX
 			delete _passFXAA;
 		}
 
+		const GLuint & GL::getRenderedTexture() const
+		{
+			return VTX_SETTING().activeAA
+					   ? _passFXAA->getTexture()
+					   : VTX_SETTING().activeOutline ? _passOutline->getTexture() : _passShading->getTexture();
+		}
+		const GLuint & GL::getRenderedFBO() const
+		{
+			return VTX_SETTING().activeAA
+					   ? _passFXAA->getFbo()
+					   : VTX_SETTING().activeOutline ? _passOutline->getFbo() : _passShading->getFbo();
+		}
+
 		void GL::init( const uint p_width, const uint p_height )
 		{
 			VTX_INFO( "Initializing renderer..." );
@@ -90,7 +103,7 @@ namespace VTX
 			glViewport( 0, 0, _width, _height );
 
 			// TODO: do not change each frame
-			if ( Setting::Rendering::camNear == 0.f )
+			if ( VTX_SETTING().cameraNear == 0.f )
 			{
 				glEnable( GL_DEPTH_CLAMP );
 			}
@@ -105,7 +118,7 @@ namespace VTX
 
 			_passLinearizeDepth->render( p_scene, *this );
 
-			if ( Setting::Rendering::useSSAO )
+			if ( VTX_SETTING().activeAO )
 			{
 				_passSSAO->render( p_scene, *this );
 				_passBlur->render( p_scene, *this );
@@ -113,12 +126,12 @@ namespace VTX
 
 			_passShading->render( p_scene, *this );
 
-			if ( Setting::Rendering::useOutline )
+			if ( VTX_SETTING().activeOutline )
 			{
 				_passOutline->render( p_scene, *this );
 			}
 
-			if ( Setting::Rendering::useAA )
+			if ( VTX_SETTING().activeAA )
 			{
 				_passFXAA->render( p_scene, *this );
 			}

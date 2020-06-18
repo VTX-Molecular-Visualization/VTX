@@ -19,9 +19,9 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				Setting::Rendering::camFov = _fov;
+				VTX_SETTING().cameraFov = _fov;
 
-				VTXApp::get().getScene().getCamera().setFov( Setting::Rendering::camFov );
+				VTXApp::get().getScene().getCamera().setFov( VTX_SETTING().cameraFov );
 			};
 
 		  private:

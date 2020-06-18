@@ -19,9 +19,9 @@ namespace VTX
 
 			virtual void execute() override
 			{
-				Setting::Rendering::camPerspective = _perspective;
+				VTX_SETTING().cameraPerspective = _perspective;
 
-				VTXApp::get().getScene().getCamera().setPerspective( Setting::Rendering::camPerspective );
+				VTXApp::get().getScene().getCamera().setPerspective( VTX_SETTING().cameraPerspective );
 			};
 
 		  private:
