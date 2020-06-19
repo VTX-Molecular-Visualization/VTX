@@ -22,7 +22,7 @@ namespace VTX
 			explicit Trackball() :
 				_camera( VTXApp::get().getScene().getCamera() ),
 				_target( VTXApp::get().getScene().getAABB().centroid() ),
-				_distance( VTXApp::get().getScene().getAABB().diameter() )
+				_distanceForced( VTXApp::get().getScene().getAABB().diameter() )
 			{
 			}
 
@@ -46,10 +46,9 @@ namespace VTX
 		  private:
 			Object3D::Camera & _camera;
 
-			Vec3f _target	= VEC3F_ZERO;
-			float _distance = 0.f;
-			Vec3f _velocity = VEC3F_ZERO;
-			//Quatf _rotation = Quatf( 1.0, { 0.0, 0.0, 0.0 } );
+			Vec3f _target		  = VEC3F_ZERO;
+			float _distanceForced = 0.f;
+			Vec3f _velocity		  = VEC3F_ZERO;
 
 			bool _needUpdate = true;
 		};

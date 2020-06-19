@@ -10,9 +10,9 @@ namespace VTX
 			BaseController::setActive( p_active );
 			if ( p_active )
 			{
-				_needUpdate = true;
-				_target		= VTXApp::get().getScene().getAABB().centroid();
-				_distance	= VTXApp::get().getScene().getAABB().diameter();
+				_needUpdate		= true;
+				_target			= VTXApp::get().getScene().getAABB().centroid();
+				_distanceForced = VTXApp::get().getScene().getAABB().diameter();
 			}
 			else
 			{
@@ -118,11 +118,21 @@ namespace VTX
 			// Update if needed.
 			if ( _needUpdate )
 			{
-				_distance = Util::Math::clamp( _distance - deltaDistance, 0.1f, 10000.f );
+				float distance = 0.f;
+				if ( _distanceForced != 0.f )
+				{
+					distance		= Util::Math::clamp( _distanceForced - deltaDistance, 0.1f, 10000.f );
+					_distanceForced = 0.f;
+				}
+				else
+				{
+					distance = Util::Math::length( _camera.getPosition() - _target );
+					distance = Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
+				}
 
 				Quatf rotation = Quatf( Vec3f( -_velocity.y, _velocity.x, -_velocity.z ) * (float)p_deltaTime );
 				rotation	   = (Quatf)_camera.getRotation() * rotation;
-				Vec3f position = rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
+				Vec3f position = rotation * Vec3f( 0.f, 0.f, distance ) + _target;
 
 				/*
 				// Orbit.
