@@ -13,6 +13,7 @@
 #include "window/inspector.hpp"
 #include "window/render.hpp"
 #include "window/scene.hpp"
+#include <imgui/ImGuizmo.h>
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_sdl.h>
 #include <iostream>
@@ -240,6 +241,7 @@ namespace VTX
 			ImGui_ImplOpenGL3_NewFrame();
 			ImGui_ImplSDL2_NewFrame( _window );
 			ImGui::NewFrame();
+			ImGuizmo::BeginFrame();
 
 			// Configuration.
 			ImGuiViewport * viewport = ImGui::GetMainViewport();

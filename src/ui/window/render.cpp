@@ -3,6 +3,7 @@
 #include "renderer/gl/gl.hpp"
 #include "style.hpp"
 #include "vtx_app.hpp"
+#include <imgui/ImGuizmo.h>
 
 namespace VTX
 {
@@ -45,6 +46,18 @@ namespace VTX
 													  ImVec2( 0, 1 ),
 													  ImVec2( 1, 0 ) );
 #pragma warning( pop )
+
+				/*
+				ImGuiIO & io = ImGui::GetIO();
+				ImGuizmo::SetRect( 0, 0, io.DisplaySize.x, io.DisplaySize.y );
+				ImGuizmo::Manipulate( camera.mView.m16,
+									  camera.mProjection.m16,
+									  mCurrentGizmoOperation,
+									  mCurrentGizmoMode,
+									  matrix.m16,
+									  NULL,
+									  useSnap ? &snap.x : NULL );
+									  */
 			}
 		} // namespace Window
 	}	  // namespace UI
