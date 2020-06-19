@@ -48,7 +48,7 @@ namespace VTX
 				float deltaX = (float)_deltaMousePosition.x * 0.1f;
 				float deltaY = (float)_deltaMousePosition.y * 0.1f;
 
-				_target		= _target + _rotation * ( -VEC3F_X * deltaX + VEC3F_Y * deltaY );
+				_target		= _target + (Quatf)_camera.getRotation() * ( -VEC3F_X * deltaX + VEC3F_Y * deltaY );
 				_needUpdate = true;
 			}
 			_deltaMousePosition.x = 0;
@@ -121,8 +121,8 @@ namespace VTX
 				_distance = Util::Math::clamp( _distance - deltaDistance, 0.1f, 10000.f );
 
 				Quatf rotation = Quatf( Vec3f( -_velocity.y, _velocity.x, -_velocity.z ) * (float)p_deltaTime );
-				_rotation	   = _rotation * rotation;
-				Vec3f position = _rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
+				rotation	   = (Quatf)_camera.getRotation() * rotation;
+				Vec3f position = rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
 
 				/*
 				// Orbit.
@@ -132,7 +132,7 @@ namespace VTX
 				Quatf rotation = Quatf( Vec3f( _rotationXAxis, _rotationYAxis, 0.f ) );
 				Vec3f position = rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
 				*/
-				_camera.set( position, _rotation );
+				_camera.set( position, rotation );
 				_needUpdate = false;
 			}
 
