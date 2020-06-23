@@ -46,9 +46,9 @@ namespace VTX
 		  private:
 			Object3D::Camera & _camera;
 
-			Vec3f _target		  = VEC3F_ZERO;
-			float _distanceForced = 0.f;
-			Vec3f _velocity		  = VEC3F_ZERO;
+			Vec3d  _target		   = VEC3F_ZERO;
+			double _distanceForced = 0.0;
+			Vec3f  _velocity	   = VEC3F_ZERO;
 
 			bool _needUpdate = true;
 		};

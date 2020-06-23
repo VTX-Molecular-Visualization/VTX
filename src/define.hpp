@@ -64,9 +64,13 @@ namespace VTX
 	constexpr Vec3f VEC3F_ZERO = Vec3f( 0.f, 0.f, 0.f );
 	constexpr Vec3d VEC3D_ZERO = Vec3d( 0.0, 0.0, 0.0 );
 	constexpr Vec3f VEC3F_X	   = Vec3f( 1.f, 0.f, 0.f );
+	constexpr Vec3d VEC3D_X	   = Vec3d( 1.0, 0.0, 0.0 );
 	constexpr Vec3f VEC3F_Y	   = Vec3f( 0.f, 1.f, 0.f );
+	constexpr Vec3d VEC3D_Y	   = Vec3d( 0.0, 1.0, 0.0 );
 	constexpr Vec3f VEC3F_Z	   = Vec3f( 0.f, 0.f, 1.f );
+	constexpr Vec3d VEC3D_Z	   = Vec3d( 0.0, 0.0, 1.0 );
 	constexpr Vec3f VEC3F_XYZ  = Vec3f( 1.f, 1.f, 1.f );
+	constexpr Vec3d VEC3D_XYZ  = Vec3d( 1.0, 1.0, 1.0 );
 	constexpr Vec3f VEC3F_MIN  = Vec3f( FLOAT_MIN );
 	constexpr Vec3f VEC3F_MAX  = Vec3f( FLOAT_MAX );
 

@@ -45,10 +45,10 @@ namespace VTX
 			// Pan target with wheel button.
 			else if ( _mouseMiddlePressed )
 			{
-				float deltaX = (float)_deltaMousePosition.x * 0.1f;
-				float deltaY = (float)_deltaMousePosition.y * 0.1f;
+				double deltaX = _deltaMousePosition.x * 0.1;
+				double deltaY = _deltaMousePosition.y * 0.1;
 
-				_target		= _target + (Quatf)_camera.getRotation() * ( -VEC3F_X * deltaX + VEC3F_Y * deltaY );
+				_target		= _target + _camera.getRotation() * ( -VEC3D_X * deltaX + VEC3D_Y * deltaY );
 				_needUpdate = true;
 			}
 			_deltaMousePosition.x = 0;
@@ -118,16 +118,16 @@ namespace VTX
 			// Update if needed.
 			if ( _needUpdate )
 			{
-				double distance = 0.f;
-				if ( _distanceForced != 0.f )
+				double distance = 0.0;
+				if ( _distanceForced != 0.0 )
 				{
-					distance		= Util::Math::clamp( _distanceForced - deltaDistance, 0.1f, 10000.f );
-					_distanceForced = 0.f;
+					distance		= Util::Math::clamp( _distanceForced - deltaDistance, 0.1, 10000.0 );
+					_distanceForced = 0.0;
 				}
 				else
 				{
-					distance = Util::Math::distance( (Vec3d)_camera.getPosition(), (Vec3d)_target );
-					distance = Util::Math::clamp( (float)distance - deltaDistance, 0.1f, 10000.f );
+					distance = Util::Math::distance( _camera.getPosition(), _target );
+					distance = Util::Math::clamp( distance - deltaDistance, 0.1, 10000.0 );
 				}
 
 				Quatd rotation = Quatd( Vec3d( -_velocity.y, _velocity.x, -_velocity.z ) * p_deltaTime );
