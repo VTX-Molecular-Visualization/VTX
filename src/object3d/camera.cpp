@@ -15,7 +15,7 @@ namespace VTX
 			_updateRotation();
 		}
 
-		void Camera::move( const Vec3f & p_delta )
+		void Camera::move( const Vec3d & p_delta )
 		{
 			_position += _left * p_delta.x;
 			_position += _up * p_delta.y;
@@ -23,19 +23,19 @@ namespace VTX
 			_updateViewMatrix();
 		}
 
-		void Camera::moveFront( const float p_delta )
+		void Camera::moveFront( const double p_delta )
 		{
 			_position += _front * p_delta;
 			_updateViewMatrix();
 		}
 
-		void Camera::moveLeft( const float p_delta )
+		void Camera::moveLeft( const double p_delta )
 		{
 			_position += _left * p_delta;
 			_updateViewMatrix();
 		}
 
-		void Camera::moveUp( const float p_delta )
+		void Camera::moveUp( const double p_delta )
 		{
 			_position += _up * p_delta;
 			_updateViewMatrix();
@@ -48,24 +48,32 @@ namespace VTX
 			_updateRotation();
 		}
 
-		void Camera::rotatePitch( const float p_delta )
+		void Camera::rotatePitch( const double p_delta )
 		{
 			_eulerAngles.x = -p_delta;
 			_rotation	   = _rotation * Util::Math::eulerToQuaternion( _eulerAngles );
 			_updateRotation();
 		}
 
-		void Camera::rotateYaw( const float p_delta )
+		void Camera::rotateYaw( const double p_delta )
 		{
 			_eulerAngles.y = -p_delta;
 			_rotation	   = _rotation * Util::Math::eulerToQuaternion( _eulerAngles );
 			_updateRotation();
 		}
 
-		void Camera::rotateRoll( const float p_delta )
+		void Camera::rotateRoll( const double p_delta )
 		{
 			_eulerAngles.z = p_delta;
 			_rotation	   = _rotation * Util::Math::eulerToQuaternion( _eulerAngles );
+			_updateRotation();
+		}
+
+		void Camera::rotateAround( const Quatd & p_rotation, const Vec3d & p_target, const double p_distance )
+		{
+			Quatd rotation = _rotation * p_rotation;
+			_position	   = rotation * Vec3d( 0.0, 0.0, (double)p_distance ) + p_target;
+			_rotation	   = rotation;
 			_updateRotation();
 		}
 

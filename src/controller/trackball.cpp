@@ -118,7 +118,7 @@ namespace VTX
 			// Update if needed.
 			if ( _needUpdate )
 			{
-				float distance = 0.f;
+				double distance = 0.f;
 				if ( _distanceForced != 0.f )
 				{
 					distance		= Util::Math::clamp( _distanceForced - deltaDistance, 0.1f, 10000.f );
@@ -126,23 +126,22 @@ namespace VTX
 				}
 				else
 				{
-					distance = Util::Math::length( _camera.getPosition() - _target );
-					distance = Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
+					distance = Util::Math::distance( (Vec3d)_camera.getPosition(), (Vec3d)_target );
+					distance = Util::Math::clamp( (float)distance - deltaDistance, 0.1f, 10000.f );
 				}
 
-				Quatf rotation = Quatf( Vec3f( -_velocity.y, _velocity.x, -_velocity.z ) * (float)p_deltaTime );
-				rotation	   = (Quatf)_camera.getRotation() * rotation;
-				Vec3f position = rotation * Vec3f( 0.f, 0.f, distance ) + _target;
+				Quatd rotation = Quatd( Vec3d( -_velocity.y, _velocity.x, -_velocity.z ) * p_deltaTime );
+				_camera.rotateAround( rotation, _target, distance );
 
-				/*
-				// Orbit.
+				/***********************
+				// Orbit backup.
 				_rotationYAxis += _velocityX;
 				_rotationXAxis -= _velocityY;
 
 				Quatf rotation = Quatf( Vec3f( _rotationXAxis, _rotationYAxis, 0.f ) );
 				Vec3f position = rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
-				*/
-				_camera.set( position, rotation );
+				************************/
+
 				_needUpdate = false;
 			}
 
