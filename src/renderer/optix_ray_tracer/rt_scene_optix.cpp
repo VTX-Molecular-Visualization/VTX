@@ -1,6 +1,7 @@
 #include "rt_scene_optix.hpp"
-#include "setting.hpp"
+#include "vtx_app.hpp"
 
+#ifdef OPTIX_DEFINED
 namespace VTX::Renderer::Optix
 {
 	Scene::~Scene()
@@ -43,7 +44,7 @@ namespace VTX::Renderer::Optix
 			const Vec3f & p = atomPositions[ i ];
 			const float	  r = ( p_representation == Generic::REPRESENTATION::BALL_AND_STICK
 								|| p_representation == Generic::REPRESENTATION::STICK )
-								? Setting::MoleculeView::atomsRadiusFixed
+								? VTX_SETTING().atomsRadius
 								: p_molecule->getAtomRadius( i ) + radiusAdd;
 			const Color::Rgb & c		   = p_molecule->getAtomColor( i );
 			_spheres[ i + offset ]._center = { p.x, p.y, p.z };
@@ -90,7 +91,7 @@ namespace VTX::Renderer::Optix
 			const Color::Rgb &	c			 = p_molecule->getAtomColor( bond.getIndexFirstAtom() );
 			_cylinders[ i + offset ]._v0	 = { p0.x, p0.y, p0.z };
 			_cylinders[ i + offset ]._v1	 = { p1.x, p1.y, p1.z };
-			_cylinders[ i + offset ]._radius = Setting::MoleculeView::bondsRadius;
+			_cylinders[ i + offset ]._radius = VTX_SETTING().bondsRadius;
 			uint colorId					 = INVALID_ID;
 			for ( uint j = 0; j < uint( _colors.size() ); ++j )
 			{
@@ -114,3 +115,4 @@ namespace VTX::Renderer::Optix
 		_colorsDevBuffer.memcpyHostToDevice( _colors.data(), _colors.size() );
 	}
 } // namespace VTX::Renderer::Optix
+#endif

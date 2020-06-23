@@ -1,6 +1,7 @@
 #include "vtx_app.hpp"
 #include "action/open.hpp"
 #include "action/open_api.hpp"
+#include "action/setting.hpp"
 #include "action/snapshot.hpp"
 #include "id.hpp"
 #include "model/molecule.hpp"
@@ -67,13 +68,15 @@ namespace VTX
 
 		_scene = new Object3D::Scene();
 
-		_scene->getCamera().setScreenSize( WINDOW_WIDTH, WINDOW_HEIGHT );
+		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
 
 		_rendererGL = new Renderer::GL();
-		_rendererGL->init( WINDOW_WIDTH, WINDOW_HEIGHT );
+		_rendererGL->init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
 
 		_stateMachine = Generic::create<State::StateMachine>();
 		_stateMachine->goToState( ID::State::VISUALIZATION );
+
+		VTX_ACTION( new Action::Setting::Load() );
 
 		VTXApp::_isRunning = true;
 
@@ -85,7 +88,7 @@ namespace VTX
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "r2d2_2.obj" ) ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "4v6x.mmtf" ) ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr("6vsb.mmtf" ) ) );
-		VTX_ACTION( new Action::OpenApi( "3jb9" ) );
+		VTX_ACTION( new Action::OpenApi( "4hhb" ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "3jb9.pdb" ) ) );
 #endif
 

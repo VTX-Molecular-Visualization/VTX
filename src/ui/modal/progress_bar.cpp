@@ -29,7 +29,7 @@ namespace VTX
 					ImGui::OpenPopup( getTitle() );
 				}
 
-				ImGui::PushStyleVar( ImGuiStyleVar_WindowMinSize, IMGUI_STYLE_PROGRESS_BAR_SIZE );
+				ImGui::PushStyleVar( ImGuiStyleVar_WindowMinSize, Style::IMGUI_STYLE_PROGRESS_BAR_SIZE );
 				return BaseComponentModal::_drawHeader();
 			}
 
@@ -43,11 +43,11 @@ namespace VTX
 
 				min.x += position.x;
 				min.y += position.y;
-				max.x = min.x + _value * IMGUI_STYLE_PROGRESS_BAR_SIZE.x;
+				max.x = min.x + _value * Style::IMGUI_STYLE_PROGRESS_BAR_SIZE.x;
 				max.y += position.y;
 
 				ImDrawList * drawList = ImGui::GetForegroundDrawList();
-				drawList->AddRectFilled( min, max, IMGUI_STYLE_PROGRESS_BAR_COLOR );
+				drawList->AddRectFilled( min, max, Style::IMGUI_STYLE_PROGRESS_BAR_COLOR );
 
 				if ( _value == 0.f )
 				{

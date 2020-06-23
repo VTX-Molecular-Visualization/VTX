@@ -2,7 +2,6 @@
 #include "action/transformable_rotate.hpp"
 #include "generic/factory.hpp"
 #include "math/transform.hpp"
-#include "setting.hpp"
 
 namespace VTX
 {
@@ -66,21 +65,20 @@ namespace VTX
 			}
 
 			// Auto rotate.
-			if ( Setting::Controller::autoRotateSpeed.x != 0.f || Setting::Controller::autoRotateSpeed.y != 0.f
-				 || Setting::Controller::autoRotateSpeed.z != 0.f )
+			if ( VTX_SETTING().autoRotationSpeed != VEC3F_ZERO )
 			{
 				for ( const PairMoleculePtrFloat & pair : _molecules )
 				{
-					pair.first->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.x, VEC3F_X );
-					pair.first->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.y, VEC3F_Y );
-					pair.first->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.z, VEC3F_Z );
+					pair.first->rotate( float( p_deltaTime ) * VTX_SETTING().autoRotationSpeed.x, VEC3F_X );
+					pair.first->rotate( float( p_deltaTime ) * VTX_SETTING().autoRotationSpeed.y, VEC3F_Y );
+					pair.first->rotate( float( p_deltaTime ) * VTX_SETTING().autoRotationSpeed.z, VEC3F_Z );
 				}
 
 				for ( const MeshTrianglePtr & mesh : _meshes )
 				{
-					mesh->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.x, VEC3F_X );
-					mesh->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.y, VEC3F_Y );
-					mesh->rotate( float( p_deltaTime ) * Setting::Controller::autoRotateSpeed.z, VEC3F_Z );
+					mesh->rotate( float( p_deltaTime ) * VTX_SETTING().autoRotationSpeed.x, VEC3F_X );
+					mesh->rotate( float( p_deltaTime ) * VTX_SETTING().autoRotationSpeed.y, VEC3F_Y );
+					mesh->rotate( float( p_deltaTime ) * VTX_SETTING().autoRotationSpeed.z, VEC3F_Z );
 				}
 			}
 		} // namespace Object3D

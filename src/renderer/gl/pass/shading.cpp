@@ -1,6 +1,6 @@
 #include "shading.hpp"
 #include "renderer/gl/gl.hpp"
-#include "setting.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -63,7 +63,7 @@ namespace VTX
 				_currentShading->use();
 
 				// TODO: do not update each frame
-				const Color::Rgb & bgColor = Setting::Rendering::backgroundColor;
+				const Color::Rgb & bgColor = VTX_SETTING().backgroundColor;
 				glUniform3f( _uBackgroundColorLoc, bgColor.getR(), bgColor.getG(), bgColor.getB() );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );
@@ -74,7 +74,7 @@ namespace VTX
 
 			void Shading::set()
 			{
-				switch ( Setting::Rendering::shading )
+				switch ( VTX_SETTING().shading )
 				{
 				case SHADING::TOON: _currentShading = _toonShading; break;
 				case SHADING::GLOSSY: _currentShading = _glossyShading; break;

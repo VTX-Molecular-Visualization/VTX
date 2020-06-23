@@ -1,9 +1,6 @@
 #include "action_manager.hpp"
 #include "action/representable.hpp"
-#include "change_auto_rotate_speed.hpp"
-#include "change_color_mode.hpp"
-#include "change_representation.hpp"
-#include "change_shading.hpp"
+#include "action/setting.hpp"
 #include "snapshot.hpp"
 #include <magic_enum.hpp>
 #include <sstream>
@@ -56,29 +53,31 @@ namespace VTX
 				}
 				else if ( command == "change_representation" )
 				{
-					action = new ChangeRepresentation(
+					action = new Setting::ChangeRepresentation(
 						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "change_auto_rotate_speed" )
 				{
 					if ( words.size() == 2 )
 					{
-						action = new ChangeAutoRotateSpeed( Vec3f(
+						action = new Setting::ChangeAutoRotateSpeed( Vec3f(
 							std::stof( words.at( 1 ) ), std::stof( words.at( 1 ) ), std::stof( words.at( 1 ) ) ) );
 					}
 					else
 					{
-						action = new ChangeAutoRotateSpeed( Vec3f(
+						action = new Setting::ChangeAutoRotateSpeed( Vec3f(
 							std::stof( words.at( 1 ) ), std::stof( words.at( 2 ) ), std::stof( words.at( 3 ) ) ) );
 					}
 				}
 				else if ( command == "change_shading" )
 				{
-					action = new ChangeShading( magic_enum::enum_cast<Renderer::SHADING>( words.at( 1 ) ).value() );
+					action = new Setting::ChangeShading(
+						magic_enum::enum_cast<Renderer::SHADING>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "change_color_mode" )
 				{
-					action = new ChangeColorMode( magic_enum::enum_cast<Generic::COLOR_MODE>( words.at( 1 ) ).value() );
+					action = new Setting::ChangeColorMode(
+						magic_enum::enum_cast<Generic::COLOR_MODE>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "add_representation_molecule" )
 				{
@@ -214,7 +213,7 @@ namespace VTX
 
 		void ActionManager::_purgeBuffer()
 		{
-			while ( _bufferUndo.size() > ACTION_BUFFER_SIZE )
+			while ( _bufferUndo.size() > VTX::Setting::ACTION_BUFFER_SIZE )
 			{
 				delete _bufferUndo.back();
 				_bufferUndo.pop_back();

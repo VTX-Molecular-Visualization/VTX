@@ -67,7 +67,7 @@ namespace VTX
 			void Console::_addLog( const Event::VTXEventLog & p_log )
 			{
 				_logs.emplace_back( p_log );
-				if ( _logs.size() > VTX_CONSOLE_SIZE )
+				if ( _logs.size() > Setting::CONSOLE_SIZE )
 				{
 					_logs.pop_front();
 				}

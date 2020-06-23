@@ -4,7 +4,6 @@
 #include "../materials/metal.hpp"
 #include "../materials/phong_material.hpp"
 #include "cylinder.hpp"
-#include "setting.hpp"
 #include "sphere.hpp"
 
 namespace VTX

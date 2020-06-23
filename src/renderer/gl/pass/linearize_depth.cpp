@@ -1,6 +1,5 @@
 #include "linearize_depth.hpp"
 #include "renderer/gl/gl.hpp"
-#include "setting.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

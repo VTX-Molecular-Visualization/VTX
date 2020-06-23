@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "../base_renderer.hpp"
 #include "pass/blur.hpp"
 #include "pass/fxaa.hpp"
 #include "pass/geometric.hpp"
@@ -13,7 +12,7 @@
 #include "pass/outline.hpp"
 #include "pass/shading.hpp"
 #include "pass/ssao.hpp"
-#include "setting.hpp"
+#include "renderer/base_renderer.hpp"
 
 namespace VTX
 {
@@ -42,18 +41,8 @@ namespace VTX
 			inline const GLuint & getQuadVAO() const { return _quadVAO; }
 			inline const GLuint & getQuadVBO() const { return _quadVBO; }
 
-			inline const GLuint & getRenderedTexture() const
-			{
-				return Setting::Rendering::useAA
-						   ? _passFXAA->getTexture()
-						   : Setting::Rendering::useOutline ? _passOutline->getTexture() : _passShading->getTexture();
-			}
-			inline const GLuint & getRenderedFBO() const
-			{
-				return Setting::Rendering::useAA
-						   ? _passFXAA->getFbo()
-						   : Setting::Rendering::useOutline ? _passOutline->getFbo() : _passShading->getFbo();
-			}
+			const GLuint & getRenderedTexture() const;
+			const GLuint & getRenderedFBO() const;
 
 		  private:
 			Pass::Geometric *	   _passGeometric	   = new Pass::Geometric();

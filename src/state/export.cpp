@@ -15,7 +15,7 @@ namespace VTX
 			_directoryName = Util::Time::getTimestamp();
 
 			float duration = _arg.path->getDuration();
-			_frameCount	   = uint( VIDEO_FPS * duration );
+			_frameCount	   = uint( Setting::VIDEO_FPS_DEFAULT * duration );
 
 			if ( _frameCount == 0u || _arg.path->getViewpoints().size() < 2 )
 			{
@@ -39,7 +39,7 @@ namespace VTX
 		{
 			BaseState::update( p_deltaTime );
 
-			float			 time	   = (float)_frame / VIDEO_FPS;
+			float			 time	   = (float)_frame /Setting:: VIDEO_FPS_DEFAULT;
 			Model::Viewpoint viewpoint = _arg.path->getInterpolatedViewpoint( time );
 
 			// Action.
@@ -54,7 +54,7 @@ namespace VTX
 
 			// Update renderer.
 			VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
-			VTXApp::get().getScene().update( 1.f / VIDEO_FPS );
+			VTXApp::get().getScene().update( 1.f / Setting::VIDEO_FPS_DEFAULT );
 			VTXApp::get().renderScene();
 
 			std::string counterStr = std::to_string( _frame );

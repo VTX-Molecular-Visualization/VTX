@@ -20,7 +20,10 @@ namespace VTX
 			{
 			}
 
-			virtual void execute() override { _molecule.setFPS( Util::Math::clamp( _fps, 0, int( VIDEO_FPS ) ) ); }
+			virtual void execute() override
+			{
+				_molecule.setFPS( Util::Math::clamp( _fps, 0, int( Setting::VIDEO_FPS_DEFAULT ) ) );
+			}
 
 		  private:
 			Model::Molecule & _molecule;

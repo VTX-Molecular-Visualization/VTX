@@ -2,7 +2,6 @@
 #include "action/selectable_select.hpp"
 #include "action/selectable_unselect.hpp"
 #include "action/viewpoint_goto.hpp"
-#include "setting.hpp"
 #include <string>
 
 namespace VTX
@@ -19,7 +18,9 @@ namespace VTX
 				if ( ImGui::IsItemClicked() )
 				{
 					if ( pathOpened )
-					{ VTX_ACTION( new Action::SelectableUnselect( _getModel() ) ); }
+					{
+						VTX_ACTION( new Action::SelectableUnselect( _getModel() ) );
+					}
 
 					else
 					{
@@ -38,13 +39,11 @@ namespace VTX
 												  + std::string( "s" ) )
 													.c_str() ) )
 						{
-							VTX_ACTION(
-								new Action::ViewpointGoTo( *viewpoint, VTXApp::get().getScene().getCamera() ) );
+							VTX_ACTION( new Action::ViewpointGoTo( *viewpoint, VTXApp::get().getScene().getCamera() ) );
 
 							if ( viewpoint->isSelected() )
 							{
-								VTX_ACTION(
-									new Action::SelectableUnselect( *viewpoint ) );
+								VTX_ACTION( new Action::SelectableUnselect( *viewpoint ) );
 							}
 							else
 							{

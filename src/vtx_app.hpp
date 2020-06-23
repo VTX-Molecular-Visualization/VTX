@@ -23,6 +23,8 @@
 
 namespace VTX
 {
+	class Setting;
+
 	class VTXApp final
 	{
 	  public:
@@ -38,6 +40,8 @@ namespace VTX
 		void goToState( const std::string &, void * const = nullptr );
 		void renderScene() const { _rendererGL->renderFrame( *_scene ); }
 
+		inline Setting &							  getSetting() { return _setting; }
+		inline const Setting &						  getSetting() const { return _setting; }
 		inline Object3D::Scene &					  getScene() { return *_scene; }
 		inline const Object3D::Scene &				  getScene() const { return *_scene; }
 		inline Renderer::GL &						  getRendererGL() { return *_rendererGL; }
@@ -62,6 +66,7 @@ namespace VTX
 
 	  private:
 		static bool					  _isRunning;
+		Setting						  _setting			= Setting();
 		Tool::Chrono				  _chrono			= Tool::Chrono();
 		UI::UserInterface *			  _ui				= nullptr;
 		State::StateMachine *		  _stateMachine		= nullptr;
@@ -81,7 +86,8 @@ namespace VTX
 	};
 
 	// TODO: check const
-	inline void VTX_EVENT( VTX::Event::VTXEvent * const p_event )
+	inline Setting & VTX_SETTING() { return VTXApp::get().getSetting(); }
+	inline void		 VTX_EVENT( VTX::Event::VTXEvent * const p_event )
 	{
 		VTXApp::get().getEventManager().fireEvent( p_event );
 	}

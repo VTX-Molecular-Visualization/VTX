@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-
+#include "define.hpp"
 
 namespace VTX
 {
@@ -13,10 +13,13 @@ namespace VTX
 	{
 		namespace Writer
 		{
+			template<typename T>
 			class BaseWriter
 			{
 			  public:
-				virtual bool writeFile( const Path & ) = 0;
+				virtual ~BaseWriter() = default;
+
+				virtual void writeFile( const Path &, const T & ) = 0;
 			};
 		} // namespace Writer
 	}	  // namespace IO

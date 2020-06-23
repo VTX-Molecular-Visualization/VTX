@@ -1,6 +1,6 @@
 #include "camera.hpp"
-#include "setting.hpp"
 #include "util/logger.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -8,9 +8,9 @@ namespace VTX
 	{
 		// TODO? (20_05_27): _near, _far, _fov must be initialized in cpp because setting.hpp cannot be included in hpp
 		Camera::Camera() :
-			_near( Util::Math::max( 1e-1f, Setting::Rendering::camNear ) ), // Avoid to little value.
-			_far( Util::Math::max( _near, Setting::Rendering::camFar ) ), _fov( Setting::Rendering::camFov ),
-			_isPerspective( Setting::Rendering::camPerspective )
+			_near( Util::Math::max( 1e-1f, VTX_SETTING().cameraNear ) ), // Avoid to little value.
+			_far( Util::Math::max( _near, VTX_SETTING().cameraFar ) ), _fov( VTX_SETTING().cameraFov ),
+			_isPerspective( VTX_SETTING().cameraPerspective )
 		{
 			_updateRotation();
 		}

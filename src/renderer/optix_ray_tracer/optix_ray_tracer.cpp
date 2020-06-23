@@ -55,7 +55,7 @@ namespace VTX::Renderer::Optix
 		_hitGroupRecordsBuffer.free();
 
 		const Model::Molecule * mol = VTXApp::get().getScene().getMolecules().begin()->first;
-		_scene.add( mol, Setting::Rendering::representation );
+		_scene.add( mol, VTX_SETTING().representation );
 
 		_launchParameters._colors = (float3 *)( _scene.getColorsDevPtr() );
 
@@ -740,9 +740,9 @@ namespace VTX::Renderer::Optix
 		// create miss records buffer on device
 		{
 			MissRecord r;
-			r._data._colorBackground = make_float3( Setting::Rendering::backgroundColor.getR(),
-													Setting::Rendering::backgroundColor.getG(),
-													Setting::Rendering::backgroundColor.getB() );
+			r._data._colorBackground = make_float3( VTX_SETTING().backgroundColor.getR(),
+													VTX_SETTING().backgroundColor.getG(),
+													VTX_SETTING().backgroundColor.getB() );
 
 			OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _missProgram, &r ) );
 

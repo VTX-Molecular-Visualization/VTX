@@ -154,7 +154,7 @@ namespace VTX
 
 			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 			{
-				switch ( Setting::Rendering::colorMode )
+				switch ( VTX_SETTING().colorMode )
 				{
 				case Generic::COLOR_MODE::ATOM:
 					if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )

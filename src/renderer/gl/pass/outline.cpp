@@ -1,6 +1,6 @@
 #include "outline.hpp"
 #include "renderer/gl/gl.hpp"
-#include "setting.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -38,7 +38,7 @@ namespace VTX
 				_uProjMatrixLoc = glGetUniformLocation( _program->getId(), "uProjMatrix" );
 				_uLineColorLoc	= glGetUniformLocation( _program->getId(), "uLineColor" );
 
-				const Color::Rgb & lineColor = Setting::Rendering::outlineColor;
+				const Color::Rgb & lineColor = VTX_SETTING().outlineColor;
 				glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );
 			}
 
@@ -64,7 +64,7 @@ namespace VTX
 									1,
 									GL_FALSE,
 									Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
-				const Color::Rgb & lineColor = Setting::Rendering::outlineColor;
+				const Color::Rgb & lineColor = VTX_SETTING().outlineColor;
 				glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );

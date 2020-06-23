@@ -96,13 +96,23 @@ namespace VTX
 
 			inline const std::string readPath( const Path & p_path )
 			{
-				std::ifstream f( p_path, std::ios::in | std::ios::binary );
-				const auto	  sz = std::filesystem::file_size( p_path );
-				std::string	  result( sz, '\0' );
-				f.read( result.data(), sz );
+				std::ifstream file;
+				file.open( p_path, std::ios::in );
+
+				if ( !file.is_open() )
+				{
+					throw Exception::VTXException( "Cannot open file " + p_path.string() );
+				}
+
+				const uintmax_t size = std::filesystem::file_size( p_path );
+				std::string		result( size, '\0' );
+				file.read( result.data(), size );
+				file.close();
 
 				return result;
 			}
+
+			inline bool exists( const Path & p_path ) { return std::filesystem::exists( p_path ); }
 
 		} // namespace Filesystem
 	}	  // namespace Util

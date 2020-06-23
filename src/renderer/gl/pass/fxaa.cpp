@@ -1,5 +1,6 @@
 #include "fxaa.hpp"
 #include "renderer/gl/gl.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -45,7 +46,7 @@ namespace VTX
 
 				glActiveTexture( GL_TEXTURE0 );
 				glBindTexture( GL_TEXTURE_2D,
-							   Setting::Rendering::useOutline ? p_renderer.getPassOutline().getTexture()
+							   VTX_SETTING().activeOutline ? p_renderer.getPassOutline().getTexture()
 															  : p_renderer.getPassShading().getTexture() );
 
 				_program->use();
