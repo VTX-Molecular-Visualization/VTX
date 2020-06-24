@@ -25,8 +25,8 @@ namespace VTX
 					{ "AO_BLUR_SIZE", VTX_SETTING().aoBlurSize },
 					{ "ACTIVE_AA", VTX_SETTING().activeAA },
 					{ "ACTIVE_OUTLINE", VTX_SETTING().activeOutline },
-					//{ "OUTLINE_COLOR", VTX_SETTING().outlineColor },
-					//{ "BACKGROUND_COLOR", VTX_SETTING().backgroundColor },
+					{ "OUTLINE_COLOR", VTX_SETTING().outlineColor.toStdVector() },
+					{ "BACKGROUND_COLOR", VTX_SETTING().backgroundColor.toStdVector() },
 
 					{ "CAMERA_NEAR", VTX_SETTING().cameraNear },
 					{ "CAMERA_FAR", VTX_SETTING().cameraFar },

@@ -33,8 +33,10 @@ namespace VTX
 				VTX_ACTION( new Action::Setting::ChangeAOBlurSize( json[ "AO_BLUR_SIZE" ].get<int>() ) );
 				VTX_ACTION( new Action::Setting::ActiveAA( json[ "ACTIVE_AA" ].get<bool>() ) );
 				VTX_ACTION( new Action::Setting::ActiveOutline( json[ "ACTIVE_OUTLINE" ].get<bool>() ) );
-				//{ "OUTLINE_COLOR", VTX_SETTING().outlineColor },
-				//{ "BACKGROUND_COLOR", VTX_SETTING().backgroundColor },
+				VTX_ACTION( new Action::Setting::ChangeOutlineColor(
+					Color::Rgb( json[ "OUTLINE_COLOR" ].get<std::vector<float>>() ) ) );
+				VTX_ACTION( new Action::Setting::ChangeBackgroundColor(
+					Color::Rgb( json[ "BACKGROUND_COLOR" ].get<std::vector<float>>() ) ) );
 
 				VTX_ACTION(
 					new Action::Setting::ChangeCameraClip( json[ "CAMERA_NEAR" ], json[ "CAMERA_FAR" ].get<float>() ) );

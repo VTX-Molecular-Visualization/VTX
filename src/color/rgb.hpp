@@ -20,6 +20,15 @@ namespace VTX
 			{
 			}
 			Rgb( const Rgb & p_c ) : _r( p_c._r ), _g( p_c._g ), _b( p_c._b ) {}
+			Rgb( const std::vector<float> & p_c )
+			{
+				assert( p_c.size() == 3 );
+				_r = p_c[ 0 ];
+				_g = p_c[ 1 ];
+				_b = p_c[ 2 ];
+			}
+
+			inline std::vector<float> toStdVector() const { return { _r, _g, _b }; }
 
 			inline Rgb & operator=( const Rgb & p_c )
 			{
