@@ -43,6 +43,9 @@ namespace VTX
 				GLuint			_texture		= GL_INVALID_VALUE;
 
 				GLint _uBackgroundColorLoc = GL_INVALID_INDEX;
+				GLint _uFogNear			   = GL_INVALID_INDEX;
+				GLint _uFogFar			   = GL_INVALID_INDEX;
+				GLint _uFogDensity		   = GL_INVALID_INDEX;
 
 				GLSL::Program * _currentShading = nullptr;
 			};

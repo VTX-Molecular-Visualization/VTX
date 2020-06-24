@@ -252,21 +252,6 @@ namespace VTX
 				const int _blurSize;
 			};
 
-			class ActiveAA : public BaseAction
-			{
-			  public:
-				explicit ActiveAA( const bool p_active ) : _active( p_active ) {}
-
-				virtual void execute() override
-				{
-					VTX_SETTING().activeAA = _active;
-					VTXApp::get().getRendererGL().activeAA( _active );
-				};
-
-			  private:
-				const bool _active;
-			};
-
 			class ActiveOutline : public BaseAction
 			{
 			  public:
@@ -276,6 +261,88 @@ namespace VTX
 				{
 					VTX_SETTING().activeOutline = _active;
 					VTXApp::get().getRendererGL().activeOutline( _active );
+				};
+
+			  private:
+				const bool _active;
+			};
+
+			class ChangeOutlineColor : public BaseAction
+			{
+			  public:
+				explicit ChangeOutlineColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+
+				virtual void execute() override { VTX_SETTING().outlineColor = _color; };
+
+			  private:
+				const Color::Rgb _color;
+			};
+
+			class ActiveFog : public BaseAction
+			{
+			  public:
+				explicit ActiveFog( const bool p_active ) : _active( p_active ) {}
+
+				virtual void execute() override
+				{
+					VTX_SETTING().activeFog = _active;
+					VTXApp::get().getRendererGL().activeFog( _active );
+				};
+
+			  private:
+				const bool _active;
+			};
+
+			class ChangeFogNear : public BaseAction
+			{
+			  public:
+				explicit ChangeFogNear( const float p_near ) : _near( p_near ) {}
+
+				virtual void execute() override
+				{
+					VTX_SETTING().fogNear = Util::Math::min( _near, VTX_SETTING().fogFar );
+					VTX_SETTING().fogFar  = Util::Math::max( _near, VTX_SETTING().fogFar );
+				};
+
+			  private:
+				const float _near;
+			};
+
+			class ChangeFogFar : public BaseAction
+			{
+			  public:
+				explicit ChangeFogFar( const float p_far ) : _far( p_far ) {}
+
+				virtual void execute() override
+				{
+					VTX_SETTING().fogNear = Util::Math::min( VTX_SETTING().fogNear, _far );
+					VTX_SETTING().fogFar  = Util::Math::max( VTX_SETTING().fogNear, _far );
+				};
+
+			  private:
+				const float _far;
+			};
+
+			class ChangeFogDensity : public BaseAction
+			{
+			  public:
+				explicit ChangeFogDensity( const float p_density ) : _density( p_density ) {}
+
+				virtual void execute() override { VTX_SETTING().fogDensity = Util::Math::clamp( _density, 0.f, 1.f ); };
+
+			  private:
+				const float _density;
+			};
+
+			class ActiveAA : public BaseAction
+			{
+			  public:
+				explicit ActiveAA( const bool p_active ) : _active( p_active ) {}
+
+				virtual void execute() override
+				{
+					VTX_SETTING().activeAA = _active;
+					VTXApp::get().getRendererGL().activeAA( _active );
 				};
 
 			  private:

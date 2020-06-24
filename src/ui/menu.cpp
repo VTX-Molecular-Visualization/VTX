@@ -222,7 +222,7 @@ namespace VTX
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.Rendering" ), &isActive ) )
 				{
 					VTX_ACTION( new Action::Setting::ActiveRenderer( isActive ) );
-				};
+				}
 
 				// Background color.
 				Color::Rgb & bgColor = VTX_SETTING().backgroundColor;
@@ -251,7 +251,8 @@ namespace VTX
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.AtomsRadius" ),
 											 &atomsRadius,
 											 Setting::ATOMS_RADIUS_MIN,
-											 Setting::ATOMS_RADIUS_MAX ) )
+											 Setting::ATOMS_RADIUS_MAX,
+											 "%.2f \u00c5" ) )
 					{
 						VTX_ACTION( new Action::Setting::ChangeAtomsRadius( atomsRadius ) );
 					}
@@ -263,7 +264,8 @@ namespace VTX
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.BondsRadius" ),
 											 &bondsRadius,
 											 Setting::BONDS_RADIUS_MIN,
-											 Setting::BONDS_RADIUS_MAX ) )
+											 Setting::BONDS_RADIUS_MAX,
+											 "%.2f \u00c5" ) )
 					{
 						VTX_ACTION( new Action::Setting::ChangeBondsRadius( bondsRadius ) );
 					}
@@ -296,7 +298,8 @@ namespace VTX
 				if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.CamNear" ),
 										 &camNear,
 										 Setting::CAMERA_NEAR_MIN,
-										 Setting::CAMERA_NEAR_MAX ) )
+										 Setting::CAMERA_NEAR_MAX,
+										 "%.0f" ) )
 				{
 					VTX_ACTION( new Action::Setting::ChangeCameraClip( camNear, VTX_SETTING().cameraFar ) );
 				}
@@ -304,7 +307,8 @@ namespace VTX
 				if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.CamFar" ),
 										 &camFar,
 										 Setting::CAMERA_FAR_MIN,
-										 Setting::CAMERA_FAR_MAX ) )
+										 Setting::CAMERA_FAR_MAX,
+										 "%.0f" ) )
 				{
 					VTX_ACTION( new Action::Setting::ChangeCameraClip( VTX_SETTING().cameraNear, camFar ) );
 				}
@@ -320,38 +324,41 @@ namespace VTX
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.CamPerspective" ), &camPerspective ) )
 				{
 					VTX_ACTION( new Action::Setting::ChangeCameraProjection( camPerspective ) );
-				};
+				}
 
 				// VSYNC.
 				bool useVSync = VTX_SETTING().activeVSync;
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.VSync" ), &useVSync ) )
 				{
 					VTX_ACTION( new Action::Setting::ActiveVerticalSync( useVSync ) );
-				};
+				}
+				ImGui::Separator();
 
 				// SSAO.
 				bool useSSAO = VTX_SETTING().activeAO;
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.SSAO" ), &useSSAO ) )
 				{
 					VTX_ACTION( new Action::Setting::ActiveAO( useSSAO ) );
-				};
-
-				int aoIntensity = VTX_SETTING().aoIntensity;
-				if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOIntensity" ),
-									   &aoIntensity,
-									   Setting::AO_INTENSITY_MIN,
-									   Setting::AO_INTENSITY_MAX ) )
-				{
-					VTX_ACTION( new Action::Setting::ChangeAOIntensity( aoIntensity ) );
 				}
-
-				int aoBlurSize = VTX_SETTING().aoBlurSize;
-				if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOBlurSize" ),
-									   &aoBlurSize,
-									   Setting::AO_BLUR_SIZE_MIN,
-									   Setting::AO_BLUR_SIZE_MAX ) )
+				if ( VTX_SETTING().activeAO )
 				{
-					VTX_ACTION( new Action::Setting::ChangeAOBlurSize( aoBlurSize ) );
+					int aoIntensity = VTX_SETTING().aoIntensity;
+					if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOIntensity" ),
+										   &aoIntensity,
+										   Setting::AO_INTENSITY_MIN,
+										   Setting::AO_INTENSITY_MAX ) )
+					{
+						VTX_ACTION( new Action::Setting::ChangeAOIntensity( aoIntensity ) );
+					}
+
+					int aoBlurSize = VTX_SETTING().aoBlurSize;
+					if ( ImGui::SliderInt( LOCALE( "MainMenu.Settings.AOBlurSize" ),
+										   &aoBlurSize,
+										   Setting::AO_BLUR_SIZE_MIN,
+										   Setting::AO_BLUR_SIZE_MAX ) )
+					{
+						VTX_ACTION( new Action::Setting::ChangeAOBlurSize( aoBlurSize ) );
+					}
 				}
 				ImGui::Separator();
 
@@ -360,7 +367,49 @@ namespace VTX
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.Outline" ), &useOutline ) )
 				{
 					VTX_ACTION( new Action::Setting::ActiveOutline( useOutline ) );
-				};
+				}
+				if ( VTX_SETTING().activeOutline )
+				{
+					Color::Rgb & outlineColor = VTX_SETTING().outlineColor;
+					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.OutlineColor" ), (float *)&outlineColor ) )
+					{
+						VTX_ACTION( new Action::Setting::ChangeOutlineColor( outlineColor ) );
+					}
+				}
+				ImGui::Separator();
+
+				// Fog.
+				bool useFog = VTX_SETTING().activeFog;
+				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.Fog" ), &useFog ) )
+				{
+					VTX_ACTION( new Action::Setting::ActiveFog( useFog ) );
+				}
+				if ( VTX_SETTING().activeFog )
+				{
+					float fogNear = VTX_SETTING().fogNear;
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.FogNear" ),
+											 &fogNear,
+											 Setting::FOG_NEAR_MIN,
+											 Setting::FOG_NEAR_MAX,
+											 "%.1f" ) )
+					{
+						VTX_ACTION( new Action::Setting::ChangeFogNear( fogNear ) );
+					}
+					float fogFar = VTX_SETTING().fogFar;
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.FogFar" ),
+											 &fogFar,
+											 Setting::FOG_FAR_MIN,
+											 Setting::FOG_FAR_MAX,
+											 "%.1f" ) )
+					{
+						VTX_ACTION( new Action::Setting::ChangeFogFar( fogFar ) );
+					}
+					float fogDensity = VTX_SETTING().fogDensity;
+					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.FogDensity" ), &fogDensity, 0.f, 1.f, "%.1f" ) )
+					{
+						VTX_ACTION( new Action::Setting::ChangeFogDensity( fogDensity ) );
+					}
+				}
 				ImGui::Separator();
 
 				// AA.
@@ -368,7 +417,7 @@ namespace VTX
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Settings.AA" ), &useAA ) )
 				{
 					VTX_ACTION( new Action::Setting::ActiveAA( useAA ) );
-				};
+				}
 				ImGui::Separator();
 
 				// Auto rotate.
