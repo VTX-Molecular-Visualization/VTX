@@ -168,8 +168,6 @@ namespace VTX
 			static const Rgb MAGENTA;
 			static const Rgb CYAN;
 
-			static const std::vector<Rgb> predefined;
-
 			static inline Rgb random()
 			{
 				return Rgb( Util::Math::randomFloat(), Util::Math::randomFloat(), Util::Math::randomFloat() );
