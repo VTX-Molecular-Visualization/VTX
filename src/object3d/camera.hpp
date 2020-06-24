@@ -48,8 +48,7 @@ namespace VTX
 
 			inline void setRotation( const Quatd & p_rotation )
 			{
-				_rotation	 = p_rotation;
-				_eulerAngles = Util::Math::quaternionToEuler( _rotation );
+				_rotation = Util::Math::normalize( p_rotation );
 				_updateRotation();
 			}
 
@@ -79,7 +78,7 @@ namespace VTX
 
 			inline void setRotationAround( const Quatd & p_rotation, const Vec3d & p_target, const double p_distance )
 			{
-				_rotation = p_rotation;
+				_rotation = Util::Math::normalize( p_rotation );
 				_position = _rotation * Vec3d( 0.0, 0.0, p_distance ) + p_target;
 				_updateRotation();
 			}
@@ -112,9 +111,8 @@ namespace VTX
 			float _far			= 1e4f;
 			float _fov			= 60.f;
 
-			Vec3d _position	   = VEC3F_Z * 50.f;
-			Quatd _rotation	   = Quatd( 1.0, { 0.0, 0.0, 0.0 } );
-			Vec3d _eulerAngles = Vec3d(); // [pitch, yaw, roll]
+			Vec3d _position = VEC3F_Z * 50.f;
+			Quatd _rotation = Quatd( 1.0, { 0.0, 0.0, 0.0 } );
 
 			Vec3d _front = -VEC3F_Z;
 			Vec3d _left	 = -VEC3F_X;

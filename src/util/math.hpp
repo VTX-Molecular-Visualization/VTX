@@ -232,7 +232,7 @@ namespace VTX
 
 			inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
-			inline Quatd eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
+			inline Quatd eulerToQuaternion( const Vec3d & p_angles ) { return Quatd( p_angles ); }
 
 			inline Quatd eulerToQuaternion( const double & p_pitch, const double & p_yaw, const double & p_roll )
 			{
@@ -257,7 +257,7 @@ namespace VTX
 				return eulerToQuaternion( Vec3d( p_pitch, p_yaw, p_roll ) );
 			}
 
-			inline Vec3f quaternionToEuler( const Quatd & p_quaternion )
+			inline Vec3d quaternionToEuler( const Quatd & p_quaternion )
 			{
 				// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
 				const Quatd & q = p_quaternion;

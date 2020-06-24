@@ -27,21 +27,22 @@ namespace VTX
 								 Controller::BaseController * const p_controller ) :
 					_path( p_path ),
 					_position( p_camera.getPosition() ), _rotation( p_camera.getRotation() ), _target( VEC3D_ZERO ),
-					_distance( 0.0 )
+					_distance( 0.0 ), _controller( ID::Controller::FREEFLY )
 				{
 					const Controller::Trackball * const trackball
 						= dynamic_cast<Controller::Trackball *>( p_controller );
 					if ( trackball != nullptr )
 					{
-						_target	  = trackball->getTarget();
-						_distance = Util::Math::distance( _position, _target );
+						_target		= trackball->getTarget();
+						_distance	= Util::Math::distance( _position, _target );
+						_controller = ID::Controller::TRACKBALL;
 					}
 				}
 
 				virtual void execute() override
 				{
 					Model::Viewpoint * const viewpoint = new Model::Viewpoint( &_path );
-					viewpoint->setController( ID::Controller::FREEFLY );
+					viewpoint->setController( _controller );
 					viewpoint->setPosition( _position );
 					viewpoint->setRotation( _rotation );
 					viewpoint->setTarget( _target );
@@ -56,6 +57,7 @@ namespace VTX
 				const Quatd	  _rotation;
 				Vec3d		  _target;
 				double		  _distance;
+				ID::VTX_ID	  _controller;
 			};
 
 			class Delete : public BaseAction

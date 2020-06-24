@@ -39,7 +39,7 @@ namespace VTX
 		{
 			BaseState::update( p_deltaTime );
 
-			float			 time	   = (float)_frame /Setting:: VIDEO_FPS_DEFAULT;
+			float			 time	   = (float)_frame / Setting::VIDEO_FPS_DEFAULT;
 			Model::Viewpoint viewpoint = _arg.path->getInterpolatedViewpoint( time );
 
 			// Action.
@@ -53,7 +53,15 @@ namespace VTX
 			}
 
 			// Update renderer.
-			VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
+			if ( viewpoint.getController() == ID::Controller::TRACKBALL )
+			{
+				VTXApp::get().getScene().getCamera().setRotationAround(
+					Quatd( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );
+			}
+			else
+			{
+				VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
+			}
 			VTXApp::get().getScene().update( 1.f / Setting::VIDEO_FPS_DEFAULT );
 			VTXApp::get().renderScene();
 

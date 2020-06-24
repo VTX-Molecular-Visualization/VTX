@@ -64,7 +64,15 @@ namespace VTX
 		void Play::_setCamera() const
 		{
 			Model::Viewpoint viewpoint = _path->getInterpolatedViewpoint( _time );
-			VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
+			if ( viewpoint.getController() == ID::Controller::TRACKBALL )
+			{
+				VTXApp::get().getScene().getCamera().setRotationAround(
+					Quatd( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );
+			}
+			else
+			{
+				VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
+			}
 		}
 
 		void Play::_executeActions( const double p_time )

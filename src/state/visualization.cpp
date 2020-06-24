@@ -16,7 +16,14 @@ namespace VTX
 			addItem( Generic::create<Controller::Trackball>() );
 			addItem( Generic::create<Controller::Shortcut>() );
 
-			getItem( ID::Controller::TRACKBALL )->setActive( false );
+			if ( _controller == ID::Controller::FREEFLY )
+			{
+				getItem( ID::Controller::TRACKBALL )->setActive( false );
+			}
+			else
+			{
+				getItem( ID::Controller::FREEFLY )->setActive( false );
+			}
 		}
 
 		void Visualization::exit() { Generic::HasCollection<Controller::BaseController>::clean(); }
@@ -27,7 +34,7 @@ namespace VTX
 
 			VTXApp::get().getScene().update( p_deltaTime );
 
-			if ( VTX_SETTING().activeRenderer)
+			if ( VTX_SETTING().activeRenderer )
 			{
 				VTXApp::get().renderScene();
 			}

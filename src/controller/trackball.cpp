@@ -133,15 +133,6 @@ namespace VTX
 				Quatd rotation = Quatd( Vec3d( -_velocity.y, _velocity.x, -_velocity.z ) * p_deltaTime );
 				_camera.rotateAround( rotation, _target, distance );
 
-				/***********************
-				// Orbit backup.
-				_rotationYAxis += _velocityX;
-				_rotationXAxis -= _velocityY;
-
-				Quatf rotation = Quatf( Vec3f( _rotationXAxis, _rotationYAxis, 0.f ) );
-				Vec3f position = rotation * Vec3f( 0.f, 0.f, _distance ) + _target;
-				************************/
-
 				_needUpdate = false;
 			}
 
