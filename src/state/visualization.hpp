@@ -20,9 +20,13 @@ namespace VTX
 			virtual void				enter( void * const ) override;
 			virtual void				exit() override;
 
+			ID::VTX_ID getController() { return _controller; }
+
 			virtual void update( const double p_deltaTime ) override;
 
-			void toggleController();
+			void									 toggleController();
+			const Controller::BaseController * const getCurrentController() const { return getItemAt( _controller ); }
+			Controller::BaseController * const		 getCurrentController() { return getItem( _controller ); }
 
 		  private:
 			ID::VTX_ID _controller = ID::Controller::FREEFLY;

@@ -28,14 +28,14 @@ namespace VTX
 			VTX_INFO( "Stop" );
 			_path	 = nullptr;
 			_actions = nullptr;
-			_time	 = 0.f;
+			_time	 = 0.0;
 		}
 
 		void Play::update( const double p_deltaTime )
 		{
 			BaseState::update( p_deltaTime );
 
-			_time += (float)p_deltaTime;
+			_time += p_deltaTime;
 
 			// Loop.
 			if ( _time >= _path->getDuration() )
@@ -67,7 +67,7 @@ namespace VTX
 			VTXApp::get().getScene().getCamera().set( viewpoint.getPosition(), viewpoint.getRotation() );
 		}
 
-		void Play::_executeActions( const float p_time )
+		void Play::_executeActions( const double p_time )
 		{
 			if ( _actions != _path->getCurrentActions( p_time ) )
 			{

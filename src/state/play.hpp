@@ -25,10 +25,10 @@ namespace VTX
 		  private:
 			Model::Path *					 _path	  = nullptr;
 			const std::vector<std::string> * _actions = nullptr;
-			float							 _time	  = 0.f;
+			double							 _time	  = 0.f;
 
 			void _setCamera() const;
-			void _executeActions( const float p_time );
+			void _executeActions( const double p_time );
 		};
 	} // namespace State
 } // namespace VTX

@@ -1,9 +1,5 @@
 #include "viewpoint.hpp"
-#include "action/viewpoint_add_action.hpp"
-#include "action/viewpoint_change_duration.hpp"
-#include "action/viewpoint_delete.hpp"
-#include "action/viewpoint_delete_action.hpp"
-#include "action/viewpoint_replace.hpp"
+#include "action/viewpoint.hpp"
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
 
@@ -23,7 +19,9 @@ namespace VTX
 					{
 						float duration = _getModel().getDuration();
 						if ( ImGui::InputFloat( LOCALE( "View.Duration" ), &duration, 1.f ) )
-						{ VTX_ACTION( new Action::ViewpointChangeDuration( _getModel(), duration ) ); }
+						{
+							VTX_ACTION( new Action::Viewpoint::ChangeDuration( _getModel(), duration ) );
+						}
 					}
 					else
 					{
@@ -32,12 +30,15 @@ namespace VTX
 
 					if ( ImGui::Button( LOCALE( "View.Replace" ) ) )
 					{
-						VTX_ACTION( new Action::ViewpointReplace( _getModel(), VTXApp::get().getScene().getCamera() ) );
+						VTX_ACTION(
+							new Action::Viewpoint::Replace( _getModel(), VTXApp::get().getScene().getCamera() ) );
 					}
 
 					ImGui::SameLine();
 					if ( ImGui::Button( LOCALE( "View.Delete" ) ) )
-					{ VTX_ACTION( new Action::ViewpointDelete( _getModel() ) ); }
+					{
+						VTX_ACTION( new Action::Viewpoint::Delete( _getModel() ) );
+					}
 
 					ImGui::Text( LOCALE( "View.Actions" ) );
 
@@ -49,14 +50,18 @@ namespace VTX
 						ImGui::PushID( ( "ViewViewpointAction" + std::to_string( i ) ).c_str() );
 						ImGui::Text( ( *action ).c_str() );
 						if ( ImGui::Button( LOCALE( "View.Delete" ) ) )
-						{ VTX_ACTION( new Action::ViewpointDeleteAction( _getModel(), action ) ); }
+						{
+							VTX_ACTION( new Action::Viewpoint::DeleteAction( _getModel(), action ) );
+						}
 						i++;
 						ImGui::PopID();
 					}
 					ImGui::PushItemWidth( 255 );
 					if ( ImGui::InputText(
 							 "##Add", _action, IM_ARRAYSIZE( _action ), ImGuiInputTextFlags_EnterReturnsTrue ) )
-					{ VTX_ACTION( new Action::ViewpointAddAction( _getModel(), std::string( _action ) ) ); }
+					{
+						VTX_ACTION( new Action::Viewpoint::AddAction( _getModel(), std::string( _action ) ) );
+					}
 
 					ImGui::PopItemWidth();
 				}

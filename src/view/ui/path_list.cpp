@@ -1,7 +1,7 @@
 #include "path_list.hpp"
 #include "action/selectable_select.hpp"
 #include "action/selectable_unselect.hpp"
-#include "action/viewpoint_goto.hpp"
+#include "action/viewpoint.hpp"
 #include <string>
 
 namespace VTX
@@ -39,7 +39,8 @@ namespace VTX
 												  + std::string( "s" ) )
 													.c_str() ) )
 						{
-							VTX_ACTION( new Action::ViewpointGoTo( *viewpoint, VTXApp::get().getScene().getCamera() ) );
+							VTX_ACTION(
+								new Action::Viewpoint::GoTo( *viewpoint, VTXApp::get().getScene().getCamera() ) );
 
 							if ( viewpoint->isSelected() )
 							{

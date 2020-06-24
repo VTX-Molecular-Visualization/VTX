@@ -2,8 +2,9 @@
 #include "action/change_camera_controller.hpp"
 #include "action/new.hpp"
 #include "action/setting.hpp"
-#include "action/viewpoint_create.hpp"
+#include "action/viewpoint.hpp"
 #include "define.hpp"
+#include "state/visualization.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -29,8 +30,13 @@ namespace VTX
 					Renderer::SHADING( ( (uint)VTX_SETTING().shading + 1 ) % (uint)Renderer::SHADING::COUNT ) ) );
 				break;
 			case SDL_SCANCODE_F5:
-				VTX_ACTION( new Action::ViewpointCreate( *VTXApp::get().getScene().getPaths()[ 0 ],
-														 VTXApp::get().getScene().getCamera() ) );
+				VTX_ACTION(
+					new Action::Viewpoint::Create( *VTXApp::get().getScene().getPaths()[ 0 ],
+												   VTXApp::get().getScene().getCamera(),
+												   VTXApp::get()
+													   .getStateMachine()
+													   .getItem<State::Visualization>( ID::State::VISUALIZATION )
+													   ->getCurrentController() ) );
 				break;
 
 			case SDL_SCANCODE_F10:

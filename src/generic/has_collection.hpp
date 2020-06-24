@@ -78,12 +78,20 @@ namespace VTX
 
 			inline const T * const getItemAt( const std::string & p_name ) const { return _items.at( p_name ); }
 			inline T * const	   getItemAt( const std::string & p_name ) { return _items.at( p_name ); }
+			inline const T * const getItem( const std::string & p_name ) const { return _items[ p_name ]; }
 			inline T * const	   getItem( const std::string & p_name ) { return _items[ p_name ]; }
+
+			template<typename T2, typename = std::enable_if<std::is_base_of<T, T2>::value>>
+			const T2 * const getItem( const std::string & p_name ) const
+			{
+				return (const T2 * const)getItem( p_name );
+			}
 			template<typename T2, typename = std::enable_if<std::is_base_of<T, T2>::value>>
 			T2 * const getItem( const std::string & p_name )
 			{
-				return (T2 *)getItem( p_name );
+				return (T2 * const)getItem( p_name );
 			}
+
 			inline bool hasItem( const std::string & p_name ) const { return _items.find( p_name ) != _items.end(); }
 
 		  protected:
@@ -96,7 +104,6 @@ namespace VTX
 			MapStringToItemPtr		 _items		  = MapStringToItemPtr();
 			std::vector<std::string> _orderedKeys = std::vector<std::string>();
 		};
-
 	} // namespace Generic
 } // namespace VTX
 #endif

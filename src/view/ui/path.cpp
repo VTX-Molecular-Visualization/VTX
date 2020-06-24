@@ -4,7 +4,8 @@
 #include "action/path_change_interpolation_mode.hpp"
 #include "action/path_change_is_looping.hpp"
 #include "action/path_play.hpp"
-#include "action/viewpoint_create.hpp"
+#include "action/viewpoint.hpp"
+#include "state/visualization.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -29,8 +30,8 @@ namespace VTX
 					int durationMode = (int)_getModel().getDurationMode();
 					if ( ImGui::Combo( LOCALE( "View.DurationMode" ), &durationMode, durationModes, 3 ) )
 					{
-						VTX_ACTION( new Action::PathChangeDurationMode(
-							_getModel(), (Model::Path::DURATION_MODE)durationMode ) );
+						VTX_ACTION( new Action::PathChangeDurationMode( _getModel(),
+																		(Model::Path::DURATION_MODE)durationMode ) );
 					}
 
 					const char * interpolationModes[] = {
@@ -50,8 +51,7 @@ namespace VTX
 						float duration = _getModel().getDuration();
 						if ( ImGui::InputFloat( LOCALE( "View.Duration" ), &duration, 1.f ) )
 						{
-							VTX_ACTION(
-								new Action::PathChangeDuration( _getModel(), duration ) );
+							VTX_ACTION( new Action::PathChangeDuration( _getModel(), duration ) );
 						}
 					}
 					else
@@ -60,21 +60,29 @@ namespace VTX
 					}
 
 					if ( ImGui::Button( LOCALE( "View.Play" ) ) )
-					{ VTX_ACTION( new Action::PathPlay( &_getModel() ) ); }
+					{
+						VTX_ACTION( new Action::PathPlay( &_getModel() ) );
+					}
 					ImGui::SameLine();
 					if ( ImGui::Button( LOCALE( "View.Stop" ) ) )
-					{ VTXApp::get().goToState( ID::State::VISUALIZATION ); }
+					{
+						VTXApp::get().goToState( ID::State::VISUALIZATION );
+					}
 					ImGui::SameLine();
 					bool isLooping = _getModel().isLooping();
 					if ( ImGui::Checkbox( LOCALE( "View.Loop" ), &isLooping ) )
 					{
-						VTX_ACTION(
-							new Action::PathChangeIsLooping( _getModel(), isLooping ) );
+						VTX_ACTION( new Action::PathChangeIsLooping( _getModel(), isLooping ) );
 					}
 					if ( ImGui::Button( LOCALE( "View.Viewpoint.Add" ) ) )
 					{
-						VTX_ACTION(
-							new Action::ViewpointCreate( _getModel(), VTXApp::get().getScene().getCamera() ) );
+						VTX_ACTION( new Action::Viewpoint::Create(
+							_getModel(),
+							VTXApp::get().getScene().getCamera(),
+							VTXApp::get()
+								.getStateMachine()
+								.getItem<State::Visualization>( ID::State::VISUALIZATION )
+								->getCurrentController() ) );
 					}
 				}
 				ImGui::PopID();

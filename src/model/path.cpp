@@ -18,10 +18,10 @@ namespace VTX
 			addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::PathList>( this ) );
 		}
 
-		const std::vector<std::string> * const Path::getCurrentActions( const float p_time )
+		const std::vector<std::string> * const Path::getCurrentActions( const double p_time )
 		{
 			uint  size	 = (uint)_viewpoints.size();
-			float total	 = 0.f;
+			float total	 = 0.0;
 			uint  offset = 0;
 
 			// Get the last actions.
@@ -39,13 +39,13 @@ namespace VTX
 			return &_viewpoints[ offset - 1 ]->getActions();
 		}
 
-		Model::Viewpoint Path::getInterpolatedViewpoint( const float p_time ) const
+		Model::Viewpoint Path::getInterpolatedViewpoint( const double p_time ) const
 		{
 			Viewpoint viewpoint( (Path * const)this );
 
-			uint  size	 = (uint)_viewpoints.size();
-			float total	 = 0.f;
-			uint  offset = 0;
+			uint   size	  = (uint)_viewpoints.size();
+			double total  = 0.0;
+			uint   offset = 0;
 
 			// Find the next and previous points.
 			while ( total <= p_time && offset < size )
@@ -59,7 +59,7 @@ namespace VTX
 				// Computes value.
 				Viewpoint * const p0	= _viewpoints[ offset - 1 ];
 				Viewpoint * const p1	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset ) ];
-				float			  value = 1.f - ( ( total - p_time ) / p1->getDuration() );
+				double			  value = 1.0 - ( ( total - p_time ) / p1->getDuration() );
 
 				// Lerp.
 				viewpoint.setPosition( Util::Math::linearInterpolation( p0->getPosition(), p1->getPosition(), value ) );
@@ -71,7 +71,7 @@ namespace VTX
 				Viewpoint * const p1	= _viewpoints[ offset - 1 ];
 				Viewpoint * const p2	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset ) ];
 				Viewpoint * const p3	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset + 1 ) ];
-				float			  value = 1.f - ( ( total - p_time ) / p2->getDuration() );
+				double			  value = 1.0 - ( ( total - p_time ) / p2->getDuration() );
 
 				viewpoint.setPosition( Util::Math::catmullRomInterpolation(
 					p0->getPosition(), p1->getPosition(), p2->getPosition(), p3->getPosition(), value ) );
@@ -84,7 +84,7 @@ namespace VTX
 				Viewpoint * const p1	= _viewpoints[ offset - 1 ];
 				Viewpoint * const p2	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset ) ];
 				Viewpoint * const p3	= _viewpoints[ Util::Math::min<int>( (int)size - 1, offset + 1 ) ];
-				float			  value = 1.f - ( ( total - p_time ) / p2->getDuration() );
+				double			  value = 1.0 - ( ( total - p_time ) / p2->getDuration() );
 
 				viewpoint.setPosition( Util::Math::cubicInterpolation(
 					p0->getPosition(), p1->getPosition(), p2->getPosition(), p3->getPosition(), value ) );
@@ -136,8 +136,8 @@ namespace VTX
 				uint  size			= (uint)Util::Math::max<int>( (int)_viewpoints.size() - 1, 0 );
 				for ( uint i = 0; i < size; ++i )
 				{
-					totalDistance += Util::Math::distance( _viewpoints[ i ]->getPosition(),
-														   _viewpoints[ i + 1u ]->getPosition() );
+					totalDistance += (float)Util::Math::distance( _viewpoints[ i ]->getPosition(),
+																  _viewpoints[ i + 1u ]->getPosition() );
 				}
 
 				// Compute viewpoint durations.
@@ -150,7 +150,7 @@ namespace VTX
 						break;
 					}
 					float distance
-						= Util::Math::distance( _viewpoints[ i - 1u ]->getPosition(), viewpoint->getPosition() );
+						= (float)Util::Math::distance( _viewpoints[ i - 1u ]->getPosition(), viewpoint->getPosition() );
 					viewpoint->setDuration( _duration * distance / totalDistance );
 				}
 			}
@@ -211,7 +211,7 @@ namespace VTX
 				// get duration
 				iss >> duration;
 
-				addViewpoint( new Viewpoint( this, position, rotation, duration ) );
+				// addViewpoint( new Viewpoint( this, position, rotation, duration ) );
 
 				std::string action;
 				while ( iss.eof() == false )

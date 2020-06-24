@@ -77,6 +77,13 @@ namespace VTX
 				_updateProjectionMatrix();
 			}
 
+			inline void setRotationAround( const Quatd & p_rotation, const Vec3d & p_target, const double p_distance )
+			{
+				_rotation = p_rotation;
+				_position = _rotation * Vec3d( 0.0, 0.0, p_distance ) + p_target;
+				_updateRotation();
+			}
+
 			void move( const Vec3d & );
 			void moveFront( const double );
 			void moveLeft( const double );

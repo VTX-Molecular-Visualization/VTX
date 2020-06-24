@@ -36,6 +36,8 @@ namespace VTX
 			virtual const std::string & getName() const override { return ID::Controller::TRACKBALL; }
 			virtual void				setActive( const bool p_active ) override;
 
+			inline const Vec3d & getTarget() const { return _target; }
+
 		  protected:
 			virtual void					_handleKeyPressedEvent( const SDL_Scancode & ) override;
 			virtual std::vector<ID::VTX_ID> _getUIItems() const override
@@ -46,7 +48,7 @@ namespace VTX
 		  private:
 			Object3D::Camera & _camera;
 
-			Vec3d  _target		   = VEC3F_ZERO;
+			Vec3d  _target		   = VEC3D_ZERO;
 			double _distanceForced = 0.0;
 			Vec3f  _velocity	   = VEC3F_ZERO;
 

@@ -71,9 +71,8 @@ namespace VTX
 
 		void Camera::rotateAround( const Quatd & p_rotation, const Vec3d & p_target, const double p_distance )
 		{
-			Quatd rotation = _rotation * p_rotation;
-			_position	   = rotation * Vec3d( 0.0, 0.0, (double)p_distance ) + p_target;
-			_rotation	   = rotation;
+			_rotation = _rotation * p_rotation;
+			_position = _rotation * Vec3d( 0.0, 0.0, p_distance ) + p_target;
 			_updateRotation();
 		}
 
