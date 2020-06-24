@@ -282,6 +282,17 @@ namespace VTX
 				const bool _active;
 			};
 
+			class ChangeOutlineColor : public BaseAction
+			{
+			  public:
+				explicit ChangeOutlineColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+
+				virtual void execute() override { VTX_SETTING().outlineColor = _color; };
+
+			  private:
+				const Color::Rgb _color;
+			};
+
 			class ChangeBackgroundColor : public BaseAction
 			{
 			  public:
