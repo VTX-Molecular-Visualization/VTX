@@ -4,7 +4,10 @@ layout( binding = 0 ) uniform usampler2D gbColorNormal;
 layout( binding = 1 ) uniform sampler2D gbViewPosition;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
-uniform vec3 uBackgroundColor;
+uniform vec3  uBackgroundColor;
+uniform float uFogNear;
+uniform float uFogFar;
+uniform float uFogDensity;
 
 out vec4 fragColor;
 
@@ -30,13 +33,13 @@ void main()
 	UnpackedData data;
 	unpackGBuffers( texCoord, data );
 
-	if ( data.normal.x == 0.f && data.normal.y == 0.f && data.normal.z == 0.f )
+	const vec3 viewPosition = texelFetch( gbViewPosition, texCoord, 0 ).xyz;
+
+	if ( viewPosition.z == 0.f )
 	{
 		fragColor = vec4( uBackgroundColor, 1.f );
 		return;
 	}
-
-	const vec3 viewPosition = texelFetch( gbViewPosition, texCoord, 0 ).xyz;
 
 	// Light on camera.
 	const vec3 lightDir = normalize( -viewPosition );
@@ -45,5 +48,8 @@ void main()
 
 	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, texCoord, 0 ).x;
 
-	fragColor = vec4( data.color * cosTheta * ambientOcclusion, 1.f );
+	const float fogFactor = smoothstep( uFogNear, uFogFar, -viewPosition.z ) * uFogDensity;
+	const vec3	color	  = data.color * cosTheta * ambientOcclusion;
+
+	fragColor = vec4( mix( color, uBackgroundColor, fogFactor ), 1.f );
 }

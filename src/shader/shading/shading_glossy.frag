@@ -6,6 +6,9 @@ layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
 uniform float uSpecularFactor = 0.4f;
 uniform vec3  uBackgroundColor;
+uniform float uFogNear;
+uniform float uFogFar;
+uniform float uFogDensity;
 
 out vec4 fragColor;
 
@@ -37,7 +40,7 @@ void main()
 	UnpackedData data;
 	unpackGBuffers( texCoord, data );
 
-	if ( data.normal.x == 0.f && data.normal.y == 0.f && data.normal.z == 0.f )
+	if ( data.viewPosition.z == 0.f )
 	{
 		fragColor = vec4( uBackgroundColor, 1.f );
 		return;
@@ -50,13 +53,17 @@ void main()
 	const float diffuse = 1.f - uSpecularFactor;
 
 	// Blinn-Phong.
-	const vec3	h		 = normalize( lightDir - data.viewPosition );
+	const vec3	viewDir	 = normalize( -data.viewPosition );
+	const vec3	h		 = normalize( lightDir + viewDir );
 	const float specular = uSpecularFactor * pow( max( dot( h, data.normal ), 0.f ), data.shininess );
 
 	const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
 	const float lighting = ( diffuse + specular ) * cosTheta;
 
 	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, texCoord, 0 ).x;
+	
+	const float fogFactor = smoothstep( uFogNear, uFogFar, -data.viewPosition.z ) * uFogDensity;
+	const vec3	color	  = data.color * lighting * ambientOcclusion;
 
-	fragColor = vec4( data.color * lighting * ambientOcclusion, 1.f );
+	fragColor = vec4( mix( color, uBackgroundColor, fogFactor ), 1.f );
 }

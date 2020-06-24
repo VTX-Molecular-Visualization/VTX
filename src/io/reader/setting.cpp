@@ -31,10 +31,14 @@ namespace VTX
 				VTX_ACTION( new Action::Setting::ActiveAO( json[ "ACTIVE_AO" ].get<bool>() ) );
 				VTX_ACTION( new Action::Setting::ChangeAOIntensity( json[ "AO_INTENSITY" ].get<int>() ) );
 				VTX_ACTION( new Action::Setting::ChangeAOBlurSize( json[ "AO_BLUR_SIZE" ].get<int>() ) );
-				VTX_ACTION( new Action::Setting::ActiveAA( json[ "ACTIVE_AA" ].get<bool>() ) );
 				VTX_ACTION( new Action::Setting::ActiveOutline( json[ "ACTIVE_OUTLINE" ].get<bool>() ) );
 				VTX_ACTION( new Action::Setting::ChangeOutlineColor(
 					Color::Rgb( json[ "OUTLINE_COLOR" ].get<std::vector<float>>() ) ) );
+				VTX_ACTION( new Action::Setting::ActiveFog( json[ "ACTIVE_FOG" ].get<bool>() ) );
+				VTX_ACTION( new Action::Setting::ChangeFogNear( json[ "FOG_NEAR" ].get<float>() ) );
+				VTX_ACTION( new Action::Setting::ChangeFogFar( json[ "FOG_FAR" ].get<float>() ) );
+				VTX_ACTION( new Action::Setting::ChangeFogDensity( json[ "FOG_DENSITY" ].get<float>() ) );
+				VTX_ACTION( new Action::Setting::ActiveAA( json[ "ACTIVE_AA" ].get<bool>() ) );
 				VTX_ACTION( new Action::Setting::ChangeBackgroundColor(
 					Color::Rgb( json[ "BACKGROUND_COLOR" ].get<std::vector<float>>() ) ) );
 
