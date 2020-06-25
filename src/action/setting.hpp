@@ -360,6 +360,17 @@ namespace VTX
 				const Color::Rgb _color;
 			};
 
+			class ChangeLightColor : public BaseAction
+			{
+			  public:
+				explicit ChangeLightColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+
+				virtual void execute() override { VTX_SETTING().lightColor = _color; };
+
+			  private:
+				const Color::Rgb _color;
+			};
+
 			class ChangeCameraClip : public BaseAction
 			{
 			  public:

@@ -50,6 +50,7 @@ namespace VTX
 			{ "MainMenu.Settings.SymbolDisplay", "Symbol display" },
 			{ "MainMenu.Settings.Rendering", "Rendering" },
 			{ "MainMenu.Settings.BackgroundColor", "Background color" },
+			{ "MainMenu.Settings.LightColor", "Light color" },
 			{ "MainMenu.Settings.Representation", "Representation" },
 			{ "MainMenu.Settings.AtomsRadius", "Atoms radius" },
 			{ "MainMenu.Settings.BondsRadius", "Bonds radius" },

@@ -29,6 +29,7 @@ namespace VTX
 	const int					  Setting::AO_BLUR_SIZE_MIN			= 1;
 	const int					  Setting::AO_BLUR_SIZE_MAX			= 99;
 	const bool					  Setting::ACTIVE_OUTLINE_DEFAULT	= false;
+	const Color::Rgb			  Setting::OUTLINE_COLOR_DEFAULT	= Color::Rgb::WHITE;
 	const bool					  Setting::ACTIVE_FOG_DEFAULT		= false;
 	const float					  Setting::FOG_NEAR_DEFAULT			= 400.f;
 	const float					  Setting::FOG_NEAR_MIN				= 0.f;
@@ -38,8 +39,8 @@ namespace VTX
 	const float					  Setting::FOG_FAR_MAX				= 1000.f;
 	const float					  Setting::FOG_DENSITY_DEFAULT		= 0.8f;
 	const bool					  Setting::ACTIVE_AA_DEFAULT		= true;
-	const Color::Rgb			  Setting::OUTLINE_COLOR_DEFAULT	= Color::Rgb::WHITE;
 	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT = Color::Rgb::BLACK;
+	const Color::Rgb			  Setting::LIGHT_COLOR_DEFAULT		= Color::Rgb::WHITE;
 
 	// Camera.
 	const float Setting::CAMERA_NEAR_DEFAULT		= 0.f;

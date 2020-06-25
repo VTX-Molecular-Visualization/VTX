@@ -4,11 +4,16 @@ layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
 layout( binding = 1 ) uniform sampler2D gbColor;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
-uniform float uSpecularFactor = 0.4f;
-uniform vec3  uBackgroundColor;
+uniform vec3 uBackgroundColor;
+
 uniform float uFogNear;
 uniform float uFogFar;
 uniform float uFogDensity;
+
+uniform vec3 uLightColor;
+
+// TODO: let the user set it !
+uniform float uSpecularFactor = 0.4f;
 
 out vec4 fragColor;
 
@@ -49,9 +54,10 @@ void main()
 	const vec4 pixelColor = texelFetch( gbColor, texCoord, 0 );
 
 	// Blinn-Phong.
-	const vec3	viewDir	 = normalize( -data.viewPosition ); // == lightDir for the moment
-	const vec3	h		 = normalize( lightDir + viewDir );
-	const float specular = uSpecularFactor * pow( max( dot( h, data.normal ), 0.f ), pixelColor.w );
+	const vec3	viewDir = normalize( -data.viewPosition ); // == lightDir for the moment
+	const vec3	h		= normalize( lightDir + viewDir );
+	const float specular
+		= uSpecularFactor * pow( max( dot( h, data.normal ), 0.f ), pixelColor.w ); // pixelColor.x is shininess.
 
 	const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
 	const float lighting = ( diffuse + specular ) * cosTheta;
@@ -59,7 +65,7 @@ void main()
 	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, texCoord, 0 ).x;
 
 	const float fogFactor = smoothstep( uFogNear, uFogFar, -data.viewPosition.z ) * uFogDensity;
-	const vec3	color	  = pixelColor.xyz * lighting * ambientOcclusion;
+	const vec3	color	  = pixelColor.xyz * lighting * ambientOcclusion * uLightColor;
 
 	fragColor = vec4( mix( color, uBackgroundColor, fogFactor ), 1.f );
 }

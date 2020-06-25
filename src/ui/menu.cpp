@@ -230,6 +230,14 @@ namespace VTX
 				{
 					VTX_ACTION( new Action::Setting::ChangeBackgroundColor( bgColor ) );
 				}
+				ImGui::Separator();
+
+				// Light color.
+				Color::Rgb & lightColor = VTX_SETTING().lightColor;
+				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.LightColor" ), (float *)&lightColor ) )
+				{
+					VTX_ACTION( new Action::Setting::ChangeLightColor( lightColor ) );
+				}
 
 				// Representation.
 				const char * representations[] = { LOCALE( "Enum.Representation.BallsAndSticks" ),

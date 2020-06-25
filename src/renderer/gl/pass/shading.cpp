@@ -69,6 +69,9 @@ namespace VTX
 				glUniform1f( _uFogNear, VTX_SETTING().fogNear );
 				glUniform1f( _uFogFar, VTX_SETTING().fogFar );
 				glUniform1f( _uFogDensity, VTX_SETTING().activeFog ? VTX_SETTING().fogDensity : 0.f );
+				// TODO: no need for flat shading
+				const Color::Rgb & lightColor = VTX_SETTING().lightColor;
+				glUniform3f( _uLightColor, lightColor.getR(), lightColor.getG(), lightColor.getB() );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );
 				glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
@@ -92,6 +95,7 @@ namespace VTX
 				_uFogNear			 = glGetUniformLocation( _currentShading->getId(), "uFogNear" );
 				_uFogFar			 = glGetUniformLocation( _currentShading->getId(), "uFogFar" );
 				_uFogDensity		 = glGetUniformLocation( _currentShading->getId(), "uFogDensity" );
+				_uLightColor		 = glGetUniformLocation( _currentShading->getId(), "uLightColor" );
 			}
 
 		} // namespace Pass
