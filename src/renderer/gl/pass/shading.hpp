@@ -49,7 +49,8 @@ namespace VTX
 				GLint _uFogDensity = GL_INVALID_INDEX;
 				GLint _uFogColor   = GL_INVALID_INDEX;
 				// Lights.
-				GLint _uLightColor = GL_INVALID_INDEX;
+				GLint _uLightPosition = GL_INVALID_INDEX;
+				GLint _uLightColor	  = GL_INVALID_INDEX;
 
 				GLSL::Program * _currentShading = nullptr;
 			};

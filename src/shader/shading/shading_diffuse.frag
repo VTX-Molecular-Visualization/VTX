@@ -11,6 +11,7 @@ uniform float uFogFar;
 uniform float uFogDensity;
 uniform vec3  uFogColor;
 
+uniform vec3 uLightPosition;
 uniform vec3 uLightColor;
 
 out vec4 fragColor;
@@ -47,7 +48,7 @@ void main()
 	}
 
 	// Light on camera.
-	const vec3 lightDir = normalize( -data.viewPosition );
+	const vec3 lightDir = normalize( uLightPosition - data.viewPosition );
 
 	const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
 

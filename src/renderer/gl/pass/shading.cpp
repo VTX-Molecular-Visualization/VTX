@@ -72,6 +72,11 @@ namespace VTX
 				const Color::Rgb & fogColor = VTX_SETTING().fogColor;
 				glUniform3f( _uFogColor, fogColor.getR(), fogColor.getG(), fogColor.getB() );
 				// TODO: no need for flat shading
+				// TODO: let the user choose where's the light
+				// TODO: distinguish "view" and "world" lights
+				const Vec4f & lightPosition
+					= p_scene.getCamera().getViewMatrix() * Vec4f( p_scene.getCamera().getPosition(), 1.f );
+				glUniform3f( _uLightPosition, lightPosition.x, lightPosition.y, lightPosition.z );
 				const Color::Rgb & lightColor = VTX_SETTING().lightColor;
 				glUniform3f( _uLightColor, lightColor.getR(), lightColor.getG(), lightColor.getB() );
 
@@ -98,6 +103,7 @@ namespace VTX
 				_uFogFar			 = glGetUniformLocation( _currentShading->getId(), "uFogFar" );
 				_uFogDensity		 = glGetUniformLocation( _currentShading->getId(), "uFogDensity" );
 				_uFogColor			 = glGetUniformLocation( _currentShading->getId(), "uFogColor" );
+				_uLightPosition		 = glGetUniformLocation( _currentShading->getId(), "uLightPosition" );
 				_uLightColor		 = glGetUniformLocation( _currentShading->getId(), "uLightColor" );
 			}
 

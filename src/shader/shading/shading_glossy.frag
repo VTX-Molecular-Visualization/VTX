@@ -11,6 +11,7 @@ uniform float uFogFar;
 uniform float uFogDensity;
 uniform vec3  uFogColor;
 
+uniform vec3 uLightPosition;
 uniform vec3 uLightColor;
 
 // TODO: let the user set it !
@@ -50,7 +51,7 @@ void main()
 	}
 
 	// Light on camera.
-	const vec3 lightDir = normalize( -data.viewPosition );
+	const vec3 lightDir = normalize( uLightPosition - data.viewPosition );
 
 	// Shader does not produce energy ! ;-)
 	const float diffuse = 1.f - uSpecularFactor;
