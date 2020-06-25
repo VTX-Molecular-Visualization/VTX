@@ -1,6 +1,6 @@
 #version 450
 
-#define SHOW_IMPOSTORS
+//#define SHOW_IMPOSTORS
 
 uniform mat4  uProjMatrix;
 uniform float uCylRad;
@@ -19,15 +19,15 @@ layout( location = 1 ) out vec4 outColor;
 
 float computeDepth( const vec3 v )
 {
-	// Computes 'v' NDC depth ([-1,1])
+	// Computes 'v' NDC depth ([-1,1]).
 	const float ndcDepth = ( v.z * uProjMatrix[ 2 ].z + uProjMatrix[ 3 ].z ) / -v.z;
-	// Return depth according to depth range
+	// Return depth according to depth range.
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
 
-// only consider cylinder body
 void main()
 {
+	// Only consider cylinder body.
 	const vec3 v1v0	  = viewCylVert[ 1 ] - viewCylVert[ 0 ];
 	const vec3 v0	  = -viewCylVert[ 0 ];
 	const vec3 rayDir = normalize( viewImpPos );
@@ -45,9 +45,9 @@ void main()
 	if ( h < 0.f )
 	{
 #ifdef SHOW_IMPOSTORS
-		// Show impostors for debugging purpose
+		// Show impostors for debugging purpose.
 		uvec4 colorNormal = uvec4( 0 );
-		// fill G-buffers
+		// Fill G-buffers.
 		uvec4 viewPositionNormalCompressed;
 		viewPositionNormalCompressed.x = packHalf2x16( viewImpPos.xy );
 		viewPositionNormalCompressed.y = packHalf2x16( vec2( viewImpPos.z, -rayDir.x ) );
@@ -65,7 +65,7 @@ void main()
 	}
 	else
 	{
-		// Solve equation (only first intersection)
+		// Solve equation (only first intersection).
 		const float t = ( -b - sqrt( h ) ) / a;
 
 		const float y = d2 + t * d1;
