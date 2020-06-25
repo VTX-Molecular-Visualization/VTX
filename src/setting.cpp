@@ -1,5 +1,7 @@
 #include "setting.hpp"
+#include "action/setting.hpp"
 #include "renderer/gl/pass/shading.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -79,5 +81,89 @@ namespace VTX
 	// Misc.
 	const int  Setting::CONSOLE_SIZE	   = 80;
 	const uint Setting::ACTION_BUFFER_SIZE = 10;
+
+	nlohmann::json Setting::toJson() const
+	{
+		return {
+			{ "THEME", theme },
+			{ "SYMBOL_DISPLAY_MODE", theme },
+
+			{ "ACTIVE_RENDERER", activeRenderer },
+			{ "REPRESENTATION", representation },
+			{ "ATOMS_RADIUS", atomsRadius },
+			{ "BONDS_RADIUS", bondsRadius },
+			{ "COLOR_MODE", colorMode },
+			{ "SHADING", shading },
+			{ "ACTIVE_VSYNC", activeVSync },
+			{ "ACTIVE_AO", activeAO },
+			{ "AO_INTENSITY", aoIntensity },
+			{ "AO_BLUR_SIZE", aoBlurSize },
+			{ "ACTIVE_OUTLINE", activeOutline },
+			{ "OUTLINE_COLOR", outlineColor.toStdVector() },
+			{ "ACTIVE_FOG", activeFog },
+			{ "FOG_NEAR", fogNear },
+			{ "FOG_FAR", fogFar },
+			{ "FOG_DENSITY", fogDensity },
+			{ "ACTIVE_AA", activeAA },
+			{ "BACKGROUND_COLOR", backgroundColor.toStdVector() },
+
+			{ "CAMERA_NEAR", cameraNear },
+			{ "CAMERA_FAR", cameraFar },
+			{ "CAMERA_FOV", cameraFov },
+			{ "CAMERA_PERSPECTIVE", cameraPerspective },
+
+			{ "CONTROLLER_TRANSLATION_SPEED", translationSpeed },
+			{ "CONTROLLER_TRANSLATION_FACTOR", translationFactorSpeed },
+			{ "CONTROLLER_ROTATION_SPEED", rotationSpeed },
+			{ "CONTROLLER_Y_AXIS_INVERTED", yAxisInverted },
+
+			//{ "AUTO_ROTATE_SPEED",autoRotationSpeed }
+		};
+	}
+
+	void Setting::fromJson( nlohmann::json & p_json )
+	{
+		// TODO: check values before update, or force all values?
+
+		// Set new values with actions.
+		VTX_ACTION( new Action::Setting::ChangeTheme( p_json[ "THEME" ].get<Style::THEME>() ) );
+		VTX_ACTION( new Action::Setting::ChangeDisplayMode(
+			p_json[ "SYMBOL_DISPLAY_MODE" ].get<Style::SYMBOL_DISPLAY_MODE>() ) );
+
+		VTX_ACTION( new Action::Setting::ActiveRenderer( p_json[ "ACTIVE_RENDERER" ].get<bool>() ) );
+		VTX_ACTION(
+			new Action::Setting::ChangeRepresentation( p_json[ "REPRESENTATION" ].get<Generic::REPRESENTATION>() ) );
+		VTX_ACTION( new Action::Setting::ChangeAtomsRadius( p_json[ "ATOMS_RADIUS" ].get<float>() ) );
+		VTX_ACTION( new Action::Setting::ChangeBondsRadius( p_json[ "BONDS_RADIUS" ].get<float>() ) );
+		VTX_ACTION( new Action::Setting::ChangeColorMode( p_json[ "COLOR_MODE" ].get<Generic::COLOR_MODE>() ) );
+		VTX_ACTION( new Action::Setting::ChangeShading( p_json[ "SHADING" ].get<Renderer::SHADING>() ) );
+		VTX_ACTION( new Action::Setting::ActiveVerticalSync( p_json[ "ACTIVE_VSYNC" ].get<bool>() ) );
+		VTX_ACTION( new Action::Setting::ActiveAO( p_json[ "ACTIVE_AO" ].get<bool>() ) );
+		VTX_ACTION( new Action::Setting::ChangeAOIntensity( p_json[ "AO_INTENSITY" ].get<int>() ) );
+		VTX_ACTION( new Action::Setting::ChangeAOBlurSize( p_json[ "AO_BLUR_SIZE" ].get<int>() ) );
+		VTX_ACTION( new Action::Setting::ActiveOutline( p_json[ "ACTIVE_OUTLINE" ].get<bool>() ) );
+		VTX_ACTION( new Action::Setting::ChangeOutlineColor(
+			Color::Rgb( p_json[ "OUTLINE_COLOR" ].get<std::vector<float>>() ) ) );
+		VTX_ACTION( new Action::Setting::ActiveFog( p_json[ "ACTIVE_FOG" ].get<bool>() ) );
+		VTX_ACTION( new Action::Setting::ChangeFogNear( p_json[ "FOG_NEAR" ].get<float>() ) );
+		VTX_ACTION( new Action::Setting::ChangeFogFar( p_json[ "FOG_FAR" ].get<float>() ) );
+		VTX_ACTION( new Action::Setting::ChangeFogDensity( p_json[ "FOG_DENSITY" ].get<float>() ) );
+		VTX_ACTION( new Action::Setting::ActiveAA( p_json[ "ACTIVE_AA" ].get<bool>() ) );
+		VTX_ACTION( new Action::Setting::ChangeBackgroundColor(
+			Color::Rgb( p_json[ "BACKGROUND_COLOR" ].get<std::vector<float>>() ) ) );
+
+		VTX_ACTION(
+			new Action::Setting::ChangeCameraClip( p_json[ "CAMERA_NEAR" ], p_json[ "CAMERA_FAR" ].get<float>() ) );
+		VTX_ACTION( new Action::Setting::ChangeCameraFov( p_json[ "CAMERA_FOV" ].get<float>() ) );
+		VTX_ACTION( new Action::Setting::ChangeCameraProjection( p_json[ "CAMERA_PERSPECTIVE" ].get<bool>() ) );
+
+		VTX_ACTION(
+			new Action::Setting::ChangeTranslationSpeed( p_json[ "CONTROLLER_TRANSLATION_SPEED" ].get<float>() ) );
+		VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed(
+			p_json[ "CONTROLLER_TRANSLATION_FACTOR" ].get<float>() ) );
+		VTX_ACTION( new Action::Setting::ChangeRotationSpeed( p_json[ "CONTROLLER_ROTATION_SPEED" ].get<float>() ) );
+		VTX_ACTION( new Action::Setting::ActiveYAxisInversion( p_json[ "CONTROLLER_Y_AXIS_INVERTED" ].get<bool>() ) );
+		//{ "AUTO_ROTATE_SPEED", VTX_SETTING().autoRotationSpeed }
+	}
 
 } // namespace VTX

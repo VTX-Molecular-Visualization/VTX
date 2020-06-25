@@ -7,8 +7,8 @@
 
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "generic/base_serializable.hpp"
 #include "style.hpp"
-
 namespace VTX
 {
 	namespace Generic
@@ -21,7 +21,7 @@ namespace VTX
 		enum class SHADING;
 	}
 
-	class Setting
+	class Setting : public Generic::BaseSerializable
 	{
 	  public:
 		// UI.
@@ -155,6 +155,10 @@ namespace VTX
 		// Misc.
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
+
+		virtual void		   fromJson( nlohmann::json & ) override;
+		virtual nlohmann::json toJson() const override;
 	};
+
 } // namespace VTX
 #endif

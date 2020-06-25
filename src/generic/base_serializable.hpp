@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-
+#include <nlohmann/json.hpp>
 
 namespace VTX
 {
@@ -16,8 +16,8 @@ namespace VTX
 		  public:
 			virtual ~BaseSerializable() = default;
 
-			virtual void load( const Path & )		= 0;
-			virtual void save( const Path & ) const = 0;
+			virtual void		   fromJson( nlohmann::json & ) = 0;
+			virtual nlohmann::json toJson() const				= 0;
 		};
 	} // namespace Generic
 } // namespace VTX

@@ -7,7 +7,6 @@
 
 #include "base_model.hpp"
 #include "define.hpp"
-#include "generic/base_serializable.hpp"
 #include "object3d/camera.hpp"
 #include "setting.hpp"
 #include "viewpoint.hpp"
@@ -17,7 +16,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		class Path : public BaseModel, public Generic::BaseSerializable
+		class Path : public BaseModel
 		{
 		  public:
 			using ViewpointPtr		 = Model::Viewpoint *;
@@ -61,10 +60,6 @@ namespace VTX
 			const std::vector<std::string> * const getCurrentActions( const double p_time );
 
 			virtual void setSelected( const bool ) override;
-
-			// TODO: redo implementation.
-			virtual void load( const std::filesystem::path & ) override;
-			virtual void save( const std::filesystem::path & ) const override;
 
 		  protected:
 			virtual void _addItems() override final;

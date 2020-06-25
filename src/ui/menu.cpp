@@ -4,9 +4,7 @@
 #include "action/new.hpp"
 #include "action/open.hpp"
 #include "action/open_api.hpp"
-#include "action/path_export.hpp"
 #include "action/path_export_video.hpp"
-#include "action/path_import.hpp"
 #include "action/quit.hpp"
 #include "action/setting.hpp"
 #include "action/snapshot.hpp"
@@ -130,23 +128,6 @@ namespace VTX
 				ImGui::EndMenu();
 			}
 
-			// Import
-			if ( ImGui::BeginMenu( LOCALE( "MainMenu.Import" ), isVisiblePtr() ) )
-			{
-				if ( ImGui::MenuItem( LOCALE( "MainMenu.Import.Path" ) ) )
-				{
-					try
-					{
-						VTX_ACTION( new Action::PathImport( VTXApp::get().getScene().getPaths()[ 0 ] ) );
-					}
-					catch ( const std::exception & e )
-					{
-						VTX_WARNING( "Import failed: " + std::string( e.what() ) );
-					}
-				}
-				ImGui::EndMenu();
-			}
-
 			// Export
 			if ( ImGui::BeginMenu( LOCALE( "MainMenu.Export" ), isVisiblePtr() ) )
 			{
@@ -167,17 +148,6 @@ namespace VTX
 					VTX_ACTION( new Action::Snapshot(
 						Worker::Snapshoter::MODE::RT_OPTIX,
 						Util::Filesystem::getRendersPath( Util::Time::getTimestamp() + ".png" ) ) );
-				}
-				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Path" ) ) )
-				{
-					try
-					{
-						VTX_ACTION( new Action::PathExport( VTXApp::get().getScene().getPaths()[ 0 ] ) );
-					}
-					catch ( const std::exception & e )
-					{
-						VTX_WARNING( "Export failed: " + std::string( e.what() ) );
-					}
 				}
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Video" ) ) )
 				{

@@ -191,6 +191,7 @@ namespace VTX
 			}
 		}
 
+		/*
 		void Path::load( const std::filesystem::path & p_file )
 		{
 			VTX_INFO( "Importing view points from " + p_file.string() );
@@ -281,6 +282,7 @@ namespace VTX
 
 			file.close();
 		}
+		*/
 
 	} // namespace Model
 } // namespace VTX
