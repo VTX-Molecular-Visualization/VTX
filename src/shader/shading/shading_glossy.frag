@@ -1,7 +1,7 @@
 #version 450 core
 
-layout( binding = 0 ) uniform usampler2D gbColorNormal;
-layout( binding = 1 ) uniform sampler2D gbViewPosition;
+layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
+layout( binding = 1 ) uniform sampler2D gbColor;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
 uniform float uSpecularFactor = 0.4f;
@@ -14,23 +14,17 @@ out vec4 fragColor;
 
 struct UnpackedData
 {
-	vec3  color;
-	vec3  normal;
-	vec3  viewPosition;
-	float shininess;
+	vec3 viewPosition;
+	vec3 normal;
 };
 
 void unpackGBuffers( ivec2 px, out UnpackedData data )
 {
-	const uvec4 colorNormal	 = texelFetch( gbColorNormal, px, 0 );
-	const vec4	viewPosition = texelFetch( gbViewPosition, px, 0 );
+	const uvec4 viewPositionNormal = texelFetch( gbViewPositionNormal, px, 0 );
 
-	const vec2 tmp = unpackHalf2x16( colorNormal.y );
-
-	data.color		  = vec3( unpackHalf2x16( colorNormal.x ), tmp.x );
-	data.normal		  = vec3( tmp.y, unpackHalf2x16( colorNormal.z ) );
-	data.viewPosition = viewPosition.xyz;
-	data.shininess	  = viewPosition.w;
+	const vec2 tmp	  = unpackHalf2x16( viewPositionNormal.y );
+	data.viewPosition = vec3( unpackHalf2x16( viewPositionNormal.x ), tmp.x );
+	data.normal		  = vec3( tmp.y, unpackHalf2x16( viewPositionNormal.z ) );
 }
 
 void main()
@@ -52,18 +46,20 @@ void main()
 	// Shader does not produce energy ! ;-)
 	const float diffuse = 1.f - uSpecularFactor;
 
+	const vec4 pixelColor = texelFetch( gbColor, texCoord, 0 );
+
 	// Blinn-Phong.
-	const vec3	viewDir	 = normalize( -data.viewPosition );
+	const vec3	viewDir	 = normalize( -data.viewPosition ); // == lightDir for the moment
 	const vec3	h		 = normalize( lightDir + viewDir );
-	const float specular = uSpecularFactor * pow( max( dot( h, data.normal ), 0.f ), data.shininess );
+	const float specular = uSpecularFactor * pow( max( dot( h, data.normal ), 0.f ), pixelColor.w );
 
 	const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
 	const float lighting = ( diffuse + specular ) * cosTheta;
 
 	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, texCoord, 0 ).x;
-	
+
 	const float fogFactor = smoothstep( uFogNear, uFogFar, -data.viewPosition.z ) * uFogDensity;
-	const vec3	color	  = data.color * lighting * ambientOcclusion;
+	const vec3	color	  = pixelColor.xyz * lighting * ambientOcclusion;
 
 	fragColor = vec4( mix( color, uBackgroundColor, fogFactor ), 1.f );
 }

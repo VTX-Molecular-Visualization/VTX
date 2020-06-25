@@ -2,55 +2,54 @@
 
 // Crytek (Crysis) like SSAO
 
-layout( binding = 0 ) uniform usampler2D gbColorNormal;
-layout( binding = 1 ) uniform sampler2D gbViewPosition;
+layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
+layout( binding = 1 ) uniform sampler2D gbColor;
 layout( binding = 2 ) uniform sampler2D noise;
+layout( binding = 3 ) uniform sampler2D linearDepth;
 
 layout( location = 0 ) out float ambientOcclusion;
 
-const float BIAS	= 0.025f;
+const float BIAS = 0.025f;
 
-uniform mat4  uProjMatrix;
-uniform vec3  uAoKernel[ 512 ]; // TODO: better use texture no ? ;-)
-uniform int	  uAoIntensity;
-uniform int	  uKernelSize;
+uniform mat4 uProjMatrix;
+uniform vec3 uAoKernel[ 512 ]; // TODO: better use texture no ? ;-)
+uniform int	 uAoIntensity;
+uniform int	 uKernelSize;
 
-struct FragmentData
+struct UnpackedData
 {
-	vec3 normal;
 	vec3 viewPosition;
+	vec3 normal;
 };
 
-void unpackGBuffers( const in vec2 texPos, out FragmentData fd )
+void unpackGBuffers( ivec2 px, out UnpackedData data )
 {
-	const uvec4 colorNormal = texture( gbColorNormal, texPos, 0 );
-	const vec4	viewPosition = texture( gbViewPosition, texPos, 0 );
+	const uvec4 viewPositionNormal = texelFetch( gbViewPositionNormal, px, 0 );
 
-	const vec2 tmp = unpackHalf2x16( colorNormal.y );
-
-	fd.normal	   = vec3( tmp.y, unpackHalf2x16( colorNormal.z ) );
-	fd.viewPosition = viewPosition.xyz;
+	const vec2 tmp	  = unpackHalf2x16( viewPositionNormal.y );
+	data.viewPosition = vec3( unpackHalf2x16( viewPositionNormal.x ), tmp.x );
+	data.normal		  = vec3( tmp.y, unpackHalf2x16( viewPositionNormal.z ) );
 }
 
 void main()
 {
-	const vec2 texSize		= textureSize( gbViewPosition, 0 );
-	const vec2 noisTextSize = textureSize( noise, 0 );
-	const vec2 noiseScale	= texSize / noisTextSize;
-	const vec2 texPos		= gl_FragCoord.xy / texSize;
+	const vec2	texSize		 = textureSize( gbViewPositionNormal, 0 );
+	const vec2	noisTextSize = textureSize( noise, 0 );
+	const vec2	noiseScale	 = texSize / noisTextSize;
+	const ivec2 texPos		 = ivec2( gl_FragCoord.xy ); // / texSize;
 
-	FragmentData fd;
-	unpackGBuffers( texPos, fd );
-	const vec3 pos = fd.viewPosition;
+	UnpackedData data;
+	unpackGBuffers( texPos, data );
+	const vec3 pos = data.viewPosition;
 
 	// Adapt sharpness wrt depth: the deeper the fragment is, the larger the radius is.
 	const float rad = -pos.z;
 
-	const vec3 randomVec = normalize( texture( noise, texPos * noiseScale ).xyz );
+	const vec3 randomVec = normalize( texture( noise, ( vec2( texPos ) / texSize ) * noiseScale, 0 ).xyz );
 	// Gram-Schmidt process.
-	const vec3 tangent   = normalize( randomVec - fd.normal * dot( randomVec, fd.normal ) );
-	const vec3 bitangent = cross( fd.normal, tangent );
-	const mat3 TBN	   = mat3( tangent, bitangent, fd.normal );
+	const vec3 tangent	 = normalize( randomVec - data.normal * dot( randomVec, data.normal ) );
+	const vec3 bitangent = cross( data.normal, tangent );
+	const mat3 TBN		 = mat3( tangent, bitangent, data.normal );
 
 	float ao = 0.f;
 
@@ -65,7 +64,7 @@ void main()
 		offset.xy = offset.xy * 0.5f + 0.5f;
 
 		// Get sample depth.
-		float sampleDepth = texture( gbViewPosition, offset.xy ).z;
+		float sampleDepth = -texture( linearDepth, offset.xy ).x;
 
 		// Range check: ignore background.
 		const float rangeCheck = sampleDepth == 0.f ? 0.f : smoothstep( 0.f, 1.f, rad / abs( pos.z - sampleDepth ) );

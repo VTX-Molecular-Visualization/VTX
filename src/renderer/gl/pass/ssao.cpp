@@ -10,7 +10,6 @@ namespace VTX
 	{
 		namespace Pass
 		{
-			SSAO::SSAO() : _kernelSize( 16 ) {}
 			SSAO::~SSAO()
 			{
 				glDeleteFramebuffers( 1, &_fbo );
@@ -104,11 +103,14 @@ namespace VTX
 				glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
 				glActiveTexture( GL_TEXTURE0 );
-				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getColorNormalCompressedTexture() );
+				glBindTexture( GL_TEXTURE_2D,
+							   p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
 				glActiveTexture( GL_TEXTURE1 );
-				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getCamSpacePositionsTexture() );
+				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getColorsTexture() );
 				glActiveTexture( GL_TEXTURE2 );
 				glBindTexture( GL_TEXTURE_2D, _noiseTexture );
+				glActiveTexture( GL_TEXTURE3 );
+				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassLinearizeDepth().getTexture() );
 
 				_program->use();
 

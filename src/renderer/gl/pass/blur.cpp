@@ -80,7 +80,7 @@ namespace VTX
 				_program->use();
 				// TODO don't update each frame
 				glUniform1i( _uBlurSizeLoc, VTX_SETTING().aoBlurSize );
-				glUniform2f( _uInvDirectionTexSizeLoc, 1.f / p_renderer.getWidth(), 0.f );
+				glUniform2i( _uInvDirectionTexSizeLoc, 1, 0 );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );
 
@@ -102,7 +102,7 @@ namespace VTX
 				glActiveTexture( GL_TEXTURE1 );
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassLinearizeDepth().getTexture() );
 
-				glUniform2f( _uInvDirectionTexSizeLoc, 0.f, 1.f / p_renderer.getHeight() );
+				glUniform2i( _uInvDirectionTexSizeLoc, 0, 1 );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );
 

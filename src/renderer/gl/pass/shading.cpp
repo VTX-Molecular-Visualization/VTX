@@ -52,9 +52,10 @@ namespace VTX
 				glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
 				glActiveTexture( GL_TEXTURE0 );
-				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getColorNormalCompressedTexture() );
+				glBindTexture( GL_TEXTURE_2D,
+							   p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
 				glActiveTexture( GL_TEXTURE1 );
-				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getCamSpacePositionsTexture() );
+				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getColorsTexture() );
 
 				glActiveTexture( GL_TEXTURE2 );
 				// If SSAO/Blur disabled, texture is previoulsy cleared.

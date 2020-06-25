@@ -21,15 +21,18 @@ namespace VTX
 				virtual void resize( const uint, const uint ) override;
 				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
 
-				inline const GLuint & getColorNormalCompressedTexture() const { return _colorNormalCompressedTexture; }
-				inline const GLuint & getCamSpacePositionsTexture() const { return _camSpacePositionsTexture; }
+				inline const GLuint & getViewPositionsNormalsCompressedTexture() const
+				{
+					return _viewPositionsNormalsCompressedTexture;
+				}
+				inline const GLuint & getColorsTexture() const { return _colorsTexture; }
 				inline const GLuint & getDepthTexture() const { return _depthTexture; }
 
 			  private:
-				GLuint _fbo							 = GL_INVALID_VALUE;
-				GLuint _colorNormalCompressedTexture = GL_INVALID_VALUE;
-				GLuint _camSpacePositionsTexture	 = GL_INVALID_VALUE;
-				GLuint _depthTexture				 = GL_INVALID_VALUE;
+				GLuint _fbo									  = GL_INVALID_VALUE;
+				GLuint _viewPositionsNormalsCompressedTexture = GL_INVALID_VALUE;
+				GLuint _colorsTexture						  = GL_INVALID_VALUE;
+				GLuint _depthTexture						  = GL_INVALID_VALUE;
 			};
 		} // namespace Pass
 

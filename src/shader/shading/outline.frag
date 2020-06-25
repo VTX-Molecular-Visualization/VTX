@@ -10,16 +10,15 @@ uniform vec3 uLineColor;
 
 void main()
 {
-	const vec2 texelSize = 1.f / textureSize( colorTexture, 0 );
-	const vec2 texCoord	 = gl_FragCoord.xy * texelSize;
+	const ivec2 texCoord = ivec2( gl_FragCoord.xy );
 
 	// Get current pixel depth.
-	const float depthCenter = texture( linearDepthTexture, texCoord ).x;
+	const float depthCenter = texelFetch( linearDepthTexture, texCoord, 0 ).x;
 	// Get cross neighbor depth
-	const float depthNW = textureOffset( linearDepthTexture, texCoord, ivec2( -1, -1 ) ).x;
-	const float depthNE = textureOffset( linearDepthTexture, texCoord, ivec2( -1, 1 ) ).x;
-	const float depthSE = textureOffset( linearDepthTexture, texCoord, ivec2( 1, 1 ) ).x;
-	const float depthSW = textureOffset( linearDepthTexture, texCoord, ivec2( 1, -1 ) ).x;
+	const float depthNW = texelFetchOffset( linearDepthTexture, texCoord, 0, ivec2( -1, -1 ) ).x;
+	const float depthNE = texelFetchOffset( linearDepthTexture, texCoord, 0, ivec2( -1, 1 ) ).x;
+	const float depthSE = texelFetchOffset( linearDepthTexture, texCoord, 0, ivec2( 1, 1 ) ).x;
+	const float depthSW = texelFetchOffset( linearDepthTexture, texCoord, 0, ivec2( 1, -1 ) ).x;
 
 	// Compute threshold wrt depth
 	// TODO: allow the user to control it
@@ -33,5 +32,5 @@ void main()
 	const float edgeDepth = sqrt( depthDiff0 * depthDiff0 + depthDiff1 * depthDiff1 );
 
 	// Apply outline if edge depth is greater than threshold.
-	fragColor = vec4( edgeDepth > threshold ? uLineColor : texture( colorTexture, texCoord ).xyz, 1.f );
+	fragColor = vec4( edgeDepth > threshold ? uLineColor : texelFetch( colorTexture, texCoord, 0 ).xyz, 1.f );
 }
