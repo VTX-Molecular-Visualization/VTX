@@ -69,6 +69,8 @@ namespace VTX
 				glUniform1f( _uFogNear, VTX_SETTING().fogNear );
 				glUniform1f( _uFogFar, VTX_SETTING().fogFar );
 				glUniform1f( _uFogDensity, VTX_SETTING().activeFog ? VTX_SETTING().fogDensity : 0.f );
+				const Color::Rgb & fogColor = VTX_SETTING().fogColor;
+				glUniform3f( _uFogColor, fogColor.getR(), fogColor.getG(), fogColor.getB() );
 				// TODO: no need for flat shading
 				const Color::Rgb & lightColor = VTX_SETTING().lightColor;
 				glUniform3f( _uLightColor, lightColor.getR(), lightColor.getG(), lightColor.getB() );
@@ -95,6 +97,7 @@ namespace VTX
 				_uFogNear			 = glGetUniformLocation( _currentShading->getId(), "uFogNear" );
 				_uFogFar			 = glGetUniformLocation( _currentShading->getId(), "uFogFar" );
 				_uFogDensity		 = glGetUniformLocation( _currentShading->getId(), "uFogDensity" );
+				_uFogColor			 = glGetUniformLocation( _currentShading->getId(), "uFogColor" );
 				_uLightColor		 = glGetUniformLocation( _currentShading->getId(), "uLightColor" );
 			}
 

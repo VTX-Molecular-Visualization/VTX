@@ -21,6 +21,8 @@ namespace VTX
 					json[ "SYMBOL_DISPLAY_MODE" ].get<Style::SYMBOL_DISPLAY_MODE>() ) );
 
 				VTX_ACTION( new Action::Setting::ActiveRenderer( json[ "ACTIVE_RENDERER" ].get<bool>() ) );
+				VTX_ACTION( new Action::Setting::ChangeBackgroundColor(
+					Color::Rgb( json[ "BACKGROUND_COLOR" ].get<std::vector<float>>() ) ) );
 				VTX_ACTION( new Action::Setting::ChangeRepresentation(
 					json[ "REPRESENTATION" ].get<Generic::REPRESENTATION>() ) );
 				VTX_ACTION( new Action::Setting::ChangeAtomsRadius( json[ "ATOMS_RADIUS" ].get<float>() ) );
@@ -38,9 +40,11 @@ namespace VTX
 				VTX_ACTION( new Action::Setting::ChangeFogNear( json[ "FOG_NEAR" ].get<float>() ) );
 				VTX_ACTION( new Action::Setting::ChangeFogFar( json[ "FOG_FAR" ].get<float>() ) );
 				VTX_ACTION( new Action::Setting::ChangeFogDensity( json[ "FOG_DENSITY" ].get<float>() ) );
+				VTX_ACTION( new Action::Setting::ChangeFogColor(
+					Color::Rgb( json[ "FOG_COLOR" ].get<std::vector<float>>() ) ) );
 				VTX_ACTION( new Action::Setting::ActiveAA( json[ "ACTIVE_AA" ].get<bool>() ) );
-				VTX_ACTION( new Action::Setting::ChangeBackgroundColor(
-					Color::Rgb( json[ "BACKGROUND_COLOR" ].get<std::vector<float>>() ) ) );
+				VTX_ACTION( new Action::Setting::ChangeLightColor(
+					Color::Rgb( json[ "LIGHT_COLOR" ].get<std::vector<float>>() ) ) );
 
 				VTX_ACTION(
 					new Action::Setting::ChangeCameraClip( json[ "CAMERA_NEAR" ], json[ "CAMERA_FAR" ].get<float>() ) );

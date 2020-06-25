@@ -70,6 +70,7 @@ namespace VTX
 			{ "MainMenu.Settings.FogNear", "Fog near" },
 			{ "MainMenu.Settings.FogFar", "Fog far" },
 			{ "MainMenu.Settings.FogDensity", "Fog density" },
+			{ "MainMenu.Settings.FogColor", "Fog color" },
 			{ "MainMenu.Settings.AA", "Anti-aliasing" },
 			{ "MainMenu.Settings.AutoRotateXSpeed", "X auto rotation speed" },
 			{ "MainMenu.Settings.AutoRotateYSpeed", "Y auto rotation speed" },

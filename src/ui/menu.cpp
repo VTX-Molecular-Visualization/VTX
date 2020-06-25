@@ -417,6 +417,11 @@ namespace VTX
 					{
 						VTX_ACTION( new Action::Setting::ChangeFogDensity( fogDensity ) );
 					}
+					Color::Rgb & fogColor = VTX_SETTING().fogColor;
+					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.FogColor" ), (float *)&fogColor ) )
+					{
+						VTX_ACTION( new Action::Setting::ChangeFogColor( fogColor ) );
+					}
 				}
 				ImGui::Separator();
 

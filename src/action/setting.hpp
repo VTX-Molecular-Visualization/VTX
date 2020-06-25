@@ -100,6 +100,17 @@ namespace VTX
 				const bool _active;
 			};
 
+			class ChangeBackgroundColor : public BaseAction
+			{
+			  public:
+				explicit ChangeBackgroundColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+
+				virtual void execute() override { VTX_SETTING().backgroundColor = _color; };
+
+			  private:
+				const Color::Rgb _color;
+			};
+
 			class ChangeRepresentation : public BaseAction
 			{
 			  public:
@@ -334,6 +345,17 @@ namespace VTX
 				const float _density;
 			};
 
+			class ChangeFogColor : public BaseAction
+			{
+			  public:
+				explicit ChangeFogColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+
+				virtual void execute() override { VTX_SETTING().fogColor = _color; };
+
+			  private:
+				const Color::Rgb _color;
+			};
+
 			class ActiveAA : public BaseAction
 			{
 			  public:
@@ -347,17 +369,6 @@ namespace VTX
 
 			  private:
 				const bool _active;
-			};
-
-			class ChangeBackgroundColor : public BaseAction
-			{
-			  public:
-				explicit ChangeBackgroundColor( const Color::Rgb & p_color ) : _color( p_color ) {}
-
-				virtual void execute() override { VTX_SETTING().backgroundColor = _color; };
-
-			  private:
-				const Color::Rgb _color;
 			};
 
 			class ChangeLightColor : public BaseAction

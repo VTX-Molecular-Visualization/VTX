@@ -14,6 +14,7 @@ namespace VTX
 					{ "SYMBOL_DISPLAY_MODE", VTX_SETTING().theme },
 
 					{ "ACTIVE_RENDERER", VTX_SETTING().activeRenderer },
+					{ "BACKGROUND_COLOR", VTX_SETTING().backgroundColor.toStdVector() },
 					{ "REPRESENTATION", VTX_SETTING().representation },
 					{ "ATOMS_RADIUS", VTX_SETTING().atomsRadius },
 					{ "BONDS_RADIUS", VTX_SETTING().bondsRadius },
@@ -29,8 +30,9 @@ namespace VTX
 					{ "FOG_NEAR", VTX_SETTING().fogNear },
 					{ "FOG_FAR", VTX_SETTING().fogFar },
 					{ "FOG_DENSITY", VTX_SETTING().fogDensity },
+					{ "FOG_COLOR", VTX_SETTING().fogColor.toStdVector() },
 					{ "ACTIVE_AA", VTX_SETTING().activeAA },
-					{ "BACKGROUND_COLOR", VTX_SETTING().backgroundColor.toStdVector() },
+					{ "LIGHT_COLOR", VTX_SETTING().lightColor.toStdVector() },
 
 					{ "CAMERA_NEAR", VTX_SETTING().cameraNear },
 					{ "CAMERA_FAR", VTX_SETTING().cameraFar },

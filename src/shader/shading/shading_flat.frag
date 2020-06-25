@@ -8,6 +8,7 @@ uniform vec3  uBackgroundColor;
 uniform float uFogNear;
 uniform float uFogFar;
 uniform float uFogDensity;
+uniform vec3  uFogColor;
 
 out vec4 fragColor;
 
@@ -33,7 +34,10 @@ void main()
 
 	if ( data.viewPosition.z == 0.f )
 	{
-		fragColor = vec4( uBackgroundColor, 1.f );
+		if ( uFogDensity != 0.f )
+			fragColor = vec4( mix( uBackgroundColor, uFogColor, uFogDensity ), 1.f );
+		else
+			fragColor = vec4( uBackgroundColor, 1.f );
 		return;
 	}
 

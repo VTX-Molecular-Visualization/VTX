@@ -47,6 +47,7 @@ namespace VTX
 				GLint _uFogNear	   = GL_INVALID_INDEX;
 				GLint _uFogFar	   = GL_INVALID_INDEX;
 				GLint _uFogDensity = GL_INVALID_INDEX;
+				GLint _uFogColor   = GL_INVALID_INDEX;
 				// Lights.
 				GLint _uLightColor = GL_INVALID_INDEX;
 
