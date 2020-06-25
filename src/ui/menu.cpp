@@ -1,18 +1,13 @@
 #include "menu.hpp"
-#include "action/active_ui_component.hpp"
-#include "action/change_camera_controller.hpp"
-#include "action/new.hpp"
-#include "action/open.hpp"
-#include "action/open_api.hpp"
-#include "action/path_export_video.hpp"
-#include "action/quit.hpp"
+#include "action/main.hpp"
+#include "action/path.hpp"
 #include "action/setting.hpp"
-#include "action/snapshot.hpp"
 #include "define.hpp"
 #include "imgui/imgui_internal.h"
 #include "style.hpp"
 #include "util/filesystem.hpp"
 #include "util/logger.hpp"
+#include "util/time.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -43,7 +38,7 @@ namespace VTX
 				}
 				if ( paths.size() )
 				{
-					VTX_ACTION( new Action::Open( paths ) );
+					VTX_ACTION( new Action::Main::Open( paths ) );
 				}
 				_openFileDialog = nullptr;
 			}
@@ -57,7 +52,7 @@ namespace VTX
 				// New.
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.New" ) /*, "Ctrl+N"*/ ) )
 				{
-					VTX_ACTION( new Action::New() );
+					VTX_ACTION( new Action::Main::New() );
 				}
 
 				// Open.
@@ -73,7 +68,7 @@ namespace VTX
 				// Quit.
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
 				{
-					VTX_ACTION( new Action::Quit() );
+					VTX_ACTION( new Action::Main::Quit() );
 				}
 
 				ImGui::EndMenu();
@@ -85,45 +80,45 @@ namespace VTX
 				bool showRender = VTXApp::get().getUI().getComponentByName( ID::UI::RENDER )->isVisible();
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Render" ), &showRender ) )
 				{
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::RENDER, showRender ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::RENDER, showRender ) );
 				}
 				ImGui::Separator();
 				ImGui::Separator();
 				bool showScene = VTXApp::get().getUI().getComponentByName( ID::UI::SCENE )->isVisible();
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Scene" ), &showScene ) )
 				{
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::SCENE, showScene ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::SCENE, showScene ) );
 				}
 				bool showInspector = VTXApp::get().getUI().getComponentByName( ID::UI::INSPECTOR )->isVisible();
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Inspector" ), &showInspector ) )
 				{
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::INSPECTOR, showInspector ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::INSPECTOR, showInspector ) );
 				}
 				bool showConsole = VTXApp::get().getUI().getComponentByName( ID::UI::CONSOLE )->isVisible();
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.Console" ), &showConsole ) )
 				{
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::CONSOLE, showConsole ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::CONSOLE, showConsole ) );
 				}
 				bool showCameraEditor = VTXApp::get().getUI().getComponentByName( ID::UI::CAMERA_EDITOR )->isVisible();
 				if ( ImGui::Checkbox( LOCALE( "MainMenu.Display.CameraEditor" ), &showCameraEditor ) )
 				{
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, showCameraEditor ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::CAMERA_EDITOR, showCameraEditor ) );
 				}
 
 				ImGui::Separator();
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.CloseAll" ) ) )
 				{
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::SCENE, false ) );
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::INSPECTOR, false ) );
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::CONSOLE, false ) );
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, false ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::SCENE, false ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::INSPECTOR, false ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::CONSOLE, false ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::CAMERA_EDITOR, false ) );
 				}
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Display.ShowAll" ) ) )
 				{
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::SCENE, true ) );
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::INSPECTOR, true ) );
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::CONSOLE, true ) );
-					VTX_ACTION( new Action::ActiveUIComponent( ID::UI::CAMERA_EDITOR, true ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::SCENE, true ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::INSPECTOR, true ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::CONSOLE, true ) );
+					VTX_ACTION( new Action::Main::ActiveUIComponent( ID::UI::CAMERA_EDITOR, true ) );
 				}
 				ImGui::EndMenu();
 			}
@@ -133,31 +128,31 @@ namespace VTX
 			{
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Snapshot" ) ) )
 				{
-					VTX_ACTION( new Action::Snapshot(
+					VTX_ACTION( new Action::Main::Snapshot(
 						Worker::Snapshoter::MODE::GL,
 						Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) ) );
 				}
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.RenderCPU" ) ) )
 				{
-					VTX_ACTION( new Action::Snapshot(
+					VTX_ACTION( new Action::Main::Snapshot(
 						Worker::Snapshoter::MODE::RT_CPU,
 						Util::Filesystem::getRendersPath( Util::Time::getTimestamp() + ".png" ) ) );
 				}
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.RenderOptix" ) ) )
 				{
-					VTX_ACTION( new Action::Snapshot(
+					VTX_ACTION( new Action::Main::Snapshot(
 						Worker::Snapshoter::MODE::RT_OPTIX,
 						Util::Filesystem::getRendersPath( Util::Time::getTimestamp() + ".png" ) ) );
 				}
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Video" ) ) )
 				{
-					VTX_ACTION( new Action::PathExportVideo( VTXApp::get().getScene().getPaths()[ 0 ],
-															 Worker::Snapshoter::MODE::GL ) );
+					VTX_ACTION( new Action::Path::ExportVideo( VTXApp::get().getScene().getPaths()[ 0 ],
+															   Worker::Snapshoter::MODE::GL ) );
 				}
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.VideoRT" ) ) )
 				{
-					VTX_ACTION( new Action::PathExportVideo( VTXApp::get().getScene().getPaths()[ 0 ],
-															 Worker::Snapshoter::MODE::RT_CPU ) );
+					VTX_ACTION( new Action::Path::ExportVideo( VTXApp::get().getScene().getPaths()[ 0 ],
+															   Worker::Snapshoter::MODE::RT_CPU ) );
 				}
 				ImGui::EndMenu();
 			}
@@ -478,7 +473,7 @@ namespace VTX
 				std::string id = std::string( name );
 				if ( id.size() == 4 )
 				{
-					VTX_ACTION( new Action::OpenApi( id ) );
+					VTX_ACTION( new Action::Main::OpenApi( id ) );
 				}
 			}
 
@@ -542,7 +537,7 @@ namespace VTX
 			// Camera.
 			if ( ImGui::Button( LOCALE( "MainMenu.Camera" ) ) )
 			{
-				VTX_ACTION( new Action::ChangeCameraController() );
+				VTX_ACTION( new Action::Main::ChangeCameraController() );
 			}
 		}
 	} // namespace UI

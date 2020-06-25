@@ -1,7 +1,7 @@
 #include "scene.hpp"
-#include "action/transformable_rotate.hpp"
 #include "generic/factory.hpp"
 #include "math/transform.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

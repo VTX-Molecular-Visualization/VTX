@@ -1,5 +1,4 @@
 #include "event_manager.hpp"
-#include "action/resize.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

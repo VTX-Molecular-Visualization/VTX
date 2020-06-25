@@ -1,5 +1,5 @@
 #include "export.hpp"
-#include "action/snapshot.hpp"
+#include "action/main.hpp"
 #include "util/filesystem.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
@@ -70,8 +70,8 @@ namespace VTX
 			std::string counterStr = std::to_string( _frame );
 			std::string fileName   = "video" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
 
-			VTX_ACTION( new Action::Snapshot( _arg.mode,
-											  Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ) );
+			VTX_ACTION( new Action::Main::Snapshot(
+				_arg.mode, Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ) );
 
 			VTX_INFO( std::to_string( ( uint )( (float)_frame * 100 / _frameCount ) ) + "%" );
 

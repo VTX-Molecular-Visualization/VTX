@@ -1,7 +1,8 @@
 #include "action_manager.hpp"
+#include "action/main.hpp"
 #include "action/representable.hpp"
 #include "action/setting.hpp"
-#include "snapshot.hpp"
+#include "util/time.hpp"
 #include <magic_enum.hpp>
 #include <sstream>
 
@@ -48,8 +49,9 @@ namespace VTX
 			{
 				if ( command == "snapshot" )
 				{
-					action = new Snapshot( Worker::Snapshoter::MODE::GL,
-										   Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) );
+					action = new Main::Snapshot(
+						Worker::Snapshoter::MODE::GL,
+						Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) );
 				}
 				else if ( command == "change_representation" )
 				{

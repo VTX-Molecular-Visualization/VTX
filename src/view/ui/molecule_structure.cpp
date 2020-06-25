@@ -1,10 +1,9 @@
 #include "molecule_structure.hpp"
 #include "action/action_manager.hpp"
-#include "action/chain_change_visibility.hpp"
-#include "action/molecule_delete.hpp"
-#include "action/residue_change_visibility.hpp"
-#include "action/selectable_select.hpp"
-#include "action/selectable_unselect.hpp"
+#include "action/chain.hpp"
+#include "action/molecule.hpp"
+#include "action/residue.hpp"
+#include "action/selectable.hpp"
 
 namespace VTX
 {
@@ -26,7 +25,7 @@ namespace VTX
 				{
 					if ( ImGui::MenuItem( LOCALE( "View.Delete" ) ) )
 					{
-						VTX_ACTION( new Action::MoleculeDelete( _getModel() ) );
+						VTX_ACTION( new Action::Molecule::Delete( _getModel() ) );
 					}
 					ImGui::EndPopup();
 				}
@@ -35,12 +34,12 @@ namespace VTX
 				{
 					if ( moleculeOpened )
 					{
-						VTX_ACTION( new Action::SelectableUnselect( _getModel() ) );
+						VTX_ACTION( new Action::Selectable::Unselect( _getModel() ) );
 					}
 
 					else
 					{
-						VTX_ACTION( new Action::SelectableSelect( _getModel() ) );
+						VTX_ACTION( new Action::Selectable::Select( _getModel() ) );
 					}
 				}
 				if ( moleculeOpened )
@@ -58,27 +57,27 @@ namespace VTX
 							{
 								if ( ImGui::MenuItem( LOCALE( "View.Show" ) ) )
 								{
-									VTX_ACTION( new Action::ChainChangeVisibility(
-										*chain, Action::ChainChangeVisibility::VISIBILITY_MODE::SHOW ) );
+									VTX_ACTION( new Action::Chain::ChangeVisibility(
+										*chain, Action::Chain::ChangeVisibility::VISIBILITY_MODE::SHOW ) );
 								}
 							}
 							else
 							{
 								if ( ImGui::MenuItem( LOCALE( "View.Hide" ) ) )
 								{
-									VTX_ACTION( new Action::ChainChangeVisibility(
-										*chain, Action::ChainChangeVisibility::VISIBILITY_MODE::HIDE ) );
+									VTX_ACTION( new Action::Chain::ChangeVisibility(
+										*chain, Action::Chain::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
 								}
 							}
 							if ( ImGui::MenuItem( LOCALE( "View.Solo" ) ) )
 							{
-								VTX_ACTION( new Action::ChainChangeVisibility(
-									*chain, Action::ChainChangeVisibility::VISIBILITY_MODE::SOLO ) );
+								VTX_ACTION( new Action::Chain::ChangeVisibility(
+									*chain, Action::Chain::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
 							}
 							if ( ImGui::MenuItem( LOCALE( "View.All" ) ) )
 							{
-								VTX_ACTION( new Action::ChainChangeVisibility(
-									*chain, Action::ChainChangeVisibility::VISIBILITY_MODE::ALL ) );
+								VTX_ACTION( new Action::Chain::ChangeVisibility(
+									*chain, Action::Chain::ChangeVisibility::VISIBILITY_MODE::ALL ) );
 							}
 							ImGui::EndPopup();
 						}
@@ -87,12 +86,12 @@ namespace VTX
 						{
 							if ( chainOpened )
 							{
-								VTX_ACTION( new Action::SelectableUnselect( *chain ) );
+								VTX_ACTION( new Action::Selectable::Unselect( *chain ) );
 							}
 
 							else
 							{
-								VTX_ACTION( new Action::SelectableSelect( *chain ) );
+								VTX_ACTION( new Action::Selectable::Select( *chain ) );
 							}
 						}
 						if ( chainOpened )
@@ -114,27 +113,27 @@ namespace VTX
 									{
 										if ( ImGui::MenuItem( LOCALE( "View.Show" ) ) )
 										{
-											VTX_ACTION( new Action::ResidueChangeVisibility(
-												residue, Action::ResidueChangeVisibility::VISIBILITY_MODE::SHOW ) );
+											VTX_ACTION( new Action::Residue::ChangeVisibility(
+												residue, Action::Residue::ChangeVisibility::VISIBILITY_MODE::SHOW ) );
 										}
 									}
 									else
 									{
 										if ( ImGui::MenuItem( LOCALE( "View.Hide" ) ) )
 										{
-											VTX_ACTION( new Action::ResidueChangeVisibility(
-												residue, Action::ResidueChangeVisibility::VISIBILITY_MODE::HIDE ) );
+											VTX_ACTION( new Action::Residue::ChangeVisibility(
+												residue, Action::Residue::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
 										}
 									}
 									if ( ImGui::MenuItem( LOCALE( "View.Solo" ) ) )
 									{
-										VTX_ACTION( new Action::ResidueChangeVisibility(
-											residue, Action::ResidueChangeVisibility::VISIBILITY_MODE::SOLO ) );
+										VTX_ACTION( new Action::Residue::ChangeVisibility(
+											residue, Action::Residue::ChangeVisibility::VISIBILITY_MODE::SOLO ) );
 									}
 									if ( ImGui::MenuItem( LOCALE( "View.All" ) ) )
 									{
-										VTX_ACTION( new Action::ResidueChangeVisibility(
-											residue, Action::ResidueChangeVisibility::VISIBILITY_MODE::ALL ) );
+										VTX_ACTION( new Action::Residue::ChangeVisibility(
+											residue, Action::Residue::ChangeVisibility::VISIBILITY_MODE::ALL ) );
 									}
 									ImGui::EndPopup();
 								}
@@ -143,11 +142,11 @@ namespace VTX
 								{
 									if ( residueOpened )
 									{
-										VTX_ACTION( new Action::SelectableUnselect( residue ) );
+										VTX_ACTION( new Action::Selectable::Unselect( residue ) );
 									}
 									else
 									{
-										VTX_ACTION( new Action::SelectableSelect( residue ) );
+										VTX_ACTION( new Action::Selectable::Select( residue ) );
 									}
 								}
 								if ( residueOpened )
@@ -165,11 +164,11 @@ namespace VTX
 										{
 											if ( atom.isSelected() )
 											{
-												VTX_ACTION( new Action::SelectableUnselect( atom ) );
+												VTX_ACTION( new Action::Selectable::Unselect( atom ) );
 											}
 											else
 											{
-												VTX_ACTION( new Action::SelectableSelect( atom ) );
+												VTX_ACTION( new Action::Selectable::Select( atom ) );
 											}
 										}
 										ImGui::PopID();

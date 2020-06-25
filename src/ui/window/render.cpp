@@ -1,5 +1,5 @@
 #include "render.hpp"
-#include "action/resize.hpp"
+#include "action/main.hpp"
 #include "renderer/gl/gl.hpp"
 #include "style.hpp"
 #include "vtx_app.hpp"
@@ -34,7 +34,7 @@ namespace VTX
 				{
 					_width	= width;
 					_height = height;
-					VTX_ACTION( new Action::Resize( _width, _height ) );
+					VTX_ACTION( new Action::Main::Resize( _width, _height ) );
 				}
 
 #pragma warning( push )

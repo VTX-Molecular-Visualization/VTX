@@ -1,6 +1,5 @@
 #include "path_list.hpp"
-#include "action/selectable_select.hpp"
-#include "action/selectable_unselect.hpp"
+#include "action/selectable.hpp"
 #include "action/viewpoint.hpp"
 #include <string>
 
@@ -19,12 +18,12 @@ namespace VTX
 				{
 					if ( pathOpened )
 					{
-						VTX_ACTION( new Action::SelectableUnselect( _getModel() ) );
+						VTX_ACTION( new Action::Selectable::Unselect( _getModel() ) );
 					}
 
 					else
 					{
-						VTX_ACTION( new Action::SelectableSelect( _getModel() ) );
+						VTX_ACTION( new Action::Selectable::Select( _getModel() ) );
 					}
 				}
 				if ( pathOpened )
@@ -44,11 +43,11 @@ namespace VTX
 
 							if ( viewpoint->isSelected() )
 							{
-								VTX_ACTION( new Action::SelectableUnselect( *viewpoint ) );
+								VTX_ACTION( new Action::Selectable::Unselect( *viewpoint ) );
 							}
 							else
 							{
-								VTX_ACTION( new Action::SelectableSelect( *viewpoint ) );
+								VTX_ACTION( new Action::Selectable::Select( *viewpoint ) );
 							}
 						}
 						ImGui::PopID();
