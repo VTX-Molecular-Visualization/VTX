@@ -113,24 +113,6 @@ namespace VTX
 				const std::string _id;
 			};
 
-			class Resize : public BaseAction
-			{
-			  public:
-				Resize( const uint p_width, const uint p_height ) : _width( p_width ), _height( p_height ) {}
-				virtual void execute() override
-				{
-					// Set camera.
-					VTXApp::get().getScene().getCamera().setScreenSize( _width, _height );
-
-					// Resize renderer.
-					VTXApp::get().getRendererGL().resize( _width, _height );
-				};
-
-			  private:
-				uint _width;
-				uint _height;
-			};
-
 			class ChangeCameraController : public BaseAction
 			{
 			  public:
@@ -145,24 +127,6 @@ namespace VTX
 				};
 
 			  private:
-			};
-
-			class ActiveUIComponent : public BaseAction
-			{
-			  public:
-				explicit ActiveUIComponent( const std::string & p_name, const bool p_active ) :
-					_name( p_name ), _active( p_active )
-				{
-				}
-
-				virtual void execute() override
-				{
-					VTXApp::get().getUI().getComponentByName( _name )->setVisible( _active );
-				};
-
-			  private:
-				const std::string & _name;
-				const bool			_active;
 			};
 
 			class Snapshot : public BaseAction
