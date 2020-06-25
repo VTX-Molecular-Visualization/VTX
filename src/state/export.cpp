@@ -13,6 +13,7 @@ namespace VTX
 		{
 			_arg		   = *(Arg *)p_arg;
 			_directoryName = Util::Time::getTimestamp();
+			VTXApp::get().getSetting().backup();
 
 			float duration = _arg.path->getDuration();
 			_frameCount	   = uint( Setting::VIDEO_FPS_DEFAULT * duration );
@@ -33,6 +34,7 @@ namespace VTX
 			_actions	= nullptr;
 			_frame		= 0u;
 			_frameCount = 0u;
+			VTXApp::get().getSetting().recover();
 		}
 
 		void Export::update( const double p_deltaTime )

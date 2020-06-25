@@ -11,6 +11,7 @@ namespace VTX
 		void Play::enter( void * const p_arg )
 		{
 			_path = (Model::Path *)p_arg;
+			VTXApp::get().getSetting().backup();
 
 			if ( _path->getDuration() == 0.f || _path->getViewpoints().size() < 2 )
 			{
@@ -29,6 +30,7 @@ namespace VTX
 			_path	 = nullptr;
 			_actions = nullptr;
 			_time	 = 0.0;
+			VTXApp::get().getSetting().recover();
 		}
 
 		void Play::update( const double p_deltaTime )
@@ -46,6 +48,7 @@ namespace VTX
 				{
 					_time	 = 0.f;
 					_actions = nullptr;
+					VTXApp::get().getSetting().recover();
 				}
 				else
 				{

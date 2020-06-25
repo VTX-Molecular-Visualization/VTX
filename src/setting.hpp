@@ -158,6 +158,12 @@ namespace VTX
 
 		virtual void		   fromJson( nlohmann::json & ) override;
 		virtual nlohmann::json toJson() const override;
+
+		inline void backup() { _backup = toJson(); }
+		inline void recover() { fromJson( _backup ); }
+
+	  private:
+		nlohmann::json _backup;
 	};
 
 } // namespace VTX
