@@ -65,6 +65,9 @@ namespace VTX
 				// TODO: do not update each frame
 				const Color::Rgb & bgColor = VTX_SETTING().backgroundColor;
 				glUniform3f( _uBackgroundColorLoc, bgColor.getR(), bgColor.getG(), bgColor.getB() );
+				glUniform1f( _uFogNear, VTX_SETTING().fogNear );
+				glUniform1f( _uFogFar, VTX_SETTING().fogFar );
+				glUniform1f( _uFogDensity, VTX_SETTING().activeFog ? VTX_SETTING().fogDensity : 0.f );
 
 				glBindVertexArray( p_renderer.getQuadVAO() );
 				glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
@@ -85,6 +88,9 @@ namespace VTX
 
 				_currentShading->use();
 				_uBackgroundColorLoc = glGetUniformLocation( _currentShading->getId(), "uBackgroundColor" );
+				_uFogNear			 = glGetUniformLocation( _currentShading->getId(), "uFogNear" );
+				_uFogFar			 = glGetUniformLocation( _currentShading->getId(), "uFogFar" );
+				_uFogDensity		 = glGetUniformLocation( _currentShading->getId(), "uFogDensity" );
 			}
 
 		} // namespace Pass

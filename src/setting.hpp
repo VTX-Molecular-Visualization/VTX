@@ -73,14 +73,30 @@ namespace VTX
 		static const int AO_BLUR_SIZE_MAX;
 		int				 aoBlurSize = AO_BLUR_SIZE_DEFAULT;
 
-		static const bool ACTIVE_AA_DEFAULT;
-		bool			  activeAA = ACTIVE_AA_DEFAULT;
-
 		static const bool ACTIVE_OUTLINE_DEFAULT;
 		bool			  activeOutline = ACTIVE_OUTLINE_DEFAULT;
 
 		static const Color::Rgb OUTLINE_COLOR_DEFAULT;
-		Color::Rgb				outlineColor;
+		Color::Rgb				outlineColor = OUTLINE_COLOR_DEFAULT;
+
+		static const bool ACTIVE_FOG_DEFAULT;
+		bool			  activeFog = ACTIVE_FOG_DEFAULT;
+
+		static const float FOG_NEAR_DEFAULT;
+		static const float FOG_NEAR_MIN;
+		static const float FOG_NEAR_MAX;
+		float			   fogNear = FOG_NEAR_DEFAULT;
+
+		static const float FOG_FAR_DEFAULT;
+		static const float FOG_FAR_MIN;
+		static const float FOG_FAR_MAX;
+		float			   fogFar = FOG_FAR_DEFAULT;
+
+		static const float FOG_DENSITY_DEFAULT;
+		float			   fogDensity = FOG_DENSITY_DEFAULT;
+
+		static const bool ACTIVE_AA_DEFAULT;
+		bool			  activeAA = ACTIVE_AA_DEFAULT;
 
 		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
 		Color::Rgb				backgroundColor = BACKGROUND_COLOR_DEFAULT;

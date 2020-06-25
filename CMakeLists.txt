@@ -151,6 +151,7 @@ elseif(MSVC)
 	target_compile_options(VTX PRIVATE "/WX")  # Warnings as errors.
 	target_compile_options(VTX PRIVATE "/MP")  # Multicore compilation.
 	target_compile_options(VTX PRIVATE "/sdl") # SDL check.
+	target_compile_options(VTX PRIVATE "/execution-charset:utf-8") # To display Angstrom symbol for example.
 	
 	#Optimization.
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/O2>")
