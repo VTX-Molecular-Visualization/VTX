@@ -1,6 +1,5 @@
 #include "shortcut.hpp"
-#include "action/change_camera_controller.hpp"
-#include "action/new.hpp"
+#include "action/main.hpp"
 #include "action/setting.hpp"
 #include "action/viewpoint.hpp"
 #include "define.hpp"
@@ -16,7 +15,7 @@ namespace VTX
 			// TODO: link with action and UI button.
 			switch ( p_key )
 			{
-			case SDL_SCANCODE_F1: VTX_ACTION( new Action::ChangeCameraController() ); break;
+			case SDL_SCANCODE_F1: VTX_ACTION( new Action::Main::ChangeCameraController() ); break;
 			case SDL_SCANCODE_F2:
 				VTX_ACTION( new Action::Setting::ChangeRepresentation( Generic::REPRESENTATION(
 					( (uint)VTX_SETTING().representation + 1 ) % (uint)Generic::REPRESENTATION::COUNT ) ) );

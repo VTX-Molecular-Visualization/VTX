@@ -1,6 +1,5 @@
 #include "residue.hpp"
-#include "action/residue_change_color.hpp "
-#include "action/visible_change_visibility.hpp"
+#include "action/residue.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
 
@@ -29,7 +28,7 @@ namespace VTX
 					Color::Rgb color = _getModel().getColor();
 					if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
 					{
-						VTX_ACTION( new Action::ResidueChangeColor( _getModel(), color ) );
+						VTX_ACTION( new Action::Residue::ChangeColor( _getModel(), color ) );
 						// VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::RESIDUE ) );
 					}
 					Util::UI::drawRepresentations( _getModel() );

@@ -1,6 +1,5 @@
 #include "chain.hpp"
-#include "action/chain_change_color.hpp"
-#include "action/chain_change_visibility.hpp"
+#include "action/chain.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
 
@@ -19,16 +18,15 @@ namespace VTX
 					bool isVisible = _getModel().isVisible();
 					if ( ImGui::Checkbox( LOCALE( "View.Visible" ), &isVisible ) )
 					{
-						VTX_ACTION( new Action::ChainChangeVisibility(
-							_getModel(), Action::VisibleChangeVisibility::VISIBILITY_MODE::TOGGLE ) );
+						VTX_ACTION( new Action::Chain::ChangeVisibility(
+							_getModel(), Action::Visible::ChangeVisibility::VISIBILITY_MODE::TOGGLE ) );
 					}
 					ImGui::Text( "ID: %d", _getModel().getIndex() );
 					ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
 					Color::Rgb color = _getModel().getColor();
 					if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
 					{
-						VTX_ACTION( new Action::ChainChangeColor( _getModel(), color ) );
-						// VTX_ACTION( new Action::ChangeColorMode( Generi::MOLECULE_COLOR_MODE::CHAIN ) );
+						VTX_ACTION( new Action::Chain::ChangeColor( _getModel(), color ) );
 					}
 					Util::UI::drawRepresentations( _getModel() );
 				}

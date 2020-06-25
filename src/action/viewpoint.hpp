@@ -1,5 +1,5 @@
-#ifndef __VTX_ACTION_VIEWPOINT_CREATE__
-#define __VTX_ACTION_VIEWPOINT_CREATE__
+#ifndef __VTX_ACTION_VIEWPOINT__
+#define __VTX_ACTION_VIEWPOINT__
 
 #ifdef _MSC_VER
 #pragma once
