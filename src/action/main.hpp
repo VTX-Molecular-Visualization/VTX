@@ -7,23 +7,18 @@
 
 #include "base_action.hpp"
 #include "define.hpp"
+#include "io/reader/vtx.hpp"
+#include "io/writer/vtx.hpp"
 #include "state/visualization.hpp"
 #include "vtx_app.hpp"
 #include "worker/api_fetcher.hpp"
 #include "worker/snapshoter.hpp"
-
 namespace VTX
 {
 	namespace Action
 	{
 		namespace Main
 		{
-			class Quit : public BaseAction
-			{
-			  public:
-				virtual void execute() override { VTXApp::get().stop(); };
-			};
-
 			class New : public BaseAction
 			{
 			  public:
@@ -33,6 +28,12 @@ namespace VTX
 					Model::Path * path = Generic::create<Model::Path>();
 					VTXApp::get().getScene().addPath( path );
 				}
+			};
+
+			class Quit : public BaseAction
+			{
+			  public:
+				virtual void execute() override { VTXApp::get().stop(); };
 			};
 
 			class Open : public BaseAction
@@ -112,6 +113,25 @@ namespace VTX
 
 			  private:
 				const std::string _id;
+			};
+
+			class Save : public BaseAction
+			{
+			  public:
+				explicit Save() {}
+				virtual void execute() override
+				{
+					IO::Writer::VTX writer = IO::Writer::VTX();
+					try
+					{
+						writer.writeFile( Util::Filesystem::VTX_JSON_FILE, VTXApp::get().getScene() );
+						VTX_INFO( "Scene saved " );
+					}
+					catch ( const std::exception & p_e )
+					{
+						VTX_ERROR( "Cannot save scene: " + std::string( p_e.what() ) );
+					}
+				}
 			};
 
 			class ChangeCameraController : public BaseAction
