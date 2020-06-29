@@ -13,7 +13,7 @@ const float EDGE_THRESHOLD
 	//= 1.f / 3.f; // too little
 	// = 1.f / 4.f; // low quality
 	= 1.f / 8.f; // high quality
-	//= 1.f / 16.f; // overkill
+				 //= 1.f / 16.f; // overkill
 
 // trims the algorithm from processing darks.
 const float EDGE_THRESHOLD_MIN
@@ -23,8 +23,8 @@ const float EDGE_THRESHOLD_MIN
 
 // sub-pixel aliasing removal
 const float QUALITY_SUBPIXEL
-	= 1.f; // upper limit (softer)
-	//= 0.75f; // default amount of filtering
+	//= 1.f; // upper limit (softer)
+	= 0.75f; // default amount of filtering
 			 //= 0.5f; // lower limit (sharper, less sub-pixel aliasing removal)
 			 //= 0.25f; // almost off
 			 //= 0.f;					 // completely off

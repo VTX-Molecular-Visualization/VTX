@@ -53,6 +53,7 @@ namespace VTX::Renderer::Optix
 		Optix::Scene _scene;
 
 		CUDA::Buffer _gasOutputBuffer;
+		OptixAabb	 _gasAABB;
 		// CUDA data
 		int			   _bestDeviceId = -1;
 		cudaDeviceProp _deviceProperties;
@@ -69,13 +70,14 @@ namespace VTX::Renderer::Optix
 		OptixPipelineLinkOptions	_optixPipelineLinkOptions;
 
 		// Program groups
-		OptixProgramGroup _rayGeneratorProgram;
-		CUDA::Buffer	  _rayGeneratorRecordBuffer;
-		OptixProgramGroup _missProgram;
-		CUDA::Buffer	  _missRecordBuffer;
-		OptixProgramGroup _hitGroupSphereProgram;
-		OptixProgramGroup _hitGroupCylinderProgram;
-		CUDA::Buffer	  _hitGroupRecordsBuffer;
+		OptixProgramGroup			   _rayGeneratorProgram;
+		CUDA::Buffer				   _rayGeneratorRecordBuffer;
+		OptixProgramGroup			   _missProgram;
+		CUDA::Buffer				   _missRecordBuffer;
+		OptixProgramGroup			   _hitGroupSphereProgram;
+		OptixProgramGroup			   _hitGroupCylinderProgram;
+		CUDA::Buffer				   _hitGroupRecordsBuffer;
+		std::vector<OptixProgramGroup> _programGroups;
 
 		// shader binding table (SBT)
 		OptixShaderBindingTable _shaderBindingTable = {};

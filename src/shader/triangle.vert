@@ -11,7 +11,7 @@ uniform mat4 uNormalMatrix;
 
 smooth out vec3 vViewPosition;
 smooth out vec3 vNormal;
-flat out vec3 vColor;
+flat out vec3	vColor;
 
 void main()
 {

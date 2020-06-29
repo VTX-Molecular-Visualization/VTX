@@ -10,8 +10,8 @@ namespace VTX
 			Geometric::~Geometric()
 			{
 				glDeleteFramebuffers( 1, &_fbo );
-				glDeleteTextures( 1, &_colorNormalCompressedTexture );
-				glDeleteTextures( 1, &_camSpacePositionsTexture );
+				glDeleteTextures( 1, &_viewPositionsNormalsCompressedTexture );
+				glDeleteTextures( 1, &_colorsTexture );
 				glDeleteTextures( 1, &_depthTexture );
 			}
 
@@ -26,8 +26,8 @@ namespace VTX
 
 				glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
-				glGenTextures( 1, &_colorNormalCompressedTexture );
-				glBindTexture( GL_TEXTURE_2D, _colorNormalCompressedTexture );
+				glGenTextures( 1, &_viewPositionsNormalsCompressedTexture );
+				glBindTexture( GL_TEXTURE_2D, _viewPositionsNormalsCompressedTexture );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -35,8 +35,8 @@ namespace VTX
 				glTexImage2D(
 					GL_TEXTURE_2D, 0, GL_RGBA32UI, p_width, p_height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, nullptr );
 
-				glGenTextures( 1, &_camSpacePositionsTexture );
-				glBindTexture( GL_TEXTURE_2D, _camSpacePositionsTexture );
+				glGenTextures( 1, &_colorsTexture );
+				glBindTexture( GL_TEXTURE_2D, _colorsTexture );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -60,9 +60,8 @@ namespace VTX
 							  nullptr );
 
 				glFramebufferTexture2D(
-					GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _colorNormalCompressedTexture, 0 );
-				glFramebufferTexture2D(
-					GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _camSpacePositionsTexture, 0 );
+					GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _viewPositionsNormalsCompressedTexture, 0 );
+				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _colorsTexture, 0 );
 				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0 );
 
 				static const GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
@@ -86,11 +85,11 @@ namespace VTX
 
 			void Geometric::resize( const uint p_width, const uint p_height )
 			{
-				glBindTexture( GL_TEXTURE_2D, _colorNormalCompressedTexture );
+				glBindTexture( GL_TEXTURE_2D, _viewPositionsNormalsCompressedTexture );
 				glTexImage2D(
 					GL_TEXTURE_2D, 0, GL_RGBA32UI, p_width, p_height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, nullptr );
 
-				glBindTexture( GL_TEXTURE_2D, _camSpacePositionsTexture );
+				glBindTexture( GL_TEXTURE_2D, _colorsTexture );
 				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
 
 				glBindTexture( GL_TEXTURE_2D, _depthTexture );

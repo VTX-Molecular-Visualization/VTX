@@ -12,13 +12,13 @@ flat in vec3   sphereColor;
 flat in float  sphereRad;
 flat in float  dotViewSpherePos;
 
-// 3 16 bits for color.
+// 3 16 bits for position.
 // 3 16 bits for normal.
 // 1 32 bits for padding.
-layout( location = 0 ) out uvec4 outColorNormal;
-// 3 32 bits for position in view space.
+layout( location = 0 ) out uvec4 outViewPositionNormal;
+// 3 32 bits for color.
 // 1 32 bits for specular.
-layout( location = 1 ) out vec4 outViewPosition;
+layout( location = 1 ) out vec4 outColor;
 
 float computeDepth( const vec3 v )
 {
@@ -44,14 +44,15 @@ void main()
 		// Show impostors for debugging purpose.
 		uvec4 colorNormal = uvec4( 0 );
 		// fill G-buffers.
-		const vec3 normal = normalize( -viewSpherePos );
-		colorNormal.x	  = packHalf2x16( vec2( 1.0, 0.0 ) );
-		colorNormal.y	  = packHalf2x16( vec2( 0.f, normal.x ) );
-		colorNormal.z	  = packHalf2x16( normal.yz );
-		colorNormal.w	  = 0; // Padding.
+		uvec4 viewPositionNormalCompressed;
+		viewPositionNormalCompressed.x = packHalf2x16( viewImpPos.xy );
+		viewPositionNormalCompressed.y = packHalf2x16( vec2( viewImpPos.z, -viewSpherePos.x ) );
+		viewPositionNormalCompressed.z = packHalf2x16( -viewSpherePos.yz );
+		viewPositionNormalCompressed.w = 0; // Padding.
 
-		outColorNormal	= colorNormal;
-		outViewPosition = vec4( viewImpPos, 32.f ); // w = specular shininess.
+		// Output data.
+		outViewPositionNormal = viewPositionNormalCompressed;
+		outColor			  = vec4( 1.f, 0.f, 0.f, 32.f ); // w = specular shininess.
 
 		gl_FragDepth = computeDepth( viewImpPos );
 #else
@@ -71,15 +72,15 @@ void main()
 		// Fill depth buffer.
 		gl_FragDepth = computeDepth( hit );
 
-		// Compress color and normal.
-		uvec4 colorNormal;
-		colorNormal.x = packHalf2x16( sphereColor.xy );
-		colorNormal.y = packHalf2x16( vec2( sphereColor.z, normal.x ) );
-		colorNormal.z = packHalf2x16( normal.yz );
-		colorNormal.w = 0; // Padding.
+		// Compress position and normal.
+		uvec4 viewPositionNormalCompressed;
+		viewPositionNormalCompressed.x = packHalf2x16( hit.xy );
+		viewPositionNormalCompressed.y = packHalf2x16( vec2( hit.z, normal.x ) );
+		viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
+		viewPositionNormalCompressed.w = 0; // Padding.
 
 		// Output data.
-		outColorNormal	= colorNormal;
-		outViewPosition = vec4( hit, 32.f ); // w = specular shininess.
+		outViewPositionNormal = viewPositionNormalCompressed;
+		outColor			  = vec4( sphereColor, 32.f ); // w = specular shininess.
 	}
 }

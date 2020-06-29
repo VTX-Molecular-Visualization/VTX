@@ -16,7 +16,7 @@ namespace VTX
 			class SSAO : public BasePass
 			{
 			  public:
-				SSAO();
+				SSAO() = default;
 				virtual ~SSAO();
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
 				virtual void resize( const uint, const uint ) override;
@@ -33,7 +33,7 @@ namespace VTX
 				GLint			_uAoKernelLoc	  = GL_INVALID_INDEX;
 				GLint			_uKernelSizeLoc	  = GL_INVALID_INDEX;
 				GLint			_uAoIntensityLoc  = GL_INVALID_INDEX;
-				GLint			_kernelSize		  = 64;
+				GLint			_kernelSize		  = 16;
 				GLuint			_noiseTextureSize = 64;
 			};
 		} // namespace Pass

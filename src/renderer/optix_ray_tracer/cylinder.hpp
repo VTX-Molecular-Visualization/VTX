@@ -73,9 +73,10 @@ namespace VTX::Renderer::Optix
 				return false;
 			}
 
-			p_hit._t	  = t;
-			p_hit._point  = p_origin + p_direction * p_hit._t;
-			p_hit._normal = ( ov0 + t * p_direction - v * y / d0 ) / _radius;
+			p_hit._t	   = t;
+			p_hit._point   = p_origin + p_direction * p_hit._t;
+			p_hit._normal  = ( ov0 + t * p_direction - v * y / d0 ) / _radius;
+			p_hit._colorId = _colorId;
 
 			return true;
 		}

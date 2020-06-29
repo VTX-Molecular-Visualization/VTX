@@ -1,8 +1,8 @@
 
 #include "cuda/random.hpp"
 #include "optix_parameters.hpp"
-#include <optix_device.h>
 #include <device_functions.h>
+#include <optix_device.h>
 
 #define NB_PIXEL_SAMPLES 16
 
@@ -32,45 +32,6 @@ namespace VTX::Renderer::Optix
 							static_cast<uint8_t>( clamp( c.y, 0.f, 1.f ) * 255.f ),
 							static_cast<uint8_t>( clamp( c.z, 0.f, 1.f ) * 255.f ),
 							255u );
-	}
-
-	extern "C" __global__ void __closesthit__sphere()
-	{
-		HitGroupData * data = reinterpret_cast<HitGroupData *>( optixGetSbtDataPointer() );
-
-		const float3   normal	= make_float3( int_as_float( optixGetAttribute_0() ),
-										   int_as_float( optixGetAttribute_1() ),
-										   int_as_float( optixGetAttribute_2() ) );
-		const int	   id		= optixGetPrimitiveIndex();
-		const float3 & color	= params._colors[ data->_spheres[ id ]._colorId ];
-		const float3 & rayDir	= optixGetWorldRayDirection();
-		const float	   radiance = fabsf( dot( rayDir, normal ) );
-
-		setPayload( color * radiance );
-	}
-
-	extern "C" __global__ void __closesthit__cylinder()
-	{
-		HitGroupData * data = reinterpret_cast<HitGroupData *>( optixGetSbtDataPointer() );
-
-		const float3   normal	= make_float3( int_as_float( optixGetAttribute_0() ),
-										   int_as_float( optixGetAttribute_1() ),
-										   int_as_float( optixGetAttribute_2() ) );
-		const int	   id		= optixGetPrimitiveIndex();
-		const float3 & color	= params._colors[ data->_cylinders[ id ]._colorId ];
-		const float3 & rayDir	= optixGetWorldRayDirection();
-		const float	   radiance = fabsf( dot( rayDir, normal ) );
-
-		setPayload( color * radiance );
-	}
-
-	// extern "C" __global__ void __anyhit__() {}
-
-	extern "C" __global__ void __miss__()
-	{
-		MissData * data	  = reinterpret_cast<MissData *>( optixGetSbtDataPointer() );
-		float3			  payload = getPayload();
-		setPayload( data->_colorBackground );
 	}
 
 	static __forceinline__ __device__ void trace( const OptixTraversableHandle & th,
@@ -123,7 +84,7 @@ namespace VTX::Renderer::Optix
 
 		uint32_t seed = tea<4>( idy * dimx + idx, 0 );
 
-		float3 color;
+		float3 color = { 0.f, 0.f, 0.f };
 		for ( int i = 0; i < nbSamples; ++i )
 		{
 			const float2 d
@@ -162,11 +123,11 @@ namespace VTX::Renderer::Optix
 			unsigned int p1 = float_as_int( hit._normal.y );
 			unsigned int p2 = float_as_int( hit._normal.z );
 
-			optixReportIntersection( hit._t, 0, p0, p1, p2 );
+			optixReportIntersection( hit._t, 0, p0, p1, p2, hit._colorId );
 		}
 	}
 
-	 extern "C" __global__ void __intersection__cylinder()
+	extern "C" __global__ void __intersection__cylinder()
 	{
 		HitGroupData * data = reinterpret_cast<HitGroupData *>( optixGetSbtDataPointer() );
 
@@ -174,17 +135,55 @@ namespace VTX::Renderer::Optix
 		const int id = optixGetPrimitiveIndex();
 
 		Intersection hit;
-		if ( data->_cylinders[ id ].intersect( optixGetObjectRayOrigin(),
-											   optixGetObjectRayDirection(),
-											   optixGetRayTmin(),
-											   optixGetRayTmax(),
-											   hit ) )
+		if ( data->_cylinders[ id ].intersect(
+				 optixGetObjectRayOrigin(), optixGetObjectRayDirection(), optixGetRayTmin(), optixGetRayTmax(), hit ) )
 		{
 			unsigned int p0 = float_as_int( hit._normal.x );
 			unsigned int p1 = float_as_int( hit._normal.y );
 			unsigned int p2 = float_as_int( hit._normal.z );
 
-			optixReportIntersection( hit._t, 0, p0, p1, p2 );
+			optixReportIntersection( hit._t, 0, p0, p1, p2, hit._colorId );
 		}
+	}
+
+	// extern "C" __global__ void __anyhit__() {}
+
+	extern "C" __global__ void __miss__()
+	{
+		MissData * data	   = reinterpret_cast<MissData *>( optixGetSbtDataPointer() );
+		float3	   payload = getPayload();
+		setPayload( data->_colorBackground );
+	}
+
+
+	// Shading.
+	extern "C" __global__ void __closesthit__sphere()
+	{
+		HitGroupData * data = reinterpret_cast<HitGroupData *>( optixGetSbtDataPointer() );
+
+		const float3 normal = make_float3( int_as_float( optixGetAttribute_0() ),
+										   int_as_float( optixGetAttribute_1() ),
+										   int_as_float( optixGetAttribute_2() ) );
+		// const int	   id		= optixGetPrimitiveIndex();
+		const float3 & color	= params._colors[ 0 ]; // data->_spheres[ id ]._colorId ];
+		const float3 & rayDir	= optixGetWorldRayDirection();
+		const float	   radiance = fabsf( dot( rayDir, normal ) );
+
+		setPayload( color * radiance );
+	}
+
+	extern "C" __global__ void __closesthit__cylinder()
+	{
+		HitGroupData * data = reinterpret_cast<HitGroupData *>( optixGetSbtDataPointer() );
+
+		const float3 normal = make_float3( int_as_float( optixGetAttribute_0() ),
+										   int_as_float( optixGetAttribute_1() ),
+										   int_as_float( optixGetAttribute_2() ) );
+		// const int	   id		= optixGetPrimitiveIndex();
+		const float3 & color	= params._colors[ 0 ]; // data->_spheres[ id ]._colorId ];
+		const float3 & rayDir	= optixGetWorldRayDirection();
+		const float	   radiance = fabsf( dot( rayDir, normal ) );
+
+		setPayload( color * radiance );
 	}
 } // namespace VTX::Renderer::Optix

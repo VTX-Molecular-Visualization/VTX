@@ -14,6 +14,7 @@ namespace VTX::Renderer::Optix
 		float3 _point;
 		float  _t;
 		float3 _normal;
+		int	   _colorId;
 	};
 } // namespace VTX::Renderer::Optix
 

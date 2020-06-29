@@ -33,7 +33,7 @@ if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
   endif()
 endif()
 
-message("Downloading depdendencies... DONE")
+message("Downloading dependencies... DONE")
 message("Copying all sources...")
 
 # Get all .hpp.

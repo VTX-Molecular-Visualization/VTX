@@ -1,36 +1,37 @@
 #version 450 core
 
-layout( binding = 0 ) uniform usampler2D gbColorNormal;
-layout( binding = 1 ) uniform sampler2D gbViewPosition;
+layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
+layout( binding = 1 ) uniform sampler2D gbColor;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
-uniform float uSpecularFactor = 0.4f;
-uniform vec3  uBackgroundColor;
+uniform vec3 uBackgroundColor;
+
 uniform float uFogNear;
 uniform float uFogFar;
 uniform float uFogDensity;
+uniform vec3  uFogColor;
+
+uniform vec3 uLightPosition;
+uniform vec3 uLightColor;
+
+// TODO: let the user set it !
+uniform float uSpecularFactor = 0.4f;
 
 out vec4 fragColor;
 
 struct UnpackedData
 {
-	vec3  color;
-	vec3  normal;
-	vec3  viewPosition;
-	float shininess;
+	vec3 viewPosition;
+	vec3 normal;
 };
 
 void unpackGBuffers( ivec2 px, out UnpackedData data )
 {
-	const uvec4 colorNormal	 = texelFetch( gbColorNormal, px, 0 );
-	const vec4	viewPosition = texelFetch( gbViewPosition, px, 0 );
+	const uvec4 viewPositionNormal = texelFetch( gbViewPositionNormal, px, 0 );
 
-	const vec2 tmp = unpackHalf2x16( colorNormal.y );
-
-	data.color		  = vec3( unpackHalf2x16( colorNormal.x ), tmp.x );
-	data.normal		  = vec3( tmp.y, unpackHalf2x16( colorNormal.z ) );
-	data.viewPosition = viewPosition.xyz;
-	data.shininess	  = viewPosition.w;
+	const vec2 tmp	  = unpackHalf2x16( viewPositionNormal.y );
+	data.viewPosition = vec3( unpackHalf2x16( viewPositionNormal.x ), tmp.x );
+	data.normal		  = vec3( tmp.y, unpackHalf2x16( viewPositionNormal.z ) );
 }
 
 void main()
@@ -42,28 +43,34 @@ void main()
 
 	if ( data.viewPosition.z == 0.f )
 	{
-		fragColor = vec4( uBackgroundColor, 1.f );
+		if ( uFogDensity != 0.f )
+			fragColor = vec4( mix( uBackgroundColor, uFogColor, uFogDensity ) * uLightColor, 1.f );
+		else
+			fragColor = vec4( uBackgroundColor, 1.f );
 		return;
 	}
 
 	// Light on camera.
-	const vec3 lightDir = normalize( -data.viewPosition );
+	const vec3 lightDir = normalize( uLightPosition - data.viewPosition );
 
 	// Shader does not produce energy ! ;-)
 	const float diffuse = 1.f - uSpecularFactor;
 
+	const vec4 pixelColor = texelFetch( gbColor, texCoord, 0 );
+
 	// Blinn-Phong.
-	const vec3	viewDir	 = normalize( -data.viewPosition );
-	const vec3	h		 = normalize( lightDir + viewDir );
-	const float specular = uSpecularFactor * pow( max( dot( h, data.normal ), 0.f ), data.shininess );
+	const vec3	viewDir = normalize( -data.viewPosition ); // == lightDir for the moment
+	const vec3	h		= normalize( lightDir + viewDir );
+	const float specular
+		= uSpecularFactor * pow( max( dot( h, data.normal ), 0.f ), pixelColor.w ); // pixelColor.x is shininess.
 
 	const float cosTheta = max( dot( data.normal, lightDir ), 0.f );
 	const float lighting = ( diffuse + specular ) * cosTheta;
 
 	const float ambientOcclusion = texelFetch( gbAmbientOcclusion, texCoord, 0 ).x;
-	
-	const float fogFactor = smoothstep( uFogNear, uFogFar, -data.viewPosition.z ) * uFogDensity;
-	const vec3	color	  = data.color * lighting * ambientOcclusion;
 
-	fragColor = vec4( mix( color, uBackgroundColor, fogFactor ), 1.f );
+	const float fogFactor = smoothstep( uFogNear, uFogFar, -data.viewPosition.z ) * uFogDensity;
+	const vec3	color	  = pixelColor.xyz * lighting * ambientOcclusion;
+
+	fragColor = vec4( mix( color, uBackgroundColor, fogFactor ) * uLightColor, 1.f );
 }

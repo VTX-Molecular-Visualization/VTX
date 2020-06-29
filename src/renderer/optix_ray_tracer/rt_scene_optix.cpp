@@ -48,7 +48,7 @@ namespace VTX::Renderer::Optix
 								: p_molecule->getAtomRadius( i ) + radiusAdd;
 			const Color::Rgb & c		   = p_molecule->getAtomColor( i );
 			_spheres[ i + offset ]._center = { p.x, p.y, p.z };
-			_spheres[ i + offset ]._radius = r;
+			_spheres[ i + offset ]._radius = 0.4f;
 			uint colorId				   = INVALID_ID;
 			for ( uint j = 0; j < uint( _colors.size() ); ++j )
 			{

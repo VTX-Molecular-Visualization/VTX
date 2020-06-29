@@ -195,6 +195,14 @@ namespace VTX
 				{
 					VTX_ACTION( new Action::Setting::ChangeBackgroundColor( bgColor ) );
 				}
+				ImGui::Separator();
+
+				// Light color.
+				Color::Rgb & lightColor = VTX_SETTING().lightColor;
+				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.LightColor" ), (float *)&lightColor ) )
+				{
+					VTX_ACTION( new Action::Setting::ChangeLightColor( lightColor ) );
+				}
 
 				// Representation.
 				const char * representations[] = { LOCALE( "Enum.Representation.BallsAndSticks" ),
@@ -373,6 +381,11 @@ namespace VTX
 					if ( ImGui::SliderFloat( LOCALE( "MainMenu.Settings.FogDensity" ), &fogDensity, 0.f, 1.f, "%.1f" ) )
 					{
 						VTX_ACTION( new Action::Setting::ChangeFogDensity( fogDensity ) );
+					}
+					Color::Rgb & fogColor = VTX_SETTING().fogColor;
+					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.FogColor" ), (float *)&fogColor ) )
+					{
+						VTX_ACTION( new Action::Setting::ChangeFogColor( fogColor ) );
 					}
 				}
 				ImGui::Separator();

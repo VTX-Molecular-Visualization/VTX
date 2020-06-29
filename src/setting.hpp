@@ -38,6 +38,9 @@ namespace VTX
 		static const bool ACTIVE_RENDERER_DEFAULT;
 		bool			  activeRenderer = ACTIVE_RENDERER_DEFAULT;
 
+		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
+		Color::Rgb				backgroundColor = BACKGROUND_COLOR_DEFAULT;
+
 		static const Generic::REPRESENTATION REPRESENTATION_DEFAULT;
 		Generic::REPRESENTATION				 representation = REPRESENTATION_DEFAULT;
 
@@ -95,11 +98,14 @@ namespace VTX
 		static const float FOG_DENSITY_DEFAULT;
 		float			   fogDensity = FOG_DENSITY_DEFAULT;
 
+		static const Color::Rgb FOG_COLOR_DEFAULT;
+		Color::Rgb				fogColor = FOG_COLOR_DEFAULT;
+
 		static const bool ACTIVE_AA_DEFAULT;
 		bool			  activeAA = ACTIVE_AA_DEFAULT;
 
-		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
-		Color::Rgb				backgroundColor = BACKGROUND_COLOR_DEFAULT;
+		static const Color::Rgb LIGHT_COLOR_DEFAULT;
+		Color::Rgb				lightColor = LIGHT_COLOR_DEFAULT;
 
 		// Camera.
 		static const float CAMERA_NEAR_DEFAULT;
