@@ -13,6 +13,8 @@
 #include "vtx_app.hpp"
 #include "worker/api_fetcher.hpp"
 #include "worker/snapshoter.hpp"
+#include "util/filesystem.hpp"
+
 namespace VTX
 {
 	namespace Action
@@ -124,7 +126,7 @@ namespace VTX
 					IO::Writer::VTX writer = IO::Writer::VTX();
 					try
 					{
-						writer.writeFile( Util::Filesystem::VTX_JSON_FILE, VTXApp::get().getScene() );
+						writer.writeFile( Util::Filesystem::VTX_JSON_FILE, VTXApp::get() );
 						VTX_INFO( "Scene saved " );
 					}
 					catch ( const std::exception & p_e )

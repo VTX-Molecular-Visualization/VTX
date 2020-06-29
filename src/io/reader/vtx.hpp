@@ -6,7 +6,7 @@
 #endif
 
 #include "base_reader_json.hpp"
-#include "object3d/scene.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -15,12 +15,12 @@ namespace VTX
 		namespace Reader
 		{
 			// Scene or app?
-			class VTX : public BaseReaderJson<Object3D::Scene>
+			class VTX : public BaseReaderJson<VTXApp>
 			{
 			  public:
 				virtual ~VTX() = default;
 
-				virtual void readFile( const Path &, Object3D::Scene & ) override;
+				virtual void readFile( const Path &, VTXApp & ) override;
 			};
 		} // namespace Reader
 	}	  // namespace IO

@@ -14,7 +14,7 @@ namespace VTX
 	{
 		namespace Writer
 		{
-			template<typename T>
+			template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseSerializable, T>::value>>
 			class BaseWriterJson : public BaseWriter<T>
 			{
 			  public:

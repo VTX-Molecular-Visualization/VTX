@@ -15,7 +15,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			template<typename T>
+			template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseSerializable, T>::value>>
 			class BaseReaderJson : public BaseReader<T>
 			{
 			  public:

@@ -6,7 +6,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			void VTX::readFile( const Path & p_path, Object3D::Scene & p_data )
+			void VTX::readFile( const Path & p_path, VTXApp & p_data )
 			{
 				/*
 				std::ifstream  is( p_path );

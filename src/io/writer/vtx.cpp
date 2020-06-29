@@ -1,5 +1,4 @@
 #include "vtx.hpp"
-#include "util/filesystem.hpp"
 
 namespace VTX
 {
@@ -7,7 +6,7 @@ namespace VTX
 	{
 		namespace Writer
 		{
-			void VTX::writeFile( const Path & p_path, const Object3D::Scene & p_data )
+			void VTX::writeFile( const Path & p_path, const VTXApp & p_data )
 			{
 				/*
 				nlohmann::json json = p_data.toJson();

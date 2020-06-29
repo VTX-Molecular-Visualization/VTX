@@ -9,6 +9,7 @@
 #include "define.hpp"
 #include "generic/base_serializable.hpp"
 #include "style.hpp"
+
 namespace VTX
 {
 	namespace Generic
@@ -16,6 +17,7 @@ namespace VTX
 		enum class REPRESENTATION;
 		enum class COLOR_MODE;
 	} // namespace Generic
+
 	namespace Renderer
 	{
 		enum class SHADING;

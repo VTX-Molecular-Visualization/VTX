@@ -87,39 +87,41 @@ namespace VTX
 	nlohmann::json Setting::toJson() const
 	{
 		return {
-			{ "THEME", theme },
-			{ "SYMBOL_DISPLAY_MODE", theme },
+			{ "THEME", VTX_SETTING().theme },
+			{ "SYMBOL_DISPLAY_MODE", VTX_SETTING().theme },
 
-			{ "ACTIVE_RENDERER", activeRenderer },
-			{ "REPRESENTATION", representation },
-			{ "ATOMS_RADIUS", atomsRadius },
-			{ "BONDS_RADIUS", bondsRadius },
-			{ "COLOR_MODE", colorMode },
-			{ "SHADING", shading },
-			{ "ACTIVE_VSYNC", activeVSync },
-			{ "ACTIVE_AO", activeAO },
-			{ "AO_INTENSITY", aoIntensity },
-			{ "AO_BLUR_SIZE", aoBlurSize },
-			{ "ACTIVE_OUTLINE", activeOutline },
-			{ "OUTLINE_COLOR", outlineColor.toStdVector() },
-			{ "ACTIVE_FOG", activeFog },
-			{ "FOG_NEAR", fogNear },
-			{ "FOG_FAR", fogFar },
-			{ "FOG_DENSITY", fogDensity },
-			{ "ACTIVE_AA", activeAA },
-			{ "BACKGROUND_COLOR", backgroundColor.toStdVector() },
+			{ "ACTIVE_RENDERER", VTX_SETTING().activeRenderer },
+			{ "BACKGROUND_COLOR", VTX_SETTING().backgroundColor.toStdVector() },
+			{ "REPRESENTATION", VTX_SETTING().representation },
+			{ "ATOMS_RADIUS", VTX_SETTING().atomsRadius },
+			{ "BONDS_RADIUS", VTX_SETTING().bondsRadius },
+			{ "COLOR_MODE", VTX_SETTING().colorMode },
+			{ "SHADING", VTX_SETTING().shading },
+			{ "ACTIVE_VSYNC", VTX_SETTING().activeVSync },
+			{ "ACTIVE_AO", VTX_SETTING().activeAO },
+			{ "AO_INTENSITY", VTX_SETTING().aoIntensity },
+			{ "AO_BLUR_SIZE", VTX_SETTING().aoBlurSize },
+			{ "ACTIVE_OUTLINE", VTX_SETTING().activeOutline },
+			{ "OUTLINE_COLOR", VTX_SETTING().outlineColor.toStdVector() },
+			{ "ACTIVE_FOG", VTX_SETTING().activeFog },
+			{ "FOG_NEAR", VTX_SETTING().fogNear },
+			{ "FOG_FAR", VTX_SETTING().fogFar },
+			{ "FOG_DENSITY", VTX_SETTING().fogDensity },
+			{ "FOG_COLOR", VTX_SETTING().fogColor.toStdVector() },
+			{ "ACTIVE_AA", VTX_SETTING().activeAA },
+			{ "LIGHT_COLOR", VTX_SETTING().lightColor.toStdVector() },
 
-			{ "CAMERA_NEAR", cameraNear },
-			{ "CAMERA_FAR", cameraFar },
-			{ "CAMERA_FOV", cameraFov },
-			{ "CAMERA_PERSPECTIVE", cameraPerspective },
+			{ "CAMERA_NEAR", VTX_SETTING().cameraNear },
+			{ "CAMERA_FAR", VTX_SETTING().cameraFar },
+			{ "CAMERA_FOV", VTX_SETTING().cameraFov },
+			{ "CAMERA_PERSPECTIVE", VTX_SETTING().cameraPerspective },
 
-			{ "CONTROLLER_TRANSLATION_SPEED", translationSpeed },
-			{ "CONTROLLER_TRANSLATION_FACTOR", translationFactorSpeed },
-			{ "CONTROLLER_ROTATION_SPEED", rotationSpeed },
-			{ "CONTROLLER_Y_AXIS_INVERTED", yAxisInverted },
+			{ "CONTROLLER_TRANSLATION_SPEED", VTX_SETTING().translationSpeed },
+			{ "CONTROLLER_TRANSLATION_FACTOR", VTX_SETTING().translationFactorSpeed },
+			{ "CONTROLLER_ROTATION_SPEED", VTX_SETTING().rotationSpeed },
+			{ "CONTROLLER_Y_AXIS_INVERTED", VTX_SETTING().yAxisInverted },
 
-			//{ "AUTO_ROTATE_SPEED",autoRotationSpeed }
+			//{ "AUTO_ROTATE_SPEED", VTX_SETTING().autoRotationSpeed }
 		};
 	}
 
@@ -133,6 +135,8 @@ namespace VTX
 			p_json[ "SYMBOL_DISPLAY_MODE" ].get<Style::SYMBOL_DISPLAY_MODE>() ) );
 
 		VTX_ACTION( new Action::Setting::ActiveRenderer( p_json[ "ACTIVE_RENDERER" ].get<bool>() ) );
+		VTX_ACTION( new Action::Setting::ChangeBackgroundColor(
+			Color::Rgb( p_json[ "BACKGROUND_COLOR" ].get<std::vector<float>>() ) ) );
 		VTX_ACTION(
 			new Action::Setting::ChangeRepresentation( p_json[ "REPRESENTATION" ].get<Generic::REPRESENTATION>() ) );
 		VTX_ACTION( new Action::Setting::ChangeAtomsRadius( p_json[ "ATOMS_RADIUS" ].get<float>() ) );
@@ -150,9 +154,11 @@ namespace VTX
 		VTX_ACTION( new Action::Setting::ChangeFogNear( p_json[ "FOG_NEAR" ].get<float>() ) );
 		VTX_ACTION( new Action::Setting::ChangeFogFar( p_json[ "FOG_FAR" ].get<float>() ) );
 		VTX_ACTION( new Action::Setting::ChangeFogDensity( p_json[ "FOG_DENSITY" ].get<float>() ) );
+		VTX_ACTION(
+			new Action::Setting::ChangeFogColor( Color::Rgb( p_json[ "FOG_COLOR" ].get<std::vector<float>>() ) ) );
 		VTX_ACTION( new Action::Setting::ActiveAA( p_json[ "ACTIVE_AA" ].get<bool>() ) );
-		VTX_ACTION( new Action::Setting::ChangeBackgroundColor(
-			Color::Rgb( p_json[ "BACKGROUND_COLOR" ].get<std::vector<float>>() ) ) );
+		VTX_ACTION(
+			new Action::Setting::ChangeLightColor( Color::Rgb( p_json[ "LIGHT_COLOR" ].get<std::vector<float>>() ) ) );
 
 		VTX_ACTION(
 			new Action::Setting::ChangeCameraClip( p_json[ "CAMERA_NEAR" ], p_json[ "CAMERA_FAR" ].get<float>() ) );
@@ -165,6 +171,7 @@ namespace VTX
 			p_json[ "CONTROLLER_TRANSLATION_FACTOR" ].get<float>() ) );
 		VTX_ACTION( new Action::Setting::ChangeRotationSpeed( p_json[ "CONTROLLER_ROTATION_SPEED" ].get<float>() ) );
 		VTX_ACTION( new Action::Setting::ActiveYAxisInversion( p_json[ "CONTROLLER_Y_AXIS_INVERTED" ].get<bool>() ) );
+
 		//{ "AUTO_ROTATE_SPEED", VTX_SETTING().autoRotationSpeed }
 	}
 

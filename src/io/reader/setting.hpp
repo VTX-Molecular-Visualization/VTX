@@ -14,12 +14,12 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			class Setting : public BaseReaderJson<VTX::Setting>
+			class Setting : public BaseReaderJson<::VTX::Setting>
 			{
 			  public:
 				virtual ~Setting() = default;
 
-				virtual void readFile( const Path &, VTX::Setting & p_data ) override;
+				virtual void readFile( const Path &, ::VTX::Setting & p_data ) override;
 			};
 		} // namespace Reader
 	}	  // namespace IO
