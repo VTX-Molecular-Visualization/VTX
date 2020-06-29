@@ -8,6 +8,7 @@
 #include "action/action_manager.hpp"
 #include "action/base_action.hpp"
 #include "event/event_manager.hpp"
+#include "generic/base_serializable.hpp"
 #include "generic/factory.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/gl/gl.hpp"
@@ -25,7 +26,7 @@ namespace VTX
 {
 	class Setting;
 
-	class VTXApp final
+	class VTXApp final : public Generic::BaseSerializable
 	{
 	  public:
 		inline static VTXApp & get()
@@ -63,6 +64,9 @@ namespace VTX
 		inline const Worker::WorkerManager &	   getWorkerManager() const { return *_workerManager; }
 		inline Selection::SelectionManager &	   getSelectionManager() { return *_selectionManager; }
 		inline const Selection::SelectionManager & getSelectionManager() const { return *_selectionManager; }
+
+		virtual void		   fromJson( nlohmann::json & ) override {}
+		virtual nlohmann::json toJson() const override { return {}; }
 
 	  private:
 		static bool					  _isRunning;
