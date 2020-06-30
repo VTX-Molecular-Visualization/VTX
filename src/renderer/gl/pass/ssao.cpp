@@ -38,13 +38,14 @@ namespace VTX
 
 				_uProjMatrixLoc	 = glGetUniformLocation( _program->getId(), "uProjMatrix" );
 				_uAoKernelLoc	 = glGetUniformLocation( _program->getId(), "uAoKernel" );
-				_uKernelSizeLoc	 = glGetUniformLocation( _program->getId(), "uKernelSize" );
 				_uAoIntensityLoc = glGetUniformLocation( _program->getId(), "uAoIntensity" );
+				_uKernelSizeLoc	 = glGetUniformLocation( _program->getId(), "uKernelSize" );
+				_uNoiseSizeLoc	 = glGetUniformLocation( _program->getId(), "uNoiseSize" );
 
 				// generate random ao kernel
 				std::vector<Vec3f> aoKernel( _kernelSize );
 
-				for ( int i = 0; i < _kernelSize; i++ )
+				for ( uint i = 0; i < _kernelSize; i++ )
 				{
 					// sample on unit hemisphere
 					Vec3f v = Util::Sampler::cosineWeightedHemisphere( Util::Math::randomFloat(),
@@ -58,11 +59,6 @@ namespace VTX
 					v *= scale;
 					aoKernel[ i ] = v;
 				}
-
-				_program->use();
-				glUniform3fv( _uAoKernelLoc, _kernelSize, (const GLfloat *)aoKernel.data() );
-				glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
-				glUniform1i( _uKernelSizeLoc, _kernelSize );
 
 				// generate noise texture
 				std::vector<Vec3f> noise( _noiseTextureSize * _noiseTextureSize );
@@ -90,6 +86,12 @@ namespace VTX
 							  GL_RGB,
 							  GL_FLOAT,
 							  noise.data() );
+
+				_program->use();
+				glUniform3fv( _uAoKernelLoc, _kernelSize, (const GLfloat *)aoKernel.data() );
+				glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
+				glUniform1i( _uKernelSizeLoc, _kernelSize );
+				glUniform1f( _uNoiseSizeLoc, float( _noiseTextureSize ) );
 			}
 
 			void SSAO::resize( const uint p_width, const uint p_height )
@@ -106,10 +108,8 @@ namespace VTX
 				glBindTexture( GL_TEXTURE_2D,
 							   p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
 				glActiveTexture( GL_TEXTURE1 );
-				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getColorsTexture() );
-				glActiveTexture( GL_TEXTURE2 );
 				glBindTexture( GL_TEXTURE_2D, _noiseTexture );
-				glActiveTexture( GL_TEXTURE3 );
+				glActiveTexture( GL_TEXTURE2 );
 				glBindTexture( GL_TEXTURE_2D, p_renderer.getPassLinearizeDepth().getTexture() );
 
 				_program->use();
@@ -132,8 +132,6 @@ namespace VTX
 				glActiveTexture( GL_TEXTURE1 );
 				glBindTexture( GL_TEXTURE_2D, 0 );
 				glActiveTexture( GL_TEXTURE2 );
-				glBindTexture( GL_TEXTURE_2D, 0 );
-				glActiveTexture( GL_TEXTURE3 );
 				glBindTexture( GL_TEXTURE_2D, 0 );
 
 				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
