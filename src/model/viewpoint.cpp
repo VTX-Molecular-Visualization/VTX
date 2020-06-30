@@ -18,7 +18,22 @@ namespace VTX
 			}
 		}
 
-		void Viewpoint::fromJson( nlohmann::json & ) {}
+		void Viewpoint::fromJson( nlohmann::json & p_json )
+		{
+			_duration	= p_json[ "DURATION" ].get<float>();
+			_position	= Util::Math::jsonToVec<Vec3d>( p_json[ "POSITION" ] );
+			_target		= Util::Math::jsonToVec<Vec3d>( p_json[ "TARGET" ] );
+			_rotation	= Util::Math::jsonToQuat<Quatd>( p_json[ "ROTATION" ] );
+			_distance	= p_json[ "DISTANCE" ].get<float>();
+			_controller = p_json[ "CONTROLLER" ].get<ID::VTX_ID>();
+
+			for ( nlohmann::json & jsonAction : p_json[ "ACTIONS" ] )
+			{
+				std::string action = jsonAction.get<std::string>();
+				std::replace( action.begin(), action.end(), '-', ' ' );
+				addAction( action );
+			}
+		}
 
 		nlohmann::json Viewpoint::toJson() const
 		{
@@ -36,8 +51,6 @@ namespace VTX
 					 { "DISTANCE", _distance },
 					 { "CONTROLLER", _controller },
 					 { "ACTIONS", jsonArray } };
-
-			// TODO: add actions.
 		}
 
 	} // namespace Model

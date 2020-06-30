@@ -284,7 +284,22 @@ namespace VTX
 		}
 		*/
 
-		void Path::fromJson( nlohmann::json & ) {}
+		void Path::fromJson( nlohmann::json & p_json )
+		{
+			_modeDuration = p_json[ "MODE_DURATION" ].get<DURATION_MODE>();
+			_modeInterpolation = p_json[ "MODE_INTERPOLATION" ].get<INNTERPOLATION_MODE>();
+			_duration		   = p_json[ "DURATION" ].get<float>();
+			_isLooping		   = p_json[ "IS_LOOPING" ].get<bool>();
+
+			for ( nlohmann::json & jsonViewpoint : p_json[ "VIEWPOINTS" ] )
+			{
+				Model::Viewpoint * const viewpoint = Generic::create<Model::Viewpoint>( this );
+				viewpoint->fromJson( jsonViewpoint );
+				addViewpoint( viewpoint );
+			}
+
+			refreshAllDurations();
+		}
 
 		nlohmann::json Path::toJson() const
 		{

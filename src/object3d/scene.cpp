@@ -85,14 +85,16 @@ namespace VTX
 
 		void Scene::fromJson( nlohmann::json & p_json )
 		{
-			assert( _paths.size() != 1 );
+			// Just clean paths for the moment.
+			// clean();
+			Generic::clearVector( _paths );
 
-			clean();
-
-			const nlohmann::json & jsonArray = p_json[ "SCENE" ];
-
-			Model::Path * path = Generic::create<Model::Path>();
-			VTXApp::get().getScene().addPath( path );
+			for ( nlohmann::json & jsonPath : p_json[ "PATHS" ] )
+			{
+				Model::Path * path = Generic::create<Model::Path>();
+				addPath( path );
+				path->fromJson( jsonPath );
+			}
 		}
 
 		nlohmann::json Scene::toJson() const

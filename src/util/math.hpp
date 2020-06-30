@@ -420,7 +420,7 @@ namespace VTX
 			template<typename T>
 			inline T jsonToQuat( const nlohmann::json & p_value )
 			{
-				return T(, p_value[ "W" ], { p_value[ "X" ], p_value[ "Y" ], p_value[ "Z" ] } );
+				return T( p_value[ "W" ], { p_value[ "X" ], p_value[ "Y" ], p_value[ "Z" ] } );
 			}
 
 		} // namespace Math
