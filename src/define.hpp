@@ -5,10 +5,10 @@
 #pragma once
 #endif
 
+#include "math/vec3.hpp"
 #include <filesystem>
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
-#include <glm/gtx/spline.hpp>
 #include <limits>
 #include <string>
 

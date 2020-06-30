@@ -83,5 +83,28 @@ namespace VTX
 			}
 		} // namespace Object3D
 
+		void Scene::fromJson( nlohmann::json & p_json )
+		{
+			assert( _paths.size() != 1 );
+
+			clean();
+
+			const nlohmann::json & jsonArray = p_json[ "SCENE" ];
+
+			Model::Path * path = Generic::create<Model::Path>();
+			VTXApp::get().getScene().addPath( path );
+		}
+
+		nlohmann::json Scene::toJson() const
+		{
+			nlohmann::json jsonArray = nlohmann::json::array();
+			for ( const Model::Path * const path : _paths )
+			{
+				jsonArray.emplace_back( path->toJson() );
+			}
+
+			return { { "PATHS", jsonArray } };
+		}
+
 	} // namespace Object3D
 } // namespace VTX

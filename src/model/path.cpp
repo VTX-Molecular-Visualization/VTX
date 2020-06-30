@@ -284,5 +284,29 @@ namespace VTX
 		}
 		*/
 
+		void Path::fromJson( nlohmann::json & ) {}
+
+		nlohmann::json Path::toJson() const
+		{
+			nlohmann::json jsonArray = nlohmann::json::array();
+			for ( const Model::Viewpoint * const viewpoint : _viewpoints )
+			{
+				jsonArray.emplace_back( viewpoint->toJson() );
+			}
+
+			return { { "MODE_DURATION", _modeDuration },
+					 { "MODE_INTERPOLATION", _modeInterpolation },
+					 { "DURATION", _duration },
+					 { "IS_LOOPING", _isLooping },
+					 { "VIEWPOINTS", jsonArray } };
+
+			/*
+			for ( const Model::Path * const path : _paths )
+			{
+				jsonArray.emplace_back( "LAL" );
+			}
+			*/
+		}
+
 	} // namespace Model
 } // namespace VTX

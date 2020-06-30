@@ -7,6 +7,7 @@
 
 #include "camera.hpp"
 #include "generic/base_cleanable.hpp"
+#include "generic/base_serializable.hpp"
 #include "generic/base_updatable.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -17,7 +18,7 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		class Scene : public Generic::BaseUpdatable, public Generic::BaseCleanable
+		class Scene : public Generic::BaseUpdatable, public Generic::BaseCleanable, public Generic::BaseSerializable
 		{
 		  public:
 			using MoleculePtr			= Model::Molecule *;
@@ -64,6 +65,9 @@ namespace VTX
 			inline const VectorMeshTrianglePtr & getMeshes() const { return _meshes; };
 
 			virtual void update( const double ) override;
+
+			virtual void		   fromJson( nlohmann::json & ) override;
+			virtual nlohmann::json toJson() const override;
 
 		  private:
 			void _computeAABB()

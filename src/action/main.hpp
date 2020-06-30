@@ -10,10 +10,10 @@
 #include "io/reader/vtx.hpp"
 #include "io/writer/vtx.hpp"
 #include "state/visualization.hpp"
+#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "worker/api_fetcher.hpp"
 #include "worker/snapshoter.hpp"
-#include "util/filesystem.hpp"
 
 namespace VTX
 {
@@ -117,6 +117,32 @@ namespace VTX
 				const std::string _id;
 			};
 
+			class Load : public BaseAction
+			{
+			  public:
+				explicit Load() {}
+				virtual void execute() override
+				{
+					const VTX::Path & path = Util::Filesystem::VTX_JSON_FILE;
+					if ( Util::Filesystem::exists( path ) == false )
+					{
+						VTX_INFO( "No app file found" );
+						return;
+					}
+
+					IO::Reader::VTX reader = IO::Reader::VTX();
+					try
+					{
+						reader.readFile( path, VTXApp::get() );
+						VTX_INFO( "App loaded " );
+					}
+					catch ( const std::exception & p_e )
+					{
+						VTX_ERROR( "Cannot load app: " + std::string( p_e.what() ) );
+					}
+				}
+			};
+
 			class Save : public BaseAction
 			{
 			  public:
@@ -127,11 +153,11 @@ namespace VTX
 					try
 					{
 						writer.writeFile( Util::Filesystem::VTX_JSON_FILE, VTXApp::get() );
-						VTX_INFO( "Scene saved " );
+						VTX_INFO( "App saved " );
 					}
 					catch ( const std::exception & p_e )
 					{
-						VTX_ERROR( "Cannot save scene: " + std::string( p_e.what() ) );
+						VTX_ERROR( "Cannot save app: " + std::string( p_e.what() ) );
 					}
 				}
 			};

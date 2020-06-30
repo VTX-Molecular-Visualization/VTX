@@ -65,6 +65,20 @@ namespace VTX
 											pfd::opt::multiselect ) );
 				}
 
+				ImGui::Separator();
+
+				if ( ImGui::MenuItem( LOCALE( "Load" ) ) )
+				{
+					VTX_ACTION( new Action::Main::Load() );
+				}
+
+				if ( ImGui::MenuItem( LOCALE( "Save" ) ) )
+				{
+					VTX_ACTION( new Action::Main::Save() );
+				}
+
+				ImGui::Separator();
+
 				// Quit.
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
 				{

@@ -5,13 +5,14 @@
 #pragma once
 #endif
 
+#include "generic/base_serializable.hpp"
 #include "util/math.hpp"
 
 namespace VTX
 {
 	namespace Color
 	{
-		class Rgb
+		class Rgb : public Generic::BaseSerializable
 		{
 		  public:
 			Rgb() = default;
@@ -173,6 +174,14 @@ namespace VTX
 				return Rgb( Util::Math::randomFloat(), Util::Math::randomFloat(), Util::Math::randomFloat() );
 			}
 			static inline Rgb randomPastel() { return random() * 0.5f + 0.5f; }
+
+			virtual void fromJson( nlohmann::json & p_json ) override
+			{
+				_r = p_json[ "R" ].get<float>();
+				_g = p_json[ "G" ].get<float>();
+				_b = p_json[ "B" ].get<float>();
+			}
+			virtual nlohmann::json toJson() const override { return { { "R", _r }, { "G", _g }, { "B", _b } }; }
 
 		  private:
 			float _r = 0.f;

@@ -7,6 +7,7 @@
 
 #include "base_model.hpp"
 #include "define.hpp"
+#include "generic/base_serializable.hpp"
 #include "object3d/camera.hpp"
 #include "setting.hpp"
 #include "viewpoint.hpp"
@@ -16,7 +17,8 @@ namespace VTX
 {
 	namespace Model
 	{
-		class Path : public BaseModel
+		// TODO: move BaseSerializable in BaseModel.
+		class Path : public BaseModel, public Generic::BaseSerializable
 		{
 		  public:
 			using ViewpointPtr		 = Model::Viewpoint *;
@@ -60,6 +62,9 @@ namespace VTX
 			const std::vector<std::string> * const getCurrentActions( const double p_time );
 
 			virtual void setSelected( const bool ) override;
+
+			virtual void		   fromJson( nlohmann::json & ) override;
+			virtual nlohmann::json toJson() const override;
 
 		  protected:
 			virtual void _addItems() override final;
