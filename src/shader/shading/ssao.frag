@@ -3,18 +3,18 @@
 // Crytek (Crysis) like SSAO
 
 layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
-layout( binding = 1 ) uniform sampler2D gbColor;
-layout( binding = 2 ) uniform sampler2D noise;
-layout( binding = 3 ) uniform sampler2D linearDepth;
+layout( binding = 1 ) uniform sampler2D noise;
+layout( binding = 2 ) uniform sampler2D linearDepth;
 
 layout( location = 0 ) out float ambientOcclusion;
 
 const float BIAS = 0.025f;
 
-uniform mat4 uProjMatrix;
-uniform vec3 uAoKernel[ 512 ]; // TODO: better use texture no ? ;-)
-uniform int	 uAoIntensity;
-uniform int	 uKernelSize;
+uniform mat4  uProjMatrix;
+uniform vec3  uAoKernel[ 512 ]; // TODO: better use texture no ? ;-)
+uniform int	  uAoIntensity;
+uniform int	  uKernelSize;
+uniform float uNoiseSize;
 
 struct UnpackedData
 {
@@ -33,19 +33,16 @@ void unpackGBuffers( ivec2 px, out UnpackedData data )
 
 void main()
 {
-	const vec2	texSize		 = textureSize( gbViewPositionNormal, 0 );
-	const vec2	noisTextSize = textureSize( noise, 0 );
-	const vec2	noiseScale	 = texSize / noisTextSize;
-	const ivec2 texPos		 = ivec2( gl_FragCoord.xy ); // / texSize;
+	const ivec2 texPos = ivec2( gl_FragCoord.xy );
 
 	UnpackedData data;
 	unpackGBuffers( texPos, data );
 	const vec3 pos = data.viewPosition;
 
-	// Adapt sharpness wrt depth: the deeper the fragment is, the larger the radius is.
-	const float rad = -pos.z;
+	// Adapt radius wrt depth: the deeper the fragment is, the larger the radius is.
+	const float radius = -pos.z;
 
-	const vec3 randomVec = normalize( texture( noise, ( vec2( texPos ) / texSize ) * noiseScale, 0 ).xyz );
+	const vec3 randomVec = normalize( texture( noise, texPos / uNoiseSize ).xyz );
 	// Gram-Schmidt process.
 	const vec3 tangent	 = normalize( randomVec - data.normal * dot( randomVec, data.normal ) );
 	const vec3 bitangent = cross( data.normal, tangent );
@@ -56,7 +53,7 @@ void main()
 	for ( int i = 0; i < uKernelSize; ++i )
 	{
 		// Compute sample position.
-		const vec3 samplePos = TBN * uAoKernel[ i ] * rad + pos;
+		const vec3 samplePos = TBN * uAoKernel[ i ] * radius + pos;
 
 		// Project sample position.
 		vec4 offset = uProjMatrix * vec4( samplePos, 1.f );
@@ -67,7 +64,7 @@ void main()
 		float sampleDepth = -texture( linearDepth, offset.xy ).x;
 
 		// Range check: ignore background.
-		const float rangeCheck = sampleDepth == 0.f ? 0.f : smoothstep( 0.f, 1.f, rad / abs( pos.z - sampleDepth ) );
+		const float rangeCheck = sampleDepth == 0.f ? 0.f : smoothstep( 0.f, 1.f, radius / abs( pos.z - sampleDepth ) );
 		ao += ( sampleDepth >= samplePos.z + BIAS ? 1.f : 0.f ) * rangeCheck;
 	}
 
