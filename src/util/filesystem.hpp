@@ -59,7 +59,7 @@ namespace VTX
 			static const std::string IMGUI_INI_FILE	   = Path( EXECUTABLE_DIR.string() + "/../../imgui.ini" ).string();
 			static const Path		 SETTING_JSON_FILE = Path( EXECUTABLE_DIR.string() + "/../../setting.json" );
 			// TMP: because i have la flemme de choisir l'emplacement du fichier for the moment.
-			static const Path VTX_JSON_FILE = Path( EXECUTABLE_DIR.string() + "/../../save.json" );
+			static const Path VTX_JSON_FILE = Path( EXECUTABLE_DIR.string() + "/../../save.vtx" );
 
 			inline Path * const getDataPathPtr( const std::string & p_filename )
 			{

@@ -3,6 +3,7 @@
 #include "io/reader/lib_chemfiles.hpp"
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
+#include "io/reader/vtx.hpp"
 #include "tool/chrono.hpp"
 #include "vtx_app.hpp"
 
@@ -10,6 +11,7 @@ namespace VTX
 {
 	namespace Worker
 	{
+		// TODO: some cleanup, remove ptr?
 		void Loader::work()
 		{
 			Model::Configuration::Molecule config = Model::Configuration::Molecule();
@@ -46,7 +48,7 @@ namespace VTX
 				else if ( mode == MODE::MOLECULE )
 				{
 					// Create reader.
-					IO::Reader::BaseReader<Model::Molecule> * reader = new IO::Reader::LibChemfiles();
+					IO::Reader::LibChemfiles * reader = new IO::Reader::LibChemfiles();
 
 					// Set PRM.
 					Model::Molecule * molecule = new Model::Molecule();
@@ -71,8 +73,8 @@ namespace VTX
 				}
 				else if ( mode == MODE::MESH )
 				{
-					IO::Reader::BaseReader<Model::MeshTriangle> * reader = new IO::Reader::LibAssimp();
-					Model::MeshTriangle *						  mesh	 = new Model::MeshTriangle();
+					IO::Reader::LibAssimp * reader = new IO::Reader::LibAssimp();
+					Model::MeshTriangle *	mesh   = new Model::MeshTriangle();
 
 					try
 					{
@@ -86,6 +88,22 @@ namespace VTX
 						delete mesh;
 						VTX_ERROR( "Error loading file" );
 						VTX_ERROR( p_e.what() );
+					}
+
+					delete reader;
+				}
+				else if ( mode == MODE::VTX )
+				{
+					IO::Reader::VTX * reader = new IO::Reader::VTX();
+
+					try
+					{
+						reader->readFile( *path, VTXApp::get() );
+						VTX_INFO( "App loaded " );
+					}
+					catch ( const std::exception & p_e )
+					{
+						VTX_ERROR( "Cannot load app: " + std::string( p_e.what() ) );
 					}
 
 					delete reader;
@@ -111,8 +129,8 @@ namespace VTX
 				else
 				{
 					// Create reader.
-					IO::Reader::BaseReader<Model::Molecule> * reader   = new IO::Reader::LibChemfiles();
-					Model::Molecule *						  molecule = new Model::Molecule();
+					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles();
+					Model::Molecule *		   molecule = new Model::Molecule();
 
 					// Load.
 					try
@@ -154,6 +172,10 @@ namespace VTX
 			else if ( extension == ".obj" )
 			{
 				return MODE::MESH;
+			}
+			else if ( extension == ".vtx" )
+			{
+				return MODE::VTX;
 			}
 			else
 			{

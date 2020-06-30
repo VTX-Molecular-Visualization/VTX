@@ -117,32 +117,6 @@ namespace VTX
 				const std::string _id;
 			};
 
-			class Load : public BaseAction
-			{
-			  public:
-				explicit Load() {}
-				virtual void execute() override
-				{
-					const VTX::Path & path = Util::Filesystem::VTX_JSON_FILE;
-					if ( Util::Filesystem::exists( path ) == false )
-					{
-						VTX_INFO( "No app file found" );
-						return;
-					}
-
-					IO::Reader::VTX reader = IO::Reader::VTX();
-					try
-					{
-						reader.readFile( path, VTXApp::get() );
-						VTX_INFO( "App loaded " );
-					}
-					catch ( const std::exception & p_e )
-					{
-						VTX_ERROR( "Cannot load app: " + std::string( p_e.what() ) );
-					}
-				}
-			};
-
 			class Save : public BaseAction
 			{
 			  public:

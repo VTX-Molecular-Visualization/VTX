@@ -36,7 +36,7 @@ namespace VTX
 				{
 					paths.emplace_back( new Path( file ) );
 				}
-				if ( paths.size() )
+				if ( paths.size() > 0 )
 				{
 					VTX_ACTION( new Action::Main::Open( paths ) );
 				}
@@ -66,11 +66,6 @@ namespace VTX
 				}
 
 				ImGui::Separator();
-
-				if ( ImGui::MenuItem( LOCALE( "Load" ) ) )
-				{
-					VTX_ACTION( new Action::Main::Load() );
-				}
 
 				if ( ImGui::MenuItem( LOCALE( "Save" ) ) )
 				{
@@ -473,13 +468,13 @@ namespace VTX
 
 				ImGui::Separator();
 
-				// New.
+				// Load.
 				if ( ImGui::MenuItem( LOCALE( "Load" ) ) )
 				{
 					VTX_ACTION( new Action::Setting::Load() );
 				}
 
-				// New.
+				// Save.
 				if ( ImGui::MenuItem( LOCALE( "Save" ) ) )
 				{
 					VTX_ACTION( new Action::Setting::Save() );
