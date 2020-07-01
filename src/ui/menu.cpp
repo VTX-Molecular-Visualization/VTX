@@ -42,6 +42,14 @@ namespace VTX
 				}
 				_openFileDialog = nullptr;
 			}
+
+			// Open file dialog.
+			if ( _saveFileDialog && _saveFileDialog->ready() )
+			{
+				std::string file = _saveFileDialog->result();
+				VTX_ACTION( new Action::Main::Save( new Path( file ) ) );
+				_saveFileDialog = nullptr;
+			}
 		}
 
 		void Menu::_drawContent()
@@ -58,18 +66,18 @@ namespace VTX
 				// Open.
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Open" ) ) )
 				{
-					_openFileDialog = std::shared_ptr<pfd::open_file>(
-						new pfd::open_file( LOCALE( "MainMenu.Menu.Open.ChooseFile" ),
-											"C://",
-											{ "All Files", "*" },
-											pfd::opt::multiselect ) );
+					// TODO: file filters.
+					_openFileDialog = std::shared_ptr<pfd::open_file>( new pfd::open_file(
+						LOCALE( "MainMenu.Menu.Open.ChooseFile" ), "", { "All Files", "*" }, pfd::opt::multiselect ) );
 				}
-
-				ImGui::Separator();
 
 				if ( ImGui::MenuItem( LOCALE( "Save" ) ) )
 				{
-					VTX_ACTION( new Action::Main::Save() );
+					_saveFileDialog = std::shared_ptr<pfd::save_file>(
+						new pfd::save_file( LOCALE( "MainMenu.Menu.Open.ChooseFile" ),
+											"",
+											{ "VTX file (.vtx)", "*.vtx" },
+											pfd::opt::none ) );
 				}
 
 				ImGui::Separator();

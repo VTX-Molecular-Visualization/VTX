@@ -26,6 +26,7 @@ namespace VTX
 			bool _showDialogImport = false;
 
 			std::shared_ptr<pfd::open_file> _openFileDialog = nullptr;
+			std::shared_ptr<pfd::save_file> _saveFileDialog = nullptr;
 		};
 	} // namespace UI
 } // namespace VTX

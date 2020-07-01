@@ -13,6 +13,7 @@
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "worker/api_fetcher.hpp"
+#include "worker/saver.hpp"
 #include "worker/snapshoter.hpp"
 
 namespace VTX
@@ -120,20 +121,17 @@ namespace VTX
 			class Save : public BaseAction
 			{
 			  public:
-				explicit Save() {}
+				explicit Save( Path * p_path ) : _path( p_path ) {}
+
 				virtual void execute() override
 				{
-					IO::Writer::VTX writer = IO::Writer::VTX();
-					try
-					{
-						writer.writeFile( Util::Filesystem::VTX_JSON_FILE, VTXApp::get() );
-						VTX_INFO( "App saved " );
-					}
-					catch ( const std::exception & p_e )
-					{
-						VTX_ERROR( "Cannot save app: " + std::string( p_e.what() ) );
-					}
+					Worker::Saver * saver = new Worker::Saver( _path );
+					VTX_WORKER( saver );
+					delete saver;
 				}
+
+			  private:
+				Path * _path;
 			};
 
 			class ChangeCameraController : public BaseAction
