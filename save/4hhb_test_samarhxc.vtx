@@ -1,5 +1,10 @@
 {
     "SCENE": {
+        "MOLECULES": [
+            {
+                "PATH": "4hhb.mmtf"
+            }
+        ],
         "PATHS": [
             {
                 "DURATION": 5.0,
@@ -76,7 +81,7 @@
                     {
                         "ACTIONS": [],
                         "CONTROLLER": "TRACKBALL",
-                        "DISTANCE": 107.22476196289064,
+                        "DISTANCE": 107.22476196289063,
                         "DURATION": 1.0,
                         "POSITION": {
                             "X": -0.024122433735863313,
@@ -98,7 +103,7 @@
                     {
                         "ACTIONS": [],
                         "CONTROLLER": "TRACKBALL",
-                        "DISTANCE": 107.22476196287008,
+                        "DISTANCE": 107.22476196289063,
                         "DURATION": 1.0,
                         "POSITION": {
                             "X": -16.6614185810599,
@@ -120,7 +125,7 @@
                     {
                         "ACTIONS": [],
                         "CONTROLLER": "TRACKBALL",
-                        "DISTANCE": 107.22476196282747,
+                        "DISTANCE": 107.22476196289063,
                         "DURATION": 1.0,
                         "POSITION": {
                             "X": -28.59240918177056,

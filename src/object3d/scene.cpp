@@ -1,4 +1,5 @@
 #include "scene.hpp"
+#include "action/main.hpp"
 #include "generic/factory.hpp"
 #include "math/transform.hpp"
 #include "vtx_app.hpp"
@@ -90,9 +91,15 @@ namespace VTX
 
 			for ( nlohmann::json & jsonMolecule : p_json[ "MOLECULES" ] )
 			{
-				Model::Path * path = Generic::create<Model::Path>();
-				addPath( path );
-				path->fromJson( jsonMolecule );
+				std::string str = jsonMolecule[ "PATH" ].get<std::string>();
+				if ( str.find( "/" ) != std::string::npos || str.find( "\\" ) != std::string::npos )
+				{
+					VTX_ACTION( new Action::Main::Open( new Path( str ) ), true );
+				}
+				else
+				{
+					VTX_ACTION( new Action::Main::OpenApi( Path( str ).stem().string() ), true );
+				}
 			}
 
 			for ( nlohmann::json & jsonPath : p_json[ "PATHS" ] )
