@@ -16,19 +16,20 @@ namespace VTX
 			{
 				prepareChemfiles();
 				chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string() );
-				readTrajectory( trajectory, p_molecule, p_path.extension().string() );
+
+				readTrajectory( trajectory, p_path, p_molecule );
 			}
 
 			void LibChemfiles::readBuffer( const std::string & p_buffer,
-										   const std::string & p_extension,
+										   const Path &		   p_path,
 										   Model::Molecule &   p_molecule )
 			{
-				std::string extension = p_extension.substr( 1, p_extension.size() );
+				std::string extension = p_path.extension().string().substr( 1, p_path.extension().string().size() );
 				std::transform( extension.begin(), extension.end(), extension.begin(), toupper );
 				prepareChemfiles();
 				chemfiles::Trajectory trajectory
 					= chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), extension );
-				readTrajectory( trajectory, p_molecule, p_extension );
+				readTrajectory( trajectory, p_path, p_molecule );
 			}
 
 			void LibChemfiles::prepareChemfiles() const
@@ -42,8 +43,8 @@ namespace VTX
 			}
 
 			void LibChemfiles::readTrajectory( chemfiles::Trajectory & p_trajectory,
-											   Model::Molecule &	   p_molecule,
-											   const std::string &	   p_extension ) const
+											   const Path &			   p_path,
+											   Model::Molecule &	   p_molecule ) const
 			{
 				VTX_INFO( std::to_string( p_trajectory.nsteps() ) + " frames found" );
 
@@ -61,6 +62,7 @@ namespace VTX
 				const std::vector<chemfiles::Residue> & residues = topology.residues();
 				const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
 				Model::Configuration::Molecule &		config	 = p_molecule.getConfiguration();
+				p_molecule.setPath( p_path );
 
 				if ( frame.size() != topology.size() )
 				{
@@ -191,7 +193,7 @@ namespace VTX
 
 					// PDB only.
 					// TODO: modify chemfiles to load handedness!
-					if ( p_extension == ".pdb" )
+					if ( p_path.extension() == ".pdb" )
 					{
 						std::string secondaryStructure
 							= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();

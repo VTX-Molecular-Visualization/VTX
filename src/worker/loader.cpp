@@ -135,7 +135,7 @@ namespace VTX
 					// Load.
 					try
 					{
-						reader->readBuffer( *pair.second, pair.first->extension().string(), *molecule );
+						reader->readBuffer( *pair.second, *pair.first, *molecule );
 						molecule->init();
 						molecule->print();
 						VTXApp::get().getScene().addMolecule( molecule );

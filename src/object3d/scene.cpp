@@ -86,8 +86,14 @@ namespace VTX
 		void Scene::fromJson( nlohmann::json & p_json )
 		{
 			// Just clean paths for the moment.
-			// clean();
-			Generic::clearVector( _paths );
+			clean();
+
+			for ( nlohmann::json & jsonMolecule : p_json[ "MOLECULES" ] )
+			{
+				Model::Path * path = Generic::create<Model::Path>();
+				addPath( path );
+				path->fromJson( jsonMolecule );
+			}
 
 			for ( nlohmann::json & jsonPath : p_json[ "PATHS" ] )
 			{
@@ -99,13 +105,19 @@ namespace VTX
 
 		nlohmann::json Scene::toJson() const
 		{
-			nlohmann::json jsonArray = nlohmann::json::array();
-			for ( const Model::Path * const path : _paths )
+			nlohmann::json jsonArrayMolecules = nlohmann::json::array();
+			for ( const PairMoleculePtrFloat & pair : _molecules )
 			{
-				jsonArray.emplace_back( path->toJson() );
+				jsonArrayMolecules.emplace_back( pair.first->toJson() );
 			}
 
-			return { { "PATHS", jsonArray } };
+			nlohmann::json jsonArrayPaths = nlohmann::json::array();
+			for ( const Model::Path * const path : _paths )
+			{
+				jsonArrayPaths.emplace_back( path->toJson() );
+			}
+
+			return { { "MOLECULES", jsonArrayMolecules }, { "PATHS", jsonArrayPaths } };
 		}
 
 	} // namespace Object3D
