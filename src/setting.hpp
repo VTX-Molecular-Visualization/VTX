@@ -41,7 +41,7 @@ namespace VTX
 		bool			  activeRenderer = ACTIVE_RENDERER_DEFAULT;
 
 		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
-		Color::Rgb				backgroundColor = BACKGROUND_COLOR_DEFAULT;
+		static Color::Rgb		backgroundColor;
 
 		static const Generic::REPRESENTATION REPRESENTATION_DEFAULT;
 		Generic::REPRESENTATION				 representation = REPRESENTATION_DEFAULT;
@@ -107,7 +107,7 @@ namespace VTX
 		bool			  activeAA = ACTIVE_AA_DEFAULT;
 
 		static const Color::Rgb LIGHT_COLOR_DEFAULT;
-		Color::Rgb				lightColor = LIGHT_COLOR_DEFAULT;
+		static Color::Rgb		lightColor;
 
 		// Camera.
 		static const float CAMERA_NEAR_DEFAULT;

@@ -16,12 +16,12 @@ namespace VTX
 		{
 		  public:
 			Rgb() = default;
-			Rgb( const float p_r, const float p_g, const float p_b ) : _r( p_r ), _g( p_g ), _b( p_b ) {}
+			explicit Rgb( const float p_r, const float p_g, const float p_b ) : _r( p_r ), _g( p_g ), _b( p_b ) {}
 			Rgb( const int p_r, const int p_g, const int p_b ) : _r( p_r / 255.f ), _g( p_g / 255.f ), _b( p_b / 255.f )
 			{
 			}
 			Rgb( const Rgb & p_c ) : _r( p_c._r ), _g( p_c._g ), _b( p_c._b ) {}
-			Rgb( const std::vector<float> & p_c )
+			explicit Rgb( const std::vector<float> & p_c )
 			{
 				assert( p_c.size() == 3 );
 				_r = p_c[ 0 ];

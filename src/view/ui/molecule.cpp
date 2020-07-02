@@ -110,7 +110,7 @@ namespace VTX
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Options" ) ) )
 					{
-						Color::Rgb color = _getModel().getColor();
+						std::vector<float> color = _getModel().getColor().toStdVector();
 						if ( ImGui::ColorEdit3( LOCALE( "View.Color" ), (float *)&color ) )
 						{
 							VTX_ACTION( new Action::Molecule::ChangeColor( _getModel(), color ) );

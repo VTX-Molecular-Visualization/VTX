@@ -104,6 +104,7 @@ namespace VTX
 			{
 			  public:
 				explicit ChangeBackgroundColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+				explicit ChangeBackgroundColor( const std::vector<float> & p_color ) : _color( p_color ) {}
 
 				virtual void execute() override { VTX_SETTING().backgroundColor = _color; };
 
@@ -281,6 +282,7 @@ namespace VTX
 			class ChangeOutlineColor : public BaseAction
 			{
 			  public:
+				explicit ChangeOutlineColor( const std::vector<float> & p_color ) : _color( p_color ) {}
 				explicit ChangeOutlineColor( const Color::Rgb & p_color ) : _color( p_color ) {}
 
 				virtual void execute() override { VTX_SETTING().outlineColor = _color; };
@@ -348,6 +350,7 @@ namespace VTX
 			class ChangeFogColor : public BaseAction
 			{
 			  public:
+				explicit ChangeFogColor( const std::vector<float> & p_color ) : _color( p_color ) {}
 				explicit ChangeFogColor( const Color::Rgb & p_color ) : _color( p_color ) {}
 
 				virtual void execute() override { VTX_SETTING().fogColor = _color; };
@@ -375,6 +378,7 @@ namespace VTX
 			{
 			  public:
 				explicit ChangeLightColor( const Color::Rgb & p_color ) : _color( p_color ) {}
+				explicit ChangeLightColor( const std::vector<float> & p_color ) : _color( p_color ) {}
 
 				virtual void execute() override { VTX_SETTING().lightColor = _color; };
 

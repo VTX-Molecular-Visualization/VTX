@@ -14,6 +14,7 @@ namespace VTX
 	// Rendering.
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT	= true;
 	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT = Color::Rgb::BLACK;
+	Color::Rgb					  Setting::backgroundColor			= BACKGROUND_COLOR_DEFAULT;
 	const Generic::REPRESENTATION Setting::REPRESENTATION_DEFAULT	= Generic::REPRESENTATION::VAN_DER_WAALS;
 	const float					  Setting::ATOMS_RADIUS_DEFAULT		= 0.4f;
 	const float					  Setting::ATOMS_RADIUS_MIN			= 0.f;
@@ -44,6 +45,7 @@ namespace VTX
 	const Color::Rgb			  Setting::FOG_COLOR_DEFAULT		= Color::Rgb::WHITE;
 	const bool					  Setting::ACTIVE_AA_DEFAULT		= true;
 	const Color::Rgb			  Setting::LIGHT_COLOR_DEFAULT		= Color::Rgb::WHITE;
+	Color::Rgb					  Setting::lightColor				= LIGHT_COLOR_DEFAULT;
 
 	// Camera.
 	const float Setting::CAMERA_NEAR_DEFAULT		= 0.f;
@@ -86,41 +88,41 @@ namespace VTX
 
 	nlohmann::json Setting::toJson() const
 	{
-		return { { "THEME", VTX_SETTING().theme },
-				 { "SYMBOL_DISPLAY_MODE", VTX_SETTING().symbolDisplayMode },
+		return { { "THEME", theme },
+				 { "SYMBOL_DISPLAY_MODE", symbolDisplayMode },
 
-				 { "ACTIVE_RENDERER", VTX_SETTING().activeRenderer },
-				 { "BACKGROUND_COLOR", VTX_SETTING().backgroundColor.toJson() },
-				 { "REPRESENTATION", VTX_SETTING().representation },
-				 { "ATOMS_RADIUS", VTX_SETTING().atomsRadius },
-				 { "BONDS_RADIUS", VTX_SETTING().bondsRadius },
-				 { "COLOR_MODE", VTX_SETTING().colorMode },
-				 { "SHADING", VTX_SETTING().shading },
-				 { "ACTIVE_VSYNC", VTX_SETTING().activeVSync },
-				 { "ACTIVE_AO", VTX_SETTING().activeAO },
-				 { "AO_INTENSITY", VTX_SETTING().aoIntensity },
-				 { "AO_BLUR_SIZE", VTX_SETTING().aoBlurSize },
-				 { "ACTIVE_OUTLINE", VTX_SETTING().activeOutline },
-				 { "OUTLINE_COLOR", VTX_SETTING().outlineColor.toJson() },
-				 { "ACTIVE_FOG", VTX_SETTING().activeFog },
-				 { "FOG_NEAR", VTX_SETTING().fogNear },
-				 { "FOG_FAR", VTX_SETTING().fogFar },
-				 { "FOG_DENSITY", VTX_SETTING().fogDensity },
-				 { "FOG_COLOR", VTX_SETTING().fogColor.toJson() },
-				 { "ACTIVE_AA", VTX_SETTING().activeAA },
-				 { "LIGHT_COLOR", VTX_SETTING().lightColor.toJson() },
+				 { "ACTIVE_RENDERER", activeRenderer },
+				 { "BACKGROUND_COLOR", backgroundColor.toJson() },
+				 { "REPRESENTATION", representation },
+				 { "ATOMS_RADIUS", atomsRadius },
+				 { "BONDS_RADIUS", bondsRadius },
+				 { "COLOR_MODE", colorMode },
+				 { "SHADING", shading },
+				 { "ACTIVE_VSYNC", activeVSync },
+				 { "ACTIVE_AO", activeAO },
+				 { "AO_INTENSITY", aoIntensity },
+				 { "AO_BLUR_SIZE", aoBlurSize },
+				 { "ACTIVE_OUTLINE", activeOutline },
+				 { "OUTLINE_COLOR", outlineColor.toJson() },
+				 { "ACTIVE_FOG", activeFog },
+				 { "FOG_NEAR", fogNear },
+				 { "FOG_FAR", fogFar },
+				 { "FOG_DENSITY", fogDensity },
+				 { "FOG_COLOR", fogColor.toJson() },
+				 { "ACTIVE_AA", activeAA },
+				 { "LIGHT_COLOR", lightColor.toJson() },
 
-				 { "CAMERA_NEAR", VTX_SETTING().cameraNear },
-				 { "CAMERA_FAR", VTX_SETTING().cameraFar },
-				 { "CAMERA_FOV", VTX_SETTING().cameraFov },
-				 { "CAMERA_PERSPECTIVE", VTX_SETTING().cameraPerspective },
+				 { "CAMERA_NEAR", cameraNear },
+				 { "CAMERA_FAR", cameraFar },
+				 { "CAMERA_FOV", cameraFov },
+				 { "CAMERA_PERSPECTIVE", cameraPerspective },
 
-				 { "CONTROLLER_TRANSLATION_SPEED", VTX_SETTING().translationSpeed },
-				 { "CONTROLLER_TRANSLATION_FACTOR", VTX_SETTING().translationFactorSpeed },
-				 { "CONTROLLER_ROTATION_SPEED", VTX_SETTING().rotationSpeed },
-				 { "CONTROLLER_Y_AXIS_INVERTED", VTX_SETTING().yAxisInverted },
+				 { "CONTROLLER_TRANSLATION_SPEED", translationSpeed },
+				 { "CONTROLLER_TRANSLATION_FACTOR", translationFactorSpeed },
+				 { "CONTROLLER_ROTATION_SPEED", rotationSpeed },
+				 { "CONTROLLER_Y_AXIS_INVERTED", yAxisInverted },
 
-				 { "AUTO_ROTATE_SPEED", Util::Math::vecToJson( VTX_SETTING().autoRotationSpeed ) } };
+				 { "AUTO_ROTATE_SPEED", Util::Math::vecToJson( autoRotationSpeed ) } };
 	}
 
 	void Setting::fromJson( nlohmann::json & p_json )
