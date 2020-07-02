@@ -14,7 +14,6 @@ namespace VTX
 	// Rendering.
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT	= true;
 	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT = Color::Rgb::BLACK;
-	Color::Rgb					  Setting::backgroundColor			= BACKGROUND_COLOR_DEFAULT;
 	const Generic::REPRESENTATION Setting::REPRESENTATION_DEFAULT	= Generic::REPRESENTATION::VAN_DER_WAALS;
 	const float					  Setting::ATOMS_RADIUS_DEFAULT		= 0.4f;
 	const float					  Setting::ATOMS_RADIUS_MIN			= 0.f;
@@ -45,7 +44,6 @@ namespace VTX
 	const Color::Rgb			  Setting::FOG_COLOR_DEFAULT		= Color::Rgb::WHITE;
 	const bool					  Setting::ACTIVE_AA_DEFAULT		= true;
 	const Color::Rgb			  Setting::LIGHT_COLOR_DEFAULT		= Color::Rgb::WHITE;
-	Color::Rgb					  Setting::lightColor				= LIGHT_COLOR_DEFAULT;
 
 	// Camera.
 	const float Setting::CAMERA_NEAR_DEFAULT		= 0.f;
