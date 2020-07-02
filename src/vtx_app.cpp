@@ -86,7 +86,7 @@ namespace VTX
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "r2d2_2.obj" ) ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "4v6x.mmtf" ) ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr("6vsb.mmtf" ) ) );
-		VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
+		// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "3jb9.pdb" ) ) );
 #endif
 

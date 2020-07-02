@@ -47,17 +47,22 @@ namespace VTX
 													  ImVec2( 1, 0 ) );
 #pragma warning( pop )
 
-				ImGuiIO & io = ImGui::GetIO();
-				ImGuizmo::SetRect( 0, 0, io.DisplaySize.x, io.DisplaySize.y );
 				/*
-				ImGuizmo::Manipulate( camera.mView.m16,
-									  camera.mProjection.m16,
-									  mCurrentGizmoOperation,
-									  mCurrentGizmoMode,
-									  matrix.m16,
-									  NULL,
-									  NULL );
-									  */
+				if ( VTXApp::get().getScene().getMolecules().size() > 0 )
+				{
+					ImGuiIO & io = ImGui::GetIO();
+					ImGuizmo::SetRect( 0, 0, io.DisplaySize.x, io.DisplaySize.y );
+					Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
+
+					ImGuizmo::Manipulate( (float *)&cam.getViewMatrix(),
+										  (float *)&cam.getProjectionMatrix(),
+										  ImGuizmo::ROTATE,
+										  ImGuizmo::WORLD,
+										  ( VTXApp::get().getScene().getMolecules().begin() ),
+										  NULL,
+										  NULL );
+				}
+				*/
 			}
 		} // namespace Window
 	}	  // namespace UI

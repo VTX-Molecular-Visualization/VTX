@@ -12,7 +12,7 @@ namespace VTX
 		class BaseInitializable
 		{
 		  public:
-			virtual void init() {}
+			virtual void init() = 0;
 		};
 	} // namespace Generic
 } // namespace VTX

@@ -14,7 +14,7 @@ namespace VTX
 		class BaseCleanable
 		{
 		  public:
-			virtual void clean() {};
+			virtual void clean() = 0;
 		};
 	} // namespace Generic
 } // namespace VTX
