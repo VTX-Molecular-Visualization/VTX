@@ -57,6 +57,10 @@ namespace VTX
 				VAL,
 				ASX,
 				GLX,
+				WAT,
+				HOH,
+				HEM,
+				PO4,
 				COUNT
 			};
 

@@ -404,6 +404,12 @@ namespace VTX
 					residueStart->getIndexExtraBondStart().emplace_back( counter );
 					residueEnd->getIndexExtraBondEnd().emplace_back( counter );
 				}
+
+				// Compute chain's sequence.
+				for ( Model::Chain * const chain : p_molecule.getChains() )
+				{
+					chain->computeSequence();
+				}
 			}
 
 		} // namespace Reader

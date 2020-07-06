@@ -47,6 +47,7 @@ namespace VTX
 
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
+			inline const std::string & getSequence() const { return _sequence; };
 			inline uint				   getIndexFirstResidue() const { return _indexFirstResidue; };
 			inline void				   setIndexFirstResidue( const uint p_id ) { _indexFirstResidue = p_id; };
 			inline uint				   getResidueCount() const { return _residueCount; };
@@ -56,12 +57,15 @@ namespace VTX
 			virtual void addRepresentation( const Generic::REPRESENTATION ) override;
 			virtual void removeRepresentation( const Generic::REPRESENTATION ) override;
 
+			void computeSequence();
+
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;
 			uint	   _index		= 0;
 			Molecule * _moleculePtr = nullptr;
 
 			std::string _name			   = "unknown";
+			std::string _sequence		   = "";
 			uint		_indexFirstResidue = 0;
 			uint		_residueCount	   = 0;
 		}; // namespace Model
