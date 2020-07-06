@@ -25,7 +25,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					const VTX::Path & path = Util::Filesystem::SETTING_JSON_FILE;
-					if ( Util::Filesystem::exists( path ) == false )
+					if ( std::filesystem::exists( path ) == false )
 					{
 						VTX_INFO( "No settings file found" );
 						return;
