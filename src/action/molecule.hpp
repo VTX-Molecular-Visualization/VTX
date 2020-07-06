@@ -134,6 +134,17 @@ namespace VTX
 				Model::Molecule & _molecule;
 			};
 
+			class ToggleSequenceVisibility : public BaseAction
+			{
+			  public:
+				explicit ToggleSequenceVisibility( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
+
+				virtual void execute() override { _molecule.toggleSequenceVisibility(); }
+
+			  private:
+				Model::Molecule & _molecule;
+			};
+
 			class Delete : public BaseAction
 			{
 			  public:

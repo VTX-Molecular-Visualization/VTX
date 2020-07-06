@@ -27,6 +27,7 @@ namespace VTX
 		namespace View
 		{
 			const VTX_ID UI_MOLECULE_STRUCTURE = "UI_MOLECULE_STRUCTURE";
+			const VTX_ID UI_MOLECULE_SEQUENCE  = "UI_MOLECULE_SEQUENCE";
 			const VTX_ID UI_MOLECULE		   = "UI_MOLECULE";
 			const VTX_ID UI_CHAIN			   = "UI_CHAIN";
 			const VTX_ID UI_RESIDUE			   = "UI_RESIDUE";

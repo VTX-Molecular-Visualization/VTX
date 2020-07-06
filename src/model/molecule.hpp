@@ -90,6 +90,8 @@ namespace VTX
 
 			inline const Ribbon & getRibbon() const { return *_ribbon; }
 			inline Ribbon &		  getRibbon() { return *_ribbon; }
+			inline const Ribbon & getSequence() const { return *_ribbon; }
+			inline Ribbon &		  getSequence() { return *_ribbon; }
 
 			inline const bool isAtomVisible( const uint p_idx ) const
 			{
@@ -179,6 +181,7 @@ namespace VTX
 			bool mergeTopology( const Molecule & );
 			void refreshVisibility();
 			void createSecondaryStructure();
+			void toggleSequenceVisibility();
 
 			virtual void		   setSelected( const bool ) override;
 			virtual void		   setVisible( const bool ) override;
@@ -224,6 +227,9 @@ namespace VTX
 
 			// Secondary structure.
 			Ribbon * _ribbon = nullptr;
+
+			// Sequence.
+			std::string _sequence;
 
 			// OpenGL buffers.
 			enum ATTRIBUTE_LOCATION

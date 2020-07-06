@@ -7,6 +7,7 @@
 #include "view/d3/sphere.hpp"
 #include "view/d3/triangle_ribbon.hpp"
 #include "view/ui/molecule.hpp"
+#include "view/ui/molecule_sequence.hpp"
 #include "view/ui/molecule_structure.hpp"
 #include "vtx_app.hpp"
 
@@ -466,6 +467,18 @@ namespace VTX
 			_ribbon = Generic::create<Ribbon, Molecule>( this );
 			_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
+		}
+
+		void Molecule::toggleSequenceVisibility()
+		{
+			if ( hasItem( ( ID::View::UI_MOLECULE_SEQUENCE ) ) )
+			{
+				Generic::destroy( removeItem( ID::View::UI_MOLECULE_SEQUENCE ) );
+			}
+			else
+			{
+				addItem( (View::BaseView<BaseModel> *)Generic::create<View::UI::MoleculeSequence>( this ) );
+			}
 		}
 
 		void Molecule::fromJson( nlohmann::json & p_json ) {}

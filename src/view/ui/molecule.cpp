@@ -43,6 +43,11 @@ namespace VTX
 								VTX_ACTION( new Action::Molecule::ComputeSecondaryStructure( _getModel() ) );
 							}
 						}
+
+						if ( ImGui::Button( LOCALE( "Sequence" ) ) )
+						{
+							VTX_ACTION( new Action::Molecule::ToggleSequenceVisibility( _getModel() ) );
+						}
 					}
 					if ( _getModel().getFrameCount() > 1 )
 					{
