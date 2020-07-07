@@ -13,6 +13,7 @@
 #include <glm/gtx/spline.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
+#include <nlohmann/json.hpp>
 #include <random>
 
 namespace VTX
@@ -394,6 +395,32 @@ namespace VTX
 									 const Vec3f & p_vector1 )
 			{
 				return p_scalar0 * p_vector0 + p_scalar1 * p_vector1;
+			}
+
+			// TODO: class Vec
+			template<typename T>
+			inline nlohmann::json vecToJson( const T & p_value )
+			{
+				return nlohmann::json( { { "X", p_value.x }, { "Y", p_value.y }, { "Z", p_value.z } } );
+			}
+
+			template<typename T>
+			inline T jsonToVec( const nlohmann::json & p_value )
+			{
+				return T( p_value[ "X" ], p_value[ "Y" ], p_value[ "Z" ] );
+			}
+
+			template<typename T>
+			inline nlohmann::json quatToJson( const T & p_value )
+			{
+				return nlohmann::json(
+					{ { "X", p_value.x }, { "Y", p_value.y }, { "Z", p_value.z }, { "W", p_value.w } } );
+			}
+
+			template<typename T>
+			inline T jsonToQuat( const nlohmann::json & p_value )
+			{
+				return T( p_value[ "W" ], { p_value[ "X" ], p_value[ "Y" ], p_value[ "Z" ] } );
 			}
 
 		} // namespace Math

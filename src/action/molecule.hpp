@@ -18,6 +18,10 @@ namespace VTX
 			class ChangeColor : public BaseAction
 			{
 			  public:
+				explicit ChangeColor( Model::Molecule & p_molecule, const std::vector<float> & p_color ) :
+					_molecule( p_molecule ), _color( p_color )
+				{
+				}
 				explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgb & p_color ) :
 					_molecule( p_molecule ), _color( p_color )
 				{

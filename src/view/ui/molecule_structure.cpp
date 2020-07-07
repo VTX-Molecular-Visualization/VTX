@@ -17,7 +17,8 @@ namespace VTX
 				const std::string nbBonds = std::to_string( _getModel().getBondCount() ) + " bonds.";
 				ImGui::PushID( ( "ViewMoleculeStructure" + std::to_string( _getModel().getId() ) ).c_str() );
 				bool moleculeOpened = ImGui::TreeNodeEx(
-					( _getModel().getFileName() + " " + _getModel().getName() + "\n - " + nbAtoms ).c_str(),
+					( _getModel().getPath().filename().string() + " " + _getModel().getName() + "\n - " + nbAtoms )
+						.c_str(),
 					_getModel().isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 
 				// Context menu.

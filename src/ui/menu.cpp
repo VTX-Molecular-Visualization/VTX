@@ -36,11 +36,19 @@ namespace VTX
 				{
 					paths.emplace_back( new Path( file ) );
 				}
-				if ( paths.size() )
+				if ( paths.size() > 0 )
 				{
 					VTX_ACTION( new Action::Main::Open( paths ) );
 				}
 				_openFileDialog = nullptr;
+			}
+
+			// Open file dialog.
+			if ( _saveFileDialog && _saveFileDialog->ready() )
+			{
+				std::string file = _saveFileDialog->result();
+				VTX_ACTION( new Action::Main::Save( new Path( file ) ) );
+				_saveFileDialog = nullptr;
 			}
 		}
 
@@ -58,12 +66,21 @@ namespace VTX
 				// Open.
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Open" ) ) )
 				{
-					_openFileDialog = std::shared_ptr<pfd::open_file>(
-						new pfd::open_file( LOCALE( "MainMenu.Menu.Open.ChooseFile" ),
-											"C://",
-											{ "All Files", "*" },
-											pfd::opt::multiselect ) );
+					// TODO: file filters.
+					_openFileDialog = std::shared_ptr<pfd::open_file>( new pfd::open_file(
+						LOCALE( "MainMenu.Menu.Open.ChooseFile" ), "", { "All Files", "*" }, pfd::opt::multiselect ) );
 				}
+
+				if ( ImGui::MenuItem( LOCALE( "Save" ) ) )
+				{
+					_saveFileDialog = std::shared_ptr<pfd::save_file>(
+						new pfd::save_file( LOCALE( "MainMenu.Menu.Open.ChooseFile" ),
+											"",
+											{ "VTX file (.vtx)", "*.vtx" },
+											pfd::opt::none ) );
+				}
+
+				ImGui::Separator();
 
 				// Quit.
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Menu.Quit" ) ) )
@@ -190,16 +207,19 @@ namespace VTX
 				}
 
 				// Background color.
-				Color::Rgb & bgColor = VTX_SETTING().backgroundColor;
-				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.BackgroundColor" ), (float *)&bgColor ) )
+				static std::vector<float> bgColor = VTX_SETTING().backgroundColor.toStdVector();
+
+				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.BackgroundColor" ), (float *)bgColor.data() ),
+					 ImGuiColorEditFlags_NoAlpha )
 				{
 					VTX_ACTION( new Action::Setting::ChangeBackgroundColor( bgColor ) );
 				}
 				ImGui::Separator();
 
 				// Light color.
-				Color::Rgb & lightColor = VTX_SETTING().lightColor;
-				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.LightColor" ), (float *)&lightColor ) )
+				static std::vector<float> lightColor = VTX_SETTING().lightColor.toStdVector();
+				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.LightColor" ), (float *)lightColor.data() ),
+					 ImGuiColorEditFlags_NoAlpha )
 				{
 					VTX_ACTION( new Action::Setting::ChangeLightColor( lightColor ) );
 				}
@@ -343,8 +363,8 @@ namespace VTX
 				}
 				if ( VTX_SETTING().activeOutline )
 				{
-					Color::Rgb & outlineColor = VTX_SETTING().outlineColor;
-					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.OutlineColor" ), (float *)&outlineColor ) )
+					std::vector<float> outlineColor = VTX_SETTING().outlineColor.toStdVector();
+					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.OutlineColor" ), (float *)outlineColor.data() ) )
 					{
 						VTX_ACTION( new Action::Setting::ChangeOutlineColor( outlineColor ) );
 					}
@@ -382,8 +402,8 @@ namespace VTX
 					{
 						VTX_ACTION( new Action::Setting::ChangeFogDensity( fogDensity ) );
 					}
-					Color::Rgb & fogColor = VTX_SETTING().fogColor;
-					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.FogColor" ), (float *)&fogColor ) )
+					std::vector<float> fogColor = VTX_SETTING().fogColor.toStdVector();
+					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.FogColor" ), (float *)fogColor.data() ) )
 					{
 						VTX_ACTION( new Action::Setting::ChangeFogColor( fogColor ) );
 					}
@@ -459,13 +479,13 @@ namespace VTX
 
 				ImGui::Separator();
 
-				// New.
+				// Load.
 				if ( ImGui::MenuItem( LOCALE( "Load" ) ) )
 				{
 					VTX_ACTION( new Action::Setting::Load() );
 				}
 
-				// New.
+				// Save.
 				if ( ImGui::MenuItem( LOCALE( "Save" ) ) )
 				{
 					VTX_ACTION( new Action::Setting::Save() );

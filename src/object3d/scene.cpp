@@ -1,4 +1,5 @@
 #include "scene.hpp"
+#include "action/main.hpp"
 #include "generic/factory.hpp"
 #include "math/transform.hpp"
 #include "vtx_app.hpp"
@@ -82,6 +83,49 @@ namespace VTX
 				}
 			}
 		} // namespace Object3D
+
+		void Scene::fromJson( nlohmann::json & p_json )
+		{
+			// Just clean paths for the moment.
+			clean();
+
+			for ( nlohmann::json & jsonMolecule : p_json[ "MOLECULES" ] )
+			{
+				std::string str = jsonMolecule[ "PATH" ].get<std::string>();
+				if ( str.find( "/" ) != std::string::npos || str.find( "\\" ) != std::string::npos )
+				{
+					VTX_ACTION( new Action::Main::Open( new Path( str ) ), true );
+				}
+				else
+				{
+					VTX_ACTION( new Action::Main::OpenApi( Path( str ).stem().string() ), true );
+				}
+			}
+
+			for ( nlohmann::json & jsonPath : p_json[ "PATHS" ] )
+			{
+				Model::Path * path = Generic::create<Model::Path>();
+				addPath( path );
+				path->fromJson( jsonPath );
+			}
+		}
+
+		nlohmann::json Scene::toJson() const
+		{
+			nlohmann::json jsonArrayMolecules = nlohmann::json::array();
+			for ( const PairMoleculePtrFloat & pair : _molecules )
+			{
+				jsonArrayMolecules.emplace_back( pair.first->toJson() );
+			}
+
+			nlohmann::json jsonArrayPaths = nlohmann::json::array();
+			for ( const Model::Path * const path : _paths )
+			{
+				jsonArrayPaths.emplace_back( path->toJson() );
+			}
+
+			return { { "MOLECULES", jsonArrayMolecules }, { "PATHS", jsonArrayPaths } };
+		}
 
 	} // namespace Object3D
 } // namespace VTX

@@ -21,6 +21,7 @@ namespace VTX
 			{
 				MOLECULE,
 				MESH,
+				VTX,
 				UNKNOWN,
 			};
 

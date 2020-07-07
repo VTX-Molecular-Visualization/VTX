@@ -18,6 +18,10 @@ namespace VTX
 			class ChangeColor : public BaseAction
 			{
 			  public:
+				explicit ChangeColor( Model::Residue & p_residue, const std::vector<float> & p_color ) :
+					_residue( p_residue ), _color( p_color )
+				{
+				}
 				explicit ChangeColor( Model::Residue & p_residue, const Color::Rgb & p_color ) :
 					_residue( p_residue ), _color( p_color )
 				{

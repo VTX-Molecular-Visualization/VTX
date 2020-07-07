@@ -39,13 +39,6 @@ namespace VTX
 					}
 				}
 
-				virtual void readBuffer( const std::string & p_buffer,
-										 const std::string & p_extension,
-										 T & ) override final
-				{
-					throw Exception::NotImplementedException();
-				}
-
 			  protected:
 				virtual void _readLine( const std::string &, T & ) = 0;
 			};

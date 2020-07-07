@@ -110,8 +110,8 @@ namespace VTX
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Options" ) ) )
 					{
-						Color::Rgb color = _getModel().getColor();
-						if ( ImGui::ColorEdit3( LOCALE( "View.Color" ), (float *)&color ) )
+						std::vector<float> color = _getModel().getColor().toStdVector();
+						if ( ImGui::ColorEdit3( LOCALE( "View.Color" ), (float *)color.data() ) )
 						{
 							VTX_ACTION( new Action::Molecule::ChangeColor( _getModel(), color ) );
 							// VTX_ACTION( new Action::Molecule::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN )

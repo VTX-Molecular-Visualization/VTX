@@ -11,6 +11,7 @@
 #include "chain.hpp"
 #include "define.hpp"
 #include "generic/base_representable.hpp"
+#include "generic/base_serializable.hpp"
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
@@ -29,7 +30,11 @@ namespace VTX
 	{
 		class BaseView3DMolecule;
 		class Ribbon;
-		class Molecule : public BaseModel3D, public Generic::BaseColorable, public Generic::BaseRepresentable
+		class Molecule :
+			public BaseModel3D,
+			public Generic::BaseColorable,
+			public Generic::BaseRepresentable,
+			public Generic::BaseSerializable
 		{
 		  public:
 			using AtomPositionsFrame = std::vector<Vec3f>;
@@ -59,8 +64,8 @@ namespace VTX
 			// Models.
 			inline const std::string & getName() const { return _name; }
 			inline void				   setName( const std::string & p_name ) { _name = p_name; }
-			inline const std::string & getFileName() const { return _fileName; }
-			inline void				   setFileName( const std::string & p_fileName ) { _fileName = p_fileName; }
+			inline const VTX::Path &   getPath() const { return _path; }
+			inline void				   setPath( const VTX::Path & p_path ) { _path = p_path; }
 
 			inline void							  addChain() { _chains.emplace_back( new Chain() ); }
 			inline Chain &						  getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
@@ -173,13 +178,14 @@ namespace VTX
 
 			bool mergeTopology( const Molecule & );
 			void refreshVisibility();
-
-			virtual void setSelected( const bool ) override;
-			virtual void setVisible( const bool ) override;
-			virtual void addRepresentation( const Generic::REPRESENTATION ) override;
-			virtual void removeRepresentation( const Generic::REPRESENTATION ) override;
-
 			void createSecondaryStructure();
+
+			virtual void		   setSelected( const bool ) override;
+			virtual void		   setVisible( const bool ) override;
+			virtual void		   addRepresentation( const Generic::REPRESENTATION ) override;
+			virtual void		   removeRepresentation( const Generic::REPRESENTATION ) override;
+			virtual void		   fromJson( nlohmann::json & ) override;
+			virtual nlohmann::json toJson() const override;
 
 		  protected:
 			virtual void _addItems() override final;
@@ -194,7 +200,7 @@ namespace VTX
 			RepresentationState _representationState = RepresentationState();
 
 			// Models.
-			std::string						_fileName					= "";
+			VTX::Path						_path;
 			std::string						_name						= "unknown";
 			std::vector<Chain *>			_chains						= std::vector<Chain *>();
 			std::vector<Residue *>			_residues					= std::vector<Residue *>();

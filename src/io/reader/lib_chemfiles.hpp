@@ -21,11 +21,11 @@ namespace VTX
 			{
 			  public:
 				virtual void readFile( const Path &, Model::Molecule & ) override;
-				virtual void readBuffer( const std::string &, const std::string &, Model::Molecule & ) override;
+				virtual void readBuffer( const std::string &, const Path &, Model::Molecule & ) override;
 
 			  private:
 				void prepareChemfiles() const;
-				void readTrajectory( chemfiles::Trajectory &, Model::Molecule &, const std::string & ) const;
+				void readTrajectory( chemfiles::Trajectory &, const Path &, Model::Molecule & ) const;
 			};
 		} // namespace Reader
 	}	  // namespace IO

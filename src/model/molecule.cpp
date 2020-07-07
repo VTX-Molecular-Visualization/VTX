@@ -467,5 +467,10 @@ namespace VTX
 			_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
 		}
+
+		void Molecule::fromJson( nlohmann::json & p_json ) {}
+
+		nlohmann::json Molecule::toJson() const { return { { "PATH", _path.string() } }; }
+
 	} // namespace Model
 } // namespace VTX
