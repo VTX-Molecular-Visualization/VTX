@@ -23,8 +23,8 @@ namespace VTX
 					}
 					ImGui::Text( "ID: %d", _getModel().getIndex() );
 					ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
-					std::vector<float> color = _getModel().getColor().toStdVector();
-					if ( ImGui::ColorEdit3( "Color", (float *)color.data() ) )
+					Color::Rgb color = _getModel().getColor();
+					if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
 					{
 						VTX_ACTION( new Action::Chain::ChangeColor( _getModel(), color ) );
 					}

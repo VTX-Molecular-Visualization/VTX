@@ -35,6 +35,8 @@ namespace VTX
 			const std::vector<std::string> * _actions	 = nullptr;
 			uint							 _frame		 = 0u;
 			uint							 _frameCount = 0u;
+
+			void _generareVideo() const;
 		};
 	} // namespace State
 } // namespace VTX

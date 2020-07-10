@@ -66,6 +66,12 @@ namespace VTX
 			explicit MathException( const std::string & p_err ) : std::runtime_error( "[MATH] " + p_err ) {}
 		};
 
+		class LibException : public std::runtime_error
+		{
+		  public:
+			explicit LibException( const std::string & p_err ) : std::runtime_error( "[LIB] " + p_err ) {}
+		};
+
 		class NotImplementedException : public std::runtime_error
 		{
 		  public:

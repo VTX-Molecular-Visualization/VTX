@@ -207,9 +207,8 @@ namespace VTX
 				}
 
 				// Background color.
-				static std::vector<float> bgColor = VTX_SETTING().backgroundColor.toStdVector();
-
-				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.BackgroundColor" ), (float *)bgColor.data() ),
+				Color::Rgb bgColor = VTX_SETTING().backgroundColor;
+				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.BackgroundColor" ), bgColor.getRGB() ),
 					 ImGuiColorEditFlags_NoAlpha )
 				{
 					VTX_ACTION( new Action::Setting::ChangeBackgroundColor( bgColor ) );
@@ -217,8 +216,8 @@ namespace VTX
 				ImGui::Separator();
 
 				// Light color.
-				static std::vector<float> lightColor = VTX_SETTING().lightColor.toStdVector();
-				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.LightColor" ), (float *)lightColor.data() ),
+				Color::Rgb lightColor = VTX_SETTING().lightColor;
+				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.LightColor" ), lightColor.getRGB() ),
 					 ImGuiColorEditFlags_NoAlpha )
 				{
 					VTX_ACTION( new Action::Setting::ChangeLightColor( lightColor ) );
@@ -363,8 +362,8 @@ namespace VTX
 				}
 				if ( VTX_SETTING().activeOutline )
 				{
-					std::vector<float> outlineColor = VTX_SETTING().outlineColor.toStdVector();
-					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.OutlineColor" ), (float *)outlineColor.data() ) )
+					Color::Rgb outlineColor = VTX_SETTING().outlineColor;
+					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.OutlineColor" ), outlineColor.getRGB() ) )
 					{
 						VTX_ACTION( new Action::Setting::ChangeOutlineColor( outlineColor ) );
 					}
@@ -402,8 +401,8 @@ namespace VTX
 					{
 						VTX_ACTION( new Action::Setting::ChangeFogDensity( fogDensity ) );
 					}
-					std::vector<float> fogColor = VTX_SETTING().fogColor.toStdVector();
-					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.FogColor" ), (float *)fogColor.data() ) )
+					Color::Rgb fogColor = VTX_SETTING().fogColor;
+					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.FogColor" ), fogColor.getRGB() ) )
 					{
 						VTX_ACTION( new Action::Setting::ChangeFogColor( fogColor ) );
 					}

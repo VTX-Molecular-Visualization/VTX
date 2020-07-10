@@ -3,6 +3,7 @@
 #include "util/filesystem.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
+#include "worker/program_launcher.hpp"
 
 namespace VTX
 {
@@ -75,14 +76,37 @@ namespace VTX
 
 			VTX_INFO( std::to_string( ( uint )( (float)_frame * 100 / _frameCount ) ) + "%" );
 
-			if ( _frame == _frameCount )
+			if ( _frame == _frameCount - 1 )
 			{
+				try
+				{
+					_generareVideo();
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( p_e.what() );
+				}
+
 				VTXApp::get().goToState( ID::State::VISUALIZATION );
 			}
 			else
 			{
 				_frame++;
 			}
+		}
+
+		void Export::_generareVideo() const
+		{
+			if ( std::filesystem::exists( Util::Filesystem::FFMPEG_EXE_FILE ) == false )
+			{
+				throw Exception::LibException( "ffmpeg is missing, frames are saved on disk" );
+			}
+
+			VTX_INFO( "Encoding video" );
+
+			VTX_WORKER( new Worker::ProgramLauncher(
+				Util::Filesystem::FFMPEG_EXE_FILE.string()
+				+ "-f image2 -framerate 60 -i frame%0d.png -vcodec libx264 -crf 10 video.mp4" ) );
 		}
 
 	} // namespace State

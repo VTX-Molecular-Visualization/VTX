@@ -56,10 +56,11 @@ namespace VTX
 			static const Path		 RENDERS_DIR	   = Path( EXECUTABLE_DIR.string() + "/../../renders" );
 			static const Path		 PATHS_DIR		   = Path( EXECUTABLE_DIR.string() + "/../../paths" );
 			static const Path		 VIDEOS_DIR		   = Path( EXECUTABLE_DIR.string() + "/../../videos" );
-			static const std::string IMGUI_INI_FILE	   = Path( EXECUTABLE_DIR.string() + "/../../imgui.ini" ).string();
+			static const Path		 LIBS_DIR		   = Path( EXECUTABLE_DIR.string() + "/.." );
+
+			static const std::string IMGUI_INI_FILE	   = Path( EXECUTABLE_DIR.string() + "/../../imgui.ini" ).string(); // TOFIX
 			static const Path		 SETTING_JSON_FILE = Path( EXECUTABLE_DIR.string() + "/../../setting.json" );
-			// TMP: because i have la flemme de choisir l'emplacement du fichier for the moment.
-			static const Path VTX_JSON_FILE = Path( EXECUTABLE_DIR.string() + "/../../save.vtx" );
+			static const Path		 FFMPEG_EXE_FILE   = Path( LIBS_DIR.string() + "/ffmpeg.exe" );
 
 			inline Path * const getDataPathPtr( const std::string & p_filename )
 			{
