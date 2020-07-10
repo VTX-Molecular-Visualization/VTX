@@ -109,11 +109,15 @@ namespace VTX
 
 			Path files = Util::Filesystem::getVideosBatchPath( _directoryName );
 			files /= "frame%06d.png";
-			std::string command = Util::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate 60 -i "
-								  + files.string() + " -vcodec libx264 -crf 10 "
+			std::string command = Util::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate "
+								  + std::to_string( Setting::VIDEO_FPS_DEFAULT ) + " -i " + files.string()
+								  + " -vcodec libx264 -crf " + std::to_string( Setting::VIDEO_CRF_DEFAULT ) + " "
 								  + Util::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
 			VTX_INFO( command );
 			VTX_WORKER( new Worker::ProgramLauncher( command ) );
+
+			// Clean frames
+			std::filesystem::remove_all( Util::Filesystem::getVideosBatchPath( _directoryName ) );
 		}
 
 	} // namespace State

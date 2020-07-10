@@ -79,6 +79,7 @@ namespace VTX
 	// Video.
 	const float Setting::PATH_DURATION_DEFAULT = 5.f;
 	const uint	Setting::VIDEO_FPS_DEFAULT	   = 60;
+	const uint	Setting::VIDEO_CRF_DEFAULT	   = 10;
 
 	// Misc.
 	const int  Setting::CONSOLE_SIZE	   = 80;
