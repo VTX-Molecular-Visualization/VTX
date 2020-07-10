@@ -113,8 +113,9 @@ namespace VTX
 								  + std::to_string( Setting::VIDEO_FPS_DEFAULT ) + " -i " + files.string()
 								  + " -vcodec libx264 -crf " + std::to_string( Setting::VIDEO_CRF_DEFAULT ) + " "
 								  + Util::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
-			VTX_INFO( command );
-			VTX_WORKER( new Worker::ProgramLauncher( command ) );
+			Worker::ProgramLauncher * worker = new Worker::ProgramLauncher( command );
+			VTX_WORKER( worker );
+			delete worker;
 
 			// Clean frames
 			std::filesystem::remove_all( Util::Filesystem::getVideosBatchPath( _directoryName ) );
