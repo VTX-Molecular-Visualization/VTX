@@ -14,6 +14,8 @@ namespace VTX
 		{
 			_arg		   = *(Arg *)p_arg;
 			_directoryName = Util::Time::getTimestamp();
+			_directoryName.erase( remove_if( _directoryName.begin(), _directoryName.end(), isspace ),
+								  _directoryName.end() );
 			VTXApp::get().getSetting().backup();
 
 			float duration = _arg.path->getDuration();
@@ -69,10 +71,11 @@ namespace VTX
 			VTXApp::get().renderScene();
 
 			std::string counterStr = std::to_string( _frame );
-			std::string fileName   = "video" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
+			std::string fileName   = "frame" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
 
 			VTX_ACTION( new Action::Main::Snapshot(
-				_arg.mode, Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ) );
+							_arg.mode, Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ),
+						true );
 
 			VTX_INFO( std::to_string( ( uint )( (float)_frame * 100 / _frameCount ) ) + "%" );
 
@@ -104,9 +107,13 @@ namespace VTX
 
 			VTX_INFO( "Encoding video" );
 
-			VTX_WORKER( new Worker::ProgramLauncher(
-				Util::Filesystem::FFMPEG_EXE_FILE.string()
-				+ "-f image2 -framerate 60 -i frame%0d.png -vcodec libx264 -crf 10 video.mp4" ) );
+			Path files = Util::Filesystem::getVideosBatchPath( _directoryName );
+			files /= "frame%06d.png";
+			std::string command = Util::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate 60 -i "
+								  + files.string() + " -vcodec libx264 -crf 10 "
+								  + Util::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
+			VTX_INFO( command );
+			VTX_WORKER( new Worker::ProgramLauncher( command ) );
 		}
 
 	} // namespace State
