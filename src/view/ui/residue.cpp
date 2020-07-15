@@ -26,7 +26,7 @@ namespace VTX
 					ImGui::Text( "ID: %d", _getModel().getIndex() );
 					ImGui::Text( "Atoms: %d", _getModel().getAtomCount() );
 					Color::Rgb color = _getModel().getColor();
-					if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
+					if ( ImGui::ColorEdit3( "Color", color.getRGB() ) )
 					{
 						VTX_ACTION( new Action::Residue::ChangeColor( _getModel(), color ) );
 						// VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::RESIDUE ) );
