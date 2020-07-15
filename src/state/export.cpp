@@ -3,6 +3,7 @@
 #include "util/filesystem.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
+#include "worker/program_launcher.hpp"
 
 namespace VTX
 {
@@ -13,6 +14,8 @@ namespace VTX
 		{
 			_arg		   = *(Arg *)p_arg;
 			_directoryName = Util::Time::getTimestamp();
+			_directoryName.erase( remove_if( _directoryName.begin(), _directoryName.end(), isspace ),
+								  _directoryName.end() );
 			VTXApp::get().getSetting().backup();
 
 			float duration = _arg.path->getDuration();
@@ -68,21 +71,54 @@ namespace VTX
 			VTXApp::get().renderScene();
 
 			std::string counterStr = std::to_string( _frame );
-			std::string fileName   = "video" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
+			std::string fileName   = "frame" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
 
 			VTX_ACTION( new Action::Main::Snapshot(
-				_arg.mode, Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ) );
+							_arg.mode, Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ),
+						true );
 
 			VTX_INFO( std::to_string( ( uint )( (float)_frame * 100 / _frameCount ) ) + "%" );
 
-			if ( _frame == _frameCount )
+			if ( _frame == _frameCount - 1 )
 			{
+				try
+				{
+					_generareVideo();
+				}
+				catch ( const std::exception & p_e )
+				{
+					VTX_ERROR( p_e.what() );
+				}
+
 				VTXApp::get().goToState( ID::State::VISUALIZATION );
 			}
 			else
 			{
 				_frame++;
 			}
+		}
+
+		void Export::_generareVideo() const
+		{
+			if ( std::filesystem::exists( Util::Filesystem::FFMPEG_EXE_FILE ) == false )
+			{
+				throw Exception::LibException( "ffmpeg is missing, frames are saved on disk" );
+			}
+
+			VTX_INFO( "Encoding video" );
+
+			Path files = Util::Filesystem::getVideosBatchPath( _directoryName );
+			files /= "frame%06d.png";
+			std::string command = Util::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate "
+								  + std::to_string( Setting::VIDEO_FPS_DEFAULT ) + " -i " + files.string()
+								  + " -vcodec libx264 -crf " + std::to_string( Setting::VIDEO_CRF_DEFAULT ) + " "
+								  + Util::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
+			Worker::ProgramLauncher * worker = new Worker::ProgramLauncher( command );
+			VTX_WORKER( worker );
+			delete worker;
+
+			// Clean frames
+			std::filesystem::remove_all( Util::Filesystem::getVideosBatchPath( _directoryName ) );
 		}
 
 	} // namespace State

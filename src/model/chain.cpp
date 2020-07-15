@@ -105,5 +105,22 @@ namespace VTX
 			Generic::BaseRepresentable::removeRepresentation( p_representation );
 			Util::Molecule::refreshRepresentationState( *getMoleculePtr() );
 		}
+
+		void Chain::computeSequence()
+		{
+			_sequence = "/" + getName() + "/";
+			for ( uint i = 0; i < getResidueCount(); ++i )
+			{
+				Model::Residue & residue = getMoleculePtr()->getResidue( getIndexFirstResidue() + i );
+				if ( residue.getSymbolShort() != "?" )
+				{
+					_sequence += residue.getSymbolShort();
+				}
+				else
+				{
+					_sequence += residue.getSymbolStr() + " ";
+				}
+			}
+		}
 	} // namespace Model
 } // namespace VTX

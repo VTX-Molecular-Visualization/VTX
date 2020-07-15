@@ -10,16 +10,19 @@ set(PATH_LIB "lib")
 set(PATH_LIB_SRC "lib_src")
 set(PATH_WINDOWS_RESOURCE "_windows/resource")
 set(CONFIGS "Debug;Release;RelWithDebInfo")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 
 message("Downloading depdendencies...")
 
 # Download dependencies.
+set(LIB_URL "https://www.simonguionniere.com/private/VTX")
 set(ZIP_LIB "lib.zip")
 set(ZIP_LIB_SRC "lib_src.zip")
+set(FFMPEG "ffmpeg.exe")
 
 if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${PATH_LIB})
   if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${ZIP_LIB})
-    file(DOWNLOAD https://www.simonguionniere.com/private/VTX/${ZIP_LIB} ${CMAKE_SOURCE_DIR}/${ZIP_LIB} SHOW_PROGRESS)
+    file(DOWNLOAD ${LIB_URL}/${ZIP_LIB} ${CMAKE_SOURCE_DIR}/${ZIP_LIB} SHOW_PROGRESS)
 	execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${CMAKE_SOURCE_DIR}/${ZIP_LIB} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB})
 	file(REMOVE ${CMAKE_SOURCE_DIR}/${ZIP_LIB})
   endif()
@@ -27,10 +30,17 @@ endif()
 
 if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
   if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC})
-    file(DOWNLOAD https://www.simonguionniere.com/private/VTX/${ZIP_LIB_SRC} ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC} SHOW_PROGRESS)
+    file(DOWNLOAD ${LIB_URL}/${ZIP_LIB_SRC} ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC} SHOW_PROGRESS)
 	execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
 	file(REMOVE ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC})
   endif()
+endif()
+
+if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
+	file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+endif()
+if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FFMPEG})
+	file(DOWNLOAD ${LIB_URL}/${FFMPEG} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FFMPEG} SHOW_PROGRESS)
 endif()
 
 message("Downloading dependencies... DONE")
@@ -82,7 +92,6 @@ message("Copying all sources... DONE")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CONFIGURATION_TYPES ${CONFIGS} CACHE STRING "" FORCE)
 set(CMAKE_SUPPRESS_REGENERATION true)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set link directories.

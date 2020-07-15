@@ -159,6 +159,7 @@ namespace VTX
 		// Video.
 		static const float PATH_DURATION_DEFAULT;
 		static const uint  VIDEO_FPS_DEFAULT;
+		static const uint  VIDEO_CRF_DEFAULT;
 
 		// Misc.
 		static const int  CONSOLE_SIZE;

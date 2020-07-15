@@ -90,14 +90,21 @@ namespace VTX
 
 			inline const Ribbon & getRibbon() const { return *_ribbon; }
 			inline Ribbon &		  getRibbon() { return *_ribbon; }
+			inline const Ribbon & getSequence() const { return *_ribbon; }
+			inline Ribbon &		  getSequence() { return *_ribbon; }
 
 			inline const bool isAtomVisible( const uint p_idx ) const
 			{
 				return bool( _bufferAtomVisibilities[ p_idx ] );
 			}
 
-			inline const float		  getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
-			inline const Color::Rgb & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
+			inline const float		getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
+			inline const Color::Rgb getAtomColor( const uint p_idx ) const
+			{
+				return Color::Rgb( _bufferAtomColors[ p_idx * 3 ],
+								   _bufferAtomColors[ p_idx * 3 + 1 ],
+								   _bufferAtomColors[ p_idx * 3 + 2 ] );
+			}
 
 			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
 			{
@@ -179,6 +186,7 @@ namespace VTX
 			bool mergeTopology( const Molecule & );
 			void refreshVisibility();
 			void createSecondaryStructure();
+			void toggleSequenceVisibility();
 
 			virtual void		   setSelected( const bool ) override;
 			virtual void		   setVisible( const bool ) override;
@@ -213,10 +221,10 @@ namespace VTX
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
 			// Buffers.
-			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
-			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
-			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
-			std::vector<uint>		_bufferBonds			= std::vector<uint>();
+			std::vector<float> _bufferAtomRadius	   = std::vector<float>();
+			std::vector<float> _bufferAtomColors	   = std::vector<float>();
+			std::vector<uint>  _bufferAtomVisibilities = std::vector<uint>();
+			std::vector<uint>  _bufferBonds			   = std::vector<uint>();
 
 			// Global AABB of atom positions (taking into account each frame).
 			// TODO: find better name
@@ -224,6 +232,9 @@ namespace VTX
 
 			// Secondary structure.
 			Ribbon * _ribbon = nullptr;
+
+			// Sequence.
+			std::string _sequence;
 
 			// OpenGL buffers.
 			enum ATTRIBUTE_LOCATION

@@ -7,9 +7,9 @@
         ],
         "PATHS": [
             {
-                "DURATION": 5.0,
-                "IS_LOOPING": true,
-                "MODE_DURATION": 2,
+                "DURATION": 0.20000000298023224,
+                "IS_LOOPING": false,
+                "MODE_DURATION": 1,
                 "MODE_INTERPOLATION": 1,
                 "VIEWPOINTS": [
                     {
@@ -38,7 +38,7 @@
                         "ACTIONS": [],
                         "CONTROLLER": "FREEFLY",
                         "DISTANCE": 0.0,
-                        "DURATION": 1.0,
+                        "DURATION": 0.03999999910593033,
                         "POSITION": {
                             "X": 14.137548316278444,
                             "Y": 0.0,
@@ -60,7 +60,7 @@
                         "ACTIONS": [],
                         "CONTROLLER": "FREEFLY",
                         "DISTANCE": 0.0,
-                        "DURATION": 1.0,
+                        "DURATION": 0.03999999910593033,
                         "POSITION": {
                             "X": 26.98999603377686,
                             "Y": 0.0,
@@ -82,7 +82,7 @@
                         "ACTIONS": [],
                         "CONTROLLER": "TRACKBALL",
                         "DISTANCE": 107.22476196289063,
-                        "DURATION": 1.0,
+                        "DURATION": 0.03999999910593033,
                         "POSITION": {
                             "X": -0.024122433735863313,
                             "Y": -0.5355005264282227,
@@ -104,7 +104,7 @@
                         "ACTIONS": [],
                         "CONTROLLER": "TRACKBALL",
                         "DISTANCE": 107.22476196289063,
-                        "DURATION": 1.0,
+                        "DURATION": 0.03999999910593033,
                         "POSITION": {
                             "X": -16.6614185810599,
                             "Y": 85.201777585765,
@@ -126,7 +126,7 @@
                         "ACTIONS": [],
                         "CONTROLLER": "TRACKBALL",
                         "DISTANCE": 107.22476196289063,
-                        "DURATION": 1.0,
+                        "DURATION": 0.03999999910593033,
                         "POSITION": {
                             "X": -28.59240918177056,
                             "Y": -90.80363489411071,

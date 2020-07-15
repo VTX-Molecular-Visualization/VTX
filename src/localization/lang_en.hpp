@@ -16,7 +16,7 @@ namespace VTX
 
 			{ "Load", "Load" },
 			{ "Save", "Save" },
-
+			{ "Sequence", "Sequence" },
 			// TODO: remove extended keys, juste translate.
 
 			// Main menu.

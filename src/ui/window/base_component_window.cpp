@@ -8,7 +8,8 @@ namespace VTX
 		{
 			bool BaseComponentWindow::_drawHeader()
 			{
-				ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing;
+				ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoFocusOnAppearing
+										 | ImGuiWindowFlags_HorizontalScrollbar;
 				ImGui::SetNextWindowDockID( ImGui::GetID( Style::IMGUI_ID_MAIN_DOCKSPACE ), ImGuiCond_FirstUseEver );
 				ImGui::SetNextWindowBgAlpha( Style::IMGUI_STYLE_BG_ALPHA );
 

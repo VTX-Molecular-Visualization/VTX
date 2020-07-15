@@ -67,6 +67,11 @@ namespace VTX
 
 		BaseComponent * const BaseComponent::getComponentByName( const std::string & p_name )
 		{
+			if ( getName() == p_name )
+			{
+				return this;
+			}
+
 			if ( hasItem( p_name ) )
 			{
 				return static_cast<BaseComponent *>( getItem( p_name ) );

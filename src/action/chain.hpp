@@ -18,10 +18,6 @@ namespace VTX
 			class ChangeColor : public BaseAction
 			{
 			  public:
-				explicit ChangeColor( Model::Chain & p_chain, const std::vector<float> & p_color ) :
-					_chain( p_chain ), _color( p_color )
-				{
-				}
 				explicit ChangeColor( Model::Chain & p_chain, const Color::Rgb & p_color ) :
 					_chain( p_chain ), _color( p_color )
 				{

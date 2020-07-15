@@ -18,10 +18,6 @@ namespace VTX
 			class ChangeColor : public BaseAction
 			{
 			  public:
-				explicit ChangeColor( Model::Molecule & p_molecule, const std::vector<float> & p_color ) :
-					_molecule( p_molecule ), _color( p_color )
-				{
-				}
 				explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgb & p_color ) :
 					_molecule( p_molecule ), _color( p_color )
 				{
@@ -129,6 +125,17 @@ namespace VTX
 					Util::Molecule::computeSecondaryStructure( _molecule );
 					_molecule.createSecondaryStructure();
 				}
+
+			  private:
+				Model::Molecule & _molecule;
+			};
+
+			class ToggleSequenceVisibility : public BaseAction
+			{
+			  public:
+				explicit ToggleSequenceVisibility( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
+
+				virtual void execute() override { _molecule.toggleSequenceVisibility(); }
 
 			  private:
 				Model::Molecule & _molecule;
