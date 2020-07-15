@@ -172,8 +172,12 @@ namespace VTX
 					modelResidue->setChainPtr( modelChain );
 					modelResidue->setIndexFirstAtom( uint( *residue.begin() ) );
 					modelResidue->setAtomCount( uint( residue.size() ) );
-					const std::string & residueSymbol = residue.name();
-					std::optional		symbol		  = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
+					std::string residueSymbol = residue.name();
+					std::transform(
+						residueSymbol.begin(), residueSymbol.end(), residueSymbol.begin(), []( unsigned char c ) {
+							return std::toupper( c );
+						} );
+					std::optional symbol = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
 					symbol.has_value() ? modelResidue->setSymbol( symbol.value() )
 									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 
@@ -257,6 +261,10 @@ namespace VTX
 						modelAtom->setChainPtr( modelChain );
 						modelAtom->setResiduePtr( modelResidue );
 						std::string atomSymbol = atom.type();
+						std::transform(
+							atomSymbol.begin(), atomSymbol.end(), atomSymbol.begin(), []( unsigned char c ) {
+								return std::toupper( c );
+							} );
 
 						// VTX_INFO( atom.name() + " " + atom.type() );
 
