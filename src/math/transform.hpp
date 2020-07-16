@@ -35,7 +35,7 @@ namespace VTX
 				return Vec3f( _scale[ 0 ][ 0 ], _scale[ 1 ][ 1 ], _scale[ 2 ][ 2 ] );
 			}
 
-			inline void Transform::reset()
+			inline void reset()
 			{
 				_transform	 = MAT4F_ID;
 				_translation = MAT4F_ID;
@@ -43,13 +43,13 @@ namespace VTX
 				_scale		 = MAT4F_ID;
 			}
 
-			inline void Transform::translate( const Vec3f & p_vec )
+			inline void translate( const Vec3f & p_vec )
 			{
 				_translation = Util::Math::translate( _translation, p_vec );
 				update();
 			}
 
-			inline void Transform::setTranslation( const float p_x, const float p_y, const float p_z )
+			inline void setTranslation( const float p_x, const float p_y, const float p_z )
 			{
 				_translation[ 3 ][ 0 ] = p_x;
 				_translation[ 3 ][ 1 ] = p_y;
@@ -57,49 +57,49 @@ namespace VTX
 				update();
 			}
 
-			inline void Transform::setTranslation( const Vec3f & p_vec )
+			inline void setTranslation( const Vec3f & p_vec )
 			{
 				setTranslation( p_vec.x, p_vec.y, p_vec.z );
 				update();
 			}
 
-			inline void Transform::setTranslation( const Mat4f & p_mat )
+			inline void setTranslation( const Mat4f & p_mat )
 			{
 				_translation = p_mat;
 				update();
 			}
 
-			inline void Transform::rotate( const float p_angle, const Vec3f & p_axis )
+			inline void rotate( const float p_angle, const Vec3f & p_axis )
 			{
 				_rotation = Util::Math::rotate( _rotation, p_angle, p_axis );
 				update();
 			}
 
-			inline void Transform::setRotation( const float p_x, const float p_y, const float p_z )
+			inline void setRotation( const float p_x, const float p_y, const float p_z )
 			{
 				// TODO
 				update();
 			}
 
-			inline void Transform::setRotation( const Vec3f & p_vec )
+			inline void setRotation( const Vec3f & p_vec )
 			{
 				setRotation( p_vec.x, p_vec.y, p_vec.z );
 				update();
 			}
 
-			inline void Transform::Transform::setRotation( const Mat4f & p_mat )
+			inline void setRotation( const Mat4f & p_mat )
 			{
 				_rotation = p_mat;
 				update();
 			}
 
-			inline void Transform::scale( const Vec3f & p_vec )
+			inline void scale( const Vec3f & p_vec )
 			{
 				_scale = Util::Math::scale( _scale, p_vec );
 				update();
 			}
 
-			inline void Transform::setScale( const Vec3f & p_scale )
+			inline void setScale( const Vec3f & p_scale )
 			{
 				_scale[ 0 ][ 0 ] = p_scale.x;
 				_scale[ 1 ][ 1 ] = p_scale.y;
@@ -107,7 +107,7 @@ namespace VTX
 				update();
 			}
 
-			inline void Transform::setScale( const float p_scale )
+			inline void setScale( const float p_scale )
 			{
 				_scale[ 0 ][ 0 ] = p_scale;
 				_scale[ 1 ][ 1 ] = p_scale;
@@ -115,7 +115,7 @@ namespace VTX
 				update();
 			}
 
-			inline void Transform::setScale( const Mat4f & p_mat )
+			inline void setScale( const Mat4f & p_mat )
 			{
 				_scale = p_mat;
 				update();

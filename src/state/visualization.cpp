@@ -18,11 +18,11 @@ namespace VTX
 
 			if ( _controller == ID::Controller::FREEFLY )
 			{
-				getItem( ID::Controller::TRACKBALL )->setActive( false );
+				getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( false );
 			}
 			else
 			{
-				getItem( ID::Controller::FREEFLY )->setActive( false );
+				getItem<Controller::Freefly>( ID::Controller::FREEFLY )->setActive( false );
 			}
 		}
 
