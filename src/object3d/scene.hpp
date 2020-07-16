@@ -73,11 +73,11 @@ namespace VTX
 			void _computeAABB()
 			{
 				_aabb.invalidate();
-				for ( const PairMoleculePtrFloat mol : _molecules )
+				for ( const PairMoleculePtrFloat & mol : _molecules )
 				{
 					_aabb.extend( mol.first->getGlobalPositionsAABB() );
 				}
-				for ( const MeshTrianglePtr mesh : _meshes )
+				for ( const MeshTrianglePtr & mesh : _meshes )
 				{
 					_aabb.extend( mesh->getAABB() );
 				}

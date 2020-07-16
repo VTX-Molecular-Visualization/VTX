@@ -22,7 +22,7 @@ namespace VTX
 			inline const uint getWidth() const { return _width; }
 			inline const uint getHeight() const { return _height; }
 
-			virtual void BaseRenderer::resize( const uint p_width, const uint p_height )
+			virtual void resize( const uint p_width, const uint p_height )
 			{
 				_width	= p_width;
 				_height = p_height;

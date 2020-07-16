@@ -73,13 +73,13 @@ namespace VTX
 				GLenum fboStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
 				if ( fboStatus != GL_FRAMEBUFFER_COMPLETE )
 				{
-					VTX_WARNING( "Framebuffer not complete: " + fboStatus );
+					VTX_WARNING( "Framebuffer not complete: " + std::to_string( fboStatus ) );
 				}
 
 				GLenum glstatus = glGetError();
 				if ( glstatus != GL_NO_ERROR )
 				{
-					VTX_ERROR( "Error in GL call: " + glstatus );
+					VTX_ERROR( "Error in GL call: " + std::to_string( glstatus ) );
 				}
 			}
 

@@ -26,9 +26,13 @@
 
 namespace VTX
 {
-	namespace Model
+	namespace View
 	{
 		class BaseView3DMolecule;
+	}
+
+	namespace Model
+	{
 		class Ribbon;
 		class Molecule :
 			public BaseModel3D,
