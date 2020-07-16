@@ -95,11 +95,10 @@ namespace VTX
 
 		TriangleMesh::TriangleMesh( const Model::Molecule * p_molecule )
 		{
-			const Model::Ribbon & ribbon			= p_molecule->getRibbon();
-			_vertices								= ribbon.getVertices();
-			_normals								= ribbon.getNormals();
-			const std::vector<Color::Rgb> & colors	= ribbon.getColors();
-			const std::vector<uint> &		indices = ribbon.getIndices();
+			const Model::Ribbon & ribbon	  = p_molecule->getRibbon();
+			_vertices						  = ribbon.getVertices();
+			_normals						  = ribbon.getNormals();
+			const std::vector<uint> & indices = ribbon.getIndices();
 
 			_triangles.reserve( indices.size() / 3 );
 
@@ -108,7 +107,7 @@ namespace VTX
 				uint idMtl = INVALID_ID;
 				for ( uint m = 0; m < uint( _materials.size() ); ++m )
 				{
-					if ( _materials[ m ]->getColor() == colors[ indices[ i ] ] )
+					if ( _materials[ m ]->getColor() == ribbon.getColor( indices[ i ] ) )
 					{
 						idMtl = m;
 						break;
@@ -118,7 +117,7 @@ namespace VTX
 				{
 					_materials.emplace_back( //
 											 // new MatteMaterial( colors[ indices[ i ] ], 0.3f ) );
-						new PhongMaterial( colors[ indices[ i ] ], colors[ indices[ i ] ], 64.f ) );
+						new PhongMaterial( ribbon.getColor( indices[ i ] ), ribbon.getColor( indices[ i ] ), 64.f ) );
 					idMtl = uint( _materials.size() - 1 );
 				}
 

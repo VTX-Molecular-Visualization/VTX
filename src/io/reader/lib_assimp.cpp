@@ -36,7 +36,7 @@ namespace VTX
 
 				p_mesh.getVertices().resize( nbVertices );
 				p_mesh.getNormals().resize( nbVertices );
-				p_mesh.getColors().resize( nbVertices );
+				p_mesh.getColors().resize( nbVertices * 3u );
 				p_mesh.getVisibilities().resize( nbVertices, true );
 				p_mesh.getIndices().resize( nbTriangles * 3u );
 
@@ -75,10 +75,9 @@ namespace VTX
 						normale.z		= mesh->mNormals[ v ].z;
 
 						// TODO: read mtl if exists !
-						Color::Rgb & color = p_mesh.getColor( currentVertex );
-						color.setR( 1.f );
-						color.setG( 0.5f );
-						color.setB( 0.f );
+						p_mesh.getColors()[ currentVertex * 3u ]	 = 1.f;
+						p_mesh.getColors()[ currentVertex * 3u + 1 ] = 0.5f;
+						p_mesh.getColors()[ currentVertex * 3u + 2 ] = 0.f;
 					}
 				}
 			}

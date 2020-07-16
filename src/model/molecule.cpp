@@ -350,7 +350,7 @@ namespace VTX
 
 			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( float ) * 3, 0 );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );

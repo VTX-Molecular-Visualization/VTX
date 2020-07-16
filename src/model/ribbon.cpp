@@ -566,7 +566,9 @@ namespace VTX
 				// Colors.
 				for ( uint t = 0; t < 32; ++t )
 				{
-					_colors.emplace_back( p_color );
+					_colors.emplace_back( p_color.getR() );
+					_colors.emplace_back( p_color.getG() );
+					_colors.emplace_back( p_color.getB() );
 				}
 
 				// Triangle indices.
