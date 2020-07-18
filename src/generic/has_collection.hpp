@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "base_cleanable.hpp"
 #include "base_collectionable.hpp"
 #include "base_initializable.hpp"
 #include "factory.hpp"
@@ -20,21 +19,25 @@ namespace VTX
 	namespace Generic
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCollectionable, T>::value>>
-		class HasCollection : public BaseInitializable, public BaseCleanable
+		class HasCollection : public BaseInitializable
 		{
 		  public:
 			using MapStringToItemPtr  = std::map<std::string, T *>;
 			using PairStringToItemPtr = std::pair<const std::string, T *>;
 
-			virtual void init() override { _addItems(); }
+			virtual ~HasCollection() { clear(); }
 
-			virtual void clean() override
-			{
-				for ( const PairStringToItemPtr & pair : _items )
-				{
-					Generic::destroy<BaseCollectionable>( pair.second );
-				}
+			virtual void init() override { _addItems(); }
+			void		 clear() { 
+				/*for ( const PairStringToItemPtr & pair : _items )
+					{
+				Generic::destroy<BaseCollectionable>( pair.second );
+				
+					}
 				_items.clear();
+				_orderedKeys.clear();*/
+				
+				Generic::clearMapAsValue( _items );
 				_orderedKeys.clear();
 			}
 
@@ -100,7 +103,7 @@ namespace VTX
 
 			virtual void _addItems() {};
 
-		  private:
+		  public:
 			MapStringToItemPtr		 _items		  = MapStringToItemPtr();
 			std::vector<std::string> _orderedKeys = std::vector<std::string>();
 		};

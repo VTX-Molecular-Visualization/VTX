@@ -90,7 +90,7 @@ namespace VTX
 			}
 			else
 			{
-				Generic::destroy( removeItem( ID::View::UI_CHAIN ) );
+				delete removeItem( ID::View::UI_CHAIN );
 			}
 		}
 

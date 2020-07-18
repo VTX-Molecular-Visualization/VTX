@@ -25,7 +25,6 @@ namespace VTX
 			virtual void enter( void * const ) = 0;
 			virtual void exit()				   = 0;
 			virtual void init() override { HasCollection::init(); }
-			virtual void clean() override { HasCollection::clean(); }
 
 			virtual void BaseState::update( const double p_deltaTime ) override
 			{

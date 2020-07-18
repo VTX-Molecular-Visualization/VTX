@@ -26,7 +26,7 @@ namespace VTX
 			}
 		}
 
-		void Visualization::exit() { Generic::HasCollection<Controller::BaseController>::clean(); }
+		void Visualization::exit() { Generic::HasCollection<Controller::BaseController>::clear(); }
 
 		void Visualization::update( const double p_deltaTime )
 		{

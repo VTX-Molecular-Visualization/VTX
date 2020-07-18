@@ -187,106 +187,14 @@ namespace VTX
 			}
 			else
 			{
-				Generic::destroy( removeItem( ID::View::UI_PATH ) );
+				delete removeItem( ID::View::UI_PATH );
 			}
 		}
 
-		/*
-		void Path::load( const std::filesystem::path & p_file )
-		{
-			VTX_INFO( "Importing view points from " + p_file.string() );
-			std::ifstream file;
-			file.open( p_file );
-
-			if ( !file.is_open() )
-				throw Exception::VTXException( "ModelPath::importPath: cannot open file " + p_file.string() );
-
-			Tool::Chrono chrono = Tool::Chrono();
-			chrono.start();
-			std::string		   line;
-			std::istringstream iss;
-
-			int	  nbViewPoints = 0;
-			float x = 1, y = 1, z = 1, w = 1;
-			Vec3f position;
-			Quatf rotation;
-			float duration;
-			// read first line to get the number of view points
-			std::getline( file, line );
-			iss.str( line );
-			iss >> nbViewPoints;
-			Generic::clearVector( _viewpoints );
-
-			for ( int i = 0; i < nbViewPoints; ++i )
-			{
-				std::getline( file, line );
-				iss.clear();
-				iss.str( line );
-
-				iss >> position.x;
-				iss >> position.y;
-				iss >> position.z;
-				// get rotation
-				iss >> rotation.x;
-				iss >> rotation.y;
-				iss >> rotation.z;
-				iss >> rotation.w;
-				// get duration
-				iss >> duration;
-
-				// addViewpoint( new Viewpoint( this, position, rotation, duration ) );
-
-				std::string action;
-				while ( iss.eof() == false )
-				{
-					iss >> action;
-					std::replace( action.begin(), action.end(), '-', ' ' );
-					getViewpoints()[ i ]->addAction( action );
-				}
-			}
-			refreshAllDurations();
-			chrono.stop();
-			VTX_INFO( "Import finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
-		}
-
-		void Path::save( const std::filesystem::path & p_file ) const
-		{
-			VTX_INFO( "Exporting " + std::to_string( _viewpoints.size() ) + " view points in " + p_file.string() );
-			std::ofstream file;
-			file.open( p_file, std::ios::out | std::ios::trunc );
-
-			if ( !file.is_open() )
-				throw Exception::VTXException( "ModelPath::exportPath: cannot open file " + p_file.string() );
-
-			Tool::Chrono chrono = Tool::Chrono();
-			chrono.start();
-			file << _viewpoints.size() << std::endl;
-			for ( Model::Viewpoint * viewpoint : _viewpoints )
-			{
-				const Vec3f & p = viewpoint->getPosition();
-				const Quatf & r = viewpoint->getRotation();
-				const float & d = viewpoint->getDuration();
-				file << p.x << " " << p.y << " " << p.z << " " << r.x << " " << r.y << " " << r.z << " " << r.w << " "
-					 << d;
-
-				for ( std::string action : viewpoint->getActions() )
-				{
-					std::replace( action.begin(), action.end(), ' ', '-' );
-					file << " " << action;
-				}
-
-				file << std::endl;
-			}
-			chrono.stop();
-			VTX_INFO( "Export finished in " + std::to_string( chrono.elapsedTime() ) + " seconds" );
-
-			file.close();
-		}
-		*/
-
+		// Not const because nlohmann not const :-)
 		void Path::fromJson( nlohmann::json & p_json )
 		{
-			_modeDuration = p_json[ "MODE_DURATION" ].get<DURATION_MODE>();
+			_modeDuration	   = p_json[ "MODE_DURATION" ].get<DURATION_MODE>();
 			_modeInterpolation = p_json[ "MODE_INTERPOLATION" ].get<INNTERPOLATION_MODE>();
 			_duration		   = p_json[ "DURATION" ].get<float>();
 			_isLooping		   = p_json[ "IS_LOOPING" ].get<bool>();

@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "base_cleanable.hpp"
 #include "base_initializable.hpp"
 #include "define.hpp"
 #include <string>
@@ -14,7 +13,7 @@ namespace VTX
 {
 	namespace Generic
 	{
-		class BaseCollectionable : public BaseInitializable, public BaseCleanable
+		class BaseCollectionable : public BaseInitializable
 		{
 		  public:
 			virtual ~BaseCollectionable() = default;

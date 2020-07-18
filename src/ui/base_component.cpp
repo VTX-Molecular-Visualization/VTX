@@ -13,13 +13,6 @@ namespace VTX
 			_visible = true;
 		}
 
-		void BaseComponent::clean()
-		{
-			_visible = false;
-			Event::BaseEventReceiverVTX::_unregisterEvents();
-			Generic::HasCollection<Generic::BaseDrawable>::clean();
-		}
-
 		void BaseComponent::_draw()
 		{
 			if ( _drawHeader() == false )

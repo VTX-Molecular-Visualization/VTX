@@ -6,7 +6,6 @@
 #endif
 
 #include "camera.hpp"
-#include "generic/base_cleanable.hpp"
 #include "generic/base_serializable.hpp"
 #include "generic/base_updatable.hpp"
 #include "model/mesh_triangle.hpp"
@@ -18,7 +17,7 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		class Scene : public Generic::BaseUpdatable, public Generic::BaseCleanable, public Generic::BaseSerializable
+		class Scene : public Generic::BaseUpdatable, public Generic::BaseSerializable
 		{
 		  public:
 			using MoleculePtr			= Model::Molecule *;
@@ -30,8 +29,14 @@ namespace VTX
 			using VectorMeshTrianglePtr = std::vector<MeshTrianglePtr>;
 
 			Scene();
+			~Scene();
 
-			virtual void clean() override;
+			inline void clear()
+			{
+				Generic::clearMapAsKey( _molecules );
+				Generic::clearVector( _meshes );
+				Generic::clearVector( _paths );
+			}
 
 			inline const Math::AABB & getAABB() const { return _aabb; }
 

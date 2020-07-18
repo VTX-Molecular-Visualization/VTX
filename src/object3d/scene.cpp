@@ -14,12 +14,7 @@ namespace VTX
 			addPath( path );
 		}
 
-		void Scene::clean()
-		{
-			Generic::clearMapAsKey( _molecules );
-			Generic::clearVector( _meshes );
-			Generic::clearVector( _paths );
-		}
+		Scene::~Scene() { clear(); }
 
 		void Scene::update( const double p_deltaTime )
 		{
@@ -86,9 +81,6 @@ namespace VTX
 
 		void Scene::fromJson( nlohmann::json & p_json )
 		{
-			// Just clean paths for the moment.
-			clean();
-
 			for ( nlohmann::json & jsonMolecule : p_json[ "MOLECULES" ] )
 			{
 				std::string str = jsonMolecule[ "PATH" ].get<std::string>();

@@ -50,7 +50,7 @@ namespace VTX
 			if ( _ribbon != nullptr )
 			{
 				VTXApp::get().getScene().removeMesh( _ribbon );
-				Generic::destroy( _ribbon );
+				delete _ribbon;
 			}
 		}
 
@@ -293,7 +293,7 @@ namespace VTX
 			}
 			else
 			{
-				Generic::destroy( removeItem( ID::View::UI_MOLECULE ) );
+				delete removeItem( ID::View::UI_MOLECULE );
 			}
 		}
 
@@ -474,7 +474,7 @@ namespace VTX
 			if ( _ribbon != nullptr )
 			{
 				VTXApp::get().getScene().removeMesh( _ribbon );
-				Generic::destroy( _ribbon );
+				delete _ribbon;
 			}
 
 			_ribbon = Generic::create<Ribbon, Molecule>( this );
@@ -486,7 +486,7 @@ namespace VTX
 		{
 			if ( hasItem( ( ID::View::UI_MOLECULE_SEQUENCE ) ) )
 			{
-				Generic::destroy( removeItem( ID::View::UI_MOLECULE_SEQUENCE ) );
+				delete removeItem( ID::View::UI_MOLECULE_SEQUENCE );
 			}
 			else
 			{

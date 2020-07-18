@@ -31,7 +31,6 @@ namespace VTX
 			}
 			virtual void createProgram()	   = 0;
 			virtual void setUniFormLocations() = 0;
-			virtual void clean() override {}
 
 		  protected:
 			Renderer::GLSL::Program * _program = nullptr;

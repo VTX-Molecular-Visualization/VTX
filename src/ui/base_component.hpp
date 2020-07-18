@@ -28,10 +28,13 @@ namespace VTX
 			public Event::BaseEventReceiverVTX
 		{
 		  public:
-			virtual ~BaseComponent() {}
+			virtual ~BaseComponent()
+			{
+				_visible = false;
+				Event::BaseEventReceiverVTX::_unregisterEvents();
+			}
 
 			virtual void		  init() override;
-			virtual void		  clean() override;
 			BaseComponent * const getComponentByName( const std::string & );
 
 		  protected:

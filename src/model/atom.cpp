@@ -14,7 +14,7 @@ namespace VTX
 			}
 			else
 			{
-				Generic::destroy( removeItem( ID::View::UI_ATOM ) );
+				delete removeItem( ID::View::UI_ATOM );
 			}
 		}
 

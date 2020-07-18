@@ -19,11 +19,11 @@ namespace VTX
 			  public:
 				explicit Residue( Model::Residue * const p_model ) : BaseViewUI( p_model ) {}
 
-				virtual const std::string & getName() const override { return ID::View::UI_RESIDUE; };
-				virtual const std::string & getComponentParentName() const override { return ID::UI::INSPECTOR; };
+				const std::string & getName() const override { return ID::View::UI_RESIDUE; };
+				const std::string & getComponentParentName() const override { return ID::UI::INSPECTOR; };
 
 			  protected:
-				virtual void _draw() override;
+				void _draw() override;
 
 			  private:
 			};
