@@ -19,20 +19,19 @@ namespace VTX
 		{
 		  public:
 			explicit BaseViewUI( T * const p_model ) : BaseView( p_model ) {}
-			virtual ~BaseViewUI()
-			{
-				/*VTXApp::get()
-					.getUI()
-					.getComponentByName( getComponentParentName() )
-					->removeItem( getName() + std::to_string( _getModel().getId() ) );*/
-			}
+			virtual ~BaseViewUI() {}
 
 			virtual void init() override
+			{
+				VTXApp::get().getUI().getComponentByName( getComponentParentName() )->addItem(getName() + std::to_string(_getModel().getId()), this );
+			}
+
+			virtual void clean() override
 			{
 				VTXApp::get()
 					.getUI()
 					.getComponentByName( getComponentParentName() )
-					->addItem( getName() + std::to_string( _getModel().getId() ), this );
+					->removeItem( getName() + std::to_string( _getModel().getId() ) );
 			}
 
 			virtual const std::string & getComponentParentName() const = 0;

@@ -27,7 +27,7 @@ namespace VTX
 			  public:
 				virtual void execute() override
 				{
-					VTXApp::get().getScene().clear();
+					VTXApp::get().getScene().clean();
 					Model::Path * path = Generic::create<Model::Path>();
 					VTXApp::get().getScene().addPath( path );
 				}

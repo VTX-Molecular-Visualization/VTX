@@ -161,6 +161,7 @@ elseif(MSVC)
 	target_compile_options(VTX PRIVATE "/MP")  # Multicore compilation.
 	target_compile_options(VTX PRIVATE "/sdl") # SDL check.
 	target_compile_options(VTX PRIVATE "/execution-charset:utf-8") # To display Angstrom symbol for example.
+	target_compile_options(VTX PRIVATE "/DEBUG:FASTLINK") # https://devblogs.microsoft.com/cppblog/debugfastlink-for-vs2015-update-1/
 	
 	#Optimization.
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/O2>")
@@ -181,7 +182,7 @@ elseif(MSVC)
 	
 	# Set default startup project.
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VTX)
-	#set_target_properties(VTX PROPERTIES VS_GLOBAL_DisableFastUpToDateCheck true)
+	set_target_properties(VTX PROPERTIES VS_GLOBAL_DisableFastUpToDateCheck true)
 endif()
 
 # TODO: find cuda and optix.

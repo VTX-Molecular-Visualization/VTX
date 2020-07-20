@@ -24,6 +24,11 @@ namespace VTX
 				BaseViewUI::init();
 				BaseComponentWindow::init();
 			}
+			virtual void clean() override
+			{
+				BaseViewUI::clean();
+				BaseComponentWindow::clean();
+			}
 
 		  protected:
 			virtual void _draw() override { BaseComponentWindow::_draw(); }

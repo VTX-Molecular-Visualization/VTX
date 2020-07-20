@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "base_cleanable.hpp"
 #include "base_initializable.hpp"
 #include "view/base_view.hpp"
 #include <map>
@@ -44,6 +45,13 @@ namespace VTX
 			return instance;
 		}
 
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCleanable, T>::value>>
+		static void destroy( T * p_instance )
+		{
+			p_instance->clean();
+			delete p_instance;
+		}
+
 		template<typename M,
 				 typename V,
 				 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
@@ -55,32 +63,32 @@ namespace VTX
 			return instance;
 		}
 
-		template<typename T>
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCleanable, T>::value>>
 		void clearVector( std::vector<T *> & p_vector )
 		{
 			for ( T * element : p_vector )
 			{
-				delete element;
+				destroy( element );
 			}
 			p_vector.clear();
 		}
 
-		template<typename T, typename V>
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCleanable, T>::value>, typename V>
 		void clearMapAsKey( std::map<T *, V> & p_map )
 		{
 			for ( std::pair<T *, V> pair : p_map )
 			{
-				delete pair.first;
+				destroy( pair.first );
 			}
 			p_map.clear();
 		}
 
-		template<typename T, typename V>
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCleanable, T>::value>, typename V>
 		void clearMapAsValue( std::map<V, T *> & p_map )
 		{
 			for ( std::pair<const V, T *> & pair : p_map )
 			{
-				delete pair.second;
+				destroy( pair.second );
 			}
 			p_map.clear();
 		}

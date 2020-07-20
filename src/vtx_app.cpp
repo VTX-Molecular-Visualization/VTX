@@ -26,15 +26,15 @@ namespace VTX
 		// Respect this order!
 		if ( _stateMachine != nullptr )
 		{
-			delete _stateMachine;
+			Generic::destroy( _stateMachine );
 		}
 		if ( _scene != nullptr )
 		{
-			delete _scene;
+			Generic::destroy( _scene );
 		}
 		if ( _ui != nullptr )
 		{
-			delete _ui;
+			Generic::destroy( _ui );
 		}
 		if ( _rendererGL != nullptr )
 		{
