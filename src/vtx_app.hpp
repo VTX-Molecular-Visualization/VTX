@@ -65,8 +65,8 @@ namespace VTX
 		inline Selection::SelectionManager &	   getSelectionManager() { return *_selectionManager; }
 		inline const Selection::SelectionManager & getSelectionManager() const { return *_selectionManager; }
 
-		virtual void		   fromJson( nlohmann::json & ) override;
-		virtual nlohmann::json toJson() const override;
+		void		   fromJson( nlohmann::json & );
+		nlohmann::json toJson() const;
 
 	  private:
 		static bool					  _isRunning;

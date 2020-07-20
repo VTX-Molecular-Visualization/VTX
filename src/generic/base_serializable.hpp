@@ -14,10 +14,8 @@ namespace VTX
 		class BaseSerializable
 		{
 		  public:
-			virtual ~BaseSerializable() = default;
-
-			virtual void		   fromJson( nlohmann::json & ) = 0;
-			virtual nlohmann::json toJson() const				= 0;
+			void		   fromJson( nlohmann::json & ) {};
+			nlohmann::json toJson() const {};
 		};
 	} // namespace Generic
 } // namespace VTX

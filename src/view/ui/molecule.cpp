@@ -116,7 +116,7 @@ namespace VTX
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Options" ) ) )
 					{
 						Color::Rgb color = _getModel().getColor();
-						if ( ImGui::ColorEdit3( LOCALE( "View.Color" ), color.getRGB() ) )
+						if ( ImGui::ColorEdit3( LOCALE( "View.Color" ), (float *)&color ) )
 						{
 							VTX_ACTION( new Action::Molecule::ChangeColor( _getModel(), color ) );
 							// VTX_ACTION( new Action::Molecule::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN )

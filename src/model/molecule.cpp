@@ -151,7 +151,7 @@ namespace VTX
 
 		void Molecule::_fillBufferAtomColors()
 		{
-			_bufferAtomColors.resize( _atoms.size() * 3 );
+			_bufferAtomColors.resize( _atoms.size() );
 
 			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 			{
@@ -160,40 +160,28 @@ namespace VTX
 				case Generic::COLOR_MODE::ATOM:
 					if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
 					{
-						_bufferAtomColors[ i * 3 ]	   = _atoms[ i ]->getChainPtr()->getColor().getR();
-						_bufferAtomColors[ i * 3 + 1 ] = _atoms[ i ]->getChainPtr()->getColor().getG();
-						_bufferAtomColors[ i * 3 + 2 ] = _atoms[ i ]->getChainPtr()->getColor().getB();
+						_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
 					}
 					else
 					{
-						_bufferAtomColors[ i * 3 ]	   = _atoms[ i ]->getColor().getR();
-						_bufferAtomColors[ i * 3 + 1 ] = _atoms[ i ]->getColor().getG();
-						_bufferAtomColors[ i * 3 + 2 ] = _atoms[ i ]->getColor().getB();
+						_bufferAtomColors[ i ] = _atoms[ i ]->getColor();
 					}
 					break;
 				case Generic::COLOR_MODE::RESIDUE:
-					_bufferAtomColors[ i * 3 ]	   = _atoms[ i ]->getResiduePtr()->getColor().getR();
-					_bufferAtomColors[ i * 3 + 1 ] = _atoms[ i ]->getResiduePtr()->getColor().getG();
-					_bufferAtomColors[ i * 3 + 2 ] = _atoms[ i ]->getResiduePtr()->getColor().getB();
+					_bufferAtomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor();
 
 					break;
-				case Generic::COLOR_MODE::CHAIN:
-					_bufferAtomColors[ i * 3 ]	   = _atoms[ i ]->getChainPtr()->getColor().getR();
-					_bufferAtomColors[ i * 3 + 1 ] = _atoms[ i ]->getChainPtr()->getColor().getG();
-					_bufferAtomColors[ i * 3 + 2 ] = _atoms[ i ]->getChainPtr()->getColor().getB();
-					break;
-				case Generic::COLOR_MODE::PROTEIN:
-					_bufferAtomColors[ i * 3 ]	   = _color.getR();
-					_bufferAtomColors[ i * 3 + 1 ] = _color.getG();
-					_bufferAtomColors[ i * 3 + 2 ] = _color.getB();
-					break;
+				case Generic::COLOR_MODE::CHAIN: _bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor(); break;
+				case Generic::COLOR_MODE::PROTEIN: _bufferAtomColors[ i ] = _color; break;
 
 				default: break;
 				}
 			}
 
-			glNamedBufferData(
-				_atomColorsVBO, sizeof( float ) * _bufferAtomColors.size(), _bufferAtomColors.data(), GL_STATIC_DRAW );
+			glNamedBufferData( _atomColorsVBO,
+							   sizeof( Color::Rgb ) * _bufferAtomColors.size(),
+							   _bufferAtomColors.data(),
+							   GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()
@@ -350,7 +338,7 @@ namespace VTX
 
 			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( float ) * 3, 0 );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );

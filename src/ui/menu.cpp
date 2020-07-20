@@ -208,7 +208,7 @@ namespace VTX
 
 				// Background color.
 				Color::Rgb bgColor = VTX_SETTING().backgroundColor;
-				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.BackgroundColor" ), bgColor.getRGB() ),
+				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.BackgroundColor" ), (float *)&bgColor ),
 					 ImGuiColorEditFlags_NoAlpha )
 				{
 					VTX_ACTION( new Action::Setting::ChangeBackgroundColor( bgColor ) );
@@ -217,7 +217,7 @@ namespace VTX
 
 				// Light color.
 				Color::Rgb lightColor = VTX_SETTING().lightColor;
-				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.LightColor" ), lightColor.getRGB() ),
+				if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.LightColor" ), (float *)&lightColor ),
 					 ImGuiColorEditFlags_NoAlpha )
 				{
 					VTX_ACTION( new Action::Setting::ChangeLightColor( lightColor ) );
@@ -363,7 +363,7 @@ namespace VTX
 				if ( VTX_SETTING().activeOutline )
 				{
 					Color::Rgb outlineColor = VTX_SETTING().outlineColor;
-					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.OutlineColor" ), outlineColor.getRGB() ) )
+					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.OutlineColor" ), (float *)&outlineColor ) )
 					{
 						VTX_ACTION( new Action::Setting::ChangeOutlineColor( outlineColor ) );
 					}
@@ -402,7 +402,7 @@ namespace VTX
 						VTX_ACTION( new Action::Setting::ChangeFogDensity( fogDensity ) );
 					}
 					Color::Rgb fogColor = VTX_SETTING().fogColor;
-					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.FogColor" ), fogColor.getRGB() ) )
+					if ( ImGui::ColorEdit3( LOCALE( "MainMenu.Settings.FogColor" ), (float *)&fogColor ) )
 					{
 						VTX_ACTION( new Action::Setting::ChangeFogColor( fogColor ) );
 					}

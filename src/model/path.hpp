@@ -63,8 +63,8 @@ namespace VTX
 
 			virtual void setSelected( const bool ) override;
 
-			virtual void		   fromJson( nlohmann::json & ) override;
-			virtual nlohmann::json toJson() const override;
+			void		   fromJson( nlohmann::json & );
+			nlohmann::json toJson() const;
 
 		  protected:
 			virtual void _addItems() override final;

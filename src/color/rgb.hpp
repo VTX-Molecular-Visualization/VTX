@@ -175,13 +175,13 @@ namespace VTX
 			}
 			static inline Rgb randomPastel() { return random() * 0.5f + 0.5f; }
 
-			virtual void fromJson( nlohmann::json & p_json ) override
+			void fromJson( nlohmann::json & p_json )
 			{
 				_r = p_json[ "R" ].get<float>();
 				_g = p_json[ "G" ].get<float>();
 				_b = p_json[ "B" ].get<float>();
 			}
-			virtual nlohmann::json toJson() const override { return { { "R", _r }, { "G", _g }, { "B", _b } }; }
+			nlohmann::json toJson() const { return { { "R", _r }, { "G", _g }, { "B", _b } }; }
 
 		  private:
 			float _r = 0.f;
