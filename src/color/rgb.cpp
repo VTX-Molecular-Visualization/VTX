@@ -6,7 +6,7 @@ namespace VTX
 	{
 		std::ostream & operator<<( std::ostream & p_os, const Rgb & p_c )
 		{
-			p_os << p_c._rgb[ 0 ] << " - " << p_c._rgb[ 1 ] << " - " << p_c._rgb[ 2 ] << std::endl;
+			p_os << p_c._r << " - " << p_c._g << " - " << p_c._b << std::endl;
 			return p_os;
 		}
 
