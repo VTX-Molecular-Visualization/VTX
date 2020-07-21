@@ -6,7 +6,6 @@
 #endif
 
 #include "camera.hpp"
-#include "generic/base_cleanable.hpp"
 #include "generic/base_updatable.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -17,7 +16,7 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		class Scene : public Generic::BaseUpdatable, public Generic::BaseCleanable
+		class Scene : public Generic::BaseUpdatable
 		{
 		  public:
 			using MoleculePtr			= Model::Molecule *;
@@ -30,7 +29,7 @@ namespace VTX
 
 			Scene();
 
-			virtual void clean() override;
+			void clear();
 
 			inline const Math::AABB & getAABB() const { return _aabb; }
 

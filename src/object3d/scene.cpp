@@ -14,7 +14,7 @@ namespace VTX
 			addPath( path );
 		}
 
-		void Scene::clean()
+		void Scene::clear()
 		{
 			Generic::clearMapAsKey( _molecules );
 			Generic::clearVector( _meshes );

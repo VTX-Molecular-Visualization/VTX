@@ -129,7 +129,7 @@ namespace VTX
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Object3D::Scene & p_scene ) const
 		{
-			p_scene.clean();
+			p_scene.clear();
 
 			for ( const nlohmann::json & jsonMolecule : p_json.at( "MOLECULES" ) )
 			{
