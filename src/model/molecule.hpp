@@ -172,7 +172,7 @@ namespace VTX
 			inline bool hasTopology() const { return getResidueCount() > 1; }
 			inline bool hasDynamic() const { return getFrameCount() > 1; }
 
-			virtual void print() const override;
+			void print() const;
 
 			virtual void bindBuffers() override;
 			virtual void unbindBuffers() override;

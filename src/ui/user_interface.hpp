@@ -6,7 +6,6 @@
 #endif
 
 #include "base_component.hpp"
-#include "generic/base_printable.hpp"
 #include "util/logger.hpp"
 #include <GL/gl3w.h>
 #include <SDL.h>
@@ -24,15 +23,15 @@ namespace VTX
 {
 	namespace UI
 	{
-		class UserInterface : public BaseComponent, public Generic::BasePrintable
+		class UserInterface : public BaseComponent
 		{
 		  public:
 			UserInterface();
 			~UserInterface();
-			virtual void print() const override;
-			bool		 getEvent( SDL_Event & evt ) const;
-			void		 setTheme() const;
-			void		 setVSync( const bool );
+			void print() const;
+			bool getEvent( SDL_Event & evt ) const;
+			void setTheme() const;
+			void setVSync( const bool );
 
 			virtual const std::string & getName() const override { return ID::UI::USER_INTERFACE; }
 

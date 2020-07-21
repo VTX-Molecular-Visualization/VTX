@@ -6,14 +6,13 @@
 #endif
 
 #include "define.hpp"
-#include "generic/base_printable.hpp"
 #include "util/math.hpp"
 
 namespace VTX
 {
 	namespace Object3D
 	{
-		class Camera : public Generic::BasePrintable
+		class Camera
 		{
 		  public:
 			Camera();
@@ -101,7 +100,7 @@ namespace VTX
 				_updateProjectionMatrix();
 			}
 
-			virtual void print() const;
+			void print() const;
 
 		  private:
 			float _screenWidth	= 1.f;

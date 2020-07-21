@@ -48,7 +48,7 @@ namespace VTX
 
 			inline const Math::AABB & getAABB() const { return _aabb; }
 
-			virtual void print() const override;
+			void		 print() const;
 			virtual void init() override;
 			virtual void bindBuffers() override;
 			virtual void unbindBuffers() override;
