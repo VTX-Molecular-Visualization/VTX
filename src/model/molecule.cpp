@@ -482,9 +482,5 @@ namespace VTX
 			}
 		}
 
-		void Molecule::fromJson( nlohmann::json & p_json ) {}
-
-		nlohmann::json Molecule::toJson() const { return { { "PATH", _path.string() } }; }
-
 	} // namespace Model
 } // namespace VTX

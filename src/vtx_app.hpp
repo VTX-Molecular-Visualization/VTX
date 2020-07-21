@@ -86,9 +86,6 @@ namespace VTX
 		void _update();
 	};
 
-	void to_json( nlohmann::json &, const VTXApp & );
-	void from_json( const nlohmann::json &, VTXApp & );
-
 	// TODO: check const
 	inline Setting & VTX_SETTING() { return VTXApp::get().getSetting(); }
 	inline void		 VTX_EVENT( VTX::Event::VTXEvent * const p_event )

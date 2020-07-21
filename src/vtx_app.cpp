@@ -148,15 +148,4 @@ namespace VTX
 		_ui->draw();
 	}
 
-	void to_json( nlohmann::json & p_json, const VTXApp & p_app )
-	{
-		// p_json = json { { "SCENE", p_app.getScene() } };
-		VTX_DEBUG( "TOJSON" );
-	}
-
-	void from_json( const nlohmann::json & p_json, VTXApp & p_app )
-	{
-		// p_json.at( "SCENE" ).get_to( p_app.getScene() );
-		VTX_DEBUG( "FROMJSON" );
-	}
 } // namespace VTX

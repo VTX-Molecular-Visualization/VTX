@@ -164,11 +164,8 @@ namespace VTX
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
 
-		void		   fromJson( nlohmann::json & );
-		nlohmann::json toJson() const;
-
-		inline void backup() { _backup = toJson(); }
-		inline void recover() { fromJson( _backup ); }
+		void backup();
+		void recover();
 
 	  private:
 		nlohmann::json _backup;

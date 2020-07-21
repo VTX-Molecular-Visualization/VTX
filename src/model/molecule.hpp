@@ -187,9 +187,6 @@ namespace VTX
 			virtual void addRepresentation( const Generic::REPRESENTATION ) override;
 			virtual void removeRepresentation( const Generic::REPRESENTATION ) override;
 
-			void		   fromJson( nlohmann::json & );
-			nlohmann::json toJson() const;
-
 		  protected:
 			virtual void _addItems() override final;
 

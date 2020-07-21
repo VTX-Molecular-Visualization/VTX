@@ -65,9 +65,6 @@ namespace VTX
 
 			virtual void update( const double ) override;
 
-			void		   fromJson( nlohmann::json & );
-			nlohmann::json toJson() const;
-
 		  private:
 			void _computeAABB()
 			{

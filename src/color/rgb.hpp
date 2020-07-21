@@ -174,14 +174,6 @@ namespace VTX
 			}
 			static inline Rgb randomPastel() { return random() * 0.5f + 0.5f; }
 
-			void fromJson( nlohmann::json & p_json )
-			{
-				_r = p_json[ "R" ].get<float>();
-				_g = p_json[ "G" ].get<float>();
-				_b = p_json[ "B" ].get<float>();
-			}
-			nlohmann::json toJson() const { return { { "R", _r }, { "G", _g }, { "B", _b } }; }
-
 		  private:
 			float _r = 0.f;
 			float _g = 0.f;

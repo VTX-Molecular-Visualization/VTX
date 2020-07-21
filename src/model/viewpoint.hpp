@@ -45,9 +45,6 @@ namespace VTX
 
 			virtual void setSelected( const bool ) override;
 
-			void		   fromJson( nlohmann::json & );
-			nlohmann::json toJson() const;
-
 		  private:
 			Path * const _path;
 			float		 _duration;
