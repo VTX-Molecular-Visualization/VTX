@@ -86,6 +86,8 @@ namespace VTX
 
 			{ "MainMenu.Camera", "Camera" },
 
+			{ "MainMenu.RecenterCamera", "Recenter camera" },
+
 			// Render.
 			{ "Render.Render", "Render" },
 

@@ -14,7 +14,7 @@ namespace VTX
 		  public:
 			virtual ~BaseUpdatable() = default;
 
-			virtual void update( const double p_deltaTime ) = 0;
+			virtual void update( const double & p_deltaTime ) = 0;
 		};
 	} // namespace Generic
 } // namespace VTX

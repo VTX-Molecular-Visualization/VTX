@@ -4,7 +4,7 @@ namespace VTX
 {
 	namespace Controller
 	{
-		void Freefly::update( const double p_deltaTime )
+		void Freefly::update( const double & p_deltaTime )
 		{
 			// Rotation.
 			if ( _mouseLeftPressed )
@@ -69,6 +69,15 @@ namespace VTX
 			}
 
 			_camera.move( translation );
+		}
+
+		void Freefly::reset()
+		{
+			const Vec3d defaultPos = VTXApp::get().getScene().getAABB().centroid()
+									 + VEC3F_Z * VTXApp::get().getScene().getAABB().diameter();
+
+			_camera.setPosition( defaultPos );
+			_camera.setRotation( Vec3d( 0.0, 0.0, 0.0 ) );
 		}
 
 		void Freefly::_handleKeyPressedEvent( const SDL_Scancode & p_key )
