@@ -571,6 +571,12 @@ namespace VTX
 			{
 				VTX_ACTION( new Action::Main::ChangeCameraController() );
 			}
+
+			// Recenter Camera.
+			if ( ImGui::Button( LOCALE( "MainMenu.RecenterCamera" ) ) )
+			{
+				VTX_ACTION( new Action::Main::RecenterCameraController() );
+			}
 		}
 	} // namespace UI
 } // namespace VTX

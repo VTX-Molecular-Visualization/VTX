@@ -60,7 +60,7 @@ namespace VTX
 			_unlock();
 		}
 
-		void EventManager::update( const double p_deltaTime )
+		void EventManager::update( const double & p_deltaTime )
 		{
 			// SDL.
 			SDL_Event event;

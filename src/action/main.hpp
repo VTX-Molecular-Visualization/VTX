@@ -150,6 +150,22 @@ namespace VTX
 			  private:
 			};
 
+			class RecenterCameraController : public BaseAction
+			{
+			  public:
+				explicit RecenterCameraController() {}
+
+				virtual void execute() override
+				{
+					VTXApp::get()
+						.getStateMachine()
+						.getItem<State::Visualization>( ID::State::VISUALIZATION )
+						->recenter();
+				};
+
+			  private:
+			};
+
 			class Snapshot : public BaseAction
 			{
 			  public:

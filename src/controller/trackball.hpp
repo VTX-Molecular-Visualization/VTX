@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "base_camera_controller.hpp"
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
 #include "id.hpp"
@@ -15,7 +16,7 @@ namespace VTX
 {
 	namespace Controller
 	{
-		class Trackball : public BaseKeyboardController, public BaseMouseController
+		class Trackball : public BaseKeyboardController, public BaseMouseController, public BaseCameraController
 		{
 		  public:
 			// TOFIX: Ugly... set the camera in the BaseCollectionable::init()?
@@ -32,7 +33,9 @@ namespace VTX
 				BaseMouseController::receiveEvent( p_event );
 			}
 
-			virtual void				update( const double ) override;
+			virtual void reset() override;
+
+			virtual void				update( const double & ) override;
 			virtual const std::string & getName() const override { return ID::Controller::TRACKBALL; }
 			virtual void				setActive( const bool p_active ) override;
 

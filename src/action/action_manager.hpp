@@ -32,7 +32,7 @@ namespace VTX
 			bool canRedo() const;
 			void redo();
 
-			virtual void update( const double p_deltaTime ) override;
+			virtual void update( const double & p_deltaTime ) override;
 
 		  private:
 			ListActionUndonablePtr _bufferUndo	= ListActionUndonablePtr();

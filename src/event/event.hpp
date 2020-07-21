@@ -18,6 +18,7 @@ namespace VTX
 		{
 			const VTX_EVENT LOG_CONSOLE			= "LOG_CONSOLE";
 			const VTX_EVENT UPDATE_PROGRESS_BAR = "UPDATE_PROGRESS_BAR";
+			const VTX_EVENT ON_SCENE_CHANGE		= "ON_SCENE_CHANGE";
 		} // namespace Global
 
 		// Model events for notifier pattern (model->views)[1-n].
@@ -41,6 +42,7 @@ namespace VTX
 			const T arg;
 		};
 
+		// TODO: remove that, template is sufficient
 		struct VTXEventFloat : public VTXEventArg<float>
 		{
 			VTXEventFloat( const VTX_EVENT & p_event, const float p_arg ) : VTXEventArg( p_event, p_arg ) {}
@@ -64,6 +66,11 @@ namespace VTX
 			std::string level;
 			std::string date;
 			std::string message;
+		};
+
+		struct VTXEventOnSceneChange : public VTXEvent
+		{
+			VTXEventOnSceneChange( const VTX_EVENT & p_event ) : VTXEvent( p_event ) {}
 		};
 
 	} // namespace Event

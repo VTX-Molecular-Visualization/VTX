@@ -21,7 +21,7 @@ namespace VTX
 			Generic::clearVector( _paths );
 		}
 
-		void Scene::update( const double p_deltaTime )
+		void Scene::update( const double & p_deltaTime )
 		{
 			// TOCHECK: do that in state or in scene?
 			// (let that here instead of doing the exact same things in all states for the moment)
@@ -38,8 +38,8 @@ namespace VTX
 					continue;
 				}
 
-				uint frame = molecule->getFrame();
-				uint fps   = molecule->getFPS();
+				const uint frame = molecule->getFrame();
+				const uint fps	 = molecule->getFPS();
 
 				uint nextFrame = frame;
 

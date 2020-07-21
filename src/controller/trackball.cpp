@@ -10,9 +10,7 @@ namespace VTX
 			BaseController::setActive( p_active );
 			if ( p_active )
 			{
-				_needUpdate		= true;
-				_target			= VTXApp::get().getScene().getAABB().centroid();
-				_distanceForced = VTXApp::get().getScene().getAABB().diameter();
+				reset();
 			}
 			else
 			{
@@ -20,7 +18,14 @@ namespace VTX
 			}
 		}
 
-		void Trackball::update( const double p_deltaTime )
+		void Trackball::reset()
+		{
+			_needUpdate		= true;
+			_target			= VTXApp::get().getScene().getAABB().centroid();
+			_distanceForced = VTXApp::get().getScene().getAABB().diameter();
+		}
+
+		void Trackball::update( const double & p_deltaTime )
 		{
 			// Wheel.
 			float deltaDistance = 0.f;

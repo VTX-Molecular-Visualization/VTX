@@ -27,7 +27,7 @@ namespace VTX
 			virtual const std::string & getName() const override { return ID::State::EXPORT; }
 			virtual void				enter( void * const ) override;
 			virtual void				exit() override;
-			virtual void				update( const double ) override;
+			virtual void				update( const double & ) override;
 
 		  private:
 			std::string						 _directoryName;

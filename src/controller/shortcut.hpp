@@ -21,7 +21,7 @@ namespace VTX
 			virtual void _handleKeyPressedEvent( const SDL_Scancode & ) override;
 
 			virtual const std::string & getName() const override { return ID::Controller::SHORTCUT; }
-			virtual void				update( const double ) override {}
+			virtual void				update( const double & ) override {}
 
 		  private:
 		};

@@ -64,7 +64,7 @@ namespace VTX
 			inline const VectorPathPtr &		 getPaths() const { return _paths; };
 			inline const VectorMeshTrianglePtr & getMeshes() const { return _meshes; };
 
-			virtual void update( const double ) override;
+			virtual void update( const double & ) override;
 
 			virtual void		   fromJson( nlohmann::json & ) override;
 			virtual nlohmann::json toJson() const override;
