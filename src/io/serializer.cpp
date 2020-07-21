@@ -160,7 +160,7 @@ namespace VTX
 		void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const
 		{
 			p_path.setDurationMode( p_json.at( "MODE_DURATION" ).get<Model::Path::DURATION_MODE>() );
-			p_path.setInterpolationMode( p_json.at( "MODE_INTERPOLATION" ).get<Model::Path::INNTERPOLATION_MODE>() );
+			p_path.setInterpolationMode( p_json.at( "MODE_INTERPOLATION" ).get<Model::Path::INTERPOLATION_MODE>() );
 			p_path.setDuration( p_json.at( "DURATION" ).get<float>() );
 			p_path.setIsLooping( p_json.at( "IS_LOOPING" ).get<bool>() );
 

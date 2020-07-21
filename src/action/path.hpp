@@ -57,10 +57,8 @@ namespace VTX
 			class ChangeInterpolationMode : public BaseAction
 			{
 			  public:
-				explicit ChangeInterpolationMode( Model::Path &							 p_path,
-												  const Model::Path::INNTERPOLATION_MODE p_mode ) :
-					_path( p_path ),
-					_mode( p_mode )
+				explicit ChangeInterpolationMode( Model::Path & p_path, const Model::Path::INTERPOLATION_MODE p_mode ) :
+					_path( p_path ), _mode( p_mode )
 				{
 				}
 
@@ -71,8 +69,8 @@ namespace VTX
 				}
 
 			  private:
-				Model::Path &						   _path;
-				const Model::Path::INNTERPOLATION_MODE _mode;
+				Model::Path &						  _path;
+				const Model::Path::INTERPOLATION_MODE _mode;
 			};
 
 			class Play : public BaseAction

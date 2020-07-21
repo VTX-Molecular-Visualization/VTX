@@ -39,7 +39,7 @@ namespace VTX
 					if ( ImGui::Combo( LOCALE( "View.InterpolationMode" ), &interpolationMode, interpolationModes, 2 ) )
 					{
 						VTX_ACTION( new Action::Path::ChangeInterpolationMode(
-							_getModel(), (Model::Path::INNTERPOLATION_MODE)interpolationMode ) );
+							_getModel(), (Model::Path::INTERPOLATION_MODE)interpolationMode ) );
 					}
 
 					if ( _getModel().getDurationMode() != Model::Path::DURATION_MODE::VIEWPOINT )

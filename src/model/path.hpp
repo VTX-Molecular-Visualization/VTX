@@ -29,7 +29,7 @@ namespace VTX
 				VIEWPOINT
 			};
 
-			enum class INNTERPOLATION_MODE : int
+			enum class INTERPOLATION_MODE : int
 			{
 				LINEAR,
 				CATMULL_ROM,
@@ -47,12 +47,12 @@ namespace VTX
 			inline VectorViewpointPtr &		  getViewpoints() { return _viewpoints; }
 			inline const VectorViewpointPtr & getViewpoints() const { return _viewpoints; }
 
-			inline float			   getDuration() const { return _duration; }
-			inline void				   setDuration( const float p_duration ) { _duration = p_duration; }
-			inline DURATION_MODE	   getDurationMode() const { return _modeDuration; }
-			inline void				   setDurationMode( const DURATION_MODE p_mode ) { _modeDuration = p_mode; }
-			inline INNTERPOLATION_MODE getInterpolationMode() const { return _modeInterpolation; }
-			inline void		 setInterpolationMode( const INNTERPOLATION_MODE p_mode ) { _modeInterpolation = p_mode; }
+			inline float			  getDuration() const { return _duration; }
+			inline void				  setDuration( const float p_duration ) { _duration = p_duration; }
+			inline DURATION_MODE	  getDurationMode() const { return _modeDuration; }
+			inline void				  setDurationMode( const DURATION_MODE p_mode ) { _modeDuration = p_mode; }
+			inline INTERPOLATION_MODE getInterpolationMode() const { return _modeInterpolation; }
+			inline void		 setInterpolationMode( const INTERPOLATION_MODE p_mode ) { _modeInterpolation = p_mode; }
 			inline bool		 isLooping() const { return _isLooping; }
 			inline void		 setIsLooping( const bool p_isLooping ) { _isLooping = p_isLooping; }
 			void			 refreshAllDurations();
@@ -65,11 +65,11 @@ namespace VTX
 			virtual void _addItems() override final;
 
 		  private:
-			VectorViewpointPtr	_viewpoints		   = VectorViewpointPtr();
-			DURATION_MODE		_modeDuration	   = DURATION_MODE::CONSTANT_SPEED;
-			INNTERPOLATION_MODE _modeInterpolation = INNTERPOLATION_MODE::LINEAR;
-			float				_duration		   = Setting::PATH_DURATION_DEFAULT;
-			bool				_isLooping		   = false;
+			VectorViewpointPtr _viewpoints		  = VectorViewpointPtr();
+			DURATION_MODE	   _modeDuration	  = DURATION_MODE::CONSTANT_SPEED;
+			INTERPOLATION_MODE _modeInterpolation = INTERPOLATION_MODE::LINEAR;
+			float			   _duration		  = Setting::PATH_DURATION_DEFAULT;
+			bool			   _isLooping		  = false;
 		};
 	} // namespace Model
 } // namespace VTX
