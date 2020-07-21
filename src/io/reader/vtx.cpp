@@ -11,7 +11,7 @@ namespace VTX
 				std::ifstream  is( p_path );
 				nlohmann::json json;
 				is >> json;
-				p_data.fromJson( json );
+				json.get_to<VTXApp>( VTXApp::get() );
 			}
 		} // namespace Reader
 	}	  // namespace IO

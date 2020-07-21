@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "base_writer_json.hpp"
+#include "base_writer.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -14,7 +14,7 @@ namespace VTX
 	{
 		namespace Writer
 		{
-			class VTX : public BaseWriterJson<VTXApp>
+			class VTX : public BaseWriter<VTXApp>
 			{
 			  public:
 				virtual ~VTX() = default;

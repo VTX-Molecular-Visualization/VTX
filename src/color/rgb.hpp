@@ -5,14 +5,13 @@
 #pragma once
 #endif
 
-#include "generic/base_serializable.hpp"
 #include "util/math.hpp"
 
 namespace VTX
 {
 	namespace Color
 	{
-		class Rgb : public Generic::BaseSerializable
+		class Rgb
 		{
 		  public:
 			Rgb() = default;

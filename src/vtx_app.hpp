@@ -8,7 +8,6 @@
 #include "action/action_manager.hpp"
 #include "action/base_action.hpp"
 #include "event/event_manager.hpp"
-#include "generic/base_serializable.hpp"
 #include "generic/factory.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/gl/gl.hpp"
@@ -19,6 +18,7 @@
 #include "ui/user_interface.hpp"
 #include "worker/loader.hpp"
 #include "worker/worker_manager.hpp"
+#include <nlohmann/json.hpp>
 #include <thread>
 #include <vector>
 
@@ -26,7 +26,7 @@ namespace VTX
 {
 	class Setting;
 
-	class VTXApp final : public Generic::BaseSerializable
+	class VTXApp final
 	{
 	  public:
 		inline static VTXApp & get()
@@ -65,9 +65,6 @@ namespace VTX
 		inline Selection::SelectionManager &	   getSelectionManager() { return *_selectionManager; }
 		inline const Selection::SelectionManager & getSelectionManager() const { return *_selectionManager; }
 
-		void		   fromJson( nlohmann::json & );
-		nlohmann::json toJson() const;
-
 	  private:
 		static bool					  _isRunning;
 		Setting						  _setting			= Setting();
@@ -88,6 +85,9 @@ namespace VTX
 
 		void _update();
 	};
+
+	void to_json( nlohmann::json &, const VTXApp & );
+	void from_json( const nlohmann::json &, VTXApp & );
 
 	// TODO: check const
 	inline Setting & VTX_SETTING() { return VTXApp::get().getSetting(); }
@@ -114,6 +114,7 @@ namespace VTX
 	{
 		VTXApp::get().getWorkerManager().run( p_worker, p_success, p_error );
 	}
+
 } // namespace VTX
 
 #endif

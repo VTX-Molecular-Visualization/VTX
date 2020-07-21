@@ -7,7 +7,6 @@
 
 #include "base_model.hpp"
 #include "define.hpp"
-#include "generic/base_serializable.hpp"
 #include "object3d/camera.hpp"
 #include "setting.hpp"
 #include "viewpoint.hpp"
@@ -17,8 +16,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		// TODO: move BaseSerializable in BaseModel.
-		class Path : public BaseModel, public Generic::BaseSerializable
+		class Path : public BaseModel
 		{
 		  public:
 			using ViewpointPtr		 = Model::Viewpoint *;

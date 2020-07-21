@@ -7,7 +7,6 @@
 
 #include "camera.hpp"
 #include "generic/base_cleanable.hpp"
-#include "generic/base_serializable.hpp"
 #include "generic/base_updatable.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -18,7 +17,7 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		class Scene : public Generic::BaseUpdatable, public Generic::BaseCleanable, public Generic::BaseSerializable
+		class Scene : public Generic::BaseUpdatable, public Generic::BaseCleanable
 		{
 		  public:
 			using MoleculePtr			= Model::Molecule *;

@@ -11,7 +11,6 @@
 #include "chain.hpp"
 #include "define.hpp"
 #include "generic/base_representable.hpp"
-#include "generic/base_serializable.hpp"
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
@@ -34,11 +33,7 @@ namespace VTX
 	namespace Model
 	{
 		class Ribbon;
-		class Molecule :
-			public BaseModel3D,
-			public Generic::BaseColorable,
-			public Generic::BaseRepresentable,
-			public Generic::BaseSerializable
+		class Molecule : public BaseModel3D, public Generic::BaseColorable, public Generic::BaseRepresentable
 		{
 		  public:
 			using AtomPositionsFrame = std::vector<Vec3f>;

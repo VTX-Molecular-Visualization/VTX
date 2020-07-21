@@ -7,7 +7,6 @@
 
 #include "color/rgb.hpp"
 #include "define.hpp"
-#include "generic/base_serializable.hpp"
 #include "style.hpp"
 
 namespace VTX
@@ -23,7 +22,7 @@ namespace VTX
 		enum class SHADING;
 	}
 
-	class Setting : public Generic::BaseSerializable
+	class Setting
 	{
 	  public:
 		// UI.
