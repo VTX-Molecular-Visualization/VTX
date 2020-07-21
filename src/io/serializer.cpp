@@ -189,7 +189,7 @@ namespace VTX
 			p_viewpoint.setDistance( p_json.at( "DISTANCE" ).get<float>() );
 			p_viewpoint.setController( p_json.at( "CONTROLLER" ).get<ID::VTX_ID>() );
 
-			for ( const nlohmann::json & jsonAction : p_json[ "ACTIONS" ] )
+			for ( const nlohmann::json & jsonAction : p_json.at( "ACTIONS" ) )
 			{
 				std::string action = jsonAction.get<std::string>();
 				std::replace( action.begin(), action.end(), '-', ' ' );
@@ -200,8 +200,8 @@ namespace VTX
 		void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgb & p_color ) const
 		{
 			p_color.setR( p_json.at( "R" ).get<float>() );
-			p_color.setG( p_json[ "G" ].get<float>() );
-			p_color.setB( p_json[ "B" ].get<float>() );
+			p_color.setG( p_json.at( "G" ).get<float>() );
+			p_color.setB( p_json.at( "B" ).get<float>() );
 		}
 
 		template<int L, typename T, glm::qualifier Q>
