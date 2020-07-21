@@ -15,10 +15,13 @@
 
 namespace VTX
 {
-	namespace View
+	namespace Model
 	{
 		class BaseModel;
+	}
 
+	namespace View
+	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
 		class BaseView :
 			virtual public Generic::BaseCollectionable,

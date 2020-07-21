@@ -18,29 +18,8 @@ namespace VTX
 		class MeshTriangle : public BaseModel3D
 		{
 		  public:
-			/*
-			struct Triangle
-			{
-				// vertices ids in TriangleMesh::_vertices
-				union
-				{
-					struct
-					{
-						uint _v0, _v1, _v2;
-					};
-					uint _v[ 3 ];
-				};
-
-			};
-			*/
-
 			MeshTriangle() = default;
 			~MeshTriangle();
-
-			// const std::vector<Triangle> & getTriangles() const { return _triangles; }
-			// std::vector<Triangle> &		  getTriangles() { return _triangles; }
-			// const Triangle &			  getTriangle( uint p_idx ) const { return _triangles[ p_idx ]; }
-			// Triangle &					  getTriangle( uint p_idx ) { return _triangles[ p_idx ]; }
 
 			inline const std::vector<Vec3f> & getVertices() const { return _vertices; }
 			inline std::vector<Vec3f> &		  getVertices() { return _vertices; }
@@ -52,10 +31,16 @@ namespace VTX
 			inline const Vec3f &			  getNormal( uint p_idx ) const { return _normals[ p_idx ]; }
 			inline Vec3f &					  getNormal( uint p_idx ) { return _normals[ p_idx ]; }
 
-			inline const std::vector<Color::Rgb> & getColors() const { return _colors; }
-			inline std::vector<Color::Rgb> &	   getColors() { return _colors; }
-			inline const Color::Rgb &			   getColor( uint p_idx ) const { return _colors[ p_idx ]; }
-			inline Color::Rgb &					   getColor( uint p_idx ) { return _colors[ p_idx ]; }
+			inline const std::vector<float> & getColors() const { return _colors; }
+			inline std::vector<float> &		  getColors() { return _colors; }
+			inline const Color::Rgb			  getColor( uint p_idx ) const
+			{
+				return Color::Rgb( _colors[ p_idx * 3u ], _colors[ p_idx * 3u + 1 ], _colors[ p_idx * 3u + 2 ] );
+			}
+			inline Color::Rgb getColor( uint p_idx )
+			{
+				return Color::Rgb( _colors[ p_idx * 3u ], _colors[ p_idx * 3u + 1 ], _colors[ p_idx * 3u + 2 ] );
+			}
 
 			inline const std::vector<uint> & getVisibilities() const { return _visibilities; }
 			inline std::vector<uint> &		 getVisibilities() { return _visibilities; }
@@ -95,10 +80,10 @@ namespace VTX
 			};
 
 			// std::vector<Triangle> _triangles;
-			std::vector<Vec3f>		_vertices;
-			std::vector<Vec3f>		_normals;
-			std::vector<Color::Rgb> _colors;
-			std::vector<uint>		_visibilities;
+			std::vector<Vec3f> _vertices;
+			std::vector<Vec3f> _normals;
+			std::vector<float> _colors;
+			std::vector<uint>  _visibilities;
 
 			std::vector<uint> _indices;
 
