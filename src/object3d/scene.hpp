@@ -28,6 +28,7 @@ namespace VTX
 			using VectorMeshTrianglePtr = std::vector<MeshTrianglePtr>;
 
 			Scene();
+			~Scene() { clear(); }
 
 			void clear();
 
