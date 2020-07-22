@@ -118,33 +118,27 @@ target_link_libraries(VTX PRIVATE chemfiles)
 if(WIN32)
 	# Add specific libs.
 	target_link_libraries(VTX PRIVATE ws2_32)
-	
-	# Create custom target.
-	add_custom_target(VTX_PRE_BUILD)
-	
-	# Add all commands.
+  
 	# Copy DLL to output.	
 	# Debug
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/Debug/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/SDL2.dll)
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/assimp-vc142-mtd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/assimp-vc142-mtd.dll)
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/zlibd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/zlibd1.dll)
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/Debug/libcurl-d.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/libcurl-d.dll)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/Debug/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/SDL2.dll)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/assimp-vc142-mtd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/assimp-vc142-mtd.dll)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/zlibd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/zlibd1.dll)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/Debug/libcurl-d.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/libcurl-d.dll)
 	# Release
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/Release/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/SDL2.dll)
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Release/assimp-vc142-mt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/assimp-vc142-mt.dll)
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Release/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/zlib1.dll)
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/Release/libcurl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/libcurl.dll)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/Release/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/SDL2.dll)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Release/assimp-vc142-mt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/assimp-vc142-mt.dll)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Release/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/zlib1.dll)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/Release/libcurl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/libcurl.dll)
 	# RelWithDebInfo
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/RelWithDebInfo/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/SDL2.dll)
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/assimp-vc142-mt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/assimp-vc142-mt.dll)
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/zlib1.dll)
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/RelWithDebInfo/libcurl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/libcurl.dll)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/RelWithDebInfo/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/SDL2.dll)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/assimp-vc142-mt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/assimp-vc142-mt.dll)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/zlib1.dll)
+	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/RelWithDebInfo/libcurl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/libcurl.dll)
 	
 	# Copy shaders to build directoy.
-	add_custom_command(TARGET VTX_PRE_BUILD PRE_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${PATH_SRC}/shader ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../shaders)
-	
-	# Add to VTX.
-	add_dependencies(VTX VTX_PRE_BUILD)
+	add_custom_target(VTX_COPY_SHADER COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${PATH_SRC}/shader ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../shaders)
+	add_dependencies(VTX VTX_COPY_SHADER)
 	
 endif()
 
