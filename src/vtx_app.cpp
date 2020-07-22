@@ -30,7 +30,7 @@ namespace VTX
 		}
 		if ( _scene != nullptr )
 		{
-			Generic::destroy( _scene );
+			delete _scene;
 		}
 		if ( _ui != nullptr )
 		{

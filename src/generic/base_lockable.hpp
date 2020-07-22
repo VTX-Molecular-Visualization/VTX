@@ -14,9 +14,6 @@ namespace VTX
 	{
 		class BaseLocakble
 		{
-		  public:
-			virtual ~BaseLocakble() = default;
-
 		  protected:
 			inline void _lock() { _mutex.lock(); }
 			inline void _unlock() { _mutex.unlock(); }
