@@ -13,6 +13,14 @@ namespace VTX
 {
 	namespace Renderer
 	{
+		enum class MODE : int
+		{
+			GL,
+			RT_CPU,
+			RT_OPTIX,
+			COUNT
+		};
+
 		class BaseRenderer
 		{
 		  public:

@@ -85,6 +85,9 @@ namespace VTX
 	const int  Setting::CONSOLE_SIZE	   = 80;
 	const uint Setting::ACTION_BUFFER_SIZE = 10;
 
+	// Dev.
+	const Renderer::MODE Setting::MODE_DEFAULT  = Renderer::MODE::GL;
+
 	void Setting::backup()
 	{
 		IO::Serializer serializer = IO::Serializer();

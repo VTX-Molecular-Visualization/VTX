@@ -123,11 +123,13 @@ namespace VTX
 				_du = Util::Math::normalize( Util::Math::cross( _front, _up ) ) * halfWidth;
 				_dv = Util::Math::normalize( Util::Math::cross( _left, _front ) ) * halfHeight;
 
+				/*
 				std::cout << "Camera RT" << std::endl;
 				std::cout << "- pos   : " << _pos.x << " / " << _pos.y << " / " << _pos.z << std::endl;
 				std::cout << "- front : " << _front.x << " / " << _front.y << " / " << _front.z << std::endl;
 				std::cout << "- up    : " << _up.x << " / " << _up.y << " / " << _up.z << std::endl;
 				std::cout << "- left  : " << _left.x << " / " << _left.y << " / " << _left.z << std::endl;
+				*/
 			}
 
 			Ray generateRay( const float p_sx, const float p_sy ) const

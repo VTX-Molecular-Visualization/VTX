@@ -20,7 +20,8 @@ namespace VTX
 	namespace Renderer
 	{
 		enum class SHADING;
-	}
+		enum class MODE;
+	} // namespace Renderer
 
 	class Setting
 	{
@@ -166,6 +167,10 @@ namespace VTX
 
 		void backup();
 		void recover();
+
+		// Dev.
+		static const Renderer::MODE MODE_DEFAULT;
+		Renderer::MODE				mode = MODE_DEFAULT;
 
 	  private:
 		nlohmann::json _backup;
