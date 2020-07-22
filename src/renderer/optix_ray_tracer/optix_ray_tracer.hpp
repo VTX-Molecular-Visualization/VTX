@@ -29,6 +29,8 @@ namespace VTX::Renderer::Optix
 
 		const inline std::vector<uchar4> & getPixels() const { return _pixels; }
 
+		virtual void * getRendererData() const override { return (void *)getPixels().data(); }
+
 	  private:
 		void _initOptix();
 		void _createOptixContext();

@@ -30,6 +30,8 @@ namespace VTX
 
 			const inline std::vector<uchar> & getPixels() const { return _pixels; }
 
+			virtual void * getRendererData() const override { return (void *)_texture; }
+
 		  private:
 			void _initScene( const Object3D::Scene & );
 
@@ -54,6 +56,7 @@ namespace VTX
 
 			Scene			   _scene;
 			std::vector<uchar> _pixels = std::vector<uchar>();
+			GLuint			   _texture;
 
 			// TODO: keep gamma as float ?
 			float _gamma = 1.f;

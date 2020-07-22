@@ -54,6 +54,16 @@ namespace VTX
 
 		void Menu::_drawContent()
 		{
+			// Render mode.
+			const char * modes[] = { LOCALE( "Enum.Renderer.Mode.GL" ),
+									 LOCALE( "Enum.Renderer.Mode.RT" ),
+									 LOCALE( "Enum.Renderer.Mode.Optix" ) };
+			int			 mode	 = (int)VTX_SETTING().mode;
+			if ( ImGui::Combo( LOCALE( "Mode" ), &mode, modes, 3 ) )
+			{
+				VTX_ACTION( new Action::Setting::ChangeRenderMode( ( Renderer::MODE )( mode ) ) );
+			}
+
 			// Main menu.
 			if ( ImGui::BeginMenu( LOCALE( "MainMenu.Menu" ), isVisiblePtr() ) )
 			{

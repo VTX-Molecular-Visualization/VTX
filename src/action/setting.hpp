@@ -511,10 +511,10 @@ namespace VTX
 				const Vec3f _value;
 			};
 
-			class ChangeRendermode : public BaseAction
+			class ChangeRenderMode : public BaseAction
 			{
 			  public:
-				ChangeRendermode( const Renderer::MODE p_mode ) : _mode( p_mode ) {}
+				ChangeRenderMode( const Renderer::MODE p_mode ) : _mode( p_mode ) {}
 
 				virtual void execute() override
 				{

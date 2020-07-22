@@ -47,6 +47,8 @@ namespace VTX
 		inline const Setting &						   getSetting() const { return _setting; }
 		inline Object3D::Scene &					   getScene() { return *_scene; }
 		inline const Object3D::Scene &				   getScene() const { return *_scene; }
+		inline Renderer::BaseRenderer &				   getRenderer() { return *_renderer; }
+		inline const Renderer::BaseRenderer &		   getRenderer() const { return *_renderer; }
 		inline Renderer::GL &						   getRendererGL() { return *_rendererGL; }
 		inline const Renderer::GL &					   getRendererGL() const { return *_rendererGL; }
 		inline Renderer::RayTracer &				   getRendererRT() { return *_rendererRT; }

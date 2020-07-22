@@ -16,6 +16,7 @@ namespace VTX
 
 			{ "Load", "Load" },
 			{ "Save", "Save" },
+			{ "Mode", "Mode" },
 			{ "Sequence", "Sequence" },
 			// TODO: remove extended keys, juste translate.
 
@@ -188,6 +189,10 @@ namespace VTX
 
 			{ "Enum.API.MMTF", "MMTF" },
 			{ "Enum.API.PDB", "PDB" },
+
+			{ "Enum.Renderer.Mode.GL", "OpenGL" },
+			{ "Enum.Renderer.Mode.RT", "RT CPU" },
+			{ "Enum.Renderer.Mode.Optix", "RT Optix" },
 		};
 
 	} // namespace Localization

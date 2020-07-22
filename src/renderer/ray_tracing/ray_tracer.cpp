@@ -163,16 +163,25 @@ namespace VTX
 			//_integrator	  = new DirectLightingIntegrator;
 			//_aoIntegrator = new AOIntegrator( 50.f, 12 );
 
+			VTX_INFO( "Init Scene" );
+			_initScene( VTXApp::get().getScene() );
+
+			glGenTextures( 1, &_texture );
+			glBindTexture( GL_TEXTURE_2D, _texture );
+
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+			glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+
 			VTX_INFO( "Ray tracer initialized" );
 		}
 
 		void RayTracer::renderFrame( const Object3D::Scene & p_scene )
 		{
-			VTX_INFO( "Init Scene" );
-			_initScene( p_scene );
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
-			VTX_INFO( "Render frame" );
+			VTX_DEBUG( "Render frame" );
 
 			const uint nbPixelSamples = 1;
 
@@ -193,7 +202,7 @@ namespace VTX
 			std::vector<std::thread> threadPool;
 			threadPool.reserve( nbThreads );
 
-			VTX_INFO( "Nb threads: " + std::to_string( nbThreads ) );
+			VTX_DEBUG( "Nb threads: " + std::to_string( nbThreads ) );
 
 			// start rendering
 			_progressBar.start( nbTiles, 50 );
@@ -215,12 +224,14 @@ namespace VTX
 				t.join();
 			}
 
+			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
+
 			chrono.stop();
 			_progressBar.stop();
 
 			const double time = chrono.elapsedTime();
 
-			VTX_INFO( "Rendering time: " + std::to_string( time * 1000. ) + "ms" );
+			VTX_DEBUG( "Rendering time: " + std::to_string( time * 1000. ) + "ms" );
 		}
 
 		void RayTracer::setShading() {}
@@ -389,7 +400,7 @@ namespace VTX
 				}
 
 				taskId = p_nextTileId++;
-				_progressBar.next();
+				//_progressBar.next();
 			}
 		}
 
