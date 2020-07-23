@@ -36,10 +36,11 @@ namespace VTX
 				_height = p_height;
 			}
 
-			virtual void   init( const uint, const uint )		  = 0;
-			virtual void   renderFrame( const Object3D::Scene & ) = 0;
-			virtual void * getRendererData() const				  = 0;
-			virtual void   setShading()							  = 0;
+			virtual void		   init( const uint, const uint )		  = 0;
+			virtual void		   renderFrame( const Object3D::Scene & ) = 0;
+			virtual void		   setShading()							  = 0;
+			virtual const GLuint & getRenderedTexture() const			  = 0;
+
 			// TODO: why ? because SSAO and AA in RT.
 			virtual void activeSSAO( const bool ) {}
 			virtual void activeOutline( const bool ) {}

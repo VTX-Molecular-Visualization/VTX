@@ -29,7 +29,7 @@ namespace VTX::Renderer::Optix
 
 		const inline std::vector<uchar4> & getPixels() const { return _pixels; }
 
-		virtual void * getRendererData() const override { return (void *)_texture; }
+		virtual const GLuint & getRenderedTexture() const override { return _texture; }
 
 	  private:
 		void _initOptix();

@@ -30,7 +30,7 @@ namespace VTX
 
 			const inline std::vector<uchar> & getPixels() const { return _pixels; }
 
-			virtual void * getRendererData() const override { return (void *)_texture; }
+			virtual const GLuint & getRenderedTexture() const override { return _texture; }
 
 		  private:
 			void _initScene( const Object3D::Scene & );

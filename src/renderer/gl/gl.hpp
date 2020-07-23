@@ -44,8 +44,6 @@ namespace VTX
 			const GLuint & getRenderedTexture() const;
 			const GLuint & getRenderedFBO() const;
 
-			virtual void * getRendererData() const override { return (void *)getRenderedTexture(); }
-
 		  private:
 			Pass::Geometric *	   _passGeometric	   = new Pass::Geometric();
 			Pass::LinearizeDepth * _passLinearizeDepth = new Pass::LinearizeDepth();

@@ -159,7 +159,7 @@ if(CMAKE_COMPILER_IS_GNUCC)
 elseif(MSVC)
 	#General.
     target_compile_options(VTX PRIVATE "/W3")  # Warning level 3.
-	#target_compile_options(VTX PRIVATE "/WX")  # Warnings as errors.
+	target_compile_options(VTX PRIVATE "/WX")  # Warnings as errors.
 	target_compile_options(VTX PRIVATE "/MP")  # Multicore compilation.
 	target_compile_options(VTX PRIVATE "/sdl") # SDL check.
 	target_compile_options(VTX PRIVATE "/execution-charset:utf-8") # To display Angstrom symbol for example.

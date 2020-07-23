@@ -205,7 +205,7 @@ namespace VTX
 			VTX_DEBUG( "Nb threads: " + std::to_string( nbThreads ) );
 
 			// start rendering
-			_progressBar.start( nbTiles, 50 );
+			//_progressBar.start( nbTiles, 50 );
 			Tool::Chrono chrono;
 
 			chrono.start();
@@ -227,7 +227,7 @@ namespace VTX
 			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
 
 			chrono.stop();
-			_progressBar.stop();
+			//_progressBar.stop();
 
 			const double time = chrono.elapsedTime();
 
