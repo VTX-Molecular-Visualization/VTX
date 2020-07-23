@@ -44,7 +44,7 @@ namespace VTX::Renderer::Optix
 
 	void OptixRayTracer::init( const uint p_width, const uint p_height )
 	{
-		VTX_INFO( "Initializing OptiX ray tracer (only first molecule)..." );
+		// VTX_INFO( "Initializing OptiX ray tracer (only first molecule)..." );
 
 		resize( p_width, p_height );
 
@@ -98,6 +98,14 @@ namespace VTX::Renderer::Optix
 			// TODO: handle it ! :-)
 		}
 
+		glGenTextures( 1, &_texture );
+		glBindTexture( GL_TEXTURE_2D, _texture );
+
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+		glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+
 		VTX_INFO( "Optix ray tracer initialized" );
 	}
 
@@ -131,8 +139,8 @@ namespace VTX::Renderer::Optix
 		CUDA_HANDLE_ERROR( cudaEventSynchronize( stop ) );
 		CUDA_HANDLE_ERROR( cudaEventElapsedTime( &elapsedTime, start, stop ) );
 
-		VTX_INFO( "Rendering time: " + std::to_string( elapsedTime ) );
-		VTX_INFO( "Save image as: test Optix.png" );
+		// VTX_INFO( "Rendering time: " + std::to_string( elapsedTime ) );
+		// VTX_INFO( "Save image as: test Optix.png" );
 
 		// sync - make sure the frame is rendered before we download and
 		// display (obviously, for a high-performance application you
@@ -143,7 +151,9 @@ namespace VTX::Renderer::Optix
 		_pixelsBuffer.memcpyDeviceToHost( (uchar4 *)( _pixels.data() ),
 										  _launchParameters._frame._width * _launchParameters._frame._height );
 
-		VTX_INFO( "Saved" );
+		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _pixels.data() );
+
+		// VTX_INFO( "Saved" );
 	}
 
 	void OptixRayTracer::setShading() {}

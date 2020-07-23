@@ -29,7 +29,7 @@ namespace VTX::Renderer::Optix
 
 		const inline std::vector<uchar4> & getPixels() const { return _pixels; }
 
-		virtual void * getRendererData() const override { return (void *)getPixels().data(); }
+		virtual void * getRendererData() const override { return (void *)_texture; }
 
 	  private:
 		void _initOptix();
@@ -92,6 +92,8 @@ namespace VTX::Renderer::Optix
 		CUDA::Buffer			_launchParametersBuffer;
 
 		CUDA::Buffer _pixelsBuffer;
+
+		GLuint _texture;
 	};
 } // namespace VTX::Renderer::Optix
 
