@@ -54,6 +54,8 @@ namespace VTX::Renderer::Optix
 		_missRecordBuffer.free();
 		_hitGroupRecordsBuffer.free();
 
+		// TODO: check scene size.
+		// TODO: re-init when scene is updated.
 		const Model::Molecule * mol = VTXApp::get().getScene().getMolecules().begin()->first;
 		_scene.add( mol, VTX_SETTING().representation );
 
@@ -114,7 +116,9 @@ namespace VTX::Renderer::Optix
 		if ( _launchParameters._frame._width == 0 || _launchParameters._frame._height == 0 )
 			return;
 
-		VTX_INFO( "Render Frame" );
+		// VTX_INFO( "Render Frame" );
+
+		_createOptixShaderBindingTable();
 
 		cudaEvent_t start, stop;
 		float		elapsedTime;
@@ -151,6 +155,7 @@ namespace VTX::Renderer::Optix
 		_pixelsBuffer.memcpyDeviceToHost( (uchar4 *)( _pixels.data() ),
 										  _launchParameters._frame._width * _launchParameters._frame._height );
 
+		glBindTexture( GL_TEXTURE_2D, _texture );
 		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _pixels.data() );
 
 		// VTX_INFO( "Saved" );

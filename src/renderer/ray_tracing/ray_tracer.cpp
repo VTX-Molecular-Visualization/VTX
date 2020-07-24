@@ -224,6 +224,7 @@ namespace VTX
 				t.join();
 			}
 
+			glBindTexture( GL_TEXTURE_2D, _texture );
 			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
 
 			chrono.stop();
@@ -392,6 +393,8 @@ namespace VTX
 					{
 						Color::Rgb color = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
 						color.applyGamma( _gamma );
+
+						// TODO: fill buffer in the correct order and revert snapshot with stb.
 						const uint pixelId	   = ( x + y * _width ) * 3;
 						p_image[ pixelId ]	   = uchar( color.getR() * 255 );
 						p_image[ pixelId + 1 ] = uchar( color.getG() * 255 );
