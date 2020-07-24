@@ -55,7 +55,8 @@ namespace VTX
 			rt->init( width, height );
 			rt->renderFrame( VTXApp::get().getScene() );
 			const std::vector<uchar> & pixels = rt->getPixels();
-			stbi_write_png_compression_level  = 0;
+			stbi_flip_vertically_on_write( true );
+			stbi_write_png_compression_level = 0;
 			bool res = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
 			delete rt;
 			return res;
@@ -73,7 +74,8 @@ namespace VTX
 			ort->init( width, height );
 			ort->renderFrame( VTXApp::get().getScene() );
 			const std::vector<uchar4> & pixels = ort->getPixels();
-			stbi_write_png_compression_level   = 0;
+			stbi_flip_vertically_on_write( true );
+			stbi_write_png_compression_level = 0;
 			bool res = stbi_write_png( p_path.string().c_str(), width, height, 4, pixels.data(), 0 );
 			delete ort;
 			return res;

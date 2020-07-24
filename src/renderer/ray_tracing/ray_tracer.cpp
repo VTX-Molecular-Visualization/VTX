@@ -395,7 +395,7 @@ namespace VTX
 						color.applyGamma( _gamma );
 
 						// TODO: fill buffer in the correct order and revert snapshot with stb.
-						const uint pixelId	   = ( x + y * _width ) * 3;
+						const uint pixelId	   = ( x + ( _height - y ) * _width ) * 3;
 						p_image[ pixelId ]	   = uchar( color.getR() * 255 );
 						p_image[ pixelId + 1 ] = uchar( color.getG() * 255 );
 						p_image[ pixelId + 2 ] = uchar( color.getB() * 255 );
