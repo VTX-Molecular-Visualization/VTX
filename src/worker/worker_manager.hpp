@@ -23,7 +23,7 @@ namespace VTX
 			// Async.
 			void run( BaseWorker * const p_woker, const CallbackSuccess * const, const CallbackError * const );
 
-			virtual void update( const double p_deltaTime ) override;
+			virtual void update( const double & p_deltaTime ) override;
 
 		  private:
 			BaseWorker *			_worker = nullptr;

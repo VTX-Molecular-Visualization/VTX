@@ -6,6 +6,7 @@
 #include "io/reader/vtx.hpp"
 #include "tool/chrono.hpp"
 #include "vtx_app.hpp"
+#include "event/event.hpp"
 
 namespace VTX
 {
@@ -35,6 +36,7 @@ namespace VTX
 
 			// Load all files.
 			Tool::Chrono chrono;
+			bool hasChangeScene = false;
 			for ( const Path * path : _paths )
 			{
 				chrono.start();
@@ -61,6 +63,7 @@ namespace VTX
 						molecule->init();
 						molecule->print();
 						VTXApp::get().getScene().addMolecule( molecule );
+						hasChangeScene = true;
 					}
 					catch ( const std::exception & p_e )
 					{
@@ -139,6 +142,7 @@ namespace VTX
 						molecule->init();
 						molecule->print();
 						VTXApp::get().getScene().addMolecule( molecule );
+						hasChangeScene = true;
 					}
 					catch ( const std::exception & p_e )
 					{
@@ -155,6 +159,11 @@ namespace VTX
 
 				chrono.stop();
 				VTX_INFO( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			}
+
+			if (hasChangeScene)
+			{
+				VTX_EVENT( new Event::VTXEventOnSceneChange( Event::Global::ON_SCENE_CHANGE ) );
 			}
 
 			_isFinished = true;

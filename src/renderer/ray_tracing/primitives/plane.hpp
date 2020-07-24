@@ -30,7 +30,7 @@ namespace VTX
 							const float	   p_tMax,
 							Intersection & p_intersection ) const override
 			{
-				const Vec3f & o	  = p_ray.getOrigin();
+				//const Vec3f & o	  = p_ray.getOrigin();
 				const Vec3f & d	  = p_ray.getDirection();
 				const float	  den = Util::Math::dot( d, _n );
 				if ( den == 0.f ) return false;

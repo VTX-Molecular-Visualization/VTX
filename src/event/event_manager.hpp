@@ -41,7 +41,7 @@ namespace VTX
 
 			void fireEvent( VTXEvent * const );
 
-			virtual void update( const double p_deltaTime ) override;
+			virtual void update( const double & p_deltaTime ) override;
 
 		  private:
 			// SDL receivers mapped on window ID.

@@ -7,7 +7,6 @@
 
 #include "base_model.hpp"
 #include "define.hpp"
-#include "generic/base_serializable.hpp"
 #include "id.hpp"
 
 namespace VTX
@@ -15,8 +14,7 @@ namespace VTX
 	namespace Model
 	{
 		class Path;
-		// TODO: move BaseSerializable in BaseModel.
-		class Viewpoint : public BaseModel, public Generic::BaseSerializable
+		class Viewpoint : public BaseModel
 		{
 		  public:
 			explicit Viewpoint( Path * const p_path ) : _path( p_path ) {}
@@ -46,9 +44,6 @@ namespace VTX
 			}
 
 			virtual void setSelected( const bool ) override;
-
-			virtual void		   fromJson( nlohmann::json & ) override;
-			virtual nlohmann::json toJson() const override;
 
 		  private:
 			Path * const _path;

@@ -20,13 +20,22 @@ namespace VTX
 			virtual void				enter( void * const ) override;
 			virtual void				exit() override;
 
-			ID::VTX_ID getController() { return _controller; }
+			const ID::VTX_ID & getController() const { return _controller; }
 
-			virtual void update( const double p_deltaTime ) override;
+			virtual void update( const double & p_deltaTime ) override;
 
 			void									 toggleController();
+			void									 recenter();
 			const Controller::BaseController * const getCurrentController() const { return getItemAt( _controller ); }
 			Controller::BaseController * const		 getCurrentController() { return getItem( _controller ); }
+
+			virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
+
+		  protected:
+			virtual std::vector<Event::VTX_EVENT> _getEvents() const override
+			{
+				return std::vector<Event::VTX_EVENT>( 1, Event::Global::ON_SCENE_CHANGE );
+			}
 
 		  private:
 			ID::VTX_ID _controller = ID::Controller::FREEFLY;

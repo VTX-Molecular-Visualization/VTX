@@ -25,7 +25,7 @@ namespace VTX
 		{
 		  public:
 			inline const Color::Rgb & getColor() const { return _color; }
-			inline virtual void		  setColor( const Color::Rgb & p_color ) { _color = p_color; }
+			inline void				  setColor( const Color::Rgb & p_color ) { _color = p_color; }
 
 		  protected:
 			Color::Rgb _color = Color::Rgb::random();

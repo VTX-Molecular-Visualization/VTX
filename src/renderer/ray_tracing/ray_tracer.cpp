@@ -123,11 +123,13 @@ namespace VTX
 				_du = Util::Math::normalize( Util::Math::cross( _front, _up ) ) * halfWidth;
 				_dv = Util::Math::normalize( Util::Math::cross( _left, _front ) ) * halfHeight;
 
+				/*
 				std::cout << "Camera RT" << std::endl;
 				std::cout << "- pos   : " << _pos.x << " / " << _pos.y << " / " << _pos.z << std::endl;
 				std::cout << "- front : " << _front.x << " / " << _front.y << " / " << _front.z << std::endl;
 				std::cout << "- up    : " << _up.x << " / " << _up.y << " / " << _up.z << std::endl;
 				std::cout << "- left  : " << _left.x << " / " << _left.y << " / " << _left.z << std::endl;
+				*/
 			}
 
 			Ray generateRay( const float p_sx, const float p_sy ) const
@@ -161,16 +163,25 @@ namespace VTX
 			//_integrator	  = new DirectLightingIntegrator;
 			//_aoIntegrator = new AOIntegrator( 50.f, 12 );
 
+			VTX_INFO( "Init Scene" );
+			_initScene( VTXApp::get().getScene() );
+
+			glGenTextures( 1, &_texture );
+			glBindTexture( GL_TEXTURE_2D, _texture );
+
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+
+			glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+
 			VTX_INFO( "Ray tracer initialized" );
 		}
 
 		void RayTracer::renderFrame( const Object3D::Scene & p_scene )
 		{
-			VTX_INFO( "Init Scene" );
-			_initScene( p_scene );
 			const CameraRayTracing camera( p_scene.getCamera(), _width, _height );
 
-			VTX_INFO( "Render frame" );
+			VTX_DEBUG( "Render frame" );
 
 			const uint nbPixelSamples = 1;
 
@@ -191,10 +202,10 @@ namespace VTX
 			std::vector<std::thread> threadPool;
 			threadPool.reserve( nbThreads );
 
-			VTX_INFO( "Nb threads: " + std::to_string( nbThreads ) );
+			VTX_DEBUG( "Nb threads: " + std::to_string( nbThreads ) );
 
 			// start rendering
-			_progressBar.start( nbTiles, 50 );
+			//_progressBar.start( nbTiles, 50 );
 			Tool::Chrono chrono;
 
 			chrono.start();
@@ -213,12 +224,15 @@ namespace VTX
 				t.join();
 			}
 
+			glBindTexture( GL_TEXTURE_2D, _texture );
+			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
+
 			chrono.stop();
-			_progressBar.stop();
+			//_progressBar.stop();
 
 			const double time = chrono.elapsedTime();
 
-			VTX_INFO( "Rendering time: " + std::to_string( time * 1000. ) + "ms" );
+			VTX_DEBUG( "Rendering time: " + std::to_string( time * 1000. ) + "ms" );
 		}
 
 		void RayTracer::setShading() {}
@@ -379,7 +393,9 @@ namespace VTX
 					{
 						Color::Rgb color = _renderPixel( p_camera, float( x ), float( y ), p_nbPixelSamples );
 						color.applyGamma( _gamma );
-						const uint pixelId	   = ( x + y * _width ) * 3;
+
+						// TODO: fill buffer in the correct order and revert snapshot with stb.
+						const uint pixelId	   = ( x + ( _height - y ) * _width ) * 3;
 						p_image[ pixelId ]	   = uchar( color.getR() * 255 );
 						p_image[ pixelId + 1 ] = uchar( color.getG() * 255 );
 						p_image[ pixelId + 2 ] = uchar( color.getB() * 255 );
@@ -387,7 +403,7 @@ namespace VTX
 				}
 
 				taskId = p_nextTileId++;
-				_progressBar.next();
+				//_progressBar.next();
 			}
 		}
 

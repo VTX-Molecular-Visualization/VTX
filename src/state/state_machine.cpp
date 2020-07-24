@@ -44,7 +44,7 @@ namespace VTX
 			}
 		}
 
-		void StateMachine::update( const double p_deltaTime )
+		void StateMachine::update( const double & p_deltaTime )
 		{
 			if ( _currentState != nullptr )
 			{

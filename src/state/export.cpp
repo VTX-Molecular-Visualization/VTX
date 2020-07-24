@@ -40,7 +40,7 @@ namespace VTX
 			VTXApp::get().getSetting().recover();
 		}
 
-		void Export::update( const double p_deltaTime )
+		void Export::update( const double & p_deltaTime )
 		{
 			BaseState::update( p_deltaTime );
 

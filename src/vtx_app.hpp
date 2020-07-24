@@ -8,10 +8,11 @@
 #include "action/action_manager.hpp"
 #include "action/base_action.hpp"
 #include "event/event_manager.hpp"
-#include "generic/base_serializable.hpp"
 #include "generic/factory.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/gl/gl.hpp"
+#include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
+#include "renderer/ray_tracing/ray_tracer.hpp"
 #include "selection/selection_manager.hpp"
 #include "setting.hpp"
 #include "state/state_machine.hpp"
@@ -19,6 +20,7 @@
 #include "ui/user_interface.hpp"
 #include "worker/loader.hpp"
 #include "worker/worker_manager.hpp"
+#include <nlohmann/json.hpp>
 #include <thread>
 #include <vector>
 
@@ -26,7 +28,7 @@ namespace VTX
 {
 	class Setting;
 
-	class VTXApp final : public Generic::BaseSerializable
+	class VTXApp final
 	{
 	  public:
 		inline static VTXApp & get()
@@ -39,18 +41,24 @@ namespace VTX
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
-		void renderScene() const { _rendererGL->renderFrame( *_scene ); }
+		void renderScene() const { _renderer->renderFrame( *_scene ); }
 
-		inline Setting &							  getSetting() { return _setting; }
-		inline const Setting &						  getSetting() const { return _setting; }
-		inline Object3D::Scene &					  getScene() { return *_scene; }
-		inline const Object3D::Scene &				  getScene() const { return *_scene; }
-		inline Renderer::GL &						  getRendererGL() { return *_rendererGL; }
-		inline const Renderer::GL &					  getRendererGL() const { return *_rendererGL; }
-		inline Renderer::GLSL::ProgramManager &		  getProgramManager() { return _rendererGL->getProgramManager(); }
-		inline const Renderer::GLSL::ProgramManager & getProgramManager() const
+		inline Setting &							   getSetting() { return _setting; }
+		inline const Setting &						   getSetting() const { return _setting; }
+		inline Object3D::Scene &					   getScene() { return *_scene; }
+		inline const Object3D::Scene &				   getScene() const { return *_scene; }
+		inline Renderer::BaseRenderer &				   getRenderer() { return *_renderer; }
+		inline const Renderer::BaseRenderer &		   getRenderer() const { return *_renderer; }
+		inline Renderer::GL &						   getRendererGL() { return *_rendererGL; }
+		inline const Renderer::GL &					   getRendererGL() const { return *_rendererGL; }
+		inline Renderer::RayTracer &				   getRendererRT() { return *_rendererRT; }
+		inline const Renderer::RayTracer &			   getRendererRT() const { return *_rendererRT; }
+		inline Renderer::Optix::OptixRayTracer &	   getRendererOptix() { return *_rendererOptix; }
+		inline const Renderer::Optix::OptixRayTracer & getRendererOptix() const { return *_rendererOptix; }
+		inline Renderer::GLSL::ProgramManager &		   getProgramManager() { return _renderer->getProgramManager(); }
+		inline const Renderer::GLSL::ProgramManager &  getProgramManager() const
 		{
-			return _rendererGL->getProgramManager();
+			return _renderer->getProgramManager();
 		}
 		inline UI::UserInterface &				   getUI() { return *_ui; }
 		inline const UI::UserInterface &		   getUI() const { return *_ui; }
@@ -65,21 +73,23 @@ namespace VTX
 		inline Selection::SelectionManager &	   getSelectionManager() { return *_selectionManager; }
 		inline const Selection::SelectionManager & getSelectionManager() const { return *_selectionManager; }
 
-		virtual void		   fromJson( nlohmann::json & ) override;
-		virtual nlohmann::json toJson() const override;
+		void switchRenderer( const Renderer::MODE );
 
 	  private:
-		static bool					  _isRunning;
-		Setting						  _setting			= Setting();
-		Tool::Chrono				  _chrono			= Tool::Chrono();
-		UI::UserInterface *			  _ui				= nullptr;
-		State::StateMachine *		  _stateMachine		= nullptr;
-		Object3D::Scene *			  _scene			= nullptr;
-		Renderer::GL *				  _rendererGL		= nullptr;
-		Action::ActionManager *		  _actionManager	= nullptr;
-		Event::EventManager *		  _eventManager		= nullptr;
-		Worker::WorkerManager *		  _workerManager	= nullptr;
-		Selection::SelectionManager * _selectionManager = nullptr;
+		static bool						  _isRunning;
+		Setting							  _setting			= Setting();
+		Tool::Chrono					  _chrono			= Tool::Chrono();
+		UI::UserInterface *				  _ui				= nullptr;
+		State::StateMachine *			  _stateMachine		= nullptr;
+		Object3D::Scene *				  _scene			= nullptr;
+		Renderer::BaseRenderer *		  _renderer			= nullptr;
+		Renderer::GL *					  _rendererGL		= nullptr;
+		Renderer::RayTracer *			  _rendererRT		= nullptr;
+		Renderer::Optix::OptixRayTracer * _rendererOptix	= nullptr;
+		Action::ActionManager *			  _actionManager	= nullptr;
+		Event::EventManager *			  _eventManager		= nullptr;
+		Worker::WorkerManager *			  _workerManager	= nullptr;
+		Selection::SelectionManager *	  _selectionManager = nullptr;
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;
@@ -114,6 +124,7 @@ namespace VTX
 	{
 		VTXApp::get().getWorkerManager().run( p_worker, p_success, p_error );
 	}
+
 } // namespace VTX
 
 #endif

@@ -510,6 +510,21 @@ namespace VTX
 			  private:
 				const Vec3f _value;
 			};
+
+			class ChangeRenderMode : public BaseAction
+			{
+			  public:
+				ChangeRenderMode( const Renderer::MODE p_mode ) : _mode( p_mode ) {}
+
+				virtual void execute() override
+				{
+					VTX_SETTING().mode = _mode;
+					VTXApp::get().switchRenderer( _mode );
+				};
+
+			  private:
+				const Renderer::MODE _mode;
+			};
 		} // namespace Setting
 	}	  // namespace Action
 } // namespace VTX

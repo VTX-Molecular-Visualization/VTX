@@ -39,8 +39,8 @@ namespace VTX
 
 #pragma warning( push )
 #pragma warning( disable : 4312 )
-				const Renderer::GL & renderer = VTXApp::get().getRendererGL();
-				ImGui::GetWindowDrawList()->AddImage( (void *)( renderer.getRenderedTexture() ),
+				const Renderer::BaseRenderer & renderer = VTXApp::get().getRenderer();
+				ImGui::GetWindowDrawList()->AddImage( (void *)renderer.getRenderedTexture(),
 													  ImVec2( position.x + min.x, position.y + min.y ),
 													  ImVec2( position.x + min.x + width, position.y + min.y + height ),
 													  ImVec2( 0, 1 ),

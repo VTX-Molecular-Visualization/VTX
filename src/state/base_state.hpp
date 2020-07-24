@@ -6,6 +6,7 @@
 #endif
 
 #include "controller/base_controller.hpp"
+#include "event/base_event_receiver_vtx.hpp"
 #include "generic/base_collectionable.hpp"
 #include "generic/base_updatable.hpp"
 #include "generic/has_collection.hpp"
@@ -19,23 +20,27 @@ namespace VTX
 		class BaseState :
 			public Generic::HasCollection<Controller::BaseController>,
 			public Generic::BaseUpdatable,
-			public Generic::BaseCollectionable
+			public Generic::BaseCollectionable,
+			public Event::BaseEventReceiverVTX
 		{
 		  public:
 			virtual void enter( void * const ) = 0;
 			virtual void exit()				   = 0;
-			virtual void init() override { HasCollection::init(); }
+			virtual void init() override
+			{
+				HasCollection::init();
+				Event::BaseEventReceiverVTX::_registerEvents();
+			}
 			virtual void clean() override { HasCollection::clean(); }
 
-			virtual void BaseState::update( const double p_deltaTime ) override
+			virtual void BaseState::update( const double & p_deltaTime ) override
 			{
 				for ( const PairStringToItemPtr & controller : _getItems() )
 				{
-					if ( controller.second->isActive() == false )
+					if ( controller.second->isActive() )
 					{
-						continue;
+						controller.second->update( p_deltaTime );
 					}
-					controller.second->update( p_deltaTime );
 				}
 			}
 		}; // namespace State

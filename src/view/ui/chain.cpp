@@ -24,7 +24,7 @@ namespace VTX
 					ImGui::Text( "ID: %d", _getModel().getIndex() );
 					ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
 					Color::Rgb color = _getModel().getColor();
-					if ( ImGui::ColorEdit3( "Color", color.getRGB() ) )
+					if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
 					{
 						VTX_ACTION( new Action::Chain::ChangeColor( _getModel(), color ) );
 					}

@@ -7,7 +7,6 @@
 
 #include "color/rgb.hpp"
 #include "define.hpp"
-#include "generic/base_serializable.hpp"
 #include "style.hpp"
 
 namespace VTX
@@ -21,9 +20,10 @@ namespace VTX
 	namespace Renderer
 	{
 		enum class SHADING;
-	}
+		enum class MODE;
+	} // namespace Renderer
 
-	class Setting : public Generic::BaseSerializable
+	class Setting
 	{
 	  public:
 		// UI.
@@ -165,11 +165,12 @@ namespace VTX
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
 
-		virtual void		   fromJson( nlohmann::json & ) override;
-		virtual nlohmann::json toJson() const override;
+		void backup();
+		void recover();
 
-		inline void backup() { _backup = toJson(); }
-		inline void recover() { fromJson( _backup ); }
+		// Dev.
+		static const Renderer::MODE MODE_DEFAULT;
+		Renderer::MODE				mode = MODE_DEFAULT;
 
 	  private:
 		nlohmann::json _backup;

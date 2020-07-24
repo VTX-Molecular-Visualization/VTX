@@ -6,8 +6,6 @@
 #endif
 
 #include "camera.hpp"
-#include "generic/base_cleanable.hpp"
-#include "generic/base_serializable.hpp"
 #include "generic/base_updatable.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -18,7 +16,7 @@ namespace VTX
 {
 	namespace Object3D
 	{
-		class Scene : public Generic::BaseUpdatable, public Generic::BaseCleanable, public Generic::BaseSerializable
+		class Scene : public Generic::BaseUpdatable
 		{
 		  public:
 			using MoleculePtr			= Model::Molecule *;
@@ -30,8 +28,9 @@ namespace VTX
 			using VectorMeshTrianglePtr = std::vector<MeshTrianglePtr>;
 
 			Scene();
+			~Scene() { clear(); }
 
-			virtual void clean() override;
+			void clear();
 
 			inline const Math::AABB & getAABB() const { return _aabb; }
 
@@ -64,20 +63,17 @@ namespace VTX
 			inline const VectorPathPtr &		 getPaths() const { return _paths; };
 			inline const VectorMeshTrianglePtr & getMeshes() const { return _meshes; };
 
-			virtual void update( const double ) override;
-
-			virtual void		   fromJson( nlohmann::json & ) override;
-			virtual nlohmann::json toJson() const override;
+			virtual void update( const double & ) override;
 
 		  private:
 			void _computeAABB()
 			{
 				_aabb.invalidate();
-				for ( const PairMoleculePtrFloat mol : _molecules )
+				for ( const PairMoleculePtrFloat & mol : _molecules )
 				{
 					_aabb.extend( mol.first->getGlobalPositionsAABB() );
 				}
-				for ( const MeshTrianglePtr mesh : _meshes )
+				for ( const MeshTrianglePtr & mesh : _meshes )
 				{
 					_aabb.extend( mesh->getAABB() );
 				}

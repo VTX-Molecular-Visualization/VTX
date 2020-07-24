@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "base_reader_json.hpp"
+#include "base_reader.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -14,7 +14,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			class Setting : public BaseReaderJson<::VTX::Setting>
+			class Setting : public BaseReader<::VTX::Setting>
 			{
 			  public:
 				virtual ~Setting() = default;

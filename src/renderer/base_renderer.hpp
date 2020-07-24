@@ -13,6 +13,14 @@ namespace VTX
 {
 	namespace Renderer
 	{
+		enum class MODE : int
+		{
+			GL,
+			RT_CPU,
+			RT_OPTIX,
+			COUNT
+		};
+
 		class BaseRenderer
 		{
 		  public:
@@ -22,15 +30,17 @@ namespace VTX
 			inline const uint getWidth() const { return _width; }
 			inline const uint getHeight() const { return _height; }
 
-			virtual void BaseRenderer::resize( const uint p_width, const uint p_height )
+			virtual void resize( const uint p_width, const uint p_height )
 			{
 				_width	= p_width;
 				_height = p_height;
 			}
 
-			virtual void init( const uint, const uint )			= 0;
-			virtual void renderFrame( const Object3D::Scene & ) = 0;
-			virtual void setShading()							= 0;
+			virtual void		   init( const uint, const uint )		  = 0;
+			virtual void		   renderFrame( const Object3D::Scene & ) = 0;
+			virtual void		   setShading()							  = 0;
+			virtual const GLuint & getRenderedTexture() const			  = 0;
+
 			// TODO: why ? because SSAO and AA in RT.
 			virtual void activeSSAO( const bool ) {}
 			virtual void activeOutline( const bool ) {}

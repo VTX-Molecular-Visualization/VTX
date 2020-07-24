@@ -11,7 +11,6 @@
 #include "chain.hpp"
 #include "define.hpp"
 #include "generic/base_representable.hpp"
-#include "generic/base_serializable.hpp"
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
@@ -26,15 +25,15 @@
 
 namespace VTX
 {
-	namespace Model
+	namespace View
 	{
 		class BaseView3DMolecule;
+	}
+
+	namespace Model
+	{
 		class Ribbon;
-		class Molecule :
-			public BaseModel3D,
-			public Generic::BaseColorable,
-			public Generic::BaseRepresentable,
-			public Generic::BaseSerializable
+		class Molecule : public BaseModel3D, public Generic::BaseColorable, public Generic::BaseRepresentable
 		{
 		  public:
 			using AtomPositionsFrame = std::vector<Vec3f>;
@@ -98,13 +97,8 @@ namespace VTX
 				return bool( _bufferAtomVisibilities[ p_idx ] );
 			}
 
-			inline const float		getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
-			inline const Color::Rgb getAtomColor( const uint p_idx ) const
-			{
-				return Color::Rgb( _bufferAtomColors[ p_idx * 3 ],
-								   _bufferAtomColors[ p_idx * 3 + 1 ],
-								   _bufferAtomColors[ p_idx * 3 + 2 ] );
-			}
+			inline const float &	  getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
+			inline const Color::Rgb & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 
 			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
 			{
@@ -178,7 +172,7 @@ namespace VTX
 			inline bool hasTopology() const { return getResidueCount() > 1; }
 			inline bool hasDynamic() const { return getFrameCount() > 1; }
 
-			virtual void print() const override;
+			void print() const;
 
 			virtual void bindBuffers() override;
 			virtual void unbindBuffers() override;
@@ -188,12 +182,10 @@ namespace VTX
 			void createSecondaryStructure();
 			void toggleSequenceVisibility();
 
-			virtual void		   setSelected( const bool ) override;
-			virtual void		   setVisible( const bool ) override;
-			virtual void		   addRepresentation( const Generic::REPRESENTATION ) override;
-			virtual void		   removeRepresentation( const Generic::REPRESENTATION ) override;
-			virtual void		   fromJson( nlohmann::json & ) override;
-			virtual nlohmann::json toJson() const override;
+			virtual void setSelected( const bool ) override;
+			virtual void setVisible( const bool ) override;
+			virtual void addRepresentation( const Generic::REPRESENTATION ) override;
+			virtual void removeRepresentation( const Generic::REPRESENTATION ) override;
 
 		  protected:
 			virtual void _addItems() override final;
@@ -221,10 +213,10 @@ namespace VTX
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
 			// Buffers.
-			std::vector<float> _bufferAtomRadius	   = std::vector<float>();
-			std::vector<float> _bufferAtomColors	   = std::vector<float>();
-			std::vector<uint>  _bufferAtomVisibilities = std::vector<uint>();
-			std::vector<uint>  _bufferBonds			   = std::vector<uint>();
+			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
+			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
+			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
+			std::vector<uint>		_bufferBonds			= std::vector<uint>();
 
 			// Global AABB of atom positions (taking into account each frame).
 			// TODO: find better name

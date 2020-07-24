@@ -30,7 +30,7 @@ namespace VTX
 		}
 		if ( _scene != nullptr )
 		{
-			Generic::destroy( _scene );
+			delete _scene;
 		}
 		if ( _ui != nullptr )
 		{
@@ -39,6 +39,14 @@ namespace VTX
 		if ( _rendererGL != nullptr )
 		{
 			delete _rendererGL;
+		}
+		if ( _rendererRT != nullptr )
+		{
+			delete _rendererRT;
+		}
+		if ( _rendererOptix != nullptr )
+		{
+			delete _rendererOptix;
 		}
 		if ( _selectionManager != nullptr )
 		{
@@ -68,8 +76,7 @@ namespace VTX
 
 		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
 
-		_rendererGL = new Renderer::GL();
-		_rendererGL->init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
+		switchRenderer( Setting::MODE_DEFAULT );
 
 		_stateMachine = Generic::create<State::StateMachine>();
 		_stateMachine->goToState( ID::State::VISUALIZATION );
@@ -86,7 +93,7 @@ namespace VTX
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "r2d2_2.obj" ) ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "4v6x.mmtf" ) ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr("6vsb.mmtf" ) ) );
-		VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
+		// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
 		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "3jb9.pdb" ) ) );
 #endif
 
@@ -128,6 +135,46 @@ namespace VTX
 		}
 	}
 
+	void VTXApp::switchRenderer( const Renderer::MODE p_mode )
+	{
+		bool needInit = false;
+
+		switch ( p_mode )
+		{
+		case Renderer::MODE::GL:
+			if ( _rendererGL == nullptr )
+			{
+				_rendererGL = new Renderer::GL();
+				needInit	= true;
+			}
+			_renderer = _rendererGL;
+			break;
+		case Renderer::MODE::RT_CPU:
+			if ( _rendererRT == nullptr )
+			{
+				_rendererRT = new Renderer::RayTracer();
+				needInit	= true;
+			}
+			_renderer = _rendererRT;
+			break;
+
+		case Renderer::MODE::RT_OPTIX:
+			if ( _rendererOptix == nullptr )
+			{
+				_rendererOptix = new Renderer::Optix::OptixRayTracer();
+				needInit	   = true;
+			}
+			_renderer = _rendererOptix;
+			break;
+		default: _renderer = nullptr;
+		}
+
+		if ( needInit && _renderer != nullptr )
+		{
+			_renderer->init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
+		}
+	}
+
 	void VTXApp::_update()
 	{
 		const float deltaTime = ImGui::GetIO().DeltaTime;
@@ -147,9 +194,5 @@ namespace VTX
 		// UI.
 		_ui->draw();
 	}
-
-	void VTXApp::fromJson( nlohmann::json & p_json ) { _scene->fromJson( p_json[ "SCENE" ] ); }
-
-	nlohmann::json VTXApp::toJson() const { return { { "SCENE", _scene->toJson() } }; }
 
 } // namespace VTX

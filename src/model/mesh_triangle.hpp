@@ -23,38 +23,32 @@ namespace VTX
 
 			inline const std::vector<Vec3f> & getVertices() const { return _vertices; }
 			inline std::vector<Vec3f> &		  getVertices() { return _vertices; }
-			inline const Vec3f &			  getVertice( uint p_idx ) const { return _vertices[ p_idx ]; }
-			inline Vec3f &					  getVertice( uint p_idx ) { return _vertices[ p_idx ]; }
+			inline const Vec3f &			  getVertice( const uint p_idx ) const { return _vertices[ p_idx ]; }
+			inline Vec3f &					  getVertice( const uint p_idx ) { return _vertices[ p_idx ]; }
 
 			inline const std::vector<Vec3f> & getNormals() const { return _normals; }
 			inline std::vector<Vec3f> &		  getNormals() { return _normals; }
-			inline const Vec3f &			  getNormal( uint p_idx ) const { return _normals[ p_idx ]; }
-			inline Vec3f &					  getNormal( uint p_idx ) { return _normals[ p_idx ]; }
+			inline const Vec3f &			  getNormal( const uint p_idx ) const { return _normals[ p_idx ]; }
+			inline Vec3f &					  getNormal( const uint p_idx ) { return _normals[ p_idx ]; }
 
-			inline const std::vector<float> & getColors() const { return _colors; }
-			inline std::vector<float> &		  getColors() { return _colors; }
-			inline const Color::Rgb			  getColor( uint p_idx ) const
-			{
-				return Color::Rgb( _colors[ p_idx * 3u ], _colors[ p_idx * 3u + 1 ], _colors[ p_idx * 3u + 2 ] );
-			}
-			inline Color::Rgb getColor( uint p_idx )
-			{
-				return Color::Rgb( _colors[ p_idx * 3u ], _colors[ p_idx * 3u + 1 ], _colors[ p_idx * 3u + 2 ] );
-			}
+			inline const std::vector<Color::Rgb> & getColors() const { return _colors; }
+			inline std::vector<Color::Rgb> &	   getColors() { return _colors; }
+			inline const Color::Rgb &			   getColor( const uint p_idx ) const { return _colors[ p_idx ]; }
+			inline Color::Rgb &					   getColor( const uint p_idx ) { return _colors[ p_idx ]; }
 
 			inline const std::vector<uint> & getVisibilities() const { return _visibilities; }
 			inline std::vector<uint> &		 getVisibilities() { return _visibilities; }
-			inline const uint &				 getVisibilitie( uint p_idx ) const { return _visibilities[ p_idx ]; }
-			inline uint &					 getVisibilitie( uint p_idx ) { return _visibilities[ p_idx ]; }
+			inline const uint &				 getVisibilitie( const uint p_idx ) const { return _visibilities[ p_idx ]; }
+			inline uint &					 getVisibilitie( const uint p_idx ) { return _visibilities[ p_idx ]; }
 
 			inline const std::vector<uint> & getIndices() const { return _indices; }
 			inline std::vector<uint> &		 getIndices() { return _indices; }
-			inline const uint &				 getIndice( uint p_idx ) const { return _indices[ p_idx ]; }
-			inline uint &					 getIndice( uint p_idx ) { return _indices[ p_idx ]; }
+			inline const uint &				 getIndice( const uint p_idx ) const { return _indices[ p_idx ]; }
+			inline uint &					 getIndice( const uint p_idx ) { return _indices[ p_idx ]; }
 
 			inline const Math::AABB & getAABB() const { return _aabb; }
 
-			virtual void print() const override;
+			void		 print() const;
 			virtual void init() override;
 			virtual void bindBuffers() override;
 			virtual void unbindBuffers() override;
@@ -80,10 +74,10 @@ namespace VTX
 			};
 
 			// std::vector<Triangle> _triangles;
-			std::vector<Vec3f> _vertices;
-			std::vector<Vec3f> _normals;
-			std::vector<float> _colors;
-			std::vector<uint>  _visibilities;
+			std::vector<Vec3f>		_vertices;
+			std::vector<Vec3f>		_normals;
+			std::vector<Color::Rgb> _colors;
+			std::vector<uint>		_visibilities;
 
 			std::vector<uint> _indices;
 

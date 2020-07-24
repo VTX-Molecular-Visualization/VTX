@@ -1,4 +1,5 @@
 #include "setting.hpp"
+#include "io/serializer.hpp"
 #include "util/filesystem.hpp"
 
 namespace VTX
@@ -7,9 +8,10 @@ namespace VTX
 	{
 		namespace Writer
 		{
-			void Setting::writeFile( const Path & p_path, const ::VTX::Setting & p_data )
+			void Setting::writeFile( const Path & p_path, const ::VTX::Setting & p_setting )
 			{
-				nlohmann::json json = p_data.toJson();
+				IO::Serializer serializer = IO::Serializer();
+				nlohmann::json json		  = serializer.serialize( p_setting );
 				std::ofstream  os( p_path );
 				os << std::setw( 4 ) << json << std::endl;
 			}

@@ -2,6 +2,7 @@
 #include "controller/freefly.hpp"
 #include "controller/shortcut.hpp"
 #include "controller/trackball.hpp"
+#include "event/event.hpp"
 #include "generic/factory.hpp"
 #include "vtx_app.hpp"
 
@@ -28,7 +29,7 @@ namespace VTX
 
 		void Visualization::exit() { Generic::HasCollection<Controller::BaseController>::clean(); }
 
-		void Visualization::update( const double p_deltaTime )
+		void Visualization::update( const double & p_deltaTime )
 		{
 			BaseState::update( p_deltaTime );
 
@@ -53,6 +54,16 @@ namespace VTX
 				_controller = ID::Controller::FREEFLY;
 			}
 			getItem( _controller )->setActive( true );
+		}
+
+		void Visualization::recenter() { getItem<VTX::Controller::BaseCameraController>( _controller )->reset(); }
+
+		void Visualization::receiveEvent( const Event::VTXEvent & p_event )
+		{
+			if ( p_event.name == Event::Global::ON_SCENE_CHANGE )
+			{
+				recenter();
+			}
 		}
 
 	} // namespace State

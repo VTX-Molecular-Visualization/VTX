@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "base_reader_json.hpp"
+#include "base_reader.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -15,7 +15,7 @@ namespace VTX
 		namespace Reader
 		{
 			// Scene or app?
-			class VTX : public BaseReaderJson<VTXApp>
+			class VTX : public BaseReader<VTXApp>
 			{
 			  public:
 				virtual ~VTX() = default;

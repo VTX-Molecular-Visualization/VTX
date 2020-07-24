@@ -33,7 +33,7 @@ namespace VTX
 			VTXApp::get().getSetting().recover();
 		}
 
-		void Play::update( const double p_deltaTime )
+		void Play::update( const double & p_deltaTime )
 		{
 			BaseState::update( p_deltaTime );
 
