@@ -47,6 +47,8 @@ namespace VTX::Renderer::Optix
 		// create shader binding table
 		void _createOptixShaderBindingTable();
 
+		void _updateCam();
+
 	  private:
 		std::vector<uchar4> _pixels			 = std::vector<uchar4>();
 		const Vec3f			_backgroundColor = Vec3f( 0.f, 0.f, 0.f );

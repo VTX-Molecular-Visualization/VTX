@@ -118,14 +118,15 @@ namespace VTX::Renderer::Optix
 
 		// VTX_INFO( "Render Frame" );
 
-		_createOptixShaderBindingTable();
+		_updateCam();
+		//_createOptixShaderBindingTable();
 
-		cudaEvent_t start, stop;
-		float		elapsedTime;
-		CUDA_HANDLE_ERROR( cudaEventCreate( &start ) );
-		CUDA_HANDLE_ERROR( cudaEventCreate( &stop ) );
+		// cudaEvent_t start, stop;
+		// float		elapsedTime;
+		// CUDA_HANDLE_ERROR( cudaEventCreate( &start ) );
+		// CUDA_HANDLE_ERROR( cudaEventCreate( &stop ) );
 
-		CUDA_HANDLE_ERROR( cudaEventRecord( start, 0 ) );
+		// CUDA_HANDLE_ERROR( cudaEventRecord( start, 0 ) );
 
 		_launchParametersBuffer.memcpyHostToDevice( &_launchParameters, 1 );
 		_launchParameters._frame._id++;
@@ -139,9 +140,9 @@ namespace VTX::Renderer::Optix
 										 _launchParameters._frame._height,
 										 1 ) );
 
-		CUDA_HANDLE_ERROR( cudaEventRecord( stop, 0 ) );
-		CUDA_HANDLE_ERROR( cudaEventSynchronize( stop ) );
-		CUDA_HANDLE_ERROR( cudaEventElapsedTime( &elapsedTime, start, stop ) );
+		// CUDA_HANDLE_ERROR( cudaEventRecord( stop, 0 ) );
+		// CUDA_HANDLE_ERROR( cudaEventSynchronize( stop ) );
+		// CUDA_HANDLE_ERROR( cudaEventElapsedTime( &elapsedTime, start, stop ) );
 
 		// VTX_INFO( "Rendering time: " + std::to_string( elapsedTime ) );
 		// VTX_INFO( "Save image as: test Optix.png" );
@@ -731,7 +732,7 @@ namespace VTX::Renderer::Optix
 			Vec3f					 camLeft	= cam.getLeft();
 			Vec3f					 camUp		= cam.getUp();
 			float					 fov		= cam.getFov();
-			float					 ratio		= float( _width ) / _height;
+			float					 ratio		= cam.getAspectRatio();
 			const float				 halfHeight = tan( Util::Math::radians( fov ) * 0.5f );
 			const float				 halfWidth	= ratio * halfHeight;
 
@@ -794,6 +795,33 @@ namespace VTX::Renderer::Optix
 			_shaderBindingTable.hitgroupRecordStrideInBytes = sizeof( HitGroupRecord );
 			_shaderBindingTable.hitgroupRecordCount			= uint( records.size() );
 		}
+	}
+
+	void OptixRayTracer::_updateCam()
+	{
+		RayGeneratorRecord r;
+
+		const Object3D::Camera & cam		= VTXApp::get().getScene().getCamera();
+		Vec3f					 camPos		= cam.getPosition();
+		Vec3f					 camFront	= cam.getFront();
+		Vec3f					 camLeft	= cam.getLeft();
+		Vec3f					 camUp		= cam.getUp();
+		float					 fov		= cam.getFov();
+		float					 ratio		= cam.getAspectRatio();
+		const float				 halfHeight = tan( Util::Math::radians( fov ) * 0.5f );
+		const float				 halfWidth	= ratio * halfHeight;
+
+		Vec3f u = Util::Math::normalize( Util::Math::cross( camFront, camUp ) ) * halfWidth;
+		Vec3f v = Util::Math::normalize( Util::Math::cross( camLeft, camFront ) ) * halfHeight;
+
+		r._data._camera._position = make_float3( camPos.x, camPos.y, camPos.z );
+		r._data._camera._front	  = make_float3( camFront.x, camFront.y, camFront.z );
+		r._data._camera._du		  = make_float3( u.x, u.y, u.z );
+		r._data._camera._dv		  = make_float3( v.x, v.y, v.z );
+		r._data._nbSamples		  = 1;
+
+		OPTIX_HANDLE_ERROR( optixSbtRecordPackHeader( _rayGeneratorProgram, &r ) );
+		_rayGeneratorRecordBuffer.memcpyHostToDevice( &r, 1 );
 	}
 } // namespace VTX::Renderer::Optix
 

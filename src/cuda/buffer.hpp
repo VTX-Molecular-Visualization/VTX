@@ -25,7 +25,10 @@ namespace VTX::CUDA
 
 		void free()
 		{
-			CUDA_HANDLE_ERROR( cudaFree( _devicePtr ) );
+			if ( _devicePtr != nullptr )
+			{
+				CUDA_HANDLE_ERROR( cudaFree( _devicePtr ) );
+			}
 			_devicePtr	 = nullptr;
 			_sizeInBytes = 0;
 		}
@@ -48,10 +51,7 @@ namespace VTX::CUDA
 
 		void realloc( const size_t p_size )
 		{
-			if ( _devicePtr != nullptr )
-			{
-				free();
-			}
+			free();
 			malloc( p_size );
 		}
 

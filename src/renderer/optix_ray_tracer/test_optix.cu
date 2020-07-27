@@ -104,7 +104,7 @@ namespace VTX::Renderer::Optix
 			color.z += c.z;
 		}
 
-		const uint32_t frameBufferId		   = idx + idy * dimx;
+		const uint32_t frameBufferId		   = idx + (dimy - idy - 1) * dimx;
 		params._frame._pixels[ frameBufferId ] = make_color( color / nbSamples );
 	}
 
@@ -164,8 +164,8 @@ namespace VTX::Renderer::Optix
 		const float3 normal = make_float3( int_as_float( optixGetAttribute_0() ),
 										   int_as_float( optixGetAttribute_1() ),
 										   int_as_float( optixGetAttribute_2() ) );
-		// const int	   id		= optixGetPrimitiveIndex();
-		const float3 & color	= params._colors[ 0 ]; // data->_spheres[ id ]._colorId ];
+		const int	   id		= optixGetPrimitiveIndex();
+		const float3 & color	= params._colors[ data->_spheres[ id ]._colorId ];
 		const float3 & rayDir	= optixGetWorldRayDirection();
 		const float	   radiance = fabsf( dot( rayDir, normal ) );
 

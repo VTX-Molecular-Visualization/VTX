@@ -23,6 +23,10 @@ namespace VTX
 			inline const Mat4f & getViewMatrix() const { return _viewMatrix; }
 			inline const Mat4f & getProjectionMatrix() const { return _projectionMatrix; }
 
+			inline const float getScreenWidth() const { return _screenWidth; }
+			inline const float getScreenHeight() const { return _screenHeight; }
+			inline const float getAspectRatio() const { return _aspectRatio; }
+
 			inline const Vec3d & getFront() const { return _front; }
 			inline const Vec3d & getLeft() const { return _left; }
 			inline const Vec3d & getUp() const { return _up; }

@@ -116,7 +116,7 @@ namespace VTX
 				//_pos.z += 10.f;
 
 				const float camFov	   = p_camera.getFov();
-				const float ratio	   = float( _width ) / _height;
+				const float ratio	   = p_camera.getAspectRatio();
 				const float halfHeight = tan( Util::Math::radians( camFov ) * 0.5f );
 				const float halfWidth  = ratio * halfHeight;
 
@@ -169,10 +169,8 @@ namespace VTX
 			glGenTextures( 1, &_texture );
 			glBindTexture( GL_TEXTURE_2D, _texture );
 
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-
-			glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -184,9 +182,6 @@ namespace VTX
 			VTX_DEBUG( "Render frame" );
 
 			const uint nbPixelSamples = 1;
-
-			uint size = _width * _height * 3 * sizeof( char );
-			_pixels.resize( _width * _height * 3 );
 
 			// init data for tiled rendering
 			const uint nbTilesX = ( _width + TILE_SIZE - 1 ) / TILE_SIZE;
@@ -237,7 +232,12 @@ namespace VTX
 
 		void RayTracer::setShading() {}
 
-		void RayTracer::resize( const uint p_width, const uint p_height ) { BaseRenderer::resize( p_width, p_height ); }
+		void RayTracer::resize( const uint p_width, const uint p_height )
+		{
+			BaseRenderer::resize( p_width, p_height );
+
+			_pixels.resize( _width * _height * 3 );
+		}
 
 		void RayTracer::_initScene( const Object3D::Scene & p_scene )
 		{
@@ -395,7 +395,7 @@ namespace VTX
 						color.applyGamma( _gamma );
 
 						// TODO: fill buffer in the correct order and revert snapshot with stb.
-						const uint pixelId	   = ( x + ( _height - y ) * _width ) * 3;
+						const uint pixelId	   = ( x + ( _height - y - 1 ) * _width ) * 3;
 						p_image[ pixelId ]	   = uchar( color.getR() * 255 );
 						p_image[ pixelId + 1 ] = uchar( color.getG() * 255 );
 						p_image[ pixelId + 2 ] = uchar( color.getB() * 255 );
