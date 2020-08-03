@@ -23,8 +23,8 @@ namespace VTX
 			inline const Mat4f & getViewMatrix() const { return _viewMatrix; }
 			inline const Mat4f & getProjectionMatrix() const { return _projectionMatrix; }
 
-			inline const float getScreenWidth() const { return _screenWidth; }
-			inline const float getScreenHeight() const { return _screenHeight; }
+			inline const uint  getScreenWidth() const { return _screenWidth; }
+			inline const uint  getScreenHeight() const { return _screenHeight; }
 			inline const float getAspectRatio() const { return _aspectRatio; }
 
 			inline const Vec3d & getFront() const { return _front; }
@@ -37,9 +37,9 @@ namespace VTX
 
 			inline void setScreenSize( const uint p_width, const uint p_height )
 			{
-				_screenWidth  = float( p_width );
-				_screenHeight = float( p_height );
-				_aspectRatio  = _screenWidth / _screenHeight;
+				_screenWidth  = p_width;
+				_screenHeight = p_height;
+				_aspectRatio  = (float)_screenWidth / _screenHeight;
 				_updateProjectionMatrix();
 			}
 
@@ -107,8 +107,8 @@ namespace VTX
 			void print() const;
 
 		  private:
-			float _screenWidth	= 1.f;
-			float _screenHeight = 1.f;
+			uint  _screenWidth	= 1u;
+			uint  _screenHeight = 1u;
 			float _aspectRatio	= 1.f;
 			float _near			= 1e-1f;
 			float _far			= 1e4f;
