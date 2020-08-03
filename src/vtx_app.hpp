@@ -43,20 +43,24 @@ namespace VTX
 		void goToState( const std::string &, void * const = nullptr );
 		void renderScene() const { _renderer->renderFrame( *_scene ); }
 
-		inline Setting &							   getSetting() { return _setting; }
-		inline const Setting &						   getSetting() const { return _setting; }
-		inline Object3D::Scene &					   getScene() { return *_scene; }
-		inline const Object3D::Scene &				   getScene() const { return *_scene; }
-		inline Renderer::BaseRenderer &				   getRenderer() { return *_renderer; }
-		inline const Renderer::BaseRenderer &		   getRenderer() const { return *_renderer; }
-		inline Renderer::GL &						   getRendererGL() { return *_rendererGL; }
-		inline const Renderer::GL &					   getRendererGL() const { return *_rendererGL; }
-		inline Renderer::RayTracer &				   getRendererRT() { return *_rendererRT; }
-		inline const Renderer::RayTracer &			   getRendererRT() const { return *_rendererRT; }
+		inline Setting &					  getSetting() { return _setting; }
+		inline const Setting &				  getSetting() const { return _setting; }
+		inline Object3D::Scene &			  getScene() { return *_scene; }
+		inline const Object3D::Scene &		  getScene() const { return *_scene; }
+		inline Renderer::BaseRenderer &		  getRenderer() { return *_renderer; }
+		inline const Renderer::BaseRenderer & getRenderer() const { return *_renderer; }
+		inline Renderer::GL &				  getRendererGL() { return *_rendererGL; }
+		inline const Renderer::GL &			  getRendererGL() const { return *_rendererGL; }
+#ifdef CUDA_DEFINED
+		inline Renderer::RayTracer &	   getRendererRT() { return *_rendererRT; }
+		inline const Renderer::RayTracer & getRendererRT() const { return *_rendererRT; }
+#endif
+#ifdef OPTIX_DEFINED
 		inline Renderer::Optix::OptixRayTracer &	   getRendererOptix() { return *_rendererOptix; }
 		inline const Renderer::Optix::OptixRayTracer & getRendererOptix() const { return *_rendererOptix; }
-		inline Renderer::GLSL::ProgramManager &		   getProgramManager() { return _renderer->getProgramManager(); }
-		inline const Renderer::GLSL::ProgramManager &  getProgramManager() const
+#endif
+		inline Renderer::GLSL::ProgramManager &		  getProgramManager() { return _renderer->getProgramManager(); }
+		inline const Renderer::GLSL::ProgramManager & getProgramManager() const
 		{
 			return _renderer->getProgramManager();
 		}
@@ -76,20 +80,22 @@ namespace VTX
 		void switchRenderer( const Renderer::MODE );
 
 	  private:
-		static bool						  _isRunning;
-		Setting							  _setting			= Setting();
-		Tool::Chrono					  _chrono			= Tool::Chrono();
-		UI::UserInterface *				  _ui				= nullptr;
-		State::StateMachine *			  _stateMachine		= nullptr;
-		Object3D::Scene *				  _scene			= nullptr;
-		Renderer::BaseRenderer *		  _renderer			= nullptr;
-		Renderer::GL *					  _rendererGL		= nullptr;
-		Renderer::RayTracer *			  _rendererRT		= nullptr;
-		Renderer::Optix::OptixRayTracer * _rendererOptix	= nullptr;
-		Action::ActionManager *			  _actionManager	= nullptr;
-		Event::EventManager *			  _eventManager		= nullptr;
-		Worker::WorkerManager *			  _workerManager	= nullptr;
-		Selection::SelectionManager *	  _selectionManager = nullptr;
+		static bool				 _isRunning;
+		Setting					 _setting	   = Setting();
+		Tool::Chrono			 _chrono	   = Tool::Chrono();
+		UI::UserInterface *		 _ui		   = nullptr;
+		State::StateMachine *	 _stateMachine = nullptr;
+		Object3D::Scene *		 _scene		   = nullptr;
+		Renderer::BaseRenderer * _renderer	   = nullptr;
+		Renderer::GL *			 _rendererGL   = nullptr;
+		Renderer::RayTracer *	 _rendererRT   = nullptr;
+#ifdef OPTIX_DEFINED
+		Renderer::Optix::OptixRayTracer * _rendererOptix = nullptr;
+#endif
+		Action::ActionManager *		  _actionManager	= nullptr;
+		Event::EventManager *		  _eventManager		= nullptr;
+		Worker::WorkerManager *		  _workerManager	= nullptr;
+		Selection::SelectionManager * _selectionManager = nullptr;
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;

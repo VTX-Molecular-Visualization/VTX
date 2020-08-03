@@ -149,18 +149,22 @@ namespace VTX
 						Worker::Snapshoter::MODE::GL,
 						Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) ) );
 				}
+#ifdef CUDA_DEFINED
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.RenderCPU" ) ) )
 				{
 					VTX_ACTION( new Action::Main::Snapshot(
 						Worker::Snapshoter::MODE::RT_CPU,
 						Util::Filesystem::getRendersPath( Util::Time::getTimestamp() + ".png" ) ) );
 				}
+#endif
+#ifdef OPTIX_DEFINED
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.RenderOptix" ) ) )
 				{
 					VTX_ACTION( new Action::Main::Snapshot(
 						Worker::Snapshoter::MODE::RT_OPTIX,
 						Util::Filesystem::getRendersPath( Util::Time::getTimestamp() + ".png" ) ) );
 				}
+#endif
 				if ( ImGui::MenuItem( LOCALE( "MainMenu.Export.Video" ) ) )
 				{
 					VTX_ACTION( new Action::Path::ExportVideo( VTXApp::get().getScene().getPaths()[ 0 ],
@@ -578,6 +582,7 @@ namespace VTX
 				VTX_ACTION( new Action::Main::RecenterCameraController() );
 			}
 
+			/*
 			// Render mode.
 			const char * modes[] = { LOCALE( "Enum.Renderer.Mode.GL" ),
 									 LOCALE( "Enum.Renderer.Mode.RT" ),
@@ -587,6 +592,7 @@ namespace VTX
 			{
 				VTX_ACTION( new Action::Setting::ChangeRenderMode( ( Renderer::MODE )( mode ) ) );
 			}
+			*/
 		}
 	} // namespace UI
 } // namespace VTX

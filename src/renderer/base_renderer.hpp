@@ -16,8 +16,12 @@ namespace VTX
 		enum class MODE : int
 		{
 			GL,
+#ifdef CUDA_DEFINED
 			RT_CPU,
+#endif
+#ifdef OPTIX_DEFINED
 			RT_OPTIX,
+#endif
 			COUNT
 		};
 

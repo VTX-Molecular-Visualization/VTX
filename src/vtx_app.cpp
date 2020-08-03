@@ -40,14 +40,18 @@ namespace VTX
 		{
 			delete _rendererGL;
 		}
+#ifdef CUDA_DEFINED
 		if ( _rendererRT != nullptr )
 		{
 			delete _rendererRT;
 		}
+#endif
+#ifdef OPTIX_DEFINED
 		if ( _rendererOptix != nullptr )
 		{
 			delete _rendererOptix;
 		}
+#endif
 		if ( _selectionManager != nullptr )
 		{
 			delete _selectionManager;
@@ -149,6 +153,7 @@ namespace VTX
 			}
 			_renderer = _rendererGL;
 			break;
+#ifdef CUDA_DEFINED
 		case Renderer::MODE::RT_CPU:
 			if ( _rendererRT == nullptr )
 			{
@@ -157,7 +162,8 @@ namespace VTX
 			}
 			_renderer = _rendererRT;
 			break;
-
+#endif
+#ifdef OPTIX_DEFINED
 		case Renderer::MODE::RT_OPTIX:
 			if ( _rendererOptix == nullptr )
 			{
@@ -166,6 +172,8 @@ namespace VTX
 			}
 			_renderer = _rendererOptix;
 			break;
+#endif
+
 		default: _renderer = nullptr;
 		}
 
