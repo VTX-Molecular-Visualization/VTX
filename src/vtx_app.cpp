@@ -177,9 +177,18 @@ namespace VTX
 		default: _renderer = nullptr;
 		}
 
-		if ( needInit && _renderer != nullptr )
+		if ( _renderer != nullptr )
 		{
-			_renderer->init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
+			if ( needInit )
+			{
+				_renderer->init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
+			}
+			// Resize if needed.
+			else if ( _renderer->getWidth() != getScene().getCamera().getScreenWidth()
+					  || _renderer->getHeight() != getScene().getCamera().getScreenHeight() )
+			{
+				_renderer->resize( getScene().getCamera().getScreenWidth(), getScene().getCamera().getScreenHeight() );
+			}
 		}
 	}
 
