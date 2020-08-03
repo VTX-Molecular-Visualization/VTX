@@ -38,7 +38,7 @@ namespace VTX
 			}
 
 		  private:
-			ID::VTX_ID _controller = ID::Controller::FREEFLY;
+			ID::VTX_ID _controller = ID::Controller::TRACKBALL;
 		};
 	} // namespace State
 } // namespace VTX
