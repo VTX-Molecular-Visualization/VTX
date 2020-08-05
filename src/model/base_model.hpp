@@ -19,13 +19,10 @@ namespace VTX
 		{
 		  public:
 			inline static long COUNTER = 0;
-
-			virtual ~BaseModel() = default;
-
-			long getId() const { return _id; }
+			long			   getId() const { return _id; }
 
 		  protected:
-			virtual void _notifyViews( const Event::VTX_EVENT_MODEL p_event ) final
+			void _notifyViews( const Event::VTX_EVENT_MODEL p_event )
 			{
 				for ( PairStringToItemPtr & pair : _getItems() )
 				{

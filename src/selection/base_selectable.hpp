@@ -14,8 +14,6 @@ namespace VTX
 		class BaseSelectable
 		{
 		  public:
-			~BaseSelectable();
-
 			inline bool	 isSelected() const { return _isSelected; }
 			virtual void setSelected( const bool p_selected ) { _isSelected = p_selected; }
 
