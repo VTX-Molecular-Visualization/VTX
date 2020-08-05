@@ -11,7 +11,6 @@ namespace VTX
 			try
 			{
 				_selected.emplace( p_selectable );
-				p_selectable->setSelected( true );
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -25,7 +24,6 @@ namespace VTX
 			try
 			{
 				_selected.erase( p_selectable );
-				p_selectable->setSelected( false );
 			}
 			catch ( const std::exception & p_e )
 			{

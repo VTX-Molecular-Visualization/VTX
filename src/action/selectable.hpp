@@ -15,42 +15,29 @@ namespace VTX
 	{
 		namespace Selectable
 		{
+			template<typename T, typename = std::enable_if<std::is_base_of<Selection::BaseSelectable, T>::value>>
 			class SetSelected : public BaseAction
 			{
 			  public:
-				explicit SetSelected( Selection::BaseSelectable & p_selectable, const bool p_selected ) :
-					_selectable( &p_selectable ), _selected( p_selected ) {};
+				explicit SetSelected( T & p_selectable, const bool p_selected ) :
+					_selectable( p_selectable ), _selected( p_selected ) {};
 
 				virtual void execute() override
 				{
+					_selectable.setSelected( _selected );
 					if ( _selected )
 					{
-						VTXApp::get().getSelectionManager().select( _selectable );
+						VTXApp::get().getSelectionManager().select( &_selectable );
 					}
 					else
 					{
-						VTXApp::get().getSelectionManager().unselect( _selectable );
+						VTXApp::get().getSelectionManager().unselect( &_selectable );
 					}
 				};
 
 			  protected:
-				Selection::BaseSelectable * const _selectable;
-				bool							  _selected;
-			};
-
-			class SetPathSelected : public SetSelected
-			{
-			  public:
-				explicit SetPathSelected( Model::Path & p_path, const bool p_selected ) :
-					SetSelected( p_path, p_selected )
-				{
-				}
-
-				virtual void execute() override
-				{
-					SetSelected::execute();
-					( (Model::Path * const)_selected )->setSelected();
-				}
+				T &	 _selectable;
+				bool _selected;
 			};
 		} // namespace Selectable
 	}	  // namespace Action

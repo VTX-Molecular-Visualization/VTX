@@ -178,8 +178,9 @@ namespace VTX
 			}
 		} // namespace Model
 
-		void Path::setSelected()
+		void Path::setSelected( const bool p_selected )
 		{
+			BaseSelectable::setSelected( p_selected );
 			if ( isSelected() )
 			{
 				addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::Path>( this ) );

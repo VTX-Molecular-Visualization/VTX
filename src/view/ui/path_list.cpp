@@ -18,12 +18,12 @@ namespace VTX
 				{
 					if ( pathOpened )
 					{
-						VTX_ACTION( new Action::Selectable::SetPathSelected( _getModel(), false ) );
+						VTX_ACTION( new Action::Selectable::SetSelected( _getModel(), false ) );
 					}
 
 					else
 					{
-						VTX_ACTION( new Action::Selectable::SetPathSelected( _getModel(), true ) );
+						VTX_ACTION( new Action::Selectable::SetSelected( _getModel(), true ) );
 					}
 				}
 				if ( pathOpened )
@@ -43,11 +43,11 @@ namespace VTX
 
 							if ( viewpoint->isSelected() )
 							{
-								// VTX_ACTION( new Action::Selectable::Unselect( *viewpoint ) );
+								VTX_ACTION( new Action::Selectable::SetSelected( *viewpoint, false ) );
 							}
 							else
 							{
-								// VTX_ACTION( new Action::Selectable::Select( *viewpoint ) );
+								VTX_ACTION( new Action::Selectable::SetSelected( *viewpoint, true ) );
 							}
 						}
 						ImGui::PopID();

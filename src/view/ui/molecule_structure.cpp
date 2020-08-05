@@ -35,12 +35,12 @@ namespace VTX
 				{
 					if ( moleculeOpened )
 					{
-						// VTX_ACTION( new Action::Selectable::Unselect( _getModel() ) );
+						VTX_ACTION( new Action::Selectable::SetSelected( _getModel(), false ) );
 					}
 
 					else
 					{
-						// VTX_ACTION( new Action::Selectable::Select( _getModel() ) );
+						VTX_ACTION( new Action::Selectable::SetSelected( _getModel(), true ) );
 					}
 				}
 				if ( moleculeOpened )
@@ -87,12 +87,12 @@ namespace VTX
 						{
 							if ( chainOpened )
 							{
-								// VTX_ACTION( new Action::Selectable::Unselect( *chain ) );
+								VTX_ACTION( new Action::Selectable::SetSelected( *chain, false ) );
 							}
 
 							else
 							{
-								// VTX_ACTION( new Action::Selectable::Select( *chain ) );
+								VTX_ACTION( new Action::Selectable::SetSelected( *chain, true ) );
 							}
 						}
 						if ( chainOpened )
@@ -143,11 +143,11 @@ namespace VTX
 								{
 									if ( residueOpened )
 									{
-										// VTX_ACTION( new Action::Selectable::Unselect( residue ) );
+										VTX_ACTION( new Action::Selectable::SetSelected( residue, false ) );
 									}
 									else
 									{
-										// VTX_ACTION( new Action::Selectable::Select( residue ) );
+										VTX_ACTION( new Action::Selectable::SetSelected( residue, true ) );
 									}
 								}
 								if ( residueOpened )
@@ -165,11 +165,11 @@ namespace VTX
 										{
 											if ( atom.isSelected() )
 											{
-												// VTX_ACTION( new Action::Selectable::Unselect( atom ) );
+												VTX_ACTION( new Action::Selectable::SetSelected( atom, false ) );
 											}
 											else
 											{
-												// VTX_ACTION( new Action::Selectable::Select( atom ) );
+												VTX_ACTION( new Action::Selectable::SetSelected( atom, true ) );
 											}
 										}
 										ImGui::PopID();
