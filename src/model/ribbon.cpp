@@ -64,9 +64,9 @@ namespace VTX
 							continue;
 						}
 
-						const Model::Atom * CA1 = residue1.findFirstAtomByName( "CA" );
-						const Model::Atom * OX1 = residue1.findFirstAtomByName( "O" );
-						const Model::Atom * CA2 = residue2.findFirstAtomByName( "CA" );
+						const Model::Atom * const CA1 = residue1.findFirstAtomByName( "CA" );
+						const Model::Atom * const OX1 = residue1.findFirstAtomByName( "O" );
+						const Model::Atom * const CA2 = residue2.findFirstAtomByName( "CA" );
 
 						if ( CA1 == nullptr || OX1 == nullptr || CA2 == nullptr )
 						{
@@ -115,8 +115,8 @@ namespace VTX
 							continue;
 						}
 
-						const Model::Atom * OX2 = residue2.findFirstAtomByName( "O" );
-						const Model::Atom * CA3 = residue3.findFirstAtomByName( "CA" );
+						const Model::Atom * const OX2 = residue2.findFirstAtomByName( "O" );
+						const Model::Atom * const CA3 = residue3.findFirstAtomByName( "CA" );
 
 						if ( OX2 == nullptr || CA3 == nullptr )
 						{
@@ -201,9 +201,9 @@ namespace VTX
 								continue;
 							}
 
-							const Model::Atom * CA2 = residue2.findFirstAtomByName( "CA" );
-							const Model::Atom * OX2 = residue2.findFirstAtomByName( "O" );
-							const Model::Atom * CA3 = residue3.findFirstAtomByName( "CA" );
+							const Model::Atom * const CA2 = residue2.findFirstAtomByName( "CA" );
+							const Model::Atom * const OX2 = residue2.findFirstAtomByName( "O" );
+							const Model::Atom * const CA3 = residue3.findFirstAtomByName( "CA" );
 
 							if ( CA2 == nullptr || OX2 == nullptr || CA3 == nullptr )
 							{

@@ -58,8 +58,7 @@ namespace VTX
 			void			 refreshAllDurations();
 			Model::Viewpoint getInterpolatedViewpoint( const double p_time ) const;
 			const std::vector<std::string> * const getCurrentActions( const double p_time );
-
-			virtual void setSelected( const bool ) override;
+			void								   setSelected();
 
 		  protected:
 			virtual void _addItems() override final;

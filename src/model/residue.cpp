@@ -8,7 +8,7 @@ namespace VTX
 	{
 		void Residue::setSelected( const bool p_selected )
 		{
-			BaseModel::setSelected( p_selected );
+			BaseSelectable::setSelected( p_selected );
 			if ( isSelected() )
 			{
 				addItem( (View::BaseView<BaseModel> *)Generic::create<Residue, View::UI::Residue>( this ) );

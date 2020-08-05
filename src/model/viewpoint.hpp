@@ -43,7 +43,7 @@ namespace VTX
 				_actions.erase( p_action );
 			}
 
-			virtual void setSelected( const bool ) override;
+			void setSelected( const bool );
 
 		  private:
 			Path * const _path;

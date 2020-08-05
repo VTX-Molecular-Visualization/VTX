@@ -120,6 +120,12 @@ namespace VTX
 				const bool	  _isLooping;
 			};
 
+			class SetSelected : public BaseAction
+			{
+			  public:
+			  private:
+			};
+
 		} // namespace Path
 	}	  // namespace Action
 } // namespace VTX

@@ -136,7 +136,8 @@ namespace VTX
 			inline void				setHandedness( const HANDEDNESS p_handedness ) { _handedness = p_handedness; };
 			const Atom * const		findFirstAtomByName( const std::string & ) const;
 
-			virtual void setSelected( const bool ) override;
+			void setSelected( const bool );
+
 			virtual void addRepresentation( const Generic::REPRESENTATION ) override;
 			virtual void removeRepresentation( const Generic::REPRESENTATION ) override;
 

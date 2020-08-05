@@ -6,6 +6,7 @@
 #endif
 
 #include "base_action.hpp"
+#include "model/path.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -14,26 +15,44 @@ namespace VTX
 	{
 		namespace Selectable
 		{
-			class Select : public BaseAction
+			class SetSelected : public BaseAction
 			{
 			  public:
-				Select( Selection::BaseSelectable & p_selectable ) : _selectable( p_selectable ) {};
-				virtual void execute() override { VTXApp::get().getSelectionManager().select( &_selectable ); };
+				explicit SetSelected( Selection::BaseSelectable & p_selectable, const bool p_selected ) :
+					_selectable( &p_selectable ), _selected( p_selected ) {};
 
-			  private:
-				Selection::BaseSelectable & _selectable;
+				virtual void execute() override
+				{
+					if ( _selected )
+					{
+						VTXApp::get().getSelectionManager().select( _selectable );
+					}
+					else
+					{
+						VTXApp::get().getSelectionManager().unselect( _selectable );
+					}
+				};
+
+			  protected:
+				Selection::BaseSelectable * const _selectable;
+				bool							  _selected;
 			};
 
-			class Unselect : public BaseAction
+			class SetPathSelected : public SetSelected
 			{
 			  public:
-				Unselect( Selection::BaseSelectable & p_selectable ) : _selectable( p_selectable ) {};
-				virtual void execute() override { VTXApp::get().getSelectionManager().unselect( &_selectable ); }
+				explicit SetPathSelected( Model::Path & p_path, const bool p_selected ) :
+					SetSelected( p_path, p_selected )
+				{
+				}
 
-			  private:
-				Selection::BaseSelectable & _selectable;
-			}; // namespace VTX
-		}	   // namespace Selectable
-	}		   // namespace Action
+				virtual void execute() override
+				{
+					SetSelected::execute();
+					( (Model::Path * const)_selected )->setSelected();
+				}
+			};
+		} // namespace Selectable
+	}	  // namespace Action
 } // namespace VTX
 #endif

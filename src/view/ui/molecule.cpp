@@ -187,7 +187,7 @@ namespace VTX
 				}
 				if ( notClosed == false )
 				{
-					VTX_ACTION( new Action::Selectable::Unselect( _getModel() ) );
+					// VTX_ACTION( new Action::Selectable::Unselect( _getModel() ) );
 				}
 				ImGui::PopID();
 			}

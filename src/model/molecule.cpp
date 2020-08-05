@@ -274,7 +274,7 @@ namespace VTX
 
 		void Molecule::setSelected( const bool p_selected )
 		{
-			BaseModel::setSelected( p_selected );
+			BaseSelectable::setSelected( p_selected );
 			if ( isSelected() )
 			{
 				addItem( (View::BaseView<BaseModel> *)Generic::create<View::UI::Molecule>( this ) );
