@@ -2,7 +2,6 @@
 #include "action/molecule.hpp"
 #include "action/selectable.hpp"
 #include "action/transformable.hpp"
-#include "action/visible.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
 
@@ -24,7 +23,7 @@ namespace VTX
 					bool isVisible = _getModel().isVisible();
 					if ( ImGui::Checkbox( LOCALE( "View.Visible" ), &isVisible ) )
 					{
-						VTX_ACTION( new Action::Visible::ChangeVisibility(
+						VTX_ACTION( new Action::Molecule::ChangeVisibility(
 							_getModel(), (Action::Visible::ChangeVisibility::VISIBILITY_MODE)isVisible ) );
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )

@@ -183,7 +183,6 @@ namespace VTX
 			void toggleSequenceVisibility();
 
 			void		 setSelected( const bool );
-			virtual void setVisible( const bool ) override;
 			virtual void addRepresentation( const Generic::REPRESENTATION ) override;
 			virtual void removeRepresentation( const Generic::REPRESENTATION ) override;
 

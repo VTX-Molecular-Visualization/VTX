@@ -303,12 +303,6 @@ namespace VTX
 			Util::Molecule::refreshRepresentationState( *this );
 		}
 
-		void Molecule::setVisible( const bool p_visible )
-		{
-			Generic::BaseVisible::setVisible( p_visible );
-			refreshVisibility();
-		}
-
 		void Molecule::refreshVisibility()
 		{
 			_fillBufferAtomVisibilities();

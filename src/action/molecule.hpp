@@ -7,6 +7,7 @@
 
 #include "model/molecule.hpp"
 #include "util/molecule.hpp"
+#include "visible.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -32,6 +33,22 @@ namespace VTX
 			  private:
 				Model::Molecule & _molecule;
 				const Color::Rgb  _color;
+			};
+
+			class ChangeVisibility : public Visible::ChangeVisibility
+			{
+			  public:
+				explicit ChangeVisibility( Model::Molecule & p_molecule, const VISIBILITY_MODE p_mode ) :
+					Visible::ChangeVisibility( p_molecule, p_mode )
+				{
+				}
+
+				virtual void execute() override
+				{
+					Model::Molecule & molecule = ( (Model::Molecule &)_visible );
+					Visible::ChangeVisibility::execute();
+					molecule.refreshVisibility();
+				}
 			};
 
 			class ChangeFPS : public BaseAction
