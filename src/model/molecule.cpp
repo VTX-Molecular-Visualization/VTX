@@ -270,6 +270,12 @@ namespace VTX
 				}
 				VTX_WARNING( "Unknown atom symbols : " + unknownAtomSymbolsStr );
 			}
+
+			VTX_DEBUG( "Sizeof molecule: " + std::to_string( sizeof( *this ) ) );
+			VTX_DEBUG( "Sizeof chain: " + std::to_string( sizeof( *_chains[ 0 ] ) ) );
+			VTX_DEBUG( "Sizeof residue: " + std::to_string( sizeof( *_residues[ 0 ] ) ) );
+			VTX_DEBUG( "Sizeof atom: " + std::to_string( sizeof( *_atoms[ 0 ] ) ) );
+			VTX_DEBUG( "Sizeof bond: " + std::to_string( sizeof( *_bonds[ 0 ] ) ) );
 		}
 
 		void Molecule::setSelected( const bool p_selected )
