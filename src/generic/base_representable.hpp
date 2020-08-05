@@ -24,14 +24,12 @@ namespace VTX
 		class BaseRepresentable
 		{
 		  public:
-			virtual ~BaseRepresentable() = default;
-
 			inline const std::set<REPRESENTATION> & getRepresentations() const { return _representations; }
-			virtual void							addRepresentation( const REPRESENTATION p_representation )
+			void									addRepresentation( const REPRESENTATION p_representation )
 			{
 				_representations.emplace( p_representation );
 			};
-			virtual void removeRepresentation( const REPRESENTATION p_representation )
+			void removeRepresentation( const REPRESENTATION p_representation )
 			{
 				_representations.erase( p_representation );
 			};

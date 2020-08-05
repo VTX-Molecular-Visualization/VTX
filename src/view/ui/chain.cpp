@@ -28,7 +28,7 @@ namespace VTX
 					{
 						VTX_ACTION( new Action::Chain::ChangeColor( _getModel(), color ) );
 					}
-					Util::UI::drawRepresentations( _getModel() );
+					Util::UI::drawRepresentations( _getModel(), *_getModel().getMoleculePtr() );
 				}
 				ImGui::PopID();
 			}

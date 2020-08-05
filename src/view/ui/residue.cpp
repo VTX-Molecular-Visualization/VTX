@@ -31,7 +31,7 @@ namespace VTX
 						VTX_ACTION( new Action::Residue::ChangeColor( _getModel(), color ) );
 						// VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::RESIDUE ) );
 					}
-					Util::UI::drawRepresentations( _getModel() );
+					Util::UI::drawRepresentations( _getModel(), *_getModel().getMoleculePtr() );
 				}
 				ImGui::PopID();
 			}

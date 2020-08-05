@@ -182,9 +182,7 @@ namespace VTX
 			void createSecondaryStructure();
 			void toggleSequenceVisibility();
 
-			void		 setSelected( const bool );
-			virtual void addRepresentation( const Generic::REPRESENTATION ) override;
-			virtual void removeRepresentation( const Generic::REPRESENTATION ) override;
+			void setSelected( const bool );
 
 		  protected:
 			virtual void _addItems() override final;

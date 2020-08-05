@@ -47,6 +47,8 @@ namespace VTX
 			// TODO: map with ids.
 			try
 			{
+				Model::Molecule & molecule = *( *VTXApp::get().getScene().getMolecules().begin() ).first;
+
 				if ( command == "snapshot" )
 				{
 					action = new Main::Snapshot(
@@ -84,20 +86,19 @@ namespace VTX
 				else if ( command == "add_representation_molecule" )
 				{
 					action = new RepresentableAddRepresentation(
-						*( *VTXApp::get().getScene().getMolecules().begin() ).first,
-						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+						molecule, molecule, magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "remove_representation_molecule" )
 				{
 					action = new RepresentableRemoveRepresentation(
-						*( *VTXApp::get().getScene().getMolecules().begin() ).first,
-						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+						molecule, molecule, magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "add_representation_chain" )
 				{
 					action = new RepresentableAddRepresentation(
 						*( *VTXApp::get().getScene().getMolecules().begin() )
 							 .first->getChains()[ std::stoi( words.at( 2 ) ) ],
+						molecule,
 						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "remove_representation_chain" )
@@ -105,6 +106,7 @@ namespace VTX
 					action = new RepresentableRemoveRepresentation(
 						*( *VTXApp::get().getScene().getMolecules().begin() )
 							 .first->getChains()[ std::stoi( words.at( 2 ) ) ],
+						molecule,
 						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "add_representation_residue" )
@@ -112,6 +114,7 @@ namespace VTX
 					action = new RepresentableAddRepresentation(
 						*( *VTXApp::get().getScene().getMolecules().begin() )
 							 .first->getResidues()[ std::stoi( words.at( 2 ) ) ],
+						molecule,
 						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "remove_representation_residue" )
@@ -119,6 +122,7 @@ namespace VTX
 					action = new RepresentableRemoveRepresentation(
 						*( *VTXApp::get().getScene().getMolecules().begin() )
 							 .first->getResidues()[ std::stoi( words.at( 2 ) ) ],
+						molecule,
 						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 			}

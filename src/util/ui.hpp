@@ -17,7 +17,8 @@ namespace VTX
 	{
 		namespace UI
 		{
-			static void drawRepresentations( Generic::BaseRepresentable & p_representable )
+			static void drawRepresentations( Generic::BaseRepresentable & p_representable,
+											 Model::Molecule &			  p_molecule )
 			{
 				if ( ImGui::CollapsingHeader( LOCALE( "View.Representation" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 				{
@@ -30,8 +31,8 @@ namespace VTX
 						ImGui::PushID( (int)( *r ) );
 						if ( ImGui::Button( LOCALE( "View.Delete" ) ) )
 						{
-							VTX_ACTION( new Action::RepresentableRemoveRepresentation( p_representable,
-																					   (Generic::REPRESENTATION)*r ) );
+							VTX_ACTION( new Action::RepresentableRemoveRepresentation(
+								p_representable, p_molecule, (Generic::REPRESENTATION)*r ) );
 						}
 						ImGui::PopID();
 					}
@@ -45,7 +46,7 @@ namespace VTX
 					if ( ImGui::Combo( LOCALE( "View.Add" ), &representation, representations, 5 ) )
 					{
 						VTX_ACTION( new Action::RepresentableAddRepresentation(
-							p_representable, (Generic::REPRESENTATION)representation ) );
+							p_representable, p_molecule, (Generic::REPRESENTATION)representation ) );
 					}
 				}
 			}

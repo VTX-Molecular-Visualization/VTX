@@ -138,9 +138,6 @@ namespace VTX
 
 			void setSelected( const bool );
 
-			virtual void addRepresentation( const Generic::REPRESENTATION ) override;
-			virtual void removeRepresentation( const Generic::REPRESENTATION ) override;
-
 		  private:
 			TYPE	   _type				 = TYPE::STANDARD;
 			uint	   _index				 = 0;

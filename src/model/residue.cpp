@@ -19,18 +19,6 @@ namespace VTX
 			}
 		}
 
-		void Residue::addRepresentation( const Generic::REPRESENTATION p_representation )
-		{
-			Generic::BaseRepresentable::addRepresentation( p_representation );
-			Util::Molecule::refreshRepresentationState( *getMoleculePtr() );
-		}
-
-		void Residue::removeRepresentation( const Generic::REPRESENTATION p_representation )
-		{
-			Generic::BaseRepresentable::removeRepresentation( p_representation );
-			Util::Molecule::refreshRepresentationState( *getMoleculePtr() );
-		}
-
 		const Atom * const Residue::findFirstAtomByName( const std::string & p_name ) const
 		{
 			for ( uint i = 0; i < _atomCount; ++i )

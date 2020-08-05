@@ -182,7 +182,7 @@ namespace VTX
 					}
 #endif
 
-					Util::UI::drawRepresentations( _getModel() );
+					Util::UI::drawRepresentations( _getModel(), _getModel() );
 				}
 				if ( notClosed == false )
 				{
