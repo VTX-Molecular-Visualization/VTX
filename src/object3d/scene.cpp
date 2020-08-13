@@ -10,7 +10,7 @@ namespace VTX
 	{
 		Scene::Scene()
 		{
-			Model::Path * path = Generic::create<Model::Path>();
+			Model::Path * path = new Model::Path();
 			addPath( path );
 		}
 

@@ -11,12 +11,9 @@ namespace VTX
 {
 	namespace Model
 	{
-		Path::~Path() { Generic::clearVector( _viewpoints ); }
+		Path::Path() { addItem( (View::BaseView<BaseModel> *)new View::UI::PathList( this ) ); }
 
-		void Path::_addItems()
-		{
-			addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::PathList>( this ) );
-		}
+		Path::~Path() { Generic::clearVector( _viewpoints ); }
 
 		const std::vector<std::string> * const Path::getCurrentActions( const double p_time )
 		{
@@ -183,11 +180,11 @@ namespace VTX
 			BaseSelectable::setSelected( p_selected );
 			if ( isSelected() )
 			{
-				addItem( (View::BaseView<BaseModel> *)Generic::create<Path, View::UI::Path>( this ) );
+				addItem( (View::BaseView<BaseModel> *)new View::UI::Path( this ) );
 			}
 			else
 			{
-				Generic::destroy( removeItem( ID::View::UI_PATH ) );
+				delete removeItem( ID::View::UI_PATH );
 			}
 		}
 

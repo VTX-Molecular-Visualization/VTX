@@ -36,6 +36,7 @@ namespace VTX
 				CUBIC
 			};
 
+			Path();
 			~Path();
 
 			void addViewpoint( const ViewpointPtr p_viewpoint ) { _viewpoints.emplace_back( p_viewpoint ); }
@@ -59,9 +60,6 @@ namespace VTX
 			Model::Viewpoint getInterpolatedViewpoint( const double p_time ) const;
 			const std::vector<std::string> * const getCurrentActions( const double p_time );
 			void								   setSelected( const bool );
-
-		  protected:
-			virtual void _addItems() override final;
 
 		  private:
 			VectorViewpointPtr _viewpoints		  = VectorViewpointPtr();

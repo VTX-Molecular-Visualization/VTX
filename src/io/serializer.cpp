@@ -146,7 +146,7 @@ namespace VTX
 
 			for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
 			{
-				Model::Path * const path = Generic::create<Model::Path>();
+				Model::Path * const path = new Model::Path();
 				deserialize( jsonPath, *path );
 				p_scene.addPath( path );
 			}
@@ -166,7 +166,7 @@ namespace VTX
 
 			for ( const nlohmann::json & jsonViewpoint : p_json.at( "VIEWPOINTS" ) )
 			{
-				Model::Viewpoint * const viewpoint = Generic::create<Model::Viewpoint>( &p_path );
+				Model::Viewpoint * const viewpoint = new Model::Viewpoint( &p_path );
 				deserialize( jsonViewpoint, *viewpoint );
 				p_path.addViewpoint( viewpoint );
 			}

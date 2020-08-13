@@ -13,9 +13,9 @@ namespace VTX
 		void Visualization::enter( void * const )
 		{
 			// Create controller.
-			addItem( Generic::create<Controller::Freefly>() );
-			addItem( Generic::create<Controller::Trackball>() );
-			addItem( Generic::create<Controller::Shortcut>() );
+			addItem( new Controller::Freefly() );
+			addItem( new Controller::Trackball() );
+			addItem( new Controller::Shortcut() );
 
 			if ( _controller == ID::Controller::FREEFLY )
 			{
@@ -27,7 +27,7 @@ namespace VTX
 			}
 		}
 
-		void Visualization::exit() { Generic::HasCollection<Controller::BaseController>::clean(); }
+		void Visualization::exit() { Generic::HasCollection<Controller::BaseController>::clear(); }
 
 		void Visualization::update( const double & p_deltaTime )
 		{

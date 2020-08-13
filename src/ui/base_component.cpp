@@ -8,7 +8,6 @@ namespace VTX
 	{
 		void BaseComponent::init()
 		{
-			Generic::HasCollection<Generic::BaseDrawable>::init();
 			Event::BaseEventReceiverVTX::_registerEvents();
 			_visible = true;
 		}
@@ -17,7 +16,6 @@ namespace VTX
 		{
 			_visible = false;
 			Event::BaseEventReceiverVTX::_unregisterEvents();
-			Generic::HasCollection<Generic::BaseDrawable>::clean();
 		}
 
 		void BaseComponent::_draw()

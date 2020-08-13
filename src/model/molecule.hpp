@@ -48,7 +48,7 @@ namespace VTX
 
 			using RepresentationState = std::map<const Generic::REPRESENTATION, RepresentationStruct>;
 
-			Molecule() = default;
+			Molecule();
 			~Molecule();
 
 			// Configuration.
@@ -144,7 +144,7 @@ namespace VTX
 
 			inline const Math::AABB & getGlobalPositionsAABB() const { return _globalPositionsAABB; }
 
-			virtual void								   init() override;
+			void										   init();
 			void										   setColorMode();
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
@@ -185,8 +185,6 @@ namespace VTX
 			void setSelected( const bool );
 
 		  protected:
-			virtual void _addItems() override final;
-
 			void _computeGlobalPositionsAABB();
 
 		  private:

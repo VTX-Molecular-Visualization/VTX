@@ -18,7 +18,7 @@ namespace VTX
 		class MeshTriangle : public BaseModel3D
 		{
 		  public:
-			MeshTriangle() = default;
+			MeshTriangle();
 			~MeshTriangle();
 
 			inline const std::vector<Vec3f> & getVertices() const { return _vertices; }
@@ -49,13 +49,11 @@ namespace VTX
 			inline const Math::AABB & getAABB() const { return _aabb; }
 
 			void		 print() const;
-			virtual void init() override;
+			void		 init();
 			virtual void bindBuffers() override;
 			virtual void unbindBuffers() override;
 
 		  protected:
-			virtual void _addItems() override;
-
 			void _computeAABB()
 			{
 				_aabb.invalidate();

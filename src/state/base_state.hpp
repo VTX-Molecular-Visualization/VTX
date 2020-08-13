@@ -26,12 +26,8 @@ namespace VTX
 		  public:
 			virtual void enter( void * const ) = 0;
 			virtual void exit()				   = 0;
-			virtual void init() override
-			{
-				HasCollection::init();
-				Event::BaseEventReceiverVTX::_registerEvents();
-			}
-			virtual void clean() override { HasCollection::clean(); }
+			virtual void init() override { Event::BaseEventReceiverVTX::_registerEvents(); }
+			virtual void clean() override { Event::BaseEventReceiverVTX::_unregisterEvents(); }
 
 			virtual void BaseState::update( const double & p_deltaTime ) override
 			{

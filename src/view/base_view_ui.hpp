@@ -23,7 +23,10 @@ namespace VTX
 
 			virtual void init() override
 			{
-				VTXApp::get().getUI().getComponentByName( getComponentParentName() )->addItem(getName() + std::to_string(_getModel().getId()), this );
+				VTXApp::get()
+					.getUI()
+					.getComponentByName( getComponentParentName() )
+					->addItemRef( getName() + std::to_string( _getModel().getId() ), this );
 			}
 
 			virtual void clean() override
@@ -31,7 +34,7 @@ namespace VTX
 				VTXApp::get()
 					.getUI()
 					.getComponentByName( getComponentParentName() )
-					->removeItem( getName() + std::to_string( _getModel().getId() ) );
+					->removeItemRef( getName() + std::to_string( _getModel().getId() ) );
 			}
 
 			virtual const std::string & getComponentParentName() const = 0;

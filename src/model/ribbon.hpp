@@ -37,10 +37,6 @@ namespace VTX
 			inline Molecule * const getMolecule() const { return _molecule; }
 			void					refreshVisibility();
 
-		  protected:
-			// Don't use default Triangle view, use Triangle Ribbbon to override some features.
-			virtual void _addItems() override;
-
 		  private:
 			static constexpr int LHANDED = -1;
 			static constexpr int RHANDED = 1;

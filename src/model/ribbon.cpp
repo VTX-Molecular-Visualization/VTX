@@ -8,6 +8,8 @@ namespace VTX
 	{
 		Ribbon::Ribbon( Molecule * const p_molecule ) : _molecule( p_molecule )
 		{
+			addItem( (View::BaseView<BaseModel> *)new View::D3::TriangleRibbon( this ) );
+
 			Tool::Chrono chrono;
 			chrono.start();
 			VTX_INFO( "Creating secondary structure..." );
@@ -638,11 +640,5 @@ namespace VTX
 			glNamedBufferData(
 				_vboVisibilities, sizeof( uint ) * _visibilities.size(), _visibilities.data(), GL_STATIC_DRAW );
 		}
-
-		void Ribbon::_addItems()
-		{
-			addItem( (View::BaseView<BaseModel> *)Generic::create<View::D3::TriangleRibbon>( this ) );
-		}
-
 	} // namespace Model
 } // namespace VTX

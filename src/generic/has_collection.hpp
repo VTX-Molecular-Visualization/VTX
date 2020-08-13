@@ -6,9 +6,8 @@
 #endif
 
 #include "base_cleanable.hpp"
-#include "base_collectionable.hpp"
-#include "base_initializable.hpp"
 #include "factory.hpp"
+#include "util/logger.hpp"
 #include <algorithm>
 #include <map>
 #include <string>
@@ -20,25 +19,34 @@ namespace VTX
 	namespace Generic
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCollectionable, T>::value>>
-		class HasCollection : public BaseInitializable, public BaseCleanable
+		class HasCollection
 		{
 		  public:
 			using MapStringToItemPtr  = std::map<std::string, T *>;
 			using PairStringToItemPtr = std::pair<const std::string, T *>;
 
-			virtual void init() override { _addItems(); }
+			~HasCollection() { clear(); }
 
-			virtual void clean() override
+			void clear()
 			{
-				for ( const PairStringToItemPtr & pair : _items )
+				for ( PairStringToItemPtr & pair : _items )
 				{
-					Generic::destroy<BaseCollectionable>( pair.second );
+					pair.second->clean();
+					delete pair.second;
 				}
+
 				_items.clear();
 				_orderedKeys.clear();
 			}
 
-			void addItem( const std::string & p_name, T * const p_item )
+			void addItem( T * const p_item )
+			{
+				p_item->init();
+				std::string name = static_cast<BaseCollectionable *>( p_item )->getName();
+				addItemRef( name, p_item );
+			}
+
+			void addItemRef( const std::string & p_name, T * const p_item )
 			{
 				try
 				{
@@ -52,23 +60,14 @@ namespace VTX
 				}
 			}
 
-			void addItem( T * const p_item )
+			T * removeItem( const std::string & p_name )
 			{
-				std::string name = static_cast<BaseCollectionable *>( p_item )->getName();
-				try
-				{
-					_items.try_emplace( name, p_item );
-					_orderedKeys.push_back( name );
-				}
-				catch ( const std::exception & )
-				{
-					_orderedKeys.erase( std::find( _orderedKeys.begin(), _orderedKeys.end(), name ) );
-					VTX_WARNING( "An item with this name already exists: "
-								 + static_cast<BaseCollectionable *>( p_item )->getName() );
-				}
+				T * item = _items.at( p_name );
+				item->clean();
+				return removeItemRef( p_name );
 			}
 
-			T * removeItem( const std::string & p_name )
+			T * removeItemRef( const std::string & p_name )
 			{
 				T * item = _items.at( p_name );
 				_items.erase( p_name );
@@ -97,8 +96,6 @@ namespace VTX
 		  protected:
 			inline MapStringToItemPtr &		  _getItems() { return _items; }
 			inline std::vector<std::string> & _getOrderedKeys() { return _orderedKeys; }
-
-			virtual void _addItems() {};
 
 		  private:
 			MapStringToItemPtr		 _items		  = MapStringToItemPtr();

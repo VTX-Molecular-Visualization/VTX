@@ -41,7 +41,7 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					Model::Viewpoint * const viewpoint = Generic::create<Model::Viewpoint>(&_path);
+					Model::Viewpoint * const viewpoint = new Model::Viewpoint( &_path );
 					viewpoint->setController( _controller );
 					viewpoint->setPosition( _position );
 					viewpoint->setRotation( _rotation );
@@ -70,7 +70,7 @@ namespace VTX
 					Model::Path * const path = _viewpoint.getPathPtr();
 					path->removeViewpoint( &_viewpoint );
 					path->refreshAllDurations();
-					Generic::destroy<Model::Viewpoint>( &_viewpoint );
+					delete &_viewpoint;
 				}
 
 			  private:

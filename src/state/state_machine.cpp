@@ -11,6 +11,13 @@ namespace VTX
 {
 	namespace State
 	{
+		StateMachine::StateMachine()
+		{
+			addItem( new Visualization() );
+			addItem( new Play() );
+			addItem( new Export() );
+		}
+
 		void StateMachine::goToState( const std::string & p_name, void * const p_arg )
 		{
 			VTX_DEBUG( "Go to state: " + p_name );
@@ -22,13 +29,6 @@ namespace VTX
 			{
 				throw Exception::VTXException( "State not found: " + p_name );
 			}
-		}
-
-		void StateMachine::_addItems()
-		{
-			addItem( Generic::create<Visualization>() );
-			addItem( Generic::create<Play>() );
-			addItem( Generic::create<Export>() );
 		}
 
 		void StateMachine::_switchState( BaseState * const p_state, void * const p_arg )

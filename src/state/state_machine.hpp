@@ -18,12 +18,11 @@ namespace VTX
 		class StateMachine : public Generic::BaseUpdatable, public Generic::HasCollection<BaseState>
 		{
 		  public:
+			StateMachine();
+
 			void goToState( const std::string &, void * const p_arg = nullptr );
 
 			virtual void update( const double & ) override;
-
-		  protected:
-			virtual void _addItems() override;
 
 		  private:
 			BaseState * _currentState = nullptr;

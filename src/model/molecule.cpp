@@ -15,6 +15,13 @@ namespace VTX
 {
 	namespace Model
 	{
+		Molecule::Molecule()
+		{
+			addItem( (View::BaseView<BaseModel> *)new View::D3::Sphere( this ) );
+			addItem( (View::BaseView<BaseModel> *)new View::D3::Cylinder( this ) );
+			addItem( (View::BaseView<BaseModel> *)new View::UI::MoleculeStructure( this ) );
+		}
+
 		Molecule::~Molecule()
 		{
 			glBindVertexArray( _vao );
@@ -50,15 +57,12 @@ namespace VTX
 			if ( _ribbon != nullptr )
 			{
 				VTXApp::get().getScene().removeMesh( _ribbon );
-				Generic::destroy( _ribbon );
+				delete _ribbon;
 			}
 		}
 
 		void Molecule::init()
 		{
-			// Add views.
-			BaseModel::init();
-
 			// Compute global AABB of atom positions (taking into account each frame).
 			_computeGlobalPositionsAABB();
 
@@ -81,17 +85,9 @@ namespace VTX
 				}
 
 				// Create secondary structure mesh.
-				createSecondaryStructure();
+				// createSecondaryStructure();
 				refreshVisibility();
 			}
-		}
-
-		void Molecule::_addItems()
-		{
-			// Add views.
-			addItem( (View::BaseView<BaseModel> *)Generic::create<View::D3::Sphere>( this ) );
-			addItem( (View::BaseView<BaseModel> *)Generic::create<View::D3::Cylinder>( this ) );
-			addItem( (View::BaseView<BaseModel> *)Generic::create<View::UI::MoleculeStructure>( this ) );
 		}
 
 		void Molecule::_computeGlobalPositionsAABB()
@@ -283,11 +279,11 @@ namespace VTX
 			BaseSelectable::setSelected( p_selected );
 			if ( isSelected() )
 			{
-				addItem( (View::BaseView<BaseModel> *)Generic::create<View::UI::Molecule>( this ) );
+				addItem( (View::BaseView<BaseModel> *)new View::UI::Molecule( this ) );
 			}
 			else
 			{
-				Generic::destroy( removeItem( ID::View::UI_MOLECULE ) );
+				delete removeItem( ID::View::UI_MOLECULE );
 			}
 		}
 
@@ -450,10 +446,10 @@ namespace VTX
 			if ( _ribbon != nullptr )
 			{
 				VTXApp::get().getScene().removeMesh( _ribbon );
-				Generic::destroy( _ribbon );
+				delete _ribbon;
 			}
 
-			_ribbon = Generic::create<Ribbon, Molecule>( this );
+			_ribbon = new Ribbon( this );
 			_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
 		}
@@ -462,11 +458,11 @@ namespace VTX
 		{
 			if ( hasItem( ( ID::View::UI_MOLECULE_SEQUENCE ) ) )
 			{
-				Generic::destroy( removeItem( ID::View::UI_MOLECULE_SEQUENCE ) );
+				delete removeItem( ID::View::UI_MOLECULE_SEQUENCE );
 			}
 			else
 			{
-				addItem( (View::BaseView<BaseModel> *)Generic::create<View::UI::MoleculeSequence>( this ) );
+				addItem( (View::BaseView<BaseModel> *)new View::UI::MoleculeSequence( this ) );
 			}
 		}
 

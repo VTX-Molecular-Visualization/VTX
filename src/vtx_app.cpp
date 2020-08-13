@@ -26,7 +26,7 @@ namespace VTX
 		// Respect this order!
 		if ( _stateMachine != nullptr )
 		{
-			Generic::destroy( _stateMachine );
+			delete _stateMachine;
 		}
 		if ( _scene != nullptr )
 		{
@@ -34,7 +34,7 @@ namespace VTX
 		}
 		if ( _ui != nullptr )
 		{
-			Generic::destroy( _ui );
+			delete _ui;
 		}
 		if ( _rendererGL != nullptr )
 		{
@@ -74,7 +74,7 @@ namespace VTX
 	{
 		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
 
-		_ui = Generic::create<UI::UserInterface>();
+		_ui = new UI::UserInterface();
 
 		_scene = new Object3D::Scene();
 
@@ -82,7 +82,7 @@ namespace VTX
 
 		switchRenderer( Setting::MODE_DEFAULT );
 
-		_stateMachine = Generic::create<State::StateMachine>();
+		_stateMachine = new State::StateMachine();
 		_stateMachine->goToState( ID::State::VISUALIZATION );
 
 		VTX_ACTION( new Action::Setting::Load() );

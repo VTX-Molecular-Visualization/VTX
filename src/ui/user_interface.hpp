@@ -41,8 +41,6 @@ namespace VTX
 			inline void				setHoveredWindow( const ID::VTX_ID & p_id ) { _hoveredWindow = p_id; }
 
 		  protected:
-			virtual void _addItems() override;
-
 			virtual bool _drawHeader() override;
 			virtual void _drawContent() override;
 			virtual void _drawFooter() override;

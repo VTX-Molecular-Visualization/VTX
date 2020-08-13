@@ -26,6 +26,19 @@ namespace VTX
 		{
 			VTX_INFO( "Creating user interface" );
 
+			// Menu.
+			addItem( new Menu() );
+
+			// Windows.
+			addItem( new Window::Console() );
+			addItem( new Window::Scene() );
+			addItem( new Window::Inspector() );
+			addItem( new Window::CameraEditor() );
+			addItem( new Window::Render() );
+
+			// Modals.
+			addItem( new Modal::ProgressBar() );
+
 			try
 			{
 				_initSDL2();
@@ -68,22 +81,6 @@ namespace VTX
 		}
 
 		void UserInterface::setVSync( const bool p_vsync ) { SDL_GL_SetSwapInterval( p_vsync ); }
-
-		void UserInterface::_addItems()
-		{
-			// Menu.
-			addItem( Generic::create<Menu>() );
-
-			// Windows.
-			addItem( Generic::create<Window::Console>() );
-			addItem( Generic::create<Window::Scene>() );
-			addItem( Generic::create<Window::Inspector>() );
-			addItem( Generic::create<Window::CameraEditor>() );
-			addItem( Generic::create<Window::Render>() );
-
-			// Modals.
-			addItem( Generic::create<Modal::ProgressBar>() );
-		}
 
 		void UserInterface::_initSDL2()
 		{

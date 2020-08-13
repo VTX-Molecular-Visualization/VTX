@@ -86,11 +86,11 @@ namespace VTX
 			BaseSelectable::setSelected( p_selected );
 			if ( isSelected() )
 			{
-				addItem( (View::BaseView<BaseModel> *)Generic::create<Chain, View::UI::Chain>( this ) );
+				addItem( (View::BaseView<BaseModel> *)new View::UI::Chain( this ) );
 			}
 			else
 			{
-				Generic::destroy( removeItem( ID::View::UI_CHAIN ) );
+				delete removeItem( ID::View::UI_CHAIN );
 			}
 		}
 

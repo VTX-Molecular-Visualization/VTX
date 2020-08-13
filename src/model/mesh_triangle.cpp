@@ -6,6 +6,12 @@ namespace VTX
 {
 	namespace Model
 	{
+		MeshTriangle::MeshTriangle()
+		{
+			// Add views.
+			addItem( (View::BaseView<BaseModel> *)new View::D3::Triangle( this ) );
+		}
+
 		MeshTriangle::~MeshTriangle()
 		{
 			glBindVertexArray( _vao );
@@ -36,8 +42,6 @@ namespace VTX
 
 		void MeshTriangle::init()
 		{
-			BaseModel::init();
-
 			_computeAABB();
 
 			// VBO.
@@ -95,12 +99,6 @@ namespace VTX
 
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 			glBindVertexArray( 0 );
-		}
-
-		void MeshTriangle::_addItems()
-		{
-			// Add views.
-			addItem( (View::BaseView<BaseModel> *)Generic::create<MeshTriangle, View::D3::Triangle>( this ) );
 		}
 
 		void MeshTriangle::print() const

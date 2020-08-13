@@ -166,7 +166,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTXApp::get().getScene().removeMolecule( &_molecule );
-					Generic::destroy<Model::Molecule>( &_molecule );
+					delete &_molecule;
 				}
 
 			  private:
