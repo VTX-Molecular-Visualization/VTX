@@ -8,7 +8,6 @@
 #include "base_model_3d.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
-#include "math/aabb.hpp"
 #include <vector>
 
 namespace VTX
@@ -47,23 +46,12 @@ namespace VTX
 			inline const uint &				 getIndice( const uint p_idx ) const { return _indices[ p_idx ]; }
 			inline uint &					 getIndice( const uint p_idx ) { return _indices[ p_idx ]; }
 
-			inline const Math::AABB & getAABB() const { return _aabb; }
-
 			void		 print() const;
 			void		 init();
 			virtual void bindBuffers() override;
 			virtual void unbindBuffers() override;
 
 		  protected:
-			void _computeAABB()
-			{
-				_aabb.invalidate();
-				for ( const Vec3f & v : _vertices )
-				{
-					_aabb.extend( v );
-				}
-			}
-
 			enum ATTRIBUTE_LOCATION
 			{
 				VERTEX_POSITION	  = 0,
@@ -80,14 +68,14 @@ namespace VTX
 
 			std::vector<uint> _indices;
 
-			Math::AABB _aabb;
-
 			GLuint _vboPositions	= GL_INVALID_VALUE;
 			GLuint _vboNormals		= GL_INVALID_VALUE;
 			GLuint _vboColors		= GL_INVALID_VALUE;
 			GLuint _vboVisibilities = GL_INVALID_VALUE;
 			GLuint _ibo				= GL_INVALID_VALUE;
 			GLuint _vao				= GL_INVALID_VALUE;
+
+			void _computeAABB();
 		};
 	} // namespace Model
 } // namespace VTX

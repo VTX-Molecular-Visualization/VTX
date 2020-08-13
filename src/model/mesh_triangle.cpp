@@ -127,5 +127,14 @@ namespace VTX
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 		}
 
+		void MeshTriangle::_computeAABB()
+		{
+			_aabb.invalidate();
+			for ( const Vec3f & v : _vertices )
+			{
+				_aabb.extend( v );
+			}
+		}
+
 	} // namespace Model
 } // namespace VTX

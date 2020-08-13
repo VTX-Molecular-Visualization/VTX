@@ -8,6 +8,7 @@
 #include "generic/base_renderable.hpp"
 #include "generic/base_transformable.hpp"
 #include "generic/base_visible.hpp"
+#include "math/aabb.hpp"
 #include "model/base_model.hpp"
 #include <GL/gl3w.h>
 
@@ -24,6 +25,8 @@ namespace VTX
 		  public:
 			virtual ~BaseModel3D() = default;
 
+			inline const Math::AABB & getAABB() const { return _aabb; }
+
 			virtual void render()
 			{
 				bindBuffers();
@@ -33,6 +36,9 @@ namespace VTX
 
 			virtual void bindBuffers()	 = 0;
 			virtual void unbindBuffers() = 0;
+
+		  protected:
+			Math::AABB _aabb;
 		};
 	} // namespace Model
 } // namespace VTX

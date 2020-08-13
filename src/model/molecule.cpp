@@ -96,7 +96,7 @@ namespace VTX
 			{
 				for ( Vec3f pos : frame )
 				{
-					_globalPositionsAABB.extend( pos );
+					_aabb.extend( pos );
 				}
 			}
 		}

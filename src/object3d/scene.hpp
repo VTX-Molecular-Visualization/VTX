@@ -37,7 +37,7 @@ namespace VTX
 			void addMolecule( MoleculePtr const p_molecule )
 			{
 				_molecules.emplace( p_molecule, 0.f );
-				_aabb.extend( p_molecule->getGlobalPositionsAABB() );
+				_aabb.extend( p_molecule->getAABB() );
 			}
 			void removeMolecule( MoleculePtr const p_molecule )
 			{
@@ -71,7 +71,7 @@ namespace VTX
 				_aabb.invalidate();
 				for ( const PairMoleculePtrFloat & mol : _molecules )
 				{
-					_aabb.extend( mol.first->getGlobalPositionsAABB() );
+					_aabb.extend( mol.first->getAABB() );
 				}
 				for ( const MeshTrianglePtr & mesh : _meshes )
 				{

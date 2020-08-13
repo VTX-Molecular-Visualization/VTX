@@ -142,8 +142,6 @@ namespace VTX
 			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
 			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
-			inline const Math::AABB & getGlobalPositionsAABB() const { return _globalPositionsAABB; }
-
 			void										   init();
 			void										   setColorMode();
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
@@ -212,10 +210,6 @@ namespace VTX
 			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
 			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
 			std::vector<uint>		_bufferBonds			= std::vector<uint>();
-
-			// Global AABB of atom positions (taking into account each frame).
-			// TODO: find better name
-			Math::AABB _globalPositionsAABB;
 
 			// Secondary structure.
 			Ribbon * _ribbon = nullptr;
