@@ -6,10 +6,14 @@ namespace VTX
 {
 	namespace Model
 	{
-		MeshTriangle::MeshTriangle()
+		MeshTriangle::MeshTriangle() { MeshTriangle( true ); }
+
+		MeshTriangle::MeshTriangle( const bool p_defaultView )
 		{
-			// Add views.
-			addItem( (View::BaseView<BaseModel> *)new View::D3::Triangle( this ) );
+			if ( p_defaultView )
+			{
+				addItem( (View::BaseView<BaseModel> *)new View::D3::Triangle( this ) );
+			}
 		}
 
 		MeshTriangle::~MeshTriangle()

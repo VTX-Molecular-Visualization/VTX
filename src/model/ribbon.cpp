@@ -6,10 +6,8 @@ namespace VTX
 {
 	namespace Model
 	{
-		Ribbon::Ribbon( Molecule * const p_molecule ) : _molecule( p_molecule )
+		Ribbon::Ribbon( Molecule * const p_molecule ) : MeshTriangle( false ), _molecule( p_molecule )
 		{
-			addItem( (View::BaseView<BaseModel> *)new View::D3::TriangleRibbon( this ) );
-
 			Tool::Chrono chrono;
 			chrono.start();
 			VTX_INFO( "Creating secondary structure..." );
@@ -282,6 +280,8 @@ namespace VTX
 
 			chrono.stop();
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
+
+			addItem( (View::BaseView<BaseModel> *)new View::D3::TriangleRibbon( this ) );
 		}
 
 		void Ribbon::_addControlPoints( const Vec3f &					   p_CA0Pos,

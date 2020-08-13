@@ -19,6 +19,7 @@ namespace VTX
 		{
 		  public:
 			MeshTriangle();
+			MeshTriangle( const bool );
 			~MeshTriangle();
 
 			inline const std::vector<Vec3f> & getVertices() const { return _vertices; }

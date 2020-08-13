@@ -85,7 +85,7 @@ namespace VTX
 				}
 
 				// Create secondary structure mesh.
-				// createSecondaryStructure();
+				createSecondaryStructure();
 				refreshVisibility();
 			}
 		}
@@ -450,6 +450,7 @@ namespace VTX
 			}
 
 			_ribbon = new Ribbon( this );
+			_ribbon->init();
 			_ribbon->print();
 			VTXApp::get().getScene().addMesh( _ribbon );
 		}
