@@ -13,21 +13,21 @@ namespace VTX
 			void Path::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-				ImGui::PushID( ( "ViewPath" + std::to_string( _getModel().getId() ) ).c_str() );
+				ImGui::PushID( ( "ViewPath" + std::to_string( _model->getId() ) ).c_str() );
 				if ( ImGui::CollapsingHeader( LOCALE( "View.Path" ), flags ) )
 				{
-					ImGui::Text( "Viewpoints: %d", _getModel().getViewpoints().size() );
+					ImGui::Text( "Viewpoints: %d", _model->getViewpoints().size() );
 
 					const char * durationModes[] = {
 						LOCALE( "Enum.DurationMode.ConstantSpeed" ),
 						LOCALE( "Enum.DurationMode.Path" ),
 						LOCALE( "Enum.DurationMode.Viewpoint" ),
 					};
-					int durationMode = (int)_getModel().getDurationMode();
+					int durationMode = (int)_model->getDurationMode();
 					if ( ImGui::Combo( LOCALE( "View.DurationMode" ), &durationMode, durationModes, 3 ) )
 					{
-						VTX_ACTION( new Action::Path::ChangeDurationMode( _getModel(),
-																		  (Model::Path::DURATION_MODE)durationMode ) );
+						VTX_ACTION(
+							new Action::Path::ChangeDurationMode( *_model, (Model::Path::DURATION_MODE)durationMode ) );
 					}
 
 					const char * interpolationModes[] = {
@@ -35,29 +35,29 @@ namespace VTX
 						LOCALE( "Enum.InterpolationMode.CatmullRom" ),
 						LOCALE( "Enum.InterpolationMode.Cubic" ),
 					};
-					int interpolationMode = (int)_getModel().getInterpolationMode();
+					int interpolationMode = (int)_model->getInterpolationMode();
 					if ( ImGui::Combo( LOCALE( "View.InterpolationMode" ), &interpolationMode, interpolationModes, 2 ) )
 					{
 						VTX_ACTION( new Action::Path::ChangeInterpolationMode(
-							_getModel(), (Model::Path::INTERPOLATION_MODE)interpolationMode ) );
+							*_model, (Model::Path::INTERPOLATION_MODE)interpolationMode ) );
 					}
 
-					if ( _getModel().getDurationMode() != Model::Path::DURATION_MODE::VIEWPOINT )
+					if ( _model->getDurationMode() != Model::Path::DURATION_MODE::VIEWPOINT )
 					{
-						float duration = _getModel().getDuration();
+						float duration = _model->getDuration();
 						if ( ImGui::InputFloat( LOCALE( "View.Duration" ), &duration, 1.f ) )
 						{
-							VTX_ACTION( new Action::Path::ChangeDuration( _getModel(), duration ) );
+							VTX_ACTION( new Action::Path::ChangeDuration( *_model, duration ) );
 						}
 					}
 					else
 					{
-						ImGui::Text( "Duration: %f", _getModel().getDuration() );
+						ImGui::Text( "Duration: %f", _model->getDuration() );
 					}
 
 					if ( ImGui::Button( LOCALE( "View.Play" ) ) )
 					{
-						VTX_ACTION( new Action::Path::Play( &_getModel() ) );
+						VTX_ACTION( new Action::Path::Play( &*_model ) );
 					}
 					ImGui::SameLine();
 					if ( ImGui::Button( LOCALE( "View.Stop" ) ) )
@@ -65,15 +65,15 @@ namespace VTX
 						VTXApp::get().goToState( ID::State::VISUALIZATION );
 					}
 					ImGui::SameLine();
-					bool isLooping = _getModel().isLooping();
+					bool isLooping = _model->isLooping();
 					if ( ImGui::Checkbox( LOCALE( "View.Loop" ), &isLooping ) )
 					{
-						VTX_ACTION( new Action::Path::ChangeIsLooping( _getModel(), isLooping ) );
+						VTX_ACTION( new Action::Path::ChangeIsLooping( *_model, isLooping ) );
 					}
 					if ( ImGui::Button( LOCALE( "View.Viewpoint.Add" ) ) )
 					{
 						VTX_ACTION( new Action::Viewpoint::Create(
-							_getModel(),
+							*_model,
 							VTXApp::get().getScene().getCamera(),
 							VTXApp::get()
 								.getStateMachine()

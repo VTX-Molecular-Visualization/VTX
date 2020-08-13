@@ -23,15 +23,15 @@ namespace VTX
 			long getId() const { return _id; }
 
 		  protected:
+			long _id = COUNTER++;
+
 			void _notifyViews( const Event::VTX_EVENT_MODEL p_event )
 			{
-				for ( PairStringToItemPtr & pair : _getItems() )
+				for ( PairStringToItemPtr & pair : _items )
 				{
 					pair.second->notify( p_event );
 				}
 			}
-
-			long _id = COUNTER++;
 		};
 	} // namespace Model
 } // namespace VTX

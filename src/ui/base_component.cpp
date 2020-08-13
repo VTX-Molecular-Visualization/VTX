@@ -57,7 +57,7 @@ namespace VTX
 
 		void BaseComponent::_drawComponents()
 		{
-			for ( const std::string & key : _getOrderedKeys() )
+			for ( const std::string & key : _orderedKeys )
 			{
 				getItem( key )->draw();
 			}
@@ -75,7 +75,7 @@ namespace VTX
 				return static_cast<BaseComponent *>( getItem( p_name ) );
 			}
 
-			for ( const PairStringToItemPtr & pair : _getItems() )
+			for ( const PairStringToItemPtr & pair : _items )
 			{
 				BaseComponent * child = dynamic_cast<BaseComponent *>( pair.second );
 				if ( child != nullptr )

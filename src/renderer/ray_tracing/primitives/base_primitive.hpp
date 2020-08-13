@@ -34,11 +34,11 @@ namespace VTX
 				return intersect( p_ray, p_tMin, p_tMax, Intersection( VEC3F_ZERO, VEC3F_ZERO, FLOAT_MAX, nullptr ) );
 			}
 
-		  private:
-			virtual void _computeAABB() = 0;
-
 		  protected:
 			BaseMaterial * _material = nullptr;
+
+		  private:
+			virtual void _computeAABB() = 0;
 		};
 	} // namespace Renderer
 } // namespace VTX

@@ -19,7 +19,10 @@ namespace VTX
 
 			virtual void draw()
 			{
-				if ( isVisible() ) { _draw(); }
+				if ( isVisible() )
+				{
+					_draw();
+				}
 			}
 
 		  private:

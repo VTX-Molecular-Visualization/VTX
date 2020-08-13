@@ -12,46 +12,45 @@ namespace VTX
 			void Viewpoint::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-				ImGui::PushID( ( "ViewViewpoint" + std::to_string( _getModel().getId() ) ).c_str() );
+				ImGui::PushID( ( "ViewViewpoint" + std::to_string( _model->getId() ) ).c_str() );
 				if ( ImGui::CollapsingHeader( LOCALE( "View.Viewpoint" ), flags ) )
 				{
-					if ( _getModel().getPathPtr()->getDurationMode() == Model::Path::DURATION_MODE::VIEWPOINT )
+					if ( _model->getPathPtr()->getDurationMode() == Model::Path::DURATION_MODE::VIEWPOINT )
 					{
-						float duration = _getModel().getDuration();
+						float duration = _model->getDuration();
 						if ( ImGui::InputFloat( LOCALE( "View.Duration" ), &duration, 1.f ) )
 						{
-							VTX_ACTION( new Action::Viewpoint::ChangeDuration( _getModel(), duration ) );
+							VTX_ACTION( new Action::Viewpoint::ChangeDuration( *_model, duration ) );
 						}
 					}
 					else
 					{
-						ImGui::Text( "Duration: %f", _getModel().getDuration() );
+						ImGui::Text( "Duration: %f", _model->getDuration() );
 					}
 
 					if ( ImGui::Button( LOCALE( "View.Replace" ) ) )
 					{
-						VTX_ACTION(
-							new Action::Viewpoint::Replace( _getModel(), VTXApp::get().getScene().getCamera() ) );
+						VTX_ACTION( new Action::Viewpoint::Replace( *_model, VTXApp::get().getScene().getCamera() ) );
 					}
 
 					ImGui::SameLine();
 					if ( ImGui::Button( LOCALE( "View.Delete" ) ) )
 					{
-						VTX_ACTION( new Action::Viewpoint::Delete( _getModel() ) );
+						VTX_ACTION( new Action::Viewpoint::Delete( *_model ) );
 					}
 
 					ImGui::Text( LOCALE( "View.Actions" ) );
 
 					uint i = 0;
-					for ( std::vector<std::string>::const_iterator & action = _getModel().getActions().begin();
-						  action != _getModel().getActions().end();
+					for ( std::vector<std::string>::const_iterator & action = _model->getActions().begin();
+						  action != _model->getActions().end();
 						  ++action )
 					{
 						ImGui::PushID( ( "ViewViewpointAction" + std::to_string( i ) ).c_str() );
 						ImGui::Text( ( *action ).c_str() );
 						if ( ImGui::Button( LOCALE( "View.Delete" ) ) )
 						{
-							VTX_ACTION( new Action::Viewpoint::DeleteAction( _getModel(), action ) );
+							VTX_ACTION( new Action::Viewpoint::DeleteAction( *_model, action ) );
 						}
 						i++;
 						ImGui::PopID();
@@ -60,7 +59,7 @@ namespace VTX
 					if ( ImGui::InputText(
 							 "##Add", _action, IM_ARRAYSIZE( _action ), ImGuiInputTextFlags_EnterReturnsTrue ) )
 					{
-						VTX_ACTION( new Action::Viewpoint::AddAction( _getModel(), std::string( _action ) ) );
+						VTX_ACTION( new Action::Viewpoint::AddAction( *_model, std::string( _action ) ) );
 					}
 
 					ImGui::PopItemWidth();

@@ -34,9 +34,6 @@ namespace VTX
 			virtual void notify( const Event::VTX_EVENT_MODEL & ) override {};
 
 		  protected:
-			virtual T & _getModel() final { return *_model; }
-
-		  private:
 			T * _model = nullptr;
 		};
 	} // namespace View

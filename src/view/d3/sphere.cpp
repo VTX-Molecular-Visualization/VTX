@@ -55,15 +55,14 @@ namespace VTX
 				glUniformMatrix4fv( _uModelViewMatrixLoc,
 									1,
 									GL_FALSE,
-									Util::Math::value_ptr( cam.getViewMatrix() * _getModel().getTransform().get() ) );
+									Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
 				glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 
 				glUniform1f( _uRadiusFixedLoc, _radiusFixed );
 				glUniform1f( _uRadiusAddLoc, _radiusAdd );
 				glUniform1ui( _uIsRadiusFixedLoc, _isRadiusFixed );
 
-				for ( const std::pair<uint, uint> & pair :
-					  _getModel().getRepresentationState()[ p_representation ].atoms )
+				for ( const std::pair<uint, uint> & pair : _model->getRepresentationState()[ p_representation ].atoms )
 				{
 					glDrawArrays( GL_POINTS, pair.first, pair.second );
 				}

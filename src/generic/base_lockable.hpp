@@ -15,11 +15,10 @@ namespace VTX
 		class BaseLocakble
 		{
 		  protected:
+			std::mutex _mutex;
+
 			inline void _lock() { _mutex.lock(); }
 			inline void _unlock() { _mutex.unlock(); }
-
-		  private:
-			std::mutex _mutex;
 		};
 	} // namespace Generic
 } // namespace VTX

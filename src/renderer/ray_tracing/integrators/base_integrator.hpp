@@ -25,13 +25,13 @@ namespace VTX
 								   const float	 p_tMax ) const = 0;
 
 		  protected:
+			static constexpr float SHADOW_EPS = 0.00001f;
+
 			// TODO: static
 			const Color::Rgb _backgroundColor //
 											  //	= Vec3f( 1.5f ) * 0.1f;
 				= Color::Rgb( 0.5f, 0.6f, 0.8f ) * 0.05f;
 			//( 0.7f, 0.7f, 0.7f );
-
-			static constexpr float SHADOW_EPS = 0.00001f;
 		};
 
 	} // namespace Renderer

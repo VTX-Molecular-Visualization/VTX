@@ -13,25 +13,24 @@ namespace VTX
 		{
 			void Molecule::_draw()
 			{
-				Model::Configuration::Molecule & config = _getModel().getConfiguration();
+				Model::Configuration::Molecule & config = _model->getConfiguration();
 
-				ImGui::PushID( ( "ViewMolecule" + std::to_string( _getModel().getId() ) ).c_str() );
+				ImGui::PushID( ( "ViewMolecule" + std::to_string( _model->getId() ) ).c_str() );
 				bool notClosed = true;
-				if ( ImGui::CollapsingHeader(
-						 _getModel().getName().c_str(), &notClosed, ImGuiTreeNodeFlags_DefaultOpen ) )
+				if ( ImGui::CollapsingHeader( _model->getName().c_str(), &notClosed, ImGuiTreeNodeFlags_DefaultOpen ) )
 				{
-					bool isVisible = _getModel().isVisible();
+					bool isVisible = _model->isVisible();
 					if ( ImGui::Checkbox( LOCALE( "View.Visible" ), &isVisible ) )
 					{
 						VTX_ACTION( new Action::Molecule::ChangeVisibility(
-							_getModel(), (Action::Visible::ChangeVisibility::VISIBILITY_MODE)isVisible ) );
+							*_model, (Action::Visible::ChangeVisibility::VISIBILITY_MODE)isVisible ) );
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Data" ), ImGuiTreeNodeFlags_DefaultOpen ) )
 					{
-						ImGui::Text( LOCALE( "View.Chains%Count" ), _getModel().getChainCount() );
-						ImGui::Text( LOCALE( "View.Residues%Count" ), _getModel().getResidueCount() );
-						ImGui::Text( LOCALE( "View.Atoms%Count" ), _getModel().getAtomCount() );
-						ImGui::Text( LOCALE( "View.Bonds%Count" ), _getModel().getBondCount() );
+						ImGui::Text( LOCALE( "View.Chains%Count" ), _model->getChainCount() );
+						ImGui::Text( LOCALE( "View.Residues%Count" ), _model->getResidueCount() );
+						ImGui::Text( LOCALE( "View.Atoms%Count" ), _model->getAtomCount() );
+						ImGui::Text( LOCALE( "View.Bonds%Count" ), _model->getBondCount() );
 						ImGui::Text( LOCALE( "View.SecondaryStructure%State" ),
 									 config.isSecondaryStructureLoadedFromFile ? LOCALE( "View.Loaded" )
 																			   : LOCALE( "View.Computed" ) );
@@ -39,102 +38,101 @@ namespace VTX
 						{
 							if ( ImGui::Button( LOCALE( "View.Compute" ) ) )
 							{
-								VTX_ACTION( new Action::Molecule::ComputeSecondaryStructure( _getModel() ) );
+								VTX_ACTION( new Action::Molecule::ComputeSecondaryStructure( *_model ) );
 							}
 						}
 
 						if ( ImGui::Button( LOCALE( "Sequence" ) ) )
 						{
-							VTX_ACTION( new Action::Molecule::ToggleSequenceVisibility( _getModel() ) );
+							VTX_ACTION( new Action::Molecule::ToggleSequenceVisibility( *_model ) );
 						}
 					}
-					if ( _getModel().getFrameCount() > 1 )
+					if ( _model->getFrameCount() > 1 )
 					{
 						if ( ImGui::CollapsingHeader( LOCALE( "View.Molecule.Dynamic" ),
 													  ImGuiTreeNodeFlags_DefaultOpen ) )
 						{
-							ImGui::Text( "Frames: %d", _getModel().getFrameCount() );
-							int frame = int( _getModel().getFrame() );
-							if ( ImGui::SliderInt(
-									 LOCALE( "View.Frame" ), &frame, 0, _getModel().getFrameCount() - 1 ) )
+							ImGui::Text( "Frames: %d", _model->getFrameCount() );
+							int frame = int( _model->getFrame() );
+							if ( ImGui::SliderInt( LOCALE( "View.Frame" ), &frame, 0, _model->getFrameCount() - 1 ) )
 							{
-								VTX_ACTION( new Action::Molecule::ChangeFrame( _getModel(), frame ) );
+								VTX_ACTION( new Action::Molecule::ChangeFrame( *_model, frame ) );
 							}
 							if ( ImGui::InputInt( "##FrameInput", &frame, 1 ) )
 							{
-								VTX_ACTION( new Action::Molecule::ChangeFrame( _getModel(), frame ) );
+								VTX_ACTION( new Action::Molecule::ChangeFrame( *_model, frame ) );
 							}
-							bool isPlaying = _getModel().isPlaying();
+							bool isPlaying = _model->isPlaying();
 							if ( ImGui::Checkbox( LOCALE( "View.Play" ), &isPlaying ) )
 							{
-								VTX_ACTION( new Action::Molecule::ChangeIsPlaying( _getModel(), isPlaying ) );
+								VTX_ACTION( new Action::Molecule::ChangeIsPlaying( *_model, isPlaying ) );
 							}
-							int fps = _getModel().getFPS();
+							int fps = _model->getFPS();
 							if ( ImGui::SliderInt( LOCALE( "View.FPS" ), &fps, 0, Setting::VIDEO_FPS_DEFAULT ) )
 							{
-								VTX_ACTION( new Action::Molecule::ChangeFPS( _getModel(), fps ) );
+								VTX_ACTION( new Action::Molecule::ChangeFPS( *_model, fps ) );
 							}
 							if ( ImGui::InputInt( "##FPSInput", &fps, 1 ) )
 							{
-								VTX_ACTION( new Action::Molecule::ChangeFPS( _getModel(), fps ) );
+								VTX_ACTION( new Action::Molecule::ChangeFPS( *_model, fps ) );
 							}
 						}
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Transform" ) ) )
 					{
 						ImGui::PushID( "Position" );
-						Vec3f translation = _getModel().getTransform().getTranslationVector();
+						Vec3f translation = _model->getTransform().getTranslationVector();
 						float t[]		  = { translation.x, translation.y, translation.z };
 						if ( ImGui::InputFloat3( LOCALE( "View.Transform.Position" ), t, 2 ) )
 						{
-							VTX_ACTION( new Action::Transformable::SetTranslation( _getModel(),
-																				   Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
+							VTX_ACTION(
+								new Action::Transformable::SetTranslation( *_model, Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] ) ) );
 						}
 						ImGui::PopID();
 						/*
 						ImGui::PushID( "Rotation" );
-						Vec3f rotation = _getModel().getTransform().getRotationVector();
+						Vec3f rotation = _model->getTransform().getRotationVector();
 						float r[]	   = { rotation.x, rotation.y, rotation.z };
 						if ( ImGui::InputFloat3( LOCALE( "View.Transform.Rotation" ), t, 2 ) )
 						{
 							// VTX_ACTION(
-							//	new Action::Molecule::TransformableRotate( _getModel(), Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] )
+							//	new Action::Molecule::TransformableRotate( *_model, Vec3f( t[ 0 ], t[ 1 ], t[ 2 ] )
 						) );
 						}
 						ImGui::PopID();
 						*/
 						ImGui::PushID( "Scale" );
-						Vec3f scale = _getModel().getTransform().getScaleVector();
+						Vec3f scale = _model->getTransform().getScaleVector();
 						float s		= scale.x;
 						if ( ImGui::InputFloat( LOCALE( "View.Transform.Scale" ), &s, 1.f ) )
 						{
-							VTX_ACTION( new Action::Transformable::SetScale( _getModel(), s ) );
+							VTX_ACTION( new Action::Transformable::SetScale( *_model, s ) );
 						}
 						ImGui::PopID();
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Options" ) ) )
 					{
-						Color::Rgb color = _getModel().getColor();
+						Color::Rgb color = _model->getColor();
 						if ( ImGui::ColorEdit3( LOCALE( "View.Color" ), (float *)&color ) )
 						{
-							VTX_ACTION( new Action::Molecule::ChangeColor( _getModel(), color ) );
+							VTX_ACTION( new Action::Molecule::ChangeColor( *_model, color ) );
 							// VTX_ACTION( new Action::Molecule::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN )
 							// );
 						}
 						if ( config.solventAtomIds.size() > 0 || config.solventResidueSymbols.size() > 0 )
 						{
-							bool showSolvent = _getModel().showSolvent();
+							bool showSolvent = _model->showSolvent();
 							if ( ImGui::Checkbox( LOCALE( "View.Molecule.Solvent" ), &showSolvent ) )
 							{
-								VTX_ACTION( new Action::Molecule::ChangeShowSolvent( _getModel(), showSolvent ) );
+								VTX_ACTION( new Action::Molecule::ChangeShowSolvent( *_model, showSolvent ) );
 							}
 						}
 						if ( config.ionAtomIds.size() > 0 || config.ionResidueSymbols.size() > 0 )
 						{
-							bool showIon = _getModel().showIon();
+							bool showIon = _model->showIon();
 							if ( ImGui::Checkbox( LOCALE( "View.Molecule.Ion" ), &showIon ) )
 							{
-								VTX_ACTION( new Action::Molecule::ChangeShowIon( _getModel(), showIon ) );
+								VTX_ACTION( new Action::Molecule::ChangeShowIon( *_model, showIon ) );
 							}
 						}
 					}
@@ -146,7 +144,7 @@ namespace VTX
 						ImGui::PushID( "Debug" );
 
 						ImGui::Text( "Translation" );
-						const Mat4f & translation = _getModel().getTransform().getTranslation();
+						const Mat4f & translation = _model->getTransform().getTranslation();
 						x						  = (float *)&translation[ 0 ];
 						y						  = (float *)&translation[ 1 ];
 						z						  = (float *)&translation[ 2 ];
@@ -157,7 +155,7 @@ namespace VTX
 						ImGui::PopID();
 
 						ImGui::Text( "Rotation" );
-						const Mat4f & rotation = _getModel().getTransform().getRotation();
+						const Mat4f & rotation = _model->getTransform().getRotation();
 						x					   = (float *)&rotation[ 0 ];
 						y					   = (float *)&rotation[ 1 ];
 						z					   = (float *)&rotation[ 2 ];
@@ -168,7 +166,7 @@ namespace VTX
 						ImGui::PopID();
 
 						ImGui::Text( "Scale" );
-						const Mat4f & scale = _getModel().getTransform().getScale();
+						const Mat4f & scale = _model->getTransform().getScale();
 						x					= (float *)&scale[ 0 ];
 						y					= (float *)&scale[ 1 ];
 						z					= (float *)&scale[ 2 ];
@@ -182,11 +180,11 @@ namespace VTX
 					}
 #endif
 
-					Util::UI::drawRepresentations( _getModel(), _getModel() );
+					Util::UI::drawRepresentations( *_model, *_model );
 				}
 				if ( notClosed == false )
 				{
-					// VTX_ACTION( new Action::Selectable::Unselect( _getModel() ) );
+					// VTX_ACTION( new Action::Selectable::Unselect( *_model ) );
 				}
 				ImGui::PopID();
 			}

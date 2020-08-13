@@ -27,7 +27,7 @@ namespace VTX
 
 				// TODO: do not upadte each frame !
 				const Object3D::Camera & cam	  = VTXApp::get().getScene().getCamera();
-				const Mat4f				 MVMatrix = cam.getViewMatrix() * _getModel().getTransform().get();
+				const Mat4f				 MVMatrix = cam.getViewMatrix() * _model->getTransform().get();
 				glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
 				glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 				glUniformMatrix4fv( _uNormalMatrixLoc,
@@ -36,10 +36,7 @@ namespace VTX
 									Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
 
 				for ( const std::pair<uint, uint> & pair :
-					  _getModel()
-						  .getMolecule()
-						  ->getRepresentationState()[ Generic::REPRESENTATION::CARTOON ]
-						  .triangles )
+					  _model->getMolecule()->getRepresentationState()[ Generic::REPRESENTATION::CARTOON ].triangles )
 				{
 					glDrawElements(
 						GL_TRIANGLES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );

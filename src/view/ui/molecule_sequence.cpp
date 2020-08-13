@@ -8,10 +8,10 @@ namespace VTX
 		{
 			void MoleculeSequence::_drawContent()
 			{
-				ImGui::Text( _getModel().getName().c_str() );
-				ImGui::Text( ( "/" + _getModel().getPath().filename().stem().string() ).c_str() );
+				ImGui::Text( _model->getName().c_str() );
+				ImGui::Text( ( "/" + _model->getPath().filename().stem().string() ).c_str() );
 
-				for ( Model::Chain * const chain : _getModel().getChains() )
+				for ( Model::Chain * const chain : _model->getChains() )
 				{
 					ImGui::Text( chain->getSequence().c_str() );
 				}

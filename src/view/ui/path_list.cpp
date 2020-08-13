@@ -11,25 +11,25 @@ namespace VTX
 		{
 			void PathList::_draw()
 			{
-				ImGui::PushID( ( "ViewPathList" + std::to_string( _getModel().getId() ) ).c_str() );
+				ImGui::PushID( ( "ViewPathList" + std::to_string( _model->getId() ) ).c_str() );
 				bool pathOpened = ImGui::TreeNodeEx(
-					"Path", _getModel().isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
+					"Path", _model->isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 				if ( ImGui::IsItemClicked() )
 				{
 					if ( pathOpened )
 					{
-						VTX_ACTION( new Action::Selectable::SetSelected( _getModel(), false ) );
+						VTX_ACTION( new Action::Selectable::SetSelected( *_model, false ) );
 					}
 
 					else
 					{
-						VTX_ACTION( new Action::Selectable::SetSelected( _getModel(), true ) );
+						VTX_ACTION( new Action::Selectable::SetSelected( *_model, true ) );
 					}
 				}
 				if ( pathOpened )
 				{
 					uint i = 0;
-					for ( Model::Viewpoint * const viewpoint : _getModel().getViewpoints() )
+					for ( Model::Viewpoint * const viewpoint : _model->getViewpoints() )
 					{
 						ImGui::PushID( viewpoint->getId() );
 						if ( ImGui::Selectable( ( std::to_string( ++i ) + std::string( " - " )

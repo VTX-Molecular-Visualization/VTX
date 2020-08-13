@@ -14,8 +14,9 @@ namespace VTX
 		class BaseCameraController : virtual public BaseController
 		{
 		  public:
+			virtual ~BaseCameraController() = default;
 			// TODO: recenter only on visible objects
-			virtual void reset() {};
+			virtual void reset() = 0;
 		};
 	} // namespace Controller
 } // namespace VTX

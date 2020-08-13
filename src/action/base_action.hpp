@@ -18,8 +18,6 @@ namespace VTX
 		  public:
 			virtual void execute() = 0;
 			virtual void displayUsage() {}
-
-		  protected:
 		};
 	} // namespace Action
 } // namespace VTX

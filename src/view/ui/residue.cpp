@@ -12,26 +12,26 @@ namespace VTX
 			void Residue::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-				ImGui::PushID( ( "ViewResidue" + std::to_string( _getModel().getId() ) ).c_str() );
-				if ( ImGui::CollapsingHeader( ( "Residue: " + _getModel().getSymbolName() ).c_str(), flags ) )
+				ImGui::PushID( ( "ViewResidue" + std::to_string( _model->getId() ) ).c_str() );
+				if ( ImGui::CollapsingHeader( ( "Residue: " + _model->getSymbolName() ).c_str(), flags ) )
 				{
 					/*
-					bool isVisible = _getModel().isVisible();
+					bool isVisible = _model->isVisible();
 					if ( ImGui::Checkbox( LOCALE( "View.Visible" ), &isVisible ) )
 					{
 						VTX_ACTION( new Action::VisibleChangeVisibility(
-							_getModel(), (Action::VisibleChangeVisibility::VISIBILITY_MODE)isVisible ) );
+							*_model, (Action::VisibleChangeVisibility::VISIBILITY_MODE)isVisible ) );
 					}
 					*/
-					ImGui::Text( "ID: %d", _getModel().getIndex() );
-					ImGui::Text( "Atoms: %d", _getModel().getAtomCount() );
-					Color::Rgb color = _getModel().getColor();
+					ImGui::Text( "ID: %d", _model->getIndex() );
+					ImGui::Text( "Atoms: %d", _model->getAtomCount() );
+					Color::Rgb color = _model->getColor();
 					if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
 					{
-						VTX_ACTION( new Action::Residue::ChangeColor( _getModel(), color ) );
+						VTX_ACTION( new Action::Residue::ChangeColor( *_model, color ) );
 						// VTX_ACTION( new Action::ChangeColorMode( View::MOLECULE_COLOR_MODE::RESIDUE ) );
 					}
-					Util::UI::drawRepresentations( _getModel(), *_getModel().getMoleculePtr() );
+					Util::UI::drawRepresentations( *_model, *_model->getMoleculePtr() );
 				}
 				ImGui::PopID();
 			}

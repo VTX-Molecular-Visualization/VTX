@@ -12,23 +12,23 @@ namespace VTX
 			void Chain::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-				ImGui::PushID( ( "ViewChain" + std::to_string( _getModel().getId() ) ).c_str() );
-				if ( ImGui::CollapsingHeader( ( "Chain: " + _getModel().getName() ).c_str(), flags ) )
+				ImGui::PushID( ( "ViewChain" + std::to_string( _model->getId() ) ).c_str() );
+				if ( ImGui::CollapsingHeader( ( "Chain: " + _model->getName() ).c_str(), flags ) )
 				{
-					bool isVisible = _getModel().isVisible();
+					bool isVisible = _model->isVisible();
 					if ( ImGui::Checkbox( LOCALE( "View.Visible" ), &isVisible ) )
 					{
 						VTX_ACTION( new Action::Chain::ChangeVisibility(
-							_getModel(), Action::Visible::ChangeVisibility::VISIBILITY_MODE::TOGGLE ) );
+							*_model, Action::Visible::ChangeVisibility::VISIBILITY_MODE::TOGGLE ) );
 					}
-					ImGui::Text( "ID: %d", _getModel().getIndex() );
-					ImGui::Text( "Residues: %d", _getModel().getResidueCount() );
-					Color::Rgb color = _getModel().getColor();
+					ImGui::Text( "ID: %d", _model->getIndex() );
+					ImGui::Text( "Residues: %d", _model->getResidueCount() );
+					Color::Rgb color = _model->getColor();
 					if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
 					{
-						VTX_ACTION( new Action::Chain::ChangeColor( _getModel(), color ) );
+						VTX_ACTION( new Action::Chain::ChangeColor( *_model, color ) );
 					}
-					Util::UI::drawRepresentations( _getModel(), *_getModel().getMoleculePtr() );
+					Util::UI::drawRepresentations( *_model, *_model->getMoleculePtr() );
 				}
 				ImGui::PopID();
 			}

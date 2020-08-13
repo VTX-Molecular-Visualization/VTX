@@ -31,7 +31,7 @@ namespace VTX
 
 			virtual void BaseState::update( const double & p_deltaTime ) override
 			{
-				for ( const PairStringToItemPtr & controller : _getItems() )
+				for ( const PairStringToItemPtr & controller : _items )
 				{
 					if ( controller.second->isActive() )
 					{

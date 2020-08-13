@@ -41,8 +41,6 @@ namespace VTX
 			virtual void _draw() override;
 			virtual void _drawComponent( const std::string & ) final;
 			virtual void _drawComponents() final;
-
-		  private:
 		};
 	} // namespace UI
 } // namespace VTX

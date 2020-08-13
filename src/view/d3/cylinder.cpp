@@ -37,12 +37,11 @@ namespace VTX
 				glUniformMatrix4fv( _uModelViewMatrixLoc,
 									1,
 									GL_FALSE,
-									Util::Math::value_ptr( cam.getViewMatrix() * _getModel().getTransform().get() ) );
+									Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
 				glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 				glUniform1f( _uRadiusLoc, VTX_SETTING().bondsRadius );
 
-				for ( const std::pair<uint, uint> & pair :
-					  _getModel().getRepresentationState()[ p_representation ].bonds )
+				for ( const std::pair<uint, uint> & pair : _model->getRepresentationState()[ p_representation ].bonds )
 				{
 					glDrawElements( GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
 				}

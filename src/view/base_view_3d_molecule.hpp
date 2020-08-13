@@ -23,7 +23,7 @@ namespace VTX
 			{
 				// Render atoms.
 				for ( const std::pair<const Generic::REPRESENTATION, Model::Molecule::RepresentationStruct> & pair :
-					  _getModel().getRepresentationState() )
+					  _model->getRepresentationState() )
 				{
 					render( pair.first );
 				}

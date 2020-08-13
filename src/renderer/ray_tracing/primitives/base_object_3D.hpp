@@ -28,11 +28,11 @@ namespace VTX
 
 			virtual bool intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const = 0;
 
-		  private:
-			virtual void _computeAABB() = 0;
-
 		  protected:
 			Math::AABB _aabb;
+
+		  private:
+			virtual void _computeAABB() = 0;
 		};
 	} // namespace Renderer
 } // namespace VTX

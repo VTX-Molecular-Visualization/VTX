@@ -94,10 +94,6 @@ namespace VTX
 			inline bool hasItem( const std::string & p_name ) const { return _items.find( p_name ) != _items.end(); }
 
 		  protected:
-			inline MapStringToItemPtr &		  _getItems() { return _items; }
-			inline std::vector<std::string> & _getOrderedKeys() { return _orderedKeys; }
-
-		  private:
 			MapStringToItemPtr		 _items		  = MapStringToItemPtr();
 			std::vector<std::string> _orderedKeys = std::vector<std::string>();
 		};

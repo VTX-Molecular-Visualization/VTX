@@ -13,20 +13,19 @@ namespace VTX
 		{
 			void MoleculeStructure::_draw()
 			{
-				const std::string nbAtoms = std::to_string( _getModel().getAtomCount() ) + " atoms.";
-				const std::string nbBonds = std::to_string( _getModel().getBondCount() ) + " bonds.";
-				ImGui::PushID( ( "ViewMoleculeStructure" + std::to_string( _getModel().getId() ) ).c_str() );
+				const std::string nbAtoms = std::to_string( _model->getAtomCount() ) + " atoms.";
+				const std::string nbBonds = std::to_string( _model->getBondCount() ) + " bonds.";
+				ImGui::PushID( ( "ViewMoleculeStructure" + std::to_string( _model->getId() ) ).c_str() );
 				bool moleculeOpened = ImGui::TreeNodeEx(
-					( _getModel().getPath().filename().string() + " " + _getModel().getName() + "\n - " + nbAtoms )
-						.c_str(),
-					_getModel().isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
+					( _model->getPath().filename().string() + " " + _model->getName() + "\n - " + nbAtoms ).c_str(),
+					_model->isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 
 				// Context menu.
 				if ( ImGui::BeginPopupContextItem() )
 				{
 					if ( ImGui::MenuItem( LOCALE( "View.Delete" ) ) )
 					{
-						VTX_ACTION( new Action::Molecule::Delete( _getModel() ) );
+						VTX_ACTION( new Action::Molecule::Delete( *_model ) );
 					}
 					ImGui::EndPopup();
 				}
@@ -35,17 +34,17 @@ namespace VTX
 				{
 					if ( moleculeOpened )
 					{
-						VTX_ACTION( new Action::Selectable::SetSelected( _getModel(), false ) );
+						VTX_ACTION( new Action::Selectable::SetSelected( *_model, false ) );
 					}
 
 					else
 					{
-						VTX_ACTION( new Action::Selectable::SetSelected( _getModel(), true ) );
+						VTX_ACTION( new Action::Selectable::SetSelected( *_model, true ) );
 					}
 				}
 				if ( moleculeOpened )
 				{
-					for ( Model::Chain * const chain : _getModel().getChains() )
+					for ( Model::Chain * const chain : _model->getChains() )
 					{
 						ImGui::PushID( chain->getId() );
 						bool chainOpened = ImGui::TreeNodeEx(
@@ -99,7 +98,7 @@ namespace VTX
 						{
 							for ( uint i = 0; i < chain->getResidueCount(); ++i )
 							{
-								Model::Residue & residue = _getModel().getResidue( chain->getIndexFirstResidue() + i );
+								Model::Residue & residue = _model->getResidue( chain->getIndexFirstResidue() + i );
 								ImGui::PushID( residue.getId() );
 								bool residueOpened = ImGui::TreeNodeEx(
 									VTX_SETTING().symbolDisplayMode == Style::SYMBOL_DISPLAY_MODE::SHORT
@@ -154,7 +153,7 @@ namespace VTX
 								{
 									for ( uint j = 0; j < residue.getAtomCount(); ++j )
 									{
-										Model::Atom & atom = _getModel().getAtom( residue.getIndexFirstAtom() + j );
+										Model::Atom & atom = _model->getAtom( residue.getIndexFirstAtom() + j );
 										ImGui::PushID( atom.getId() );
 										if ( ImGui::Selectable(
 												 VTX_SETTING().symbolDisplayMode == Style::SYMBOL_DISPLAY_MODE::SHORT

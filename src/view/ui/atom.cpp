@@ -10,11 +10,11 @@ namespace VTX
 			void Atom::_draw()
 			{
 				ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen;
-				ImGui::PushID( ( "ViewAtom" + std::to_string( _getModel().getId() ) ).c_str() );
-				if ( ImGui::CollapsingHeader( ( "Atom: " + _getModel().getSymbolName() ).c_str(), flags ) )
+				ImGui::PushID( ( "ViewAtom" + std::to_string( _model->getId() ) ).c_str() );
+				if ( ImGui::CollapsingHeader( ( "Atom: " + _model->getSymbolName() ).c_str(), flags ) )
 				{
-					ImGui::Text( "ID: %d", _getModel().getIndex() );
-					ImGui::Text( "Vdw radius: %.2f", _getModel().getVdwRadius() );
+					ImGui::Text( "ID: %d", _model->getIndex() );
+					ImGui::Text( "Vdw radius: %.2f", _model->getVdwRadius() );
 					/*
 					Vec3f color = _getModel().getColor();
 					if ( ImGui::ColorEdit3( "Color", (float *)&color ) )
