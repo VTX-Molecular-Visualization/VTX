@@ -30,10 +30,11 @@
 
 ### SHORTCUTS
 
-- F1: Add camera viewpoint at current position
-- F2: Clear all and create an empty scene
-- F3: Toggle camera controls
-- F4: Switch representation
+- F1: Toggle camera controls
+- F2: Change representation
+- F3: Change color mode
+- F4: Change shading
+- F5: Add camera viewpoint at current position
 
 ### SCRIPTABLE ACTIONS
 
@@ -46,6 +47,10 @@ command < param | param1 param2 ... | ... >
 -   change_auto_rotate_speed < x y z | xyz > (float values between 0.0 and 1.0)
 
 ## CHANGELOG
+
+### 0.0.6
+
+TODO
 
 ### 0.0.5
 
