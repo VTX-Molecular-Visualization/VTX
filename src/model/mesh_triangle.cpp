@@ -6,7 +6,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		MeshTriangle::MeshTriangle() { MeshTriangle( true ); }
+		MeshTriangle::MeshTriangle() : MeshTriangle( true ) {}
 
 		MeshTriangle::MeshTriangle( const bool p_defaultView )
 		{

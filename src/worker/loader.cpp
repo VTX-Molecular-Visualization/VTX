@@ -1,4 +1,5 @@
 #include "loader.hpp"
+#include "event/event.hpp"
 #include "io/reader/lib_assimp.hpp"
 #include "io/reader/lib_chemfiles.hpp"
 #include "io/reader/prm.hpp"
@@ -6,7 +7,6 @@
 #include "io/reader/vtx.hpp"
 #include "tool/chrono.hpp"
 #include "vtx_app.hpp"
-#include "event/event.hpp"
 
 namespace VTX
 {
@@ -36,7 +36,7 @@ namespace VTX
 
 			// Load all files.
 			Tool::Chrono chrono;
-			bool hasChangeScene = false;
+			bool		 hasChangeScene = false;
 			for ( const Path * path : _paths )
 			{
 				chrono.start();
@@ -85,6 +85,7 @@ namespace VTX
 						mesh->init();
 						mesh->print();
 						VTXApp::get().getScene().addMesh( mesh );
+						hasChangeScene = true;
 					}
 					catch ( const std::exception & p_e )
 					{
@@ -161,7 +162,7 @@ namespace VTX
 				VTX_INFO( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
-			if (hasChangeScene)
+			if ( hasChangeScene )
 			{
 				VTX_EVENT( new Event::VTXEventOnSceneChange( Event::Global::ON_SCENE_CHANGE ) );
 			}
