@@ -16,12 +16,7 @@ namespace VTX
 			std::string date( Util::Time::getNowString() );
 			std::string message( p_message );
 			message.erase( std::remove( message.begin(), message.end(), '\n' ), message.end() );
-
 			std::string messageToWrite = "[" + date + "] " + "[" + level + "] " + message;
-
-#ifdef LOG_TO_FILE
-			_writer.writeFile( "", messageToWrite );
-#endif
 
 #ifndef _DEBUG
 			if ( p_level == LEVEL::LOG_LVL_DEBUG )
@@ -37,6 +32,11 @@ namespace VTX
 			if ( LOG_LEVEL > p_level )
 				return;
 #endif
+
+#ifdef LOG_TO_FILE
+			_writer.writeFile( "", messageToWrite );
+#endif
+
 			std::cout << messageToWrite << std::endl;
 		}
 
