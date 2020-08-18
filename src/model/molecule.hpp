@@ -16,7 +16,6 @@
 #include "math/aabb.hpp"
 #include "model/configuration/molecule.hpp"
 #include "residue.hpp"
-#include "util/logger.hpp"
 #include <iostream>
 #include <map>
 #include <unordered_set>

@@ -7,6 +7,7 @@
 
 #include "base_action.hpp"
 #include "model/path.hpp"
+#include "selection/selection_manager.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

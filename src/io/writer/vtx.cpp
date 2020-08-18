@@ -13,6 +13,7 @@ namespace VTX
 				nlohmann::json json		  = serializer.serialize( p_data );
 				std::ofstream  os( p_path );
 				os << std::setw( 4 ) << json << std::endl;
+				os.close();
 			}
 		} // namespace Writer
 	}	  // namespace IO

@@ -1,5 +1,4 @@
 #include "psf.hpp"
-#include "util/logger.hpp"
 #include <fstream>
 #include <sstream>
 

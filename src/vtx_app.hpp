@@ -6,27 +6,43 @@
 #endif
 
 #include "action/action_manager.hpp"
-#include "action/base_action.hpp"
 #include "event/event_manager.hpp"
-#include "generic/factory.hpp"
-#include "object3d/scene.hpp"
-#include "renderer/gl/gl.hpp"
-#include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
-#include "renderer/ray_tracing/ray_tracer.hpp"
-#include "selection/selection_manager.hpp"
+#include "renderer/base_renderer.hpp"
 #include "setting.hpp"
-#include "state/state_machine.hpp"
 #include "tool/chrono.hpp"
-#include "ui/user_interface.hpp"
-#include "worker/loader.hpp"
+#include "tool/logger.hpp"
 #include "worker/worker_manager.hpp"
-#include <nlohmann/json.hpp>
-#include <thread>
-#include <vector>
 
 namespace VTX
 {
+	// Forward declaration to avoid circular dependencies and reduce compile time (maybe?)
 	class Setting;
+	namespace State
+	{
+		class StateMachine;
+	}
+	namespace Selection
+	{
+		class SelectionManager;
+	}
+	namespace Renderer
+	{
+		class GL;
+		class RayTracer;
+		class OptixRayTracer;
+		namespace GLSL
+		{
+			class ProgramManager;
+		}
+	} // namespace Renderer
+	namespace Object3D
+	{
+		class Scene;
+	}
+	namespace UI
+	{
+		class UserInterface;
+	}
 
 	class VTXApp final
 	{
@@ -45,6 +61,8 @@ namespace VTX
 
 		inline Setting &					  getSetting() { return _setting; }
 		inline const Setting &				  getSetting() const { return _setting; }
+		inline Tool::Logger &				  getLogger() { return _logger; }
+		inline const Tool::Logger &			  getLogger() const { return _logger; }
 		inline Object3D::Scene &			  getScene() { return *_scene; }
 		inline const Object3D::Scene &		  getScene() const { return *_scene; }
 		inline Renderer::BaseRenderer &		  getRenderer() { return *_renderer; }
@@ -82,6 +100,7 @@ namespace VTX
 	  private:
 		static bool				 _isRunning;
 		Setting					 _setting	   = Setting();
+		Tool::Logger			 _logger	   = Tool::Logger();
 		Tool::Chrono			 _chrono	   = Tool::Chrono();
 		UI::UserInterface *		 _ui		   = nullptr;
 		State::StateMachine *	 _stateMachine = nullptr;
@@ -130,6 +149,11 @@ namespace VTX
 	{
 		VTXApp::get().getWorkerManager().run( p_worker, p_success, p_error );
 	}
+	inline void VTX_DEBUG( const std::string & p_str ) { VTXApp::get().getLogger().logDebug( p_str ); }
+	inline void VTX_INFO( const std::string & p_str ) { VTXApp::get().getLogger().logInfo( p_str ); }
+	inline void VTX_WARNING( const std::string & p_str ) { VTXApp::get().getLogger().logWarning( p_str ); }
+	inline void VTX_ERROR( const std::string & p_str ) { VTXApp::get().getLogger().logError( p_str ); }
+	inline void VTX_CONSOLE( const std::string & p_str ) { std::cout << p_str << std::endl; }
 
 } // namespace VTX
 

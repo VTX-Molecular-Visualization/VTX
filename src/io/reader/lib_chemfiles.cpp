@@ -1,6 +1,7 @@
 #include "lib_chemfiles.hpp"
 #include "color/rgb.hpp"
 #include "tool/chrono.hpp"
+#include "vtx_app.hpp"
 #include <algorithm>
 #include <magic_enum.hpp>
 #include <unordered_map>

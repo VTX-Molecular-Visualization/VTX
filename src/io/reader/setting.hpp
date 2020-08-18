@@ -17,9 +17,7 @@ namespace VTX
 			class Setting : public BaseReader<::VTX::Setting>
 			{
 			  public:
-				virtual ~Setting() = default;
-
-				virtual void readFile( const Path &, ::VTX::Setting & p_data ) override;
+				void readFile( const Path &, ::VTX::Setting & p_data ) override;
 			};
 		} // namespace Reader
 	}	  // namespace IO

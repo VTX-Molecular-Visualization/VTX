@@ -20,8 +20,8 @@ namespace VTX
 			class LibChemfiles : public BaseReader<Model::Molecule>
 			{
 			  public:
-				virtual void readFile( const Path &, Model::Molecule & ) override;
-				virtual void readBuffer( const std::string &, const Path &, Model::Molecule & ) override;
+				void readFile( const Path &, Model::Molecule & ) override;
+				void readBuffer( const std::string &, const Path &, Model::Molecule & ) override;
 
 			  private:
 				void prepareChemfiles() const;

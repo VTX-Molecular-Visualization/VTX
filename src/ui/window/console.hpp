@@ -6,7 +6,6 @@
 #endif
 
 #include "base_component_window.hpp"
-#include "util/logger.hpp"
 #include <list>
 
 namespace VTX
@@ -36,6 +35,6 @@ namespace VTX
 				void _clear();
 			};
 		} // namespace Window
-	} // namespace UI
+	}	  // namespace UI
 } // namespace VTX
 #endif

@@ -1,7 +1,6 @@
 #include "worker_manager.hpp"
 #include "define.hpp"
 #include "event/event_manager.hpp"
-#include "util/logger.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

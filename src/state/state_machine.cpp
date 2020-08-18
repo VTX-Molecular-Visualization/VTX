@@ -4,8 +4,8 @@
 #include "export.hpp"
 #include "generic/factory.hpp"
 #include "play.hpp"
-#include "util/logger.hpp"
 #include "visualization.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

@@ -2,7 +2,7 @@
 #include "define.hpp"
 #include "exception.hpp"
 #include "util/filesystem.hpp"
-#include "util/logger.hpp"
+#include "vtx_app.hpp"
 #include <vector>
 
 namespace VTX

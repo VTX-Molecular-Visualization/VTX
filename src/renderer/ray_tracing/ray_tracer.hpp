@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "../base_renderer.hpp"
+#include "renderer/base_renderer.hpp"
 #include "console_progress_bar.hpp"
 #include "integrators/base_integrator.hpp"
 #include "rt_scene.hpp"

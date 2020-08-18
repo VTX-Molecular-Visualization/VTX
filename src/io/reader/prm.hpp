@@ -19,7 +19,7 @@ namespace VTX
 			class PRM : public BaseReaderLine<Model::Configuration::Molecule>
 			{
 			  protected:
-				virtual void _readLine( const std::string &, Model::Configuration::Molecule & ) override;
+				void _readLine( const std::string &, Model::Configuration::Molecule & ) override;
 
 			  private:
 				uint _readId( const std::string & ) const;

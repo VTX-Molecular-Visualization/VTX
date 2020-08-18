@@ -8,6 +8,7 @@
 #include "base_action.hpp"
 #include "io/reader/setting.hpp"
 #include "io/writer/setting.hpp"
+#include "renderer/gl/gl.hpp"
 #include "util/filesystem.hpp"
 #include "util/molecule.hpp"
 #include "vtx_app.hpp"

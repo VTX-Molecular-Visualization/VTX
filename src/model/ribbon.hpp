@@ -8,7 +8,6 @@
 #include "math/bspline.hpp"
 #include "mesh_triangle.hpp"
 #include "model/molecule.hpp"
-#include "util/logger.hpp"
 #include "util/math.hpp"
 #include <map>
 

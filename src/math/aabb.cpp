@@ -1,5 +1,4 @@
 #include "aabb.hpp"
-#include "util/logger.hpp"
 #include "util/math.hpp"
 
 namespace VTX

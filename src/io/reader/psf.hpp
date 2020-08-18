@@ -19,7 +19,7 @@ namespace VTX
 			class PSF : public BaseReaderLine<Model::Configuration::Molecule>
 			{
 			  protected:
-				virtual void _readLine( const std::string &, Model::Configuration::Molecule & ) override;
+				void _readLine( const std::string &, Model::Configuration::Molecule & ) override;
 
 			  private:
 				std::string _readSymbol( const std::string & ) const;

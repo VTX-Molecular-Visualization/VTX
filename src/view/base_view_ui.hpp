@@ -7,7 +7,7 @@
 
 #include "base_view.hpp"
 #include "model/base_model.hpp"
-#include "ui/base_component.hpp"
+#include "ui/user_interface.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

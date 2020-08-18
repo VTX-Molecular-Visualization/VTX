@@ -6,7 +6,6 @@
 #include "imgui/imgui_internal.h"
 #include "style.hpp"
 #include "util/filesystem.hpp"
-#include "util/logger.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
 

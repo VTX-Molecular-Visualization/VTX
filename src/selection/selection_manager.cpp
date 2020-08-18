@@ -1,6 +1,6 @@
 #include "selection_manager.hpp"
-#include "util/logger.hpp"
 #include <string>
+#include "vtx_app.hpp"
 
 namespace VTX
 {

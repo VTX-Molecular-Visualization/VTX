@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "util/logger.hpp"
 #include <mutex>
 
 namespace VTX

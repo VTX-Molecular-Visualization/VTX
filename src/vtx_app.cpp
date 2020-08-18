@@ -4,6 +4,7 @@
 #include "id.hpp"
 #include "model/molecule.hpp"
 #include "renderer/gl/gl.hpp"
+#include "selection/selection_manager.hpp"
 #include "util/filesystem.hpp"
 
 namespace VTX
@@ -12,7 +13,6 @@ namespace VTX
 
 	VTXApp::VTXApp()
 	{
-		VTX_INFO( "Initializing application" );
 		_eventManager	  = new Event::EventManager();
 		_actionManager	  = new Action::ActionManager();
 		_workerManager	  = new Worker::WorkerManager();

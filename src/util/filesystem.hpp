@@ -6,6 +6,7 @@
 #endif
 
 #include "define.hpp"
+#include "exception.hpp"
 #include <fstream>
 
 #ifdef _WIN32
@@ -56,6 +57,7 @@ namespace VTX
 			static const Path RENDERS_DIR	  = Path( EXECUTABLE_DIR.string() + "/../../renders" );
 			static const Path PATHS_DIR		  = Path( EXECUTABLE_DIR.string() + "/../../paths" );
 			static const Path VIDEOS_DIR	  = Path( EXECUTABLE_DIR.string() + "/../../videos" );
+			static const Path LOGS_DIR		  = Path( EXECUTABLE_DIR.string() + "/../../logs" );
 			static const Path LIBS_DIR		  = Path( EXECUTABLE_DIR.string() + "/.." );
 
 			static const std::string IMGUI_INI_FILE
@@ -107,6 +109,12 @@ namespace VTX
 			inline const Path getVideosPath( const std::string & p_fileName )
 			{
 				return Path( VIDEOS_DIR ) /= p_fileName;
+			}
+
+			inline const Path getLogsPath( const std::string & p_filename )
+			{
+				std::filesystem::create_directories( LOGS_DIR );
+				return Path( LOGS_DIR ) /= p_filename;
 			}
 
 			inline const std::string readPath( const Path & p_path )

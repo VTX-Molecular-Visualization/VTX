@@ -6,7 +6,6 @@
 #endif
 
 #include "base_component.hpp"
-#include "util/logger.hpp"
 #include <GL/gl3w.h>
 #include <SDL.h>
 

@@ -1,5 +1,6 @@
 #include "base_component.hpp"
 #include "model/molecule.hpp"
+#include "ui/user_interface.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

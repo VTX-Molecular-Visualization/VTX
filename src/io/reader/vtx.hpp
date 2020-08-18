@@ -18,9 +18,7 @@ namespace VTX
 			class VTX : public BaseReader<VTXApp>
 			{
 			  public:
-				virtual ~VTX() = default;
-
-				virtual void readFile( const Path &, VTXApp & ) override;
+				void readFile( const Path &, VTXApp & ) override;
 			};
 		} // namespace Reader
 	}	  // namespace IO

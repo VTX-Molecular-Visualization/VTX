@@ -1,5 +1,4 @@
 #include "camera.hpp"
-#include "util/logger.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

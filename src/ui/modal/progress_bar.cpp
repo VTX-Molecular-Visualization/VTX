@@ -1,6 +1,5 @@
 #include "progress_bar.hpp"
 #include "localization/language.hpp"
-#include "util/logger.hpp"
 
 namespace VTX
 {

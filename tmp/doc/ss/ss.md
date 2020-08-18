@@ -42,3 +42,8 @@ On calcule l'angle dièdre entre C0 N1 CA1 C1.
 On calcule l'angle dièdre entre N1 CA1 C1 N2.
 
 Pour le premier résidu, l'angle est défini à 90°.
+
+// TOFINISH?
+
+### From "Visualization of complex molecular ribbon structures at interactive rates" (g1655_halm_a.pdf)
+

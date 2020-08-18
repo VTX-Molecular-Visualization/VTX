@@ -1,4 +1,5 @@
 #include "event_manager.hpp"
+#include "ui/user_interface.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

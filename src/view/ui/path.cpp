@@ -1,6 +1,7 @@
 #include "path.hpp"
 #include "action/path.hpp"
 #include "action/viewpoint.hpp"
+#include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "vtx_app.hpp"
 

@@ -9,10 +9,13 @@
 #include "define.hpp"
 #include "io/reader/vtx.hpp"
 #include "io/writer/vtx.hpp"
+#include "state/state_machine.hpp"
 #include "state/visualization.hpp"
+#include "ui/user_interface.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "worker/api_fetcher.hpp"
+#include "worker/loader.hpp"
 #include "worker/saver.hpp"
 #include "worker/snapshoter.hpp"
 

@@ -7,7 +7,6 @@
 
 #include "base_cleanable.hpp"
 #include "factory.hpp"
-#include "util/logger.hpp"
 #include <algorithm>
 #include <map>
 #include <string>

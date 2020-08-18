@@ -1,6 +1,7 @@
 #include "ribbon.hpp"
 #include "tool/chrono.hpp"
 #include "view/d3/triangle_ribbon.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

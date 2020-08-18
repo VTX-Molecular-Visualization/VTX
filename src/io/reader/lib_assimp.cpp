@@ -1,7 +1,6 @@
 #include "lib_assimp.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
-#include "util/logger.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>

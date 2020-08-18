@@ -5,7 +5,6 @@
 #include "modal/progress_bar.hpp"
 #include "style.hpp"
 #include "util/filesystem.hpp"
-#include "util/logger.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
 #include "window/camera_editor.hpp"

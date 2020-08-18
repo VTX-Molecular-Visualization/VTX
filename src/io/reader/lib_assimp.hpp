@@ -18,8 +18,8 @@ namespace VTX
 			class LibAssimp : public BaseReader<Model::Molecule>, public BaseReader<Model::MeshTriangle>
 			{
 			  public:
-				virtual void readFile( const Path &, Model::MeshTriangle & ) override;
-				virtual void readFile( const Path &, Model::Molecule & ) override;
+				void readFile( const Path &, Model::MeshTriangle & ) override;
+				void readFile( const Path &, Model::Molecule & ) override;
 			};
 		} // namespace Reader
 	}	  // namespace IO

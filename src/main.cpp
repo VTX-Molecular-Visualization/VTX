@@ -1,4 +1,3 @@
-#include "util/logger.hpp"
 #include "vtx_app.hpp"
 
 using namespace VTX;

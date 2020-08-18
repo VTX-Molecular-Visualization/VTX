@@ -1,6 +1,6 @@
 #include "mesh_triangle.hpp"
-#include "util/logger.hpp"
 #include "view/d3/triangle.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

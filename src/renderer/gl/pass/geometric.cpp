@@ -1,5 +1,6 @@
 #include "geometric.hpp"
 #include "renderer/gl/gl.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

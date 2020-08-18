@@ -17,9 +17,7 @@ namespace VTX
 			class VTX : public BaseWriter<VTXApp>
 			{
 			  public:
-				virtual ~VTX() = default;
-
-				virtual void writeFile( const Path & p_path, const VTXApp & p_data ) override;
+				void writeFile( const Path & p_path, const VTXApp & p_data ) override;
 			};
 		} // namespace Writer
 	}	  // namespace IO
