@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
+#include "../exception.hpp"
 #include "define.hpp"
-#include "exception.hpp"
 #include <fstream>
 
 #ifdef _WIN32
@@ -124,7 +124,7 @@ namespace VTX
 
 				if ( !file.is_open() )
 				{
-					throw Exception::VTXException( "Cannot open file " + p_path.string() );
+					throw Exception::IOException( "Cannot open file " + p_path.string() );
 				}
 
 				const uintmax_t size = std::filesystem::file_size( p_path );
