@@ -1,3 +1,4 @@
+#include "StackWalker.h"
 #include "io/writer/exception.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"

@@ -99,6 +99,7 @@ link_directories(${PATH_LIB}/SDL2/lib/x64)
 link_directories(${PATH_LIB}/assimp/lib/x64)
 link_directories(${PATH_LIB}/curl/lib/x64)
 link_directories(${PATH_LIB}/chemfiles/lib/x64)
+link_directories(${PATH_LIB}/StackWalker/lib/x64)
 
 # Declare executable with source files.
 add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES})
@@ -114,6 +115,7 @@ target_link_libraries(VTX PRIVATE zlib)
 target_link_libraries(VTX PRIVATE zlibstatic)
 target_link_libraries(VTX PRIVATE libcurl)
 target_link_libraries(VTX PRIVATE chemfiles)
+target_link_libraries(VTX PRIVATE StackWalker)
 
 if(WIN32)
 	# Add specific libs.
@@ -152,6 +154,7 @@ target_include_directories(VTX PRIVATE ${PATH_LIB}/SDL2/include)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/assimp/include)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/curl/include)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/chemfiles/include)
+target_include_directories(VTX PRIVATE ${PATH_LIB}/StackWalker/include)
 
 # Compiler options #2.
 if(CMAKE_COMPILER_IS_GNUCC)
@@ -188,11 +191,11 @@ elseif(MSVC)
 endif()
 
 # TODO: find cuda and optix.
-if(WIN322)
+if(WIN32)
 	add_definitions(-DCUDA_DEFINED)
 	add_definitions(-DOPTIX_DEFINED)
 	target_include_directories(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/include")
-	target_include_directories(VTX PRIVATE "C:/ProgramData/NVIDIA Corporation/OptiX SDK 7.0.0/include")
+	target_include_directories(VTX PRIVATE "C:/ProgramData/NVIDIA Corporation/OptiX SDK 7.1.0/include")
 	target_link_libraries(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/lib/x64/cudart_static.lib")
 	target_link_libraries(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/lib/x64/cuda.lib")
 endif()

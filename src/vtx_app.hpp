@@ -28,12 +28,19 @@ namespace VTX
 	namespace Renderer
 	{
 		class GL;
-		class RayTracer;
-		class OptixRayTracer;
 		namespace GLSL
 		{
 			class ProgramManager;
 		}
+#ifdef CUDA_DEFINED
+		class RayTracer;
+#endif
+#ifdef OPTIX_DEFINED
+		namespace Optix
+		{
+			class OptixRayTracer;
+		}
+#endif
 	} // namespace Renderer
 	namespace Object3D
 	{

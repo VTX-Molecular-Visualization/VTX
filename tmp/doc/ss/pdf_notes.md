@@ -4,7 +4,7 @@
 
 ## Algorithm for ribbon models of proteins (1985)
 
-Only construction, not computation.
+Only construction, not computation, base on B-spline.
 
 ### Peptide plane
 
@@ -38,6 +38,8 @@ It must be noted that the curves are very smooth (10 points between control poin
 ## Knowledge-Based Protein Secondary Structure Assignment
 
 ## Visualization of complex molecular ribbon structures at interactive rates (2004)
+
+Based on combined BReps, a mesh structure defining a combination of polygonal faces and Catmull/Clark surfaces.
 
 ## Instant visualization of secondary structures of molecular models
 

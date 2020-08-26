@@ -242,7 +242,7 @@ namespace VTX::Renderer::Optix
 		_optixPipelineCompileOptions.pipelineLaunchParamsVariableName = "params";
 
 		_optixPipelineLinkOptions						 = {};
-		_optixPipelineLinkOptions.overrideUsesMotionBlur = false;
+		//_optixPipelineLinkOptions.overrideUsesMotionBlur = false;
 		_optixPipelineLinkOptions.maxTraceDepth			 = 1;
 		_optixPipelineLinkOptions.debugLevel			 = OPTIX_COMPILE_DEBUG_LEVEL_NONE;
 
@@ -494,7 +494,8 @@ namespace VTX::Renderer::Optix
 			CUdeviceptr d_spheresAabbPtr = d_spheresAabb.getDevicePtr();
 
 			buildInputs.emplace_back( OptixBuildInput() );
-			OptixBuildInputCustomPrimitiveArray & spheresInput		= buildInputs.back().aabbArray;
+			/*
+			OptixBuildInputCustomPrimitiveArray & spheresInput;		= buildInputs.back().aabbArray;
 			uint32_t							  spheresInputFlags = { OPTIX_GEOMETRY_FLAG_DISABLE_ANYHIT };
 
 			buildInputs.back().type					 = OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES;
@@ -505,6 +506,7 @@ namespace VTX::Renderer::Optix
 			spheresInput.sbtIndexOffsetSizeInBytes	 = sizeof( int );
 			spheresInput.sbtIndexOffsetStrideInBytes = sizeof( int );
 			spheresInput.sbtIndexOffsetBuffer		 = 0;
+			*/
 		}
 
 		// Set up cylinders input if any.
@@ -525,6 +527,7 @@ namespace VTX::Renderer::Optix
 			CUdeviceptr d_cylindersAabbPtr = d_cylindersAabb.getDevicePtr();
 
 			buildInputs.emplace_back( OptixBuildInput() );
+			/*
 			OptixBuildInputCustomPrimitiveArray & cylindersInput	  = buildInputs.back().aabbArray;
 			uint32_t							  cylindersInputFlags = { OPTIX_GEOMETRY_FLAG_DISABLE_ANYHIT };
 
@@ -536,6 +539,7 @@ namespace VTX::Renderer::Optix
 			cylindersInput.sbtIndexOffsetSizeInBytes   = sizeof( int );
 			cylindersInput.sbtIndexOffsetStrideInBytes = sizeof( int );
 			cylindersInput.sbtIndexOffsetBuffer		   = 0;
+			*/
 		}
 
 		// Compute GAS memory.

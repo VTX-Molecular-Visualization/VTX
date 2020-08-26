@@ -6,6 +6,12 @@
 #include "renderer/gl/gl.hpp"
 #include "selection/selection_manager.hpp"
 #include "util/filesystem.hpp"
+#ifdef CUDA_DEFINED
+#include "renderer/ray_tracing/ray_tracer.hpp"
+#endif
+#ifdef OPTIX_DEFINED
+#include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
+#endif
 
 namespace VTX
 {
