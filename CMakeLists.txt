@@ -56,8 +56,8 @@ foreach(SRC IN ITEMS ${HEADERS})
     source_group("Headers${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
-# Get all C++, GLSL and CUDA sources.
-file(GLOB_RECURSE SOURCES ${PATH_SRC}/*.cpp ${PATH_SRC}/*.vert ${PATH_SRC}/*.frag ${PATH_SRC}/*.geom ${PATH_SRC}/*.cu)
+# Get all sources.
+file(GLOB_RECURSE SOURCES ${PATH_SRC}/*.cpp ${PATH_SRC}/*.cu)
 foreach(SRC IN ITEMS ${SOURCES})
     get_filename_component(SRC_PATH "${SRC}" PATH)
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
@@ -86,6 +86,16 @@ foreach(SRC IN ITEMS ${RESOURCES})
     source_group("Resources${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
+# Get all C++, GLSL and CUDA sources.
+file(GLOB_RECURSE SHADERS ${PATH_SRC}/*.vert ${PATH_SRC}/*.frag ${PATH_SRC}/*.geom ${PATH_SRC}/*.tesc ${PATH_SRC}/*.tese)
+foreach(SRC IN ITEMS ${SHADERS})
+    get_filename_component(SRC_PATH "${SRC}" PATH)
+    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
+    string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
+	# Create group to make visual studio filters.
+    source_group("Sources${GROUP_PATH}" FILES "${SRC}")
+endforeach()
+
 message("Copying all sources... DONE")
 
 # Compiler options #1.
@@ -103,8 +113,6 @@ link_directories(${PATH_LIB}/StackWalker/lib/x64)
 
 # Declare executable with source files.
 add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES})
-
-
 
 # Link libs.
 target_link_libraries(VTX PRIVATE SDL2)
@@ -138,9 +146,12 @@ if(WIN32)
 	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/zlib1.dll)
 	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/RelWithDebInfo/libcurl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/libcurl.dll)
 	
-	# Copy shaders to build directoy.
-	add_custom_target(VTX_COPY_SHADER COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${PATH_SRC}/shader ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../shaders)
-	add_dependencies(VTX VTX_COPY_SHADER)
+	# Create custom target for GPU sources that copy files to build direcctory.
+	add_custom_target(VTX_SHADERS)
+	add_custom_command(TARGET VTX_SHADERS COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${PATH_SRC}/shader ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../shaders)
+	set_property(TARGET VTX_SHADERS APPEND PROPERTY SOURCES ${SHADERS}) # Workaround to add source to custom target.
+	
+	add_dependencies(VTX VTX_SHADERS)
 	
 endif()
 
