@@ -18,7 +18,6 @@ namespace VTX
 		{
 		  public:
 			MeshTriangle();
-			MeshTriangle( const bool );
 			~MeshTriangle();
 
 			inline const std::vector<Vec3f> & getVertices() const { return _vertices; }
@@ -46,10 +45,10 @@ namespace VTX
 			inline const uint &				 getIndice( const uint p_idx ) const { return _indices[ p_idx ]; }
 			inline uint &					 getIndice( const uint p_idx ) { return _indices[ p_idx ]; }
 
-			void		 print() const;
-			void		 init();
-			virtual void bindBuffers() override;
-			virtual void unbindBuffers() override;
+			void print() const;
+			void init();
+			void bindBuffers() override;
+			void unbindBuffers() override;
 
 		  protected:
 			enum ATTRIBUTE_LOCATION
@@ -60,7 +59,6 @@ namespace VTX
 				VERTEX_VISIBILITY = 3,
 			};
 
-			// std::vector<Triangle> _triangles;
 			std::vector<Vec3f>		_vertices;
 			std::vector<Vec3f>		_normals;
 			std::vector<Color::Rgb> _colors;

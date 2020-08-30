@@ -9,6 +9,7 @@ namespace VTX
 	{
 		Ribbon::Ribbon( Molecule * const p_molecule ) : MeshTriangle( false ), _molecule( p_molecule )
 		{
+			/*
 			Tool::Chrono chrono;
 			chrono.start();
 			VTX_INFO( "Creating secondary structure..." );
@@ -283,18 +284,19 @@ namespace VTX
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 
 			addItem( (View::BaseView<BaseModel> *)new View::D3::TriangleRibbon( this ) );
+			*/
 		}
 
 		void Ribbon::_addControlPoints( const Vec3f &					   p_CA0Pos,
 										const Vec3f &					   p_OX0Pos,
 										const Vec3f &					   p_CA1Pos,
 										const Residue::SECONDARY_STRUCTURE p_ss,
-										const Residue::HANDEDNESS		   p_handedness,
 										Vec3f &							   p_flipTestV,
 										Math::BSpline &					   p_splineCenter,
 										Math::BSpline &					   p_splineSide1,
 										Math::BSpline &					   p_splineSide2 )
 		{
+			/*
 			Vec3f A, B, C, D, p0, cpt0, cpt1, cpt2;
 
 			A = p_CA1Pos - p_CA0Pos;
@@ -345,6 +347,7 @@ namespace VTX
 
 			// Saving the plane vector (for the flipping test in the next call)
 			p_flipTestV = D;
+			*/
 		}
 
 		void Ribbon::_computeTriangleMesh( Math::BSpline &	  p_splineCenter,

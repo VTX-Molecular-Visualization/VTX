@@ -1,11 +1,10 @@
 #include "molecule.hpp"
 #include "color/rgb.hpp"
-#include "model/ribbon.hpp"
+#include "model/secondary_structure.hpp"
 #include "util/molecule.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
-#include "view/d3/triangle_ribbon.hpp"
 #include "view/ui/molecule.hpp"
 #include "view/ui/molecule_sequence.hpp"
 #include "view/ui/molecule_structure.hpp"
@@ -54,10 +53,9 @@ namespace VTX
 			Generic::clearVector( _chains );
 			Generic::clearVector( _bonds );
 
-			if ( _ribbon != nullptr )
+			if ( _secondaryStructure != nullptr )
 			{
-				VTXApp::get().getScene().removeMesh( _ribbon );
-				delete _ribbon;
+				delete _secondaryStructure;
 			}
 		}
 
@@ -81,7 +79,7 @@ namespace VTX
 				// Compute secondary structure if not loaded.
 				if ( _configuration.isSecondaryStructureLoadedFromFile == false )
 				{
-					Util::Molecule::computeSecondaryStructure( *this );
+					// Util::Molecule::computeSecondaryStructure( *this );
 				}
 
 				// Create secondary structure mesh.
@@ -290,9 +288,9 @@ namespace VTX
 		void Molecule::refreshVisibility()
 		{
 			_fillBufferAtomVisibilities();
-			if ( _ribbon != nullptr )
+			if ( _secondaryStructure != nullptr )
 			{
-				_ribbon->refreshVisibility();
+				//_ribbon->refreshVisibility();
 			}
 			// Refresh representation state to remove invisible items.
 			Util::Molecule::refreshRepresentationState( *this );
@@ -338,6 +336,15 @@ namespace VTX
 
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 			glBindVertexArray( 0 );
+		}
+
+		void Molecule::render()
+		{
+			BaseModel3D::render();
+			if ( _secondaryStructure != nullptr )
+			{
+				_secondaryStructure->render();
+			}
 		}
 
 		void Molecule::bindBuffers()
@@ -443,16 +450,14 @@ namespace VTX
 
 		void Molecule::createSecondaryStructure()
 		{
-			if ( _ribbon != nullptr )
+			if ( _secondaryStructure != nullptr )
 			{
-				VTXApp::get().getScene().removeMesh( _ribbon );
-				delete _ribbon;
+				delete _secondaryStructure;
 			}
 
-			_ribbon = new Ribbon( this );
-			_ribbon->init();
-			_ribbon->print();
-			VTXApp::get().getScene().addMesh( _ribbon );
+			_secondaryStructure = new SecondaryStructure( this );
+			_secondaryStructure->init();
+			_secondaryStructure->print();
 		}
 
 		void Molecule::toggleSequenceVisibility()

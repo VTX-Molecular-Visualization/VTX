@@ -2,7 +2,6 @@
 #include "../materials/flat_color_material.hpp"
 #include "../materials/matte.hpp"
 #include "../materials/phong_material.hpp"
-#include "model/ribbon.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -95,6 +94,7 @@ namespace VTX
 
 		TriangleMesh::TriangleMesh( const Model::Molecule * p_molecule )
 		{
+			/*
 			const Model::Ribbon & ribbon	  = p_molecule->getRibbon();
 			_vertices						  = ribbon.getVertices();
 			_normals						  = ribbon.getNormals();
@@ -135,6 +135,7 @@ namespace VTX
 
 			const uint maxPrimsLeaf = 256;
 			_bvh.build( _triangles, maxPrimsLeaf, BVH::SplitMethod::SAH );
+			*/
 		}
 	} // namespace Renderer
 } // namespace VTX

@@ -2,16 +2,6 @@
 
 ## PDB format
 
-### Data types
-
-3 data types possible, here is the mapping from PDB type to SS type:
-
-- HELIX -> HELIX
-
-- SHEET -> STRAND
-
-- TURN -> COIL
-
 ### HELIX idendification code
 
 - 1 = left alpha

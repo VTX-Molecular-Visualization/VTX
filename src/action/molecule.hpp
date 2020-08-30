@@ -139,7 +139,7 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					Util::Molecule::computeSecondaryStructure( _molecule );
+					// Util::Molecule::computeSecondaryStructure( _molecule );
 					_molecule.createSecondaryStructure();
 				}
 

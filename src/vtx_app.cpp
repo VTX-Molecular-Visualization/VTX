@@ -92,6 +92,7 @@ namespace VTX
 		_stateMachine->goToState( ID::State::VISUALIZATION );
 
 		VTX_ACTION( new Action::Setting::Load() );
+		VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
 
 		VTXApp::_isRunning = true;
 

@@ -66,15 +66,11 @@ namespace VTX
 
 			enum class SECONDARY_STRUCTURE : int
 			{
-				COIL,
-				HELIX,
-				STRAND
-			};
-
-			enum class HANDEDNESS : int
-			{
-				LEFT  = -1,
-				RIGHT = 1
+				A_HELIX_LEFT,
+				A_HELIX_RIGHT,
+				B_SHEET,
+				TURN,
+				COIL
 			};
 
 			// Static const mapping.
@@ -132,9 +128,7 @@ namespace VTX
 			{
 				_secondaryStructure = p_structure;
 			};
-			inline const HANDEDNESS getHandedness() const { return _handedness; };
-			inline void				setHandedness( const HANDEDNESS p_handedness ) { _handedness = p_handedness; };
-			const Atom * const		findFirstAtomByName( const std::string & ) const;
+			const Atom * const findFirstAtomByName( const std::string & ) const;
 
 			void setSelected( const bool );
 
@@ -159,7 +153,6 @@ namespace VTX
 			uint				_indiceRibbonTriangleCount = 0;
 			Atom::TYPE			_atomType			= Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
 			SECONDARY_STRUCTURE _secondaryStructure = SECONDARY_STRUCTURE::COIL;
-			HANDEDNESS			_handedness			= HANDEDNESS::RIGHT;
 		};
 
 	} // namespace Model

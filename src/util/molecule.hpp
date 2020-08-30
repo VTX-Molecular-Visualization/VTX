@@ -6,7 +6,6 @@
 #endif
 
 #include "model/molecule.hpp"
-#include "model/ribbon.hpp"
 #include "tool/chrono.hpp"
 #include "vtx_app.hpp"
 
@@ -16,6 +15,7 @@ namespace VTX
 	{
 		namespace Molecule
 		{
+			/*
 			static void computeSecondaryStructure( Model::Molecule & p_molecule )
 			{
 				Tool::Chrono chrono;
@@ -166,29 +166,32 @@ namespace VTX
 					}
 
 					// ????
-					/*
-					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
-					{
-						Model::Residue & residue0 = p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
-						Model::Residue & residue  = p_molecule.getResidue( idxFirstResidue + residueIdx );
-						Model::Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
-
-						if ( ( residue0.getSecondaryStructure() == Model::Residue::SECONDARY_STRUCTURE::HELIX )
-							 && ( residue2.getSecondaryStructure() == Model::Residue::SECONDARY_STRUCTURE::HELIX ) )
-						{ residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX ); }
-						else if ( ( residue0.getSecondaryStructure() == Model::Residue::SECONDARY_STRUCTURE::STRAND )
-								  && ( residue2.getSecondaryStructure()
-									   == Model::Residue::SECONDARY_STRUCTURE::STRAND ) )
-						{
-							residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
-						}
-					}
 					*/
-				}
+			/*
+			for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
+			{
+				Model::Residue & residue0 = p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
+				Model::Residue & residue  = p_molecule.getResidue( idxFirstResidue + residueIdx );
+				Model::Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
 
-				chrono.stop();
-				VTX_DEBUG( "Secondary structure computed in " + std::to_string( chrono.elapsedTime() ) + "s" );
+				if ( ( residue0.getSecondaryStructure() == Model::Residue::SECONDARY_STRUCTURE::HELIX )
+					 && ( residue2.getSecondaryStructure() == Model::Residue::SECONDARY_STRUCTURE::HELIX ) )
+				{ residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX ); }
+				else if ( ( residue0.getSecondaryStructure() == Model::Residue::SECONDARY_STRUCTURE::STRAND )
+						  && ( residue2.getSecondaryStructure()
+							   == Model::Residue::SECONDARY_STRUCTURE::STRAND ) )
+				{
+					residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
+				}
 			}
+			*/
+			/*
+		} // namespace Molecule
+
+		chrono.stop();
+		VTX_DEBUG( "Secondary structure computed in " + std::to_string( chrono.elapsedTime() ) + "s" );
+	} // namespace Util
+	*/
 
 			static void mergeRanges( std::map<uint, uint> & p_ranges )
 			{

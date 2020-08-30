@@ -206,31 +206,36 @@ namespace VTX
 						{
 							if ( secondaryStructure == "extended" )
 							{
-								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::B_SHEET );
 							}
 							else if ( secondaryStructure == "turn" )
 							{
-								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::COIL );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::TURN );
 							}
 							else if ( secondaryStructure == "alpha helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+								modelResidue->setSecondaryStructure(
+									Model::Residue::SECONDARY_STRUCTURE::A_HELIX_RIGHT );
 							}
 							else if ( secondaryStructure == "omega helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+								modelResidue->setSecondaryStructure(
+									Model::Residue::SECONDARY_STRUCTURE::A_HELIX_RIGHT );
 							}
 							else if ( secondaryStructure == "gamma helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+								modelResidue->setSecondaryStructure(
+									Model::Residue::SECONDARY_STRUCTURE::A_HELIX_RIGHT );
 							}
 							else if ( secondaryStructure == "pi helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+								modelResidue->setSecondaryStructure(
+									Model::Residue::SECONDARY_STRUCTURE::A_HELIX_RIGHT );
 							}
 							else if ( secondaryStructure == "3-10 helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+								modelResidue->setSecondaryStructure(
+									Model::Residue::SECONDARY_STRUCTURE::A_HELIX_RIGHT );
 							}
 
 							if ( config.isSecondaryStructureLoadedFromFile == false )

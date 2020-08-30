@@ -31,7 +31,7 @@ namespace VTX
 
 	namespace Model
 	{
-		class Ribbon;
+		class SecondaryStructure;
 		class Molecule : public BaseModel3D, public Generic::BaseColorable, public Generic::BaseRepresentable
 		{
 		  public:
@@ -86,10 +86,10 @@ namespace VTX
 			inline std::vector<Bond *> &		  getBonds() { return _bonds; }
 			inline const std::vector<Bond *> &	  getBonds() const { return _bonds; }
 
-			inline const Ribbon & getRibbon() const { return *_ribbon; }
-			inline Ribbon &		  getRibbon() { return *_ribbon; }
-			inline const Ribbon & getSequence() const { return *_ribbon; }
-			inline Ribbon &		  getSequence() { return *_ribbon; }
+			inline const SecondaryStructure & getSecondaryStructure() const { return *_secondaryStructure; }
+			inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
+			inline const std::string &		  getSequence() const { return _sequence; }
+			inline std::string &			  getSequence() { return _sequence; }
 
 			inline const bool isAtomVisible( const uint p_idx ) const
 			{
@@ -171,8 +171,9 @@ namespace VTX
 
 			void print() const;
 
-			virtual void bindBuffers() override;
-			virtual void unbindBuffers() override;
+			void render() override;
+			void bindBuffers() override;
+			void unbindBuffers() override;
 
 			bool mergeTopology( const Molecule & );
 			void refreshVisibility();
@@ -211,7 +212,7 @@ namespace VTX
 			std::vector<uint>		_bufferBonds			= std::vector<uint>();
 
 			// Secondary structure.
-			Ribbon * _ribbon = nullptr;
+			SecondaryStructure * _secondaryStructure = nullptr;
 
 			// Sequence.
 			std::string _sequence;

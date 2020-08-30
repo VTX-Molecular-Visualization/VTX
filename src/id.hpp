@@ -41,6 +41,7 @@ namespace VTX
 			const VTX_ID D3_BOX				= "3D_BOX";
 			const VTX_ID D3_TRIANGLE		= "3D_TRIANGLE";
 			const VTX_ID D3_TRIANGLE_RIBBON = "3D_TRIANGLE_RIBBON";
+			const VTX_ID D3_RIBBON_PATCH	= "3D_RIBBON_PATCH";
 		} // namespace View
 
 		namespace State
