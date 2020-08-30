@@ -62,6 +62,8 @@ These are smooth, dart, crease, and corner vertices, whereby a smooth vertex has
 
 // End of the paper talk about mathematical construction.
 
+## Protein secondary structure assignment revisited a detailed analysis of different assignment methods (2005)
+
 ## GPU-based Visualisation of Protein Secondary Structure (2008)
 
 All amino acids have an identical part, called backbone, which consists of the amino and the carboxyl functional group, which are attached to another carbon, the so-called a-carbon.
