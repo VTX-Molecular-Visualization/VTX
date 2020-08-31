@@ -13,10 +13,8 @@ namespace VTX
 			chrono.start();
 			VTX_INFO( "Creating secondary structure..." );
 
-			// The current frame.
 			const Molecule::AtomPositionsFrame & positions = p_molecule->getAtomPositionFrame( p_molecule->getFrame() );
 
-			// TODO: //?
 			// Loop over chains (1 chain = 1 ribbon).
 			for ( uint chainIdx = 0; chainIdx < p_molecule->getChainCount(); ++chainIdx )
 			{
@@ -30,8 +28,8 @@ namespace VTX
 					continue;
 				}
 
-				uint idxFirstResidue   = chain.getIndexFirstResidue();
-				uint validResidueCount = 0;
+				uint idxFirstResidue		  = chain.getIndexFirstResidue();
+				uint validResidueInChainCount = 0;
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
 					const Residue & residue = p_molecule->getResidue( idxFirstResidue + residueIdx );
@@ -43,9 +41,15 @@ namespace VTX
 					const Model::Atom * const O = residue.findFirstAtomByName( "O" );
 
 					// Not an amine acid (water, heme, or phosphate groupment).
-					if ( CA == nullptr || O == nullptr )
+					if ( CA == nullptr )
 					{
 						// What to do, skip residue, skip all the chain or split the chain into multiple ribbons?
+						continue;
+					}
+					// Missing oxygen atom.
+					if ( O == nullptr )
+					{
+						VTX_DEBUG( "Missing oxygen atom in amine acid" );
 						continue;
 					}
 
@@ -65,15 +69,16 @@ namespace VTX
 					_controlPointSecondaryStructures.emplace_back( uint( residue.getSecondaryStructure() ) );
 
 					// Add indices.
-					if ( validResidueCount >= 4 )
+					validResidueInChainCount++;
+					uint controlPointCount = uint( _controlPointPositions.size() );
+					if ( validResidueInChainCount >= 4 )
 					{
-						_indices.emplace_back( validResidueCount - 4 );
-						_indices.emplace_back( validResidueCount - 3 );
-						_indices.emplace_back( validResidueCount - 2 );
-						_indices.emplace_back( validResidueCount - 1 );
+						// Add last 4 control point indices to create patch.
+						_indices.emplace_back( controlPointCount - 4 );
+						_indices.emplace_back( controlPointCount - 3 );
+						_indices.emplace_back( controlPointCount - 2 );
+						_indices.emplace_back( controlPointCount - 1 );
 					}
-
-					validResidueCount++;
 				}
 			}
 
