@@ -161,6 +161,7 @@ namespace VTX
 
 			static const Rgb BLACK;
 			static const Rgb WHITE;
+			static const Rgb GREY;
 			static const Rgb RED;
 			static const Rgb GREEN;
 			static const Rgb BLUE;

@@ -15,6 +15,8 @@ namespace VTX
 		class SecondaryStructure : public BaseModel3D
 		{
 		  public:
+			static const Color::Rgb SECONDARY_STRUCTURE_COLORS[ 5 ];
+
 			SecondaryStructure( Molecule * const );
 			~SecondaryStructure();
 
@@ -34,20 +36,23 @@ namespace VTX
 				CONTROL_POINT_POSITION			  = 0,
 				CONTROL_POINT_DIRECTION			  = 1,
 				CONTROL_POINT_SECONDARY_STRUCTURE = 2,
-				CONTROL_POINT_VISIBILITY		  = 3,
+				CONTROL_POINT_COLOR				  = 3,
+				CONTROL_POINT_VISIBILITY		  = 4,
 			};
 
 			Model::Molecule * const _molecule;
 
-			std::vector<Vec3f> _controlPointPositions			= std::vector<Vec3f>();
-			std::vector<Vec3f> _controlPointDirections			= std::vector<Vec3f>();
-			std::vector<uint>  _controlPointSecondaryStructures = std::vector<uint>();
-			std::vector<uint>  _controlPointVisibilities		= std::vector<uint>();
-			std::vector<uint>  _indices							= std::vector<uint>();
+			std::vector<Vec3f>		_controlPointPositions			 = std::vector<Vec3f>();
+			std::vector<Vec3f>		_controlPointDirections			 = std::vector<Vec3f>();
+			std::vector<uint>		_controlPointSecondaryStructures = std::vector<uint>();
+			std::vector<Color::Rgb> _controlPointColors				 = std::vector<Color::Rgb>();
+			std::vector<uint>		_controlPointVisibilities		 = std::vector<uint>();
+			std::vector<uint>		_indices						 = std::vector<uint>();
 
 			GLuint _vboPositions		   = GL_INVALID_VALUE;
 			GLuint _vboDirections		   = GL_INVALID_VALUE;
 			GLuint _vboSecondaryStructures = GL_INVALID_VALUE;
+			GLuint _vboColors			   = GL_INVALID_VALUE;
 			GLuint _vboVisibilities		   = GL_INVALID_VALUE;
 			GLuint _ibo					   = GL_INVALID_VALUE;
 			GLuint _vao					   = GL_INVALID_VALUE;

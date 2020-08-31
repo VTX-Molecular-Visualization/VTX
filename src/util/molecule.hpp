@@ -15,6 +15,12 @@ namespace VTX
 	{
 		namespace Molecule
 		{
+			static void computeSecondaryStructure( Model::Molecule & p_molecule ) {
+			
+			
+			
+			}
+
 			/*
 			static void computeSecondaryStructure( Model::Molecule & p_molecule )
 			{

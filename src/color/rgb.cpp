@@ -12,6 +12,7 @@ namespace VTX
 
 		const Rgb Rgb::BLACK( 0.f, 0.f, 0.f );
 		const Rgb Rgb::WHITE( 1.f, 1.f, 1.f );
+		const Rgb Rgb::GREY( 0.5f, 0.5f, 0.5f );
 		const Rgb Rgb::RED( 1.f, 0.f, 0.f );
 		const Rgb Rgb::GREEN( 0.f, 1.f, 0.f );
 		const Rgb Rgb::BLUE( 0.f, 0.f, 1.f );

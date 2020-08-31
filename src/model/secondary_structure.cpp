@@ -7,6 +7,9 @@ namespace VTX
 {
 	namespace Model
 	{
+		const Color::Rgb SecondaryStructure::SECONDARY_STRUCTURE_COLORS[ 5 ]
+			= { Color::Rgb::RED, Color::Rgb::RED, Color::Rgb::YELLOW, Color::Rgb::BLUE, Color::Rgb::GREY };
+
 		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) : _molecule( p_molecule )
 		{
 			Tool::Chrono chrono;
@@ -68,6 +71,10 @@ namespace VTX
 					// Add secondary structure type.
 					_controlPointSecondaryStructures.emplace_back( uint( residue.getSecondaryStructure() ) );
 
+					// Addd color.
+					_controlPointColors.emplace_back(
+						SECONDARY_STRUCTURE_COLORS[ uint( residue.getSecondaryStructure() ) ] );
+
 					// Add indices.
 					validResidueInChainCount++;
 					uint controlPointCount = uint( _controlPointPositions.size() );
@@ -97,6 +104,8 @@ namespace VTX
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
+			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
+			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
@@ -108,6 +117,8 @@ namespace VTX
 				glDeleteBuffers( 1, &_vboDirections );
 			if ( _vboSecondaryStructures != GL_INVALID_VALUE )
 				glDeleteBuffers( 1, &_vboSecondaryStructures );
+			if ( _vboColors != GL_INVALID_VALUE )
+				glDeleteBuffers( 1, &_vboColors );
 			if ( _vboVisibilities != GL_INVALID_VALUE )
 				glDeleteBuffers( 1, &_vboVisibilities );
 			if ( _ibo != GL_INVALID_VALUE )
@@ -140,6 +151,14 @@ namespace VTX
 			glBufferData( GL_ARRAY_BUFFER,
 						  _controlPointSecondaryStructures.size() * sizeof( uint ),
 						  _controlPointSecondaryStructures.data(),
+						  GL_STATIC_DRAW );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+			glGenBuffers( 1, &_vboColors );
+			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
+			glBufferData( GL_ARRAY_BUFFER,
+						  _controlPointColors.size() * sizeof( Color::Rgb ),
+						  _controlPointColors.data(),
 						  GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
@@ -181,6 +200,11 @@ namespace VTX
 								   GL_FALSE,
 								   sizeof( uint ),
 								   0 );
+
+			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
+			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
+			glVertexAttribPointer(
+				ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY );

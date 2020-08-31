@@ -2,6 +2,7 @@
 
 smooth in vec3 vViewPosition;
 smooth in vec3 vNormal;
+flat in vec3   vColor;
 
 // 3 16 bits for position.
 // 3 16 bits for normal.
@@ -24,5 +25,5 @@ void main()
 
 	// Output data.
 	outViewPositionNormal = viewPositionNormalCompressed;
-	outColor			  = vec4( 1.f, 1.f, 1.f, 32.f ); // w = specular shininess.
+	outColor			  = vec4( vColor, 32.f ); // w = specular shininess.
 }
