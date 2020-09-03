@@ -7,8 +7,11 @@ namespace VTX
 {
 	namespace Model
 	{
-		const Color::Rgb SecondaryStructure::SECONDARY_STRUCTURE_COLORS[ 5 ]
-			= { Color::Rgb::RED, Color::Rgb::RED, Color::Rgb::YELLOW, Color::Rgb::BLUE, Color::Rgb::GREY };
+		const Color::Rgb SecondaryStructure::SECONDARY_STRUCTURE_COLORS[ 5 ] = { Color::Rgb( 1.f, 0.f, 0.5f ),
+																				 Color::Rgb( 1.f, 0.f, 0.5f ),
+																				 Color::Rgb( 1.f, 0.78f, 0.f ),
+																				 Color::Rgb( 0.37f, 0.5f, 1.f ),
+																				 Color::Rgb::WHITE };
 
 		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) : _molecule( p_molecule )
 		{
@@ -31,8 +34,9 @@ namespace VTX
 					continue;
 				}
 
-				uint idxFirstResidue		  = chain.getIndexFirstResidue();
-				uint validResidueInChainCount = 0;
+				Vec3f directionLast;
+				uint  idxFirstResidue		   = chain.getIndexFirstResidue();
+				uint  validResidueInChainCount = 0;
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
 					const Residue & residue = p_molecule->getResidue( idxFirstResidue + residueIdx );
@@ -64,16 +68,36 @@ namespace VTX
 
 					// Compute control point direction.
 					Vec3f direction = Util::Math::normalize( positionO - positionCA );
+					if ( validResidueInChainCount > 0 )
+					{
+						// TOCHECK
+						if ( Util::Math::dot( direction, directionLast ) < 0.f )
+						{
+							// VTX_DEBUG( "FLIP" );
+							direction = -direction;
+						}
+						directionLast = direction;
+					}
 
 					// TODO: Flip test, something like if dot product > 0 then direction *= -1
 					_controlPointDirections.emplace_back( direction );
 
 					// Add secondary structure type.
+					VTX_DEBUG( std::to_string( uint( residue.getSecondaryStructure() ) ) );
 					_controlPointSecondaryStructures.emplace_back( uint( residue.getSecondaryStructure() ) );
 
 					// Addd color.
-					_controlPointColors.emplace_back(
-						SECONDARY_STRUCTURE_COLORS[ uint( residue.getSecondaryStructure() ) ] );
+					switch ( _colorMode )
+					{
+					case COLOR_MODE::JMOL:
+						_controlPointColors.emplace_back(
+							SECONDARY_STRUCTURE_COLORS[ uint( residue.getSecondaryStructure() ) ] );
+						break;
+					case COLOR_MODE::CHAIN:
+						_controlPointColors.emplace_back( residue.getChainPtr()->getColor() );
+						break;
+					default: _controlPointColors.emplace_back( Color::Rgb::WHITE ); break;
+					}
 
 					// Add indices.
 					validResidueInChainCount++;
@@ -87,7 +111,13 @@ namespace VTX
 						_indices.emplace_back( controlPointCount - 1 );
 					}
 				}
+
+				std::vector<uint> indicesReverse = _indices;
+				std::reverse( indicesReverse.begin(), indicesReverse.end() );
+				//_indices.insert( _indices.end(), indicesReverse.begin(), indicesReverse.end() );
 			}
+
+			refreshVisibility();
 
 			chrono.stop();
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
@@ -181,16 +211,19 @@ namespace VTX
 			glGenVertexArrays( 1, &_vao );
 			glBindVertexArray( _vao );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
 			glVertexAttribPointer(
 				ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
 			glVertexAttribPointer(
 				ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
@@ -200,17 +233,18 @@ namespace VTX
 								   GL_FALSE,
 								   sizeof( uint ),
 								   0 );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
 			glVertexAttribPointer(
 				ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
+			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY );
 			glVertexAttribPointer(
 				ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
-
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -227,6 +261,11 @@ namespace VTX
 		{
 			glBindVertexArray( 0 );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+		}
+
+		void SecondaryStructure::refreshVisibility()
+		{
+			// TODO
 		}
 
 		void SecondaryStructure::print() const

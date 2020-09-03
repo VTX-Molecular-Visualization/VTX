@@ -111,6 +111,12 @@ namespace VTX
 			}
 
 			_currentFrame = p_frameIdx;
+			if ( _secondaryStructure != nullptr )
+			{
+				delete _secondaryStructure;
+			}
+			_secondaryStructure = new SecondaryStructure( this );
+			_secondaryStructure->init();
 			_updateBufferAtomPositions();
 		}
 
@@ -290,7 +296,7 @@ namespace VTX
 			_fillBufferAtomVisibilities();
 			if ( _secondaryStructure != nullptr )
 			{
-				//_ribbon->refreshVisibility();
+				_secondaryStructure->refreshVisibility();
 			}
 			// Refresh representation state to remove invisible items.
 			Util::Molecule::refreshRepresentationState( *this );

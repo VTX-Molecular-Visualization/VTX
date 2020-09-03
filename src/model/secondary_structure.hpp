@@ -28,6 +28,8 @@ namespace VTX
 
 			const std::vector<uint> & getIndices() const { return _indices; }
 
+			void refreshVisibility();
+
 			void print() const;
 
 		  private:
@@ -39,8 +41,14 @@ namespace VTX
 				CONTROL_POINT_COLOR				  = 3,
 				CONTROL_POINT_VISIBILITY		  = 4,
 			};
+			enum class COLOR_MODE : int
+			{
+				JMOL,
+				CHAIN
+			};
 
 			Model::Molecule * const _molecule;
+			COLOR_MODE				_colorMode = COLOR_MODE::CHAIN;
 
 			std::vector<Vec3f>		_controlPointPositions			 = std::vector<Vec3f>();
 			std::vector<Vec3f>		_controlPointDirections			 = std::vector<Vec3f>();

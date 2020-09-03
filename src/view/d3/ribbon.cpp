@@ -10,9 +10,14 @@ namespace VTX
 			void Ribbon::createProgram()
 			{
 				GLint maxPatchVertices = 0;
+				GLint maxTessGenLevel  = 0;
+
+				glPatchParameteri( GL_PATCH_VERTICES, 4 );
 				glGetIntegerv( GL_MAX_PATCH_VERTICES, &maxPatchVertices );
+				glGetIntegerv( GL_MAX_TESS_GEN_LEVEL, &maxTessGenLevel );
+
 				VTX_DEBUG( "Max supported patch vertices: " + std::to_string( maxPatchVertices ) );
-				glPatchParameteri( GL_PATCH_VERTICES, 3 );
+				VTX_DEBUG( "Max supported tessellation levels: " + std::to_string( maxTessGenLevel ) );
 
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
 				_program							= pm.createProgram(
