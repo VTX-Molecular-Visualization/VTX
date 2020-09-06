@@ -86,7 +86,7 @@ namespace VTX
 					VTX_DEBUG( std::to_string( uint( residue.getSecondaryStructure() ) ) );
 					_controlPointSecondaryStructures.emplace_back( uint( residue.getSecondaryStructure() ) );
 
-					// Addd color.
+					// Add color.
 					switch ( _colorMode )
 					{
 					case COLOR_MODE::JMOL:
@@ -104,7 +104,7 @@ namespace VTX
 					uint controlPointCount = uint( _controlPointPositions.size() );
 					if ( validResidueInChainCount >= 4 )
 					{
-						// Add last 4 control point indices to create patch.
+						// TODO: wrong!! Use Ci-1, Ci, Ci+1 and Ci+2 for residue i
 						_indices.emplace_back( controlPointCount - 4 );
 						_indices.emplace_back( controlPointCount - 3 );
 						_indices.emplace_back( controlPointCount - 2 );
@@ -117,7 +117,7 @@ namespace VTX
 				//_indices.insert( _indices.end(), indicesReverse.begin(), indicesReverse.end() );
 			}
 
-			refreshVisibility();
+			// refreshVisibility();
 
 			chrono.stop();
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
@@ -261,11 +261,6 @@ namespace VTX
 		{
 			glBindVertexArray( 0 );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-		}
-
-		void SecondaryStructure::refreshVisibility()
-		{
-			// TODO
 		}
 
 		void SecondaryStructure::print() const

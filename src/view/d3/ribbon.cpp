@@ -58,7 +58,7 @@ namespace VTX
 				}
 				*/
 
-				glDrawElements( GL_PATCHES, uint( _model->getIndices().size() ), GL_UNSIGNED_INT, 0 );
+				// glDrawElements( GL_PATCHES, uint( _model->getIndices().size() ), GL_UNSIGNED_INT, 0 );
 			}
 		} // namespace D3
 	}	  // namespace View

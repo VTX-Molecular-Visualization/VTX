@@ -6,6 +6,7 @@
 #endif
 
 #include "model/molecule.hpp"
+#include "model/secondary_structure.hpp"
 #include "tool/chrono.hpp"
 #include "vtx_app.hpp"
 
@@ -15,11 +16,7 @@ namespace VTX
 	{
 		namespace Molecule
 		{
-			static void computeSecondaryStructure( Model::Molecule & p_molecule ) {
-			
-			
-			
-			}
+			static void computeSecondaryStructure( Model::Molecule & p_molecule ) {}
 
 			/*
 			static void computeSecondaryStructure( Model::Molecule & p_molecule )
@@ -224,7 +221,11 @@ namespace VTX
 			static void refreshRepresentationState( Model::Molecule & p_molecule )
 			{
 				// Sort ranges by rep.
-				Model::Molecule::RepresentationState & state = p_molecule.getRepresentationState();
+				Model::Molecule::RepresentationState & state			  = p_molecule.getRepresentationState();
+				const Model::SecondaryStructure &	   secondaryStructure = p_molecule.getSecondaryStructure();
+				const std::map<uint, uint>			   residueToControlPointIndices
+					= secondaryStructure.getResidueToControlPointIndice();
+
 				state.clear();
 				state.emplace( Generic::REPRESENTATION::BALL_AND_STICK, Model::Molecule::RepresentationStruct() );
 				state.emplace( Generic::REPRESENTATION::VAN_DER_WAALS, Model::Molecule::RepresentationStruct() );
@@ -253,8 +254,13 @@ namespace VTX
 						= std::pair( residue->getIndexFirstAtom(), residue->getAtomCount() );
 					std::pair<uint, uint> rangeBonds
 						= std::pair( residue->getIndiceFirstBond(), residue->getBondIndiceCount() );
-					std::pair<uint, uint> rangeTriangles
-						= std::pair( residue->getIndiceRibbonFirstTriangle(), residue->getIndiceRibbonTriangleCount() );
+					std::pair<uint, uint> rangeSecondaryStructure = std::pair( 0, 0 );
+					if ( residueToControlPointIndices.find( residue->getIndex() )
+						 != residueToControlPointIndices.end() )
+					{
+						std::pair<uint, uint> rangeSecondaryStructure
+							= std::pair( residueToControlPointIndices.at( residue->getIndex() ), 4 );
+					}
 
 					const std::set<Generic::REPRESENTATION> * representations = nullptr;
 
@@ -284,9 +290,9 @@ namespace VTX
 							{
 								state[ representation ].bonds.emplace( rangeBonds );
 							}
-							if ( rangeTriangles.second > 0 )
+							if ( rangeSecondaryStructure.second > 0 )
 							{
-								state[ representation ].triangles.emplace( rangeTriangles );
+								state[ representation ].triangles.emplace( rangeSecondaryStructure );
 							}
 							for ( uint indexBond : residue->getIndexExtraBondStart() )
 							{
@@ -308,9 +314,9 @@ namespace VTX
 						{
 							state[ VTX_SETTING().representation ].bonds.emplace( rangeBonds );
 						}
-						if ( rangeTriangles.second > 0 )
+						if ( rangeSecondaryStructure.second > 0 )
 						{
-							state[ VTX_SETTING().representation ].triangles.emplace( rangeTriangles );
+							state[ VTX_SETTING().representation ].triangles.emplace( rangeSecondaryStructure );
 						}
 						for ( uint indexBond : residue->getIndexExtraBondStart() )
 						{
@@ -322,8 +328,6 @@ namespace VTX
 						}
 					}
 				}
-
-				//
 
 				// Merge  ranges.
 				for ( std::pair<const Generic::REPRESENTATION, Model::Molecule::RepresentationStruct> & pair : state )

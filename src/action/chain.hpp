@@ -6,6 +6,7 @@
 #endif
 
 #include "model/chain.hpp"
+#include "util/molecule.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
 
@@ -56,7 +57,7 @@ namespace VTX
 						}
 					}
 
-					chain.getMoleculePtr()->refreshVisibility();
+					Util::Molecule::refreshRepresentationState( *chain.getMoleculePtr() );
 				}
 			};
 		} // namespace Chain

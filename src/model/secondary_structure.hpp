@@ -26,9 +26,11 @@ namespace VTX
 			void bindBuffers() override;
 			void unbindBuffers() override;
 
-			const std::vector<uint> & getIndices() const { return _indices; }
-
-			void refreshVisibility();
+			const std::vector<uint> &	 getIndices() const { return _indices; }
+			const std::map<uint, uint> & getResidueToControlPointIndice() const
+			{
+				return _residueToControlPointIndices;
+			}
 
 			void print() const;
 
@@ -56,6 +58,8 @@ namespace VTX
 			std::vector<Color::Rgb> _controlPointColors				 = std::vector<Color::Rgb>();
 			std::vector<uint>		_controlPointVisibilities		 = std::vector<uint>();
 			std::vector<uint>		_indices						 = std::vector<uint>();
+
+			std::map<uint, uint> _residueToControlPointIndices = std::map<uint, uint>();
 
 			GLuint _vboPositions		   = GL_INVALID_VALUE;
 			GLuint _vboDirections		   = GL_INVALID_VALUE;

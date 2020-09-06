@@ -156,13 +156,13 @@ namespace VTX
 			inline void		  setShowSolvent( const bool p_showSolvent )
 			{
 				_showSolvent = p_showSolvent;
-				refreshVisibility();
+				_fillBufferAtomVisibilities();
 			}
 			inline bool showIon() const { return _showIon; }
 			inline void setShowIon( const bool p_showIon )
 			{
 				_showIon = p_showIon;
-				refreshVisibility();
+				_fillBufferAtomVisibilities();
 			}
 
 			// At least one residue
@@ -176,7 +176,7 @@ namespace VTX
 			void unbindBuffers() override;
 
 			bool mergeTopology( const Molecule & );
-			void refreshVisibility();
+
 			void createSecondaryStructure();
 			void toggleSequenceVisibility();
 

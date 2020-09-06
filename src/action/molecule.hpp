@@ -47,7 +47,7 @@ namespace VTX
 				{
 					Model::Molecule & molecule = ( (Model::Molecule &)_visible );
 					Visible::ChangeVisibility::execute();
-					molecule.refreshVisibility();
+					Util::Molecule::refreshRepresentationState( molecule );
 				}
 			};
 

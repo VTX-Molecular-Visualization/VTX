@@ -84,7 +84,7 @@ namespace VTX
 
 				// Create secondary structure mesh.
 				createSecondaryStructure();
-				refreshVisibility();
+				_fillBufferAtomVisibilities();
 			}
 		}
 
@@ -190,23 +190,8 @@ namespace VTX
 			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 			{
 				Atom * const atom = _atoms[ i ];
-				// Molecule not visible.
-				if ( isVisible() == false )
-				{
-					_bufferAtomVisibilities[ i ] = 0u;
-				}
-				// Residue not visible.
-				else if ( atom->getResiduePtr()->isVisible() == false )
-				{
-					_bufferAtomVisibilities[ i ] = 0u;
-				}
-				// Chain not visible.
-				else if ( atom->getChainPtr()->isVisible() == false )
-				{
-					_bufferAtomVisibilities[ i ] = 0u;
-				}
 				// Solvent hidden.
-				else if ( _showSolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
+				if ( _showSolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
 				{
 					_bufferAtomVisibilities[ i ] = 0u;
 				}
@@ -289,17 +274,6 @@ namespace VTX
 			{
 				delete removeItem( ID::View::UI_MOLECULE );
 			}
-		}
-
-		void Molecule::refreshVisibility()
-		{
-			_fillBufferAtomVisibilities();
-			if ( _secondaryStructure != nullptr )
-			{
-				_secondaryStructure->refreshVisibility();
-			}
-			// Refresh representation state to remove invisible items.
-			Util::Molecule::refreshRepresentationState( *this );
 		}
 
 		void Molecule::_createBuffers()

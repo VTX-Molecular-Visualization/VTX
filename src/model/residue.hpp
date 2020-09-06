@@ -111,16 +111,6 @@ namespace VTX
 			inline const std::vector<uint> & getIndexExtraBondEnd() const { return _indexExtraBondEnd; };
 			inline std::vector<uint> &		 getIndexExtraBondEnd() { return _indexExtraBondEnd; };
 
-			inline uint getIndexRibbonFirstVertex() const { return _indexRibbonFirstVertex; };
-			inline void setIndexRibbonFirstVertex( const uint p_id ) { _indexRibbonFirstVertex = p_id; };
-			inline uint getRibbonVertexCount() const { return _ribbonVertexCount; };
-			inline void setRibbonVertexCount( const uint p_count ) { _ribbonVertexCount = p_count; };
-
-			inline uint getIndiceRibbonFirstTriangle() const { return _indiceRibbonFirstTriangle; };
-			inline void setIndiceRibbonFirstTriangle( const uint p_id ) { _indiceRibbonFirstTriangle = p_id; };
-			inline uint getIndiceRibbonTriangleCount() const { return _indiceRibbonTriangleCount; };
-			inline void setIndiceRibbonTriangleCount( const uint p_count ) { _indiceRibbonTriangleCount = p_count; };
-
 			inline Atom::TYPE				 getAtomType() const { return _atomType; }
 			inline void						 setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
 			inline const SECONDARY_STRUCTURE getSecondaryStructure() const { return _secondaryStructure; };
@@ -141,18 +131,14 @@ namespace VTX
 
 			SYMBOL _symbol = SYMBOL::UNKNOWN;
 
-			uint				_indexFirstAtom			   = 0;
-			uint				_atomCount				   = 0;
-			uint				_indexFirstBond			   = 0;
-			uint				_bondCount				   = 0;
-			std::vector<uint>	_indexExtraBondStart	   = std::vector<uint>();
-			std::vector<uint>	_indexExtraBondEnd		   = std::vector<uint>();
-			uint				_indexRibbonFirstVertex	   = 0;
-			uint				_ribbonVertexCount		   = 0;
-			uint				_indiceRibbonFirstTriangle = 0;
-			uint				_indiceRibbonTriangleCount = 0;
-			Atom::TYPE			_atomType			= Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
-			SECONDARY_STRUCTURE _secondaryStructure = SECONDARY_STRUCTURE::COIL;
+			uint				_indexFirstAtom		 = 0;
+			uint				_atomCount			 = 0;
+			uint				_indexFirstBond		 = 0;
+			uint				_bondCount			 = 0;
+			std::vector<uint>	_indexExtraBondStart = std::vector<uint>();
+			std::vector<uint>	_indexExtraBondEnd	 = std::vector<uint>();
+			Atom::TYPE			_atomType			 = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
+			SECONDARY_STRUCTURE _secondaryStructure	 = SECONDARY_STRUCTURE::COIL;
 		};
 
 	} // namespace Model
