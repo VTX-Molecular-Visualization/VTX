@@ -102,7 +102,7 @@ namespace VTX
 								ImGui::PushID( residue.getId() );
 								bool residueOpened = ImGui::TreeNodeEx(
 									VTX_SETTING().symbolDisplayMode == Style::SYMBOL_DISPLAY_MODE::SHORT
-										? ( residue.getSymbolShort() + " " + std::to_string( residue.getIndex() ) )
+										? ( residue.getSymbolStr() + " " + std::to_string( residue.getIndex() ) )
 											  .c_str()
 										: residue.getSymbolName().c_str(),
 									residue.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
