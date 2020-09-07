@@ -40,9 +40,9 @@ namespace VTX
 
 			struct RepresentationStruct
 			{
-				MapRange atoms	   = MapRange();
-				MapRange bonds	   = MapRange();
-				MapRange triangles = MapRange();
+				MapRange atoms	 = MapRange();
+				MapRange bonds	 = MapRange();
+				MapRange ribbons = MapRange();
 			};
 
 			using RepresentationState = std::map<const Generic::REPRESENTATION, RepresentationStruct>;

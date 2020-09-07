@@ -34,9 +34,12 @@ namespace VTX
 					continue;
 				}
 
+				// Store chain control points.
+				std::vector<Vec3f> controlPointPositions = std::vector<Vec3f>();
+				std::vector<uint>  residueIndex			 = std::vector<uint>();
+
 				Vec3f directionLast;
-				uint  idxFirstResidue		   = chain.getIndexFirstResidue();
-				uint  validResidueInChainCount = 0;
+				uint  idxFirstResidue = chain.getIndexFirstResidue();
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
 					const Residue & residue = p_molecule->getResidue( idxFirstResidue + residueIdx );
@@ -64,11 +67,14 @@ namespace VTX
 					const Vec3f & positionO	 = positions[ O->getIndex() ];
 
 					// Add control point position.
-					_controlPointPositions.emplace_back( positionCA );
+					controlPointPositions.emplace_back( positionCA );
+
+					// Store residue index for later.
+					residueIndex.emplace_back( residue.getIndex() );
 
 					// Compute control point direction.
 					Vec3f direction = Util::Math::normalize( positionO - positionCA );
-					if ( validResidueInChainCount > 0 )
+					if ( controlPointPositions.size() > 0 )
 					{
 						// TOCHECK
 						if ( Util::Math::dot( direction, directionLast ) < 0.f )
@@ -78,12 +84,9 @@ namespace VTX
 						}
 						directionLast = direction;
 					}
-
-					// TODO: Flip test, something like if dot product > 0 then direction *= -1
 					_controlPointDirections.emplace_back( direction );
 
 					// Add secondary structure type.
-					VTX_DEBUG( std::to_string( uint( residue.getSecondaryStructure() ) ) );
 					_controlPointSecondaryStructures.emplace_back( uint( residue.getSecondaryStructure() ) );
 
 					// Add color.
@@ -98,26 +101,31 @@ namespace VTX
 						break;
 					default: _controlPointColors.emplace_back( Color::Rgb::WHITE ); break;
 					}
-
-					// Add indices.
-					validResidueInChainCount++;
-					uint controlPointCount = uint( _controlPointPositions.size() );
-					if ( validResidueInChainCount >= 4 )
-					{
-						// TODO: wrong!! Use Ci-1, Ci, Ci+1 and Ci+2 for residue i
-						_indices.emplace_back( controlPointCount - 4 );
-						_indices.emplace_back( controlPointCount - 3 );
-						_indices.emplace_back( controlPointCount - 2 );
-						_indices.emplace_back( controlPointCount - 1 );
-					}
 				}
 
-				std::vector<uint> indicesReverse = _indices;
-				std::reverse( indicesReverse.begin(), indicesReverse.end() );
-				//_indices.insert( _indices.end(), indicesReverse.begin(), indicesReverse.end() );
+				// Add indices and save mapping.
+				if ( controlPointPositions.size() >= 4 )
+				{
+					uint offset = uint( _controlPointPositions.size() );
+					for ( uint i = 1; i < controlPointPositions.size() - 2; ++i )
+					{
+						_residueToControlPointIndices.emplace( residueIndex[ i ], uint( _indices.size() ) );
+
+						_indices.emplace_back( offset + i - 1 );
+						_indices.emplace_back( offset + i );
+						_indices.emplace_back( offset + i + 1 );
+						_indices.emplace_back( offset + i + 2 );
+					}
+
+					// Merge control points.
+					_controlPointPositions.insert(
+						_controlPointPositions.end(), controlPointPositions.begin(), controlPointPositions.end() );
+				}
 			}
 
-			// refreshVisibility();
+			std::vector<uint> indicesReverse = _indices;
+			std::reverse( indicesReverse.begin(), indicesReverse.end() );
+			//_indices.insert( _indices.end(), indicesReverse.begin(), indicesReverse.end() );
 
 			chrono.stop();
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );

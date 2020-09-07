@@ -231,6 +231,7 @@ namespace VTX
 				state.emplace( Generic::REPRESENTATION::VAN_DER_WAALS, Model::Molecule::RepresentationStruct() );
 				state.emplace( Generic::REPRESENTATION::STICK, Model::Molecule::RepresentationStruct() );
 				state.emplace( Generic::REPRESENTATION::SAS, Model::Molecule::RepresentationStruct() );
+				state.emplace( Generic::REPRESENTATION::CARTOON, Model::Molecule::RepresentationStruct() );
 
 				for ( Model::Residue * const residue : p_molecule.getResidues() )
 				{
@@ -254,12 +255,12 @@ namespace VTX
 						= std::pair( residue->getIndexFirstAtom(), residue->getAtomCount() );
 					std::pair<uint, uint> rangeBonds
 						= std::pair( residue->getIndiceFirstBond(), residue->getBondIndiceCount() );
-					std::pair<uint, uint> rangeSecondaryStructure = std::pair( 0, 0 );
+					std::pair<uint, uint> rangeRibbons = std::pair( 0, 0 );
+
 					if ( residueToControlPointIndices.find( residue->getIndex() )
 						 != residueToControlPointIndices.end() )
 					{
-						std::pair<uint, uint> rangeSecondaryStructure
-							= std::pair( residueToControlPointIndices.at( residue->getIndex() ), 4 );
+						rangeRibbons = std::pair( residueToControlPointIndices.at( residue->getIndex() ), 4 );
 					}
 
 					const std::set<Generic::REPRESENTATION> * representations = nullptr;
@@ -290,9 +291,9 @@ namespace VTX
 							{
 								state[ representation ].bonds.emplace( rangeBonds );
 							}
-							if ( rangeSecondaryStructure.second > 0 )
+							if ( rangeRibbons.second > 0 )
 							{
-								state[ representation ].triangles.emplace( rangeSecondaryStructure );
+								state[ representation ].ribbons.emplace( rangeRibbons );
 							}
 							for ( uint indexBond : residue->getIndexExtraBondStart() )
 							{
@@ -314,9 +315,9 @@ namespace VTX
 						{
 							state[ VTX_SETTING().representation ].bonds.emplace( rangeBonds );
 						}
-						if ( rangeSecondaryStructure.second > 0 )
+						if ( rangeRibbons.second > 0 )
 						{
-							state[ VTX_SETTING().representation ].triangles.emplace( rangeSecondaryStructure );
+							state[ VTX_SETTING().representation ].ribbons.emplace( rangeRibbons );
 						}
 						for ( uint indexBond : residue->getIndexExtraBondStart() )
 						{
@@ -350,13 +351,13 @@ namespace VTX
 						// VTX_INFO( "After merging bonds: " + std::to_string( rangeBonds.size() ) );
 					}
 
-					// Triangles.
-					std::map<uint, uint> & rangeTriangle = pair.second.triangles;
-					if ( rangeTriangle.size() > 1 )
+					// Ribbons.
+					std::map<uint, uint> & rangeRibbons = pair.second.ribbons;
+					if ( rangeRibbons.size() > 1 )
 					{
-						// VTX_INFO( "Before merging triangles: " + std::to_string( rangeTriangle.size() ) );
-						mergeRanges( rangeTriangle );
-						// VTX_INFO( "After merging triangles: " + std::to_string( rangeTriangle.size() ) );
+						// VTX_INFO( "Before merging ribbons: " + std::to_string( rangeRibbons.size() ) );
+						mergeRanges( rangeRibbons );
+						// VTX_INFO( "After merging ribbons: " + std::to_string( rangeRibbons.size() ) );
 					}
 				}
 			}

@@ -48,15 +48,11 @@ namespace VTX
 									GL_FALSE,
 									Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
 
-				// TODO: use rep state.
-				/*
 				for ( const std::pair<uint, uint> & pair :
-					  _model->getMolecule()->getRepresentationState()[ Generic::REPRESENTATION::CARTOON ].triangles )
+					  _model->getMolecule()->getRepresentationState()[ Generic::REPRESENTATION::CARTOON ].ribbons )
 				{
-					glDrawElements(
-						GL_TRIANGLES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
+					glDrawElements( GL_PATCHES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
 				}
-				*/
 
 				// glDrawElements( GL_PATCHES, uint( _model->getIndices().size() ), GL_UNSIGNED_INT, 0 );
 			}

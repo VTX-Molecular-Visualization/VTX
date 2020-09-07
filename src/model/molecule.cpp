@@ -85,6 +85,8 @@ namespace VTX
 				// Create secondary structure mesh.
 				createSecondaryStructure();
 				_fillBufferAtomVisibilities();
+
+				Util::Molecule::refreshRepresentationState( *this );
 			}
 		}
 
