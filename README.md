@@ -1,6 +1,5 @@
 # VTX
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/25aeed2cf0e54f45b39496354738bfc4)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sguionni/VTX&amp;utm_campaign=Badge_Grade)
-![C/C++ CI](https://github.com/sguionni/VTX/workflows/C/C++%20CI/badge.svg?branch=master&event=push)
 
 ## USER GUIDE
 
@@ -35,6 +34,15 @@
 - F3: Change color mode
 - F4: Change shading
 - F5: Add camera viewpoint at current position
+
+### EXPORTS
+
+- Snapshots are saved in the /snapshots folder
+- Videos are saved in the /videos folder
+
+### BUGS AND CRASH REPORTS
+
+- A log file is saved in the /logs folder, please attach this file with your ticket
 
 ### SCRIPTABLE ACTIONS
 
@@ -85,16 +93,6 @@ Go to Tools -> Options, then under LLVM/Clang, set the following values:
     -   Fallback Style: LLVM
     -   Sort includes: True
     -   Style: file
-
-### LINUX
-
-// TODO
-
-git curl cmake GL (libgl1-mesa-dev)
-
-### MAC OS
-
-// TODO
 
 ### Some architecture points
 

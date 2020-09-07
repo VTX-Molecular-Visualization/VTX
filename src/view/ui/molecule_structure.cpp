@@ -13,11 +13,11 @@ namespace VTX
 		{
 			void MoleculeStructure::_draw()
 			{
-				const std::string nbAtoms = std::to_string( _model->getAtomCount() ) + " atoms.";
-				const std::string nbBonds = std::to_string( _model->getBondCount() ) + " bonds.";
+				const std::string nbAtoms = std::to_string( _model->getAtomCount() ) + " atoms";
+				const std::string nbBonds = std::to_string( _model->getBondCount() ) + " bonds";
 				ImGui::PushID( ( "ViewMoleculeStructure" + std::to_string( _model->getId() ) ).c_str() );
 				bool moleculeOpened = ImGui::TreeNodeEx(
-					( _model->getPath().filename().string() + " " + _model->getName() + "\n - " + nbAtoms ).c_str(),
+					( _model->getPath().filename().string() + "\n" + _model->getName() + "\n" + nbAtoms ).c_str(),
 					_model->isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 
 				// Context menu.
