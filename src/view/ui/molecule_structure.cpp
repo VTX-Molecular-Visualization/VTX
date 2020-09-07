@@ -101,10 +101,11 @@ namespace VTX
 								Model::Residue & residue = _model->getResidue( chain->getIndexFirstResidue() + i );
 								ImGui::PushID( residue.getId() );
 								bool residueOpened = ImGui::TreeNodeEx(
-									VTX_SETTING().symbolDisplayMode == Style::SYMBOL_DISPLAY_MODE::SHORT
-										? ( residue.getSymbolStr() + " " + std::to_string( residue.getIndex() ) )
-											  .c_str()
-										: residue.getSymbolName().c_str(),
+									( ( VTX_SETTING().symbolDisplayMode == Style::SYMBOL_DISPLAY_MODE::SHORT
+											? residue.getSymbolShort()
+											: residue.getSymbolName() )
+									  + " " + std::to_string( residue.getIndex() ) )
+										.c_str(),
 									residue.isSelected() ? ImGuiTreeNodeFlags_Selected : ImGuiTreeNodeFlags_None );
 								// Context menu.
 								if ( ImGui::BeginPopupContextItem() )
@@ -155,12 +156,13 @@ namespace VTX
 									{
 										Model::Atom & atom = _model->getAtom( residue.getIndexFirstAtom() + j );
 										ImGui::PushID( atom.getId() );
-										if ( ImGui::Selectable(
-												 VTX_SETTING().symbolDisplayMode == Style::SYMBOL_DISPLAY_MODE::SHORT
-													 ? ( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) )
-														   .c_str()
-													 : atom.getSymbolName().c_str(),
-												 atom.isSelected() ) )
+										if ( ImGui::Selectable( ( ( VTX_SETTING().symbolDisplayMode
+																			== Style::SYMBOL_DISPLAY_MODE::SHORT
+																		? atom.getSymbolStr()
+																		: atom.getSymbolName() )
+																  + " " + std::to_string( atom.getIndex() ) )
+																	.c_str(),
+																atom.isSelected() ) )
 										{
 											if ( atom.isSelected() )
 											{
