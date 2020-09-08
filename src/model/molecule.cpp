@@ -113,13 +113,12 @@ namespace VTX
 			}
 
 			_currentFrame = p_frameIdx;
+			_updateBufferAtomPositions();
+
 			if ( _secondaryStructure != nullptr )
 			{
-				delete _secondaryStructure;
+				_secondaryStructure->setCurrentFrame();
 			}
-			_secondaryStructure = new SecondaryStructure( this );
-			_secondaryStructure->init();
-			_updateBufferAtomPositions();
 		}
 
 		void Molecule::_initBufferAtomPositions() const

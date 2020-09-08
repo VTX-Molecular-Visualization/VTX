@@ -271,6 +271,69 @@ namespace VTX
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 		}
 
+		void SecondaryStructure::setCurrentFrame()
+		{
+			const Molecule::AtomPositionsFrame & positions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
+
+			_controlPointPositions.clear();
+			_controlPointDirections.clear();
+
+			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
+			{
+				const Chain & chain		   = _molecule->getChain( chainIdx );
+				uint		  residueCount = chain.getResidueCount();
+
+				if ( residueCount < 4 )
+				{
+					VTX_DEBUG( "Chain residue count < 4" );
+					continue;
+				}
+
+				uint  validResidueCount = 0;
+				Vec3f directionLast;
+				uint  idxFirstResidue = chain.getIndexFirstResidue();
+				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
+				{
+					const Residue &			  residue = _molecule->getResidue( idxFirstResidue + residueIdx );
+					const Model::Atom * const CA	  = residue.findFirstAtomByName( "CA" );
+					const Model::Atom * const O		  = residue.findFirstAtomByName( "O" );
+
+					if ( CA == nullptr )
+					{
+						continue;
+					}
+					if ( O == nullptr )
+					{
+						VTX_DEBUG( "Missing oxygen atom in amine acid" );
+						continue;
+					}
+
+					const Vec3f & positionCA = positions[ CA->getIndex() ];
+					const Vec3f & positionO	 = positions[ O->getIndex() ];
+
+					_controlPointPositions.emplace_back( positionCA );
+
+					Vec3f direction = Util::Math::normalize( positionO - positionCA );
+					if ( validResidueCount > 0 )
+					{
+						if ( Util::Math::dot( direction, directionLast ) < 0.f )
+						{
+							direction = -direction;
+						}
+						directionLast = direction;
+					}
+					_controlPointDirections.emplace_back( direction );
+
+					validResidueCount++;
+				}
+			}
+
+			glNamedBufferSubData(
+				_vboPositions, 0, sizeof( Vec3f ) * _controlPointPositions.size(), _controlPointPositions.data() );
+			glNamedBufferSubData(
+				_vboDirections, 0, sizeof( Vec3f ) * _controlPointDirections.size(), _controlPointDirections.data() );
+		}
+
 		void SecondaryStructure::print() const
 		{
 			VTX_INFO( "Control points: " + std::to_string( _controlPointPositions.size() ) );

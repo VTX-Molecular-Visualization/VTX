@@ -26,6 +26,8 @@ namespace VTX
 			void bindBuffers() override;
 			void unbindBuffers() override;
 
+			void setCurrentFrame();
+
 			const std::vector<uint> &	 getIndices() const { return _indices; }
 			const std::map<uint, uint> & getResidueToControlPointIndice() const
 			{
