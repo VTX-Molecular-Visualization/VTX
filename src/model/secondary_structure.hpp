@@ -70,6 +70,8 @@ namespace VTX
 			GLuint _vboVisibilities		   = GL_INVALID_VALUE;
 			GLuint _ibo					   = GL_INVALID_VALUE;
 			GLuint _vao					   = GL_INVALID_VALUE;
+
+			void _flipTest( Vec3f &, Vec3f & ) const;
 		};
 
 	} // namespace Model

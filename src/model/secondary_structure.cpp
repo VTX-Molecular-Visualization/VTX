@@ -76,13 +76,7 @@ namespace VTX
 					Vec3f direction = Util::Math::normalize( positionO - positionCA );
 					if ( controlPointPositions.size() > 0 )
 					{
-						// TOCHECK
-						if ( Util::Math::dot( direction, directionLast ) < 0.f )
-						{
-							// VTX_DEBUG( "FLIP" );
-							direction = -direction;
-						}
-						directionLast = direction;
+						_flipTest( direction, directionLast );
 					}
 					_controlPointDirections.emplace_back( direction );
 
@@ -316,11 +310,7 @@ namespace VTX
 					Vec3f direction = Util::Math::normalize( positionO - positionCA );
 					if ( validResidueCount > 0 )
 					{
-						if ( Util::Math::dot( direction, directionLast ) < 0.f )
-						{
-							direction = -direction;
-						}
-						directionLast = direction;
+						_flipTest( direction, directionLast );
 					}
 					_controlPointDirections.emplace_back( direction );
 
@@ -332,6 +322,15 @@ namespace VTX
 				_vboPositions, 0, sizeof( Vec3f ) * _controlPointPositions.size(), _controlPointPositions.data() );
 			glNamedBufferSubData(
 				_vboDirections, 0, sizeof( Vec3f ) * _controlPointDirections.size(), _controlPointDirections.data() );
+		}
+
+		void SecondaryStructure::_flipTest( Vec3f & p_direction, Vec3f & p_directionLast ) const
+		{
+			if ( Util::Math::dot( p_direction, p_directionLast ) < 0.f )
+			{
+				p_direction = -p_direction;
+			}
+			p_directionLast = p_direction;
 		}
 
 		void SecondaryStructure::print() const
