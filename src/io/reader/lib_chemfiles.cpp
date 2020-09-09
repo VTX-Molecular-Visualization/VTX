@@ -204,38 +204,38 @@ namespace VTX
 							= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
 						if ( secondaryStructure != "" )
 						{
+							VTX_DEBUG( secondaryStructure );
 							if ( secondaryStructure == "extended" )
 							{
-								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::B_SHEET );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
 							}
 							else if ( secondaryStructure == "turn" )
 							{
 								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::TURN );
 							}
+							else if ( secondaryStructure == "coil" )
+							{
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::COIL );
+							}
 							else if ( secondaryStructure == "alpha helix" )
 							{
-								modelResidue->setSecondaryStructure(
-									Model::Residue::SECONDARY_STRUCTURE::A_HELIX_RIGHT );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX_ALPHA );
 							}
 							else if ( secondaryStructure == "omega helix" )
 							{
-								modelResidue->setSecondaryStructure(
-									Model::Residue::SECONDARY_STRUCTURE::A_HELIX_RIGHT );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX_ALPHA );
 							}
 							else if ( secondaryStructure == "gamma helix" )
 							{
-								modelResidue->setSecondaryStructure(
-									Model::Residue::SECONDARY_STRUCTURE::A_HELIX_RIGHT );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX_ALPHA );
 							}
 							else if ( secondaryStructure == "pi helix" )
 							{
-								modelResidue->setSecondaryStructure(
-									Model::Residue::SECONDARY_STRUCTURE::A_HELIX_RIGHT );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX_PI );
 							}
 							else if ( secondaryStructure == "3-10 helix" )
 							{
-								modelResidue->setSecondaryStructure(
-									Model::Residue::SECONDARY_STRUCTURE::A_HELIX_RIGHT );
+								modelResidue->setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX_3_10 );
 							}
 
 							if ( config.isSecondaryStructureLoadedFromFile == false )

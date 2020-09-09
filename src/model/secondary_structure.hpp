@@ -15,7 +15,8 @@ namespace VTX
 		class SecondaryStructure : public BaseModel3D
 		{
 		  public:
-			static const Color::Rgb SECONDARY_STRUCTURE_COLORS[ 5 ];
+			static const Color::Rgb
+				SECONDARY_STRUCTURE_COLORS_JMOL[ uint( Model::Residue::SECONDARY_STRUCTURE::COUNT ) ];
 
 			SecondaryStructure( Molecule * const );
 			~SecondaryStructure();
@@ -52,7 +53,7 @@ namespace VTX
 			};
 
 			Model::Molecule * const _molecule;
-			COLOR_MODE				_colorMode = COLOR_MODE::CHAIN;
+			COLOR_MODE				_colorMode = COLOR_MODE::JMOL;
 
 			std::vector<Vec3f>		_controlPointPositions			 = std::vector<Vec3f>();
 			std::vector<Vec3f>		_controlPointDirections			 = std::vector<Vec3f>();

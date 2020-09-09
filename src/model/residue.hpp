@@ -66,11 +66,13 @@ namespace VTX
 
 			enum class SECONDARY_STRUCTURE : int
 			{
-				A_HELIX_LEFT,
-				A_HELIX_RIGHT,
-				B_SHEET,
+				HELIX_ALPHA,
+				HELIX_3_10,
+				HELIX_PI,
+				STRAND,
 				TURN,
-				COIL
+				COIL,
+				COUNT
 			};
 
 			// Static const mapping.

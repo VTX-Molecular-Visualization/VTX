@@ -7,11 +7,10 @@ namespace VTX
 {
 	namespace Model
 	{
-		const Color::Rgb SecondaryStructure::SECONDARY_STRUCTURE_COLORS[ 5 ] = { Color::Rgb( 1.f, 0.f, 0.5f ),
-																				 Color::Rgb( 1.f, 0.f, 0.5f ),
-																				 Color::Rgb( 1.f, 0.78f, 0.f ),
-																				 Color::Rgb( 0.37f, 0.5f, 1.f ),
-																				 Color::Rgb::WHITE };
+		const Color::Rgb
+			SecondaryStructure::SECONDARY_STRUCTURE_COLORS_JMOL[ uint( Model::Residue::SECONDARY_STRUCTURE::COUNT ) ]
+			= { Color::Rgb( 1.f, 0.f, 0.5f ),  Color::Rgb( 0.62f, 0.f, 0.5f ), Color::Rgb( 0.37f, 0.f, 0.5f ),
+				Color::Rgb( 1.f, 0.78f, 0.f ), Color::Rgb( 0.37f, 0.5f, 1.f ), Color::Rgb::WHITE };
 
 		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) : _molecule( p_molecule )
 		{
@@ -88,7 +87,7 @@ namespace VTX
 					{
 					case COLOR_MODE::JMOL:
 						_controlPointColors.emplace_back(
-							SECONDARY_STRUCTURE_COLORS[ uint( residue.getSecondaryStructure() ) ] );
+							SECONDARY_STRUCTURE_COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
 						break;
 					case COLOR_MODE::CHAIN:
 						_controlPointColors.emplace_back( residue.getChainPtr()->getColor() );
