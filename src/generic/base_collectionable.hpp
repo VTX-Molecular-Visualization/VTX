@@ -5,8 +5,6 @@
 #pragma once
 #endif
 
-#include "base_cleanable.hpp"
-#include "base_initializable.hpp"
 #include "define.hpp"
 #include <string>
 
@@ -14,12 +12,14 @@ namespace VTX
 {
 	namespace Generic
 	{
-		class BaseCollectionable : public BaseInitializable, public BaseCleanable
+		class BaseCollectionable
 		{
 		  public:
 			virtual ~BaseCollectionable() = default;
 
 			virtual const std::string & getName() const = 0;
+			virtual void				init()			= 0;
+			virtual void				clean()			= 0;
 		};
 	} // namespace Generic
 } // namespace VTX
