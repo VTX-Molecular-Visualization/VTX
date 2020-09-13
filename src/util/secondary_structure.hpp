@@ -18,6 +18,7 @@ namespace VTX
 		{
 			static void computeStride( Model::Molecule & p_molecule )
 			{
+				return;
 				const Model::Molecule::AtomPositionsFrame & positions
 					= p_molecule.getAtomPositionFrame( p_molecule.getFrame() );
 
