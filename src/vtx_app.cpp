@@ -4,11 +4,9 @@
 #include "id.hpp"
 #include "model/molecule.hpp"
 #include "renderer/gl/gl.hpp"
+#include "renderer/ray_tracing/ray_tracer.hpp"
 #include "selection/selection_manager.hpp"
 #include "util/filesystem.hpp"
-#ifdef CUDA_DEFINED
-#include "renderer/ray_tracing/ray_tracer.hpp"
-#endif
 #ifdef OPTIX_DEFINED
 #include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
 #endif
@@ -160,7 +158,6 @@ namespace VTX
 			}
 			_renderer = _rendererGL;
 			break;
-#ifdef CUDA_DEFINED
 		case Renderer::MODE::RT_CPU:
 			if ( _rendererRT == nullptr )
 			{
@@ -169,7 +166,6 @@ namespace VTX
 			}
 			_renderer = _rendererRT;
 			break;
-#endif
 #ifdef OPTIX_DEFINED
 		case Renderer::MODE::RT_OPTIX:
 			if ( _rendererOptix == nullptr )

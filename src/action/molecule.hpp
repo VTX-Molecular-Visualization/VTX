@@ -7,6 +7,7 @@
 
 #include "model/molecule.hpp"
 #include "util/molecule.hpp"
+#include "util/secondary_structure.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
 
@@ -139,8 +140,8 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					// Util::Molecule::computeSecondaryStructure( _molecule );
-					_molecule.createSecondaryStructure();
+					Util::SecondaryStructure::computeSecondaryStructure( _molecule );
+					// TODO: update SS VBO.
 				}
 
 			  private:

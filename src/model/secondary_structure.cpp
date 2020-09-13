@@ -1,4 +1,5 @@
 #include "secondary_structure.hpp"
+#include "model/molecule.hpp"
 #include "tool/chrono.hpp"
 #include "view/d3/ribbon.hpp"
 #include "vtx_app.hpp"
@@ -7,8 +8,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		const Color::Rgb
-			SecondaryStructure::SECONDARY_STRUCTURE_COLORS_JMOL[ uint( Model::Residue::SECONDARY_STRUCTURE::COUNT ) ]
+		const Color::Rgb SecondaryStructure::SECONDARY_STRUCTURE_COLORS_JMOL[ uint( VALUE::COUNT ) ]
 			= { Color::Rgb( 1.f, 0.f, 0.5f ),  Color::Rgb( 0.62f, 0.f, 0.5f ), Color::Rgb( 0.37f, 0.f, 0.5f ),
 				Color::Rgb( 1.f, 0.78f, 0.f ), Color::Rgb( 0.37f, 0.5f, 1.f ), Color::Rgb::WHITE };
 
@@ -116,6 +116,7 @@ namespace VTX
 				}
 			}
 
+			// Reverse indices to render the other side.
 			std::vector<uint> indicesReverse = _indices;
 			std::reverse( indicesReverse.begin(), indicesReverse.end() );
 			//_indices.insert( _indices.end(), indicesReverse.begin(), indicesReverse.end() );

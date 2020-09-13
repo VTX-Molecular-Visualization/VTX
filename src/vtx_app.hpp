@@ -32,9 +32,7 @@ namespace VTX
 		{
 			class ProgramManager;
 		}
-#ifdef CUDA_DEFINED
 		class RayTracer;
-#endif
 #ifdef OPTIX_DEFINED
 		namespace Optix
 		{
@@ -114,9 +112,7 @@ namespace VTX
 		Object3D::Scene *		 _scene		   = nullptr;
 		Renderer::BaseRenderer * _renderer	   = nullptr;
 		Renderer::GL *			 _rendererGL   = nullptr;
-#ifdef CUDA_DEFINED
-		Renderer::RayTracer * _rendererRT = nullptr;
-#endif
+		Renderer::RayTracer *	 _rendererRT   = nullptr;
 #ifdef OPTIX_DEFINED
 		Renderer::Optix::OptixRayTracer * _rendererOptix = nullptr;
 #endif

@@ -86,10 +86,15 @@ namespace VTX
 			inline std::vector<Bond *> &		  getBonds() { return _bonds; }
 			inline const std::vector<Bond *> &	  getBonds() const { return _bonds; }
 
-			inline const SecondaryStructure & getSecondaryStructure() const { return *_secondaryStructure; }
-			inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
-			inline const std::string &		  getSequence() const { return _sequence; }
-			inline std::string &			  getSequence() { return _sequence; }
+			inline const SecondaryStructure &		getSecondaryStructure() const { return *_secondaryStructure; }
+			inline SecondaryStructure &				getSecondaryStructure() { return *_secondaryStructure; }
+			inline const SecondaryStructure::ALGO & getSecondaryStructureAlgo() const
+			{
+				return _secondaryStructureAlgo;
+			}
+
+			inline const std::string & getSequence() const { return _sequence; }
+			inline std::string &	   getSequence() { return _sequence; }
 
 			inline const bool isAtomVisible( const uint p_idx ) const
 			{
@@ -212,7 +217,8 @@ namespace VTX
 			std::vector<uint>		_bufferBonds			= std::vector<uint>();
 
 			// Secondary structure.
-			SecondaryStructure * _secondaryStructure = nullptr;
+			SecondaryStructure::ALGO _secondaryStructureAlgo = SecondaryStructure::ALGO::STRIDE;
+			SecondaryStructure *	 _secondaryStructure	 = nullptr;
 
 			// Sequence.
 			std::string _sequence;

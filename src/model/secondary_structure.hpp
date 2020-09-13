@@ -6,17 +6,33 @@
 #endif
 
 #include "base_model_3d.hpp"
-#include "model/molecule.hpp"
+#include "color/rgb.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
+		class Molecule;
 		class SecondaryStructure : public BaseModel3D
 		{
 		  public:
-			static const Color::Rgb
-				SECONDARY_STRUCTURE_COLORS_JMOL[ uint( Model::Residue::SECONDARY_STRUCTURE::COUNT ) ];
+			enum class VALUE : int
+			{
+				HELIX_ALPHA,
+				HELIX_3_10,
+				HELIX_PI,
+				STRAND,
+				TURN,
+				COIL,
+				COUNT
+			};
+
+			enum class ALGO : int
+			{
+				STRIDE
+			};
+
+			static const Color::Rgb SECONDARY_STRUCTURE_COLORS_JMOL[ uint( VALUE::COUNT ) ];
 
 			SecondaryStructure( Molecule * const );
 			~SecondaryStructure();

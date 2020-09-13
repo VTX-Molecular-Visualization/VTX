@@ -2,6 +2,7 @@
 #include "color/rgb.hpp"
 #include "model/secondary_structure.hpp"
 #include "util/molecule.hpp"
+#include "util/secondary_structure.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
@@ -79,7 +80,7 @@ namespace VTX
 				// Compute secondary structure if not loaded.
 				if ( _configuration.isSecondaryStructureLoadedFromFile == false )
 				{
-					// Util::Molecule::computeSecondaryStructure( *this );
+					Util::SecondaryStructure::computeSecondaryStructure( *this );
 				}
 
 				// Create secondary structure mesh.

@@ -11,6 +11,7 @@
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
 #include "generic/base_visible.hpp"
+#include "model/secondary_structure.hpp"
 #include <map>
 
 namespace VTX
@@ -64,17 +65,6 @@ namespace VTX
 				COUNT
 			};
 
-			enum class SECONDARY_STRUCTURE : int
-			{
-				HELIX_ALPHA,
-				HELIX_3_10,
-				HELIX_PI,
-				STRAND,
-				TURN,
-				COIL,
-				COUNT
-			};
-
 			// Static const mapping.
 			static const std::string SYMBOL_STR[ (int)SYMBOL::COUNT ];
 			static const std::string SYMBOL_SHORT_STR[ (int)SYMBOL::COUNT ];
@@ -113,10 +103,10 @@ namespace VTX
 			inline const std::vector<uint> & getIndexExtraBondEnd() const { return _indexExtraBondEnd; };
 			inline std::vector<uint> &		 getIndexExtraBondEnd() { return _indexExtraBondEnd; };
 
-			inline Atom::TYPE				 getAtomType() const { return _atomType; }
-			inline void						 setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
-			inline const SECONDARY_STRUCTURE getSecondaryStructure() const { return _secondaryStructure; };
-			inline void						 setSecondaryStructure( const SECONDARY_STRUCTURE p_structure )
+			inline Atom::TYPE getAtomType() const { return _atomType; }
+			inline void		  setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
+			inline const SecondaryStructure::VALUE getSecondaryStructure() const { return _secondaryStructure; };
+			inline void							   setSecondaryStructure( const SecondaryStructure::VALUE p_structure )
 			{
 				_secondaryStructure = p_structure;
 			};
@@ -133,14 +123,14 @@ namespace VTX
 
 			SYMBOL _symbol = SYMBOL::UNKNOWN;
 
-			uint				_indexFirstAtom		 = 0;
-			uint				_atomCount			 = 0;
-			uint				_indexFirstBond		 = 0;
-			uint				_bondCount			 = 0;
-			std::vector<uint>	_indexExtraBondStart = std::vector<uint>();
-			std::vector<uint>	_indexExtraBondEnd	 = std::vector<uint>();
-			Atom::TYPE			_atomType			 = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
-			SECONDARY_STRUCTURE _secondaryStructure	 = SECONDARY_STRUCTURE::COIL;
+			uint					  _indexFirstAtom	   = 0;
+			uint					  _atomCount		   = 0;
+			uint					  _indexFirstBond	   = 0;
+			uint					  _bondCount		   = 0;
+			std::vector<uint>		  _indexExtraBondStart = std::vector<uint>();
+			std::vector<uint>		  _indexExtraBondEnd   = std::vector<uint>();
+			Atom::TYPE				  _atomType = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
+			SecondaryStructure::VALUE _secondaryStructure = SecondaryStructure::VALUE::COIL;
 		};
 
 	} // namespace Model

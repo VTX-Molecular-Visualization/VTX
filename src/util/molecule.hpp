@@ -16,8 +16,6 @@ namespace VTX
 	{
 		namespace Molecule
 		{
-			static void computeStride( Model::Molecule & p_molecule ) {}
-
 			static void mergeRanges( std::map<uint, uint> & p_ranges )
 			{
 				std::map<uint, uint>::iterator itFirst	= p_ranges.begin();
