@@ -114,7 +114,9 @@ namespace VTX
 		Object3D::Scene *		 _scene		   = nullptr;
 		Renderer::BaseRenderer * _renderer	   = nullptr;
 		Renderer::GL *			 _rendererGL   = nullptr;
-		Renderer::RayTracer *	 _rendererRT   = nullptr;
+#ifdef CUDA_DEFINED
+		Renderer::RayTracer * _rendererRT = nullptr;
+#endif
 #ifdef OPTIX_DEFINED
 		Renderer::Optix::OptixRayTracer * _rendererOptix = nullptr;
 #endif
