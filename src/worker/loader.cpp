@@ -175,7 +175,7 @@ namespace VTX
 			Path extension = p_path.extension();
 
 			if ( extension == ".pdb" || extension == ".mmtf" || extension == ".cif" || extension == ".arc"
-				 || extension == ".xyz" || extension == ".dcd" )
+				 || extension == ".xyz" || extension == ".dcd" || extension == ".mol2" )
 			{
 				return MODE::MOLECULE;
 			}
