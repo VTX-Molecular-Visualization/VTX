@@ -34,7 +34,7 @@ namespace VTX
 		}
 
 		const std::string Residue::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {
-			"---", // UNKWNON
+			"---", // UNKNOWN
 			"ALA", // ALA
 			"ARG", // ARG
 			"ASN", // ASN
@@ -64,7 +64,7 @@ namespace VTX
 		};
 
 		const std::string Residue::SYMBOL_SHORT_STR[ (int)SYMBOL::COUNT ] = {
-			"-", // UNKWNON
+			"-", // UNKNOWN
 			"A", // ALA
 			"R", // ARG
 			"N", // ASN
@@ -94,7 +94,7 @@ namespace VTX
 		};
 
 		const std::string Residue::SYMBOL_NAME[ (int)SYMBOL::COUNT ] = {
-			"Unknown",				// UNKWNON
+			"Unknown",				// UNKNOWN
 			"Alanine",				// ALA
 			"Arginine",				// ARG
 			"Asparagine",			// ASN
@@ -125,7 +125,7 @@ namespace VTX
 
 		// http://jmol.sourceforge.net/jscolors/#Jmolcolors : Protein "amino" colors
 		const Color::Rgb Residue::SYMBOL_COLOR[ (int)SYMBOL::COUNT ] = {
-			{ 190, 160, 110 }, // UNKWNON
+			{ 190, 160, 110 }, // UNKNOWN
 			{ 200, 200, 200 }, // ALA
 			{ 20, 90, 255 },   // ARG
 			{ 0, 220, 220 },   // ASN

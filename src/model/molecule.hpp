@@ -146,8 +146,11 @@ namespace VTX
 			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
 			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
-			void										   init();
-			void										   setColorMode();
+			void init();
+
+			inline const Generic::COLOR_MODE			   getColorMode() const { return _colorMode; }
+			void										   refreshColors();
+			void										   setColorMode( const Generic::COLOR_MODE );
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
 			inline uint									   getFrame() const { return _currentFrame; }
@@ -207,6 +210,10 @@ namespace VTX
 			std::vector<AtomPositionsFrame> _atomPositionsFrames		= std::vector<AtomPositionsFrame>();
 			uint							_indexFirstBondExtraResidue = 0;
 
+			// Options.
+			Generic::COLOR_MODE _colorMode = Generic::COLOR_MODE::INHERITED;
+
+			// Missing symbols.
 			std::unordered_set<std::string> _unknownResidueSymbol = std::unordered_set<std::string>();
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 

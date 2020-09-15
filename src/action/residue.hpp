@@ -27,7 +27,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_residue.setColor( _color );
-					_residue.getMoleculePtr()->setColorMode();
+					_residue.getMoleculePtr()->refreshColors();
 				}
 
 			  private:

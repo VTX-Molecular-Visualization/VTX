@@ -47,7 +47,7 @@ namespace VTX
 					phi[ residueCount - 1 ] = PI_2f;
 					psi[ residueCount - 1 ] = PI_2f;
 
-					for ( uint residueIdx = 1; residueIdx < -1; ++residueIdx )
+					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 					{
 						const Model::Residue & residue0 = p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
 						const Model::Residue & residue1 = p_molecule.getResidue( idxFirstResidue + residueIdx );
@@ -76,6 +76,101 @@ namespace VTX
 						psi[ residueIdx ]
 							= Util::Math::torsionalAngle( positionN1, positionCA1, positionC1, positionN2 );
 					}
+
+					/*
+					uint firstHelixIdx	= 0u;
+					uint RHelixCount	= 0u;
+					uint LHelixCount	= 0u;
+					uint firstStrandIdx = 0u;
+					uint strandCount	= 0u;
+
+					for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
+					{
+						// Right-handed helix
+						if ( ( Util::Math::distance( Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
+													 Vec2f( -PIf / 3.f, -PIf / 4.f ) )
+							   < ( PIf / 6.f ) )
+							 && ( residueIdx < residueCount - 1 ) )
+						{
+							if ( RHelixCount == 0 )
+							{
+								firstHelixIdx = residueIdx;
+							}
+							RHelixCount++;
+						}
+						else
+						{
+							if ( 3 <= RHelixCount )
+							{
+								for ( uint k = firstHelixIdx; k < residueIdx; k++ )
+								{
+									Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + k );
+									residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+									residue.setHandedness( Model::Residue::HANDEDNESS::RIGHT );
+								}
+							}
+							RHelixCount = 0;
+						}
+
+						// Left-handed helix
+						if ( ( Util::Math::distance( Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
+													 Vec2f( PIf / 3.f, PIf / 4.f ) )
+							   < ( PIf / 6.f ) )
+							 && ( residueIdx < residueCount - 1 ) )
+						{
+							if ( LHelixCount == 0 )
+							{
+								firstHelixIdx = residueIdx;
+							}
+							LHelixCount++;
+						}
+						else
+						{
+							if ( 3 <= LHelixCount )
+							{
+								for ( uint k = firstHelixIdx; k < residueIdx; k++ )
+								{
+									Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + k );
+									residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
+									residue.setHandedness( Model::Residue::HANDEDNESS::LEFT );
+								}
+							}
+							LHelixCount = 0;
+						}
+
+						// Strand
+						if ( ( Util::Math::distance(
+								   Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
+								   Vec2f( -Util::Math::radians( 110.f ), Util::Math::radians( 130.f ) ) )
+							   < ( PIf / 6.f ) )
+							 && ( residueIdx < residueCount - 1 ) )
+						{
+							if ( strandCount == 0 )
+							{
+								firstStrandIdx = residueIdx;
+							}
+							strandCount++;
+						}
+						else
+						{
+							if ( 2 <= strandCount )
+							{
+								for ( uint k = firstStrandIdx; k < residueIdx; k++ )
+								{
+									Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + k );
+									residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
+									residue.setHandedness( Model::Residue::HANDEDNESS::RIGHT );
+								}
+							}
+							strandCount = 0;
+						}
+
+						// ????
+						// Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + residueIdx );
+						// residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::COIL );
+						// residue.setHandedness( Model::Residue::HANDEDNESS::RIGHT );
+					}
+					*/
 				}
 			}
 

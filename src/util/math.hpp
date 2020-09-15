@@ -351,23 +351,26 @@ namespace VTX
 			}
 
 			template<typename T>
-			static float torsionalAngle( const T & p_at0, const T & p_at1, const T & p_at2, const T & p_at3 )
+			static float torsionalAngle( const T & p_point0,
+										 const T & p_point1,
+										 const T & p_point2,
+										 const T & p_point3 )
 			{
-				const Vec3f r01 = p_at0 - p_at1;
-				const Vec3f r32 = p_at3 - p_at2;
-				const Vec3f r12 = p_at1 - p_at2;
+				const Vec3f v01 = p_point0 - p_point1;
+				const Vec3f v32 = p_point3 - p_point2;
+				const Vec3f v12 = p_point1 - p_point2;
 
-				const Vec3f p = cross( r12, r01 );
-				const Vec3f q = cross( r12, r32 );
-				const Vec3f r = cross( r12, q );
+				const Vec3f p = cross( v12, v01 );
+				const Vec3f q = cross( v12, v32 );
+				const Vec3f r = cross( v12, q );
 
 				float u = dot( q, q );
 				float v = dot( r, r );
 
-				float a;
+				float angle;
 				if ( u <= 0.f || v <= 0.f )
 				{
-					a = TWO_PIf;
+					angle = TWO_PIf;
 				}
 				else
 				{
@@ -379,14 +382,14 @@ namespace VTX
 
 					if ( std::abs( u ) > 0.01f || std::abs( v ) > 0.01f )
 					{
-						a = std::atan2( v, u );
+						angle = std::atan2( v, u );
 					}
 					else
 					{
-						a = TWO_PIf;
+						angle = TWO_PIf;
 					}
 				}
-				return a;
+				return angle;
 			}
 
 			inline Vec3f linearComb( const float   p_scalar0,

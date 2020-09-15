@@ -202,6 +202,7 @@ namespace VTX
 					{
 						std::string secondaryStructure
 							= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
+						// VTX_DEBUG( secondaryStructure );
 						if ( secondaryStructure != "" )
 						{
 							if ( secondaryStructure == "extended" )
@@ -216,25 +217,54 @@ namespace VTX
 							{
 								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
 							}
-							else if ( secondaryStructure == "alpha helix" )
+							else if ( secondaryStructure == "right-handed alpha helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_ALPHA );
+								modelResidue->setSecondaryStructure(
+									Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT );
 							}
-							else if ( secondaryStructure == "omega helix" )
+							else if ( secondaryStructure == "left-handed alpha helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_ALPHA );
+								modelResidue->setSecondaryStructure(
+									Model::SecondaryStructure::VALUE::HELIX_ALPHA_LEFT );
 							}
-							else if ( secondaryStructure == "gamma helix" )
+							else if ( secondaryStructure == "right-handed 3-10 helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_ALPHA );
+								modelResidue->setSecondaryStructure(
+									Model::SecondaryStructure::VALUE::HELIX_3_10_RIGHT );
+							}
+							else if ( secondaryStructure == "left-handed 3-10 helix" )
+							{
+								modelResidue->setSecondaryStructure(
+									Model::SecondaryStructure::VALUE::HELIX_3_10_LEFT );
 							}
 							else if ( secondaryStructure == "pi helix" )
 							{
 								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_PI );
 							}
-							else if ( secondaryStructure == "3-10 helix" )
+							else if ( secondaryStructure == "right-handed omega helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_3_10 );
+								// ?
+							}
+							else if ( secondaryStructure == "left-handed omega helix" )
+							{
+								// ?
+							}
+							else if ( secondaryStructure == "right-handed gamma helix" )
+							{
+								// ?
+							}
+							else if ( secondaryStructure == "left-handed gamma helix" )
+							{
+								// ?
+							}
+
+							else if ( secondaryStructure == "2 - 7 ribbon / helix" )
+							{
+								// ?
+							}
+							else if ( secondaryStructure == "polyproline" )
+							{
+								// ?
 							}
 
 							if ( config.isSecondaryStructureLoadedFromFile == false )

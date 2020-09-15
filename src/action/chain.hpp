@@ -27,7 +27,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_chain.setColor( _color );
-					_chain.getMoleculePtr()->setColorMode();
+					_chain.getMoleculePtr()->refreshColors();
 				}
 
 			  private:

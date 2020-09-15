@@ -18,7 +18,8 @@ namespace VTX
 			RESIDUE,
 			CHAIN,
 			PROTEIN,
-			COUNT
+			COUNT,
+			INHERITED
 		};
 
 		class BaseColorable

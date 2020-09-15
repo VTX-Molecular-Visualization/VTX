@@ -19,7 +19,8 @@ mat4 bsplineMat = mat4( -1.f, 3.f, -3.f, 1.f, 3.f, -6.f, 3.f, 0.f, -3.f, 0.f, 3.
 
 vec3 evaluateBSpline( mat4x3 p_bspline, float p_offset )
 {
-	return ( 1.f / 6.f ) * p_bspline * bsplineMat * vec4( pow( p_offset, 3 ), pow( p_offset, 2 ), p_offset, 1.f );
+	return ( 1.f / 6.f ) * p_bspline * bsplineMat
+		   * vec4( p_offset * p_offset * p_offset, p_offset * p_offset, p_offset, 1.f );
 }
 
 void main()
@@ -28,34 +29,31 @@ void main()
 	vec3   direction  = mix( vDirectionTC[ 1 ], vDirectionTC[ 2 ], gl_TessCoord.x );
 	vec3   normaleCA1 = cross( vPositionTC[ 1 ] - vPositionTC[ 0 ], vDirectionTC[ 1 ] );
 	vec3   normaleCA2 = cross( vPositionTC[ 2 ] - vPositionTC[ 1 ], vDirectionTC[ 2 ] );
-	vec3   normale	  = normalize( mix( normaleCA1, normaleCA2, gl_TessCoord.x ) );
+	vec3   normale	  = -normalize( mix( normaleCA1, normaleCA2, gl_TessCoord.x ) );
 
 	vec3 vertex = evaluateBSpline( bspline, gl_TessCoord.x );
 
 	uint  currentSS = vSecondaryStructureTC[ 1 ];
 	float factor	= 1.f;
 
-	/*
-	// A_HELIX_LEFT || A_HELIX_RIGHT
-	if ( currentSS == 0 || currentSS == 1 )
+	// HELIX
+	if ( currentSS == 0 || currentSS == 1 || currentSS == 2 )
 	{
 		factor = 2.f;
 	}
-	// B_SHEET
-	else if ( currentSS == 2 )
+	// STRAND
+	else if ( currentSS == 3 )
 	{
-		factor = 2.f;
+		factor = 8.f;
 	}
-	// TURN
-	// COIL
+	// TURN AND COIL
 	else
-	{ 
+	{
 		factor = 0.5f;
 	}
-	*/
 
-	vertex += direction * gl_TessCoord.y;
-	//vertex += normale ;//* cos( radians( gl_TessCoord.y * 90.f ) ) ;
+	vertex += direction * gl_TessCoord.y * factor;
+	// vertex += normale ;//* cos( radians( gl_TessCoord.y * 90.f ) ) ;
 
 	vViewPositionTE = vec3( uMVMatrix * vec4( vertex, 1.f ) );
 	vNormaleTE		= normale;

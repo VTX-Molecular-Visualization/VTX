@@ -18,8 +18,10 @@ namespace VTX
 		  public:
 			enum class VALUE : int
 			{
-				HELIX_ALPHA,
-				HELIX_3_10,
+				HELIX_ALPHA_RIGHT,
+				HELIX_ALPHA_LEFT,
+				HELIX_3_10_RIGHT,
+				HELIX_3_10_LEFT,
 				HELIX_PI,
 				STRAND,
 				TURN,
@@ -60,12 +62,12 @@ namespace VTX
 				CONTROL_POINT_DIRECTION			  = 1,
 				CONTROL_POINT_SECONDARY_STRUCTURE = 2,
 				CONTROL_POINT_COLOR				  = 3,
-				CONTROL_POINT_VISIBILITY		  = 4,
 			};
 			enum class COLOR_MODE : int
 			{
 				JMOL,
-				CHAIN
+				CHAIN,
+				MOLECULE
 			};
 
 			Model::Molecule * const _molecule;
@@ -84,7 +86,6 @@ namespace VTX
 			GLuint _vboDirections		   = GL_INVALID_VALUE;
 			GLuint _vboSecondaryStructures = GL_INVALID_VALUE;
 			GLuint _vboColors			   = GL_INVALID_VALUE;
-			GLuint _vboVisibilities		   = GL_INVALID_VALUE;
 			GLuint _ibo					   = GL_INVALID_VALUE;
 			GLuint _vao					   = GL_INVALID_VALUE;
 

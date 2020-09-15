@@ -102,7 +102,13 @@ namespace VTX
 			}
 		}
 
-		void Molecule::setColorMode() { _fillBufferAtomColors(); }
+		void Molecule::refreshColors() { _fillBufferAtomColors(); }
+
+		void Molecule::setColorMode( const Generic::COLOR_MODE p_colorMode )
+		{
+			_colorMode = p_colorMode;
+			refreshColors();
+		}
 
 		void Molecule::setFrame( const uint p_frameIdx )
 		{

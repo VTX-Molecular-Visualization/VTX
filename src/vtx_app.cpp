@@ -81,7 +81,6 @@ namespace VTX
 		_ui = new UI::UserInterface();
 
 		_scene = new Object3D::Scene();
-
 		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
 
 		switchRenderer( Setting::MODE_DEFAULT );
@@ -90,20 +89,15 @@ namespace VTX
 		_stateMachine->goToState( ID::State::VISUALIZATION );
 
 		VTX_ACTION( new Action::Setting::Load() );
-		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4f8h.pdb" ) ) );
 
 		VTXApp::_isRunning = true;
 
 		VTX_INFO( "Application started" );
 		_ui->print();
 
-#define AUTO_OPEN
+//#define AUTO_OPEN
 #ifdef AUTO_OPEN
-		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "r2d2_2.obj" ) ) );
-		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "4v6x.mmtf" ) ) );
-		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr("6vsb.mmtf" ) ) );
-		// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
-		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "3jb9.pdb" ) ) );
+		VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4f8h.pdb" ) ) );
 #endif
 
 //#define RT_ENABLED

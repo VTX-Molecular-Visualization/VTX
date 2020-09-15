@@ -28,7 +28,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_molecule.setColor( _color );
-					_molecule.setColorMode();
+					_molecule.refreshColors();
 				}
 
 			  private:

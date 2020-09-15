@@ -9,8 +9,14 @@ namespace VTX
 	namespace Model
 	{
 		const Color::Rgb SecondaryStructure::SECONDARY_STRUCTURE_COLORS_JMOL[ uint( VALUE::COUNT ) ]
-			= { Color::Rgb( 1.f, 0.f, 0.5f ),  Color::Rgb( 0.62f, 0.f, 0.5f ), Color::Rgb( 0.37f, 0.f, 0.5f ),
-				Color::Rgb( 1.f, 0.78f, 0.f ), Color::Rgb( 0.37f, 0.5f, 1.f ), Color::Rgb::WHITE };
+			= { Color::Rgb( 1.f, 0.f, 0.5f ),	// HELIX_ALPHA_RIGHT
+				Color::Rgb( 1.f, 0.f, 0.5f ),	// HELIX_ALPHA_LEFT
+				Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
+				Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_LEFT
+				Color::Rgb( 0.37f, 0.f, 0.5f ), // HELIX_PI
+				Color::Rgb( 1.f, 0.78f, 0.f ),	// STRAND
+				Color::Rgb( 0.37f, 0.5f, 1.f ), // TURN
+				Color::Rgb::WHITE };
 
 		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) : _molecule( p_molecule )
 		{
@@ -138,8 +144,6 @@ namespace VTX
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
 			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 			glBindVertexArray( 0 );
 
@@ -151,8 +155,6 @@ namespace VTX
 				glDeleteBuffers( 1, &_vboSecondaryStructures );
 			if ( _vboColors != GL_INVALID_VALUE )
 				glDeleteBuffers( 1, &_vboColors );
-			if ( _vboVisibilities != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboVisibilities );
 			if ( _ibo != GL_INVALID_VALUE )
 				glDeleteBuffers( 1, &_ibo );
 			if ( _vao != GL_INVALID_VALUE )
@@ -191,14 +193,6 @@ namespace VTX
 			glBufferData( GL_ARRAY_BUFFER,
 						  _controlPointColors.size() * sizeof( Color::Rgb ),
 						  _controlPointColors.data(),
-						  GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glGenBuffers( 1, &_vboVisibilities );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
-			glBufferData( GL_ARRAY_BUFFER,
-						  _controlPointVisibilities.size() * sizeof( uint ),
-						  _controlPointVisibilities.data(),
 						  GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
@@ -241,12 +235,6 @@ namespace VTX
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
 			glVertexAttribPointer(
 				ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY );
-			glVertexAttribPointer(
-				ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
