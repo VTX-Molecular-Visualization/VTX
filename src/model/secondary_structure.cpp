@@ -140,30 +140,33 @@ namespace VTX
 
 		SecondaryStructure::~SecondaryStructure()
 		{
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glBindVertexArray( 0 );
-
-			if ( _vboPositions != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboPositions );
-			if ( _vboDirections != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboDirections );
-			if ( _vboSecondaryStructures != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboSecondaryStructures );
-			if ( _vboColors != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboColors );
-			if ( _ibo != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_ibo );
 			if ( _vao != GL_INVALID_VALUE )
+			{
+				glBindVertexArray( _vao );
+				glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
+				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
+				glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
+				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
+				glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
+				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
+				glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
+				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
+				glBindBuffer( GL_ARRAY_BUFFER, 0 );
+				glBindVertexArray( 0 );
+
+				if ( _vboPositions != GL_INVALID_VALUE )
+					glDeleteBuffers( 1, &_vboPositions );
+				if ( _vboDirections != GL_INVALID_VALUE )
+					glDeleteBuffers( 1, &_vboDirections );
+				if ( _vboSecondaryStructures != GL_INVALID_VALUE )
+					glDeleteBuffers( 1, &_vboSecondaryStructures );
+				if ( _vboColors != GL_INVALID_VALUE )
+					glDeleteBuffers( 1, &_vboColors );
+				if ( _ibo != GL_INVALID_VALUE )
+					glDeleteBuffers( 1, &_ibo );
+
 				glDeleteVertexArrays( 1, &_vao );
+			}
 		}
 
 		void SecondaryStructure::init()

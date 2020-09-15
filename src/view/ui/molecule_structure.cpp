@@ -36,7 +36,6 @@ namespace VTX
 					{
 						VTX_ACTION( new Action::Selectable::SetSelected( *_model, false ) );
 					}
-
 					else
 					{
 						VTX_ACTION( new Action::Selectable::SetSelected( *_model, true ) );

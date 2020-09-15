@@ -10,30 +10,33 @@ namespace VTX
 
 		MeshTriangle::~MeshTriangle()
 		{
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_POSITION );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboNormals );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_NORMAL );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_COLOR );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glBindVertexArray( 0 );
-
-			if ( _vboPositions != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboPositions );
-			if ( _vboNormals != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboNormals );
-			if ( _vboColors != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboColors );
-			if ( _vboVisibilities != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboVisibilities );
-			if ( _ibo != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_ibo );
 			if ( _vao != GL_INVALID_VALUE )
+			{
+				glBindVertexArray( _vao );
+				glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
+				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_POSITION );
+				glBindBuffer( GL_ARRAY_BUFFER, _vboNormals );
+				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_NORMAL );
+				glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
+				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_COLOR );
+				glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
+				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
+				glBindBuffer( GL_ARRAY_BUFFER, 0 );
+				glBindVertexArray( 0 );
+
+				if ( _vboPositions != GL_INVALID_VALUE )
+					glDeleteBuffers( 1, &_vboPositions );
+				if ( _vboNormals != GL_INVALID_VALUE )
+					glDeleteBuffers( 1, &_vboNormals );
+				if ( _vboColors != GL_INVALID_VALUE )
+					glDeleteBuffers( 1, &_vboColors );
+				if ( _vboVisibilities != GL_INVALID_VALUE )
+					glDeleteBuffers( 1, &_vboVisibilities );
+				if ( _ibo != GL_INVALID_VALUE )
+					glDeleteBuffers( 1, &_ibo );
+
 				glDeleteVertexArrays( 1, &_vao );
+			}
 		}
 
 		void MeshTriangle::init()
