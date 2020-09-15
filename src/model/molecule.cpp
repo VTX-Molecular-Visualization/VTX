@@ -161,9 +161,15 @@ namespace VTX
 		{
 			_bufferAtomColors.resize( _atoms.size() );
 
+			Generic::COLOR_MODE colorMode = _colorMode;
+			if ( colorMode == Generic::COLOR_MODE::INHERITED )
+			{
+				colorMode = VTX_SETTING().colorMode;
+			}
+
 			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 			{
-				switch ( VTX_SETTING().colorMode )
+				switch ( colorMode )
 				{
 				case Generic::COLOR_MODE::ATOM:
 					if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )

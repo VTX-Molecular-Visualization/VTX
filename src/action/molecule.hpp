@@ -17,6 +17,21 @@ namespace VTX
 	{
 		namespace Molecule
 		{
+			class ChangeColorMode : public BaseAction
+			{
+			  public:
+				explicit ChangeColorMode( Model::Molecule & p_molecule, const Generic::COLOR_MODE p_colorMode ) :
+					_molecule( p_molecule ), _colorMode( p_colorMode )
+				{
+				}
+
+				virtual void execute() override { _molecule.setColorMode( _colorMode ); }
+
+			  private:
+				Model::Molecule &		  _molecule;
+				const Generic::COLOR_MODE _colorMode;
+			};
+
 			class ChangeColor : public BaseAction
 			{
 			  public:

@@ -173,6 +173,7 @@ namespace VTX
 			{ "Enum.ColorMode.Residue", "Residue" },
 			{ "Enum.ColorMode.Chain", "Chain" },
 			{ "Enum.ColorMode.Protein", "Protein" },
+			{ "Enum.ColorMode.Inherited", "Inherited" },
 
 			{ "Enum.Shading.Diffuse", "Diffuse" },
 			{ "Enum.Shading.Glossy", "Glossy" },

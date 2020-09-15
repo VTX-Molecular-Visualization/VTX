@@ -112,6 +112,20 @@ namespace VTX
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Options" ) ) )
 					{
+						// Color mode.
+						const char * modes[]   = { LOCALE( "Enum.ColorMode.Atom" ),
+												   LOCALE( "Enum.ColorMode.Residue" ),
+												   LOCALE( "Enum.ColorMode.Chain" ),
+												   LOCALE( "Enum.ColorMode.Protein" ),
+												   LOCALE( "Enum.ColorMode.Inherited" ) };
+						int			 colorMode = (int)_model->getColorMode();
+						if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ), &colorMode, modes, 5 ) )
+						{
+							VTX_ACTION(
+								new Action::Molecule::ChangeColorMode( *_model, (Generic::COLOR_MODE)colorMode ) );
+						}
+
+						// Molecule color.
 						Color::Rgb color = _model->getColor();
 						if ( ImGui::ColorEdit3( LOCALE( "View.Color" ), (float *)&color ) )
 						{
