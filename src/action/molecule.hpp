@@ -156,7 +156,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					Util::SecondaryStructure::computeSecondaryStructure( _molecule );
-					// TODO: update SS VBO.
+					_molecule.createSecondaryStructure();
 				}
 
 			  private:

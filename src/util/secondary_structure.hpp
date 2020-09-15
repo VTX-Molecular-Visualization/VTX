@@ -18,7 +18,6 @@ namespace VTX
 		{
 			static void computeStride( Model::Molecule & p_molecule )
 			{
-				return;
 				const Model::Molecule::AtomPositionsFrame & positions
 					= p_molecule.getAtomPositionFrame( p_molecule.getFrame() );
 
@@ -47,11 +46,18 @@ namespace VTX
 					phi[ residueCount - 1 ] = PI_2f;
 					psi[ residueCount - 1 ] = PI_2f;
 
+					p_molecule.getResidue( idxFirstResidue )
+						.setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
+					p_molecule.getResidue( idxFirstResidue + residueCount - 1 )
+						.setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
+
 					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 					{
 						const Model::Residue & residue0 = p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
-						const Model::Residue & residue1 = p_molecule.getResidue( idxFirstResidue + residueIdx );
+						Model::Residue &	   residue1 = p_molecule.getResidue( idxFirstResidue + residueIdx );
 						const Model::Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
+
+						residue1.setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
 
 						const Model::Atom * C0	= residue0.findFirstAtomByName( "C" );
 						const Model::Atom * N1	= residue1.findFirstAtomByName( "N" );
@@ -61,7 +67,7 @@ namespace VTX
 
 						if ( C0 == nullptr || N1 == nullptr || CA1 == nullptr || C1 == nullptr || N2 == nullptr )
 						{
-							VTX_DEBUG( "Failed to get atoms in chain: " + chain.getName() );
+							// VTX_DEBUG( "Failed to get atoms in chain: " + chain.getName() );
 							continue;
 						}
 
@@ -77,7 +83,6 @@ namespace VTX
 							= Util::Math::torsionalAngle( positionN1, positionCA1, positionC1, positionN2 );
 					}
 
-					/*
 					uint firstHelixIdx	= 0u;
 					uint RHelixCount	= 0u;
 					uint LHelixCount	= 0u;
@@ -105,8 +110,8 @@ namespace VTX
 								for ( uint k = firstHelixIdx; k < residueIdx; k++ )
 								{
 									Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + k );
-									residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
-									residue.setHandedness( Model::Residue::HANDEDNESS::RIGHT );
+									residue.setSecondaryStructure(
+										Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT );
 								}
 							}
 							RHelixCount = 0;
@@ -131,8 +136,7 @@ namespace VTX
 								for ( uint k = firstHelixIdx; k < residueIdx; k++ )
 								{
 									Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + k );
-									residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::HELIX );
-									residue.setHandedness( Model::Residue::HANDEDNESS::LEFT );
+									residue.setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_ALPHA_LEFT );
 								}
 							}
 							LHelixCount = 0;
@@ -158,19 +162,31 @@ namespace VTX
 								for ( uint k = firstStrandIdx; k < residueIdx; k++ )
 								{
 									Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + k );
-									residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::STRAND );
-									residue.setHandedness( Model::Residue::HANDEDNESS::RIGHT );
+									residue.setSecondaryStructure( Model::SecondaryStructure::VALUE::STRAND );
 								}
 							}
 							strandCount = 0;
 						}
-
-						// ????
-						// Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + residueIdx );
-						// residue.setSecondaryStructure( Model::Residue::SECONDARY_STRUCTURE::COIL );
-						// residue.setHandedness( Model::Residue::HANDEDNESS::RIGHT );
 					}
-					*/
+
+					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
+					{
+						Model::Residue & residue0 = p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
+						Model::Residue & residue  = p_molecule.getResidue( idxFirstResidue + residueIdx );
+						Model::Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
+
+						if ( ( residue0.getSecondaryStructure() == residue2.getSecondaryStructure() )
+							 && ( ( residue0.getSecondaryStructure()
+									== Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT )
+								  || ( residue0.getSecondaryStructure()
+									   == Model::SecondaryStructure::VALUE::HELIX_ALPHA_LEFT )
+								  || ( residue0.getSecondaryStructure()
+									   == Model::SecondaryStructure::VALUE::STRAND ) ) )
+
+						{
+							residue.setSecondaryStructure( residue0.getSecondaryStructure() );
+						}
+					}
 				}
 			}
 
@@ -178,7 +194,7 @@ namespace VTX
 			{
 				Tool::Chrono chrono;
 				chrono.start();
-				VTX_DEBUG( "Computing secondary structure..." );
+				VTX_INFO( "Computing secondary structure..." );
 
 				switch ( p_molecule.getSecondaryStructureAlgo() )
 				{
@@ -186,8 +202,9 @@ namespace VTX
 				default: VTX_WARNING( "Secondary structure algorithm not implemented yet" ); break;
 				}
 
+				p_molecule.getConfiguration().isSecondaryStructureLoadedFromFile = false;
 				chrono.stop();
-				VTX_DEBUG( "Secondary structure computed in " + std::to_string( chrono.elapsedTime() ) + "s" );
+				VTX_INFO( "Secondary structure computed in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
 		} // namespace SecondaryStructure
