@@ -22,7 +22,7 @@ namespace VTX
 				break;
 			case SDL_SCANCODE_F3:
 				VTX_ACTION( new Action::Setting::ChangeColorMode(
-					Generic::COLOR_MODE( ( (uint)VTX_SETTING().colorMode + 1 ) % (uint)Generic::COLOR_MODE::COUNT ) ) );
+					Generic::COLOR_MODE( ( (uint)VTX_SETTING().colorMode + 1 ) % 4 ) ) );
 				break;
 			case SDL_SCANCODE_F4:
 				VTX_ACTION( new Action::Setting::ChangeShading(

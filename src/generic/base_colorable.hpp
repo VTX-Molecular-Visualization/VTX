@@ -18,7 +18,6 @@ namespace VTX
 			RESIDUE,
 			CHAIN,
 			PROTEIN,
-			COUNT,
 			INHERITED
 		};
 

@@ -95,9 +95,14 @@ namespace VTX
 						_controlPointColors.emplace_back(
 							SECONDARY_STRUCTURE_COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
 						break;
+
+					case COLOR_MODE::PROTEIN:
+						_controlPointColors.emplace_back( residue.getMoleculePtr()->getColor() );
+						break;
 					case COLOR_MODE::CHAIN:
 						_controlPointColors.emplace_back( residue.getChainPtr()->getColor() );
 						break;
+					case COLOR_MODE::RESIDUE: _controlPointColors.emplace_back( residue.getColor() ); break;
 					default: _controlPointColors.emplace_back( Color::Rgb::WHITE ); break;
 					}
 				}
@@ -310,6 +315,55 @@ namespace VTX
 				_vboPositions, 0, sizeof( Vec3f ) * _controlPointPositions.size(), _controlPointPositions.data() );
 			glNamedBufferSubData(
 				_vboDirections, 0, sizeof( Vec3f ) * _controlPointDirections.size(), _controlPointDirections.data() );
+		}
+
+		void SecondaryStructure::_fillBufferColors()
+		{
+			_controlPointColors.clear();
+
+			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
+			{
+				const Chain & chain		   = _molecule->getChain( chainIdx );
+				uint		  residueCount = chain.getResidueCount();
+
+				if ( residueCount < 4 )
+				{
+					continue;
+				}
+
+				uint idxFirstResidue = chain.getIndexFirstResidue();
+				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
+				{
+					const Residue &			  residue = _molecule->getResidue( idxFirstResidue + residueIdx );
+					const Model::Atom * const CA	  = residue.findFirstAtomByName( "CA" );
+					const Model::Atom * const O		  = residue.findFirstAtomByName( "O" );
+
+					if ( CA == nullptr || O == nullptr )
+					{
+						continue;
+					}
+
+					switch ( _colorMode )
+					{
+					case COLOR_MODE::JMOL:
+						_controlPointColors.emplace_back(
+							SECONDARY_STRUCTURE_COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
+						break;
+
+					case COLOR_MODE::PROTEIN:
+						_controlPointColors.emplace_back( residue.getMoleculePtr()->getColor() );
+						break;
+					case COLOR_MODE::CHAIN:
+						_controlPointColors.emplace_back( residue.getChainPtr()->getColor() );
+						break;
+					case COLOR_MODE::RESIDUE: _controlPointColors.emplace_back( residue.getColor() ); break;
+					default: _controlPointColors.emplace_back( Color::Rgb::WHITE ); break;
+					}
+				}
+			}
+
+			glNamedBufferSubData(
+				_vboColors, 0, sizeof( Color::Rgb ) * _controlPointColors.size(), _controlPointColors.data() );
 		}
 
 		void SecondaryStructure::_flipTest( Vec3f & p_direction, Vec3f & p_directionLast ) const

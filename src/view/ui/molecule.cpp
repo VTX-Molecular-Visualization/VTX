@@ -112,14 +112,14 @@ namespace VTX
 					}
 					if ( ImGui::CollapsingHeader( LOCALE( "View.Options" ) ) )
 					{
-						// Color mode.
+						// Molecule color mode.
 						const char * modes[]   = { LOCALE( "Enum.ColorMode.Atom" ),
 												   LOCALE( "Enum.ColorMode.Residue" ),
 												   LOCALE( "Enum.ColorMode.Chain" ),
 												   LOCALE( "Enum.ColorMode.Protein" ),
 												   LOCALE( "Enum.ColorMode.Inherited" ) };
 						int			 colorMode = (int)_model->getColorMode();
-						if ( ImGui::Combo( LOCALE( "MainMenu.Settings.ColorMode" ), &colorMode, modes, 5 ) )
+						if ( ImGui::Combo( LOCALE( "View.Molecule.ColorMode" ), &colorMode, modes, 5 ) )
 						{
 							VTX_ACTION(
 								new Action::Molecule::ChangeColorMode( *_model, (Generic::COLOR_MODE)colorMode ) );
@@ -133,6 +133,20 @@ namespace VTX
 							// VTX_ACTION( new Action::Molecule::ChangeColorMode( View::MOLECULE_COLOR_MODE::PROTEIN )
 							// );
 						}
+
+						// Secondary structure color mode.
+						const char * modesSS[]	 = { LOCALE( "Enum.ColorMode.SS.JMol" ),
+													 LOCALE( "Enum.ColorMode.SS.Protein" ),
+													 LOCALE( "Enum.ColorMode.SS.Chain" ),
+													 LOCALE( "Enum.ColorMode.SS.Residue" ) };
+						int			 colorModeSS = (int)_model->getSecondaryStructure().getColorMode();
+						if ( ImGui::Combo( LOCALE( "View.Molecule.SSColorMode" ), &colorModeSS, modesSS, 4 ) )
+						{
+							VTX_ACTION( new Action::Molecule::ChangeColorModeSecondaryStructure(
+								*_model, (Model::SecondaryStructure::COLOR_MODE)colorModeSS ) );
+						}
+
+						// Solvents.
 						if ( config.solventAtomIds.size() > 0 || config.solventResidueSymbols.size() > 0 )
 						{
 							bool showSolvent = _model->showSolvent();

@@ -138,6 +138,8 @@ namespace VTX
 			{ "View.Transform.Scale", "Scale" },
 			{ "View.Molecule.Dynamic", "Dynamic" },
 			{ "View.Molecule.Solvent", "Solvent" },
+			{ "View.Molecule.ColorMode", "Color mode" },
+			{ "View.Molecule.SSColorMode", "SS Color mode" },
 			{ "View.Molecule.Ion", "Ion" },
 			{ "View.Actions", "Actions" },
 			{ "View.Visible", "Visible" },
@@ -174,6 +176,11 @@ namespace VTX
 			{ "Enum.ColorMode.Chain", "Chain" },
 			{ "Enum.ColorMode.Protein", "Protein" },
 			{ "Enum.ColorMode.Inherited", "Inherited" },
+
+			{ "Enum.ColorMode.SS.JMol", "JMol" },
+			{ "Enum.ColorMode.SS.Chain", "Chain" },
+			{ "Enum.ColorMode.SS.Residue", "Residue" },
+			{ "Enum.ColorMode.SS.Protein", "Protein" },
 
 			{ "Enum.Shading.Diffuse", "Diffuse" },
 			{ "Enum.Shading.Glossy", "Glossy" },

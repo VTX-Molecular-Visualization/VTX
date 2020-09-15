@@ -148,9 +148,13 @@ namespace VTX
 
 			void init();
 
-			inline const Generic::COLOR_MODE			   getColorMode() const { return _colorMode; }
-			void										   refreshColors();
-			void										   setColorMode( const Generic::COLOR_MODE );
+			inline const Generic::COLOR_MODE getColorMode() const { return _colorMode; }
+			inline void						 setColorMode( const Generic::COLOR_MODE p_colorMode )
+			{
+				_colorMode = p_colorMode;
+				refreshColors();
+			}
+			inline void									   refreshColors() { _fillBufferAtomColors(); }
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
 			inline uint									   getFrame() const { return _currentFrame; }

@@ -28,7 +28,14 @@ namespace VTX
 				COIL,
 				COUNT
 			};
+			enum class COLOR_MODE : int
+			{
+				JMOL,
+				PROTEIN,
+				CHAIN,
+				RESIDUE
 
+			};
 			enum class ALGO : int
 			{
 				STRIDE
@@ -40,6 +47,13 @@ namespace VTX
 			~SecondaryStructure();
 
 			inline Model::Molecule * const getMolecule() { return _molecule; }
+			inline const COLOR_MODE		   getColorMode() const { return _colorMode; }
+			inline void					   setColorMode( const COLOR_MODE p_colorMode )
+			{
+				_colorMode = p_colorMode;
+				refreshColors();
+			}
+			inline void refreshColors() { _fillBufferColors(); }
 
 			void init();
 			void bindBuffers() override;
@@ -63,12 +77,6 @@ namespace VTX
 				CONTROL_POINT_SECONDARY_STRUCTURE = 2,
 				CONTROL_POINT_COLOR				  = 3,
 			};
-			enum class COLOR_MODE : int
-			{
-				JMOL,
-				CHAIN,
-				MOLECULE
-			};
 
 			Model::Molecule * const _molecule;
 			COLOR_MODE				_colorMode = COLOR_MODE::JMOL;
@@ -89,6 +97,7 @@ namespace VTX
 			GLuint _ibo					   = GL_INVALID_VALUE;
 			GLuint _vao					   = GL_INVALID_VALUE;
 
+			void _fillBufferColors();
 			void _flipTest( Vec3f &, Vec3f & ) const;
 		};
 

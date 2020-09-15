@@ -188,6 +188,23 @@ namespace VTX
 			  private:
 				Model::Molecule & _molecule;
 			};
+
+			class ChangeColorModeSecondaryStructure : public BaseAction
+			{
+			  public:
+				explicit ChangeColorModeSecondaryStructure( Model::Molecule &							p_molecule,
+															const Model::SecondaryStructure::COLOR_MODE p_colorMode ) :
+					_molecule( p_molecule ),
+					_colorMode( p_colorMode )
+				{
+				}
+
+				virtual void execute() override { _molecule.getSecondaryStructure().setColorMode( _colorMode ); }
+
+			  private:
+				Model::Molecule &							_molecule;
+				const Model::SecondaryStructure::COLOR_MODE _colorMode;
+			};
 		} // namespace Molecule
 	}	  // namespace Action
 } // namespace VTX
