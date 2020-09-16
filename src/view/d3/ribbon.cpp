@@ -27,10 +27,10 @@ namespace VTX
 			void Ribbon::setUniFormLocations()
 			{
 				assert( _program != nullptr );
-				_uCamPositionLoc	 = glGetUniformLocation( _program->getId(), "uCamPosition" );
-				_uModelViewMatrixLoc = glGetUniformLocation( _program->getId(), "uMVMatrix" );
-				_uProjMatrixLoc		 = glGetUniformLocation( _program->getId(), "uProjMatrix" );
-				_uNormalMatrixLoc	 = glGetUniformLocation( _program->getId(), "uNormalMatrix" );
+				_uCamPositionLoc	 = glGetUniformLocation( _program->getId(), "u_camPosition" );
+				_uModelViewMatrixLoc = glGetUniformLocation( _program->getId(), "u_MVMatrix" );
+				_uProjMatrixLoc		 = glGetUniformLocation( _program->getId(), "u_projMatrix" );
+				_uNormalMatrixLoc	 = glGetUniformLocation( _program->getId(), "u_normalMatrix" );
 			}
 
 			void Ribbon::render()

@@ -2,17 +2,17 @@
 
 layout( vertices = 4 ) out;
 
-uniform vec3 uCamPosition;
+uniform vec3 u_camPosition;
 
-in vec3 vPositionVS[];
-in vec3 vDirectionVS[];
-in uint vSecondaryStructureVS[];
-in vec3 vColorVS[];
+in vec3 vs_position[];
+in vec3 vs_direction[];
+in uint vs_secondaryStructure[];
+in vec3 vs_color[];
 
-out vec3 vPositionTC[];
-out vec3 vDirectionTC[];
-out uint vSecondaryStructureTC[];
-out vec3 vColorTC[];
+out vec3 tc_position[];
+out vec3 tc_direction[];
+out uint tc_secondaryStructure[];
+out vec3 tc_color[];
 
 // Values from original paper.
 const float MAX_DISTANCE				= 160.f;
@@ -26,44 +26,41 @@ const int	MIN_SUBDIVISION_LEVEL_SHEET = 2;
 const int	MAX_SUBDIVISION_LEVEL_OTHER = 8;
 const int	MIN_SUBDIVISION_LEVEL_OTHER = 2;
 
-float getTess( vec3 p_point )
+// Map with ss.
+const int[] MIN = {
+	MIN_SUBDIVISION_LEVEL_HELIX, // HELIX_ALPHA_RIGHT
+	MIN_SUBDIVISION_LEVEL_HELIX, // HELIX_ALPHA_LEFT
+	MIN_SUBDIVISION_LEVEL_HELIX, // HELIX_3_10_RIGHT
+	MIN_SUBDIVISION_LEVEL_HELIX, // HELIX_3_10_LEFT
+	MIN_SUBDIVISION_LEVEL_HELIX, // HELIX_PI
+	MIN_SUBDIVISION_LEVEL_SHEET, // STRAND
+	MIN_SUBDIVISION_LEVEL_OTHER, // TURN
+	MIN_SUBDIVISION_LEVEL_OTHER, // COIL
+};
+
+const int[] MAX = {
+	MAX_SUBDIVISION_LEVEL_HELIX, // HELIX_ALPHA_RIGHT
+	MAX_SUBDIVISION_LEVEL_HELIX, // HELIX_ALPHA_LEFT
+	MAX_SUBDIVISION_LEVEL_HELIX, // HELIX_3_10_RIGHT
+	MAX_SUBDIVISION_LEVEL_HELIX, // HELIX_3_10_LEFT
+	MAX_SUBDIVISION_LEVEL_HELIX, // HELIX_PI
+	MAX_SUBDIVISION_LEVEL_SHEET, // STRAND
+	MAX_SUBDIVISION_LEVEL_OTHER, // TURN
+	MAX_SUBDIVISION_LEVEL_OTHER, // COIL
+};
+
+float getDistance( vec3 p_point )
 {
-	return clamp( ( distance( p_point, uCamPosition ) - MIN_DISTANCE ) / MAX_DISTANCE, 0, 1 );
-}
-uint getMin( uint p_ss )
-{
-	switch ( p_ss )
-	{
-	// A_HELIX_LEFT || A_HELIX_RIGHT
-	case 0:
-	case 1:
-	case 2: return MIN_SUBDIVISION_LEVEL_HELIX;
-	// B_SHEET
-	case 3: return MIN_SUBDIVISION_LEVEL_SHEET;
-	default: return MIN_SUBDIVISION_LEVEL_OTHER;
-	}
-}
-uint getMax( uint p_ss )
-{
-	switch ( p_ss )
-	{
-	// A_HELIX_LEFT || A_HELIX_RIGHT
-	case 0:
-	case 1:
-	case 2: return MAX_SUBDIVISION_LEVEL_HELIX;
-	// B_SHEET
-	case 3: return MAX_SUBDIVISION_LEVEL_SHEET;
-	default: return MAX_SUBDIVISION_LEVEL_OTHER;
-	}
+	return clamp( ( distance( p_point, u_camPosition ) - MIN_DISTANCE ) / MAX_DISTANCE, 0, 1 );
 }
 
 void main()
 {
 	// Transmit data.
-	vPositionTC[ gl_InvocationID ]			 = vPositionVS[ gl_InvocationID ];
-	vDirectionTC[ gl_InvocationID ]			 = vDirectionVS[ gl_InvocationID ];
-	vSecondaryStructureTC[ gl_InvocationID ] = vSecondaryStructureVS[ gl_InvocationID ];
-	vColorTC[ gl_InvocationID ]				 = vColorVS[ gl_InvocationID ];
+	tc_position[ gl_InvocationID ]			 = vs_position[ gl_InvocationID ];
+	tc_direction[ gl_InvocationID ]			 = vs_direction[ gl_InvocationID ];
+	tc_secondaryStructure[ gl_InvocationID ] = vs_secondaryStructure[ gl_InvocationID ];
+	tc_color[ gl_InvocationID ]				 = vs_color[ gl_InvocationID ];
 
 	// if ( gl_InvocationID == 0 )
 	//{
@@ -85,14 +82,24 @@ void main()
 	gl_TessLevelInner[1] - tess. in vertical (v) direction
 	*/
 
+	gl_TessLevelOuter[ 0 ] = 10.f;
+	gl_TessLevelOuter[ 1 ] = 10.f;
+	gl_TessLevelOuter[ 2 ] = 10.f;
+	gl_TessLevelOuter[ 3 ] = 10.f;
+	gl_TessLevelInner[ 0 ] = 10.f;
+	gl_TessLevelInner[ 1 ] = 10.f;
+
+	/*
 	gl_TessLevelOuter[ 0 ]
-		= getTess( vPositionVS[ 1 ] ) * getMax( vSecondaryStructureVS[ 1 ] ) + getMin( vSecondaryStructureVS[ 1 ] );
-	gl_TessLevelOuter[ 1 ] = max( getTess( vPositionVS[ 1 ] ), getTess( vPositionVS[ 2 ] ) ) * MAX_SUBDIVISION_LEVEL
-							 + MIN_SUBDIVISION_LEVEL;
+		= getDistance( vs_position[ 1 ] ) * MAX[ vs_secondaryStructure[ 1 ] ] + MIN[ vs_secondaryStructure[ 1 ] ];
+	gl_TessLevelOuter[ 1 ]
+		= max( getDistance( vs_position[ 1 ] ), getDistance( vs_position[ 2 ] ) ) * MAX_SUBDIVISION_LEVEL
+		  + MIN_SUBDIVISION_LEVEL;
 	gl_TessLevelOuter[ 2 ]
-		= getTess( vPositionVS[ 2 ] ) * getMax( vSecondaryStructureVS[ 2 ] ) + getMin( vSecondaryStructureVS[ 2 ] );
+		= getDistance( vs_position[ 2 ] ) * MAX[ vs_secondaryStructure[ 2 ] ] + MIN[ vs_secondaryStructure[ 2 ] ];
 	gl_TessLevelOuter[ 3 ] = gl_TessLevelOuter[ 1 ];
 	gl_TessLevelInner[ 0 ] = gl_TessLevelOuter[ 1 ];
 	gl_TessLevelInner[ 1 ] = max( gl_TessLevelOuter[ 0 ], gl_TessLevelOuter[ 2 ] );
+	*/
 	//}
 }
