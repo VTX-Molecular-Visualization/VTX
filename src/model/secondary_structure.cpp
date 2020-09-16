@@ -8,7 +8,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		const Color::Rgb SecondaryStructure::SECONDARY_STRUCTURE_COLORS_JMOL[ uint( VALUE::COUNT ) ]
+		const Color::Rgb SecondaryStructure::COLORS_JMOL[ uint( VALUE::COUNT ) ]
 			= { Color::Rgb( 1.f, 0.f, 0.5f ),	// HELIX_ALPHA_RIGHT
 				Color::Rgb( 1.f, 0.f, 0.5f ),	// HELIX_ALPHA_LEFT
 				Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
@@ -16,7 +16,7 @@ namespace VTX
 				Color::Rgb( 0.37f, 0.f, 0.5f ), // HELIX_PI
 				Color::Rgb( 1.f, 0.78f, 0.f ),	// STRAND
 				Color::Rgb( 0.37f, 0.5f, 1.f ), // TURN
-				Color::Rgb::WHITE };
+				Color::Rgb::WHITE };			// COIL
 
 		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) : _molecule( p_molecule )
 		{
@@ -86,14 +86,14 @@ namespace VTX
 					_controlPointDirections.emplace_back( direction );
 
 					// Add secondary structure type.
+					VTX_DEBUG( std::to_string( uint( residue.getSecondaryStructure() ) ) );
 					_controlPointSecondaryStructures.emplace_back( uint( residue.getSecondaryStructure() ) );
 
 					// Add color.
 					switch ( _colorMode )
 					{
 					case COLOR_MODE::JMOL:
-						_controlPointColors.emplace_back(
-							SECONDARY_STRUCTURE_COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
+						_controlPointColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
 						break;
 
 					case COLOR_MODE::PROTEIN:
@@ -349,8 +349,7 @@ namespace VTX
 					switch ( _colorMode )
 					{
 					case COLOR_MODE::JMOL:
-						_controlPointColors.emplace_back(
-							SECONDARY_STRUCTURE_COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
+						_controlPointColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
 						break;
 
 					case COLOR_MODE::PROTEIN:
@@ -380,9 +379,8 @@ namespace VTX
 
 		void SecondaryStructure::print() const
 		{
-			VTX_INFO( "Control points: " + std::to_string( _controlPointPositions.size() ) );
-			VTX_INFO( "Indices: " + std::to_string( _indices.size() ) );
-
+			VTX_INFO( "Control points: " + std::to_string( _controlPointPositions.size() )
+					  + " / Indices: " + std::to_string( _indices.size() ) );
 			VTX_DEBUG( "Sizeof secondary structure: " + std::to_string( sizeof( *this ) ) );
 		}
 

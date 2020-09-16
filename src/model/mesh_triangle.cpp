@@ -102,10 +102,9 @@ namespace VTX
 
 		void MeshTriangle::print() const
 		{
-			VTX_INFO( "Faces: " + std::to_string( _indices.size() / 3 ) );
-			VTX_INFO( "Vertices: " + std::to_string( _vertices.size() ) );
-			VTX_INFO( "Normals: " + std::to_string( _normals.size() ) );
-			VTX_INFO( "Indices: " + std::to_string( _indices.size() ) );
+			VTX_INFO( "Faces: " + std::to_string( _indices.size() / 3 ) + " / Vertices: "
+					  + std::to_string( _vertices.size() ) + " / Normals: " + std::to_string( _normals.size() )
+					  + " / Indices: " + std::to_string( _indices.size() ) );
 
 			VTX_DEBUG( "Sizeof mesh triangle: " + std::to_string( sizeof( *this ) ) );
 		}

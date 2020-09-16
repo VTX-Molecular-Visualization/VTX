@@ -41,7 +41,7 @@ namespace VTX
 				STRIDE
 			};
 
-			static const Color::Rgb SECONDARY_STRUCTURE_COLORS_JMOL[ uint( VALUE::COUNT ) ];
+			static const Color::Rgb COLORS_JMOL[ uint( VALUE::COUNT ) ];
 
 			SecondaryStructure( Molecule * const );
 			~SecondaryStructure();
@@ -85,7 +85,6 @@ namespace VTX
 			std::vector<Vec3f>		_controlPointDirections			 = std::vector<Vec3f>();
 			std::vector<uint>		_controlPointSecondaryStructures = std::vector<uint>();
 			std::vector<Color::Rgb> _controlPointColors				 = std::vector<Color::Rgb>();
-			std::vector<uint>		_controlPointVisibilities		 = std::vector<uint>();
 			std::vector<uint>		_indices						 = std::vector<uint>();
 
 			std::map<uint, uint> _residueToControlPointIndices = std::map<uint, uint>();

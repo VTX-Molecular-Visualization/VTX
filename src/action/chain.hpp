@@ -28,6 +28,12 @@ namespace VTX
 				{
 					_chain.setColor( _color );
 					_chain.getMoleculePtr()->refreshColors();
+
+					if ( _chain.getMoleculePtr()->getSecondaryStructure().getColorMode()
+						 == Model::SecondaryStructure::COLOR_MODE::CHAIN )
+					{
+						_chain.getMoleculePtr()->getSecondaryStructure().refreshColors();
+					}
 				}
 
 			  private:

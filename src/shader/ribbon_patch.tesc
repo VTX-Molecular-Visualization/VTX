@@ -17,17 +17,17 @@ out vec3 tc_color[];
 // Values from original paper.
 const float MAX_DISTANCE				= 160.f;
 const float MIN_DISTANCE				= 10.f;
-const uint	MAX_SUBDIVISION_LEVEL		= 12;
-const uint	MIN_SUBDIVISION_LEVEL		= 2;
-const int	MAX_SUBDIVISION_LEVEL_HELIX = 8;
-const int	MIN_SUBDIVISION_LEVEL_HELIX = 2;
-const int	MAX_SUBDIVISION_LEVEL_SHEET = 8;
-const int	MIN_SUBDIVISION_LEVEL_SHEET = 2;
-const int	MAX_SUBDIVISION_LEVEL_OTHER = 8;
-const int	MIN_SUBDIVISION_LEVEL_OTHER = 2;
+const uint	MAX_SUBDIVISION_LEVEL		= 12u;
+const uint	MIN_SUBDIVISION_LEVEL		= 2u;
+const uint	MAX_SUBDIVISION_LEVEL_HELIX = 8u;
+const uint	MIN_SUBDIVISION_LEVEL_HELIX = 2u;
+const uint	MAX_SUBDIVISION_LEVEL_SHEET = 8u;
+const uint	MIN_SUBDIVISION_LEVEL_SHEET = 2u;
+const uint	MAX_SUBDIVISION_LEVEL_OTHER = 8u;
+const uint	MIN_SUBDIVISION_LEVEL_OTHER = 2u;
 
 // Map with ss.
-const int[] MIN = {
+const uint[] MIN = {
 	MIN_SUBDIVISION_LEVEL_HELIX, // HELIX_ALPHA_RIGHT
 	MIN_SUBDIVISION_LEVEL_HELIX, // HELIX_ALPHA_LEFT
 	MIN_SUBDIVISION_LEVEL_HELIX, // HELIX_3_10_RIGHT
@@ -38,7 +38,7 @@ const int[] MIN = {
 	MIN_SUBDIVISION_LEVEL_OTHER, // COIL
 };
 
-const int[] MAX = {
+const uint[] MAX = {
 	MAX_SUBDIVISION_LEVEL_HELIX, // HELIX_ALPHA_RIGHT
 	MAX_SUBDIVISION_LEVEL_HELIX, // HELIX_ALPHA_LEFT
 	MAX_SUBDIVISION_LEVEL_HELIX, // HELIX_3_10_RIGHT
@@ -51,7 +51,7 @@ const int[] MAX = {
 
 float getDistance( vec3 p_point )
 {
-	return clamp( ( distance( p_point, u_camPosition ) - MIN_DISTANCE ) / MAX_DISTANCE, 0, 1 );
+	return clamp( ( distance( p_point, u_camPosition ) - MIN_DISTANCE ) / MAX_DISTANCE, 0.f, 1.f );
 }
 
 void main()

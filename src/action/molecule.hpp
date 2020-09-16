@@ -44,6 +44,12 @@ namespace VTX
 				{
 					_molecule.setColor( _color );
 					_molecule.refreshColors();
+
+					if ( _molecule.getSecondaryStructure().getColorMode()
+						 == Model::SecondaryStructure::COLOR_MODE::PROTEIN )
+					{
+						_molecule.getSecondaryStructure().refreshColors();
+					}
 				}
 
 			  private:
