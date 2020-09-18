@@ -31,6 +31,7 @@ namespace VTX
 				_uModelViewMatrixLoc = glGetUniformLocation( _program->getId(), "u_MVMatrix" );
 				_uProjMatrixLoc		 = glGetUniformLocation( _program->getId(), "u_projMatrix" );
 				_uNormalMatrixLoc	 = glGetUniformLocation( _program->getId(), "u_normalMatrix" );
+				_uMaxIndice			 = glGetUniformLocation( _program->getId(), "u_maxIndice" );
 			}
 
 			void Ribbon::render()
@@ -51,6 +52,7 @@ namespace VTX
 				for ( const std::pair<uint, uint> & pair :
 					  _model->getMolecule()->getRepresentationState()[ Generic::REPRESENTATION::CARTOON ].ribbons )
 				{
+					glUniform1ui( _uMaxIndice, pair.second / 2u );
 					glDrawElements( GL_PATCHES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
 				}
 

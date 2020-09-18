@@ -31,6 +31,7 @@ namespace VTX
 				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
 				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
 				GLint _uNormalMatrixLoc	   = GL_INVALID_INDEX;
+				GLint _uMaxIndice		   = GL_INVALID_INDEX;
 			};
 		} // namespace D3
 	}	  // namespace View

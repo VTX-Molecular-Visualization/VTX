@@ -95,7 +95,7 @@ namespace VTX
 		VTX_INFO( "Application started" );
 		_ui->print();
 
-//#define AUTO_OPEN
+#define AUTO_OPEN
 #ifdef AUTO_OPEN
 		VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4f8h.pdb" ) ) );
 #endif

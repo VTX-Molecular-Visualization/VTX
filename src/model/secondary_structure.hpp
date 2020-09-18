@@ -74,8 +74,9 @@ namespace VTX
 			{
 				CONTROL_POINT_POSITION			  = 0,
 				CONTROL_POINT_DIRECTION			  = 1,
-				CONTROL_POINT_SECONDARY_STRUCTURE = 2,
-				CONTROL_POINT_COLOR				  = 3,
+				CONTROL_POINT_NORMAL			  = 2,
+				CONTROL_POINT_SECONDARY_STRUCTURE = 3,
+				CONTROL_POINT_COLOR				  = 4,
 			};
 
 			Model::Molecule * const _molecule;
@@ -83,6 +84,7 @@ namespace VTX
 
 			std::vector<Vec3f>		_controlPointPositions			 = std::vector<Vec3f>();
 			std::vector<Vec3f>		_controlPointDirections			 = std::vector<Vec3f>();
+			std::vector<Vec3f>		_controlPointNormals			 = std::vector<Vec3f>();
 			std::vector<uint>		_controlPointSecondaryStructures = std::vector<uint>();
 			std::vector<Color::Rgb> _controlPointColors				 = std::vector<Color::Rgb>();
 			std::vector<uint>		_indices						 = std::vector<uint>();
@@ -91,6 +93,7 @@ namespace VTX
 
 			GLuint _vboPositions		   = GL_INVALID_VALUE;
 			GLuint _vboDirections		   = GL_INVALID_VALUE;
+			GLuint _vboNormals			   = GL_INVALID_VALUE;
 			GLuint _vboSecondaryStructures = GL_INVALID_VALUE;
 			GLuint _vboColors			   = GL_INVALID_VALUE;
 			GLuint _ibo					   = GL_INVALID_VALUE;
