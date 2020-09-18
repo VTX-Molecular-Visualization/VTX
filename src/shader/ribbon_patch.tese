@@ -1,6 +1,6 @@
 #version 450
 
-layout( quads ) in;
+layout( quads, equal_spacing, ccw ) in;
 
 uniform mat4 u_MVMatrix;
 uniform mat4 u_projMatrix;
@@ -44,7 +44,6 @@ void main()
 	mat4x3 positionBSpline = mat4x3( tc_position[ 0 ], tc_position[ 1 ], tc_position[ 2 ], tc_position[ 3 ] );
 	vec3   position		   = evaluateBSpline( positionBSpline, gl_TessCoord.x );
 	vec3   positionOld	   = position;
-
 	// Evaluate direction.
 
 	mat4x3 directionBSpline = mat4x3( tc_direction[ 0 ], tc_direction[ 1 ], tc_direction[ 2 ], tc_direction[ 3 ] );
@@ -63,38 +62,36 @@ void main()
 
 	// vec3 normal = normalize( mix( tc_normal[ 1 ], tc_normal[ 2 ], gl_TessCoord.x ) );
 
-	float directionFactor = 1.f; // DIRECTION_FACTOR[ tc_secondaryStructure[ 1 ] ];
-	float factor		  = 0.3f;
+	float directionFactor = 2.f; // DIRECTION_FACTOR[ tc_secondaryStructure[ 1 ] ];
+	float radius		  = 0.5f;
 
 	/*
 	if ( gl_PrimitiveID < 32 )
 	{
 		normal			= -normal;
-		directionFactor = 2.f;
 	}
 	*/
 
-	// normal = -normal;
-
 	// Move vertex along [-direction, direction].
 
-	position -= direction * directionFactor * factor;
-	position += direction * gl_TessCoord.y * 2.f * directionFactor * factor;
-	// position += direction * gl_TessCoord.y * factor;
+	float directionStep = directionFactor * radius;
+	position -= direction * directionStep;
+	position += direction * directionStep * 2.f * gl_TessCoord.y;
 
 	// Move vertex along normal.
 
 	// 0.00001
-	position += normal * sin( gl_TessCoord.y * PI ) * factor;
-	// position += normal * gl_TessCoord.y;
+	float normalStep = radius;
+	// position += normal * normalStep * sin( gl_TessCoord.y * PI );
 
 	// View position.
 
 	te_viewPosition = vec3( u_MVMatrix * vec4( position, 1.f ) );
 
 	// Shading normal.
-	vec3 shadingNormal = normalize( position - positionOld );
-	te_normal		   = vec3( u_normalMatrix * vec4( shadingNormal, 1.f ) );
+	// vec3 shadingNormal = normalize( normal * sin( gl_TessCoord.y * PI ) );
+	// vec3 shadingNormal = normalize( position - positionOld );
+	te_normal = vec3( u_normalMatrix * vec4( normal, 1.f ) );
 
 	// Mix colors.
 
