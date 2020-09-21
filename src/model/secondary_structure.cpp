@@ -139,8 +139,8 @@ namespace VTX
 			}
 
 			// Reverse indices to render the other side.
-			std::vector<uint> indicesReverse = _indices;
-			std::reverse( indicesReverse.begin(), indicesReverse.end() );
+			// std::vector<uint> indicesReverse = _indices;
+			// std::reverse( indicesReverse.begin(), indicesReverse.end() );
 			//_indices.insert( _indices.end(), indicesReverse.begin(), indicesReverse.end() );
 
 			_controlPointPositions.shrink_to_fit();
