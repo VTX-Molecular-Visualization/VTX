@@ -65,13 +65,6 @@ void main()
 	float directionFactor = 2.f; // DIRECTION_FACTOR[ tc_secondaryStructure[ 1 ] ];
 	float radius		  = 0.5f;
 
-	/*
-	if ( gl_PrimitiveID < 32 )
-	{
-		normal			= -normal;
-	}
-	*/
-
 	// Move vertex along [-direction, direction].
 	float directionStep = directionFactor * radius;
 	position -= direction * directionStep;
@@ -85,20 +78,12 @@ void main()
 	// View position.
 	te_viewPosition = vec3( u_MVMatrix * vec4( position, 1.f ) );
 
-	// Shading normal.
-	// vec3 shadingNormal = normalize( normal * sin( gl_TessCoord.y * PI ) );
-	// vec3 shadingNormal = normalize( position - positionOld );
-
 	// Position.
 	gl_Position = u_projMatrix * vec4( te_viewPosition, 1.f );
 
 	// Shading normal.
 	vec3 shadingNormal = normal;
-	// if ( dot( te_viewPosition, shadingNormal ) > 0.f )
-	//{
-	//	shadingNormal = -shadingNormal;
-	//}
-	te_normal = vec3( u_normalMatrix * vec4( shadingNormal, 1.f ) );
+	te_normal		   = vec3( u_normalMatrix * vec4( shadingNormal, 1.f ) );
 
 	// Mix colors.
 	te_color = mix( tc_color[ 1 ], tc_color[ 2 ], gl_TessCoord.x );

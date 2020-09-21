@@ -16,11 +16,17 @@ void main()
 {
 	uvec4 colorNormal = uvec4( 0 );
 
+	vec3 normal = te_normal;
+	if ( gl_FrontFacing )
+	{
+		normal = -normal;
+	}
+
 	// Compress color and normal.
 	uvec4 viewPositionNormalCompressed;
 	viewPositionNormalCompressed.x = packHalf2x16( te_viewPosition.xy );
-	viewPositionNormalCompressed.y = packHalf2x16( vec2( te_viewPosition.z, te_normal.x ) );
-	viewPositionNormalCompressed.z = packHalf2x16( te_normal.yz );
+	viewPositionNormalCompressed.y = packHalf2x16( vec2( te_viewPosition.z, normal.x ) );
+	viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
 	viewPositionNormalCompressed.w = 0; // Padding.
 
 	// Output data.
