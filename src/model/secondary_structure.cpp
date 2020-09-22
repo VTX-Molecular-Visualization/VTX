@@ -91,10 +91,16 @@ namespace VTX
 						Vec3f directionCA = positionCA - controlPointPositions[ controlPointPositions.size() - 2 ];
 						Vec3f normal	  = Util::Math::normalize( Util::Math::cross( direction, directionCA ) );
 						_controlPointNormals.emplace_back( normal );
+
+						// Copy second to first.
+						if ( controlPointPositions.size() == 2 )
+						{
+							_controlPointNormals[ _controlPointNormals.size() - 2 ]
+								= _controlPointNormals[ _controlPointNormals.size() - 1 ];
+						}
 					}
 					else
 					{
-						// ?
 						_controlPointNormals.emplace_back( VEC3F_ZERO );
 					}
 
@@ -299,6 +305,7 @@ namespace VTX
 
 		void SecondaryStructure::setCurrentFrame()
 		{
+			// TODO: refacto.
 			const Molecule::AtomPositionsFrame & positions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
 
 			_controlPointPositions.clear();
@@ -353,10 +360,14 @@ namespace VTX
 			_controlPointPositions.shrink_to_fit();
 			_controlPointDirections.shrink_to_fit();
 
-			glNamedBufferSubData(
-				_vboPositions, 0, sizeof( Vec3f ) * _controlPointPositions.size(), _controlPointPositions.data() );
-			glNamedBufferSubData(
-				_vboDirections, 0, sizeof( Vec3f ) * _controlPointDirections.size(), _controlPointDirections.data() );
+			glNamedBufferData( _vboPositions,
+							   sizeof( Vec3f ) * _controlPointPositions.size(),
+							   _controlPointPositions.data(),
+							   GL_STATIC_DRAW );
+			glNamedBufferData( _vboDirections,
+							   sizeof( Vec3f ) * _controlPointDirections.size(),
+							   _controlPointDirections.data(),
+							   GL_STATIC_DRAW );
 		}
 
 		void SecondaryStructure::_fillBufferColors()
@@ -404,8 +415,10 @@ namespace VTX
 
 			_controlPointColors.shrink_to_fit();
 
-			glNamedBufferSubData(
-				_vboColors, 0, sizeof( Color::Rgb ) * _controlPointColors.size(), _controlPointColors.data() );
+			glNamedBufferData( _vboColors,
+							   sizeof( Color::Rgb ) * _controlPointColors.size(),
+							   _controlPointColors.data(),
+							   GL_STATIC_DRAW );
 		}
 
 		void SecondaryStructure::_flipTest( Vec3f & p_direction, Vec3f & p_directionLast ) const

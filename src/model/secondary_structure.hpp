@@ -18,14 +18,14 @@ namespace VTX
 		  public:
 			enum class VALUE : int
 			{
-				HELIX_ALPHA_RIGHT,
-				HELIX_ALPHA_LEFT,
-				HELIX_3_10_RIGHT,
-				HELIX_3_10_LEFT,
-				HELIX_PI,
-				STRAND,
-				TURN,
-				COIL,
+				HELIX_ALPHA_RIGHT = 0,
+				HELIX_ALPHA_LEFT  = 1,
+				HELIX_3_10_RIGHT  = 2,
+				HELIX_3_10_LEFT	  = 3,
+				HELIX_PI		  = 4,
+				STRAND			  = 5,
+				TURN			  = 6,
+				COIL			  = 7,
 				COUNT
 			};
 			enum class COLOR_MODE : int

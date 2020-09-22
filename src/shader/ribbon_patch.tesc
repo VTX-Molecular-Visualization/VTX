@@ -4,18 +4,17 @@ layout( vertices = 4 ) out;
 
 uniform vec3 u_camPosition;
 
-in vec3 vs_position[];
-in vec3 vs_direction[];
-in vec3 vs_normal[];
-in uint vs_secondaryStructure[];
-in vec3 vs_color[];
+in vec3		 vs_position[];
+in vec3		 vs_direction[];
+in vec3		 vs_normal[];
+flat in uint vs_secondaryStructure[];
+flat in vec3 vs_color[];
 
-out vec3 tc_position[];
-out vec3 tc_direction[];
-out vec3 tc_normal[];
-out uint tc_secondaryStructure[];
-out vec3 tc_color[];
-out uint tc_primitiveId[];
+out vec3	  tc_position[];
+out vec3	  tc_direction[];
+out vec3	  tc_normal[];
+flat out uint tc_secondaryStructure[];
+flat out vec3 tc_color[];
 
 // Values from original paper.
 const float MAX_DISTANCE				 = 160.f;
@@ -30,27 +29,25 @@ const uint	MAX_SUBDIVISION_LEVEL_OTHER	 = 8u;
 const uint	MIN_SUBDIVISION_LEVEL_OTHER	 = 2u;
 
 // Map with ss.
-const uint[] MIN = {
-	MIN_SUBDIVISION_LEVEL_HELIX,  // HELIX_ALPHA_RIGHT
-	MIN_SUBDIVISION_LEVEL_HELIX,  // HELIX_ALPHA_LEFT
-	MIN_SUBDIVISION_LEVEL_HELIX,  // HELIX_3_10_RIGHT
-	MIN_SUBDIVISION_LEVEL_HELIX,  // HELIX_3_10_LEFT
-	MIN_SUBDIVISION_LEVEL_HELIX,  // HELIX_PI
-	MIN_SUBDIVISION_LEVEL_STRAND, // STRAND
-	MIN_SUBDIVISION_LEVEL_OTHER,  // TURN
-	MIN_SUBDIVISION_LEVEL_OTHER,  // COIL
-};
+const uint[] MIN = uint[]( MIN_SUBDIVISION_LEVEL_HELIX,	 // HELIX_ALPHA_RIGHT
+						   MIN_SUBDIVISION_LEVEL_HELIX,	 // HELIX_ALPHA_LEFT
+						   MIN_SUBDIVISION_LEVEL_HELIX,	 // HELIX_3_10_RIGHT
+						   MIN_SUBDIVISION_LEVEL_HELIX,	 // HELIX_3_10_LEFT
+						   MIN_SUBDIVISION_LEVEL_HELIX,	 // HELIX_PI
+						   MIN_SUBDIVISION_LEVEL_STRAND, // STRAND
+						   MIN_SUBDIVISION_LEVEL_OTHER,	 // TURN
+						   MIN_SUBDIVISION_LEVEL_OTHER	 // COIL
+);
 
-const uint[] MAX = {
-	MAX_SUBDIVISION_LEVEL_HELIX,  // HELIX_ALPHA_RIGHT
-	MAX_SUBDIVISION_LEVEL_HELIX,  // HELIX_ALPHA_LEFT
-	MAX_SUBDIVISION_LEVEL_HELIX,  // HELIX_3_10_RIGHT
-	MAX_SUBDIVISION_LEVEL_HELIX,  // HELIX_3_10_LEFT
-	MAX_SUBDIVISION_LEVEL_HELIX,  // HELIX_PI
-	MAX_SUBDIVISION_LEVEL_STRAND, // STRAND
-	MAX_SUBDIVISION_LEVEL_OTHER,  // TURN
-	MAX_SUBDIVISION_LEVEL_OTHER,  // COIL
-};
+const uint[] MAX = uint[]( MAX_SUBDIVISION_LEVEL_HELIX,	 // HELIX_ALPHA_RIGHT
+						   MAX_SUBDIVISION_LEVEL_HELIX,	 // HELIX_ALPHA_LEFT
+						   MAX_SUBDIVISION_LEVEL_HELIX,	 // HELIX_3_10_RIGHT
+						   MAX_SUBDIVISION_LEVEL_HELIX,	 // HELIX_3_10_LEFT
+						   MAX_SUBDIVISION_LEVEL_HELIX,	 // HELIX_PI
+						   MAX_SUBDIVISION_LEVEL_STRAND, // STRAND
+						   MAX_SUBDIVISION_LEVEL_OTHER,	 // TURN
+						   MAX_SUBDIVISION_LEVEL_OTHER	 // COIL
+);
 
 float getDistance( vec3 p_point )
 {
@@ -65,15 +62,6 @@ void main()
 	tc_normal[ gl_InvocationID ]			 = vs_normal[ gl_InvocationID ];
 	tc_secondaryStructure[ gl_InvocationID ] = vs_secondaryStructure[ gl_InvocationID ];
 	tc_color[ gl_InvocationID ]				 = vs_color[ gl_InvocationID ];
-	//tc_primitiveId[ gl_InvocationID ]		 = gl_PrimitiveIDIn;
-	// gl_InvocationID - 1 ??
-	/*
-	tc_normal[ gl_InvocationID ]
-		= normalize( cross( mix( tc_position[ gl_InvocationID ] - tc_position[ gl_InvocationID - 1 ],
-								 tc_position[ gl_InvocationID + 1 ] - tc_position[ gl_InvocationID ],
-								 0.5 ),
-							tc_direction[ gl_InvocationID ] ) );
-	*/
 
 	// if ( gl_InvocationID == 0 )
 	//{
@@ -94,7 +82,6 @@ void main()
 	gl_TessLevelInner[0] - tess. in horizontal (u) direction
 	gl_TessLevelInner[1] - tess. in vertical (v) direction
 	*/
-
 
 	gl_TessLevelOuter[ 0 ] = 10.f;
 	gl_TessLevelOuter[ 1 ] = 10.f;
