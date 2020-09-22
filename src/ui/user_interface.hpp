@@ -6,26 +6,19 @@
 #endif
 
 #include "base_component.hpp"
+#include "ui/main_window.hpp"
 #include <GL/gl3w.h>
+#include <QtWidgets/QApplication>
 #include <SDL.h>
-
-// GL error callback return type.
-typedef void( APIENTRY * DEBUGPROC )( GLenum		 p_source,
-									  GLenum		 p_type,
-									  GLuint		 p_id,
-									  GLenum		 p_severity,
-									  GLsizei		 p_length,
-									  const GLchar * p_message,
-									  const void *	 p_userParam );
 
 namespace VTX
 {
 	namespace UI
 	{
-		class UserInterface : public BaseComponent
+		class UserInterface : public BaseComponent, public QApplication
 		{
 		  public:
-			UserInterface();
+			UserInterface( int, char ** );
 			~UserInterface();
 			void print() const;
 			bool getEvent( SDL_Event & evt ) const;
@@ -46,6 +39,7 @@ namespace VTX
 			virtual void _draw() override;
 
 		  private:
+			// IMGUI
 			SDL_Window *	_window	   = nullptr;
 			SDL_GLContext	_glContext = nullptr;
 			SDL_DisplayMode _displayMode;
@@ -61,6 +55,9 @@ namespace VTX
 			void _disposeSDL2();
 			void _disposeGL();
 			void _disposeIMGUI();
+
+			// QT
+			MainWindow * _mainWindow = nullptr;
 		};
 	} // namespace UI
 } // namespace VTX

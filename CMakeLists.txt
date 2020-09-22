@@ -93,14 +93,24 @@ foreach(SRC IN ITEMS ${RESOURCES})
     source_group("Resources${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
-# Get all C++, GLSL and CUDA sources.
+# Get all GLSL sources.
 file(GLOB_RECURSE SHADERS ${PATH_SRC}/*.vert ${PATH_SRC}/*.frag ${PATH_SRC}/*.geom ${PATH_SRC}/*.tesc ${PATH_SRC}/*.tese)
 foreach(SRC IN ITEMS ${SHADERS})
     get_filename_component(SRC_PATH "${SRC}" PATH)
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
-    source_group("Sources${GROUP_PATH}" FILES "${SRC}")
+    source_group("Sources" FILES "${SRC}")
+endforeach()
+
+# Get all QT forms.
+file(GLOB_RECURSE FORMS ${PATH_SRC}/*.ui)
+foreach(SRC IN ITEMS ${FORMS})
+    get_filename_component(SRC_PATH "${SRC}" PATH)
+    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_SRC}" "${SRC_PATH}")
+    string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
+	# Create group to make visual studio filters.
+    source_group("Forms" FILES "${SRC}")
 endforeach()
 
 message("Copying all sources... DONE")
@@ -122,7 +132,7 @@ link_directories(${PATH_LIB}/chemfiles/lib/x64)
 link_directories(${PATH_LIB}/StackWalker/lib/x64)
 
 # Declare executable with source files.
-add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES})
+add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS})
 
 # Link libs.
 target_link_libraries(VTX PRIVATE SDL2)

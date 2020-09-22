@@ -74,11 +74,12 @@ namespace VTX
 		}
 	}
 
-	void VTXApp::start()
+	void VTXApp::start( int p_argc, char * p_argv[] )
 	{
 		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
 
-		_ui = new UI::UserInterface();
+		_ui = new UI::UserInterface( p_argc, p_argv );
+		_ui->exec();
 
 		_scene = new Object3D::Scene();
 		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );

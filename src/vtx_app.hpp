@@ -59,7 +59,7 @@ namespace VTX
 		}
 		static bool isRunning() { return VTXApp::_isRunning; }
 
-		void start();
+		void start( int, char ** );
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
 		void renderScene() const { _renderer->renderFrame( *_scene ); }

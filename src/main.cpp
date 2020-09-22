@@ -1,22 +1,14 @@
 #include "io/writer/exception.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMainWindow>
 
 using namespace VTX;
 
-int main( int argc, char * argv[] )
+int main( int p_argc, char * p_argv[] )
 {
 	try
 	{
-		QApplication app( argc, argv );
-		QMainWindow	 window;
-
-		window.show();
-		app.exec();
-
-		VTXApp::get().start();
+		VTXApp::get().start( p_argc, p_argv );
 	}
 	catch ( const std::exception & p_e )
 	{
