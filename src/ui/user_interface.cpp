@@ -21,7 +21,7 @@ namespace VTX
 {
 	namespace UI
 	{
-		UserInterface::UserInterface( int p_argc, char * p_argv[] ) : QApplication( p_argc, p_argv )
+		UserInterface::UserInterface( int p_argc, char * p_argv[] )
 		{
 			VTX_INFO( "Creating user interface" );
 
@@ -53,8 +53,10 @@ namespace VTX
 			}
 
 			///////////////////
-			_mainWindow = new MainWindow();
-			_mainWindow->show();
+			QApplication   app( p_argc, p_argv );
+			UI::MainWindow mainWindow;
+			mainWindow.show();
+			app.exec();
 		}
 
 		UserInterface::~UserInterface() { _disposeAll(); }

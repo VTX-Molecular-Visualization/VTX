@@ -9,6 +9,11 @@
 #include "vtx_app.hpp"
 #include <QtWidgets/QMainWindow>
 
+namespace Ui
+{
+	class MainWindow;
+}
+
 namespace VTX
 {
 	namespace UI
@@ -18,9 +23,8 @@ namespace VTX
 			Q_OBJECT
 
 		  public:
-			MainWindow( QObject * parent = 0 ) {
-				ui.setupUi( this );
-			}
+			MainWindow( QWidget * = 0 );
+			~MainWindow();
 
 		  signals:
 
@@ -28,7 +32,7 @@ namespace VTX
 			void actionTest();
 
 		  private:
-			Ui_MainWindow ui;
+			Ui::MainWindow * _ui;
 		};
 
 	} // namespace UI

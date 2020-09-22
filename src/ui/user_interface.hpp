@@ -15,7 +15,7 @@ namespace VTX
 {
 	namespace UI
 	{
-		class UserInterface : public BaseComponent, public QApplication
+		class UserInterface : public BaseComponent
 		{
 		  public:
 			UserInterface( int, char ** );
@@ -57,7 +57,7 @@ namespace VTX
 			void _disposeIMGUI();
 
 			// QT
-			MainWindow * _mainWindow = nullptr;
+			UI::MainWindow * _mainWindow = nullptr;
 		};
 	} // namespace UI
 } // namespace VTX
