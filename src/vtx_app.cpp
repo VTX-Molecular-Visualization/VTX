@@ -13,9 +13,8 @@
 
 namespace VTX
 {
-	bool VTXApp::_isRunning;
-
-	VTXApp::VTXApp()
+	int ZERO = 0;
+	VTXApp::VTXApp() : QApplication( ZERO, nullptr )
 	{
 		_eventManager	  = new Event::EventManager();
 		_actionManager	  = new Action::ActionManager();
@@ -23,9 +22,52 @@ namespace VTX
 		_selectionManager = new Selection::SelectionManager();
 	}
 
+	void VTXApp::start()
+	{
+		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
+
+		_ui = new UI::UserInterface();
+
+		_scene = new Object3D::Scene();
+		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
+
+		switchRenderer( Setting::MODE_DEFAULT );
+
+		_stateMachine = new State::StateMachine();
+		_stateMachine->goToState( ID::State::VISUALIZATION );
+
+		VTX_ACTION( new Action::Setting::Load() );
+
+		VTX_INFO( "Application started" );
+		_ui->print();
+
+		_timer = new QTimer( this );
+		connect( _timer, &QTimer::timeout, this, QOverload<>::of( &VTXApp::_update ) );
+		_timer->start( 0 );
+
+#define AUTO_OPEN
+#ifdef AUTO_OPEN
+		VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4f8h.pdb" ) ) );
+#endif
+
+//#define RT_ENABLED
+#ifdef RT_ENABLED
+		// Path * path	   = new Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
+		Path * path = new Path( DATA_DIR + "6vsb.mmtf" );
+		VTX_ACTION( new Action::Open( path ) );
+		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
+		_actionManager->update( 0.f );
+		_workerManager->update( 0.f );
+#endif
+	}
+
+	void VTXApp::stop() { _timer->stop(); }
+
 	VTXApp::~VTXApp()
 	{
 		VTX_INFO( "Destructing application" );
+
+		delete _timer;
 
 		// Respect this order!
 		if ( _stateMachine != nullptr )
@@ -72,58 +114,6 @@ namespace VTX
 		{
 			delete _eventManager;
 		}
-	}
-
-	void VTXApp::start( int p_argc, char * p_argv[] )
-	{
-		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
-
-		_ui = new UI::UserInterface( p_argc, p_argv );
-
-		_scene = new Object3D::Scene();
-		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
-
-		switchRenderer( Setting::MODE_DEFAULT );
-
-		_stateMachine = new State::StateMachine();
-		_stateMachine->goToState( ID::State::VISUALIZATION );
-
-		VTX_ACTION( new Action::Setting::Load() );
-
-		VTXApp::_isRunning = true;
-
-		VTX_INFO( "Application started" );
-		_ui->print();
-
-#define AUTO_OPEN
-#ifdef AUTO_OPEN
-		VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4f8h.pdb" ) ) );
-#endif
-
-//#define RT_ENABLED
-#ifdef RT_ENABLED
-		// Path * path	   = new Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
-		Path * path = new Path( DATA_DIR + "6vsb.mmtf" );
-		VTX_ACTION( new Action::Open( path ) );
-		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
-		_actionManager->update( 0.f );
-		_workerManager->update( 0.f );
-		_isRunning = false;
-#endif
-
-		while ( VTXApp::_isRunning )
-		{
-			_update();
-		}
-	}
-
-	void VTXApp::stop()
-	{
-		VTX_INFO( "Stopping application" );
-
-		VTXApp::_isRunning = false;
-
-		VTX_INFO( "Application stopped" );
 	}
 
 	void VTXApp::goToState( const std::string & p_name, void * const p_arg )

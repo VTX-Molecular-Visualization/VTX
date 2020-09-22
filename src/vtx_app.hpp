@@ -12,6 +12,8 @@
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "worker/worker_manager.hpp"
+#include <QTimer>
+#include <QtWidgets/QApplication>
 
 namespace VTX
 {
@@ -49,7 +51,7 @@ namespace VTX
 		class UserInterface;
 	}
 
-	class VTXApp final
+	class VTXApp final : public QApplication
 	{
 	  public:
 		inline static VTXApp & get()
@@ -57,9 +59,8 @@ namespace VTX
 			static VTXApp instance;
 			return instance;
 		}
-		static bool isRunning() { return VTXApp::_isRunning; }
 
-		void start( int, char ** );
+		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
 		void renderScene() const { _renderer->renderFrame( *_scene ); }
@@ -103,7 +104,8 @@ namespace VTX
 		void switchRenderer( const Renderer::MODE );
 
 	  private:
-		static bool				 _isRunning;
+		QTimer * _timer = nullptr;
+
 		Setting					 _setting	   = Setting();
 		Tool::Logger			 _logger	   = Tool::Logger();
 		Tool::Chrono			 _chrono	   = Tool::Chrono();

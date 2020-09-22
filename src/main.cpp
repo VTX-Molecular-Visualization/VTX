@@ -8,7 +8,9 @@ int main( int p_argc, char * p_argv[] )
 {
 	try
 	{
-		VTXApp::get().start( p_argc, p_argv );
+		VTXApp & app = VTXApp::get();
+		app.start();
+		return app.exec();
 	}
 	catch ( const std::exception & p_e )
 	{
@@ -23,6 +25,4 @@ int main( int p_argc, char * p_argv[] )
 
 		return EXIT_FAILURE;
 	}
-
-	return EXIT_SUCCESS;
 }

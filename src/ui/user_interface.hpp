@@ -8,7 +8,6 @@
 #include "base_component.hpp"
 #include "ui/main_window.hpp"
 #include <GL/gl3w.h>
-#include <QtWidgets/QApplication>
 #include <SDL.h>
 
 namespace VTX
@@ -18,7 +17,7 @@ namespace VTX
 		class UserInterface : public BaseComponent
 		{
 		  public:
-			UserInterface( int, char ** );
+			UserInterface();
 			~UserInterface();
 			void print() const;
 			bool getEvent( SDL_Event & evt ) const;
