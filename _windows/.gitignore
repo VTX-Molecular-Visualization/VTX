@@ -10,3 +10,4 @@ Release/
 RelWithDebInfo/
 build/
 imgui.ini
+VTX_autogen/
