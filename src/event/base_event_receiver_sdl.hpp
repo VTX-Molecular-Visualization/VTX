@@ -17,8 +17,8 @@ namespace VTX
 		class BaseEventReceiverSDL : public BaseEventReceiver<SDL_Event>
 		{
 		  protected:
-			virtual void					_registerEvents() override final;
-			virtual void					_unregisterEvents() override final;
+			void							_registerEvents() override final;
+			void							_unregisterEvents() override final;
 			virtual std::vector<ID::VTX_ID> _getUIItems() const { return std::vector<ID::VTX_ID>(); }
 		};
 	} // namespace Event

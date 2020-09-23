@@ -18,8 +18,8 @@ namespace VTX
 		class BaseEventReceiverVTX : public BaseEventReceiver<VTXEvent>
 		{
 		  protected:
-			virtual void				   _registerEvents() override final;
-			virtual void				   _unregisterEvents() override final;
+			void						   _registerEvents() override final;
+			void						   _unregisterEvents() override final;
 			virtual std::vector<VTX_EVENT> _getEvents() const { return std::vector<VTX_EVENT>(); }
 		};
 	} // namespace Event
