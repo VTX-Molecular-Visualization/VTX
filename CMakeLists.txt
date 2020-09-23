@@ -11,13 +11,6 @@ set(PATH_LIB_SRC "lib_src")
 set(PATH_WINDOWS_RESOURCE "_windows/resource")
 set(CONFIGS "Debug;Release;RelWithDebInfo")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
-set(CMAKE_PREFIX_PATH "D:/Programmes/Qt/5.15.1/msvc2019_64")
-
-# Find packages.
-find_package(Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt5 COMPONENTS Gui REQUIRED)
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
-# TODO: add CUDA and Optix
 
 message("Downloading depdendencies...")
 
@@ -135,6 +128,23 @@ link_directories(${PATH_LIB}/StackWalker/lib/x64)
 # Declare executable with source files.
 add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS})
 
+# Find required packages.
+find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt5 COMPONENTS Gui REQUIRED)
+find_package(Qt5 COMPONENTS Widgets REQUIRED)
+
+# Includes directories.
+target_include_directories(VTX PRIVATE ${PATH_SRC})
+target_include_directories(VTX PRIVATE ${PATH_LIB})
+target_include_directories(VTX PRIVATE ${PATH_LIB_SRC})
+target_include_directories(VTX PRIVATE ${PATH_LIB_SRC}/GL)
+target_include_directories(VTX PRIVATE ${PATH_LIB}/msgpack)
+target_include_directories(VTX PRIVATE ${PATH_LIB}/SDL2/include)
+target_include_directories(VTX PRIVATE ${PATH_LIB}/assimp/include)
+target_include_directories(VTX PRIVATE ${PATH_LIB}/curl/include)
+target_include_directories(VTX PRIVATE ${PATH_LIB}/chemfiles/include)
+target_include_directories(VTX PRIVATE ${PATH_LIB}/StackWalker/include)
+
 # Link libs.
 target_link_libraries(VTX PRIVATE SDL2)
 target_link_libraries(VTX PRIVATE SDL2main)
@@ -149,58 +159,55 @@ target_link_libraries(VTX PRIVATE Qt5::Core)
 target_link_libraries(VTX PRIVATE Qt5::Gui)
 target_link_libraries(VTX PRIVATE Qt5::Widgets)
 
+# TODO: Find optional packages.
+if(0)
+	add_definitions(-DCUDA_DEFINED)
+	add_definitions(-DOPTIX_DEFINED)
+	target_include_directories(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/include")
+	target_include_directories(VTX PRIVATE "C:/ProgramData/NVIDIA Corporation/OptiX SDK 7.1.0/include")
+	target_link_libraries(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/lib/x64/cudart_static.lib")
+	target_link_libraries(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/lib/x64/cuda.lib")
+endif()
+
 if(WIN32)
 	# Add specific libs.
 	target_link_libraries(VTX PRIVATE ws2_32)
-  
-	# Copy DLL to output.	
-	# Debug
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/Debug/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/SDL2.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/assimp-vc142-mtd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/assimp-vc142-mtd.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/zlibd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/zlibd1.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/Debug/libcurl-d.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/libcurl-d.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Debug/Qt5Cored.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/Qt5Cored.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Debug/Qt5Guid.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/Qt5Guid.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Debug/Qt5Widgetsd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/Qt5Widgetsd.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Debug/platforms/qwindowsd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/platforms/qwindowsd.dll)
-	# Release
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/Release/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/SDL2.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Release/assimp-vc142-mt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/assimp-vc142-mt.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Release/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/zlib1.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/Release/libcurl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/libcurl.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Release/Qt5Core.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/Qt5Core.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Release/Qt5Gui.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/Qt5Gui.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Release/Qt5Widgets.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/Qt5Widgets.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Release/platforms/qwindows.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/platforms/qwindows.dll)
-	# RelWithDebInfo
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/RelWithDebInfo/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/SDL2.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/assimp-vc142-mt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/assimp-vc142-mt.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/zlib1.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/RelWithDebInfo/libcurl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/libcurl.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/RelWithDebInfo/Qt5Cored.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/Qt5Cored.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/RelWithDebInfo/Qt5Guid.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/Qt5Guid.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/RelWithDebInfo/Qt5Widgetsd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/Qt5Widgetsd.dll)
-	add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/RelWithDebInfo/platforms/qwindowsd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/platforms/qwindowsd.dll)
-	
-	# Create custom target for GPU sources that copy files to build direcctory.
-	add_custom_target(VTX_SHADERS COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${PATH_SRC}/shader ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../shaders)
-	set_property(TARGET VTX_SHADERS APPEND PROPERTY SOURCES ${SHADERS}) # Workaround to add source to custom target.
-	
-	add_dependencies(VTX VTX_SHADERS)
-	
-endif()
+ endif()
+ 
+# Copy DLL to output.	
+# Debug
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/Debug/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/SDL2.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/assimp-vc142-mtd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/assimp-vc142-mtd.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/zlibd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/zlibd1.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/Debug/libcurl-d.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/libcurl-d.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Debug/Qt5Cored.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/Qt5Cored.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Debug/Qt5Guid.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/Qt5Guid.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Debug/Qt5Widgetsd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/Qt5Widgetsd.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Debug/platforms/qwindowsd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/platforms/qwindowsd.dll)
+# Release
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/Release/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/SDL2.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Release/assimp-vc142-mt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/assimp-vc142-mt.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Release/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/zlib1.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/Release/libcurl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/libcurl.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Release/Qt5Core.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/Qt5Core.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Release/Qt5Gui.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/Qt5Gui.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Release/Qt5Widgets.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/Qt5Widgets.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Release/platforms/qwindows.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/platforms/qwindows.dll)
+# RelWithDebInfo
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/RelWithDebInfo/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/SDL2.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/assimp-vc142-mt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/assimp-vc142-mt.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/zlib1.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/RelWithDebInfo/libcurl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/libcurl.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/RelWithDebInfo/Qt5Cored.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/Qt5Cored.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/RelWithDebInfo/Qt5Guid.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/Qt5Guid.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/RelWithDebInfo/Qt5Widgetsd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/Qt5Widgetsd.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/RelWithDebInfo/platforms/qwindowsd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/platforms/qwindowsd.dll)
 
-# Includes directories.
-target_include_directories(VTX PRIVATE ${PATH_SRC})
-target_include_directories(VTX PRIVATE ${PATH_LIB})
-target_include_directories(VTX PRIVATE ${PATH_LIB_SRC})
-target_include_directories(VTX PRIVATE ${PATH_LIB_SRC}/GL)
-target_include_directories(VTX PRIVATE ${PATH_LIB}/msgpack)
-target_include_directories(VTX PRIVATE ${PATH_LIB}/SDL2/include)
-target_include_directories(VTX PRIVATE ${PATH_LIB}/assimp/include)
-target_include_directories(VTX PRIVATE ${PATH_LIB}/curl/include)
-target_include_directories(VTX PRIVATE ${PATH_LIB}/chemfiles/include)
-target_include_directories(VTX PRIVATE ${PATH_LIB}/StackWalker/include)
+# Create custom target for GPU sources that copy files to build direcctory.
+add_custom_target(VTX_SHADERS COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/${PATH_SRC}/shader ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../shaders)
+set_property(TARGET VTX_SHADERS APPEND PROPERTY SOURCES ${SHADERS}) # Workaround to add source to custom target.
+
+add_dependencies(VTX VTX_SHADERS)
 
 # Compiler options #2.
 if(CMAKE_COMPILER_IS_GNUCC)
@@ -234,14 +241,4 @@ elseif(MSVC)
 	# Set default startup project.
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VTX)
 	#set_target_properties(VTX PROPERTIES VS_GLOBAL_DisableFastUpToDateCheck false)
-endif()
-
-# TODO: find cuda and optix.
-if(WIN322)
-	add_definitions(-DCUDA_DEFINED)
-	add_definitions(-DOPTIX_DEFINED)
-	target_include_directories(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/include")
-	target_include_directories(VTX PRIVATE "C:/ProgramData/NVIDIA Corporation/OptiX SDK 7.1.0/include")
-	target_link_libraries(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/lib/x64/cudart_static.lib")
-	target_link_libraries(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/lib/x64/cuda.lib")
 endif()

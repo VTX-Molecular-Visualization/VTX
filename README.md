@@ -75,7 +75,8 @@ TODO
 
 #### 1. Make solution
 
--   Install Visual Studio 2019 latest version with C++ tools.  
+-   Install Visual Studio 2019 latest version with C++ tools.
+- 	Install Qt5 SDK and add an environment variable : Qt5_DIR = <QtInstallDir>/5.15.1/msvc2019_64
 -   Run _cmake.bat
 
 #### 2. Open solution
