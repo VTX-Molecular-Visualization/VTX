@@ -9,11 +9,6 @@
 #include "vtx_app.hpp"
 #include <QtWidgets/QMainWindow>
 
-namespace Ui
-{
-	class MainWindow;
-}
-
 namespace VTX
 {
 	namespace UI
@@ -26,13 +21,11 @@ namespace VTX
 			MainWindow( QWidget * = 0 );
 			~MainWindow();
 
-
-		  private:
-			Ui::MainWindow * _ui;
-
-			
 		  public slots:
 			void on_actionTest_triggered();
+
+		  private:
+			Ui_MainWindow * _ui;
 		};
 
 	} // namespace UI

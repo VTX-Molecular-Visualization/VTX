@@ -5,21 +5,15 @@ namespace VTX
 {
 	namespace UI
 	{
-		MainWindow::MainWindow( QWidget * p_parent ) : QMainWindow( p_parent ), _ui( new Ui::MainWindow() )
+		MainWindow::MainWindow( QWidget * p_parent ) : QMainWindow( p_parent ), _ui( new Ui_MainWindow() )
 		{
 			_ui->setupUi( this );
-
 			// connect( _ui->actionTest, &QAction::triggered, this, &MainWindow::actionTest );
 		}
 
 		MainWindow::~MainWindow() { delete _ui; }
 
-		void MainWindow::on_actionTest_triggered( )
-		{
-			std::cout << "ACTION TEST" << std::endl;
-		}
+		void MainWindow::on_actionTest_triggered() { std::cout << "ACTION TEST" << std::endl; }
 
 	} // namespace UI
 } // namespace VTX
-
-
