@@ -14,7 +14,12 @@ namespace VTX
 
 		MainWindow::~MainWindow() { delete _ui; }
 
-		void MainWindow::actionTest() { std::cout << "ACTION TEST" << std::endl; }
+		void MainWindow::on_actionTest_triggered( )
+		{
+			std::cout << "ACTION TEST" << std::endl;
+		}
 
 	} // namespace UI
 } // namespace VTX
+
+

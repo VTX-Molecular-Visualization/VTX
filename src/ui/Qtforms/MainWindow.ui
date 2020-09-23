@@ -32,11 +32,13 @@
       <addaction name="menuFile"/>
     </widget>
     <widget class="QStatusBar" name="statusbar"/>
-    <action name="actionTest">
-      <property name="text">
-        <string>ActionTest</string>
-      </property>
-    </action>
+	
+	<action name="actionTest">
+	  <property name="text">
+	    <string>Action Test</string>
+	  </property>
+	</action>
+  
   </widget>
   <resources/>
   <connections/>
