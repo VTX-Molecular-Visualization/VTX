@@ -8,7 +8,6 @@
 #include "event/base_event_receiver_vtx.hpp"
 #include "ui_console_widget.h"
 #include <QDockWidget>
-#include <qdockwidget.h>
 
 namespace VTX
 {

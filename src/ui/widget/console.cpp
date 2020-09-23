@@ -7,7 +7,7 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			Console::Console( QWidget * p_parent ) : QDockWidget( p_parent ), _ui( new Ui_Console() )
+			Console::Console( QWidget * p_parent ) : QDockWidget( this ), _ui( new Ui_Console() )
 			{
 				Event::BaseEventReceiverVTX::_registerEvents();
 				_ui->setupUi( this );
