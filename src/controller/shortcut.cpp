@@ -45,6 +45,7 @@ namespace VTX
 			case SDL_SCANCODE_F11:
 				VTX_ACTION( new Action::Setting::ChangeRenderMode(
 					Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)Renderer::MODE::COUNT ) ) );
+				break;
 			default: break;
 			}
 		}
