@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "ui_MainWindow.h"
+#include "ui_main_window.h"
 #include "vtx_app.hpp"
 #include <QtWidgets/QMainWindow>
 
