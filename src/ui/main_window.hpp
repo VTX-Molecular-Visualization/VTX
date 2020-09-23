@@ -23,6 +23,7 @@ namespace VTX
 
 		  public slots:
 			void on_actionTest_triggered();
+			void on_window_togglelog_triggered();
 
 		  private:
 			Ui_MainWindow * _ui;

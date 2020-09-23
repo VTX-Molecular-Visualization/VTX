@@ -11,7 +11,7 @@ namespace VTX
 			{
 				Event::BaseEventReceiverVTX::_registerEvents();
 				_ui->setupUi( this );
-				//_ui->bottomDockWidget->setWidget( _ui->listWidget );
+				setWidget( _ui->listWidget );
 			}
 
 			Console::~Console()
