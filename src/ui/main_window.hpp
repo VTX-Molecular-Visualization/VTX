@@ -26,13 +26,13 @@ namespace VTX
 			MainWindow( QWidget * = 0 );
 			~MainWindow();
 
-		  signals:
-
-		  public slots:
-			void actionTest();
 
 		  private:
 			Ui::MainWindow * _ui;
+
+			
+		  public slots:
+			void on_actionTest_triggered();
 		};
 
 	} // namespace UI
