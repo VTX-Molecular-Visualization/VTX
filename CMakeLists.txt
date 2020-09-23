@@ -123,7 +123,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/Qtforms")
+set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form")
 
 # Set link directories.
 link_directories(${PATH_LIB}/SDL2/lib/x64)
