@@ -36,6 +36,11 @@ namespace VTX
 		static const int WINDOW_WIDTH_DEFAULT;
 		static const int WINDOW_HEIGHT_DEFAULT;
 
+		static const int	 CONSOLE_WIDGET_HEIGHT_DEFAULT;
+		static const int	 SCENE_WIDGET_WIDTH_DEFAULT;
+		static const int	 INSPECTOR_WIDGET_WIDTH_DEFAULT;
+		static const int	 RENDER_WIDGET_HEIGHT_DEFAULT;
+
 		// Rendering.
 		static const bool ACTIVE_RENDERER_DEFAULT;
 		bool			  activeRenderer = ACTIVE_RENDERER_DEFAULT;

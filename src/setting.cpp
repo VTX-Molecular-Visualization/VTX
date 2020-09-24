@@ -11,6 +11,12 @@ namespace VTX
 	const int						 Setting::WINDOW_WIDTH_DEFAULT		  = 1280;
 	const int						 Setting::WINDOW_HEIGHT_DEFAULT		  = 720;
 
+	const int						 Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT = 200;
+	const int						 Setting::SCENE_WIDGET_WIDTH_DEFAULT = 50;
+	const int						 Setting::INSPECTOR_WIDGET_WIDTH_DEFAULT = 50;
+	const int						 Setting::RENDER_WIDGET_HEIGHT_DEFAULT	 = Setting::WINDOW_HEIGHT_DEFAULT - Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT;
+	
+
 	// Rendering.
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT	= true;
 	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT = Color::Rgb::BLACK;

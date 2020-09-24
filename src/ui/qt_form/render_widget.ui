@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ConsoleWidget</class>
- <widget class="QDockWidget" name="ConsoleWidget">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>800</width>
-    <height>600</height>
-   </rect>
-  </property>
+ <class>RenderWidget</class>
+ <widget class="QDockWidget" name="RenderWidget">
   <property name="windowTitle">
-   <string>Console</string>
+   <string>Render</string>
   </property>
    <widget class="QListWidget" name="listWidget">
      <property name="geometry">

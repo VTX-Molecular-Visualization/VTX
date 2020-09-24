@@ -4,12 +4,36 @@
 	
 	<widget class="QMainWindow" name="MainWindow">
 		<property name="windowTitle">
-			<string>MainWindow</string>
+			<string>VTX</string>
 		</property>
-			
-		<widget class="QWidget" name="centralwidget">
-			<widget class="VTX::UI::Widget::Console" name="console">
-			</widget>
+		
+		
+		<widget class="VTX::UI::Widget::RenderWidget" name="render">
+			<property name="windowTitle"><string>Render</string></property>
+			<attribute name="dockWidgetArea">
+				<number>4</number>
+			</attribute>
+		</widget>
+		
+		<widget class="VTX::UI::Widget::SceneWidget" name="scene">
+			<property name="windowTitle"><string>Scene</string></property>
+			<attribute name="dockWidgetArea">
+				<number>1</number>
+			</attribute>
+		</widget>
+		
+		<widget class="VTX::UI::Widget::InspectorWidget" name="inspector">
+			<property name="windowTitle"><string>Inspector</string></property>
+			<attribute name="dockWidgetArea">
+				<number>2</number>
+			</attribute>
+		</widget>
+		
+		<widget class="VTX::UI::Widget::ConsoleWidget" name="console">
+		<property name="windowTitle"><string>Console</string></property>
+			<attribute name="dockWidgetArea">
+				<number>8</number>
+			</attribute>
 		</widget>
 
 		<widget class="QMenuBar" name="menubar">
@@ -26,7 +50,9 @@
 				<property name="title">
 					<string>&amp;File</string>
 				</property>
-				<addaction name="actionTest"/>
+				<addaction name="file_open"/>
+				<addaction name="separator"/>
+				<addaction name="file_close"/>
 			</widget>
 				
 			<addaction name="menuFile"/>
@@ -36,6 +62,9 @@
 				<property name="title">
 					<string>&amp;Window</string>
 				</property>
+				<addaction name="window_togglerender"/>
+				<addaction name="window_togglescene"/>
+				<addaction name="window_toggleinspector"/>
 				<addaction name="window_togglelog"/>
 			</widget>
 
@@ -46,18 +75,47 @@
 			
 		<widget class="QStatusBar" name="statusbar"/>
 
-		<action name="actionTest">
+		<action name="file_open">
 			<property name="text">
-				<string>Action Test</string>
+				<string>Open...</string>
+			</property>
+		</action>
+		<action name="file_close">
+			<property name="text">
+				<string>Close</string>
 			</property>
 		</action>
 		
+		<action name="window_togglerender">
+			<property name="text">
+				<string>Render</string>
+			</property>
+			<property name="shortcut">
+				<string>F2</string>
+			</property>
+		</action>
+		<action name="window_togglescene">
+			<property name="text">
+				<string>Scene</string>
+			</property>
+			<property name="shortcut">
+				<string>F3</string>
+			</property>
+		</action>
+		<action name="window_toggleinspector">
+			<property name="text">
+				<string>Inspector</string>
+			</property>
+			<property name="shortcut">
+				<string>F4</string>
+			</property>
+		</action>
 		<action name="window_togglelog">
 			<property name="text">
 				<string>Log</string>
 			</property>
 			<property name="shortcut">
-				<string>F12</string>
+				<string>F5</string>
 			</property>
 		</action>
 	</widget>
@@ -65,9 +123,24 @@
 	
 	<customwidgets>
 		<customwidget>
-			<class>VTX::UI::Widget::Console</class>
+			<class>VTX::UI::Widget::RenderWidget</class>
 			<extends>QDockWidget</extends>
-			<header>ui/widget/console.hpp</header>
+			<header>ui/widget/render_widget.hpp</header>
+		</customwidget>
+		<customwidget>
+			<class>VTX::UI::Widget::InspectorWidget</class>
+			<extends>QDockWidget</extends>
+			<header>ui/widget/inspector_widget.hpp</header>
+		</customwidget>
+		<customwidget>
+			<class>VTX::UI::Widget::SceneWidget</class>
+			<extends>QDockWidget</extends>
+			<header>ui/widget/scene_widget.hpp</header>
+		</customwidget>
+		<customwidget>
+			<class>VTX::UI::Widget::ConsoleWidget</class>
+			<extends>QDockWidget</extends>
+			<header>ui/widget/console_widget.hpp</header>
 		</customwidget>
 	</customwidgets>
 	
