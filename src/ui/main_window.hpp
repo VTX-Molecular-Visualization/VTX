@@ -29,6 +29,7 @@ namespace VTX
 			void on_window_togglelog_triggered();
 
 		  private:
+			void setupSlots();
 			void setupDock();
 			void toggleWidget( QWidget * widget );
 		};

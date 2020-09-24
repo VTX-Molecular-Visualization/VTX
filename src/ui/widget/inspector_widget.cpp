@@ -1,5 +1,5 @@
 #include "inspector_widget.hpp"
-#include <QListWidget>
+
 
 namespace VTX
 {
@@ -7,16 +7,9 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			InspectorWidget::InspectorWidget( QWidget * p_parent ) : QDockWidget( p_parent ), _ui( new Ui_InspectorWidget() )
+			InspectorWidget::InspectorWidget( QWidget * p_parent ) : BaseWidget( p_parent )
 			{
-				Event::BaseEventReceiverVTX::_registerEvents();
-				_ui->setupUi( this );
-			}
-
-			InspectorWidget::~InspectorWidget()
-			{
-				Event::BaseEventReceiverVTX::_unregisterEvents();
-				delete ( _ui );
+				_registerEvent( Event::Global::ON_SCENE_CHANGE );
 			}
 
 			void InspectorWidget::receiveEvent( const Event::VTXEvent & p_event )

@@ -1,5 +1,5 @@
 #include "render_widget.hpp"
-#include <QListWidget>
+
 
 namespace VTX
 {
@@ -7,16 +7,9 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			RenderWidget::RenderWidget( QWidget * p_parent ) : QDockWidget( p_parent ), _ui( new Ui_RenderWidget() )
+			RenderWidget::RenderWidget( QWidget * p_parent ) : BaseWidget( p_parent )
 			{
-				Event::BaseEventReceiverVTX::_registerEvents();
-				_ui->setupUi( this );
-			}
-
-			RenderWidget::~RenderWidget()
-			{
-				Event::BaseEventReceiverVTX::_unregisterEvents();
-				delete ( _ui );
+				_registerEvent( Event::Global::ON_SCENE_CHANGE );
 			}
 
 			void RenderWidget::receiveEvent( const Event::VTXEvent & p_event )
