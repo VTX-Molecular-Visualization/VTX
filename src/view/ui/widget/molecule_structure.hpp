@@ -5,7 +5,10 @@
 #pragma once
 #endif
 
+#include "model/molecule.hpp"
+#include "ui/widget/base_widget.hpp"
 #include "ui_molecule_structure.h"
+#include "view/base_view.hpp"
 #include <QTreeWidget>
 
 namespace VTX
@@ -16,16 +19,14 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class MoleculeStructure : public QTreeWidget
+				class MoleculeStructure :
+					public VTX::UI::Widget::BaseWidget<QTreeWidget, Ui_MoleculeStructure>,
+					public View::BaseView<Model ::Molecule>
 				{
 					Q_OBJECT
 
 				  public:
-					MoleculeStructure( QWidget * = 0 );
-					~MoleculeStructure();
-
-				  private:
-					Ui_MoleculeStructure * _ui;
+					MoleculeStructure( Model::Molecule * const p_model, QWidget * = 0 );
 				};
 
 			} // namespace Widget
