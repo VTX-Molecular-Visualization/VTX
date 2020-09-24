@@ -10,6 +10,8 @@ namespace VTX
 	{
 		namespace Window
 		{
+			Console::Console() { _registerEvent( Event::Global::LOG_CONSOLE ); }
+
 			void Console::receiveEvent( const Event::VTXEvent & p_event )
 			{
 				if ( p_event.name == Event::Global::LOG_CONSOLE )

@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#include "event.hpp"
+
 namespace VTX
 {
 	namespace Event
@@ -16,8 +18,10 @@ namespace VTX
 			virtual void receiveEvent( const T & p_event ) {};
 
 		  protected:
-			virtual void _registerEvents()	 = 0;
-			virtual void _unregisterEvents() = 0;
+			virtual void _registerEvents()					   = 0;
+			virtual void _unregisterEvents()				   = 0;
+			virtual void _registerEvent( const VTX_EVENT & )   = 0;
+			virtual void _unregisterEvent( const VTX_EVENT & ) = 0;
 		};
 	} // namespace Event
 } // namespace VTX

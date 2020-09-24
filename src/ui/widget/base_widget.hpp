@@ -18,17 +18,9 @@ namespace VTX
 			class BaseWidget : public Q, public Event::BaseEventReceiverVTX
 			{
 			  public:
-				BaseWidget( QWidget * p_parent ) : Q( p_parent ), _ui( new T() )
-				{
-					Event::BaseEventReceiverVTX::_registerEvents();
-					_ui->setupUi( this );
-				}
+				BaseWidget( QWidget * p_parent ) : Q( p_parent ), _ui( new T() ) { _ui->setupUi( this ); }
 
-				virtual ~BaseWidget()
-				{
-					Event::BaseEventReceiverVTX::_unregisterEvents();
-					delete _ui;
-				}
+				virtual ~BaseWidget() { delete _ui; }
 
 			  protected:
 				T * _ui;

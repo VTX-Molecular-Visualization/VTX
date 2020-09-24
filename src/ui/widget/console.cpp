@@ -8,14 +8,16 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			Console::Console( QWidget * p_parent ) : BaseWidget( p_parent ) { setWidget( _ui->listWidget ); }
+			Console::Console( QWidget * p_parent ) : BaseWidget( p_parent )
+			{
+				_registerEvent( Event::Global::LOG_CONSOLE );
+				setWidget( _ui->listWidget );
+			}
 
 			void Console::receiveEvent( const Event::VTXEvent & p_event )
 			{
 				if ( p_event.name == Event::Global::LOG_CONSOLE )
 				{
-					std::cout << "EVENT LOG" << std::endl;
-
 					const Event::VTXEventLog & event = dynamic_cast<const Event::VTXEventLog &>( p_event );
 					QListWidget * const		   list	 = _ui->listWidget;
 					list->addItem(

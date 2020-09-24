@@ -14,7 +14,7 @@ namespace VTX
 		class Visualization : public BaseState
 		{
 		  public:
-			Visualization() = default;
+			Visualization();
 
 			virtual const std::string & getName() const override { return ID::State::VISUALIZATION; }
 			virtual void				enter( void * const ) override;
@@ -30,12 +30,6 @@ namespace VTX
 			Controller::BaseController * const		 getCurrentController() { return getItem( _controller ); }
 
 			virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
-
-		  protected:
-			virtual std::vector<Event::VTX_EVENT> _getEvents() const override
-			{
-				return std::vector<Event::VTX_EVENT>( 1, Event::Global::ON_SCENE_CHANGE );
-			}
 
 		  private:
 			ID::VTX_ID _controller = ID::Controller::TRACKBALL;

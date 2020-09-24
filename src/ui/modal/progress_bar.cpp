@@ -7,6 +7,8 @@ namespace VTX
 	{
 		namespace Modal
 		{
+			ProgressBar::ProgressBar() { _registerEvent( Event::Global::UPDATE_PROGRESS_BAR ); }
+
 			void ProgressBar::receiveEvent( const Event::VTXEvent & p_event )
 			{
 				if ( p_event.name == Event::Global::UPDATE_PROGRESS_BAR )

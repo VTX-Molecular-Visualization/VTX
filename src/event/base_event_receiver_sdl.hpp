@@ -19,6 +19,8 @@ namespace VTX
 		  protected:
 			void							_registerEvents() override final;
 			void							_unregisterEvents() override final;
+			void							_registerEvent( const VTX_EVENT & ) override final;
+			void							_unregisterEvent( const VTX_EVENT & ) override final;
 			virtual std::vector<ID::VTX_ID> _getUIItems() const { return std::vector<ID::VTX_ID>(); }
 		};
 	} // namespace Event

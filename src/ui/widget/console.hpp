@@ -25,11 +25,6 @@ namespace VTX
 				virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 			  protected:
-				std::vector<Event::VTX_EVENT> _getEvents() const override
-				{
-					return std::vector<Event::VTX_EVENT>( { Event::Global::LOG_CONSOLE } );
-				}
-
 			  private:
 			};
 		} // namespace Widget
