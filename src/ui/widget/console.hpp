@@ -20,7 +20,7 @@ namespace VTX
 				Q_OBJECT
 
 			  public:
-				Console( QWidget * p_parent );
+				Console( QWidget * );
 
 				virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 
