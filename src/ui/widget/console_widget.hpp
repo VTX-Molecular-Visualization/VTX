@@ -15,12 +15,12 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class Console : public BaseWidget<QDockWidget, Ui_ConsoleWidget>
+			class ConsoleWidget : public BaseWidget<QDockWidget, Ui_ConsoleWidget>
 			{
 				Q_OBJECT
 
 			  public:
-				Console( QWidget * );
+				ConsoleWidget( QWidget * );
 
 				virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 
