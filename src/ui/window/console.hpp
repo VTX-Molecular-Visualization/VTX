@@ -17,16 +17,14 @@ namespace VTX
 			class Console : public BaseComponentWindow
 			{
 			  public:
+				Console();
+
 				virtual const std::string & getName() const override { return ID::UI::CONSOLE; }
 				virtual const char *		getTitle() const override { return LOCALE( "Console.Console" ); }
 				virtual void				receiveEvent( const Event::VTXEvent & p_event ) override;
 
 			  protected:
-				virtual void						  _drawContent() override;
-				virtual std::vector<Event::VTX_EVENT> _getEvents() const override
-				{
-					return std::vector<Event::VTX_EVENT>( { Event::Global::LOG_CONSOLE } );
-				}
+				virtual void _drawContent() override;
 
 			  private:
 				std::list<Event::VTXEventLog> _logs = std::list<Event::VTXEventLog>();

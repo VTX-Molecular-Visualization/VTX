@@ -1,5 +1,6 @@
 #include "console_widget.hpp"
 #include <QListWidget>
+#include <iostream>
 
 namespace VTX
 {
@@ -7,17 +8,10 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			ConsoleWidget::ConsoleWidget( QWidget * p_parent ) : QDockWidget( p_parent ), _ui( new Ui_ConsoleWidget() )
+			ConsoleWidget::ConsoleWidget( QWidget * p_parent ) : BaseWidget( p_parent )
 			{
-				Event::BaseEventReceiverVTX::_registerEvents();
-				_ui->setupUi( this );
+				_registerEvent( Event::Global::LOG_CONSOLE );
 				setWidget( _ui->listWidget );
-			}
-
-			ConsoleWidget::~ConsoleWidget()
-			{
-				Event::BaseEventReceiverVTX::_unregisterEvents();
-				delete ( _ui );
 			}
 
 			void ConsoleWidget::receiveEvent( const Event::VTXEvent & p_event )

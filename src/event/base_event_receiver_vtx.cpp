@@ -5,21 +5,25 @@ namespace VTX
 {
 	namespace Event
 	{
-		void BaseEventReceiverVTX::_registerEvents()
+		BaseEventReceiverVTX ::~BaseEventReceiverVTX()
 		{
-			for ( const VTX_EVENT & event : _getEvents() )
-			{
-				VTXApp::get().getEventManager().registerEventReceiverVTX( event, this );
-			}
-		}
-
-		void BaseEventReceiverVTX::_unregisterEvents()
-		{
-			for ( const VTX_EVENT & event : _getEvents() )
+			for ( const VTX_EVENT & event : _events )
 			{
 				VTXApp::get().getEventManager().unregisterEventReceiverVTX( event, this );
 			}
+			_events.clear();
 		}
 
+		void BaseEventReceiverVTX::_registerEvent( const VTX_EVENT & p_event )
+		{
+			_events.emplace_back( p_event );
+			VTXApp::get().getEventManager().registerEventReceiverVTX( p_event, this );
+		}
+
+		void BaseEventReceiverVTX::_unregisterEvent( const VTX_EVENT & p_event )
+		{
+			_events.erase( std::find( _events.begin(), _events.end(), p_event ) );
+			VTXApp::get().getEventManager().unregisterEventReceiverVTX( p_event, this );
+		}
 	} // namespace Event
 } // namespace VTX

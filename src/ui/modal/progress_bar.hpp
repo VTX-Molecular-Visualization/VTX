@@ -16,6 +16,8 @@ namespace VTX
 			class ProgressBar : public BaseComponentModal
 			{
 			  public:
+				ProgressBar();
+
 				virtual const std::string & getName() const override { return ID::UI::PROGRESS_BAR; }
 				virtual const char *		getTitle() const override { return LOCALE( "Modal.Loading" ); }
 				virtual void				receiveEvent( const Event::VTXEvent & p_event ) override;
@@ -24,11 +26,6 @@ namespace VTX
 				virtual bool _drawHeader() override;
 				virtual void _drawContent() override;
 				virtual void _drawFooter() override;
-
-				virtual std::vector<Event::VTX_EVENT> _getEvents() const override
-				{
-					return std::vector<Event::VTX_EVENT>( { Event::Global::UPDATE_PROGRESS_BAR } );
-				}
 
 			  private:
 				float _value = 0.f;

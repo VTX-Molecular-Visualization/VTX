@@ -10,6 +10,8 @@ namespace VTX
 {
 	namespace State
 	{
+		Visualization::Visualization() { _registerEvent( Event::Global::ON_SCENE_CHANGE ); }
+
 		void Visualization::enter( void * const )
 		{
 			// Create controller.

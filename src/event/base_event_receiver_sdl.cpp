@@ -35,5 +35,9 @@ namespace VTX
 			}
 		}
 
+		void BaseEventReceiverSDL::_registerEvent( const VTX_EVENT & ) {}
+
+		void BaseEventReceiverSDL::_unregisterEvent( const VTX_EVENT & ) {}
+
 	} // namespace Event
 } // namespace VTX

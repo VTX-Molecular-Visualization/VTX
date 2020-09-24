@@ -115,8 +115,8 @@ set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form")
 
 # Set link directories.
 link_directories(${PATH_LIB}/SDL2/lib/x64)

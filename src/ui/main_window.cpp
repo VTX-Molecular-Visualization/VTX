@@ -1,5 +1,6 @@
 #include "main_window.hpp"
 #include "action/main.hpp"
+#include "vtx_app.hpp"
 #include <iostream>
 #include <QSettings>
 #include <QCloseEvent>
@@ -10,21 +11,12 @@ namespace VTX
 {
 	namespace UI
 	{
-		MainWindow::MainWindow( QWidget * p_parent ) : QMainWindow( p_parent ), _ui( new Ui_MainWindow() )
+		MainWindow::MainWindow( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
-			_ui->setupUi( this );
-
 			const QSize winsize = QSize( VTX_SETTING().WINDOW_WIDTH_DEFAULT, VTX_SETTING().WINDOW_HEIGHT_DEFAULT );
 			resize( winsize );
 
 			setupDock();
-		}
-
-
-
-		MainWindow::~MainWindow()
-		{
-			delete _ui;
 		}
 
 		void MainWindow::toggleWidget( QWidget * widget )
@@ -34,6 +26,8 @@ namespace VTX
 			else
 				widget->show();
 		}
+
+		void MainWindow::on_window_togglelog_triggered() { _ui->console->show(); }
 
 		void MainWindow::setupDock()
 		{
