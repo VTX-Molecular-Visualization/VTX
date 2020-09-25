@@ -8,13 +8,10 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				MoleculeStructure::MoleculeStructure( QWidget * p_parent ) :
-					QTreeWidget( p_parent ), _ui( new Ui_MoleculeStructure() )
+				MoleculeStructure::MoleculeStructure( Model::Molecule * const p_model, QWidget * p_parent ) :
+					View::BaseView<Model::Molecule>( p_model ), BaseWidget( p_parent )
 				{
-					_ui->setupUi( this );
 				}
-
-				MoleculeStructure::~MoleculeStructure() { delete _ui; }
 
 			} // namespace Widget
 		}	  // namespace UI
