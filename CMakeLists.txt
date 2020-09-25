@@ -209,6 +209,9 @@ set_property(TARGET VTX_SHADERS APPEND PROPERTY SOURCES ${SHADERS}) # Workaround
 
 add_dependencies(VTX VTX_SHADERS)
 
+# Qt options
+set_property(TARGET VTX PROPERTY AUTOUIC_OPTIONS "--no-autoconnection")
+
 # Compiler options #2.
 if(CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(VTX PRIVATE "-Wall -Wextra")
