@@ -33,7 +33,8 @@ namespace VTX
 
 			// Qt.
 			inline const UI::MainWindow & getMainWindow() const { return *_mainWindow; }
-			inline UI::MainWindow &		  getMainWindow() { return *_mainWindow; }
+
+			inline UI::MainWindow & getMainWindow() { return *_mainWindow; }
 
 		  protected:
 			virtual bool _drawHeader() override;
