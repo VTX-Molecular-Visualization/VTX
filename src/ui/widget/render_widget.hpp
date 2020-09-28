@@ -8,6 +8,7 @@
 #include "base_widget.hpp"
 #include "ui_render_widget.h"
 #include <QDockWidget>
+//#include <QOpenGLFunctions>
 
 namespace VTX
 {
@@ -15,17 +16,16 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class RenderWidget : public BaseWidget<QDockWidget, Ui_RenderWidget>
+			class RenderWidget : public BaseWidget<QDockWidget, Ui_RenderWidget>//, protected QOpenGLFunctions
 			{
 				Q_OBJECT
 
-			public:
+			  public:
 				RenderWidget( QWidget * p_parent );
 
-				virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
-
-			private:
-				Ui_RenderWidget * _ui;
+			  private:
+				//QOpenGLContext *	 _context = nullptr;
+				//QOpenGLPaintDevice * _device  = nullptr;
 			};
 		} // namespace Widget
 	}	  // namespace UI
