@@ -9,6 +9,7 @@ set(PATH_SRC "src")
 set(PATH_LIB "lib")
 set(PATH_LIB_SRC "lib_src")
 set(PATH_WINDOWS_RESOURCE "_windows/resource")
+set(PATH_QT_RESOURCE "asset/qt_resources")
 set(CONFIGS "Debug;Release;RelWithDebInfo")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 
@@ -106,6 +107,17 @@ foreach(SRC IN ITEMS ${FORMS})
     source_group("Forms" FILES "${SRC}")
 endforeach()
 
+# Get all QT Resources Files.
+file(GLOB_RECURSE QT_RESOURCES ${PATH_QT_RESOURCE}/*.qrc)
+foreach(SRC IN ITEMS ${QT_RESOURCES})
+	message("items : " ${ITEMS})
+    get_filename_component(SRC_PATH "${SRC}" PATH)
+    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_QT_RESOURCE}" "${SRC_PATH}")
+    string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
+	# Create group to make visual studio filters.
+    source_group("QtResources" FILES "${SRC}")
+endforeach()
+
 message("Copying all sources... DONE")
 
 # Compiler options #1.
@@ -126,7 +138,7 @@ link_directories(${PATH_LIB}/chemfiles/lib/x64)
 link_directories(${PATH_LIB}/StackWalker/lib/x64)
 
 # Declare executable with source files.
-add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS})
+add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESOURCES})
 
 # Find required packages.
 find_package(Qt5 COMPONENTS Core REQUIRED)
