@@ -30,28 +30,19 @@ namespace VTX
 			// Buffer need to be deleted manually in the callback to avoid copy.
 			std::string * _buffer = new std::string();
 
-			static size_t _writeCallback( const void * p_content,
-										  const size_t p_size,
-										  const size_t p_nmemb,
-										  const void * p_userp )
+			static size_t _writeCallback( const void * p_content, const size_t p_size, const size_t p_nmemb, const void * p_userp )
 			{
 				( (std::string *)p_userp )->append( (char *)p_content, p_size * p_nmemb );
 				return p_size * p_nmemb;
 			}
 
-			static int _progressCallback( const void *	   p_clientp,
-										  const curl_off_t p_dltotal,
-										  const curl_off_t p_dlnow,
-										  const curl_off_t p_ultotal,
-										  const curl_off_t p_ulnow )
+			static int _progressCallback( const void * p_clientp, const curl_off_t p_dltotal, const curl_off_t p_dlnow, const curl_off_t p_ultotal, const curl_off_t p_ulnow )
 			{
 				PROGRESS = 0.f;
 				if ( p_dltotal > 0.f )
 				{
 					PROGRESS = (float)p_dlnow / (float)p_dltotal;
 				}
-
-				// VTX_DEBUG( std::to_string( uint( PROGRESS * 100 ) ) + "%" );
 
 				return 0;
 			}

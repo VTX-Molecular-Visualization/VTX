@@ -21,6 +21,49 @@ namespace VTX
 			Generic::clearVector( _paths );
 		}
 
+		void Scene::addMolecule( MoleculePtr const p_molecule )
+		{
+			_molecules.emplace( p_molecule, 0.f );
+			_aabb.extend( p_molecule->getAABB() );
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, p_molecule ) );
+		}
+
+		void Scene::removeMolecule( MoleculePtr const p_molecule )
+		{
+			_molecules.erase( p_molecule );
+			_computeAABB();
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_REMOVED, p_molecule ) );
+		}
+
+		void Scene::addPath( PathPtr const p_path ) { _paths.emplace_back( p_path ); }
+
+		void Scene::addMesh( MeshTrianglePtr const p_mesh )
+		{
+			_meshes.emplace_back( p_mesh );
+			_aabb.extend( p_mesh->getAABB() );
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_ADDED, p_mesh ) );
+		}
+
+		void Scene::removeMesh( MeshTrianglePtr const p_mesh )
+		{
+			_meshes.erase( std::find( _meshes.begin(), _meshes.end(), p_mesh ) );
+			_computeAABB();
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_REMOVED, p_mesh ) );
+		}
+
+		void Scene::_computeAABB()
+		{
+			_aabb.invalidate();
+			for ( const PairMoleculePtrFloat & mol : _molecules )
+			{
+				_aabb.extend( mol.first->getAABB() );
+			}
+			for ( const MeshTrianglePtr & mesh : _meshes )
+			{
+				_aabb.extend( mesh->getAABB() );
+			}
+		}
+
 		void Scene::update( const double & p_deltaTime )
 		{
 			// TOCHECK: do that in state or in scene?

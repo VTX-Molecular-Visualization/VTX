@@ -6,18 +6,11 @@ namespace VTX
 {
 	namespace Event
 	{
-		void EventManager::registerEventReceiverSDL( BaseEventReceiverSDL * const p_receiver )
-		{
-			_receiversSDLGlobal.emplace( p_receiver );
-		}
+		void EventManager::registerEventReceiverSDL( BaseEventReceiverSDL * const p_receiver ) { _receiversSDLGlobal.emplace( p_receiver ); }
 
-		void EventManager::unregisterEventReceiverSDL( BaseEventReceiverSDL * const p_receiver )
-		{
-			_receiversSDLGlobal.erase( p_receiver );
-		}
+		void EventManager::unregisterEventReceiverSDL( BaseEventReceiverSDL * const p_receiver ) { _receiversSDLGlobal.erase( p_receiver ); }
 
-		void EventManager::registerEventReceiverSDL( const ID::VTX_ID &			  p_windowId,
-													 BaseEventReceiverSDL * const p_receiver )
+		void EventManager::registerEventReceiverSDL( const ID::VTX_ID & p_windowId, BaseEventReceiverSDL * const p_receiver )
 		{
 			if ( _receiversSDL.find( p_windowId ) == _receiversSDL.end() )
 			{
@@ -27,14 +20,12 @@ namespace VTX
 			_receiversSDL.at( p_windowId ).emplace( p_receiver );
 		}
 
-		void EventManager::unregisterEventReceiverSDL( const ID::VTX_ID &			p_windowId,
-													   BaseEventReceiverSDL * const p_receiver )
+		void EventManager::unregisterEventReceiverSDL( const ID::VTX_ID & p_windowId, BaseEventReceiverSDL * const p_receiver )
 		{
 			_receiversSDL.at( p_windowId ).erase( p_receiver );
 		}
 
-		void EventManager::registerEventReceiverVTX( const VTX_EVENT &			  p_event,
-													 BaseEventReceiverVTX * const p_receiver )
+		void EventManager::registerEventReceiverVTX( const VTX_EVENT & p_event, BaseEventReceiverVTX * const p_receiver )
 		{
 			if ( _receiversVTX.find( p_event ) == _receiversVTX.end() )
 			{
@@ -44,11 +35,7 @@ namespace VTX
 			_receiversVTX.at( p_event ).emplace( p_receiver );
 		}
 
-		void EventManager::unregisterEventReceiverVTX( const VTX_EVENT &			p_event,
-													   BaseEventReceiverVTX * const p_receiver )
-		{
-			_receiversVTX.at( p_event ).erase( p_receiver );
-		}
+		void EventManager::unregisterEventReceiverVTX( const VTX_EVENT & p_event, BaseEventReceiverVTX * const p_receiver ) { _receiversVTX.at( p_event ).erase( p_receiver ); }
 
 		void EventManager::fireEvent( VTXEvent * const p_event )
 		{

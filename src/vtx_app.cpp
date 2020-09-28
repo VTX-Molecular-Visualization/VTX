@@ -46,9 +46,9 @@ namespace VTX
 		connect( _timer, &QTimer::timeout, this, QOverload<>::of( &VTXApp::_update ) );
 		_timer->start( 0 );
 
-#define AUTO_OPEN
+//#define AUTO_OPEN
 #ifdef AUTO_OPEN
-		VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4f8h.pdb" ) ) );
+		VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
 #endif
 
 //#define RT_ENABLED
@@ -172,8 +172,7 @@ namespace VTX
 				_renderer->init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
 			}
 			// Resize if needed.
-			else if ( _renderer->getWidth() != getScene().getCamera().getScreenWidth()
-					  || _renderer->getHeight() != getScene().getCamera().getScreenHeight() )
+			else if ( _renderer->getWidth() != getScene().getCamera().getScreenWidth() || _renderer->getHeight() != getScene().getCamera().getScreenHeight() )
 			{
 				_renderer->resize( getScene().getCamera().getScreenWidth(), getScene().getCamera().getScreenHeight() );
 			}

@@ -9,9 +9,7 @@ namespace VTX
 	{
 		void WorkerManager::run( BaseWorker * const p_woker ) { p_woker->work(); }
 
-		void WorkerManager::run( BaseWorker * const			   p_worker,
-								 const CallbackSuccess * const p_success,
-								 const CallbackError * const   p_error )
+		void WorkerManager::run( BaseWorker * const p_worker, const CallbackSuccess * const p_success, const CallbackError * const p_error )
 		{
 			_worker			 = p_worker;
 			_success		 = p_success;
@@ -58,13 +56,13 @@ namespace VTX
 
 			if ( _worker->isFinished() )
 			{
-				VTX_EVENT( new Event::VTXEventFloat( Event::Global::UPDATE_PROGRESS_BAR, 1.f ) );
+				VTX_EVENT( new Event::VTXEventValue<float>( Event::Global::UPDATE_PROGRESS_BAR, 1.f ) );
 				( *_success )();
 				_clean();
 			}
 			else
 			{
-				VTX_EVENT( new Event::VTXEventFloat( Event::Global::UPDATE_PROGRESS_BAR, _worker->getProgress() ) );
+				VTX_EVENT( new Event::VTXEventValue<float>( Event::Global::UPDATE_PROGRESS_BAR, _worker->getProgress() ) );
 			}
 		}
 

@@ -25,7 +25,6 @@ namespace VTX
 
 				  public:
 					MoleculeStructure( Model::Molecule * const p_model, QWidget * = 0 );
-					~MoleculeStructure();
 				};
 
 			} // namespace Widget

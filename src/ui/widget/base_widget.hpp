@@ -19,8 +19,10 @@ namespace VTX
 			{
 			  public:
 				BaseWidget( QWidget * p_parent ) : Q( p_parent ), _ui( new T() ) { _ui->setupUi( this ); }
-
 				virtual ~BaseWidget() { delete _ui; }
+
+				inline const T & getUI() const { return _ui; }
+				inline T &		 getUI() { return _ui; }
 
 			  protected:
 				T * _ui;
