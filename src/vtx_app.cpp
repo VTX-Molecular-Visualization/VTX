@@ -13,6 +13,7 @@
 
 namespace VTX
 {
+	// TODO: ugly...
 	int ZERO = 0;
 	VTXApp::VTXApp() : QApplication( ZERO, nullptr )
 	{

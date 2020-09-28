@@ -31,6 +31,10 @@ namespace VTX
 			inline const ID::VTX_ID getHoveredWindow() const { return _hoveredWindow; }
 			inline void				setHoveredWindow( const ID::VTX_ID & p_id ) { _hoveredWindow = p_id; }
 
+			// Qt.
+			inline const UI::MainWindow & getMainWindow() const { return *_mainWindow; }
+			inline UI::MainWindow &		  getMainWindow() { return *_mainWindow; }
+
 		  protected:
 			virtual bool _drawHeader() override;
 			virtual void _drawContent() override;
@@ -55,7 +59,7 @@ namespace VTX
 			void _disposeGL();
 			void _disposeIMGUI();
 
-			// QT
+			// Qt.
 			UI::MainWindow * _mainWindow = nullptr;
 		};
 	} // namespace UI
