@@ -9,7 +9,6 @@
 #include "ui_scene_widget.h"
 #include <QDockWidget>
 
-
 namespace VTX
 {
 	namespace UI
@@ -22,13 +21,10 @@ namespace VTX
 
 			  public:
 				SceneWidget( QWidget * p_parent );
-				
-				virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-			  private:
-				Ui_SceneWidget * _ui;
+				virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 			};
 		} // namespace Widget
-	}// namespace UI
+	}	  // namespace UI
 } // namespace VTX
 #endif

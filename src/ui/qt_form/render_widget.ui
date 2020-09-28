@@ -2,19 +2,18 @@
 <ui version="4.0">
  <class>RenderWidget</class>
  <widget class="QDockWidget" name="RenderWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>256</width>
+    <height>214</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Render</string>
   </property>
-   <widget class="QListWidget" name="listWidget">
-     <property name="geometry">
-       <rect>
-         <x>-30</x>
-         <y>-19</y>
-         <width>131</width>
-         <height>301</height>
-       </rect>
-     </property>
-   </widget>
+  <!--<widget class="QOpenGLWidget" name="openGLWidget"/>-->
  </widget>
  <resources/>
  <connections/>

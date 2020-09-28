@@ -9,7 +9,6 @@
 #include "ui_inspector_widget.h"
 #include <QDockWidget>
 
-
 namespace VTX
 {
 	namespace UI
@@ -22,11 +21,6 @@ namespace VTX
 
 			  public:
 				InspectorWidget( QWidget * p_parent );
-
-				virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
-
-			  private:
-				Ui_InspectorWidget * _ui;
 			};
 		} // namespace Widget
 	}	  // namespace UI

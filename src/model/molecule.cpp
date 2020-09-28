@@ -109,8 +109,7 @@ namespace VTX
 		{
 			if ( p_frameIdx > getFrameCount() )
 			{
-				VTX_WARNING( "Frame " + std::to_string( p_frameIdx )
-							 + " does not exists / Count: " + std::to_string( getFrameCount() ) );
+				VTX_WARNING( "Frame " + std::to_string( p_frameIdx ) + " does not exists / Count: " + std::to_string( getFrameCount() ) );
 				return;
 			}
 
@@ -134,10 +133,7 @@ namespace VTX
 
 		void Molecule::_updateBufferAtomPositions() const
 		{
-			glNamedBufferSubData( _atomPositionsVBO,
-								  0,
-								  sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
-								  _atomPositionsFrames[ _currentFrame ].data() );
+			glNamedBufferSubData( _atomPositionsVBO, 0, sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(), _atomPositionsFrames[ _currentFrame ].data() );
 		}
 
 		void Molecule::_fillBufferAtomRadius()
@@ -148,8 +144,7 @@ namespace VTX
 				_bufferAtomRadius[ i ] = _atoms[ i ]->getVdwRadius();
 			}
 
-			glNamedBufferData(
-				_atomRadiusVBO, sizeof( float ) * _bufferAtomRadius.size(), _bufferAtomRadius.data(), GL_STATIC_DRAW );
+			glNamedBufferData( _atomRadiusVBO, sizeof( float ) * _bufferAtomRadius.size(), _bufferAtomRadius.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferAtomColors()
@@ -176,10 +171,7 @@ namespace VTX
 						_bufferAtomColors[ i ] = _atoms[ i ]->getColor();
 					}
 					break;
-				case Generic::COLOR_MODE::RESIDUE:
-					_bufferAtomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor();
-
-					break;
+				case Generic::COLOR_MODE::RESIDUE: _bufferAtomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor(); break;
 				case Generic::COLOR_MODE::CHAIN: _bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor(); break;
 				case Generic::COLOR_MODE::PROTEIN: _bufferAtomColors[ i ] = _color; break;
 
@@ -187,10 +179,7 @@ namespace VTX
 				}
 			}
 
-			glNamedBufferData( _atomColorsVBO,
-							   sizeof( Color::Rgb ) * _bufferAtomColors.size(),
-							   _bufferAtomColors.data(),
-							   GL_STATIC_DRAW );
+			glNamedBufferData( _atomColorsVBO, sizeof( Color::Rgb ) * _bufferAtomColors.size(), _bufferAtomColors.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()
@@ -216,10 +205,7 @@ namespace VTX
 				}
 			}
 
-			glNamedBufferData( _atomVisibilitiesVBO,
-							   sizeof( uint ) * _bufferAtomVisibilities.size(),
-							   _bufferAtomVisibilities.data(),
-							   GL_STATIC_DRAW );
+			glNamedBufferData( _atomVisibilitiesVBO, sizeof( uint ) * _bufferAtomVisibilities.size(), _bufferAtomVisibilities.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferBonds()
@@ -238,8 +224,7 @@ namespace VTX
 		{
 			// TODO: add more infos in debug (solvents, ions, ss...).
 			VTX_INFO( "Molecule: " + _name );
-			VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: "
-					  + std::to_string( _residues.size() ) + " / Atoms: " + std::to_string( _atoms.size() )
+			VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: " + std::to_string( _residues.size() ) + " / Atoms: " + std::to_string( _atoms.size() )
 					  + " / Bonds: " + std::to_string( _bonds.size() ) );
 
 			// Display unknown symbols.
@@ -319,8 +304,7 @@ namespace VTX
 
 			glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
-			glVertexAttribPointer(
-				ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -390,8 +374,7 @@ namespace VTX
 
 				for ( uint residueIndex = 0; residueIndex < otherChain.getResidueCount(); ++residueIndex )
 				{
-					const Residue & otherResidue
-						= p_molecule.getResidue( otherChain.getIndexFirstResidue() + residueIndex );
+					const Residue &	 otherResidue = p_molecule.getResidue( otherChain.getIndexFirstResidue() + residueIndex );
 					Model::Residue & modelResidue = getResidue( otherChain.getIndexFirstResidue() + residueIndex );
 					modelResidue.setIndex( otherResidue.getIndex() );
 					modelResidue.setMoleculePtr( this );

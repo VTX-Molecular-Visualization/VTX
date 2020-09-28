@@ -36,7 +36,6 @@ namespace VTX
 
 			// Load all files.
 			Tool::Chrono chrono;
-			bool		 hasChangeScene = false;
 			for ( const Path * path : _paths )
 			{
 				chrono.start();
@@ -63,7 +62,6 @@ namespace VTX
 						molecule->init();
 						molecule->print();
 						VTXApp::get().getScene().addMolecule( molecule );
-						hasChangeScene = true;
 					}
 					catch ( const std::exception & p_e )
 					{
@@ -85,7 +83,6 @@ namespace VTX
 						mesh->init();
 						mesh->print();
 						VTXApp::get().getScene().addMesh( mesh );
-						hasChangeScene = true;
 					}
 					catch ( const std::exception & p_e )
 					{
@@ -143,7 +140,6 @@ namespace VTX
 						molecule->init();
 						molecule->print();
 						VTXApp::get().getScene().addMolecule( molecule );
-						hasChangeScene = true;
 					}
 					catch ( const std::exception & p_e )
 					{
@@ -162,11 +158,6 @@ namespace VTX
 				VTX_INFO( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
-			if ( hasChangeScene )
-			{
-				VTX_EVENT( new Event::VTXEventOnSceneChange( Event::Global::ON_SCENE_CHANGE ) );
-			}
-
 			_isFinished = true;
 		}
 
@@ -174,8 +165,7 @@ namespace VTX
 		{
 			Path extension = p_path.extension();
 
-			if ( extension == ".pdb" || extension == ".mmtf" || extension == ".cif" || extension == ".arc"
-				 || extension == ".xyz" || extension == ".dcd" )
+			if ( extension == ".pdb" || extension == ".mmtf" || extension == ".cif" || extension == ".arc" || extension == ".xyz" || extension == ".dcd" )
 			{
 				return MODE::MOLECULE;
 			}

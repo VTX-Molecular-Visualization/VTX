@@ -10,7 +10,13 @@ namespace VTX
 {
 	namespace State
 	{
-		Visualization::Visualization() { _registerEvent( Event::Global::ON_SCENE_CHANGE ); }
+		Visualization::Visualization()
+		{
+			_registerEvent( Event::Global::MOLECULE_ADDED );
+			_registerEvent( Event::Global::MOLECULE_REMOVED );
+			_registerEvent( Event::Global::MESH_ADDED );
+			_registerEvent( Event::Global::MESH_REMOVED );
+		}
 
 		void Visualization::enter( void * const )
 		{
@@ -60,13 +66,7 @@ namespace VTX
 
 		void Visualization::recenter() { getItem<VTX::Controller::BaseCameraController>( _controller )->reset(); }
 
-		void Visualization::receiveEvent( const Event::VTXEvent & p_event )
-		{
-			if ( p_event.name == Event::Global::ON_SCENE_CHANGE )
-			{
-				recenter();
-			}
-		}
+		void Visualization::receiveEvent( const Event::VTXEvent & p_event ) { recenter(); }
 
 	} // namespace State
 } // namespace VTX

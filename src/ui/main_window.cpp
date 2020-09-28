@@ -34,33 +34,23 @@ namespace VTX
 		{
 			connect( _ui->file_open, &QAction::triggered, this, &MainWindow::on_file_open_triggered );
 			connect( _ui->file_close, &QAction::triggered, this, &MainWindow::on_file_close_triggered );
-
-			connect(
-				_ui->window_togglerender, &QAction::triggered, this, &MainWindow::on_window_togglerender_triggered );
-			connect( _ui->window_toggleinspector,
-					 &QAction::triggered,
-					 this,
-					 &MainWindow::on_window_toggleinspector_triggered );
+			connect( _ui->window_togglerender, &QAction::triggered, this, &MainWindow::on_window_togglerender_triggered );
+			connect( _ui->window_toggleinspector, &QAction::triggered, this, &MainWindow::on_window_toggleinspector_triggered );
 			connect( _ui->window_togglescene, &QAction::triggered, this, &MainWindow::on_window_togglescene_triggered );
 			connect( _ui->window_togglelog, &QAction::triggered, this, &MainWindow::on_window_togglelog_triggered );
 		}
 
 		void MainWindow::setupDock()
 		{
-			this->setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks
-								  | DockOption::AnimatedDocks );
+			this->setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks | DockOption::AnimatedDocks );
 
 			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _ui->scene, Qt::Orientation::Horizontal );
 			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _ui->render, Qt::Orientation::Horizontal );
 			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _ui->inspector, Qt::Orientation::Horizontal );
 			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _ui->console, Qt::Orientation::Vertical );
 
-			resizeDocks( { _ui->render, _ui->console },
-						 { VTX_SETTING().RENDER_WIDGET_HEIGHT_DEFAULT, VTX_SETTING().CONSOLE_WIDGET_HEIGHT_DEFAULT },
-						 Qt::Orientation::Vertical );
-			resizeDocks( { _ui->scene, _ui->inspector },
-						 { VTX_SETTING().SCENE_WIDGET_WIDTH_DEFAULT, VTX_SETTING().INSPECTOR_WIDGET_WIDTH_DEFAULT },
-						 Qt::Orientation::Horizontal );
+			resizeDocks( { _ui->render, _ui->console }, { VTX_SETTING().RENDER_WIDGET_HEIGHT_DEFAULT, VTX_SETTING().CONSOLE_WIDGET_HEIGHT_DEFAULT }, Qt::Orientation::Vertical );
+			resizeDocks( { _ui->scene, _ui->inspector }, { VTX_SETTING().SCENE_WIDGET_WIDTH_DEFAULT, VTX_SETTING().INSPECTOR_WIDGET_WIDTH_DEFAULT }, Qt::Orientation::Horizontal );
 		}
 
 		void MainWindow::on_file_open_triggered()

@@ -19,9 +19,7 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class MoleculeStructure :
-					public VTX::UI::Widget::BaseWidget<QTreeWidget, Ui_MoleculeStructure>,
-					public View::BaseView<Model ::Molecule>
+				class MoleculeStructure : public VTX::UI::Widget::BaseWidget<QTreeWidget, Ui_MoleculeStructure>, public View::BaseView<Model ::Molecule>
 				{
 					Q_OBJECT
 

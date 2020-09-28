@@ -11,14 +11,11 @@ namespace VTX
 
 			void ProgressBar::receiveEvent( const Event::VTXEvent & p_event )
 			{
-				if ( p_event.name == Event::Global::UPDATE_PROGRESS_BAR )
-				{
-					_value = dynamic_cast<const Event::VTXEventFloat &>( p_event ).arg;
+				_value = dynamic_cast<const Event::VTXEventValue<float> &>( p_event ).value;
 
-					if ( _value >= 1.f )
-					{
-						_value = 0.f;
-					}
+				if ( _value >= 1.f )
+				{
+					_value = 0.f;
 				}
 			}
 
