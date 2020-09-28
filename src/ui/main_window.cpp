@@ -17,6 +17,17 @@ namespace VTX
 			const QSize winsize = QSize( VTX_SETTING().WINDOW_WIDTH_DEFAULT, VTX_SETTING().WINDOW_HEIGHT_DEFAULT );
 			resize( winsize );
 			setupDock();
+
+			loadStyleSheet( VTX_SETTING().STYLESHEET_FILE_DEFAULT );
+		}
+
+		void MainWindow::loadStyleSheet( const char * p_stylesheetPath )
+		{
+			QFile stylesheetFile( p_stylesheetPath );
+			stylesheetFile.open( QFile::ReadOnly );
+
+			QString stylesheet = stylesheetFile.readAll();
+			setStyleSheet( stylesheet );
 		}
 
 		void MainWindow::setupSlots()
@@ -39,9 +50,9 @@ namespace VTX
 			this->setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks
 								  | DockOption::AnimatedDocks );
 
-			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _ui->inspector, Qt::Orientation::Horizontal );
-			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _ui->render, Qt::Orientation::Horizontal );
 			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _ui->scene, Qt::Orientation::Horizontal );
+			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _ui->render, Qt::Orientation::Horizontal );
+			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _ui->inspector, Qt::Orientation::Horizontal );
 			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _ui->console, Qt::Orientation::Vertical );
 
 			resizeDocks( { _ui->render, _ui->console },

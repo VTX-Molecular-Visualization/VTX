@@ -1,0 +1,45 @@
+/* For all widgets */
+QWidget
+{
+	background-color : #222222;
+	color : #FFFFFF;
+	border: 1px solid #444444;
+}
+
+/* Window resize area */
+QMainWindow::separator
+{
+    background: black;
+    width: 2px;
+    height: 2px;
+}
+
+QMenuBar::item:selected
+{
+	background-color : #444444;
+}
+QMenuBar::item:pressed
+{
+	background-color : #444444;
+}
+
+QMenu
+{
+    border: 1px solid #444444;
+}
+QMenu::item:selected
+{
+    background-color: #444444;
+}
+
+
+QDockWidget
+{
+	titlebar-close-icon: url(:/sprite/close_icon.png);
+	titlebar-normal-icon: url(:/sprite/undock_icon.png);
+}
+QDockWidget::close-button, QDockWidget::float-button
+{
+	/* set border to 0 to remove auto background */
+	border: 0px;
+}

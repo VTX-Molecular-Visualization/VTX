@@ -29,6 +29,7 @@ namespace VTX
 			void on_window_togglelog_triggered();
 
 		  private:
+			void loadStyleSheet( const char * p_stylesheetPath );
 			void setupSlots();
 			void setupDock();
 			void toggleWidget( QWidget * widget );

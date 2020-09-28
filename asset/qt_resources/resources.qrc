@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+    <file>stylesheet.css</file>
+    <file>sprite/close_icon.png</file>
+    <file>sprite/undock_icon.png</file>
+</qresource>
+</RCC>
