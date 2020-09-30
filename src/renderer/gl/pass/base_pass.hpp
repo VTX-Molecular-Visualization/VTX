@@ -8,7 +8,7 @@
 #include "define.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/gl/program_manager.hpp"
-#include <GL/gl3w.h>
+#include <QOpenGLFunctions_4_5_Compatibility>
 
 namespace VTX
 {
@@ -18,7 +18,7 @@ namespace VTX
 
 		namespace Pass
 		{
-			class BasePass
+			class BasePass : public QOpenGLFunctions_4_5_Compatibility
 			{
 			  public:
 				BasePass() = default;

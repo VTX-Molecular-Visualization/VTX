@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>RenderWidget</class>
- <widget class="QDockWidget" name="RenderWidget">
+ <widget class="QDockWidget">
   <property name="geometry">
    <rect>
     <x>0</x>

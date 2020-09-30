@@ -64,21 +64,6 @@ namespace VTX
 				}
 			};
 
-			class ChangeTheme : public BaseAction
-			{
-			  public:
-				explicit ChangeTheme( const Style::THEME p_theme ) : _theme( p_theme ) {}
-
-				virtual void execute() override
-				{
-					VTX_SETTING().theme = _theme;
-					VTXApp::get().getUI().setTheme();
-				};
-
-			  private:
-				const Style::THEME _theme;
-			};
-
 			class ChangeDisplayMode : public BaseAction
 			{
 			  public:
@@ -115,10 +100,7 @@ namespace VTX
 			class ChangeRepresentation : public BaseAction
 			{
 			  public:
-				explicit ChangeRepresentation( const Generic::REPRESENTATION p_representation ) :
-					_representation( p_representation )
-				{
-				}
+				explicit ChangeRepresentation( const Generic::REPRESENTATION p_representation ) : _representation( p_representation ) {}
 
 				virtual void execute() override
 				{
@@ -139,9 +121,8 @@ namespace VTX
 			{
 			  public:
 				explicit ChangeAtomsRadius( const float p_atomsRadius ) :
-					_atomsRadius( VTX_SETTING().representation == Generic::REPRESENTATION::BALL_AND_STICK
-									  ? Util::Math::max( VTX_SETTING().bondsRadius, p_atomsRadius )
-									  : p_atomsRadius )
+					_atomsRadius( VTX_SETTING().representation == Generic::REPRESENTATION::BALL_AND_STICK ? Util::Math::max( VTX_SETTING().bondsRadius, p_atomsRadius )
+																										  : p_atomsRadius )
 				{
 				}
 
@@ -155,9 +136,8 @@ namespace VTX
 			{
 			  public:
 				explicit ChangeBondsRadius( const float p_bondsRadius ) :
-					_bondsRadius( VTX_SETTING().representation == Generic::REPRESENTATION::BALL_AND_STICK
-									  ? Util::Math::min( VTX_SETTING().atomsRadius, p_bondsRadius )
-									  : p_bondsRadius )
+					_bondsRadius( VTX_SETTING().representation == Generic::REPRESENTATION::BALL_AND_STICK ? Util::Math::min( VTX_SETTING().atomsRadius, p_bondsRadius )
+																										  : p_bondsRadius )
 				{
 				}
 
@@ -212,7 +192,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().activeVSync = _active;
-					VTXApp::get().getUI().setVSync( VTX_SETTING().activeVSync );
+					// TODO
 				};
 
 			  private:
@@ -239,11 +219,7 @@ namespace VTX
 			  public:
 				explicit ChangeAOIntensity( const int p_intensity ) : _intensity( p_intensity ) {}
 
-				virtual void execute() override
-				{
-					VTX_SETTING().aoIntensity = Util::Math::clamp(
-						_intensity, VTX::Setting::AO_INTENSITY_MIN, VTX::Setting::AO_INTENSITY_MAX );
-				};
+				virtual void execute() override { VTX_SETTING().aoIntensity = Util::Math::clamp( _intensity, VTX::Setting::AO_INTENSITY_MIN, VTX::Setting::AO_INTENSITY_MAX ); };
 
 			  private:
 				const int _intensity;
@@ -254,11 +230,7 @@ namespace VTX
 			  public:
 				explicit ChangeAOBlurSize( const int p_blurSize ) : _blurSize( p_blurSize ) {}
 
-				virtual void execute() override
-				{
-					VTX_SETTING().aoBlurSize = Util::Math::clamp(
-						_blurSize, VTX::Setting::AO_BLUR_SIZE_MIN, VTX::Setting::AO_BLUR_SIZE_MAX );
-				};
+				virtual void execute() override { VTX_SETTING().aoBlurSize = Util::Math::clamp( _blurSize, VTX::Setting::AO_BLUR_SIZE_MIN, VTX::Setting::AO_BLUR_SIZE_MAX ); };
 
 			  private:
 				const int _blurSize;
@@ -441,10 +413,7 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					VTX_SETTING().translationSpeed
-						= Util::Math::clamp( _speed,
-											 VTX::Setting::CONTROLLER_TRANSLATION_SPEED_MIN,
-											 VTX::Setting::CONTROLLER_TRANSLATION_SPEED_MAX );
+					VTX_SETTING().translationSpeed = Util::Math::clamp( _speed, VTX::Setting::CONTROLLER_TRANSLATION_SPEED_MIN, VTX::Setting::CONTROLLER_TRANSLATION_SPEED_MAX );
 				};
 
 			  private:
@@ -459,9 +428,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().translationFactorSpeed
-						= Util::Math::clamp( _factor,
-											 VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MIN,
-											 VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MAX );
+						= Util::Math::clamp( _factor, VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MIN, VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MAX );
 				};
 
 			  private:
@@ -475,9 +442,7 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					VTX_SETTING().rotationSpeed = Util::Math::clamp( _speed,
-																	 VTX::Setting::CONTROLLER_ROTATION_SPEED_MIN,
-																	 VTX::Setting::CONTROLLER_ROTATION_SPEED_MAX );
+					VTX_SETTING().rotationSpeed = Util::Math::clamp( _speed, VTX::Setting::CONTROLLER_ROTATION_SPEED_MIN, VTX::Setting::CONTROLLER_ROTATION_SPEED_MAX );
 				};
 
 			  private:
@@ -502,8 +467,7 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					VTX_SETTING().autoRotationSpeed = Util::Math::clamp(
-						_value, VTX::Setting::AUTO_ROTATE_SPEED_MIN, VTX::Setting::AUTO_ROTATE_SPEED_MAX );
+					VTX_SETTING().autoRotationSpeed = Util::Math::clamp( _value, VTX::Setting::AUTO_ROTATE_SPEED_MIN, VTX::Setting::AUTO_ROTATE_SPEED_MAX );
 				}
 
 				virtual void displayUsage() override { VTX_INFO( "f f f|f" ); }

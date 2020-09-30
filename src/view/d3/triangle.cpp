@@ -7,14 +7,11 @@ namespace VTX
 	{
 		namespace D3
 		{
-			void Triangle::createProgram()
+			Triangle::Triangle( Model::MeshTriangle * const p_model ) : BaseView3D( p_model )
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
-				_program = pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
-			}
+				_program							= pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
 
-			void Triangle::setUniFormLocations()
-			{
 				assert( _program != nullptr );
 				_uModelViewMatrixLoc = glGetUniformLocation( _program->getId(), "uMVMatrix" );
 				_uProjMatrixLoc		 = glGetUniformLocation( _program->getId(), "uProjMatrix" );
@@ -30,10 +27,7 @@ namespace VTX
 				const Mat4f				 MVMatrix = cam.getViewMatrix() * _model->getTransform().get();
 				glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
 				glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
-				glUniformMatrix4fv( _uNormalMatrixLoc,
-									1,
-									GL_FALSE,
-									Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
+				glUniformMatrix4fv( _uNormalMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
 
 				glDrawElements( GL_TRIANGLES, uint( _model->getIndices().size() ), GL_UNSIGNED_INT, 0 );
 			}

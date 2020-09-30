@@ -33,7 +33,7 @@ namespace VTX
 				}
 			}
 
-			void Program::attachShader( const GLuint p_shaderId ) const
+			void Program::attachShader( const GLuint p_shaderId )
 			{
 				if ( _id == GL_INVALID_INDEX )
 				{
@@ -81,7 +81,7 @@ namespace VTX
 				}
 			}
 
-			std::string Program::_getProgramErrors() const
+			std::string Program::_getProgramErrors()
 			{
 				GLint length;
 				glGetProgramiv( _id, GL_INFO_LOG_LENGTH, &length );

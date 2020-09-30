@@ -7,6 +7,7 @@
 
 #include "define.hpp"
 #include "program.hpp"
+#include <QOpenGLFunctions_4_5_Compatibility>
 #include <map>
 #include <vector>
 
@@ -27,12 +28,12 @@ namespace VTX
 				INVALID			= GL_INVALID_VALUE
 			};
 
-			class ProgramManager
+			class ProgramManager : QOpenGLFunctions_4_5_Compatibility
 			{
 			  public:
 				using MapStringToEnum	  = std::map<std::string, SHADER_TYPE>;
-				using MapStringToProgram  = std::map<std::string, Program>;
-				using PairStringToProgram = std::pair<const std::string, Program>;
+				using MapStringToProgram  = std::map<std::string, Program *>;
+				using PairStringToProgram = std::pair<const std::string, Program *>;
 				using MapStringToGLuint	  = std::map<std::string, GLuint>;
 				using PairStringToGLuint  = std::pair<const std::string, GLuint>;
 
@@ -52,7 +53,7 @@ namespace VTX
 				MapStringToGLuint  _shaders	 = MapStringToGLuint();
 
 				GLuint		_createShader( const Path & );
-				std::string _getShaderErrors( const GLuint ) const;
+				std::string _getShaderErrors( const GLuint );
 			};
 		} // namespace GLSL
 	}	  // namespace Renderer

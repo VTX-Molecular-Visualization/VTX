@@ -22,6 +22,7 @@ namespace VTX
 		namespace Global
 		{
 			const VTX_EVENT LOG_CONSOLE			= "LOG_CONSOLE";
+			const VTX_EVENT CHANGE_STATE		= "CHANGE_STATE";
 			const VTX_EVENT UPDATE_PROGRESS_BAR = "UPDATE_PROGRESS_BAR";
 			const VTX_EVENT MOLECULE_ADDED		= "MOLECULE_ADDED";
 			const VTX_EVENT MOLECULE_REMOVED	= "MOLECULE_REMOVED";
@@ -33,6 +34,7 @@ namespace VTX
 		// Model events for notifier pattern (model->views)[1-n].
 		enum class VTX_EVENT_MODEL : int
 		{
+			INIT,
 			RENDER
 		};
 
@@ -49,21 +51,21 @@ namespace VTX
 		struct VTXEventValue : public VTXEvent
 		{
 			VTXEventValue( const VTX_EVENT & p_event, const T & p_value ) : VTXEvent( p_event ), value( p_value ) {}
-			const T value;
+			T value;
 		};
 
 		template<typename T>
 		struct VTXEventRef : public VTXEvent
 		{
-			VTXEventRef( const VTX_EVENT & p_event, const T & p_ref ) : VTXEvent( p_event ), ref( p_ref ) {}
-			const T & ref;
+			VTXEventRef( const VTX_EVENT & p_event, T & p_ref ) : VTXEvent( p_event ), ref( p_ref ) {}
+			T & ref;
 		};
 
 		template<typename T>
 		struct VTXEventPtr : public VTXEvent
 		{
-			VTXEventPtr( const VTX_EVENT & p_event, const T * const p_ptr ) : VTXEvent( p_event ), ptr( p_ptr ) {}
-			const T * const ptr;
+			VTXEventPtr( const VTX_EVENT & p_event, T * const p_ptr ) : VTXEvent( p_event ), ptr( p_ptr ) {}
+			T * const ptr;
 		};
 
 		// Other events.

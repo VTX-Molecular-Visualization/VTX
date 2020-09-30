@@ -59,28 +59,28 @@
 		</widget>
 		
 		
-		<widget class="VTX::UI::Widget::RenderWidget" name="render">
+		<widget class="VTX::UI::Widget::RenderWidget" name="renderWidget">
 			<property name="windowTitle"><string>Render</string></property>
 			<attribute name="dockWidgetArea">
 				<number>4</number>
 			</attribute>
 		</widget>
 		
-		<widget class="VTX::UI::Widget::SceneWidget" name="scene">
+		<widget class="VTX::UI::Widget::SceneWidget" name="sceneWidget">
 			<property name="windowTitle"><string>Scene</string></property>
 			<attribute name="dockWidgetArea">
 				<number>1</number>
 			</attribute>
 		</widget>
 		
-		<widget class="VTX::UI::Widget::InspectorWidget" name="inspector">
+		<widget class="VTX::UI::Widget::InspectorWidget" name="inspectorWidget">
 			<property name="windowTitle"><string>Inspector</string></property>
 			<attribute name="dockWidgetArea">
 				<number>2</number>
 			</attribute>
 		</widget>
 		
-		<widget class="VTX::UI::Widget::ConsoleWidget" name="console">
+		<widget class="VTX::UI::Widget::ConsoleWidget" name="consoleWidget">
 		<property name="windowTitle"><string>Console</string></property>
 			<attribute name="dockWidgetArea">
 				<number>8</number>

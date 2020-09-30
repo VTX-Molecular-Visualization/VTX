@@ -37,17 +37,14 @@ namespace VTX
 			inline const void	 setDistance( const double p_distance ) { _distance = p_distance; }
 
 			inline const std::vector<std::string> & getActions() const { return _actions; }
-			inline void addAction( const std::string & p_action ) { _actions.emplace_back( p_action ); }
-			inline void removeAction( const std::vector<std::string>::const_iterator & p_action )
-			{
-				_actions.erase( p_action );
-			}
+			inline void								addAction( const std::string & p_action ) { _actions.emplace_back( p_action ); }
+			inline void								removeAction( const std::vector<std::string>::const_iterator & p_action ) { _actions.erase( p_action ); }
 
 			void setSelected( const bool );
 
 		  private:
 			Path * const _path;
-			float		 _duration;
+			float		 _duration = 0.f;
 			/************************************/
 			Vec3d	   _position   = VEC3F_ZERO;
 			Vec3d	   _target	   = VEC3F_ZERO;

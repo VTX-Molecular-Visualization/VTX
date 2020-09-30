@@ -4,6 +4,7 @@
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
 #include <QListWidget>
+#include <QTreeWidget>
 
 namespace VTX
 {
@@ -21,7 +22,8 @@ namespace VTX
 			{
 				if ( p_event.name == Event::Global::MOLECULE_ADDED )
 				{
-					// TODO: add molecule view as child widget.
+					const Event::VTXEventPtr<Model::Molecule> & event = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+					verticalLayout->addWidget( (QTreeWidget *)( event.ptr->getItem( ID::View::UI_MOLECULE_STRUCTURE ) ) );
 				}
 				else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 				{
@@ -30,4 +32,5 @@ namespace VTX
 
 		} // namespace Widget
 	}	  // namespace UI
+
 } // namespace VTX

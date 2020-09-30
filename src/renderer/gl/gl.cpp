@@ -22,19 +22,16 @@ namespace VTX
 
 		const GLuint & GL::getRenderedTexture() const
 		{
-			return VTX_SETTING().activeAA
-					   ? _passFXAA->getTexture()
-					   : VTX_SETTING().activeOutline ? _passOutline->getTexture() : _passShading->getTexture();
+			return VTX_SETTING().activeAA ? _passFXAA->getTexture() : VTX_SETTING().activeOutline ? _passOutline->getTexture() : _passShading->getTexture();
 		}
 		const GLuint & GL::getRenderedFBO() const
 		{
-			return VTX_SETTING().activeAA
-					   ? _passFXAA->getFbo()
-					   : VTX_SETTING().activeOutline ? _passOutline->getFbo() : _passShading->getFbo();
+			return VTX_SETTING().activeAA ? _passFXAA->getFbo() : VTX_SETTING().activeOutline ? _passOutline->getFbo() : _passShading->getFbo();
 		}
 
 		void GL::init( const uint p_width, const uint p_height )
 		{
+			return;
 			VTX_INFO( "Initializing renderer..." );
 
 			// Set size.
@@ -100,6 +97,7 @@ namespace VTX
 
 		void GL::renderFrame( const Object3D::Scene & p_scene )
 		{
+			return;
 			glViewport( 0, 0, _width, _height );
 
 			// TODO: do not change each frame

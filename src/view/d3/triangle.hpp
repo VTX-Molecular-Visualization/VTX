@@ -17,12 +17,7 @@ namespace VTX
 			class Triangle : public BaseView3D<Model::MeshTriangle>
 			{
 			  public:
-				explicit Triangle( Model::MeshTriangle * const p_model ) : BaseView3D( p_model ) {}
-
-				virtual const std::string & getName() const override { return ID::View::D3_TRIANGLE; };
-
-				virtual void createProgram() override;
-				virtual void setUniFormLocations() override;
+				explicit Triangle( Model::MeshTriangle * const p_model );
 
 				virtual void render() override;
 

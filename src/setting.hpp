@@ -27,9 +27,6 @@ namespace VTX
 	{
 	  public:
 		// UI.
-		static const Style::THEME THEME_DEFAULT;
-		Style::THEME			  theme = THEME_DEFAULT;
-
 		static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
 		Style::SYMBOL_DISPLAY_MODE				symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
 

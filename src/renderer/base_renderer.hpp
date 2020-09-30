@@ -7,6 +7,7 @@
 
 #include "gl/program_manager.hpp"
 #include "object3d/scene.hpp"
+#include <QOpenGLFunctions_4_5_Compatibility>
 #include <vector>
 
 namespace VTX
@@ -23,7 +24,7 @@ namespace VTX
 			COUNT
 		};
 
-		class BaseRenderer
+		class BaseRenderer : public QOpenGLFunctions_4_5_Compatibility
 		{
 		  public:
 			BaseRenderer()			= default;

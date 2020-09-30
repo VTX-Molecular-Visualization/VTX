@@ -14,6 +14,7 @@ namespace VTX
 	{
 		class BaseKeyboardController : virtual public BaseController
 		{
+			/*
 		  public:
 			virtual void receiveEvent( const SDL_Event & p_event ) override
 			{
@@ -41,6 +42,7 @@ namespace VTX
 			{
 				return _pressedButtons.find( p_key ) != _pressedButtons.end();
 			}
+			*/
 		};
 	} // namespace Controller
 } // namespace VTX

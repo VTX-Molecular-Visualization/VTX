@@ -6,6 +6,7 @@
 #include "renderer/gl/gl.hpp"
 #include "renderer/ray_tracing/ray_tracer.hpp"
 #include "selection/selection_manager.hpp"
+#include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #ifdef OPTIX_DEFINED
 #include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
@@ -27,7 +28,8 @@ namespace VTX
 	{
 		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
 
-		_ui = new UI::UserInterface();
+		_mainWindow = new UI::MainWindow();
+		_mainWindow->show();
 
 		_scene = new Object3D::Scene();
 		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
@@ -40,16 +42,13 @@ namespace VTX
 		VTX_ACTION( new Action::Setting::Load() );
 
 		VTX_INFO( "Application started" );
-		_ui->print();
 
 		_timer = new QTimer( this );
-		connect( _timer, &QTimer::timeout, this, QOverload<>::of( &VTXApp::_update ) );
+		connect( _timer, &QTimer::timeout, this, &VTXApp::_update );
 		_timer->start( 0 );
 
-//#define AUTO_OPEN
-#ifdef AUTO_OPEN
-		VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
-#endif
+		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
+		// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
 
 //#define RT_ENABLED
 #ifdef RT_ENABLED
@@ -79,9 +78,9 @@ namespace VTX
 		{
 			delete _scene;
 		}
-		if ( _ui != nullptr )
+		if ( _mainWindow != nullptr )
 		{
-			delete _ui;
+			delete _mainWindow;
 		}
 		if ( _rendererGL != nullptr )
 		{
@@ -181,7 +180,8 @@ namespace VTX
 
 	void VTXApp::_update()
 	{
-		const float deltaTime = ImGui::GetIO().DeltaTime;
+		// TODO: QElapsedTimer?
+		double deltaTime = 0.0;
 
 		// State machine.
 		_stateMachine->update( deltaTime );
@@ -194,9 +194,6 @@ namespace VTX
 
 		// Worker manager.
 		_workerManager->update( deltaTime );
-
-		// UI.
-		_ui->draw();
 	}
 
 } // namespace VTX

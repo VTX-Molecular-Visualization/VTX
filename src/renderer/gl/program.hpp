@@ -6,7 +6,7 @@
 #endif
 
 #include "define.hpp"
-#include <GL/gl3w.h>
+#include <QOpenGLFunctions_4_5_Compatibility>
 #include <string>
 
 namespace VTX
@@ -15,17 +15,17 @@ namespace VTX
 	{
 		namespace GLSL
 		{
-			class Program
+			class Program : public QOpenGLFunctions_4_5_Compatibility
 			{
 			  public:
 				Program() = default;
 				~Program();
 
 				inline GLuint getId() const { return _id; }
-				inline void	  use() const { glUseProgram( _id ); }
+				inline void	  use() { glUseProgram( _id ); }
 
 				void create( const std::string & );
-				void attachShader( const GLuint ) const;
+				void attachShader( const GLuint );
 				void link();
 
 				void detachShaders();
@@ -34,7 +34,7 @@ namespace VTX
 				GLuint		_id	  = GL_INVALID_INDEX;
 				std::string _name = "";
 
-				std::string _getProgramErrors() const;
+				std::string _getProgramErrors();
 
 				friend class ProgramManager;
 			};

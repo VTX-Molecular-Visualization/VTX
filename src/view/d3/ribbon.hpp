@@ -17,12 +17,7 @@ namespace VTX
 			class Ribbon : public BaseView3D<Model::SecondaryStructure>
 			{
 			  public:
-				explicit Ribbon( Model::SecondaryStructure * const p_model ) : BaseView3D( p_model ) {}
-
-				virtual const std::string & getName() const override { return ID::View::D3_RIBBON_PATCH; };
-
-				virtual void createProgram() override;
-				virtual void setUniFormLocations() override;
+				explicit Ribbon( Model::SecondaryStructure * const p_model );
 
 				virtual void render() override;
 

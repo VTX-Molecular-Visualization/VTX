@@ -6,7 +6,10 @@ namespace VTX
 {
 	namespace Model
 	{
-		MeshTriangle::MeshTriangle() { addItem( (View::BaseView<BaseModel> *)new View::D3::Triangle( this ) ); }
+		MeshTriangle::MeshTriangle()
+		{
+			// addItem( (View::BaseView<BaseModel> *)new View::D3::Triangle( this ) );
+		}
 
 		MeshTriangle::~MeshTriangle()
 		{
@@ -61,15 +64,13 @@ namespace VTX
 
 			glGenBuffers( 1, &_vboVisibilities );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
-			glBufferData(
-				GL_ARRAY_BUFFER, _visibilities.size() * sizeof( uint ), _visibilities.data(), GL_STATIC_DRAW );
+			glBufferData( GL_ARRAY_BUFFER, _visibilities.size() * sizeof( uint ), _visibilities.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			// IBO.
 			glGenBuffers( 1, &_ibo );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
-			glBufferData(
-				GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof( uint32_t ), _indices.data(), GL_STATIC_DRAW );
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof( uint32_t ), _indices.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
 			// VAO.
@@ -91,8 +92,7 @@ namespace VTX
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
-			glVertexAttribPointer(
-				ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
@@ -102,8 +102,7 @@ namespace VTX
 
 		void MeshTriangle::print() const
 		{
-			VTX_INFO( "Faces: " + std::to_string( _indices.size() / 3 ) + " / Vertices: "
-					  + std::to_string( _vertices.size() ) + " / Normals: " + std::to_string( _normals.size() )
+			VTX_INFO( "Faces: " + std::to_string( _indices.size() / 3 ) + " / Vertices: " + std::to_string( _vertices.size() ) + " / Normals: " + std::to_string( _normals.size() )
 					  + " / Indices: " + std::to_string( _indices.size() ) );
 
 			VTX_DEBUG( "Sizeof mesh triangle: " + std::to_string( sizeof( *this ) ) );

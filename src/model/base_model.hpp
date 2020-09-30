@@ -5,10 +5,12 @@
 #pragma once
 #endif
 
+#include "event/event_manager.hpp"
 #include "generic/has_collection.hpp"
 #include "math/transform.hpp"
 #include "selection/base_selectable.hpp"
 #include "view/base_view.hpp"
+#include <iostream>
 #include <map>
 
 namespace VTX
@@ -25,10 +27,11 @@ namespace VTX
 		  protected:
 			long _id = COUNTER++;
 
-			void _notifyViews( const Event::VTX_EVENT_MODEL p_event )
+			void _notifyViews( const Event::VTX_EVENT_MODEL & p_event )
 			{
 				for ( PairStringToItemPtr & pair : _items )
 				{
+					std::cout << "_notifyViews: " + pair.first << std::endl;
 					pair.second->notify( p_event );
 				}
 			}

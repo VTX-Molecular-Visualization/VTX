@@ -8,8 +8,6 @@
 #include "renderer/ray_tracing/ray_tracer.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
-#include <GL/gl3w.h>
-#include <imgui/imgui.h>
 #include <stb/stb_image_write.h>
 #include <vector>
 
@@ -17,7 +15,7 @@ namespace VTX
 {
 	namespace Worker
 	{
-		bool Snapshoter::takeSnapshotGL( const Path & p_path ) const
+		bool Snapshoter::takeSnapshotGL( const Path & p_path )
 		{
 			const Renderer::GL & renderer = VTXApp::get().getRendererGL();
 
@@ -58,7 +56,7 @@ namespace VTX
 			const std::vector<uchar> & pixels = rt->getPixels();
 			stbi_flip_vertically_on_write( true );
 			stbi_write_png_compression_level = 0;
-			bool res = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
+			bool res						 = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
 			delete rt;
 			return res;
 		}
@@ -77,7 +75,7 @@ namespace VTX
 			const std::vector<uchar4> & pixels = ort->getPixels();
 			stbi_flip_vertically_on_write( true );
 			stbi_write_png_compression_level = 0;
-			bool res = stbi_write_png( p_path.string().c_str(), width, height, 4, pixels.data(), 0 );
+			bool res						 = stbi_write_png( p_path.string().c_str(), width, height, 4, pixels.data(), 0 );
 			delete ort;
 			return res;
 #else

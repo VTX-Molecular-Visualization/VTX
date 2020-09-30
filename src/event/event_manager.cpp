@@ -1,29 +1,10 @@
 #include "event_manager.hpp"
-#include "ui/user_interface.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
 {
 	namespace Event
 	{
-		void EventManager::registerEventReceiverSDL( BaseEventReceiverSDL * const p_receiver ) { _receiversSDLGlobal.emplace( p_receiver ); }
-
-		void EventManager::unregisterEventReceiverSDL( BaseEventReceiverSDL * const p_receiver ) { _receiversSDLGlobal.erase( p_receiver ); }
-
-		void EventManager::registerEventReceiverSDL( const ID::VTX_ID & p_windowId, BaseEventReceiverSDL * const p_receiver )
-		{
-			if ( _receiversSDL.find( p_windowId ) == _receiversSDL.end() )
-			{
-				_receiversSDL.try_emplace( p_windowId, SetBaseEventReceiverSDLPtr() );
-			}
-
-			_receiversSDL.at( p_windowId ).emplace( p_receiver );
-		}
-
-		void EventManager::unregisterEventReceiverSDL( const ID::VTX_ID & p_windowId, BaseEventReceiverSDL * const p_receiver )
-		{
-			_receiversSDL.at( p_windowId ).erase( p_receiver );
-		}
 
 		void EventManager::registerEventReceiverVTX( const VTX_EVENT & p_event, BaseEventReceiverVTX * const p_receiver )
 		{
@@ -50,6 +31,7 @@ namespace VTX
 
 		void EventManager::update( const double & p_deltaTime )
 		{
+			/*
 			// SDL.
 			SDL_Event event;
 			while ( VTXApp::get().getUI().getEvent( event ) )
@@ -81,7 +63,7 @@ namespace VTX
 				// If mouse or key up, propagate to all.
 				if ( event.type == SDL_KEYUP || event.type == SDL_MOUSEBUTTONUP )
 				{
-					for ( const std::pair<ID::VTX_ID, SetBaseEventReceiverSDLPtr> & receiverSDL : _receiversSDL )
+					for ( const std::pair<ID::VTX_ID, SetBaseEventReceiverInputPtr> & receiverSDL : _receiversSDL )
 					{
 						for ( BaseEventReceiverSDL * const receiver : receiverSDL.second )
 						{
@@ -98,6 +80,7 @@ namespace VTX
 					}
 				}
 			}
+			*/
 
 			// VTX.
 			_lock();
@@ -122,6 +105,7 @@ namespace VTX
 			delete p_event;
 		}
 
+		/*
 		void EventManager::_handlerWindowEvent( const SDL_WindowEvent & p_event )
 		{
 			switch ( p_event.event )
@@ -129,6 +113,7 @@ namespace VTX
 			case SDL_WINDOWEVENT_CLOSE: VTXApp::get().stop(); break;
 			}
 		}
+		*/
 
 	} // namespace Event
 } // namespace VTX

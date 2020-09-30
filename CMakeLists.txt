@@ -131,7 +131,6 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set link directories.
-link_directories(${PATH_LIB}/SDL2/lib/x64)
 link_directories(${PATH_LIB}/assimp/lib/x64)
 link_directories(${PATH_LIB}/curl/lib/x64)
 link_directories(${PATH_LIB}/chemfiles/lib/x64)
@@ -149,17 +148,13 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 target_include_directories(VTX PRIVATE ${PATH_SRC})
 target_include_directories(VTX PRIVATE ${PATH_LIB})
 target_include_directories(VTX PRIVATE ${PATH_LIB_SRC})
-target_include_directories(VTX PRIVATE ${PATH_LIB_SRC}/GL)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/msgpack)
-target_include_directories(VTX PRIVATE ${PATH_LIB}/SDL2/include)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/assimp/include)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/curl/include)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/chemfiles/include)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/StackWalker/include)
 
 # Link libs.
-target_link_libraries(VTX PRIVATE SDL2)
-target_link_libraries(VTX PRIVATE SDL2main)
 target_link_libraries(VTX PRIVATE assimp-vc142-mt)
 target_link_libraries(VTX PRIVATE IrrXML)
 target_link_libraries(VTX PRIVATE zlib)
@@ -188,7 +183,6 @@ if(WIN32)
  
 # Copy DLL to output.	
 # Debug
-add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/Debug/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/SDL2.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/assimp-vc142-mtd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/assimp-vc142-mtd.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/zlibd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/zlibd1.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/Debug/libcurl-d.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/libcurl-d.dll)
@@ -197,7 +191,6 @@ add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_dif
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Debug/Qt5Widgetsd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/Qt5Widgetsd.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Debug/platforms/qwindowsd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/platforms/qwindowsd.dll)
 # Release
-add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/Release/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/SDL2.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Release/assimp-vc142-mt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/assimp-vc142-mt.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Release/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/zlib1.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/Release/libcurl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/libcurl.dll)
@@ -206,7 +199,6 @@ add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_dif
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Release/Qt5Widgets.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/Qt5Widgets.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/Qt/bin/x64/Release/platforms/qwindows.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/platforms/qwindows.dll)
 # RelWithDebInfo
-add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/SDL2/bin/x64/RelWithDebInfo/SDL2.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/SDL2.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/assimp-vc142-mt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/assimp-vc142-mt.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/zlib1.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/curl/bin/x64/RelWithDebInfo/libcurl.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/libcurl.dll)
