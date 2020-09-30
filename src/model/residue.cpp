@@ -1,6 +1,5 @@
 #include "residue.hpp"
 #include "util/molecule.hpp"
-#include "view/ui/residue.hpp"
 
 namespace VTX
 {
@@ -11,11 +10,11 @@ namespace VTX
 			BaseSelectable::setSelected( p_selected );
 			if ( isSelected() )
 			{
-				addItem( (View::BaseView<BaseModel> *)new View::UI::Residue( this ) );
+				// addItem( (View::BaseView<BaseModel> *)new View::UI::Residue( this ) );
 			}
 			else
 			{
-				delete removeItem( ID::View::UI_RESIDUE );
+				// delete removeItem( ID::View::UI_RESIDUE );
 			}
 		}
 

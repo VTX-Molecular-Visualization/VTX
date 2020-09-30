@@ -27,19 +27,16 @@ namespace VTX
 	{
 	  public:
 		// UI.
-		static const Style::THEME THEME_DEFAULT;
-		Style::THEME			  theme = THEME_DEFAULT;
-
 		static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
 		Style::SYMBOL_DISPLAY_MODE				symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
 
 		static const int WINDOW_WIDTH_DEFAULT;
 		static const int WINDOW_HEIGHT_DEFAULT;
 
-		static const int	 CONSOLE_WIDGET_HEIGHT_DEFAULT;
-		static const int	 SCENE_WIDGET_WIDTH_DEFAULT;
-		static const int	 INSPECTOR_WIDGET_WIDTH_DEFAULT;
-		static const int	 RENDER_WIDGET_HEIGHT_DEFAULT;
+		static const int CONSOLE_WIDGET_HEIGHT_DEFAULT;
+		static const int SCENE_WIDGET_WIDTH_DEFAULT;
+		static const int INSPECTOR_WIDGET_WIDTH_DEFAULT;
+		static const int RENDER_WIDGET_HEIGHT_DEFAULT;
 
 		// Rendering.
 		static const bool ACTIVE_RENDERER_DEFAULT;

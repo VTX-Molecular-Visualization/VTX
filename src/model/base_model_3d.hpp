@@ -10,7 +10,7 @@
 #include "generic/base_visible.hpp"
 #include "math/aabb.hpp"
 #include "model/base_model.hpp"
-#include <GL/gl3w.h>
+#include <QOpenGLFunctions_4_5_Compatibility>
 
 namespace VTX
 {
@@ -20,7 +20,8 @@ namespace VTX
 			public BaseModel,
 			public Generic::BaseTransformable,
 			public Generic::BaseRenderable,
-			public Generic::BaseVisible
+			public Generic::BaseVisible,
+			public QOpenGLFunctions_4_5_Compatibility
 		{
 		  public:
 			virtual ~BaseModel3D() = default;
@@ -30,7 +31,8 @@ namespace VTX
 			virtual void render()
 			{
 				bindBuffers();
-				_notifyViews( Event::VTX_EVENT_MODEL::RENDER );
+				// TODO
+				//_notifyViews( Event::VTX_EVENT_MODEL::RENDER );
 				unbindBuffers();
 			}
 

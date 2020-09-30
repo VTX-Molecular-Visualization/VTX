@@ -20,6 +20,8 @@ namespace VTX
 		  public:
 			MainWindow( QWidget * = 0 );
 
+			void receiveEvent( const Event::VTXEvent & p_event ) override;
+
 		  public slots:
 			void on_file_open_triggered();
 			void on_file_close_triggered();
@@ -29,9 +31,9 @@ namespace VTX
 			void on_window_togglelog_triggered();
 
 		  private:
-			void setupSlots();
-			void setupDock();
-			void toggleWidget( QWidget * widget );
+			void _setupSlots();
+			void _setupDock();
+			void _toggleWidget( QWidget * widget );
 		};
 
 	} // namespace UI

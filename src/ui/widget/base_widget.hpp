@@ -14,18 +14,11 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			template<typename Q, typename T>
-			class BaseWidget : public Q, public Event::BaseEventReceiverVTX
+			template<typename Q, typename T, typename = std::enable_if<std::is_base_of<QWidget, Q>::value>>
+			class BaseWidget : public Q, public T, public Event::BaseEventReceiverVTX
 			{
 			  public:
-				BaseWidget( QWidget * p_parent ) : Q( p_parent ), _ui( new T() ) { _ui->setupUi( this ); }
-				virtual ~BaseWidget() { delete _ui; }
-
-				inline const T & getUI() const { return _ui; }
-				inline T &		 getUI() { return _ui; }
-
-			  protected:
-				T * _ui;
+				BaseWidget( QWidget * p_parent = 0 ) : Q( p_parent ) { setupUi( this ); }
 			};
 		} // namespace Widget
 	}	  // namespace UI

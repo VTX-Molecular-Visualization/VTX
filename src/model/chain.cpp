@@ -1,6 +1,5 @@
 #include "chain.hpp"
 #include "util/molecule.hpp"
-#include "view/ui/chain.hpp"
 
 namespace VTX
 {
@@ -86,11 +85,11 @@ namespace VTX
 			BaseSelectable::setSelected( p_selected );
 			if ( isSelected() )
 			{
-				addItem( (View::BaseView<BaseModel> *)new View::UI::Chain( this ) );
+				// addItem( (View::BaseView<BaseModel> *)new View::UI::Chain( this ) );
 			}
 			else
 			{
-				delete removeItem( ID::View::UI_CHAIN );
+				// delete removeItem( ID::View::UI_CHAIN );
 			}
 		}
 

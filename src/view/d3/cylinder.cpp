@@ -7,14 +7,11 @@ namespace VTX
 	{
 		namespace D3
 		{
-			void Cylinder::createProgram()
+			Cylinder::Cylinder( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model )
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
-				_program = pm.createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
-			}
+				_program							= pm.createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
 
-			void Cylinder::setUniFormLocations()
-			{
 				assert( _program != nullptr );
 				_uModelViewMatrixLoc = glGetUniformLocation( _program->getId(), "uMVMatrix" );
 				_uProjMatrixLoc		 = glGetUniformLocation( _program->getId(), "uProjMatrix" );
@@ -34,10 +31,7 @@ namespace VTX
 
 				// TODO: do not upadte each frame !
 				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
-				glUniformMatrix4fv( _uModelViewMatrixLoc,
-									1,
-									GL_FALSE,
-									Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
+				glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
 				glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 				glUniform1f( _uRadiusLoc, VTX_SETTING().bondsRadius );
 

@@ -1,6 +1,7 @@
 #include "program_manager.hpp"
 #include "define.hpp"
 #include "exception.hpp"
+#include "generic/factory.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include <vector>
@@ -11,13 +12,12 @@ namespace VTX
 	{
 		namespace GLSL
 		{
-			const ProgramManager::MapStringToEnum ProgramManager::EXTENSIONS
-				= MapStringToEnum( { { ".vert", SHADER_TYPE::VERTEX },
-									 { ".geom", SHADER_TYPE::GEOMETRY },
-									 { ".frag", SHADER_TYPE::FRAGMENT },
-									 { ".comp", SHADER_TYPE::COMPUTE },
-									 { ".tesc", SHADER_TYPE::TESS_CONTROL },
-									 { ".tese", SHADER_TYPE::TESS_EVALUATION } } );
+			const ProgramManager::MapStringToEnum ProgramManager::EXTENSIONS = MapStringToEnum( { { ".vert", SHADER_TYPE::VERTEX },
+																								  { ".geom", SHADER_TYPE::GEOMETRY },
+																								  { ".frag", SHADER_TYPE::FRAGMENT },
+																								  { ".comp", SHADER_TYPE::COMPUTE },
+																								  { ".tesc", SHADER_TYPE::TESS_CONTROL },
+																								  { ".tese", SHADER_TYPE::TESS_EVALUATION } } );
 
 			SHADER_TYPE ProgramManager::getShaderType( const Path & p_name )
 			{
@@ -37,17 +37,20 @@ namespace VTX
 				{
 					glDeleteShader( pair.second );
 				}
+
+				Generic::clearMapAsValue( _programs );
+				_shaders.clear();
+				_programs.clear();
 			}
 
-			Program * const ProgramManager::createProgram( const std::string &				p_name,
-														   const std::vector<std::string> & p_shaders )
+			Program * const ProgramManager::createProgram( const std::string & p_name, const std::vector<std::string> & p_shaders )
 			{
 				VTX_DEBUG( "Creating program: " + p_name );
 
 				if ( _programs.find( p_name ) == _programs.end() )
 				{
-					_programs[ p_name ] = Program();
-					Program & program	= _programs[ p_name ];
+					_programs[ p_name ] = new Program();
+					Program & program	= *_programs[ p_name ];
 					program.create( p_name );
 
 					for ( const std::string & shader : p_shaders )
@@ -57,14 +60,14 @@ namespace VTX
 
 					program.link();
 
-					VTX_DEBUG( "Program " + std::to_string( _programs[ p_name ].getId() ) + " created: " + p_name );
+					VTX_DEBUG( "Program " + std::to_string( _programs[ p_name ]->getId() ) + " created: " + p_name );
 				}
 				else
 				{
 					VTX_DEBUG( "Program " + p_name + " already exists" );
 				}
 
-				return &( _programs[ p_name ] );
+				return _programs[ p_name ];
 			}
 
 			void ProgramManager::deleteProgram( const std::string & p_name )
@@ -82,7 +85,7 @@ namespace VTX
 			{
 				if ( _programs.find( p_name ) != _programs.end() )
 				{
-					return &( _programs.at( p_name ) );
+					return _programs.at( p_name );
 				}
 
 				VTX_ERROR( "Program " + p_name + " does not exists" );
@@ -148,7 +151,7 @@ namespace VTX
 				return GL_INVALID_INDEX;
 			}
 
-			std::string ProgramManager::_getShaderErrors( const GLuint p_shader ) const
+			std::string ProgramManager::_getShaderErrors( const GLuint p_shader )
 			{
 				GLint length;
 				glGetShaderiv( p_shader, GL_INFO_LOG_LENGTH, &length );

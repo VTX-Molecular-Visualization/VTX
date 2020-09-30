@@ -10,8 +10,10 @@ namespace VTX
 {
 	namespace Controller
 	{
+		/*
 		void Shortcut::_handleKeyPressedEvent( const SDL_Scancode & p_key )
 		{
+
 			// TODO: link with action and UI button.
 			switch ( p_key )
 			{
@@ -49,6 +51,7 @@ namespace VTX
 			default: break;
 			}
 		}
+		*/
 
 	} // namespace Controller
 } // namespace VTX

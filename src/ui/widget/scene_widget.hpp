@@ -22,7 +22,7 @@ namespace VTX
 			  public:
 				SceneWidget( QWidget * p_parent );
 
-				virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
+				void receiveEvent( const Event::VTXEvent & p_event ) override;
 			};
 		} // namespace Widget
 	}	  // namespace UI

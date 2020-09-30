@@ -16,9 +16,8 @@ namespace VTX
 		  public:
 			Visualization();
 
-			virtual const std::string & getName() const override { return ID::State::VISUALIZATION; }
-			virtual void				enter( void * const ) override;
-			virtual void				exit() override;
+			virtual void enter( void * const ) override;
+			virtual void exit() override;
 
 			const ID::VTX_ID & getController() const { return _controller; }
 

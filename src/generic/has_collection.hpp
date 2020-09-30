@@ -16,7 +16,7 @@ namespace VTX
 {
 	namespace Generic
 	{
-		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCollectionable, T>::value>>
+		template<typename T>
 		class HasCollection
 		{
 		  public:
@@ -29,7 +29,6 @@ namespace VTX
 			{
 				for ( PairStringToItemPtr & pair : _items )
 				{
-					pair.second->clean();
 					delete pair.second;
 				}
 
@@ -37,14 +36,7 @@ namespace VTX
 				_orderedKeys.clear();
 			}
 
-			void addItem( T * const p_item )
-			{
-				p_item->init();
-				std::string name = static_cast<BaseCollectionable *>( p_item )->getName();
-				addItemRef( name, p_item );
-			}
-
-			void addItemRef( const std::string & p_name, T * const p_item )
+			void addItem( const std::string & p_name, T * const p_item )
 			{
 				try
 				{
@@ -59,13 +51,6 @@ namespace VTX
 			}
 
 			T * removeItem( const std::string & p_name )
-			{
-				T * item = _items.at( p_name );
-				item->clean();
-				return removeItemRef( p_name );
-			}
-
-			T * removeItemRef( const std::string & p_name )
 			{
 				T * item = _items.at( p_name );
 				_items.erase( p_name );

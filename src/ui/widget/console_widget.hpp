@@ -22,7 +22,7 @@ namespace VTX
 			  public:
 				ConsoleWidget( QWidget * );
 
-				virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
+				void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 			  protected:
 			  private:

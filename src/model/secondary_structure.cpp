@@ -8,15 +8,14 @@ namespace VTX
 {
 	namespace Model
 	{
-		const Color::Rgb SecondaryStructure::COLORS_JMOL[ uint( VALUE::COUNT ) ]
-			= { Color::Rgb( 1.f, 0.f, 0.5f ),	// HELIX_ALPHA_RIGHT
-				Color::Rgb( 1.f, 0.f, 0.5f ),	// HELIX_ALPHA_LEFT
-				Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
-				Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_LEFT
-				Color::Rgb( 0.37f, 0.f, 0.5f ), // HELIX_PI
-				Color::Rgb( 1.f, 0.78f, 0.f ),	// STRAND
-				Color::Rgb( 0.37f, 0.5f, 1.f ), // TURN
-				Color::Rgb::WHITE };			// COIL
+		const Color::Rgb SecondaryStructure::COLORS_JMOL[ uint( VALUE::COUNT ) ] = { Color::Rgb( 1.f, 0.f, 0.5f ),	 // HELIX_ALPHA_RIGHT
+																					 Color::Rgb( 1.f, 0.f, 0.5f ),	 // HELIX_ALPHA_LEFT
+																					 Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
+																					 Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_LEFT
+																					 Color::Rgb( 0.37f, 0.f, 0.5f ), // HELIX_PI
+																					 Color::Rgb( 1.f, 0.78f, 0.f ),	 // STRAND
+																					 Color::Rgb( 0.37f, 0.5f, 1.f ), // TURN
+																					 Color::Rgb::WHITE };			 // COIL
 
 		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) : _molecule( p_molecule )
 		{
@@ -95,8 +94,7 @@ namespace VTX
 						// Copy second to first.
 						if ( controlPointPositions.size() == 2 )
 						{
-							_controlPointNormals[ _controlPointNormals.size() - 2 ]
-								= _controlPointNormals[ _controlPointNormals.size() - 1 ];
+							_controlPointNormals[ _controlPointNormals.size() - 2 ] = _controlPointNormals[ _controlPointNormals.size() - 1 ];
 						}
 					}
 					else
@@ -110,15 +108,9 @@ namespace VTX
 					// Add color.
 					switch ( _colorMode )
 					{
-					case COLOR_MODE::JMOL:
-						_controlPointColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
-						break;
-					case COLOR_MODE::PROTEIN:
-						_controlPointColors.emplace_back( residue.getMoleculePtr()->getColor() );
-						break;
-					case COLOR_MODE::CHAIN:
-						_controlPointColors.emplace_back( residue.getChainPtr()->getColor() );
-						break;
+					case COLOR_MODE::JMOL: _controlPointColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] ); break;
+					case COLOR_MODE::PROTEIN: _controlPointColors.emplace_back( residue.getMoleculePtr()->getColor() ); break;
+					case COLOR_MODE::CHAIN: _controlPointColors.emplace_back( residue.getChainPtr()->getColor() ); break;
 					case COLOR_MODE::RESIDUE: _controlPointColors.emplace_back( residue.getColor() ); break;
 					default: _controlPointColors.emplace_back( Color::Rgb::WHITE ); break;
 					}
@@ -139,8 +131,7 @@ namespace VTX
 					}
 
 					// Merge control points.
-					_controlPointPositions.insert(
-						_controlPointPositions.end(), controlPointPositions.begin(), controlPointPositions.end() );
+					_controlPointPositions.insert( _controlPointPositions.end(), controlPointPositions.begin(), controlPointPositions.end() );
 				}
 			}
 
@@ -159,7 +150,7 @@ namespace VTX
 			chrono.stop();
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 
-			addItem( (View::BaseView<BaseModel> *)new View::D3::Ribbon( this ) );
+			// addItem( (View::BaseView<BaseModel> *)new View::D3::Ribbon( this ) );
 		}
 
 		SecondaryStructure::~SecondaryStructure()
@@ -202,49 +193,33 @@ namespace VTX
 			// VBO.
 			glGenBuffers( 1, &_vboPositions );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
-			glBufferData( GL_ARRAY_BUFFER,
-						  _controlPointPositions.size() * sizeof( Vec3f ),
-						  _controlPointPositions.data(),
-						  GL_STATIC_DRAW );
+			glBufferData( GL_ARRAY_BUFFER, _controlPointPositions.size() * sizeof( Vec3f ), _controlPointPositions.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glGenBuffers( 1, &_vboDirections );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
-			glBufferData( GL_ARRAY_BUFFER,
-						  _controlPointDirections.size() * sizeof( Vec3f ),
-						  _controlPointDirections.data(),
-						  GL_STATIC_DRAW );
+			glBufferData( GL_ARRAY_BUFFER, _controlPointDirections.size() * sizeof( Vec3f ), _controlPointDirections.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glGenBuffers( 1, &_vboNormals );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboNormals );
-			glBufferData( GL_ARRAY_BUFFER,
-						  _controlPointNormals.size() * sizeof( Vec3f ),
-						  _controlPointNormals.data(),
-						  GL_STATIC_DRAW );
+			glBufferData( GL_ARRAY_BUFFER, _controlPointNormals.size() * sizeof( Vec3f ), _controlPointNormals.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glGenBuffers( 1, &_vboSecondaryStructures );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
-			glBufferData( GL_ARRAY_BUFFER,
-						  _controlPointSecondaryStructures.size() * sizeof( uint ),
-						  _controlPointSecondaryStructures.data(),
-						  GL_STATIC_DRAW );
+			glBufferData( GL_ARRAY_BUFFER, _controlPointSecondaryStructures.size() * sizeof( uint ), _controlPointSecondaryStructures.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glGenBuffers( 1, &_vboColors );
 			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
-			glBufferData( GL_ARRAY_BUFFER,
-						  _controlPointColors.size() * sizeof( Color::Rgb ),
-						  _controlPointColors.data(),
-						  GL_STATIC_DRAW );
+			glBufferData( GL_ARRAY_BUFFER, _controlPointColors.size() * sizeof( Color::Rgb ), _controlPointColors.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			// IBO.
 			glGenBuffers( 1, &_ibo );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
-			glBufferData(
-				GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof( uint32_t ), _indices.data(), GL_STATIC_DRAW );
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof( uint32_t ), _indices.data(), GL_STATIC_DRAW );
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
 			// VAO.
@@ -255,36 +230,27 @@ namespace VTX
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
-			glVertexAttribPointer(
-				ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
-			glVertexAttribPointer(
-				ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboNormals );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL );
-			glVertexAttribPointer(
-				ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE,
-								   1,
-								   GL_UNSIGNED_INT,
-								   GL_FALSE,
-								   sizeof( uint ),
-								   0 );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
 			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
-			glVertexAttribPointer(
-				ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
+			glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
 			glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -360,14 +326,8 @@ namespace VTX
 			_controlPointPositions.shrink_to_fit();
 			_controlPointDirections.shrink_to_fit();
 
-			glNamedBufferData( _vboPositions,
-							   sizeof( Vec3f ) * _controlPointPositions.size(),
-							   _controlPointPositions.data(),
-							   GL_STATIC_DRAW );
-			glNamedBufferData( _vboDirections,
-							   sizeof( Vec3f ) * _controlPointDirections.size(),
-							   _controlPointDirections.data(),
-							   GL_STATIC_DRAW );
+			glNamedBufferData( _vboPositions, sizeof( Vec3f ) * GLsizei( _controlPointPositions.size() ), _controlPointPositions.data(), GL_STATIC_DRAW );
+			glNamedBufferData( _vboDirections, sizeof( Vec3f ) * GLsizei( _controlPointDirections.size() ), _controlPointDirections.data(), GL_STATIC_DRAW );
 		}
 
 		void SecondaryStructure::_fillBufferColors()
@@ -398,15 +358,9 @@ namespace VTX
 
 					switch ( _colorMode )
 					{
-					case COLOR_MODE::JMOL:
-						_controlPointColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
-						break;
-					case COLOR_MODE::PROTEIN:
-						_controlPointColors.emplace_back( residue.getMoleculePtr()->getColor() );
-						break;
-					case COLOR_MODE::CHAIN:
-						_controlPointColors.emplace_back( residue.getChainPtr()->getColor() );
-						break;
+					case COLOR_MODE::JMOL: _controlPointColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] ); break;
+					case COLOR_MODE::PROTEIN: _controlPointColors.emplace_back( residue.getMoleculePtr()->getColor() ); break;
+					case COLOR_MODE::CHAIN: _controlPointColors.emplace_back( residue.getChainPtr()->getColor() ); break;
 					case COLOR_MODE::RESIDUE: _controlPointColors.emplace_back( residue.getColor() ); break;
 					default: _controlPointColors.emplace_back( Color::Rgb::WHITE ); break;
 					}
@@ -415,10 +369,7 @@ namespace VTX
 
 			_controlPointColors.shrink_to_fit();
 
-			glNamedBufferData( _vboColors,
-							   sizeof( Color::Rgb ) * _controlPointColors.size(),
-							   _controlPointColors.data(),
-							   GL_STATIC_DRAW );
+			glNamedBufferData( _vboColors, sizeof( Color::Rgb ) * GLsizei( _controlPointColors.size() ), _controlPointColors.data(), GL_STATIC_DRAW );
 		}
 
 		void SecondaryStructure::_flipTest( Vec3f & p_direction, Vec3f & p_directionLast ) const
@@ -432,8 +383,7 @@ namespace VTX
 
 		void SecondaryStructure::print() const
 		{
-			VTX_INFO( "Control points: " + std::to_string( _controlPointPositions.size() )
-					  + " / Indices: " + std::to_string( _indices.size() ) );
+			VTX_INFO( "Control points: " + std::to_string( _controlPointPositions.size() ) + " / Indices: " + std::to_string( _indices.size() ) );
 			VTX_DEBUG( "Sizeof secondary structure: " + std::to_string( sizeof( *this ) ) );
 		}
 

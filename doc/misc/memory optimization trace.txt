@@ -1,0 +1,39 @@
+Sizeof molecule: 1216
+Sizeof chain: 256
+Sizeof residue: 304
+Sizeof atom: 184
+Sizeof bond: 112
+App with 3j3q without ss: 1.7GB
+
+Remove PM in BaseSelectable
+
+Sizeof molecule: 1200
+Sizeof chain: 240
+Sizeof residue: 288
+Sizeof atom: 168
+Sizeof bond: 96
+
+Remove PM in BaseVisible
+
+Sizeof molecule: 1192
+Sizeof chain: 232
+Sizeof residue: 280
+Sizeof atom: 168
+Sizeof bond: 96
+
+Remove PM in BaseRepresentable
+
+Sizeof molecule: 1184
+Sizeof chain: 224
+Sizeof residue: 272
+Sizeof atom: 168
+Sizeof bond: 96
+
+Remove PM in HasCollection
+
+Sizeof molecule: 1168
+Sizeof chain: 208
+Sizeof residue: 256
+Sizeof atom: 152
+Sizeof bond: 80
+App with 3j3q without ss: 1.5GB

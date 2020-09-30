@@ -7,9 +7,9 @@
 
 #include "define.hpp"
 #include "event/event.hpp"
-#include "generic/base_collectionable.hpp"
 #include "generic/base_notifiable.hpp"
 #include "id.hpp"
+#include <QObject>
 #include <type_traits>
 #include <utility>
 
@@ -23,18 +23,16 @@ namespace VTX
 	namespace View
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		class BaseView :
-			virtual public Generic::BaseCollectionable,
-			public Generic::BaseNotifiable<Event::VTX_EVENT_MODEL>
+		class BaseView
 		{
 		  public:
 			explicit BaseView( T * const p_model ) : _model( p_model ) {}
-			virtual ~BaseView() {}
+			virtual ~BaseView() = default;
 
-			virtual void notify( const Event::VTX_EVENT_MODEL & ) override {};
+			virtual void notify( const Event::VTX_EVENT_MODEL & ) { std::cout << "notify super class" << std::endl; };
 
 		  protected:
-			T * _model = nullptr;
+			T * _model;
 		};
 	} // namespace View
 } // namespace VTX

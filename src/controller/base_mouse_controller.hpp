@@ -14,6 +14,7 @@ namespace VTX
 	{
 		class BaseMouseController : virtual public BaseController
 		{
+			/*
 		  public:
 			virtual void receiveEvent( const SDL_Event & p_event ) override
 			{
@@ -43,7 +44,7 @@ namespace VTX
 				case SDL_BUTTON_MIDDLE: _mouseMiddlePressed = true; break;
 				default: break;
 				}
-			};
+			}
 
 			virtual void _handleMouseButtonUpEvent( const SDL_MouseButtonEvent & p_event )
 			{
@@ -54,17 +55,18 @@ namespace VTX
 				case SDL_BUTTON_MIDDLE: _mouseMiddlePressed = false; break;
 				default: break;
 				}
-			};
+			}
 
 			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )
 			{
 				_deltaMousePosition.x = p_event.xrel;
 				_deltaMousePosition.y = p_event.yrel;
-			};
+			}
 			virtual void _handleMouseWheelEvent( const SDL_MouseWheelEvent & p_event )
 			{
 				_deltaMouseWheel = p_event.y;
-			};
+			}
+			*/
 		};
 	} // namespace Controller
 } // namespace VTX

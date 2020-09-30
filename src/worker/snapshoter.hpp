@@ -6,12 +6,13 @@
 #endif
 
 #include "define.hpp"
+#include <QOpenGLFunctions_4_5_Compatibility>
 
 namespace VTX
 {
 	namespace Worker
 	{
-		class Snapshoter
+		class Snapshoter : public QOpenGLFunctions_4_5_Compatibility
 		{
 		  public:
 			enum class MODE : int
@@ -21,7 +22,7 @@ namespace VTX
 				RT_OPTIX
 			};
 
-			bool takeSnapshotGL( const Path & p_path ) const;
+			bool takeSnapshotGL( const Path & p_path );
 			bool takeSnapshotRTCPU( const Path & p_path ) const;
 			bool takeSnapshotRTOptix( const Path & p_path ) const;
 

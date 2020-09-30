@@ -1,5 +1,4 @@
 #include "viewpoint.hpp"
-#include "view/ui/viewpoint.hpp"
 
 namespace VTX
 {
@@ -10,11 +9,11 @@ namespace VTX
 			BaseSelectable::setSelected( p_selected );
 			if ( isSelected() )
 			{
-				addItem( (View::BaseView<BaseModel> *)new View::UI::Viewpoint( this ) );
+				// addItem( (View::BaseView<BaseModel> *)new View::UI::Viewpoint( this ) );
 			}
 			else
 			{
-				delete removeItem( ID::View::UI_VIEWPOINT );
+				// delete removeItem( ID::View::UI_VIEWPOINT );
 			}
 		}
 

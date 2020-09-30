@@ -5,14 +5,13 @@
 #pragma once
 #endif
 
-#include "base_collectionable.hpp"
 #include "base_visible.hpp"
 
 namespace VTX
 {
 	namespace Generic
 	{
-		class BaseDrawable : virtual public BaseCollectionable, public BaseVisible
+		class BaseDrawable : public BaseVisible
 		{
 		  public:
 			virtual ~BaseDrawable() = default;

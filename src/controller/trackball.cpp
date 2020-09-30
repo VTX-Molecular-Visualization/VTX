@@ -27,6 +27,7 @@ namespace VTX
 
 		void Trackball::update( const double & p_deltaTime )
 		{
+			/*
 			// Wheel.
 			float deltaDistance = 0.f;
 			if ( _deltaMouseWheel != 0.f )
@@ -113,8 +114,7 @@ namespace VTX
 			if ( deltaVelocity != VEC3F_ZERO )
 			{
 				_velocity.x += VTX_SETTING().rotationSpeed * deltaVelocity.x;
-				_velocity.y
-					+= VTX_SETTING().rotationSpeed * deltaVelocity.y * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f );
+				_velocity.y += VTX_SETTING().rotationSpeed * deltaVelocity.y * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f );
 				_velocity.z += VTX_SETTING().rotationSpeed * deltaVelocity.z;
 			}
 
@@ -144,26 +144,17 @@ namespace VTX
 			// Handle elasticity.
 			if ( _velocity != VEC3F_ZERO )
 			{
-				_velocity = Util::Math::linearInterpolation(
-					_velocity, VEC3F_ZERO, (float)p_deltaTime * Setting::CONTROLLER_ELASTICITY_FACTOR );
+				_velocity = Util::Math::linearInterpolation( _velocity, VEC3F_ZERO, (float)p_deltaTime * Setting::CONTROLLER_ELASTICITY_FACTOR );
 
-				Vec3f::bool_type res = Util::Math::lessThan( Util::Math::abs( _velocity ),
-															 Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD,
-																	Setting::CONTROLLER_ELASTICITY_THRESHOLD,
-																	Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
+				Vec3f::bool_type res
+					= Util::Math::lessThan( Util::Math::abs( _velocity ),
+											Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD, Setting::CONTROLLER_ELASTICITY_THRESHOLD, Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
 				if ( !_mouseLeftPressed && res.x && res.y && res.z )
 				{
 					_velocity = VEC3F_ZERO;
 				}
 			}
-		}
-
-		void Trackball::_handleKeyPressedEvent( const SDL_Scancode & p_key )
-		{
-			if ( p_key == SDL_SCANCODE_SPACE )
-			{
-				_camera.print();
-			}
+			*/
 		}
 	} // namespace Controller
 } // namespace VTX

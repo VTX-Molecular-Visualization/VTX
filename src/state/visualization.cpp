@@ -21,9 +21,9 @@ namespace VTX
 		void Visualization::enter( void * const )
 		{
 			// Create controller.
-			addItem( new Controller::Freefly() );
-			addItem( new Controller::Trackball() );
-			addItem( new Controller::Shortcut() );
+			addItem( ID::Controller::FREEFLY, new Controller::Freefly() );
+			addItem( ID::Controller::TRACKBALL, new Controller::Trackball() );
+			addItem( ID::Controller::SHORTCUT, new Controller::Shortcut() );
 
 			if ( _controller == ID::Controller::FREEFLY )
 			{

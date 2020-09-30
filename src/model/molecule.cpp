@@ -6,9 +6,7 @@
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
-#include "view/ui/molecule.hpp"
-#include "view/ui/molecule_sequence.hpp"
-#include "view/ui/molecule_structure.hpp"
+#include "view/ui/widget/molecule_structure.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -17,9 +15,9 @@ namespace VTX
 	{
 		Molecule::Molecule()
 		{
-			addItem( (View::BaseView<BaseModel> *)new View::D3::Sphere( this ) );
-			addItem( (View::BaseView<BaseModel> *)new View::D3::Cylinder( this ) );
-			addItem( (View::BaseView<BaseModel> *)new View::UI::MoleculeStructure( this ) );
+			// addItem( (View::BaseView<BaseModel> *)new View::D3::Sphere( this ) );
+			// addItem( (View::BaseView<BaseModel> *)new View::D3::Cylinder( this ) );
+			addItem( ID::View::UI_MOLECULE_STRUCTURE, (View::BaseView<BaseModel> *)new View::UI::Widget::MoleculeStructure( this ) );
 		}
 
 		Molecule::~Molecule()
@@ -65,6 +63,10 @@ namespace VTX
 
 		void Molecule::init()
 		{
+			// TODO
+			_notifyViews( Event::VTX_EVENT_MODEL::INIT );
+			return;
+
 			// Compute global AABB of atom positions (taking into account each frame).
 			_computeGlobalPositionsAABB();
 
@@ -122,18 +124,18 @@ namespace VTX
 			}
 		}
 
-		void Molecule::_initBufferAtomPositions() const
+		void Molecule::_initBufferAtomPositions()
 		{
 			glNamedBufferData( _atomPositionsVBO,
-							   sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
+							   sizeof( Vec3f ) * GLsizei( _atomPositionsFrames[ _currentFrame ].size() ),
 							   _atomPositionsFrames[ _currentFrame ].data(),
 							   // static data ? buffer will never be modified : buffer will be updated each X frames
-							   _atomPositionsFrames.size() == 1 ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW );
+							   GLsizei( _atomPositionsFrames.size() ) == 1 ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW );
 		}
 
-		void Molecule::_updateBufferAtomPositions() const
+		void Molecule::_updateBufferAtomPositions()
 		{
-			glNamedBufferSubData( _atomPositionsVBO, 0, sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(), _atomPositionsFrames[ _currentFrame ].data() );
+			glNamedBufferSubData( _atomPositionsVBO, 0, sizeof( Vec3f ) * GLsizei( _atomPositionsFrames[ _currentFrame ].size() ), _atomPositionsFrames[ _currentFrame ].data() );
 		}
 
 		void Molecule::_fillBufferAtomRadius()
@@ -144,7 +146,7 @@ namespace VTX
 				_bufferAtomRadius[ i ] = _atoms[ i ]->getVdwRadius();
 			}
 
-			glNamedBufferData( _atomRadiusVBO, sizeof( float ) * _bufferAtomRadius.size(), _bufferAtomRadius.data(), GL_STATIC_DRAW );
+			glNamedBufferData( _atomRadiusVBO, sizeof( float ) * GLsizei( _bufferAtomRadius.size() ), _bufferAtomRadius.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferAtomColors()
@@ -179,7 +181,7 @@ namespace VTX
 				}
 			}
 
-			glNamedBufferData( _atomColorsVBO, sizeof( Color::Rgb ) * _bufferAtomColors.size(), _bufferAtomColors.data(), GL_STATIC_DRAW );
+			glNamedBufferData( _atomColorsVBO, sizeof( Color::Rgb ) * GLsizei( _bufferAtomColors.size() ), _bufferAtomColors.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()
@@ -205,7 +207,7 @@ namespace VTX
 				}
 			}
 
-			glNamedBufferData( _atomVisibilitiesVBO, sizeof( uint ) * _bufferAtomVisibilities.size(), _bufferAtomVisibilities.data(), GL_STATIC_DRAW );
+			glNamedBufferData( _atomVisibilitiesVBO, sizeof( uint ) * GLsizei( _bufferAtomVisibilities.size() ), _bufferAtomVisibilities.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferBonds()
@@ -217,7 +219,7 @@ namespace VTX
 				_bufferBonds[ 2u * i + 1u ] = _bonds[ i ]->getIndexSecondAtom();
 			}
 
-			glNamedBufferData( _bondsIBO, sizeof( uint ) * _bufferBonds.size(), _bufferBonds.data(), GL_STATIC_DRAW );
+			glNamedBufferData( _bondsIBO, sizeof( uint ) * GLsizei( _bufferBonds.size() ), _bufferBonds.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::print() const
@@ -262,11 +264,11 @@ namespace VTX
 			BaseSelectable::setSelected( p_selected );
 			if ( isSelected() )
 			{
-				addItem( (View::BaseView<BaseModel> *)new View::UI::Molecule( this ) );
+				// addItem( (View::BaseView<BaseModel> *)new View::UI::Molecule( this ) );
 			}
 			else
 			{
-				delete removeItem( ID::View::UI_MOLECULE );
+				// delete removeItem( ID::View::UI_MOLECULE );
 			}
 		}
 
@@ -436,11 +438,11 @@ namespace VTX
 		{
 			if ( hasItem( ( ID::View::UI_MOLECULE_SEQUENCE ) ) )
 			{
-				delete removeItem( ID::View::UI_MOLECULE_SEQUENCE );
+				// delete removeItem( ID::View::UI_MOLECULE_SEQUENCE );
 			}
 			else
 			{
-				addItem( (View::BaseView<BaseModel> *)new View::UI::MoleculeSequence( this ) );
+				// addItem( (View::BaseView<BaseModel> *)new View::UI::MoleculeSequence( this ) );
 			}
 		}
 

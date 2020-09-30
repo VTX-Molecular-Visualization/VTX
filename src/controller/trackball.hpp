@@ -16,38 +16,30 @@ namespace VTX
 {
 	namespace Controller
 	{
-		class Trackball : public BaseKeyboardController, public BaseMouseController, public BaseCameraController
+		class Trackball : public BaseMouseController, public BaseCameraController
 		{
 		  public:
 			// TOFIX: Ugly... set the camera in the BaseCollectionable::init()?
 			explicit Trackball() :
-				_camera( VTXApp::get().getScene().getCamera() ),
-				_target( VTXApp::get().getScene().getAABB().centroid() ),
+				_camera( VTXApp::get().getScene().getCamera() ), _target( VTXApp::get().getScene().getAABB().centroid() ),
 				_distanceForced( VTXApp::get().getScene().getAABB().diameter() )
 			{
 			}
 
+			/*
 			virtual void receiveEvent( const SDL_Event & p_event ) override final
 			{
-				BaseKeyboardController::receiveEvent( p_event );
 				BaseMouseController::receiveEvent( p_event );
 			}
-
+			*/
 			virtual void reset() override;
 
-			virtual void				update( const double & ) override;
-			virtual const std::string & getName() const override { return ID::Controller::TRACKBALL; }
-			virtual void				setActive( const bool p_active ) override;
+			virtual void update( const double & ) override;
+			virtual void setActive( const bool p_active ) override;
 
 			inline const Vec3d & getTarget() const { return _target; }
 
 		  protected:
-			virtual void					_handleKeyPressedEvent( const SDL_Scancode & ) override;
-			virtual std::vector<ID::VTX_ID> _getUIItems() const override
-			{
-				return std::vector<ID::VTX_ID>( { ID::UI::RENDER } );
-			}
-
 		  private:
 			Object3D::Camera & _camera;
 

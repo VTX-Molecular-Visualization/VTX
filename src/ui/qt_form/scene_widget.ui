@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-	<class>SceneWidget</class>
-	<widget class="QDockWidget" name="SceneWidget">
-		<property name="windowTitle">
-			<string>Scene</string>
-		</property>
-
-		<widget class="QTreeWidget" name="treeWidget">
-			<column>
-				<property name="text">
-					<string>Data</string>
-				</property>
-			</column>
-		</widget>
-	</widget>
-
-	<resources/>
-	<connections/>
+ <class>SceneWidget</class>
+ <widget class="QDockWidget">
+  <property name="windowTitle">
+   <string>Scene</string>
+  </property>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <layout class="QVBoxLayout" name="verticalLayout"/>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
 </ui>

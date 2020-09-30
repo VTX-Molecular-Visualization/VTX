@@ -22,8 +22,6 @@ namespace VTX
 			virtual ~BaseEventReceiverVTX();
 
 		  protected:
-			void _registerEvents() override final {};
-			void _unregisterEvents() override final {};
 			void _registerEvent( const VTX_EVENT & ) override final;
 			void _unregisterEvent( const VTX_EVENT & ) override final;
 

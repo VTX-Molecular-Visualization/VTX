@@ -11,7 +11,6 @@
 #include "io/writer/vtx.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
-#include "ui/user_interface.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "worker/api_fetcher.hpp"
@@ -107,12 +106,11 @@ namespace VTX
 						VTX_ACTION( new Open( mapBuffers ) );
 					} );
 
-					const Worker::CallbackError * error
-						= new Worker::CallbackError( [ fetcher ]( const std::exception & p_e ) {
-							  VTX_ERROR( p_e.what() );
-							  delete fetcher->getBuffer();
-							  delete fetcher;
-						  } );
+					const Worker::CallbackError * error = new Worker::CallbackError( [ fetcher ]( const std::exception & p_e ) {
+						VTX_ERROR( p_e.what() );
+						delete fetcher->getBuffer();
+						delete fetcher;
+					} );
 
 					VTX_WORKER( fetcher, success, error );
 				}
@@ -142,13 +140,7 @@ namespace VTX
 			  public:
 				explicit ChangeCameraController() {}
 
-				virtual void execute() override
-				{
-					VTXApp::get()
-						.getStateMachine()
-						.getItem<State::Visualization>( ID::State::VISUALIZATION )
-						->toggleController();
-				};
+				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->toggleController(); };
 
 			  private:
 			};
@@ -158,13 +150,7 @@ namespace VTX
 			  public:
 				explicit RecenterCameraController() {}
 
-				virtual void execute() override
-				{
-					VTXApp::get()
-						.getStateMachine()
-						.getItem<State::Visualization>( ID::State::VISUALIZATION )
-						->recenter();
-				};
+				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->recenter(); };
 
 			  private:
 			};
@@ -172,10 +158,7 @@ namespace VTX
 			class Snapshot : public BaseAction
 			{
 			  public:
-				explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const Path & p_path ) :
-					_mode( p_mode ), _path( p_path )
-				{
-				}
+				explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const Path & p_path ) : _mode( p_mode ), _path( p_path ) {}
 
 				virtual void execute() override
 				{
@@ -223,25 +206,6 @@ namespace VTX
 				uint _width;
 				uint _height;
 			};
-
-			class ActiveUIComponent : public BaseAction
-			{
-			  public:
-				explicit ActiveUIComponent( const std::string & p_name, const bool p_active ) :
-					_name( p_name ), _active( p_active )
-				{
-				}
-
-				virtual void execute() override
-				{
-					VTXApp::get().getUI().getComponentByName( _name )->setVisible( _active );
-				};
-
-			  private:
-				const std::string & _name;
-				const bool			_active;
-			};
-
 		} // namespace Main
 	}	  // namespace Action
 } // namespace VTX

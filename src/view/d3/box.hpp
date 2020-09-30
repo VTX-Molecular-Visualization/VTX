@@ -16,12 +16,7 @@ namespace VTX
 			class Box : public BaseView3DMolecule
 			{
 			  public:
-				explicit Box( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
-
-				virtual const std::string & getName() const override { return ID::View::D3_SPHERE; };
-
-				virtual void createProgram() override;
-				virtual void setUniFormLocations() override;
+				explicit Box( Model::Molecule * const p_model );
 
 				virtual void render( const Generic::REPRESENTATION ) override;
 

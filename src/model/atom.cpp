@@ -1,5 +1,4 @@
 #include "atom.hpp"
-#include "view/ui/atom.hpp"
 
 namespace VTX
 {
@@ -10,11 +9,11 @@ namespace VTX
 			BaseSelectable::setSelected( p_selected );
 			if ( isSelected() )
 			{
-				addItem( (View::BaseView<BaseModel> *)new View::UI::Atom( this ) );
+				// addItem( (View::BaseView<BaseModel> *)new View::UI::Atom( this ) );
 			}
 			else
 			{
-				delete removeItem( ID::View::UI_ATOM );
+				// delete removeItem( ID::View::UI_ATOM );
 			}
 		}
 
