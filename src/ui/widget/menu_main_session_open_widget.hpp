@@ -6,6 +6,7 @@
 #endif
 
 #include "base_widget.hpp"
+#include "base_widget.hpp"
 #include "ui_menu_main_session_open_widget.h"
 #include <QToolButton>
 #include <QWidget>

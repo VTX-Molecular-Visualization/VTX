@@ -5,7 +5,8 @@
 #pragma once
 #endif
 
-#include "base_menutoolbutton_widget.hpp"
+#include "base_widget.hpp"
+//#include "base_menutoolbutton_widget.hpp"
 #include "ui_menu_main_session_new_widget.h"
 #include <QToolButton>
 #include <QWidget>
@@ -16,12 +17,12 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class MenuMainSessionNewWidget : public BaseMenuToolButtonWidget<Ui_MenuMainSessionNewWidget>
+			class MenuMainSessionNewWidget : public BaseWidget<QToolButton, Ui_MenuMainSessionNewWidget>
 			{
 				Q_OBJECT
 
 			  public:
-				MenuMainSessionNewWidget( QWidget * p_parent = nullptr ) : BaseMenuToolButtonWidget( p_parent ) {};
+				MenuMainSessionNewWidget( QWidget * p_parent ) : BaseWidget( p_parent ) {};
 
 			  protected:
 			  private:
