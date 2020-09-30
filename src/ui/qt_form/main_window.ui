@@ -7,6 +7,57 @@
 			<string>VTX</string>
 		</property>
 		
+		<widget class="QTabWidget" name="menuTab">
+			<property name="geometry">
+				<rect>
+					<x>0</x>
+					<y>2</y>
+					<width>800</width>
+					<height>110</height>
+				</rect>
+			</property>
+			<property name="sizePolicy">
+				 <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+					  <horstretch>0</horstretch>
+					  <verstretch>0</verstretch>
+				 </sizepolicy>
+			</property>
+			<property name="minimumSize">
+				<size>
+					<width>800</width>
+					<height>110</height>
+				</size>
+			</property>
+			<property name="font">
+				<font>
+					<pointsize>10</pointsize>
+				</font>
+			</property>
+			<property name="currentIndex">
+				<number>0</number>
+			</property>
+
+			<widget class="QWidget" name="mainTab">			
+				<attribute name="title">
+					<string>Main</string>
+				</attribute>
+
+				<widget class="VTX::UI::Widget::MenuMainWidget" name="mainTabContent" />
+			</widget>
+			
+			<widget class="QLabel" name="tmp1">		
+				<attribute name="title">
+					<string>View</string>
+				</attribute>
+			</widget>
+			
+			<widget class="QLabel" name="tmp2">		
+				<attribute name="title">
+					<string>Movie</string>
+				</attribute>
+			</widget>
+		</widget>
+		
 		
 		<widget class="VTX::UI::Widget::RenderWidget" name="render">
 			<property name="windowTitle"><string>Render</string></property>
@@ -35,43 +86,8 @@
 				<number>8</number>
 			</attribute>
 		</widget>
-
-		<widget class="QMenuBar" name="menubar">
-			<property name="geometry">
-				<rect>
-					<x>0</x>
-					<y>0</y>
-					<width>800</width>
-					<height>21</height>
-				</rect>
-			</property>
-				
-			<widget class="QMenu" name="menuFile">
-				<property name="title">
-					<string>&amp;File</string>
-				</property>
-				<addaction name="file_open"/>
-				<addaction name="separator"/>
-				<addaction name="file_close"/>
-			</widget>
-				
-			<addaction name="menuFile"/>
-
-			
-			<widget class="QMenu" name="menuWindow">
-				<property name="title">
-					<string>&amp;Window</string>
-				</property>
-				<addaction name="window_togglerender"/>
-				<addaction name="window_togglescene"/>
-				<addaction name="window_toggleinspector"/>
-				<addaction name="window_togglelog"/>
-			</widget>
-
-			<addaction name="menuWindow"/>
-			
-			
-		</widget>
+		
+		
 			
 		<widget class="QStatusBar" name="statusbar"/>
 
@@ -122,6 +138,12 @@
 	
 	
 	<customwidgets>
+		<customwidget>
+			<class>VTX::UI::Widget::MenuMainWidget</class>
+			<extends>QWidget</extends>
+			<header>ui/widget/menu_main_widget.hpp</header>
+		</customwidget>
+
 		<customwidget>
 			<class>VTX::UI::Widget::RenderWidget</class>
 			<extends>QDockWidget</extends>

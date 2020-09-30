@@ -1,10 +1,28 @@
 /* For all widgets */
 QWidget
 {
-	background-color : #222222;
-	color : #FFFFFF;
-	border: 1px solid #444444;
+	background: #222222;
+	color: #FFFFFF;
+/*	border: 1px solid white*/ /*Debug*/
 }
+
+QMainWindow
+{
+    background: black;
+}
+
+VTX--UI--Widget--MenuMainSessionWidget
+{
+	margin: 0px;
+}
+
+VTX--UI--Widget--MenuMainWidget
+{
+	border: 0px;
+	padding: 0px;
+	margin: 0px;
+}
+
 
 /* Window resize area */
 QMainWindow::separator
@@ -32,14 +50,40 @@ QMenu::item:selected
     background-color: #444444;
 }
 
-
 QDockWidget
 {
 	titlebar-close-icon: url(:/sprite/close_icon.png);
 	titlebar-normal-icon: url(:/sprite/undock_icon.png);
+
+	border: 1px solid #444444;
 }
 QDockWidget::close-button, QDockWidget::float-button
 {
 	/* set border to 0 to remove auto background */
 	border: 0px;
+}
+
+QTabWidget::pane
+{
+	border-left: 0px;
+	border-right: 0px;
+	
+	padding-top: 0px;
+}
+QTabBar::tab
+{
+	background: #000000;
+    border: 0px;
+	min-height: 8ex;
+	padding-left: 12px;
+	padding-right: 12px;
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover
+{
+    background: #444444;
+}
+QTabBar::tab:selected
+{
+    background: #222222; /* same as the pane color */
 }

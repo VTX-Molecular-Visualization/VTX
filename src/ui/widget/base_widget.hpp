@@ -6,6 +6,8 @@
 #endif
 
 #include "event/base_event_receiver_vtx.hpp"
+#include <QPainter>
+#include <QStyleOption>
 #include <QWidget>
 
 namespace VTX
@@ -23,6 +25,17 @@ namespace VTX
 
 				inline const T & getUI() const { return _ui; }
 				inline T &		 getUI() { return _ui; }
+
+				// Need to override paintEvent to read style on custom widgets
+				inline void paintEvent( QPaintEvent * event ) override
+				{
+					QStyleOption opt;
+					opt.init( this );
+					QPainter p( this );
+					style()->drawPrimitive( QStyle::PE_Widget, &opt, &p, this );
+
+					Q::paintEvent( event );
+				};
 
 			  protected:
 				T * _ui;
