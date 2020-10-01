@@ -1,6 +1,7 @@
 #include "main_window.hpp"
 #include "action/main.hpp"
 #include "vtx_app.hpp"
+#include "widget_factory.hpp"
 #include <QAction>
 #include <QFileDialog>
 #include <QSettings>
@@ -13,6 +14,8 @@ namespace VTX
 		MainWindow::MainWindow( QWidget * p_parent ) : BaseWidget( p_parent )
 		{
 			_registerEvent( Event::Global::CHANGE_STATE );
+
+			_consoleWidget = WidgetFactory::get().GetWidget<Widget::ConsoleWidget>();
 
 			_setupSlots();
 
@@ -59,9 +62,9 @@ namespace VTX
 			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, this->inspectorWidget, Qt::Orientation::Horizontal );
 			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, this->renderWidget, Qt::Orientation::Horizontal );
 			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, this->sceneWidget, Qt::Orientation::Horizontal );
-			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, this->consoleWidget, Qt::Orientation::Vertical );
+			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, this->_consoleWidget, Qt::Orientation::Vertical );
 
-			resizeDocks( { this->renderWidget, this->consoleWidget },
+			resizeDocks( { this->renderWidget, this->_consoleWidget },
 						 { VTX_SETTING().RENDER_WIDGET_HEIGHT_DEFAULT, VTX_SETTING().CONSOLE_WIDGET_HEIGHT_DEFAULT },
 						 Qt::Orientation::Vertical );
 			resizeDocks( { this->sceneWidget, this->inspectorWidget },
@@ -82,7 +85,7 @@ namespace VTX
 		void MainWindow::on_window_togglerender_triggered() { _toggleWidget( this->renderWidget ); }
 		void MainWindow::on_window_toggleinspector_triggered() { _toggleWidget( this->inspectorWidget ); }
 		void MainWindow::on_window_togglescene_triggered() { _toggleWidget( this->sceneWidget ); }
-		void MainWindow::on_window_togglelog_triggered() { _toggleWidget( this->consoleWidget ); }
+		void MainWindow::on_window_togglelog_triggered() { _toggleWidget( this->_consoleWidget ); }
 
 		void MainWindow::_toggleWidget( QWidget * widget )
 		{

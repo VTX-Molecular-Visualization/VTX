@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "base_widget.hpp"
-#include "ui_console_widget.h"
+#include "base_manual_widget.hpp"
 #include <QDockWidget>
+#include <QListWidget>
 
 namespace VTX
 {
@@ -15,17 +15,20 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class ConsoleWidget : public BaseWidget<QDockWidget, Ui_ConsoleWidget>
+			class ConsoleWidget : public BaseManualWidget<QDockWidget>
 			{
-				Q_OBJECT
-
 			  public:
 				ConsoleWidget( QWidget * );
 
 				void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 			  protected:
+				void setupUi() override;
+				void setupSlots() override;
+				void localize() override;
+
 			  private:
+				QListWidget * listWidget = 0;
 			};
 		} // namespace Widget
 	}	  // namespace UI

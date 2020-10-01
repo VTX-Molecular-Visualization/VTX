@@ -7,6 +7,7 @@
 
 #include "ui_main_window.h"
 #include "widget/base_widget.hpp"
+#include "widget/console_widget.hpp"
 #include <QMainWindow>
 
 namespace VTX
@@ -31,6 +32,8 @@ namespace VTX
 			void on_window_togglelog_triggered();
 
 		  private:
+			Widget::ConsoleWidget * _consoleWidget;
+
 			void _loadStyleSheet( const char * p_stylesheetPath );
 			void _setupSlots();
 			void _setupDock();
