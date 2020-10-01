@@ -26,12 +26,12 @@ namespace VTX
 			};
 
 		  public:
-			template<typename W, typename = std::enable_if<std::is_base_of<W, Widget::WidgetInitializer>::value>>
+			template<typename W, typename = std::enable_if<std::is_base_of<W, Widget::BaseManualWidgetInitializer>::value>>
 			W * GetWidget( QWidget * p_parent = nullptr ) const
 			{
 				W * res = new W( p_parent );
 
-				Widget::WidgetInitializer * widget = static_cast<Widget::WidgetInitializer *>( res );
+				Widget::BaseManualWidgetInitializer * widget = static_cast<Widget::BaseManualWidgetInitializer *>( res );
 
 				widget->setupUi();
 				widget->setupSlots();
