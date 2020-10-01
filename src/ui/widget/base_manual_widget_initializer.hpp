@@ -11,10 +11,10 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class WidgetInitializer
+			class BaseManualWidgetInitializer
 			{
 			  public:
-				WidgetInitializer() {};
+				BaseManualWidgetInitializer() {};
 
 				virtual void setupUi()	  = 0;
 				virtual void setupSlots() = 0;
