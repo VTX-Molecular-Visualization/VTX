@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "base_widget.hpp"
-#include "ui_inspector_widget.h"
+#include "base_manual_widget.hpp"
 #include <QDockWidget>
+#include <QListWidget>
 
 namespace VTX
 {
@@ -15,12 +15,22 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class InspectorWidget : public BaseWidget<QDockWidget, Ui_InspectorWidget>
+			class InspectorWidget : public BaseManualWidget<QDockWidget>
 			{
-				Q_OBJECT
+				VTX_MANUAL_WIDGET_DECLARATION
 
 			  public:
+				~InspectorWidget();
+				void localize() override;
+
+			  protected:
 				InspectorWidget( QWidget * p_parent );
+
+				void setupUi() override;
+				void setupSlots() override;
+
+			  private:
+				QListWidget * _listWidget = nullptr;
 			};
 		} // namespace Widget
 	}	  // namespace UI

@@ -12,10 +12,16 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			SceneWidget::SceneWidget( QWidget * p_parent ) : BaseWidget( p_parent )
+			SceneWidget::SceneWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 			{
 				_registerEvent( Event::Global::MOLECULE_ADDED );
 				_registerEvent( Event::Global::MOLECULE_REMOVED );
+			}
+
+			SceneWidget::~SceneWidget()
+			{
+				delete _verticalLayout;
+				delete _verticalLayoutWidget;
 			}
 
 			void SceneWidget::receiveEvent( const Event::VTXEvent & p_event )
@@ -23,13 +29,30 @@ namespace VTX
 				if ( p_event.name == Event::Global::MOLECULE_ADDED )
 				{
 					const Event::VTXEventPtr<Model::Molecule> & event = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-					verticalLayout->addWidget( (QTreeWidget *)( event.ptr->getItem( ID::View::UI_MOLECULE_STRUCTURE ) ) );
+					_verticalLayout->addWidget( (QTreeWidget *)( event.ptr->getItem( ID::View::UI_MOLECULE_STRUCTURE ) ) );
 				}
 				else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 				{
 				}
 			}
 
+			void SceneWidget::setupUi()
+			{
+				setObjectName( QString::fromUtf8( "sceneDockWidget" ) );
+				_verticalLayoutWidget = new QWidget();
+				_verticalLayoutWidget->setObjectName( QString::fromUtf8( "verticalLayoutWidget" ) );
+				_verticalLayout = new QVBoxLayout( _verticalLayoutWidget );
+				_verticalLayout->setObjectName( QString::fromUtf8( "verticalLayout" ) );
+
+				setWidget( _verticalLayoutWidget );
+			}
+
+			void SceneWidget::setupSlots() {}
+			void SceneWidget::localize()
+			{
+				this->setWindowTitle( "Scene" );
+				// this->setWindowTitle( QCoreApplication::translate( "SceneWidget", "Scene", nullptr ) );
+			}
 		} // namespace Widget
 	}	  // namespace UI
 

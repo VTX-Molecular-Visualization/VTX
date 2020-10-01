@@ -1,7 +1,7 @@
 #include "main_window.hpp"
 #include "action/main.hpp"
 #include "vtx_app.hpp"
-#include "widget_factory.hpp"
+#include "widget/widget_factory.hpp"
 #include <QAction>
 #include <QFileDialog>
 #include <QSettings>
@@ -15,7 +15,10 @@ namespace VTX
 		{
 			_registerEvent( Event::Global::CHANGE_STATE );
 
-			_consoleWidget = WidgetFactory::get().GetWidget<Widget::ConsoleWidget>();
+			_renderWidget	 = Widget::WidgetFactory::get().GetWidget<Widget::RenderWidget>();
+			_sceneWidget	 = Widget::WidgetFactory::get().GetWidget<Widget::SceneWidget>();
+			_inspectorWidget = Widget::WidgetFactory::get().GetWidget<Widget::InspectorWidget>();
+			_consoleWidget	 = Widget::WidgetFactory::get().GetWidget<Widget::ConsoleWidget>();
 
 			_setupSlots();
 
@@ -33,6 +36,14 @@ namespace VTX
 
 			QString stylesheet = stylesheetFile.readAll();
 			setStyleSheet( stylesheet );
+		}
+
+		MainWindow::~MainWindow()
+		{
+			delete _consoleWidget;
+			delete _inspectorWidget;
+			delete _sceneWidget;
+			delete _renderWidget;
 		}
 
 		void MainWindow::receiveEvent( const Event::VTXEvent & p_event )
@@ -57,19 +68,17 @@ namespace VTX
 
 		void MainWindow::_setupDock()
 		{
-			this->setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks | DockOption::AnimatedDocks );
+			setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks | DockOption::AnimatedDocks );
 
-			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, this->inspectorWidget, Qt::Orientation::Horizontal );
-			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, this->renderWidget, Qt::Orientation::Horizontal );
-			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, this->sceneWidget, Qt::Orientation::Horizontal );
-			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, this->_consoleWidget, Qt::Orientation::Vertical );
+			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _inspectorWidget, Qt::Orientation::Horizontal );
+			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _renderWidget, Qt::Orientation::Horizontal );
+			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _sceneWidget, Qt::Orientation::Horizontal );
+			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _consoleWidget, Qt::Orientation::Vertical );
 
-			resizeDocks( { this->renderWidget, this->_consoleWidget },
-						 { VTX_SETTING().RENDER_WIDGET_HEIGHT_DEFAULT, VTX_SETTING().CONSOLE_WIDGET_HEIGHT_DEFAULT },
-						 Qt::Orientation::Vertical );
-			resizeDocks( { this->sceneWidget, this->inspectorWidget },
-						 { VTX_SETTING().SCENE_WIDGET_WIDTH_DEFAULT, VTX_SETTING().INSPECTOR_WIDGET_WIDTH_DEFAULT },
-						 Qt::Orientation::Horizontal );
+			resizeDocks(
+				{ _renderWidget, _consoleWidget }, { VTX_SETTING().RENDER_WIDGET_HEIGHT_DEFAULT, VTX_SETTING().CONSOLE_WIDGET_HEIGHT_DEFAULT }, Qt::Orientation::Vertical );
+			resizeDocks(
+				{ _sceneWidget, _inspectorWidget }, { VTX_SETTING().SCENE_WIDGET_WIDTH_DEFAULT, VTX_SETTING().INSPECTOR_WIDGET_WIDTH_DEFAULT }, Qt::Orientation::Horizontal );
 		}
 
 		void MainWindow::on_file_open_triggered()
@@ -82,10 +91,10 @@ namespace VTX
 		}
 		void MainWindow::on_file_close_triggered() { close(); }
 
-		void MainWindow::on_window_togglerender_triggered() { _toggleWidget( this->renderWidget ); }
-		void MainWindow::on_window_toggleinspector_triggered() { _toggleWidget( this->inspectorWidget ); }
-		void MainWindow::on_window_togglescene_triggered() { _toggleWidget( this->sceneWidget ); }
-		void MainWindow::on_window_togglelog_triggered() { _toggleWidget( this->_consoleWidget ); }
+		void MainWindow::on_window_togglerender_triggered() { _toggleWidget( _renderWidget ); }
+		void MainWindow::on_window_toggleinspector_triggered() { _toggleWidget( _inspectorWidget ); }
+		void MainWindow::on_window_togglescene_triggered() { _toggleWidget( _sceneWidget ); }
+		void MainWindow::on_window_togglelog_triggered() { _toggleWidget( _consoleWidget ); }
 
 		void MainWindow::_toggleWidget( QWidget * widget )
 		{

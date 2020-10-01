@@ -17,18 +17,20 @@ namespace VTX
 		{
 			class ConsoleWidget : public BaseManualWidget<QDockWidget>
 			{
-			  public:
-				ConsoleWidget( QWidget * );
+				VTX_MANUAL_WIDGET_DECLARATION
 
+			  public:
+				~ConsoleWidget();
 				void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 			  protected:
+				ConsoleWidget( QWidget * );
 				void setupUi() override;
 				void setupSlots() override;
 				void localize() override;
 
 			  private:
-				QListWidget * listWidget = 0;
+				QListWidget * _listWidget = nullptr;
 			};
 		} // namespace Widget
 	}	  // namespace UI

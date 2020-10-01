@@ -8,6 +8,9 @@
 #include "ui_main_window.h"
 #include "widget/base_widget.hpp"
 #include "widget/console_widget.hpp"
+#include "widget/inspector_widget.hpp"
+#include "widget/render_widget.hpp"
+#include "widget/scene_widget.hpp"
 #include <QMainWindow>
 
 namespace VTX
@@ -20,6 +23,7 @@ namespace VTX
 
 		  public:
 			MainWindow( QWidget * = 0 );
+			~MainWindow();
 
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
@@ -32,7 +36,10 @@ namespace VTX
 			void on_window_togglelog_triggered();
 
 		  private:
-			Widget::ConsoleWidget * _consoleWidget;
+			Widget::RenderWidget *	  _renderWidget	   = nullptr;
+			Widget::SceneWidget *	  _sceneWidget	   = nullptr;
+			Widget::InspectorWidget * _inspectorWidget = nullptr;
+			Widget::ConsoleWidget *	  _consoleWidget   = nullptr;
 
 			void _loadStyleSheet( const char * p_stylesheetPath );
 			void _setupSlots();

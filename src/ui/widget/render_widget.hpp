@@ -5,8 +5,7 @@
 #pragma once
 #endif
 
-#include "base_widget.hpp"
-#include "ui_render_widget.h"
+#include "base_manual_widget.hpp"
 #include <QDockWidget>
 //#include <QOpenGLFunctions>
 
@@ -16,16 +15,23 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class RenderWidget : public BaseWidget<QDockWidget, Ui_RenderWidget>//, protected QOpenGLFunctions
+			class RenderWidget : public BaseManualWidget<QDockWidget> //, protected QOpenGLFunctions
 			{
-				Q_OBJECT
+				VTX_MANUAL_WIDGET_DECLARATION
 
 			  public:
+				~RenderWidget();
+				void localize() override;
+
+			  protected:
 				RenderWidget( QWidget * p_parent );
 
+				void setupUi() override;
+				void setupSlots() override;
+
 			  private:
-				//QOpenGLContext *	 _context = nullptr;
-				//QOpenGLPaintDevice * _device  = nullptr;
+				// QOpenGLContext *	 _context = nullptr;
+				// QOpenGLPaintDevice * _device  = nullptr;
 			};
 		} // namespace Widget
 	}	  // namespace UI

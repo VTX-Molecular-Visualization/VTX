@@ -59,7 +59,7 @@
 		</widget>
 		
 		
-		<widget class="VTX::UI::Widget::RenderWidget" name="renderWidget">
+		<!--<widget class="VTX::UI::Widget::RenderWidget" name="renderWidget">
 			<property name="windowTitle"><string>Render</string></property>
 			<attribute name="dockWidgetArea">
 				<number>4</number>
@@ -79,6 +79,13 @@
 				<number>2</number>
 			</attribute>
 		</widget>
+		
+		<widget class="VTX::UI::Widget::ConsoleWidget" name="consoleWidget">
+		<property name="windowTitle"><string>Console</string></property>
+			<attribute name="dockWidgetArea">
+				<number>8</number>
+			</attribute>
+		</widget>-->
 		
 		
 			
@@ -137,7 +144,7 @@
 			<header>ui/widget/menu_main_widget.hpp</header>
 		</customwidget>
 
-		<customwidget>
+		<!--<customwidget>
 			<class>VTX::UI::Widget::RenderWidget</class>
 			<extends>QDockWidget</extends>
 			<header>ui/widget/render_widget.hpp</header>
@@ -152,6 +159,11 @@
 			<extends>QDockWidget</extends>
 			<header>ui/widget/scene_widget.hpp</header>
 		</customwidget>
+		<customwidget>
+			<class>VTX::UI::Widget::ConsoleWidget</class>
+			<extends>QDockWidget</extends>
+			<header>ui/widget/console_widget.hpp</header>
+		</customwidget>-->
 	</customwidgets>
 	
 	<resources/>

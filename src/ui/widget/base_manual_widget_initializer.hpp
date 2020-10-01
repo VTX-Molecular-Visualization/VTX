@@ -5,6 +5,8 @@
 #pragma once
 #endif
 
+#define VTX_MANUAL_WIDGET_DECLARATION friend class WidgetFactory;
+
 namespace VTX
 {
 	namespace UI
@@ -13,12 +15,16 @@ namespace VTX
 		{
 			class BaseManualWidgetInitializer
 			{
+				VTX_MANUAL_WIDGET_DECLARATION
+
 			  public:
+				virtual void localize() = 0;
+
+			  protected:
 				BaseManualWidgetInitializer() {};
 
 				virtual void setupUi()	  = 0;
 				virtual void setupSlots() = 0;
-				virtual void localize()	  = 0;
 			};
 		} // namespace Widget
 	}	  // namespace UI
