@@ -13,7 +13,7 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class SecondaryStructure : public BaseModel3D
+		class SecondaryStructure : public BaseModel3D<SecondaryStructure>
 		{
 		  public:
 			enum class VALUE : int
@@ -62,10 +62,7 @@ namespace VTX
 			void setCurrentFrame();
 
 			const std::vector<uint> &	 getIndices() const { return _indices; }
-			const std::map<uint, uint> & getResidueToControlPointIndice() const
-			{
-				return _residueToControlPointIndices;
-			}
+			const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToControlPointIndices; }
 
 			void print() const;
 

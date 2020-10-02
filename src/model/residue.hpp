@@ -20,11 +20,7 @@ namespace VTX
 	{
 		class Molecule;
 		class Chain;
-		class Residue :
-			public BaseModel,
-			public Generic::BaseColorable,
-			public Generic::BaseVisible,
-			public Generic::BaseRepresentable
+		class Residue : public BaseModel<Residue>, public Generic::BaseColorable, public Generic::BaseVisible, public Generic::BaseRepresentable
 		{
 		  public:
 			enum class TYPE : int
@@ -103,14 +99,11 @@ namespace VTX
 			inline const std::vector<uint> & getIndexExtraBondEnd() const { return _indexExtraBondEnd; };
 			inline std::vector<uint> &		 getIndexExtraBondEnd() { return _indexExtraBondEnd; };
 
-			inline Atom::TYPE getAtomType() const { return _atomType; }
-			inline void		  setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
+			inline Atom::TYPE					   getAtomType() const { return _atomType; }
+			inline void							   setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
 			inline const SecondaryStructure::VALUE getSecondaryStructure() const { return _secondaryStructure; };
-			inline void							   setSecondaryStructure( const SecondaryStructure::VALUE p_structure )
-			{
-				_secondaryStructure = p_structure;
-			};
-			const Atom * const findFirstAtomByName( const std::string & ) const;
+			inline void							   setSecondaryStructure( const SecondaryStructure::VALUE p_structure ) { _secondaryStructure = p_structure; };
+			const Atom * const					   findFirstAtomByName( const std::string & ) const;
 
 			void setSelected( const bool );
 
@@ -129,8 +122,8 @@ namespace VTX
 			uint					  _bondCount		   = 0;
 			std::vector<uint>		  _indexExtraBondStart = std::vector<uint>();
 			std::vector<uint>		  _indexExtraBondEnd   = std::vector<uint>();
-			Atom::TYPE				  _atomType = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
-			SecondaryStructure::VALUE _secondaryStructure = SecondaryStructure::VALUE::COIL;
+			Atom::TYPE				  _atomType			   = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
+			SecondaryStructure::VALUE _secondaryStructure  = SecondaryStructure::VALUE::COIL;
 		};
 
 	} // namespace Model

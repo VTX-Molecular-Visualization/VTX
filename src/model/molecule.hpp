@@ -32,7 +32,7 @@ namespace VTX
 	namespace Model
 	{
 		class SecondaryStructure;
-		class Molecule : public BaseModel3D, public Generic::BaseColorable, public Generic::BaseRepresentable
+		class Molecule : public BaseModel3D<Molecule>, public Generic::BaseColorable, public Generic::BaseRepresentable
 		{
 		  public:
 			using AtomPositionsFrame = std::vector<Vec3f>;

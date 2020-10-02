@@ -17,11 +17,7 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class Chain :
-			public BaseModel,
-			public Generic::BaseColorable,
-			public Generic::BaseVisible,
-			public Generic::BaseRepresentable
+		class Chain : public BaseModel<Chain>, public Generic::BaseColorable, public Generic::BaseVisible, public Generic::BaseRepresentable
 		{
 		  public:
 			enum class TYPE : int

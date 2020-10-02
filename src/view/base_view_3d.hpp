@@ -17,7 +17,7 @@ namespace VTX
 {
 	namespace View
 	{
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel3D, T>::value>>
+		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel3D<T>, T>::value>>
 		class BaseView3D : public BaseView<T>, public Generic::BaseRenderable, public QOpenGLFunctions_4_5_Compatibility
 		{
 		  public:

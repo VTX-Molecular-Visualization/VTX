@@ -12,7 +12,7 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class Bond : public BaseModel
+		class Bond : public BaseModel<Bond>
 		{
 		  public:
 			inline uint				getIndexFirstAtom() const { return _indexFirstAtom; };

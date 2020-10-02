@@ -15,9 +15,12 @@ namespace VTX
 	{
 		Molecule::Molecule()
 		{
-			// addItem( (View::BaseView<BaseModel> *)new View::D3::Sphere( this ) );
-			// addItem( (View::BaseView<BaseModel> *)new View::D3::Cylinder( this ) );
-			addItem( ID::View::UI_MOLECULE_STRUCTURE, (View::BaseView<BaseModel> *)new View::UI::Widget::MoleculeStructure( this ) );
+			// addItem( ID::View::D3_SPHERE, (View::BaseView<BaseModel> *)new View::D3::Sphere( this ) );
+			// addItem( ID::View::D3_CYLINDER, (View::BaseView<BaseModel> *)new View::D3::Cylinder( this ) );
+
+			// View::UI::Widget::MoleculeStructure * view = UI::Widget::WidgetFactory::get().GetWidget<View::UI::Widget::MoleculeStructure, Molecule>( this );
+			// addItem( ID::View::UI_MOLECULE_STRUCTURE, (View::BaseView<BaseModel> *)view );
+			addItem( ID::View::UI_MOLECULE_STRUCTURE, new View::UI::Widget::MoleculeStructure( this ) );
 		}
 
 		Molecule::~Molecule()
@@ -63,7 +66,6 @@ namespace VTX
 
 		void Molecule::init()
 		{
-			// TODO
 			_notifyViews( Event::VTX_EVENT_MODEL::INIT );
 			return;
 
