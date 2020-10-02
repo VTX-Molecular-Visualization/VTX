@@ -21,7 +21,12 @@ namespace VTX
 
 			  public:
 				void setData( const QString & p_name, const QString & p_iconUrl, const Qt::Orientation p_orientation );
-				void setTriggerAction() {};
+
+				template<typename F>
+				void setTriggerAction( const F * p_receiver, void ( F::*p_action )() )
+				{
+					p_receiver->connect( this, &QToolButton::clicked, p_receiver, p_action );
+				}
 				void localize() override;
 
 			  protected:

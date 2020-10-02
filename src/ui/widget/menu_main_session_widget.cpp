@@ -1,5 +1,8 @@
 #include "menu_main_session_widget.hpp"
+#include "action/main.hpp"
 #include "ui/widget_factory.hpp"
+#include "vtx_app.hpp"
+#include <QFileDialog>
 
 namespace VTX
 {
@@ -8,6 +11,16 @@ namespace VTX
 		namespace Widget
 		{
 			MenuMainSessionWidget::~MenuMainSessionWidget() {}
+
+			void MenuMainSessionWidget::_openFile()
+			{
+				// TODO : Filter file type
+				const QString filename = QFileDialog::getOpenFileName( this, "Open Molecule", "", "*" );
+				Path *		  path	   = new Path( filename.toStdString() );
+
+				VTX_ACTION( new Action::Main::Open( path ), true );
+			}
+
 			void MenuMainSessionWidget::setupUi( const QString & p_name )
 			{
 				MenuToolBlockWidget::setupUi( p_name );
@@ -36,7 +49,7 @@ namespace VTX
 
 				validate();
 			}
-			void MenuMainSessionWidget::setupSlots() {}
+			void MenuMainSessionWidget::setupSlots() { _openSessionButton->setTriggerAction( this, &MenuMainSessionWidget::_openFile ); }
 			void MenuMainSessionWidget::localize() {}
 		} // namespace Widget
 	}	  // namespace UI

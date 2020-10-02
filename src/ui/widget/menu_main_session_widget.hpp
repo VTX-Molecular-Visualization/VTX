@@ -34,6 +34,9 @@ namespace VTX
 				MenuToolButtonWidget * _openRecentSessionButton = nullptr;
 				MenuToolButtonWidget * _saveSessionButton		= nullptr;
 				MenuToolButtonWidget * _saveAsSessionButton		= nullptr;
+
+			  private:
+				void _openFile();
 			};
 		} // namespace Widget
 	}	  // namespace UI

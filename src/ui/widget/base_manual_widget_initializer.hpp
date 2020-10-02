@@ -15,6 +15,7 @@ namespace VTX
 		class WidgetFactory;
 	}
 }
+
 #define VTX_MANUAL_WIDGET_DECLARATION friend ::VTX::UI::WidgetFactory;
 
 namespace VTX
@@ -25,7 +26,7 @@ namespace VTX
 		{
 			class BaseManualWidgetInitializer
 			{
-				VTX_MANUAL_WIDGET_DECLARATION
+				friend ::VTX::UI::WidgetFactory;
 
 			  public:
 				virtual void localize() = 0;
