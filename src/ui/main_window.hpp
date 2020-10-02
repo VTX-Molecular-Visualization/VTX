@@ -9,6 +9,7 @@
 #include "widget/base_widget.hpp"
 #include "widget/console_widget.hpp"
 #include "widget/inspector_widget.hpp"
+#include "widget/menu_main_widget.hpp"
 #include "widget/render_widget.hpp"
 #include "widget/scene_widget.hpp"
 #include <QMainWindow>
@@ -36,6 +37,8 @@ namespace VTX
 			void on_window_togglelog_triggered();
 
 		  private:
+			Widget::MenuMainWidget * _menuMainWidget = nullptr;
+
 			Widget::RenderWidget *	  _renderWidget	   = nullptr;
 			Widget::SceneWidget *	  _sceneWidget	   = nullptr;
 			Widget::InspectorWidget * _inspectorWidget = nullptr;

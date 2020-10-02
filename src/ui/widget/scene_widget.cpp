@@ -36,9 +36,10 @@ namespace VTX
 				}
 			}
 
-			void SceneWidget::setupUi()
+			void SceneWidget::setupUi( const QString & p_name )
 			{
-				setObjectName( QString::fromUtf8( "sceneDockWidget" ) );
+				BaseManualWidget::setupUi( p_name );
+
 				_verticalLayoutWidget = new QWidget();
 				_verticalLayoutWidget->setObjectName( QString::fromUtf8( "verticalLayoutWidget" ) );
 				_verticalLayout = new QVBoxLayout( _verticalLayoutWidget );

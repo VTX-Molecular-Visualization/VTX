@@ -26,7 +26,7 @@ namespace VTX
 			  protected:
 				InspectorWidget( QWidget * p_parent );
 
-				void setupUi() override;
+				void setupUi( const QString & p_name ) override;
 				void setupSlots() override;
 
 			  private:

@@ -5,7 +5,17 @@
 #pragma once
 #endif
 
-#define VTX_MANUAL_WIDGET_DECLARATION friend class WidgetFactory;
+#include <QtCore>
+#include "ui/widget_factory.hpp"
+
+namespace VTX
+{
+	namespace UI
+	{
+		class WidgetFactory;
+	}
+}
+#define VTX_MANUAL_WIDGET_DECLARATION friend ::VTX::UI::WidgetFactory;
 
 namespace VTX
 {
@@ -23,8 +33,8 @@ namespace VTX
 			  protected:
 				BaseManualWidgetInitializer() {};
 
-				virtual void setupUi()	  = 0;
-				virtual void setupSlots() = 0;
+				virtual void setupUi( const QString & p_name ) = 0;
+				virtual void setupSlots()					   = 0;
 			};
 		} // namespace Widget
 	}	  // namespace UI

@@ -1,7 +1,7 @@
 #include "main_window.hpp"
 #include "action/main.hpp"
 #include "vtx_app.hpp"
-#include "widget/widget_factory.hpp"
+#include "widget_factory.hpp"
 #include <QAction>
 #include <QFileDialog>
 #include <QSettings>
@@ -15,10 +15,14 @@ namespace VTX
 		{
 			_registerEvent( Event::Global::CHANGE_STATE );
 
-			_renderWidget	 = Widget::WidgetFactory::get().GetWidget<Widget::RenderWidget>();
-			_sceneWidget	 = Widget::WidgetFactory::get().GetWidget<Widget::SceneWidget>();
-			_inspectorWidget = Widget::WidgetFactory::get().GetWidget<Widget::InspectorWidget>();
-			_consoleWidget	 = Widget::WidgetFactory::get().GetWidget<Widget::ConsoleWidget>();
+			_menuMainWidget = WidgetFactory::get().GetWidget<Widget::MenuMainWidget>( this, "menuMainWidget" );
+			menuTab->insertTab( 0, _menuMainWidget, "Main" );
+			menuTab->setCurrentIndex( 0 );
+
+			_renderWidget	 = WidgetFactory::get().GetWidget<Widget::RenderWidget>( this, "renderWidget" );
+			_sceneWidget	 = WidgetFactory::get().GetWidget<Widget::SceneWidget>( this, "sceneWidget" );
+			_inspectorWidget = WidgetFactory::get().GetWidget<Widget::InspectorWidget>( this, "inspectorWidget" );
+			_consoleWidget	 = WidgetFactory::get().GetWidget<Widget::ConsoleWidget>( this, "consoleWidget" );
 
 			_setupSlots();
 
@@ -38,13 +42,7 @@ namespace VTX
 			setStyleSheet( stylesheet );
 		}
 
-		MainWindow::~MainWindow()
-		{
-			delete _consoleWidget;
-			delete _inspectorWidget;
-			delete _sceneWidget;
-			delete _renderWidget;
-		}
+		MainWindow::~MainWindow() {}
 
 		void MainWindow::receiveEvent( const Event::VTXEvent & p_event )
 		{

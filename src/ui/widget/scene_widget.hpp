@@ -6,7 +6,6 @@
 #endif
 
 #include "base_manual_widget.hpp"
-#include "ui_scene_widget.h"
 #include <QDockWidget>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -28,7 +27,7 @@ namespace VTX
 
 			  protected:
 				SceneWidget( QWidget * p_parent );
-				void setupUi() override;
+				void setupUi( const QString & p_name ) override;
 				void setupSlots() override;
 
 			  private:

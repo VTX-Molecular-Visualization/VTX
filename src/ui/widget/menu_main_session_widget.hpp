@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "base_menutoolblock_widget.hpp"
-#include "ui_menu_main_session_widget.h"
+#include "menu_toolblock_widget.hpp"
+#include "menu_toolbutton_widget.hpp"
 #include <QWidget>
 
 namespace VTX
@@ -15,15 +15,25 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class MenuMainSessionWidget : public BaseMenuToolBlockWidget<QWidget, Ui_MenuMainSessionWidget>
+			class MenuMainSessionWidget : public MenuToolBlockWidget
 			{
-				Q_OBJECT
+				VTX_MANUAL_WIDGET_DECLARATION
 
 			  public:
-				MenuMainSessionWidget( QWidget * p_parent ) : BaseMenuToolBlockWidget( p_parent ) {};
+				~MenuMainSessionWidget();
+				void localize() override;
 
 			  protected:
+				MenuMainSessionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
+				void setupUi( const QString & p_name ) override;
+				void setupSlots() override;
+
 			  private:
+				MenuToolButtonWidget * _newSessionButton		= nullptr;
+				MenuToolButtonWidget * _openSessionButton		= nullptr;
+				MenuToolButtonWidget * _openRecentSessionButton = nullptr;
+				MenuToolButtonWidget * _saveSessionButton		= nullptr;
+				MenuToolButtonWidget * _saveAsSessionButton		= nullptr;
 			};
 		} // namespace Widget
 	}	  // namespace UI

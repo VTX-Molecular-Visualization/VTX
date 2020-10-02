@@ -9,9 +9,10 @@ namespace VTX
 			InspectorWidget::InspectorWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 			InspectorWidget::~InspectorWidget() { delete _listWidget; }
 
-			void InspectorWidget::setupUi()
+			void InspectorWidget::setupUi( const QString & p_name )
 			{
-				this->setObjectName( QString::fromUtf8( "InspectorDockWidget" ) );
+				BaseManualWidget::setupUi( p_name );
+
 				_listWidget = new QListWidget();
 				QSizePolicy sizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 				this->setSizePolicy( sizePolicy );

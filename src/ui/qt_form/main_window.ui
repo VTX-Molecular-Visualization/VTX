@@ -37,13 +37,13 @@
 				<number>0</number>
 			</property>
 
-			<widget class="QWidget" name="mainTab">			
+			<!--<widget class="QWidget" name="mainTab">			
 				<attribute name="title">
 					<string>Main</string>
 				</attribute>
 
 				<widget class="VTX::UI::Widget::MenuMainWidget" name="mainTabContent" />
-			</widget>
+			</widget>-->
 			
 			<widget class="QLabel" name="tmp1">		
 				<attribute name="title">
@@ -138,13 +138,13 @@
 	
 	
 	<customwidgets>
-		<customwidget>
+		<!--<customwidget>
 			<class>VTX::UI::Widget::MenuMainWidget</class>
 			<extends>QWidget</extends>
 			<header>ui/widget/menu_main_widget.hpp</header>
 		</customwidget>
 
-		<!--<customwidget>
+		<customwidget>
 			<class>VTX::UI::Widget::RenderWidget</class>
 			<extends>QDockWidget</extends>
 			<header>ui/widget/render_widget.hpp</header>

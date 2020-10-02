@@ -5,8 +5,10 @@
 #pragma once
 #endif
 
-#include "base_widget.hpp"
-#include "ui_menu_main_widget.h"
+#include "base_manual_widget.hpp"
+#include "menu_main_session_widget.hpp"
+#include <QHBoxLayout>
+#include <QSpacerItem>
 #include <QWidget>
 
 namespace VTX
@@ -15,15 +17,24 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class MenuMainWidget : public BaseWidget<QWidget, Ui_MenuMainWidget>
+			class MenuMainWidget : public BaseManualWidget<QWidget>
 			{
-				Q_OBJECT
+				VTX_MANUAL_WIDGET_DECLARATION
 
 			  public:
-				MenuMainWidget( QWidget * p_parent = nullptr ) : BaseWidget( p_parent ) {};
+				~MenuMainWidget();
+				void localize() override;
 
 			  protected:
+				MenuMainWidget( QWidget * p_parent = nullptr );
+				void setupUi( const QString & p_name ) override;
+				void setupSlots() override;
+
 			  private:
+				QHBoxLayout * _horizontalLayout = nullptr;
+				QSpacerItem * _horizontalSpacer = nullptr;
+
+				MenuMainSessionWidget * _session = nullptr;
 			};
 		} // namespace Widget
 	}	  // namespace UI

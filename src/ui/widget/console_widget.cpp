@@ -22,9 +22,9 @@ namespace VTX
 				list->scrollToBottom();
 			}
 
-			void ConsoleWidget::setupUi()
+			void ConsoleWidget::setupUi( const QString & p_name )
 			{
-				setObjectName( "consoleWidget" );
+				BaseManualWidget::setupUi( p_name );
 
 				_listWidget = new QListWidget();
 				_listWidget->setObjectName( QString::fromUtf8( "logList" ) );

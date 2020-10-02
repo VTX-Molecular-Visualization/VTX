@@ -11,18 +11,6 @@ QMainWindow
     background: black;
 }
 
-VTX--UI--Widget--MenuMainSessionWidget
-{
-	margin: 0px;
-}
-
-VTX--UI--Widget--MenuMainWidget
-{
-	border: 0px;
-	padding: 0px;
-	margin: 0px;
-}
-
 
 /* Window resize area */
 QMainWindow::separator
