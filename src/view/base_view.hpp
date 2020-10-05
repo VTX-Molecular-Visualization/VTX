@@ -9,7 +9,6 @@
 #include "event/event.hpp"
 #include "generic/base_notifiable.hpp"
 #include "id.hpp"
-#include <QObject>
 #include <type_traits>
 #include <utility>
 
@@ -17,12 +16,14 @@ namespace VTX
 {
 	namespace Model
 	{
+		template<typename>
 		class BaseModel;
 	}
 
 	namespace View
 	{
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
+		// TODO: Cannot use baseof with forward declaration (or not like that).
+		template<typename T /*, typename = std::enable_if<std::is_base_of<Model::BaseModel<T>, T>::value>*/>
 		class BaseView
 		{
 		  public:

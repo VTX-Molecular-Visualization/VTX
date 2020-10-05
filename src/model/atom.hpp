@@ -16,7 +16,7 @@ namespace VTX
 		class Molecule;
 		class Chain;
 		class Residue;
-		class Atom : public BaseModel, public Generic::BaseColorable
+		class Atom : public BaseModel<Atom>, public Generic::BaseColorable
 		{
 		  public:
 			// Sorted by atomic number.

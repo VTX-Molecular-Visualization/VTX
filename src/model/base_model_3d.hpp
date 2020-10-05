@@ -16,8 +16,9 @@ namespace VTX
 {
 	namespace Model
 	{
+		template<typename T>
 		class BaseModel3D :
-			public BaseModel,
+			public BaseModel<T>,
 			public Generic::BaseTransformable,
 			public Generic::BaseRenderable,
 			public Generic::BaseVisible,
@@ -31,8 +32,7 @@ namespace VTX
 			virtual void render()
 			{
 				bindBuffers();
-				// TODO
-				//_notifyViews( Event::VTX_EVENT_MODEL::RENDER );
+				_notifyViews( Event::VTX_EVENT_MODEL::RENDER );
 				unbindBuffers();
 			}
 

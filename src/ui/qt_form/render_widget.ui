@@ -13,8 +13,15 @@
   <property name="windowTitle">
    <string>Render</string>
   </property>
-  <!--<widget class="QOpenGLWidget" name="openGLWidget"/>-->
+  <widget class="VTX::UI::Widget::OpenGLWidget" name="openGLWidget"/>
  </widget>
+  <customwidgets>
+    <customwidget>
+      <class>VTX::UI::Widget::OpenGLWidget</class>
+      <extends>QOpenGLWidget</extends>
+      <header>ui/widget/opengl_widget.hpp</header>
+    </customwidget>
+  </customwidgets>
  <resources/>
  <connections/>
 </ui>

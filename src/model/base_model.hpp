@@ -17,7 +17,8 @@ namespace VTX
 {
 	namespace Model
 	{
-		class BaseModel : public Generic::HasCollection<View::BaseView<BaseModel>>, public Selection::BaseSelectable
+		template<typename T>
+		class BaseModel : public Generic::HasCollection<View::BaseView<T>>, public Selection::BaseSelectable
 		{
 		  public:
 			inline static long COUNTER = 0;
@@ -31,7 +32,6 @@ namespace VTX
 			{
 				for ( PairStringToItemPtr & pair : _items )
 				{
-					std::cout << "_notifyViews: " + pair.first << std::endl;
 					pair.second->notify( p_event );
 				}
 			}

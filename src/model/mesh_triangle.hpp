@@ -14,7 +14,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		class MeshTriangle : public BaseModel3D
+		class MeshTriangle : public BaseModel3D<MeshTriangle>
 		{
 		  public:
 			MeshTriangle();

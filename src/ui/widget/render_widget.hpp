@@ -6,8 +6,9 @@
 #endif
 
 #include "base_manual_widget.hpp"
+#include "opengl_widget.hpp"
+#include "render_widget.hpp"
 #include <QDockWidget>
-//#include <QOpenGLFunctions>
 
 namespace VTX
 {
@@ -15,7 +16,7 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class RenderWidget : public BaseManualWidget<QDockWidget> //, protected QOpenGLFunctions
+			class RenderWidget : public BaseManualWidget<QDockWidget>
 			{
 				VTX_MANUAL_WIDGET_DECLARATION
 
@@ -30,8 +31,7 @@ namespace VTX
 				void _setupSlots() override;
 
 			  private:
-				// QOpenGLContext *	 _context = nullptr;
-				// QOpenGLPaintDevice * _device  = nullptr;
+				OpenGLWidget * _openGLWidget = nullptr;
 			};
 		} // namespace Widget
 	}	  // namespace UI

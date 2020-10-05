@@ -6,8 +6,7 @@
 #endif
 
 #include "model/molecule.hpp"
-#include "ui/widget/base_widget.hpp"
-#include "ui_molecule_structure.h"
+#include "ui/widget/base_manual_widget.hpp"
 #include "view/base_view.hpp"
 #include <QTreeWidget>
 
@@ -19,20 +18,27 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class MoleculeStructure : public VTX::UI::Widget::BaseWidget<QTreeWidget, Ui_MoleculeStructure>, public View::BaseView<Model::Molecule>
+				class MoleculeStructure : public VTX::UI::Widget::BaseManualWidget<QTreeWidget>, public View::BaseView<Model::Molecule>
 				{
-					Q_OBJECT
+					VTX_MANUAL_WIDGET_DECLARATION
 
 				  public:
 					MoleculeStructure( Model::Molecule * const, QWidget * = 0 );
+					~MoleculeStructure();
 
+					void localize() override;
 					void notify( const Event::VTX_EVENT_MODEL & ) override;
+
+				  protected:
+					void setupUi( const QString & ) override;
+					void setupSlots() override;
+
+				  private:
 				};
 
 			} // namespace Widget
 		}	  // namespace UI
 	}		  // namespace View
-			  // namespace UI
 } // namespace VTX
 
 #endif
