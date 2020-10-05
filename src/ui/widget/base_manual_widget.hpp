@@ -26,7 +26,7 @@ namespace VTX
 			  protected:
 				BaseManualWidget( QWidget * p_parent = nullptr ) : W( p_parent ), BaseManualWidgetInitializer() {};
 
-				virtual void setupUi( const QString & p_name ) override { setObjectName( p_name ); }
+				virtual void _setupUi( const QString & p_name ) override { setObjectName( p_name ); }
 
 				// Need to override paintEvent to read style on custom widgets
 				inline void paintEvent( QPaintEvent * event ) override

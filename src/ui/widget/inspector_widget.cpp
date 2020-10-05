@@ -9,9 +9,9 @@ namespace VTX
 			InspectorWidget::InspectorWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 			InspectorWidget::~InspectorWidget() { delete _listWidget; }
 
-			void InspectorWidget::setupUi( const QString & p_name )
+			void InspectorWidget::_setupUi( const QString & p_name )
 			{
-				BaseManualWidget::setupUi( p_name );
+				BaseManualWidget::_setupUi( p_name );
 
 				_listWidget = new QListWidget();
 				QSizePolicy sizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
@@ -20,7 +20,7 @@ namespace VTX
 				this->setWidget( _listWidget );
 			}
 
-			void InspectorWidget::setupSlots() {}
+			void InspectorWidget::_setupSlots() {}
 			void InspectorWidget::localize()
 			{
 				this->setWindowTitle( "Inspector" );

@@ -24,13 +24,13 @@ namespace VTX
 				updateButtonStyle( p_orientation );
 			}
 			void MenuToolButtonWidget::localize() {}
-			void MenuToolButtonWidget::setupUi( const QString & p_name )
+			void MenuToolButtonWidget::_setupUi( const QString & p_name )
 			{
-				BaseManualWidget::setupUi( p_name );
+				BaseManualWidget::_setupUi( p_name );
 				QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::Maximum, QSizePolicy::Policy::Maximum );
 				setSizePolicy( sizePolicy );
 			}
-			void MenuToolButtonWidget::setupSlots() {}
+			void MenuToolButtonWidget::_setupSlots() {}
 
 			void MenuToolButtonWidget::updateButtonStyle( const Qt::Orientation p_orientation )
 			{

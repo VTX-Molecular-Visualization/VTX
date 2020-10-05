@@ -22,9 +22,9 @@ namespace VTX
 				list->scrollToBottom();
 			}
 
-			void ConsoleWidget::setupUi( const QString & p_name )
+			void ConsoleWidget::_setupUi( const QString & p_name )
 			{
-				BaseManualWidget::setupUi( p_name );
+				BaseManualWidget::_setupUi( p_name );
 
 				_listWidget = new QListWidget();
 				_listWidget->setObjectName( QString::fromUtf8( "logList" ) );
@@ -34,7 +34,7 @@ namespace VTX
 				this->setSizePolicy( sizePolicy );
 			}
 
-			void ConsoleWidget::setupSlots() {};
+			void ConsoleWidget::_setupSlots() {};
 			void ConsoleWidget::localize()
 			{
 				// Qt translate (not use currently)

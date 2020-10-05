@@ -21,9 +21,9 @@ namespace VTX
 				VTX_ACTION( new Action::Main::Open( path ), true );
 			}
 
-			void MenuMainSessionWidget::setupUi( const QString & p_name )
+			void MenuMainSessionWidget::_setupUi( const QString & p_name )
 			{
-				MenuToolBlockWidget::setupUi( p_name );
+				MenuToolBlockWidget::_setupUi( p_name );
 
 				setTitle( "Session" );
 
@@ -49,7 +49,7 @@ namespace VTX
 
 				validate();
 			}
-			void MenuMainSessionWidget::setupSlots() { _openSessionButton->setTriggerAction( this, &MenuMainSessionWidget::_openFile ); }
+			void MenuMainSessionWidget::_setupSlots() { _openSessionButton->setTriggerAction( this, &MenuMainSessionWidget::_openFile ); }
 			void MenuMainSessionWidget::localize() {}
 		} // namespace Widget
 	}	  // namespace UI

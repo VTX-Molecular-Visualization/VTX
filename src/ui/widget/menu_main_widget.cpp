@@ -11,9 +11,9 @@ namespace VTX
 			MenuMainWidget::MenuMainWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 			MenuMainWidget::~MenuMainWidget() {}
 
-			void MenuMainWidget::setupUi( const QString & p_name )
+			void MenuMainWidget::_setupUi( const QString & p_name )
 			{
-				BaseManualWidget::setupUi( p_name );
+				BaseManualWidget::_setupUi( p_name );
 				setContentsMargins( 2, 2, 2, 2 );
 
 				_horizontalLayout = new QHBoxLayout( this );
@@ -26,7 +26,7 @@ namespace VTX
 				_horizontalSpacer = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
 				_horizontalLayout->addItem( _horizontalSpacer );
 			}
-			void MenuMainWidget::setupSlots() {}
+			void MenuMainWidget::_setupSlots() {}
 			void MenuMainWidget::localize() {}
 		} // namespace Widget
 	}	  // namespace UI

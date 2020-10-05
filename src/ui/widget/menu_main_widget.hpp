@@ -27,8 +27,8 @@ namespace VTX
 
 			  protected:
 				MenuMainWidget( QWidget * p_parent = nullptr );
-				void setupUi( const QString & p_name ) override;
-				void setupSlots() override;
+				void _setupUi( const QString & p_name ) override;
+				void _setupSlots() override;
 
 			  private:
 				QHBoxLayout * _horizontalLayout = nullptr;

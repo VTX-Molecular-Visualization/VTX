@@ -27,9 +27,9 @@ namespace VTX
 				_gridLayout->setRowMinimumHeight( titleRow, 0 );
 			}
 
-			void MenuToolBlockWidget::setupUi( const QString & p_name )
+			void MenuToolBlockWidget::_setupUi( const QString & p_name )
 			{
-				BaseManualWidget::setupUi( p_name );
+				BaseManualWidget::_setupUi( p_name );
 				setContentsMargins( 2, 2, 2, 2 );
 
 				QSizePolicy sizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
@@ -44,7 +44,7 @@ namespace VTX
 				_title->setObjectName( "blockTitle" );
 				_title->setAlignment( Qt::AlignCenter );
 			}
-			void MenuToolBlockWidget::setupSlots() {}
+			void MenuToolBlockWidget::_setupSlots() {}
 			void MenuToolBlockWidget::localize() {}
 		} // namespace Widget
 	}	  // namespace UI

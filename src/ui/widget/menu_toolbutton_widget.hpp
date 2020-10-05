@@ -31,8 +31,8 @@ namespace VTX
 
 			  protected:
 				MenuToolButtonWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
-				void setupUi( const QString & p_name ) override;
-				void setupSlots() override;
+				void _setupUi( const QString & p_name ) override;
+				void _setupSlots() override;
 
 				void updateButtonStyle()
 				{

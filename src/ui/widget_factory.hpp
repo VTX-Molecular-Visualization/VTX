@@ -16,30 +16,30 @@ namespace VTX
 	{
 		class WidgetFactory
 		{
-			public:
+		  public:
 			inline static WidgetFactory & get()
 			{
 				static WidgetFactory instance;
 				return instance;
 			};
 
-			public:
+		  public:
 			template<typename W, typename = std::enable_if<std::is_base_of<W, Widget::BaseManualWidgetInitializer>::value>>
 			W * GetWidget( QWidget * p_parent, const QString & p_name ) const
 			{
 				W * res = new W( p_parent );
 
-				res->setupUi( p_name );
-				res->setupSlots();
+				res->_setupUi( p_name );
+				res->_setupSlots();
 				res->localize();
 
 				return res;
 			};
 
-			private:
+		  private:
 			inline WidgetFactory() {};
 		};
-	}	  // namespace UI
+	} // namespace UI
 } // namespace VTX
 
 #endif

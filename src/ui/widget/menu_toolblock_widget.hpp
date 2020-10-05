@@ -37,8 +37,8 @@ namespace VTX
 
 			  protected:
 				MenuToolBlockWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
-				virtual void setupUi( const QString & p_name ) override;
-				virtual void setupSlots() override;
+				virtual void _setupUi( const QString & p_name ) override;
+				virtual void _setupSlots() override;
 
 			  private:
 				QGridLayout * _gridLayout = nullptr;

@@ -26,8 +26,8 @@ namespace VTX
 			  protected:
 				RenderWidget( QWidget * p_parent );
 
-				void setupUi( const QString & p_name ) override;
-				void setupSlots() override;
+				void _setupUi( const QString & p_name ) override;
+				void _setupSlots() override;
 
 			  private:
 				// QOpenGLContext *	 _context = nullptr;

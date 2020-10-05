@@ -25,8 +25,8 @@ namespace VTX
 
 			  protected:
 				MenuMainSessionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
-				void setupUi( const QString & p_name ) override;
-				void setupSlots() override;
+				void _setupUi( const QString & p_name ) override;
+				void _setupSlots() override;
 
 			  private:
 				MenuToolButtonWidget * _newSessionButton		= nullptr;

@@ -9,8 +9,8 @@ namespace VTX
 			RenderWidget::RenderWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 			RenderWidget::~RenderWidget() {};
 
-			void RenderWidget::setupUi( const QString & p_name ) { BaseManualWidget::setupUi( p_name ); }
-			void RenderWidget::setupSlots() {}
+			void RenderWidget::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
+			void RenderWidget::_setupSlots() {}
 			void RenderWidget::localize()
 			{
 				setWindowTitle( "Render" );

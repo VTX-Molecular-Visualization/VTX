@@ -25,8 +25,8 @@ namespace VTX
 
 			  protected:
 				ConsoleWidget( QWidget * );
-				void setupUi( const QString & p_name ) override;
-				void setupSlots() override;
+				void _setupUi( const QString & p_name ) override;
+				void _setupSlots() override;
 				void localize() override;
 
 			  private:
