@@ -30,8 +30,8 @@ namespace VTX
 					void notify( const Event::VTX_EVENT_MODEL & ) override;
 
 				  protected:
-					void setupUi( const QString & ) override;
-					void setupSlots() override;
+					void _setupUi( const QString & ) override;
+					void _setupSlots() override;
 
 				  private:
 				};

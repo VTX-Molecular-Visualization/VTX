@@ -39,8 +39,8 @@ namespace VTX
 					}
 				}
 
-				void MoleculeStructure::setupUi( const QString & p_name ) { BaseManualWidget::setupUi( p_name ); }
-				void MoleculeStructure::setupSlots() {}
+				void MoleculeStructure::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
+				void MoleculeStructure::_setupSlots() {}
 				void MoleculeStructure::localize() {}
 
 			} // namespace Widget

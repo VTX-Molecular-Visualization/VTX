@@ -30,18 +30,18 @@ namespace VTX
 				if ( p_event.name == Event::Global::MOLECULE_ADDED )
 				{
 					const Event::VTXEventPtr<Model::Molecule> &		  event = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-					const View::UI::Widget::MoleculeStructure * const view	= event.ptr->getItem<View::UI::Widget::MoleculeStructure>( ID::View::UI_MOLECULE_STRUCTURE );
+					View::UI::Widget::MoleculeStructure * const view	= event.ptr->getItem<View::UI::Widget::MoleculeStructure>( ID::View::UI_MOLECULE_STRUCTURE );
 
-					_verticalLayout->addWidget( (QTreeWidget *)view );
+					_verticalLayout->addWidget( view );
 				}
 				else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 				{
 				}
 			}
 
-			void SceneWidget::setupUi( const QString & p_name )
+			void SceneWidget::_setupUi( const QString & p_name )
 			{
-				BaseManualWidget::setupUi( p_name );
+				BaseManualWidget::_setupUi( p_name );
 
 				_verticalLayoutWidget = new QWidget();
 				_verticalLayoutWidget->setObjectName( QString::fromUtf8( "verticalLayoutWidget" ) );
@@ -51,7 +51,7 @@ namespace VTX
 				setWidget( _verticalLayoutWidget );
 			}
 
-			void SceneWidget::setupSlots() {}
+			void SceneWidget::_setupSlots() {}
 			void SceneWidget::localize()
 			{
 				this->setWindowTitle( "Scene" );
