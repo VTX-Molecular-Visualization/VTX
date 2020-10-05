@@ -29,9 +29,6 @@ namespace VTX
 				_listWidget = new QListWidget();
 				_listWidget->setObjectName( QString::fromUtf8( "logList" ) );
 				this->setWidget( _listWidget );
-
-				QSizePolicy sizePolicy( QSizePolicy::Maximum, QSizePolicy::Maximum );
-				this->setSizePolicy( sizePolicy );
 			}
 
 			void ConsoleWidget::_setupSlots() {};

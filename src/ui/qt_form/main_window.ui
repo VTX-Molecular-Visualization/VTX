@@ -7,7 +7,7 @@
 			<string>VTX</string>
 		</property>
 		
-		<widget class="QTabWidget" name="menuTab">
+		<!--<widget class="QTabWidget" name="menuTab">
 			<property name="geometry">
 				<rect>
 					<x>0</x>
@@ -37,13 +37,13 @@
 				<number>0</number>
 			</property>
 
-			<!--<widget class="QWidget" name="mainTab">			
+			<widget class="QWidget" name="mainTab">			
 				<attribute name="title">
 					<string>Main</string>
 				</attribute>
 
 				<widget class="VTX::UI::Widget::MenuMainWidget" name="mainTabContent" />
-			</widget>-->
+			</widget>
 			
 			<widget class="QLabel" name="tmp1">		
 				<attribute name="title">
@@ -56,7 +56,7 @@
 					<string>Movie</string>
 				</attribute>
 			</widget>
-		</widget>
+		</widget> -->
 		
 		
 		<!--<widget class="VTX::UI::Widget::RenderWidget" name="renderWidget">
