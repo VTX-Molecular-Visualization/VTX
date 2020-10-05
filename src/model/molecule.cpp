@@ -1,6 +1,7 @@
 #include "molecule.hpp"
 #include "color/rgb.hpp"
 #include "model/secondary_structure.hpp"
+#include "ui/widget_factory.hpp"
 #include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "view/d3/box.hpp"
@@ -20,7 +21,6 @@ namespace VTX
 
 			// View::UI::Widget::MoleculeStructure * view = UI::Widget::WidgetFactory::get().GetWidget<View::UI::Widget::MoleculeStructure, Molecule>( this );
 			// addItem( ID::View::UI_MOLECULE_STRUCTURE, (View::BaseView<BaseModel> *)view );
-			addItem( ID::View::UI_MOLECULE_STRUCTURE, new View::UI::Widget::MoleculeStructure( this ) );
 		}
 
 		Molecule::~Molecule()
@@ -66,6 +66,7 @@ namespace VTX
 
 		void Molecule::init()
 		{
+			_isInit = true;
 			_notifyViews( Event::VTX_EVENT_MODEL::INIT );
 			return;
 

@@ -9,6 +9,7 @@
 #include "widget/base_manual_widget_initializer.hpp"
 #include <QMainWindow>
 #include <QWidget>
+#include <string>
 
 namespace VTX
 {
@@ -25,13 +26,12 @@ namespace VTX
 
 		  public:
 			template<typename W, typename = std::enable_if<std::is_base_of<W, Widget::BaseManualWidgetInitializer>::value>>
-			W * GetWidget( QWidget * p_parent, const QString & p_name ) const
+			W * GetWidget( QWidget * p_parent, const std::string & p_name ) const
 			{
-				W * res = new W( p_parent );
+				QString qstringName = QString::fromStdString( p_name );
 
-				res->_setupUi( p_name );
-				res->_setupSlots();
-				res->localize();
+				W * res = new W( p_parent );
+				res->_setup( qstringName );
 
 				return res;
 			};

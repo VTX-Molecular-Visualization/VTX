@@ -12,6 +12,8 @@ namespace VTX
 				MoleculeStructure::MoleculeStructure( Model::Molecule * const p_model, QWidget * p_parent ) :
 					BaseManualWidget( p_parent ), View::BaseView<Model::Molecule>( p_model )
 				{
+					if ( p_model->isInit() )
+						_setup( p_model->getName() );
 				}
 
 				MoleculeStructure::~MoleculeStructure() {}
@@ -20,26 +22,32 @@ namespace VTX
 				{
 					if ( p_event == Event::VTX_EVENT_MODEL::INIT )
 					{
-						setColumnCount( 1 );
-						QTreeWidgetItem * itemMolecule = new QTreeWidgetItem( this, QStringList( QString::fromStdString( _model->getName() ) ) );
-						insertTopLevelItem( 0, itemMolecule );
-
-						// Chains.
-						for ( const Model::Chain * const chain : _model->getChains() )
-						{
-							QTreeWidgetItem * itemChain = new QTreeWidgetItem( itemMolecule, QStringList( QString::fromStdString( chain->getName() ) ) );
-
-							// Residues.
-							for ( uint r = 0; r < chain->getResidueCount(); ++r )
-							{
-								const Model::Residue & residue	   = _model->getResidue( chain->getIndexFirstResidue() + r );
-								QTreeWidgetItem *	   itemResidue = new QTreeWidgetItem( itemChain, QStringList( QString::fromStdString( residue.getSymbolName() ) ) );
-							}
-						}
+						_setup( _model->getName() );
 					}
 				}
 
-				void MoleculeStructure::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
+				void MoleculeStructure::_setupUi( const QString & p_name )
+				{
+					BaseManualWidget::_setupUi( p_name );
+
+					setColumnCount( 1 );
+					setHeaderHidden( true );
+					QTreeWidgetItem * itemMolecule = new QTreeWidgetItem( this, QStringList( QString::fromStdString( _model->getPdbIdCode() ) ) );
+					insertTopLevelItem( 0, itemMolecule );
+
+					// Chains.
+					for ( const Model::Chain * const chain : _model->getChains() )
+					{
+						QTreeWidgetItem * itemChain = new QTreeWidgetItem( itemMolecule, QStringList( QString::fromStdString( chain->getName() ) ) );
+
+						// Residues.
+						for ( uint r = 0; r < chain->getResidueCount(); ++r )
+						{
+							const Model::Residue & residue	   = _model->getResidue( chain->getIndexFirstResidue() + r );
+							QTreeWidgetItem *	   itemResidue = new QTreeWidgetItem( itemChain, QStringList( QString::fromStdString( residue.getSymbolName() ) ) );
+						}
+					}
+				}
 				void MoleculeStructure::_setupSlots() {}
 				void MoleculeStructure::localize() {}
 

@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "ui/widget_factory.hpp"
 #include <QtCore>
 
 namespace VTX

@@ -25,6 +25,9 @@ namespace VTX
 				void receiveEvent( const Event::VTXEvent & p_event ) override;
 				void localize() override;
 
+				void addItem( QWidget * p_item );
+				void removeItem( QWidget * p_item );
+
 			  protected:
 				SceneWidget( QWidget * p_parent );
 				void _setupUi( const QString & p_name ) override;

@@ -68,9 +68,9 @@ namespace VTX
 		{
 			setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks | DockOption::AnimatedDocks );
 
-			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _inspectorWidget, Qt::Orientation::Horizontal );
-			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _renderWidget, Qt::Orientation::Horizontal );
 			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _sceneWidget, Qt::Orientation::Horizontal );
+			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _renderWidget, Qt::Orientation::Horizontal );
+			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _inspectorWidget, Qt::Orientation::Horizontal );
 			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _consoleWidget, Qt::Orientation::Vertical );
 
 			resizeDocks(

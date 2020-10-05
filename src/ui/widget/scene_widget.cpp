@@ -2,6 +2,7 @@
 #include "base_widget.hpp"
 #include "model/molecule.hpp"
 #include "object3d/scene.hpp"
+#include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_structure.hpp"
 #include "vtx_app.hpp"
 #include <QListWidget>
@@ -25,17 +26,30 @@ namespace VTX
 				delete _verticalLayoutWidget;
 			}
 
+			void SceneWidget::addItem( QWidget * p_item ) { _verticalLayout->addWidget( p_item ); }
+			void SceneWidget::removeItem( QWidget * p_item )
+			{
+				_verticalLayout->removeWidget( p_item );
+				delete p_item;
+			}
+
 			void SceneWidget ::receiveEvent( const Event::VTXEvent & p_event )
 			{
 				if ( p_event.name == Event::Global::MOLECULE_ADDED )
 				{
-					const Event::VTXEventPtr<Model::Molecule> &		  event = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-					View::UI::Widget::MoleculeStructure * const view	= event.ptr->getItem<View::UI::Widget::MoleculeStructure>( ID::View::UI_MOLECULE_STRUCTURE );
+					const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
-					_verticalLayout->addWidget( view );
+					View::UI::Widget::MoleculeStructure * moleculeWidget = new View::UI::Widget::MoleculeStructure( castedEvent.ptr, this );
+					castedEvent.ptr->addItem( ID::View::UI_MOLECULE_STRUCTURE, moleculeWidget );
+
+					addItem( moleculeWidget );
 				}
 				else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 				{
+					const Event::VTXEventPtr<Model::Molecule> & castedEvent	   = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+					View::UI::Widget::MoleculeStructure *		moleculeWidget = castedEvent.ptr->getItem<View::UI::Widget::MoleculeStructure>( ID::View::UI_MOLECULE_STRUCTURE );
+
+					removeItem( moleculeWidget );
 				}
 			}
 

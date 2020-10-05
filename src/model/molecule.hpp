@@ -62,8 +62,11 @@ namespace VTX
 			// Models.
 			inline const std::string & getName() const { return _name; }
 			inline void				   setName( const std::string & p_name ) { _name = p_name; }
-			inline const VTX::Path &   getPath() const { return _path; }
-			inline void				   setPath( const VTX::Path & p_path ) { _path = p_path; }
+			inline const std::string & getPdbIdCode() const { return _pdbIdCode; }
+			inline void				   setPdbIdCode( const std::string & p_pdbId ) { _pdbIdCode = p_pdbId; }
+
+			inline const VTX::Path & getPath() const { return _path; }
+			inline void				 setPath( const VTX::Path & p_path ) { _path = p_path; }
 
 			inline void							  addChain() { _chains.emplace_back( new Chain() ); }
 			inline Chain &						  getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
@@ -168,7 +171,8 @@ namespace VTX
 			void createSecondaryStructure();
 			void toggleSequenceVisibility();
 
-			void setSelected( const bool );
+			inline bool isInit() const { return _isInit; };
+			void		setSelected( const bool );
 
 		  protected:
 			void _computeGlobalPositionsAABB();
@@ -183,6 +187,7 @@ namespace VTX
 			// Models.
 			VTX::Path						_path;
 			std::string						_name						= "unknown";
+			std::string						_pdbIdCode					= "unknown";
 			std::vector<Chain *>			_chains						= std::vector<Chain *>();
 			std::vector<Residue *>			_residues					= std::vector<Residue *>();
 			std::vector<Atom *>				_atoms						= std::vector<Atom *>();
@@ -229,6 +234,7 @@ namespace VTX
 			uint _currentFrame = 0u;
 			bool _isPlaying	   = true;
 			uint _fps		   = 1u;
+			bool _isInit	   = false;
 
 			bool _showSolvent = true;
 			bool _showIon	  = true;
