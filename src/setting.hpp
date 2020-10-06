@@ -8,6 +8,7 @@
 #include "color/rgb.hpp"
 #include "define.hpp"
 #include "style.hpp"
+#include <QString>
 
 namespace VTX
 {
@@ -38,6 +39,11 @@ namespace VTX
 		static const int	SCENE_WIDGET_WIDTH_DEFAULT;
 		static const int	INSPECTOR_WIDGET_WIDTH_DEFAULT;
 		static const int	RENDER_WIDGET_HEIGHT_DEFAULT;
+
+		static const int STATUS_PROGRESS_BAR_CHUNKS;
+		static const int STATUS_PROGRESS_BAR_WIDTH;
+
+		static const QString MOLECULE_FILE_FILTERS;
 
 		// Rendering.
 		static const bool ACTIVE_RENDERER_DEFAULT;

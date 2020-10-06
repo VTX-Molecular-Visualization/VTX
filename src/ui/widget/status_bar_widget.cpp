@@ -1,4 +1,5 @@
 #include "status_bar_widget.hpp"
+#include "vtx_app.hpp"
 #include <QHBoxLayout>
 #include <QSpacerItem>
 
@@ -22,7 +23,7 @@ namespace VTX
 					}
 					else
 					{
-						int progressBarValue = (int)( progress * 10 );
+						int progressBarValue = (int)( progress * VTX_SETTING().STATUS_PROGRESS_BAR_CHUNKS );
 						_progressBar->setValue( progressBarValue );
 						_progressBar->show();
 					}
@@ -39,9 +40,9 @@ namespace VTX
 
 				_progressBar = new QProgressBar( this );
 				_progressBar->setMinimum( 0 );
-				_progressBar->setMaximum( 10 );
+				_progressBar->setMaximum( VTX_SETTING().STATUS_PROGRESS_BAR_CHUNKS );
 				_progressBar->setTextVisible( false );
-				_progressBar->setFixedWidth( 100 );
+				_progressBar->setFixedWidth( VTX_SETTING().STATUS_PROGRESS_BAR_WIDTH );
 				_progressBar->hide();
 				this->addWidget( _progressBar );
 			}
