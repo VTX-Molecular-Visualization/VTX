@@ -36,17 +36,6 @@ namespace VTX
 				};
 
 				virtual void _setupUi( const QString & p_name ) override { setObjectName( p_name ); };
-
-				// Need to override paintEvent to read style on custom widgets
-				inline void paintEvent( QPaintEvent * event ) override
-				{
-					QStyleOption opt;
-					opt.init( this );
-					QPainter p( this );
-					style()->drawPrimitive( QStyle::PE_Widget, &opt, &p, this );
-
-					W::paintEvent( event );
-				};
 			};
 		} // namespace Widget
 	}	  // namespace UI

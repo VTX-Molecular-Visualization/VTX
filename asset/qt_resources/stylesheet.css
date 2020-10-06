@@ -10,8 +10,6 @@ QMainWindow
 {
     background: black;
 }
-
-
 /* Window resize area */
 QMainWindow::separator
 {
@@ -19,6 +17,7 @@ QMainWindow::separator
     width: 2px;
     height: 2px;
 }
+
 
 QMenuBar::item:selected
 {
@@ -29,6 +28,7 @@ QMenuBar::item:pressed
 	background-color : #444444;
 }
 
+
 QMenu
 {
     border: 1px solid #444444;
@@ -38,6 +38,13 @@ QMenu::item:selected
     background-color: #444444;
 }
 
+
+QDockWidget::title
+{
+	background-color: #222222;
+	border-top: 1px solid #444444;
+	border-bottom: 1px solid #111111;
+}
 QDockWidget
 {
 	titlebar-close-icon: url(:/sprite/close_icon.png);
@@ -50,6 +57,7 @@ QDockWidget::close-button, QDockWidget::float-button
 	/* set border to 0 to remove auto background */
 	border: 0px;
 }
+
 
 QTabWidget::pane
 {
@@ -66,7 +74,6 @@ QTabBar::tab
 	padding-left: 12px;
 	padding-right: 12px;
 }
-
 QTabBar::tab:selected, QTabBar::tab:hover
 {
     background: #444444;
@@ -75,6 +82,7 @@ QTabBar::tab:selected
 {
     background: #222222; /* same as the pane color */
 }
+
 
 QMainWindow > QStatusBar
 {
@@ -85,7 +93,6 @@ QMainWindow > QStatusBar::item
 	margin: 2px;
 	border: 0px;
 }
-
 QStatusBar > QProgressBar
 {
     border: 2px solid #555555;
@@ -93,5 +100,40 @@ QStatusBar > QProgressBar
 QStatusBar > QProgressBar::chunk
 {
 	background-color: #79C0FE;
+}
+
+
+QTreeWidget
+{
+	border: 0px;
+}
+QTreeWidget::item:selected
+{
+	border: none;
+	background-color: #444444;
+}
+/*without that, font color turns black when !active (???)*/
+QTreeWidget::item:!active
+{
+	color: white;
+}
+QTreeWidget::item:hover
+{
+	background-color: #555555;
+}
+QTreeWidget::branch
+{
+    border-image: none;
+    image: none;
+}
+QTreeWidget::branch:has-children:!has-siblings:closed,
+QTreeWidget::branch:closed:has-children:has-siblings
+{
+	image: url(:/sprite/treeview_folded_molecule_icon.png);
+}
+QTreeWidget::branch:open:has-children:!has-siblings,
+QTreeWidget::branch:open:has-children:has-siblings 
+{
+	image: url(:/sprite/treeview_unfolded_molecule_icon.png);
 }
 
