@@ -60,7 +60,7 @@ QTabWidget::pane
 }
 QTabBar::tab
 {
-	background: #000000;
+	background: black;
     border: 0px;
 	min-height: 8ex;
 	padding-left: 12px;
@@ -75,3 +75,23 @@ QTabBar::tab:selected
 {
     background: #222222; /* same as the pane color */
 }
+
+QMainWindow > QStatusBar
+{
+	border-top: 2px solid #444444;
+}
+QMainWindow > QStatusBar::item
+{
+	margin: 2px;
+	border: 0px;
+}
+
+QStatusBar > QProgressBar
+{
+    border: 2px solid #555555;
+}
+QStatusBar > QProgressBar::chunk
+{
+	background-color: #79C0FE;
+}
+

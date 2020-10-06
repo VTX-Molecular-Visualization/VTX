@@ -23,6 +23,10 @@ namespace VTX
 			_inspectorWidget = WidgetFactory::get().GetWidget<Widget::InspectorWidget>( this, "inspectorWidget" );
 			_consoleWidget	 = WidgetFactory::get().GetWidget<Widget::ConsoleWidget>( this, "consoleWidget" );
 
+			_statusBarWidget = WidgetFactory::get().GetWidget<Widget::StatusBarWidget>( this, "statusBar" );
+			_statusBarWidget->setFixedHeight( 25 );
+			this->setStatusBar( _statusBarWidget );
+
 			_setupSlots();
 
 			const QSize winsize = QSize( VTX_SETTING().WINDOW_WIDTH_DEFAULT, VTX_SETTING().WINDOW_HEIGHT_DEFAULT );

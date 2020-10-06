@@ -89,7 +89,7 @@
 		
 		
 			
-		<widget class="QStatusBar" name="statusbar"/>
+		<!--<widget class="QStatusBar" name="statusbar"/>-->
 
 		<action name="file_open">
 			<property name="text">

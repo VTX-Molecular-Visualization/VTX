@@ -12,6 +12,7 @@
 #include "widget/main_menu_bar.hpp"
 #include "widget/render_widget.hpp"
 #include "widget/scene_widget.hpp"
+#include "widget/status_bar_widget.hpp"
 #include <QMainWindow>
 
 namespace VTX
@@ -43,6 +44,8 @@ namespace VTX
 			Widget::SceneWidget *	  _sceneWidget	   = nullptr;
 			Widget::InspectorWidget * _inspectorWidget = nullptr;
 			Widget::ConsoleWidget *	  _consoleWidget   = nullptr;
+
+			Widget::StatusBarWidget * _statusBarWidget = nullptr;
 
 			void _loadStyleSheet( const char * p_stylesheetPath );
 			void _setupSlots();
