@@ -5,8 +5,9 @@
 #pragma once
 #endif
 
-#include "base_manual_widget.hpp"
+#include "menu_main_molecule_widget.hpp"
 #include "menu_main_session_widget.hpp"
+#include "menu_tooltab_widget.hpp"
 #include <QHBoxLayout>
 #include <QSpacerItem>
 #include <QWidget>
@@ -17,7 +18,7 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class MenuMainWidget : public BaseManualWidget<QWidget>
+			class MenuMainWidget : public MenuTooltabWidget
 			{
 				VTX_MANUAL_WIDGET_DECLARATION
 
@@ -31,10 +32,8 @@ namespace VTX
 				void _setupSlots() override;
 
 			  private:
-				QHBoxLayout * _horizontalLayout = nullptr;
-				QSpacerItem * _horizontalSpacer = nullptr;
-
-				MenuMainSessionWidget * _session = nullptr;
+				MenuMainSessionWidget *	 _session  = nullptr;
+				MenuMainMoleculeWidget * _molecule = nullptr;
 			};
 		} // namespace Widget
 	}	  // namespace UI

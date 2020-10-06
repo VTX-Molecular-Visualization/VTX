@@ -1,0 +1,52 @@
+#include "menu_main_molecule_widget.hpp"
+#include "action/main.hpp"
+#include "ui/widget_factory.hpp"
+#include "vtx_app.hpp"
+#include <QFileDialog>
+
+namespace VTX
+{
+	namespace UI
+	{
+		namespace Widget
+		{
+			MenuMainMoleculeWidget::~MenuMainMoleculeWidget() {}
+
+			void MenuMainMoleculeWidget::_loadMoleculeFile()
+			{
+				QString filters = "*.pdb *.cif";
+				QString filter	= "*.pdb";
+				// TODO : Filter file type
+				const QString filename = QFileDialog::getOpenFileName( this, "Open Molecule", "", filters, &filter );
+				Path *		  path	   = new Path( filename.toStdString() );
+
+				VTX_ACTION( new Action::Main::Open( path ), true );
+			}
+			void MenuMainMoleculeWidget::_downloadMoleculeFile() {}
+			void MenuMainMoleculeWidget::_saveMoleculeFile() {}
+
+			void MenuMainMoleculeWidget::_setupUi( const QString & p_name )
+			{
+				MenuToolBlockWidget::_setupUi( p_name );
+
+				setTitle( "Molecule" );
+
+				_loadMoleculeButton = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "loadMoleculeButton" );
+				_loadMoleculeButton->setData( "Load", ":/sprite/load_molecule_icon.png", Qt::Orientation::Vertical );
+				addButton( *_loadMoleculeButton, 0, 0, 1, 1 );
+
+				_downloadMoleculeButton = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "downloadMoleculeButton" );
+				_downloadMoleculeButton->setData( "Download", ":/sprite/download_molecule_icon.png", Qt::Orientation::Vertical );
+				addButton( *_downloadMoleculeButton, 0, 1, 1, 1 );
+
+				_saveMoleculeButton = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "saveMoleculeButton" );
+				_saveMoleculeButton->setData( "Save", ":/sprite/save_molecule_icon.png", Qt::Orientation::Vertical );
+				addButton( *_saveMoleculeButton, 0, 2, 1, 1 );
+
+				validate();
+			}
+			void MenuMainMoleculeWidget::_setupSlots() { _loadMoleculeButton->setTriggerAction( this, &MenuMainMoleculeWidget::_loadMoleculeFile ); }
+			void MenuMainMoleculeWidget::localize() {}
+		} // namespace Widget
+	}	  // namespace UI
+} // namespace VTX

@@ -8,23 +8,15 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			MenuMainWidget::MenuMainWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
+			MenuMainWidget::MenuMainWidget( QWidget * p_parent ) : MenuTooltabWidget( p_parent ) {}
 			MenuMainWidget::~MenuMainWidget() {}
 
 			void MenuMainWidget::_setupUi( const QString & p_name )
 			{
-				BaseManualWidget::_setupUi( p_name );
-				setContentsMargins( 2, 2, 2, 2 );
+				MenuTooltabWidget::_setupUi( p_name );
 
-				_horizontalLayout = new QHBoxLayout( this );
-				_horizontalLayout->setObjectName( "horizontalLayout" );
-				_horizontalLayout->setContentsMargins( 0, 0, 0, 0 );
-
-				_session = WidgetFactory::get().GetWidget<MenuMainSessionWidget>( this, "sessionBlockWidget" );
-				_horizontalLayout->addWidget( _session );
-
-				_horizontalSpacer = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
-				_horizontalLayout->addItem( _horizontalSpacer );
+				_session  = addToolBlock<MenuMainSessionWidget>( "sessionBlockWidget" );
+				_molecule = addToolBlock<MenuMainMoleculeWidget>( "moleculeBlockWidget" );
 			}
 			void MenuMainWidget::_setupSlots() {}
 			void MenuMainWidget::localize() {}

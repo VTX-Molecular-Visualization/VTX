@@ -1,12 +1,16 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
 	<file>sprite/close_icon.png</file>
+	<file>sprite/download_molecule_icon.png</file>
+	<file>sprite/load_molecule_icon.png</file>
 	<file>sprite/logo.png</file>
 	<file>sprite/logoWhite.png</file>
+	<file>sprite/main_menu_separator.png</file>
 	<file>sprite/new_session_icon.png</file>
 	<file>sprite/openrecent_session_icon.png</file>
 	<file>sprite/open_session_icon.png</file>
 	<file>sprite/saveas_session_icon.png</file>
+	<file>sprite/save_molecule_icon.png</file>
 	<file>sprite/save_session_icon.png</file>
 	<file>sprite/undock_icon.png</file>
 	<file>stylesheet.css</file>
