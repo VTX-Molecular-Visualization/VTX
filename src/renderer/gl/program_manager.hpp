@@ -7,7 +7,7 @@
 
 #include "define.hpp"
 #include "program.hpp"
-#include <QOpenGLFunctions_4_5_Compatibility>
+#include <QOpenGLFunctions_4_5_Core>
 #include <map>
 #include <vector>
 
@@ -28,7 +28,7 @@ namespace VTX
 				INVALID			= GL_INVALID_VALUE
 			};
 
-			class ProgramManager : QOpenGLFunctions_4_5_Compatibility
+			class ProgramManager : QOpenGLFunctions_4_5_Core
 			{
 			  public:
 				using MapStringToEnum	  = std::map<std::string, SHADER_TYPE>;

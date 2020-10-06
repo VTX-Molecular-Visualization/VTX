@@ -7,7 +7,7 @@
 
 #include "gl/program_manager.hpp"
 #include "object3d/scene.hpp"
-#include <QOpenGLFunctions_4_5_Compatibility>
+#include <QOpenGLFunctions_4_5_Core>
 #include <vector>
 
 namespace VTX
@@ -17,14 +17,16 @@ namespace VTX
 		enum class MODE : int
 		{
 			GL,
+#ifdef CUDA_DEFINED
 			RT_CPU,
+#endif
 #ifdef OPTIX_DEFINED
 			RT_OPTIX,
 #endif
 			COUNT
 		};
 
-		class BaseRenderer : public QOpenGLFunctions_4_5_Compatibility
+		class BaseRenderer : public QOpenGLFunctions_4_5_Core
 		{
 		  public:
 			BaseRenderer()			= default;

@@ -188,24 +188,6 @@ namespace VTX
 				const Worker::Snapshoter::MODE _mode;
 				const Path					   _path;
 			};
-
-			class Resize : public BaseAction
-			{
-			  public:
-				Resize( const uint p_width, const uint p_height ) : _width( p_width ), _height( p_height ) {}
-				virtual void execute() override
-				{
-					// Set camera.
-					VTXApp::get().getScene().getCamera().setScreenSize( _width, _height );
-
-					// Resize renderer.
-					VTXApp::get().getRenderer().resize( _width, _height );
-				};
-
-			  private:
-				uint _width;
-				uint _height;
-			};
 		} // namespace Main
 	}	  // namespace Action
 } // namespace VTX

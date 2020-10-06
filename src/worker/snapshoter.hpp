@@ -6,13 +6,13 @@
 #endif
 
 #include "define.hpp"
-#include <QOpenGLFunctions_4_5_Compatibility>
+#include <QOpenGLFunctions_4_5_Core>
 
 namespace VTX
 {
 	namespace Worker
 	{
-		class Snapshoter : public QOpenGLFunctions_4_5_Compatibility
+		class Snapshoter : public QOpenGLFunctions_4_5_Core
 		{
 		  public:
 			enum class MODE : int

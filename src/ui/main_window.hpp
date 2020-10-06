@@ -10,6 +10,7 @@
 #include "widget/console_widget.hpp"
 #include "widget/inspector_widget.hpp"
 #include "widget/main_menu_bar.hpp"
+#include "widget/opengl_widget.hpp"
 #include "widget/render_widget.hpp"
 #include "widget/scene_widget.hpp"
 #include "widget/status_bar_widget.hpp"
@@ -26,6 +27,9 @@ namespace VTX
 		  public:
 			MainWindow( QWidget * = 0 );
 			~MainWindow();
+
+			inline const Widget::OpenGLWidget & getOpenGLWidget() const { return _renderWidget->getOpenGLWidget(); }
+			inline Widget::OpenGLWidget &		getOpenGLWidget() { return _renderWidget->getOpenGLWidget(); }
 
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 

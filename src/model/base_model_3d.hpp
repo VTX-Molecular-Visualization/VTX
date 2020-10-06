@@ -10,19 +10,14 @@
 #include "generic/base_visible.hpp"
 #include "math/aabb.hpp"
 #include "model/base_model.hpp"
-#include <QOpenGLFunctions_4_5_Compatibility>
+#include <QOpenGLFunctions_4_5_Core>
 
 namespace VTX
 {
 	namespace Model
 	{
 		template<typename T>
-		class BaseModel3D :
-			public BaseModel<T>,
-			public Generic::BaseTransformable,
-			public Generic::BaseRenderable,
-			public Generic::BaseVisible,
-			public QOpenGLFunctions_4_5_Compatibility
+		class BaseModel3D : public BaseModel<T>, public Generic::BaseTransformable, public Generic::BaseRenderable, public Generic::BaseVisible, public QOpenGLFunctions_4_5_Core
 		{
 		  public:
 			virtual ~BaseModel3D() = default;

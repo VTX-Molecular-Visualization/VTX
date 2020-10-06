@@ -6,7 +6,7 @@
 #endif
 
 #include "define.hpp"
-#include <QOpenGLFunctions_4_5_Compatibility>
+#include <QOpenGLFunctions_4_5_Core>
 #include <string>
 
 namespace VTX
@@ -15,7 +15,7 @@ namespace VTX
 	{
 		namespace GLSL
 		{
-			class Program : public QOpenGLFunctions_4_5_Compatibility
+			class Program : public QOpenGLFunctions_4_5_Core
 			{
 			  public:
 				Program() = default;

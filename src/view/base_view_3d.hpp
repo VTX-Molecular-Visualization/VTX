@@ -11,14 +11,14 @@
 #include "object3d/camera.hpp"
 #include "renderer/gl/program_manager.hpp"
 #include "util/math.hpp"
-#include <QOpenGLFunctions_4_5_Compatibility>
+#include <QOpenGLFunctions_4_5_Core>
 
 namespace VTX
 {
 	namespace View
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel3D<T>, T>::value>>
-		class BaseView3D : public BaseView<T>, public Generic::BaseRenderable, public QOpenGLFunctions_4_5_Compatibility
+		class BaseView3D : public BaseView<T>, public Generic::BaseRenderable, public QOpenGLFunctions_4_5_Core
 		{
 		  public:
 			explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}

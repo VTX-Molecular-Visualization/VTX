@@ -9,6 +9,7 @@
 #include "opengl_widget.hpp"
 #include "render_widget.hpp"
 #include <QDockWidget>
+#include <QVBoxLayout>
 
 namespace VTX
 {
@@ -24,6 +25,9 @@ namespace VTX
 				~RenderWidget();
 				void localize() override;
 
+				inline const OpenGLWidget & getOpenGLWidget() const { return *_openGLWidget; }
+				inline OpenGLWidget &		getOpenGLWidget() { return *_openGLWidget; }
+
 			  protected:
 				RenderWidget( QWidget * p_parent );
 
@@ -31,7 +35,9 @@ namespace VTX
 				void _setupSlots() override;
 
 			  private:
-				OpenGLWidget * _openGLWidget = nullptr;
+				QWidget *	   _verticalLayoutWidget;
+				QVBoxLayout *  _verticalLayout;
+				OpenGLWidget * _openGLWidget = new OpenGLWidget();
 			};
 		} // namespace Widget
 	}	  // namespace UI

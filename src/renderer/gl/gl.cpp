@@ -31,7 +31,6 @@ namespace VTX
 
 		void GL::init( const uint p_width, const uint p_height )
 		{
-			return;
 			VTX_INFO( "Initializing renderer..." );
 
 			// Set size.
@@ -97,7 +96,6 @@ namespace VTX
 
 		void GL::renderFrame( const Object3D::Scene & p_scene )
 		{
-			return;
 			glViewport( 0, 0, _width, _height );
 
 			// TODO: do not change each frame

@@ -175,7 +175,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().shading = _shading;
-					VTXApp::get().getRendererGL().setShading();
+					VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().setShading();
 				};
 
 				virtual void displayUsage() override { VTX_INFO( "DIFFUSE|GLOSSY|TOON|FLAT_COLOR" ); }
@@ -207,7 +207,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().activeAO = _active;
-					VTXApp::get().getRendererGL().activeSSAO( _active );
+					VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeSSAO( _active );
 				};
 
 			  private:
@@ -244,7 +244,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().activeOutline = _active;
-					VTXApp::get().getRendererGL().activeOutline( _active );
+					VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeOutline( _active );
 				};
 
 			  private:
@@ -270,7 +270,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().activeFog = _active;
-					VTXApp::get().getRendererGL().activeFog( _active );
+					VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeFog( _active );
 				};
 
 			  private:
@@ -337,7 +337,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().activeAA = _active;
-					VTXApp::get().getRendererGL().activeAA( _active );
+					VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeAA( _active );
 				};
 
 			  private:
@@ -484,7 +484,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().mode = _mode;
-					VTXApp::get().switchRenderer( _mode );
+					VTXApp::get().getMainWindow().getOpenGLWidget().switchRenderer( _mode );
 				};
 
 			  private:

@@ -7,11 +7,27 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			RenderWidget::RenderWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) { _openGLWidget = new OpenGLWidget(); }
+			RenderWidget::RenderWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 
-			RenderWidget::~RenderWidget() { delete _openGLWidget; };
+			RenderWidget::~RenderWidget()
+			{
+				delete _verticalLayout;
+				delete _verticalLayoutWidget;
+				delete _openGLWidget;
+			};
 
-			void RenderWidget::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
+			void RenderWidget::_setupUi( const QString & p_name )
+			{
+				BaseManualWidget::_setupUi( p_name );
+
+				_verticalLayoutWidget = new QWidget();
+				_verticalLayoutWidget->setObjectName( QString::fromUtf8( "verticalLayoutWidget" ) );
+				_verticalLayout = new QVBoxLayout( _verticalLayoutWidget );
+				_verticalLayout->setObjectName( QString::fromUtf8( "verticalLayout" ) );
+				setWidget( _verticalLayoutWidget );
+
+				_verticalLayout->addWidget( _openGLWidget );
+			}
 
 			void RenderWidget::_setupSlots() {}
 

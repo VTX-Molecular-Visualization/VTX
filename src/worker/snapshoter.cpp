@@ -17,7 +17,7 @@ namespace VTX
 	{
 		bool Snapshoter::takeSnapshotGL( const Path & p_path )
 		{
-			const Renderer::GL & renderer = VTXApp::get().getRendererGL();
+			const Renderer::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
 			const uint width  = renderer.getWidth();
 			const uint height = renderer.getHeight();
@@ -45,7 +45,7 @@ namespace VTX
 
 		bool Snapshoter::takeSnapshotRTCPU( const Path & p_path ) const
 		{
-			const Renderer::GL & renderer = VTXApp::get().getRendererGL();
+			const Renderer::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
 			const uint width  = renderer.getWidth();
 			const uint height = renderer.getHeight();
@@ -63,7 +63,7 @@ namespace VTX
 
 		bool Snapshoter::takeSnapshotRTOptix( const Path & p_path ) const
 		{
-			const Renderer::GL & renderer = VTXApp::get().getRendererGL();
+			const Renderer::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
 			const uint width  = renderer.getWidth();
 			const uint height = renderer.getHeight();

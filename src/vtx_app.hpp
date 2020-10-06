@@ -7,7 +7,6 @@
 
 #include "action/action_manager.hpp"
 #include "event/event_manager.hpp"
-#include "renderer/base_renderer.hpp"
 #include "setting.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
@@ -28,21 +27,7 @@ namespace VTX
 	{
 		class SelectionManager;
 	}
-	namespace Renderer
-	{
-		class GL;
-		namespace GLSL
-		{
-			class ProgramManager;
-		}
-		class RayTracer;
-#ifdef OPTIX_DEFINED
-		namespace Optix
-		{
-			class OptixRayTracer;
-		}
-#endif
-	} // namespace Renderer
+
 	namespace Object3D
 	{
 		class Scene;
@@ -64,28 +49,20 @@ namespace VTX
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
-		void renderScene() const { _renderer->renderFrame( *_scene ); }
+		void renderScene() const
+		{
+			//_renderer->renderFrame( *_scene );
+		}
 
-		inline Setting &					  getSetting() { return _setting; }
-		inline const Setting &				  getSetting() const { return _setting; }
-		inline Tool::Logger &				  getLogger() { return _logger; }
-		inline const Tool::Logger &			  getLogger() const { return _logger; }
-		inline Object3D::Scene &			  getScene() { return *_scene; }
-		inline const Object3D::Scene &		  getScene() const { return *_scene; }
-		inline Renderer::BaseRenderer &		  getRenderer() { return *_renderer; }
-		inline const Renderer::BaseRenderer & getRenderer() const { return *_renderer; }
-		inline Renderer::GL &				  getRendererGL() { return *_rendererGL; }
-		inline const Renderer::GL &			  getRendererGL() const { return *_rendererGL; }
-#ifdef CUDA_DEFINED
-		inline Renderer::RayTracer &	   getRendererRT() { return *_rendererRT; }
-		inline const Renderer::RayTracer & getRendererRT() const { return *_rendererRT; }
-#endif
-#ifdef OPTIX_DEFINED
-		inline Renderer::Optix::OptixRayTracer &	   getRendererOptix() { return *_rendererOptix; }
-		inline const Renderer::Optix::OptixRayTracer & getRendererOptix() const { return *_rendererOptix; }
-#endif
-		inline Renderer::GLSL::ProgramManager &		  getProgramManager() { return _renderer->getProgramManager(); }
-		inline const Renderer::GLSL::ProgramManager & getProgramManager() const { return _renderer->getProgramManager(); }
+		inline Setting &			   getSetting() { return _setting; }
+		inline const Setting &		   getSetting() const { return _setting; }
+		inline Tool::Logger &		   getLogger() { return _logger; }
+		inline const Tool::Logger &	   getLogger() const { return _logger; }
+		inline Object3D::Scene &	   getScene() { return *_scene; }
+		inline const Object3D::Scene & getScene() const { return *_scene; }
+
+		inline Renderer::GLSL::ProgramManager &		  getProgramManager() { return _mainWindow->getOpenGLWidget().getProgramManager(); }
+		inline const Renderer::GLSL::ProgramManager & getProgramManager() const { return _mainWindow->getOpenGLWidget().getProgramManager(); }
 		inline const UI::MainWindow &				  getMainWindow() const { return *_mainWindow; }
 		inline UI::MainWindow &						  getMainWindow() { return *_mainWindow; }
 		inline State::StateMachine &				  getStateMachine() { return *_stateMachine; }
@@ -99,23 +76,15 @@ namespace VTX
 		inline Selection::SelectionManager &		  getSelectionManager() { return *_selectionManager; }
 		inline const Selection::SelectionManager &	  getSelectionManager() const { return *_selectionManager; }
 
-		void switchRenderer( const Renderer::MODE );
-
 	  private:
 		QTimer * _timer = nullptr;
 
-		Setting					 _setting	   = Setting();
-		Tool::Logger			 _logger	   = Tool::Logger();
-		Tool::Chrono			 _chrono	   = Tool::Chrono();
-		UI::MainWindow *		 _mainWindow   = nullptr;
-		State::StateMachine *	 _stateMachine = nullptr;
-		Object3D::Scene *		 _scene		   = nullptr;
-		Renderer::BaseRenderer * _renderer	   = nullptr;
-		Renderer::GL *			 _rendererGL   = nullptr;
-		Renderer::RayTracer *	 _rendererRT   = nullptr;
-#ifdef OPTIX_DEFINED
-		Renderer::Optix::OptixRayTracer * _rendererOptix = nullptr;
-#endif
+		Setting						  _setting			= Setting();
+		Tool::Logger				  _logger			= Tool::Logger();
+		Tool::Chrono				  _chrono			= Tool::Chrono();
+		UI::MainWindow *			  _mainWindow		= nullptr;
+		State::StateMachine *		  _stateMachine		= nullptr;
+		Object3D::Scene *			  _scene			= nullptr;
 		Action::ActionManager *		  _actionManager	= nullptr;
 		Event::EventManager *		  _eventManager		= nullptr;
 		Worker::WorkerManager *		  _workerManager	= nullptr;

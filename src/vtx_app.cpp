@@ -3,14 +3,9 @@
 #include "action/setting.hpp"
 #include "id.hpp"
 #include "model/molecule.hpp"
-#include "renderer/gl/gl.hpp"
-#include "renderer/ray_tracing/ray_tracer.hpp"
 #include "selection/selection_manager.hpp"
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
-#ifdef OPTIX_DEFINED
-#include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
-#endif
 
 namespace VTX
 {
@@ -28,19 +23,17 @@ namespace VTX
 	{
 		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
 
-		this->setWindowIcon(QIcon(":/sprite/logo.png"));
-		_mainWindow = new UI::MainWindow();
-		_mainWindow->show();
-
 		_scene = new Object3D::Scene();
 		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
-
-		switchRenderer( Setting::MODE_DEFAULT );
 
 		_stateMachine = new State::StateMachine();
 		_stateMachine->goToState( ID::State::VISUALIZATION );
 
 		VTX_ACTION( new Action::Setting::Load() );
+
+		this->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
+		_mainWindow = new UI::MainWindow();
+		_mainWindow->show();
 
 		VTX_INFO( "Application started" );
 
@@ -83,22 +76,6 @@ namespace VTX
 		{
 			delete _mainWindow;
 		}
-		if ( _rendererGL != nullptr )
-		{
-			delete _rendererGL;
-		}
-#ifdef CUDA_DEFINED
-		if ( _rendererRT != nullptr )
-		{
-			delete _rendererRT;
-		}
-#endif
-#ifdef OPTIX_DEFINED
-		if ( _rendererOptix != nullptr )
-		{
-			delete _rendererOptix;
-		}
-#endif
 		if ( _selectionManager != nullptr )
 		{
 			delete _selectionManager;
@@ -126,56 +103,6 @@ namespace VTX
 		catch ( const std::exception & p_e )
 		{
 			VTX_ERROR( p_e.what() );
-		}
-	}
-
-	void VTXApp::switchRenderer( const Renderer::MODE p_mode )
-	{
-		bool needInit = false;
-
-		switch ( p_mode )
-		{
-		case Renderer::MODE::GL:
-			if ( _rendererGL == nullptr )
-			{
-				_rendererGL = new Renderer::GL();
-				needInit	= true;
-			}
-			_renderer = _rendererGL;
-			break;
-		case Renderer::MODE::RT_CPU:
-			if ( _rendererRT == nullptr )
-			{
-				_rendererRT = new Renderer::RayTracer();
-				needInit	= true;
-			}
-			_renderer = _rendererRT;
-			break;
-#ifdef OPTIX_DEFINED
-		case Renderer::MODE::RT_OPTIX:
-			if ( _rendererOptix == nullptr )
-			{
-				_rendererOptix = new Renderer::Optix::OptixRayTracer();
-				needInit	   = true;
-			}
-			_renderer = _rendererOptix;
-			break;
-#endif
-
-		default: _renderer = nullptr;
-		}
-
-		if ( _renderer != nullptr )
-		{
-			if ( needInit )
-			{
-				_renderer->init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
-			}
-			// Resize if needed.
-			else if ( _renderer->getWidth() != getScene().getCamera().getScreenWidth() || _renderer->getHeight() != getScene().getCamera().getScreenHeight() )
-			{
-				_renderer->resize( getScene().getCamera().getScreenWidth(), getScene().getCamera().getScreenHeight() );
-			}
 		}
 	}
 
