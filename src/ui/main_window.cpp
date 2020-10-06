@@ -16,7 +16,7 @@ namespace VTX
 			_registerEvent( Event::Global::CHANGE_STATE );
 
 			_mainMenuBar = WidgetFactory::get().GetWidget<Widget::MainMenuBar>( this, "mainMenuBar" );
-			setMenuBar( _mainMenuBar );
+			this->setMenuBar( _mainMenuBar );
 
 			_renderWidget	 = WidgetFactory::get().GetWidget<Widget::RenderWidget>( this, "renderWidget" );
 			_sceneWidget	 = WidgetFactory::get().GetWidget<Widget::SceneWidget>( this, "sceneWidget" );
@@ -67,7 +67,7 @@ namespace VTX
 
 		void MainWindow::_setupDock()
 		{
-			setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks | DockOption::AnimatedDocks );
+			setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
 			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _sceneWidget, Qt::Orientation::Horizontal );
 			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _renderWidget, Qt::Orientation::Horizontal );

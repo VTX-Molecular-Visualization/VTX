@@ -7,6 +7,7 @@
 
 #include "base_manual_widget.hpp"
 #include "menu_main_widget.hpp"
+#include <QLabel>
 #include <QMenuBar>
 #include <QTabWidget>
 

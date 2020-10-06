@@ -28,6 +28,7 @@ namespace VTX
 	{
 		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
 
+		this->setWindowIcon(QIcon(":/sprite/logo.png"));
 		_mainWindow = new UI::MainWindow();
 		_mainWindow->show();
 
