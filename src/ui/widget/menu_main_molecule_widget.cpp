@@ -14,10 +14,8 @@ namespace VTX
 
 			void MenuMainMoleculeWidget::_loadMoleculeFile()
 			{
-				QString filters = "*.pdb *.cif";
-				QString filter	= "*.pdb";
 				// TODO : Filter file type
-				const QString filename = QFileDialog::getOpenFileName( this, "Open Molecule", "", filters, &filter );
+				const QString filename = QFileDialog::getOpenFileName( this, "Open Molecule", "", VTX_SETTING().MOLECULE_FILE_FILTERS );
 				Path *		  path	   = new Path( filename.toStdString() );
 
 				VTX_ACTION( new Action::Main::Open( path ), true );
@@ -29,8 +27,6 @@ namespace VTX
 			void MenuMainMoleculeWidget::_setupUi( const QString & p_name )
 			{
 				MenuToolBlockWidget::_setupUi( p_name );
-
-				setTitle( "Molecule" );
 
 				_loadMoleculeButton = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "loadMoleculeButton" );
 				_loadMoleculeButton->setData( "Load", ":/sprite/load_molecule_icon.png", Qt::Orientation::Vertical );
@@ -54,7 +50,7 @@ namespace VTX
 				_downloadMoleculeButton->setTriggerAction( this, &MenuMainMoleculeWidget::_downloadMoleculeFile );
 				_saveMoleculeButton->setTriggerAction( this, &MenuMainMoleculeWidget::_saveMoleculeFile );
 			}
-			void MenuMainMoleculeWidget::localize() {}
+			void MenuMainMoleculeWidget::localize() { setTitle( "Molecule" ); }
 		} // namespace Widget
 	}	  // namespace UI
 } // namespace VTX
