@@ -22,7 +22,8 @@ namespace VTX
 
 				VTX_ACTION( new Action::Main::Open( path ), true );
 			}
-			void MenuMainMoleculeWidget::_downloadMoleculeFile() {}
+			void MenuMainMoleculeWidget::_downloadMoleculeFile() { _downloadMoleculeDialog->show(); }
+
 			void MenuMainMoleculeWidget::_saveMoleculeFile() {}
 
 			void MenuMainMoleculeWidget::_setupUi( const QString & p_name )
@@ -44,8 +45,15 @@ namespace VTX
 				addButton( *_saveMoleculeButton, 0, 2, 1, 1 );
 
 				validate();
+
+				_downloadMoleculeDialog = WidgetFactory::get().GetWidget<DownloadMoleculeDialog>( this, "downloadMoleculeDialog" );
 			}
-			void MenuMainMoleculeWidget::_setupSlots() { _loadMoleculeButton->setTriggerAction( this, &MenuMainMoleculeWidget::_loadMoleculeFile ); }
+			void MenuMainMoleculeWidget::_setupSlots()
+			{
+				_loadMoleculeButton->setTriggerAction( this, &MenuMainMoleculeWidget::_loadMoleculeFile );
+				_downloadMoleculeButton->setTriggerAction( this, &MenuMainMoleculeWidget::_downloadMoleculeFile );
+				_saveMoleculeButton->setTriggerAction( this, &MenuMainMoleculeWidget::_saveMoleculeFile );
+			}
 			void MenuMainMoleculeWidget::localize() {}
 		} // namespace Widget
 	}	  // namespace UI
