@@ -22,6 +22,7 @@ namespace VTX
 
 			void Program::create( const std::string & p_name )
 			{
+				initializeOpenGLFunctions();
 				if ( _id == GL_INVALID_INDEX )
 				{
 					_name = p_name;

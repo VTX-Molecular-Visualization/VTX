@@ -12,8 +12,6 @@ namespace VTX
 				format().setVersion( 4, 5 );
 				format().setProfile( QSurfaceFormat::CompatibilityProfile );
 				format().setRenderableType( QSurfaceFormat::OpenGL );
-
-				switchRenderer( Setting::MODE_DEFAULT );
 			}
 
 			OpenGLWidget::~OpenGLWidget()
@@ -38,15 +36,16 @@ namespace VTX
 
 			void OpenGLWidget::initializeGL()
 			{
-				// VTXApp::get().getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
+				switchRenderer( Setting::MODE_DEFAULT );
+				getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
 			}
 
-			void OpenGLWidget::paintGL() {}
+			void OpenGLWidget::paintGL() { getRenderer().renderFrame( VTXApp::get().getScene() ); }
 
 			void OpenGLWidget::resizeGL( int p_width, int p_height )
 			{
-				// VTXApp::get().getScene().getCamera().setScreenSize( _width, _height );
-				// VTXApp::get().getRenderer().resize( p_width, p_height );
+				VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
+				getRenderer().resize( p_width, p_height );
 			}
 
 			void OpenGLWidget::switchRenderer( const Renderer::MODE p_mode )

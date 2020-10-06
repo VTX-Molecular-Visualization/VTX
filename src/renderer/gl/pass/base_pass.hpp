@@ -21,7 +21,7 @@ namespace VTX
 			class BasePass : public QOpenGLFunctions_4_5_Compatibility
 			{
 			  public:
-				BasePass() = default;
+				BasePass() { initializeOpenGLFunctions(); };
 				virtual ~BasePass() {};
 
 				virtual void init( GLSL::ProgramManager &, const uint, const uint )	 = 0;

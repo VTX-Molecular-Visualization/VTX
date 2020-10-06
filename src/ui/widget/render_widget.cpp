@@ -11,9 +11,9 @@ namespace VTX
 
 			RenderWidget::~RenderWidget()
 			{
+				delete _openGLWidget;
 				delete _verticalLayout;
 				delete _verticalLayoutWidget;
-				delete _openGLWidget;
 			};
 
 			void RenderWidget::_setupUi( const QString & p_name )

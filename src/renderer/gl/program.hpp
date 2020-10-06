@@ -18,7 +18,7 @@ namespace VTX
 			class Program : public QOpenGLFunctions_4_5_Core
 			{
 			  public:
-				Program() = default;
+				Program() { initializeOpenGLFunctions(); };
 				~Program();
 
 				inline GLuint getId() const { return _id; }

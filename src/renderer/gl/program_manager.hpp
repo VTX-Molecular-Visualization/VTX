@@ -37,7 +37,7 @@ namespace VTX
 				using MapStringToGLuint	  = std::map<std::string, GLuint>;
 				using PairStringToGLuint  = std::pair<const std::string, GLuint>;
 
-				ProgramManager() = default;
+				ProgramManager() { initializeOpenGLFunctions(); };
 				~ProgramManager();
 				Program * const createProgram( const std::string &, const std::vector<std::string> & );
 				void			deleteProgram( const std::string & );

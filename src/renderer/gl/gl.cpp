@@ -33,6 +33,8 @@ namespace VTX
 		{
 			VTX_INFO( "Initializing renderer..." );
 
+			initializeOpenGLFunctions();
+
 			// Set size.
 			BaseRenderer::resize( p_width, p_height );
 
