@@ -6,7 +6,6 @@
 #endif
 
 #include "vtx_app.hpp"
-#include <GL/gl3w.h>
 #include <iostream>
 
 namespace VTX

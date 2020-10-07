@@ -1,4 +1,5 @@
 #include "opengl_widget.hpp"
+#include "util/opengl.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -9,13 +10,17 @@ namespace VTX
 		{
 			OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : QOpenGLWidget( p_parent )
 			{
-				format().setVersion( 4, 5 );
-				format().setProfile( QSurfaceFormat::CompatibilityProfile );
-				format().setRenderableType( QSurfaceFormat::OpenGL );
+				QSurfaceFormat format;
+				format.setVersion( 4, 5 );
+				format.setProfile( QSurfaceFormat::CoreProfile );
+				format.setRenderableType( QSurfaceFormat::OpenGL );
+				// setFormat( format );
 			}
 
 			OpenGLWidget::~OpenGLWidget()
 			{
+				makeCurrent();
+
 				if ( _rendererGL != nullptr )
 				{
 					delete _rendererGL;
@@ -32,15 +37,38 @@ namespace VTX
 					delete _rendererOptix;
 				}
 #endif
+
+				doneCurrent();
 			}
 
 			void OpenGLWidget::initializeGL()
 			{
+				initializeOpenGLFunctions();
+
+#ifdef _DEBUG
+				glEnable( GL_DEBUG_OUTPUT );
+				glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
+#endif
+
 				switchRenderer( Setting::MODE_DEFAULT );
 				getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
 			}
 
-			void OpenGLWidget::paintGL() { getRenderer().renderFrame( VTXApp::get().getScene() ); }
+			void OpenGLWidget::paintGL()
+			{
+				getRenderer().renderFrame( VTXApp::get().getScene() );
+
+				// With named fbo.
+				// glNamedFramebufferDrawBuffer( getRendererGL().getRenderedFBO(), GL_COLOR_ATTACHMENT0 );
+
+				// With bind.
+				// makeCurrent();
+				// glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+				glBindFramebuffer( GL_FRAMEBUFFER, getRendererGL().getRenderedFBO() );
+				glDrawBuffer( GL_COLOR_ATTACHMENT0 );
+				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				// doneCurrent();
+			}
 
 			void OpenGLWidget::resizeGL( int p_width, int p_height )
 			{

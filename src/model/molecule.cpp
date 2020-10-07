@@ -16,11 +16,8 @@ namespace VTX
 	{
 		Molecule::Molecule()
 		{
-			// addItem( ID::View::D3_SPHERE, (View::BaseView<BaseModel> *)new View::D3::Sphere( this ) );
-			// addItem( ID::View::D3_CYLINDER, (View::BaseView<BaseModel> *)new View::D3::Cylinder( this ) );
-
-			// View::UI::Widget::MoleculeSceneView * view = UI::Widget::WidgetFactory::get().GetWidget<View::UI::Widget::MoleculeSceneView, Molecule>( this );
-			// addItem( ID::View::UI_MOLECULE_STRUCTURE, (View::BaseView<BaseModel> *)view );
+			addItem( ID::View::D3_SPHERE, new View::D3::Sphere( this ) );
+			addItem( ID::View::D3_CYLINDER, new View::D3::Cylinder( this ) );
 		}
 
 		Molecule::~Molecule()
@@ -66,10 +63,6 @@ namespace VTX
 
 		void Molecule::init()
 		{
-			_isInit = true;
-			_notifyViews( Event::VTX_EVENT_MODEL::INIT );
-			return;
-
 			// Compute global AABB of atom positions (taking into account each frame).
 			_computeGlobalPositionsAABB();
 
@@ -97,6 +90,9 @@ namespace VTX
 
 				Util::Molecule::refreshRepresentationState( *this );
 			}
+
+			_isInit = true;
+			_notifyViews( Event::VTX_EVENT_MODEL::INIT );
 		}
 
 		void Molecule::_computeGlobalPositionsAABB()
@@ -290,6 +286,7 @@ namespace VTX
 
 			glGenVertexArrays( 1, &_vao );
 			glBindVertexArray( _vao );
+
 			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
 
 			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
