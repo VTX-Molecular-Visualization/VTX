@@ -7,7 +7,7 @@
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
-#include "view/ui/widget/molecule_structure.hpp"
+//#include "view/ui/widget/molecule_scene_view.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -19,7 +19,7 @@ namespace VTX
 			// addItem( ID::View::D3_SPHERE, (View::BaseView<BaseModel> *)new View::D3::Sphere( this ) );
 			// addItem( ID::View::D3_CYLINDER, (View::BaseView<BaseModel> *)new View::D3::Cylinder( this ) );
 
-			// View::UI::Widget::MoleculeStructure * view = UI::Widget::WidgetFactory::get().GetWidget<View::UI::Widget::MoleculeStructure, Molecule>( this );
+			// View::UI::Widget::MoleculeSceneView * view = UI::Widget::WidgetFactory::get().GetWidget<View::UI::Widget::MoleculeSceneView, Molecule>( this );
 			// addItem( ID::View::UI_MOLECULE_STRUCTURE, (View::BaseView<BaseModel> *)view );
 		}
 

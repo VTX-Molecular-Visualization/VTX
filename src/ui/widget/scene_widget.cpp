@@ -3,10 +3,8 @@
 #include "model/molecule.hpp"
 #include "object3d/scene.hpp"
 #include "ui/widget_factory.hpp"
-#include "view/ui/widget/molecule_structure.hpp"
+#include "view/ui/widget/molecule_scene_view.hpp"
 #include "vtx_app.hpp"
-#include <QListWidget>
-#include <QTreeWidget>
 
 namespace VTX
 {
@@ -20,16 +18,16 @@ namespace VTX
 				_registerEvent( Event::Global::MOLECULE_REMOVED );
 			}
 
-			SceneWidget::~SceneWidget()
+			void			  SceneWidget::addItem( QTreeWidgetItem * p_item ) { _treeWidget->addTopLevelItem( p_item ); }
+			void			  SceneWidget::addItem( QTreeWidgetItem * p_item, QTreeWidgetItem * p_parent ) { p_parent->addChild( p_item ); }
+			QTreeWidgetItem * SceneWidget::takeItem( QTreeWidgetItem * p_item )
 			{
-				delete _verticalLayout;
-				delete _verticalLayoutWidget;
+				_treeWidget->removeItemWidget( p_item, 0 );
+				return p_item;
 			}
-
-			void SceneWidget::addItem( QWidget * p_item ) { _verticalLayout->addWidget( p_item ); }
-			void SceneWidget::removeItem( QWidget * p_item )
+			void SceneWidget::deleteItem( QTreeWidgetItem * p_item )
 			{
-				_verticalLayout->removeWidget( p_item );
+				_treeWidget->removeItemWidget( p_item, 0 );
 				delete p_item;
 			}
 
@@ -39,17 +37,18 @@ namespace VTX
 				{
 					const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
-					View::UI::Widget::MoleculeStructure * moleculeWidget = new View::UI::Widget::MoleculeStructure( castedEvent.ptr, this );
-					castedEvent.ptr->addItem( ID::View::UI_MOLECULE_STRUCTURE, moleculeWidget );
+					View::UI::Widget::MoleculeSceneView * item = WidgetFactory::get().GetSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>(
+						castedEvent.ptr, _treeWidget->invisibleRootItem(), "MoleculeStructure" );
 
-					addItem( moleculeWidget );
+					castedEvent.ptr->addItem( ID::View::UI_MOLECULE_STRUCTURE, item );
+					addItem( item );
 				}
 				else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 				{
 					const Event::VTXEventPtr<Model::Molecule> & castedEvent	   = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-					View::UI::Widget::MoleculeStructure *		moleculeWidget = castedEvent.ptr->getItem<View::UI::Widget::MoleculeStructure>( ID::View::UI_MOLECULE_STRUCTURE );
+					View::UI::Widget::MoleculeSceneView *		moleculeWidget = castedEvent.ptr->getItem<View::UI::Widget::MoleculeSceneView>( ID::View::UI_MOLECULE_STRUCTURE );
 
-					removeItem( moleculeWidget );
+					deleteItem( moleculeWidget );
 				}
 			}
 
@@ -57,12 +56,12 @@ namespace VTX
 			{
 				BaseManualWidget::_setupUi( p_name );
 
-				_verticalLayoutWidget = new QWidget();
-				_verticalLayoutWidget->setObjectName( QString::fromUtf8( "verticalLayoutWidget" ) );
-				_verticalLayout = new QVBoxLayout( _verticalLayoutWidget );
-				_verticalLayout->setObjectName( QString::fromUtf8( "verticalLayout" ) );
+				_treeWidget = new QTreeWidget( this );
+				_treeWidget->setObjectName( QString::fromUtf8( "sceneTree" ) );
+				_treeWidget->setColumnCount( 1 );
+				_treeWidget->setHeaderHidden( true );
 
-				setWidget( _verticalLayoutWidget );
+				setWidget( _treeWidget );
 			}
 
 			void SceneWidget::_setupSlots() {}

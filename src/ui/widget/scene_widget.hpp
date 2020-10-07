@@ -7,8 +7,7 @@
 
 #include "base_manual_widget.hpp"
 #include <QDockWidget>
-#include <QVBoxLayout>
-#include <QWidget>
+#include <QTreeWidget>
 
 namespace VTX
 {
@@ -21,12 +20,13 @@ namespace VTX
 				VTX_MANUAL_WIDGET_DECLARATION
 
 			  public:
-				~SceneWidget();
 				void receiveEvent( const Event::VTXEvent & p_event ) override;
 				void localize() override;
 
-				void addItem( QWidget * p_item );
-				void removeItem( QWidget * p_item );
+				void			  addItem( QTreeWidgetItem * p_item );
+				void			  addItem( QTreeWidgetItem * p_item, QTreeWidgetItem * p_parent );
+				QTreeWidgetItem * takeItem( QTreeWidgetItem * p_item );
+				void			  deleteItem( QTreeWidgetItem * p_item );
 
 			  protected:
 				SceneWidget( QWidget * p_parent );
@@ -34,8 +34,7 @@ namespace VTX
 				void _setupSlots() override;
 
 			  private:
-				QWidget *	  _verticalLayoutWidget;
-				QVBoxLayout * _verticalLayout;
+				QTreeWidget * _treeWidget;
 			};
 		} // namespace Widget
 	}	  // namespace UI

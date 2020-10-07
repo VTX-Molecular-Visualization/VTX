@@ -6,6 +6,7 @@
 #endif
 
 #include <QtCore>
+#include <string>
 
 namespace VTX
 {
@@ -32,6 +33,14 @@ namespace VTX
 
 			  protected:
 				BaseManualWidgetInitializer() {};
+
+				inline void _setup( const std::string & p_name ) { _setup( QString::fromStdString( p_name ) ); };
+				inline void _setup( const QString & p_name )
+				{
+					_setupUi( p_name );
+					_setupSlots();
+					localize();
+				};
 
 				virtual void _setupUi( const QString & p_name ) = 0;
 				virtual void _setupSlots()						= 0;

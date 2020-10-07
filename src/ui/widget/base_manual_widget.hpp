@@ -7,11 +7,7 @@
 
 #include "base_manual_widget_initializer.hpp"
 #include "event/base_event_receiver_vtx.hpp"
-#include <QPainter>
-#include <QStyleOption>
 #include <QWidget>
-#include <QtCore>
-#include <string>
 
 namespace VTX
 {
@@ -26,14 +22,6 @@ namespace VTX
 
 			  protected:
 				BaseManualWidget( QWidget * p_parent = nullptr ) : W( p_parent ), BaseManualWidgetInitializer() {};
-
-				inline void _setup( const std::string & p_name ) { _setup( QString::fromStdString( p_name ) ); };
-				inline void _setup( const QString & p_name )
-				{
-					_setupUi( p_name );
-					_setupSlots();
-					localize();
-				};
 
 				virtual void _setupUi( const QString & p_name ) override { setObjectName( p_name ); };
 			};
