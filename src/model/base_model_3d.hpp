@@ -20,6 +20,7 @@ namespace VTX
 		class BaseModel3D : public BaseModel<T>, public Generic::BaseTransformable, public Generic::BaseRenderable, public Generic::BaseVisible, public QOpenGLFunctions_4_5_Core
 		{
 		  public:
+			BaseModel3D() { initializeOpenGLFunctions(); }
 			virtual ~BaseModel3D() = default;
 
 			inline const Math::AABB & getAABB() const { return _aabb; }

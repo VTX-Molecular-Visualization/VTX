@@ -25,7 +25,6 @@ namespace VTX
 				_verticalLayout = new QVBoxLayout( _verticalLayoutWidget );
 				_verticalLayout->setObjectName( QString::fromUtf8( "verticalLayout" ) );
 				setWidget( _verticalLayoutWidget );
-
 				_verticalLayout->addWidget( _openGLWidget );
 			}
 

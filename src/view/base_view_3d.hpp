@@ -21,7 +21,7 @@ namespace VTX
 		class BaseView3D : public BaseView<T>, public Generic::BaseRenderable, public QOpenGLFunctions_4_5_Core
 		{
 		  public:
-			explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
+			explicit BaseView3D( T * const p_model ) : BaseView( p_model ) { initializeOpenGLFunctions(); }
 			virtual ~BaseView3D() {}
 
 		  protected:

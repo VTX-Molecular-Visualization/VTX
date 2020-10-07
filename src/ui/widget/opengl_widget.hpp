@@ -9,6 +9,7 @@
 #include "renderer/gl/gl.hpp"
 #include "renderer/ray_tracing/ray_tracer.hpp"
 #include "ui_opengl_widget.h"
+#include <QOpenGLFunctions_4_5_Core>
 #include <QOpenGLWidget>
 #ifdef OPTIX_DEFINED
 #include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
@@ -36,7 +37,7 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class OpenGLWidget : public QOpenGLWidget
+			class OpenGLWidget : public QOpenGLWidget, public QOpenGLFunctions_4_5_Core
 			{
 			  public:
 				OpenGLWidget( QWidget * p_parent = 0 );

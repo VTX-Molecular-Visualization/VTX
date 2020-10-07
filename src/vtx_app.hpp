@@ -49,10 +49,7 @@ namespace VTX
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
-		void renderScene() const
-		{
-			//_renderer->renderFrame( *_scene );
-		}
+		void renderScene() const { _mainWindow->getOpenGLWidget().update(); }
 
 		inline Setting &			   getSetting() { return _setting; }
 		inline const Setting &		   getSetting() const { return _setting; }
