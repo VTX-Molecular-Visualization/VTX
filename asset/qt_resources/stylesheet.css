@@ -55,7 +55,7 @@ QDockWidget
 QDockWidget::close-button, QDockWidget::float-button
 {
 	/* set border to 0 to remove auto background */
-	border: 0px;
+	border: none;
 }
 
 
@@ -69,7 +69,7 @@ QTabWidget::pane
 QTabBar::tab
 {
 	background: black;
-    border: 0px;
+    border: none;
 	min-height: 8ex;
 	padding-left: 12px;
 	padding-right: 12px;
@@ -91,7 +91,7 @@ QMainWindow > QStatusBar
 QMainWindow > QStatusBar::item
 {
 	margin: 2px;
-	border: 0px;
+	border: none;
 }
 QStatusBar > QProgressBar
 {
@@ -105,7 +105,7 @@ QStatusBar > QProgressBar::chunk
 
 QTreeWidget
 {
-	border: 0px;
+	border: none;
 }
 QTreeWidget::item:selected
 {

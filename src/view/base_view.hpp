@@ -30,7 +30,7 @@ namespace VTX
 			explicit BaseView( T * const p_model ) : _model( p_model ) {}
 			virtual ~BaseView() = default;
 
-			virtual void notify( const Event::VTX_EVENT_MODEL & ) { std::cout << "notify super class" << std::endl; };
+			virtual void notify( const Event::VTX_EVENT_MODEL & ) { /*std::cout << "notify super class" << std::endl;*/ };
 
 		  protected:
 			T * _model;

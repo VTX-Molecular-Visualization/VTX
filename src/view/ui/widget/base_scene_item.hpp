@@ -27,7 +27,11 @@ namespace VTX
 				  protected:
 					BaseSceneItem( M * const p_model, QTreeWidgetItem * p_parent ) :
 						View::BaseView<M>( p_model ), QTreeWidgetItem( p_parent ), VTX::UI::Widget::BaseManualWidgetInitializer() {};
-					inline virtual void _setupUi( const QString & p_name ) override { setText( 0, p_name ); };
+					inline virtual void _setupUi( const QString & p_name ) override
+					{
+						setCheckState( 0, Qt::CheckState::Checked );
+						setText( 0, p_name );
+					};
 				};
 
 			} // namespace Widget
