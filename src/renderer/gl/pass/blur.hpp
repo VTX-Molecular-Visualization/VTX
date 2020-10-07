@@ -23,11 +23,7 @@ namespace VTX
 
 				inline const GLuint & getTexture() const { return _texture; }
 
-				void clearTexture()
-				{
-					float clearColor = 1.f;
-					glClearTexImage( _texture, 0, GL_RED, GL_FLOAT, &clearColor );
-				}
+				void clearTexture();
 
 			  private:
 				GLSL::Program * _program				 = nullptr;

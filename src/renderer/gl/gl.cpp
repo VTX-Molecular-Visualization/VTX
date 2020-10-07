@@ -33,8 +33,6 @@ namespace VTX
 		{
 			VTX_INFO( "Initializing renderer..." );
 
-			initializeOpenGLFunctions();
-
 			// Set size.
 			BaseRenderer::resize( p_width, p_height );
 
@@ -84,35 +82,35 @@ namespace VTX
 			// clang-format on
 
 			// Setup plane VAO.
-			glGenBuffers( 1, &_quadVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
-			glBufferData( GL_ARRAY_BUFFER, sizeof( quadVertices ), quadVertices, GL_STATIC_DRAW );
-			glGenVertexArrays( 1, &_quadVAO );
-			glBindVertexArray( _quadVAO );
-			glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
-			glEnableVertexAttribArray( 0 );
-			glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glBindVertexArray( 0 );
+			OGL().glGenBuffers( 1, &_quadVBO );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
+			OGL().glBufferData( GL_ARRAY_BUFFER, sizeof( quadVertices ), quadVertices, GL_STATIC_DRAW );
+			OGL().glGenVertexArrays( 1, &_quadVAO );
+			OGL().glBindVertexArray( _quadVAO );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
+			OGL().glEnableVertexAttribArray( 0 );
+			OGL().glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glBindVertexArray( 0 );
 		}
 
 		void GL::renderFrame( const Object3D::Scene & p_scene )
 		{
-			glViewport( 0, 0, _width, _height );
+			OGL().glViewport( 0, 0, _width, _height );
 
 			// TODO: do not change each frame
 			if ( VTX_SETTING().cameraNear == 0.f )
 			{
-				glEnable( GL_DEPTH_CLAMP );
+				OGL().glEnable( GL_DEPTH_CLAMP );
 			}
 			else
 			{
-				glDisable( GL_DEPTH_CLAMP );
+				OGL().glDisable( GL_DEPTH_CLAMP );
 			}
 
-			glEnable( GL_DEPTH_TEST );
+			OGL().glEnable( GL_DEPTH_TEST );
 			_passGeometric->render( p_scene, *this );
-			glDisable( GL_DEPTH_TEST );
+			OGL().glDisable( GL_DEPTH_TEST );
 
 			_passLinearizeDepth->render( p_scene, *this );
 

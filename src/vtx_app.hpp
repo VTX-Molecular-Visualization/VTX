@@ -27,16 +27,10 @@ namespace VTX
 	{
 		class SelectionManager;
 	}
-
 	namespace Object3D
 	{
 		class Scene;
 	}
-	namespace UI
-	{
-		class UserInterface;
-	}
-
 	class VTXApp final : public QApplication
 	{
 	  public:
@@ -49,7 +43,9 @@ namespace VTX
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
-		void renderScene() const { _mainWindow->getOpenGLWidget().update(); }
+		void renderScene() const
+		{ //_mainWindow->getOpenGLWidget().update();
+		}
 
 		inline Setting &			   getSetting() { return _setting; }
 		inline const Setting &		   getSetting() const { return _setting; }
@@ -112,6 +108,7 @@ namespace VTX
 	inline void VTX_ERROR( const std::string & p_str ) { VTXApp::get().getLogger().logError( p_str ); }
 	inline void VTX_CONSOLE( const std::string & p_str ) { std::cout << p_str << std::endl; }
 
+	inline QOpenGLFunctions_4_5_Core & OGL() { return VTXApp::get().getMainWindow().getOpenGLWidget().getFunctions(); }
 } // namespace VTX
 
 #endif

@@ -17,10 +17,10 @@ namespace VTX
 	namespace Model
 	{
 		template<typename T>
-		class BaseModel3D : public BaseModel<T>, public Generic::BaseTransformable, public Generic::BaseRenderable, public Generic::BaseVisible, public QOpenGLFunctions_4_5_Core
+		class BaseModel3D : public BaseModel<T>, public Generic::BaseTransformable, public Generic::BaseRenderable, public Generic::BaseVisible
 		{
 		  public:
-			BaseModel3D() { initializeOpenGLFunctions(); }
+			BaseModel3D()		   = default;
 			virtual ~BaseModel3D() = default;
 
 			inline const Math::AABB & getAABB() const { return _aabb; }

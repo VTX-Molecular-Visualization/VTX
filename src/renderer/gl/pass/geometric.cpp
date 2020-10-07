@@ -10,10 +10,10 @@ namespace VTX
 		{
 			Geometric::~Geometric()
 			{
-				glDeleteFramebuffers( 1, &_fbo );
-				glDeleteTextures( 1, &_viewPositionsNormalsCompressedTexture );
-				glDeleteTextures( 1, &_colorsTexture );
-				glDeleteTextures( 1, &_depthTexture );
+				OGL().glDeleteFramebuffers( 1, &_fbo );
+				OGL().glDeleteTextures( 1, &_viewPositionsNormalsCompressedTexture );
+				OGL().glDeleteTextures( 1, &_colorsTexture );
+				OGL().glDeleteTextures( 1, &_depthTexture );
 			}
 
 			void Geometric::init( GLSL::ProgramManager & p_programManager, const uint p_width, const uint p_height )
@@ -23,51 +23,51 @@ namespace VTX
 				glPointParameteri( GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT );*/
 
 				// Create G-buffers for deferred shading.
-				glGenFramebuffers( 1, &_fbo );
+				OGL().glGenFramebuffers( 1, &_fbo );
 
-				glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+				OGL().glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
-				glGenTextures( 1, &_viewPositionsNormalsCompressedTexture );
-				glBindTexture( GL_TEXTURE_2D, _viewPositionsNormalsCompressedTexture );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32UI, p_width, p_height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, nullptr );
+				OGL().glGenTextures( 1, &_viewPositionsNormalsCompressedTexture );
+				OGL().glBindTexture( GL_TEXTURE_2D, _viewPositionsNormalsCompressedTexture );
+				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				OGL().glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32UI, p_width, p_height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, nullptr );
 
-				glGenTextures( 1, &_colorsTexture );
-				glBindTexture( GL_TEXTURE_2D, _colorsTexture );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
+				OGL().glGenTextures( 1, &_colorsTexture );
+				OGL().glBindTexture( GL_TEXTURE_2D, _colorsTexture );
+				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				OGL().glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
 
-				glGenTextures( 1, &_depthTexture );
-				glBindTexture( GL_TEXTURE_2D, _depthTexture );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-				glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, p_width, p_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr );
+				OGL().glGenTextures( 1, &_depthTexture );
+				OGL().glBindTexture( GL_TEXTURE_2D, _depthTexture );
+				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				OGL().glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, p_width, p_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr );
 
-				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _viewPositionsNormalsCompressedTexture, 0 );
-				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _colorsTexture, 0 );
-				glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0 );
+				OGL().glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _viewPositionsNormalsCompressedTexture, 0 );
+				OGL().glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _colorsTexture, 0 );
+				OGL().glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0 );
 
 				static const GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 
-				glDrawBuffers( 2, drawBuffers );
+				OGL().glDrawBuffers( 2, drawBuffers );
 
-				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				OGL().glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-				GLenum fboStatus = glCheckFramebufferStatus( GL_FRAMEBUFFER );
+				GLenum fboStatus = OGL().glCheckFramebufferStatus( GL_FRAMEBUFFER );
 				if ( fboStatus != GL_FRAMEBUFFER_COMPLETE )
 				{
 					VTX_WARNING( "Framebuffer not complete: " + std::to_string( fboStatus ) );
 				}
 
-				GLenum glstatus = glGetError();
+				GLenum glstatus = OGL().glGetError();
 				if ( glstatus != GL_NO_ERROR )
 				{
 					VTX_ERROR( "Error in GL call: " + std::to_string( glstatus ) );
@@ -76,20 +76,20 @@ namespace VTX
 
 			void Geometric::resize( const uint p_width, const uint p_height )
 			{
-				glBindTexture( GL_TEXTURE_2D, _viewPositionsNormalsCompressedTexture );
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32UI, p_width, p_height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, nullptr );
+				OGL().glBindTexture( GL_TEXTURE_2D, _viewPositionsNormalsCompressedTexture );
+				OGL().glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA32UI, p_width, p_height, 0, GL_RGBA_INTEGER, GL_UNSIGNED_INT, nullptr );
 
-				glBindTexture( GL_TEXTURE_2D, _colorsTexture );
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
+				OGL().glBindTexture( GL_TEXTURE_2D, _colorsTexture );
+				OGL().glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
 
-				glBindTexture( GL_TEXTURE_2D, _depthTexture );
-				glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, p_width, p_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr );
+				OGL().glBindTexture( GL_TEXTURE_2D, _depthTexture );
+				OGL().glTexImage2D( GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, p_width, p_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr );
 			}
 
 			void Geometric::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{
-				glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
-				glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+				OGL().glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+				OGL().glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 				for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 				{
@@ -100,7 +100,7 @@ namespace VTX
 					mesh->render();
 				}
 
-				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				OGL().glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 			}
 
 		} // namespace Pass

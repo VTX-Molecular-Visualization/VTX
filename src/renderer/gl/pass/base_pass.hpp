@@ -8,7 +8,7 @@
 #include "define.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/gl/program_manager.hpp"
-#include <QOpenGLFunctions_4_5_Compatibility>
+#include <QOpenGLFunctions_4_5_Core>
 
 namespace VTX
 {
@@ -18,11 +18,11 @@ namespace VTX
 
 		namespace Pass
 		{
-			class BasePass : public QOpenGLFunctions_4_5_Compatibility
+			class BasePass
 			{
 			  public:
-				BasePass() { initializeOpenGLFunctions(); };
-				virtual ~BasePass() {};
+				BasePass()			= default;
+				virtual ~BasePass() = default;
 
 				virtual void init( GLSL::ProgramManager &, const uint, const uint )	 = 0;
 				virtual void resize( const uint, const uint )						 = 0;

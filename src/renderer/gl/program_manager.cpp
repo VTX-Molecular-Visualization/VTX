@@ -35,7 +35,7 @@ namespace VTX
 			{
 				for ( const PairStringToGLuint & pair : _shaders )
 				{
-					glDeleteShader( pair.second );
+					OGL().glDeleteShader( pair.second );
 				}
 
 				Generic::clearMapAsValue( _programs );
@@ -107,27 +107,27 @@ namespace VTX
 				GLuint shaderId = getShader( name );
 				if ( shaderId == GL_INVALID_INDEX )
 				{
-					shaderId			   = glCreateShader( (int)type );
+					shaderId			   = OGL().glCreateShader( (int)type );
 					Path			  path = Util::Filesystem::getShadersPath( p_path.string() );
 					const std::string src  = Util::Filesystem::readPath( path );
 					if ( src.empty() )
 					{
-						glDeleteShader( shaderId );
+						OGL().glDeleteShader( shaderId );
 						return GL_INVALID_INDEX;
 					}
 
 					const GLchar * shaderCode = src.c_str();
-					glShaderSource( shaderId, 1, &shaderCode, 0 );
-					glCompileShader( shaderId );
+					OGL().glShaderSource( shaderId, 1, &shaderCode, 0 );
+					OGL().glCompileShader( shaderId );
 					GLint compiled;
-					glGetShaderiv( shaderId, GL_COMPILE_STATUS, &compiled );
+					OGL().glGetShaderiv( shaderId, GL_COMPILE_STATUS, &compiled );
 					if ( compiled == GL_FALSE )
 					{
 						std::string error = "Error compiling shader: ";
 						error += name;
 						error += "\n";
 						error += _getShaderErrors( shaderId );
-						glDeleteShader( shaderId );
+						OGL().glDeleteShader( shaderId );
 						VTX_ERROR( error );
 						return GL_INVALID_INDEX;
 					}
@@ -154,13 +154,13 @@ namespace VTX
 			std::string ProgramManager::_getShaderErrors( const GLuint p_shader )
 			{
 				GLint length;
-				glGetShaderiv( p_shader, GL_INFO_LOG_LENGTH, &length );
+				OGL().glGetShaderiv( p_shader, GL_INFO_LOG_LENGTH, &length );
 				if ( length == 0 )
 				{
 					return "";
 				}
 				std::vector<GLchar> log( length );
-				glGetShaderInfoLog( p_shader, length, &length, &log[ 0 ] );
+				OGL().glGetShaderInfoLog( p_shader, length, &length, &log[ 0 ] );
 				return std::string( log.begin(), log.end() );
 			}
 		} // namespace GLSL

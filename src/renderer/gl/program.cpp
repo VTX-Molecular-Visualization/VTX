@@ -16,17 +16,16 @@ namespace VTX
 				{
 					// Detach but don't delete shaders, can be used by other programs.
 					detachShaders();
-					glDeleteProgram( _id );
+					OGL().glDeleteProgram( _id );
 				}
 			}
 
 			void Program::create( const std::string & p_name )
 			{
-				initializeOpenGLFunctions();
 				if ( _id == GL_INVALID_INDEX )
 				{
 					_name = p_name;
-					_id	  = glCreateProgram();
+					_id	  = OGL().glCreateProgram();
 				}
 				else
 				{
@@ -42,7 +41,7 @@ namespace VTX
 					return;
 				}
 
-				glAttachShader( _id, p_shaderId );
+				OGL().glAttachShader( _id, p_shaderId );
 			}
 
 			void Program::link()
@@ -56,15 +55,15 @@ namespace VTX
 				}
 
 				GLint linked;
-				glLinkProgram( _id );
-				glGetProgramiv( _id, GL_LINK_STATUS, &linked );
+				OGL().glLinkProgram( _id );
+				OGL().glGetProgramiv( _id, GL_LINK_STATUS, &linked );
 				if ( linked == GL_FALSE )
 				{
 					std::string error = "Error linking program: ";
 					error += _name;
 					error += "\n";
 					error += _getProgramErrors();
-					glDeleteProgram( _id );
+					OGL().glDeleteProgram( _id );
 					VTX_ERROR( error );
 					return;
 				}
@@ -73,25 +72,27 @@ namespace VTX
 			void Program::detachShaders()
 			{
 				GLint nbShaders = 0;
-				glGetProgramiv( _id, GL_ATTACHED_SHADERS, &nbShaders );
+				OGL().glGetProgramiv( _id, GL_ATTACHED_SHADERS, &nbShaders );
 				std::vector<GLuint> shaders( nbShaders );
-				glGetAttachedShaders( _id, nbShaders, nullptr, shaders.data() );
+				OGL().glGetAttachedShaders( _id, nbShaders, nullptr, shaders.data() );
 				for ( GLuint shader : shaders )
 				{
-					glDetachShader( _id, shader );
+					OGL().glDetachShader( _id, shader );
 				}
 			}
+
+			void Program::use() { OGL().glUseProgram( _id ); }
 
 			std::string Program::_getProgramErrors()
 			{
 				GLint length;
-				glGetProgramiv( _id, GL_INFO_LOG_LENGTH, &length );
+				OGL().glGetProgramiv( _id, GL_INFO_LOG_LENGTH, &length );
 				if ( length == 0 )
 				{
 					return "";
 				}
 				std::vector<GLchar> log( length );
-				glGetProgramInfoLog( _id, length, &length, &log[ 0 ] );
+				OGL().glGetProgramInfoLog( _id, length, &length, &log[ 0 ] );
 				return std::string( log.begin(), log.end() );
 			}
 		} // namespace GLSL
