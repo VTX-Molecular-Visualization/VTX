@@ -27,8 +27,7 @@ namespace VTX
 		{
 		  public:
 			CameraRayTracing( const Object3D::Camera & p_camera, const uint p_width, const uint p_height ) :
-				_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ),
-				_left( p_camera.getLeft() ), _width( p_width ), _height( p_height )
+				_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ), _left( p_camera.getLeft() ), _width( p_width ), _height( p_height )
 			{
 				//
 				//
@@ -166,11 +165,11 @@ namespace VTX
 			VTX_INFO( "Init Scene" );
 			_initScene( VTXApp::get().getScene() );
 
-			glGenTextures( 1, &_texture );
-			glBindTexture( GL_TEXTURE_2D, _texture );
+			OGL().glGenTextures( 1, &_texture );
+			OGL().glBindTexture( GL_TEXTURE_2D, _texture );
 
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -209,18 +208,17 @@ namespace VTX
 
 			for ( uint i = 0; i < nbThreads; ++i )
 			{
-				threadPool.emplace_back( std::thread(
-					[ this, nbThreads, &camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, &nextTileId ]() {
-						_renderTiles( _pixels, camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, nextTileId );
-					} ) );
+				threadPool.emplace_back( std::thread( [ this, nbThreads, &camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, &nextTileId ]() {
+					_renderTiles( _pixels, camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, nextTileId );
+				} ) );
 			}
 			for ( std::thread & t : threadPool )
 			{
 				t.join();
 			}
 
-			glBindTexture( GL_TEXTURE_2D, _texture );
-			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
+			OGL().glBindTexture( GL_TEXTURE_2D, _texture );
+			OGL().glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
 
 			chrono.stop();
 			//_progressBar.stop();
@@ -407,10 +405,7 @@ namespace VTX
 			}
 		}
 
-		Color::Rgb RayTracer::_renderPixel( const CameraRayTracing & p_camera,
-											const float				 p_x,
-											const float				 p_y,
-											const uint				 p_nbPixelSamples )
+		Color::Rgb RayTracer::_renderPixel( const CameraRayTracing & p_camera, const float p_x, const float p_y, const uint p_nbPixelSamples )
 		{
 			Color::Rgb color = Color::Rgb::BLACK;
 

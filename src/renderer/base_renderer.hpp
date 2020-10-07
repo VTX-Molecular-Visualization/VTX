@@ -7,7 +7,6 @@
 
 #include "gl/program_manager.hpp"
 #include "object3d/scene.hpp"
-#include <QOpenGLFunctions_4_5_Core>
 #include <vector>
 
 namespace VTX
@@ -19,14 +18,15 @@ namespace VTX
 			GL,
 #ifdef CUDA_DEFINED
 			RT_CPU,
-#endif
+
 #ifdef OPTIX_DEFINED
 			RT_OPTIX,
+#endif
 #endif
 			COUNT
 		};
 
-		class BaseRenderer : public QOpenGLFunctions_4_5_Core
+		class BaseRenderer
 		{
 		  public:
 			BaseRenderer()			= default;

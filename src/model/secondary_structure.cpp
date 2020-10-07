@@ -157,116 +157,116 @@ namespace VTX
 		{
 			if ( _vao != GL_INVALID_VALUE )
 			{
-				glBindVertexArray( _vao );
-				glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
-				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
-				glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
-				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
-				glBindBuffer( GL_ARRAY_BUFFER, _vboNormals );
-				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL );
-				glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
-				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
-				glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
-				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
-				glBindBuffer( GL_ARRAY_BUFFER, 0 );
-				glBindVertexArray( 0 );
+				OGL().glBindVertexArray( _vao );
+				OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
+				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
+				OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
+				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
+				OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboNormals );
+				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL );
+				OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
+				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
+				OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
+				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
+				OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
+				OGL().glBindVertexArray( 0 );
 
 				if ( _vboPositions != GL_INVALID_VALUE )
-					glDeleteBuffers( 1, &_vboPositions );
+					OGL().glDeleteBuffers( 1, &_vboPositions );
 				if ( _vboDirections != GL_INVALID_VALUE )
-					glDeleteBuffers( 1, &_vboDirections );
+					OGL().glDeleteBuffers( 1, &_vboDirections );
 				if ( _vboNormals != GL_INVALID_VALUE )
-					glDeleteBuffers( 1, &_vboNormals );
+					OGL().glDeleteBuffers( 1, &_vboNormals );
 				if ( _vboSecondaryStructures != GL_INVALID_VALUE )
-					glDeleteBuffers( 1, &_vboSecondaryStructures );
+					OGL().glDeleteBuffers( 1, &_vboSecondaryStructures );
 				if ( _vboColors != GL_INVALID_VALUE )
-					glDeleteBuffers( 1, &_vboColors );
+					OGL().glDeleteBuffers( 1, &_vboColors );
 				if ( _ibo != GL_INVALID_VALUE )
-					glDeleteBuffers( 1, &_ibo );
+					OGL().glDeleteBuffers( 1, &_ibo );
 
-				glDeleteVertexArrays( 1, &_vao );
+				OGL().glDeleteVertexArrays( 1, &_vao );
 			}
 		}
 
 		void SecondaryStructure::init()
 		{
 			// VBO.
-			glGenBuffers( 1, &_vboPositions );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
-			glBufferData( GL_ARRAY_BUFFER, _controlPointPositions.size() * sizeof( Vec3f ), _controlPointPositions.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glGenBuffers( 1, &_vboPositions );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
+			OGL().glBufferData( GL_ARRAY_BUFFER, _controlPointPositions.size() * sizeof( Vec3f ), _controlPointPositions.data(), GL_STATIC_DRAW );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glGenBuffers( 1, &_vboDirections );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
-			glBufferData( GL_ARRAY_BUFFER, _controlPointDirections.size() * sizeof( Vec3f ), _controlPointDirections.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glGenBuffers( 1, &_vboDirections );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
+			OGL().glBufferData( GL_ARRAY_BUFFER, _controlPointDirections.size() * sizeof( Vec3f ), _controlPointDirections.data(), GL_STATIC_DRAW );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glGenBuffers( 1, &_vboNormals );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboNormals );
-			glBufferData( GL_ARRAY_BUFFER, _controlPointNormals.size() * sizeof( Vec3f ), _controlPointNormals.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glGenBuffers( 1, &_vboNormals );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboNormals );
+			OGL().glBufferData( GL_ARRAY_BUFFER, _controlPointNormals.size() * sizeof( Vec3f ), _controlPointNormals.data(), GL_STATIC_DRAW );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glGenBuffers( 1, &_vboSecondaryStructures );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
-			glBufferData( GL_ARRAY_BUFFER, _controlPointSecondaryStructures.size() * sizeof( uint ), _controlPointSecondaryStructures.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glGenBuffers( 1, &_vboSecondaryStructures );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
+			OGL().glBufferData( GL_ARRAY_BUFFER, _controlPointSecondaryStructures.size() * sizeof( uint ), _controlPointSecondaryStructures.data(), GL_STATIC_DRAW );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glGenBuffers( 1, &_vboColors );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
-			glBufferData( GL_ARRAY_BUFFER, _controlPointColors.size() * sizeof( Color::Rgb ), _controlPointColors.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glGenBuffers( 1, &_vboColors );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
+			OGL().glBufferData( GL_ARRAY_BUFFER, _controlPointColors.size() * sizeof( Color::Rgb ), _controlPointColors.data(), GL_STATIC_DRAW );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			// IBO.
-			glGenBuffers( 1, &_ibo );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
-			glBufferData( GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof( uint32_t ), _indices.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			OGL().glGenBuffers( 1, &_ibo );
+			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
+			OGL().glBufferData( GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof( uint32_t ), _indices.data(), GL_STATIC_DRAW );
+			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
 			// VAO.
-			glGenVertexArrays( 1, &_vao );
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glGenVertexArrays( 1, &_vao );
+			OGL().glBindVertexArray( _vao );
+			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
+			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
+			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
+			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
+			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glBindBuffer( GL_ARRAY_BUFFER, _vboNormals );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboNormals );
+			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL );
+			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
+			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
+			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
+			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
+			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-			glBindVertexArray( 0 );
+			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			OGL().glBindVertexArray( 0 );
 		}
 
 		void SecondaryStructure::bindBuffers()
 		{
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
+			OGL().glBindVertexArray( _vao );
+			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
 		}
 
 		void SecondaryStructure::unbindBuffers()
 		{
-			glBindVertexArray( 0 );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			OGL().glBindVertexArray( 0 );
+			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 		}
 
 		void SecondaryStructure::setCurrentFrame()
@@ -326,8 +326,8 @@ namespace VTX
 			_controlPointPositions.shrink_to_fit();
 			_controlPointDirections.shrink_to_fit();
 
-			glNamedBufferData( _vboPositions, sizeof( Vec3f ) * GLsizei( _controlPointPositions.size() ), _controlPointPositions.data(), GL_STATIC_DRAW );
-			glNamedBufferData( _vboDirections, sizeof( Vec3f ) * GLsizei( _controlPointDirections.size() ), _controlPointDirections.data(), GL_STATIC_DRAW );
+			OGL().glNamedBufferData( _vboPositions, sizeof( Vec3f ) * GLsizei( _controlPointPositions.size() ), _controlPointPositions.data(), GL_STATIC_DRAW );
+			OGL().glNamedBufferData( _vboDirections, sizeof( Vec3f ) * GLsizei( _controlPointDirections.size() ), _controlPointDirections.data(), GL_STATIC_DRAW );
 		}
 
 		void SecondaryStructure::_fillBufferColors()
@@ -369,7 +369,7 @@ namespace VTX
 
 			_controlPointColors.shrink_to_fit();
 
-			glNamedBufferData( _vboColors, sizeof( Color::Rgb ) * GLsizei( _controlPointColors.size() ), _controlPointColors.data(), GL_STATIC_DRAW );
+			OGL().glNamedBufferData( _vboColors, sizeof( Color::Rgb ) * GLsizei( _controlPointColors.size() ), _controlPointColors.data(), GL_STATIC_DRAW );
 		}
 
 		void SecondaryStructure::_flipTest( Vec3f & p_direction, Vec3f & p_directionLast ) const

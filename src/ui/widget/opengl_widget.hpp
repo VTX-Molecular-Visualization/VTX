@@ -8,7 +8,6 @@
 #include "renderer/base_renderer.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/ray_tracing/ray_tracer.hpp"
-#include "ui_opengl_widget.h"
 #include <QOpenGLFunctions_4_5_Core>
 #include <QOpenGLWidget>
 #ifdef OPTIX_DEFINED
@@ -37,7 +36,7 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class OpenGLWidget : public QOpenGLWidget, public QOpenGLFunctions_4_5_Core
+			class OpenGLWidget : public QOpenGLWidget
 			{
 			  public:
 				OpenGLWidget( QWidget * p_parent = 0 );
@@ -49,6 +48,8 @@ namespace VTX
 				inline const Renderer::GL &					  getRendererGL() const { return *_rendererGL; }
 				inline Renderer::GLSL::ProgramManager &		  getProgramManager() { return _renderer->getProgramManager(); }
 				inline const Renderer::GLSL::ProgramManager & getProgramManager() const { return _renderer->getProgramManager(); }
+				inline const QOpenGLFunctions_4_5_Core &	  getFunctions() const { return *_functions; }
+				inline QOpenGLFunctions_4_5_Core &			  getFunctions() { return *_functions; }
 
 				void switchRenderer( const Renderer::MODE );
 
@@ -57,8 +58,9 @@ namespace VTX
 				void resizeGL( int, int ) override;
 
 			  private:
-				Renderer::BaseRenderer * _renderer	 = nullptr;
-				Renderer::GL *			 _rendererGL = nullptr;
+				QOpenGLFunctions_4_5_Core * _functions	= nullptr;
+				Renderer::BaseRenderer *	_renderer	= nullptr;
+				Renderer::GL *				_rendererGL = nullptr;
 #ifdef CUDA_DEFINED
 				Renderer::RayTracer * _rendererRT = nullptr;
 #endif
@@ -68,5 +70,7 @@ namespace VTX
 			};
 		} // namespace Widget
 	}	  // namespace UI
+
 } // namespace VTX
+
 #endif

@@ -28,7 +28,7 @@ namespace VTX
 				INVALID			= GL_INVALID_VALUE
 			};
 
-			class ProgramManager : QOpenGLFunctions_4_5_Core
+			class ProgramManager
 			{
 			  public:
 				using MapStringToEnum	  = std::map<std::string, SHADER_TYPE>;
@@ -37,7 +37,7 @@ namespace VTX
 				using MapStringToGLuint	  = std::map<std::string, GLuint>;
 				using PairStringToGLuint  = std::pair<const std::string, GLuint>;
 
-				ProgramManager() { initializeOpenGLFunctions(); };
+				ProgramManager() = default;
 				~ProgramManager();
 				Program * const createProgram( const std::string &, const std::vector<std::string> & );
 				void			deleteProgram( const std::string & );

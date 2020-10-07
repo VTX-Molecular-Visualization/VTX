@@ -13,11 +13,11 @@ namespace VTX
 				_program							= pm.createProgram( "Sphere", { "sphere.vert", "sphere.geom", "sphere.frag" } );
 
 				assert( _program != nullptr );
-				_uModelViewMatrixLoc = glGetUniformLocation( _program->getId(), "uMVMatrix" );
-				_uProjMatrixLoc		 = glGetUniformLocation( _program->getId(), "uProjMatrix" );
-				_uRadiusFixedLoc	 = glGetUniformLocation( _program->getId(), "uRadiusFixed" );
-				_uRadiusAddLoc		 = glGetUniformLocation( _program->getId(), "uRadiusAdd" );
-				_uIsRadiusFixedLoc	 = glGetUniformLocation( _program->getId(), "uIsRadiusFixed" );
+				_uModelViewMatrixLoc = OGL().glGetUniformLocation( _program->getId(), "uMVMatrix" );
+				_uProjMatrixLoc		 = OGL().glGetUniformLocation( _program->getId(), "uProjMatrix" );
+				_uRadiusFixedLoc	 = OGL().glGetUniformLocation( _program->getId(), "uRadiusFixed" );
+				_uRadiusAddLoc		 = OGL().glGetUniformLocation( _program->getId(), "uRadiusAdd" );
+				_uIsRadiusFixedLoc	 = OGL().glGetUniformLocation( _program->getId(), "uIsRadiusFixed" );
 			}
 
 			void Sphere::render( const Generic::REPRESENTATION p_representation )
@@ -49,16 +49,16 @@ namespace VTX
 
 				// TODO: do not upadte each frame !
 				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
-				glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
-				glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
+				OGL().glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
+				OGL().glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 
-				glUniform1f( _uRadiusFixedLoc, _radiusFixed );
-				glUniform1f( _uRadiusAddLoc, _radiusAdd );
-				glUniform1ui( _uIsRadiusFixedLoc, _isRadiusFixed );
+				OGL().glUniform1f( _uRadiusFixedLoc, _radiusFixed );
+				OGL().glUniform1f( _uRadiusAddLoc, _radiusAdd );
+				OGL().glUniform1ui( _uIsRadiusFixedLoc, _isRadiusFixed );
 
 				for ( const std::pair<uint, uint> & pair : _model->getRepresentationState()[ p_representation ].atoms )
 				{
-					glDrawArrays( GL_POINTS, pair.first, pair.second );
+					OGL().glDrawArrays( GL_POINTS, pair.first, pair.second );
 				}
 			}
 		} // namespace D3

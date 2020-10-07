@@ -1,6 +1,5 @@
 #include "opengl_widget.hpp"
 #include "util/opengl.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -14,7 +13,7 @@ namespace VTX
 				format.setVersion( 4, 5 );
 				format.setProfile( QSurfaceFormat::CoreProfile );
 				format.setRenderableType( QSurfaceFormat::OpenGL );
-				// setFormat( format );
+				setFormat( format );
 			}
 
 			OpenGLWidget::~OpenGLWidget()
@@ -43,11 +42,12 @@ namespace VTX
 
 			void OpenGLWidget::initializeGL()
 			{
-				initializeOpenGLFunctions();
+				_functions = context()->versionFunctions<QOpenGLFunctions_4_5_Core>();
+				_functions->initializeOpenGLFunctions();
 
 #ifdef _DEBUG
-				glEnable( GL_DEBUG_OUTPUT );
-				glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
+				_functions->glEnable( GL_DEBUG_OUTPUT );
+				_functions->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
 #endif
 
 				switchRenderer( Setting::MODE_DEFAULT );
@@ -62,11 +62,10 @@ namespace VTX
 				// glNamedFramebufferDrawBuffer( getRendererGL().getRenderedFBO(), GL_COLOR_ATTACHMENT0 );
 
 				// With bind.
-				// makeCurrent();
 				// glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-				glBindFramebuffer( GL_FRAMEBUFFER, getRendererGL().getRenderedFBO() );
-				glDrawBuffer( GL_COLOR_ATTACHMENT0 );
-				glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				//_functions->glBindFramebuffer( GL_FRAMEBUFFER, getRendererGL().getRenderedFBO() );
+				//_functions->glDrawBuffer( GL_COLOR_ATTACHMENT0 );
+				//_functions->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 				// doneCurrent();
 			}
 
@@ -132,4 +131,5 @@ namespace VTX
 
 		} // namespace Widget
 	}	  // namespace UI
+
 } // namespace VTX

@@ -15,20 +15,19 @@ namespace VTX
 	{
 		namespace GLSL
 		{
-			class Program : public QOpenGLFunctions_4_5_Core
+			class Program
 			{
 			  public:
-				Program() { initializeOpenGLFunctions(); };
+				Program() = default;
 				~Program();
 
 				inline GLuint getId() const { return _id; }
-				inline void	  use() { glUseProgram( _id ); }
 
 				void create( const std::string & );
 				void attachShader( const GLuint );
 				void link();
-
 				void detachShaders();
+				void use();
 
 			  private:
 				GLuint		_id	  = GL_INVALID_INDEX;

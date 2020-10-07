@@ -24,30 +24,30 @@ namespace VTX
 		{
 			if ( _vao != GL_INVALID_VALUE )
 			{
-				glBindVertexArray( _vao );
-				glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
-				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
-				glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
-				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
-				glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
-				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
-				glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
-				glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
-				glBindBuffer( GL_ARRAY_BUFFER, 0 );
-				glBindVertexArray( 0 );
+				OGL().glBindVertexArray( _vao );
+				OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
+				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
+				OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
+				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
+				OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
+				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
+				OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
+				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
+				OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
+				OGL().glBindVertexArray( 0 );
 
 				if ( _atomPositionsVBO != GL_INVALID_VALUE )
-					glDeleteBuffers( 1, &_atomPositionsVBO );
+					OGL().glDeleteBuffers( 1, &_atomPositionsVBO );
 				if ( _atomRadiusVBO != GL_INVALID_VALUE )
-					glDeleteBuffers( 1, &_atomRadiusVBO );
+					OGL().glDeleteBuffers( 1, &_atomRadiusVBO );
 				if ( _atomColorsVBO != GL_INVALID_VALUE )
-					glDeleteBuffers( 1, &_atomColorsVBO );
+					OGL().glDeleteBuffers( 1, &_atomColorsVBO );
 				if ( _atomVisibilitiesVBO != GL_INVALID_VALUE )
-					glDeleteBuffers( 1, &_atomVisibilitiesVBO );
+					OGL().glDeleteBuffers( 1, &_atomVisibilitiesVBO );
 				if ( _bondsIBO != GL_INVALID_VALUE )
-					glDeleteBuffers( 1, &_bondsIBO );
+					OGL().glDeleteBuffers( 1, &_bondsIBO );
 
-				glDeleteVertexArrays( 1, &_vao );
+				OGL().glDeleteVertexArrays( 1, &_vao );
 			}
 
 			Generic::clearVector( _atoms );
@@ -63,6 +63,7 @@ namespace VTX
 
 		void Molecule::init()
 		{
+			VTXApp::get().getMainWindow().getOpenGLWidget().makeCurrent();
 			// Compute global AABB of atom positions (taking into account each frame).
 			_computeGlobalPositionsAABB();
 
@@ -125,16 +126,17 @@ namespace VTX
 
 		void Molecule::_initBufferAtomPositions()
 		{
-			glNamedBufferData( _atomPositionsVBO,
-							   sizeof( Vec3f ) * GLsizei( _atomPositionsFrames[ _currentFrame ].size() ),
-							   _atomPositionsFrames[ _currentFrame ].data(),
-							   // static data ? buffer will never be modified : buffer will be updated each X frames
-							   GLsizei( _atomPositionsFrames.size() ) == 1 ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW );
+			OGL().glNamedBufferData( _atomPositionsVBO,
+									 sizeof( Vec3f ) * GLsizei( _atomPositionsFrames[ _currentFrame ].size() ),
+									 _atomPositionsFrames[ _currentFrame ].data(),
+									 // static data ? buffer will never be modified : buffer will be updated each X frames
+									 GLsizei( _atomPositionsFrames.size() ) == 1 ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW );
 		}
 
 		void Molecule::_updateBufferAtomPositions()
 		{
-			glNamedBufferSubData( _atomPositionsVBO, 0, sizeof( Vec3f ) * GLsizei( _atomPositionsFrames[ _currentFrame ].size() ), _atomPositionsFrames[ _currentFrame ].data() );
+			OGL().glNamedBufferSubData(
+				_atomPositionsVBO, 0, sizeof( Vec3f ) * GLsizei( _atomPositionsFrames[ _currentFrame ].size() ), _atomPositionsFrames[ _currentFrame ].data() );
 		}
 
 		void Molecule::_fillBufferAtomRadius()
@@ -145,7 +147,7 @@ namespace VTX
 				_bufferAtomRadius[ i ] = _atoms[ i ]->getVdwRadius();
 			}
 
-			glNamedBufferData( _atomRadiusVBO, sizeof( float ) * GLsizei( _bufferAtomRadius.size() ), _bufferAtomRadius.data(), GL_STATIC_DRAW );
+			OGL().glNamedBufferData( _atomRadiusVBO, sizeof( float ) * GLsizei( _bufferAtomRadius.size() ), _bufferAtomRadius.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferAtomColors()
@@ -180,7 +182,7 @@ namespace VTX
 				}
 			}
 
-			glNamedBufferData( _atomColorsVBO, sizeof( Color::Rgb ) * GLsizei( _bufferAtomColors.size() ), _bufferAtomColors.data(), GL_STATIC_DRAW );
+			OGL().glNamedBufferData( _atomColorsVBO, sizeof( Color::Rgb ) * GLsizei( _bufferAtomColors.size() ), _bufferAtomColors.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()
@@ -206,7 +208,7 @@ namespace VTX
 				}
 			}
 
-			glNamedBufferData( _atomVisibilitiesVBO, sizeof( uint ) * GLsizei( _bufferAtomVisibilities.size() ), _bufferAtomVisibilities.data(), GL_STATIC_DRAW );
+			OGL().glNamedBufferData( _atomVisibilitiesVBO, sizeof( uint ) * GLsizei( _bufferAtomVisibilities.size() ), _bufferAtomVisibilities.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::_fillBufferBonds()
@@ -218,7 +220,7 @@ namespace VTX
 				_bufferBonds[ 2u * i + 1u ] = _bonds[ i ]->getIndexSecondAtom();
 			}
 
-			glNamedBufferData( _bondsIBO, sizeof( uint ) * GLsizei( _bufferBonds.size() ), _bufferBonds.data(), GL_STATIC_DRAW );
+			OGL().glNamedBufferData( _bondsIBO, sizeof( uint ) * GLsizei( _bufferBonds.size() ), _bufferBonds.data(), GL_STATIC_DRAW );
 		}
 
 		void Molecule::print() const
@@ -273,44 +275,44 @@ namespace VTX
 
 		void Molecule::_createBuffers()
 		{
-			glGenBuffers( 1, &_atomPositionsVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glGenBuffers( 1, &_atomColorsVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glGenBuffers( 1, &_atomRadiusVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glGenBuffers( 1, &_atomVisibilitiesVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glGenBuffers( 1, &_bondsIBO );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			OGL().glGenBuffers( 1, &_atomPositionsVBO );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glGenBuffers( 1, &_atomColorsVBO );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glGenBuffers( 1, &_atomRadiusVBO );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glGenBuffers( 1, &_atomVisibilitiesVBO );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glGenBuffers( 1, &_bondsIBO );
+			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
-			glGenVertexArrays( 1, &_vao );
-			glBindVertexArray( _vao );
+			OGL().glGenVertexArrays( 1, &_vao );
+			OGL().glBindVertexArray( _vao );
 
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
+			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
 
-			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
+			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
+			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
+			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
+			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_RADIUS, 1, GL_FLOAT, GL_FALSE, sizeof( float ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
+			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
+			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_RADIUS, 1, GL_FLOAT, GL_FALSE, sizeof( float ), 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
+			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
+			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
+			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-			glBindVertexArray( 0 );
+			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			OGL().glBindVertexArray( 0 );
 		}
 
 		void Molecule::render()
@@ -324,14 +326,14 @@ namespace VTX
 
 		void Molecule::bindBuffers()
 		{
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
+			OGL().glBindVertexArray( _vao );
+			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
 		}
 
 		void Molecule::unbindBuffers()
 		{
-			glBindVertexArray( 0 );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			OGL().glBindVertexArray( 0 );
+			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 		}
 
 		bool Molecule::mergeTopology( const Molecule & p_molecule )

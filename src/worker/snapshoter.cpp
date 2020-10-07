@@ -23,9 +23,9 @@ namespace VTX
 			const uint height = renderer.getHeight();
 
 			std::vector<uchar> image( width * height * 4 );
-			glBindFramebuffer( GL_FRAMEBUFFER, renderer.getRenderedFBO() );
-			glReadnPixels( 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, GLsizei( image.size() ), image.data() );
-			glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+			OGL().glBindFramebuffer( GL_FRAMEBUFFER, renderer.getRenderedFBO() );
+			OGL().glReadnPixels( 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, GLsizei( image.size() ), image.data() );
+			OGL().glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 			// const GLuint & texture = renderer.getRenderedTexture();
 			// std::vector<float> buffer( width * height * 4 );
