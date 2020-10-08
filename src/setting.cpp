@@ -24,7 +24,7 @@ namespace VTX
 	// Rendering.
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT	= true;
 	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT = Color::Rgb::BLACK;
-	const Generic::REPRESENTATION Setting::REPRESENTATION_DEFAULT	= Generic::REPRESENTATION::BALL_AND_STICK;
+	const Generic::REPRESENTATION Setting::REPRESENTATION_DEFAULT	= Generic::REPRESENTATION::VAN_DER_WAALS;
 	const float					  Setting::ATOMS_RADIUS_DEFAULT		= 0.4f;
 	const float					  Setting::ATOMS_RADIUS_MIN			= 0.f;
 	const float					  Setting::ATOMS_RADIUS_MAX			= 1.f;
@@ -82,7 +82,7 @@ namespace VTX
 	const float Setting::CONTROLLER_ELASTICITY_THRESHOLD	   = 1e-4f;
 
 	// Auto rotate.
-	const float Setting::AUTO_ROTATE_SPEED_DEFAULT = 0.5f;
+	const float Setting::AUTO_ROTATE_SPEED_DEFAULT = 0.0f;
 	const float Setting::AUTO_ROTATE_SPEED_MIN	   = 0.0f;
 	const float Setting::AUTO_ROTATE_SPEED_MAX	   = 1.0f;
 

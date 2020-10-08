@@ -13,7 +13,10 @@ namespace VTX
 				format.setVersion( 4, 5 );
 				format.setProfile( QSurfaceFormat::CoreProfile );
 				format.setRenderableType( QSurfaceFormat::OpenGL );
-				setFormat( format );
+				format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
+				format.setSwapInterval( 0 ); // TODO: handle v-sync with settings.
+
+				// setFormat( format );
 			}
 
 			OpenGLWidget::~OpenGLWidget()
@@ -68,7 +71,7 @@ namespace VTX
 				{
 					double fps = _counter / ( (double)_timer.elapsed() / 1000.0 );
 
-					VTX_DEBUG( "OpenGL FPS: " + std::to_string( (int)fps ) );
+					// VTX_DEBUG( "OpenGL FPS: " + std::to_string( (int)fps ) );
 					_counter = 0;
 					_timer.restart();
 				}
