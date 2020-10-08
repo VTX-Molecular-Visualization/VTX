@@ -43,9 +43,7 @@ namespace VTX
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
-		void renderScene() const
-		{ //_mainWindow->getOpenGLWidget().update();
-		}
+		void renderScene() const { _mainWindow->getOpenGLWidget().update(); }
 
 		inline Setting &			   getSetting() { return _setting; }
 		inline const Setting &		   getSetting() const { return _setting; }
@@ -70,7 +68,8 @@ namespace VTX
 		inline const Selection::SelectionManager &	  getSelectionManager() const { return *_selectionManager; }
 
 	  private:
-		QTimer * _timer = nullptr;
+		QTimer *		_timer		  = nullptr;
+		QElapsedTimer * _elapsedTimer = nullptr;
 
 		Setting						  _setting			= Setting();
 		Tool::Logger				  _logger			= Tool::Logger();

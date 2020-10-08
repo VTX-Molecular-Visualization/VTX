@@ -9,7 +9,6 @@
 
 namespace VTX
 {
-	// TODO: ugly...
 	int ZERO = 0;
 	VTXApp::VTXApp() : QApplication( ZERO, nullptr )
 	{
@@ -37,9 +36,13 @@ namespace VTX
 
 		VTX_INFO( "Application started" );
 
-		_timer = new QTimer( this );
+		_timer		  = new QTimer( this );
+		_elapsedTimer = new QElapsedTimer();
+
 		connect( _timer, &QTimer::timeout, this, &VTXApp::_update );
+
 		_timer->start( 0 );
+		_elapsedTimer->start();
 
 		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
 		// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
@@ -108,8 +111,9 @@ namespace VTX
 
 	void VTXApp::_update()
 	{
-		// TODO: QElapsedTimer?
-		double deltaTime = 0.0;
+		// TODO: check if QTimer and QElapsedTimer can be fused.
+		double deltaTime = _elapsedTimer->elapsed() / 1000.0;
+		_elapsedTimer->restart();
 
 		// State machine.
 		_stateMachine->update( deltaTime );

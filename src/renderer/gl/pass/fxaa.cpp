@@ -42,8 +42,7 @@ namespace VTX
 
 			void FXAA::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{
-				OGL().glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-				// OGL().glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+				OGL().glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
 				OGL().glActiveTexture( GL_TEXTURE0 );
 				OGL().glBindTexture( GL_TEXTURE_2D, VTX_SETTING().activeOutline ? p_renderer.getPassOutline().getTexture() : p_renderer.getPassShading().getTexture() );
@@ -54,7 +53,7 @@ namespace VTX
 				OGL().glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 				OGL().glBindVertexArray( 0 );
 
-				// OGL().glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				OGL().glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 			}
 
 		} // namespace Pass

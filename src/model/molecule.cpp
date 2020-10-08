@@ -92,6 +92,8 @@ namespace VTX
 				Util::Molecule::refreshRepresentationState( *this );
 			}
 
+			VTXApp::get().getMainWindow().getOpenGLWidget().doneCurrent();
+
 			_isInit = true;
 			_notifyViews( Event::VTX_EVENT_MODEL::INIT );
 		}

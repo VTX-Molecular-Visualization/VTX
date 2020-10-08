@@ -58,15 +58,9 @@ namespace VTX
 			{
 				getRenderer().renderFrame( VTXApp::get().getScene() );
 
-				// With named fbo.
-				// glNamedFramebufferDrawBuffer( getRendererGL().getRenderedFBO(), GL_COLOR_ATTACHMENT0 );
-
-				// With bind.
-				// glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-				//_functions->glBindFramebuffer( GL_FRAMEBUFFER, getRendererGL().getRenderedFBO() );
-				//_functions->glDrawBuffer( GL_COLOR_ATTACHMENT0 );
-				//_functions->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-				// doneCurrent();
+				_functions->glBindFramebuffer( GL_READ_FRAMEBUFFER, getRendererGL().getRenderedFBO() );
+				_functions->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, defaultFramebufferObject() );
+				_functions->glBlitFramebuffer( 0, 0, size().width(), size().height(), 0, 0, size().width(), size().height(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
 			}
 
 			void OpenGLWidget::resizeGL( int p_width, int p_height )
