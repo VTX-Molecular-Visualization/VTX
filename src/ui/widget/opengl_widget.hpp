@@ -8,6 +8,7 @@
 #include "renderer/base_renderer.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/ray_tracing/ray_tracer.hpp"
+#include <QElapsedTimer>
 #include <QOpenGLFunctions_4_5_Core>
 #include <QOpenGLWidget>
 #ifdef OPTIX_DEFINED
@@ -58,6 +59,9 @@ namespace VTX
 				void resizeGL( int, int ) override;
 
 			  private:
+				QElapsedTimer _timer;
+				uint		  _counter = 0;
+
 				QOpenGLFunctions_4_5_Core * _functions	= nullptr;
 				Renderer::BaseRenderer *	_renderer	= nullptr;
 				Renderer::GL *				_rendererGL = nullptr;

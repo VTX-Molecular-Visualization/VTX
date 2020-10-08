@@ -52,6 +52,7 @@ namespace VTX
 
 				switchRenderer( Setting::MODE_DEFAULT );
 				getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
+				_timer.start();
 			}
 
 			void OpenGLWidget::paintGL()
@@ -61,6 +62,16 @@ namespace VTX
 				_functions->glBindFramebuffer( GL_READ_FRAMEBUFFER, getRendererGL().getRenderedFBO() );
 				_functions->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, defaultFramebufferObject() );
 				_functions->glBlitFramebuffer( 0, 0, size().width(), size().height(), 0, 0, size().width(), size().height(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
+
+				_counter++;
+				if ( _timer.elapsed() >= 1000.0 )
+				{
+					double fps = _counter / ( (double)_timer.elapsed() / 1000.0 );
+
+					VTX_DEBUG( "OpenGL FPS: " + std::to_string( (int)fps ) );
+					_counter = 0;
+					_timer.restart();
+				}
 			}
 
 			void OpenGLWidget::resizeGL( int p_width, int p_height )

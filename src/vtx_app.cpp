@@ -65,6 +65,7 @@ namespace VTX
 		VTX_INFO( "Destructing application" );
 
 		delete _timer;
+		delete _elapsedTimer;
 
 		// Respect this order!
 		if ( _stateMachine != nullptr )
