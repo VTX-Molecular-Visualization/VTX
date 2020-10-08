@@ -150,7 +150,7 @@ namespace VTX
 			chrono.stop();
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 
-			// addItem( (View::BaseView<BaseModel> *)new View::D3::Ribbon( this ) );
+			addItem( ID::View::D3_RIBBON_PATCH, new View::D3::Ribbon( this ) );
 		}
 
 		SecondaryStructure::~SecondaryStructure()

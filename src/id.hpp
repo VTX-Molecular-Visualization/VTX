@@ -26,22 +26,21 @@ namespace VTX
 
 		namespace View
 		{
-			const VTX_ID UI_MOLECULE_STRUCTURE	  = "UI_MOLECULE_STRUCTURE";
-			const VTX_ID UI_MOLECULE_SEQUENCE	  = "UI_MOLECULE_SEQUENCE";
-			const VTX_ID UI_MOLECULE			  = "UI_MOLECULE";
-			const VTX_ID UI_CHAIN				  = "UI_CHAIN";
-			const VTX_ID UI_RESIDUE				  = "UI_RESIDUE";
-			const VTX_ID UI_ATOM				  = "UI_ATOM";
-			const VTX_ID UI_PATH_LIST			  = "UI_PATH_LIST";
-			const VTX_ID UI_PATH				  = "UI_PATH";
-			const VTX_ID UI_VIEWPOINT			  = "UI_VIEWPOINT";
+			const VTX_ID UI_MOLECULE_STRUCTURE = "UI_MOLECULE_STRUCTURE";
+			const VTX_ID UI_MOLECULE_SEQUENCE  = "UI_MOLECULE_SEQUENCE";
+			const VTX_ID UI_MOLECULE		   = "UI_MOLECULE";
+			const VTX_ID UI_CHAIN			   = "UI_CHAIN";
+			const VTX_ID UI_RESIDUE			   = "UI_RESIDUE";
+			const VTX_ID UI_ATOM			   = "UI_ATOM";
+			const VTX_ID UI_PATH_LIST		   = "UI_PATH_LIST";
+			const VTX_ID UI_PATH			   = "UI_PATH";
+			const VTX_ID UI_VIEWPOINT		   = "UI_VIEWPOINT";
 
-			const VTX_ID D3_CYLINDER		= "3D_CYLINDER";
-			const VTX_ID D3_SPHERE			= "3D_SPHERE";
-			const VTX_ID D3_BOX				= "3D_BOX";
-			const VTX_ID D3_TRIANGLE		= "3D_TRIANGLE";
-			const VTX_ID D3_TRIANGLE_RIBBON = "3D_TRIANGLE_RIBBON";
-			const VTX_ID D3_RIBBON_PATCH	= "3D_RIBBON_PATCH";
+			const VTX_ID D3_CYLINDER	 = "3D_CYLINDER";
+			const VTX_ID D3_SPHERE		 = "3D_SPHERE";
+			const VTX_ID D3_BOX			 = "3D_BOX";
+			const VTX_ID D3_TRIANGLE	 = "3D_TRIANGLE";
+			const VTX_ID D3_RIBBON_PATCH = "3D_RIBBON_PATCH";
 		} // namespace View
 
 		namespace State

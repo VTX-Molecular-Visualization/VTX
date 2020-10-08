@@ -6,10 +6,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		MeshTriangle::MeshTriangle()
-		{
-			// addItem( (View::BaseView<BaseModel> *)new View::D3::Triangle( this ) );
-		}
+		MeshTriangle::MeshTriangle() { addItem( ID::View::D3_TRIANGLE, new View::D3::Triangle( this ) ); }
 
 		MeshTriangle::~MeshTriangle()
 		{
@@ -44,6 +41,8 @@ namespace VTX
 
 		void MeshTriangle::init()
 		{
+			VTXApp::get().getMainWindow().getOpenGLWidget().makeCurrent();
+
 			_computeAABB();
 
 			// VBO.
@@ -98,6 +97,8 @@ namespace VTX
 
 			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 			OGL().glBindVertexArray( 0 );
+
+			VTXApp::get().getMainWindow().getOpenGLWidget().doneCurrent();
 		}
 
 		void MeshTriangle::print() const
