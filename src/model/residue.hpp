@@ -20,7 +20,7 @@ namespace VTX
 	{
 		class Molecule;
 		class Chain;
-		class Residue : public BaseModel<Residue>, public Generic::BaseColorable, public Generic::BaseVisible, public Generic::BaseRepresentable
+		class Residue : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible, public Generic::BaseRepresentable
 		{
 		  public:
 			enum class TYPE : int

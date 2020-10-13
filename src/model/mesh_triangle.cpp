@@ -1,4 +1,6 @@
 #include "mesh_triangle.hpp"
+#include "id.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "view/d3/triangle.hpp"
 #include "vtx_app.hpp"
 
@@ -6,7 +8,9 @@ namespace VTX
 {
 	namespace Model
 	{
-		MeshTriangle::MeshTriangle() { addItem( ID::View::D3_TRIANGLE, new View::D3::Triangle( this ) ); }
+		MeshTriangle::MeshTriangle() {}
+
+		void MeshTriangle::instantiateDefaultViews() { MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_TRIANGLE, new View::D3::Triangle( this ) ); };
 
 		MeshTriangle::~MeshTriangle()
 		{

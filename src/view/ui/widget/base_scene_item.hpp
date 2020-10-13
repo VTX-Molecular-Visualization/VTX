@@ -7,7 +7,7 @@
 
 #include "model/molecule.hpp"
 #include "ui/widget/base_manual_widget_initializer.hpp"
-#include "view/base_view.hpp"
+#include "view/templated_base_view.hpp"
 #include <QTreeWidget>
 
 namespace VTX
@@ -18,15 +18,14 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				template<typename M>
-				// typename = std::enable_if<std::is_base_of<M, Model::BaseModel<>>::value>>
-				class BaseSceneItem : public QTreeWidgetItem, public View::BaseView<M>, VTX::UI::Widget::BaseManualWidgetInitializer
+				template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
+				class BaseSceneItem : public QTreeWidgetItem, public View::TemplatedBaseView<M>, VTX::UI::Widget::BaseManualWidgetInitializer
 				{
 					VTX_MANUAL_WIDGET_DECLARATION
 
 				  protected:
 					BaseSceneItem( M * const p_model, QTreeWidgetItem * p_parent ) :
-						View::BaseView<M>( p_model ), QTreeWidgetItem( p_parent ), VTX::UI::Widget::BaseManualWidgetInitializer() {};
+						View::TemplatedBaseView<M>( p_model ), QTreeWidgetItem( p_parent ), VTX::UI::Widget::BaseManualWidgetInitializer() {};
 					inline virtual void _setupUi( const QString & p_name ) override
 					{
 						setCheckState( 0, Qt::CheckState::Checked );

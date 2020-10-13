@@ -1,5 +1,6 @@
 #include "molecule.hpp"
 #include "color/rgb.hpp"
+#include "generic/factory.hpp"
 #include "model/secondary_structure.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/molecule.hpp"
@@ -8,18 +9,14 @@
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
 //#include "view/ui/widget/molecule_scene_view.hpp"
+#include "id.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
-		Molecule::Molecule()
-		{
-			addItem( ID::View::D3_SPHERE, new View::D3::Sphere( this ) );
-			addItem( ID::View::D3_CYLINDER, new View::D3::Cylinder( this ) );
-		}
-
+		Molecule::Molecule() {}
 		Molecule::~Molecule()
 		{
 			if ( _vao != GL_INVALID_VALUE )
@@ -61,6 +58,11 @@ namespace VTX
 			}
 		}
 
+		void Molecule::instantiateDefaultViews()
+		{
+			MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_SPHERE, new View::D3::Sphere( this ) );
+			MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_CYLINDER, new View::D3::Cylinder( this ) );
+		};
 		void Molecule::init()
 		{
 			VTXApp::get().getMainWindow().getOpenGLWidget().makeCurrent();
@@ -358,12 +360,12 @@ namespace VTX
 			_chains.resize( p_molecule.getChainCount() );
 			for ( uint i = 0; i < p_molecule.getChainCount(); ++i )
 			{
-				getChains()[ i ] = new Chain();
+				getChains()[ i ] = MVC::MvcManager::get().instantiate<Chain>();
 			}
 			_residues.resize( p_molecule.getResidueCount() );
 			for ( uint i = 0; i < p_molecule.getResidueCount(); ++i )
 			{
-				getResidues()[ i ] = new Residue();
+				getResidues()[ i ] = MVC::MvcManager::get().instantiate<Residue>();
 			}
 
 			setName( p_molecule.getName() );
@@ -433,20 +435,20 @@ namespace VTX
 				delete _secondaryStructure;
 			}
 
-			_secondaryStructure = new SecondaryStructure( this );
+			_secondaryStructure = MVC::MvcManager::get().instantiate<SecondaryStructure, Molecule * const>( this );
 			_secondaryStructure->init();
 			_secondaryStructure->print();
 		}
 
 		void Molecule::toggleSequenceVisibility()
 		{
-			if ( hasItem( ( ID::View::UI_MOLECULE_SEQUENCE ) ) )
+			if ( MVC::MvcManager::get().hasView( this, ID::View::UI_MOLECULE_SEQUENCE ) )
 			{
-				// delete removeItem( ID::View::UI_MOLECULE_SEQUENCE );
+				//	delete MVC::MvcManager::get().removeViewOnModel( this, ID::View::UI_MOLECULE_SEQUENCE );
 			}
 			else
 			{
-				// addItem( (View::BaseView<BaseModel> *)new View::UI::MoleculeSequence( this ) );
+				//	 MVC::MvcManager::get().addViewOnModel<View::UI::Widget::MoleculeStructure>( this, ID::View::UI_MOLECULE_SEQUENCE );
 			}
 		}
 

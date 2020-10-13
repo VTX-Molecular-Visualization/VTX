@@ -7,6 +7,7 @@
 
 #include "base_action.hpp"
 #include "controller/trackball.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "model/path.hpp"
 #include "model/viewpoint.hpp"
 #include "object3d/camera.hpp"
@@ -41,7 +42,7 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					Model::Viewpoint * const viewpoint = new Model::Viewpoint( &_path );
+					Model::Viewpoint * const viewpoint = MVC::MvcManager::get().instantiate<Model::Viewpoint, Model::Path*>( &_path );
 					viewpoint->setController( _controller );
 					viewpoint->setPosition( _position );
 					viewpoint->setRotation( _rotation );

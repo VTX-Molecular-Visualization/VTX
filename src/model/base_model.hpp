@@ -5,36 +5,32 @@
 #pragma once
 #endif
 
-#include "event/event_manager.hpp"
-#include "generic/has_collection.hpp"
-#include "math/transform.hpp"
+#include "event/event.hpp"
 #include "selection/base_selectable.hpp"
-#include "view/base_view.hpp"
-#include <iostream>
-#include <map>
+#include <string>
 
 namespace VTX
 {
 	namespace Model
 	{
-		template<typename T>
-		class BaseModel : public Generic::HasCollection<View::BaseView<T>>, public Selection::BaseSelectable
+		using Model_ID = unsigned long;
+
+		class BaseModel : public Selection::BaseSelectable
 		{
 		  public:
-			inline static long COUNTER = 0;
+			inline static Model_ID COUNTER = 0;
 
-			long getId() const { return _id; }
+			const Model_ID & getId() const { return _id; };
+			void			 instantiateDefaultViews() {};
+
+			bool isEnable() { return _enabled; };
+			void setEnable( bool p_enable ) { _enabled = p_enable; };
 
 		  protected:
-			long _id = COUNTER++;
+			Model_ID _id	  = COUNTER++;
+			bool	 _enabled = true;
 
-			void _notifyViews( const Event::VTX_EVENT_MODEL & p_event )
-			{
-				for ( PairStringToItemPtr & pair : _items )
-				{
-					pair.second->notify( p_event );
-				}
-			}
+			void _notifyViews( const Event::VTX_EVENT_MODEL & p_event );
 		};
 	} // namespace Model
 } // namespace VTX

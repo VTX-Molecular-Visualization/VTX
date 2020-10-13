@@ -13,7 +13,7 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class SecondaryStructure : public BaseModel3D<SecondaryStructure>
+		class SecondaryStructure : public BaseModel3D
 		{
 		  public:
 			enum class VALUE : int
@@ -45,6 +45,8 @@ namespace VTX
 
 			SecondaryStructure( Molecule * const );
 			~SecondaryStructure();
+
+			void instantiateDefaultViews();
 
 			inline Model::Molecule * const getMolecule() { return _molecule; }
 			inline const COLOR_MODE		   getColorMode() const { return _colorMode; }

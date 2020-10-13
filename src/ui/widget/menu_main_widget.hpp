@@ -9,7 +9,6 @@
 #include "menu_main_session_widget.hpp"
 #include "menu_tooltab_widget.hpp"
 #include <QHBoxLayout>
-#include <QSpacerItem>
 #include <QWidget>
 
 namespace VTX

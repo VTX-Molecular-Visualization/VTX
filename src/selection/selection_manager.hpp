@@ -19,6 +19,9 @@ namespace VTX
 
 			void select( BaseSelectable * const );
 			void unselect( BaseSelectable * const );
+			void clear();
+
+			inline const SetSelectablePtr & getSelection() const { return _selected; };
 
 		  private:
 			SetSelectablePtr _selected = SetSelectablePtr();

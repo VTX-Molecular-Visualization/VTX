@@ -6,6 +6,7 @@
 #endif
 
 #include "base_manual_widget.hpp"
+#include "selection/base_selectable.hpp"
 #include <QDockWidget>
 #include <QTreeWidget>
 
@@ -32,9 +33,12 @@ namespace VTX
 				SceneWidget( QWidget * p_parent );
 				void _setupUi( const QString & p_name ) override;
 				void _setupSlots() override;
+				Selection::BaseSelectable * _getSelectableFromTreeWidgetItem( QTreeWidgetItem * treeWidgetItem ) const;
 
 			  private:
 				QTreeWidget * _treeWidget;
+
+				void _onSelectionChange();
 			};
 		} // namespace Widget
 	}	  // namespace UI

@@ -5,9 +5,6 @@
 #pragma once
 #endif
 
-#include "model/molecule.hpp"
-#include "ui/widget/base_manual_widget_initializer.hpp"
-#include "view/base_view.hpp"
 #include <QTreeWidget>
 
 namespace VTX

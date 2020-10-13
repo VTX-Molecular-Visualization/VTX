@@ -22,7 +22,18 @@ namespace VTX
 			const VTX_ID CAMERA_EDITOR	= "CAMERA_EDITOR";
 			const VTX_ID PROGRESS_BAR	= "PROGRESS_BAR";
 			const VTX_ID RENDER			= "RENDER";
+			const VTX_ID INSPECTOR_ITEM = "INSPECTORITEM";
 		} // namespace UI
+
+		namespace Model
+		{
+			const VTX_ID MODEL_MOLECULE	 = "MODEL_MOLECULE";
+			const VTX_ID MODEL_CHAIN	 = "MODEL_CHAIN";
+			const VTX_ID MODEL_RESIDUE	 = "MODEL_RESIDUE";
+			const VTX_ID MODEL_ATOM		 = "MODEL_ATOM";
+			const VTX_ID MODEL_PATH		 = "MODEL_PATH";
+			const VTX_ID MODEL_VIEWPOINT = "MODEL_VIEWPOINT";
+		} // namespace Model
 
 		namespace View
 		{
@@ -36,11 +47,17 @@ namespace VTX
 			const VTX_ID UI_PATH			   = "UI_PATH";
 			const VTX_ID UI_VIEWPOINT		   = "UI_VIEWPOINT";
 
+			const VTX_ID UI_INSPECTOR_MOLECULE_STRUCTURE = "UI_INSPECTOR_MOLECULE_STRUCTURE";
+			const VTX_ID UI_INSPECTOR_CHAIN				 = "UI_INSPECTOR_CHAIN";
+			const VTX_ID UI_INSPECTOR_RESIDUE			 = "UI_INSPECTOR_RESIDUE";
+			const VTX_ID UI_INSPECTOR_ATOM				 = "UI_INSPECTOR_ATOM";
+
 			const VTX_ID D3_CYLINDER	 = "3D_CYLINDER";
 			const VTX_ID D3_SPHERE		 = "3D_SPHERE";
 			const VTX_ID D3_BOX			 = "3D_BOX";
 			const VTX_ID D3_TRIANGLE	 = "3D_TRIANGLE";
 			const VTX_ID D3_RIBBON_PATCH = "3D_RIBBON_PATCH";
+
 		} // namespace View
 
 		namespace State

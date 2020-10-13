@@ -29,8 +29,7 @@ namespace VTX
 				_horizontalLayout->setObjectName( "horizontalLayout" );
 				_horizontalLayout->setContentsMargins( 0, 0, 0, 0 );
 
-				_horizontalSpacer = new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum );
-				_horizontalLayout->addItem( _horizontalSpacer );
+				_horizontalLayout->addStretch( 1000 );
 			}
 		} // namespace Widget
 	}	  // namespace UI

@@ -7,7 +7,7 @@
 
 #include "base_manual_widget.hpp"
 #include <QDockWidget>
-#include <QListWidget>
+#include <QVBoxLayout>
 
 namespace VTX
 {
@@ -22,6 +22,9 @@ namespace VTX
 			  public:
 				~InspectorWidget();
 				void localize() override;
+				void receiveEvent( const Event::VTXEvent & p_event ) override;
+				void refresh();
+				void clear();
 
 			  protected:
 				InspectorWidget( QWidget * p_parent );
@@ -30,7 +33,7 @@ namespace VTX
 				void _setupSlots() override;
 
 			  private:
-				QListWidget * _listWidget = nullptr;
+				QVBoxLayout * _verticalLayout = nullptr;
 			};
 		} // namespace Widget
 	}	  // namespace UI

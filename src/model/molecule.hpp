@@ -15,9 +15,11 @@
 #include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
 #include "model/configuration/molecule.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "residue.hpp"
 #include <iostream>
 #include <map>
+#include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -32,7 +34,7 @@ namespace VTX
 	namespace Model
 	{
 		class SecondaryStructure;
-		class Molecule : public BaseModel3D<Molecule>, public Generic::BaseColorable, public Generic::BaseRepresentable
+		class Molecule : public BaseModel3D, public Generic::BaseColorable, public Generic::BaseRepresentable
 		{
 		  public:
 			using AtomPositionsFrame = std::vector<Vec3f>;
@@ -49,6 +51,9 @@ namespace VTX
 
 			Molecule();
 			~Molecule();
+
+			void instantiateDefaultViews();
+			// inline const std::string * BaseModel::getName() const { return &getPdbIdCode(); };
 
 			// Configuration.
 			inline const Configuration::Molecule & getConfiguration() const { return _configuration; }
@@ -68,22 +73,22 @@ namespace VTX
 			inline const VTX::Path & getPath() const { return _path; }
 			inline void				 setPath( const VTX::Path & p_path ) { _path = p_path; }
 
-			inline void							  addChain() { _chains.emplace_back( new Chain() ); }
+			inline void							  addChain() { _chains.emplace_back( MVC::MvcManager::get().instantiate<Chain>() ); }
 			inline Chain &						  getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
 			inline const Chain &				  getChain( const uint p_idx ) const { return *_chains[ p_idx ]; }
 			inline std::vector<Chain *> &		  getChains() { return _chains; }
 			inline const std::vector<Chain *> &	  getChains() const { return _chains; }
-			inline void							  addResidue() { _residues.emplace_back( new Residue() ); }
+			inline void							  addResidue() { _residues.emplace_back( MVC::MvcManager::get().instantiate<Residue>() ); }
 			inline Residue &					  getResidue( const uint p_idx ) { return *_residues[ p_idx ]; }
 			inline const Residue &				  getResidue( const uint p_idx ) const { return *_residues[ p_idx ]; }
 			inline std::vector<Residue *> &		  getResidues() { return _residues; }
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
-			inline void							  addAtom() { _atoms.emplace_back( new Atom() ); }
+			inline void							  addAtom() { _atoms.emplace_back( MVC::MvcManager::get().instantiate<Atom>() ); }
 			inline Atom &						  getAtom( const uint p_idx ) { return *_atoms[ p_idx ]; }
 			inline const Atom &					  getAtom( const uint p_idx ) const { return *_atoms[ p_idx ]; }
 			inline std::vector<Atom *> &		  getAtoms() { return _atoms; }
 			inline const std::vector<Atom *> &	  getAtoms() const { return _atoms; }
-			inline void							  addBond() { _bonds.emplace_back( new Bond() ); }
+			inline void							  addBond() { _bonds.emplace_back( MVC::MvcManager::get().instantiate<Bond>() ); }
 			inline Bond &						  getBond( const uint p_idx ) { return *_bonds[ p_idx ]; }
 			inline const Bond &					  getBond( const uint p_idx ) const { return *_bonds[ p_idx ]; }
 			inline std::vector<Bond *> &		  getBonds() { return _bonds; }
@@ -255,7 +260,7 @@ namespace VTX
 			uint atomCount	  = 0;
 			uint bondCount	  = 0;
 #endif
-		}; // namespace Model
-	}	   // namespace Model
+		};
+	} // namespace Model
 } // namespace VTX
 #endif

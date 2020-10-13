@@ -16,7 +16,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		class Path : public BaseModel<Path>
+		class Path : public BaseModel
 		{
 		  public:
 			using ViewpointPtr		 = Model::Viewpoint *;

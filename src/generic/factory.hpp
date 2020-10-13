@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "view/base_view.hpp"
 #include <map>
 #include <type_traits>
 #include <utility>

@@ -1,7 +1,6 @@
 #include "status_bar_widget.hpp"
 #include "vtx_app.hpp"
 #include <QHBoxLayout>
-#include <QSpacerItem>
 
 namespace VTX
 {

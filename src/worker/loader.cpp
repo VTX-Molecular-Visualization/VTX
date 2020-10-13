@@ -5,6 +5,7 @@
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "io/reader/vtx.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
 #include "vtx_app.hpp"
 
@@ -52,7 +53,7 @@ namespace VTX
 					IO::Reader::LibChemfiles * reader = new IO::Reader::LibChemfiles();
 
 					// Set PRM.
-					Model::Molecule * molecule = new Model::Molecule();
+					Model::Molecule * molecule = MVC::MvcManager::get().instantiate<Model::Molecule>();
 					molecule->setConfiguration( config );
 
 					// Load.
@@ -75,7 +76,7 @@ namespace VTX
 				else if ( mode == MODE::MESH )
 				{
 					IO::Reader::LibAssimp * reader = new IO::Reader::LibAssimp();
-					Model::MeshTriangle *	mesh   = new Model::MeshTriangle();
+					Model::MeshTriangle *	mesh   = MVC::MvcManager::get().instantiate<Model::MeshTriangle>();
 
 					try
 					{
@@ -131,7 +132,7 @@ namespace VTX
 				{
 					// Create reader.
 					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles();
-					Model::Molecule *		   molecule = new Model::Molecule();
+					Model::Molecule *		   molecule = MVC::MvcManager::get().instantiate<Model::Molecule>();
 
 					// Load.
 					try

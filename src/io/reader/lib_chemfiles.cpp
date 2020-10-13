@@ -1,5 +1,6 @@
 #include "lib_chemfiles.hpp"
 #include "color/rgb.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
 #include "vtx_app.hpp"
 #include <algorithm>
@@ -158,7 +159,7 @@ namespace VTX
 					modelChain->setResidueCount( modelChain->getResidueCount() + 1 );
 
 					// Create residue.
-					Model::Residue * modelResidue		   = new Model::Residue();
+					Model::Residue * modelResidue		   = MVC::MvcManager::get().instantiate<Model::Residue>();
 					p_molecule.getResidues()[ residueIdx ] = modelResidue;
 					modelResidue->setIndex( residueIdx );
 
@@ -272,7 +273,7 @@ namespace VTX
 						atomType = uint( atom.properties().get( "atom_type" ).value_or( -1 ).as_double() );
 
 						// Create atom.
-						Model::Atom * modelAtom			= new Model::Atom();
+						Model::Atom * modelAtom			= MVC::MvcManager::get().instantiate<Model::Atom>();
 						p_molecule.getAtoms()[ atomId ] = modelAtom;
 						modelAtom->setIndex( atomId );
 						modelAtom->setMoleculePtr( &p_molecule );
@@ -392,7 +393,7 @@ namespace VTX
 					for ( uint i = 0; i < vectorBonds.size(); ++i, ++counter )
 					{
 						const chemfiles::Bond & bond	  = *vectorBonds[ i ];
-						Model::Bond *			modelBond = new Model::Bond();
+						Model::Bond *			modelBond = MVC::MvcManager::get().instantiate<Model::Bond>();
 						p_molecule.getBonds()[ counter ]  = modelBond;
 
 						modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
@@ -404,7 +405,7 @@ namespace VTX
 				for ( uint i = 0; i < bondsExtraResidues.size(); ++i, ++counter )
 				{
 					const chemfiles::Bond & bond	  = *bondsExtraResidues[ i ];
-					Model::Bond *			modelBond = new Model::Bond();
+					Model::Bond *			modelBond = MVC::MvcManager::get().instantiate<Model::Bond>();
 					p_molecule.getBonds()[ counter ]  = modelBond;
 
 					uint bondStart = uint( bond[ 0 ] );

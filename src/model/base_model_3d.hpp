@@ -16,8 +16,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		template<typename T>
-		class BaseModel3D : public BaseModel<T>, public Generic::BaseTransformable, public Generic::BaseRenderable, public Generic::BaseVisible
+		class BaseModel3D : public BaseModel, public Generic::BaseTransformable, public Generic::BaseRenderable, public Generic::BaseVisible
 		{
 		  public:
 			BaseModel3D()		   = default;

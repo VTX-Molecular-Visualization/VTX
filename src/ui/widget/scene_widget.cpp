@@ -1,8 +1,11 @@
 #include "scene_widget.hpp"
 #include "base_widget.hpp"
 #include "model/molecule.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
+#include "selection/selection_manager.hpp"
 #include "ui/widget_factory.hpp"
+#include "view/ui/widget/base_scene_item.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 #include "vtx_app.hpp"
 
@@ -31,7 +34,7 @@ namespace VTX
 				delete p_item;
 			}
 
-			void SceneWidget ::receiveEvent( const Event::VTXEvent & p_event )
+			void SceneWidget::receiveEvent( const Event::VTXEvent & p_event )
 			{
 				if ( p_event.name == Event::Global::MOLECULE_ADDED )
 				{
@@ -40,13 +43,16 @@ namespace VTX
 					View::UI::Widget::MoleculeSceneView * item = WidgetFactory::get().GetSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>(
 						castedEvent.ptr, _treeWidget->invisibleRootItem(), "MoleculeStructure" );
 
-					castedEvent.ptr->addItem( ID::View::UI_MOLECULE_STRUCTURE, item );
+					MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, item );
+
 					addItem( item );
 				}
 				else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 				{
-					const Event::VTXEventPtr<Model::Molecule> & castedEvent	   = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-					View::UI::Widget::MoleculeSceneView *		moleculeWidget = castedEvent.ptr->getItem<View::UI::Widget::MoleculeSceneView>( ID::View::UI_MOLECULE_STRUCTURE );
+					const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+
+					View::UI::Widget::MoleculeSceneView * moleculeWidget
+						= dynamic_cast<View::UI::Widget::MoleculeSceneView *>( MVC::MvcManager::get().removeViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE ) );
 
 					deleteItem( moleculeWidget );
 				}
@@ -64,7 +70,27 @@ namespace VTX
 				setWidget( _treeWidget );
 			}
 
-			void SceneWidget::_setupSlots() {}
+			void SceneWidget::_setupSlots() { connect( _treeWidget, &QTreeWidget::itemSelectionChanged, this, &SceneWidget::_onSelectionChange ); }
+
+			void SceneWidget::_onSelectionChange()
+			{
+				Selection::SelectionManager selectionManager = VTXApp::get().getSelectionManager();
+				selectionManager.clear();
+
+				const QList<QTreeWidgetItem *> selectedObjects = _treeWidget->selectedItems();
+				for ( auto iterator = selectedObjects.begin(); iterator != selectedObjects.end(); iterator++ )
+				{
+					QTreeWidgetItem *			selectedObject = ( *iterator );
+					Selection::BaseSelectable * item		   = _getSelectableFromTreeWidgetItem( selectedObject );
+
+					if ( item != nullptr )
+						selectionManager.select( item );
+				}
+			}
+
+			// TODO
+			Selection::BaseSelectable * SceneWidget::_getSelectableFromTreeWidgetItem( QTreeWidgetItem * treeWidgetItem ) const { return nullptr; }
+
 			void SceneWidget::localize()
 			{
 				this->setWindowTitle( "Scene" );

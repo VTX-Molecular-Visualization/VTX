@@ -22,8 +22,7 @@ namespace VTX
 			virtual inline void render() final
 			{
 				// Render atoms.
-				for ( const std::pair<const Generic::REPRESENTATION, Model::Molecule::RepresentationStruct> & pair :
-					  _model->getRepresentationState() )
+				for ( const std::pair<const Generic::REPRESENTATION, Model::Molecule::RepresentationStruct> & pair : _model->getRepresentationState() )
 				{
 					render( pair.first );
 				}

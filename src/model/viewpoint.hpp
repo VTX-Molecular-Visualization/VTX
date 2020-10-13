@@ -14,7 +14,7 @@ namespace VTX
 	namespace Model
 	{
 		class Path;
-		class Viewpoint : public BaseModel<Viewpoint>
+		class Viewpoint : public BaseModel
 		{
 		  public:
 			explicit Viewpoint( Path * const p_path ) : _path( p_path ) {}

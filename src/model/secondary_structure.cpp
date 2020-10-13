@@ -1,5 +1,7 @@
 #include "secondary_structure.hpp"
+#include "id.hpp"
 #include "model/molecule.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
 #include "view/d3/ribbon.hpp"
 #include "vtx_app.hpp"
@@ -149,9 +151,9 @@ namespace VTX
 
 			chrono.stop();
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
-
-			addItem( ID::View::D3_RIBBON_PATCH, new View::D3::Ribbon( this ) );
 		}
+
+		void SecondaryStructure::instantiateDefaultViews() { MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_RIBBON_PATCH, new View::D3::Ribbon( this ) ); };
 
 		SecondaryStructure::~SecondaryStructure()
 		{

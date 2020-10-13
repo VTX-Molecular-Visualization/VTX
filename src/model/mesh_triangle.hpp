@@ -14,11 +14,13 @@ namespace VTX
 {
 	namespace Model
 	{
-		class MeshTriangle : public BaseModel3D<MeshTriangle>
+		class MeshTriangle : public BaseModel3D
 		{
 		  public:
 			MeshTriangle();
 			~MeshTriangle();
+
+			void instantiateDefaultViews();
 
 			inline const std::vector<Vec3f> & getVertices() const { return _vertices; }
 			inline std::vector<Vec3f> &		  getVertices() { return _vertices; }

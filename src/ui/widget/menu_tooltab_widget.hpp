@@ -8,7 +8,6 @@
 #include "base_manual_widget.hpp"
 #include "menu_toolblock_widget.hpp"
 #include <QHBoxLayout>
-#include <QSpacerItem>
 #include <string>
 
 namespace VTX
@@ -43,7 +42,6 @@ namespace VTX
 
 			  private:
 				QHBoxLayout * _horizontalLayout = nullptr;
-				QSpacerItem * _horizontalSpacer = nullptr;
 			};
 		} // namespace Widget
 	}	  // namespace UI

@@ -11,6 +11,7 @@
 #include <QTreeWidget>
 #include <QWidget>
 #include <string>
+#include <type_traits>
 
 namespace VTX
 {
