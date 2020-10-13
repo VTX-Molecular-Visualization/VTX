@@ -15,6 +15,8 @@ namespace VTX
 				_registerEvent( Event::Global::MOLECULE_ADDED );
 			}
 
+			InspectorWidget::~InspectorWidget() {}
+
 			void InspectorWidget::receiveEvent( const Event::VTXEvent & p_event )
 			{
 				if ( p_event.name == Event::Global::SELECTION_CHANGE )
