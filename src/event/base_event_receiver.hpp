@@ -6,6 +6,7 @@
 #endif
 
 #include "event.hpp"
+#include <iostream>
 
 namespace VTX
 {
@@ -16,10 +17,6 @@ namespace VTX
 		{
 		  public:
 			virtual void receiveEvent( const T & p_event ) {};
-
-		  protected:
-			virtual void _registerEvent( const VTX_EVENT & )   = 0;
-			virtual void _unregisterEvent( const VTX_EVENT & ) = 0;
 		};
 	} // namespace Event
 } // namespace VTX

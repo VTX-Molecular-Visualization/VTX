@@ -1,5 +1,5 @@
 #include "render_widget.hpp"
-#include <iostream>
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -20,6 +20,8 @@ namespace VTX
 			{
 				BaseManualWidget::_setupUi( p_name );
 
+				setFocusPolicy( Qt::StrongFocus );
+
 				_verticalLayoutWidget = new QWidget();
 				_verticalLayoutWidget->setObjectName( QString::fromUtf8( "verticalLayoutWidget" ) );
 				_verticalLayout = new QVBoxLayout( _verticalLayoutWidget );
@@ -35,6 +37,18 @@ namespace VTX
 				setWindowTitle( "Render" );
 				// setWindowTitle( QCoreApplication::translate( "RenderWidget", "Render", nullptr ) );
 			}
+
+			void RenderWidget::mouseMoveEvent( QMouseEvent * p_event ) { VTXApp::get().getEventManager().fireEventMouse( *p_event ); }
+
+			void RenderWidget::mousePressEvent( QMouseEvent * p_event ) { VTXApp::get().getEventManager().fireEventMouse( *p_event ); }
+
+			void RenderWidget::mouseReleaseEvent( QMouseEvent * p_event ) { VTXApp::get().getEventManager().fireEventMouse( *p_event ); }
+
+			void RenderWidget::keyPressEvent( QKeyEvent * p_event ) { VTXApp::get().getEventManager().fireEventKeyboard( *p_event ); }
+
+			void RenderWidget::keyReleaseEvent( QKeyEvent * p_event ) { VTXApp::get().getEventManager().fireEventKeyboard( *p_event ); }
+
+			void RenderWidget::wheelEvent( QWheelEvent * p_event ) { VTXApp::get().getEventManager().fireEventWheel( *p_event ); }
 
 		} // namespace Widget
 	}	  // namespace UI

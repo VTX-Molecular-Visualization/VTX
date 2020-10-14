@@ -16,7 +16,7 @@ namespace VTX
 {
 	namespace Controller
 	{
-		class Trackball : public BaseMouseController, public BaseCameraController
+		class Trackball : public BaseMouseController, public BaseKeyboardController, public BaseCameraController
 		{
 		  public:
 			// TOFIX: Ugly... set the camera in the BaseCollectionable::init()?
@@ -26,12 +26,6 @@ namespace VTX
 			{
 			}
 
-			/*
-			virtual void receiveEvent( const SDL_Event & p_event ) override final
-			{
-				BaseMouseController::receiveEvent( p_event );
-			}
-			*/
 			virtual void reset() override;
 
 			virtual void update( const double & ) override;

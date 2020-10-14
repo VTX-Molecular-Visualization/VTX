@@ -11,7 +11,7 @@ namespace VTX
 {
 	namespace Controller
 	{
-		class BaseController : public Generic::BaseUpdatable//, public Event::BaseEventReceiverSDL
+		class BaseController : public Generic::BaseUpdatable
 		{
 		  public:
 			BaseController()		  = default;
