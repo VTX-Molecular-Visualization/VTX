@@ -18,7 +18,7 @@ namespace VTX
 			explicit Shortcut() {}
 
 		  protected:
-			// virtual void _handleKeyPressedEvent( const SDL_Scancode & ) override;
+			virtual void _handleKeyDownEvent( const int & ) override;
 
 			virtual void update( const double & ) override {}
 

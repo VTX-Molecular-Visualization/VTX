@@ -33,50 +33,64 @@ namespace VTX
 		{
 			_lock();
 #ifdef DELAY_EVENTS
-			_eventQueue.emplace( p_event );
+			_eventQueueVTX.emplace( p_event );
 #else
 			_flushVTXEvent( p_event );
 #endif
 			_unlock();
 		}
 
-		void EventManager::fireEventKeyboard( const QKeyEvent & p_event )
-		{
-			for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
-			{
-				receiver->receiveEvent( p_event );
-			}
-		}
+		void EventManager::fireEventKeyboard( QKeyEvent * const p_event ) { _eventQueueKeyboard.emplace( *p_event ); }
 
-		void EventManager::fireEventMouse( const QMouseEvent & p_event )
-		{
-			for ( Event::BaseEventReceiverMouse * const receiver : _receiversMouse )
-			{
-				receiver->receiveEvent( p_event );
-			}
-		}
+		void EventManager::fireEventMouse( QMouseEvent * const p_event ) { _eventQueueMouse.emplace( *p_event ); }
 
-		void EventManager::fireEventWheel( const QWheelEvent & p_event )
-		{
-			for ( Event::BaseEventReceiverWheel * const receiver : _receiversWheel )
-			{
-				receiver->receiveEvent( p_event );
-			}
-		}
+		void EventManager::fireEventWheel( QWheelEvent * const p_event ) { _eventQueueWheel.emplace( *p_event ); }
 
 		void EventManager::update( const double & p_deltaTime )
 		{
-			_lock();
-			while ( _eventQueue.empty() == false )
+			// Input events.
+			while ( _eventQueueKeyboard.empty() == false )
 			{
-				VTXEvent * const event = _eventQueue.front();
+				const QKeyEvent & event = _eventQueueKeyboard.front();
+				for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
+				{
+					receiver->receiveEvent( event );
+				}
+				_eventQueueKeyboard.pop();
+			}
+
+			while ( _eventQueueMouse.empty() == false )
+			{
+				const QMouseEvent & event = _eventQueueMouse.front();
+				for ( Event::BaseEventReceiverMouse * const receiver : _receiversMouse )
+				{
+					receiver->receiveEvent( event );
+				}
+				_eventQueueMouse.pop();
+			}
+
+			while ( _eventQueueWheel.empty() == false )
+			{
+				const QWheelEvent & event = _eventQueueWheel.front();
+				for ( Event::BaseEventReceiverWheel * const receiver : _receiversWheel )
+				{
+					receiver->receiveEvent( event );
+				}
+				_eventQueueWheel.pop();
+			}
+
+			// VTX events.
+			_lock();
+			while ( _eventQueueVTX.empty() == false )
+			{
+				VTXEvent * const event = _eventQueueVTX.front();
 				_flushVTXEvent( event );
-				_eventQueue.pop();
+				_eventQueueVTX.pop();
 			}
 			_unlock();
 		}
 
-		void EventManager::_flushVTXEvent( VTXEvent * p_event )
+		void EventManager::_flushVTXEvent( VTXEvent * const p_event )
 		{
 			if ( _receiversVTX.find( p_event->name ) != _receiversVTX.end() )
 			{

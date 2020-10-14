@@ -21,6 +21,9 @@ namespace VTX
 		  public:
 			virtual void receiveEvent( const QMouseEvent & p_event ) override
 			{
+				if ( isActive() == false )
+					return;
+
 				switch ( p_event.type() )
 				{
 				case QEvent::MouseButtonPress: _handleMouseButtonDownEvent( p_event ); break;
@@ -32,6 +35,9 @@ namespace VTX
 
 			virtual void receiveEvent( const QWheelEvent & p_event ) override
 			{
+				if ( isActive() == false )
+					return;
+
 				switch ( p_event.type() )
 				{
 				case QEvent::Wheel: _handleMouseWheelEvent( p_event ); break;

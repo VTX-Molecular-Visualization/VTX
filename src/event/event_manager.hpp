@@ -31,8 +31,6 @@ namespace VTX
 			using SetBaseEventReceiverVTXPtr			 = std::set<BaseEventReceiverVTX *>;
 			using MapStringVectorBaseEventReceiverVTXPtr = std::map<Event::VTX_EVENT, SetBaseEventReceiverVTXPtr>;
 
-			using QueueVTXEventPtr = std::queue<VTXEvent *>;
-
 			void registerEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
 			void unregisterEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
 			void registerEventReceiverKeyboard( BaseEventReceiverKeyboard * const );
@@ -43,22 +41,24 @@ namespace VTX
 			void unregisterEventReceiverWheel( BaseEventReceiverWheel * const );
 
 			void fireEventVTX( VTXEvent * const );
-			void fireEventKeyboard( const QKeyEvent & );
-			void fireEventMouse( const QMouseEvent & );
-			void fireEventWheel( const QWheelEvent & );
+			void fireEventKeyboard( QKeyEvent * const );
+			void fireEventMouse( QMouseEvent * const );
+			void fireEventWheel( QWheelEvent * const );
 
 			virtual void update( const double & p_deltaTime ) override;
 
 		  private:
-			// VTX receivers mapped on event ID.
-			MapStringVectorBaseEventReceiverVTXPtr _receiversVTX = MapStringVectorBaseEventReceiverVTXPtr();
-			// Current VTX event queue.
-			QueueVTXEventPtr _eventQueue = QueueVTXEventPtr();
-
 			// Input events.
-			std::set<BaseEventReceiverKeyboard *> _receiversKeyboard = std::set<BaseEventReceiverKeyboard *>();
-			std::set<BaseEventReceiverMouse *>	  _receiversMouse	 = std::set<BaseEventReceiverMouse *>();
-			std::set<BaseEventReceiverWheel *>	  _receiversWheel	 = std::set<BaseEventReceiverWheel *>();
+			MapStringVectorBaseEventReceiverVTXPtr _receiversVTX	  = MapStringVectorBaseEventReceiverVTXPtr(); // VTX receivers mapped on event ID.
+			std::set<BaseEventReceiverKeyboard *>  _receiversKeyboard = std::set<BaseEventReceiverKeyboard *>();
+			std::set<BaseEventReceiverMouse *>	   _receiversMouse	  = std::set<BaseEventReceiverMouse *>();
+			std::set<BaseEventReceiverWheel *>	   _receiversWheel	  = std::set<BaseEventReceiverWheel *>();
+
+			// Event queues.
+			std::queue<VTXEvent *>	_eventQueueVTX		= std::queue<VTXEvent *>();
+			std::queue<QKeyEvent>	_eventQueueKeyboard = std::queue<QKeyEvent>();
+			std::queue<QMouseEvent> _eventQueueMouse	= std::queue<QMouseEvent>();
+			std::queue<QWheelEvent> _eventQueueWheel	= std::queue<QWheelEvent>();
 
 			// void _handlerWindowEvent( const SDL_WindowEvent & );
 			void _flushVTXEvent( VTXEvent * const );

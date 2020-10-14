@@ -38,17 +38,17 @@ namespace VTX
 				// setWindowTitle( QCoreApplication::translate( "RenderWidget", "Render", nullptr ) );
 			}
 
-			void RenderWidget::mouseMoveEvent( QMouseEvent * p_event ) { VTXApp::get().getEventManager().fireEventMouse( *p_event ); }
+			void RenderWidget::mouseMoveEvent( QMouseEvent * p_event ) { VTXApp::get().getEventManager().fireEventMouse( p_event ); }
 
-			void RenderWidget::mousePressEvent( QMouseEvent * p_event ) { VTXApp::get().getEventManager().fireEventMouse( *p_event ); }
+			void RenderWidget::mousePressEvent( QMouseEvent * p_event ) { VTXApp::get().getEventManager().fireEventMouse( p_event ); }
 
-			void RenderWidget::mouseReleaseEvent( QMouseEvent * p_event ) { VTXApp::get().getEventManager().fireEventMouse( *p_event ); }
+			void RenderWidget::mouseReleaseEvent( QMouseEvent * p_event ) { VTXApp::get().getEventManager().fireEventMouse( p_event ); }
 
-			void RenderWidget::keyPressEvent( QKeyEvent * p_event ) { VTXApp::get().getEventManager().fireEventKeyboard( *p_event ); }
+			void RenderWidget::keyPressEvent( QKeyEvent * p_event ) { VTXApp::get().getEventManager().fireEventKeyboard( p_event ); }
 
-			void RenderWidget::keyReleaseEvent( QKeyEvent * p_event ) { VTXApp::get().getEventManager().fireEventKeyboard( *p_event ); }
+			void RenderWidget::keyReleaseEvent( QKeyEvent * p_event ) { VTXApp::get().getEventManager().fireEventKeyboard( p_event ); }
 
-			void RenderWidget::wheelEvent( QWheelEvent * p_event ) { VTXApp::get().getEventManager().fireEventWheel( *p_event ); }
+			void RenderWidget::wheelEvent( QWheelEvent * p_event ) { VTXApp::get().getEventManager().fireEventWheel( p_event ); }
 
 		} // namespace Widget
 	}	  // namespace UI

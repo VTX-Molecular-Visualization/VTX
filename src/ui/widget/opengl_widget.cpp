@@ -14,7 +14,7 @@ namespace VTX
 				format.setProfile( QSurfaceFormat::CoreProfile );
 				format.setRenderableType( QSurfaceFormat::OpenGL );
 				format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
-				format.setSwapInterval( 0 ); // TODO: handle v-sync with settings.
+				// format.setSwapInterval( 0 ); // TODO: handle v-sync with settings.
 				QSurfaceFormat::setDefaultFormat( format );
 			}
 
