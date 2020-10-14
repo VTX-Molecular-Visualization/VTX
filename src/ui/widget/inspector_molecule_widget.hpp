@@ -54,6 +54,8 @@ namespace VTX
 				QHBoxLayout * _headerLayout = nullptr;
 				QPushButton * _foldState	= nullptr;
 				QCheckBox *	  _enableWidget = nullptr;
+				QLabel *	  _symbolWidget = nullptr;
+				QLabel *	  _nameWidget	= nullptr;
 
 				// Content
 				QWidget *	  _content		 = nullptr;

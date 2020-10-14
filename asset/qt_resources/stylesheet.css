@@ -137,3 +137,11 @@ QTreeWidget::branch:open:has-children:has-siblings
 	image: url(:/sprite/treeview_unfolded_molecule_icon.png);
 }
 
+QWidget#inspector_item_content
+{
+	border-bottom: 1px solid #444444;
+}
+QWidget#inspector_item_header
+{
+	border-bottom: 1px solid #444444;
+}

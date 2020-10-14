@@ -12,6 +12,7 @@
 	<file>sprite/saveas_session_icon.png</file>
 	<file>sprite/save_molecule_icon.png</file>
 	<file>sprite/save_session_icon.png</file>
+	<file>sprite/symbol/molecule_symbol_icon.png</file>
 	<file>sprite/treeview_folded_molecule_icon.png</file>
 	<file>sprite/treeview_unfolded_molecule_icon.png</file>
 	<file>sprite/undock_icon.png</file>
