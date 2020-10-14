@@ -1,6 +1,7 @@
 #include "path.hpp"
 #include "exception.hpp"
 #include "generic/factory.hpp"
+#include "mvc/mvc_manager.hpp"
 #include <algorithm>
 #include <fstream>
 #include <sstream>
@@ -11,7 +12,7 @@ namespace VTX
 	{
 		Path::Path() {}
 
-		Path::~Path() { Generic::clearVector( _viewpoints ); }
+		Path::~Path() { MVC::MvcManager::get().deleteAllModels( _viewpoints ); }
 
 		const std::vector<std::string> * const Path::getCurrentActions( const double p_time )
 		{

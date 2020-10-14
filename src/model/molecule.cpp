@@ -47,14 +47,14 @@ namespace VTX
 				OGL().glDeleteVertexArrays( 1, &_vao );
 			}
 
-			Generic::clearVector( _atoms );
-			Generic::clearVector( _residues );
-			Generic::clearVector( _chains );
-			Generic::clearVector( _bonds );
+			MVC::MvcManager::get().deleteAllModels( _atoms );
+			MVC::MvcManager::get().deleteAllModels( _residues );
+			MVC::MvcManager::get().deleteAllModels( _chains );
+			MVC::MvcManager::get().deleteAllModels( _bonds );
 
 			if ( _secondaryStructure != nullptr )
 			{
-				delete _secondaryStructure;
+				MVC::MvcManager::get().deleteModel( _secondaryStructure );
 			}
 		}
 

@@ -12,6 +12,7 @@
 #include "view/base_view.hpp"
 //#include "view/ui/widget/molecule_inspector_view.hpp"
 #include <type_traits>
+#include <vector>
 
 namespace VTX
 {
@@ -48,6 +49,23 @@ namespace VTX
 
 				return model;
 			};
+
+			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			void deleteModel( M * p_model )
+			{
+				MvcData * mvc = _mvcs->remove( p_model );
+				delete mvc;
+				delete p_model;
+			};
+
+			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			void deleteAllModels( std::vector<M *> p_models )
+			{
+				for ( M * element : p_models )
+					MVC::MvcManager::get().deleteModel( element );
+
+				p_models.clear();
+			}
 
 			inline void addViewOnModel( Model::BaseModel * p_model, const ID::VTX_ID & p_id, View::BaseView * p_view ) { _getMvcData( p_model )->addView( p_id, p_view ); };
 			inline View::BaseView * removeViewOnModel( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { return _getMvcData( p_model )->removeView( p_id ); };

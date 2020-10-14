@@ -68,7 +68,7 @@ namespace VTX
 					{
 						VTX_ERROR( "Error loading file" );
 						VTX_ERROR( p_e.what() );
-						delete molecule;
+						MVC::MvcManager::get().deleteModel( molecule );
 					}
 
 					delete reader;
@@ -87,9 +87,9 @@ namespace VTX
 					}
 					catch ( const std::exception & p_e )
 					{
-						delete mesh;
 						VTX_ERROR( "Error loading file" );
 						VTX_ERROR( p_e.what() );
+						MVC::MvcManager::get().deleteModel( mesh );
 					}
 
 					delete reader;
@@ -146,7 +146,7 @@ namespace VTX
 					{
 						VTX_ERROR( "Error loading file" );
 						VTX_ERROR( p_e.what() );
-						delete molecule;
+						MVC::MvcManager::get().deleteModel( molecule );
 					}
 
 					delete reader;
