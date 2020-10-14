@@ -36,6 +36,8 @@ namespace VTX
 
 				_mvcs->add( mvc );
 
+				model->instantiateDefaultViews();
+
 				return model;
 			};
 
@@ -46,6 +48,8 @@ namespace VTX
 				MvcData * mvc	= new MvcData( model );
 
 				_mvcs->add( mvc );
+
+				model->instantiateDefaultViews();
 
 				return model;
 			};
