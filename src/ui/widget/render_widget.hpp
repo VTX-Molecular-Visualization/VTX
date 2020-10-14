@@ -34,6 +34,13 @@ namespace VTX
 				void _setupUi( const QString & p_name ) override;
 				void _setupSlots() override;
 
+				void mouseMoveEvent( QMouseEvent * ) override;
+				void mousePressEvent( QMouseEvent * ) override;
+				void mouseReleaseEvent( QMouseEvent * ) override;
+				void keyPressEvent( QKeyEvent * ) override;
+				void keyReleaseEvent( QKeyEvent * ) override;
+				void wheelEvent( QWheelEvent * ) override;
+
 			  private:
 				QWidget *	   _verticalLayoutWidget;
 				QVBoxLayout *  _verticalLayout;

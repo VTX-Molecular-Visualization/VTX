@@ -6,12 +6,10 @@ namespace VTX
 	{
 		void Freefly::update( const double & p_deltaTime )
 		{
-			/*
 			// Rotation.
 			if ( _mouseLeftPressed )
 			{
-				_camera.rotate( Vec3d( -VTX_SETTING().rotationSpeed * (float)_deltaMousePosition.y
-										   * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f ),
+				_camera.rotate( Vec3d( -VTX_SETTING().rotationSpeed * (float)_deltaMousePosition.y * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f ),
 									   -VTX_SETTING().rotationSpeed * (float)_deltaMousePosition.x,
 
 									   0.f ) );
@@ -27,27 +25,27 @@ namespace VTX
 			// Translation.
 			Vec3f translation = VEC3F_ZERO;
 
-			if ( _isKeyPressed( SDL_SCANCODE_W ) || _isKeyPressed( SDL_SCANCODE_UP ) )
+			if ( _isKeyPressed( Qt::Key_Z ) || _isKeyPressed( Qt::Key_Up ) )
 			{
 				translation.z++;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_S ) || _isKeyPressed( SDL_SCANCODE_DOWN ) )
+			if ( _isKeyPressed( Qt::Key_S ) || _isKeyPressed( Qt::Key_Down ) )
 			{
 				translation.z--;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_A ) || _isKeyPressed( SDL_SCANCODE_LEFT ) )
+			if ( _isKeyPressed( Qt::Key_Q ) || _isKeyPressed( Qt::Key_Left ) )
 			{
 				translation.x++;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_D ) || _isKeyPressed( SDL_SCANCODE_RIGHT ) )
+			if ( _isKeyPressed( Qt::Key_D ) || _isKeyPressed( Qt::Key_Right ) )
 			{
 				translation.x--;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_R ) )
+			if ( _isKeyPressed( Qt::Key_R ) )
 			{
 				translation.y++;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_F ) )
+			if ( _isKeyPressed( Qt::Key_F ) )
 			{
 				translation.y--;
 			}
@@ -60,17 +58,16 @@ namespace VTX
 			translation *= VTX_SETTING().translationSpeed;
 			translation *= p_deltaTime;
 
-			if ( _isKeyPressed( SDL_SCANCODE_LSHIFT ) )
+			if ( _isKeyPressed( Qt::Key_Shift ) )
 			{
 				translation *= VTX_SETTING().translationFactorSpeed;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_LCTRL ) )
+			if ( _isKeyPressed( Qt::Key_Control ) )
 			{
 				translation /= VTX_SETTING().translationFactorSpeed;
 			}
 
 			_camera.move( translation );
-			*/
 		}
 
 		void Freefly::reset()
@@ -80,16 +77,6 @@ namespace VTX
 			_camera.setPosition( defaultPos );
 			_camera.setRotation( Vec3d( 0.0, 0.0, 0.0 ) );
 		}
-
-		/*
-		void Freefly::_handleKeyPressedEvent( const SDL_Scancode & p_key )
-		{
-			if ( p_key == SDL_SCANCODE_SPACE )
-			{
-				_camera.print();
-			}
-		}
-		*/
 
 	} // namespace Controller
 } // namespace VTX

@@ -92,7 +92,7 @@ namespace VTX
 
 	// TODO: check const
 	inline Setting & VTX_SETTING() { return VTXApp::get().getSetting(); }
-	inline void		 VTX_EVENT( VTX::Event::VTXEvent * const p_event ) { VTXApp::get().getEventManager().fireEvent( p_event ); }
+	inline void		 VTX_EVENT( VTX::Event::VTXEvent * const p_event ) { VTXApp::get().getEventManager().fireEventVTX( p_event ); }
 	inline void		 VTX_ACTION( VTX::Action::BaseAction * const p_action, const bool p_force = false ) { VTXApp::get().getActionManager().execute( p_action, p_force ); }
 	inline void		 VTX_ACTION( const std::string & p_action, const bool p_force = false ) { VTXApp::get().getActionManager().execute( p_action, p_force ); }
 	// TODO: will be deleted when all workers will be threaded.

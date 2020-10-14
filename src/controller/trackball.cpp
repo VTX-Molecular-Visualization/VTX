@@ -27,7 +27,6 @@ namespace VTX
 
 		void Trackball::update( const double & p_deltaTime )
 		{
-			/*
 			// Wheel.
 			float deltaDistance = 0.f;
 			if ( _deltaMouseWheel != 0.f )
@@ -61,35 +60,35 @@ namespace VTX
 			_deltaMousePosition.y = 0;
 
 			// Keyboard.
-			if ( _isKeyPressed( SDL_SCANCODE_W ) || _isKeyPressed( SDL_SCANCODE_UP ) )
+			if ( _isKeyPressed( Qt::Key_Z ) || _isKeyPressed( Qt::Key_Up ) )
 			{
 				deltaDistance = 1.5f * (float)p_deltaTime;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_S ) || _isKeyPressed( SDL_SCANCODE_DOWN ) )
+			if ( _isKeyPressed( Qt::Key_S ) || _isKeyPressed( Qt::Key_Down ) )
 			{
 				deltaDistance = -1.5f * (float)p_deltaTime;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_A ) || _isKeyPressed( SDL_SCANCODE_LEFT ) )
+			if ( _isKeyPressed( Qt::Key_Q ) || _isKeyPressed( Qt::Key_Left ) )
 			{
 				deltaVelocity.x = 1e4f * (float)p_deltaTime;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_D ) || _isKeyPressed( SDL_SCANCODE_RIGHT ) )
+			if ( _isKeyPressed( Qt::Key_D ) || _isKeyPressed( Qt::Key_Right ) )
 			{
 				deltaVelocity.x = -1e4f * (float)p_deltaTime;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_R ) )
+			if ( _isKeyPressed( Qt::Key_R ) )
 			{
 				deltaVelocity.y = -1e4f * (float)p_deltaTime;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_F ) )
+			if ( _isKeyPressed( Qt::Key_F ) )
 			{
 				deltaVelocity.y = 1e4f * (float)p_deltaTime;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_Q ) )
+			if ( _isKeyPressed( Qt::Key_A ) )
 			{
 				deltaVelocity.z = 1e4f * (float)p_deltaTime;
 			}
-			if ( _isKeyPressed( SDL_SCANCODE_E ) )
+			if ( _isKeyPressed( Qt::Key_E ) )
 			{
 				deltaVelocity.z = -1e4f * (float)p_deltaTime;
 			}
@@ -99,11 +98,11 @@ namespace VTX
 			{
 				deltaDistance *= VTX_SETTING().translationSpeed;
 
-				if ( _isKeyPressed( SDL_SCANCODE_LSHIFT ) )
+				if ( _isKeyPressed( Qt::Key_Shift ) )
 				{
 					deltaDistance *= VTX_SETTING().translationFactorSpeed;
 				}
-				if ( _isKeyPressed( SDL_SCANCODE_LCTRL ) )
+				if ( _isKeyPressed( Qt::Key_Control ) )
 				{
 					deltaDistance /= VTX_SETTING().translationFactorSpeed;
 				}
@@ -154,7 +153,6 @@ namespace VTX
 					_velocity = VEC3F_ZERO;
 				}
 			}
-			*/
 		}
 	} // namespace Controller
 } // namespace VTX

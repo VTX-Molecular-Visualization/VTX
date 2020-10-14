@@ -23,7 +23,7 @@ namespace VTX
 			// Create controller.
 			addItem( ID::Controller::FREEFLY, new Controller::Freefly() );
 			addItem( ID::Controller::TRACKBALL, new Controller::Trackball() );
-			addItem( ID::Controller::SHORTCUT, new Controller::Shortcut() );
+			// addItem( ID::Controller::SHORTCUT, new Controller::Shortcut() );
 
 			if ( _controller == ID::Controller::FREEFLY )
 			{

@@ -5,7 +5,6 @@ namespace VTX
 {
 	namespace Event
 	{
-
 		void EventManager::registerEventReceiverVTX( const VTX_EVENT & p_event, BaseEventReceiverVTX * const p_receiver )
 		{
 			if ( _receiversVTX.find( p_event ) == _receiversVTX.end() )
@@ -18,7 +17,19 @@ namespace VTX
 
 		void EventManager::unregisterEventReceiverVTX( const VTX_EVENT & p_event, BaseEventReceiverVTX * const p_receiver ) { _receiversVTX.at( p_event ).erase( p_receiver ); }
 
-		void EventManager::fireEvent( VTXEvent * const p_event )
+		void EventManager::registerEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver ) { _receiversKeyboard.emplace( p_receiver ); }
+
+		void EventManager::unregisterEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver ) { _receiversKeyboard.erase( p_receiver ); }
+
+		void EventManager::registerEventReceiverMouse( BaseEventReceiverMouse * const p_receiver ) { _receiversMouse.emplace( p_receiver ); }
+
+		void EventManager::unregisterEventReceiverMouse( BaseEventReceiverMouse * const p_receiver ) { _receiversMouse.erase( p_receiver ); }
+
+		void EventManager::registerEventReceiverWheel( BaseEventReceiverWheel * const p_receiver ) { _receiversWheel.emplace( p_receiver ); }
+
+		void EventManager::unregisterEventReceiverWheel( BaseEventReceiverWheel * const p_receiver ) { _receiversWheel.erase( p_receiver ); }
+
+		void EventManager::fireEventVTX( VTXEvent * const p_event )
 		{
 			_lock();
 #ifdef DELAY_EVENTS
@@ -29,60 +40,32 @@ namespace VTX
 			_unlock();
 		}
 
+		void EventManager::fireEventKeyboard( const QKeyEvent & p_event )
+		{
+			for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
+			{
+				receiver->receiveEvent( p_event );
+			}
+		}
+
+		void EventManager::fireEventMouse( const QMouseEvent & p_event )
+		{
+			for ( Event::BaseEventReceiverMouse * const receiver : _receiversMouse )
+			{
+				receiver->receiveEvent( p_event );
+			}
+		}
+
+		void EventManager::fireEventWheel( const QWheelEvent & p_event )
+		{
+			for ( Event::BaseEventReceiverWheel * const receiver : _receiversWheel )
+			{
+				receiver->receiveEvent( p_event );
+			}
+		}
+
 		void EventManager::update( const double & p_deltaTime )
 		{
-			/*
-			// SDL.
-			SDL_Event event;
-			while ( VTXApp::get().getUI().getEvent( event ) )
-			{
-				switch ( event.type )
-				{
-				case SDL_QUIT:
-				{
-					VTXApp::get().stop();
-					break;
-				}
-				case SDL_WINDOWEVENT:
-				{
-					_handlerWindowEvent( event.window );
-					break;
-				}
-				}
-
-				// Propagate to receivers.
-				for ( Event::BaseEventReceiverSDL * const receiver : _receiversSDLGlobal )
-				{
-					receiver->receiveEvent( event );
-				}
-
-				// Then other
-				const ID::VTX_ID & focused = VTXApp::get().getUI().getFocusedWindow();
-				const ID::VTX_ID & hovered = VTXApp::get().getUI().getHoveredWindow();
-
-				// If mouse or key up, propagate to all.
-				if ( event.type == SDL_KEYUP || event.type == SDL_MOUSEBUTTONUP )
-				{
-					for ( const std::pair<ID::VTX_ID, SetBaseEventReceiverInputPtr> & receiverSDL : _receiversSDL )
-					{
-						for ( BaseEventReceiverSDL * const receiver : receiverSDL.second )
-						{
-							receiver->receiveEvent( event );
-						}
-					}
-				}
-				// Else propagate to subscribers.
-				else if ( _receiversSDL.find( hovered ) != _receiversSDL.end() )
-				{
-					for ( BaseEventReceiverSDL * const receiver : _receiversSDL.at( hovered ) )
-					{
-						receiver->receiveEvent( event );
-					}
-				}
-			}
-			*/
-
-			// VTX.
 			_lock();
 			while ( _eventQueue.empty() == false )
 			{
@@ -104,16 +87,6 @@ namespace VTX
 			}
 			delete p_event;
 		}
-
-		/*
-		void EventManager::_handlerWindowEvent( const SDL_WindowEvent & p_event )
-		{
-			switch ( p_event.event )
-			{
-			case SDL_WINDOWEVENT_CLOSE: VTXApp::get().stop(); break;
-			}
-		}
-		*/
 
 	} // namespace Event
 } // namespace VTX
