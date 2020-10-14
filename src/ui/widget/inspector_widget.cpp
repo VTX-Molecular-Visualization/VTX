@@ -28,7 +28,9 @@ namespace VTX
 					const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 					moleculeInspector->setModel( castedEvent.ptr );
 
-					_verticalLayout->addWidget( moleculeInspector );
+					_verticalLayout->insertWidget( 0, moleculeInspector );
+					moleculeInspector->setObjectName( "inspector_layout" );
+					moleculeInspector->setSizePolicy( QSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy ::Policy::Minimum ) );
 				}
 			}
 
@@ -67,6 +69,8 @@ namespace VTX
 				QWidget * layoutWidget = new QWidget( this );
 				layoutWidget->setContentsMargins( 0, 0, 0, 0 );
 				_verticalLayout = new QVBoxLayout( layoutWidget );
+				_verticalLayout->setContentsMargins( 0, 0, 0, 0 );
+				_verticalLayout->addStretch( 1000 );
 
 				this->setWidget( layoutWidget );
 			}
