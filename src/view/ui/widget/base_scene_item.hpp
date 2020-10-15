@@ -27,7 +27,7 @@ namespace VTX
 
 				  protected:
 					BaseSceneItem( M * const p_model, QTreeWidgetItem * p_parent ) :
-						View::TemplatedBaseView<M>( p_model ), SceneTreeWidgetItem( p_parent ), BaseManualWidgetInitializer() {};
+						View::TemplatedBaseView<M>( p_model ), SceneTreeWidgetItem( *p_model, p_parent ), BaseManualWidgetInitializer() {};
 					inline virtual void _setupUi( const QString & p_name ) override {};
 				};
 

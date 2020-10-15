@@ -20,16 +20,16 @@ namespace VTX
 					fillData( *_model, _model->getPdbIdCode(), VTX::Style::IconConst::get().MOLECULE_SYMBOL );
 
 					// Chains.
-					for ( const Model::Chain * const chain : _model->getChains() )
+					for ( Model::Chain * const chain : _model->getChains() )
 					{
-						MoleculeSubDataSceneView * chainView = new MoleculeSubDataSceneView( this );
+						MoleculeSubDataSceneView * chainView = new MoleculeSubDataSceneView( *chain, this );
 						chainView->setData( *chain );
 
 						// Residues.
 						for ( uint r = 0; r < chain->getResidueCount(); ++r )
 						{
-							const Model::Residue &	   residue	   = _model->getResidue( chain->getIndexFirstResidue() + r );
-							MoleculeSubDataSceneView * residueView = new MoleculeSubDataSceneView( chainView );
+							Model::Residue &		   residue	   = _model->getResidue( chain->getIndexFirstResidue() + r );
+							MoleculeSubDataSceneView * residueView = new MoleculeSubDataSceneView( residue, chainView );
 							residueView->setData( residue );
 						}
 					}

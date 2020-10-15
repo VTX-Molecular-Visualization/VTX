@@ -22,7 +22,7 @@ namespace VTX
 				class MoleculeSubDataSceneView : public VTX::UI::Widget::SceneTreeWidgetItem
 				{
 				  public:
-					MoleculeSubDataSceneView( QTreeWidgetItem * p_parent ) : SceneTreeWidgetItem( p_parent ) {};
+					MoleculeSubDataSceneView( Model::BaseModel & p_model, QTreeWidgetItem * p_parent ) : SceneTreeWidgetItem( p_model, p_parent ) {};
 					void setData( const Model::Chain & p_chain );
 					void setData( const Model::Residue & p_residue );
 					void setData( const Model::Atom & p_atom );

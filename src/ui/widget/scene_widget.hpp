@@ -39,6 +39,7 @@ namespace VTX
 				QTreeWidget * _treeWidget = nullptr;
 
 				void _onSelectionChange();
+				void _onItemChange( QTreeWidgetItem * item, int column );
 			};
 		} // namespace Widget
 	}	  // namespace UI
