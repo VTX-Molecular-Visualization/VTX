@@ -23,7 +23,7 @@ namespace VTX
 			const Model_ID & getId() const { return _id; };
 			void			 instantiateDefaultViews() {};
 
-			bool isEnable() { return _enabled; };
+			bool isEnable() const { return _enabled; };
 			void setEnable( bool p_enable ) { _enabled = p_enable; };
 
 		  protected:

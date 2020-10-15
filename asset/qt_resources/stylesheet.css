@@ -109,7 +109,6 @@ QTreeWidget
 }
 QTreeWidget::item:selected
 {
-	border: none;
 	background-color: #444444;
 }
 /*without that, font color turns black when !active (???)*/

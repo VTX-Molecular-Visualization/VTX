@@ -1,5 +1,6 @@
 #include "molecule_scene_view.hpp"
 #include "molecule_subdata_scene_view.hpp"
+#include "ui/widget/scene_widget.hpp"
 #include "ui/widget_factory.hpp"
 
 namespace VTX
@@ -16,7 +17,7 @@ namespace VTX
 				{
 					BaseSceneItem<Model::Molecule>::_setupUi( p_name );
 
-					setText( 0, QString::fromStdString( _model->getPdbIdCode() ) );
+					fillData( *_model, _model->getPdbIdCode(), VTX::Style::IconConst::get().MOLECULE_SYMBOL );
 
 					// Chains.
 					for ( const Model::Chain * const chain : _model->getChains() )

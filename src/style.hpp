@@ -26,12 +26,18 @@ namespace VTX
 				return instance;
 			};
 
-			const QIcon UNFOLDED_PIXMAP = QIcon( ":/sprite/treeview_unfolded_molecule_icon.png" );
-			const QIcon FOLDED_PIXMAP	= QIcon( ":/sprite/treeview_folded_molecule_icon.png" );
+			const QIcon UNFOLDED_PIXMAP;
+			const QIcon FOLDED_PIXMAP;
+			const QIcon MOLECULE_SYMBOL;
+			const QIcon CHAIN_SYMBOL;
+			const QIcon RESIDUE_SYMBOL;
+			const QIcon ATOM_SYMBOL;
 
 		  private:
 			inline IconConst() :
-				UNFOLDED_PIXMAP( QIcon( ":/sprite/treeview_unfolded_molecule_icon.png" ) ), FOLDED_PIXMAP( QIcon( ":/sprite/treeview_folded_molecule_icon.png" ) ) {};
+				UNFOLDED_PIXMAP( QIcon( ":/sprite/treeview_unfolded_molecule_icon.png" ) ), FOLDED_PIXMAP( QIcon( ":/sprite/treeview_folded_molecule_icon.png" ) ),
+				MOLECULE_SYMBOL( QIcon( ":/sprite/symbol/molecule_symbol_icon.png" ) ), CHAIN_SYMBOL( QIcon( ":/sprite/symbol/chain_symbol_icon.png" ) ),
+				RESIDUE_SYMBOL( QIcon( ":/sprite/symbol/residue_symbol_icon.png" ) ), ATOM_SYMBOL( QIcon( ":/sprite/symbol/atom_symbol_icon.png" ) ) {};
 		};
 
 		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;

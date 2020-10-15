@@ -5,6 +5,10 @@
 #pragma once
 #endif
 
+#include "model/atom.hpp"
+#include "model/chain.hpp"
+#include "model/residue.hpp"
+#include "ui/widget/scene_tree_widget_item.hpp"
 #include <QTreeWidget>
 
 namespace VTX
@@ -15,15 +19,13 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class MoleculeSubDataSceneView : public QTreeWidgetItem
+				class MoleculeSubDataSceneView : public VTX::UI::Widget::SceneTreeWidgetItem
 				{
 				  public:
-					MoleculeSubDataSceneView( QTreeWidgetItem * p_parent ) : QTreeWidgetItem( p_parent ) { _setupUi(); };
-					inline void setData( const Model::Chain & p_chain ) { setText( 0, QString::fromStdString( p_chain.getName() ) ); };
-					inline void setData( const Model::Residue & p_residue ) { setText( 0, QString::fromStdString( p_residue.getSymbolName() ) ); };
-
-				  protected:
-					inline void _setupUi() { setCheckState( 0, Qt::CheckState::Checked ); };
+					MoleculeSubDataSceneView( QTreeWidgetItem * p_parent ) : SceneTreeWidgetItem( p_parent ) {};
+					void setData( const Model::Chain & p_chain );
+					void setData( const Model::Residue & p_residue );
+					void setData( const Model::Atom & p_atom );
 				};
 
 			} // namespace Widget
