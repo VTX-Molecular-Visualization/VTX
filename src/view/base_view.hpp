@@ -6,9 +6,7 @@
 #endif
 
 #include "event/event.hpp"
-//#include "generic/base_notifiable.hpp"
 #include "model/base_model.hpp"
-//#include <utility>
 
 namespace VTX
 {

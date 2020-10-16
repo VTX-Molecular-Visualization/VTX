@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "base_manual_widget.hpp"
 #include "model/molecule.hpp"
 #include "ui/widget_factory.hpp"
+#include "view_item_widget.hpp"
 #include <QBoxLayout>
 #include <QCheckBox>
 #include <QIcon>
@@ -21,7 +21,7 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class InspectorMoleculeWidget : public BaseManualWidget<QWidget>
+			class InspectorMoleculeWidget : public ViewItemWidget<Model::Molecule>
 			{
 				VTX_MANUAL_WIDGET_DECLARATION
 
@@ -29,15 +29,8 @@ namespace VTX
 				void		refresh();
 				inline void localize() override {};
 
-				inline void setModel( Model::Molecule * const p_model )
-				{
-					_model = p_model;
-					refresh();
-				};
-				inline Model::Molecule * getModel() { return _model; };
-
 			  protected:
-				InspectorMoleculeWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
+				InspectorMoleculeWidget( QWidget * p_parent ) : ViewItemWidget( p_parent ) {};
 
 				void		 _setupUi( const QString & p_name ) override;
 				virtual void _setupSlots() override;
@@ -62,8 +55,7 @@ namespace VTX
 				QLabel *	  _info			 = nullptr;
 				QVBoxLayout * _contentLayout = nullptr;
 
-				bool			  _folded = false;
-				Model::Molecule * _model  = nullptr;
+				bool _folded = false;
 
 				void setModelEnableFromCheckBox( int checkboxState ) { _model->setEnable( checkboxState > 0 ); }
 			};
