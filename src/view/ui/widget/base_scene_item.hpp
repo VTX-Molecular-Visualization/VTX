@@ -5,12 +5,12 @@
 #pragma once
 #endif
 
-#include "model/molecule.hpp"
-#include "style.hpp"
+#include "model/base_model.hpp"
 #include "ui/widget/base_manual_widget_initializer.hpp"
 #include "ui/widget/scene_tree_widget_item.hpp"
 #include "view/templated_base_view.hpp"
 #include <QTreeWidget>
+#include <type_traits>
 
 namespace VTX
 {
@@ -29,6 +29,12 @@ namespace VTX
 					BaseSceneItem( M * const p_model, QTreeWidgetItem * p_parent ) :
 						View::TemplatedBaseView<M>( p_model ), SceneTreeWidgetItem( *p_model, p_parent ), BaseManualWidgetInitializer() {};
 					inline virtual void _setupUi( const QString & p_name ) override {};
+
+					inline virtual void refreshView() override
+					{
+						View::TemplatedBaseView<M>::refreshView();
+						VTX::UI::Widget::SceneTreeWidgetItem::refreshItem();
+					};
 				};
 
 			} // namespace Widget

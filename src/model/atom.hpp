@@ -8,6 +8,7 @@
 #include "base_model.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
+#include "id.hpp"
 
 namespace VTX
 {
@@ -157,6 +158,8 @@ namespace VTX
 			static const float		 SYMBOL_VDW_RADIUS[ (int)SYMBOL::COUNT ];
 			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
 
+			Atom() : BaseModel( ID::Model::MODEL_ATOM ) {};
+
 			inline const uint		getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
@@ -168,7 +171,11 @@ namespace VTX
 
 			inline const SYMBOL		   getSymbol() const { return _symbol; };
 			inline const std::string & getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; };
-			inline void				   setSymbol( const SYMBOL p_symbol ) { _symbol = p_symbol; };
+			inline void				   setSymbol( const SYMBOL p_symbol )
+			{
+				_symbol = p_symbol;
+				BaseModel::setDefaultName( &getSymbolName() );
+			};
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
 			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ (int)_symbol ]; }

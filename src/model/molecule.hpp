@@ -68,7 +68,11 @@ namespace VTX
 			inline const std::string & getName() const { return _name; }
 			inline void				   setName( const std::string & p_name ) { _name = p_name; }
 			inline const std::string & getPdbIdCode() const { return _pdbIdCode; }
-			inline void				   setPdbIdCode( const std::string & p_pdbId ) { _pdbIdCode = p_pdbId; }
+			inline void				   setPdbIdCode( const std::string & p_pdbId )
+			{
+				_pdbIdCode = p_pdbId;
+				BaseModel::setDefaultName( &_pdbIdCode );
+			}
 
 			inline const VTX::Path & getPath() const { return _path; }
 			inline void				 setPath( const VTX::Path & p_path ) { _path = p_path; }

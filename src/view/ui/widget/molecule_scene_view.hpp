@@ -28,8 +28,6 @@ namespace VTX
 					MoleculeSceneView( Model::Molecule * const, QTreeWidgetItem * );
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
-
-				  private:
 				};
 
 			} // namespace Widget

@@ -8,7 +8,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		MeshTriangle::MeshTriangle() {}
+		MeshTriangle::MeshTriangle() : BaseModel3D( ID::Model::MODEL_MESH_TRIANGLE ) {}
 
 		void MeshTriangle::instantiateDefaultViews() { MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_TRIANGLE, new View::D3::Triangle( this ) ); };
 

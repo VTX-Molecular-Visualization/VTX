@@ -17,7 +17,7 @@ namespace VTX
 		class Viewpoint : public BaseModel
 		{
 		  public:
-			explicit Viewpoint( Path * const p_path ) : _path( p_path ) {}
+			explicit Viewpoint( Path * const p_path ) : BaseModel( ID::Model::MODEL_VIEWPOINT ), _path( p_path ), _rotation( Quatd() ) {};
 
 			inline Path * const getPathPtr() const { return _path; }
 			inline float		getDuration() const { return _duration; }

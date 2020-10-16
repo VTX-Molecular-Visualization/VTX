@@ -1,6 +1,7 @@
 #include "path.hpp"
 #include "exception.hpp"
 #include "generic/factory.hpp"
+#include "id.hpp"
 #include "mvc/mvc_manager.hpp"
 #include <algorithm>
 #include <fstream>
@@ -10,8 +11,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		Path::Path() {}
-
+		Path::Path() : BaseModel( ID::Model::MODEL_PATH ) {};
 		Path::~Path() { MVC::MvcManager::get().deleteAllModels( _viewpoints ); }
 
 		const std::vector<std::string> * const Path::getCurrentActions( const double p_time )

@@ -5,12 +5,10 @@
 #pragma once
 #endif
 
-#include "define.hpp"
 #include "event/event.hpp"
-#include "generic/base_notifiable.hpp"
-#include "id.hpp"
+//#include "generic/base_notifiable.hpp"
 #include "model/base_model.hpp"
-#include <utility>
+//#include <utility>
 
 namespace VTX
 {
@@ -22,9 +20,13 @@ namespace VTX
 			explicit BaseView( VTX::Model::BaseModel * const p_model ) {};
 			virtual ~BaseView() = default;
 
-			virtual void notify( const Event::VTX_EVENT_MODEL & ) { /*std::cout << "notify super class" << std::endl;*/ };
+			virtual void notify( const Event::VTX_EVENT_MODEL & p_event )
+			{
+				if ( p_event == Event::VTX_EVENT_MODEL::DATA_CHANGE )
+					refreshView();
+			};
 
-		  protected:
+			inline virtual void refreshView() {};
 		};
 	} // namespace View
 } // namespace VTX

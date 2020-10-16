@@ -19,13 +19,15 @@ namespace VTX
 			class SceneTreeWidgetItem : public QTreeWidgetItem
 			{
 			  public:
-				SceneTreeWidgetItem( Model::BaseModel & p_model, QTreeWidgetItem * p_parent ) : QTreeWidgetItem( p_parent ), _linkedModel( &p_model ) {};
-				void fillData( const Model::BaseModel & p_model, const std::string & p_name, const QIcon & p_icon );
+				SceneTreeWidgetItem( Model::BaseModel & p_model, QTreeWidgetItem * p_parent ) : QTreeWidgetItem( p_parent ), _linkedModel( &p_model ) { refreshItem(); };
 
 				Model::BaseModel * const getModel() { return _linkedModel; };
 
+				virtual void refreshItem();
+
 			  protected:
-				Qt::CheckState			 getCheckState( const Model::BaseModel & p_model );
+				const Qt::CheckState getCheckState( const bool p_enable ) const { return p_enable ? Qt::CheckState::Checked : Qt::CheckState::Unchecked; };
+
 				Model::BaseModel * const _linkedModel = nullptr;
 			};
 		} // namespace Widget

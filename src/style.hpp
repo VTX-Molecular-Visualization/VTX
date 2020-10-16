@@ -5,7 +5,10 @@
 #pragma once
 #endif
 
+#include "id.hpp"
+//#include "vtx_app.hpp"
 #include <QIcon>
+#include <iostream>
 
 namespace VTX
 {
@@ -32,6 +35,28 @@ namespace VTX
 			const QIcon CHAIN_SYMBOL;
 			const QIcon RESIDUE_SYMBOL;
 			const QIcon ATOM_SYMBOL;
+
+			const QIcon * const getModelSymbol( const ID::VTX_ID & p_id ) const
+			{
+				const QIcon * res;
+
+				if ( p_id == ID::Model::MODEL_MOLECULE )
+					res = &MOLECULE_SYMBOL;
+				else if ( p_id == ID::Model::MODEL_CHAIN )
+					res = &CHAIN_SYMBOL;
+				else if ( p_id == ID::Model::MODEL_RESIDUE )
+					res = &RESIDUE_SYMBOL;
+				else if ( p_id == ID::Model::MODEL_ATOM )
+					res = &ATOM_SYMBOL;
+				else
+				{
+					std::cout << "[WARNING] - Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." << std::endl;
+					// VTX_WARNING( "Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." );
+					res = nullptr;
+				}
+
+				return res;
+			};
 
 		  private:
 			inline IconConst() :
