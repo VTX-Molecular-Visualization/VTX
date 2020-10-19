@@ -136,11 +136,24 @@ QTreeWidget::branch:open:has-children:has-siblings
 	image: url(:/sprite/treeview_unfolded_molecule_icon.png);
 }
 
-QWidget#inspector_item_content
+
+QPushButton#inspector_item_header,
+QPushButton#inspector_item_section_header
 {
-	border-bottom: 1px solid #444444;
+	border-top: none;
+	border-bottom: none;
 }
-QWidget#inspector_item_header
+
+QPushButton#inspector_item_header,
+QLabel#inspector_item_header_title,
+QLabel#inspector_item_header_icon
 {
-	border-bottom: 1px solid #444444;
+	background-color: #40A6FF;
+}
+
+QPushButton#inspector_item_section_header,
+QLabel#inspector_item_section_header_title,
+QLabel#inspector_item_section_header_icon
+{
+	background-color: #79C0FE;
 }

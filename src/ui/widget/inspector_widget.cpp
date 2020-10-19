@@ -34,7 +34,6 @@ namespace VTX
 					QWidget *								  widget				= linkedWidgetInterface->getLinkedWidget();
 
 					_verticalLayout->insertWidget( 0, widget );
-					// widget->setSizePolicy( QSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy ::Policy::Minimum ) );
 				}
 			}
 
@@ -72,7 +71,9 @@ namespace VTX
 
 				QWidget * layoutWidget = new QWidget( this );
 				layoutWidget->setContentsMargins( 0, 0, 0, 0 );
+
 				_verticalLayout = new QVBoxLayout( layoutWidget );
+				_verticalLayout->setSpacing( 4 );
 				_verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 				_verticalLayout->addStretch( 1000 );
 

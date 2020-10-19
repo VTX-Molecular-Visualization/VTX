@@ -7,7 +7,7 @@
 
 #include "id.hpp"
 //#include "vtx_app.hpp"
-#include <QIcon>
+#include <QPixmap>
 #include <iostream>
 
 namespace VTX
@@ -29,16 +29,16 @@ namespace VTX
 				return instance;
 			};
 
-			const QIcon UNFOLDED_PIXMAP;
-			const QIcon FOLDED_PIXMAP;
-			const QIcon MOLECULE_SYMBOL;
-			const QIcon CHAIN_SYMBOL;
-			const QIcon RESIDUE_SYMBOL;
-			const QIcon ATOM_SYMBOL;
+			const QPixmap UNFOLDED_PIXMAP;
+			const QPixmap FOLDED_PIXMAP;
+			const QPixmap MOLECULE_SYMBOL;
+			const QPixmap CHAIN_SYMBOL;
+			const QPixmap RESIDUE_SYMBOL;
+			const QPixmap ATOM_SYMBOL;
 
-			const QIcon * const getModelSymbol( const ID::VTX_ID & p_id ) const
+			const QPixmap * const getModelSymbol( const ID::VTX_ID & p_id ) const
 			{
-				const QIcon * res;
+				const QPixmap * res;
 
 				if ( p_id == ID::Model::MODEL_MOLECULE )
 					res = &MOLECULE_SYMBOL;
@@ -60,13 +60,12 @@ namespace VTX
 
 		  private:
 			inline IconConst() :
-				UNFOLDED_PIXMAP( QIcon( ":/sprite/treeview_unfolded_molecule_icon.png" ) ), FOLDED_PIXMAP( QIcon( ":/sprite/treeview_folded_molecule_icon.png" ) ),
-				MOLECULE_SYMBOL( QIcon( ":/sprite/symbol/molecule_symbol_icon.png" ) ), CHAIN_SYMBOL( QIcon( ":/sprite/symbol/chain_symbol_icon.png" ) ),
-				RESIDUE_SYMBOL( QIcon( ":/sprite/symbol/residue_symbol_icon.png" ) ), ATOM_SYMBOL( QIcon( ":/sprite/symbol/atom_symbol_icon.png" ) ) {};
+				UNFOLDED_PIXMAP( QPixmap( ":/sprite/treeview_unfolded_molecule_icon.png" ) ), FOLDED_PIXMAP( QPixmap( ":/sprite/treeview_folded_molecule_icon.png" ) ),
+				MOLECULE_SYMBOL( QPixmap( ":/sprite/symbol/molecule_symbol_icon.png" ) ), CHAIN_SYMBOL( QPixmap( ":/sprite/symbol/chain_symbol_icon.png" ) ),
+				RESIDUE_SYMBOL( QPixmap( ":/sprite/symbol/residue_symbol_icon.png" ) ), ATOM_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ) {};
 		};
 
 		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;
-		inline static const int INSPECTOR_HEADER_ICON_SPACING		= 2;
 		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;
 		inline static const int INSPECTOR_CONTENT_HORIZONTAL_OFFSET = 10;
 

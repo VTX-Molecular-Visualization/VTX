@@ -10,7 +10,9 @@ namespace VTX
 		{
 			void SceneTreeWidgetItem::refreshItem()
 			{
-				setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( _linkedModel->getTypeId() ) );
+				if ( icon( 0 ).isNull() )
+					setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( _linkedModel->getTypeId() ) );
+
 				setCheckState( 0, getCheckState( _linkedModel->isEnable() ) );
 				setText( 0, QString::fromStdString( _linkedModel->getDefaultName() ) );
 			}

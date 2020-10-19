@@ -5,14 +5,10 @@
 #pragma once
 #endif
 
+#include "hideable_section_widget.hpp"
+#include "inspector_item_field.hpp"
 #include "model/molecule.hpp"
-#include "ui/widget_factory.hpp"
 #include "view_item_widget.hpp"
-#include <QBoxLayout>
-#include <QCheckBox>
-#include <QIcon>
-#include <QLabel>
-#include <QPushButton>
 #include <QWidget>
 
 namespace VTX
@@ -26,38 +22,30 @@ namespace VTX
 				VTX_MANUAL_WIDGET_DECLARATION
 
 			  public:
-				void		refresh();
-				inline void localize() override {};
+				void refresh();
+				void localize() override;
 
 			  protected:
 				InspectorMoleculeWidget( QWidget * p_parent ) : ViewItemWidget( p_parent ) {};
+				~InspectorMoleculeWidget();
 
 				void		 _setupUi( const QString & p_name ) override;
 				virtual void _setupSlots() override;
 
-				inline void toggleFoldState() { setFoldState( !_folded ); }
-				inline bool getFoldState() { return _folded; }
-				void		setFoldState( bool foldState );
-
 			  private:
-				QVBoxLayout * _verticalLayout = nullptr;
+				HideableSectionWidget * _mainWidget = nullptr;
 
-				// Header
-				QWidget *	  _headerWidget = nullptr;
-				QHBoxLayout * _headerLayout = nullptr;
-				QPushButton * _foldState	= nullptr;
-				QCheckBox *	  _enableWidget = nullptr;
-				QLabel *	  _symbolWidget = nullptr;
-				QLabel *	  _nameWidget	= nullptr;
+				// Info section
+				enum class InfoFields : int
+				{
+					FULL_NAME = 0,
+					ATOM_COUNT,
+					COUNT
+				};
+				HideableSectionWidget * _infoSection								 = nullptr;
+				InspectorItemField		_infoSectionFields[ (int)InfoFields::COUNT ] = { InspectorItemField( "Full Name" ), InspectorItemField( "Atom count" ) };
 
-				// Content
-				QWidget *	  _content		 = nullptr;
-				QLabel *	  _info			 = nullptr;
-				QVBoxLayout * _contentLayout = nullptr;
-
-				bool _folded = false;
-
-				void setModelEnableFromCheckBox( int checkboxState ) { _model->setEnable( checkboxState > 0 ); }
+				void setModelEnableFromCheckBox( const int checkboxState ) { _model->setEnable( checkboxState > 0 ); }
 			};
 
 		} // namespace Widget
