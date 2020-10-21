@@ -42,7 +42,7 @@ namespace VTX
 			};
 
 			template<typename M, typename P1, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
-			M * const instantiate( P1 p_param1 )
+			M * const instantiate( P1 & p_param1 )
 			{
 				M *		  model = new M( p_param1 );
 				MvcData * mvc	= new MvcData( model );
