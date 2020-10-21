@@ -42,7 +42,7 @@ namespace VTX
 
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
 			gl()->glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
-			gl()->glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
+			gl()->glVertexAttribIPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, GL_UNSIGNED_INT, sizeof( uint ), 0 );
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboColors );

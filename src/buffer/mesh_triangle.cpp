@@ -40,7 +40,7 @@ namespace VTX
 
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
 			gl()->glEnableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
-			gl()->glVertexAttribPointer( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
+			gl()->glVertexAttribIPointer( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, GL_UNSIGNED_INT, sizeof( uint ), 0 );
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
