@@ -45,7 +45,7 @@ namespace VTX
 		_elapsedTimer->start();
 
 		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
-		// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
+		// VTX_ACTION( new Action::Main::OpenApi( "4v6x" ) );
 
 //#define RT_ENABLED
 #ifdef RT_ENABLED
@@ -58,7 +58,11 @@ namespace VTX
 #endif
 	}
 
-	void VTXApp::stop() { _timer->stop(); }
+	void VTXApp::stop()
+	{
+		_timer->stop();
+		exit();
+	}
 
 	VTXApp::~VTXApp()
 	{

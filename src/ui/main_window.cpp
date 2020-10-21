@@ -82,6 +82,12 @@ namespace VTX
 			resizeDocks( { _sceneWidget, _renderWidget, _inspectorWidget }, { 1, 5, 1 }, Qt::Orientation::Horizontal );
 		}
 
+		void MainWindow::closeEvent( QCloseEvent * p_event )
+		{
+			VTXApp::get().stop();
+			p_event->accept();
+		}
+
 		void MainWindow::on_file_open_triggered()
 		{
 			// TODO : Filter file type

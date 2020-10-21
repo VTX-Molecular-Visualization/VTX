@@ -22,8 +22,8 @@ namespace VTX
 
 			gl()->glGenVertexArrays( 1, &_vao );
 			gl()->glBindVertexArray( _vao );
+
 			gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
-			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
 			gl()->glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );

@@ -14,6 +14,7 @@
 #include "widget/render_widget.hpp"
 #include "widget/scene_widget.hpp"
 #include "widget/status_bar_widget.hpp"
+#include <QCloseEvent>
 #include <QMainWindow>
 
 namespace VTX
@@ -32,6 +33,7 @@ namespace VTX
 			inline Widget::OpenGLWidget &		getOpenGLWidget() { return _renderWidget->getOpenGLWidget(); }
 
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
+			void closeEvent( QCloseEvent * ) override;
 
 		  public slots:
 			void on_file_open_triggered();
