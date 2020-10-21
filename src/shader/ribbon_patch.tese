@@ -20,12 +20,12 @@ out vec3 te_color;
 
 const float PI				   = 3.1415;
 const mat4	BSPLINE_MAT		   = mat4( -1.f, 3.f, -3.f, 1.f, 3.f, -6.f, 3.f, 0.f, -3.f, 0.f, 3.f, 0.f, 1.f, 4.f, 1.f, 0.f );
-const float DIRECTION_FACTOR[] = float[]( 2.f, // HELIX_ALPHA_RIGHT
-										  2.f, // HELIX_ALPHA_LEFT
-										  2.f, // HELIX_3_10_RIGHT
-										  2.f, // HELIX_3_10_LEFT
-										  2.f, // HELIX_PI
-										  3.f, // STRAND
+const float DIRECTION_FACTOR[] = float[]( 5.f, // HELIX_ALPHA_RIGHT
+										  5.f, // HELIX_ALPHA_LEFT
+										  5.f, // HELIX_3_10_RIGHT
+										  5.f, // HELIX_3_10_LEFT
+										  5.f, // HELIX_PI
+										  6.f, // STRAND
 										  1.f, // TURN
 										  1.f  // COIL
 );
@@ -58,9 +58,12 @@ void main()
 	// vec3 normal = normalize( mix( tc_normal[ 1 ], tc_normal[ 2 ], gl_TessCoord.x ) );
 
 	// Handle factors.
-	const unsigned short ss				 = tc_secondaryStructure[ 1 ];
-	const float			 directionFactor = DIRECTION_FACTOR[ ss ];
-	const float			 radius			 = 0.5f;
+	// const float directionFactor = DIRECTION_FACTOR[ tc_secondaryStructure[ 1 ] ];
+
+	const float directionFactor = mix( min( DIRECTION_FACTOR[ tc_secondaryStructure[ 0 ] ], DIRECTION_FACTOR[ tc_secondaryStructure[ 1 ] ] ),
+									   min( DIRECTION_FACTOR[ tc_secondaryStructure[ 1 ] ], DIRECTION_FACTOR[ tc_secondaryStructure[ 2 ] ] ),
+									   gl_TessCoord.x );
+	const float radius			= 0.1f;
 
 	// Move vertex along [-direction, direction].
 	float directionStep = directionFactor * radius;
@@ -84,5 +87,6 @@ void main()
 	te_normal = vec3( u_normalMatrix * vec4( normal, 1.f ) );
 
 	// Mix colors.
-	te_color = mix( tc_color[ 1 ], tc_color[ 2 ], gl_TessCoord.x );
+	// te_color = mix( tc_color[ 1 ], tc_color[ 2 ], gl_TessCoord.x );
+	te_color = tc_color[ 1 ];
 }
