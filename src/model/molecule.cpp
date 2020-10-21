@@ -252,8 +252,8 @@ namespace VTX
 			}
 
 			// Clear topology.
-			Generic::clearVector( _chains );
-			Generic::clearVector( _residues );
+			MVC::MvcManager::get().deleteAllModels( _chains );
+			MVC::MvcManager::get().deleteAllModels( _residues );
 
 			// Create models.
 			_chains.resize( p_molecule.getChainCount() );

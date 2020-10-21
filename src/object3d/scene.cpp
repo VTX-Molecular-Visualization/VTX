@@ -16,9 +16,14 @@ namespace VTX
 
 		void Scene::clear()
 		{
-			Generic::clearMapAsKey( _molecules );
-			Generic::clearVector( _meshes );
-			Generic::clearVector( _paths );
+			for ( const PairMoleculePtrFloat & mol : _molecules )
+			{
+				MVC::MvcManager::get().deleteModel( mol.first );
+			}
+			_molecules.clear();
+
+			MVC::MvcManager::get().deleteAllModels( _meshes );
+			MVC::MvcManager::get().deleteAllModels( _paths );
 		}
 
 		void Scene::addMolecule( MoleculePtr const p_molecule )
