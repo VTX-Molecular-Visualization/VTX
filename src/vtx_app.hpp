@@ -106,8 +106,6 @@ namespace VTX
 	inline void VTX_WARNING( const std::string & p_str ) { VTXApp::get().getLogger().logWarning( p_str ); }
 	inline void VTX_ERROR( const std::string & p_str ) { VTXApp::get().getLogger().logError( p_str ); }
 	inline void VTX_CONSOLE( const std::string & p_str ) { std::cout << p_str << std::endl; }
-
-	inline QOpenGLFunctions_4_5_Core & OGL() { return VTXApp::get().getMainWindow().getOpenGLWidget().getFunctions(); }
 } // namespace VTX
 
 #endif

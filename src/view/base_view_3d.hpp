@@ -27,8 +27,8 @@ namespace VTX
 		  protected:
 			Renderer::GLSL::Program * _program = nullptr;
 
-			inline QOpenGLFunctions_4_5_Core * const _gl() { return _model->getBuffer()->gl(); }
-			virtual void							 notify( const Event::VTX_EVENT_MODEL & p_event ) override
+			inline OpenGLFunctions * const _gl() { return _model->getBuffer()->gl(); }
+			virtual void				   notify( const Event::VTX_EVENT_MODEL & p_event ) override
 			{
 				if ( p_event == Event::VTX_EVENT_MODEL::RENDER )
 				{

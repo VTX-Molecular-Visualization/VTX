@@ -16,6 +16,7 @@ namespace VTX
 			class LinearizeDepth : public BasePass
 			{
 			  public:
+				LinearizeDepth( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
 				virtual ~LinearizeDepth();
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
 				virtual void resize( const uint, const uint ) override;

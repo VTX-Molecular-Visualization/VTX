@@ -21,7 +21,7 @@ namespace VTX
 		class GL : public BaseRenderer
 		{
 		  public:
-			GL() = default;
+			GL( OpenGLFunctions * const p_gl );
 			~GL();
 
 			virtual void init( const uint, const uint ) override;
@@ -45,13 +45,13 @@ namespace VTX
 			const GLuint & getRenderedFBO() const;
 
 		  private:
-			Pass::Geometric *	   _passGeometric	   = new Pass::Geometric();
-			Pass::LinearizeDepth * _passLinearizeDepth = new Pass::LinearizeDepth();
-			Pass::SSAO *		   _passSSAO		   = new Pass::SSAO();
-			Pass::Blur *		   _passBlur		   = new Pass::Blur();
-			Pass::Shading *		   _passShading		   = new Pass::Shading();
-			Pass::Outline *		   _passOutline		   = new Pass::Outline();
-			Pass::FXAA *		   _passFXAA		   = new Pass::FXAA();
+			Pass::Geometric *	   _passGeometric	   = nullptr;
+			Pass::LinearizeDepth * _passLinearizeDepth = nullptr;
+			Pass::SSAO *		   _passSSAO		   = nullptr;
+			Pass::Blur *		   _passBlur		   = nullptr;
+			Pass::Shading *		   _passShading		   = nullptr;
+			Pass::Outline *		   _passOutline		   = nullptr;
+			Pass::FXAA *		   _passFXAA		   = nullptr;
 
 			GLuint _quadVAO = GL_INVALID_VALUE;
 			GLuint _quadVBO = GL_INVALID_VALUE;

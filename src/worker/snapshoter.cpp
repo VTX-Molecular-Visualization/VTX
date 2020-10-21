@@ -17,15 +17,15 @@ namespace VTX
 	{
 		bool Snapshoter::takeSnapshotGL( const Path & p_path )
 		{
-			const Renderer::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
+			Renderer::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
 			const uint width  = renderer.getWidth();
 			const uint height = renderer.getHeight();
 
 			std::vector<uchar> image( width * height * 4 );
-			OGL().glBindFramebuffer( GL_FRAMEBUFFER, renderer.getRenderedFBO() );
-			OGL().glReadnPixels( 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, GLsizei( image.size() ), image.data() );
-			OGL().glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+			renderer.gl()->glBindFramebuffer( GL_FRAMEBUFFER, renderer.getRenderedFBO() );
+			renderer.gl()->glReadnPixels( 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, GLsizei( image.size() ), image.data() );
+			renderer.gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 			// const GLuint & texture = renderer.getRenderedTexture();
 			// std::vector<float> buffer( width * height * 4 );
@@ -45,12 +45,12 @@ namespace VTX
 
 		bool Snapshoter::takeSnapshotRTCPU( const Path & p_path ) const
 		{
-			const Renderer::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
+			Renderer::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
 			const uint width  = renderer.getWidth();
 			const uint height = renderer.getHeight();
 
-			Renderer::RayTracer * rt = new Renderer::RayTracer();
+			Renderer::RayTracer * rt = new Renderer::RayTracer( renderer.gl() );
 			rt->init( width, height );
 			rt->renderFrame( VTXApp::get().getScene() );
 			const std::vector<uchar> & pixels = rt->getPixels();

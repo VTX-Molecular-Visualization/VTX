@@ -17,7 +17,7 @@ namespace VTX
 		class MeshTriangle : public BaseBufferOpenGL
 		{
 		  public:
-			MeshTriangle( QOpenGLFunctions_4_5_Core * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
+			MeshTriangle( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
 			~MeshTriangle() = default;
 
 			void generate() override;

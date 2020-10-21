@@ -16,6 +16,7 @@ namespace VTX
 			class Outline : public BasePass
 			{
 			  public:
+				Outline( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
 				virtual ~Outline();
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
 				virtual void resize( const uint, const uint ) override;

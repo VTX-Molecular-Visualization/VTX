@@ -43,7 +43,7 @@ namespace VTX
 				_buffer->unbind();
 			}
 
-			void init( QOpenGLFunctions_4_5_Core * const p_gl )
+			void init( OpenGLFunctions * const p_gl )
 			{
 				_buffer = new B( p_gl );
 				_buffer->generate();

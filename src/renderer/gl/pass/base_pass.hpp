@@ -6,9 +6,9 @@
 #endif
 
 #include "define.hpp"
+#include "generic/base_opengl.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/gl/program_manager.hpp"
-#include <QOpenGLFunctions_4_5_Core>
 
 namespace VTX
 {
@@ -18,10 +18,10 @@ namespace VTX
 
 		namespace Pass
 		{
-			class BasePass
+			class BasePass : public Generic::BaseOpenGL
 			{
 			  public:
-				BasePass()			= default;
+				BasePass( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 				virtual ~BasePass() = default;
 
 				virtual void init( GLSL::ProgramManager &, const uint, const uint )	 = 0;

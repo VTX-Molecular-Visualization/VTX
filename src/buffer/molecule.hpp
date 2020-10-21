@@ -17,7 +17,7 @@ namespace VTX
 		class Molecule : public BaseBufferOpenGL
 		{
 		  public:
-			Molecule( QOpenGLFunctions_4_5_Core * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
+			Molecule( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
 			~Molecule() = default;
 
 			void generate() override;

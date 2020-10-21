@@ -25,6 +25,7 @@ namespace VTX
 			class Shading : public BasePass
 			{
 			  public:
+				Shading( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
 				virtual ~Shading();
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
 				virtual void resize( const uint, const uint ) override;

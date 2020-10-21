@@ -7,7 +7,7 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : QOpenGLWidget( p_parent )
+			OpenGLWidget::OpenGLWidget( QWidget * p_parent ) : QOpenGLWidget( p_parent ), Generic::BaseOpenGL( nullptr )
 			{
 				QSurfaceFormat format;
 				format.setVersion( 4, 5 );
@@ -44,12 +44,12 @@ namespace VTX
 
 			void OpenGLWidget::initializeGL()
 			{
-				_functions = context()->versionFunctions<QOpenGLFunctions_4_5_Core>();
-				_functions->initializeOpenGLFunctions();
+				_gl = context()->versionFunctions<OpenGLFunctions>();
+				_gl->initializeOpenGLFunctions();
 
 #ifdef _DEBUG
-				_functions->glEnable( GL_DEBUG_OUTPUT );
-				_functions->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
+				_gl->glEnable( GL_DEBUG_OUTPUT );
+				_gl->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
 #endif
 
 				switchRenderer( Setting::MODE_DEFAULT );
@@ -61,9 +61,9 @@ namespace VTX
 			{
 				getRenderer().renderFrame( VTXApp::get().getScene() );
 
-				_functions->glBindFramebuffer( GL_READ_FRAMEBUFFER, getRendererGL().getRenderedFBO() );
-				_functions->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, defaultFramebufferObject() );
-				_functions->glBlitFramebuffer( 0, 0, size().width(), size().height(), 0, 0, size().width(), size().height(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
+				_gl->glBindFramebuffer( GL_READ_FRAMEBUFFER, getRendererGL().getRenderedFBO() );
+				_gl->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, defaultFramebufferObject() );
+				_gl->glBlitFramebuffer( 0, 0, size().width(), size().height(), 0, 0, size().width(), size().height(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
 
 				_counter++;
 				if ( _timer.elapsed() >= 1000.0 )
@@ -86,6 +86,8 @@ namespace VTX
 
 			void OpenGLWidget::switchRenderer( const Renderer::MODE p_mode )
 			{
+				assert( _gl != nullptr );
+
 				bool needInit = false;
 
 				switch ( p_mode )
@@ -93,7 +95,7 @@ namespace VTX
 				case Renderer::MODE::GL:
 					if ( _rendererGL == nullptr )
 					{
-						_rendererGL = new Renderer::GL();
+						_rendererGL = new Renderer::GL( _gl );
 						needInit	= true;
 					}
 					_renderer = _rendererGL;

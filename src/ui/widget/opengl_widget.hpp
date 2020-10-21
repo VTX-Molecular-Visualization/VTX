@@ -5,11 +5,11 @@
 #pragma once
 #endif
 
+#include "generic/base_opengl.hpp"
 #include "renderer/base_renderer.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/ray_tracing/ray_tracer.hpp"
 #include <QElapsedTimer>
-#include <QOpenGLFunctions_4_5_Core>
 #include <QOpenGLWidget>
 #ifdef OPTIX_DEFINED
 #include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
@@ -37,7 +37,7 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class OpenGLWidget : public QOpenGLWidget
+			class OpenGLWidget : public QOpenGLWidget, public Generic::BaseOpenGL
 			{
 			  public:
 				OpenGLWidget( QWidget * p_parent = 0 );
@@ -49,8 +49,6 @@ namespace VTX
 				inline const Renderer::GL &					  getRendererGL() const { return *_rendererGL; }
 				inline Renderer::GLSL::ProgramManager &		  getProgramManager() { return _renderer->getProgramManager(); }
 				inline const Renderer::GLSL::ProgramManager & getProgramManager() const { return _renderer->getProgramManager(); }
-				inline const QOpenGLFunctions_4_5_Core &	  getFunctions() const { return *_functions; }
-				inline QOpenGLFunctions_4_5_Core &			  getFunctions() { return *_functions; }
 
 				void switchRenderer( const Renderer::MODE );
 
@@ -62,9 +60,8 @@ namespace VTX
 				QElapsedTimer _timer;
 				uint		  _counter = 0;
 
-				QOpenGLFunctions_4_5_Core * _functions	= nullptr;
-				Renderer::BaseRenderer *	_renderer	= nullptr;
-				Renderer::GL *				_rendererGL = nullptr;
+				Renderer::BaseRenderer * _renderer	 = nullptr;
+				Renderer::GL *			 _rendererGL = nullptr;
 #ifdef CUDA_DEFINED
 				Renderer::RayTracer * _rendererRT = nullptr;
 #endif

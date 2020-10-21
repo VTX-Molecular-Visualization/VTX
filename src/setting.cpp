@@ -24,7 +24,7 @@ namespace VTX
 	// Rendering.
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT	= true;
 	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT = Color::Rgb::BLACK;
-	const Generic::REPRESENTATION Setting::REPRESENTATION_DEFAULT	= Generic::REPRESENTATION::CARTOON;
+	const Generic::REPRESENTATION Setting::REPRESENTATION_DEFAULT	= Generic::REPRESENTATION::BALL_AND_STICK;
 	const float					  Setting::ATOMS_RADIUS_DEFAULT		= 0.4f;
 	const float					  Setting::ATOMS_RADIUS_MIN			= 0.f;
 	const float					  Setting::ATOMS_RADIUS_MAX			= 1.f;

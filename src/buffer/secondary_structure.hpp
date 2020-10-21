@@ -17,7 +17,7 @@ namespace VTX
 		class SecondaryStructure : public BaseBufferOpenGL
 		{
 		  public:
-			SecondaryStructure( QOpenGLFunctions_4_5_Core * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
+			SecondaryStructure( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
 			~SecondaryStructure() = default;
 
 			void generate() override;

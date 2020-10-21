@@ -16,15 +16,13 @@ namespace VTX
 			class Geometric : public BasePass
 			{
 			  public:
+				Geometric( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
 				virtual ~Geometric();
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
 				virtual void resize( const uint, const uint ) override;
 				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
 
-				inline const GLuint & getViewPositionsNormalsCompressedTexture() const
-				{
-					return _viewPositionsNormalsCompressedTexture;
-				}
+				inline const GLuint & getViewPositionsNormalsCompressedTexture() const { return _viewPositionsNormalsCompressedTexture; }
 				inline const GLuint & getColorsTexture() const { return _colorsTexture; }
 				inline const GLuint & getDepthTexture() const { return _depthTexture; }
 
