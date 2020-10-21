@@ -36,7 +36,8 @@ namespace VTX
 		enum class VTX_EVENT_MODEL : int
 		{
 			INIT,
-			RENDER
+			RENDER,
+			DATA_CHANGE
 		};
 
 		// Base event without args.

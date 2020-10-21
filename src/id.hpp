@@ -27,12 +27,15 @@ namespace VTX
 
 		namespace Model
 		{
-			const VTX_ID MODEL_MOLECULE	 = "MODEL_MOLECULE";
-			const VTX_ID MODEL_CHAIN	 = "MODEL_CHAIN";
-			const VTX_ID MODEL_RESIDUE	 = "MODEL_RESIDUE";
-			const VTX_ID MODEL_ATOM		 = "MODEL_ATOM";
-			const VTX_ID MODEL_PATH		 = "MODEL_PATH";
-			const VTX_ID MODEL_VIEWPOINT = "MODEL_VIEWPOINT";
+			const VTX_ID MODEL_MOLECULE			   = "MODEL_MOLECULE";
+			const VTX_ID MODEL_CHAIN			   = "MODEL_CHAIN";
+			const VTX_ID MODEL_RESIDUE			   = "MODEL_RESIDUE";
+			const VTX_ID MODEL_ATOM				   = "MODEL_ATOM";
+			const VTX_ID MODEL_BOND				   = "MODEL_BOND";
+			const VTX_ID MODEL_SECONDARY_STRUCTURE = "MODEL_SECONDARY_STRUCTURE";
+			const VTX_ID MODEL_MESH_TRIANGLE	   = "MODEL_MESH_TRIANGLE";
+			const VTX_ID MODEL_PATH				   = "MODEL_PATH";
+			const VTX_ID MODEL_VIEWPOINT		   = "MODEL_VIEWPOINT";
 		} // namespace Model
 
 		namespace View

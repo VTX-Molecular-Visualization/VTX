@@ -64,7 +64,7 @@ namespace VTX
 			inline const T * const getItem( const std::string & p_name ) const { return _items[ p_name ]; }
 			inline T * const	   getItem( const std::string & p_name ) { return _items[ p_name ]; }
 
-			inline const MapStringToItemPtr * const getItems() { return &_items; }
+			inline const MapStringToItemPtr * const getItems() const { return &_items; }
 
 			template<typename T2, typename = std::enable_if<std::is_base_of<T, T2>::value>>
 			const T2 * const getItem( const std::string & p_name ) const

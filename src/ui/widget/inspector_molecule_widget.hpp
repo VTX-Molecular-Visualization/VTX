@@ -5,14 +5,10 @@
 #pragma once
 #endif
 
-#include "base_manual_widget.hpp"
+#include "collapsing_header_widget.hpp"
+#include "inspector_item_field.hpp"
 #include "model/molecule.hpp"
-#include "ui/widget_factory.hpp"
-#include <QBoxLayout>
-#include <QCheckBox>
-#include <QIcon>
-#include <QLabel>
-#include <QPushButton>
+#include "view_item_widget.hpp"
 #include <QWidget>
 
 namespace VTX
@@ -21,51 +17,35 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			class InspectorMoleculeWidget : public BaseManualWidget<QWidget>
+			class InspectorMoleculeWidget : public ViewItemWidget<Model::Molecule>
 			{
 				VTX_MANUAL_WIDGET_DECLARATION
 
 			  public:
-				void		refresh();
-				inline void localize() override {};
-
-				inline void setModel( Model::Molecule * const p_model )
-				{
-					_model = p_model;
-					refresh();
-				};
-				inline Model::Molecule * getModel() { return _model; };
+				void refresh();
+				void localize() override;
 
 			  protected:
-				InspectorMoleculeWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
+				InspectorMoleculeWidget( QWidget * p_parent ) : ViewItemWidget( p_parent ) {};
+				~InspectorMoleculeWidget();
 
 				void		 _setupUi( const QString & p_name ) override;
 				virtual void _setupSlots() override;
 
-				inline void toggleFoldState() { setFoldState( !_folded ); }
-				inline bool getFoldState() { return _folded; }
-				void		setFoldState( bool foldState );
-
 			  private:
-				QVBoxLayout * _verticalLayout = nullptr;
+				CollapsingHeaderWidget * _mainWidget = nullptr;
 
-				// Header
-				QWidget *	  _headerWidget = nullptr;
-				QHBoxLayout * _headerLayout = nullptr;
-				QPushButton * _foldState	= nullptr;
-				QCheckBox *	  _enableWidget = nullptr;
-				QLabel *	  _symbolWidget = nullptr;
-				QLabel *	  _nameWidget	= nullptr;
+				// Info section
+				enum class InfoFields : int
+				{
+					FULL_NAME = 0,
+					ATOM_COUNT,
+					COUNT
+				};
+				CollapsingHeaderWidget * _infoSection								  = nullptr;
+				InspectorItemField		 _infoSectionFields[ (int)InfoFields::COUNT ] = { InspectorItemField( "Full Name" ), InspectorItemField( "Atom count" ) };
 
-				// Content
-				QWidget *	  _content		 = nullptr;
-				QLabel *	  _info			 = nullptr;
-				QVBoxLayout * _contentLayout = nullptr;
-
-				bool			  _folded = false;
-				Model::Molecule * _model  = nullptr;
-
-				void setModelEnableFromCheckBox( int checkboxState ) { _model->setEnable( checkboxState > 0 ); }
+				void setModelEnableFromCheckBox( const int checkboxState ) { _model->setEnable( checkboxState > 0 ); }
 			};
 
 		} // namespace Widget

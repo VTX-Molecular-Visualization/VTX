@@ -1,6 +1,4 @@
 #include "menu_main_widget.hpp"
-#include "ui/widget_factory.hpp"
-#include <QWidget>
 
 namespace VTX
 {

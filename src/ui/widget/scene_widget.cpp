@@ -4,6 +4,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
+#include "ui/widget/scene_tree_widget_item.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/base_scene_item.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
@@ -40,11 +41,13 @@ namespace VTX
 				{
 					const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
-					View::UI::Widget::MoleculeSceneView * item = WidgetFactory::get().GetSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>(
-						castedEvent.ptr, _treeWidget->invisibleRootItem(), "MoleculeStructure" );
+					//Set no parent to not trigger ItemChange event during init
+					View::UI::Widget::MoleculeSceneView * item
+						= WidgetFactory::get().GetSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>( castedEvent.ptr, nullptr, "MoleculeStructure" );
 
 					MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, item );
 
+					//Add Item to tree hierarchy
 					addItem( item );
 				}
 				else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
@@ -70,8 +73,22 @@ namespace VTX
 				setWidget( _treeWidget );
 			}
 
-			void SceneWidget::_setupSlots() { connect( _treeWidget, &QTreeWidget::itemSelectionChanged, this, &SceneWidget::_onSelectionChange ); }
+			void SceneWidget::_setupSlots()
+			{
+				connect( _treeWidget, &QTreeWidget::itemSelectionChanged, this, &SceneWidget::_onSelectionChange );
+				connect( _treeWidget, &QTreeWidget::itemChanged, this, &SceneWidget::_onItemChange );
+			}
 
+			void SceneWidget::_onItemChange( QTreeWidgetItem * p_item, int p_column )
+			{
+				// VTX_INFO( "_onItemChange !! " );
+				if ( p_column == 0 )
+				{
+					SceneTreeWidgetItem * sceneItem	   = dynamic_cast<SceneTreeWidgetItem *>( p_item );
+					bool				  modelEnabled = sceneItem->checkState( 0 ) == Qt::CheckState::Checked ? true : false;
+					sceneItem->getModel()->setEnable( modelEnabled );
+				}
+			}
 			void SceneWidget::_onSelectionChange()
 			{
 				Selection::SelectionManager selectionManager = VTXApp::get().getSelectionManager();

@@ -26,8 +26,8 @@ namespace VTX
 				setContentsMargins( 2, 2, 2, 2 );
 
 				_horizontalLayout = new QHBoxLayout( this );
-				_horizontalLayout->setObjectName( "horizontalLayout" );
 				_horizontalLayout->setContentsMargins( 0, 0, 0, 0 );
+				_horizontalLayout->setSpacing( 0 );
 
 				_horizontalLayout->addStretch( 1000 );
 			}

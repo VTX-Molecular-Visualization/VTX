@@ -30,15 +30,15 @@ namespace VTX
 
 				_loadMoleculeButton = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "loadMoleculeButton" );
 				_loadMoleculeButton->setData( "Load", ":/sprite/load_molecule_icon.png", Qt::Orientation::Vertical );
-				addButton( *_loadMoleculeButton, 0, 0, 1, 1 );
+				pushButton( *_loadMoleculeButton, 0 );
 
 				_downloadMoleculeButton = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "downloadMoleculeButton" );
 				_downloadMoleculeButton->setData( "Download", ":/sprite/download_molecule_icon.png", Qt::Orientation::Vertical );
-				addButton( *_downloadMoleculeButton, 0, 1, 1, 1 );
+				pushButton( *_downloadMoleculeButton, 1 );
 
 				_saveMoleculeButton = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "saveMoleculeButton" );
 				_saveMoleculeButton->setData( "Save", ":/sprite/save_molecule_icon.png", Qt::Orientation::Vertical );
-				addButton( *_saveMoleculeButton, 0, 2, 1, 1 );
+				pushButton( *_saveMoleculeButton, 2 );
 
 				validate();
 

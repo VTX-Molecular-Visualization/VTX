@@ -17,24 +17,21 @@ namespace VTX
 		class MvcData
 		{
 		  public:
-			MvcData( const Model::BaseModel * p_model )
+			MvcData( const Model::BaseModel * const p_model )
 			{
 				_model = p_model;
 				_views = Generic::HasCollection<View::BaseView>();
 			};
 
-			~MvcData()
-			{
-				_views.clear();
-			};
+			~MvcData() { _views.clear(); };
 
-			const Model::Model_ID getId() const { return _model->getId(); }
+			const Model::Model_ID & getId() const { return _model->getId(); }
 
-			inline void				addView( const ID::VTX_ID & p_id, View::BaseView * p_view ) { _views.addItem( p_id, p_view ); };
+			inline void				addView( const ID::VTX_ID & p_id, View::BaseView * const p_view ) { _views.addItem( p_id, p_view ); };
 			inline View::BaseView * removeView( const ID::VTX_ID & p_id ) { return _views.removeItem( p_id ); };
 			inline bool				hasView( const ID::VTX_ID & p_id ) { return _views.getItem( p_id ); };
 
-			void notifyViews( const Event::VTX_EVENT_MODEL & p_event )
+			void notifyViews( const Event::VTX_EVENT_MODEL & p_event ) const
 			{
 				Generic::HasCollection<View::BaseView>::MapStringToItemPtr mapViews = *( _views.getItems() );
 

@@ -19,7 +19,7 @@ namespace VTX
 																					 Color::Rgb( 0.37f, 0.5f, 1.f ), // TURN
 																					 Color::Rgb::WHITE };			 // COIL
 
-		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) : _molecule( p_molecule )
+		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) : BaseModel3D( ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
 		{
 			Tool::Chrono chrono;
 			chrono.start();

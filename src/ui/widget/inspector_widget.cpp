@@ -1,6 +1,8 @@
 #include "inspector_widget.hpp"
+#include "model/molecule.hpp"
 #include "selection/selection_manager.hpp"
-#include "ui/widget/inspector_molecule_widget.hpp"
+#include "view/ui/linked_widget_interface.hpp"
+#include "view/ui/widget/molecule_inspector_view.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -24,13 +26,14 @@ namespace VTX
 
 				if ( p_event.name == Event::Global::MOLECULE_ADDED )
 				{
-					UI::Widget::InspectorMoleculeWidget * moleculeInspector = UI::WidgetFactory::get().GetWidget<UI::Widget::InspectorMoleculeWidget>( this, "MoleculeInspector" );
-					const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-					moleculeInspector->setModel( castedEvent.ptr );
+					const Event::VTXEventPtr<Model::Molecule> & castedEvent			  = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+					View::UI::Widget::MoleculeInspectorView *	moleculeInspectorView = new View::UI::Widget::MoleculeInspectorView( castedEvent.ptr, nullptr );
+					MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE, moleculeInspectorView );
 
-					_verticalLayout->insertWidget( 0, moleculeInspector );
-					moleculeInspector->setObjectName( "inspector_layout" );
-					moleculeInspector->setSizePolicy( QSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy ::Policy::Minimum ) );
+					View::UI::Widget::LinkedWidgetInterface * linkedWidgetInterface = moleculeInspectorView;
+					QWidget *								  widget				= linkedWidgetInterface->getLinkedWidget();
+
+					_verticalLayout->insertWidget( 0, widget );
 				}
 			}
 
@@ -68,7 +71,9 @@ namespace VTX
 
 				QWidget * layoutWidget = new QWidget( this );
 				layoutWidget->setContentsMargins( 0, 0, 0, 0 );
+
 				_verticalLayout = new QVBoxLayout( layoutWidget );
+				_verticalLayout->setSpacing( 4 );
 				_verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 				_verticalLayout->addStretch( 1000 );
 

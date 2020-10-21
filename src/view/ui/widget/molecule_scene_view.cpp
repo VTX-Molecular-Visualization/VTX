@@ -1,5 +1,6 @@
 #include "molecule_scene_view.hpp"
 #include "molecule_subdata_scene_view.hpp"
+#include "ui/widget/scene_widget.hpp"
 #include "ui/widget_factory.hpp"
 
 namespace VTX
@@ -16,20 +17,16 @@ namespace VTX
 				{
 					BaseSceneItem<Model::Molecule>::_setupUi( p_name );
 
-					setText( 0, QString::fromStdString( _model->getPdbIdCode() ) );
-
 					// Chains.
-					for ( const Model::Chain * const chain : _model->getChains() )
+					for ( Model::Chain * const chain : _model->getChains() )
 					{
-						MoleculeSubDataSceneView * chainView = new MoleculeSubDataSceneView( this );
-						chainView->setData( *chain );
+						MoleculeSubDataSceneView * chainView = new MoleculeSubDataSceneView( *chain, this );
 
 						// Residues.
 						for ( uint r = 0; r < chain->getResidueCount(); ++r )
 						{
-							const Model::Residue &	   residue	   = _model->getResidue( chain->getIndexFirstResidue() + r );
-							MoleculeSubDataSceneView * residueView = new MoleculeSubDataSceneView( chainView );
-							residueView->setData( residue );
+							Model::Residue &		   residue	   = _model->getResidue( chain->getIndexFirstResidue() + r );
+							MoleculeSubDataSceneView * residueView = new MoleculeSubDataSceneView( residue, chainView );
 						}
 					}
 				}

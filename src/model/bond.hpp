@@ -6,6 +6,7 @@
 #endif
 
 #include "base_model.hpp"
+#include "id.hpp"
 
 namespace VTX
 {
@@ -21,6 +22,8 @@ namespace VTX
 			inline void				setIndexSecondAtom( const uint p_index ) { _indexSecondAtom = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
+
+			Bond() : BaseModel( ID::Model::MODEL_BOND ) {};
 
 		  private:
 			uint	   _indexFirstAtom	= 0;

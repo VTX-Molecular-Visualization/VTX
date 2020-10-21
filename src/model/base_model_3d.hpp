@@ -9,6 +9,7 @@
 #include "generic/base_renderable.hpp"
 #include "generic/base_transformable.hpp"
 #include "generic/base_visible.hpp"
+#include "id.hpp"
 #include "math/aabb.hpp"
 #include "model/base_model.hpp"
 
@@ -20,7 +21,7 @@ namespace VTX
 		class BaseModel3D : public BaseModel, public Generic::BaseTransformable, public Generic::BaseRenderable, public Generic::BaseVisible
 		{
 		  public:
-			BaseModel3D() = default;
+			BaseModel3D( const ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {};
 			virtual ~BaseModel3D()
 			{
 				if ( _buffer != nullptr )

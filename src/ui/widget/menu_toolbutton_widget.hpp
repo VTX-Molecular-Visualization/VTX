@@ -8,6 +8,7 @@
 #include "base_manual_widget.hpp"
 #include <QToolButton>
 #include <QWidget>
+#include <type_traits>
 
 namespace VTX
 {
@@ -21,9 +22,10 @@ namespace VTX
 
 			  public:
 				void setData( const QString & p_name, const QString & p_iconUrl, const Qt::Orientation p_orientation );
+				void setOrientation( const Qt::Orientation p_orientation );
 
-				template<typename F>
-				void setTriggerAction( const F * p_receiver, void ( F::*p_action )() )
+				template<typename F, typename = std::enable_if<std::is_base_of<QWidget, F>::value>>
+				void setTriggerAction( const F * const p_receiver, void ( F::*p_action )() )
 				{
 					p_receiver->connect( this, &QToolButton::clicked, p_receiver, p_action );
 				}

@@ -1,4 +1,5 @@
 #include "menu_toolbutton_widget.hpp"
+#include "style.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -23,12 +24,14 @@ namespace VTX
 
 				updateButtonStyle( p_orientation );
 			}
+
+			void MenuToolButtonWidget::setOrientation( const Qt::Orientation p_orientation ) { updateButtonStyle( p_orientation ); }
 			void MenuToolButtonWidget::localize() {}
 			void MenuToolButtonWidget::_setupUi( const QString & p_name )
 			{
 				BaseManualWidget::_setupUi( p_name );
-				QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::Maximum, QSizePolicy::Policy::Maximum );
-				setSizePolicy( sizePolicy );
+				setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
+				setFont( Style::TOOL_MENU_BUTTON_FONT );
 			}
 			void MenuToolButtonWidget::_setupSlots() {}
 

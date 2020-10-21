@@ -8,7 +8,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		MeshTriangle::MeshTriangle() {}
+		MeshTriangle::MeshTriangle() : BaseModel3D( ID::Model::MODEL_MESH_TRIANGLE ) {}
 
 		void MeshTriangle::instantiateDefaultViews() {};
 

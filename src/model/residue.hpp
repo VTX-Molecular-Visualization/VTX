@@ -11,6 +11,7 @@
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
 #include "generic/base_visible.hpp"
+#include "id.hpp"
 #include "model/secondary_structure.hpp"
 #include <map>
 
@@ -67,6 +68,8 @@ namespace VTX
 			static const std::string SYMBOL_NAME[ (int)SYMBOL::COUNT ];
 			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
 
+			Residue() : BaseModel( ID::Model::MODEL_RESIDUE ) {};
+
 			inline TYPE				getType() const { return _type; }
 			inline void				setType( const TYPE p_type ) { _type = p_type; }
 			inline uint				getIndex() const { return _index; };
@@ -80,7 +83,11 @@ namespace VTX
 
 			inline const SYMBOL		   getSymbol() const { return _symbol; };
 			inline const std::string & getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; }
-			inline void				   setSymbol( const SYMBOL p_type ) { _symbol = p_type; };
+			inline void				   setSymbol( const SYMBOL p_type )
+			{
+				_symbol = p_type;
+				BaseModel::setDefaultName( &getSymbolName() );
+			};
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const std::string & getSymbolShort() const { return SYMBOL_SHORT_STR[ (int)_symbol ]; }
 

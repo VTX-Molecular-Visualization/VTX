@@ -10,6 +10,7 @@
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
 #include "generic/base_visible.hpp"
+#include "id.hpp"
 #include <iostream>
 
 namespace VTX
@@ -32,6 +33,8 @@ namespace VTX
 			static const Color::Rgb CHAIN_ID_COLOR_HETATM[ NB_COLORS ];
 			static const Color::Rgb CHAIN_ID_UNKNOWN_COLOR;
 
+			Chain() : BaseModel( ID::Model::MODEL_CHAIN ) {};
+
 			// inline TYPE				getType() const { return _type; }
 			// inline void				setType( const TYPE p_type ) { _type = p_type; }
 			inline uint				getIndex() const { return _index; };
@@ -42,7 +45,11 @@ namespace VTX
 			static Color::Rgb getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
 
 			inline const std::string & getName() const { return _name; };
-			inline void				   setName( const std::string & p_name ) { _name = p_name; };
+			inline void				   setName( const std::string & p_name )
+			{
+				_name = p_name;
+				BaseModel::setDefaultName( &_name );
+			};
 			inline const std::string & getSequence() const { return _sequence; };
 			inline uint				   getIndexFirstResidue() const { return _indexFirstResidue; };
 			inline void				   setIndexFirstResidue( const uint p_id ) { _indexFirstResidue = p_id; };
