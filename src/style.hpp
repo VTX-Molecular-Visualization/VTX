@@ -7,6 +7,7 @@
 
 #include "id.hpp"
 //#include "vtx_app.hpp"
+#include <QFont>
 #include <QPixmap>
 #include <iostream>
 
@@ -68,6 +69,8 @@ namespace VTX
 		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;
 		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;
 		inline static const int INSPECTOR_CONTENT_HORIZONTAL_OFFSET = 10;
+
+		inline static const QFont TOOL_MENU_BUTTON_FONT = QFont( "Helvetica", 10 );
 
 	} // namespace Style
 } // namespace VTX

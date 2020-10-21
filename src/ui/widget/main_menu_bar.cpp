@@ -14,8 +14,8 @@ namespace VTX
 			{
 				BaseManualWidget::_setupUi( p_name );
 
-				setGeometry( QRect( 0, 2, 800, 110 ) );
-				setMinimumSize( 800, 110 );
+				setGeometry( QRect( 0, 2, 800, 130 ) );
+				setMinimumSize( 800, 130 );
 				setContentsMargins( 10, 2, 10, 2 );
 				setSizePolicy( QSizePolicy( QSizePolicy::Policy::Maximum, QSizePolicy::Policy::Fixed ) );
 
@@ -31,8 +31,8 @@ namespace VTX
 				_mainMenu = WidgetFactory::get().GetWidget<MenuMainWidget>( this, "mainMenu" );
 				_tabWidget->addTab( _mainMenu, "Main" );
 
-				_viewMenu = new QLabel( "viewMenu", this );
-				_tabWidget->addTab( _viewMenu, "View" );
+				_viewMenu = WidgetFactory::get().GetWidget<MenuVisualizationWidget>( this, "visualizationMenu" );
+				_tabWidget->addTab( _viewMenu, "Visualization" );
 
 				_movieMenu = new QLabel( "movieMenu", this );
 				_tabWidget->addTab( _movieMenu, "Movie" );

@@ -7,8 +7,10 @@
 
 #include "base_manual_widget.hpp"
 #include "menu_toolblock_widget.hpp"
+#include "ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <string>
+#include <type_traits>
 
 namespace VTX
 {
