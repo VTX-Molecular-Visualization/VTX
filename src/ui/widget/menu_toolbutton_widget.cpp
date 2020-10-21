@@ -1,6 +1,7 @@
 #include "menu_toolbutton_widget.hpp"
 #include "style.hpp"
 #include "vtx_app.hpp"
+#include <QPalette>
 
 namespace VTX
 {
@@ -26,6 +27,25 @@ namespace VTX
 			}
 
 			void MenuToolButtonWidget::setOrientation( const Qt::Orientation p_orientation ) { updateButtonStyle( p_orientation ); }
+
+			void MenuToolButtonWidget::showActiveFeedback( const bool p_activate )
+			{
+				_hasActiveFeedback = p_activate;
+
+				if ( _hasActiveFeedback )
+				{
+					QPalette highlightedPalette = palette();
+					highlightedPalette.setColor( QPalette::ColorRole::Button, Style::HIGHLIGHTED_COLOR );
+					setPalette( highlightedPalette );
+				}
+				else
+				{
+					QPalette highlightedPalette = palette();
+					highlightedPalette.setColor( QPalette::ColorRole::Button, Style::BACKGROUND_COLOR );
+					setPalette( highlightedPalette );
+				}
+			}
+
 			void MenuToolButtonWidget::localize() {}
 			void MenuToolButtonWidget::_setupUi( const QString & p_name )
 			{

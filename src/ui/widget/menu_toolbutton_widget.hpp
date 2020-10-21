@@ -25,11 +25,17 @@ namespace VTX
 				void setOrientation( const Qt::Orientation p_orientation );
 
 				template<typename F, typename = std::enable_if<std::is_base_of<QWidget, F>::value>>
+				void setTriggerAction( const F * const p_receiver, void ( F::*p_action )() const )
+				{
+					p_receiver->connect( this, &QToolButton::clicked, p_receiver, p_action );
+				}
+				template<typename F, typename = std::enable_if<std::is_base_of<QWidget, F>::value>>
 				void setTriggerAction( const F * const p_receiver, void ( F::*p_action )() )
 				{
 					p_receiver->connect( this, &QToolButton::clicked, p_receiver, p_action );
 				}
 				void localize() override;
+				void showActiveFeedback( const bool p_activate );
 
 			  protected:
 				MenuToolButtonWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
@@ -42,6 +48,9 @@ namespace VTX
 					updateButtonStyle( currOrientation );
 				}
 				virtual void updateButtonStyle( const Qt::Orientation p_orientation );
+
+			  private:
+				bool _hasActiveFeedback = false;
 			};
 		} // namespace Widget
 	}	  // namespace UI

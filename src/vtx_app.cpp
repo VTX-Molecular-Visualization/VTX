@@ -6,6 +6,7 @@
 #include "selection/selection_manager.hpp"
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
+#include <QPalette>
 
 namespace VTX
 {
@@ -30,7 +31,7 @@ namespace VTX
 
 		VTX_ACTION( new Action::Setting::Load() );
 
-		this->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
+		_initQt();
 		_mainWindow = new UI::MainWindow();
 		_mainWindow->show();
 
@@ -100,6 +101,15 @@ namespace VTX
 		{
 			delete _eventManager;
 		}
+	}
+
+	void VTXApp::_initQt()
+	{
+		this->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
+
+		QPalette appPalette = palette();
+		Style::applyApplicationPaletteInPalette( appPalette );
+		setPalette( appPalette );
 	}
 
 	void VTXApp::goToState( const std::string & p_name, void * const p_arg )

@@ -87,6 +87,7 @@ namespace VTX
 		VTXApp & operator=( const VTXApp & ) = delete;
 		~VTXApp();
 
+		void _initQt();
 		void _update();
 	};
 

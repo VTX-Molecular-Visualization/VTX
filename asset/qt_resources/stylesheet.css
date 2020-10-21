@@ -1,47 +1,23 @@
 /* For all widgets */
 QWidget
 {
-	background: #222222;
-	color: #FFFFFF;
-/*	border: 1px solid white*/ /*Debug*/
+	/*border: 1px solid white*/ /*Debug*/
 }
 
-QMainWindow
-{
-    background: black;
-}
 /* Window resize area */
 QMainWindow::separator
 {
-    background: black;
     width: 2px;
     height: 2px;
 }
-
-
-QMenuBar::item:selected
-{
-	background-color : #444444;
-}
-QMenuBar::item:pressed
-{
-	background-color : #444444;
-}
-
 
 QMenu
 {
     border: 1px solid #444444;
 }
-QMenu::item:selected
-{
-    background-color: #444444;
-}
-
 
 QDockWidget::title
 {
-	background-color: #222222;
 	border-top: 1px solid #444444;
 	border-bottom: 1px solid #111111;
 }
@@ -76,11 +52,11 @@ QTabBar::tab
 }
 QTabBar::tab:selected, QTabBar::tab:hover
 {
-    background: #444444;
+	background: #444444;
 }
 QTabBar::tab:selected
 {
-    background: #222222; /* same as the pane color */
+	background: #222222; /* same as the pane color */
 }
 
 
@@ -107,11 +83,11 @@ QTreeWidget
 {
 	border: none;
 }
+/*without QTreeWidget::item:selected and QTreeWidget::item:!active, font color turns black when !active (???)*/
 QTreeWidget::item:selected
 {
 	background-color: #444444;
 }
-/*without that, font color turns black when !active (???)*/
 QTreeWidget::item:!active
 {
 	color: white;

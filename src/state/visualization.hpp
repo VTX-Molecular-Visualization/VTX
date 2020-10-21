@@ -24,9 +24,11 @@ namespace VTX
 			virtual void update( const double & p_deltaTime ) override;
 
 			void									 toggleController();
+			void									 setController( const ID::VTX_ID & p_controllerId );
 			void									 recenter();
 			const Controller::BaseController * const getCurrentController() const { return getItemAt( _controller ); }
 			Controller::BaseController * const		 getCurrentController() { return getItem( _controller ); }
+			const ID::VTX_ID &						 getCurrentControllerID() const { return _controller; }
 
 			virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 
