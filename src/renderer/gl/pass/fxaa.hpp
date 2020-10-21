@@ -16,6 +16,7 @@ namespace VTX
 			class FXAA : public BasePass
 			{
 			  public:
+				FXAA( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
 				virtual ~FXAA();
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
 				virtual void resize( const uint, const uint ) override;

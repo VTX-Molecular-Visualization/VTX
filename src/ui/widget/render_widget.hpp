@@ -28,6 +28,8 @@ namespace VTX
 				inline const OpenGLWidget & getOpenGLWidget() const { return *_openGLWidget; }
 				inline OpenGLWidget &		getOpenGLWidget() { return *_openGLWidget; }
 
+				void receiveEvent( const Event::VTXEvent & p_event ) override;
+
 			  protected:
 				RenderWidget( QWidget * p_parent );
 

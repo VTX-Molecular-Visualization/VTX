@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "renderer/base_renderer.hpp"
 #include "console_progress_bar.hpp"
 #include "integrators/base_integrator.hpp"
+#include "renderer/base_renderer.hpp"
 #include "rt_scene.hpp"
 #include <vector>
 
@@ -20,7 +20,7 @@ namespace VTX
 			class CameraRayTracing;
 
 		  public:
-			RayTracer()	 = default;
+			RayTracer( OpenGLFunctions * const p_gl ) : BaseRenderer( p_gl ) {}
 			~RayTracer() = default;
 
 			virtual void init( const uint, const uint ) override;
@@ -44,10 +44,7 @@ namespace VTX
 							   const uint				p_nbTiles,
 							   std::atomic<uint> &		p_nextTileId );
 
-			Color::Rgb _renderPixel( const CameraRayTracing & p_camera,
-									 const float			  p_x,
-									 const float			  p_y,
-									 const uint				  p_nbPixelSamples );
+			Color::Rgb _renderPixel( const CameraRayTracing & p_camera, const float p_x, const float p_y, const uint p_nbPixelSamples );
 
 		  private:
 			static const uint TILE_SIZE;

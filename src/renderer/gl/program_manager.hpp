@@ -6,8 +6,8 @@
 #endif
 
 #include "define.hpp"
+#include "generic/base_opengl.hpp"
 #include "program.hpp"
-#include <QOpenGLFunctions_4_5_Core>
 #include <map>
 #include <vector>
 
@@ -28,7 +28,7 @@ namespace VTX
 				INVALID			= GL_INVALID_VALUE
 			};
 
-			class ProgramManager
+			class ProgramManager : public Generic::BaseOpenGL
 			{
 			  public:
 				using MapStringToEnum	  = std::map<std::string, SHADER_TYPE>;
@@ -37,7 +37,7 @@ namespace VTX
 				using MapStringToGLuint	  = std::map<std::string, GLuint>;
 				using PairStringToGLuint  = std::pair<const std::string, GLuint>;
 
-				ProgramManager() = default;
+				ProgramManager( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 				~ProgramManager();
 				Program * const createProgram( const std::string &, const std::vector<std::string> & );
 				void			deleteProgram( const std::string & );

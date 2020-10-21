@@ -19,7 +19,7 @@
 #include <queue>
 #include <set>
 
-#define DELAY_EVENTS
+//#define DELAY_EVENTS
 
 namespace VTX
 {
@@ -30,6 +30,8 @@ namespace VTX
 		  public:
 			using SetBaseEventReceiverVTXPtr			 = std::set<BaseEventReceiverVTX *>;
 			using MapStringVectorBaseEventReceiverVTXPtr = std::map<Event::VTX_EVENT, SetBaseEventReceiverVTXPtr>;
+
+			~EventManager();
 
 			void registerEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
 			void unregisterEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );

@@ -9,6 +9,17 @@ namespace VTX
 {
 	namespace Renderer
 	{
+		GL::GL( OpenGLFunctions * const p_gl ) : BaseRenderer( p_gl )
+		{
+			_passGeometric		= new Pass::Geometric( p_gl );
+			_passLinearizeDepth = new Pass::LinearizeDepth( p_gl );
+			_passSSAO			= new Pass::SSAO( p_gl );
+			_passBlur			= new Pass::Blur( p_gl );
+			_passShading		= new Pass::Shading( p_gl );
+			_passOutline		= new Pass::Outline( p_gl );
+			_passFXAA			= new Pass::FXAA( p_gl );
+		}
+
 		GL::~GL()
 		{
 			delete _passGeometric;
@@ -37,13 +48,13 @@ namespace VTX
 			BaseRenderer::resize( p_width, p_height );
 
 			// Init pass.
-			_passGeometric->init( _programManager, p_width, p_height );
-			_passLinearizeDepth->init( _programManager, _width, _height );
-			_passSSAO->init( _programManager, p_width, p_height );
-			_passBlur->init( _programManager, p_width, p_height );
-			_passShading->init( _programManager, p_width, p_height );
-			_passOutline->init( _programManager, p_width, p_height );
-			_passFXAA->init( _programManager, p_width, p_height );
+			_passGeometric->init( *_programManager, p_width, p_height );
+			_passLinearizeDepth->init( *_programManager, _width, _height );
+			_passSSAO->init( *_programManager, p_width, p_height );
+			_passBlur->init( *_programManager, p_width, p_height );
+			_passShading->init( *_programManager, p_width, p_height );
+			_passOutline->init( *_programManager, p_width, p_height );
+			_passFXAA->init( *_programManager, p_width, p_height );
 
 			// Init VAO.
 			_initQuadVAO();
@@ -82,35 +93,35 @@ namespace VTX
 			// clang-format on
 
 			// Setup plane VAO.
-			OGL().glGenBuffers( 1, &_quadVBO );
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
-			OGL().glBufferData( GL_ARRAY_BUFFER, sizeof( quadVertices ), quadVertices, GL_STATIC_DRAW );
-			OGL().glGenVertexArrays( 1, &_quadVAO );
-			OGL().glBindVertexArray( _quadVAO );
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
-			OGL().glEnableVertexAttribArray( 0 );
-			OGL().glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0 );
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			OGL().glBindVertexArray( 0 );
+			gl()->glGenBuffers( 1, &_quadVBO );
+			gl()->glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
+			gl()->glBufferData( GL_ARRAY_BUFFER, sizeof( quadVertices ), quadVertices, GL_STATIC_DRAW );
+			gl()->glGenVertexArrays( 1, &_quadVAO );
+			gl()->glBindVertexArray( _quadVAO );
+			gl()->glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
+			gl()->glEnableVertexAttribArray( 0 );
+			gl()->glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0 );
+			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			gl()->glBindVertexArray( 0 );
 		}
 
 		void GL::renderFrame( const Object3D::Scene & p_scene )
 		{
-			OGL().glViewport( 0, 0, _width, _height );
+			gl()->glViewport( 0, 0, _width, _height );
 
 			// TODO: do not change each frame
 			if ( VTX_SETTING().cameraNear == 0.f )
 			{
-				OGL().glEnable( GL_DEPTH_CLAMP );
+				gl()->glEnable( GL_DEPTH_CLAMP );
 			}
 			else
 			{
-				OGL().glDisable( GL_DEPTH_CLAMP );
+				gl()->glDisable( GL_DEPTH_CLAMP );
 			}
 
-			OGL().glEnable( GL_DEPTH_TEST );
+			gl()->glEnable( GL_DEPTH_TEST );
 			_passGeometric->render( p_scene, *this );
-			OGL().glDisable( GL_DEPTH_TEST );
+			gl()->glDisable( GL_DEPTH_TEST );
 
 			_passLinearizeDepth->render( p_scene, *this );
 

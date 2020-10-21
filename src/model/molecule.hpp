@@ -8,6 +8,7 @@
 #include "atom.hpp"
 #include "base_model_3d.hpp"
 #include "bond.hpp"
+#include "buffer/molecule.hpp"
 #include "chain.hpp"
 #include "define.hpp"
 #include "generic/base_representable.hpp"
@@ -34,7 +35,7 @@ namespace VTX
 	namespace Model
 	{
 		class SecondaryStructure;
-		class Molecule : public BaseModel3D, public Generic::BaseColorable, public Generic::BaseRepresentable
+		class Molecule : public BaseModel3D<Buffer::Molecule>, public Generic::BaseColorable, public Generic::BaseRepresentable
 		{
 		  public:
 			using AtomPositionsFrame = std::vector<Vec3f>;
@@ -134,8 +135,6 @@ namespace VTX
 			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
 			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
-			void init();
-
 			inline const Generic::COLOR_MODE getColorMode() const { return _colorMode; }
 			inline void						 setColorMode( const Generic::COLOR_MODE p_colorMode )
 			{
@@ -172,19 +171,18 @@ namespace VTX
 			void print() const;
 
 			void render() override;
-			void bindBuffers() override;
-			void unbindBuffers() override;
 
 			bool mergeTopology( const Molecule & );
 
 			void createSecondaryStructure();
 			void toggleSequenceVisibility();
 
-			inline bool isInit() const { return _isInit; };
-			void		setSelected( const bool );
+			void setSelected( const bool );
 
 		  protected:
 			void _computeGlobalPositionsAABB();
+			void _init() override;
+			void _instanciate3DViews() override;
 
 		  private:
 			// Configuration.
@@ -211,7 +209,7 @@ namespace VTX
 			std::unordered_set<std::string> _unknownResidueSymbol = std::unordered_set<std::string>();
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
-			// Buffers.
+			// TODO : remove unecessary buffers, and move to BufferMolecule?
 			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
 			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
 			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
@@ -224,33 +222,14 @@ namespace VTX
 			// Sequence.
 			std::string _sequence;
 
-			// OpenGL buffers.
-			enum ATTRIBUTE_LOCATION
-			{
-				ATOM_POSITION	= 0,
-				ATOM_COLOR		= 1,
-				ATOM_RADIUS		= 2,
-				ATOM_VISIBILITY = 3,
-			};
-
-			GLuint _vao					= GL_INVALID_VALUE;
-			GLuint _atomPositionsVBO	= GL_INVALID_VALUE;
-			GLuint _atomRadiusVBO		= GL_INVALID_VALUE;
-			GLuint _atomColorsVBO		= GL_INVALID_VALUE;
-			GLuint _atomVisibilitiesVBO = GL_INVALID_VALUE;
-			GLuint _bondsIBO			= GL_INVALID_VALUE;
-
 			uint _currentFrame = 0u;
 			bool _isPlaying	   = true;
 			uint _fps		   = 1u;
-			bool _isInit	   = false;
 
 			bool _showSolvent = true;
 			bool _showIon	  = true;
 
-			void _createBuffers();
-			void _initBufferAtomPositions();
-			void _updateBufferAtomPositions();
+			void _fillBufferAtomPositions();
 			void _fillBufferAtomRadius();
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();

@@ -165,11 +165,11 @@ namespace VTX
 			VTX_INFO( "Init Scene" );
 			_initScene( VTXApp::get().getScene() );
 
-			OGL().glGenTextures( 1, &_texture );
-			OGL().glBindTexture( GL_TEXTURE_2D, _texture );
+			gl()->glGenTextures( 1, &_texture );
+			gl()->glBindTexture( GL_TEXTURE_2D, _texture );
 
-			OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -217,8 +217,8 @@ namespace VTX
 				t.join();
 			}
 
-			OGL().glBindTexture( GL_TEXTURE_2D, _texture );
-			OGL().glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
+			gl()->glBindTexture( GL_TEXTURE_2D, _texture );
+			gl()->glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
 
 			chrono.stop();
 			//_progressBar.stop();

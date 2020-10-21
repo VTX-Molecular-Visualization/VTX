@@ -16,6 +16,7 @@ namespace VTX
 			class Blur : public BasePass
 			{
 			  public:
+				Blur( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
 				virtual ~Blur();
 				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
 				virtual void resize( const uint, const uint ) override;

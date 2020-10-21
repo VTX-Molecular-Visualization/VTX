@@ -18,8 +18,8 @@ out vec3 te_viewPosition;
 out vec3 te_normal;
 out vec3 te_color;
 
-const float PI			= 3.1415;
-const mat4	BSPLINE_MAT = mat4( -1.f, 3.f, -3.f, 1.f, 3.f, -6.f, 3.f, 0.f, -3.f, 0.f, 3.f, 0.f, 1.f, 4.f, 1.f, 0.f );
+const float PI				   = 3.1415;
+const mat4	BSPLINE_MAT		   = mat4( -1.f, 3.f, -3.f, 1.f, 3.f, -6.f, 3.f, 0.f, -3.f, 0.f, 3.f, 0.f, 1.f, 4.f, 1.f, 0.f );
 const float DIRECTION_FACTOR[] = float[]( 2.f, // HELIX_ALPHA_RIGHT
 										  2.f, // HELIX_ALPHA_LEFT
 										  2.f, // HELIX_3_10_RIGHT
@@ -32,8 +32,7 @@ const float DIRECTION_FACTOR[] = float[]( 2.f, // HELIX_ALPHA_RIGHT
 
 vec3 evaluateBSpline( const mat4x3 p_bspline, const float p_offset )
 {
-	return ( 1.f / 6.f ) * p_bspline * BSPLINE_MAT
-		   * vec4( p_offset * p_offset * p_offset, p_offset * p_offset, p_offset, 1.f );
+	return ( 1.f / 6.f ) * p_bspline * BSPLINE_MAT * vec4( p_offset * p_offset * p_offset, p_offset * p_offset, p_offset, 1.f );
 }
 
 void main()
@@ -59,7 +58,7 @@ void main()
 	// vec3 normal = normalize( mix( tc_normal[ 1 ], tc_normal[ 2 ], gl_TessCoord.x ) );
 
 	// Handle factors.
-	float directionFactor = 1.f; // DIRECTION_FACTOR[ tc_secondaryStructure[ 1 ] ];
+	float directionFactor = DIRECTION_FACTOR[ tc_secondaryStructure[ 1 ] ];
 	float radius		  = 1.f;
 
 	// Move vertex along [-direction, direction].

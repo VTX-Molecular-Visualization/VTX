@@ -23,9 +23,9 @@ namespace VTX
 
 		void Scene::addMolecule( MoleculePtr const p_molecule )
 		{
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, p_molecule ) );
 			_molecules.emplace( p_molecule, 0.f );
 			_aabb.extend( p_molecule->getAABB() );
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, p_molecule ) );
 		}
 
 		void Scene::removeMolecule( MoleculePtr const p_molecule )
@@ -39,9 +39,9 @@ namespace VTX
 
 		void Scene::addMesh( MeshTrianglePtr const p_mesh )
 		{
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_ADDED, p_mesh ) );
 			_meshes.emplace_back( p_mesh );
 			_aabb.extend( p_mesh->getAABB() );
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_ADDED, p_mesh ) );
 		}
 
 		void Scene::removeMesh( MeshTrianglePtr const p_mesh )

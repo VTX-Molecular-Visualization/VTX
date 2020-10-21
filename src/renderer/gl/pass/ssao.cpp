@@ -12,35 +12,35 @@ namespace VTX
 		{
 			SSAO::~SSAO()
 			{
-				OGL().glDeleteFramebuffers( 1, &_fbo );
-				OGL().glDeleteTextures( 1, &_texture );
-				OGL().glDeleteTextures( 1, &_noiseTexture );
+				gl()->glDeleteFramebuffers( 1, &_fbo );
+				gl()->glDeleteTextures( 1, &_texture );
+				gl()->glDeleteTextures( 1, &_noiseTexture );
 			}
 
 			void SSAO::init( GLSL::ProgramManager & p_programManager, const uint p_width, const uint p_height )
 			{
-				OGL().glGenFramebuffers( 1, &_fbo );
-				OGL().glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+				gl()->glGenFramebuffers( 1, &_fbo );
+				gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
-				OGL().glGenTextures( 1, &_texture );
-				OGL().glBindTexture( GL_TEXTURE_2D, _texture );
-				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-				OGL().glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, p_width, p_height, 0, GL_RED, GL_FLOAT, nullptr );
+				gl()->glGenTextures( 1, &_texture );
+				gl()->glBindTexture( GL_TEXTURE_2D, _texture );
+				gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+				gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				gl()->glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, p_width, p_height, 0, GL_RED, GL_FLOAT, nullptr );
 
-				OGL().glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0 );
+				gl()->glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0 );
 
-				OGL().glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 				_program = p_programManager.createProgram( "SSAO", { "shading/ssao.frag" } );
 
-				_uProjMatrixLoc	 = OGL().glGetUniformLocation( _program->getId(), "uProjMatrix" );
-				_uAoKernelLoc	 = OGL().glGetUniformLocation( _program->getId(), "uAoKernel" );
-				_uAoIntensityLoc = OGL().glGetUniformLocation( _program->getId(), "uAoIntensity" );
-				_uKernelSizeLoc	 = OGL().glGetUniformLocation( _program->getId(), "uKernelSize" );
-				_uNoiseSizeLoc	 = OGL().glGetUniformLocation( _program->getId(), "uNoiseSize" );
+				_uProjMatrixLoc	 = gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
+				_uAoKernelLoc	 = gl()->glGetUniformLocation( _program->getId(), "uAoKernel" );
+				_uAoIntensityLoc = gl()->glGetUniformLocation( _program->getId(), "uAoIntensity" );
+				_uKernelSizeLoc	 = gl()->glGetUniformLocation( _program->getId(), "uKernelSize" );
+				_uNoiseSizeLoc	 = gl()->glGetUniformLocation( _program->getId(), "uNoiseSize" );
 
 				// generate random ao kernel
 				std::vector<Vec3f> aoKernel( _kernelSize );
@@ -68,59 +68,59 @@ namespace VTX
 										0.f ); // Vec3f([-1;1],[-1;1],0)
 					noise[ i ] = Util::Math::normalize( noise[ i ] );
 				}
-				OGL().glGenTextures( 1, &_noiseTexture );
-				OGL().glBindTexture( GL_TEXTURE_2D, _noiseTexture );
-				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				gl()->glGenTextures( 1, &_noiseTexture );
+				gl()->glBindTexture( GL_TEXTURE_2D, _noiseTexture );
+				gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+				gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 				// repeat tile over the image
-				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-				OGL().glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-				OGL().glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, _noiseTextureSize, _noiseTextureSize, 0, GL_RGB, GL_FLOAT, noise.data() );
+				gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
+				gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+				gl()->glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, _noiseTextureSize, _noiseTextureSize, 0, GL_RGB, GL_FLOAT, noise.data() );
 
 				_program->use();
-				OGL().glUniform3fv( _uAoKernelLoc, _kernelSize, (const GLfloat *)aoKernel.data() );
-				OGL().glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
-				OGL().glUniform1i( _uKernelSizeLoc, _kernelSize );
-				OGL().glUniform1f( _uNoiseSizeLoc, float( _noiseTextureSize ) );
+				gl()->glUniform3fv( _uAoKernelLoc, _kernelSize, (const GLfloat *)aoKernel.data() );
+				gl()->glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
+				gl()->glUniform1i( _uKernelSizeLoc, _kernelSize );
+				gl()->glUniform1f( _uNoiseSizeLoc, float( _noiseTextureSize ) );
 			}
 
 			void SSAO::resize( const uint p_width, const uint p_height )
 			{
-				OGL().glBindTexture( GL_TEXTURE_2D, _texture );
-				OGL().glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, p_width, p_height, 0, GL_RED, GL_FLOAT, nullptr );
+				gl()->glBindTexture( GL_TEXTURE_2D, _texture );
+				gl()->glTexImage2D( GL_TEXTURE_2D, 0, GL_R8, p_width, p_height, 0, GL_RED, GL_FLOAT, nullptr );
 			}
 
 			void SSAO::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{
-				OGL().glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+				gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
-				OGL().glActiveTexture( GL_TEXTURE0 );
-				OGL().glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
-				OGL().glActiveTexture( GL_TEXTURE1 );
-				OGL().glBindTexture( GL_TEXTURE_2D, _noiseTexture );
-				OGL().glActiveTexture( GL_TEXTURE2 );
-				OGL().glBindTexture( GL_TEXTURE_2D, p_renderer.getPassLinearizeDepth().getTexture() );
+				gl()->glActiveTexture( GL_TEXTURE0 );
+				gl()->glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
+				gl()->glActiveTexture( GL_TEXTURE1 );
+				gl()->glBindTexture( GL_TEXTURE_2D, _noiseTexture );
+				gl()->glActiveTexture( GL_TEXTURE2 );
+				gl()->glBindTexture( GL_TEXTURE_2D, p_renderer.getPassLinearizeDepth().getTexture() );
 
 				_program->use();
 
 				// TODO don't update each frame
-				OGL().glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
+				gl()->glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
 
-				OGL().glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
+				gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
 
-				OGL().glBindVertexArray( p_renderer.getQuadVAO() );
-				OGL().glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-				OGL().glBindVertexArray( 0 );
+				gl()->glBindVertexArray( p_renderer.getQuadVAO() );
+				gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+				gl()->glBindVertexArray( 0 );
 
 				// TODO Needed ?
-				OGL().glActiveTexture( GL_TEXTURE0 );
-				OGL().glBindTexture( GL_TEXTURE_2D, 0 );
-				OGL().glActiveTexture( GL_TEXTURE1 );
-				OGL().glBindTexture( GL_TEXTURE_2D, 0 );
-				OGL().glActiveTexture( GL_TEXTURE2 );
-				OGL().glBindTexture( GL_TEXTURE_2D, 0 );
+				gl()->glActiveTexture( GL_TEXTURE0 );
+				gl()->glBindTexture( GL_TEXTURE_2D, 0 );
+				gl()->glActiveTexture( GL_TEXTURE1 );
+				gl()->glBindTexture( GL_TEXTURE_2D, 0 );
+				gl()->glActiveTexture( GL_TEXTURE2 );
+				gl()->glBindTexture( GL_TEXTURE_2D, 0 );
 
-				OGL().glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 			}
 
 		} // namespace Pass

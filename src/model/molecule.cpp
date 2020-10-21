@@ -16,37 +16,10 @@ namespace VTX
 {
 	namespace Model
 	{
-		Molecule::Molecule() : BaseModel3D( ID::Model::MODEL_MOLECULE ) {};
+		Molecule::Molecule() : BaseModel3D( ID::Model::MODEL_MOLECULE ) {}
+
 		Molecule::~Molecule()
 		{
-			if ( _vao != GL_INVALID_VALUE )
-			{
-				OGL().glBindVertexArray( _vao );
-				OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
-				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
-				OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
-				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
-				OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
-				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
-				OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
-				OGL().glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
-				OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
-				OGL().glBindVertexArray( 0 );
-
-				if ( _atomPositionsVBO != GL_INVALID_VALUE )
-					OGL().glDeleteBuffers( 1, &_atomPositionsVBO );
-				if ( _atomRadiusVBO != GL_INVALID_VALUE )
-					OGL().glDeleteBuffers( 1, &_atomRadiusVBO );
-				if ( _atomColorsVBO != GL_INVALID_VALUE )
-					OGL().glDeleteBuffers( 1, &_atomColorsVBO );
-				if ( _atomVisibilitiesVBO != GL_INVALID_VALUE )
-					OGL().glDeleteBuffers( 1, &_atomVisibilitiesVBO );
-				if ( _bondsIBO != GL_INVALID_VALUE )
-					OGL().glDeleteBuffers( 1, &_bondsIBO );
-
-				OGL().glDeleteVertexArrays( 1, &_vao );
-			}
-
 			MVC::MvcManager::get().deleteAllModels( _atoms );
 			MVC::MvcManager::get().deleteAllModels( _residues );
 			MVC::MvcManager::get().deleteAllModels( _chains );
@@ -58,27 +31,18 @@ namespace VTX
 			}
 		}
 
-		void Molecule::instantiateDefaultViews()
+		void Molecule::_init()
 		{
-			MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_SPHERE, new View::D3::Sphere( this ) );
-			MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_CYLINDER, new View::D3::Cylinder( this ) );
-		};
-		void Molecule::init()
-		{
-			VTXApp::get().getMainWindow().getOpenGLWidget().makeCurrent();
 			// Compute global AABB of atom positions (taking into account each frame).
 			_computeGlobalPositionsAABB();
-
-			// Create GL buffers.
-			_createBuffers();
 
 			// Fill buffers.
 			if ( _atomPositionsFrames.size() > 0 )
 			{
-				_initBufferAtomPositions();
+				_fillBufferAtomPositions();
 				_fillBufferAtomRadius();
 				_fillBufferAtomColors();
-				//_fillBufferAtomVisibilities(); // Done after.
+				_fillBufferAtomVisibilities();
 				_fillBufferBonds();
 
 				// Compute secondary structure if not loaded.
@@ -89,22 +53,24 @@ namespace VTX
 
 				// Create secondary structure mesh.
 				createSecondaryStructure();
-				_fillBufferAtomVisibilities();
 
 				Util::Molecule::refreshRepresentationState( *this );
 			}
+		}
 
-			VTXApp::get().getMainWindow().getOpenGLWidget().doneCurrent();
+		void Molecule::instantiateDefaultViews() {}
 
-			_isInit = true;
-			_notifyViews( Event::VTX_EVENT_MODEL::INIT );
+		void Molecule::_instanciate3DViews()
+		{
+			MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_SPHERE, new View::D3::Sphere( this ) );
+			MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_CYLINDER, new View::D3::Cylinder( this ) );
 		}
 
 		void Molecule::_computeGlobalPositionsAABB()
 		{
 			for ( AtomPositionsFrame frame : _atomPositionsFrames )
 			{
-				for ( Vec3f pos : frame )
+				for ( const Vec3f & pos : frame )
 				{
 					_aabb.extend( pos );
 				}
@@ -120,7 +86,7 @@ namespace VTX
 			}
 
 			_currentFrame = p_frameIdx;
-			_updateBufferAtomPositions();
+			_fillBufferAtomPositions();
 
 			if ( _secondaryStructure != nullptr )
 			{
@@ -128,20 +94,7 @@ namespace VTX
 			}
 		}
 
-		void Molecule::_initBufferAtomPositions()
-		{
-			OGL().glNamedBufferData( _atomPositionsVBO,
-									 sizeof( Vec3f ) * GLsizei( _atomPositionsFrames[ _currentFrame ].size() ),
-									 _atomPositionsFrames[ _currentFrame ].data(),
-									 // static data ? buffer will never be modified : buffer will be updated each X frames
-									 GLsizei( _atomPositionsFrames.size() ) == 1 ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW );
-		}
-
-		void Molecule::_updateBufferAtomPositions()
-		{
-			OGL().glNamedBufferSubData(
-				_atomPositionsVBO, 0, sizeof( Vec3f ) * GLsizei( _atomPositionsFrames[ _currentFrame ].size() ), _atomPositionsFrames[ _currentFrame ].data() );
-		}
+		void Molecule::_fillBufferAtomPositions() { _buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] ); }
 
 		void Molecule::_fillBufferAtomRadius()
 		{
@@ -151,7 +104,7 @@ namespace VTX
 				_bufferAtomRadius[ i ] = _atoms[ i ]->getVdwRadius();
 			}
 
-			OGL().glNamedBufferData( _atomRadiusVBO, sizeof( float ) * GLsizei( _bufferAtomRadius.size() ), _bufferAtomRadius.data(), GL_STATIC_DRAW );
+			_buffer->setAtomRadius( _bufferAtomRadius );
 		}
 
 		void Molecule::_fillBufferAtomColors()
@@ -186,7 +139,7 @@ namespace VTX
 				}
 			}
 
-			OGL().glNamedBufferData( _atomColorsVBO, sizeof( Color::Rgb ) * GLsizei( _bufferAtomColors.size() ), _bufferAtomColors.data(), GL_STATIC_DRAW );
+			_buffer->setAtomColors( _bufferAtomColors );
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()
@@ -212,7 +165,7 @@ namespace VTX
 				}
 			}
 
-			OGL().glNamedBufferData( _atomVisibilitiesVBO, sizeof( uint ) * GLsizei( _bufferAtomVisibilities.size() ), _bufferAtomVisibilities.data(), GL_STATIC_DRAW );
+			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 		}
 
 		void Molecule::_fillBufferBonds()
@@ -224,7 +177,7 @@ namespace VTX
 				_bufferBonds[ 2u * i + 1u ] = _bonds[ i ]->getIndexSecondAtom();
 			}
 
-			OGL().glNamedBufferData( _bondsIBO, sizeof( uint ) * GLsizei( _bufferBonds.size() ), _bufferBonds.data(), GL_STATIC_DRAW );
+			_buffer->setBonds( _bufferBonds );
 		}
 
 		void Molecule::print() const
@@ -277,48 +230,6 @@ namespace VTX
 			}
 		}
 
-		void Molecule::_createBuffers()
-		{
-			OGL().glGenBuffers( 1, &_atomPositionsVBO );
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			OGL().glGenBuffers( 1, &_atomColorsVBO );
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			OGL().glGenBuffers( 1, &_atomRadiusVBO );
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			OGL().glGenBuffers( 1, &_atomVisibilitiesVBO );
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			OGL().glGenBuffers( 1, &_bondsIBO );
-			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-			OGL().glGenVertexArrays( 1, &_vao );
-			OGL().glBindVertexArray( _vao );
-
-			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
-
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
-			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
-			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
-			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
-			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
-			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
-			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_RADIUS, 1, GL_FLOAT, GL_FALSE, sizeof( float ), 0 );
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
-			OGL().glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
-			OGL().glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
-			OGL().glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-			OGL().glBindVertexArray( 0 );
-		}
-
 		void Molecule::render()
 		{
 			BaseModel3D::render();
@@ -326,18 +237,6 @@ namespace VTX
 			{
 				_secondaryStructure->render();
 			}
-		}
-
-		void Molecule::bindBuffers()
-		{
-			OGL().glBindVertexArray( _vao );
-			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
-		}
-
-		void Molecule::unbindBuffers()
-		{
-			OGL().glBindVertexArray( 0 );
-			OGL().glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 		}
 
 		bool Molecule::mergeTopology( const Molecule & p_molecule )
@@ -436,7 +335,7 @@ namespace VTX
 			}
 
 			_secondaryStructure = MVC::MvcManager::get().instantiate<SecondaryStructure, Molecule * const>( this );
-			_secondaryStructure->init();
+			_secondaryStructure->init( getBuffer()->gl() );
 			_secondaryStructure->print();
 		}
 

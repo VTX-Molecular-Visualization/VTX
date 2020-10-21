@@ -6,7 +6,7 @@
 #endif
 
 #include "define.hpp"
-#include <QOpenGLFunctions_4_5_Core>
+#include "generic/base_opengl.hpp"
 #include <string>
 
 namespace VTX
@@ -15,10 +15,10 @@ namespace VTX
 	{
 		namespace GLSL
 		{
-			class Program
+			class Program : public Generic::BaseOpenGL
 			{
 			  public:
-				Program() = default;
+				Program( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 				~Program();
 
 				inline GLuint getId() const { return _id; }

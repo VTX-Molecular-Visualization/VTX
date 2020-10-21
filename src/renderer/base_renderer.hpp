@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "generic/base_opengl.hpp"
 #include "gl/program_manager.hpp"
 #include "object3d/scene.hpp"
 #include <vector>
@@ -26,11 +27,11 @@ namespace VTX
 			COUNT
 		};
 
-		class BaseRenderer
+		class BaseRenderer : public Generic::BaseOpenGL
 		{
 		  public:
-			BaseRenderer()			= default;
-			virtual ~BaseRenderer() = default;
+			BaseRenderer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) { _programManager = new GLSL::ProgramManager( p_gl ); }
+			virtual ~BaseRenderer() { delete _programManager; }
 
 			inline const uint getWidth() const { return _width; }
 			inline const uint getHeight() const { return _height; }
@@ -52,13 +53,13 @@ namespace VTX
 			virtual void activeFog( const bool ) {}
 			virtual void activeAA( const bool ) {}
 
-			inline GLSL::ProgramManager &		getProgramManager() { return _programManager; }
-			inline const GLSL::ProgramManager & getProgramManager() const { return _programManager; }
+			inline GLSL::ProgramManager &		getProgramManager() { return *_programManager; }
+			inline const GLSL::ProgramManager & getProgramManager() const { return *_programManager; }
 
 		  protected:
-			uint				 _width			 = 0;
-			uint				 _height		 = 0;
-			GLSL::ProgramManager _programManager = GLSL::ProgramManager();
+			uint				   _width		   = 0;
+			uint				   _height		   = 0;
+			GLSL::ProgramManager * _programManager = nullptr;
 		};
 	} // namespace Renderer
 } // namespace VTX

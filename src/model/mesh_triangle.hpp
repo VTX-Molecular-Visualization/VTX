@@ -6,6 +6,7 @@
 #endif
 
 #include "base_model_3d.hpp"
+#include "buffer/mesh_triangle.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
 #include <vector>
@@ -14,7 +15,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		class MeshTriangle : public BaseModel3D
+		class MeshTriangle : public BaseModel3D<Buffer::MeshTriangle>
 		{
 		  public:
 			MeshTriangle();
@@ -48,34 +49,17 @@ namespace VTX
 			inline uint &					 getIndice( const uint p_idx ) { return _indices[ p_idx ]; }
 
 			void print() const;
-			void init();
-			void bindBuffers() override;
-			void unbindBuffers() override;
 
 		  protected:
-			enum ATTRIBUTE_LOCATION
-			{
-				VERTEX_POSITION	  = 0,
-				VERTEX_NORMAL	  = 1,
-				VERTEX_COLOR	  = 2,
-				VERTEX_VISIBILITY = 3,
-			};
-
 			std::vector<Vec3f>		_vertices;
 			std::vector<Vec3f>		_normals;
 			std::vector<Color::Rgb> _colors;
 			std::vector<uint>		_visibilities;
-
-			std::vector<uint> _indices;
-
-			GLuint _vboPositions	= GL_INVALID_VALUE;
-			GLuint _vboNormals		= GL_INVALID_VALUE;
-			GLuint _vboColors		= GL_INVALID_VALUE;
-			GLuint _vboVisibilities = GL_INVALID_VALUE;
-			GLuint _ibo				= GL_INVALID_VALUE;
-			GLuint _vao				= GL_INVALID_VALUE;
+			std::vector<uint>		_indices;
 
 			void _computeAABB();
+			void _init() override;
+			void _instanciate3DViews() override;
 		};
 	} // namespace Model
 } // namespace VTX
