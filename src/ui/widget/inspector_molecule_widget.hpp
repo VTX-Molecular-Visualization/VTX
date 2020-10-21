@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "hideable_section_widget.hpp"
+#include "collapsing_header_widget.hpp"
 #include "inspector_item_field.hpp"
 #include "model/molecule.hpp"
 #include "view_item_widget.hpp"
@@ -33,7 +33,7 @@ namespace VTX
 				virtual void _setupSlots() override;
 
 			  private:
-				HideableSectionWidget * _mainWidget = nullptr;
+				CollapsingHeaderWidget * _mainWidget = nullptr;
 
 				// Info section
 				enum class InfoFields : int
@@ -42,8 +42,8 @@ namespace VTX
 					ATOM_COUNT,
 					COUNT
 				};
-				HideableSectionWidget * _infoSection								 = nullptr;
-				InspectorItemField		_infoSectionFields[ (int)InfoFields::COUNT ] = { InspectorItemField( "Full Name" ), InspectorItemField( "Atom count" ) };
+				CollapsingHeaderWidget * _infoSection								  = nullptr;
+				InspectorItemField		 _infoSectionFields[ (int)InfoFields::COUNT ] = { InspectorItemField( "Full Name" ), InspectorItemField( "Atom count" ) };
 
 				void setModelEnableFromCheckBox( const int checkboxState ) { _model->setEnable( checkboxState > 0 ); }
 			};

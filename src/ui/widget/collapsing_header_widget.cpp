@@ -1,4 +1,4 @@
-#include "hideable_section_widget.hpp"
+#include "collapsing_header_widget.hpp"
 
 namespace VTX
 {
@@ -6,7 +6,7 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			void HideableSectionWidget::_setupUi( const QString & p_name )
+			void CollapsingHeaderWidget::_setupUi( const QString & p_name )
 			{
 				setObjectName( p_name );
 				setContentsMargins( 0, 0, 0, 0 );
@@ -41,9 +41,9 @@ namespace VTX
 				_mainLayout->addStretch( 100 );
 			}
 
-			void HideableSectionWidget::_setupSlots() { connect( _headerWidget, &QPushButton::clicked, this, &HideableSectionWidget::toggleSectionVisibility ); }
+			void CollapsingHeaderWidget::_setupSlots() { connect( _headerWidget, &QPushButton::clicked, this, &CollapsingHeaderWidget::toggleBodyVisibility ); }
 
-			void HideableSectionWidget::localize() {};
+			void CollapsingHeaderWidget::localize() {};
 
 		} // namespace Widget
 	}	  // namespace UI

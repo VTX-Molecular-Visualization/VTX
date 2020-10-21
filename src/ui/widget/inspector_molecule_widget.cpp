@@ -23,7 +23,7 @@ namespace VTX
 				mainLayout->setContentsMargins( 0, 0, 0, 0 );
 				mainLayout->setSpacing( 1 );
 
-				_mainWidget = WidgetFactory::get().GetWidget<HideableSectionWidget>( this, "inspector_item" );
+				_mainWidget = WidgetFactory::get().GetWidget<CollapsingHeaderWidget>( this, "inspector_item" );
 				_mainWidget->setContentsMargins( 0, 0, 0, 0 );
 				_mainWidget->setHeaderHeight( Style::INSPECTOR_HEADER_HEIGHT );
 
@@ -32,7 +32,7 @@ namespace VTX
 				QVBoxLayout * contentLayout = new QVBoxLayout( mainContent );
 				contentLayout->setContentsMargins( 0, 0, 0, 0 );
 
-				_infoSection = WidgetFactory::get().GetWidget<HideableSectionWidget>( this, "inspector_item_section" );
+				_infoSection = WidgetFactory::get().GetWidget<CollapsingHeaderWidget>( this, "inspector_item_section" );
 				_infoSection->setHeaderHeight( Style::INSPECTOR_HEADER_HEIGHT );
 				_infoSection->displayIconInHeader( false );
 
@@ -46,12 +46,12 @@ namespace VTX
 				for ( int i = 0; i < (int)InfoFields::COUNT; i++ )
 					_infoSectionFields[ i ].addInGrid( i, *infoSectionContentLayout );
 
-				_infoSection->setSection( infoSectionContent );
+				_infoSection->setBody( infoSectionContent );
 
 				contentLayout->addWidget( _infoSection );
 				contentLayout->addStretch( 1000 );
 
-				_mainWidget->setSection( mainContent );
+				_mainWidget->setBody( mainContent );
 				mainLayout->addWidget( _mainWidget );
 			}
 

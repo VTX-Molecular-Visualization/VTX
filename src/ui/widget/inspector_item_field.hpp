@@ -5,10 +5,6 @@
 #pragma once
 #endif
 
-#include "hideable_section_widget.hpp"
-#include "model/molecule.hpp"
-#include "ui/widget_factory.hpp"
-#include "view_item_widget.hpp"
 #include <QGridLayout>
 #include <QLabel>
 #include <string>
