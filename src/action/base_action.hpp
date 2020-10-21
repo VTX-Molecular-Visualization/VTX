@@ -19,6 +19,16 @@ namespace VTX
 			virtual void execute() = 0;
 			virtual void displayUsage() {}
 		};
+
+		template<typename P1>
+		class BaseActionParametrized : public BaseAction
+		{
+		  public:
+			BaseActionParametrized( P1 & p_parameter ) { _parameter = &p_parameter; };
+
+		  protected:
+			P1 * _parameter;
+		};
 	} // namespace Action
 } // namespace VTX
 #endif

@@ -76,6 +76,7 @@ namespace VTX
 			const VTX_ID TRACKBALL = "TRACKBALL";
 			const VTX_ID ORBIT	   = "ORBIT";
 			const VTX_ID SHORTCUT  = "SHORCUT";
+			const VTX_ID VESSEL	   = "VESSEL";
 		} // namespace Controller
 	}	  // namespace ID
 

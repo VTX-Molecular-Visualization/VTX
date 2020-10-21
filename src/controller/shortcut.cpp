@@ -15,7 +15,7 @@ namespace VTX
 			// TODO: link with action and UI button.
 			switch ( p_key )
 			{
-			case Qt::Key_F1: VTX_ACTION( new Action::Main::ChangeCameraController() ); break;
+			case Qt::Key_F1: VTX_ACTION( new Action::Main::ToggleCameraController() ); break;
 			case Qt::Key_F2:
 				VTX_ACTION(
 					new Action::Setting::ChangeRepresentation( Generic::REPRESENTATION( ( (uint)VTX_SETTING().representation + 1 ) % (uint)Generic::REPRESENTATION::COUNT ) ) );

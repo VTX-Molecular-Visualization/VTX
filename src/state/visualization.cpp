@@ -62,6 +62,20 @@ namespace VTX
 				_controller = ID::Controller::FREEFLY;
 			}
 			getItem( _controller )->setActive( true );
+
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::CONTROLLER_CHANGE, &_controller ) );
+		}
+		void Visualization::setController( const ID::VTX_ID & p_controllerId )
+		{
+			// Do nothing if id not in collection or already in use
+			if ( !hasItem( p_controllerId ) || _controller == p_controllerId )
+				return;
+
+			getItem( _controller )->setActive( false );
+			_controller = p_controllerId;
+			getItem( _controller )->setActive( true );
+
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::CONTROLLER_CHANGE, &_controller ) );
 		}
 
 		void Visualization::recenter() { getItem<VTX::Controller::BaseCameraController>( _controller )->reset(); }

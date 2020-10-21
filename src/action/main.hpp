@@ -135,14 +135,20 @@ namespace VTX
 				Path * _path;
 			};
 
-			class ChangeCameraController : public BaseAction
+			class ToggleCameraController : public BaseAction
 			{
 			  public:
-				explicit ChangeCameraController() {}
+				explicit ToggleCameraController() {}
 
 				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->toggleController(); };
+			};
 
-			  private:
+			class ChangeCameraController : public BaseActionParametrized<const ID::VTX_ID>
+			{
+			  public:
+				explicit ChangeCameraController( const ID::VTX_ID & p_controllerId ) : BaseActionParametrized( p_controllerId ) {};
+
+				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->setController( *_parameter ); };
 			};
 
 			class RecenterCameraController : public BaseAction

@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "event/event.hpp"
 #include "menu_toolblock_widget.hpp"
 #include "menu_toolbutton_widget.hpp"
 #include <QWidget>
@@ -23,8 +24,10 @@ namespace VTX
 				~MenuVisualizationCameraActionWidget();
 				void localize() override;
 
+				void receiveEvent( const Event::VTXEvent & p_event ) override;
+
 			  protected:
-				MenuVisualizationCameraActionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
+				MenuVisualizationCameraActionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) { _registerEvent( Event::Global::CONTROLLER_CHANGE ); };
 				void _setupUi( const QString & p_name ) override;
 				void _setupSlots() override;
 
@@ -43,9 +46,11 @@ namespace VTX
 				MenuToolButtonWidget * _createViewpoint = nullptr;
 				MenuToolButtonWidget * _takeScreenshot	= nullptr;
 
-				void _setTrackballController();
-				void _setFreeflyController();
-				void _setVesselController();
+				void _updateCameraModeFeedback();
+
+				void _setTrackballController() const;
+				void _setFreeflyController() const;
+				void _setVesselController() const;
 			};
 		} // namespace Widget
 	}	  // namespace UI
