@@ -76,7 +76,7 @@ namespace VTX
 			std::vector<Vec3f>		_controlPointPositions			 = std::vector<Vec3f>();
 			std::vector<Vec3f>		_controlPointDirections			 = std::vector<Vec3f>();
 			std::vector<Vec3f>		_controlPointNormals			 = std::vector<Vec3f>();
-			std::vector<uint>		_controlPointSecondaryStructures = std::vector<uint>();
+			std::vector<ushort>		_controlPointSecondaryStructures = std::vector<ushort>();
 			std::vector<Color::Rgb> _controlPointColors				 = std::vector<Color::Rgb>();
 			std::vector<uint>		_indices						 = std::vector<uint>();
 

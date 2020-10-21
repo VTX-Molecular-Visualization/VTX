@@ -4,17 +4,17 @@ layout( vertices = 4 ) out;
 
 uniform vec3 u_camPosition;
 
-in vec3		 vs_position[];
-in vec3		 vs_direction[];
-in vec3		 vs_normal[];
-flat in uint vs_secondaryStructure[];
-flat in vec3 vs_color[];
+in vec3				   vs_position[];
+in vec3				   vs_direction[];
+in vec3				   vs_normal[];
+flat in unsigned short vs_secondaryStructure[];
+flat in vec3		   vs_color[];
 
-out vec3	  tc_position[];
-out vec3	  tc_direction[];
-out vec3	  tc_normal[];
-flat out uint tc_secondaryStructure[];
-flat out vec3 tc_color[];
+out vec3				tc_position[];
+out vec3				tc_direction[];
+out vec3				tc_normal[];
+flat out unsigned short tc_secondaryStructure[];
+flat out vec3			tc_color[];
 
 // Values from original paper.
 const float MAX_DISTANCE				 = 160.f;
@@ -49,10 +49,7 @@ const uint[] MAX = uint[]( MAX_SUBDIVISION_LEVEL_HELIX,	 // HELIX_ALPHA_RIGHT
 						   MAX_SUBDIVISION_LEVEL_OTHER	 // COIL
 );
 
-float getDistance( vec3 p_point )
-{
-	return clamp( ( distance( p_point, u_camPosition ) - MIN_DISTANCE ) / MAX_DISTANCE, 0.f, 1.f );
-}
+float getDistance( vec3 p_point ) { return clamp( ( distance( p_point, u_camPosition ) - MIN_DISTANCE ) / MAX_DISTANCE, 0.f, 1.f ); }
 
 void main()
 {
@@ -83,24 +80,21 @@ void main()
 	gl_TessLevelInner[1] - tess. in vertical (v) direction
 	*/
 
+	/*
 	gl_TessLevelOuter[ 0 ] = 10.f;
 	gl_TessLevelOuter[ 1 ] = 10.f;
 	gl_TessLevelOuter[ 2 ] = 10.f;
 	gl_TessLevelOuter[ 3 ] = 10.f;
 	gl_TessLevelInner[ 0 ] = 10.f;
 	gl_TessLevelInner[ 1 ] = 10.f;
+	*/
 
-	/*
-	gl_TessLevelOuter[ 0 ]
-		= getDistance( vs_position[ 1 ] ) * MAX[ vs_secondaryStructure[ 1 ] ] + MIN[ vs_secondaryStructure[ 1 ] ];
-	gl_TessLevelOuter[ 1 ]
-		= max( getDistance( vs_position[ 1 ] ), getDistance( vs_position[ 2 ] ) ) * MAX_SUBDIVISION_LEVEL
-		  + MIN_SUBDIVISION_LEVEL;
-	gl_TessLevelOuter[ 2 ]
-		= getDistance( vs_position[ 2 ] ) * MAX[ vs_secondaryStructure[ 2 ] ] + MIN[ vs_secondaryStructure[ 2 ] ];
+	gl_TessLevelOuter[ 0 ] = getDistance( vs_position[ 1 ] ) * MAX[ vs_secondaryStructure[ 1 ] ] + MIN[ vs_secondaryStructure[ 1 ] ];
+	gl_TessLevelOuter[ 1 ] = max( getDistance( vs_position[ 1 ] ), getDistance( vs_position[ 2 ] ) ) * MAX_SUBDIVISION_LEVEL + MIN_SUBDIVISION_LEVEL;
+	gl_TessLevelOuter[ 2 ] = getDistance( vs_position[ 2 ] ) * MAX[ vs_secondaryStructure[ 2 ] ] + MIN[ vs_secondaryStructure[ 2 ] ];
 	gl_TessLevelOuter[ 3 ] = gl_TessLevelOuter[ 1 ];
 	gl_TessLevelInner[ 0 ] = gl_TessLevelOuter[ 1 ];
 	gl_TessLevelInner[ 1 ] = max( gl_TessLevelOuter[ 0 ], gl_TessLevelOuter[ 2 ] );
-	*/
+
 	//}
 }

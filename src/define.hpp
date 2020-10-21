@@ -17,8 +17,9 @@
 namespace VTX
 {
 	// Types.
-	using uint	= unsigned int;
-	using uchar = unsigned char;
+	using ushort = unsigned short;
+	using uint	 = unsigned int;
+	using uchar	 = unsigned char;
 
 	using Vec2f = glm::vec2;
 	using Vec2i = glm::ivec2;

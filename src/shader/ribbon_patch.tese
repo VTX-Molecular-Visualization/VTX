@@ -8,11 +8,11 @@ uniform mat4 u_normalMatrix;
 uniform uint u_maxIndice;
 uniform vec3 u_camPosition;
 
-in vec3		 tc_position[];
-in vec3		 tc_direction[];
-in vec3		 tc_normal[];
-flat in uint tc_secondaryStructure[];
-flat in vec3 tc_color[];
+in vec3				   tc_position[];
+in vec3				   tc_direction[];
+in vec3				   tc_normal[];
+flat in unsigned short tc_secondaryStructure[];
+flat in vec3		   tc_color[];
 
 out vec3 te_viewPosition;
 out vec3 te_normal;
@@ -38,12 +38,12 @@ vec3 evaluateBSpline( const mat4x3 p_bspline, const float p_offset )
 void main()
 {
 	// Evaluate position.
-	mat4x3 positionBSpline = mat4x3( tc_position[ 0 ], tc_position[ 1 ], tc_position[ 2 ], tc_position[ 3 ] );
-	vec3   position		   = evaluateBSpline( positionBSpline, gl_TessCoord.x );
+	const mat4x3 positionBSpline = mat4x3( tc_position[ 0 ], tc_position[ 1 ], tc_position[ 2 ], tc_position[ 3 ] );
+	vec3		 position		 = evaluateBSpline( positionBSpline, gl_TessCoord.x );
 
 	// Evaluate direction.
-	mat4x3 directionBSpline = mat4x3( tc_direction[ 0 ], tc_direction[ 1 ], tc_direction[ 2 ], tc_direction[ 3 ] );
-	vec3   direction		= normalize( evaluateBSpline( directionBSpline, gl_TessCoord.x ) );
+	const mat4x3 directionBSpline = mat4x3( tc_direction[ 0 ], tc_direction[ 1 ], tc_direction[ 2 ], tc_direction[ 3 ] );
+	vec3		 direction		  = normalize( evaluateBSpline( directionBSpline, gl_TessCoord.x ) );
 
 	// vec3 direction = normalize( mix( tc_direction[ 1 ], tc_direction[ 2 ], gl_TessCoord.x ) );
 
@@ -52,14 +52,15 @@ void main()
 	// vec3 normalCA2 = cross( tc_direction[ 2 ], tc_position[ 3 ] - tc_position[ 2 ] );
 	// vec3 normal	   = normalize( mix( normalCA1, normalCA2, gl_TessCoord.x ) );
 
-	mat4x3 normalBSpline = mat4x3( tc_normal[ 0 ], tc_normal[ 1 ], tc_normal[ 2 ], tc_normal[ 3 ] );
-	vec3   normal		 = normalize( evaluateBSpline( normalBSpline, gl_TessCoord.x ) );
+	const mat4x3 normalBSpline = mat4x3( tc_normal[ 0 ], tc_normal[ 1 ], tc_normal[ 2 ], tc_normal[ 3 ] );
+	vec3		 normal		   = normalize( evaluateBSpline( normalBSpline, gl_TessCoord.x ) );
 
 	// vec3 normal = normalize( mix( tc_normal[ 1 ], tc_normal[ 2 ], gl_TessCoord.x ) );
 
 	// Handle factors.
-	float directionFactor = DIRECTION_FACTOR[ tc_secondaryStructure[ 1 ] ];
-	float radius		  = 1.f;
+	const unsigned short ss				 = tc_secondaryStructure[ 1 ];
+	const float			 directionFactor = DIRECTION_FACTOR[ ss ];
+	const float			 radius			 = 0.5f;
 
 	// Move vertex along [-direction, direction].
 	float directionStep = directionFactor * radius;

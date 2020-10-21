@@ -42,7 +42,7 @@ namespace VTX
 
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
 			gl()->glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
-			gl()->glVertexAttribIPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, GL_UNSIGNED_INT, sizeof( uint ), 0 );
+			gl()->glVertexAttribIPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, GL_UNSIGNED_SHORT, sizeof( ushort ), 0 );
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
@@ -127,9 +127,9 @@ namespace VTX
 			gl()->glNamedBufferData( _vboNormals, GLsizei( p_normals.size() ) * sizeof( Vec3f ), p_normals.data(), GL_STATIC_DRAW );
 		}
 
-		void SecondaryStructure::setControlPointSecondaryStructure( const std::vector<uint> & p_ss )
+		void SecondaryStructure::setControlPointSecondaryStructure( const std::vector<ushort> & p_ss )
 		{
-			gl()->glNamedBufferData( _vboSecondaryStructures, GLsizei( p_ss.size() ) * sizeof( uint ), p_ss.data(), GL_STATIC_DRAW );
+			gl()->glNamedBufferData( _vboSecondaryStructures, GLsizei( p_ss.size() ) * sizeof( ushort ), p_ss.data(), GL_STATIC_DRAW );
 		}
 
 		void SecondaryStructure::setControlPointColors( const std::vector<Color::Rgb> & p_colors )

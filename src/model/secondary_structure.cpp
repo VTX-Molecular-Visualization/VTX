@@ -105,7 +105,7 @@ namespace VTX
 					}
 
 					// Add secondary structure type.
-					_controlPointSecondaryStructures.emplace_back( uint( residue.getSecondaryStructure() ) );
+					_controlPointSecondaryStructures.emplace_back( ushort( residue.getSecondaryStructure() ) );
 
 					// Add color.
 					switch ( _colorMode )
