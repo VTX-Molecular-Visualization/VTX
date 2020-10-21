@@ -78,8 +78,10 @@ namespace VTX
 
 			void OpenGLWidget::resizeGL( int p_width, int p_height )
 			{
+				makeCurrent();
 				VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
 				getRenderer().resize( p_width, p_height );
+				doneCurrent();
 			}
 
 			void OpenGLWidget::switchRenderer( const Renderer::MODE p_mode )

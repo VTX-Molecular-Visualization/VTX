@@ -5,6 +5,16 @@ namespace VTX
 {
 	namespace Event
 	{
+		EventManager::~EventManager()
+		{
+			while ( _eventQueueVTX.empty() == false )
+			{
+				VTXEvent * const event = _eventQueueVTX.front();
+				_eventQueueVTX.pop();
+				delete event;
+			}
+		}
+
 		void EventManager::registerEventReceiverVTX( const VTX_EVENT & p_event, BaseEventReceiverVTX * const p_receiver )
 		{
 			if ( _receiversVTX.find( p_event ) == _receiversVTX.end() )
@@ -31,13 +41,13 @@ namespace VTX
 
 		void EventManager::fireEventVTX( VTXEvent * const p_event )
 		{
-			_lock();
 #ifdef DELAY_EVENTS
+			_lock();
 			_eventQueueVTX.emplace( p_event );
+			_unlock();
 #else
 			_flushVTXEvent( p_event );
 #endif
-			_unlock();
 		}
 
 		void EventManager::fireEventKeyboard( QKeyEvent * const p_event ) { _eventQueueKeyboard.emplace( *p_event ); }
@@ -80,14 +90,16 @@ namespace VTX
 			}
 
 			// VTX events.
-			_lock();
 			while ( _eventQueueVTX.empty() == false )
 			{
+				_lock();
 				VTXEvent * const event = _eventQueueVTX.front();
+				_unlock();
 				_flushVTXEvent( event );
+				_lock();
 				_eventQueueVTX.pop();
+				_unlock();
 			}
-			_unlock();
 		}
 
 		void EventManager::_flushVTXEvent( VTXEvent * const p_event )

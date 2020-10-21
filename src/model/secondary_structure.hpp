@@ -6,6 +6,7 @@
 #endif
 
 #include "base_model_3d.hpp"
+#include "buffer/secondary_structure.hpp"
 #include "color/rgb.hpp"
 
 namespace VTX
@@ -13,7 +14,7 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class SecondaryStructure : public BaseModel3D
+		class SecondaryStructure : public BaseModel3D<Buffer::SecondaryStructure>
 		{
 		  public:
 			enum class VALUE : int
@@ -57,10 +58,6 @@ namespace VTX
 			}
 			inline void refreshColors() { _fillBufferColors(); }
 
-			void init();
-			void bindBuffers() override;
-			void unbindBuffers() override;
-
 			void setCurrentFrame();
 
 			const std::vector<uint> &	 getIndices() const { return _indices; }
@@ -68,16 +65,11 @@ namespace VTX
 
 			void print() const;
 
-		  private:
-			enum ATTRIBUTE_LOCATION
-			{
-				CONTROL_POINT_POSITION			  = 0,
-				CONTROL_POINT_DIRECTION			  = 1,
-				CONTROL_POINT_NORMAL			  = 2,
-				CONTROL_POINT_SECONDARY_STRUCTURE = 3,
-				CONTROL_POINT_COLOR				  = 4,
-			};
+		  protected:
+			void _init() override;
+			void _instanciate3DViews() override;
 
+		  private:
 			Model::Molecule * const _molecule;
 			COLOR_MODE				_colorMode = COLOR_MODE::JMOL;
 
@@ -89,14 +81,6 @@ namespace VTX
 			std::vector<uint>		_indices						 = std::vector<uint>();
 
 			std::map<uint, uint> _residueToControlPointIndices = std::map<uint, uint>();
-
-			GLuint _vboPositions		   = GL_INVALID_VALUE;
-			GLuint _vboDirections		   = GL_INVALID_VALUE;
-			GLuint _vboNormals			   = GL_INVALID_VALUE;
-			GLuint _vboSecondaryStructures = GL_INVALID_VALUE;
-			GLuint _vboColors			   = GL_INVALID_VALUE;
-			GLuint _ibo					   = GL_INVALID_VALUE;
-			GLuint _vao					   = GL_INVALID_VALUE;
 
 			void _fillBufferColors();
 			void _flipTest( Vec3f &, Vec3f & ) const;

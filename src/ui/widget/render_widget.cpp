@@ -7,14 +7,34 @@ namespace VTX
 	{
 		namespace Widget
 		{
-			RenderWidget::RenderWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
+			RenderWidget::RenderWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
+			{
+				_registerEvent( Event::Global::MOLECULE_ADDED );
+				_registerEvent( Event::Global::MESH_ADDED );
+			}
 
 			RenderWidget::~RenderWidget()
 			{
 				delete _openGLWidget;
 				delete _verticalLayout;
 				delete _verticalLayoutWidget;
-			};
+			}
+
+			void RenderWidget::receiveEvent( const Event::VTXEvent & p_event )
+			{
+				_openGLWidget->makeCurrent();
+				if ( p_event.name == Event::Global::MOLECULE_ADDED )
+				{
+					const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+					castedEvent.ptr->init( &getOpenGLWidget().getFunctions() );
+				}
+				else if ( p_event.name == Event::Global::MESH_ADDED )
+				{
+					const Event::VTXEventPtr<Model::MeshTriangle> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::MeshTriangle> &>( p_event );
+					castedEvent.ptr->init( &getOpenGLWidget().getFunctions() );
+				}
+				_openGLWidget->doneCurrent();
+			}
 
 			void RenderWidget::_setupUi( const QString & p_name )
 			{

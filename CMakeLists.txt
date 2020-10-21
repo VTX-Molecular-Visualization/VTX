@@ -110,7 +110,6 @@ endforeach()
 # Get all QT Resources Files.
 file(GLOB_RECURSE QT_RESOURCES ${PATH_QT_RESOURCE}/*.qrc)
 foreach(SRC IN ITEMS ${QT_RESOURCES})
-	message("items : " ${ITEMS})
     get_filename_component(SRC_PATH "${SRC}" PATH)
     file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_QT_RESOURCE}" "${SRC_PATH}")
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")

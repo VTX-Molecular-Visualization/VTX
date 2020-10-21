@@ -13,9 +13,9 @@ namespace VTX
 				_program							= pm.createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
 
 				assert( _program != nullptr );
-				_uModelViewMatrixLoc = OGL().glGetUniformLocation( _program->getId(), "uMVMatrix" );
-				_uProjMatrixLoc		 = OGL().glGetUniformLocation( _program->getId(), "uProjMatrix" );
-				_uRadiusLoc			 = OGL().glGetUniformLocation( _program->getId(), "uCylRad" );
+				_uModelViewMatrixLoc = _gl()->glGetUniformLocation( _program->getId(), "uMVMatrix" );
+				_uProjMatrixLoc		 = _gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
+				_uRadiusLoc			 = _gl()->glGetUniformLocation( _program->getId(), "uCylRad" );
 			}
 
 			void Cylinder::render( const Generic::REPRESENTATION p_representation )
@@ -31,13 +31,13 @@ namespace VTX
 
 				// TODO: do not upadte each frame !
 				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
-				OGL().glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
-				OGL().glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
-				OGL().glUniform1f( _uRadiusLoc, VTX_SETTING().bondsRadius );
+				_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
+				_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
+				_gl()->glUniform1f( _uRadiusLoc, VTX_SETTING().bondsRadius );
 
 				for ( const std::pair<uint, uint> & pair : _model->getRepresentationState()[ p_representation ].bonds )
 				{
-					OGL().glDrawElements( GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
+					_gl()->glDrawElements( GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
 				}
 			}
 		} // namespace D3

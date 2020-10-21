@@ -17,7 +17,7 @@ namespace VTX
 {
 	namespace View
 	{
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel3D, T>::value>>
+		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel3D<Buffer::BaseBufferOpenGL>, T>::value>>
 		class BaseView3D : public TemplatedBaseView<T>, public Generic::BaseRenderable
 		{
 		  public:
@@ -27,7 +27,8 @@ namespace VTX
 		  protected:
 			Renderer::GLSL::Program * _program = nullptr;
 
-			virtual void notify( const Event::VTX_EVENT_MODEL & p_event ) override
+			inline QOpenGLFunctions_4_5_Core * const _gl() { return _model->getBuffer()->gl(); }
+			virtual void							 notify( const Event::VTX_EVENT_MODEL & p_event ) override
 			{
 				if ( p_event == Event::VTX_EVENT_MODEL::RENDER )
 				{

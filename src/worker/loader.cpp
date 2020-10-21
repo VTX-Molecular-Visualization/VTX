@@ -60,7 +60,6 @@ namespace VTX
 					try
 					{
 						reader->readFile( *path, *molecule );
-						molecule->init();
 						molecule->print();
 						VTXApp::get().getScene().addMolecule( molecule );
 					}
@@ -81,7 +80,6 @@ namespace VTX
 					try
 					{
 						reader->readFile( *path, *mesh );
-						mesh->init();
 						mesh->print();
 						VTXApp::get().getScene().addMesh( mesh );
 					}
@@ -138,7 +136,6 @@ namespace VTX
 					try
 					{
 						reader->readBuffer( *pair.second, *pair.first, *molecule );
-						molecule->init();
 						molecule->print();
 						VTXApp::get().getScene().addMolecule( molecule );
 					}
