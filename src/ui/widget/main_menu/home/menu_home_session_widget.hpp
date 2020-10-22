@@ -1,0 +1,50 @@
+#ifndef __VTX_UI_WIDGET_MENU_HOME_SESSION__
+#define __VTX_UI_WIDGET_MENU_HOME_SESSION__
+
+#ifdef _MSC_VER
+#pragma once
+#endif
+
+#include "ui/widget/main_menu/menu_toolblock_widget.hpp"
+#include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
+#include <QWidget>
+
+namespace VTX
+{
+	namespace UI
+	{
+		namespace Widget
+		{
+			namespace MainMenu
+			{
+				namespace Home
+				{
+					class MenuHomeSessionWidget : public MenuToolBlockWidget
+					{
+						VTX_MANUAL_WIDGET_DECLARATION
+
+					  public:
+						~MenuHomeSessionWidget();
+						void localize() override;
+
+					  protected:
+						MenuHomeSessionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
+						void _setupUi( const QString & p_name ) override;
+						void _setupSlots() override;
+
+					  private:
+						MenuToolButtonWidget * _newSessionButton		= nullptr;
+						MenuToolButtonWidget * _openSessionButton		= nullptr;
+						MenuToolButtonWidget * _openRecentSessionButton = nullptr;
+						MenuToolButtonWidget * _saveSessionButton		= nullptr;
+						MenuToolButtonWidget * _saveAsSessionButton		= nullptr;
+
+					  private:
+						void _openFile();
+					};
+				} // namespace Home
+			}	  // namespace MainMenu
+		}		  // namespace Widget
+	}			  // namespace UI
+} // namespace VTX
+#endif

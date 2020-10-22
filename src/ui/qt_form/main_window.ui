@@ -42,7 +42,7 @@
 					<string>Main</string>
 				</attribute>
 
-				<widget class="VTX::UI::Widget::MenuMainWidget" name="mainTabContent" />
+				<widget class="VTX::UI::Widget::MainMenu/Home/MenuHomeWidget" name="mainTabContent" />
 			</widget>
 			
 			<widget class="QLabel" name="tmp1">		
@@ -139,9 +139,9 @@
 	
 	<customwidgets>
 		<!--<customwidget>
-			<class>VTX::UI::Widget::MenuMainWidget</class>
+			<class>VTX::UI::Widget::MainMenu/Home/MenuMainWidget</class>
 			<extends>QWidget</extends>
-			<header>ui/widget/menu_main_widget.hpp</header>
+			<header>ui/widget/main_menu_home/menu_home_widget.hpp</header>
 		</customwidget>
 
 		<customwidget>

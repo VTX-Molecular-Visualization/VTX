@@ -15,7 +15,7 @@ namespace VTX
 		{
 			_registerEvent( Event::Global::CHANGE_STATE );
 
-			_mainMenuBar = WidgetFactory::get().GetWidget<Widget::MainMenuBar>( this, "mainMenuBar" );
+			_mainMenuBar = WidgetFactory::get().GetWidget<Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
 			this->setMenuBar( _mainMenuBar );
 
 			_renderWidget	 = WidgetFactory::get().GetWidget<Widget::RenderWidget>( this, "renderWidget" );
