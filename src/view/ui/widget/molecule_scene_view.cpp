@@ -1,6 +1,5 @@
 #include "molecule_scene_view.hpp"
 #include "molecule_subdata_scene_view.hpp"
-#include "ui/widget/scene_widget.hpp"
 #include "ui/widget_factory.hpp"
 
 namespace VTX

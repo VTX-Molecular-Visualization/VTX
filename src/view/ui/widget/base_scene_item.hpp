@@ -7,7 +7,7 @@
 
 #include "model/base_model.hpp"
 #include "ui/widget/base_manual_widget_initializer.hpp"
-#include "ui/widget/scene_tree_widget_item.hpp"
+#include "ui/widget/scene/scene_tree_widget_item.hpp"
 #include "view/templated_base_view.hpp"
 #include <QTreeWidget>
 #include <type_traits>
@@ -21,7 +21,7 @@ namespace VTX
 			namespace Widget
 			{
 				template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
-				class BaseSceneItem : public VTX::UI::Widget::SceneTreeWidgetItem, public View::TemplatedBaseView<M>, VTX::UI::Widget::BaseManualWidgetInitializer
+				class BaseSceneItem : public VTX::UI::Widget::Scene::SceneTreeWidgetItem, public View::TemplatedBaseView<M>, VTX::UI::Widget::BaseManualWidgetInitializer
 				{
 					VTX_MANUAL_WIDGET_DECLARATION
 
@@ -33,7 +33,7 @@ namespace VTX
 					inline virtual void refreshView() override
 					{
 						View::TemplatedBaseView<M>::refreshView();
-						VTX::UI::Widget::SceneTreeWidgetItem::refreshItem();
+						VTX::UI::Widget::Scene::SceneTreeWidgetItem::refreshItem();
 					};
 				};
 

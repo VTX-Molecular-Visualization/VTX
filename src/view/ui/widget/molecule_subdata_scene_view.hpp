@@ -8,7 +8,7 @@
 #include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/residue.hpp"
-#include "ui/widget/scene_tree_widget_item.hpp"
+#include "ui/widget/scene/scene_tree_widget_item.hpp"
 #include <QTreeWidget>
 
 namespace VTX
@@ -19,7 +19,7 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class MoleculeSubDataSceneView : public VTX::UI::Widget::SceneTreeWidgetItem
+				class MoleculeSubDataSceneView : public VTX::UI::Widget::Scene::SceneTreeWidgetItem
 				{
 				  public:
 					MoleculeSubDataSceneView( Model::BaseModel & p_model, QTreeWidgetItem * const p_parent ) : SceneTreeWidgetItem( p_model, p_parent ) {};

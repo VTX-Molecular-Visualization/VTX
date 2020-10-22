@@ -12,8 +12,8 @@
 #include "widget/main_menu/main_menu_bar.hpp"
 #include "widget/render/opengl_widget.hpp"
 #include "widget/render/render_widget.hpp"
-#include "widget/scene_widget.hpp"
-#include "widget/status_bar_widget.hpp"
+#include "widget/scene/scene_widget.hpp"
+#include "widget/status_bar/status_bar_widget.hpp"
 #include <QCloseEvent>
 #include <QMainWindow>
 
@@ -47,11 +47,11 @@ namespace VTX
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
 
 			Widget::Render::RenderWidget *		 _renderWidget	  = nullptr;
-			Widget::SceneWidget *				 _sceneWidget	  = nullptr;
+			Widget::Scene::SceneWidget *		 _sceneWidget	  = nullptr;
 			Widget::Inspector::InspectorWidget * _inspectorWidget = nullptr;
 			Widget::Console::ConsoleWidget *	 _consoleWidget	  = nullptr;
 
-			Widget::StatusBarWidget * _statusBarWidget = nullptr;
+			Widget::StatusBar::StatusBarWidget * _statusBarWidget = nullptr;
 
 			void _loadStyleSheet( const char * p_stylesheetPath );
 			void _setupSlots();

@@ -19,11 +19,11 @@ namespace VTX
 			this->setMenuBar( _mainMenuBar );
 
 			_renderWidget	 = WidgetFactory::get().GetWidget<Widget::Render::RenderWidget>( this, "renderWidget" );
-			_sceneWidget	 = WidgetFactory::get().GetWidget<Widget::SceneWidget>( this, "sceneWidget" );
+			_sceneWidget	 = WidgetFactory::get().GetWidget<Widget::Scene::SceneWidget>( this, "sceneWidget" );
 			_inspectorWidget = WidgetFactory::get().GetWidget<Widget::Inspector::InspectorWidget>( this, "inspectorWidget" );
 			_consoleWidget	 = WidgetFactory::get().GetWidget<Widget::Console::ConsoleWidget>( this, "consoleWidget" );
 
-			_statusBarWidget = WidgetFactory::get().GetWidget<Widget::StatusBarWidget>( this, "statusBar" );
+			_statusBarWidget = WidgetFactory::get().GetWidget<Widget::StatusBar::StatusBarWidget>( this, "statusBar" );
 			_statusBarWidget->setFixedHeight( 25 );
 			this->setStatusBar( _statusBarWidget );
 
