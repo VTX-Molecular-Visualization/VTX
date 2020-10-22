@@ -9,6 +9,7 @@
 #include "define.hpp"
 #include "io/reader/vtx.hpp"
 #include "io/writer/vtx.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "util/filesystem.hpp"
@@ -30,7 +31,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTXApp::get().getScene().clear();
-					Model::Path * path = new Model::Path();
+					Model::Path * path = MVC::MvcManager::get().instantiate<Model::Path>();
 					VTXApp::get().getScene().addPath( path );
 				}
 			};

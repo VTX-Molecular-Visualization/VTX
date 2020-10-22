@@ -21,9 +21,9 @@ namespace VTX
 		Molecule::~Molecule()
 		{
 			MVC::MvcManager::get().deleteAllModels( _atoms );
+			MVC::MvcManager::get().deleteAllModels( _bonds );
 			MVC::MvcManager::get().deleteAllModels( _residues );
 			MVC::MvcManager::get().deleteAllModels( _chains );
-			MVC::MvcManager::get().deleteAllModels( _bonds );
 
 			if ( _secondaryStructure != nullptr )
 			{

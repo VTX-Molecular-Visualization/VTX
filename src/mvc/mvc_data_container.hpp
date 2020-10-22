@@ -10,6 +10,7 @@
 #include "mvc_data.hpp"
 #include "view/base_view.hpp"
 #include <algorithm>
+#include <type_traits>
 #include <vector>
 
 namespace VTX
@@ -37,6 +38,57 @@ namespace VTX
 				VecSizeType index = _findIndex( p_obj );
 				return _removeAtIndex( index );
 			};
+
+			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			inline void deleteAllMVCs( const std::vector<M *> & p_allModelsSorted )
+			{
+				VecSizeType		  allModelsSeek	 = 0;
+				const VecSizeType allModelsSize	 = p_allModelsSorted.size();
+				Model::Model_ID	  currentModelID = p_allModelsSorted[ allModelsSeek ]->getId();
+
+				VecSizeType		  vectorSeek = this->_findIndex( currentModelID );
+				VecSizeType		  currIndex	 = vectorSeek;
+				const VecSizeType nbItems	 = _vector.size();
+
+				while ( allModelsSeek < allModelsSize )
+				{
+					if ( _vector[ vectorSeek ]->getId() != currentModelID )
+					{
+						MvcData * item		  = _vector[ vectorSeek ];
+						_vector[ vectorSeek ] = _vector[ currIndex ];
+						_vector[ currIndex ]  = item;
+
+						currIndex++;
+					}
+					else
+					{
+						allModelsSeek++;
+
+						if ( allModelsSeek < allModelsSize )
+							currentModelID = p_allModelsSorted[ allModelsSeek ]->getId();
+					}
+
+					vectorSeek++;
+				}
+
+				// We finish to decale all the models to pop_back all MVCs
+				while ( vectorSeek < nbItems )
+				{
+					MvcData * item		  = _vector[ vectorSeek ];
+					_vector[ vectorSeek ] = _vector[ currIndex ];
+					_vector[ currIndex ]  = item;
+
+					vectorSeek++;
+					currIndex++;
+				}
+
+				while ( currIndex < vectorSeek )
+				{
+					delete _vector.back();
+					_vector.pop_back();
+					vectorSeek--;
+				}
+			}
 
 		  private:
 			std::vector<MvcData *> _vector;

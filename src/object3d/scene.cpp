@@ -2,6 +2,7 @@
 #include "action/main.hpp"
 #include "generic/factory.hpp"
 #include "math/transform.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -10,7 +11,7 @@ namespace VTX
 	{
 		Scene::Scene()
 		{
-			Model::Path * path = new Model::Path();
+			Model::Path * path = MVC::MvcManager::get().instantiate<Model::Path>();
 			addPath( path );
 		}
 

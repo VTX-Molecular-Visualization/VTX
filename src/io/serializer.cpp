@@ -1,6 +1,7 @@
 #include "serializer.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
+#include "mvc/mvc_manager.hpp"
 
 namespace VTX
 {
@@ -133,7 +134,7 @@ namespace VTX
 
 			for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
 			{
-				Model::Path * const path = new Model::Path();
+				Model::Path * const path = MVC::MvcManager::get().instantiate<Model::Path>();
 				deserialize( jsonPath, *path );
 				p_scene.addPath( path );
 			}

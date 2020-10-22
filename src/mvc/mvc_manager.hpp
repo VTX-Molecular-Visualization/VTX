@@ -65,8 +65,13 @@ namespace VTX
 			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
 			void deleteAllModels( std::vector<M *> & p_models )
 			{
-				for ( M * element : p_models )
-					MVC::MvcManager::get().deleteModel( element );
+				if ( p_models.size() <= 0 )
+					return;
+
+				_mvcs->deleteAllMVCs( p_models );
+
+				for ( auto it = p_models.begin(); it != p_models.end(); it++ )
+					delete ( *it );
 
 				p_models.clear();
 			}
