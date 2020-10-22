@@ -20,13 +20,13 @@ namespace VTX
 					// Chains.
 					for ( Model::Chain * const chain : _model->getChains() )
 					{
-						MoleculeSubDataSceneView * chainView = new MoleculeSubDataSceneView( *chain, this );
+						MoleculeSubDataSceneView * const chainView = new MoleculeSubDataSceneView( *chain, this );
 
 						// Residues.
 						for ( uint r = 0; r < chain->getResidueCount(); ++r )
 						{
-							Model::Residue &		   residue	   = _model->getResidue( chain->getIndexFirstResidue() + r );
-							MoleculeSubDataSceneView * residueView = new MoleculeSubDataSceneView( residue, chainView );
+							Model::Residue &					   residue	   = _model->getResidue( chain->getIndexFirstResidue() + r );
+							const MoleculeSubDataSceneView * const residueView = new MoleculeSubDataSceneView( residue, chainView );
 						}
 					}
 				}
