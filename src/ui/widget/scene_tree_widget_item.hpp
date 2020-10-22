@@ -19,7 +19,7 @@ namespace VTX
 			class SceneTreeWidgetItem : public QTreeWidgetItem
 			{
 			  public:
-				SceneTreeWidgetItem( Model::BaseModel & p_model, QTreeWidgetItem * p_parent ) : QTreeWidgetItem( p_parent ), _linkedModel( &p_model ) { refreshItem(); };
+				SceneTreeWidgetItem( Model::BaseModel & p_model, QTreeWidgetItem * const p_parent ) : QTreeWidgetItem( p_parent ), _linkedModel( &p_model ) { refreshItem(); };
 
 				Model::BaseModel * const getModel() { return _linkedModel; };
 
