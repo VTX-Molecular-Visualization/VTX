@@ -73,7 +73,7 @@
 			</attribute>
 		</widget>
 		
-		<widget class="VTX::UI::Widget::InspectorWidget" name="inspectorWidget">
+		<widget class="VTX::UI::Widget::Inspector::InspectorWidget" name="inspectorWidget">
 			<property name="windowTitle"><string>Inspector</string></property>
 			<attribute name="dockWidgetArea">
 				<number>2</number>
@@ -150,9 +150,9 @@
 			<header>ui/widget/render_widget.hpp</header>
 		</customwidget>
 		<customwidget>
-			<class>VTX::UI::Widget::InspectorWidget</class>
+			<class>VTX::UI::Widget::Inspector::InspectorWidget</class>
 			<extends>QDockWidget</extends>
-			<header>ui/widget/inspector_widget.hpp</header>
+			<header>ui/widget/inspector/inspector_widget.hpp</header>
 		</customwidget>
 		<customwidget>
 			<class>VTX::UI::Widget::SceneWidget</class>

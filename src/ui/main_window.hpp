@@ -8,7 +8,7 @@
 #include "ui_main_window.h"
 #include "widget/base_widget.hpp"
 #include "widget/console/console_widget.hpp"
-#include "widget/inspector_widget.hpp"
+#include "widget/inspector/inspector_widget.hpp"
 #include "widget/main_menu_bar.hpp"
 #include "widget/opengl_widget.hpp"
 #include "widget/render_widget.hpp"
@@ -46,10 +46,10 @@ namespace VTX
 		  private:
 			Widget::MainMenuBar * _mainMenuBar = nullptr;
 
-			Widget::RenderWidget *			 _renderWidget	  = nullptr;
-			Widget::SceneWidget *			 _sceneWidget	  = nullptr;
-			Widget::InspectorWidget *		 _inspectorWidget = nullptr;
-			Widget::Console::ConsoleWidget * _consoleWidget	  = nullptr;
+			Widget::RenderWidget *				 _renderWidget	  = nullptr;
+			Widget::SceneWidget *				 _sceneWidget	  = nullptr;
+			Widget::Inspector::InspectorWidget * _inspectorWidget = nullptr;
+			Widget::Console::ConsoleWidget *	 _consoleWidget	  = nullptr;
 
 			Widget::StatusBarWidget * _statusBarWidget = nullptr;
 

@@ -7,7 +7,7 @@
 
 #include "base_widget_view.hpp"
 #include "model/molecule.hpp"
-#include "ui/widget/inspector_molecule_widget.hpp"
+#include "ui/widget/inspector/inspector_molecule_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include <QWidget>
 
@@ -19,7 +19,7 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class MoleculeInspectorView : public BaseWidgetView<Model::Molecule, VTX::UI::Widget::InspectorMoleculeWidget>
+				class MoleculeInspectorView : public BaseWidgetView<Model::Molecule, VTX::UI::Widget::Inspector::InspectorMoleculeWidget>
 				{
 				  public:
 					MoleculeInspectorView( Model::Molecule * const p_molecule, QWidget * p_parent ) : BaseWidgetView( p_molecule, "MoleculeInspector", p_parent ) {};
