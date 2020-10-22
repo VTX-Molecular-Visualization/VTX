@@ -23,7 +23,7 @@ namespace VTX
 				mainLayout->setContentsMargins( 0, 0, 0, 0 );
 				mainLayout->setSpacing( 1 );
 
-				_mainWidget = WidgetFactory::get().GetWidget<CollapsingHeaderWidget>( this, "inspector_item" );
+				_mainWidget = WidgetFactory::get().GetWidget<CustomWidget::CollapsingHeaderWidget>( this, "inspector_item" );
 				_mainWidget->setContentsMargins( 0, 0, 0, 0 );
 				_mainWidget->setHeaderHeight( Style::INSPECTOR_HEADER_HEIGHT );
 
@@ -32,7 +32,7 @@ namespace VTX
 				QVBoxLayout * contentLayout = new QVBoxLayout( mainContent );
 				contentLayout->setContentsMargins( 0, 0, 0, 0 );
 
-				_infoSection = WidgetFactory::get().GetWidget<CollapsingHeaderWidget>( this, "inspector_item_section" );
+				_infoSection = WidgetFactory::get().GetWidget<CustomWidget::CollapsingHeaderWidget>( this, "inspector_item_section" );
 				_infoSection->setHeaderHeight( Style::INSPECTOR_HEADER_HEIGHT );
 				_infoSection->displayIconInHeader( false );
 
