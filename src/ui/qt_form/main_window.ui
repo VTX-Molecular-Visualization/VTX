@@ -80,7 +80,7 @@
 			</attribute>
 		</widget>
 		
-		<widget class="VTX::UI::Widget::ConsoleWidget" name="consoleWidget">
+		<widget class="VTX::UI::Widget::Console::ConsoleWidget" name="consoleWidget">
 		<property name="windowTitle"><string>Console</string></property>
 			<attribute name="dockWidgetArea">
 				<number>8</number>
@@ -160,9 +160,9 @@
 			<header>ui/widget/scene_widget.hpp</header>
 		</customwidget>
 		<customwidget>
-			<class>VTX::UI::Widget::ConsoleWidget</class>
+			<class>VTX::UI::Widget::Console::ConsoleWidget</class>
 			<extends>QDockWidget</extends>
-			<header>ui/widget/console_widget.hpp</header>
+			<header>ui/widget/console/console_widget.hpp</header>
 		</customwidget>-->
 	</customwidgets>
 	

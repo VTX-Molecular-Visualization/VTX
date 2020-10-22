@@ -21,7 +21,7 @@ namespace VTX
 			_renderWidget	 = WidgetFactory::get().GetWidget<Widget::RenderWidget>( this, "renderWidget" );
 			_sceneWidget	 = WidgetFactory::get().GetWidget<Widget::SceneWidget>( this, "sceneWidget" );
 			_inspectorWidget = WidgetFactory::get().GetWidget<Widget::InspectorWidget>( this, "inspectorWidget" );
-			_consoleWidget	 = WidgetFactory::get().GetWidget<Widget::ConsoleWidget>( this, "consoleWidget" );
+			_consoleWidget	 = WidgetFactory::get().GetWidget<Widget::Console::ConsoleWidget>( this, "consoleWidget" );
 
 			_statusBarWidget = WidgetFactory::get().GetWidget<Widget::StatusBarWidget>( this, "statusBar" );
 			_statusBarWidget->setFixedHeight( 25 );
