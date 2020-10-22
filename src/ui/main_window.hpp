@@ -10,8 +10,8 @@
 #include "widget/console/console_widget.hpp"
 #include "widget/inspector/inspector_widget.hpp"
 #include "widget/main_menu/main_menu_bar.hpp"
-#include "widget/opengl_widget.hpp"
-#include "widget/render_widget.hpp"
+#include "widget/render/opengl_widget.hpp"
+#include "widget/render/render_widget.hpp"
 #include "widget/scene_widget.hpp"
 #include "widget/status_bar_widget.hpp"
 #include <QCloseEvent>
@@ -29,8 +29,8 @@ namespace VTX
 			MainWindow( QWidget * = 0 );
 			~MainWindow();
 
-			inline const Widget::OpenGLWidget & getOpenGLWidget() const { return _renderWidget->getOpenGLWidget(); }
-			inline Widget::OpenGLWidget &		getOpenGLWidget() { return _renderWidget->getOpenGLWidget(); }
+			inline const Widget::Render::OpenGLWidget & getOpenGLWidget() const { return _renderWidget->getOpenGLWidget(); }
+			inline Widget::Render::OpenGLWidget &		getOpenGLWidget() { return _renderWidget->getOpenGLWidget(); }
 
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 			void closeEvent( QCloseEvent * ) override;
@@ -46,7 +46,7 @@ namespace VTX
 		  private:
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
 
-			Widget::RenderWidget *				 _renderWidget	  = nullptr;
+			Widget::Render::RenderWidget *		 _renderWidget	  = nullptr;
 			Widget::SceneWidget *				 _sceneWidget	  = nullptr;
 			Widget::Inspector::InspectorWidget * _inspectorWidget = nullptr;
 			Widget::Console::ConsoleWidget *	 _consoleWidget	  = nullptr;

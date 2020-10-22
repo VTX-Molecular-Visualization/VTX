@@ -18,7 +18,7 @@ namespace VTX
 			_mainMenuBar = WidgetFactory::get().GetWidget<Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
 			this->setMenuBar( _mainMenuBar );
 
-			_renderWidget	 = WidgetFactory::get().GetWidget<Widget::RenderWidget>( this, "renderWidget" );
+			_renderWidget	 = WidgetFactory::get().GetWidget<Widget::Render::RenderWidget>( this, "renderWidget" );
 			_sceneWidget	 = WidgetFactory::get().GetWidget<Widget::SceneWidget>( this, "sceneWidget" );
 			_inspectorWidget = WidgetFactory::get().GetWidget<Widget::Inspector::InspectorWidget>( this, "inspectorWidget" );
 			_consoleWidget	 = WidgetFactory::get().GetWidget<Widget::Console::ConsoleWidget>( this, "consoleWidget" );
