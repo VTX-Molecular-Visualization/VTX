@@ -17,15 +17,12 @@ namespace VTX
 		class MvcData
 		{
 		  public:
-			MvcData( const Model::BaseModel * const p_model )
-			{
-				_model = p_model;
-				_views = Generic::HasCollection<View::BaseView>();
-			};
+			MvcData( Model::BaseModel * const p_model ) : _model( p_model ) { _views = Generic::HasCollection<View::BaseView>(); };
 
 			~MvcData() { _views.clear(); };
 
-			const Model::Model_ID & getId() const { return _model->getId(); }
+			const Model::Model_ID &	 getId() const { return _model->getId(); }
+			const Model::BaseModel & getModel() const { return *_model; };
 
 			inline void				addView( const ID::VTX_ID & p_id, View::BaseView * const p_view ) { _views.addItem( p_id, p_view ); };
 			inline View::BaseView * removeView( const ID::VTX_ID & p_id ) { return _views.removeItem( p_id ); };
@@ -33,14 +30,14 @@ namespace VTX
 
 			void notifyViews( const Event::VTX_EVENT_MODEL & p_event ) const
 			{
-				Generic::HasCollection<View::BaseView>::MapStringToItemPtr mapViews = *( _views.getItems() );
+				const Generic::HasCollection<View::BaseView>::MapStringToItemPtr mapViews = *( _views.getItems() );
 
-				for ( Generic::HasCollection<View::BaseView>::PairStringToItemPtr & pair : mapViews )
+				for ( const Generic::HasCollection<View::BaseView>::PairStringToItemPtr & pair : mapViews )
 					pair.second->notify( p_event );
 			};
 
 		  private:
-			const Model::BaseModel *			   _model;
+			Model::BaseModel * const			   _model;
 			Generic::HasCollection<View::BaseView> _views;
 		};
 	} // namespace MVC

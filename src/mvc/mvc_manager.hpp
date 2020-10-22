@@ -31,8 +31,8 @@ namespace VTX
 			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
 			M * const instantiate()
 			{
-				M *		  model = new M();
-				MvcData * mvc	= new MvcData( model );
+				M * const		model = new M();
+				MvcData * const mvc	  = new MvcData( model );
 
 				_mvcs->add( mvc );
 
@@ -44,8 +44,8 @@ namespace VTX
 			template<typename M, typename P1, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
 			M * const instantiate( P1 & p_param1 )
 			{
-				M *		  model = new M( p_param1 );
-				MvcData * mvc	= new MvcData( model );
+				M * const		model = new M( p_param1 );
+				MvcData * const mvc	  = new MvcData( model );
 
 				_mvcs->add( mvc );
 
@@ -55,9 +55,9 @@ namespace VTX
 			};
 
 			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
-			void deleteModel( M * p_model )
+			void deleteModel( M * const p_model )
 			{
-				MvcData * mvc = _mvcs->remove( p_model );
+				MvcData * const mvc = _mvcs->remove( p_model );
 				delete mvc;
 				delete p_model;
 			};
@@ -76,6 +76,12 @@ namespace VTX
 				p_models.clear();
 			}
 
+			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			M & getModel( const Model::Model_ID & _id ) const
+			{
+				return _getMvcData( _id )->getModel();
+			};
+
 			inline void addViewOnModel( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id, View::BaseView * const p_view )
 			{
 				_getMvcData( p_model )->addView( p_id, p_view );
@@ -87,9 +93,10 @@ namespace VTX
 		  private:
 			inline MvcManager() {};
 
-			MvcDataContainer * _mvcs = new MvcDataContainer();
+			MvcDataContainer * const _mvcs = new MvcDataContainer();
 
-			MvcData * _getMvcData( const Model::BaseModel * const p_model ) const { return ( *_mvcs )[ p_model ]; };
+			MvcData * const _getMvcData( const Model::BaseModel * const p_model ) const { return ( *_mvcs )[ p_model ]; };
+			MvcData * const _getMvcData( const Model::Model_ID & p_modelId ) const { return ( *_mvcs )[ p_modelId ]; };
 		};
 	} // namespace MVC
 } // namespace VTX

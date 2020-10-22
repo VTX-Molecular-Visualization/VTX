@@ -25,7 +25,8 @@ namespace VTX
 		  public:
 			MvcDataContainer() { _vector = std::vector<MvcData *>(); };
 
-			MvcData * operator[]( const Model::BaseModel * const p_model ) const { return _vector[ _findIndex( p_model->getId() ) ]; };
+			MvcData * const operator[]( const Model::BaseModel * const p_model ) const { return _vector[ _findIndex( p_model->getId() ) ]; };
+			MvcData * const operator[]( const Model::Model_ID & p_modelId ) const { return _vector[ _findIndex( p_modelId ) ]; };
 
 			inline void		 add( MvcData * p_obj ) { _vector.push_back( p_obj ); };
 			inline MvcData * remove( const Model::BaseModel * const p_model )
@@ -95,7 +96,7 @@ namespace VTX
 
 			inline MvcData * _removeAtIndex( const VecSizeType & p_index )
 			{
-				MvcData * removed = _vector[ p_index ];
+				MvcData * const removed = _vector[ p_index ];
 				_vector.erase( _vector.begin() + p_index );
 
 				return removed;
@@ -113,8 +114,8 @@ namespace VTX
 					else
 						throw new std::exception( "searchedValue not found !" );
 				}
-				VecSizeType		middleIndex = p_maxIndex / 2 + p_minIndex / 2;
-				Model::Model_ID middleValue = _vector[ middleIndex ]->getId();
+				const VecSizeType	  middleIndex = p_maxIndex / 2 + p_minIndex / 2;
+				const Model::Model_ID middleValue = _vector[ middleIndex ]->getId();
 
 				if ( middleValue < p_searchedValue )
 					return _findIndexRecursive( middleIndex + 1, p_maxIndex, p_searchedValue );
