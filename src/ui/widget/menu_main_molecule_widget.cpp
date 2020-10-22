@@ -42,7 +42,7 @@ namespace VTX
 
 				validate();
 
-				_downloadMoleculeDialog = WidgetFactory::get().GetWidget<DownloadMoleculeDialog>( this, "downloadMoleculeDialog" );
+				_downloadMoleculeDialog = WidgetFactory::get().GetWidget<Dialog::DownloadMoleculeDialog>( this, "downloadMoleculeDialog" );
 			}
 			void MenuMainMoleculeWidget::_setupSlots()
 			{
