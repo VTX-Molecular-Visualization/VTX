@@ -45,7 +45,7 @@ namespace VTX
 		  protected:
 			inline static const std::string DEFAULT_NAME = "<unknown>";
 
-			Model_ID					  _id	   = COUNTER++;
+			const Model_ID				  _id	   = COUNTER++;
 			bool						  _enabled = true;
 			const std::string *			  _name	   = &DEFAULT_NAME;
 			const VTX::ID::VTX_ID * const _typeId;
