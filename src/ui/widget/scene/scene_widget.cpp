@@ -30,7 +30,7 @@ namespace VTX
 					_treeWidget->removeItemWidget( p_item, 0 );
 					return p_item;
 				}
-				void SceneWidget::deleteItem( QTreeWidgetItem * p_item )
+				void SceneWidget::deleteItem( QTreeWidgetItem * const p_item )
 				{
 					_treeWidget->removeItemWidget( p_item, 0 );
 					delete p_item;

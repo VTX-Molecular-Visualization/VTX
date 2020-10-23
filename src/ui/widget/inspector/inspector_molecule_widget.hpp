@@ -24,7 +24,7 @@ namespace VTX
 					VTX_MANUAL_WIDGET_DECLARATION
 
 				  public:
-					void refresh();
+					void refresh() override;
 					void localize() override;
 
 				  protected:

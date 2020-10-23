@@ -28,12 +28,11 @@ namespace VTX
 
 					if ( p_event.name == Event::Global::MOLECULE_ADDED )
 					{
-						const Event::VTXEventPtr<Model::Molecule> & castedEvent			  = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-						View::UI::Widget::MoleculeInspectorView *	moleculeInspectorView = new View::UI::Widget::MoleculeInspectorView( castedEvent.ptr, nullptr );
+						const Event::VTXEventPtr<Model::Molecule> &		castedEvent			  = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+						View::UI::Widget::MoleculeInspectorView * const moleculeInspectorView = new View::UI::Widget::MoleculeInspectorView( castedEvent.ptr, nullptr );
 						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE, moleculeInspectorView );
 
-						View::UI::Widget::LinkedWidgetInterface * linkedWidgetInterface = moleculeInspectorView;
-						QWidget *								  widget				= linkedWidgetInterface->getLinkedWidget();
+						QWidget * const widget = moleculeInspectorView->getLinkedWidget();
 
 						_verticalLayout->insertWidget( 0, widget );
 					}
