@@ -117,7 +117,7 @@ namespace VTX
 				p_molecule.getFrames().resize( p_trajectory.nsteps() );
 				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 				p_molecule.getResidues().resize( topology.residues().size() );
-				p_molecule.getAtoms().resize( frame.size() );
+				p_molecule.getAtoms().reserve( frame.size() );
 				modelFrame.resize( frame.size() );
 
 				Model::Chain * modelChain;
@@ -126,6 +126,10 @@ namespace VTX
 				bool		   chainIsStandard = true;
 
 				std::map<uint, std::vector<const chemfiles::Bond *>> mapResidueBonds = std::map<uint, std::vector<const chemfiles::Bond *>>();
+
+				// Ensure that all models for atoms are sorted with Model index
+				for ( chemfiles::Frame::const_iterator it = frame.begin(); it != frame.end(); it++ )
+					p_molecule.addAtom();
 
 				int oldIndexInChain = INT_MIN;
 				for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
@@ -273,8 +277,7 @@ namespace VTX
 						atomType = uint( atom.properties().get( "atom_type" ).value_or( -1 ).as_double() );
 
 						// Create atom.
-						Model::Atom * modelAtom			= MVC::MvcManager::get().instantiate<Model::Atom>();
-						p_molecule.getAtoms()[ atomId ] = modelAtom;
+						Model::Atom * modelAtom = &p_molecule.getAtom( atomId );
 						modelAtom->setIndex( atomId );
 						modelAtom->setMoleculePtr( &p_molecule );
 						modelAtom->setChainPtr( modelChain );

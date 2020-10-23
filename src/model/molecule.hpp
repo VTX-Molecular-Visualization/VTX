@@ -78,22 +78,42 @@ namespace VTX
 			inline const VTX::Path & getPath() const { return _path; }
 			inline void				 setPath( const VTX::Path & p_path ) { _path = p_path; }
 
-			inline void							  addChain() { _chains.emplace_back( MVC::MvcManager::get().instantiate<Chain>() ); }
+			inline Chain & addChain()
+			{
+				Chain * const chain = MVC::MvcManager::get().instantiate<Chain>();
+				_chains.emplace_back( chain );
+				return *chain;
+			}
 			inline Chain &						  getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
 			inline const Chain &				  getChain( const uint p_idx ) const { return *_chains[ p_idx ]; }
 			inline std::vector<Chain *> &		  getChains() { return _chains; }
 			inline const std::vector<Chain *> &	  getChains() const { return _chains; }
-			inline void							  addResidue() { _residues.emplace_back( MVC::MvcManager::get().instantiate<Residue>() ); }
+			inline Residue &					  addResidue()
+			{ 
+				Residue * const residue = MVC::MvcManager::get().instantiate<Residue>();
+				_residues.emplace_back( residue );
+				return *residue;
+			}
 			inline Residue &					  getResidue( const uint p_idx ) { return *_residues[ p_idx ]; }
 			inline const Residue &				  getResidue( const uint p_idx ) const { return *_residues[ p_idx ]; }
 			inline std::vector<Residue *> &		  getResidues() { return _residues; }
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
-			inline void							  addAtom() { _atoms.emplace_back( MVC::MvcManager::get().instantiate<Atom>() ); }
+			inline Atom &						  addAtom()
+			{
+				Atom * const atom = MVC::MvcManager::get().instantiate<Atom>();
+				_atoms.emplace_back( atom );
+				return *atom;
+			}
 			inline Atom &						  getAtom( const uint p_idx ) { return *_atoms[ p_idx ]; }
 			inline const Atom &					  getAtom( const uint p_idx ) const { return *_atoms[ p_idx ]; }
 			inline std::vector<Atom *> &		  getAtoms() { return _atoms; }
 			inline const std::vector<Atom *> &	  getAtoms() const { return _atoms; }
-			inline void							  addBond() { _bonds.emplace_back( MVC::MvcManager::get().instantiate<Bond>() ); }
+			inline Bond &						  addBond()
+			{
+				Bond * const bond = MVC::MvcManager::get().instantiate<Bond>();
+				_bonds.emplace_back( bond );
+				return *bond;
+			}
 			inline Bond &						  getBond( const uint p_idx ) { return *_bonds[ p_idx ]; }
 			inline const Bond &					  getBond( const uint p_idx ) const { return *_bonds[ p_idx ]; }
 			inline std::vector<Bond *> &		  getBonds() { return _bonds; }
@@ -117,7 +137,11 @@ namespace VTX
 			inline void addUnknownResidueSymbol( const std::string & p_symbol ) { _unknownResidueSymbol.emplace( p_symbol ); }
 			inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
 
-			inline void addAtomPositionFrame() { _atomPositionsFrames.emplace_back(); }
+			inline AtomPositionsFrame & addAtomPositionFrame()
+			{
+				_atomPositionsFrames.emplace_back();
+				return _atomPositionsFrames.back();
+			}
 			inline void addAtomPositionFrame( const AtomPositionsFrame & p_frame ) { _atomPositionsFrames.emplace_back( p_frame ); }
 
 			inline void setAtomPositionFrames( const std::vector<AtomPositionsFrame> & p_frame )
