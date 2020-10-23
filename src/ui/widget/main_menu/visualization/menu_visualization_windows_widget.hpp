@@ -36,6 +36,9 @@ namespace VTX
 						// Render view tools
 						MenuToolButtonWidget * _minimap			= nullptr;
 						MenuToolButtonWidget * _infoUnderCursor = nullptr;
+						MenuToolButtonWidget * _sequence		= nullptr;
+
+						void _openSequenceWindow();
 					};
 				} // namespace Visualization
 			}	  // namespace MainMenu

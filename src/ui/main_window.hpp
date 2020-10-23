@@ -13,6 +13,7 @@
 #include "widget/render/opengl_widget.hpp"
 #include "widget/render/render_widget.hpp"
 #include "widget/scene/scene_widget.hpp"
+#include "widget/sequence/sequence_widget.hpp"
 #include "widget/status_bar/status_bar_widget.hpp"
 #include <QCloseEvent>
 #include <QMainWindow>
@@ -35,6 +36,14 @@ namespace VTX
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 			void closeEvent( QCloseEvent * ) override;
 
+			inline void toggleSequenceWindow()
+			{
+				if ( _sequenceWidget->isVisible() )
+					_sequenceWidget->hide();
+				else
+					_sequenceWidget->show();
+			}
+
 		  public slots:
 			void on_file_open_triggered();
 			void on_file_close_triggered();
@@ -50,6 +59,7 @@ namespace VTX
 			Widget::Scene::SceneWidget *		 _sceneWidget	  = nullptr;
 			Widget::Inspector::InspectorWidget * _inspectorWidget = nullptr;
 			Widget::Console::ConsoleWidget *	 _consoleWidget	  = nullptr;
+			Widget::Sequence::SequenceWidget *	 _sequenceWidget  = nullptr;
 
 			Widget::StatusBar::StatusBarWidget * _statusBarWidget = nullptr;
 

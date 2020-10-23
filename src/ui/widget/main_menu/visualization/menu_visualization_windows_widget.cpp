@@ -1,5 +1,6 @@
 #include "menu_visualization_windows_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -26,10 +27,16 @@ namespace VTX
 						_infoUnderCursor->setData( " Show Info\nUnder Cursor", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_infoUnderCursor, 0 );
 
+						_sequence = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "toggleSequenceButton" );
+						_sequence->setData( " Toggle Sequence", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						pushButton( *_sequence, 0 );
+
 						validate();
 					}
-					void MenuVisualizationWindowsWidget::_setupSlots() {}
+					void MenuVisualizationWindowsWidget::_setupSlots() { _sequence->setTriggerAction( this, &MenuVisualizationWindowsWidget::_openSequenceWindow ); }
 					void MenuVisualizationWindowsWidget::localize() { setTitle( "Windows" ); }
+
+					void MenuVisualizationWindowsWidget::_openSequenceWindow() { VTXApp::get().getMainWindow().toggleSequenceWindow(); }
 				} // namespace Visualization
 			}	  // namespace MainMenu
 		}		  // namespace Widget
