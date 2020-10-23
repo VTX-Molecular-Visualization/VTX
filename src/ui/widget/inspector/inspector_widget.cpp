@@ -42,13 +42,13 @@ namespace VTX
 				{
 					clear();
 
-					Selection::SelectionManager					  selectionManager = VTXApp::get().getSelectionManager();
-					Selection::SelectionManager::SetSelectablePtr selection		   = selectionManager.getSelection();
+					VTX::Selection::SelectionManager				   selectionManager = VTXApp::get().getSelectionManager();
+					VTX::Selection::SelectionManager::SetSelectablePtr selection		= selectionManager.getSelection();
 
 					if ( selection.size() > 0 )
 					{
-						Selection::BaseSelectable * firstItem = *selection.begin();
-						Model::BaseModel *			model	  = static_cast<Model::BaseModel *>( firstItem );
+						VTX::Selection::BaseSelectable * firstItem = *selection.begin();
+						Model::BaseModel *				 model	   = static_cast<Model::BaseModel *>( firstItem );
 
 						// View::BaseView * inspectorItemView = model->instantiateInspectorView();
 						// MVC::MvcManager::get().addViewOnModel( model, ID::UI::INSPECTOR_ITEM, inspectorItemView );

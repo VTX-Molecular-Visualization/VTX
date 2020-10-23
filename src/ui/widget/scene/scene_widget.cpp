@@ -92,14 +92,14 @@ namespace VTX
 				}
 				void SceneWidget::_onSelectionChange()
 				{
-					Selection::SelectionManager selectionManager = VTXApp::get().getSelectionManager();
+					VTX::Selection::SelectionManager selectionManager = VTXApp::get().getSelectionManager();
 					selectionManager.clear();
 
 					const QList<QTreeWidgetItem *> selectedObjects = _treeWidget->selectedItems();
 					for ( auto iterator = selectedObjects.begin(); iterator != selectedObjects.end(); iterator++ )
 					{
-						QTreeWidgetItem *			selectedObject = ( *iterator );
-						Selection::BaseSelectable * item		   = _getSelectableFromTreeWidgetItem( selectedObject );
+						QTreeWidgetItem *				 selectedObject = ( *iterator );
+						VTX::Selection::BaseSelectable * item			= _getSelectableFromTreeWidgetItem( selectedObject );
 
 						if ( item != nullptr )
 							selectionManager.select( item );
@@ -107,7 +107,7 @@ namespace VTX
 				}
 
 				// TODO
-				Selection::BaseSelectable * SceneWidget::_getSelectableFromTreeWidgetItem( QTreeWidgetItem * treeWidgetItem ) const { return nullptr; }
+				VTX::Selection::BaseSelectable * SceneWidget::_getSelectableFromTreeWidgetItem( QTreeWidgetItem * treeWidgetItem ) const { return nullptr; }
 
 				void SceneWidget::localize()
 				{

@@ -23,6 +23,7 @@ namespace VTX
 			_inspectorWidget = WidgetFactory::get().GetWidget<Widget::Inspector::InspectorWidget>( this, "inspectorWidget" );
 			_consoleWidget	 = WidgetFactory::get().GetWidget<Widget::Console::ConsoleWidget>( this, "consoleWidget" );
 			_sequenceWidget	 = WidgetFactory::get().GetWidget<Widget::Sequence::SequenceWidget>( this, "sequenceWidget" );
+			_selectionWidget = WidgetFactory::get().GetWidget<Widget::Selection::SelectionWidget>( this, "selectionWidget" );
 
 			_statusBarWidget = WidgetFactory::get().GetWidget<Widget::StatusBar::StatusBarWidget>( this, "statusBar" );
 			_statusBarWidget->setFixedHeight( 25 );
@@ -75,12 +76,14 @@ namespace VTX
 			setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
 			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _sceneWidget, Qt::Orientation::Horizontal );
+			splitDockWidget( _sceneWidget, _selectionWidget, Qt::Orientation::Vertical );
 			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _sequenceWidget, Qt::Orientation::Horizontal );
-			this->splitDockWidget( _sequenceWidget, _renderWidget, Qt::Orientation::Vertical );
+			splitDockWidget( _sequenceWidget, _renderWidget, Qt::Orientation::Vertical );
 			addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _inspectorWidget, Qt::Orientation::Horizontal );
 			addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _consoleWidget, Qt::Orientation::Vertical );
 
 			//_sequenceWidget->hide();
+			//_selectionWidget->hide();
 
 			resizeDocks( { _renderWidget, _consoleWidget }, { 500, 1 }, Qt::Orientation::Vertical );
 			resizeDocks( { _sceneWidget, _renderWidget, _inspectorWidget }, { 1, 5, 1 }, Qt::Orientation::Horizontal );

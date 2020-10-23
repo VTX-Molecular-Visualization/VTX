@@ -13,6 +13,7 @@
 #include "widget/render/opengl_widget.hpp"
 #include "widget/render/render_widget.hpp"
 #include "widget/scene/scene_widget.hpp"
+#include "widget/selection/selection_widget.hpp"
 #include "widget/sequence/sequence_widget.hpp"
 #include "widget/status_bar/status_bar_widget.hpp"
 #include <QCloseEvent>
@@ -60,6 +61,7 @@ namespace VTX
 			Widget::Inspector::InspectorWidget * _inspectorWidget = nullptr;
 			Widget::Console::ConsoleWidget *	 _consoleWidget	  = nullptr;
 			Widget::Sequence::SequenceWidget *	 _sequenceWidget  = nullptr;
+			Widget::Selection::SelectionWidget * _selectionWidget = nullptr;
 
 			Widget::StatusBar::StatusBarWidget * _statusBarWidget = nullptr;
 

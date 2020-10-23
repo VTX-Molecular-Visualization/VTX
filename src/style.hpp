@@ -7,6 +7,7 @@
 
 #include "id.hpp"
 //#include "vtx_app.hpp"
+#include "selection/selection_enum.hpp"
 #include <QColor>
 #include <QFont>
 #include <QPalette>
@@ -71,6 +72,8 @@ namespace VTX
 		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;
 		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;
 		inline static const int INSPECTOR_CONTENT_HORIZONTAL_OFFSET = 10;
+
+		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION = VTX::Selection::SelectionType::RESIDUE;
 
 		inline static const QFont TOOL_MENU_BUTTON_FONT = QFont( "Helvetica", 10 );
 
