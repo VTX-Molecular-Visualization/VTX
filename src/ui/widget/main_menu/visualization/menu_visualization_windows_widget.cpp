@@ -24,7 +24,7 @@ namespace VTX
 						pushButton( *_minimap, 0 );
 
 						_infoUnderCursor = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "showInfoUnderCursorButton" );
-						_infoUnderCursor->setData( " Show Info\nUnder Cursor", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						_infoUnderCursor->setData( " Show Cursor Info", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_infoUnderCursor, 0 );
 
 						_sequence = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "toggleSequenceButton" );

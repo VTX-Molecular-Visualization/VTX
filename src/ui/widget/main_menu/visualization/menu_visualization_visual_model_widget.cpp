@@ -43,7 +43,7 @@ namespace VTX
 						pushButton( *_preset6, 1 );
 
 						_addPreset = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "addNewVisualModelPresetButton" );
-						_addPreset->setData( "Add Preset", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
+						_addPreset->setData( "Add\nPreset", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
 						pushButton( *_addPreset, 2 );
 
 						validate();
