@@ -40,7 +40,10 @@ namespace VTX
 					sequenceTxt.append( QString::fromStdString( _model->getPdbIdCode() ) );
 
 					for ( const Model::Chain * const chain : _model->getChains() )
+					{
+						sequenceTxt.append( '\n' );
 						sequenceTxt.append( QString::fromStdString( chain->getSequence() ) );
+					}
 
 					_sequenceLabel->setText( sequenceTxt );
 				}
