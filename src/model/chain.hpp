@@ -50,7 +50,6 @@ namespace VTX
 				_name = p_name;
 				BaseModel::setDefaultName( &_name );
 			};
-			inline const std::string & getSequence() const { return _sequence; };
 			inline uint				   getIndexFirstResidue() const { return _indexFirstResidue; };
 			inline void				   setIndexFirstResidue( const uint p_id ) { _indexFirstResidue = p_id; };
 			inline uint				   getResidueCount() const { return _residueCount; };
@@ -58,15 +57,12 @@ namespace VTX
 
 			void setSelected( const bool );
 
-			void computeSequence();
-
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;
 			uint	   _index		= 0;
 			Molecule * _moleculePtr = nullptr;
 
 			std::string _name			   = "unknown";
-			std::string _sequence		   = "";
 			uint		_indexFirstResidue = 0;
 			uint		_residueCount	   = 0;
 		}; // namespace Model

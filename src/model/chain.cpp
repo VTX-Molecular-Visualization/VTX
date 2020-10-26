@@ -92,22 +92,6 @@ namespace VTX
 				// delete removeItem( ID::View::UI_CHAIN );
 			}
 		}
-
-		void Chain::computeSequence()
-		{
-			_sequence = "/" + getName() + "/";
-			for ( uint i = 0; i < getResidueCount(); ++i )
-			{
-				Model::Residue & residue = getMoleculePtr()->getResidue( getIndexFirstResidue() + i );
-				if ( residue.getSymbolShort() != "?" )
-				{
-					_sequence += residue.getSymbolShort();
-				}
-				else
-				{
-					_sequence += residue.getSymbolStr() + " ";
-				}
-			}
-		}
+		
 	} // namespace Model
 } // namespace VTX
