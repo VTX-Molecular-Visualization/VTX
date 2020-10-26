@@ -6,8 +6,8 @@
 #endif
 
 #include "model/molecule.hpp"
+#include "sequence_display_widget.hpp"
 #include "ui/widget/view_item_widget.hpp"
-#include <QLabel>
 #include <QString>
 
 namespace VTX
@@ -31,9 +31,10 @@ namespace VTX
 					MoleculeSequenceWidget( QWidget * p_parent );
 					void _setupUi( const QString & p_name ) override;
 					void _setupSlots() override;
+					void _onSequenceSelectionChanged();
 
 				  private:
-					QLabel * _sequenceLabel;
+					SequenceDisplayWidget * _sequenceDisplayWidget;
 				};
 			} // namespace Sequence
 		}	  // namespace Widget
