@@ -48,13 +48,15 @@ namespace VTX
 
 						// Viewpoints
 						MenuToolButtonWidget * _createViewpoint = nullptr;
-						MenuToolButtonWidget * _takeScreenshot	= nullptr;
+						MenuToolButtonWidget * _takeSnapshot	= nullptr;
 
 						void _updateCameraModeFeedback();
 
+						void _recenterCamera() const;
 						void _setTrackballController() const;
 						void _setFreeflyController() const;
 						void _setVesselController() const;
+						void _takeSnapshotAction() const;
 					};
 				} // namespace Visualization
 			}	  // namespace MainMenu

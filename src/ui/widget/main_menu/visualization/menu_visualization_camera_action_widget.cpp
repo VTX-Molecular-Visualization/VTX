@@ -3,7 +3,9 @@
 #include "id.hpp"
 #include "state/visualization.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
+#include "worker/snapshoter.hpp"
 
 namespace VTX
 {
@@ -54,13 +56,13 @@ namespace VTX
 						pushButton( *_vessel, 1 );
 
 						// Viewpoints
-						_createViewpoint = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
+						_createViewpoint = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "createViewpointButton" );
 						_createViewpoint->setData( "Add\nViewpoint", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_createViewpoint, 2 );
 
-						_takeScreenshot = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
-						_takeScreenshot->setData( "Capture", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
-						pushButton( *_takeScreenshot, 2 );
+						_takeSnapshot = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "snapshotButton" );
+						_takeSnapshot->setData( "Snapshot", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						pushButton( *_takeSnapshot, 2 );
 
 						validate();
 
@@ -71,9 +73,13 @@ namespace VTX
 
 					void MenuVisualizationCameraActionWidget::_setupSlots()
 					{
+						_center->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_recenterCamera );
+
 						_trackball->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setTrackballController );
 						_freefly->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setFreeflyController );
 						_vessel->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setVesselController );
+
+						_takeSnapshot->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_takeSnapshotAction );
 					}
 
 					void MenuVisualizationCameraActionWidget::_updateCameraModeFeedback()
@@ -85,12 +91,18 @@ namespace VTX
 						_vessel->showActiveFeedback( currentControllerID == ID::Controller::VESSEL );
 					}
 
+					void MenuVisualizationCameraActionWidget::_recenterCamera() const { VTX_ACTION( new Action::Main::RecenterCameraController() ); }
 					void MenuVisualizationCameraActionWidget::_setTrackballController() const
 					{
 						VTX_ACTION( new Action::Main::ChangeCameraController( ID::Controller::TRACKBALL ) );
 					}
 					void MenuVisualizationCameraActionWidget::_setFreeflyController() const { VTX_ACTION( new Action::Main::ChangeCameraController( ID::Controller::FREEFLY ) ); }
 					void MenuVisualizationCameraActionWidget::_setVesselController() const { VTX_ACTION( new Action::Main::ChangeCameraController( ID::Controller::VESSEL ) ); }
+
+					void MenuVisualizationCameraActionWidget::_takeSnapshotAction() const
+					{
+						VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) ) );
+					}
 				} // namespace Visualization
 			}	  // namespace MainMenu
 		}		  // namespace Widget
