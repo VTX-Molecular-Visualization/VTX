@@ -54,6 +54,8 @@ namespace VTX
 								sequenceTxt.append( QString::fromStdString( residue.getSymbolStr() + " " ) );
 							}
 						}
+
+						sequenceTxt.append( '\n' );
 					}
 
 					setText( sequenceTxt );
