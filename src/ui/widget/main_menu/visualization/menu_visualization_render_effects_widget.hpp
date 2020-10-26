@@ -47,8 +47,11 @@ namespace VTX
 						MenuToolButtonWidget * _createPreset = nullptr;
 
 						// Render Feature
-						MenuToolButtonWidget * _fullscreen = nullptr;
-						MenuToolButtonWidget * _capture	   = nullptr;
+						MenuToolButtonWidget * _fullscreen	 = nullptr;
+						MenuToolButtonWidget * _takeSnapshot = nullptr;
+
+						// ACTIONS //
+						void _takeSnapshotAction() const;
 					};
 				} // namespace Visualization
 			}	  // namespace MainMenu

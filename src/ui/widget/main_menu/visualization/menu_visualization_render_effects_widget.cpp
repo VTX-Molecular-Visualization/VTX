@@ -1,5 +1,9 @@
 #include "menu_visualization_render_effects_widget.hpp"
+#include "action/main.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/filesystem.hpp"
+#include "vtx_app.hpp"
+#include "worker/snapshoter.hpp"
 
 namespace VTX
 {
@@ -53,14 +57,22 @@ namespace VTX
 						_fullscreen->setData( "Fullscreen", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_fullscreen, 3 );
 
-						_capture = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "screenshotButton" );
-						_capture->setData( "Capture", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
-						pushButton( *_capture, 3 );
+						_takeSnapshot = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "takeSnapshotButton" );
+						_takeSnapshot->setData( "Snapshot", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						pushButton( *_takeSnapshot, 3 );
 
 						validate();
 					}
-					void MenuVisualizationRenderEffectsWidget::_setupSlots() {}
+					void MenuVisualizationRenderEffectsWidget::_setupSlots()
+					{
+						_takeSnapshot->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_takeSnapshotAction );
+					}
 					void MenuVisualizationRenderEffectsWidget::localize() { setTitle( "Render Effects" ); }
+
+					void MenuVisualizationRenderEffectsWidget::_takeSnapshotAction() const
+					{
+						VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) ) );
+					}
 				} // namespace Visualization
 			}	  // namespace MainMenu
 		}		  // namespace Widget

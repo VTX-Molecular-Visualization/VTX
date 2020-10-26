@@ -3,9 +3,7 @@
 #include "id.hpp"
 #include "state/visualization.hpp"
 #include "ui/widget_factory.hpp"
-#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
-#include "worker/snapshoter.hpp"
 
 namespace VTX
 {
@@ -60,10 +58,6 @@ namespace VTX
 						_createViewpoint->setData( "Add\nViewpoint", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_createViewpoint, 2 );
 
-						_takeSnapshot = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "snapshotButton" );
-						_takeSnapshot->setData( "Snapshot", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
-						pushButton( *_takeSnapshot, 2 );
-
 						validate();
 
 						_updateCameraModeFeedback();
@@ -78,8 +72,6 @@ namespace VTX
 						_trackball->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setTrackballController );
 						_freefly->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setFreeflyController );
 						_vessel->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setVesselController );
-
-						_takeSnapshot->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_takeSnapshotAction );
 					}
 
 					void MenuVisualizationCameraActionWidget::_updateCameraModeFeedback()
@@ -99,10 +91,6 @@ namespace VTX
 					void MenuVisualizationCameraActionWidget::_setFreeflyController() const { VTX_ACTION( new Action::Main::ChangeCameraController( ID::Controller::FREEFLY ) ); }
 					void MenuVisualizationCameraActionWidget::_setVesselController() const { VTX_ACTION( new Action::Main::ChangeCameraController( ID::Controller::VESSEL ) ); }
 
-					void MenuVisualizationCameraActionWidget::_takeSnapshotAction() const
-					{
-						VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) ) );
-					}
 				} // namespace Visualization
 			}	  // namespace MainMenu
 		}		  // namespace Widget
