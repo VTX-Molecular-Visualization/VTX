@@ -45,13 +45,7 @@ namespace VTX
 					_sequenceWidget->show();
 			}
 
-		  public slots:
-			void on_file_open_triggered();
-			void on_file_close_triggered();
-			void on_window_togglerender_triggered();
-			void on_window_toggleinspector_triggered();
-			void on_window_togglescene_triggered();
-			void on_window_togglelog_triggered();
+			inline bool getWidgetVisibility( const ID::VTX_ID & p_winId ) const { return getWidget( p_winId ).isVisible(); };
 
 		  private:
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
@@ -65,6 +59,29 @@ namespace VTX
 
 			Widget::StatusBar::StatusBarWidget * _statusBarWidget = nullptr;
 
+			// ACTIONS
+			void _onDockWindowVisibilityChange( bool p_visible );
+
+			// FUNCTIONS
+			inline const QWidget & getWidget( const ID::VTX_ID & p_winId ) const
+			{
+				const QWidget * widget = nullptr;
+
+				if ( p_winId == ID::UI::WINDOWS::RENDER )
+					widget = _renderWidget;
+				else if ( p_winId == ID::UI::WINDOWS::SCENE )
+					widget = _sceneWidget;
+				else if ( p_winId == ID::UI::WINDOWS::INSPECTOR )
+					widget = _inspectorWidget;
+				else if ( p_winId == ID::UI::WINDOWS::CONSOLE )
+					widget = _consoleWidget;
+				else if ( p_winId == ID::UI::WINDOWS::SEQUENCE )
+					widget = _sequenceWidget;
+				else if ( p_winId == ID::UI::WINDOWS::SELECTION )
+					widget = _selectionWidget;
+
+				return *widget;
+			}
 			void _loadStyleSheet( const char * p_stylesheetPath );
 			void _setupSlots();
 			void _setupDock();

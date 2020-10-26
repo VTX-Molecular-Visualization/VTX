@@ -61,15 +61,7 @@ namespace VTX
 			}
 		}
 
-		void MainWindow::_setupSlots()
-		{
-			connect( this->file_open, &QAction::triggered, this, &MainWindow::on_file_open_triggered );
-			connect( this->file_close, &QAction::triggered, this, &MainWindow::on_file_close_triggered );
-			connect( this->window_togglerender, &QAction::triggered, this, &MainWindow::on_window_togglerender_triggered );
-			connect( this->window_toggleinspector, &QAction::triggered, this, &MainWindow::on_window_toggleinspector_triggered );
-			connect( this->window_togglescene, &QAction::triggered, this, &MainWindow::on_window_togglescene_triggered );
-			connect( this->window_togglelog, &QAction::triggered, this, &MainWindow::on_window_togglelog_triggered );
-		}
+		void MainWindow::_setupSlots() { connect( this->_sequenceWidget, &Widget::Sequence::SequenceWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange ); }
 
 		void MainWindow::_setupDock()
 		{
@@ -89,26 +81,13 @@ namespace VTX
 			resizeDocks( { _sceneWidget, _renderWidget, _inspectorWidget }, { 1, 5, 1 }, Qt::Orientation::Horizontal );
 		}
 
+		void MainWindow::_onDockWindowVisibilityChange( const bool p_visible ) { VTX_EVENT( new Event::VTXEvent( Event::UI::DOCK_WINDOW_VISIBILITY_CHANGE ) ); }
+
 		void MainWindow::closeEvent( QCloseEvent * p_event )
 		{
 			VTXApp::get().stop();
 			p_event->accept();
 		}
-
-		void MainWindow::on_file_open_triggered()
-		{
-			// TODO : Filter file type
-			const QString filename = QFileDialog::getOpenFileName( this, "Open Molecule", "", "*" );
-			Path *		  path	   = new Path( filename.toStdString() );
-
-			VTX_ACTION( new Action::Main::Open( path ), true );
-		}
-		void MainWindow::on_file_close_triggered() { close(); }
-
-		void MainWindow::on_window_togglerender_triggered() { _toggleWidget( _renderWidget ); }
-		void MainWindow::on_window_toggleinspector_triggered() { _toggleWidget( _inspectorWidget ); }
-		void MainWindow::on_window_togglescene_triggered() { _toggleWidget( _sceneWidget ); }
-		void MainWindow::on_window_togglelog_triggered() { _toggleWidget( _consoleWidget ); }
 
 		void MainWindow::_toggleWidget( QWidget * widget )
 		{

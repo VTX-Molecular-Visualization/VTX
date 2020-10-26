@@ -91,7 +91,7 @@
 			
 		<!--<widget class="QStatusBar" name="statusbar"/>-->
 
-		<action name="file_open">
+		<!--<action name="file_open">
 			<property name="text">
 				<string>Open...</string>
 			</property>
@@ -133,7 +133,7 @@
 			<property name="shortcut">
 				<string>F5</string>
 			</property>
-		</action>
+		</action>-->
 	</widget>
 	
 	

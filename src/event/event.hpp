@@ -33,6 +33,11 @@ namespace VTX
 
 		} // namespace Global
 
+		namespace UI
+		{
+			const VTX_EVENT DOCK_WINDOW_VISIBILITY_CHANGE = "DOCK_WINDOW_VISIBILITY_CHANGE";
+		}
+
 		// Model events for notifier pattern (model->views)[1-n].
 		enum class VTX_EVENT_MODEL : int
 		{

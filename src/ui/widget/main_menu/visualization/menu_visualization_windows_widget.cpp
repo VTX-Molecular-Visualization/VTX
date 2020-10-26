@@ -1,4 +1,5 @@
 #include "menu_visualization_windows_widget.hpp"
+#include "id.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 
@@ -12,7 +13,27 @@ namespace VTX
 			{
 				namespace Visualization
 				{
+					MenuVisualizationWindowsWidget::MenuVisualizationWindowsWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
+					{
+						_registerEvent( Event::UI::DOCK_WINDOW_VISIBILITY_CHANGE );
+					}
+
 					MenuVisualizationWindowsWidget::~MenuVisualizationWindowsWidget() {}
+
+					void MenuVisualizationWindowsWidget::receiveEvent( const Event::VTXEvent & p_event )
+					{
+						if ( p_event.name == Event::UI::DOCK_WINDOW_VISIBILITY_CHANGE )
+						{
+							refresh();
+						}
+					}
+
+					void MenuVisualizationWindowsWidget::refresh()
+					{
+						const bool	  sequenceWindowVisible = VTXApp::get().getMainWindow().getWidgetVisibility( ID::UI::WINDOWS::SEQUENCE );
+						const QString sequenceText			= sequenceWindowVisible ? "Hide Sequence" : "Show Sequence";
+						_sequence->setText( sequenceText );
+					}
 
 					void MenuVisualizationWindowsWidget::_setupUi( const QString & p_name )
 					{
@@ -20,15 +41,15 @@ namespace VTX
 
 						// Render view tools
 						_minimap = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "showMinimapButton" );
-						_minimap->setData( " Show Minimap", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						_minimap->setData( "Show Minimap", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_minimap, 0 );
 
 						_infoUnderCursor = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "showInfoUnderCursorButton" );
-						_infoUnderCursor->setData( " Show Cursor Info", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						_infoUnderCursor->setData( "Show Cursor Info", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_infoUnderCursor, 0 );
 
 						_sequence = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "toggleSequenceButton" );
-						_sequence->setData( " Toggle Sequence", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						_sequence->setData( "Show Sequence", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_sequence, 0 );
 
 						validate();

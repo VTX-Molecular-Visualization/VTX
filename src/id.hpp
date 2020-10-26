@@ -14,15 +14,21 @@ namespace VTX
 		using VTX_ID = std::string;
 		namespace UI
 		{
+			namespace WINDOWS
+			{
+				const VTX_ID SCENE	   = "SCENE";
+				const VTX_ID RENDER	   = "RENDER";
+				const VTX_ID INSPECTOR = "INSPECTOR";
+				const VTX_ID CONSOLE   = "CONSOLE";
+				const VTX_ID SEQUENCE  = "SEQUENCE";
+				const VTX_ID SELECTION = "SELECTION";
+			} // namespace WINDOWS
+
 			const VTX_ID USER_INTERFACE = "USER_INTERFACE";
 			const VTX_ID MENU			= "MENU";
-			const VTX_ID CONSOLE		= "CONSOLE";
-			const VTX_ID SCENE			= "SCENE";
-			const VTX_ID INSPECTOR		= "INSPECTOR";
 			const VTX_ID CAMERA_EDITOR	= "CAMERA_EDITOR";
 			const VTX_ID PROGRESS_BAR	= "PROGRESS_BAR";
-			const VTX_ID RENDER			= "RENDER";
-			const VTX_ID INSPECTOR_ITEM = "INSPECTORITEM";
+			const VTX_ID INSPECTOR_ITEM = "INSPECTOR_ITEM";
 		} // namespace UI
 
 		namespace Model

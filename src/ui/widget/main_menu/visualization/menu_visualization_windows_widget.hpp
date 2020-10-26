@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
@@ -26,9 +27,11 @@ namespace VTX
 					  public:
 						~MenuVisualizationWindowsWidget();
 						void localize() override;
+						void receiveEvent( const Event::VTXEvent & p_event ) override;
+						void refresh();
 
 					  protected:
-						MenuVisualizationWindowsWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
+						MenuVisualizationWindowsWidget( QWidget * p_parent );
 						void _setupUi( const QString & p_name ) override;
 						void _setupSlots() override;
 
