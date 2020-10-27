@@ -174,6 +174,8 @@ namespace VTX
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
 
+		inline static std::vector<VTX::Path> recentLoadingPath = { "Recent 1", "Recent 2", "Recent 3" };
+
 		void backup();
 		void recover();
 

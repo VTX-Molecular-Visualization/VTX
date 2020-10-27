@@ -1,8 +1,12 @@
 #include "menu_home_session_widget.hpp"
 #include "action/main.hpp"
+#include "define.hpp"
+#include "setting.hpp"
+#include "ui/widget/custom_widget/indexed_action.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 #include <QFileDialog>
+#include <vector>
 
 namespace VTX
 {
@@ -51,10 +55,41 @@ namespace VTX
 						_saveAsSessionButton->setData( "Save as...", ":/sprite/saveas_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_saveAsSessionButton, 2 );
 
+						QMenu * const recentSessionMenu = _generateRecentSessionsMenu();
+						_openRecentSessionButton->setMenu( recentSessionMenu );
+
 						validate();
 					}
 					void MenuHomeSessionWidget::_setupSlots() { _openSessionButton->setTriggerAction( this, &MenuHomeSessionWidget::_openFile ); }
 					void MenuHomeSessionWidget::localize() {}
+
+					QMenu * const MenuHomeSessionWidget::_generateRecentSessionsMenu() const
+					{
+						QMenu * const recentSessionMenu = new QMenu( _openRecentSessionButton );
+						int			  actionIndex		= 0;
+
+						const std::vector<VTX::Path> recentFiles = Setting::recentLoadingPath;
+
+						for ( auto it : recentFiles )
+						{
+							CustomWidget::IndexedAction * const action = new CustomWidget::IndexedAction( actionIndex, recentSessionMenu );
+							const QString						path   = QString::fromStdString( it.string() );
+							action->setText( path );
+
+							connect( action, &CustomWidget::IndexedAction::triggeredWithIndex, this, &MenuHomeSessionWidget::_loadRecentSession );
+
+							recentSessionMenu->addAction( action );
+							actionIndex++;
+						}
+
+						return recentSessionMenu;
+					}
+
+					void MenuHomeSessionWidget::_loadRecentSession( const int & p_ptrSessionIndex ) const
+					{
+						VTX_INFO( "Load " + Setting::recentLoadingPath[ p_ptrSessionIndex ].string() );
+					}
+
 				} // namespace Home
 			}	  // namespace MainMenu
 		}		  // namespace Widget
