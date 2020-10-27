@@ -7,6 +7,7 @@
 
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
+#include <QMenu>
 #include <QWidget>
 
 namespace VTX
@@ -39,8 +40,13 @@ namespace VTX
 						MenuToolButtonWidget * _saveSessionButton		= nullptr;
 						MenuToolButtonWidget * _saveAsSessionButton		= nullptr;
 
+						QMenu * _recentSessionMenu = nullptr;
+
 					  private:
 						void _openFile();
+						void _loadRecentSession( const int & p_ptrSessionIndex ) const;
+
+						QMenu * const MenuHomeSessionWidget::_generateRecentSessionsMenu() const;
 					};
 				} // namespace Home
 			}	  // namespace MainMenu
