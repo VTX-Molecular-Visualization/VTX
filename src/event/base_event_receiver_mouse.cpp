@@ -1,13 +1,13 @@
 #include "base_event_receiver_mouse.hpp"
-#include "vtx_app.hpp"
+#include "event_manager.hpp"
 
 namespace VTX
 {
 	namespace Event
 	{
-		BaseEventReceiverMouse ::BaseEventReceiverMouse() { VTXApp::get().getEventManager().registerEventReceiverMouse( this ); }
+		BaseEventReceiverMouse ::BaseEventReceiverMouse() { EventManager::get().registerEventReceiverMouse( this ); }
 
-		BaseEventReceiverMouse ::~BaseEventReceiverMouse() { VTXApp::get().getEventManager().unregisterEventReceiverMouse( this ); }
+		BaseEventReceiverMouse ::~BaseEventReceiverMouse() { EventManager::get().unregisterEventReceiverMouse( this ); }
 
 	} // namespace Event
 } // namespace VTX

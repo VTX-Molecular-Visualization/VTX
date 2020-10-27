@@ -3,7 +3,7 @@
 #include "generic/factory.hpp"
 #include "math/transform.hpp"
 #include "mvc/mvc_manager.hpp"
-#include "vtx_app.hpp"
+#include "event/event_manager.hpp"
 
 namespace VTX
 {

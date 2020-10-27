@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "action/action_manager.hpp"
 #include "base_action.hpp"
 #include "define.hpp"
 #include "io/reader/vtx.hpp"
@@ -12,12 +13,14 @@
 #include "mvc/mvc_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
+#include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "worker/api_fetcher.hpp"
 #include "worker/loader.hpp"
 #include "worker/saver.hpp"
 #include "worker/snapshoter.hpp"
+#include "worker/worker_manager.hpp"
 
 namespace VTX
 {

@@ -1,16 +1,15 @@
 #include "molecule.hpp"
 #include "color/rgb.hpp"
 #include "generic/factory.hpp"
+#include "id.hpp"
 #include "model/secondary_structure.hpp"
+#include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
-//#include "view/ui/widget/molecule_scene_view.hpp"
-#include "id.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -57,8 +56,6 @@ namespace VTX
 				Util::Molecule::refreshRepresentationState( *this );
 			}
 		}
-
-		void Molecule::instantiateDefaultViews() {}
 
 		void Molecule::_instanciate3DViews()
 		{

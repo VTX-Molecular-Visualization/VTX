@@ -14,7 +14,7 @@ namespace VTX
 {
 	namespace Model
 	{
-		using Model_ID = unsigned long;
+		using Model_ID = ulong;
 
 		class BaseModel : public Selection::BaseSelectable
 		{

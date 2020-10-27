@@ -1,5 +1,6 @@
 #include "opengl_widget.hpp"
 #include "util/opengl.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

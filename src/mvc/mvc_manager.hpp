@@ -91,7 +91,10 @@ namespace VTX
 			inline void notifyView( const Model::BaseModel * const p_caller, const Event::VTX_EVENT_MODEL & p_event ) { _getMvcData( p_caller )->notifyViews( p_event ); };
 
 		  private:
-			inline MvcManager() {};
+			MvcManager()					 = default;
+			MvcManager( const MvcManager & ) = delete;
+			MvcManager & operator=( const MvcManager & ) = delete;
+			~MvcManager()								 = default;
 
 			MvcDataContainer * const _mvcs = new MvcDataContainer();
 

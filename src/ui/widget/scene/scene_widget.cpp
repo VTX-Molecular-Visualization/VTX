@@ -7,7 +7,6 @@
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/base_scene_item.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -92,7 +91,7 @@ namespace VTX
 				}
 				void SceneWidget::_onSelectionChange()
 				{
-					VTX::Selection::SelectionManager selectionManager = VTXApp::get().getSelectionManager();
+					VTX::Selection::SelectionManager & selectionManager = Selection::SelectionManager::get();
 					selectionManager.clear();
 
 					const QList<QTreeWidgetItem *> selectedObjects = _treeWidget->selectedItems();

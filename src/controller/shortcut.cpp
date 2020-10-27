@@ -4,6 +4,7 @@
 #include "action/viewpoint.hpp"
 #include "define.hpp"
 #include "state/visualization.hpp"
+#include "tool/logger.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

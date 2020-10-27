@@ -1,13 +1,13 @@
 #include "base_event_receiver_wheel.hpp"
-#include "vtx_app.hpp"
+#include "event_manager.hpp"
 
 namespace VTX
 {
 	namespace Event
 	{
-		BaseEventReceiverWheel ::BaseEventReceiverWheel() { VTXApp::get().getEventManager().registerEventReceiverWheel( this ); }
+		BaseEventReceiverWheel ::BaseEventReceiverWheel() { EventManager::get().registerEventReceiverWheel( this ); }
 
-		BaseEventReceiverWheel ::~BaseEventReceiverWheel() { VTXApp::get().getEventManager().unregisterEventReceiverWheel( this ); }
+		BaseEventReceiverWheel ::~BaseEventReceiverWheel() { EventManager::get().unregisterEventReceiverWheel( this ); }
 
 	} // namespace Event
 } // namespace VTX

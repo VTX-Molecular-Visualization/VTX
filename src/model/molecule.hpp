@@ -53,9 +53,6 @@ namespace VTX
 			Molecule();
 			~Molecule();
 
-			void instantiateDefaultViews();
-			// inline const std::string * BaseModel::getName() const { return &getPdbIdCode(); };
-
 			// Configuration.
 			inline const Configuration::Molecule & getConfiguration() const { return _configuration; }
 			inline Configuration::Molecule &	   getConfiguration() { return _configuration; }
@@ -84,12 +81,12 @@ namespace VTX
 				_chains.emplace_back( chain );
 				return *chain;
 			}
-			inline Chain &						  getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
-			inline const Chain &				  getChain( const uint p_idx ) const { return *_chains[ p_idx ]; }
-			inline std::vector<Chain *> &		  getChains() { return _chains; }
-			inline const std::vector<Chain *> &	  getChains() const { return _chains; }
-			inline Residue &					  addResidue()
-			{ 
+			inline Chain &						getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
+			inline const Chain &				getChain( const uint p_idx ) const { return *_chains[ p_idx ]; }
+			inline std::vector<Chain *> &		getChains() { return _chains; }
+			inline const std::vector<Chain *> & getChains() const { return _chains; }
+			inline Residue &					addResidue()
+			{
 				Residue * const residue = MVC::MvcManager::get().instantiate<Residue>();
 				_residues.emplace_back( residue );
 				return *residue;
@@ -104,20 +101,20 @@ namespace VTX
 				_atoms.emplace_back( atom );
 				return *atom;
 			}
-			inline Atom &						  getAtom( const uint p_idx ) { return *_atoms[ p_idx ]; }
-			inline const Atom &					  getAtom( const uint p_idx ) const { return *_atoms[ p_idx ]; }
-			inline std::vector<Atom *> &		  getAtoms() { return _atoms; }
-			inline const std::vector<Atom *> &	  getAtoms() const { return _atoms; }
-			inline Bond &						  addBond()
+			inline Atom &					   getAtom( const uint p_idx ) { return *_atoms[ p_idx ]; }
+			inline const Atom &				   getAtom( const uint p_idx ) const { return *_atoms[ p_idx ]; }
+			inline std::vector<Atom *> &	   getAtoms() { return _atoms; }
+			inline const std::vector<Atom *> & getAtoms() const { return _atoms; }
+			inline Bond &					   addBond()
 			{
 				Bond * const bond = MVC::MvcManager::get().instantiate<Bond>();
 				_bonds.emplace_back( bond );
 				return *bond;
 			}
-			inline Bond &						  getBond( const uint p_idx ) { return *_bonds[ p_idx ]; }
-			inline const Bond &					  getBond( const uint p_idx ) const { return *_bonds[ p_idx ]; }
-			inline std::vector<Bond *> &		  getBonds() { return _bonds; }
-			inline const std::vector<Bond *> &	  getBonds() const { return _bonds; }
+			inline Bond &					   getBond( const uint p_idx ) { return *_bonds[ p_idx ]; }
+			inline const Bond &				   getBond( const uint p_idx ) const { return *_bonds[ p_idx ]; }
+			inline std::vector<Bond *> &	   getBonds() { return _bonds; }
+			inline const std::vector<Bond *> & getBonds() const { return _bonds; }
 
 			inline const SecondaryStructure &		getSecondaryStructure() const { return *_secondaryStructure; }
 			inline SecondaryStructure &				getSecondaryStructure() { return *_secondaryStructure; }

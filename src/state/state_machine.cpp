@@ -8,6 +8,7 @@
 #include "play.hpp"
 #include "visualization.hpp"
 #include "vtx_app.hpp"
+#include "event/event_manager.hpp"
 
 namespace VTX
 {

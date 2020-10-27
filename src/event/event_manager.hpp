@@ -25,13 +25,17 @@ namespace VTX
 {
 	namespace Event
 	{
-		class EventManager : public Generic::BaseUpdatable, public Generic::BaseLocakble
+		class EventManager final : public Generic::BaseUpdatable, public Generic::BaseLocakble
 		{
 		  public:
 			using SetBaseEventReceiverVTXPtr			 = std::set<BaseEventReceiverVTX *>;
 			using MapStringVectorBaseEventReceiverVTXPtr = std::map<Event::VTX_EVENT, SetBaseEventReceiverVTXPtr>;
 
-			~EventManager();
+			inline static EventManager & get()
+			{
+				static EventManager instance;
+				return instance;
+			}
 
 			void registerEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
 			void unregisterEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
@@ -62,10 +66,16 @@ namespace VTX
 			std::queue<QMouseEvent> _eventQueueMouse	= std::queue<QMouseEvent>();
 			std::queue<QWheelEvent> _eventQueueWheel	= std::queue<QWheelEvent>();
 
+			EventManager()						 = default;
+			EventManager( const EventManager & ) = delete;
+			EventManager & operator=( const EventManager & ) = delete;
+			~EventManager();
+
 			// void _handlerWindowEvent( const SDL_WindowEvent & );
 			void _flushVTXEvent( VTXEvent * const );
 		};
 	} // namespace Event
 
+	inline void VTX_EVENT( VTX::Event::VTXEvent * const p_event ) { Event::EventManager::get().fireEventVTX( p_event ); }
 } // namespace VTX
 #endif

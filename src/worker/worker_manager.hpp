@@ -15,9 +15,15 @@ namespace VTX
 		using CallbackSuccess = std::function<void( void )>;
 		using CallbackError	  = std::function<void( const std::exception & )>;
 
-		class WorkerManager : public Generic::BaseUpdatable
+		class WorkerManager final : public Generic::BaseUpdatable
 		{
 		  public:
+			inline static WorkerManager & get()
+			{
+				static WorkerManager instance;
+				return instance;
+			}
+
 			// Sync.
 			void run( BaseWorker * const p_woker );
 			// Async.
@@ -31,8 +37,20 @@ namespace VTX
 			const CallbackError *	_error;
 			std::exception_ptr		_threadException = nullptr;
 
+			WorkerManager()						   = default;
+			WorkerManager( const WorkerManager & ) = delete;
+			WorkerManager & operator=( const WorkerManager & ) = delete;
+			~WorkerManager()								   = default;
+
 			void _clean();
 		};
 	} // namespace Worker
+
+	// TODO: will be deleted when all workers will be threaded.
+	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker ) { Worker::WorkerManager::get().run( p_worker ); }
+	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker, const Worker::CallbackSuccess * const p_success, const Worker::CallbackError * const p_error )
+	{
+		Worker::WorkerManager::get().run( p_worker, p_success, p_error );
+	}
 } // namespace VTX
 #endif

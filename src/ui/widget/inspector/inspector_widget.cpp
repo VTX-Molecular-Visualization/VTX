@@ -3,7 +3,6 @@
 #include "selection/selection_manager.hpp"
 #include "view/ui/linked_widget_interface.hpp"
 #include "view/ui/widget/molecule_inspector_view.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -42,13 +41,13 @@ namespace VTX
 				{
 					clear();
 
-					VTX::Selection::SelectionManager				   selectionManager = VTXApp::get().getSelectionManager();
-					VTX::Selection::SelectionManager::SetSelectablePtr selection		= selectionManager.getSelection();
+					Selection::SelectionManager &				  selectionManager = Selection::SelectionManager::get();
+					Selection::SelectionManager::SetSelectablePtr selection		   = selectionManager.getSelection();
 
 					if ( selection.size() > 0 )
 					{
-						VTX::Selection::BaseSelectable * firstItem = *selection.begin();
-						Model::BaseModel *				 model	   = static_cast<Model::BaseModel *>( firstItem );
+						Selection::BaseSelectable * firstItem = *selection.begin();
+						Model::BaseModel *			model	  = static_cast<Model::BaseModel *>( firstItem );
 
 						// View::BaseView * inspectorItemView = model->instantiateInspectorView();
 						// MVC::MvcManager::get().addViewOnModel( model, ID::UI::INSPECTOR_ITEM, inspectorItemView );

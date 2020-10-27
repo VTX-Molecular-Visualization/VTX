@@ -1,4 +1,5 @@
 #include "play.hpp"
+#include "action/action_manager.hpp"
 #include "object3d/scene.hpp"
 #include "tool/chrono.hpp"
 #include "util/math.hpp"
@@ -69,8 +70,7 @@ namespace VTX
 			Model::Viewpoint viewpoint = _path->getInterpolatedViewpoint( _time );
 			if ( viewpoint.getController() == ID::Controller::TRACKBALL )
 			{
-				VTXApp::get().getScene().getCamera().setRotationAround(
-					Quatd( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );
+				VTXApp::get().getScene().getCamera().setRotationAround( Quatd( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );
 			}
 			else
 			{

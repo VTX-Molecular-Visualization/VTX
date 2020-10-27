@@ -2,7 +2,6 @@
 #include "action/main.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/filesystem.hpp"
-#include "vtx_app.hpp"
 #include "worker/snapshoter.hpp"
 
 namespace VTX

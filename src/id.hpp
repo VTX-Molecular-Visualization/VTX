@@ -42,6 +42,7 @@ namespace VTX
 			const VTX_ID MODEL_MESH_TRIANGLE	   = "MODEL_MESH_TRIANGLE";
 			const VTX_ID MODEL_PATH				   = "MODEL_PATH";
 			const VTX_ID MODEL_VIEWPOINT		   = "MODEL_VIEWPOINT";
+			const VTX_ID MODEL_SELECTION		   = "MODEL_SELECTION";
 		} // namespace Model
 
 		namespace View

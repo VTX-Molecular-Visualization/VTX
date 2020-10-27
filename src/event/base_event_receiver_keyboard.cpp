@@ -1,13 +1,13 @@
 #include "base_event_receiver_keyboard.hpp"
-#include "vtx_app.hpp"
+#include "event_manager.hpp"
 
 namespace VTX
 {
 	namespace Event
 	{
-		BaseEventReceiverKeyboard ::BaseEventReceiverKeyboard() { VTXApp::get().getEventManager().registerEventReceiverKeyboard( this ); }
+		BaseEventReceiverKeyboard ::BaseEventReceiverKeyboard() { EventManager::get().registerEventReceiverKeyboard( this ); }
 
-		BaseEventReceiverKeyboard ::~BaseEventReceiverKeyboard() { VTXApp::get().getEventManager().unregisterEventReceiverKeyboard( this ); }
+		BaseEventReceiverKeyboard ::~BaseEventReceiverKeyboard() { EventManager::get().unregisterEventReceiverKeyboard( this ); }
 
 	} // namespace Event
 } // namespace VTX

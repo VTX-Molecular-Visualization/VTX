@@ -1,4 +1,5 @@
 #include "io/writer/exception.hpp"
+#include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 

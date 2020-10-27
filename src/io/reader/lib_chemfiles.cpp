@@ -2,7 +2,7 @@
 #include "color/rgb.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
-#include "vtx_app.hpp"
+#include "tool/logger.hpp"
 #include <algorithm>
 #include <magic_enum.hpp>
 #include <unordered_map>

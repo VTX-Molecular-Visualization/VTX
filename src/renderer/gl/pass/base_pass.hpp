@@ -9,6 +9,7 @@
 #include "generic/base_opengl.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/gl/program_manager.hpp"
+#include "tool/logger.hpp"
 
 namespace VTX
 {

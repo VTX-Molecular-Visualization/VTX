@@ -7,7 +7,7 @@
 #include "io/reader/vtx.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
-#include "vtx_app.hpp"
+#include "tool/logger.hpp"
 
 namespace VTX
 {

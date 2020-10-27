@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "vtx_app.hpp"
+#include "tool/logger.hpp"
 #include <iostream>
 
 namespace VTX

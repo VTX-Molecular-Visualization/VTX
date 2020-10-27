@@ -2,8 +2,8 @@
 #include "define.hpp"
 #include "exception.hpp"
 #include "generic/factory.hpp"
+#include "tool/logger.hpp"
 #include "util/filesystem.hpp"
-#include "vtx_app.hpp"
 #include <vector>
 
 namespace VTX

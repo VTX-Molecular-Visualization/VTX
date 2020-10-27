@@ -5,6 +5,7 @@
 #include "event/event.hpp"
 #include "generic/factory.hpp"
 #include "vtx_app.hpp"
+#include "event/event_manager.hpp"
 
 namespace VTX
 {

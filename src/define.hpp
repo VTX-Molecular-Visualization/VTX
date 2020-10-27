@@ -19,6 +19,7 @@ namespace VTX
 	// Types.
 	using ushort = unsigned short;
 	using uint	 = unsigned int;
+	using ulong	 = unsigned long;
 	using uchar	 = unsigned char;
 
 	using Vec2f = glm::vec2;

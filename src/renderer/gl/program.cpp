@@ -1,6 +1,6 @@
 #include "program.hpp"
 #include "define.hpp"
-#include "vtx_app.hpp"
+#include "tool/logger.hpp"
 #include <iostream>
 #include <vector>
 

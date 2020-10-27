@@ -1,6 +1,6 @@
 #include "molecule_sequence_widget.hpp"
 #include "model/residue.hpp"
-#include "vtx_app.hpp"
+#include "tool/logger.hpp"
 #include <QHBoxLayout>
 
 namespace VTX

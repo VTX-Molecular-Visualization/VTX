@@ -1,23 +1,17 @@
 #include "vtx_app.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
-#include "id.hpp"
-#include "model/molecule.hpp"
+#include "event/event_manager.hpp"
 #include "selection/selection_manager.hpp"
-#include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
+#include "worker/worker_manager.hpp"
 #include <QPalette>
 
 namespace VTX
 {
 	int ZERO = 0;
-	VTXApp::VTXApp() : QApplication( ZERO, nullptr )
-	{
-		_eventManager	  = new Event::EventManager();
-		_actionManager	  = new Action::ActionManager();
-		_workerManager	  = new Worker::WorkerManager();
-		_selectionManager = new Selection::SelectionManager();
-	}
+	VTXApp::VTXApp() : QApplication( ZERO, nullptr ) {}
 
 	void VTXApp::start()
 	{
@@ -46,7 +40,7 @@ namespace VTX
 		_elapsedTimer->start();
 
 		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
-		// VTX_ACTION( new Action::Main::OpenApi( "4v6x" ) );
+		VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
 
 //#define RT_ENABLED
 #ifdef RT_ENABLED
@@ -54,8 +48,8 @@ namespace VTX
 		Path * path = new Path( DATA_DIR + "6vsb.mmtf" );
 		VTX_ACTION( new Action::Open( path ) );
 		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
-		_actionManager->update( 0.f );
-		_workerManager->update( 0.f );
+		Action::ActionManager::get().update( 0.f );
+		Worker::WorkerManager::get().update( 0.f );
 #endif
 	}
 
@@ -84,22 +78,6 @@ namespace VTX
 		if ( _mainWindow != nullptr )
 		{
 			delete _mainWindow;
-		}
-		if ( _selectionManager != nullptr )
-		{
-			delete _selectionManager;
-		}
-		if ( _workerManager != nullptr )
-		{
-			delete _workerManager;
-		}
-		if ( _actionManager != nullptr )
-		{
-			delete _actionManager;
-		}
-		if ( _eventManager != nullptr )
-		{
-			delete _eventManager;
 		}
 	}
 
@@ -134,13 +112,13 @@ namespace VTX
 		_stateMachine->update( deltaTime );
 
 		// Event manager.
-		_eventManager->update( deltaTime );
+		Event::EventManager::get().update( deltaTime );
 
 		// Action manager.
-		_actionManager->update( deltaTime );
+		Action::ActionManager::get().update( deltaTime );
 
 		// Worker manager.
-		_workerManager->update( deltaTime );
+		Worker::WorkerManager::get().update( deltaTime );
 	}
 
 } // namespace VTX

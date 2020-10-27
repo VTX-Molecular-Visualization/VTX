@@ -1,6 +1,6 @@
 #include "menu_toolbutton_widget.hpp"
 #include "style.hpp"
-#include "vtx_app.hpp"
+#include "tool/logger.hpp"
 #include <QPalette>
 
 namespace VTX

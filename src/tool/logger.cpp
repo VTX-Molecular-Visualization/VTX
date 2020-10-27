@@ -1,6 +1,5 @@
 #include "logger.hpp"
-#include "event/event.hpp"
-#include "vtx_app.hpp"
+#include "event/event_manager.hpp"
 #include <algorithm>
 #include <magic_enum.hpp>
 

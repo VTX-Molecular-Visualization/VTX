@@ -6,6 +6,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <iostream>
+#include "event/event_manager.hpp"
 
 namespace VTX
 {
