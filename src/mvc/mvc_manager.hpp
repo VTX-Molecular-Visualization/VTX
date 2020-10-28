@@ -79,8 +79,12 @@ namespace VTX
 			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
 			M & getModel( const Model::Model_ID & _id ) const
 			{
-				return _getMvcData( _id )->getModel();
+				Model::BaseModel & model	= _getMvcData( _id )->getModel();
+				M &				   modelPtr = static_cast<M &>( model );
+				return modelPtr;
 			};
+
+			ID::VTX_ID getModelTypeID( const Model::Model_ID & _id ) const { return _getMvcData( _id )->getModel().getTypeId(); };
 
 			inline void addViewOnModel( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id, View::BaseView * const p_view )
 			{

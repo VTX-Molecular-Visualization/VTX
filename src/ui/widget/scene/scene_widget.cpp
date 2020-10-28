@@ -1,5 +1,13 @@
 #include "scene_widget.hpp"
+#include "action/action_manager.hpp"
+//#include "action/atom.hpp"
+#include "action/chain.hpp"
+#include "action/molecule.hpp"
+#include "action/residue.hpp"
+#include "model/atom.hpp"
+#include "model/chain.hpp"
 #include "model/molecule.hpp"
+#include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
 #include "scene_tree_widget_item.hpp"
@@ -8,6 +16,7 @@
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/base_scene_item.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
+#include <string>
 
 namespace VTX
 {
@@ -43,7 +52,7 @@ namespace VTX
 						const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
 						// Set no parent to not trigger ItemChange event during init
-						View::UI::Widget::MoleculeSceneView * item
+						View::UI::Widget::MoleculeSceneView * const item
 							= WidgetFactory::get().GetSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>( castedEvent.ptr, nullptr, "MoleculeStructure" );
 
 						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, item );
@@ -55,7 +64,7 @@ namespace VTX
 					{
 						const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
-						View::UI::Widget::MoleculeSceneView * moleculeWidget
+						View::UI::Widget::MoleculeSceneView * const moleculeWidget
 							= dynamic_cast<View::UI::Widget::MoleculeSceneView *>( MVC::MvcManager::get().removeViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE ) );
 
 						deleteItem( moleculeWidget );
@@ -83,12 +92,12 @@ namespace VTX
 
 				void SceneWidget::_onItemChange( QTreeWidgetItem * p_item, int p_column )
 				{
-					// VTX_INFO( "_onItemChange !! " );
 					if ( p_column == 0 )
 					{
-						SceneTreeWidgetItem * sceneItem	   = dynamic_cast<SceneTreeWidgetItem *>( p_item );
-						bool				  modelEnabled = sceneItem->checkState( 0 ) == Qt::CheckState::Checked ? true : false;
-						sceneItem->getModel()->setEnable( modelEnabled );
+						const Model::Model_ID id		   = _getModelID( *p_item );
+						const bool			  modelEnabled = p_item->checkState( 0 ) == Qt::CheckState::Checked ? true : false;
+
+						_sendEnableStateChangeAction( id, modelEnabled );
 					}
 				}
 				void SceneWidget::_onSelectionChange()
@@ -96,7 +105,7 @@ namespace VTX
 					// Don't need to use this at this time.
 					return;
 					VTX_INFO( "_onSelectionChange" );
-					VTX::Selection::SelectionManager & selectionManager = Selection::SelectionManager::get();
+					VTX::Selection::SelectionManager & selectionManager = VTX::Selection::SelectionManager::get();
 					selectionManager.clear();
 
 					const QList<QTreeWidgetItem *> selectedObjects = _treeWidget->selectedItems();
@@ -112,12 +121,8 @@ namespace VTX
 
 				void SceneWidget::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
 				{
-					QVariant &	 data	  = p_item->data( 0, Qt::UserRole );
-					QVariantList dataList = data.toList();
-					std::string	 type	  = dataList[ 0 ].toString().toStdString();
-					std::string	 id		  = dataList[ 1 ].toString().toStdString();
-
-					VTX_INFO( "Item clicked: TYPE = " + type + " ID = " + id );
+					Model::Model_ID id = _getModelID( *p_item );
+					VTX_INFO( "Item clicked: ID = " + std::to_string( id ) );
 				}
 
 				// TODO
@@ -127,6 +132,36 @@ namespace VTX
 				{
 					this->setWindowTitle( "Scene" );
 					// this->setWindowTitle( QCoreApplication::translate( "SceneWidget", "Scene", nullptr ) );
+				}
+
+				void SceneWidget::_sendEnableStateChangeAction( const Model::Model_ID & p_modelID, const bool modelEnabled ) const
+				{
+					ID::VTX_ID modelTypeId = MVC::MvcManager::get().getModelTypeID( p_modelID );
+
+					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+					{
+						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
+							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
+
+						Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( p_modelID );
+						VTX_ACTION( new Action::Molecule::ChangeVisibility( model, visibilityMode ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+					{
+						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
+							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
+
+						Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( p_modelID );
+						VTX_ACTION( new Action::Chain::ChangeVisibility( model, visibilityMode ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+					{
+						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
+							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
+
+						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( p_modelID );
+						VTX_ACTION( new Action::Residue::ChangeVisibility( model, visibilityMode ) );
+					}
 				}
 			} // namespace Scene
 		}	  // namespace Widget
