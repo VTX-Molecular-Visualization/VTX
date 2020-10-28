@@ -198,8 +198,6 @@ namespace VTX
 			void createSecondaryStructure();
 			void toggleSequenceVisibility();
 
-			void setSelected( const bool );
-
 		  protected:
 			void _computeGlobalPositionsAABB();
 			void _init() override;

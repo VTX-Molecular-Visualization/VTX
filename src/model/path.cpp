@@ -162,18 +162,5 @@ namespace VTX
 			}
 		} // namespace Model
 
-		void Path::setSelected( const bool p_selected )
-		{
-			BaseSelectable::setSelected( p_selected );
-			if ( isSelected() )
-			{
-				// addItem( (View::BaseView<BaseModel> *)new View::UI::Path( this ) );
-			}
-			else
-			{
-				// delete removeItem( ID::View::UI_PATH );
-			}
-		}
-
 	} // namespace Model
 } // namespace VTX

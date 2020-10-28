@@ -93,21 +93,21 @@ namespace VTX
 				}
 				void SceneWidget::_onSelectionChange()
 				{
-					// Don't need to use this at this time.
-					return;
-					VTX_INFO( "_onSelectionChange" );
-					VTX::Selection::SelectionManager & selectionManager = Selection::SelectionManager::get();
-					selectionManager.clear();
+					/*
+				VTX_INFO( "_onSelectionChange" );
+				VTX::Selection::SelectionManager & selectionManager = Selection::SelectionManager::get();
+				selectionManager.clear();
 
-					const QList<QTreeWidgetItem *> selectedObjects = _treeWidget->selectedItems();
-					for ( auto iterator = selectedObjects.begin(); iterator != selectedObjects.end(); iterator++ )
-					{
-						QTreeWidgetItem *				 selectedObject = ( *iterator );
-						VTX::Selection::BaseSelectable * item			= _getSelectableFromTreeWidgetItem( selectedObject );
+				const QList<QTreeWidgetItem *> selectedObjects = _treeWidget->selectedItems();
+				for ( auto iterator = selectedObjects.begin(); iterator != selectedObjects.end(); iterator++ )
+				{
+					QTreeWidgetItem *				 selectedObject = ( *iterator );
+					VTX::Selection::BaseSelectable * item			= _getSelectableFromTreeWidgetItem( selectedObject );
 
-						if ( item != nullptr )
-							selectionManager.select( item );
-					}
+					if ( item != nullptr )
+						selectionManager.select( item );
+				}
+				*/
 				}
 
 				void SceneWidget::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
@@ -116,12 +116,7 @@ namespace VTX
 					QVariantList dataList = data.toList();
 					std::string	 type	  = dataList[ 0 ].toString().toStdString();
 					std::string	 id		  = dataList[ 1 ].toString().toStdString();
-
-					VTX_INFO( "Item clicked: TYPE = " + type + " ID = " + id );
 				}
-
-				// TODO
-				VTX::Selection::BaseSelectable * SceneWidget::_getSelectableFromTreeWidgetItem( QTreeWidgetItem * treeWidgetItem ) const { return nullptr; }
 
 				void SceneWidget::localize()
 				{

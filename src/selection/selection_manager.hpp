@@ -5,8 +5,11 @@
 #pragma once
 #endif
 
+#include "model/atom.hpp"
+#include "model/chain.hpp"
+#include "model/molecule.hpp"
+#include "model/residue.hpp"
 #include "model/selection.hpp"
-#include "selection/base_selectable.hpp"
 #include <unordered_set>
 
 namespace VTX
@@ -16,22 +19,13 @@ namespace VTX
 		class SelectionManager final
 		{
 		  public:
-			using SetSelectablePtr = std::unordered_set<BaseSelectable *>;
-
 			inline static SelectionManager & get()
 			{
 				static SelectionManager instance;
 				return instance;
 			}
 
-			void select( BaseSelectable * const );
-			void unselect( BaseSelectable * const );
-			void clear();
-
-			inline const SetSelectablePtr & getSelection() const { return _selected; };
-
 		  private:
-			SetSelectablePtr   _selected = SetSelectablePtr();
 			Model::Selection * _selectionModel;
 
 			SelectionManager();

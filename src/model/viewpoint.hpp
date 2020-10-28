@@ -40,8 +40,6 @@ namespace VTX
 			inline void								addAction( const std::string & p_action ) { _actions.emplace_back( p_action ); }
 			inline void								removeAction( const std::vector<std::string>::const_iterator & p_action ) { _actions.erase( p_action ); }
 
-			void setSelected( const bool );
-
 		  private:
 			Path * const _path;
 			float		 _duration = 0.f;

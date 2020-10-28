@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "selection/base_selectable.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDockWidget>
 #include <QTreeWidget>
@@ -35,7 +34,6 @@ namespace VTX
 					SceneWidget( QWidget * p_parent );
 					void							 _setupUi( const QString & p_name ) override;
 					void							 _setupSlots() override;
-					VTX::Selection::BaseSelectable * _getSelectableFromTreeWidgetItem( QTreeWidgetItem * treeWidgetItem ) const;
 
 				  private:
 					QTreeWidget * _treeWidget = nullptr;

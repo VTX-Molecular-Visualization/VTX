@@ -214,19 +214,6 @@ namespace VTX
 			VTX_DEBUG( "Sizeof bond: " + std::to_string( sizeof( *_bonds[ 0 ] ) ) );
 		}
 
-		void Molecule::setSelected( const bool p_selected )
-		{
-			BaseSelectable::setSelected( p_selected );
-			if ( isSelected() )
-			{
-				// addItem( (View::BaseView<BaseModel> *)new View::UI::Molecule( this ) );
-			}
-			else
-			{
-				// delete removeItem( ID::View::UI_MOLECULE );
-			}
-		}
-
 		void Molecule::render()
 		{
 			BaseModel3D::render();

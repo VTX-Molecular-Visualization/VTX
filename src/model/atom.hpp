@@ -184,8 +184,6 @@ namespace VTX
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
-			void setSelected( const bool );
-
 		  private:
 			uint	   _index		= 0;
 			Molecule * _moleculePtr = nullptr;

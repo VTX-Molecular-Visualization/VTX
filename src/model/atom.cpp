@@ -4,18 +4,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		void Atom::setSelected( const bool p_selected )
-		{
-			BaseSelectable::setSelected( p_selected );
-			if ( isSelected() )
-			{
-				// addItem( (View::BaseView<BaseModel> *)new View::UI::Atom( this ) );
-			}
-			else
-			{
-				// delete removeItem( ID::View::UI_ATOM );
-			}
-		}
 
 		const std::string Atom::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {
 			"UNKNOWN", // UNKNOWN = 0,

@@ -7,8 +7,8 @@
 
 #include "event/event.hpp"
 #include "id.hpp"
-#include "selection/base_selectable.hpp"
 #include <string>
+#include "define.hpp"
 
 namespace VTX
 {
@@ -16,7 +16,7 @@ namespace VTX
 	{
 		using Model_ID = ulong;
 
-		class BaseModel : public Selection::BaseSelectable
+		class BaseModel 
 		{
 		  public:
 			BaseModel( const ID::VTX_ID & p_typeId ) : _typeId( &p_typeId ) {};
