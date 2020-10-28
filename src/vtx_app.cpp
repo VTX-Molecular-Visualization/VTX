@@ -56,12 +56,6 @@ namespace VTX
 	void VTXApp::stop()
 	{
 		_timer->stop();
-		exit();
-	}
-
-	VTXApp::~VTXApp()
-	{
-		VTX_INFO( "Destructing application" );
 
 		delete _timer;
 		delete _elapsedTimer;
@@ -79,7 +73,11 @@ namespace VTX
 		{
 			delete _mainWindow;
 		}
+
+		exit();
 	}
+
+	VTXApp::~VTXApp() {}
 
 	void VTXApp::_initQt()
 	{

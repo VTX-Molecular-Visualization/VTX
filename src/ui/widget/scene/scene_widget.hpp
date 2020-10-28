@@ -42,6 +42,7 @@ namespace VTX
 
 					void _onSelectionChange();
 					void _onItemChange( QTreeWidgetItem * item, int column );
+					void _onItemClicked( QTreeWidgetItem *, int );
 				};
 			} // namespace Scene
 		}	  // namespace Widget
