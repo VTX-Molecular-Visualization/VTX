@@ -4,6 +4,7 @@
 #include "object3d/scene.hpp"
 #include "scene_tree_widget_item.hpp"
 #include "selection/selection_manager.hpp"
+#include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/base_scene_item.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
@@ -77,6 +78,7 @@ namespace VTX
 				{
 					connect( _treeWidget, &QTreeWidget::itemSelectionChanged, this, &SceneWidget::_onSelectionChange );
 					connect( _treeWidget, &QTreeWidget::itemChanged, this, &SceneWidget::_onItemChange );
+					connect( _treeWidget, &QTreeWidget::itemClicked, this, &SceneWidget::_onItemClicked );
 				}
 
 				void SceneWidget::_onItemChange( QTreeWidgetItem * p_item, int p_column )
@@ -91,6 +93,9 @@ namespace VTX
 				}
 				void SceneWidget::_onSelectionChange()
 				{
+					// Don't need to use this at this time.
+					return;
+					VTX_INFO( "_onSelectionChange" );
 					VTX::Selection::SelectionManager & selectionManager = Selection::SelectionManager::get();
 					selectionManager.clear();
 
@@ -103,6 +108,16 @@ namespace VTX
 						if ( item != nullptr )
 							selectionManager.select( item );
 					}
+				}
+
+				void SceneWidget::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
+				{
+					QVariant &	 data	  = p_item->data( 0, Qt::UserRole );
+					QVariantList dataList = data.toList();
+					std::string	 type	  = dataList[ 0 ].toString().toStdString();
+					std::string	 id		  = dataList[ 1 ].toString().toStdString();
+
+					VTX_INFO( "Item clicked: TYPE = " + type + " ID = " + id );
 				}
 
 				// TODO
