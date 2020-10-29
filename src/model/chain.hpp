@@ -50,12 +50,14 @@ namespace VTX
 				_name = p_name;
 				BaseModel::setDefaultName( &_name );
 			};
-			inline uint				   getIndexFirstResidue() const { return _indexFirstResidue; };
-			inline void				   setIndexFirstResidue( const uint p_id ) { _indexFirstResidue = p_id; };
-			inline uint				   getResidueCount() const { return _residueCount; };
-			inline void				   setResidueCount( const uint p_count ) { _residueCount = p_count; };
+			inline uint getIndexFirstResidue() const { return _indexFirstResidue; };
+			inline void setIndexFirstResidue( const uint p_id ) { _indexFirstResidue = p_id; };
+			inline uint getResidueCount() const { return _residueCount; };
+			inline void setResidueCount( const uint p_count ) { _residueCount = p_count; };
 
 			void setSelected( const bool );
+
+			void setVisible( const bool p_visible ) override;
 
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;

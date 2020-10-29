@@ -200,6 +200,13 @@ namespace VTX
 
 			void setSelected( const bool );
 
+			void notifyChildDataChange( const Model_ID & p_childId )
+			{
+				Event::VTXEventModelData * const tmpData = new Event::VTXEventModelDataTemplated<Model_ID>( p_childId );
+				_notifyViews( Event::VTX_EVENT_MODEL::CHILD_DATA_CHANGE, tmpData );
+				delete tmpData;
+			}
+
 		  protected:
 			void _computeGlobalPositionsAABB();
 			void _init() override;

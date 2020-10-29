@@ -28,8 +28,9 @@ namespace VTX
 			Renderer::GLSL::Program * _program = nullptr;
 
 			inline OpenGLFunctions * const _gl() { return _model->getBuffer()->gl(); }
-			virtual void				   notify( const Event::VTX_EVENT_MODEL & p_event ) override
+			virtual void				   notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = 0 ) override
 			{
+				TemplatedBaseView<T>::notify( p_event, p_eventData );
 				if ( p_event == Event::VTX_EVENT_MODEL::RENDER )
 				{
 					render();

@@ -32,6 +32,15 @@ namespace VTX
 			return nullptr;
 		}
 
+		void Residue::setVisible( const bool p_visible )
+		{
+			if ( isVisible() != p_visible )
+			{
+				BaseVisible ::setVisible( p_visible );
+				getMoleculePtr()->notifyChildDataChange( getId() );
+			}
+		}
+
 		const std::string Residue::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {
 			"---", // UNKNOWN
 			"ALA", // ALA

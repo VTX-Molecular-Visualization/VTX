@@ -43,7 +43,23 @@ namespace VTX
 		{
 			INIT,
 			RENDER,
-			DATA_CHANGE
+			DATA_CHANGE,
+			CHILD_DATA_CHANGE,
+		};
+
+		struct VTXEventModelData
+		{
+		  public:
+			VTXEventModelData() {};
+			virtual ~VTXEventModelData() = default;
+		};
+
+		template<typename T>
+		struct VTXEventModelDataTemplated : public VTXEventModelData
+		{
+		  public:
+			VTXEventModelDataTemplated( const T & p_value ) : VTXEventModelData(), value( p_value ) {};
+			const T & value;
 		};
 
 		// Base event without args.

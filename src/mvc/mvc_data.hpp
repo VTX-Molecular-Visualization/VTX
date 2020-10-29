@@ -28,12 +28,12 @@ namespace VTX
 			inline View::BaseView * removeView( const ID::VTX_ID & p_id ) { return _views.removeItem( p_id ); };
 			inline bool				hasView( const ID::VTX_ID & p_id ) { return _views.getItem( p_id ); };
 
-			void notifyViews( const Event::VTX_EVENT_MODEL & p_event ) const
+			void notifyViews( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = 0 ) const
 			{
 				const Generic::HasCollection<View::BaseView>::MapStringToItemPtr mapViews = *( _views.getItems() );
 
 				for ( const Generic::HasCollection<View::BaseView>::PairStringToItemPtr & pair : mapViews )
-					pair.second->notify( p_event );
+					pair.second->notify( p_event, p_eventData );
 			};
 
 		  private:

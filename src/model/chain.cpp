@@ -92,6 +92,15 @@ namespace VTX
 				// delete removeItem( ID::View::UI_CHAIN );
 			}
 		}
-		
+
+		void Chain::setVisible( const bool p_visible )
+		{
+			if ( isVisible() != p_visible )
+			{
+				BaseVisible ::setVisible( p_visible );
+				getMoleculePtr()->notifyChildDataChange( getId() );
+			}
+		}
+
 	} // namespace Model
 } // namespace VTX

@@ -25,7 +25,8 @@ namespace VTX
 					VTX_MANUAL_WIDGET_DECLARATION
 
 				  public:
-					void localize() override;
+					void		 localize() override;
+					virtual void notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = 0 ) override;
 
 				  protected:
 					MoleculeSceneView( Model::Molecule * const, QTreeWidgetItem * );
@@ -33,7 +34,8 @@ namespace VTX
 					void _setupSlots() override;
 
 				  private:
-					void refreshItem( QTreeWidgetItem * const p_itemWidget );
+					void _refreshItem( QTreeWidgetItem * const p_itemWidget );
+					void _refreshItem( const Model::Model_ID & p_id );
 
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Molecule & p_model ) const;
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Chain & p_model ) const;
