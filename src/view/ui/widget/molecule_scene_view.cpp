@@ -1,6 +1,5 @@
 #include "molecule_scene_view.hpp"
 #include "id.hpp"
-#include "molecule_subdata_scene_view.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
