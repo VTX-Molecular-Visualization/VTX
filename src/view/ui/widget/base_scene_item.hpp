@@ -21,20 +21,16 @@ namespace VTX
 			namespace Widget
 			{
 				template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
-				class BaseSceneItem : public VTX::UI::Widget::Scene::SceneTreeWidgetItem, public View::TemplatedBaseView<M>, VTX::UI::Widget::BaseManualWidgetInitializer
+				class BaseSceneItem : public QTreeWidgetItem, public View::TemplatedBaseView<M>, VTX::UI::Widget::BaseManualWidgetInitializer
 				{
 					VTX_MANUAL_WIDGET_DECLARATION
 
 				  protected:
 					BaseSceneItem( M * const p_model, QTreeWidgetItem * p_parent ) :
-						View::TemplatedBaseView<M>( p_model ), SceneTreeWidgetItem( *p_model, p_parent ), BaseManualWidgetInitializer() {};
+						View::TemplatedBaseView<M>( p_model ), QTreeWidgetItem( p_parent ), BaseManualWidgetInitializer() {};
 					inline virtual void _setupUi( const QString & p_name ) override {};
 
-					inline virtual void refreshView() override
-					{
-						View::TemplatedBaseView<M>::refreshView();
-						VTX::UI::Widget::Scene::SceneTreeWidgetItem::refreshItem();
-					};
+					inline virtual void refreshView() override { View::TemplatedBaseView<M>::refreshView(); };
 				};
 
 			} // namespace Widget

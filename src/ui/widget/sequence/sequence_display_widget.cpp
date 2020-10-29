@@ -31,6 +31,7 @@ namespace VTX
 				void SequenceDisplayWidget::setupSequence( const Model::Molecule & p_molecule )
 				{
 					_model = &p_molecule;
+					_chainsFirstIndex.clear();
 
 					std::vector<Model::Chain *> chains		= p_molecule.getChains();
 					QString						sequenceTxt = QString();
@@ -40,7 +41,7 @@ namespace VTX
 						const QString chainName = QString::fromStdString( "/" + chain->getName() + "/" );
 						sequenceTxt.append( chainName );
 
-						_chainsFirstIndex.push_back( sequenceTxt.size() );
+						_chainsFirstIndex.emplace_back( sequenceTxt.size() );
 
 						for ( uint i = 0; i < chain->getResidueCount(); ++i )
 						{

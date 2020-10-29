@@ -79,8 +79,12 @@ namespace VTX
 			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
 			M & getModel( const Model::Model_ID & _id ) const
 			{
-				return _getMvcData( _id )->getModel();
+				Model::BaseModel & model	= _getMvcData( _id )->getModel();
+				M &				   modelPtr = static_cast<M &>( model );
+				return modelPtr;
 			};
+
+			ID::VTX_ID getModelTypeID( const Model::Model_ID & _id ) const { return _getMvcData( _id )->getModel().getTypeId(); };
 
 			inline void addViewOnModel( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id, View::BaseView * const p_view )
 			{
@@ -88,7 +92,10 @@ namespace VTX
 			};
 			inline View::BaseView * removeViewOnModel( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { return _getMvcData( p_model )->removeView( p_id ); };
 			inline bool				hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { return _getMvcData( p_model )->hasView( p_id ); };
-			inline void notifyView( const Model::BaseModel * const p_caller, const Event::VTX_EVENT_MODEL & p_event ) { _getMvcData( p_caller )->notifyViews( p_event ); };
+			inline void notifyView( const Model::BaseModel * const p_caller, const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = 0 )
+			{
+				_getMvcData( p_caller )->notifyViews( p_event, p_eventData );
+			};
 
 		  private:
 			MvcManager()					 = default;

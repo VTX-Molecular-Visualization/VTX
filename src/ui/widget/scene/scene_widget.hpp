@@ -5,9 +5,13 @@
 #pragma once
 #endif
 
+#include "model/base_model.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDockWidget>
 #include <QTreeWidget>
+#include <QVariant>
+
+Q_DECLARE_METATYPE( VTX::Model::Model_ID )
 
 namespace VTX
 {
@@ -41,9 +45,20 @@ namespace VTX
 					void _onSelectionChange();
 					void _onItemChange( QTreeWidgetItem * item, int column );
 					void _onItemClicked( QTreeWidgetItem *, int );
+
+					inline Model::Model_ID _getModelID( const QTreeWidgetItem & p_item ) const
+					{
+						const QVariant & dataID = p_item.data( 0, Qt::UserRole );
+						return dataID.value<VTX::Model::Model_ID>();
+					};
+					void _sendEnableStateChangeAction( const Model::Model_ID & p_modelID, const bool modelEnabled ) const;
+
+					const Qt::CheckState _getCheckState( const bool p_enable ) const { return p_enable ? Qt::CheckState::Checked : Qt::CheckState::Unchecked; };
 				};
+
 			} // namespace Scene
 		}	  // namespace Widget
 	}		  // namespace UI
 } // namespace VTX
+
 #endif
