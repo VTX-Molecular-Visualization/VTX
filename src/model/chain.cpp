@@ -84,7 +84,7 @@ namespace VTX
 		{
 			if ( isVisible() != p_visible )
 			{
-				BaseVisible ::setVisible( p_visible );
+				BaseVisible::setVisible( p_visible );
 				getMoleculePtr()->notifyChildDataChange( getId() );
 			}
 		}

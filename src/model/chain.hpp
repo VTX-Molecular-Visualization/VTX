@@ -55,7 +55,8 @@ namespace VTX
 			inline uint getResidueCount() const { return _residueCount; };
 			inline void setResidueCount( const uint p_count ) { _residueCount = p_count; };
 
-			void setVisible( const bool p_visible ) override;
+			// Mask BaseVisible::setVisible
+			void setVisible( const bool p_visible );
 
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;

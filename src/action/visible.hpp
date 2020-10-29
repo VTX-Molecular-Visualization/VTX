@@ -27,29 +27,35 @@ namespace VTX
 					ALL
 				};
 
-				explicit ChangeVisibility( Generic::BaseVisible & p_visible, const VISIBILITY_MODE p_mode ) :
-					_visible( p_visible ), _mode( p_mode )
-				{
-				}
+				explicit ChangeVisibility( Generic::BaseVisible & p_visible, const VISIBILITY_MODE p_mode ) : _visible( p_visible ), _mode( p_mode ) {}
 
 				virtual void execute() override
 				{
-					switch ( _mode )
-					{
-					case VISIBILITY_MODE::SHOW:
-					case VISIBILITY_MODE::SOLO:
-					case VISIBILITY_MODE::ALL: _visible.setVisible( true ); break;
-					case VISIBILITY_MODE::HIDE: _visible.setVisible( false ); break;
-					case VISIBILITY_MODE::TOGGLE: _visible.setVisible( !_visible.isVisible() ); break;
-					default: break;
-					}
+					const bool newVisibility = _getVisibilityBool();
+					_visible.setVisible( newVisibility );
 				}
 
 			  protected:
 				Generic::BaseVisible & _visible;
 				const VISIBILITY_MODE  _mode;
+
+				inline bool _getVisibilityBool()
+				{
+					bool newVisibility;
+					switch ( _mode )
+					{
+					case VISIBILITY_MODE::SHOW:
+					case VISIBILITY_MODE::SOLO:
+					case VISIBILITY_MODE::ALL: newVisibility = true; break;
+					case VISIBILITY_MODE::HIDE: newVisibility = false; break;
+					case VISIBILITY_MODE::TOGGLE: newVisibility = !_visible.isVisible(); break;
+					default: newVisibility = _visible.isVisible(); break;
+					}
+
+					return newVisibility;
+				}
 			};
 		} // namespace Visible
-	} // namespace Action
+	}	  // namespace Action
 } // namespace VTX
 #endif

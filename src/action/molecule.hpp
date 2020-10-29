@@ -20,10 +20,7 @@ namespace VTX
 			class ChangeColorMode : public BaseAction
 			{
 			  public:
-				explicit ChangeColorMode( Model::Molecule & p_molecule, const Generic::COLOR_MODE p_colorMode ) :
-					_molecule( p_molecule ), _colorMode( p_colorMode )
-				{
-				}
+				explicit ChangeColorMode( Model::Molecule & p_molecule, const Generic::COLOR_MODE p_colorMode ) : _molecule( p_molecule ), _colorMode( p_colorMode ) {}
 
 				virtual void execute() override { _molecule.setColorMode( _colorMode ); }
 
@@ -35,18 +32,14 @@ namespace VTX
 			class ChangeColor : public BaseAction
 			{
 			  public:
-				explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgb & p_color ) :
-					_molecule( p_molecule ), _color( p_color )
-				{
-				}
+				explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgb & p_color ) : _molecule( p_molecule ), _color( p_color ) {}
 
 				virtual void execute() override
 				{
 					_molecule.setColor( _color );
 					_molecule.refreshColors();
 
-					if ( _molecule.getSecondaryStructure().getColorMode()
-						 == Model::SecondaryStructure::COLOR_MODE::PROTEIN )
+					if ( _molecule.getSecondaryStructure().getColorMode() == Model::SecondaryStructure::COLOR_MODE::PROTEIN )
 					{
 						_molecule.getSecondaryStructure().refreshColors();
 					}
@@ -60,15 +53,14 @@ namespace VTX
 			class ChangeVisibility : public Visible::ChangeVisibility
 			{
 			  public:
-				explicit ChangeVisibility( Model::Molecule & p_molecule, const VISIBILITY_MODE p_mode ) :
-					Visible::ChangeVisibility( p_molecule, p_mode )
-				{
-				}
+				explicit ChangeVisibility( Model::Molecule & p_molecule, const VISIBILITY_MODE p_mode ) : Visible::ChangeVisibility( p_molecule, p_mode ) {}
 
 				virtual void execute() override
 				{
-					Model::Molecule & molecule = ( (Model::Molecule &)_visible );
-					Visible::ChangeVisibility::execute();
+					bool			  newVisibility = _getVisibilityBool();
+					Model::Molecule & molecule		= ( (Model::Molecule &)_visible );
+
+					molecule.setVisible( newVisibility );
 					Util::Molecule::refreshRepresentationState( molecule );
 				}
 			};
@@ -76,15 +68,9 @@ namespace VTX
 			class ChangeFPS : public BaseAction
 			{
 			  public:
-				explicit ChangeFPS( Model::Molecule & p_molecule, const int p_fps ) :
-					_molecule( p_molecule ), _fps( p_fps )
-				{
-				}
+				explicit ChangeFPS( Model::Molecule & p_molecule, const int p_fps ) : _molecule( p_molecule ), _fps( p_fps ) {}
 
-				virtual void execute() override
-				{
-					_molecule.setFPS( Util::Math::clamp( _fps, 0, int( Setting::VIDEO_FPS_DEFAULT ) ) );
-				}
+				virtual void execute() override { _molecule.setFPS( Util::Math::clamp( _fps, 0, int( Setting::VIDEO_FPS_DEFAULT ) ) ); }
 
 			  private:
 				Model::Molecule & _molecule;
@@ -94,15 +80,9 @@ namespace VTX
 			class ChangeFrame : public BaseAction
 			{
 			  public:
-				explicit ChangeFrame( Model::Molecule & p_molecule, const int p_frame ) :
-					_molecule( p_molecule ), _frame( p_frame )
-				{
-				}
+				explicit ChangeFrame( Model::Molecule & p_molecule, const int p_frame ) : _molecule( p_molecule ), _frame( p_frame ) {}
 
-				virtual void execute() override
-				{
-					_molecule.setFrame( Util::Math::clamp( _frame, 0, (int)_molecule.getFrameCount() - 1 ) );
-				}
+				virtual void execute() override { _molecule.setFrame( Util::Math::clamp( _frame, 0, (int)_molecule.getFrameCount() - 1 ) ); }
 
 			  private:
 				Model::Molecule & _molecule;
@@ -112,10 +92,7 @@ namespace VTX
 			class ChangeIsPlaying : public BaseAction
 			{
 			  public:
-				explicit ChangeIsPlaying( Model::Molecule & p_molecule, const bool p_isPlaying ) :
-					_molecule( p_molecule ), _isPlaying( p_isPlaying )
-				{
-				}
+				explicit ChangeIsPlaying( Model::Molecule & p_molecule, const bool p_isPlaying ) : _molecule( p_molecule ), _isPlaying( p_isPlaying ) {}
 
 				virtual void execute() override { _molecule.setIsPlaying( _isPlaying ); }
 
@@ -127,10 +104,7 @@ namespace VTX
 			class ChangeShowIon : public BaseAction
 			{
 			  public:
-				explicit ChangeShowIon( Model::Molecule & p_molecule, const bool p_showIon ) :
-					_molecule( p_molecule ), _showIon( p_showIon )
-				{
-				}
+				explicit ChangeShowIon( Model::Molecule & p_molecule, const bool p_showIon ) : _molecule( p_molecule ), _showIon( p_showIon ) {}
 
 				virtual void execute() override { _molecule.setShowIon( _showIon ); }
 
@@ -142,10 +116,7 @@ namespace VTX
 			class ChangeShowSolvent : public BaseAction
 			{
 			  public:
-				explicit ChangeShowSolvent( Model::Molecule & p_molecule, const bool p_showSolvent ) :
-					_molecule( p_molecule ), _showSolvent( p_showSolvent )
-				{
-				}
+				explicit ChangeShowSolvent( Model::Molecule & p_molecule, const bool p_showSolvent ) : _molecule( p_molecule ), _showSolvent( p_showSolvent ) {}
 
 				virtual void execute() override { _molecule.setShowSolvent( _showSolvent ); }
 
@@ -198,10 +169,8 @@ namespace VTX
 			class ChangeColorModeSecondaryStructure : public BaseAction
 			{
 			  public:
-				explicit ChangeColorModeSecondaryStructure( Model::Molecule &							p_molecule,
-															const Model::SecondaryStructure::COLOR_MODE p_colorMode ) :
-					_molecule( p_molecule ),
-					_colorMode( p_colorMode )
+				explicit ChangeColorModeSecondaryStructure( Model::Molecule & p_molecule, const Model::SecondaryStructure::COLOR_MODE p_colorMode ) :
+					_molecule( p_molecule ), _colorMode( p_colorMode )
 				{
 				}
 
