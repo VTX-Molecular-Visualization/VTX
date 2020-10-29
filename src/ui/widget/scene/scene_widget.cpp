@@ -1,9 +1,9 @@
 #include "scene_widget.hpp"
 #include "action/action_manager.hpp"
-//#include "action/atom.hpp"
 #include "action/chain.hpp"
 #include "action/molecule.hpp"
 #include "action/residue.hpp"
+#include "action/selection.hpp"
 #include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
@@ -84,7 +84,6 @@ namespace VTX
 
 				void SceneWidget::_setupSlots()
 				{
-					connect( _treeWidget, &QTreeWidget::itemSelectionChanged, this, &SceneWidget::_onSelectionChange );
 					connect( _treeWidget, &QTreeWidget::itemChanged, this, &SceneWidget::_onItemChange );
 					connect( _treeWidget, &QTreeWidget::itemClicked, this, &SceneWidget::_onItemClicked );
 				}
@@ -98,29 +97,6 @@ namespace VTX
 
 						_sendEnableStateChangeAction( id, modelEnabled );
 					}
-				}
-				void SceneWidget::_onSelectionChange()
-				{
-					/*
-				VTX_INFO( "_onSelectionChange" );
-				VTX::Selection::SelectionManager & selectionManager = Selection::SelectionManager::get();
-				selectionManager.clear();
-
-				const QList<QTreeWidgetItem *> selectedObjects = _treeWidget->selectedItems();
-				for ( auto iterator = selectedObjects.begin(); iterator != selectedObjects.end(); iterator++ )
-				{
-					QTreeWidgetItem *				 selectedObject = ( *iterator );
-					VTX::Selection::BaseSelectable * item			= _getSelectableFromTreeWidgetItem( selectedObject );
-
-					if ( item != nullptr )
-						selectionManager.select( item );
-				}
-				*/
-				}
-
-				void SceneWidget::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
-				{
-					const Model::Model_ID & id = _getModelID( *p_item );
 				}
 
 				void SceneWidget::localize()
@@ -158,8 +134,31 @@ namespace VTX
 						VTX_ACTION( new Action::Residue::ChangeVisibility( model, visibilityMode ) );
 					}
 				}
+
+				void SceneWidget::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
+				{
+					const Model::Model_ID & modelId		   = _getModelID( *p_item );
+					ID::VTX_ID				modelTypeId	   = MVC::MvcManager::get().getModelTypeID( modelId );
+					Model::Selection &		selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+					{
+						Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+						VTX_ACTION( new Action::Selection::SelectMolecule( selectionModel, model ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+					{
+						Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+						VTX_ACTION( new Action::Selection::SelectChain( selectionModel, model ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+					{
+						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+						VTX_ACTION( new Action::Selection::SelectResidue( selectionModel, model ) );
+					}
+				}
+
 			} // namespace Scene
 		}	  // namespace Widget
 	}		  // namespace UI
-
 } // namespace VTX

@@ -36,13 +36,12 @@ namespace VTX
 
 				  protected:
 					SceneWidget( QWidget * p_parent );
-					void							 _setupUi( const QString & p_name ) override;
-					void							 _setupSlots() override;
+					void _setupUi( const QString & p_name ) override;
+					void _setupSlots() override;
 
 				  private:
 					QTreeWidget * _treeWidget = nullptr;
 
-					void _onSelectionChange();
 					void _onItemChange( QTreeWidgetItem * item, int column );
 					void _onItemClicked( QTreeWidgetItem *, int );
 
