@@ -1,5 +1,6 @@
 #include "scene_widget.hpp"
 #include "action/action_manager.hpp"
+#include "action/atom.hpp"
 #include "action/chain.hpp"
 #include "action/molecule.hpp"
 #include "action/residue.hpp"
@@ -133,6 +134,14 @@ namespace VTX
 						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( p_modelID );
 						VTX_ACTION( new Action::Residue::ChangeVisibility( model, visibilityMode ) );
 					}
+					else if ( modelTypeId == ID::Model::MODEL_ATOM )
+					{
+						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
+							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
+
+						Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( p_modelID );
+						VTX_ACTION( new Action::Atom::ChangeVisibility( model, visibilityMode ) );
+					}
 				}
 
 				void SceneWidget::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
@@ -155,6 +164,11 @@ namespace VTX
 					{
 						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
 						VTX_ACTION( new Action::Selection::SelectResidue( selectionModel, model ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_ATOM )
+					{
+						Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+						VTX_ACTION( new Action::Selection::SelectAtom( selectionModel, model ) );
 					}
 				}
 

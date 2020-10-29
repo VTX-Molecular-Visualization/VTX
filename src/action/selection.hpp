@@ -1,5 +1,5 @@
-#ifndef __VTX_ACTION_ATOM__
-#define __VTX_ACTION_ATOM__
+#ifndef __VTX_ACTION_SELECTION__
+#define __VTX_ACTION_SELECTION__
 
 #ifdef _MSC_VER
 #pragma once
