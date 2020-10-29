@@ -41,20 +41,7 @@ namespace VTX
 				{
 					clear();
 
-					Selection::SelectionManager &				  selectionManager = Selection::SelectionManager::get();
-					Selection::SelectionManager::SetSelectablePtr selection		   = selectionManager.getSelection();
-
-					if ( selection.size() > 0 )
-					{
-						Selection::BaseSelectable * firstItem = *selection.begin();
-						Model::BaseModel *			model	  = static_cast<Model::BaseModel *>( firstItem );
-
-						// View::BaseView * inspectorItemView = model->instantiateInspectorView();
-						// MVC::MvcManager::get().addViewOnModel( model, ID::UI::INSPECTOR_ITEM, inspectorItemView );
-
-						// BaseManualWidget * inspectorItemWidget = dynamic_cast<BaseManualWidget *>( inspectorItemView );
-						//_verticalLayout->insertWidget( 0, inspectorItemWidget );
-					}
+					// TODO
 				}
 
 				void InspectorWidget::clear()

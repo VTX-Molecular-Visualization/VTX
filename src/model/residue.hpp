@@ -112,7 +112,6 @@ namespace VTX
 			inline void							   setSecondaryStructure( const SecondaryStructure::VALUE p_structure ) { _secondaryStructure = p_structure; };
 			const Atom * const					   findFirstAtomByName( const std::string & ) const;
 
-			void setSelected( const bool );
 			void setVisible( const bool p_visible ) override;
 
 		  private:

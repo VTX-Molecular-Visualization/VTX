@@ -80,19 +80,6 @@ namespace VTX
 			return p_isHetAtm ? Chain::CHAIN_ID_COLOR_HETATM[ id ] : Chain::CHAIN_ID_COLOR_ATOM[ id ];
 		}
 
-		void Chain::setSelected( const bool p_selected )
-		{
-			BaseSelectable::setSelected( p_selected );
-			if ( isSelected() )
-			{
-				// addItem( (View::BaseView<BaseModel> *)new View::UI::Chain( this ) );
-			}
-			else
-			{
-				// delete removeItem( ID::View::UI_CHAIN );
-			}
-		}
-
 		void Chain::setVisible( const bool p_visible )
 		{
 			if ( isVisible() != p_visible )

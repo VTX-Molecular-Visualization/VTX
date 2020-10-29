@@ -55,8 +55,6 @@ namespace VTX
 			inline uint getResidueCount() const { return _residueCount; };
 			inline void setResidueCount( const uint p_count ) { _residueCount = p_count; };
 
-			void setSelected( const bool );
-
 			void setVisible( const bool p_visible ) override;
 
 		  private:

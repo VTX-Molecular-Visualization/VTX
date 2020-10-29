@@ -16,7 +16,6 @@
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/base_scene_item.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
-#include <string>
 
 namespace VTX
 {
@@ -102,31 +101,27 @@ namespace VTX
 				}
 				void SceneWidget::_onSelectionChange()
 				{
-					// Don't need to use this at this time.
-					return;
-					VTX_INFO( "_onSelectionChange" );
-					VTX::Selection::SelectionManager & selectionManager = VTX::Selection::SelectionManager::get();
-					selectionManager.clear();
+					/*
+				VTX_INFO( "_onSelectionChange" );
+				VTX::Selection::SelectionManager & selectionManager = Selection::SelectionManager::get();
+				selectionManager.clear();
 
-					const QList<QTreeWidgetItem *> selectedObjects = _treeWidget->selectedItems();
-					for ( auto iterator = selectedObjects.begin(); iterator != selectedObjects.end(); iterator++ )
-					{
-						QTreeWidgetItem *				 selectedObject = ( *iterator );
-						VTX::Selection::BaseSelectable * item			= _getSelectableFromTreeWidgetItem( selectedObject );
+				const QList<QTreeWidgetItem *> selectedObjects = _treeWidget->selectedItems();
+				for ( auto iterator = selectedObjects.begin(); iterator != selectedObjects.end(); iterator++ )
+				{
+					QTreeWidgetItem *				 selectedObject = ( *iterator );
+					VTX::Selection::BaseSelectable * item			= _getSelectableFromTreeWidgetItem( selectedObject );
 
-						if ( item != nullptr )
-							selectionManager.select( item );
-					}
+					if ( item != nullptr )
+						selectionManager.select( item );
+				}
+				*/
 				}
 
 				void SceneWidget::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
 				{
-					Model::Model_ID id = _getModelID( *p_item );
-					VTX_INFO( "Item clicked: ID = " + std::to_string( id ) );
+					const Model::Model_ID & id = _getModelID( *p_item );
 				}
-
-				// TODO
-				VTX::Selection::BaseSelectable * SceneWidget::_getSelectableFromTreeWidgetItem( QTreeWidgetItem * treeWidgetItem ) const { return nullptr; }
 
 				void SceneWidget::localize()
 				{

@@ -5,19 +5,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		void Residue::setSelected( const bool p_selected )
-		{
-			BaseSelectable::setSelected( p_selected );
-			if ( isSelected() )
-			{
-				// addItem( (View::BaseView<BaseModel> *)new View::UI::Residue( this ) );
-			}
-			else
-			{
-				// delete removeItem( ID::View::UI_RESIDUE );
-			}
-		}
-
 		const Atom * const Residue::findFirstAtomByName( const std::string & p_name ) const
 		{
 			for ( uint i = 0; i < _atomCount; ++i )
