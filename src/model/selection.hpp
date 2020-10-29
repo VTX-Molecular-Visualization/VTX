@@ -39,6 +39,13 @@ namespace VTX
 
 		  private:
 			MapIds _items = MapIds();
+
+			void _addMolecule( const Model::Molecule & );
+			void _addChain( const Model::Chain & );
+			void _addResidue( const Model::Residue & );
+			void _addMoleculeContent( const Model::Molecule & );
+			void _addChainContent( const Model::Chain & );
+			void _addResidueContent( const Model::Residue & );
 		};
 
 	} // namespace Model
