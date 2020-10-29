@@ -20,20 +20,20 @@ namespace VTX
 		class Selection : public BaseModel
 		{
 			// Map molecule model id with index (not model id) of chains, residues and atoms.
-			using MapIds = std::map<ulong, std::map<uint, std::map<uint, std::vector<uint>>>>;
+			using MapIds = std::map<Model::Model_ID, std::map<uint, std::map<uint, std::vector<uint>>>>;
 
 		  public:
 			Selection() : BaseModel( ID::Model::MODEL_SELECTION ) {}
 			~Selection() = default;
 
-			void selectMolecule( Model::Molecule * const );
-			void unselectMolecule( Model::Molecule * const );
-			void selectChain( Model::Chain * const );
-			void unselectChain( Model::Chain * const );
-			void selectResidue( Model::Residue * const );
-			void unselectResidue( Model::Residue * const );
-			void selectAtom( Model::Atom * const );
-			void unselectAtom( Model::Atom * const );
+			void selectMolecule( const Model::Molecule & );
+			void unselectMolecule( const Model::Molecule & );
+			void selectChain( const Model::Chain & );
+			void unselectChain( const Model::Chain & );
+			void selectResidue( const Model::Residue & );
+			void unselectResidue( const Model::Residue & );
+			void selectAtom( const Model::Atom & );
+			void unselectAtom( const Model::Atom & );
 
 			void clear();
 

@@ -25,6 +25,10 @@ namespace VTX
 				return instance;
 			}
 
+			// For further feature: multiselecction.
+			// void addSelectionObject();
+			// void removeSelectionObject();
+
 		  private:
 			Model::Selection * _selectionModel;
 
