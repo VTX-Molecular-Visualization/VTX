@@ -15,6 +15,9 @@
 	<file>sprite/new_session_icon.png</file>
 	<file>sprite/openrecent_session_icon.png</file>
 	<file>sprite/open_session_icon.png</file>
+	<file>sprite/representation_sas_icon.png</file>
+	<file>sprite/representation_stick_icon.png</file>
+	<file>sprite/representation_trace_icon.png</file>
 	<file>sprite/saveas_session_icon.png</file>
 	<file>sprite/save_molecule_icon.png</file>
 	<file>sprite/save_session_icon.png</file>

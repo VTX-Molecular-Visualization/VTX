@@ -35,15 +35,15 @@ namespace VTX
 
 						// Custom presets
 						_customPreset1 = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "applyRenderPresetButton" );
-						_customPreset1->setData( "Custom Preset 1", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						_customPreset1->setData( "Custom Preset 1", "", Qt::Orientation::Horizontal );
 						pushButton( *_customPreset1, 1 );
 
 						_customPreset2 = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "applyRenderPresetButton" );
-						_customPreset2->setData( "Custom Preset 2", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						_customPreset2->setData( "Custom Preset 2", "", Qt::Orientation::Horizontal );
 						pushButton( *_customPreset2, 1 );
 
 						_customPreset3 = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "applyRenderPresetButton" );
-						_customPreset3->setData( "Custom Preset 3", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						_customPreset3->setData( "Custom Preset 3", "", Qt::Orientation::Horizontal );
 						pushButton( *_customPreset3, 1 );
 
 						// Camera Mode
