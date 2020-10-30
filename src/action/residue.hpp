@@ -8,7 +8,6 @@
 #include "model/residue.hpp"
 #include "util/molecule.hpp"
 #include "visible.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX
 {

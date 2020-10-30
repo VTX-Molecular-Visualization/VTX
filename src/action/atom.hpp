@@ -6,7 +6,8 @@
 #endif
 
 #include "model/atom.hpp"
-#include "vtx_app.hpp"
+#include "util/molecule.hpp"
+#include "visible.hpp"
 
 namespace VTX
 {
@@ -17,22 +18,44 @@ namespace VTX
 			class ChangeColor : public BaseAction
 			{
 			  public:
-				explicit ChangeColor( Model::Atom & p_atom, const Color::Rgb & p_color ) :
-					_atom( p_atom ), _color( p_color )
-				{
-				}
+				explicit ChangeColor( Model::Atom & p_atom, const Color::Rgb & p_color ) : _atom( p_atom ), _color( p_color ) {}
 
 				virtual void execute() override
 				{
-					_atom.setColor( _color );
-					_atom.getMoleculePtr()->setColorMode();
+					//_atom.setColor( _color );
+					//_atom.getMoleculePtr()->setColorMode();
 				}
 
 			  private:
 				Model::Atom &	 _atom;
 				const Color::Rgb _color;
 			};
+
+			class ChangeVisibility : public Visible::ChangeVisibility
+			{
+			  public:
+				explicit ChangeVisibility( Model::Atom & p_atom, const VISIBILITY_MODE p_mode ) : Visible::ChangeVisibility( p_atom, p_mode ) {}
+
+				virtual void execute() override
+				{
+					const Model::Atom & atom = ( (Model::Atom &)_visible );
+					Visible::ChangeVisibility::execute();
+
+					if ( _mode == VISIBILITY_MODE::ALL || _mode == VISIBILITY_MODE::SOLO )
+					{
+						for ( uint i = 0; i < atom.getResiduePtr()->getAtomCount(); ++i )
+						{
+							atom.getMoleculePtr()
+								->getAtom( atom.getResiduePtr()->getIndexFirstAtom() + i )
+								.setVisible( _mode == VISIBILITY_MODE::ALL
+											 || ( _mode == VISIBILITY_MODE::SOLO && atom.getResiduePtr()->getIndexFirstAtom() + i == atom.getIndex() ) );
+						}
+					}
+
+					Util::Molecule::refreshRepresentationState( *atom.getMoleculePtr() );
+				}
+			};
 		} // namespace Atom
-	} // namespace Action
+	}	  // namespace Action
 } // namespace VTX
 #endif

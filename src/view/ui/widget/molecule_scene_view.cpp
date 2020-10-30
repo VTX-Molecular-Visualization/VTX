@@ -1,6 +1,5 @@
 #include "molecule_scene_view.hpp"
 #include "id.hpp"
-#include "molecule_subdata_scene_view.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
@@ -58,6 +57,19 @@ namespace VTX
 							_refreshItem( residueView, residue );
 
 							chainView->addChild( residueView );
+
+							// Atom.
+							for ( uint a = 0; a < residue.getAtomCount(); ++a )
+							{
+								Model::Atom &			atom	 = _model->getAtom( residue.getIndexFirstAtom() + a );
+								QTreeWidgetItem * const atomView = new QTreeWidgetItem( residueView );
+								atomView->setData( 0, Qt::UserRole, QVariant::fromValue( atom.getId() ) );
+								atomView->setText( 0, QString::fromStdString( atom.getSymbolStr() ) );
+								atomView->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( atom.getTypeId() ) );
+								_refreshItem( atomView, atom );
+
+								residueView->addChild( atomView );
+							}
 						}
 					}
 				}
@@ -104,12 +116,12 @@ namespace VTX
 					}
 					else if ( typeId == ID::Model::MODEL_ATOM )
 					{
-						// const Model::Atom &			 atom	 = MVC::MvcManager::get().getModel<Model::Atom>( p_id );
-						// const Model::Residue * const residue = atom.getResiduePtr();
-						// const Model::Chain * const	 chain	 = residue->getChainPtr();
-						// QTreeWidgetItem * const		 item	 = child( chain->getIndex() )->child( residue->getIndexInOriginalChain() );
+						const Model::Atom &			 atom	 = MVC::MvcManager::get().getModel<Model::Atom>( p_id );
+						const Model::Residue * const residue = atom.getResiduePtr();
+						const Model::Chain * const	 chain	 = residue->getChainPtr();
+						QTreeWidgetItem * const		 item	 = child( chain->getIndex() )->child( residue->getIndexInOriginalChain() );
 
-						//_refreshItem( item, atom );
+						_refreshItem( item, atom );
 					}
 				}
 
@@ -131,7 +143,12 @@ namespace VTX
 					if ( p_itemWidget->checkState( 0 ) != newCheckState )
 						p_itemWidget->setCheckState( 0, newCheckState );
 				}
-				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Atom & p_model ) const {}
+				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Atom & p_model ) const
+				{
+					const Qt::CheckState newCheckState = _getCheckState( p_model.isVisible() );
+					if ( p_itemWidget->checkState( 0 ) != newCheckState )
+						p_itemWidget->setCheckState( 0, newCheckState );
+				}
 
 			} // namespace Widget
 		}	  // namespace UI
