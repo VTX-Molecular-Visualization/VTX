@@ -118,10 +118,7 @@ namespace VTX
 				*/
 				}
 
-				void SceneWidget::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
-				{
-					const Model::Model_ID & id = _getModelID( *p_item );
-				}
+				void SceneWidget::_onItemClicked( QTreeWidgetItem * p_item, int p_column ) { const Model::Model_ID & id = _getModelID( *p_item ); }
 
 				void SceneWidget::localize()
 				{

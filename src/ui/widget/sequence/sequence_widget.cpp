@@ -33,7 +33,7 @@ namespace VTX
 						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE, moleculeSequenceView );
 						MoleculeSequenceWidget * const widget = moleculeSequenceView->getWidget();
 
-						this->_scrollAreaLayout->addWidget( widget );
+						_layout->insertWidget( _layout->count() - 1, widget );
 					}
 					else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 					{
@@ -49,16 +49,13 @@ namespace VTX
 				{
 					BaseManualWidget::_setupUi( p_name );
 
-					_scrollArea = new QScrollArea( this );
+					QWidget * const contentWidget = new QWidget( this );
+					contentWidget->setContentsMargins( 2, 2, 2, 2 );
 
-					QWidget * const scrollAreaContent = new QWidget();
-					scrollAreaContent->setContentsMargins( 0, 0, 0, 0 );
-					_scrollAreaLayout = new QVBoxLayout( scrollAreaContent );
-					_scrollAreaLayout->setSizeConstraint( QLayout::SizeConstraint::SetMinAndMaxSize );
+					_layout = new QVBoxLayout( contentWidget );
+					_layout->addStretch( 1000 );
 
-					_scrollArea->setWidget( scrollAreaContent );
-
-					setWidget( _scrollArea );
+					setWidget( contentWidget );
 				}
 
 				void SequenceWidget::_setupSlots() {}

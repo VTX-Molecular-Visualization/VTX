@@ -7,7 +7,6 @@
 
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDockWidget>
-#include <QScrollArea>
 #include <QVBoxLayout>
 
 namespace VTX
@@ -32,8 +31,7 @@ namespace VTX
 					void _setupSlots() override;
 
 				  private:
-					QScrollArea * _scrollArea;
-					QVBoxLayout * _scrollAreaLayout;
+					QVBoxLayout * _layout;
 				};
 			} // namespace Sequence
 		}	  // namespace Widget

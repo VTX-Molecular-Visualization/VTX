@@ -1,8 +1,6 @@
 #include "sequence_display_widget.hpp"
-#include "model/chain.hpp"
+#include "model/molecule.hpp"
 #include "model/residue.hpp"
-#include <QString>
-#include <vector>
 
 namespace VTX
 {
@@ -28,38 +26,56 @@ namespace VTX
 					}
 				};
 
-				void SequenceDisplayWidget::setupSequence( const Model::Molecule & p_molecule )
+				void SequenceDisplayWidget::setupSequence( const Model::Chain & p_chain )
 				{
-					_model = &p_molecule;
-					_chainsFirstIndex.clear();
+					_chain = &p_chain;
+					_charIndexResidueIndexMap.clear();
 
-					std::vector<Model::Chain *> chains		= p_molecule.getChains();
-					QString						sequenceTxt = QString();
+					QString sequenceTxt = QString();
 
-					for ( const Model::Chain * const chain : p_molecule.getChains() )
+					const uint residueCount = _chain->getResidueCount();
+
+					int					  richTextTagSize = 0;
+					const VTX::Color::Rgb currentColor	  = _chain->getColor();
+					const QString		  colorString	  = QString::fromStdString( currentColor.toHexaString() );
+					const QString		  htmlColorTag	  = "<font color=" + colorString + ">";
+					richTextTagSize += htmlColorTag.size();
+					sequenceTxt.append( htmlColorTag );
+
+					for ( uint i = 0; i < residueCount; ++i )
 					{
-						const QString chainName = QString::fromStdString( "/" + chain->getName() + "/" );
-						sequenceTxt.append( chainName );
+						const uint			   residueIndex = _chain->getIndexFirstResidue() + i;
+						const Model::Residue & residue		= _chain->getMoleculePtr()->getResidue( residueIndex );
 
-						_chainsFirstIndex.emplace_back( sequenceTxt.size() );
+						/*VTX::Color::Rgb residueColor = residue.getColor();
 
-						for ( uint i = 0; i < chain->getResidueCount(); ++i )
+						if ( currentColor != residueColor )
 						{
-							const Model::Residue & residue = p_molecule.getResidue( chain->getIndexFirstResidue() + i );
-							if ( residue.getSymbolShort() != "?" )
-							{
-								sequenceTxt.append( QString::fromStdString( residue.getSymbolShort() ) );
-							}
-							else
-							{
-								sequenceTxt.append( QString::fromStdString( residue.getSymbolStr() + " " ) );
-							}
-						}
+							htmlColorTag = "</font>";
+							richTextTagSize += htmlColorTag.size();
+							sequenceTxt.append( htmlColorTag );
+							colorString	 = QString::fromStdString( residueColor.toHexaString() );
+							htmlColorTag = "<font color=" + colorString + ">";
+							richTextTagSize += htmlColorTag.size();
+							sequenceTxt.append( htmlColorTag );
 
-						sequenceTxt.append( '\n' );
+							currentColor = residueColor;
+						}*/
+
+						QString symbol;
+						if ( residue.getSymbolShort() != "?" )
+							symbol = QString::fromStdString( residue.getSymbolShort() );
+						else
+							symbol = QString::fromStdString( " " + residue.getSymbolStr() + " " );
+
+						_charIndexResidueIndexMap.emplace( sequenceTxt.size() - richTextTagSize, residueIndex );
+						sequenceTxt.append( symbol );
 					}
 
+					sequenceTxt.append( "</font>" );
 					setText( sequenceTxt );
+
+					_selection.reserve( residueCount );
 				}
 
 				void SequenceDisplayWidget::_buildSelection()
@@ -70,27 +86,13 @@ namespace VTX
 						return;
 
 					const int start = selectionStart();
+					const int end	= start + selectedText().size();
 
-					const Model::Chain * chain			   = nullptr;
-					uint				 indexFirstResidue = 0;
-					for ( int i = (int)_chainsFirstIndex.size() - 1; i >= 0; i-- )
+					for ( int i = start; i < end; i++ )
 					{
-						if ( start >= _chainsFirstIndex[ i ] )
-						{
-							chain			  = &_model->getChain( i );
-							indexFirstResidue = start - _chainsFirstIndex[ i ];
-							break;
-						}
-					}
-
-					if ( chain == nullptr )
-						return;
-
-					const int selectionSize = selectedText().size();
-
-					for ( int i = 0; i < selectionSize; i++ )
-					{
-						_selection.emplace_back( chain->getIndexFirstResidue() + indexFirstResidue + i );
+						auto it = _charIndexResidueIndexMap.find( i );
+						if ( it != _charIndexResidueIndexMap.end() )
+							_selection.emplace_back( _charIndexResidueIndexMap[ i ] );
 					}
 				}
 

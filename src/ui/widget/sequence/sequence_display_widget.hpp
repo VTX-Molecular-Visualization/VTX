@@ -5,8 +5,11 @@
 #pragma once
 #endif
 
-#include "model/molecule.hpp"
+#include "model/chain.hpp"
+#include "style.hpp"
 #include <QLabel>
+#include <QString>
+#include <map>
 #include <vector>
 
 namespace VTX
@@ -26,9 +29,10 @@ namespace VTX
 					{
 						_updateSelectionData();
 						setTextInteractionFlags( Qt::TextInteractionFlag::TextSelectableByMouse );
+						setFont( Style::SEQUENCE_DISPLAY_FONT );
 					}
 
-					void setupSequence( const Model::Molecule & p_molecule );
+					void setupSequence( const Model::Chain & p_molecule );
 
 					const std::vector<uint> & getSelection() const { return _selection; };
 					std::vector<uint> &		  getSelection() { return _selection; };
@@ -45,9 +49,9 @@ namespace VTX
 					int		_lastFirstIndexSelection;
 					QString _lastSelection;
 
-					const Model::Molecule * _model			  = nullptr;
-					std::vector<uint>		_selection		  = std::vector<uint>();
-					std::vector<int>		_chainsFirstIndex = std::vector<int>();
+					const Model::Chain * _chain					   = nullptr;
+					std::vector<uint>	 _selection				   = std::vector<uint>();
+					std::map<int, uint>	 _charIndexResidueIndexMap = std::map<int, uint>();
 
 					void _buildSelection();
 

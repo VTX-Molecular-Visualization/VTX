@@ -73,9 +73,13 @@ namespace VTX
 		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;
 		inline static const int INSPECTOR_CONTENT_HORIZONTAL_OFFSET = 10;
 
+		inline static const std::string SEQUENCE_CHAIN_NAME_SEPARATOR = "/";
+		inline static const int			SEQUENCE_CHAIN_SCALE_STEP	  = 5;
+
 		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION = VTX::Selection::SelectionType::RESIDUE;
 
 		inline static const QFont TOOL_MENU_BUTTON_FONT = QFont( "Helvetica", 10 );
+		inline static const QFont SEQUENCE_DISPLAY_FONT = QFont( "Courier", 10 );
 
 		inline static const QColor BLACK_COLOR			  = QColor( 0, 0, 0 );
 		inline static const QColor BACKGROUND_COLOR		  = QColor( 34, 34, 34 );

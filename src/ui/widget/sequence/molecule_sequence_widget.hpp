@@ -5,10 +5,13 @@
 #pragma once
 #endif
 
+#include "chain_sequence_widget.hpp"
 #include "model/molecule.hpp"
-#include "sequence_display_widget.hpp"
 #include "ui/widget/view_item_widget.hpp"
-#include <QString>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QScrollArea>
+#include <QWidget>
 
 namespace VTX
 {
@@ -31,10 +34,16 @@ namespace VTX
 					MoleculeSequenceWidget( QWidget * p_parent );
 					void _setupUi( const QString & p_name ) override;
 					void _setupSlots() override;
-					void _onSequenceSelectionChanged();
+
+					void _onScrollBarValueChanged();
+					void _updateLabelName( const Model::Chain & p_currentChainDisplayed );
 
 				  private:
-					SequenceDisplayWidget * _sequenceDisplayWidget;
+					QLabel *						   _sequenceLabel	  = nullptr;
+					QWidget *						   _scrollAreaContent = nullptr;
+					QScrollArea *					   _scrollArea		  = nullptr;
+					std::vector<ChainSequenceWidget *> _chainDisplayWidgets;
+					QHBoxLayout *					   _sequenceLayout = nullptr;
 				};
 			} // namespace Sequence
 		}	  // namespace Widget

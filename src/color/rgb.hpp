@@ -6,6 +6,10 @@
 #endif
 
 #include "util/math.hpp"
+#include <iomanip>
+#include <sstream>
+#include <vector>
+#include <string>
 
 namespace VTX
 {
@@ -16,9 +20,7 @@ namespace VTX
 		  public:
 			Rgb() = default;
 			explicit Rgb( const float p_r, const float p_g, const float p_b ) : _r( p_r ), _g( p_g ), _b( p_b ) {}
-			Rgb( const int p_r, const int p_g, const int p_b ) : _r( p_r / 255.f ), _g( p_g / 255.f ), _b( p_b / 255.f )
-			{
-			}
+			Rgb( const int p_r, const int p_g, const int p_b ) : _r( p_r / 255.f ), _g( p_g / 255.f ), _b( p_b / 255.f ) {}
 			Rgb( const Rgb & p_c ) : _r( p_c._r ), _g( p_c._g ), _b( p_c._b ) {}
 			explicit Rgb( const std::vector<float> & p_c )
 			{
@@ -29,6 +31,12 @@ namespace VTX
 			}
 
 			inline std::vector<float> toStdVector() const { return { _r, _g, _b }; }
+			inline std::string		  toHexaString() const
+			{
+				std::stringstream stringstream;
+				stringstream << '#' << std::hex << (int)( _r * 255 ) << std::hex << (int)( _g * 255 ) << std::hex << (int)( _b * 255 );
+				return stringstream.str();
+			};
 
 			inline Rgb & operator=( const Rgb & p_c )
 			{
@@ -115,18 +123,9 @@ namespace VTX
 				return Rgb( _r / p_f, _g / p_f, _b / p_f );
 			}
 
-			friend inline Rgb operator+( const float & p_f, const Rgb & p_c )
-			{
-				return Rgb( p_f + p_c._r, p_f + p_c._g, p_f + p_c._b );
-			}
-			friend inline Rgb operator-( const float & p_f, const Rgb & p_c )
-			{
-				return Rgb( p_f - p_c._r, p_f - p_c._g, p_f - p_c._b );
-			}
-			friend inline Rgb operator*( const float & p_f, const Rgb & p_c )
-			{
-				return Rgb( p_f * p_c._r, p_f * p_c._g, p_f * p_c._b );
-			}
+			friend inline Rgb operator+( const float & p_f, const Rgb & p_c ) { return Rgb( p_f + p_c._r, p_f + p_c._g, p_f + p_c._b ); }
+			friend inline Rgb operator-( const float & p_f, const Rgb & p_c ) { return Rgb( p_f - p_c._r, p_f - p_c._g, p_f - p_c._b ); }
+			friend inline Rgb operator*( const float & p_f, const Rgb & p_c ) { return Rgb( p_f * p_c._r, p_f * p_c._g, p_f * p_c._b ); }
 			friend inline Rgb operator/( const float & p_f, const Rgb & p_c )
 			{
 				assert( p_c._r != 0.f && p_c._g != 0.f && p_c._b != 0.f );
@@ -169,10 +168,7 @@ namespace VTX
 			static const Rgb MAGENTA;
 			static const Rgb CYAN;
 
-			static inline Rgb random()
-			{
-				return Rgb( Util::Math::randomFloat(), Util::Math::randomFloat(), Util::Math::randomFloat() );
-			}
+			static inline Rgb random() { return Rgb( Util::Math::randomFloat(), Util::Math::randomFloat(), Util::Math::randomFloat() ); }
 			static inline Rgb randomPastel() { return random() * 0.5f + 0.5f; }
 
 		  private:
