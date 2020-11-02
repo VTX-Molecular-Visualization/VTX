@@ -35,7 +35,7 @@ namespace VTX
 					_sequenceLayout = new QHBoxLayout( scrollAreaContent );
 					_sequenceLayout->setSizeConstraint( QLayout::SetMinAndMaxSize );
 					_sequenceLayout->setContentsMargins( 0, 0, 0, 0 );
-					_sequenceLayout->setSpacing( 0 );
+					_sequenceLayout->setSpacing( 5 );
 					_sequenceLayout->addStretch( 1000 );
 
 					_scrollArea = new QScrollArea( this );

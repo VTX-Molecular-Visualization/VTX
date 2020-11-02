@@ -19,15 +19,15 @@ namespace VTX
 
 						// Selection focus
 						_showWater = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "toggleWatersVisibilityButton" );
-						_showWater->setData( "Hide Waters", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						_showWater->setData( "Hide Waters", ":/sprite/hide_water_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_showWater, 0 );
 
 						_showSolvant = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "toggleSolvantVisibilityButton" );
-						_showSolvant->setData( "Hide Solvant", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						_showSolvant->setData( "Hide Solvant", ":/sprite/hide_solvant_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_showSolvant, 0 );
 
 						_showHydrogens = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "toggleHydrogensVisibilityButton" );
-						_showHydrogens->setData( "Hide Hydrogen", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						_showHydrogens->setData( "Hide Hydrogen", ":/sprite/hide_hydrogen_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_showHydrogens, 0 );
 
 						validate();

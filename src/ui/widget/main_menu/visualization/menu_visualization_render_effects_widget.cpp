@@ -46,18 +46,18 @@ namespace VTX
 						_customPreset3->setData( "Custom Preset 3", "", Qt::Orientation::Horizontal );
 						pushButton( *_customPreset3, 1 );
 
-						// Camera Mode
+						// Add Preset
 						_createPreset = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "createRenderPresetButton" );
-						_createPreset->setData( "Add\nPreset", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
+						_createPreset->setData( "Add\nPreset", ":/sprite/representation_new_preset_icon.png", Qt::Orientation::Vertical );
 						pushButton( *_createPreset, 2 );
 
-						// Camera Mode
+						// Fullscreen / snapshot
 						_fullscreen = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "toggleFullscreenButton" );
-						_fullscreen->setData( "Fullscreen", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						_fullscreen->setData( "Fullscreen", ":/sprite/fullscreen_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_fullscreen, 3 );
 
 						_takeSnapshot = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "takeSnapshotButton" );
-						_takeSnapshot->setData( "Snapshot", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
+						_takeSnapshot->setData( "Snapshot", ":/sprite/screenshot_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_takeSnapshot, 3 );
 
 						validate();

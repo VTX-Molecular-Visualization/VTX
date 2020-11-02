@@ -29,7 +29,7 @@ namespace VTX
 
 					_horizontalLayout = new QHBoxLayout( this );
 					_horizontalLayout->setContentsMargins( 0, 0, 0, 0 );
-					_horizontalLayout->setSpacing( 0 );
+					_horizontalLayout->setSpacing( 2 );
 
 					_horizontalLayout->addStretch( 1000 );
 				}

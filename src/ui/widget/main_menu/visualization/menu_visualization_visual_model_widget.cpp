@@ -50,7 +50,7 @@ namespace VTX
 					}
 					void MenuVisualizationVisualModelWidget::_setupSlots() {}
 
-					void MenuVisualizationVisualModelWidget::localize() { setTitle( "Visual Model" ); }
+					void MenuVisualizationVisualModelWidget::localize() { setTitle( "Representation" ); }
 				} // namespace Visualization
 			}	  // namespace MainMenu
 		}		  // namespace Widget
