@@ -48,7 +48,7 @@ namespace VTX
 
 						// Add Preset
 						_createPreset = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "createRenderPresetButton" );
-						_createPreset->setData( "Add\nPreset", ":/sprite/representation_new_preset_icon.png", Qt::Orientation::Vertical );
+						_createPreset->setData( "Add\nPreset", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
 						pushButton( *_createPreset, 2 );
 
 						// Fullscreen / snapshot
