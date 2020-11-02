@@ -8,8 +8,8 @@
 #include "util/math.hpp"
 #include <iomanip>
 #include <sstream>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace VTX
 {
@@ -34,9 +34,19 @@ namespace VTX
 			inline std::string		  toHexaString() const
 			{
 				std::stringstream stringstream;
-				stringstream << '#' << std::hex << (int)( _r * 255 ) << std::hex << (int)( _g * 255 ) << std::hex << (int)( _b * 255 );
+
+				stringstream << "#";
+				setSingleChannelHexaInStream( _r, stringstream );
+				setSingleChannelHexaInStream( _g, stringstream );
+				setSingleChannelHexaInStream( _b, stringstream );
+
 				return stringstream.str();
 			};
+
+			inline void setSingleChannelHexaInStream( const float p_channelValue, std::stringstream & p_stream ) const
+			{
+				p_stream << std::hex << std::setw( 2 ) << std::setfill( '0' ) << (int)( p_channelValue * 255 );
+			}
 
 			inline Rgb & operator=( const Rgb & p_c )
 			{
