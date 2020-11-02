@@ -60,7 +60,6 @@ namespace VTX
 					_sequenceDisplayWidget->setupSequence( *_model );
 
 					const int residueCount = _model->getResidueCount();
-					QString	  scaleTxt	   = QString( residueCount, ' ' );
 
 					if ( residueCount <= 0 )
 						return;
@@ -68,6 +67,14 @@ namespace VTX
 					const int		  startIndex		= _model->getMoleculePtr()->getResidue( _model->getIndexFirstResidue() ).getIndexInOriginalChain();
 					const std::string firstIndexStr		= std::to_string( startIndex );
 					const int		  firstIndexStrSize = (int)firstIndexStr.size();
+
+					const int		  lastIndex					  = startIndex + residueCount - 1;
+					const std::string lastIndexStr				  = std::to_string( lastIndex );
+					const int		  lastIndexForwardOffsetIndex = (int)( lastIndexStr.size() / 2 );
+
+					const int scaleTxtLength = residueCount + ( lastIndexForwardOffsetIndex - ( lastIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) );
+
+					QString scaleTxt = QString( scaleTxtLength, ' ' );
 
 					// We display the index of the first label (in original chain)
 					for ( int i = 0; i < firstIndexStrSize; i++ )
