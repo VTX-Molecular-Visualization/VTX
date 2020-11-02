@@ -9,7 +9,6 @@
 #include "style.hpp"
 #include <QLabel>
 #include <QString>
-#include <map>
 #include <vector>
 
 namespace VTX
@@ -37,6 +36,8 @@ namespace VTX
 					const std::vector<uint> & getSelection() const { return _selection; };
 					std::vector<uint> &		  getSelection() { return _selection; };
 
+					const std::vector<uint> & getUnknownResiduesPositions() { return _positionUnknownResidues; }
+
 				  signals:
 					void selectionChanged();
 
@@ -49,9 +50,9 @@ namespace VTX
 					int		_lastFirstIndexSelection;
 					QString _lastSelection;
 
-					const Model::Chain * _chain					   = nullptr;
-					std::vector<uint>	 _selection				   = std::vector<uint>();
-					std::map<int, uint>	 _charIndexResidueIndexMap = std::map<int, uint>();
+					const Model::Chain * _chain					  = nullptr;
+					std::vector<uint>	 _selection				  = std::vector<uint>();
+					std::vector<uint>	 _positionUnknownResidues = std::vector<uint>();
 
 					void _buildSelection();
 

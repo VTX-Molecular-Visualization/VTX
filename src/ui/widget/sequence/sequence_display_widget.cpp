@@ -29,7 +29,6 @@ namespace VTX
 				void SequenceDisplayWidget::setupSequence( const Model::Chain & p_chain )
 				{
 					_chain = &p_chain;
-					_charIndexResidueIndexMap.clear();
 
 					QString sequenceTxt = QString();
 
@@ -66,9 +65,13 @@ namespace VTX
 						if ( residue.getSymbolShort() != "?" )
 							symbol = QString::fromStdString( residue.getSymbolShort() );
 						else
-							symbol = QString::fromStdString( " " + residue.getSymbolStr() + " " );
+						{
+							const uint posInString = i + (uint)_positionUnknownResidues.size() * Model::Residue::SYMBOL_STR_SIZE;
+							_positionUnknownResidues.emplace_back( posInString );
 
-						_charIndexResidueIndexMap.emplace( sequenceTxt.size() - richTextTagSize, residueIndex );
+							symbol = QString::fromStdString( " " + residue.getSymbolStr() + " " );
+						}
+
 						sequenceTxt.append( symbol );
 					}
 
@@ -85,14 +88,35 @@ namespace VTX
 					if ( !hasSelectedText() )
 						return;
 
-					const int start = selectionStart();
-					const int end	= start + selectedText().size();
+					const uint strStartIndex = selectionStart();
+					uint	   residueIndex	 = _chain->getIndexFirstResidue() + strStartIndex;
+					const uint strEndIndex	 = strStartIndex + selectedText().size();
 
-					for ( int i = start; i < end; i++ )
+					int unknownResidueCounter = 0;
+
+					for ( int i = 0; i < _positionUnknownResidues.size(); i++ )
 					{
-						auto it = _charIndexResidueIndexMap.find( i );
-						if ( it != _charIndexResidueIndexMap.end() )
-							_selection.emplace_back( _charIndexResidueIndexMap[ i ] );
+						if ( _positionUnknownResidues[ i ] < strStartIndex )
+						{
+							residueIndex -= Model::Residue::SYMBOL_STR_SIZE;
+							unknownResidueCounter++;
+						}
+						else
+						{
+							break;
+						}
+					}
+
+					for ( uint strIndex = strStartIndex; strIndex < strEndIndex; strIndex++ )
+					{
+						_selection.emplace_back( residueIndex );
+						residueIndex++;
+
+						if ( _positionUnknownResidues.size() > unknownResidueCounter && strIndex == _positionUnknownResidues[ unknownResidueCounter ] )
+						{
+							unknownResidueCounter++;
+							strIndex += Model::Residue::SYMBOL_STR_SIZE;
+						}
 					}
 				}
 

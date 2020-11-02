@@ -58,45 +58,109 @@ namespace VTX
 				void ChainSequenceWidget::refresh()
 				{
 					_sequenceDisplayWidget->setupSequence( *_model );
+					_refreshScale();
+				}
 
-					const int residueCount = _model->getResidueCount();
+				void ChainSequenceWidget::_refreshScale()
+				{
+					const uint residueCount = _model->getResidueCount();
 
 					if ( residueCount <= 0 )
+					{
+						_scaleWidget->setText( "" );
 						return;
+					}
 
-					const int		  startIndex		= _model->getMoleculePtr()->getResidue( _model->getIndexFirstResidue() ).getIndexInOriginalChain();
-					const std::string firstIndexStr		= std::to_string( startIndex );
-					const int		  firstIndexStrSize = (int)firstIndexStr.size();
+					const uint		  firstResidueIndex	   = _model->getMoleculePtr()->getResidue( _model->getIndexFirstResidue() ).getIndexInOriginalChain();
+					const std::string firstResidueIndexStr = std::to_string( firstResidueIndex );
 
-					const int		  lastIndex					  = startIndex + residueCount - 1;
-					const std::string lastIndexStr				  = std::to_string( lastIndex );
-					const int		  lastIndexForwardOffsetIndex = (int)( lastIndexStr.size() / 2 );
+					if ( residueCount == 1 )
+					{
+						_scaleWidget->setText( QString::fromStdString( firstResidueIndexStr ) );
+						return;
+					}
 
-					const int scaleTxtLength = residueCount + ( lastIndexForwardOffsetIndex - ( lastIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) );
+					const uint firstIndexStrSize = (uint)firstResidueIndexStr.size();
+
+					// Short symbol size + space
+					const uint				unknownResidueSymbolSize   = Model::Residue::SYMBOL_STR_SIZE + 1;
+					const int				unknownResidueSymbolOffset = unknownResidueSymbolSize - 1;
+					const std::vector<uint> unknownResidues			   = _sequenceDisplayWidget->getUnknownResiduesPositions();
+					uint					unknownResidueIndex		   = 0;
+
+					const uint		  lastResidueIndex					 = firstResidueIndex + residueCount - 1;
+					const std::string lastResidueIndexStr				 = std::to_string( lastResidueIndex );
+					const uint		  lastResidueIndexForwardOffsetIndex = ( uint )( lastResidueIndexStr.size() / 2 );
+
+					const uint scaleTxtLength = residueCount + ( lastResidueIndexForwardOffsetIndex - ( lastResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) )
+												+ ( (uint)unknownResidues.size() ) * unknownResidueSymbolOffset;
 
 					QString scaleTxt = QString( scaleTxtLength, ' ' );
 
 					// We display the index of the first label (in original chain)
-					for ( int i = 0; i < firstIndexStrSize; i++ )
-						scaleTxt[ i ] = firstIndexStr[ i ];
+					for ( uint i = 0; i < firstIndexStrSize; i++ )
+						scaleTxt[ i ] = firstResidueIndexStr[ i ];
 
-					// Then, the second one will be the next multiple of Style::SEQUENCE_CHAIN_SCALE_STEP which does not overlay or stick with the chars of the first index
-					int secondIndex = Style::SEQUENCE_CHAIN_SCALE_STEP - ( startIndex % Style::SEQUENCE_CHAIN_SCALE_STEP );
-					if ( secondIndex <= ( firstIndexStrSize + ( firstIndexStrSize / 2 ) ) )
-						secondIndex += Style::SEQUENCE_CHAIN_SCALE_STEP;
+					// Then we find the next displayed index which will be the next multiple of Style::SEQUENCE_CHAIN_SCALE_STEP which does not overlay or stick with the chars of
+					// the first index
+					const uint secondIndex = _findSecondIndex( firstResidueIndex, firstIndexStrSize );
 
-					// After that, we draw a label every Style::SEQUENCE_CHAIN_SCALE_STEP
-					for ( int i = secondIndex; i < residueCount; i += Style::SEQUENCE_CHAIN_SCALE_STEP )
+					// and we draw a label every Style::SEQUENCE_CHAIN_SCALE_STEP (verifying unknown symbols that take 4 chars instead of 1)
+					for ( uint i = secondIndex; i < residueCount; i += Style::SEQUENCE_CHAIN_SCALE_STEP )
 					{
-						const std::string indexTxt	   = std::to_string( startIndex + i );
-						const int		  indexTxtSize = (int)indexTxt.size();
-						const int		  indexOffset  = ( indexTxtSize - 1 ) / 2;
+						// We count all unknown symbols passed in the step
+						while ( unknownResidueIndex < unknownResidues.size() && i > unknownResidues[ unknownResidueIndex ] )
+						{
+							unknownResidueIndex++;
+						}
 
-						for ( int j = 0; j < indexTxtSize; j++ )
-							scaleTxt[ i + j - indexOffset ] = indexTxt[ j ];
+						const std::string indexTxt	   = std::to_string( firstResidueIndex + i );
+						const uint		  indexTxtSize = (uint)indexTxt.size();
+						const uint		  indexOffset  = ( indexTxtSize - 1 ) / 2;
+
+						for ( uint j = 0; j < indexTxtSize; j++ )
+						{
+							const uint index  = i + j - indexOffset + ( unknownResidueIndex * unknownResidueSymbolOffset );
+							scaleTxt[ index ] = indexTxt[ j ];
+						}
 					}
 
 					_scaleWidget->setText( scaleTxt );
+				}
+
+				uint ChainSequenceWidget::_findSecondIndex( const int firstResidueIndex, const int firstIndexStrSize )
+				{
+					// The second index will be the next multiple of Style::SEQUENCE_CHAIN_SCALE_STEP which does not overlay or stick with the chars of the first index
+					uint	   secondIndex		  = Style::SEQUENCE_CHAIN_SCALE_STEP - ( firstResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP );
+					const uint secondIndexStrSize = (uint)std::to_string( firstResidueIndex + 1 ).size();
+
+					// first index size + back offset second index + space
+					const uint spaceNeededBetweenFirstAndSecondIndex = firstIndexStrSize + ( secondIndexStrSize / 2 ) + 1;
+					uint	   spaceBetweenFirstAndSecondIndex		 = 0;
+
+					const uint				unknownResidueSymbolSize   = Model::Residue::SYMBOL_STR_SIZE + 1;
+					const int				unknownResidueSymbolOffset = unknownResidueSymbolSize - 1;
+					const std::vector<uint> unknownResidues			   = _sequenceDisplayWidget->getUnknownResiduesPositions();
+					uint					unknownResidueIndex		   = 0;
+
+					for ( uint residueIndex = 0; residueIndex < secondIndex; residueIndex++ )
+					{
+						const uint strIndex = unknownResidueIndex * unknownResidueSymbolOffset + residueIndex;
+						if ( unknownResidues.size() > unknownResidueIndex && unknownResidues[ unknownResidueIndex ] == strIndex )
+						{
+							spaceBetweenFirstAndSecondIndex += unknownResidueSymbolSize;
+							unknownResidueIndex++;
+						}
+						else
+						{
+							spaceBetweenFirstAndSecondIndex += 1;
+						}
+					}
+
+					if ( spaceBetweenFirstAndSecondIndex < spaceNeededBetweenFirstAndSecondIndex )
+						secondIndex += Style::SEQUENCE_CHAIN_SCALE_STEP;
+
+					return secondIndex;
 				}
 			} // namespace Sequence
 		}	  // namespace Widget
