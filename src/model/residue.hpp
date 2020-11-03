@@ -67,6 +67,7 @@ namespace VTX
 			static const std::string SYMBOL_SHORT_STR[ (int)SYMBOL::COUNT ];
 			static const std::string SYMBOL_NAME[ (int)SYMBOL::COUNT ];
 			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
+			static const uint		 SYMBOL_STR_SIZE;
 
 			Residue() : BaseModel( ID::Model::MODEL_RESIDUE ) {};
 

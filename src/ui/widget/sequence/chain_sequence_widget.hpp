@@ -38,6 +38,9 @@ namespace VTX
 					QLabel *				_scaleWidget		   = nullptr;
 					SequenceDisplayWidget * _sequenceDisplayWidget = nullptr;
 					QVBoxLayout *			_layout				   = nullptr;
+
+					void _refreshScale();
+					uint _findSecondIndex( const int firstResidueIndex, const int firstIndexStrSize );
 				};
 			} // namespace Sequence
 		}	  // namespace Widget
