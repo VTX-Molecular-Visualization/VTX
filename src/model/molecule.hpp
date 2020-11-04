@@ -198,9 +198,9 @@ namespace VTX
 			void createSecondaryStructure();
 			void toggleSequenceVisibility();
 
-			void notifyChildDataChange( const Model_ID & p_childId )
+			void notifyChildDataChange( const ID & p_childId )
 			{
-				Event::VTXEventModelData * const tmpData = new Event::VTXEventModelDataTemplated<Model_ID>( p_childId );
+				Event::VTXEventModelData * const tmpData = new Event::VTXEventModelDataTemplated<ID>( p_childId );
 				_notifyViews( Event::VTX_EVENT_MODEL::CHILD_DATA_CHANGE, tmpData );
 				delete tmpData;
 			}

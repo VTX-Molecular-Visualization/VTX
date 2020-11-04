@@ -18,10 +18,10 @@ namespace VTX
 				{
 					if ( p_event == Event::VTX_EVENT_MODEL::CHILD_DATA_CHANGE )
 					{
-						const Event::VTXEventModelDataTemplated<Model::Model_ID> * const castedEventData
-							= dynamic_cast<const Event::VTXEventModelDataTemplated<Model::Model_ID> *>( p_eventData );
+						const Event::VTXEventModelDataTemplated<Model::ID> * const castedEventData
+							= dynamic_cast<const Event::VTXEventModelDataTemplated<Model::ID> *>( p_eventData );
 
-						const Model::Model_ID idChildModified = castedEventData->value;
+						const Model::ID idChildModified = castedEventData->value;
 						_refreshItem( idChildModified );
 					}
 				}
@@ -29,7 +29,7 @@ namespace VTX
 				void MoleculeSceneView::_setupUi( const QString & p_name )
 				{
 					BaseSceneItem<Model::Molecule>::_setupUi( p_name );
-					setData( 0, Qt::UserRole, QVariant::fromValue<VTX::Model::Model_ID>( _model->getId() ) );
+					setData( 0, Qt::UserRole, QVariant::fromValue<VTX::Model::ID>( _model->getId() ) );
 					setText( 0, QString::fromStdString( _model->getDefaultName() ) );
 					setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( _model->getTypeId() ) );
 
@@ -79,7 +79,7 @@ namespace VTX
 
 				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget )
 				{
-					Model::Model_ID	   modelId = p_itemWidget->data( 0, Qt::UserRole ).value<VTX::Model::Model_ID>();
+					Model::ID	   modelId = p_itemWidget->data( 0, Qt::UserRole ).value<VTX::Model::ID>();
 					const ID::VTX_ID & typeId  = MVC::MvcManager::get().getModelTypeID( modelId );
 
 					if ( typeId == ID::Model::MODEL_MOLECULE )
@@ -91,7 +91,7 @@ namespace VTX
 					else if ( typeId == ID::Model::MODEL_ATOM )
 						_refreshItem( p_itemWidget, MVC::MvcManager::get().getModel<Model::Atom>( modelId ) );
 				}
-				void MoleculeSceneView::_refreshItem( const Model::Model_ID & p_id )
+				void MoleculeSceneView::_refreshItem( const Model::ID & p_id )
 				{
 					const ID::VTX_ID & typeId = MVC::MvcManager::get().getModelTypeID( p_id );
 

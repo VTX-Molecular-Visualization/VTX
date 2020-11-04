@@ -11,7 +11,7 @@
 #include <QTreeWidget>
 #include <QVariant>
 
-Q_DECLARE_METATYPE( VTX::Model::Model_ID )
+Q_DECLARE_METATYPE( VTX::Model::ID )
 
 namespace VTX
 {
@@ -45,12 +45,12 @@ namespace VTX
 					void _onItemChange( QTreeWidgetItem * item, int column );
 					void _onItemClicked( QTreeWidgetItem *, int );
 
-					inline Model::Model_ID _getModelID( const QTreeWidgetItem & p_item ) const
+					inline Model::ID _getModelID( const QTreeWidgetItem & p_item ) const
 					{
 						const QVariant & dataID = p_item.data( 0, Qt::UserRole );
-						return dataID.value<VTX::Model::Model_ID>();
+						return dataID.value<VTX::Model::ID>();
 					};
-					void _sendEnableStateChangeAction( const Model::Model_ID & p_modelID, const bool modelEnabled ) const;
+					void _sendEnableStateChangeAction( const Model::ID & p_modelID, const bool modelEnabled ) const;
 
 					const Qt::CheckState _getCheckState( const bool p_enable ) const { return p_enable ? Qt::CheckState::Checked : Qt::CheckState::Unchecked; };
 				};

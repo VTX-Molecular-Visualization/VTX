@@ -35,7 +35,7 @@ namespace VTX
 
 				  private:
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget );
-					void _refreshItem( const Model::Model_ID & p_id );
+					void _refreshItem( const Model::ID & p_id );
 
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Molecule & p_model ) const;
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Chain & p_model ) const;

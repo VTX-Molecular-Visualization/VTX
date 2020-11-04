@@ -13,6 +13,8 @@ namespace VTX
 	int ZERO = 0;
 	VTXApp::VTXApp() : QApplication( ZERO, nullptr ) {}
 
+	VTXApp::~VTXApp() {}
+
 	void VTXApp::start()
 	{
 		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
@@ -76,8 +78,6 @@ namespace VTX
 
 		exit();
 	}
-
-	VTXApp::~VTXApp() {}
 
 	void VTXApp::_initQt()
 	{

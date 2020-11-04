@@ -11,7 +11,6 @@
 #include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
-#include "scene_tree_widget_item.hpp"
 #include "selection/selection_manager.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
@@ -93,8 +92,8 @@ namespace VTX
 				{
 					if ( p_column == 0 )
 					{
-						const Model::Model_ID id		   = _getModelID( *p_item );
-						const bool			  modelEnabled = p_item->checkState( 0 ) == Qt::CheckState::Checked ? true : false;
+						const Model::ID id			 = _getModelID( *p_item );
+						const bool		modelEnabled = p_item->checkState( 0 ) == Qt::CheckState::Checked ? true : false;
 
 						_sendEnableStateChangeAction( id, modelEnabled );
 					}
@@ -106,7 +105,7 @@ namespace VTX
 					// this->setWindowTitle( QCoreApplication::translate( "SceneWidget", "Scene", nullptr ) );
 				}
 
-				void SceneWidget::_sendEnableStateChangeAction( const Model::Model_ID & p_modelID, const bool modelEnabled ) const
+				void SceneWidget::_sendEnableStateChangeAction( const Model::ID & p_modelID, const bool modelEnabled ) const
 				{
 					ID::VTX_ID modelTypeId = MVC::MvcManager::get().getModelTypeID( p_modelID );
 
@@ -146,9 +145,9 @@ namespace VTX
 
 				void SceneWidget::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
 				{
-					const Model::Model_ID & modelId		   = _getModelID( *p_item );
-					ID::VTX_ID				modelTypeId	   = MVC::MvcManager::get().getModelTypeID( modelId );
-					Model::Selection &		selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+					const Model::ID &  modelId		  = _getModelID( *p_item );
+					ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( modelId );
+					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
 					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
 					{

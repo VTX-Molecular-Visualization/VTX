@@ -14,7 +14,7 @@ namespace VTX
 		using VTX_ID = std::string;
 		namespace UI
 		{
-			namespace WINDOWS
+			namespace Window
 			{
 				const VTX_ID SCENE	   = "SCENE";
 				const VTX_ID RENDER	   = "RENDER";
@@ -22,7 +22,7 @@ namespace VTX
 				const VTX_ID CONSOLE   = "CONSOLE";
 				const VTX_ID SEQUENCE  = "SEQUENCE";
 				const VTX_ID SELECTION = "SELECTION";
-			} // namespace WINDOWS
+			} // namespace Window
 
 			const VTX_ID USER_INTERFACE = "USER_INTERFACE";
 			const VTX_ID MENU			= "MENU";

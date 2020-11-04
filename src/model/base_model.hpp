@@ -5,26 +5,26 @@
 #pragma once
 #endif
 
+#include "define.hpp"
 #include "event/event.hpp"
 #include "id.hpp"
 #include <string>
-#include "define.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
-		using Model_ID = ulong;
+		using ID = uint;
 
-		class BaseModel 
+		class BaseModel
 		{
 		  public:
 			BaseModel( const ID::VTX_ID & p_typeId ) : _typeId( &p_typeId ) {};
 
-			inline static Model_ID COUNTER = 0;
+			inline static ID COUNTER = 0;
 
-			const Model_ID & getId() const { return _id; };
-			void			 instantiateDefaultViews() {};
+			const ID & getId() const { return _id; };
+			void	   instantiateDefaultViews() {};
 
 			const VTX::ID::VTX_ID & getTypeId() const { return *_typeId; };
 
@@ -45,7 +45,7 @@ namespace VTX
 		  protected:
 			inline static const std::string DEFAULT_NAME = "<unknown>";
 
-			const Model_ID				  _id	   = COUNTER++;
+			const ID					  _id	   = COUNTER++;
 			bool						  _enabled = true;
 			const std::string *			  _name	   = &DEFAULT_NAME;
 			const VTX::ID::VTX_ID * const _typeId;

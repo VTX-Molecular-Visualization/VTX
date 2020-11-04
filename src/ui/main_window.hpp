@@ -59,29 +59,30 @@ namespace VTX
 
 			Widget::StatusBar::StatusBarWidget * _statusBarWidget = nullptr;
 
-			// ACTIONS
+			// Actions.
 			void _onDockWindowVisibilityChange( bool p_visible );
 
-			// FUNCTIONS
+			// Functions.
 			inline const QWidget & getWidget( const ID::VTX_ID & p_winId ) const
 			{
 				const QWidget * widget = nullptr;
 
-				if ( p_winId == ID::UI::WINDOWS::RENDER )
+				if ( p_winId == ID::UI::Window::RENDER )
 					widget = _renderWidget;
-				else if ( p_winId == ID::UI::WINDOWS::SCENE )
+				else if ( p_winId == ID::UI::Window::SCENE )
 					widget = _sceneWidget;
-				else if ( p_winId == ID::UI::WINDOWS::INSPECTOR )
+				else if ( p_winId == ID::UI::Window::INSPECTOR )
 					widget = _inspectorWidget;
-				else if ( p_winId == ID::UI::WINDOWS::CONSOLE )
+				else if ( p_winId == ID::UI::Window::CONSOLE )
 					widget = _consoleWidget;
-				else if ( p_winId == ID::UI::WINDOWS::SEQUENCE )
+				else if ( p_winId == ID::UI::Window::SEQUENCE )
 					widget = _sequenceWidget;
-				else if ( p_winId == ID::UI::WINDOWS::SELECTION )
+				else if ( p_winId == ID::UI::Window::SELECTION )
 					widget = _selectionWidget;
 
 				return *widget;
 			}
+
 			void _loadStyleSheet( const char * p_stylesheetPath );
 			void _setupSlots();
 			void _setupDock();

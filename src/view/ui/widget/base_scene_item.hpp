@@ -7,7 +7,6 @@
 
 #include "model/base_model.hpp"
 #include "ui/widget/base_manual_widget_initializer.hpp"
-#include "ui/widget/scene/scene_tree_widget_item.hpp"
 #include "view/templated_base_view.hpp"
 #include <QTreeWidget>
 #include <type_traits>

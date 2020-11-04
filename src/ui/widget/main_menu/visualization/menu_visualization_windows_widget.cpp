@@ -30,7 +30,7 @@ namespace VTX
 
 					void MenuVisualizationWindowsWidget::refresh()
 					{
-						const bool	  sequenceWindowVisible = VTXApp::get().getMainWindow().getWidgetVisibility( ID::UI::WINDOWS::SEQUENCE );
+						const bool	  sequenceWindowVisible = VTXApp::get().getMainWindow().getWidgetVisibility( ID::UI::Window::SEQUENCE );
 						const QString sequenceText			= sequenceWindowVisible ? "Hide Sequence" : "Show Sequence";
 						_sequence->setText( sequenceText );
 					}

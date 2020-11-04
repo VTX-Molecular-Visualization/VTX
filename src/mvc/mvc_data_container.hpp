@@ -26,7 +26,7 @@ namespace VTX
 			MvcDataContainer() { _vector = std::vector<MvcData *>(); };
 
 			MvcData * const operator[]( const Model::BaseModel * const p_model ) const { return _vector[ _findIndex( p_model->getId() ) ]; };
-			MvcData * const operator[]( const Model::Model_ID & p_modelId ) const { return _vector[ _findIndex( p_modelId ) ]; };
+			MvcData * const operator[]( const Model::ID & p_modelId ) const { return _vector[ _findIndex( p_modelId ) ]; };
 
 			inline void		 add( MvcData * p_obj ) { _vector.push_back( p_obj ); };
 			inline MvcData * remove( const Model::BaseModel * const p_model )
@@ -45,7 +45,7 @@ namespace VTX
 			{
 				VecSizeType		  allModelsSeek	 = 0;
 				const VecSizeType allModelsSize	 = p_allModelsSorted.size();
-				Model::Model_ID	  currentModelID = p_allModelsSorted[ allModelsSeek ]->getId();
+				Model::ID	  currentModelID = p_allModelsSorted[ allModelsSeek ]->getId();
 
 				VecSizeType		  vectorSeek = this->_findIndex( currentModelID );
 				VecSizeType		  currIndex	 = vectorSeek;
@@ -104,8 +104,8 @@ namespace VTX
 
 			VecSizeType _findIndex( const MvcData * const p_obj ) const { return _findIndexRecursive( 0, _vector.size() - 1, p_obj->getId() ); };
 			VecSizeType _findIndex( const Model::BaseModel * const p_model ) const { return _findIndexRecursive( 0, _vector.size() - 1, p_model->getId() ); };
-			VecSizeType _findIndex( const Model::Model_ID & p_id ) const { return _findIndexRecursive( 0, _vector.size() - 1, p_id ); };
-			VecSizeType _findIndexRecursive( const VecSizeType & p_minIndex, const VecSizeType & p_maxIndex, const Model::Model_ID & p_searchedValue ) const
+			VecSizeType _findIndex( const Model::ID & p_id ) const { return _findIndexRecursive( 0, _vector.size() - 1, p_id ); };
+			VecSizeType _findIndexRecursive( const VecSizeType & p_minIndex, const VecSizeType & p_maxIndex, const Model::ID & p_searchedValue ) const
 			{
 				if ( p_maxIndex <= p_minIndex )
 				{
@@ -115,7 +115,7 @@ namespace VTX
 						throw new std::exception( "searchedValue not found !" );
 				}
 				const VecSizeType	  middleIndex = p_maxIndex / 2 + p_minIndex / 2;
-				const Model::Model_ID middleValue = _vector[ middleIndex ]->getId();
+				const Model::ID middleValue = _vector[ middleIndex ]->getId();
 
 				if ( middleValue < p_searchedValue )
 					return _findIndexRecursive( middleIndex + 1, p_maxIndex, p_searchedValue );

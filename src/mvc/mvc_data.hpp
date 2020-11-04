@@ -21,7 +21,7 @@ namespace VTX
 
 			~MvcData() { _views.clear(); };
 
-			const Model::Model_ID & getId() const { return _model->getId(); }
+			const Model::ID & getId() const { return _model->getId(); }
 			Model::BaseModel &		getModel() const { return *_model; };
 
 			inline void				addView( const ID::VTX_ID & p_id, View::BaseView * const p_view ) { _views.addItem( p_id, p_view ); };
