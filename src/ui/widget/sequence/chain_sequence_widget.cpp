@@ -3,6 +3,7 @@
 #include "model/residue.hpp"
 #include "style.hpp"
 #include "tool/logger.hpp"
+#include "unknown_residue_data.hpp"
 #include <QFont>
 #include <QString>
 #include <QVBoxLayout>
@@ -42,11 +43,12 @@ namespace VTX
 
 				void ChainSequenceWidget::_onSequenceSelectionChanged() const
 				{
-					const Model::Molecule * const molecule = _model->getMoleculePtr();
+					const Model::Molecule * const molecule				= _model->getMoleculePtr();
+					const uint					  moleculeResidueOffset = _model->getIndexFirstResidue();
 
-					for ( uint residueIndex : _sequenceDisplayWidget->getSelection() )
+					for ( uint localResidueIndex : _sequenceDisplayWidget->getSelection() )
 					{
-						const Model::Residue residue = molecule->getResidue( residueIndex );
+						const Model::Residue & residue = molecule->getResidue( moleculeResidueOffset + localResidueIndex );
 						VTX_INFO( residue.getSymbolName() + " selected." );
 					}
 				}
@@ -83,17 +85,20 @@ namespace VTX
 					const uint firstIndexStrSize = (uint)firstResidueIndexStr.size();
 
 					// Short symbol size + space
-					const uint				unknownResidueSymbolSize   = Model::Residue::SYMBOL_STR_SIZE + 1;
-					const int				unknownResidueSymbolOffset = unknownResidueSymbolSize - 1;
-					const std::vector<uint> unknownResidues			   = _sequenceDisplayWidget->getUnknownResiduesPositions();
-					uint					unknownResidueIndex		   = 0;
+					const std::vector<UnknownResidueData> unknownResidues	  = _sequenceDisplayWidget->getUnknownResiduesPositions();
+					uint								  unknownResidueIndex = 0;
 
 					const uint		  lastResidueIndex					 = firstResidueIndex + residueCount - 1;
 					const std::string lastResidueIndexStr				 = std::to_string( lastResidueIndex );
 					const uint		  lastResidueIndexForwardOffsetIndex = ( uint )( lastResidueIndexStr.size() / 2 );
 
-					const uint scaleTxtLength = residueCount + ( lastResidueIndexForwardOffsetIndex - ( lastResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) )
-												+ ( (uint)unknownResidues.size() ) * unknownResidueSymbolOffset;
+					uint unknownResidueAdditionalLength = 0;
+
+					for ( auto it = unknownResidues.begin(); it != unknownResidues.end(); it++ )
+						unknownResidueAdditionalLength += it->strSize - 1;
+
+					const uint scaleTxtLength
+						= residueCount + ( lastResidueIndexForwardOffsetIndex - ( lastResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) ) + unknownResidueAdditionalLength;
 
 					QString scaleTxt = QString( scaleTxtLength, ' ' );
 
@@ -103,14 +108,15 @@ namespace VTX
 
 					// Then we find the next displayed index which will be the next multiple of Style::SEQUENCE_CHAIN_SCALE_STEP which does not overlay or stick with the chars of
 					// the first index
-					const uint secondIndex = _findSecondIndex( firstResidueIndex, firstIndexStrSize );
-
+					const uint secondIndex		   = _findSecondIndex( firstResidueIndex, firstIndexStrSize );
+					uint	   unknowResidueOffset = 0;
 					// and we draw a label every Style::SEQUENCE_CHAIN_SCALE_STEP (verifying unknown symbols that take 4 chars instead of 1)
 					for ( uint i = secondIndex; i < residueCount; i += Style::SEQUENCE_CHAIN_SCALE_STEP )
 					{
 						// We count all unknown symbols passed in the step
-						while ( unknownResidueIndex < unknownResidues.size() && i > unknownResidues[ unknownResidueIndex ] )
+						while ( unknownResidueIndex < unknownResidues.size() && i > unknownResidues[ unknownResidueIndex ].residueIndex )
 						{
+							unknowResidueOffset += unknownResidues[ unknownResidueIndex ].strSize - 1;
 							unknownResidueIndex++;
 						}
 
@@ -120,7 +126,7 @@ namespace VTX
 
 						for ( uint j = 0; j < indexTxtSize; j++ )
 						{
-							const uint index  = i + j - indexOffset + ( unknownResidueIndex * unknownResidueSymbolOffset );
+							const uint index  = i + j - indexOffset + unknowResidueOffset;
 							scaleTxt[ index ] = indexTxt[ j ];
 						}
 					}
@@ -138,21 +144,21 @@ namespace VTX
 					const uint spaceNeededBetweenFirstAndSecondIndex = firstIndexStrSize + ( secondIndexStrSize / 2 ) + 1;
 					uint	   spaceBetweenFirstAndSecondIndex		 = 0;
 
-					const uint				unknownResidueSymbolSize   = Model::Residue::SYMBOL_STR_SIZE + 1;
-					const int				unknownResidueSymbolOffset = unknownResidueSymbolSize - 1;
-					const std::vector<uint> unknownResidues			   = _sequenceDisplayWidget->getUnknownResiduesPositions();
-					uint					unknownResidueIndex		   = 0;
+					const std::vector<UnknownResidueData> unknownResidues	  = _sequenceDisplayWidget->getUnknownResiduesPositions();
+					uint								  unknownResidueIndex = 0;
 
+					uint strIndex = 0;
 					for ( uint residueIndex = 0; residueIndex < secondIndex; residueIndex++ )
 					{
-						const uint strIndex = unknownResidueIndex * unknownResidueSymbolOffset + residueIndex;
-						if ( unknownResidues.size() > unknownResidueIndex && unknownResidues[ unknownResidueIndex ] == strIndex )
+						if ( unknownResidues.size() > unknownResidueIndex && unknownResidues[ unknownResidueIndex ].residueIndex == strIndex )
 						{
-							spaceBetweenFirstAndSecondIndex += unknownResidueSymbolSize;
+							spaceBetweenFirstAndSecondIndex += unknownResidues[ unknownResidueIndex ].strSize;
+							strIndex += unknownResidues[ unknownResidueIndex ].strSize;
 							unknownResidueIndex++;
 						}
 						else
 						{
+							strIndex += 1;
 							spaceBetweenFirstAndSecondIndex += 1;
 						}
 					}

@@ -6,9 +6,15 @@
 #endif
 
 #include "model/chain.hpp"
-#include "style.hpp"
+#include "model/residue.hpp"
+#include "unknown_residue_data.hpp"
+#include <QFontMetricsF>
 #include <QLabel>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPointF>
 #include <QString>
+#include <unordered_set>
 #include <vector>
 
 namespace VTX
@@ -24,19 +30,15 @@ namespace VTX
 					Q_OBJECT
 
 				  public:
-					SequenceDisplayWidget( QWidget * p_parent = nullptr ) : QLabel( p_parent )
-					{
-						_updateSelectionData();
-						setTextInteractionFlags( Qt::TextInteractionFlag::TextSelectableByMouse );
-						setFont( Style::SEQUENCE_DISPLAY_FONT );
-					}
+					SequenceDisplayWidget( QWidget * p_parent = nullptr );
+					~SequenceDisplayWidget();
 
 					void setupSequence( const Model::Chain & p_molecule );
 
-					const std::vector<uint> & getSelection() const { return _selection; };
-					std::vector<uint> &		  getSelection() { return _selection; };
+					const std::unordered_set<uint> & getSelection() const { return _selection; };
+					std::unordered_set<uint> &		 getSelection() { return _selection; };
 
-					const std::vector<uint> & getUnknownResiduesPositions() { return _positionUnknownResidues; }
+					const std::vector<UnknownResidueData> & getUnknownResiduesPositions() const { return _positionUnknownResidues; }
 
 				  signals:
 					void selectionChanged();
@@ -44,24 +46,29 @@ namespace VTX
 				  protected:
 					void mousePressEvent( QMouseEvent * ev ) override;
 					void mouseReleaseEvent( QMouseEvent * ev ) override;
+					void mouseDoubleClickEvent( QMouseEvent * ev ) override;
+
+					virtual void paintEvent( QPaintEvent * ) override;
 
 				  private:
-					bool	_lastHasSelection;
-					int		_lastFirstIndexSelection;
-					QString _lastSelection;
+					QFontMetricsF * _fontMetrics;
+					QString			_chainPlainText;
+					int *			_charIndexPaintCache	= new int();
+					int *			_symbolLengthPaintCache = new int();
 
-					const Model::Chain * _chain					  = nullptr;
-					std::vector<uint>	 _selection				  = std::vector<uint>();
-					std::vector<uint>	 _positionUnknownResidues = std::vector<uint>();
+					QPointF _startPressPosition;
 
-					void _buildSelection();
+					const Model::Chain *			_chain					 = nullptr;
+					std::unordered_set<uint>		_selection				 = std::unordered_set<uint>();
+					std::vector<UnknownResidueData> _positionUnknownResidues = std::vector<UnknownResidueData>();
 
-					inline void _updateSelectionData()
-					{
-						_lastHasSelection		 = hasSelectedText();
-						_lastFirstIndexSelection = selectionStart();
-						_lastSelection			 = selectedText();
-					};
+					uint			 _getCharIndex( const uint p_residueIndex ) const;
+					uint			 _getLocalResidueIndex( const uint p_charIndex ) const;
+					Model::Residue & _getResidue( const uint p_localResidueIndex ) const;
+					uint			 _getResidueIndexFromMousePos( const QPointF & p_position ) const;
+					bool			 _checkUnknownResidue( const uint p_localResidueIndex, const UnknownResidueData *& p_unknownResidueData ) const;
+
+					void _getUnderlineData( uint p_localResidueIndex, int * const p_charIndex, int * const p_length ) const;
 				};
 			} // namespace Sequence
 		}	  // namespace Widget

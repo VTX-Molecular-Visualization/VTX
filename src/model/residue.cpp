@@ -28,8 +28,6 @@ namespace VTX
 			}
 		}
 
-		const uint Residue::SYMBOL_STR_SIZE = 3;
-
 		const std::string Residue::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {
 			"---", // UNKNOWN
 			"ALA", // ALA
