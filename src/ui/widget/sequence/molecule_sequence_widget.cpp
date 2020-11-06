@@ -115,6 +115,9 @@ namespace VTX
 				{
 					ViewItemWidget<Model::Molecule>::mousePressEvent( ev );
 
+					if ( !ev->buttons().testFlag( Qt::MouseButton::LeftButton ) )
+						return;
+
 					const bool appendToSelection = ev->modifiers() & ( Qt::KeyboardModifier::ControlModifier | Qt::KeyboardModifier::ShiftModifier );
 
 					if ( !appendToSelection )
@@ -140,6 +143,9 @@ namespace VTX
 				{
 					ViewItemWidget<Model::Molecule>::mouseMoveEvent( ev );
 
+					if ( !ev->buttons().testFlag( Qt::MouseButton::LeftButton ) )
+						return;
+
 					const QPoint	 currentMousePos	   = _scrollAreaContent->mapFromGlobal( ev->globalPos() );
 					Model::Residue * currentResidueHovered = _getResidueAtPos( currentMousePos );
 
@@ -149,84 +155,89 @@ namespace VTX
 					// If the cursor switch side of the first clicked object, we clear the selection
 					if ( switchStartClickSide )
 					{
-						_selection.clear();
+						_clearSelection();
 						Model::Residue * const startResidue = _getResidueAtPos( _startPressPosition );
 
 						if ( startResidue != nullptr )
 							_selection.emplace_back( startResidue );
 
 						_lastResidueHovered = startResidue;
+						_repaintSelection();
 					}
 
 					if ( currentResidueHovered == _lastResidueHovered )
+					{
+						_lastDragSelectionPosition = currentMousePos;
 						return;
+					}
 
 					if ( currentResidueHovered == nullptr )
 					{
 						const bool getForwardResidue = _startPressPosition.x() > currentMousePos.x();
-						currentResidueHovered = _getClosestResidue( currentMousePos, getForwardResidue );
+						currentResidueHovered		 = _getClosestResidue( currentMousePos, getForwardResidue );
 					}
 
 					if ( currentResidueHovered == nullptr )
-						return;
-
-					const bool hoveredResidueAlreadySelected = !_isSelected( *currentResidueHovered );
-
-					if ( hoveredResidueAlreadySelected )
 					{
+						_lastDragSelectionPosition = currentMousePos;
+						return;
+					}
+
+					const bool hoveredResidueAlreadySelected = _isSelected( *currentResidueHovered );
+
+					if ( !hoveredResidueAlreadySelected )
+					{
+						const bool moveForward = _lastDragSelectionPosition.x() <= currentMousePos.x();
+
 						if ( _lastResidueHovered == nullptr )
 						{
-							_lastResidueHovered = currentResidueHovered;
-							_selection.push_back( _lastResidueHovered );
+							_lastResidueHovered = _getClosestResidue( _lastDragSelectionPosition, moveForward );
+							_selectResidue( *_lastResidueHovered );
+						}
+						if ( moveForward )
+						{
+							const Model::Chain * const startChain = _lastResidueHovered->getChainPtr();
+							const Model::Chain * const endChain	  = currentResidueHovered->getChainPtr();
+
+							for ( uint iChain = startChain->getIndex(); iChain <= endChain->getIndex(); iChain++ )
+							{
+								const Model::Chain & currentChain = _model->getChain( iChain );
+								const uint startResidueIndex	  = ( &currentChain == startChain ) ? ( _lastResidueHovered->getIndex() + 1 ) : currentChain.getIndexFirstResidue();
+								const uint endResidueIndex
+									= ( &currentChain == endChain ) ? currentResidueHovered->getIndex() : currentChain.getIndexFirstResidue() + currentChain.getResidueCount() - 1;
+
+								for ( uint iResidue = startResidueIndex; iResidue <= endResidueIndex; iResidue++ )
+								{
+									Model::Residue & currentResidue = _model->getResidue( iResidue );
+									_selectResidue( currentResidue );
+								}
+							}
 						}
 						else
 						{
-							const bool moveForward = _lastDragSelectionPosition.x() <= currentMousePos.x();
-							if ( moveForward )
+							const Model::Chain * const startChain = _lastResidueHovered->getChainPtr();
+							const Model::Chain * const endChain	  = currentResidueHovered->getChainPtr();
+
+							for ( uint iChain = startChain->getIndex(); iChain >= endChain->getIndex(); iChain-- )
 							{
-								const Model::Chain * const startChain = _lastResidueHovered->getChainPtr();
-								const Model::Chain * const endChain	  = currentResidueHovered->getChainPtr();
+								const Model::Chain & currentChain	   = _model->getChain( iChain );
+								const uint			 startResidueIndex = ( &currentChain == startChain ) ? ( _lastResidueHovered->getIndex() - 1 )
+																										 : currentChain.getIndexFirstResidue() + currentChain.getResidueCount() - 1;
+								const uint			 endResidueIndex   = ( &currentChain == endChain ) ? currentResidueHovered->getIndex() : currentChain.getIndexFirstResidue();
 
-								for ( uint iChain = startChain->getIndex(); iChain <= endChain->getIndex(); iChain++ )
+								for ( uint iResidue = startResidueIndex; iResidue >= endResidueIndex; iResidue-- )
 								{
-									const Model::Chain & currentChain = _model->getChain( iChain );
-									const uint startResidueIndex = ( &currentChain == startChain ) ? ( _lastResidueHovered->getIndex() + 1 ) : currentChain.getIndexFirstResidue();
-									const uint endResidueIndex	 = ( &currentChain == endChain ) ? currentResidueHovered->getIndex()
-																								 : currentChain.getIndexFirstResidue() + currentChain.getResidueCount() - 1;
-
-									for ( uint iResidue = startResidueIndex; iResidue <= endResidueIndex; iResidue++ )
-									{
-										Model::Residue & currentResidue = _model->getResidue( iResidue );
-										_selectResidue( currentResidue );
-									}
-								}
-							}
-							else
-							{
-								const Model::Chain * const startChain = _lastResidueHovered->getChainPtr();
-								const Model::Chain * const endChain	  = currentResidueHovered->getChainPtr();
-
-								for ( uint iChain = startChain->getIndex(); iChain >= endChain->getIndex(); iChain-- )
-								{
-									const Model::Chain & currentChain	   = _model->getChain( iChain );
-									const uint			 startResidueIndex = ( &currentChain == startChain ) ? ( _lastResidueHovered->getIndex() - 1 )
-																											 : currentChain.getIndexFirstResidue() + currentChain.getResidueCount() - 1;
-									const uint			 endResidueIndex = ( &currentChain == endChain ) ? currentResidueHovered->getIndex() : currentChain.getIndexFirstResidue();
-
-									for ( uint iResidue = startResidueIndex; iResidue >= endResidueIndex; iResidue-- )
-									{
-										Model::Residue & currentResidue = _model->getResidue( iResidue );
-										_selectResidue( currentResidue );
-
-										// prevent uint go to maxSize
-										if ( iResidue == 0 )
-											break;
-									}
+									Model::Residue & currentResidue = _model->getResidue( iResidue );
+									_selectResidue( currentResidue );
 
 									// prevent uint go to maxSize
-									if ( iChain == 0 )
+									if ( iResidue == 0 )
 										break;
 								}
+
+								// prevent uint go to maxSize
+								if ( iChain == 0 )
+									break;
 							}
 						}
 					}
