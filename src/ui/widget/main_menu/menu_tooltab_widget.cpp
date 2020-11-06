@@ -1,4 +1,5 @@
 #include "menu_tooltab_widget.hpp"
+#include "style.hpp"
 #include <QLabel>
 #include <QPixmap>
 
@@ -15,8 +16,8 @@ namespace VTX
 
 				void MenuTooltabWidget::_addSeparator()
 				{
-					QLabel *  separator	   = new QLabel( this );
-					separator->setPixmap( QPixmap( ":/sprite/main_menu_separator.png" ) );
+					QLabel * separator = new QLabel( this );
+					separator->setPixmap( Style::IconConst::get().TOOLTAB_SEPARATOR );
 
 					_horizontalLayout->insertWidget( _horizontalLayout->count() - 1, separator );
 				}
