@@ -15,9 +15,8 @@ namespace VTX
 
 				void MenuTooltabWidget::_addSeparator()
 				{
-					QPixmap * separatorImg = new QPixmap( ":/sprite/main_menu_separator.png" );
 					QLabel *  separator	   = new QLabel( this );
-					separator->setPixmap( *separatorImg );
+					separator->setPixmap( QPixmap( ":/sprite/main_menu_separator.png" ) );
 
 					_horizontalLayout->insertWidget( _horizontalLayout->count() - 1, separator );
 				}
