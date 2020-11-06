@@ -18,15 +18,15 @@ namespace VTX
 						MenuToolBlockWidget::_setupUi( p_name );
 
 						// Selection focus
-						_showWater = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "toggleWatersVisibilityButton" );
+						_showWater = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "toggleWatersVisibilityButton" );
 						_showWater->setData( "Hide Waters", ":/sprite/hide_water_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_showWater, 0 );
 
-						_showSolvant = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "toggleSolvantVisibilityButton" );
+						_showSolvant = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "toggleSolvantVisibilityButton" );
 						_showSolvant->setData( "Hide Solvant", ":/sprite/hide_solvant_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_showSolvant, 0 );
 
-						_showHydrogens = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "toggleHydrogensVisibilityButton" );
+						_showHydrogens = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "toggleHydrogensVisibilityButton" );
 						_showHydrogens->setData( "Hide Hydrogen", ":/sprite/hide_hydrogen_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_showHydrogens, 0 );
 

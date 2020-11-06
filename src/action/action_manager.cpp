@@ -51,79 +51,62 @@ namespace VTX
 
 				if ( command == "snapshot" )
 				{
-					action = new Main::Snapshot(
-						Worker::Snapshoter::MODE::GL,
-						Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) );
+					action = new Main::Snapshot( Worker::Snapshoter::MODE::GL, Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) );
 				}
 				else if ( command == "change_representation" )
 				{
-					action = new Setting::ChangeRepresentation(
-						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+					action = new Setting::ChangeRepresentation( magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "change_auto_rotate_speed" )
 				{
 					if ( words.size() == 2 )
 					{
-						action = new Setting::ChangeAutoRotateSpeed( Vec3f(
-							std::stof( words.at( 1 ) ), std::stof( words.at( 1 ) ), std::stof( words.at( 1 ) ) ) );
+						action = new Setting::ChangeAutoRotateSpeed( Vec3f( std::stof( words.at( 1 ) ), std::stof( words.at( 1 ) ), std::stof( words.at( 1 ) ) ) );
 					}
 					else
 					{
-						action = new Setting::ChangeAutoRotateSpeed( Vec3f(
-							std::stof( words.at( 1 ) ), std::stof( words.at( 2 ) ), std::stof( words.at( 3 ) ) ) );
+						action = new Setting::ChangeAutoRotateSpeed( Vec3f( std::stof( words.at( 1 ) ), std::stof( words.at( 2 ) ), std::stof( words.at( 3 ) ) ) );
 					}
 				}
 				else if ( command == "change_shading" )
 				{
-					action = new Setting::ChangeShading(
-						magic_enum::enum_cast<Renderer::SHADING>( words.at( 1 ) ).value() );
+					action = new Setting::ChangeShading( magic_enum::enum_cast<Renderer::SHADING>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "change_color_mode" )
 				{
-					action = new Setting::ChangeColorMode(
-						magic_enum::enum_cast<Generic::COLOR_MODE>( words.at( 1 ) ).value() );
+					action = new Setting::ChangeColorMode( magic_enum::enum_cast<Generic::COLOR_MODE>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "add_representation_molecule" )
 				{
-					action = new RepresentableAddRepresentation(
-						molecule, molecule, magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+					action = new RepresentableAddRepresentation( molecule, molecule, magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "remove_representation_molecule" )
 				{
-					action = new RepresentableRemoveRepresentation(
-						molecule, molecule, magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+					action = new RepresentableRemoveRepresentation( molecule, molecule, magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "add_representation_chain" )
 				{
-					action = new RepresentableAddRepresentation(
-						*( *VTXApp::get().getScene().getMolecules().begin() )
-							 .first->getChains()[ std::stoi( words.at( 2 ) ) ],
-						molecule,
-						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+					action = new RepresentableAddRepresentation( *( *VTXApp::get().getScene().getMolecules().begin() ).first->getChains()[ std::stoi( words.at( 2 ) ) ],
+																 molecule,
+																 magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "remove_representation_chain" )
 				{
-					action = new RepresentableRemoveRepresentation(
-						*( *VTXApp::get().getScene().getMolecules().begin() )
-							 .first->getChains()[ std::stoi( words.at( 2 ) ) ],
-						molecule,
-						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+					action = new RepresentableRemoveRepresentation( *( *VTXApp::get().getScene().getMolecules().begin() ).first->getChains()[ std::stoi( words.at( 2 ) ) ],
+																	molecule,
+																	magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "add_representation_residue" )
 				{
-					action = new RepresentableAddRepresentation(
-						*( *VTXApp::get().getScene().getMolecules().begin() )
-							 .first->getResidues()[ std::stoi( words.at( 2 ) ) ],
-						molecule,
-						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+					action = new RepresentableAddRepresentation( *( *VTXApp::get().getScene().getMolecules().begin() ).first->getResidues()[ std::stoi( words.at( 2 ) ) ],
+																 molecule,
+																 magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 				else if ( command == "remove_representation_residue" )
 				{
-					action = new RepresentableRemoveRepresentation(
-						*( *VTXApp::get().getScene().getMolecules().begin() )
-							 .first->getResidues()[ std::stoi( words.at( 2 ) ) ],
-						molecule,
-						magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
+					action = new RepresentableRemoveRepresentation( *( *VTXApp::get().getScene().getMolecules().begin() ).first->getResidues()[ std::stoi( words.at( 2 ) ) ],
+																	molecule,
+																	magic_enum::enum_cast<Generic::REPRESENTATION>( words.at( 1 ) ).value() );
 				}
 			}
 			catch ( const std::exception & )
@@ -197,6 +180,7 @@ namespace VTX
 			}
 
 			// Handle undo.
+			/*
 			BaseActionUndonable * undonable = dynamic_cast<BaseActionUndonable *>( p_action );
 			if ( undonable != nullptr )
 			{
@@ -212,9 +196,9 @@ namespace VTX
 				_bufferRedo.clear();
 			}
 			else
-			{
-				delete p_action;
-			}
+			{*/
+			delete p_action;
+			//}
 		}
 
 		void ActionManager::_purgeBuffer()

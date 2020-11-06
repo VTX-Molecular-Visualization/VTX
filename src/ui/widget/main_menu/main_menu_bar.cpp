@@ -30,10 +30,10 @@ namespace VTX
 					menuBarFont.setPointSize( 10 );
 					_tabWidget->setFont( menuBarFont );
 
-					_mainMenu = WidgetFactory::get().GetWidget<Home::MenuHomeWidget>( this, "mainMenu" );
+					_mainMenu = WidgetFactory::get().getWidget<Home::MenuHomeWidget>( this, "mainMenu" );
 					_tabWidget->addTab( _mainMenu, "Main" );
 
-					_viewMenu = WidgetFactory::get().GetWidget<Visualization::MenuVisualizationWidget>( this, "visualizationMenu" );
+					_viewMenu = WidgetFactory::get().getWidget<Visualization::MenuVisualizationWidget>( this, "visualizationMenu" );
 					_tabWidget->addTab( _viewMenu, "Visualization" );
 
 					_movieMenu = new QLabel( "movieMenu", this );

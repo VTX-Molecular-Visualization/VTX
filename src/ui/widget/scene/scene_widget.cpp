@@ -52,7 +52,7 @@ namespace VTX
 
 						// Set no parent to not trigger ItemChange event during init
 						View::UI::Widget::MoleculeSceneView * const item
-							= WidgetFactory::get().GetSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>( castedEvent.ptr, nullptr, "MoleculeStructure" );
+							= WidgetFactory::get().getSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>( castedEvent.ptr, nullptr, "MoleculeStructure" );
 
 						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, item );
 
@@ -62,9 +62,10 @@ namespace VTX
 					else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 					{
 						const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+						const Model::Molecule * const				molecule	= castedEvent.ptr;
 
 						View::UI::Widget::MoleculeSceneView * const moleculeWidget
-							= dynamic_cast<View::UI::Widget::MoleculeSceneView *>( MVC::MvcManager::get().removeViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE ) );
+							= MVC::MvcManager::get().removeViewOnModel<Model::Molecule, View::UI::Widget::MoleculeSceneView>( molecule, ID::View::UI_MOLECULE_STRUCTURE );
 
 						deleteItem( moleculeWidget );
 					}

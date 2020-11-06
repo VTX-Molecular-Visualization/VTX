@@ -38,8 +38,8 @@ namespace VTX
 					else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 					{
 						const Event::VTXEventPtr<Model::Molecule> &	   castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-						View::BaseView * const						   baseView	   = MVC::MvcManager::get().removeViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE );
-						View::UI::Widget::MoleculeSequenceView * const moleculeSequenceView = dynamic_cast<View::UI::Widget::MoleculeSequenceView * const>( baseView );
+						View::UI::Widget::MoleculeSequenceView * const moleculeSequenceView
+							= MVC::MvcManager::get().removeViewOnModel<Model::Molecule, View::UI::Widget::MoleculeSequenceView>( castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE );
 
 						delete moleculeSequenceView;
 					}

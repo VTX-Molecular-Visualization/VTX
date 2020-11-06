@@ -10,7 +10,6 @@
 #include "mvc_data.hpp"
 #include "mvc_data_container.hpp"
 #include "view/base_view.hpp"
-//#include "view/ui/widget/molecule_inspector_view.hpp"
 #include <type_traits>
 #include <vector>
 
@@ -25,7 +24,7 @@ namespace VTX
 			{
 				static MvcManager instance;
 				return instance;
-			};
+			}
 
 		  public:
 			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
@@ -39,7 +38,7 @@ namespace VTX
 				model->instantiateDefaultViews();
 
 				return model;
-			};
+			}
 
 			template<typename M, typename P1, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
 			M * const instantiate( P1 & p_param1 )
@@ -52,7 +51,7 @@ namespace VTX
 				model->instantiateDefaultViews();
 
 				return model;
-			};
+			}
 
 			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
 			void deleteModel( M * const p_model )
@@ -60,7 +59,7 @@ namespace VTX
 				MvcData * const mvc = _mvcs->remove( p_model );
 				delete mvc;
 				delete p_model;
-			};
+			}
 
 			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
 			void deleteAllModels( std::vector<M *> & p_models )
@@ -82,31 +81,50 @@ namespace VTX
 				Model::BaseModel & model	= _getMvcData( _id )->getModel();
 				M &				   modelPtr = static_cast<M &>( model );
 				return modelPtr;
-			};
+			}
 
 			ID::VTX_ID getModelTypeID( const Model::ID & _id ) const { return _getMvcData( _id )->getModel().getTypeId(); };
 
-			inline void addViewOnModel( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id, View::BaseView * const p_view )
+			template<typename M,
+					 typename V,
+					 typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>,
+					 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
+			inline void addViewOnModel( const M * const p_model, const ID::VTX_ID & p_id, V * const p_view )
 			{
-				_getMvcData( p_model )->addView( p_id, p_view );
-			};
-			inline View::BaseView * removeViewOnModel( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { return _getMvcData( p_model )->removeView( p_id ); };
-			inline bool				hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { return _getMvcData( p_model )->hasView( p_id ); };
+				_getMvcData<M>( p_model )->addView<M, V>( p_id, p_view );
+			}
+
+			template<typename M,
+					 typename V,
+					 typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>,
+					 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
+			inline V * const removeViewOnModel( const M * const p_model, const ID::VTX_ID & p_id )
+			{
+				return (V * const)_getMvcData<M>( p_model )->removeView<M, V>( p_id );
+			}
+
+			inline bool hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { return _getMvcData( p_model )->hasView( p_id ); };
+
 			inline void notifyView( const Model::BaseModel * const p_caller, const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = 0 )
 			{
 				_getMvcData( p_caller )->notifyViews( p_event, p_eventData );
-			};
+			}
 
 		  private:
 			MvcManager()					 = default;
 			MvcManager( const MvcManager & ) = delete;
 			MvcManager & operator=( const MvcManager & ) = delete;
-			~MvcManager()								 = default;
+			~MvcManager() { delete _mvcs; }
 
 			MvcDataContainer * const _mvcs = new MvcDataContainer();
 
-			MvcData * const _getMvcData( const Model::BaseModel * const p_model ) const { return ( *_mvcs )[ p_model ]; };
-			MvcData * const _getMvcData( const Model::ID & p_modelId ) const { return ( *_mvcs )[ p_modelId ]; };
+			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			MvcData * const _getMvcData( const M * const p_model ) const
+			{
+				return ( *_mvcs )[ p_model ];
+			}
+
+			MvcData * const _getMvcData( const Model::ID & p_modelId ) const { return ( *_mvcs )[ p_modelId ]; }
 		};
 	} // namespace MVC
 } // namespace VTX

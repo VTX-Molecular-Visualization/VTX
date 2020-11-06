@@ -45,7 +45,7 @@ namespace VTX
 			{
 				VecSizeType		  allModelsSeek	 = 0;
 				const VecSizeType allModelsSize	 = p_allModelsSorted.size();
-				Model::ID	  currentModelID = p_allModelsSorted[ allModelsSeek ]->getId();
+				Model::ID		  currentModelID = p_allModelsSorted[ allModelsSeek ]->getId();
 
 				VecSizeType		  vectorSeek = this->_findIndex( currentModelID );
 				VecSizeType		  currIndex	 = vectorSeek;
@@ -114,8 +114,8 @@ namespace VTX
 					else
 						throw new std::exception( "searchedValue not found !" );
 				}
-				const VecSizeType	  middleIndex = p_maxIndex / 2 + p_minIndex / 2;
-				const Model::ID middleValue = _vector[ middleIndex ]->getId();
+				const VecSizeType middleIndex = p_maxIndex / 2 + p_minIndex / 2;
+				const Model::ID	  middleValue = _vector[ middleIndex ]->getId();
 
 				if ( middleValue < p_searchedValue )
 					return _findIndexRecursive( middleIndex + 1, p_maxIndex, p_searchedValue );

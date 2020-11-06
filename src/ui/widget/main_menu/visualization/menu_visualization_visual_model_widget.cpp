@@ -18,31 +18,31 @@ namespace VTX
 					{
 						MenuToolBlockWidget::_setupUi( p_name );
 
-						_preset1 = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "applyVisualModelPresetButton" );
+						_preset1 = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "applyVisualModelPresetButton" );
 						_preset1->setData( "Sticks", ":/sprite/representation_stick_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_preset1, 0 );
 
-						_preset2 = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "applyVisualModelPresetButton" );
+						_preset2 = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "applyVisualModelPresetButton" );
 						_preset2->setData( "Trace", ":/sprite/representation_trace_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_preset2, 0 );
 
-						_preset3 = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "applyVisualModelPresetButton" );
+						_preset3 = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "applyVisualModelPresetButton" );
 						_preset3->setData( "SAS", ":/sprite/representation_sas_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_preset3, 0 );
 
-						_preset4 = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "applyVisualModelPresetButton" );
+						_preset4 = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "applyVisualModelPresetButton" );
 						_preset4->setData( "Custom preset 1", "", Qt::Orientation::Horizontal );
 						pushButton( *_preset4, 1 );
 
-						_preset5 = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "applyVisualModelPresetButton" );
+						_preset5 = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "applyVisualModelPresetButton" );
 						_preset5->setData( "Custom preset 2", "", Qt::Orientation::Horizontal );
 						pushButton( *_preset5, 1 );
 
-						_preset6 = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "applyVisualModelPresetButton" );
+						_preset6 = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "applyVisualModelPresetButton" );
 						_preset6->setData( "Custom preset 3", "", Qt::Orientation::Horizontal );
 						pushButton( *_preset6, 1 );
 
-						_addPreset = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "addNewVisualModelPresetButton" );
+						_addPreset = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "addNewVisualModelPresetButton" );
 						_addPreset->setData( "Add\nPreset", ":/sprite/representation_new_preset_icon.png", Qt::Orientation::Vertical );
 						pushButton( *_addPreset, 2 );
 
