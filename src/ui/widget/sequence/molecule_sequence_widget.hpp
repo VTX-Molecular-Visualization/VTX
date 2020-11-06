@@ -44,6 +44,7 @@ namespace VTX
 					void mouseReleaseEvent( QMouseEvent * ev ) override;
 
 					Model::Residue * const _getResidueAtPos( const QPoint & p_pos ) const;
+					Model::Residue * const _getClosestResidue( const QPoint & p_pos, const bool p_next ) const;
 
 					void _onScrollBarValueChanged();
 					void _updateLabelName( const Model::Chain & p_currentChainDisplayed );
@@ -59,7 +60,7 @@ namespace VTX
 
 					QPoint			 _startPressPosition;
 					QPoint			 _lastDragSelectionPosition;
-					Model::Residue * _lastResidueHovered;
+					Model::Residue * _lastResidueHovered = nullptr;
 
 					bool _isSelected( const Model::Residue & residue ) const;
 					void _selectResidue( Model::Residue & p_residue );

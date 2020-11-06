@@ -6,6 +6,7 @@
 #endif
 
 #include "model/chain.hpp"
+#include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "sequence_display_widget.hpp"
 #include "ui/widget/view_item_widget.hpp"
@@ -31,8 +32,11 @@ namespace VTX
 					void refresh() override;
 					void localize() override;
 
-					Model::Residue & getResidueAtPos( const QPoint & p_pos );
-					void			 updateSelection( const std::vector<Model::Residue *> & p_selection ) { _sequenceDisplayWidget->updateSelection( p_selection ); };
+					Model::Residue & getResidueAtPos( const QPoint & p_pos ) const;
+					Model::Residue & getFirstResidue() const { return _model->getMoleculePtr()->getResidue( _model->getIndexFirstResidue() ); };
+					Model::Residue & getLastResidue() const { return _model->getMoleculePtr()->getResidue( _model->getIndexFirstResidue() + _model->getResidueCount() - 1 ); };
+
+					void updateSelection( const std::vector<Model::Residue *> & p_selection ) { _sequenceDisplayWidget->updateSelection( p_selection ); };
 
 				  protected:
 					ChainSequenceWidget( QWidget * p_parent );

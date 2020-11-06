@@ -140,8 +140,8 @@ namespace VTX
 				{
 					ViewItemWidget<Model::Molecule>::mouseMoveEvent( ev );
 
-					const QPoint		   currentMousePos		 = _scrollAreaContent->mapFromGlobal( ev->globalPos() );
-					Model::Residue * const currentResidueHovered = _getResidueAtPos( currentMousePos );
+					const QPoint	 currentMousePos	   = _scrollAreaContent->mapFromGlobal( ev->globalPos() );
+					Model::Residue * currentResidueHovered = _getResidueAtPos( currentMousePos );
 
 					const bool switchStartClickSide = ( _lastDragSelectionPosition.x() < _startPressPosition.x() && currentMousePos.x() > _startPressPosition.x() )
 													  || ( _lastDragSelectionPosition.x() > _startPressPosition.x() && currentMousePos.x() < _startPressPosition.x() );
@@ -158,7 +158,16 @@ namespace VTX
 						_lastResidueHovered = startResidue;
 					}
 
-					if ( currentResidueHovered == _lastResidueHovered || currentResidueHovered == nullptr )
+					if ( currentResidueHovered == _lastResidueHovered )
+						return;
+
+					if ( currentResidueHovered == nullptr )
+					{
+						const bool getForwardResidue = _startPressPosition.x() > currentMousePos.x();
+						currentResidueHovered = _getClosestResidue( currentMousePos, getForwardResidue );
+					}
+
+					if ( currentResidueHovered == nullptr )
 						return;
 
 					const bool hoveredResidueAlreadySelected = !_isSelected( *currentResidueHovered );
@@ -283,7 +292,31 @@ namespace VTX
 						if ( chainDisplayStartPos <= p_pos.x() && p_pos.x() < chainDisplayEndPos )
 						{
 							res = &( it->getResidueAtPos( p_pos ) );
+							break;
 						}
+					}
+
+					return res;
+				}
+				Model::Residue * const MoleculeSequenceWidget::_getClosestResidue( const QPoint & p_pos, const bool p_next ) const
+				{
+					Model::Residue *			res			  = nullptr;
+					const ChainSequenceWidget * previousChain = nullptr;
+
+					for ( auto it : _chainDisplayWidgets )
+					{
+						const qreal chainDisplayStartPos = it->pos().x();
+						const qreal chainDisplayEndPos	 = chainDisplayStartPos + it->width();
+
+						if ( chainDisplayStartPos > p_pos.x() )
+						{
+							if ( p_next )
+								res = &( it->getFirstResidue() );
+
+							break;
+						}
+						else if ( !p_next )
+							res = &( it->getLastResidue() );
 					}
 
 					return res;

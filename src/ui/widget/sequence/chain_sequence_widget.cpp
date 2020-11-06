@@ -48,7 +48,7 @@ namespace VTX
 					_refreshScale();
 				}
 
-				Model::Residue & ChainSequenceWidget::getResidueAtPos( const QPoint & p_pos )
+				Model::Residue & ChainSequenceWidget::getResidueAtPos( const QPoint & p_pos ) const
 				{
 					const QPoint localPos = _sequenceDisplayWidget->mapFrom( parentWidget(), p_pos );
 					return _sequenceDisplayWidget->getResidueAtPos( localPos );
