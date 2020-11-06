@@ -133,3 +133,39 @@ QLabel#inspector_item_section_header_icon
 {
 	background-color: #79C0FE;
 }
+
+
+QScrollBar#SequenceScrollbar:horizontal {
+    border: 2px solid grey;
+    background: #444444;
+    height: 12px;
+    margin: 0px 0px 0px 0px;
+}
+QScrollBar#SequenceScrollbar::groove:horizontal {
+    background: white;
+    width: 20px;
+    height: 20px;
+}
+QScrollBar#SequenceScrollbar::handle:horizontal {
+    background: white;
+    min-width: 10px;
+}
+QScrollBar#SequenceScrollbar::add-line:horizontal {
+    border: none;
+    background: #32CC99;
+    width: 0px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+QScrollBar#SequenceScrollbar::sub-line:horizontal {
+    border: none;
+    background: #32CC99;
+    width: 0px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+QScrollBar:left-arrow:horizontal, QScrollBar::right-arrow:horizontal {
+    border: none;
+    width: 0px;
+    height: 0px;
+}

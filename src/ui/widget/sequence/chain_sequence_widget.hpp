@@ -6,11 +6,14 @@
 #endif
 
 #include "model/chain.hpp"
+#include "model/residue.hpp"
 #include "sequence_display_widget.hpp"
 #include "ui/widget/view_item_widget.hpp"
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPoint>
 #include <QString>
+#include <vector>
 
 namespace VTX
 {
@@ -28,11 +31,13 @@ namespace VTX
 					void refresh() override;
 					void localize() override;
 
+					Model::Residue & getResidueAtPos( const QPoint & p_pos );
+					void			 updateSelection( const std::vector<Model::Residue *> & p_selection ) { _sequenceDisplayWidget->updateSelection( p_selection ); };
+
 				  protected:
 					ChainSequenceWidget( QWidget * p_parent );
 					void _setupUi( const QString & p_name ) override;
 					void _setupSlots() override;
-					void _onSequenceSelectionChanged() const;
 
 				  private:
 					QLabel *				_scaleWidget		   = nullptr;

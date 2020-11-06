@@ -41,26 +41,17 @@ namespace VTX
 
 				void ChainSequenceWidget::_setupSlots() {}
 
-				void ChainSequenceWidget::_onSequenceSelectionChanged() const
-				{
-					const Model::Molecule * const molecule				= _model->getMoleculePtr();
-					const uint					  moleculeResidueOffset = _model->getIndexFirstResidue();
-
-					for ( uint localResidueIndex : _sequenceDisplayWidget->getSelection() )
-					{
-						const Model::Residue & residue = molecule->getResidue( moleculeResidueOffset + localResidueIndex );
-						VTX_INFO( residue.getSymbolName() + " selected." );
-					}
-				}
-
-				void ChainSequenceWidget::localize()
-				{
-					connect( _sequenceDisplayWidget, &SequenceDisplayWidget::selectionChanged, this, &ChainSequenceWidget::_onSequenceSelectionChanged );
-				}
+				void ChainSequenceWidget::localize() {}
 				void ChainSequenceWidget::refresh()
 				{
 					_sequenceDisplayWidget->setupSequence( *_model );
 					_refreshScale();
+				}
+
+				Model::Residue & ChainSequenceWidget::getResidueAtPos( const QPoint & p_pos )
+				{
+					const QPoint localPos = _sequenceDisplayWidget->mapFrom( parentWidget(), p_pos );
+					return _sequenceDisplayWidget->getResidueAtPos( localPos );
 				}
 
 				void ChainSequenceWidget::_refreshScale()
@@ -168,6 +159,7 @@ namespace VTX
 
 					return secondIndex;
 				}
+
 			} // namespace Sequence
 		}	  // namespace Widget
 	}		  // namespace UI
