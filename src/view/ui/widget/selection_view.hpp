@@ -5,9 +5,10 @@
 #pragma once
 #endif
 
-#include "base_scene_item.hpp"
 #include "model/selection.hpp"
 #include "view/base_view.hpp"
+#include "ui/widget/base_manual_widget_initializer.hpp"
+#include <QTreeWidgetItem>
 
 namespace VTX
 {
@@ -17,16 +18,20 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class SelectionView : public BaseSceneItem<Model::Selection>
+				class SelectionView : public QTreeWidgetItem, public View::BaseView<Model::Selection>, VTX::UI::Widget::BaseManualWidgetInitializer
 				{
 					VTX_MANUAL_WIDGET_DECLARATION
 
 				  public:
+					SelectionView( Model::Selection * const p_model, QTreeWidgetItem * const p_parent ) :
+						View::BaseView<Model::Selection>( p_model ), QTreeWidgetItem( p_parent ), BaseManualWidgetInitializer()
+					{
+					}
+
 					void		 localize() override;
 					virtual void notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = 0 ) override;
 
 				  protected:
-					SelectionView( Model::Selection * const, QTreeWidgetItem * );
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
 

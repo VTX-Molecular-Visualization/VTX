@@ -35,23 +35,23 @@ namespace VTX
 
 						setTitle( "Session" );
 
-						_newSessionButton = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "newSessionButton" );
+						_newSessionButton = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "newSessionButton" );
 						_newSessionButton->setData( "New", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
 						pushButton( *_newSessionButton, 0 );
 
-						_openSessionButton = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "openSessionButton" );
+						_openSessionButton = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "openSessionButton" );
 						_openSessionButton->setData( "Open", ":/sprite/open_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_openSessionButton, 1 );
 
-						_openRecentSessionButton = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "openRecentSessionButton" );
+						_openRecentSessionButton = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "openRecentSessionButton" );
 						_openRecentSessionButton->setData( "Recent", ":/sprite/openrecent_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_openRecentSessionButton, 1 );
 
-						_saveSessionButton = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "saveSessionButton" );
+						_saveSessionButton = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "saveSessionButton" );
 						_saveSessionButton->setData( "Save", ":/sprite/save_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_saveSessionButton, 2 );
 
-						_saveAsSessionButton = WidgetFactory::get().GetWidget<MenuToolButtonWidget>( this, "saveAsSessionButton" );
+						_saveAsSessionButton = WidgetFactory::get().getWidget<MenuToolButtonWidget>( this, "saveAsSessionButton" );
 						_saveAsSessionButton->setData( "Save as...", ":/sprite/saveas_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_saveAsSessionButton, 2 );
 

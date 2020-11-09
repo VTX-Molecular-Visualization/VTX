@@ -1,7 +1,6 @@
 #include "inspector_widget.hpp"
 #include "model/molecule.hpp"
 #include "selection/selection_manager.hpp"
-#include "view/ui/linked_widget_interface.hpp"
 #include "view/ui/widget/molecule_inspector_view.hpp"
 
 namespace VTX

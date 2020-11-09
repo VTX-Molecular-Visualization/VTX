@@ -29,6 +29,8 @@ namespace VTX
 				friend ::VTX::UI::WidgetFactory;
 
 			  public:
+				virtual ~BaseManualWidgetInitializer() = default;
+
 				virtual void localize() = 0;
 
 			  protected:

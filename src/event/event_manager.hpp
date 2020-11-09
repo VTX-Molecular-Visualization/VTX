@@ -19,6 +19,7 @@
 #include <queue>
 #include <set>
 
+// Disabled to ensure that molecule.init() creates gl buffer before rendering.
 //#define DELAY_EVENTS
 
 namespace VTX

@@ -65,7 +65,7 @@ namespace VTX
 						switch ( selectionType )
 						{
 						case VTX::Selection::SelectionType::ATOM: txt = "Atom"; break;
-						case VTX::Selection::SelectionType::BOND: txt = "Bond"; break;
+						//case VTX::Selection::SelectionType::BOND: txt = "Bond"; break;
 						case VTX::Selection::SelectionType::CHAINS: txt = "Chain"; break;
 						case VTX::Selection::SelectionType::MOLECULE: txt = "Molecule"; break;
 						case VTX::Selection::SelectionType::RESIDUE: txt = "Residue"; break;

@@ -28,7 +28,7 @@ namespace VTX
 
 		  public:
 			template<typename W, typename = std::enable_if<std::is_base_of<W, Widget::BaseManualWidgetInitializer>::value>>
-			W * GetWidget( QWidget * p_parent, const std::string & p_name ) const
+			W * getWidget( QWidget * const p_parent, const std::string & p_name ) const
 			{
 				QString qstringName = QString::fromStdString( p_name );
 
@@ -39,7 +39,7 @@ namespace VTX
 			};
 
 			template<typename V, typename M>
-			V * GetSceneItem( M * const p_model, QTreeWidgetItem * p_parent, const std::string & p_name ) const
+			V * getSceneItem( M * const p_model, QTreeWidgetItem * const p_parent, const std::string & p_name ) const
 			{
 				QString qstringName = QString::fromStdString( p_name );
 

@@ -5,12 +5,13 @@
 #pragma once
 #endif
 
-#include "base_scene_item.hpp"
 #include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
+#include "ui/widget/base_manual_widget_initializer.hpp"
 #include "view/base_view.hpp"
+#include <QTreeWidgetItem>
 
 namespace VTX
 {
@@ -20,16 +21,20 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class MoleculeSceneView : public BaseSceneItem<Model::Molecule>
+				class MoleculeSceneView : public View::BaseView<Model::Molecule>, public QTreeWidgetItem, public VTX::UI::Widget::BaseManualWidgetInitializer
 				{
 					VTX_MANUAL_WIDGET_DECLARATION
 
 				  public:
-					void		 localize() override;
-					virtual void notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = 0 ) override;
+					MoleculeSceneView( Model::Molecule * const p_model, QTreeWidgetItem * const p_parent ) :
+						View::BaseView<Model::Molecule>( p_model ), QTreeWidgetItem( p_parent ), BaseManualWidgetInitializer()
+					{
+					}
+
+					void localize() override;
+					void notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = nullptr ) override;
 
 				  protected:
-					MoleculeSceneView( Model::Molecule * const, QTreeWidgetItem * );
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
 

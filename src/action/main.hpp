@@ -102,7 +102,7 @@ namespace VTX
 					Path *		path = new Path( id + ".mmtf" );
 
 					const Worker::CallbackSuccess * success = new Worker::CallbackSuccess( [ fetcher, path ]( void ) {
-						std::map<Path *, std::string *> mapBuffers = std::map<Path *, std::string *>();
+						std::map<Path *, std::string *> & mapBuffers = std::map<Path *, std::string *>();
 						mapBuffers.emplace( path, fetcher->getBuffer() );
 						delete fetcher;
 
@@ -147,12 +147,15 @@ namespace VTX
 				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->toggleController(); };
 			};
 
-			class ChangeCameraController : public BaseActionParametrized<const ID::VTX_ID>
+			class ChangeCameraController : public BaseAction
 			{
 			  public:
-				explicit ChangeCameraController( const ID::VTX_ID & p_controllerId ) : BaseActionParametrized( p_controllerId ) {};
+				explicit ChangeCameraController( const ID::VTX_ID & p_controllerId ) : _id( p_controllerId ) {}
 
-				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->setController( *_parameter ); };
+				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->setController( _id ); };
+
+			  private:
+				const ID::VTX_ID _id;
 			};
 
 			class RecenterCameraController : public BaseAction

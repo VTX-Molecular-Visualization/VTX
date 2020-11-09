@@ -12,8 +12,6 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				SelectionView::SelectionView( Model::Selection * const p_model, QTreeWidgetItem * p_parent ) : BaseSceneItem<Model::Selection>( p_model, p_parent ) {}
-
 				void SelectionView::notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData )
 				{
 					
