@@ -45,6 +45,7 @@ namespace VTX
 			RENDER,
 			DATA_CHANGE,
 			CHILD_DATA_CHANGE,
+			
 		};
 
 		struct VTXEventModelData

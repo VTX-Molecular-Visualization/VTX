@@ -91,7 +91,7 @@ namespace VTX
 					 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
 			inline void addViewOnModel( const M * const p_model, const ID::VTX_ID & p_id, V * const p_view )
 			{
-				_getMvcData<M>( p_model )->addView<M, V>( p_id, p_view );
+				_getMvcData( p_model )->addView<M, V>( p_id, p_view );
 			}
 
 			template<typename M,
@@ -100,12 +100,12 @@ namespace VTX
 					 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
 			inline V * const removeViewOnModel( const M * const p_model, const ID::VTX_ID & p_id )
 			{
-				return (V * const)_getMvcData<M>( p_model )->removeView<M, V>( p_id );
+				return (V * const)_getMvcData( p_model )->removeView<M, V>( p_id );
 			}
 
 			inline bool hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { return _getMvcData( p_model )->hasView( p_id ); };
 
-			inline void notifyView( const Model::BaseModel * const p_caller, const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = 0 )
+			inline void notifyView( const Model::BaseModel * const p_caller, const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = nullptr )
 			{
 				_getMvcData( p_caller )->notifyViews( p_event, p_eventData );
 			}
@@ -118,11 +118,7 @@ namespace VTX
 
 			MvcDataContainer * const _mvcs = new MvcDataContainer();
 
-			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
-			MvcData * const _getMvcData( const M * const p_model ) const
-			{
-				return ( *_mvcs )[ p_model ];
-			}
+			MvcData * const _getMvcData( const Model::BaseModel * const p_model ) const { return ( *_mvcs )[ p_model ]; }
 
 			MvcData * const _getMvcData( const Model::ID & p_modelId ) const { return ( *_mvcs )[ p_modelId ]; }
 		};

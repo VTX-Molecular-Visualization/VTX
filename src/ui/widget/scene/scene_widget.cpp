@@ -14,7 +14,6 @@
 #include "selection/selection_manager.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
-#include "view/ui/widget/base_scene_item.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 
 namespace VTX

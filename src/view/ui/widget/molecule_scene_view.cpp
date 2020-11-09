@@ -12,10 +12,9 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				MoleculeSceneView::MoleculeSceneView( Model::Molecule * const p_model, QTreeWidgetItem * p_parent ) : BaseSceneItem<Model::Molecule>( p_model, p_parent ) {}
-
 				void MoleculeSceneView::notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData )
 				{
+					return;
 					if ( p_event == Event::VTX_EVENT_MODEL::CHILD_DATA_CHANGE )
 					{
 						const Event::VTXEventModelDataTemplated<Model::ID> * const castedEventData
@@ -28,7 +27,6 @@ namespace VTX
 
 				void MoleculeSceneView::_setupUi( const QString & p_name )
 				{
-					BaseSceneItem<Model::Molecule>::_setupUi( p_name );
 					setData( 0, Qt::UserRole, QVariant::fromValue<VTX::Model::ID>( _model->getId() ) );
 					setText( 0, QString::fromStdString( _model->getDefaultName() ) );
 					setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( _model->getTypeId() ) );
@@ -79,7 +77,7 @@ namespace VTX
 
 				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget )
 				{
-					Model::ID	   modelId = p_itemWidget->data( 0, Qt::UserRole ).value<VTX::Model::ID>();
+					Model::ID		   modelId = p_itemWidget->data( 0, Qt::UserRole ).value<VTX::Model::ID>();
 					const ID::VTX_ID & typeId  = MVC::MvcManager::get().getModelTypeID( modelId );
 
 					if ( typeId == ID::Model::MODEL_MOLECULE )
