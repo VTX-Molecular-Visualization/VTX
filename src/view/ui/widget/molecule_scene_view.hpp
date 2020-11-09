@@ -9,8 +9,8 @@
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
-#include "view/base_view.hpp"
 #include "ui/widget/base_manual_widget_initializer.hpp"
+#include "view/base_view.hpp"
 #include <QTreeWidgetItem>
 
 namespace VTX
@@ -21,7 +21,7 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class MoleculeSceneView : public QTreeWidgetItem, public View::BaseView<Model::Molecule>, VTX::UI::Widget::BaseManualWidgetInitializer
+				class MoleculeSceneView : public View::BaseView<Model::Molecule>, public QTreeWidgetItem, public VTX::UI::Widget::BaseManualWidgetInitializer
 				{
 					VTX_MANUAL_WIDGET_DECLARATION
 

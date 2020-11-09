@@ -31,7 +31,6 @@ namespace VTX
 
 			void notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = nullptr ) override
 			{
-				BaseView::notify( p_event, p_eventData );
 				if ( p_event == Event::VTX_EVENT_MODEL::RENDER )
 				{
 					render();

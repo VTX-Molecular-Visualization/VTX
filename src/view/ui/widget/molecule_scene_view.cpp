@@ -14,7 +14,6 @@ namespace VTX
 			{
 				void MoleculeSceneView::notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData )
 				{
-					return;
 					if ( p_event == Event::VTX_EVENT_MODEL::CHILD_DATA_CHANGE )
 					{
 						const Event::VTXEventModelDataTemplated<Model::ID> * const castedEventData
