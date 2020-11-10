@@ -107,7 +107,7 @@ namespace VTX
 					{
 						const Model::Residue &	   residue = MVC::MvcManager::get().getModel<Model::Residue>( p_id );
 						const Model::Chain * const chain   = residue.getChainPtr();
-						QTreeWidgetItem * const	   item	   = child( chain->getIndex() )->child( residue.getIndexInOriginalChain() - 1 );
+						QTreeWidgetItem * const	   item	   = child( chain->getIndex() )->child( residue.getIndex() - chain->getIndexFirstResidue() );
 
 						_refreshItem( item, residue );
 					}
@@ -116,7 +116,7 @@ namespace VTX
 						const Model::Atom &			 atom	 = MVC::MvcManager::get().getModel<Model::Atom>( p_id );
 						const Model::Residue * const residue = atom.getResiduePtr();
 						const Model::Chain * const	 chain	 = residue->getChainPtr();
-						QTreeWidgetItem * const		 item	 = child( chain->getIndex() )->child( residue->getIndexInOriginalChain() );
+						QTreeWidgetItem * const		 item	 = child( chain->getIndex() )->child( residue->getIndex() - chain->getIndexFirstResidue() );
 
 						_refreshItem( item, atom );
 					}
