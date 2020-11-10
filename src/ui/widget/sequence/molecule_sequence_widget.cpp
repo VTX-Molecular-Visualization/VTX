@@ -194,12 +194,16 @@ namespace VTX
 
 						if ( cursorMoveForward )
 						{
-							if ( addToSelection )
+							if ( addToSelection && _lastResidueHovered != nullptr )
 								fromResidue = _getNextResidue( *closestLastResidueHovered );
 							else
 								fromResidue = closestLastResidueHovered;
 
-							toResidue = _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick );
+							if ( currentResidueHovered != nullptr )
+								toResidue = currentResidueHovered;
+							else
+								toResidue = _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick );
+
 							if ( !addToSelection )
 								toResidue = _getPreviousResidue( *toResidue );
 						}
@@ -214,7 +218,7 @@ namespace VTX
 									fromResidue = _getNextResidue( *fromResidue );
 							}
 
-							if ( addToSelection )
+							if ( addToSelection && _lastResidueHovered != nullptr )
 								toResidue = _getPreviousResidue( *closestLastResidueHovered );
 							else
 								toResidue = closestLastResidueHovered;
