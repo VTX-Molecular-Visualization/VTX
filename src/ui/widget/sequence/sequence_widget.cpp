@@ -28,7 +28,7 @@ namespace VTX
 					if ( p_event.name == Event::Global::MOLECULE_ADDED )
 					{
 						const Event::VTXEventPtr<Model::Molecule> &	   castedEvent			= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-						View::UI::Widget::MoleculeSequenceView * const moleculeSequenceView = new View::UI::Widget::MoleculeSequenceView( castedEvent.ptr, nullptr );
+						View::UI::Widget::MoleculeSequenceView * const moleculeSequenceView = new View::UI::Widget::MoleculeSequenceView( castedEvent.ptr, this );
 
 						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE, moleculeSequenceView );
 						MoleculeSequenceWidget * const widget = moleculeSequenceView->getWidget();
@@ -49,13 +49,20 @@ namespace VTX
 				{
 					BaseManualWidget::_setupUi( p_name );
 
-					QWidget * const contentWidget = new QWidget( this );
-					contentWidget->setContentsMargins( 2, 2, 2, 2 );
+					QScrollArea * const scrollArea = new QScrollArea( this );
+					scrollArea->setContentsMargins( 0, 0, 0, 0 );
 
-					_layout = new QVBoxLayout( contentWidget );
+					QWidget * const scrollWidget = new QWidget( scrollArea );
+					scrollWidget->setContentsMargins( 0, 0, 0, 0 );
+
+					_layout = new QVBoxLayout( scrollWidget );
+					_layout->setContentsMargins( 0, 0, 0, 0 );
+					_layout->setSizeConstraint( QLayout::SizeConstraint::SetMinAndMaxSize );
 					_layout->addStretch( 1000 );
 
-					setWidget( contentWidget );
+					scrollArea->setWidget( scrollWidget );
+					scrollArea->setWidgetResizable( true );
+					this->setWidget( scrollArea );
 				}
 
 				void SequenceWidget::_setupSlots() {}
