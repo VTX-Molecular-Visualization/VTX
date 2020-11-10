@@ -6,6 +6,7 @@
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
 #include <QScrollBar>
+#include <algorithm>
 
 namespace VTX
 {
@@ -130,10 +131,10 @@ namespace VTX
 
 					if ( _lastResidueHovered != nullptr )
 					{
-						if ( _isSelected( *_lastResidueHovered ) )
-							_deselectResidue( *_lastResidueHovered );
+						if ( _isSelected( _lastResidueHovered ) )
+							_unselect( _lastResidueHovered );
 						else
-							_selectResidue( *_lastResidueHovered );
+							_select( _lastResidueHovered );
 					}
 
 					_repaintSelection();
@@ -146,24 +147,10 @@ namespace VTX
 					if ( !ev->buttons().testFlag( Qt::MouseButton::LeftButton ) )
 						return;
 
+					_frameSelection.clear();
+
 					const QPoint	 currentMousePos	   = _scrollAreaContent->mapFromGlobal( ev->globalPos() );
 					Model::Residue * currentResidueHovered = _getResidueAtPos( currentMousePos );
-
-					const bool switchStartClickSide = ( _lastDragSelectionPosition.x() < _startPressPosition.x() && currentMousePos.x() > _startPressPosition.x() )
-													  || ( _lastDragSelectionPosition.x() > _startPressPosition.x() && currentMousePos.x() < _startPressPosition.x() );
-
-					// If the cursor switch side of the first clicked object, we clear the selection
-					if ( switchStartClickSide )
-					{
-						_clearSelection();
-						Model::Residue * const startResidue = _getResidueAtPos( _startPressPosition );
-
-						if ( startResidue != nullptr )
-							_selection.emplace_back( startResidue );
-
-						_lastResidueHovered = startResidue;
-						_repaintSelection();
-					}
 
 					if ( currentResidueHovered == _lastResidueHovered )
 					{
@@ -171,83 +158,97 @@ namespace VTX
 						return;
 					}
 
-					if ( currentResidueHovered == nullptr )
+					const bool switchStartClickSide = ( _lastDragSelectionPosition.x() < _startPressPosition.x() && currentMousePos.x() > _startPressPosition.x() )
+													  || ( _lastDragSelectionPosition.x() > _startPressPosition.x() && currentMousePos.x() < _startPressPosition.x() );
+
+					const bool isForwardStartPos = currentMousePos.x() > _startPressPosition.x();
+					const bool cursorMoveForward = currentMousePos.x() >= _lastDragSelectionPosition.x();
+
+					const Model::Residue * const closestLastResidueHovered
+						= _lastResidueHovered == nullptr ? _getClosestResidue( _lastDragSelectionPosition, cursorMoveForward ) : _lastResidueHovered;
+
+					// If the cursor switch side of the first clicked object, we clear the selection
+					if ( switchStartClickSide )
 					{
-						const bool getForwardResidue = _startPressPosition.x() > currentMousePos.x();
-						currentResidueHovered		 = _getClosestResidue( currentMousePos, getForwardResidue );
-					}
+						const Model::Residue * const startResidue = _getResidueAtPos( _startPressPosition );
 
-					if ( currentResidueHovered == nullptr )
-					{
-						_lastDragSelectionPosition = currentMousePos;
-						return;
-					}
+						const Model::Residue * closestResidueCurrentlyHovered
+							= currentResidueHovered == nullptr ? _getClosestResidue( currentMousePos, !isForwardStartPos, true ) : currentResidueHovered;
+						const Model::Residue * closestOfStart = startResidue == nullptr ? _getClosestResidue( _startPressPosition, !isForwardStartPos, true ) : startResidue;
 
-					const bool hoveredResidueAlreadySelected = _isSelected( *currentResidueHovered );
+						const Model::Residue * fromResidue = _compareResiduePos( *closestLastResidueHovered, *closestOfStart ) <= 0 ? closestLastResidueHovered : closestOfStart;
+						const Model::Residue * toResidue   = _compareResiduePos( *closestLastResidueHovered, *closestOfStart ) > 0 ? closestLastResidueHovered : closestOfStart;
 
-					if ( !hoveredResidueAlreadySelected )
-					{
-						const bool moveForward = _lastDragSelectionPosition.x() <= currentMousePos.x();
+						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
+						_unselect( _frameSelection );
 
-						if ( _lastResidueHovered == nullptr )
+						_frameSelection.clear();
+
+						if ( !( startResidue == nullptr && currentResidueHovered == nullptr && closestOfStart == closestResidueCurrentlyHovered ) )
 						{
-							_lastResidueHovered = _getClosestResidue( _lastDragSelectionPosition, moveForward );
-							_selectResidue( *_lastResidueHovered );
-						}
-						if ( moveForward )
-						{
-							const Model::Chain * const startChain = _lastResidueHovered->getChainPtr();
-							const Model::Chain * const endChain	  = currentResidueHovered->getChainPtr();
+							closestOfStart = startResidue == nullptr ? _getClosestResidue( _startPressPosition, isForwardStartPos, true ) : startResidue;
 
-							for ( uint iChain = startChain->getIndex(); iChain <= endChain->getIndex(); iChain++ )
-							{
-								const Model::Chain & currentChain = _model->getChain( iChain );
-								const uint startResidueIndex	  = ( &currentChain == startChain ) ? ( _lastResidueHovered->getIndex() + 1 ) : currentChain.getIndexFirstResidue();
-								const uint endResidueIndex
-									= ( &currentChain == endChain ) ? currentResidueHovered->getIndex() : currentChain.getIndexFirstResidue() + currentChain.getResidueCount() - 1;
+							fromResidue = _compareResiduePos( *closestOfStart, *closestResidueCurrentlyHovered ) <= 0 ? closestOfStart : closestResidueCurrentlyHovered;
+							toResidue	= _compareResiduePos( *closestOfStart, *closestResidueCurrentlyHovered ) > 0 ? closestOfStart : closestResidueCurrentlyHovered;
+							_getFromTo( *fromResidue, *toResidue, &_frameSelection );
 
-								for ( uint iResidue = startResidueIndex; iResidue <= endResidueIndex; iResidue++ )
-								{
-									Model::Residue & currentResidue = _model->getResidue( iResidue );
-									_selectResidue( currentResidue );
-								}
-							}
-						}
-						else
-						{
-							const Model::Chain * const startChain = _lastResidueHovered->getChainPtr();
-							const Model::Chain * const endChain	  = currentResidueHovered->getChainPtr();
-
-							for ( uint iChain = startChain->getIndex(); iChain >= endChain->getIndex(); iChain-- )
-							{
-								const Model::Chain & currentChain	   = _model->getChain( iChain );
-								const uint			 startResidueIndex = ( &currentChain == startChain ) ? ( _lastResidueHovered->getIndex() - 1 )
-																										 : currentChain.getIndexFirstResidue() + currentChain.getResidueCount() - 1;
-								const uint			 endResidueIndex   = ( &currentChain == endChain ) ? currentResidueHovered->getIndex() : currentChain.getIndexFirstResidue();
-
-								for ( uint iResidue = startResidueIndex; iResidue >= endResidueIndex; iResidue-- )
-								{
-									Model::Residue & currentResidue = _model->getResidue( iResidue );
-									_selectResidue( currentResidue );
-
-									// prevent uint go to maxSize
-									if ( iResidue == 0 )
-										break;
-								}
-
-								// prevent uint go to maxSize
-								if ( iChain == 0 )
-									break;
-							}
+							_select( _frameSelection );
 						}
 					}
 					else
 					{
-						// Because we add elements in the right order, we can pop the selection to the hovered residue
-						while ( _selection.back()->getId() != currentResidueHovered->getId() )
+						const bool isAddingToSelection
+							= ( isForwardStartPos && ( currentMousePos.x() - _startPressPosition.x() ) >= ( _lastDragSelectionPosition.x() - _startPressPosition.x() ) )
+							  || ( !isForwardStartPos && ( currentMousePos.x() - _startPressPosition.x() ) <= ( _lastDragSelectionPosition.x() - _startPressPosition.x() ) );
+
+						const Model::Residue * fromResidue;
+						const Model::Residue * toResidue;
+
+						if ( cursorMoveForward )
 						{
-							_selection.pop_back();
+							fromResidue = closestLastResidueHovered;
+
+							if ( currentResidueHovered == nullptr )
+							{
+								if ( isAddingToSelection )
+									toResidue = _getClosestResidue( currentMousePos, !isForwardStartPos );
+								else
+									toResidue = _getPreviousResidue( *_getClosestResidue( currentMousePos, !isForwardStartPos ) );
+							}
+							else if ( isAddingToSelection )
+								toResidue = currentResidueHovered;
+							else
+								toResidue = _getPreviousResidue( *currentResidueHovered );
 						}
+						else
+						{
+							if ( currentResidueHovered == nullptr )
+							{
+								if ( isAddingToSelection )
+									fromResidue = _getClosestResidue( currentMousePos, !isForwardStartPos );
+								else
+								{
+									fromResidue = _getClosestResidue( currentMousePos, !isForwardStartPos );
+									if ( fromResidue != nullptr )
+										fromResidue = _getNextResidue( *fromResidue );
+									else
+										fromResidue = _getClosestResidue( currentMousePos, isForwardStartPos );
+								}
+							}
+							else if ( isAddingToSelection )
+								fromResidue = currentResidueHovered;
+							else
+								fromResidue = _getNextResidue( *currentResidueHovered );
+
+							toResidue = closestLastResidueHovered;
+						}
+
+						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
+
+						if ( isAddingToSelection )
+							_select( _frameSelection );
+						else
+							_unselect( _frameSelection );
 					}
 
 					_repaintSelection();
@@ -255,38 +256,142 @@ namespace VTX
 					_lastDragSelectionPosition = currentMousePos;
 					_lastResidueHovered		   = currentResidueHovered;
 				}
-
 				void MoleculeSequenceWidget::mouseReleaseEvent( QMouseEvent * ev )
 				{
 					ViewItemWidget<Model::Molecule>::mouseReleaseEvent( ev );
-					_lastResidueHovered = nullptr;
+					//_lastResidueHovered = nullptr;
 				}
 
-				bool MoleculeSequenceWidget::_isSelected( const Model::Residue & residue ) const
+				Model::Residue * const MoleculeSequenceWidget::_getPreviousResidue( const Model::Residue & p_residue ) const
+				{
+					const Model::Chain * const chain			 = p_residue.getChainPtr();
+					const bool				   isFirstOfItsChain = p_residue.getIndex() == chain->getIndexFirstResidue();
+
+					if ( isFirstOfItsChain )
+					{
+						if ( chain->getIndex() > 0 )
+						{
+							const Model::Chain & previousChain = _model->getChain( chain->getIndex() - 1 );
+							return &( _model->getResidue( previousChain.getIndexFirstResidue() + previousChain.getResidueCount() - 1 ) );
+						}
+						else
+						{
+							return &( _model->getResidue( p_residue.getIndex() ) );
+						}
+					}
+					else
+					{
+						return &( _model->getResidue( p_residue.getIndex() - 1 ) );
+					}
+				}
+				Model::Residue * const MoleculeSequenceWidget::_getNextResidue( const Model::Residue & p_residue ) const
+				{
+					const Model::Chain * const chain			= p_residue.getChainPtr();
+					const bool				   isLastOfItsChain = p_residue.getIndex() == ( chain->getIndexFirstResidue() + chain->getResidueCount() - 1 );
+					if ( isLastOfItsChain )
+					{
+						if ( chain->getIndex() < ( _model->getChainCount() - 1 ) )
+						{
+							const Model::Chain & nextChain = _model->getChain( chain->getIndex() + 1 );
+							return &( _model->getResidue( nextChain.getIndexFirstResidue() ) );
+						}
+						else
+						{
+							return &( _model->getResidue( p_residue.getIndex() ) );
+						}
+					}
+					else
+					{
+						return &( _model->getResidue( p_residue.getIndex() + 1 ) );
+					}
+				}
+
+				int MoleculeSequenceWidget::_compareResiduePos( const Model::Residue & p_lhs, const Model::Residue & p_rhs ) const
+				{
+					const uint indexChainLhs = p_lhs.getChainPtr()->getIndex();
+					const uint indexChainRhs = p_rhs.getChainPtr()->getIndex();
+
+					if ( indexChainLhs < indexChainRhs )
+						return -1;
+					else if ( indexChainLhs > indexChainRhs )
+						return 1;
+					else
+					{
+						const uint indexLhs = p_lhs.getIndex();
+						const uint indexRhs = p_rhs.getIndex();
+
+						if ( indexLhs < indexRhs )
+							return -1;
+						else if ( indexLhs > indexRhs )
+							return 1;
+						else
+							return 0;
+					}
+				}
+				void MoleculeSequenceWidget::_getFromTo( const Model::Residue & p_from, const Model::Residue & p_to, std::vector<Model::Residue *> * const _container ) const
+				{
+					// const Model::Residue & startResidue = _compareResiduePos( p_from, p_to ) <= 0 ? p_from : p_to;
+					// const Model::Residue & endResidue	= _compareResiduePos( p_from, p_to ) > 0 ? p_from : p_to;
+					const Model::Residue & startResidue = p_from;
+					const Model::Residue & endResidue	= p_to;
+
+					const Model::Chain * const startChain = startResidue.getChainPtr();
+					const Model::Chain * const endChain	  = endResidue.getChainPtr();
+
+					for ( uint iChain = startChain->getIndex(); iChain <= endChain->getIndex(); iChain++ )
+					{
+						const Model::Chain & currentChain	   = _model->getChain( iChain );
+						const uint			 startResidueIndex = ( &currentChain == startChain ) ? startResidue.getIndex() : currentChain.getIndexFirstResidue();
+						const uint			 endResidueIndex
+							= ( &currentChain == endChain ) ? endResidue.getIndex() : currentChain.getIndexFirstResidue() + currentChain.getResidueCount() - 1;
+
+						for ( uint iResidue = startResidueIndex; iResidue <= endResidueIndex; iResidue++ )
+						{
+							Model::Residue & currentResidue = _model->getResidue( iResidue );
+							_container->emplace_back( &currentResidue );
+						}
+					}
+				}
+
+				bool MoleculeSequenceWidget::_isSelected( const Model::Residue * const residue ) const
 				{
 					for ( auto it : _selection )
 					{
-						if ( it->getId() == residue.getId() )
+						if ( it->getId() == residue->getId() )
 							return true;
 					}
 
 					return false;
 				}
-				void MoleculeSequenceWidget::_selectResidue( Model::Residue & p_residue )
+				void MoleculeSequenceWidget::_select( const std::vector<Model::Residue *> & p_residues )
 				{
-					_selection.emplace_back( &p_residue );
-					VTX::Selection::SelectionManager::get().getSelectionModel().selectResidue( p_residue );
+					for ( Model::Residue * residue : p_residues )
+						_select( residue );
 				}
-				void MoleculeSequenceWidget::_deselectResidue( Model::Residue & p_residue )
+				void MoleculeSequenceWidget::_select( Model::Residue * p_residue )
 				{
-					VTX::Selection::SelectionManager::get().getSelectionModel().unselectResidue( p_residue );
-
-					for ( int i = 0; i < _selection.size(); i++ )
+					if ( !_isSelected( p_residue ) )
 					{
-						if ( _selection[ i ]->getId() == p_residue.getId() )
+						_selection.emplace_back( p_residue );
+						VTX::Selection::SelectionManager::get().getSelectionModel().selectResidue( *p_residue );
+					}
+				}
+				void MoleculeSequenceWidget::_unselect( const std::vector<Model::Residue *> & p_residues )
+				{
+					for ( Model::Residue * residue : p_residues )
+					{
+						_unselect( residue );
+					}
+				}
+				void MoleculeSequenceWidget::_unselect( const Model::Residue * const p_residue )
+				{
+					for ( auto it = _selection.begin(); it != _selection.end(); it++ )
+					{
+						if ( ( *it )->getId() == p_residue->getId() )
 						{
-							_selection.erase( _selection.cbegin() + i );
-							return;
+							_selection.erase( it );
+							VTX::Selection::SelectionManager::get().getSelectionModel().unselectResidue( *p_residue );
+							break;
 						}
 					}
 				}
@@ -309,9 +414,9 @@ namespace VTX
 
 					return res;
 				}
-				Model::Residue * const MoleculeSequenceWidget::_getClosestResidue( const QPoint & p_pos, const bool p_next ) const
+				Model::Residue * const MoleculeSequenceWidget::_getClosestResidue( const QPoint & p_pos, const bool p_next, const bool p_forceGetValue ) const
 				{
-					Model::Residue *			res			  = nullptr;
+					Model::Residue *			res			  = p_forceGetValue ? &( _chainDisplayWidgets[ 0 ]->getFirstResidue() ) : nullptr;
 					const ChainSequenceWidget * previousChain = nullptr;
 
 					for ( auto it : _chainDisplayWidgets )

@@ -43,9 +43,6 @@ namespace VTX
 					void mouseMoveEvent( QMouseEvent * ev ) override;
 					void mouseReleaseEvent( QMouseEvent * ev ) override;
 
-					Model::Residue * const _getResidueAtPos( const QPoint & p_pos ) const;
-					Model::Residue * const _getClosestResidue( const QPoint & p_pos, const bool p_next ) const;
-
 					void _onScrollBarValueChanged();
 					void _updateLabelName( const Model::Chain & p_currentChainDisplayed );
 
@@ -56,15 +53,24 @@ namespace VTX
 					std::vector<ChainSequenceWidget *> _chainDisplayWidgets;
 					QHBoxLayout *					   _sequenceLayout = nullptr;
 
-					std::vector<Model::Residue *> _selection = std::vector<Model::Residue *>();
+					std::vector<Model::Residue *> _selection	  = std::vector<Model::Residue *>();
+					std::vector<Model::Residue *> _frameSelection = std::vector<Model::Residue *>();
+					QPoint						  _startPressPosition;
+					QPoint						  _lastDragSelectionPosition;
+					Model::Residue *			  _lastResidueHovered = nullptr;
 
-					QPoint			 _startPressPosition;
-					QPoint			 _lastDragSelectionPosition;
-					Model::Residue * _lastResidueHovered = nullptr;
+					int					   _compareResiduePos( const Model::Residue & p_lhs, const Model::Residue & p_rhs ) const;
+					void				   _getFromTo( const Model::Residue & p_from, const Model::Residue & p_to, std::vector<Model::Residue *> * const _container ) const;
+					Model::Residue * const _getResidueAtPos( const QPoint & p_pos ) const;
+					Model::Residue * const _getClosestResidue( const QPoint & p_pos, const bool p_next, const bool p_forceGetValue = false ) const;
 
-					bool _isSelected( const Model::Residue & residue ) const;
-					void _selectResidue( Model::Residue & p_residue );
-					void _deselectResidue( Model::Residue & p_residue );
+					bool				   _isSelected( const Model::Residue * const residue ) const;
+					void				   _select( const std::vector<Model::Residue *> & p_residues );
+					void				   _select( Model::Residue * p_residue );
+					void				   _unselect( const std::vector<Model::Residue *> & p_residues );
+					void				   _unselect( const Model::Residue * const p_residue );
+					Model::Residue * const _getPreviousResidue( const Model::Residue & p_residue ) const;
+					Model::Residue * const _getNextResidue( const Model::Residue & p_residue ) const;
 
 					void _clearSelection();
 					void _repaintSelection() const;
