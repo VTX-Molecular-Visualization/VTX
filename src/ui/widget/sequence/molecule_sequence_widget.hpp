@@ -29,6 +29,16 @@ namespace VTX
 				{
 					VTX_MANUAL_WIDGET_DECLARATION
 
+				  private:
+					enum class SelectionModifier
+					{
+						None,
+						Append,
+						ToggleSelect,
+						ForceUnselect,
+						ForceSelect,
+					};
+
 				  public:
 					void receiveEvent( const Event::VTXEvent & p_event ) override;
 					void refresh() override;
@@ -39,8 +49,8 @@ namespace VTX
 					void _setupUi( const QString & p_name ) override;
 					void _setupSlots() override;
 
-					void mousePressEvent( QMouseEvent * ev ) override;
-					void mouseMoveEvent( QMouseEvent * ev ) override;
+					void mousePressEvent( QMouseEvent * p_event ) override;
+					void mouseMoveEvent( QMouseEvent * p_event ) override;
 
 					void _onScrollBarValueChanged();
 					void _updateLabelName( const Model::Chain & p_currentChainDisplayed );
@@ -56,6 +66,7 @@ namespace VTX
 					QPoint						  _startPressPosition;
 					QPoint						  _lastDragSelectionPosition;
 					Model::Residue *			  _lastResidueHovered = nullptr;
+					SelectionModifier			  _selectionModifier  = SelectionModifier::None;
 
 					int					   _compareResiduePos( const Model::Residue & p_lhs, const Model::Residue & p_rhs ) const;
 					void				   _getFromTo( const Model::Residue & p_from, const Model::Residue & p_to, std::vector<Model::Residue *> * const _container ) const;
@@ -63,6 +74,9 @@ namespace VTX
 					Model::Residue * const _getClosestResidue( const QPoint & p_pos, const bool p_next, const bool p_forceGetValue = false ) const;
 					Model::Residue * const _getPreviousResidue( const Model::Residue & p_residue ) const;
 					Model::Residue * const _getNextResidue( const Model::Residue & p_residue ) const;
+					SelectionModifier	   _getModifier( const QMouseEvent * const p_event ) const;
+					void				   _applySelection( const bool p_select, Model::Residue * p_residue );
+					void				   _applySelection( const bool p_select, const std::vector<Model::Residue *> & p_residues );
 
 					// TMP waiting selection manager system
 					///////////////////////////////////////////////////////////////////////////////////////////
@@ -71,6 +85,8 @@ namespace VTX
 					bool _isSelected( const Model::Residue * const residue ) const;
 					void _select( const std::vector<Model::Residue *> & p_residues );
 					void _select( Model::Residue * p_residue );
+					void _toggleSelect( const std::vector<Model::Residue *> & p_residues );
+					void _toggleSelect( Model::Residue * p_residue );
 					void _unselect( const std::vector<Model::Residue *> & p_residues );
 					void _unselect( const Model::Residue * const p_residue );
 					void _clearSelection();

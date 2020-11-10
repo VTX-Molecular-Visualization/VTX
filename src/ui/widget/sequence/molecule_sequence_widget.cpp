@@ -112,45 +112,38 @@ namespace VTX
 					}
 				}
 
-				void MoleculeSequenceWidget::mousePressEvent( QMouseEvent * ev )
+				void MoleculeSequenceWidget::mousePressEvent( QMouseEvent * p_event )
 				{
-					ViewItemWidget<Model::Molecule>::mousePressEvent( ev );
+					ViewItemWidget<Model::Molecule>::mousePressEvent( p_event );
 
-					if ( !ev->buttons().testFlag( Qt::MouseButton::LeftButton ) )
+					if ( !p_event->buttons().testFlag( Qt::MouseButton::LeftButton ) )
 						return;
 
-					const bool appendToSelection = ev->modifiers() & ( Qt::KeyboardModifier::ControlModifier | Qt::KeyboardModifier::ShiftModifier );
-
-					if ( !appendToSelection )
-						_clearSelection();
-
-					_startPressPosition		   = _scrollAreaContent->mapFromGlobal( ev->globalPos() );
+					_startPressPosition		   = _scrollAreaContent->mapFromGlobal( p_event->globalPos() );
 					_lastDragSelectionPosition = _startPressPosition;
+
+					_selectionModifier = _getModifier( p_event );
+
+					if ( _selectionModifier == SelectionModifier::None )
+						_clearSelection();
 
 					Model::Residue * const residueHovered = _getResidueAtPos( _startPressPosition );
 
 					if ( residueHovered != nullptr )
-					{
-						if ( _isSelected( residueHovered ) )
-							_unselect( residueHovered );
-						else
-							_select( residueHovered );
-					}
+						_applySelection( !_isSelected( residueHovered ), residueHovered );
 
 					_lastResidueHovered = residueHovered;
 					_repaintSelection();
 				}
 
-				void MoleculeSequenceWidget::mouseMoveEvent( QMouseEvent * ev )
+				void MoleculeSequenceWidget::mouseMoveEvent( QMouseEvent * p_event )
 				{
-					ViewItemWidget<Model::Molecule>::mouseMoveEvent( ev );
+					ViewItemWidget<Model::Molecule>::mouseMoveEvent( p_event );
 
-					if ( !ev->buttons().testFlag( Qt::MouseButton::LeftButton ) )
+					if ( !p_event->buttons().testFlag( Qt::MouseButton::LeftButton ) )
 						return;
 
-					_frameSelection.clear();
-
-					const QPoint	 currentMousePos	   = _scrollAreaContent->mapFromGlobal( ev->globalPos() );
+					const QPoint	 currentMousePos	   = _scrollAreaContent->mapFromGlobal( p_event->globalPos() );
 					Model::Residue * currentResidueHovered = _getResidueAtPos( currentMousePos );
 
 					if ( currentResidueHovered == _lastResidueHovered )
@@ -179,9 +172,7 @@ namespace VTX
 						const Model::Residue * toResidue   = _compareResiduePos( *closestLastResidueHovered, *closestOfStart ) > 0 ? closestLastResidueHovered : closestOfStart;
 
 						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
-						_unselect( _frameSelection );
-
-						_frameSelection.clear();
+						_applySelection( false, _frameSelection );
 
 						if ( !( startResidue == nullptr && currentResidueHovered == nullptr && closestOfStart == closestResidueCurrentlyHovered ) )
 						{
@@ -191,7 +182,7 @@ namespace VTX
 							toResidue	= _compareResiduePos( *closestOfStart, *closestResidueCurrentlyHovered ) > 0 ? closestOfStart : closestResidueCurrentlyHovered;
 							_getFromTo( *fromResidue, *toResidue, &_frameSelection );
 
-							_select( _frameSelection );
+							_applySelection( true, _frameSelection );
 						}
 					}
 					else
@@ -203,7 +194,10 @@ namespace VTX
 
 						if ( cursorMoveForward )
 						{
-							fromResidue = closestLastResidueHovered;
+							if ( addToSelection )
+								fromResidue = _getNextResidue( *closestLastResidueHovered );
+							else
+								fromResidue = closestLastResidueHovered;
 
 							toResidue = _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick );
 							if ( !addToSelection )
@@ -220,21 +214,79 @@ namespace VTX
 									fromResidue = _getNextResidue( *fromResidue );
 							}
 
-							toResidue = closestLastResidueHovered;
+							if ( addToSelection )
+								toResidue = _getPreviousResidue( *closestLastResidueHovered );
+							else
+								toResidue = closestLastResidueHovered;
 						}
 
 						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
 
-						if ( addToSelection )
-							_select( _frameSelection );
-						else
-							_unselect( _frameSelection );
+						_applySelection( addToSelection, _frameSelection );
 					}
 
 					_repaintSelection();
 
 					_lastDragSelectionPosition = currentMousePos;
 					_lastResidueHovered		   = currentResidueHovered;
+				}
+
+				void MoleculeSequenceWidget::_applySelection( const bool p_select, Model::Residue * p_residue )
+				{
+					switch ( _selectionModifier )
+					{
+					case SelectionModifier::ForceSelect: _select( p_residue ); break;
+					case SelectionModifier::ToggleSelect: _toggleSelect( p_residue ); break;
+					case SelectionModifier::ForceUnselect: _unselect( p_residue ); break;
+					default:
+						if ( p_select )
+							_select( p_residue );
+						else
+							_unselect( p_residue );
+						break;
+					}
+				}
+
+				void MoleculeSequenceWidget::_applySelection( const bool p_select, const std::vector<Model::Residue *> & p_residues )
+				{
+					switch ( _selectionModifier )
+					{
+					case SelectionModifier::ForceSelect: _select( p_residues ); break;
+					case SelectionModifier::ToggleSelect: _toggleSelect( p_residues ); break;
+					case SelectionModifier::ForceUnselect: _unselect( p_residues ); break;
+					default:
+						if ( p_select )
+							_select( p_residues );
+						else
+							_unselect( p_residues );
+						break;
+					}
+
+					_frameSelection.clear();
+				}
+
+				MoleculeSequenceWidget::SelectionModifier MoleculeSequenceWidget::_getModifier( const QMouseEvent * const p_event ) const
+				{
+					SelectionModifier res;
+
+					Qt::KeyboardModifiers modifierFlag = p_event->modifiers();
+
+					bool ctrlModifier  = modifierFlag.testFlag( Qt::KeyboardModifier::ControlModifier );
+					bool shiftModifier = modifierFlag.testFlag( Qt::KeyboardModifier::ShiftModifier );
+					bool altModifier   = modifierFlag.testFlag( Qt::KeyboardModifier::AltModifier );
+
+					if ( shiftModifier && altModifier )
+						res = SelectionModifier::ToggleSelect;
+					else if ( shiftModifier )
+						res = SelectionModifier::Append;
+					else if ( ctrlModifier )
+						res = SelectionModifier::ForceUnselect;
+					else if ( altModifier )
+						res = SelectionModifier::ForceSelect;
+					else
+						res = SelectionModifier::None;
+
+					return res;
 				}
 
 				Model::Residue * const MoleculeSequenceWidget::_getPreviousResidue( const Model::Residue & p_residue ) const
@@ -411,6 +463,18 @@ namespace VTX
 							break;
 						}
 					}
+				}
+				void MoleculeSequenceWidget::_toggleSelect( const std::vector<Model::Residue *> & p_residues )
+				{
+					for ( Model::Residue * residue : p_residues )
+						_toggleSelect( residue );
+				}
+				void MoleculeSequenceWidget::_toggleSelect( Model::Residue * p_residue )
+				{
+					if ( _isSelected( p_residue ) )
+						_unselect( p_residue );
+					else
+						_select( p_residue );
 				}
 				void MoleculeSequenceWidget::_clearSelection() { _selection.clear(); }
 
