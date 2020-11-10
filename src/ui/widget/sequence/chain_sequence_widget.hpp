@@ -34,7 +34,7 @@ namespace VTX
 
 					Model::Residue & getResidueAtPos( const QPoint & p_pos ) const;
 					Model::Residue & getFirstResidue() const { return _model->getMoleculePtr()->getResidue( _model->getIndexFirstResidue() ); };
-					Model::Residue & getLastResidue() const { return _model->getMoleculePtr()->getResidue( _model->getIndexFirstResidue() + _model->getResidueCount() - 1 ); };
+					Model::Residue & getLastResidue() const { return _model->getMoleculePtr()->getResidue( _model->getIndexLastResidue() ); };
 
 					void updateSelection( const std::vector<Model::Residue *> & p_selection ) { _sequenceDisplayWidget->updateSelection( p_selection ); };
 
