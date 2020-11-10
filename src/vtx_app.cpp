@@ -3,6 +3,7 @@
 #include "action/main.hpp"
 #include "action/setting.hpp"
 #include "event/event_manager.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "util/filesystem.hpp"
 #include "worker/worker_manager.hpp"
@@ -19,20 +20,31 @@ namespace VTX
 	{
 		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
 
+		// Create scene.
 		_scene = new Object3D::Scene();
 		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
 
+		// Create statemachine.
 		_stateMachine = new State::StateMachine();
 		_stateMachine->goToState( ID::State::VISUALIZATION );
 
+		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );
 
+		// Create UI.
 		_initQt();
 		_mainWindow = new UI::MainWindow();
 		_mainWindow->show();
 
+		// Create singletons.
+		MVC::MvcManager::get();
+		Action::ActionManager::get();
+		Event::EventManager::get();
+		Selection::SelectionManager::get();
+
 		VTX_INFO( "Application started" );
 
+		// Start timers.
 		_timer		  = new QTimer( this );
 		_elapsedTimer = new QElapsedTimer();
 
