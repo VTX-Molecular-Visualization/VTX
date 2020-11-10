@@ -276,13 +276,13 @@ namespace VTX
 					bool altModifier   = modifierFlag.testFlag( Qt::KeyboardModifier::AltModifier );
 
 					if ( shiftModifier && altModifier )
-						res = SelectionModifier::ToggleSelect;
+						res = SelectionModifier::ForceSelect;
+					else if ( ctrlModifier && altModifier )
+						res = SelectionModifier::ForceUnselect;
 					else if ( shiftModifier )
 						res = SelectionModifier::Append;
 					else if ( ctrlModifier )
-						res = SelectionModifier::ForceUnselect;
-					else if ( altModifier )
-						res = SelectionModifier::ForceSelect;
+						res = SelectionModifier::ToggleSelect;
 					else
 						res = SelectionModifier::None;
 
