@@ -11,8 +11,6 @@
 #include <QTreeWidget>
 #include <QVariant>
 
-Q_DECLARE_METATYPE( VTX::Model::ID )
-
 namespace VTX
 {
 	namespace UI
