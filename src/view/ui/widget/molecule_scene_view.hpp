@@ -21,20 +21,19 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class MoleculeSceneView : public View::BaseView<Model::Molecule>, public QTreeWidgetItem, public VTX::UI::Widget::BaseManualWidgetInitializer
+				class MoleculeSceneView : public View::BaseView<Model::Molecule>, public VTX::UI::Widget::BaseManualWidgetInitializer, public QTreeWidgetItem
 				{
 					VTX_MANUAL_WIDGET_DECLARATION
 
 				  public:
-					MoleculeSceneView( Model::Molecule * const p_model, QTreeWidgetItem * const p_parent ) :
-						View::BaseView<Model::Molecule>( p_model ), QTreeWidgetItem( p_parent ), BaseManualWidgetInitializer()
-					{
-					}
-
 					void localize() override;
 					void notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = nullptr ) override;
 
 				  protected:
+					MoleculeSceneView( Model::Molecule * const p_model, QTreeWidgetItem * const p_parent ) :
+						View::BaseView<Model::Molecule>( p_model ), BaseManualWidgetInitializer(), QTreeWidgetItem( p_parent )
+					{
+					}
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
 

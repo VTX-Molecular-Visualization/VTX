@@ -10,6 +10,7 @@
 #include <QComboBox>
 #include <QDockWidget>
 #include <QString>
+#include <QTreeWidgetItem>
 
 namespace VTX
 {
@@ -33,7 +34,8 @@ namespace VTX
 					void _setupSlots() override;
 
 				  private:
-					QComboBox * _selectionTypeComboBox;
+					QTreeWidget * _treeWidget			 = nullptr;
+					QComboBox *	  _selectionTypeComboBox = nullptr;
 
 					void _populateItemList();
 					void _selectionTypeChangedAction( const int p_newIndex );

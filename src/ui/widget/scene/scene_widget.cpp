@@ -51,7 +51,8 @@ namespace VTX
 
 						// Set no parent to not trigger ItemChange event during init
 						View::UI::Widget::MoleculeSceneView * const item
-							= WidgetFactory::get().getSceneItem<View::UI::Widget::MoleculeSceneView, Model::Molecule>( castedEvent.ptr, nullptr, "MoleculeStructure" );
+							= WidgetFactory::get().getViewWidget<View::UI::Widget::MoleculeSceneView, Model::Molecule, QTreeWidgetItem>(
+								castedEvent.ptr, nullptr, "MoleculeStructure" );
 
 						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, item );
 

@@ -26,7 +26,7 @@ namespace VTX
 		{
 			class BaseManualWidgetInitializer
 			{
-				friend ::VTX::UI::WidgetFactory;
+				VTX_MANUAL_WIDGET_DECLARATION
 
 			  public:
 				virtual ~BaseManualWidgetInitializer() = default;

@@ -1,5 +1,7 @@
 #include "selection_widget.hpp"
+#include "model/selection.hpp"
 #include "style.hpp"
+#include "view/ui/widget/selection_view.hpp"
 #include "vtx_app.hpp"
 #include <QVBoxLayout>
 #include <QtGlobal>
@@ -13,11 +15,33 @@ namespace VTX
 		{
 			namespace Selection
 			{
-				SelectionWidget::SelectionWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) { _registerEvent( Event::Global::SELECTION_CHANGE ); }
+				SelectionWidget::SelectionWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
+				{
+					_registerEvent( Event::Global::SELECTION_ADDED );
+					_registerEvent( Event::Global::SELECTION_REMOVED );
+				}
 
 				void SelectionWidget::receiveEvent( const Event::VTXEvent & p_event )
 				{
-					if ( p_event.name == Event::Global::SELECTION_CHANGE ) {}
+					if ( p_event.name == Event::Global::SELECTION_ADDED )
+					{
+						const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+						View::UI::Widget::SelectionView * const		 item
+							= WidgetFactory::get().getViewWidget<View::UI::Widget::SelectionView, Model::Selection, QTreeWidgetItem>( castedEvent.ptr, nullptr, "Selection" );
+						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_SELECTION, item );
+						_treeWidget->addTopLevelItem( item );
+					}
+					else if ( p_event.name == Event::Global::SELECTION_REMOVED )
+					{
+						const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+						const Model::Selection * const				 selection	 = castedEvent.ptr;
+
+						View::UI::Widget::SelectionView * const selectionWidget
+							= MVC::MvcManager::get().removeViewOnModel<Model::Selection, View::UI::Widget::SelectionView>( selection, ID::View::UI_SELECTION );
+
+						_treeWidget->removeItemWidget( selectionWidget, 0 );
+						delete selectionWidget;
+					}
 				}
 
 				void SelectionWidget::_setupUi( const QString & p_name )
@@ -34,6 +58,12 @@ namespace VTX
 
 					_selectionTypeComboBox->setCurrentIndex( (int)Style::SELECTION_WINDOW_DEFAULT_SELECTION );
 
+					_treeWidget = new QTreeWidget( this );
+					_treeWidget->setObjectName( QString::fromUtf8( "selectionTree" ) );
+					_treeWidget->setColumnCount( 1 );
+					_treeWidget->setHeaderHidden( true );
+
+					layout->addWidget( _treeWidget );
 					layout->addWidget( _selectionTypeComboBox );
 					layout->addStretch( 100 );
 
@@ -65,7 +95,7 @@ namespace VTX
 						switch ( selectionType )
 						{
 						case VTX::Selection::SelectionType::ATOM: txt = "Atom"; break;
-						//case VTX::Selection::SelectionType::BOND: txt = "Bond"; break;
+						case VTX::Selection::SelectionType::BOND: txt = "Bond"; break;
 						case VTX::Selection::SelectionType::CHAINS: txt = "Chain"; break;
 						case VTX::Selection::SelectionType::MOLECULE: txt = "Molecule"; break;
 						case VTX::Selection::SelectionType::RESIDUE: txt = "Residue"; break;

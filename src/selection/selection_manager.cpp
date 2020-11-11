@@ -8,9 +8,13 @@ namespace VTX
 {
 	namespace Selection
 	{
-		SelectionManager::SelectionManager() { _selectionModel = MVC::MvcManager::get().instantiate<Model::Selection>(); }
+		SelectionManager::SelectionManager()
+		{
+			_selectionModel = MVC::MvcManager::get().instantiate<Model::Selection>();
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SELECTION_ADDED, _selectionModel ) );
+		}
 
-		SelectionManager::~SelectionManager() { MVC::MvcManager::get().deleteModel( _selectionModel ); }
+		SelectionManager::~SelectionManager() {}
 
 	} // namespace Selection
 } // namespace VTX
