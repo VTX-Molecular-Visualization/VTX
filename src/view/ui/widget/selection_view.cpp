@@ -74,7 +74,9 @@ namespace VTX
 				{
 					for ( uint i = 0; i < uint( childCount() ); ++i )
 					{
-						removeChild( child( i ) );
+						QTreeWidgetItem * const c = child( i );
+						removeChild( c );
+						delete c;
 					}
 				}
 
