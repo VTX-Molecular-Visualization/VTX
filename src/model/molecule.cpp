@@ -323,6 +323,16 @@ namespace VTX
 			_secondaryStructure->print();
 		}
 
+		void Molecule::setVisible( const bool p_visible )
+		{
+			if ( isVisible() != p_visible )
+			{
+				BaseVisible::setVisible( p_visible );
+
+				_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
+			}
+		}
+
 		void Molecule::toggleSequenceVisibility()
 		{
 			if ( MVC::MvcManager::get().hasView( this, ID::View::UI_MOLECULE_SEQUENCE ) )

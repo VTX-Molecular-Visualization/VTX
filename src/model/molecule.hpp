@@ -191,6 +191,7 @@ namespace VTX
 
 			void print() const;
 
+			void setVisible( const bool );
 			void render() override;
 
 			bool mergeTopology( const Molecule & );

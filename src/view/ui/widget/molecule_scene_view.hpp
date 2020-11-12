@@ -40,13 +40,9 @@ namespace VTX
 					void _onItemExpanded( QTreeWidgetItem * );
 					void _onItemCollapsed( QTreeWidgetItem * );
 
-					void _refreshItem( QTreeWidgetItem * const p_itemWidget );
-					void _refreshItem( const Model::ID & p_id );
-
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Molecule & p_model ) const;
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Chain & p_model ) const;
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Residue & p_model ) const;
-					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Atom & p_model ) const;
 
 					void _sendEnableStateChangeAction( const Model::ID & p_modelID, const bool modelEnabled ) const;
 

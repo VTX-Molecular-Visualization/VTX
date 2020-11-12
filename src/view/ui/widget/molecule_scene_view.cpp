@@ -20,15 +20,27 @@ namespace VTX
 			{
 				void MoleculeSceneView::notify( const Event::VTXEvent * const p_event )
 				{
-					/*
-					if ( p_event == Event::Model::CHILD_DATA_CHANGE )
+					if ( p_event->name == Event::Model::MOLECULE_VISIBILITY )
 					{
-						const Event::VTXEventTemplated<Model::ID> * const castedEventData = dynamic_cast<const Event::VTXEventTemplated<Model::ID> *>( p_eventData );
-
-						const Model::ID idChildModified = castedEventData->value;
-						_refreshItem( idChildModified );
+						_refreshItem( topLevelItem( 0 ), *_model );
 					}
-					*/
+					else if ( p_event->name == Event::Model::CHAIN_VISIBILITY )
+
+					{
+						const Event::VTXEventValue<uint> * const castedEventData = dynamic_cast<const Event::VTXEventValue<uint> *>( p_event );
+						const uint								 index			 = castedEventData->value;
+						const Model::Chain &					 chain			 = _model->getChain( index );
+						_refreshItem( topLevelItem( 0 )->child( index ), chain );
+					}
+					else if ( p_event->name == Event::Model::RESIDUE_VISIBILITY )
+
+					{
+						const Event::VTXEventValue<uint> * const castedEventData = dynamic_cast<const Event::VTXEventValue<uint> *>( p_event );
+						const uint								 index			 = castedEventData->value;
+						const Model::Residue &					 residue		 = _model->getResidue( index );
+						const Model::Chain &					 chain			 = *residue.getChainPtr();
+						_refreshItem( topLevelItem( 0 )->child( chain.getIndex() )->child( residue.getIndex() - chain.getIndexFirstResidue() ), residue );
+					}
 				}
 
 				void MoleculeSceneView::_setupUi( const QString & p_name )
@@ -78,7 +90,6 @@ namespace VTX
 								atomView->setData( 0, Qt::UserRole, QVariant::fromValue( atom.getId() ) );
 								atomView->setText( 0, QString::fromStdString( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) ) );
 								atomView->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( atom.getTypeId() ) );
-								_refreshItem( atomView, atom );
 
 								residueView->addChild( atomView );
 							}
@@ -104,44 +115,6 @@ namespace VTX
 						const bool		modelEnabled = p_item->checkState( 0 ) == Qt::CheckState::Checked ? true : false;
 
 						_sendEnableStateChangeAction( id, modelEnabled );
-					}
-				}
-
-				void MoleculeSceneView::_sendEnableStateChangeAction( const Model::ID & p_modelID, const bool modelEnabled ) const
-				{
-					ID::VTX_ID modelTypeId = MVC::MvcManager::get().getModelTypeID( p_modelID );
-
-					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
-					{
-						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
-							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
-
-						Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( p_modelID );
-						VTX_ACTION( new Action::Molecule::ChangeVisibility( model, visibilityMode ) );
-					}
-					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
-					{
-						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
-							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
-
-						Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( p_modelID );
-						VTX_ACTION( new Action::Chain::ChangeVisibility( model, visibilityMode ) );
-					}
-					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
-					{
-						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
-							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
-
-						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( p_modelID );
-						VTX_ACTION( new Action::Residue::ChangeVisibility( model, visibilityMode ) );
-					}
-					else if ( modelTypeId == ID::Model::MODEL_ATOM )
-					{
-						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
-							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
-
-						Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( p_modelID );
-						VTX_ACTION( new Action::Atom::ChangeVisibility( model, visibilityMode ) );
 					}
 				}
 
@@ -177,77 +150,55 @@ namespace VTX
 
 				void MoleculeSceneView::_onItemCollapsed( QTreeWidgetItem * p_item ) {}
 
-				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget )
-				{
-					Model::ID		   modelId = p_itemWidget->data( 0, Qt::UserRole ).value<VTX::Model::ID>();
-					const ID::VTX_ID & typeId  = MVC::MvcManager::get().getModelTypeID( modelId );
-
-					if ( typeId == ID::Model::MODEL_MOLECULE )
-						_refreshItem( p_itemWidget, MVC::MvcManager::get().getModel<Model::Molecule>( modelId ) );
-					else if ( typeId == ID::Model::MODEL_CHAIN )
-						_refreshItem( p_itemWidget, MVC::MvcManager::get().getModel<Model::Chain>( modelId ) );
-					else if ( typeId == ID::Model::MODEL_RESIDUE )
-						_refreshItem( p_itemWidget, MVC::MvcManager::get().getModel<Model::Residue>( modelId ) );
-					else if ( typeId == ID::Model::MODEL_ATOM )
-						_refreshItem( p_itemWidget, MVC::MvcManager::get().getModel<Model::Atom>( modelId ) );
-				}
-				void MoleculeSceneView::_refreshItem( const Model::ID & p_id )
-				{
-					const ID::VTX_ID & typeId = MVC::MvcManager::get().getModelTypeID( p_id );
-
-					if ( typeId == ID::Model::MODEL_MOLECULE )
-					{
-						_refreshItem( topLevelItem( 0 ) );
-					}
-					else if ( typeId == ID::Model::MODEL_CHAIN )
-					{
-						const Model::Chain &	chain = MVC::MvcManager::get().getModel<Model::Chain>( p_id );
-						QTreeWidgetItem * const item  = topLevelItem( 0 )->child( chain.getIndex() );
-
-						_refreshItem( item, chain );
-					}
-					else if ( typeId == ID::Model::MODEL_RESIDUE )
-					{
-						const Model::Residue &	   residue = MVC::MvcManager::get().getModel<Model::Residue>( p_id );
-						const Model::Chain * const chain   = residue.getChainPtr();
-						QTreeWidgetItem * const	   item	   = topLevelItem( 0 )->child( chain->getIndex() )->child( residue.getIndex() - chain->getIndexFirstResidue() );
-
-						_refreshItem( item, residue );
-					}
-					else if ( typeId == ID::Model::MODEL_ATOM )
-					{
-						const Model::Atom &			 atom	 = MVC::MvcManager::get().getModel<Model::Atom>( p_id );
-						const Model::Residue * const residue = atom.getResiduePtr();
-						const Model::Chain * const	 chain	 = residue->getChainPtr();
-						QTreeWidgetItem * const		 item	 = topLevelItem( 0 )->child( chain->getIndex() )->child( residue->getIndex() - chain->getIndexFirstResidue() );
-
-						_refreshItem( item, atom );
-					}
-				}
-
 				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Molecule & p_model ) const
 				{
 					const Qt::CheckState newCheckState = _getCheckState( p_model.isVisible() );
 					if ( p_itemWidget->checkState( 0 ) != newCheckState )
 						p_itemWidget->setCheckState( 0, newCheckState );
 				}
+
 				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Chain & p_model ) const
 				{
 					const Qt::CheckState newCheckState = _getCheckState( p_model.isVisible() );
 					if ( p_itemWidget->checkState( 0 ) != newCheckState )
 						p_itemWidget->setCheckState( 0, newCheckState );
 				}
+
 				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Residue & p_model ) const
 				{
 					const Qt::CheckState newCheckState = _getCheckState( p_model.isVisible() );
 					if ( p_itemWidget->checkState( 0 ) != newCheckState )
 						p_itemWidget->setCheckState( 0, newCheckState );
 				}
-				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Atom & p_model ) const
+
+				void MoleculeSceneView::_sendEnableStateChangeAction( const Model::ID & p_modelID, const bool modelEnabled ) const
 				{
-					const Qt::CheckState newCheckState = _getCheckState( p_model.isVisible() );
-					if ( p_itemWidget->checkState( 0 ) != newCheckState )
-						p_itemWidget->setCheckState( 0, newCheckState );
+					ID::VTX_ID modelTypeId = MVC::MvcManager::get().getModelTypeID( p_modelID );
+
+					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+					{
+						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
+							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
+
+						Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( p_modelID );
+						VTX_ACTION( new Action::Molecule::ChangeVisibility( model, visibilityMode ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+					{
+						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
+							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
+
+						Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( p_modelID );
+						VTX_ACTION( new Action::Chain::ChangeVisibility( model, visibilityMode ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+					{
+						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
+							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
+
+						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( p_modelID );
+						VTX_ACTION( new Action::Residue::ChangeVisibility( model, visibilityMode ) );
+					}
 				}
 
 			} // namespace Widget
