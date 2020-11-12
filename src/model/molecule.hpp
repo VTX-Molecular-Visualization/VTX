@@ -198,13 +198,6 @@ namespace VTX
 			void createSecondaryStructure();
 			void toggleSequenceVisibility();
 
-			void notifyChildDataChange( const ID & p_childId )
-			{
-				Event::VTXEventModelData * const tmpData = new Event::VTXEventModelDataTemplated<ID>( p_childId );
-				_notifyViews( Event::Model::CHILD_DATA_CHANGE, tmpData );
-				delete tmpData;
-			}
-
 		  protected:
 			void _computeGlobalPositionsAABB();
 			void _init() override;

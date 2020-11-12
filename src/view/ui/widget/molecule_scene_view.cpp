@@ -18,16 +18,17 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				void MoleculeSceneView::notify( const Event::Model & p_event, const Event::VTXEventModelData * const p_eventData )
+				void MoleculeSceneView::notify( const Event::VTXEvent * const p_event )
 				{
+					/*
 					if ( p_event == Event::Model::CHILD_DATA_CHANGE )
 					{
-						const Event::VTXEventModelDataTemplated<Model::ID> * const castedEventData
-							= dynamic_cast<const Event::VTXEventModelDataTemplated<Model::ID> *>( p_eventData );
+						const Event::VTXEventTemplated<Model::ID> * const castedEventData = dynamic_cast<const Event::VTXEventTemplated<Model::ID> *>( p_eventData );
 
 						const Model::ID idChildModified = castedEventData->value;
 						_refreshItem( idChildModified );
 					}
+					*/
 				}
 
 				void MoleculeSceneView::_setupUi( const QString & p_name )

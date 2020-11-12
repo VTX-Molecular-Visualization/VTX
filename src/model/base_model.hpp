@@ -50,8 +50,8 @@ namespace VTX
 			const std::string *			  _name	   = &DEFAULT_NAME;
 			const VTX::ID::VTX_ID * const _typeId;
 
-			void		_notifyViews( const Event::Model & p_event, const Event::VTXEventModelData * const p_eventData = nullptr );
-			inline void _notifyDataChanged() { _notifyViews( Event::Model::DATA_CHANGE ); }
+			void		_notifyViews( const Event::VTXEvent * const p_event );
+			inline void _notifyDataChanged() { _notifyViews( new Event::VTXEvent( Event::Model::DATA_CHANGE ) ); }
 		};
 	} // namespace Model
 } // namespace VTX

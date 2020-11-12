@@ -27,7 +27,7 @@ namespace VTX
 
 				  public:
 					void localize() override;
-					void notify( const Event::Model & p_event, const Event::VTXEventModelData * const p_eventData = nullptr ) override;
+					void notify( const Event::VTXEvent * const p_event ) override;
 
 				  protected:
 					MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent ) : View::BaseView<Model::Molecule>( p_model ), BaseManualWidget( p_parent ) {}
