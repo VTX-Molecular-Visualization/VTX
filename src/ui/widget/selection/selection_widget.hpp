@@ -11,6 +11,7 @@
 #include <QDockWidget>
 #include <QString>
 #include <QTreeWidgetItem>
+#include "model/selection.hpp"
 
 namespace VTX
 {
@@ -36,6 +37,14 @@ namespace VTX
 				  private:
 					QTreeWidget * _treeWidget			 = nullptr;
 					QComboBox *	  _selectionTypeComboBox = nullptr;
+
+					void _onItemClicked( QTreeWidgetItem *, int );
+
+					inline Model::ID _getModelID( const QTreeWidgetItem & p_item ) const
+					{
+						const QVariant & dataID = p_item.data( 0, Qt::UserRole );
+						return dataID.value<VTX::Model::ID>();
+					}
 
 					void _populateItemList();
 					void _selectionTypeChangedAction( const int p_newIndex );
