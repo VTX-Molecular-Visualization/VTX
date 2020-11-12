@@ -49,7 +49,7 @@ namespace VTX
 							const Model::Residue &	residue		= _model->getResidue( chain->getIndexFirstResidue() + r );
 							QTreeWidgetItem * const residueView = new QTreeWidgetItem( chainView );
 							residueView->setData( 0, Qt::UserRole, QVariant::fromValue( residue.getId() ) );
-							residueView->setText( 0, QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndex() ) ) );
+							residueView->setText( 0, QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndex() + 1 ) ) );
 							residueView->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( residue.getTypeId() ) );
 							_refreshItem( residueView, residue );
 
