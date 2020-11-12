@@ -38,8 +38,8 @@ namespace VTX
 				return res;
 			};
 
-			template<typename V, typename M>
-			V * getSceneItem( M * const p_model, QTreeWidgetItem * const p_parent, const std::string & p_name ) const
+			template<typename V, typename M, typename W>
+			V * getViewWidget( M * const p_model, W * const p_parent, const std::string & p_name ) const
 			{
 				QString qstringName = QString::fromStdString( p_name );
 

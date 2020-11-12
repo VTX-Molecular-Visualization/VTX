@@ -33,7 +33,7 @@ namespace VTX
 					_refreshItem( this, *_model );
 
 					// Chains.
-					for ( Model::Chain * const chain : _model->getChains() )
+					for ( const Model::Chain * const chain : _model->getChains() )
 					{
 						QTreeWidgetItem * const chainView = new QTreeWidgetItem( this );
 						chainView->setData( 0, Qt::UserRole, QVariant::fromValue( chain->getId() ) );
@@ -46,10 +46,10 @@ namespace VTX
 						// Residues.
 						for ( uint r = 0; r < chain->getResidueCount(); ++r )
 						{
-							Model::Residue &		residue		= _model->getResidue( chain->getIndexFirstResidue() + r );
+							const Model::Residue &	residue		= _model->getResidue( chain->getIndexFirstResidue() + r );
 							QTreeWidgetItem * const residueView = new QTreeWidgetItem( chainView );
 							residueView->setData( 0, Qt::UserRole, QVariant::fromValue( residue.getId() ) );
-							residueView->setText( 0, QString::fromStdString( residue.getDefaultName() ) );
+							residueView->setText( 0, QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndex() ) ) );
 							residueView->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( residue.getTypeId() ) );
 							_refreshItem( residueView, residue );
 
@@ -58,10 +58,10 @@ namespace VTX
 							// Atom.
 							for ( uint a = 0; a < residue.getAtomCount(); ++a )
 							{
-								Model::Atom &			atom	 = _model->getAtom( residue.getIndexFirstAtom() + a );
+								const Model::Atom &		atom	 = _model->getAtom( residue.getIndexFirstAtom() + a );
 								QTreeWidgetItem * const atomView = new QTreeWidgetItem( residueView );
 								atomView->setData( 0, Qt::UserRole, QVariant::fromValue( atom.getId() ) );
-								atomView->setText( 0, QString::fromStdString( atom.getSymbolStr() ) );
+								atomView->setText( 0, QString::fromStdString( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) ) );
 								atomView->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( atom.getTypeId() ) );
 								_refreshItem( atomView, atom );
 
