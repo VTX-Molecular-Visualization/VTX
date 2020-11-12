@@ -25,7 +25,6 @@ namespace VTX
 						_refreshItem( topLevelItem( 0 ), *_model );
 					}
 					else if ( p_event->name == Event::Model::CHAIN_VISIBILITY )
-
 					{
 						const Event::VTXEventValue<uint> * const castedEventData = dynamic_cast<const Event::VTXEventValue<uint> *>( p_event );
 						const uint								 index			 = castedEventData->value;
@@ -49,52 +48,51 @@ namespace VTX
 					setColumnCount( 1 );
 					setHeaderHidden( true );
 
-					QTreeWidgetItem * const moleculeView = new QTreeWidgetItem( this );
+					QTreeWidgetItem * const moleculeView = new QTreeWidgetItem();
 
 					moleculeView->setData( 0, Qt::UserRole, QVariant::fromValue<VTX::Model::ID>( _model->getId() ) );
 					moleculeView->setText( 0, QString::fromStdString( _model->getDefaultName() ) );
 					moleculeView->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( _model->getTypeId() ) );
-
-					addTopLevelItem( moleculeView );
-
 					_refreshItem( moleculeView, *_model );
 
 					// Chains.
 					for ( const Model::Chain * const chain : _model->getChains() )
 					{
-						QTreeWidgetItem * const chainView = new QTreeWidgetItem( moleculeView );
+						QTreeWidgetItem * const chainView = new QTreeWidgetItem();
 						chainView->setData( 0, Qt::UserRole, QVariant::fromValue( chain->getId() ) );
 						chainView->setText( 0, QString::fromStdString( chain->getDefaultName() ) );
 						chainView->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( chain->getTypeId() ) );
 						_refreshItem( chainView, *chain );
 
-						moleculeView->addChild( chainView );
-
 						// Residues.
 						for ( uint r = 0; r < chain->getResidueCount(); ++r )
 						{
 							const Model::Residue &	residue		= _model->getResidue( chain->getIndexFirstResidue() + r );
-							QTreeWidgetItem * const residueView = new QTreeWidgetItem( chainView );
+							QTreeWidgetItem * const residueView = new QTreeWidgetItem();
 							residueView->setData( 0, Qt::UserRole, QVariant::fromValue( residue.getId() ) );
 							residueView->setText( 0, QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndex() ) ) );
 							residueView->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( residue.getTypeId() ) );
 							_refreshItem( residueView, residue );
 
-							chainView->addChild( residueView );
-
 							// Atom.
 							for ( uint a = 0; a < residue.getAtomCount(); ++a )
 							{
 								const Model::Atom &		atom	 = _model->getAtom( residue.getIndexFirstAtom() + a );
-								QTreeWidgetItem * const atomView = new QTreeWidgetItem( residueView );
+								QTreeWidgetItem * const atomView = new QTreeWidgetItem();
 								atomView->setData( 0, Qt::UserRole, QVariant::fromValue( atom.getId() ) );
 								atomView->setText( 0, QString::fromStdString( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) ) );
 								atomView->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( atom.getTypeId() ) );
 
 								residueView->addChild( atomView );
 							}
+
+							chainView->addChild( residueView );
 						}
+
+						moleculeView->addChild( chainView );
 					}
+
+					addTopLevelItem( moleculeView );
 				}
 
 				void MoleculeSceneView::_setupSlots()
