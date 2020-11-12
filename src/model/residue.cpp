@@ -24,7 +24,8 @@ namespace VTX
 			if ( isVisible() != p_visible )
 			{
 				BaseVisible ::setVisible( p_visible );
-				getMoleculePtr()->notifyChildDataChange( getId() );
+
+				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
 			}
 		}
 

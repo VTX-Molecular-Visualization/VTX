@@ -13,10 +13,7 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				void SelectionView::notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData )
-				{
-					BaseView::notify( p_event, p_eventData );
-				}
+				void SelectionView::notify( const Event::VTXEvent * const p_event ) { BaseView::notify( p_event ); }
 
 				void SelectionView::_setupUi( const QString & p_name ) { refreshView(); }
 
@@ -74,7 +71,9 @@ namespace VTX
 				{
 					for ( uint i = 0; i < uint( childCount() ); ++i )
 					{
-						removeChild( child( i ) );
+						QTreeWidgetItem * const c = child( i );
+						removeChild( c );
+						delete c;
 					}
 				}
 

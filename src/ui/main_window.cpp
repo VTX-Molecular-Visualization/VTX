@@ -82,7 +82,7 @@ namespace VTX
 			resizeDocks( { _sceneWidget, _renderWidget, _inspectorWidget }, { 1, 5, 1 }, Qt::Orientation::Horizontal );
 		}
 
-		void MainWindow::_onDockWindowVisibilityChange( const bool p_visible ) { VTX_EVENT( new Event::VTXEvent( Event::UI::DOCK_WINDOW_VISIBILITY_CHANGE ) ); }
+		void MainWindow::_onDockWindowVisibilityChange( const bool p_visible ) { VTX_EVENT( new Event::VTXEvent( Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE ) ); }
 
 		void MainWindow::closeEvent( QCloseEvent * p_event )
 		{

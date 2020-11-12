@@ -191,6 +191,7 @@ namespace VTX
 
 			void print() const;
 
+			void setVisible( const bool );
 			void render() override;
 
 			bool mergeTopology( const Molecule & );
@@ -198,12 +199,6 @@ namespace VTX
 			void createSecondaryStructure();
 			void toggleSequenceVisibility();
 
-			void notifyChildDataChange( const ID & p_childId )
-			{
-				Event::VTXEventModelData * const tmpData = new Event::VTXEventModelDataTemplated<ID>( p_childId );
-				_notifyViews( Event::VTX_EVENT_MODEL::CHILD_DATA_CHANGE, tmpData );
-				delete tmpData;
-			}
 		  protected:
 			void _computeGlobalPositionsAABB();
 			void _init() override;

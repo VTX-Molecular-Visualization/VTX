@@ -44,13 +44,13 @@ namespace VTX
 
 			inline bool hasView( const ID::VTX_ID & p_id ) { return _views.getItem( p_id ); };
 
-			void notifyViews( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = nullptr ) const
+			void notifyViews( const Event::VTXEvent * const p_event ) const
 			{
 				const Generic::HasCollection<View::BaseView<Model::BaseModel>>::MapStringToItemPtr * const mapViews = _views.getItems();
 
 				for ( const Generic::HasCollection<View::BaseView<Model::BaseModel>>::PairStringToItemPtr & pair : *mapViews )
 				{
-					pair.second->notify( p_event, p_eventData );
+					pair.second->notify( p_event );
 				}
 			};
 

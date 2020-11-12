@@ -20,9 +20,9 @@ namespace VTX
 			explicit BaseView( T * const p_model ) : _model( p_model ) {}
 			virtual ~BaseView() = default;
 
-			virtual void notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = nullptr )
+			virtual void notify( const Event::VTXEvent * const p_event )
 			{
-				if ( p_event == Event::VTX_EVENT_MODEL::DATA_CHANGE )
+				if ( p_event->name == Event::Model::DATA_CHANGE )
 				{
 					refreshView();
 				}

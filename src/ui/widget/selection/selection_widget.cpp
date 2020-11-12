@@ -1,5 +1,6 @@
 #include "selection_widget.hpp"
-#include "model/selection.hpp"
+#include "action/action_manager.hpp"
+#include "action/selection.hpp"
 #include "style.hpp"
 #include "view/ui/widget/selection_view.hpp"
 #include "vtx_app.hpp"
@@ -73,6 +74,7 @@ namespace VTX
 				void SelectionWidget::_setupSlots()
 				{
 					connect( _selectionTypeComboBox, QOverload<int>::of( &QComboBox::currentIndexChanged ), this, &SelectionWidget::_selectionTypeChangedAction );
+					connect( _treeWidget, &QTreeWidget::itemClicked, this, &SelectionWidget::_onItemClicked );
 				}
 
 				void SelectionWidget::_selectionTypeChangedAction( const int p_newIndex ) { VTX_INFO( std::to_string( p_newIndex ) + " selected." ); }
@@ -83,6 +85,34 @@ namespace VTX
 
 					this->setWindowTitle( "Selection" );
 					// this->setWindowTitle( QCoreApplication::translate( "SceneWidget", "Scene", nullptr ) );
+				}
+
+				void SelectionWidget::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
+				{
+					const Model::ID &  modelId		  = _getModelID( *p_item );
+					ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( modelId );
+					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+					{
+						Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+						VTX_ACTION( new Action::Selection::UnselectMolecule( selectionModel, model ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+					{
+						Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+						VTX_ACTION( new Action::Selection::UnselectChain( selectionModel, model ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+					{
+						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+						VTX_ACTION( new Action::Selection::UnselectResidue( selectionModel, model ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_ATOM )
+					{
+						Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+						VTX_ACTION( new Action::Selection::UnselectAtom( selectionModel, model ) );
+					}
 				}
 
 				void SelectionWidget::_populateItemList()

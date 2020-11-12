@@ -17,52 +17,35 @@ namespace VTX
 	namespace Event
 	{
 		// Global system events [n-n].
-		using VTX_EVENT = std::string;
+		using VTX_EVENT = int;
 
-		namespace Global
+		enum Global
 		{
-			const VTX_EVENT LOG_CONSOLE			= "LOG_CONSOLE";
-			const VTX_EVENT CHANGE_STATE		= "CHANGE_STATE";
-			const VTX_EVENT UPDATE_PROGRESS_BAR = "UPDATE_PROGRESS_BAR";
-			const VTX_EVENT MOLECULE_ADDED		= "MOLECULE_ADDED";
-			const VTX_EVENT MOLECULE_REMOVED	= "MOLECULE_REMOVED";
-			const VTX_EVENT MESH_ADDED			= "MESH_ADDED";
-			const VTX_EVENT MESH_REMOVED		= "MESH_REMOVED";
-			const VTX_EVENT SELECTION_ADDED		= "SELECTION_ADDED";
-			const VTX_EVENT SELECTION_REMOVED	= "SELECTION_REMOVED";
-			const VTX_EVENT SELECTION_CHANGE	= "SELECTION_CHANGE";
-			const VTX_EVENT CONTROLLER_CHANGE	= "CONTROLLER_CHANGE";
+			LOG_CONSOLE,
+			CHANGE_STATE,
+			UPDATE_PROGRESS_BAR,
+			MOLECULE_ADDED,
+			MOLECULE_REMOVED,
+			MESH_ADDED,
+			MESH_REMOVED,
+			SELECTION_ADDED,
+			SELECTION_REMOVED,
+			SELECTION_CHANGE,
+			CONTROLLER_CHANGE,
+			DOCK_WINDOW_VISIBILITY_CHANGE
 
-		} // namespace Global
-
-		namespace UI
-		{
-			const VTX_EVENT DOCK_WINDOW_VISIBILITY_CHANGE = "DOCK_WINDOW_VISIBILITY_CHANGE";
-		}
+		};
 
 		// Model events for notifier pattern (model->views)[1-n].
-		enum class VTX_EVENT_MODEL : int
+		enum Model
 		{
 			INIT,
 			RENDER,
 			DATA_CHANGE,
-			CHILD_DATA_CHANGE,
-			
-		};
+			MOLECULE_VISIBILITY,
+			CHAIN_VISIBILITY,
+			RESIDUE_VISIBILITY
 
-		struct VTXEventModelData
-		{
-		  public:
-			VTXEventModelData() {};
-			virtual ~VTXEventModelData() = default;
-		};
-
-		template<typename T>
-		struct VTXEventModelDataTemplated : public VTXEventModelData
-		{
-		  public:
-			VTXEventModelDataTemplated( const T & p_value ) : VTXEventModelData(), value( p_value ) {};
-			const T & value;
 		};
 
 		// Base event without args.

@@ -24,7 +24,7 @@ namespace VTX
 
 				  public:
 					void		 localize() override;
-					virtual void notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = 0 ) override;
+					virtual void notify( const Event::VTXEvent * const p_event ) override;
 
 				  protected:
 					SelectionView( Model::Selection * const p_model, QTreeWidgetItem * const p_parent ) :
