@@ -33,10 +33,15 @@ namespace VTX
 					enum class SelectionModifier
 					{
 						None,
-						Append,
 						ToggleSelect,
 						ForceUnselect,
 						ForceSelect,
+					};
+					enum class ClickModifier
+					{
+						Clear,
+						Append,
+						TakeFromTo,
 					};
 
 				  public:
@@ -51,6 +56,7 @@ namespace VTX
 
 					void mousePressEvent( QMouseEvent * p_event ) override;
 					void mouseMoveEvent( QMouseEvent * p_event ) override;
+					void mouseReleaseEvent( QMouseEvent * p_event ) override;
 
 					void _onScrollBarValueChanged();
 					void _updateLabelName( const Model::Chain & p_currentChainDisplayed );
@@ -64,6 +70,8 @@ namespace VTX
 
 					std::vector<Model::Residue *> _frameSelection = std::vector<Model::Residue *>();
 					QPoint						  _startPressPosition;
+					Model::Residue *			  _startResidueHovered			   = nullptr;
+					const Model::Residue *		  _closestResidueFromStartPosition = nullptr;
 					QPoint						  _lastDragSelectionPosition;
 					Model::Residue *			  _lastResidueHovered = nullptr;
 					SelectionModifier			  _selectionModifier  = SelectionModifier::None;
@@ -72,9 +80,11 @@ namespace VTX
 					void				   _getFromTo( const Model::Residue & p_from, const Model::Residue & p_to, std::vector<Model::Residue *> * const _container ) const;
 					Model::Residue * const _getResidueAtPos( const QPoint & p_pos ) const;
 					Model::Residue * const _getClosestResidue( const QPoint & p_pos, const bool p_next, const bool p_forceGetValue = false ) const;
-					Model::Residue * const _getPreviousResidue( const Model::Residue & p_residue ) const;
-					Model::Residue * const _getNextResidue( const Model::Residue & p_residue ) const;
-					SelectionModifier	   _getModifier( const QMouseEvent * const p_event ) const;
+					Model::Residue * const _getPreviousResidue( const Model::Residue & p_residue, const bool p_forceResult ) const;
+					Model::Residue * const _getNextResidue( const Model::Residue & p_residue, const bool p_forceResult ) const;
+					QPoint				   _getResiduePos( const Model::Residue & p_residue ) const;
+					SelectionModifier	   _getSelectionModifier( const QMouseEvent * const p_event ) const;
+					ClickModifier		   _getClickModifier( const QMouseEvent * const p_event ) const;
 					void				   _applySelection( const bool p_select, Model::Residue * p_residue );
 					void				   _applySelection( const bool p_select, const std::vector<Model::Residue *> & p_residues );
 

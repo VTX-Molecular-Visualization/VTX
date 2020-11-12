@@ -119,23 +119,60 @@ namespace VTX
 					if ( !p_event->buttons().testFlag( Qt::MouseButton::LeftButton ) )
 						return;
 
-					_startPressPosition		   = _scrollAreaContent->mapFromGlobal( p_event->globalPos() );
-					_lastDragSelectionPosition = _startPressPosition;
+					_startPressPosition				 = _scrollAreaContent->mapFromGlobal( p_event->globalPos() );
+					_startResidueHovered			 = _getResidueAtPos( _startPressPosition );
+					_closestResidueFromStartPosition = _getClosestResidue( _startPressPosition, _startPressPosition.x() < _lastDragSelectionPosition.x(), true );
+					_selectionModifier				 = _getSelectionModifier( p_event );
 
-					_selectionModifier = _getModifier( p_event );
-
-					if ( _selectionModifier == SelectionModifier::None )
+					const ClickModifier clickModifier = _getClickModifier( p_event );
+					if ( clickModifier == ClickModifier::Clear )
 						_clearSelection();
 
-					Model::Residue * const residueHovered = _getResidueAtPos( _startPressPosition );
+					if ( clickModifier == ClickModifier::TakeFromTo && !( _startResidueHovered == nullptr && _lastResidueHovered == nullptr ) )
+					{
+						Model::Residue * const closestResidueFromPreviousClick
+							= _getClosestResidue( _lastDragSelectionPosition, _startPressPosition.x() > _lastDragSelectionPosition.x(), true );
 
-					if ( residueHovered != nullptr )
-						_applySelection( !_isSelected( residueHovered ), residueHovered );
+						const Model::Residue * const fromResidue = _compareResiduePos( *_closestResidueFromStartPosition, *closestResidueFromPreviousClick ) <= 0
+																	   ? _closestResidueFromStartPosition
+																	   : closestResidueFromPreviousClick;
 
-					_lastResidueHovered = residueHovered;
+						const Model::Residue * const toResidue = _compareResiduePos( *_closestResidueFromStartPosition, *closestResidueFromPreviousClick ) > 0
+																	 ? _closestResidueFromStartPosition
+																	 : closestResidueFromPreviousClick;
+
+						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
+
+						const bool select = _startResidueHovered == nullptr ? true : !_isSelected( _startResidueHovered );
+						_applySelection( select, _frameSelection );
+
+						// If we select, we set the start of selection with the first selected residue of the current block
+						if ( select )
+						{
+							Model::Residue * firstResidueOfSelection = closestResidueFromPreviousClick;
+							Model::Residue * previousResidue		 = closestResidueFromPreviousClick;
+							const bool		 searchForward			 = _lastDragSelectionPosition.x() > _startPressPosition.x();
+
+							while ( previousResidue != nullptr && _isSelected( previousResidue ) )
+							{
+								firstResidueOfSelection = previousResidue;
+								previousResidue = searchForward ? _getNextResidue( *firstResidueOfSelection, false ) : _getPreviousResidue( *firstResidueOfSelection, false );
+							}
+
+							_startResidueHovered			 = firstResidueOfSelection;
+							_closestResidueFromStartPosition = firstResidueOfSelection;
+							_startPressPosition				 = _getResiduePos( *firstResidueOfSelection );
+						}
+					}
+					else if ( _startResidueHovered != nullptr )
+					{
+						_applySelection( !_isSelected( _startResidueHovered ), _startResidueHovered );
+					}
+
+					_lastDragSelectionPosition = _startPressPosition;
+					_lastResidueHovered		   = _startResidueHovered;
 					_repaintSelection();
 				}
-
 				void MoleculeSequenceWidget::mouseMoveEvent( QMouseEvent * p_event )
 				{
 					ViewItemWidget<Model::Molecule>::mouseMoveEvent( p_event );
@@ -152,8 +189,8 @@ namespace VTX
 						return;
 					}
 
-					const bool switchSideFromStartClick = ( _lastDragSelectionPosition.x() < _startPressPosition.x() && currentMousePos.x() > _startPressPosition.x() )
-														  || ( _lastDragSelectionPosition.x() > _startPressPosition.x() && currentMousePos.x() < _startPressPosition.x() );
+					const bool switchSideFromStartClick = ( _lastDragSelectionPosition.x() < _startPressPosition.x() && currentMousePos.x() >= _startPressPosition.x() )
+														  || ( _lastDragSelectionPosition.x() > _startPressPosition.x() && currentMousePos.x() <= _startPressPosition.x() );
 
 					const bool cursorInFrontOfStartClick = currentMousePos.x() > _startPressPosition.x();
 					const bool cursorMoveForward		 = currentMousePos.x() >= _lastDragSelectionPosition.x();
@@ -195,7 +232,7 @@ namespace VTX
 						if ( cursorMoveForward )
 						{
 							if ( addToSelection && _lastResidueHovered != nullptr )
-								fromResidue = _getNextResidue( *closestLastResidueHovered );
+								fromResidue = _getNextResidue( *closestLastResidueHovered, true );
 							else
 								fromResidue = closestLastResidueHovered;
 
@@ -205,7 +242,7 @@ namespace VTX
 								toResidue = _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick );
 
 							if ( !addToSelection )
-								toResidue = _getPreviousResidue( *toResidue );
+								toResidue = _getPreviousResidue( *toResidue, true );
 						}
 						else
 						{
@@ -215,17 +252,16 @@ namespace VTX
 								if ( fromResidue == nullptr )
 									fromResidue = _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick, true );
 								else
-									fromResidue = _getNextResidue( *fromResidue );
+									fromResidue = _getNextResidue( *fromResidue, true );
 							}
 
 							if ( addToSelection && _lastResidueHovered != nullptr )
-								toResidue = _getPreviousResidue( *closestLastResidueHovered );
+								toResidue = _getPreviousResidue( *closestLastResidueHovered, true );
 							else
 								toResidue = closestLastResidueHovered;
 						}
 
 						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
-
 						_applySelection( addToSelection, _frameSelection );
 					}
 
@@ -233,6 +269,17 @@ namespace VTX
 
 					_lastDragSelectionPosition = currentMousePos;
 					_lastResidueHovered		   = currentResidueHovered;
+				}
+				void MoleculeSequenceWidget::mouseReleaseEvent( QMouseEvent * p_event )
+				{
+					if ( p_event->button() != Qt::MouseButton::LeftButton )
+						return;
+
+					// We update these data here if from to click selection is used and no move has been done (_lastDragSelectionPosition and _lastResidueHovered may not be up to
+					// date)
+					const QPoint currentMousePos = _scrollAreaContent->mapFromGlobal( p_event->globalPos() );
+					_lastDragSelectionPosition	 = currentMousePos;
+					_lastResidueHovered			 = _getResidueAtPos( _lastDragSelectionPosition );
 				}
 
 				void MoleculeSequenceWidget::_applySelection( const bool p_select, Model::Residue * p_residue )
@@ -250,7 +297,6 @@ namespace VTX
 						break;
 					}
 				}
-
 				void MoleculeSequenceWidget::_applySelection( const bool p_select, const std::vector<Model::Residue *> & p_residues )
 				{
 					switch ( _selectionModifier )
@@ -269,7 +315,7 @@ namespace VTX
 					_frameSelection.clear();
 				}
 
-				MoleculeSequenceWidget::SelectionModifier MoleculeSequenceWidget::_getModifier( const QMouseEvent * const p_event ) const
+				MoleculeSequenceWidget::SelectionModifier MoleculeSequenceWidget::_getSelectionModifier( const QMouseEvent * const p_event ) const
 				{
 					SelectionModifier res;
 
@@ -281,19 +327,36 @@ namespace VTX
 
 					if ( shiftModifier && altModifier )
 						res = SelectionModifier::ForceSelect;
-					else if ( ctrlModifier && altModifier )
+					else if ( ( ctrlModifier && altModifier ) || ( shiftModifier && _isSelected( _closestResidueFromStartPosition ) ) )
 						res = SelectionModifier::ForceUnselect;
-					else if ( shiftModifier )
-						res = SelectionModifier::Append;
-					else if ( ctrlModifier )
+					else if ( ( ctrlModifier || shiftModifier ) && _isSelected( _closestResidueFromStartPosition ) )
 						res = SelectionModifier::ToggleSelect;
 					else
 						res = SelectionModifier::None;
 
 					return res;
 				}
+				MoleculeSequenceWidget::ClickModifier MoleculeSequenceWidget::_getClickModifier( const QMouseEvent * const p_event ) const
+				{
+					ClickModifier res;
 
-				Model::Residue * const MoleculeSequenceWidget::_getPreviousResidue( const Model::Residue & p_residue ) const
+					Qt::KeyboardModifiers modifierFlag = p_event->modifiers();
+
+					bool ctrlModifier  = modifierFlag.testFlag( Qt::KeyboardModifier::ControlModifier );
+					bool shiftModifier = modifierFlag.testFlag( Qt::KeyboardModifier::ShiftModifier );
+					bool altModifier   = modifierFlag.testFlag( Qt::KeyboardModifier::AltModifier );
+
+					if ( shiftModifier )
+						res = ClickModifier::TakeFromTo;
+					else if ( ctrlModifier || altModifier )
+						res = ClickModifier::Append;
+					else
+						res = ClickModifier::Clear;
+
+					return res;
+				}
+
+				Model::Residue * const MoleculeSequenceWidget::_getPreviousResidue( const Model::Residue & p_residue, const bool p_forceResult ) const
 				{
 					const Model::Chain * const chain			 = p_residue.getChainPtr();
 					const bool				   isFirstOfItsChain = p_residue.getIndex() == chain->getIndexFirstResidue();
@@ -307,7 +370,7 @@ namespace VTX
 						}
 						else
 						{
-							return &( _model->getResidue( p_residue.getIndex() ) );
+							return p_forceResult ? &( _model->getResidue( p_residue.getIndex() ) ) : nullptr;
 						}
 					}
 					else
@@ -315,7 +378,7 @@ namespace VTX
 						return &( _model->getResidue( p_residue.getIndex() - 1 ) );
 					}
 				}
-				Model::Residue * const MoleculeSequenceWidget::_getNextResidue( const Model::Residue & p_residue ) const
+				Model::Residue * const MoleculeSequenceWidget::_getNextResidue( const Model::Residue & p_residue, const bool p_forceResult ) const
 				{
 					const Model::Chain * const chain			= p_residue.getChainPtr();
 					const bool				   isLastOfItsChain = p_residue.getIndex() == ( chain->getIndexLastResidue() );
@@ -324,7 +387,7 @@ namespace VTX
 						if ( chain->getIndex() < ( _model->getChainCount() - 1 ) )
 						{
 							const Model::Chain & nextChain = _model->getChain( chain->getIndex() + 1 );
-							return &( _model->getResidue( nextChain.getIndexFirstResidue() ) );
+							return p_forceResult ? &( _model->getResidue( nextChain.getIndexFirstResidue() ) ) : nullptr;
 						}
 						else
 						{
@@ -335,6 +398,12 @@ namespace VTX
 					{
 						return &( _model->getResidue( p_residue.getIndex() + 1 ) );
 					}
+				}
+				QPoint MoleculeSequenceWidget::_getResiduePos( const Model::Residue & p_residue ) const
+				{
+					const int						  chainIndex	 = p_residue.getChainPtr()->getIndex();
+					const ChainSequenceWidget * const sequenceWidget = _chainDisplayWidgets[ chainIndex ];
+					return sequenceWidget->getResiduePos( p_residue, _scrollAreaContent );
 				}
 
 				int MoleculeSequenceWidget::_compareResiduePos( const Model::Residue & p_lhs, const Model::Residue & p_rhs ) const

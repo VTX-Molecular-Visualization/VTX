@@ -43,9 +43,10 @@ namespace VTX
 						_moleculeSelection = &p_selection;
 						repaint();
 					};
+					QPoint getResiduePos( const Model::Residue & p_residue, const QWidget * const p_widgetSpace ) const;
 
 				  protected:
-					void mouseDoubleClickEvent( QMouseEvent * ev ) override;
+					void mouseDoubleClickEvent( QMouseEvent * p_event ) override;
 
 					virtual void paintEvent( QPaintEvent * ) override;
 

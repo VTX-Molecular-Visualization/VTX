@@ -77,9 +77,9 @@ namespace VTX
 					setText( sequenceTxt );
 				}
 
-				void SequenceDisplayWidget::mouseDoubleClickEvent( QMouseEvent * ev )
+				void SequenceDisplayWidget::mouseDoubleClickEvent( QMouseEvent * p_event )
 				{
-					const uint			   residueIndex = _getResidueIndexFromLocaleXPos( ev->localPos().x() );
+					const uint			   residueIndex = _getResidueIndexFromLocaleXPos( p_event->localPos().x() );
 					const Model::Residue & residue		= _getResidue( residueIndex );
 
 					ev->accept();
@@ -148,6 +148,21 @@ namespace VTX
 				uint SequenceDisplayWidget::_getLocalResidueIndexFromResidue( const Model::Residue & p_residue ) const
 				{
 					return p_residue.getIndex() - _chain->getIndexFirstResidue();
+				}
+				QPoint SequenceDisplayWidget::getResiduePos( const Model::Residue & p_residue, const QWidget * const p_widgetSpace ) const
+				{
+					const uint	localIndex = _getLocalResidueIndexFromResidue( p_residue );
+					const uint	charIndex  = _getCharIndex( localIndex );
+					const float charSize   = _fontMetrics->averageCharWidth();
+
+					const int posX = (int)( charIndex * charSize + charSize * 0.5f );
+					const int posY = height() / 2;
+
+					const QPoint localPos		= QPoint( posX, posY );
+					const QPoint globalPos		= mapToGlobal( localPos );
+					const QPoint widgetSpacePos = p_widgetSpace->mapFromGlobal( globalPos );
+
+					return widgetSpacePos;
 				}
 
 				bool SequenceDisplayWidget::_checkUnknownResidue( const uint p_localResidueIndex, const UnknownResidueData *& p_unknownResidueData ) const
