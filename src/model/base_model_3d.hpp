@@ -39,7 +39,7 @@ namespace VTX
 			virtual void render()
 			{
 				_buffer->bind();
-				_notifyViews( Event::VTX_EVENT_MODEL::RENDER );
+				_notifyViews( Event::Model::RENDER );
 				_buffer->unbind();
 			}
 
@@ -51,7 +51,7 @@ namespace VTX
 				_instanciate3DViews();
 
 				_isInit = true;
-				_notifyViews( Event::VTX_EVENT_MODEL::INIT );
+				_notifyViews( Event::Model::INIT );
 			}
 
 		  protected:

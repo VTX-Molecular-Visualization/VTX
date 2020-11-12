@@ -29,9 +29,9 @@ namespace VTX
 
 			inline OpenGLFunctions * const _gl() { return _model->getBuffer()->gl(); }
 
-			void notify( const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = nullptr ) override
+			void notify( const Event::Model & p_event, const Event::VTXEventModelData * const p_eventData = nullptr ) override
 			{
-				if ( p_event == Event::VTX_EVENT_MODEL::RENDER )
+				if ( p_event == Event::Model::RENDER )
 				{
 					render();
 				}

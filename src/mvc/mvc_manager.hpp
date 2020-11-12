@@ -105,7 +105,7 @@ namespace VTX
 
 			inline bool hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { return _getMvcData( p_model )->hasView( p_id ); };
 
-			inline void notifyView( const Model::BaseModel * const p_caller, const Event::VTX_EVENT_MODEL & p_event, const Event::VTXEventModelData * const p_eventData = nullptr )
+			inline void notifyView( const Model::BaseModel * const p_caller, const Event::Model & p_event, const Event::VTXEventModelData * const p_eventData = nullptr )
 			{
 				_getMvcData( p_caller )->notifyViews( p_event, p_eventData );
 			}

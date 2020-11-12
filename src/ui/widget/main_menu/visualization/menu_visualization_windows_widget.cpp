@@ -15,14 +15,14 @@ namespace VTX
 				{
 					MenuVisualizationWindowsWidget::MenuVisualizationWindowsWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 					{
-						_registerEvent( Event::UI::DOCK_WINDOW_VISIBILITY_CHANGE );
+						_registerEvent( Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
 					}
 
 					MenuVisualizationWindowsWidget::~MenuVisualizationWindowsWidget() {}
 
 					void MenuVisualizationWindowsWidget::receiveEvent( const Event::VTXEvent & p_event )
 					{
-						if ( p_event.name == Event::UI::DOCK_WINDOW_VISIBILITY_CHANGE )
+						if ( p_event.name == Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
 						{
 							refresh();
 						}
