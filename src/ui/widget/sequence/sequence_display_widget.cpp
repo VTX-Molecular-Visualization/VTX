@@ -82,7 +82,7 @@ namespace VTX
 					const uint			   residueIndex = _getResidueIndexFromLocaleXPos( p_event->localPos().x() );
 					const Model::Residue & residue		= _getResidue( residueIndex );
 
-					ev->accept();
+					p_event->accept();
 
 					VTX_INFO( "Double click on " + residue.getSymbolName() );
 				}
