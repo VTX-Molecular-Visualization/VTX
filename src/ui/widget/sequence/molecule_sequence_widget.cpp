@@ -549,7 +549,11 @@ namespace VTX
 					else
 						_select( p_residue );
 				}
-				void MoleculeSequenceWidget::_clearSelection() { _selection.clear(); }
+				void MoleculeSequenceWidget::_clearSelection()
+				{
+					_selection.clear();
+					VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+				}
 
 				void MoleculeSequenceWidget::_repaintSelection() const
 				{
