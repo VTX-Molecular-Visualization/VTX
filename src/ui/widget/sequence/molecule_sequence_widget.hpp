@@ -48,6 +48,7 @@ namespace VTX
 					void receiveEvent( const Event::VTXEvent & p_event ) override;
 					void refresh() override;
 					void localize() override;
+					void repaintSelection() const;
 
 				  protected:
 					MoleculeSequenceWidget( QWidget * p_parent );
@@ -100,7 +101,6 @@ namespace VTX
 					void _unselect( const std::vector<Model::Residue *> & p_residues );
 					void _unselect( const Model::Residue * const p_residue );
 					void _clearSelection();
-					void _repaintSelection() const;
 					///////////////////////////////////////////////////////////////////////////////////////////
 				};
 			} // namespace Sequence

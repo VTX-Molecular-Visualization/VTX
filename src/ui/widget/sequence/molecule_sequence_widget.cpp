@@ -1,5 +1,6 @@
 #include "molecule_sequence_widget.hpp"
 #include "model/selection.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "sequence_display_widget.hpp"
 #include "style.hpp"
@@ -20,7 +21,8 @@ namespace VTX
 
 				void MoleculeSequenceWidget::receiveEvent( const Event::VTXEvent & p_event )
 				{
-					if ( p_event.name == Event::Global::SELECTION_CHANGE ) {}
+					if ( p_event.name == Event::Global::SELECTION_CHANGE )
+						repaintSelection();
 				}
 
 				void MoleculeSequenceWidget::_setupUi( const QString & p_name )
@@ -171,7 +173,6 @@ namespace VTX
 
 					_lastDragSelectionPosition = _startPressPosition;
 					_lastResidueHovered		   = _startResidueHovered;
-					_repaintSelection();
 				}
 				void MoleculeSequenceWidget::mouseMoveEvent( QMouseEvent * p_event )
 				{
@@ -264,8 +265,6 @@ namespace VTX
 						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
 						_applySelection( addToSelection, _frameSelection );
 					}
-
-					_repaintSelection();
 
 					_lastDragSelectionPosition = currentMousePos;
 					_lastResidueHovered		   = currentResidueHovered;
@@ -555,12 +554,10 @@ namespace VTX
 					VTX::Selection::SelectionManager::get().getSelectionModel().clear();
 				}
 
-				void MoleculeSequenceWidget::_repaintSelection() const
+				void MoleculeSequenceWidget::repaintSelection() const
 				{
 					for ( auto it : _chainDisplayWidgets )
-					{
-						it->updateSelection( _selection );
-					}
+						it->repaintSelection( _selection );
 				}
 			} // namespace Sequence
 		}	  // namespace Widget

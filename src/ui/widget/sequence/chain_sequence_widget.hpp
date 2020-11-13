@@ -40,7 +40,7 @@ namespace VTX
 						return _sequenceDisplayWidget->getResiduePos( p_residue, p_widgetSpace );
 					}
 
-					void updateSelection( const std::vector<Model::Residue *> & p_selection ) { _sequenceDisplayWidget->updateSelection( p_selection ); };
+					void repaintSelection( const std::vector<Model::Residue *> & p_selection ) const { _sequenceDisplayWidget->repaint(); };
 
 				  protected:
 					ChainSequenceWidget( QWidget * p_parent );

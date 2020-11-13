@@ -1,5 +1,6 @@
 #include "sequence_display_widget.hpp"
 #include "model/molecule.hpp"
+#include "selection/selection_manager.hpp"
 #include "style.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
@@ -196,22 +197,42 @@ namespace VTX
 					painter.setWorldMatrixEnabled( false );
 					painter.setBrush( Qt::NoBrush );
 
-					if ( _moleculeSelection != nullptr )
+					const int charSize = (int)_fontMetrics->averageCharWidth();
+
+					const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+					const Model::ID & linkedMoleculeId = _chain->getMoleculePtr()->getId();
+					const uint &	  linkedChainIndex = _chain->getIndex();
+
+					for ( const auto pairMoleculeChains : selectionModel.getItems() )
 					{
-						const int charSize = (int)_fontMetrics->averageCharWidth();
+						const Model::ID & moleculeId = pairMoleculeChains.first;
 
-						for ( auto it : *_moleculeSelection )
+						if ( moleculeId == linkedMoleculeId )
 						{
-							if ( it == nullptr || it->getChainPtr()->getId() != _chain->getId() )
-								continue;
+							for ( const auto pairChainResidues : pairMoleculeChains.second )
+							{
+								const uint chainId = pairChainResidues.first;
 
-							uint locaResidueIndex = _getLocalResidueIndexFromResidue( *it );
-							_getResidueHighlightData( locaResidueIndex, _charIndexPaintCache, _symbolLengthPaintCache );
+								if ( chainId == linkedChainIndex )
+								{
+									for ( const auto pairResiduesAtoms : pairChainResidues.second )
+									{
+										const Model::Residue & residue			= _chain->getMoleculePtr()->getResidue( pairResiduesAtoms.first );
+										const uint			   locaResidueIndex = _getLocalResidueIndexFromResidue( residue );
+										_getResidueHighlightData( locaResidueIndex, _charIndexPaintCache, _symbolLengthPaintCache );
 
-							QRect selectionRect = QRect( *_charIndexPaintCache * charSize, 0, *_symbolLengthPaintCache * charSize, height() );
-							painter.fillRect( selectionRect, Style::SEQUENCE_FOREGROUND_SELECTION_COLOR );
+										const QRect selectionRect = QRect( *_charIndexPaintCache * charSize, 0, *_symbolLengthPaintCache * charSize, height() );
+										painter.fillRect( selectionRect, Style::SEQUENCE_FOREGROUND_SELECTION_COLOR );
+									}
+									break;
+								}
+							}
+
+							break;
 						}
 					}
+
 					painter.setWorldMatrixEnabled( true );
 					painter.restore();
 				}
