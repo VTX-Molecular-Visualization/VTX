@@ -1,9 +1,8 @@
 #include "selection_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/selection.hpp"
 #include "style.hpp"
 #include "view/ui/widget/selection_view.hpp"
 #include "vtx_app.hpp"
+#include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QtGlobal>
 #include <string>
@@ -28,20 +27,13 @@ namespace VTX
 					{
 						const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
 						View::UI::Widget::SelectionView * const		 item
-							= WidgetFactory::get().getViewWidget<View::UI::Widget::SelectionView, Model::Selection, QTreeWidgetItem>( castedEvent.ptr, nullptr, "Selection" );
+							= WidgetFactory::get().getViewWidget<View::UI::Widget::SelectionView, Model::Selection, QTreeWidget>( castedEvent.ptr, nullptr, "Selection" );
 						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_SELECTION, item );
-						_treeWidget->addTopLevelItem( item );
+						setWidget( item );
 					}
 					else if ( p_event.name == Event::Global::SELECTION_REMOVED )
 					{
-						const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
-						const Model::Selection * const				 selection	 = castedEvent.ptr;
-
-						View::UI::Widget::SelectionView * const selectionWidget
-							= MVC::MvcManager::get().removeViewOnModel<Model::Selection, View::UI::Widget::SelectionView>( selection, ID::View::UI_SELECTION );
-
-						_treeWidget->removeItemWidget( selectionWidget, 0 );
-						delete selectionWidget;
+						// Only 1 selection at this time.
 					}
 				}
 
@@ -49,35 +41,32 @@ namespace VTX
 				{
 					BaseManualWidget::_setupUi( p_name );
 
-					QWidget * const		centralWidget = new QWidget( this );
-					QVBoxLayout * const layout		  = new QVBoxLayout( centralWidget );
-
+					_widget				   = new QWidget( this );
+					_layout				   = new QVBoxLayout( _widget );
 					_selectionTypeComboBox = new QComboBox( this );
 
 					for ( int i = 0; i < (int)VTX::Selection::SelectionType::COUNT; i++ )
+					{
 						_selectionTypeComboBox->addItem( "" );
-
+					}
 					_selectionTypeComboBox->setCurrentIndex( (int)Style::SELECTION_WINDOW_DEFAULT_SELECTION );
+					_layout->addStretch( 100 );
+					_layout->addWidget( _selectionTypeComboBox );
 
-					_treeWidget = new QTreeWidget( this );
-					_treeWidget->setObjectName( QString::fromUtf8( "selectionTree" ) );
-					_treeWidget->setColumnCount( 1 );
-					_treeWidget->setHeaderHidden( true );
-
-					layout->addWidget( _treeWidget );
-					layout->addWidget( _selectionTypeComboBox );
-					layout->addStretch( 100 );
-
-					setWidget( centralWidget );
+					setWidget( _widget );
 				}
 
 				void SelectionWidget::_setupSlots()
 				{
-					connect( _selectionTypeComboBox, QOverload<int>::of( &QComboBox::currentIndexChanged ), this, &SelectionWidget::_selectionTypeChangedAction );
-					connect( _treeWidget, &QTreeWidget::itemClicked, this, &SelectionWidget::_onItemClicked );
+					connect( _selectionTypeComboBox, QOverload<int>::of( &QComboBox::currentIndexChanged ), this, &SelectionWidget::_selectionTypeCurrentIndexChanged );
 				}
 
-				void SelectionWidget::_selectionTypeChangedAction( const int p_newIndex ) { VTX_INFO( std::to_string( p_newIndex ) + " selected." ); }
+				void SelectionWidget::_selectionTypeCurrentIndexChanged( const int p_newIndex )
+				{
+					VTX_INFO( std::to_string( p_newIndex ) + " selected." );
+
+					// TODO: action to change global selection mode.
+				}
 
 				void SelectionWidget::localize()
 				{
@@ -85,34 +74,6 @@ namespace VTX
 
 					this->setWindowTitle( "Selection" );
 					// this->setWindowTitle( QCoreApplication::translate( "SceneWidget", "Scene", nullptr ) );
-				}
-
-				void SelectionWidget::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
-				{
-					const Model::ID &  modelId		  = _getModelID( *p_item );
-					ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( modelId );
-					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-
-					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
-					{
-						const Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
-						VTX_ACTION( new Action::Selection::UnselectMolecule( selectionModel, model ) );
-					}
-					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
-					{
-						const Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
-						VTX_ACTION( new Action::Selection::UnselectChain( selectionModel, model ) );
-					}
-					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
-					{
-						const Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
-						VTX_ACTION( new Action::Selection::UnselectResidue( selectionModel, model ) );
-					}
-					else if ( modelTypeId == ID::Model::MODEL_ATOM )
-					{
-						const Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
-						VTX_ACTION( new Action::Selection::UnselectAtom( selectionModel, model ) );
-					}
 				}
 
 				void SelectionWidget::_populateItemList()

@@ -24,14 +24,14 @@ namespace VTX
 			{
 				if ( p_event->name == Event::Model::DATA_CHANGE )
 				{
-					refreshView();
+					_refreshView();
 				}
 			}
 
-			virtual void refreshView() {}
-
 		  protected:
 			T * const _model;
+
+			virtual void _refreshView() {}
 		};
 	} // namespace View
 } // namespace VTX
