@@ -28,14 +28,6 @@ namespace VTX
 			Renderer::GLSL::Program * _program = nullptr;
 
 			inline OpenGLFunctions * const _gl() { return _model->getBuffer()->gl(); }
-
-			void notify( const Event::VTXEvent * const p_event ) override
-			{
-				if ( p_event->name == Event::Model::RENDER )
-				{
-					render();
-				}
-			}
 		};
 	} // namespace View
 } // namespace VTX

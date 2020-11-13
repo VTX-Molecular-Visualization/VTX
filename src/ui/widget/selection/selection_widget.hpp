@@ -5,13 +5,14 @@
 #pragma once
 #endif
 
+#include "model/selection.hpp"
 #include "selection/selection_enum.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QComboBox>
 #include <QDockWidget>
 #include <QString>
 #include <QTreeWidgetItem>
-#include "model/selection.hpp"
+#include <QVBoxLayout>
 
 namespace VTX
 {
@@ -35,19 +36,12 @@ namespace VTX
 					void _setupSlots() override;
 
 				  private:
-					QTreeWidget * _treeWidget			 = nullptr;
+					QWidget *	  _widget				 = nullptr;
+					QVBoxLayout * _layout				 = nullptr;
 					QComboBox *	  _selectionTypeComboBox = nullptr;
 
-					void _onItemClicked( QTreeWidgetItem *, int );
-
-					inline Model::ID _getModelID( const QTreeWidgetItem & p_item ) const
-					{
-						const QVariant & dataID = p_item.data( 0, Qt::UserRole );
-						return dataID.value<VTX::Model::ID>();
-					}
-
 					void _populateItemList();
-					void _selectionTypeChangedAction( const int p_newIndex );
+					void _selectionTypeCurrentIndexChanged( const int p_newIndex );
 				};
 			} // namespace Selection
 		}	  // namespace Widget

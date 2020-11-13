@@ -28,17 +28,18 @@ namespace VTX
 			MvcData * const operator[]( const Model::BaseModel * const p_model ) const { return _vector[ _findIndex( p_model->getId() ) ]; };
 			MvcData * const operator[]( const Model::ID & p_modelId ) const { return _vector[ _findIndex( p_modelId ) ]; };
 
-			inline void		 add( MvcData * p_obj ) { _vector.push_back( p_obj ); };
-			inline MvcData * remove( const Model::BaseModel * const p_model )
+			inline void add( MvcData * p_obj ) { _vector.push_back( p_obj ); }
+
+			inline const MvcData * const remove( const Model::BaseModel * const p_model )
 			{
 				VecSizeType index = _findIndex( p_model );
 				return _removeAtIndex( index );
 			}
-			inline MvcData * remove( const MvcData * const p_obj )
+			inline const MvcData * const remove( const MvcData * const p_obj )
 			{
 				VecSizeType index = _findIndex( p_obj );
 				return _removeAtIndex( index );
-			};
+			}
 
 			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
 			inline void deleteAllMVCs( const std::vector<M *> & p_allModelsSorted )
@@ -94,7 +95,7 @@ namespace VTX
 		  private:
 			std::vector<MvcData *> _vector;
 
-			inline MvcData * _removeAtIndex( const VecSizeType & p_index )
+			inline MvcData * const _removeAtIndex( const VecSizeType & p_index )
 			{
 				MvcData * const removed = _vector[ p_index ];
 				_vector.erase( _vector.begin() + p_index );
@@ -102,10 +103,10 @@ namespace VTX
 				return removed;
 			}
 
-			VecSizeType _findIndex( const MvcData * const p_obj ) const { return _findIndexRecursive( 0, _vector.size() - 1, p_obj->getId() ); };
-			VecSizeType _findIndex( const Model::BaseModel * const p_model ) const { return _findIndexRecursive( 0, _vector.size() - 1, p_model->getId() ); };
-			VecSizeType _findIndex( const Model::ID & p_id ) const { return _findIndexRecursive( 0, _vector.size() - 1, p_id ); };
-			VecSizeType _findIndexRecursive( const VecSizeType & p_minIndex, const VecSizeType & p_maxIndex, const Model::ID & p_searchedValue ) const
+			const VecSizeType _findIndex( const MvcData * const p_obj ) const { return _findIndexRecursive( 0, _vector.size() - 1, p_obj->getId() ); };
+			const VecSizeType _findIndex( const Model::BaseModel * const p_model ) const { return _findIndexRecursive( 0, _vector.size() - 1, p_model->getId() ); };
+			const VecSizeType _findIndex( const Model::ID & p_id ) const { return _findIndexRecursive( 0, _vector.size() - 1, p_id ); };
+			const VecSizeType _findIndexRecursive( const VecSizeType & p_minIndex, const VecSizeType & p_maxIndex, const Model::ID & p_searchedValue ) const
 			{
 				if ( p_maxIndex <= p_minIndex )
 				{

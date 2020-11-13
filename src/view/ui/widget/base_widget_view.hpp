@@ -33,7 +33,7 @@ namespace VTX
 						_widget->setModel( p_model );
 					};
 
-					inline void refreshView() override { _widget->refresh(); };
+					inline void _refreshView() override { _widget->refresh(); };
 
 					W *		  getWidget() { return _widget; };
 					QWidget * getLinkedWidget() { return _widget; }

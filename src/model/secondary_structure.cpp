@@ -167,7 +167,7 @@ namespace VTX
 			_buffer->setIndices( _indices );
 		}
 
-		void SecondaryStructure::_instanciate3DViews() { MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_RIBBON_PATCH, new View::D3::Ribbon( this ) ); }
+		void SecondaryStructure::_instanciate3DViews() {_addRenderable(MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_RIBBON_PATCH, new View::D3::Ribbon( this )) ); }
 
 		void SecondaryStructure::setCurrentFrame()
 		{

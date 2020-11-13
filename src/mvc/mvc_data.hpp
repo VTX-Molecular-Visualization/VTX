@@ -8,7 +8,7 @@
 #include "generic/has_collection.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"
-#include "view/base_view.hpp"
+#include "view/base_view_3d.hpp"
 
 namespace VTX
 {
@@ -17,12 +17,13 @@ namespace VTX
 		class MvcData
 		{
 		  public:
-			MvcData( Model::BaseModel * const p_model ) : _model( p_model ) { _views = Generic::HasCollection<View::BaseView<Model::BaseModel>>(); };
+			MvcData( Model::BaseModel * const p_model ) : _model( p_model ) {}
 
-			~MvcData() { _views.clear(); };
+			~MvcData() { _views.clear(); }
 
-			const Model::ID &  getId() const { return _model->getId(); }
-			Model::BaseModel & getModel() const { return *_model; };
+			const Model::ID &		 getId() const { return _model->getId(); }
+			const Model::BaseModel & getModel() const { return *_model; };
+			Model::BaseModel &		 getModel() { return *_model; };
 
 			template<typename M,
 					 typename V,
@@ -31,7 +32,7 @@ namespace VTX
 			inline void addView( const ID::VTX_ID & p_id, V * const p_view )
 			{
 				_views.addItem( p_id, (View::BaseView<Model::BaseModel> * const)p_view );
-			};
+			}
 
 			template<typename M,
 					 typename V,
@@ -42,7 +43,7 @@ namespace VTX
 				return (V * const)_views.removeItem( p_id );
 			};
 
-			inline bool hasView( const ID::VTX_ID & p_id ) { return _views.getItem( p_id ); };
+			inline const bool hasView( const ID::VTX_ID & p_id ) const { return _views.getItemAt( p_id ); }
 
 			void notifyViews( const Event::VTXEvent * const p_event ) const
 			{
@@ -56,8 +57,9 @@ namespace VTX
 
 		  private:
 			Model::BaseModel * const								 _model;
-			Generic::HasCollection<View::BaseView<Model::BaseModel>> _views;
+			Generic::HasCollection<View::BaseView<Model::BaseModel>> _views = Generic::HasCollection<View::BaseView<Model::BaseModel>>();
 		};
+
 	} // namespace MVC
 } // namespace VTX
 
