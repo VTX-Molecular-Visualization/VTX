@@ -25,7 +25,7 @@ namespace VTX
 			_buffer->setIndices( _indices );
 		}
 
-		void MeshTriangle::_instanciate3DViews() { MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_TRIANGLE, new View::D3::Triangle( this ) ); }
+		void MeshTriangle::_instanciate3DViews() { _addRenderable( MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_TRIANGLE, new View::D3::Triangle( this ) ) ); }
 
 		void MeshTriangle::print() const
 		{

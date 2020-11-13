@@ -21,7 +21,7 @@ namespace VTX
 		class BaseModel3D : public BaseModel, public Generic::BaseTransformable, public Generic::BaseRenderable, public Generic::BaseVisible
 		{
 		  public:
-			BaseModel3D( const ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {};
+			BaseModel3D( const ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {}
 			virtual ~BaseModel3D()
 			{
 				if ( _buffer != nullptr )
@@ -36,31 +36,34 @@ namespace VTX
 			inline B * const		  getBuffer() { return _buffer; }
 			inline bool				  isInit() const { return _isInit; };
 
-			virtual void render()
+			void render() override
 			{
 				_buffer->bind();
-				_notifyViews( new Event::VTXEvent( Event::Model::RENDER ) );
+				for ( Generic::BaseRenderable * const renderable : _renderables )
+				{
+					renderable->render();
+				}
 				_buffer->unbind();
 			}
-
 			void init( OpenGLFunctions * const p_gl )
 			{
 				_buffer = new B( p_gl );
 				_buffer->generate();
 				_init();
 				_instanciate3DViews();
-
 				_isInit = true;
 				_notifyViews( new Event::VTXEvent( Event::Model::INIT ) );
 			}
 
 		  protected:
-			Math::AABB _aabb;
-			B *		   _buffer = nullptr;
-			bool	   _isInit = false;
+			Math::AABB							   _aabb;
+			std::vector<Generic::BaseRenderable *> _renderables = std::vector<Generic::BaseRenderable *>();
+			B *									   _buffer		= nullptr;
+			bool								   _isInit		= false;
 
 			virtual void _init()			   = 0;
 			virtual void _instanciate3DViews() = 0;
+			inline void	 _addRenderable( Generic::BaseRenderable * const p_renderable ) { _renderables.push_back( p_renderable ); }
 		};
 	} // namespace Model
 } // namespace VTX

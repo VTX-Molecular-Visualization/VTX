@@ -19,7 +19,7 @@ namespace VTX
 			  public:
 				explicit Ribbon( Model::SecondaryStructure * const p_model );
 
-				virtual void render() override;
+				void render() override;
 
 			  private:
 				GLint _uCamPositionLoc	   = GL_INVALID_INDEX;

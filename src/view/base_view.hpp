@@ -28,7 +28,7 @@ namespace VTX
 				}
 			}
 
-			inline virtual void refreshView() {}
+			virtual void refreshView() {}
 
 		  protected:
 			T * const _model;

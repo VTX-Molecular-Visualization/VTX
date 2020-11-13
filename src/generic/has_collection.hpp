@@ -6,7 +6,7 @@
 #endif
 
 #include "factory.hpp"
-//#include "vtx_app.hpp"
+#include "tool/logger.hpp"
 #include <algorithm>
 #include <map>
 #include <string>
@@ -47,7 +47,7 @@ namespace VTX
 				catch ( const std::exception & )
 				{
 					_orderedKeys.erase( std::find( _orderedKeys.begin(), _orderedKeys.end(), p_name ) );
-					// VTX_WARNING( "An item with this name already exists: " + p_name );
+					VTX_WARNING( "An item with this name already exists: " + p_name );
 				}
 			}
 
@@ -61,7 +61,6 @@ namespace VTX
 
 			inline const T * const getItemAt( const std::string & p_name ) const { return _items.at( p_name ); }
 			inline T * const	   getItemAt( const std::string & p_name ) { return _items.at( p_name ); }
-			inline const T * const getItem( const std::string & p_name ) const { return _items[ p_name ]; }
 			inline T * const	   getItem( const std::string & p_name ) { return _items[ p_name ]; }
 
 			inline const MapStringToItemPtr * const getItems() const { return &_items; }

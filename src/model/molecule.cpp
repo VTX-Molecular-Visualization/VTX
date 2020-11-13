@@ -59,8 +59,8 @@ namespace VTX
 
 		void Molecule::_instanciate3DViews()
 		{
-			MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_SPHERE, new View::D3::Sphere( this ) );
-			MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_CYLINDER, new View::D3::Cylinder( this ) );
+			_addRenderable( MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_SPHERE, new View::D3::Sphere( this ) ) );
+			_addRenderable( MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_CYLINDER, new View::D3::Cylinder( this ) ) );
 		}
 
 		void Molecule::_computeGlobalPositionsAABB()

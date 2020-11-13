@@ -18,7 +18,7 @@ namespace VTX
 			  public:
 				explicit Box( Model::Molecule * const p_model );
 
-				virtual void render( const Generic::REPRESENTATION ) override;
+				void render( const Generic::REPRESENTATION ) override;
 
 			  private:
 				// Uniforms.

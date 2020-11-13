@@ -40,7 +40,6 @@ namespace VTX
 		enum Model
 		{
 			INIT,
-			RENDER,
 			DATA_CHANGE,
 			MOLECULE_VISIBILITY,
 			CHAIN_VISIBILITY,

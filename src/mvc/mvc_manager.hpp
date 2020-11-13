@@ -6,10 +6,10 @@
 #endif
 
 #include "id.hpp"
-#include "model/base_model.hpp"
+#include "model/base_model_3d.hpp"
 #include "mvc_data.hpp"
 #include "mvc_data_container.hpp"
-#include "view/base_view.hpp"
+#include "view/base_view_3d.hpp"
 #include <type_traits>
 #include <vector>
 
@@ -56,7 +56,7 @@ namespace VTX
 			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
 			void deleteModel( M * const p_model )
 			{
-				MvcData * const mvc = _mvcs->remove( p_model );
+				const MvcData * const mvc = _mvcs->remove( p_model );
 				delete mvc;
 				delete p_model;
 			}
@@ -76,22 +76,31 @@ namespace VTX
 			}
 
 			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
-			M & getModel( const Model::ID & _id ) const
+			const M & getModel( const Model::ID & _id ) const
+			{
+				const Model::BaseModel & model	  = _getMvcData( _id )->getModel();
+				const M &				 modelPtr = static_cast<const M &>( model );
+				return modelPtr;
+			}
+
+			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			M & getModel( const Model::ID & _id )
 			{
 				Model::BaseModel & model	= _getMvcData( _id )->getModel();
 				M &				   modelPtr = static_cast<M &>( model );
 				return modelPtr;
 			}
 
-			ID::VTX_ID getModelTypeID( const Model::ID & _id ) const { return _getMvcData( _id )->getModel().getTypeId(); };
+			const ID::VTX_ID & getModelTypeID( const Model::ID & _id ) const { return _getMvcData( _id )->getModel().getTypeId(); };
 
 			template<typename M,
 					 typename V,
 					 typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>,
 					 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
-			inline void addViewOnModel( const M * const p_model, const ID::VTX_ID & p_id, V * const p_view )
+			inline V * const addViewOnModel( const M * const p_model, const ID::VTX_ID & p_id, V * const p_view )
 			{
 				_getMvcData( p_model )->addView<M, V>( p_id, p_view );
+				return p_view;
 			}
 
 			template<typename M,
@@ -103,7 +112,7 @@ namespace VTX
 				return (V * const)_getMvcData( p_model )->removeView<M, V>( p_id );
 			}
 
-			inline bool hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { return _getMvcData( p_model )->hasView( p_id ); };
+			inline const bool hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) const { return _getMvcData( p_model )->hasView( p_id ); };
 
 			inline void notifyView( const Model::BaseModel * const p_caller, const Event::VTXEvent * const p_event ) { _getMvcData( p_caller )->notifyViews( p_event ); }
 
@@ -115,9 +124,10 @@ namespace VTX
 
 			MvcDataContainer * const _mvcs = new MvcDataContainer();
 
-			MvcData * const _getMvcData( const Model::BaseModel * const p_model ) const { return ( *_mvcs )[ p_model ]; }
-
-			MvcData * const _getMvcData( const Model::ID & p_modelId ) const { return ( *_mvcs )[ p_modelId ]; }
+			inline const MvcData * const _getMvcData( const Model::BaseModel * const p_model ) const { return ( *_mvcs )[ p_model ]; }
+			inline const MvcData * const _getMvcData( const Model::ID & p_modelId ) const { return ( *_mvcs )[ p_modelId ]; }
+			inline MvcData * const		 _getMvcData( const Model::BaseModel * const p_model ) { return ( *_mvcs )[ p_model ]; }
+			inline MvcData * const		 _getMvcData( const Model::ID & p_modelId ) { return ( *_mvcs )[ p_modelId ]; }
 		};
 	} // namespace MVC
 } // namespace VTX

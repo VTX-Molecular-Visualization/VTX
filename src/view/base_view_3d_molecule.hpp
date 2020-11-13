@@ -19,7 +19,7 @@ namespace VTX
 			explicit BaseView3DMolecule( Model::Molecule * const p_model ) : BaseView3D( p_model ) {}
 			virtual ~BaseView3DMolecule() {}
 
-			virtual inline void render() final
+			inline void render() override
 			{
 				// Render atoms.
 				for ( const std::pair<const Generic::REPRESENTATION, Model::Molecule::RepresentationStruct> & pair : _model->getRepresentationState() )
