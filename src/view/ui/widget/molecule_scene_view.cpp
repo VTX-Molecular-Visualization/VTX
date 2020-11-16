@@ -55,11 +55,33 @@ namespace VTX
 
 					blockSignals( true );
 					selectionModel()->clearSelection();
-					const Model::Selection::MapMoleculeIds &		 selection = castedEvent.ptr->getItems();
-					Model::Selection::MapMoleculeIds::const_iterator molecule  = selection.find( _model->getId() );
-					if ( molecule != selection.end() )
+					const Model::Selection::MapMoleculeIds & items = castedEvent.ptr->getItems();
+					for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & pairMolecule : items )
 					{
-						// TODO: selecct items.
+						if ( pairMolecule.first != _model->getId() )
+						{
+							continue;
+						}
+
+						topLevelItem( 0 )->setSelected( true );
+						for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : pairMolecule.second )
+						{
+							const Model::Chain & chain = _model->getChain( pairChain.first );
+							topLevelItem( 0 )->child( chain.getIndex() )->setSelected( true );
+							for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+							{
+								const Model::Residue & residue = _model->getResidue( pairResidue.first );
+								topLevelItem( 0 )->child( chain.getIndex() )->child( residue.getIndex() - chain.getIndexFirstResidue() )->setSelected( true );
+								for ( const uint & atom : pairResidue.second )
+								{
+									topLevelItem( 0 )
+										->child( chain.getIndex() )
+										->child( residue.getIndex() - chain.getIndexFirstResidue() )
+										->child( atom - residue.getIndexFirstAtom() )
+										->setSelected( true );
+								}
+							}
+						}
 					}
 					blockSignals( false );
 				}
