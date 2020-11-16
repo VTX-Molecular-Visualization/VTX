@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "event/base_event_receiver_vtx.hpp"
 #include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
@@ -28,9 +29,10 @@ namespace VTX
 				  public:
 					void localize() override;
 					void notify( const Event::VTXEvent * const p_event ) override;
+					void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 				  protected:
-					MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent ) : View::BaseView<Model::Molecule>( p_model ), BaseManualWidget( p_parent ) {}
+					MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
 

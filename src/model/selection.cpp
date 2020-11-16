@@ -1,4 +1,5 @@
 #include "selection.hpp"
+#include "event/event_manager.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "tool/logger.hpp"
 
@@ -35,6 +36,7 @@ namespace VTX
 			}
 
 			this->_notifyDataChanged();
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SELECTION_CHANGE, this ) );
 		}
 
 		void Selection::selectMolecule( const Molecule & p_molecule )

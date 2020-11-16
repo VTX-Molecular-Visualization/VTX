@@ -30,6 +30,7 @@ namespace VTX
 			~Selection() = default;
 
 			inline const MapMoleculeIds & getItems() const { return _items; }
+			inline MapMoleculeIds &		  getItems() { return _items; }
 
 			void update( const std::vector<ID> & );
 			void selectMolecule( const Molecule & );

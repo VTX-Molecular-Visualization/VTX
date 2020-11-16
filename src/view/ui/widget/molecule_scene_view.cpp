@@ -18,6 +18,12 @@ namespace VTX
 		{
 			namespace Widget
 			{
+				MoleculeSceneView::MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent ) :
+					View::BaseView<Model::Molecule>( p_model ), BaseManualWidget( p_parent )
+				{
+					_registerEvent( Event::Global::SELECTION_CHANGE );
+				}
+
 				void MoleculeSceneView::notify( const Event::VTXEvent * const p_event )
 				{
 					if ( p_event->name == Event::Model::MOLECULE_VISIBILITY )
@@ -40,6 +46,22 @@ namespace VTX
 						const Model::Chain &					 chain			 = *residue.getChainPtr();
 						_refreshItem( topLevelItem( 0 )->child( chain.getIndex() )->child( residue.getIndex() - chain.getIndexFirstResidue() ), residue );
 					}
+				}
+
+				void MoleculeSceneView::receiveEvent( const Event::VTXEvent & p_event )
+				{
+					// Event::Global::SELECTION_CHANGE.
+					const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+
+					blockSignals( true );
+					selectionModel()->clearSelection();
+					const Model::Selection::MapMoleculeIds &		 selection = castedEvent.ptr->getItems();
+					Model::Selection::MapMoleculeIds::const_iterator molecule  = selection.find( _model->getId() );
+					if ( molecule != selection.end() )
+					{
+						// TODO: selecct items.
+					}
+					blockSignals( false );
 				}
 
 				void MoleculeSceneView::_setupUi( const QString & p_name )
@@ -119,7 +141,7 @@ namespace VTX
 
 				void MoleculeSceneView::_onItemSelectionChanged()
 				{
-					Model::Selection &				 selectionModel	 = VTX::Selection::SelectionManager::get().getSelectionModel();
+					Model::Selection &				 selection		 = VTX::Selection::SelectionManager::get().getSelectionModel();
 					const QList<QTreeWidgetItem *> & selectedObjects = selectedItems();
 					std::vector<Model::ID>			 selectedIds	 = std::vector<Model::ID>();
 					for ( QList<QTreeWidgetItem *>::const_iterator iterator = selectedObjects.begin(); iterator != selectedObjects.end(); iterator++ )
@@ -128,7 +150,7 @@ namespace VTX
 						selectedIds.push_back( _getModelID( *selectedObject ) );
 					}
 
-					VTX_ACTION( new Action::Selection::UpdateSelection( selectionModel, selectedIds ) );
+					VTX_ACTION( new Action::Selection::UpdateSelection( selection, selectedIds ) );
 				}
 
 				void MoleculeSceneView::_onItemExpanded( QTreeWidgetItem * p_item ) {}
