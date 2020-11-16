@@ -1,66 +1,126 @@
 #include "selection.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "tool/logger.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
+		void Selection::update( const std::vector<ID> & p_selectedIds )
+		{
+			clear();
+			for ( const ID & modelId : p_selectedIds )
+			{
+				ID::VTX_ID modelTypeId = MVC::MvcManager::get().getModelTypeID( modelId );
+				if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+				{
+					const Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+					_selectMolecule( model );
+				}
+				else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+				{
+					const Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+					_selectChain( model );
+				}
+				else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+				{
+					const Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+					_selectResidue( model );
+				}
+				else if ( modelTypeId == ID::Model::MODEL_ATOM )
+				{
+					const Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+					_selectAtom( model );
+				}
+			}
+
+			this->_notifyDataChanged();
+		}
+
 		void Selection::selectMolecule( const Molecule & p_molecule )
 		{
-			_addMolecule( p_molecule );
-			_addMoleculeContent( p_molecule );
+			_selectMolecule( p_molecule );
 			this->_notifyDataChanged();
 		}
 
 		void Selection::selectChain( const Chain & p_chain )
 		{
-			_addMolecule( *p_chain.getMoleculePtr() );
-			_addChain( p_chain );
-			_addChainContent( p_chain );
+			_selectChain( p_chain );
 			this->_notifyDataChanged();
 		}
 
 		void Selection::selectResidue( const Residue & p_residue )
 		{
-			_addMolecule( *p_residue.getMoleculePtr() );
-			_addChain( *p_residue.getChainPtr() );
-			_addResidue( p_residue );
-			_addResidueContent( p_residue );
+			_selectResidue( p_residue );
 			this->_notifyDataChanged();
 		}
 
 		void Selection::selectAtom( const Atom & p_atom )
 		{
-			_addMolecule( *p_atom.getMoleculePtr() );
-			_addChain( *p_atom.getChainPtr() );
-			_addResidue( *p_atom.getResiduePtr() );
-			_addAtom( p_atom );
+			_selectAtom( p_atom );
 			this->_notifyDataChanged();
 		}
 
 		void Selection::unselectMolecule( const Molecule & p_molecule )
 		{
-			_removeMolecule( p_molecule );
+			_unselectMolecule( p_molecule );
 			this->_notifyDataChanged();
 		}
 
 		void Selection::unselectChain( const Chain & p_chain )
 		{
-			_removeChain( p_chain );
+			_unselectChain( p_chain );
 			this->_notifyDataChanged();
 		}
 
 		void Selection::unselectResidue( const Residue & p_residue )
 		{
-			_removeResidue( p_residue );
+			_unselectResidue( p_residue );
 			this->_notifyDataChanged();
 		}
 
 		void Selection::unselectAtom( const Atom & p_atom )
 		{
-			_removeAtom( p_atom );
+			_unselectAtom( p_atom );
 			this->_notifyDataChanged();
 		}
+
+		void Selection::_selectMolecule( const Molecule & p_molecule )
+		{
+			_addMolecule( p_molecule );
+			_addMoleculeContent( p_molecule );
+		}
+
+		void Selection::_selectChain( const Chain & p_chain )
+		{
+			_addMolecule( *p_chain.getMoleculePtr() );
+			_addChain( p_chain );
+			_addChainContent( p_chain );
+		}
+
+		void Selection::_selectResidue( const Residue & p_residue )
+		{
+			_addMolecule( *p_residue.getMoleculePtr() );
+			_addChain( *p_residue.getChainPtr() );
+			_addResidue( p_residue );
+			_addResidueContent( p_residue );
+		}
+
+		void Selection::_selectAtom( const Atom & p_atom )
+		{
+			_addMolecule( *p_atom.getMoleculePtr() );
+			_addChain( *p_atom.getChainPtr() );
+			_addResidue( *p_atom.getResiduePtr() );
+			_addAtom( p_atom );
+		}
+
+		void Selection::_unselectMolecule( const Molecule & p_molecule ) { _removeMolecule( p_molecule ); }
+
+		void Selection::_unselectChain( const Chain & p_chain ) { _removeChain( p_chain ); }
+
+		void Selection::_unselectResidue( const Residue & p_residue ) { _removeResidue( p_residue ); }
+
+		void Selection::_unselectAtom( const Atom & p_atom ) { _removeAtom( p_atom ); }
 
 		void Selection::_addMolecule( const Molecule & p_molecule )
 		{
