@@ -34,8 +34,8 @@ namespace VTX
 				  private:
 					void _onItemClicked( QTreeWidgetItem *, int );
 
-					void			 _createTopLevelChildren( const uint p_count );
-					void			 _createChildren( QTreeWidgetItem & p_item, const uint p_count );
+					bool			 _createTopLevelChildren( const uint p_count );
+					bool			 _createChildren( QTreeWidgetItem & p_item, const uint p_count );
 					inline Model::ID _getModelID( const QTreeWidgetItem & p_item ) const
 					{
 						const QVariant & dataID = p_item.data( 0, Qt::UserRole );

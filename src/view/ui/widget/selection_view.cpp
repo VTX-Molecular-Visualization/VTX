@@ -33,48 +33,67 @@ namespace VTX
 					blockSignals( true );
 					setUpdatesEnabled( false );
 
-					const Model::Selection::MapMoleculeIds & items = _model->getItems();
-					uint									 m	   = 0;
-					_createTopLevelChildren( uint( items.size() ) );
+					const Model::Selection::MapMoleculeIds & items				= _model->getItems();
+					uint									 m					= 0;
+					const bool								 needUpdateMolecule = _createTopLevelChildren( uint( items.size() ) );
 					for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & pairMolecule : items )
 					{
-						const Model::Molecule & molecule	 = MVC::MvcManager::get().getModel<Model::Molecule>( pairMolecule.first );
 						QTreeWidgetItem * const moleculeView = topLevelItem( m++ );
-						moleculeView->setData( 0, Qt::UserRole, QVariant::fromValue<VTX::Model::ID>( pairMolecule.first ) );
-						moleculeView->setText( 0, QString::fromStdString( molecule.getDefaultName() ) );
+
+						const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( pairMolecule.first );
 
 						// Chains.
-						uint c = 0;
-						_createChildren( *moleculeView, uint( pairMolecule.second.size() ) );
+						uint	   c			   = 0;
+						const bool needUpdateChain = _createChildren( *moleculeView, uint( pairMolecule.second.size() ) );
 						for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : pairMolecule.second )
 						{
-							const Model::Chain &	chain	  = molecule.getChain( pairChain.first );
 							QTreeWidgetItem * const chainView = moleculeView->child( c++ );
-							chainView->setData( 0, Qt::UserRole, QVariant::fromValue( chain.getId() ) );
-							chainView->setText( 0, QString::fromStdString( chain.getDefaultName() ) );
 
 							// Residues.
-							uint r = 0;
-							_createChildren( *chainView, uint( pairChain.second.size() ) );
+							uint	   r				 = 0;
+							const bool needUpdateResidue = _createChildren( *chainView, uint( pairChain.second.size() ) );
 							for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
 							{
-								const Model::Residue &	residue		= molecule.getResidue( pairResidue.first );
 								QTreeWidgetItem * const residueView = chainView->child( r++ );
-								residueView->setData( 0, Qt::UserRole, QVariant::fromValue( residue.getId() ) );
-								residueView->setText( 0, QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndex() ) ) );
 
 								// Atom.
-								uint a = 0;
-								_createChildren( *residueView, uint( pairResidue.second.size() ) );
-								for ( const uint & atomIndex : pairResidue.second )
+								uint	   a			  = 0;
+								const bool needUpdateAtom = _createChildren( *residueView, uint( pairResidue.second.size() ) );
+								if ( needUpdateAtom )
 								{
-									const Model::Atom &		atom	 = molecule.getAtom( atomIndex );
-									QTreeWidgetItem * const atomView = residueView->child( a++ );
-									atomView->setData( 0, Qt::UserRole, QVariant::fromValue( atom.getId() ) );
-									atomView->setText( 0, QString::fromStdString( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) ) );
+									for ( const uint & atomIndex : pairResidue.second )
+									{
+										const Model::Atom &		atom	 = molecule.getAtom( atomIndex );
+										QTreeWidgetItem * const atomView = residueView->child( a++ );
+										atomView->setData( 0, Qt::UserRole, QVariant::fromValue( atom.getId() ) );
+										atomView->setText( 0, QString::fromStdString( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) ) );
+									}
 								}
+
+								if ( needUpdateResidue == false )
+								{
+									continue;
+								}
+								const Model::Residue & residue = molecule.getResidue( pairResidue.first );
+								residueView->setData( 0, Qt::UserRole, QVariant::fromValue( residue.getId() ) );
+								residueView->setText( 0, QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndex() ) ) );
 							}
+
+							if ( needUpdateChain == false )
+							{
+								continue;
+							}
+							const Model::Chain & chain = molecule.getChain( pairChain.first );
+							chainView->setData( 0, Qt::UserRole, QVariant::fromValue( chain.getId() ) );
+							chainView->setText( 0, QString::fromStdString( chain.getDefaultName() ) );
 						}
+
+						if ( needUpdateMolecule == false )
+						{
+							continue;
+						}
+						moleculeView->setData( 0, Qt::UserRole, QVariant::fromValue<VTX::Model::ID>( pairMolecule.first ) );
+						moleculeView->setText( 0, QString::fromStdString( molecule.getDefaultName() ) );
 					}
 
 					blockSignals( false );
@@ -84,8 +103,12 @@ namespace VTX
 					VTX_INFO( "Selection UI time: " + std::to_string( chrono.elapsedTime() ) );
 				}
 
-				void SelectionView::_createTopLevelChildren( const uint p_count )
+				bool SelectionView::_createTopLevelChildren( const uint p_count )
 				{
+					if ( uint( topLevelItemCount() ) == p_count )
+					{
+						return false;
+					}
 					while ( uint( topLevelItemCount() ) < p_count )
 					{
 						addTopLevelItem( new QTreeWidgetItem() );
@@ -94,10 +117,15 @@ namespace VTX
 					{
 						delete topLevelItem( topLevelItemCount() - 1 );
 					}
+					return true;
 				}
 
-				void SelectionView::_createChildren( QTreeWidgetItem & p_item, const uint p_count )
+				bool SelectionView::_createChildren( QTreeWidgetItem & p_item, const uint p_count )
 				{
+					if ( uint( p_item.childCount() ) == p_count )
+					{
+						return false;
+					}
 					while ( uint( p_item.childCount() ) < p_count )
 					{
 						p_item.addChild( new QTreeWidgetItem() );
@@ -106,6 +134,7 @@ namespace VTX
 					{
 						delete p_item.child( p_item.childCount() - 1 );
 					}
+					return true;
 				}
 
 				void SelectionView::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
