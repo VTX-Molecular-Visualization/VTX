@@ -15,50 +15,49 @@ namespace VTX
 			_selectMolecule( p_molecule );
 			chrono.stop();
 			VTX_INFO( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
-
-			_notifyViews( new Event::VTXEventRef( Event::SELECTION_ADD_MOLECULE, p_molecule ) );
+			_notifyDataChanged();
 		}
 
 		void Selection::selectChain( const Chain & p_chain )
 		{
 			_selectChain( p_chain );
-			_notifyViews( new Event::VTXEventRef( Event::SELECTION_ADD_CHAIN, p_chain ) );
+			_notifyDataChanged();
 		}
 
 		void Selection::selectResidue( const Residue & p_residue )
 		{
 			_selectResidue( p_residue );
-			_notifyViews( new Event::VTXEventRef( Event::SELECTION_ADD_RESIDUE, p_residue ) );
+			_notifyDataChanged();
 		}
 
 		void Selection::selectAtom( const Atom & p_atom )
 		{
 			_selectAtom( p_atom );
-			_notifyViews( new Event::VTXEventRef( Event::SELECTION_ADD_ATOM, p_atom ) );
+			_notifyDataChanged();
 		}
 
 		void Selection::unselectMolecule( const Molecule & p_molecule )
 		{
 			_unselectMolecule( p_molecule );
-			_notifyViews( new Event::VTXEventRef( Event::SELECTION_REMOVE_MOLECULE, p_molecule ) );
+			_notifyDataChanged();
 		}
 
 		void Selection::unselectChain( const Chain & p_chain )
 		{
 			_unselectChain( p_chain );
-			_notifyViews( new Event::VTXEventRef( Event::SELECTION_REMOVE_CHAIN, p_chain ) );
+			_notifyDataChanged();
 		}
 
 		void Selection::unselectResidue( const Residue & p_residue )
 		{
 			_unselectResidue( p_residue );
-			_notifyViews( new Event::VTXEventRef( Event::SELECTION_REMOVE_RESIDUE, p_residue ) );
+			_notifyDataChanged();
 		}
 
 		void Selection::unselectAtom( const Atom & p_atom )
 		{
 			_unselectAtom( p_atom );
-			_notifyViews( new Event::VTXEventRef( Event::SELECTION_REMOVE_ATOM, p_atom ) );
+			_notifyDataChanged();
 		}
 
 		void Selection::_selectMolecule( const Molecule & p_molecule )

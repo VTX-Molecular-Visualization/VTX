@@ -23,8 +23,7 @@ namespace VTX
 					VTX_MANUAL_WIDGET_DECLARATION
 
 				  public:
-					void		 localize() override;
-					virtual void notify( const Event::VTXEvent * const p_event ) override;
+					void localize() override;
 
 				  protected:
 					SelectionView( Model::Selection * const p_model, QWidget * const p_parent ) : View::BaseView<Model::Selection>( p_model ), BaseManualWidget( p_parent ) {}
@@ -35,29 +34,8 @@ namespace VTX
 				  private:
 					void _onItemClicked( QTreeWidgetItem *, int );
 
-					/*
-					void _addMolecule( const Model::Molecule & );
-					void _addChain( const Model::Chain & );
-					void _addResidue( const Model::Residue & );
-					void _addAtom( const Model::Atom & );
-
-					void _removeMolecule( const Model::Molecule & );
-					void _removeChain( const Model::Chain & );
-					void _removeResidue( const Model::Residue & );
-					void _removeAtom( const Model::Atom & );
-
-					QTreeWidgetItem * const _createWidget( const Model::Molecule & );
-					QTreeWidgetItem * const _createWidget( const Model::Chain & );
-					QTreeWidgetItem * const _createWidget( const Model::Residue & );
-					QTreeWidgetItem * const _createWidget( const Model::Atom & );
-
-					QTreeWidgetItem * const _getWidget( const Model::Molecule & );
-					QTreeWidgetItem * const _getWidget( const Model::Chain & );
-					QTreeWidgetItem * const _getWidget( const Model::Residue & );
-					QTreeWidgetItem * const _getWidget( const Model::Atom & );
-					*/
-
-					void			 _createChildren( const QTreeWidgetItem & p_item, const uint p_count );
+					void			 _createTopLevelChildren( const uint p_count );
+					void			 _createChildren( QTreeWidgetItem & p_item, const uint p_count );
 					inline Model::ID _getModelID( const QTreeWidgetItem & p_item ) const
 					{
 						const QVariant & dataID = p_item.data( 0, Qt::UserRole );
