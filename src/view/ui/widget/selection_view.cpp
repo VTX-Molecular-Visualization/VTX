@@ -21,6 +21,8 @@ namespace VTX
 					setObjectName( QString::fromUtf8( "selectionTree" ) );
 					setColumnCount( 1 );
 					setHeaderHidden( true );
+					setSelectionMode( QAbstractItemView::NoSelection );
+					setExpandsOnDoubleClick( false );
 				}
 
 				void SelectionView::_setupSlots() { connect( this, &QTreeWidget::itemClicked, this, &SelectionView::_onItemClicked ); }
@@ -75,6 +77,7 @@ namespace VTX
 									continue;
 								}
 								const Model::Residue & residue = molecule.getResidue( pairResidue.first );
+								residueView->setExpanded( false );
 								residueView->setData( 0, Qt::UserRole, QVariant::fromValue( residue.getId() ) );
 								residueView->setText( 0, QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndex() ) ) );
 							}
@@ -84,6 +87,7 @@ namespace VTX
 								continue;
 							}
 							const Model::Chain & chain = molecule.getChain( pairChain.first );
+							chainView->setExpanded( false );
 							chainView->setData( 0, Qt::UserRole, QVariant::fromValue( chain.getId() ) );
 							chainView->setText( 0, QString::fromStdString( chain.getDefaultName() ) );
 						}
@@ -92,6 +96,7 @@ namespace VTX
 						{
 							continue;
 						}
+						moleculeView->setExpanded( false );
 						moleculeView->setData( 0, Qt::UserRole, QVariant::fromValue<VTX::Model::ID>( pairMolecule.first ) );
 						moleculeView->setText( 0, QString::fromStdString( molecule.getDefaultName() ) );
 					}
