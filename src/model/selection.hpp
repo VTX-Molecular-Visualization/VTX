@@ -32,7 +32,6 @@ namespace VTX
 			inline const MapMoleculeIds & getItems() const { return _items; }
 			inline MapMoleculeIds &		  getItems() { return _items; }
 
-			void update( const std::vector<ID> & );
 			void selectMolecule( const Molecule & );
 			void unselectMolecule( const Molecule & );
 			void selectChain( const Chain & );

@@ -30,13 +30,34 @@ namespace VTX
 					SelectionView( Model::Selection * const p_model, QWidget * const p_parent ) : View::BaseView<Model::Selection>( p_model ), BaseManualWidget( p_parent ) {}
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
-					void _refreshView() override;
+					void _refreshView() override; // Debug only.
 
 				  private:
-					void _clear();
-
 					void _onItemClicked( QTreeWidgetItem *, int );
 
+					/*
+					void _addMolecule( const Model::Molecule & );
+					void _addChain( const Model::Chain & );
+					void _addResidue( const Model::Residue & );
+					void _addAtom( const Model::Atom & );
+
+					void _removeMolecule( const Model::Molecule & );
+					void _removeChain( const Model::Chain & );
+					void _removeResidue( const Model::Residue & );
+					void _removeAtom( const Model::Atom & );
+
+					QTreeWidgetItem * const _createWidget( const Model::Molecule & );
+					QTreeWidgetItem * const _createWidget( const Model::Chain & );
+					QTreeWidgetItem * const _createWidget( const Model::Residue & );
+					QTreeWidgetItem * const _createWidget( const Model::Atom & );
+
+					QTreeWidgetItem * const _getWidget( const Model::Molecule & );
+					QTreeWidgetItem * const _getWidget( const Model::Chain & );
+					QTreeWidgetItem * const _getWidget( const Model::Residue & );
+					QTreeWidgetItem * const _getWidget( const Model::Atom & );
+					*/
+
+					void			 _createChildren( const QTreeWidgetItem & p_item, const uint p_count );
 					inline Model::ID _getModelID( const QTreeWidgetItem & p_item ) const
 					{
 						const QVariant & dataID = p_item.data( 0, Qt::UserRole );

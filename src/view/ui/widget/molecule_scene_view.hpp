@@ -38,7 +38,7 @@ namespace VTX
 
 				  private:
 					void _onItemChanged( QTreeWidgetItem * item, int column );
-					void _onItemSelectionChanged();
+					void _onItemClicked( QTreeWidgetItem *, int );
 					void _onItemExpanded( QTreeWidgetItem * );
 					void _onItemCollapsed( QTreeWidgetItem * );
 

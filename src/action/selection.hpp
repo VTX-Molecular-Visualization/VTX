@@ -18,21 +18,6 @@ namespace VTX
 	{
 		namespace Selection
 		{
-			class UpdateSelection : public BaseAction
-			{
-			  public:
-				explicit UpdateSelection( Model::Selection & p_selection, const std::vector<Model::ID> & p_selectedIds ) : _selection( p_selection ), _selectedIds( p_selectedIds )
-				{
-					_selection.update( _selectedIds );
-				}
-
-				virtual void execute() override {}
-
-			  private:
-				Model::Selection &	   _selection;
-				std::vector<Model::ID> _selectedIds;
-			};
-
 			class SelectMolecule : public BaseAction
 			{
 			  public:

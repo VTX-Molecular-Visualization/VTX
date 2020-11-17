@@ -145,7 +145,7 @@ namespace VTX
 				void MoleculeSceneView::_setupSlots()
 				{
 					connect( this, &QTreeWidget::itemChanged, this, &MoleculeSceneView::_onItemChanged );
-					connect( this, &QTreeWidget::itemSelectionChanged, this, &MoleculeSceneView::_onItemSelectionChanged );
+					connect( this, &QTreeWidget::itemClicked, this, &MoleculeSceneView::_onItemClicked );
 					connect( this, &QTreeWidget::itemExpanded, this, &MoleculeSceneView::_onItemExpanded );
 					connect( this, &QTreeWidget::itemCollapsed, this, &MoleculeSceneView::_onItemCollapsed );
 				}
@@ -163,18 +163,32 @@ namespace VTX
 					}
 				}
 
-				void MoleculeSceneView::_onItemSelectionChanged()
+				void MoleculeSceneView::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
 				{
-					Model::Selection &				 selection		 = VTX::Selection::SelectionManager::get().getSelectionModel();
-					const QList<QTreeWidgetItem *> & selectedObjects = selectedItems();
-					std::vector<Model::ID>			 selectedIds	 = std::vector<Model::ID>();
-					for ( QList<QTreeWidgetItem *>::const_iterator iterator = selectedObjects.begin(); iterator != selectedObjects.end(); iterator++ )
-					{
-						const QTreeWidgetItem * const selectedObject = ( *iterator );
-						selectedIds.push_back( _getModelID( *selectedObject ) );
-					}
+					const Model::ID &  modelId		  = _getModelID( *p_item );
+					ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( modelId );
+					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-					VTX_ACTION( new Action::Selection::UpdateSelection( selection, selectedIds ) );
+					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+					{
+						const Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+						VTX_ACTION( new Action::Selection::SelectMolecule( selectionModel, model ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+					{
+						const Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+						VTX_ACTION( new Action::Selection::SelectChain( selectionModel, model ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+					{
+						const Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+						VTX_ACTION( new Action::Selection::SelectResidue( selectionModel, model ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_ATOM )
+					{
+						const Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+						VTX_ACTION( new Action::Selection::SelectAtom( selectionModel, model ) );
+					}
 				}
 
 				void MoleculeSceneView::_onItemExpanded( QTreeWidgetItem * p_item ) {}
