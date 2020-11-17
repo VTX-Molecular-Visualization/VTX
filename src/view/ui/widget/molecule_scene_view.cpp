@@ -54,6 +54,7 @@ namespace VTX
 					const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
 
 					blockSignals( true );
+					setUpdatesEnabled( false );
 					selectionModel()->clearSelection();
 					const Model::Selection::MapMoleculeIds & items = castedEvent.ptr->getItems();
 					for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & pairMolecule : items )
@@ -84,6 +85,7 @@ namespace VTX
 						}
 					}
 					blockSignals( false );
+					setUpdatesEnabled( true );
 				}
 
 				void MoleculeSceneView::_setupUi( const QString & p_name )

@@ -67,24 +67,28 @@ namespace VTX
 		{
 			_unselectMolecule( p_molecule );
 			this->_notifyDataChanged();
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SELECTION_CHANGE, this ) );
 		}
 
 		void Selection::unselectChain( const Chain & p_chain )
 		{
 			_unselectChain( p_chain );
 			this->_notifyDataChanged();
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SELECTION_CHANGE, this ) );
 		}
 
 		void Selection::unselectResidue( const Residue & p_residue )
 		{
 			_unselectResidue( p_residue );
 			this->_notifyDataChanged();
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SELECTION_CHANGE, this ) );
 		}
 
 		void Selection::unselectAtom( const Atom & p_atom )
 		{
 			_unselectAtom( p_atom );
 			this->_notifyDataChanged();
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SELECTION_CHANGE, this ) );
 		}
 
 		void Selection::_selectMolecule( const Molecule & p_molecule )

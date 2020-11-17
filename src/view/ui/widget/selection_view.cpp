@@ -30,6 +30,9 @@ namespace VTX
 
 				void SelectionView::_refreshView()
 				{
+					blockSignals( true );
+					setUpdatesEnabled( false );
+
 					_clear();
 
 					const Model::Selection::MapMoleculeIds & items = _model->getItems();
@@ -72,6 +75,9 @@ namespace VTX
 						}
 						addTopLevelItem( moleculeView );
 					}
+
+					blockSignals( false );
+					setUpdatesEnabled( true );
 				}
 
 				void SelectionView::_clear()
