@@ -30,6 +30,7 @@ namespace VTX
 			~Selection() = default;
 
 			inline const MapMoleculeIds & getItems() const { return _items; }
+			inline MapMoleculeIds &		  getItems() { return _items; }
 
 			void selectMolecule( const Molecule & );
 			void unselectMolecule( const Molecule & );
@@ -44,6 +45,15 @@ namespace VTX
 
 		  private:
 			MapMoleculeIds _items = MapMoleculeIds();
+
+			void _selectMolecule( const Molecule & );
+			void _unselectMolecule( const Molecule & );
+			void _selectChain( const Chain & );
+			void _unselectChain( const Chain & );
+			void _selectResidue( const Residue & );
+			void _unselectResidue( const Residue & );
+			void _selectAtom( const Atom & );
+			void _unselectAtom( const Atom & );
 
 			void _addMolecule( const Molecule & );
 			void _addChain( const Chain & );

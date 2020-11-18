@@ -33,7 +33,12 @@ namespace VTX
 				QString qstringName = QString::fromStdString( p_name );
 
 				W * res = new W( p_parent );
+
+				res->blockSignals( true );
+				res->setUpdatesEnabled( false );
 				res->_setup( qstringName );
+				res->setUpdatesEnabled( true );
+				res->blockSignals( false );
 
 				return res;
 			};
@@ -44,7 +49,12 @@ namespace VTX
 				QString qstringName = QString::fromStdString( p_name );
 
 				V * res = new V( p_model, p_parent );
+
+				res->blockSignals( true );
+				res->setUpdatesEnabled( false );
 				res->_setup( qstringName );
+				res->setUpdatesEnabled( true );
+				res->blockSignals( false );
 
 				return res;
 			};

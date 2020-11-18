@@ -1,4 +1,7 @@
 #include "selection.hpp"
+#include "event/event_manager.hpp"
+#include "mvc/mvc_manager.hpp"
+#include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 
 namespace VTX
@@ -7,60 +10,92 @@ namespace VTX
 	{
 		void Selection::selectMolecule( const Molecule & p_molecule )
 		{
-			_addMolecule( p_molecule );
-			_addMoleculeContent( p_molecule );
-			this->_notifyDataChanged();
+			Tool::Chrono chrono = Tool::Chrono();
+			chrono.start();
+			_selectMolecule( p_molecule );
+			chrono.stop();
+			VTX_INFO( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
+			_notifyDataChanged();
 		}
 
 		void Selection::selectChain( const Chain & p_chain )
 		{
-			_addMolecule( *p_chain.getMoleculePtr() );
-			_addChain( p_chain );
-			_addChainContent( p_chain );
-			this->_notifyDataChanged();
+			_selectChain( p_chain );
+			_notifyDataChanged();
 		}
 
 		void Selection::selectResidue( const Residue & p_residue )
+		{
+			_selectResidue( p_residue );
+			_notifyDataChanged();
+		}
+
+		void Selection::selectAtom( const Atom & p_atom )
+		{
+			_selectAtom( p_atom );
+			_notifyDataChanged();
+		}
+
+		void Selection::unselectMolecule( const Molecule & p_molecule )
+		{
+			_unselectMolecule( p_molecule );
+			_notifyDataChanged();
+		}
+
+		void Selection::unselectChain( const Chain & p_chain )
+		{
+			_unselectChain( p_chain );
+			_notifyDataChanged();
+		}
+
+		void Selection::unselectResidue( const Residue & p_residue )
+		{
+			_unselectResidue( p_residue );
+			_notifyDataChanged();
+		}
+
+		void Selection::unselectAtom( const Atom & p_atom )
+		{
+			_unselectAtom( p_atom );
+			_notifyDataChanged();
+		}
+
+		void Selection::_selectMolecule( const Molecule & p_molecule )
+		{
+			_addMolecule( p_molecule );
+			_addMoleculeContent( p_molecule );
+		}
+
+		void Selection::_selectChain( const Chain & p_chain )
+		{
+			_addMolecule( *p_chain.getMoleculePtr() );
+			_addChain( p_chain );
+			_addChainContent( p_chain );
+		}
+
+		void Selection::_selectResidue( const Residue & p_residue )
 		{
 			_addMolecule( *p_residue.getMoleculePtr() );
 			_addChain( *p_residue.getChainPtr() );
 			_addResidue( p_residue );
 			_addResidueContent( p_residue );
-			this->_notifyDataChanged();
 		}
 
-		void Selection::selectAtom( const Atom & p_atom )
+		void Selection::_selectAtom( const Atom & p_atom )
 		{
 			_addMolecule( *p_atom.getMoleculePtr() );
 			_addChain( *p_atom.getChainPtr() );
 			_addResidue( *p_atom.getResiduePtr() );
 			_addAtom( p_atom );
-			this->_notifyDataChanged();
 		}
 
-		void Selection::unselectMolecule( const Molecule & p_molecule )
-		{
-			_removeMolecule( p_molecule );
-			this->_notifyDataChanged();
-		}
+		void Selection::_unselectMolecule( const Molecule & p_molecule ) { _removeMolecule( p_molecule ); }
 
-		void Selection::unselectChain( const Chain & p_chain )
-		{
-			_removeChain( p_chain );
-			this->_notifyDataChanged();
-		}
+		void Selection::_unselectChain( const Chain & p_chain ) { _removeChain( p_chain ); }
 
-		void Selection::unselectResidue( const Residue & p_residue )
-		{
-			_removeResidue( p_residue );
-			this->_notifyDataChanged();
-		}
+		void Selection::_unselectResidue( const Residue & p_residue ) { _removeResidue( p_residue ); }
 
-		void Selection::unselectAtom( const Atom & p_atom )
-		{
-			_removeAtom( p_atom );
-			this->_notifyDataChanged();
-		}
+		void Selection::_unselectAtom( const Atom & p_atom ) { _removeAtom( p_atom ); }
 
 		void Selection::_addMolecule( const Molecule & p_molecule )
 		{

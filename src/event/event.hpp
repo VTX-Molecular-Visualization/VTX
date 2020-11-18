@@ -43,8 +43,7 @@ namespace VTX
 			DATA_CHANGE,
 			MOLECULE_VISIBILITY,
 			CHAIN_VISIBILITY,
-			RESIDUE_VISIBILITY
-
+			RESIDUE_VISIBILITY,
 		};
 
 		// Base event without args.

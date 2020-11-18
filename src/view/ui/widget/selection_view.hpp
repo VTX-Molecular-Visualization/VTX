@@ -23,20 +23,19 @@ namespace VTX
 					VTX_MANUAL_WIDGET_DECLARATION
 
 				  public:
-					void		 localize() override;
-					virtual void notify( const Event::VTXEvent * const p_event ) override;
+					void localize() override;
 
 				  protected:
 					SelectionView( Model::Selection * const p_model, QWidget * const p_parent ) : View::BaseView<Model::Selection>( p_model ), BaseManualWidget( p_parent ) {}
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
-					void _refreshView() override;
+					void _refreshView() override; // Debug only.
 
 				  private:
-					void _clear();
-
 					void _onItemClicked( QTreeWidgetItem *, int );
 
+					bool			 _createTopLevelChildren( const uint p_count );
+					bool			 _createChildren( QTreeWidgetItem & p_item, const uint p_count );
 					inline Model::ID _getModelID( const QTreeWidgetItem & p_item ) const
 					{
 						const QVariant & dataID = p_item.data( 0, Qt::UserRole );

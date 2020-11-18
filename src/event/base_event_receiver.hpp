@@ -16,7 +16,7 @@ namespace VTX
 		class BaseEventReceiver
 		{
 		  public:
-			virtual void receiveEvent( const T & p_event ) {};
+			virtual void receiveEvent( const T & p_event ) {}
 		};
 	} // namespace Event
 } // namespace VTX
