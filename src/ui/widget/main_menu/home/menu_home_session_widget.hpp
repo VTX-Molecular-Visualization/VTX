@@ -39,12 +39,16 @@ namespace VTX
 						MenuToolButtonWidget * _openRecentSessionButton = nullptr;
 						MenuToolButtonWidget * _saveSessionButton		= nullptr;
 						MenuToolButtonWidget * _saveAsSessionButton		= nullptr;
+						MenuToolButtonWidget * _loadSettingsButton		= nullptr;
+						MenuToolButtonWidget * _saveSettingsButton		= nullptr;
 
 						QMenu * _recentSessionMenu = nullptr;
 
 					  private:
 						void _openFile();
 						void _loadRecentSession( const int & p_ptrSessionIndex ) const;
+						void _loadSettings() const;
+						void _saveSettings() const;
 
 						QMenu * const MenuHomeSessionWidget::_generateRecentSessionsMenu() const;
 					};
