@@ -196,7 +196,10 @@ namespace VTX
 					const bool cursorInFrontOfStartClick = currentMousePos.x() > _startPressPosition.x();
 					const bool cursorMoveForward		 = currentMousePos.x() >= _lastDragSelectionPosition.x();
 
-					const Model::Residue * const closestLastResidueHovered = _getClosestResidue( _lastDragSelectionPosition, cursorMoveForward );
+					const Model::Residue * closestLastResidueHovered = _getClosestResidue( _lastDragSelectionPosition, cursorMoveForward );
+
+					if ( closestLastResidueHovered == nullptr )
+						closestLastResidueHovered = _getClosestResidue( _lastDragSelectionPosition, cursorMoveForward );
 
 					// If the cursor switch side of the first clicked object, we clear the selection
 					if ( switchSideFromStartClick )
@@ -459,7 +462,7 @@ namespace VTX
 
 						if ( chainDisplayStartPos <= p_pos.x() && p_pos.x() < chainDisplayEndPos )
 						{
-							res = &( it->getResidueAtPos( p_pos ) );
+							res = it->getResidueAtPos( p_pos );
 							break;
 						}
 					}
@@ -477,10 +480,15 @@ namespace VTX
 
 					for ( auto it : _chainDisplayWidgets )
 					{
-						const qreal chainDisplayStartPos = it->pos().x();
-						const qreal chainDisplayEndPos	 = chainDisplayStartPos + it->width();
+						const qreal chainDisplayStartPos = it->getSequenceXmin();
+						const qreal chainDisplayEndPos	 = it->getSequenceXmax();
 
-						if ( chainDisplayStartPos > p_pos.x() )
+						if ( chainDisplayStartPos <= p_pos.x() && p_pos.x() < chainDisplayEndPos )
+						{
+							res = &( it->getClosestResidueFromPos( p_pos, p_next ) );
+							break;
+						}
+						else if ( chainDisplayStartPos > p_pos.x() )
 						{
 							if ( p_next )
 								res = &( it->getFirstResidue() );

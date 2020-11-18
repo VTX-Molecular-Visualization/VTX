@@ -44,85 +44,23 @@ namespace VTX
 				void ChainSequenceWidget::localize() {}
 				void ChainSequenceWidget::refresh()
 				{
-					_sequenceDisplayWidget->setupSequence( *_model );
-					_refreshScale();
+					_chainData = new SequenceChainData( *_model );
+					_sequenceDisplayWidget->setupSequence( _chainData );
+
+					const QString scaleString = _chainData->getScale();
+					_scaleWidget->setText( scaleString );
 				}
 
-				Model::Residue & ChainSequenceWidget::getResidueAtPos( const QPoint & p_pos ) const
+				Model::Residue * const ChainSequenceWidget::getResidueAtPos( const QPoint & p_pos ) const
 				{
 					const QPoint localPos = _sequenceDisplayWidget->mapFrom( parentWidget(), p_pos );
 					return _sequenceDisplayWidget->getResidueAtPos( localPos );
 				}
 
-				void ChainSequenceWidget::_refreshScale()
+				Model::Residue & ChainSequenceWidget::getClosestResidueFromPos( const QPoint & p_pos, const bool p_takeForward ) const
 				{
-					const uint residueCount = _model->getResidueCount();
-
-					if ( residueCount <= 0 )
-					{
-						_scaleWidget->setText( "" );
-						return;
-					}
-
-					const uint		  firstResidueIndex	   = _model->getMoleculePtr()->getResidue( _model->getIndexFirstResidue() ).getIndexInOriginalChain();
-					const std::string firstResidueIndexStr = std::to_string( firstResidueIndex );
-
-					if ( residueCount == 1 )
-					{
-						_scaleWidget->setText( QString::fromStdString( firstResidueIndexStr ) );
-						return;
-					}
-
-					const uint firstIndexStrSize = (uint)firstResidueIndexStr.size();
-
-					// Short symbol size + space
-					const std::vector<UnknownResidueData> unknownResidues	  = _sequenceDisplayWidget->getUnknownResiduesPositions();
-					uint								  unknownResidueIndex = 0;
-
-					const uint		  lastResidueIndex					 = firstResidueIndex + residueCount - 1;
-					const std::string lastResidueIndexStr				 = std::to_string( lastResidueIndex );
-					const uint		  lastResidueIndexForwardOffsetIndex = ( uint )( lastResidueIndexStr.size() / 2 );
-
-					uint unknownResidueAdditionalLength = 0;
-
-					for ( auto it = unknownResidues.begin(); it != unknownResidues.end(); it++ )
-						unknownResidueAdditionalLength += it->strSize - 1;
-
-					const uint scaleTxtLength
-						= residueCount + ( lastResidueIndexForwardOffsetIndex - ( lastResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) ) + unknownResidueAdditionalLength;
-
-					QString scaleTxt = QString( scaleTxtLength, ' ' );
-
-					// We display the index of the first label (in original chain)
-					for ( uint i = 0; i < firstIndexStrSize; i++ )
-						scaleTxt[ i ] = firstResidueIndexStr[ i ];
-
-					// Then we find the next displayed index which will be the next multiple of Style::SEQUENCE_CHAIN_SCALE_STEP which does not overlay or stick with the chars of
-					// the first index
-					const uint secondIndex		   = _findSecondIndex( firstResidueIndex, firstIndexStrSize );
-					uint	   unknowResidueOffset = 0;
-					// and we draw a label every Style::SEQUENCE_CHAIN_SCALE_STEP (verifying unknown symbols that take 4 chars instead of 1)
-					for ( uint i = secondIndex; i < residueCount; i += Style::SEQUENCE_CHAIN_SCALE_STEP )
-					{
-						// We count all unknown symbols passed in the step
-						while ( unknownResidueIndex < unknownResidues.size() && i > unknownResidues[ unknownResidueIndex ].residueIndex )
-						{
-							unknowResidueOffset += unknownResidues[ unknownResidueIndex ].strSize - 1;
-							unknownResidueIndex++;
-						}
-
-						const std::string indexTxt	   = std::to_string( firstResidueIndex + i );
-						const uint		  indexTxtSize = (uint)indexTxt.size();
-						const uint		  indexOffset  = ( indexTxtSize - 1 ) / 2;
-
-						for ( uint j = 0; j < indexTxtSize; j++ )
-						{
-							const uint index  = i + j - indexOffset + unknowResidueOffset;
-							scaleTxt[ index ] = indexTxt[ j ];
-						}
-					}
-
-					_scaleWidget->setText( scaleTxt );
+					const QPoint localPos = _sequenceDisplayWidget->mapFrom( parentWidget(), p_pos );
+					return *( _sequenceDisplayWidget->getClosestResidueFromPos( localPos, p_takeForward ) );
 				}
 
 				uint ChainSequenceWidget::_findSecondIndex( const int firstResidueIndex, const int firstIndexStrSize )
