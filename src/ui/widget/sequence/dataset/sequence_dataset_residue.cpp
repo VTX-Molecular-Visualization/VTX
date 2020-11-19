@@ -15,20 +15,24 @@ namespace VTX
 																					const uint			 p_startIndexChar,
 																					const uint			 p_startResidueIndex,
 																					const uint			 p_endResidueIndex ) :
-						SequenceDisplayDataset( p_startIndexChar, p_startIndexChar + ( p_endResidueIndex - p_startResidueIndex ) ),
-						_startResidueIndex( p_startResidueIndex ), _endResidueIndex( p_endResidueIndex ), _linkedChain( p_chain )
-					{
-						const uint size = p_endResidueIndex - p_startResidueIndex + 1;
-						_str			= QString( size, ' ' );
+						SequenceDisplayDataset( p_startIndexChar, p_endResidueIndex - p_startResidueIndex + 1 ),
+						_startResidueIndex( p_startResidueIndex ), _endResidueIndex( p_endResidueIndex ), _linkedChain( p_chain ) {};
 
-						const Model::Molecule * const molecule		  = p_chain.getMoleculePtr();
-						const uint					  chainFirstIndex = p_chain.getIndexFirstResidue();
+					void SequenceDisplayDataset_Residue::appendToSequence( QString & p_string ) const
+					{
+						const uint size			  = _endResidueIndex - _startResidueIndex + 1;
+						QString	   sequenceString = QString( size, ' ' );
+
+						const Model::Molecule * const molecule		  = _linkedChain.getMoleculePtr();
+						const uint					  chainFirstIndex = _linkedChain.getIndexFirstResidue();
 
 						for ( uint i = 0; i < size; i++ )
-							_str[ i ] = molecule->getResidue( chainFirstIndex + p_startResidueIndex + i ).getSymbolShort()[ 0 ];
-					};
+							sequenceString[ i ] = molecule->getResidue( chainFirstIndex + _startResidueIndex + i ).getSymbolShort()[ 0 ];
 
-					const void SequenceDisplayDataset_Residue::appendToScale( QString & p_scale, const bool p_startBloc ) const
+						p_string.append( sequenceString );
+					}
+
+					void SequenceDisplayDataset_Residue::appendToScale( QString & p_scale, const bool p_startBloc ) const
 					{
 						uint currentIndexChar;
 						uint currentLocalIndexResidue;

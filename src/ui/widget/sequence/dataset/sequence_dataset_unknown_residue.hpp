@@ -27,7 +27,8 @@ namespace VTX
 															   const uint		p_startIndexChar,
 															   const uint		p_residueIndex );
 
-						const void			   appendToScale( QString & p_scale, bool p_startBloc ) const override;
+						void				   appendToSequence( QString & p_sequenceString ) const override;
+						void				   appendToScale( QString & p_scale, bool p_startBloc ) const override;
 						Model::Residue * const getResidueAtCharIndex( const uint p_charIndex ) override;
 
 						virtual bool isResidueInScope( const uint p_residueIndex ) const
@@ -40,12 +41,13 @@ namespace VTX
 						Model::Residue * const getLastResidue( const uint p_charIndex ) const override { return _residue; };
 
 						uint getPaintLength( const uint p_charIndex ) const override { return 3; };
-						uint getPaintCharIndex( const uint p_charIndex ) const override { return _startIndexChar + _scaleIndexPosition - 1; };
+						uint getPaintCharIndex( const uint p_charIndex ) const override { return _startIndexChar + ( _spaceBefore ? 1 : 0 ); };
 
 					  private:
 						Model::Residue * const _residue;
 						uint				   _residueIndex;
-						uint				   _scaleIndexPosition;
+						const bool			   _spaceBefore;
+						const bool			   _spaceAfter;
 					};
 				} // namespace Dataset
 			}	  // namespace Sequence

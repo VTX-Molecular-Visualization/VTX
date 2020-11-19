@@ -21,7 +21,7 @@ namespace VTX
 					class SequenceDisplayDataset_HtmlTag : public SequenceDisplayDataset
 					{
 					  public:
-						SequenceDisplayDataset_HtmlTag( const uint p_charIndex ) : SequenceDisplayDataset( p_charIndex, p_charIndex ) {};
+						SequenceDisplayDataset_HtmlTag( const uint p_charIndex ) : SequenceDisplayDataset( p_charIndex, 0 ) {};
 
 						int	 getStringSize() const override { return 0; };
 						bool isCharIndexInScope( const uint p_charIndex ) override { return false; }
@@ -30,18 +30,32 @@ namespace VTX
 					class SequenceDisplayDataset_HtmlColorTag : public SequenceDisplayDataset_HtmlTag
 					{
 					  public:
-						SequenceDisplayDataset_HtmlColorTag( const uint p_charIndex, const Color::Rgb & p_color );
+						SequenceDisplayDataset_HtmlColorTag( const uint p_charIndex, const Color::Rgb & p_color ) :
+							SequenceDisplayDataset_HtmlTag( p_charIndex ), _color( p_color ) {};
+
+						void appendToSequence( QString & p_sequenceString ) const override
+						{
+							QString tag = QString();
+							Util::UI::appendColorHtmlTag( tag, _color );
+							p_sequenceString.append( tag );
+						}
 						const bool isFinishingBlock( bool p_startBlock ) const override { return p_startBlock; };
+
+					  protected:
+						Color::Rgb _color;
 					};
 
 					class SequenceDisplayDataset_EndHtmlColorTag : public SequenceDisplayDataset_HtmlTag
 					{
 					  public:
-						SequenceDisplayDataset_EndHtmlColorTag( const uint p_charIndex ) : SequenceDisplayDataset_HtmlTag( p_charIndex )
+						SequenceDisplayDataset_EndHtmlColorTag( const uint p_charIndex ) : SequenceDisplayDataset_HtmlTag( p_charIndex ) {};
+						void appendToSequence( QString & p_sequenceString ) const override
 						{
-							_str = QString();
-							Util::UI::appendEndColorHtmlTag( _str );
-						};
+							QString tag = QString();
+							Util::UI::appendEndColorHtmlTag( tag );
+							p_sequenceString.append( tag );
+						}
+
 						const bool isFinishingBlock( bool p_startBlock ) const override { return p_startBlock; };
 					};
 

@@ -113,7 +113,7 @@ namespace VTX
 
 					for ( auto it : _dataset )
 					{
-						_strSequence.append( it->getString() );
+						it->appendToSequence( _strSequence );
 						sequenceLength += it->getStringSize();
 					}
 					const uint firstResidueIndex = _chain.getMoleculePtr()->getResidue( _chain.getIndexFirstResidue() ).getIndexInOriginalChain();

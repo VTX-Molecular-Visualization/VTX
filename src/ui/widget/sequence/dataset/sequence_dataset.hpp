@@ -22,16 +22,17 @@ namespace VTX
 					class SequenceDisplayDataset
 					{
 					  public:
-						SequenceDisplayDataset( const uint p_startIndexChar, const uint p_endIndexChar ) :
-							_startIndexChar( p_startIndexChar ), _endIndexChar( p_endIndexChar ), _charCount( p_endIndexChar - p_startIndexChar + 1 ) {};
+						SequenceDisplayDataset( const uint p_startIndexChar, const uint p_charCount ) : _startIndexChar( p_startIndexChar ), _charCount( p_charCount ) {};
+
+						virtual void appendToSequence( QString & p_sequenceString ) const {};
 
 						virtual const QString & getString() const { return _str; };
-						virtual int				getStringSize() const { return _str.size(); };
+						virtual int				getStringSize() const { return _charCount; };
 
-						virtual const void appendToScale( QString & p_scale, bool p_startBloc ) const {};
+						virtual void	   appendToScale( QString & p_scale, bool p_startBloc ) const {};
 						virtual const bool isFinishingBlock( bool p_startBlock ) const { return false; };
 
-						virtual bool				   isCharIndexInScope( const uint p_charIndex ) { return _startIndexChar <= p_charIndex && p_charIndex <= _endIndexChar; }
+						virtual bool isCharIndexInScope( const uint p_charIndex ) { return _startIndexChar <= p_charIndex && p_charIndex < ( _startIndexChar + _charCount ); }
 						virtual Model::Residue * const getResidueAtCharIndex( const uint p_charIndex ) { return nullptr; };
 
 						virtual bool				   isResidueInScope( const uint p_residueIndex ) const { return false; };
@@ -41,11 +42,10 @@ namespace VTX
 
 						virtual uint getPaintCharIndex( const uint p_charIndex ) const { return getCharIndexOfResidue( p_charIndex ); };
 						virtual uint getPaintLength( const uint p_charIndex ) const { return 0; };
-						uint		 getLastCharIndex() const { return _endIndexChar; };
+						uint		 getLastCharIndex() const { return _startIndexChar + _charCount - 1; };
 
 					  protected:
 						uint	_startIndexChar;
-						uint	_endIndexChar;
 						uint	_charCount;
 						QString _str;
 

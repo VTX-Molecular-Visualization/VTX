@@ -10,7 +10,20 @@ namespace VTX
 			{
 				namespace Dataset
 				{
-					const void SequenceDisplayDataset_MissingResidue::appendToScale( QString & p_scale, const bool p_startBloc ) const
+					void SequenceDisplayDataset_MissingResidue::appendToSequence( QString & p_sequenceString ) const
+					{
+						if ( _isTooLong )
+						{
+							// Use of unbreakable space (U+00A0) instead of normal space because rich text in QLabel collapse consecutive space and break scale alignment
+							p_sequenceString.append( " " );
+						}
+						else
+						{
+							p_sequenceString.append( QString( _charCount, '-' ) );
+						}
+					}
+
+					void SequenceDisplayDataset_MissingResidue::appendToScale( QString & p_scale, const bool p_startBloc ) const
 					{
 						if ( _isTooLong )
 							return;
@@ -19,7 +32,7 @@ namespace VTX
 						uint currentIndexResidue;
 
 						const uint firstResidue = _startResidueIndexInOriginalChain;
-						const uint endResidue	= _startResidueIndexInOriginalChain + _size;
+						const uint endResidue	= _startResidueIndexInOriginalChain + _charCount;
 
 						if ( p_startBloc )
 						{

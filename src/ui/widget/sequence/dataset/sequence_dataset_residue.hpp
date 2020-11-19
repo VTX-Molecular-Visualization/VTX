@@ -23,7 +23,8 @@ namespace VTX
 					{
 					  public:
 						SequenceDisplayDataset_Residue( const Model::Chain & p_chain, const uint p_startIndexChar, const uint p_startResidueIndex, const uint p_endResidueIndex );
-						const void appendToScale( QString & p_scale, const bool p_startBloc ) const override;
+						void appendToSequence( QString & p_sequenceString ) const override;
+						void appendToScale( QString & p_scale, const bool p_startBloc ) const override;
 
 						Model::Residue * const getResidueAtCharIndex( const uint p_charIndex ) override;
 						bool				   isResidueInScope( const uint p_residueIndex ) const override;
