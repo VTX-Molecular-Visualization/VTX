@@ -10,7 +10,7 @@
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include <QString>
-#include <list>
+#include <vector>
 
 namespace VTX
 {
@@ -52,9 +52,9 @@ namespace VTX
 					uint				   getCharCount() const { return _dataset.back()->getLastCharIndex(); };
 
 				  private:
-					const Model::Molecule &						 _molecule;
-					const Model::Chain &						 _chain;
-					std::list<Dataset::SequenceDisplayDataset *> _dataset = std::list<Dataset::SequenceDisplayDataset *>();
+					const Model::Molecule &						   _molecule;
+					const Model::Chain &						   _chain;
+					std::vector<Dataset::SequenceDisplayDataset *> _dataset = std::vector<Dataset::SequenceDisplayDataset *>();
 
 					Model::Residue & _getResidue( const uint p_localResidueIndex ) const
 					{

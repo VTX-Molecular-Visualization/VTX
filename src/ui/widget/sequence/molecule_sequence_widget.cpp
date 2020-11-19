@@ -504,7 +504,7 @@ namespace VTX
 
 				bool MoleculeSequenceWidget::_isSelected( const Model::Residue * const residue ) const
 				{
-					for ( auto it : _selection )
+					for ( const auto it : _selection )
 					{
 						if ( it->getId() == residue->getId() )
 							return true;
