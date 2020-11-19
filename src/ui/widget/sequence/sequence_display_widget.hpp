@@ -8,7 +8,6 @@
 #include "model/chain.hpp"
 #include "model/residue.hpp"
 #include "sequence_chain_data.hpp"
-#include "unknown_residue_data.hpp"
 #include <QFontMetricsF>
 #include <QLabel>
 #include <QMouseEvent>
@@ -39,8 +38,6 @@ namespace VTX
 					Model::Residue * const getResidueAtPos( const QPoint & p_pos );
 					Model::Residue * const getClosestResidueFromPos( const QPoint & p_pos, const bool p_takeForward );
 
-					const std::vector<UnknownResidueData> & getUnknownResiduesPositions() const { return _positionUnknownResidues; }
-
 					void updateSelection( const std::vector<Model::Residue *> & p_selection )
 					{
 						_moleculeSelection = &p_selection;
@@ -59,21 +56,14 @@ namespace VTX
 					int *			_charIndexPaintCache	= new int();
 					int *			_symbolLengthPaintCache = new int();
 
-					const SequenceChainData *		_chainData				 = nullptr;
-					std::vector<UnknownResidueData> _positionUnknownResidues = std::vector<UnknownResidueData>();
+					const SequenceChainData * _chainData = nullptr;
 
 					const std::vector<Model::Residue *> * _moleculeSelection = nullptr;
 
 					uint				   _getCharIndex( const uint p_residueIndex ) const;
-					uint				   _getLocalResidueIndex( const uint p_charIndex ) const;
 					Model::Residue &	   _getResidue( const uint p_localResidueIndex ) const;
 					Model::Residue * const _getResidueFromLocaleXPos( const int p_localeXPos ) const;
-					uint				   _getResidueIndexFromLocaleXPos( const int p_localeXPos ) const;
 					uint				   _getLocalResidueIndexFromResidue( const Model::Residue & p_globalResIndex ) const;
-
-					bool _checkUnknownResidue( const uint p_localResidueIndex, const UnknownResidueData *& p_unknownResidueData ) const;
-
-					void _getResidueHighlightData( uint p_localResidueIndex, int * const p_charIndex, int * const p_length ) const;
 				};
 			} // namespace Sequence
 		}	  // namespace Widget

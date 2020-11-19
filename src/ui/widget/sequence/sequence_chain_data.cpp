@@ -1,4 +1,8 @@
 #include "sequence_chain_data.hpp"
+#include "dataset/sequence_dataset_missing_residue.hpp"
+#include "dataset/sequence_dataset_residue.hpp"
+#include "dataset/sequence_dataset_tag.hpp"
+#include "dataset/sequence_dataset_unknown_residue.hpp"
 
 namespace VTX
 {
@@ -12,7 +16,7 @@ namespace VTX
 				{
 					const uint residueCount = _chain.getResidueCount();
 
-					SequenceDisplayDataset_HtmlColorTag * const colorTag = new SequenceDisplayDataset_HtmlColorTag( 0, _chain.getColor() );
+					Dataset::SequenceDisplayDataset_HtmlColorTag * const colorTag = new Dataset::SequenceDisplayDataset_HtmlColorTag( 0, _chain.getColor() );
 					_dataset.emplace_back( colorTag );
 
 					uint localCharIndex = 0;
@@ -34,18 +38,19 @@ namespace VTX
 						{
 							if ( localResidueIndex > 0 && startSequentialResidueChainStartIndex )
 							{
-								SequenceDisplayDataset_Residue * residueSet
-									= new SequenceDisplayDataset_Residue( _chain, localCharIndex, sequentialResidueChainStartIndex, localResidueIndex - 1 );
+								Dataset::SequenceDisplayDataset_Residue * residueSet
+									= new Dataset::SequenceDisplayDataset_Residue( _chain, localCharIndex, sequentialResidueChainStartIndex, localResidueIndex - 1 );
 								_dataset.emplace_back( residueSet );
 
-								localCharIndex += residueSet->getStringSize();
+								uint stringSize = residueSet->getStringSize();
+								localCharIndex += stringSize;
 							}
 
 							const uint nbMissingResidue					= residueScaleIndex - previousResidueScaleIndex - 1;
 							const uint firstResidueIndexInOriginalChain = previousResidueScaleIndex + 1;
 
-							SequenceDisplayDataset_MissingResidue * missingResidueSet
-								= new SequenceDisplayDataset_MissingResidue( localCharIndex, firstResidueIndexInOriginalChain, nbMissingResidue );
+							Dataset::SequenceDisplayDataset_MissingResidue * missingResidueSet
+								= new Dataset::SequenceDisplayDataset_MissingResidue( localCharIndex, firstResidueIndexInOriginalChain, nbMissingResidue );
 							_dataset.emplace_back( missingResidueSet );
 							localCharIndex += missingResidueSet->getStringSize();
 
@@ -57,8 +62,8 @@ namespace VTX
 						{
 							if ( localResidueIndex > 0 && startSequentialResidueChainStartIndex )
 							{
-								SequenceDisplayDataset_Residue * residueSet
-									= new SequenceDisplayDataset_Residue( _chain, localCharIndex, sequentialResidueChainStartIndex, localResidueIndex - 1 );
+								Dataset::SequenceDisplayDataset_Residue * residueSet
+									= new Dataset::SequenceDisplayDataset_Residue( _chain, localCharIndex, sequentialResidueChainStartIndex, localResidueIndex - 1 );
 								_dataset.emplace_back( residueSet );
 
 								localCharIndex += residueSet->getStringSize();
@@ -67,8 +72,8 @@ namespace VTX
 							bool spaceBefore = localResidueIndex > 0 && !lastResidueWasUnknown;
 							bool spaceAfter	 = localResidueIndex < ( residueCount - 1 );
 
-							SequenceDisplayDataset_UnknownResidue * unknownResidueSet
-								= new SequenceDisplayDataset_UnknownResidue( residue, spaceBefore, spaceAfter, localCharIndex, residueScaleIndex );
+							Dataset::SequenceDisplayDataset_UnknownResidue * unknownResidueSet
+								= new Dataset::SequenceDisplayDataset_UnknownResidue( residue, spaceBefore, spaceAfter, localCharIndex, residueScaleIndex );
 
 							_dataset.emplace_back( unknownResidueSet );
 							localCharIndex += unknownResidueSet->getStringSize();
@@ -90,15 +95,15 @@ namespace VTX
 
 					if ( startSequentialResidueChainStartIndex )
 					{
-						SequenceDisplayDataset_Residue * residueSet
-							= new SequenceDisplayDataset_Residue( _chain, localCharIndex, sequentialResidueChainStartIndex, residueCount - 1 );
+						Dataset::SequenceDisplayDataset_Residue * residueSet
+							= new Dataset::SequenceDisplayDataset_Residue( _chain, localCharIndex, sequentialResidueChainStartIndex, residueCount - 1 );
 						_dataset.emplace_back( residueSet );
 
 						localCharIndex += residueSet->getStringSize();
 						startSequentialResidueChainStartIndex = false;
 					}
 
-					_dataset.emplace_back( new SequenceDisplayDataset_EndHtmlColorTag( localCharIndex ) );
+					_dataset.emplace_back( new Dataset::SequenceDisplayDataset_EndHtmlColorTag( localCharIndex ) );
 				};
 
 				void SequenceChainData::_generateString()

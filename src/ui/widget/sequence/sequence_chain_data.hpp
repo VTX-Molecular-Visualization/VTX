@@ -5,11 +5,10 @@
 #pragma once
 #endif
 
+#include "dataset/sequence_dataset.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
-#include "sequence_dataset.hpp"
-#include "unknown_residue_data.hpp"
 #include <QString>
 #include <list>
 
@@ -50,12 +49,12 @@ namespace VTX
 					uint				   getCharIndex( const uint p_residueIndex ) const;
 					uint				   getPaintCharIndex( const uint p_residueIndex ) const;
 					uint				   getPaintLength( const uint p_localResidueIndex ) const;
-					uint				   getCharCount() const { return ( *( _dataset.crbegin() ) )->getLastCharIndex(); };
+					uint				   getCharCount() const { return _dataset.back()->getLastCharIndex(); };
 
 				  private:
-					const Model::Molecule &				_molecule;
-					const Model::Chain &				_chain;
-					std::list<SequenceDisplayDataset *> _dataset = std::list<SequenceDisplayDataset *>();
+					const Model::Molecule &						 _molecule;
+					const Model::Chain &						 _chain;
+					std::list<Dataset::SequenceDisplayDataset *> _dataset = std::list<Dataset::SequenceDisplayDataset *>();
 
 					Model::Residue & _getResidue( const uint p_localResidueIndex ) const
 					{

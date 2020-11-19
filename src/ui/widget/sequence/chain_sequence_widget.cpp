@@ -3,7 +3,6 @@
 #include "model/residue.hpp"
 #include "style.hpp"
 #include "tool/logger.hpp"
-#include "unknown_residue_data.hpp"
 #include <QFont>
 #include <QString>
 #include <QVBoxLayout>
@@ -61,41 +60,6 @@ namespace VTX
 				{
 					const QPoint localPos = _sequenceDisplayWidget->mapFrom( parentWidget(), p_pos );
 					return *( _sequenceDisplayWidget->getClosestResidueFromPos( localPos, p_takeForward ) );
-				}
-
-				uint ChainSequenceWidget::_findSecondIndex( const int firstResidueIndex, const int firstIndexStrSize )
-				{
-					// The second index will be the next multiple of Style::SEQUENCE_CHAIN_SCALE_STEP which does not overlay or stick with the chars of the first index
-					uint	   secondIndex		  = Style::SEQUENCE_CHAIN_SCALE_STEP - ( firstResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP );
-					const uint secondIndexStrSize = (uint)std::to_string( firstResidueIndex + 1 ).size();
-
-					// first index size + back offset second index + space
-					const uint spaceNeededBetweenFirstAndSecondIndex = firstIndexStrSize + ( secondIndexStrSize / 2 ) + 1;
-					uint	   spaceBetweenFirstAndSecondIndex		 = 0;
-
-					const std::vector<UnknownResidueData> unknownResidues	  = _sequenceDisplayWidget->getUnknownResiduesPositions();
-					uint								  unknownResidueIndex = 0;
-
-					uint strIndex = 0;
-					for ( uint residueIndex = 0; residueIndex < secondIndex; residueIndex++ )
-					{
-						if ( unknownResidues.size() > unknownResidueIndex && unknownResidues[ unknownResidueIndex ].residueIndex == strIndex )
-						{
-							spaceBetweenFirstAndSecondIndex += unknownResidues[ unknownResidueIndex ].strSize;
-							strIndex += unknownResidues[ unknownResidueIndex ].strSize;
-							unknownResidueIndex++;
-						}
-						else
-						{
-							strIndex += 1;
-							spaceBetweenFirstAndSecondIndex += 1;
-						}
-					}
-
-					if ( spaceBetweenFirstAndSecondIndex < spaceNeededBetweenFirstAndSecondIndex )
-						secondIndex += Style::SEQUENCE_CHAIN_SCALE_STEP;
-
-					return secondIndex;
 				}
 
 			} // namespace Sequence

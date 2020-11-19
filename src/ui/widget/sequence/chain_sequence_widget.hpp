@@ -64,8 +64,6 @@ namespace VTX
 					QVBoxLayout *			_layout				   = nullptr;
 
 					SequenceChainData * _chainData = nullptr;
-
-					uint _findSecondIndex( const int firstResidueIndex, const int firstIndexStrSize );
 				};
 			} // namespace Sequence
 		}	  // namespace Widget
