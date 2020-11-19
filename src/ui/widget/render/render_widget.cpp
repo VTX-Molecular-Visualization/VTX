@@ -11,8 +11,8 @@ namespace VTX
 			{
 				RenderWidget::RenderWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 				{
-					_registerEvent( Event::Global::MOLECULE_ADDED );
-					_registerEvent( Event::Global::MESH_ADDED );
+					_registerEvent( Event::Global::MOLECULE_CREATED );
+					_registerEvent( Event::Global::MESH_CREATED );
 				}
 
 				RenderWidget::~RenderWidget()
@@ -25,12 +25,12 @@ namespace VTX
 				void RenderWidget::receiveEvent( const Event::VTXEvent & p_event )
 				{
 					_openGLWidget->makeCurrent();
-					if ( p_event.name == Event::Global::MOLECULE_ADDED )
+					if ( p_event.name == Event::Global::MOLECULE_CREATED )
 					{
 						const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 						castedEvent.ptr->init( getOpenGLWidget().gl() );
 					}
-					else if ( p_event.name == Event::Global::MESH_ADDED )
+					else if ( p_event.name == Event::Global::MESH_CREATED )
 					{
 						const Event::VTXEventPtr<Model::MeshTriangle> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::MeshTriangle> &>( p_event );
 						castedEvent.ptr->init( getOpenGLWidget().gl() );

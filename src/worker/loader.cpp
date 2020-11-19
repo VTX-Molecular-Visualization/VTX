@@ -1,5 +1,5 @@
 #include "loader.hpp"
-#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "io/reader/lib_assimp.hpp"
 #include "io/reader/lib_chemfiles.hpp"
 #include "io/reader/prm.hpp"
@@ -61,6 +61,7 @@ namespace VTX
 					{
 						reader->readFile( *path, *molecule );
 						molecule->print();
+						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
 						VTXApp::get().getScene().addMolecule( molecule );
 					}
 					catch ( const std::exception & p_e )
@@ -81,6 +82,7 @@ namespace VTX
 					{
 						reader->readFile( *path, *mesh );
 						mesh->print();
+						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
 						VTXApp::get().getScene().addMesh( mesh );
 					}
 					catch ( const std::exception & p_e )
@@ -137,6 +139,7 @@ namespace VTX
 					{
 						reader->readBuffer( *pair.second, *pair.first, *molecule );
 						molecule->print();
+						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
 						VTXApp::get().getScene().addMolecule( molecule );
 					}
 					catch ( const std::exception & p_e )

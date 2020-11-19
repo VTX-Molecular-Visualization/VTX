@@ -3,9 +3,9 @@
 #include "controller/shortcut.hpp"
 #include "controller/trackball.hpp"
 #include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "generic/factory.hpp"
 #include "vtx_app.hpp"
-#include "event/event_manager.hpp"
 
 namespace VTX
 {
