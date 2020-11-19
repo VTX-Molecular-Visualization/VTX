@@ -29,7 +29,8 @@ namespace VTX
 			void setAtomPositions( const std::vector<Vec3f> & );
 			void setAtomRadius( const std::vector<float> & );
 			void setAtomColors( const std::vector<Color::Rgb> & );
-			void setAtomVisibilities( const std::vector<uint> & );
+			void setAtomVisibilities( const std::vector<ushort> & );
+			void setAtomSelections( const std::vector<ushort> & );
 			void setBonds( const std::vector<uint> & );
 
 		  private:
@@ -39,6 +40,7 @@ namespace VTX
 				ATOM_COLOR		= 1,
 				ATOM_RADIUS		= 2,
 				ATOM_VISIBILITY = 3,
+				ATOM_SELECTION	= 4,
 			};
 
 			GLuint _vao					= GL_INVALID_VALUE;
@@ -46,6 +48,7 @@ namespace VTX
 			GLuint _atomRadiusVBO		= GL_INVALID_VALUE;
 			GLuint _atomColorsVBO		= GL_INVALID_VALUE;
 			GLuint _atomVisibilitiesVBO = GL_INVALID_VALUE;
+			GLuint _atomSelectionsVBO	= GL_INVALID_VALUE;
 			GLuint _bondsIBO			= GL_INVALID_VALUE;
 		};
 	} // namespace Buffer

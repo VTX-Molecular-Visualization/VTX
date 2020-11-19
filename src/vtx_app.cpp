@@ -28,9 +28,6 @@ namespace VTX
 		_stateMachine = new State::StateMachine();
 		_stateMachine->goToState( ID::State::VISUALIZATION );
 
-		// Load settings.
-		VTX_ACTION( new Action::Setting::Load() );
-
 		// Create UI.
 		_initQt();
 		_mainWindow = new UI::MainWindow();
@@ -41,6 +38,9 @@ namespace VTX
 		Action::ActionManager::get();
 		Event::EventManager::get();
 		Selection::SelectionManager::get();
+
+		// Load settings.
+		VTX_ACTION( new Action::Setting::Load() );
 
 		VTX_INFO( "Application started" );
 

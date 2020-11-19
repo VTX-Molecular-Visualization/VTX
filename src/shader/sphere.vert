@@ -3,7 +3,7 @@
 layout( location = 0 ) in vec3 aSpherePos;
 layout( location = 1 ) in vec3 aSphereColor;
 layout( location = 2 ) in float aSphereRad;
-layout( location = 3 ) in uint aSphereVis;
+layout( location = 3 ) in unsigned short aSphereVis;
 
 uniform mat4  uMVMatrix;
 uniform mat4  uProjMatrix;
@@ -14,7 +14,7 @@ uniform bool  uIsRadiusFixed = false;
 flat out vec3  vViewSpherePos; // Sphere position in view space.
 flat out vec3  vSphereColor;
 flat out float vSphereRad;
-flat out uint  vSphereVis;
+flat out unsigned short  vSphereVis;
 flat out vec3  vImpU; // Impostor vectors.
 flat out vec3  vImpV;
 flat out float vDotViewSpherePos;
