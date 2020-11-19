@@ -79,7 +79,7 @@ namespace VTX
 								const Model::Residue & residue = molecule.getResidue( pairResidue.first );
 								residueView->setExpanded( false );
 								residueView->setData( 0, Qt::UserRole, QVariant::fromValue( residue.getId() ) );
-								residueView->setText( 0, QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndex() ) ) );
+								residueView->setText( 0, QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndexInOriginalChain() ) ) );
 							}
 
 							if ( needUpdateChain == false )
