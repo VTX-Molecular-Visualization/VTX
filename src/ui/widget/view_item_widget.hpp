@@ -22,6 +22,8 @@ namespace VTX
 				VTX_MANUAL_WIDGET_DECLARATION
 
 			  public:
+				ViewItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
+
 				inline M *	getModel() { return _model; };
 				inline void setModel( M * const p_model )
 				{
@@ -32,7 +34,6 @@ namespace VTX
 				virtual void refresh() {};
 
 			  protected:
-				ViewItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
 				M * _model = nullptr;
 			};
 

@@ -15,6 +15,7 @@ namespace VTX
 				{
 					_registerEvent( Event::Global::SELECTION_CHANGE );
 					_registerEvent( Event::Global::MOLECULE_ADDED );
+					_registerEvent( Event::Global::MOLECULE_REMOVED );
 				}
 
 				InspectorWidget::~InspectorWidget() {}
@@ -30,9 +31,20 @@ namespace VTX
 						View::UI::Widget::MoleculeInspectorView * const moleculeInspectorView = new View::UI::Widget::MoleculeInspectorView( castedEvent.ptr, nullptr );
 						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE, moleculeInspectorView );
 
-						QWidget * const widget = moleculeInspectorView->getLinkedWidget();
-
+						QWidget * const widget = moleculeInspectorView->getWidget();
 						_verticalLayout->insertWidget( 0, widget );
+					}
+					if ( p_event.name == Event::Global::MOLECULE_REMOVED )
+					{
+						const Event::VTXEventPtr<Model::Molecule> &		castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+						View::UI::Widget::MoleculeInspectorView * const moleculeInspectorView
+							= MVC::MvcManager::get().removeViewOnModel<Model::Molecule, View::UI::Widget::MoleculeInspectorView>( castedEvent.ptr,
+																																  ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
+
+						QWidget * const widget = moleculeInspectorView->getWidget();
+						_verticalLayout->removeWidget( widget );
+
+						delete moleculeInspectorView;
 					}
 				}
 

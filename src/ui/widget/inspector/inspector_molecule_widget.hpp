@@ -24,12 +24,12 @@ namespace VTX
 					VTX_MANUAL_WIDGET_DECLARATION
 
 				  public:
+					~InspectorMoleculeWidget();
 					void refresh() override;
 					void localize() override;
 
 				  protected:
 					InspectorMoleculeWidget( QWidget * p_parent ) : ViewItemWidget( p_parent ) {};
-					~InspectorMoleculeWidget();
 
 					void		 _setupUi( const QString & p_name ) override;
 					virtual void _setupSlots() override;

@@ -32,11 +32,10 @@ namespace VTX
 						_widget = VTX::UI::WidgetFactory::get().getWidget<W>( p_parent, p_widgetName );
 						_widget->setModel( p_model );
 					};
+					~BaseWidgetView() { delete _widget; };
 
 					inline void _refreshView() override { _widget->refresh(); };
-
-					W *		  getWidget() { return _widget; };
-					QWidget * getLinkedWidget() { return _widget; }
+					W *			getWidget() { return _widget; };
 
 				  private:
 					W * _widget;

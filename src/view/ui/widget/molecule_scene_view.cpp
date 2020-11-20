@@ -90,10 +90,14 @@ namespace VTX
 
 				void MoleculeSceneView::_setupUi( const QString & p_name )
 				{
-					setObjectName( QString::fromUtf8( "sceneTree" ) );
+					setObjectName( "sceneTree" );
 					setColumnCount( 1 );
 					setHeaderHidden( true );
 					setSelectionMode( QAbstractItemView::MultiSelection );
+
+					setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
+					_contextMenu = new QMenu( parentWidget() );
+					_contextMenu->addAction( "Delete", this, &MoleculeSceneView::_deleteAction, QKeySequence::Delete );
 
 					QTreeWidgetItem * const moleculeView = new QTreeWidgetItem();
 
@@ -142,13 +146,23 @@ namespace VTX
 					addTopLevelItem( moleculeView );
 				}
 
+				void MoleculeSceneView::_deleteAction()
+				{
+					Model::Molecule & molecule = *_model;
+					VTX_ACTION( new Action::Molecule::Delete( molecule ) );
+				}
+
 				void MoleculeSceneView::_setupSlots()
 				{
 					connect( this, &QTreeWidget::itemChanged, this, &MoleculeSceneView::_onItemChanged );
 					connect( this, &QTreeWidget::itemClicked, this, &MoleculeSceneView::_onItemClicked );
 					connect( this, &QTreeWidget::itemExpanded, this, &MoleculeSceneView::_onItemExpanded );
 					connect( this, &QTreeWidget::itemCollapsed, this, &MoleculeSceneView::_onItemCollapsed );
+
+					connect( this, &QTreeWidget::customContextMenuRequested, this, &MoleculeSceneView::_onCustomContextMenuCalled );
 				}
+
+				void MoleculeSceneView::_onCustomContextMenuCalled( const QPoint & p_clicPos ) { _contextMenu->popup( mapToGlobal( p_clicPos ) ); }
 
 				void MoleculeSceneView::localize() {}
 

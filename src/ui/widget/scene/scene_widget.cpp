@@ -43,6 +43,7 @@ namespace VTX
 							= MVC::MvcManager::get().removeViewOnModel<Model::Molecule, View::UI::Widget::MoleculeSceneView>( molecule, ID::View::UI_MOLECULE_STRUCTURE );
 
 						_layout->removeWidget( moleculeWidget );
+						delete moleculeWidget;
 					}
 				}
 
