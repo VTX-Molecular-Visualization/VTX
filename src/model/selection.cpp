@@ -231,5 +231,14 @@ namespace VTX
 			this->_notifyDataChanged();
 		}
 
+		void Selection::receiveEvent( const Event::VTXEvent & p_event )
+		{
+			if ( p_event.name == Event::MOLECULE_REMOVED )
+			{
+				const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+				unselectMolecule( *castedEvent.ptr );
+			}
+		}
+
 	} // namespace Model
 } // namespace VTX
