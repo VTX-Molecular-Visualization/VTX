@@ -29,7 +29,7 @@ namespace VTX
 			void setPositions( const std::vector<Vec3f> & );
 			void setNormals( const std::vector<Vec3f> & );
 			void setColors( const std::vector<Color::Rgb> & );
-			void setVisibilities( const std::vector<uint> & );
+			void setVisibilities( const std::vector<ushort> & );
 			void setIndices( const std::vector<uint> & );
 
 		  private:

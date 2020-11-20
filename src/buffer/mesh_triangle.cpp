@@ -40,7 +40,7 @@ namespace VTX
 
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
 			gl()->glEnableVertexAttribArray( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
-			gl()->glVertexAttribIPointer( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, GL_UNSIGNED_INT, sizeof( uint ), 0 );
+			gl()->glVertexAttribIPointer( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, GL_UNSIGNED_SHORT, sizeof( ushort ), 0 );
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
 			gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -114,9 +114,9 @@ namespace VTX
 			gl()->glNamedBufferData( _vboColors, sizeof( Color::Rgb ) * GLsizei( p_colors.size() ), p_colors.data(), GL_STATIC_DRAW );
 		}
 
-		void MeshTriangle::setVisibilities( const std::vector<uint> & p_visibilities )
+		void MeshTriangle::setVisibilities( const std::vector<ushort> & p_visibilities )
 		{
-			gl()->glNamedBufferData( _vboVisibilities, sizeof( uint ) * GLsizei( p_visibilities.size() ), p_visibilities.data(), GL_STATIC_DRAW );
+			gl()->glNamedBufferData( _vboVisibilities, sizeof( ushort ) * GLsizei( p_visibilities.size() ), p_visibilities.data(), GL_STATIC_DRAW );
 		}
 
 		void MeshTriangle::setIndices( const std::vector<uint> & p_indices )

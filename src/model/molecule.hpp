@@ -232,7 +232,7 @@ namespace VTX
 			// TODO : remove unecessary buffers, and move to BufferMolecule?
 			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
 			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
-			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
+			std::vector<ushort>		_bufferAtomVisibilities = std::vector<ushort>();
 			std::vector<uint>		_bufferBonds			= std::vector<uint>();
 
 			// Secondary structure.
