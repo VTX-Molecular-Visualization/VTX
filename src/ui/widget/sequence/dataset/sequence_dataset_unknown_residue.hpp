@@ -37,8 +37,8 @@ namespace VTX
 						};
 						virtual uint getCharIndexOfResidue( const uint p_residueIndex ) const { return _startIndexChar; };
 
-						Model::Residue * const getFirstResidue( const uint p_charIndex ) const override { return _residue; };
-						Model::Residue * const getLastResidue( const uint p_charIndex ) const override { return _residue; };
+						Model::Residue * const getFirstResidue() const override { return _residue; };
+						Model::Residue * const getLastResidue() const override { return _residue; };
 
 						uint getPaintLength( const uint p_charIndex ) const override { return 3; };
 						uint getPaintCharIndex( const uint p_charIndex ) const override { return _startIndexChar + ( _spaceBefore ? 1 : 0 ); };
