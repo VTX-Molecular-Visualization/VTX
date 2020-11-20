@@ -38,15 +38,19 @@ namespace VTX
 			void selectMolecule( const Molecule & );
 			void selectMolecules( const std::vector<Molecule *> & );
 			void unselectMolecule( const Molecule & );
+			void unselectMolecules( const std::vector<Molecule *> & );
 			void selectChain( const Chain & );
 			void selectChains( const std::vector<Chain *> & );
 			void unselectChain( const Chain & );
+			void unselectChains( const std::vector<Chain *> & );
 			void selectResidue( const Residue & );
 			void selectResidues( const std::vector<Residue *> & );
 			void unselectResidue( const Residue & );
+			void unselectResidues( const std::vector<Residue *> & );
 			void selectAtom( const Atom & );
 			void selectAtoms( const std::vector<Atom *> & );
 			void unselectAtom( const Atom & );
+			void unselectAtoms( const std::vector<Atom *> & );
 
 			void clear();
 

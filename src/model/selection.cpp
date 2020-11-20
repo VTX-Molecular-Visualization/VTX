@@ -65,10 +65,22 @@ namespace VTX
 			_unselectMolecule( p_molecule );
 			_notifyDataChanged();
 		}
+		void Selection::unselectMolecules( const std::vector<Molecule *> & p_molecules )
+		{
+			for ( const auto it : p_molecules )
+				_unselectMolecule( *it );
+			_notifyDataChanged();
+		}
 
 		void Selection::unselectChain( const Chain & p_chain )
 		{
 			_unselectChain( p_chain );
+			_notifyDataChanged();
+		}
+		void Selection::unselectChains( const std::vector<Chain *> & p_chains )
+		{
+			for ( const auto it : p_chains )
+				_unselectChain( *it );
 			_notifyDataChanged();
 		}
 
@@ -77,10 +89,22 @@ namespace VTX
 			_unselectResidue( p_residue );
 			_notifyDataChanged();
 		}
+		void Selection::unselectResidues( const std::vector<Residue *> & p_residues )
+		{
+			for ( const auto it : p_residues )
+				_unselectResidue( *it );
+			_notifyDataChanged();
+		}
 
 		void Selection::unselectAtom( const Atom & p_atom )
 		{
 			_unselectAtom( p_atom );
+			_notifyDataChanged();
+		}
+		void Selection::unselectAtoms( const std::vector<Atom *> & p_atoms)
+		{
+			for ( const auto it : p_atoms )
+				_unselectAtom( *it );
 			_notifyDataChanged();
 		}
 

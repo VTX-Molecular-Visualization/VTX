@@ -305,7 +305,11 @@ namespace VTX
 						break;
 					}
 
-					VTX::Selection::SelectionManager::get().getSelectionModel().selectResidues( _frameSelection );
+					if ( p_select )
+						VTX::Selection::SelectionManager::get().getSelectionModel().selectResidues( _frameSelection );
+					else
+						VTX::Selection::SelectionManager::get().getSelectionModel().unselectResidues( _frameSelection );
+
 					_frameSelection.clear();
 				}
 
