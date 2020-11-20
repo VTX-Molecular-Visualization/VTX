@@ -1,5 +1,6 @@
 #include "sequence_display_widget.hpp"
 #include "model/molecule.hpp"
+#include "selection/selection_manager.hpp"
 #include "style.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
@@ -28,148 +29,67 @@ namespace VTX
 					delete _symbolLengthPaintCache;
 				}
 
-				void SequenceDisplayWidget::setupSequence( const Model::Chain & p_chain )
+				void SequenceDisplayWidget::setupSequence( const SequenceChainData * p_dataset )
 				{
-					_chain = &p_chain;
+					_chainData						   = p_dataset;
+					const QString sequenceString	   = _chainData->getSequenceString();
+					const int	  sequenceStringLength = sequenceString.length();
 
-					QString sequenceTxt	   = QString();
-					uint	plainTextIndex = 0;
-
-					const uint residueCount = _chain->getResidueCount();
-
-					Util::UI::appendColorHtmlTag( sequenceTxt, _chain->getColor() );
-
-					bool previousResidueWasUnknown = false;
-
-					for ( uint localResidueIndex = 0; localResidueIndex < residueCount; ++localResidueIndex )
-					{
-						const Model::Residue & residue = _getResidue( localResidueIndex );
-
-						QString	   symbol;
-						const bool unknownResidue = residue.getSymbolShort() == "?";
-
-						if ( unknownResidue )
-						{
-							symbol = QString();
-
-							if ( localResidueIndex > 0 && !previousResidueWasUnknown )
-								symbol.append( ' ' );
-
-							symbol.append( QString::fromStdString( residue.getSymbolStr() ) );
-
-							if ( localResidueIndex < residueCount - 1 )
-								symbol.append( ' ' );
-
-							_positionUnknownResidues.emplace_back( UnknownResidueData( localResidueIndex, plainTextIndex, symbol ) );
-						}
-						else
-						{
-							symbol = QString::fromStdString( residue.getSymbolShort() );
-						}
-
-						sequenceTxt.append( symbol );
-
-						plainTextIndex += symbol.length();
-						previousResidueWasUnknown = unknownResidue;
-					}
-					Util::UI::appendEndColorHtmlTag( sequenceTxt );
-
-					setText( sequenceTxt );
+					setText( sequenceString );
+					const QString txt		 = text();
+					const int	  textLength = txt.length();
 				}
 
-				void SequenceDisplayWidget::mouseDoubleClickEvent( QMouseEvent * ev )
+				void SequenceDisplayWidget::mouseDoubleClickEvent( QMouseEvent * p_event )
 				{
-					const uint			   residueIndex = _getResidueIndexFromLocaleXPos( ev->localPos().x() );
-					const Model::Residue & residue		= _getResidue( residueIndex );
+					const Model::Residue * const residue = _getResidueFromLocaleXPos( p_event->localPos().x() );
+					p_event->accept();
 
-					ev->accept();
-
-					VTX_INFO( "Double click on " + residue.getSymbolName() );
+					VTX_INFO( "Double click on " + residue->getSymbolName() );
 				}
 
-				Model::Residue & SequenceDisplayWidget::getResidueAtPos( const QPoint & p_pos )
-				{
-					const uint		 localResidueIndex = _getResidueIndexFromLocaleXPos( p_pos.x() );
-					Model::Residue & residue		   = _getResidue( localResidueIndex );
+				Model::Residue * const SequenceDisplayWidget::getResidueAtPos( const QPoint & p_pos ) { return _getResidueFromLocaleXPos( p_pos.x() ); }
 
-					return residue;
+				Model::Residue * const SequenceDisplayWidget::getClosestResidueFromPos( const QPoint & p_pos, const bool p_takeforward )
+				{
+					const float charSize  = _fontMetrics->averageCharWidth();
+					const uint	charIndex = p_pos.x() / charSize;
+
+					return _chainData->getClosestResidueFromCharIndex( charIndex, p_takeforward );
 				}
 
-				uint SequenceDisplayWidget::_getResidueIndexFromLocaleXPos( const int p_localeXPos ) const
+				Model::Residue * const SequenceDisplayWidget::_getResidueFromLocaleXPos( const int p_localeXPos ) const
 				{
 					const float charSize  = _fontMetrics->averageCharWidth();
 					const uint	charIndex = p_localeXPos / charSize;
 
-					const uint residueIndex = _getLocalResidueIndex( charIndex );
-
-					return residueIndex >= _chain->getResidueCount() ? _chain->getResidueCount() - 1 : residueIndex;
+					return _chainData->getResidueFromCharIndex( charIndex );
 				}
-				uint SequenceDisplayWidget::_getLocalResidueIndex( const uint p_charIndex ) const
-				{
-					uint localResidueIndex = p_charIndex;
 
-					for ( int i = 0; i < _positionUnknownResidues.size(); i++ )
-					{
-						const UnknownResidueData & unknownResidueData = _positionUnknownResidues[ i ];
-						if ( unknownResidueData.charIndex < p_charIndex )
-						{
-							if ( p_charIndex >= unknownResidueData.charIndex + unknownResidueData.strSize )
-								localResidueIndex -= unknownResidueData.strSize - 1;
-							else
-								localResidueIndex = unknownResidueData.residueIndex;
-						}
-						else
-						{
-							break;
-						}
-					}
-
-					return localResidueIndex;
-				}
 				Model::Residue & SequenceDisplayWidget::_getResidue( const uint p_localResidueIndex ) const
 				{
-					const uint moleculeResidueIndex = _chain->getIndexFirstResidue() + p_localResidueIndex;
-					return _chain->getMoleculePtr()->getResidue( moleculeResidueIndex );
+					const uint moleculeResidueIndex = _chainData->getIndexFirstResidue() + p_localResidueIndex;
+					return _chainData->getMoleculePtr()->getResidue( moleculeResidueIndex );
 				}
-				uint SequenceDisplayWidget::_getCharIndex( const uint p_residueIndex ) const
-				{
-					uint res = p_residueIndex;
-
-					for ( int i = 0; i < _positionUnknownResidues.size(); i++ )
-					{
-						if ( _positionUnknownResidues[ i ].residueIndex < p_residueIndex )
-							res += _positionUnknownResidues[ i ].strSize - 1;
-						else
-							break;
-					}
-
-					return res;
-				}
+				uint SequenceDisplayWidget::_getCharIndex( const uint p_residueIndex ) const { return _chainData->getCharIndex( p_residueIndex ); }
 				uint SequenceDisplayWidget::_getLocalResidueIndexFromResidue( const Model::Residue & p_residue ) const
 				{
-					return p_residue.getIndex() - _chain->getIndexFirstResidue();
+					return p_residue.getIndex() - _chainData->getIndexFirstResidue();
 				}
-
-				bool SequenceDisplayWidget::_checkUnknownResidue( const uint p_localResidueIndex, const UnknownResidueData *& p_unknownResidueData ) const
+				QPoint SequenceDisplayWidget::getResiduePos( const Model::Residue & p_residue, const QWidget * const p_widgetSpace ) const
 				{
-					bool unknownResidueDataFound = false;
+					const uint	localIndex = _getLocalResidueIndexFromResidue( p_residue );
+					const uint	charIndex  = _getCharIndex( localIndex );
+					const float charSize   = _fontMetrics->averageCharWidth();
 
-					for ( int i = 0; i < _positionUnknownResidues.size(); i++ )
-					{
-						const UnknownResidueData data = _positionUnknownResidues[ i ];
-						if ( data.residueIndex == p_localResidueIndex )
-						{
-							p_unknownResidueData	= &data;
-							unknownResidueDataFound = true;
-							break;
-						}
-						else if ( data.residueIndex > p_localResidueIndex )
-						{
-							break;
-						}
-					}
+					const int posX = (int)( charIndex * charSize + charSize * 0.5f );
+					const int posY = height() / 2;
 
-					return unknownResidueDataFound;
+					const QPoint localPos		= QPoint( posX, posY );
+					const QPoint globalPos		= mapToGlobal( localPos );
+					const QPoint widgetSpacePos = p_widgetSpace->mapFromGlobal( globalPos );
+
+					return widgetSpacePos;
 				}
 
 				void SequenceDisplayWidget::paintEvent( QPaintEvent * p_paintEvent )
@@ -181,38 +101,46 @@ namespace VTX
 					painter.setWorldMatrixEnabled( false );
 					painter.setBrush( Qt::NoBrush );
 
-					if ( _moleculeSelection != nullptr )
+					const int charSize = (int)_fontMetrics->averageCharWidth();
+
+					const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+					const Model::ID & linkedMoleculeId = _chainData->getMoleculePtr()->getId();
+					const uint		  linkedChainIndex = _chainData->getChainIndex();
+
+					for ( const auto pairMoleculeChains : selectionModel.getItems() )
 					{
-						const int charSize = (int)_fontMetrics->averageCharWidth();
+						const Model::ID & moleculeId = pairMoleculeChains.first;
 
-						for ( auto it : *_moleculeSelection )
+						if ( moleculeId == linkedMoleculeId )
 						{
-							if ( it == nullptr || it->getChainPtr()->getId() != _chain->getId() )
-								continue;
+							for ( const auto pairChainResidues : pairMoleculeChains.second )
+							{
+								const uint chainId = pairChainResidues.first;
 
-							uint locaResidueIndex = _getLocalResidueIndexFromResidue( *it );
-							_getResidueHighlightData( locaResidueIndex, _charIndexPaintCache, _symbolLengthPaintCache );
+								if ( chainId == linkedChainIndex )
+								{
+									for ( const auto pairResiduesAtoms : pairChainResidues.second )
+									{
+										const Model::Residue & residue			= _chainData->getMoleculePtr()->getResidue( pairResiduesAtoms.first );
+										const uint			   locaResidueIndex = _getLocalResidueIndexFromResidue( residue );
 
-							QRect selectionRect = QRect( *_charIndexPaintCache * charSize, 0, *_symbolLengthPaintCache * charSize, height() );
-							painter.fillRect( selectionRect, Style::SEQUENCE_FOREGROUND_SELECTION_COLOR );
+										const int charIndexPaint  = _chainData->getPaintCharIndex( locaResidueIndex );
+										const int charLengthPaint = _chainData->getPaintLength( locaResidueIndex );
+
+										const QRect selectionRect = QRect( charIndexPaint * charSize, 0, charLengthPaint * charSize, height() );
+										painter.fillRect( selectionRect, Style::SEQUENCE_FOREGROUND_SELECTION_COLOR );
+									}
+									break;
+								}
+							}
+
+							break;
 						}
 					}
+
 					painter.setWorldMatrixEnabled( true );
 					painter.restore();
-				}
-				void SequenceDisplayWidget::_getResidueHighlightData( uint p_localResidueIndex, int * const p_charIndex, int * const p_length ) const
-				{
-					const UnknownResidueData * unkownResidueData = nullptr;
-
-					if ( _checkUnknownResidue( p_localResidueIndex, unkownResidueData ) )
-					{
-						unkownResidueData->getSelectionData( p_charIndex, p_length );
-					}
-					else
-					{
-						*p_charIndex = _getCharIndex( p_localResidueIndex );
-						*p_length	 = 1;
-					}
 				}
 			} // namespace Sequence
 		}	  // namespace Widget

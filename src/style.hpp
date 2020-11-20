@@ -8,6 +8,7 @@
 #include "id.hpp"
 //#include "vtx_app.hpp"
 #include "selection/selection_enum.hpp"
+#include <QChar>
 #include <QColor>
 #include <QFont>
 #include <QPalette>
@@ -76,9 +77,11 @@ namespace VTX
 		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;
 		inline static const int INSPECTOR_CONTENT_HORIZONTAL_OFFSET = 10;
 
-		inline static const std::string SEQUENCE_CHAIN_NAME_SEPARATOR		= "/";
-		inline static const int			SEQUENCE_CHAIN_SCALE_STEP			= 5;
-		inline static const QColor		SEQUENCE_FOREGROUND_SELECTION_COLOR = QColor( 0, 122, 204, 125 );
+		inline static const std::string SEQUENCE_CHAIN_NAME_SEPARATOR				 = "/";
+		inline static const int			SEQUENCE_CHAIN_SCALE_STEP					 = 5;
+		inline static const QColor		SEQUENCE_FOREGROUND_SELECTION_COLOR			 = QColor( 0, 122, 204, 125 );
+		inline static const int			SEQUENCE_MAX_MISSING_RESIDUE_BEFORE_COLLAPSE = 5;
+		inline static const QChar		SEQUENCE_MISSING_RESIDUE_SYMBOL				 = '-';
 
 		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION = VTX::Selection::SelectionType::RESIDUE;
 

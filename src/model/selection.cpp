@@ -225,7 +225,11 @@ namespace VTX
 			}
 		}
 
-		void Selection::clear() { _items.clear(); }
+		void Selection::clear()
+		{
+			_items.clear();
+			this->_notifyDataChanged();
+		}
 
 	} // namespace Model
 } // namespace VTX
