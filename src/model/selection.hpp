@@ -14,6 +14,7 @@
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include <map>
+#include <vector>
 
 namespace VTX
 {
@@ -35,12 +36,16 @@ namespace VTX
 			inline MapMoleculeIds &		  getItems() { return _items; }
 
 			void selectMolecule( const Molecule & );
+			void selectMolecules( const std::vector<Molecule *> & );
 			void unselectMolecule( const Molecule & );
 			void selectChain( const Chain & );
+			void selectChains( const std::vector<Chain *> & );
 			void unselectChain( const Chain & );
 			void selectResidue( const Residue & );
+			void selectResidues( const std::vector<Residue *> & );
 			void unselectResidue( const Residue & );
 			void selectAtom( const Atom & );
+			void selectAtoms( const std::vector<Atom *> & );
 			void unselectAtom( const Atom & );
 
 			void clear();

@@ -146,7 +146,7 @@ namespace VTX
 						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
 
 						const bool select = _startResidueHovered == nullptr ? true : !_isSelected( _startResidueHovered );
-						_applySelection( select, _frameSelection );
+						_applySelection( select );
 
 						// If we select, we set the start of selection with the first selected residue of the current block
 						if ( select )
@@ -213,7 +213,7 @@ namespace VTX
 						const Model::Residue * toResidue   = _compareResiduePos( *closestLastResidueHovered, *closestOfStart ) > 0 ? closestLastResidueHovered : closestOfStart;
 
 						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
-						_applySelection( false, _frameSelection );
+						_applySelection( false );
 
 						if ( !( startResidue == nullptr && currentResidueHovered == nullptr && closestOfStart == closestResidueCurrentlyHovered ) )
 						{
@@ -223,7 +223,7 @@ namespace VTX
 							toResidue	= _compareResiduePos( *closestOfStart, *closestResidueCurrentlyHovered ) > 0 ? closestOfStart : closestResidueCurrentlyHovered;
 							_getFromTo( *fromResidue, *toResidue, &_frameSelection );
 
-							_applySelection( true, _frameSelection );
+							_applySelection( true );
 						}
 					}
 					else
@@ -266,7 +266,7 @@ namespace VTX
 						}
 
 						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
-						_applySelection( addToSelection, _frameSelection );
+						_applySelection( addToSelection );
 					}
 
 					_lastDragSelectionPosition = currentMousePos;
@@ -286,34 +286,26 @@ namespace VTX
 
 				void MoleculeSequenceWidget::_applySelection( const bool p_select, Model::Residue * p_residue )
 				{
-					switch ( _selectionModifier )
-					{
-					case SelectionModifier::ForceSelect: _select( p_residue ); break;
-					case SelectionModifier::ToggleSelect: _toggleSelect( p_residue ); break;
-					case SelectionModifier::ForceUnselect: _unselect( p_residue ); break;
-					default:
-						if ( p_select )
-							_select( p_residue );
-						else
-							_unselect( p_residue );
-						break;
-					}
+					_frameSelection.clear();
+					_frameSelection.emplace_back( p_residue );
+					_applySelection( p_select );
 				}
-				void MoleculeSequenceWidget::_applySelection( const bool p_select, const std::vector<Model::Residue *> & p_residues )
+				void MoleculeSequenceWidget::_applySelection( const bool p_select )
 				{
 					switch ( _selectionModifier )
 					{
-					case SelectionModifier::ForceSelect: _select( p_residues ); break;
-					case SelectionModifier::ToggleSelect: _toggleSelect( p_residues ); break;
-					case SelectionModifier::ForceUnselect: _unselect( p_residues ); break;
+					case SelectionModifier::ForceSelect: _select( _frameSelection ); break;
+					case SelectionModifier::ToggleSelect: _toggleSelect( _frameSelection ); break;
+					case SelectionModifier::ForceUnselect: _unselect( _frameSelection ); break;
 					default:
 						if ( p_select )
-							_select( p_residues );
+							_select( _frameSelection );
 						else
-							_unselect( p_residues );
+							_unselect( _frameSelection );
 						break;
 					}
 
+					VTX::Selection::SelectionManager::get().getSelectionModel().selectResidues( _frameSelection );
 					_frameSelection.clear();
 				}
 
@@ -522,7 +514,6 @@ namespace VTX
 					if ( !_isSelected( p_residue ) )
 					{
 						_selection.emplace_back( p_residue );
-						VTX::Selection::SelectionManager::get().getSelectionModel().selectResidue( *p_residue );
 					}
 				}
 				void MoleculeSequenceWidget::_unselect( const std::vector<Model::Residue *> & p_residues )
@@ -539,7 +530,6 @@ namespace VTX
 						if ( ( *it )->getId() == p_residue->getId() )
 						{
 							_selection.erase( it );
-							VTX::Selection::SelectionManager::get().getSelectionModel().unselectResidue( *p_residue );
 							break;
 						}
 					}

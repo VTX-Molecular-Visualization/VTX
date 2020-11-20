@@ -17,10 +17,22 @@ namespace VTX
 			VTX_INFO( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
 			_notifyDataChanged();
 		}
+		void Selection::selectMolecules( const std::vector<Molecule *> & p_molecules )
+		{
+			for ( const auto it : p_molecules )
+				_selectMolecule( *it );
+			_notifyDataChanged();
+		}
 
 		void Selection::selectChain( const Chain & p_chain )
 		{
 			_selectChain( p_chain );
+			_notifyDataChanged();
+		}
+		void Selection::selectChains( const std::vector<Chain *> & p_chains )
+		{
+			for ( auto it : p_chains )
+				_selectChain( *it );
 			_notifyDataChanged();
 		}
 
@@ -29,10 +41,22 @@ namespace VTX
 			_selectResidue( p_residue );
 			_notifyDataChanged();
 		}
+		void Selection::selectResidues( const std::vector<Residue *> & p_residues )
+		{
+			for ( const auto it : p_residues )
+				_selectResidue( *it );
+			_notifyDataChanged();
+		}
 
 		void Selection::selectAtom( const Atom & p_atom )
 		{
 			_selectAtom( p_atom );
+			_notifyDataChanged();
+		}
+		void Selection::selectAtoms( const std::vector<Atom *> & p_atoms )
+		{
+			for ( const auto it : p_atoms )
+				_selectAtom( *it );
 			_notifyDataChanged();
 		}
 

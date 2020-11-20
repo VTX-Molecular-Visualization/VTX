@@ -87,7 +87,7 @@ namespace VTX
 					SelectionModifier	   _getSelectionModifier( const QMouseEvent * const p_event ) const;
 					ClickModifier		   _getClickModifier( const QMouseEvent * const p_event ) const;
 					void				   _applySelection( const bool p_select, Model::Residue * p_residue );
-					void				   _applySelection( const bool p_select, const std::vector<Model::Residue *> & p_residues );
+					void				   _applySelection( const bool p_select );
 
 					// TMP waiting selection manager system
 					///////////////////////////////////////////////////////////////////////////////////////////
