@@ -67,7 +67,7 @@ namespace VTX
 				gl()->glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
 				gl()->glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
 				gl()->glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
-				gl()->glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
+				gl()->glBindBuffer( GL_ARRAY_BUFFER, _atomSelectionsVBO );
 				gl()->glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_SELECTION );
 				gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
 				gl()->glBindVertexArray( 0 );

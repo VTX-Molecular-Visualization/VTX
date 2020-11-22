@@ -168,20 +168,19 @@ namespace VTX
 
 		void Molecule::_fillBufferAtomSelection( const Model::Selection::MapChainIds * const p_selection )
 		{
+			_bufferAtomSelection.clear();
 			_bufferAtomSelection.resize( _atoms.size(), 0 );
 
-			if ( p_selection == nullptr )
+			if ( p_selection != nullptr )
 			{
-				return;
-			}
-
-			for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : *p_selection )
-			{
-				for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+				for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : *p_selection )
 				{
-					for ( const uint & atomIndex : pairResidue.second )
+					for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
 					{
-						_bufferAtomSelection[ atomIndex ] = 1;
+						for ( const uint & atomIndex : pairResidue.second )
+						{
+							_bufferAtomSelection[ atomIndex ] = 1;
+						}
 					}
 				}
 			}

@@ -30,11 +30,13 @@ namespace VTX
 #endif
 
 #ifdef LOG_TO_FILE
-			_writer.writeFile( "", messageToWrite );
+			logInFile( messageToWrite );
 #endif
 
 			std::cout << messageToWrite << std::endl;
 		}
+
+		void Logger::logInFile( const std::string & p_message ) { _writer.writeFile( "", p_message ); }
 
 	} // namespace Tool
 } // namespace VTX

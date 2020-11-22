@@ -53,15 +53,17 @@ namespace VTX
 				gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
 				gl()->glActiveTexture( GL_TEXTURE0 );
-				gl()->glBindTexture( GL_TEXTURE_2D, VTX_SETTING().activeOutline ? p_renderer.getPassOutline().getTexture() : p_renderer.getPassShading().getTexture() );
+				gl()->glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
 				gl()->glActiveTexture( GL_TEXTURE1 );
+				gl()->glBindTexture( GL_TEXTURE_2D, VTX_SETTING().activeOutline ? p_renderer.getPassOutline().getTexture() : p_renderer.getPassShading().getTexture() );
+				gl()->glActiveTexture( GL_TEXTURE2 );
 				gl()->glBindTexture( GL_TEXTURE_2D, p_renderer.getPassLinearizeDepth().getTexture() );
 
 				_program->use();
 
 				// TODO: do not update each frame
 				gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
-				const Color::Rgb & lineColor = VTX_SETTING().outlineColor;
+				const Color::Rgb lineColor = Color::Rgb( 45, 243, 26 );
 				gl()->glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );
 
 				gl()->glBindVertexArray( p_renderer.getQuadVAO() );

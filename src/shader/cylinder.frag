@@ -12,7 +12,8 @@ flat in unsigned short vertexSel[ 2 ];
 
 // 3 16 bits for position.
 // 3 16 bits for normal.
-// 1 32 bits for padding.
+// 1 16 bits for selection.
+// 1 16 bits for padding.
 layout( location = 0 ) out uvec4 outViewPositionNormal;
 // 3 32 bits for color.
 // 1 32 bits for specular.
@@ -53,7 +54,7 @@ void main()
 		viewPositionNormalCompressed.x = packHalf2x16( viewImpPos.xy );
 		viewPositionNormalCompressed.y = packHalf2x16( vec2( viewImpPos.z, -rayDir.x ) );
 		viewPositionNormalCompressed.z = packHalf2x16( -rayDir.yz );
-		viewPositionNormalCompressed.w = 0; // Padding.
+		viewPositionNormalCompressed.w = packHalf2x16( vec2( vertexSel[ 0 ] & vertexSel[ 1 ], 0 ) );
 
 		// Output data.
 		outViewPositionNormal = viewPositionNormalCompressed;
@@ -79,7 +80,7 @@ void main()
 			viewPositionNormalCompressed.x = packHalf2x16( viewImpPos.xy );
 			viewPositionNormalCompressed.y = packHalf2x16( vec2( viewImpPos.z, -rayDir.x ) );
 			viewPositionNormalCompressed.z = packHalf2x16( -rayDir.yz );
-			viewPositionNormalCompressed.w = 0; // Padding.
+			viewPositionNormalCompressed.w = packHalf2x16( vec2( vertexSel[ 0 ] & vertexSel[ 1 ], 0 ) );
 
 			// Output data.
 			outViewPositionNormal = viewPositionNormalCompressed;
@@ -107,7 +108,7 @@ void main()
 			viewPositionNormalCompressed.x = packHalf2x16( hit.xy );
 			viewPositionNormalCompressed.y = packHalf2x16( vec2( hit.z, normal.x ) );
 			viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
-			viewPositionNormalCompressed.w = 0; // Padding.
+			viewPositionNormalCompressed.w = packHalf2x16( vec2( vertexSel[ 0 ] & vertexSel[ 1 ], 0 ) );
 
 			// Output data.
 			outViewPositionNormal = viewPositionNormalCompressed;

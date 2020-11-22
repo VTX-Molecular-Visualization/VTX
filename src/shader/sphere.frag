@@ -6,17 +6,17 @@ uniform mat4  uProjMatrix;
 uniform float uZNear;
 uniform float uZFar;
 
-smooth in vec3 viewImpPos;
-flat in vec3   viewSpherePos;
-flat in vec3   sphereColor;
-flat in float  sphereRad;
-flat in float  dotViewSpherePos;
-flat in unsigned short  sphereSel;
+smooth in vec3		   viewImpPos;
+flat in vec3		   viewSpherePos;
+flat in vec3		   sphereColor;
+flat in float		   sphereRad;
+flat in float		   dotViewSpherePos;
+flat in unsigned short sphereSel;
 
 // 3 16 bits for position.
 // 3 16 bits for normal.
-// 1 32 bits for padding.
-// Add selection in padding.
+// 1 16 bits for padding.
+// 1 16 bits for selection.
 layout( location = 0 ) out uvec4 outViewPositionNormal;
 // 3 32 bits for color.
 // 1 32 bits for specular.
@@ -50,7 +50,7 @@ void main()
 		viewPositionNormalCompressed.x = packHalf2x16( viewImpPos.xy );
 		viewPositionNormalCompressed.y = packHalf2x16( vec2( viewImpPos.z, -viewSpherePos.x ) );
 		viewPositionNormalCompressed.z = packHalf2x16( -viewSpherePos.yz );
-		viewPositionNormalCompressed.w = 0; // Padding.
+		viewPositionNormalCompressed.w = packHalf2x16( vec2( sphereSel, 0 ) );
 
 		// Output data.
 		outViewPositionNormal = viewPositionNormalCompressed;
@@ -79,7 +79,7 @@ void main()
 		viewPositionNormalCompressed.x = packHalf2x16( hit.xy );
 		viewPositionNormalCompressed.y = packHalf2x16( vec2( hit.z, normal.x ) );
 		viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
-		viewPositionNormalCompressed.w = 0; // Padding.
+		viewPositionNormalCompressed.w = packHalf2x16( vec2( sphereSel, 0 ) );
 
 		// Output data.
 		outViewPositionNormal = viewPositionNormalCompressed;

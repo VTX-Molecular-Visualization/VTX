@@ -27,6 +27,7 @@ namespace VTX
 			inline void logInfo( const std::string & p_info ) { _log( LEVEL::LOG_LVL_INFO, p_info ); }
 			inline void logWarning( const std::string & p_warning ) { _log( LEVEL::LOG_LVL_WARNING, p_warning ); }
 			inline void logError( const std::string & p_error ) { _log( LEVEL::LOG_LVL_ERROR, p_error ); }
+			void		logInFile( const std::string & );
 
 		  private:
 			enum class LEVEL
@@ -53,6 +54,7 @@ namespace VTX
 	inline void VTX_WARNING( const std::string & p_str ) { Tool::Logger::get().logWarning( p_str ); }
 	inline void VTX_ERROR( const std::string & p_str ) { Tool::Logger::get().logError( p_str ); }
 	inline void VTX_CONSOLE( const std::string & p_str ) { std::cout << p_str << std::endl; }
+	inline void VTX_LOG_FILE( const std::string & p_str ) { Tool::Logger::get().logInFile( p_str ); }
 } // namespace VTX
 
 #endif
