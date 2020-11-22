@@ -6,6 +6,7 @@
 #endif
 
 #include "model/molecule.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "visible.hpp"
@@ -159,7 +160,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTXApp::get().getScene().removeMolecule( &_molecule );
-					delete &_molecule;
+					MVC::MvcManager::get().deleteModel( &_molecule );
 				}
 
 			  private:

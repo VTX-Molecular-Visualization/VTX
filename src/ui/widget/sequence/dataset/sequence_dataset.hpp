@@ -37,8 +37,8 @@ namespace VTX
 
 						virtual bool				   isResidueInScope( const uint p_residueIndex ) const { return false; };
 						virtual uint				   getCharIndexOfResidue( const uint p_residueIndex ) const { return 0; };
-						virtual Model::Residue * const getFirstResidue( const uint p_charIndex ) const { return nullptr; };
-						virtual Model::Residue * const getLastResidue( const uint p_charIndex ) const { return nullptr; };
+						virtual Model::Residue * const getFirstResidue() const { return nullptr; };
+						virtual Model::Residue * const getLastResidue() const { return nullptr; };
 
 						virtual uint getPaintCharIndex( const uint p_charIndex ) const { return getCharIndexOfResidue( p_charIndex ); };
 						virtual uint getPaintLength( const uint p_charIndex ) const { return 0; };

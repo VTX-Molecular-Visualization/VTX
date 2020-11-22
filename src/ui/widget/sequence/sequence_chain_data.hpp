@@ -62,6 +62,13 @@ namespace VTX
 						return _chain.getMoleculePtr()->getResidue( moleculeResidueIndex );
 					}
 
+					Dataset::SequenceDisplayDataset * const getDataset( const uint p_residueIndex ) const;
+					Dataset::SequenceDisplayDataset * const getDataset_recursive( const std::vector<Dataset::SequenceDisplayDataset *> p_vec,
+																				  const uint										   p_residueIndex,
+																				  const uint										   p_indexMin,
+																				  const uint										   p_indexMax,
+																				  const bool										   p_minHasChanged ) const;
+
 					void _generateDataSet();
 					void _generateString();
 

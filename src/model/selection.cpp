@@ -18,11 +18,23 @@ namespace VTX
 			p_molecule.refreshSelection( &_items[ p_molecule.getId() ] );
 			_notifyDataChanged();
 		}
+		void Selection::selectMolecules( const std::vector<Molecule *> & p_molecules )
+		{
+			for ( const auto it : p_molecules )
+				_selectMolecule( *it );
+			_notifyDataChanged();
+		}
 
 		void Selection::selectChain( Chain & p_chain )
 		{
 			_selectChain( p_chain );
 			p_chain.getMoleculePtr()->refreshSelection( &_items[ p_chain.getMoleculePtr()->getId() ] );
+			_notifyDataChanged();
+		}
+		void Selection::selectChains( const std::vector<Chain *> & p_chains )
+		{
+			for ( auto it : p_chains )
+				_selectChain( *it );
 			_notifyDataChanged();
 		}
 
@@ -33,6 +45,12 @@ namespace VTX
 
 			_notifyDataChanged();
 		}
+		void Selection::selectResidues( const std::vector<Residue *> & p_residues )
+		{
+			for ( const auto it : p_residues )
+				_selectResidue( *it );
+			_notifyDataChanged();
+		}
 
 		void Selection::selectAtom( Atom & p_atom )
 		{
@@ -41,11 +59,23 @@ namespace VTX
 
 			_notifyDataChanged();
 		}
+		void Selection::selectAtoms( const std::vector<Atom *> & p_atoms )
+		{
+			for ( const auto it : p_atoms )
+				_selectAtom( *it );
+			_notifyDataChanged();
+		}
 
 		void Selection::unselectMolecule( Molecule & p_molecule )
 		{
 			_unselectMolecule( p_molecule );
 			p_molecule.refreshSelection( nullptr );
+			_notifyDataChanged();
+		}
+		void Selection::unselectMolecules( const std::vector<Molecule *> & p_molecules )
+		{
+			for ( const auto it : p_molecules )
+				_unselectMolecule( *it );
 			_notifyDataChanged();
 		}
 
@@ -56,6 +86,12 @@ namespace VTX
 
 			_notifyDataChanged();
 		}
+		void Selection::unselectChains( const std::vector<Chain *> & p_chains )
+		{
+			for ( const auto it : p_chains )
+				_unselectChain( *it );
+			_notifyDataChanged();
+		}
 
 		void Selection::unselectResidue( Residue & p_residue )
 		{
@@ -64,11 +100,23 @@ namespace VTX
 
 			_notifyDataChanged();
 		}
+		void Selection::unselectResidues( const std::vector<Residue *> & p_residues )
+		{
+			for ( const auto it : p_residues )
+				_unselectResidue( *it );
+			_notifyDataChanged();
+		}
 
 		void Selection::unselectAtom( Atom & p_atom )
 		{
 			_unselectAtom( p_atom );
 			p_atom.getMoleculePtr()->refreshSelection( &_items[ p_atom.getMoleculePtr()->getId() ] );
+			_notifyDataChanged();
+		}
+		void Selection::unselectAtoms( const std::vector<Atom *> & p_atoms)
+		{
+			for ( const auto it : p_atoms )
+				_unselectAtom( *it );
 			_notifyDataChanged();
 		}
 
@@ -241,6 +289,15 @@ namespace VTX
 		{
 			_items.clear();
 			this->_notifyDataChanged();
+		}
+
+		void Selection::receiveEvent( const Event::VTXEvent & p_event )
+		{
+			if ( p_event.name == Event::MOLECULE_REMOVED )
+			{
+				const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+				unselectMolecule( *castedEvent.ptr );
+			}
 		}
 
 	} // namespace Model

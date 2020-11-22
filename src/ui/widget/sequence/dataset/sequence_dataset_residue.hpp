@@ -30,11 +30,11 @@ namespace VTX
 						bool				   isResidueInScope( const uint p_residueIndex ) const override;
 						uint				   getCharIndexOfResidue( const uint p_residueIndex ) const override;
 
-						Model::Residue * const getFirstResidue( const uint p_charIndex ) const override
+						Model::Residue * const getFirstResidue() const override
 						{
 							return &( _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue() + _startResidueIndex ) );
 						};
-						Model::Residue * const getLastResidue( const uint p_charIndex ) const override
+						Model::Residue * const getLastResidue() const override
 						{
 							return &( _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue() + _endResidueIndex ) );
 						};

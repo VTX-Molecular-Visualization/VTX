@@ -12,6 +12,7 @@
 #include "model/residue.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "view/base_view.hpp"
+#include <QMenu>
 #include <QTreeWidget>
 
 namespace VTX
@@ -37,10 +38,15 @@ namespace VTX
 					void _setupSlots() override;
 
 				  private:
+					QMenu * _contextMenu;
+
 					void _onItemChanged( QTreeWidgetItem * item, int column );
 					void _onItemClicked( QTreeWidgetItem *, int );
 					void _onItemExpanded( QTreeWidgetItem * );
 					void _onItemCollapsed( QTreeWidgetItem * );
+					void _onCustomContextMenuCalled( const QPoint & p_clicPos );
+
+					void _deleteAction();
 
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Molecule & p_model ) const;
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Chain & p_model ) const;

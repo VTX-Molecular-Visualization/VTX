@@ -157,7 +157,7 @@ namespace VTX
 					{
 						if ( takeNext )
 						{
-							res = it->getFirstResidue( p_charIndex );
+							res = it->getFirstResidue();
 							break;
 						}
 
@@ -168,7 +168,7 @@ namespace VTX
 							else
 								break; // res set to previousIt->getLastResidue.
 						}
-						res = it->getLastResidue( p_charIndex );
+						res = it->getLastResidue();
 					}
 
 					return res;
@@ -176,34 +176,76 @@ namespace VTX
 
 				uint SequenceChainData::getCharIndex( const uint p_residueIndex ) const
 				{
-					for ( const auto it : _dataset )
-					{
-						if ( it->isResidueInScope( p_residueIndex ) )
-							return it->getCharIndexOfResidue( p_residueIndex );
-					}
+					Dataset::SequenceDisplayDataset * const data = getDataset( p_residueIndex );
 
-					return -1;
+					if ( data != nullptr )
+						return data->getCharIndexOfResidue( p_residueIndex );
+					else
+						return -1;
 				}
 
 				uint SequenceChainData::getPaintCharIndex( const uint p_residueIndex ) const
 				{
-					for ( const auto it : _dataset )
-					{
-						if ( it->isResidueInScope( p_residueIndex ) )
-							return it->getPaintCharIndex( p_residueIndex );
-					}
+					Dataset::SequenceDisplayDataset * const data = getDataset( p_residueIndex );
 
-					return -1;
+					if ( data != nullptr )
+						return data->getPaintCharIndex( p_residueIndex );
+					else
+						return -1;
 				}
 				uint SequenceChainData::getPaintLength( const uint p_residueIndex ) const
+				{
+					Dataset::SequenceDisplayDataset * const data = getDataset( p_residueIndex );
+
+					if ( data != nullptr )
+						return data->getPaintLength( p_residueIndex );
+					else
+						return 0;
+				}
+
+				Dataset::SequenceDisplayDataset * const SequenceChainData::getDataset( const uint p_residueIndex ) const
 				{
 					for ( const auto it : _dataset )
 					{
 						if ( it->isResidueInScope( p_residueIndex ) )
-							return it->getPaintLength( p_residueIndex );
+							return it;
 					}
 
-					return 0;
+					return nullptr;
+				}
+
+				Dataset::SequenceDisplayDataset * const SequenceChainData::getDataset_recursive( const std::vector<Dataset::SequenceDisplayDataset *> p_vec,
+																								 const uint											  p_residueIndex,
+																								 const uint											  p_indexMin,
+																								 const uint											  p_indexMax,
+																								 const bool											  p_minHasChanged ) const
+				{
+					if ( p_indexMax <= p_indexMin )
+					{
+						Dataset::SequenceDisplayDataset * const middleObj = p_minHasChanged ? p_vec[ p_indexMin ] : p_vec[ p_indexMax ];
+
+						if ( middleObj->getFirstResidue()->getIndex() <= p_residueIndex && p_residueIndex <= middleObj->getLastResidue()->getIndex() )
+							return middleObj;
+						else
+							return nullptr;
+					}
+
+					const uint								middleIndex = p_indexMin + ( ( p_indexMax - p_indexMin ) / 2 );
+					Dataset::SequenceDisplayDataset * const middleObj	= p_vec[ middleIndex ];
+
+					if ( middleObj->getFirstResidue() != nullptr )
+					{
+						if ( p_minHasChanged )
+							return getDataset_recursive( p_vec, p_residueIndex, p_indexMin + 1, p_indexMax, true );
+						else
+							return getDataset_recursive( p_vec, p_residueIndex, p_indexMin, p_indexMax - 1, false );
+					}
+					else if ( middleObj->getFirstResidue()->getIndex() < p_residueIndex )
+						return getDataset_recursive( p_vec, p_residueIndex, p_indexMin, middleIndex - 1, false );
+					else if ( middleObj->getLastResidue()->getIndex() > p_residueIndex )
+						return getDataset_recursive( p_vec, p_residueIndex, middleIndex + 1, p_indexMax, true );
+					else
+						return middleObj;
 				}
 
 			} // namespace Sequence

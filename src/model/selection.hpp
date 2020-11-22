@@ -7,17 +7,20 @@
 
 #include "base_model.hpp"
 #include "define.hpp"
+#include "event/base_event_receiver_vtx.hpp"
+#include "event/event.hpp"
 #include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include <map>
+#include <vector>
 
 namespace VTX
 {
 	namespace Model
 	{
-		class Selection : public BaseModel
+		class Selection : public BaseModel, public VTX::Event::BaseEventReceiverVTX
 		{
 		  public:
 			// Map molecule model id with with chains, residues and atoms index.
@@ -26,22 +29,32 @@ namespace VTX
 			using MapChainIds	 = std::map<uint, MapResidueIds>;
 			using MapMoleculeIds = std::map<ID, MapChainIds>;
 
-			Selection() : BaseModel( ID::Model::MODEL_SELECTION ) {}
+			Selection() : BaseModel( ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
 			~Selection() = default;
 
 			inline const MapMoleculeIds & getItems() const { return _items; }
 			inline MapMoleculeIds &		  getItems() { return _items; }
 
-			void selectMolecule( Molecule & );
-			void unselectMolecule( Molecule & );
-			void selectChain( Chain & );
-			void unselectChain( Chain & );
-			void selectResidue( Residue & );
-			void unselectResidue( Residue & );
-			void selectAtom( Atom & );
-			void unselectAtom( Atom & );
+			void selectMolecule( const Molecule & );
+			void selectMolecules( const std::vector<Molecule *> & );
+			void unselectMolecule( const Molecule & );
+			void unselectMolecules( const std::vector<Molecule *> & );
+			void selectChain( const Chain & );
+			void selectChains( const std::vector<Chain *> & );
+			void unselectChain( const Chain & );
+			void unselectChains( const std::vector<Chain *> & );
+			void selectResidue( const Residue & );
+			void selectResidues( const std::vector<Residue *> & );
+			void unselectResidue( const Residue & );
+			void unselectResidues( const std::vector<Residue *> & );
+			void selectAtom( const Atom & );
+			void selectAtoms( const std::vector<Atom *> & );
+			void unselectAtom( const Atom & );
+			void unselectAtoms( const std::vector<Atom *> & );
 
 			void clear();
+
+			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		  private:
 			MapMoleculeIds _items = MapMoleculeIds();

@@ -1,4 +1,8 @@
 #include "menu_visualization_selection_action_widget.hpp"
+#include "action/action_manager.hpp"
+#include "action/molecule.hpp"
+#include "mvc/mvc_manager.hpp"
+#include "selection/selection_manager.hpp"
 #include "ui/widget_factory.hpp"
 
 namespace VTX
@@ -41,8 +45,27 @@ namespace VTX
 
 						validate();
 					}
-					void MenuVisualizationSelectionActionWidget::_setupSlots() {}
+					void MenuVisualizationSelectionActionWidget::_setupSlots()
+					{
+						_delete->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_deleteSelection );
+						_show->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_showSelection );
+						_hide->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_hideSelection );
+					}
 					void MenuVisualizationSelectionActionWidget::localize() { setTitle( "Selection Action" ); }
+
+					void MenuVisualizationSelectionActionWidget::_deleteSelection() const
+					{
+						const Model::Selection &			   selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+						const Model::Selection::MapMoleculeIds moleculeIDs	  = selectionModel.getItems();
+
+						for ( const auto pairMolecule : moleculeIDs )
+						{
+							Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( pairMolecule.first );
+							VTX_ACTION( new Action::Molecule::Delete( molecule ) );
+						}
+					}
+					void MenuVisualizationSelectionActionWidget::_showSelection() const {}
+					void MenuVisualizationSelectionActionWidget::_hideSelection() const {}
 				} // namespace Visualization
 			}	  // namespace MainMenu
 		}		  // namespace Widget
