@@ -35,22 +35,22 @@ namespace VTX
 			inline const MapMoleculeIds & getItems() const { return _items; }
 			inline MapMoleculeIds &		  getItems() { return _items; }
 
-			void selectMolecule( const Molecule & );
-			void selectMolecules( const std::vector<Molecule *> & );
-			void unselectMolecule( const Molecule & );
-			void unselectMolecules( const std::vector<Molecule *> & );
-			void selectChain( const Chain & );
-			void selectChains( const std::vector<Chain *> & );
-			void unselectChain( const Chain & );
-			void unselectChains( const std::vector<Chain *> & );
-			void selectResidue( const Residue & );
-			void selectResidues( const std::vector<Residue *> & );
-			void unselectResidue( const Residue & );
-			void unselectResidues( const std::vector<Residue *> & );
-			void selectAtom( const Atom & );
-			void selectAtoms( const std::vector<Atom *> & );
-			void unselectAtom( const Atom & );
-			void unselectAtoms( const std::vector<Atom *> & );
+			void selectMolecule( Molecule & );
+			void selectMolecules( std::vector<Molecule *> & );
+			void unselectMolecule( Molecule & );
+			void unselectMolecules( std::vector<Molecule *> & );
+			void selectChain( Chain & );
+			void selectChains( std::vector<Chain *> & );
+			void unselectChain( Chain & );
+			void unselectChains( std::vector<Chain *> & );
+			void selectResidue( Residue & );
+			void selectResidues( std::vector<Residue *> & );
+			void unselectResidue( Residue & );
+			void unselectResidues( std::vector<Residue *> & );
+			void selectAtom( Atom & );
+			void selectAtoms( std::vector<Atom *> & );
+			void unselectAtom( Atom & );
+			void unselectAtoms( std::vector<Atom *> & );
 
 			void clear();
 

@@ -31,7 +31,7 @@ namespace VTX
 
 				gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
-				_program = p_programManager.createProgram( "Outline", { "shading/selection.frag" } );
+				_program = p_programManager.createProgram( "Selection", { "shading/selection.frag" } );
 
 				_program->use();
 

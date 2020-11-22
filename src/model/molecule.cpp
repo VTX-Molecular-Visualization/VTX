@@ -181,8 +181,7 @@ namespace VTX
 				{
 					for ( const uint & atomIndex : pairResidue.second )
 					{
-						uint idx					= pairChain.first + pairResidue.first + atomIndex;
-						_bufferAtomSelection[ idx ] = 1;
+						_bufferAtomSelection[ atomIndex ] = 1;
 					}
 				}
 			}

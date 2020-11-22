@@ -12,6 +12,7 @@ uniform vec3 uLineColor;
 
 void main()
 {
+
 #ifdef USE_TEXTURE_GATHER
 	const vec2 texCoord = gl_FragCoord.xy / vec2( textureSize( linearDepthTexture, 0 ) );
 
@@ -61,4 +62,5 @@ void main()
 	// Apply outline if edge depth is greater than threshold.
 	fragColor = vec4( edgeDepth > threshold ? uLineColor : texelFetch( colorTexture, texCoord, 0 ).xyz, 1.f );
 #endif
+
 }
