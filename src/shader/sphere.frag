@@ -11,10 +11,12 @@ flat in vec3   viewSpherePos;
 flat in vec3   sphereColor;
 flat in float  sphereRad;
 flat in float  dotViewSpherePos;
+flat in unsigned short  sphereSel;
 
 // 3 16 bits for position.
 // 3 16 bits for normal.
 // 1 32 bits for padding.
+// Add selection in padding.
 layout( location = 0 ) out uvec4 outViewPositionNormal;
 // 3 32 bits for color.
 // 1 32 bits for specular.

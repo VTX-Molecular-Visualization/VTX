@@ -17,6 +17,7 @@ namespace VTX
 			_passBlur			= new Pass::Blur( p_gl );
 			_passShading		= new Pass::Shading( p_gl );
 			_passOutline		= new Pass::Outline( p_gl );
+			_passSelection		= new Pass::Selection( p_gl );
 			_passFXAA			= new Pass::FXAA( p_gl );
 		}
 
@@ -28,17 +29,12 @@ namespace VTX
 			delete _passBlur;
 			delete _passShading;
 			delete _passOutline;
+			delete _passSelection;
 			delete _passFXAA;
 		}
 
-		const GLuint & GL::getRenderedTexture() const
-		{
-			return VTX_SETTING().activeAA ? _passFXAA->getTexture() : VTX_SETTING().activeOutline ? _passOutline->getTexture() : _passShading->getTexture();
-		}
-		const GLuint & GL::getRenderedFBO() const
-		{
-			return VTX_SETTING().activeAA ? _passFXAA->getFbo() : VTX_SETTING().activeOutline ? _passOutline->getFbo() : _passShading->getFbo();
-		}
+		const GLuint & GL::getRenderedTexture() const { return VTX_SETTING().activeAA ? _passFXAA->getTexture() : _passSelection->getTexture(); }
+		const GLuint & GL::getRenderedFBO() const { return VTX_SETTING().activeAA ? _passFXAA->getFbo() : _passSelection->getFbo(); }
 
 		void GL::init( const uint p_width, const uint p_height )
 		{
@@ -54,6 +50,7 @@ namespace VTX
 			_passBlur->init( *_programManager, p_width, p_height );
 			_passShading->init( *_programManager, p_width, p_height );
 			_passOutline->init( *_programManager, p_width, p_height );
+			_passSelection->init( *_programManager, p_width, p_height );
 			_passFXAA->init( *_programManager, p_width, p_height );
 
 			// Init VAO.
@@ -74,6 +71,7 @@ namespace VTX
 				_passBlur->resize( _width, _height );
 				_passShading->resize( _width, _height );
 				_passOutline->resize( _width, _height );
+				_passSelection->resize( _width, _height );
 				_passFXAA->resize( _width, _height );
 			}
 		}
@@ -137,6 +135,8 @@ namespace VTX
 			{
 				_passOutline->render( p_scene, *this );
 			}
+
+			_passSelection->render( p_scene, *this );
 
 			if ( VTX_SETTING().activeAA )
 			{

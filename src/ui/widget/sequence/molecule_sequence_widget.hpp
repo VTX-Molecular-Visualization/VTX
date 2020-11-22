@@ -87,19 +87,19 @@ namespace VTX
 					SelectionModifier	   _getSelectionModifier( const QMouseEvent * const p_event ) const;
 					ClickModifier		   _getClickModifier( const QMouseEvent * const p_event ) const;
 					void				   _applySelection( const bool p_select, Model::Residue * p_residue );
-					void				   _applySelection( const bool p_select, const std::vector<Model::Residue *> & p_residues );
+					void				   _applySelection( const bool p_select, std::vector<Model::Residue *> & p_residues );
 
 					// TMP waiting selection manager system
 					///////////////////////////////////////////////////////////////////////////////////////////
 					std::vector<Model::Residue *> _selection = std::vector<Model::Residue *>();
 
 					bool _isSelected( const Model::Residue * const residue ) const;
-					void _select( const std::vector<Model::Residue *> & p_residues );
+					void _select( std::vector<Model::Residue *> & p_residues );
 					void _select( Model::Residue * p_residue );
 					void _toggleSelect( const std::vector<Model::Residue *> & p_residues );
 					void _toggleSelect( Model::Residue * p_residue );
-					void _unselect( const std::vector<Model::Residue *> & p_residues );
-					void _unselect( const Model::Residue * const p_residue );
+					void _unselect( std::vector<Model::Residue *> & p_residues );
+					void _unselect( Model::Residue * const p_residue );
 					void _clearSelection();
 					///////////////////////////////////////////////////////////////////////////////////////////
 				};

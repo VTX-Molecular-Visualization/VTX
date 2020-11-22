@@ -150,22 +150,22 @@ namespace VTX
 
 					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
 					{
-						const Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+						Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 						VTX_ACTION( new Action::Selection::UnselectMolecule( selectionModel, model ) );
 					}
 					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
 					{
-						const Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+						Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
 						VTX_ACTION( new Action::Selection::UnselectChain( selectionModel, model ) );
 					}
 					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
 					{
-						const Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
 						VTX_ACTION( new Action::Selection::UnselectResidue( selectionModel, model ) );
 					}
 					else if ( modelTypeId == ID::Model::MODEL_ATOM )
 					{
-						const Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+						Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
 						VTX_ACTION( new Action::Selection::UnselectAtom( selectionModel, model ) );
 					}
 				}

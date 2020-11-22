@@ -5,9 +5,10 @@
 uniform mat4  uProjMatrix;
 uniform float uCylRad;
 
-smooth in vec3 viewImpPos;
-flat in vec3   viewCylVert[ 2 ];
-flat in vec3   colors[ 2 ];
+smooth in vec3		   viewImpPos;
+flat in vec3		   viewCylVert[ 2 ];
+flat in vec3		   colors[ 2 ];
+flat in unsigned short vertexSel[ 2 ];
 
 // 3 16 bits for position.
 // 3 16 bits for normal.

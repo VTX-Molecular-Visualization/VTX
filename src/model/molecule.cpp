@@ -42,6 +42,7 @@ namespace VTX
 				_fillBufferAtomRadius();
 				_fillBufferAtomColors();
 				_fillBufferAtomVisibilities();
+				_fillBufferAtomSelection();
 				_fillBufferBonds();
 
 				// Compute secondary structure if not loaded.
@@ -144,7 +145,7 @@ namespace VTX
 			_bufferAtomVisibilities.resize( _atoms.size() );
 			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 			{
-				Atom * const atom = _atoms[ i ];
+				const Atom * const atom = _atoms[ i ];
 				// Solvent hidden.
 				if ( _showSolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
 				{
@@ -163,6 +164,30 @@ namespace VTX
 			}
 
 			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
+		}
+
+		void Molecule::_fillBufferAtomSelection( const Model::Selection::MapChainIds * const p_selection )
+		{
+			_bufferAtomSelection.resize( _atoms.size(), 0 );
+
+			if ( p_selection == nullptr )
+			{
+				return;
+			}
+
+			for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : *p_selection )
+			{
+				for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+				{
+					for ( const uint & atomIndex : pairResidue.second )
+					{
+						uint idx					= pairChain.first + pairResidue.first + atomIndex;
+						_bufferAtomSelection[ idx ] = 1;
+					}
+				}
+			}
+
+			_buffer->setAtomSelections( _bufferAtomSelection );
 		}
 
 		void Molecule::_fillBufferBonds()

@@ -32,14 +32,14 @@ namespace VTX
 			inline const MapMoleculeIds & getItems() const { return _items; }
 			inline MapMoleculeIds &		  getItems() { return _items; }
 
-			void selectMolecule( const Molecule & );
-			void unselectMolecule( const Molecule & );
-			void selectChain( const Chain & );
-			void unselectChain( const Chain & );
-			void selectResidue( const Residue & );
-			void unselectResidue( const Residue & );
-			void selectAtom( const Atom & );
-			void unselectAtom( const Atom & );
+			void selectMolecule( Molecule & );
+			void unselectMolecule( Molecule & );
+			void selectChain( Chain & );
+			void unselectChain( Chain & );
+			void selectResidue( Residue & );
+			void unselectResidue( Residue & );
+			void selectAtom( Atom & );
+			void unselectAtom( Atom & );
 
 			void clear();
 

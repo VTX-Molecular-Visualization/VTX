@@ -299,7 +299,7 @@ namespace VTX
 						break;
 					}
 				}
-				void MoleculeSequenceWidget::_applySelection( const bool p_select, const std::vector<Model::Residue *> & p_residues )
+				void MoleculeSequenceWidget::_applySelection( const bool p_select, std::vector<Model::Residue *> & p_residues )
 				{
 					switch ( _selectionModifier )
 					{
@@ -512,7 +512,7 @@ namespace VTX
 
 					return false;
 				}
-				void MoleculeSequenceWidget::_select( const std::vector<Model::Residue *> & p_residues )
+				void MoleculeSequenceWidget::_select( std::vector<Model::Residue *> & p_residues )
 				{
 					for ( Model::Residue * residue : p_residues )
 						_select( residue );
@@ -525,14 +525,14 @@ namespace VTX
 						VTX::Selection::SelectionManager::get().getSelectionModel().selectResidue( *p_residue );
 					}
 				}
-				void MoleculeSequenceWidget::_unselect( const std::vector<Model::Residue *> & p_residues )
+				void MoleculeSequenceWidget::_unselect( std::vector<Model::Residue *> & p_residues )
 				{
 					for ( Model::Residue * residue : p_residues )
 					{
 						_unselect( residue );
 					}
 				}
-				void MoleculeSequenceWidget::_unselect( const Model::Residue * const p_residue )
+				void MoleculeSequenceWidget::_unselect( Model::Residue * const p_residue )
 				{
 					for ( auto it = _selection.begin(); it != _selection.end(); it++ )
 					{

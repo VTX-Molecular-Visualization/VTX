@@ -9,16 +9,18 @@ flat in vec3		   vViewSpherePos[]; // Sphere position in view space.
 flat in vec3		   vSphereColor[];
 flat in float		   vSphereRad[];
 flat in unsigned short vSphereVis[];
+flat in unsigned short vSphereSel[];
 // Impostor vectors.
 flat in vec3  vImpU[];
 flat in vec3  vImpV[];
 flat in float vDotViewSpherePos[];
 
-smooth out vec3 viewImpPos;	   // Impostor position in view space.
-flat out vec3	viewSpherePos; // Sphere position in view space.
-flat out vec3	sphereColor;
-flat out float	sphereRad;
-flat out float	dotViewSpherePos;
+smooth out vec3			viewImpPos;	   // Impostor position in view space.
+flat out vec3			viewSpherePos; // Sphere position in view space.
+flat out vec3			sphereColor;
+flat out float			sphereRad;
+flat out float			dotViewSpherePos;
+flat out unsigned short sphereSel;
 
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
@@ -54,6 +56,7 @@ void main()
 	sphereColor		 = vSphereColor[ 0 ];
 	sphereRad		 = vSphereRad[ 0 ];
 	dotViewSpherePos = vDotViewSpherePos[ 0 ];
+	sphereSel		 = vSphereSel[ 0 ];
 
 	// Compute impostors vertices.
 	const vec3 v1 = gl_in[ 0 ].gl_Position.xyz - vImpU[ 0 ] - vImpV[ 0 ];

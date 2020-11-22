@@ -8,55 +8,67 @@ namespace VTX
 {
 	namespace Model
 	{
-		void Selection::selectMolecule( const Molecule & p_molecule )
+		void Selection::selectMolecule( Molecule & p_molecule )
 		{
 			Tool::Chrono chrono = Tool::Chrono();
 			chrono.start();
 			_selectMolecule( p_molecule );
 			chrono.stop();
 			VTX_INFO( "Selection time: " + std::to_string( chrono.elapsedTime() ) );
+			p_molecule.refreshSelection( &_items[ p_molecule.getId() ] );
 			_notifyDataChanged();
 		}
 
-		void Selection::selectChain( const Chain & p_chain )
+		void Selection::selectChain( Chain & p_chain )
 		{
 			_selectChain( p_chain );
+			p_chain.getMoleculePtr()->refreshSelection( &_items[ p_chain.getMoleculePtr()->getId() ] );
 			_notifyDataChanged();
 		}
 
-		void Selection::selectResidue( const Residue & p_residue )
+		void Selection::selectResidue( Residue & p_residue )
 		{
 			_selectResidue( p_residue );
+			p_residue.getMoleculePtr()->refreshSelection( &_items[ p_residue.getMoleculePtr()->getId() ] );
+
 			_notifyDataChanged();
 		}
 
-		void Selection::selectAtom( const Atom & p_atom )
+		void Selection::selectAtom( Atom & p_atom )
 		{
 			_selectAtom( p_atom );
+			p_atom.getMoleculePtr()->refreshSelection( &_items[ p_atom.getMoleculePtr()->getId() ] );
+
 			_notifyDataChanged();
 		}
 
-		void Selection::unselectMolecule( const Molecule & p_molecule )
+		void Selection::unselectMolecule( Molecule & p_molecule )
 		{
 			_unselectMolecule( p_molecule );
+			p_molecule.refreshSelection( nullptr );
 			_notifyDataChanged();
 		}
 
-		void Selection::unselectChain( const Chain & p_chain )
+		void Selection::unselectChain( Chain & p_chain )
 		{
 			_unselectChain( p_chain );
+			p_chain.getMoleculePtr()->refreshSelection( &_items[ p_chain.getMoleculePtr()->getId() ] );
+
 			_notifyDataChanged();
 		}
 
-		void Selection::unselectResidue( const Residue & p_residue )
+		void Selection::unselectResidue( Residue & p_residue )
 		{
 			_unselectResidue( p_residue );
+			p_residue.getMoleculePtr()->refreshSelection( &_items[ p_residue.getMoleculePtr()->getId() ] );
+
 			_notifyDataChanged();
 		}
 
-		void Selection::unselectAtom( const Atom & p_atom )
+		void Selection::unselectAtom( Atom & p_atom )
 		{
 			_unselectAtom( p_atom );
+			p_atom.getMoleculePtr()->refreshSelection( &_items[ p_atom.getMoleculePtr()->getId() ] );
 			_notifyDataChanged();
 		}
 

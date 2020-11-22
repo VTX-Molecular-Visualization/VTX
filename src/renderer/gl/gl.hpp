@@ -10,6 +10,7 @@
 #include "pass/geometric.hpp"
 #include "pass/linearize_depth.hpp"
 #include "pass/outline.hpp"
+#include "pass/selection.hpp"
 #include "pass/shading.hpp"
 #include "pass/ssao.hpp"
 #include "renderer/base_renderer.hpp"
@@ -36,6 +37,7 @@ namespace VTX
 			inline const Pass::Blur &			getPassBlur() const { return *_passBlur; }
 			inline const Pass::Shading &		getPassShading() const { return *_passShading; }
 			inline const Pass::Outline &		getPassOutline() const { return *_passOutline; }
+			inline const Pass::Selection &		getPassSelection() const { return *_passSelection; }
 			inline const Pass::FXAA &			getPassFXAA() const { return *_passFXAA; }
 
 			inline const GLuint & getQuadVAO() const { return _quadVAO; }
@@ -51,6 +53,7 @@ namespace VTX
 			Pass::Blur *		   _passBlur		   = nullptr;
 			Pass::Shading *		   _passShading		   = nullptr;
 			Pass::Outline *		   _passOutline		   = nullptr;
+			Pass::Selection *	   _passSelection	   = nullptr;
 			Pass::FXAA *		   _passFXAA		   = nullptr;
 
 			GLuint _quadVAO = GL_INVALID_VALUE;
