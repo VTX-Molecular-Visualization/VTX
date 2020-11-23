@@ -182,9 +182,23 @@ namespace VTX
 						return;
 
 					const QPoint	 currentMousePos	   = _scrollAreaContent->mapFromGlobal( p_event->globalPos() );
+					const bool		 cursorMoveForward	   = currentMousePos.x() >= _lastDragSelectionPosition.x();
 					Model::Residue * currentResidueHovered = _getResidueAtPos( currentMousePos );
 
-					if ( currentResidueHovered == _lastResidueHovered )
+					const bool cursorInFrontOfStartClick = currentMousePos.x() > _startPressPosition.x();
+
+					bool sameResidueHovered = currentResidueHovered == _lastResidueHovered;
+
+					// If we jump from a nullresidue to another null residue, we check if the nearest residue is the same
+					if ( sameResidueHovered && currentResidueHovered == nullptr )
+					{
+						const Model::Residue * const closestLastResidueHovered	  = _getClosestResidue( _lastDragSelectionPosition, cursorMoveForward );
+						const Model::Residue * const closestResidueCurrentlyHovered = _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick, true );
+
+						sameResidueHovered = closestLastResidueHovered == closestResidueCurrentlyHovered;
+					}
+
+					if ( sameResidueHovered )
 					{
 						_lastDragSelectionPosition = currentMousePos;
 						return;
@@ -193,13 +207,7 @@ namespace VTX
 					const bool switchSideFromStartClick = ( _lastDragSelectionPosition.x() < _startPressPosition.x() && currentMousePos.x() >= _startPressPosition.x() )
 														  || ( _lastDragSelectionPosition.x() > _startPressPosition.x() && currentMousePos.x() <= _startPressPosition.x() );
 
-					const bool cursorInFrontOfStartClick = currentMousePos.x() > _startPressPosition.x();
-					const bool cursorMoveForward		 = currentMousePos.x() >= _lastDragSelectionPosition.x();
-
 					const Model::Residue * closestLastResidueHovered = _getClosestResidue( _lastDragSelectionPosition, cursorMoveForward );
-
-					if ( closestLastResidueHovered == nullptr )
-						closestLastResidueHovered = _getClosestResidue( _lastDragSelectionPosition, cursorMoveForward );
 
 					// If the cursor switch side of the first clicked object, we clear the selection
 					if ( switchSideFromStartClick )
@@ -292,6 +300,9 @@ namespace VTX
 				}
 				void MoleculeSequenceWidget::_applySelection( const bool p_select )
 				{
+					if ( _frameSelection.size() <= 0 )
+						return;
+
 					switch ( _selectionModifier )
 					{
 					case SelectionModifier::ForceSelect: _select( _frameSelection ); break;
