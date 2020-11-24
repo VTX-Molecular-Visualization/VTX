@@ -43,13 +43,13 @@ namespace VTX
 				ATOM_SELECTION	= 4,
 			};
 
+			GLuint _vboAtomPositions	= GL_INVALID_VALUE;
+			GLuint _vboAtomRadius		= GL_INVALID_VALUE;
+			GLuint _vboAtomColors		= GL_INVALID_VALUE;
+			GLuint _vboAtomVisibilities = GL_INVALID_VALUE;
+			GLuint _vboAtomSelections	= GL_INVALID_VALUE;
+			GLuint _iboBonds			= GL_INVALID_VALUE;
 			GLuint _vao					= GL_INVALID_VALUE;
-			GLuint _atomPositionsVBO	= GL_INVALID_VALUE;
-			GLuint _atomRadiusVBO		= GL_INVALID_VALUE;
-			GLuint _atomColorsVBO		= GL_INVALID_VALUE;
-			GLuint _atomVisibilitiesVBO = GL_INVALID_VALUE;
-			GLuint _atomSelectionsVBO	= GL_INVALID_VALUE;
-			GLuint _bondsIBO			= GL_INVALID_VALUE;
 		};
 	} // namespace Buffer
 } // namespace VTX

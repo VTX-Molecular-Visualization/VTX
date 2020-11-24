@@ -163,7 +163,11 @@ namespace VTX
 				refreshColors();
 			}
 			inline void refreshColors() { _fillBufferAtomColors(); }
-			inline void refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection ) { _fillBufferAtomSelection( p_selection ); }
+			inline void refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection )
+			{
+				_fillBufferAtomSelections( p_selection );
+				_secondaryStructure->refreshSelection( p_selection );
+			}
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
 			inline uint									   getFrame() const { return _currentFrame; }
@@ -255,7 +259,7 @@ namespace VTX
 			void _fillBufferAtomRadius();
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();
-			void _fillBufferAtomSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const = nullptr );
+			void _fillBufferAtomSelections( const std::map<uint, std::map<uint, std::vector<uint>>> * const = nullptr );
 			void _fillBufferBonds();
 
 #ifdef _DEBUG

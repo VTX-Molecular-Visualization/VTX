@@ -13,10 +13,12 @@ in vec3				   tc_direction[];
 in vec3				   tc_normal[];
 flat in unsigned short tc_secondaryStructure[];
 flat in vec3		   tc_color[];
+flat in unsigned short tc_selection[];
 
-out vec3 te_viewPosition;
-out vec3 te_normal;
-out vec3 te_color;
+out vec3				te_viewPosition;
+out vec3				te_normal;
+out vec3				te_color;
+out flat unsigned short te_selection;
 
 const float PI				   = 3.1415;
 const mat4	BSPLINE_MAT		   = mat4( -1.f, 3.f, -3.f, 1.f, 3.f, -6.f, 3.f, 0.f, -3.f, 0.f, 3.f, 0.f, 1.f, 4.f, 1.f, 0.f );
@@ -88,5 +90,6 @@ void main()
 
 	// Mix colors.
 	// te_color = mix( tc_color[ 1 ], tc_color[ 2 ], gl_TessCoord.x );
-	te_color = tc_color[ 1 ];
+	te_color	 = tc_color[ 1 ];
+	te_selection = tc_selection[ 1 ];
 }

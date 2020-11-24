@@ -23,11 +23,7 @@ namespace VTX
 			MVC::MvcManager::get().deleteAllModels( _bonds );
 			MVC::MvcManager::get().deleteAllModels( _residues );
 			MVC::MvcManager::get().deleteAllModels( _chains );
-
-			if ( _secondaryStructure != nullptr )
-			{
-				MVC::MvcManager::get().deleteModel( _secondaryStructure );
-			}
+			MVC::MvcManager::get().deleteModel( _secondaryStructure );
 		}
 
 		void Molecule::_init()
@@ -42,7 +38,7 @@ namespace VTX
 				_fillBufferAtomRadius();
 				_fillBufferAtomColors();
 				_fillBufferAtomVisibilities();
-				_fillBufferAtomSelection();
+				_fillBufferAtomSelections();
 				_fillBufferBonds();
 
 				// Compute secondary structure if not loaded.
@@ -166,7 +162,7 @@ namespace VTX
 			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 		}
 
-		void Molecule::_fillBufferAtomSelection( const Model::Selection::MapChainIds * const p_selection )
+		void Molecule::_fillBufferAtomSelections( const Model::Selection::MapChainIds * const p_selection )
 		{
 			_bufferAtomSelection.clear();
 			_bufferAtomSelection.resize( _atoms.size(), 0 );

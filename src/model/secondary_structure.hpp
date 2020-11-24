@@ -60,8 +60,9 @@ namespace VTX
 
 			void setCurrentFrame();
 
-			const std::vector<uint> &	 getIndices() const { return _indices; }
-			const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToControlPointIndices; }
+			const std::vector<uint> &	 getIndices() const { return _buffferIndices; }
+			const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToIndices; }
+			inline void refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection = nullptr ) { _fillBufferSelections( p_selection ); }
 
 			void print() const;
 
@@ -73,16 +74,19 @@ namespace VTX
 			Model::Molecule * const _molecule;
 			COLOR_MODE				_colorMode = COLOR_MODE::JMOL;
 
-			std::vector<Vec3f>		_controlPointPositions			 = std::vector<Vec3f>();
-			std::vector<Vec3f>		_controlPointDirections			 = std::vector<Vec3f>();
-			std::vector<Vec3f>		_controlPointNormals			 = std::vector<Vec3f>();
-			std::vector<ushort>		_controlPointSecondaryStructures = std::vector<ushort>();
-			std::vector<Color::Rgb> _controlPointColors				 = std::vector<Color::Rgb>();
-			std::vector<uint>		_indices						 = std::vector<uint>();
+			std::vector<Vec3f>		_bufferPositions		   = std::vector<Vec3f>();
+			std::vector<Vec3f>		_bufferDirections		   = std::vector<Vec3f>();
+			std::vector<Vec3f>		_bufferNormals			   = std::vector<Vec3f>();
+			std::vector<ushort>		_bufferSecondaryStructures = std::vector<ushort>();
+			std::vector<Color::Rgb> _bufferColors			   = std::vector<Color::Rgb>();
+			std::vector<ushort>		_bufferSelections		   = std::vector<ushort>();
+			std::vector<uint>		_buffferIndices			   = std::vector<uint>();
 
-			std::map<uint, uint> _residueToControlPointIndices = std::map<uint, uint>();
+			std::map<uint, uint> _residueToIndices	 = std::map<uint, uint>();
+			std::map<uint, uint> _residueToPositions = std::map<uint, uint>();
 
 			void _fillBufferColors();
+			void _fillBufferSelections( const std::map<uint, std::map<uint, std::vector<uint>>> * const = nullptr );
 			void _flipTest( Vec3f &, Vec3f & ) const;
 		};
 

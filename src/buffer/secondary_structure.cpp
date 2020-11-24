@@ -17,6 +17,8 @@ namespace VTX
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
 			gl()->glGenBuffers( 1, &_vboColors );
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
+			gl()->glGenBuffers( 1, &_vboSelections );
+			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
 			gl()->glGenBuffers( 1, &_ibo );
 			gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 
@@ -50,6 +52,11 @@ namespace VTX
 			gl()->glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
 
+			gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboSelections );
+			gl()->glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
+			gl()->glVertexAttribIPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, 1, GL_UNSIGNED_SHORT, sizeof( ushort ), 0 );
+			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
 			gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 			gl()->glBindVertexArray( 0 );
 		}
@@ -69,6 +76,8 @@ namespace VTX
 				gl()->glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
 				gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
 				gl()->glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
+				gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboSelections );
+				gl()->glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
 				gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
 				gl()->glBindVertexArray( 0 );
 
@@ -94,6 +103,10 @@ namespace VTX
 			if ( _vboColors != GL_INVALID_VALUE )
 			{
 				gl()->glDeleteBuffers( 1, &_vboColors );
+			}
+			if ( _vboSelections != GL_INVALID_VALUE )
+			{
+				gl()->glDeleteBuffers( 1, &_vboSelections );
 			}
 			if ( _ibo != GL_INVALID_VALUE )
 			{
@@ -135,6 +148,11 @@ namespace VTX
 		void SecondaryStructure::setControlPointColors( const std::vector<Color::Rgb> & p_colors )
 		{
 			gl()->glNamedBufferData( _vboColors, GLsizei( p_colors.size() ) * sizeof( Color::Rgb ), p_colors.data(), GL_STATIC_DRAW );
+		}
+
+		void SecondaryStructure::setControlPointSelections( const std::vector<ushort> & p_selections )
+		{
+			gl()->glNamedBufferData( _vboSelections, GLsizei( p_selections.size() ) * sizeof( ushort ), p_selections.data(), GL_STATIC_DRAW );
 		}
 
 		void SecondaryStructure::setIndices( const std::vector<uint> & p_indices )

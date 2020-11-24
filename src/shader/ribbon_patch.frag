@@ -1,8 +1,9 @@
 #version 450
 
-in vec3 te_viewPosition;
-in vec3 te_normal;
-in vec3 te_color;
+in vec3				   te_viewPosition;
+in vec3				   te_normal;
+in vec3				   te_color;
+in flat unsigned short te_selection;
 
 // 3 16 bits for position.
 // 3 16 bits for normal.
@@ -27,7 +28,7 @@ void main()
 	viewPositionNormalCompressed.x = packHalf2x16( te_viewPosition.xy );
 	viewPositionNormalCompressed.y = packHalf2x16( vec2( te_viewPosition.z, normal.x ) );
 	viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
-	viewPositionNormalCompressed.w = 0; // Padding.
+	viewPositionNormalCompressed.w = packHalf2x16( vec2( te_selection, 0 ) );
 
 	// Output data.
 	outViewPositionNormal = viewPositionNormalCompressed;
