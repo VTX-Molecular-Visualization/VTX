@@ -52,5 +52,6 @@ namespace VTX
 	{
 		Worker::WorkerManager::get().run( p_worker, p_success, p_error );
 	}
+	inline void VTX_ASYNC( const std::function<void( void )> & p_function ) { std::thread( p_function ).detach(); }
 } // namespace VTX
 #endif

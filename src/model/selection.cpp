@@ -36,6 +36,9 @@ namespace VTX
 		}
 		void Selection::selectChains( std::vector<Chain *> & p_chains )
 		{
+			if ( p_chains.size() == 0 )
+				return;
+
 			for ( auto it : p_chains )
 				_selectChain( *it );
 			p_chains[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_chains[ 0 ]->getMoleculePtr()->getId() ] );
@@ -50,6 +53,9 @@ namespace VTX
 		}
 		void Selection::selectResidues( std::vector<Residue *> & p_residues )
 		{
+			if ( p_residues.size() == 0 )
+				return;
+
 			for ( const auto it : p_residues )
 				_selectResidue( *it );
 			p_residues[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_residues[ 0 ]->getMoleculePtr()->getId() ] );
@@ -64,6 +70,9 @@ namespace VTX
 		}
 		void Selection::selectAtoms( std::vector<Atom *> & p_atoms )
 		{
+			if ( p_atoms.size() == 0 )
+				return;
+
 			for ( const auto it : p_atoms )
 				_selectAtom( *it );
 			p_atoms[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_atoms[ 0 ]->getMoleculePtr()->getId() ] );
@@ -78,6 +87,9 @@ namespace VTX
 		}
 		void Selection::unselectMolecules( std::vector<Molecule *> & p_molecules )
 		{
+			if ( p_molecules.size() == 0 )
+				return;
+
 			for ( const auto it : p_molecules )
 			{
 				_unselectMolecule( *it );
@@ -95,6 +107,9 @@ namespace VTX
 		}
 		void Selection::unselectChains( std::vector<Chain *> & p_chains )
 		{
+			if ( p_chains.size() == 0 )
+				return;
+
 			for ( const auto it : p_chains )
 				_unselectChain( *it );
 			p_chains[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_chains[ 0 ]->getMoleculePtr()->getId() ] );
@@ -109,6 +124,9 @@ namespace VTX
 		}
 		void Selection::unselectResidues( std::vector<Residue *> & p_residues )
 		{
+			if ( p_residues.size() == 0 )
+				return;
+
 			for ( const auto it : p_residues )
 				_unselectResidue( *it );
 			p_residues[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_residues[ 0 ]->getMoleculePtr()->getId() ] );
@@ -123,6 +141,9 @@ namespace VTX
 		}
 		void Selection::unselectAtoms( std::vector<Atom *> & p_atoms )
 		{
+			if ( p_atoms.size() == 0 )
+				return;
+
 			for ( const auto it : p_atoms )
 				_unselectAtom( *it );
 			p_atoms[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_atoms[ 0 ]->getMoleculePtr()->getId() ] );
