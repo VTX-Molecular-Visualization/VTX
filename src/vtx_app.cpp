@@ -8,6 +8,7 @@
 #include "util/filesystem.hpp"
 #include "worker/worker_manager.hpp"
 #include <QPalette>
+#include <exception>
 
 namespace VTX
 {
@@ -129,6 +130,20 @@ namespace VTX
 
 		// Worker manager.
 		Worker::WorkerManager::get().update( deltaTime );
+	}
+
+	bool VTXApp::notify( QObject * receiver, QEvent * event )
+	{
+		try
+		{
+			return QApplication::notify( receiver, event );
+		}
+		catch ( const std::exception & exception )
+		{
+			VTX_ERROR( exception.what() );
+			// throw( exception );
+			return true;
+		}
 	}
 
 } // namespace VTX

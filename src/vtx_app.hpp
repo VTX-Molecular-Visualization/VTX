@@ -49,6 +49,8 @@ namespace VTX
 		inline State::StateMachine &				  getStateMachine() { return *_stateMachine; }
 		inline const State::StateMachine &			  getStateMachine() const { return *_stateMachine; }
 
+		bool notify( QObject * receiver, QEvent * event ) override;
+
 	  private:
 		QTimer *		_timer		  = nullptr;
 		QElapsedTimer * _elapsedTimer = nullptr;
