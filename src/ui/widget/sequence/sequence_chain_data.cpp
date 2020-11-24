@@ -122,7 +122,8 @@ namespace VTX
 					const std::string firstResidueIndexStr = std::to_string( firstResidueIndex );
 					const std::string lastResidueIndexStr  = std::to_string( lastResidueIndex );
 
-					const uint scaleLength = sequenceLength - ( lastResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) + ( (uint)lastResidueIndexStr.size() / 2 );
+					const uint lastResidueOffset = ( uint )( sequenceLength < Style::SEQUENCE_CHAIN_SCALE_STEP ? lastResidueIndexStr.size() : ( lastResidueIndexStr.size() / 2 ) );
+					const uint scaleLength		 = sequenceLength - ( lastResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) + lastResidueOffset;
 
 					_strScale = QString( scaleLength, ' ' );
 
