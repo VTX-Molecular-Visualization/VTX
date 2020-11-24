@@ -15,7 +15,6 @@
 #include <QLabel>
 #include <QPoint>
 #include <QString>
-#include <vector>
 
 namespace VTX
 {
@@ -51,7 +50,7 @@ namespace VTX
 					int				 getSequenceXmin() const { return pos().x() + _sequenceDisplayWidget->pos().x(); };
 					int				 getSequenceXmax() const { return pos().x() + _sequenceDisplayWidget->pos().x() + _sequenceDisplayWidget->getSize() - 1; };
 
-					void repaintSelection( const std::vector<Model::Residue *> & p_selection ) const { _sequenceDisplayWidget->repaint(); };
+					void repaintSelection() const { _sequenceDisplayWidget->repaint(); };
 
 				  protected:
 					ChainSequenceWidget( QWidget * p_parent );

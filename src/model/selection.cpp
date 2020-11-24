@@ -83,6 +83,21 @@ namespace VTX
 				_unselectMolecule( *it );
 				p_molecules[ 0 ]->refreshSelection( &_items[ p_molecules[ 0 ]->getId() ] );
 			}
+
+			_notifyDataChanged();
+		}
+		void Selection::unselectMoleculesWithCheck( std::vector<Molecule *> & p_molecules )
+		{
+			for ( const auto it : p_molecules )
+			{
+				Model::Molecule & molecule = *it;
+				if ( isMoleculeSelected( molecule ) )
+				{
+					_unselectMolecule( molecule );
+					molecule.refreshSelection( &_items[ molecule.getId() ] );
+				}
+			}
+
 			_notifyDataChanged();
 		}
 
@@ -100,6 +115,17 @@ namespace VTX
 			p_chains[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_chains[ 0 ]->getMoleculePtr()->getId() ] );
 			_notifyDataChanged();
 		}
+		void Selection::unselectChainsWithCheck( std::vector<Chain *> & p_chains )
+		{
+			for ( const auto it : p_chains )
+			{
+				if ( isChainSelected( *it ) )
+					_unselectChain( *it );
+			}
+
+			p_chains[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_chains[ 0 ]->getMoleculePtr()->getId() ] );
+			_notifyDataChanged();
+		}
 
 		void Selection::unselectResidue( Residue & p_residue )
 		{
@@ -111,6 +137,16 @@ namespace VTX
 		{
 			for ( const auto it : p_residues )
 				_unselectResidue( *it );
+			p_residues[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_residues[ 0 ]->getMoleculePtr()->getId() ] );
+			_notifyDataChanged();
+		}
+		void Selection::unselectResiduesWithCheck( std::vector<Residue *> & p_residues )
+		{
+			for ( const auto it : p_residues )
+			{
+				if ( isResidueSelected( *it ) )
+					_unselectResidue( *it );
+			}
 			p_residues[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_residues[ 0 ]->getMoleculePtr()->getId() ] );
 			_notifyDataChanged();
 		}
@@ -127,6 +163,76 @@ namespace VTX
 				_unselectAtom( *it );
 			p_atoms[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_atoms[ 0 ]->getMoleculePtr()->getId() ] );
 			_notifyDataChanged();
+		}
+		void Selection::unselectAtomsWithCheck( std::vector<Atom *> & p_atoms )
+		{
+			for ( const auto it : p_atoms )
+			{
+				if ( isAtomSelected( *it ) )
+					_unselectAtom( *it );
+			}
+
+			p_atoms[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_atoms[ 0 ]->getMoleculePtr()->getId() ] );
+			_notifyDataChanged();
+		}
+
+		bool Selection::isMoleculeSelected( const Molecule & p_molecule ) const
+		{
+			const ID & id = p_molecule.getId();
+			return _items.find( id ) != _items.end();
+		}
+		bool Selection::isChainSelected( const Chain & p_chain ) const
+		{
+			const ID & moleculeId = p_chain.getMoleculePtr()->getId();
+
+			if ( _items.find( moleculeId ) == _items.end() )
+				return false;
+
+			const MapChainIds & chainMap = _items.at( moleculeId );
+			const uint &		index	 = p_chain.getIndex();
+
+			return chainMap.find( index ) != chainMap.end();
+		}
+		bool Selection::isResidueSelected( const Residue & p_residue ) const
+		{
+			const ID & moleculeId = p_residue.getMoleculePtr()->getId();
+
+			if ( _items.find( moleculeId ) == _items.end() )
+				return false;
+
+			const MapChainIds & chainMap   = _items.at( moleculeId );
+			const uint &		chainIndex = p_residue.getChainPtr()->getIndex();
+
+			if ( chainMap.find( chainIndex ) == chainMap.end() )
+				return false;
+
+			const MapResidueIds & residueMap = _items.at( moleculeId ).at( chainIndex );
+			const uint &		  index		 = p_residue.getIndex();
+
+			return residueMap.find( index ) != residueMap.end();
+		}
+		bool Selection::isAtomSelected( const Atom & p_atom ) const
+		{
+			const ID & moleculeId = p_atom.getMoleculePtr()->getId();
+
+			if ( _items.find( moleculeId ) == _items.end() )
+				return false;
+
+			const MapChainIds & chainMap   = _items.at( moleculeId );
+			const uint &		chainIndex = p_atom.getChainPtr()->getIndex();
+
+			if ( chainMap.find( chainIndex ) == chainMap.end() )
+				return false;
+
+			const MapResidueIds & residueMap   = _items.at( moleculeId ).at( chainIndex );
+			const uint &		  residueIndex = p_atom.getResiduePtr()->getIndex();
+			if ( residueMap.find( residueIndex ) == residueMap.end() )
+				return false;
+
+			const VecAtomIds & atomVector = _items.at( moleculeId ).at( chainIndex ).at( residueIndex );
+			const uint &	   index	  = p_atom.getIndex();
+
+			return std::find( atomVector.begin(), atomVector.end(), index ) != atomVector.end();
 		}
 
 		void Selection::_selectMolecule( const Molecule & p_molecule )

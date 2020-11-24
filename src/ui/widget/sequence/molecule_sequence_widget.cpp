@@ -132,16 +132,12 @@ namespace VTX
 
 					if ( clickModifier == ClickModifier::TakeFromTo && !( _startResidueHovered == nullptr && _lastResidueHovered == nullptr ) )
 					{
+						bool				   takeForward = _lastDragSelectionPosition.x() <= _startPressPosition.x();
 						Model::Residue * const closestResidueFromPreviousClick
 							= _getClosestResidue( _lastDragSelectionPosition, _startPressPosition.x() > _lastDragSelectionPosition.x(), true );
 
-						const Model::Residue * const fromResidue = _compareResiduePos( *_closestResidueFromStartPosition, *closestResidueFromPreviousClick ) <= 0
-																	   ? _closestResidueFromStartPosition
-																	   : closestResidueFromPreviousClick;
-
-						const Model::Residue * const toResidue = _compareResiduePos( *_closestResidueFromStartPosition, *closestResidueFromPreviousClick ) > 0
-																	 ? _closestResidueFromStartPosition
-																	 : closestResidueFromPreviousClick;
+						const Model::Residue * const fromResidue = takeForward ? closestResidueFromPreviousClick : _closestResidueFromStartPosition;
+						const Model::Residue * const toResidue	 = takeForward ? _closestResidueFromStartPosition : closestResidueFromPreviousClick;
 
 						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
 
@@ -192,7 +188,7 @@ namespace VTX
 					// If we jump from a nullresidue to another null residue, we check if the nearest residue is the same
 					if ( sameResidueHovered && currentResidueHovered == nullptr )
 					{
-						const Model::Residue * const closestLastResidueHovered	  = _getClosestResidue( _lastDragSelectionPosition, cursorMoveForward );
+						const Model::Residue * const closestLastResidueHovered		= _getClosestResidue( _lastDragSelectionPosition, cursorMoveForward, true );
 						const Model::Residue * const closestResidueCurrentlyHovered = _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick, true );
 
 						sameResidueHovered = closestLastResidueHovered == closestResidueCurrentlyHovered;
@@ -217,8 +213,8 @@ namespace VTX
 						const Model::Residue * closestResidueCurrentlyHovered = _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick, true );
 						const Model::Residue * closestOfStart				  = _getClosestResidue( _startPressPosition, !cursorInFrontOfStartClick, true );
 
-						const Model::Residue * fromResidue = _compareResiduePos( *closestLastResidueHovered, *closestOfStart ) <= 0 ? closestLastResidueHovered : closestOfStart;
-						const Model::Residue * toResidue   = _compareResiduePos( *closestLastResidueHovered, *closestOfStart ) > 0 ? closestLastResidueHovered : closestOfStart;
+						const Model::Residue * fromResidue = cursorInFrontOfStartClick ? closestLastResidueHovered : closestOfStart;
+						const Model::Residue * toResidue   = cursorInFrontOfStartClick ? closestOfStart : closestLastResidueHovered;
 
 						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
 						_applySelection( false );
@@ -227,8 +223,8 @@ namespace VTX
 						{
 							closestOfStart = _getClosestResidue( _startPressPosition, cursorInFrontOfStartClick, true );
 
-							fromResidue = _compareResiduePos( *closestOfStart, *closestResidueCurrentlyHovered ) <= 0 ? closestOfStart : closestResidueCurrentlyHovered;
-							toResidue	= _compareResiduePos( *closestOfStart, *closestResidueCurrentlyHovered ) > 0 ? closestOfStart : closestResidueCurrentlyHovered;
+							fromResidue = cursorInFrontOfStartClick ? closestOfStart : closestResidueCurrentlyHovered;
+							toResidue	= cursorInFrontOfStartClick ? closestResidueCurrentlyHovered : closestOfStart;
 							_getFromTo( *fromResidue, *toResidue, &_frameSelection );
 
 							_applySelection( true );
@@ -244,7 +240,7 @@ namespace VTX
 						if ( cursorMoveForward )
 						{
 							if ( addToSelection && _lastResidueHovered != nullptr )
-								fromResidue = _getNextResidue( *closestLastResidueHovered, true );
+								fromResidue = _getNextResidue( *closestLastResidueHovered, false );
 							else
 								fromResidue = closestLastResidueHovered;
 
@@ -254,7 +250,7 @@ namespace VTX
 								toResidue = _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick );
 
 							if ( !addToSelection )
-								toResidue = _getPreviousResidue( *toResidue, true );
+								toResidue = _getPreviousResidue( *toResidue, false );
 						}
 						else
 						{
@@ -264,17 +260,20 @@ namespace VTX
 								if ( fromResidue == nullptr )
 									fromResidue = _getClosestResidue( currentMousePos, !cursorInFrontOfStartClick, true );
 								else
-									fromResidue = _getNextResidue( *fromResidue, true );
+									fromResidue = _getNextResidue( *fromResidue, false );
 							}
 
 							if ( addToSelection && _lastResidueHovered != nullptr )
-								toResidue = _getPreviousResidue( *closestLastResidueHovered, true );
+								toResidue = _getPreviousResidue( *closestLastResidueHovered, false );
 							else
 								toResidue = closestLastResidueHovered;
 						}
 
-						_getFromTo( *fromResidue, *toResidue, &_frameSelection );
-						_applySelection( addToSelection );
+						if ( fromResidue != nullptr && toResidue != nullptr )
+						{
+							_getFromTo( *fromResidue, *toResidue, &_frameSelection );
+							_applySelection( addToSelection );
+						}
 					}
 
 					_lastDragSelectionPosition = currentMousePos;
@@ -307,19 +306,14 @@ namespace VTX
 					{
 					case SelectionModifier::ForceSelect: _select( _frameSelection ); break;
 					case SelectionModifier::ToggleSelect: _toggleSelect( _frameSelection ); break;
-					case SelectionModifier::ForceUnselect: _unselect( _frameSelection ); break;
+					case SelectionModifier::ForceUnselect: _unselect( _frameSelection, true ); break;
 					default:
 						if ( p_select )
 							_select( _frameSelection );
 						else
-							_unselect( _frameSelection );
+							_unselect( _frameSelection, false );
 						break;
 					}
-
-					if ( p_select )
-						VTX::Selection::SelectionManager::get().getSelectionModel().selectResidues( _frameSelection );
-					else
-						VTX::Selection::SelectionManager::get().getSelectionModel().unselectResidues( _frameSelection );
 
 					_frameSelection.clear();
 				}
@@ -415,28 +409,6 @@ namespace VTX
 					return sequenceWidget->getResiduePos( p_residue, _scrollAreaContent );
 				}
 
-				int MoleculeSequenceWidget::_compareResiduePos( const Model::Residue & p_lhs, const Model::Residue & p_rhs ) const
-				{
-					const uint indexChainLhs = p_lhs.getChainPtr()->getIndex();
-					const uint indexChainRhs = p_rhs.getChainPtr()->getIndex();
-
-					if ( indexChainLhs < indexChainRhs )
-						return -1;
-					else if ( indexChainLhs > indexChainRhs )
-						return 1;
-					else
-					{
-						const uint indexLhs = p_lhs.getIndex();
-						const uint indexRhs = p_rhs.getIndex();
-
-						if ( indexLhs < indexRhs )
-							return -1;
-						else if ( indexLhs > indexRhs )
-							return 1;
-						else
-							return 0;
-					}
-				}
 				void MoleculeSequenceWidget::_getFromTo( const Model::Residue & p_from, const Model::Residue & p_to, std::vector<Model::Residue *> * const _container ) const
 				{
 					const Model::Residue & startResidue = p_from;
@@ -511,66 +483,38 @@ namespace VTX
 
 				bool MoleculeSequenceWidget::_isSelected( const Model::Residue * const residue ) const
 				{
-					for ( const auto it : _selection )
-					{
-						if ( it->getId() == residue->getId() )
-							return true;
-					}
-
-					return false;
+					return VTX::Selection::SelectionManager::get().getSelectionModel().isResidueSelected( *residue );
 				}
-				void MoleculeSequenceWidget::_select( std::vector<Model::Residue *> & p_residues )
+				void MoleculeSequenceWidget::_select( std::vector<Model::Residue *> & p_residues ) const
 				{
-					for ( Model::Residue * residue : p_residues )
-						_select( residue );
+					VTX::Selection::SelectionManager::get().getSelectionModel().selectResidues( p_residues );
 				}
-				void MoleculeSequenceWidget::_select( Model::Residue * p_residue )
+				void MoleculeSequenceWidget::_unselect( std::vector<Model::Residue *> & p_residues, const bool p_checkData ) const
 				{
-					if ( !_isSelected( p_residue ) )
-					{
-						_selection.emplace_back( p_residue );
-					}
-				}
-				void MoleculeSequenceWidget::_unselect( std::vector<Model::Residue *> & p_residues )
-				{
-					for ( Model::Residue * residue : p_residues )
-					{
-						_unselect( residue );
-					}
-				}
-				void MoleculeSequenceWidget::_unselect( Model::Residue * const p_residue )
-				{
-					for ( auto it = _selection.begin(); it != _selection.end(); it++ )
-					{
-						if ( ( *it )->getId() == p_residue->getId() )
-						{
-							_selection.erase( it );
-							break;
-						}
-					}
-				}
-				void MoleculeSequenceWidget::_toggleSelect( const std::vector<Model::Residue *> & p_residues )
-				{
-					for ( Model::Residue * residue : p_residues )
-						_toggleSelect( residue );
-				}
-				void MoleculeSequenceWidget::_toggleSelect( Model::Residue * p_residue )
-				{
-					if ( _isSelected( p_residue ) )
-						_unselect( p_residue );
+					if ( p_checkData )
+						VTX::Selection::SelectionManager::get().getSelectionModel().unselectResiduesWithCheck( p_residues );
 					else
-						_select( p_residue );
+						VTX::Selection::SelectionManager::get().getSelectionModel().unselectResidues( p_residues );
 				}
-				void MoleculeSequenceWidget::_clearSelection()
+				void MoleculeSequenceWidget::_toggleSelect( std::vector<Model::Residue *> & p_residues ) const
 				{
-					_selection.clear();
-					VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+					Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+					for ( std::vector<Model::Residue *>::const_iterator it = p_residues.cbegin(); it != p_residues.cend(); it++ )
+					{
+						Model::Residue * const residue = *it;
+
+						if ( selection.isResidueSelected( **it ) )
+							selection.unselectResidue( *residue );
+						else
+							selection.selectResidue( *residue );
+					}
 				}
+				void MoleculeSequenceWidget::_clearSelection() const { VTX::Selection::SelectionManager::get().getSelectionModel().clear(); }
 
 				void MoleculeSequenceWidget::repaintSelection() const
 				{
 					for ( auto it : _chainDisplayWidgets )
-						it->repaintSelection( _selection );
+						it->repaintSelection();
 				}
 			} // namespace Sequence
 		}	  // namespace Widget

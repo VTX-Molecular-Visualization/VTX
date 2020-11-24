@@ -77,7 +77,6 @@ namespace VTX
 					Model::Residue *			  _lastResidueHovered = nullptr;
 					SelectionModifier			  _selectionModifier  = SelectionModifier::None;
 
-					int					   _compareResiduePos( const Model::Residue & p_lhs, const Model::Residue & p_rhs ) const;
 					void				   _getFromTo( const Model::Residue & p_from, const Model::Residue & p_to, std::vector<Model::Residue *> * const _container ) const;
 					Model::Residue * const _getResidueAtPos( const QPoint & p_pos ) const;
 					Model::Residue * const _getClosestResidue( const QPoint & p_pos, const bool p_next, const bool p_forceGetValue = false ) const;
@@ -89,19 +88,11 @@ namespace VTX
 					void				   _applySelection( const bool p_select, Model::Residue * p_residue );
 					void				   _applySelection( const bool p_select );
 
-					// TMP waiting selection manager system
-					///////////////////////////////////////////////////////////////////////////////////////////
-					std::vector<Model::Residue *> _selection = std::vector<Model::Residue *>();
-
 					bool _isSelected( const Model::Residue * const residue ) const;
-					void _select( std::vector<Model::Residue *> & p_residues );
-					void _select( Model::Residue * p_residue );
-					void _toggleSelect( const std::vector<Model::Residue *> & p_residues );
-					void _toggleSelect( Model::Residue * p_residue );
-					void _unselect( std::vector<Model::Residue *> & p_residues );
-					void _unselect( Model::Residue * const p_residue );
-					void _clearSelection();
-					///////////////////////////////////////////////////////////////////////////////////////////
+					void _select( std::vector<Model::Residue *> & p_residues ) const;
+					void _toggleSelect( std::vector<Model::Residue *> & p_residues ) const;
+					void _unselect( std::vector<Model::Residue *> & p_residues, const bool p_checkData ) const;
+					void _clearSelection() const;
 				};
 			} // namespace Sequence
 		}	  // namespace Widget
