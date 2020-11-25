@@ -34,8 +34,8 @@ namespace VTX
 					void _setupSlots() override;
 
 				  private:
-					QWidget *	  _widget = nullptr;
-					QVBoxLayout * _layout = nullptr;
+					QWidget *	  _scrollAreaContent = nullptr;
+					QVBoxLayout * _layout			 = nullptr;
 				};
 
 			} // namespace Scene

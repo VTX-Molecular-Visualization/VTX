@@ -44,7 +44,7 @@ namespace VTX
 			};
 
 			template<typename V, typename M, typename W>
-			V * getViewWidget( M * const p_model, W * const p_parent, const std::string & p_name ) const
+			V * getViewWidget( M * const p_model, QWidget * const p_parent, const std::string & p_name ) const
 			{
 				QString qstringName = QString::fromStdString( p_name );
 

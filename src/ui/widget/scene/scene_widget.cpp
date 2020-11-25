@@ -3,6 +3,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
+#include <QScrollArea>
 
 namespace VTX
 {
@@ -27,12 +28,12 @@ namespace VTX
 						// Set no parent to not trigger ItemChange event during init
 						View::UI::Widget::MoleculeSceneView * const moleculeWidget
 							= WidgetFactory::get().getViewWidget<View::UI::Widget::MoleculeSceneView, Model::Molecule, QTreeWidget>(
-								castedEvent.ptr, nullptr, "MoleculeStructure" );
+								castedEvent.ptr, _scrollAreaContent, "MoleculeStructure" );
 
 						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, moleculeWidget );
 
 						// Add Item to tree hierarchy
-						_layout->addWidget( moleculeWidget );
+						_layout->insertWidget( _layout->count() - 1, moleculeWidget, 1 );
 					}
 					else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 					{
@@ -51,10 +52,22 @@ namespace VTX
 				{
 					BaseManualWidget::_setupUi( p_name );
 
-					_widget = new QWidget( this );
-					_layout = new QVBoxLayout( _widget );
+					_scrollAreaContent = new QWidget( this );
+					_scrollAreaContent->setSizePolicy( QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum );
 
-					setWidget( _widget );
+					_layout = new QVBoxLayout( _scrollAreaContent );
+					_layout->setSizeConstraint( QLayout::SizeConstraint::SetMinAndMaxSize );
+					_layout->setSpacing( 2 );
+					_layout->addStretch( 1000 );
+					_layout->setContentsMargins( 0, 0, 0, 0 );
+
+					QScrollArea * const scrollArea = new QScrollArea( this );
+					scrollArea->setFrameShape( QFrame::Shape::NoFrame );
+					scrollArea->setWidget( _scrollAreaContent );
+					scrollArea->setWidgetResizable( true );
+					scrollArea->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored );
+
+					setWidget( scrollArea );
 				}
 
 				void SceneWidget::_setupSlots() {}

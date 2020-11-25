@@ -9,6 +9,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
+#include <QScrollBar>
 
 namespace VTX
 {
@@ -91,9 +92,16 @@ namespace VTX
 				void MoleculeSceneView::_setupUi( const QString & p_name )
 				{
 					setObjectName( "sceneTree" );
-					setColumnCount( 1 );
+					setUniformRowHeights( true );
 					setHeaderHidden( true );
+					setColumnCount( 1 );
 					setSelectionMode( QAbstractItemView::MultiSelection );
+
+					setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents );
+					setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
+
+					setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
+					setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
 
 					setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
 					_contextMenu = new QMenu( parentWidget() );
@@ -144,6 +152,9 @@ namespace VTX
 					}
 
 					addTopLevelItem( moleculeView );
+
+					setMinimumHeight( rowHeight( model()->index( 0, 0 ) ) );
+					setMinimumWidth( sizeHintForColumn( 0 ) );
 				}
 
 				void MoleculeSceneView::_deleteAction()
@@ -205,9 +216,19 @@ namespace VTX
 					}
 				}
 
-				void MoleculeSceneView::_onItemExpanded( QTreeWidgetItem * p_item ) {}
+				void MoleculeSceneView::_onItemExpanded( QTreeWidgetItem * p_item )
+				{
+					// If expanded, height is good at minimum height, we reset it.
+					setMinimumHeight( 0 );
+					setMinimumWidth( sizeHintForColumn( 0 ) );
+				}
 
-				void MoleculeSceneView::_onItemCollapsed( QTreeWidgetItem * p_item ) {}
+				void MoleculeSceneView::_onItemCollapsed( QTreeWidgetItem * p_item )
+				{
+					// Minimum height is bad when full collapsed => we force it.
+					setMinimumHeight( topLevelItem( 0 )->isExpanded() ? 0 : rowHeight( model()->index( 0, 0 ) ) );
+					setMinimumWidth( sizeHintForColumn( 0 ) );
+				}
 
 				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Molecule & p_model ) const
 				{
