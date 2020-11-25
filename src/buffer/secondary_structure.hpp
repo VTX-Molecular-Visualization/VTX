@@ -31,6 +31,7 @@ namespace VTX
 			void setControlPointNormals( const std::vector<Vec3f> & );
 			void setControlPointSecondaryStructure( const std::vector<ushort> & );
 			void setControlPointColors( const std::vector<Color::Rgb> & );
+			void setControlPointSelections( const std::vector<ushort> & );
 			void setIndices( const std::vector<uint> & );
 
 		  private:
@@ -41,6 +42,7 @@ namespace VTX
 				CONTROL_POINT_NORMAL			  = 2,
 				CONTROL_POINT_SECONDARY_STRUCTURE = 3,
 				CONTROL_POINT_COLOR				  = 4,
+				CONTROL_POINT_SELECTION			  = 5,
 			};
 
 			GLuint _vboPositions		   = GL_INVALID_VALUE;
@@ -48,6 +50,7 @@ namespace VTX
 			GLuint _vboNormals			   = GL_INVALID_VALUE;
 			GLuint _vboSecondaryStructures = GL_INVALID_VALUE;
 			GLuint _vboColors			   = GL_INVALID_VALUE;
+			GLuint _vboSelections		   = GL_INVALID_VALUE;
 			GLuint _ibo					   = GL_INVALID_VALUE;
 			GLuint _vao					   = GL_INVALID_VALUE;
 		};

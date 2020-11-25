@@ -9,12 +9,14 @@ in vec3				   vs_direction[];
 in vec3				   vs_normal[];
 flat in unsigned short vs_secondaryStructure[];
 flat in vec3		   vs_color[];
+flat in unsigned short vs_selection[];
 
 out vec3				tc_position[];
 out vec3				tc_direction[];
 out vec3				tc_normal[];
 flat out unsigned short tc_secondaryStructure[];
 flat out vec3			tc_color[];
+flat out unsigned short tc_selection[];
 
 // Values from original paper.
 const float MAX_DISTANCE				 = 160.f;
@@ -59,6 +61,7 @@ void main()
 	tc_normal[ gl_InvocationID ]			 = vs_normal[ gl_InvocationID ];
 	tc_secondaryStructure[ gl_InvocationID ] = vs_secondaryStructure[ gl_InvocationID ];
 	tc_color[ gl_InvocationID ]				 = vs_color[ gl_InvocationID ];
+	tc_selection[ gl_InvocationID ]			 = vs_selection[ gl_InvocationID ];
 
 	// if ( gl_InvocationID == 0 )
 	//{
