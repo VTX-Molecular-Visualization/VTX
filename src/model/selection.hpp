@@ -36,21 +36,21 @@ namespace VTX
 			inline MapMoleculeIds &		  getItems() { return _items; }
 
 			void selectMolecule( Molecule & );
-			void selectMolecules( std::vector<Molecule *> & );
+			void selectMolecules( const std::vector<Molecule *> & );
 			void unselectMolecule( Molecule & );
-			void unselectMolecules( std::vector<Molecule *> & );
+			void unselectMolecules( const std::vector<Molecule *> & );
 			void selectChain( Chain & );
-			void selectChains( std::vector<Chain *> & );
+			void selectChains( const std::vector<Chain *> & );
 			void unselectChain( Chain & );
-			void unselectChains( std::vector<Chain *> & );
+			void unselectChains( const std::vector<Chain *> & );
 			void selectResidue( Residue & );
-			void selectResidues( std::vector<Residue *> & );
+			void selectResidues( const std::vector<Residue *> & );
 			void unselectResidue( Residue & );
-			void unselectResidues( std::vector<Residue *> & );
+			void unselectResidues( const std::vector<Residue *> & );
 			void selectAtom( Atom & );
-			void selectAtoms( std::vector<Atom *> & );
+			void selectAtoms( const std::vector<Atom *> & );
 			void unselectAtom( Atom & );
-			void unselectAtoms( std::vector<Atom *> & );
+			void unselectAtoms( const std::vector<Atom *> & );
 
 			void clear();
 
@@ -81,6 +81,8 @@ namespace VTX
 			void _removeChain( const Chain & );
 			void _removeResidue( const Residue & );
 			void _removeAtom( const Atom & );
+
+			void _refreshMoleculeSelection( Molecule * const );
 		};
 
 	} // namespace Model
