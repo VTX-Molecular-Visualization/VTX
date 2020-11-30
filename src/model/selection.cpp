@@ -261,6 +261,32 @@ namespace VTX
 			return std::find( atomVector.begin(), atomVector.end(), index ) != atomVector.end();
 		}
 
+		uint Selection::getMoleculeSelectedCount() const { return (uint)_items.size(); }
+		uint Selection::getChainSelectedCount() const
+		{
+			uint res = 0;
+			for ( const std::pair<ID, MapChainIds> mapMolecules : _items )
+				res += (uint)mapMolecules.second.size();
+			return res;
+		}
+		uint Selection::getResidueSelectedCount() const
+		{
+			uint res = 0;
+			for ( const std::pair<ID, MapChainIds> mapMolecules : _items )
+				for ( const std::pair<ID, MapResidueIds> mapChains : mapMolecules.second )
+					res += (uint)mapChains.second.size();
+			return res;
+		}
+		uint Selection::getAtomSelectedCount() const
+		{
+			uint res = 0;
+			for ( const std::pair<ID, MapChainIds> mapMolecules : _items )
+				for ( const std::pair<ID, MapResidueIds> mapChains : mapMolecules.second )
+					for ( const std::pair<ID, VecAtomIds> mapResidus : mapChains.second )
+						res += (uint)mapResidus.second.size();
+			return res;
+		}
+
 		void Selection::_selectMolecule( const Molecule & p_molecule )
 		{
 			_addMolecule( p_molecule );

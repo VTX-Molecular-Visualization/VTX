@@ -41,24 +41,31 @@ namespace VTX
 			void unselectMolecules( const std::vector<Molecule *> & );
 			void unselectMoleculesWithCheck( const std::vector<Molecule *> & );
 			bool isMoleculeSelected( const Molecule & ) const;
+			uint getMoleculeSelectedCount() const;
+
 			void selectChain( Chain & );
 			void selectChains( const std::vector<Chain *> & );
 			void unselectChain( Chain & );
 			void unselectChains( const std::vector<Chain *> & );
 			void unselectChainsWithCheck( const std::vector<Chain *> & );
 			bool isChainSelected( const Chain & ) const;
+			uint getChainSelectedCount() const;
+
 			void selectResidue( Residue & );
 			void selectResidues( const std::vector<Residue *> & );
 			void unselectResidue( Residue & );
 			void unselectResidues( const std::vector<Residue *> & );
 			void unselectResiduesWithCheck( const std::vector<Residue *> & );
 			bool isResidueSelected( const Residue & ) const;
+			uint getResidueSelectedCount() const;
+
 			void selectAtom( Atom & );
 			void selectAtoms( const std::vector<Atom *> & );
 			void unselectAtom( Atom & );
 			void unselectAtoms( const std::vector<Atom *> & );
 			void unselectAtomsWithCheck( const std::vector<Atom *> & );
 			bool isAtomSelected( const Atom & ) const;
+			uint getAtomSelectedCount() const;
 
 			void clear();
 
