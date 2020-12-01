@@ -32,9 +32,9 @@ namespace VTX
 			virtual void update( const double & p_deltaTime ) override;
 
 		  private:
-			BaseWorker *			_worker = nullptr;
-			const CallbackSuccess * _success;
-			const CallbackError *	_error;
+			BaseWorker *			_worker			 = nullptr;
+			const CallbackSuccess * _success		 = nullptr;
+			const CallbackError *	_error			 = nullptr;
 			std::exception_ptr		_threadException = nullptr;
 
 			WorkerManager()						   = default;
