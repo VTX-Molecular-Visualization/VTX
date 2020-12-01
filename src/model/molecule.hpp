@@ -17,6 +17,7 @@
 #include "math/aabb.hpp"
 #include "model/configuration/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "representation/representation.hpp"
 #include "residue.hpp"
 #include <iostream>
 #include <map>
@@ -48,7 +49,7 @@ namespace VTX
 				MapRange ribbons = MapRange();
 			};
 
-			using RepresentationState = std::map<const Generic::REPRESENTATION, RepresentationStruct>;
+			using RepresentationState = std::map<const Model::Representation::BaseRepresentation *, RepresentationStruct>;
 
 			Molecule();
 			~Molecule();
@@ -273,4 +274,5 @@ namespace VTX
 		};
 	} // namespace Model
 } // namespace VTX
+
 #endif

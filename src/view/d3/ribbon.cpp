@@ -42,10 +42,17 @@ namespace VTX
 				_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 				_gl()->glUniformMatrix4fv( _uNormalMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
 
-				for ( const std::pair<uint, uint> & pair : _model->getMolecule()->getRepresentationState()[ Generic::REPRESENTATION::CARTOON ].ribbons )
+				for ( const std::pair<const Model::Representation::BaseRepresentation *, Model::Molecule::RepresentationStruct> & pair :
+					  _model->getMolecule()->getRepresentationState() )
 				{
-					_gl()->glUniform1ui( _uMaxIndice, pair.second / 2u );
-					_gl()->glDrawElements( GL_PATCHES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
+					if ( !pair.first->hasToDrawRibbon() )
+						break;
+
+					for ( const std::pair<uint, uint> & ribbonData : pair.second.ribbons )
+					{
+						_gl()->glUniform1ui( _uMaxIndice, ribbonData.second / 2u );
+						_gl()->glDrawElements( GL_PATCHES, ribbonData.second, GL_UNSIGNED_INT, (void *)( ribbonData.first * sizeof( uint ) ) );
+					}
 				}
 
 				// glDrawElements( GL_PATCHES, uint( _model->getIndices().size() ), GL_UNSIGNED_INT, 0 );

@@ -10,6 +10,7 @@
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

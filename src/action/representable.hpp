@@ -8,6 +8,8 @@
 #include "base_action.hpp"
 #include "generic/base_representable.hpp"
 #include "model/molecule.hpp"
+#include "model/representation/representation.hpp"
+#include "representation/representation_manager.hpp"
 #include "util/molecule.hpp"
 
 namespace VTX
@@ -17,9 +19,9 @@ namespace VTX
 		class RepresentableAddRepresentation : public BaseAction
 		{
 		  public:
-			explicit RepresentableAddRepresentation( Generic::BaseRepresentable &  p_representable,
-													 Model::Molecule &			   p_molecule,
-													 const Generic::REPRESENTATION p_representation ) :
+			explicit RepresentableAddRepresentation( Generic::BaseRepresentable &				 p_representable,
+													 Model::Molecule &							 p_molecule,
+													 Model::Representation::BaseRepresentation * p_representation ) :
 				_representable( p_representable ),
 				_molecule( p_molecule ), _representation( p_representation )
 			{
@@ -27,22 +29,22 @@ namespace VTX
 
 			void execute()
 			{
-				_representable.addRepresentation( _representation );
+				Representation::RepresentationManager::get().toggleRepresentation( _representation, &_representable );
 				Util::Molecule::refreshRepresentationState( _molecule );
 			};
 
 		  private:
-			Generic::BaseRepresentable &  _representable;
-			Model::Molecule &			  _molecule;
-			const Generic::REPRESENTATION _representation;
+			Generic::BaseRepresentable &				_representable;
+			Model::Molecule &							_molecule;
+			Model::Representation::BaseRepresentation * _representation;
 		};
 
 		class RepresentableRemoveRepresentation : public BaseAction
 		{
 		  public:
-			explicit RepresentableRemoveRepresentation( Generic::BaseRepresentable &  p_representable,
-														Model::Molecule &			  p_molecule,
-														const Generic::REPRESENTATION p_representation ) :
+			explicit RepresentableRemoveRepresentation( Generic::BaseRepresentable &				p_representable,
+														Model::Molecule &							p_molecule,
+														Model::Representation::BaseRepresentation * p_representation ) :
 				_representable( p_representable ),
 				_molecule( p_molecule ), _representation( p_representation )
 			{
@@ -50,14 +52,14 @@ namespace VTX
 
 			void execute()
 			{
-				_representable.removeRepresentation( _representation );
+				Representation::RepresentationManager::get().removeRepresentation( _representation );
 				Util::Molecule::refreshRepresentationState( _molecule );
 			};
 
 		  private:
-			Generic::BaseRepresentable &  _representable;
-			Model::Molecule &			  _molecule;
-			const Generic::REPRESENTATION _representation;
+			Generic::BaseRepresentable &				_representable;
+			Model::Molecule &							_molecule;
+			Model::Representation::BaseRepresentation * _representation;
 		};
 	} // namespace Action
 } // namespace VTX

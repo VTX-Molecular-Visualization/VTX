@@ -18,7 +18,7 @@ namespace VTX
 			  public:
 				explicit Sphere( Model::Molecule * const p_model );
 
-				void render( const Generic::REPRESENTATION ) override;
+				void render( const Model::Representation::BaseRepresentation * const p_representation ) override;
 
 			  private:
 				float _radiusFixed	 = 1.f;

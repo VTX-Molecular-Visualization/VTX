@@ -7,6 +7,7 @@
 
 #include "base_view_3d.hpp"
 #include "model/molecule.hpp"
+#include "model/representation/representation.hpp"
 #include <map>
 
 namespace VTX
@@ -22,13 +23,13 @@ namespace VTX
 			inline void render() override
 			{
 				// Render atoms.
-				for ( const std::pair<const Generic::REPRESENTATION, Model::Molecule::RepresentationStruct> & pair : _model->getRepresentationState() )
+				for ( const std::pair<const Model::Representation::BaseRepresentation *, Model::Molecule::RepresentationStruct> & pair : _model->getRepresentationState() )
 				{
 					render( pair.first );
 				}
 			}
 
-			virtual void render( const Generic::REPRESENTATION ) = 0;
+			virtual void render( const Model::Representation::BaseRepresentation * const ) = 0;
 		};
 	} // namespace View
 } // namespace VTX

@@ -5,6 +5,8 @@
 #include "action/molecule.hpp"
 #include "action/residue.hpp"
 #include "action/selection.hpp"
+#include "model/selection.hpp"
+#include "selection/selection_manager.hpp"
 #include "id.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "style.hpp"

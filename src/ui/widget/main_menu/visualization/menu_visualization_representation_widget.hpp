@@ -1,10 +1,11 @@
-#ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_VISUAL_MODEL__
-#define __VTX_UI_WIDGET_MENU_VISUALIZATION_VISUAL_MODEL__
+#ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_REPRESENTATION__
+#define __VTX_UI_WIDGET_MENU_VISUALIZATION_REPRESENTATION__
 
 #ifdef _MSC_VER
 #pragma once
 #endif
 
+#include "menu_visualization_representation_button_widget.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
@@ -19,27 +20,27 @@ namespace VTX
 			{
 				namespace Visualization
 				{
-					class MenuVisualizationVisualModelWidget : public MenuToolBlockWidget
+					class MenuVisualizationRepresentationWidget : public MenuToolBlockWidget
 					{
 						VTX_MANUAL_WIDGET_DECLARATION
 
 					  public:
-						~MenuVisualizationVisualModelWidget();
+						~MenuVisualizationRepresentationWidget();
 						void localize() override;
 
 					  protected:
-						MenuVisualizationVisualModelWidget( QWidget * p_parent );
+						MenuVisualizationRepresentationWidget( QWidget * p_parent );
 						void _setupUi( const QString & p_name ) override;
 						void _setupSlots() override;
 
 					  private:
-						MenuToolButtonWidget * _preset1 = nullptr;
-						MenuToolButtonWidget * _preset2 = nullptr;
-						MenuToolButtonWidget * _preset3 = nullptr;
+						RepresentationPresetButton * _preset1 = nullptr;
+						RepresentationPresetButton * _preset2 = nullptr;
+						RepresentationPresetButton * _preset3 = nullptr;
 
-						MenuToolButtonWidget * _preset4 = nullptr;
-						MenuToolButtonWidget * _preset5 = nullptr;
-						MenuToolButtonWidget * _preset6 = nullptr;
+						RepresentationPresetButton * _preset4 = nullptr;
+						RepresentationPresetButton * _preset5 = nullptr;
+						RepresentationPresetButton * _preset6 = nullptr;
 
 						MenuToolButtonWidget * _addPreset = nullptr;
 					};

@@ -18,7 +18,7 @@ namespace VTX
 						MenuTooltabWidget::_setupUi( p_name );
 
 						_cameraAction	 = addToolBlock<MenuVisualizationCameraActionWidget>( "cameraActionBlockWidget" );
-						_visualModel	 = addToolBlock<MenuVisualizationVisualModelWidget>( "visualModelBlockWidget" );
+						_representation	 = addToolBlock<MenuVisualizationRepresentationWidget>( "RepresentationBlockWidget" );
 						_objectDisplay	 = addToolBlock<MenuVisualizationObjectDisplayWidget>( "objectDisplayBlockWidget" );
 						_renderEffects	 = addToolBlock<MenuVisualizationRenderEffectsWidget>( "renderEffectsBlockWidget" );
 						_selectionAction = addToolBlock<MenuVisualizationSelectionActionWidget>( "selectionBlockWidget" );

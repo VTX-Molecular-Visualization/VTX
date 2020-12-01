@@ -6,7 +6,6 @@
 #endif
 
 #include "id.hpp"
-//#include "vtx_app.hpp"
 #include "selection/selection_enum.hpp"
 #include <QChar>
 #include <QColor>

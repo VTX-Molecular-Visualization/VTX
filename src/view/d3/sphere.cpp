@@ -20,30 +20,15 @@ namespace VTX
 				_uIsRadiusFixedLoc	 = _gl()->glGetUniformLocation( _program->getId(), "uIsRadiusFixed" );
 			}
 
-			void Sphere::render( const Generic::REPRESENTATION p_representation )
+			void Sphere::render( const Model::Representation::BaseRepresentation * const p_representation )
 			{
-				switch ( p_representation )
-				{
-				case Generic::REPRESENTATION::BALL_AND_STICK:
-					_radiusFixed   = VTX_SETTING().atomsRadius;
-					_radiusAdd	   = 0.f;
-					_isRadiusFixed = true;
-					break;
-				case Generic::REPRESENTATION::VAN_DER_WAALS:
-					_isRadiusFixed = false;
-					_radiusAdd	   = 0.f;
-					break;
-				case Generic::REPRESENTATION::STICK:
-					_radiusFixed   = VTX_SETTING().bondsRadius;
-					_radiusAdd	   = 0.f;
-					_isRadiusFixed = true;
-					break;
-				case Generic::REPRESENTATION::SAS:
-					_isRadiusFixed = false;
-					_radiusAdd	   = 1.4f;
-					break;
-				default: return;
-				}
+				if ( !p_representation->hasToDrawSphere() )
+					return;
+
+				const Model::Representation::SphereData sphereData = p_representation->getSphereData();
+				_isRadiusFixed									   = sphereData._isRadiusFixed;
+				_radiusFixed									   = sphereData._radiusFixed;
+				_radiusAdd										   = sphereData._radiusAdd;
 
 				_program->use();
 

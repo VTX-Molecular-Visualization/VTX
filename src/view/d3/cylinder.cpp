@@ -18,14 +18,12 @@ namespace VTX
 				_uRadiusLoc			 = _gl()->glGetUniformLocation( _program->getId(), "uCylRad" );
 			}
 
-			void Cylinder::render( const Generic::REPRESENTATION p_representation )
+			void Cylinder::render( const Model::Representation::BaseRepresentation * const p_representation )
 			{
-				switch ( p_representation )
-				{
-				case Generic::REPRESENTATION::STICK:
-				case Generic::REPRESENTATION::BALL_AND_STICK: break;
-				default: return;
-				}
+				if ( !p_representation->hasToDrawCylinder() )
+					return;
+
+				const float radius = p_representation->getCylinderData()._radiusFixed;
 
 				_program->use();
 
@@ -33,7 +31,7 @@ namespace VTX
 				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
 				_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
 				_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
-				_gl()->glUniform1f( _uRadiusLoc, VTX_SETTING().bondsRadius );
+				_gl()->glUniform1f( _uRadiusLoc, radius );
 
 				for ( const std::pair<uint, uint> & pair : _model->getRepresentationState()[ p_representation ].bonds )
 				{

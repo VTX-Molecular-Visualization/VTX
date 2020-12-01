@@ -8,8 +8,8 @@
 #include "menu_visualization_camera_action_widget.hpp"
 #include "menu_visualization_object_display_widget.hpp"
 #include "menu_visualization_render_effects_widget.hpp"
+#include "menu_visualization_representation_widget.hpp"
 #include "menu_visualization_selection_action_widget.hpp"
-#include "menu_visualization_visual_model_widget.hpp"
 #include "menu_visualization_windows_widget.hpp"
 #include "ui/widget/main_menu/menu_tooltab_widget.hpp"
 #include <QWidget>
@@ -39,7 +39,7 @@ namespace VTX
 
 					  private:
 						MenuVisualizationCameraActionWidget *	 _cameraAction	  = nullptr;
-						MenuVisualizationVisualModelWidget *	 _visualModel	  = nullptr;
+						MenuVisualizationRepresentationWidget *	 _representation  = nullptr;
 						MenuVisualizationObjectDisplayWidget *	 _objectDisplay	  = nullptr;
 						MenuVisualizationRenderEffectsWidget *	 _renderEffects	  = nullptr;
 						MenuVisualizationSelectionActionWidget * _selectionAction = nullptr;
