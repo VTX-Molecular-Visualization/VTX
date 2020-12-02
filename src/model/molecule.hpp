@@ -150,6 +150,16 @@ namespace VTX
 			inline AtomPositionsFrame &					   getAtomPositionFrame( const uint p_frame ) { return _atomPositionsFrames[ p_frame ]; }
 			inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const { return _atomPositionsFrames; }
 			inline std::vector<AtomPositionsFrame> &	   getAtomPositionFrames() { return _atomPositionsFrames; }
+			inline std::vector<float> &					   getBufferAtomRadius() { return _bufferAtomRadius; }
+			inline const std::vector<float> &			   getBufferAtomRadius() const { return _bufferAtomRadius; }
+			inline std::vector<Color::Rgb> &			   getBufferAtomColors() { return _bufferAtomColors; }
+			inline const std::vector<Color::Rgb> &		   getBufferAtomColors() const { return _bufferAtomColors; }
+			inline std::vector<ushort> &				   getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
+			inline const std::vector<ushort> &			   getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
+			inline std::vector<ushort> &				   getBufferAtomSelection() { return _bufferAtomSelection; }
+			inline const std::vector<ushort> &			   getBufferAtomSelection() const { return _bufferAtomSelection; }
+			inline std::vector<uint> &					   getBufferBonds() { return _bufferBonds; }
+			inline const std::vector<uint> &			   getBufferBonds() const { return _bufferBonds; }
 
 			inline const uint getChainCount() const { return uint( _chains.size() ); }
 			inline const uint getResidueCount() const { return uint( _residues.size() ); }
@@ -168,6 +178,7 @@ namespace VTX
 				_fillBufferAtomSelections( p_selection );
 				_secondaryStructure->refreshSelection( p_selection );
 			}
+
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
 			inline uint									   getFrame() const { return _currentFrame; }
@@ -234,7 +245,6 @@ namespace VTX
 			std::unordered_set<std::string> _unknownResidueSymbol = std::unordered_set<std::string>();
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
-			// TODO : remove unecessary buffers, and move to BufferMolecule?
 			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
 			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
 			std::vector<ushort>		_bufferAtomVisibilities = std::vector<ushort>();
@@ -255,12 +265,9 @@ namespace VTX
 			bool _showSolvent = true;
 			bool _showIon	  = true;
 
-			void _fillBufferAtomPositions();
-			void _fillBufferAtomRadius();
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();
 			void _fillBufferAtomSelections( const std::map<uint, std::map<uint, std::vector<uint>>> * const = nullptr );
-			void _fillBufferBonds();
 
 #ifdef _DEBUG
 		  public:

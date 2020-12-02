@@ -118,6 +118,9 @@ namespace VTX
 				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 				p_molecule.getResidues().resize( topology.residues().size() );
 				p_molecule.getAtoms().resize( frame.size() );
+				p_molecule.getBufferAtomRadius().resize( frame.size() );
+				p_molecule.getBufferAtomVisibilities().resize( frame.size(), 1u );
+				p_molecule.getBufferAtomSelection().resize( frame.size(), 0u );
 				modelFrame.resize( frame.size() );
 
 				Model::Chain * modelChain;
@@ -329,6 +332,9 @@ namespace VTX
 							ionCounter++;
 							modelAtom->setType( Model::Atom::TYPE::ION );
 						}
+
+						// Radius.
+						p_molecule.getBufferAtomRadius()[ atomId ] = modelAtom->getVdwRadius();
 					}
 
 					// Check residue full of solvent/ion.
@@ -388,6 +394,7 @@ namespace VTX
 				// Create models.
 				uint counter = 0;
 				p_molecule.getBonds().resize( bonds.size() );
+				p_molecule.getBufferBonds().resize( bonds.size() * 2 );
 				for ( const std::pair<uint, std::vector<const chemfiles::Bond *>> & pair : mapResidueBonds )
 				{
 					Model::Residue &							 residue	 = p_molecule.getResidue( pair.first );
@@ -402,8 +409,14 @@ namespace VTX
 						Model::Bond *			modelBond = MVC::MvcManager::get().instantiate<Model::Bond>();
 						p_molecule.getBonds()[ counter ]  = modelBond;
 
-						modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
-						modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
+						uint bondStart = uint( bond[ 0 ] );
+						uint bondEnd   = uint( bond[ 1 ] );
+
+						modelBond->setIndexFirstAtom( bondStart );
+						modelBond->setIndexSecondAtom( bondEnd );
+
+						p_molecule.getBufferBonds()[ counter * 2u ]		 = bondStart;
+						p_molecule.getBufferBonds()[ counter * 2u + 1u ] = bondEnd;
 					}
 				}
 
@@ -425,6 +438,9 @@ namespace VTX
 
 					residueStart->getIndexExtraBondStart().emplace_back( counter );
 					residueEnd->getIndexExtraBondEnd().emplace_back( counter );
+
+					p_molecule.getBufferBonds()[ counter * 2u ]		 = bondStart;
+					p_molecule.getBufferBonds()[ counter * 2u + 1u ] = bondEnd;
 				}
 			}
 
