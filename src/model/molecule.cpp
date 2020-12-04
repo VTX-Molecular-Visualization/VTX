@@ -125,6 +125,7 @@ namespace VTX
 
 		void Molecule::_fillBufferAtomVisibilities()
 		{
+			_bufferAtomVisibilities.clear();
 			_bufferAtomVisibilities.resize( _atoms.size(), 1u );
 			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 			{
@@ -146,6 +147,7 @@ namespace VTX
 
 		void Molecule::_fillBufferAtomSelections( const Model::Selection::MapChainIds * const p_selection )
 		{
+			_bufferAtomSelection.clear();
 			_bufferAtomSelection.resize( _atoms.size(), 0u );
 			if ( p_selection != nullptr )
 			{
@@ -155,7 +157,7 @@ namespace VTX
 					{
 						for ( const uint & atomIndex : pairResidue.second )
 						{
-							_bufferAtomSelection[ atomIndex ] = 1;
+							_bufferAtomSelection[ atomIndex ] = 1u;
 						}
 					}
 				}
@@ -317,18 +319,6 @@ namespace VTX
 				BaseVisible::setVisible( p_visible );
 
 				_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
-			}
-		}
-
-		void Molecule::toggleSequenceVisibility()
-		{
-			if ( MVC::MvcManager::get().hasView( this, ID::View::UI_MOLECULE_SEQUENCE ) )
-			{
-				//	delete MVC::MvcManager::get().removeViewOnModel( this, ID::View::UI_MOLECULE_SEQUENCE );
-			}
-			else
-			{
-				//	 MVC::MvcManager::get().addViewOnModel<View::UI::Widget::MoleculeStructure>( this, ID::View::UI_MOLECULE_SEQUENCE );
 			}
 		}
 

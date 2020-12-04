@@ -213,7 +213,6 @@ namespace VTX
 			bool mergeTopology( const Molecule & );
 
 			void createSecondaryStructure();
-			void toggleSequenceVisibility();
 
 		  protected:
 			void _computeGlobalPositionsAABB();
