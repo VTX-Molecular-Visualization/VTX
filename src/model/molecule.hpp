@@ -37,6 +37,8 @@ namespace VTX
 		class SecondaryStructure;
 		class Molecule : public BaseModel3D<Buffer::Molecule>, public Generic::BaseColorable, public Generic::BaseRepresentable
 		{
+			VTX_MODEL
+
 		  public:
 			using AtomPositionsFrame = std::vector<Vec3f>;
 			using MapRange			 = std::map<uint, uint>; // std::map<start, count>
@@ -49,9 +51,6 @@ namespace VTX
 			};
 
 			using RepresentationState = std::map<const Generic::REPRESENTATION, RepresentationStruct>;
-
-			Molecule();
-			~Molecule();
 
 			// Configuration.
 			inline const Configuration::Molecule & getConfiguration() const { return _configuration; }
@@ -77,7 +76,7 @@ namespace VTX
 
 			inline Chain & addChain()
 			{
-				Chain * const chain = MVC::MvcManager::get().instantiate<Chain>();
+				Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
 				_chains.emplace_back( chain );
 				return *chain;
 			}
@@ -87,7 +86,7 @@ namespace VTX
 			inline const std::vector<Chain *> & getChains() const { return _chains; }
 			inline Residue &					addResidue()
 			{
-				Residue * const residue = MVC::MvcManager::get().instantiate<Residue>();
+				Residue * const residue = MVC::MvcManager::get().instantiateModel<Residue>();
 				_residues.emplace_back( residue );
 				return *residue;
 			}
@@ -97,7 +96,7 @@ namespace VTX
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
 			inline Atom &						  addAtom()
 			{
-				Atom * const atom = MVC::MvcManager::get().instantiate<Atom>();
+				Atom * const atom = MVC::MvcManager::get().instantiateModel<Atom>();
 				_atoms.emplace_back( atom );
 				return *atom;
 			}
@@ -107,7 +106,7 @@ namespace VTX
 			inline const std::vector<Atom *> & getAtoms() const { return _atoms; }
 			inline Bond &					   addBond()
 			{
-				Bond * const bond = MVC::MvcManager::get().instantiate<Bond>();
+				Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
 				_bonds.emplace_back( bond );
 				return *bond;
 			}
@@ -263,6 +262,9 @@ namespace VTX
 
 			bool _showSolvent = true;
 			bool _showIon	  = true;
+
+			Molecule();
+			~Molecule();
 
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();

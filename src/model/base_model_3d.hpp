@@ -21,16 +21,6 @@ namespace VTX
 		class BaseModel3D : public BaseModel, public Generic::BaseTransformable, public Generic::BaseRenderable, public Generic::BaseVisible
 		{
 		  public:
-			BaseModel3D( const ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {}
-			virtual ~BaseModel3D()
-			{
-				if ( _buffer != nullptr )
-				{
-					_buffer->free();
-					delete _buffer;
-				}
-			}
-
 			inline const Math::AABB & getAABB() const { return _aabb; }
 			inline const B * const	  getBuffer() const { return _buffer; }
 			inline B * const		  getBuffer() { return _buffer; }
@@ -61,6 +51,15 @@ namespace VTX
 			B *									   _buffer		= nullptr;
 			bool								   _isInit		= false;
 
+			BaseModel3D( const ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {}
+			virtual ~BaseModel3D()
+			{
+				if ( _buffer != nullptr )
+				{
+					_buffer->free();
+					delete _buffer;
+				}
+			}
 			virtual void _init()			   = 0;
 			virtual void _instanciate3DViews() = 0;
 			inline void	 _addRenderable( Generic::BaseRenderable * const p_renderable ) { _renderables.push_back( p_renderable ); }

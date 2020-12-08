@@ -19,17 +19,18 @@ namespace VTX
 			{
 				class SelectionSequenceView : public View::BaseView<Model::Selection>
 				{
-				  public:
-					SelectionSequenceView( Model::Selection * const p_model, const VTX::UI::Widget::Sequence::SequenceWidget * const p_sequenceWidget ) :
-						View::BaseView<Model::Selection>( p_model ), _linkedSequenceWidget( p_sequenceWidget ) {};
-
-					virtual void notify( const Event::VTXEvent * const p_event ) override { BaseView::notify( p_event ); };
+					VTX_VIEW
 
 				  protected:
 					void _refreshView() override { _linkedSequenceWidget->refreshSelection(); };
 
 				  private:
 					const VTX::UI::Widget::Sequence::SequenceWidget * const _linkedSequenceWidget;
+
+					SelectionSequenceView( Model::Selection * const p_model, QWidget * const p_sequenceWidget ) :
+						View::BaseView<Model::Selection>( p_model ), _linkedSequenceWidget( dynamic_cast<VTX::UI::Widget::Sequence::SequenceWidget * const>( p_sequenceWidget ) )
+					{
+					}
 				};
 			} // namespace Widget
 		}	  // namespace UI

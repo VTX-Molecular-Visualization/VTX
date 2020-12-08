@@ -10,21 +10,24 @@
 #include "id.hpp"
 #include <string>
 
+namespace VTX::MVC
+{
+	class MvcManager;
+}
+
+#define VTX_MODEL friend VTX::MVC::MvcManager;
+
 namespace VTX
 {
 	namespace Model
 	{
 		using ID = uint;
-
 		class BaseModel
 		{
+			VTX_MODEL
+
 		  public:
-			BaseModel( const ID::VTX_ID & p_typeId ) : _typeId( &p_typeId ) {};
-
-			inline static ID COUNTER = 0;
-
 			const ID & getId() const { return _id; };
-			void	   instantiateDefaultViews() {};
 
 			const VTX::ID::VTX_ID & getTypeId() const { return *_typeId; };
 
@@ -45,11 +48,14 @@ namespace VTX
 		  protected:
 			inline static const std::string DEFAULT_NAME = "<unknown>";
 
+			inline static ID			  COUNTER  = 0;
 			const ID					  _id	   = COUNTER++;
 			bool						  _enabled = true;
 			const std::string *			  _name	   = &DEFAULT_NAME;
 			const VTX::ID::VTX_ID * const _typeId;
 
+			BaseModel( const ID::VTX_ID & p_typeId ) : _typeId( &p_typeId ) {}
+			void		_instantiateDefaultViews() {}
 			void		_notifyViews( const Event::VTXEvent * const p_event );
 			inline void _notifyDataChanged() { _notifyViews( new Event::VTXEvent( Event::Model::DATA_CHANGE ) ); }
 		};

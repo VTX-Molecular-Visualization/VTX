@@ -23,28 +23,25 @@ namespace VTX
 				void InspectorWidget::receiveEvent( const Event::VTXEvent & p_event )
 				{
 					if ( p_event.name == Event::Global::SELECTION_CHANGE )
-						refresh();
-
-					if ( p_event.name == Event::Global::MOLECULE_ADDED )
 					{
-						const Event::VTXEventPtr<Model::Molecule> &		castedEvent			  = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-						View::UI::Widget::MoleculeInspectorView * const moleculeInspectorView = new View::UI::Widget::MoleculeInspectorView( castedEvent.ptr, nullptr );
-						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE, moleculeInspectorView );
-
-						QWidget * const widget = moleculeInspectorView->getWidget();
-						_verticalLayout->insertWidget( 0, widget );
+						refresh();
 					}
-					if ( p_event.name == Event::Global::MOLECULE_REMOVED )
+					else if ( p_event.name == Event::Global::MOLECULE_ADDED )
 					{
 						const Event::VTXEventPtr<Model::Molecule> &		castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 						View::UI::Widget::MoleculeInspectorView * const moleculeInspectorView
-							= MVC::MvcManager::get().removeViewOnModel<Model::Molecule, View::UI::Widget::MoleculeInspectorView>( castedEvent.ptr,
-																																  ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
-
+							= MVC::MvcManager::get().instanciateView<View::UI::Widget::MoleculeInspectorView>( castedEvent.ptr, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
+						QWidget * const widget = moleculeInspectorView->getWidget();
+						_verticalLayout->insertWidget( 0, widget );
+					}
+					else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
+					{
+						const Event::VTXEventPtr<Model::Molecule> &		castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+						View::UI::Widget::MoleculeInspectorView * const moleculeInspectorView
+							= MVC::MvcManager::get().getView<View::UI::Widget::MoleculeInspectorView>( castedEvent.ptr, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
 						QWidget * const widget = moleculeInspectorView->getWidget();
 						_verticalLayout->removeWidget( widget );
-
-						delete moleculeInspectorView;
+						MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeInspectorView>( castedEvent.ptr, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
 					}
 				}
 

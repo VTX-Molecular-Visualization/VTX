@@ -130,13 +130,6 @@ namespace VTX
 
 				std::map<uint, std::vector<const chemfiles::Bond *>> mapResidueBonds = std::map<uint, std::vector<const chemfiles::Bond *>>();
 
-				// Ensure that all models for atoms are sorted with Model index
-				for ( uint atomIdx = 0; atomIdx < frame.size(); ++atomIdx )
-				{
-					Model::Atom * atom				 = MVC::MvcManager::get().instantiate<Model::Atom>();
-					p_molecule.getAtoms()[ atomIdx ] = atom;
-				}
-
 				int oldIndexInChain = INT_MIN;
 				for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 				{
@@ -169,7 +162,7 @@ namespace VTX
 					modelChain->setResidueCount( modelChain->getResidueCount() + 1 );
 
 					// Create residue.
-					Model::Residue * modelResidue		   = MVC::MvcManager::get().instantiate<Model::Residue>();
+					Model::Residue * modelResidue		   = MVC::MvcManager::get().instantiateModel<Model::Residue>();
 					p_molecule.getResidues()[ residueIdx ] = modelResidue;
 					modelResidue->setIndex( residueIdx );
 
@@ -283,7 +276,8 @@ namespace VTX
 						atomType = uint( atom.properties().get( "atom_type" ).value_or( -1 ).as_double() );
 
 						// Create atom.
-						Model::Atom * modelAtom = &p_molecule.getAtom( atomId );
+						Model::Atom * modelAtom			= MVC::MvcManager::get().instantiateModel<Model::Atom>();
+						p_molecule.getAtoms()[ atomId ] = modelAtom;
 						modelAtom->setIndex( atomId );
 						modelAtom->setMoleculePtr( &p_molecule );
 						modelAtom->setChainPtr( modelChain );
@@ -374,11 +368,8 @@ namespace VTX
 				{
 					const chemfiles::Bond & bond = bonds[ boundIdx ];
 
-					uint bondStart = uint( bond[ 0 ] );
-					uint bondEnd   = uint( bond[ 1 ] );
-
-					Model::Residue * residueStart = p_molecule.getAtom( bondStart ).getResiduePtr();
-					Model::Residue * residueEnd	  = p_molecule.getAtom( bondEnd ).getResiduePtr();
+					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) ).getResiduePtr();
+					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) ).getResiduePtr();
 
 					if ( residueStart == residueEnd )
 					{
@@ -406,17 +397,14 @@ namespace VTX
 					for ( uint i = 0; i < vectorBonds.size(); ++i, ++counter )
 					{
 						const chemfiles::Bond & bond	  = *vectorBonds[ i ];
-						Model::Bond *			modelBond = MVC::MvcManager::get().instantiate<Model::Bond>();
+						Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
 						p_molecule.getBonds()[ counter ]  = modelBond;
 
-						uint bondStart = uint( bond[ 0 ] );
-						uint bondEnd   = uint( bond[ 1 ] );
+						modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
+						modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
 
-						modelBond->setIndexFirstAtom( bondStart );
-						modelBond->setIndexSecondAtom( bondEnd );
-
-						p_molecule.getBufferBonds()[ counter * 2u ]		 = bondStart;
-						p_molecule.getBufferBonds()[ counter * 2u + 1u ] = bondEnd;
+						p_molecule.getBufferBonds()[ counter * 2u ]		 = uint( bond[ 0 ] );
+						p_molecule.getBufferBonds()[ counter * 2u + 1u ] = uint( bond[ 1 ] );
 					}
 				}
 
@@ -424,23 +412,20 @@ namespace VTX
 				for ( uint i = 0; i < bondsExtraResidues.size(); ++i, ++counter )
 				{
 					const chemfiles::Bond & bond	  = *bondsExtraResidues[ i ];
-					Model::Bond *			modelBond = MVC::MvcManager::get().instantiate<Model::Bond>();
+					Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
 					p_molecule.getBonds()[ counter ]  = modelBond;
 
-					uint bondStart = uint( bond[ 0 ] );
-					uint bondEnd   = uint( bond[ 1 ] );
+					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) ).getResiduePtr();
+					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) ).getResiduePtr();
 
-					Model::Residue * residueStart = p_molecule.getAtom( bondStart ).getResiduePtr();
-					Model::Residue * residueEnd	  = p_molecule.getAtom( bondEnd ).getResiduePtr();
-
-					modelBond->setIndexFirstAtom( bondStart );
-					modelBond->setIndexSecondAtom( bondEnd );
+					modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
+					modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
 
 					residueStart->getIndexExtraBondStart().emplace_back( counter );
 					residueEnd->getIndexExtraBondEnd().emplace_back( counter );
 
-					p_molecule.getBufferBonds()[ counter * 2u ]		 = bondStart;
-					p_molecule.getBufferBonds()[ counter * 2u + 1u ] = bondEnd;
+					p_molecule.getBufferBonds()[ counter * 2u ]		 = uint( bond[ 0 ] );
+					p_molecule.getBufferBonds()[ counter * 2u + 1u ] = uint( bond[ 1 ] );
 				}
 			}
 

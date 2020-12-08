@@ -10,7 +10,7 @@ namespace VTX
 	{
 		SelectionManager::SelectionManager()
 		{
-			_selectionModel = MVC::MvcManager::get().instantiate<Model::Selection>();
+			_selectionModel = MVC::MvcManager::get().instantiateModel<Model::Selection>();
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SELECTION_ADDED, _selectionModel ) );
 		}
 

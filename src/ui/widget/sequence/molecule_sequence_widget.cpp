@@ -104,7 +104,7 @@ namespace VTX
 						chainNameWidget->setFont( Style::SEQUENCE_DISPLAY_FONT );
 						chainNameWidget->setText( QString::fromStdString( Style::SEQUENCE_CHAIN_NAME_SEPARATOR + chain->getName() + Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
 
-						ChainSequenceWidget * const chainSequenceDisplay = WidgetFactory::get().getWidget<ChainSequenceWidget>( this, "chainSequenceWidget" );
+						ChainSequenceWidget * const chainSequenceDisplay = WidgetFactory::get().instanciateWidget<ChainSequenceWidget>( this, "chainSequenceWidget" );
 						_chainDisplayWidgets.emplace_back( chainSequenceDisplay );
 
 						chainSequenceDisplay->setModel( chain );
@@ -128,7 +128,7 @@ namespace VTX
 
 					const ClickModifier clickModifier = _getClickModifier( p_event );
 
-					const bool targetWasSelected			 = _startResidueHovered != nullptr && _isSelected( _startResidueHovered );
+					const bool targetWasSelected		   = _startResidueHovered != nullptr && _isSelected( _startResidueHovered );
 					const bool targetIsOnlyResidueSelected = VTX::Selection::SelectionManager::get().getSelectionModel().getResidueSelectedCount() == 1;
 
 					if ( clickModifier == ClickModifier::Clear )

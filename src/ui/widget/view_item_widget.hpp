@@ -19,7 +19,7 @@ namespace VTX
 			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			class ViewItemWidget : public BaseManualWidget<QWidget>
 			{
-				VTX_MANUAL_WIDGET_DECLARATION
+				VTX_WIDGET
 
 			  public:
 				ViewItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};

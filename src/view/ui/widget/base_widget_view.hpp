@@ -27,15 +27,17 @@ namespace VTX
 				class BaseWidgetView : public View::BaseView<M>
 				{
 				  public:
-					BaseWidgetView( M * const p_model, const std::string & p_widgetName, QWidget * p_parent = nullptr ) : View::BaseView<M>( p_model )
+					W * const getWidget() { return _widget; };
+
+				  protected:
+					BaseWidgetView( M * const p_model, const std::string & p_widgetName, QWidget * const p_parent = nullptr ) : View::BaseView<M>( p_model )
 					{
-						_widget = VTX::UI::WidgetFactory::get().getWidget<W>( p_parent, p_widgetName );
+						_widget = VTX::UI::WidgetFactory::get().instanciateWidget<W>( p_parent, p_widgetName );
 						_widget->setModel( p_model );
 					};
 					~BaseWidgetView() { delete _widget; };
 
 					inline void _refreshView() override { _widget->refresh(); };
-					W *			getWidget() { return _widget; };
 
 				  private:
 					W * _widget;

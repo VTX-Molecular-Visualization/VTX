@@ -21,12 +21,11 @@ namespace VTX
 		class BaseView3D : public BaseView<T>, public Generic::BaseRenderable
 		{
 		  public:
-			explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
-			virtual ~BaseView3D() = default;
-
 		  protected:
 			Renderer::GLSL::Program * _program = nullptr;
 
+			explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
+			virtual ~BaseView3D() = default;
 			inline OpenGLFunctions * const _gl() { return _model->getBuffer()->gl(); }
 		};
 	} // namespace View

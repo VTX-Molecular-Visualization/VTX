@@ -21,7 +21,7 @@ namespace VTX
 				{
 					class MenuVisualizationSelectionActionWidget : public MenuToolBlockWidget
 					{
-						VTX_MANUAL_WIDGET_DECLARATION
+						VTX_WIDGET
 
 					  public:
 						~MenuVisualizationSelectionActionWidget();

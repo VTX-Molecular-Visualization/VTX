@@ -21,7 +21,7 @@ namespace VTX
 			{
 				class SequenceWidget : public BaseManualWidget<QDockWidget>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					void receiveEvent( const Event::VTXEvent & p_event ) override;

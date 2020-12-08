@@ -26,7 +26,7 @@ namespace VTX
 			{
 				class ChainSequenceWidget : public ViewItemWidget<Model::Chain>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					~ChainSequenceWidget()

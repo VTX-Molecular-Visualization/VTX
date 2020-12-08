@@ -16,6 +16,8 @@ namespace VTX
 		class Molecule;
 		class SecondaryStructure : public BaseModel3D<Buffer::SecondaryStructure>
 		{
+			VTX_MODEL
+
 		  public:
 			enum class VALUE : int
 			{
@@ -43,11 +45,6 @@ namespace VTX
 			};
 
 			static const Color::Rgb COLORS_JMOL[ uint( VALUE::COUNT ) ];
-
-			SecondaryStructure( Molecule * const );
-			~SecondaryStructure();
-
-			void instantiateDefaultViews();
 
 			inline Model::Molecule * const getMolecule() { return _molecule; }
 			inline const COLOR_MODE		   getColorMode() const { return _colorMode; }
@@ -84,6 +81,9 @@ namespace VTX
 
 			std::map<uint, uint> _residueToIndices	 = std::map<uint, uint>();
 			std::map<uint, uint> _residueToPositions = std::map<uint, uint>();
+
+			SecondaryStructure( Molecule * const );
+			~SecondaryStructure() = default;
 
 			void _fillBufferColors();
 			void _fillBufferSelections( const std::map<uint, std::map<uint, std::vector<uint>>> * const = nullptr );

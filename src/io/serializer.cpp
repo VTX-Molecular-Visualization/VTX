@@ -134,7 +134,7 @@ namespace VTX
 
 			for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
 			{
-				Model::Path * const path = MVC::MvcManager::get().instantiate<Model::Path>();
+				Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
 				deserialize( jsonPath, *path );
 				p_scene.addPath( path );
 			}
@@ -154,7 +154,7 @@ namespace VTX
 
 			for ( const nlohmann::json & jsonViewpoint : p_json.at( "VIEWPOINTS" ) )
 			{
-				Model::Viewpoint * const viewpoint = new Model::Viewpoint( &p_path );
+				Model::Viewpoint * const viewpoint = MVC::MvcManager::get().instantiateModel<Model::Viewpoint>( &p_path );
 				deserialize( jsonViewpoint, *viewpoint );
 				p_path.addViewpoint( viewpoint );
 			}

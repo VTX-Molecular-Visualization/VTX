@@ -21,8 +21,10 @@ namespace VTX
 			{
 				class MoleculeInspectorView : public BaseWidgetView<Model::Molecule, VTX::UI::Widget::Inspector::InspectorMoleculeWidget>
 				{
-				  public:
-					MoleculeInspectorView( Model::Molecule * const p_molecule, QWidget * p_parent ) : BaseWidgetView( p_molecule, "MoleculeInspector", p_parent ) {};
+					VTX_VIEW
+
+				  private:
+					MoleculeInspectorView( Model::Molecule * const p_molecule ) : BaseWidgetView( p_molecule, "MoleculeInspector" ) {};
 				};
 
 			} // namespace Widget

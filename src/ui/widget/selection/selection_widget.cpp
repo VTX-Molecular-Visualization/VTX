@@ -26,9 +26,8 @@ namespace VTX
 					if ( p_event.name == Event::Global::SELECTION_ADDED )
 					{
 						const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
-						View::UI::Widget::SelectionView * const		 item
-							= WidgetFactory::get().getViewWidget<View::UI::Widget::SelectionView, Model::Selection, QTreeWidget>( castedEvent.ptr, nullptr, "Selection" );
-						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_SELECTION, item );
+						View::UI::Widget::SelectionView * const item = WidgetFactory::get().instanciateViewWidget<View::UI::Widget::SelectionView, Model::Selection, QTreeWidget>(
+							castedEvent.ptr, ID::View::UI_SELECTION, nullptr, "Selection" );
 						setWidget( item );
 					}
 					else if ( p_event.name == Event::Global::SELECTION_REMOVED )

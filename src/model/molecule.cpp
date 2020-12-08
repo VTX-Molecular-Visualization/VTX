@@ -56,8 +56,8 @@ namespace VTX
 
 		void Molecule::_instanciate3DViews()
 		{
-			_addRenderable( MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_SPHERE, new View::D3::Sphere( this ) ) );
-			_addRenderable( MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_CYLINDER, new View::D3::Cylinder( this ) ) );
+			_addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
+			_addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
 		}
 
 		void Molecule::_computeGlobalPositionsAABB()
@@ -232,12 +232,12 @@ namespace VTX
 			_chains.resize( p_molecule.getChainCount() );
 			for ( uint i = 0; i < p_molecule.getChainCount(); ++i )
 			{
-				getChains()[ i ] = MVC::MvcManager::get().instantiate<Chain>();
+				getChains()[ i ] = MVC::MvcManager::get().instantiateModel<Chain>();
 			}
 			_residues.resize( p_molecule.getResidueCount() );
 			for ( uint i = 0; i < p_molecule.getResidueCount(); ++i )
 			{
-				getResidues()[ i ] = MVC::MvcManager::get().instantiate<Residue>();
+				getResidues()[ i ] = MVC::MvcManager::get().instantiateModel<Residue>();
 			}
 
 			setName( p_molecule.getName() );
@@ -304,10 +304,10 @@ namespace VTX
 		{
 			if ( _secondaryStructure != nullptr )
 			{
-				delete _secondaryStructure;
+				MVC::MvcManager::get().deleteModel( _secondaryStructure );
 			}
 
-			_secondaryStructure = MVC::MvcManager::get().instantiate<SecondaryStructure, Molecule * const>( this );
+			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule * const>( this );
 			_secondaryStructure->init( getBuffer()->gl() );
 			_secondaryStructure->print();
 		}

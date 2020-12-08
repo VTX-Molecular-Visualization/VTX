@@ -22,7 +22,7 @@ namespace VTX
 			{
 				class MenuToolBlockWidget : public BaseManualWidget<QWidget>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  private:
 					class TmpGridStructure

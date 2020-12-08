@@ -18,6 +18,8 @@ namespace VTX
 	{
 		class Path : public BaseModel
 		{
+			VTX_MODEL
+
 		  public:
 			using ViewpointPtr		 = Model::Viewpoint *;
 			using VectorViewpointPtr = std::vector<ViewpointPtr>;
@@ -35,9 +37,6 @@ namespace VTX
 				CATMULL_ROM,
 				CUBIC
 			};
-
-			Path();
-			~Path();
 
 			void addViewpoint( const ViewpointPtr p_viewpoint ) { _viewpoints.emplace_back( p_viewpoint ); }
 			void removeViewpoint( const ViewpointPtr p_viewpoint ) { _viewpoints.erase( std::find( _viewpoints.begin(), _viewpoints.end(), p_viewpoint ) ); }
@@ -64,6 +63,9 @@ namespace VTX
 			INTERPOLATION_MODE _modeInterpolation = INTERPOLATION_MODE::LINEAR;
 			float			   _duration		  = Setting::PATH_DURATION_DEFAULT;
 			bool			   _isLooping		  = false;
+
+			Path();
+			~Path();
 		};
 	} // namespace Model
 } // namespace VTX

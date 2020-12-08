@@ -22,7 +22,7 @@ namespace VTX
 			{
 				class MainMenuBar : public BaseManualWidget<QMenuBar>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					void		localize() override;

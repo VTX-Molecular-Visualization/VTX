@@ -22,15 +22,14 @@ namespace VTX
 	{
 		class Selection : public BaseModel, public VTX::Event::BaseEventReceiverVTX
 		{
+			VTX_MODEL
+
 		  public:
 			// Map molecule model id with with chains, residues and atoms index.
 			using VecAtomIds	 = std::vector<uint>;
 			using MapResidueIds	 = std::map<uint, VecAtomIds>;
 			using MapChainIds	 = std::map<uint, MapResidueIds>;
 			using MapMoleculeIds = std::map<ID, MapChainIds>;
-
-			Selection() : BaseModel( ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
-			~Selection() = default;
 
 			inline const MapMoleculeIds & getItems() const { return _items; }
 			inline MapMoleculeIds &		  getItems() { return _items; }
@@ -73,6 +72,9 @@ namespace VTX
 
 		  private:
 			MapMoleculeIds _items = MapMoleculeIds();
+
+			Selection() : BaseModel( ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
+			~Selection() = default;
 
 			void _selectMolecule( const Molecule & );
 			void _unselectMolecule( const Molecule & );

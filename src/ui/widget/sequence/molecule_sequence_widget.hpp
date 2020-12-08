@@ -27,7 +27,7 @@ namespace VTX
 			{
 				class MoleculeSequenceWidget : public ViewItemWidget<Model::Molecule>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  private:
 					enum class SelectionModifier

@@ -22,7 +22,7 @@ namespace VTX
 			{
 				class MenuTooltabWidget : public BaseManualWidget<QWidget>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					~MenuTooltabWidget();
@@ -33,7 +33,7 @@ namespace VTX
 						if ( _horizontalLayout->count() > 1 )
 							_addSeparator();
 
-						W * toolblock = WidgetFactory::get().getWidget<W>( this, p_name );
+						W * toolblock = WidgetFactory::get().instanciateWidget<W>( this, p_name );
 						_horizontalLayout->insertWidget( _horizontalLayout->count() - 1, toolblock );
 
 						return toolblock;

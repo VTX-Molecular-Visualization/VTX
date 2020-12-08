@@ -20,6 +20,8 @@ namespace VTX
 		class Residue;
 		class Atom : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
 		{
+			VTX_MODEL
+
 		  public:
 			// Sorted by atomic number.
 			enum class SYMBOL : int
@@ -159,8 +161,6 @@ namespace VTX
 			static const float		 SYMBOL_VDW_RADIUS[ (int)SYMBOL::COUNT ];
 			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
 
-			Atom() : BaseModel( ID::Model::MODEL_ATOM ) {};
-
 			inline const uint		getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
@@ -194,6 +194,8 @@ namespace VTX
 			SYMBOL	   _symbol		= SYMBOL::UNKNOWN;
 			// /!\ Names PDB != MMTF (CA and C1 for alpha carbon).
 			std::string _name = "";
+
+			Atom() : BaseModel( ID::Model::MODEL_ATOM ) {}
 		};
 
 	} // namespace Model

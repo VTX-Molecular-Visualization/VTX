@@ -25,7 +25,8 @@ namespace VTX
 			{
 				class MoleculeSceneView : public View::BaseView<Model::Molecule>, public VTX::UI::Widget::BaseManualWidget<QTreeWidget>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
+					VTX_VIEW
 
 				  public:
 					void localize() override;
@@ -33,12 +34,13 @@ namespace VTX
 					void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 				  protected:
-					MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
 
 				  private:
 					QMenu * _contextMenu;
+
+					MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
 
 					void _onItemChanged( QTreeWidgetItem * item, int column );
 					void _onItemClicked( QTreeWidgetItem *, int );

@@ -20,7 +20,7 @@ namespace VTX
 			{
 				class RenderWidget : public BaseManualWidget<QDockWidget>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					~RenderWidget();

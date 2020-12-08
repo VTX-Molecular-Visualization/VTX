@@ -17,12 +17,9 @@ namespace VTX
 	{
 		class MeshTriangle : public BaseModel3D<Buffer::MeshTriangle>
 		{
+			VTX_MODEL
+
 		  public:
-			MeshTriangle();
-			~MeshTriangle();
-
-			void instantiateDefaultViews();
-
 			inline const std::vector<Vec3f> & getVertices() const { return _vertices; }
 			inline std::vector<Vec3f> &		  getVertices() { return _vertices; }
 			inline const Vec3f &			  getVertice( const uint p_idx ) const { return _vertices[ p_idx ]; }
@@ -50,12 +47,15 @@ namespace VTX
 
 			void print() const;
 
-		  protected:
+		  private:
 			std::vector<Vec3f>		_vertices;
 			std::vector<Vec3f>		_normals;
 			std::vector<Color::Rgb> _colors;
 			std::vector<ushort>		_visibilities;
 			std::vector<uint>		_indices;
+
+			MeshTriangle();
+			~MeshTriangle() = default;
 
 			void _computeAABB();
 			void _init() override;

@@ -22,7 +22,7 @@ namespace VTX
 				{
 					class MenuHomeWidget : public MenuTooltabWidget
 					{
-						VTX_MANUAL_WIDGET_DECLARATION
+						VTX_WIDGET
 
 					  public:
 						~MenuHomeWidget();

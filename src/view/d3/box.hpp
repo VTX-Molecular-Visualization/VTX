@@ -15,15 +15,17 @@ namespace VTX
 		{
 			class Box : public BaseView3DMolecule
 			{
-			  public:
-				explicit Box( Model::Molecule * const p_model );
+				VTX_VIEW
 
+			  public:
 				void render( const Generic::REPRESENTATION ) override;
 
 			  private:
 				// Uniforms.
 				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
 				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
+
+				explicit Box( Model::Molecule * const p_model );
 			};
 		} // namespace D3
 	}	  // namespace View
