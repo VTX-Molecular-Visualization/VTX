@@ -22,15 +22,14 @@ namespace VTX
 	{
 		class Selection : public BaseModel, public VTX::Event::BaseEventReceiverVTX
 		{
+			VTX_MODEL
+
 		  public:
 			// Map molecule model id with with chains, residues and atoms index.
 			using VecAtomIds	 = std::vector<uint>;
 			using MapResidueIds	 = std::map<uint, VecAtomIds>;
 			using MapChainIds	 = std::map<uint, MapResidueIds>;
 			using MapMoleculeIds = std::map<ID, MapChainIds>;
-
-			Selection() : BaseModel( ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
-			~Selection() = default;
 
 			inline const MapMoleculeIds & getItems() const { return _items; }
 			inline MapMoleculeIds &		  getItems() { return _items; }
@@ -41,24 +40,31 @@ namespace VTX
 			void unselectMolecules( const std::vector<Molecule *> & );
 			void unselectMoleculesWithCheck( const std::vector<Molecule *> & );
 			bool isMoleculeSelected( const Molecule & ) const;
+			uint getMoleculeSelectedCount() const;
+
 			void selectChain( Chain & );
 			void selectChains( const std::vector<Chain *> & );
 			void unselectChain( Chain & );
 			void unselectChains( const std::vector<Chain *> & );
 			void unselectChainsWithCheck( const std::vector<Chain *> & );
 			bool isChainSelected( const Chain & ) const;
+			uint getChainSelectedCount() const;
+
 			void selectResidue( Residue & );
 			void selectResidues( const std::vector<Residue *> & );
 			void unselectResidue( Residue & );
 			void unselectResidues( const std::vector<Residue *> & );
 			void unselectResiduesWithCheck( const std::vector<Residue *> & );
 			bool isResidueSelected( const Residue & ) const;
+			uint getResidueSelectedCount() const;
+
 			void selectAtom( Atom & );
 			void selectAtoms( const std::vector<Atom *> & );
 			void unselectAtom( Atom & );
 			void unselectAtoms( const std::vector<Atom *> & );
 			void unselectAtomsWithCheck( const std::vector<Atom *> & );
 			bool isAtomSelected( const Atom & ) const;
+			uint getAtomSelectedCount() const;
 
 			void clear();
 
@@ -66,6 +72,9 @@ namespace VTX
 
 		  private:
 			MapMoleculeIds _items = MapMoleculeIds();
+
+			Selection() : BaseModel( ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
+			~Selection() = default;
 
 			void _selectMolecule( const Molecule & );
 			void _unselectMolecule( const Molecule & );

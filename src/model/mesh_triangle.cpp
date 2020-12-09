@@ -10,10 +10,6 @@ namespace VTX
 	{
 		MeshTriangle::MeshTriangle() : BaseModel3D( ID::Model::MODEL_MESH_TRIANGLE ) {}
 
-		void MeshTriangle::instantiateDefaultViews() {};
-
-		MeshTriangle::~MeshTriangle() {}
-
 		void MeshTriangle::_init()
 		{
 			_computeAABB();
@@ -25,7 +21,7 @@ namespace VTX
 			_buffer->setIndices( _indices );
 		}
 
-		void MeshTriangle::_instanciate3DViews() { _addRenderable( MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_TRIANGLE, new View::D3::Triangle( this ) ) ); }
+		void MeshTriangle::_instanciate3DViews() { _addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Triangle>( this, ID::View::D3_TRIANGLE ) ); }
 
 		void MeshTriangle::print() const
 		{

@@ -20,7 +20,7 @@ namespace VTX
 			{
 				class MenuToolButtonWidget : public BaseManualWidget<QToolButton>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					void setData( const QString & p_name, const QString & p_iconUrl, const Qt::Orientation p_orientation );

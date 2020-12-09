@@ -21,7 +21,7 @@ namespace VTX
 			{
 				class InspectorMoleculeWidget : public ViewItemWidget<Model::Molecule>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					~InspectorMoleculeWidget();

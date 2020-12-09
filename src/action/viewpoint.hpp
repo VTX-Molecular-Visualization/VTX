@@ -38,7 +38,7 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					Model::Viewpoint * const viewpoint = MVC::MvcManager::get().instantiate<Model::Viewpoint, Model::Path * const>( &_path );
+					Model::Viewpoint * const viewpoint = MVC::MvcManager::get().instantiateModel<Model::Viewpoint, Model::Path * const>( &_path );
 					viewpoint->setController( _controller );
 					viewpoint->setPosition( _position );
 					viewpoint->setRotation( _rotation );

@@ -23,6 +23,8 @@ namespace VTX
 		class Chain;
 		class Residue : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible, public Generic::BaseRepresentable
 		{
+			VTX_MODEL
+
 		  public:
 			enum class TYPE : int
 			{
@@ -67,8 +69,6 @@ namespace VTX
 			static const std::string SYMBOL_SHORT_STR[ (int)SYMBOL::COUNT ];
 			static const std::string SYMBOL_NAME[ (int)SYMBOL::COUNT ];
 			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
-
-			Residue() : BaseModel( ID::Model::MODEL_RESIDUE ) {};
 
 			inline TYPE				getType() const { return _type; }
 			inline void				setType( const TYPE p_type ) { _type = p_type; }
@@ -136,6 +136,8 @@ namespace VTX
 			std::vector<uint>		  _indexExtraBondEnd   = std::vector<uint>();
 			Atom::TYPE				  _atomType			   = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
 			SecondaryStructure::VALUE _secondaryStructure  = SecondaryStructure::VALUE::COIL;
+
+			Residue() : BaseModel( ID::Model::MODEL_RESIDUE ) {}
 		};
 
 	} // namespace Model

@@ -20,6 +20,8 @@ namespace VTX
 		class Molecule;
 		class Chain : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible, public Generic::BaseRepresentable
 		{
+			VTX_MODEL
+
 		  public:
 			enum class TYPE : int
 			{
@@ -32,8 +34,6 @@ namespace VTX
 			static const Color::Rgb CHAIN_ID_COLOR_ATOM[ NB_COLORS ];
 			static const Color::Rgb CHAIN_ID_COLOR_HETATM[ NB_COLORS ];
 			static const Color::Rgb CHAIN_ID_UNKNOWN_COLOR;
-
-			Chain() : BaseModel( ID::Model::MODEL_CHAIN ) {};
 
 			// inline TYPE				getType() const { return _type; }
 			// inline void				setType( const TYPE p_type ) { _type = p_type; }
@@ -72,6 +72,8 @@ namespace VTX
 			std::string _name			   = "unknown";
 			uint		_indexFirstResidue = 0;
 			uint		_residueCount	   = 0;
+
+			Chain() : BaseModel( ID::Model::MODEL_CHAIN ) {}
 		}; // namespace Model
 
 	} // namespace Model

@@ -39,12 +39,11 @@ namespace VTX
 		class SecondaryStructure;
 		class Molecule : public BaseModel3D<Buffer::Molecule>, public Generic::BaseColorable, public Generic::BaseRepresentable
 		{
+			VTX_MODEL
+
 		  public:
 			using AtomPositionsFrame  = std::vector<Vec3f>;
 			using RepresentationState = std::map<const Model::Representation::BaseRepresentation *, VTX::Representation::RepresentationTarget>;
-
-			Molecule();
-			~Molecule();
 
 			// Configuration.
 			inline const Configuration::Molecule & getConfiguration() const { return _configuration; }
@@ -70,7 +69,7 @@ namespace VTX
 
 			inline Chain & addChain()
 			{
-				Chain * const chain = MVC::MvcManager::get().instantiate<Chain>();
+				Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
 				_chains.emplace_back( chain );
 				return *chain;
 			}
@@ -80,7 +79,7 @@ namespace VTX
 			inline const std::vector<Chain *> & getChains() const { return _chains; }
 			inline Residue &					addResidue()
 			{
-				Residue * const residue = MVC::MvcManager::get().instantiate<Residue>();
+				Residue * const residue = MVC::MvcManager::get().instantiateModel<Residue>();
 				_residues.emplace_back( residue );
 				return *residue;
 			}
@@ -90,7 +89,7 @@ namespace VTX
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
 			inline Atom &						  addAtom()
 			{
-				Atom * const atom = MVC::MvcManager::get().instantiate<Atom>();
+				Atom * const atom = MVC::MvcManager::get().instantiateModel<Atom>();
 				_atoms.emplace_back( atom );
 				return *atom;
 			}
@@ -100,7 +99,7 @@ namespace VTX
 			inline const std::vector<Atom *> & getAtoms() const { return _atoms; }
 			inline Bond &					   addBond()
 			{
-				Bond * const bond = MVC::MvcManager::get().instantiate<Bond>();
+				Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
 				_bonds.emplace_back( bond );
 				return *bond;
 			}
@@ -143,6 +142,16 @@ namespace VTX
 			inline AtomPositionsFrame &					   getAtomPositionFrame( const uint p_frame ) { return _atomPositionsFrames[ p_frame ]; }
 			inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const { return _atomPositionsFrames; }
 			inline std::vector<AtomPositionsFrame> &	   getAtomPositionFrames() { return _atomPositionsFrames; }
+			inline std::vector<float> &					   getBufferAtomRadius() { return _bufferAtomRadius; }
+			inline const std::vector<float> &			   getBufferAtomRadius() const { return _bufferAtomRadius; }
+			inline std::vector<Color::Rgb> &			   getBufferAtomColors() { return _bufferAtomColors; }
+			inline const std::vector<Color::Rgb> &		   getBufferAtomColors() const { return _bufferAtomColors; }
+			inline std::vector<ushort> &				   getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
+			inline const std::vector<ushort> &			   getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
+			inline std::vector<ushort> &				   getBufferAtomSelection() { return _bufferAtomSelection; }
+			inline const std::vector<ushort> &			   getBufferAtomSelection() const { return _bufferAtomSelection; }
+			inline std::vector<uint> &					   getBufferBonds() { return _bufferBonds; }
+			inline const std::vector<uint> &			   getBufferBonds() const { return _bufferBonds; }
 
 			inline const uint getChainCount() const { return uint( _chains.size() ); }
 			inline const uint getResidueCount() const { return uint( _residues.size() ); }
@@ -161,6 +170,7 @@ namespace VTX
 				_fillBufferAtomSelections( p_selection );
 				_secondaryStructure->refreshSelection( p_selection );
 			}
+
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
 			inline uint									   getFrame() const { return _currentFrame; }
@@ -195,7 +205,6 @@ namespace VTX
 			bool mergeTopology( const Molecule & );
 
 			void createSecondaryStructure();
-			void toggleSequenceVisibility();
 
 		  protected:
 			void _computeGlobalPositionsAABB();
@@ -227,7 +236,6 @@ namespace VTX
 			std::unordered_set<std::string> _unknownResidueSymbol = std::unordered_set<std::string>();
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
-			// TODO : remove unecessary buffers, and move to BufferMolecule?
 			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
 			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
 			std::vector<ushort>		_bufferAtomVisibilities = std::vector<ushort>();
@@ -248,12 +256,12 @@ namespace VTX
 			bool _showSolvent = true;
 			bool _showIon	  = true;
 
-			void _fillBufferAtomPositions();
-			void _fillBufferAtomRadius();
+			Molecule();
+			~Molecule();
+
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();
 			void _fillBufferAtomSelections( const std::map<uint, std::map<uint, std::vector<uint>>> * const = nullptr );
-			void _fillBufferBonds();
 
 #ifdef _DEBUG
 		  public:

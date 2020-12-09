@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "mvc/mvc_manager.hpp"
 #include "widget/base_manual_widget.hpp"
 #include "widget/base_manual_widget_initializer.hpp"
 #include <QMainWindow>
@@ -24,15 +25,15 @@ namespace VTX
 			{
 				static WidgetFactory instance;
 				return instance;
-			};
+			}
 
 		  public:
 			template<typename W, typename = std::enable_if<std::is_base_of<W, Widget::BaseManualWidgetInitializer>::value>>
-			W * getWidget( QWidget * const p_parent, const std::string & p_name ) const
+			W * const instanciateWidget( QWidget * const p_parent, const std::string & p_name ) const
 			{
 				QString qstringName = QString::fromStdString( p_name );
 
-				W * res = new W( p_parent );
+				W * const res = new W( p_parent );
 
 				res->blockSignals( true );
 				res->setUpdatesEnabled( false );
@@ -41,14 +42,18 @@ namespace VTX
 				res->blockSignals( false );
 
 				return res;
-			};
+			}
 
-			template<typename V, typename M, typename W>
-			V * getViewWidget( M * const p_model, QWidget * const p_parent, const std::string & p_name ) const
+			template<typename V,
+					 typename M,
+					 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
+					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>,
+					 typename = std::enable_if<std::is_base_of<Widget::BaseManualWidgetInitializer, V>::value>>
+			V * const instanciateViewWidget( M * const p_model, const ID::VTX_ID & p_id, QWidget * const p_parent, const std::string & p_name ) const
 			{
 				QString qstringName = QString::fromStdString( p_name );
 
-				V * res = new V( p_model, p_parent );
+				V * const res = MVC::MvcManager::get().instanciateViewWidget<V>( p_model, p_id, p_parent );
 
 				res->blockSignals( true );
 				res->setUpdatesEnabled( false );
@@ -57,10 +62,10 @@ namespace VTX
 				res->blockSignals( false );
 
 				return res;
-			};
+			}
 
 		  private:
-			inline WidgetFactory() {};
+			WidgetFactory() = default;
 		};
 	} // namespace UI
 } // namespace VTX

@@ -26,7 +26,7 @@ namespace VTX
 				class RepresentableFieldWidget : public BaseManualWidget<QLabel>
 				{
 					Q_OBJECT
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					~RepresentableFieldWidget() {};

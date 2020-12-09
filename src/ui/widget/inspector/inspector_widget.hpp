@@ -19,7 +19,7 @@ namespace VTX
 			{
 				class InspectorWidget : public BaseManualWidget<QDockWidget>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					~InspectorWidget();

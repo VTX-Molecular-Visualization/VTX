@@ -30,43 +30,32 @@ namespace VTX
 				{
 					if ( p_event.name == Event::Global::MOLECULE_ADDED )
 					{
-						const Event::VTXEventPtr<Model::Molecule> &	   castedEvent			= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-						View::UI::Widget::MoleculeSequenceView * const moleculeSequenceView = new View::UI::Widget::MoleculeSequenceView( castedEvent.ptr, this );
-
-						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE, moleculeSequenceView );
-						MoleculeSequenceWidget * widget = moleculeSequenceView->getWidget();
-
+						const Event::VTXEventPtr<Model::Molecule> &	   castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+						View::UI::Widget::MoleculeSequenceView * const moleculeSequenceView
+							= MVC::MvcManager::get().instanciateViewWidget<View::UI::Widget::MoleculeSequenceView>( castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE, this );
+						MoleculeSequenceWidget * const widget = moleculeSequenceView->getWidget();
 						_moleculeWidgets.emplace( widget );
-
 						_layout->insertWidget( _layout->count() - 1, widget );
 					}
 					else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 					{
 						const Event::VTXEventPtr<Model::Molecule> &	   castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 						View::UI::Widget::MoleculeSequenceView * const moleculeSequenceView
-							= MVC::MvcManager::get().removeViewOnModel<Model::Molecule, View::UI::Widget::MoleculeSequenceView>( castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE );
-
+							= MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSequenceView>( castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE );
 						_moleculeWidgets.erase( moleculeSequenceView->getWidget() );
-						delete moleculeSequenceView;
+						MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeSequenceView>( castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE );
 					}
 					else if ( p_event.name == Event::Global::SELECTION_ADDED )
 					{
-						const Event::VTXEventPtr<Model::Selection> &	castedEvent			  = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
-						View::UI::Widget::SelectionSequenceView * const selectionSequenceView = new View::UI::Widget::SelectionSequenceView( castedEvent.ptr, this );
-
-						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_SEQUENCE, selectionSequenceView );
-
+						const Event::VTXEventPtr<Model::Selection> &	castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+						View::UI::Widget::SelectionSequenceView * const selectionSequenceView
+							= MVC::MvcManager::get().instanciateViewWidget<View::UI::Widget::SelectionSequenceView>( castedEvent.ptr, ID::View::UI_SELECTION_SEQUENCE, this );
 						refreshSelection();
 					}
 					else if ( p_event.name == Event::Global::SELECTION_REMOVED )
 					{
 						const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
-						View::UI::Widget::SelectionSequenceView *	 selectionSequenceView
-							= MVC::MvcManager::get().removeViewOnModel<Model::Selection, View::UI::Widget::SelectionSequenceView>( castedEvent.ptr,
-																																   ID::View::UI_SELECTION_SEQUENCE );
-
-						delete selectionSequenceView;
-
+						MVC::MvcManager::get().deleteView<View::UI::Widget::SelectionSequenceView>( castedEvent.ptr, ID::View::UI_SELECTION_SEQUENCE );
 						refreshSelection();
 					}
 					else if ( p_event.name == Event::Global::SELECTION_CHANGE )

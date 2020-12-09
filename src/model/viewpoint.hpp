@@ -16,9 +16,10 @@ namespace VTX
 		class Path;
 		class Viewpoint : public BaseModel
 		{
-		  public:
-			explicit Viewpoint( Path * const p_path ) : BaseModel( ID::Model::MODEL_VIEWPOINT ), _path( p_path ), _rotation( Quatd() ) {};
+			VTX_MODEL
+			friend Path; // To allow constructor in path interpolation.
 
+		  public:
 			inline Path * const getPathPtr() const { return _path; }
 			inline float		getDuration() const { return _duration; }
 			inline void			setDuration( const float p_duration ) { _duration = p_duration; }
@@ -51,6 +52,8 @@ namespace VTX
 			/*************************************/
 			Quatd					 _rotation;
 			std::vector<std::string> _actions = std::vector<std::string>();
+
+			explicit Viewpoint( Path * const p_path ) : BaseModel( ID::Model::MODEL_VIEWPOINT ), _path( p_path ), _rotation( Quatd() ) {}
 
 		}; // namespace Camera
 	}	   // namespace Model

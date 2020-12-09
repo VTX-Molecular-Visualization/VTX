@@ -34,12 +34,12 @@ namespace VTX
 			// Fill buffers.
 			if ( _atomPositionsFrames.size() > 0 )
 			{
-				_fillBufferAtomPositions();
-				_fillBufferAtomRadius();
+				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
+				_buffer->setAtomRadius( _bufferAtomRadius );
 				_fillBufferAtomColors();
-				_fillBufferAtomVisibilities();
-				_fillBufferAtomSelections();
-				_fillBufferBonds();
+				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
+				_buffer->setAtomSelections( _bufferAtomSelection );
+				_buffer->setBonds( _bufferBonds );
 
 				// Compute secondary structure if not loaded.
 				if ( _configuration.isSecondaryStructureLoadedFromFile == false )
@@ -57,8 +57,8 @@ namespace VTX
 
 		void Molecule::_instanciate3DViews()
 		{
-			_addRenderable( MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_SPHERE, new View::D3::Sphere( this ) ) );
-			_addRenderable( MVC::MvcManager::get().addViewOnModel( this, ID::View::D3_CYLINDER, new View::D3::Cylinder( this ) ) );
+			_addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
+			_addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
 		}
 
 		void Molecule::_computeGlobalPositionsAABB()
@@ -81,25 +81,12 @@ namespace VTX
 			}
 
 			_currentFrame = p_frameIdx;
-			_fillBufferAtomPositions();
+			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
 
 			if ( _secondaryStructure != nullptr )
 			{
 				_secondaryStructure->setCurrentFrame();
 			}
-		}
-
-		void Molecule::_fillBufferAtomPositions() { _buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] ); }
-
-		void Molecule::_fillBufferAtomRadius()
-		{
-			_bufferAtomRadius.resize( _atoms.size() );
-			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
-			{
-				_bufferAtomRadius[ i ] = _atoms[ i ]->getVdwRadius();
-			}
-
-			_buffer->setAtomRadius( _bufferAtomRadius );
 		}
 
 		void Molecule::_fillBufferAtomColors()
@@ -139,7 +126,8 @@ namespace VTX
 
 		void Molecule::_fillBufferAtomVisibilities()
 		{
-			_bufferAtomVisibilities.resize( _atoms.size() );
+			_bufferAtomVisibilities.clear();
+			_bufferAtomVisibilities.resize( _atoms.size(), 1u );
 			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 			{
 				const Atom * const atom = _atoms[ i ];
@@ -153,11 +141,6 @@ namespace VTX
 				{
 					_bufferAtomVisibilities[ i ] = 0u;
 				}
-				// Ok!
-				else
-				{
-					_bufferAtomVisibilities[ i ] = 1u;
-				}
 			}
 
 			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
@@ -166,8 +149,7 @@ namespace VTX
 		void Molecule::_fillBufferAtomSelections( const Model::Selection::MapChainIds * const p_selection )
 		{
 			_bufferAtomSelection.clear();
-			_bufferAtomSelection.resize( _atoms.size(), 0 );
-
+			_bufferAtomSelection.resize( _atoms.size(), 0u );
 			if ( p_selection != nullptr )
 			{
 				for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : *p_selection )
@@ -176,25 +158,13 @@ namespace VTX
 					{
 						for ( const uint & atomIndex : pairResidue.second )
 						{
-							_bufferAtomSelection[ atomIndex ] = 1;
+							_bufferAtomSelection[ atomIndex ] = 1u;
 						}
 					}
 				}
 			}
 
 			_buffer->setAtomSelections( _bufferAtomSelection );
-		}
-
-		void Molecule::_fillBufferBonds()
-		{
-			_bufferBonds.resize( _bonds.size() * 2 );
-			for ( uint i = 0; i < _bonds.size(); i++ )
-			{
-				_bufferBonds[ 2u * i ]		= _bonds[ i ]->getIndexFirstAtom();
-				_bufferBonds[ 2u * i + 1u ] = _bonds[ i ]->getIndexSecondAtom();
-			}
-
-			_buffer->setBonds( _bufferBonds );
 		}
 
 		void Molecule::print() const
@@ -263,12 +233,12 @@ namespace VTX
 			_chains.resize( p_molecule.getChainCount() );
 			for ( uint i = 0; i < p_molecule.getChainCount(); ++i )
 			{
-				getChains()[ i ] = MVC::MvcManager::get().instantiate<Chain>();
+				getChains()[ i ] = MVC::MvcManager::get().instantiateModel<Chain>();
 			}
 			_residues.resize( p_molecule.getResidueCount() );
 			for ( uint i = 0; i < p_molecule.getResidueCount(); ++i )
 			{
-				getResidues()[ i ] = MVC::MvcManager::get().instantiate<Residue>();
+				getResidues()[ i ] = MVC::MvcManager::get().instantiateModel<Residue>();
 			}
 
 			setName( p_molecule.getName() );
@@ -335,10 +305,10 @@ namespace VTX
 		{
 			if ( _secondaryStructure != nullptr )
 			{
-				delete _secondaryStructure;
+				MVC::MvcManager::get().deleteModel( _secondaryStructure );
 			}
 
-			_secondaryStructure = MVC::MvcManager::get().instantiate<SecondaryStructure, Molecule * const>( this );
+			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule * const>( this );
 			_secondaryStructure->init( getBuffer()->gl() );
 			_secondaryStructure->print();
 		}
@@ -350,18 +320,6 @@ namespace VTX
 				BaseVisible::setVisible( p_visible );
 
 				_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
-			}
-		}
-
-		void Molecule::toggleSequenceVisibility()
-		{
-			if ( MVC::MvcManager::get().hasView( this, ID::View::UI_MOLECULE_SEQUENCE ) )
-			{
-				//	delete MVC::MvcManager::get().removeViewOnModel( this, ID::View::UI_MOLECULE_SEQUENCE );
-			}
-			else
-			{
-				//	 MVC::MvcManager::get().addViewOnModel<View::UI::Widget::MoleculeStructure>( this, ID::View::UI_MOLECULE_SEQUENCE );
 			}
 		}
 

@@ -20,7 +20,7 @@ namespace VTX
 			{
 				class StatusBarWidget : public BaseManualWidget<QStatusBar>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					void receiveEvent( const Event::VTXEvent & p_event ) override;

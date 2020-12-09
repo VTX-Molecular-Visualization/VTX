@@ -34,7 +34,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTXApp::get().getScene().clear();
-					Model::Path * path = MVC::MvcManager::get().instantiate<Model::Path>();
+					Model::Path * path = MVC::MvcManager::get().instantiateModel<Model::Path>();
 					VTXApp::get().getScene().addPath( path );
 				}
 			};

@@ -104,7 +104,7 @@ namespace VTX
 						chainNameWidget->setFont( Style::SEQUENCE_DISPLAY_FONT );
 						chainNameWidget->setText( QString::fromStdString( Style::SEQUENCE_CHAIN_NAME_SEPARATOR + chain->getName() + Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
 
-						ChainSequenceWidget * const chainSequenceDisplay = WidgetFactory::get().getWidget<ChainSequenceWidget>( this, "chainSequenceWidget" );
+						ChainSequenceWidget * const chainSequenceDisplay = WidgetFactory::get().instanciateWidget<ChainSequenceWidget>( this, "chainSequenceWidget" );
 						_chainDisplayWidgets.emplace_back( chainSequenceDisplay );
 
 						chainSequenceDisplay->setModel( chain );
@@ -127,6 +127,10 @@ namespace VTX
 					_selectionModifier				 = _getSelectionModifier( p_event );
 
 					const ClickModifier clickModifier = _getClickModifier( p_event );
+
+					const bool targetWasSelected		   = _startResidueHovered != nullptr && _isSelected( _startResidueHovered );
+					const bool targetIsOnlyResidueSelected = VTX::Selection::SelectionManager::get().getSelectionModel().getResidueSelectedCount() == 1;
+
 					if ( clickModifier == ClickModifier::Clear )
 						_clearSelection();
 
@@ -164,7 +168,10 @@ namespace VTX
 					}
 					else if ( _startResidueHovered != nullptr )
 					{
-						_applySelection( !_isSelected( _startResidueHovered ), _startResidueHovered );
+						if ( targetWasSelected && targetIsOnlyResidueSelected )
+							_frameSelection.push_back( _startResidueHovered );
+						else
+							_applySelection( true, _startResidueHovered );
 					}
 
 					_lastDragSelectionPosition = _startPressPosition;
@@ -289,6 +296,7 @@ namespace VTX
 					const QPoint currentMousePos = _scrollAreaContent->mapFromGlobal( p_event->globalPos() );
 					_lastDragSelectionPosition	 = currentMousePos;
 					_lastResidueHovered			 = _getResidueAtPos( _lastDragSelectionPosition );
+					_frameSelection.clear();
 				}
 
 				void MoleculeSequenceWidget::_applySelection( const bool p_select, Model::Residue * p_residue )

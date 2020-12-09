@@ -16,17 +16,17 @@ namespace VTX
 		{
 			_registerEvent( Event::Global::CHANGE_STATE );
 
-			_mainMenuBar = WidgetFactory::get().getWidget<Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
+			_mainMenuBar = WidgetFactory::get().instanciateWidget<Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
 			this->setMenuBar( _mainMenuBar );
 
-			_renderWidget	 = WidgetFactory::get().getWidget<Widget::Render::RenderWidget>( this, "renderWidget" );
-			_sceneWidget	 = WidgetFactory::get().getWidget<Widget::Scene::SceneWidget>( this, "sceneWidget" );
-			_inspectorWidget = WidgetFactory::get().getWidget<Widget::Inspector::InspectorWidget>( this, "inspectorWidget" );
-			_consoleWidget	 = WidgetFactory::get().getWidget<Widget::Console::ConsoleWidget>( this, "consoleWidget" );
-			_sequenceWidget	 = WidgetFactory::get().getWidget<Widget::Sequence::SequenceWidget>( this, "sequenceWidget" );
-			_selectionWidget = WidgetFactory::get().getWidget<Widget::Selection::SelectionWidget>( this, "selectionWidget" );
+			_renderWidget	 = WidgetFactory::get().instanciateWidget<Widget::Render::RenderWidget>( this, "renderWidget" );
+			_sceneWidget	 = WidgetFactory::get().instanciateWidget<Widget::Scene::SceneWidget>( this, "sceneWidget" );
+			_inspectorWidget = WidgetFactory::get().instanciateWidget<Widget::Inspector::InspectorWidget>( this, "inspectorWidget" );
+			_consoleWidget	 = WidgetFactory::get().instanciateWidget<Widget::Console::ConsoleWidget>( this, "consoleWidget" );
+			_sequenceWidget	 = WidgetFactory::get().instanciateWidget<Widget::Sequence::SequenceWidget>( this, "sequenceWidget" );
+			_selectionWidget = WidgetFactory::get().instanciateWidget<Widget::Selection::SelectionWidget>( this, "selectionWidget" );
 
-			_statusBarWidget = WidgetFactory::get().getWidget<Widget::StatusBar::StatusBarWidget>( this, "statusBar" );
+			_statusBarWidget = WidgetFactory::get().instanciateWidget<Widget::StatusBar::StatusBarWidget>( this, "statusBar" );
 			_statusBarWidget->setFixedHeight( 25 );
 			this->setStatusBar( _statusBarWidget );
 

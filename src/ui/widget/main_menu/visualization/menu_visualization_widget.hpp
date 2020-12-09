@@ -26,7 +26,7 @@ namespace VTX
 				{
 					class MenuVisualizationWidget : public MenuTooltabWidget
 					{
-						VTX_MANUAL_WIDGET_DECLARATION
+						VTX_WIDGET
 
 					  public:
 						~MenuVisualizationWidget();

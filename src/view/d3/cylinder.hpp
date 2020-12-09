@@ -15,8 +15,7 @@ namespace VTX
 		{
 			class Cylinder : public BaseView3DMolecule
 			{
-			  public:
-				explicit Cylinder( Model::Molecule * const p_model );
+				VTX_VIEW
 
 				void render( const Model::Representation::BaseRepresentation * const ) override;
 
@@ -25,6 +24,8 @@ namespace VTX
 				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
 				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
 				GLint _uRadiusLoc		   = GL_INVALID_INDEX;
+
+				explicit Cylinder( Model::Molecule * const p_model );
 			};
 		} // namespace D3
 	}	  // namespace View

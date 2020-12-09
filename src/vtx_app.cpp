@@ -39,6 +39,7 @@ namespace VTX
 		Action::ActionManager::get();
 		Event::EventManager::get();
 		Selection::SelectionManager::get();
+		Worker::WorkerManager::get();
 
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );

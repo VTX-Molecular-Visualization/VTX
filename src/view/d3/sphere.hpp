@@ -15,8 +15,9 @@ namespace VTX
 		{
 			class Sphere : public BaseView3DMolecule
 			{
+				VTX_VIEW
+				
 			  public:
-				explicit Sphere( Model::Molecule * const p_model );
 
 				void render( const Model::Representation::BaseRepresentation * const p_representation ) override;
 
@@ -31,6 +32,8 @@ namespace VTX
 				GLint _uIsRadiusFixedLoc   = GL_INVALID_INDEX;
 				GLint _uRadiusAddLoc	   = GL_INVALID_INDEX;
 				GLint _uRadiusFixedLoc	   = GL_INVALID_INDEX;
+
+				explicit Sphere( Model::Molecule * const p_model );
 			};
 		} // namespace D3
 	}	  // namespace View

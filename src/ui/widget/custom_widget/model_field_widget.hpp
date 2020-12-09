@@ -26,7 +26,7 @@ namespace VTX
 				class ModelFieldWidget : public BaseManualWidget<QFrame>
 				{
 					Q_OBJECT
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					~ModelFieldWidget() {};

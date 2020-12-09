@@ -21,7 +21,9 @@ namespace VTX
 			{
 				class RepresentationInspectorView : public BaseWidgetView<Model::Representation::BaseRepresentation, VTX::UI::Widget::Inspector::InspectorRepresentationWidget>
 				{
-				  public:
+					VTX_VIEW
+
+				  protected:
 					RepresentationInspectorView( Model::Representation::BaseRepresentation * const p_molecule, QWidget * p_parent ) :
 						BaseWidgetView( p_molecule, "representationInspector", p_parent ) {};
 				};

@@ -11,7 +11,7 @@ namespace VTX
 	{
 		Scene::Scene()
 		{
-			Model::Path * path = MVC::MvcManager::get().instantiate<Model::Path>();
+			Model::Path * path = MVC::MvcManager::get().instantiateModel<Model::Path>();
 			addPath( path );
 		}
 

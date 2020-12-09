@@ -16,9 +16,9 @@ namespace VTX
 		{
 			class Ribbon : public BaseView3D<Model::SecondaryStructure>
 			{
-			  public:
-				explicit Ribbon( Model::SecondaryStructure * const p_model );
+				VTX_VIEW
 
+			  public:
 				void render() override;
 
 			  private:
@@ -27,6 +27,8 @@ namespace VTX
 				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
 				GLint _uNormalMatrixLoc	   = GL_INVALID_INDEX;
 				GLint _uMaxIndice		   = GL_INVALID_INDEX;
+
+				explicit Ribbon( Model::SecondaryStructure * const p_model );
 			};
 		} // namespace D3
 	}	  // namespace View

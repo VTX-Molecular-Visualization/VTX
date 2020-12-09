@@ -1,4 +1,5 @@
 #include "selection_widget.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "style.hpp"
 #include "view/ui/widget/selection_view.hpp"
 #include "vtx_app.hpp"
@@ -27,8 +28,7 @@ namespace VTX
 					{
 						const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
 						View::UI::Widget::SelectionView * const		 item
-							= WidgetFactory::get().getViewWidget<View::UI::Widget::SelectionView, Model::Selection, QTreeWidget>( castedEvent.ptr, nullptr, "Selection" );
-						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_SELECTION, item );
+							= WidgetFactory::get().instanciateViewWidget<View::UI::Widget::SelectionView>( castedEvent.ptr, ID::View::UI_SELECTION, nullptr, "SelectionWidget" );
 						setWidget( item );
 					}
 					else if ( p_event.name == Event::Global::SELECTION_REMOVED )

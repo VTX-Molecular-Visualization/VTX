@@ -53,7 +53,7 @@ namespace VTX
 					IO::Reader::LibChemfiles * reader = new IO::Reader::LibChemfiles();
 
 					// Set PRM.
-					Model::Molecule * molecule = MVC::MvcManager::get().instantiate<Model::Molecule>();
+					Model::Molecule * molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 					molecule->setConfiguration( config );
 
 					// Load.
@@ -76,7 +76,7 @@ namespace VTX
 				else if ( mode == MODE::MESH )
 				{
 					IO::Reader::LibAssimp * reader = new IO::Reader::LibAssimp();
-					Model::MeshTriangle *	mesh   = MVC::MvcManager::get().instantiate<Model::MeshTriangle>();
+					Model::MeshTriangle *	mesh   = MVC::MvcManager::get().instantiateModel<Model::MeshTriangle>();
 
 					try
 					{
@@ -132,7 +132,7 @@ namespace VTX
 				{
 					// Create reader.
 					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles();
-					Model::Molecule *		   molecule = MVC::MvcManager::get().instantiate<Model::Molecule>();
+					Model::Molecule *		   molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 
 					// Load.
 					try

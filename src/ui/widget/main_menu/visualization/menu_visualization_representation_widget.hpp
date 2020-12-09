@@ -22,7 +22,7 @@ namespace VTX
 				{
 					class MenuVisualizationRepresentationWidget : public MenuToolBlockWidget
 					{
-						VTX_MANUAL_WIDGET_DECLARATION
+						VTX_WIDGET
 
 					  public:
 						~MenuVisualizationRepresentationWidget();

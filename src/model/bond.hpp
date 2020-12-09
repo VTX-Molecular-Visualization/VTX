@@ -15,6 +15,8 @@ namespace VTX
 		class Molecule;
 		class Bond : public BaseModel
 		{
+			VTX_MODEL
+
 		  public:
 			inline uint				getIndexFirstAtom() const { return _indexFirstAtom; };
 			inline void				setIndexFirstAtom( const uint p_index ) { _indexFirstAtom = p_index; };
@@ -23,12 +25,12 @@ namespace VTX
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
 
-			Bond() : BaseModel( ID::Model::MODEL_BOND ) {};
-
 		  private:
 			uint	   _indexFirstAtom	= 0;
 			uint	   _indexSecondAtom = 0;
 			Molecule * _moleculePtr		= nullptr;
+
+			Bond() : BaseModel( ID::Model::MODEL_BOND ) {};
 		};
 
 	} // namespace Model

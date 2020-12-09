@@ -22,7 +22,7 @@ namespace VTX
 			{
 				class CollapsingHeaderWidget : public BaseManualWidget<QWidget>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					~CollapsingHeaderWidget() {};

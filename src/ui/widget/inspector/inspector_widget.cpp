@@ -36,10 +36,11 @@ namespace VTX
 						const Event::VTXEventPtr<Model::Representation::BaseRepresentation> & castedEvent
 							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::BaseRepresentation> &>( p_event );
 
-						Model::Representation::BaseRepresentation * const	  representation	 = castedEvent.ptr;
-						View::UI::Widget::RepresentationInspectorView * const representationView = new View::UI::Widget::RepresentationInspectorView( representation, this );
+						Model::Representation::BaseRepresentation * const	  representation = castedEvent.ptr;
+						View::UI::Widget::RepresentationInspectorView * const representationView
+							= MVC::MvcManager::get().instanciateViewWidget<View::UI::Widget::RepresentationInspectorView>(
+								representation, ID::View::UI_INSPECTOR_REPRESENTATION, this );
 
-						MVC::MvcManager::get().addViewOnModel( representation, ID::View::UI_INSPECTOR_REPRESENTATION, representationView );
 						QWidget * const widget = representationView->getWidget();
 
 						_verticalLayout->insertWidget( _verticalLayout->count() - 1, widget );
@@ -51,12 +52,11 @@ namespace VTX
 
 						const Model::Representation::BaseRepresentation * const representation = castedEvent.ptr;
 						View::UI::Widget::RepresentationInspectorView * const	representationView
-							= MVC::MvcManager::get().removeViewOnModel<Model::Representation::BaseRepresentation, View::UI::Widget::RepresentationInspectorView>(
-								representation, ID::View::UI_INSPECTOR_REPRESENTATION );
+							= MVC::MvcManager::get().getView<View::UI::Widget::RepresentationInspectorView>( representation, ID::View::UI_INSPECTOR_REPRESENTATION );
 
 						_verticalLayout->removeWidget( representationView->getWidget() );
 
-						delete representationView;
+						MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeInspectorView>( representation, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
 					}
 				}
 

@@ -17,16 +17,18 @@ namespace VTX
 			{
 				class RepresentationPresetButton : public MenuToolButtonWidget
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
-					RepresentationPresetButton( QWidget * p_parent ) : MenuToolButtonWidget( p_parent ) {};
 					void _setupSlots() override
 					{
 						MenuToolButtonWidget::_setupSlots();
 						connect( this, &QToolButton::clicked, this, &RepresentationPresetButton::_onButtonClicked );
 					}
 					void setRepresentationID( const int p_id ) { _id = p_id; };
+
+				  protected:
+					RepresentationPresetButton( QWidget * p_parent ) : MenuToolButtonWidget( p_parent ) {};
 
 				  private:
 					int _id;

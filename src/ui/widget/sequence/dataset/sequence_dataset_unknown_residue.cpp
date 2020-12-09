@@ -46,9 +46,14 @@ namespace VTX
 					{
 						if ( p_startBloc || ( ( _residueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) == 0 ) )
 						{
-							const std::string residueIndexStr = std::to_string( _residueIndex );
-							uint			  charIndexOffset = (uint)_residue->getSymbolStr().length() / 2 + ( _spaceBefore ? 1 : 0 );
-							_drawInScale( p_scale, residueIndexStr, _startIndexChar + charIndexOffset, true );
+							const bool		  indexInitialized = _residueIndex != (uint)INT_MIN;
+							const std::string residueIndexStr  = indexInitialized ? std::to_string( _residueIndex ) : "?";
+
+							const bool		  center		  = !p_startBloc;
+							uint		  charIndexOffset = center ? (( uint ) _residue->getSymbolStr().length() / 2) : 0;
+							charIndexOffset += _spaceBefore ? 1 : 0;
+
+							_drawInScale( p_scale, residueIndexStr, _startIndexChar + charIndexOffset, center );
 						}
 					}
 

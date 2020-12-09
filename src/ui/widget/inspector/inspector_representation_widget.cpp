@@ -26,7 +26,7 @@ namespace VTX
 					mainLayout->setContentsMargins( 0, 0, 0, 0 );
 					mainLayout->setSpacing( 1 );
 
-					_mainWidget = WidgetFactory::get().getWidget<CustomWidget::CollapsingHeaderWidget>( this, "inspector_item" );
+					_mainWidget = WidgetFactory::get().instanciateWidget<CustomWidget::CollapsingHeaderWidget>( this, "inspector_item" );
 					_mainWidget->setContentsMargins( 0, 0, 0, 0 );
 					_mainWidget->setHeaderHeight( Style::INSPECTOR_HEADER_HEIGHT );
 
@@ -35,11 +35,11 @@ namespace VTX
 					QVBoxLayout * const contentLayout = new QVBoxLayout( mainContent );
 					contentLayout->setContentsMargins( 0, 0, 0, 0 );
 
-					_targetSection = WidgetFactory::get().getWidget<InspectorSection>( this, "inspector_item_section" );
-					_targetsField  = WidgetFactory::get().getWidget<CustomWidget::RepresentableFieldWidget>( this, "inspector_item" );
+					_targetSection = WidgetFactory::get().instanciateWidget<InspectorSection>( this, "inspector_item_section" );
+					_targetsField  = WidgetFactory::get().instanciateWidget<CustomWidget::RepresentableFieldWidget>( this, "inspector_item" );
 					_targetSection->appendField( "Target", _targetsField );
 
-					_colorModeField = WidgetFactory::get().getWidget<CustomWidget::ColorModeFieldWidget>( this, "inspector_item" );
+					_colorModeField = WidgetFactory::get().instanciateWidget<CustomWidget::ColorModeFieldWidget>( this, "inspector_item" );
 					_targetSection->appendField( "Color Mode", _colorModeField );
 
 					contentLayout->addWidget( _targetSection );

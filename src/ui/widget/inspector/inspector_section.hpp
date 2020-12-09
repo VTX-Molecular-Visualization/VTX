@@ -21,10 +21,9 @@ namespace VTX
 			{
 				class InspectorSection : public CustomWidget::CollapsingHeaderWidget
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
-					InspectorSection( QWidget * p_parent ) : CustomWidget::CollapsingHeaderWidget( p_parent ) {};
 					~InspectorSection() {};
 
 					inline void appendField( const std::string & p_label, QWidget * const p_widget )
@@ -43,6 +42,7 @@ namespace VTX
 					};
 
 				  protected:
+					InspectorSection( QWidget * p_parent ) : CustomWidget::CollapsingHeaderWidget( p_parent ) {};
 					void _setupUi( const QString & p_name ) override
 					{
 						CustomWidget::CollapsingHeaderWidget::_setupUi( p_name );

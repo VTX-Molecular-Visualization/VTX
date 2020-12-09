@@ -25,7 +25,8 @@ namespace VTX
 			{
 				class RepresentationSceneView : public View::BaseView<Model::Representation::BaseRepresentation>, public VTX::UI::Widget::BaseManualWidget<QTreeWidget>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_VIEW
+					VTX_WIDGET
 
 				  public:
 					void localize() override;

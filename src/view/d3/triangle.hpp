@@ -16,9 +16,9 @@ namespace VTX
 		{
 			class Triangle : public BaseView3D<Model::MeshTriangle>
 			{
-			  public:
-				explicit Triangle( Model::MeshTriangle * const p_model );
+				VTX_VIEW
 
+			  public:
 				void render() override;
 
 			  private:
@@ -26,6 +26,8 @@ namespace VTX
 				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
 				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
 				GLint _uNormalMatrixLoc	   = GL_INVALID_INDEX;
+
+				explicit Triangle( Model::MeshTriangle * const p_model );
 			};
 		} // namespace D3
 	}	  // namespace View

@@ -21,7 +21,7 @@ namespace VTX
 				{
 					class MenuVisualizationRenderEffectsWidget : public MenuToolBlockWidget
 					{
-						VTX_MANUAL_WIDGET_DECLARATION
+						VTX_WIDGET
 
 					  public:
 						~MenuVisualizationRenderEffectsWidget();

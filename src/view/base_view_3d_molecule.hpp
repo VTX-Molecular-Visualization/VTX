@@ -18,9 +18,6 @@ namespace VTX
 		class BaseView3DMolecule : public BaseView3D<Model::Molecule>
 		{
 		  public:
-			explicit BaseView3DMolecule( Model::Molecule * const p_model ) : BaseView3D( p_model ) {}
-			virtual ~BaseView3DMolecule() {}
-
 			inline void render() override
 			{
 				// Render atoms.
@@ -33,6 +30,10 @@ namespace VTX
 			}
 
 			virtual void render( const Model::Representation::BaseRepresentation * const ) = 0;
+
+		  protected:
+			explicit BaseView3DMolecule( Model::Molecule * const p_model ) : BaseView3D( p_model ) {}
+			virtual ~BaseView3DMolecule() {}
 		};
 	} // namespace View
 } // namespace VTX

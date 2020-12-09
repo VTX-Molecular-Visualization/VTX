@@ -20,18 +20,19 @@ namespace VTX
 			{
 				class SelectionView : public View::BaseView<Model::Selection>, public VTX::UI::Widget::BaseManualWidget<QTreeWidget>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
+					VTX_VIEW
 
 				  public:
 					void localize() override;
 
 				  protected:
-					SelectionView( Model::Selection * const p_model, QWidget * const p_parent ) : View::BaseView<Model::Selection>( p_model ), BaseManualWidget( p_parent ) {}
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
 					void _refreshView() override; // Debug only.
 
 				  private:
+					SelectionView( Model::Selection * const p_model, QWidget * const p_parent ) : View::BaseView<Model::Selection>( p_model ), BaseManualWidget( p_parent ) {}
 					void _onItemClicked( QTreeWidgetItem *, int );
 
 					bool			 _createTopLevelChildren( const uint p_count );

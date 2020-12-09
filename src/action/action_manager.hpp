@@ -50,7 +50,7 @@ namespace VTX
 			ActionManager & operator=( const ActionManager & ) = delete;
 			~ActionManager()								   = default;
 
-			void _flushAction( BaseAction * );
+			void _flushAction( BaseAction * const);
 			void _purgeBuffer();
 		};
 	} // namespace Action

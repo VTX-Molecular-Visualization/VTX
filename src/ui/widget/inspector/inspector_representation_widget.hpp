@@ -24,7 +24,7 @@ namespace VTX
 			{
 				class InspectorRepresentationWidget : public ViewItemWidget<Model::Representation::BaseRepresentation>
 				{
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					~InspectorRepresentationWidget();

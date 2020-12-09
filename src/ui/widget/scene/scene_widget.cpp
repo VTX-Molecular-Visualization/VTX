@@ -31,11 +31,8 @@ namespace VTX
 						const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
 						// Set no parent to not trigger ItemChange event during init
-						View::UI::Widget::MoleculeSceneView * const moleculeWidget
-							= WidgetFactory::get().getViewWidget<View::UI::Widget::MoleculeSceneView, Model::Molecule, QTreeWidget>(
-								castedEvent.ptr, _scrollAreaContent, "MoleculeStructure" );
-
-						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, moleculeWidget );
+						View::UI::Widget::MoleculeSceneView * const moleculeWidget = WidgetFactory::get().instanciateViewWidget<View::UI::Widget::MoleculeSceneView>(
+							castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, _scrollAreaContent, "moleculeSceneView" );
 
 						// Add Item to tree hierarchy
 						_layout->insertWidget( _layout->count() - 1, moleculeWidget, 1 );
@@ -46,10 +43,11 @@ namespace VTX
 						const Model::Molecule * const				molecule	= castedEvent.ptr;
 
 						View::UI::Widget::MoleculeSceneView * const moleculeWidget
-							= MVC::MvcManager::get().removeViewOnModel<Model::Molecule, View::UI::Widget::MoleculeSceneView>( molecule, ID::View::UI_MOLECULE_STRUCTURE );
+							= MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSceneView>( molecule, ID::View::UI_MOLECULE_STRUCTURE );
 
 						_layout->removeWidget( moleculeWidget );
-						delete moleculeWidget;
+
+						MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeSceneView>( molecule, ID::View::UI_MOLECULE_STRUCTURE );
 					}
 					else if ( p_event.name == Event::Global::REPRESENTATION_ADDED )
 					{
@@ -57,10 +55,8 @@ namespace VTX
 							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::BaseRepresentation> &>( p_event );
 
 						View::UI::Widget::RepresentationSceneView * const representationSceneWidget
-							= WidgetFactory::get().getViewWidget<View::UI::Widget::RepresentationSceneView, Model::Representation::BaseRepresentation, QTreeWidget>(
-								castedEvent.ptr, _scrollAreaContent, "RepresentationSceneItem" );
-
-						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION, representationSceneWidget );
+							= WidgetFactory::get().instanciateViewWidget<View::UI::Widget::RepresentationSceneView>(
+								castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION, _scrollAreaContent, "representationSceneView" );
 
 						// Add Item to tree hierarchy
 						_layout->insertWidget( _layout->count() - 1, representationSceneWidget, 1 );
@@ -71,12 +67,12 @@ namespace VTX
 							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::BaseRepresentation> &>( p_event );
 
 						View::UI::Widget::RepresentationSceneView * const representationSceneWidget
-							= MVC::MvcManager::get().removeViewOnModel<Model::Representation::BaseRepresentation, View::UI::Widget::RepresentationSceneView>(
-								castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION );
+							= MVC::MvcManager::get().getView<View::UI::Widget::RepresentationSceneView>( castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION );
 
 						_layout->removeWidget( representationSceneWidget );
 
-						delete representationSceneWidget;
+						MVC::MvcManager::get().deleteView<View::UI::Widget::RepresentationSceneView, Model::Representation::BaseRepresentation>(
+							castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION );
 					}
 				}
 

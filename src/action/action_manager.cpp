@@ -170,7 +170,7 @@ namespace VTX
 			}
 		}
 
-		void ActionManager::_flushAction( BaseAction * p_action )
+		void ActionManager::_flushAction( BaseAction * const p_action )
 		{
 			try
 			{

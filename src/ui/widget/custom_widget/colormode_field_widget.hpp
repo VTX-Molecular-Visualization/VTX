@@ -26,7 +26,7 @@ namespace VTX
 				class ColorModeFieldWidget : public BaseManualWidget<QWidget>
 				{
 					Q_OBJECT
-					VTX_MANUAL_WIDGET_DECLARATION
+					VTX_WIDGET
 
 				  public:
 					~ColorModeFieldWidget() {};
