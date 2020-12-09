@@ -142,7 +142,7 @@ namespace VTX
 					return true;
 				}
 
-				void SelectionView::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
+				void SelectionView::_onItemClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
 				{
 					const Model::ID &  modelId		  = _getModelID( *p_item );
 					ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( modelId );

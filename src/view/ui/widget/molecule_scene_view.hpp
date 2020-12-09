@@ -42,10 +42,11 @@ namespace VTX
 
 					MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
 
-					void _onItemChanged( QTreeWidgetItem * item, int column );
-					void _onItemClicked( QTreeWidgetItem *, int );
-					void _onItemExpanded( QTreeWidgetItem * );
-					void _onItemCollapsed( QTreeWidgetItem * );
+					void _onItemChanged( const QTreeWidgetItem * const, const int ) const;
+					void _onItemClicked( const QTreeWidgetItem * const, const int ) const;
+					void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;
+					void _onItemExpanded( const QTreeWidgetItem * const );
+					void _onItemCollapsed( const QTreeWidgetItem * const );
 					void _onCustomContextMenuCalled( const QPoint & p_clicPos );
 
 					void _deleteAction();

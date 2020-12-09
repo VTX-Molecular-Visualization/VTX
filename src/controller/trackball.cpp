@@ -155,6 +155,6 @@ namespace VTX
 			_distanceForced = VTXApp::get().getScene().getAABB().diameter();
 		}
 
-		void Trackball::focus( const Math::AABB & ) {}
+		void Trackball::focus( const Math::AABB & ) { VTX_DEBUG( "FOCUS" ); }
 	} // namespace Controller
 } // namespace VTX
