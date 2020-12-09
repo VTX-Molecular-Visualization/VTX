@@ -22,17 +22,9 @@ namespace VTX
 			// TOFIX: Ugly... set the camera in the BaseCollectionable::init()?
 			explicit Freefly() : _camera( VTXApp::get().getScene().getCamera() ) {}
 
-			/*
-			virtual void receiveEvent( const SDL_Event & p_event ) override final
-			{
-				BaseKeyboardController::receiveEvent( p_event );
-				BaseMouseController::receiveEvent( p_event );
-			}
-			*/
-
 			virtual void update( const double & ) override;
-
 			virtual void reset() override;
+			virtual void focus( const Math::AABB & ) override;
 
 		  protected:
 			// virtual void					_handleKeyPressedEvent( const SDL_Scancode & ) override;

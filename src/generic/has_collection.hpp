@@ -70,6 +70,7 @@ namespace VTX
 			{
 				return dynamic_cast<const T2 * const>( getItem( p_name ) );
 			}
+
 			template<typename T2, typename = std::enable_if<std::is_base_of<T, T2>::value>>
 			T2 * const getItem( const std::string & p_name )
 			{

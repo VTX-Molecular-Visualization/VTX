@@ -18,13 +18,6 @@ namespace VTX
 			}
 		}
 
-		void Trackball::reset()
-		{
-			_needUpdate		= true;
-			_target			= VTXApp::get().getScene().getAABB().centroid();
-			_distanceForced = VTXApp::get().getScene().getAABB().diameter();
-		}
-
 		void Trackball::update( const double & p_deltaTime )
 		{
 			// Wheel.
@@ -154,5 +147,14 @@ namespace VTX
 				}
 			}
 		}
+
+		void Trackball::reset()
+		{
+			_needUpdate		= true;
+			_target			= VTXApp::get().getScene().getAABB().centroid();
+			_distanceForced = VTXApp::get().getScene().getAABB().diameter();
+		}
+
+		void Trackball::focus( const Math::AABB & ) {}
 	} // namespace Controller
 } // namespace VTX

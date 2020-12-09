@@ -6,6 +6,8 @@
 #endif
 
 #include "model/chain.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
 #include "util/molecule.hpp"
 #include "visible.hpp"
 
@@ -58,6 +60,20 @@ namespace VTX
 
 					Util::Molecule::refreshRepresentationState( *chain.getMoleculePtr() );
 				}
+			};
+
+			class Focus : public BaseAction
+			{
+			  public:
+				explicit Focus( Model::Chain & p_chain ) : _chain( p_chain ) {}
+
+				virtual void execute() override
+				{
+					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->getCurrentCameraController()->focus( _chain.getAABB() );
+				}
+
+			  private:
+				Model::Chain & _chain;
 			};
 		} // namespace Chain
 	}	  // namespace Action

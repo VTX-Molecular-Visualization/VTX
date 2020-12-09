@@ -6,8 +6,11 @@
 #endif
 
 #include "model/atom.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
 #include "util/molecule.hpp"
 #include "visible.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -54,6 +57,20 @@ namespace VTX
 
 					Util::Molecule::refreshRepresentationState( *atom.getMoleculePtr() );
 				}
+			};
+
+			class Focus : public BaseAction
+			{
+			  public:
+				explicit Focus( Model::Atom & p_atom ) : _atom( p_atom ) {}
+
+				virtual void execute() override
+				{
+					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->getCurrentCameraController()->focus( _atom.getAABB() );
+				}
+
+			  private:
+				Model::Atom & _atom;
 			};
 		} // namespace Atom
 	}	  // namespace Action

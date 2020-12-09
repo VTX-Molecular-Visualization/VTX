@@ -90,5 +90,18 @@ namespace VTX
 			}
 		}
 
+		const Math::AABB Chain::getAABB() const
+		{
+			Math::AABB aabb = Math::AABB();
+
+			for ( uint i = 0; i < _residueCount; ++i )
+			{
+				const Residue & residue = _moleculePtr->getResidue( _indexFirstResidue + i );
+				aabb.extend( residue.getAABB() );
+			}
+
+			return aabb;
+		}
+
 	} // namespace Model
 } // namespace VTX

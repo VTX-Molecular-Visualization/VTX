@@ -144,7 +144,7 @@ namespace VTX
 			  public:
 				explicit ToggleCameraController() {}
 
-				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->toggleController(); };
+				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->toggleCameraController(); };
 			};
 
 			class ChangeCameraController : public BaseAction

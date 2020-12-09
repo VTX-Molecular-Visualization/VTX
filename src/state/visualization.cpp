@@ -26,7 +26,7 @@ namespace VTX
 			addItem( ID::Controller::TRACKBALL, new Controller::Trackball() );
 			addItem( ID::Controller::SHORTCUT, new Controller::Shortcut() );
 
-			if ( _controller == ID::Controller::FREEFLY )
+			if ( _cameraController == ID::Controller::FREEFLY )
 			{
 				getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->setActive( false );
 			}
@@ -50,36 +50,36 @@ namespace VTX
 			}
 		}
 
-		void Visualization::toggleController()
+		void Visualization::toggleCameraController()
 		{
-			getItem( _controller )->setActive( false );
+			getItem( _cameraController )->setActive( false );
 
-			if ( _controller == ID::Controller::FREEFLY )
+			if ( _cameraController == ID::Controller::FREEFLY )
 			{
-				_controller = ID::Controller::TRACKBALL;
+				_cameraController = ID::Controller::TRACKBALL;
 			}
 			else
 			{
-				_controller = ID::Controller::FREEFLY;
+				_cameraController = ID::Controller::FREEFLY;
 			}
-			getItem( _controller )->setActive( true );
+			getItem( _cameraController )->setActive( true );
 
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::CONTROLLER_CHANGE, &_controller ) );
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::CONTROLLER_CHANGE, &_cameraController ) );
 		}
 		void Visualization::setController( const ID::VTX_ID & p_controllerId )
 		{
 			// Do nothing if id not in collection or already in use
-			if ( !hasItem( p_controllerId ) || _controller == p_controllerId )
+			if ( !hasItem( p_controllerId ) || _cameraController == p_controllerId )
 				return;
 
-			getItem( _controller )->setActive( false );
-			_controller = p_controllerId;
-			getItem( _controller )->setActive( true );
+			getItem( _cameraController )->setActive( false );
+			_cameraController = p_controllerId;
+			getItem( _cameraController )->setActive( true );
 
-			VTX_EVENT( new Event::VTXEventPtr( Event::Global::CONTROLLER_CHANGE, &_controller ) );
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::CONTROLLER_CHANGE, &_cameraController ) );
 		}
 
-		void Visualization::recenter() { getItem<VTX::Controller::BaseCameraController>( _controller )->reset(); }
+		void Visualization::recenter() { getItem<VTX::Controller::BaseCameraController>( _cameraController )->reset(); }
 
 		void Visualization::receiveEvent( const Event::VTXEvent & p_event ) { recenter(); }
 

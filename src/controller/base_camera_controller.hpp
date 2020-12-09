@@ -6,6 +6,7 @@
 #endif
 
 #include "base_controller.hpp"
+#include "math/aabb.hpp"
 
 namespace VTX
 {
@@ -16,7 +17,8 @@ namespace VTX
 		  public:
 			virtual ~BaseCameraController() = default;
 			// TODO: recenter only on visible objects
-			virtual void reset() = 0;
+			virtual void reset()					 = 0;
+			virtual void focus( const Math::AABB & ) = 0;
 		};
 	} // namespace Controller
 } // namespace VTX

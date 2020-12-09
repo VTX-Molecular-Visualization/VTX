@@ -26,10 +26,10 @@ namespace VTX
 			{
 			}
 
-			virtual void reset() override;
-
-			virtual void update( const double & ) override;
 			virtual void setActive( const bool p_active ) override;
+			virtual void update( const double & ) override;
+			virtual void reset() override;
+			virtual void focus( const Math::AABB & ) override;
 
 			inline const Vec3d & getTarget() const { return _target; }
 

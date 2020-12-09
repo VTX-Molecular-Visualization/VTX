@@ -6,6 +6,8 @@
 #endif
 
 #include "model/residue.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
 #include "util/molecule.hpp"
 #include "visible.hpp"
 
@@ -61,6 +63,20 @@ namespace VTX
 
 					Util::Molecule::refreshRepresentationState( *residue.getMoleculePtr() );
 				}
+			};
+
+			class Focus : public BaseAction
+			{
+			  public:
+				explicit Focus( Model::Residue & p_residue ) : _residue( p_residue ) {}
+
+				virtual void execute() override
+				{
+					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->getCurrentCameraController()->focus( _residue.getAABB() );
+				}
+
+			  private:
+				Model::Residue & _residue;
 			};
 		} // namespace Residue
 	}	  // namespace Action

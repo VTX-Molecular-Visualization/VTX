@@ -24,9 +24,10 @@ namespace VTX
 			case Qt::Key_F3: VTX_ACTION( new Action::Setting::ChangeColorMode( Generic::COLOR_MODE( ( (uint)VTX_SETTING().colorMode + 1 ) % 4 ) ) ); break;
 			case Qt::Key_F4: VTX_ACTION( new Action::Setting::ChangeShading( Renderer::SHADING( ( (uint)VTX_SETTING().shading + 1 ) % (uint)Renderer::SHADING::COUNT ) ) ); break;
 			case Qt::Key_F5:
-				VTX_ACTION( new Action::Viewpoint::Create( *VTXApp::get().getScene().getPaths()[ 0 ],
-														   VTXApp::get().getScene().getCamera(),
-														   VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->getCurrentController() ) );
+				VTX_ACTION(
+					new Action::Viewpoint::Create( *VTXApp::get().getScene().getPaths()[ 0 ],
+												   VTXApp::get().getScene().getCamera(),
+												   VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->getCurrentCameraController() ) );
 				break;
 
 			case Qt::Key_F10: VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().activeRenderer ) ); break;

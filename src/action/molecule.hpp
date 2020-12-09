@@ -7,6 +7,8 @@
 
 #include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
 #include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "visible.hpp"
@@ -169,6 +171,20 @@ namespace VTX
 			  private:
 				Model::Molecule &							_molecule;
 				const Model::SecondaryStructure::COLOR_MODE _colorMode;
+			};
+
+			class Focus : public BaseAction
+			{
+			  public:
+				explicit Focus( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
+
+				virtual void execute() override
+				{
+					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->getCurrentCameraController()->focus( _molecule.getAABB() );
+				}
+
+			  private:
+				Model::Molecule & _molecule;
 			};
 		} // namespace Molecule
 	}	  // namespace Action

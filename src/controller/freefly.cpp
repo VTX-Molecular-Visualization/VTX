@@ -78,5 +78,7 @@ namespace VTX
 			_camera.setRotation( Vec3d( 0.0, 0.0, 0.0 ) );
 		}
 
+		void Freefly::focus( const Math::AABB & ) {}
+
 	} // namespace Controller
 } // namespace VTX

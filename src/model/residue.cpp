@@ -29,6 +29,19 @@ namespace VTX
 			}
 		}
 
+		const Math::AABB Residue::getAABB() const
+		{
+			Math::AABB aabb = Math::AABB();
+
+			for ( uint i = 0; i < _atomCount; ++i )
+			{
+				const Atom & atom = _moleculePtr->getAtom( _indexFirstAtom + i );
+				aabb.extend( atom.getAABB() );
+			}
+
+			return aabb;
+		}
+
 		const std::string Residue::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {
 			"---", // UNKNOWN
 			"ALA", // ALA

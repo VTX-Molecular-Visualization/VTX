@@ -10,6 +10,7 @@
 #include "generic/base_colorable.hpp"
 #include "generic/base_visible.hpp"
 #include "id.hpp"
+#include "math/aabb.hpp"
 
 namespace VTX
 {
@@ -184,6 +185,8 @@ namespace VTX
 			inline void				   setType( const TYPE p_type ) { _type = p_type; }
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
+
+			const Math::AABB getAABB() const;
 
 		  private:
 			uint	   _index		= 0;

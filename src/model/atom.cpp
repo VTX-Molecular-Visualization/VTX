@@ -1,9 +1,19 @@
 #include "atom.hpp"
+#include "molecule.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
+		const Math::AABB Atom::getAABB() const
+		{
+			Vec3f &	   position = _moleculePtr->getAtomPositionFrame( _moleculePtr->getFrame() )[ _index ];
+			Math::AABB aabb		= Math::AABB( position );
+
+			// TODO: add radius?
+
+			return aabb;
+		}
 
 		const std::string Atom::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {
 			"UNKNOWN", // UNKNOWN = 0,
