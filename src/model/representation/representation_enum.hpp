@@ -7,6 +7,37 @@
 
 namespace VTX
 {
+	namespace Representation
+	{
+		enum class FlagDataTargeted : int
+		{
+			NONE   = 0,
+			ATOM   = 1 << 1,
+			BOND   = 1 << 2,
+			RIBBON = 1 << 3,
+		};
+
+		inline FlagDataTargeted operator|( FlagDataTargeted lhs, FlagDataTargeted rhs )
+		{
+			return static_cast<FlagDataTargeted>( static_cast<int>( lhs ) | static_cast<int>( rhs ) );
+		}
+		inline FlagDataTargeted & operator|=( FlagDataTargeted & lhs, FlagDataTargeted rhs )
+		{
+			lhs = lhs | rhs;
+			return lhs;
+		}
+
+		inline FlagDataTargeted operator&( FlagDataTargeted lhs, FlagDataTargeted rhs )
+		{
+			return static_cast<FlagDataTargeted>( static_cast<int>( lhs ) & static_cast<int>( rhs ) );
+		}
+		inline FlagDataTargeted & operator&=( FlagDataTargeted & lhs, FlagDataTargeted rhs )
+		{
+			lhs = lhs & rhs;
+			return lhs;
+		}
+
+	} // namespace Representation
 	namespace Generic
 	{
 		enum class REPRESENTATION : int

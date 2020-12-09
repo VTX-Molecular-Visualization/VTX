@@ -1,8 +1,10 @@
 #include "scene_widget.hpp"
 #include "model/molecule.hpp"
+#include "model/representation/representation.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
+#include "view/ui/widget/representation_scene_view.hpp"
 #include <QScrollArea>
 
 namespace VTX
@@ -17,6 +19,9 @@ namespace VTX
 				{
 					_registerEvent( Event::Global::MOLECULE_ADDED );
 					_registerEvent( Event::Global::MOLECULE_REMOVED );
+
+					_registerEvent( Event::Global::REPRESENTATION_ADDED );
+					_registerEvent( Event::Global::REPRESENTATION_REMOVED );
 				}
 
 				void SceneWidget::receiveEvent( const Event::VTXEvent & p_event )
@@ -45,6 +50,33 @@ namespace VTX
 
 						_layout->removeWidget( moleculeWidget );
 						delete moleculeWidget;
+					}
+					else if ( p_event.name == Event::Global::REPRESENTATION_ADDED )
+					{
+						const Event::VTXEventPtr<Model::Representation::BaseRepresentation> & castedEvent
+							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::BaseRepresentation> &>( p_event );
+
+						View::UI::Widget::RepresentationSceneView * const representationSceneWidget
+							= WidgetFactory::get().getViewWidget<View::UI::Widget::RepresentationSceneView, Model::Representation::BaseRepresentation, QTreeWidget>(
+								castedEvent.ptr, _scrollAreaContent, "RepresentationSceneItem" );
+
+						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION, representationSceneWidget );
+
+						// Add Item to tree hierarchy
+						_layout->insertWidget( _layout->count() - 1, representationSceneWidget, 1 );
+					}
+					else if ( p_event.name == Event::Global::REPRESENTATION_REMOVED )
+					{
+						const Event::VTXEventPtr<Model::Representation::BaseRepresentation> & castedEvent
+							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::BaseRepresentation> &>( p_event );
+
+						View::UI::Widget::RepresentationSceneView * const representationSceneWidget
+							= MVC::MvcManager::get().removeViewOnModel<Model::Representation::BaseRepresentation, View::UI::Widget::RepresentationSceneView>(
+								castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION );
+
+						_layout->removeWidget( representationSceneWidget );
+
+						delete representationSceneWidget;
 					}
 				}
 

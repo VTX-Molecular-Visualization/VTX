@@ -9,6 +9,7 @@
 #include "object3d/scene.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -25,10 +26,7 @@ namespace VTX
 
 					if ( target.getItems().size() > 0 )
 					{
-						const VTX::Model::ID moleculeId = target.getItems().begin()->first;
-						Model::Molecule &	 molecule	= MVC::MvcManager::get().getModel<Model::Molecule>( moleculeId );
-
-						VTX_ACTION( new Action::RepresentableAddRepresentation( molecule, molecule, representation ) );
+						VTX_ACTION( new Action::RepresentableAddRepresentation( &target, representation ) );
 					}
 					else
 					{
@@ -36,7 +34,7 @@ namespace VTX
 						if ( mapMolFloat.size() > 0 )
 						{
 							Model::Molecule & molecule = *mapMolFloat.begin()->first;
-							VTX_ACTION( new Action::RepresentableAddRepresentation( molecule, molecule, representation ) );
+							VTX_ACTION( new Action::RepresentableAddRepresentation( molecule, representation ) );
 						}
 					}
 				};

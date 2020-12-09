@@ -33,6 +33,17 @@ namespace VTX
 			void setAtomSelections( const std::vector<ushort> & );
 			void setBonds( const std::vector<uint> & );
 
+			void refreshAtomBufferCacheSize( const uint p_atomCount )
+			{
+				_bufferAtomRadius.resize( p_atomCount );
+				_bufferAtomColors.resize( p_atomCount );
+				_bufferAtomVisibilities.resize( p_atomCount, 0 );
+				_bufferAtomSelection.resize( p_atomCount );
+			}
+			void refreshBondBufferCacheSize( const uint p_bondCount ) { _bufferBonds.resize( p_bondCount * 2 ); }
+
+			std::vector<Color::Rgb> & getColorBufferCache() const { return _bufferAtomColors; };
+
 		  private:
 			enum ATTRIBUTE_LOCATION
 			{
@@ -50,6 +61,13 @@ namespace VTX
 			GLuint _vboAtomSelections	= GL_INVALID_VALUE;
 			GLuint _iboBonds			= GL_INVALID_VALUE;
 			GLuint _vao					= GL_INVALID_VALUE;
+
+			// Buffer caches
+			mutable std::vector<float>		_bufferAtomRadius		= std::vector<float>();
+			mutable std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
+			mutable std::vector<ushort>		_bufferAtomVisibilities = std::vector<ushort>();
+			mutable std::vector<ushort>		_bufferAtomSelection	= std::vector<ushort>();
+			mutable std::vector<uint>		_bufferBonds			= std::vector<uint>();
 		};
 	} // namespace Buffer
 } // namespace VTX

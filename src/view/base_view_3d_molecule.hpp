@@ -8,6 +8,7 @@
 #include "base_view_3d.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
+#include "representation/representation_target.hpp"
 #include <map>
 
 namespace VTX
@@ -23,9 +24,11 @@ namespace VTX
 			inline void render() override
 			{
 				// Render atoms.
-				for ( const std::pair<const Model::Representation::BaseRepresentation *, Model::Molecule::RepresentationStruct> & pair : _model->getRepresentationState() )
+
+				for ( const std::pair<const Model::Representation::BaseRepresentation *, VTX::Representation::RepresentationTarget> representationData :
+					  _model->getRepresentationData() )
 				{
-					render( pair.first );
+					render( representationData.first );
 				}
 			}
 

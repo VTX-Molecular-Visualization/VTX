@@ -9,8 +9,9 @@
 #include "io/reader/setting.hpp"
 #include "io/writer/setting.hpp"
 #include "renderer/gl/gl.hpp"
+#include "representation/representation_manager.hpp"
+#include "setting.hpp"
 #include "util/filesystem.hpp"
-#include "util/molecule.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -105,10 +106,11 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().representation = _representationIndex;
+
+					VTX::Representation::RepresentationManager::get().setDefaultRepresentationIndex( _representationIndex );
+
 					for ( const Object3D::Scene::PairMoleculePtrFloat & pair : VTXApp::get().getScene().getMolecules() )
-					{
-						Util::Molecule::refreshRepresentationState( *pair.first );
-					}
+						pair.first->computeRepresentationTargets();
 				};
 
 				virtual void displayUsage() override { VTX_INFO( "BALL_AND_STICK|VAN_DER_WAALS|STICK|SAS" ); }

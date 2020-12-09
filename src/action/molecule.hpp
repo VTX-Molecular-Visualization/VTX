@@ -9,7 +9,6 @@
 #include "mvc/mvc_manager.hpp"
 #include "setting.hpp"
 #include "util/math.hpp"
-#include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
@@ -64,7 +63,7 @@ namespace VTX
 					Model::Molecule & molecule		= ( (Model::Molecule &)_visible );
 
 					molecule.setVisible( newVisibility );
-					Util::Molecule::refreshRepresentationState( molecule );
+					molecule.computeRepresentationTargets();
 				}
 			};
 

@@ -18,6 +18,7 @@
 #include "model/configuration/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation.hpp"
+#include "representation/representation_target.hpp"
 #include "residue.hpp"
 #include <iostream>
 #include <map>
@@ -39,17 +40,8 @@ namespace VTX
 		class Molecule : public BaseModel3D<Buffer::Molecule>, public Generic::BaseColorable, public Generic::BaseRepresentable
 		{
 		  public:
-			using AtomPositionsFrame = std::vector<Vec3f>;
-			using MapRange			 = std::map<uint, uint>; // std::map<start, count>
-
-			struct RepresentationStruct
-			{
-				MapRange atoms	 = MapRange();
-				MapRange bonds	 = MapRange();
-				MapRange ribbons = MapRange();
-			};
-
-			using RepresentationState = std::map<const Model::Representation::BaseRepresentation *, RepresentationStruct>;
+			using AtomPositionsFrame  = std::vector<Vec3f>;
+			using RepresentationState = std::map<const Model::Representation::BaseRepresentation *, VTX::Representation::RepresentationTarget>;
 
 			Molecule();
 			~Molecule();

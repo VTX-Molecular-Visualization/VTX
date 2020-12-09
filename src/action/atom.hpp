@@ -6,7 +6,7 @@
 #endif
 
 #include "model/atom.hpp"
-#include "util/molecule.hpp"
+#include "model/molecule.hpp"
 #include "visible.hpp"
 
 namespace VTX
@@ -52,7 +52,7 @@ namespace VTX
 						}
 					}
 
-					Util::Molecule::refreshRepresentationState( *atom.getMoleculePtr() );
+					atom.getMoleculePtr()->computeRepresentationTargets();
 				}
 			};
 		} // namespace Atom

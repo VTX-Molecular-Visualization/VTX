@@ -1,4 +1,5 @@
 #include "sphere.hpp"
+#include "representation/representation_manager.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -41,7 +42,7 @@ namespace VTX
 				_gl()->glUniform1f( _uRadiusAddLoc, _radiusAdd );
 				_gl()->glUniform1ui( _uIsRadiusFixedLoc, _isRadiusFixed );
 
-				for ( const std::pair<uint, uint> & pair : _model->getRepresentationState()[ p_representation ].atoms )
+				for ( const std::pair<uint, uint> & pair : _model->getRepresentationAtoms( p_representation ) )
 				{
 					_gl()->glDrawArrays( GL_POINTS, pair.first, pair.second );
 				}

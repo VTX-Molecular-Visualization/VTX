@@ -1,16 +1,20 @@
-#ifndef __VTX_REPRESENTATTION_MANAGER__
-#define __VTX_REPRESENTATTION_MANAGER__
+#ifndef __VTX_REPRESENTATION_MANAGER__
+#define __VTX_REPRESENTATION_MANAGER__
 
 #ifdef _MSC_VER
 #pragma once
 #endif
 
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "generic/base_representable.hpp"
 #include "model/representation/representation.hpp"
+#include "model/representation/representation_library.hpp"
 #include "model/selection.hpp"
+//#include "setting.hpp"
 #include <algorithm>
-#include <map>
 #include <set>
+#include <vector>
 
 namespace VTX
 {
@@ -25,66 +29,125 @@ namespace VTX
 				return instance;
 			}
 
-			inline void addRepresentation( const Model::Representation::BaseRepresentation * p_representation, const Generic::BaseRepresentable * p_target )
+			inline void instantiateRepresentation( Model::Representation::BaseRepresentation * p_representation, Generic::BaseRepresentable * p_target )
 			{
-				if ( _mapRepresentationOnSelections.find( p_representation ) == _mapRepresentationOnSelections.end() )
-					_mapRepresentationOnSelections.emplace( p_representation, std::set<const Generic::BaseRepresentable *>() );
+				p_target->addRepresentation( p_representation );
+				p_target->computeRepresentationTargets();
 
-				_mapRepresentationOnSelections[ p_representation ].emplace( p_target );
+				if ( _mapRepresentablesLinkedToRepresentation.find( p_representation ) == _mapRepresentablesLinkedToRepresentation.end() )
+					_mapRepresentablesLinkedToRepresentation.emplace( p_representation, std::unordered_set<Generic::BaseRepresentable *>() );
+
+				_mapRepresentablesLinkedToRepresentation[ p_representation ].emplace( p_target );
+
+				VTX_EVENT( new Event::VTXEventPtr<Model::Representation::BaseRepresentation>( Event::REPRESENTATION_ADDED, p_representation ) );
 			};
-			inline void removeRepresentation( Model::Representation::BaseRepresentation * p_representation, Generic::BaseRepresentable * p_target )
+			inline void instantiateRepresentation( Model::Representation::BaseRepresentation * p_representation, const Model::Selection * const p_selection )
 			{
-				_mapRepresentationOnSelections[ p_representation ].erase(
-					std::find( _mapRepresentationOnSelections[ p_representation ].begin(), _mapRepresentationOnSelections[ p_representation ].end(), p_target ) );
+				std::set<Model::Molecule *> molecules = std::set<Model::Molecule *>();
 
-				if ( _mapRepresentationOnSelections[ p_representation ].empty() )
-					_mapRepresentationOnSelections.erase( p_representation );
+				if ( _mapRepresentablesLinkedToRepresentation.find( p_representation ) == _mapRepresentablesLinkedToRepresentation.end() )
+					_mapRepresentablesLinkedToRepresentation.emplace( p_representation, std::unordered_set<Generic::BaseRepresentable *>() );
+
+				for ( const std::pair<Model::ID, Model::Selection::MapChainIds> mapMolecule : p_selection->getItems() )
+				{
+					Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( mapMolecule.first );
+					for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> mapChain : mapMolecule.second )
+					{
+						for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> mapResidue : mapChain.second )
+						{
+							Model::Residue & residue = molecule.getResidue( mapResidue.first );
+							residue.addRepresentation( p_representation );
+
+							_mapRepresentablesLinkedToRepresentation[ p_representation ].emplace( &residue );
+						}
+					}
+
+					molecule.computeRepresentationTargets();
+				}
+
+				VTX_EVENT( new Event::VTXEventPtr<Model::Representation::BaseRepresentation>( Event::REPRESENTATION_ADDED, p_representation ) );
 			};
-			inline void removeRepresentation( Model::Representation::BaseRepresentation * p_representation ) { _mapRepresentationOnSelections.erase( p_representation ); };
+
+			inline void addRepresentation( Model::Representation::BaseRepresentation * p_representation, Generic::BaseRepresentable * p_target )
+			{
+				p_target->addRepresentation( p_representation );
+				p_target->computeRepresentationTargets();
+
+				if ( _mapRepresentablesLinkedToRepresentation.find( p_representation ) == _mapRepresentablesLinkedToRepresentation.end() )
+					_mapRepresentablesLinkedToRepresentation.emplace( p_representation, std::unordered_set<Generic::BaseRepresentable *>() );
+
+				_mapRepresentablesLinkedToRepresentation[ p_representation ].emplace( p_target );
+			};
+
+			inline void removeRepresentation( const Model::Representation::BaseRepresentation * p_representation, Generic::BaseRepresentable * p_target )
+			{
+				_mapRepresentablesLinkedToRepresentation[ p_representation ].erase( p_target );
+				p_target->removeRepresentation( p_representation );
+
+				p_target->computeRepresentationTargets();
+			};
+			inline void removeRepresentation( Model::Representation::BaseRepresentation * p_representation )
+			{
+				std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *> molecules = std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *>();
+				for ( Generic::BaseRepresentable * target : _mapRepresentablesLinkedToRepresentation[ p_representation ] )
+				{
+					target->removeRepresentation( p_representation );
+					molecules.emplace( target->getMolecule(), target );
+				}
+
+				for ( std::pair<const Model::Molecule *, Generic::BaseRepresentable *> pairMoleculeRep : molecules )
+				{
+					pairMoleculeRep.second->computeRepresentationTargets();
+				}
+
+				_mapRepresentablesLinkedToRepresentation.erase( p_representation );
+
+				VTX_EVENT( new Event::VTXEventPtr<Model::Representation::BaseRepresentation>( Event::REPRESENTATION_REMOVED, p_representation ) );
+			};
 
 			inline void toggleRepresentation( const Model::Representation::BaseRepresentation * p_representation, Generic::BaseRepresentable * p_target )
 			{
-				if ( _mapRepresentationOnSelections.find( p_representation ) == _mapRepresentationOnSelections.end() )
-					_mapRepresentationOnSelections.emplace( p_representation, std::set<const Generic::BaseRepresentable *>() );
-
-				std::set<const Generic::BaseRepresentable *>::const_iterator representableIt = _mapRepresentationOnSelections[ p_representation ].find( p_target );
-				if ( representableIt == _mapRepresentationOnSelections[ p_representation ].end() )
-				{
-					_mapRepresentationOnSelections[ p_representation ].emplace( p_target );
-					p_target->addRepresentation( p_representation );
-				}
-				else
-				{
-					_mapRepresentationOnSelections[ p_representation ].erase( representableIt );
-					p_target->removeRepresentation( p_representation );
-				}
+				p_target->toggleRepresentation( p_representation );
 			};
-
-			inline const std::map<const Model::Representation::BaseRepresentation *, std::set<const Generic::BaseRepresentable *>> & getRepresentations() const
+			inline void toggleRepresentation( const Model::Representation::BaseRepresentation * p_representation, const Model::Selection * const p_selection )
 			{
-				return _mapRepresentationOnSelections;
-			};
-
-			inline void fillVectorWithRepresentations( const Generic::BaseRepresentable * const							p_representable,
-													   std::vector<const Model::Representation::BaseRepresentation *> & p_vector ) const
-			{
-				for ( const std::pair<const Model::Representation::BaseRepresentation *, std::set<const Generic::BaseRepresentable *>> it : _mapRepresentationOnSelections )
+				for ( const std::pair<Model::ID, Model::Selection::MapChainIds> mapMolecule : p_selection->getItems() )
 				{
-					if ( it.second.find( p_representable ) != it.second.cend() )
+					Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( mapMolecule.first );
+					for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> mapChain : mapMolecule.second )
 					{
-						p_vector.emplace_back( it.first );
+						for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> mapResidue : mapChain.second )
+						{
+							Model::Residue & residue = molecule.getResidue( mapResidue.first );
+							residue.toggleRepresentation( p_representation );
+						}
 					}
+
+					molecule.computeRepresentationTargets();
 				}
 			};
+
+			inline std::set<const Model::Representation::BaseRepresentation *> & getDefaultRepresentationSet() { return _defaultRepresentationSet; };
+
+			inline void setDefaultRepresentationIndex( const int p_defaultRepresentationIndex )
+			{
+				const Model::Representation::BaseRepresentation * const defaultRep
+					= Model::Representation::RepresentationLibrary::get().getRepresentation( p_defaultRepresentationIndex );
+
+				_defaultRepresentationSet.clear();
+				_defaultRepresentationSet.emplace( defaultRep );
+			}
 
 		  private:
-			std::map<const Model::Representation::BaseRepresentation *, std::set<const Generic::BaseRepresentable *>> _mapRepresentationOnSelections
-				= std::map<const Model::Representation::BaseRepresentation *, std::set<const Generic::BaseRepresentable *>>();
-
-			RepresentationManager() {};
+			RepresentationManager() { setDefaultRepresentationIndex( 0 /*VTX::Setting::REPRESENTATION_DEFAULT_INDEX*/ ); };
 			RepresentationManager( const RepresentationManager & ) = delete;
 			RepresentationManager & operator=( const RepresentationManager & ) = delete;
 			~RepresentationManager() {};
+
+			std::map<const Model::Representation::BaseRepresentation *, std::unordered_set<Generic::BaseRepresentable *>> _mapRepresentablesLinkedToRepresentation
+				= std::map<const Model::Representation::BaseRepresentation *, std::unordered_set<Generic::BaseRepresentable *>>();
+
+			std::set<const Model::Representation::BaseRepresentation *> & _defaultRepresentationSet = std::set<const Model::Representation::BaseRepresentation *>();
 		};
 	} // namespace Representation
 } // namespace VTX

@@ -1,7 +1,12 @@
 #include "inspector_widget.hpp"
 #include "model/molecule.hpp"
+#include "model/representation/representation.hpp"
+#include "model/representation/representation_library.hpp"
+#include "model/selection.hpp"
+#include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "view/ui/widget/molecule_inspector_view.hpp"
+#include "view/ui/widget/representation_inspector_view.hpp"
 
 namespace VTX
 {
@@ -14,8 +19,8 @@ namespace VTX
 				InspectorWidget::InspectorWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 				{
 					_registerEvent( Event::Global::SELECTION_CHANGE );
-					_registerEvent( Event::Global::MOLECULE_ADDED );
-					_registerEvent( Event::Global::MOLECULE_REMOVED );
+					_registerEvent( Event::Global::REPRESENTATION_ADDED );
+					_registerEvent( Event::Global::REPRESENTATION_REMOVED );
 				}
 
 				InspectorWidget::~InspectorWidget() {}
@@ -23,28 +28,35 @@ namespace VTX
 				void InspectorWidget::receiveEvent( const Event::VTXEvent & p_event )
 				{
 					if ( p_event.name == Event::Global::SELECTION_CHANGE )
+					{
 						refresh();
-
-					if ( p_event.name == Event::Global::MOLECULE_ADDED )
-					{
-						const Event::VTXEventPtr<Model::Molecule> &		castedEvent			  = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-						View::UI::Widget::MoleculeInspectorView * const moleculeInspectorView = new View::UI::Widget::MoleculeInspectorView( castedEvent.ptr, nullptr );
-						MVC::MvcManager::get().addViewOnModel( castedEvent.ptr, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE, moleculeInspectorView );
-
-						QWidget * const widget = moleculeInspectorView->getWidget();
-						_verticalLayout->insertWidget( 0, widget );
 					}
-					if ( p_event.name == Event::Global::MOLECULE_REMOVED )
+					else if ( p_event.name == Event::Global::REPRESENTATION_ADDED )
 					{
-						const Event::VTXEventPtr<Model::Molecule> &		castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-						View::UI::Widget::MoleculeInspectorView * const moleculeInspectorView
-							= MVC::MvcManager::get().removeViewOnModel<Model::Molecule, View::UI::Widget::MoleculeInspectorView>( castedEvent.ptr,
-																																  ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
+						const Event::VTXEventPtr<Model::Representation::BaseRepresentation> & castedEvent
+							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::BaseRepresentation> &>( p_event );
 
-						QWidget * const widget = moleculeInspectorView->getWidget();
-						_verticalLayout->removeWidget( widget );
+						Model::Representation::BaseRepresentation * const	  representation	 = castedEvent.ptr;
+						View::UI::Widget::RepresentationInspectorView * const representationView = new View::UI::Widget::RepresentationInspectorView( representation, this );
 
-						delete moleculeInspectorView;
+						MVC::MvcManager::get().addViewOnModel( representation, ID::View::UI_INSPECTOR_REPRESENTATION, representationView );
+						QWidget * const widget = representationView->getWidget();
+
+						_verticalLayout->insertWidget( _verticalLayout->count() - 1, widget );
+					}
+					else if ( p_event.name == Event::Global::REPRESENTATION_REMOVED )
+					{
+						const Event::VTXEventPtr<Model::Representation::BaseRepresentation> & castedEvent
+							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::BaseRepresentation> &>( p_event );
+
+						const Model::Representation::BaseRepresentation * const representation = castedEvent.ptr;
+						View::UI::Widget::RepresentationInspectorView * const	representationView
+							= MVC::MvcManager::get().removeViewOnModel<Model::Representation::BaseRepresentation, View::UI::Widget::RepresentationInspectorView>(
+								representation, ID::View::UI_INSPECTOR_REPRESENTATION );
+
+						_verticalLayout->removeWidget( representationView->getWidget() );
+
+						delete representationView;
 					}
 				}
 
@@ -60,7 +72,10 @@ namespace VTX
 					QObjectList widgets = _verticalLayout->children();
 
 					for ( auto it = widgets.begin(); it != widgets.end(); it++ )
+					{
 						_verticalLayout->removeItem( dynamic_cast<QWidgetItem *>( *it ) );
+						delete *it;
+					}
 				}
 
 				void InspectorWidget::_setupUi( const QString & p_name )

@@ -5,12 +5,14 @@
 #include "action/molecule.hpp"
 #include "action/residue.hpp"
 #include "action/selection.hpp"
-#include "model/selection.hpp"
-#include "selection/selection_manager.hpp"
 #include "id.hpp"
+#include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "selection/selection_manager.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
+#include <QDrag>
+#include <QMimeData>
 #include <QScrollBar>
 
 namespace VTX
@@ -281,6 +283,33 @@ namespace VTX
 						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( p_modelID );
 						VTX_ACTION( new Action::Residue::ChangeVisibility( model, visibilityMode ) );
 					}
+				}
+
+				void MoleculeSceneView::mousePressEvent( QMouseEvent * p_event )
+				{
+					QTreeWidget::mousePressEvent( p_event );
+
+					if ( p_event->button() == Qt::LeftButton )
+						_dragStartPosition = p_event->pos();
+				}
+				void MoleculeSceneView::mouseMoveEvent( QMouseEvent * p_event )
+				{
+					if ( !( p_event->buttons() & Qt::LeftButton ) )
+						return;
+
+					if ( ( p_event->pos() - _dragStartPosition ).manhattanLength() < QApplication::startDragDistance() )
+						return;
+
+					QDrag *		drag	 = new QDrag( this );
+					QMimeData * mimeData = new QMimeData;
+
+					QByteArray byteData = QByteArray();
+					byteData.push_back( std::to_string( _model->getId() ).c_str() );
+
+					mimeData->setData( "custom/representable", byteData );
+					drag->setMimeData( mimeData );
+
+					drag->exec( Qt::CopyAction | Qt::MoveAction );
 				}
 
 			} // namespace Widget

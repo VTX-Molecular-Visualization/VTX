@@ -6,6 +6,7 @@
 #endif
 
 #include "color/rgb.hpp"
+#include "generic/base_colorable.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"
 #include "representation_data.hpp"
@@ -37,14 +38,14 @@ namespace VTX
 
 				const std::string & getName() const { return _name; };
 				void				setName( const std::string & p_name ) { _name = std::string( p_name ); };
-				const Color::Rgb &	getColor() const { return _color; };
-				void				setColor( const Color::Rgb & p_color )
-				{
-					_overrideColor = true;
-					_color		   = Color::Rgb( p_color );
-				};
-				void setIgnoreColor() { _overrideColor = false; };
-				bool isColorOverrided() { return _overrideColor; };
+
+				const Generic::COLOR_MODE & getColorMode() { return _colorMode; }
+				void						setColorMode( const Generic::COLOR_MODE & p_colorMode ) { _colorMode = p_colorMode; }
+
+				const Color::Rgb & getColor() const { return _color; };
+				void			   setColor( const Color::Rgb & p_color ) { _color = Color::Rgb( p_color ); };
+
+				const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const { return _dataTargeted; };
 
 				bool			   hasToDrawSphere() const { return _sphereData != nullptr; };
 				const SphereData & getSphereData() const { return *_sphereData; };
@@ -55,12 +56,16 @@ namespace VTX
 				bool			   hasToDrawRibbon() const { return _ribbonData != nullptr; };
 				const RibbonData & getRibbonData() const { return *_ribbonData; };
 
+				void fillMoleculeColorBuffer( Model::Molecule & p_molecule );
+
 			  protected:
 				Generic::REPRESENTATION _representationType;
 
-				std::string _name;
-				bool		_overrideColor = false;
-				Color::Rgb	_color;
+				std::string							  _name;
+				bool								  _overrideColor = false;
+				Color::Rgb							  _color;
+				VTX::Representation::FlagDataTargeted _dataTargeted;
+				Generic::COLOR_MODE					  _colorMode;
 
 				SphereData *   _sphereData	 = nullptr;
 				CylinderData * _cylinderData = nullptr;
@@ -72,33 +77,30 @@ namespace VTX
 			  public:
 				Representation_BallsAndSticks();
 
-			  private:
-				bool  _atomDependantBallRadius = false;
-				float _ballRadius			   = 1.0f;
+				inline void setBallRadius( const float p_radius )
+				{
+					_sphereData->_isRadiusFixed = true;
+					_sphereData->_radiusFixed	= p_radius;
+				};
 
-				float _stickRadius = 0.5f;
+				float		getStickRadius() { return _cylinderData->_radius; };
+				inline void setStickRadius( const float p_radius ) { _cylinderData->_radius = p_radius; };
 			};
 			class Representation_VanDerWaals : public BaseRepresentation
 			{
 			  public:
 				Representation_VanDerWaals();
-
-			  private:
-				bool  _atomDependantBallRadius = false;
-				float _ballRadius			   = 1.0f;
-
-				float _stickRadius = 0.5f;
 			};
 			class Representation_Sticks : public BaseRepresentation
 			{
 			  public:
 				Representation_Sticks();
 
-				float		getStickRadius() { return _stickRadius; };
-				inline void setStickRadius( const float p_radius ) { _stickRadius = p_radius; };
-
-			  private:
-				float _stickRadius = 0.5f;
+				inline void setStickRadius( const float p_radius )
+				{
+					_sphereData->_radiusFixed = p_radius;
+					_cylinderData->_radius	  = p_radius;
+				};
 			};
 			class Representation_Trace : public BaseRepresentation
 			{
@@ -115,6 +117,12 @@ namespace VTX
 			{
 			  public:
 				Representation_Sas();
+			};
+
+			class Representation_Cartoon : public BaseRepresentation
+			{
+			  public:
+				Representation_Cartoon();
 			};
 
 		} // namespace Representation

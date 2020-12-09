@@ -23,7 +23,7 @@ namespace VTX
 				if ( !p_representation->hasToDrawCylinder() )
 					return;
 
-				const float radius = p_representation->getCylinderData()._radiusFixed;
+				const float radius = p_representation->getCylinderData()._radius;
 
 				_program->use();
 
@@ -33,7 +33,7 @@ namespace VTX
 				_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 				_gl()->glUniform1f( _uRadiusLoc, radius );
 
-				for ( const std::pair<uint, uint> & pair : _model->getRepresentationState()[ p_representation ].bonds )
+				for ( const std::pair<uint, uint> & pair : _model->getRepresentationBonds( p_representation ) )
 				{
 					_gl()->glDrawElements( GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
 				}

@@ -7,6 +7,8 @@
 
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include <string>
+#include <vector>
 
 namespace VTX
 {
@@ -20,6 +22,7 @@ namespace VTX
 			PROTEIN,
 			INHERITED
 		};
+		static const std::vector<std::string> COLOR_MODE_STRING { "Atom", "Residue", "Chain", "Protein", "Inherited" };
 
 		class BaseColorable
 		{

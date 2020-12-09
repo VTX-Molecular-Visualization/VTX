@@ -5,7 +5,6 @@
 #include "model/secondary_structure.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
-#include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
@@ -51,7 +50,8 @@ namespace VTX
 				// Create secondary structure mesh.
 				createSecondaryStructure();
 
-				Util::Molecule::refreshRepresentationState( *this );
+				setMolecule( this );
+				computeRepresentationTargets();
 			}
 		}
 

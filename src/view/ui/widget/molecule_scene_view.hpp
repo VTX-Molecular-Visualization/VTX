@@ -13,6 +13,8 @@
 #include "ui/widget/base_manual_widget.hpp"
 #include "view/base_view.hpp"
 #include <QMenu>
+#include <QMouseEvent>
+#include <QPoint>
 #include <QTreeWidget>
 
 namespace VTX
@@ -37,8 +39,12 @@ namespace VTX
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
 
+					void mousePressEvent( QMouseEvent * p_event ) override;
+					void mouseMoveEvent( QMouseEvent * p_event ) override;
+
 				  private:
 					QMenu * _contextMenu;
+					QPoint	_dragStartPosition;
 
 					void _onItemChanged( QTreeWidgetItem * item, int column );
 					void _onItemClicked( QTreeWidgetItem *, int );

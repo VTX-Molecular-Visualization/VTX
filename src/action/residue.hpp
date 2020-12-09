@@ -59,7 +59,7 @@ namespace VTX
 						}
 					}
 
-					Util::Molecule::refreshRepresentationState( *residue.getMoleculePtr() );
+					residue.getMoleculePtr()->computeRepresentationTargets();
 				}
 			};
 		} // namespace Residue

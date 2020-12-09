@@ -25,14 +25,13 @@ namespace VTX
 			{
 			  public:
 				CylinderData() {};
-				float _radiusFixed = 1.0f;
+				float _radius = 1.0f;
 			};
 
 			class RibbonData
 			{
 			  public:
 				RibbonData() {};
-				float _ribbons = 1.0f;
 			};
 
 		} // namespace Representation

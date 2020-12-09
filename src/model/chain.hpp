@@ -40,7 +40,11 @@ namespace VTX
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
+			inline void				setMoleculePtr( Molecule * const p_molecule )
+			{
+				_moleculePtr = p_molecule;
+				setMolecule( p_molecule );
+			}
 
 			static Color::Rgb getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
 

@@ -75,7 +75,7 @@ namespace VTX
 				p_models.clear();
 			}
 
-			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			const M & getModel( const Model::ID & _id ) const
 			{
 				const Model::BaseModel & model	  = _getMvcData( _id )->getModel();
@@ -83,7 +83,7 @@ namespace VTX
 				return modelPtr;
 			}
 
-			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			M & getModel( const Model::ID & _id )
 			{
 				Model::BaseModel & model	= _getMvcData( _id )->getModel();

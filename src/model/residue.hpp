@@ -77,9 +77,13 @@ namespace VTX
 			inline int				getIndexInOriginalChain() const { return _indexInOriginalChain; };
 			inline void				setIndexInOriginalChain( const int p_index ) { _indexInOriginalChain = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
-			inline Chain * const	getChainPtr() const { return _chainPtr; }
-			inline void				setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
+			inline void				setMoleculePtr( Molecule * const p_molecule )
+			{
+				_moleculePtr = p_molecule;
+				setMolecule( p_molecule );
+			}
+			inline Chain * const getChainPtr() const { return _chainPtr; }
+			inline void			 setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
 
 			inline const SYMBOL		   getSymbol() const { return _symbol; };
 			inline const std::string & getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; }
