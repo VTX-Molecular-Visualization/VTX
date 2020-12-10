@@ -23,7 +23,9 @@ namespace VTX
 			MVC::MvcManager::get().deleteAllModels( _bonds );
 			MVC::MvcManager::get().deleteAllModels( _residues );
 			MVC::MvcManager::get().deleteAllModels( _chains );
-			MVC::MvcManager::get().deleteModel( _secondaryStructure );
+			
+			if (_secondaryStructure != nullptr)
+				MVC::MvcManager::get().deleteModel( _secondaryStructure );
 		}
 
 		void Molecule::_init()
