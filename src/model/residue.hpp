@@ -80,7 +80,7 @@ namespace VTX
 			inline void				setMoleculePtr( Molecule * const p_molecule )
 			{
 				_moleculePtr = p_molecule;
-				setMolecule( p_molecule );
+				_setRepresentableMolecule( p_molecule );
 			}
 			inline Chain * const getChainPtr() const { return _chainPtr; }
 			inline void			 setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }

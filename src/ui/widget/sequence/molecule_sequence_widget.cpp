@@ -495,7 +495,7 @@ namespace VTX
 				}
 				void MoleculeSequenceWidget::_select( std::vector<Model::Residue *> & p_residues ) const
 				{
-					VTX::Selection::SelectionManager::get().getSelectionModel().selectResidues( p_residues );
+					VTX::Selection::SelectionManager::get().getSelectionModel().selectResidues( p_residues, true );
 				}
 				void MoleculeSequenceWidget::_unselect( std::vector<Model::Residue *> & p_residues, const bool p_checkData ) const
 				{
@@ -511,10 +511,10 @@ namespace VTX
 					{
 						Model::Residue * const residue = *it;
 
-						if ( selection.isResidueSelected( **it ) )
+						if ( selection.isResidueSelected( *residue ) )
 							selection.unselectResidue( *residue );
 						else
-							selection.selectResidue( *residue );
+							selection.selectResidue( *residue, true );
 					}
 				}
 				void MoleculeSequenceWidget::_clearSelection() const { VTX::Selection::SelectionManager::get().getSelectionModel().clear(); }

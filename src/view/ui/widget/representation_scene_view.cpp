@@ -1,4 +1,6 @@
 #include "representation_scene_view.hpp"
+#include "action/action_manager.hpp"
+#include "action/selection.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
 
@@ -44,10 +46,17 @@ namespace VTX
 				void RepresentationSceneView::_setupSlots()
 				{
 					connect( this, &QTreeWidget::customContextMenuRequested, this, &RepresentationSceneView::_onCustomContextMenuCalled );
+					connect( this, &QTreeWidget::itemClicked, this, &RepresentationSceneView::_onItemClicked );
 				}
 				void RepresentationSceneView::localize() {}
 
 				void RepresentationSceneView::_onCustomContextMenuCalled( const QPoint & p_clicPos ) { _contextMenu->popup( mapToGlobal( p_clicPos ) ); }
+
+				void RepresentationSceneView::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
+				{
+					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+					VTX_ACTION( new Action::Selection::SelectRepresentation( selectionModel, *_model ) );
+				}
 
 				void RepresentationSceneView::setTarget( Generic::BaseRepresentable & p_renderable )
 				{

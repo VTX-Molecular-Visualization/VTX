@@ -23,8 +23,8 @@ namespace VTX
 			MVC::MvcManager::get().deleteAllModels( _bonds );
 			MVC::MvcManager::get().deleteAllModels( _residues );
 			MVC::MvcManager::get().deleteAllModels( _chains );
-			
-			if (_secondaryStructure != nullptr)
+
+			if ( _secondaryStructure != nullptr )
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
 		}
 
@@ -52,7 +52,7 @@ namespace VTX
 				// Create secondary structure mesh.
 				createSecondaryStructure();
 
-				setMolecule( this );
+				_setRepresentableMolecule( this );
 				computeRepresentationTargets();
 			}
 		}

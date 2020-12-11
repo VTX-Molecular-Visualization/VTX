@@ -146,6 +146,8 @@ namespace VTX
 				delete _container[ p_model->getId() ]->removeView<M, V>( p_id );
 			}
 
+			inline void deleteView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { delete _container[ p_model->getId() ]->removeView( p_id ); }
+
 			inline const bool hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { return _container[ p_model->getId() ]->hasView( p_id ); };
 
 			inline void notifyViews( const Model::BaseModel * const p_caller, const Event::VTXEvent * const p_event ) { _container[ p_caller->getId() ]->notifyViews( p_event ); }

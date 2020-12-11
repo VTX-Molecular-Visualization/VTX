@@ -32,9 +32,20 @@ namespace VTX
 					~RepresentableFieldWidget() {};
 					void localize() override;
 
+					inline Generic::BaseRepresentable * const		getPreviousRepresentable() { return _previousValue; };
+					inline const Generic::BaseRepresentable * const getPreviousRepresentable() const { return _previousValue; };
 					inline Generic::BaseRepresentable * const		getRepresentable() { return _representable; };
 					inline const Generic::BaseRepresentable * const getRepresentable() const { return _representable; };
-					inline void										setValue( Generic::BaseRepresentable * const p_representable ) { _representable = p_representable; };
+					inline void										setValue( Generic::BaseRepresentable * const p_representable )
+					{
+						if ( _representable != p_representable )
+						{
+							_previousValue = _representable;
+							_representable = p_representable;
+
+							emit dataChanged();
+						}
+					};
 
 				  signals:
 					void dataChanged();
@@ -48,6 +59,7 @@ namespace VTX
 					void dropEvent( QDropEvent * event ) override;
 
 				  private:
+					Generic::BaseRepresentable * _previousValue = nullptr;
 					Generic::BaseRepresentable * _representable = nullptr;
 				};
 			} // namespace CustomWidget

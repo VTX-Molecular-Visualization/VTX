@@ -24,7 +24,7 @@ namespace VTX
 					VTX_VIEW
 
 				  private:
-					MoleculeInspectorView( Model::Molecule * const p_molecule ) : BaseWidgetView( p_molecule, "MoleculeInspector" ) {};
+					MoleculeInspectorView( Model::Molecule * const p_molecule, QWidget * p_parent ) : BaseWidgetView( p_molecule, "MoleculeInspector", p_parent ) {};
 				};
 
 			} // namespace Widget

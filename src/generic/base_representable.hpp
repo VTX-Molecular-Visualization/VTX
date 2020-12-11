@@ -62,7 +62,7 @@ namespace VTX
 			mutable std::map<const Model::Representation::BaseRepresentation *, VTX::Representation::RepresentationTarget> _representationTargets
 				= std::map<const Model::Representation::BaseRepresentation *, VTX::Representation::RepresentationTarget>();
 
-			void setMolecule( const Model::Molecule * const p_molecule ) { _molecule = p_molecule; };
+			void _setRepresentableMolecule( const Model::Molecule * const p_molecule ) { _molecule = p_molecule; };
 
 		  private:
 			const Model::Molecule * _molecule;

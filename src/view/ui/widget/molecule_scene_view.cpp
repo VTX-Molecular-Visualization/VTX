@@ -55,42 +55,47 @@ namespace VTX
 
 				void MoleculeSceneView::receiveEvent( const Event::VTXEvent & p_event )
 				{
-					// Event::Global::SELECTION_CHANGE.
-					const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
-
-					blockSignals( true );
-					setUpdatesEnabled( false );
-					selectionModel()->clearSelection();
-					const Model::Selection::MapMoleculeIds & items = castedEvent.ptr->getItems();
-					for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & pairMolecule : items )
+					if ( p_event.name == Event::Global::SELECTION_CHANGE )
 					{
-						if ( pairMolecule.first != _model->getId() )
-						{
-							continue;
-						}
+						return;
 
-						topLevelItem( 0 )->setSelected( true );
-						for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : pairMolecule.second )
+						// Event::Global::SELECTION_CHANGE.
+						const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+
+						blockSignals( true );
+						setUpdatesEnabled( false );
+						selectionModel()->clearSelection();
+						const Model::Selection::MapMoleculeIds & items = castedEvent.ptr->getItems();
+						for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & pairMolecule : items )
 						{
-							const Model::Chain & chain = _model->getChain( pairChain.first );
-							topLevelItem( 0 )->child( chain.getIndex() )->setSelected( true );
-							for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+							if ( pairMolecule.first != _model->getId() )
 							{
-								const Model::Residue & residue = _model->getResidue( pairResidue.first );
-								topLevelItem( 0 )->child( chain.getIndex() )->child( residue.getIndex() - chain.getIndexFirstResidue() )->setSelected( true );
-								for ( const uint & atom : pairResidue.second )
+								continue;
+							}
+
+							topLevelItem( 0 )->setSelected( true );
+							for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : pairMolecule.second )
+							{
+								const Model::Chain & chain = _model->getChain( pairChain.first );
+								topLevelItem( 0 )->child( chain.getIndex() )->setSelected( true );
+								for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
 								{
-									topLevelItem( 0 )
-										->child( chain.getIndex() )
-										->child( residue.getIndex() - chain.getIndexFirstResidue() )
-										->child( atom - residue.getIndexFirstAtom() )
-										->setSelected( true );
+									const Model::Residue & residue = _model->getResidue( pairResidue.first );
+									topLevelItem( 0 )->child( chain.getIndex() )->child( residue.getIndex() - chain.getIndexFirstResidue() )->setSelected( true );
+									for ( const uint & atom : pairResidue.second )
+									{
+										topLevelItem( 0 )
+											->child( chain.getIndex() )
+											->child( residue.getIndex() - chain.getIndexFirstResidue() )
+											->child( atom - residue.getIndexFirstAtom() )
+											->setSelected( true );
+									}
 								}
 							}
 						}
+						blockSignals( false );
+						setUpdatesEnabled( true );
 					}
-					blockSignals( false );
-					setUpdatesEnabled( true );
 				}
 
 				void MoleculeSceneView::_setupUi( const QString & p_name )

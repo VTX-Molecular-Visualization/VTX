@@ -41,6 +41,8 @@ namespace VTX
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
 
+					void _onItemClicked( QTreeWidgetItem *, int );
+
 				  private:
 					QMenu * _contextMenu = nullptr;
 

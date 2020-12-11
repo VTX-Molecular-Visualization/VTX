@@ -43,7 +43,7 @@ namespace VTX
 			inline void				setMoleculePtr( Molecule * const p_molecule )
 			{
 				_moleculePtr = p_molecule;
-				setMolecule( p_molecule );
+				_setRepresentableMolecule( p_molecule );
 			}
 
 			static Color::Rgb getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );

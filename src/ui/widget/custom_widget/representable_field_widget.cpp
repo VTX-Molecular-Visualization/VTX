@@ -32,7 +32,7 @@ namespace VTX
 				}
 				void RepresentableFieldWidget::dropEvent( QDropEvent * event )
 				{
-					const QByteArray byteData		   = event->mimeData()->data( "custom/representable" );
+					const QByteArray byteData		 = event->mimeData()->data( "custom/representable" );
 					const Model::ID	 idDroppedObject = std::atoi( byteData.data() );
 
 					Model::BaseModel * const representableModel = &( MVC::MvcManager::get().getModel<Model::BaseModel>( idDroppedObject ) );
@@ -47,11 +47,7 @@ namespace VTX
 
 					event->acceptProposedAction();
 
-					if ( _representable != representable )
-					{
-						_representable = representable;
-						emit dataChanged();
-					}
+					setValue( representable );
 				}
 			} // namespace CustomWidget
 		}	  // namespace Widget
