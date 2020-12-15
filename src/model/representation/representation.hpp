@@ -39,10 +39,15 @@ namespace VTX
 				const std::string & getName() const { return _name; };
 				void				setName( const std::string & p_name ) { _name = std::string( p_name ); };
 
-				const Generic::COLOR_MODE & getColorMode() { return _colorMode; }
+				const std::string & getIconPath() const { return _iconPath; };
+				void				setIconPath( const std::string & p_iconPath ) { _iconPath = std::string( p_iconPath ); };
+
+				const Generic::COLOR_MODE & getColorMode() const { return _colorMode; }
+				Generic::COLOR_MODE &		getColorMode() { return _colorMode; }
 				void						setColorMode( const Generic::COLOR_MODE & p_colorMode ) { _colorMode = p_colorMode; }
 
 				const Color::Rgb & getColor() const { return _color; };
+				Color::Rgb &	   getColor() { return _color; };
 				void			   setColor( const Color::Rgb & p_color ) { _color = Color::Rgb( p_color ); };
 
 				const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const { return _dataTargeted; };
@@ -56,13 +61,11 @@ namespace VTX
 				bool			   hasToDrawRibbon() const { return _ribbonData != nullptr; };
 				const RibbonData & getRibbonData() const { return *_ribbonData; };
 
-				void fillMoleculeColorBuffer( Model::Molecule & p_molecule );
-
 			  protected:
 				Generic::REPRESENTATION _representationType;
 
 				std::string							  _name;
-				bool								  _overrideColor = false;
+				std::string							  _iconPath;
 				Color::Rgb							  _color;
 				VTX::Representation::FlagDataTargeted _dataTargeted;
 				Generic::COLOR_MODE					  _colorMode;

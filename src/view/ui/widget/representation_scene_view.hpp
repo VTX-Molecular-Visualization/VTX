@@ -23,7 +23,7 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class RepresentationSceneView : public View::BaseView<Model::Representation::BaseRepresentation>, public VTX::UI::Widget::BaseManualWidget<QTreeWidget>
+				class RepresentationSceneView : public View::BaseView<Model::Representation::InstantiatedRepresentation>, public VTX::UI::Widget::BaseManualWidget<QTreeWidget>
 				{
 					VTX_VIEW
 					VTX_WIDGET
@@ -35,8 +35,8 @@ namespace VTX
 					void setTarget( Generic::BaseRepresentable & p_renderable );
 
 				  protected:
-					RepresentationSceneView( Model::Representation::BaseRepresentation * const p_model, QWidget * const p_parent ) :
-						View::BaseView<Model::Representation::BaseRepresentation>( p_model ), BaseManualWidget( p_parent ) {};
+					RepresentationSceneView( Model::Representation::InstantiatedRepresentation * const p_model, QWidget * const p_parent ) :
+						View::BaseView<Model::Representation::InstantiatedRepresentation>( p_model ), BaseManualWidget( p_parent ) {};
 
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;

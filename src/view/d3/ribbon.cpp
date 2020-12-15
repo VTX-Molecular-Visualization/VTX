@@ -43,13 +43,13 @@ namespace VTX
 				_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 				_gl()->glUniformMatrix4fv( _uNormalMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
 
-				for ( const std::pair<const Model::Representation::BaseRepresentation *, VTX::Representation::RepresentationTarget> representationData :
+				for ( const std::pair<const Model::Representation::InstantiatedRepresentation *, VTX::Representation::RepresentationTarget> representationData :
 					  _model->getMolecule()->getRepresentationData() )
 				{
 					if ( !representationData.first->hasToDrawRibbon() )
 						continue;
 
-					for ( const std::pair<uint, uint> & ribbonData : representationData.second.getRibbons( ) )
+					for ( const std::pair<uint, uint> & ribbonData : representationData.second.getRibbons() )
 					{
 						_gl()->glUniform1ui( _uMaxIndice, ribbonData.second / 2u );
 						_gl()->glDrawElements( GL_PATCHES, ribbonData.second, GL_UNSIGNED_INT, (void *)( ribbonData.first * sizeof( uint ) ) );

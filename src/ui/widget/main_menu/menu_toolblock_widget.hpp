@@ -64,6 +64,7 @@ namespace VTX
 					void validate();
 
 					void pushButton( MenuToolButtonWidget & p_toolButton, const int p_column );
+					void pushButtonInNextColumn( MenuToolButtonWidget & p_toolButton );
 
 				  protected:
 					MenuToolBlockWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) { _tmpStructure = new TmpGridStructure(); };

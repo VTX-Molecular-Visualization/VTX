@@ -17,7 +17,7 @@
 #include "math/aabb.hpp"
 #include "model/configuration/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
-#include "representation/representation.hpp"
+#include "representation/instantiated_representation.hpp"
 #include "representation/representation_target.hpp"
 #include "residue.hpp"
 #include <iostream>
@@ -43,7 +43,7 @@ namespace VTX
 
 		  public:
 			using AtomPositionsFrame  = std::vector<Vec3f>;
-			using RepresentationState = std::map<const Model::Representation::BaseRepresentation *, VTX::Representation::RepresentationTarget>;
+			using RepresentationState = std::map<const Model::Representation::InstantiatedRepresentation *, VTX::Representation::RepresentationTarget>;
 
 			// Configuration.
 			inline const Configuration::Molecule & getConfiguration() const { return _configuration; }

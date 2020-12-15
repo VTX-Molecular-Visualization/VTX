@@ -22,14 +22,14 @@ namespace VTX
 			{
 				// Render atoms.
 
-				for ( const std::pair<const Model::Representation::BaseRepresentation *, VTX::Representation::RepresentationTarget> representationData :
+				for ( const std::pair<const Model::Representation::InstantiatedRepresentation *, VTX::Representation::RepresentationTarget> representationData :
 					  _model->getRepresentationData() )
 				{
 					render( representationData.first );
 				}
 			}
 
-			virtual void render( const Model::Representation::BaseRepresentation * const ) = 0;
+			virtual void render( const Model::Representation::InstantiatedRepresentation * const ) = 0;
 
 		  protected:
 			explicit BaseView3DMolecule( Model::Molecule * const p_model ) : BaseView3D( p_model ) {}

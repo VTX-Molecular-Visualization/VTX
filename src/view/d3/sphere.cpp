@@ -21,7 +21,7 @@ namespace VTX
 				_uIsRadiusFixedLoc	 = _gl()->glGetUniformLocation( _program->getId(), "uIsRadiusFixed" );
 			}
 
-			void Sphere::render( const Model::Representation::BaseRepresentation * const p_representation )
+			void Sphere::render( const Model::Representation::InstantiatedRepresentation * const p_representation )
 			{
 				if ( !p_representation->hasToDrawSphere() )
 					return;

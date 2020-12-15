@@ -12,7 +12,7 @@
 #include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
-#include "model/representation/representation.hpp"
+#include "model/representation/instantiated_representation.hpp"
 #include "model/residue.hpp"
 #include <map>
 #include <set>
@@ -36,8 +36,8 @@ namespace VTX
 			inline const MapMoleculeIds & getItems() const { return _items; }
 			inline MapMoleculeIds &		  getItems() { return _items; }
 
-			inline const std::set<Representation::BaseRepresentation *> & getRepresentations() const { return _representations; }
-			inline std::set<Representation::BaseRepresentation *> &		  getRepresentations() { return _representations; }
+			inline const std::set<Representation::InstantiatedRepresentation *> & getRepresentations() const { return _representations; }
+			inline std::set<Representation::InstantiatedRepresentation *> &		  getRepresentations() { return _representations; }
 
 			void selectMolecule( Molecule &, const bool p_appendToSelection = false );
 			void selectMolecules( const std::vector<Molecule *> &, const bool p_appendToSelection = false );
@@ -71,12 +71,12 @@ namespace VTX
 			bool isAtomSelected( const Atom & ) const;
 			uint getAtomSelectedCount() const;
 
-			void selectRepresentation( Representation::BaseRepresentation &, const bool p_appendToSelection = false );
-			void selectRepresentations( const std::vector<Representation::BaseRepresentation *> &, const bool p_appendToSelection = false );
-			void unselectRepresentation( Representation::BaseRepresentation & );
-			void unselectRepresentations( const std::vector<Representation::BaseRepresentation *> & );
-			void unselectRepresentationsWithCheck( const std::vector<Representation::BaseRepresentation *> & );
-			bool isRepresentationSelected( Representation::BaseRepresentation & ) const;
+			void selectRepresentation( Representation::InstantiatedRepresentation &, const bool p_appendToSelection = false );
+			void selectRepresentations( const std::vector<Representation::InstantiatedRepresentation *> &, const bool p_appendToSelection = false );
+			void unselectRepresentation( Representation::InstantiatedRepresentation & );
+			void unselectRepresentations( const std::vector<Representation::InstantiatedRepresentation *> & );
+			void unselectRepresentationsWithCheck( const std::vector<Representation::InstantiatedRepresentation *> & );
+			bool isRepresentationSelected( Representation::InstantiatedRepresentation & ) const;
 			uint getRepresentationSelectedCount() const;
 
 			void clear();
@@ -84,10 +84,14 @@ namespace VTX
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		  private:
-			MapMoleculeIds								   _items			= MapMoleculeIds();
-			std::set<Representation::BaseRepresentation *> _representations = std::set<Representation::BaseRepresentation *>();
+			MapMoleculeIds										   _items			= MapMoleculeIds();
+			std::set<Representation::InstantiatedRepresentation *> _representations = std::set<Representation::InstantiatedRepresentation *>();
 
-			Selection() : BaseModel( ID::Model::MODEL_SELECTION ) { _registerEvent( Event::MOLECULE_REMOVED ); }
+			Selection() : BaseModel( ID::Model::MODEL_SELECTION )
+			{
+				_registerEvent( Event::MOLECULE_REMOVED );
+				_registerEvent( Event::REPRESENTATION_REMOVED );
+			}
 			~Selection() = default;
 
 			void _selectMolecule( const Molecule & );
@@ -113,8 +117,8 @@ namespace VTX
 			void _removeResidue( const Residue & );
 			void _removeAtom( const Atom & );
 
-			void _selectRepresentation( Representation::BaseRepresentation & );
-			void _unselectRepresentation( Representation::BaseRepresentation & );
+			void _selectRepresentation( Representation::InstantiatedRepresentation & );
+			void _unselectRepresentation( Representation::InstantiatedRepresentation & );
 
 			void _clearWithoutNotify();
 

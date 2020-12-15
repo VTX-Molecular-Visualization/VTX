@@ -49,7 +49,7 @@ namespace VTX
 					InspectorWidget( QWidget * p_parent );
 
 					void _addMolecule( Model::Molecule * const p_molecule );
-					void _addRepresentation( Model::Representation::BaseRepresentation * const p_representation );
+					void _addRepresentation( Model::Representation::InstantiatedRepresentation * const p_representation );
 
 					template<typename M,
 							 typename V,

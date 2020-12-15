@@ -34,15 +34,8 @@ namespace VTX
 						void _setupSlots() override;
 
 					  private:
-						RepresentationPresetButton * _preset1 = nullptr;
-						RepresentationPresetButton * _preset2 = nullptr;
-						RepresentationPresetButton * _preset3 = nullptr;
-
-						RepresentationPresetButton * _preset4 = nullptr;
-						RepresentationPresetButton * _preset5 = nullptr;
-						RepresentationPresetButton * _preset6 = nullptr;
-
-						MenuToolButtonWidget * _addPreset = nullptr;
+						std::vector<RepresentationPresetButton *> _buttons	 = std::vector<RepresentationPresetButton *>();
+						MenuToolButtonWidget *					  _addPreset = nullptr;
 					};
 				} // namespace Visualization
 			}	  // namespace MainMenu

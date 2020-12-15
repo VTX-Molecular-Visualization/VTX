@@ -51,8 +51,8 @@ namespace VTX
 					}
 					else if ( p_event.name == Event::Global::REPRESENTATION_ADDED )
 					{
-						const Event::VTXEventPtr<Model::Representation::BaseRepresentation> & castedEvent
-							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::BaseRepresentation> &>( p_event );
+						const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> & castedEvent
+							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>( p_event );
 
 						View::UI::Widget::RepresentationSceneView * const representationSceneWidget
 							= WidgetFactory::get().instanciateViewWidget<View::UI::Widget::RepresentationSceneView>(
@@ -63,15 +63,15 @@ namespace VTX
 					}
 					else if ( p_event.name == Event::Global::REPRESENTATION_REMOVED )
 					{
-						const Event::VTXEventPtr<Model::Representation::BaseRepresentation> & castedEvent
-							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::BaseRepresentation> &>( p_event );
+						const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> & castedEvent
+							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>( p_event );
 
 						View::UI::Widget::RepresentationSceneView * const representationSceneWidget
 							= MVC::MvcManager::get().getView<View::UI::Widget::RepresentationSceneView>( castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION );
 
 						_layout->removeWidget( representationSceneWidget );
 
-						MVC::MvcManager::get().deleteView<View::UI::Widget::RepresentationSceneView, Model::Representation::BaseRepresentation>(
+						MVC::MvcManager::get().deleteView<View::UI::Widget::RepresentationSceneView, Model::Representation::InstantiatedRepresentation>(
 							castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION );
 					}
 				}

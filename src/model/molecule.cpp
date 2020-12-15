@@ -38,6 +38,7 @@ namespace VTX
 			{
 				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
 				_buffer->setAtomRadius( _bufferAtomRadius );
+				_buffer->refreshAtomBufferCacheSize( (uint)_atoms.size() );
 				_fillBufferAtomColors();
 				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 				_buffer->setAtomSelections( _bufferAtomSelection );

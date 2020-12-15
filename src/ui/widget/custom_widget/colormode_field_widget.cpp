@@ -28,12 +28,21 @@ namespace VTX
 
 					_colorSetButton = new QPushButton( this );
 					_colorSetButton->hide();
-				
+
 					_colorDialog = new QColorDialog( this );
 				}
 
-				void ColorModeFieldWidget::_setupSlots() { connect( _colorSetButton, &QPushButton::clicked, this, &ColorModeFieldWidget::_openColorDialog ); }
+				void ColorModeFieldWidget::_setupSlots()
+				{
+					connect( _colorModeComboBox, QOverload<int>::of( &QComboBox::currentIndexChanged ), this, &ColorModeFieldWidget::_colorModeChange );
+					connect( _colorSetButton, &QPushButton::clicked, this, &ColorModeFieldWidget::_openColorDialog );
+				}
 
+				void ColorModeFieldWidget::_colorModeChange( int p_index )
+				{
+					const Generic::COLOR_MODE colorMode = (Generic::COLOR_MODE)p_index;
+					setColorMode( colorMode );
+				}
 				void ColorModeFieldWidget::_openColorDialog() { _colorDialog->open(); }
 
 				void ColorModeFieldWidget::localize() {};

@@ -9,6 +9,7 @@
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
 #include "model/molecule.hpp"
+#include "model/representation/instantiated_representation.hpp"
 #include "model/representation/representation.hpp"
 #include "model/selection.hpp"
 #include "representation/representation_manager.hpp"
@@ -47,7 +48,7 @@ namespace VTX
 		class RepresentableRemoveRepresentation : public BaseAction
 		{
 		  public:
-			explicit RepresentableRemoveRepresentation( Generic::BaseRepresentable & p_representable, Model::Representation::BaseRepresentation * p_representation ) :
+			explicit RepresentableRemoveRepresentation( Generic::BaseRepresentable & p_representable, const Model::Representation::InstantiatedRepresentation * p_representation ) :
 				_representable( &p_representable ), _representation( p_representation )
 			{
 			}
@@ -55,23 +56,34 @@ namespace VTX
 			void execute() { Representation::RepresentationManager::get().removeRepresentation( _representation, _representable ); };
 
 		  private:
-			Generic::BaseRepresentable * const			_representable;
-			Model::Representation::BaseRepresentation * _representation;
+			Generic::BaseRepresentable * const						  _representable;
+			const Model::Representation::InstantiatedRepresentation * _representation;
 		};
 
-		class ChangeRepresentationColorMode
+		class ChangeRepresentationColorMode : public BaseAction
 		{
 		  public:
 			explicit ChangeRepresentationColorMode( Model::Representation::BaseRepresentation * const p_representation, const Generic::COLOR_MODE & p_colorMode ) :
 				_representation( p_representation ), _colorMode( p_colorMode )
 			{
 			}
+			explicit ChangeRepresentationColorMode( Model::Representation::InstantiatedRepresentation * const p_representation, const Generic::COLOR_MODE & p_colorMode ) :
+				_instantiatedRepresentation( p_representation ), _colorMode( p_colorMode )
+			{
+			}
 
-			void execute() { _representation->setColorMode( _colorMode ); };
+			void execute()
+			{
+				if ( _representation != nullptr )
+					_representation->setColorMode( _colorMode );
+				else
+					_instantiatedRepresentation->setColorMode( _colorMode );
+			};
 
 		  private:
-			const Generic::COLOR_MODE						  _colorMode;
-			Model::Representation::BaseRepresentation * const _representation;
+			const Generic::COLOR_MODE								  _colorMode;
+			Model::Representation::BaseRepresentation * const		  _representation			  = nullptr;
+			Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation = nullptr;
 		};
 	} // namespace Action
 } // namespace VTX

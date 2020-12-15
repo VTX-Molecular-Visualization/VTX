@@ -66,7 +66,7 @@ namespace VTX
 					_representable = &p_renderable;
 
 					if ( _representable != nullptr )
-						Representation::RepresentationManager::get().addRepresentation( _model, _representable );
+						Representation::RepresentationManager::get().addToRepresentation( _model, _representable );
 				}
 
 				void RepresentationSceneView::_deleteAction() { Representation::RepresentationManager::get().removeRepresentation( _model ); }

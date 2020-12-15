@@ -18,7 +18,7 @@ namespace VTX
 				_uRadiusLoc			 = _gl()->glGetUniformLocation( _program->getId(), "uCylRad" );
 			}
 
-			void Cylinder::render( const Model::Representation::BaseRepresentation * const p_representation )
+			void Cylinder::render( const Model::Representation::InstantiatedRepresentation * const p_representation )
 			{
 				if ( !p_representation->hasToDrawCylinder() )
 					return;

@@ -7,6 +7,7 @@
 
 #include "inspector_item_field.hpp"
 #include "inspector_section.hpp"
+#include "model/representation/instantiated_representation.hpp"
 #include "model/representation/representation.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget/custom_widget/colormode_field_widget.hpp"
@@ -22,7 +23,7 @@ namespace VTX
 		{
 			namespace Inspector
 			{
-				class InspectorRepresentationWidget : public ViewItemWidget<Model::Representation::BaseRepresentation>
+				class InspectorRepresentationWidget : public ViewItemWidget<Model::Representation::InstantiatedRepresentation>
 				{
 					VTX_WIDGET
 
@@ -39,6 +40,7 @@ namespace VTX
 
 				  private:
 					CustomWidget::CollapsingHeaderWidget * _mainWidget = nullptr;
+					bool _isRefreshing = false;
 
 					InspectorSection * _targetSection = nullptr;
 

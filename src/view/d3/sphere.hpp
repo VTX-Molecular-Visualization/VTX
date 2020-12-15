@@ -16,10 +16,9 @@ namespace VTX
 			class Sphere : public BaseView3DMolecule
 			{
 				VTX_VIEW
-				
-			  public:
 
-				void render( const Model::Representation::BaseRepresentation * const p_representation ) override;
+			  public:
+				void render( const Model::Representation::InstantiatedRepresentation * const p_representation ) override;
 
 			  private:
 				float _radiusFixed	 = 1.f;

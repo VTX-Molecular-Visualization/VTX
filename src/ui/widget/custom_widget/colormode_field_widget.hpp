@@ -49,6 +49,8 @@ namespace VTX
 
 					void _setupUi( const QString & p_name ) override;
 					void _setupSlots() override;
+
+					void _colorModeChange( int index );
 					void _openColorDialog();
 
 				  private:

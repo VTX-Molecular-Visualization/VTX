@@ -1,4 +1,7 @@
 #include "inspector_representation_widget.hpp"
+#include "action/action_manager.hpp"
+#include "action/representable.hpp"
+#include "inspector_representation_widget.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
@@ -60,19 +63,25 @@ namespace VTX
 					if ( _model == nullptr )
 						return;
 
+					_isRefreshing = true;
+
 					_mainWidget->setHeaderTitle( QString::fromStdString( _model->getName() ) );
 					const QPixmap symbolPixmap = Style::IconConst::get().REPRESENTATION_SYMBOL;
 					_mainWidget->setHeaderIcon( symbolPixmap );
-					
-					//TODO Manage multiple selection
+
+					// TODO Manage multiple selection
 					const std::unordered_set<Generic::BaseRepresentable *> & targets = Representation::RepresentationManager::get().getTargets( _model );
 					if ( targets.size() > 0 )
 						_targetsField->setValue( *targets.begin() );
 					_colorModeField->setColorMode( _model->getColorMode() );
+					_isRefreshing = false;
 				}
 
 				void InspectorRepresentationWidget::_onTargetChange()
 				{
+					if ( _isRefreshing )
+						return;
+
 					Generic::BaseRepresentable * const previousRepresentable = _targetsField->getPreviousRepresentable();
 					Generic::BaseRepresentable * const representable		 = _targetsField->getRepresentable();
 
@@ -80,11 +89,17 @@ namespace VTX
 						Representation::RepresentationManager::get().removeRepresentation( _model, previousRepresentable );
 
 					if ( representable != nullptr )
-						Representation::RepresentationManager::get().addRepresentation( _model, representable );
+						Representation::RepresentationManager::get().addToRepresentation( _model, representable );
 
 					VTX_INFO( "On Target Change" );
 				}
-				void InspectorRepresentationWidget::_onColorModeChange() { VTX_INFO( "On Target Change" ); }
+				void InspectorRepresentationWidget::_onColorModeChange()
+				{
+					if ( _isRefreshing )
+						return;
+
+					VTX_ACTION( new Action::ChangeRepresentationColorMode( _model, _colorModeField->getColorMode() ) );
+				}
 
 				void InspectorRepresentationWidget::localize() { _targetSection->setHeaderTitle( "TARGETS" ); }
 

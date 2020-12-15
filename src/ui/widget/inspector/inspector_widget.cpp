@@ -81,10 +81,10 @@ namespace VTX
 				{
 					_addInspectorView<Model::Molecule, View::UI::Widget::MoleculeInspectorView>( p_molecule, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
 				}
-				void InspectorWidget::_addRepresentation( Model::Representation::BaseRepresentation * const p_representation )
+				void InspectorWidget::_addRepresentation( Model::Representation::InstantiatedRepresentation * const p_representation )
 				{
-					_addInspectorView<Model::Representation::BaseRepresentation, View::UI::Widget::RepresentationInspectorView>( p_representation,
-																																 ID::View::UI_INSPECTOR_REPRESENTATION );
+					_addInspectorView<Model::Representation::InstantiatedRepresentation, View::UI::Widget::RepresentationInspectorView>( p_representation,
+																																		 ID::View::UI_INSPECTOR_REPRESENTATION );
 				}
 
 				void InspectorWidget::_setupSlots() {}

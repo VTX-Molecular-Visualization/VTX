@@ -1,6 +1,8 @@
 #include "base_representable.hpp"
+#include "model/atom.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/representation_library.hpp"
+#include "model/residue.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
 #include "vtx_app.hpp"
@@ -9,10 +11,15 @@ namespace VTX
 {
 	namespace Generic
 	{
-		const std::set<const Model::Representation::BaseRepresentation *> & BaseRepresentable::getRepresentations() const
+		const std::set<const Model::Representation::InstantiatedRepresentation *> & BaseRepresentable::getRepresentations() const
 		{
 			if ( _representations.size() == 0 )
-				return Representation::RepresentationManager::get().getDefaultRepresentationSet();
+			{
+				if ( _molecule->_representations.size() == 0 )
+					return Representation::RepresentationManager::get().getDefaultRepresentationSet();
+				else
+					return _molecule->getRepresentations();
+			}
 			else
 				return _representations;
 		}
@@ -27,28 +34,18 @@ namespace VTX
 			for ( Model::Residue * const residue : _molecule->getResidues() )
 			{
 				// Skip hidden items.
-				if ( residue->isVisible() == false || residue->getChainPtr()->isVisible() == false || residue->getMoleculePtr()->isVisible() == false )
+				if ( !_isResidueVisible( *residue ) )
 					continue;
 
-				if ( _molecule->showSolvent() == false && residue->getAtomType() == Model::Atom::TYPE::SOLVENT )
-					continue;
+				const std::set<const Model::Representation::InstantiatedRepresentation *> & currentRepresentations = residue->getRepresentations();
 
-				if ( _molecule->showIon() == false && residue->getAtomType() == Model::Atom::TYPE::ION )
-					continue;
-
-				const std::set<const Model::Representation::BaseRepresentation *> * currentRepresentations;
-				if ( residue->_representations.size() > 0 )
-					currentRepresentations = &( residue->_representations );
-				else
-					currentRepresentations = &( _molecule->getRepresentations() );
-
-				for ( const Model::Representation::BaseRepresentation * const representation : *currentRepresentations )
+				for ( const Model::Representation::InstantiatedRepresentation * const representation : currentRepresentations )
 				{
 					if ( _molecule->_representationTargets.find( representation ) == _molecule->_representationTargets.end() )
 						_molecule->_representationTargets.emplace( representation, VTX::Representation::RepresentationTarget() );
 
 					VTX::Representation::RepresentationTarget & representationTargets = _molecule->_representationTargets.at( representation );
-					const VTX::Representation::FlagDataTargeted		dataFlag			  = representation->getFlagDataTargeted();
+					const VTX::Representation::FlagDataTargeted dataFlag			  = representation->getFlagDataTargeted();
 
 					if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::ATOM ) )
 					{
@@ -71,5 +68,60 @@ namespace VTX
 				}
 			}
 		}
+
+		void BaseRepresentable::computeColorBuffer()
+		{
+			std::vector<Color::Rgb> p_colorBuffer = _molecule->getBufferAtomColors();
+
+			for ( Model::Residue * const residue : _molecule->getResidues() )
+			{
+				// Skip hidden items.
+				if ( !_isResidueVisible( *residue ) )
+					continue;
+
+				const Model::Representation::InstantiatedRepresentation * const currentRepresentation = *( residue->getRepresentations().begin() );
+
+				for ( uint i = residue->getIndexFirstAtom(); i < residue->getIndexFirstAtom() + residue->getAtomCount(); i++ )
+				{
+					const Model::Atom & atom = _molecule->getAtom( i );
+					switch ( currentRepresentation->getColorMode() )
+					{
+					case Generic::COLOR_MODE::ATOM:
+						if ( atom.getSymbol() == Model::Atom::SYMBOL::A_C )
+							p_colorBuffer[ i ] = atom.getChainPtr()->getColor();
+						else
+							p_colorBuffer[ i ] = atom.getColor();
+						break;
+					case Generic::COLOR_MODE::RESIDUE: p_colorBuffer[ i ] = atom.getResiduePtr()->getColor(); break;
+					case Generic::COLOR_MODE::CHAIN: p_colorBuffer[ i ] = atom.getChainPtr()->getColor(); break;
+					case Generic::COLOR_MODE::PROTEIN: p_colorBuffer[ i ] = currentRepresentation->getColor(); break;
+
+					default: break;
+					}
+				}
+			}
+
+			_molecule->getBuffer()->setAtomColors( p_colorBuffer );
+		}
+
+		bool BaseRepresentable::_isResidueVisible( const Model::Residue & p_residue ) const
+		{
+			const Model::Molecule * const molecule = p_residue.getMoleculePtr();
+
+			// Skip hidden items.
+			if ( p_residue.isVisible() == false || p_residue.getChainPtr()->isVisible() == false || molecule->isVisible() == false )
+				return false;
+
+			const Model::Atom::TYPE atomType = p_residue.getAtomType();
+
+			if ( molecule->showSolvent() == false && atomType == Model::Atom::TYPE::SOLVENT )
+				return false;
+
+			if ( molecule->showIon() == false && atomType == Model::Atom::TYPE::ION )
+				return false;
+
+			return true;
+		}
+
 	} // namespace Generic
 } // namespace VTX

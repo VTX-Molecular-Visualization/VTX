@@ -19,7 +19,7 @@ namespace VTX
 				_uProjMatrixLoc		 = _gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
 			}
 
-			void Box::render( const Model::Representation::BaseRepresentation * const p_representation )
+			void Box::render( const Model::Representation::InstantiatedRepresentation * const p_representation )
 			{
 				_program->use();
 

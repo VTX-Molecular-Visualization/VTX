@@ -9,7 +9,6 @@
 #include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
-#include "model/representation/representation.hpp"
 #include "model/residue.hpp"
 #include "selection/selection_manager.hpp"
 
@@ -70,7 +69,7 @@ namespace VTX
 			class SelectRepresentation : public BaseAction
 			{
 			  public:
-				explicit SelectRepresentation( Model::Selection & p_selection, Model::Representation::BaseRepresentation & p_representation ) :
+				explicit SelectRepresentation( Model::Selection & p_selection, Model::Representation::InstantiatedRepresentation & p_representation ) :
 					_selection( p_selection ), _representation( p_representation )
 				{
 				}
@@ -78,8 +77,8 @@ namespace VTX
 				virtual void execute() override { _selection.selectRepresentation( _representation ); }
 
 			  private:
-				Model::Selection &							_selection;
-				Model::Representation::BaseRepresentation & _representation;
+				Model::Selection &									_selection;
+				Model::Representation::InstantiatedRepresentation & _representation;
 			};
 
 			class UnselectMolecule : public BaseAction
