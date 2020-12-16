@@ -49,7 +49,7 @@ namespace VTX
 		inline State::StateMachine &				  getStateMachine() { return *_stateMachine; }
 		inline const State::StateMachine &			  getStateMachine() const { return *_stateMachine; }
 
-		bool notify( QObject * receiver, QEvent * event ) override;
+		bool notify( QObject * const, QEvent * const ) override;
 
 	  private:
 		QTimer *		_timer		  = nullptr;

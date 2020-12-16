@@ -22,8 +22,10 @@ namespace VTX
 		void Visualization::enter( void * const )
 		{
 			// Create controller.
-			addItem( ID::Controller::FREEFLY, new Controller::Freefly() );
-			addItem( ID::Controller::TRACKBALL, new Controller::Trackball() );
+			addItem( ID::Controller::FREEFLY, new Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
+			addItem(
+				ID::Controller::TRACKBALL,
+				new Controller::Trackball( VTXApp::get().getScene().getCamera(), VTXApp::get().getScene().getAABB().centroid(), VTXApp::get().getScene().getAABB().diameter() ) );
 			addItem( ID::Controller::SHORTCUT, new Controller::Shortcut() );
 
 			if ( _cameraController == ID::Controller::FREEFLY )

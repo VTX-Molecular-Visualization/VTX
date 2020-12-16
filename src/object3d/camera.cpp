@@ -71,12 +71,22 @@ namespace VTX
 			_updateRotation();
 		}
 
+		void Camera::lookAt( const Vec3d & p_target )
+		{
+			Vec3d direction = Util::Math::normalize( p_target - _position );
+
+			rotate( direction - _front );
+
+			//_rotation = Util::Math::lookAt( _position, p_target, -VEC3D_Y );
+			//_updateRotation();
+		}
+
 		void Camera::_updateRotation()
 		{
 			Mat3d rotation = Util::Math::castMat3( _rotation );
-			_front		   = rotation * -VEC3F_Z;
-			_left		   = rotation * -VEC3F_X;
-			_up			   = rotation * VEC3F_Y;
+			_front		   = rotation * -VEC3D_Z;
+			_left		   = rotation * -VEC3D_X;
+			_up			   = rotation * VEC3D_Y;
 
 			_updateViewMatrix();
 		}

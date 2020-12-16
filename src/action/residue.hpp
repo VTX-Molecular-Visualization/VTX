@@ -72,7 +72,7 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->getCurrentCameraController()->focus( _residue.getAABB() );
+					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->getCurrentCameraController()->orient( _residue.getAABB() );
 				}
 
 			  private:

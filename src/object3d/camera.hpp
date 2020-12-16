@@ -98,6 +98,8 @@ namespace VTX
 
 			void rotateAround( const Quatd &, const Vec3d &, const double );
 
+			void lookAt( const Vec3d & );
+
 			void setPerspective( const bool p_perspective )
 			{
 				_isPerspective = p_perspective;

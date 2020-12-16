@@ -133,7 +133,7 @@ namespace VTX
 		Worker::WorkerManager::get().update( deltaTime );
 	}
 
-	bool VTXApp::notify( QObject * receiver, QEvent * event )
+	bool VTXApp::notify( QObject * const receiver, QEvent * const event )
 	{
 		try
 		{

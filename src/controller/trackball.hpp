@@ -6,40 +6,32 @@
 #endif
 
 #include "base_camera_controller.hpp"
-#include "base_keyboard_controller.hpp"
-#include "base_mouse_controller.hpp"
-#include "id.hpp"
-#include "object3d/camera.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX
 {
 	namespace Controller
 	{
-		class Trackball : public BaseMouseController, public BaseKeyboardController, public BaseCameraController
+		class Trackball : public BaseCameraController
 		{
 		  public:
-			// TOFIX: Ugly... set the camera in the BaseCollectionable::init()?
-			explicit Trackball() :
-				_camera( VTXApp::get().getScene().getCamera() ), _target( VTXApp::get().getScene().getAABB().centroid() ),
-				_distanceForced( VTXApp::get().getScene().getAABB().diameter() )
+			explicit Trackball( Object3D::Camera & p_camera, const Vec3f p_target, const float p_distance ) :
+				BaseCameraController( p_camera ), _target( p_target ), _distance( p_distance )
 			{
 			}
 
-			virtual void setActive( const bool p_active ) override;
-			virtual void update( const double & ) override;
-			virtual void reset() override;
-			virtual void focus( const Math::AABB & ) override;
+			void setActive( const bool p_active ) override;
+			void reset() override;
 
 			inline const Vec3d & getTarget() const { return _target; }
 
 		  protected:
-		  private:
-			Object3D::Camera & _camera;
+			void _updateInputs( const double & ) override;
+			void _updateOrient( const double & ) override;
 
-			Vec3d  _target		   = VEC3D_ZERO;
-			double _distanceForced = 0.0;
-			Vec3f  _velocity	   = VEC3F_ZERO;
+		  private:
+			Vec3d  _target	 = VEC3D_ZERO;
+			double _distance = 0.0;
+			Vec3f  _velocity = VEC3F_ZERO;
 
 			bool _needUpdate = true;
 		};

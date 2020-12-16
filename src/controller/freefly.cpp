@@ -4,7 +4,7 @@ namespace VTX
 {
 	namespace Controller
 	{
-		void Freefly::update( const double & p_deltaTime )
+		void Freefly::_updateInputs( const double & p_deltaTime )
 		{
 			// Rotation.
 			if ( _mouseLeftPressed )
@@ -78,7 +78,7 @@ namespace VTX
 			_camera.setRotation( Vec3d( 0.0, 0.0, 0.0 ) );
 		}
 
-		void Freefly::focus( const Math::AABB & ) { VTX_DEBUG( "FOCUS" ); }
+		void Freefly::_updateOrient( const double & p_deltaTime ) { VTX_DEBUG( "ORIENT" ); }
 
 	} // namespace Controller
 } // namespace VTX

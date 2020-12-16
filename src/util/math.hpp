@@ -151,9 +151,7 @@ namespace VTX
 			}
 
 			template<typename T>
-			inline glm::tmat4x4<T> lookAt( const glm::tvec3<T> & p_value,
-										   const glm::tvec3<T> & p_target,
-										   const glm::tvec3<T> & p_axis )
+			inline glm::tmat4x4<T> lookAt( const glm::tvec3<T> & p_value, const glm::tvec3<T> & p_target, const glm::tvec3<T> & p_axis )
 			{
 				return glm::lookAt( p_value, p_target, p_axis );
 			}
@@ -165,12 +163,7 @@ namespace VTX
 			}
 
 			template<typename T>
-			inline glm::tmat4x4<T> ortho( const T & p_left,
-										  const T & p_right,
-										  const T & p_bottom,
-										  const T & p_top,
-										  const T & p_near,
-										  const T & p_far )
+			inline glm::tmat4x4<T> ortho( const T & p_left, const T & p_right, const T & p_bottom, const T & p_top, const T & p_near, const T & p_far )
 			{
 				return glm::ortho( p_left, p_right, p_bottom, p_top, p_near, p_far );
 			}
@@ -296,21 +289,13 @@ namespace VTX
 			}
 
 			template<typename T, typename Q>
-			inline T catmullRomInterpolation( const T & p_p0,
-											  const T & p_p1,
-											  const T & p_p2,
-											  const T & p_p3,
-											  const Q	p_value )
+			inline T catmullRomInterpolation( const T & p_p0, const T & p_p1, const T & p_p2, const T & p_p3, const Q p_value )
 			{
 				return glm::catmullRom( p_p0, p_p1, p_p2, p_p3, p_value );
 			}
 
 			template<typename T, typename Q>
-			inline T cubicInterpolation( const T & p_p0,
-										 const T & p_p1,
-										 const T & p_p2,
-										 const T & p_p3,
-										 const Q   p_value )
+			inline T cubicInterpolation( const T & p_p0, const T & p_p1, const T & p_p2, const T & p_p3, const Q p_value )
 			{
 				return glm::cubic( p_p0, p_p1, p_p2, p_p3, p_value );
 			}
@@ -336,25 +321,20 @@ namespace VTX
 				assert( p_v.x >= 0 );
 				assert( p_v.y >= 0 );
 				assert( p_v.z >= 0 );
-				return ( leftShift3( uint( p_v.z ) ) << 2 ) | ( leftShift3( uint( p_v.y ) ) << 1 )
-					   | leftShift3( uint( p_v.x ) );
+				return ( leftShift3( uint( p_v.z ) ) << 2 ) | ( leftShift3( uint( p_v.y ) ) << 1 ) | leftShift3( uint( p_v.x ) );
 			}
 
 			// p_n (normal) must be normalized
 			inline Mat3f createOrthonormalBasis( const Vec3f & p_n )
 			{
-				const Vec3f t = fabsf( p_n.x ) > fabsf( p_n.y )
-									? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )
-									: Vec3f( 0.f, -p_n.z, p_n.y ) / sqrtf( p_n.y * p_n.y + p_n.z * p_n.z );
+				const Vec3f t = fabsf( p_n.x ) > fabsf( p_n.y ) ? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )
+																: Vec3f( 0.f, -p_n.z, p_n.y ) / sqrtf( p_n.y * p_n.y + p_n.z * p_n.z );
 				const Vec3f b = cross( p_n, t );
 				return Mat3f( t, b, p_n );
 			}
 
 			template<typename T>
-			static float torsionalAngle( const T & p_point0,
-										 const T & p_point1,
-										 const T & p_point2,
-										 const T & p_point3 )
+			static float torsionalAngle( const T & p_point0, const T & p_point1, const T & p_point2, const T & p_point3 )
 			{
 				const Vec3f v01 = p_point0 - p_point1;
 				const Vec3f v32 = p_point3 - p_point2;
@@ -392,10 +372,7 @@ namespace VTX
 				return angle;
 			}
 
-			inline Vec3f linearComb( const float   p_scalar0,
-									 const Vec3f & p_vector0,
-									 const float   p_scalar1,
-									 const Vec3f & p_vector1 )
+			inline Vec3f linearComb( const float p_scalar0, const Vec3f & p_vector0, const float p_scalar1, const Vec3f & p_vector1 )
 			{
 				return p_scalar0 * p_vector0 + p_scalar1 * p_vector1;
 			}

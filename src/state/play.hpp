@@ -24,7 +24,7 @@ namespace VTX
 		  private:
 			Model::Path *					 _path	  = nullptr;
 			const std::vector<std::string> * _actions = nullptr;
-			double							 _time	  = 0.f;
+			double							 _time	  = 0.0;
 
 			void _setCamera() const;
 			void _executeActions( const double p_time );

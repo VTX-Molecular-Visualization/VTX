@@ -18,7 +18,7 @@ namespace VTX
 			}
 		}
 
-		void Trackball::update( const double & p_deltaTime )
+		void Trackball::_updateInputs( const double & p_deltaTime )
 		{
 			// Wheel.
 			float deltaDistance = 0.f;
@@ -116,10 +116,10 @@ namespace VTX
 			if ( _needUpdate )
 			{
 				double distance = 0.0;
-				if ( _distanceForced != 0.0 )
+				if ( _distance != 0.0 )
 				{
-					distance		= Util::Math::clamp( _distanceForced - deltaDistance, 0.1, 10000.0 );
-					_distanceForced = 0.0;
+					distance  = Util::Math::clamp( _distance - deltaDistance, 0.1, 10000.0 );
+					_distance = 0.0;
 				}
 				else
 				{
@@ -150,11 +150,11 @@ namespace VTX
 
 		void Trackball::reset()
 		{
-			_needUpdate		= true;
-			_target			= VTXApp::get().getScene().getAABB().centroid();
-			_distanceForced = VTXApp::get().getScene().getAABB().diameter();
+			_needUpdate = true;
+			_target		= VTXApp::get().getScene().getAABB().centroid();
+			_distance	= VTXApp::get().getScene().getAABB().diameter();
 		}
 
-		void Trackball::focus( const Math::AABB & ) { VTX_DEBUG( "FOCUS" ); }
+		void Trackball::_updateOrient( const double & p_deltaTime ) {}
 	} // namespace Controller
 } // namespace VTX
