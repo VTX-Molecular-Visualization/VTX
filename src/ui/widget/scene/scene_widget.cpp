@@ -178,14 +178,14 @@ namespace VTX
 					_sceneWidgets.erase( _sceneWidgets.begin() + previousIndex );
 					_sceneWidgets.insert( _sceneWidgets.begin() + newIndex, tmp );
 
+					_layout->insertWidget( newIndex, sceneItemWidget, 1 );
+
 					int iMinIndex = previousIndex < newIndex ? previousIndex : newIndex;
 					int iMaxIndex = previousIndex > newIndex ? previousIndex : newIndex;
 					for ( int i = iMinIndex; i <= iMaxIndex; i++ )
 					{
 						_sceneWidgets[ i ]->updatePosInSceneHierarchy( i );
 					}
-
-					_layout->insertWidget( newIndex, sceneItemWidget );
 				}
 
 			} // namespace Scene
