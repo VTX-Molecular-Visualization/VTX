@@ -131,7 +131,7 @@ namespace VTX
 
 			inline std::set<const Model::Representation::InstantiatedRepresentation *> & getDefaultRepresentationSet() { return _defaultRepresentationSet; };
 
-			const std::unordered_set<Generic::BaseRepresentable *> getTargets( const Model::Representation::InstantiatedRepresentation * p_representation )
+			const std::unordered_set<Generic::BaseRepresentable *> & getTargets( const Model::Representation::InstantiatedRepresentation * p_representation )
 			{
 				return _mapRepresentablesLinkedToRepresentation[ p_representation ];
 			}

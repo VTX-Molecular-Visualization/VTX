@@ -6,11 +6,15 @@
 #endif
 
 #include "model/base_model.hpp"
+#include "scene_item_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDockWidget>
+#include <QDragEnterEvent>
+#include <QDropEvent>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QVariant>
+#include <vector>
 
 namespace VTX
 {
@@ -33,9 +37,17 @@ namespace VTX
 					void _setupUi( const QString & p_name ) override;
 					void _setupSlots() override;
 
+					void dragEnterEvent( QDragEnterEvent * p_event ) override;
+					void mouseMoveEvent( QMouseEvent * p_event ) override;
+					void dropEvent( QDropEvent * p_event ) override;
+
 				  private:
-					QWidget *	  _scrollAreaContent = nullptr;
-					QVBoxLayout * _layout			 = nullptr;
+					QWidget *					_scrollAreaContent = nullptr;
+					QVBoxLayout *				_layout			   = nullptr;
+					std::vector<SceneItemWidget *> _sceneWidgets	  = std::vector<SceneItemWidget *>();
+
+					void _addWidgetInLayout( SceneItemWidget * const p_sceneItemWidget );
+					void _removeWidgetInLayout( SceneItemWidget * const p_sceneItemWidget );
 				};
 
 			} // namespace Scene

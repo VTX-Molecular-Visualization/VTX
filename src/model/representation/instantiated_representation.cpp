@@ -9,34 +9,38 @@ namespace VTX
 	{
 		namespace Representation
 		{
+			void InstantiatedRepresentation::setPriority( const int p_priority )
+			{
+				_priority = p_priority;
+				_updateTargets( VTX::Representation::MoleculeComputationFlag::ALL );
+			};
+
 			void InstantiatedRepresentation::setColorMode( const Generic::COLOR_MODE & p_colorMode )
 			{
-				Generic::COLOR_MODE * overridedColorMode = new Generic::COLOR_MODE( p_colorMode );
-				_data.emplace_back( overridedColorMode );
-
-				_colorMode = overridedColorMode;
-
-				std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
-				for ( Generic::BaseRepresentable * target : VTX::Representation::RepresentationManager::get().getTargets( this ) )
-					molecules.emplace( target->getMolecule() );
-
-				for ( Model::Molecule * const molecule : molecules )
-					molecule->computeColorBuffer();
+				_colorMode = overrideParameter<Generic::COLOR_MODE>( p_colorMode );
+				_updateTargets( VTX::Representation::MoleculeComputationFlag::ColorBuffer );
 			}
 
 			void InstantiatedRepresentation::setColor( const Color::Rgb & p_color )
 			{
-				Color::Rgb * overridedColor = new Color::Rgb( p_color );
-				_data.emplace_back( overridedColor );
+				_color = overrideParameter<Color::Rgb>( p_color );
+				_updateTargets( VTX::Representation::MoleculeComputationFlag::ColorBuffer );
+			}
 
-				_color = overridedColor;
-
+			void InstantiatedRepresentation::_updateTargets( const VTX::Representation::MoleculeComputationFlag & p_flag ) const
+			{
 				std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 				for ( Generic::BaseRepresentable * target : VTX::Representation::RepresentationManager::get().getTargets( this ) )
 					molecules.emplace( target->getMolecule() );
 
 				for ( Model::Molecule * const molecule : molecules )
-					molecule->computeColorBuffer();
+				{
+					if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::Targets ) != 0 )
+						molecule->computeRepresentationTargets();
+
+					if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::ColorBuffer ) != 0 )
+						molecule->computeColorBuffer();
+				}
 			}
 
 		} // namespace Representation

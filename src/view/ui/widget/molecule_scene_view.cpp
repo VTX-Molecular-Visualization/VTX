@@ -10,10 +10,9 @@
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
+#include "ui/mime_type.hpp"
 #include "ui/widget_factory.hpp"
-#include <QDrag>
 #include <QMimeData>
-#include <QScrollBar>
 
 namespace VTX
 {
@@ -24,7 +23,7 @@ namespace VTX
 			namespace Widget
 			{
 				MoleculeSceneView::MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent ) :
-					View::BaseView<Model::Molecule>( p_model ), BaseManualWidget( p_parent )
+					View::BaseView<Model::Molecule>( p_model ), SceneItemWidget( p_parent )
 				{
 					_registerEvent( Event::Global::SELECTION_CHANGE );
 				}
@@ -100,21 +99,7 @@ namespace VTX
 
 				void MoleculeSceneView::_setupUi( const QString & p_name )
 				{
-					setObjectName( "sceneTree" );
-					setUniformRowHeights( true );
-					setHeaderHidden( true );
-					setColumnCount( 1 );
-					setSelectionMode( QAbstractItemView::MultiSelection );
-
-					setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents );
-					setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
-
-					setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
-					setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
-
-					setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
-					_contextMenu = new QMenu( parentWidget() );
-					_contextMenu->addAction( "Delete", this, &MoleculeSceneView::_deleteAction, QKeySequence::Delete );
+					SceneItemWidget::_setupUi( p_name );
 
 					QTreeWidgetItem * const moleculeView = new QTreeWidgetItem();
 
@@ -161,9 +146,6 @@ namespace VTX
 					}
 
 					addTopLevelItem( moleculeView );
-
-					setMinimumHeight( rowHeight( model()->index( 0, 0 ) ) );
-					setMinimumWidth( sizeHintForColumn( 0 ) );
 				}
 
 				void MoleculeSceneView::_deleteAction()
@@ -174,17 +156,15 @@ namespace VTX
 
 				void MoleculeSceneView::_setupSlots()
 				{
+					SceneItemWidget::_setupSlots();
+
 					connect( this, &QTreeWidget::itemChanged, this, &MoleculeSceneView::_onItemChanged );
 					connect( this, &QTreeWidget::itemClicked, this, &MoleculeSceneView::_onItemClicked );
 					connect( this, &QTreeWidget::itemExpanded, this, &MoleculeSceneView::_onItemExpanded );
 					connect( this, &QTreeWidget::itemCollapsed, this, &MoleculeSceneView::_onItemCollapsed );
-
-					connect( this, &QTreeWidget::customContextMenuRequested, this, &MoleculeSceneView::_onCustomContextMenuCalled );
 				}
 
-				void MoleculeSceneView::_onCustomContextMenuCalled( const QPoint & p_clicPos ) { _contextMenu->popup( mapToGlobal( p_clicPos ) ); }
-
-				void MoleculeSceneView::localize() {}
+				void MoleculeSceneView::localize() { SceneItemWidget::localize(); }
 
 				void MoleculeSceneView::_onItemChanged( QTreeWidgetItem * p_item, int p_column )
 				{
@@ -290,33 +270,7 @@ namespace VTX
 					}
 				}
 
-				void MoleculeSceneView::mousePressEvent( QMouseEvent * p_event )
-				{
-					QTreeWidget::mousePressEvent( p_event );
-
-					if ( p_event->button() == Qt::LeftButton )
-						_dragStartPosition = p_event->pos();
-				}
-				void MoleculeSceneView::mouseMoveEvent( QMouseEvent * p_event )
-				{
-					if ( !( p_event->buttons() & Qt::LeftButton ) )
-						return;
-
-					if ( ( p_event->pos() - _dragStartPosition ).manhattanLength() < QApplication::startDragDistance() )
-						return;
-
-					QDrag *		drag	 = new QDrag( this );
-					QMimeData * mimeData = new QMimeData;
-
-					QByteArray byteData = QByteArray();
-					byteData.push_back( std::to_string( _model->getId() ).c_str() );
-
-					mimeData->setData( "custom/representable", byteData );
-					drag->setMimeData( mimeData );
-
-					drag->exec( Qt::CopyAction | Qt::MoveAction );
-				}
-
+				QMimeData * MoleculeSceneView::_getDataForDrag() { return VTX::UI::MimeType::generateMoleculeData( *_model ); }
 			} // namespace Widget
 		}	  // namespace UI
 	}		  // namespace View

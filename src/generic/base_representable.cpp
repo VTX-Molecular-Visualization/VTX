@@ -24,6 +24,21 @@ namespace VTX
 				return _representations;
 		}
 
+		const Model::Representation::InstantiatedRepresentation * const BaseRepresentable::getRepresentation() const
+		{
+			const std::set<const Model::Representation::InstantiatedRepresentation *> & representations = getRepresentations();
+
+			const Model::Representation::InstantiatedRepresentation * res = *representations.cbegin();
+
+			for ( const Model::Representation::InstantiatedRepresentation * representation : representations )
+			{
+				if ( representation->getPriority() > res->getPriority() )
+					res = representation;
+			}
+
+			return res;
+		}
+
 		void BaseRepresentable::computeRepresentationTargets()
 		{
 			_molecule->_representationTargets.clear();
@@ -37,34 +52,31 @@ namespace VTX
 				if ( !_isResidueVisible( *residue ) )
 					continue;
 
-				const std::set<const Model::Representation::InstantiatedRepresentation *> & currentRepresentations = residue->getRepresentations();
+				const Model::Representation::InstantiatedRepresentation * const representation = residue->getRepresentation();
 
-				for ( const Model::Representation::InstantiatedRepresentation * const representation : currentRepresentations )
+				if ( _molecule->_representationTargets.find( representation ) == _molecule->_representationTargets.end() )
+					_molecule->_representationTargets.emplace( representation, VTX::Representation::RepresentationTarget() );
+
+				VTX::Representation::RepresentationTarget & representationTargets = _molecule->_representationTargets.at( representation );
+				const VTX::Representation::FlagDataTargeted dataFlag			  = representation->getFlagDataTargeted();
+
+				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::ATOM ) )
 				{
-					if ( _molecule->_representationTargets.find( representation ) == _molecule->_representationTargets.end() )
-						_molecule->_representationTargets.emplace( representation, VTX::Representation::RepresentationTarget() );
+					const std::pair<uint, uint> rangeAtoms = std::pair( residue->getIndexFirstAtom(), residue->getAtomCount() );
+					representationTargets.appendAtoms( rangeAtoms );
+				}
+				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::BOND ) )
+				{
+					const std::pair<uint, uint> rangeBonds = std::pair( residue->getIndiceFirstBond(), residue->getBondIndiceCount() );
+					representationTargets.appendBonds( rangeBonds, residue->getIndexExtraBondStart(), residue->getIndexExtraBondEnd() );
+				}
+				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::RIBBON ) )
+				{
+					std::pair<uint, uint> rangeRibbons = std::pair( 0, 0 );
+					if ( residueToControlPointIndices.find( residue->getIndex() ) != residueToControlPointIndices.end() )
+						rangeRibbons = std::pair( residueToControlPointIndices.at( residue->getIndex() ), 4 );
 
-					VTX::Representation::RepresentationTarget & representationTargets = _molecule->_representationTargets.at( representation );
-					const VTX::Representation::FlagDataTargeted dataFlag			  = representation->getFlagDataTargeted();
-
-					if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::ATOM ) )
-					{
-						const std::pair<uint, uint> rangeAtoms = std::pair( residue->getIndexFirstAtom(), residue->getAtomCount() );
-						representationTargets.appendAtoms( rangeAtoms );
-					}
-					if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::BOND ) )
-					{
-						const std::pair<uint, uint> rangeBonds = std::pair( residue->getIndiceFirstBond(), residue->getBondIndiceCount() );
-						representationTargets.appendBonds( rangeBonds, residue->getIndexExtraBondStart(), residue->getIndexExtraBondEnd() );
-					}
-					if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::RIBBON ) )
-					{
-						std::pair<uint, uint> rangeRibbons = std::pair( 0, 0 );
-						if ( residueToControlPointIndices.find( residue->getIndex() ) != residueToControlPointIndices.end() )
-							rangeRibbons = std::pair( residueToControlPointIndices.at( residue->getIndex() ), 4 );
-
-						representationTargets.appendRibbons( rangeRibbons );
-					}
+					representationTargets.appendRibbons( rangeRibbons );
 				}
 			}
 		}
@@ -79,7 +91,7 @@ namespace VTX
 				if ( !_isResidueVisible( *residue ) )
 					continue;
 
-				const Model::Representation::InstantiatedRepresentation * const currentRepresentation = *( residue->getRepresentations().begin() );
+				const Model::Representation::InstantiatedRepresentation * const currentRepresentation = residue->getRepresentation();
 
 				for ( uint i = residue->getIndexFirstAtom(); i < residue->getIndexFirstAtom() + residue->getAtomCount(); i++ )
 				{

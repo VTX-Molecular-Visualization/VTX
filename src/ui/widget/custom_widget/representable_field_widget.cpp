@@ -3,6 +3,7 @@
 #include "model/base_model.hpp"
 #include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "ui/mime_type.hpp"
 
 namespace VTX
 {
@@ -27,12 +28,12 @@ namespace VTX
 
 				void RepresentableFieldWidget::dragEnterEvent( QDragEnterEvent * event )
 				{
-					if ( event->mimeData()->hasFormat( "custom/representable" ) )
+					if ( event->mimeData()->hasFormat( UI::MimeType::getQStringMimeType( UI::MimeType::ApplicationMimeType::REPRESENTABLE ) ) )
 						event->acceptProposedAction();
 				}
 				void RepresentableFieldWidget::dropEvent( QDropEvent * event )
 				{
-					const QByteArray byteData		 = event->mimeData()->data( "custom/representable" );
+					const QByteArray byteData		 = event->mimeData()->data( UI::MimeType::getQStringMimeType( UI::MimeType::ApplicationMimeType::REPRESENTABLE ) );
 					const Model::ID	 idDroppedObject = std::atoi( byteData.data() );
 
 					Model::BaseModel * const representableModel = &( MVC::MvcManager::get().getModel<Model::BaseModel>( idDroppedObject ) );

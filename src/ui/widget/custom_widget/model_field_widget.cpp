@@ -1,6 +1,7 @@
 #include "model_field_widget.hpp"
 #include "id.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "ui/mime_type.hpp"
 
 namespace VTX
 {
@@ -14,8 +15,6 @@ namespace VTX
 				{
 					setObjectName( p_name );
 					setAcceptDrops( true );
-
-					setFixedSize( 200, 50 );
 				}
 
 				void ModelFieldWidget::_setupSlots() {}
@@ -24,13 +23,13 @@ namespace VTX
 
 				void ModelFieldWidget::dragEnterEvent( QDragEnterEvent * event )
 				{
-					if ( event->mimeData()->hasFormat( "custom/representable" ) )
+					if ( event->mimeData()->hasFormat( UI::MimeType::getQStringMimeType( UI::MimeType::ApplicationMimeType::BASE_MODEL ) ) )
 						event->acceptProposedAction();
 				}
 				void ModelFieldWidget::dropEvent( QDropEvent * event )
 				{
-					const QByteArray byteData		   = event->mimeData()->data( "custom/representable" );
-					const Model::ID idDroppedObject = std::atoi( byteData.data() );
+					const QByteArray byteData		 = event->mimeData()->data( UI::MimeType::getQStringMimeType( UI::MimeType::ApplicationMimeType::BASE_MODEL ) );
+					const Model::ID	 idDroppedObject = std::atoi( byteData.data() );
 
 					Model::BaseModel & model = MVC::MvcManager::get().getModel<Model::BaseModel>( idDroppedObject );
 

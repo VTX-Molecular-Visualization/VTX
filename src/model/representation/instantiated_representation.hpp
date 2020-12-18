@@ -6,6 +6,7 @@
 #endif
 
 #include "color/rgb.hpp"
+#include "generic/base_objectoverride.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"
 #include "representation.hpp"
@@ -18,7 +19,7 @@ namespace VTX
 	{
 		namespace Representation
 		{
-			class InstantiatedRepresentation : public BaseModel
+			class InstantiatedRepresentation : public BaseModel, public Generic::BaseObjectOverride
 			{
 			  public:
 				InstantiatedRepresentation( BaseRepresentation * const p_linkedRepresentation ) :
@@ -27,18 +28,17 @@ namespace VTX
 					setName( _linkedRepresentation->getName() + " (instantiated)" );
 					_color	   = &_linkedRepresentation->getColor();
 					_colorMode = &_linkedRepresentation->getColorMode();
+
+					_priority = getId();
 				};
 
-				~InstantiatedRepresentation()
-				{
-					for ( void * item : _data )
-						delete item;
-
-					_data.clear();
-				}
+				~InstantiatedRepresentation() {}
 
 				const std::string & getName() const { return _name; };
 				void				setName( const std::string & p_name ) { _name = std::string( p_name ); };
+
+				int	 getPriority() const { return _priority; };
+				void setPriority( const int p_priority );
 
 				const Color::Rgb &			getColor() const { return *_color; }
 				void						setColor( const Color::Rgb & p_color );
@@ -58,7 +58,7 @@ namespace VTX
 
 			  protected:
 				BaseRepresentation * const _linkedRepresentation;
-				std::vector<void *>		   _data = std::vector<void *>();
+				int						   _priority = 0;
 
 				std::string			  _name;
 				Color::Rgb *		  _color;
@@ -67,6 +67,8 @@ namespace VTX
 				SphereData *   _sphereData	 = nullptr;
 				CylinderData * _cylinderData = nullptr;
 				RibbonData *   _ribbonData	 = nullptr;
+
+				void _updateTargets( const VTX::Representation::MoleculeComputationFlag & p_flag ) const;
 			};
 
 		} // namespace Representation
