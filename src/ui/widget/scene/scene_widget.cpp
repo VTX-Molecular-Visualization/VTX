@@ -2,6 +2,8 @@
 #include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "selection/selection_manager.hpp"
+#include "style.hpp"
 #include "ui/mime_type.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
@@ -86,13 +88,25 @@ namespace VTX
 				}
 				void SceneWidget::_removeWidgetInLayout( SceneItemWidget * const p_sceneItemWidget )
 				{
-					const int itemID = p_sceneItemWidget->getModelID();
-					for ( auto it = _sceneWidgets.begin(); it != _sceneWidgets.end(); it++ )
+					const int itemID	 = p_sceneItemWidget->getModelID();
+					bool	  itemErased = false;
+					int		  counter	 = 0;
+					while ( counter < _sceneWidgets.size() )
 					{
-						if ( ( *it )->getModelID() == itemID )
+						SceneItemWidget * const item = _sceneWidgets[ counter ];
+						if ( itemErased )
 						{
-							_sceneWidgets.erase( it );
-							break;
+							item->updatePosInSceneHierarchy( counter - 1 );
+							counter++;
+						}
+						else if ( item->getModelID() == itemID )
+						{
+							_sceneWidgets.erase( _sceneWidgets.begin() + counter );
+							itemErased = true;
+						}
+						else
+						{
+							counter++;
 						}
 					}
 
@@ -108,7 +122,7 @@ namespace VTX
 
 					_layout = new QVBoxLayout( _scrollAreaContent );
 					_layout->setSizeConstraint( QLayout::SizeConstraint::SetMinAndMaxSize );
-					_layout->setSpacing( 2 );
+					_layout->setSpacing( Style::SCENE_SPACE_BETWEEN_ITEMS );
 					_layout->addStretch( 1000 );
 					_layout->setContentsMargins( 0, 0, 0, 0 );
 
@@ -130,7 +144,7 @@ namespace VTX
 					this->setWindowTitle( "Scene" );
 					// this->setWindowTitle( QCoreApplication::translate( "SceneWidget", "Scene", nullptr ) );
 				}
-
+				void SceneWidget::mousePressEvent( QMouseEvent * p_event ) { VTX::Selection::SelectionManager::get().getSelectionModel().clear(); }
 				void SceneWidget::dragEnterEvent( QDragEnterEvent * p_event )
 				{
 					BaseManualWidget::dragEnterEvent( p_event );
@@ -163,13 +177,14 @@ namespace VTX
 					bool	  draggedAfterCurrentPos = false;
 					for ( int i = 0; i < _sceneWidgets.size(); i++ )
 					{
-						draggedAfterCurrentPos = draggedAfterCurrentPos || _sceneWidgets[ i ] == sceneItemWidget;
-						const int itemPosY	   = _sceneWidgets[ i ]->pos().y();
+						const int itemPosY = _sceneWidgets[ i ]->pos().y();
 						if ( itemPosY > eventPosY )
 						{
 							newIndex = i - ( draggedAfterCurrentPos ? 1 : 0 );
 							break;
 						}
+
+						draggedAfterCurrentPos = draggedAfterCurrentPos || _sceneWidgets[ i ] == sceneItemWidget;
 					}
 
 					p_event->acceptProposedAction();

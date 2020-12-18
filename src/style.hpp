@@ -83,6 +83,8 @@ namespace VTX
 		inline static const int			SEQUENCE_MAX_MISSING_RESIDUE_BEFORE_COLLAPSE = 5;
 		inline static const QChar		SEQUENCE_MISSING_RESIDUE_SYMBOL				 = '-';
 
+		inline static const int SCENE_SPACE_BETWEEN_ITEMS = 4;
+
 		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION = VTX::Selection::SelectionType::RESIDUE;
 
 		inline static const QFont TOOL_MENU_BUTTON_FONT = QFont( "Helvetica", 10 );
