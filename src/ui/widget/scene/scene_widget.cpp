@@ -159,7 +159,7 @@ namespace VTX
 					}
 
 					const int eventPosY				 = _scrollAreaContent->mapFrom( this, p_event->pos() ).y();
-					int		  newIndex				 = (int)_sceneWidgets.size();
+					int		  newIndex				 = (int)_sceneWidgets.size() - 1;
 					bool	  draggedAfterCurrentPos = false;
 					for ( int i = 0; i < _sceneWidgets.size(); i++ )
 					{
@@ -178,14 +178,14 @@ namespace VTX
 					_sceneWidgets.erase( _sceneWidgets.begin() + previousIndex );
 					_sceneWidgets.insert( _sceneWidgets.begin() + newIndex, tmp );
 
-					_layout->insertWidget( newIndex, sceneItemWidget );
-
 					int iMinIndex = previousIndex < newIndex ? previousIndex : newIndex;
 					int iMaxIndex = previousIndex > newIndex ? previousIndex : newIndex;
 					for ( int i = iMinIndex; i <= iMaxIndex; i++ )
 					{
 						_sceneWidgets[ i ]->updatePosInSceneHierarchy( i );
 					}
+
+					_layout->insertWidget( newIndex, sceneItemWidget );
 				}
 
 			} // namespace Scene
