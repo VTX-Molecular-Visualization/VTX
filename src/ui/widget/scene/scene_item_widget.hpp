@@ -31,7 +31,10 @@ namespace VTX
 					{
 						int minimumHeight = rowHeight( model()->index( 0, 0 ) );
 						setMinimumHeight( minimumHeight );
-						setMinimumWidth( sizeHintForColumn( 0 ) );
+
+						int columnWidth = sizeHintForColumn( 0 );
+						if ( columnWidth  > 0)
+							setMinimumWidth( columnWidth );
 					};
 
 					virtual const Model::ID & getModelID() const = 0;

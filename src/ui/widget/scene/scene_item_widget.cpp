@@ -31,7 +31,6 @@ namespace VTX
 					setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
 					_contextMenu = new QMenu( parentWidget() );
 
-					setMinimumWidth( sizeHintForColumn( 0 ) );
 					setAcceptDrops( true );
 				}
 
