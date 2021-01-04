@@ -80,17 +80,16 @@ namespace VTX
 
 				_mapRepresentablesLinkedToRepresentation[ p_representation ].emplace( p_target );
 			};
-
-			inline void removeRepresentation( const Model::Representation::InstantiatedRepresentation * p_representation, Generic::BaseRepresentable * p_target )
+			
+			inline void removeRepresentation( const Model::Representation::InstantiatedRepresentation * const p_representation, Generic::BaseRepresentable * p_target, bool p_update )
 			{
 				_mapRepresentablesLinkedToRepresentation[ p_representation ].erase( p_target );
 				p_target->removeRepresentation( p_representation );
 
-				_recomputeRepresentableData( *p_target );
-
-				VTX_EVENT( new Event::VTXEventPtr<const Model::Representation::InstantiatedRepresentation>( Event::REPRESENTATION_REMOVED, p_representation ) );
+				if ( p_update )
+					_recomputeRepresentableData( *p_target );
 			};
-			inline void removeRepresentation( Model::Representation::InstantiatedRepresentation * p_representation )
+			inline void deleteRepresentation( Model::Representation::InstantiatedRepresentation * p_representation )
 			{
 				std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *> molecules = std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *>();
 				for ( Generic::BaseRepresentable * target : _mapRepresentablesLinkedToRepresentation[ p_representation ] )

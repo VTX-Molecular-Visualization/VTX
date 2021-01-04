@@ -44,7 +44,7 @@ namespace VTX
 				void RepresentationSceneView::setTarget( Generic::BaseRepresentable & p_renderable )
 				{
 					if ( _representable != nullptr )
-						Representation::RepresentationManager::get().removeRepresentation( _model, _representable );
+						Representation::RepresentationManager::get().removeRepresentation( _model, _representable, false );
 
 					_representable = &p_renderable;
 
@@ -57,7 +57,7 @@ namespace VTX
 					_model->setPriority( p_position );
 				}
 
-				void		RepresentationSceneView::_deleteAction() { Representation::RepresentationManager::get().removeRepresentation( _model ); }
+				void		RepresentationSceneView::_deleteAction() { Representation::RepresentationManager::get().deleteRepresentation( _model ); }
 				QMimeData * RepresentationSceneView::_getDataForDrag() { return VTX::UI::MimeType::generateInstantiatedRepresentationData( *_model ); };
 
 			} // namespace Widget

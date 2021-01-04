@@ -67,7 +67,7 @@ namespace VTX
 			}
 
 			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
-			void deleteModel( M * const p_model )
+			void deleteModel( M * const & p_model )
 			{
 				const MvcData * const mvc = _container[ p_model->getId() ];
 				_container.erase( p_model->getId() );

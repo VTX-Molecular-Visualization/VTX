@@ -11,6 +11,17 @@ namespace VTX
 {
 	namespace Generic
 	{
+		BaseRepresentable::~BaseRepresentable() 
+		{ 
+			while ( _representations.size() > 0) 
+			{
+				// erase _representations.begin() in _representations
+				Representation::RepresentationManager::get().removeRepresentation( *_representations.begin(), this, false );
+			}
+
+			_molecule = nullptr;
+		}
+
 		const std::set<const Model::Representation::InstantiatedRepresentation *> & BaseRepresentable::getRepresentations() const
 		{
 			if ( _representations.size() == 0 )

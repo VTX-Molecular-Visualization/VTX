@@ -24,6 +24,8 @@ namespace VTX
 		class BaseRepresentable
 		{
 		  public:
+			~BaseRepresentable();
+
 			const std::set<const Model::Representation::InstantiatedRepresentation *> & getRepresentations() const;
 			const Model::Representation::InstantiatedRepresentation * const				getRepresentation() const;
 

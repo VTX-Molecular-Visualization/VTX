@@ -53,7 +53,7 @@ namespace VTX
 			{
 			}
 
-			void execute() { Representation::RepresentationManager::get().removeRepresentation( _representation, _representable ); };
+			void execute() { Representation::RepresentationManager::get().removeRepresentation( _representation, _representable, true ); };
 
 		  private:
 			Generic::BaseRepresentable * const						  _representable;

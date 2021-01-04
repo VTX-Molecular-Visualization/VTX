@@ -86,7 +86,7 @@ namespace VTX
 					Generic::BaseRepresentable * const representable		 = _targetsField->getRepresentable();
 
 					if ( previousRepresentable != nullptr )
-						Representation::RepresentationManager::get().removeRepresentation( _model, previousRepresentable );
+						Representation::RepresentationManager::get().removeRepresentation( _model, previousRepresentable, false );
 
 					if ( representable != nullptr )
 						Representation::RepresentationManager::get().addToRepresentation( _model, representable );
