@@ -7,6 +7,7 @@
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
+#include <QHeaderView>
 
 namespace VTX
 {
@@ -19,10 +20,17 @@ namespace VTX
 				void SelectionView::_setupUi( const QString & p_name )
 				{
 					setObjectName( QString::fromUtf8( "selectionTree" ) );
-					setColumnCount( 1 );
+					setColumnCount( 2 );
 					setHeaderHidden( true );
-					setSelectionMode( QAbstractItemView::NoSelection );
+					setSelectionMode( QAbstractItemView::SelectionMode::NoSelection );
 					setExpandsOnDoubleClick( false );
+
+					this->setItemDelegateForColumn( REMOVE_COLUMN_INDEX, new SelectionStyleItemDelegate() );
+
+					header()->setStretchLastSection( false );
+					header()->setMinimumSectionSize( 10 );
+					header()->setSectionResizeMode( NAME_COLUMN_INDEX, QHeaderView::ResizeMode::Stretch );
+					header()->setSectionResizeMode( REMOVE_COLUMN_INDEX, QHeaderView::ResizeMode::ResizeToContents );
 				}
 
 				void SelectionView::_setupSlots() { connect( this, &QTreeWidget::itemClicked, this, &SelectionView::_onItemClicked ); }
@@ -67,8 +75,9 @@ namespace VTX
 									{
 										const Model::Atom &		atom	 = molecule.getAtom( atomIndex );
 										QTreeWidgetItem * const atomView = residueView->child( a++ );
-										atomView->setData( 0, Qt::UserRole, QVariant::fromValue( atom.getId() ) );
-										atomView->setText( 0, QString::fromStdString( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) ) );
+
+										atomView->setData( NAME_COLUMN_INDEX, Qt::UserRole, QVariant::fromValue( atom.getId() ) );
+										atomView->setText( NAME_COLUMN_INDEX, QString::fromStdString( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) ) );
 									}
 								}
 
@@ -78,8 +87,9 @@ namespace VTX
 								}
 								const Model::Residue & residue = molecule.getResidue( pairResidue.first );
 								residueView->setExpanded( false );
-								residueView->setData( 0, Qt::UserRole, QVariant::fromValue( residue.getId() ) );
-								residueView->setText( 0, QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndexInOriginalChain() ) ) );
+								residueView->setData( NAME_COLUMN_INDEX, Qt::UserRole, QVariant::fromValue( residue.getId() ) );
+								residueView->setText( NAME_COLUMN_INDEX,
+													  QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndexInOriginalChain() ) ) );
 							}
 
 							if ( needUpdateChain == false )
@@ -88,8 +98,8 @@ namespace VTX
 							}
 							const Model::Chain & chain = molecule.getChain( pairChain.first );
 							chainView->setExpanded( false );
-							chainView->setData( 0, Qt::UserRole, QVariant::fromValue( chain.getId() ) );
-							chainView->setText( 0, QString::fromStdString( chain.getDefaultName() ) );
+							chainView->setData( NAME_COLUMN_INDEX, Qt::UserRole, QVariant::fromValue( chain.getId() ) );
+							chainView->setText( NAME_COLUMN_INDEX, QString::fromStdString( chain.getDefaultName() ) );
 						}
 
 						if ( needUpdateMolecule == false )
@@ -97,8 +107,8 @@ namespace VTX
 							continue;
 						}
 						moleculeView->setExpanded( false );
-						moleculeView->setData( 0, Qt::UserRole, QVariant::fromValue<VTX::Model::ID>( pairMolecule.first ) );
-						moleculeView->setText( 0, QString::fromStdString( molecule.getDefaultName() ) );
+						moleculeView->setData( NAME_COLUMN_INDEX, Qt::UserRole, QVariant::fromValue<VTX::Model::ID>( pairMolecule.first ) );
+						moleculeView->setText( NAME_COLUMN_INDEX, QString::fromStdString( molecule.getDefaultName() ) );
 					}
 
 					blockSignals( false );
@@ -144,33 +154,62 @@ namespace VTX
 
 				void SelectionView::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
 				{
-					const Model::ID &  modelId		  = _getModelID( *p_item );
-					ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( modelId );
-					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+					if ( p_column == REMOVE_COLUMN_INDEX )
+					{
+						const Model::ID &  modelId		  = _getModelID( *p_item );
+						ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( modelId );
+						Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
 
-					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
-					{
-						Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
-						VTX_ACTION( new Action::Selection::UnselectMolecule( selectionModel, model ) );
-					}
-					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
-					{
-						Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
-						VTX_ACTION( new Action::Selection::UnselectChain( selectionModel, model ) );
-					}
-					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
-					{
-						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
-						VTX_ACTION( new Action::Selection::UnselectResidue( selectionModel, model ) );
-					}
-					else if ( modelTypeId == ID::Model::MODEL_ATOM )
-					{
-						Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
-						VTX_ACTION( new Action::Selection::UnselectAtom( selectionModel, model ) );
+						if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+						{
+							Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+							VTX_ACTION( new Action::Selection::UnselectMolecule( selectionModel, model ) );
+						}
+						else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+						{
+							Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+							VTX_ACTION( new Action::Selection::UnselectChain( selectionModel, model ) );
+						}
+						else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+						{
+							Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+							VTX_ACTION( new Action::Selection::UnselectResidue( selectionModel, model ) );
+						}
+						else if ( modelTypeId == ID::Model::MODEL_ATOM )
+						{
+							Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+							VTX_ACTION( new Action::Selection::UnselectAtom( selectionModel, model ) );
+						}
 					}
 				}
 
 				void SelectionView::localize() {}
+
+
+				// /////////////////////  SelectionStyleItemDelegate  ///////////////////////////
+				void SelectionView::SelectionStyleItemDelegate::paint( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+				{
+					if ( option.state & QStyle::State_MouseOver )
+						painter->fillRect( option.rect, option.palette.highlight() );
+
+					const int minColumnBorder = ( option.rect.width() < option.rect.height() ? option.rect.width() : option.rect.height() );
+					const int size			  = ( minColumnBorder < _getSize() ? minColumnBorder : _getSize() ) - 2;
+
+					const QRect rect = QRect( option.rect.x() + ( ( option.rect.width() - size ) / 2 ), option.rect.y() + ( ( option.rect.height() - size ) / 2 ), size, size );
+					painter->drawPixmap( rect, Style::IconConst::get().CLOSE_PIXMAP );
+				}
+
+				QSize SelectionView::SelectionStyleItemDelegate::sizeHint( const QStyleOptionViewItem & option, const QModelIndex & index ) const
+				{
+					const int size = _getSize();
+					return QSize( size, size );
+				}
+
+				int SelectionView::SelectionStyleItemDelegate::_getSize() const
+				{
+					const QPixmap & removePixmap = Style::IconConst::get().CLOSE_PIXMAP;
+					return removePixmap.height() + 2;
+				}
 
 			} // namespace Widget
 		}	  // namespace UI
