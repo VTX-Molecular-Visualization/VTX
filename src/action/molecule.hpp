@@ -60,11 +60,13 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					bool			  newVisibility = _getVisibilityBool();
-					Model::Molecule & molecule		= ( (Model::Molecule &)_visible );
-
-					molecule.setVisible( newVisibility );
-					molecule.computeRepresentationTargets();
+					for ( Generic::BaseVisible * const visible : _visibles )
+					{
+						const bool		  newVisibility = _getVisibilityBool( *visible );
+						Model::Molecule * molecule		= ( (Model::Molecule *)visible );
+						molecule->setVisible( newVisibility );
+						molecule->computeRepresentationTargets();
+					}
 				}
 			};
 

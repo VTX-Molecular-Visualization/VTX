@@ -38,21 +38,25 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					const Model::Atom & atom = ( (Model::Atom &)_visible );
 					Visible::ChangeVisibility::execute();
 
-					if ( _mode == VISIBILITY_MODE::ALL || _mode == VISIBILITY_MODE::SOLO )
+					for ( Generic::BaseVisible * const visible : _visibles )
 					{
-						for ( uint i = 0; i < atom.getResiduePtr()->getAtomCount(); ++i )
-						{
-							atom.getMoleculePtr()
-								->getAtom( atom.getResiduePtr()->getIndexFirstAtom() + i )
-								.setVisible( _mode == VISIBILITY_MODE::ALL
-											 || ( _mode == VISIBILITY_MODE::SOLO && atom.getResiduePtr()->getIndexFirstAtom() + i == atom.getIndex() ) );
-						}
-					}
+						const Model::Atom & atom = *( (Model::Atom *)visible );
 
-					atom.getMoleculePtr()->computeRepresentationTargets();
+						if ( _mode == VISIBILITY_MODE::ALL || _mode == VISIBILITY_MODE::SOLO )
+						{
+							for ( uint i = 0; i < atom.getResiduePtr()->getAtomCount(); ++i )
+							{
+								atom.getMoleculePtr()
+									->getAtom( atom.getResiduePtr()->getIndexFirstAtom() + i )
+									.setVisible( _mode == VISIBILITY_MODE::ALL
+												 || ( _mode == VISIBILITY_MODE::SOLO && atom.getResiduePtr()->getIndexFirstAtom() + i == atom.getIndex() ) );
+							}
+						}
+
+						atom.getMoleculePtr()->computeRepresentationTargets();
+					}
 				}
 			};
 		} // namespace Atom

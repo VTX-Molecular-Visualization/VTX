@@ -43,23 +43,26 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					bool			 newVisibility = _getVisibilityBool();
-					Model::Residue & residue	   = ( (Model::Residue &)_visible );
-
-					residue.setVisible( newVisibility );
-
-					if ( _mode == VISIBILITY_MODE::ALL || _mode == VISIBILITY_MODE::SOLO )
+					for ( Generic::BaseVisible * const visible : _visibles )
 					{
-						for ( uint i = 0; i < residue.getChainPtr()->getResidueCount(); ++i )
-						{
-							residue.getMoleculePtr()
-								->getResidue( residue.getChainPtr()->getIndexFirstResidue() + i )
-								.setVisible( _mode == VISIBILITY_MODE::ALL
-											 || ( _mode == VISIBILITY_MODE::SOLO && residue.getChainPtr()->getIndexFirstResidue() + i == residue.getIndex() ) );
-						}
-					}
+						bool			 newVisibility = _getVisibilityBool( *visible );
+						Model::Residue & residue	   = *( (Model::Residue *)visible );
 
-					residue.getMoleculePtr()->computeRepresentationTargets();
+						residue.setVisible( newVisibility );
+
+						if ( _mode == VISIBILITY_MODE::ALL || _mode == VISIBILITY_MODE::SOLO )
+						{
+							for ( uint i = 0; i < residue.getChainPtr()->getResidueCount(); ++i )
+							{
+								residue.getMoleculePtr()
+									->getResidue( residue.getChainPtr()->getIndexFirstResidue() + i )
+									.setVisible( _mode == VISIBILITY_MODE::ALL
+												 || ( _mode == VISIBILITY_MODE::SOLO && residue.getChainPtr()->getIndexFirstResidue() + i == residue.getIndex() ) );
+							}
+						}
+
+						residue.getMoleculePtr()->computeRepresentationTargets();
+					}
 				}
 			};
 		} // namespace Residue
