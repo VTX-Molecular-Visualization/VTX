@@ -78,6 +78,11 @@ namespace VTX
 			return p_isHetAtm ? Chain::CHAIN_ID_COLOR_HETATM[ id ] : Chain::CHAIN_ID_COLOR_ATOM[ id ];
 		}
 
+		Color::Rgb Chain::getChainIdColor( const uint p_chainId, const bool p_isHetAtm )
+		{
+			return p_isHetAtm ? Chain::CHAIN_ID_COLOR_HETATM[ p_chainId ] : Chain::CHAIN_ID_COLOR_ATOM[ p_chainId ];
+		}
+
 		void Chain::setVisible( const bool p_visible )
 		{
 			if ( isVisible() != p_visible )

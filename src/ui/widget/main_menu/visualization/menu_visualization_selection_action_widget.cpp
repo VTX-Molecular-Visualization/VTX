@@ -47,12 +47,25 @@ namespace VTX
 					}
 					void MenuVisualizationSelectionActionWidget::_setupSlots()
 					{
+						_copy->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_copySelection );
+						_extract->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_extractSelection );
 						_delete->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_deleteSelection );
+
 						_show->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_showSelection );
 						_hide->setTriggerAction( this, &MenuVisualizationSelectionActionWidget::_hideSelection );
 					}
 					void MenuVisualizationSelectionActionWidget::localize() { setTitle( "Selection Action" ); }
 
+					void MenuVisualizationSelectionActionWidget::_copySelection() const
+					{
+						const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+						VTX_ACTION( new Action::Molecule::Copy( selectionModel ) );
+					}
+					void MenuVisualizationSelectionActionWidget::_extractSelection() const
+					{
+						const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+						VTX_ACTION( new Action::Molecule::Copy( selectionModel ) );
+					}
 					void MenuVisualizationSelectionActionWidget::_deleteSelection() const
 					{
 						const Model::Selection &			   selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
@@ -64,6 +77,7 @@ namespace VTX
 							VTX_ACTION( new Action::Molecule::Delete( molecule ) );
 						}
 					}
+
 					void MenuVisualizationSelectionActionWidget::_showSelection() const {}
 					void MenuVisualizationSelectionActionWidget::_hideSelection() const {}
 				} // namespace Visualization

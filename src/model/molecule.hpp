@@ -211,6 +211,10 @@ namespace VTX
 			void _init() override;
 			void _instanciate3DViews() override;
 
+			Molecule();
+			Molecule( const ID::VTX_ID & p_typeId );
+			~Molecule();
+
 		  private:
 			// Configuration.
 			Configuration::Molecule _configuration = Configuration::Molecule();
@@ -255,9 +259,6 @@ namespace VTX
 
 			bool _showSolvent = true;
 			bool _showIon	  = true;
-
-			Molecule();
-			~Molecule();
 
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();
