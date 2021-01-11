@@ -400,6 +400,7 @@ namespace VTX
 						Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
 						p_molecule.getBonds()[ counter ]  = modelBond;
 
+						modelBond->setMoleculePtr( &p_molecule );
 						modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
 						modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
 
@@ -418,6 +419,7 @@ namespace VTX
 					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) ).getResiduePtr();
 					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) ).getResiduePtr();
 
+					modelBond->setMoleculePtr( &p_molecule );
 					modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
 					modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
 
