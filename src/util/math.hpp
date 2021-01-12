@@ -258,12 +258,12 @@ namespace VTX
 				Vec3d		  angles;
 
 				// Roll (x-axis rotation).
-				const double sinr_cosp = 2 * ( q.w * q.x + q.y * q.z );
-				const double cosr_cosp = 1 - 2 * ( q.x * q.x + q.y * q.y );
+				const double sinr_cosp = 2.0 * ( q.w * q.x + q.y * q.z );
+				const double cosr_cosp = 1.0 - 2.0 * ( q.x * q.x + q.y * q.y );
 				angles.z			   = std::atan2( sinr_cosp, cosr_cosp );
 
 				// Pitch (y-axis rotation).
-				const double sinp = 2 * ( q.w * q.y - q.z * q.x );
+				const double sinp = 2.0 * ( q.w * q.y - q.z * q.x );
 				if ( std::abs( sinp ) >= 1 )
 				{
 					// Use 90 degrees if out of range.
@@ -275,11 +275,23 @@ namespace VTX
 				}
 
 				// Yaw (z-axis rotation).
-				const double siny_cosp = 2 * ( q.w * q.z + q.x * q.y );
-				const double cosy_cosp = 1 - 2 * ( q.y * q.y + q.z * q.z );
+				const double siny_cosp = 2.0 * ( q.w * q.z + q.x * q.y );
+				const double cosy_cosp = 1.0 - 2.0 * ( q.y * q.y + q.z * q.z );
 				angles.y			   = std::atan2( siny_cosp, cosy_cosp );
 
 				return angles;
+			}
+
+			template<int L, typename T>
+			inline glm::vec<L, T> directionToEuler( glm::vec<L, T> & p_direction )
+			{
+				// https://stackoverflow.com/questions/1251828/calculate-rotations-to-look-at-a-3d-point
+				glm::vec<L, T> normalized = normalize( p_direction );
+				T			   rotx		  = atan2( p_direction.y, p_direction.z );
+				T			   roty		  = atan2( p_direction.x * cos( rotx ), p_direction.z );
+				T			   rotz		  = atan2( cos( rotx ), sin( rotx ) * sin( roty ) );
+
+				return glm::vec<L, T>( rotx, roty, rotz );
 			}
 
 			template<typename T, typename Q>
@@ -298,6 +310,13 @@ namespace VTX
 			inline T cubicInterpolation( const T & p_p0, const T & p_p1, const T & p_p2, const T & p_p3, const Q p_value )
 			{
 				return glm::cubic( p_p0, p_p1, p_p2, p_p3, p_value );
+			}
+
+			template<typename T, typename Q>
+			inline T easeInOutInterpolation( const T & p_lhs, const T & p_rhs, const Q p_value )
+			{
+				const Q value = glm::pow2( glm::sin( PI_2f * p_value ) );
+				return glm::lerp( p_lhs, p_rhs, value );
 			}
 
 			// Morton utils

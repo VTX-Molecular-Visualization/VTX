@@ -35,7 +35,7 @@ namespace VTX
 					}
 					else
 					{
-						_updateOrient( 0.0 );
+						_updateOrient( _orientTime / ORIENT_DURATION );
 					}
 				}
 				else
@@ -55,7 +55,7 @@ namespace VTX
 			}
 
 		  protected:
-			const double ORIENT_DURATION = 3.0;
+			const double ORIENT_DURATION = 2.0;
 
 			Object3D::Camera & _camera;
 

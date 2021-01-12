@@ -39,7 +39,7 @@ namespace VTX
 			{
 				_screenWidth  = p_width;
 				_screenHeight = p_height;
-				_aspectRatio  = (float)_screenWidth / _screenHeight;
+				_aspectRatio  = (float)_screenWidth / (float)_screenHeight;
 				_updateProjectionMatrix();
 			}
 
@@ -52,6 +52,12 @@ namespace VTX
 			inline void setRotation( const Quatd & p_rotation )
 			{
 				_rotation = Util::Math::normalize( p_rotation );
+				_updateRotation();
+			}
+
+			inline void setRotation( const Vec3d & p_rotation )
+			{
+				_rotation = Util::Math::normalize( Util::Math::eulerToQuaternion( p_rotation ) );
 				_updateRotation();
 			}
 
@@ -98,7 +104,7 @@ namespace VTX
 
 			void rotateAround( const Quatd &, const Vec3d &, const double );
 
-			void lookAt( const Vec3d & );
+			void lookAt( const Vec3d &, const Vec3d & );
 
 			void setPerspective( const bool p_perspective )
 			{

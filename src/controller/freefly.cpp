@@ -78,7 +78,42 @@ namespace VTX
 			_camera.setRotation( Vec3d( 0.0, 0.0, 0.0 ) );
 		}
 
-		void Freefly::_updateOrient( const double & p_deltaTime ) { VTX_DEBUG( "ORIENT" ); }
+		void Freefly::_updateOrient( const double & p_time )
+		{
+			// Compute target position.
+			Vec3f direction = (Vec3f)_orientStartCamera.getPosition() - _orientTargetAabb.centroid();
+			if ( direction == VEC3F_ZERO )
+			{
+				// TODO: finish if current position = target position.
+				VTX_DEBUG( "direction == VEC3F_ZERO" );
+			}
+
+			Util::Math::normalizeSelf( direction );
+
+			// const Vec3f targetPosition = _orientTargetAabb.centroid() + ( direction * (float)_orientTargetAabb.diagonal().length() );
+			const float distanceToBBox = (float)_orientTargetAabb.diameter() / ( 2.f * tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+			const Vec3f targetPosition = _orientTargetAabb.centroid() + direction * distanceToBBox;
+
+			// Move.
+			direction			  = targetPosition - (Vec3f)_orientStartCamera.getPosition();
+			const double distance = Util::Math::length( direction );
+			Util::Math::normalizeSelf( direction );
+
+			Vec3f position = _orientStartCamera.getPosition();
+			position += direction * (float)Util::Math::easeInOutInterpolation( 0.0, distance, p_time );
+			_camera.setPosition( position );
+
+			// Rotation.
+			// Vec3d eulerFrom	 = Util::Math::quaternionToEuler( _orientStartCamera.getRotation() );
+			// Vec3d eulerTo	 = Util::Math::directionToEuler( -direction );
+			// Quatd rotationTo = Util::Math::eulerToQuaternion( eulerTo );
+
+			Vec3d up = VEC3D_Y;
+			Util::Math::normalizeSelf( up );
+			Quatd rotationTo = Util::Math::lookAt( _orientStartCamera.getPosition(), (Vec3d)_orientTargetAabb.centroid(), up );
+			Quatd rotation	 = Util::Math::easeInOutInterpolation( _orientStartCamera.getRotation(), rotationTo, p_time );
+			_camera.setRotation( rotation );
+		}
 
 	} // namespace Controller
 } // namespace VTX
