@@ -26,7 +26,7 @@ namespace VTX
 
 			virtual void enter( void * const ) override;
 			virtual void exit() override;
-			virtual void update( const double & ) override;
+			virtual void update( const float & ) override;
 
 		  private:
 			std::string						 _directoryName;

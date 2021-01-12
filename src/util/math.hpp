@@ -91,14 +91,14 @@ namespace VTX
 			template<typename T>
 			inline void normalizeSelf( T & p_value )
 			{
-				assert( glm::length( p_value ) != 0.0 );
+				assert( glm::length( p_value ) != 0.f );
 				p_value = glm::normalize( p_value );
 			}
 
 			template<typename T>
 			inline T normalize( const T & p_value )
 			{
-				assert( glm::length( p_value ) != 0.0 );
+				assert( glm::length( p_value ) != 0.f );
 				return glm::normalize( p_value );
 			}
 
@@ -226,9 +226,9 @@ namespace VTX
 
 			inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
-			inline Quatd eulerToQuaternion( const Vec3d & p_angles ) { return Quatd( p_angles ); }
+			inline Quatf eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
 
-			inline Quatd eulerToQuaternion( const double & p_pitch, const double & p_yaw, const double & p_roll )
+			inline Quatf eulerToQuaternion( const float & p_pitch, const float & p_yaw, const float & p_roll )
 			{
 				// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
 				/*
@@ -248,22 +248,22 @@ namespace VTX
 				return q;
 				*/
 				// Same thing did by glm.
-				return eulerToQuaternion( Vec3d( p_pitch, p_yaw, p_roll ) );
+				return eulerToQuaternion( Vec3f( p_pitch, p_yaw, p_roll ) );
 			}
 
-			inline Vec3d quaternionToEuler( const Quatd & p_quaternion )
+			inline Vec3f quaternionToEuler( const Quatf & p_quaternion )
 			{
 				// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
-				const Quatd & q = p_quaternion;
-				Vec3d		  angles;
+				const Quatf & q = p_quaternion;
+				Vec3f		  angles;
 
 				// Roll (x-axis rotation).
-				const double sinr_cosp = 2.0 * ( q.w * q.x + q.y * q.z );
-				const double cosr_cosp = 1.0 - 2.0 * ( q.x * q.x + q.y * q.y );
+				const float sinr_cosp = 2.f * ( q.w * q.x + q.y * q.z );
+				const float cosr_cosp = 1.f - 2.f * ( q.x * q.x + q.y * q.y );
 				angles.z			   = std::atan2( sinr_cosp, cosr_cosp );
 
 				// Pitch (y-axis rotation).
-				const double sinp = 2.0 * ( q.w * q.y - q.z * q.x );
+				const float sinp = 2.f * ( q.w * q.y - q.z * q.x );
 				if ( std::abs( sinp ) >= 1 )
 				{
 					// Use 90 degrees if out of range.
@@ -275,8 +275,8 @@ namespace VTX
 				}
 
 				// Yaw (z-axis rotation).
-				const double siny_cosp = 2.0 * ( q.w * q.z + q.x * q.y );
-				const double cosy_cosp = 1.0 - 2.0 * ( q.y * q.y + q.z * q.z );
+				const float	 siny_cosp = 2.f * ( q.w * q.z + q.x * q.y );
+				const float cosy_cosp = 1.f - 2.f * ( q.y * q.y + q.z * q.z );
 				angles.y			   = std::atan2( siny_cosp, cosy_cosp );
 
 				return angles;

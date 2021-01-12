@@ -223,7 +223,7 @@ namespace VTX
 			chrono.stop();
 			//_progressBar.stop();
 
-			const double time = chrono.elapsedTime();
+			const float time = chrono.elapsedTime();
 
 			VTX_DEBUG( "Rendering time: " + std::to_string( time * 1000. ) + "ms" );
 		}

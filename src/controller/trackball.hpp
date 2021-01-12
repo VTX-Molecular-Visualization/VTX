@@ -22,16 +22,16 @@ namespace VTX
 			void setActive( const bool p_active ) override;
 			void reset() override;
 
-			inline const Vec3d & getTarget() const { return _target; }
+			inline const Vec3f & getTarget() const { return _target; }
 
 		  protected:
-			void _updateInputs( const double & ) override;
-			void _updateOrient( const double & ) override;
+			void _updateInputs( const float & ) override;
+			void _updateOrient( const float & ) override;
 
 		  private:
-			Vec3d  _target	 = VEC3D_ZERO;
-			double _distance = 0.0;
-			Vec3f  _velocity = VEC3F_ZERO;
+			Vec3f _target	= VEC3F_ZERO;
+			float _distance = 0.f;
+			Vec3f _velocity = VEC3F_ZERO;
 
 			bool _needUpdate = true;
 		};

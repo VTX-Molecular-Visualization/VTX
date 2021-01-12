@@ -159,7 +159,7 @@ namespace VTX
 			_bufferRedo.pop_front();
 		}
 
-		void ActionManager::update( const double & p_deltaTime )
+		void ActionManager::update( const float & p_deltaTime )
 		{
 			while ( _actionQueue.empty() == false )
 			{

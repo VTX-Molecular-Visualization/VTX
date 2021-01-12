@@ -46,7 +46,7 @@ namespace VTX
 
 			void clear();
 
-			virtual void update( const double & ) override;
+			virtual void update( const float & ) override;
 
 		  private:
 			void _computeAABB();

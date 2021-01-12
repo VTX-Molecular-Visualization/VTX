@@ -117,7 +117,7 @@ namespace VTX
 	void VTXApp::_update()
 	{
 		// TODO: check if QTimer and QElapsedTimer can be fused.
-		double deltaTime = _elapsedTimer->elapsed() / 1000.0;
+		float deltaTime = _elapsedTimer->elapsed() / 1000.f;
 		_elapsedTimer->restart();
 
 		// State machine.

@@ -69,9 +69,9 @@ namespace VTX
 					_gl->glBlitFramebuffer( 0, 0, size().width(), size().height(), 0, 0, size().width(), size().height(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
 
 					_counter++;
-					if ( _timer.elapsed() >= 1000.0 )
+					if ( _timer.elapsed() >= 1000.f )
 					{
-						double fps = _counter / ( (double)_timer.elapsed() / 1000.0 );
+						float fps = _counter / ( _timer.elapsed() / 1000.f );
 
 						// VTX_DEBUG( "OpenGL FPS: " + std::to_string( (int)fps ) );
 						_counter = 0;

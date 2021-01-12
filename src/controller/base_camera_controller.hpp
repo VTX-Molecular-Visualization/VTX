@@ -22,7 +22,7 @@ namespace VTX
 			explicit BaseCameraController( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
 			virtual ~BaseCameraController() = default;
 
-			void update( const double & p_deltaTime ) override
+			void update( const float & p_deltaTime ) override
 			{
 				if ( _isOrienting )
 				{
@@ -30,7 +30,7 @@ namespace VTX
 
 					if ( _orientTime >= ORIENT_DURATION )
 					{
-						_updateOrient( 1.0 );
+						_updateOrient( 1.f );
 						_isOrienting = false;
 					}
 					else
@@ -50,22 +50,22 @@ namespace VTX
 			{
 				_isOrienting	   = true;
 				_orientStartCamera = _camera;
-				_orientTime		   = 0.0;
+				_orientTime		   = 0.f;
 				_orientTargetAabb  = p_aabb;
 			}
 
 		  protected:
-			const double ORIENT_DURATION = 2.0;
+			const float ORIENT_DURATION = 2.f;
 
 			Object3D::Camera & _camera;
 
 			bool			 _isOrienting = false;
-			double			 _orientTime  = 0.0;
+			float			 _orientTime  = 0.f;
 			Object3D::Camera _orientStartCamera;
 			Math::AABB		 _orientTargetAabb;
 
-			virtual void _updateInputs( const double & ) = 0;
-			virtual void _updateOrient( const double & ) = 0;
+			virtual void _updateInputs( const float & ) = 0;
+			virtual void _updateOrient( const float & ) = 0;
 		};
 	} // namespace Controller
 } // namespace VTX

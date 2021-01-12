@@ -41,7 +41,7 @@ namespace VTX
 				PROGRESS = 0.f;
 				if ( p_dltotal > 0.f )
 				{
-					PROGRESS = (float)p_dlnow / (float)p_dltotal;
+					PROGRESS = p_dlnow / p_dltotal;
 				}
 
 				return 0;

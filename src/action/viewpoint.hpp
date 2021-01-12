@@ -24,7 +24,7 @@ namespace VTX
 			{
 			  public:
 				explicit Create( Model::Path & p_path, const Object3D::Camera & p_camera, Controller::BaseController * const p_controller ) :
-					_path( p_path ), _position( p_camera.getPosition() ), _rotation( p_camera.getRotation() ), _target( VEC3D_ZERO ), _distance( 0.0 ),
+					_path( p_path ), _position( p_camera.getPosition() ), _rotation( p_camera.getRotation() ), _target( VEC3F_ZERO ), _distance( 0.f ),
 					_controller( ID::Controller::FREEFLY )
 				{
 					const Controller::Trackball * const trackball = dynamic_cast<Controller::Trackball *>( p_controller );
@@ -50,10 +50,10 @@ namespace VTX
 
 			  private:
 				Model::Path & _path;
-				const Vec3d	  _position;
-				const Quatd	  _rotation;
-				Vec3d		  _target;
-				double		  _distance;
+				const Vec3f	  _position;
+				const Quatf	  _rotation;
+				Vec3f		  _target;
+				float		  _distance;
 				ID::VTX_ID	  _controller;
 			};
 

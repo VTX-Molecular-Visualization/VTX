@@ -168,7 +168,7 @@ namespace VTX
 				{
 					connect( this, &QTreeWidget::itemChanged, this, &MoleculeSceneView::_onItemChanged );
 					// connect( this, &QTreeWidget::itemClicked, this, &MoleculeSceneView::_onItemClicked );
-					connect( this, &QTreeWidget::itemDoubleClicked, this, &MoleculeSceneView::_onItemDoubleClicked );
+					connect( this, &QTreeWidget::itemDoubleClicked, this, &MoleculeSceneView::_onItemfloatClicked );
 					connect( this, &QTreeWidget::itemExpanded, this, &MoleculeSceneView::_onItemExpanded );
 					connect( this, &QTreeWidget::itemCollapsed, this, &MoleculeSceneView::_onItemCollapsed );
 
@@ -220,7 +220,7 @@ namespace VTX
 					}
 				}
 
-				void MoleculeSceneView::_onItemDoubleClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
+				void MoleculeSceneView::_onItemfloatClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
 				{
 					const Model::ID &  modelId		  = _getModelID( *p_item );
 					ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( modelId );

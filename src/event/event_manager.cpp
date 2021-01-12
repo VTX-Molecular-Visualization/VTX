@@ -56,7 +56,7 @@ namespace VTX
 
 		void EventManager::fireEventWheel( QWheelEvent * const p_event ) { _eventQueueWheel.emplace( *p_event ); }
 
-		void EventManager::update( const double & p_deltaTime )
+		void EventManager::update( const float & p_deltaTime )
 		{
 			// Input events.
 			while ( _eventQueueKeyboard.empty() == false )

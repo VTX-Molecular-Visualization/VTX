@@ -19,7 +19,7 @@ namespace VTX
 
 		  protected:
 			void _handleKeyDownEvent( const int & ) override;
-			void update( const double & ) override {}
+			void update( const float & ) override {}
 
 		  private:
 		};

@@ -14,7 +14,9 @@ namespace VTX
 		class BaseActionUndonable : public BaseAction
 		{
 		  public:
-			virtual void undo()	   = 0;
+			virtual ~BaseActionUndonable() = default;
+
+			virtual void undo() = 0;
 			virtual void redo() { execute(); }
 		};
 	} // namespace Action

@@ -18,13 +18,13 @@ namespace VTX
 			}
 		}
 
-		void Trackball::_updateInputs( const double & p_deltaTime )
+		void Trackball::_updateInputs( const float & p_deltaTime )
 		{
 			// Wheel.
 			float deltaDistance = 0.f;
 			if ( _deltaMouseWheel != 0.f )
 			{
-				deltaDistance	 = _deltaMouseWheel * 0.01f * (float)p_deltaTime;
+				deltaDistance	 = _deltaMouseWheel * 0.01f * p_deltaTime;
 				_deltaMouseWheel = 0;
 			}
 
@@ -32,21 +32,21 @@ namespace VTX
 			Vec3f deltaVelocity = VEC3F_ZERO;
 			if ( _mouseLeftPressed )
 			{
-				deltaVelocity.x = -(float)_deltaMousePosition.x * 15.f;
-				deltaVelocity.y = (float)_deltaMousePosition.y * 15.f;
+				deltaVelocity.x = -_deltaMousePosition.x * 15.f;
+				deltaVelocity.y = _deltaMousePosition.y * 15.f;
 			}
 			// Mouse right.
 			else if ( _mouseRightPressed )
 			{
-				deltaVelocity.z = -(float)_deltaMousePosition.x * 15.f;
+				deltaVelocity.z = -_deltaMousePosition.x * 15.f;
 			}
 			// Pan target with wheel button.
 			else if ( _mouseMiddlePressed )
 			{
-				double deltaX = _deltaMousePosition.x * 0.1;
-				double deltaY = _deltaMousePosition.y * 0.1;
+				float deltaX = _deltaMousePosition.x * 0.1;
+				float deltaY = _deltaMousePosition.y * 0.1;
 
-				_target		= _target + _camera.getRotation() * ( -VEC3D_X * deltaX + VEC3D_Y * deltaY );
+				_target		= _target + _camera.getRotation() * ( -VEC3F_X * deltaX + VEC3F_Y * deltaY );
 				_needUpdate = true;
 			}
 			_deltaMousePosition.x = 0;
@@ -55,35 +55,35 @@ namespace VTX
 			// Keyboard.
 			if ( _isKeyPressed( Qt::Key_Z ) || _isKeyPressed( Qt::Key_Up ) )
 			{
-				deltaDistance = 1.5f * (float)p_deltaTime;
+				deltaDistance = 1.5f * p_deltaTime;
 			}
 			if ( _isKeyPressed( Qt::Key_S ) || _isKeyPressed( Qt::Key_Down ) )
 			{
-				deltaDistance = -1.5f * (float)p_deltaTime;
+				deltaDistance = -1.5f * p_deltaTime;
 			}
 			if ( _isKeyPressed( Qt::Key_Q ) || _isKeyPressed( Qt::Key_Left ) )
 			{
-				deltaVelocity.x = 1e4f * (float)p_deltaTime;
+				deltaVelocity.x = 1e4f * p_deltaTime;
 			}
 			if ( _isKeyPressed( Qt::Key_D ) || _isKeyPressed( Qt::Key_Right ) )
 			{
-				deltaVelocity.x = -1e4f * (float)p_deltaTime;
+				deltaVelocity.x = -1e4f * p_deltaTime;
 			}
 			if ( _isKeyPressed( Qt::Key_R ) )
 			{
-				deltaVelocity.y = -1e4f * (float)p_deltaTime;
+				deltaVelocity.y = -1e4f * p_deltaTime;
 			}
 			if ( _isKeyPressed( Qt::Key_F ) )
 			{
-				deltaVelocity.y = 1e4f * (float)p_deltaTime;
+				deltaVelocity.y = 1e4f * p_deltaTime;
 			}
 			if ( _isKeyPressed( Qt::Key_A ) )
 			{
-				deltaVelocity.z = 1e4f * (float)p_deltaTime;
+				deltaVelocity.z = 1e4f * p_deltaTime;
 			}
 			if ( _isKeyPressed( Qt::Key_E ) )
 			{
-				deltaVelocity.z = -1e4f * (float)p_deltaTime;
+				deltaVelocity.z = -1e4f * p_deltaTime;
 			}
 
 			// Set values from settings.
@@ -115,19 +115,19 @@ namespace VTX
 			// Update if needed.
 			if ( _needUpdate )
 			{
-				double distance = 0.0;
-				if ( _distance != 0.0 )
+				float distance = 0.f;
+				if ( _distance != 0.f )
 				{
-					distance  = Util::Math::clamp( _distance - deltaDistance, 0.1, 10000.0 );
-					_distance = 0.0;
+					distance  = Util::Math::clamp( _distance - deltaDistance, 0.1f, 10000.f );
+					_distance = 0.f;
 				}
 				else
 				{
 					distance = Util::Math::distance( _camera.getPosition(), _target );
-					distance = Util::Math::clamp( distance - deltaDistance, 0.1, 10000.0 );
+					distance = Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 				}
 
-				Quatd rotation = Quatd( Vec3d( -_velocity.y, _velocity.x, -_velocity.z ) * p_deltaTime );
+				Quatf rotation = Quatf( Vec3f( -_velocity.y, _velocity.x, -_velocity.z ) * p_deltaTime );
 				_camera.rotateAround( rotation, _target, distance );
 
 				_needUpdate = false;
@@ -136,11 +136,9 @@ namespace VTX
 			// Handle elasticity.
 			if ( _velocity != VEC3F_ZERO )
 			{
-				_velocity = Util::Math::linearInterpolation( _velocity, VEC3F_ZERO, (float)p_deltaTime * Setting::CONTROLLER_ELASTICITY_FACTOR );
+				_velocity = Util::Math::linearInterpolation( _velocity, VEC3F_ZERO, p_deltaTime * Setting::CONTROLLER_ELASTICITY_FACTOR );
 
-				Vec3f::bool_type res
-					= Util::Math::lessThan( Util::Math::abs( _velocity ),
-											Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD, Setting::CONTROLLER_ELASTICITY_THRESHOLD, Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
+				Vec3f::bool_type res = Util::Math::lessThan( Util::Math::abs( _velocity ), Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
 				if ( !_mouseLeftPressed && res.x && res.y && res.z )
 				{
 					_velocity = VEC3F_ZERO;
@@ -155,6 +153,6 @@ namespace VTX
 			_distance	= VTXApp::get().getScene().getAABB().diameter();
 		}
 
-		void Trackball::_updateOrient( const double & p_deltaTime ) {}
+		void Trackball::_updateOrient( const float & p_deltaTime ) {}
 	} // namespace Controller
 } // namespace VTX

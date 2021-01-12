@@ -17,8 +17,8 @@ namespace VTX
 		  public:
 			Camera();
 
-			inline const Vec3d & getPosition() const { return _position; }
-			inline const Quatd & getRotation() const { return _rotation; }
+			inline const Vec3f & getPosition() const { return _position; }
+			inline const Quatf & getRotation() const { return _rotation; }
 
 			inline const Mat4f & getViewMatrix() const { return _viewMatrix; }
 			inline const Mat4f & getProjectionMatrix() const { return _projectionMatrix; }
@@ -27,9 +27,9 @@ namespace VTX
 			inline const uint  getScreenHeight() const { return _screenHeight; }
 			inline const float getAspectRatio() const { return _aspectRatio; }
 
-			inline const Vec3d & getFront() const { return _front; }
-			inline const Vec3d & getLeft() const { return _left; }
-			inline const Vec3d & getUp() const { return _up; }
+			inline const Vec3f & getFront() const { return _front; }
+			inline const Vec3f & getLeft() const { return _left; }
+			inline const Vec3f & getUp() const { return _up; }
 
 			inline const float getNear() const { return _near; }
 			inline const float getFar() const { return _far; }
@@ -43,25 +43,25 @@ namespace VTX
 				_updateProjectionMatrix();
 			}
 
-			inline void setPosition( const Vec3d & p_position )
+			inline void setPosition( const Vec3f & p_position )
 			{
 				_position = p_position;
 				_updateViewMatrix();
 			}
 
-			inline void setRotation( const Quatd & p_rotation )
+			inline void setRotation( const Quatf & p_rotation )
 			{
 				_rotation = Util::Math::normalize( p_rotation );
 				_updateRotation();
 			}
 
-			inline void setRotation( const Vec3d & p_rotation )
+			inline void setRotation( const Vec3f & p_rotation )
 			{
 				_rotation = Util::Math::normalize( Util::Math::eulerToQuaternion( p_rotation ) );
 				_updateRotation();
 			}
 
-			inline void set( const Vec3d & p_position, const Quatd & p_rotation )
+			inline void set( const Vec3f & p_position, const Quatf & p_rotation )
 			{
 				_position = p_position;
 				setRotation( p_rotation );
@@ -85,26 +85,26 @@ namespace VTX
 				_updateProjectionMatrix();
 			}
 
-			inline void setRotationAround( const Quatd & p_rotation, const Vec3d & p_target, const double p_distance )
+			inline void setRotationAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance )
 			{
 				_rotation = Util::Math::normalize( p_rotation );
-				_position = _rotation * Vec3d( 0.0, 0.0, p_distance ) + p_target;
+				_position = _rotation * Vec3f( 0.f, 0.f, p_distance ) + p_target;
 				_updateRotation();
 			}
 
-			void move( const Vec3d & );
-			void moveFront( const double );
-			void moveLeft( const double );
-			void moveUp( const double );
+			void move( const Vec3f & );
+			void moveFront( const float );
+			void moveLeft( const float );
+			void moveUp( const float );
 
-			void rotate( const Vec3d & );
-			void rotatePitch( const double );
-			void rotateYaw( const double );
-			void rotateRoll( const double );
+			void rotate( const Vec3f & );
+			void rotatePitch( const float );
+			void rotateYaw( const float );
+			void rotateRoll( const float );
 
-			void rotateAround( const Quatd &, const Vec3d &, const double );
+			void rotateAround( const Quatf &, const Vec3f &, const float );
 
-			void lookAt( const Vec3d &, const Vec3d & );
+			void lookAt( const Vec3f &, const Vec3f & );
 
 			void setPerspective( const bool p_perspective )
 			{
@@ -122,12 +122,12 @@ namespace VTX
 			float _far			= 1e4f;
 			float _fov			= 60.f;
 
-			Vec3d _position = VEC3F_Z * 50.f;
-			Quatd _rotation = Quatd( 1.0, { 0.0, 0.0, 0.0 } );
+			Vec3f _position; //= VEC3F_Z * 50.f;
+			Quatf _rotation = Quatf( 1.f, { 0.f, 0.f, 0.f } );
 
-			Vec3d _front = -VEC3F_Z;
-			Vec3d _left	 = -VEC3F_X;
-			Vec3d _up	 = VEC3F_Y;
+			Vec3f _front = -VEC3F_Z;
+			Vec3f _left	 = -VEC3F_X;
+			Vec3f _up	 = VEC3F_Y;
 
 			Mat4f _viewMatrix;
 			Mat4f _projectionMatrix;

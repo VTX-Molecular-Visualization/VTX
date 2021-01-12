@@ -19,8 +19,8 @@ namespace VTX
 			void reset() override;
 
 		  protected:
-			void _updateInputs( const double & ) override;
-			void _updateOrient( const double & ) override;
+			void _updateInputs( const float & ) override;
+			void _updateOrient( const float & ) override;
 		};
 	} // namespace Controller
 } // namespace VTX

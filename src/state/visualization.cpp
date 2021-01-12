@@ -40,7 +40,7 @@ namespace VTX
 
 		void Visualization::exit() { Generic::HasCollection<Controller::BaseController>::clear(); }
 
-		void Visualization::update( const double & p_deltaTime )
+		void Visualization::update( const float & p_deltaTime )
 		{
 			BaseState::update( p_deltaTime );
 

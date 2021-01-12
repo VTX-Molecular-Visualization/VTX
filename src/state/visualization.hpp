@@ -20,7 +20,7 @@ namespace VTX
 			virtual void enter( void * const ) override;
 			virtual void exit() override;
 
-			virtual void update( const double & p_deltaTime ) override;
+			virtual void update( const float & p_deltaTime ) override;
 
 			// inline const Controller::BaseCameraController * const getCurrentCameraController() const { return getItem<Controller::BaseCameraController>( _cameraController ); }
 			inline Controller::BaseCameraController * const getCurrentCameraController() { return getItem<Controller::BaseCameraController>( _cameraController ); }

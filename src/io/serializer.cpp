@@ -165,13 +165,13 @@ namespace VTX
 		void Serializer::deserialize( const nlohmann::json & p_json, Model::Viewpoint & p_viewpoint ) const
 		{
 			p_viewpoint.setDuration( p_json.at( "DURATION" ).get<float>() );
-			Vec3d position;
+			Vec3f position;
 			deserialize( p_json.at( "POSITION" ), position );
 			p_viewpoint.setPosition( position );
-			Vec3d target;
+			Vec3f target;
 			deserialize( p_json.at( "TARGET" ), target );
 			p_viewpoint.setTarget( target );
-			Quatd rotation;
+			Quatf rotation;
 			deserialize( p_json.at( "ROTATION" ), rotation );
 			p_viewpoint.setRotation( rotation );
 			p_viewpoint.setDistance( p_json.at( "DISTANCE" ).get<float>() );

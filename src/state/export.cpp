@@ -40,11 +40,11 @@ namespace VTX
 			VTXApp::get().getSetting().recover();
 		}
 
-		void Export::update( const double & p_deltaTime )
+		void Export::update( const float & p_deltaTime )
 		{
 			BaseState::update( p_deltaTime );
 
-			float			 time	   = (float)_frame / Setting::VIDEO_FPS_DEFAULT;
+			float			 time	   = _frame / Setting::VIDEO_FPS_DEFAULT;
 			Model::Viewpoint viewpoint = _arg.path->getInterpolatedViewpoint( time );
 
 			// Action.
@@ -61,7 +61,7 @@ namespace VTX
 			if ( viewpoint.getController() == ID::Controller::TRACKBALL )
 			{
 				VTXApp::get().getScene().getCamera().setRotationAround(
-					Quatd( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );
+					Quatf( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );
 			}
 			else
 			{
@@ -77,7 +77,7 @@ namespace VTX
 							_arg.mode, Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ),
 						true );
 
-			VTX_INFO( std::to_string( ( uint )( (float)_frame * 100 / _frameCount ) ) + "%" );
+			VTX_INFO( std::to_string( ( uint )( _frame * 100 / _frameCount ) ) + "%" );
 
 			if ( _frame == _frameCount - 1 )
 			{
