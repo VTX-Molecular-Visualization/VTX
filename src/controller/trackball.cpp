@@ -134,6 +134,11 @@ namespace VTX
 			}
 
 			// Handle elasticity.
+			_updateElasticity( p_deltaTime );
+		}
+
+		void Trackball::_updateElasticity( const float & p_deltaTime )
+		{
 			if ( _velocity != VEC3F_ZERO )
 			{
 				_velocity = Util::Math::linearInterpolation( _velocity, VEC3F_ZERO, p_deltaTime * Setting::CONTROLLER_ELASTICITY_FACTOR );
@@ -153,6 +158,21 @@ namespace VTX
 			_distance	= VTXApp::get().getScene().getAABB().diameter();
 		}
 
-		void Trackball::_updateOrient( const float & p_deltaTime ) {}
+		void Trackball::_computeOrientPositions( const Math::AABB & p_aabb )
+		{
+			_orientStartingPosition = _target;
+			_orientTargetPosition	= p_aabb.centroid();
+			_velocity				= VEC3F_ZERO;
+			_orientStartingDistance = Util::Math::distance( _camera.getPosition(), _target );
+			_orientTargetDistance	= p_aabb.radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+		}
+
+		void Trackball::_updateOrient( const float & p_deltaTime )
+		{
+			_target	  = Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime );
+			_distance = Util::Math::easeInOutInterpolation( _orientStartingDistance, _orientTargetDistance, p_deltaTime );
+			_camera.rotateAround( QUATF_ID, _target, _distance );
+		}
+
 	} // namespace Controller
 } // namespace VTX

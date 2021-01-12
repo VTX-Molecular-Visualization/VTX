@@ -27,13 +27,19 @@ namespace VTX
 		  protected:
 			void _updateInputs( const float & ) override;
 			void _updateOrient( const float & ) override;
+			void _computeOrientPositions( const Math::AABB & ) override;
 
 		  private:
 			Vec3f _target	= VEC3F_ZERO;
 			float _distance = 0.f;
 			Vec3f _velocity = VEC3F_ZERO;
 
+			float _orientStartingDistance = 0.f;
+			float _orientTargetDistance	  = 0.f;
+
 			bool _needUpdate = true;
+
+			void _updateElasticity( const float & );
 		};
 	} // namespace Controller
 } // namespace VTX

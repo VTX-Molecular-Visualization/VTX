@@ -21,6 +21,7 @@ namespace VTX
 		  protected:
 			void _updateInputs( const float & ) override;
 			void _updateOrient( const float & ) override;
+			void _computeOrientPositions( const Math::AABB & ) override;
 		};
 	} // namespace Controller
 } // namespace VTX

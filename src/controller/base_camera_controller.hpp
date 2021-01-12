@@ -46,15 +46,10 @@ namespace VTX
 
 			virtual void reset() = 0;
 
-			void orient( const Math::AABB & p_aabb )
+			virtual void orient( const Math::AABB & p_aabb )
 			{
-				_isOrienting			= true;
-				_orientTime				= 0.f;
-				_orientStartingPosition = _camera.getPosition();
-
-				const float targetDistance = p_aabb.radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
-				_orientTargetPosition	   = p_aabb.centroid() - _camera.getFront() * targetDistance;
-
+				_orientTime = 0.f;
+				_computeOrientPositions( p_aabb );
 				_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > 1e-4f;
 			}
 
@@ -68,8 +63,9 @@ namespace VTX
 			Vec3f _orientStartingPosition = VEC3F_ZERO;
 			Vec3f _orientTargetPosition	  = VEC3F_ZERO;
 
-			virtual void _updateInputs( const float & ) = 0;
-			virtual void _updateOrient( const float & ) = 0;
+			virtual void _updateInputs( const float & )						  = 0;
+			virtual void _computeOrientPositions( const Math::AABB & p_aabb ) = 0;
+			virtual void _updateOrient( const float & )						  = 0;
 		};
 	} // namespace Controller
 } // namespace VTX

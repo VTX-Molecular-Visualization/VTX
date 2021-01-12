@@ -78,7 +78,17 @@ namespace VTX
 			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
 		}
 
-		void Freefly::_updateOrient( const float & p_time ) { _camera.setPosition( Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_time ) ); }
+		void Freefly::_computeOrientPositions( const Math::AABB & p_aabb )
+		{
+			_orientStartingPosition	   = _camera.getPosition();
+			const float targetDistance = p_aabb.radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+			_orientTargetPosition	   = p_aabb.centroid() - _camera.getFront() * targetDistance;
+		}
+
+		void Freefly::_updateOrient( const float & p_deltaTime )
+		{
+			_camera.setPosition( Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime ) );
+		}
 
 	} // namespace Controller
 } // namespace VTX
