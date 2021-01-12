@@ -35,11 +35,11 @@ namespace VTX
 			}
 			if ( _isKeyPressed( Qt::Key_Q ) || _isKeyPressed( Qt::Key_Left ) )
 			{
-				translation.x++;
+				translation.x--;
 			}
 			if ( _isKeyPressed( Qt::Key_D ) || _isKeyPressed( Qt::Key_Right ) )
 			{
-				translation.x--;
+				translation.x++;
 			}
 			if ( _isKeyPressed( Qt::Key_R ) )
 			{

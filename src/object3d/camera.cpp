@@ -16,7 +16,7 @@ namespace VTX
 
 		void Camera::move( const Vec3f & p_delta )
 		{
-			_position += _left * p_delta.x;
+			_position += _right * p_delta.x;
 			_position += _up * p_delta.y;
 			_position += _front * p_delta.z;
 			_updateViewMatrix();
@@ -28,9 +28,9 @@ namespace VTX
 			_updateViewMatrix();
 		}
 
-		void Camera::moveLeft( const float p_delta )
+		void Camera::moveRight( const float p_delta )
 		{
-			_position += _left * p_delta;
+			_position += _right * p_delta;
 			_updateViewMatrix();
 		}
 
@@ -48,13 +48,13 @@ namespace VTX
 
 		void Camera::rotatePitch( const float p_delta )
 		{
-			_rotation = _rotation * Util::Math::eulerToQuaternion( Vec3f( -p_delta, 0.f, 0.f ) );
+			_rotation = _rotation * Util::Math::eulerToQuaternion( Vec3f( p_delta, 0.f, 0.f ) );
 			_updateRotation();
 		}
 
 		void Camera::rotateYaw( const float p_delta )
 		{
-			_rotation = _rotation * Util::Math::eulerToQuaternion( Vec3f( 0.f, -p_delta, 0.f ) );
+			_rotation = _rotation * Util::Math::eulerToQuaternion( Vec3f( 0.f, p_delta, 0.f ) );
 			_updateRotation();
 		}
 
@@ -80,9 +80,9 @@ namespace VTX
 		void Camera::_updateRotation()
 		{
 			Mat3f rotation = Util::Math::castMat3( _rotation );
-			_front		   = rotation * -VEC3F_Z;
-			_left		   = rotation * -VEC3F_X;
-			_up			   = rotation * VEC3F_Y;
+			_front		   = rotation * CAMERA_FRONT_DEFAULT;
+			_right		   = rotation * CAMERA_RIGHT_DEFAULT;
+			_up			   = rotation * CAMERA_UP_DEFAULT;
 
 			_updateViewMatrix();
 		}
@@ -105,7 +105,8 @@ namespace VTX
 		{
 			VTX_INFO( "Position: " + Util::Math::to_string( _position ) );
 			VTX_INFO( "Rotation: " + Util::Math::to_string( _rotation ) );
-			VTX_INFO( "Left: " + Util::Math::to_string( _left ) );
+			VTX_INFO( "Front: " + Util::Math::to_string( _front ) );
+			VTX_INFO( "Right: " + Util::Math::to_string( _right ) );
 			VTX_INFO( "Up: " + Util::Math::to_string( _up ) );
 		}
 

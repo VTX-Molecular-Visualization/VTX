@@ -72,6 +72,10 @@ namespace VTX
 	constexpr Mat3f MAT3F_ID = Mat3f( 1.f );
 	constexpr Mat4f MAT4F_ID = Mat4f( 1.f );
 
+	constexpr Vec3f CAMERA_RIGHT_DEFAULT = VEC3F_X;
+	constexpr Vec3f CAMERA_UP_DEFAULT	 = VEC3F_Y;
+	constexpr Vec3f CAMERA_FRONT_DEFAULT = Vec3f( 0.f, 0.f, -1.f );
+
 	constexpr uint INVALID_ID = UINT_MAX;
 } // namespace VTX
 

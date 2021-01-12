@@ -33,20 +33,20 @@ namespace VTX
 			if ( _mouseLeftPressed )
 			{
 				deltaVelocity.x = -_deltaMousePosition.x * 15.f;
-				deltaVelocity.y = _deltaMousePosition.y * 15.f;
+				deltaVelocity.y = -_deltaMousePosition.y * 15.f;
 			}
 			// Mouse right.
 			else if ( _mouseRightPressed )
 			{
-				deltaVelocity.z = -_deltaMousePosition.x * 15.f;
+				deltaVelocity.z = _deltaMousePosition.x * 15.f;
 			}
 			// Pan target with wheel button.
 			else if ( _mouseMiddlePressed )
 			{
-				float deltaX = _deltaMousePosition.x * 0.1;
+				float deltaX = -_deltaMousePosition.x * 0.1;
 				float deltaY = _deltaMousePosition.y * 0.1;
 
-				_target		= _target + _camera.getRotation() * ( -VEC3F_X * deltaX + VEC3F_Y * deltaY );
+				_target		= _target + _camera.getRotation() * ( VEC3F_X * deltaX + VEC3F_Y * deltaY );
 				_needUpdate = true;
 			}
 			_deltaMousePosition.x = 0;
@@ -61,27 +61,27 @@ namespace VTX
 			{
 				deltaDistance = -1.5f * p_deltaTime;
 			}
-			if ( _isKeyPressed( Qt::Key_Q ) || _isKeyPressed( Qt::Key_Left ) )
+			if ( _isKeyPressed( Qt::Key_D ) || _isKeyPressed( Qt::Key_Right ) )
 			{
 				deltaVelocity.x = 1e4f * p_deltaTime;
 			}
-			if ( _isKeyPressed( Qt::Key_D ) || _isKeyPressed( Qt::Key_Right ) )
+			if ( _isKeyPressed( Qt::Key_Q ) || _isKeyPressed( Qt::Key_Left ) )
 			{
 				deltaVelocity.x = -1e4f * p_deltaTime;
 			}
 			if ( _isKeyPressed( Qt::Key_R ) )
 			{
-				deltaVelocity.y = -1e4f * p_deltaTime;
+				deltaVelocity.y = 1e4f * p_deltaTime;
 			}
 			if ( _isKeyPressed( Qt::Key_F ) )
 			{
-				deltaVelocity.y = 1e4f * p_deltaTime;
+				deltaVelocity.y = -1e4f * p_deltaTime;
 			}
-			if ( _isKeyPressed( Qt::Key_A ) )
+			if ( _isKeyPressed( Qt::Key_E ) )
 			{
 				deltaVelocity.z = 1e4f * p_deltaTime;
 			}
-			if ( _isKeyPressed( Qt::Key_E ) )
+			if ( _isKeyPressed( Qt::Key_A ) )
 			{
 				deltaVelocity.z = -1e4f * p_deltaTime;
 			}
@@ -127,7 +127,7 @@ namespace VTX
 					distance = Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 				}
 
-				Quatf rotation = Quatf( Vec3f( -_velocity.y, _velocity.x, -_velocity.z ) * p_deltaTime );
+				Quatf rotation = Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * p_deltaTime );
 				_camera.rotateAround( rotation, _target, distance );
 
 				_needUpdate = false;

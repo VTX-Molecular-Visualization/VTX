@@ -28,7 +28,7 @@ namespace VTX
 			inline const float getAspectRatio() const { return _aspectRatio; }
 
 			inline const Vec3f & getFront() const { return _front; }
-			inline const Vec3f & getLeft() const { return _left; }
+			inline const Vec3f & getRight() const { return _right; }
 			inline const Vec3f & getUp() const { return _up; }
 
 			inline const float getNear() const { return _near; }
@@ -94,7 +94,7 @@ namespace VTX
 
 			void move( const Vec3f & );
 			void moveFront( const float );
-			void moveLeft( const float );
+			void moveRight( const float );
 			void moveUp( const float );
 
 			void rotate( const Vec3f & );
@@ -122,12 +122,12 @@ namespace VTX
 			float _far			= 1e4f;
 			float _fov			= 60.f;
 
-			Vec3f _position; //= VEC3F_Z * 50.f;
+			Vec3f _position;
 			Quatf _rotation = Quatf( 1.f, { 0.f, 0.f, 0.f } );
 
-			Vec3f _front = -VEC3F_Z;
-			Vec3f _left	 = -VEC3F_X;
-			Vec3f _up	 = VEC3F_Y;
+			Vec3f _front = CAMERA_FRONT_DEFAULT;
+			Vec3f _right = CAMERA_RIGHT_DEFAULT;
+			Vec3f _up	 = CAMERA_UP_DEFAULT;
 
 			Mat4f _viewMatrix;
 			Mat4f _projectionMatrix;
