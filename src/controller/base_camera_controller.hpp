@@ -50,11 +50,11 @@ namespace VTX
 			{
 				_orientTime = 0.f;
 				_computeOrientPositions( p_aabb );
-				_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > 1e-4f;
 			}
 
 		  protected:
-			const float ORIENT_DURATION = 2.f;
+			const float ORIENT_DURATION	 = 2.f;
+			const float ORIENT_THRESHOLD = 1e-4f;
 
 			Object3D::Camera & _camera;
 

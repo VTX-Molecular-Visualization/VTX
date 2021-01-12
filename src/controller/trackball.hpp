@@ -23,6 +23,7 @@ namespace VTX
 			void reset() override;
 
 			inline const Vec3f & getTarget() const { return _target; }
+			inline void			 setTarget( const Vec3f & p_target ) { _target = p_target; }
 
 		  protected:
 			void _updateInputs( const float & ) override;

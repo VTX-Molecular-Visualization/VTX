@@ -10,7 +10,7 @@ namespace VTX
 			BaseController::setActive( p_active );
 			if ( p_active )
 			{
-				reset();
+				// reset();
 			}
 			else
 			{
@@ -155,7 +155,7 @@ namespace VTX
 		{
 			_needUpdate = true;
 			_target		= VTXApp::get().getScene().getAABB().centroid();
-			_distance	= VTXApp::get().getScene().getAABB().diameter();
+			_distance	= VTXApp::get().getScene().getAABB().radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
 		}
 
 		void Trackball::_computeOrientPositions( const Math::AABB & p_aabb )
@@ -165,13 +165,17 @@ namespace VTX
 			_velocity				= VEC3F_ZERO;
 			_orientStartingDistance = Util::Math::distance( _camera.getPosition(), _target );
 			_orientTargetDistance	= p_aabb.radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+			_isOrienting			= Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
+						   || abs( _orientTargetDistance - _orientStartingDistance ) > ORIENT_THRESHOLD;
+
+			VTX_DEBUG( std::to_string( abs( _orientTargetDistance - _orientTargetDistance ) ) );
 		}
 
 		void Trackball::_updateOrient( const float & p_deltaTime )
 		{
-			_target	  = Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime );
-			_distance = Util::Math::easeInOutInterpolation( _orientStartingDistance, _orientTargetDistance, p_deltaTime );
-			_camera.rotateAround( QUATF_ID, _target, _distance );
+			_target		   = Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime );
+			float distance = Util::Math::easeInOutInterpolation( _orientStartingDistance, _orientTargetDistance, p_deltaTime );
+			_camera.rotateAround( QUATF_ID, _target, distance );
 		}
 
 	} // namespace Controller

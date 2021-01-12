@@ -83,6 +83,7 @@ namespace VTX
 			_orientStartingPosition	   = _camera.getPosition();
 			const float targetDistance = p_aabb.radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
 			_orientTargetPosition	   = p_aabb.centroid() - _camera.getFront() * targetDistance;
+			_isOrienting			   = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
 		}
 
 		void Freefly::_updateOrient( const float & p_deltaTime )
