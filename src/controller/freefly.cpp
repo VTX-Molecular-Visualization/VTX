@@ -78,43 +78,7 @@ namespace VTX
 			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
 		}
 
-		void Freefly::_updateOrient( const float & p_time )
-		{
-			// Compute target position.
-			Vec3f direction = _orientStartCamera.getPosition() - _orientTargetAabb.centroid();
-			if ( direction == VEC3F_ZERO )
-			{
-				// TODO: finish if current position = target position.
-				VTX_DEBUG( "direction == VEC3F_ZERO" );
-			}
-
-			Util::Math::normalizeSelf( direction );
-
-			// const Vec3f targetPosition = _orientTargetAabb.centroid() + ( direction * _orientTargetAabb.diagonal().length() );
-			const float distanceToBBox = _orientTargetAabb.diameter() / ( 2.f * tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
-			const Vec3f targetPosition = _orientTargetAabb.centroid() + direction * distanceToBBox;
-
-			// Move.
-			direction			 = targetPosition - _orientStartCamera.getPosition();
-			const float distance = Util::Math::length( direction );
-			Util::Math::normalizeSelf( direction );
-
-			Vec3f position = _orientStartCamera.getPosition();
-			position += direction * Util::Math::easeInOutInterpolation( 0.f, distance, p_time );
-			_camera.setPosition( position );
-
-			// Rotation.
-			// Vec3f eulerFrom	 = Util::Math::quaternionToEuler( _orientStartCamera.getRotation() );
-			// Vec3f eulerTo	 = Util::Math::directionToEuler( -direction );
-			// Quatf rotationTo  = Util::Math::eulerToQuaternion( eulerTo );
-
-			Vec3f up = _orientStartCamera.getUp() + direction - _orientStartCamera.getFront();
-			// VTX_DEBUG( Util::Math::to_string( _orientStartCamera.getUp() ) );
-			up				 = Util::Math::normalize( up );
-			Quatf rotationTo = Util::Math::lookAt( targetPosition, _orientTargetAabb.centroid(), up );
-			Quatf rotation	 = Util::Math::easeInOutInterpolation( _orientStartCamera.getRotation(), rotationTo, p_time );
-			_camera.setRotation( rotation );
-		}
+		void Freefly::_updateOrient( const float & p_time ) { _camera.setPosition( Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_time ) ); }
 
 	} // namespace Controller
 } // namespace VTX

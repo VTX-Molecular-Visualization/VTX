@@ -48,10 +48,14 @@ namespace VTX
 
 			void orient( const Math::AABB & p_aabb )
 			{
-				_isOrienting	   = true;
-				_orientStartCamera = _camera;
-				_orientTime		   = 0.f;
-				_orientTargetAabb  = p_aabb;
+				_isOrienting			= true;
+				_orientTime				= 0.f;
+				_orientStartingPosition = _camera.getPosition();
+
+				const float targetDistance = p_aabb.radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+				_orientTargetPosition	   = p_aabb.centroid() - _camera.getFront() * targetDistance;
+
+				_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > 1e-4f;
 			}
 
 		  protected:
@@ -59,10 +63,10 @@ namespace VTX
 
 			Object3D::Camera & _camera;
 
-			bool			 _isOrienting = false;
-			float			 _orientTime  = 0.f;
-			Object3D::Camera _orientStartCamera;
-			Math::AABB		 _orientTargetAabb;
+			bool  _isOrienting			  = false;
+			float _orientTime			  = 0.f;
+			Vec3f _orientStartingPosition = VEC3F_ZERO;
+			Vec3f _orientTargetPosition	  = VEC3F_ZERO;
 
 			virtual void _updateInputs( const float & ) = 0;
 			virtual void _updateOrient( const float & ) = 0;
