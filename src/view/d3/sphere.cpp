@@ -1,4 +1,5 @@
 #include "sphere.hpp"
+#include "representation/representation_manager.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -20,30 +21,15 @@ namespace VTX
 				_uIsRadiusFixedLoc	 = _gl()->glGetUniformLocation( _program->getId(), "uIsRadiusFixed" );
 			}
 
-			void Sphere::render( const Generic::REPRESENTATION p_representation )
+			void Sphere::render( const Model::Representation::InstantiatedRepresentation * const p_representation )
 			{
-				switch ( p_representation )
-				{
-				case Generic::REPRESENTATION::BALL_AND_STICK:
-					_radiusFixed   = VTX_SETTING().atomsRadius;
-					_radiusAdd	   = 0.f;
-					_isRadiusFixed = true;
-					break;
-				case Generic::REPRESENTATION::VAN_DER_WAALS:
-					_isRadiusFixed = false;
-					_radiusAdd	   = 0.f;
-					break;
-				case Generic::REPRESENTATION::STICK:
-					_radiusFixed   = VTX_SETTING().bondsRadius;
-					_radiusAdd	   = 0.f;
-					_isRadiusFixed = true;
-					break;
-				case Generic::REPRESENTATION::SAS:
-					_isRadiusFixed = false;
-					_radiusAdd	   = 1.4f;
-					break;
-				default: return;
-				}
+				if ( !p_representation->hasToDrawSphere() )
+					return;
+
+				const Model::Representation::SphereData sphereData = p_representation->getSphereData();
+				_isRadiusFixed									   = sphereData._isRadiusFixed;
+				_radiusFixed									   = sphereData._radiusFixed;
+				_radiusAdd										   = sphereData._radiusAdd;
 
 				_program->use();
 
@@ -56,7 +42,7 @@ namespace VTX
 				_gl()->glUniform1f( _uRadiusAddLoc, _radiusAdd );
 				_gl()->glUniform1ui( _uIsRadiusFixedLoc, _isRadiusFixed );
 
-				for ( const std::pair<uint, uint> & pair : _model->getRepresentationState()[ p_representation ].atoms )
+				for ( const std::pair<uint, uint> & pair : _model->getRepresentationAtoms( p_representation ) )
 				{
 					_gl()->glDrawArrays( GL_POINTS, pair.first, pair.second );
 				}

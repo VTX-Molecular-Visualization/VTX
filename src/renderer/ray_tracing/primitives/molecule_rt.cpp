@@ -4,6 +4,7 @@
 #include "../materials/metal.hpp"
 #include "../materials/phong_material.hpp"
 #include "cylinder.hpp"
+#include "model/representation/representation_enum.hpp"
 #include "sphere.hpp"
 
 namespace VTX
@@ -88,12 +89,11 @@ namespace VTX
 						mapMtls[ chainPtr ] = _materials.back();
 					}
 
-					primitives.emplace_back( new Renderer::Sphere(
-						tAtomPositions[ i ],
-						rep == Generic::REPRESENTATION::VAN_DER_WAALS
-							? p_molecule->getAtomRadius( i )
-							: rep == Generic::REPRESENTATION::SAS ? p_molecule->getAtomRadius( i ) + 1.4f : radius,
-						mapMtls[ chainPtr ] ) );
+					primitives.emplace_back( new Renderer::Sphere( tAtomPositions[ i ],
+																   rep == Generic::REPRESENTATION::VAN_DER_WAALS ? p_molecule->getAtomRadius( i )
+																   : rep == Generic::REPRESENTATION::SAS		 ? p_molecule->getAtomRadius( i ) + 1.4f
+																												 : radius,
+																   mapMtls[ chainPtr ] ) );
 				}
 			}
 
@@ -105,8 +105,7 @@ namespace VTX
 					const Vec3f &		a1	 = tAtomPositions[ bond.getIndexFirstAtom() ];
 					const Vec3f &		a2	 = tAtomPositions[ bond.getIndexSecondAtom() ];
 
-					primitives.emplace_back( new Renderer::Cylinder(
-						a1, a2, 0.25f, mapMtls[ p_molecule->getAtom( bond.getIndexFirstAtom() ).getChainPtr() ] ) );
+					primitives.emplace_back( new Renderer::Cylinder( a1, a2, 0.25f, mapMtls[ p_molecule->getAtom( bond.getIndexFirstAtom() ).getChainPtr() ] ) );
 				}
 			}
 

@@ -6,7 +6,6 @@
 #endif
 
 #include "id.hpp"
-//#include "vtx_app.hpp"
 #include "selection/selection_enum.hpp"
 #include <QChar>
 #include <QColor>
@@ -40,6 +39,7 @@ namespace VTX
 			const QPixmap CHAIN_SYMBOL;
 			const QPixmap RESIDUE_SYMBOL;
 			const QPixmap ATOM_SYMBOL;
+			const QPixmap REPRESENTATION_SYMBOL;
 
 			const QPixmap TOOLTAB_SEPARATOR;
 
@@ -70,7 +70,7 @@ namespace VTX
 				UNFOLDED_PIXMAP( QPixmap( ":/sprite/treeview_unfolded_molecule_icon.png" ) ), FOLDED_PIXMAP( QPixmap( ":/sprite/treeview_folded_molecule_icon.png" ) ),
 				MOLECULE_SYMBOL( QPixmap( ":/sprite/symbol/molecule_symbol_icon.png" ) ), CHAIN_SYMBOL( QPixmap( ":/sprite/symbol/chain_symbol_icon.png" ) ),
 				RESIDUE_SYMBOL( QPixmap( ":/sprite/symbol/residue_symbol_icon.png" ) ), ATOM_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
-				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ) {};
+				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ), REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ) {};
 		};
 
 		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;
@@ -82,6 +82,8 @@ namespace VTX
 		inline static const QColor		SEQUENCE_FOREGROUND_SELECTION_COLOR			 = QColor( 0, 122, 204, 125 );
 		inline static const int			SEQUENCE_MAX_MISSING_RESIDUE_BEFORE_COLLAPSE = 5;
 		inline static const QChar		SEQUENCE_MISSING_RESIDUE_SYMBOL				 = '-';
+
+		inline static const int SCENE_SPACE_BETWEEN_ITEMS = 4;
 
 		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION = VTX::Selection::SelectionType::RESIDUE;
 

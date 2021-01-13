@@ -5,11 +5,11 @@
 #include "model/secondary_structure.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
-#include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -23,7 +23,9 @@ namespace VTX
 			MVC::MvcManager::get().deleteAllModels( _bonds );
 			MVC::MvcManager::get().deleteAllModels( _residues );
 			MVC::MvcManager::get().deleteAllModels( _chains );
-			MVC::MvcManager::get().deleteModel( _secondaryStructure );
+
+			if ( _secondaryStructure != nullptr )
+				MVC::MvcManager::get().deleteModel( _secondaryStructure );
 		}
 
 		void Molecule::_init()
@@ -36,6 +38,7 @@ namespace VTX
 			{
 				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
 				_buffer->setAtomRadius( _bufferAtomRadius );
+				_buffer->refreshAtomBufferCacheSize( (uint)_atoms.size() );
 				_fillBufferAtomColors();
 				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 				_buffer->setAtomSelections( _bufferAtomSelection );
@@ -50,7 +53,8 @@ namespace VTX
 				// Create secondary structure mesh.
 				createSecondaryStructure();
 
-				Util::Molecule::refreshRepresentationState( *this );
+				_setRepresentableMolecule( this );
+				computeRepresentationTargets();
 			}
 		}
 

@@ -1,5 +1,5 @@
 #include "residue.hpp"
-#include "util/molecule.hpp"
+#include "molecule.hpp"
 
 namespace VTX
 {

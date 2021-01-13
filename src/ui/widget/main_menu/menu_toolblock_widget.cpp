@@ -58,6 +58,11 @@ namespace VTX
 
 				///// MenuToolBlockWidget /////
 				void MenuToolBlockWidget::pushButton( MenuToolButtonWidget & p_toolButton, const int p_column ) { _tmpStructure->pushWidgetInColumn( p_column, &p_toolButton ); }
+				void MenuToolBlockWidget::pushButtonInNextColumn( MenuToolButtonWidget & p_toolButton )
+				{
+					int column = int( _tmpStructure->getNbColumns() );
+					pushButton( p_toolButton, column );
+				}
 
 				void MenuToolBlockWidget::setTitle( const QString & p_title ) { _title->setText( p_title ); }
 				void MenuToolBlockWidget::validate()

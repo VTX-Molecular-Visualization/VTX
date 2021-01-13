@@ -9,6 +9,7 @@
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "util/molecule.hpp"
+#include "model/molecule.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
 
@@ -55,7 +56,7 @@ namespace VTX
 						}
 					}
 
-					Util::Molecule::refreshRepresentationState( *atom.getMoleculePtr() );
+					atom.getMoleculePtr()->computeRepresentationTargets();
 				}
 			};
 

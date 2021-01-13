@@ -9,8 +9,9 @@
 #include "io/reader/setting.hpp"
 #include "io/writer/setting.hpp"
 #include "renderer/gl/gl.hpp"
+#include "representation/representation_manager.hpp"
+#include "setting.hpp"
 #include "util/filesystem.hpp"
-#include "util/molecule.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -100,31 +101,28 @@ namespace VTX
 			class ChangeRepresentation : public BaseAction
 			{
 			  public:
-				explicit ChangeRepresentation( const Generic::REPRESENTATION p_representation ) : _representation( p_representation ) {}
+				explicit ChangeRepresentation( const int p_representationIndex ) : _representationIndex( p_representationIndex ) {}
 
 				virtual void execute() override
 				{
-					VTX_SETTING().representation = _representation;
+					VTX_SETTING().representation = _representationIndex;
+
+					VTX::Representation::RepresentationManager::get().setDefaultRepresentationIndex( _representationIndex );
+
 					for ( const Object3D::Scene::PairMoleculePtrFloat & pair : VTXApp::get().getScene().getMolecules() )
-					{
-						Util::Molecule::refreshRepresentationState( *pair.first );
-					}
+						pair.first->computeRepresentationTargets();
 				};
 
 				virtual void displayUsage() override { VTX_INFO( "BALL_AND_STICK|VAN_DER_WAALS|STICK|SAS" ); }
 
 			  private:
-				const Generic::REPRESENTATION _representation;
+				const int _representationIndex;
 			};
 
 			class ChangeAtomsRadius : public BaseAction
 			{
 			  public:
-				explicit ChangeAtomsRadius( const float p_atomsRadius ) :
-					_atomsRadius( VTX_SETTING().representation == Generic::REPRESENTATION::BALL_AND_STICK ? Util::Math::max( VTX_SETTING().bondsRadius, p_atomsRadius )
-																										  : p_atomsRadius )
-				{
-				}
+				explicit ChangeAtomsRadius( const float p_atomsRadius ) : _atomsRadius( p_atomsRadius ) {}
 
 				virtual void execute() override { VTX_SETTING().atomsRadius = _atomsRadius; }
 
@@ -135,11 +133,7 @@ namespace VTX
 			class ChangeBondsRadius : public BaseAction
 			{
 			  public:
-				explicit ChangeBondsRadius( const float p_bondsRadius ) :
-					_bondsRadius( VTX_SETTING().representation == Generic::REPRESENTATION::BALL_AND_STICK ? Util::Math::min( VTX_SETTING().atomsRadius, p_bondsRadius )
-																										  : p_bondsRadius )
-				{
-				}
+				explicit ChangeBondsRadius( const float p_bondsRadius ) : _bondsRadius( p_bondsRadius ) {}
 
 				virtual void execute() override { VTX_SETTING().bondsRadius = _bondsRadius; };
 

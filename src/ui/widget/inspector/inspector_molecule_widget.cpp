@@ -4,6 +4,7 @@
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>
+#include <QLabel>
 #include <QPixmap>
 
 namespace VTX
@@ -34,21 +35,13 @@ namespace VTX
 					QVBoxLayout * contentLayout = new QVBoxLayout( mainContent );
 					contentLayout->setContentsMargins( 0, 0, 0, 0 );
 
-					_infoSection = WidgetFactory::get().instanciateWidget<CustomWidget::CollapsingHeaderWidget>( this, "inspector_item_section" );
-					_infoSection->setHeaderHeight( Style::INSPECTOR_HEADER_HEIGHT );
-					_infoSection->displayIconInHeader( false );
-
-					QWidget * infoSectionContent = new QWidget();
-					infoSectionContent->setContentsMargins( 4, 0, 4, 0 );
-
-					QGridLayout * infoSectionContentLayout = new QGridLayout( infoSectionContent );
-					infoSectionContentLayout->setColumnStretch( 1, 100 );
-					infoSectionContentLayout->setContentsMargins( 0, 0, 0, 0 );
-
-					for ( int i = 0; i < (int)InfoFields::COUNT; i++ )
-						_infoSectionFields[ i ].addInGrid( i, *infoSectionContentLayout );
-
-					_infoSection->setBody( infoSectionContent );
+					_infoSection   = WidgetFactory::get().instanciateWidget<InspectorSection>( this, "inspector_item_section" );
+					_fullnameLabel = new QLabel( this );
+					_fullnameLabel->setWordWrap( true );
+					_infoSection->appendField( "Full Name", _fullnameLabel );
+					_nbAtomsLabel = new QLabel( this );
+					_nbAtomsLabel->setWordWrap( true );
+					_infoSection->appendField( "Nb Atoms", _nbAtomsLabel );
 
 					contentLayout->addWidget( _infoSection );
 					contentLayout->addStretch( 1000 );
@@ -68,16 +61,13 @@ namespace VTX
 					const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( _model->getTypeId() );
 					_mainWidget->setHeaderIcon( *symbolPixmap );
 
-					_infoSectionFields[ (int)InfoFields::FULL_NAME ].setValue( _model->getName() );
-					_infoSectionFields[ (int)InfoFields::ATOM_COUNT ].setValue( std::to_string( _model->getAtomCount() ) );
+					_infoSection->setHeaderTitle( "Infos" );
+
+					_fullnameLabel->setText( QString::fromStdString( _model->getName() ) );
+					_nbAtomsLabel->setText( QString::fromStdString( std::to_string( _model->getAtomCount() ) ) );
 				}
 
-				void InspectorMoleculeWidget::localize()
-				{
-					_infoSection->setHeaderTitle( "INFOS" );
-					for ( int i = 0; i < (int)InfoFields::COUNT; i++ )
-						_infoSectionFields[ i ].localize();
-				}
+				void InspectorMoleculeWidget::localize() { _infoSection->localize(); }
 
 			} // namespace Inspector
 		}	  // namespace Widget

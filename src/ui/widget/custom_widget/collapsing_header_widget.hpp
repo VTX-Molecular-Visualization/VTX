@@ -44,11 +44,12 @@ namespace VTX
 					QLabel & getHeaderLabelWidget() { return *_titleLabel; };
 					void	 setHeaderHeight( const int p_height ) { _headerWidget->setFixedHeight( p_height ); };
 
+					void localize() override;
+
 				  protected:
 					CollapsingHeaderWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
 					void _setupUi( const QString & p_name ) override;
 					void _setupSlots() override;
-					void localize() override;
 
 				  private:
 					QVBoxLayout * _mainLayout	= nullptr;

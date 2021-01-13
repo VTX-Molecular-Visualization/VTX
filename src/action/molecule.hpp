@@ -10,6 +10,8 @@
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "util/molecule.hpp"
+#include "setting.hpp"
+#include "util/math.hpp"
 #include "util/secondary_structure.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
@@ -64,7 +66,7 @@ namespace VTX
 					Model::Molecule & molecule		= ( (Model::Molecule &)_visible );
 
 					molecule.setVisible( newVisibility );
-					Util::Molecule::refreshRepresentationState( molecule );
+					molecule.computeRepresentationTargets();
 				}
 			};
 
@@ -73,7 +75,7 @@ namespace VTX
 			  public:
 				explicit ChangeFPS( Model::Molecule & p_molecule, const int p_fps ) : _molecule( p_molecule ), _fps( p_fps ) {}
 
-				virtual void execute() override { _molecule.setFPS( Util::Math::clamp( _fps, 0, int( Setting::VIDEO_FPS_DEFAULT ) ) ); }
+				virtual void execute() override { _molecule.setFPS( Util::Math::clamp( _fps, 0, int( VTX::Setting::VIDEO_FPS_DEFAULT ) ) ); }
 
 			  private:
 				Model::Molecule & _molecule;

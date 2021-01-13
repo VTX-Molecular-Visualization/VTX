@@ -6,10 +6,13 @@
 #include "action/residue.hpp"
 #include "action/selection.hpp"
 #include "id.hpp"
+#include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "selection/selection_manager.hpp"
 #include "style.hpp"
+#include "ui/mime_type.hpp"
 #include "ui/widget_factory.hpp"
-#include <QScrollBar>
+#include <QMimeData>
 
 namespace VTX
 {
@@ -20,7 +23,7 @@ namespace VTX
 			namespace Widget
 			{
 				MoleculeSceneView::MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent ) :
-					View::BaseView<Model::Molecule>( p_model ), BaseManualWidget( p_parent )
+					View::BaseView<Model::Molecule>( p_model ), SceneItemWidget( p_parent )
 				{
 					_registerEvent( Event::Global::SELECTION_CHANGE );
 				}
@@ -51,46 +54,53 @@ namespace VTX
 
 				void MoleculeSceneView::receiveEvent( const Event::VTXEvent & p_event )
 				{
-					// Event::Global::SELECTION_CHANGE.
-					const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
-
-					blockSignals( true );
-					setUpdatesEnabled( false );
-					selectionModel()->clearSelection();
-					const Model::Selection::MapMoleculeIds & items = castedEvent.ptr->getItems();
-					for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & pairMolecule : items )
+					if ( p_event.name == Event::Global::SELECTION_CHANGE )
 					{
-						if ( pairMolecule.first != _model->getId() )
-						{
-							continue;
-						}
+						return;
 
-						topLevelItem( 0 )->setSelected( true );
-						for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : pairMolecule.second )
+						// Event::Global::SELECTION_CHANGE.
+						const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+
+						blockSignals( true );
+						setUpdatesEnabled( false );
+						selectionModel()->clearSelection();
+						const Model::Selection::MapMoleculeIds & items = castedEvent.ptr->getItems();
+						for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & pairMolecule : items )
 						{
-							const Model::Chain & chain = _model->getChain( pairChain.first );
-							topLevelItem( 0 )->child( chain.getIndex() )->setSelected( true );
-							for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+							if ( pairMolecule.first != _model->getId() )
 							{
-								const Model::Residue & residue = _model->getResidue( pairResidue.first );
-								topLevelItem( 0 )->child( chain.getIndex() )->child( residue.getIndex() - chain.getIndexFirstResidue() )->setSelected( true );
-								for ( const uint & atom : pairResidue.second )
+								continue;
+							}
+
+							topLevelItem( 0 )->setSelected( true );
+							for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : pairMolecule.second )
+							{
+								const Model::Chain & chain = _model->getChain( pairChain.first );
+								topLevelItem( 0 )->child( chain.getIndex() )->setSelected( true );
+								for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
 								{
-									topLevelItem( 0 )
-										->child( chain.getIndex() )
-										->child( residue.getIndex() - chain.getIndexFirstResidue() )
-										->child( atom - residue.getIndexFirstAtom() )
-										->setSelected( true );
+									const Model::Residue & residue = _model->getResidue( pairResidue.first );
+									topLevelItem( 0 )->child( chain.getIndex() )->child( residue.getIndex() - chain.getIndexFirstResidue() )->setSelected( true );
+									for ( const uint & atom : pairResidue.second )
+									{
+										topLevelItem( 0 )
+											->child( chain.getIndex() )
+											->child( residue.getIndex() - chain.getIndexFirstResidue() )
+											->child( atom - residue.getIndexFirstAtom() )
+											->setSelected( true );
+									}
 								}
 							}
 						}
+						blockSignals( false );
+						setUpdatesEnabled( true );
 					}
-					blockSignals( false );
-					setUpdatesEnabled( true );
 				}
 
 				void MoleculeSceneView::_setupUi( const QString & p_name )
 				{
+					SceneItemWidget::_setupUi( p_name );
+					
 					setObjectName( "sceneTree" );
 					setUniformRowHeights( true );
 					setHeaderHidden( true );
@@ -107,6 +117,7 @@ namespace VTX
 					setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
 					_contextMenu = new QMenu( parentWidget() );
 					_contextMenu->addAction( "Delete", this, &MoleculeSceneView::_deleteAction, QKeySequence::Delete );
+					
 
 					QTreeWidgetItem * const moleculeView = new QTreeWidgetItem();
 
@@ -153,9 +164,6 @@ namespace VTX
 					}
 
 					addTopLevelItem( moleculeView );
-
-					setMinimumHeight( rowHeight( model()->index( 0, 0 ) ) );
-					setMinimumWidth( sizeHintForColumn( 0 ) );
 				}
 
 				void MoleculeSceneView::_deleteAction()
@@ -166,18 +174,16 @@ namespace VTX
 
 				void MoleculeSceneView::_setupSlots()
 				{
+					SceneItemWidget::_setupSlots();
+
 					connect( this, &QTreeWidget::itemChanged, this, &MoleculeSceneView::_onItemChanged );
 					connect( this, &QTreeWidget::itemClicked, this, &MoleculeSceneView::_onItemClicked );
 					connect( this, &QTreeWidget::itemDoubleClicked, this, &MoleculeSceneView::_onItemDoubleClicked );
 					connect( this, &QTreeWidget::itemExpanded, this, &MoleculeSceneView::_onItemExpanded );
 					connect( this, &QTreeWidget::itemCollapsed, this, &MoleculeSceneView::_onItemCollapsed );
-
-					connect( this, &QTreeWidget::customContextMenuRequested, this, &MoleculeSceneView::_onCustomContextMenuCalled );
 				}
 
-				void MoleculeSceneView::_onCustomContextMenuCalled( const QPoint & p_clicPos ) { _contextMenu->popup( mapToGlobal( p_clicPos ) ); }
-
-				void MoleculeSceneView::localize() {}
+				void MoleculeSceneView::localize() { SceneItemWidget::localize(); }
 
 				void MoleculeSceneView::_onItemChanged( const QTreeWidgetItem * const p_item, const int p_column ) const
 				{
@@ -313,6 +319,7 @@ namespace VTX
 					}
 				}
 
+				QMimeData * MoleculeSceneView::_getDataForDrag() { return VTX::UI::MimeType::generateMoleculeData( *_model ); }
 			} // namespace Widget
 		}	  // namespace UI
 	}		  // namespace View

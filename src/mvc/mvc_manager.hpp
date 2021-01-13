@@ -27,7 +27,7 @@ namespace VTX
 			}
 
 		  public:
-			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			M * const instantiateModel()
 			{
 				M * const		model = new M();
@@ -40,7 +40,7 @@ namespace VTX
 				return model;
 			}
 
-			template<typename M, typename P1, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			template<typename M, typename P1, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			M * const instantiateModel( P1 & p_param1 )
 			{
 				M * const		model = new M( p_param1 );
@@ -53,7 +53,7 @@ namespace VTX
 				return model;
 			}
 
-			template<typename M, typename P1, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			template<typename M, typename P1, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			M * const instantiateModel( P1 * p_param1 )
 			{
 				M * const		model = new M( p_param1 );
@@ -66,8 +66,8 @@ namespace VTX
 				return model;
 			}
 
-			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
-			void deleteModel( M * const p_model )
+			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
+			void deleteModel( M * const & p_model )
 			{
 				const MvcData * const mvc = _container[ p_model->getId() ];
 				_container.erase( p_model->getId() );
@@ -79,7 +79,7 @@ namespace VTX
 				delete p_model;
 			}
 
-			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			void deleteAllModels( std::vector<M *> & p_models )
 			{
 				for ( auto it = p_models.begin(); it != p_models.end(); it++ )
@@ -88,7 +88,7 @@ namespace VTX
 				}
 			}
 
-			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			const M & getModel( const Model::ID & p_id ) const
 			{
 				const Model::BaseModel & model	  = _container[ p_id ]->getModel();
@@ -96,7 +96,7 @@ namespace VTX
 				return modelPtr;
 			}
 
-			template<typename M, typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>>
+			template<typename M, typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>>
 			M & getModel( const Model::ID & p_id )
 			{
 				Model::BaseModel & model	= _container[ p_id ]->getModel();
@@ -108,8 +108,8 @@ namespace VTX
 
 			template<typename V,
 					 typename M,
-					 typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>,
-					 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
+					 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
+					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
 			inline V * const instanciateView( M * const p_model, const ID::VTX_ID & p_id )
 			{
 				V * const view = new V( p_model );
@@ -119,8 +119,8 @@ namespace VTX
 
 			template<typename V,
 					 typename M,
-					 typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>,
-					 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
+					 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
+					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
 			inline V * const instanciateViewWidget( M * const p_model, const ID::VTX_ID & p_id, QWidget * const p_parentWidget = nullptr )
 			{
 				V * const view = new V( p_model, p_parentWidget );
@@ -130,8 +130,8 @@ namespace VTX
 
 			template<typename V,
 					 typename M,
-					 typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>,
-					 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
+					 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
+					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
 			inline V * const getView( const M * const p_model, const ID::VTX_ID & p_id )
 			{
 				return _container[ p_model->getId() ]->getView<M, V>( p_id );
@@ -139,12 +139,14 @@ namespace VTX
 
 			template<typename V,
 					 typename M,
-					 typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>,
-					 typename = std::enable_if<std::is_base_of<V, View::BaseView<M>>::value>>
+					 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
+					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
 			inline void deleteView( const M * const p_model, const ID::VTX_ID & p_id )
 			{
 				delete _container[ p_model->getId() ]->removeView<M, V>( p_id );
 			}
+
+			inline void deleteView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { delete _container[ p_model->getId() ]->removeView( p_id ); }
 
 			inline const bool hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { return _container[ p_model->getId() ]->hasView( p_id ); };
 

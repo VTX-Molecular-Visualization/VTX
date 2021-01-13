@@ -17,6 +17,8 @@
 #include "math/aabb.hpp"
 #include "model/configuration/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "representation/instantiated_representation.hpp"
+#include "representation/representation_target.hpp"
 #include "residue.hpp"
 #include <iostream>
 #include <map>
@@ -40,17 +42,8 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
-			using AtomPositionsFrame = std::vector<Vec3f>;
-			using MapRange			 = std::map<uint, uint>; // std::map<start, count>
-
-			struct RepresentationStruct
-			{
-				MapRange atoms	 = MapRange();
-				MapRange bonds	 = MapRange();
-				MapRange ribbons = MapRange();
-			};
-
-			using RepresentationState = std::map<const Generic::REPRESENTATION, RepresentationStruct>;
+			using AtomPositionsFrame  = std::vector<Vec3f>;
+			using RepresentationState = std::map<const Model::Representation::InstantiatedRepresentation *, VTX::Representation::RepresentationTarget>;
 
 			// Configuration.
 			inline const Configuration::Molecule & getConfiguration() const { return _configuration; }
@@ -281,4 +274,5 @@ namespace VTX
 		};
 	} // namespace Model
 } // namespace VTX
+
 #endif

@@ -17,8 +17,7 @@ namespace VTX
 			{
 				VTX_VIEW
 
-			  public:
-				void render( const Generic::REPRESENTATION ) override;
+				void render( const Model::Representation::InstantiatedRepresentation * const ) override;
 
 			  private:
 				// Uniforms.

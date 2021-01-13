@@ -8,8 +8,11 @@ namespace VTX
 {
 	namespace Model
 	{
-		void Selection::selectMolecule( Molecule & p_molecule )
+		void Selection::selectMolecule( Molecule & p_molecule, const bool p_appendToSelection )
 		{
+			if ( !p_appendToSelection )
+				_clearWithoutNotify();
+
 			Tool::Chrono chrono = Tool::Chrono();
 			chrono.start();
 			_selectMolecule( p_molecule );
@@ -18,8 +21,11 @@ namespace VTX
 			p_molecule.refreshSelection( &_items[ p_molecule.getId() ] );
 			_notifyDataChanged();
 		}
-		void Selection::selectMolecules( const std::vector<Molecule *> & p_molecules )
+		void Selection::selectMolecules( const std::vector<Molecule *> & p_molecules, const bool p_appendToSelection )
 		{
+			if ( !p_appendToSelection )
+				_clearWithoutNotify();
+
 			for ( const auto it : p_molecules )
 			{
 				_selectMolecule( *it );
@@ -28,14 +34,20 @@ namespace VTX
 			_notifyDataChanged();
 		}
 
-		void Selection::selectChain( Chain & p_chain )
+		void Selection::selectChain( Chain & p_chain, const bool p_appendToSelection )
 		{
+			if ( !p_appendToSelection )
+				_clearWithoutNotify();
+
 			_selectChain( p_chain );
 			_refreshMoleculeSelection( p_chain.getMoleculePtr() );
 			_notifyDataChanged();
 		}
-		void Selection::selectChains( const std::vector<Chain *> & p_chains )
+		void Selection::selectChains( const std::vector<Chain *> & p_chains, const bool p_appendToSelection )
 		{
+			if ( !p_appendToSelection )
+				_clearWithoutNotify();
+
 			if ( p_chains.size() == 0 )
 				return;
 
@@ -46,14 +58,20 @@ namespace VTX
 			_notifyDataChanged();
 		}
 
-		void Selection::selectResidue( Residue & p_residue )
+		void Selection::selectResidue( Residue & p_residue, const bool p_appendToSelection )
 		{
+			if ( !p_appendToSelection )
+				_clearWithoutNotify();
+
 			_selectResidue( p_residue );
 			_refreshMoleculeSelection( p_residue.getMoleculePtr() );
 			_notifyDataChanged();
 		}
-		void Selection::selectResidues( const std::vector<Residue *> & p_residues )
+		void Selection::selectResidues( const std::vector<Residue *> & p_residues, const bool p_appendToSelection )
 		{
+			if ( !p_appendToSelection )
+				_clearWithoutNotify();
+
 			if ( p_residues.size() == 0 )
 				return;
 
@@ -64,14 +82,20 @@ namespace VTX
 			_notifyDataChanged();
 		}
 
-		void Selection::selectAtom( Atom & p_atom )
+		void Selection::selectAtom( Atom & p_atom, const bool p_appendToSelection )
 		{
+			if ( !p_appendToSelection )
+				_clearWithoutNotify();
+
 			_selectAtom( p_atom );
 			_refreshMoleculeSelection( p_atom.getMoleculePtr() );
 			_notifyDataChanged();
 		}
-		void Selection::selectAtoms( const std::vector<Atom *> & p_atoms )
+		void Selection::selectAtoms( const std::vector<Atom *> & p_atoms, const bool p_appendToSelection )
 		{
+			if ( !p_appendToSelection )
+				_clearWithoutNotify();
+
 			if ( p_atoms.size() == 0 )
 				return;
 
@@ -79,6 +103,25 @@ namespace VTX
 				_selectAtom( *it );
 
 			_refreshMoleculeSelection( p_atoms[ 0 ]->getMoleculePtr() );
+			_notifyDataChanged();
+		}
+
+		void Selection::selectRepresentation( Representation::InstantiatedRepresentation & p_representation, const bool p_appendToSelection )
+		{
+			if ( !p_appendToSelection )
+				_clearWithoutNotify();
+
+			_selectRepresentation( p_representation );
+			_notifyDataChanged();
+		}
+		void Selection::selectRepresentations( const std::vector<Representation::InstantiatedRepresentation *> & p_representations, const bool p_appendToSelection )
+		{
+			if ( !p_appendToSelection )
+				_clearWithoutNotify();
+
+			for ( const auto it : p_representations )
+				_selectRepresentation( *it );
+
 			_notifyDataChanged();
 		}
 
@@ -202,6 +245,32 @@ namespace VTX
 			_notifyDataChanged();
 		}
 
+		void Selection::unselectRepresentation( Representation::InstantiatedRepresentation & p_representation )
+		{
+			_unselectRepresentation( p_representation );
+			_notifyDataChanged();
+		}
+		void Selection::unselectRepresentations( const std::vector<Representation::InstantiatedRepresentation *> & p_representations )
+		{
+			if ( p_representations.size() == 0 )
+				return;
+
+			for ( const auto it : p_representations )
+				_unselectRepresentation( *it );
+
+			_notifyDataChanged();
+		}
+		void Selection::unselectRepresentationsWithCheck( const std::vector<Representation::InstantiatedRepresentation *> & p_representations )
+		{
+			for ( const auto it : p_representations )
+			{
+				if ( isRepresentationSelected( *it ) )
+					_unselectRepresentation( *it );
+			}
+
+			_notifyDataChanged();
+		}
+
 		bool Selection::isMoleculeSelected( const Molecule & p_molecule ) const
 		{
 			const ID & id = p_molecule.getId();
@@ -260,6 +329,10 @@ namespace VTX
 
 			return std::find( atomVector.begin(), atomVector.end(), index ) != atomVector.end();
 		}
+		bool Selection::isRepresentationSelected( Representation::InstantiatedRepresentation & p_representation ) const
+		{
+			return _representations.find( &p_representation ) != _representations.end();
+		}
 
 		uint Selection::getMoleculeSelectedCount() const { return (uint)_items.size(); }
 		uint Selection::getChainSelectedCount() const
@@ -286,6 +359,7 @@ namespace VTX
 						res += (uint)mapResidus.second.size();
 			return res;
 		}
+		uint Selection::getRepresentationSelectedCount() const { return (uint)_representations.size(); }
 
 		void Selection::_selectMolecule( const Molecule & p_molecule )
 		{
@@ -464,10 +538,24 @@ namespace VTX
 			}
 		}
 
+		void Selection::_selectRepresentation( Representation::InstantiatedRepresentation & p_representation ) { _representations.emplace( &p_representation ); }
+		void Selection::_unselectRepresentation( Representation::InstantiatedRepresentation & p_representation ) { _representations.erase( &p_representation ); }
+
 		void Selection::clear()
 		{
-			_items.clear();
+			_clearWithoutNotify();
 			this->_notifyDataChanged();
+		}
+		void Selection::_clearWithoutNotify()
+		{
+			for ( const std::pair<ID, MapChainIds> item : _items )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( item.first );
+				molecule.refreshSelection( nullptr );
+			}
+
+			_items.clear();
+			_representations.clear();
 		}
 
 		void Selection::receiveEvent( const Event::VTXEvent & p_event )
@@ -477,6 +565,18 @@ namespace VTX
 				const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 				unselectMolecule( *castedEvent.ptr );
 			}
+			if ( p_event.name == Event::REPRESENTATION_REMOVED )
+			{
+				const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> & castedEvent
+					= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>( p_event );
+				unselectRepresentation( *castedEvent.ptr );
+			}
+		}
+
+		void Selection::_notifyDataChanged()
+		{
+			BaseModel::_notifyDataChanged();
+			VTX_EVENT( new Event::VTXEventPtr( Event ::SELECTION_CHANGE, this ) );
 		}
 
 	} // namespace Model

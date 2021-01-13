@@ -3,6 +3,7 @@
 #include "action/setting.hpp"
 #include "action/viewpoint.hpp"
 #include "define.hpp"
+#include "model/representation/representation_library.hpp"
 #include "state/visualization.hpp"
 #include "tool/logger.hpp"
 #include "vtx_app.hpp"
@@ -18,8 +19,8 @@ namespace VTX
 			{
 			case Qt::Key_F1: VTX_ACTION( new Action::Main::ToggleCameraController() ); break;
 			case Qt::Key_F2:
-				VTX_ACTION(
-					new Action::Setting::ChangeRepresentation( Generic::REPRESENTATION( ( (uint)VTX_SETTING().representation + 1 ) % (uint)Generic::REPRESENTATION::COUNT ) ) );
+				VTX_ACTION( new Action::Setting::ChangeRepresentation( ( VTX_SETTING().representation + 1 )
+																	   % Model::Representation::RepresentationLibrary::get().getRepresentationCount() ) );
 				break;
 			case Qt::Key_F3: VTX_ACTION( new Action::Setting::ChangeColorMode( Generic::COLOR_MODE( ( (uint)VTX_SETTING().colorMode + 1 ) % 4 ) ) ); break;
 			case Qt::Key_F4: VTX_ACTION( new Action::Setting::ChangeShading( Renderer::SHADING( ( (uint)VTX_SETTING().shading + 1 ) % (uint)Renderer::SHADING::COUNT ) ) ); break;

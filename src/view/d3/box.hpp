@@ -16,9 +16,8 @@ namespace VTX
 			class Box : public BaseView3DMolecule
 			{
 				VTX_VIEW
-
 			  public:
-				void render( const Generic::REPRESENTATION ) override;
+				void render( const Model::Representation::InstantiatedRepresentation * const ) override;
 
 			  private:
 				// Uniforms.

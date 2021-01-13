@@ -43,6 +43,13 @@ namespace VTX
 				return view;
 			}
 
+			inline View::BaseView<Model::BaseModel> * removeView( const ID::VTX_ID & p_id )
+			{
+				View::BaseView<Model::BaseModel> * const view = _views.at( p_id );
+				_views.erase( p_id );
+				return view;
+			}
+
 			template<typename M,
 					 typename V,
 					 typename = std::enable_if<std::is_base_of<M, Model::BaseModel>::value>,

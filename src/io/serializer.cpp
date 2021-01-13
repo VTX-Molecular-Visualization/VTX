@@ -217,7 +217,7 @@ namespace VTX
 			Color::Rgb bgColor = Color::Rgb();
 			deserialize( p_json.at( "BACKGROUND_COLOR" ), bgColor );
 			VTX_ACTION( new Action::Setting::ChangeBackgroundColor( bgColor ) );
-			VTX_ACTION( new Action::Setting::ChangeRepresentation( p_json.at( "REPRESENTATION" ).get<Generic::REPRESENTATION>() ) );
+			VTX_ACTION( new Action::Setting::ChangeRepresentation( p_json.at( "REPRESENTATION" ).get<int>() ) );
 			VTX_ACTION( new Action::Setting::ChangeAtomsRadius( p_json.at( "ATOMS_RADIUS" ).get<float>() ) );
 			VTX_ACTION( new Action::Setting::ChangeBondsRadius( p_json.at( "BONDS_RADIUS" ).get<float>() ) );
 			VTX_ACTION( new Action::Setting::ChangeColorMode( p_json.at( "COLOR_MODE" ).get<Generic::COLOR_MODE>() ) );

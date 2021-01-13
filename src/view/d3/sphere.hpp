@@ -18,7 +18,7 @@ namespace VTX
 				VTX_VIEW
 
 			  public:
-				void render( const Generic::REPRESENTATION ) override;
+				void render( const Model::Representation::InstantiatedRepresentation * const p_representation ) override;
 
 			  private:
 				float _radiusFixed	 = 1.f;

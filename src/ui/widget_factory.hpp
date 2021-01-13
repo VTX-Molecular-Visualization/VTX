@@ -44,7 +44,11 @@ namespace VTX
 				return res;
 			}
 
-			template<typename V, typename M, typename W>
+			template<typename V,
+					 typename M,
+					 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
+					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>,
+					 typename = std::enable_if<std::is_base_of<Widget::BaseManualWidgetInitializer, V>::value>>
 			V * const instanciateViewWidget( M * const p_model, const ID::VTX_ID & p_id, QWidget * const p_parent, const std::string & p_name ) const
 			{
 				QString qstringName = QString::fromStdString( p_name );

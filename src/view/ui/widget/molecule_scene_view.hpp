@@ -10,10 +10,13 @@
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
-#include "ui/widget/base_manual_widget.hpp"
+#include "ui/widget/scene/scene_item_widget.hpp"
 #include "view/base_view.hpp"
 #include <QMenu>
+#include <QMouseEvent>
+#include <QPoint>
 #include <QTreeWidget>
+#include <QWidget>
 
 namespace VTX
 {
@@ -23,19 +26,22 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class MoleculeSceneView : public View::BaseView<Model::Molecule>, public VTX::UI::Widget::BaseManualWidget<QTreeWidget>
+				class MoleculeSceneView : public View::BaseView<Model::Molecule>, public VTX::UI::Widget::Scene::SceneItemWidget
 				{
 					VTX_WIDGET
 					VTX_VIEW
 
 				  public:
-					void localize() override;
-					void notify( const Event::VTXEvent * const p_event ) override;
-					void receiveEvent( const Event::VTXEvent & p_event ) override;
+					void			  localize() override;
+					void			  notify( const Event::VTXEvent * const p_event ) override;
+					void			  receiveEvent( const Event::VTXEvent & p_event ) override;
+					const Model::ID & getModelID() const override { return _model->getId(); };
 
 				  protected:
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
+
+					QMimeData * _getDataForDrag() override;
 
 				  private:
 					QMenu * _contextMenu;
@@ -49,7 +55,7 @@ namespace VTX
 					void _onItemCollapsed( const QTreeWidgetItem * const );
 					void _onCustomContextMenuCalled( const QPoint & p_clicPos );
 
-					void _deleteAction();
+					void _deleteAction() override;
 
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Molecule & p_model ) const;
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Chain & p_model ) const;
@@ -62,8 +68,6 @@ namespace VTX
 						const QVariant & dataID = p_item.data( 0, Qt::UserRole );
 						return dataID.value<VTX::Model::ID>();
 					}
-
-					const Qt::CheckState _getCheckState( const bool p_enable ) const { return p_enable ? Qt::CheckState::Checked : Qt::CheckState::Unchecked; };
 				};
 
 			} // namespace Widget

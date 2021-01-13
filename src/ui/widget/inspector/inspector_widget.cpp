@@ -1,7 +1,13 @@
 #include "inspector_widget.hpp"
 #include "model/molecule.hpp"
+#include "model/representation/representation.hpp"
+#include "model/representation/representation_library.hpp"
+#include "model/selection.hpp"
+#include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "view/ui/widget/molecule_inspector_view.hpp"
+#include "view/ui/widget/representation_inspector_view.hpp"
+#include <type_traits>
 
 namespace VTX
 {
@@ -11,68 +17,74 @@ namespace VTX
 		{
 			namespace Inspector
 			{
-				InspectorWidget::InspectorWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
-				{
-					_registerEvent( Event::Global::SELECTION_CHANGE );
-					_registerEvent( Event::Global::MOLECULE_ADDED );
-					_registerEvent( Event::Global::MOLECULE_REMOVED );
-				}
+				InspectorWidget::InspectorWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) { _registerEvent( Event::Global::SELECTION_CHANGE ); }
 
 				InspectorWidget::~InspectorWidget() {}
 
 				void InspectorWidget::receiveEvent( const Event::VTXEvent & p_event )
 				{
 					if ( p_event.name == Event::Global::SELECTION_CHANGE )
-					{
 						refresh();
-					}
-					else if ( p_event.name == Event::Global::MOLECULE_ADDED )
-					{
-						const Event::VTXEventPtr<Model::Molecule> &		castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-						View::UI::Widget::MoleculeInspectorView * const moleculeInspectorView
-							= MVC::MvcManager::get().instanciateView<View::UI::Widget::MoleculeInspectorView>( castedEvent.ptr, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
-						QWidget * const widget = moleculeInspectorView->getWidget();
-						_verticalLayout->insertWidget( 0, widget );
-					}
-					else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
-					{
-						const Event::VTXEventPtr<Model::Molecule> &		castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-						View::UI::Widget::MoleculeInspectorView * const moleculeInspectorView
-							= MVC::MvcManager::get().getView<View::UI::Widget::MoleculeInspectorView>( castedEvent.ptr, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
-						QWidget * const widget = moleculeInspectorView->getWidget();
-						_verticalLayout->removeWidget( widget );
-						MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeInspectorView>( castedEvent.ptr, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
-					}
 				}
 
 				void InspectorWidget::refresh()
 				{
 					clear();
 
-					// TODO
+					for ( const auto it : Selection::SelectionManager::get().getSelectionModel().getItems() )
+					{
+						Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( it.first );
+						_addMolecule( &molecule );
+					}
+
+					for ( auto it : Selection::SelectionManager::get().getSelectionModel().getRepresentations() )
+					{
+						_addRepresentation( it );
+					}
 				}
 
 				void InspectorWidget::clear()
 				{
-					QObjectList widgets = _verticalLayout->children();
+					for ( const ViewData viewData : _inspectorViewsData )
+					{
+						Model::BaseModel & model = MVC::MvcManager::get().getModel<Model::BaseModel>( viewData._modelID );
+						_verticalLayout->removeWidget( viewData._widget );
+						MVC::MvcManager::get().deleteView( &model, viewData._viewID );
+					}
 
-					for ( auto it = widgets.begin(); it != widgets.end(); it++ )
-						_verticalLayout->removeItem( dynamic_cast<QWidgetItem *>( *it ) );
+					_inspectorViewsData.clear();
 				}
 
 				void InspectorWidget::_setupUi( const QString & p_name )
 				{
 					BaseManualWidget::_setupUi( p_name );
 
-					QWidget * layoutWidget = new QWidget( this );
-					layoutWidget->setContentsMargins( 0, 0, 0, 0 );
+					_scrollWidget = new QWidget( this );
+					_scrollWidget->setSizePolicy( QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum );
 
-					_verticalLayout = new QVBoxLayout( layoutWidget );
+					_verticalLayout = new QVBoxLayout( _scrollWidget );
+					_verticalLayout->setSizeConstraint( QLayout::SizeConstraint::SetMinAndMaxSize );
 					_verticalLayout->setSpacing( 4 );
-					_verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 					_verticalLayout->addStretch( 1000 );
+					_verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 
-					this->setWidget( layoutWidget );
+					_scrollArea = new QScrollArea( this );
+					_scrollArea->setFrameShape( QFrame::Shape::NoFrame );
+					_scrollArea->setWidget( _scrollWidget );
+					_scrollArea->setWidgetResizable( true );
+					_scrollArea->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored );
+
+					setWidget( _scrollArea );
+				}
+
+				void InspectorWidget::_addMolecule( Model::Molecule * const p_molecule )
+				{
+					_addInspectorView<Model::Molecule, View::UI::Widget::MoleculeInspectorView>( p_molecule, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
+				}
+				void InspectorWidget::_addRepresentation( Model::Representation::InstantiatedRepresentation * const p_representation )
+				{
+					_addInspectorView<Model::Representation::InstantiatedRepresentation, View::UI::Widget::RepresentationInspectorView>( p_representation,
+																																		 ID::View::UI_INSPECTOR_REPRESENTATION );
 				}
 
 				void InspectorWidget::_setupSlots() {}

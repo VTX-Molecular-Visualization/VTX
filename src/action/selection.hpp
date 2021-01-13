@@ -66,6 +66,21 @@ namespace VTX
 				Model::Atom &	   _atom;
 			};
 
+			class SelectRepresentation : public BaseAction
+			{
+			  public:
+				explicit SelectRepresentation( Model::Selection & p_selection, Model::Representation::InstantiatedRepresentation & p_representation ) :
+					_selection( p_selection ), _representation( p_representation )
+				{
+				}
+
+				virtual void execute() override { _selection.selectRepresentation( _representation ); }
+
+			  private:
+				Model::Selection &									_selection;
+				Model::Representation::InstantiatedRepresentation & _representation;
+			};
+
 			class UnselectMolecule : public BaseAction
 			{
 			  public:
