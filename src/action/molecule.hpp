@@ -7,11 +7,11 @@
 
 #include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "setting.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
-#include "util/molecule.hpp"
-#include "setting.hpp"
 #include "util/math.hpp"
+#include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
@@ -182,7 +182,7 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->getCurrentCameraController()->orient( _molecule.getAABB() );
+					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->orientCameraController( _molecule.getAABB() );
 				}
 
 			  private:

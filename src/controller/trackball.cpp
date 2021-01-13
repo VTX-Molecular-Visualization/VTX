@@ -10,11 +10,14 @@ namespace VTX
 			BaseController::setActive( p_active );
 			if ( p_active )
 			{
-				// reset();
+				_target = _camera.getPosition() + _camera.getFront() * _distance;
 			}
 			else
 			{
 				_velocity = VEC3F_ZERO;
+				// Save distance to force at next setActive(true).
+				// If orient is called in Freefly, the distance is overriden.
+				_distance = Util::Math::distance( _camera.getPosition(), _target );
 			}
 		}
 
@@ -154,9 +157,12 @@ namespace VTX
 
 		void Trackball::reset()
 		{
-			_needUpdate = true;
-			_target		= VTXApp::get().getScene().getAABB().centroid();
-			_distance	= VTXApp::get().getScene().getAABB().radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+			_needUpdate			   = true;
+			const Vec3f defaultPos = -CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+			_camera.setPosition( defaultPos );
+			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
+			_target	  = VTXApp::get().getScene().getAABB().centroid();
+			_velocity = VEC3F_ZERO;
 		}
 
 		void Trackball::_computeOrientPositions( const Math::AABB & p_aabb )

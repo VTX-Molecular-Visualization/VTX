@@ -73,16 +73,14 @@ namespace VTX
 					{
 						uint fps	   = _counter / ( _timer.elapsed() / 1000.f );
 						VTX_STAT().FPS = fps;
-						// VTX_DEBUG( "OpenGL FPS: " + std::to_string( (int)fps ) );
-						_counter = 0;
+						_counter	   = 0;
 						_timer.restart();
 					}
 
-					QPainter painter;
-					painter.begin( this );
-					painter.setPen( Qt::white );
-					painter.drawText( 10, 10, QString::fromStdString( "FPS: " + std::to_string( VTX_STAT().FPS ) ) );
-					painter.end();
+					_painter.begin( this );
+					_painter.setPen( Qt::white );
+					_painter.drawText( 10, 10, QString::fromStdString( "FPS: " + std::to_string( VTX_STAT().FPS ) ) );
+					_painter.end();
 				}
 
 				void OpenGLWidget::resizeGL( int p_width, int p_height )

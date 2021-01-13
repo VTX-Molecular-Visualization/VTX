@@ -22,6 +22,10 @@ namespace VTX
 			explicit BaseCameraController( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
 			virtual ~BaseCameraController() = default;
 
+			inline const bool	 isOrienting() const { return _isOrienting; }
+			inline const Vec3f & getOrientStartingPosition() const { return _orientStartingPosition; }
+			inline const Vec3f & getOrientTargetPosition() const { return _orientTargetPosition; }
+
 			void update( const float & p_deltaTime ) override
 			{
 				if ( _isOrienting )

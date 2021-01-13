@@ -65,14 +65,14 @@ namespace VTX
 				}
 			};
 
-			class Focus : public BaseAction
+			class Orient : public BaseAction
 			{
 			  public:
-				explicit Focus( Model::Residue & p_residue ) : _residue( p_residue ) {}
+				explicit Orient( Model::Residue & p_residue ) : _residue( p_residue ) {}
 
 				virtual void execute() override
 				{
-					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->getCurrentCameraController()->orient( _residue.getAABB() );
+					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->orientCameraController( _residue.getAABB() );
 				}
 
 			  private:

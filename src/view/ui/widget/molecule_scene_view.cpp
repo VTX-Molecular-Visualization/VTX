@@ -222,17 +222,17 @@ namespace VTX
 					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
 					{
 						Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
-						VTX_ACTION( new Action::Chain::Focus( model ) );
+						VTX_ACTION( new Action::Chain::Orient( model ) );
 					}
 					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
 					{
 						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
-						VTX_ACTION( new Action::Residue::Focus( model ) );
+						VTX_ACTION( new Action::Residue::Orient( model ) );
 					}
 					else if ( modelTypeId == ID::Model::MODEL_ATOM )
 					{
 						Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
-						VTX_ACTION( new Action::Atom::Focus( model ) );
+						VTX_ACTION( new Action::Atom::Orient( model ) );
 					}
 				}
 
