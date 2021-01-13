@@ -33,7 +33,7 @@ namespace VTX
 	const float				  Setting::BONDS_RADIUS_MAX				= 1.f;
 	const Generic::COLOR_MODE Setting::COLOR_MODE_DEFAULT			= Generic::COLOR_MODE::CHAIN;
 	const Renderer::SHADING	  Setting::SHADING_DEFAULT				= Renderer::SHADING::DIFFUSE;
-	const bool				  Setting::ACTIVE_VSYNC_DEFAULT			= true;
+	const bool				  Setting::ACTIVE_VSYNC_DEFAULT			= false;
 	const bool				  Setting::ACTIVE_AO_DEFAULT			= true;
 	const int				  Setting::AO_INTENSITY_DEFAULT			= 5;
 	const int				  Setting::AO_INTENSITY_MIN				= 1;

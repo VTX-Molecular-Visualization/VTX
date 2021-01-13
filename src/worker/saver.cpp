@@ -1,5 +1,6 @@
 #include "saver.hpp"
 #include "io/writer/vtx.hpp"
+#include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 
 namespace VTX

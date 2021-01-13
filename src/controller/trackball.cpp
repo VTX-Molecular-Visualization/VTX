@@ -127,9 +127,10 @@ namespace VTX
 					distance = Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 				}
 
-				Quatf rotation = Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * p_deltaTime );
+				Quatd rotation = Quatd( Vec3d( _velocity.y, _velocity.x, _velocity.z ) * (double)p_deltaTime );
 				_camera.rotateAround( rotation, _target, distance );
-
+				float d = Util::Math::distance( _camera.getPosition(), _target );
+				// VTX_INFO( std::to_string( distance ) + " / " + std::to_string( d ) );
 				_needUpdate = false;
 			}
 
