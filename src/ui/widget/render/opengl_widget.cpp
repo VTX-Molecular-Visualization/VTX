@@ -64,9 +64,19 @@ namespace VTX
 				{
 					getRenderer().renderFrame( VTXApp::get().getScene() );
 
-					_gl->glBindFramebuffer( GL_READ_FRAMEBUFFER, getRendererGL().getRenderedFBO() );
-					_gl->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, defaultFramebufferObject() );
-					_gl->glBlitFramebuffer( 0, 0, size().width(), size().height(), 0, 0, size().width(), size().height(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
+					// TODO: write directly in defaultFramebufferObject()
+					_gl->glBlitNamedFramebuffer( getRendererGL().getRenderedFBO(),
+												 defaultFramebufferObject(),
+												 0,
+												 0,
+												 size().width(),
+												 size().height(),
+												 0,
+												 0,
+												 size().width(),
+												 size().height(),
+												 GL_COLOR_BUFFER_BIT,
+												 GL_NEAREST );
 
 					_counter++;
 					if ( _timer.elapsed() >= 1000.f )

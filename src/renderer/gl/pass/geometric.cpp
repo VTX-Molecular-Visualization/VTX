@@ -22,9 +22,7 @@ namespace VTX
 				glPointParameteri( GL_POINT_SPRITE_COORD_ORIGIN, GL_LOWER_LEFT );*/
 
 				// Create G-buffers for deferred shading.
-				gl()->glGenFramebuffers( 1, &_fbo );
-
-				gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+				gl()->glCreateFramebuffers( 1, &_fbo );
 
 				gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_viewPositionsNormalsCompressedTexture );
 				gl()->glTextureParameteri( _viewPositionsNormalsCompressedTexture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
@@ -47,17 +45,14 @@ namespace VTX
 				gl()->glTextureParameteri( _depthTexture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 				gl()->glTextureStorage2D( _depthTexture, 1, GL_DEPTH_COMPONENT32F, p_width, p_height );
 
-				gl()->glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _viewPositionsNormalsCompressedTexture, 0 );
-				gl()->glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _colorsTexture, 0 );
-				gl()->glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0 );
+				gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _viewPositionsNormalsCompressedTexture, 0 );
+				gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT1, _colorsTexture, 0 );
+				gl()->glNamedFramebufferTexture( _fbo, GL_DEPTH_ATTACHMENT, _depthTexture, 0 );
 
 				static const GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+				gl()->glNamedFramebufferDrawBuffers( _fbo, 2, drawBuffers );
 
-				gl()->glDrawBuffers( 2, drawBuffers );
-
-				gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-				GLenum fboStatus = gl()->glCheckFramebufferStatus( GL_FRAMEBUFFER );
+				GLenum fboStatus = gl()->glCheckNamedFramebufferStatus(_fbo, GL_FRAMEBUFFER );
 				if ( fboStatus != GL_FRAMEBUFFER_COMPLETE )
 				{
 					VTX_WARNING( "Framebuffer not complete: " + std::to_string( fboStatus ) );
@@ -95,11 +90,9 @@ namespace VTX
 				gl()->glTextureParameteri( _depthTexture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 				gl()->glTextureStorage2D( _depthTexture, 1, GL_DEPTH_COMPONENT32F, p_width, p_height );
 
-				gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
-				gl()->glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _viewPositionsNormalsCompressedTexture, 0 );
-				gl()->glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, _colorsTexture, 0 );
-				gl()->glFramebufferTexture2D( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, _depthTexture, 0 );
-				gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _viewPositionsNormalsCompressedTexture, 0 );
+				gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT1, _colorsTexture, 0 );
+				gl()->glNamedFramebufferTexture( _fbo, GL_DEPTH_ATTACHMENT, _depthTexture, 0 );
 			}
 
 			void Geometric::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
