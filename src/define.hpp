@@ -25,6 +25,7 @@ namespace VTX
 	using Vec2f = glm::vec2;
 	using Vec2i = glm::ivec2;
 	using Vec3f = glm::vec3;
+	using Vec3d = glm::dvec3;
 	using Vec3i = glm::ivec3;
 	using Vec4f = glm::vec4;
 
@@ -33,6 +34,7 @@ namespace VTX
 	using Mat4f	 = glm::mat4;
 
 	using Quatf = glm::quat;
+	using Quatd = glm::dquat;
 
 	using Path = std::filesystem::path;
 

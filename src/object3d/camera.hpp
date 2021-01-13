@@ -102,7 +102,7 @@ namespace VTX
 			void rotateYaw( const float );
 			void rotateRoll( const float );
 
-			void rotateAround( const Quatf &, const Vec3f &, const float );
+			void rotateAround( const Quatd &, const Vec3f &, const float );
 
 			void lookAt( const Vec3f &, const Vec3f & );
 

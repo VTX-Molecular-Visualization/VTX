@@ -6,7 +6,7 @@
 #endif
 
 #include "setting.hpp"
-#include "tool/chrono.hpp"
+#include "stat.hpp"
 #include "ui/main_window.hpp"
 #include <QTimer>
 #include <QtWidgets/QApplication>
@@ -39,6 +39,8 @@ namespace VTX
 
 		inline Setting &			   getSetting() { return _setting; }
 		inline const Setting &		   getSetting() const { return _setting; }
+		inline Stat &				   getStat() { return _stat; }
+		inline const Stat &			   getStat() const { return _stat; }
 		inline Object3D::Scene &	   getScene() { return *_scene; }
 		inline const Object3D::Scene & getScene() const { return *_scene; }
 
@@ -56,7 +58,7 @@ namespace VTX
 		QElapsedTimer * _elapsedTimer = nullptr;
 
 		Setting				  _setting		= Setting();
-		Tool::Chrono		  _chrono		= Tool::Chrono();
+		Stat				  _stat			= Stat();
 		UI::MainWindow *	  _mainWindow	= nullptr;
 		State::StateMachine * _stateMachine = nullptr;
 		Object3D::Scene *	  _scene		= nullptr;
@@ -71,6 +73,7 @@ namespace VTX
 	};
 
 	inline Setting & VTX_SETTING() { return VTXApp::get().getSetting(); }
+	inline Stat &	 VTX_STAT() { return VTXApp::get().getStat(); }
 
 } // namespace VTX
 

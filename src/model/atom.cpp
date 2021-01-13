@@ -8,9 +8,7 @@ namespace VTX
 		const Math::AABB Atom::getAABB() const
 		{
 			Vec3f &	   position = _moleculePtr->getAtomPositionFrame( _moleculePtr->getFrame() )[ _index ];
-			Math::AABB aabb		= Math::AABB( position );
-
-			// TODO: add radius?
+			Math::AABB aabb		= Math::AABB( position, getVdwRadius() );
 
 			return aabb;
 		}
