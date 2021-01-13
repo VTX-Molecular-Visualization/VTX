@@ -49,6 +49,8 @@ namespace VTX
 
 					MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
 
+					void _buildTree();
+
 					void _onItemChanged( QTreeWidgetItem * item, int column );
 					void _onItemClicked( QTreeWidgetItem *, int );
 					void _onItemExpanded( QTreeWidgetItem * );

@@ -83,6 +83,9 @@ namespace VTX
 
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 
+		  protected:
+			void _notifyDataChanged();
+
 		  private:
 			MapMoleculeIds										   _items			= MapMoleculeIds();
 			std::set<Representation::InstantiatedRepresentation *> _representations = std::set<Representation::InstantiatedRepresentation *>();
@@ -90,6 +93,7 @@ namespace VTX
 			Selection() : BaseModel( ID::Model::MODEL_SELECTION )
 			{
 				_registerEvent( Event::MOLECULE_REMOVED );
+				_registerEvent( Event::MOLECULE_STRUCTURE_CHANGE );
 				_registerEvent( Event::REPRESENTATION_REMOVED );
 			}
 			~Selection() = default;
@@ -123,7 +127,6 @@ namespace VTX
 			void _clearWithoutNotify();
 
 			void _refreshMoleculeSelection( Molecule * const );
-			void _notifyDataChanged();
 		};
 
 	} // namespace Model

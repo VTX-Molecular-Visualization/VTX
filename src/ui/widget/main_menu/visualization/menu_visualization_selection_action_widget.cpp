@@ -64,7 +64,7 @@ namespace VTX
 					void MenuVisualizationSelectionActionWidget::_extractSelection() const
 					{
 						const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-						VTX_ACTION( new Action::Molecule::Copy( selectionModel ) );
+						VTX_ACTION( new Action::Molecule::Extract( selectionModel ) );
 					}
 					void MenuVisualizationSelectionActionWidget::_deleteSelection() const
 					{

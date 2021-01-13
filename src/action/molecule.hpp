@@ -8,6 +8,7 @@
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "selection/selection_manager.hpp"
 #include "setting.hpp"
 #include "util/math.hpp"
 #include "util/secondary_structure.hpp"
@@ -185,9 +186,29 @@ namespace VTX
 					generatedMolecule->copyFromSelection( _selection );
 					VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
 
-					Model::Molecule & baseMolecule = MVC::MvcManager::get().getModel<Model::Molecule>( _selection.getItems().begin()->first );
-					VTXApp::get().getScene().addMolecule( generatedMolecule );
 					generatedMolecule->setTranslation( VTX::Vec3f( 10, 0, 0 ) );
+					VTXApp::get().getScene().addMolecule( generatedMolecule );
+				}
+
+			  private:
+				const Model::Selection & _selection;
+			};
+
+			class Extract : public BaseAction
+			{
+			  public:
+				explicit Extract( const Model::Selection & p_source ) : _selection( p_source ) {}
+				virtual void execute() override
+				{
+					const Model::ID & idMolSource = _selection.getItems().begin()->first;
+					Model::Molecule & molecule	  = MVC::MvcManager::get().getModel<Model::Molecule>( idMolSource );
+
+					Model::GeneratedMolecule * const generatedMolecule = MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+					generatedMolecule->extractFromSelection( _selection );
+
+					VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+
+					VTXApp::get().getScene().addMolecule( generatedMolecule );
 				}
 
 			  private:

@@ -17,7 +17,8 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
-			void copyFromSelection( const Model::Selection & _selection );
+			void copyFromSelection( const Model::Selection & p_selection );
+			void extractFromSelection( const Model::Selection & p_selection ) { copyFromSelection( p_selection ); };
 
 		  protected:
 			GeneratedMolecule();

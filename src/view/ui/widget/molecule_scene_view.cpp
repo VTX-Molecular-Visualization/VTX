@@ -50,6 +50,11 @@ namespace VTX
 						const Model::Chain &					 chain			 = *residue.getChainPtr();
 						_refreshItem( topLevelItem( 0 )->child( chain.getIndex() )->child( residue.getIndex() - chain.getIndexFirstResidue() ), residue );
 					}
+					else if ( p_event->name == Event::Model::DATA_CHANGE )
+					{
+						clear();
+						_buildTree();
+					}
 				}
 
 				void MoleculeSceneView::receiveEvent( const Event::VTXEvent & p_event )
@@ -100,7 +105,10 @@ namespace VTX
 				void MoleculeSceneView::_setupUi( const QString & p_name )
 				{
 					SceneItemWidget::_setupUi( p_name );
-
+					_buildTree();
+				}
+				void MoleculeSceneView::_buildTree()
+				{
 					QTreeWidgetItem * const moleculeView = new QTreeWidgetItem();
 
 					moleculeView->setData( 0, Qt::UserRole, QVariant::fromValue<VTX::Model::ID>( _model->getId() ) );

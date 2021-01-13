@@ -12,17 +12,17 @@ namespace VTX
 	{
 		GeneratedMolecule::GeneratedMolecule() : Model::Molecule( ID::Model::MODEL_GENERATED_MOLECULE ) {}
 
-		void GeneratedMolecule::copyFromSelection( const Model::Selection & _selection )
+		void GeneratedMolecule::copyFromSelection( const Model::Selection & p_selection )
 		{
 			Tool::Chrono chrono;
 			chrono.start();
 
-			if ( _selection.getMoleculeSelectedCount() < 1 )
+			if ( p_selection.getMoleculeSelectedCount() < 1 )
 				throw Exception::VTXException( "Generate molecule from empty selection" );
-			if ( _selection.getMoleculeSelectedCount() > 1 )
+			if ( p_selection.getMoleculeSelectedCount() > 1 )
 				throw Exception::VTXException( "Generate molecule from multiple molecule. Not allowed currently." );
 
-			const std::pair<const ID, const Model::Selection::MapChainIds> & moleculeData = *( _selection.getItems().begin() );
+			const std::pair<const ID, const Model::Selection::MapChainIds> & moleculeData = *( p_selection.getItems().begin() );
 			const Model::Molecule &											 molecule	  = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 
 			// Copy molecule properties.
