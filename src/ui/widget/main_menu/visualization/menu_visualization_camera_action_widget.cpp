@@ -84,7 +84,7 @@ namespace VTX
 						_vessel->showActiveFeedback( currentControllerID == ID::Controller::VESSEL );
 					}
 
-					void MenuVisualizationCameraActionWidget::_recenterCamera() const { VTX_ACTION( new Action::Main::RecenterCameraController() ); }
+					void MenuVisualizationCameraActionWidget::_recenterCamera() const { VTX_ACTION( new Action::Main::ResetCameraController() ); }
 					void MenuVisualizationCameraActionWidget::_setTrackballController() const
 					{
 						VTX_ACTION( new Action::Main::ChangeCameraController( ID::Controller::TRACKBALL ) );

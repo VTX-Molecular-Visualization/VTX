@@ -54,6 +54,11 @@ namespace VTX
 
 		void Visualization::toggleCameraController()
 		{
+			if ( getItem<VTX::Controller::BaseCameraController>( _cameraController )->isOrienting() )
+			{
+				return;
+			}
+
 			getItem( _cameraController )->setActive( false );
 
 			if ( _cameraController == ID::Controller::FREEFLY )
@@ -68,8 +73,13 @@ namespace VTX
 
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::CONTROLLER_CHANGE, &_cameraController ) );
 		}
-		void Visualization::setController( const ID::VTX_ID & p_controllerId )
+		void Visualization::setCameraController( const ID::VTX_ID & p_controllerId )
 		{
+			if ( getItem<VTX::Controller::BaseCameraController>( _cameraController )->isOrienting() )
+			{
+				return;
+			}
+
 			// Do nothing if id not in collection or already in use
 			if ( !hasItem( p_controllerId ) || _cameraController == p_controllerId )
 				return;
@@ -81,9 +91,31 @@ namespace VTX
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::CONTROLLER_CHANGE, &_cameraController ) );
 		}
 
-		void Visualization::recenter() { getItem<VTX::Controller::BaseCameraController>( _cameraController )->reset(); }
+		void Visualization::resetCameraController()
+		{
+			if ( getItem<VTX::Controller::BaseCameraController>( _cameraController )->isOrienting() )
+			{
+				return;
+			}
+			getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->reset();
+			getItem<Controller::Freefly>( ID::Controller::FREEFLY )->reset();
+		}
 
-		void Visualization::receiveEvent( const Event::VTXEvent & p_event ) { recenter(); }
+		void Visualization::orientCameraController( const Math::AABB & p_aabb )
+		{
+			getItem<VTX::Controller::BaseCameraController>( _cameraController )->orient( p_aabb );
+			// Override Trackball distance.
+			if ( _cameraController == ID::Controller::FREEFLY )
+			{
+				const Controller::Freefly * const freefly = getItem<Controller::Freefly>( ID::Controller::FREEFLY );
+				if ( freefly->isOrienting() )
+				{
+					getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->setDistance( Util::Math::distance( p_aabb.centroid(), freefly->getOrientTargetPosition() ) );
+				}
+			}
+		}
+
+		void Visualization::receiveEvent( const Event::VTXEvent & p_event ) { resetCameraController(); }
 
 	} // namespace State
 } // namespace VTX

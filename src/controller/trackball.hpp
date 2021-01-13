@@ -24,6 +24,7 @@ namespace VTX
 
 			inline const Vec3f & getTarget() const { return _target; }
 			inline void			 setTarget( const Vec3f & p_target ) { _target = p_target; }
+			inline void			 setDistance( const float & p_distance ) { _distance = p_distance; }
 
 		  protected:
 			void _updateInputs( const float & ) override;

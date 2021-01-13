@@ -72,7 +72,7 @@ namespace VTX
 
 		void Freefly::reset()
 		{
-			const Vec3f defaultPos = VTXApp::get().getScene().getAABB().centroid() + VEC3F_Z * VTXApp::get().getScene().getAABB().diameter();
+			const Vec3f defaultPos = -CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
 
 			_camera.setPosition( defaultPos );
 			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );

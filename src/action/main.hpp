@@ -152,18 +152,18 @@ namespace VTX
 			  public:
 				explicit ChangeCameraController( const ID::VTX_ID & p_controllerId ) : _id( p_controllerId ) {}
 
-				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->setController( _id ); };
+				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->setCameraController( _id ); };
 
 			  private:
 				const ID::VTX_ID _id;
 			};
 
-			class RecenterCameraController : public BaseAction
+			class ResetCameraController : public BaseAction
 			{
 			  public:
-				explicit RecenterCameraController() {}
+				explicit ResetCameraController() {}
 
-				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->recenter(); };
+				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->resetCameraController(); };
 
 			  private:
 			};

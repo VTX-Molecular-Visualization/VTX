@@ -27,8 +27,9 @@ namespace VTX
 			inline const ID::VTX_ID &						getCurrentCameraControllerID() const { return _cameraController; }
 
 			void toggleCameraController();
-			void setController( const ID::VTX_ID & p_controllerId );
-			void recenter();
+			void setCameraController( const ID::VTX_ID & p_controllerId );
+			void resetCameraController();
+			void orientCameraController( const Math::AABB & );
 
 			virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 

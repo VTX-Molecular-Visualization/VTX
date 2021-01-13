@@ -6,10 +6,10 @@
 #endif
 
 #include "model/atom.hpp"
+#include "model/molecule.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "util/molecule.hpp"
-#include "model/molecule.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
 
@@ -60,14 +60,14 @@ namespace VTX
 				}
 			};
 
-			class Focus : public BaseAction
+			class Orient : public BaseAction
 			{
 			  public:
-				explicit Focus( Model::Atom & p_atom ) : _atom( p_atom ) {}
+				explicit Orient( Model::Atom & p_atom ) : _atom( p_atom ) {}
 
 				virtual void execute() override
 				{
-					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->getCurrentCameraController()->orient( _atom.getAABB() );
+					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->orientCameraController( _atom.getAABB() );
 				}
 
 			  private:
