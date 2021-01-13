@@ -173,10 +173,10 @@ namespace VTX
 				const Model::SecondaryStructure::COLOR_MODE _colorMode;
 			};
 
-			class Focus : public BaseAction
+			class Orient : public BaseAction
 			{
 			  public:
-				explicit Focus( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
+				explicit Orient( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
 
 				virtual void execute() override
 				{

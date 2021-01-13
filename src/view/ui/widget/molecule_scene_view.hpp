@@ -44,7 +44,7 @@ namespace VTX
 
 					void _onItemChanged( const QTreeWidgetItem * const, const int ) const;
 					void _onItemClicked( const QTreeWidgetItem * const, const int ) const;
-					void _onItemfloatClicked( const QTreeWidgetItem * const, const int ) const;
+					void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;
 					void _onItemExpanded( const QTreeWidgetItem * const );
 					void _onItemCollapsed( const QTreeWidgetItem * const );
 					void _onCustomContextMenuCalled( const QPoint & p_clicPos );

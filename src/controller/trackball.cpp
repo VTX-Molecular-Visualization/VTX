@@ -167,8 +167,6 @@ namespace VTX
 			_orientTargetDistance	= p_aabb.radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
 			_isOrienting			= Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
 						   || abs( _orientTargetDistance - _orientStartingDistance ) > ORIENT_THRESHOLD;
-
-			VTX_DEBUG( std::to_string( abs( _orientTargetDistance - _orientTargetDistance ) ) );
 		}
 
 		void Trackball::_updateOrient( const float & p_deltaTime )
