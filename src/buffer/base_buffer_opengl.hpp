@@ -22,6 +22,11 @@ namespace VTX
 
 			virtual void bind()	  = 0;
 			virtual void unbind() = 0;
+
+		  protected:
+			GLuint _vboAABB = GL_INVALID_VALUE;
+			GLuint _vaoAABB = GL_INVALID_VALUE;
+			GLuint _iboAABB = GL_INVALID_VALUE;
 		};
 	} // namespace Buffer
 } // namespace VTX
