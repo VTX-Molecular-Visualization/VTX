@@ -57,12 +57,6 @@ namespace VTX
 				{
 					VTX_WARNING( "Framebuffer not complete: " + std::to_string( fboStatus ) );
 				}
-
-				GLenum glstatus = gl()->glGetError();
-				if ( glstatus != GL_NO_ERROR )
-				{
-					VTX_ERROR( "Error in GL call: " + std::to_string( glstatus ) );
-				}
 			}
 
 			void Geometric::resize( const uint p_width, const uint p_height )
