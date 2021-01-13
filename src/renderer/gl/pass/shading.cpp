@@ -16,20 +16,16 @@ namespace VTX
 
 			void Shading::init( GLSL::ProgramManager & p_programManager, const uint p_width, const uint p_height )
 			{
-				gl()->glGenFramebuffers( 1, &_fbo );
-				gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+				gl()->glCreateFramebuffers( 1, &_fbo );
 
-				gl()->glGenTextures( 1, &_texture );
-				gl()->glBindTexture( GL_TEXTURE_2D, _texture );
-				gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-				gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-				gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-				gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-				gl()->glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
+				gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
+				gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+				gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
 
-				gl()->glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture, 0 );
-
-				gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+				gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 
 				_toonShading	= p_programManager.createProgram( "ToonShading", { "shading/shading_toon.frag" } );
 				_diffuseShading = p_programManager.createProgram( "DiffuseShading", { "shading/shading_diffuse.frag" } );
@@ -42,22 +38,25 @@ namespace VTX
 
 			void Shading::resize( const uint p_width, const uint p_height )
 			{
-				gl()->glBindTexture( GL_TEXTURE_2D, _texture );
-				gl()->glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, p_width, p_height, 0, GL_RGBA, GL_FLOAT, nullptr );
+				gl()->glDeleteTextures( 1, &_texture );
+				gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
+				gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+				gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+				gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+				gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+				gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
+
+				gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 			}
 
 			void Shading::render( const Object3D::Scene & p_scene, const Renderer::GL & p_renderer )
 			{
 				gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
-				gl()->glActiveTexture( GL_TEXTURE0 );
-				gl()->glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
-				gl()->glActiveTexture( GL_TEXTURE1 );
-				gl()->glBindTexture( GL_TEXTURE_2D, p_renderer.getPassGeometric().getColorsTexture() );
-
-				gl()->glActiveTexture( GL_TEXTURE2 );
+				gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
+				gl()->glBindTextureUnit( 1, p_renderer.getPassGeometric().getColorsTexture() );
 				// If SSAO/Blur disabled, texture is previoulsy cleared.
-				gl()->glBindTexture( GL_TEXTURE_2D, p_renderer.getPassBlur().getTexture() );
+				gl()->glBindTextureUnit( 2, p_renderer.getPassBlur().getTexture() );
 
 				_currentShading->use();
 
