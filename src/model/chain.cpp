@@ -1,4 +1,6 @@
 #include "chain.hpp"
+#include "molecule.hpp"
+
 namespace VTX
 {
 	namespace Model

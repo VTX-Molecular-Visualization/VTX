@@ -100,24 +100,6 @@ namespace VTX
 				void MoleculeSceneView::_setupUi( const QString & p_name )
 				{
 					SceneItemWidget::_setupUi( p_name );
-					
-					setObjectName( "sceneTree" );
-					setUniformRowHeights( true );
-					setHeaderHidden( true );
-					setColumnCount( 1 );
-					setSelectionMode( QAbstractItemView::MultiSelection );
-					setExpandsOnDoubleClick( false );
-
-					setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents );
-					setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
-
-					setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
-					setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
-
-					setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
-					_contextMenu = new QMenu( parentWidget() );
-					_contextMenu->addAction( "Delete", this, &MoleculeSceneView::_deleteAction, QKeySequence::Delete );
-					
 
 					QTreeWidgetItem * const moleculeView = new QTreeWidgetItem();
 
