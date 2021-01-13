@@ -27,7 +27,7 @@ namespace VTX
 		{
 		  public:
 			CameraRayTracing( const Object3D::Camera & p_camera, const uint p_width, const uint p_height ) :
-				_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ), _left( p_camera.getLeft() ), _width( p_width ), _height( p_height )
+				_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ), _right( p_camera.getRight() ), _width( p_width ), _height( p_height )
 			{
 				//
 				//
@@ -120,7 +120,7 @@ namespace VTX
 				const float halfWidth  = ratio * halfHeight;
 
 				_du = Util::Math::normalize( Util::Math::cross( _front, _up ) ) * halfWidth;
-				_dv = Util::Math::normalize( Util::Math::cross( _left, _front ) ) * halfHeight;
+				_dv = Util::Math::normalize( Util::Math::cross( _right, _front ) ) * halfHeight;
 
 				/*
 				std::cout << "Camera RT" << std::endl;
@@ -141,7 +141,7 @@ namespace VTX
 			Vec3f _pos;
 			Vec3f _front;
 			Vec3f _up;
-			Vec3f _left;
+			Vec3f _right;
 
 			uint _width;
 			uint _height;
@@ -223,7 +223,7 @@ namespace VTX
 			chrono.stop();
 			//_progressBar.stop();
 
-			const double time = chrono.elapsedTime();
+			const float time = chrono.elapsedTime();
 
 			VTX_DEBUG( "Rendering time: " + std::to_string( time * 1000. ) + "ms" );
 		}

@@ -7,7 +7,11 @@
 
 #include "model/atom.hpp"
 #include "model/molecule.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
+#include "util/molecule.hpp"
 #include "visible.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -58,6 +62,20 @@ namespace VTX
 						atom.getMoleculePtr()->computeRepresentationTargets();
 					}
 				}
+			};
+
+			class Orient : public BaseAction
+			{
+			  public:
+				explicit Orient( Model::Atom & p_atom ) : _atom( p_atom ) {}
+
+				virtual void execute() override
+				{
+					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->orientCameraController( _atom.getAABB() );
+				}
+
+			  private:
+				Model::Atom & _atom;
 			};
 		} // namespace Atom
 	}	  // namespace Action

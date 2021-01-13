@@ -107,6 +107,7 @@ namespace VTX
 					SceneItemWidget::_setupUi( p_name );
 					_buildTree();
 				}
+
 				void MoleculeSceneView::_buildTree()
 				{
 					QTreeWidgetItem * const moleculeView = new QTreeWidgetItem();
@@ -168,13 +169,14 @@ namespace VTX
 
 					connect( this, &QTreeWidget::itemChanged, this, &MoleculeSceneView::_onItemChanged );
 					connect( this, &QTreeWidget::itemClicked, this, &MoleculeSceneView::_onItemClicked );
+					connect( this, &QTreeWidget::itemDoubleClicked, this, &MoleculeSceneView::_onItemDoubleClicked );
 					connect( this, &QTreeWidget::itemExpanded, this, &MoleculeSceneView::_onItemExpanded );
 					connect( this, &QTreeWidget::itemCollapsed, this, &MoleculeSceneView::_onItemCollapsed );
 				}
 
 				void MoleculeSceneView::localize() { SceneItemWidget::localize(); }
 
-				void MoleculeSceneView::_onItemChanged( QTreeWidgetItem * p_item, int p_column )
+				void MoleculeSceneView::_onItemChanged( const QTreeWidgetItem * const p_item, const int p_column ) const
 				{
 					if ( p_column == 0 )
 						_doEnableStateChangeAction( p_item );
@@ -220,7 +222,7 @@ namespace VTX
 					}
 				}
 
-				void MoleculeSceneView::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
+				void MoleculeSceneView::_onItemClicked( const QTreeWidgetItem * const p_item, const int p_column )
 				{
 					const Model::ID & modelId = _getModelID( *p_item );
 
@@ -257,6 +259,33 @@ namespace VTX
 					}
 
 					_lastItemClicked = p_item;
+				}
+				void MoleculeSceneView::_onItemDoubleClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
+				{
+					const Model::ID &  modelId		  = _getModelID( *p_item );
+					ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( modelId );
+					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+					{
+						Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+						VTX_ACTION( new Action::Molecule::Orient( model ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+					{
+						Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+						VTX_ACTION( new Action::Chain::Orient( model ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+					{
+						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+						VTX_ACTION( new Action::Residue::Orient( model ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_ATOM )
+					{
+						Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+						VTX_ACTION( new Action::Atom::Orient( model ) );
+					}
 				}
 				void MoleculeSceneView::_selectModelAction( const std::vector<Model::ID> & p_modelIds, const bool p_appendToSelection ) const
 				{
@@ -302,14 +331,14 @@ namespace VTX
 					}
 				}
 
-				void MoleculeSceneView::_onItemExpanded( QTreeWidgetItem * p_item )
+				void MoleculeSceneView::_onItemExpanded( const QTreeWidgetItem * const p_item )
 				{
 					// If expanded, height is good at minimum height, we reset it.
 					setMinimumHeight( 0 );
 					setMinimumWidth( sizeHintForColumn( 0 ) );
 				}
 
-				void MoleculeSceneView::_onItemCollapsed( QTreeWidgetItem * p_item )
+				void MoleculeSceneView::_onItemCollapsed( const QTreeWidgetItem * const p_item )
 				{
 					// Minimum height is bad when full collapsed => we force it.
 					setMinimumHeight( topLevelItem( 0 )->isExpanded() ? 0 : rowHeight( model()->index( 0, 0 ) ) );

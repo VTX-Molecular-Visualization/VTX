@@ -16,7 +16,7 @@ namespace VTX
 		class BaseAction
 		{
 		  public:
-			~BaseAction() = default;
+			virtual ~BaseAction() = default;
 
 			virtual void execute() = 0;
 			virtual void displayUsage() {}

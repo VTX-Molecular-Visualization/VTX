@@ -15,12 +15,11 @@ namespace VTX
 		class Shortcut : public BaseKeyboardController
 		{
 		  public:
-			explicit Shortcut() {}
+			Shortcut() = default;
 
 		  protected:
-			virtual void _handleKeyDownEvent( const int & ) override;
-
-			virtual void update( const double & ) override {}
+			void _handleKeyDownEvent( const int & ) override;
+			void update( const float & ) override {}
 
 		  private:
 		};

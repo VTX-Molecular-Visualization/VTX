@@ -32,7 +32,7 @@ namespace VTX
 			thread.detach();
 		}
 
-		void WorkerManager::update( const double & )
+		void WorkerManager::update( const float & )
 		{
 			if ( _worker == nullptr )
 			{

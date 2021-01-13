@@ -49,7 +49,7 @@ namespace VTX
 
 				  private:
 					SelectionView( Model::Selection * const p_model, QWidget * const p_parent ) : View::BaseView<Model::Selection>( p_model ), BaseManualWidget( p_parent ) {}
-					void _onItemClicked( QTreeWidgetItem *, int );
+					void _onItemClicked( const QTreeWidgetItem * const, const int ) const;
 
 					bool			 _createTopLevelChildren( const uint p_count );
 					bool			 _createChildren( QTreeWidgetItem & p_item, const uint p_count );

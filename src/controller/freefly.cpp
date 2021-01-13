@@ -4,13 +4,13 @@ namespace VTX
 {
 	namespace Controller
 	{
-		void Freefly::update( const double & p_deltaTime )
+		void Freefly::_updateInputs( const float & p_deltaTime )
 		{
 			// Rotation.
 			if ( _mouseLeftPressed )
 			{
-				_camera.rotate( Vec3d( -VTX_SETTING().rotationSpeed * (float)_deltaMousePosition.y * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f ),
-									   -VTX_SETTING().rotationSpeed * (float)_deltaMousePosition.x,
+				_camera.rotate( Vec3f( -VTX_SETTING().rotationSpeed * _deltaMousePosition.y * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f ),
+									   -VTX_SETTING().rotationSpeed * _deltaMousePosition.x,
 
 									   0.f ) );
 				_deltaMousePosition.x = 0;
@@ -18,7 +18,7 @@ namespace VTX
 			}
 			if ( _mouseRightPressed )
 			{
-				_camera.rotateRoll( VTX_SETTING().rotationSpeed * (float)_deltaMousePosition.x );
+				_camera.rotateRoll( VTX_SETTING().rotationSpeed * _deltaMousePosition.x );
 				_deltaMousePosition.x = 0;
 			}
 
@@ -35,11 +35,11 @@ namespace VTX
 			}
 			if ( _isKeyPressed( Qt::Key_Q ) || _isKeyPressed( Qt::Key_Left ) )
 			{
-				translation.x++;
+				translation.x--;
 			}
 			if ( _isKeyPressed( Qt::Key_D ) || _isKeyPressed( Qt::Key_Right ) )
 			{
-				translation.x--;
+				translation.x++;
 			}
 			if ( _isKeyPressed( Qt::Key_R ) )
 			{
@@ -72,10 +72,23 @@ namespace VTX
 
 		void Freefly::reset()
 		{
-			const Vec3d defaultPos = VTXApp::get().getScene().getAABB().centroid() + VEC3F_Z * VTXApp::get().getScene().getAABB().diameter();
+			const Vec3f defaultPos = -CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
 
 			_camera.setPosition( defaultPos );
-			_camera.setRotation( Vec3d( 0.0, 0.0, 0.0 ) );
+			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
+		}
+
+		void Freefly::_computeOrientPositions( const Math::AABB & p_aabb )
+		{
+			_orientStartingPosition	   = _camera.getPosition();
+			const float targetDistance = p_aabb.radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+			_orientTargetPosition	   = p_aabb.centroid() - _camera.getFront() * targetDistance;
+			_isOrienting			   = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD;
+		}
+
+		void Freefly::_updateOrient( const float & p_deltaTime )
+		{
+			_camera.setPosition( Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime ) );
 		}
 
 	} // namespace Controller

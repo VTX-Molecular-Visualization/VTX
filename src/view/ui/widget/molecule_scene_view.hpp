@@ -44,17 +44,18 @@ namespace VTX
 					QMimeData * _getDataForDrag() override;
 
 				  private:
-					QMenu *			  _contextMenu;
-					QTreeWidgetItem * _lastItemClicked = nullptr;
+					QMenu *					_contextMenu;
+					const QTreeWidgetItem * _lastItemClicked = nullptr;
 
 					MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
 
 					void _buildTree();
 
-					void _onItemChanged( QTreeWidgetItem * item, int column );
-					void _onItemClicked( QTreeWidgetItem *, int );
-					void _onItemExpanded( QTreeWidgetItem * );
-					void _onItemCollapsed( QTreeWidgetItem * );
+					void _onItemChanged( const QTreeWidgetItem * const, const int ) const;
+					void _onItemClicked( const QTreeWidgetItem * const, const int );
+					void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;
+					void _onItemExpanded( const QTreeWidgetItem * const );
+					void _onItemCollapsed( const QTreeWidgetItem * const );
 
 					void _deleteAction() override;
 

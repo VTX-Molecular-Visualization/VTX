@@ -70,7 +70,7 @@ namespace VTX
 			}
 		}
 
-		void Scene::update( const double & p_deltaTime )
+		void Scene::update( const float & p_deltaTime )
 		{
 			// TOCHECK: do that in state or in scene?
 			// (let that here instead of doing the exact same things in all states for the moment)

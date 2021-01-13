@@ -91,14 +91,14 @@ namespace VTX
 			template<typename T>
 			inline void normalizeSelf( T & p_value )
 			{
-				assert( glm::length( p_value ) != 0.0 );
+				assert( glm::length( p_value ) != 0.f );
 				p_value = glm::normalize( p_value );
 			}
 
 			template<typename T>
 			inline T normalize( const T & p_value )
 			{
-				assert( glm::length( p_value ) != 0.0 );
+				assert( glm::length( p_value ) != 0.f );
 				return glm::normalize( p_value );
 			}
 
@@ -151,9 +151,7 @@ namespace VTX
 			}
 
 			template<typename T>
-			inline glm::tmat4x4<T> lookAt( const glm::tvec3<T> & p_value,
-										   const glm::tvec3<T> & p_target,
-										   const glm::tvec3<T> & p_axis )
+			inline glm::tmat4x4<T> lookAt( const glm::tvec3<T> & p_value, const glm::tvec3<T> & p_target, const glm::tvec3<T> & p_axis )
 			{
 				return glm::lookAt( p_value, p_target, p_axis );
 			}
@@ -165,12 +163,7 @@ namespace VTX
 			}
 
 			template<typename T>
-			inline glm::tmat4x4<T> ortho( const T & p_left,
-										  const T & p_right,
-										  const T & p_bottom,
-										  const T & p_top,
-										  const T & p_near,
-										  const T & p_far )
+			inline glm::tmat4x4<T> ortho( const T & p_left, const T & p_right, const T & p_bottom, const T & p_top, const T & p_near, const T & p_far )
 			{
 				return glm::ortho( p_left, p_right, p_bottom, p_top, p_near, p_far );
 			}
@@ -233,9 +226,9 @@ namespace VTX
 
 			inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
-			inline Quatd eulerToQuaternion( const Vec3d & p_angles ) { return Quatd( p_angles ); }
+			inline Quatf eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
 
-			inline Quatd eulerToQuaternion( const double & p_pitch, const double & p_yaw, const double & p_roll )
+			inline Quatf eulerToQuaternion( const float & p_pitch, const float & p_yaw, const float & p_roll )
 			{
 				// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
 				/*
@@ -255,22 +248,22 @@ namespace VTX
 				return q;
 				*/
 				// Same thing did by glm.
-				return eulerToQuaternion( Vec3d( p_pitch, p_yaw, p_roll ) );
+				return eulerToQuaternion( Vec3f( p_pitch, p_yaw, p_roll ) );
 			}
 
-			inline Vec3d quaternionToEuler( const Quatd & p_quaternion )
+			inline Vec3f quaternionToEuler( const Quatf & p_quaternion )
 			{
 				// https://www.wikiwand.com/en/Conversion_between_quaternions_and_Euler_angles
-				const Quatd & q = p_quaternion;
-				Vec3d		  angles;
+				const Quatf & q = p_quaternion;
+				Vec3f		  angles;
 
 				// Roll (x-axis rotation).
-				const double sinr_cosp = 2 * ( q.w * q.x + q.y * q.z );
-				const double cosr_cosp = 1 - 2 * ( q.x * q.x + q.y * q.y );
+				const float sinr_cosp = 2.f * ( q.w * q.x + q.y * q.z );
+				const float cosr_cosp = 1.f - 2.f * ( q.x * q.x + q.y * q.y );
 				angles.z			   = std::atan2( sinr_cosp, cosr_cosp );
 
 				// Pitch (y-axis rotation).
-				const double sinp = 2 * ( q.w * q.y - q.z * q.x );
+				const float sinp = 2.f * ( q.w * q.y - q.z * q.x );
 				if ( std::abs( sinp ) >= 1 )
 				{
 					// Use 90 degrees if out of range.
@@ -282,11 +275,23 @@ namespace VTX
 				}
 
 				// Yaw (z-axis rotation).
-				const double siny_cosp = 2 * ( q.w * q.z + q.x * q.y );
-				const double cosy_cosp = 1 - 2 * ( q.y * q.y + q.z * q.z );
+				const float	 siny_cosp = 2.f * ( q.w * q.z + q.x * q.y );
+				const float cosy_cosp = 1.f - 2.f * ( q.y * q.y + q.z * q.z );
 				angles.y			   = std::atan2( siny_cosp, cosy_cosp );
 
 				return angles;
+			}
+
+			template<int L, typename T>
+			inline glm::vec<L, T> directionToEuler( glm::vec<L, T> & p_direction )
+			{
+				// https://stackoverflow.com/questions/1251828/calculate-rotations-to-look-at-a-3d-point
+				glm::vec<L, T> normalized = normalize( p_direction );
+				T			   rotx		  = atan2( p_direction.y, p_direction.z );
+				T			   roty		  = atan2( p_direction.x * cos( rotx ), p_direction.z );
+				T			   rotz		  = atan2( cos( rotx ), sin( rotx ) * sin( roty ) );
+
+				return glm::vec<L, T>( rotx, roty, rotz );
 			}
 
 			template<typename T, typename Q>
@@ -296,23 +301,22 @@ namespace VTX
 			}
 
 			template<typename T, typename Q>
-			inline T catmullRomInterpolation( const T & p_p0,
-											  const T & p_p1,
-											  const T & p_p2,
-											  const T & p_p3,
-											  const Q	p_value )
+			inline T catmullRomInterpolation( const T & p_p0, const T & p_p1, const T & p_p2, const T & p_p3, const Q p_value )
 			{
 				return glm::catmullRom( p_p0, p_p1, p_p2, p_p3, p_value );
 			}
 
 			template<typename T, typename Q>
-			inline T cubicInterpolation( const T & p_p0,
-										 const T & p_p1,
-										 const T & p_p2,
-										 const T & p_p3,
-										 const Q   p_value )
+			inline T cubicInterpolation( const T & p_p0, const T & p_p1, const T & p_p2, const T & p_p3, const Q p_value )
 			{
 				return glm::cubic( p_p0, p_p1, p_p2, p_p3, p_value );
+			}
+
+			template<typename T, typename Q>
+			inline T easeInOutInterpolation( const T & p_lhs, const T & p_rhs, const Q p_value )
+			{
+				const Q value = glm::pow2( glm::sin( PI_2f * p_value ) );
+				return glm::lerp( p_lhs, p_rhs, value );
 			}
 
 			// Morton utils
@@ -336,25 +340,20 @@ namespace VTX
 				assert( p_v.x >= 0 );
 				assert( p_v.y >= 0 );
 				assert( p_v.z >= 0 );
-				return ( leftShift3( uint( p_v.z ) ) << 2 ) | ( leftShift3( uint( p_v.y ) ) << 1 )
-					   | leftShift3( uint( p_v.x ) );
+				return ( leftShift3( uint( p_v.z ) ) << 2 ) | ( leftShift3( uint( p_v.y ) ) << 1 ) | leftShift3( uint( p_v.x ) );
 			}
 
 			// p_n (normal) must be normalized
 			inline Mat3f createOrthonormalBasis( const Vec3f & p_n )
 			{
-				const Vec3f t = fabsf( p_n.x ) > fabsf( p_n.y )
-									? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )
-									: Vec3f( 0.f, -p_n.z, p_n.y ) / sqrtf( p_n.y * p_n.y + p_n.z * p_n.z );
+				const Vec3f t = fabsf( p_n.x ) > fabsf( p_n.y ) ? Vec3f( p_n.z, 0.f, -p_n.x ) / sqrtf( p_n.x * p_n.x + p_n.z * p_n.z )
+																: Vec3f( 0.f, -p_n.z, p_n.y ) / sqrtf( p_n.y * p_n.y + p_n.z * p_n.z );
 				const Vec3f b = cross( p_n, t );
 				return Mat3f( t, b, p_n );
 			}
 
 			template<typename T>
-			static float torsionalAngle( const T & p_point0,
-										 const T & p_point1,
-										 const T & p_point2,
-										 const T & p_point3 )
+			static float torsionalAngle( const T & p_point0, const T & p_point1, const T & p_point2, const T & p_point3 )
 			{
 				const Vec3f v01 = p_point0 - p_point1;
 				const Vec3f v32 = p_point3 - p_point2;
@@ -392,10 +391,7 @@ namespace VTX
 				return angle;
 			}
 
-			inline Vec3f linearComb( const float   p_scalar0,
-									 const Vec3f & p_vector0,
-									 const float   p_scalar1,
-									 const Vec3f & p_vector1 )
+			inline Vec3f linearComb( const float p_scalar0, const Vec3f & p_vector0, const float p_scalar1, const Vec3f & p_vector1 )
 			{
 				return p_scalar0 * p_vector0 + p_scalar1 * p_vector1;
 			}

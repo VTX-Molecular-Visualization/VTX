@@ -11,6 +11,7 @@
 #include "renderer/ray_tracing/ray_tracer.hpp"
 #include <QElapsedTimer>
 #include <QOpenGLWidget>
+#include <QPainter>
 #ifdef OPTIX_DEFINED
 #include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
 #endif
@@ -59,8 +60,9 @@ namespace VTX
 					void switchRenderer( const Renderer::MODE );
 
 				  private:
-					QElapsedTimer _timer;
+					QElapsedTimer _timer   = QElapsedTimer();
 					uint		  _counter = 0;
+					QPainter	  _painter = QPainter();
 
 					Renderer::BaseRenderer * _renderer	 = nullptr;
 					Renderer::GL *			 _rendererGL = nullptr;

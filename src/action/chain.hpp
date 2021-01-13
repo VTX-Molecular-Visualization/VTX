@@ -7,6 +7,9 @@
 
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
+#include "util/molecule.hpp"
 #include "visible.hpp"
 
 namespace VTX
@@ -61,6 +64,20 @@ namespace VTX
 						chain.getMoleculePtr()->computeRepresentationTargets();
 					}
 				}
+			};
+
+			class Orient : public BaseAction
+			{
+			  public:
+				explicit Orient( Model::Chain & p_chain ) : _chain( p_chain ) {}
+
+				virtual void execute() override
+				{
+					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->orientCameraController( _chain.getAABB() );
+				}
+
+			  private:
+				Model::Chain & _chain;
 			};
 		} // namespace Chain
 	}	  // namespace Action

@@ -86,11 +86,7 @@ namespace VTX
 
 			_currentFrame = p_frameIdx;
 			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
-
-			if ( _secondaryStructure != nullptr )
-			{
-				_secondaryStructure->setCurrentFrame();
-			}
+			_secondaryStructure->setCurrentFrame();
 		}
 
 		void Molecule::_fillBufferAtomColors()
@@ -211,10 +207,7 @@ namespace VTX
 		void Molecule::render()
 		{
 			BaseModel3D::render();
-			if ( _secondaryStructure != nullptr )
-			{
-				_secondaryStructure->render();
-			}
+			_secondaryStructure->render();
 		}
 
 		bool Molecule::mergeTopology( const Molecule & p_molecule )

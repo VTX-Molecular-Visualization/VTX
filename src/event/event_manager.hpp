@@ -52,7 +52,7 @@ namespace VTX
 			void fireEventMouse( QMouseEvent * const );
 			void fireEventWheel( QWheelEvent * const );
 
-			virtual void update( const double & p_deltaTime ) override;
+			virtual void update( const float & p_deltaTime ) override;
 
 		  private:
 			// Input events.

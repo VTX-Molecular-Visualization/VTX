@@ -25,7 +25,7 @@ namespace VTX
 			virtual void enter( void * const ) = 0;
 			virtual void exit()				   = 0;
 
-			virtual void BaseState::update( const double & p_deltaTime ) override
+			virtual void BaseState::update( const float & p_deltaTime ) override
 			{
 				for ( const PairStringToItemPtr & controller : _items )
 				{

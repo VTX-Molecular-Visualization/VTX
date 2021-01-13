@@ -12,6 +12,7 @@
 #include "generic/base_representable.hpp"
 #include "generic/base_visible.hpp"
 #include "id.hpp"
+#include "math/aabb.hpp"
 #include "model/secondary_structure.hpp"
 #include <map>
 
@@ -118,6 +119,8 @@ namespace VTX
 
 			// Mask BaseVisible::setVisible
 			void setVisible( const bool p_visible );
+
+			const Math::AABB getAABB() const;
 
 		  private:
 			TYPE	   _type				 = TYPE::STANDARD;

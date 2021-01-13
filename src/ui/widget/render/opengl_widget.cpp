@@ -17,7 +17,7 @@ namespace VTX
 					format.setProfile( QSurfaceFormat::CoreProfile );
 					format.setRenderableType( QSurfaceFormat::OpenGL );
 					format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
-					// format.setSwapInterval( 0 ); // TODO: handle v-sync with settings.
+					format.setSwapInterval( VTX_SETTING().activeVSync );
 					QSurfaceFormat::setDefaultFormat( format );
 				}
 
@@ -69,14 +69,18 @@ namespace VTX
 					_gl->glBlitFramebuffer( 0, 0, size().width(), size().height(), 0, 0, size().width(), size().height(), GL_COLOR_BUFFER_BIT, GL_NEAREST );
 
 					_counter++;
-					if ( _timer.elapsed() >= 1000.0 )
+					if ( _timer.elapsed() >= 1000.f )
 					{
-						double fps = _counter / ( (double)_timer.elapsed() / 1000.0 );
-
-						// VTX_DEBUG( "OpenGL FPS: " + std::to_string( (int)fps ) );
-						_counter = 0;
+						uint fps	   = _counter / ( _timer.elapsed() / 1000.f );
+						VTX_STAT().FPS = fps;
+						_counter	   = 0;
 						_timer.restart();
 					}
+
+					_painter.begin( this );
+					_painter.setPen( Qt::white );
+					_painter.drawText( 10, 10, QString::fromStdString( "FPS: " + std::to_string( VTX_STAT().FPS ) ) );
+					_painter.end();
 				}
 
 				void OpenGLWidget::resizeGL( int p_width, int p_height )

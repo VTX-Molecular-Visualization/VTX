@@ -10,7 +10,10 @@
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "setting.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
 #include "util/math.hpp"
+#include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
@@ -174,6 +177,20 @@ namespace VTX
 			  private:
 				Model::Molecule &							_molecule;
 				const Model::SecondaryStructure::COLOR_MODE _colorMode;
+			};
+
+			class Orient : public BaseAction
+			{
+			  public:
+				explicit Orient( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
+
+				virtual void execute() override
+				{
+					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->orientCameraController( _molecule.getAABB() );
+				}
+
+			  private:
+				Model::Molecule & _molecule;
 			};
 
 			class Copy : public BaseAction

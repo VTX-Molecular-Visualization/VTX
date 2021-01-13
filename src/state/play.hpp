@@ -19,15 +19,15 @@ namespace VTX
 
 			virtual void enter( void * const ) override;
 			virtual void exit() override;
-			virtual void update( const double & ) override;
+			virtual void update( const float & ) override;
 
 		  private:
 			Model::Path *					 _path	  = nullptr;
 			const std::vector<std::string> * _actions = nullptr;
-			double							 _time	  = 0.f;
+			float							 _time	  = 0.f;
 
 			void _setCamera() const;
-			void _executeActions( const double p_time );
+			void _executeActions( const float p_time );
 		};
 	} // namespace State
 } // namespace VTX

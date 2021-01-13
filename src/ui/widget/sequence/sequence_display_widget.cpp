@@ -45,7 +45,7 @@ namespace VTX
 					const Model::Residue * const residue = _getResidueFromLocaleXPos( p_event->localPos().x() );
 					p_event->accept();
 
-					VTX_INFO( "Double click on " + residue->getSymbolName() );
+					VTX_INFO( "float click on " + residue->getSymbolName() );
 				}
 
 				Model::Residue * const SequenceDisplayWidget::getResidueAtPos( const QPoint & p_pos ) { return _getResidueFromLocaleXPos( p_pos.x() ); }

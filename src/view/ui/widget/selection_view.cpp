@@ -152,7 +152,7 @@ namespace VTX
 					return true;
 				}
 
-				void SelectionView::_onItemClicked( QTreeWidgetItem * p_item, int p_column )
+				void SelectionView::_onItemClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
 				{
 					if ( p_column == REMOVE_COLUMN_INDEX )
 					{

@@ -30,11 +30,11 @@ namespace VTX
 			VTX_INFO( "Stop" );
 			_path	 = nullptr;
 			_actions = nullptr;
-			_time	 = 0.0;
+			_time	 = 0.f;
 			VTXApp::get().getSetting().recover();
 		}
 
-		void Play::update( const double & p_deltaTime )
+		void Play::update( const float & p_deltaTime )
 		{
 			BaseState::update( p_deltaTime );
 
@@ -70,7 +70,7 @@ namespace VTX
 			Model::Viewpoint viewpoint = _path->getInterpolatedViewpoint( _time );
 			if ( viewpoint.getController() == ID::Controller::TRACKBALL )
 			{
-				VTXApp::get().getScene().getCamera().setRotationAround( Quatd( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );
+				VTXApp::get().getScene().getCamera().setRotationAround( Quatf( viewpoint.getRotation() ), viewpoint.getTarget(), viewpoint.getDistance() );
 			}
 			else
 			{
@@ -78,7 +78,7 @@ namespace VTX
 			}
 		}
 
-		void Play::_executeActions( const double p_time )
+		void Play::_executeActions( const float p_time )
 		{
 			if ( _actions != _path->getCurrentActions( p_time ) )
 			{
