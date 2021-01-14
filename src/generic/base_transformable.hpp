@@ -24,6 +24,8 @@ namespace VTX
 			inline void setTranslation( const Vec3f & p_translation ) { _transform.setTranslation( p_translation ); }
 			inline void setTranslation( const Mat4f & p_translation ) { _transform.setTranslation( p_translation ); }
 
+			inline void applyTransform( const Math::Transform & p_transform ) { _transform = p_transform; };
+
 		  protected:
 			Math::Transform _transform;
 		};

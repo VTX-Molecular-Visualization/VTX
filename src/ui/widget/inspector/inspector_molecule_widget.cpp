@@ -35,7 +35,9 @@ namespace VTX
 					QVBoxLayout * contentLayout = new QVBoxLayout( mainContent );
 					contentLayout->setContentsMargins( 0, 0, 0, 0 );
 
-					_infoSection   = WidgetFactory::get().instanciateWidget<InspectorSection>( this, "inspector_item_section" );
+					_infoSection	 = WidgetFactory::get().instanciateWidget<InspectorSection>( this, "inspector_item_section" );
+					_transformWidget = WidgetFactory::get().instanciateWidget<CustomWidget::TransformWidget>( this, "inspector_molecule_transform" );
+					_infoSection->appendField( "", _transformWidget );
 					_fullnameLabel = new QLabel( this );
 					_fullnameLabel->setWordWrap( true );
 					_infoSection->appendField( "Full Name", _fullnameLabel );
@@ -50,7 +52,13 @@ namespace VTX
 					mainLayout->addWidget( _mainWidget );
 				}
 
-				void InspectorMoleculeWidget::_setupSlots() {};
+				void InspectorMoleculeWidget::_setupSlots()
+				{
+					connect( _transformWidget,
+							 QOverload<const Math::Transform &>::of( &CustomWidget::TransformWidget::onValueChange ),
+							 this,
+							 &InspectorMoleculeWidget::_onTransformChange );
+				};
 
 				void InspectorMoleculeWidget::refresh()
 				{
@@ -61,13 +69,17 @@ namespace VTX
 					const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( _model->getTypeId() );
 					_mainWidget->setHeaderIcon( *symbolPixmap );
 
-					_infoSection->setHeaderTitle( "Infos" );
+					_transformWidget->setData( _model->getTransform() );
 
 					_fullnameLabel->setText( QString::fromStdString( _model->getName() ) );
 					_nbAtomsLabel->setText( QString::fromStdString( std::to_string( _model->getAtomCount() ) ) );
 				}
 
-				void InspectorMoleculeWidget::localize() { _infoSection->localize(); }
+				void InspectorMoleculeWidget::localize()
+				{
+					_infoSection->setHeaderTitle( "Infos" );
+					_infoSection->localize();
+				}
 
 			} // namespace Inspector
 		}	  // namespace Widget
