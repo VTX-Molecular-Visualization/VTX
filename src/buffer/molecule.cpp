@@ -3,7 +3,7 @@
 
 namespace VTX::Buffer
 {
-	void Molecule::generate()
+	void Molecule::_generate()
 	{
 		gl()->glCreateBuffers( 1, &_vboAtomPositions );
 		gl()->glCreateBuffers( 1, &_vboAtomColors );
@@ -53,7 +53,7 @@ namespace VTX::Buffer
 			_vao, ATTRIBUTE_LOCATION::ATOM_SELECTION, ATTRIBUTE_LOCATION::ATOM_SELECTION );
 	}
 
-	void Molecule::free()
+	void Molecule::_free()
 	{
 		if ( _vao != GL_INVALID_VALUE )
 		{

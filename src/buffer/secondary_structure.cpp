@@ -3,7 +3,7 @@
 
 namespace VTX::Buffer
 {
-	void SecondaryStructure::generate()
+	void SecondaryStructure::_generate()
 	{
 		gl()->glCreateBuffers( 1, &_vboPositions );
 		gl()->glCreateBuffers( 1, &_vboDirections );
@@ -68,7 +68,7 @@ namespace VTX::Buffer
 			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
 	}
 
-	void SecondaryStructure::free()
+	void SecondaryStructure::_free()
 	{
 		if ( _vao != GL_INVALID_VALUE )
 		{

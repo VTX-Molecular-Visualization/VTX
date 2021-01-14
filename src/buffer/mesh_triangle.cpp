@@ -3,7 +3,7 @@
 
 namespace VTX::Buffer
 {
-	void MeshTriangle::generate()
+	void MeshTriangle::_generate()
 	{
 		gl()->glCreateBuffers( 1, &_vboPositions );
 		gl()->glCreateBuffers( 1, &_vboNormals );
@@ -43,7 +43,7 @@ namespace VTX::Buffer
 			_vao, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
 	}
 
-	void MeshTriangle::free()
+	void MeshTriangle::_free()
 	{
 		if ( _vao != GL_INVALID_VALUE )
 		{

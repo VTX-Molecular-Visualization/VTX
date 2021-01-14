@@ -20,15 +20,15 @@ namespace VTX
 
 					QLabel * const positionLabel = new QLabel();
 					positionLabel->setText( "position" );
-					_positionWidget = WidgetFactory::get().instanciateWidget<Vector3Widget>( this, "transform_position_widget" );
+					_positionWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_position_widget" );
 
 					QLabel * const rotationLabel = new QLabel();
 					rotationLabel->setText( "rotation" );
-					_rotationWidget = WidgetFactory::get().instanciateWidget<Vector3Widget>( this, "transform_rotation_widget" );
+					_rotationWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_rotation_widget" );
 
 					QLabel * const scaleLabel = new QLabel();
 					scaleLabel->setText( "scale" );
-					_scaleWidget = WidgetFactory::get().instanciateWidget<Vector3Widget>( this, "transform_scale_widget" );
+					_scaleWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_scale_widget" );
 
 					mainLayout->addWidget( positionLabel, 0, 0 );
 					mainLayout->addWidget( _positionWidget, 0, 1 );

@@ -91,9 +91,12 @@ namespace VTX
 											 max,
 											 Vec3f( min.x, max.y, max.z ) } );
 
-				_bufferAABBIndices.insert( _bufferAABBIndices.end(), { counter + 0, counter + 1, counter + 1, counter + 2, counter + 2, counter + 3, counter + 3, counter + 0,
-																	   counter + 4, counter + 5, counter + 5, counter + 6, counter + 6, counter + 7, counter + 7, counter + 4,
-																	   counter + 0, counter + 4, counter + 1, counter + 5, counter + 2, counter + 6, counter + 3, counter + 7 } );
+				_bufferAABBIndices.insert(
+					_bufferAABBIndices.end(),
+					{ counter + 0, counter + 1, counter + 1, counter + 2, counter + 2, counter + 3,
+					  counter + 3, counter + 0, counter + 4, counter + 5, counter + 5, counter + 6,
+					  counter + 6, counter + 7, counter + 7, counter + 4, counter + 0, counter + 4,
+					  counter + 1, counter + 5, counter + 2, counter + 6, counter + 3, counter + 7 } );
 
 				counter += 8u;
 			}
@@ -104,7 +107,8 @@ namespace VTX
 
 		void Molecule::_instantiate3DViews()
 		{
-			//_viewBox = MVC::MvcManager::get().instantiateView<View::D3::Box>( (Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const)this, ID::View::D3_BOX );
+			_viewBox = MVC::MvcManager::get().instantiateView<View::D3::Box>(
+				(Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const)this, ID::View::D3_BOX );
 
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
@@ -114,7 +118,8 @@ namespace VTX
 		{
 			if ( p_frameIdx > getFrameCount() )
 			{
-				VTX_WARNING( "Frame " + std::to_string( p_frameIdx ) + " does not exists / Count: " + std::to_string( getFrameCount() ) );
+				VTX_WARNING( "Frame " + std::to_string( p_frameIdx )
+							 + " does not exists / Count: " + std::to_string( getFrameCount() ) );
 				return;
 			}
 
@@ -147,7 +152,9 @@ namespace VTX
 						_bufferAtomColors[ i ] = _atoms[ i ]->getColor();
 					}
 					break;
-				case Generic::COLOR_MODE::RESIDUE: _bufferAtomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor(); break;
+				case Generic::COLOR_MODE::RESIDUE:
+					_bufferAtomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor();
+					break;
 				case Generic::COLOR_MODE::CHAIN: _bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor(); break;
 				case Generic::COLOR_MODE::PROTEIN: _bufferAtomColors[ i ] = _color; break;
 
@@ -205,7 +212,8 @@ namespace VTX
 		{
 			// TODO: add more infos in debug (solvents, ions, ss...).
 			VTX_INFO( "Molecule: " + _name );
-			VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: " + std::to_string( _residues.size() ) + " / Atoms: " + std::to_string( _atoms.size() )
+			VTX_INFO( "Chains: " + std::to_string( _chains.size() ) + " / Residues: "
+					  + std::to_string( _residues.size() ) + " / Atoms: " + std::to_string( _atoms.size() )
 					  + " / Bonds: " + std::to_string( _bonds.size() ) );
 
 			// Display unknown symbols.
@@ -286,7 +294,8 @@ namespace VTX
 
 				for ( uint residueIndex = 0; residueIndex < otherChain.getResidueCount(); ++residueIndex )
 				{
-					const Residue &	 otherResidue = p_molecule.getResidue( otherChain.getIndexFirstResidue() + residueIndex );
+					const Residue & otherResidue
+						= p_molecule.getResidue( otherChain.getIndexFirstResidue() + residueIndex );
 					Model::Residue & modelResidue = getResidue( otherChain.getIndexFirstResidue() + residueIndex );
 					modelResidue.setIndex( otherResidue.getIndex() );
 					modelResidue.setMoleculePtr( this );
