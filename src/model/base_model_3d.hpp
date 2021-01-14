@@ -65,10 +65,12 @@ namespace VTX
 
 		  protected:
 			Math::AABB							   _aabb;
-			std::vector<Generic::BaseRenderable *> _renderables = std::vector<Generic::BaseRenderable *>();
-			B *									   _buffer		= nullptr;
-			bool								   _isInit		= false;
-			Generic::BaseRenderable *			   _viewBox		= nullptr;
+			std::vector<Generic::BaseRenderable *> _renderables		  = std::vector<Generic::BaseRenderable *>();
+			B *									   _buffer			  = nullptr;
+			bool								   _isInit			  = false;
+			std::vector<Vec3f>					   _bufferAABBCorners = std::vector<Vec3f>();
+			std::vector<uint>					   _bufferAABBIndices = std::vector<uint>();
+			Generic::BaseRenderable *			   _viewBox			  = nullptr;
 
 			BaseModel3D( const ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {}
 			virtual ~BaseModel3D()
@@ -105,10 +107,6 @@ namespace VTX
 				_buffer->setAABBCorners( _bufferAABBCorners );
 				_buffer->setAABBIndices( _bufferAABBIndices );
 			}
-
-		  private:
-			std::vector<Vec3f> _bufferAABBCorners;
-			std::vector<uint>  _bufferAABBIndices;
 		};
 	} // namespace Model
 } // namespace VTX

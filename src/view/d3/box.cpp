@@ -29,7 +29,7 @@ namespace VTX
 				_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
 				_gl()->glUniformMatrix4fv(
 					_uNormalMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( cam.getViewMatrix() * _model->getTransform().get() ) ) ) );
-				GLfloat width = 10.f;
+				GLfloat width = 2.f;
 				_gl()->glLineWidth( width );
 				_gl()->glDrawElements( GL_LINES, uint( _model->getBufferAABBIndices().size() ), GL_UNSIGNED_INT, 0 );
 			}

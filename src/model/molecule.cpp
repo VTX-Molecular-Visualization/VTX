@@ -68,9 +68,42 @@ namespace VTX
 			}
 		}
 
+		void Molecule::_fillBufferAABB()
+		{
+			uint counter	   = 0;
+			_bufferAABBCorners = std::vector<Vec3f>();
+			_bufferAABBIndices = std::vector<uint>();
+			for ( const Residue * const elem : _residues )
+			{
+				const Math::AABB & aabb = elem->getAABB();
+
+				const Vec3f & min = aabb.getMin();
+				const Vec3f & max = aabb.getMax();
+
+				_bufferAABBCorners.insert( _bufferAABBCorners.end(),
+										   { min,
+											 Vec3f( max.x, min.y, min.z ),
+											 Vec3f( max.x, max.y, min.z ),
+											 Vec3f( min.x, max.y, min.z ),
+											 Vec3f( min.x, min.y, max.z ),
+											 Vec3f( max.x, min.y, max.z ),
+											 max,
+											 Vec3f( min.x, max.y, max.z ) } );
+
+				_bufferAABBIndices.insert( _bufferAABBIndices.end(), { counter + 0, counter + 1, counter + 1, counter + 2, counter + 2, counter + 3, counter + 3, counter + 0,
+																	   counter + 4, counter + 5, counter + 5, counter + 6, counter + 6, counter + 7, counter + 7, counter + 4,
+																	   counter + 0, counter + 4, counter + 1, counter + 5, counter + 2, counter + 6, counter + 3, counter + 7 } );
+
+				counter += 8u;
+			}
+
+			_buffer->setAABBCorners( _bufferAABBCorners );
+			_buffer->setAABBIndices( _bufferAABBIndices );
+		}
+
 		void Molecule::_instantiate3DViews()
 		{
-			_viewBox = MVC::MvcManager::get().instantiateView<View::D3::Box>( (Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const)this, ID::View::D3_BOX );
+			//_viewBox = MVC::MvcManager::get().instantiateView<View::D3::Box>( (Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const)this, ID::View::D3_BOX );
 
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );

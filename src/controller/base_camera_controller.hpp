@@ -57,7 +57,7 @@ namespace VTX
 			}
 
 		  protected:
-			const float ORIENT_DURATION	 = 2.f;
+			const float ORIENT_DURATION	 = 0.5f;
 			const float ORIENT_THRESHOLD = 1e-4f;
 
 			Object3D::Camera & _camera;
