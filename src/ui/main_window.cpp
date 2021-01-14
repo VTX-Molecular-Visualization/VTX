@@ -77,9 +77,6 @@ namespace VTX
 
 			//_sequenceWidget->hide();
 			//_selectionWidget->hide();
-
-			resizeDocks( { _renderWidget, _consoleWidget }, { 500, 1 }, Qt::Orientation::Vertical );
-			resizeDocks( { _sceneWidget, _renderWidget, _inspectorWidget }, { 1, 5, 1 }, Qt::Orientation::Horizontal );
 		}
 
 		void MainWindow::_onDockWindowVisibilityChange( const bool p_visible ) { VTX_EVENT( new Event::VTXEvent( Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE ) ); }

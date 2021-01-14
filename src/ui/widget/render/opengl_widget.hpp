@@ -53,6 +53,8 @@ namespace VTX
 					inline Renderer::GLSL::ProgramManager &		  getProgramManager() { return _renderer->getProgramManager(); }
 					inline const Renderer::GLSL::ProgramManager & getProgramManager() const { return _renderer->getProgramManager(); }
 
+					QSize sizeHint() const override;
+
 					void initializeGL() override;
 					void paintGL() override;
 					void resizeGL( int, int ) override;

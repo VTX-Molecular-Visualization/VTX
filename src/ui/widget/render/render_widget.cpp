@@ -43,13 +43,7 @@ namespace VTX
 					BaseManualWidget::_setupUi( p_name );
 
 					setFocusPolicy( Qt::StrongFocus );
-
-					_verticalLayoutWidget = new QWidget();
-					_verticalLayoutWidget->setObjectName( QString::fromUtf8( "verticalLayoutWidget" ) );
-					_verticalLayout = new QVBoxLayout( _verticalLayoutWidget );
-					_verticalLayout->setObjectName( QString::fromUtf8( "verticalLayout" ) );
-					setWidget( _verticalLayoutWidget );
-					_verticalLayout->addWidget( _openGLWidget );
+					setWidget( _openGLWidget );
 				}
 
 				void RenderWidget::_setupSlots() {}
