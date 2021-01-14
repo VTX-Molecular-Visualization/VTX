@@ -5,7 +5,7 @@ namespace VTX
 {
 	namespace Buffer
 	{
-		void MeshTriangle::generate()
+		void MeshTriangle::_generate()
 		{
 			gl()->glGenBuffers( 1, &_vboPositions );
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
@@ -47,7 +47,7 @@ namespace VTX
 			gl()->glBindVertexArray( 0 );
 		}
 
-		void MeshTriangle::free()
+		void MeshTriangle::_free()
 		{
 			if ( _vao != GL_INVALID_VALUE )
 			{

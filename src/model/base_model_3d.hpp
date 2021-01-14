@@ -39,8 +39,16 @@ namespace VTX
 			{
 				_buffer = new B( p_gl );
 				_buffer->generate();
+
 				_init();
+
+				_computeAABB();
+				_fillBufferAABB();
+
+				_fillBuffer();
+
 				_instanciate3DViews();
+
 				_isInit = true;
 				_notifyViews( new Event::VTXEvent( Event::Model::INIT ) );
 			}
@@ -60,9 +68,14 @@ namespace VTX
 					delete _buffer;
 				}
 			}
-			virtual void _init()			   = 0;
+
+			virtual void _init() {}; // Facultative pass.
+			virtual void _fillBuffer()		   = 0;
+			virtual void _computeAABB()		   = 0;
 			virtual void _instanciate3DViews() = 0;
 			inline void	 _addRenderable( Generic::BaseRenderable * const p_renderable ) { _renderables.push_back( p_renderable ); }
+
+			virtual void _fillBufferAABB() {}
 		};
 	} // namespace Model
 } // namespace VTX

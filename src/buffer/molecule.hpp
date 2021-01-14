@@ -20,9 +20,6 @@ namespace VTX
 			Molecule( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
 			~Molecule() = default;
 
-			void generate() override;
-			void free() override;
-
 			void bind() override;
 			void unbind() override;
 
@@ -32,6 +29,10 @@ namespace VTX
 			void setAtomVisibilities( const std::vector<ushort> & );
 			void setAtomSelections( const std::vector<ushort> & );
 			void setBonds( const std::vector<uint> & );
+
+		  protected:
+			void _generate() override;
+			void _free() override;
 
 		  private:
 			enum ATTRIBUTE_LOCATION

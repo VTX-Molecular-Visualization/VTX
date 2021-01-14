@@ -10,15 +10,24 @@ namespace VTX
 	{
 		MeshTriangle::MeshTriangle() : BaseModel3D( ID::Model::MODEL_MESH_TRIANGLE ) {}
 
-		void MeshTriangle::_init()
-		{
-			_computeAABB();
+		void MeshTriangle::_init() {}
 
+		void MeshTriangle::_fillBuffer()
+		{
 			_buffer->setPositions( _vertices );
 			_buffer->setNormals( _normals );
 			_buffer->setColors( _colors );
 			_buffer->setVisibilities( _visibilities );
 			_buffer->setIndices( _indices );
+		}
+
+		void MeshTriangle::_computeAABB()
+		{
+			_aabb.invalidate();
+			for ( const Vec3f & v : _vertices )
+			{
+				_aabb.extend( v );
+			}
 		}
 
 		void MeshTriangle::_instanciate3DViews() { _addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Triangle>( this, ID::View::D3_TRIANGLE ) ); }
@@ -29,15 +38,6 @@ namespace VTX
 					  + " / Indices: " + std::to_string( _indices.size() ) );
 
 			VTX_DEBUG( "Sizeof mesh triangle: " + std::to_string( sizeof( *this ) ) );
-		}
-
-		void MeshTriangle::_computeAABB()
-		{
-			_aabb.invalidate();
-			for ( const Vec3f & v : _vertices )
-			{
-				_aabb.extend( v );
-			}
 		}
 
 	} // namespace Model

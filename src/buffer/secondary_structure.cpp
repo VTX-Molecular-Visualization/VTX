@@ -5,7 +5,7 @@ namespace VTX
 {
 	namespace Buffer
 	{
-		void SecondaryStructure::generate()
+		void SecondaryStructure::_generate()
 		{
 			gl()->glGenBuffers( 1, &_vboPositions );
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
@@ -61,7 +61,7 @@ namespace VTX
 			gl()->glBindVertexArray( 0 );
 		}
 
-		void SecondaryStructure::free()
+		void SecondaryStructure::_free()
 		{
 			if ( _vao != GL_INVALID_VALUE )
 			{

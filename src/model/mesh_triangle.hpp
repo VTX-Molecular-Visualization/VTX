@@ -57,8 +57,9 @@ namespace VTX
 			MeshTriangle();
 			~MeshTriangle() = default;
 
-			void _computeAABB();
 			void _init() override;
+			void _computeAABB() override;
+			void _fillBuffer() override;
 			void _instanciate3DViews() override;
 		};
 	} // namespace Model

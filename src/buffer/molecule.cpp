@@ -5,7 +5,7 @@ namespace VTX
 {
 	namespace Buffer
 	{
-		void Molecule::generate()
+		void Molecule::_generate()
 		{
 			gl()->glGenBuffers( 1, &_vboAtomPositions );
 			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
@@ -54,7 +54,7 @@ namespace VTX
 			gl()->glBindVertexArray( 0 );
 		}
 
-		void Molecule::free()
+		void Molecule::_free()
 		{
 			if ( _vao != GL_INVALID_VALUE )
 			{

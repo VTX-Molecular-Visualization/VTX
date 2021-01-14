@@ -30,19 +30,9 @@ namespace VTX
 
 		void Molecule::_init()
 		{
-			// Compute global AABB of atom positions (taking into account each frame).
-			_computeGlobalPositionsAABB();
-
 			// Fill buffers.
 			if ( _atomPositionsFrames.size() > 0 )
 			{
-				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
-				_buffer->setAtomRadius( _bufferAtomRadius );
-				_fillBufferAtomColors();
-				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
-				_buffer->setAtomSelections( _bufferAtomSelection );
-				_buffer->setBonds( _bufferBonds );
-
 				// Compute secondary structure if not loaded.
 				if ( _configuration.isSecondaryStructureLoadedFromFile == false )
 				{
@@ -57,13 +47,17 @@ namespace VTX
 			}
 		}
 
-		void Molecule::_instanciate3DViews()
+		void Molecule::_fillBuffer()
 		{
-			_addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
-			_addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
+			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
+			_buffer->setAtomRadius( _bufferAtomRadius );
+			_fillBufferAtomColors();
+			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
+			_buffer->setAtomSelections( _bufferAtomSelection );
+			_buffer->setBonds( _bufferBonds );
 		}
 
-		void Molecule::_computeGlobalPositionsAABB()
+		void Molecule::_computeAABB()
 		{
 			for ( AtomPositionsFrame frame : _atomPositionsFrames )
 			{
@@ -72,6 +66,12 @@ namespace VTX
 					_aabb.extend( pos );
 				}
 			}
+		}
+
+		void Molecule::_instanciate3DViews()
+		{
+			_addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
+			_addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
 		}
 
 		void Molecule::setFrame( const uint p_frameIdx )

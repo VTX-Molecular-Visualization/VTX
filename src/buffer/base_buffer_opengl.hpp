@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "define.hpp"
 #include "generic/base_opengl.hpp"
 
 namespace VTX
@@ -17,16 +18,80 @@ namespace VTX
 			BaseBufferOpenGL( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 			virtual ~BaseBufferOpenGL() {};
 
-			virtual void generate() = 0;
-			virtual void free()		= 0;
+			virtual void generate()
+			{
+				gl()->glGenBuffers( 1, &_vboAABB );
+				gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
+				gl()->glGenBuffers( 1, &_iboAABB );
+				gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+
+				gl()->glGenVertexArrays( 1, &_vaoAABB );
+				gl()->glBindVertexArray( _vaoAABB );
+
+				gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _iboAABB );
+
+				gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboAABB );
+				gl()->glEnableVertexAttribArray( ATTRIBUTE_AABB_LOCATION::AABB_CENTER );
+				gl()->glVertexAttribPointer( ATTRIBUTE_AABB_LOCATION::AABB_CENTER, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
+				gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
+
+				gl()->glBindVertexArray( 0 );
+				_generate();
+			}
+
+			virtual void free()
+			{
+				if ( _vaoAABB != GL_INVALID_VALUE )
+				{
+					gl()->glBindVertexArray( _vaoAABB );
+					gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboAABB );
+					gl()->glDisableVertexAttribArray( ATTRIBUTE_AABB_LOCATION::AABB_CENTER );
+					gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
+					gl()->glBindVertexArray( 0 );
+
+					gl()->glDeleteVertexArrays( 1, &_vaoAABB );
+				}
+
+				if ( _vboAABB != GL_INVALID_VALUE )
+				{
+					gl()->glDeleteBuffers( 1, &_vboAABB );
+				}
+				if ( _iboAABB != GL_INVALID_VALUE )
+				{
+					gl()->glDeleteBuffers( 1, &_iboAABB );
+				}
+
+				_free();
+			}
+
+			virtual void bindAABB()
+			{
+				gl()->glBindVertexArray( _vaoAABB );
+				gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _iboAABB );
+			}
+
+			virtual void unbindAABB()
+			{
+				gl()->glBindVertexArray( 0 );
+				gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			}
 
 			virtual void bind()	  = 0;
 			virtual void unbind() = 0;
 
 		  protected:
+			virtual void _generate() = 0;
+			virtual void _free()	 = 0;
+
+		  private:
+			enum ATTRIBUTE_AABB_LOCATION
+			{
+				AABB_CENTER = 0
+			};
+
 			GLuint _vboAABB = GL_INVALID_VALUE;
-			GLuint _vaoAABB = GL_INVALID_VALUE;
 			GLuint _iboAABB = GL_INVALID_VALUE;
+			GLuint _vaoAABB = GL_INVALID_VALUE;
 		};
 	} // namespace Buffer
 } // namespace VTX

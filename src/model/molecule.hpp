@@ -207,8 +207,9 @@ namespace VTX
 			void createSecondaryStructure();
 
 		  protected:
-			void _computeGlobalPositionsAABB();
 			void _init() override;
+			void _fillBuffer() override;
+			void _computeAABB() override;
 			void _instanciate3DViews() override;
 
 		  private:
