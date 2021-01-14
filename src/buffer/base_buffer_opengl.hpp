@@ -20,22 +20,20 @@ namespace VTX
 
 			virtual void generate()
 			{
-				gl()->glGenBuffers( 1, &_vboAABB );
-				gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
-				gl()->glGenBuffers( 1, &_iboAABB );
-				gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+				gl()->glCreateBuffers( 1, &_vboAABB );
+				gl()->glCreateBuffers( 1, &_iboAABB );
 
-				gl()->glGenVertexArrays( 1, &_vaoAABB );
-				gl()->glBindVertexArray( _vaoAABB );
+				gl()->glCreateVertexArrays( 1, &_vaoAABB );
+				
+				gl()->glVertexArrayElementBuffer( _vaoAABB, _iboAABB );
 
-				gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _iboAABB );
-
-				gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboAABB );
-				gl()->glEnableVertexAttribArray( ATTRIBUTE_AABB_LOCATION::AABB_CENTER );
-				gl()->glVertexAttribPointer( ATTRIBUTE_AABB_LOCATION::AABB_CENTER, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
-				gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-				gl()->glBindVertexArray( 0 );
+				gl()->glEnableVertexArrayAttrib( _vaoAABB, ATTRIBUTE_AABB_LOCATION::AABB_CENTER);
+				gl()->glVertexArrayVertexBuffer(
+					_vaoAABB, ATTRIBUTE_AABB_LOCATION::AABB_CENTER, _vboAABB, 0, sizeof( Vec3f ) );
+				gl()->glVertexArrayAttribFormat(
+					_vaoAABB, ATTRIBUTE_AABB_LOCATION::AABB_CENTER, 3, GL_FLOAT, GL_FALSE, 0 );
+				gl()->glVertexArrayAttribBinding(
+					_vaoAABB, ATTRIBUTE_AABB_LOCATION::AABB_CENTER, ATTRIBUTE_AABB_LOCATION::AABB_CENTER );
 
 				_generate();
 			}
@@ -43,12 +41,8 @@ namespace VTX
 			virtual void free()
 			{
 				if ( _vaoAABB != GL_INVALID_VALUE )
-				{
-					gl()->glBindVertexArray( _vaoAABB );
-					gl()->glBindBuffer( GL_ARRAY_BUFFER, _vboAABB );
+				{					
 					gl()->glDisableVertexAttribArray( ATTRIBUTE_AABB_LOCATION::AABB_CENTER );
-					gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
-					gl()->glBindVertexArray( 0 );
 
 					gl()->glDeleteVertexArrays( 1, &_vaoAABB );
 				}
@@ -68,13 +62,11 @@ namespace VTX
 			virtual void bindAABB()
 			{
 				gl()->glBindVertexArray( _vaoAABB );
-				gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _iboAABB );
 			}
 
 			virtual void unbindAABB()
 			{
 				gl()->glBindVertexArray( 0 );
-				gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 			}
 
 			void setAABBCorners( const std::vector<Vec3f> & p_positions )
