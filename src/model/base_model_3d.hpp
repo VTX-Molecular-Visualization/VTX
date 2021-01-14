@@ -12,7 +12,6 @@
 #include "id.hpp"
 #include "math/aabb.hpp"
 #include "model/base_model.hpp"
-#include <vector>
 
 namespace VTX
 {

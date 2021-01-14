@@ -70,7 +70,7 @@ namespace VTX
 
 		void Molecule::_instantiate3DViews()
 		{
-			_viewBox = new View::D3::Box( this );
+			_viewBox = MVC::MvcManager::get().instantiateView<View::D3::Box>( (Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const)this, ID::View::D3_BOX );
 
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
