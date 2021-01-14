@@ -23,6 +23,16 @@ namespace VTX
 
 		GL::~GL()
 		{
+			if ( _quadVAO != GL_INVALID_VALUE )
+			{
+				gl()->glDisableVertexArrayAttrib( _quadVAO, 0 );
+				gl()->glDeleteVertexArrays( 1, &_quadVAO );
+			}
+			if ( _quadVBO != GL_INVALID_VALUE )
+			{
+				gl()->glDeleteBuffers( 1, &_quadVBO );
+			}
+
 			delete _passGeometric;
 			delete _passLinearizeDepth;
 			delete _passSSAO;
@@ -33,8 +43,14 @@ namespace VTX
 			delete _passFXAA;
 		}
 
-		const GLuint & GL::getRenderedTexture() const { return VTX_SETTING().activeAA ? _passFXAA->getTexture() : _passSelection->getTexture(); }
-		const GLuint & GL::getRenderedFBO() const { return VTX_SETTING().activeAA ? _passFXAA->getFbo() : _passSelection->getFbo(); }
+		const GLuint & GL::getRenderedTexture() const
+		{
+			return VTX_SETTING().activeAA ? _passFXAA->getTexture() : _passSelection->getTexture();
+		}
+		const GLuint & GL::getRenderedFBO() const
+		{
+			return VTX_SETTING().activeAA ? _passFXAA->getFbo() : _passSelection->getFbo();
+		}
 
 		void GL::init( const uint p_width, const uint p_height )
 		{
@@ -81,26 +97,25 @@ namespace VTX
 			// Init quad vao/vbo for deferred shading.
 
 			// clang-format off
-			GLfloat quadVertices[] =
+			Vec2f quadVertices[] =
 			{
-				-1.0f,  1.0f,
-				-1.0f, -1.0f, 
-				 1.0f,  1.0f,
-				 1.0f, -1.0f,
+				Vec2f(-1.f,  1.f),
+				Vec2f(-1.f,  -1.f),
+				Vec2f(1.f,  1.f),
+				Vec2f(1.f,  -1.f)
 			};
 			// clang-format on
 
-			// Setup plane VAO.
-			gl()->glGenBuffers( 1, &_quadVBO );
-			gl()->glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
-			gl()->glBufferData( GL_ARRAY_BUFFER, sizeof( quadVertices ), quadVertices, GL_STATIC_DRAW );
-			gl()->glGenVertexArrays( 1, &_quadVAO );
-			gl()->glBindVertexArray( _quadVAO );
-			gl()->glBindBuffer( GL_ARRAY_BUFFER, _quadVBO );
-			gl()->glEnableVertexAttribArray( 0 );
-			gl()->glVertexAttribPointer( 0, 2, GL_FLOAT, GL_FALSE, 0, (void *)0 );
-			gl()->glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			gl()->glBindVertexArray( 0 );
+			gl()->glCreateBuffers( 1, &_quadVBO );
+
+			gl()->glCreateVertexArrays( 1, &_quadVAO );
+
+			gl()->glEnableVertexArrayAttrib( _quadVAO, 0 );
+			gl()->glVertexArrayVertexBuffer( _quadVAO, 0, _quadVBO, 0, sizeof( Vec2f ) );
+			gl()->glVertexArrayAttribFormat( _quadVAO, 0, 2, GL_FLOAT, GL_FALSE, 0 );
+			gl()->glVertexArrayAttribBinding( _quadVAO, 0, 0 );
+
+			gl()->glNamedBufferData( _quadVBO, sizeof( quadVertices ), quadVertices, GL_STATIC_DRAW );
 		}
 
 		void GL::renderFrame( const Object3D::Scene & p_scene )
