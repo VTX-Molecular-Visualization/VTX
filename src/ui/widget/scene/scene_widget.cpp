@@ -5,6 +5,7 @@
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
 #include "ui/mime_type.hpp"
+#include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 #include "view/ui/widget/representation_scene_view.hpp"
@@ -126,11 +127,12 @@ namespace VTX
 					_layout->addStretch( 1000 );
 					_layout->setContentsMargins( 0, 0, 0, 0 );
 
-					QScrollArea * const scrollArea = new QScrollArea( this );
+					CustomWidget::DockWindowMainWidget<QScrollArea> * const scrollArea = new CustomWidget::DockWindowMainWidget<QScrollArea>( this );
 					scrollArea->setFrameShape( QFrame::Shape::NoFrame );
 					scrollArea->setWidget( _scrollAreaContent );
 					scrollArea->setWidgetResizable( true );
 					scrollArea->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored );
+					scrollArea->setSizeHint( Style::SCENE_PREFERED_SIZE );
 
 					setWidget( scrollArea );
 

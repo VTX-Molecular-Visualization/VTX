@@ -76,6 +76,11 @@ namespace VTX
 				REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ) {};
 		};
 
+		inline static const QSize INSPECTOR_PREFERED_SIZE = QSize( 150, 1000 );
+		inline static const QSize RENDER_PREFERED_SIZE	  = QSize( 1000, 1000 );
+		inline static const QSize SCENE_PREFERED_SIZE	  = QSize( 150, 1000 );
+		inline static const QSize CONSOLE_PREFERED_SIZE	  = QSize( 1000, 100 );
+
 		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;
 		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;
 		inline static const int INSPECTOR_CONTENT_HORIZONTAL_OFFSET = 10;

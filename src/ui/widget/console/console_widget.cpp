@@ -1,4 +1,6 @@
 #include "console_widget.hpp"
+#include "style.hpp"
+#include "vtx_app.hpp"
 #include <QCoreApplication>
 #include <QListWidget>
 #include <QWidget>
@@ -28,8 +30,10 @@ namespace VTX
 				{
 					BaseManualWidget::_setupUi( p_name );
 
-					_listWidget = new QListWidget();
+					_listWidget = new CustomWidget::DockWindowMainWidget<QListWidget>();
 					_listWidget->setObjectName( QString::fromUtf8( "logList" ) );
+					_listWidget->setSizeHint( Style::CONSOLE_PREFERED_SIZE );
+
 					this->setWidget( _listWidget );
 				}
 

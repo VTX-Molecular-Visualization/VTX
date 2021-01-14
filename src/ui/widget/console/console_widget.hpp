@@ -6,6 +6,7 @@
 #endif
 
 #include "ui/widget/base_manual_widget.hpp"
+#include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include <QDockWidget>
 #include <QListWidget>
 
@@ -32,7 +33,7 @@ namespace VTX
 					void localize() override;
 
 				  private:
-					QListWidget * _listWidget = nullptr;
+					CustomWidget::DockWindowMainWidget<QListWidget> * _listWidget = nullptr;
 				};
 			} // namespace Console
 		}	  // namespace Widget

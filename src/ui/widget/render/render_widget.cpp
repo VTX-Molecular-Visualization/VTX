@@ -1,5 +1,6 @@
 #include "render_widget.hpp"
 #include "event/event_manager.hpp"
+#include "style.hpp"
 
 namespace VTX
 {
@@ -15,12 +16,7 @@ namespace VTX
 					_registerEvent( Event::Global::MESH_CREATED );
 				}
 
-				RenderWidget::~RenderWidget()
-				{
-					delete _openGLWidget;
-					delete _verticalLayout;
-					delete _verticalLayoutWidget;
-				}
+				RenderWidget::~RenderWidget() {}
 
 				void RenderWidget::receiveEvent( const Event::VTXEvent & p_event )
 				{
@@ -42,6 +38,7 @@ namespace VTX
 				{
 					BaseManualWidget::_setupUi( p_name );
 
+					_openGLWidget->setSizeHint( Style::RENDER_PREFERED_SIZE );
 					setFocusPolicy( Qt::StrongFocus );
 					setWidget( _openGLWidget );
 				}

@@ -22,13 +22,6 @@ namespace VTX
 					QSurfaceFormat::setDefaultFormat( format );
 				}
 
-				QSize OpenGLWidget::sizeHint() const
-				{
-					const QSize & screenSize = VTXApp::get().getMainWindow().size();
-					const Vec2f	  ratio		 = Vec2f( 0.7f, 1.0f );
-					return QSize( screenSize.width() * ratio.x, screenSize.height() * ratio.y );
-				}
-
 				OpenGLWidget::~OpenGLWidget()
 				{
 					makeCurrent();
