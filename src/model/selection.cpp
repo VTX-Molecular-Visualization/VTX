@@ -565,7 +565,12 @@ namespace VTX
 				const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 				unselectMolecule( *castedEvent.ptr );
 			}
-			if ( p_event.name == Event::REPRESENTATION_REMOVED )
+			else if ( p_event.name == Event::MOLECULE_STRUCTURE_CHANGE )
+			{
+				const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+				unselectMolecule( *castedEvent.ptr );
+			}
+			else if ( p_event.name == Event::REPRESENTATION_REMOVED )
 			{
 				const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> & castedEvent
 					= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>( p_event );

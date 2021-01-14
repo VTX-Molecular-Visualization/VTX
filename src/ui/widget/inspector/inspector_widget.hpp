@@ -9,6 +9,7 @@
 #include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
 #include "ui/widget/base_manual_widget.hpp"
+#include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include "view/ui/widget/base_widget_view.hpp"
 #include <QDockWidget>
 #include <QScrollArea>
@@ -69,9 +70,9 @@ namespace VTX
 					void _setupSlots() override;
 
 				  private:
-					QWidget *	  _scrollWidget	  = nullptr;
-					QScrollArea * _scrollArea	  = nullptr;
-					QVBoxLayout * _verticalLayout = nullptr;
+					QWidget *										  _scrollWidget	  = nullptr;
+					CustomWidget::DockWindowMainWidget<QScrollArea> * _scrollArea	  = nullptr;
+					QVBoxLayout *									  _verticalLayout = nullptr;
 
 					std::vector<ViewData> _inspectorViewsData = std::vector<ViewData>();
 				};

@@ -44,7 +44,10 @@ namespace VTX
 							   const uint				p_nbTiles,
 							   std::atomic<uint> &		p_nextTileId );
 
-			Color::Rgb _renderPixel( const CameraRayTracing & p_camera, const float p_x, const float p_y, const uint p_nbPixelSamples );
+			Color::Rgb _renderPixel( const CameraRayTracing & p_camera,
+									 const float			  p_x,
+									 const float			  p_y,
+									 const uint				  p_nbPixelSamples );
 
 		  private:
 			static const uint TILE_SIZE;
@@ -52,8 +55,8 @@ namespace VTX
 			BaseIntegrator *  _aoIntegrator = nullptr;
 
 			Scene			   _scene;
-			std::vector<uchar> _pixels = std::vector<uchar>();
-			GLuint			   _texture;
+			std::vector<uchar> _pixels	= std::vector<uchar>();
+			GLuint			   _texture = GL_INVALID_VALUE;
 
 			// TODO: keep gamma as float ?
 			float _gamma = 1.f;

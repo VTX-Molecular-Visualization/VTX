@@ -31,7 +31,7 @@ namespace VTX
 					RepresentationPresetButton( QWidget * p_parent ) : MenuToolButtonWidget( p_parent ) {};
 
 				  private:
-					int _id;
+					int _id = -1;
 
 					void _onButtonClicked();
 				};

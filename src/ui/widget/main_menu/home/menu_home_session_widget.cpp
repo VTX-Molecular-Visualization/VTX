@@ -82,12 +82,12 @@ namespace VTX
 						QMenu * const recentSessionMenu = new QMenu( _openRecentSessionButton );
 						int			  actionIndex		= 0;
 
-						const std::vector<VTX::Path> recentFiles = Setting::recentLoadingPath;
+						const std::vector<VTX::Path> & recentFiles = Setting::recentLoadingPath;
 
-						for ( auto it : recentFiles )
+						for ( const VTX::Path & recentFile : recentFiles )
 						{
 							CustomWidget::IndexedAction * const action = new CustomWidget::IndexedAction( actionIndex, recentSessionMenu );
-							const QString						path   = QString::fromStdString( it.string() );
+							const QString						path   = QString::fromStdString( recentFile.string() );
 							action->setText( path );
 
 							connect( action, &CustomWidget::IndexedAction::triggeredWithIndex, this, &MenuHomeSessionWidget::_loadRecentSession );

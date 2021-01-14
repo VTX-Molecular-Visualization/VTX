@@ -62,12 +62,15 @@ namespace VTX
 					void _onScrollBarValueChanged();
 					void _updateLabelName( const Model::Chain & p_currentChainDisplayed );
 
+					void _clear();
+
 				  private:
 					QLabel *						   _sequenceLabel	  = nullptr;
 					QWidget *						   _scrollAreaContent = nullptr;
 					QScrollArea *					   _scrollArea		  = nullptr;
 					std::vector<ChainSequenceWidget *> _chainDisplayWidgets;
-					QHBoxLayout *					   _sequenceLayout = nullptr;
+					std::vector<QLabel *>			   _chainLabelWidgets = std::vector<QLabel *>();
+					QHBoxLayout *					   _sequenceLayout	  = nullptr;
 
 					std::vector<Model::Residue *> _frameSelection = std::vector<Model::Residue *>();
 					QPoint						  _startPressPosition;

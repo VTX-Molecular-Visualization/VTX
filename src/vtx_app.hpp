@@ -44,12 +44,18 @@ namespace VTX
 		inline Object3D::Scene &	   getScene() { return *_scene; }
 		inline const Object3D::Scene & getScene() const { return *_scene; }
 
-		inline Renderer::GLSL::ProgramManager &		  getProgramManager() { return _mainWindow->getOpenGLWidget().getProgramManager(); }
-		inline const Renderer::GLSL::ProgramManager & getProgramManager() const { return _mainWindow->getOpenGLWidget().getProgramManager(); }
-		inline const UI::MainWindow &				  getMainWindow() const { return *_mainWindow; }
-		inline UI::MainWindow &						  getMainWindow() { return *_mainWindow; }
-		inline State::StateMachine &				  getStateMachine() { return *_stateMachine; }
-		inline const State::StateMachine &			  getStateMachine() const { return *_stateMachine; }
+		inline Renderer::GL::ProgramManager & getProgramManager()
+		{
+			return _mainWindow->getOpenGLWidget().getProgramManager();
+		}
+		inline const Renderer::GL::ProgramManager & getProgramManager() const
+		{
+			return _mainWindow->getOpenGLWidget().getProgramManager();
+		}
+		inline const UI::MainWindow &	   getMainWindow() const { return *_mainWindow; }
+		inline UI::MainWindow &			   getMainWindow() { return *_mainWindow; }
+		inline State::StateMachine &	   getStateMachine() { return *_stateMachine; }
+		inline const State::StateMachine & getStateMachine() const { return *_stateMachine; }
 
 		bool notify( QObject * const, QEvent * const ) override;
 

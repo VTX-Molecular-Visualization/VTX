@@ -20,11 +20,11 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		class GL;
-		namespace GLSL
+		namespace GL
 		{
+			class GL;
 			class ProgramManager;
-		}
+		} // namespace GL
 		class RayTracer;
 #ifdef OPTIX_DEFINED
 		namespace Optix
@@ -34,48 +34,45 @@ namespace VTX
 #endif
 	} // namespace Renderer
 
-	namespace UI
+	namespace UI::Widget::Render
 	{
-		namespace Widget
+		class OpenGLWidget : public QOpenGLWidget, public Generic::BaseOpenGL
 		{
-			namespace Render
+		  public:
+			OpenGLWidget( QWidget * p_parent = 0 );
+			~OpenGLWidget();
+
+			inline Renderer::BaseRenderer &				getRenderer() { return *_renderer; }
+			inline const Renderer::BaseRenderer &		getRenderer() const { return *_renderer; }
+			inline Renderer::GL::GL &					getRendererGL() { return *_rendererGL; }
+			inline const Renderer::GL::GL &				getRendererGL() const { return *_rendererGL; }
+			inline Renderer::GL::ProgramManager &		getProgramManager() { return _renderer->getProgramManager(); }
+			inline const Renderer::GL::ProgramManager & getProgramManager() const
 			{
-				class OpenGLWidget : public QOpenGLWidget, public Generic::BaseOpenGL
-				{
-				  public:
-					OpenGLWidget( QWidget * p_parent = 0 );
-					~OpenGLWidget();
+				return _renderer->getProgramManager();
+			}
 
-					inline Renderer::BaseRenderer &				  getRenderer() { return *_renderer; }
-					inline const Renderer::BaseRenderer &		  getRenderer() const { return *_renderer; }
-					inline Renderer::GL &						  getRendererGL() { return *_rendererGL; }
-					inline const Renderer::GL &					  getRendererGL() const { return *_rendererGL; }
-					inline Renderer::GLSL::ProgramManager &		  getProgramManager() { return _renderer->getProgramManager(); }
-					inline const Renderer::GLSL::ProgramManager & getProgramManager() const { return _renderer->getProgramManager(); }
+			void initializeGL() override;
+			void paintGL() override;
+			void resizeGL( int, int ) override;
 
-					void initializeGL() override;
-					void paintGL() override;
-					void resizeGL( int, int ) override;
+			void switchRenderer( const Renderer::MODE );
 
-					void switchRenderer( const Renderer::MODE );
+		  private:
+			QElapsedTimer _timer   = QElapsedTimer();
+			uint		  _counter = 0;
+			QPainter	  _painter = QPainter();
 
-				  private:
-					QElapsedTimer _timer   = QElapsedTimer();
-					uint		  _counter = 0;
-					QPainter	  _painter = QPainter();
-
-					Renderer::BaseRenderer * _renderer	 = nullptr;
-					Renderer::GL *			 _rendererGL = nullptr;
+			Renderer::BaseRenderer * _renderer	 = nullptr;
+			Renderer::GL::GL *		 _rendererGL = nullptr;
 #ifdef CUDA_DEFINED
-					Renderer::RayTracer * _rendererRT = nullptr;
+			Renderer::RayTracer * _rendererRT = nullptr;
 #endif
 #ifdef OPTIX_DEFINED
-					Renderer::Optix::OptixRayTracer * _rendererOptix = nullptr;
+			Renderer::Optix::OptixRayTracer * _rendererOptix = nullptr;
 #endif
-				};
-			} // namespace Render
-		}	  // namespace Widget
-	}		  // namespace UI
+		};
+	} // namespace UI::Widget::Render
 
 } // namespace VTX
 

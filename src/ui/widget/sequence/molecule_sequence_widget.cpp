@@ -86,8 +86,28 @@ namespace VTX
 				}
 
 				void MoleculeSequenceWidget::localize() {}
+
+				void MoleculeSequenceWidget::_clear()
+				{
+					for ( ChainSequenceWidget * const chain : _chainDisplayWidgets )
+					{
+						_sequenceLayout->removeWidget( chain );
+						delete chain;
+					}
+					_chainDisplayWidgets.clear();
+
+					for ( QLabel * const chainLabel : _chainLabelWidgets )
+					{
+						_sequenceLayout->removeWidget( chainLabel );
+						delete chainLabel;
+					}
+					_chainLabelWidgets.clear();
+				}
+
 				void MoleculeSequenceWidget::refresh()
 				{
+					_clear();
+
 					const int chainCount = _model->getChainCount();
 					if ( chainCount <= 0 )
 						_sequenceLabel->setText( QString::fromStdString( _model->getPdbIdCode() ) );
@@ -103,6 +123,7 @@ namespace VTX
 						chainNameWidget->setAlignment( Qt::AlignmentFlag::AlignTop );
 						chainNameWidget->setFont( Style::SEQUENCE_DISPLAY_FONT );
 						chainNameWidget->setText( QString::fromStdString( Style::SEQUENCE_CHAIN_NAME_SEPARATOR + chain->getName() + Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
+						_chainLabelWidgets.emplace_back( chainNameWidget );
 
 						ChainSequenceWidget * const chainSequenceDisplay = WidgetFactory::get().instantiateWidget<ChainSequenceWidget>( this, "chainSequenceWidget" );
 						_chainDisplayWidgets.emplace_back( chainSequenceDisplay );

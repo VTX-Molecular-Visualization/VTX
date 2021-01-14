@@ -165,11 +165,12 @@ namespace VTX
 			VTX_INFO( "Init Scene" );
 			_initScene( VTXApp::get().getScene() );
 
-			gl()->glGenTextures( 1, &_texture );
-			gl()->glBindTexture( GL_TEXTURE_2D, _texture );
-
-			gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			gl()->glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
+			gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+			gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+			gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -217,8 +218,10 @@ namespace VTX
 				t.join();
 			}
 
+			gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, _width, _height );
+
 			gl()->glBindTexture( GL_TEXTURE_2D, _texture );
-			gl()->glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
+			gl()->glTextureSubImage2D( _texture, 0, 0, 0, _width, _height, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
 
 			chrono.stop();
 			//_progressBar.stop();

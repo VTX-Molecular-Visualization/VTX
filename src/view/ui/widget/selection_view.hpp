@@ -8,6 +8,9 @@
 #include "model/selection.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "view/base_view.hpp"
+#include <QPainter>
+#include <QStyleOptionViewItem>
+#include <QStyledItemDelegate>
 #include <QTreeWidgetItem>
 
 namespace VTX
@@ -20,6 +23,16 @@ namespace VTX
 			{
 				class SelectionView : public View::BaseView<Model::Selection>, public VTX::UI::Widget::BaseManualWidget<QTreeWidget>
 				{
+					class SelectionStyleItemDelegate : public QStyledItemDelegate
+					{
+					  public:
+						void  paint( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const override;
+						QSize sizeHint( const QStyleOptionViewItem & option, const QModelIndex & index ) const override;
+
+					  protected:
+						int _getSize() const;
+					};
+
 					VTX_WIDGET
 					VTX_VIEW
 
@@ -31,6 +44,9 @@ namespace VTX
 					void _setupSlots() override;
 					void _refreshView() override; // Debug only.
 
+					static const int NAME_COLUMN_INDEX	 = 0;
+					static const int REMOVE_COLUMN_INDEX = 1;
+
 				  private:
 					SelectionView( Model::Selection * const p_model, QWidget * const p_parent ) : View::BaseView<Model::Selection>( p_model ), BaseManualWidget( p_parent ) {}
 					void _onItemClicked( const QTreeWidgetItem * const, const int ) const;
@@ -39,7 +55,7 @@ namespace VTX
 					bool			 _createChildren( QTreeWidgetItem & p_item, const uint p_count );
 					inline Model::ID _getModelID( const QTreeWidgetItem & p_item ) const
 					{
-						const QVariant & dataID = p_item.data( 0, Qt::UserRole );
+						const QVariant & dataID = p_item.data( NAME_COLUMN_INDEX, Qt::UserRole );
 						return dataID.value<VTX::Model::ID>();
 					}
 				};

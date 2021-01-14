@@ -8,6 +8,7 @@
 #include "inspector_section.hpp"
 #include "model/molecule.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "ui/widget/custom_widget/transform_widget.hpp"
 #include "ui/widget/view_item_widget.hpp"
 #include <QWidget>
 
@@ -38,8 +39,11 @@ namespace VTX
 					CustomWidget::CollapsingHeaderWidget * _mainWidget	= nullptr;
 					InspectorSection *					   _infoSection = nullptr;
 
-					QLabel * _fullnameLabel = nullptr;
-					QLabel * _nbAtomsLabel	= nullptr;
+					CustomWidget::TransformWidget * _transformWidget = nullptr;
+					QLabel *						_fullnameLabel	 = nullptr;
+					QLabel *						_nbAtomsLabel	 = nullptr;
+
+					void _onTransformChange( const Math::Transform & _transform ) { _model->applyTransform( _transform ); }
 
 					void setModelEnableFromCheckBox( const int checkboxState ) { _model->setEnable( checkboxState > 0 ); }
 				};
