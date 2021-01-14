@@ -42,7 +42,10 @@ namespace VTX
 						MenuToolButtonWidget * _show = nullptr;
 						MenuToolButtonWidget * _hide = nullptr;
 
+						void _copySelection() const;
+						void _extractSelection() const;
 						void _deleteSelection() const;
+
 						void _showSelection() const;
 						void _hideSelection() const;
 					};

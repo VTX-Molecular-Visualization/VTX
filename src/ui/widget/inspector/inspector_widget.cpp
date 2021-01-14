@@ -5,6 +5,7 @@
 #include "model/selection.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
+#include "style.hpp"
 #include "view/ui/widget/molecule_inspector_view.hpp"
 #include "view/ui/widget/representation_inspector_view.hpp"
 #include <type_traits>
@@ -31,13 +32,13 @@ namespace VTX
 				{
 					clear();
 
-					for ( const auto it : Selection::SelectionManager::get().getSelectionModel().getItems() )
+					for ( const auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getItems() )
 					{
 						Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( it.first );
 						_addMolecule( &molecule );
 					}
 
-					for ( auto it : Selection::SelectionManager::get().getSelectionModel().getRepresentations() )
+					for ( auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getRepresentations() )
 					{
 						_addRepresentation( it );
 					}
@@ -68,7 +69,8 @@ namespace VTX
 					_verticalLayout->addStretch( 1000 );
 					_verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 
-					_scrollArea = new QScrollArea( this );
+					_scrollArea = new CustomWidget::DockWindowMainWidget<QScrollArea>( this );
+					_scrollArea->setSizeHint( Style::INSPECTOR_PREFERED_SIZE );
 					_scrollArea->setFrameShape( QFrame::Shape::NoFrame );
 					_scrollArea->setWidget( _scrollWidget );
 					_scrollArea->setWidgetResizable( true );

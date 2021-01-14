@@ -50,6 +50,11 @@ namespace VTX
 						const Model::Chain &					 chain			 = *residue.getChainPtr();
 						_refreshItem( topLevelItem( 0 )->child( chain.getIndex() )->child( residue.getIndex() - chain.getIndexFirstResidue() ), residue );
 					}
+					else if ( p_event->name == Event::Model::DATA_CHANGE )
+					{
+						clear();
+						_buildTree();
+					}
 				}
 
 				void MoleculeSceneView::receiveEvent( const Event::VTXEvent & p_event )
@@ -100,7 +105,11 @@ namespace VTX
 				void MoleculeSceneView::_setupUi( const QString & p_name )
 				{
 					SceneItemWidget::_setupUi( p_name );
+					_buildTree();
+				}
 
+				void MoleculeSceneView::_buildTree()
+				{
 					QTreeWidgetItem * const moleculeView = new QTreeWidgetItem();
 
 					moleculeView->setData( 0, Qt::UserRole, QVariant::fromValue<VTX::Model::ID>( _model->getId() ) );
@@ -170,44 +179,87 @@ namespace VTX
 				void MoleculeSceneView::_onItemChanged( const QTreeWidgetItem * const p_item, const int p_column ) const
 				{
 					if ( p_column == 0 )
-					{
-						const Model::ID id			 = _getModelID( *p_item );
-						const bool		modelEnabled = p_item->checkState( 0 ) == Qt::CheckState::Checked ? true : false;
-
-						_sendEnableStateChangeAction( id, modelEnabled );
-					}
+						_doEnableStateChangeAction( p_item );
 				}
 
-				void MoleculeSceneView::_onItemClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
+				void MoleculeSceneView::_doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const
 				{
-					const Model::ID &  modelId		  = _getModelID( *p_item );
-					ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( modelId );
-					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+					const Model::ID modelId		 = _getModelID( *p_item );
+					ID::VTX_ID		modelTypeId	 = MVC::MvcManager::get().getModelTypeID( modelId );
+					const bool		modelEnabled = p_item->checkState( 0 ) == Qt::CheckState::Checked ? true : false;
+
+					const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+
+					const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
+						= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
 
 					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
 					{
 						Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
-						VTX_ACTION( new Action::Selection::SelectMolecule( selectionModel, model ) );
+
+						if ( selection.isMoleculeSelected( model ) )
+							VTX_ACTION( new Action::Selection::ChangeVisibility( selection, model, visibilityMode ) );
+						else
+							VTX_ACTION( new Action::Molecule::ChangeVisibility( model, visibilityMode ) );
 					}
 					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
 					{
 						Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
-						VTX_ACTION( new Action::Selection::SelectChain( selectionModel, model ) );
+
+						if ( selection.isChainSelected( model ) )
+							VTX_ACTION( new Action::Selection::ChangeVisibility( selection, model, visibilityMode ) );
+						else
+							VTX_ACTION( new Action::Chain::ChangeVisibility( model, visibilityMode ) );
 					}
 					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
 					{
 						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
 
-						VTX_ACTION( new Action::Selection::SelectResidue( selectionModel, model ) );
-					}
-					else if ( modelTypeId == ID::Model::MODEL_ATOM )
-					{
-						Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
-
-						VTX_ACTION( new Action::Selection::SelectAtom( selectionModel, model ) );
+						if ( selection.isResidueSelected( model ) )
+							VTX_ACTION( new Action::Selection::ChangeVisibility( selection, model, visibilityMode ) );
+						else
+							VTX_ACTION( new Action::Residue::ChangeVisibility( model, visibilityMode ) );
 					}
 				}
 
+				void MoleculeSceneView::_onItemClicked( const QTreeWidgetItem * const p_item, const int p_column )
+				{
+					const Model::ID & modelId = _getModelID( *p_item );
+
+					const Qt::KeyboardModifiers & modifiers			= QApplication::keyboardModifiers();
+					bool						  appendToSelection = modifiers & Qt::KeyboardModifier::ControlModifier;
+					bool						  fromToSelection	= modifiers & Qt::KeyboardModifier::ShiftModifier;
+
+					if ( fromToSelection && _lastItemClicked != nullptr )
+					{
+						QModelIndex & lastClickedItemModelIndex = indexFromItem( _lastItemClicked );
+						QModelIndex & clickedItemModelIndex		= indexFromItem( p_item );
+
+						const QTreeWidgetItem * firstItem = itemFromIndex( lastClickedItemModelIndex < clickedItemModelIndex ? lastClickedItemModelIndex : clickedItemModelIndex );
+						const QTreeWidgetItem * lastItem  = itemFromIndex( lastClickedItemModelIndex < clickedItemModelIndex ? clickedItemModelIndex : lastClickedItemModelIndex );
+
+						const QTreeWidgetItem * seeker = firstItem;
+						std::vector<Model::ID>	ids	   = std::vector<Model::ID>();
+						while ( seeker != lastItem )
+						{
+							const Model::ID & currentModelId = _getModelID( *seeker );
+							ids.emplace_back( currentModelId );
+							const QTreeWidgetItem * sibling = itemBelow( seeker );
+							seeker							= sibling;
+						}
+
+						// Add last item
+						ids.emplace_back( _getModelID( *seeker ) );
+
+						_selectModelAction( ids, true );
+					}
+					else
+					{
+						_selectModelAction( modelId, appendToSelection );
+					}
+
+					_lastItemClicked = p_item;
+				}
 				void MoleculeSceneView::_onItemDoubleClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
 				{
 					const Model::ID &  modelId		  = _getModelID( *p_item );
@@ -233,6 +285,49 @@ namespace VTX
 					{
 						Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
 						VTX_ACTION( new Action::Atom::Orient( model ) );
+					}
+				}
+				void MoleculeSceneView::_selectModelAction( const std::vector<Model::ID> & p_modelIds, const bool p_appendToSelection ) const
+				{
+					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+					VTX_ACTION( new Action::Selection::SelectModels( selectionModel, p_modelIds, p_appendToSelection ) );
+				}
+				void MoleculeSceneView::_selectModelAction( const Model::ID & p_modelId, const bool p_appendToSelection ) const
+				{
+					ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( p_modelId );
+					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+					{
+						Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( p_modelId );
+						if ( p_appendToSelection && selectionModel.isMoleculeSelected( model ) )
+							VTX_ACTION( new Action::Selection::UnselectMolecule( selectionModel, model ) );
+						else
+							VTX_ACTION( new Action::Selection::SelectMolecule( selectionModel, model, p_appendToSelection ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+					{
+						Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( p_modelId );
+						if ( p_appendToSelection && selectionModel.isChainSelected( model ) )
+							VTX_ACTION( new Action::Selection::UnselectChain( selectionModel, model ) );
+						else
+							VTX_ACTION( new Action::Selection::SelectChain( selectionModel, model, p_appendToSelection ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+					{
+						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( p_modelId );
+						if ( p_appendToSelection && selectionModel.isResidueSelected( model ) )
+							VTX_ACTION( new Action::Selection::UnselectResidue( selectionModel, model ) );
+						else
+							VTX_ACTION( new Action::Selection::SelectResidue( selectionModel, model, p_appendToSelection ) );
+					}
+					else if ( modelTypeId == ID::Model::MODEL_ATOM )
+					{
+						Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( p_modelId );
+						if ( p_appendToSelection && selectionModel.isAtomSelected( model ) )
+							VTX_ACTION( new Action::Selection::UnselectAtom( selectionModel, model ) );
+						else
+							VTX_ACTION( new Action::Selection::SelectAtom( selectionModel, model, p_appendToSelection ) );
 					}
 				}
 
@@ -269,36 +364,6 @@ namespace VTX
 					const Qt::CheckState newCheckState = _getCheckState( p_model.isVisible() );
 					if ( p_itemWidget->checkState( 0 ) != newCheckState )
 						p_itemWidget->setCheckState( 0, newCheckState );
-				}
-
-				void MoleculeSceneView::_sendEnableStateChangeAction( const Model::ID & p_modelID, const bool modelEnabled ) const
-				{
-					ID::VTX_ID modelTypeId = MVC::MvcManager::get().getModelTypeID( p_modelID );
-
-					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
-					{
-						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
-							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
-
-						Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( p_modelID );
-						VTX_ACTION( new Action::Molecule::ChangeVisibility( model, visibilityMode ) );
-					}
-					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
-					{
-						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
-							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
-
-						Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( p_modelID );
-						VTX_ACTION( new Action::Chain::ChangeVisibility( model, visibilityMode ) );
-					}
-					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
-					{
-						const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
-							= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
-
-						Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( p_modelID );
-						VTX_ACTION( new Action::Residue::ChangeVisibility( model, visibilityMode ) );
-					}
 				}
 
 				QMimeData * MoleculeSceneView::_getDataForDrag() { return VTX::UI::MimeType::generateMoleculeData( *_model ); }

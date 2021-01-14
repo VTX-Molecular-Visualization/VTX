@@ -1,6 +1,7 @@
 #include "opengl_widget.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
+#include <QMainWindow>
 
 namespace VTX::UI::Widget::Render
 {

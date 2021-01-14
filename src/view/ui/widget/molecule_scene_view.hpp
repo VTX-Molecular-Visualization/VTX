@@ -44,16 +44,18 @@ namespace VTX
 					QMimeData * _getDataForDrag() override;
 
 				  private:
-					QMenu * _contextMenu;
+					QMenu *					_contextMenu;
+					const QTreeWidgetItem * _lastItemClicked = nullptr;
 
 					MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
 
+					void _buildTree();
+
 					void _onItemChanged( const QTreeWidgetItem * const, const int ) const;
-					void _onItemClicked( const QTreeWidgetItem * const, const int ) const;
+					void _onItemClicked( const QTreeWidgetItem * const, const int );
 					void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;
 					void _onItemExpanded( const QTreeWidgetItem * const );
 					void _onItemCollapsed( const QTreeWidgetItem * const );
-					void _onCustomContextMenuCalled( const QPoint & p_clicPos );
 
 					void _deleteAction() override;
 
@@ -61,7 +63,10 @@ namespace VTX
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Chain & p_model ) const;
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Residue & p_model ) const;
 
-					void _sendEnableStateChangeAction( const Model::ID & p_modelID, const bool modelEnabled ) const;
+					void _selectModelAction( const Model::ID & p_modelId, const bool p_appendToSelection ) const;
+					void _selectModelAction( const std::vector<Model::ID> & p_modelId, const bool p_appendToSelection ) const;
+
+					void _doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const;
 
 					inline Model::ID _getModelID( const QTreeWidgetItem & p_item ) const
 					{

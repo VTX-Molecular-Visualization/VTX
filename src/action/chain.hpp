@@ -46,20 +46,23 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					bool		   newVisibility = _getVisibilityBool();
-					Model::Chain & chain		 = ( (Model::Chain &)_visible );
-
-					chain.setVisible( newVisibility );
-
-					if ( _mode == VISIBILITY_MODE::ALL || _mode == VISIBILITY_MODE::SOLO )
+					for ( Generic::BaseVisible * const visible : _visibles )
 					{
-						for ( Model::Chain * const c : chain.getMoleculePtr()->getChains() )
-						{
-							c->setVisible( _mode == VISIBILITY_MODE::ALL || ( _mode == VISIBILITY_MODE::SOLO && c == &chain ) );
-						}
-					}
+						bool		   newVisibility = _getVisibilityBool( *visible );
+						Model::Chain & chain		 = *( (Model::Chain *)visible );
 
-					chain.getMoleculePtr()->computeRepresentationTargets();
+						chain.setVisible( newVisibility );
+
+						if ( _mode == VISIBILITY_MODE::ALL || _mode == VISIBILITY_MODE::SOLO )
+						{
+							for ( Model::Chain * const c : chain.getMoleculePtr()->getChains() )
+							{
+								c->setVisible( _mode == VISIBILITY_MODE::ALL || ( _mode == VISIBILITY_MODE::SOLO && c == &chain ) );
+							}
+						}
+
+						chain.getMoleculePtr()->computeRepresentationTargets();
+					}
 				}
 			};
 

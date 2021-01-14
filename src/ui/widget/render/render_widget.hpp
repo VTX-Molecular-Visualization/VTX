@@ -7,6 +7,7 @@
 
 #include "opengl_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
+#include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include <QDockWidget>
 #include <QVBoxLayout>
 
@@ -45,9 +46,7 @@ namespace VTX
 					void wheelEvent( QWheelEvent * ) override;
 
 				  private:
-					QWidget *	   _verticalLayoutWidget;
-					QVBoxLayout *  _verticalLayout;
-					OpenGLWidget * _openGLWidget = new OpenGLWidget();
+					CustomWidget::DockWindowMainWidget<OpenGLWidget> * const _openGLWidget = new CustomWidget::DockWindowMainWidget<OpenGLWidget>( this );
 				};
 			} // namespace Render
 		}	  // namespace Widget

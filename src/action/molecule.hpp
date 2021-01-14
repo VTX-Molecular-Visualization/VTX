@@ -5,8 +5,10 @@
 #pragma once
 #endif
 
+#include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "selection/selection_manager.hpp"
 #include "setting.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
@@ -62,11 +64,13 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					bool			  newVisibility = _getVisibilityBool();
-					Model::Molecule & molecule		= ( (Model::Molecule &)_visible );
-
-					molecule.setVisible( newVisibility );
-					molecule.computeRepresentationTargets();
+					for ( Generic::BaseVisible * const visible : _visibles )
+					{
+						const bool		  newVisibility = _getVisibilityBool( *visible );
+						Model::Molecule * molecule		= ( (Model::Molecule *)visible );
+						molecule->setVisible( newVisibility );
+						molecule->computeRepresentationTargets();
+					}
 				}
 			};
 
@@ -187,6 +191,45 @@ namespace VTX
 
 			  private:
 				Model::Molecule & _molecule;
+			};
+
+			class Copy : public BaseAction
+			{
+			  public:
+				explicit Copy( const Model::Selection & p_source ) : _selection( p_source ) {}
+				virtual void execute() override
+				{
+					Model::GeneratedMolecule * generatedMolecule = MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+					generatedMolecule->copyFromSelection( _selection );
+					VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+
+					generatedMolecule->setTranslation( VTX::Vec3f( 10, 0, 0 ) );
+					VTXApp::get().getScene().addMolecule( generatedMolecule );
+				}
+
+			  private:
+				const Model::Selection & _selection;
+			};
+
+			class Extract : public BaseAction
+			{
+			  public:
+				explicit Extract( const Model::Selection & p_source ) : _selection( p_source ) {}
+				virtual void execute() override
+				{
+					const Model::ID & idMolSource = _selection.getItems().begin()->first;
+					Model::Molecule & molecule	  = MVC::MvcManager::get().getModel<Model::Molecule>( idMolSource );
+
+					Model::GeneratedMolecule * const generatedMolecule = MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+					generatedMolecule->extractFromSelection( _selection );
+
+					VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+
+					VTXApp::get().getScene().addMolecule( generatedMolecule );
+				}
+
+			  private:
+				const Model::Selection & _selection;
 			};
 		} // namespace Molecule
 	}	  // namespace Action

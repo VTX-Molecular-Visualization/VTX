@@ -35,6 +35,8 @@ namespace VTX
 
 			const QPixmap UNFOLDED_PIXMAP;
 			const QPixmap FOLDED_PIXMAP;
+			const QPixmap CLOSE_PIXMAP;
+
 			const QPixmap MOLECULE_SYMBOL;
 			const QPixmap CHAIN_SYMBOL;
 			const QPixmap RESIDUE_SYMBOL;
@@ -68,10 +70,16 @@ namespace VTX
 		  private:
 			inline IconConst() :
 				UNFOLDED_PIXMAP( QPixmap( ":/sprite/treeview_unfolded_molecule_icon.png" ) ), FOLDED_PIXMAP( QPixmap( ":/sprite/treeview_folded_molecule_icon.png" ) ),
-				MOLECULE_SYMBOL( QPixmap( ":/sprite/symbol/molecule_symbol_icon.png" ) ), CHAIN_SYMBOL( QPixmap( ":/sprite/symbol/chain_symbol_icon.png" ) ),
-				RESIDUE_SYMBOL( QPixmap( ":/sprite/symbol/residue_symbol_icon.png" ) ), ATOM_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
-				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ), REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ) {};
+				CLOSE_PIXMAP( QPixmap( ":/sprite/close_icon.png" ) ), MOLECULE_SYMBOL( QPixmap( ":/sprite/symbol/molecule_symbol_icon.png" ) ),
+				CHAIN_SYMBOL( QPixmap( ":/sprite/symbol/chain_symbol_icon.png" ) ), RESIDUE_SYMBOL( QPixmap( ":/sprite/symbol/residue_symbol_icon.png" ) ),
+				ATOM_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ), TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ),
+				REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ) {};
 		};
+
+		inline static const QSize INSPECTOR_PREFERED_SIZE = QSize( 150, 1000 );
+		inline static const QSize RENDER_PREFERED_SIZE	  = QSize( 1000, 1000 );
+		inline static const QSize SCENE_PREFERED_SIZE	  = QSize( 150, 1000 );
+		inline static const QSize CONSOLE_PREFERED_SIZE	  = QSize( 1000, 100 );
 
 		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;
 		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;

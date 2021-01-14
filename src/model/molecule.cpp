@@ -15,7 +15,8 @@ namespace VTX
 {
 	namespace Model
 	{
-		Molecule::Molecule() : BaseModel3D( ID::Model::MODEL_MOLECULE ) {}
+		Molecule::Molecule() : Molecule( ID::Model::MODEL_MOLECULE ) {}
+		Molecule::Molecule( const ID::VTX_ID & p_typeId ) : BaseModel3D( ID::Model::MODEL_MOLECULE ) {}
 
 		Molecule::~Molecule()
 		{
