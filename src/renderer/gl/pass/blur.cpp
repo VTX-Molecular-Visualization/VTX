@@ -34,6 +34,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 		gl()->glTextureStorage2D( _texture, 1, GL_R16F, p_width, p_height );
+		clearTexture();
 
 		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 
@@ -65,6 +66,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 		gl()->glTextureStorage2D( _texture, 1, GL_R16F, p_width, p_height );
+		clearTexture();
 
 		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 	}
