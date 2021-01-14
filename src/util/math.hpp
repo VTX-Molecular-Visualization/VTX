@@ -9,7 +9,9 @@
 #include "glm/gtc/type_ptr.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/compatibility.hpp>
+#include <glm/gtx/euler_angles.hpp>
 #include <glm/gtx/integer.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <glm/gtx/spline.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
@@ -66,6 +68,13 @@ namespace VTX
 			inline T1 rotate( const T1 & p_value, const T2 & p_rotation, const Vec3f & p_axis )
 			{
 				return glm::rotate( p_value, p_rotation, p_axis );
+			}
+			template<typename T>
+			inline glm::mat<4, 4, T> getRotation( const T & p_pitch, const T & p_yaw, const T & p_roll )
+			{
+				const Vec3f eulerRad = Vec3f( p_pitch, p_yaw, p_roll );
+				const Quatf quaternion = glm::quat( eulerRad );
+				return glm::mat4x4(quaternion);
 			}
 
 			template<typename T1, typename T2>
@@ -226,6 +235,8 @@ namespace VTX
 
 			inline Vec3f randomVec3f() { return Vec3f( randomFloat(), randomFloat(), randomFloat() ); }
 
+			inline Quatf toQuat( const Mat4f & p_matrix ) { return glm::toQuat( p_matrix ); }
+
 			inline Quatf eulerToQuaternion( const Vec3f & p_angles ) { return Quatf( p_angles ); }
 
 			inline Quatf eulerToQuaternion( const float & p_pitch, const float & p_yaw, const float & p_roll )
@@ -260,7 +271,7 @@ namespace VTX
 				// Roll (x-axis rotation).
 				const float sinr_cosp = 2.f * ( q.w * q.x + q.y * q.z );
 				const float cosr_cosp = 1.f - 2.f * ( q.x * q.x + q.y * q.y );
-				angles.z			   = std::atan2( sinr_cosp, cosr_cosp );
+				angles.z			  = std::atan2( sinr_cosp, cosr_cosp );
 
 				// Pitch (y-axis rotation).
 				const float sinp = 2.f * ( q.w * q.y - q.z * q.x );
@@ -275,13 +286,18 @@ namespace VTX
 				}
 
 				// Yaw (z-axis rotation).
-				const float	 siny_cosp = 2.f * ( q.w * q.z + q.x * q.y );
+				const float siny_cosp = 2.f * ( q.w * q.z + q.x * q.y );
 				const float cosy_cosp = 1.f - 2.f * ( q.y * q.y + q.z * q.z );
-				angles.y			   = std::atan2( siny_cosp, cosy_cosp );
+				angles.y			  = std::atan2( siny_cosp, cosy_cosp );
 
 				return angles;
 			}
 
+			inline Vec3f rotationMatrixToEuler( const Mat4f & p_matrix )
+			{
+				const Quatf quat = glm::toQuat( p_matrix );
+				return degrees( glm::eulerAngles( quat ) );
+			}
 			template<int L, typename T>
 			inline glm::vec<L, T> directionToEuler( glm::vec<L, T> & p_direction )
 			{
