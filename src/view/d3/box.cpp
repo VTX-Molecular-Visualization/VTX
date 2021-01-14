@@ -17,8 +17,7 @@ namespace VTX
 				assert( _program != nullptr );
 				_uModelViewMatrixLoc = _gl()->glGetUniformLocation( _program->getId(), "uMVMatrix" );
 				_uProjMatrixLoc		 = _gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
-
-				_gl()->glLineWidth( 1.0 );
+				_uNormalMatrixLoc	 = _gl()->glGetUniformLocation( _program->getId(), "uNormalMatrix" );
 			}
 
 			void Box::render()
@@ -28,7 +27,10 @@ namespace VTX
 				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
 				_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
 				_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
-
+				_gl()->glUniformMatrix4fv(
+					_uNormalMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( cam.getViewMatrix() * _model->getTransform().get() ) ) ) );
+				GLfloat width = 10.f;
+				_gl()->glLineWidth( width );
 				_gl()->glDrawElements( GL_LINES, uint( _model->getBufferAABBIndices().size() ), GL_UNSIGNED_INT, 0 );
 			}
 

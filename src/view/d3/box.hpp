@@ -23,6 +23,7 @@ namespace VTX
 			  private:
 				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
 				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
+				GLint _uNormalMatrixLoc	   = GL_INVALID_INDEX;
 
 				explicit Box( Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const );
 			};

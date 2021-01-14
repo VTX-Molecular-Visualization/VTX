@@ -12,6 +12,7 @@
 #include "id.hpp"
 #include "math/aabb.hpp"
 #include "model/base_model.hpp"
+#include "tool/logger.hpp"
 
 namespace VTX
 {
@@ -26,23 +27,23 @@ namespace VTX
 			inline B * const				  getBuffer() { return _buffer; }
 			inline const std::vector<Vec3f> & getBufferAABBCorners() const { return _bufferAABBCorners; }
 			inline const std::vector<uint> &  getBufferAABBIndices() const { return _bufferAABBIndices; }
-			inline bool						  isInit() const { return _isInit; };
+			inline bool						  isInit() const { return _isInit; }
 
 			void render() override
 			{
-				if ( _viewBox != nullptr )
-				{
-					_buffer->bindAABB();
-					_viewBox->render();
-					_buffer->unbindAABB();
-				}
-
 				_buffer->bind();
 				for ( Generic::BaseRenderable * const renderable : _renderables )
 				{
 					renderable->render();
 				}
 				_buffer->unbind();
+
+				if ( _viewBox != nullptr )
+				{
+					_buffer->bindAABB();
+					_viewBox->render();
+					_buffer->unbindAABB();
+				}
 			}
 
 			void init( OpenGLFunctions * const p_gl )
