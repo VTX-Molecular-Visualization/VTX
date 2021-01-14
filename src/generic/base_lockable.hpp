@@ -12,7 +12,7 @@ namespace VTX
 {
 	namespace Generic
 	{
-		class BaseLocakble
+		class BaseLockable
 		{
 		  protected:
 			std::mutex _mutex;

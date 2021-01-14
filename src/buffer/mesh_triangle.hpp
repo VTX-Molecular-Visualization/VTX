@@ -20,9 +20,6 @@ namespace VTX
 			MeshTriangle( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
 			~MeshTriangle() = default;
 
-			void generate() override;
-			void free() override;
-
 			void bind() override;
 			void unbind() override;
 
@@ -31,6 +28,10 @@ namespace VTX
 			void setColors( const std::vector<Color::Rgb> & );
 			void setVisibilities( const std::vector<ushort> & );
 			void setIndices( const std::vector<uint> & );
+
+		  protected:
+			void _generate() override;
+			void _free() override;
 
 		  private:
 			enum ATTRIBUTE_LOCATION

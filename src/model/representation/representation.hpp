@@ -40,11 +40,11 @@ namespace VTX
 				void				setName( const std::string & p_name ) { _name = std::string( p_name ); };
 
 				const std::string & getIconPath() const { return _iconPath; };
-				void				setIconPath( const std::string & p_iconPath ) { _iconPath = std::string( p_iconPath ); };
+				void setIconPath( const std::string & p_iconPath ) { _iconPath = std::string( p_iconPath ); };
 
 				const Generic::COLOR_MODE & getColorMode() const { return _colorMode; }
 				Generic::COLOR_MODE &		getColorMode() { return _colorMode; }
-				void						setColorMode( const Generic::COLOR_MODE & p_colorMode ) { _colorMode = p_colorMode; }
+				void setColorMode( const Generic::COLOR_MODE & p_colorMode ) { _colorMode = p_colorMode; }
 
 				const Color::Rgb & getColor() const { return _color; };
 				Color::Rgb &	   getColor() { return _color; };
@@ -62,13 +62,13 @@ namespace VTX
 				const RibbonData & getRibbonData() const { return *_ribbonData; };
 
 			  protected:
-				Generic::REPRESENTATION _representationType;
+				Generic::REPRESENTATION _representationType = Generic::REPRESENTATION::VAN_DER_WAALS;
 
 				std::string							  _name;
 				std::string							  _iconPath;
 				Color::Rgb							  _color;
-				VTX::Representation::FlagDataTargeted _dataTargeted;
-				Generic::COLOR_MODE					  _colorMode;
+				VTX::Representation::FlagDataTargeted _dataTargeted = VTX::Representation::FlagDataTargeted::NONE;
+				Generic::COLOR_MODE					  _colorMode	= Generic::COLOR_MODE::PROTEIN;
 
 				SphereData *   _sphereData	 = nullptr;
 				CylinderData * _cylinderData = nullptr;

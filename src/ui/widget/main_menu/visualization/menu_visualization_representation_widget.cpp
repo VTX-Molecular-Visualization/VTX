@@ -24,7 +24,7 @@ namespace VTX
 						for ( int i = 0; i < Model::Representation::RepresentationLibrary::get().getRepresentationCount(); i++ )
 						{
 							const Model::Representation::BaseRepresentation * const representation = Model::Representation::RepresentationLibrary::get().getRepresentation( i );
-							RepresentationPresetButton * const button = WidgetFactory::get().instanciateWidget<RepresentationPresetButton>( this, "applyVisualModelPresetButton" );
+							RepresentationPresetButton * const button = WidgetFactory::get().instantiateWidget<RepresentationPresetButton>( this, "applyVisualModelPresetButton" );
 							button->setRepresentationID( i );
 							button->setData(
 								QString::fromStdString( representation->getName() ), QString::fromStdString( representation->getIconPath() ), Qt::Orientation::Horizontal );
@@ -32,7 +32,7 @@ namespace VTX
 							_buttons.emplace_back( button );
 						}
 
-						_addPreset = WidgetFactory::get().instanciateWidget<RepresentationPresetButton>( this, "addNewVisualModelPresetButton" );
+						_addPreset = WidgetFactory::get().instantiateWidget<RepresentationPresetButton>( this, "addNewVisualModelPresetButton" );
 						_addPreset->setData( "Add\nPreset", ":/sprite/representation_new_preset_icon.png", Qt::Orientation::Vertical );
 						pushButtonInNextColumn( *_addPreset );
 

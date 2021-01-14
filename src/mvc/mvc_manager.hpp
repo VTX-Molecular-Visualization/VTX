@@ -110,7 +110,7 @@ namespace VTX
 					 typename M,
 					 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
 					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
-			inline V * const instanciateView( M * const p_model, const ID::VTX_ID & p_id )
+			inline V * const instantiateView( M * const p_model, const ID::VTX_ID & p_id )
 			{
 				V * const view = new V( p_model );
 				_container[ p_model->getId() ]->addView<M, V>( p_id, view );
@@ -121,7 +121,7 @@ namespace VTX
 					 typename M,
 					 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
 					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
-			inline V * const instanciateViewWidget( M * const p_model, const ID::VTX_ID & p_id, QWidget * const p_parentWidget = nullptr )
+			inline V * const instantiateViewWidget( M * const p_model, const ID::VTX_ID & p_id, QWidget * const p_parentWidget = nullptr )
 			{
 				V * const view = new V( p_model, p_parentWidget );
 				_container[ p_model->getId() ]->addView<M, V>( p_id, view );

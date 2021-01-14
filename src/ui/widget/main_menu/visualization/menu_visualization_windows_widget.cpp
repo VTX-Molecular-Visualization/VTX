@@ -40,15 +40,15 @@ namespace VTX
 						MenuToolBlockWidget::_setupUi( p_name );
 
 						// Render view tools
-						_minimap = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "showMinimapButton" );
+						_minimap = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "showMinimapButton" );
 						_minimap->setData( "Show Minimap", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_minimap, 0 );
 
-						_infoUnderCursor = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "showInfoUnderCursorButton" );
+						_infoUnderCursor = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "showInfoUnderCursorButton" );
 						_infoUnderCursor->setData( "Show Cursor Info", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_infoUnderCursor, 0 );
 
-						_sequence = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "toggleSequenceButton" );
+						_sequence = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleSequenceButton" );
 						_sequence->setData( "Show Sequence", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_sequence, 0 );
 

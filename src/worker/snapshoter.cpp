@@ -23,7 +23,7 @@ namespace VTX
 
 		bool Snapshoter::takeSnapshotRTCPU( const Path & p_path ) const
 		{
-			Renderer::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
+			Renderer::GL::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
 			const uint width  = renderer.getWidth();
 			const uint height = renderer.getHeight();
@@ -34,14 +34,14 @@ namespace VTX
 			const std::vector<uchar> & pixels = rt->getPixels();
 			stbi_flip_vertically_on_write( true );
 			stbi_write_png_compression_level = 0;
-			bool res						 = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
+			bool res = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
 			delete rt;
 			return res;
 		}
 
 		bool Snapshoter::takeSnapshotRTOptix( const Path & p_path ) const
 		{
-			const Renderer::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
+			const Renderer::GL::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
 			const uint width  = renderer.getWidth();
 			const uint height = renderer.getHeight();
@@ -53,7 +53,7 @@ namespace VTX
 			const std::vector<uchar4> & pixels = ort->getPixels();
 			stbi_flip_vertically_on_write( true );
 			stbi_write_png_compression_level = 0;
-			bool res						 = stbi_write_png( p_path.string().c_str(), width, height, 4, pixels.data(), 0 );
+			bool res = stbi_write_png( p_path.string().c_str(), width, height, 4, pixels.data(), 0 );
 			delete ort;
 			return res;
 #else

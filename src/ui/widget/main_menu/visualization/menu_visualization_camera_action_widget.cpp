@@ -28,33 +28,33 @@ namespace VTX
 						MenuToolBlockWidget::_setupUi( p_name );
 
 						// Selection focus
-						_center = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
+						_center = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
 						_center->setData( "Center", ":/sprite/camera_recenter_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_center, 0 );
 
-						_focus = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
+						_focus = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
 						_focus->setData( "Focus", ":/sprite/camera_focus_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_focus, 0 );
 
-						_reorient = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
+						_reorient = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
 						_reorient->setData( "Orient", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_reorient, 0 );
 
 						// Camera Mode
-						_trackball = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
+						_trackball = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
 						_trackball->setData( "Trackball", ":/sprite/camera_trackball_mode.png", Qt::Orientation::Horizontal );
 						pushButton( *_trackball, 1 );
 
-						_freefly = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
+						_freefly = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
 						_freefly->setData( "Freecam", ":/sprite/camera_freefly_mode.png", Qt::Orientation::Horizontal );
 						pushButton( *_freefly, 1 );
 
-						_vessel = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
+						_vessel = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
 						_vessel->setData( "Vessel", ":/sprite/camera_vessel_mode.png", Qt::Orientation::Horizontal );
 						pushButton( *_vessel, 1 );
 
 						// Viewpoints
-						_createViewpoint = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "createViewpointButton" );
+						_createViewpoint = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "createViewpointButton" );
 						_createViewpoint->setData( "Add\nViewpoint", ":/sprite/add_viewpoint.png", Qt::Orientation::Horizontal );
 						pushButton( *_createViewpoint, 2 );
 

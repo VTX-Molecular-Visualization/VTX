@@ -65,7 +65,9 @@ namespace VTX
 
 		  protected:
 			void _init() override;
-			void _instanciate3DViews() override;
+			void _fillBuffer() override;
+			void _computeAABB() override;
+			void _instantiate3DViews() override;
 
 		  private:
 			Model::Molecule * const _molecule;

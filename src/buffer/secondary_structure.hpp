@@ -20,9 +20,6 @@ namespace VTX
 			SecondaryStructure( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
 			~SecondaryStructure() = default;
 
-			void generate() override;
-			void free() override;
-
 			void bind() override;
 			void unbind() override;
 
@@ -33,6 +30,10 @@ namespace VTX
 			void setControlPointColors( const std::vector<Color::Rgb> & );
 			void setControlPointSelections( const std::vector<ushort> & );
 			void setIndices( const std::vector<uint> & );
+
+		  protected:
+			void _generate() override;
+			void _free() override;
 
 		  private:
 			enum ATTRIBUTE_LOCATION

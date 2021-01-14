@@ -11,26 +11,23 @@
 #include "renderer/gl/program_manager.hpp"
 #include "tool/logger.hpp"
 
-namespace VTX
+namespace VTX::Renderer::GL
 {
-	namespace Renderer
+	class GL;
+
+	namespace Pass
 	{
-		class GL;
-
-		namespace Pass
+		class BasePass : public Generic::BaseOpenGL
 		{
-			class BasePass : public Generic::BaseOpenGL
-			{
-			  public:
-				BasePass( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
-				virtual ~BasePass() = default;
+		  public:
+			BasePass( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
+			virtual ~BasePass() = default;
 
-				virtual void init( GLSL::ProgramManager &, const uint, const uint )	 = 0;
-				virtual void resize( const uint, const uint )						 = 0;
-				virtual void render( const Object3D::Scene &, const Renderer::GL & ) = 0;
-			};
-		} // namespace Pass
-	}	  // namespace Renderer
-} // namespace VTX
+			virtual void init( ProgramManager &, const uint, const uint ) = 0;
+			virtual void resize( const uint, const uint )				  = 0;
+			virtual void render( const Object3D::Scene &, const GL & )	  = 0;
+		};
+	} // namespace Pass
+} // namespace VTX::Renderer::GL
 
 #endif

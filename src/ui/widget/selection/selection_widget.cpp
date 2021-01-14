@@ -28,7 +28,7 @@ namespace VTX
 					{
 						const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
 						View::UI::Widget::SelectionView * const		 item
-							= WidgetFactory::get().instanciateViewWidget<View::UI::Widget::SelectionView>( castedEvent.ptr, ID::View::UI_SELECTION, nullptr, "SelectionWidget" );
+							= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::SelectionView>( castedEvent.ptr, ID::View::UI_SELECTION, nullptr, "SelectionWidget" );
 						setWidget( item );
 					}
 					else if ( p_event.name == Event::Global::SELECTION_REMOVED )

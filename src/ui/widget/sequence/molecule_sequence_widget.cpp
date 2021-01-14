@@ -125,7 +125,7 @@ namespace VTX
 						chainNameWidget->setText( QString::fromStdString( Style::SEQUENCE_CHAIN_NAME_SEPARATOR + chain->getName() + Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
 						_chainLabelWidgets.emplace_back( chainNameWidget );
 
-						ChainSequenceWidget * const chainSequenceDisplay = WidgetFactory::get().instanciateWidget<ChainSequenceWidget>( this, "chainSequenceWidget" );
+						ChainSequenceWidget * const chainSequenceDisplay = WidgetFactory::get().instantiateWidget<ChainSequenceWidget>( this, "chainSequenceWidget" );
 						_chainDisplayWidgets.emplace_back( chainSequenceDisplay );
 
 						chainSequenceDisplay->setModel( chain );

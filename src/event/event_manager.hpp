@@ -26,7 +26,7 @@ namespace VTX
 {
 	namespace Event
 	{
-		class EventManager final : public Generic::BaseUpdatable, public Generic::BaseLocakble
+		class EventManager final : public Generic::BaseUpdatable, public Generic::BaseLockable
 		{
 		  public:
 			using SetBaseEventReceiverVTXPtr			 = std::set<BaseEventReceiverVTX *>;
@@ -56,10 +56,11 @@ namespace VTX
 
 		  private:
 			// Input events.
-			MapStringVectorBaseEventReceiverVTXPtr _receiversVTX	  = MapStringVectorBaseEventReceiverVTXPtr(); // VTX receivers mapped on event ID.
-			std::set<BaseEventReceiverKeyboard *>  _receiversKeyboard = std::set<BaseEventReceiverKeyboard *>();
-			std::set<BaseEventReceiverMouse *>	   _receiversMouse	  = std::set<BaseEventReceiverMouse *>();
-			std::set<BaseEventReceiverWheel *>	   _receiversWheel	  = std::set<BaseEventReceiverWheel *>();
+			MapStringVectorBaseEventReceiverVTXPtr _receiversVTX
+				= MapStringVectorBaseEventReceiverVTXPtr(); // VTX receivers mapped on event ID.
+			std::set<BaseEventReceiverKeyboard *> _receiversKeyboard = std::set<BaseEventReceiverKeyboard *>();
+			std::set<BaseEventReceiverMouse *>	  _receiversMouse	 = std::set<BaseEventReceiverMouse *>();
+			std::set<BaseEventReceiverWheel *>	  _receiversWheel	 = std::set<BaseEventReceiverWheel *>();
 
 			// Event queues.
 			std::queue<VTXEvent *>	_eventQueueVTX		= std::queue<VTXEvent *>();
@@ -77,6 +78,9 @@ namespace VTX
 		};
 	} // namespace Event
 
-	inline void VTX_EVENT( VTX::Event::VTXEvent * const p_event ) { Event::EventManager::get().fireEventVTX( p_event ); }
+	inline void VTX_EVENT( VTX::Event::VTXEvent * const p_event )
+	{
+		Event::EventManager::get().fireEventVTX( p_event );
+	}
 } // namespace VTX
 #endif

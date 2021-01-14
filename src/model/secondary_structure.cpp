@@ -158,7 +158,9 @@ namespace VTX
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 		}
 
-		void SecondaryStructure::_init()
+		void SecondaryStructure::_init() {}
+
+		void SecondaryStructure::_fillBuffer()
 		{
 			_buffer->setControlPointPositions( _bufferPositions );
 			_buffer->setControlPointDirections( _bufferDirections );
@@ -169,7 +171,9 @@ namespace VTX
 			_buffer->setIndices( _buffferIndices );
 		}
 
-		void SecondaryStructure::_instanciate3DViews() { _addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Ribbon>( this, ID::View::D3_RIBBON_PATCH ) ); }
+		void SecondaryStructure::_computeAABB() {}
+
+		void SecondaryStructure::_instantiate3DViews() { _addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Ribbon>( this, ID::View::D3_RIBBON_PATCH ) ); }
 
 		void SecondaryStructure::setCurrentFrame()
 		{

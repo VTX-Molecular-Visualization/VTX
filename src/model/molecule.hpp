@@ -207,9 +207,11 @@ namespace VTX
 			void createSecondaryStructure();
 
 		  protected:
-			void _computeGlobalPositionsAABB();
 			void _init() override;
-			void _instanciate3DViews() override;
+			void _fillBuffer() override;
+			void _computeAABB() override;
+			void _fillBufferAABB() override;
+			void _instantiate3DViews() override;
 
 			Molecule();
 			Molecule( const ID::VTX_ID & p_typeId );
