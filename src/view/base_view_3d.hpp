@@ -13,21 +13,19 @@
 #include "util/math.hpp"
 #include <type_traits>
 
-namespace VTX
+namespace VTX::View
 {
-	namespace View
+	template<typename T,
+			 typename = std::enable_if<std::is_base_of<Model::BaseModel3D<Buffer::BaseBufferOpenGL>, T>::value>>
+	class BaseView3D : public BaseView<T>, public Generic::BaseRenderable
 	{
-		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel3D<Buffer::BaseBufferOpenGL>, T>::value>>
-		class BaseView3D : public BaseView<T>, public Generic::BaseRenderable
-		{
-		  public:
-		  protected:
-			Renderer::GLSL::Program * _program = nullptr;
+	  public:
+	  protected:
+		Renderer::GL::Program * _program = nullptr;
 
-			explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
-			virtual ~BaseView3D() = default;
-			inline OpenGLFunctions * const _gl() { return _model->getBuffer()->gl(); }
-		};
-	} // namespace View
-} // namespace VTX
+		explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
+		virtual ~BaseView3D() = default;
+		inline OpenGLFunctions * const _gl() { return _model->getBuffer()->gl(); }
+	};
+} // namespace VTX::View
 #endif

@@ -7,34 +7,30 @@
 
 #include "base_pass.hpp"
 
-namespace VTX
+namespace VTX::Renderer::GL::Pass
 {
-	namespace Renderer
+	class Geometric : public BasePass
 	{
-		namespace Pass
+	  public:
+		Geometric( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
+		virtual ~Geometric();
+		virtual void init( ProgramManager &, const uint, const uint ) override;
+		virtual void resize( const uint, const uint ) override;
+		virtual void render( const Object3D::Scene &, const GL & ) override;
+
+		inline const GLuint & getViewPositionsNormalsCompressedTexture() const
 		{
-			class Geometric : public BasePass
-			{
-			  public:
-				Geometric( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
-				virtual ~Geometric();
-				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
-				virtual void resize( const uint, const uint ) override;
-				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
+			return _viewPositionsNormalsCompressedTexture;
+		}
+		inline const GLuint & getColorsTexture() const { return _colorsTexture; }
+		inline const GLuint & getDepthTexture() const { return _depthTexture; }
 
-				inline const GLuint & getViewPositionsNormalsCompressedTexture() const { return _viewPositionsNormalsCompressedTexture; }
-				inline const GLuint & getColorsTexture() const { return _colorsTexture; }
-				inline const GLuint & getDepthTexture() const { return _depthTexture; }
-
-			  private:
-				GLuint _fbo									  = GL_INVALID_VALUE;
-				GLuint _viewPositionsNormalsCompressedTexture = GL_INVALID_VALUE;
-				GLuint _colorsTexture						  = GL_INVALID_VALUE;
-				GLuint _depthTexture						  = GL_INVALID_VALUE;
-			};
-		} // namespace Pass
-
-	} // namespace Renderer
-} // namespace VTX
+	  private:
+		GLuint _fbo									  = GL_INVALID_VALUE;
+		GLuint _viewPositionsNormalsCompressedTexture = GL_INVALID_VALUE;
+		GLuint _colorsTexture						  = GL_INVALID_VALUE;
+		GLuint _depthTexture						  = GL_INVALID_VALUE;
+	};
+} // namespace VTX::Renderer::GL::Pass
 
 #endif

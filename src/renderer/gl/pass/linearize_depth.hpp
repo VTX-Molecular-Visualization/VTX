@@ -7,32 +7,25 @@
 
 #include "base_pass.hpp"
 
-namespace VTX
+namespace VTX::Renderer::GL::Pass
 {
-	namespace Renderer
+	class LinearizeDepth : public BasePass
 	{
-		namespace Pass
-		{
-			class LinearizeDepth : public BasePass
-			{
-			  public:
-				LinearizeDepth( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
-				virtual ~LinearizeDepth();
-				virtual void init( GLSL::ProgramManager &, const uint, const uint ) override;
-				virtual void resize( const uint, const uint ) override;
-				virtual void render( const Object3D::Scene &, const Renderer::GL & ) override;
+	  public:
+		LinearizeDepth( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
+		virtual ~LinearizeDepth();
+		virtual void init( ProgramManager &, const uint, const uint ) override;
+		virtual void resize( const uint, const uint ) override;
+		virtual void render( const Object3D::Scene &, const GL & ) override;
 
-				inline const GLuint & getTexture() const { return _texture; }
+		inline const GLuint & getTexture() const { return _texture; }
 
-			  private:
-				GLSL::Program * _program	  = nullptr;
-				GLuint			_fbo		  = GL_INVALID_VALUE;
-				GLuint			_texture	  = GL_INVALID_VALUE;
-				GLint			_uClipInfoLoc = GL_INVALID_INDEX;
-			};
-		} // namespace Pass
-
-	} // namespace Renderer
-} // namespace VTX
+	  private:
+		Program * _program		= nullptr;
+		GLuint	  _fbo			= GL_INVALID_VALUE;
+		GLuint	  _texture		= GL_INVALID_VALUE;
+		GLint	  _uClipInfoLoc = GL_INVALID_INDEX;
+	};
+} // namespace VTX::Renderer::GL::Pass
 
 #endif

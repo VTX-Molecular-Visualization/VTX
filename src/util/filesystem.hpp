@@ -30,8 +30,8 @@ namespace VTX
 
 			inline const Path getCurrentDir()
 			{
-				char buff[ FILENAME_MAX ];
-				GetCurrentDir( buff, FILENAME_MAX );
+				char * buff;
+				buff = GetCurrentDir( 0, NULL );
 				Path currentWorkingDir( buff );
 				return currentWorkingDir;
 			}
