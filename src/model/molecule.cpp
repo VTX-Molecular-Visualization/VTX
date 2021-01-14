@@ -68,10 +68,10 @@ namespace VTX
 			}
 		}
 
-		void Molecule::_instanciate3DViews()
+		void Molecule::_instantiate3DViews()
 		{
-			_addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
-			_addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
+			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
+			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
 		}
 
 		void Molecule::setFrame( const uint p_frameIdx )

@@ -173,7 +173,7 @@ namespace VTX
 
 		void SecondaryStructure::_computeAABB() {}
 
-		void SecondaryStructure::_instanciate3DViews() { _addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Ribbon>( this, ID::View::D3_RIBBON_PATCH ) ); }
+		void SecondaryStructure::_instantiate3DViews() { _addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Ribbon>( this, ID::View::D3_RIBBON_PATCH ) ); }
 
 		void SecondaryStructure::setCurrentFrame()
 		{

@@ -47,7 +47,7 @@ namespace VTX
 
 				_fillBuffer();
 
-				_instanciate3DViews();
+				_instantiate3DViews();
 
 				_isInit = true;
 				_notifyViews( new Event::VTXEvent( Event::Model::INIT ) );
@@ -72,10 +72,25 @@ namespace VTX
 			virtual void _init() {}; // Facultative pass.
 			virtual void _fillBuffer()		   = 0;
 			virtual void _computeAABB()		   = 0;
-			virtual void _instanciate3DViews() = 0;
+			virtual void _instantiate3DViews() = 0;
 			inline void	 _addRenderable( Generic::BaseRenderable * const p_renderable ) { _renderables.push_back( p_renderable ); }
 
-			virtual void _fillBufferAABB() {}
+			virtual void _fillBufferAABB()
+			{
+				const Vec3f & min = _aabb.getMin();
+				const Vec3f & max = _aabb.getMax();
+
+				std::vector<Vec3f> aabbCorners = std::vector<Vec3f>( { min,
+																	   Vec3f( max.x, min.y, min.z ),
+																	   Vec3f( max.x, max.y, min.z ),
+																	   Vec3f( min.x, max.y, min.z ),
+																	   Vec3f( min.x, min.y, max.z ),
+																	   Vec3f( max.x, min.y, max.z ),
+																	   max,
+																	   Vec3f( min.x, max.y, max.z ) } );
+
+				std::vector<uint> aabbIndices = std::vector<uint>( { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 } );
+			}
 		};
 	} // namespace Model
 } // namespace VTX

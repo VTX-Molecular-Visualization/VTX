@@ -35,7 +35,7 @@ namespace VTX
 						const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
 						// Set no parent to not trigger ItemChange event during init
-						View::UI::Widget::MoleculeSceneView * const moleculeWidget = WidgetFactory::get().instanciateViewWidget<View::UI::Widget::MoleculeSceneView>(
+						View::UI::Widget::MoleculeSceneView * const moleculeWidget = WidgetFactory::get().instantiateViewWidget<View::UI::Widget::MoleculeSceneView>(
 							castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, _scrollAreaContent, "moleculeSceneView" );
 
 						_addWidgetInLayout( moleculeWidget );
@@ -58,7 +58,7 @@ namespace VTX
 							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>( p_event );
 
 						View::UI::Widget::RepresentationSceneView * const representationSceneWidget
-							= WidgetFactory::get().instanciateViewWidget<View::UI::Widget::RepresentationSceneView>(
+							= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::RepresentationSceneView>(
 								castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION, _scrollAreaContent, "representationSceneView" );
 
 						_addWidgetInLayout( representationSceneWidget );

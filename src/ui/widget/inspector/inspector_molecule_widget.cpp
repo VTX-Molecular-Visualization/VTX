@@ -26,7 +26,7 @@ namespace VTX
 					mainLayout->setContentsMargins( 0, 0, 0, 0 );
 					mainLayout->setSpacing( 1 );
 
-					_mainWidget = WidgetFactory::get().instanciateWidget<CustomWidget::CollapsingHeaderWidget>( this, "inspector_item" );
+					_mainWidget = WidgetFactory::get().instantiateWidget<CustomWidget::CollapsingHeaderWidget>( this, "inspector_item" );
 					_mainWidget->setContentsMargins( 0, 0, 0, 0 );
 					_mainWidget->setHeaderHeight( Style::INSPECTOR_HEADER_HEIGHT );
 
@@ -35,7 +35,7 @@ namespace VTX
 					QVBoxLayout * contentLayout = new QVBoxLayout( mainContent );
 					contentLayout->setContentsMargins( 0, 0, 0, 0 );
 
-					_infoSection   = WidgetFactory::get().instanciateWidget<InspectorSection>( this, "inspector_item_section" );
+					_infoSection   = WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
 					_fullnameLabel = new QLabel( this );
 					_fullnameLabel->setWordWrap( true );
 					_infoSection->appendField( "Full Name", _fullnameLabel );

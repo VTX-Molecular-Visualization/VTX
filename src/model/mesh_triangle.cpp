@@ -30,7 +30,7 @@ namespace VTX
 			}
 		}
 
-		void MeshTriangle::_instanciate3DViews() { _addRenderable( MVC::MvcManager::get().instanciateView<View::D3::Triangle>( this, ID::View::D3_TRIANGLE ) ); }
+		void MeshTriangle::_instantiate3DViews() { _addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Triangle>( this, ID::View::D3_TRIANGLE ) ); }
 
 		void MeshTriangle::print() const
 		{

@@ -104,7 +104,7 @@ namespace VTX
 						chainNameWidget->setFont( Style::SEQUENCE_DISPLAY_FONT );
 						chainNameWidget->setText( QString::fromStdString( Style::SEQUENCE_CHAIN_NAME_SEPARATOR + chain->getName() + Style::SEQUENCE_CHAIN_NAME_SEPARATOR ) );
 
-						ChainSequenceWidget * const chainSequenceDisplay = WidgetFactory::get().instanciateWidget<ChainSequenceWidget>( this, "chainSequenceWidget" );
+						ChainSequenceWidget * const chainSequenceDisplay = WidgetFactory::get().instantiateWidget<ChainSequenceWidget>( this, "chainSequenceWidget" );
 						_chainDisplayWidgets.emplace_back( chainSequenceDisplay );
 
 						chainSequenceDisplay->setModel( chain );

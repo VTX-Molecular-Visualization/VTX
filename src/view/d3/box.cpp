@@ -8,7 +8,7 @@ namespace VTX
 	{
 		namespace D3
 		{
-			Box::Box( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model )
+			Box::Box( Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const p_model ) : BaseView3D( p_model )
 			{
 				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
 
@@ -19,7 +19,7 @@ namespace VTX
 				_uProjMatrixLoc		 = _gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
 			}
 
-			void Box::render( const Model::Representation::InstantiatedRepresentation * const p_representation )
+			void Box::render()
 			{
 				_program->use();
 

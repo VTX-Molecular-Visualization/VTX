@@ -22,24 +22,24 @@ namespace VTX
 						MenuToolBlockWidget::_setupUi( p_name );
 
 						// Selection actions 1
-						_copy = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "copySelectionButton" );
+						_copy = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "copySelectionButton" );
 						_copy->setData( "Copy", ":/sprite/copy_selection_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_copy, 0 );
 
-						_extract = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "extractSelectionButton" );
+						_extract = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "extractSelectionButton" );
 						_extract->setData( "Extract", ":/sprite/extract_selection_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_extract, 0 );
 
-						_delete = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "deleteSelectionButton" );
+						_delete = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "deleteSelectionButton" );
 						_delete->setData( "Delete", ":/sprite/delete_selection_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_delete, 0 );
 
 						// Visibility actions
-						_show = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "showSelectionButton" );
+						_show = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "showSelectionButton" );
 						_show->setData( "Show", ":/sprite/show_selection_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_show, 1 );
 
-						_hide = WidgetFactory::get().instanciateWidget<MenuToolButtonWidget>( this, "hideSelectionButton" );
+						_hide = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "hideSelectionButton" );
 						_hide->setData( "Hide", ":/sprite/hide_selection_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_hide, 1 );
 

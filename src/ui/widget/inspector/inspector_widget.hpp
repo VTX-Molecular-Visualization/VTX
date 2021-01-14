@@ -57,7 +57,7 @@ namespace VTX
 							 typename = std::enable_if<std::is_base_of<View::UI::Widget::BaseWidgetView<M, ViewItemWidget<M>>, V>::value>>
 					void _addInspectorView( M * const p_model, const ID::VTX_ID & m_viewId )
 					{
-						V * const		inspectorView = MVC::MvcManager::get().instanciateViewWidget<V>( p_model, m_viewId, this );
+						V * const		inspectorView = MVC::MvcManager::get().instantiateViewWidget<V>( p_model, m_viewId, this );
 						QWidget * const widget		  = inspectorView->getWidget();
 
 						_inspectorViewsData.emplace_back( ViewData( p_model->getId(), m_viewId, widget ) );

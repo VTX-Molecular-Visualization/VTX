@@ -60,7 +60,7 @@ namespace VTX
 			void _init() override;
 			void _computeAABB() override;
 			void _fillBuffer() override;
-			void _instanciate3DViews() override;
+			void _instantiate3DViews() override;
 		};
 	} // namespace Model
 } // namespace VTX

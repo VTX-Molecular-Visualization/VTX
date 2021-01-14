@@ -76,6 +76,16 @@ namespace VTX
 				gl()->glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 			}
 
+			void setAABBCorners( const std::vector<Vec3f> & p_positions )
+			{
+				gl()->glNamedBufferData( _vboAABB, sizeof( Vec3f ) * GLsizei( p_positions.size() ), p_positions.data(), GL_STATIC_DRAW );
+			}
+
+			void setAABBIndices( const std::vector<uint> & p_indices )
+			{
+				gl()->glNamedBufferData( _iboAABB, sizeof( uint ) * GLsizei( p_indices.size() ), p_indices.data(), GL_STATIC_DRAW );
+			}
+
 			virtual void bind()	  = 0;
 			virtual void unbind() = 0;
 

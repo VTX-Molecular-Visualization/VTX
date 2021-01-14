@@ -32,7 +32,7 @@ namespace VTX
 				  protected:
 					BaseWidgetView( M * const p_model, const std::string & p_widgetName, QWidget * const p_parent = nullptr ) : View::BaseView<M>( p_model )
 					{
-						_widget = VTX::UI::WidgetFactory::get().instanciateWidget<W>( p_parent, p_widgetName );
+						_widget = VTX::UI::WidgetFactory::get().instantiateWidget<W>( p_parent, p_widgetName );
 						_widget->setModel( p_model );
 					};
 					~BaseWidgetView() { delete _widget; };
