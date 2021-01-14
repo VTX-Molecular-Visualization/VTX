@@ -23,9 +23,10 @@ namespace VTX
 		{
 			// Create controller.
 			addItem( ID::Controller::FREEFLY, new Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
-			addItem(
-				ID::Controller::TRACKBALL,
-				new Controller::Trackball( VTXApp::get().getScene().getCamera(), VTXApp::get().getScene().getAABB().centroid(), VTXApp::get().getScene().getAABB().diameter() ) );
+			addItem( ID::Controller::TRACKBALL,
+					 new Controller::Trackball( VTXApp::get().getScene().getCamera(),
+												VTXApp::get().getScene().getAABB().centroid(),
+												VTXApp::get().getScene().getAABB().diameter() ) );
 			addItem( ID::Controller::SHORTCUT, new Controller::Shortcut() );
 
 			if ( _cameraController == ID::Controller::FREEFLY )
@@ -110,7 +111,9 @@ namespace VTX
 				const Controller::Freefly * const freefly = getItem<Controller::Freefly>( ID::Controller::FREEFLY );
 				if ( freefly->isOrienting() )
 				{
-					getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->setDistance( Util::Math::distance( p_aabb.centroid(), freefly->getOrientTargetPosition() ) );
+					getItem<Controller::Trackball>( ID::Controller::TRACKBALL )
+						->setDistanceForced(
+							Util::Math::distance( p_aabb.centroid(), freefly->getOrientTargetPosition() ) );
 				}
 			}
 		}

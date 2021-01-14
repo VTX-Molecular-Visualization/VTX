@@ -10,14 +10,14 @@ namespace VTX
 			BaseController::setActive( p_active );
 			if ( p_active )
 			{
-				_target = _camera.getPosition() + _camera.getFront() * _distance;
+				_target = _camera.getPosition() + _camera.getFront() * _distanceForced;
 			}
 			else
 			{
 				_velocity = VEC3F_ZERO;
 				// Save distance to force at next setActive(true).
 				// If orient is called in Freefly, the distance is overriden.
-				_distance = Util::Math::distance( _camera.getPosition(), _target );
+				_distanceForced = Util::Math::distance( _camera.getPosition(), _target );
 			}
 		}
 
@@ -109,7 +109,8 @@ namespace VTX
 			if ( deltaVelocity != VEC3F_ZERO )
 			{
 				_velocity.x += VTX_SETTING().rotationSpeed * deltaVelocity.x;
-				_velocity.y += VTX_SETTING().rotationSpeed * deltaVelocity.y * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f );
+				_velocity.y
+					+= VTX_SETTING().rotationSpeed * deltaVelocity.y * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f );
 				_velocity.z += VTX_SETTING().rotationSpeed * deltaVelocity.z;
 			}
 
@@ -119,10 +120,10 @@ namespace VTX
 			if ( _needUpdate )
 			{
 				float distance = 0.f;
-				if ( _distance != 0.f )
+				if ( _distanceForced != 0.f )
 				{
-					distance  = Util::Math::clamp( _distance - deltaDistance, 0.1f, 10000.f );
-					_distance = 0.f;
+					distance		= Util::Math::clamp( _distanceForced - deltaDistance, 0.1f, 10000.f );
+					_distanceForced = 0.f;
 				}
 				else
 				{
@@ -145,9 +146,11 @@ namespace VTX
 		{
 			if ( _velocity != VEC3F_ZERO )
 			{
-				_velocity = Util::Math::linearInterpolation( _velocity, VEC3F_ZERO, p_deltaTime * Setting::CONTROLLER_ELASTICITY_FACTOR );
+				_velocity = Util::Math::linearInterpolation(
+					_velocity, VEC3F_ZERO, p_deltaTime * Setting::CONTROLLER_ELASTICITY_FACTOR );
 
-				Vec3f::bool_type res = Util::Math::lessThan( Util::Math::abs( _velocity ), Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
+				Vec3f::bool_type res = Util::Math::lessThan( Util::Math::abs( _velocity ),
+															 Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
 				if ( !_mouseLeftPressed && res.x && res.y && res.z )
 				{
 					_velocity = VEC3F_ZERO;
@@ -158,7 +161,8 @@ namespace VTX
 		void Trackball::reset()
 		{
 			_needUpdate			   = true;
-			const Vec3f defaultPos = -CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
+			const Vec3f defaultPos = -CAMERA_FRONT_DEFAULT * VTXApp::get().getScene().getAABB().radius()
+									 / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
 			_camera.setPosition( defaultPos );
 			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
 			_target	  = VTXApp::get().getScene().getAABB().centroid();
@@ -172,14 +176,15 @@ namespace VTX
 			_velocity				= VEC3F_ZERO;
 			_orientStartingDistance = Util::Math::distance( _camera.getPosition(), _target );
 			_orientTargetDistance	= p_aabb.radius() / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
-			_isOrienting			= Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
+			_isOrienting = Util::Math::distance( _orientStartingPosition, _orientTargetPosition ) > ORIENT_THRESHOLD
 						   || abs( _orientTargetDistance - _orientStartingDistance ) > ORIENT_THRESHOLD;
 		}
 
 		void Trackball::_updateOrient( const float & p_deltaTime )
 		{
-			_target		   = Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime );
-			float distance = Util::Math::easeInOutInterpolation( _orientStartingDistance, _orientTargetDistance, p_deltaTime );
+			_target = Util::Math::easeInOutInterpolation( _orientStartingPosition, _orientTargetPosition, p_deltaTime );
+			float distance
+				= Util::Math::easeInOutInterpolation( _orientStartingDistance, _orientTargetDistance, p_deltaTime );
 			_camera.rotateAround( QUATF_ID, _target, distance );
 		}
 
