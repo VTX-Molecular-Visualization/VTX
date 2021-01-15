@@ -4,42 +4,28 @@
 
 namespace VTX::View::D3
 {
-	Sphere::Sphere( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model )
+	Renderer::GL::Program * const Sphere::_createProgram( Renderer::GL::ProgramManager & p_pm )
 	{
-		Renderer::GL::ProgramManager & pm = VTXApp::get().getProgramManager();
-		_program = pm.createProgram( "Sphere", { "sphere.vert", "sphere.geom", "sphere.frag" } );
-
-		assert( _program != nullptr );
-		_uModelViewMatrixLoc = _gl()->glGetUniformLocation( _program->getId(), "uMVMatrix" );
-		_uProjMatrixLoc		 = _gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
-		_uRadiusFixedLoc	 = _gl()->glGetUniformLocation( _program->getId(), "uRadiusFixed" );
-		_uRadiusAddLoc		 = _gl()->glGetUniformLocation( _program->getId(), "uRadiusAdd" );
-		_uIsRadiusFixedLoc	 = _gl()->glGetUniformLocation( _program->getId(), "uIsRadiusFixed" );
+		return p_pm.createProgram( "Sphere", { "sphere.vert", "sphere.geom", "sphere.frag" } );
 	}
 
-	void Sphere::render( const Model::Representation::InstantiatedRepresentation * const p_representation )
+	void Sphere::_createUniforms()
+	{
+		_uRadiusFixedLoc   = _gl()->glGetUniformLocation( _program->getId(), "u_radiusFixed" );
+		_uRadiusAddLoc	   = _gl()->glGetUniformLocation( _program->getId(), "u_radiusAdd" );
+		_uIsRadiusFixedLoc = _gl()->glGetUniformLocation( _program->getId(), "u_isRadiusFixed" );
+	}
+
+	void Sphere::_render( const Model::Representation::InstantiatedRepresentation * const p_representation )
 	{
 		if ( !p_representation->hasToDrawSphere() )
 			return;
 
 		const Model::Representation::SphereData sphereData = p_representation->getSphereData();
-		_isRadiusFixed									   = sphereData._isRadiusFixed;
-		_radiusFixed									   = sphereData._radiusFixed;
-		_radiusAdd										   = sphereData._radiusAdd;
 
-		_program->use();
-
-		// TODO: do not upadte each frame !
-		const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
-		_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc,
-								   1,
-								   GL_FALSE,
-								   Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
-		_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
-
-		_gl()->glUniform1f( _uRadiusFixedLoc, _radiusFixed );
-		_gl()->glUniform1f( _uRadiusAddLoc, _radiusAdd );
-		_gl()->glUniform1ui( _uIsRadiusFixedLoc, _isRadiusFixed );
+		_gl()->glUniform1f( _uRadiusFixedLoc, sphereData._isRadiusFixed );
+		_gl()->glUniform1f( _uRadiusAddLoc, sphereData._radiusAdd );
+		_gl()->glUniform1ui( _uIsRadiusFixedLoc, sphereData._radiusFixed );
 
 		for ( const std::pair<uint, uint> & pair : _model->getRepresentationAtoms( p_representation ) )
 		{

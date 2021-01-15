@@ -4,8 +4,10 @@
 
 namespace VTX::View::D3
 {
-	Ribbon::Ribbon( Model::SecondaryStructure * const p_model ) : BaseView3D( p_model )
+	void Ribbon::_init()
 	{
+		BaseView3D::_init();
+
 		GLint maxPatchVertices = 0;
 		GLint maxTessGenLevel  = 0;
 
@@ -15,34 +17,27 @@ namespace VTX::View::D3
 
 		VTX_DEBUG( "Max supported patch vertices: " + std::to_string( maxPatchVertices ) );
 		VTX_DEBUG( "Max supported tessellation levels: " + std::to_string( maxTessGenLevel ) );
-
-		Renderer::GL::ProgramManager & pm = VTXApp::get().getProgramManager();
-
-		_program = pm.createProgram(
-			"Ribbon", { "ribbon_patch.vert", "ribbon_patch.tesc", "ribbon_patch.tese", "ribbon_patch.frag" } );
-
-		assert( _program != nullptr );
-		_uCamPositionLoc	 = _gl()->glGetUniformLocation( _program->getId(), "u_camPosition" );
-		_uModelViewMatrixLoc = _gl()->glGetUniformLocation( _program->getId(), "u_MVMatrix" );
-		_uProjMatrixLoc		 = _gl()->glGetUniformLocation( _program->getId(), "u_projMatrix" );
-		_uNormalMatrixLoc	 = _gl()->glGetUniformLocation( _program->getId(), "u_normalMatrix" );
-		_uMaxIndice			 = _gl()->glGetUniformLocation( _program->getId(), "u_maxIndice" );
 	}
 
-	void Ribbon::render()
+	Renderer::GL::Program * const Ribbon::_createProgram( Renderer::GL::ProgramManager & p_pm )
 	{
-		_program->use();
+		return p_pm.createProgram(
+			"Ribbon", { "ribbon_patch.vert", "ribbon_patch.tesc", "ribbon_patch.tese", "ribbon_patch.frag" } );
+	}
 
-		// TODO: do not upadte each frame !
-		const Object3D::Camera & cam	  = VTXApp::get().getScene().getCamera();
-		const Mat4f				 MVMatrix = cam.getViewMatrix() * _model->getMolecule()->getTransform().get();
-		_gl()->glUniform3fv( _uCamPositionLoc, 1, (const GLfloat *)Util::Math::value_ptr( cam.getPosition() ) );
-		_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
-		_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
-		_gl()->glUniformMatrix4fv( _uNormalMatrixLoc,
-								   1,
-								   GL_FALSE,
-								   Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
+	void Ribbon::_createUniforms()
+	{
+		_uCamPositionLoc = _gl()->glGetUniformLocation( _program->getId(), "u_camPosition" );
+		_uMaxIndiceLoc	 = _gl()->glGetUniformLocation( _program->getId(), "u_maxIndice" );
+	}
+
+	void Ribbon::_render()
+	{
+		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+		{
+			const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
+			_gl()->glUniform3fv( _uCamPositionLoc, 1, (const GLfloat *)Util::Math::value_ptr( cam.getPosition() ) );
+		}
 
 		for ( const std::pair<const Model::Representation::InstantiatedRepresentation *,
 							  VTX::Representation::RepresentationTarget> representationData :
@@ -53,7 +48,7 @@ namespace VTX::View::D3
 
 			for ( const std::pair<uint, uint> & ribbonData : representationData.second.getRibbons() )
 			{
-				_gl()->glUniform1ui( _uMaxIndice, ribbonData.second / 2u );
+				_gl()->glUniform1ui( _uMaxIndiceLoc, ribbonData.second / 2u );
 				_gl()->glDrawElements(
 					GL_PATCHES, ribbonData.second, GL_UNSIGNED_INT, (void *)( ribbonData.first * sizeof( uint ) ) );
 			}

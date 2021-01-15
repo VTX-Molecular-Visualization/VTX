@@ -19,15 +19,12 @@ namespace VTX
 				VTX_VIEW
 
 			  public:
-				void render() override;
+			  protected:
+				void						  _render() override;
+				Renderer::GL::Program * const _createProgram( Renderer::GL::ProgramManager & ) override;
 
 			  private:
-				// Uniforms.
-				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
-				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
-				GLint _uNormalMatrixLoc	   = GL_INVALID_INDEX;
-
-				explicit Triangle( Model::MeshTriangle * const p_model );
+				explicit Triangle( Model::MeshTriangle * const p_model ) : BaseView3D( p_model ) {}
 			};
 		} // namespace D3
 	}	  // namespace View

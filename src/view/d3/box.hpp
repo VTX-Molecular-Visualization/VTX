@@ -17,14 +17,13 @@ namespace VTX
 			class Box : public BaseView3D<Model::BaseModel3D<Buffer::BaseBufferOpenGL>>
 			{
 				VTX_VIEW
-			  public:
-				void render() override;
+
+			  protected:
+				void						  _init() override;
+				void						  _render() override;
+				Renderer::GL::Program * const _createProgram( Renderer::GL::ProgramManager & ) override;
 
 			  private:
-				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
-				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
-				GLint _uNormalMatrixLoc	   = GL_INVALID_INDEX;
-
 				explicit Box( Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const );
 			};
 		} // namespace D3

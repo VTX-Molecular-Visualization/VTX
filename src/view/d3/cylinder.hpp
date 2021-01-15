@@ -17,7 +17,11 @@ namespace VTX
 			{
 				VTX_VIEW
 
-				void render( const Model::Representation::InstantiatedRepresentation * const ) override;
+			  public:
+			  protected:
+				Renderer::GL::Program * const _createProgram( Renderer::GL::ProgramManager & ) override;
+				void						  _createUniforms() override;
+				void _render( const Model::Representation::InstantiatedRepresentation * const ) override;
 
 			  private:
 				// Uniforms.
@@ -25,7 +29,7 @@ namespace VTX
 				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
 				GLint _uRadiusLoc		   = GL_INVALID_INDEX;
 
-				explicit Cylinder( Model::Molecule * const p_model );
+				explicit Cylinder( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 			};
 		} // namespace D3
 	}	  // namespace View

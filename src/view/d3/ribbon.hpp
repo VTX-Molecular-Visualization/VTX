@@ -19,16 +19,17 @@ namespace VTX
 				VTX_VIEW
 
 			  public:
-				void render() override;
+			  protected:
+				void						  _init() override;
+				void						  _render() override;
+				Renderer::GL::Program * const _createProgram( Renderer::GL::ProgramManager & ) override;
+				void						  _createUniforms() override;
 
 			  private:
-				GLint _uCamPositionLoc	   = GL_INVALID_INDEX;
-				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
-				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
-				GLint _uNormalMatrixLoc	   = GL_INVALID_INDEX;
-				GLint _uMaxIndice		   = GL_INVALID_INDEX;
+				GLint _uCamPositionLoc = GL_INVALID_INDEX;
+				GLint _uMaxIndiceLoc   = GL_INVALID_INDEX;
 
-				explicit Ribbon( Model::SecondaryStructure * const p_model );
+				explicit Ribbon( Model::SecondaryStructure * const p_model ) : BaseView3D( p_model ) {}
 			};
 		} // namespace D3
 	}	  // namespace View

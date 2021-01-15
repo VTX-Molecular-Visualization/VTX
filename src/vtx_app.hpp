@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "renderer/gl/program_manager.hpp"
 #include "setting.hpp"
 #include "stat.hpp"
 #include "ui/main_window.hpp"
@@ -58,6 +59,8 @@ namespace VTX
 		inline const State::StateMachine & getStateMachine() const { return *_stateMachine; }
 
 		bool notify( QObject * const, QEvent * const ) override;
+
+		VTX_MASK MASK = 0;
 
 	  private:
 		QTimer *		_timer		  = nullptr;

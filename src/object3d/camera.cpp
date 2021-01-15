@@ -9,7 +9,8 @@ namespace VTX
 		// TODO? (20_05_27): _near, _far, _fov must be initialized in cpp because setting.hpp cannot be included in hpp
 		Camera::Camera() :
 			_near( Util::Math::max( 1e-1f, VTX_SETTING().cameraNear ) ), // Avoid to little value.
-			_far( Util::Math::max( _near, VTX_SETTING().cameraFar ) ), _fov( VTX_SETTING().cameraFov ), _isPerspective( VTX_SETTING().cameraPerspective )
+			_far( Util::Math::max( _near, VTX_SETTING().cameraFar ) ), _fov( VTX_SETTING().cameraFov ),
+			_isPerspective( VTX_SETTING().cameraPerspective )
 		{
 			_updateRotation();
 		}
@@ -87,7 +88,11 @@ namespace VTX
 			_updateViewMatrix();
 		}
 
-		void Camera::_updateViewMatrix() { _viewMatrix = Util::Math::lookAt( _position, _position + _front, _up ); }
+		void Camera::_updateViewMatrix()
+		{
+			_viewMatrix = Util::Math::lookAt( _position, _position + _front, _up );
+			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
+		}
 
 		void Camera::_updateProjectionMatrix()
 		{
@@ -99,6 +104,8 @@ namespace VTX
 			//{
 			//	// TODO !
 			//}
+
+			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 		}
 
 		void Camera::print() const

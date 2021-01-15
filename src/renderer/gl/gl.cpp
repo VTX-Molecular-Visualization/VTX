@@ -118,6 +118,11 @@ namespace VTX::Renderer::GL
 
 	void GL::renderFrame( const Object3D::Scene & p_scene )
 	{
+		if ( !VTXApp::get().MASK )
+		{
+			return;
+		}
+
 		gl()->glViewport( 0, 0, _width, _height );
 
 		// TODO: do not change each frame
@@ -155,6 +160,8 @@ namespace VTX::Renderer::GL
 		{
 			_passFXAA->render( p_scene, *this );
 		}
+
+		VTXApp::get().MASK = 0;
 	};
 
 	void GL::setShading() { _passShading->set(); }

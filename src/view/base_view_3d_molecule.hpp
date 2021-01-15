@@ -17,23 +17,23 @@ namespace VTX
 	{
 		class BaseView3DMolecule : public BaseView3D<Model::Molecule>
 		{
-		  public:
-			inline void render() override
-			{
-				// Render atoms.
-
-				for ( const std::pair<const Model::Representation::InstantiatedRepresentation *, VTX::Representation::RepresentationTarget> representationData :
-					  _model->getRepresentationData() )
-				{
-					render( representationData.first );
-				}
-			}
-
-			virtual void render( const Model::Representation::InstantiatedRepresentation * const ) = 0;
-
 		  protected:
 			explicit BaseView3DMolecule( Model::Molecule * const p_model ) : BaseView3D( p_model ) {}
 			virtual ~BaseView3DMolecule() {}
+
+			inline void _render() override
+			{
+				// Render atoms.
+
+				for ( const std::pair<const Model::Representation::InstantiatedRepresentation *,
+									  VTX::Representation::RepresentationTarget> representationData :
+					  _model->getRepresentationData() )
+				{
+					_render( representationData.first );
+				}
+			}
+
+			virtual void _render( const Model::Representation::InstantiatedRepresentation * const ) = 0;
 		};
 	} // namespace View
 } // namespace VTX
