@@ -13,7 +13,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_noiseTexture );
 	}
 
-	void SSAO::init( ProgramManager & p_programManager, const uint p_width, const uint p_height )
+	void SSAO::init( const uint p_width, const uint p_height )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
@@ -26,7 +26,7 @@ namespace VTX::Renderer::GL::Pass
 
 		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 
-		_program = p_programManager.createProgram( "SSAO", { "shading/ssao.frag" } );
+		_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { "shading/ssao.frag" } );
 
 		_uProjMatrixLoc	 = gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
 		_uAoKernelLoc	 = gl()->glGetUniformLocation( _program->getId(), "uAoKernel" );

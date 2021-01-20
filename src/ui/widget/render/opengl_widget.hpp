@@ -23,7 +23,6 @@ namespace VTX
 		namespace GL
 		{
 			class GL;
-			class ProgramManager;
 		} // namespace GL
 		class RayTracer;
 #ifdef OPTIX_DEFINED
@@ -42,15 +41,10 @@ namespace VTX
 			OpenGLWidget( QWidget * p_parent = 0 );
 			~OpenGLWidget();
 
-			inline Renderer::BaseRenderer &				getRenderer() { return *_renderer; }
-			inline const Renderer::BaseRenderer &		getRenderer() const { return *_renderer; }
-			inline Renderer::GL::GL &					getRendererGL() { return *_rendererGL; }
-			inline const Renderer::GL::GL &				getRendererGL() const { return *_rendererGL; }
-			inline Renderer::GL::ProgramManager &		getProgramManager() { return _renderer->getProgramManager(); }
-			inline const Renderer::GL::ProgramManager & getProgramManager() const
-			{
-				return _renderer->getProgramManager();
-			}
+			inline Renderer::BaseRenderer &		  getRenderer() { return *_renderer; }
+			inline const Renderer::BaseRenderer & getRenderer() const { return *_renderer; }
+			inline Renderer::GL::GL &			  getRendererGL() { return *_rendererGL; }
+			inline const Renderer::GL::GL &		  getRendererGL() const { return *_rendererGL; }
 
 			void initializeGL() override;
 			void paintGL() override;

@@ -11,7 +11,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_depthTexture );
 	}
 
-	void Geometric::init( ProgramManager & p_programManager, const uint p_width, const uint p_height )
+	void Geometric::init( const uint p_width, const uint p_height )
 	{
 		// TODO: Only when using point sprites.
 		/*glEnable( GL_PROGRAM_POINT_SIZE );
@@ -92,11 +92,11 @@ namespace VTX::Renderer::GL::Pass
 
 		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 		{
-			pair.first->render();
+			pair.first->render( p_scene.getCamera() );
 		}
 		for ( const Object3D::Scene::MeshTrianglePtr & mesh : p_scene.getMeshes() )
 		{
-			mesh->render();
+			mesh->render( p_scene.getCamera() );
 		}
 
 		gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );

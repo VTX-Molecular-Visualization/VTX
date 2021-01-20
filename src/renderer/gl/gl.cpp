@@ -58,14 +58,14 @@ namespace VTX::Renderer::GL
 		BaseRenderer::resize( p_width, p_height );
 
 		// Init pass.
-		_passGeometric->init( *_programManager, p_width, p_height );
-		_passLinearizeDepth->init( *_programManager, _width, _height );
-		_passSSAO->init( *_programManager, p_width, p_height );
-		_passBlur->init( *_programManager, p_width, p_height );
-		_passShading->init( *_programManager, p_width, p_height );
-		_passOutline->init( *_programManager, p_width, p_height );
-		_passSelection->init( *_programManager, p_width, p_height );
-		_passFXAA->init( *_programManager, p_width, p_height );
+		_passGeometric->init( p_width, p_height );
+		_passLinearizeDepth->init( _width, _height );
+		_passSSAO->init( p_width, p_height );
+		_passBlur->init( p_width, p_height );
+		_passShading->init( p_width, p_height );
+		_passOutline->init( p_width, p_height );
+		_passSelection->init( p_width, p_height );
+		_passFXAA->init( p_width, p_height );
 
 		// Init VAO.
 		_initQuadVAO();
@@ -118,7 +118,7 @@ namespace VTX::Renderer::GL
 
 	void GL::renderFrame( const Object3D::Scene & p_scene )
 	{
-		if ( !VTXApp::get().MASK )
+		if ( VTXApp::get().MASK )
 		{
 			return;
 		}
@@ -161,6 +161,7 @@ namespace VTX::Renderer::GL
 			_passFXAA->render( p_scene, *this );
 		}
 
+		// TODO: set default value from settings to force render.
 		VTXApp::get().MASK = 0;
 	};
 

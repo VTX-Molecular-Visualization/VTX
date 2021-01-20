@@ -19,9 +19,9 @@ namespace VTX
 				VTX_VIEW
 
 			  protected:
+				Renderer::GL::Program * const _createProgram() override;
 				void						  _init() override;
 				void						  _render() override;
-				Renderer::GL::Program * const _createProgram( Renderer::GL::ProgramManager & ) override;
 
 			  private:
 				explicit Box( Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const );

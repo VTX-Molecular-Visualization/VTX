@@ -17,6 +17,8 @@ namespace VTX
 	{
 		class BaseView3DMolecule : public BaseView3D<Model::Molecule>
 		{
+			VTX_VIEW
+
 		  protected:
 			explicit BaseView3DMolecule( Model::Molecule * const p_model ) : BaseView3D( p_model ) {}
 			virtual ~BaseView3DMolecule() {}

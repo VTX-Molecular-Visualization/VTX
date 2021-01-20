@@ -3,7 +3,7 @@
 layout( points ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
 
-uniform mat4 uProjMatrix;
+uniform mat4 u_projMatrix;
 
 flat in vec3		   vViewSpherePos[]; // Sphere position in view space.
 flat in vec3		   vSphereColor[];
@@ -25,19 +25,19 @@ flat out unsigned short sphereSel;
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
 	viewImpPos	= v1;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gl_Position = u_projMatrix * vec4( viewImpPos, 1.f );
 	EmitVertex();
 
 	viewImpPos	= v2;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gl_Position = u_projMatrix * vec4( viewImpPos, 1.f );
 	EmitVertex();
 
 	viewImpPos	= v3;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gl_Position = u_projMatrix * vec4( viewImpPos, 1.f );
 	EmitVertex();
 
 	viewImpPos	= v4;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gl_Position = u_projMatrix * vec4( viewImpPos, 1.f );
 	EmitVertex();
 
 	EndPrimitive();

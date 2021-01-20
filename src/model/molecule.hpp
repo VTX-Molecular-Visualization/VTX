@@ -37,18 +37,22 @@ namespace VTX
 	namespace Model
 	{
 		class SecondaryStructure;
-		class Molecule : public BaseModel3D<Buffer::Molecule>, public Generic::BaseColorable, public Generic::BaseRepresentable
+		class Molecule :
+			public BaseModel3D<Buffer::Molecule>,
+			public Generic::BaseColorable,
+			public Generic::BaseRepresentable
 		{
 			VTX_MODEL
 
 		  public:
 			using AtomPositionsFrame  = std::vector<Vec3f>;
-			using RepresentationState = std::map<const Model::Representation::InstantiatedRepresentation *, VTX::Representation::RepresentationTarget>;
+			using RepresentationState = std::map<const Model::Representation::InstantiatedRepresentation *,
+												 VTX::Representation::RepresentationTarget>;
 
 			// Configuration.
 			inline const Configuration::Molecule & getConfiguration() const { return _configuration; }
 			inline Configuration::Molecule &	   getConfiguration() { return _configuration; }
-			inline void							   setConfiguration( const Configuration::Molecule & p_config ) { _configuration = p_config; }
+			inline void setConfiguration( const Configuration::Molecule & p_config ) { _configuration = p_config; }
 
 			// Representation.
 			inline const RepresentationState & getRepresentationState() const { return _representationState; }
@@ -110,20 +114,32 @@ namespace VTX
 
 			inline const SecondaryStructure &		getSecondaryStructure() const { return *_secondaryStructure; }
 			inline SecondaryStructure &				getSecondaryStructure() { return *_secondaryStructure; }
-			inline const SecondaryStructure::ALGO & getSecondaryStructureAlgo() const { return _secondaryStructureAlgo; }
+			inline const SecondaryStructure::ALGO & getSecondaryStructureAlgo() const
+			{
+				return _secondaryStructureAlgo;
+			}
 
 			inline const std::string & getSequence() const { return _sequence; }
 			inline std::string &	   getSequence() { return _sequence; }
 
-			inline const bool isAtomVisible( const uint p_idx ) const { return bool( _bufferAtomVisibilities[ p_idx ] ); }
+			inline const bool isAtomVisible( const uint p_idx ) const
+			{
+				return bool( _bufferAtomVisibilities[ p_idx ] );
+			}
 
 			inline const float &	  getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
 			inline const Color::Rgb & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 
-			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const { return _unknownResidueSymbol; }
+			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
+			{
+				return _unknownResidueSymbol;
+			}
 			inline const std::unordered_set<std::string> & getUnknownAtomSymbols() const { return _unknownAtomSymbol; }
 
-			inline void addUnknownResidueSymbol( const std::string & p_symbol ) { _unknownResidueSymbol.emplace( p_symbol ); }
+			inline void addUnknownResidueSymbol( const std::string & p_symbol )
+			{
+				_unknownResidueSymbol.emplace( p_symbol );
+			}
 			inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
 
 			inline AtomPositionsFrame & addAtomPositionFrame()
@@ -131,27 +147,39 @@ namespace VTX
 				_atomPositionsFrames.emplace_back();
 				return _atomPositionsFrames.back();
 			}
-			inline void addAtomPositionFrame( const AtomPositionsFrame & p_frame ) { _atomPositionsFrames.emplace_back( p_frame ); }
+			inline void addAtomPositionFrame( const AtomPositionsFrame & p_frame )
+			{
+				_atomPositionsFrames.emplace_back( p_frame );
+			}
 
 			inline void setAtomPositionFrames( const std::vector<AtomPositionsFrame> & p_frame )
 			{
 				_atomPositionsFrames.clear();
 				_atomPositionsFrames = p_frame;
 			}
-			inline const AtomPositionsFrame &			   getAtomPositionFrame( const uint p_frame ) const { return _atomPositionsFrames[ p_frame ]; }
-			inline AtomPositionsFrame &					   getAtomPositionFrame( const uint p_frame ) { return _atomPositionsFrames[ p_frame ]; }
-			inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const { return _atomPositionsFrames; }
-			inline std::vector<AtomPositionsFrame> &	   getAtomPositionFrames() { return _atomPositionsFrames; }
-			inline std::vector<float> &					   getBufferAtomRadius() { return _bufferAtomRadius; }
-			inline const std::vector<float> &			   getBufferAtomRadius() const { return _bufferAtomRadius; }
-			inline std::vector<Color::Rgb> &			   getBufferAtomColors() { return _bufferAtomColors; }
-			inline const std::vector<Color::Rgb> &		   getBufferAtomColors() const { return _bufferAtomColors; }
-			inline std::vector<ushort> &				   getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
-			inline const std::vector<ushort> &			   getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
-			inline std::vector<ushort> &				   getBufferAtomSelection() { return _bufferAtomSelection; }
-			inline const std::vector<ushort> &			   getBufferAtomSelection() const { return _bufferAtomSelection; }
-			inline std::vector<uint> &					   getBufferBonds() { return _bufferBonds; }
-			inline const std::vector<uint> &			   getBufferBonds() const { return _bufferBonds; }
+			inline const AtomPositionsFrame & getAtomPositionFrame( const uint p_frame ) const
+			{
+				return _atomPositionsFrames[ p_frame ];
+			}
+			inline AtomPositionsFrame & getAtomPositionFrame( const uint p_frame )
+			{
+				return _atomPositionsFrames[ p_frame ];
+			}
+			inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const
+			{
+				return _atomPositionsFrames;
+			}
+			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; }
+			inline std::vector<float> &				 getBufferAtomRadius() { return _bufferAtomRadius; }
+			inline const std::vector<float> &		 getBufferAtomRadius() const { return _bufferAtomRadius; }
+			inline std::vector<Color::Rgb> &		 getBufferAtomColors() { return _bufferAtomColors; }
+			inline const std::vector<Color::Rgb> &	 getBufferAtomColors() const { return _bufferAtomColors; }
+			inline std::vector<ushort> &			 getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
+			inline const std::vector<ushort> & getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
+			inline std::vector<ushort> &	   getBufferAtomSelection() { return _bufferAtomSelection; }
+			inline const std::vector<ushort> & getBufferAtomSelection() const { return _bufferAtomSelection; }
+			inline std::vector<uint> &		   getBufferBonds() { return _bufferBonds; }
+			inline const std::vector<uint> &   getBufferBonds() const { return _bufferBonds; }
 
 			inline const uint getChainCount() const { return uint( _chains.size() ); }
 			inline const uint getResidueCount() const { return uint( _residues.size() ); }
@@ -175,13 +203,13 @@ namespace VTX
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
 			inline uint									   getFrame() const { return _currentFrame; }
 			void										   setFrame( const uint );
-			inline const uint							   getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
-			inline uint									   getFPS() const { return _fps; }
-			void										   setFPS( const uint p_fps ) { _fps = p_fps; }
-			inline bool									   isPlaying() const { return _isPlaying; }
-			inline void									   setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
-			inline bool									   showSolvent() const { return _showSolvent; }
-			inline void									   setShowSolvent( const bool p_showSolvent )
+			inline const uint getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
+			inline uint		  getFPS() const { return _fps; }
+			void			  setFPS( const uint p_fps ) { _fps = p_fps; }
+			inline bool		  isPlaying() const { return _isPlaying; }
+			inline void		  setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
+			inline bool		  showSolvent() const { return _showSolvent; }
+			inline void		  setShowSolvent( const bool p_showSolvent )
 			{
 				_showSolvent = p_showSolvent;
 				_fillBufferAtomVisibilities();
@@ -200,7 +228,7 @@ namespace VTX
 			void print() const;
 
 			void setVisible( const bool );
-			void render() override;
+			void render( const Object3D::Camera & ) override;
 
 			bool mergeTopology( const Molecule & );
 

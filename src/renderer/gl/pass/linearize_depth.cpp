@@ -10,7 +10,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_texture );
 	}
 
-	void LinearizeDepth::init( ProgramManager & p_programManager, const uint p_width, const uint p_height )
+	void LinearizeDepth::init( const uint p_width, const uint p_height )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
@@ -23,7 +23,7 @@ namespace VTX::Renderer::GL::Pass
 
 		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 
-		_program = p_programManager.createProgram( "LinearizeDepth", { "shading/linearize_depth.frag" } );
+		_program = VTX_PROGRAM_MANAGER().createProgram( "LinearizeDepth", { "shading/linearize_depth.frag" } );
 
 		_uClipInfoLoc = gl()->glGetUniformLocation( _program->getId(), "uClipInfo" );
 	}
@@ -49,7 +49,7 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 		// TODO don't update each frame
-		const Object3D::Camera & cam	 = VTXApp::get().getScene().getCamera();
+		const Object3D::Camera & cam	 = p_scene.getCamera();
 		const float				 camNear = cam.getNear();
 		const float				 camFar	 = cam.getFar();
 		// clipInfo.w: 0 = orhto ; 1 = perspective

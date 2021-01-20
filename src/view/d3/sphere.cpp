@@ -4,12 +4,12 @@
 
 namespace VTX::View::D3
 {
-	Renderer::GL::Program * const Sphere::_createProgram( Renderer::GL::ProgramManager & p_pm )
+	Renderer::GL::Program * const Sphere::_createProgram()
 	{
-		return p_pm.createProgram( "Sphere", { "sphere.vert", "sphere.geom", "sphere.frag" } );
+		return VTX_PROGRAM_MANAGER().createProgram( "Sphere", { "sphere.vert", "sphere.geom", "sphere.frag" } );
 	}
 
-	void Sphere::_createUniforms()
+	void Sphere::_init()
 	{
 		_uRadiusFixedLoc   = _gl()->glGetUniformLocation( _program->getId(), "u_radiusFixed" );
 		_uRadiusAddLoc	   = _gl()->glGetUniformLocation( _program->getId(), "u_radiusAdd" );

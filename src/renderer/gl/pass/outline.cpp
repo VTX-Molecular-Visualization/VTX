@@ -10,7 +10,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_texture );
 	}
 
-	void Outline::init( ProgramManager & p_programManager, const uint p_width, const uint p_height )
+	void Outline::init( const uint p_width, const uint p_height )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
@@ -23,7 +23,7 @@ namespace VTX::Renderer::GL::Pass
 
 		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 
-		_program = p_programManager.createProgram( "Outline", { "shading/outline.frag" } );
+		_program = VTX_PROGRAM_MANAGER().createProgram( "Outline", { "shading/outline.frag" } );
 
 		_program->use();
 

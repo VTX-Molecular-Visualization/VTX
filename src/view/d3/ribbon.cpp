@@ -4,9 +4,16 @@
 
 namespace VTX::View::D3
 {
+	Renderer::GL::Program * const Ribbon::_createProgram()
+	{
+		return VTX_PROGRAM_MANAGER().createProgram(
+			"Ribbon", { "ribbon_patch.vert", "ribbon_patch.tesc", "ribbon_patch.tese", "ribbon_patch.frag" } );
+	}
+
 	void Ribbon::_init()
 	{
-		BaseView3D::_init();
+		_uCamPositionLoc = _gl()->glGetUniformLocation( _program->getId(), "u_camPosition" );
+		_uMaxIndiceLoc	 = _gl()->glGetUniformLocation( _program->getId(), "u_maxIndice" );
 
 		GLint maxPatchVertices = 0;
 		GLint maxTessGenLevel  = 0;
@@ -17,18 +24,6 @@ namespace VTX::View::D3
 
 		VTX_DEBUG( "Max supported patch vertices: " + std::to_string( maxPatchVertices ) );
 		VTX_DEBUG( "Max supported tessellation levels: " + std::to_string( maxTessGenLevel ) );
-	}
-
-	Renderer::GL::Program * const Ribbon::_createProgram( Renderer::GL::ProgramManager & p_pm )
-	{
-		return p_pm.createProgram(
-			"Ribbon", { "ribbon_patch.vert", "ribbon_patch.tesc", "ribbon_patch.tese", "ribbon_patch.frag" } );
-	}
-
-	void Ribbon::_createUniforms()
-	{
-		_uCamPositionLoc = _gl()->glGetUniformLocation( _program->getId(), "u_camPosition" );
-		_uMaxIndiceLoc	 = _gl()->glGetUniformLocation( _program->getId(), "u_maxIndice" );
 	}
 
 	void Ribbon::_render()

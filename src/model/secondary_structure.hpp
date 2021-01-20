@@ -59,7 +59,11 @@ namespace VTX
 
 			const std::vector<uint> &	 getIndices() const { return _buffferIndices; }
 			const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToIndices; }
-			inline void refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection = nullptr ) { _fillBufferSelections( p_selection ); }
+			inline void refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection
+										  = nullptr )
+			{
+				_fillBufferSelections( p_selection );
+			}
 
 			void print() const;
 

@@ -1,20 +1,13 @@
 #include "box.hpp"
-#include "util/math.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX::View::D3
 {
-	void Box::_init()
+	Renderer::GL::Program * const Box::_createProgram()
 	{
-		BaseView3D::_init();
-
-		_gl()->glLineWidth( 1.f );
+		return VTX_PROGRAM_MANAGER().createProgram( "LineShader", { "line.vert", "line.frag" } );
 	}
 
-	Renderer::GL::Program * const Box::_createProgram( Renderer::GL::ProgramManager & p_pm )
-	{
-		return p_pm.createProgram( "LineShader", { "line.vert", "line.frag" } );
-	}
+	void Box::_init() { _gl()->glLineWidth( 1.f ); }
 
 	void Box::_render()
 	{

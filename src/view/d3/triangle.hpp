@@ -18,10 +18,9 @@ namespace VTX
 			{
 				VTX_VIEW
 
-			  public:
 			  protected:
+				Renderer::GL::Program * const _createProgram() override;
 				void						  _render() override;
-				Renderer::GL::Program * const _createProgram( Renderer::GL::ProgramManager & ) override;
 
 			  private:
 				explicit Triangle( Model::MeshTriangle * const p_model ) : BaseView3D( p_model ) {}

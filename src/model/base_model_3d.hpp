@@ -19,8 +19,14 @@ namespace VTX
 	namespace Model
 	{
 		template<typename B, typename = std::enable_if<std::is_base_of<Buffer::BaseBufferOpenGL, B>::value>>
-		class BaseModel3D : public BaseModel, public Generic::BaseTransformable, public Generic::BaseRenderable, public Generic::BaseVisible
+		class BaseModel3D :
+			public BaseModel,
+			public Generic::BaseTransformable,
+			public Generic::BaseRenderable,
+			public Generic::BaseVisible
 		{
+			VTX_MODEL
+
 		  public:
 			inline const Math::AABB &		  getAABB() const { return _aabb; }
 			inline const B * const			  getBuffer() const { return _buffer; }
@@ -29,19 +35,19 @@ namespace VTX
 			inline const std::vector<uint> &  getBufferAABBIndices() const { return _bufferAABBIndices; }
 			inline bool						  isInit() const { return _isInit; }
 
-			void render() override
+			void render( const Object3D::Camera & p_camera ) override
 			{
 				_buffer->bind();
 				for ( Generic::BaseRenderable * const renderable : _renderables )
 				{
-					renderable->render();
+					renderable->render( p_camera );
 				}
 				_buffer->unbind();
 
 				if ( _viewBox != nullptr )
 				{
 					_buffer->bindAABB();
-					_viewBox->render();
+					_viewBox->render( p_camera );
 					_buffer->unbindAABB();
 				}
 			}
@@ -86,7 +92,11 @@ namespace VTX
 			virtual void _fillBuffer()		   = 0;
 			virtual void _computeAABB()		   = 0;
 			virtual void _instantiate3DViews() = 0;
-			inline void	 _addRenderable( Generic::BaseRenderable * const p_renderable ) { _renderables.push_back( p_renderable ); }
+			inline void	 _addRenderable( Generic::BaseRenderable * const p_renderable )
+			{
+				p_renderable->init();
+				_renderables.push_back( p_renderable );
+			}
 
 			virtual void _fillBufferAABB()
 			{
@@ -102,7 +112,8 @@ namespace VTX
 														   max,
 														   Vec3f( min.x, max.y, max.z ) } );
 
-				_bufferAABBIndices = std::vector<uint>( { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 } );
+				_bufferAABBIndices
+					= std::vector<uint>( { 0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 } );
 
 				_buffer->setAABBCorners( _bufferAABBCorners );
 				_buffer->setAABBIndices( _bufferAABBIndices );

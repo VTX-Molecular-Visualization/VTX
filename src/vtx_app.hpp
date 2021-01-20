@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "renderer/gl/program_manager.hpp"
 #include "setting.hpp"
 #include "stat.hpp"
 #include "ui/main_window.hpp"
@@ -32,35 +31,25 @@ namespace VTX
 			static VTXApp instance;
 			return instance;
 		}
+		VTX_MASK MASK;
 
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
 		void renderScene() const { _mainWindow->getOpenGLWidget().update(); }
 
-		inline Setting &			   getSetting() { return _setting; }
-		inline const Setting &		   getSetting() const { return _setting; }
-		inline Stat &				   getStat() { return _stat; }
-		inline const Stat &			   getStat() const { return _stat; }
-		inline Object3D::Scene &	   getScene() { return *_scene; }
-		inline const Object3D::Scene & getScene() const { return *_scene; }
-
-		inline Renderer::GL::ProgramManager & getProgramManager()
-		{
-			return _mainWindow->getOpenGLWidget().getProgramManager();
-		}
-		inline const Renderer::GL::ProgramManager & getProgramManager() const
-		{
-			return _mainWindow->getOpenGLWidget().getProgramManager();
-		}
+		inline Setting &				   getSetting() { return _setting; }
+		inline const Setting &			   getSetting() const { return _setting; }
+		inline Stat &					   getStat() { return _stat; }
+		inline const Stat &				   getStat() const { return _stat; }
+		inline Object3D::Scene &		   getScene() { return *_scene; }
+		inline const Object3D::Scene &	   getScene() const { return *_scene; }
 		inline const UI::MainWindow &	   getMainWindow() const { return *_mainWindow; }
 		inline UI::MainWindow &			   getMainWindow() { return *_mainWindow; }
 		inline State::StateMachine &	   getStateMachine() { return *_stateMachine; }
 		inline const State::StateMachine & getStateMachine() const { return *_stateMachine; }
 
 		bool notify( QObject * const, QEvent * const ) override;
-
-		VTX_MASK MASK = 0;
 
 	  private:
 		QTimer *		_timer		  = nullptr;

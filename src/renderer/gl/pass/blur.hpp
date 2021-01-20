@@ -14,7 +14,7 @@ namespace VTX::Renderer::GL::Pass
 	  public:
 		Blur( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
 		virtual ~Blur();
-		virtual void init( ProgramManager &, const uint, const uint ) override;
+		virtual void init( const uint, const uint ) override;
 		virtual void resize( const uint, const uint ) override;
 		virtual void render( const Object3D::Scene &, const GL & ) override;
 

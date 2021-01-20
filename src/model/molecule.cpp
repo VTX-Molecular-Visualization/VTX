@@ -246,10 +246,10 @@ namespace VTX
 			VTX_DEBUG( "Sizeof bond: " + std::to_string( sizeof( *_bonds[ 0 ] ) ) );
 		}
 
-		void Molecule::render()
+		void Molecule::render( const Object3D::Camera & p_camera )
 		{
-			BaseModel3D::render();
-			_secondaryStructure->render();
+			BaseModel3D::render( p_camera );
+			_secondaryStructure->render( p_camera );
 		}
 
 		bool Molecule::mergeTopology( const Molecule & p_molecule )

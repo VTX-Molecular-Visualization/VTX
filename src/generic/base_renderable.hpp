@@ -5,6 +5,9 @@
 #pragma once
 #endif
 
+#include "object3d/camera.hpp"
+#include "renderer/gl/program_manager.hpp"
+
 namespace VTX
 {
 	namespace Generic
@@ -14,7 +17,8 @@ namespace VTX
 		  public:
 			virtual ~BaseRenderable() = default;
 
-			virtual void render() = 0;
+			virtual void render( const Object3D::Camera & ) = 0;
+			virtual void init() {};
 		};
 	} // namespace Generic
 } // namespace VTX

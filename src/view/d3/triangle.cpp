@@ -2,9 +2,9 @@
 
 namespace VTX::View::D3
 {
-	Renderer::GL::Program * const Triangle::_createProgram( Renderer::GL::ProgramManager & p_pm )
+	Renderer::GL::Program * const Triangle::_createProgram()
 	{
-		return p_pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
+		return VTX_PROGRAM_MANAGER().createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
 	}
 
 	void Triangle::_render()

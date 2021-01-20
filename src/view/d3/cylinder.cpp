@@ -1,14 +1,13 @@
 #include "cylinder.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX::View::D3
 {
-	Renderer::GL::Program * const Cylinder::_createProgram( Renderer::GL::ProgramManager & p_pm )
+	Renderer::GL::Program * const Cylinder::_createProgram()
 	{
-		return p_pm.createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
+		return VTX_PROGRAM_MANAGER().createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
 	}
 
-	void Cylinder::_createUniforms() { _uRadiusLoc = _gl()->glGetUniformLocation( _program->getId(), "u_cylRad" ); }
+	void Cylinder::_init() { _uRadiusLoc = _gl()->glGetUniformLocation( _program->getId(), "u_cylRad" ); }
 
 	void Cylinder::_render( const Model::Representation::InstantiatedRepresentation * const p_representation )
 	{
