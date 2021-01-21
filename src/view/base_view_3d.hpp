@@ -7,6 +7,7 @@
 
 #include "base_view.hpp"
 #include "generic/base_renderable.hpp"
+#include "object3d/camera.hpp"
 #include "renderer/gl/program_manager.hpp"
 #include "util/math.hpp"
 

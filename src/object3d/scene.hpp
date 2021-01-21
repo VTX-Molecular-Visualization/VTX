@@ -5,17 +5,23 @@
 #pragma once
 #endif
 
-#include "camera.hpp"
 #include "generic/base_updatable.hpp"
-#include "model/mesh_triangle.hpp"
-#include "model/molecule.hpp"
-#include "model/path.hpp"
+#include "math/aabb.hpp"
+#include <map>
 #include <vector>
 
 namespace VTX
 {
+	namespace Model
+	{
+		class MeshTriangle;
+		class Molecule;
+		class Path;
+	} // namespace Model
+
 	namespace Object3D
 	{
+		class Camera;
 		class Scene : public Generic::BaseUpdatable
 		{
 		  public:
@@ -28,10 +34,10 @@ namespace VTX
 			using VectorMeshTrianglePtr = std::vector<MeshTrianglePtr>;
 
 			Scene();
-			~Scene() { clear(); }
+			~Scene();
 
-			inline Camera &						 getCamera() { return _camera; }
-			inline const Camera &				 getCamera() const { return _camera; }
+			inline Camera &						 getCamera() { return *_camera; }
+			inline const Camera &				 getCamera() const { return *_camera; }
 			inline MapMoleculePtrFloat &		 getMolecules() { return _molecules; };
 			inline const MapMoleculePtrFloat &	 getMolecules() const { return _molecules; };
 			inline const VectorPathPtr &		 getPaths() const { return _paths; };
@@ -52,7 +58,7 @@ namespace VTX
 			void _computeAABB();
 
 		  private:
-			Camera				  _camera = Camera();
+			Camera *			  _camera = nullptr;
 			Math::AABB			  _aabb;
 			MapMoleculePtrFloat	  _molecules = MapMoleculePtrFloat();
 			VectorPathPtr		  _paths	 = VectorPathPtr();

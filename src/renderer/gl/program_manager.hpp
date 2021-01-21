@@ -48,7 +48,7 @@ namespace VTX
 			GLuint getShader( const std::string & ) const;
 
 			static const MapStringToEnum EXTENSIONS;
-			static SHADER_TYPE			 getShaderType( const Path & );
+			static SHADER_TYPE			 getShaderType( const FilePath & );
 
 		  private:
 			MapStringToProgram _programs = MapStringToProgram();
@@ -57,7 +57,7 @@ namespace VTX
 			ProgramManager( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 			~ProgramManager();
 
-			GLuint		_createShader( const Path & );
+			GLuint		_createShader( const FilePath & );
 			std::string _getShaderErrors( const GLuint );
 		};
 	} // namespace Renderer::GL

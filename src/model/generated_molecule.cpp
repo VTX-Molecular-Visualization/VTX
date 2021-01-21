@@ -2,7 +2,10 @@
 #include "atom.hpp"
 #include "chain.hpp"
 #include "id.hpp"
+#include "model/bond.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "residue.hpp"
+#include "selection.hpp"
 #include "tool/chrono.hpp"
 #include <map>
 
@@ -22,8 +25,9 @@ namespace VTX
 			if ( p_selection.getMoleculeSelectedCount() > 1 )
 				throw Exception::VTXException( "Generate molecule from multiple molecule. Not allowed currently." );
 
-			const std::pair<const ID, const Model::Selection::MapChainIds> & moleculeData = *( p_selection.getItems().begin() );
-			const Model::Molecule &											 molecule	  = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			const std::pair<const ID, const Model::Selection::MapChainIds> & moleculeData
+				= *( p_selection.getItems().begin() );
+			const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
 
 			// Copy molecule properties.
 			setName( "Extract from " + molecule.getName() );
@@ -95,7 +99,8 @@ namespace VTX
 
 						// Copy atom position for each frame
 						for ( int i = 0; i < getAtomPositionFrames().size(); i++ )
-							getAtomPositionFrame( i ).emplace_back( molecule.getAtomPositionFrame( i )[ atom.getIndex() ] );
+							getAtomPositionFrame( i ).emplace_back(
+								molecule.getAtomPositionFrame( i )[ atom.getIndex() ] );
 					}
 				}
 			}
@@ -108,7 +113,8 @@ namespace VTX
 			{
 				const Model::Bond & bond = *molecule.getBonds()[ i ];
 
-				if ( mapAtomIds.find( bond.getIndexFirstAtom() ) != mapAtomIds.end() && mapAtomIds.find( bond.getIndexSecondAtom() ) != mapAtomIds.end() )
+				if ( mapAtomIds.find( bond.getIndexFirstAtom() ) != mapAtomIds.end()
+					 && mapAtomIds.find( bond.getIndexSecondAtom() ) != mapAtomIds.end() )
 				{
 					const uint indexFirstAtom  = mapAtomIds[ bond.getIndexFirstAtom() ];
 					const uint indexSecondAtom = mapAtomIds[ bond.getIndexSecondAtom() ];

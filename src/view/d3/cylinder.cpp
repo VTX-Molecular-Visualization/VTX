@@ -18,6 +18,7 @@ namespace VTX::View::D3
 
 		for ( const std::pair<uint, uint> & pair : _model->getRepresentationBonds( p_representation ) )
 		{
+			VTX_DEBUG( std::to_string( pair.second ) );
 			_gl()->glDrawElements( GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
 		}
 	}

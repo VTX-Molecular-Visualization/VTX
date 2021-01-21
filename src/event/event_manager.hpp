@@ -13,8 +13,6 @@
 #include "generic/base_lockable.hpp"
 #include "generic/base_updatable.hpp"
 #include "id.hpp"
-#include "model/base_model.hpp"
-#include "view/base_view.hpp"
 #include <map>
 #include <queue>
 #include <set>

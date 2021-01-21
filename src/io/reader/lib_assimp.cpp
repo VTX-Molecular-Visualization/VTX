@@ -1,6 +1,12 @@
 #include "lib_assimp.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "model/atom.hpp"
+#include "model/bond.hpp"
+#include "model/chain.hpp"
+#include "model/mesh_triangle.hpp"
+#include "model/molecule.hpp"
+#include "model/residue.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -11,11 +17,12 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			void LibAssimp::readFile( const Path & p_path, Model::MeshTriangle & p_mesh )
+			void LibAssimp::readFile( const FilePath & p_path, Model::MeshTriangle & p_mesh )
 			{
 				Assimp::Importer Importer;
 
-				const aiScene * const scene = Importer.ReadFile( p_path.string(), aiProcess_Triangulate | aiProcess_GenNormals );
+				const aiScene * const scene
+					= Importer.ReadFile( p_path.string(), aiProcess_Triangulate | aiProcess_GenNormals );
 				if ( !scene )
 				{
 					throw Exception::IOException( "File has not scene" );
@@ -81,7 +88,7 @@ namespace VTX
 				}
 			}
 
-			void LibAssimp::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			void LibAssimp::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 			{
 				Assimp::Importer Importer;
 
@@ -148,7 +155,8 @@ namespace VTX
 						residue.setColor( Color::Rgb::randomPastel() );
 
 						// Loop over vertices in the face.
-						for ( uint atomIdx = 0; atomIdx < face.mNumIndices; ++atomIdx, ++atomGlobalIdx, ++bondGlobalIdx )
+						for ( uint atomIdx = 0; atomIdx < face.mNumIndices;
+							  ++atomIdx, ++atomGlobalIdx, ++bondGlobalIdx )
 						{
 							uint indice = face.mIndices[ atomIdx ];
 
@@ -176,7 +184,9 @@ namespace VTX
 							p_molecule.addBond();
 							Model::Bond & bond = p_molecule.getBond( atomGlobalIdx );
 							bond.setIndexFirstAtom( atomGlobalIdx );
-							bond.setIndexSecondAtom( ( atomIdx == face.mNumIndices - 1 ) ? ( atomGlobalIdx - face.mNumIndices + 1 ) : ( atomGlobalIdx + 1 ) );
+							bond.setIndexSecondAtom( ( atomIdx == face.mNumIndices - 1 )
+														 ? ( atomGlobalIdx - face.mNumIndices + 1 )
+														 : ( atomGlobalIdx + 1 ) );
 						}
 					}
 				}

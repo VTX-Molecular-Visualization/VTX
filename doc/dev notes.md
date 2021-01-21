@@ -23,5 +23,7 @@ Tous les Widgets héritants de BaseManualWidget doivent avoir au début de leur 
 - Ne pas lancer de VTX\_EVENT dans le receive d'un autre event. Attention car VTX\_DEBUG|INFO|LOG lancent aussi un event pour logger dans la console, donc faut pas le faire. Pour afficher du debug dans la fonction receive, il faut utiliser VTX_CONSOLE (qui log dans la console Windows mais pas dans celle de VTX). C'est à cause du mutex qui deadlock.
 
 ## C++ Divers 
-
-- Les classes friend référencer des classes du même namespace.
+- Amitié pas hérité
+- Pas possible de faire une forward declaration pour un type utilisé en instanciation via template
+- inline dans le hpp = declaration dans le hpp
+- Templated class = header only

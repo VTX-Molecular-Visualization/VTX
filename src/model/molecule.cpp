@@ -1,8 +1,12 @@
 #include "molecule.hpp"
 #include "color/rgb.hpp"
-#include "generic/factory.hpp"
 #include "id.hpp"
+#include "model/atom.hpp"
+#include "model/bond.hpp"
+#include "model/chain.hpp"
+#include "model/residue.hpp"
 #include "model/secondary_structure.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/secondary_structure.hpp"
@@ -27,6 +31,34 @@ namespace VTX
 
 			if ( _secondaryStructure != nullptr )
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
+		}
+
+		Chain & Molecule::addChain()
+		{
+			Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
+			_chains.emplace_back( chain );
+			return *chain;
+		}
+
+		Residue & Molecule::addResidue()
+		{
+			Residue * const residue = MVC::MvcManager::get().instantiateModel<Residue>();
+			_residues.emplace_back( residue );
+			return *residue;
+		}
+
+		Atom & Molecule::addAtom()
+		{
+			Atom * const atom = MVC::MvcManager::get().instantiateModel<Atom>();
+			_atoms.emplace_back( atom );
+			return *atom;
+		}
+
+		Bond & Molecule::addBond()
+		{
+			Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
+			_bonds.emplace_back( bond );
+			return *bond;
 		}
 
 		void Molecule::_init()
@@ -114,20 +146,6 @@ namespace VTX
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
 		}
 
-		void Molecule::setFrame( const uint p_frameIdx )
-		{
-			if ( p_frameIdx > getFrameCount() )
-			{
-				VTX_WARNING( "Frame " + std::to_string( p_frameIdx )
-							 + " does not exists / Count: " + std::to_string( getFrameCount() ) );
-				return;
-			}
-
-			_currentFrame = p_frameIdx;
-			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
-			_secondaryStructure->setCurrentFrame();
-		}
-
 		void Molecule::_fillBufferAtomColors()
 		{
 			_bufferAtomColors.resize( _atoms.size() );
@@ -206,6 +224,26 @@ namespace VTX
 			}
 
 			_buffer->setAtomSelections( _bufferAtomSelection );
+		}
+
+		void Molecule::refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection )
+		{
+			_fillBufferAtomSelections( p_selection );
+			_secondaryStructure->refreshSelection( p_selection );
+		}
+
+		void Molecule::setFrame( const uint p_frameIdx )
+		{
+			if ( p_frameIdx > getFrameCount() )
+			{
+				VTX_WARNING( "Frame " + std::to_string( p_frameIdx )
+							 + " does not exists / Count: " + std::to_string( getFrameCount() ) );
+				return;
+			}
+
+			_currentFrame = p_frameIdx;
+			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
+			_secondaryStructure->setCurrentFrame();
 		}
 
 		void Molecule::print() const

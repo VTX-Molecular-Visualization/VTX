@@ -5,12 +5,31 @@
 #pragma once
 #endif
 
-#include "model/molecule.hpp"
-#include "vtx_app.hpp"
+#include "util/math.hpp"
 #include <nlohmann/json.hpp>
 
 namespace VTX
 {
+	class VTXApp;
+	class Setting;
+
+	namespace Object3D
+	{
+		class Scene;
+	}
+
+	namespace Model
+	{
+		class Molecule;
+		class Path;
+		class Viewpoint;
+	} // namespace Model
+
+	namespace Color
+	{
+		class Rgb;
+	}
+
 	namespace IO
 	{
 		class Serializer

@@ -1,6 +1,5 @@
 #include "download_molecule_dialog.hpp"
 #include "action/main.hpp"
-#include "vtx_app.hpp"
 #include <QPushButton>
 #include <string>
 
@@ -34,7 +33,10 @@ namespace VTX
 					_fileLineEdit = new QLineEdit( this );
 					verticalLayout->addWidget( _fileLineEdit );
 
-					_dialogButtons = new QDialogButtonBox( QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open, Qt::Orientation::Horizontal, this );
+					_dialogButtons = new QDialogButtonBox(
+						QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open,
+						Qt::Orientation::Horizontal,
+						this );
 					verticalLayout->addWidget( _dialogButtons );
 				}
 

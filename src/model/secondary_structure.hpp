@@ -39,10 +39,6 @@ namespace VTX
 				RESIDUE
 
 			};
-			enum class ALGO : int
-			{
-				STRIDE
-			};
 
 			static const Color::Rgb COLORS_JMOL[ uint( VALUE::COUNT ) ];
 

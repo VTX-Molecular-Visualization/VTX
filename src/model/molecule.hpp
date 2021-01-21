@@ -5,21 +5,16 @@
 #pragma once
 #endif
 
-#include "atom.hpp"
 #include "base_model_3d.hpp"
-#include "bond.hpp"
 #include "buffer/molecule.hpp"
-#include "chain.hpp"
 #include "define.hpp"
 #include "generic/base_representable.hpp"
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
 #include "model/configuration/molecule.hpp"
-#include "mvc/mvc_manager.hpp"
 #include "representation/instantiated_representation.hpp"
 #include "representation/representation_target.hpp"
-#include "residue.hpp"
 #include <iostream>
 #include <map>
 #include <string>
@@ -29,13 +24,12 @@
 
 namespace VTX
 {
-	namespace View
-	{
-		class BaseView3DMolecule;
-	}
-
 	namespace Model
 	{
+		class Chain;
+		class Residue;
+		class Atom;
+		class Bond;
 		class SecondaryStructure;
 		class Molecule :
 			public BaseModel3D<Buffer::Molecule>,
@@ -68,56 +62,32 @@ namespace VTX
 				BaseModel::setDefaultName( &_pdbIdCode );
 			}
 
-			inline const VTX::Path & getPath() const { return _path; }
-			inline void				 setPath( const VTX::Path & p_path ) { _path = p_path; }
+			inline const VTX::FilePath & getPath() const { return _path; }
+			inline void					 setPath( const VTX::FilePath & p_path ) { _path = p_path; }
 
-			inline Chain & addChain()
-			{
-				Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
-				_chains.emplace_back( chain );
-				return *chain;
-			}
-			inline Chain &						getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
-			inline const Chain &				getChain( const uint p_idx ) const { return *_chains[ p_idx ]; }
-			inline std::vector<Chain *> &		getChains() { return _chains; }
-			inline const std::vector<Chain *> & getChains() const { return _chains; }
-			inline Residue &					addResidue()
-			{
-				Residue * const residue = MVC::MvcManager::get().instantiateModel<Residue>();
-				_residues.emplace_back( residue );
-				return *residue;
-			}
+			Chain &								  addChain();
+			inline Chain &						  getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
+			inline const Chain &				  getChain( const uint p_idx ) const { return *_chains[ p_idx ]; }
+			inline std::vector<Chain *> &		  getChains() { return _chains; }
+			inline const std::vector<Chain *> &	  getChains() const { return _chains; }
+			Residue &							  addResidue();
 			inline Residue &					  getResidue( const uint p_idx ) { return *_residues[ p_idx ]; }
 			inline const Residue &				  getResidue( const uint p_idx ) const { return *_residues[ p_idx ]; }
 			inline std::vector<Residue *> &		  getResidues() { return _residues; }
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
-			inline Atom &						  addAtom()
-			{
-				Atom * const atom = MVC::MvcManager::get().instantiateModel<Atom>();
-				_atoms.emplace_back( atom );
-				return *atom;
-			}
-			inline Atom &					   getAtom( const uint p_idx ) { return *_atoms[ p_idx ]; }
-			inline const Atom &				   getAtom( const uint p_idx ) const { return *_atoms[ p_idx ]; }
-			inline std::vector<Atom *> &	   getAtoms() { return _atoms; }
-			inline const std::vector<Atom *> & getAtoms() const { return _atoms; }
-			inline Bond &					   addBond()
-			{
-				Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
-				_bonds.emplace_back( bond );
-				return *bond;
-			}
-			inline Bond &					   getBond( const uint p_idx ) { return *_bonds[ p_idx ]; }
-			inline const Bond &				   getBond( const uint p_idx ) const { return *_bonds[ p_idx ]; }
-			inline std::vector<Bond *> &	   getBonds() { return _bonds; }
-			inline const std::vector<Bond *> & getBonds() const { return _bonds; }
+			Atom &								  addAtom();
+			inline Atom &						  getAtom( const uint p_idx ) { return *_atoms[ p_idx ]; }
+			inline const Atom &					  getAtom( const uint p_idx ) const { return *_atoms[ p_idx ]; }
+			inline std::vector<Atom *> &		  getAtoms() { return _atoms; }
+			inline const std::vector<Atom *> &	  getAtoms() const { return _atoms; }
+			Bond &								  addBond();
+			inline Bond &						  getBond( const uint p_idx ) { return *_bonds[ p_idx ]; }
+			inline const Bond &					  getBond( const uint p_idx ) const { return *_bonds[ p_idx ]; }
+			inline std::vector<Bond *> &		  getBonds() { return _bonds; }
+			inline const std::vector<Bond *> &	  getBonds() const { return _bonds; }
 
-			inline const SecondaryStructure &		getSecondaryStructure() const { return *_secondaryStructure; }
-			inline SecondaryStructure &				getSecondaryStructure() { return *_secondaryStructure; }
-			inline const SecondaryStructure::ALGO & getSecondaryStructureAlgo() const
-			{
-				return _secondaryStructureAlgo;
-			}
+			inline const SecondaryStructure & getSecondaryStructure() const { return *_secondaryStructure; }
+			inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
 
 			inline const std::string & getSequence() const { return _sequence; }
 			inline std::string &	   getSequence() { return _sequence; }
@@ -193,11 +163,7 @@ namespace VTX
 				refreshColors();
 			}
 			inline void refreshColors() { _fillBufferAtomColors(); }
-			inline void refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection )
-			{
-				_fillBufferAtomSelections( p_selection );
-				_secondaryStructure->refreshSelection( p_selection );
-			}
+			void		refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const );
 
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
@@ -253,7 +219,7 @@ namespace VTX
 			RepresentationState _representationState = RepresentationState();
 
 			// Models.
-			VTX::Path						_path;
+			VTX::FilePath					_path;
 			std::string						_name						= "unknown";
 			std::string						_pdbIdCode					= "unknown";
 			std::vector<Chain *>			_chains						= std::vector<Chain *>();
@@ -277,8 +243,7 @@ namespace VTX
 			std::vector<uint>		_bufferBonds			= std::vector<uint>();
 
 			// Secondary structure.
-			SecondaryStructure::ALGO _secondaryStructureAlgo = SecondaryStructure::ALGO::STRIDE;
-			SecondaryStructure *	 _secondaryStructure	 = nullptr;
+			SecondaryStructure * _secondaryStructure = nullptr;
 
 			// Sequence.
 			std::string _sequence;

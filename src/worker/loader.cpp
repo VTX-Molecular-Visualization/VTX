@@ -5,6 +5,8 @@
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "io/reader/vtx.hpp"
+#include "model/mesh_triangle.hpp"
+#include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
@@ -19,7 +21,7 @@ namespace VTX
 			Model::Configuration::Molecule config = Model::Configuration::Molecule();
 
 			// Load PRM or PSF file firstly.
-			for ( std::vector<Path *>::iterator it = _paths.begin(); it != _paths.end(); it++ )
+			for ( std::vector<FilePath *>::iterator it = _paths.begin(); it != _paths.end(); it++ )
 			{
 				if ( ( *it )->extension() == ".prm" )
 				{
@@ -37,7 +39,7 @@ namespace VTX
 
 			// Load all files.
 			Tool::Chrono chrono;
-			for ( const Path * path : _paths )
+			for ( const FilePath * path : _paths )
 			{
 				chrono.start();
 				VTX_INFO( "Loading " + path->filename().string() );
@@ -118,7 +120,7 @@ namespace VTX
 			}
 
 			// Load all buffers.
-			for ( const std::pair<Path *, std::string *> & pair : _mapFileNameBuffer )
+			for ( const std::pair<FilePath *, std::string *> & pair : _mapFileNameBuffer )
 			{
 				chrono.start();
 				VTX_INFO( "Loading " + pair.first->filename().string() );
@@ -162,11 +164,12 @@ namespace VTX
 			_isFinished = true;
 		}
 
-		Loader::MODE Loader::_getMode( const Path & p_path ) const
+		Loader::MODE Loader::_getMode( const FilePath & p_path ) const
 		{
-			Path extension = p_path.extension();
+			FilePath extension = p_path.extension();
 
-			if ( extension == ".pdb" || extension == ".mmtf" || extension == ".cif" || extension == ".arc" || extension == ".xyz" || extension == ".dcd" )
+			if ( extension == ".pdb" || extension == ".mmtf" || extension == ".cif" || extension == ".arc"
+				 || extension == ".xyz" || extension == ".dcd" )
 			{
 				return MODE::MOLECULE;
 			}

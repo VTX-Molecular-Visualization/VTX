@@ -4,7 +4,6 @@
 #include "controller/trackball.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
-#include "generic/factory.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX

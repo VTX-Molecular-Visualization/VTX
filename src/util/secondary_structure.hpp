@@ -18,7 +18,8 @@ namespace VTX
 		{
 			static void computeStride( Model::Molecule & p_molecule )
 			{
-				const Model::Molecule::AtomPositionsFrame & positions = p_molecule.getAtomPositionFrame( p_molecule.getFrame() );
+				const Model::Molecule::AtomPositionsFrame & positions
+					= p_molecule.getAtomPositionFrame( p_molecule.getFrame() );
 
 				for ( uint chainIdx = 0; chainIdx < p_molecule.getChainCount(); ++chainIdx )
 				{
@@ -45,8 +46,10 @@ namespace VTX
 					phi[ residueCount - 1 ] = PI_2f;
 					psi[ residueCount - 1 ] = PI_2f;
 
-					p_molecule.getResidue( idxFirstResidue ).setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
-					p_molecule.getResidue( idxFirstResidue + residueCount - 1 ).setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
+					p_molecule.getResidue( idxFirstResidue )
+						.setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
+					p_molecule.getResidue( idxFirstResidue + residueCount - 1 )
+						.setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
 
 					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 					{
@@ -74,8 +77,10 @@ namespace VTX
 						const Vec3f & positionC1  = positions[ C1->getIndex() ];
 						const Vec3f & positionN2  = positions[ N2->getIndex() ];
 
-						phi[ residueIdx ] = Util::Math::torsionalAngle( positionC0, positionN1, positionCA1, positionC1 );
-						psi[ residueIdx ] = Util::Math::torsionalAngle( positionN1, positionCA1, positionC1, positionN2 );
+						phi[ residueIdx ]
+							= Util::Math::torsionalAngle( positionC0, positionN1, positionCA1, positionC1 );
+						psi[ residueIdx ]
+							= Util::Math::torsionalAngle( positionN1, positionCA1, positionC1, positionN2 );
 					}
 
 					uint firstHelixIdx	= 0u;
@@ -87,7 +92,9 @@ namespace VTX
 					for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 					{
 						// Right-handed helix
-						if ( ( Util::Math::distance( Vec2f( phi[ residueIdx ], psi[ residueIdx ] ), Vec2f( -PIf / 3.f, -PIf / 4.f ) ) < ( PIf / 6.f ) )
+						if ( ( Util::Math::distance( Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
+													 Vec2f( -PIf / 3.f, -PIf / 4.f ) )
+							   < ( PIf / 6.f ) )
 							 && ( residueIdx < residueCount - 1 ) )
 						{
 							if ( RHelixCount == 0 )
@@ -103,14 +110,17 @@ namespace VTX
 								for ( uint k = firstHelixIdx; k < residueIdx; k++ )
 								{
 									Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + k );
-									residue.setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT );
+									residue.setSecondaryStructure(
+										Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT );
 								}
 							}
 							RHelixCount = 0;
 						}
 
 						// Left-handed helix
-						if ( ( Util::Math::distance( Vec2f( phi[ residueIdx ], psi[ residueIdx ] ), Vec2f( PIf / 3.f, PIf / 4.f ) ) < ( PIf / 6.f ) )
+						if ( ( Util::Math::distance( Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
+													 Vec2f( PIf / 3.f, PIf / 4.f ) )
+							   < ( PIf / 6.f ) )
 							 && ( residueIdx < residueCount - 1 ) )
 						{
 							if ( LHelixCount == 0 )
@@ -133,7 +143,9 @@ namespace VTX
 						}
 
 						// Strand
-						if ( ( Util::Math::distance( Vec2f( phi[ residueIdx ], psi[ residueIdx ] ), Vec2f( -Util::Math::radians( 110.f ), Util::Math::radians( 130.f ) ) )
+						if ( ( Util::Math::distance(
+								   Vec2f( phi[ residueIdx ], psi[ residueIdx ] ),
+								   Vec2f( -Util::Math::radians( 110.f ), Util::Math::radians( 130.f ) ) )
 							   < ( PIf / 6.f ) )
 							 && ( residueIdx < residueCount - 1 ) )
 						{
@@ -164,9 +176,12 @@ namespace VTX
 						Model::Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
 
 						if ( ( residue0.getSecondaryStructure() == residue2.getSecondaryStructure() )
-							 && ( ( residue0.getSecondaryStructure() == Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT )
-								  || ( residue0.getSecondaryStructure() == Model::SecondaryStructure::VALUE::HELIX_ALPHA_LEFT )
-								  || ( residue0.getSecondaryStructure() == Model::SecondaryStructure::VALUE::STRAND ) ) )
+							 && ( ( residue0.getSecondaryStructure()
+									== Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT )
+								  || ( residue0.getSecondaryStructure()
+									   == Model::SecondaryStructure::VALUE::HELIX_ALPHA_LEFT )
+								  || ( residue0.getSecondaryStructure()
+									   == Model::SecondaryStructure::VALUE::STRAND ) ) )
 
 						{
 							residue.setSecondaryStructure( residue0.getSecondaryStructure() );
@@ -181,11 +196,7 @@ namespace VTX
 				chrono.start();
 				VTX_INFO( "Computing secondary structure..." );
 
-				switch ( p_molecule.getSecondaryStructureAlgo() )
-				{
-				case Model::SecondaryStructure::ALGO ::STRIDE: computeStride( p_molecule ); break;
-				default: VTX_WARNING( "Secondary structure algorithm not implemented yet" ); break;
-				}
+				computeStride( p_molecule );
 
 				p_molecule.getConfiguration().isSecondaryStructureLoadedFromFile = false;
 				chrono.stop();

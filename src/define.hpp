@@ -36,7 +36,7 @@ namespace VTX
 	using Quatf = glm::quat;
 	using Quatd = glm::dquat;
 
-	using Path = std::filesystem::path;
+	using FilePath = std::filesystem::path;
 
 	// VTX.
 	constexpr int VTX_VERSION_MAJOR	   = 0;

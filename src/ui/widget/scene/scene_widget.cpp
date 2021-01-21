@@ -1,6 +1,7 @@
 #include "scene_widget.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
+#include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
@@ -33,49 +34,67 @@ namespace VTX
 				{
 					if ( p_event.name == Event::Global::MOLECULE_ADDED )
 					{
-						const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+						const Event::VTXEventPtr<Model::Molecule> & castedEvent
+							= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 
 						// Set no parent to not trigger ItemChange event during init
-						View::UI::Widget::MoleculeSceneView * const moleculeWidget = WidgetFactory::get().instantiateViewWidget<View::UI::Widget::MoleculeSceneView>(
-							castedEvent.ptr, ID::View::UI_MOLECULE_STRUCTURE, _scrollAreaContent, "moleculeSceneView" );
+						View::UI::Widget::MoleculeSceneView * const moleculeWidget
+							= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::MoleculeSceneView>(
+								castedEvent.ptr,
+								ID::View::UI_MOLECULE_STRUCTURE,
+								_scrollAreaContent,
+								"moleculeSceneView" );
 
 						_addWidgetInLayout( moleculeWidget );
 					}
 					else if ( p_event.name == Event::Global::MOLECULE_REMOVED )
 					{
-						const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-						const Model::Molecule * const				molecule	= castedEvent.ptr;
+						const Event::VTXEventPtr<Model::Molecule> & castedEvent
+							= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+						const Model::Molecule * const molecule = castedEvent.ptr;
 
 						View::UI::Widget::MoleculeSceneView * const moleculeWidget
-							= MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSceneView>( molecule, ID::View::UI_MOLECULE_STRUCTURE );
+							= MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSceneView>(
+								molecule, ID::View::UI_MOLECULE_STRUCTURE );
 
 						_removeWidgetInLayout( moleculeWidget );
 
-						MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeSceneView>( molecule, ID::View::UI_MOLECULE_STRUCTURE );
+						MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeSceneView>(
+							molecule, ID::View::UI_MOLECULE_STRUCTURE );
 					}
 					else if ( p_event.name == Event::Global::REPRESENTATION_ADDED )
 					{
 						const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> & castedEvent
-							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>( p_event );
+							= dynamic_cast<
+								const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>(
+								p_event );
 
 						View::UI::Widget::RepresentationSceneView * const representationSceneWidget
 							= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::RepresentationSceneView>(
-								castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION, _scrollAreaContent, "representationSceneView" );
+								castedEvent.ptr,
+								ID::View::UI_SCENE_REPRESENTATION,
+								_scrollAreaContent,
+								"representationSceneView" );
 
 						_addWidgetInLayout( representationSceneWidget );
 					}
 					else if ( p_event.name == Event::Global::REPRESENTATION_REMOVED )
 					{
 						const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> & castedEvent
-							= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>( p_event );
+							= dynamic_cast<
+								const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>(
+								p_event );
 
 						View::UI::Widget::RepresentationSceneView * const representationSceneWidget
-							= MVC::MvcManager::get().getView<View::UI::Widget::RepresentationSceneView>( castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION );
+							= MVC::MvcManager::get().getView<View::UI::Widget::RepresentationSceneView>(
+								castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION );
 
 						_removeWidgetInLayout( representationSceneWidget );
 
-						MVC::MvcManager::get().deleteView<View::UI::Widget::RepresentationSceneView, Model::Representation::InstantiatedRepresentation>(
-							castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION );
+						MVC::MvcManager::get()
+							.deleteView<View::UI::Widget::RepresentationSceneView,
+										Model::Representation::InstantiatedRepresentation>(
+								castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION );
 					}
 				}
 
@@ -127,7 +146,8 @@ namespace VTX
 					_layout->addStretch( 1000 );
 					_layout->setContentsMargins( 0, 0, 0, 0 );
 
-					CustomWidget::DockWindowMainWidget<QScrollArea> * const scrollArea = new CustomWidget::DockWindowMainWidget<QScrollArea>( this );
+					CustomWidget::DockWindowMainWidget<QScrollArea> * const scrollArea
+						= new CustomWidget::DockWindowMainWidget<QScrollArea>( this );
 					scrollArea->setFrameShape( QFrame::Shape::NoFrame );
 					scrollArea->setWidget( _scrollAreaContent );
 					scrollArea->setWidgetResizable( true );
@@ -146,21 +166,29 @@ namespace VTX
 					this->setWindowTitle( "Scene" );
 					// this->setWindowTitle( QCoreApplication::translate( "SceneWidget", "Scene", nullptr ) );
 				}
-				void SceneWidget::mousePressEvent( QMouseEvent * p_event ) { VTX::Selection::SelectionManager::get().getSelectionModel().clear(); }
+				void SceneWidget::mousePressEvent( QMouseEvent * p_event )
+				{
+					VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+				}
 				void SceneWidget::dragEnterEvent( QDragEnterEvent * p_event )
 				{
 					BaseManualWidget::dragEnterEvent( p_event );
-					if ( p_event->mimeData()->hasFormat( VTX::UI::MimeType::getQStringMimeType( VTX::UI::MimeType::ApplicationMimeType::SCENE_ITEM ) ) )
+					if ( p_event->mimeData()->hasFormat( VTX::UI::MimeType::getQStringMimeType(
+							 VTX::UI::MimeType::ApplicationMimeType::SCENE_ITEM ) ) )
 						p_event->acceptProposedAction();
 				}
-				void SceneWidget::mouseMoveEvent( QMouseEvent * p_event ) { BaseManualWidget::mouseMoveEvent( p_event ); }
+				void SceneWidget::mouseMoveEvent( QMouseEvent * p_event )
+				{
+					BaseManualWidget::mouseMoveEvent( p_event );
+				}
 
 				void SceneWidget::dropEvent( QDropEvent * p_event )
 				{
 					BaseManualWidget::dropEvent( p_event );
 
-					const QByteArray byteData		 = p_event->mimeData()->data( UI::MimeType::getQStringMimeType( UI::MimeType::ApplicationMimeType::SCENE_ITEM ) );
-					const Model::ID	 idDroppedObject = std::atoi( byteData.data() );
+					const QByteArray byteData = p_event->mimeData()->data(
+						UI::MimeType::getQStringMimeType( UI::MimeType::ApplicationMimeType::SCENE_ITEM ) );
+					const Model::ID idDroppedObject = std::atoi( byteData.data() );
 
 					SceneItemWidget * sceneItemWidget = nullptr;
 					int				  previousIndex	  = 0;

@@ -1,8 +1,10 @@
 #include "scene.hpp"
 #include "action/main.hpp"
 #include "event/event_manager.hpp"
-#include "generic/factory.hpp"
 #include "math/transform.hpp"
+#include "model/mesh_triangle.hpp"
+#include "model/molecule.hpp"
+#include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
 
 namespace VTX
@@ -11,8 +13,15 @@ namespace VTX
 	{
 		Scene::Scene()
 		{
-			Model::Path * path = MVC::MvcManager::get().instantiateModel<Model::Path>();
+			_camera					 = new Camera();
+			Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
 			addPath( path );
+		}
+
+		Scene::~Scene()
+		{
+			clear();
+			delete _camera;
 		}
 
 		void Scene::clear()
@@ -85,7 +94,7 @@ namespace VTX
 				MoleculePtr const molecule = pair.first;
 				float			  time	   = pair.second;
 
-				uint frameCount = molecule->getFrameCount();
+				const uint frameCount = molecule->getFrameCount();
 				if ( molecule->isPlaying() == false || frameCount < 2 )
 				{
 					continue;
@@ -102,7 +111,7 @@ namespace VTX
 				}
 				else
 				{
-					time += float( p_deltaTime );
+					time += p_deltaTime;
 					float offset = 1.f / float( fps );
 					while ( time >= offset )
 					{
@@ -123,16 +132,16 @@ namespace VTX
 			{
 				for ( const PairMoleculePtrFloat & pair : _molecules )
 				{
-					pair.first->rotate( float( p_deltaTime ) * VTX_SETTING().autoRotationSpeed.x, VEC3F_X );
-					pair.first->rotate( float( p_deltaTime ) * VTX_SETTING().autoRotationSpeed.y, VEC3F_Y );
-					pair.first->rotate( float( p_deltaTime ) * VTX_SETTING().autoRotationSpeed.z, VEC3F_Z );
+					pair.first->rotate( p_deltaTime * VTX_SETTING().autoRotationSpeed.x, VEC3F_X );
+					pair.first->rotate( p_deltaTime * VTX_SETTING().autoRotationSpeed.y, VEC3F_Y );
+					pair.first->rotate( p_deltaTime * VTX_SETTING().autoRotationSpeed.z, VEC3F_Z );
 				}
 
 				for ( const MeshTrianglePtr & mesh : _meshes )
 				{
-					mesh->rotate( float( p_deltaTime ) * VTX_SETTING().autoRotationSpeed.x, VEC3F_X );
-					mesh->rotate( float( p_deltaTime ) * VTX_SETTING().autoRotationSpeed.y, VEC3F_Y );
-					mesh->rotate( float( p_deltaTime ) * VTX_SETTING().autoRotationSpeed.z, VEC3F_Z );
+					mesh->rotate( p_deltaTime * VTX_SETTING().autoRotationSpeed.x, VEC3F_X );
+					mesh->rotate( p_deltaTime * VTX_SETTING().autoRotationSpeed.y, VEC3F_Y );
+					mesh->rotate( p_deltaTime * VTX_SETTING().autoRotationSpeed.z, VEC3F_Z );
 				}
 			}
 		} // namespace Object3D

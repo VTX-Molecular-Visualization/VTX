@@ -1,5 +1,4 @@
 #include "gl.hpp"
-#include "generic/factory.hpp"
 #include "model/molecule.hpp"
 #include "view/base_view_3d_molecule.hpp"
 #include "vtx_app.hpp"
@@ -120,7 +119,7 @@ namespace VTX::Renderer::GL
 	{
 		if ( VTXApp::get().MASK )
 		{
-			return;
+			// return;
 		}
 
 		gl()->glViewport( 0, 0, _width, _height );

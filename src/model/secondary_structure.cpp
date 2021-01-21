@@ -1,6 +1,8 @@
 #include "secondary_structure.hpp"
 #include "id.hpp"
+#include "model/chain.hpp"
 #include "model/molecule.hpp"
+#include "model/residue.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
@@ -11,16 +13,18 @@ namespace VTX
 {
 	namespace Model
 	{
-		const Color::Rgb SecondaryStructure::COLORS_JMOL[ uint( VALUE::COUNT ) ] = { Color::Rgb( 1.f, 0.f, 0.5f ),	 // HELIX_ALPHA_RIGHT
-																					 Color::Rgb( 1.f, 0.f, 0.5f ),	 // HELIX_ALPHA_LEFT
-																					 Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
-																					 Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_LEFT
-																					 Color::Rgb( 0.37f, 0.f, 0.5f ), // HELIX_PI
-																					 Color::Rgb( 1.f, 0.78f, 0.f ),	 // STRAND
-																					 Color::Rgb( 0.37f, 0.5f, 1.f ), // TURN
-																					 Color::Rgb::WHITE };			 // COIL
+		const Color::Rgb SecondaryStructure::COLORS_JMOL[ uint( VALUE::COUNT ) ]
+			= { Color::Rgb( 1.f, 0.f, 0.5f ),	// HELIX_ALPHA_RIGHT
+				Color::Rgb( 1.f, 0.f, 0.5f ),	// HELIX_ALPHA_LEFT
+				Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
+				Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_LEFT
+				Color::Rgb( 0.37f, 0.f, 0.5f ), // HELIX_PI
+				Color::Rgb( 1.f, 0.78f, 0.f ),	// STRAND
+				Color::Rgb( 0.37f, 0.5f, 1.f ), // TURN
+				Color::Rgb::WHITE };			// COIL
 
-		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) : BaseModel3D( ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
+		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) :
+			BaseModel3D( ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
 		{
 			Tool::Chrono chrono;
 			chrono.start();
@@ -111,7 +115,9 @@ namespace VTX
 					// Add color.
 					switch ( _colorMode )
 					{
-					case COLOR_MODE::JMOL: _bufferColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] ); break;
+					case COLOR_MODE::JMOL:
+						_bufferColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
+						break;
 					case COLOR_MODE::PROTEIN: _bufferColors.emplace_back( residue.getMoleculePtr()->getColor() ); break;
 					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue.getChainPtr()->getColor() ); break;
 					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue.getColor() ); break;
@@ -134,11 +140,14 @@ namespace VTX
 						_buffferIndices.emplace_back( offset + i + 1 );
 						_buffferIndices.emplace_back( offset + i + 2 );
 					}
-					_residueToPositions.emplace( residueIndex[ controlPointPositions.size() - 1 ], uint( _bufferPositions.size() + controlPointPositions.size() - 1 ) );
-					_residueToPositions.emplace( residueIndex[ controlPointPositions.size() - 2 ], uint( _bufferPositions.size() + controlPointPositions.size() - 2 ) );
+					_residueToPositions.emplace( residueIndex[ controlPointPositions.size() - 1 ],
+												 uint( _bufferPositions.size() + controlPointPositions.size() - 1 ) );
+					_residueToPositions.emplace( residueIndex[ controlPointPositions.size() - 2 ],
+												 uint( _bufferPositions.size() + controlPointPositions.size() - 2 ) );
 
 					// Merge control points.
-					_bufferPositions.insert( _bufferPositions.end(), controlPointPositions.begin(), controlPointPositions.end() );
+					_bufferPositions.insert(
+						_bufferPositions.end(), controlPointPositions.begin(), controlPointPositions.end() );
 				}
 			}
 
@@ -173,7 +182,11 @@ namespace VTX
 
 		void SecondaryStructure::_computeAABB() {}
 
-		void SecondaryStructure::_instantiate3DViews() { _addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Ribbon>( this, ID::View::D3_RIBBON_PATCH ) ); }
+		void SecondaryStructure::_instantiate3DViews()
+		{
+			_addRenderable(
+				MVC::MvcManager::get().instantiateView<View::D3::Ribbon>( this, ID::View::D3_RIBBON_PATCH ) );
+		}
 
 		void SecondaryStructure::setCurrentFrame()
 		{
@@ -264,7 +277,9 @@ namespace VTX
 
 					switch ( _colorMode )
 					{
-					case COLOR_MODE::JMOL: _bufferColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] ); break;
+					case COLOR_MODE::JMOL:
+						_bufferColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
+						break;
 					case COLOR_MODE::PROTEIN: _bufferColors.emplace_back( residue.getMoleculePtr()->getColor() ); break;
 					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue.getChainPtr()->getColor() ); break;
 					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue.getColor() ); break;
@@ -311,7 +326,8 @@ namespace VTX
 
 		void SecondaryStructure::print() const
 		{
-			VTX_INFO( "Control points: " + std::to_string( _bufferPositions.size() ) + " / Indices: " + std::to_string( _buffferIndices.size() ) );
+			VTX_INFO( "Control points: " + std::to_string( _bufferPositions.size() )
+					  + " / Indices: " + std::to_string( _buffferIndices.size() ) );
 			VTX_DEBUG( "Sizeof secondary structure: " + std::to_string( sizeof( *this ) ) );
 		}
 

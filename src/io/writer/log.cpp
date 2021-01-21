@@ -14,9 +14,7 @@ namespace VTX
 
 			Log::~Log() { _os.close(); }
 
-			void Log::writeFile( const Path & p_path, const std::string & p_data ) {
-				_os << p_data << std::endl;
-			}
+			void Log::writeFile( const FilePath & p_path, const std::string & p_data ) { _os << p_data << std::endl; }
 
 		} // namespace Writer
 	}	  // namespace IO

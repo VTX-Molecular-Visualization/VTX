@@ -36,7 +36,7 @@ namespace VTX::Renderer
 	class BaseRenderer : public Generic::BaseOpenGL
 	{
 	  public:
-		BaseRenderer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) { }
+		BaseRenderer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 		virtual ~BaseRenderer() = default;
 
 		inline const uint getWidth() const { return _width; }
@@ -60,8 +60,8 @@ namespace VTX::Renderer
 		virtual void activeAA( const bool ) {}
 
 	  protected:
-		uint				 _width			 = 0;
-		uint				 _height		 = 0;
+		uint _width	 = 0;
+		uint _height = 0;
 	};
 } // namespace VTX::Renderer
 

@@ -5,11 +5,13 @@
 #pragma once
 #endif
 
-#include "object3d/camera.hpp"
-#include "renderer/gl/program_manager.hpp"
-
 namespace VTX
 {
+	namespace Object3D
+	{
+		class Camera;
+	}
+
 	namespace Generic
 	{
 		class BaseRenderable

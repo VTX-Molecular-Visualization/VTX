@@ -5,8 +5,7 @@
 #pragma once
 #endif
 
-#include "model/representation/instantiated_representation.hpp"
-#include "model/representation/representation_enum.hpp"
+#include "define.hpp"
 #include "representation/representation_target.hpp"
 #include <map>
 #include <set>
@@ -17,7 +16,11 @@ namespace VTX
 	{
 		class Molecule;
 		class Residue;
-	} // namespace Model
+		namespace Representation
+		{
+			class InstantiatedRepresentation;
+		} // namespace Representation
+	}	  // namespace Model
 
 	namespace Generic
 	{

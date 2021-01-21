@@ -1,4 +1,5 @@
 #include "psf.hpp"
+#include "model/configuration/molecule.hpp"
 #include <fstream>
 #include <sstream>
 
@@ -12,7 +13,9 @@ namespace VTX
 			{
 				// TODO: are PSF files always like this ?
 				if ( p_line.find( "WT", 0 ) != std::string::npos )
-				{ p_configuration.solventResidueSymbols.emplace( _readSymbol( p_line ) ); }
+				{
+					p_configuration.solventResidueSymbols.emplace( _readSymbol( p_line ) );
+				}
 				else if ( p_line.find( "ION", 0 ) != std::string::npos )
 				{
 					p_configuration.ionResidueSymbols.emplace( _readSymbol( p_line ) );

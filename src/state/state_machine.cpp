@@ -3,7 +3,6 @@
 #include "event/event.hpp"
 #include "exception.hpp"
 #include "export.hpp"
-#include "generic/factory.hpp"
 #include "id.hpp"
 #include "play.hpp"
 #include "visualization.hpp"

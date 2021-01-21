@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "factory.hpp"
 #include "tool/logger.hpp"
 #include <algorithm>
 #include <map>
@@ -28,7 +27,7 @@ namespace VTX
 
 			void clear()
 			{
-				for ( PairStringToItemPtr & pair : _items )
+				for ( const PairStringToItemPtr & pair : _items )
 				{
 					delete pair.second;
 				}

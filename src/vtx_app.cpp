@@ -61,7 +61,7 @@ namespace VTX
 //#define RT_ENABLED
 #ifdef RT_ENABLED
 		// Path * path	   = new Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
-		Path * path = new Path( DATA_DIR + "6vsb.mmtf" );
+		FilePath * path = new FilePath( DATA_DIR + "6vsb.mmtf" );
 		VTX_ACTION( new Action::Open( path ) );
 		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
 		Action::ActionManager::get().update( 0.f );

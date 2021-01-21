@@ -26,7 +26,7 @@ namespace VTX
 				explicit Load() {}
 				virtual void execute() override
 				{
-					const VTX::Path & path = Util::Filesystem::SETTING_JSON_FILE;
+					const VTX::FilePath & path = Util::Filesystem::SETTING_JSON_FILE;
 					if ( std::filesystem::exists( path ) == false )
 					{
 						VTX_INFO( "No settings file found" );
@@ -101,13 +101,17 @@ namespace VTX
 			class ChangeRepresentation : public BaseAction
 			{
 			  public:
-				explicit ChangeRepresentation( const int p_representationIndex ) : _representationIndex( p_representationIndex ) {}
+				explicit ChangeRepresentation( const int p_representationIndex ) :
+					_representationIndex( p_representationIndex )
+				{
+				}
 
 				virtual void execute() override
 				{
 					VTX_SETTING().representation = _representationIndex;
 
-					VTX::Representation::RepresentationManager::get().setDefaultRepresentationIndex( _representationIndex );
+					VTX::Representation::RepresentationManager::get().setDefaultRepresentationIndex(
+						_representationIndex );
 
 					for ( const Object3D::Scene::PairMoleculePtrFloat & pair : VTXApp::get().getScene().getMolecules() )
 						pair.first->computeRepresentationTargets();
@@ -213,7 +217,11 @@ namespace VTX
 			  public:
 				explicit ChangeAOIntensity( const int p_intensity ) : _intensity( p_intensity ) {}
 
-				virtual void execute() override { VTX_SETTING().aoIntensity = Util::Math::clamp( _intensity, VTX::Setting::AO_INTENSITY_MIN, VTX::Setting::AO_INTENSITY_MAX ); };
+				virtual void execute() override
+				{
+					VTX_SETTING().aoIntensity = Util::Math::clamp(
+						_intensity, VTX::Setting::AO_INTENSITY_MIN, VTX::Setting::AO_INTENSITY_MAX );
+				};
 
 			  private:
 				const int _intensity;
@@ -224,7 +232,11 @@ namespace VTX
 			  public:
 				explicit ChangeAOBlurSize( const int p_blurSize ) : _blurSize( p_blurSize ) {}
 
-				virtual void execute() override { VTX_SETTING().aoBlurSize = Util::Math::clamp( _blurSize, VTX::Setting::AO_BLUR_SIZE_MIN, VTX::Setting::AO_BLUR_SIZE_MAX ); };
+				virtual void execute() override
+				{
+					VTX_SETTING().aoBlurSize = Util::Math::clamp(
+						_blurSize, VTX::Setting::AO_BLUR_SIZE_MIN, VTX::Setting::AO_BLUR_SIZE_MAX );
+				};
 
 			  private:
 				const int _blurSize;
@@ -407,7 +419,10 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					VTX_SETTING().translationSpeed = Util::Math::clamp( _speed, VTX::Setting::CONTROLLER_TRANSLATION_SPEED_MIN, VTX::Setting::CONTROLLER_TRANSLATION_SPEED_MAX );
+					VTX_SETTING().translationSpeed
+						= Util::Math::clamp( _speed,
+											 VTX::Setting::CONTROLLER_TRANSLATION_SPEED_MIN,
+											 VTX::Setting::CONTROLLER_TRANSLATION_SPEED_MAX );
 				};
 
 			  private:
@@ -422,7 +437,9 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().translationFactorSpeed
-						= Util::Math::clamp( _factor, VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MIN, VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MAX );
+						= Util::Math::clamp( _factor,
+											 VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MIN,
+											 VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MAX );
 				};
 
 			  private:
@@ -436,7 +453,9 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					VTX_SETTING().rotationSpeed = Util::Math::clamp( _speed, VTX::Setting::CONTROLLER_ROTATION_SPEED_MIN, VTX::Setting::CONTROLLER_ROTATION_SPEED_MAX );
+					VTX_SETTING().rotationSpeed = Util::Math::clamp( _speed,
+																	 VTX::Setting::CONTROLLER_ROTATION_SPEED_MIN,
+																	 VTX::Setting::CONTROLLER_ROTATION_SPEED_MAX );
 				};
 
 			  private:
@@ -461,7 +480,8 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					VTX_SETTING().autoRotationSpeed = Util::Math::clamp( _value, VTX::Setting::AUTO_ROTATE_SPEED_MIN, VTX::Setting::AUTO_ROTATE_SPEED_MAX );
+					VTX_SETTING().autoRotationSpeed = Util::Math::clamp(
+						_value, VTX::Setting::AUTO_ROTATE_SPEED_MIN, VTX::Setting::AUTO_ROTATE_SPEED_MAX );
 				}
 
 				virtual void displayUsage() override { VTX_INFO( "f f f|f" ); }

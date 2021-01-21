@@ -6,7 +6,7 @@
 #endif
 
 #include "id.hpp"
-#include "model/base_model_3d.hpp"
+#include "model/base_model.hpp"
 #include "mvc_data.hpp"
 #include "view/base_view_3d.hpp"
 #include <type_traits>
@@ -104,7 +104,10 @@ namespace VTX
 				return modelPtr;
 			}
 
-			const ID::VTX_ID & getModelTypeID( const Model::ID & p_id ) { return _container[ p_id ]->getModel().getTypeId(); };
+			const ID::VTX_ID & getModelTypeID( const Model::ID & p_id )
+			{
+				return _container[ p_id ]->getModel().getTypeId();
+			};
 
 			template<typename V,
 					 typename M,
@@ -121,7 +124,9 @@ namespace VTX
 					 typename M,
 					 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
 					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>>
-			inline V * const instantiateViewWidget( M * const p_model, const ID::VTX_ID & p_id, QWidget * const p_parentWidget = nullptr )
+			inline V * const instantiateViewWidget( M * const		   p_model,
+													const ID::VTX_ID & p_id,
+													QWidget * const	   p_parentWidget = nullptr )
 			{
 				V * const view = new V( p_model, p_parentWidget );
 				_container[ p_model->getId() ]->addView<M, V>( p_id, view );
@@ -146,11 +151,20 @@ namespace VTX
 				delete _container[ p_model->getId() ]->removeView<M, V>( p_id );
 			}
 
-			inline void deleteView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { delete _container[ p_model->getId() ]->removeView( p_id ); }
+			inline void deleteView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id )
+			{
+				delete _container[ p_model->getId() ]->removeView( p_id );
+			}
 
-			inline const bool hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id ) { return _container[ p_model->getId() ]->hasView( p_id ); };
+			inline const bool hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id )
+			{
+				return _container[ p_model->getId() ]->hasView( p_id );
+			};
 
-			inline void notifyViews( const Model::BaseModel * const p_caller, const Event::VTXEvent * const p_event ) { _container[ p_caller->getId() ]->notifyViews( p_event ); }
+			inline void notifyViews( const Model::BaseModel * const p_caller, const Event::VTXEvent * const p_event )
+			{
+				_container[ p_caller->getId() ]->notifyViews( p_event );
+			}
 
 		  private:
 			MvcManager()					 = default;

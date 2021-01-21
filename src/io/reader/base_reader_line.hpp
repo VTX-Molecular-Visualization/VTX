@@ -20,7 +20,7 @@ namespace VTX
 			  public:
 				virtual ~BaseReaderLine() = default;
 
-				virtual void readFile( const Path & p_path, T & p_data ) override final
+				virtual void readFile( const FilePath & p_path, T & p_data ) override final
 				{
 					// TODO: move stream opening in filesystem.hpp?
 					std::ifstream file;

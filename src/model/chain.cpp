@@ -1,5 +1,6 @@
 #include "chain.hpp"
 #include "molecule.hpp"
+#include "residue.hpp"
 
 namespace VTX
 {

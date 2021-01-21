@@ -6,7 +6,7 @@
 #endif
 
 #include "base_worker.hpp"
-#include "io/writer/base_writer.hpp"
+#include "define.hpp"
 
 namespace VTX
 {
@@ -15,13 +15,13 @@ namespace VTX
 		class Saver : public Worker::BaseWorker
 		{
 		  public:
-			explicit Saver( Path * const p_path ) : _path( p_path ) {}
+			explicit Saver( FilePath * const p_path ) : _path( p_path ) {}
 			~Saver() {}
 
 			virtual void work() override;
 
 		  private:
-			Path * const _path;
+			FilePath * const _path;
 		};
 	} // namespace Worker
 } // namespace VTX

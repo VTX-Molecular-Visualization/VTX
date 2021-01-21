@@ -1,4 +1,6 @@
 #include "geometric.hpp"
+#include "model/mesh_triangle.hpp"
+#include "model/molecule.hpp"
 #include "renderer/gl/gl.hpp"
 
 namespace VTX::Renderer::GL::Pass

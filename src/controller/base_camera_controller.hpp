@@ -14,6 +14,11 @@
 
 namespace VTX
 {
+	namespace Object3D
+	{
+		class Camera;
+	}
+
 	namespace Controller
 	{
 		class BaseCameraController : public BaseMouseController, public BaseKeyboardController
