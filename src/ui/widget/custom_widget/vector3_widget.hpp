@@ -35,6 +35,30 @@ namespace VTX
 
 					void localize() override;
 
+					void setSpinBoxMin( const double p_min )
+					{
+						_widgetX->setMinimum( p_min );
+						_widgetY->setMinimum( p_min );
+						_widgetZ->setMinimum( p_min );
+					};
+					void setSpinBoxMax( const double p_max )
+					{
+						_widgetX->setMaximum( p_max );
+						_widgetY->setMaximum( p_max );
+						_widgetZ->setMaximum( p_max );
+					};
+					void setSpinBoxMinMax( const double p_min, const double p_max )
+					{
+						setSpinBoxMin( p_min );
+						setSpinBoxMax( p_max );
+					}
+					void setSpinBoxStep( const double p_step )
+					{
+						_widgetX->setSingleStep( p_step );
+						_widgetY->setSingleStep( p_step );
+						_widgetZ->setSingleStep( p_step );
+					};
+
 				  signals:
 					void onValueChange( const Vec3f & value );
 

@@ -24,32 +24,49 @@ namespace VTX
 					if ( p_count <= 0 )
 						return;
 
-					if ( _lastIndex + 1 == p_firstIndex )
+					for ( std::map<uint, uint>::iterator & it = _range.begin(); it != _range.end(); it++ )
 					{
-						_range[ _lastKey ] += p_count;
-						_lastIndex += p_count;
-					}
-					else
-					{
-						_range.emplace( p_firstIndex, p_count );
+						const uint itFirstIndex = it->first;
+						uint &	   itCount		= it->second;
+						const uint itNextIndex	= itFirstIndex + itCount;
 
-						_lastKey   = p_firstIndex;
-						_lastIndex = p_firstIndex + p_count;
+						// Already in buffer
+						if ( itFirstIndex <= p_firstIndex && p_firstIndex < itNextIndex )
+							return;
+
+						if ( itNextIndex == p_firstIndex )
+						{
+							itCount += p_count;
+
+							// If new last index join the next range, fusion it
+							std::map<uint, uint>::iterator nextIt = it;
+							nextIt++;
+							if ( nextIt != _range.end() && it->second == nextIt->first )
+							{
+								itCount += nextIt->second;
+								_range.erase( nextIt );
+							}
+
+							return;
+						}
 					}
+
+					_range.emplace( p_firstIndex, p_count );
 				}
+
 				const std::map<uint, uint> & getRange() const { return _range; }
 
 			  private:
-				std::map<uint, uint> _range		= std::map<uint, uint>();
-				uint				 _lastIndex = -2;
-				uint				 _lastKey	= -2;
+				std::map<uint, uint> _range = std::map<uint, uint>();
 			};
 
 		  public:
 			RepresentationTarget() {};
 
 			void appendAtoms( const std::pair<uint, uint> & p_atomData ) { _atoms.append( p_atomData ); };
-			void appendBonds( const std::pair<uint, uint> & p_bondsRange, const std::vector<uint> & p_indexExtraBondStart, const std::vector<uint> & p_indexExtraBondEnd )
+			void appendBonds( const std::pair<uint, uint> & p_bondsRange,
+							  const std::vector<uint> &		p_indexExtraBondStart,
+							  const std::vector<uint> &		p_indexExtraBondEnd )
 			{
 				_bonds.append( p_bondsRange );
 

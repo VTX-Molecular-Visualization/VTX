@@ -36,8 +36,9 @@ namespace VTX
 					virtual void _setupSlots() override;
 
 				  private:
-					CustomWidget::CollapsingHeaderWidget * _mainWidget	= nullptr;
-					InspectorSection *					   _infoSection = nullptr;
+					CustomWidget::CollapsingHeaderWidget * _mainWidget		 = nullptr;
+					InspectorSection *					   _infoSection		 = nullptr;
+					InspectorSection *					   _transformSection = nullptr;
 
 					CustomWidget::TransformWidget * _transformWidget = nullptr;
 					QLabel *						_fullnameLabel	 = nullptr;

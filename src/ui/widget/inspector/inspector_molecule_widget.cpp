@@ -36,11 +36,14 @@ namespace VTX
 					QVBoxLayout * contentLayout = new QVBoxLayout( mainContent );
 					contentLayout->setContentsMargins( 0, 0, 0, 0 );
 
-					_infoSection
+					_transformSection
 						= WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
 					_transformWidget = WidgetFactory::get().instantiateWidget<CustomWidget::TransformWidget>(
 						this, "inspector_molecule_transform" );
-					_infoSection->appendField( "", _transformWidget );
+					_transformSection->appendField( "", _transformWidget );
+
+					_infoSection
+						= WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
 					_fullnameLabel = new QLabel( this );
 					_fullnameLabel->setWordWrap( true );
 					_infoSection->appendField( "Full Name", _fullnameLabel );
@@ -48,6 +51,7 @@ namespace VTX
 					_nbAtomsLabel->setWordWrap( true );
 					_infoSection->appendField( "Nb Atoms", _nbAtomsLabel );
 
+					contentLayout->addWidget( _transformSection );
 					contentLayout->addWidget( _infoSection );
 					contentLayout->addStretch( 1000 );
 
@@ -80,6 +84,7 @@ namespace VTX
 
 				void InspectorMoleculeWidget::localize()
 				{
+					_transformSection->setHeaderTitle( "Transform" );
 					_infoSection->setHeaderTitle( "Infos" );
 					_infoSection->localize();
 				}

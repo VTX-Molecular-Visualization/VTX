@@ -23,17 +23,11 @@ namespace VTX
 			inline const Mat4f & getRotation() const { return _rotation; };
 			inline const Mat4f & getScale() const { return _scale; };
 
-			inline Vec3f getTranslationVector() const
-			{
-				return Vec3f( _translation[ 3 ][ 0 ], _translation[ 3 ][ 1 ], _translation[ 3 ][ 2 ] );
-			};
+			inline Vec3f getTranslationVector() const { return Vec3f( _translation[ 3 ][ 0 ], _translation[ 3 ][ 1 ], _translation[ 3 ][ 2 ] ); };
 
-			inline const Vec3f getRotationVector() const { return Vec3f(); };
+			inline Vec3f getEulerAngles() const { return Util::Math::rotationMatrixToEuler( _rotation ); };
 
-			inline Vec3f getScaleVector() const
-			{
-				return Vec3f( _scale[ 0 ][ 0 ], _scale[ 1 ][ 1 ], _scale[ 2 ][ 2 ] );
-			}
+			inline Vec3f getScaleVector() const { return Vec3f( _scale[ 0 ][ 0 ], _scale[ 1 ][ 1 ], _scale[ 2 ][ 2 ] ); }
 
 			inline void reset()
 			{
@@ -75,9 +69,9 @@ namespace VTX
 				update();
 			}
 
-			inline void setRotation( const float p_x, const float p_y, const float p_z )
+			inline void setRotation( const float p_pitch, const float p_yaw, const float p_roll )
 			{
-				// TODO
+				_rotation = Util::Math::getRotation( Util::Math::radians( p_pitch ), Util::Math::radians( p_yaw ), Util::Math::radians( p_roll ) );
 				update();
 			}
 
