@@ -19,7 +19,7 @@ namespace VTX::Renderer::Optix
 	class OptixRayTracer : public BaseRenderer
 	{
 	  public:
-		OptixRayTracer() = default;
+		OptixRayTracer( OpenGLFunctions * const p_gl ) : BaseRenderer( p_gl ) {}
 		~OptixRayTracer();
 
 		virtual void init( const uint, const uint ) override;

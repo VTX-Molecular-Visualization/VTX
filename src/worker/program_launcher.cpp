@@ -1,5 +1,5 @@
 #include "program_launcher.hpp"
-#include "vtx_app.hpp"
+#include "tool/logger.hpp"
 
 namespace VTX
 {

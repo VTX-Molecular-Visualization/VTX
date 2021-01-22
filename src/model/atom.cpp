@@ -1,21 +1,16 @@
 #include "atom.hpp"
-#include "view/ui/atom.hpp"
+#include "molecule.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
-		void Atom::setSelected( const bool p_selected )
+		const Math::AABB Atom::getAABB() const
 		{
-			BaseSelectable::setSelected( p_selected );
-			if ( isSelected() )
-			{
-				addItem( (View::BaseView<BaseModel> *)new View::UI::Atom( this ) );
-			}
-			else
-			{
-				delete removeItem( ID::View::UI_ATOM );
-			}
+			Vec3f &	   position = _moleculePtr->getAtomPositionFrame( _moleculePtr->getFrame() )[ _index ];
+			Math::AABB aabb		= Math::AABB( position, getVdwRadius() );
+
+			return aabb;
 		}
 
 		const std::string Atom::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {

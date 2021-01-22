@@ -6,6 +6,7 @@
 #endif
 
 #include "factory.hpp"
+#include "tool/logger.hpp"
 #include <algorithm>
 #include <map>
 #include <string>
@@ -16,7 +17,7 @@ namespace VTX
 {
 	namespace Generic
 	{
-		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseCollectionable, T>::value>>
+		template<typename T>
 		class HasCollection
 		{
 		  public:
@@ -29,7 +30,6 @@ namespace VTX
 			{
 				for ( PairStringToItemPtr & pair : _items )
 				{
-					pair.second->clean();
 					delete pair.second;
 				}
 
@@ -37,14 +37,7 @@ namespace VTX
 				_orderedKeys.clear();
 			}
 
-			void addItem( T * const p_item )
-			{
-				p_item->init();
-				std::string name = static_cast<BaseCollectionable *>( p_item )->getName();
-				addItemRef( name, p_item );
-			}
-
-			void addItemRef( const std::string & p_name, T * const p_item )
+			void addItem( const std::string & p_name, T * const p_item )
 			{
 				try
 				{
@@ -61,13 +54,6 @@ namespace VTX
 			T * removeItem( const std::string & p_name )
 			{
 				T * item = _items.at( p_name );
-				item->clean();
-				return removeItemRef( p_name );
-			}
-
-			T * removeItemRef( const std::string & p_name )
-			{
-				T * item = _items.at( p_name );
 				_items.erase( p_name );
 				_orderedKeys.erase( std::find( _orderedKeys.begin(), _orderedKeys.end(), p_name ) );
 				return item;
@@ -75,14 +61,16 @@ namespace VTX
 
 			inline const T * const getItemAt( const std::string & p_name ) const { return _items.at( p_name ); }
 			inline T * const	   getItemAt( const std::string & p_name ) { return _items.at( p_name ); }
-			inline const T * const getItem( const std::string & p_name ) const { return _items[ p_name ]; }
 			inline T * const	   getItem( const std::string & p_name ) { return _items[ p_name ]; }
+
+			inline const MapStringToItemPtr * const getItems() const { return &_items; }
 
 			template<typename T2, typename = std::enable_if<std::is_base_of<T, T2>::value>>
 			const T2 * const getItem( const std::string & p_name ) const
 			{
 				return dynamic_cast<const T2 * const>( getItem( p_name ) );
 			}
+
 			template<typename T2, typename = std::enable_if<std::is_base_of<T, T2>::value>>
 			T2 * const getItem( const std::string & p_name )
 			{

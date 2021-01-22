@@ -1,9 +1,16 @@
 #version 450
 
-layout( location = 0 ) in vec3 aSpherePos;
-layout( location = 1 ) in vec3 aSphereColor;
-layout( location = 2 ) in float aSphereRad;
-layout( location = 3 ) in uint aSphereVis;
+#define ATOM_POSITION 0
+#define ATOM_COLOR 1
+#define ATOM_RADIUS 2
+#define ATOM_VISIBILITY 3
+#define ATOM_SELECTION 4
+
+layout( location = ATOM_POSITION ) in vec3 aSpherePos;
+layout( location = ATOM_COLOR ) in vec3 aSphereColor;
+layout( location = ATOM_RADIUS ) in float aSphereRad;
+layout( location = ATOM_VISIBILITY ) in unsigned short aSphereVis;
+layout( location = ATOM_SELECTION ) in unsigned short aSphereSel;
 
 uniform mat4  uMVMatrix;
 uniform mat4  uProjMatrix;
@@ -11,13 +18,14 @@ uniform float uRadiusAdd	 = 0.f; // TODO: for SAS ?
 uniform float uRadiusFixed	 = 1.f;
 uniform bool  uIsRadiusFixed = false;
 
-flat out vec3  vViewSpherePos; // Sphere position in view space.
-flat out vec3  vSphereColor;
-flat out float vSphereRad;
-flat out uint  vSphereVis;
-flat out vec3  vImpU; // Impostor vectors.
-flat out vec3  vImpV;
-flat out float vDotViewSpherePos;
+flat out vec3			vViewSpherePos; // Sphere position in view space.
+flat out vec3			vSphereColor;
+flat out float			vSphereRad;
+flat out unsigned short vSphereVis;
+flat out unsigned short vSphereSel;
+flat out vec3			vImpU; // Impostor vectors.
+flat out vec3			vImpV;
+flat out float			vDotViewSpherePos;
 
 void main()
 {
@@ -25,6 +33,7 @@ void main()
 	vSphereColor   = aSphereColor;
 	vSphereRad	   = uIsRadiusFixed ? uRadiusFixed : aSphereRad + uRadiusAdd;
 	vSphereVis	   = aSphereVis;
+	vSphereSel	   = aSphereSel;
 
 	// Compute normalized view vector.
 	vDotViewSpherePos		  = dot( vViewSpherePos, vViewSpherePos );

@@ -5,9 +5,9 @@
 #pragma once
 #endif
 
-#include "renderer/base_renderer.hpp"
 #include "console_progress_bar.hpp"
 #include "integrators/base_integrator.hpp"
+#include "renderer/base_renderer.hpp"
 #include "rt_scene.hpp"
 #include <vector>
 
@@ -20,7 +20,7 @@ namespace VTX
 			class CameraRayTracing;
 
 		  public:
-			RayTracer()	 = default;
+			RayTracer( OpenGLFunctions * const p_gl ) : BaseRenderer( p_gl ) {}
 			~RayTracer() = default;
 
 			virtual void init( const uint, const uint ) override;
@@ -55,8 +55,8 @@ namespace VTX
 			BaseIntegrator *  _aoIntegrator = nullptr;
 
 			Scene			   _scene;
-			std::vector<uchar> _pixels = std::vector<uchar>();
-			GLuint			   _texture;
+			std::vector<uchar> _pixels	= std::vector<uchar>();
+			GLuint			   _texture = GL_INVALID_VALUE;
 
 			// TODO: keep gamma as float ?
 			float _gamma = 1.f;

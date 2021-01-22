@@ -8,6 +8,9 @@
 #include "base_model.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"
+#include "generic/base_visible.hpp"
+#include "id.hpp"
+#include "math/aabb.hpp"
 
 namespace VTX
 {
@@ -16,8 +19,10 @@ namespace VTX
 		class Molecule;
 		class Chain;
 		class Residue;
-		class Atom : public BaseModel, public Generic::BaseColorable
+		class Atom : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible
 		{
+			VTX_MODEL
+
 		  public:
 			// Sorted by atomic number.
 			enum class SYMBOL : int
@@ -168,7 +173,11 @@ namespace VTX
 
 			inline const SYMBOL		   getSymbol() const { return _symbol; };
 			inline const std::string & getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; };
-			inline void				   setSymbol( const SYMBOL p_symbol ) { _symbol = p_symbol; };
+			inline void				   setSymbol( const SYMBOL p_symbol )
+			{
+				_symbol = p_symbol;
+				BaseModel::setDefaultName( &getSymbolName() );
+			};
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const uint		   getAtomicNumber() const { return (uint)_symbol; }
 			inline const float		   getVdwRadius() const { return SYMBOL_VDW_RADIUS[ (int)_symbol ]; }
@@ -177,7 +186,7 @@ namespace VTX
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
-			void setSelected( const bool );
+			const Math::AABB getAABB() const;
 
 		  private:
 			uint	   _index		= 0;
@@ -188,6 +197,8 @@ namespace VTX
 			SYMBOL	   _symbol		= SYMBOL::UNKNOWN;
 			// /!\ Names PDB != MMTF (CA and C1 for alpha carbon).
 			std::string _name = "";
+
+			Atom() : BaseModel( ID::Model::MODEL_ATOM ) {}
 		};
 
 	} // namespace Model

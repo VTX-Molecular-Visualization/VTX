@@ -16,21 +16,19 @@ namespace VTX
 		{
 			class Ribbon : public BaseView3D<Model::SecondaryStructure>
 			{
+				VTX_VIEW
+
 			  public:
-				explicit Ribbon( Model::SecondaryStructure * const p_model ) : BaseView3D( p_model ) {}
-
-				virtual const std::string & getName() const override { return ID::View::D3_RIBBON_PATCH; };
-
-				virtual void createProgram() override;
-				virtual void setUniFormLocations() override;
-
-				virtual void render() override;
+				void render() override;
 
 			  private:
 				GLint _uCamPositionLoc	   = GL_INVALID_INDEX;
 				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
 				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
 				GLint _uNormalMatrixLoc	   = GL_INVALID_INDEX;
+				GLint _uMaxIndice		   = GL_INVALID_INDEX;
+
+				explicit Ribbon( Model::SecondaryStructure * const p_model );
 			};
 		} // namespace D3
 	}	  // namespace View

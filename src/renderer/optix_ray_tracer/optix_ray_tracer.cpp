@@ -100,11 +100,11 @@ namespace VTX::Renderer::Optix
 			// TODO: handle it ! :-)
 		}
 
-		glGenTextures( 1, &_texture );
-		glBindTexture( GL_TEXTURE_2D, _texture );
-
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
+		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 
 		glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
 
@@ -156,8 +156,8 @@ namespace VTX::Renderer::Optix
 		_pixelsBuffer.memcpyDeviceToHost( (uchar4 *)( _pixels.data() ),
 										  _launchParameters._frame._width * _launchParameters._frame._height );
 
-		glBindTexture( GL_TEXTURE_2D, _texture );
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, _pixels.data() );
+		gl()->glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
+		gl()->glTextureSubImage2D( _texture, 0, 0, 0, _width, _height, GL_RGBA, GL_UNSIGNED_BYTE, _pixels.data() );
 
 		// VTX_INFO( "Saved" );
 	}

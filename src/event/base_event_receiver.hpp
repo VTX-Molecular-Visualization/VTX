@@ -5,6 +5,9 @@
 #pragma once
 #endif
 
+#include "event.hpp"
+#include <iostream>
+
 namespace VTX
 {
 	namespace Event
@@ -13,11 +16,7 @@ namespace VTX
 		class BaseEventReceiver
 		{
 		  public:
-			virtual void receiveEvent( const T & p_event ) {};
-
-		  protected:
-			virtual void _registerEvents()	 = 0;
-			virtual void _unregisterEvents() = 0;
+			virtual void receiveEvent( const T & p_event ) {}
 		};
 	} // namespace Event
 } // namespace VTX

@@ -2,38 +2,37 @@
 #include "util/math.hpp"
 #include "vtx_app.hpp"
 
-namespace VTX
+namespace VTX::View::D3
 {
-	namespace View
+	Box::Box( Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const p_model ) : BaseView3D( p_model )
 	{
-		namespace D3
-		{
-			void Box::createProgram()
-			{
-				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
+		Renderer::GL::ProgramManager & pm = VTXApp::get().getProgramManager();
 
-				_program = pm.createProgram( "LineShader", { "line.vert", "line.frag" } );
-			}
+		_program = pm.createProgram( "LineShader", { "line.vert", "line.frag" } );
 
-			void Box::setUniFormLocations()
-			{
-				assert( _program != nullptr );
-				_uModelViewMatrixLoc = glGetUniformLocation( _program->getId(), "uMVMatrix" );
-				_uProjMatrixLoc		 = glGetUniformLocation( _program->getId(), "uProjMatrix" );
-			}
+		assert( _program != nullptr );
+		_uModelViewMatrixLoc = _gl()->glGetUniformLocation( _program->getId(), "uMVMatrix" );
+		_uProjMatrixLoc		 = _gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
+		_uNormalMatrixLoc	 = _gl()->glGetUniformLocation( _program->getId(), "uNormalMatrix" );
+	}
 
-			void Box::render( const Generic::REPRESENTATION )
-			{
-				_program->use();
+	void Box::render()
+	{
+		_program->use();
 
-				// TODO: do not upadte each frame !
-				const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
-				glUniformMatrix4fv( _uModelViewMatrixLoc,
-									1,
-									GL_FALSE,
-									Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
-				glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
-			}
-		} // namespace D3
-	}	  // namespace View
-} // namespace VTX
+		const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
+		_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc,
+								   1,
+								   GL_FALSE,
+								   Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
+		_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
+		_gl()->glUniformMatrix4fv( _uNormalMatrixLoc,
+								   1,
+								   GL_FALSE,
+								   Util::Math::value_ptr( Util::Math::transpose(
+									   Util::Math::inverse( cam.getViewMatrix() * _model->getTransform().get() ) ) ) );
+		GLfloat width = 2.f;
+		_gl()->glLineWidth( width );
+		_gl()->glDrawElements( GL_LINES, uint( _model->getBufferAABBIndices().size() ), GL_UNSIGNED_INT, 0 );
+	}
+} // namespace VTX::View::D3

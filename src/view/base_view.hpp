@@ -5,36 +5,41 @@
 #pragma once
 #endif
 
-#include "define.hpp"
 #include "event/event.hpp"
-#include "generic/base_collectionable.hpp"
-#include "generic/base_notifiable.hpp"
-#include "id.hpp"
-#include <type_traits>
-#include <utility>
+#include "model/base_model.hpp"
+#include "tool/logger.hpp"
+
+namespace VTX::MVC
+{
+	class MvcManager;
+}
+
+#define VTX_VIEW friend VTX::MVC::MvcManager;
 
 namespace VTX
 {
-	namespace Model
-	{
-		class BaseModel;
-	}
-
 	namespace View
 	{
 		template<typename T, typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>>
-		class BaseView :
-			virtual public Generic::BaseCollectionable,
-			public Generic::BaseNotifiable<Event::VTX_EVENT_MODEL>
+		class BaseView
 		{
-		  public:
-			explicit BaseView( T * const p_model ) : _model( p_model ) {}
-			virtual ~BaseView() {}
+			VTX_VIEW
 
-			virtual void notify( const Event::VTX_EVENT_MODEL & ) override {};
+		  public:
+			virtual void notify( const Event::VTXEvent * const p_event )
+			{
+				if ( p_event->name == Event::Model::DATA_CHANGE )
+				{
+					_refreshView();
+				}
+			}
 
 		  protected:
-			T * _model = nullptr;
+			T * const _model;
+
+			explicit BaseView( T * const p_model ) : _model( p_model ) {}
+			virtual ~BaseView() = default;
+			virtual void _refreshView() {}
 		};
 	} // namespace View
 } // namespace VTX

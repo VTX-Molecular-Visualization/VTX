@@ -5,22 +5,17 @@
 #pragma once
 #endif
 
-#include "event/base_event_receiver_sdl.hpp"
-#include "generic/base_collectionable.hpp"
 #include "generic/base_updatable.hpp"
 
 namespace VTX
 {
 	namespace Controller
 	{
-		class BaseController :
-			public Generic::BaseUpdatable,
-			public Generic::BaseCollectionable,
-			public Event::BaseEventReceiverSDL
+		class BaseController : public Generic::BaseUpdatable
 		{
 		  public:
-			virtual void init() override { Event::BaseEventReceiverSDL::_registerEvents(); }
-			virtual void clean() override { Event::BaseEventReceiverSDL::_unregisterEvents(); }
+			BaseController()		  = default;
+			virtual ~BaseController() = default;
 
 			bool		 isActive() const { return _isActive; }
 			virtual void setActive( const bool p_active ) { _isActive = p_active; }

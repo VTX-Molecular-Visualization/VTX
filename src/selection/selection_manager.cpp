@@ -1,35 +1,20 @@
 #include "selection_manager.hpp"
+#include "event/event_manager.hpp"
+#include "mvc/mvc_manager.hpp"
+#include "tool/logger.hpp"
 #include <string>
-#include "vtx_app.hpp"
 
 namespace VTX
 {
 	namespace Selection
 	{
-		void SelectionManager::select( BaseSelectable * const p_selectable )
+		SelectionManager::SelectionManager()
 		{
-			try
-			{
-				_selected.emplace( p_selectable );
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( "Item already selected" );
-				VTX_ERROR( p_e.what() );
-			}
+			_selectionModel = MVC::MvcManager::get().instantiateModel<Model::Selection>();
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::SELECTION_ADDED, _selectionModel ) );
 		}
 
-		void SelectionManager::unselect( BaseSelectable * const p_selectable )
-		{
-			try
-			{
-				_selected.erase( p_selectable );
-			}
-			catch ( const std::exception & p_e )
-			{
-				VTX_ERROR( "Item not selected" );
-				VTX_ERROR( p_e.what() );
-			}
-		}
+		SelectionManager::~SelectionManager() {}
+
 	} // namespace Selection
 } // namespace VTX

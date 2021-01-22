@@ -1,31 +1,80 @@
 #include "vtx_app.hpp"
+#include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
-#include "id.hpp"
-#include "model/molecule.hpp"
-#include "renderer/gl/gl.hpp"
-#include "renderer/ray_tracing/ray_tracer.hpp"
+#include "event/event_manager.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "util/filesystem.hpp"
-#ifdef OPTIX_DEFINED
-#include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
-#endif
+#include "worker/worker_manager.hpp"
+#include <QPalette>
+#include <exception>
 
 namespace VTX
 {
-	bool VTXApp::_isRunning;
+	int ZERO = 0;
+	VTXApp::VTXApp() : QApplication( ZERO, nullptr ) {}
 
-	VTXApp::VTXApp()
+	VTXApp::~VTXApp() {}
+
+	void VTXApp::start()
 	{
-		_eventManager	  = new Event::EventManager();
-		_actionManager	  = new Action::ActionManager();
-		_workerManager	  = new Worker::WorkerManager();
-		_selectionManager = new Selection::SelectionManager();
+		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
+
+		// Create scene.
+		_scene = new Object3D::Scene();
+		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
+
+		// Create statemachine.
+		_stateMachine = new State::StateMachine();
+		_stateMachine->goToState( ID::State::VISUALIZATION );
+
+		// Create UI.
+		_initQt();
+		_mainWindow = new UI::MainWindow();
+		_mainWindow->show();
+
+		// Create singletons.
+		MVC::MvcManager::get();
+		Action::ActionManager::get();
+		Event::EventManager::get();
+		Selection::SelectionManager::get();
+		Worker::WorkerManager::get();
+
+		// Load settings.
+		VTX_ACTION( new Action::Setting::Load() );
+
+		VTX_INFO( "Application started" );
+
+		// Start timers.
+		_timer		  = new QTimer( this );
+		_elapsedTimer = new QElapsedTimer();
+
+		connect( _timer, &QTimer::timeout, this, &VTXApp::_update );
+
+		_timer->start( 0 );
+		_elapsedTimer->start();
+
+		VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
+		// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
+
+//#define RT_ENABLED
+#ifdef RT_ENABLED
+		// Path * path	   = new Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
+		Path * path = new Path( DATA_DIR + "6vsb.mmtf" );
+		VTX_ACTION( new Action::Open( path ) );
+		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
+		Action::ActionManager::get().update( 0.f );
+		Worker::WorkerManager::get().update( 0.f );
+#endif
 	}
 
-	VTXApp::~VTXApp()
+	void VTXApp::stop()
 	{
-		VTX_INFO( "Destructing application" );
+		_timer->stop();
+
+		delete _timer;
+		delete _elapsedTimer;
 
 		// Respect this order!
 		if ( _stateMachine != nullptr )
@@ -36,100 +85,21 @@ namespace VTX
 		{
 			delete _scene;
 		}
-		if ( _ui != nullptr )
+		if ( _mainWindow != nullptr )
 		{
-			delete _ui;
+			delete _mainWindow;
 		}
-		if ( _rendererGL != nullptr )
-		{
-			delete _rendererGL;
-		}
-#ifdef CUDA_DEFINED
-		if ( _rendererRT != nullptr )
-		{
-			delete _rendererRT;
-		}
-#endif
-#ifdef OPTIX_DEFINED
-		if ( _rendererOptix != nullptr )
-		{
-			delete _rendererOptix;
-		}
-#endif
-		if ( _selectionManager != nullptr )
-		{
-			delete _selectionManager;
-		}
-		if ( _workerManager != nullptr )
-		{
-			delete _workerManager;
-		}
-		if ( _actionManager != nullptr )
-		{
-			delete _actionManager;
-		}
-		if ( _eventManager != nullptr )
-		{
-			delete _eventManager;
-		}
+
+		exit();
 	}
 
-	void VTXApp::start()
+	void VTXApp::_initQt()
 	{
-		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
+		this->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
 
-		_ui = new UI::UserInterface();
-
-		_scene = new Object3D::Scene();
-
-		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
-
-		switchRenderer( Setting::MODE_DEFAULT );
-
-		_stateMachine = new State::StateMachine();
-		_stateMachine->goToState( ID::State::VISUALIZATION );
-
-		VTX_ACTION( new Action::Setting::Load() );
-		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4f8h.pdb" ) ) );
-
-		VTXApp::_isRunning = true;
-
-		VTX_INFO( "Application started" );
-		_ui->print();
-
-#define AUTO_OPEN
-#ifdef AUTO_OPEN
-		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "r2d2_2.obj" ) ) );
-		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "4v6x.mmtf" ) ) );
-		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr("6vsb.mmtf" ) ) );
-		// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
-		// VTX_ACTION( new Action::Open( Util::Filesystem::getDataPathPtr( "3jb9.pdb" ) ) );
-#endif
-
-//#define RT_ENABLED
-#ifdef RT_ENABLED
-		// Path * path	   = new Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
-		Path * path = new Path( DATA_DIR + "6vsb.mmtf" );
-		VTX_ACTION( new Action::Open( path ) );
-		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
-		_actionManager->update( 0.f );
-		_workerManager->update( 0.f );
-		_isRunning = false;
-#endif
-
-		while ( VTXApp::_isRunning )
-		{
-			_update();
-		}
-	}
-
-	void VTXApp::stop()
-	{
-		VTX_INFO( "Stopping application" );
-
-		VTXApp::_isRunning = false;
-
-		VTX_INFO( "Application stopped" );
+		QPalette appPalette = palette();
+		Style::applyApplicationPaletteInPalette( appPalette );
+		setPalette( appPalette );
 	}
 
 	void VTXApp::goToState( const std::string & p_name, void * const p_arg )
@@ -144,75 +114,37 @@ namespace VTX
 		}
 	}
 
-	void VTXApp::switchRenderer( const Renderer::MODE p_mode )
-	{
-		bool needInit = false;
-
-		switch ( p_mode )
-		{
-		case Renderer::MODE::GL:
-			if ( _rendererGL == nullptr )
-			{
-				_rendererGL = new Renderer::GL();
-				needInit	= true;
-			}
-			_renderer = _rendererGL;
-			break;
-		case Renderer::MODE::RT_CPU:
-			if ( _rendererRT == nullptr )
-			{
-				_rendererRT = new Renderer::RayTracer();
-				needInit	= true;
-			}
-			_renderer = _rendererRT;
-			break;
-#ifdef OPTIX_DEFINED
-		case Renderer::MODE::RT_OPTIX:
-			if ( _rendererOptix == nullptr )
-			{
-				_rendererOptix = new Renderer::Optix::OptixRayTracer();
-				needInit	   = true;
-			}
-			_renderer = _rendererOptix;
-			break;
-#endif
-
-		default: _renderer = nullptr;
-		}
-
-		if ( _renderer != nullptr )
-		{
-			if ( needInit )
-			{
-				_renderer->init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
-			}
-			// Resize if needed.
-			else if ( _renderer->getWidth() != getScene().getCamera().getScreenWidth()
-					  || _renderer->getHeight() != getScene().getCamera().getScreenHeight() )
-			{
-				_renderer->resize( getScene().getCamera().getScreenWidth(), getScene().getCamera().getScreenHeight() );
-			}
-		}
-	}
-
 	void VTXApp::_update()
 	{
-		const float deltaTime = ImGui::GetIO().DeltaTime;
+		// TODO: check if QTimer and QElapsedTimer can be fused.
+		float deltaTime = _elapsedTimer->elapsed() / 1000.f;
+		_elapsedTimer->restart();
 
 		// State machine.
 		_stateMachine->update( deltaTime );
 
 		// Event manager.
-		_eventManager->update( deltaTime );
+		Event::EventManager::get().update( deltaTime );
 
 		// Action manager.
-		_actionManager->update( deltaTime );
+		Action::ActionManager::get().update( deltaTime );
 
 		// Worker manager.
-		_workerManager->update( deltaTime );
+		Worker::WorkerManager::get().update( deltaTime );
+	}
 
-		// UI.
-		_ui->draw();
+	bool VTXApp::notify( QObject * const receiver, QEvent * const event )
+	{
+		try
+		{
+			return QApplication::notify( receiver, event );
+		}
+		catch ( const std::exception & exception )
+		{
+			VTX_ERROR( exception.what() );
+			// throw( exception );
+			return true;
+		}
 	}
 
 } // namespace VTX

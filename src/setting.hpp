@@ -8,12 +8,12 @@
 #include "color/rgb.hpp"
 #include "define.hpp"
 #include "style.hpp"
+#include <QString>
 
 namespace VTX
 {
 	namespace Generic
 	{
-		enum class REPRESENTATION;
 		enum class COLOR_MODE;
 	} // namespace Generic
 
@@ -27,14 +27,22 @@ namespace VTX
 	{
 	  public:
 		// UI.
-		static const Style::THEME THEME_DEFAULT;
-		Style::THEME			  theme = THEME_DEFAULT;
-
 		static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
 		Style::SYMBOL_DISPLAY_MODE				symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
 
 		static const int WINDOW_WIDTH_DEFAULT;
 		static const int WINDOW_HEIGHT_DEFAULT;
+
+		static const char * STYLESHEET_FILE_DEFAULT;
+		static const int	CONSOLE_WIDGET_HEIGHT_DEFAULT;
+		static const int	SCENE_WIDGET_WIDTH_DEFAULT;
+		static const int	INSPECTOR_WIDGET_WIDTH_DEFAULT;
+		static const int	RENDER_WIDGET_HEIGHT_DEFAULT;
+
+		static const int STATUS_PROGRESS_BAR_CHUNKS;
+		static const int STATUS_PROGRESS_BAR_WIDTH;
+
+		static const QString MOLECULE_FILE_FILTERS;
 
 		// Rendering.
 		static const bool ACTIVE_RENDERER_DEFAULT;
@@ -43,8 +51,8 @@ namespace VTX
 		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
 		Color::Rgb				backgroundColor = BACKGROUND_COLOR_DEFAULT;
 
-		static const Generic::REPRESENTATION REPRESENTATION_DEFAULT;
-		Generic::REPRESENTATION				 representation = REPRESENTATION_DEFAULT;
+		static const int REPRESENTATION_DEFAULT_INDEX;
+		int				 representation = REPRESENTATION_DEFAULT_INDEX;
 
 		static const float ATOMS_RADIUS_DEFAULT;
 		static const float ATOMS_RADIUS_MIN;
@@ -164,6 +172,8 @@ namespace VTX
 		// Misc.
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
+
+		inline static std::vector<VTX::Path> recentLoadingPath = { "Recent 1", "Recent 2", "Recent 3" };
 
 		void backup();
 		void recover();

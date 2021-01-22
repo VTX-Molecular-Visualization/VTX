@@ -17,10 +17,16 @@ namespace VTX
 	{
 		class BaseEventReceiverVTX : public BaseEventReceiver<VTXEvent>
 		{
+		  public:
+			BaseEventReceiverVTX() = default;
+			virtual ~BaseEventReceiverVTX();
+
 		  protected:
-			virtual void				   _registerEvents() override final;
-			virtual void				   _unregisterEvents() override final;
-			virtual std::vector<VTX_EVENT> _getEvents() const { return std::vector<VTX_EVENT>(); }
+			void _registerEvent( const VTX_EVENT & );
+			void _unregisterEvent( const VTX_EVENT & );
+
+		  private:
+			std::vector<VTX_EVENT> _events = std::vector<VTX_EVENT>();
 		};
 	} // namespace Event
 } // namespace VTX

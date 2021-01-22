@@ -1,12 +1,13 @@
 #include "loader.hpp"
-#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "io/reader/lib_assimp.hpp"
 #include "io/reader/lib_chemfiles.hpp"
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "io/reader/vtx.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
-#include "vtx_app.hpp"
+#include "tool/logger.hpp"
 
 namespace VTX
 {
@@ -36,7 +37,6 @@ namespace VTX
 
 			// Load all files.
 			Tool::Chrono chrono;
-			bool		 hasChangeScene = false;
 			for ( const Path * path : _paths )
 			{
 				chrono.start();
@@ -53,23 +53,22 @@ namespace VTX
 					IO::Reader::LibChemfiles * reader = new IO::Reader::LibChemfiles();
 
 					// Set PRM.
-					Model::Molecule * molecule = new Model::Molecule();
+					Model::Molecule * molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 					molecule->setConfiguration( config );
 
 					// Load.
 					try
 					{
 						reader->readFile( *path, *molecule );
-						molecule->init();
 						molecule->print();
+						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
 						VTXApp::get().getScene().addMolecule( molecule );
-						hasChangeScene = true;
 					}
 					catch ( const std::exception & p_e )
 					{
 						VTX_ERROR( "Error loading file" );
 						VTX_ERROR( p_e.what() );
-						delete molecule;
+						MVC::MvcManager::get().deleteModel( molecule );
 					}
 
 					delete reader;
@@ -77,21 +76,20 @@ namespace VTX
 				else if ( mode == MODE::MESH )
 				{
 					IO::Reader::LibAssimp * reader = new IO::Reader::LibAssimp();
-					Model::MeshTriangle *	mesh   = new Model::MeshTriangle();
+					Model::MeshTriangle *	mesh   = MVC::MvcManager::get().instantiateModel<Model::MeshTriangle>();
 
 					try
 					{
 						reader->readFile( *path, *mesh );
-						mesh->init();
 						mesh->print();
+						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
 						VTXApp::get().getScene().addMesh( mesh );
-						hasChangeScene = true;
 					}
 					catch ( const std::exception & p_e )
 					{
-						delete mesh;
 						VTX_ERROR( "Error loading file" );
 						VTX_ERROR( p_e.what() );
+						MVC::MvcManager::get().deleteModel( mesh );
 					}
 
 					delete reader;
@@ -134,22 +132,21 @@ namespace VTX
 				{
 					// Create reader.
 					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles();
-					Model::Molecule *		   molecule = new Model::Molecule();
+					Model::Molecule *		   molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 
 					// Load.
 					try
 					{
 						reader->readBuffer( *pair.second, *pair.first, *molecule );
-						molecule->init();
 						molecule->print();
+						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
 						VTXApp::get().getScene().addMolecule( molecule );
-						hasChangeScene = true;
 					}
 					catch ( const std::exception & p_e )
 					{
 						VTX_ERROR( "Error loading file" );
 						VTX_ERROR( p_e.what() );
-						delete molecule;
+						MVC::MvcManager::get().deleteModel( molecule );
 					}
 
 					delete reader;
@@ -160,11 +157,6 @@ namespace VTX
 
 				chrono.stop();
 				VTX_INFO( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
-			}
-
-			if ( hasChangeScene )
-			{
-				VTX_EVENT( new Event::VTXEventOnSceneChange( Event::Global::ON_SCENE_CHANGE ) );
 			}
 
 			_isFinished = true;

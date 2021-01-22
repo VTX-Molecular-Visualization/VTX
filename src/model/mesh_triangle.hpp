@@ -6,6 +6,7 @@
 #endif
 
 #include "base_model_3d.hpp"
+#include "buffer/mesh_triangle.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
 #include <vector>
@@ -14,12 +15,11 @@ namespace VTX
 {
 	namespace Model
 	{
-		class MeshTriangle : public BaseModel3D
+		class MeshTriangle : public BaseModel3D<Buffer::MeshTriangle>
 		{
-		  public:
-			MeshTriangle();
-			~MeshTriangle();
+			VTX_MODEL
 
+		  public:
 			inline const std::vector<Vec3f> & getVertices() const { return _vertices; }
 			inline std::vector<Vec3f> &		  getVertices() { return _vertices; }
 			inline const Vec3f &			  getVertice( const uint p_idx ) const { return _vertices[ p_idx ]; }
@@ -35,10 +35,10 @@ namespace VTX
 			inline const Color::Rgb &			   getColor( const uint p_idx ) const { return _colors[ p_idx ]; }
 			inline Color::Rgb &					   getColor( const uint p_idx ) { return _colors[ p_idx ]; }
 
-			inline const std::vector<uint> & getVisibilities() const { return _visibilities; }
-			inline std::vector<uint> &		 getVisibilities() { return _visibilities; }
-			inline const uint &				 getVisibilitie( const uint p_idx ) const { return _visibilities[ p_idx ]; }
-			inline uint &					 getVisibilitie( const uint p_idx ) { return _visibilities[ p_idx ]; }
+			inline const std::vector<ushort> & getVisibilities() const { return _visibilities; }
+			inline std::vector<ushort> &	   getVisibilities() { return _visibilities; }
+			inline const ushort &			   getVisibilitie( const uint p_idx ) const { return _visibilities[ p_idx ]; }
+			inline ushort &					   getVisibilitie( const uint p_idx ) { return _visibilities[ p_idx ]; }
 
 			inline const std::vector<uint> & getIndices() const { return _indices; }
 			inline std::vector<uint> &		 getIndices() { return _indices; }
@@ -46,34 +46,21 @@ namespace VTX
 			inline uint &					 getIndice( const uint p_idx ) { return _indices[ p_idx ]; }
 
 			void print() const;
-			void init();
-			void bindBuffers() override;
-			void unbindBuffers() override;
 
-		  protected:
-			enum ATTRIBUTE_LOCATION
-			{
-				VERTEX_POSITION	  = 0,
-				VERTEX_NORMAL	  = 1,
-				VERTEX_COLOR	  = 2,
-				VERTEX_VISIBILITY = 3,
-			};
-
+		  private:
 			std::vector<Vec3f>		_vertices;
 			std::vector<Vec3f>		_normals;
 			std::vector<Color::Rgb> _colors;
-			std::vector<uint>		_visibilities;
+			std::vector<ushort>		_visibilities;
+			std::vector<uint>		_indices;
 
-			std::vector<uint> _indices;
+			MeshTriangle();
+			~MeshTriangle() = default;
 
-			GLuint _vboPositions	= GL_INVALID_VALUE;
-			GLuint _vboNormals		= GL_INVALID_VALUE;
-			GLuint _vboColors		= GL_INVALID_VALUE;
-			GLuint _vboVisibilities = GL_INVALID_VALUE;
-			GLuint _ibo				= GL_INVALID_VALUE;
-			GLuint _vao				= GL_INVALID_VALUE;
-
-			void _computeAABB();
+			void _init() override;
+			void _computeAABB() override;
+			void _fillBuffer() override;
+			void _instantiate3DViews() override;
 		};
 	} // namespace Model
 } // namespace VTX

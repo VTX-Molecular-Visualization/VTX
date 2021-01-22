@@ -5,58 +5,82 @@
 #pragma once
 #endif
 
-#include "base_event_receiver_sdl.hpp"
+#include "base_event_receiver_keyboard.hpp"
+#include "base_event_receiver_mouse.hpp"
 #include "base_event_receiver_vtx.hpp"
+#include "base_event_receiver_wheel.hpp"
 #include "event/event.hpp"
 #include "generic/base_lockable.hpp"
 #include "generic/base_updatable.hpp"
 #include "id.hpp"
+#include "model/base_model.hpp"
+#include "view/base_view.hpp"
 #include <map>
 #include <queue>
 #include <set>
 
-#define DELAY_EVENTS
+// Disabled to ensure that molecule.init() creates gl buffer before rendering.
+//#define DELAY_EVENTS
 
 namespace VTX
 {
 	namespace Event
 	{
-		class EventManager : public Generic::BaseUpdatable, public Generic::BaseLocakble
+		class EventManager final : public Generic::BaseUpdatable, public Generic::BaseLockable
 		{
 		  public:
-			using SetBaseEventReceiverSDLPtr			 = std::set<BaseEventReceiverSDL *>;
-			using MapStringVectorBaseEventReceiverSDLPtr = std::map<ID::VTX_ID, SetBaseEventReceiverSDLPtr>;
-
 			using SetBaseEventReceiverVTXPtr			 = std::set<BaseEventReceiverVTX *>;
 			using MapStringVectorBaseEventReceiverVTXPtr = std::map<Event::VTX_EVENT, SetBaseEventReceiverVTXPtr>;
 
-			using QueueVTXEventPtr = std::queue<VTXEvent *>;
+			inline static EventManager & get()
+			{
+				static EventManager instance;
+				return instance;
+			}
 
-			void registerEventReceiverSDL( const ID::VTX_ID &, BaseEventReceiverSDL * const );
-			void unregisterEventReceiverSDL( const ID::VTX_ID &, BaseEventReceiverSDL * const );
-			void registerEventReceiverSDL( BaseEventReceiverSDL * const );
-			void unregisterEventReceiverSDL( BaseEventReceiverSDL * const );
 			void registerEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
 			void unregisterEventReceiverVTX( const Event::VTX_EVENT &, BaseEventReceiverVTX * const );
+			void registerEventReceiverKeyboard( BaseEventReceiverKeyboard * const );
+			void unregisterEventReceiverKeyboard( BaseEventReceiverKeyboard * const );
+			void registerEventReceiverMouse( BaseEventReceiverMouse * const );
+			void unregisterEventReceiverMouse( BaseEventReceiverMouse * const );
+			void registerEventReceiverWheel( BaseEventReceiverWheel * const );
+			void unregisterEventReceiverWheel( BaseEventReceiverWheel * const );
 
-			void fireEvent( VTXEvent * const );
+			void fireEventVTX( VTXEvent * const );
+			void fireEventKeyboard( QKeyEvent * const );
+			void fireEventMouse( QMouseEvent * const );
+			void fireEventWheel( QWheelEvent * const );
 
-			virtual void update( const double & p_deltaTime ) override;
+			virtual void update( const float & p_deltaTime ) override;
 
 		  private:
-			// SDL receivers mapped on window ID.
-			MapStringVectorBaseEventReceiverSDLPtr _receiversSDL = MapStringVectorBaseEventReceiverSDLPtr();
-			// SDL receivers receiving all events.
-			SetBaseEventReceiverSDLPtr _receiversSDLGlobal = SetBaseEventReceiverSDLPtr();
-			// VTX receivers mapped on event ID.
-			MapStringVectorBaseEventReceiverVTXPtr _receiversVTX = MapStringVectorBaseEventReceiverVTXPtr();
-			// Current VTX event queue.
-			QueueVTXEventPtr _eventQueue = QueueVTXEventPtr();
+			// Input events.
+			MapStringVectorBaseEventReceiverVTXPtr _receiversVTX
+				= MapStringVectorBaseEventReceiverVTXPtr(); // VTX receivers mapped on event ID.
+			std::set<BaseEventReceiverKeyboard *> _receiversKeyboard = std::set<BaseEventReceiverKeyboard *>();
+			std::set<BaseEventReceiverMouse *>	  _receiversMouse	 = std::set<BaseEventReceiverMouse *>();
+			std::set<BaseEventReceiverWheel *>	  _receiversWheel	 = std::set<BaseEventReceiverWheel *>();
 
-			void _handlerWindowEvent( const SDL_WindowEvent & );
+			// Event queues.
+			std::queue<VTXEvent *>	_eventQueueVTX		= std::queue<VTXEvent *>();
+			std::queue<QKeyEvent>	_eventQueueKeyboard = std::queue<QKeyEvent>();
+			std::queue<QMouseEvent> _eventQueueMouse	= std::queue<QMouseEvent>();
+			std::queue<QWheelEvent> _eventQueueWheel	= std::queue<QWheelEvent>();
+
+			EventManager()						 = default;
+			EventManager( const EventManager & ) = delete;
+			EventManager & operator=( const EventManager & ) = delete;
+			~EventManager();
+
+			// void _handlerWindowEvent( const SDL_WindowEvent & );
 			void _flushVTXEvent( VTXEvent * const );
 		};
 	} // namespace Event
 
+	inline void VTX_EVENT( VTX::Event::VTXEvent * const p_event )
+	{
+		Event::EventManager::get().fireEventVTX( p_event );
+	}
 } // namespace VTX
 #endif

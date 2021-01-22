@@ -15,10 +15,7 @@ namespace VTX
 
 		void BSpline::_updateMatrix3()
 		{
-			const Mat4f BSPLINE_MATRIX = { { -1.f / 6.f, 0.5f, -0.5f, 1.f / 6.f },
-										   { 0.5f, -1.f, 0.5f, 0.f },
-										   { -0.5f, 0.f, 0.5f, 0.f },
-										   { 1.f / 6.f, 2.f / 3.f, 1.f / 6.f, 0.f } };
+			const Mat4f BSPLINE_MATRIX = { { -1.f / 6.f, 0.5f, -0.5f, 1.f / 6.f }, { 0.5f, -1.f, 0.5f, 0.f }, { -0.5f, 0.f, 0.5f, 0.f }, { 1.f / 6.f, 2.f / 3.f, 1.f / 6.f, 0.f } };
 			float		s;
 			for ( int i = 0; i < 4; i++ )
 			{
@@ -47,7 +44,7 @@ namespace VTX
 
 			for ( int i = 0; i < 4; i++ )
 			{
-				tmp[ i ] = std::pow( p_t, 3 - i );
+				tmp[ i ] = float( std::pow( p_t, 3 - i ) );
 			}
 
 			return _mat * tmp;
@@ -65,7 +62,7 @@ namespace VTX
 
 			for ( int i = 0; i < 3; i++ )
 			{
-				tmp[ i ] = ( 3 - i ) * std::pow( p_t, 2 - i );
+				tmp[ i ] = ( 3 - i ) * float( std::pow( p_t, 2 - i ) );
 			}
 
 			return _mat * tmp;

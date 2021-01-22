@@ -6,23 +6,41 @@
 #endif
 
 #include "base_controller.hpp"
+#include "define.hpp"
+#include "event/base_event_receiver_mouse.hpp"
+#include "event/base_event_receiver_wheel.hpp"
+#include <iostream>
 #include <set>
 
 namespace VTX
 {
 	namespace Controller
 	{
-		class BaseMouseController : virtual public BaseController
+		class BaseMouseController : virtual public BaseController, public Event::BaseEventReceiverMouse, public Event::BaseEventReceiverWheel
 		{
 		  public:
-			virtual void receiveEvent( const SDL_Event & p_event ) override
+			virtual void receiveEvent( const QMouseEvent & p_event ) override
 			{
-				switch ( p_event.type )
+				if ( isActive() == false )
+					return;
+
+				switch ( p_event.type() )
 				{
-				case SDL_MOUSEBUTTONDOWN: _handleMouseButtonDownEvent( p_event.button ); break;
-				case SDL_MOUSEBUTTONUP: _handleMouseButtonUpEvent( p_event.button ); break;
-				case SDL_MOUSEMOTION: _handleMouseMotionEvent( p_event.motion ); break;
-				case SDL_MOUSEWHEEL: _handleMouseWheelEvent( p_event.wheel );
+				case QEvent::MouseButtonPress: _handleMouseButtonDownEvent( p_event ); break;
+				case QEvent::MouseButtonRelease: _handleMouseButtonUpEvent( p_event ); break;
+				case QEvent::MouseMove: _handleMouseMotionEvent( p_event ); break;
+				default: break;
+				}
+			}
+
+			virtual void receiveEvent( const QWheelEvent & p_event ) override
+			{
+				if ( isActive() == false )
+					return;
+
+				switch ( p_event.type() )
+				{
+				case QEvent::Wheel: _handleMouseWheelEvent( p_event ); break;
 				default: break;
 				}
 			}
@@ -31,40 +49,47 @@ namespace VTX
 			bool  _mouseLeftPressed	  = false;
 			bool  _mouseRightPressed  = false;
 			bool  _mouseMiddlePressed = false;
+			Vec2i _mousePosition	  = Vec2i();
 			Vec2i _deltaMousePosition = Vec2i();
 			int	  _deltaMouseWheel	  = 0;
 
-			virtual void _handleMouseButtonDownEvent( const SDL_MouseButtonEvent & p_event )
+			virtual void _handleMouseButtonDownEvent( const QMouseEvent & p_event )
 			{
-				switch ( p_event.button )
+				switch ( p_event.button() )
 				{
-				case SDL_BUTTON_LEFT: _mouseLeftPressed = true; break;
-				case SDL_BUTTON_RIGHT: _mouseRightPressed = true; break;
-				case SDL_BUTTON_MIDDLE: _mouseMiddlePressed = true; break;
+				case Qt::MouseButton::LeftButton: _mouseLeftPressed = true; break;
+				case Qt::MouseButton::RightButton: _mouseRightPressed = true; break;
+				case Qt::MouseButton::MiddleButton: _mouseMiddlePressed = true; break;
 				default: break;
 				}
-			};
 
-			virtual void _handleMouseButtonUpEvent( const SDL_MouseButtonEvent & p_event )
+				// Save current position.
+				_mousePosition.x = p_event.pos().x();
+				_mousePosition.y = p_event.pos().y();
+			}
+
+			virtual void _handleMouseButtonUpEvent( const QMouseEvent & p_event )
 			{
-				switch ( p_event.button )
+				switch ( p_event.button() )
 				{
-				case SDL_BUTTON_LEFT: _mouseLeftPressed = false; break;
-				case SDL_BUTTON_RIGHT: _mouseRightPressed = false; break;
-				case SDL_BUTTON_MIDDLE: _mouseMiddlePressed = false; break;
+				case Qt::MouseButton::LeftButton: _mouseLeftPressed = false; break;
+				case Qt::MouseButton::RightButton: _mouseRightPressed = false; break;
+				case Qt::MouseButton::MiddleButton: _mouseMiddlePressed = false; break;
 				default: break;
 				}
-			};
+			}
 
-			virtual void _handleMouseMotionEvent( const SDL_MouseMotionEvent & p_event )
+			virtual void _handleMouseMotionEvent( const QMouseEvent & p_event )
 			{
-				_deltaMousePosition.x = p_event.xrel;
-				_deltaMousePosition.y = p_event.yrel;
-			};
-			virtual void _handleMouseWheelEvent( const SDL_MouseWheelEvent & p_event )
-			{
-				_deltaMouseWheel = p_event.y;
-			};
+				Vec2i mousePosition = Vec2i();
+				mousePosition.x		= p_event.pos().x();
+				mousePosition.y		= p_event.pos().y();
+
+				_deltaMousePosition = mousePosition - _mousePosition;
+				_mousePosition		= mousePosition;
+			}
+
+			virtual void _handleMouseWheelEvent( const QWheelEvent & p_event ) { _deltaMouseWheel = p_event.angleDelta().y(); }
 		};
 	} // namespace Controller
 } // namespace VTX

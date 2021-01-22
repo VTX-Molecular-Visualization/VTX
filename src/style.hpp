@@ -5,41 +5,128 @@
 #pragma once
 #endif
 
-#include <imgui/imgui.h>
+#include "id.hpp"
+#include "selection/selection_enum.hpp"
+#include <QChar>
+#include <QColor>
+#include <QFont>
+#include <QPalette>
+#include <QPixmap>
+#include <iostream>
 
 namespace VTX
 {
 	namespace Style
 	{
-		enum class THEME : int
-		{
-			LIGHT,
-			DARK,
-			CLASSIC
-		};
-
 		enum class SYMBOL_DISPLAY_MODE : int
 		{
 			SHORT,
 			LONG
 		};
 
-		constexpr char * IMGUI_ID_MAIN_WINDOW	 = "VTXMainWindow";
-		constexpr char * IMGUI_ID_MAIN_DOCKSPACE = "VTXMainDockSpace";
+		class IconConst
+		{
+		  public:
+			inline static IconConst & get()
+			{
+				static IconConst instance;
+				return instance;
+			};
 
-		constexpr bool IMGUI_SHOW_DEMO		  = false;
-		constexpr bool IMGUI_ENABLE_VIEWPORTS = false;
+			const QPixmap UNFOLDED_PIXMAP;
+			const QPixmap FOLDED_PIXMAP;
+			const QPixmap CLOSE_PIXMAP;
 
-		constexpr float IMGUI_STYLE_ROUNDING	   = 0.f;
-		constexpr float IMGUI_STYLE_WINDOW_BORDER  = 0.f;
-		constexpr float IMGUI_STYLE_WINDOW_PADDING = 0.f;
-		constexpr float IMGUI_STYLE_BG_ALPHA	   = 1.f;
+			const QPixmap MOLECULE_SYMBOL;
+			const QPixmap CHAIN_SYMBOL;
+			const QPixmap RESIDUE_SYMBOL;
+			const QPixmap ATOM_SYMBOL;
+			const QPixmap REPRESENTATION_SYMBOL;
 
-		constexpr float IMGUI_STYLE_MENUBAR_PADDING = 8.f;
+			const QPixmap TOOLTAB_SEPARATOR;
 
-		constexpr float IMGUI_STYLE_MODAL_BG_ALPHA	   = 0.5f;
-		static ImColor	IMGUI_STYLE_PROGRESS_BAR_COLOR = ImColor( 150, 150, 150 );
-		static ImVec2	IMGUI_STYLE_PROGRESS_BAR_SIZE  = ImVec2( 600, 70 );
+			const QPixmap * const getModelSymbol( const ID::VTX_ID & p_id ) const
+			{
+				const QPixmap * res;
+
+				if ( p_id == ID::Model::MODEL_MOLECULE )
+					res = &MOLECULE_SYMBOL;
+				else if ( p_id == ID::Model::MODEL_CHAIN )
+					res = &CHAIN_SYMBOL;
+				else if ( p_id == ID::Model::MODEL_RESIDUE )
+					res = &RESIDUE_SYMBOL;
+				else if ( p_id == ID::Model::MODEL_ATOM )
+					res = &ATOM_SYMBOL;
+				else
+				{
+					std::cout << "[WARNING] - Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." << std::endl;
+					// VTX_WARNING( "Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." );
+					res = nullptr;
+				}
+
+				return res;
+			};
+
+		  private:
+			inline IconConst() :
+				UNFOLDED_PIXMAP( QPixmap( ":/sprite/treeview_unfolded_molecule_icon.png" ) ), FOLDED_PIXMAP( QPixmap( ":/sprite/treeview_folded_molecule_icon.png" ) ),
+				CLOSE_PIXMAP( QPixmap( ":/sprite/close_icon.png" ) ), MOLECULE_SYMBOL( QPixmap( ":/sprite/symbol/molecule_symbol_icon.png" ) ),
+				CHAIN_SYMBOL( QPixmap( ":/sprite/symbol/chain_symbol_icon.png" ) ), RESIDUE_SYMBOL( QPixmap( ":/sprite/symbol/residue_symbol_icon.png" ) ),
+				ATOM_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ), TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ),
+				REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ) {};
+		};
+
+		inline static const QSize INSPECTOR_PREFERED_SIZE = QSize( 150, 1000 );
+		inline static const QSize RENDER_PREFERED_SIZE	  = QSize( 1000, 1000 );
+		inline static const QSize SCENE_PREFERED_SIZE	  = QSize( 150, 1000 );
+		inline static const QSize CONSOLE_PREFERED_SIZE	  = QSize( 1000, 100 );
+
+		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;
+		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;
+		inline static const int INSPECTOR_CONTENT_HORIZONTAL_OFFSET = 10;
+
+		inline static const std::string SEQUENCE_CHAIN_NAME_SEPARATOR				 = "/";
+		inline static const int			SEQUENCE_CHAIN_SCALE_STEP					 = 5;
+		inline static const QColor		SEQUENCE_FOREGROUND_SELECTION_COLOR			 = QColor( 0, 122, 204, 125 );
+		inline static const int			SEQUENCE_MAX_MISSING_RESIDUE_BEFORE_COLLAPSE = 5;
+		inline static const QChar		SEQUENCE_MISSING_RESIDUE_SYMBOL				 = '-';
+
+		inline static const int SCENE_SPACE_BETWEEN_ITEMS = 4;
+
+		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION = VTX::Selection::SelectionType::RESIDUE;
+
+		inline static const QFont TOOL_MENU_BUTTON_FONT = QFont( "Helvetica", 10 );
+		inline static const QFont SEQUENCE_DISPLAY_FONT = QFont( "Courier", 10 );
+
+		inline static const QColor BLACK_COLOR			  = QColor( 0, 0, 0 );
+		inline static const QColor BACKGROUND_COLOR		  = QColor( 34, 34, 34 );
+		inline static const QColor HIGHLIGHTED_COLOR	  = QColor( 85, 85, 85 );
+		inline static const QColor TEXT_COLOR			  = QColor( 255, 255, 255 );
+		inline static const QColor PLACEHOLDER_TEXT_COLOR = QColor( 200, 200, 200 );
+
+		inline static const void applyApplicationPaletteInPalette( QPalette & p_palette )
+		{
+			p_palette.setColor( QPalette::ColorRole::Window, BACKGROUND_COLOR );
+			p_palette.setColor( QPalette::ColorRole::WindowText, TEXT_COLOR );
+			p_palette.setColor( QPalette::ColorRole::WindowText, TEXT_COLOR );
+			p_palette.setColor( QPalette::ColorRole::Base, BACKGROUND_COLOR );
+			p_palette.setColor( QPalette::ColorRole::Text, TEXT_COLOR );
+			p_palette.setColor( QPalette::ColorRole::PlaceholderText, PLACEHOLDER_TEXT_COLOR );
+			p_palette.setColor( QPalette::ColorRole::ToolTipBase, BLACK_COLOR );
+			p_palette.setColor( QPalette::ColorRole::ToolTipText, TEXT_COLOR );
+			p_palette.setColor( QPalette::ColorRole::Button, BACKGROUND_COLOR );
+			p_palette.setColor( QPalette::ColorRole::ButtonText, TEXT_COLOR );
+			p_palette.setColor( QPalette::ColorRole::BrightText, TEXT_COLOR );
+
+			p_palette.setColor( QPalette::ColorRole::Light, HIGHLIGHTED_COLOR );
+			p_palette.setColor( QPalette::ColorRole::Midlight, BACKGROUND_COLOR );
+			p_palette.setColor( QPalette::ColorRole::Mid, BACKGROUND_COLOR );
+			p_palette.setColor( QPalette::ColorRole::Shadow, BLACK_COLOR );
+			p_palette.setColor( QPalette::ColorRole::Dark, BLACK_COLOR );
+
+			p_palette.setColor( QPalette::ColorRole::Highlight, HIGHLIGHTED_COLOR );
+		};
+
 	} // namespace Style
 } // namespace VTX
 

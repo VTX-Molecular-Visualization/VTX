@@ -1,42 +1,33 @@
 #include "triangle.hpp"
 #include "vtx_app.hpp"
 
-namespace VTX
+namespace VTX::View::D3
 {
-	namespace View
+	Triangle::Triangle( Model::MeshTriangle * const p_model ) : BaseView3D( p_model )
 	{
-		namespace D3
-		{
-			void Triangle::createProgram()
-			{
-				Renderer::GLSL::ProgramManager & pm = VTXApp::get().getProgramManager();
-				_program = pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
-			}
+		Renderer::GL::ProgramManager & pm = VTXApp::get().getProgramManager();
+		_program						  = pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
 
-			void Triangle::setUniFormLocations()
-			{
-				assert( _program != nullptr );
-				_uModelViewMatrixLoc = glGetUniformLocation( _program->getId(), "uMVMatrix" );
-				_uProjMatrixLoc		 = glGetUniformLocation( _program->getId(), "uProjMatrix" );
-				_uNormalMatrixLoc	 = glGetUniformLocation( _program->getId(), "uNormalMatrix" );
-			}
+		assert( _program != nullptr );
+		_uModelViewMatrixLoc = _gl()->glGetUniformLocation( _program->getId(), "uMVMatrix" );
+		_uProjMatrixLoc		 = _gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
+		_uNormalMatrixLoc	 = _gl()->glGetUniformLocation( _program->getId(), "uNormalMatrix" );
+	}
 
-			void Triangle::render()
-			{
-				_program->use();
+	void Triangle::render()
+	{
+		_program->use();
 
-				// TODO: do not upadte each frame !
-				const Object3D::Camera & cam	  = VTXApp::get().getScene().getCamera();
-				const Mat4f				 MVMatrix = cam.getViewMatrix() * _model->getTransform().get();
-				glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
-				glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
-				glUniformMatrix4fv( _uNormalMatrixLoc,
-									1,
-									GL_FALSE,
-									Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
+		// TODO: do not upadte each frame !
+		const Object3D::Camera & cam	  = VTXApp::get().getScene().getCamera();
+		const Mat4f				 MVMatrix = cam.getViewMatrix() * _model->getTransform().get();
+		_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
+		_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
+		_gl()->glUniformMatrix4fv( _uNormalMatrixLoc,
+								   1,
+								   GL_FALSE,
+								   Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
 
-				glDrawElements( GL_TRIANGLES, uint( _model->getIndices().size() ), GL_UNSIGNED_INT, 0 );
-			}
-		} // namespace D3
-	}	  // namespace View
-} // namespace VTX
+		_gl()->glDrawElements( GL_TRIANGLES, uint( _model->getIndices().size() ), GL_UNSIGNED_INT, 0 );
+	}
+} // namespace VTX::View::D3

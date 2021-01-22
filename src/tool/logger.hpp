@@ -14,13 +14,20 @@ namespace VTX
 {
 	namespace Tool
 	{
-		class Logger
+		class Logger final
 		{
 		  public:
+			inline static Logger & get()
+			{
+				static Logger instance;
+				return instance;
+			}
+
 			inline void logDebug( const std::string & p_debug ) { _log( LEVEL::LOG_LVL_DEBUG, p_debug ); }
 			inline void logInfo( const std::string & p_info ) { _log( LEVEL::LOG_LVL_INFO, p_info ); }
 			inline void logWarning( const std::string & p_warning ) { _log( LEVEL::LOG_LVL_WARNING, p_warning ); }
 			inline void logError( const std::string & p_error ) { _log( LEVEL::LOG_LVL_ERROR, p_error ); }
+			void		logInFile( const std::string & );
 
 		  private:
 			enum class LEVEL
@@ -33,9 +40,21 @@ namespace VTX
 
 			IO::Writer::Log _writer = IO::Writer::Log( Util::Time::getTimestamp() );
 
+			Logger()				 = default;
+			Logger( const Logger & ) = delete;
+			Logger & operator=( const Logger & ) = delete;
+			~Logger()							 = default;
+
 			void _log( const LEVEL, const std::string & );
 		};
 	} // namespace Tool
+
+	inline void VTX_DEBUG( const std::string & p_str ) { Tool::Logger::get().logDebug( p_str ); }
+	inline void VTX_INFO( const std::string & p_str ) { Tool::Logger::get().logInfo( p_str ); }
+	inline void VTX_WARNING( const std::string & p_str ) { Tool::Logger::get().logWarning( p_str ); }
+	inline void VTX_ERROR( const std::string & p_str ) { Tool::Logger::get().logError( p_str ); }
+	inline void VTX_CONSOLE( const std::string & p_str ) { std::cout << p_str << std::endl; }
+	inline void VTX_LOG_FILE( const std::string & p_str ) { Tool::Logger::get().logInFile( p_str ); }
 } // namespace VTX
 
 #endif

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>InspectorWidget</class>
+ <widget class="QDockWidget">
+  <property name="windowTitle">
+   <string>Inspector</string>
+  </property>
+   <widget class="QListWidget" name="listWidget">
+     <property name="geometry">
+       <rect>
+         <x>-30</x>
+         <y>-19</y>
+         <width>131</width>
+         <height>301</height>
+       </rect>
+     </property>
+   </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

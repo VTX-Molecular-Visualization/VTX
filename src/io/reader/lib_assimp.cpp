@@ -15,8 +15,7 @@ namespace VTX
 			{
 				Assimp::Importer Importer;
 
-				const aiScene * const scene
-					= Importer.ReadFile( p_path.string(), aiProcess_Triangulate | aiProcess_GenNormals );
+				const aiScene * const scene = Importer.ReadFile( p_path.string(), aiProcess_Triangulate | aiProcess_GenNormals );
 				if ( !scene )
 				{
 					throw Exception::IOException( "File has not scene" );
@@ -36,7 +35,7 @@ namespace VTX
 				p_mesh.getVertices().resize( nbVertices );
 				p_mesh.getNormals().resize( nbVertices );
 				p_mesh.getColors().resize( nbVertices * 3u );
-				p_mesh.getVisibilities().resize( nbVertices, true );
+				p_mesh.getVisibilities().resize( nbVertices, 1u );
 				p_mesh.getIndices().resize( nbTriangles * 3u );
 
 				uint currentTriangle = 0;
@@ -149,8 +148,7 @@ namespace VTX
 						residue.setColor( Color::Rgb::randomPastel() );
 
 						// Loop over vertices in the face.
-						for ( uint atomIdx = 0; atomIdx < face.mNumIndices;
-							  ++atomIdx, ++atomGlobalIdx, ++bondGlobalIdx )
+						for ( uint atomIdx = 0; atomIdx < face.mNumIndices; ++atomIdx, ++atomGlobalIdx, ++bondGlobalIdx )
 						{
 							uint indice = face.mIndices[ atomIdx ];
 
@@ -178,9 +176,7 @@ namespace VTX
 							p_molecule.addBond();
 							Model::Bond & bond = p_molecule.getBond( atomGlobalIdx );
 							bond.setIndexFirstAtom( atomGlobalIdx );
-							bond.setIndexSecondAtom( ( atomIdx == face.mNumIndices - 1 )
-														 ? ( atomGlobalIdx - face.mNumIndices + 1 )
-														 : ( atomGlobalIdx + 1 ) );
+							bond.setIndexSecondAtom( ( atomIdx == face.mNumIndices - 1 ) ? ( atomGlobalIdx - face.mNumIndices + 1 ) : ( atomGlobalIdx + 1 ) );
 						}
 					}
 				}

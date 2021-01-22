@@ -5,19 +5,22 @@
 #pragma once
 #endif
 
+#include "action/action_manager.hpp"
 #include "base_action.hpp"
 #include "define.hpp"
 #include "io/reader/vtx.hpp"
 #include "io/writer/vtx.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
-#include "ui/user_interface.hpp"
+#include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "worker/api_fetcher.hpp"
 #include "worker/loader.hpp"
 #include "worker/saver.hpp"
 #include "worker/snapshoter.hpp"
+#include "worker/worker_manager.hpp"
 
 namespace VTX
 {
@@ -31,7 +34,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTXApp::get().getScene().clear();
-					Model::Path * path = new Model::Path();
+					Model::Path * path = MVC::MvcManager::get().instantiateModel<Model::Path>();
 					VTXApp::get().getScene().addPath( path );
 				}
 			};
@@ -99,7 +102,7 @@ namespace VTX
 					Path *		path = new Path( id + ".mmtf" );
 
 					const Worker::CallbackSuccess * success = new Worker::CallbackSuccess( [ fetcher, path ]( void ) {
-						std::map<Path *, std::string *> mapBuffers = std::map<Path *, std::string *>();
+						std::map<Path *, std::string *> & mapBuffers = std::map<Path *, std::string *>();
 						mapBuffers.emplace( path, fetcher->getBuffer() );
 						delete fetcher;
 
@@ -107,12 +110,11 @@ namespace VTX
 						VTX_ACTION( new Open( mapBuffers ) );
 					} );
 
-					const Worker::CallbackError * error
-						= new Worker::CallbackError( [ fetcher ]( const std::exception & p_e ) {
-							  VTX_ERROR( p_e.what() );
-							  delete fetcher->getBuffer();
-							  delete fetcher;
-						  } );
+					const Worker::CallbackError * error = new Worker::CallbackError( [ fetcher ]( const std::exception & p_e ) {
+						VTX_ERROR( p_e.what() );
+						delete fetcher->getBuffer();
+						delete fetcher;
+					} );
 
 					VTX_WORKER( fetcher, success, error );
 				}
@@ -137,34 +139,31 @@ namespace VTX
 				Path * _path;
 			};
 
+			class ToggleCameraController : public BaseAction
+			{
+			  public:
+				explicit ToggleCameraController() {}
+
+				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->toggleCameraController(); };
+			};
+
 			class ChangeCameraController : public BaseAction
 			{
 			  public:
-				explicit ChangeCameraController() {}
+				explicit ChangeCameraController( const ID::VTX_ID & p_controllerId ) : _id( p_controllerId ) {}
 
-				virtual void execute() override
-				{
-					VTXApp::get()
-						.getStateMachine()
-						.getItem<State::Visualization>( ID::State::VISUALIZATION )
-						->toggleController();
-				};
+				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->setCameraController( _id ); };
 
 			  private:
+				const ID::VTX_ID _id;
 			};
 
-			class RecenterCameraController : public BaseAction
+			class ResetCameraController : public BaseAction
 			{
 			  public:
-				explicit RecenterCameraController() {}
+				explicit ResetCameraController() {}
 
-				virtual void execute() override
-				{
-					VTXApp::get()
-						.getStateMachine()
-						.getItem<State::Visualization>( ID::State::VISUALIZATION )
-						->recenter();
-				};
+				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->resetCameraController(); };
 
 			  private:
 			};
@@ -172,10 +171,7 @@ namespace VTX
 			class Snapshot : public BaseAction
 			{
 			  public:
-				explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const Path & p_path ) :
-					_mode( p_mode ), _path( p_path )
-				{
-				}
+				explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const Path & p_path ) : _mode( p_mode ), _path( p_path ) {}
 
 				virtual void execute() override
 				{
@@ -205,43 +201,6 @@ namespace VTX
 				const Worker::Snapshoter::MODE _mode;
 				const Path					   _path;
 			};
-
-			class Resize : public BaseAction
-			{
-			  public:
-				Resize( const uint p_width, const uint p_height ) : _width( p_width ), _height( p_height ) {}
-				virtual void execute() override
-				{
-					// Set camera.
-					VTXApp::get().getScene().getCamera().setScreenSize( _width, _height );
-
-					// Resize renderer.
-					VTXApp::get().getRenderer().resize( _width, _height );
-				};
-
-			  private:
-				uint _width;
-				uint _height;
-			};
-
-			class ActiveUIComponent : public BaseAction
-			{
-			  public:
-				explicit ActiveUIComponent( const std::string & p_name, const bool p_active ) :
-					_name( p_name ), _active( p_active )
-				{
-				}
-
-				virtual void execute() override
-				{
-					VTXApp::get().getUI().getComponentByName( _name )->setVisible( _active );
-				};
-
-			  private:
-				const std::string & _name;
-				const bool			_active;
-			};
-
 		} // namespace Main
 	}	  // namespace Action
 } // namespace VTX

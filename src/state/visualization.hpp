@@ -6,6 +6,7 @@
 #endif
 
 #include "base_state.hpp"
+#include "controller/base_camera_controller.hpp"
 
 namespace VTX
 {
@@ -14,31 +15,26 @@ namespace VTX
 		class Visualization : public BaseState
 		{
 		  public:
-			Visualization() = default;
+			Visualization();
 
-			virtual const std::string & getName() const override { return ID::State::VISUALIZATION; }
-			virtual void				enter( void * const ) override;
-			virtual void				exit() override;
+			virtual void enter( void * const ) override;
+			virtual void exit() override;
 
-			const ID::VTX_ID & getController() const { return _controller; }
+			virtual void update( const float & p_deltaTime ) override;
 
-			virtual void update( const double & p_deltaTime ) override;
+			// inline const Controller::BaseCameraController * const getCurrentCameraController() const { return getItem<Controller::BaseCameraController>( _cameraController ); }
+			inline Controller::BaseCameraController * const getCurrentCameraController() { return getItem<Controller::BaseCameraController>( _cameraController ); }
+			inline const ID::VTX_ID &						getCurrentCameraControllerID() const { return _cameraController; }
 
-			void									 toggleController();
-			void									 recenter();
-			const Controller::BaseController * const getCurrentController() const { return getItemAt( _controller ); }
-			Controller::BaseController * const		 getCurrentController() { return getItem( _controller ); }
+			void toggleCameraController();
+			void setCameraController( const ID::VTX_ID & p_controllerId );
+			void resetCameraController();
+			void orientCameraController( const Math::AABB & );
 
 			virtual void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-		  protected:
-			virtual std::vector<Event::VTX_EVENT> _getEvents() const override
-			{
-				return std::vector<Event::VTX_EVENT>( 1, Event::Global::ON_SCENE_CHANGE );
-			}
-
 		  private:
-			ID::VTX_ID _controller = ID::Controller::TRACKBALL;
+			ID::VTX_ID _cameraController = ID::Controller::TRACKBALL;
 		};
 	} // namespace State
 } // namespace VTX

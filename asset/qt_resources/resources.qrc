@@ -1,0 +1,48 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+	<file>sprite/add_viewpoint.png</file>
+	<file>sprite/camera_focus_icon.png</file>
+	<file>sprite/camera_freefly_mode.png</file>
+	<file>sprite/camera_recenter_icon.png</file>
+	<file>sprite/camera_trackball_mode.png</file>
+	<file>sprite/camera_vessel_mode.png</file>
+	<file>sprite/close_icon.png</file>
+	<file>sprite/copy_selection_icon.png</file>
+	<file>sprite/delete_selection_icon.png</file>
+	<file>sprite/download_molecule_icon.png</file>
+	<file>sprite/extract_selection_icon.png</file>
+	<file>sprite/fullscreen_icon.png</file>
+	<file>sprite/hide_hydrogen_icon.png</file>
+	<file>sprite/hide_selection_icon.png</file>
+	<file>sprite/hide_solvant_icon.png</file>
+	<file>sprite/hide_water_icon.png</file>
+	<file>sprite/load_molecule_icon.png</file>
+	<file>sprite/logo.png</file>
+	<file>sprite/logoWhite.png</file>
+	<file>sprite/main_menu_separator.png</file>
+	<file>sprite/new_session_icon.png</file>
+	<file>sprite/openrecent_session_icon.png</file>
+	<file>sprite/open_session_icon.png</file>
+	<file>sprite/representation_icon.png</file>
+	<file>sprite/representation_new_preset_icon.png</file>
+	<file>sprite/representation_sas_icon.png</file>
+	<file>sprite/representation_stick_icon.png</file>
+	<file>sprite/representation_trace_icon.png</file>
+	<file>sprite/saveas_session_icon.png</file>
+	<file>sprite/save_molecule_icon.png</file>
+	<file>sprite/save_session_icon.png</file>
+	<file>sprite/screenshot_icon.png</file>
+	<file>sprite/show_hydrogen_icon.png</file>
+	<file>sprite/show_selection_icon.png</file>
+	<file>sprite/show_solvant_icon.png</file>
+	<file>sprite/show_water_icon.png</file>
+	<file>sprite/symbol/atom_symbol_icon.png</file>
+	<file>sprite/symbol/chain_symbol_icon.png</file>
+	<file>sprite/symbol/molecule_symbol_icon.png</file>
+	<file>sprite/symbol/residue_symbol_icon.png</file>
+	<file>sprite/treeview_folded_molecule_icon.png</file>
+	<file>sprite/treeview_unfolded_molecule_icon.png</file>
+	<file>sprite/undock_icon.png</file>
+	<file>stylesheet.css</file>
+</qresource>
+</RCC>

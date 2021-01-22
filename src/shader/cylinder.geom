@@ -6,12 +6,14 @@ layout( triangle_strip, max_vertices = 4 ) out;
 uniform mat4  uProjMatrix;
 uniform float uCylRad;
 
-flat in vec3 vVertexColor[]; // One color per atom.
-flat in uint vVertexVis[];
+flat in vec3		   vVertexColor[]; // One color per atom.
+flat in unsigned short vVertexVis[];
+flat in unsigned short vVertexSel[];
 
-smooth out vec3 viewImpPos;		  // Impostor position in view space.
-flat out vec3	viewCylVert[ 2 ]; // Cylinder vertices position in view space.
-flat out vec3	colors[ 2 ];
+smooth out vec3			viewImpPos;		  // Impostor position in view space.
+flat out vec3			viewCylVert[ 2 ]; // Cylinder vertices position in view space.
+flat out vec3			colors[ 2 ];
+flat out unsigned short vertexSel[ 2 ];
 
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
@@ -37,7 +39,7 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 void main()
 {
 	// Do not emit primitive if cylinder is not visible.
-	if ( vVertexVis[ 0 ] == 0 || vVertexVis[ 1 ] == 0 )
+	if ( vVertexVis[ 0 ] == 0us || vVertexVis[ 1 ] == 0us )
 	{
 		return;
 	}
@@ -47,6 +49,8 @@ void main()
 	viewCylVert[ 1 ] = gl_in[ 1 ].gl_Position.xyz;
 	colors[ 0 ]		 = vVertexColor[ 0 ];
 	colors[ 1 ]		 = vVertexColor[ 1 ];
+	vertexSel[ 0 ]	 = vVertexSel[ 0 ];
+	vertexSel[ 1 ]	 = vVertexSel[ 1 ];
 
 	// Flip is vertex 0 is farther than vertex 1.
 	vec3 viewImpPos0, viewImpPos1;

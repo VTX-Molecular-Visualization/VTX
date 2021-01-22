@@ -27,8 +27,7 @@ namespace VTX
 		{
 		  public:
 			CameraRayTracing( const Object3D::Camera & p_camera, const uint p_width, const uint p_height ) :
-				_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ),
-				_left( p_camera.getLeft() ), _width( p_width ), _height( p_height )
+				_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ), _right( p_camera.getRight() ), _width( p_width ), _height( p_height )
 			{
 				//
 				//
@@ -121,7 +120,7 @@ namespace VTX
 				const float halfWidth  = ratio * halfHeight;
 
 				_du = Util::Math::normalize( Util::Math::cross( _front, _up ) ) * halfWidth;
-				_dv = Util::Math::normalize( Util::Math::cross( _left, _front ) ) * halfHeight;
+				_dv = Util::Math::normalize( Util::Math::cross( _right, _front ) ) * halfHeight;
 
 				/*
 				std::cout << "Camera RT" << std::endl;
@@ -142,7 +141,7 @@ namespace VTX
 			Vec3f _pos;
 			Vec3f _front;
 			Vec3f _up;
-			Vec3f _left;
+			Vec3f _right;
 
 			uint _width;
 			uint _height;
@@ -166,11 +165,12 @@ namespace VTX
 			VTX_INFO( "Init Scene" );
 			_initScene( VTXApp::get().getScene() );
 
-			glGenTextures( 1, &_texture );
-			glBindTexture( GL_TEXTURE_2D, _texture );
-
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
+			gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+			gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+			gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -209,23 +209,24 @@ namespace VTX
 
 			for ( uint i = 0; i < nbThreads; ++i )
 			{
-				threadPool.emplace_back( std::thread(
-					[ this, nbThreads, &camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, &nextTileId ]() {
-						_renderTiles( _pixels, camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, nextTileId );
-					} ) );
+				threadPool.emplace_back( std::thread( [ this, nbThreads, &camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, &nextTileId ]() {
+					_renderTiles( _pixels, camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, nextTileId );
+				} ) );
 			}
 			for ( std::thread & t : threadPool )
 			{
 				t.join();
 			}
 
-			glBindTexture( GL_TEXTURE_2D, _texture );
-			glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, _width, _height, 0, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
+			gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, _width, _height );
+
+			gl()->glBindTexture( GL_TEXTURE_2D, _texture );
+			gl()->glTextureSubImage2D( _texture, 0, 0, 0, _width, _height, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
 
 			chrono.stop();
 			//_progressBar.stop();
 
-			const double time = chrono.elapsedTime();
+			const float time = chrono.elapsedTime();
 
 			VTX_DEBUG( "Rendering time: " + std::to_string( time * 1000. ) + "ms" );
 		}
@@ -407,10 +408,7 @@ namespace VTX
 			}
 		}
 
-		Color::Rgb RayTracer::_renderPixel( const CameraRayTracing & p_camera,
-											const float				 p_x,
-											const float				 p_y,
-											const uint				 p_nbPixelSamples )
+		Color::Rgb RayTracer::_renderPixel( const CameraRayTracing & p_camera, const float p_x, const float p_y, const uint p_nbPixelSamples )
 		{
 			Color::Rgb color = Color::Rgb::BLACK;
 

@@ -1,11 +1,14 @@
 #include "state_machine.hpp"
 #include "define.hpp"
+#include "event/event.hpp"
 #include "exception.hpp"
 #include "export.hpp"
 #include "generic/factory.hpp"
+#include "id.hpp"
 #include "play.hpp"
 #include "visualization.hpp"
 #include "vtx_app.hpp"
+#include "event/event_manager.hpp"
 
 namespace VTX
 {
@@ -13,16 +16,17 @@ namespace VTX
 	{
 		StateMachine::StateMachine()
 		{
-			addItem( new Visualization() );
-			addItem( new Play() );
-			addItem( new Export() );
+			addItem( ID::State::VISUALIZATION, new Visualization() );
+			addItem( ID::State::PLAY, new Play() );
+			addItem( ID::State::EXPORT, new Export() );
 		}
 
-		void StateMachine::goToState( const std::string & p_name, void * const p_arg )
+		void StateMachine::goToState( const ID::VTX_ID & p_name, void * const p_arg )
 		{
 			VTX_DEBUG( "Go to state: " + p_name );
 			if ( hasItem( p_name ) )
 			{
+				VTX_EVENT( new Event::VTXEventValue<ID::VTX_ID>( Event::Global::CHANGE_STATE, p_name ) );
 				_switchState( getItem( p_name ), p_arg );
 			}
 			else
@@ -44,7 +48,7 @@ namespace VTX
 			}
 		}
 
-		void StateMachine::update( const double & p_deltaTime )
+		void StateMachine::update( const float & p_deltaTime )
 		{
 			if ( _currentState != nullptr )
 			{

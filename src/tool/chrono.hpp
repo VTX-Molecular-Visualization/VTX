@@ -14,12 +14,12 @@ namespace VTX
 		class Chrono
 		{
 			using Clock	   = std::chrono::high_resolution_clock;
-			using Duration = std::chrono::duration<double>;
+			using Duration = std::chrono::duration<float>;
 
 		  public:
 			void   start() { begin = Clock::now(); }
 			void   stop() { end = Clock::now(); }
-			double elapsedTime() const { return ( std::chrono::duration_cast<Duration>( end - begin ) ).count(); }
+			float elapsedTime() const { return ( std::chrono::duration_cast<Duration>( end - begin ) ).count(); }
 
 		  private:
 			Clock::time_point begin;

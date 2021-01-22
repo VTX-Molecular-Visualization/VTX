@@ -6,6 +6,7 @@
 #endif
 
 #include "base_model.hpp"
+#include "id.hpp"
 
 namespace VTX
 {
@@ -14,6 +15,8 @@ namespace VTX
 		class Molecule;
 		class Bond : public BaseModel
 		{
+			VTX_MODEL
+
 		  public:
 			inline uint				getIndexFirstAtom() const { return _indexFirstAtom; };
 			inline void				setIndexFirstAtom( const uint p_index ) { _indexFirstAtom = p_index; };
@@ -26,6 +29,8 @@ namespace VTX
 			uint	   _indexFirstAtom	= 0;
 			uint	   _indexSecondAtom = 0;
 			Molecule * _moleculePtr		= nullptr;
+
+			Bond() : BaseModel( ID::Model::MODEL_BOND ) {};
 		};
 
 	} // namespace Model

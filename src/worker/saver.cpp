@@ -1,6 +1,7 @@
 #include "saver.hpp"
 #include "io/writer/vtx.hpp"
-#include "vtx_app.hpp"
+#include "tool/chrono.hpp"
+#include "tool/logger.hpp"
 
 namespace VTX
 {
@@ -28,7 +29,7 @@ namespace VTX
 			delete writer;
 
 			// Rename if extension is missing.
-			if( std::filesystem::exists( *_path ) && _path->extension() != ".vtx" )
+			if ( std::filesystem::exists( *_path ) && _path->extension() != ".vtx" )
 			{
 				std::filesystem::rename( *_path, Path( _path->string() + ".vtx" ) );
 			}

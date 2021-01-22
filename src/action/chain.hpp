@@ -6,9 +6,11 @@
 #endif
 
 #include "model/chain.hpp"
+#include "model/molecule.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
 #include "util/molecule.hpp"
 #include "visible.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -19,15 +21,17 @@ namespace VTX
 			class ChangeColor : public BaseAction
 			{
 			  public:
-				explicit ChangeColor( Model::Chain & p_chain, const Color::Rgb & p_color ) :
-					_chain( p_chain ), _color( p_color )
-				{
-				}
+				explicit ChangeColor( Model::Chain & p_chain, const Color::Rgb & p_color ) : _chain( p_chain ), _color( p_color ) {}
 
 				virtual void execute() override
 				{
 					_chain.setColor( _color );
-					_chain.getMoleculePtr()->setColorMode();
+					_chain.getMoleculePtr()->refreshColors();
+
+					if ( _chain.getMoleculePtr()->getSecondaryStructure().getColorMode() == Model::SecondaryStructure::COLOR_MODE::CHAIN )
+					{
+						_chain.getMoleculePtr()->getSecondaryStructure().refreshColors();
+					}
 				}
 
 			  private:
@@ -38,27 +42,42 @@ namespace VTX
 			class ChangeVisibility : public Visible::ChangeVisibility
 			{
 			  public:
-				explicit ChangeVisibility( Model::Chain & p_chain, const VISIBILITY_MODE p_mode ) :
-					Visible::ChangeVisibility( p_chain, p_mode )
-				{
-				}
+				explicit ChangeVisibility( Model::Chain & p_chain, const VISIBILITY_MODE p_mode ) : Visible::ChangeVisibility( p_chain, p_mode ) {}
 
 				virtual void execute() override
 				{
-					const Model::Chain & chain = ( (Model::Chain &)_visible );
-					Visible::ChangeVisibility::execute();
-
-					if ( _mode == VISIBILITY_MODE::ALL || _mode == VISIBILITY_MODE::SOLO )
+					for ( Generic::BaseVisible * const visible : _visibles )
 					{
-						for ( Model::Chain * const c : chain.getMoleculePtr()->getChains() )
-						{
-							c->setVisible( _mode == VISIBILITY_MODE::ALL
-										   || ( _mode == VISIBILITY_MODE::SOLO && c == &chain ) );
-						}
-					}
+						bool		   newVisibility = _getVisibilityBool( *visible );
+						Model::Chain & chain		 = *( (Model::Chain *)visible );
 
-					Util::Molecule::refreshRepresentationState( *chain.getMoleculePtr() );
+						chain.setVisible( newVisibility );
+
+						if ( _mode == VISIBILITY_MODE::ALL || _mode == VISIBILITY_MODE::SOLO )
+						{
+							for ( Model::Chain * const c : chain.getMoleculePtr()->getChains() )
+							{
+								c->setVisible( _mode == VISIBILITY_MODE::ALL || ( _mode == VISIBILITY_MODE::SOLO && c == &chain ) );
+							}
+						}
+
+						chain.getMoleculePtr()->computeRepresentationTargets();
+					}
 				}
+			};
+
+			class Orient : public BaseAction
+			{
+			  public:
+				explicit Orient( Model::Chain & p_chain ) : _chain( p_chain ) {}
+
+				virtual void execute() override
+				{
+					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->orientCameraController( _chain.getAABB() );
+				}
+
+			  private:
+				Model::Chain & _chain;
 			};
 		} // namespace Chain
 	}	  // namespace Action

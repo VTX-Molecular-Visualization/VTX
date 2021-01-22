@@ -1,6 +1,5 @@
 #include "chain.hpp"
-#include "util/molecule.hpp"
-#include "view/ui/chain.hpp"
+#include "molecule.hpp"
 
 namespace VTX
 {
@@ -81,34 +80,33 @@ namespace VTX
 			return p_isHetAtm ? Chain::CHAIN_ID_COLOR_HETATM[ id ] : Chain::CHAIN_ID_COLOR_ATOM[ id ];
 		}
 
-		void Chain::setSelected( const bool p_selected )
+		Color::Rgb Chain::getChainIdColor( const uint p_chainId, const bool p_isHetAtm )
 		{
-			BaseSelectable::setSelected( p_selected );
-			if ( isSelected() )
+			return p_isHetAtm ? Chain::CHAIN_ID_COLOR_HETATM[ p_chainId ] : Chain::CHAIN_ID_COLOR_ATOM[ p_chainId ];
+		}
+
+		void Chain::setVisible( const bool p_visible )
+		{
+			if ( isVisible() != p_visible )
 			{
-				addItem( (View::BaseView<BaseModel> *)new View::UI::Chain( this ) );
-			}
-			else
-			{
-				delete removeItem( ID::View::UI_CHAIN );
+				BaseVisible::setVisible( p_visible );
+
+				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::CHAIN_VISIBILITY, _index ) );
 			}
 		}
 
-		void Chain::computeSequence()
+		const Math::AABB Chain::getAABB() const
 		{
-			_sequence = "/" + getName() + "/";
-			for ( uint i = 0; i < getResidueCount(); ++i )
+			Math::AABB aabb = Math::AABB();
+
+			for ( uint i = 0; i < _residueCount; ++i )
 			{
-				Model::Residue & residue = getMoleculePtr()->getResidue( getIndexFirstResidue() + i );
-				if ( residue.getSymbolShort() != "?" )
-				{
-					_sequence += residue.getSymbolShort();
-				}
-				else
-				{
-					_sequence += residue.getSymbolStr() + " ";
-				}
+				const Residue & residue = _moleculePtr->getResidue( _indexFirstResidue + i );
+				aabb.extend( residue.getAABB() );
 			}
+
+			return aabb;
 		}
+
 	} // namespace Model
 } // namespace VTX

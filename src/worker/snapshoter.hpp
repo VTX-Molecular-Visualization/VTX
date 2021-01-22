@@ -21,7 +21,7 @@ namespace VTX
 				RT_OPTIX
 			};
 
-			bool takeSnapshotGL( const Path & p_path ) const;
+			bool takeSnapshotGL( const Path & p_path );
 			bool takeSnapshotRTCPU( const Path & p_path ) const;
 			bool takeSnapshotRTOptix( const Path & p_path ) const;
 

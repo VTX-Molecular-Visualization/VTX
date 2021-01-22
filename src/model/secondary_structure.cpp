@@ -1,18 +1,26 @@
 #include "secondary_structure.hpp"
+#include "id.hpp"
 #include "model/molecule.hpp"
+#include "model/selection.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
+#include "tool/logger.hpp"
 #include "view/d3/ribbon.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
-		const Color::Rgb SecondaryStructure::SECONDARY_STRUCTURE_COLORS_JMOL[ uint( VALUE::COUNT ) ]
-			= { Color::Rgb( 1.f, 0.f, 0.5f ),  Color::Rgb( 0.62f, 0.f, 0.5f ), Color::Rgb( 0.37f, 0.f, 0.5f ),
-				Color::Rgb( 1.f, 0.78f, 0.f ), Color::Rgb( 0.37f, 0.5f, 1.f ), Color::Rgb::WHITE };
+		const Color::Rgb SecondaryStructure::COLORS_JMOL[ uint( VALUE::COUNT ) ] = { Color::Rgb( 1.f, 0.f, 0.5f ),	 // HELIX_ALPHA_RIGHT
+																					 Color::Rgb( 1.f, 0.f, 0.5f ),	 // HELIX_ALPHA_LEFT
+																					 Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
+																					 Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_LEFT
+																					 Color::Rgb( 0.37f, 0.f, 0.5f ), // HELIX_PI
+																					 Color::Rgb( 1.f, 0.78f, 0.f ),	 // STRAND
+																					 Color::Rgb( 0.37f, 0.5f, 1.f ), // TURN
+																					 Color::Rgb::WHITE };			 // COIL
 
-		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) : _molecule( p_molecule )
+		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) : BaseModel3D( ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
 		{
 			Tool::Chrono chrono;
 			chrono.start();
@@ -73,204 +81,107 @@ namespace VTX
 
 					// Compute control point direction.
 					Vec3f direction = Util::Math::normalize( positionO - positionCA );
-					if ( controlPointPositions.size() > 0 )
+					if ( controlPointPositions.size() > 1 )
 					{
 						_flipTest( direction, directionLast );
 					}
-					_controlPointDirections.emplace_back( direction );
+					_bufferDirections.emplace_back( direction );
+
+					// Compute control point normal.
+					if ( controlPointPositions.size() > 1 )
+					{
+						Vec3f directionCA = positionCA - controlPointPositions[ controlPointPositions.size() - 2 ];
+						Vec3f normal	  = Util::Math::normalize( Util::Math::cross( direction, directionCA ) );
+						_bufferNormals.emplace_back( normal );
+
+						// Copy second to first.
+						if ( controlPointPositions.size() == 2 )
+						{
+							_bufferNormals[ _bufferNormals.size() - 2 ] = _bufferNormals[ _bufferNormals.size() - 1 ];
+						}
+					}
+					else
+					{
+						_bufferNormals.emplace_back( VEC3F_ZERO );
+					}
 
 					// Add secondary structure type.
-					_controlPointSecondaryStructures.emplace_back( uint( residue.getSecondaryStructure() ) );
+					_bufferSecondaryStructures.emplace_back( ushort( residue.getSecondaryStructure() ) );
 
 					// Add color.
 					switch ( _colorMode )
 					{
-					case COLOR_MODE::JMOL:
-						_controlPointColors.emplace_back(
-							SECONDARY_STRUCTURE_COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
-						break;
-					case COLOR_MODE::CHAIN:
-						_controlPointColors.emplace_back( residue.getChainPtr()->getColor() );
-						break;
-					default: _controlPointColors.emplace_back( Color::Rgb::WHITE ); break;
+					case COLOR_MODE::JMOL: _bufferColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] ); break;
+					case COLOR_MODE::PROTEIN: _bufferColors.emplace_back( residue.getMoleculePtr()->getColor() ); break;
+					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue.getChainPtr()->getColor() ); break;
+					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue.getColor() ); break;
+					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
 					}
 				}
 
 				// Add indices and save mapping.
 				if ( controlPointPositions.size() >= 4 )
 				{
-					uint offset = uint( _controlPointPositions.size() );
+					_residueToPositions.emplace( residueIndex[ 0 ], uint( _bufferPositions.size() ) );
+					uint offset = uint( _bufferPositions.size() );
 					for ( uint i = 1; i < controlPointPositions.size() - 2; ++i )
 					{
-						_residueToControlPointIndices.emplace( residueIndex[ i ], uint( _indices.size() ) );
+						_residueToIndices.emplace( residueIndex[ i ], uint( _buffferIndices.size() ) );
+						_residueToPositions.emplace( residueIndex[ i ], uint( _bufferPositions.size() + i ) );
 
-						_indices.emplace_back( offset + i - 1 );
-						_indices.emplace_back( offset + i );
-						_indices.emplace_back( offset + i + 1 );
-						_indices.emplace_back( offset + i + 2 );
+						_buffferIndices.emplace_back( offset + i - 1 );
+						_buffferIndices.emplace_back( offset + i );
+						_buffferIndices.emplace_back( offset + i + 1 );
+						_buffferIndices.emplace_back( offset + i + 2 );
 					}
+					_residueToPositions.emplace( residueIndex[ controlPointPositions.size() - 1 ], uint( _bufferPositions.size() + controlPointPositions.size() - 1 ) );
+					_residueToPositions.emplace( residueIndex[ controlPointPositions.size() - 2 ], uint( _bufferPositions.size() + controlPointPositions.size() - 2 ) );
 
 					// Merge control points.
-					_controlPointPositions.insert(
-						_controlPointPositions.end(), controlPointPositions.begin(), controlPointPositions.end() );
+					_bufferPositions.insert( _bufferPositions.end(), controlPointPositions.begin(), controlPointPositions.end() );
 				}
 			}
 
 			// Reverse indices to render the other side.
-			std::vector<uint> indicesReverse = _indices;
-			std::reverse( indicesReverse.begin(), indicesReverse.end() );
+			// std::vector<uint> indicesReverse = _indices;
+			// std::reverse( indicesReverse.begin(), indicesReverse.end() );
 			//_indices.insert( _indices.end(), indicesReverse.begin(), indicesReverse.end() );
+
+			_bufferPositions.shrink_to_fit();
+			_bufferDirections.shrink_to_fit();
+			_bufferNormals.shrink_to_fit();
+			_bufferSecondaryStructures.shrink_to_fit();
+			_bufferColors.shrink_to_fit();
+			_buffferIndices.shrink_to_fit();
 
 			chrono.stop();
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
-
-			addItem( (View::BaseView<BaseModel> *)new View::D3::Ribbon( this ) );
 		}
 
-		SecondaryStructure::~SecondaryStructure()
+		void SecondaryStructure::_init() {}
+
+		void SecondaryStructure::_fillBuffer()
 		{
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glBindVertexArray( 0 );
-
-			if ( _vboPositions != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboPositions );
-			if ( _vboDirections != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboDirections );
-			if ( _vboSecondaryStructures != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboSecondaryStructures );
-			if ( _vboColors != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboColors );
-			if ( _vboVisibilities != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_vboVisibilities );
-			if ( _ibo != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_ibo );
-			if ( _vao != GL_INVALID_VALUE )
-				glDeleteVertexArrays( 1, &_vao );
+			_buffer->setControlPointPositions( _bufferPositions );
+			_buffer->setControlPointDirections( _bufferDirections );
+			_buffer->setControlPointNormals( _bufferNormals );
+			_buffer->setControlPointSecondaryStructure( _bufferSecondaryStructures );
+			_buffer->setControlPointColors( _bufferColors );
+			refreshSelection();
+			_buffer->setIndices( _buffferIndices );
 		}
 
-		void SecondaryStructure::init()
-		{
-			// VBO.
-			glGenBuffers( 1, &_vboPositions );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
-			glBufferData( GL_ARRAY_BUFFER,
-						  _controlPointPositions.size() * sizeof( Vec3f ),
-						  _controlPointPositions.data(),
-						  GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		void SecondaryStructure::_computeAABB() {}
 
-			glGenBuffers( 1, &_vboDirections );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
-			glBufferData( GL_ARRAY_BUFFER,
-						  _controlPointDirections.size() * sizeof( Vec3f ),
-						  _controlPointDirections.data(),
-						  GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glGenBuffers( 1, &_vboSecondaryStructures );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
-			glBufferData( GL_ARRAY_BUFFER,
-						  _controlPointSecondaryStructures.size() * sizeof( uint ),
-						  _controlPointSecondaryStructures.data(),
-						  GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glGenBuffers( 1, &_vboColors );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
-			glBufferData( GL_ARRAY_BUFFER,
-						  _controlPointColors.size() * sizeof( Color::Rgb ),
-						  _controlPointColors.data(),
-						  GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glGenBuffers( 1, &_vboVisibilities );
-			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
-			glBufferData( GL_ARRAY_BUFFER,
-						  _controlPointVisibilities.size() * sizeof( uint ),
-						  _controlPointVisibilities.data(),
-						  GL_STATIC_DRAW );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			// IBO.
-			glGenBuffers( 1, &_ibo );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
-			glBufferData(
-				GL_ELEMENT_ARRAY_BUFFER, _indices.size() * sizeof( uint32_t ), _indices.data(), GL_STATIC_DRAW );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-			// VAO.
-			glGenVertexArrays( 1, &_vao );
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _vboPositions );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
-			glVertexAttribPointer(
-				ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _vboDirections );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
-			glVertexAttribPointer(
-				ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _vboSecondaryStructures );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE,
-								   1,
-								   GL_UNSIGNED_INT,
-								   GL_FALSE,
-								   sizeof( uint ),
-								   0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _vboColors );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
-			glVertexAttribPointer(
-				ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _vboVisibilities );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY );
-			glVertexAttribPointer(
-				ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-			glBindVertexArray( 0 );
-		}
-
-		void SecondaryStructure::bindBuffers()
-		{
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ibo );
-		}
-
-		void SecondaryStructure::unbindBuffers()
-		{
-			glBindVertexArray( 0 );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-		}
+		void SecondaryStructure::_instantiate3DViews() { _addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Ribbon>( this, ID::View::D3_RIBBON_PATCH ) ); }
 
 		void SecondaryStructure::setCurrentFrame()
 		{
+			// TODO: refacto.
 			const Molecule::AtomPositionsFrame & positions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
 
-			_controlPointPositions.clear();
-			_controlPointDirections.clear();
+			_bufferPositions.clear();
+			_bufferDirections.clear();
 
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
@@ -305,23 +216,66 @@ namespace VTX
 					const Vec3f & positionCA = positions[ CA->getIndex() ];
 					const Vec3f & positionO	 = positions[ O->getIndex() ];
 
-					_controlPointPositions.emplace_back( positionCA );
+					_bufferPositions.emplace_back( positionCA );
 
 					Vec3f direction = Util::Math::normalize( positionO - positionCA );
 					if ( validResidueCount > 0 )
 					{
 						_flipTest( direction, directionLast );
 					}
-					_controlPointDirections.emplace_back( direction );
+					_bufferDirections.emplace_back( direction );
 
 					validResidueCount++;
 				}
 			}
 
-			glNamedBufferSubData(
-				_vboPositions, 0, sizeof( Vec3f ) * _controlPointPositions.size(), _controlPointPositions.data() );
-			glNamedBufferSubData(
-				_vboDirections, 0, sizeof( Vec3f ) * _controlPointDirections.size(), _controlPointDirections.data() );
+			_bufferPositions.shrink_to_fit();
+			_bufferDirections.shrink_to_fit();
+
+			_buffer->setControlPointPositions( _bufferPositions );
+			_buffer->setControlPointDirections( _bufferDirections );
+		}
+
+		void SecondaryStructure::_fillBufferColors()
+		{
+			_bufferColors.clear();
+
+			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
+			{
+				const Chain & chain		   = _molecule->getChain( chainIdx );
+				uint		  residueCount = chain.getResidueCount();
+
+				if ( residueCount < 4 )
+				{
+					continue;
+				}
+
+				uint idxFirstResidue = chain.getIndexFirstResidue();
+				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
+				{
+					const Residue &			  residue = _molecule->getResidue( idxFirstResidue + residueIdx );
+					const Model::Atom * const CA	  = residue.findFirstAtomByName( "CA" );
+					const Model::Atom * const O		  = residue.findFirstAtomByName( "O" );
+
+					if ( CA == nullptr || O == nullptr )
+					{
+						continue;
+					}
+
+					switch ( _colorMode )
+					{
+					case COLOR_MODE::JMOL: _bufferColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] ); break;
+					case COLOR_MODE::PROTEIN: _bufferColors.emplace_back( residue.getMoleculePtr()->getColor() ); break;
+					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue.getChainPtr()->getColor() ); break;
+					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue.getColor() ); break;
+					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
+					}
+				}
+			}
+
+			_bufferColors.shrink_to_fit();
+
+			_buffer->setControlPointColors( _bufferColors );
 		}
 
 		void SecondaryStructure::_flipTest( Vec3f & p_direction, Vec3f & p_directionLast ) const
@@ -333,11 +287,31 @@ namespace VTX
 			p_directionLast = p_direction;
 		}
 
+		void SecondaryStructure::_fillBufferSelections( const Model::Selection::MapChainIds * const p_selection )
+		{
+			_bufferSelections.clear();
+			_bufferSelections.resize( _bufferPositions.size(), 0 );
+
+			if ( p_selection != nullptr )
+			{
+				for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : *p_selection )
+				{
+					for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+					{
+						if ( _residueToPositions.find( pairResidue.first ) != _residueToPositions.end() )
+						{
+							_bufferSelections[ _residueToPositions[ pairResidue.first ] ] = 1u;
+						}
+					}
+				}
+			}
+
+			_buffer->setControlPointSelections( _bufferSelections );
+		}
+
 		void SecondaryStructure::print() const
 		{
-			VTX_INFO( "Control points: " + std::to_string( _controlPointPositions.size() ) );
-			VTX_INFO( "Indices: " + std::to_string( _indices.size() ) );
-
+			VTX_INFO( "Control points: " + std::to_string( _bufferPositions.size() ) + " / Indices: " + std::to_string( _buffferIndices.size() ) );
 			VTX_DEBUG( "Sizeof secondary structure: " + std::to_string( sizeof( *this ) ) );
 		}
 

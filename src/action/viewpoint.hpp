@@ -9,6 +9,7 @@
 #include "controller/trackball.hpp"
 #include "model/path.hpp"
 #include "model/viewpoint.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
@@ -22,15 +23,11 @@ namespace VTX
 			class Create : public BaseAction
 			{
 			  public:
-				explicit Create( Model::Path &						p_path,
-								 const Object3D::Camera &			p_camera,
-								 Controller::BaseController * const p_controller ) :
-					_path( p_path ),
-					_position( p_camera.getPosition() ), _rotation( p_camera.getRotation() ), _target( VEC3D_ZERO ),
-					_distance( 0.0 ), _controller( ID::Controller::FREEFLY )
+				explicit Create( Model::Path & p_path, const Object3D::Camera & p_camera, Controller::BaseController * const p_controller ) :
+					_path( p_path ), _position( p_camera.getPosition() ), _rotation( p_camera.getRotation() ), _target( VEC3F_ZERO ), _distance( 0.f ),
+					_controller( ID::Controller::FREEFLY )
 				{
-					const Controller::Trackball * const trackball
-						= dynamic_cast<Controller::Trackball *>( p_controller );
+					const Controller::Trackball * const trackball = dynamic_cast<Controller::Trackball *>( p_controller );
 					if ( trackball != nullptr )
 					{
 						_target		= trackball->getTarget();
@@ -41,7 +38,7 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					Model::Viewpoint * const viewpoint = new Model::Viewpoint( &_path );
+					Model::Viewpoint * const viewpoint = MVC::MvcManager::get().instantiateModel<Model::Viewpoint, Model::Path * const>( &_path );
 					viewpoint->setController( _controller );
 					viewpoint->setPosition( _position );
 					viewpoint->setRotation( _rotation );
@@ -53,10 +50,10 @@ namespace VTX
 
 			  private:
 				Model::Path & _path;
-				const Vec3d	  _position;
-				const Quatd	  _rotation;
-				Vec3d		  _target;
-				double		  _distance;
+				const Vec3f	  _position;
+				const Quatf	  _rotation;
+				Vec3f		  _target;
+				float		  _distance;
 				ID::VTX_ID	  _controller;
 			};
 
@@ -80,10 +77,7 @@ namespace VTX
 			class GoTo : public BaseAction
 			{
 			  public:
-				explicit GoTo( Model::Viewpoint & p_viewpoint, Object3D::Camera & p_camera ) :
-					_viewpoint( p_viewpoint ), _camera( p_camera )
-				{
-				}
+				explicit GoTo( Model::Viewpoint & p_viewpoint, Object3D::Camera & p_camera ) : _viewpoint( p_viewpoint ), _camera( p_camera ) {}
 
 				virtual void execute() override { _camera.set( _viewpoint.getPosition(), _viewpoint.getRotation() ); }
 
@@ -95,10 +89,7 @@ namespace VTX
 			class AddAction : public BaseAction
 			{
 			  public:
-				explicit AddAction( Model::Viewpoint & p_viewpoint, const std::string & p_action ) :
-					_viewpoint( p_viewpoint ), _action( p_action )
-				{
-				}
+				explicit AddAction( Model::Viewpoint & p_viewpoint, const std::string & p_action ) : _viewpoint( p_viewpoint ), _action( p_action ) {}
 
 				virtual void execute() override { _viewpoint.addAction( _action ); }
 
@@ -110,10 +101,7 @@ namespace VTX
 			class DeleteAction : public BaseAction
 			{
 			  public:
-				explicit DeleteAction( Model::Viewpoint &								p_viewpoint,
-									   const std::vector<std::string>::const_iterator & p_action ) :
-					_viewpoint( p_viewpoint ),
-					_action( p_action )
+				explicit DeleteAction( Model::Viewpoint & p_viewpoint, const std::vector<std::string>::const_iterator & p_action ) : _viewpoint( p_viewpoint ), _action( p_action )
 				{
 				}
 
@@ -127,10 +115,7 @@ namespace VTX
 			class ChangeDuration : public BaseAction
 			{
 			  public:
-				explicit ChangeDuration( Model::Viewpoint & p_viewpoint, const float p_duration ) :
-					_viewpoint( p_viewpoint ), _duration( p_duration )
-				{
-				}
+				explicit ChangeDuration( Model::Viewpoint & p_viewpoint, const float p_duration ) : _viewpoint( p_viewpoint ), _duration( p_duration ) {}
 
 				virtual void execute() override
 				{

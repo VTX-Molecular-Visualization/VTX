@@ -73,16 +73,25 @@ TODO
 
 ### WINDOWS VISUAL STUDIO 2019 x64
 
-#### 1. Make solution
+### 1. Prerequisites
 
--   Install Visual Studio 2019 latest version with C++ tools.  
+-   Install Visual Studio 2019 latest version with C++ tools.
+-   [Download Qt](https://www.qt.io/download-open-source)
+-   Launch Qt installer
+-   Under "Qt 5.15.1", select "MSVC 2019 64-bit" and "Sources"
+-   Under "Developer and Designer Tools", select "Debugging Tools for Windows"
+-   Install
+-   Add an environment variable : Qt5_DIR = <QtInstallDir>/5.15.1/msvc2019_64
+
+#### 2. Make solution
+
 -   Run _cmake.bat
 
-#### 2. Open solution
+#### 3. Open solution
 
 Open "_windows/VTX.sln".
 
-#### 3. Install/configure ClangFormat
+#### 4. Install/configure ClangFormat
 
 Install [ClangFormat VS extension](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.ClangFormat).  
 Go to Tools -> Options, then under LLVM/Clang, set the following values:

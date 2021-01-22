@@ -11,6 +11,8 @@
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
 #include "generic/base_visible.hpp"
+#include "id.hpp"
+#include "math/aabb.hpp"
 #include "model/secondary_structure.hpp"
 #include <map>
 
@@ -20,12 +22,10 @@ namespace VTX
 	{
 		class Molecule;
 		class Chain;
-		class Residue :
-			public BaseModel,
-			public Generic::BaseColorable,
-			public Generic::BaseVisible,
-			public Generic::BaseRepresentable
+		class Residue : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible, public Generic::BaseRepresentable
 		{
+			VTX_MODEL
+
 		  public:
 			enum class TYPE : int
 			{
@@ -78,13 +78,21 @@ namespace VTX
 			inline int				getIndexInOriginalChain() const { return _indexInOriginalChain; };
 			inline void				setIndexInOriginalChain( const int p_index ) { _indexInOriginalChain = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
-			inline Chain * const	getChainPtr() const { return _chainPtr; }
-			inline void				setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
+			inline void				setMoleculePtr( Molecule * const p_molecule )
+			{
+				_moleculePtr = p_molecule;
+				_setRepresentableMolecule( p_molecule );
+			}
+			inline Chain * const getChainPtr() const { return _chainPtr; }
+			inline void			 setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
 
 			inline const SYMBOL		   getSymbol() const { return _symbol; };
 			inline const std::string & getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; }
-			inline void				   setSymbol( const SYMBOL p_type ) { _symbol = p_type; };
+			inline void				   setSymbol( const SYMBOL p_type )
+			{
+				_symbol = p_type;
+				BaseModel::setDefaultName( &getSymbolName() );
+			};
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const std::string & getSymbolShort() const { return SYMBOL_SHORT_STR[ (int)_symbol ]; }
 
@@ -103,16 +111,16 @@ namespace VTX
 			inline const std::vector<uint> & getIndexExtraBondEnd() const { return _indexExtraBondEnd; };
 			inline std::vector<uint> &		 getIndexExtraBondEnd() { return _indexExtraBondEnd; };
 
-			inline Atom::TYPE getAtomType() const { return _atomType; }
-			inline void		  setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
+			inline Atom::TYPE					   getAtomType() const { return _atomType; }
+			inline void							   setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
 			inline const SecondaryStructure::VALUE getSecondaryStructure() const { return _secondaryStructure; };
-			inline void							   setSecondaryStructure( const SecondaryStructure::VALUE p_structure )
-			{
-				_secondaryStructure = p_structure;
-			};
-			const Atom * const findFirstAtomByName( const std::string & ) const;
+			inline void							   setSecondaryStructure( const SecondaryStructure::VALUE p_structure ) { _secondaryStructure = p_structure; };
+			const Atom * const					   findFirstAtomByName( const std::string & ) const;
 
-			void setSelected( const bool );
+			// Mask BaseVisible::setVisible
+			void setVisible( const bool p_visible );
+
+			const Math::AABB getAABB() const;
 
 		  private:
 			TYPE	   _type				 = TYPE::STANDARD;
@@ -129,8 +137,10 @@ namespace VTX
 			uint					  _bondCount		   = 0;
 			std::vector<uint>		  _indexExtraBondStart = std::vector<uint>();
 			std::vector<uint>		  _indexExtraBondEnd   = std::vector<uint>();
-			Atom::TYPE				  _atomType = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
-			SecondaryStructure::VALUE _secondaryStructure = SecondaryStructure::VALUE::COIL;
+			Atom::TYPE				  _atomType			   = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
+			SecondaryStructure::VALUE _secondaryStructure  = SecondaryStructure::VALUE::COIL;
+
+			Residue() : BaseModel( ID::Model::MODEL_RESIDUE ) {}
 		};
 
 	} // namespace Model

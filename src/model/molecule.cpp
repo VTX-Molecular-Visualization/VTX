@@ -1,82 +1,39 @@
 #include "molecule.hpp"
 #include "color/rgb.hpp"
+#include "generic/factory.hpp"
+#include "id.hpp"
 #include "model/secondary_structure.hpp"
-#include "util/molecule.hpp"
+#include "tool/logger.hpp"
+#include "ui/widget_factory.hpp"
 #include "util/secondary_structure.hpp"
 #include "view/d3/box.hpp"
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
-#include "view/ui/molecule.hpp"
-#include "view/ui/molecule_sequence.hpp"
-#include "view/ui/molecule_structure.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
-		Molecule::Molecule()
-		{
-			addItem( (View::BaseView<BaseModel> *)new View::D3::Sphere( this ) );
-			addItem( (View::BaseView<BaseModel> *)new View::D3::Cylinder( this ) );
-			addItem( (View::BaseView<BaseModel> *)new View::UI::MoleculeStructure( this ) );
-		}
+		Molecule::Molecule() : Molecule( ID::Model::MODEL_MOLECULE ) {}
+		Molecule::Molecule( const ID::VTX_ID & p_typeId ) : BaseModel3D( ID::Model::MODEL_MOLECULE ) {}
 
 		Molecule::~Molecule()
 		{
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
-			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
-			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
-			glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
-			glDisableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glBindVertexArray( 0 );
-
-			if ( _atomPositionsVBO != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_atomPositionsVBO );
-			if ( _atomRadiusVBO != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_atomRadiusVBO );
-			if ( _atomColorsVBO != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_atomColorsVBO );
-			if ( _atomVisibilitiesVBO != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_atomVisibilitiesVBO );
-			if ( _bondsIBO != GL_INVALID_VALUE )
-				glDeleteBuffers( 1, &_bondsIBO );
-			if ( _vao != GL_INVALID_VALUE )
-				glDeleteVertexArrays( 1, &_vao );
-
-			Generic::clearVector( _atoms );
-			Generic::clearVector( _residues );
-			Generic::clearVector( _chains );
-			Generic::clearVector( _bonds );
+			MVC::MvcManager::get().deleteAllModels( _atoms );
+			MVC::MvcManager::get().deleteAllModels( _bonds );
+			MVC::MvcManager::get().deleteAllModels( _residues );
+			MVC::MvcManager::get().deleteAllModels( _chains );
 
 			if ( _secondaryStructure != nullptr )
-			{
-				delete _secondaryStructure;
-			}
+				MVC::MvcManager::get().deleteModel( _secondaryStructure );
 		}
 
-		void Molecule::init()
+		void Molecule::_init()
 		{
-			// Compute global AABB of atom positions (taking into account each frame).
-			_computeGlobalPositionsAABB();
-
-			// Create GL buffers.
-			_createBuffers();
-
 			// Fill buffers.
 			if ( _atomPositionsFrames.size() > 0 )
 			{
-				_initBufferAtomPositions();
-				_fillBufferAtomRadius();
-				_fillBufferAtomColors();
-				//_fillBufferAtomVisibilities(); // Done after.
-				_fillBufferBonds();
-
 				// Compute secondary structure if not loaded.
 				if ( _configuration.isSecondaryStructureLoadedFromFile == false )
 				{
@@ -85,24 +42,77 @@ namespace VTX
 
 				// Create secondary structure mesh.
 				createSecondaryStructure();
-				_fillBufferAtomVisibilities();
 
-				Util::Molecule::refreshRepresentationState( *this );
+				_setRepresentableMolecule( this );
+				computeRepresentationTargets();
 			}
 		}
 
-		void Molecule::_computeGlobalPositionsAABB()
+		void Molecule::_fillBuffer()
+		{
+			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
+			_buffer->setAtomRadius( _bufferAtomRadius );
+			_fillBufferAtomColors();
+			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
+			_buffer->setAtomSelections( _bufferAtomSelection );
+			_buffer->setBonds( _bufferBonds );
+		}
+
+		void Molecule::_computeAABB()
 		{
 			for ( AtomPositionsFrame frame : _atomPositionsFrames )
 			{
-				for ( Vec3f pos : frame )
+				for ( const Vec3f & pos : frame )
 				{
 					_aabb.extend( pos );
 				}
 			}
 		}
 
-		void Molecule::setColorMode() { _fillBufferAtomColors(); }
+		void Molecule::_fillBufferAABB()
+		{
+			uint counter	   = 0;
+			_bufferAABBCorners = std::vector<Vec3f>();
+			_bufferAABBIndices = std::vector<uint>();
+			for ( const Residue * const elem : _residues )
+			{
+				const Math::AABB & aabb = elem->getAABB();
+
+				const Vec3f & min = aabb.getMin();
+				const Vec3f & max = aabb.getMax();
+
+				_bufferAABBCorners.insert( _bufferAABBCorners.end(),
+										   { min,
+											 Vec3f( max.x, min.y, min.z ),
+											 Vec3f( max.x, max.y, min.z ),
+											 Vec3f( min.x, max.y, min.z ),
+											 Vec3f( min.x, min.y, max.z ),
+											 Vec3f( max.x, min.y, max.z ),
+											 max,
+											 Vec3f( min.x, max.y, max.z ) } );
+
+				_bufferAABBIndices.insert(
+					_bufferAABBIndices.end(),
+					{ counter + 0, counter + 1, counter + 1, counter + 2, counter + 2, counter + 3,
+					  counter + 3, counter + 0, counter + 4, counter + 5, counter + 5, counter + 6,
+					  counter + 6, counter + 7, counter + 7, counter + 4, counter + 0, counter + 4,
+					  counter + 1, counter + 5, counter + 2, counter + 6, counter + 3, counter + 7 } );
+
+				counter += 8u;
+			}
+
+			_buffer->setAABBCorners( _bufferAABBCorners );
+			_buffer->setAABBIndices( _bufferAABBIndices );
+		}
+
+		void Molecule::_instantiate3DViews()
+		{
+			//_viewBox = MVC::MvcManager::get().instantiateView<View::D3::Box>(
+			//	(Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const)this, ID::View::D3_BOX );
+
+			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
+			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
+		}
 
 		void Molecule::setFrame( const uint p_frameIdx )
 		{
@@ -114,50 +124,23 @@ namespace VTX
 			}
 
 			_currentFrame = p_frameIdx;
-			_updateBufferAtomPositions();
-
-			if ( _secondaryStructure != nullptr )
-			{
-				_secondaryStructure->setCurrentFrame();
-			}
-		}
-
-		void Molecule::_initBufferAtomPositions() const
-		{
-			glNamedBufferData( _atomPositionsVBO,
-							   sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
-							   _atomPositionsFrames[ _currentFrame ].data(),
-							   // static data ? buffer will never be modified : buffer will be updated each X frames
-							   _atomPositionsFrames.size() == 1 ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW );
-		}
-
-		void Molecule::_updateBufferAtomPositions() const
-		{
-			glNamedBufferSubData( _atomPositionsVBO,
-								  0,
-								  sizeof( Vec3f ) * _atomPositionsFrames[ _currentFrame ].size(),
-								  _atomPositionsFrames[ _currentFrame ].data() );
-		}
-
-		void Molecule::_fillBufferAtomRadius()
-		{
-			_bufferAtomRadius.resize( _atoms.size() );
-			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
-			{
-				_bufferAtomRadius[ i ] = _atoms[ i ]->getVdwRadius();
-			}
-
-			glNamedBufferData(
-				_atomRadiusVBO, sizeof( float ) * _bufferAtomRadius.size(), _bufferAtomRadius.data(), GL_STATIC_DRAW );
+			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
+			_secondaryStructure->setCurrentFrame();
 		}
 
 		void Molecule::_fillBufferAtomColors()
 		{
 			_bufferAtomColors.resize( _atoms.size() );
 
+			Generic::COLOR_MODE colorMode = _colorMode;
+			if ( colorMode == Generic::COLOR_MODE::INHERITED )
+			{
+				colorMode = VTX_SETTING().colorMode;
+			}
+
 			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 			{
-				switch ( VTX_SETTING().colorMode )
+				switch ( colorMode )
 				{
 				case Generic::COLOR_MODE::ATOM:
 					if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
@@ -171,7 +154,6 @@ namespace VTX
 					break;
 				case Generic::COLOR_MODE::RESIDUE:
 					_bufferAtomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor();
-
 					break;
 				case Generic::COLOR_MODE::CHAIN: _bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor(); break;
 				case Generic::COLOR_MODE::PROTEIN: _bufferAtomColors[ i ] = _color; break;
@@ -180,18 +162,16 @@ namespace VTX
 				}
 			}
 
-			glNamedBufferData( _atomColorsVBO,
-							   sizeof( Color::Rgb ) * _bufferAtomColors.size(),
-							   _bufferAtomColors.data(),
-							   GL_STATIC_DRAW );
+			_buffer->setAtomColors( _bufferAtomColors );
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()
 		{
-			_bufferAtomVisibilities.resize( _atoms.size() );
+			_bufferAtomVisibilities.clear();
+			_bufferAtomVisibilities.resize( _atoms.size(), 1u );
 			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 			{
-				Atom * const atom = _atoms[ i ];
+				const Atom * const atom = _atoms[ i ];
 				// Solvent hidden.
 				if ( _showSolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
 				{
@@ -202,29 +182,30 @@ namespace VTX
 				{
 					_bufferAtomVisibilities[ i ] = 0u;
 				}
-				// Ok!
-				else
+			}
+
+			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
+		}
+
+		void Molecule::_fillBufferAtomSelections( const Model::Selection::MapChainIds * const p_selection )
+		{
+			_bufferAtomSelection.clear();
+			_bufferAtomSelection.resize( _atoms.size(), 0u );
+			if ( p_selection != nullptr )
+			{
+				for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : *p_selection )
 				{
-					_bufferAtomVisibilities[ i ] = 1u;
+					for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+					{
+						for ( const uint & atomIndex : pairResidue.second )
+						{
+							_bufferAtomSelection[ atomIndex ] = 1u;
+						}
+					}
 				}
 			}
 
-			glNamedBufferData( _atomVisibilitiesVBO,
-							   sizeof( uint ) * _bufferAtomVisibilities.size(),
-							   _bufferAtomVisibilities.data(),
-							   GL_STATIC_DRAW );
-		}
-
-		void Molecule::_fillBufferBonds()
-		{
-			_bufferBonds.resize( _bonds.size() * 2 );
-			for ( uint i = 0; i < _bonds.size(); i++ )
-			{
-				_bufferBonds[ 2u * i ]		= _bonds[ i ]->getIndexFirstAtom();
-				_bufferBonds[ 2u * i + 1u ] = _bonds[ i ]->getIndexSecondAtom();
-			}
-
-			glNamedBufferData( _bondsIBO, sizeof( uint ) * _bufferBonds.size(), _bufferBonds.data(), GL_STATIC_DRAW );
+			_buffer->setAtomSelections( _bufferAtomSelection );
 		}
 
 		void Molecule::print() const
@@ -265,80 +246,10 @@ namespace VTX
 			VTX_DEBUG( "Sizeof bond: " + std::to_string( sizeof( *_bonds[ 0 ] ) ) );
 		}
 
-		void Molecule::setSelected( const bool p_selected )
-		{
-			BaseSelectable::setSelected( p_selected );
-			if ( isSelected() )
-			{
-				addItem( (View::BaseView<BaseModel> *)new View::UI::Molecule( this ) );
-			}
-			else
-			{
-				delete removeItem( ID::View::UI_MOLECULE );
-			}
-		}
-
-		void Molecule::_createBuffers()
-		{
-			glGenBuffers( 1, &_atomPositionsVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glGenBuffers( 1, &_atomColorsVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glGenBuffers( 1, &_atomRadiusVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glGenBuffers( 1, &_atomVisibilitiesVBO );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-			glGenBuffers( 1, &_bondsIBO );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-
-			glGenVertexArrays( 1, &_vao );
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _atomPositionsVBO );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_POSITION );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Vec3f ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _atomColorsVBO );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_COLOR );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, GL_FLOAT, GL_FALSE, sizeof( Color::Rgb ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _atomRadiusVBO );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_RADIUS );
-			glVertexAttribPointer( ATTRIBUTE_LOCATION::ATOM_RADIUS, 1, GL_FLOAT, GL_FALSE, sizeof( float ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ARRAY_BUFFER, _atomVisibilitiesVBO );
-			glEnableVertexAttribArray( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
-			glVertexAttribPointer(
-				ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, GL_UNSIGNED_INT, GL_FALSE, sizeof( uint ), 0 );
-			glBindBuffer( GL_ARRAY_BUFFER, 0 );
-
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
-			glBindVertexArray( 0 );
-		}
-
 		void Molecule::render()
 		{
 			BaseModel3D::render();
-			if ( _secondaryStructure != nullptr )
-			{
-				_secondaryStructure->render();
-			}
-		}
-
-		void Molecule::bindBuffers()
-		{
-			glBindVertexArray( _vao );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _bondsIBO );
-		}
-
-		void Molecule::unbindBuffers()
-		{
-			glBindVertexArray( 0 );
-			glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
+			_secondaryStructure->render();
 		}
 
 		bool Molecule::mergeTopology( const Molecule & p_molecule )
@@ -354,19 +265,19 @@ namespace VTX
 			}
 
 			// Clear topology.
-			Generic::clearVector( _chains );
-			Generic::clearVector( _residues );
+			MVC::MvcManager::get().deleteAllModels( _chains );
+			MVC::MvcManager::get().deleteAllModels( _residues );
 
 			// Create models.
 			_chains.resize( p_molecule.getChainCount() );
 			for ( uint i = 0; i < p_molecule.getChainCount(); ++i )
 			{
-				getChains()[ i ] = new Chain();
+				getChains()[ i ] = MVC::MvcManager::get().instantiateModel<Chain>();
 			}
 			_residues.resize( p_molecule.getResidueCount() );
 			for ( uint i = 0; i < p_molecule.getResidueCount(); ++i )
 			{
-				getResidues()[ i ] = new Residue();
+				getResidues()[ i ] = MVC::MvcManager::get().instantiateModel<Residue>();
 			}
 
 			setName( p_molecule.getName() );
@@ -434,23 +345,21 @@ namespace VTX
 		{
 			if ( _secondaryStructure != nullptr )
 			{
-				delete _secondaryStructure;
+				MVC::MvcManager::get().deleteModel( _secondaryStructure );
 			}
 
-			_secondaryStructure = new SecondaryStructure( this );
-			_secondaryStructure->init();
+			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule * const>( this );
+			_secondaryStructure->init( getBuffer()->gl() );
 			_secondaryStructure->print();
 		}
 
-		void Molecule::toggleSequenceVisibility()
+		void Molecule::setVisible( const bool p_visible )
 		{
-			if ( hasItem( ( ID::View::UI_MOLECULE_SEQUENCE ) ) )
+			if ( isVisible() != p_visible )
 			{
-				delete removeItem( ID::View::UI_MOLECULE_SEQUENCE );
-			}
-			else
-			{
-				addItem( (View::BaseView<BaseModel> *)new View::UI::MoleculeSequence( this ) );
+				BaseVisible::setVisible( p_visible );
+
+				_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
 			}
 		}
 

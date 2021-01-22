@@ -1,6 +1,5 @@
 #include "logger.hpp"
-#include "event/event.hpp"
-#include "vtx_app.hpp"
+#include "event/event_manager.hpp"
 #include <algorithm>
 #include <magic_enum.hpp>
 
@@ -23,10 +22,7 @@ namespace VTX
 				return;
 #endif
 
-			if ( VTXApp::isRunning() )
-			{
-				VTX_EVENT( new Event::VTXEventLog( Event::Global::LOG_CONSOLE, level, date, message ) );
-			}
+			VTX_EVENT( new Event::VTXEventLog( Event::Global::LOG_CONSOLE, level, date, message ) );
 
 #ifdef LOG_LEVEL
 			if ( LOG_LEVEL > p_level )
@@ -34,11 +30,13 @@ namespace VTX
 #endif
 
 #ifdef LOG_TO_FILE
-			_writer.writeFile( "", messageToWrite );
+			logInFile( messageToWrite );
 #endif
 
 			std::cout << messageToWrite << std::endl;
 		}
+
+		void Logger::logInFile( const std::string & p_message ) { _writer.writeFile( "", p_message ); }
 
 	} // namespace Tool
 } // namespace VTX

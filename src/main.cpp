@@ -1,14 +1,17 @@
 #include "io/writer/exception.hpp"
+#include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 
 using namespace VTX;
 
-int main( int argc, char * argv[] )
+int main( int p_argc, char * p_argv[] )
 {
 	try
 	{
-		VTXApp::get().start();
+		VTXApp & app = VTXApp::get();
+		app.start();
+		return app.exec();
 	}
 	catch ( const std::exception & p_e )
 	{
@@ -23,6 +26,4 @@ int main( int argc, char * argv[] )
 
 		return EXIT_FAILURE;
 	}
-
-	return EXIT_SUCCESS;
 }

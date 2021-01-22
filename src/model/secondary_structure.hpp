@@ -6,6 +6,7 @@
 #endif
 
 #include "base_model_3d.hpp"
+#include "buffer/secondary_structure.hpp"
 #include "color/rgb.hpp"
 
 namespace VTX
@@ -13,81 +14,81 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class SecondaryStructure : public BaseModel3D
+		class SecondaryStructure : public BaseModel3D<Buffer::SecondaryStructure>
 		{
+			VTX_MODEL
+
 		  public:
 			enum class VALUE : int
 			{
-				HELIX_ALPHA,
-				HELIX_3_10,
-				HELIX_PI,
-				STRAND,
-				TURN,
-				COIL,
+				HELIX_ALPHA_RIGHT = 0,
+				HELIX_ALPHA_LEFT  = 1,
+				HELIX_3_10_RIGHT  = 2,
+				HELIX_3_10_LEFT	  = 3,
+				HELIX_PI		  = 4,
+				STRAND			  = 5,
+				TURN			  = 6,
+				COIL			  = 7,
 				COUNT
 			};
+			enum class COLOR_MODE : int
+			{
+				JMOL,
+				PROTEIN,
+				CHAIN,
+				RESIDUE
 
+			};
 			enum class ALGO : int
 			{
 				STRIDE
 			};
 
-			static const Color::Rgb SECONDARY_STRUCTURE_COLORS_JMOL[ uint( VALUE::COUNT ) ];
-
-			SecondaryStructure( Molecule * const );
-			~SecondaryStructure();
+			static const Color::Rgb COLORS_JMOL[ uint( VALUE::COUNT ) ];
 
 			inline Model::Molecule * const getMolecule() { return _molecule; }
-
-			void init();
-			void bindBuffers() override;
-			void unbindBuffers() override;
+			inline const COLOR_MODE		   getColorMode() const { return _colorMode; }
+			inline void					   setColorMode( const COLOR_MODE p_colorMode )
+			{
+				_colorMode = p_colorMode;
+				refreshColors();
+			}
+			inline void refreshColors() { _fillBufferColors(); }
 
 			void setCurrentFrame();
 
-			const std::vector<uint> &	 getIndices() const { return _indices; }
-			const std::map<uint, uint> & getResidueToControlPointIndice() const
-			{
-				return _residueToControlPointIndices;
-			}
+			const std::vector<uint> &	 getIndices() const { return _buffferIndices; }
+			const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToIndices; }
+			inline void refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection = nullptr ) { _fillBufferSelections( p_selection ); }
 
 			void print() const;
 
-		  private:
-			enum ATTRIBUTE_LOCATION
-			{
-				CONTROL_POINT_POSITION			  = 0,
-				CONTROL_POINT_DIRECTION			  = 1,
-				CONTROL_POINT_SECONDARY_STRUCTURE = 2,
-				CONTROL_POINT_COLOR				  = 3,
-				CONTROL_POINT_VISIBILITY		  = 4,
-			};
-			enum class COLOR_MODE : int
-			{
-				JMOL,
-				CHAIN
-			};
+		  protected:
+			void _init() override;
+			void _fillBuffer() override;
+			void _computeAABB() override;
+			void _instantiate3DViews() override;
 
+		  private:
 			Model::Molecule * const _molecule;
 			COLOR_MODE				_colorMode = COLOR_MODE::JMOL;
 
-			std::vector<Vec3f>		_controlPointPositions			 = std::vector<Vec3f>();
-			std::vector<Vec3f>		_controlPointDirections			 = std::vector<Vec3f>();
-			std::vector<uint>		_controlPointSecondaryStructures = std::vector<uint>();
-			std::vector<Color::Rgb> _controlPointColors				 = std::vector<Color::Rgb>();
-			std::vector<uint>		_controlPointVisibilities		 = std::vector<uint>();
-			std::vector<uint>		_indices						 = std::vector<uint>();
+			std::vector<Vec3f>		_bufferPositions		   = std::vector<Vec3f>();
+			std::vector<Vec3f>		_bufferDirections		   = std::vector<Vec3f>();
+			std::vector<Vec3f>		_bufferNormals			   = std::vector<Vec3f>();
+			std::vector<ushort>		_bufferSecondaryStructures = std::vector<ushort>();
+			std::vector<Color::Rgb> _bufferColors			   = std::vector<Color::Rgb>();
+			std::vector<ushort>		_bufferSelections		   = std::vector<ushort>();
+			std::vector<uint>		_buffferIndices			   = std::vector<uint>();
 
-			std::map<uint, uint> _residueToControlPointIndices = std::map<uint, uint>();
+			std::map<uint, uint> _residueToIndices	 = std::map<uint, uint>();
+			std::map<uint, uint> _residueToPositions = std::map<uint, uint>();
 
-			GLuint _vboPositions		   = GL_INVALID_VALUE;
-			GLuint _vboDirections		   = GL_INVALID_VALUE;
-			GLuint _vboSecondaryStructures = GL_INVALID_VALUE;
-			GLuint _vboColors			   = GL_INVALID_VALUE;
-			GLuint _vboVisibilities		   = GL_INVALID_VALUE;
-			GLuint _ibo					   = GL_INVALID_VALUE;
-			GLuint _vao					   = GL_INVALID_VALUE;
+			SecondaryStructure( Molecule * const );
+			~SecondaryStructure() = default;
 
+			void _fillBufferColors();
+			void _fillBufferSelections( const std::map<uint, std::map<uint, std::vector<uint>>> * const = nullptr );
 			void _flipTest( Vec3f &, Vec3f & ) const;
 		};
 

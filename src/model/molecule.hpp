@@ -37,28 +37,18 @@ namespace VTX
 	namespace Model
 	{
 		class SecondaryStructure;
-		class Molecule : public BaseModel3D, public Generic::BaseColorable, public Generic::BaseRepresentable
+		class Molecule : public BaseModel3D<Buffer::Molecule>, public Generic::BaseColorable, public Generic::BaseRepresentable
 		{
+			VTX_MODEL
+
 		  public:
-			using AtomPositionsFrame = std::vector<Vec3f>;
-			using MapRange			 = std::map<uint, uint>;
-
-			struct RepresentationStruct
-			{
-				MapRange atoms	 = MapRange();
-				MapRange bonds	 = MapRange();
-				MapRange ribbons = MapRange();
-			};
-
-			using RepresentationState = std::map<const Generic::REPRESENTATION, RepresentationStruct>;
-
-			Molecule();
-			~Molecule();
+			using AtomPositionsFrame  = std::vector<Vec3f>;
+			using RepresentationState = std::map<const Model::Representation::InstantiatedRepresentation *, VTX::Representation::RepresentationTarget>;
 
 			// Configuration.
 			inline const Configuration::Molecule & getConfiguration() const { return _configuration; }
 			inline Configuration::Molecule &	   getConfiguration() { return _configuration; }
-			inline void setConfiguration( const Configuration::Molecule & p_config ) { _configuration = p_config; }
+			inline void							   setConfiguration( const Configuration::Molecule & p_config ) { _configuration = p_config; }
 
 			// Representation.
 			inline const RepresentationState & getRepresentationState() const { return _representationState; }
@@ -67,103 +57,131 @@ namespace VTX
 			// Models.
 			inline const std::string & getName() const { return _name; }
 			inline void				   setName( const std::string & p_name ) { _name = p_name; }
-			inline const VTX::Path &   getPath() const { return _path; }
-			inline void				   setPath( const VTX::Path & p_path ) { _path = p_path; }
+			inline const std::string & getPdbIdCode() const { return _pdbIdCode; }
+			inline void				   setPdbIdCode( const std::string & p_pdbId )
+			{
+				_pdbIdCode = p_pdbId;
+				BaseModel::setDefaultName( &_pdbIdCode );
+			}
 
-			inline void							  addChain() { _chains.emplace_back( new Chain() ); }
-			inline Chain &						  getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
-			inline const Chain &				  getChain( const uint p_idx ) const { return *_chains[ p_idx ]; }
-			inline std::vector<Chain *> &		  getChains() { return _chains; }
-			inline const std::vector<Chain *> &	  getChains() const { return _chains; }
-			inline void							  addResidue() { _residues.emplace_back( new Residue() ); }
+			inline const VTX::Path & getPath() const { return _path; }
+			inline void				 setPath( const VTX::Path & p_path ) { _path = p_path; }
+
+			inline Chain & addChain()
+			{
+				Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
+				_chains.emplace_back( chain );
+				return *chain;
+			}
+			inline Chain &						getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
+			inline const Chain &				getChain( const uint p_idx ) const { return *_chains[ p_idx ]; }
+			inline std::vector<Chain *> &		getChains() { return _chains; }
+			inline const std::vector<Chain *> & getChains() const { return _chains; }
+			inline Residue &					addResidue()
+			{
+				Residue * const residue = MVC::MvcManager::get().instantiateModel<Residue>();
+				_residues.emplace_back( residue );
+				return *residue;
+			}
 			inline Residue &					  getResidue( const uint p_idx ) { return *_residues[ p_idx ]; }
 			inline const Residue &				  getResidue( const uint p_idx ) const { return *_residues[ p_idx ]; }
 			inline std::vector<Residue *> &		  getResidues() { return _residues; }
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
-			inline void							  addAtom() { _atoms.emplace_back( new Atom() ); }
-			inline Atom &						  getAtom( const uint p_idx ) { return *_atoms[ p_idx ]; }
-			inline const Atom &					  getAtom( const uint p_idx ) const { return *_atoms[ p_idx ]; }
-			inline std::vector<Atom *> &		  getAtoms() { return _atoms; }
-			inline const std::vector<Atom *> &	  getAtoms() const { return _atoms; }
-			inline void							  addBond() { _bonds.emplace_back( new Bond() ); }
-			inline Bond &						  getBond( const uint p_idx ) { return *_bonds[ p_idx ]; }
-			inline const Bond &					  getBond( const uint p_idx ) const { return *_bonds[ p_idx ]; }
-			inline std::vector<Bond *> &		  getBonds() { return _bonds; }
-			inline const std::vector<Bond *> &	  getBonds() const { return _bonds; }
+			inline Atom &						  addAtom()
+			{
+				Atom * const atom = MVC::MvcManager::get().instantiateModel<Atom>();
+				_atoms.emplace_back( atom );
+				return *atom;
+			}
+			inline Atom &					   getAtom( const uint p_idx ) { return *_atoms[ p_idx ]; }
+			inline const Atom &				   getAtom( const uint p_idx ) const { return *_atoms[ p_idx ]; }
+			inline std::vector<Atom *> &	   getAtoms() { return _atoms; }
+			inline const std::vector<Atom *> & getAtoms() const { return _atoms; }
+			inline Bond &					   addBond()
+			{
+				Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
+				_bonds.emplace_back( bond );
+				return *bond;
+			}
+			inline Bond &					   getBond( const uint p_idx ) { return *_bonds[ p_idx ]; }
+			inline const Bond &				   getBond( const uint p_idx ) const { return *_bonds[ p_idx ]; }
+			inline std::vector<Bond *> &	   getBonds() { return _bonds; }
+			inline const std::vector<Bond *> & getBonds() const { return _bonds; }
 
 			inline const SecondaryStructure &		getSecondaryStructure() const { return *_secondaryStructure; }
 			inline SecondaryStructure &				getSecondaryStructure() { return *_secondaryStructure; }
-			inline const SecondaryStructure::ALGO & getSecondaryStructureAlgo() const
-			{
-				return _secondaryStructureAlgo;
-			}
+			inline const SecondaryStructure::ALGO & getSecondaryStructureAlgo() const { return _secondaryStructureAlgo; }
 
 			inline const std::string & getSequence() const { return _sequence; }
 			inline std::string &	   getSequence() { return _sequence; }
 
-			inline const bool isAtomVisible( const uint p_idx ) const
-			{
-				return bool( _bufferAtomVisibilities[ p_idx ] );
-			}
+			inline const bool isAtomVisible( const uint p_idx ) const { return bool( _bufferAtomVisibilities[ p_idx ] ); }
 
 			inline const float &	  getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
 			inline const Color::Rgb & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 
-			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
-			{
-				return _unknownResidueSymbol;
-			}
+			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const { return _unknownResidueSymbol; }
 			inline const std::unordered_set<std::string> & getUnknownAtomSymbols() const { return _unknownAtomSymbol; }
 
-			inline void addUnknownResidueSymbol( const std::string & p_symbol )
-			{
-				_unknownResidueSymbol.emplace( p_symbol );
-			}
+			inline void addUnknownResidueSymbol( const std::string & p_symbol ) { _unknownResidueSymbol.emplace( p_symbol ); }
 			inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
 
-			inline void addAtomPositionFrame() { _atomPositionsFrames.emplace_back(); }
-			inline void addAtomPositionFrame( const AtomPositionsFrame & p_frame )
+			inline AtomPositionsFrame & addAtomPositionFrame()
 			{
-				_atomPositionsFrames.emplace_back( p_frame );
+				_atomPositionsFrames.emplace_back();
+				return _atomPositionsFrames.back();
 			}
+			inline void addAtomPositionFrame( const AtomPositionsFrame & p_frame ) { _atomPositionsFrames.emplace_back( p_frame ); }
 
 			inline void setAtomPositionFrames( const std::vector<AtomPositionsFrame> & p_frame )
 			{
 				_atomPositionsFrames.clear();
 				_atomPositionsFrames = p_frame;
 			}
-			inline const AtomPositionsFrame & getAtomPositionFrame( const uint p_frame ) const
-			{
-				return _atomPositionsFrames[ p_frame ];
-			}
-			inline AtomPositionsFrame & getAtomPositionFrame( const uint p_frame )
-			{
-				return _atomPositionsFrames[ p_frame ];
-			}
-			inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const
-			{
-				return _atomPositionsFrames;
-			}
-			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; }
+			inline const AtomPositionsFrame &			   getAtomPositionFrame( const uint p_frame ) const { return _atomPositionsFrames[ p_frame ]; }
+			inline AtomPositionsFrame &					   getAtomPositionFrame( const uint p_frame ) { return _atomPositionsFrames[ p_frame ]; }
+			inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const { return _atomPositionsFrames; }
+			inline std::vector<AtomPositionsFrame> &	   getAtomPositionFrames() { return _atomPositionsFrames; }
+			inline std::vector<float> &					   getBufferAtomRadius() { return _bufferAtomRadius; }
+			inline const std::vector<float> &			   getBufferAtomRadius() const { return _bufferAtomRadius; }
+			inline std::vector<Color::Rgb> &			   getBufferAtomColors() { return _bufferAtomColors; }
+			inline const std::vector<Color::Rgb> &		   getBufferAtomColors() const { return _bufferAtomColors; }
+			inline std::vector<ushort> &				   getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
+			inline const std::vector<ushort> &			   getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
+			inline std::vector<ushort> &				   getBufferAtomSelection() { return _bufferAtomSelection; }
+			inline const std::vector<ushort> &			   getBufferAtomSelection() const { return _bufferAtomSelection; }
+			inline std::vector<uint> &					   getBufferBonds() { return _bufferBonds; }
+			inline const std::vector<uint> &			   getBufferBonds() const { return _bufferBonds; }
 
 			inline const uint getChainCount() const { return uint( _chains.size() ); }
 			inline const uint getResidueCount() const { return uint( _residues.size() ); }
 			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
 			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
-			void										   init();
-			void										   setColorMode();
+			inline const Generic::COLOR_MODE getColorMode() const { return _colorMode; }
+			inline void						 setColorMode( const Generic::COLOR_MODE p_colorMode )
+			{
+				_colorMode = p_colorMode;
+				refreshColors();
+			}
+			inline void refreshColors() { _fillBufferAtomColors(); }
+			inline void refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection )
+			{
+				_fillBufferAtomSelections( p_selection );
+				_secondaryStructure->refreshSelection( p_selection );
+			}
+
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
 			inline uint									   getFrame() const { return _currentFrame; }
 			void										   setFrame( const uint );
-			inline const uint getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
-			inline uint		  getFPS() const { return _fps; }
-			void			  setFPS( const uint p_fps ) { _fps = p_fps; }
-			inline bool		  isPlaying() const { return _isPlaying; }
-			inline void		  setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
-			inline bool		  showSolvent() const { return _showSolvent; }
-			inline void		  setShowSolvent( const bool p_showSolvent )
+			inline const uint							   getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
+			inline uint									   getFPS() const { return _fps; }
+			void										   setFPS( const uint p_fps ) { _fps = p_fps; }
+			inline bool									   isPlaying() const { return _isPlaying; }
+			inline void									   setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
+			inline bool									   showSolvent() const { return _showSolvent; }
+			inline void									   setShowSolvent( const bool p_showSolvent )
 			{
 				_showSolvent = p_showSolvent;
 				_fillBufferAtomVisibilities();
@@ -181,19 +199,23 @@ namespace VTX
 
 			void print() const;
 
+			void setVisible( const bool );
 			void render() override;
-			void bindBuffers() override;
-			void unbindBuffers() override;
 
 			bool mergeTopology( const Molecule & );
 
 			void createSecondaryStructure();
-			void toggleSequenceVisibility();
-
-			void setSelected( const bool );
 
 		  protected:
-			void _computeGlobalPositionsAABB();
+			void _init() override;
+			void _fillBuffer() override;
+			void _computeAABB() override;
+			void _fillBufferAABB() override;
+			void _instantiate3DViews() override;
+
+			Molecule();
+			Molecule( const ID::VTX_ID & p_typeId );
+			~Molecule();
 
 		  private:
 			// Configuration.
@@ -205,6 +227,7 @@ namespace VTX
 			// Models.
 			VTX::Path						_path;
 			std::string						_name						= "unknown";
+			std::string						_pdbIdCode					= "unknown";
 			std::vector<Chain *>			_chains						= std::vector<Chain *>();
 			std::vector<Residue *>			_residues					= std::vector<Residue *>();
 			std::vector<Atom *>				_atoms						= std::vector<Atom *>();
@@ -212,13 +235,17 @@ namespace VTX
 			std::vector<AtomPositionsFrame> _atomPositionsFrames		= std::vector<AtomPositionsFrame>();
 			uint							_indexFirstBondExtraResidue = 0;
 
+			// Options.
+			Generic::COLOR_MODE _colorMode = Generic::COLOR_MODE::INHERITED;
+
+			// Missing symbols.
 			std::unordered_set<std::string> _unknownResidueSymbol = std::unordered_set<std::string>();
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
-			// Buffers.
 			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
 			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
-			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
+			std::vector<ushort>		_bufferAtomVisibilities = std::vector<ushort>();
+			std::vector<ushort>		_bufferAtomSelection	= std::vector<ushort>();
 			std::vector<uint>		_bufferBonds			= std::vector<uint>();
 
 			// Secondary structure.
@@ -228,22 +255,6 @@ namespace VTX
 			// Sequence.
 			std::string _sequence;
 
-			// OpenGL buffers.
-			enum ATTRIBUTE_LOCATION
-			{
-				ATOM_POSITION	= 0,
-				ATOM_COLOR		= 1,
-				ATOM_RADIUS		= 2,
-				ATOM_VISIBILITY = 3,
-			};
-
-			GLuint _vao					= GL_INVALID_VALUE;
-			GLuint _atomPositionsVBO	= GL_INVALID_VALUE;
-			GLuint _atomRadiusVBO		= GL_INVALID_VALUE;
-			GLuint _atomColorsVBO		= GL_INVALID_VALUE;
-			GLuint _atomVisibilitiesVBO = GL_INVALID_VALUE;
-			GLuint _bondsIBO			= GL_INVALID_VALUE;
-
 			uint _currentFrame = 0u;
 			bool _isPlaying	   = true;
 			uint _fps		   = 1u;
@@ -251,13 +262,9 @@ namespace VTX
 			bool _showSolvent = true;
 			bool _showIon	  = true;
 
-			void _createBuffers();
-			void _initBufferAtomPositions() const;
-			void _updateBufferAtomPositions() const;
-			void _fillBufferAtomRadius();
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();
-			void _fillBufferBonds();
+			void _fillBufferAtomSelections( const std::map<uint, std::map<uint, std::vector<uint>>> * const = nullptr );
 
 #ifdef _DEBUG
 		  public:
@@ -267,7 +274,8 @@ namespace VTX
 			uint atomCount	  = 0;
 			uint bondCount	  = 0;
 #endif
-		}; // namespace Model
-	}	   // namespace Model
+		};
+	} // namespace Model
 } // namespace VTX
+
 #endif

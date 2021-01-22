@@ -22,7 +22,7 @@ namespace VTX
 
 			void goToState( const std::string &, void * const p_arg = nullptr );
 
-			virtual void update( const double & ) override;
+			virtual void update( const float & ) override;
 
 		  private:
 			BaseState * _currentState = nullptr;

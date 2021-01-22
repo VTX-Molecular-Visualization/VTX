@@ -1,0 +1,171 @@
+/* For all widgets */
+QWidget
+{
+	/*border: 1px solid white*/ /*Debug*/
+}
+
+/* Window resize area */
+QMainWindow::separator
+{
+    width: 2px;
+    height: 2px;
+}
+
+QMenu
+{
+    border: 1px solid #444444;
+}
+
+QDockWidget::title
+{
+	border-top: 1px solid #444444;
+	border-bottom: 1px solid #111111;
+}
+QDockWidget
+{
+	titlebar-close-icon: url(:/sprite/close_icon.png);
+	titlebar-normal-icon: url(:/sprite/undock_icon.png);
+
+	border: 1px solid #444444;
+}
+QDockWidget::close-button, QDockWidget::float-button
+{
+	/* set border to 0 to remove auto background */
+	border: none;
+}
+
+
+QTabWidget::pane
+{
+	border-left: 0px;
+	border-right: 0px;
+	
+	padding-top: 0px;
+}
+QTabBar::tab
+{
+	background: black;
+    border: none;
+	min-height: 8ex;
+	padding-left: 12px;
+	padding-right: 12px;
+}
+QTabBar::tab:selected, QTabBar::tab:hover
+{
+	background: #444444;
+}
+QTabBar::tab:selected
+{
+	background: #222222; /* same as the pane color */
+}
+
+
+QMainWindow > QStatusBar
+{
+	border-top: 2px solid #444444;
+}
+QMainWindow > QStatusBar::item
+{
+	margin: 2px;
+	border: none;
+}
+QStatusBar > QProgressBar
+{
+    border: 2px solid #555555;
+}
+QStatusBar > QProgressBar::chunk
+{
+	background-color: #79C0FE;
+}
+
+
+QTreeWidget
+{
+	border: none;
+}
+/*without QTreeWidget::item:selected and QTreeWidget::item:!active, font color turns black when !active (???)*/
+QTreeWidget::item:selected
+{
+	background-color: #444444;
+}
+QTreeWidget::item:!active
+{
+	color: white;
+}
+QTreeWidget::item:hover
+{
+	background-color: #555555;
+}
+QTreeWidget::branch
+{
+    border-image: none;
+    image: none;
+}
+QTreeWidget::branch:has-children:!has-siblings:closed,
+QTreeWidget::branch:closed:has-children:has-siblings
+{
+	image: url(:/sprite/treeview_folded_molecule_icon.png);
+}
+QTreeWidget::branch:open:has-children:!has-siblings,
+QTreeWidget::branch:open:has-children:has-siblings 
+{
+	image: url(:/sprite/treeview_unfolded_molecule_icon.png);
+}
+
+
+QPushButton#inspector_item_header,
+QPushButton#inspector_item_section_header
+{
+	border-top: none;
+	border-bottom: none;
+}
+
+QPushButton#inspector_item_header,
+QLabel#inspector_item_header_title,
+QLabel#inspector_item_header_icon
+{
+	background-color: #40A6FF;
+}
+
+QPushButton#inspector_item_section_header,
+QLabel#inspector_item_section_header_title,
+QLabel#inspector_item_section_header_icon
+{
+	background-color: #79C0FE;
+}
+
+
+QScrollBar#SequenceScrollbar:horizontal {
+    border: 2px solid grey;
+    background: #444444;
+    height: 12px;
+    margin: 0px 0px 0px 0px;
+}
+QScrollBar#SequenceScrollbar::groove:horizontal {
+    background: white;
+    width: 20px;
+    height: 20px;
+}
+QScrollBar#SequenceScrollbar::handle:horizontal {
+    background: white;
+    min-width: 10px;
+}
+QScrollBar#SequenceScrollbar::add-line:horizontal {
+    border: none;
+    background: #32CC99;
+    width: 0px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+QScrollBar#SequenceScrollbar::sub-line:horizontal {
+    border: none;
+    background: #32CC99;
+    width: 0px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+QScrollBar:left-arrow:horizontal, QScrollBar::right-arrow:horizontal {
+    border: none;
+    width: 0px;
+    height: 0px;
+}

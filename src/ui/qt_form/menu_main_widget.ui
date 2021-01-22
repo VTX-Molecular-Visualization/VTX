@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ui version="4.0">
+	<class>MenuMainWidget</class>
+	<widget class="QWidget" name="menuContent">
+		<layout class="QHBoxLayout" name="horizontalLayout">
+			<item>
+				<widget class="VTX::UI::Widget::MenuMainSessionWidget" name="session" />
+			</item>
+			<item>
+				<spacer name="horizontalSpacer">
+					<property name="orientation">
+						<enum>Qt::Horizontal</enum>
+					</property>
+				</spacer>
+			</item>
+		</layout>
+	</widget>
+ 
+	<customwidgets>
+		<customwidget>
+			<class>VTX::UI::Widget::MenuMainSessionWidget</class>
+			<extends>QWidget</extends>
+			<header>ui/widget/menu_main_session_widget.hpp</header>
+		</customwidget>
+	</customwidgets>		
+ 
+	<resources/>
+	<connections/>
+</ui>

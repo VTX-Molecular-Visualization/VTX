@@ -10,6 +10,8 @@
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
 #include "generic/base_visible.hpp"
+#include "id.hpp"
+#include "math/aabb.hpp"
 #include <iostream>
 
 namespace VTX
@@ -17,12 +19,10 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class Chain :
-			public BaseModel,
-			public Generic::BaseColorable,
-			public Generic::BaseVisible,
-			public Generic::BaseRepresentable
+		class Chain : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible, public Generic::BaseRepresentable
 		{
+			VTX_MODEL
+
 		  public:
 			enum class TYPE : int
 			{
@@ -41,21 +41,32 @@ namespace VTX
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
+			inline void				setMoleculePtr( Molecule * const p_molecule )
+			{
+				_moleculePtr = p_molecule;
+				_setRepresentableMolecule( p_molecule );
+			}
 
 			static Color::Rgb getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
+			static Color::Rgb getChainIdColor( const uint p_chainId, const bool p_isHetAtm = false );
 
 			inline const std::string & getName() const { return _name; };
-			inline void				   setName( const std::string & p_name ) { _name = p_name; };
-			inline const std::string & getSequence() const { return _sequence; };
-			inline uint				   getIndexFirstResidue() const { return _indexFirstResidue; };
-			inline void				   setIndexFirstResidue( const uint p_id ) { _indexFirstResidue = p_id; };
-			inline uint				   getResidueCount() const { return _residueCount; };
-			inline void				   setResidueCount( const uint p_count ) { _residueCount = p_count; };
+			inline void				   setName( const std::string & p_name )
+			{
+				_name = p_name;
+				BaseModel::setDefaultName( &_name );
+			};
+			inline uint getIndexFirstResidue() const { return _indexFirstResidue; };
+			inline void setIndexFirstResidue( const uint p_id ) { _indexFirstResidue = p_id; };
+			inline uint getResidueCount() const { return _residueCount; };
+			inline void setResidueCount( const uint p_count ) { _residueCount = p_count; };
 
-			void setSelected( const bool );
+			inline uint getIndexLastResidue() const { return _indexFirstResidue + _residueCount - 1; };
 
-			void computeSequence();
+			// Mask BaseVisible::setVisible
+			void setVisible( const bool p_visible );
+
+			const Math::AABB getAABB() const;
 
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;
@@ -63,9 +74,10 @@ namespace VTX
 			Molecule * _moleculePtr = nullptr;
 
 			std::string _name			   = "unknown";
-			std::string _sequence		   = "";
 			uint		_indexFirstResidue = 0;
 			uint		_residueCount	   = 0;
+
+			Chain() : BaseModel( ID::Model::MODEL_CHAIN ) {}
 		}; // namespace Model
 
 	} // namespace Model

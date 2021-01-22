@@ -1,24 +1,10 @@
 #include "residue.hpp"
-#include "util/molecule.hpp"
-#include "view/ui/residue.hpp"
+#include "molecule.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
-		void Residue::setSelected( const bool p_selected )
-		{
-			BaseSelectable::setSelected( p_selected );
-			if ( isSelected() )
-			{
-				addItem( (View::BaseView<BaseModel> *)new View::UI::Residue( this ) );
-			}
-			else
-			{
-				delete removeItem( ID::View::UI_RESIDUE );
-			}
-		}
-
 		const Atom * const Residue::findFirstAtomByName( const std::string & p_name ) const
 		{
 			for ( uint i = 0; i < _atomCount; ++i )
@@ -33,8 +19,31 @@ namespace VTX
 			return nullptr;
 		}
 
+		void Residue::setVisible( const bool p_visible )
+		{
+			if ( isVisible() != p_visible )
+			{
+				BaseVisible ::setVisible( p_visible );
+
+				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
+			}
+		}
+
+		const Math::AABB Residue::getAABB() const
+		{
+			Math::AABB aabb = Math::AABB();
+
+			for ( uint i = 0; i < _atomCount; ++i )
+			{
+				const Atom & atom = _moleculePtr->getAtom( _indexFirstAtom + i );
+				aabb.extend( atom.getAABB() );
+			}
+
+			return aabb;
+		}
+
 		const std::string Residue::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {
-			"---", // UNKWNON
+			"---", // UNKNOWN
 			"ALA", // ALA
 			"ARG", // ARG
 			"ASN", // ASN
@@ -64,7 +73,7 @@ namespace VTX
 		};
 
 		const std::string Residue::SYMBOL_SHORT_STR[ (int)SYMBOL::COUNT ] = {
-			"-", // UNKWNON
+			"-", // UNKNOWN
 			"A", // ALA
 			"R", // ARG
 			"N", // ASN
@@ -94,7 +103,7 @@ namespace VTX
 		};
 
 		const std::string Residue::SYMBOL_NAME[ (int)SYMBOL::COUNT ] = {
-			"Unknown",				// UNKWNON
+			"Unknown",				// UNKNOWN
 			"Alanine",				// ALA
 			"Arginine",				// ARG
 			"Asparagine",			// ASN
@@ -125,7 +134,7 @@ namespace VTX
 
 		// http://jmol.sourceforge.net/jscolors/#Jmolcolors : Protein "amino" colors
 		const Color::Rgb Residue::SYMBOL_COLOR[ (int)SYMBOL::COUNT ] = {
-			{ 190, 160, 110 }, // UNKWNON
+			{ 190, 160, 110 }, // UNKNOWN
 			{ 200, 200, 200 }, // ALA
 			{ 20, 90, 255 },   // ARG
 			{ 0, 220, 220 },   // ASN

@@ -5,18 +5,20 @@
 #pragma once
 #endif
 
+#include <iostream>
 #include <mutex>
 
 namespace VTX
 {
 	namespace Generic
 	{
-		class BaseLocakble
+		class BaseLockable
 		{
 		  protected:
 			std::mutex _mutex;
 
 			inline void _lock() { _mutex.lock(); }
+
 			inline void _unlock() { _mutex.unlock(); }
 		};
 	} // namespace Generic

@@ -11,10 +11,10 @@ Adapted from PBRTv3 BVHAccel : https://github.com/mmp/pbrt-v3
 
 #include "bvh.hpp"
 #include "tool/chrono.hpp"
+#include "tool/logger.hpp"
 #include "util/math.hpp"
 #include <algorithm>
 #include <thread>
-#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -30,20 +30,20 @@ namespace VTX
 			BVHBuildNode() = default;
 			~BVHBuildNode()
 			{
-				if ( _child0 != nullptr ) delete _child0;
-				if ( _child1 != nullptr ) delete _child1;
+				if ( _child0 != nullptr )
+					delete _child0;
+				if ( _child1 != nullptr )
+					delete _child1;
 			}
 			// Constructor for leaves
-			BVHBuildNode( const uint p_idFirstPrim, const uint p_nbPrims, const Math::AABB & p_aabb ) :
-				_idFirstPrim( p_idFirstPrim ), _nbPrims( p_nbPrims ), _aabb( p_aabb )
+			BVHBuildNode( const uint p_idFirstPrim, const uint p_nbPrims, const Math::AABB & p_aabb ) : _idFirstPrim( p_idFirstPrim ), _nbPrims( p_nbPrims ), _aabb( p_aabb )
 			{
 				++leafNodes;
 				++totalLeafNodes;
 				totalPrimitives += p_nbPrims;
 			}
 			// Constructor for inner nodes
-			BVHBuildNode( const uint p_splitAxis, BVHBuildNode * p_child0, BVHBuildNode * p_child1 ) :
-				_splitAxis( p_splitAxis ), _child0( p_child0 ), _child1( p_child1 )
+			BVHBuildNode( const uint p_splitAxis, BVHBuildNode * p_child0, BVHBuildNode * p_child1 ) : _splitAxis( p_splitAxis ), _child0( p_child0 ), _child1( p_child1 )
 			{
 				_aabb = Math::AABB::join( p_child0->_aabb, p_child1->_aabb );
 				++interiorNodes;
@@ -60,10 +60,7 @@ namespace VTX
 		struct BVHPrimInfo
 		{
 			BVHPrimInfo() {}
-			BVHPrimInfo( const uint p_idPrimitive, const Math::AABB & p_aabb ) :
-				_idPrimitive( p_idPrimitive ), _aabb( p_aabb ), _centroid( _aabb.centroid() )
-			{
-			}
+			BVHPrimInfo( const uint p_idPrimitive, const Math::AABB & p_aabb ) : _idPrimitive( p_idPrimitive ), _aabb( p_aabb ), _centroid( _aabb.centroid() ) {}
 			uint	   _idPrimitive = 0;
 			Math::AABB _aabb;
 			Vec3f	   _centroid = VEC3F_ZERO;
@@ -91,9 +88,7 @@ namespace VTX
 			BVHBuildNode * _buildNodes;
 		};
 
-		void BVH::build( const std::vector<BasePrimitive *> & p_prims,
-						 const uint							  p_maxPrimsLeaf,
-						 const SplitMethod					  p_splitMethod )
+		void BVH::build( const std::vector<BasePrimitive *> & p_prims, const uint p_maxPrimsLeaf, const SplitMethod p_splitMethod )
 		{
 			VTX_INFO( "Building " + std::string( p_splitMethod == SplitMethod::SAH ? "BVH with SAH" : "HLBVH" ) );
 			if ( p_prims.empty() )
@@ -120,7 +115,10 @@ namespace VTX
 
 			BVHBuildNode * root		  = nullptr;
 			uint		   totalNodes = 0;
-			if ( _splitMethod == SplitMethod::HLBVH ) { root = _buildHLBVH( primsInfo, totalNodes, outPrims ); }
+			if ( _splitMethod == SplitMethod::HLBVH )
+			{
+				root = _buildHLBVH( primsInfo, totalNodes, outPrims );
+			}
 			else
 			{
 				root = _buildSAHRecursive( primsInfo, 0, uint( _primitives.size() ), totalNodes, outPrims );
@@ -135,19 +133,18 @@ namespace VTX
 			assert( totalNodes == offset );
 
 			// Clean build nodes
-			if ( root != nullptr ) delete root;
+			if ( root != nullptr )
+				delete root;
 
 			chrono.stop();
 			_isBuilt = true;
 			VTX_INFO( "BVH built in " + std::to_string( chrono.elapsedTime() ) );
 		}
 
-		bool BVH::intersect( const Ray &	p_ray,
-							 const float	p_tMin,
-							 const float	p_tMax,
-							 Intersection & p_intersection ) const
+		bool BVH::intersect( const Ray & p_ray, const float p_tMin, const float p_tMax, Intersection & p_intersection ) const
 		{
-			if ( _nodes.empty() ) return false;
+			if ( _nodes.empty() )
+				return false;
 
 			const Vec3f & rayDir = p_ray.getDirection();
 			const Vec3f & rayPos = p_ray.getOrigin();
@@ -180,7 +177,8 @@ namespace VTX
 								hit	 = true;
 							}
 						}
-						if ( toVisitOffset == 0 ) break;
+						if ( toVisitOffset == 0 )
+							break;
 						currentNodeIndex = nodesToVisit[ --toVisitOffset ];
 					}
 					else
@@ -201,7 +199,8 @@ namespace VTX
 				}
 				else
 				{
-					if ( toVisitOffset == 0 ) break;
+					if ( toVisitOffset == 0 )
+						break;
 					currentNodeIndex = nodesToVisit[ --toVisitOffset ];
 				}
 			}
@@ -210,7 +209,8 @@ namespace VTX
 
 		bool BVH::intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const
 		{
-			if ( _nodes.empty() ) return false;
+			if ( _nodes.empty() )
+				return false;
 
 			const Vec3f & rayDir = p_ray.getDirection();
 			const Vec3f & rayPos = p_ray.getOrigin();
@@ -238,9 +238,12 @@ namespace VTX
 						{
 							// TODO: remove Intersection() -> make intersectAny for primitives
 							if ( _primitives[ node._primsOffset + i ]->intersect( p_ray, tMin, tMax, Intersection() ) )
-							{ return true; }
+							{
+								return true;
+							}
 						}
-						if ( toVisitOffset == 0 ) break;
+						if ( toVisitOffset == 0 )
+							break;
 						currentNodeIndex = nodesToVisit[ --toVisitOffset ];
 					}
 					else
@@ -261,7 +264,8 @@ namespace VTX
 				}
 				else
 				{
-					if ( toVisitOffset == 0 ) break;
+					if ( toVisitOffset == 0 )
+						break;
 					currentNodeIndex = nodesToVisit[ --toVisitOffset ];
 				}
 			}
@@ -318,16 +322,13 @@ namespace VTX
 				else if ( nbPrimitives <= 2 )
 				{
 					const uint idSplit = ( p_begin + p_end ) / 2;
-					std::nth_element( &p_primsInfo[ p_begin ],
-									  &p_primsInfo[ idSplit ],
-									  &p_primsInfo[ p_end - 1 ] + 1,
-									  [ splitDim ]( const BVHPrimInfo & a, const BVHPrimInfo & b ) {
-										  return a._centroid[ splitDim ] < b._centroid[ splitDim ];
-									  } );
-					return new BVHBuildNode(
-						splitDim,
-						_buildSAHRecursive( p_primsInfo, p_begin, idSplit, p_totalNodes, p_outPrims ),
-						_buildSAHRecursive( p_primsInfo, idSplit, p_end, p_totalNodes, p_outPrims ) );
+					std::nth_element(
+						&p_primsInfo[ p_begin ], &p_primsInfo[ idSplit ], &p_primsInfo[ p_end - 1 ] + 1, [ splitDim ]( const BVHPrimInfo & a, const BVHPrimInfo & b ) {
+							return a._centroid[ splitDim ] < b._centroid[ splitDim ];
+						} );
+					return new BVHBuildNode( splitDim,
+											 _buildSAHRecursive( p_primsInfo, p_begin, idSplit, p_totalNodes, p_outPrims ),
+											 _buildSAHRecursive( p_primsInfo, idSplit, p_end, p_totalNodes, p_outPrims ) );
 				}
 				else
 				{
@@ -337,7 +338,8 @@ namespace VTX
 					for ( uint i = p_begin; i < p_end; ++i )
 					{
 						uint b = uint( nbBins * centroidsAABB.offset( p_primsInfo[ i ]._centroid, splitDim ) );
-						if ( b == nbBins ) b--;
+						if ( b == nbBins )
+							b--;
 						assert( b >= 0 );
 						assert( b < nbBins );
 						bins[ b ]._count++;
@@ -384,20 +386,19 @@ namespace VTX
 					if ( nbPrimitives > _maxPrimLeaf || minSahCost < sahCostLeaf )
 					{
 						// Split it !
-						BVHPrimInfo * nodeSplit = std::partition(
-							&p_primsInfo[ p_begin ], &p_primsInfo[ p_end - 1 ] + 1, [ & ]( const BVHPrimInfo & p ) {
-								uint b = uint( nbBins * centroidsAABB.offset( p._centroid, splitDim ) );
-								if ( b == nbBins ) b--;
-								assert( b >= 0 );
-								assert( b < nbBins );
-								return b <= idMinSahCostBin;
-							} );
+						BVHPrimInfo * nodeSplit = std::partition( &p_primsInfo[ p_begin ], &p_primsInfo[ p_end - 1 ] + 1, [ & ]( const BVHPrimInfo & p ) {
+							uint b = uint( nbBins * centroidsAABB.offset( p._centroid, splitDim ) );
+							if ( b == nbBins )
+								b--;
+							assert( b >= 0 );
+							assert( b < nbBins );
+							return b <= idMinSahCostBin;
+						} );
 
 						const uint idSplit = uint( nodeSplit - &p_primsInfo[ 0 ] );
-						return new BVHBuildNode(
-							splitDim,
-							_buildSAHRecursive( p_primsInfo, p_begin, idSplit, p_totalNodes, p_outPrims ),
-							_buildSAHRecursive( p_primsInfo, idSplit, p_end, p_totalNodes, p_outPrims ) );
+						return new BVHBuildNode( splitDim,
+												 _buildSAHRecursive( p_primsInfo, p_begin, idSplit, p_totalNodes, p_outPrims ),
+												 _buildSAHRecursive( p_primsInfo, idSplit, p_end, p_totalNodes, p_outPrims ) );
 					}
 					else
 					{
@@ -456,12 +457,11 @@ namespace VTX
 				}
 			}
 			// Copy final result from _tempVector_, if needed
-			if ( nbPasses & 1 ) std::swap( *v, tempVector );
+			if ( nbPasses & 1 )
+				std::swap( *v, tempVector );
 		}
 
-		BVHBuildNode * BVH::_buildHLBVH( const std::vector<BVHPrimInfo> & p_primsInfo,
-										 uint &							  p_totalNodes,
-										 std::vector<BasePrimitive *> &	  p_outPrims )
+		BVHBuildNode * BVH::_buildHLBVH( const std::vector<BVHPrimInfo> & p_primsInfo, uint & p_totalNodes, std::vector<BasePrimitive *> & p_outPrims )
 		{
 			// Compute the global AABB of primitives centroids
 			Math::AABB aabb;
@@ -482,18 +482,16 @@ namespace VTX
 
 			for ( uint i = 0; i < nbThreads; ++i )
 			{
-				threadPool.emplace_back(
-					std::thread( [ nbThreads, &mortonPrims, mortonScale, &p_primsInfo, &aabb, i ]() {
-						uint id = i;
-						while ( id < p_primsInfo.size() )
-						{
-							mortonPrims[ id ]._idPrimitive = p_primsInfo[ id ]._idPrimitive;
-							const Vec3f centroidOffset	   = aabb.offset( p_primsInfo[ id ]._centroid );
-							mortonPrims[ id ]._code
-								= Util::Math::encodeMorton3( centroidOffset * float( mortonScale ) );
-							id += nbThreads;
-						}
-					} ) );
+				threadPool.emplace_back( std::thread( [ nbThreads, &mortonPrims, mortonScale, &p_primsInfo, &aabb, i ]() {
+					uint id = i;
+					while ( id < p_primsInfo.size() )
+					{
+						mortonPrims[ id ]._idPrimitive = p_primsInfo[ id ]._idPrimitive;
+						const Vec3f centroidOffset	   = aabb.offset( p_primsInfo[ id ]._centroid );
+						mortonPrims[ id ]._code		   = Util::Math::encodeMorton3( centroidOffset * float( mortonScale ) );
+						id += nbThreads;
+					}
+				} ) );
 			}
 			for ( std::thread & t : threadPool )
 			{
@@ -509,8 +507,7 @@ namespace VTX
 			for ( uint begin = 0, end = 1; end <= uint( mortonPrims.size() ); ++end )
 			{
 				uint mask = 0x3ffc0000;
-				if ( end == (int)mortonPrims.size()
-					 || ( ( mortonPrims[ begin ]._code & mask ) != ( mortonPrims[ end ]._code & mask ) ) )
+				if ( end == (int)mortonPrims.size() || ( ( mortonPrims[ begin ]._code & mask ) != ( mortonPrims[ end ]._code & mask ) ) )
 				{
 					// Add entry to _treeletsToBuild_ for this treelet
 					uint		   nbPrimitives = end - begin;
@@ -527,29 +524,15 @@ namespace VTX
 
 			for ( uint i = 0; i < nbThreads; ++i )
 			{
-				threadPool.emplace_back( std::thread( [ this,
-														nbThreads,
-														&treelets,
-														&p_primsInfo,
-														&mortonPrims,
-														&p_outPrims,
-														&atomicOutPrimOffset,
-														&atomicTotalNodes,
-														i ]() {
+				threadPool.emplace_back( std::thread( [ this, nbThreads, &treelets, &p_primsInfo, &mortonPrims, &p_outPrims, &atomicOutPrimOffset, &atomicTotalNodes, i ]() {
 					uint id = i;
 					while ( id < treelets.size() )
 					{
 						uint		  nodesCreated	= 0;
 						const uint	  firstBitIndex = 29 - 12;
 						LBVHTreelet & treelet		= treelets[ id ];
-						treelet._buildNodes			= _emitLBVHRecursive( treelet._buildNodes,
-																  p_primsInfo,
-																  &mortonPrims[ treelet._idBegin ],
-																  treelet._nbPrims,
-																  nodesCreated,
-																  p_outPrims,
-																  atomicOutPrimOffset,
-																  firstBitIndex );
+						treelet._buildNodes			= _emitLBVHRecursive(
+							treelet._buildNodes, p_primsInfo, &mortonPrims[ treelet._idBegin ], treelet._nbPrims, nodesCreated, p_outPrims, atomicOutPrimOffset, firstBitIndex );
 						atomicTotalNodes += nodesCreated;
 						id += nbThreads;
 					}
@@ -602,14 +585,7 @@ namespace VTX
 				uint mask = 1 << bitIndex;
 				// Advance to next subtree level if there's no LBVH split for this bit
 				if ( ( p_mortonPrims[ 0 ]._code & mask ) == ( p_mortonPrims[ p_nbPrims - 1 ]._code & mask ) )
-					return _emitLBVHRecursive( p_buildNodes,
-											   p_primsInfo,
-											   p_mortonPrims,
-											   p_nbPrims,
-											   p_totalNodes,
-											   p_outPrims,
-											   p_outPrimsOffset,
-											   bitIndex - 1 );
+					return _emitLBVHRecursive( p_buildNodes, p_primsInfo, p_mortonPrims, p_nbPrims, p_totalNodes, p_outPrims, p_outPrimsOffset, bitIndex - 1 );
 
 				// Find LBVH split point for this dimension
 				uint searchBegin = 0;
@@ -619,51 +595,37 @@ namespace VTX
 					assert( searchBegin != searchEnd );
 					uint idSplit = ( searchBegin + searchEnd ) / 2;
 					if ( ( p_mortonPrims[ searchBegin ]._code & mask ) == ( p_mortonPrims[ idSplit ]._code & mask ) )
-					{ searchBegin = idSplit; }
+					{
+						searchBegin = idSplit;
+					}
 					else
 					{
-						assert( ( p_mortonPrims[ idSplit ]._code & mask )
-								== ( p_mortonPrims[ searchEnd ]._code & mask ) );
+						assert( ( p_mortonPrims[ idSplit ]._code & mask ) == ( p_mortonPrims[ searchEnd ]._code & mask ) );
 						searchEnd = idSplit;
 					}
 				}
 				uint splitOffset = searchEnd;
 				assert( splitOffset <= p_nbPrims - 1 );
-				assert( ( p_mortonPrims[ splitOffset - 1 ]._code & mask )
-						!= ( p_mortonPrims[ splitOffset ]._code & mask ) );
+				assert( ( p_mortonPrims[ splitOffset - 1 ]._code & mask ) != ( p_mortonPrims[ splitOffset ]._code & mask ) );
 
 				// Create and return interior LBVH node
 				p_totalNodes++;
-				BVHBuildNode * node		 = p_buildNodes++;
-				BVHBuildNode * lbvh[ 2 ] = { _emitLBVHRecursive( p_buildNodes,
-																 p_primsInfo,
-																 p_mortonPrims,
-																 splitOffset,
-																 p_totalNodes,
-																 p_outPrims,
-																 p_outPrimsOffset,
-																 bitIndex - 1 ),
-											 _emitLBVHRecursive( p_buildNodes,
-																 p_primsInfo,
-																 &p_mortonPrims[ splitOffset ],
-																 p_nbPrims - splitOffset,
-																 p_totalNodes,
-																 p_outPrims,
-																 p_outPrimsOffset,
-																 bitIndex - 1 ) };
-				uint		   axis		 = bitIndex % 3;
+				BVHBuildNode * node = p_buildNodes++;
+				BVHBuildNode * lbvh[ 2 ]
+					= { _emitLBVHRecursive( p_buildNodes, p_primsInfo, p_mortonPrims, splitOffset, p_totalNodes, p_outPrims, p_outPrimsOffset, bitIndex - 1 ),
+						_emitLBVHRecursive(
+							p_buildNodes, p_primsInfo, &p_mortonPrims[ splitOffset ], p_nbPrims - splitOffset, p_totalNodes, p_outPrims, p_outPrimsOffset, bitIndex - 1 ) };
+				uint axis = bitIndex % 3;
 				return new BVHBuildNode( axis, lbvh[ 0 ], lbvh[ 1 ] );
 			}
 		}
 
-		BVHBuildNode * BVH::_buildUpperSAHRecursive( std::vector<BVHBuildNode *> & p_treeletRoots,
-													 uint						   p_begin,
-													 uint						   p_end,
-													 uint &						   totalNodes ) const
+		BVHBuildNode * BVH::_buildUpperSAHRecursive( std::vector<BVHBuildNode *> & p_treeletRoots, uint p_begin, uint p_end, uint & totalNodes ) const
 		{
 			assert( p_begin < p_end );
 			uint nbNodes = p_end - p_begin;
-			if ( nbNodes == 1 ) return p_treeletRoots[ p_begin ];
+			if ( nbNodes == 1 )
+				return p_treeletRoots[ p_begin ];
 
 			totalNodes++;
 
@@ -689,13 +651,10 @@ namespace VTX
 			BinInfo	   bins[ nbBins ];
 			for ( uint i = p_begin; i < p_end; ++i )
 			{
-				const float splitCentroid
-					= ( p_treeletRoots[ i ]->_aabb._min[ splitDim ] + p_treeletRoots[ i ]->_aabb._max[ splitDim ] )
-					  * 0.5f;
-				uint b = uint( nbBins
-							   * ( ( splitCentroid - centroidsAABB._min[ splitDim ] )
-								   / ( centroidsAABB._max[ splitDim ] - centroidsAABB._min[ splitDim ] ) ) );
-				if ( b == nbBins ) b = nbBins - 1;
+				const float splitCentroid = ( p_treeletRoots[ i ]->_aabb._min[ splitDim ] + p_treeletRoots[ i ]->_aabb._max[ splitDim ] ) * 0.5f;
+				uint		b = uint( nbBins * ( ( splitCentroid - centroidsAABB._min[ splitDim ] ) / ( centroidsAABB._max[ splitDim ] - centroidsAABB._min[ splitDim ] ) ) );
+				if ( b == nbBins )
+					b = nbBins - 1;
 				assert( b >= 0 );
 				assert( b < nbBins );
 				bins[ b ]._count++;
@@ -736,23 +695,20 @@ namespace VTX
 			}
 
 			// Split it !
-			BVHBuildNode ** pmid = std::partition(
-				&p_treeletRoots[ p_begin ], &p_treeletRoots[ p_end - 1 ] + 1, [ & ]( const BVHBuildNode * node ) {
-					const float centroid = ( node->_aabb._min[ splitDim ] + node->_aabb._max[ splitDim ] ) * 0.5f;
-					uint		b		 = uint( nbBins
-									 * ( ( centroid - centroidsAABB._min[ splitDim ] )
-										 / ( centroidsAABB._max[ splitDim ] - centroidsAABB._min[ splitDim ] ) ) );
-					if ( b == nbBins ) b = nbBins - 1;
-					assert( b >= 0 );
-					assert( b < nbBins );
-					return b <= idMinSahCostBin;
-				} );
-			uint idSplit = uint( pmid - &p_treeletRoots[ 0 ] );
+			BVHBuildNode ** pmid	= std::partition( &p_treeletRoots[ p_begin ], &p_treeletRoots[ p_end - 1 ] + 1, [ & ]( const BVHBuildNode * node ) {
+				   const float centroid = ( node->_aabb._min[ splitDim ] + node->_aabb._max[ splitDim ] ) * 0.5f;
+				   uint		   b		= uint( nbBins * ( ( centroid - centroidsAABB._min[ splitDim ] ) / ( centroidsAABB._max[ splitDim ] - centroidsAABB._min[ splitDim ] ) ) );
+				   if ( b == nbBins )
+					   b = nbBins - 1;
+				   assert( b >= 0 );
+				   assert( b < nbBins );
+				   return b <= idMinSahCostBin;
+			   } );
+			uint			idSplit = uint( pmid - &p_treeletRoots[ 0 ] );
 			assert( idSplit > p_begin );
 			assert( idSplit < p_end );
-			return new BVHBuildNode( splitDim,
-									 _buildUpperSAHRecursive( p_treeletRoots, p_begin, idSplit, totalNodes ),
-									 _buildUpperSAHRecursive( p_treeletRoots, idSplit, p_end, totalNodes ) );
+			return new BVHBuildNode(
+				splitDim, _buildUpperSAHRecursive( p_treeletRoots, p_begin, idSplit, totalNodes ), _buildUpperSAHRecursive( p_treeletRoots, idSplit, p_end, totalNodes ) );
 		}
 
 		uint BVH::_flattenRecursive( const BVHBuildNode * const p_buildNode, uint & p_offset )
