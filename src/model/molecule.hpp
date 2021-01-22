@@ -8,6 +8,7 @@
 #include "atom.hpp"
 #include "base_model_3d.hpp"
 #include "bond.hpp"
+#include "buffer/molecule.hpp"
 #include "chain.hpp"
 #include "define.hpp"
 #include "generic/base_representable.hpp"
@@ -15,9 +16,13 @@
 #include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
 #include "model/configuration/molecule.hpp"
+#include "mvc/mvc_manager.hpp"
+#include "representation/instantiated_representation.hpp"
+#include "representation/representation_target.hpp"
 #include "residue.hpp"
 #include <iostream>
 #include <map>
+#include <string>
 #include <unordered_set>
 #include <utility>
 #include <vector>

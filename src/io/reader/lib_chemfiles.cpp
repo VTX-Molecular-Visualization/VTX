@@ -59,10 +59,11 @@ namespace VTX
 				chemfiles::Frame frame = p_trajectory.read();
 				chrono.stop();
 				VTX_INFO( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
-				const chemfiles::Topology &				topology = frame.topology();
-				const std::vector<chemfiles::Residue> & residues = topology.residues();
-				const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
-				Model::Configuration::Molecule &		config	 = p_molecule.getConfiguration();
+				chemfiles::Topology &			  topology = const_cast<chemfiles::Topology &>( frame.topology() );
+				std::vector<chemfiles::Residue> & residues
+					= const_cast<std::vector<chemfiles::Residue> &>( topology.residues() );
+				std::vector<chemfiles::Bond> &	 bonds = const_cast<std::vector<chemfiles::Bond> &>( topology.bonds() );
+				Model::Configuration::Molecule & config = p_molecule.getConfiguration();
 				p_molecule.setPath( p_path );
 
 				if ( frame.size() != topology.size() )
@@ -103,27 +104,76 @@ namespace VTX
 					VTX_DEBUG( propResidue );
 				}
 
-				// If no residue, create a fake one.
-				// TODO: check file format instead of residue count?
-				bool hasTopology = true;
+				// if ( residues.size() == 0 )
+				//{
+				//	// If no residue, create a fake one.
+				//	// TODO: check file format instead of residue count?
+				//	VTX_INFO( "No residues found" );
+				//	chemfiles::Residue residue = chemfiles::Residue( "" );
+				//	for ( uint i = 0; i < frame.size(); ++i )
+				//	{
+				//		residue.add_atom( i );
+				//	}
+				//	frame.add_residue( residue );
+				//}
+
 				if ( residues.size() == 0 )
 				{
-					hasTopology = false;
-					VTX_INFO( "No residues found" );
-					chemfiles::Residue residue = chemfiles::Residue( "" );
-					for ( uint i = 0; i < frame.size(); ++i )
+					// check if a topology file is present in the same folder
+					std::string filePathWithoutExt			= p_path.string().substr( 0, p_path.string().size() - 3 );
+					std::vector<std::string> topExtensions	= { "xyz", "pdb", "mol2" };
+					std::string				 foundExtension = "";
+					for ( size_t ext = 0; ext < topExtensions.size(); ext++ )
 					{
-						residue.add_atom( i );
+						std::fstream topFile;
+						topFile.open( filePathWithoutExt + topExtensions[ ext ] );
+						if ( topFile.is_open() )
+						{
+							topFile.close();
+							foundExtension = topExtensions[ ext ];
+							break;
+						}
 					}
-					frame.add_residue( residue );
+					if ( foundExtension != "" )
+					{
+						p_trajectory.set_topology( filePathWithoutExt + foundExtension );
+						frame	 = p_trajectory.read();
+						topology = frame.topology();
+						residues = topology.residues();
+						bonds	 = topology.bonds();
+					}
+					else
+					{
+						// If no residue, create a fake one.
+						// TODO: check file format instead of residue count?
+						VTX_INFO( "No residues found" );
+						chemfiles::Residue residue = chemfiles::Residue( "" );
+						for ( uint i = 0; i < frame.size(); ++i )
+						{
+							residue.add_atom( i );
+						}
+						frame.add_residue( residue );
+					}
+				}
+
+				if ( frame.size() != topology.size() )
+				{
+					throw Exception::IOException( "Data count missmatch" );
 				}
 
 				// Create models.
 				p_molecule.getFrames().resize( p_trajectory.nsteps() );
-				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
+				for ( uint frameNum = 0; frameNum < p_trajectory.nsteps(); frameNum++ )
+				{
+					Model::Molecule::AtomPositionsFrame & framePositions = p_molecule.getAtomPositionFrame( frameNum );
+					framePositions.resize( frame.size() );
+				}
 				p_molecule.getResidues().resize( topology.residues().size() );
 				p_molecule.getAtoms().resize( frame.size() );
-				modelFrame.resize( frame.size() );
+				p_molecule.getBufferAtomRadius().resize( frame.size() );
+				p_molecule.getBufferAtomVisibilities().resize( frame.size(), 1u );
+				p_molecule.getBufferAtomSelection().resize( frame.size(), 0u );
+				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 
 				Model::Chain * modelChain;
 				std::string	   lastChainName   = "";
@@ -202,6 +252,7 @@ namespace VTX
 					{
 						std::string secondaryStructure
 							= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
+						// VTX_DEBUG( secondaryStructure );
 						if ( secondaryStructure != "" )
 						{
 							if ( secondaryStructure == "extended" )
@@ -218,15 +269,23 @@ namespace VTX
 							}
 							else if ( secondaryStructure == "alpha helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_ALPHA );
+								modelResidue->setSecondaryStructure(
+									Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT );
+							}
+							else if ( secondaryStructure == "left-handed alpha helix" )
+							{
+								modelResidue->setSecondaryStructure(
+									Model::SecondaryStructure::VALUE::HELIX_ALPHA_LEFT );
 							}
 							else if ( secondaryStructure == "omega helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_ALPHA );
+								modelResidue->setSecondaryStructure(
+									Model::SecondaryStructure::VALUE::HELIX_3_10_RIGHT );
 							}
 							else if ( secondaryStructure == "gamma helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_ALPHA );
+								modelResidue->setSecondaryStructure(
+									Model::SecondaryStructure::VALUE::HELIX_3_10_LEFT );
 							}
 							else if ( secondaryStructure == "pi helix" )
 							{
@@ -336,20 +395,30 @@ namespace VTX
 				}
 
 				// Fill other frames.
+				Tool::Chrono timeReadingFrames;
+				timeReadingFrames.start();
+				int startingFrame = 1;
 				for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )
 				{
-					VTX_INFO( "Frame " + std::to_string( frameIdx ) );
 					Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
-
-					frame												   = p_trajectory.read_step( frameIdx );
+					frame												= p_trajectory.read_step( frameIdx );
 					const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
-					moleculeFrame.resize( positions.size() );
 					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
 					{
 						const chemfiles::Vector3D & position = positions[ positionIdx ];
 						moleculeFrame[ positionIdx ]		 = { position[ 0 ], position[ 1 ], position[ 2 ] };
 					}
+					// if ( frameIdx % 100 == 0 )
+					//{
+					//	timeReadingFrames.stop();
+					//	VTX_INFO( "Frames from " + std::to_string( startingFrame ) + " to " + std::to_string( frameIdx )
+					//			  + " read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
+					//	startingFrame = frameIdx;
+					//	timeReadingFrames.start();
+					//}
 				}
+				timeReadingFrames.stop();
+				VTX_INFO( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
 
 				// Bonds.
 				// Sort by residus.
@@ -424,7 +493,6 @@ namespace VTX
 					chain->computeSequence();
 				}
 			}
-
 		} // namespace Reader
 	}	  // namespace IO
 } // namespace VTX
