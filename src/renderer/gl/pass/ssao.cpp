@@ -109,8 +109,10 @@ namespace VTX::Renderer::GL::Pass
 				_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
 		}
 
-		// TODO don't update each frame
-		gl()->glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
+		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
+		{
+			gl()->glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
+		}
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
 		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );

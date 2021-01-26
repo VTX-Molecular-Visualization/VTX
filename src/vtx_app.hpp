@@ -34,7 +34,7 @@ namespace VTX
 			static VTXApp instance;
 			return instance;
 		}
-		VTX_MASK MASK = 0xFF;
+		VTX_MASK MASK = VTX_MASK_NEED_UPDATE;
 
 		void start();
 		void stop();

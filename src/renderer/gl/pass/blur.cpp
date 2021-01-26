@@ -81,8 +81,12 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glBindTextureUnit( 1, p_renderer.getPassLinearizeDepth().getTexture() );
 
 		_program->use();
-		// TODO don't update each frame
-		gl()->glUniform1i( _uBlurSizeLoc, VTX_SETTING().aoBlurSize );
+
+		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
+		{
+			gl()->glUniform1i( _uBlurSizeLoc, VTX_SETTING().aoBlurSize );
+		}
+
 		gl()->glUniform2i( _uInvDirectionTexSizeLoc, 1, 0 );
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );

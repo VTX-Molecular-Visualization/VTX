@@ -97,7 +97,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().backgroundColor = _color;
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 				};
 
 			  private:
@@ -139,7 +139,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().atomsRadius = _atomsRadius;
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 				}
 
 			  private:
@@ -154,7 +154,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().bondsRadius = _bondsRadius;
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 				};
 
 			  private:
@@ -240,7 +240,7 @@ namespace VTX
 				{
 					VTX_SETTING().aoIntensity = Util::Math::clamp(
 						_intensity, VTX::Setting::AO_INTENSITY_MIN, VTX::Setting::AO_INTENSITY_MAX );
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 				};
 
 			  private:
@@ -256,7 +256,7 @@ namespace VTX
 				{
 					VTX_SETTING().aoBlurSize = Util::Math::clamp(
 						_blurSize, VTX::Setting::AO_BLUR_SIZE_MIN, VTX::Setting::AO_BLUR_SIZE_MAX );
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 				};
 
 			  private:
@@ -287,7 +287,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().outlineColor = _color;
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 				};
 
 			  private:
@@ -319,7 +319,7 @@ namespace VTX
 				{
 					VTX_SETTING().fogNear = Util::Math::min( _near, VTX_SETTING().fogFar );
 					VTX_SETTING().fogFar  = Util::Math::max( _near, VTX_SETTING().fogFar );
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 				};
 
 			  private:
@@ -335,7 +335,7 @@ namespace VTX
 				{
 					VTX_SETTING().fogNear = Util::Math::min( VTX_SETTING().fogNear, _far );
 					VTX_SETTING().fogFar  = Util::Math::max( VTX_SETTING().fogNear, _far );
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 				};
 
 			  private:
@@ -350,7 +350,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().fogDensity = Util::Math::clamp( _density, 0.f, 1.f );
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 				};
 
 			  private:
@@ -365,7 +365,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().fogColor = _color;
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 				};
 
 			  private:
@@ -396,7 +396,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().lightColor = _color;
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 				};
 
 			  private:
@@ -415,7 +415,6 @@ namespace VTX
 
 					VTXApp::get().getScene().getCamera().setNear( VTX_SETTING().cameraNear );
 					VTXApp::get().getScene().getCamera().setFar( VTX_SETTING().cameraFar );
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -433,7 +432,6 @@ namespace VTX
 					VTX_SETTING().cameraFov = _fov;
 
 					VTXApp::get().getScene().getCamera().setFov( VTX_SETTING().cameraFov );
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -449,7 +447,6 @@ namespace VTX
 				{
 					VTX_SETTING().cameraPerspective = _perspective;
 					VTXApp::get().getScene().getCamera().setPerspective( VTX_SETTING().cameraPerspective );
-					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:

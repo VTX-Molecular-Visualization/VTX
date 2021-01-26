@@ -49,7 +49,7 @@ namespace VTX
 		static const bool ACTIVE_RENDERER_DEFAULT;
 		bool			  activeRenderer = ACTIVE_RENDERER_DEFAULT;
 		static const bool FORCE_RENDERER_DEFAULT;
-		bool			  forceRenderer = 1;
+		bool			  forceRenderer = 0;
 
 		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
 		Color::Rgb				backgroundColor = BACKGROUND_COLOR_DEFAULT;
