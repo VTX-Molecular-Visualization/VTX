@@ -113,13 +113,32 @@ namespace VTX
 				if ( freefly->isOrienting() )
 				{
 					getItem<Controller::Trackball>( ID::Controller::TRACKBALL )
-						->setDistanceForced(
-							Util::Math::distance( p_aabb.centroid(), freefly->getOrientTargetPosition() ) );
+						->setDistance( Util::Math::distance( p_aabb.centroid(), freefly->getOrientTargetPosition() ) );
 				}
 			}
 		}
 
-		void Visualization::receiveEvent( const Event::VTXEvent & p_event ) { resetCameraController(); }
+		void Visualization::receiveEvent( const Event::VTXEvent & p_event )
+		{
+			// Recenter when add the first element in scene
+			if ( p_event.name == Event::MOLECULE_ADDED )
+			{
+				if ( VTXApp::get().getScene().getMolecules().size() == 1
+					 && VTXApp::get().getScene().getMeshes().size() == 0 )
+				{
+					const Event::VTXEventPtr<Model::Molecule> & castedEvent
+						= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+
+					orientCameraController( castedEvent.ptr->getAABB() );
+				}
+			}
+			else if ( p_event.name == Event::MESH_ADDED )
+			{
+				if ( VTXApp::get().getScene().getMolecules().size() == 0
+					 && VTXApp::get().getScene().getMeshes().size() == 1 )
+					resetCameraController();
+			}
+		}
 
 	} // namespace State
 } // namespace VTX

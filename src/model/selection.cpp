@@ -465,9 +465,13 @@ namespace VTX
 		{
 			for ( uint i = 0; i < p_molecule.getChainCount(); ++i )
 			{
-				const Chain & chain = p_molecule.getChain( i );
-				_addChain( chain );
-				_addChainContent( chain );
+				const Chain * const chain = p_molecule.getChain( i );
+
+				if ( chain == nullptr )
+					continue;
+
+				_addChain( *chain );
+				_addChainContent( *chain );
 			}
 		}
 
@@ -475,9 +479,14 @@ namespace VTX
 		{
 			for ( uint i = 0; i < p_chain.getResidueCount(); ++i )
 			{
-				const Residue & residue = p_chain.getMoleculePtr()->getResidue( p_chain.getIndexFirstResidue() + i );
-				_addResidue( residue );
-				_addResidueContent( residue );
+				const Residue * const residue
+					= p_chain.getMoleculePtr()->getResidue( p_chain.getIndexFirstResidue() + i );
+
+				if ( residue == nullptr )
+					continue;
+
+				_addResidue( *residue );
+				_addResidueContent( *residue );
 			}
 		}
 
@@ -485,8 +494,12 @@ namespace VTX
 		{
 			for ( uint i = 0; i < p_residue.getAtomCount(); ++i )
 			{
-				const Atom & atom = p_residue.getMoleculePtr()->getAtom( p_residue.getIndexFirstAtom() + i );
-				_addAtom( atom );
+				const Atom * const atom = p_residue.getMoleculePtr()->getAtom( p_residue.getIndexFirstAtom() + i );
+
+				if ( atom == nullptr )
+					continue;
+
+				_addAtom( *atom );
 			}
 		}
 

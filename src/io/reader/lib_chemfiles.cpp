@@ -160,7 +160,7 @@ namespace VTX
 						// Create chain.
 						p_molecule.addChain();
 						chainModelId++;
-						modelChain = &p_molecule.getChain( chainModelId );
+						modelChain = p_molecule.getChain( chainModelId );
 						modelChain->setIndex( chainModelId );
 						if ( chainName != "" )
 						{
@@ -174,7 +174,7 @@ namespace VTX
 						oldIndexInChain = INT_MIN;
 					}
 
-					modelChain = &p_molecule.getChain( chainModelId );
+					modelChain = p_molecule.getChain( chainModelId );
 					modelChain->setResidueCount( modelChain->getResidueCount() + 1 );
 
 					// Create residue.
@@ -182,7 +182,6 @@ namespace VTX
 					p_molecule.getResidues()[ residueIdx ] = modelResidue;
 					modelResidue->setIndex( residueIdx );
 
-					modelResidue->setMoleculePtr( &p_molecule );
 					modelResidue->setChainPtr( modelChain );
 					modelResidue->setIndexFirstAtom( uint( *residue.begin() ) );
 					modelResidue->setAtomCount( uint( residue.size() ) );
@@ -305,8 +304,6 @@ namespace VTX
 						Model::Atom * modelAtom			= MVC::MvcManager::get().instantiateModel<Model::Atom>();
 						p_molecule.getAtoms()[ atomId ] = modelAtom;
 						modelAtom->setIndex( atomId );
-						modelAtom->setMoleculePtr( &p_molecule );
-						modelAtom->setChainPtr( modelChain );
 						modelAtom->setResiduePtr( modelResidue );
 						std::string atomSymbol = atom.type();
 						std::transform(
@@ -405,8 +402,8 @@ namespace VTX
 				{
 					const chemfiles::Bond & bond = bonds[ boundIdx ];
 
-					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) ).getResiduePtr();
-					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) ).getResiduePtr();
+					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) )->getResiduePtr();
+					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) )->getResiduePtr();
 
 					if ( residueStart == residueEnd )
 					{
@@ -425,11 +422,11 @@ namespace VTX
 				p_molecule.getBufferBonds().resize( bonds.size() * 2 );
 				for ( const std::pair<uint, std::vector<const chemfiles::Bond *>> & pair : mapResidueBonds )
 				{
-					Model::Residue &							 residue	 = p_molecule.getResidue( pair.first );
+					Model::Residue * const						 residue	 = p_molecule.getResidue( pair.first );
 					const std::vector<const chemfiles::Bond *> & vectorBonds = pair.second;
 
-					residue.setIndexFirstBond( counter );
-					residue.setBondCount( uint( vectorBonds.size() ) );
+					residue->setIndexFirstBond( counter );
+					residue->setBondCount( uint( vectorBonds.size() ) );
 
 					for ( uint i = 0; i < vectorBonds.size(); ++i, ++counter )
 					{
@@ -453,8 +450,8 @@ namespace VTX
 					Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
 					p_molecule.getBonds()[ counter ]  = modelBond;
 
-					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) ).getResiduePtr();
-					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) ).getResiduePtr();
+					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) )->getResiduePtr();
+					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) )->getResiduePtr();
 
 					modelBond->setMoleculePtr( &p_molecule );
 					modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );

@@ -102,8 +102,12 @@ namespace VTX
 
 			for ( uint i = 0; i < _residueCount; ++i )
 			{
-				const Residue & residue = _moleculePtr->getResidue( _indexFirstResidue + i );
-				aabb.extend( residue.getAABB() );
+				const Residue * const residue = _moleculePtr->getResidue( _indexFirstResidue + i );
+
+				if ( residue == nullptr )
+					continue;
+
+				aabb.extend( residue->getAABB() );
 			}
 
 			return aabb;

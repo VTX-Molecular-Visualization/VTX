@@ -162,14 +162,12 @@ namespace VTX
 			static const float		 SYMBOL_VDW_RADIUS[ (int)SYMBOL::COUNT ];
 			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
 
-			inline const uint		getIndex() const { return _index; };
-			inline void				setIndex( const uint p_index ) { _index = p_index; };
-			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
-			inline Chain * const	getChainPtr() const { return _chainPtr; }
-			inline void				setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
-			inline Residue * const	getResiduePtr() const { return _residuePtr; }
-			inline void				setResiduePtr( Residue * const p_residue ) { _residuePtr = p_residue; }
+			inline const uint	   getIndex() const { return _index; };
+			inline void			   setIndex( const uint p_index ) { _index = p_index; };
+			Molecule * const	   getMoleculePtr() const;
+			Chain * const		   getChainPtr() const;
+			inline Residue * const getResiduePtr() const { return _residuePtr; }
+			inline void			   setResiduePtr( Residue * const p_residue ) { _residuePtr = p_residue; }
 
 			inline const SYMBOL		   getSymbol() const { return _symbol; };
 			inline const std::string & getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; };
@@ -189,12 +187,10 @@ namespace VTX
 			const Math::AABB getAABB() const;
 
 		  private:
-			uint	   _index		= 0;
-			Molecule * _moleculePtr = nullptr;
-			Chain *	   _chainPtr	= nullptr;
-			Residue *  _residuePtr	= nullptr;
-			TYPE	   _type		= TYPE::NORMAL;
-			SYMBOL	   _symbol		= SYMBOL::UNKNOWN;
+			uint	  _index	  = 0;
+			Residue * _residuePtr = nullptr;
+			TYPE	  _type		  = TYPE::NORMAL;
+			SYMBOL	  _symbol	  = SYMBOL::UNKNOWN;
 			// /!\ Names PDB != MMTF (CA and C1 for alpha carbon).
 			std::string _name = "";
 

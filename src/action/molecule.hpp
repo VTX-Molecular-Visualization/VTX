@@ -288,6 +288,7 @@ namespace VTX
 					VTX_EVENT(
 						new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
 
+					// generatedMolecule->setTranslation( VTX::Vec3f( 0, 10, 0 ) );
 					VTXApp::get().getScene().addMolecule( generatedMolecule );
 				}
 

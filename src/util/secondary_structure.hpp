@@ -23,7 +23,7 @@ namespace VTX
 
 				for ( uint chainIdx = 0; chainIdx < p_molecule.getChainCount(); ++chainIdx )
 				{
-					const Model::Chain & chain		  = p_molecule.getChain( chainIdx );
+					const Model::Chain & chain		  = *p_molecule.getChain( chainIdx );
 					uint				 residueCount = chain.getResidueCount();
 
 					// Not enought residues.
@@ -47,15 +47,15 @@ namespace VTX
 					psi[ residueCount - 1 ] = PI_2f;
 
 					p_molecule.getResidue( idxFirstResidue )
-						.setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
+						->setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
 					p_molecule.getResidue( idxFirstResidue + residueCount - 1 )
-						.setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
+						->setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
 
 					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 					{
-						const Model::Residue & residue0 = p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
-						Model::Residue &	   residue1 = p_molecule.getResidue( idxFirstResidue + residueIdx );
-						const Model::Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
+						const Model::Residue & residue0 = *p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
+						Model::Residue &	   residue1 = *p_molecule.getResidue( idxFirstResidue + residueIdx );
+						const Model::Residue & residue2 = *p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
 
 						residue1.setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
 
@@ -109,7 +109,7 @@ namespace VTX
 							{
 								for ( uint k = firstHelixIdx; k < residueIdx; k++ )
 								{
-									Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + k );
+									Model::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
 									residue.setSecondaryStructure(
 										Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT );
 								}
@@ -135,7 +135,7 @@ namespace VTX
 							{
 								for ( uint k = firstHelixIdx; k < residueIdx; k++ )
 								{
-									Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + k );
+									Model::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
 									residue.setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_ALPHA_LEFT );
 								}
 							}
@@ -161,7 +161,7 @@ namespace VTX
 							{
 								for ( uint k = firstStrandIdx; k < residueIdx; k++ )
 								{
-									Model::Residue & residue = p_molecule.getResidue( idxFirstResidue + k );
+									Model::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
 									residue.setSecondaryStructure( Model::SecondaryStructure::VALUE::STRAND );
 								}
 							}
@@ -171,9 +171,9 @@ namespace VTX
 
 					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 					{
-						Model::Residue & residue0 = p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
-						Model::Residue & residue  = p_molecule.getResidue( idxFirstResidue + residueIdx );
-						Model::Residue & residue2 = p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
+						Model::Residue & residue0 = *p_molecule.getResidue( idxFirstResidue + residueIdx - 1 );
+						Model::Residue & residue  = *p_molecule.getResidue( idxFirstResidue + residueIdx );
+						Model::Residue & residue2 = *p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
 
 						if ( ( residue0.getSecondaryStructure() == residue2.getSecondaryStructure() )
 							 && ( ( residue0.getSecondaryStructure()

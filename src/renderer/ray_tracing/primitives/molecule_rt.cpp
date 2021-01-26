@@ -53,7 +53,7 @@ namespace VTX
 			//					   0.6f * jaune,
 			//					   shininess ),									   // jaune ocre
 			//	new MatteMaterial( rouge, roughness ), // rouge clair
-			//	new MatteMaterial( blanc, 0.5f ),	   // blanc qui pète
+			//	new MatteMaterial( blanc, 0.5f ),	   // blanc qui pï¿½te
 			//	new MatteMaterial( rouge, roughness ), // rouge clair
 			//	new MatteMaterial( rouge, roughness )  // rouge clair
 			//};
@@ -82,7 +82,7 @@ namespace VTX
 			{
 				if ( p_molecule->isAtomVisible( i ) )
 				{
-					Model::Chain * chainPtr = p_molecule->getAtom( i ).getChainPtr();
+					Model::Chain * chainPtr = p_molecule->getAtom( i )->getChainPtr();
 
 					if ( mapMtls.find( chainPtr ) == mapMtls.end() )
 					{
@@ -105,12 +105,12 @@ namespace VTX
 			{
 				for ( uint i = 0; i < nbBonds; ++i )
 				{
-					const Model::Bond & bond = p_molecule->getBond( i );
+					const Model::Bond & bond = *p_molecule->getBond( i );
 					const Vec3f &		a1	 = tAtomPositions[ bond.getIndexFirstAtom() ];
 					const Vec3f &		a2	 = tAtomPositions[ bond.getIndexSecondAtom() ];
 
 					primitives.emplace_back( new Renderer::Cylinder(
-						a1, a2, 0.25f, mapMtls[ p_molecule->getAtom( bond.getIndexFirstAtom() ).getChainPtr() ] ) );
+						a1, a2, 0.25f, mapMtls[ p_molecule->getAtom( bond.getIndexFirstAtom() )->getChainPtr() ] ) );
 				}
 			}
 

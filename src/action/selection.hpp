@@ -326,12 +326,12 @@ namespace VTX
 
 						for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> chainIds : molIds.second )
 						{
-							Model::Chain & chain = molecule.getChain( chainIds.first );
+							Model::Chain & chain = *molecule.getChain( chainIds.first );
 							for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> residueIds :
 								  chainIds.second )
 							{
-								Model::Residue & residue = molecule.getResidue( residueIds.first );
-								residue.setVisible( visible );
+								Model::Residue * const residue = molecule.getResidue( residueIds.first );
+								residue->setVisible( visible );
 							}
 
 							if ( chain.getResidueCount() == chainIds.second.size() )

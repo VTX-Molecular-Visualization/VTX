@@ -65,29 +65,85 @@ namespace VTX
 			inline const VTX::FilePath & getPath() const { return _path; }
 			inline void					 setPath( const VTX::FilePath & p_path ) { _path = p_path; }
 
-			Chain &								  addChain();
-			inline Chain &						  getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
-			inline const Chain &				  getChain( const uint p_idx ) const { return *_chains[ p_idx ]; }
-			inline std::vector<Chain *> &		  getChains() { return _chains; }
-			inline const std::vector<Chain *> &	  getChains() const { return _chains; }
-			Residue &							  addResidue();
-			inline Residue &					  getResidue( const uint p_idx ) { return *_residues[ p_idx ]; }
-			inline const Residue &				  getResidue( const uint p_idx ) const { return *_residues[ p_idx ]; }
+			inline Chain & addChain()
+			{
+				Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
+				_chains.emplace_back( chain );
+				return *chain;
+			}
+			inline Chain * const	   getChain( const uint p_idx ) { return _chains[ p_idx ]; }
+			inline const Chain * const getChain( const uint p_idx ) const { return _chains[ p_idx ]; }
+			inline const Chain * const getPreviousChain( const uint p_idBaseChain ) const
+			{
+				for ( int i = p_idBaseChain - 1; i >= 0; i++ )
+					if ( _chains[ i ] != nullptr )
+						return _chains[ i ];
+				return nullptr;
+			}
+			inline const Chain * const getNextChain( const uint p_idBaseChain ) const
+			{
+				for ( int i = p_idBaseChain + 1; i < _chains.size(); i++ )
+					if ( _chains[ i ] != nullptr )
+						return _chains[ i ];
+				return nullptr;
+			}
+			inline std::vector<Chain *> &		getChains() { return _chains; }
+			inline const std::vector<Chain *> & getChains() const { return _chains; }
+			void								removeChain( const uint p_id,
+															 const bool p_delete	  = true,
+															 const bool p_recursive	  = true,
+															 const bool p_notifyViews = true );
+
+			inline Residue & addResidue()
+			{
+				Residue * const residue = MVC::MvcManager::get().instantiateModel<Residue>();
+				_residues.emplace_back( residue );
+				return *residue;
+			}
+			inline Residue * const				  getResidue( const uint p_idx ) { return _residues[ p_idx ]; }
+			inline const Residue * const		  getResidue( const uint p_idx ) const { return _residues[ p_idx ]; }
 			inline std::vector<Residue *> &		  getResidues() { return _residues; }
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
-			Atom &								  addAtom();
-			inline Atom &						  getAtom( const uint p_idx ) { return *_atoms[ p_idx ]; }
-			inline const Atom &					  getAtom( const uint p_idx ) const { return *_atoms[ p_idx ]; }
-			inline std::vector<Atom *> &		  getAtoms() { return _atoms; }
-			inline const std::vector<Atom *> &	  getAtoms() const { return _atoms; }
-			Bond &								  addBond();
-			inline Bond &						  getBond( const uint p_idx ) { return *_bonds[ p_idx ]; }
-			inline const Bond &					  getBond( const uint p_idx ) const { return *_bonds[ p_idx ]; }
-			inline std::vector<Bond *> &		  getBonds() { return _bonds; }
-			inline const std::vector<Bond *> &	  getBonds() const { return _bonds; }
+			void								  removeResidue( const uint p_id,
+																 const bool p_delete			= true,
+																 const bool p_recursive			= true,
+																 const bool p_checkParentUpdate = true,
+																 const bool p_notifyViews		= true );
 
-			inline const SecondaryStructure & getSecondaryStructure() const { return *_secondaryStructure; }
-			inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
+			inline Atom & addAtom()
+			{
+				Atom * const atom = MVC::MvcManager::get().instantiateModel<Atom>();
+				_atoms.emplace_back( atom );
+				return *atom;
+			}
+			inline Atom * const				   getAtom( const uint p_idx ) { return _atoms[ p_idx ]; }
+			inline const Atom * const		   getAtom( const uint p_idx ) const { return _atoms[ p_idx ]; }
+			inline std::vector<Atom *> &	   getAtoms() { return _atoms; }
+			inline const std::vector<Atom *> & getAtoms() const { return _atoms; }
+			void							   removeAtom( const uint p_id,
+														   const bool p_delete			  = true,
+														   const bool p_checkBonds		  = true,
+														   const bool p_checkParentUpdate = true,
+														   const bool p_notifyViews		  = true );
+
+			inline Bond & addBond()
+			{
+				Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
+				_bonds.emplace_back( bond );
+				return *bond;
+			}
+			inline Bond * const				   getBond( const uint p_idx ) { return _bonds[ p_idx ]; }
+			inline const Bond * const		   getBond( const uint p_idx ) const { return _bonds[ p_idx ]; }
+			inline std::vector<Bond *> &	   getBonds() { return _bonds; }
+			inline const std::vector<Bond *> & getBonds() const { return _bonds; }
+			void removeBond( const uint p_id, const bool p_delete = true, const bool p_notifyViews = true );
+
+			inline const SecondaryStructure &		getSecondaryStructure() const { return *_secondaryStructure; }
+			inline SecondaryStructure &				getSecondaryStructure() { return *_secondaryStructure; }
+			inline const SecondaryStructure::ALGO & getSecondaryStructureAlgo() const
+			{
+				return _secondaryStructureAlgo;
+			}
 
 			inline const std::string & getSequence() const { return _sequence; }
 			inline std::string &	   getSequence() { return _sequence; }
@@ -163,7 +219,16 @@ namespace VTX
 				refreshColors();
 			}
 			inline void refreshColors() { _fillBufferAtomColors(); }
+<<<<<<< HEAD
 			void		refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const );
+=======
+			inline void refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection )
+			{
+				_fillBufferAtomSelections( p_selection );
+				_secondaryStructure->refreshSelection( p_selection );
+			}
+			void										   refreshBondsBuffer();
+>>>>>>> origin/dev
 
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }

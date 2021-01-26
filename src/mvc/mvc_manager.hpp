@@ -84,7 +84,8 @@ namespace VTX
 			{
 				for ( auto it = p_models.begin(); it != p_models.end(); it++ )
 				{
-					deleteModel( *it );
+					if ( *it != nullptr )
+						deleteModel( *it );
 				}
 			}
 

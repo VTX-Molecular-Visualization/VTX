@@ -26,8 +26,19 @@ namespace VTX
 				class SequenceChainData
 				{
 				  public:
-					SequenceChainData( const Model::Chain & p_chain );
-					~SequenceChainData();
+					SequenceChainData( const Model::Chain & p_chain ) :
+						_chain( p_chain ), _molecule( *( p_chain.getMoleculePtr() ) )
+					{
+						_generateDataSet();
+						_generateString();
+					};
+					~SequenceChainData()
+					{
+						for ( auto it : _dataset )
+							delete it;
+
+						_dataset.clear();
+					}
 
 					const QString & getSequenceString() const { return _strSequence; };
 					const QString & getScale() const { return _strScale; }
@@ -51,7 +62,11 @@ namespace VTX
 					std::vector<Dataset::SequenceDisplayDataset *> _dataset
 						= std::vector<Dataset::SequenceDisplayDataset *>();
 
-					Model::Residue & _getResidue( const uint p_localResidueIndex ) const;
+					Model::Residue * const _getResidue( const uint p_localResidueIndex ) const
+					{
+						const uint moleculeResidueIndex = _chain.getIndexFirstResidue() + p_localResidueIndex;
+						return _chain.getMoleculePtr()->getResidue( moleculeResidueIndex );
+					}
 
 					Dataset::SequenceDisplayDataset * const getDataset( const uint p_residueIndex ) const;
 					Dataset::SequenceDisplayDataset * const getDataset_recursive(

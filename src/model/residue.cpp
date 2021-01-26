@@ -1,19 +1,27 @@
 #include "residue.hpp"
 #include "atom.hpp"
+#include "chain.hpp"
 #include "molecule.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
+		Molecule * const Residue::getMoleculePtr() const { return _chainPtr->getMoleculePtr(); };
+		void			 Residue::setChainPtr( Chain * const p_chain )
+		{
+			_chainPtr = p_chain;
+			_setRepresentableMolecule( p_chain->getMoleculePtr() );
+		}
+
 		const Atom * const Residue::findFirstAtomByName( const std::string & p_name ) const
 		{
 			for ( uint i = 0; i < _atomCount; ++i )
 			{
-				const Atom & atom = _moleculePtr->getAtom( _indexFirstAtom + i );
-				if ( atom.getName() == p_name )
+				const Atom * const atom = getMoleculePtr()->getAtom( _indexFirstAtom + i );
+				if ( atom != nullptr && atom->getName() == p_name )
 				{
-					return &atom;
+					return atom;
 				}
 			}
 
@@ -36,8 +44,12 @@ namespace VTX
 
 			for ( uint i = 0; i < _atomCount; ++i )
 			{
-				const Atom & atom = _moleculePtr->getAtom( _indexFirstAtom + i );
-				aabb.extend( atom.getAABB() );
+				const Atom * const atom = getMoleculePtr()->getAtom( _indexFirstAtom + i );
+
+				if ( atom == nullptr )
+					continue;
+
+				aabb.extend( atom->getAABB() );
 			}
 
 			return aabb;
@@ -129,7 +141,7 @@ namespace VTX
 			"?",					// GLX
 			"Water",				// WAT
 			"Water",				// HOH
-			"Hême",					// HEM
+			"Hï¿½me",					// HEM
 			"Groupement phosphate", // PO4
 		};
 

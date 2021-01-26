@@ -35,8 +35,11 @@ namespace VTX
 			// Loop over chains (1 chain = 1 ribbon).
 			for ( uint chainIdx = 0; chainIdx < p_molecule->getChainCount(); ++chainIdx )
 			{
-				const Chain & chain		   = p_molecule->getChain( chainIdx );
-				uint		  residueCount = chain.getResidueCount();
+				const Chain * const chain = p_molecule->getChain( chainIdx );
+				if ( chain == nullptr )
+					continue;
+
+				uint residueCount = chain->getResidueCount();
 
 				// Not enought residues.
 				if ( residueCount < 4 )
@@ -50,16 +53,19 @@ namespace VTX
 				std::vector<uint>  residueIndex			 = std::vector<uint>();
 
 				Vec3f directionLast;
-				uint  idxFirstResidue = chain.getIndexFirstResidue();
+				uint  idxFirstResidue = chain->getIndexFirstResidue();
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
-					const Residue & residue = p_molecule->getResidue( idxFirstResidue + residueIdx );
+					const Residue * const residue = p_molecule->getResidue( idxFirstResidue + residueIdx );
+
+					if ( residue == nullptr )
+						continue;
 
 					// Use backbone to compute spline data.
 					// Find alpha carbon.
-					const Model::Atom * const CA = residue.findFirstAtomByName( "CA" );
+					const Model::Atom * const CA = residue->findFirstAtomByName( "CA" );
 					// Find oxygen.
-					const Model::Atom * const O = residue.findFirstAtomByName( "O" );
+					const Model::Atom * const O = residue->findFirstAtomByName( "O" );
 
 					// Not an amine acid (water, heme, or phosphate groupment).
 					if ( CA == nullptr )
@@ -81,7 +87,7 @@ namespace VTX
 					controlPointPositions.emplace_back( positionCA );
 
 					// Store residue index for later.
-					residueIndex.emplace_back( residue.getIndex() );
+					residueIndex.emplace_back( residue->getIndex() );
 
 					// Compute control point direction.
 					Vec3f direction = Util::Math::normalize( positionO - positionCA );
@@ -110,17 +116,19 @@ namespace VTX
 					}
 
 					// Add secondary structure type.
-					_bufferSecondaryStructures.emplace_back( ushort( residue.getSecondaryStructure() ) );
+					_bufferSecondaryStructures.emplace_back( ushort( residue->getSecondaryStructure() ) );
 
 					// Add color.
 					switch ( _colorMode )
 					{
 					case COLOR_MODE::JMOL:
-						_bufferColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
+						_bufferColors.emplace_back( COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
 						break;
-					case COLOR_MODE::PROTEIN: _bufferColors.emplace_back( residue.getMoleculePtr()->getColor() ); break;
-					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue.getChainPtr()->getColor() ); break;
-					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue.getColor() ); break;
+					case COLOR_MODE::PROTEIN:
+						_bufferColors.emplace_back( residue->getMoleculePtr()->getColor() );
+						break;
+					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue->getChainPtr()->getColor() ); break;
+					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue->getColor() ); break;
 					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
 					}
 				}
@@ -198,8 +206,8 @@ namespace VTX
 
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
-				const Chain & chain		   = _molecule->getChain( chainIdx );
-				uint		  residueCount = chain.getResidueCount();
+				const Chain * const chain		 = _molecule->getChain( chainIdx );
+				uint				residueCount = chain->getResidueCount();
 
 				if ( residueCount < 4 )
 				{
@@ -209,12 +217,12 @@ namespace VTX
 
 				uint  validResidueCount = 0;
 				Vec3f directionLast;
-				uint  idxFirstResidue = chain.getIndexFirstResidue();
+				uint  idxFirstResidue = chain->getIndexFirstResidue();
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
-					const Residue &			  residue = _molecule->getResidue( idxFirstResidue + residueIdx );
-					const Model::Atom * const CA	  = residue.findFirstAtomByName( "CA" );
-					const Model::Atom * const O		  = residue.findFirstAtomByName( "O" );
+					const Residue * const	  residue = _molecule->getResidue( idxFirstResidue + residueIdx );
+					const Model::Atom * const CA	  = residue->findFirstAtomByName( "CA" );
+					const Model::Atom * const O		  = residue->findFirstAtomByName( "O" );
 
 					if ( CA == nullptr )
 					{
@@ -255,20 +263,20 @@ namespace VTX
 
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
-				const Chain & chain		   = _molecule->getChain( chainIdx );
-				uint		  residueCount = chain.getResidueCount();
+				const Chain * const chain		 = _molecule->getChain( chainIdx );
+				uint				residueCount = chain->getResidueCount();
 
 				if ( residueCount < 4 )
 				{
 					continue;
 				}
 
-				uint idxFirstResidue = chain.getIndexFirstResidue();
+				uint idxFirstResidue = chain->getIndexFirstResidue();
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
-					const Residue &			  residue = _molecule->getResidue( idxFirstResidue + residueIdx );
-					const Model::Atom * const CA	  = residue.findFirstAtomByName( "CA" );
-					const Model::Atom * const O		  = residue.findFirstAtomByName( "O" );
+					const Residue * const	  residue = _molecule->getResidue( idxFirstResidue + residueIdx );
+					const Model::Atom * const CA	  = residue->findFirstAtomByName( "CA" );
+					const Model::Atom * const O		  = residue->findFirstAtomByName( "O" );
 
 					if ( CA == nullptr || O == nullptr )
 					{
@@ -278,11 +286,21 @@ namespace VTX
 					switch ( _colorMode )
 					{
 					case COLOR_MODE::JMOL:
+<<<<<<< HEAD
 						_bufferColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
 						break;
 					case COLOR_MODE::PROTEIN: _bufferColors.emplace_back( residue.getMoleculePtr()->getColor() ); break;
 					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue.getChainPtr()->getColor() ); break;
 					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue.getColor() ); break;
+=======
+						_bufferColors.emplace_back( COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
+						break;
+					case COLOR_MODE::PROTEIN:
+						_bufferColors.emplace_back( residue->getMoleculePtr()->getColor() );
+						break;
+					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue->getChainPtr()->getColor() ); break;
+					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue->getColor() ); break;
+>>>>>>> origin/dev
 					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
 					}
 				}

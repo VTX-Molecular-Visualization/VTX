@@ -66,6 +66,9 @@ namespace VTX
 						{
 							for ( Model::Chain * const c : chain.getMoleculePtr()->getChains() )
 							{
+								if ( c == nullptr )
+									continue;
+
 								c->setVisible( _mode == VISIBILITY_MODE::ALL
 											   || ( _mode == VISIBILITY_MODE::SOLO && c == &chain ) );
 							}

@@ -82,7 +82,6 @@ namespace VTX
 						// New residue.
 						p_molecule.addResidue();
 						Model::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
-						residue.setMoleculePtr( &p_molecule );
 						residue.setChainPtr( &chain );
 						residue.setIndex( residueGlobalIdx );
 						const std::string & residueSymbol = group.groupName;
@@ -114,8 +113,6 @@ namespace VTX
 							// New atom.
 							p_molecule.addAtom();
 							Model::Atom & atom = p_molecule.getAtom( atomGlobalIdx );
-							atom.setMoleculePtr( &p_molecule );
-							atom.setChainPtr( &chain );
 							atom.setResiduePtr( &residue );
 							atom.setIndex( atomGlobalIdx );
 							const std::string & atomSymbol = group.elementList[ atomIdx ];

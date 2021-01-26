@@ -43,18 +43,25 @@ namespace VTX
 					uint localCharIndex = 0;
 
 					bool lastResidueWasUnknown				   = false;
-					uint previousResidueScaleIndex			   = _getResidue( 0 ).getIndexInOriginalChain() - 1;
+					uint previousResidueScaleIndex			   = _getResidue( 0 )->getIndexInOriginalChain() - 1;
 					uint sequentialResidueChainStartIndex	   = 0;
 					bool startSequentialResidueChainStartIndex = true;
 
 					for ( uint localResidueIndex = 0; localResidueIndex < residueCount; localResidueIndex++ )
 					{
-						Model::Residue & residue		   = _getResidue( localResidueIndex );
-						uint			 residueScaleIndex = residue.getIndexInOriginalChain();
+						Model::Residue * const residue = _getResidue( localResidueIndex );
+
+						if ( residue == nullptr )
+						{
+							previousResidueScaleIndex++;
+							continue;
+						}
+
+						uint residueScaleIndex = residue->getIndexInOriginalChain();
 
 						bool	   isMissingResidue = residueScaleIndex != previousResidueScaleIndex + 1;
 						const bool isUnknownResidue
-							= residue.getSymbolShort() == "?" || residue.getSymbolShort() == "-";
+							= residue->getSymbolShort() == "?" || residue->getSymbolShort() == "-";
 
 						if ( isMissingResidue )
 						{
@@ -103,7 +110,7 @@ namespace VTX
 
 							Dataset::SequenceDisplayDataset_UnknownResidue * unknownResidueSet
 								= new Dataset::SequenceDisplayDataset_UnknownResidue(
-									residue, spaceBefore, spaceAfter, localCharIndex, residueScaleIndex );
+									*residue, spaceBefore, spaceAfter, localCharIndex, residueScaleIndex );
 
 							_dataset.emplace_back( unknownResidueSet );
 							localCharIndex += unknownResidueSet->getStringSize();
@@ -142,16 +149,18 @@ namespace VTX
 					uint sequenceLength = 0;
 					_strSequence		= QString();
 
-					for ( auto it : _dataset )
+					for ( Dataset::SequenceDisplayDataset * const it : _dataset )
 					{
 						it->appendToSequence( _strSequence );
 						sequenceLength += it->getStringSize();
 					}
+
 					const uint firstResidueIndex = _chain.getMoleculePtr()
 													   ->getResidue( _chain.getIndexFirstResidue() )
-													   .getIndexInOriginalChain();
-					const uint lastResidueIndex
-						= _chain.getMoleculePtr()->getResidue( _chain.getIndexLastResidue() ).getIndexInOriginalChain();
+													   ->getIndexInOriginalChain();
+					const uint lastResidueIndex = _chain.getMoleculePtr()
+													  ->getResidue( _chain.getIndexLastResidue() )
+													  ->getIndexInOriginalChain();
 
 					const std::string firstResidueIndexStr = std::to_string( firstResidueIndex );
 					const std::string lastResidueIndexStr  = std::to_string( lastResidueIndex );

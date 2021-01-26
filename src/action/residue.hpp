@@ -67,10 +67,10 @@ namespace VTX
 							{
 								residue.getMoleculePtr()
 									->getResidue( residue.getChainPtr()->getIndexFirstResidue() + i )
-									.setVisible( _mode == VISIBILITY_MODE::ALL
-												 || ( _mode == VISIBILITY_MODE::SOLO
-													  && residue.getChainPtr()->getIndexFirstResidue() + i
-															 == residue.getIndex() ) );
+									->setVisible( _mode == VISIBILITY_MODE::ALL
+												  || ( _mode == VISIBILITY_MODE::SOLO
+													   && residue.getChainPtr()->getIndexFirstResidue() + i
+															  == residue.getIndex() ) );
 							}
 						}
 

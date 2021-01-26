@@ -65,7 +65,7 @@ namespace VTX
 			for ( Model::Residue * const residue : _molecule->getResidues() )
 			{
 				// Skip hidden items.
-				if ( !_isResidueVisible( *residue ) )
+				if ( residue == nullptr || !_isResidueVisible( *residue ) )
 					continue;
 
 				const Model::Representation::InstantiatedRepresentation * const representation
@@ -82,9 +82,25 @@ namespace VTX
 
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::ATOM ) )
 				{
-					const std::pair<uint, uint> rangeAtoms
-						= std::pair( residue->getIndexFirstAtom(), residue->getAtomCount() );
-					representationTargets.appendAtoms( rangeAtoms );
+					const uint			  nextAtom	 = residue->getIndexFirstAtom() + residue->getAtomCount();
+					std::pair<uint, uint> rangeAtoms = std::pair( residue->getIndexFirstAtom(), 1 );
+					for ( uint i = residue->getIndexFirstAtom() + 1; i < nextAtom; i++ )
+					{
+						if ( _molecule->getAtom( i ) == nullptr )
+						{
+							if ( rangeAtoms.second > 0 )
+								representationTargets.appendAtoms( rangeAtoms );
+							rangeAtoms.first  = i+1;
+							rangeAtoms.second = 0;
+						}
+						else
+						{
+							rangeAtoms.second++;
+						}
+					}
+
+					if ( rangeAtoms.second > 0 )
+						representationTargets.appendAtoms( rangeAtoms );
 				}
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::BOND ) )
 				{
@@ -112,7 +128,7 @@ namespace VTX
 			for ( Model::Residue * const residue : _molecule->getResidues() )
 			{
 				// Skip hidden items.
-				if ( !_isResidueVisible( *residue ) )
+				if ( residue == nullptr || !_isResidueVisible( *residue ) )
 					continue;
 
 				const Model::Representation::InstantiatedRepresentation * const currentRepresentation
@@ -121,17 +137,21 @@ namespace VTX
 				for ( uint i = residue->getIndexFirstAtom(); i < residue->getIndexFirstAtom() + residue->getAtomCount();
 					  i++ )
 				{
-					const Model::Atom & atom = _molecule->getAtom( i );
+					const Model::Atom * const atom = _molecule->getAtom( i );
+
+					if ( atom == nullptr )
+						continue;
+
 					switch ( currentRepresentation->getColorMode() )
 					{
 					case Generic::COLOR_MODE::ATOM:
-						if ( atom.getSymbol() == Model::Atom::SYMBOL::A_C )
-							p_colorBuffer[ i ] = atom.getChainPtr()->getColor();
+						if ( atom->getSymbol() == Model::Atom::SYMBOL::A_C )
+							p_colorBuffer[ i ] = atom->getChainPtr()->getColor();
 						else
-							p_colorBuffer[ i ] = atom.getColor();
+							p_colorBuffer[ i ] = atom->getColor();
 						break;
-					case Generic::COLOR_MODE::RESIDUE: p_colorBuffer[ i ] = atom.getResiduePtr()->getColor(); break;
-					case Generic::COLOR_MODE::CHAIN: p_colorBuffer[ i ] = atom.getChainPtr()->getColor(); break;
+					case Generic::COLOR_MODE::RESIDUE: p_colorBuffer[ i ] = atom->getResiduePtr()->getColor(); break;
+					case Generic::COLOR_MODE::CHAIN: p_colorBuffer[ i ] = atom->getChainPtr()->getColor(); break;
 					case Generic::COLOR_MODE::PROTEIN: p_colorBuffer[ i ] = currentRepresentation->getColor(); break;
 
 					default: break;

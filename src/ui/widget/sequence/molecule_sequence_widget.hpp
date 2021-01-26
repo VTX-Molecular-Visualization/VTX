@@ -63,8 +63,8 @@ namespace VTX
 					void mouseReleaseEvent( QMouseEvent * p_event ) override;
 
 					void _onScrollBarValueChanged();
+					void _initLabelName();
 					void _updateLabelName( const Model::Chain & p_currentChainDisplayed );
-
 					void _clear();
 
 				  private:

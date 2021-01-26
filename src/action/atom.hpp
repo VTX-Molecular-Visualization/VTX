@@ -60,7 +60,7 @@ namespace VTX
 							{
 								atom.getMoleculePtr()
 									->getAtom( atom.getResiduePtr()->getIndexFirstAtom() + i )
-									.setVisible(
+									->setVisible(
 										_mode == VISIBILITY_MODE::ALL
 										|| ( _mode == VISIBILITY_MODE::SOLO
 											 && atom.getResiduePtr()->getIndexFirstAtom() + i == atom.getIndex() ) );

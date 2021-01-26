@@ -43,11 +43,11 @@ namespace VTX
 					void localize() override;
 
 					Model::Residue * const getResidueAtPos( const QPoint & p_pos ) const;
-					Model::Residue &	   getFirstResidue() const
+					Model::Residue * const getFirstResidue() const
 					{
 						return _model->getMoleculePtr()->getResidue( _model->getIndexFirstResidue() );
 					};
-					Model::Residue & getLastResidue() const
+					Model::Residue * const getLastResidue() const
 					{
 						return _model->getMoleculePtr()->getResidue( _model->getIndexLastResidue() );
 					};
