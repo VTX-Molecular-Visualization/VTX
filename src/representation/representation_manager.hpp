@@ -31,27 +31,34 @@ namespace VTX
 				return instance;
 			}
 
-			inline void instantiateRepresentation( Model::Representation::BaseRepresentation * p_representation, Generic::BaseRepresentable * p_target )
+			inline void instantiateRepresentation( Model::Representation::BaseRepresentation * p_representation,
+												   Generic::BaseRepresentable *				   p_target )
 			{
 				Model::Representation::InstantiatedRepresentation * instantiatedRepresentation
-					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>( p_representation );
+					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
+						p_representation );
 
 				p_target->addRepresentation( instantiatedRepresentation );
 
-				_mapRepresentablesLinkedToRepresentation.emplace( instantiatedRepresentation, std::unordered_set<Generic::BaseRepresentable *>() );
+				_mapRepresentablesLinkedToRepresentation.emplace( instantiatedRepresentation,
+																  std::unordered_set<Generic::BaseRepresentable *>() );
 				_mapRepresentablesLinkedToRepresentation[ instantiatedRepresentation ].emplace( p_target );
 
 				_recomputeRepresentableData( *p_target );
 
-				VTX_EVENT( new Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation>( Event::REPRESENTATION_ADDED, instantiatedRepresentation ) );
+				VTX_EVENT( new Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation>(
+					Event::REPRESENTATION_ADDED, instantiatedRepresentation ) );
 			};
-			inline void instantiateRepresentation( Model::Representation::BaseRepresentation * p_representation, const Model::Selection * const p_selection )
+			inline void instantiateRepresentation( Model::Representation::BaseRepresentation * p_representation,
+												   const Model::Selection * const			   p_selection )
 			{
 				std::set<Model::Molecule *> molecules = std::set<Model::Molecule *>();
 
 				Model::Representation::InstantiatedRepresentation * instantiatedRepresentation
-					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>( p_representation );
-				_mapRepresentablesLinkedToRepresentation.emplace( instantiatedRepresentation, std::unordered_set<Generic::BaseRepresentable *>() );
+					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
+						p_representation );
+				_mapRepresentablesLinkedToRepresentation.emplace( instantiatedRepresentation,
+																  std::unordered_set<Generic::BaseRepresentable *>() );
 
 				for ( const std::pair<Model::ID, Model::Selection::MapChainIds> mapMolecule : p_selection->getItems() )
 				{
@@ -60,28 +67,33 @@ namespace VTX
 					{
 						for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> mapResidue : mapChain.second )
 						{
-							Model::Residue & residue = molecule.getResidue( mapResidue.first );
-							residue.addRepresentation( instantiatedRepresentation );
+							Model::Residue * residue = molecule.getResidue( mapResidue.first );
+							residue->addRepresentation( instantiatedRepresentation );
 
-							_mapRepresentablesLinkedToRepresentation[ instantiatedRepresentation ].emplace( &residue );
+							_mapRepresentablesLinkedToRepresentation[ instantiatedRepresentation ].emplace( residue );
 						}
 					}
 
 					_recomputeRepresentableData( molecule );
 				}
 
-				VTX_EVENT( new Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation>( Event::REPRESENTATION_ADDED, instantiatedRepresentation ) );
+				VTX_EVENT( new Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation>(
+					Event::REPRESENTATION_ADDED, instantiatedRepresentation ) );
 			};
 
-			inline void addToRepresentation( Model::Representation::InstantiatedRepresentation * p_representation, Generic::BaseRepresentable * p_target )
+			inline void addToRepresentation( Model::Representation::InstantiatedRepresentation * p_representation,
+											 Generic::BaseRepresentable *						 p_target )
 			{
 				p_target->addRepresentation( p_representation );
 				_recomputeRepresentableData( *p_target );
 
 				_mapRepresentablesLinkedToRepresentation[ p_representation ].emplace( p_target );
 			};
-			
-			inline void removeRepresentation( const Model::Representation::InstantiatedRepresentation * const p_representation, Generic::BaseRepresentable * p_target, bool p_update )
+
+			inline void removeRepresentation(
+				const Model::Representation::InstantiatedRepresentation * const p_representation,
+				Generic::BaseRepresentable *									p_target,
+				bool															p_update )
 			{
 				_mapRepresentablesLinkedToRepresentation[ p_representation ].erase( p_target );
 				p_target->removeRepresentation( p_representation );
@@ -91,8 +103,10 @@ namespace VTX
 			};
 			inline void deleteRepresentation( Model::Representation::InstantiatedRepresentation * p_representation )
 			{
-				std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *> molecules = std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *>();
-				for ( Generic::BaseRepresentable * target : _mapRepresentablesLinkedToRepresentation[ p_representation ] )
+				std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *> molecules
+					= std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *>();
+				for ( Generic::BaseRepresentable * target :
+					  _mapRepresentablesLinkedToRepresentation[ p_representation ] )
 				{
 					target->removeRepresentation( p_representation );
 					molecules.emplace( target->getMolecule(), target );
@@ -105,14 +119,16 @@ namespace VTX
 
 				_mapRepresentablesLinkedToRepresentation.erase( p_representation );
 
-				VTX_EVENT( new Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation>( Event::REPRESENTATION_REMOVED, p_representation ) );
+				VTX_EVENT( new Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation>(
+					Event::REPRESENTATION_REMOVED, p_representation ) );
 
 				delete p_representation;
 				p_representation = nullptr;
 			};
 			inline void removeRepresentation( Model::Representation::BaseRepresentation * p_representation ) {
-				/*std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *> molecules = std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *>();
-				for ( Generic::BaseRepresentable * target : _mapRepresentablesLinkedToRepresentation[ p_representation ] )
+				/*std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *> molecules =
+				std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *>(); for (
+				Generic::BaseRepresentable * target : _mapRepresentablesLinkedToRepresentation[ p_representation ] )
 				{
 					target->removeRepresentation( p_representation );
 					molecules.emplace( target->getMolecule(), target );
@@ -125,21 +141,28 @@ namespace VTX
 
 				_mapRepresentablesLinkedToRepresentation.erase( p_representation );
 
-				VTX_EVENT( new Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation>( Event::REPRESENTATION_REMOVED, p_representation ) );*/
+				VTX_EVENT( new Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation>(
+				Event::REPRESENTATION_REMOVED, p_representation ) );*/
 			};
 
-			inline std::set<const Model::Representation::InstantiatedRepresentation *> & getDefaultRepresentationSet() { return _defaultRepresentationSet; };
+			inline std::set<const Model::Representation::InstantiatedRepresentation *> & getDefaultRepresentationSet()
+			{
+				return _defaultRepresentationSet;
+			};
 
-			const std::unordered_set<Generic::BaseRepresentable *> & getTargets( const Model::Representation::InstantiatedRepresentation * p_representation )
+			const std::unordered_set<Generic::BaseRepresentable *> & getTargets(
+				const Model::Representation::InstantiatedRepresentation * p_representation )
 			{
 				return _mapRepresentablesLinkedToRepresentation[ p_representation ];
 			}
 
-			const Model::Representation::InstantiatedRepresentation * const getRepresentationByName( const std::string & p_representationName )
+			const Model::Representation::InstantiatedRepresentation * const getRepresentationByName(
+				const std::string & p_representationName )
 			{
 				const Model::Representation::InstantiatedRepresentation * res = nullptr;
 
-				for ( std::pair<const Model::Representation::InstantiatedRepresentation *, std::unordered_set<Generic::BaseRepresentable *>> item :
+				for ( std::pair<const Model::Representation::InstantiatedRepresentation *,
+								std::unordered_set<Generic::BaseRepresentable *>> item :
 					  _mapRepresentablesLinkedToRepresentation )
 				{
 					if ( item.first->getName().compare( p_representationName ) == 0 )
@@ -155,17 +178,22 @@ namespace VTX
 			inline void setDefaultRepresentationIndex( const int p_defaultRepresentationIndex )
 			{
 				Model::Representation::BaseRepresentation * const defaultRep
-					= Model::Representation::RepresentationLibrary::get().getRepresentation( p_defaultRepresentationIndex );
+					= Model::Representation::RepresentationLibrary::get().getRepresentation(
+						p_defaultRepresentationIndex );
 
 				Model::Representation::InstantiatedRepresentation * instantiatedDefautRep
-					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>( defaultRep );
+					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
+						defaultRep );
 
 				_defaultRepresentationSet.clear();
 				_defaultRepresentationSet.emplace( instantiatedDefautRep );
 			}
 
 		  protected:
-			RepresentationManager() { setDefaultRepresentationIndex( 0 /*VTX::Setting::REPRESENTATION_DEFAULT_INDEX*/ ); };
+			RepresentationManager()
+			{
+				setDefaultRepresentationIndex( 0 /*VTX::Setting::REPRESENTATION_DEFAULT_INDEX*/ );
+			};
 			RepresentationManager( const RepresentationManager & ) = delete;
 			RepresentationManager & operator=( const RepresentationManager & ) = delete;
 			~RepresentationManager() {};
@@ -177,10 +205,14 @@ namespace VTX
 			}
 
 		  private:
-			std::map<const Model::Representation::InstantiatedRepresentation *, std::unordered_set<Generic::BaseRepresentable *>> _mapRepresentablesLinkedToRepresentation
-				= std::map<const Model::Representation::InstantiatedRepresentation *, std::unordered_set<Generic::BaseRepresentable *>>();
+			std::map<const Model::Representation::InstantiatedRepresentation *,
+					 std::unordered_set<Generic::BaseRepresentable *>>
+				_mapRepresentablesLinkedToRepresentation
+				= std::map<const Model::Representation::InstantiatedRepresentation *,
+						   std::unordered_set<Generic::BaseRepresentable *>>();
 
-			std::set<const Model::Representation::InstantiatedRepresentation *> & _defaultRepresentationSet = std::set<const Model::Representation::InstantiatedRepresentation *>();
+			std::set<const Model::Representation::InstantiatedRepresentation *> & _defaultRepresentationSet
+				= std::set<const Model::Representation::InstantiatedRepresentation *>();
 		};
 	} // namespace Representation
 } // namespace VTX

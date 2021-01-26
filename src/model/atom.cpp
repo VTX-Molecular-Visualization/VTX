@@ -1,13 +1,18 @@
 #include "atom.hpp"
+#include "chain.hpp"
 #include "molecule.hpp"
+#include "residue.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
+		Molecule * const Atom::getMoleculePtr() const { return _residuePtr->getChainPtr()->getMoleculePtr(); };
+		Chain * const	 Atom::getChainPtr() const { return _residuePtr->getChainPtr(); }
+
 		const Math::AABB Atom::getAABB() const
 		{
-			Vec3f &	   position = _moleculePtr->getAtomPositionFrame( _moleculePtr->getFrame() )[ _index ];
+			Vec3f &	   position = getMoleculePtr()->getAtomPositionFrame( getMoleculePtr()->getFrame() )[ _index ];
 			Math::AABB aabb		= Math::AABB( position, getVdwRadius() );
 
 			return aabb;

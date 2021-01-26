@@ -44,6 +44,7 @@ namespace VTX
 				_name = p_name;
 				_notifyDataChanged();
 			};
+			inline void forceNotifyDataChanged() { _notifyDataChanged(); }
 
 		  protected:
 			inline static const std::string DEFAULT_NAME = "<unknown>";

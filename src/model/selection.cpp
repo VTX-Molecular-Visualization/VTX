@@ -106,7 +106,8 @@ namespace VTX
 			_notifyDataChanged();
 		}
 
-		void Selection::selectRepresentation( Representation::InstantiatedRepresentation & p_representation, const bool p_appendToSelection )
+		void Selection::selectRepresentation( Representation::InstantiatedRepresentation & p_representation,
+											  const bool								   p_appendToSelection )
 		{
 			if ( !p_appendToSelection )
 				_clearWithoutNotify();
@@ -114,7 +115,9 @@ namespace VTX
 			_selectRepresentation( p_representation );
 			_notifyDataChanged();
 		}
-		void Selection::selectRepresentations( const std::vector<Representation::InstantiatedRepresentation *> & p_representations, const bool p_appendToSelection )
+		void Selection::selectRepresentations(
+			const std::vector<Representation::InstantiatedRepresentation *> & p_representations,
+			const bool														  p_appendToSelection )
 		{
 			if ( !p_appendToSelection )
 				_clearWithoutNotify();
@@ -212,7 +215,8 @@ namespace VTX
 				if ( isResidueSelected( *it ) )
 					_unselectResidue( *it );
 			}
-			p_residues[ 0 ]->getMoleculePtr()->refreshSelection( &_items[ p_residues[ 0 ]->getMoleculePtr()->getId() ] );
+			p_residues[ 0 ]->getMoleculePtr()->refreshSelection(
+				&_items[ p_residues[ 0 ]->getMoleculePtr()->getId() ] );
 			_notifyDataChanged();
 		}
 
@@ -250,7 +254,8 @@ namespace VTX
 			_unselectRepresentation( p_representation );
 			_notifyDataChanged();
 		}
-		void Selection::unselectRepresentations( const std::vector<Representation::InstantiatedRepresentation *> & p_representations )
+		void Selection::unselectRepresentations(
+			const std::vector<Representation::InstantiatedRepresentation *> & p_representations )
 		{
 			if ( p_representations.size() == 0 )
 				return;
@@ -260,7 +265,8 @@ namespace VTX
 
 			_notifyDataChanged();
 		}
-		void Selection::unselectRepresentationsWithCheck( const std::vector<Representation::InstantiatedRepresentation *> & p_representations )
+		void Selection::unselectRepresentationsWithCheck(
+			const std::vector<Representation::InstantiatedRepresentation *> & p_representations )
 		{
 			for ( const auto it : p_representations )
 			{
@@ -454,9 +460,13 @@ namespace VTX
 		{
 			for ( uint i = 0; i < p_molecule.getChainCount(); ++i )
 			{
-				const Chain & chain = p_molecule.getChain( i );
-				_addChain( chain );
-				_addChainContent( chain );
+				const Chain * const chain = p_molecule.getChain( i );
+
+				if ( chain == nullptr )
+					continue;
+
+				_addChain( *chain );
+				_addChainContent( *chain );
 			}
 		}
 
@@ -464,9 +474,14 @@ namespace VTX
 		{
 			for ( uint i = 0; i < p_chain.getResidueCount(); ++i )
 			{
-				const Residue & residue = p_chain.getMoleculePtr()->getResidue( p_chain.getIndexFirstResidue() + i );
-				_addResidue( residue );
-				_addResidueContent( residue );
+				const Residue * const residue
+					= p_chain.getMoleculePtr()->getResidue( p_chain.getIndexFirstResidue() + i );
+
+				if ( residue == nullptr )
+					continue;
+
+				_addResidue( *residue );
+				_addResidueContent( *residue );
 			}
 		}
 
@@ -474,8 +489,12 @@ namespace VTX
 		{
 			for ( uint i = 0; i < p_residue.getAtomCount(); ++i )
 			{
-				const Atom & atom = p_residue.getMoleculePtr()->getAtom( p_residue.getIndexFirstAtom() + i );
-				_addAtom( atom );
+				const Atom * const atom = p_residue.getMoleculePtr()->getAtom( p_residue.getIndexFirstAtom() + i );
+
+				if ( atom == nullptr )
+					continue;
+
+				_addAtom( *atom );
 			}
 		}
 
@@ -538,8 +557,14 @@ namespace VTX
 			}
 		}
 
-		void Selection::_selectRepresentation( Representation::InstantiatedRepresentation & p_representation ) { _representations.emplace( &p_representation ); }
-		void Selection::_unselectRepresentation( Representation::InstantiatedRepresentation & p_representation ) { _representations.erase( &p_representation ); }
+		void Selection::_selectRepresentation( Representation::InstantiatedRepresentation & p_representation )
+		{
+			_representations.emplace( &p_representation );
+		}
+		void Selection::_unselectRepresentation( Representation::InstantiatedRepresentation & p_representation )
+		{
+			_representations.erase( &p_representation );
+		}
 
 		void Selection::clear()
 		{
@@ -562,18 +587,21 @@ namespace VTX
 		{
 			if ( p_event.name == Event::MOLECULE_REMOVED )
 			{
-				const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+				const Event::VTXEventPtr<Model::Molecule> & castedEvent
+					= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 				unselectMolecule( *castedEvent.ptr );
 			}
 			else if ( p_event.name == Event::MOLECULE_STRUCTURE_CHANGE )
 			{
-				const Event::VTXEventPtr<Model::Molecule> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+				const Event::VTXEventPtr<Model::Molecule> & castedEvent
+					= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 				unselectMolecule( *castedEvent.ptr );
 			}
 			else if ( p_event.name == Event::REPRESENTATION_REMOVED )
 			{
 				const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> & castedEvent
-					= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>( p_event );
+					= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>(
+						p_event );
 				unselectRepresentation( *castedEvent.ptr );
 			}
 		}

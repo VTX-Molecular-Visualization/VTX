@@ -22,7 +22,10 @@ namespace VTX
 					class SequenceDisplayDataset_Residue : public SequenceDisplayDataset
 					{
 					  public:
-						SequenceDisplayDataset_Residue( const Model::Chain & p_chain, const uint p_startIndexChar, const uint p_startResidueIndex, const uint p_endResidueIndex );
+						SequenceDisplayDataset_Residue( const Model::Chain & p_chain,
+														const uint			 p_startIndexChar,
+														const uint			 p_startResidueIndex,
+														const uint			 p_endResidueIndex );
 						void appendToSequence( QString & p_sequenceString ) const override;
 						void appendToScale( QString & p_scale, const bool p_startBloc ) const override;
 
@@ -32,11 +35,13 @@ namespace VTX
 
 						Model::Residue * const getFirstResidue() const override
 						{
-							return &( _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue() + _startResidueIndex ) );
+							return _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue()
+																			  + _startResidueIndex );
 						};
 						Model::Residue * const getLastResidue() const override
 						{
-							return &( _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue() + _endResidueIndex ) );
+							return _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue()
+																			  + _endResidueIndex );
 						};
 
 						uint getPaintLength( const uint p_charIndex ) const override { return 1; };

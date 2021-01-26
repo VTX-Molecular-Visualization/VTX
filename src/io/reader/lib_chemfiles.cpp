@@ -22,12 +22,15 @@ namespace VTX
 				readTrajectory( trajectory, p_path, p_molecule );
 			}
 
-			void LibChemfiles::readBuffer( const std::string & p_buffer, const Path & p_path, Model::Molecule & p_molecule )
+			void LibChemfiles::readBuffer( const std::string & p_buffer,
+										   const Path &		   p_path,
+										   Model::Molecule &   p_molecule )
 			{
 				std::string extension = p_path.extension().string().substr( 1, p_path.extension().string().size() );
 				std::transform( extension.begin(), extension.end(), extension.begin(), toupper );
 				prepareChemfiles();
-				chemfiles::Trajectory trajectory = chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), extension );
+				chemfiles::Trajectory trajectory
+					= chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), extension );
 				readTrajectory( trajectory, p_path, p_molecule );
 			}
 
@@ -41,7 +44,9 @@ namespace VTX
 				chemfiles::set_warning_callback( callback );
 			}
 
-			void LibChemfiles::readTrajectory( chemfiles::Trajectory & p_trajectory, const Path & p_path, Model::Molecule & p_molecule ) const
+			void LibChemfiles::readTrajectory( chemfiles::Trajectory & p_trajectory,
+											   const Path &			   p_path,
+											   Model::Molecule &	   p_molecule ) const
 			{
 				VTX_INFO( std::to_string( p_trajectory.nsteps() ) + " frames found" );
 
@@ -81,7 +86,9 @@ namespace VTX
 				if ( frame.size() > 0 )
 				{
 					std::string propAtom = std::to_string( frame[ 0 ].properties().size() ) + " properties in atoms:";
-					for ( chemfiles::property_map::iterator it = frame[ 0 ].properties().begin(); it != frame[ 0 ].properties().end(); ++it )
+					for ( chemfiles::property_map::iterator it = frame[ 0 ].properties().begin();
+						  it != frame[ 0 ].properties().end();
+						  ++it )
 					{
 						propAtom += " " + it->first;
 					}
@@ -90,8 +97,11 @@ namespace VTX
 
 				if ( residues.size() > 0 )
 				{
-					std::string propResidue = std::to_string( residues[ 0 ].properties().size() ) + " properties in residues:";
-					for ( chemfiles::property_map::iterator it = residues[ 0 ].properties().begin(); it != residues[ 0 ].properties().end(); ++it )
+					std::string propResidue
+						= std::to_string( residues[ 0 ].properties().size() ) + " properties in residues:";
+					for ( chemfiles::property_map::iterator it = residues[ 0 ].properties().begin();
+						  it != residues[ 0 ].properties().end();
+						  ++it )
 					{
 						propResidue += " " + it->first;
 					}
@@ -128,7 +138,8 @@ namespace VTX
 				uint		   chainModelId	   = -1;
 				bool		   chainIsStandard = true;
 
-				std::map<uint, std::vector<const chemfiles::Bond *>> mapResidueBonds = std::map<uint, std::vector<const chemfiles::Bond *>>();
+				std::map<uint, std::vector<const chemfiles::Bond *>> mapResidueBonds
+					= std::map<uint, std::vector<const chemfiles::Bond *>>();
 
 				int oldIndexInChain = INT_MIN;
 				for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
@@ -144,7 +155,7 @@ namespace VTX
 						// Create chain.
 						p_molecule.addChain();
 						chainModelId++;
-						modelChain = &p_molecule.getChain( chainModelId );
+						modelChain = p_molecule.getChain( chainModelId );
 						modelChain->setIndex( chainModelId );
 						if ( chainName != "" )
 						{
@@ -158,7 +169,7 @@ namespace VTX
 						oldIndexInChain = INT_MIN;
 					}
 
-					modelChain = &p_molecule.getChain( chainModelId );
+					modelChain = p_molecule.getChain( chainModelId );
 					modelChain->setResidueCount( modelChain->getResidueCount() + 1 );
 
 					// Create residue.
@@ -166,19 +177,23 @@ namespace VTX
 					p_molecule.getResidues()[ residueIdx ] = modelResidue;
 					modelResidue->setIndex( residueIdx );
 
-					modelResidue->setMoleculePtr( &p_molecule );
 					modelResidue->setChainPtr( modelChain );
 					modelResidue->setIndexFirstAtom( uint( *residue.begin() ) );
 					modelResidue->setAtomCount( uint( residue.size() ) );
 					std::string residueSymbol = residue.name();
-					std::transform( residueSymbol.begin(), residueSymbol.end(), residueSymbol.begin(), []( unsigned char c ) { return std::toupper( c ); } );
+					std::transform(
+						residueSymbol.begin(), residueSymbol.end(), residueSymbol.begin(), []( unsigned char c ) {
+							return std::toupper( c );
+						} );
 					std::optional symbol = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
-					symbol.has_value() ? modelResidue->setSymbol( symbol.value() ) : p_molecule.addUnknownResidueSymbol( residueSymbol );
+					symbol.has_value() ? modelResidue->setSymbol( symbol.value() )
+									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 
 					modelResidue->setColor( Model::Residue::SYMBOL_COLOR[ int( modelResidue->getSymbol() ) ] );
 
 					bool isStandard = residue.properties().get( "is_standard_pdb" ).value_or( true ).as_bool();
-					modelResidue->setType( isStandard ? Model::Residue::TYPE::STANDARD : Model::Residue::TYPE::NON_STANDARD );
+					modelResidue->setType( isStandard ? Model::Residue::TYPE::STANDARD
+													  : Model::Residue::TYPE::NON_STANDARD );
 
 					// Check residue index in chain.
 					int indexInChain = (int)residue.id().value_or( INT_MIN );
@@ -192,7 +207,8 @@ namespace VTX
 					// TODO: modify chemfiles to load handedness!
 					if ( p_path.extension() == ".pdb" )
 					{
-						std::string secondaryStructure = residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
+						std::string secondaryStructure
+							= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
 						// VTX_DEBUG( secondaryStructure );
 						if ( secondaryStructure != "" )
 						{
@@ -210,19 +226,23 @@ namespace VTX
 							}
 							else if ( secondaryStructure == "right-handed alpha helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT );
+								modelResidue->setSecondaryStructure(
+									Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT );
 							}
 							else if ( secondaryStructure == "left-handed alpha helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_ALPHA_LEFT );
+								modelResidue->setSecondaryStructure(
+									Model::SecondaryStructure::VALUE::HELIX_ALPHA_LEFT );
 							}
 							else if ( secondaryStructure == "right-handed 3-10 helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_3_10_RIGHT );
+								modelResidue->setSecondaryStructure(
+									Model::SecondaryStructure::VALUE::HELIX_3_10_RIGHT );
 							}
 							else if ( secondaryStructure == "left-handed 3-10 helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_3_10_LEFT );
+								modelResidue->setSecondaryStructure(
+									Model::SecondaryStructure::VALUE::HELIX_3_10_LEFT );
 							}
 							else if ( secondaryStructure == "pi helix" )
 							{
@@ -279,36 +299,40 @@ namespace VTX
 						Model::Atom * modelAtom			= MVC::MvcManager::get().instantiateModel<Model::Atom>();
 						p_molecule.getAtoms()[ atomId ] = modelAtom;
 						modelAtom->setIndex( atomId );
-						modelAtom->setMoleculePtr( &p_molecule );
-						modelAtom->setChainPtr( modelChain );
 						modelAtom->setResiduePtr( modelResidue );
 						std::string atomSymbol = atom.type();
-						std::transform( atomSymbol.begin(), atomSymbol.end(), atomSymbol.begin(), []( unsigned char c ) { return std::toupper( c ); } );
+						std::transform(
+							atomSymbol.begin(), atomSymbol.end(), atomSymbol.begin(), []( unsigned char c ) {
+								return std::toupper( c );
+							} );
 
 						// VTX_INFO( atom.name() + " " + atom.type() );
 
 						std::optional symbol = magic_enum::enum_cast<Model::Atom::SYMBOL>( "A_" + atomSymbol );
 
-						symbol.has_value() ? modelAtom->setSymbol( symbol.value() ) : p_molecule.addUnknownAtomSymbol( atom.type() );
+						symbol.has_value() ? modelAtom->setSymbol( symbol.value() )
+										   : p_molecule.addUnknownAtomSymbol( atom.type() );
 
 						modelAtom->setName( atom.name() );
 						modelAtom->setColor( Model::Atom::SYMBOL_COLOR[ int( modelAtom->getSymbol() ) ] );
 
-						const chemfiles::span<chemfiles::Vector3D> & positions	  = frame.positions();
-						const chemfiles::Vector3D &					 position	  = positions[ atomId ];
-						Vec3f										 atomPosition = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
-						modelFrame[ atomId ]									  = atomPosition;
+						const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
+						const chemfiles::Vector3D &					 position  = positions[ atomId ];
+						Vec3f atomPosition	 = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
+						modelFrame[ atomId ] = atomPosition;
 
 						// Check PRM.
 						// TODO: look for a better way to do this.
 						if ( atomType != -1 )
 						{
-							if ( std::find( config.solventAtomIds.begin(), config.solventAtomIds.end(), atomType ) != config.solventAtomIds.end() )
+							if ( std::find( config.solventAtomIds.begin(), config.solventAtomIds.end(), atomType )
+								 != config.solventAtomIds.end() )
 							{
 								solventCounter++;
 								modelAtom->setType( Model::Atom::TYPE::SOLVENT );
 							}
-							else if ( std::find( config.ionAtomIds.begin(), config.ionAtomIds.end(), atomType ) != config.ionAtomIds.end() )
+							else if ( std::find( config.ionAtomIds.begin(), config.ionAtomIds.end(), atomType )
+									  != config.ionAtomIds.end() )
 							{
 								ionCounter++;
 								modelAtom->setType( Model::Atom::TYPE::ION );
@@ -316,12 +340,17 @@ namespace VTX
 						}
 
 						// Check PSF.
-						if ( std::find( config.solventResidueSymbols.begin(), config.solventResidueSymbols.end(), residueSymbol ) != config.solventResidueSymbols.end() )
+						if ( std::find( config.solventResidueSymbols.begin(),
+										config.solventResidueSymbols.end(),
+										residueSymbol )
+							 != config.solventResidueSymbols.end() )
 						{
 							solventCounter++;
 							modelAtom->setType( Model::Atom::TYPE::SOLVENT );
 						}
-						else if ( std::find( config.ionResidueSymbols.begin(), config.ionResidueSymbols.end(), residueSymbol ) != config.ionResidueSymbols.end() )
+						else if ( std::find(
+									  config.ionResidueSymbols.begin(), config.ionResidueSymbols.end(), residueSymbol )
+								  != config.ionResidueSymbols.end() )
 						{
 							ionCounter++;
 							modelAtom->setType( Model::Atom::TYPE::ION );
@@ -368,8 +397,8 @@ namespace VTX
 				{
 					const chemfiles::Bond & bond = bonds[ boundIdx ];
 
-					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) ).getResiduePtr();
-					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) ).getResiduePtr();
+					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) )->getResiduePtr();
+					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) )->getResiduePtr();
 
 					if ( residueStart == residueEnd )
 					{
@@ -388,11 +417,11 @@ namespace VTX
 				p_molecule.getBufferBonds().resize( bonds.size() * 2 );
 				for ( const std::pair<uint, std::vector<const chemfiles::Bond *>> & pair : mapResidueBonds )
 				{
-					Model::Residue &							 residue	 = p_molecule.getResidue( pair.first );
+					Model::Residue * const						 residue	 = p_molecule.getResidue( pair.first );
 					const std::vector<const chemfiles::Bond *> & vectorBonds = pair.second;
 
-					residue.setIndexFirstBond( counter );
-					residue.setBondCount( uint( vectorBonds.size() ) );
+					residue->setIndexFirstBond( counter );
+					residue->setBondCount( uint( vectorBonds.size() ) );
 
 					for ( uint i = 0; i < vectorBonds.size(); ++i, ++counter )
 					{
@@ -416,8 +445,8 @@ namespace VTX
 					Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
 					p_molecule.getBonds()[ counter ]  = modelBond;
 
-					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) ).getResiduePtr();
-					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) ).getResiduePtr();
+					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) )->getResiduePtr();
+					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) )->getResiduePtr();
 
 					modelBond->setMoleculePtr( &p_molecule );
 					modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );

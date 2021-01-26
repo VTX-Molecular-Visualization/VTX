@@ -39,16 +39,25 @@ namespace VTX
 					void localize() override;
 
 					Model::Residue * const getResidueAtPos( const QPoint & p_pos ) const;
-					Model::Residue &	   getFirstResidue() const { return _model->getMoleculePtr()->getResidue( _model->getIndexFirstResidue() ); };
-					Model::Residue &	   getLastResidue() const { return _model->getMoleculePtr()->getResidue( _model->getIndexLastResidue() ); };
-					QPoint				   getResiduePos( const Model::Residue & p_residue, const QWidget * const p_widgetSpace ) const
+					Model::Residue * const getFirstResidue() const
+					{
+						return _model->getMoleculePtr()->getResidue( _model->getIndexFirstResidue() );
+					};
+					Model::Residue * const getLastResidue() const
+					{
+						return _model->getMoleculePtr()->getResidue( _model->getIndexLastResidue() );
+					};
+					QPoint getResiduePos( const Model::Residue & p_residue, const QWidget * const p_widgetSpace ) const
 					{
 						return _sequenceDisplayWidget->getResiduePos( p_residue, p_widgetSpace );
 					}
 
 					Model::Residue & getClosestResidueFromPos( const QPoint & p_pos, const bool p_takeForward ) const;
 					int				 getSequenceXmin() const { return pos().x() + _sequenceDisplayWidget->pos().x(); };
-					int				 getSequenceXmax() const { return pos().x() + _sequenceDisplayWidget->pos().x() + _sequenceDisplayWidget->getSize() - 1; };
+					int				 getSequenceXmax() const
+					{
+						return pos().x() + _sequenceDisplayWidget->pos().x() + _sequenceDisplayWidget->getSize() - 1;
+					};
 
 					void repaintSelection() const { _sequenceDisplayWidget->repaint(); };
 

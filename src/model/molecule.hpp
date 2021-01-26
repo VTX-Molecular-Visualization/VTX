@@ -37,18 +37,22 @@ namespace VTX
 	namespace Model
 	{
 		class SecondaryStructure;
-		class Molecule : public BaseModel3D<Buffer::Molecule>, public Generic::BaseColorable, public Generic::BaseRepresentable
+		class Molecule :
+			public BaseModel3D<Buffer::Molecule>,
+			public Generic::BaseColorable,
+			public Generic::BaseRepresentable
 		{
 			VTX_MODEL
 
 		  public:
 			using AtomPositionsFrame  = std::vector<Vec3f>;
-			using RepresentationState = std::map<const Model::Representation::InstantiatedRepresentation *, VTX::Representation::RepresentationTarget>;
+			using RepresentationState = std::map<const Model::Representation::InstantiatedRepresentation *,
+												 VTX::Representation::RepresentationTarget>;
 
 			// Configuration.
 			inline const Configuration::Molecule & getConfiguration() const { return _configuration; }
 			inline Configuration::Molecule &	   getConfiguration() { return _configuration; }
-			inline void							   setConfiguration( const Configuration::Molecule & p_config ) { _configuration = p_config; }
+			inline void setConfiguration( const Configuration::Molecule & p_config ) { _configuration = p_config; }
 
 			// Representation.
 			inline const RepresentationState & getRepresentationState() const { return _representationState; }
@@ -73,57 +77,101 @@ namespace VTX
 				_chains.emplace_back( chain );
 				return *chain;
 			}
-			inline Chain &						getChain( const uint p_idx ) { return *_chains[ p_idx ]; }
-			inline const Chain &				getChain( const uint p_idx ) const { return *_chains[ p_idx ]; }
+			inline Chain * const	   getChain( const uint p_idx ) { return _chains[ p_idx ]; }
+			inline const Chain * const getChain( const uint p_idx ) const { return _chains[ p_idx ]; }
+			inline const Chain * const getPreviousChain( const uint p_idBaseChain ) const
+			{
+				for ( int i = p_idBaseChain - 1; i >= 0; i++ )
+					if ( _chains[ i ] != nullptr )
+						return _chains[ i ];
+				return nullptr;
+			}
+			inline const Chain * const getNextChain( const uint p_idBaseChain ) const
+			{
+				for ( int i = p_idBaseChain + 1; i < _chains.size(); i++ )
+					if ( _chains[ i ] != nullptr )
+						return _chains[ i ];
+				return nullptr;
+			}
 			inline std::vector<Chain *> &		getChains() { return _chains; }
 			inline const std::vector<Chain *> & getChains() const { return _chains; }
-			inline Residue &					addResidue()
+			void								removeChain( const uint p_id,
+															 const bool p_delete	  = true,
+															 const bool p_recursive	  = true,
+															 const bool p_notifyViews = true );
+
+			inline Residue & addResidue()
 			{
 				Residue * const residue = MVC::MvcManager::get().instantiateModel<Residue>();
 				_residues.emplace_back( residue );
 				return *residue;
 			}
-			inline Residue &					  getResidue( const uint p_idx ) { return *_residues[ p_idx ]; }
-			inline const Residue &				  getResidue( const uint p_idx ) const { return *_residues[ p_idx ]; }
+			inline Residue * const				  getResidue( const uint p_idx ) { return _residues[ p_idx ]; }
+			inline const Residue * const		  getResidue( const uint p_idx ) const { return _residues[ p_idx ]; }
 			inline std::vector<Residue *> &		  getResidues() { return _residues; }
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
-			inline Atom &						  addAtom()
+			void								  removeResidue( const uint p_id,
+																 const bool p_delete			= true,
+																 const bool p_recursive			= true,
+																 const bool p_checkParentUpdate = true,
+																 const bool p_notifyViews		= true );
+
+			inline Atom & addAtom()
 			{
 				Atom * const atom = MVC::MvcManager::get().instantiateModel<Atom>();
 				_atoms.emplace_back( atom );
 				return *atom;
 			}
-			inline Atom &					   getAtom( const uint p_idx ) { return *_atoms[ p_idx ]; }
-			inline const Atom &				   getAtom( const uint p_idx ) const { return *_atoms[ p_idx ]; }
+			inline Atom * const				   getAtom( const uint p_idx ) { return _atoms[ p_idx ]; }
+			inline const Atom * const		   getAtom( const uint p_idx ) const { return _atoms[ p_idx ]; }
 			inline std::vector<Atom *> &	   getAtoms() { return _atoms; }
 			inline const std::vector<Atom *> & getAtoms() const { return _atoms; }
-			inline Bond &					   addBond()
+			void							   removeAtom( const uint p_id,
+														   const bool p_delete			  = true,
+														   const bool p_checkBonds		  = true,
+														   const bool p_checkParentUpdate = true,
+														   const bool p_notifyViews		  = true );
+
+			inline Bond & addBond()
 			{
 				Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
 				_bonds.emplace_back( bond );
 				return *bond;
 			}
-			inline Bond &					   getBond( const uint p_idx ) { return *_bonds[ p_idx ]; }
-			inline const Bond &				   getBond( const uint p_idx ) const { return *_bonds[ p_idx ]; }
+			inline Bond * const				   getBond( const uint p_idx ) { return _bonds[ p_idx ]; }
+			inline const Bond * const		   getBond( const uint p_idx ) const { return _bonds[ p_idx ]; }
 			inline std::vector<Bond *> &	   getBonds() { return _bonds; }
 			inline const std::vector<Bond *> & getBonds() const { return _bonds; }
+			void removeBond( const uint p_id, const bool p_delete = true, const bool p_notifyViews = true );
 
 			inline const SecondaryStructure &		getSecondaryStructure() const { return *_secondaryStructure; }
 			inline SecondaryStructure &				getSecondaryStructure() { return *_secondaryStructure; }
-			inline const SecondaryStructure::ALGO & getSecondaryStructureAlgo() const { return _secondaryStructureAlgo; }
+			inline const SecondaryStructure::ALGO & getSecondaryStructureAlgo() const
+			{
+				return _secondaryStructureAlgo;
+			}
 
 			inline const std::string & getSequence() const { return _sequence; }
 			inline std::string &	   getSequence() { return _sequence; }
 
-			inline const bool isAtomVisible( const uint p_idx ) const { return bool( _bufferAtomVisibilities[ p_idx ] ); }
+			inline const bool isAtomVisible( const uint p_idx ) const
+			{
+				return bool( _bufferAtomVisibilities[ p_idx ] );
+			}
 
 			inline const float &	  getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
 			inline const Color::Rgb & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 
-			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const { return _unknownResidueSymbol; }
+			inline const std::unordered_set<std::string> & getUnknownResidueSymbols() const
+			{
+				return _unknownResidueSymbol;
+			}
 			inline const std::unordered_set<std::string> & getUnknownAtomSymbols() const { return _unknownAtomSymbol; }
 
-			inline void addUnknownResidueSymbol( const std::string & p_symbol ) { _unknownResidueSymbol.emplace( p_symbol ); }
+			inline void addUnknownResidueSymbol( const std::string & p_symbol )
+			{
+				_unknownResidueSymbol.emplace( p_symbol );
+			}
 			inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
 
 			inline AtomPositionsFrame & addAtomPositionFrame()
@@ -131,27 +179,39 @@ namespace VTX
 				_atomPositionsFrames.emplace_back();
 				return _atomPositionsFrames.back();
 			}
-			inline void addAtomPositionFrame( const AtomPositionsFrame & p_frame ) { _atomPositionsFrames.emplace_back( p_frame ); }
+			inline void addAtomPositionFrame( const AtomPositionsFrame & p_frame )
+			{
+				_atomPositionsFrames.emplace_back( p_frame );
+			}
 
 			inline void setAtomPositionFrames( const std::vector<AtomPositionsFrame> & p_frame )
 			{
 				_atomPositionsFrames.clear();
 				_atomPositionsFrames = p_frame;
 			}
-			inline const AtomPositionsFrame &			   getAtomPositionFrame( const uint p_frame ) const { return _atomPositionsFrames[ p_frame ]; }
-			inline AtomPositionsFrame &					   getAtomPositionFrame( const uint p_frame ) { return _atomPositionsFrames[ p_frame ]; }
-			inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const { return _atomPositionsFrames; }
-			inline std::vector<AtomPositionsFrame> &	   getAtomPositionFrames() { return _atomPositionsFrames; }
-			inline std::vector<float> &					   getBufferAtomRadius() { return _bufferAtomRadius; }
-			inline const std::vector<float> &			   getBufferAtomRadius() const { return _bufferAtomRadius; }
-			inline std::vector<Color::Rgb> &			   getBufferAtomColors() { return _bufferAtomColors; }
-			inline const std::vector<Color::Rgb> &		   getBufferAtomColors() const { return _bufferAtomColors; }
-			inline std::vector<ushort> &				   getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
-			inline const std::vector<ushort> &			   getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
-			inline std::vector<ushort> &				   getBufferAtomSelection() { return _bufferAtomSelection; }
-			inline const std::vector<ushort> &			   getBufferAtomSelection() const { return _bufferAtomSelection; }
-			inline std::vector<uint> &					   getBufferBonds() { return _bufferBonds; }
-			inline const std::vector<uint> &			   getBufferBonds() const { return _bufferBonds; }
+			inline const AtomPositionsFrame & getAtomPositionFrame( const uint p_frame ) const
+			{
+				return _atomPositionsFrames[ p_frame ];
+			}
+			inline AtomPositionsFrame & getAtomPositionFrame( const uint p_frame )
+			{
+				return _atomPositionsFrames[ p_frame ];
+			}
+			inline const std::vector<AtomPositionsFrame> & getAtomPositionFrames() const
+			{
+				return _atomPositionsFrames;
+			}
+			inline std::vector<AtomPositionsFrame> & getAtomPositionFrames() { return _atomPositionsFrames; }
+			inline std::vector<float> &				 getBufferAtomRadius() { return _bufferAtomRadius; }
+			inline const std::vector<float> &		 getBufferAtomRadius() const { return _bufferAtomRadius; }
+			inline std::vector<Color::Rgb> &		 getBufferAtomColors() { return _bufferAtomColors; }
+			inline const std::vector<Color::Rgb> &	 getBufferAtomColors() const { return _bufferAtomColors; }
+			inline std::vector<ushort> &			 getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
+			inline const std::vector<ushort> & getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
+			inline std::vector<ushort> &	   getBufferAtomSelection() { return _bufferAtomSelection; }
+			inline const std::vector<ushort> & getBufferAtomSelection() const { return _bufferAtomSelection; }
+			inline std::vector<uint> &		   getBufferBonds() { return _bufferBonds; }
+			inline const std::vector<uint> &   getBufferBonds() const { return _bufferBonds; }
 
 			inline const uint getChainCount() const { return uint( _chains.size() ); }
 			inline const uint getResidueCount() const { return uint( _residues.size() ); }
@@ -170,18 +230,19 @@ namespace VTX
 				_fillBufferAtomSelections( p_selection );
 				_secondaryStructure->refreshSelection( p_selection );
 			}
+			void										   refreshBondsBuffer();
 
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
 			inline uint									   getFrame() const { return _currentFrame; }
 			void										   setFrame( const uint );
-			inline const uint							   getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
-			inline uint									   getFPS() const { return _fps; }
-			void										   setFPS( const uint p_fps ) { _fps = p_fps; }
-			inline bool									   isPlaying() const { return _isPlaying; }
-			inline void									   setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
-			inline bool									   showSolvent() const { return _showSolvent; }
-			inline void									   setShowSolvent( const bool p_showSolvent )
+			inline const uint getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
+			inline uint		  getFPS() const { return _fps; }
+			void			  setFPS( const uint p_fps ) { _fps = p_fps; }
+			inline bool		  isPlaying() const { return _isPlaying; }
+			inline void		  setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
+			inline bool		  showSolvent() const { return _showSolvent; }
+			inline void		  setShowSolvent( const bool p_showSolvent )
 			{
 				_showSolvent = p_showSolvent;
 				_fillBufferAtomVisibilities();

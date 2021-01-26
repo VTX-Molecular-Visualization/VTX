@@ -12,11 +12,12 @@ namespace VTX
 				namespace Dataset
 				{
 					SequenceDisplayDataset_Residue::SequenceDisplayDataset_Residue( const Model::Chain & p_chain,
-																					const uint			 p_startIndexChar,
-																					const uint			 p_startResidueIndex,
-																					const uint			 p_endResidueIndex ) :
+																					const uint p_startIndexChar,
+																					const uint p_startResidueIndex,
+																					const uint p_endResidueIndex ) :
 						SequenceDisplayDataset( p_startIndexChar, p_endResidueIndex - p_startResidueIndex + 1 ),
-						_startResidueIndex( p_startResidueIndex ), _endResidueIndex( p_endResidueIndex ), _linkedChain( p_chain ) {};
+						_startResidueIndex( p_startResidueIndex ), _endResidueIndex( p_endResidueIndex ),
+						_linkedChain( p_chain ) {};
 
 					void SequenceDisplayDataset_Residue::appendToSequence( QString & p_string ) const
 					{
@@ -27,29 +28,42 @@ namespace VTX
 						const uint					  chainFirstIndex = _linkedChain.getIndexFirstResidue();
 
 						for ( uint i = 0; i < size; i++ )
-							sequenceString[ i ] = molecule->getResidue( chainFirstIndex + _startResidueIndex + i ).getSymbolShort()[ 0 ];
+						{
+							const Model::Residue * const residue
+								= molecule->getResidue( chainFirstIndex + _startResidueIndex + i );
+
+							if ( residue == nullptr )
+								sequenceString[ i ] = '-';
+							else
+								sequenceString[ i ] = residue->getSymbolShort()[ 0 ];
+						}
 
 						p_string.append( sequenceString );
 					}
 
-					void SequenceDisplayDataset_Residue::appendToScale( QString & p_scale, const bool p_startBloc ) const
+					void SequenceDisplayDataset_Residue::appendToScale( QString &  p_scale,
+																		const bool p_startBloc ) const
 					{
 						uint currentIndexChar;
 						uint currentLocalIndexResidue;
 
-						const uint firstResidue = _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue() + _startResidueIndex ).getIndexInOriginalChain();
+						const uint firstResidue
+							= _linkedChain.getMoleculePtr()
+								  ->getResidue( _linkedChain.getIndexFirstResidue() + _startResidueIndex )
+								  ->getIndexInOriginalChain();
 
 						if ( p_startBloc )
 						{
-							const std::string firstResidueStr	 = std::to_string( firstResidue );
-							const uint		  lastCharFirstIndex = _drawInScale( p_scale, firstResidueStr, _startIndexChar, false );
+							const std::string firstResidueStr = std::to_string( firstResidue );
+							const uint		  lastCharFirstIndex
+								= _drawInScale( p_scale, firstResidueStr, _startIndexChar, false );
 
-							const std::string strSecondIndex		= std::to_string( firstResidue + 1 );
-							const uint		  nextValidIndex		= lastCharFirstIndex + ( (uint)strSecondIndex.size() / 2 ) + 1;
-							const uint		  residueNextValidIndex = firstResidue + ( nextValidIndex - _startIndexChar );
+							const std::string strSecondIndex = std::to_string( firstResidue + 1 );
+							const uint nextValidIndex = lastCharFirstIndex + ( (uint)strSecondIndex.size() / 2 ) + 1;
+							const uint residueNextValidIndex = firstResidue + ( nextValidIndex - _startIndexChar );
 
 							const uint moduloStep = residueNextValidIndex % Style::SEQUENCE_CHAIN_SCALE_STEP;
-							const uint step		  = moduloStep == 0 ? 0 : ( Style::SEQUENCE_CHAIN_SCALE_STEP - moduloStep );
+							const uint step = moduloStep == 0 ? 0 : ( Style::SEQUENCE_CHAIN_SCALE_STEP - moduloStep );
 
 							currentIndexChar		 = nextValidIndex + step;
 							currentLocalIndexResidue = _startResidueIndex + ( currentIndexChar - _startIndexChar );
@@ -63,10 +77,10 @@ namespace VTX
 							currentLocalIndexResidue = _startResidueIndex + step;
 						}
 
-						for ( ; currentLocalIndexResidue <= _endResidueIndex; currentLocalIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP )
+						for ( ; currentLocalIndexResidue <= _endResidueIndex;
+							  currentLocalIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP )
 						{
-							const uint currentResidueIndex
-								= _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue() + currentLocalIndexResidue ).getIndexInOriginalChain();
+							const uint currentResidueIndex = firstResidue + currentLocalIndexResidue;
 
 							std::string strIndex = std::to_string( currentResidueIndex );
 							_drawInScale( p_scale, strIndex, currentIndexChar, true );
@@ -75,11 +89,15 @@ namespace VTX
 						}
 					}
 
-					Model::Residue * const SequenceDisplayDataset_Residue::getResidueAtCharIndex( const uint p_charIndex )
+					Model::Residue * const SequenceDisplayDataset_Residue::getResidueAtCharIndex(
+						const uint p_charIndex )
 					{
-						const uint firstIndexInOriginlaChain = _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue() + _startResidueIndex ).getIndex();
-						uint	   residueIndex				 = firstIndexInOriginlaChain + p_charIndex - _startIndexChar;
-						return &( _linkedChain.getMoleculePtr()->getResidue( residueIndex ) );
+						const uint firstIndexInOriginlaChain
+							= _linkedChain.getMoleculePtr()
+								  ->getResidue( _linkedChain.getIndexFirstResidue() + _startResidueIndex )
+								  ->getIndex();
+						uint residueIndex = firstIndexInOriginlaChain + p_charIndex - _startIndexChar;
+						return _linkedChain.getMoleculePtr()->getResidue( residueIndex );
 					}
 
 					bool SequenceDisplayDataset_Residue::isResidueInScope( const uint p_residueIndex ) const
@@ -87,7 +105,10 @@ namespace VTX
 						return _startResidueIndex <= p_residueIndex && p_residueIndex <= _endResidueIndex;
 					}
 
-					uint SequenceDisplayDataset_Residue::getCharIndexOfResidue( const uint p_residueIndex ) const { return _startIndexChar + p_residueIndex - _startResidueIndex; }
+					uint SequenceDisplayDataset_Residue::getCharIndexOfResidue( const uint p_residueIndex ) const
+					{
+						return _startIndexChar + p_residueIndex - _startResidueIndex;
+					}
 				} // namespace Dataset
 			}	  // namespace Sequence
 		}		  // namespace Widget

@@ -15,7 +15,8 @@ namespace VTX
 			{
 				Assimp::Importer Importer;
 
-				const aiScene * const scene = Importer.ReadFile( p_path.string(), aiProcess_Triangulate | aiProcess_GenNormals );
+				const aiScene * const scene
+					= Importer.ReadFile( p_path.string(), aiProcess_Triangulate | aiProcess_GenNormals );
 				if ( !scene )
 				{
 					throw Exception::IOException( "File has not scene" );
@@ -123,7 +124,7 @@ namespace VTX
 
 					// New chain.
 					p_molecule.addChain();
-					Model::Chain & chain = p_molecule.getChain( chainGlobalIdx );
+					Model::Chain & chain = *p_molecule.getChain( chainGlobalIdx );
 					chain.setMoleculePtr( &p_molecule );
 					chain.setIndex( chainGlobalIdx );
 					chain.setName( mesh->mName.C_Str() );
@@ -138,26 +139,24 @@ namespace VTX
 
 						// New residue.
 						p_molecule.addResidue();
-						Model::Residue & residue = p_molecule.getResidue( residueGlobalIdx );
-						residue.setMoleculePtr( &p_molecule );
-						residue.setChainPtr( &chain );
-						residue.setIndex( residueGlobalIdx );
-						residue.setSymbol( Model::Residue::SYMBOL::UNKNOWN );
-						residue.setIndexFirstAtom( atomGlobalIdx );
-						residue.setAtomCount( uint( mesh->mNumVertices ) );
-						residue.setColor( Color::Rgb::randomPastel() );
+						Model::Residue * const residue = p_molecule.getResidue( residueGlobalIdx );
+						residue->setChainPtr( &chain );
+						residue->setIndex( residueGlobalIdx );
+						residue->setSymbol( Model::Residue::SYMBOL::UNKNOWN );
+						residue->setIndexFirstAtom( atomGlobalIdx );
+						residue->setAtomCount( uint( mesh->mNumVertices ) );
+						residue->setColor( Color::Rgb::randomPastel() );
 
 						// Loop over vertices in the face.
-						for ( uint atomIdx = 0; atomIdx < face.mNumIndices; ++atomIdx, ++atomGlobalIdx, ++bondGlobalIdx )
+						for ( uint atomIdx = 0; atomIdx < face.mNumIndices;
+							  ++atomIdx, ++atomGlobalIdx, ++bondGlobalIdx )
 						{
 							uint indice = face.mIndices[ atomIdx ];
 
 							// New atom.
 							p_molecule.addAtom();
-							Model::Atom & atom = p_molecule.getAtom( atomGlobalIdx );
-							atom.setMoleculePtr( &p_molecule );
-							atom.setChainPtr( &chain );
-							atom.setResiduePtr( &residue );
+							Model::Atom & atom = *p_molecule.getAtom( atomGlobalIdx );
+							atom.setResiduePtr( residue );
 							atom.setIndex( atomGlobalIdx );
 							atom.setSymbol( Model::Atom::SYMBOL::UNKNOWN );
 
@@ -174,9 +173,11 @@ namespace VTX
 
 							// Bond.
 							p_molecule.addBond();
-							Model::Bond & bond = p_molecule.getBond( atomGlobalIdx );
+							Model::Bond & bond = *p_molecule.getBond( atomGlobalIdx );
 							bond.setIndexFirstAtom( atomGlobalIdx );
-							bond.setIndexSecondAtom( ( atomIdx == face.mNumIndices - 1 ) ? ( atomGlobalIdx - face.mNumIndices + 1 ) : ( atomGlobalIdx + 1 ) );
+							bond.setIndexSecondAtom( ( atomIdx == face.mNumIndices - 1 )
+														 ? ( atomGlobalIdx - face.mNumIndices + 1 )
+														 : ( atomGlobalIdx + 1 ) );
 						}
 					}
 				}

@@ -11,18 +11,20 @@ namespace VTX
 {
 	namespace Generic
 	{
-		BaseRepresentable::~BaseRepresentable() 
-		{ 
-			while ( _representations.size() > 0) 
+		BaseRepresentable::~BaseRepresentable()
+		{
+			while ( _representations.size() > 0 )
 			{
 				// erase _representations.begin() in _representations
-				Representation::RepresentationManager::get().removeRepresentation( *_representations.begin(), this, false );
+				Representation::RepresentationManager::get().removeRepresentation(
+					*_representations.begin(), this, false );
 			}
 
 			_molecule = nullptr;
 		}
 
-		const std::set<const Model::Representation::InstantiatedRepresentation *> & BaseRepresentable::getRepresentations() const
+		const std::set<const Model::Representation::InstantiatedRepresentation *> & BaseRepresentable::
+			getRepresentations() const
 		{
 			if ( _representations.size() == 0 )
 			{
@@ -37,7 +39,8 @@ namespace VTX
 
 		const Model::Representation::InstantiatedRepresentation * const BaseRepresentable::getRepresentation() const
 		{
-			const std::set<const Model::Representation::InstantiatedRepresentation *> & representations = getRepresentations();
+			const std::set<const Model::Representation::InstantiatedRepresentation *> & representations
+				= getRepresentations();
 
 			const Model::Representation::InstantiatedRepresentation * res = *representations.cbegin();
 
@@ -54,37 +57,62 @@ namespace VTX
 		{
 			_molecule->_representationTargets.clear();
 
-			const Model::SecondaryStructure & secondaryStructure		   = _molecule->getSecondaryStructure();
-			const std::map<uint, uint>		  residueToControlPointIndices = secondaryStructure.getResidueToControlPointIndice();
+			const Model::SecondaryStructure & secondaryStructure = _molecule->getSecondaryStructure();
+			const std::map<uint, uint>		  residueToControlPointIndices
+				= secondaryStructure.getResidueToControlPointIndice();
 
 			for ( Model::Residue * const residue : _molecule->getResidues() )
 			{
 				// Skip hidden items.
-				if ( !_isResidueVisible( *residue ) )
+				if ( residue == nullptr || !_isResidueVisible( *residue ) )
 					continue;
 
-				const Model::Representation::InstantiatedRepresentation * const representation = residue->getRepresentation();
+				const Model::Representation::InstantiatedRepresentation * const representation
+					= residue->getRepresentation();
 
-				if ( _molecule->_representationTargets.find( representation ) == _molecule->_representationTargets.end() )
-					_molecule->_representationTargets.emplace( representation, VTX::Representation::RepresentationTarget() );
+				if ( _molecule->_representationTargets.find( representation )
+					 == _molecule->_representationTargets.end() )
+					_molecule->_representationTargets.emplace( representation,
+															   VTX::Representation::RepresentationTarget() );
 
-				VTX::Representation::RepresentationTarget & representationTargets = _molecule->_representationTargets.at( representation );
-				const VTX::Representation::FlagDataTargeted dataFlag			  = representation->getFlagDataTargeted();
+				VTX::Representation::RepresentationTarget & representationTargets
+					= _molecule->_representationTargets.at( representation );
+				const VTX::Representation::FlagDataTargeted dataFlag = representation->getFlagDataTargeted();
 
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::ATOM ) )
 				{
-					const std::pair<uint, uint> rangeAtoms = std::pair( residue->getIndexFirstAtom(), residue->getAtomCount() );
-					representationTargets.appendAtoms( rangeAtoms );
+					const uint			  nextAtom	 = residue->getIndexFirstAtom() + residue->getAtomCount();
+					std::pair<uint, uint> rangeAtoms = std::pair( residue->getIndexFirstAtom(), 1 );
+					for ( uint i = residue->getIndexFirstAtom() + 1; i < nextAtom; i++ )
+					{
+						if ( _molecule->getAtom( i ) == nullptr )
+						{
+							if ( rangeAtoms.second > 0 )
+								representationTargets.appendAtoms( rangeAtoms );
+							rangeAtoms.first  = i+1;
+							rangeAtoms.second = 0;
+						}
+						else
+						{
+							rangeAtoms.second++;
+						}
+					}
+
+					if ( rangeAtoms.second > 0 )
+						representationTargets.appendAtoms( rangeAtoms );
 				}
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::BOND ) )
 				{
-					const std::pair<uint, uint> rangeBonds = std::pair( residue->getIndiceFirstBond(), residue->getBondIndiceCount() );
-					representationTargets.appendBonds( rangeBonds, residue->getIndexExtraBondStart(), residue->getIndexExtraBondEnd() );
+					const std::pair<uint, uint> rangeBonds
+						= std::pair( residue->getIndiceFirstBond(), residue->getBondIndiceCount() );
+					representationTargets.appendBonds(
+						rangeBonds, residue->getIndexExtraBondStart(), residue->getIndexExtraBondEnd() );
 				}
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::RIBBON ) )
 				{
 					std::pair<uint, uint> rangeRibbons = std::pair( 0, 0 );
-					if ( residueToControlPointIndices.find( residue->getIndex() ) != residueToControlPointIndices.end() )
+					if ( residueToControlPointIndices.find( residue->getIndex() )
+						 != residueToControlPointIndices.end() )
 						rangeRibbons = std::pair( residueToControlPointIndices.at( residue->getIndex() ), 4 );
 
 					representationTargets.appendRibbons( rangeRibbons );
@@ -99,24 +127,30 @@ namespace VTX
 			for ( Model::Residue * const residue : _molecule->getResidues() )
 			{
 				// Skip hidden items.
-				if ( !_isResidueVisible( *residue ) )
+				if ( residue == nullptr || !_isResidueVisible( *residue ) )
 					continue;
 
-				const Model::Representation::InstantiatedRepresentation * const currentRepresentation = residue->getRepresentation();
+				const Model::Representation::InstantiatedRepresentation * const currentRepresentation
+					= residue->getRepresentation();
 
-				for ( uint i = residue->getIndexFirstAtom(); i < residue->getIndexFirstAtom() + residue->getAtomCount(); i++ )
+				for ( uint i = residue->getIndexFirstAtom(); i < residue->getIndexFirstAtom() + residue->getAtomCount();
+					  i++ )
 				{
-					const Model::Atom & atom = _molecule->getAtom( i );
+					const Model::Atom * const atom = _molecule->getAtom( i );
+
+					if ( atom == nullptr )
+						continue;
+
 					switch ( currentRepresentation->getColorMode() )
 					{
 					case Generic::COLOR_MODE::ATOM:
-						if ( atom.getSymbol() == Model::Atom::SYMBOL::A_C )
-							p_colorBuffer[ i ] = atom.getChainPtr()->getColor();
+						if ( atom->getSymbol() == Model::Atom::SYMBOL::A_C )
+							p_colorBuffer[ i ] = atom->getChainPtr()->getColor();
 						else
-							p_colorBuffer[ i ] = atom.getColor();
+							p_colorBuffer[ i ] = atom->getColor();
 						break;
-					case Generic::COLOR_MODE::RESIDUE: p_colorBuffer[ i ] = atom.getResiduePtr()->getColor(); break;
-					case Generic::COLOR_MODE::CHAIN: p_colorBuffer[ i ] = atom.getChainPtr()->getColor(); break;
+					case Generic::COLOR_MODE::RESIDUE: p_colorBuffer[ i ] = atom->getResiduePtr()->getColor(); break;
+					case Generic::COLOR_MODE::CHAIN: p_colorBuffer[ i ] = atom->getChainPtr()->getColor(); break;
 					case Generic::COLOR_MODE::PROTEIN: p_colorBuffer[ i ] = currentRepresentation->getColor(); break;
 
 					default: break;
@@ -132,7 +166,8 @@ namespace VTX
 			const Model::Molecule * const molecule = p_residue.getMoleculePtr();
 
 			// Skip hidden items.
-			if ( p_residue.isVisible() == false || p_residue.getChainPtr()->isVisible() == false || molecule->isVisible() == false )
+			if ( p_residue.isVisible() == false || p_residue.getChainPtr()->isVisible() == false
+				 || molecule->isVisible() == false )
 				return false;
 
 			const Model::Atom::TYPE atomType = p_residue.getAtomType();

@@ -33,7 +33,10 @@ namespace VTX
 					header()->setSectionResizeMode( REMOVE_COLUMN_INDEX, QHeaderView::ResizeMode::ResizeToContents );
 				}
 
-				void SelectionView::_setupSlots() { connect( this, &QTreeWidget::itemClicked, this, &SelectionView::_onItemClicked ); }
+				void SelectionView::_setupSlots()
+				{
+					connect( this, &QTreeWidget::itemClicked, this, &SelectionView::_onItemClicked );
+				}
 
 				void SelectionView::_refreshView()
 				{
@@ -43,41 +46,49 @@ namespace VTX
 					blockSignals( true );
 					setUpdatesEnabled( false );
 
-					const Model::Selection::MapMoleculeIds & items				= _model->getItems();
-					uint									 m					= 0;
-					const bool								 needUpdateMolecule = _createTopLevelChildren( uint( items.size() ) );
+					const Model::Selection::MapMoleculeIds & items = _model->getItems();
+					uint									 m	   = 0;
+					const bool needUpdateMolecule				   = _createTopLevelChildren( uint( items.size() ) );
 					for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & pairMolecule : items )
 					{
 						QTreeWidgetItem * const moleculeView = topLevelItem( m++ );
 
-						const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( pairMolecule.first );
+						const Model::Molecule & molecule
+							= MVC::MvcManager::get().getModel<Model::Molecule>( pairMolecule.first );
 
 						// Chains.
-						uint	   c			   = 0;
-						const bool needUpdateChain = _createChildren( *moleculeView, uint( pairMolecule.second.size() ) );
+						uint	   c = 0;
+						const bool needUpdateChain
+							= _createChildren( *moleculeView, uint( pairMolecule.second.size() ) );
 						for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : pairMolecule.second )
 						{
 							QTreeWidgetItem * const chainView = moleculeView->child( c++ );
 
 							// Residues.
-							uint	   r				 = 0;
-							const bool needUpdateResidue = _createChildren( *chainView, uint( pairChain.second.size() ) );
+							uint	   r = 0;
+							const bool needUpdateResidue
+								= _createChildren( *chainView, uint( pairChain.second.size() ) );
 							for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
 							{
 								QTreeWidgetItem * const residueView = chainView->child( r++ );
 
 								// Atom.
-								uint	   a			  = 0;
-								const bool needUpdateAtom = _createChildren( *residueView, uint( pairResidue.second.size() ) );
+								uint	   a = 0;
+								const bool needUpdateAtom
+									= _createChildren( *residueView, uint( pairResidue.second.size() ) );
 								if ( needUpdateAtom )
 								{
 									for ( const uint & atomIndex : pairResidue.second )
 									{
-										const Model::Atom &		atom	 = molecule.getAtom( atomIndex );
+										const Model::Atom &		atom	 = *molecule.getAtom( atomIndex );
 										QTreeWidgetItem * const atomView = residueView->child( a++ );
 
-										atomView->setData( NAME_COLUMN_INDEX, Qt::UserRole, QVariant::fromValue( atom.getId() ) );
-										atomView->setText( NAME_COLUMN_INDEX, QString::fromStdString( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) ) );
+										atomView->setData(
+											NAME_COLUMN_INDEX, Qt::UserRole, QVariant::fromValue( atom.getId() ) );
+										atomView->setText(
+											NAME_COLUMN_INDEX,
+											QString::fromStdString( atom.getSymbolStr() + " "
+																	+ std::to_string( atom.getIndex() ) ) );
 									}
 								}
 
@@ -85,18 +96,22 @@ namespace VTX
 								{
 									continue;
 								}
-								const Model::Residue & residue = molecule.getResidue( pairResidue.first );
+
+								const Model::Residue & residue = *molecule.getResidue( pairResidue.first );
 								residueView->setExpanded( false );
-								residueView->setData( NAME_COLUMN_INDEX, Qt::UserRole, QVariant::fromValue( residue.getId() ) );
-								residueView->setText( NAME_COLUMN_INDEX,
-													  QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndexInOriginalChain() ) ) );
+								residueView->setData(
+									NAME_COLUMN_INDEX, Qt::UserRole, QVariant::fromValue( residue.getId() ) );
+								residueView->setText(
+									NAME_COLUMN_INDEX,
+									QString::fromStdString( residue.getSymbolStr() + " "
+															+ std::to_string( residue.getIndexInOriginalChain() ) ) );
 							}
 
 							if ( needUpdateChain == false )
 							{
 								continue;
 							}
-							const Model::Chain & chain = molecule.getChain( pairChain.first );
+							const Model::Chain & chain = *molecule.getChain( pairChain.first );
 							chainView->setExpanded( false );
 							chainView->setData( NAME_COLUMN_INDEX, Qt::UserRole, QVariant::fromValue( chain.getId() ) );
 							chainView->setText( NAME_COLUMN_INDEX, QString::fromStdString( chain.getDefaultName() ) );
@@ -107,7 +122,9 @@ namespace VTX
 							continue;
 						}
 						moleculeView->setExpanded( false );
-						moleculeView->setData( NAME_COLUMN_INDEX, Qt::UserRole, QVariant::fromValue<VTX::Model::ID>( pairMolecule.first ) );
+						moleculeView->setData( NAME_COLUMN_INDEX,
+											   Qt::UserRole,
+											   QVariant::fromValue<VTX::Model::ID>( pairMolecule.first ) );
 						moleculeView->setText( NAME_COLUMN_INDEX, QString::fromStdString( molecule.getDefaultName() ) );
 					}
 
@@ -185,21 +202,27 @@ namespace VTX
 
 				void SelectionView::localize() {}
 
-
 				// /////////////////////  SelectionStyleItemDelegate  ///////////////////////////
-				void SelectionView::SelectionStyleItemDelegate::paint( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
+				void SelectionView::SelectionStyleItemDelegate::paint( QPainter *					painter,
+																	   const QStyleOptionViewItem & option,
+																	   const QModelIndex &			index ) const
 				{
 					if ( option.state & QStyle::State_MouseOver )
 						painter->fillRect( option.rect, option.palette.highlight() );
 
-					const int minColumnBorder = ( option.rect.width() < option.rect.height() ? option.rect.width() : option.rect.height() );
-					const int size			  = ( minColumnBorder < _getSize() ? minColumnBorder : _getSize() ) - 2;
+					const int minColumnBorder
+						= ( option.rect.width() < option.rect.height() ? option.rect.width() : option.rect.height() );
+					const int size = ( minColumnBorder < _getSize() ? minColumnBorder : _getSize() ) - 2;
 
-					const QRect rect = QRect( option.rect.x() + ( ( option.rect.width() - size ) / 2 ), option.rect.y() + ( ( option.rect.height() - size ) / 2 ), size, size );
+					const QRect rect = QRect( option.rect.x() + ( ( option.rect.width() - size ) / 2 ),
+											  option.rect.y() + ( ( option.rect.height() - size ) / 2 ),
+											  size,
+											  size );
 					painter->drawPixmap( rect, Style::IconConst::get().CLOSE_PIXMAP );
 				}
 
-				QSize SelectionView::SelectionStyleItemDelegate::sizeHint( const QStyleOptionViewItem & option, const QModelIndex & index ) const
+				QSize SelectionView::SelectionStyleItemDelegate::sizeHint( const QStyleOptionViewItem & option,
+																		   const QModelIndex &			index ) const
 				{
 					const int size = _getSize();
 					return QSize( size, size );

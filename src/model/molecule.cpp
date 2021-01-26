@@ -128,6 +128,12 @@ namespace VTX
 			_secondaryStructure->setCurrentFrame();
 		}
 
+		void Molecule::refreshBondsBuffer()
+		{
+			_buffer->setBonds( _bufferBonds );
+			computeRepresentationTargets();
+		}
+
 		void Molecule::_fillBufferAtomColors()
 		{
 			_bufferAtomColors.resize( _atoms.size() );
@@ -284,8 +290,8 @@ namespace VTX
 			// Loop over other molecule chains.
 			for ( uint chainIndex = 0; chainIndex < p_molecule.getChainCount(); ++chainIndex )
 			{
-				const Chain &  otherChain = p_molecule.getChain( chainIndex );
-				Model::Chain & modelChain = getChain( chainIndex );
+				const Chain &  otherChain = *p_molecule.getChain( chainIndex );
+				Model::Chain & modelChain = *getChain( chainIndex );
 				modelChain.setIndex( otherChain.getIndex() );
 				modelChain.setMoleculePtr( this );
 				modelChain.setName( otherChain.getName() );
@@ -294,23 +300,23 @@ namespace VTX
 
 				for ( uint residueIndex = 0; residueIndex < otherChain.getResidueCount(); ++residueIndex )
 				{
-					const Residue & otherResidue
+					const Residue * const otherResidue
 						= p_molecule.getResidue( otherChain.getIndexFirstResidue() + residueIndex );
-					Model::Residue & modelResidue = getResidue( otherChain.getIndexFirstResidue() + residueIndex );
-					modelResidue.setIndex( otherResidue.getIndex() );
-					modelResidue.setMoleculePtr( this );
-					modelResidue.setChainPtr( &modelChain );
-					modelResidue.setIndexFirstAtom( otherResidue.getIndexFirstAtom() );
-					modelResidue.setAtomCount( otherResidue.getAtomCount() );
-					modelResidue.setSymbol( otherResidue.getSymbol() );
+					Model::Residue * const modelResidue
+						= getResidue( otherChain.getIndexFirstResidue() + residueIndex );
 
-					for ( uint atomIndex = 0; atomIndex < otherResidue.getAtomCount(); ++atomIndex )
+					modelResidue->setIndex( otherResidue->getIndex() );
+					modelResidue->setChainPtr( &modelChain );
+					modelResidue->setIndexFirstAtom( otherResidue->getIndexFirstAtom() );
+					modelResidue->setAtomCount( otherResidue->getAtomCount() );
+					modelResidue->setSymbol( otherResidue->getSymbol() );
+
+					for ( uint atomIndex = 0; atomIndex < otherResidue->getAtomCount(); ++atomIndex )
 					{
-						const Atom &  otherAtom = p_molecule.getAtom( otherResidue.getIndexFirstAtom() + atomIndex );
-						Model::Atom & modelAtom = getAtom( otherResidue.getIndexFirstAtom() + atomIndex );
+						const Atom &  otherAtom = *p_molecule.getAtom( otherResidue->getIndexFirstAtom() + atomIndex );
+						Model::Atom & modelAtom = *getAtom( otherResidue->getIndexFirstAtom() + atomIndex );
 						modelAtom.setIndex( otherAtom.getIndex() );
-						modelAtom.setResiduePtr( &modelResidue );
-						modelAtom.setChainPtr( &modelChain );
+						modelAtom.setResiduePtr( modelResidue );
 					}
 				}
 			}
@@ -320,8 +326,8 @@ namespace VTX
 			{
 				addChain();
 				addResidue();
-				Model::Chain &	 modelChain	  = getChain( getChainCount() - 1 );
-				Model::Residue & modelResidue = getResidue( getResidueCount() - 1 );
+				Model::Chain & modelChain	= *getChain( getChainCount() - 1 );
+				Model::Residue modelResidue = *getResidue( getResidueCount() - 1 );
 				modelChain.setIndex( getChainCount() - 1 );
 				modelChain.setIndexFirstResidue( getResidueCount() - 1 );
 				modelChain.setResidueCount( 1 );
@@ -332,8 +338,7 @@ namespace VTX
 
 				for ( uint atomIndex = 0; atomIndex < modelResidue.getAtomCount(); ++atomIndex )
 				{
-					Model::Atom & modelAtom = getAtom( modelResidue.getIndexFirstAtom() + atomIndex );
-					modelAtom.setChainPtr( &modelChain );
+					Model::Atom & modelAtom = *getAtom( modelResidue.getIndexFirstAtom() + atomIndex );
 					modelAtom.setResiduePtr( &modelResidue );
 				}
 			}
@@ -358,9 +363,195 @@ namespace VTX
 			if ( isVisible() != p_visible )
 			{
 				BaseVisible::setVisible( p_visible );
-
 				_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
 			}
+		}
+
+		void Molecule::removeChain( const uint p_id,
+									const bool p_delete,
+									const bool p_recursive,
+									const bool p_notifyViews )
+		{
+			if ( p_recursive )
+			{
+				// Delete Residues
+				for ( uint residueIndex = _chains[ p_id ]->getIndexFirstResidue();
+					  residueIndex < _chains[ p_id ]->getIndexFirstResidue() + _chains[ p_id ]->getResidueCount();
+					  residueIndex++ )
+				{
+					removeResidue( residueIndex, p_delete, p_recursive, true, false );
+				}
+			}
+
+			// Delete chain
+			if ( p_delete )
+				MVC::MvcManager::get().deleteModel( _chains[ p_id ] );
+
+			_chains[ p_id ] = nullptr;
+
+			// Notify
+			if ( p_notifyViews )
+				_notifyDataChanged();
+		}
+
+		void Molecule::removeResidue( const uint p_id,
+									  const bool p_delete,
+									  const bool p_recursive,
+									  const bool p_checkParentUpdate,
+									  const bool p_notifyViews )
+		{
+			// Delete Atoms
+			if ( p_recursive )
+			{
+				for ( uint atomIndex = _residues[ p_id ]->getIndexFirstAtom();
+					  atomIndex < _residues[ p_id ]->getIndexFirstAtom() + _residues[ p_id ]->getAtomCount();
+					  atomIndex++ )
+				{
+					removeAtom( atomIndex, p_delete, true, true, false );
+				}
+			}
+
+			// Register parent before nullify
+			Model::Chain * const parent = _residues[ p_id ]->getChainPtr();
+
+			// Remove Residue
+			if ( p_delete )
+				MVC::MvcManager::get().deleteModel( _residues[ p_id ] );
+
+			_residues[ p_id ] = nullptr;
+
+			// Update parent indexes
+			if ( p_checkParentUpdate )
+			{
+				if ( parent->getIndexFirstResidue() == p_id )
+				{
+					while ( parent->getResidueCount() > 0
+							&& parent->getMoleculePtr()->getResidue( parent->getIndexFirstResidue() ) == nullptr )
+					{
+						parent->setIndexFirstResidue( parent->getIndexFirstResidue() + 1 );
+						parent->setResidueCount( parent->getResidueCount() - 1 );
+					}
+				}
+				else
+				{
+					uint lastResidueIndex = parent->getIndexFirstResidue() + parent->getResidueCount() - 1;
+					if ( lastResidueIndex == p_id )
+					{
+						while ( parent->getResidueCount() > 0
+								&& parent->getMoleculePtr()->getResidue( lastResidueIndex ) == nullptr )
+						{
+							parent->setResidueCount( parent->getResidueCount() - 1 );
+							lastResidueIndex--;
+						}
+					}
+				}
+			}
+
+			// Notify
+			if ( p_notifyViews )
+				_notifyDataChanged();
+		}
+
+		void Molecule::removeAtom( const uint p_id,
+								   const bool p_delete,
+								   const bool p_checkInternalBonds,
+								   const bool p_checkParentUpdate,
+								   const bool p_notifyViews )
+		{
+			Model::Residue * const parent = _atoms[ p_id ]->getResiduePtr();
+
+			// Delete Bonds
+			if ( p_checkInternalBonds )
+			{
+				for ( uint bondIndex = parent->getIndexFirstBond();
+					  bondIndex < parent->getIndexFirstBond() + parent->getBondCount();
+					  bondIndex++ )
+				{
+					const Bond * const bond = _bonds[ bondIndex ];
+					if ( bond != nullptr
+						 && ( bond->getIndexFirstAtom() == p_id || bond->getIndexSecondAtom() == p_id ) )
+						removeBond( bondIndex, p_delete, false );
+				}
+			}
+
+			for ( const uint & bondId : parent->getIndexExtraBondStart() )
+			{
+				const Bond * const bond = _bonds[ bondId ];
+				if ( bond != nullptr && bond->getIndexFirstAtom() == p_id )
+				{
+					removeBond( bondId, p_delete, false );
+					Model::Residue * const other			  = getAtom( bond->getIndexSecondAtom() )->getResiduePtr();
+					std::vector<uint> &	   otherExtraResidues = other->getIndexExtraBondEnd();
+
+					otherExtraResidues.erase(
+						std::find( otherExtraResidues.begin(), otherExtraResidues.end(), bondId ) );
+				}
+			}
+			for ( const uint & bondId : parent->getIndexExtraBondEnd() )
+			{
+				const Bond * const bond = _bonds[ bondId ];
+				if ( bond != nullptr && bond->getIndexSecondAtom() == p_id )
+				{
+					removeBond( bondId, p_delete, false );
+					Model::Residue * const other			  = getAtom( bond->getIndexFirstAtom() )->getResiduePtr();
+					std::vector<uint> &	   otherExtraResidues = other->getIndexExtraBondStart();
+
+					otherExtraResidues.erase(
+						std::find( otherExtraResidues.begin(), otherExtraResidues.end(), bondId ) );
+				}
+			}
+
+			// Delete Atom
+			if ( p_delete )
+				MVC::MvcManager::get().deleteModel( _atoms[ p_id ] );
+
+			_bufferAtomVisibilities[ p_id ] = 0u;
+			_atoms[ p_id ]					= nullptr;
+
+			// Update parent indexes
+			if ( p_checkParentUpdate )
+			{
+				if ( parent->getIndexFirstAtom() == p_id )
+				{
+					while ( parent->getAtomCount() > 0
+							&& parent->getMoleculePtr()->getAtom( parent->getIndexFirstAtom() ) == nullptr )
+					{
+						parent->setIndexFirstAtom( parent->getIndexFirstAtom() + 1 );
+						parent->setAtomCount( parent->getAtomCount() - 1 );
+					}
+				}
+				else
+				{
+					uint lastResidueIndex = parent->getIndexFirstAtom() + parent->getAtomCount() - 1;
+					if ( lastResidueIndex == p_id )
+					{
+						while ( parent->getAtomCount() > 0
+								&& parent->getMoleculePtr()->getAtom( lastResidueIndex ) == nullptr )
+						{
+							parent->setAtomCount( parent->getAtomCount() - 1 );
+							lastResidueIndex--;
+						}
+					}
+				}
+			}
+
+			// Notify
+			if ( p_notifyViews )
+				_notifyDataChanged();
+		}
+
+		void Molecule::removeBond( const uint p_id, const bool p_delete, const bool p_notifyViews )
+		{
+			if ( p_delete )
+				MVC::MvcManager::get().deleteModel( _bonds[ p_id ] );
+
+			_bonds[ p_id ] = nullptr;
+
+			_bufferBonds[ p_id * 2u ]	  = 0;
+			_bufferBonds[ p_id * 2u + 1u ] = 0;
+
+			if ( p_notifyViews )
+				_notifyDataChanged();
 		}
 
 	} // namespace Model

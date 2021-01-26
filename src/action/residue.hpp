@@ -20,14 +20,18 @@ namespace VTX
 			class ChangeColor : public BaseAction
 			{
 			  public:
-				explicit ChangeColor( Model::Residue & p_residue, const Color::Rgb & p_color ) : _residue( p_residue ), _color( p_color ) {}
+				explicit ChangeColor( Model::Residue & p_residue, const Color::Rgb & p_color ) :
+					_residue( p_residue ), _color( p_color )
+				{
+				}
 
 				virtual void execute() override
 				{
 					_residue.setColor( _color );
 					_residue.getMoleculePtr()->refreshColors();
 
-					if ( _residue.getMoleculePtr()->getSecondaryStructure().getColorMode() == Model::SecondaryStructure::COLOR_MODE::RESIDUE )
+					if ( _residue.getMoleculePtr()->getSecondaryStructure().getColorMode()
+						 == Model::SecondaryStructure::COLOR_MODE::RESIDUE )
 					{
 						_residue.getMoleculePtr()->getSecondaryStructure().refreshColors();
 					}
@@ -41,7 +45,10 @@ namespace VTX
 			class ChangeVisibility : public Visible::ChangeVisibility
 			{
 			  public:
-				explicit ChangeVisibility( Model::Residue & p_residue, const VISIBILITY_MODE p_mode ) : Visible::ChangeVisibility( p_residue, p_mode ) {}
+				explicit ChangeVisibility( Model::Residue & p_residue, const VISIBILITY_MODE p_mode ) :
+					Visible::ChangeVisibility( p_residue, p_mode )
+				{
+				}
 
 				virtual void execute() override
 				{
@@ -58,8 +65,10 @@ namespace VTX
 							{
 								residue.getMoleculePtr()
 									->getResidue( residue.getChainPtr()->getIndexFirstResidue() + i )
-									.setVisible( _mode == VISIBILITY_MODE::ALL
-												 || ( _mode == VISIBILITY_MODE::SOLO && residue.getChainPtr()->getIndexFirstResidue() + i == residue.getIndex() ) );
+									->setVisible( _mode == VISIBILITY_MODE::ALL
+												  || ( _mode == VISIBILITY_MODE::SOLO
+													   && residue.getChainPtr()->getIndexFirstResidue() + i
+															  == residue.getIndex() ) );
 							}
 						}
 
@@ -75,7 +84,10 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->orientCameraController( _residue.getAABB() );
+					VTXApp::get()
+						.getStateMachine()
+						.getItem<State::Visualization>( ID::State::VISUALIZATION )
+						->orientCameraController( _residue.getAABB() );
 				}
 
 			  private:

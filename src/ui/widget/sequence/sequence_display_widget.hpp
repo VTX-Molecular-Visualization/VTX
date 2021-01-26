@@ -17,56 +17,47 @@
 #include <list>
 #include <vector>
 
-namespace VTX
+namespace VTX::UI::Widget::Sequence
 {
-	namespace UI
+	class SequenceDisplayWidget : public QLabel
 	{
-		namespace Widget
+		Q_OBJECT
+
+	  public:
+		SequenceDisplayWidget( QWidget * p_parent = nullptr );
+		~SequenceDisplayWidget();
+
+		void setupSequence( const SequenceChainData * p_molecule );
+
+		Model::Residue * const getResidueAtPos( const QPoint & p_pos );
+		Model::Residue * const getClosestResidueFromPos( const QPoint & p_pos, const bool p_takeForward );
+
+		void updateSelection( const std::vector<Model::Residue *> & p_selection )
 		{
-			namespace Sequence
-			{
-				class SequenceDisplayWidget : public QLabel
-				{
-					Q_OBJECT
+			_moleculeSelection = &p_selection;
+			repaint();
+		};
+		QPoint getResiduePos( const Model::Residue & p_residue, const QWidget * const p_widgetSpace ) const;
+		qreal  getSize() const { return _chainData->getCharCount() * _fontMetrics->averageCharWidth(); };
 
-				  public:
-					SequenceDisplayWidget( QWidget * p_parent = nullptr );
-					~SequenceDisplayWidget();
+	  protected:
+		void mouseDoubleClickEvent( QMouseEvent * p_event ) override;
 
-					void setupSequence( const SequenceChainData * p_molecule );
+		virtual void paintEvent( QPaintEvent * ) override;
 
-					Model::Residue * const getResidueAtPos( const QPoint & p_pos );
-					Model::Residue * const getClosestResidueFromPos( const QPoint & p_pos, const bool p_takeForward );
+	  private:
+		QFontMetricsF * _fontMetrics;
+		int *			_charIndexPaintCache	= new int();
+		int *			_symbolLengthPaintCache = new int();
 
-					void updateSelection( const std::vector<Model::Residue *> & p_selection )
-					{
-						_moleculeSelection = &p_selection;
-						repaint();
-					};
-					QPoint getResiduePos( const Model::Residue & p_residue, const QWidget * const p_widgetSpace ) const;
-					qreal  getSize() const { return _chainData->getCharCount() * _fontMetrics->averageCharWidth(); };
+		const SequenceChainData * _chainData = nullptr;
 
-				  protected:
-					void mouseDoubleClickEvent( QMouseEvent * p_event ) override;
+		const std::vector<Model::Residue *> * _moleculeSelection = nullptr;
 
-					virtual void paintEvent( QPaintEvent * ) override;
-
-				  private:
-					QFontMetricsF * _fontMetrics;
-					int *			_charIndexPaintCache	= new int();
-					int *			_symbolLengthPaintCache = new int();
-
-					const SequenceChainData * _chainData = nullptr;
-
-					const std::vector<Model::Residue *> * _moleculeSelection = nullptr;
-
-					uint				   _getCharIndex( const uint p_residueIndex ) const;
-					Model::Residue &	   _getResidue( const uint p_localResidueIndex ) const;
-					Model::Residue * const _getResidueFromLocaleXPos( const int p_localeXPos ) const;
-					uint				   _getLocalResidueIndexFromResidue( const Model::Residue & p_globalResIndex ) const;
-				};
-			} // namespace Sequence
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+		uint				   _getCharIndex( const uint p_residueIndex ) const;
+		Model::Residue &	   _getResidue( const uint p_localResidueIndex ) const;
+		Model::Residue * const _getResidueFromLocaleXPos( const int p_localeXPos ) const;
+		uint				   _getLocalResidueIndexFromResidue( const Model::Residue & p_globalResIndex ) const;
+	};
+} // namespace VTX::UI::Widget::Sequence
 #endif

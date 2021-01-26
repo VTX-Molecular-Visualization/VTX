@@ -36,19 +36,24 @@ namespace VTX
 					}
 					else if ( p_event->name == Event::Model::CHAIN_VISIBILITY )
 					{
-						const Event::VTXEventValue<uint> * const castedEventData = dynamic_cast<const Event::VTXEventValue<uint> *>( p_event );
-						const uint								 index			 = castedEventData->value;
-						const Model::Chain &					 chain			 = _model->getChain( index );
+						const Event::VTXEventValue<uint> * const castedEventData
+							= dynamic_cast<const Event::VTXEventValue<uint> *>( p_event );
+						const uint			 index = castedEventData->value;
+						const Model::Chain & chain = *_model->getChain( index );
 						_refreshItem( topLevelItem( 0 )->child( index ), chain );
 					}
 					else if ( p_event->name == Event::Model::RESIDUE_VISIBILITY )
 
 					{
-						const Event::VTXEventValue<uint> * const castedEventData = dynamic_cast<const Event::VTXEventValue<uint> *>( p_event );
-						const uint								 index			 = castedEventData->value;
-						const Model::Residue &					 residue		 = _model->getResidue( index );
-						const Model::Chain &					 chain			 = *residue.getChainPtr();
-						_refreshItem( topLevelItem( 0 )->child( chain.getIndex() )->child( residue.getIndex() - chain.getIndexFirstResidue() ), residue );
+						const Event::VTXEventValue<uint> * const castedEventData
+							= dynamic_cast<const Event::VTXEventValue<uint> *>( p_event );
+						const uint			   index   = castedEventData->value;
+						const Model::Residue & residue = *_model->getResidue( index );
+						const Model::Chain &   chain   = *residue.getChainPtr();
+						_refreshItem( topLevelItem( 0 )
+										  ->child( chain.getIndex() )
+										  ->child( residue.getIndex() - chain.getIndexFirstResidue() ),
+									  residue );
 					}
 					else if ( p_event->name == Event::Model::DATA_CHANGE )
 					{
@@ -64,7 +69,8 @@ namespace VTX
 						return;
 
 						// Event::Global::SELECTION_CHANGE.
-						const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+						const Event::VTXEventPtr<Model::Selection> & castedEvent
+							= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
 
 						blockSignals( true );
 						setUpdatesEnabled( false );
@@ -78,14 +84,19 @@ namespace VTX
 							}
 
 							topLevelItem( 0 )->setSelected( true );
-							for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : pairMolecule.second )
+							for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain :
+								  pairMolecule.second )
 							{
-								const Model::Chain & chain = _model->getChain( pairChain.first );
+								const Model::Chain & chain = *_model->getChain( pairChain.first );
 								topLevelItem( 0 )->child( chain.getIndex() )->setSelected( true );
-								for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
+								for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue :
+									  pairChain.second )
 								{
-									const Model::Residue & residue = _model->getResidue( pairResidue.first );
-									topLevelItem( 0 )->child( chain.getIndex() )->child( residue.getIndex() - chain.getIndexFirstResidue() )->setSelected( true );
+									const Model::Residue & residue = *_model->getResidue( pairResidue.first );
+									topLevelItem( 0 )
+										->child( chain.getIndex() )
+										->child( residue.getIndex() - chain.getIndexFirstResidue() )
+										->setSelected( true );
 									for ( const uint & atom : pairResidue.second )
 									{
 										topLevelItem( 0 )
@@ -120,6 +131,9 @@ namespace VTX
 					// Chains.
 					for ( const Model::Chain * const chain : _model->getChains() )
 					{
+						if ( chain == nullptr )
+							continue;
+
 						QTreeWidgetItem * const chainView = new QTreeWidgetItem();
 						chainView->setData( 0, Qt::UserRole, QVariant::fromValue( chain->getId() ) );
 						chainView->setText( 0, QString::fromStdString( chain->getDefaultName() ) );
@@ -129,21 +143,38 @@ namespace VTX
 						// Residues.
 						for ( uint r = 0; r < chain->getResidueCount(); ++r )
 						{
-							const Model::Residue &	residue		= _model->getResidue( chain->getIndexFirstResidue() + r );
+							const Model::Residue * const residuePtr
+								= _model->getResidue( chain->getIndexFirstResidue() + r );
+							if ( residuePtr == nullptr )
+								continue;
+
+							const Model::Residue &	residue		= *residuePtr;
 							QTreeWidgetItem * const residueView = new QTreeWidgetItem();
 							residueView->setData( 0, Qt::UserRole, QVariant::fromValue( residue.getId() ) );
-							residueView->setText( 0, QString::fromStdString( residue.getSymbolStr() + " " + std::to_string( residue.getIndexInOriginalChain() ) ) );
-							residueView->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( residue.getTypeId() ) );
+							residueView->setText(
+								0,
+								QString::fromStdString( residue.getSymbolStr() + " "
+														+ std::to_string( residue.getIndexInOriginalChain() ) ) );
+							residueView->setIcon( 0,
+												  *VTX::Style::IconConst::get().getModelSymbol( residue.getTypeId() ) );
 							_refreshItem( residueView, residue );
 
 							// Atom.
 							for ( uint a = 0; a < residue.getAtomCount(); ++a )
 							{
-								const Model::Atom &		atom	 = _model->getAtom( residue.getIndexFirstAtom() + a );
+								const Model::Atom * atomPtr = _model->getAtom( residue.getIndexFirstAtom() + a );
+
+								if ( atomPtr == nullptr )
+									continue;
+
+								const Model::Atom &		atom	 = *atomPtr;
 								QTreeWidgetItem * const atomView = new QTreeWidgetItem();
 								atomView->setData( 0, Qt::UserRole, QVariant::fromValue( atom.getId() ) );
-								atomView->setText( 0, QString::fromStdString( atom.getSymbolStr() + " " + std::to_string( atom.getIndex() ) ) );
-								atomView->setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( atom.getTypeId() ) );
+								atomView->setText( 0,
+												   QString::fromStdString( atom.getSymbolStr() + " "
+																		   + std::to_string( atom.getIndex() ) ) );
+								atomView->setIcon( 0,
+												   *VTX::Style::IconConst::get().getModelSymbol( atom.getTypeId() ) );
 
 								residueView->addChild( atomView );
 							}
@@ -191,7 +222,8 @@ namespace VTX
 					const Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
 
 					const Action::Visible::ChangeVisibility::VISIBILITY_MODE visibilityMode
-						= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
+						= modelEnabled ? Action::Visible::ChangeVisibility::VISIBILITY_MODE::SHOW
+									   : Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE;
 
 					if ( modelTypeId == ID::Model::MODEL_MOLECULE )
 					{
@@ -235,8 +267,12 @@ namespace VTX
 						QModelIndex & lastClickedItemModelIndex = indexFromItem( _lastItemClicked );
 						QModelIndex & clickedItemModelIndex		= indexFromItem( p_item );
 
-						const QTreeWidgetItem * firstItem = itemFromIndex( lastClickedItemModelIndex < clickedItemModelIndex ? lastClickedItemModelIndex : clickedItemModelIndex );
-						const QTreeWidgetItem * lastItem  = itemFromIndex( lastClickedItemModelIndex < clickedItemModelIndex ? clickedItemModelIndex : lastClickedItemModelIndex );
+						const QTreeWidgetItem * firstItem = itemFromIndex(
+							lastClickedItemModelIndex < clickedItemModelIndex ? lastClickedItemModelIndex
+																			  : clickedItemModelIndex );
+						const QTreeWidgetItem * lastItem = itemFromIndex(
+							lastClickedItemModelIndex < clickedItemModelIndex ? clickedItemModelIndex
+																			  : lastClickedItemModelIndex );
 
 						const QTreeWidgetItem * seeker = firstItem;
 						std::vector<Model::ID>	ids	   = std::vector<Model::ID>();
@@ -260,7 +296,8 @@ namespace VTX
 
 					_lastItemClicked = p_item;
 				}
-				void MoleculeSceneView::_onItemDoubleClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
+				void MoleculeSceneView::_onItemDoubleClicked( const QTreeWidgetItem * const p_item,
+															  const int						p_column ) const
 				{
 					const Model::ID &  modelId		  = _getModelID( *p_item );
 					ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( modelId );
@@ -287,12 +324,15 @@ namespace VTX
 						VTX_ACTION( new Action::Atom::Orient( model ) );
 					}
 				}
-				void MoleculeSceneView::_selectModelAction( const std::vector<Model::ID> & p_modelIds, const bool p_appendToSelection ) const
+				void MoleculeSceneView::_selectModelAction( const std::vector<Model::ID> & p_modelIds,
+															const bool					   p_appendToSelection ) const
 				{
 					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-					VTX_ACTION( new Action::Selection::SelectModels( selectionModel, p_modelIds, p_appendToSelection ) );
+					VTX_ACTION(
+						new Action::Selection::SelectModels( selectionModel, p_modelIds, p_appendToSelection ) );
 				}
-				void MoleculeSceneView::_selectModelAction( const Model::ID & p_modelId, const bool p_appendToSelection ) const
+				void MoleculeSceneView::_selectModelAction( const Model::ID & p_modelId,
+															const bool		  p_appendToSelection ) const
 				{
 					ID::VTX_ID		   modelTypeId	  = MVC::MvcManager::get().getModelTypeID( p_modelId );
 					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
@@ -303,7 +343,8 @@ namespace VTX
 						if ( p_appendToSelection && selectionModel.isMoleculeSelected( model ) )
 							VTX_ACTION( new Action::Selection::UnselectMolecule( selectionModel, model ) );
 						else
-							VTX_ACTION( new Action::Selection::SelectMolecule( selectionModel, model, p_appendToSelection ) );
+							VTX_ACTION(
+								new Action::Selection::SelectMolecule( selectionModel, model, p_appendToSelection ) );
 					}
 					else if ( modelTypeId == ID::Model::MODEL_CHAIN )
 					{
@@ -311,7 +352,8 @@ namespace VTX
 						if ( p_appendToSelection && selectionModel.isChainSelected( model ) )
 							VTX_ACTION( new Action::Selection::UnselectChain( selectionModel, model ) );
 						else
-							VTX_ACTION( new Action::Selection::SelectChain( selectionModel, model, p_appendToSelection ) );
+							VTX_ACTION(
+								new Action::Selection::SelectChain( selectionModel, model, p_appendToSelection ) );
 					}
 					else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
 					{
@@ -319,7 +361,8 @@ namespace VTX
 						if ( p_appendToSelection && selectionModel.isResidueSelected( model ) )
 							VTX_ACTION( new Action::Selection::UnselectResidue( selectionModel, model ) );
 						else
-							VTX_ACTION( new Action::Selection::SelectResidue( selectionModel, model, p_appendToSelection ) );
+							VTX_ACTION(
+								new Action::Selection::SelectResidue( selectionModel, model, p_appendToSelection ) );
 					}
 					else if ( modelTypeId == ID::Model::MODEL_ATOM )
 					{
@@ -327,7 +370,8 @@ namespace VTX
 						if ( p_appendToSelection && selectionModel.isAtomSelected( model ) )
 							VTX_ACTION( new Action::Selection::UnselectAtom( selectionModel, model ) );
 						else
-							VTX_ACTION( new Action::Selection::SelectAtom( selectionModel, model, p_appendToSelection ) );
+							VTX_ACTION(
+								new Action::Selection::SelectAtom( selectionModel, model, p_appendToSelection ) );
 					}
 				}
 
@@ -345,28 +389,34 @@ namespace VTX
 					setMinimumWidth( sizeHintForColumn( 0 ) );
 				}
 
-				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Molecule & p_model ) const
+				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget,
+													  const Model::Molecule & p_model ) const
 				{
 					const Qt::CheckState newCheckState = _getCheckState( p_model.isVisible() );
 					if ( p_itemWidget->checkState( 0 ) != newCheckState )
 						p_itemWidget->setCheckState( 0, newCheckState );
 				}
 
-				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Chain & p_model ) const
+				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget,
+													  const Model::Chain &	  p_model ) const
 				{
 					const Qt::CheckState newCheckState = _getCheckState( p_model.isVisible() );
 					if ( p_itemWidget->checkState( 0 ) != newCheckState )
 						p_itemWidget->setCheckState( 0, newCheckState );
 				}
 
-				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Residue & p_model ) const
+				void MoleculeSceneView::_refreshItem( QTreeWidgetItem * const p_itemWidget,
+													  const Model::Residue &  p_model ) const
 				{
 					const Qt::CheckState newCheckState = _getCheckState( p_model.isVisible() );
 					if ( p_itemWidget->checkState( 0 ) != newCheckState )
 						p_itemWidget->setCheckState( 0, newCheckState );
 				}
 
-				QMimeData * MoleculeSceneView::_getDataForDrag() { return VTX::UI::MimeType::generateMoleculeData( *_model ); }
+				QMimeData * MoleculeSceneView::_getDataForDrag()
+				{
+					return VTX::UI::MimeType::generateMoleculeData( *_model );
+				}
 			} // namespace Widget
 		}	  // namespace UI
 	}		  // namespace View

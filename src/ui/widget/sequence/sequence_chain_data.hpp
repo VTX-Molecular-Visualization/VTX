@@ -23,7 +23,8 @@ namespace VTX
 				class SequenceChainData
 				{
 				  public:
-					SequenceChainData( const Model::Chain & p_chain ) : _chain( p_chain ), _molecule( *( p_chain.getMoleculePtr() ) )
+					SequenceChainData( const Model::Chain & p_chain ) :
+						_chain( p_chain ), _molecule( *( p_chain.getMoleculePtr() ) )
 					{
 						_generateDataSet();
 						_generateString();
@@ -45,7 +46,8 @@ namespace VTX
 					uint					getChainIndex() const { return _chain.getIndex(); };
 
 					Model::Residue * const getResidueFromCharIndex( const uint p_charIndex ) const;
-					Model::Residue * const getClosestResidueFromCharIndex( const uint p_charIndex, const bool takeForward ) const;
+					Model::Residue * const getClosestResidueFromCharIndex( const uint p_charIndex,
+																		   const bool takeForward ) const;
 					uint				   getCharIndex( const uint p_residueIndex ) const;
 					uint				   getPaintCharIndex( const uint p_residueIndex ) const;
 					uint				   getPaintLength( const uint p_localResidueIndex ) const;
@@ -54,20 +56,22 @@ namespace VTX
 				  private:
 					const Model::Molecule &						   _molecule;
 					const Model::Chain &						   _chain;
-					std::vector<Dataset::SequenceDisplayDataset *> _dataset = std::vector<Dataset::SequenceDisplayDataset *>();
+					std::vector<Dataset::SequenceDisplayDataset *> _dataset
+						= std::vector<Dataset::SequenceDisplayDataset *>();
 
-					Model::Residue & _getResidue( const uint p_localResidueIndex ) const
+					Model::Residue * const _getResidue( const uint p_localResidueIndex ) const
 					{
 						const uint moleculeResidueIndex = _chain.getIndexFirstResidue() + p_localResidueIndex;
 						return _chain.getMoleculePtr()->getResidue( moleculeResidueIndex );
 					}
 
 					Dataset::SequenceDisplayDataset * const getDataset( const uint p_residueIndex ) const;
-					Dataset::SequenceDisplayDataset * const getDataset_recursive( const std::vector<Dataset::SequenceDisplayDataset *> p_vec,
-																				  const uint										   p_residueIndex,
-																				  const uint										   p_indexMin,
-																				  const uint										   p_indexMax,
-																				  const bool										   p_minHasChanged ) const;
+					Dataset::SequenceDisplayDataset * const getDataset_recursive(
+						const std::vector<Dataset::SequenceDisplayDataset *> p_vec,
+						const uint											 p_residueIndex,
+						const uint											 p_indexMin,
+						const uint											 p_indexMax,
+						const bool											 p_minHasChanged ) const;
 
 					void _generateDataSet();
 					void _generateString();
