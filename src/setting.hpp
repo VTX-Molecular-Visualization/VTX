@@ -7,6 +7,7 @@
 
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "generic/base_colorable.hpp"
 #include "style.hpp"
 #include <QString>
 

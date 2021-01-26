@@ -5,8 +5,6 @@
 #pragma once
 #endif
 
-#include "model/chain.hpp"
-#include "model/residue.hpp"
 #include "sequence_chain_data.hpp"
 #include <QFontMetricsF>
 #include <QLabel>
@@ -19,6 +17,11 @@
 
 namespace VTX
 {
+	namespace Model
+	{
+		class Chain;
+		class Residue;
+	} // namespace Model
 	namespace UI
 	{
 		namespace Widget
@@ -63,7 +66,7 @@ namespace VTX
 					uint				   _getCharIndex( const uint p_residueIndex ) const;
 					Model::Residue &	   _getResidue( const uint p_localResidueIndex ) const;
 					Model::Residue * const _getResidueFromLocaleXPos( const int p_localeXPos ) const;
-					uint				   _getLocalResidueIndexFromResidue( const Model::Residue & p_globalResIndex ) const;
+					uint _getLocalResidueIndexFromResidue( const Model::Residue & p_globalResIndex ) const;
 				};
 			} // namespace Sequence
 		}	  // namespace Widget

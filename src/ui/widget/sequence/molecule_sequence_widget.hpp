@@ -7,7 +7,6 @@
 
 #include "chain_sequence_widget.hpp"
 #include "model/molecule.hpp"
-#include "model/residue.hpp"
 #include "ui/widget/view_item_widget.hpp"
 #include <QHBoxLayout>
 #include <QLabel>
@@ -19,6 +18,10 @@
 
 namespace VTX
 {
+	namespace Model
+	{
+		class Residue;
+	}
 	namespace UI
 	{
 		namespace Widget
@@ -80,11 +83,17 @@ namespace VTX
 					Model::Residue *			  _lastResidueHovered = nullptr;
 					SelectionModifier			  _selectionModifier  = SelectionModifier::None;
 
-					void				   _getFromTo( const Model::Residue & p_from, const Model::Residue & p_to, std::vector<Model::Residue *> * const _container ) const;
+					void				   _getFromTo( const Model::Residue &				 p_from,
+													   const Model::Residue &				 p_to,
+													   std::vector<Model::Residue *> * const _container ) const;
 					Model::Residue * const _getResidueAtPos( const QPoint & p_pos ) const;
-					Model::Residue * const _getClosestResidue( const QPoint & p_pos, const bool p_next, const bool p_forceGetValue = false ) const;
-					Model::Residue * const _getPreviousResidue( const Model::Residue & p_residue, const bool p_forceResult ) const;
-					Model::Residue * const _getNextResidue( const Model::Residue & p_residue, const bool p_forceResult ) const;
+					Model::Residue * const _getClosestResidue( const QPoint & p_pos,
+															   const bool	  p_next,
+															   const bool	  p_forceGetValue = false ) const;
+					Model::Residue * const _getPreviousResidue( const Model::Residue & p_residue,
+																const bool			   p_forceResult ) const;
+					Model::Residue * const _getNextResidue( const Model::Residue & p_residue,
+															const bool			   p_forceResult ) const;
 					QPoint				   _getResiduePos( const Model::Residue & p_residue ) const;
 					SelectionModifier	   _getSelectionModifier( const QMouseEvent * const p_event ) const;
 					ClickModifier		   _getClickModifier( const QMouseEvent * const p_event ) const;

@@ -1,5 +1,7 @@
 #include "ssao.hpp"
+#include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include "util/sampler.hpp"
 #include "vtx_app.hpp"
 #include <random>

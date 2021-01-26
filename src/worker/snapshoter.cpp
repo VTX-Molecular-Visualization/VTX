@@ -6,6 +6,7 @@
 #endif
 #include "renderer/gl/gl.hpp"
 #include "renderer/ray_tracing/ray_tracer.hpp"
+#include "ui/main_window.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
 #include <stb/stb_image_write.h>

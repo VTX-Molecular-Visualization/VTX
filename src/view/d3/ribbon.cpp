@@ -1,4 +1,7 @@
 #include "ribbon.hpp"
+#include "model/molecule.hpp"
+#include "object3d/camera.hpp"
+#include "object3d/scene.hpp"
 #include "representation/representation_target.hpp"
 #include "vtx_app.hpp"
 

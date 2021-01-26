@@ -8,8 +8,11 @@
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "object3d/camera.hpp"
+#include "object3d/scene.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {

@@ -4,7 +4,9 @@
 #include "action/setting.hpp"
 #include "event/event_manager.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include "selection/selection_manager.hpp"
+#include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "worker/worker_manager.hpp"
 #include <QPalette>
@@ -40,6 +42,7 @@ namespace VTX
 		Event::EventManager::get();
 		Selection::SelectionManager::get();
 		Worker::WorkerManager::get();
+		Renderer::GL::ProgramManager::get();
 
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );
@@ -90,6 +93,8 @@ namespace VTX
 			delete _mainWindow;
 		}
 
+		Renderer::GL::ProgramManager::get().dispose();
+
 		exit();
 	}
 
@@ -132,6 +137,8 @@ namespace VTX
 		// Worker manager.
 		Worker::WorkerManager::get().update( deltaTime );
 	}
+
+	void VTXApp::renderScene() const { _mainWindow->getOpenGLWidget().update(); }
 
 	bool VTXApp::notify( QObject * const receiver, QEvent * const event )
 	{

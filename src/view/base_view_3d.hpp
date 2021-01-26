@@ -7,9 +7,11 @@
 
 #include "base_view.hpp"
 #include "generic/base_renderable.hpp"
+#include "model/base_model_3d.hpp"
 #include "object3d/camera.hpp"
 #include "renderer/gl/program_manager.hpp"
 #include "util/math.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX::View
 {
@@ -25,18 +27,18 @@ namespace VTX::View
 			_program->use();
 
 			// Update camera uniforms.
-			// if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
-			//{
-			const Mat4f MVMatrix = p_camera.getViewMatrix() * _model->getTransform().get();
-			_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
-			_gl()->glUniformMatrix4fv(
-				_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( p_camera.getProjectionMatrix() ) );
-			_gl()->glUniformMatrix4fv(
-				_uNormalMatrixLoc,
-				1,
-				GL_FALSE,
-				Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
-			//}
+			if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+			{
+				const Mat4f MVMatrix = p_camera.getViewMatrix() * _model->getTransform().get();
+				_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
+				_gl()->glUniformMatrix4fv(
+					_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( p_camera.getProjectionMatrix() ) );
+				_gl()->glUniformMatrix4fv(
+					_uNormalMatrixLoc,
+					1,
+					GL_FALSE,
+					Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
+			}
 
 			_render();
 		}

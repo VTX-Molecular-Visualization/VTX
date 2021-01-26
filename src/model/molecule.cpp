@@ -6,6 +6,7 @@
 #include "model/chain.hpp"
 #include "model/residue.hpp"
 #include "model/secondary_structure.hpp"
+#include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"

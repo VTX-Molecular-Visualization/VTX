@@ -7,13 +7,12 @@
 
 #include "setting.hpp"
 #include "stat.hpp"
-#include "ui/main_window.hpp"
+#include <QElapsedTimer>
 #include <QTimer>
 #include <QtWidgets/QApplication>
 
 namespace VTX
 {
-	// Forward declaration to avoid circular dependencies and reduce compile time (maybe?)
 	class Setting;
 	namespace State
 	{
@@ -22,6 +21,10 @@ namespace VTX
 	namespace Object3D
 	{
 		class Scene;
+	}
+	namespace UI
+	{
+		class MainWindow;
 	}
 	class VTXApp final : public QApplication
 	{
@@ -36,7 +39,7 @@ namespace VTX
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
-		void renderScene() const { _mainWindow->getOpenGLWidget().update(); }
+		void renderScene() const;
 
 		inline Setting &				   getSetting() { return _setting; }
 		inline const Setting &			   getSetting() const { return _setting; }

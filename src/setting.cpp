@@ -1,6 +1,6 @@
 #include "setting.hpp"
 #include "io/serializer.hpp"
-#include "renderer/gl/pass/shading.hpp"
+#include "renderer/base_renderer.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -14,7 +14,8 @@ namespace VTX
 	const int	 Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT	 = 200;
 	const int	 Setting::SCENE_WIDGET_WIDTH_DEFAULT	 = 50;
 	const int	 Setting::INSPECTOR_WIDGET_WIDTH_DEFAULT = 50;
-	const int	 Setting::RENDER_WIDGET_HEIGHT_DEFAULT	 = Setting::WINDOW_HEIGHT_DEFAULT - Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT;
+	const int	 Setting::RENDER_WIDGET_HEIGHT_DEFAULT
+		= Setting::WINDOW_HEIGHT_DEFAULT - Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT;
 
 	const int Setting::STATUS_PROGRESS_BAR_CHUNKS = 10;
 	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;

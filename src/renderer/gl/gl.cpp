@@ -117,9 +117,9 @@ namespace VTX::Renderer::GL
 
 	void GL::renderFrame( const Object3D::Scene & p_scene )
 	{
-		if ( VTXApp::get().MASK )
+		if ( !VTXApp::get().MASK )
 		{
-			// return;
+			return;
 		}
 
 		gl()->glViewport( 0, 0, _width, _height );

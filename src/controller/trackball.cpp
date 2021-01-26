@@ -1,4 +1,5 @@
 #include "trackball.hpp"
+#include "object3d/scene.hpp"
 #include "util/math.hpp"
 
 namespace VTX

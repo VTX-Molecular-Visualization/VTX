@@ -7,14 +7,9 @@
 
 #include "generic/base_opengl.hpp"
 #include "renderer/base_renderer.hpp"
-#include "renderer/gl/gl.hpp"
-#include "renderer/ray_tracing/ray_tracer.hpp"
 #include <QElapsedTimer>
 #include <QOpenGLWidget>
 #include <QPainter>
-#ifdef OPTIX_DEFINED
-#include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
-#endif
 
 namespace VTX
 {

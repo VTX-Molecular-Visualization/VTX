@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "model/base_model.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QBoxLayout>
 #include <QDragEnterEvent>
@@ -17,6 +16,11 @@
 
 namespace VTX
 {
+	namespace Model
+	{
+		class BaseModel;
+	}
+
 	namespace UI
 	{
 		namespace Widget

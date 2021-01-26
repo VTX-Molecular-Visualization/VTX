@@ -1,4 +1,8 @@
 #include "opengl_widget.hpp"
+#include "object3d/camera.hpp"
+#include "object3d/scene.hpp"
+#include "renderer/gl/gl.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
 #include <QMainWindow>

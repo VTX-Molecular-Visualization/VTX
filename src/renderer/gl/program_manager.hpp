@@ -47,6 +47,8 @@ namespace VTX
 
 			GLuint getShader( const std::string & ) const;
 
+			void dispose();
+
 			static const MapStringToEnum EXTENSIONS;
 			static SHADER_TYPE			 getShaderType( const FilePath & );
 

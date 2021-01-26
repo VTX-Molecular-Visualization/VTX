@@ -1,4 +1,6 @@
 #include "instantiated_representation.hpp"
+#include "generic/base_representable.hpp"
+#include "model/molecule.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
 #include "vtx_app.hpp"
@@ -27,10 +29,12 @@ namespace VTX
 				_updateTargets( VTX::Representation::MoleculeComputationFlag::ColorBuffer );
 			}
 
-			void InstantiatedRepresentation::_updateTargets( const VTX::Representation::MoleculeComputationFlag & p_flag ) const
+			void InstantiatedRepresentation::_updateTargets(
+				const VTX::Representation::MoleculeComputationFlag & p_flag ) const
 			{
 				std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
-				for ( Generic::BaseRepresentable * target : VTX::Representation::RepresentationManager::get().getTargets( this ) )
+				for ( Generic::BaseRepresentable * target :
+					  VTX::Representation::RepresentationManager::get().getTargets( this ) )
 					molecules.emplace( target->getMolecule() );
 
 				for ( Model::Molecule * const molecule : molecules )

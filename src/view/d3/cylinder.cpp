@@ -14,11 +14,12 @@ namespace VTX::View::D3
 		if ( !p_representation->hasToDrawCylinder() )
 			return;
 
-		_gl()->glUniform1f( _uRadiusLoc, p_representation->getCylinderData()._radius );
+		const Model::Representation::CylinderData & cylinderData = p_representation->getCylinderData();
+
+		_gl()->glUniform1f( _uRadiusLoc, cylinderData._radius );
 
 		for ( const std::pair<uint, uint> & pair : _model->getRepresentationBonds( p_representation ) )
 		{
-			VTX_DEBUG( std::to_string( pair.second ) );
 			_gl()->glDrawElements( GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
 		}
 	}

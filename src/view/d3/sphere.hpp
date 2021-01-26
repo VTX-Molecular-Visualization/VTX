@@ -20,8 +20,7 @@ namespace VTX
 			  protected:
 				Renderer::GL::Program * const _createProgram() override;
 				void						  _init() override;
-				void						  _render(
-											 const Model::Representation::InstantiatedRepresentation * const p_representation ) override;
+				void _render( const Model::Representation::InstantiatedRepresentation * const ) override;
 
 			  private:
 				GLint _uIsRadiusFixedLoc = GL_INVALID_INDEX;

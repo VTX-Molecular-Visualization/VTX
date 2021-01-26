@@ -1,6 +1,6 @@
 #include "fxaa.hpp"
 #include "renderer/gl/gl.hpp"
-#include "vtx_app.hpp"
+#include "renderer/gl/program_manager.hpp"
 
 namespace VTX::Renderer::GL::Pass
 {

@@ -1,5 +1,7 @@
 #include "shading.hpp"
+#include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Renderer::GL::Pass

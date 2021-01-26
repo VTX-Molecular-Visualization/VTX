@@ -1,5 +1,6 @@
 #include "vtx.hpp"
 #include "io/serializer.hpp"
+#include "util/filesystem.hpp"
 
 namespace VTX
 {

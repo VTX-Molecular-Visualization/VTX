@@ -2,6 +2,7 @@
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "renderer/gl/gl.hpp"
+#include "renderer/gl/program_manager.hpp"
 
 namespace VTX::Renderer::GL::Pass
 {

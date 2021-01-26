@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "model/selection.hpp"
 #include "selection/selection_enum.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QComboBox>

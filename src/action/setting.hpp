@@ -8,9 +8,11 @@
 #include "base_action.hpp"
 #include "io/reader/setting.hpp"
 #include "io/writer/setting.hpp"
+#include "model/molecule.hpp"
 #include "renderer/gl/gl.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
+#include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 

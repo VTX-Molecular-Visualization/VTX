@@ -21,7 +21,7 @@ namespace VTX::View::D3
 		if ( !p_representation->hasToDrawSphere() )
 			return;
 
-		const Model::Representation::SphereData sphereData = p_representation->getSphereData();
+		const Model::Representation::SphereData & sphereData = p_representation->getSphereData();
 
 		_gl()->glUniform1f( _uRadiusFixedLoc, sphereData._isRadiusFixed );
 		_gl()->glUniform1f( _uRadiusAddLoc, sphereData._radiusAdd );

@@ -1,6 +1,7 @@
 #include "selection_widget.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "style.hpp"
+#include "ui/widget_factory.hpp"
 #include "view/ui/widget/selection_view.hpp"
 #include "vtx_app.hpp"
 #include <QTreeWidget>
@@ -26,9 +27,11 @@ namespace VTX
 				{
 					if ( p_event.name == Event::Global::SELECTION_ADDED )
 					{
-						const Event::VTXEventPtr<Model::Selection> & castedEvent = dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
-						View::UI::Widget::SelectionView * const		 item
-							= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::SelectionView>( castedEvent.ptr, ID::View::UI_SELECTION, nullptr, "SelectionWidget" );
+						const Event::VTXEventPtr<Model::Selection> & castedEvent
+							= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+						View::UI::Widget::SelectionView * const item
+							= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::SelectionView>(
+								castedEvent.ptr, ID::View::UI_SELECTION, nullptr, "SelectionWidget" );
 						setWidget( item );
 					}
 					else if ( p_event.name == Event::Global::SELECTION_REMOVED )
@@ -58,7 +61,10 @@ namespace VTX
 
 				void SelectionWidget::_setupSlots()
 				{
-					connect( _selectionTypeComboBox, QOverload<int>::of( &QComboBox::currentIndexChanged ), this, &SelectionWidget::_selectionTypeCurrentIndexChanged );
+					connect( _selectionTypeComboBox,
+							 QOverload<int>::of( &QComboBox::currentIndexChanged ),
+							 this,
+							 &SelectionWidget::_selectionTypeCurrentIndexChanged );
 				}
 
 				void SelectionWidget::_selectionTypeCurrentIndexChanged( const int p_newIndex )
@@ -92,7 +98,8 @@ namespace VTX
 						case VTX::Selection::SelectionType::RESIDUE: txt = "Residue"; break;
 
 						default:
-							VTX_WARNING( "Selection " + std::to_string( i ) + " not managed in SelectionWidget::getSelectionTypeText." );
+							VTX_WARNING( "Selection " + std::to_string( i )
+										 + " not managed in SelectionWidget::getSelectionTypeText." );
 							txt = "<unknown>";
 							break;
 						}

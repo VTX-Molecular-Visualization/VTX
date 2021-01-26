@@ -27,7 +27,9 @@ namespace VTX::Renderer::GL
 		return SHADER_TYPE::INVALID;
 	}
 
-	ProgramManager::~ProgramManager()
+	ProgramManager::~ProgramManager() { dispose(); }
+
+	void ProgramManager::dispose()
 	{
 		for ( const PairStringToGLuint & pair : _shaders )
 		{

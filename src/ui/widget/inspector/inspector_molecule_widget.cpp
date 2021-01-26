@@ -89,6 +89,16 @@ namespace VTX
 					_infoSection->localize();
 				}
 
+				void InspectorMoleculeWidget::_onTransformChange( const Math::Transform & _transform )
+				{
+					_model->applyTransform( _transform );
+				}
+
+				void InspectorMoleculeWidget::setModelEnableFromCheckBox( const int checkboxState )
+				{
+					_model->setEnable( checkboxState > 0 );
+				}
+
 			} // namespace Inspector
 		}	  // namespace Widget
 	}		  // namespace UI
