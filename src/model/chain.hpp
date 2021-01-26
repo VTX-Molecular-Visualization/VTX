@@ -19,7 +19,11 @@ namespace VTX
 	namespace Model
 	{
 		class Molecule;
-		class Chain : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible, public Generic::BaseRepresentable
+		class Chain :
+			public BaseModel,
+			public Generic::BaseColorable,
+			public Generic::BaseVisible,
+			public Generic::BaseRepresentable
 		{
 			VTX_MODEL
 
@@ -48,7 +52,6 @@ namespace VTX
 			}
 
 			static Color::Rgb getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
-			static Color::Rgb getChainIdColor( const uint p_chainId, const bool p_isHetAtm = false );
 
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name )

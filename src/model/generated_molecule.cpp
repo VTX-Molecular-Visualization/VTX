@@ -262,7 +262,7 @@ namespace VTX::Model
 		p_chain.setIndex( getChainCount() - 1 );
 		p_chain.setName( p_chainSource.getName() );
 		p_chain.setIndexFirstResidue( getResidueCount() );
-		p_chain.setColor( Model::Chain::getChainIdColor( p_chain.getIndex() ) );
+		p_chain.setColor( Model::Chain::getChainIdColor( p_chain.getName() ) );
 	}
 	void GeneratedMolecule::_copyResidueData( Model::Residue &		 p_residue,
 											  const Model::Residue & p_residueSource,
