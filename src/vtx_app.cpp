@@ -75,6 +75,7 @@ namespace VTX
 	void VTXApp::stop()
 	{
 		_timer->stop();
+		Renderer::GL::ProgramManager::get().dispose();
 
 		delete _timer;
 		delete _elapsedTimer;
@@ -92,8 +93,6 @@ namespace VTX
 		{
 			delete _mainWindow;
 		}
-
-		Renderer::GL::ProgramManager::get().dispose();
 
 		exit();
 	}
