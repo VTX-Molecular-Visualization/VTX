@@ -22,7 +22,10 @@ namespace VTX
 			class ChangeColor : public BaseAction
 			{
 			  public:
-				explicit ChangeColor( Model::Atom & p_atom, const Color::Rgb & p_color ) : _atom( p_atom ), _color( p_color ) {}
+				explicit ChangeColor( Model::Atom & p_atom, const Color::Rgb & p_color ) :
+					_atom( p_atom ), _color( p_color )
+				{
+				}
 
 				virtual void execute() override
 				{
@@ -38,7 +41,10 @@ namespace VTX
 			class ChangeVisibility : public Visible::ChangeVisibility
 			{
 			  public:
-				explicit ChangeVisibility( Model::Atom & p_atom, const VISIBILITY_MODE p_mode ) : Visible::ChangeVisibility( p_atom, p_mode ) {}
+				explicit ChangeVisibility( Model::Atom & p_atom, const VISIBILITY_MODE p_mode ) :
+					Visible::ChangeVisibility( p_atom, p_mode )
+				{
+				}
 
 				virtual void execute() override
 				{
@@ -54,13 +60,17 @@ namespace VTX
 							{
 								atom.getMoleculePtr()
 									->getAtom( atom.getResiduePtr()->getIndexFirstAtom() + i )
-									.setVisible( _mode == VISIBILITY_MODE::ALL
-												 || ( _mode == VISIBILITY_MODE::SOLO && atom.getResiduePtr()->getIndexFirstAtom() + i == atom.getIndex() ) );
+									.setVisible(
+										_mode == VISIBILITY_MODE::ALL
+										|| ( _mode == VISIBILITY_MODE::SOLO
+											 && atom.getResiduePtr()->getIndexFirstAtom() + i == atom.getIndex() ) );
 							}
 						}
 
 						atom.getMoleculePtr()->computeRepresentationTargets();
 					}
+
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 				}
 			};
 
@@ -71,7 +81,10 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->orientCameraController( _atom.getAABB() );
+					VTXApp::get()
+						.getStateMachine()
+						.getItem<State::Visualization>( ID::State::VISUALIZATION )
+						->orientCameraController( _atom.getAABB() );
 				}
 
 			  private:

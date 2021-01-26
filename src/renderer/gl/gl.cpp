@@ -160,8 +160,7 @@ namespace VTX::Renderer::GL
 			_passFXAA->render( p_scene, *this );
 		}
 
-		// TODO: set default value from settings to force render.
-		VTXApp::get().MASK = 0;
+		VTXApp::get().MASK = VTX_SETTING().forceRenderer ? 0xFF : 0x00;
 	};
 
 	void GL::setShading() { _passShading->set(); }

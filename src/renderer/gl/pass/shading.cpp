@@ -69,9 +69,13 @@ namespace VTX::Renderer::GL::Pass
 		// TODO: no need for flat shading
 		// TODO: let the user choose where's the light
 		// TODO: distinguish "view" and "world" lights
-		const Vec4f & lightPosition
-			= p_scene.getCamera().getViewMatrix() * Vec4f( p_scene.getCamera().getPosition(), 1.f );
-		gl()->glUniform3f( _uLightPosition, lightPosition.x, lightPosition.y, lightPosition.z );
+		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+		{
+			const Vec4f & lightPosition
+				= p_scene.getCamera().getViewMatrix() * Vec4f( p_scene.getCamera().getPosition(), 1.f );
+			gl()->glUniform3f( _uLightPosition, lightPosition.x, lightPosition.y, lightPosition.z );
+		}
+
 		const Color::Rgb & lightColor = VTX_SETTING().lightColor;
 		gl()->glUniform3f( _uLightColor, lightColor.getR(), lightColor.getG(), lightColor.getB() );
 

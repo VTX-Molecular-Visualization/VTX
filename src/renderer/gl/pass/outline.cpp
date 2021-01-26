@@ -58,9 +58,13 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 
-		// TODO: do not update each frame
-		gl()->glUniformMatrix4fv(
-			_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
+		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+		{
+			gl()->glUniformMatrix4fv(
+				_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
+		}
+
+		// TODO: do not update each frame.
 		const Color::Rgb & lineColor = VTX_SETTING().outlineColor;
 		gl()->glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );
 

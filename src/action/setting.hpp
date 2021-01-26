@@ -94,7 +94,11 @@ namespace VTX
 			  public:
 				explicit ChangeBackgroundColor( const Color::Rgb & p_color ) : _color( p_color ) {}
 
-				virtual void execute() override { VTX_SETTING().backgroundColor = _color; };
+				virtual void execute() override
+				{
+					VTX_SETTING().backgroundColor = _color;
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+				};
 
 			  private:
 				const Color::Rgb _color;
@@ -117,6 +121,8 @@ namespace VTX
 
 					for ( const Object3D::Scene::PairMoleculePtrFloat & pair : VTXApp::get().getScene().getMolecules() )
 						pair.first->computeRepresentationTargets();
+
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 				virtual void displayUsage() override { VTX_INFO( "BALL_AND_STICK|VAN_DER_WAALS|STICK|SAS" ); }
@@ -130,7 +136,11 @@ namespace VTX
 			  public:
 				explicit ChangeAtomsRadius( const float p_atomsRadius ) : _atomsRadius( p_atomsRadius ) {}
 
-				virtual void execute() override { VTX_SETTING().atomsRadius = _atomsRadius; }
+				virtual void execute() override
+				{
+					VTX_SETTING().atomsRadius = _atomsRadius;
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+				}
 
 			  private:
 				const float _atomsRadius;
@@ -141,7 +151,11 @@ namespace VTX
 			  public:
 				explicit ChangeBondsRadius( const float p_bondsRadius ) : _bondsRadius( p_bondsRadius ) {}
 
-				virtual void execute() override { VTX_SETTING().bondsRadius = _bondsRadius; };
+				virtual void execute() override
+				{
+					VTX_SETTING().bondsRadius = _bondsRadius;
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+				};
 
 			  private:
 				const float _bondsRadius;
@@ -159,6 +173,7 @@ namespace VTX
 					{
 						pair.first->refreshColors();
 					}
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 				virtual void displayUsage() override { VTX_INFO( "ATOM|RESIDUE|CHAIN|PROTEIN" ); }
@@ -176,6 +191,7 @@ namespace VTX
 				{
 					VTX_SETTING().shading = _shading;
 					VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().setShading();
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 				virtual void displayUsage() override { VTX_INFO( "DIFFUSE|GLOSSY|TOON|FLAT_COLOR" ); }
@@ -208,6 +224,7 @@ namespace VTX
 				{
 					VTX_SETTING().activeAO = _active;
 					VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeSSAO( _active );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -223,6 +240,7 @@ namespace VTX
 				{
 					VTX_SETTING().aoIntensity = Util::Math::clamp(
 						_intensity, VTX::Setting::AO_INTENSITY_MIN, VTX::Setting::AO_INTENSITY_MAX );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -238,6 +256,7 @@ namespace VTX
 				{
 					VTX_SETTING().aoBlurSize = Util::Math::clamp(
 						_blurSize, VTX::Setting::AO_BLUR_SIZE_MIN, VTX::Setting::AO_BLUR_SIZE_MAX );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -253,6 +272,7 @@ namespace VTX
 				{
 					VTX_SETTING().activeOutline = _active;
 					VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeOutline( _active );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -264,7 +284,11 @@ namespace VTX
 			  public:
 				explicit ChangeOutlineColor( const Color::Rgb & p_color ) : _color( p_color ) {}
 
-				virtual void execute() override { VTX_SETTING().outlineColor = _color; };
+				virtual void execute() override
+				{
+					VTX_SETTING().outlineColor = _color;
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+				};
 
 			  private:
 				const Color::Rgb _color;
@@ -279,6 +303,7 @@ namespace VTX
 				{
 					VTX_SETTING().activeFog = _active;
 					VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeFog( _active );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -294,6 +319,7 @@ namespace VTX
 				{
 					VTX_SETTING().fogNear = Util::Math::min( _near, VTX_SETTING().fogFar );
 					VTX_SETTING().fogFar  = Util::Math::max( _near, VTX_SETTING().fogFar );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -309,6 +335,7 @@ namespace VTX
 				{
 					VTX_SETTING().fogNear = Util::Math::min( VTX_SETTING().fogNear, _far );
 					VTX_SETTING().fogFar  = Util::Math::max( VTX_SETTING().fogNear, _far );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -320,7 +347,11 @@ namespace VTX
 			  public:
 				explicit ChangeFogDensity( const float p_density ) : _density( p_density ) {}
 
-				virtual void execute() override { VTX_SETTING().fogDensity = Util::Math::clamp( _density, 0.f, 1.f ); };
+				virtual void execute() override
+				{
+					VTX_SETTING().fogDensity = Util::Math::clamp( _density, 0.f, 1.f );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+				};
 
 			  private:
 				const float _density;
@@ -331,7 +362,11 @@ namespace VTX
 			  public:
 				explicit ChangeFogColor( const Color::Rgb & p_color ) : _color( p_color ) {}
 
-				virtual void execute() override { VTX_SETTING().fogColor = _color; };
+				virtual void execute() override
+				{
+					VTX_SETTING().fogColor = _color;
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+				};
 
 			  private:
 				const Color::Rgb _color;
@@ -346,6 +381,7 @@ namespace VTX
 				{
 					VTX_SETTING().activeAA = _active;
 					VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeAA( _active );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -357,7 +393,11 @@ namespace VTX
 			  public:
 				explicit ChangeLightColor( const Color::Rgb & p_color ) : _color( p_color ) {}
 
-				virtual void execute() override { VTX_SETTING().lightColor = _color; };
+				virtual void execute() override
+				{
+					VTX_SETTING().lightColor = _color;
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+				};
 
 			  private:
 				const Color::Rgb _color;
@@ -375,6 +415,7 @@ namespace VTX
 
 					VTXApp::get().getScene().getCamera().setNear( VTX_SETTING().cameraNear );
 					VTXApp::get().getScene().getCamera().setFar( VTX_SETTING().cameraFar );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -392,6 +433,7 @@ namespace VTX
 					VTX_SETTING().cameraFov = _fov;
 
 					VTXApp::get().getScene().getCamera().setFov( VTX_SETTING().cameraFov );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -406,8 +448,8 @@ namespace VTX
 				virtual void execute() override
 				{
 					VTX_SETTING().cameraPerspective = _perspective;
-
 					VTXApp::get().getScene().getCamera().setPerspective( VTX_SETTING().cameraPerspective );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:
@@ -501,6 +543,7 @@ namespace VTX
 				{
 					VTX_SETTING().mode = _mode;
 					VTXApp::get().getMainWindow().getOpenGLWidget().switchRenderer( _mode );
+					VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 				};
 
 			  private:

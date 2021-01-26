@@ -21,17 +21,23 @@ namespace VTX
 			class ChangeColor : public BaseAction
 			{
 			  public:
-				explicit ChangeColor( Model::Chain & p_chain, const Color::Rgb & p_color ) : _chain( p_chain ), _color( p_color ) {}
+				explicit ChangeColor( Model::Chain & p_chain, const Color::Rgb & p_color ) :
+					_chain( p_chain ), _color( p_color )
+				{
+				}
 
 				virtual void execute() override
 				{
 					_chain.setColor( _color );
 					_chain.getMoleculePtr()->refreshColors();
 
-					if ( _chain.getMoleculePtr()->getSecondaryStructure().getColorMode() == Model::SecondaryStructure::COLOR_MODE::CHAIN )
+					if ( _chain.getMoleculePtr()->getSecondaryStructure().getColorMode()
+						 == Model::SecondaryStructure::COLOR_MODE::CHAIN )
 					{
 						_chain.getMoleculePtr()->getSecondaryStructure().refreshColors();
 					}
+
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 				}
 
 			  private:
@@ -42,7 +48,10 @@ namespace VTX
 			class ChangeVisibility : public Visible::ChangeVisibility
 			{
 			  public:
-				explicit ChangeVisibility( Model::Chain & p_chain, const VISIBILITY_MODE p_mode ) : Visible::ChangeVisibility( p_chain, p_mode ) {}
+				explicit ChangeVisibility( Model::Chain & p_chain, const VISIBILITY_MODE p_mode ) :
+					Visible::ChangeVisibility( p_chain, p_mode )
+				{
+				}
 
 				virtual void execute() override
 				{
@@ -57,12 +66,15 @@ namespace VTX
 						{
 							for ( Model::Chain * const c : chain.getMoleculePtr()->getChains() )
 							{
-								c->setVisible( _mode == VISIBILITY_MODE::ALL || ( _mode == VISIBILITY_MODE::SOLO && c == &chain ) );
+								c->setVisible( _mode == VISIBILITY_MODE::ALL
+											   || ( _mode == VISIBILITY_MODE::SOLO && c == &chain ) );
 							}
 						}
 
 						chain.getMoleculePtr()->computeRepresentationTargets();
 					}
+
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 				}
 			};
 
@@ -73,7 +85,10 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->orientCameraController( _chain.getAABB() );
+					VTXApp::get()
+						.getStateMachine()
+						.getItem<State::Visualization>( ID::State::VISUALIZATION )
+						->orientCameraController( _chain.getAABB() );
 				}
 
 			  private:

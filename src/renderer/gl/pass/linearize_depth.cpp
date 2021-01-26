@@ -2,6 +2,7 @@
 #include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/gl/program_manager.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX::Renderer::GL::Pass
 {
@@ -49,12 +50,15 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getDepthTexture() );
 
 		_program->use();
-		// TODO don't update each frame
-		const Object3D::Camera & cam	 = p_scene.getCamera();
-		const float				 camNear = cam.getNear();
-		const float				 camFar	 = cam.getFar();
-		// clipInfo.w: 0 = orhto ; 1 = perspective
-		gl()->glUniform4f( _uClipInfoLoc, camNear * camFar, camFar, camFar - camNear, 1.f );
+
+		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+		{
+			const Object3D::Camera & cam	 = p_scene.getCamera();
+			const float				 camNear = cam.getNear();
+			const float				 camFar	 = cam.getFar();
+			// clipInfo.w: 0 = orhto ; 1 = perspective
+			gl()->glUniform4f( _uClipInfoLoc, camNear * camFar, camFar, camFar - camNear, 1.f );
+		}
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
 
