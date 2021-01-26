@@ -36,8 +36,14 @@ namespace VTX
 			inline const MapMoleculeIds & getItems() const { return _items; }
 			inline MapMoleculeIds &		  getItems() { return _items; }
 
-			inline const std::set<Representation::InstantiatedRepresentation *> & getRepresentations() const { return _representations; }
-			inline std::set<Representation::InstantiatedRepresentation *> &		  getRepresentations() { return _representations; }
+			inline const std::set<Representation::InstantiatedRepresentation *> & getRepresentations() const
+			{
+				return _representations;
+			}
+			inline std::set<Representation::InstantiatedRepresentation *> & getRepresentations()
+			{
+				return _representations;
+			}
 
 			void selectMolecule( Molecule &, const bool p_appendToSelection = false );
 			void selectMolecules( const std::vector<Molecule *> &, const bool p_appendToSelection = false );
@@ -71,25 +77,21 @@ namespace VTX
 			bool isAtomSelected( const Atom & ) const;
 			uint getAtomSelectedCount() const;
 
-			void selectRepresentation( Representation::InstantiatedRepresentation &, const bool p_appendToSelection = false );
-			void selectRepresentations( const std::vector<Representation::InstantiatedRepresentation *> &, const bool p_appendToSelection = false );
+			void selectRepresentation( Representation::InstantiatedRepresentation &,
+									   const bool p_appendToSelection = false );
+			void selectRepresentations( const std::vector<Representation::InstantiatedRepresentation *> &,
+										const bool p_appendToSelection = false );
 			void unselectRepresentation( Representation::InstantiatedRepresentation & );
 			void unselectRepresentations( const std::vector<Representation::InstantiatedRepresentation *> & );
 			void unselectRepresentationsWithCheck( const std::vector<Representation::InstantiatedRepresentation *> & );
 			bool isRepresentationSelected( Representation::InstantiatedRepresentation & ) const;
 			uint getRepresentationSelectedCount() const;
 
-			void clear();
-
-			void receiveEvent( const Event::VTXEvent & p_event ) override;
+			void			   clear();
+			const Math::AABB & getAABB() const { return _aabb; }
+			void			   receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		  protected:
-			void _notifyDataChanged();
-
-		  private:
-			MapMoleculeIds										   _items			= MapMoleculeIds();
-			std::set<Representation::InstantiatedRepresentation *> _representations = std::set<Representation::InstantiatedRepresentation *>();
-
 			Selection() : BaseModel( ID::Model::MODEL_SELECTION )
 			{
 				_registerEvent( Event::MOLECULE_REMOVED );
@@ -97,6 +99,14 @@ namespace VTX
 				_registerEvent( Event::REPRESENTATION_REMOVED );
 			}
 			~Selection() = default;
+
+			void _notifyDataChanged();
+
+		  private:
+			MapMoleculeIds										   _items = MapMoleculeIds();
+			std::set<Representation::InstantiatedRepresentation *> _representations
+				= std::set<Representation::InstantiatedRepresentation *>();
+			Math::AABB _aabb = Math::AABB();
 
 			void _selectMolecule( const Molecule & );
 			void _unselectMolecule( const Molecule & );
@@ -127,6 +137,7 @@ namespace VTX
 			void _clearWithoutNotify();
 
 			void _refreshMoleculeSelection( Molecule * const );
+			void _recomputeAABB();
 		};
 
 	} // namespace Model

@@ -371,6 +371,8 @@ namespace VTX
 		{
 			_addMolecule( p_molecule );
 			_addMoleculeContent( p_molecule );
+
+			_aabb.extend( p_molecule.getAABB() );
 		}
 
 		void Selection::_selectChain( const Chain & p_chain )
@@ -378,6 +380,8 @@ namespace VTX
 			_addMolecule( *p_chain.getMoleculePtr() );
 			_addChain( p_chain );
 			_addChainContent( p_chain );
+
+			_aabb.extend( p_chain.getAABB() );
 		}
 
 		void Selection::_selectResidue( const Residue & p_residue )
@@ -386,6 +390,8 @@ namespace VTX
 			_addChain( *p_residue.getChainPtr() );
 			_addResidue( p_residue );
 			_addResidueContent( p_residue );
+
+			_aabb.extend( p_residue.getAABB() );
 		}
 
 		void Selection::_selectAtom( const Atom & p_atom )
@@ -394,15 +400,33 @@ namespace VTX
 			_addChain( *p_atom.getChainPtr() );
 			_addResidue( *p_atom.getResiduePtr() );
 			_addAtom( p_atom );
+
+			_aabb.extend( p_atom.getAABB() );
 		}
 
-		void Selection::_unselectMolecule( const Molecule & p_molecule ) { _removeMolecule( p_molecule ); }
+		void Selection::_unselectMolecule( const Molecule & p_molecule )
+		{
+			_removeMolecule( p_molecule );
+			_recomputeAABB();
+		}
 
-		void Selection::_unselectChain( const Chain & p_chain ) { _removeChain( p_chain ); }
+		void Selection::_unselectChain( const Chain & p_chain )
+		{
+			_removeChain( p_chain );
+			_recomputeAABB();
+		}
 
-		void Selection::_unselectResidue( const Residue & p_residue ) { _removeResidue( p_residue ); }
+		void Selection::_unselectResidue( const Residue & p_residue )
+		{
+			_removeResidue( p_residue );
+			_recomputeAABB();
+		}
 
-		void Selection::_unselectAtom( const Atom & p_atom ) { _removeAtom( p_atom ); }
+		void Selection::_unselectAtom( const Atom & p_atom )
+		{
+			_removeAtom( p_atom );
+			_recomputeAABB();
+		}
 
 		void Selection::_addMolecule( const Molecule & p_molecule )
 		{
@@ -581,6 +605,7 @@ namespace VTX
 
 			_items.clear();
 			_representations.clear();
+			_aabb = Math::AABB();
 		}
 
 		void Selection::receiveEvent( const Event::VTXEvent & p_event )
@@ -612,5 +637,45 @@ namespace VTX
 			VTX_EVENT( new Event::VTXEventPtr( Event ::SELECTION_CHANGE, this ) );
 		}
 
+		void Selection::_recomputeAABB()
+		{
+			_aabb = Math::AABB();
+
+			for ( const std::pair<ID, MapChainIds> & mapMol : _items )
+			{
+				const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( mapMol.first );
+				if ( molecule.getChainCount() == mapMol.second.size() )
+				{
+					_aabb.extend( molecule.getAABB() );
+					continue;
+				}
+
+				for ( const std::pair<ID, MapResidueIds> & mapChain : mapMol.second )
+				{
+					const Model::Chain & chain = *molecule.getChain( mapChain.first );
+					if ( chain.getResidueCount() == mapChain.second.size() )
+					{
+						_aabb.extend( chain.getAABB() );
+						continue;
+					}
+
+					for ( const std::pair<ID, VecAtomIds> & mapResidue : mapChain.second )
+					{
+						const Model::Residue & residue = *molecule.getResidue( mapResidue.first );
+						if ( residue.getAtomCount() == mapResidue.second.size() )
+						{
+							_aabb.extend( residue.getAABB() );
+							continue;
+						}
+
+						for ( const uint & vectorId : mapResidue.second )
+						{
+							const Model::Atom & atom = *molecule.getAtom( vectorId );
+							_aabb.extend( atom.getAABB() );
+						}
+					}
+				}
+			}
+		}
 	} // namespace Model
 } // namespace VTX

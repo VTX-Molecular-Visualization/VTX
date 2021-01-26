@@ -12,6 +12,8 @@
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "selection/selection_manager.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
 #include "visible.hpp"
 #include <vector>
 
@@ -85,6 +87,23 @@ namespace VTX
 				Model::Selection &	   _selection;
 				std::vector<Model::ID> _models = std::vector<Model::ID>();
 				const bool			   _appendToSelection;
+			};
+
+			class Orient : public BaseAction
+			{
+			  public:
+				explicit Orient( const Model::Selection & p_selection ) : _selection( p_selection ) {}
+
+				virtual void execute() override
+				{
+					VTXApp::get()
+						.getStateMachine()
+						.getItem<State::Visualization>( ID::State::VISUALIZATION )
+						->orientCameraController( _selection.getAABB() );
+				}
+
+			  private:
+				const Model::Selection & _selection;
 			};
 
 			class SelectMolecule : public BaseAction
