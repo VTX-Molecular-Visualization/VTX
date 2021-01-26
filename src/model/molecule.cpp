@@ -431,6 +431,9 @@ namespace VTX
 						parent->setIndexFirstResidue( parent->getIndexFirstResidue() + 1 );
 						parent->setResidueCount( parent->getResidueCount() - 1 );
 					}
+
+					if ( parent->getResidueCount() == 0 )
+						removeChain( parent->getIndex(), p_delete, false, false );
 				}
 				else
 				{
@@ -443,6 +446,9 @@ namespace VTX
 							parent->setResidueCount( parent->getResidueCount() - 1 );
 							lastResidueIndex--;
 						}
+
+						if ( parent->getResidueCount() == 0 )
+							removeChain( parent->getIndex(), p_delete, false, false );
 					}
 				}
 			}
@@ -547,7 +553,7 @@ namespace VTX
 
 			_bonds[ p_id ] = nullptr;
 
-			_bufferBonds[ p_id * 2u ]	  = 0;
+			_bufferBonds[ p_id * 2u ]	   = 0;
 			_bufferBonds[ p_id * 2u + 1u ] = 0;
 
 			if ( p_notifyViews )
