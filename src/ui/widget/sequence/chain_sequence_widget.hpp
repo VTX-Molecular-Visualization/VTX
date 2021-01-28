@@ -20,7 +20,7 @@ namespace VTX
 	namespace Model
 	{
 		class Residue;
-	}
+	} // namespace Model
 
 	namespace UI
 	{
@@ -33,11 +33,7 @@ namespace VTX
 					VTX_WIDGET
 
 				  public:
-					~ChainSequenceWidget()
-					{
-						if ( _chainData != nullptr )
-							delete _chainData;
-					};
+					~ChainSequenceWidget();
 
 					void refresh() override;
 					void localize() override;

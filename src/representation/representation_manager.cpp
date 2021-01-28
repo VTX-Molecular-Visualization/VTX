@@ -45,17 +45,17 @@ namespace VTX
 			_mapRepresentablesLinkedToRepresentation.emplace( instantiatedRepresentation,
 															  std::unordered_set<Generic::BaseRepresentable *>() );
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & mapMolecule : p_selection->getItems() )
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> mapMolecule : p_selection->getItems() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( mapMolecule.first );
 				for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> mapChain : mapMolecule.second )
 				{
 					for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> mapResidue : mapChain.second )
 					{
-						Model::Residue & residue = molecule.getResidue( mapResidue.first );
-						residue.addRepresentation( instantiatedRepresentation );
+						Model::Residue * residue = molecule.getResidue( mapResidue.first );
+						residue->addRepresentation( instantiatedRepresentation );
 
-						_mapRepresentablesLinkedToRepresentation[ instantiatedRepresentation ].emplace( &residue );
+						_mapRepresentablesLinkedToRepresentation[ instantiatedRepresentation ].emplace( residue );
 					}
 				}
 
@@ -152,8 +152,8 @@ namespace VTX
 		{
 			const Model::Representation::InstantiatedRepresentation * res = nullptr;
 
-			for ( const std::pair<const Model::Representation::InstantiatedRepresentation *,
-								  std::unordered_set<Generic::BaseRepresentable *>> & item :
+			for ( std::pair<const Model::Representation::InstantiatedRepresentation *,
+							std::unordered_set<Generic::BaseRepresentable *>> item :
 				  _mapRepresentablesLinkedToRepresentation )
 			{
 				if ( item.first->getName().compare( p_representationName ) == 0 )

@@ -4,6 +4,7 @@
 #include "controller/trackball.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
+#include "model/molecule.hpp"
 #include "object3d/camera.hpp"
 #include "object3d/scene.hpp"
 #include "vtx_app.hpp"
@@ -113,7 +114,8 @@ namespace VTX
 				if ( freefly->isOrienting() )
 				{
 					getItem<Controller::Trackball>( ID::Controller::TRACKBALL )
-						->setDistance( Util::Math::distance( p_aabb.centroid(), freefly->getOrientTargetPosition() ) );
+						->setDistanceForced(
+							Util::Math::distance( p_aabb.centroid(), freefly->getOrientTargetPosition() ) );
 				}
 			}
 		}

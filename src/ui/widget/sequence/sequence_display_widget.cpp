@@ -1,4 +1,5 @@
 #include "sequence_display_widget.hpp"
+#include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/selection.hpp"
 #include "selection/selection_manager.hpp"

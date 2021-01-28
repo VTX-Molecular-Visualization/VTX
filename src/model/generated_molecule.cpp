@@ -119,31 +119,7 @@ namespace VTX::Model
 					}
 					else
 					{
-<<<<<<< HEAD
-						const Model::Atom & atom = molecule.getAtom( atomId );
-
-						Model::Atom & generatedAtom		 = addAtom();
-						const uint	  generatedAtomIndex = getAtomCount() - 1;
-						generatedAtom.setIndex( generatedAtomIndex );
-
-						mapAtomIds.emplace( atom.getIndex(), generatedAtomIndex );
-
-						generatedAtom.setMoleculePtr( this );
-						generatedAtom.setChainPtr( &generatedChain );
-						generatedAtom.setResiduePtr( &generatedResidue );
-						generatedAtom.setSymbol( atom.getSymbol() );
-						generatedAtom.setName( atom.getName() );
-						generatedAtom.setColor( Model::Atom::SYMBOL_COLOR[ int( atom.getSymbol() ) ] );
-						generatedAtom.setType( atom.getType() );
-						getBufferAtomRadius().emplace_back( generatedAtom.getVdwRadius() );
-
-						// Copy atom position for each frame
-						for ( int i = 0; i < getAtomPositionFrames().size(); i++ )
-							getAtomPositionFrame( i ).emplace_back(
-								molecule.getAtomPositionFrame( i )[ atom.getIndex() ] );
-=======
 						counter++;
->>>>>>> origin/dev
 					}
 				}
 			}
@@ -197,10 +173,6 @@ namespace VTX::Model
 				continue;
 			}
 
-<<<<<<< HEAD
-				if ( mapAtomIds.find( bond.getIndexFirstAtom() ) != mapAtomIds.end()
-					 && mapAtomIds.find( bond.getIndexSecondAtom() ) != mapAtomIds.end() )
-=======
 			Model::Chain & generatedChain = addChain();
 			_copyChainData( generatedChain, *chain );
 			generatedChain.setResidueCount( uint( chainData.second.size() ) );
@@ -209,7 +181,6 @@ namespace VTX::Model
 			{
 				const Model::Residue * const residue = molecule.getResidue( residueData.first );
 				if ( residue->getAtomCount() == residueData.second.size() )
->>>>>>> origin/dev
 				{
 					_extractFullResidue( molecule, residueData.first, &generatedChain );
 					continue;

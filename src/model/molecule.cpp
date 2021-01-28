@@ -34,6 +34,12 @@ namespace VTX
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
 		}
 
+		void Molecule::setPdbIdCode( const std::string & p_pdbId )
+		{
+			_pdbIdCode = p_pdbId;
+			BaseModel::setDefaultName( &_pdbIdCode );
+		}
+
 		Chain & Molecule::addChain()
 		{
 			Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
@@ -60,6 +66,21 @@ namespace VTX
 			Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
 			_bonds.emplace_back( bond );
 			return *bond;
+		}
+
+		const Chain * const Molecule::getPreviousChain( const uint p_idBaseChain ) const
+		{
+			for ( int i = p_idBaseChain - 1; i >= 0; i++ )
+				if ( _chains[ i ] != nullptr )
+					return _chains[ i ];
+			return nullptr;
+		}
+		const Chain * const Molecule::getNextChain( const uint p_idBaseChain ) const
+		{
+			for ( int i = p_idBaseChain + 1; i < _chains.size(); i++ )
+				if ( _chains[ i ] != nullptr )
+					return _chains[ i ];
+			return nullptr;
 		}
 
 		void Molecule::_init()
@@ -145,20 +166,6 @@ namespace VTX
 
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
-		}
-
-		void Molecule::setFrame( const uint p_frameIdx )
-		{
-			if ( p_frameIdx > getFrameCount() )
-			{
-				VTX_WARNING( "Frame " + std::to_string( p_frameIdx )
-							 + " does not exists / Count: " + std::to_string( getFrameCount() ) );
-				return;
-			}
-
-			_currentFrame = p_frameIdx;
-			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
-			_secondaryStructure->setCurrentFrame();
 		}
 
 		void Molecule::refreshBondsBuffer()

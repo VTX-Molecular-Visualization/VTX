@@ -286,13 +286,6 @@ namespace VTX
 					switch ( _colorMode )
 					{
 					case COLOR_MODE::JMOL:
-<<<<<<< HEAD
-						_bufferColors.emplace_back( COLORS_JMOL[ uint( residue.getSecondaryStructure() ) ] );
-						break;
-					case COLOR_MODE::PROTEIN: _bufferColors.emplace_back( residue.getMoleculePtr()->getColor() ); break;
-					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue.getChainPtr()->getColor() ); break;
-					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue.getColor() ); break;
-=======
 						_bufferColors.emplace_back( COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
 						break;
 					case COLOR_MODE::PROTEIN:
@@ -300,7 +293,7 @@ namespace VTX
 						break;
 					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue->getChainPtr()->getColor() ); break;
 					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue->getColor() ); break;
->>>>>>> origin/dev
+
 					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
 					}
 				}

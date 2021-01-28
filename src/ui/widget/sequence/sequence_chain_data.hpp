@@ -26,27 +26,16 @@ namespace VTX
 				class SequenceChainData
 				{
 				  public:
-					SequenceChainData( const Model::Chain & p_chain ) :
-						_chain( p_chain ), _molecule( *( p_chain.getMoleculePtr() ) )
-					{
-						_generateDataSet();
-						_generateString();
-					};
-					~SequenceChainData()
-					{
-						for ( auto it : _dataset )
-							delete it;
-
-						_dataset.clear();
-					}
+					SequenceChainData( const Model::Chain & p_chain );
+					~SequenceChainData();
 
 					const QString & getSequenceString() const { return _strSequence; };
 					const QString & getScale() const { return _strScale; }
 
-					uint					getResidueCount() const { return _chain.getResidueCount(); };
-					uint					getIndexFirstResidue() const { return _chain.getIndexFirstResidue(); };
-					Model::Molecule * const getMoleculePtr() const { return _chain.getMoleculePtr(); };
-					uint					getChainIndex() const { return _chain.getIndex(); };
+					inline uint getResidueCount() const { return _chain.getResidueCount(); };
+					inline uint getIndexFirstResidue() const { return _chain.getIndexFirstResidue(); };
+					inline Model::Molecule * const getMoleculePtr() const { return _chain.getMoleculePtr(); };
+					inline uint					   getChainIndex() const { return _chain.getIndex(); };
 
 					Model::Residue * const getResidueFromCharIndex( const uint p_charIndex ) const;
 					Model::Residue * const getClosestResidueFromCharIndex( const uint p_charIndex,
@@ -54,7 +43,7 @@ namespace VTX
 					uint				   getCharIndex( const uint p_residueIndex ) const;
 					uint				   getPaintCharIndex( const uint p_residueIndex ) const;
 					uint				   getPaintLength( const uint p_localResidueIndex ) const;
-					uint				   getCharCount() const { return _dataset.back()->getLastCharIndex(); };
+					inline uint			   getCharCount() const { return _dataset.back()->getLastCharIndex(); };
 
 				  private:
 					const Model::Molecule &						   _molecule;
@@ -62,11 +51,7 @@ namespace VTX
 					std::vector<Dataset::SequenceDisplayDataset *> _dataset
 						= std::vector<Dataset::SequenceDisplayDataset *>();
 
-					Model::Residue * const _getResidue( const uint p_localResidueIndex ) const
-					{
-						const uint moleculeResidueIndex = _chain.getIndexFirstResidue() + p_localResidueIndex;
-						return _chain.getMoleculePtr()->getResidue( moleculeResidueIndex );
-					}
+					Model::Residue * const _getResidue( const uint p_localResidueIndex ) const;
 
 					Dataset::SequenceDisplayDataset * const getDataset( const uint p_residueIndex ) const;
 					Dataset::SequenceDisplayDataset * const getDataset_recursive(

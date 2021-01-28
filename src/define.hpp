@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "math/vec3.hpp"
 #include <filesystem>
 #include <glm/detail/qualifier.hpp>
 #include <glm/detail/type_quat.hpp>

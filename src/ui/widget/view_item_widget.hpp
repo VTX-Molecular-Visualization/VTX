@@ -6,12 +6,15 @@
 #endif
 
 #include "base_manual_widget.hpp"
-#include "model/base_model.hpp"
 #include <QWidget>
 #include <type_traits>
 
 namespace VTX
 {
+	namespace Model
+	{
+		class BaseModel;
+	}
 	namespace UI
 	{
 		namespace Widget
@@ -22,16 +25,16 @@ namespace VTX
 				VTX_WIDGET
 
 			  public:
-				ViewItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
+				ViewItemWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 
-				inline M *	getModel() { return _model; };
+				inline M *	getModel() { return _model; }
 				inline void setModel( M * const p_model )
 				{
 					_model = p_model;
 					refresh();
-				};
+				}
 
-				virtual void refresh() {};
+				virtual void refresh() {}
 
 			  protected:
 				M * _model = nullptr;

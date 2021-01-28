@@ -26,7 +26,7 @@ namespace VTX
 					_dataset.clear();
 				}
 
-				Model::Residue & SequenceChainData::_getResidue( const uint p_localResidueIndex ) const
+				Model::Residue * const SequenceChainData::_getResidue( const uint p_localResidueIndex ) const
 				{
 					const uint moleculeResidueIndex = _chain.getIndexFirstResidue() + p_localResidueIndex;
 					return _chain.getMoleculePtr()->getResidue( moleculeResidueIndex );

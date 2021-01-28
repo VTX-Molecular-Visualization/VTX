@@ -56,37 +56,16 @@ namespace VTX
 			inline const std::string & getName() const { return _name; }
 			inline void				   setName( const std::string & p_name ) { _name = p_name; }
 			inline const std::string & getPdbIdCode() const { return _pdbIdCode; }
-			inline void				   setPdbIdCode( const std::string & p_pdbId )
-			{
-				_pdbIdCode = p_pdbId;
-				BaseModel::setDefaultName( &_pdbIdCode );
-			}
+			void					   setPdbIdCode( const std::string & p_pdbId );
 
 			inline const VTX::FilePath & getPath() const { return _path; }
 			inline void					 setPath( const VTX::FilePath & p_path ) { _path = p_path; }
 
-			inline Chain & addChain()
-			{
-				Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
-				_chains.emplace_back( chain );
-				return *chain;
-			}
-			inline Chain * const	   getChain( const uint p_idx ) { return _chains[ p_idx ]; }
-			inline const Chain * const getChain( const uint p_idx ) const { return _chains[ p_idx ]; }
-			inline const Chain * const getPreviousChain( const uint p_idBaseChain ) const
-			{
-				for ( int i = p_idBaseChain - 1; i >= 0; i++ )
-					if ( _chains[ i ] != nullptr )
-						return _chains[ i ];
-				return nullptr;
-			}
-			inline const Chain * const getNextChain( const uint p_idBaseChain ) const
-			{
-				for ( int i = p_idBaseChain + 1; i < _chains.size(); i++ )
-					if ( _chains[ i ] != nullptr )
-						return _chains[ i ];
-				return nullptr;
-			}
+			Chain &								addChain();
+			inline Chain * const				getChain( const uint p_idx ) { return _chains[ p_idx ]; }
+			inline const Chain * const			getChain( const uint p_idx ) const { return _chains[ p_idx ]; }
+			const Chain * const					getPreviousChain( const uint p_idBaseChain ) const;
+			const Chain * const					getNextChain( const uint p_idBaseChain ) const;
 			inline std::vector<Chain *> &		getChains() { return _chains; }
 			inline const std::vector<Chain *> & getChains() const { return _chains; }
 			void								removeChain( const uint p_id,
@@ -94,12 +73,7 @@ namespace VTX
 															 const bool p_recursive	  = true,
 															 const bool p_notifyViews = true );
 
-			inline Residue & addResidue()
-			{
-				Residue * const residue = MVC::MvcManager::get().instantiateModel<Residue>();
-				_residues.emplace_back( residue );
-				return *residue;
-			}
+			Residue &							  addResidue();
 			inline Residue * const				  getResidue( const uint p_idx ) { return _residues[ p_idx ]; }
 			inline const Residue * const		  getResidue( const uint p_idx ) const { return _residues[ p_idx ]; }
 			inline std::vector<Residue *> &		  getResidues() { return _residues; }
@@ -110,12 +84,7 @@ namespace VTX
 																 const bool p_checkParentUpdate = true,
 																 const bool p_notifyViews		= true );
 
-			inline Atom & addAtom()
-			{
-				Atom * const atom = MVC::MvcManager::get().instantiateModel<Atom>();
-				_atoms.emplace_back( atom );
-				return *atom;
-			}
+			Atom &							   addAtom();
 			inline Atom * const				   getAtom( const uint p_idx ) { return _atoms[ p_idx ]; }
 			inline const Atom * const		   getAtom( const uint p_idx ) const { return _atoms[ p_idx ]; }
 			inline std::vector<Atom *> &	   getAtoms() { return _atoms; }
@@ -126,24 +95,15 @@ namespace VTX
 														   const bool p_checkParentUpdate = true,
 														   const bool p_notifyViews		  = true );
 
-			inline Bond & addBond()
-			{
-				Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
-				_bonds.emplace_back( bond );
-				return *bond;
-			}
+			Bond &							   addBond();
 			inline Bond * const				   getBond( const uint p_idx ) { return _bonds[ p_idx ]; }
 			inline const Bond * const		   getBond( const uint p_idx ) const { return _bonds[ p_idx ]; }
 			inline std::vector<Bond *> &	   getBonds() { return _bonds; }
 			inline const std::vector<Bond *> & getBonds() const { return _bonds; }
 			void removeBond( const uint p_id, const bool p_delete = true, const bool p_notifyViews = true );
 
-			inline const SecondaryStructure &		getSecondaryStructure() const { return *_secondaryStructure; }
-			inline SecondaryStructure &				getSecondaryStructure() { return *_secondaryStructure; }
-			inline const SecondaryStructure::ALGO & getSecondaryStructureAlgo() const
-			{
-				return _secondaryStructureAlgo;
-			}
+			inline const SecondaryStructure & getSecondaryStructure() const { return *_secondaryStructure; }
+			inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
 
 			inline const std::string & getSequence() const { return _sequence; }
 			inline std::string &	   getSequence() { return _sequence; }
@@ -219,16 +179,8 @@ namespace VTX
 				refreshColors();
 			}
 			inline void refreshColors() { _fillBufferAtomColors(); }
-<<<<<<< HEAD
 			void		refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const );
-=======
-			inline void refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection )
-			{
-				_fillBufferAtomSelections( p_selection );
-				_secondaryStructure->refreshSelection( p_selection );
-			}
-			void										   refreshBondsBuffer();
->>>>>>> origin/dev
+			void		refreshBondsBuffer();
 
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
