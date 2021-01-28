@@ -15,7 +15,8 @@ namespace VTX
 			}
 		}
 
-		void EventManager::registerEventReceiverVTX( const VTX_EVENT & p_event, BaseEventReceiverVTX * const p_receiver )
+		void EventManager::registerEventReceiverVTX( const VTX_EVENT &			  p_event,
+													 BaseEventReceiverVTX * const p_receiver )
 		{
 			if ( _receiversVTX.find( p_event ) == _receiversVTX.end() )
 			{
@@ -25,21 +26,43 @@ namespace VTX
 			_receiversVTX.at( p_event ).emplace( p_receiver );
 		}
 
-		void EventManager::unregisterEventReceiverVTX( const VTX_EVENT & p_event, BaseEventReceiverVTX * const p_receiver ) { _receiversVTX.at( p_event ).erase( p_receiver ); }
+		void EventManager::unregisterEventReceiverVTX( const VTX_EVENT &			p_event,
+													   BaseEventReceiverVTX * const p_receiver )
+		{
+			_receiversVTX.at( p_event ).erase( p_receiver );
+		}
 
-		void EventManager::registerEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver ) { _receiversKeyboard.emplace( p_receiver ); }
+		void EventManager::registerEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver )
+		{
+			_receiversKeyboard.emplace( p_receiver );
+		}
 
-		void EventManager::unregisterEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver ) { _receiversKeyboard.erase( p_receiver ); }
+		void EventManager::unregisterEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver )
+		{
+			_receiversKeyboard.erase( p_receiver );
+		}
 
-		void EventManager::registerEventReceiverMouse( BaseEventReceiverMouse * const p_receiver ) { _receiversMouse.emplace( p_receiver ); }
+		void EventManager::registerEventReceiverMouse( BaseEventReceiverMouse * const p_receiver )
+		{
+			_receiversMouse.emplace( p_receiver );
+		}
 
-		void EventManager::unregisterEventReceiverMouse( BaseEventReceiverMouse * const p_receiver ) { _receiversMouse.erase( p_receiver ); }
+		void EventManager::unregisterEventReceiverMouse( BaseEventReceiverMouse * const p_receiver )
+		{
+			_receiversMouse.erase( p_receiver );
+		}
 
-		void EventManager::registerEventReceiverWheel( BaseEventReceiverWheel * const p_receiver ) { _receiversWheel.emplace( p_receiver ); }
+		void EventManager::registerEventReceiverWheel( BaseEventReceiverWheel * const p_receiver )
+		{
+			_receiversWheel.emplace( p_receiver );
+		}
 
-		void EventManager::unregisterEventReceiverWheel( BaseEventReceiverWheel * const p_receiver ) { _receiversWheel.erase( p_receiver ); }
+		void EventManager::unregisterEventReceiverWheel( BaseEventReceiverWheel * const p_receiver )
+		{
+			_receiversWheel.erase( p_receiver );
+		}
 
-		void EventManager::fireEventVTX( VTXEvent * const p_event )
+		void EventManager::fireEventVTX( VTXEvent * const p_event, const bool p_force )
 		{
 #ifdef DELAY_EVENTS
 			_lock();

@@ -41,7 +41,7 @@ namespace VTX
 			_molecules.emplace( p_molecule, 0.f );
 			_aabb.extend( p_molecule->getAABB() );
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, p_molecule ) );
-			VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 
 		void Scene::removeMolecule( MoleculePtr const p_molecule )
@@ -49,7 +49,7 @@ namespace VTX
 			_molecules.erase( p_molecule );
 			_computeAABB();
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_REMOVED, p_molecule ) );
-			VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 
 		void Scene::addPath( PathPtr const p_path ) { _paths.emplace_back( p_path ); }
@@ -59,7 +59,7 @@ namespace VTX
 			_meshes.emplace_back( p_mesh );
 			_aabb.extend( p_mesh->getAABB() );
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_ADDED, p_mesh ) );
-			VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 
 		void Scene::removeMesh( MeshTrianglePtr const p_mesh )
@@ -67,7 +67,7 @@ namespace VTX
 			_meshes.erase( std::find( _meshes.begin(), _meshes.end(), p_mesh ) );
 			_computeAABB();
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_REMOVED, p_mesh ) );
-			VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 
 		void Scene::_computeAABB()

@@ -82,7 +82,7 @@ namespace VTX
 					if ( atoms.size() > 0 )
 						_selection.selectAtoms( atoms, true );
 
-					VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
@@ -116,7 +116,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_selection.selectMolecules( _molecules, _appendToSelection );
-					VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
@@ -139,7 +139,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_selection.selectChain( _chain, _appendToSelection );
-					VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
@@ -173,7 +173,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_selection.selectResidues( _residues, _appendToSelection );
-					VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
@@ -196,7 +196,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_selection.selectAtom( _atom, _appendToSelection );
-					VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
@@ -218,7 +218,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_selection.selectRepresentation( _representation );
-					VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
@@ -237,7 +237,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_selection.unselectMolecule( _molecule );
-					VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
@@ -256,7 +256,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_selection.unselectChain( _chain );
-					VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
@@ -275,7 +275,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_selection.unselectResidue( _residue );
-					VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
@@ -294,7 +294,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_selection.unselectAtom( _atom );
-					VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
@@ -356,7 +356,7 @@ namespace VTX
 						molecule.computeRepresentationTargets();
 					}
 
-					VTXApp::get().MASK |= VTX_MASK_SCENE_UPDATED;
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
