@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "ui/widget/settings/setting_widget_enum.hpp"
 #include "ui_main_window.h"
 #include "widget/base_widget.hpp"
 #include "widget/console/console_widget.hpp"
@@ -15,6 +16,7 @@
 #include "widget/scene/scene_widget.hpp"
 #include "widget/selection/selection_widget.hpp"
 #include "widget/sequence/sequence_widget.hpp"
+#include "widget/settings/setting_widget.hpp"
 #include "widget/status_bar/status_bar_widget.hpp"
 #include <QCloseEvent>
 #include <QMainWindow>
@@ -31,21 +33,19 @@ namespace VTX
 			MainWindow( QWidget * = 0 );
 			~MainWindow();
 
-			inline const Widget::Render::OpenGLWidget & getOpenGLWidget() const { return _renderWidget->getOpenGLWidget(); }
-			inline Widget::Render::OpenGLWidget &		getOpenGLWidget() { return _renderWidget->getOpenGLWidget(); }
+			inline const Widget::Render::OpenGLWidget & getOpenGLWidget() const
+			{
+				return _renderWidget->getOpenGLWidget();
+			}
+			inline Widget::Render::OpenGLWidget & getOpenGLWidget() { return _renderWidget->getOpenGLWidget(); }
 
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 			void closeEvent( QCloseEvent * ) override;
 
-			inline void toggleSequenceWindow()
-			{
-				if ( _sequenceWidget->isVisible() )
-					_sequenceWidget->hide();
-				else
-					_sequenceWidget->show();
-			}
-
-			inline bool getWidgetVisibility( const ID::VTX_ID & p_winId ) const { return getWidget( p_winId ).isVisible(); };
+			bool getWidgetVisibility( const ID::VTX_ID & p_winId ) const;
+			void toggleSequenceWindow() const;
+			void openSettingWindow() const;
+			void openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const;
 
 		  private:
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
@@ -56,6 +56,7 @@ namespace VTX
 			Widget::Console::ConsoleWidget *	 _consoleWidget	  = nullptr;
 			Widget::Sequence::SequenceWidget *	 _sequenceWidget  = nullptr;
 			Widget::Selection::SelectionWidget * _selectionWidget = nullptr;
+			Widget::Settings::SettingWidget *	 _settingWidget	  = nullptr;
 
 			Widget::StatusBar::StatusBarWidget * _statusBarWidget = nullptr;
 
@@ -79,6 +80,8 @@ namespace VTX
 					widget = _sequenceWidget;
 				else if ( p_winId == ID::UI::Window::SELECTION )
 					widget = _selectionWidget;
+				else if ( p_winId == ID::UI::Window::SETTINGS )
+					widget = _settingWidget;
 
 				return *widget;
 			}

@@ -77,22 +77,12 @@ namespace VTX
 				_chains.emplace_back( chain );
 				return *chain;
 			}
-			inline Chain * const	   getChain( const uint p_idx ) { return _chains[ p_idx ]; }
-			inline const Chain * const getChain( const uint p_idx ) const { return _chains[ p_idx ]; }
-			inline const Chain * const getPreviousChain( const uint p_idBaseChain ) const
-			{
-				for ( int i = p_idBaseChain - 1; i >= 0; i++ )
-					if ( _chains[ i ] != nullptr )
-						return _chains[ i ];
-				return nullptr;
-			}
-			inline const Chain * const getNextChain( const uint p_idBaseChain ) const
-			{
-				for ( int i = p_idBaseChain + 1; i < _chains.size(); i++ )
-					if ( _chains[ i ] != nullptr )
-						return _chains[ i ];
-				return nullptr;
-			}
+			inline Chain * const				getChain( const uint p_idx ) { return _chains[ p_idx ]; }
+			inline const Chain * const			getChain( const uint p_idx ) const { return _chains[ p_idx ]; }
+			const Chain * const					getPreviousChain( const uint p_idBaseChain ) const;
+			Chain * const						getPreviousChain( const uint p_idBaseChain );
+			const Chain * const					getNextChain( const uint p_idBaseChain ) const;
+			Chain * const						getNextChain( const uint p_idBaseChain );
 			inline std::vector<Chain *> &		getChains() { return _chains; }
 			inline const std::vector<Chain *> & getChains() const { return _chains; }
 			void								removeChain( const uint p_id,
@@ -108,6 +98,10 @@ namespace VTX
 			}
 			inline Residue * const				  getResidue( const uint p_idx ) { return _residues[ p_idx ]; }
 			inline const Residue * const		  getResidue( const uint p_idx ) const { return _residues[ p_idx ]; }
+			const Residue * const				  getPreviousResidue( const uint p_idBaseResidue ) const;
+			Residue * const						  getPreviousResidue( const uint p_idBaseResidue );
+			const Residue * const				  getNextResidue( const uint p_idBaseResidue ) const;
+			Residue * const						  getNextResidue( const uint p_idBaseResidue );
 			inline std::vector<Residue *> &		  getResidues() { return _residues; }
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
 			void								  removeResidue( const uint p_id,
@@ -230,7 +224,7 @@ namespace VTX
 				_fillBufferAtomSelections( p_selection );
 				_secondaryStructure->refreshSelection( p_selection );
 			}
-			void										   refreshBondsBuffer();
+			void refreshBondsBuffer();
 
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }

@@ -367,6 +367,80 @@ namespace VTX
 			}
 		}
 
+		const Chain * const Molecule::getPreviousChain( const uint p_idBaseChain ) const
+		{
+			if ( p_idBaseChain == 0 )
+				return nullptr;
+
+			for ( uint i = p_idBaseChain - 1; i > 0; i-- )
+				if ( _chains[ i ] != nullptr )
+					return _chains[ i ];
+
+			return _chains[ 0 ];
+		}
+		Chain * const Molecule::getPreviousChain( const uint p_idBaseChain )
+		{
+			if ( p_idBaseChain == 0 )
+				return nullptr;
+
+			for ( uint i = p_idBaseChain - 1; i > 0; i-- )
+				if ( _chains[ i ] != nullptr )
+					return _chains[ i ];
+
+			return _chains[ 0 ];
+		}
+		const Chain * const Molecule::getNextChain( const uint p_idBaseChain ) const
+		{
+			for ( uint i = p_idBaseChain + 1; i < _chains.size(); i++ )
+				if ( _chains[ i ] != nullptr )
+					return _chains[ i ];
+			return nullptr;
+		}
+		Chain * const Molecule::getNextChain( const uint p_idBaseChain )
+		{
+			for ( uint i = p_idBaseChain + 1; i < _chains.size(); i++ )
+				if ( _chains[ i ] != nullptr )
+					return _chains[ i ];
+			return nullptr;
+		}
+
+		const Residue * const Molecule::getPreviousResidue( const uint p_idBaseResidue ) const
+		{
+			if ( p_idBaseResidue == 0 )
+				return nullptr;
+
+			for ( uint i = p_idBaseResidue - 1; i > 0; i-- )
+				if ( _residues[ i ] != nullptr )
+					return _residues[ i ];
+
+			return _residues[ 0 ];
+		}
+		Residue * const Molecule::getPreviousResidue( const uint p_idBaseResidue )
+		{
+			if ( p_idBaseResidue == 0 )
+				return nullptr;
+
+			for ( uint i = p_idBaseResidue - 1; i > 0; i-- )
+				if ( _residues[ i ] != nullptr )
+					return _residues[ i ];
+
+			return _residues[ 0 ];
+		}
+		const Residue * const Molecule::getNextResidue( const uint p_idBaseResidue ) const
+		{
+			for ( uint i = p_idBaseResidue + 1; i < _residues.size(); i++ )
+				if ( _residues[ i ] != nullptr )
+					return _residues[ i ];
+			return nullptr;
+		}
+		Residue * const Molecule::getNextResidue( const uint p_idBaseResidue )
+		{
+			for ( uint i = p_idBaseResidue + 1; i < _residues.size(); i++ )
+				if ( _residues[ i ] != nullptr )
+					return _residues[ i ];
+			return nullptr;
+		}
+
 		void Molecule::removeChain( const uint p_id,
 									const bool p_delete,
 									const bool p_recursive,

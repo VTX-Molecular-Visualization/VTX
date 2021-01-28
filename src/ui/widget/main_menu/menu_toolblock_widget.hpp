@@ -12,73 +12,67 @@
 #include <QWidget>
 #include <vector>
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu
 {
-	namespace UI
+	class MenuToolBlockWidget : public BaseManualWidget<QWidget>
 	{
-		namespace Widget
+		VTX_WIDGET
+
+	  private:
+		class TmpGridStructure
 		{
-			namespace MainMenu
+		  private:
+			inline static const size_t MAX_COLUMN_COUNT		 = 5;
+			inline static const size_t MAX_ROW_COUNT		 = 3;
+			inline static const int	   GRID_LAYOUT_ROW_COUNT = 6;
+
+		  public:
+			TmpGridStructure()
 			{
-				class MenuToolBlockWidget : public BaseManualWidget<QWidget>
-				{
-					VTX_WIDGET
+				_columnsData = std::vector<std::vector<MenuToolButtonWidget *> *>();
+				_columnsData.reserve( MAX_COLUMN_COUNT );
+			};
+			~TmpGridStructure();
 
-				  private:
-					class TmpGridStructure
-					{
-					  private:
-						inline static const size_t MAX_COLUMN_COUNT		 = 5;
-						inline static const size_t MAX_ROW_COUNT		 = 3;
-						inline static const int	   GRID_LAYOUT_ROW_COUNT = 6;
+			const size_t getNbColumns() { return _columnsData.size(); };
 
-					  public:
-						TmpGridStructure()
-						{
-							_columnsData = std::vector<std::vector<MenuToolButtonWidget *> *>();
-							_columnsData.reserve( MAX_COLUMN_COUNT );
-						};
-						~TmpGridStructure();
+			void pushWidgetInColumn( const int p_column, MenuToolButtonWidget * const p_widget );
+			void fillGridLayout( QGridLayout & p_gridLayout, const int p_startRow = 0 );
 
-						const size_t getNbColumns() { return _columnsData.size(); };
+		  private:
+			void addNewColumn( const size_t p_nbColumns = 1 );
 
-						void pushWidgetInColumn( const int p_column, MenuToolButtonWidget * const p_widget );
-						void fillGridLayout( QGridLayout & p_gridLayout, const int p_startRow = 0 );
+			std::vector<std::vector<MenuToolButtonWidget *> *> _columnsData;
+		};
 
-					  private:
-						void addNewColumn( const size_t p_nbColumns = 1 );
+	  public:
+		~MenuToolBlockWidget()
+		{
+			if ( _tmpStructure != nullptr )
+				delete _tmpStructure;
+		};
 
-						std::vector<std::vector<MenuToolButtonWidget *> *> _columnsData;
-					};
+		void localize() override;
 
-				  public:
-					~MenuToolBlockWidget()
-					{
-						if ( _tmpStructure != nullptr )
-							delete _tmpStructure;
-					};
+		void setTitle( const QString & p_title );
+		void validate();
 
-					void localize() override;
+		void pushButton( MenuToolButtonWidget & p_toolButton, const int p_column );
+		int	 pushButtonInNextColumn( MenuToolButtonWidget & p_toolButton );
 
-					void setTitle( const QString & p_title );
-					void validate();
+	  protected:
+		MenuToolBlockWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
+		{
+			_tmpStructure = new TmpGridStructure();
+		};
+		virtual void _setupUi( const QString & p_name ) override;
+		virtual void _setupSlots() override;
 
-					void pushButton( MenuToolButtonWidget & p_toolButton, const int p_column );
-					void pushButtonInNextColumn( MenuToolButtonWidget & p_toolButton );
+	  private:
+		QGridLayout * _gridLayout = nullptr;
+		QLabel *	  _title	  = nullptr;
 
-				  protected:
-					MenuToolBlockWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) { _tmpStructure = new TmpGridStructure(); };
-					virtual void _setupUi( const QString & p_name ) override;
-					virtual void _setupSlots() override;
-
-				  private:
-					QGridLayout * _gridLayout = nullptr;
-					QLabel *	  _title	  = nullptr;
-
-					TmpGridStructure * _tmpStructure;
-				};
-			} // namespace MainMenu
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+		TmpGridStructure * _tmpStructure;
+	};
+} // namespace VTX::UI::Widget::MainMenu
 #endif

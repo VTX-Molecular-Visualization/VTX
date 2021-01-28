@@ -89,6 +89,11 @@ namespace VTX
 		static const bool ACTIVE_OUTLINE_DEFAULT;
 		bool			  activeOutline = ACTIVE_OUTLINE_DEFAULT;
 
+		static const float OUTLINE_THICKNESS_DEFAULT;
+		static const float OUTLINE_THICKNESS_MIN;
+		static const float OUTLINE_THICKNESS_MAX;
+		bool			   outlineThickness = OUTLINE_THICKNESS_DEFAULT;
+
 		static const Color::Rgb OUTLINE_COLOR_DEFAULT;
 		Color::Rgb				outlineColor = OUTLINE_COLOR_DEFAULT;
 
@@ -157,6 +162,9 @@ namespace VTX
 
 		static const float CONTROLLER_ELASTICITY_FACTOR;
 		static const float CONTROLLER_ELASTICITY_THRESHOLD;
+
+		// Molecules
+		static const float COPIED_MOLECULE_OFFSET;
 
 		// Auto rotate.
 		static const float AUTO_ROTATE_SPEED_DEFAULT;

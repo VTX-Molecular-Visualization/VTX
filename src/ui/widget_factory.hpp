@@ -28,7 +28,8 @@ namespace VTX
 			}
 
 		  public:
-			template<typename W, typename = std::enable_if<std::is_base_of<W, Widget::BaseManualWidgetInitializer>::value>>
+			template<typename W,
+					 typename = std::enable_if<std::is_base_of<Widget::BaseManualWidgetInitializer, W>::value>>
 			W * const instantiateWidget( QWidget * const p_parent, const std::string & p_name ) const
 			{
 				QString qstringName = QString::fromStdString( p_name );
@@ -49,7 +50,10 @@ namespace VTX
 					 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
 					 typename = std::enable_if<std::is_base_of<View::BaseView<M>, V>::value>,
 					 typename = std::enable_if<std::is_base_of<Widget::BaseManualWidgetInitializer, V>::value>>
-			V * const instantiateViewWidget( M * const p_model, const ID::VTX_ID & p_id, QWidget * const p_parent, const std::string & p_name ) const
+			V * const instantiateViewWidget( M * const			 p_model,
+											 const ID::VTX_ID &	 p_id,
+											 QWidget * const	 p_parent,
+											 const std::string & p_name ) const
 			{
 				QString qstringName = QString::fromStdString( p_name );
 

@@ -14,15 +14,17 @@ namespace VTX
 		{
 			namespace Console
 			{
-				ConsoleWidget::ConsoleWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) { _registerEvent( Event::Global::LOG_CONSOLE ); }
-
-				ConsoleWidget::~ConsoleWidget() { delete _listWidget; }
+				ConsoleWidget::ConsoleWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
+				{
+					_registerEvent( Event::Global::LOG_CONSOLE );
+				}
 
 				void ConsoleWidget::receiveEvent( const Event::VTXEvent & p_event )
 				{
 					const Event::VTXEventLog & event = dynamic_cast<const Event::VTXEventLog &>( p_event );
 					QListWidget * const		   list	 = _listWidget;
-					list->addItem( QString( ( "[" + event.date + "] " + "[" + event.level + "] " + event.message ).c_str() ) );
+					list->addItem(
+						QString( ( "[" + event.date + "] " + "[" + event.level + "] " + event.message ).c_str() ) );
 					list->scrollToBottom();
 				}
 
@@ -30,7 +32,7 @@ namespace VTX
 				{
 					BaseManualWidget::_setupUi( p_name );
 
-					_listWidget = new CustomWidget::DockWindowMainWidget<QListWidget>();
+					_listWidget = new CustomWidget::DockWindowMainWidget<QListWidget>( this );
 					_listWidget->setObjectName( QString::fromUtf8( "logList" ) );
 					_listWidget->setSizeHint( Style::CONSOLE_PREFERED_SIZE );
 

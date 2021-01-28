@@ -5,57 +5,40 @@
 #pragma once
 #endif
 
+#include "menu_visualization_render_effect_button_widget.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
+#include <vector>
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu::Visualization
 {
-	namespace UI
+	class MenuVisualizationRenderEffectsWidget : public MenuToolBlockWidget
 	{
-		namespace Widget
-		{
-			namespace MainMenu
-			{
-				namespace Visualization
-				{
-					class MenuVisualizationRenderEffectsWidget : public MenuToolBlockWidget
-					{
-						VTX_WIDGET
+		VTX_WIDGET
 
-					  public:
-						~MenuVisualizationRenderEffectsWidget();
-						void localize() override;
+	  public:
+		~MenuVisualizationRenderEffectsWidget();
+		void localize() override;
 
-					  protected:
-						MenuVisualizationRenderEffectsWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
-						void _setupUi( const QString & p_name ) override;
-						void _setupSlots() override;
+	  protected:
+		MenuVisualizationRenderEffectsWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 
-					  private:
-						// Predefined Preset list
-						MenuToolButtonWidget * _predefinedPreset1 = nullptr;
-						MenuToolButtonWidget * _predefinedPreset2 = nullptr;
-						MenuToolButtonWidget * _predefinedPreset3 = nullptr;
+	  private:
+		std::vector<RenderEffectPresetButton *> _presetButtons = std::vector<RenderEffectPresetButton *>();
 
-						// Custom Preset list
-						MenuToolButtonWidget * _customPreset1 = nullptr;
-						MenuToolButtonWidget * _customPreset2 = nullptr;
-						MenuToolButtonWidget * _customPreset3 = nullptr;
+		// Create Preset
+		MenuToolButtonWidget * _createPreset = nullptr;
 
-						// Create Preset
-						MenuToolButtonWidget * _createPreset = nullptr;
+		// Render Feature
+		MenuToolButtonWidget * _fullscreen	 = nullptr;
+		MenuToolButtonWidget * _takeSnapshot = nullptr;
 
-						// Render Feature
-						MenuToolButtonWidget * _fullscreen	 = nullptr;
-						MenuToolButtonWidget * _takeSnapshot = nullptr;
-
-						// ACTIONS //
-						void _takeSnapshotAction() const;
-					};
-				} // namespace Visualization
-			}	  // namespace MainMenu
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+		// ACTIONS //
+		void _takeSnapshotAction() const;
+		void _openPresetSettings() const;
+	};
+} // namespace VTX::UI::Widget::MainMenu::Visualization
 #endif

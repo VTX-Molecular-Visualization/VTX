@@ -1,4 +1,5 @@
 #include "colormode_field_widget.hpp"
+#include "ui/widget_factory.hpp"
 
 namespace VTX
 {
@@ -24,18 +25,24 @@ namespace VTX
 
 					_colorModeComboBox->addItems( colorModeList );
 
-					_layout->addWidget( _colorModeComboBox );
-
-					_colorSetButton = new QPushButton( this );
+					_colorSetButton
+						= WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "colorSetButton" );
 					_colorSetButton->hide();
 
-					_colorDialog = new QColorDialog( this );
+					_layout->addWidget( _colorModeComboBox );
+					_layout->addWidget( _colorSetButton );
 				}
 
 				void ColorModeFieldWidget::_setupSlots()
 				{
-					connect( _colorModeComboBox, QOverload<int>::of( &QComboBox::currentIndexChanged ), this, &ColorModeFieldWidget::_colorModeChange );
-					connect( _colorSetButton, &QPushButton::clicked, this, &ColorModeFieldWidget::_openColorDialog );
+					connect( _colorModeComboBox,
+							 QOverload<int>::of( &QComboBox::currentIndexChanged ),
+							 this,
+							 &ColorModeFieldWidget::_colorModeChange );
+					connect( _colorSetButton,
+							 QOverload<const Color::Rgb &>::of( &ColorFieldButton::onValueChange ),
+							 this,
+							 &ColorModeFieldWidget::_applyColor );
 				}
 
 				void ColorModeFieldWidget::_colorModeChange( int p_index )
@@ -43,7 +50,7 @@ namespace VTX
 					const Generic::COLOR_MODE colorMode = (Generic::COLOR_MODE)p_index;
 					setColorMode( colorMode );
 				}
-				void ColorModeFieldWidget::_openColorDialog() { _colorDialog->open(); }
+				void ColorModeFieldWidget::_applyColor( const Color::Rgb & p_color ) {}
 
 				void ColorModeFieldWidget::localize() {};
 

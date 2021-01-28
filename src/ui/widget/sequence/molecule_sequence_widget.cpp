@@ -454,7 +454,7 @@ namespace VTX
 					}
 					else
 					{
-						return _model->getResidue( p_residue.getIndex() - 1 );
+						return _model->getPreviousResidue( p_residue.getIndex() );
 					}
 				}
 				Model::Residue * const MoleculeSequenceWidget::_getNextResidue( const Model::Residue & p_residue,
@@ -468,11 +468,11 @@ namespace VTX
 						if ( nextChain != nullptr )
 							return p_forceResult ? _model->getResidue( nextChain->getIndexFirstResidue() ) : nullptr;
 						else
-							return _model->getResidue( p_residue.getIndex() );
+							return p_forceResult ? _model->getResidue( p_residue.getIndex() ) : nullptr;
 					}
 					else
 					{
-						return _model->getResidue( p_residue.getIndex() + 1 );
+						return _model->getNextResidue( p_residue.getIndex() );
 					}
 				}
 				QPoint MoleculeSequenceWidget::_getResiduePos( const Model::Residue & p_residue ) const
@@ -494,16 +494,24 @@ namespace VTX
 
 					for ( uint iChain = startChain->getIndex(); iChain <= endChain->getIndex(); iChain++ )
 					{
-						const Model::Chain * const currentChain		 = _model->getChain( iChain );
-						const uint				   startResidueIndex = ( currentChain == startChain )
-																		   ? startResidue.getIndex()
-																		   : currentChain->getIndexFirstResidue();
-						const uint endResidueIndex = ( currentChain == endChain ) ? endResidue.getIndex()
-																				  : currentChain->getIndexLastResidue();
+						const Model::Chain * const currentChain = _model->getChain( iChain );
+
+						if ( currentChain == nullptr )
+							continue;
+
+						const uint startResidueIndex = ( currentChain == startChain )
+														   ? startResidue.getIndex()
+														   : currentChain->getIndexFirstResidue();
+						const uint endResidueIndex	 = ( currentChain == endChain ) ? endResidue.getIndex()
+																					: currentChain->getIndexLastResidue();
 
 						for ( uint iResidue = startResidueIndex; iResidue <= endResidueIndex; iResidue++ )
 						{
 							Model::Residue * const currentResidue = _model->getResidue( iResidue );
+
+							if ( currentResidue == nullptr )
+								continue;
+
 							_container->emplace_back( currentResidue );
 						}
 					}
