@@ -36,17 +36,6 @@ namespace VTX
 				return instance;
 			}
 
-			inline std::set<const Model::Representation::InstantiatedRepresentation *> & getDefaultRepresentationSet()
-			{
-				return _defaultRepresentationSet;
-			}
-
-			inline const std::unordered_set<Generic::BaseRepresentable *> & getTargets(
-				const Model::Representation::InstantiatedRepresentation * p_representation )
-			{
-				return _mapRepresentablesLinkedToRepresentation[ p_representation ];
-			}
-
 			void instantiateRepresentation( Model::Representation::BaseRepresentation * p_representation,
 											Generic::BaseRepresentable *				p_target );
 			void instantiateRepresentation( Model::Representation::BaseRepresentation * p_representation,
@@ -61,6 +50,9 @@ namespace VTX
 			const Model::Representation::InstantiatedRepresentation * const getRepresentationByName(
 				const std::string & p_representationName );
 			void setDefaultRepresentationIndex( const int p_defaultRepresentationIndex );
+			std::set<const Model::Representation::InstantiatedRepresentation *> & getDefaultRepresentationSet();
+			const std::unordered_set<Generic::BaseRepresentable *> &			  RepresentationManager::getTargets(
+				 const Model::Representation::InstantiatedRepresentation * p_representation );
 
 		  protected:
 			RepresentationManager()

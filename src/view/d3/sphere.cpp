@@ -29,7 +29,6 @@ namespace VTX::View::D3
 
 		for ( const std::pair<uint, uint> & pair : _model->getRepresentationAtoms( p_representation ) )
 		{
-			VTX_DEBUG( "spheres:" + std::to_string( pair.second ) );
 			_gl()->glDrawArrays( GL_POINTS, pair.first, pair.second );
 		}
 	}
