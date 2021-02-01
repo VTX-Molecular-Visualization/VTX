@@ -42,7 +42,6 @@ namespace VTX
 		Event::EventManager::get();
 		Selection::SelectionManager::get();
 		Worker::WorkerManager::get();
-		Renderer::GL::ProgramManager::get();
 
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );
@@ -75,7 +74,6 @@ namespace VTX
 	void VTXApp::stop()
 	{
 		_timer->stop();
-		Renderer::GL::ProgramManager::get().dispose();
 
 		delete _timer;
 		delete _elapsedTimer;

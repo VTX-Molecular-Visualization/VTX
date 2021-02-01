@@ -18,10 +18,12 @@ namespace VTX
 			{
 				VTX_VIEW
 
+			  public:
+				void render( const Object3D::Camera & p_camera ) override;
+
 			  protected:
 				Renderer::GL::Program * const _createProgram() override;
 				void						  _init() override;
-				void						  _render() override;
 
 			  private:
 				GLint _uCamPositionLoc = GL_INVALID_INDEX;

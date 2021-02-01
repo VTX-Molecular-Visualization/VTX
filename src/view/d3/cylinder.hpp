@@ -17,10 +17,12 @@ namespace VTX
 			{
 				VTX_VIEW
 
+			  public:
+				void render( const Object3D::Camera & p_camera ) override;
+
 			  protected:
 				Renderer::GL::Program * const _createProgram() override;
 				void						  _init() override;
-				void _render( const Model::Representation::InstantiatedRepresentation * const ) override;
 
 			  private:
 				GLint _uRadiusLoc = GL_INVALID_INDEX;

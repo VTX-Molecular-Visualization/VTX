@@ -17,15 +17,17 @@ namespace VTX
 			{
 				VTX_VIEW
 
+			  public:
+				void render( const Object3D::Camera & p_camera ) override;
+
 			  protected:
 				Renderer::GL::Program * const _createProgram() override;
 				void						  _init() override;
-				void _render( const Model::Representation::InstantiatedRepresentation * const ) override;
 
 			  private:
-				GLint _uIsRadiusFixedLoc = GL_INVALID_INDEX;
-				GLint _uRadiusAddLoc	 = GL_INVALID_INDEX;
 				GLint _uRadiusFixedLoc	 = GL_INVALID_INDEX;
+				GLint _uRadiusAddLoc	 = GL_INVALID_INDEX;
+				GLint _uIsRadiusFixedLoc = GL_INVALID_INDEX;
 
 				explicit Sphere( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 			};

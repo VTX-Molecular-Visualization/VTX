@@ -41,6 +41,8 @@ namespace VTX::UI::Widget::Render
 		}
 #endif
 
+		Renderer::GL::ProgramManager::get().dispose();
+
 		doneCurrent();
 	}
 

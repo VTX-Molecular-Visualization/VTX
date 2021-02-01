@@ -27,7 +27,7 @@ namespace VTX::View
 			_program->use();
 
 			// Update camera uniforms.
-			if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+			if ( VTXApp::get().MASK & ( VTX_MASK_CAMERA_UPDATED | VTX_MASK_3D_MODEL_UPDATED ) )
 			{
 				const Mat4f MVMatrix = p_camera.getViewMatrix() * _model->getTransform().get();
 				_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
@@ -39,8 +39,6 @@ namespace VTX::View
 					GL_FALSE,
 					Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
 			}
-
-			_render();
 		}
 
 		virtual void init() override
@@ -71,7 +69,6 @@ namespace VTX::View
 
 		virtual Renderer::GL::Program * const _createProgram() = 0;
 		virtual void						  _init() {}
-		virtual void						  _render() = 0;
 	};
 } // namespace VTX::View
 #endif

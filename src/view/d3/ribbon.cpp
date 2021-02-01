@@ -29,8 +29,10 @@ namespace VTX::View::D3
 		VTX_DEBUG( "Max supported tessellation levels: " + std::to_string( maxTessGenLevel ) );
 	}
 
-	void Ribbon::_render()
+	void Ribbon::render( const Object3D::Camera & p_camera )
 	{
+		BaseView3D::render( p_camera );
+
 		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
 		{
 			const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
