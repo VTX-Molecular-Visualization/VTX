@@ -22,8 +22,8 @@ namespace VTX::Renderer::GL
 			BasePass( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 			virtual ~BasePass() = default;
 
-			virtual void init( const uint, const uint )				   = 0;
-			virtual void resize( const uint, const uint )			   = 0;
+			virtual void init( const uint, const uint, const GL & )	   = 0;
+			virtual void resize( const uint, const uint, const GL & )  = 0;
 			virtual void render( const Object3D::Scene &, const GL & ) = 0;
 		};
 	} // namespace Pass

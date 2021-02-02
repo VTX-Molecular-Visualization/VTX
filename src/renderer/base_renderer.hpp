@@ -39,19 +39,20 @@ namespace VTX::Renderer
 		BaseRenderer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 		virtual ~BaseRenderer() = default;
 
-		inline const uint getWidth() const { return _width; }
-		inline const uint getHeight() const { return _height; }
+		inline const uint	getWidth() const { return _width; }
+		inline const uint	getHeight() const { return _height; }
+		inline const GLuint getOutputFbo() const { return _outputFbo; }
 
-		virtual void resize( const uint p_width, const uint p_height )
+		virtual void resize( const uint p_width, const uint p_height, const GLuint p_fbo )
 		{
-			_width	= p_width;
-			_height = p_height;
+			_width	   = p_width;
+			_height	   = p_height;
+			_outputFbo = p_fbo;
 		}
 
-		virtual void		   init( const uint, const uint )		  = 0;
-		virtual void		   renderFrame( const Object3D::Scene & ) = 0;
-		virtual void		   setShading()							  = 0;
-		virtual const GLuint & getRenderedTexture() const			  = 0;
+		virtual void init( const uint, const uint, const GLuint ) = 0;
+		virtual void renderFrame( const Object3D::Scene & )		  = 0;
+		virtual void setShading()								  = 0;
 
 		// TODO: why ? because SSAO and AA in RT.
 		virtual void activeSSAO( const bool ) {}
@@ -60,8 +61,9 @@ namespace VTX::Renderer
 		virtual void activeAA( const bool ) {}
 
 	  protected:
-		uint _width	 = 0;
-		uint _height = 0;
+		uint   _width	  = 0;
+		uint   _height	  = 0;
+		GLuint _outputFbo = GL_INVALID_INDEX;
 	};
 } // namespace VTX::Renderer
 

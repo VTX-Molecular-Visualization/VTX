@@ -154,11 +154,11 @@ namespace VTX
 
 		const uint RayTracer::TILE_SIZE = 32;
 
-		void RayTracer::init( const uint p_width, const uint p_height )
+		void RayTracer::init( const uint p_width, const uint p_height, const GLuint p_fbo )
 		{
 			VTX_INFO( "Initializing ray tracer..." );
 
-			resize( p_width, p_height );
+			resize( p_width, p_height, p_fbo );
 
 			_integrator = new RayCastIntegrator;
 			//_integrator	  = new DirectLightingIntegrator;
@@ -236,9 +236,9 @@ namespace VTX
 
 		void RayTracer::setShading() {}
 
-		void RayTracer::resize( const uint p_width, const uint p_height )
+		void RayTracer::resize( const uint p_width, const uint p_height, const GLuint p_fbo )
 		{
-			BaseRenderer::resize( p_width, p_height );
+			BaseRenderer::resize( p_width, p_height, p_fbo );
 
 			_pixels.resize( _width * _height * 3 );
 		}

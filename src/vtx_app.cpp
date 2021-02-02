@@ -135,7 +135,13 @@ namespace VTX
 		Worker::WorkerManager::get().update( deltaTime );
 	}
 
-	void VTXApp::renderScene() const { _mainWindow->getOpenGLWidget().update(); }
+	void VTXApp::renderScene() const
+	{
+		if ( MASK )
+		{
+			_mainWindow->getOpenGLWidget().update();
+		}
+	}
 
 	bool VTXApp::notify( QObject * const receiver, QEvent * const event )
 	{

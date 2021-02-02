@@ -58,7 +58,7 @@ namespace VTX::UI::Widget::Render
 
 		VTX_PROGRAM_MANAGER( _gl );
 		switchRenderer( Setting::MODE_DEFAULT );
-		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
+		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT, defaultFramebufferObject() );
 		_timer.start();
 	}
 
@@ -66,7 +66,7 @@ namespace VTX::UI::Widget::Render
 	{
 		getRenderer().renderFrame( VTXApp::get().getScene() );
 
-		// TODO: write directly in defaultFramebufferObject()
+		/*
 		_gl->glBlitNamedFramebuffer( getRendererGL().getRenderedFBO(),
 									 defaultFramebufferObject(),
 									 0,
@@ -76,9 +76,11 @@ namespace VTX::UI::Widget::Render
 									 0,
 									 0,
 									 size().width(),
+									 size().width(),
 									 size().height(),
 									 GL_COLOR_BUFFER_BIT,
 									 GL_NEAREST );
+									 */
 
 		_counter++;
 		if ( _timer.elapsed() >= 1000.f )
@@ -99,7 +101,7 @@ namespace VTX::UI::Widget::Render
 	{
 		makeCurrent();
 		VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
-		getRenderer().resize( p_width, p_height );
+		getRenderer().resize( p_width, p_height, defaultFramebufferObject() );
 		doneCurrent();
 	}
 

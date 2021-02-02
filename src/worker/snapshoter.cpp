@@ -30,7 +30,7 @@ namespace VTX
 			const uint height = renderer.getHeight();
 
 			Renderer::RayTracer * rt = new Renderer::RayTracer( renderer.gl() );
-			rt->init( width, height );
+			rt->init( width, height, renderer.getOutputFbo() );
 			rt->renderFrame( VTXApp::get().getScene() );
 			const std::vector<uchar> & pixels = rt->getPixels();
 			stbi_flip_vertically_on_write( true );

@@ -12,7 +12,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_texture );
 	}
 
-	void Outline::init( const uint p_width, const uint p_height )
+	void Outline::init( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
@@ -36,7 +36,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );
 	}
 
-	void Outline::resize( const uint p_width, const uint p_height )
+	void Outline::resize( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glDeleteTextures( 1, &_texture );
 		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
