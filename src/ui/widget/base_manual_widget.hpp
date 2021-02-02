@@ -8,6 +8,7 @@
 #include "base_manual_widget_initializer.hpp"
 #include "event/base_event_receiver_vtx.hpp"
 #include <QWidget>
+#include <type_traits>
 
 namespace VTX
 {

@@ -2,8 +2,8 @@
 
 //#define SHOW_IMPOSTORS
 
-uniform mat4  uProjMatrix;
-uniform float uCylRad;
+uniform mat4  u_projMatrix;
+uniform float u_cylRad;
 
 smooth in vec3		   viewImpPos;
 flat in vec3		   viewCylVert[ 2 ];
@@ -22,7 +22,7 @@ layout( location = 1 ) out vec4 outColor;
 float computeDepth( const vec3 v )
 {
 	// Computes 'v' NDC depth ([-1,1]).
-	const float ndcDepth = ( v.z * uProjMatrix[ 2 ].z + uProjMatrix[ 3 ].z ) / -v.z;
+	const float ndcDepth = ( v.z * u_projMatrix[ 2 ].z + u_projMatrix[ 3 ].z ) / -v.z;
 	// Return depth according to depth range.
 	return ( gl_DepthRange.diff * ndcDepth + gl_DepthRange.near + gl_DepthRange.far ) * 0.5f;
 }
@@ -40,7 +40,7 @@ void main()
 
 	const float a = d0 - d1 * d1;
 	const float b = d0 * dot( v0, rayDir ) - d2 * d1;
-	const float c = d0 * dot( v0, v0 ) - d2 * d2 - uCylRad * uCylRad * d0;
+	const float c = d0 * dot( v0, v0 ) - d2 * d2 - u_cylRad * u_cylRad * d0;
 
 	const float h = b * b - a * c;
 

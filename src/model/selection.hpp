@@ -9,11 +9,7 @@
 #include "define.hpp"
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"
-#include "model/atom.hpp"
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
-#include "model/representation/instantiated_representation.hpp"
-#include "model/residue.hpp"
+#include "math/aabb.hpp"
 #include <map>
 #include <set>
 #include <vector>
@@ -22,6 +18,15 @@ namespace VTX
 {
 	namespace Model
 	{
+		class Molecule;
+		class Chain;
+		class Residue;
+		class Atom;
+		namespace Representation
+		{
+			class InstantiatedRepresentation;
+		}
+
 		class Selection : public BaseModel, public VTX::Event::BaseEventReceiverVTX
 		{
 			VTX_MODEL

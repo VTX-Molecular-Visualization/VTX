@@ -8,7 +8,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			void Setting::readFile( const Path & p_path, ::VTX::Setting & p_setting )
+			void Setting::readFile( const FilePath & p_path, ::VTX::Setting & p_setting )
 			{
 				IO::Serializer serializer = IO::Serializer();
 				std::ifstream  is( p_path );

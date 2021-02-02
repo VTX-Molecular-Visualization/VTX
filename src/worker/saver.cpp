@@ -31,7 +31,7 @@ namespace VTX
 			// Rename if extension is missing.
 			if ( std::filesystem::exists( *_path ) && _path->extension() != ".vtx" )
 			{
-				std::filesystem::rename( *_path, Path( _path->string() + ".vtx" ) );
+				std::filesystem::rename( *_path, FilePath( _path->string() + ".vtx" ) );
 			}
 
 			delete _path;

@@ -3,6 +3,7 @@
 #include "action/setting.hpp"
 #include "action/viewpoint.hpp"
 #include "define.hpp"
+#include "model/path.hpp"
 #include "model/representation/representation_library.hpp"
 #include "state/visualization.hpp"
 #include "tool/logger.hpp"
@@ -28,21 +29,34 @@ namespace VTX
 				}
 				break;
 			case Qt::Key_F2:
-				VTX_ACTION( new Action::Setting::ChangeRepresentation( ( VTX_SETTING().representation + 1 )
-																	   % Model::Representation::RepresentationLibrary::get().getRepresentationCount() ) );
+				VTX_ACTION( new Action::Setting::ChangeRepresentation(
+					( VTX_SETTING().representation + 1 )
+					% Model::Representation::RepresentationLibrary::get().getRepresentationCount() ) );
 				break;
-			case Qt::Key_F3: VTX_ACTION( new Action::Setting::ChangeColorMode( Generic::COLOR_MODE( ( (uint)VTX_SETTING().colorMode + 1 ) % 4 ) ) ); break;
-			case Qt::Key_F4: VTX_ACTION( new Action::Setting::ChangeShading( Renderer::SHADING( ( (uint)VTX_SETTING().shading + 1 ) % (uint)Renderer::SHADING::COUNT ) ) ); break;
+			case Qt::Key_F3:
+				VTX_ACTION( new Action::Setting::ChangeColorMode(
+					Generic::COLOR_MODE( ( (uint)VTX_SETTING().colorMode + 1 ) % 4 ) ) );
+				break;
+			case Qt::Key_F4:
+				VTX_ACTION( new Action::Setting::ChangeShading(
+					Renderer::SHADING( ( (uint)VTX_SETTING().shading + 1 ) % (uint)Renderer::SHADING::COUNT ) ) );
+				break;
 			case Qt::Key_F5:
 				VTX_ACTION(
 					new Action::Viewpoint::Create( *VTXApp::get().getScene().getPaths()[ 0 ],
 												   VTXApp::get().getScene().getCamera(),
-												   VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->getCurrentCameraController() ) );
+												   VTXApp::get()
+													   .getStateMachine()
+													   .getItem<State::Visualization>( ID::State::VISUALIZATION )
+													   ->getCurrentCameraController() ) );
 				break;
 
 			case Qt::Key_F10: VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().activeRenderer ) ); break;
 
-			case Qt::Key_F11: VTX_ACTION( new Action::Setting::ChangeRenderMode( Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)Renderer::MODE::COUNT ) ) ); break;
+			case Qt::Key_F11:
+				VTX_ACTION( new Action::Setting::ChangeRenderMode(
+					Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)Renderer::MODE::COUNT ) ) );
+				break;
 			default: break;
 			}
 		}

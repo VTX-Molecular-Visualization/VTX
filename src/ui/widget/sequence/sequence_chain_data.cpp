@@ -12,6 +12,26 @@ namespace VTX
 		{
 			namespace Sequence
 			{
+				SequenceChainData::SequenceChainData( const Model::Chain & p_chain ) :
+					_chain( p_chain ), _molecule( *( p_chain.getMoleculePtr() ) )
+				{
+					_generateDataSet();
+					_generateString();
+				};
+				SequenceChainData ::~SequenceChainData()
+				{
+					for ( auto it : _dataset )
+						delete it;
+
+					_dataset.clear();
+				}
+
+				Model::Residue * const SequenceChainData::_getResidue( const uint p_localResidueIndex ) const
+				{
+					const uint moleculeResidueIndex = _chain.getIndexFirstResidue() + p_localResidueIndex;
+					return _chain.getMoleculePtr()->getResidue( moleculeResidueIndex );
+				}
+
 				void SequenceChainData::_generateDataSet()
 				{
 					const uint residueCount = _chain.getResidueCount();

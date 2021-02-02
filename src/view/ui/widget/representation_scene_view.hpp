@@ -7,9 +7,7 @@
 
 #include "event/base_event_receiver_vtx.hpp"
 #include "generic/base_representable.hpp"
-#include "model/chain.hpp"
-#include "model/representation/representation.hpp"
-#include "model/residue.hpp"
+#include "model/representation/instantiated_representation.hpp"
 #include "ui/widget/scene/scene_item_widget.hpp"
 #include "view/base_view.hpp"
 #include <QMenu>
@@ -23,7 +21,9 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class RepresentationSceneView : public View::BaseView<Model::Representation::InstantiatedRepresentation>, public VTX::UI::Widget::Scene::SceneItemWidget
+				class RepresentationSceneView :
+					public View::BaseView<Model::Representation::InstantiatedRepresentation>,
+					public VTX::UI::Widget::Scene::SceneItemWidget
 				{
 					VTX_VIEW
 					VTX_WIDGET
@@ -38,8 +38,10 @@ namespace VTX
 					const Model::ID & getModelID() const override { return _model->getId(); };
 
 				  protected:
-					RepresentationSceneView( Model::Representation::InstantiatedRepresentation * const p_model, QWidget * const p_parent ) :
-						View::BaseView<Model::Representation::InstantiatedRepresentation>( p_model ), SceneItemWidget( p_parent ) {};
+					RepresentationSceneView( Model::Representation::InstantiatedRepresentation * const p_model,
+											 QWidget * const										   p_parent ) :
+						View::BaseView<Model::Representation::InstantiatedRepresentation>( p_model ),
+						SceneItemWidget( p_parent ) {};
 
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;

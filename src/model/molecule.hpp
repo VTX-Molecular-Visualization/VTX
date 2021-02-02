@@ -5,21 +5,16 @@
 #pragma once
 #endif
 
-#include "atom.hpp"
 #include "base_model_3d.hpp"
-#include "bond.hpp"
 #include "buffer/molecule.hpp"
-#include "chain.hpp"
 #include "define.hpp"
 #include "generic/base_representable.hpp"
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
 #include "model/configuration/molecule.hpp"
-#include "mvc/mvc_manager.hpp"
 #include "representation/instantiated_representation.hpp"
 #include "representation/representation_target.hpp"
-#include "residue.hpp"
 #include <iostream>
 #include <map>
 #include <string>
@@ -29,13 +24,12 @@
 
 namespace VTX
 {
-	namespace View
-	{
-		class BaseView3DMolecule;
-	}
-
 	namespace Model
 	{
+		class Chain;
+		class Residue;
+		class Atom;
+		class Bond;
 		class SecondaryStructure;
 		class Molecule :
 			public BaseModel3D<Buffer::Molecule>,
@@ -62,21 +56,12 @@ namespace VTX
 			inline const std::string & getName() const { return _name; }
 			inline void				   setName( const std::string & p_name ) { _name = p_name; }
 			inline const std::string & getPdbIdCode() const { return _pdbIdCode; }
-			inline void				   setPdbIdCode( const std::string & p_pdbId )
-			{
-				_pdbIdCode = p_pdbId;
-				BaseModel::setDefaultName( &_pdbIdCode );
-			}
+			void					   setPdbIdCode( const std::string & p_pdbId );
 
-			inline const VTX::Path & getPath() const { return _path; }
-			inline void				 setPath( const VTX::Path & p_path ) { _path = p_path; }
+			inline const VTX::FilePath & getPath() const { return _path; }
+			inline void					 setPath( const VTX::FilePath & p_path ) { _path = p_path; }
 
-			inline Chain & addChain()
-			{
-				Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
-				_chains.emplace_back( chain );
-				return *chain;
-			}
+			Chain &								addChain();
 			inline Chain * const				getChain( const uint p_idx ) { return _chains[ p_idx ]; }
 			inline const Chain * const			getChain( const uint p_idx ) const { return _chains[ p_idx ]; }
 			const Chain * const					getPreviousChain( const uint p_idBaseChain ) const;
@@ -90,12 +75,7 @@ namespace VTX
 															 const bool p_recursive	  = true,
 															 const bool p_notifyViews = true );
 
-			inline Residue & addResidue()
-			{
-				Residue * const residue = MVC::MvcManager::get().instantiateModel<Residue>();
-				_residues.emplace_back( residue );
-				return *residue;
-			}
+			Residue &							  addResidue();
 			inline Residue * const				  getResidue( const uint p_idx ) { return _residues[ p_idx ]; }
 			inline const Residue * const		  getResidue( const uint p_idx ) const { return _residues[ p_idx ]; }
 			const Residue * const				  getPreviousResidue( const uint p_idBaseResidue ) const;
@@ -110,12 +90,7 @@ namespace VTX
 																 const bool p_checkParentUpdate = true,
 																 const bool p_notifyViews		= true );
 
-			inline Atom & addAtom()
-			{
-				Atom * const atom = MVC::MvcManager::get().instantiateModel<Atom>();
-				_atoms.emplace_back( atom );
-				return *atom;
-			}
+			Atom &							   addAtom();
 			inline Atom * const				   getAtom( const uint p_idx ) { return _atoms[ p_idx ]; }
 			inline const Atom * const		   getAtom( const uint p_idx ) const { return _atoms[ p_idx ]; }
 			inline std::vector<Atom *> &	   getAtoms() { return _atoms; }
@@ -126,24 +101,15 @@ namespace VTX
 														   const bool p_checkParentUpdate = true,
 														   const bool p_notifyViews		  = true );
 
-			inline Bond & addBond()
-			{
-				Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
-				_bonds.emplace_back( bond );
-				return *bond;
-			}
+			Bond &							   addBond();
 			inline Bond * const				   getBond( const uint p_idx ) { return _bonds[ p_idx ]; }
 			inline const Bond * const		   getBond( const uint p_idx ) const { return _bonds[ p_idx ]; }
 			inline std::vector<Bond *> &	   getBonds() { return _bonds; }
 			inline const std::vector<Bond *> & getBonds() const { return _bonds; }
 			void removeBond( const uint p_id, const bool p_delete = true, const bool p_notifyViews = true );
 
-			inline const SecondaryStructure &		getSecondaryStructure() const { return *_secondaryStructure; }
-			inline SecondaryStructure &				getSecondaryStructure() { return *_secondaryStructure; }
-			inline const SecondaryStructure::ALGO & getSecondaryStructureAlgo() const
-			{
-				return _secondaryStructureAlgo;
-			}
+			inline const SecondaryStructure & getSecondaryStructure() const { return *_secondaryStructure; }
+			inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
 
 			inline const std::string & getSequence() const { return _sequence; }
 			inline std::string &	   getSequence() { return _sequence; }
@@ -219,12 +185,8 @@ namespace VTX
 				refreshColors();
 			}
 			inline void refreshColors() { _fillBufferAtomColors(); }
-			inline void refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection )
-			{
-				_fillBufferAtomSelections( p_selection );
-				_secondaryStructure->refreshSelection( p_selection );
-			}
-			void refreshBondsBuffer();
+			void		refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const );
+			void		refreshBondsBuffer();
 
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
@@ -255,7 +217,7 @@ namespace VTX
 			void print() const;
 
 			void setVisible( const bool );
-			void render() override;
+			void render( const Object3D::Camera & ) override;
 
 			bool mergeTopology( const Molecule & );
 
@@ -280,7 +242,7 @@ namespace VTX
 			RepresentationState _representationState = RepresentationState();
 
 			// Models.
-			VTX::Path						_path;
+			VTX::FilePath					_path;
 			std::string						_name						= "unknown";
 			std::string						_pdbIdCode					= "unknown";
 			std::vector<Chain *>			_chains						= std::vector<Chain *>();
@@ -304,8 +266,7 @@ namespace VTX
 			std::vector<uint>		_bufferBonds			= std::vector<uint>();
 
 			// Secondary structure.
-			SecondaryStructure::ALGO _secondaryStructureAlgo = SecondaryStructure::ALGO::STRIDE;
-			SecondaryStructure *	 _secondaryStructure	 = nullptr;
+			SecondaryStructure * _secondaryStructure = nullptr;
 
 			// Sequence.
 			std::string _sequence;

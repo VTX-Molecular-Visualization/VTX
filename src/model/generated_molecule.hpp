@@ -7,12 +7,12 @@
 
 #include "bond.hpp"
 #include "molecule.hpp"
-#include "selection.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
+		class Selection;
 		class GeneratedMolecule : public Molecule
 		{
 			VTX_MODEL

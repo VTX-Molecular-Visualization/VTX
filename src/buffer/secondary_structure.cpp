@@ -1,5 +1,4 @@
-#include "molecule.hpp"
-#include "vtx_app.hpp"
+#include "secondary_structure.hpp"
 
 namespace VTX::Buffer
 {

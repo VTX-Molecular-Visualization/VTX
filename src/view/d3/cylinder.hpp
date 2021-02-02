@@ -17,18 +17,20 @@ namespace VTX
 			{
 				VTX_VIEW
 
-				void render( const Model::Representation::InstantiatedRepresentation * const ) override;
+			  public:
+				void render( const Object3D::Camera & p_camera ) override;
+
+			  protected:
+				Renderer::GL::Program * const _createProgram() override;
+				void						  _init() override;
 
 			  private:
-				// Uniforms.
-				GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
-				GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
-				GLint _uRadiusLoc		   = GL_INVALID_INDEX;
+				GLint _uRadiusLoc = GL_INVALID_INDEX;
 
-				explicit Cylinder( Model::Molecule * const p_model );
+				explicit Cylinder( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 			};
 		} // namespace D3
 	}	  // namespace View
 } // namespace VTX
 
-#endif;
+#endif

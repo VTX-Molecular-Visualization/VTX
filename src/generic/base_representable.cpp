@@ -1,5 +1,6 @@
 #include "base_representable.hpp"
 #include "model/atom.hpp"
+#include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"

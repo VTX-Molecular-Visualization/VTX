@@ -1,13 +1,20 @@
 #include "serializer.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
+#include "model/mesh_triangle.hpp"
+#include "model/molecule.hpp"
+#include "model/path.hpp"
+#include "model/viewpoint.hpp"
 #include "mvc/mvc_manager.hpp"
 
 namespace VTX
 {
 	namespace IO
 	{
-		nlohmann::json Serializer::serialize( const VTXApp & p_app ) const { return nlohmann::json { { "SCENE", serialize( p_app.getScene() ) } }; }
+		nlohmann::json Serializer::serialize( const VTXApp & p_app ) const
+		{
+			return nlohmann::json { { "SCENE", serialize( p_app.getScene() ) } };
+		}
 
 		nlohmann::json Serializer::serialize( const Object3D::Scene & p_scene ) const
 		{
@@ -26,7 +33,10 @@ namespace VTX
 			return { { "MOLECULES", jsonArrayMolecules }, { "PATHS", jsonArrayPaths } };
 		}
 
-		nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const { return { { "PATH", p_molecule.getPath().string() } }; }
+		nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
+		{
+			return { { "PATH", p_molecule.getPath().string() } };
+		}
 
 		nlohmann::json Serializer::serialize( const Model::Path & p_path ) const
 		{
@@ -61,7 +71,10 @@ namespace VTX
 					 { "ACTIONS", jsonArray } };
 		}
 
-		nlohmann::json Serializer::serialize( const Color::Rgb & p_color ) const { return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() } }; }
+		nlohmann::json Serializer::serialize( const Color::Rgb & p_color ) const
+		{
+			return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() } };
+		}
 
 		template<int L, typename T, glm::qualifier Q>
 		nlohmann::json Serializer::serialize( const glm::vec<L, T, Q> & p_vec ) const
@@ -113,7 +126,10 @@ namespace VTX
 					 { "AUTO_ROTATE_SPEED", serialize( p_setting.autoRotationSpeed ) } };
 		}
 
-		void Serializer::deserialize( const nlohmann::json & p_json, VTXApp & p_app ) const { deserialize( p_json.at( "SCENE" ), p_app.getScene() ); }
+		void Serializer::deserialize( const nlohmann::json & p_json, VTXApp & p_app ) const
+		{
+			deserialize( p_json.at( "SCENE" ), p_app.getScene() );
+		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Object3D::Scene & p_scene ) const
 		{
@@ -124,11 +140,11 @@ namespace VTX
 				std::string str = jsonMolecule.at( "PATH" ).get<std::string>();
 				if ( str.find( "/" ) != std::string::npos || str.find( "\\" ) != std::string::npos )
 				{
-					VTX_ACTION( new Action::Main::Open( new Path( str ) ), true );
+					VTX_ACTION( new Action::Main::Open( new FilePath( str ) ), true );
 				}
 				else
 				{
-					VTX_ACTION( new Action::Main::OpenApi( Path( str ).stem().string() ), true );
+					VTX_ACTION( new Action::Main::OpenApi( FilePath( str ).stem().string() ), true );
 				}
 			}
 
@@ -154,7 +170,8 @@ namespace VTX
 
 			for ( const nlohmann::json & jsonViewpoint : p_json.at( "VIEWPOINTS" ) )
 			{
-				Model::Viewpoint * const viewpoint = MVC::MvcManager::get().instantiateModel<Model::Viewpoint>( &p_path );
+				Model::Viewpoint * const viewpoint
+					= MVC::MvcManager::get().instantiateModel<Model::Viewpoint>( &p_path );
 				deserialize( jsonViewpoint, *viewpoint );
 				p_path.addViewpoint( viewpoint );
 			}
@@ -211,7 +228,8 @@ namespace VTX
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Setting & p_setting ) const
 		{
-			VTX_ACTION( new Action::Setting::ChangeDisplayMode( p_json.at( "SYMBOL_DISPLAY_MODE" ).get<Style::SYMBOL_DISPLAY_MODE>() ) );
+			VTX_ACTION( new Action::Setting::ChangeDisplayMode(
+				p_json.at( "SYMBOL_DISPLAY_MODE" ).get<Style::SYMBOL_DISPLAY_MODE>() ) );
 
 			VTX_ACTION( new Action::Setting::ActiveRenderer( p_json.at( "ACTIVE_RENDERER" ).get<bool>() ) );
 			Color::Rgb bgColor = Color::Rgb();
@@ -242,14 +260,19 @@ namespace VTX
 			deserialize( p_json.at( "LIGHT_COLOR" ), lightColor );
 			VTX_ACTION( new Action::Setting::ChangeLightColor( lightColor ) );
 
-			VTX_ACTION( new Action::Setting::ChangeCameraClip( p_json.at( "CAMERA_NEAR" ), p_json.at( "CAMERA_FAR" ).get<float>() ) );
+			VTX_ACTION( new Action::Setting::ChangeCameraClip( p_json.at( "CAMERA_NEAR" ),
+															   p_json.at( "CAMERA_FAR" ).get<float>() ) );
 			VTX_ACTION( new Action::Setting::ChangeCameraFov( p_json.at( "CAMERA_FOV" ).get<float>() ) );
 			VTX_ACTION( new Action::Setting::ChangeCameraProjection( p_json.at( "CAMERA_PERSPECTIVE" ).get<bool>() ) );
 
-			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( p_json.at( "CONTROLLER_TRANSLATION_SPEED" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed( p_json.at( "CONTROLLER_TRANSLATION_FACTOR" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeRotationSpeed( p_json.at( "CONTROLLER_ROTATION_SPEED" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ActiveYAxisInversion( p_json.at( "CONTROLLER_Y_AXIS_INVERTED" ).get<bool>() ) );
+			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed(
+				p_json.at( "CONTROLLER_TRANSLATION_SPEED" ).get<float>() ) );
+			VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed(
+				p_json.at( "CONTROLLER_TRANSLATION_FACTOR" ).get<float>() ) );
+			VTX_ACTION(
+				new Action::Setting::ChangeRotationSpeed( p_json.at( "CONTROLLER_ROTATION_SPEED" ).get<float>() ) );
+			VTX_ACTION(
+				new Action::Setting::ActiveYAxisInversion( p_json.at( "CONTROLLER_Y_AXIS_INVERTED" ).get<bool>() ) );
 			Vec3f autoRotateSpeed;
 			deserialize( p_json.at( "AUTO_ROTATE_SPEED" ), autoRotateSpeed );
 			VTX_ACTION( new Action::Setting::ChangeAutoRotateSpeed( autoRotateSpeed ) );

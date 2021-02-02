@@ -4,7 +4,9 @@
 #include "action/setting.hpp"
 #include "event/event_manager.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include "selection/selection_manager.hpp"
+#include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "worker/worker_manager.hpp"
 #include <QPalette>
@@ -61,7 +63,7 @@ namespace VTX
 //#define RT_ENABLED
 #ifdef RT_ENABLED
 		// Path * path	   = new Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
-		Path * path = new Path( DATA_DIR + "6vsb.mmtf" );
+		FilePath * path = new FilePath( DATA_DIR + "6vsb.mmtf" );
 		VTX_ACTION( new Action::Open( path ) );
 		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
 		Action::ActionManager::get().update( 0.f );
@@ -132,6 +134,8 @@ namespace VTX
 		// Worker manager.
 		Worker::WorkerManager::get().update( deltaTime );
 	}
+
+	void VTXApp::renderScene() const { _mainWindow->getOpenGLWidget().update(); }
 
 	bool VTXApp::notify( QObject * const receiver, QEvent * const event )
 	{

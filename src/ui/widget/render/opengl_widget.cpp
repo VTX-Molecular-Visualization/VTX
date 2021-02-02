@@ -1,4 +1,8 @@
 #include "opengl_widget.hpp"
+#include "object3d/camera.hpp"
+#include "object3d/scene.hpp"
+#include "renderer/gl/gl.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
 #include <QMainWindow>
@@ -37,6 +41,8 @@ namespace VTX::UI::Widget::Render
 		}
 #endif
 
+		Renderer::GL::ProgramManager::get().dispose();
+
 		doneCurrent();
 	}
 
@@ -50,6 +56,7 @@ namespace VTX::UI::Widget::Render
 		_gl->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
 #endif
 
+		VTX_PROGRAM_MANAGER( _gl );
 		switchRenderer( Setting::MODE_DEFAULT );
 		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
 		_timer.start();
@@ -84,7 +91,7 @@ namespace VTX::UI::Widget::Render
 
 		_painter.begin( this );
 		_painter.setPen( Qt::white );
-		_painter.drawText( 10, 10, QString::fromStdString( "FPS: " + std::to_string( VTX_STAT().FPS ) ) );
+		_painter.drawText( 0, 10, QString::fromStdString( std::to_string( VTX_STAT().FPS ) ) );
 		_painter.end();
 	}
 

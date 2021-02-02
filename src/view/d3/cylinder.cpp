@@ -1,40 +1,33 @@
 #include "cylinder.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX::View::D3
 {
-	Cylinder::Cylinder( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model )
+	Renderer::GL::Program * const Cylinder::_createProgram()
 	{
-		Renderer::GL::ProgramManager & pm = VTXApp::get().getProgramManager();
-		_program = pm.createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
-
-		assert( _program != nullptr );
-		_uModelViewMatrixLoc = _gl()->glGetUniformLocation( _program->getId(), "uMVMatrix" );
-		_uProjMatrixLoc		 = _gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
-		_uRadiusLoc			 = _gl()->glGetUniformLocation( _program->getId(), "uCylRad" );
+		return VTX_PROGRAM_MANAGER().createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
 	}
 
-	void Cylinder::render( const Model::Representation::InstantiatedRepresentation * const p_representation )
+	void Cylinder::_init() { _uRadiusLoc = _gl()->glGetUniformLocation( _program->getId(), "u_cylRad" ); }
+
+	void Cylinder::render( const Object3D::Camera & p_camera )
 	{
-		if ( !p_representation->hasToDrawCylinder() )
-			return;
+		BaseView3D::render( p_camera );
 
-		const float radius = p_representation->getCylinderData()._radius;
-
-		_program->use();
-
-		// TODO: do not upadte each frame !
-		const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
-		_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc,
-								   1,
-								   GL_FALSE,
-								   Util::Math::value_ptr( cam.getViewMatrix() * _model->getTransform().get() ) );
-		_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
-		_gl()->glUniform1f( _uRadiusLoc, radius );
-
-		for ( const std::pair<uint, uint> & pair : _model->getRepresentationBonds( p_representation ) )
+		for ( const std::pair<const Model::Representation::InstantiatedRepresentation *,
+							  VTX::Representation::RepresentationTarget> representationData :
+			  _model->getMolecule()->getRepresentationData() )
 		{
-			_gl()->glDrawElements( GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
+			if ( !representationData.first->hasToDrawCylinder() )
+				return;
+
+			const Model::Representation::CylinderData & cylinderData = representationData.first->getCylinderData();
+			_gl()->glUniform1f( _uRadiusLoc, cylinderData._radius );
+
+			for ( const std::pair<uint, uint> & pair : representationData.second.getBonds() )
+			{
+				_gl()->glDrawElements(
+					GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
+			}
 		}
 	}
 } // namespace VTX::View::D3

@@ -1,32 +1,15 @@
 #include "triangle.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX::View::D3
 {
-	Triangle::Triangle( Model::MeshTriangle * const p_model ) : BaseView3D( p_model )
+	Renderer::GL::Program * const Triangle::_createProgram()
 	{
-		Renderer::GL::ProgramManager & pm = VTXApp::get().getProgramManager();
-		_program						  = pm.createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
-
-		assert( _program != nullptr );
-		_uModelViewMatrixLoc = _gl()->glGetUniformLocation( _program->getId(), "uMVMatrix" );
-		_uProjMatrixLoc		 = _gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
-		_uNormalMatrixLoc	 = _gl()->glGetUniformLocation( _program->getId(), "uNormalMatrix" );
+		return VTX_PROGRAM_MANAGER().createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
 	}
 
-	void Triangle::render()
+	void Triangle::render( const Object3D::Camera & p_camera )
 	{
-		_program->use();
-
-		// TODO: do not upadte each frame !
-		const Object3D::Camera & cam	  = VTXApp::get().getScene().getCamera();
-		const Mat4f				 MVMatrix = cam.getViewMatrix() * _model->getTransform().get();
-		_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
-		_gl()->glUniformMatrix4fv( _uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( cam.getProjectionMatrix() ) );
-		_gl()->glUniformMatrix4fv( _uNormalMatrixLoc,
-								   1,
-								   GL_FALSE,
-								   Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
+		BaseView3D::render( p_camera );
 
 		_gl()->glDrawElements( GL_TRIANGLES, uint( _model->getIndices().size() ), GL_UNSIGNED_INT, 0 );
 	}

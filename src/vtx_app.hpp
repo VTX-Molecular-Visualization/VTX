@@ -7,13 +7,12 @@
 
 #include "setting.hpp"
 #include "stat.hpp"
-#include "ui/main_window.hpp"
+#include <QElapsedTimer>
 #include <QTimer>
 #include <QtWidgets/QApplication>
 
 namespace VTX
 {
-	// Forward declaration to avoid circular dependencies and reduce compile time (maybe?)
 	class Setting;
 	namespace State
 	{
@@ -23,6 +22,10 @@ namespace VTX
 	{
 		class Scene;
 	}
+	namespace UI
+	{
+		class MainWindow;
+	}
 	class VTXApp final : public QApplication
 	{
 	  public:
@@ -31,27 +34,19 @@ namespace VTX
 			static VTXApp instance;
 			return instance;
 		}
+		VTX_MASK MASK = VTX_MASK_NEED_UPDATE;
 
 		void start();
 		void stop();
 		void goToState( const std::string &, void * const = nullptr );
-		void renderScene() const { _mainWindow->getOpenGLWidget().update(); }
+		void renderScene() const;
 
-		inline Setting &			   getSetting() { return _setting; }
-		inline const Setting &		   getSetting() const { return _setting; }
-		inline Stat &				   getStat() { return _stat; }
-		inline const Stat &			   getStat() const { return _stat; }
-		inline Object3D::Scene &	   getScene() { return *_scene; }
-		inline const Object3D::Scene & getScene() const { return *_scene; }
-
-		inline Renderer::GL::ProgramManager & getProgramManager()
-		{
-			return _mainWindow->getOpenGLWidget().getProgramManager();
-		}
-		inline const Renderer::GL::ProgramManager & getProgramManager() const
-		{
-			return _mainWindow->getOpenGLWidget().getProgramManager();
-		}
+		inline Setting &				   getSetting() { return _setting; }
+		inline const Setting &			   getSetting() const { return _setting; }
+		inline Stat &					   getStat() { return _stat; }
+		inline const Stat &				   getStat() const { return _stat; }
+		inline Object3D::Scene &		   getScene() { return *_scene; }
+		inline const Object3D::Scene &	   getScene() const { return *_scene; }
 		inline const UI::MainWindow &	   getMainWindow() const { return *_mainWindow; }
 		inline UI::MainWindow &			   getMainWindow() { return *_mainWindow; }
 		inline State::StateMachine &	   getStateMachine() { return *_stateMachine; }

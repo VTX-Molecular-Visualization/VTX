@@ -13,6 +13,7 @@
 #include "model/representation/representation.hpp"
 #include "model/selection.hpp"
 #include "representation/representation_manager.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
@@ -36,6 +37,8 @@ namespace VTX
 					Representation::RepresentationManager::get().instantiateRepresentation( _representation, _selection );
 				else
 					Representation::RepresentationManager::get().instantiateRepresentation( _representation, _representable );
+
+				VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 			};
 
 		  private:
@@ -53,7 +56,13 @@ namespace VTX
 			{
 			}
 
-			void execute() { Representation::RepresentationManager::get().removeRepresentation( _representation, _representable, true ); };
+			void execute()
+			{
+				Representation::RepresentationManager::get().removeRepresentation(
+					_representation, _representable, true );
+
+				VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+			};
 
 		  private:
 			Generic::BaseRepresentable * const						  _representable;
@@ -78,6 +87,8 @@ namespace VTX
 					_representation->setColorMode( _colorMode );
 				else
 					_instantiatedRepresentation->setColorMode( _colorMode );
+
+				VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 			};
 
 		  private:

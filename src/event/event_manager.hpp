@@ -13,13 +13,10 @@
 #include "generic/base_lockable.hpp"
 #include "generic/base_updatable.hpp"
 #include "id.hpp"
-#include "model/base_model.hpp"
-#include "view/base_view.hpp"
 #include <map>
 #include <queue>
 #include <set>
 
-// Disabled to ensure that molecule.init() creates gl buffer before rendering.
 //#define DELAY_EVENTS
 
 namespace VTX
@@ -47,7 +44,7 @@ namespace VTX
 			void registerEventReceiverWheel( BaseEventReceiverWheel * const );
 			void unregisterEventReceiverWheel( BaseEventReceiverWheel * const );
 
-			void fireEventVTX( VTXEvent * const );
+			void fireEventVTX( VTXEvent * const, const bool = false );
 			void fireEventKeyboard( QKeyEvent * const );
 			void fireEventMouse( QMouseEvent * const );
 			void fireEventWheel( QWheelEvent * const );
@@ -78,9 +75,9 @@ namespace VTX
 		};
 	} // namespace Event
 
-	inline void VTX_EVENT( VTX::Event::VTXEvent * const p_event )
+	inline void VTX_EVENT( VTX::Event::VTXEvent * const p_event, const bool p_force = false )
 	{
-		Event::EventManager::get().fireEventVTX( p_event );
+		Event::EventManager::get().fireEventVTX( p_event, p_force );
 	}
 } // namespace VTX
 #endif

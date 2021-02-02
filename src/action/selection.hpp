@@ -11,6 +11,8 @@
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
+#include "model/selection.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
@@ -81,6 +83,8 @@ namespace VTX
 						_selection.selectResidues( residues, true );
 					if ( atoms.size() > 0 )
 						_selection.selectAtoms( atoms, true );
+
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
@@ -128,7 +132,11 @@ namespace VTX
 						_molecules[ i ] = p_molecules[ i ];
 				}
 
-				virtual void execute() override { _selection.selectMolecules( _molecules, _appendToSelection ); }
+				virtual void execute() override
+				{
+					_selection.selectMolecules( _molecules, _appendToSelection );
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+				}
 
 			  private:
 				Model::Selection &			   _selection;
@@ -147,7 +155,11 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _selection.selectChain( _chain, _appendToSelection ); }
+				virtual void execute() override
+				{
+					_selection.selectChain( _chain, _appendToSelection );
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+				}
 
 			  private:
 				Model::Selection & _selection;
@@ -177,7 +189,11 @@ namespace VTX
 						_residues[ i ] = p_residues[ i ];
 				}
 
-				virtual void execute() override { _selection.selectResidues( _residues, _appendToSelection ); }
+				virtual void execute() override
+				{
+					_selection.selectResidues( _residues, _appendToSelection );
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+				}
 
 			  private:
 				Model::Selection &			  _selection;
@@ -196,7 +212,11 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _selection.selectAtom( _atom, _appendToSelection ); }
+				virtual void execute() override
+				{
+					_selection.selectAtom( _atom, _appendToSelection );
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+				}
 
 			  private:
 				Model::Selection & _selection;
@@ -214,7 +234,11 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _selection.selectRepresentation( _representation ); }
+				virtual void execute() override
+				{
+					_selection.selectRepresentation( _representation );
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+				}
 
 			  private:
 				Model::Selection &									_selection;
@@ -229,7 +253,11 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _selection.unselectMolecule( _molecule ); }
+				virtual void execute() override
+				{
+					_selection.unselectMolecule( _molecule );
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+				}
 
 			  private:
 				Model::Selection & _selection;
@@ -244,7 +272,11 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _selection.unselectChain( _chain ); }
+				virtual void execute() override
+				{
+					_selection.unselectChain( _chain );
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+				}
 
 			  private:
 				Model::Selection & _selection;
@@ -259,7 +291,11 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _selection.unselectResidue( _residue ); }
+				virtual void execute() override
+				{
+					_selection.unselectResidue( _residue );
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+				}
 
 			  private:
 				Model::Selection & _selection;
@@ -274,7 +310,11 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _selection.unselectAtom( _atom ); }
+				virtual void execute() override
+				{
+					_selection.unselectAtom( _atom );
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+				}
 
 			  private:
 				Model::Selection & _selection;
@@ -334,6 +374,8 @@ namespace VTX
 
 						molecule.computeRepresentationTargets();
 					}
+
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:

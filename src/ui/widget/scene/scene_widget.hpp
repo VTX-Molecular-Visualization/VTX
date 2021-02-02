@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "model/base_model.hpp"
 #include "scene_item_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDockWidget>

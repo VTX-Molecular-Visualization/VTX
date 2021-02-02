@@ -1,5 +1,10 @@
 #include "lib_chemfiles.hpp"
 #include "color/rgb.hpp"
+#include "model/atom.hpp"
+#include "model/bond.hpp"
+#include "model/chain.hpp"
+#include "model/molecule.hpp"
+#include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
@@ -14,7 +19,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			void LibChemfiles::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 			{
 				prepareChemfiles();
 				chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string() );
@@ -23,7 +28,7 @@ namespace VTX
 			}
 
 			void LibChemfiles::readBuffer( const std::string & p_buffer,
-										   const Path &		   p_path,
+										   const FilePath &	   p_path,
 										   Model::Molecule &   p_molecule )
 			{
 				std::string extension = p_path.extension().string().substr( 1, p_path.extension().string().size() );
@@ -45,7 +50,7 @@ namespace VTX
 			}
 
 			void LibChemfiles::readTrajectory( chemfiles::Trajectory & p_trajectory,
-											   const Path &			   p_path,
+											   const FilePath &		   p_path,
 											   Model::Molecule &	   p_molecule ) const
 			{
 				VTX_INFO( std::to_string( p_trajectory.nsteps() ) + " frames found" );

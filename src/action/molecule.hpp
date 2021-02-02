@@ -5,8 +5,10 @@
 #pragma once
 #endif
 
+#include "event/event_manager.hpp"
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
+#include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "setting.hpp"
@@ -32,7 +34,11 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _molecule.setColorMode( _colorMode ); }
+				virtual void execute() override
+				{
+					_molecule.setColorMode( _colorMode );
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+				}
 
 			  private:
 				Model::Molecule &		  _molecule;
@@ -57,6 +63,8 @@ namespace VTX
 					{
 						_molecule.getSecondaryStructure().refreshColors();
 					}
+
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 				}
 
 			  private:
@@ -81,6 +89,8 @@ namespace VTX
 						molecule->setVisible( newVisibility );
 						molecule->computeRepresentationTargets();
 					}
+
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 				}
 			};
 
@@ -113,6 +123,7 @@ namespace VTX
 				virtual void execute() override
 				{
 					_molecule.setFrame( Util::Math::clamp( _frame, 0, (int)_molecule.getFrameCount() - 1 ) );
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 				}
 
 			  private:
@@ -143,7 +154,11 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _molecule.setShowIon( _showIon ); }
+				virtual void execute() override
+				{
+					_molecule.setShowIon( _showIon );
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+				}
 
 			  private:
 				Model::Molecule & _molecule;
@@ -158,7 +173,11 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _molecule.setShowSolvent( _showSolvent ); }
+				virtual void execute() override
+				{
+					_molecule.setShowSolvent( _showSolvent );
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+				}
 
 			  private:
 				Model::Molecule & _molecule;
@@ -205,7 +224,11 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _molecule.getSecondaryStructure().setColorMode( _colorMode ); }
+				virtual void execute() override
+				{
+					_molecule.getSecondaryStructure().setColorMode( _colorMode );
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+				}
 
 			  private:
 				Model::Molecule &							_molecule;

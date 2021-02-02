@@ -1,6 +1,7 @@
 #include "setting_widget.hpp"
 #include "setting_menu_item.hpp"
 #include "style.hpp"
+#include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::UI::Widget::Settings

@@ -1,7 +1,6 @@
 #include "program_manager.hpp"
 #include "define.hpp"
 #include "exception.hpp"
-#include "generic/factory.hpp"
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include <vector>
@@ -16,7 +15,7 @@ namespace VTX::Renderer::GL
 							 { ".tesc", SHADER_TYPE::TESS_CONTROL },
 							 { ".tese", SHADER_TYPE::TESS_EVALUATION } } );
 
-	SHADER_TYPE ProgramManager::getShaderType( const Path & p_name )
+	SHADER_TYPE ProgramManager::getShaderType( const FilePath & p_name )
 	{
 		std::string extension = p_name.extension().string();
 		if ( ProgramManager::EXTENSIONS.find( extension ) != ProgramManager::EXTENSIONS.end() )
@@ -28,14 +27,20 @@ namespace VTX::Renderer::GL
 		return SHADER_TYPE::INVALID;
 	}
 
-	ProgramManager::~ProgramManager()
+	ProgramManager::~ProgramManager() { dispose(); }
+
+	void ProgramManager::dispose()
 	{
 		for ( const PairStringToGLuint & pair : _shaders )
 		{
 			gl()->glDeleteShader( pair.second );
 		}
 
-		Generic::clearMapAsValue( _programs );
+		for ( const PairStringToProgram & pair : _programs )
+		{
+			delete pair.second;
+		}
+
 		_shaders.clear();
 		_programs.clear();
 	}
@@ -90,7 +95,7 @@ namespace VTX::Renderer::GL
 		return nullptr;
 	}
 
-	GLuint ProgramManager::_createShader( const Path & p_path )
+	GLuint ProgramManager::_createShader( const FilePath & p_path )
 	{
 		VTX_DEBUG( "Creating shader: " + p_path.filename().string() );
 
@@ -106,7 +111,7 @@ namespace VTX::Renderer::GL
 		if ( shaderId == GL_INVALID_INDEX )
 		{
 			shaderId			   = gl()->glCreateShader( (int)type );
-			Path			  path = Util::Filesystem::getShadersPath( p_path.string() );
+			FilePath		  path = Util::Filesystem::getShadersPath( p_path.string() );
 			const std::string src  = Util::Filesystem::readPath( path );
 			if ( src.empty() )
 			{

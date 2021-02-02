@@ -27,33 +27,30 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
-			const ID & getId() const { return _id; };
-
-			const VTX::ID::VTX_ID & getTypeId() const { return *_typeId; };
-
-			bool isEnable() const { return _enabled; };
-			void setEnable( bool p_enable )
+			inline const ID &		  getId() const { return _id; }
+			inline const ID::VTX_ID & getTypeId() const { return *_typeId; }
+			inline bool				  isEnable() const { return _enabled; }
+			inline void				  setEnable( bool p_enable )
 			{
 				_enabled = p_enable;
 				_notifyDataChanged();
-			};
-
-			const std::string & getDefaultName() const { return *_name; };
-			void				setDefaultName( const std::string * const p_name )
+			}
+			inline const std::string & getDefaultName() const { return *_name; }
+			inline void				   setDefaultName( const std::string * const p_name )
 			{
 				_name = p_name;
 				_notifyDataChanged();
-			};
+			}
 			inline void forceNotifyDataChanged() { _notifyDataChanged(); }
 
 		  protected:
+			inline static ID				COUNTER		 = 0;
 			inline static const std::string DEFAULT_NAME = "<unknown>";
 
-			inline static ID			  COUNTER  = 0;
-			const ID					  _id	   = COUNTER++;
-			bool						  _enabled = true;
-			const std::string *			  _name	   = &DEFAULT_NAME;
-			const VTX::ID::VTX_ID * const _typeId;
+			const ID				 _id	  = COUNTER++;
+			bool					 _enabled = true;
+			const std::string *		 _name	  = &DEFAULT_NAME;
+			const ID::VTX_ID * const _typeId;
 
 			BaseModel( const ID::VTX_ID & p_typeId ) : _typeId( &p_typeId ) {}
 			void		_instantiateDefaultViews() {}

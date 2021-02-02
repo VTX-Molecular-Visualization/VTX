@@ -1,4 +1,5 @@
 #include "residue.hpp"
+#include "atom.hpp"
 #include "chain.hpp"
 #include "molecule.hpp"
 
@@ -140,7 +141,7 @@ namespace VTX
 			"?",					// GLX
 			"Water",				// WAT
 			"Water",				// HOH
-			"Hême",					// HEM
+			"Hï¿½me",					// HEM
 			"Groupement phosphate", // PO4
 		};
 

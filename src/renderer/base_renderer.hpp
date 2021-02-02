@@ -6,7 +6,6 @@
 #endif
 
 #include "generic/base_opengl.hpp"
-#include "gl/program_manager.hpp"
 #include "object3d/scene.hpp"
 #include <vector>
 
@@ -37,11 +36,8 @@ namespace VTX::Renderer
 	class BaseRenderer : public Generic::BaseOpenGL
 	{
 	  public:
-		BaseRenderer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl )
-		{
-			_programManager = new GL::ProgramManager( p_gl );
-		}
-		virtual ~BaseRenderer() { delete _programManager; }
+		BaseRenderer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
+		virtual ~BaseRenderer() = default;
 
 		inline const uint getWidth() const { return _width; }
 		inline const uint getHeight() const { return _height; }
@@ -63,13 +59,9 @@ namespace VTX::Renderer
 		virtual void activeFog( const bool ) {}
 		virtual void activeAA( const bool ) {}
 
-		inline GL::ProgramManager &		  getProgramManager() { return *_programManager; }
-		inline const GL::ProgramManager & getProgramManager() const { return *_programManager; }
-
 	  protected:
-		uint				 _width			 = 0;
-		uint				 _height		 = 0;
-		GL::ProgramManager * _programManager = nullptr;
+		uint _width	 = 0;
+		uint _height = 0;
 	};
 } // namespace VTX::Renderer
 

@@ -1,6 +1,8 @@
 #include "secondary_structure.hpp"
 #include "id.hpp"
+#include "model/chain.hpp"
 #include "model/molecule.hpp"
+#include "model/residue.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
@@ -291,6 +293,7 @@ namespace VTX
 						break;
 					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue->getChainPtr()->getColor() ); break;
 					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue->getColor() ); break;
+
 					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
 					}
 				}

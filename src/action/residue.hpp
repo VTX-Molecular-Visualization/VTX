@@ -35,6 +35,8 @@ namespace VTX
 					{
 						_residue.getMoleculePtr()->getSecondaryStructure().refreshColors();
 					}
+
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 				}
 
 			  private:
@@ -74,6 +76,8 @@ namespace VTX
 
 						residue.getMoleculePtr()->computeRepresentationTargets();
 					}
+
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 				}
 			};
 

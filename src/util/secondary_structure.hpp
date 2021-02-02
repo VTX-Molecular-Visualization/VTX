@@ -196,11 +196,7 @@ namespace VTX
 				chrono.start();
 				VTX_INFO( "Computing secondary structure..." );
 
-				switch ( p_molecule.getSecondaryStructureAlgo() )
-				{
-				case Model::SecondaryStructure::ALGO ::STRIDE: computeStride( p_molecule ); break;
-				default: VTX_WARNING( "Secondary structure algorithm not implemented yet" ); break;
-				}
+				computeStride( p_molecule );
 
 				p_molecule.getConfiguration().isSecondaryStructureLoadedFromFile = false;
 				chrono.stop();

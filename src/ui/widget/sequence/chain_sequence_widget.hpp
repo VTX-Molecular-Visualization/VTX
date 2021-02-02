@@ -7,7 +7,6 @@
 
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
-#include "model/residue.hpp"
 #include "sequence_chain_data.hpp"
 #include "sequence_display_widget.hpp"
 #include "ui/widget/view_item_widget.hpp"
@@ -18,6 +17,11 @@
 
 namespace VTX
 {
+	namespace Model
+	{
+		class Residue;
+	} // namespace Model
+
 	namespace UI
 	{
 		namespace Widget
@@ -29,11 +33,7 @@ namespace VTX
 					VTX_WIDGET
 
 				  public:
-					~ChainSequenceWidget()
-					{
-						if ( _chainData != nullptr )
-							delete _chainData;
-					};
+					~ChainSequenceWidget();
 
 					void refresh() override;
 					void localize() override;

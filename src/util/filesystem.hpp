@@ -26,22 +26,22 @@ namespace VTX
 		namespace Filesystem
 		{
 			// Test only.
-			static const Path DATA_DIR = "../data";
+			static const FilePath DATA_DIR = "../data";
 
-			inline const Path getCurrentDir()
+			inline const FilePath getCurrentDir()
 			{
 				char * buff;
 				buff = GetCurrentDir( 0, NULL );
-				Path currentWorkingDir( buff );
+				FilePath currentWorkingDir( buff );
 				return currentWorkingDir;
 			}
 
-			inline const Path getExecutableFile()
+			inline const FilePath getExecutableFile()
 			{
 #ifdef _WIN32
 				wchar_t path[ MAX_PATH ] = { 0 };
 				GetModuleFileNameW( NULL, path, MAX_PATH );
-				Path exe( path );
+				FilePath exe( path );
 				return exe;
 #else
 				char	result[ PATH_MAX ];
@@ -50,74 +50,74 @@ namespace VTX
 #endif
 			}
 
-			static const Path EXECUTABLE_FILE = getExecutableFile();
-			static const Path EXECUTABLE_DIR  = EXECUTABLE_FILE.parent_path();
-			static const Path SHADERS_DIR	  = Path( EXECUTABLE_DIR.string() + "/../../shaders" );
-			static const Path SNAPSHOTS_DIR	  = Path( EXECUTABLE_DIR.string() + "/../../snapshots" );
-			static const Path RENDERS_DIR	  = Path( EXECUTABLE_DIR.string() + "/../../renders" );
-			static const Path PATHS_DIR		  = Path( EXECUTABLE_DIR.string() + "/../../paths" );
-			static const Path VIDEOS_DIR	  = Path( EXECUTABLE_DIR.string() + "/../../videos" );
-			static const Path LOGS_DIR		  = Path( EXECUTABLE_DIR.string() + "/../../logs" );
-			static const Path LIBS_DIR		  = Path( EXECUTABLE_DIR.string() + "/.." );
+			static const FilePath EXECUTABLE_FILE = getExecutableFile();
+			static const FilePath EXECUTABLE_DIR  = EXECUTABLE_FILE.parent_path();
+			static const FilePath SHADERS_DIR	  = FilePath( EXECUTABLE_DIR.string() + "/../../shaders" );
+			static const FilePath SNAPSHOTS_DIR	  = FilePath( EXECUTABLE_DIR.string() + "/../../snapshots" );
+			static const FilePath RENDERS_DIR	  = FilePath( EXECUTABLE_DIR.string() + "/../../renders" );
+			static const FilePath PATHS_DIR		  = FilePath( EXECUTABLE_DIR.string() + "/../../paths" );
+			static const FilePath VIDEOS_DIR	  = FilePath( EXECUTABLE_DIR.string() + "/../../videos" );
+			static const FilePath LOGS_DIR		  = FilePath( EXECUTABLE_DIR.string() + "/../../logs" );
+			static const FilePath LIBS_DIR		  = FilePath( EXECUTABLE_DIR.string() + "/.." );
 
 			static const std::string IMGUI_INI_FILE
-				= Path( EXECUTABLE_DIR.string() + "/../../imgui.ini" ).string(); // TOFIX
-			static const Path SETTING_JSON_FILE = Path( EXECUTABLE_DIR.string() + "/../../setting.json" );
-			static const Path FFMPEG_EXE_FILE	= Path( LIBS_DIR.string() + "/ffmpeg.exe" );
+				= FilePath( EXECUTABLE_DIR.string() + "/../../imgui.ini" ).string(); // TOFIX
+			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/../../setting.json" );
+			static const FilePath FFMPEG_EXE_FILE	= FilePath( LIBS_DIR.string() + "/ffmpeg.exe" );
 
-			inline Path * const getDataPathPtr( const std::string & p_filename )
+			inline FilePath * const getDataPathPtr( const std::string & p_filename )
 			{
-				return new Path( DATA_DIR.string() + "/" + p_filename );
+				return new FilePath( DATA_DIR.string() + "/" + p_filename );
 			}
 
-			inline const Path getShadersPath( const std::string & p_filename )
+			inline const FilePath getShadersPath( const std::string & p_filename )
 			{
-				return Path( SHADERS_DIR ) /= p_filename;
+				return FilePath( SHADERS_DIR ) /= p_filename;
 			}
 
-			inline const Path getSnapshotsPath( const std::string & p_filename )
+			inline const FilePath getSnapshotsPath( const std::string & p_filename )
 			{
 				std::filesystem::create_directories( SNAPSHOTS_DIR );
-				return Path( SNAPSHOTS_DIR ) /= p_filename;
+				return FilePath( SNAPSHOTS_DIR ) /= p_filename;
 			}
 
-			inline const Path getRendersPath( const std::string & p_filename )
+			inline const FilePath getRendersPath( const std::string & p_filename )
 			{
 				std::filesystem::create_directories( RENDERS_DIR );
-				return Path( RENDERS_DIR ) /= p_filename;
+				return FilePath( RENDERS_DIR ) /= p_filename;
 			}
 
-			inline const Path getPathsPath( const std::string & p_filename )
+			inline const FilePath getPathsPath( const std::string & p_filename )
 			{
 				std::filesystem::create_directories( PATHS_DIR );
-				return Path( PATHS_DIR ) /= p_filename;
+				return FilePath( PATHS_DIR ) /= p_filename;
 			}
 
-			inline const Path getVideosBatchPath( const std::string & p_batchName )
+			inline const FilePath getVideosBatchPath( const std::string & p_batchName )
 			{
-				Path dir = Path( VIDEOS_DIR ) /= p_batchName;
+				FilePath dir = FilePath( VIDEOS_DIR ) /= p_batchName;
 				std::filesystem::create_directories( dir );
-				return Path( dir );
+				return FilePath( dir );
 			}
 
-			inline const Path getVideosPath( const std::string & p_batchName, const std::string & p_fileName )
+			inline const FilePath getVideosPath( const std::string & p_batchName, const std::string & p_fileName )
 			{
-				Path dir = getVideosBatchPath( p_batchName );
+				FilePath dir = getVideosBatchPath( p_batchName );
 				return dir /= p_fileName;
 			}
 
-			inline const Path getVideosPath( const std::string & p_fileName )
+			inline const FilePath getVideosPath( const std::string & p_fileName )
 			{
-				return Path( VIDEOS_DIR ) /= p_fileName;
+				return FilePath( VIDEOS_DIR ) /= p_fileName;
 			}
 
-			inline const Path getLogsPath( const std::string & p_filename )
+			inline const FilePath getLogsPath( const std::string & p_filename )
 			{
 				std::filesystem::create_directories( LOGS_DIR );
-				return Path( LOGS_DIR ) /= p_filename;
+				return FilePath( LOGS_DIR ) /= p_filename;
 			}
 
-			inline const std::string readPath( const Path & p_path )
+			inline const std::string readPath( const FilePath & p_path )
 			{
 				std::ifstream file;
 				file.open( p_path, std::ios::in );

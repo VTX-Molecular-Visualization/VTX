@@ -4,6 +4,7 @@
 #include "generic/base_representable.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
+#include "model/representation/representation_library.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
@@ -21,8 +22,9 @@ namespace VTX
 			{
 				void RepresentationPresetButton::_onButtonClicked()
 				{
-					Model::Representation::BaseRepresentation * representation = Model::Representation::RepresentationLibrary::get().getRepresentation( _id );
-					const Model::Selection &					target		   = VTX::Selection::SelectionManager::get().getSelectionModel();
+					Model::Representation::BaseRepresentation * representation
+						= Model::Representation::RepresentationLibrary::get().getRepresentation( _id );
+					const Model::Selection & target = VTX::Selection::SelectionManager::get().getSelectionModel();
 
 					if ( target.getItems().size() > 0 )
 					{

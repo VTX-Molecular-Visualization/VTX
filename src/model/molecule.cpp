@@ -1,8 +1,13 @@
 #include "molecule.hpp"
 #include "color/rgb.hpp"
-#include "generic/factory.hpp"
 #include "id.hpp"
+#include "model/atom.hpp"
+#include "model/bond.hpp"
+#include "model/chain.hpp"
+#include "model/residue.hpp"
 #include "model/secondary_structure.hpp"
+#include "model/selection.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/secondary_structure.hpp"
@@ -27,6 +32,40 @@ namespace VTX
 
 			if ( _secondaryStructure != nullptr )
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
+		}
+
+		void Molecule::setPdbIdCode( const std::string & p_pdbId )
+		{
+			_pdbIdCode = p_pdbId;
+			BaseModel::setDefaultName( &_pdbIdCode );
+		}
+
+		Chain & Molecule::addChain()
+		{
+			Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
+			_chains.emplace_back( chain );
+			return *chain;
+		}
+
+		Residue & Molecule::addResidue()
+		{
+			Residue * const residue = MVC::MvcManager::get().instantiateModel<Residue>();
+			_residues.emplace_back( residue );
+			return *residue;
+		}
+
+		Atom & Molecule::addAtom()
+		{
+			Atom * const atom = MVC::MvcManager::get().instantiateModel<Atom>();
+			_atoms.emplace_back( atom );
+			return *atom;
+		}
+
+		Bond & Molecule::addBond()
+		{
+			Bond * const bond = MVC::MvcManager::get().instantiateModel<Bond>();
+			_bonds.emplace_back( bond );
+			return *bond;
 		}
 
 		void Molecule::_init()
@@ -107,25 +146,11 @@ namespace VTX
 
 		void Molecule::_instantiate3DViews()
 		{
-			//_viewBox = MVC::MvcManager::get().instantiateView<View::D3::Box>(
-			//	(Model::BaseModel3D<Buffer::BaseBufferOpenGL> * const)this, ID::View::D3_BOX );
+			//_viewBox = MVC::MvcManager::get().instantiateView<View::D3::Box>( this, ID::View::D3_BOX );
+			//_viewBox->init();
 
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Sphere>( this, ID::View::D3_SPHERE ) );
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
-		}
-
-		void Molecule::setFrame( const uint p_frameIdx )
-		{
-			if ( p_frameIdx > getFrameCount() )
-			{
-				VTX_WARNING( "Frame " + std::to_string( p_frameIdx )
-							 + " does not exists / Count: " + std::to_string( getFrameCount() ) );
-				return;
-			}
-
-			_currentFrame = p_frameIdx;
-			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
-			_secondaryStructure->setCurrentFrame();
 		}
 
 		void Molecule::refreshBondsBuffer()
@@ -214,6 +239,26 @@ namespace VTX
 			_buffer->setAtomSelections( _bufferAtomSelection );
 		}
 
+		void Molecule::refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection )
+		{
+			_fillBufferAtomSelections( p_selection );
+			_secondaryStructure->refreshSelection( p_selection );
+		}
+
+		void Molecule::setFrame( const uint p_frameIdx )
+		{
+			if ( p_frameIdx > getFrameCount() )
+			{
+				VTX_WARNING( "Frame " + std::to_string( p_frameIdx )
+							 + " does not exists / Count: " + std::to_string( getFrameCount() ) );
+				return;
+			}
+
+			_currentFrame = p_frameIdx;
+			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
+			_secondaryStructure->setCurrentFrame();
+		}
+
 		void Molecule::print() const
 		{
 			// TODO: add more infos in debug (solvents, ions, ss...).
@@ -252,10 +297,10 @@ namespace VTX
 			VTX_DEBUG( "Sizeof bond: " + std::to_string( sizeof( *_bonds[ 0 ] ) ) );
 		}
 
-		void Molecule::render()
+		void Molecule::render( const Object3D::Camera & p_camera )
 		{
-			BaseModel3D::render();
-			_secondaryStructure->render();
+			BaseModel3D::render( p_camera );
+			_secondaryStructure->render( p_camera );
 		}
 
 		bool Molecule::mergeTopology( const Molecule & p_molecule )

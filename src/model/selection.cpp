@@ -1,6 +1,11 @@
 #include "selection.hpp"
+#include "atom.hpp"
+#include "chain.hpp"
 #include "event/event_manager.hpp"
+#include "molecule.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "representation/instantiated_representation.hpp"
+#include "residue.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 

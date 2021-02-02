@@ -10,6 +10,7 @@
 #include "define.hpp"
 #include "io/reader/vtx.hpp"
 #include "io/writer/vtx.hpp"
+#include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
@@ -48,9 +49,9 @@ namespace VTX
 			class Open : public BaseAction
 			{
 			  public:
-				explicit Open( Path * p_path ) { _paths.emplace_back( p_path ); }
-				explicit Open( const std::vector<Path *> & p_paths ) : _paths( p_paths ) {}
-				explicit Open( const std::map<Path *, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
+				explicit Open( FilePath * p_path ) { _paths.emplace_back( p_path ); }
+				explicit Open( const std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {}
+				explicit Open( const std::map<FilePath *, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
 
 				virtual void execute() override
 				{
@@ -85,8 +86,8 @@ namespace VTX
 				}
 
 			  private:
-				std::vector<Path *>				_paths = std::vector<Path *>();
-				std::map<Path *, std::string *> _buffers;
+				std::vector<FilePath *>				_paths = std::vector<FilePath *>();
+				std::map<FilePath *, std::string *> _buffers;
 			};
 
 			class OpenApi : public BaseAction
@@ -98,11 +99,11 @@ namespace VTX
 				{
 					Worker::ApiFetcher * const fetcher = new Worker::ApiFetcher( API_URL_MMTF + _id );
 
-					std::string id	 = _id;
-					Path *		path = new Path( id + ".mmtf" );
+					std::string		 id	  = _id;
+					FilePath * const path = new FilePath( id + ".mmtf" );
 
 					const Worker::CallbackSuccess * success = new Worker::CallbackSuccess( [ fetcher, path ]( void ) {
-						std::map<Path *, std::string *> & mapBuffers = std::map<Path *, std::string *>();
+						std::map<FilePath *, std::string *> & mapBuffers = std::map<FilePath *, std::string *>();
 						mapBuffers.emplace( path, fetcher->getBuffer() );
 						delete fetcher;
 
@@ -110,11 +111,12 @@ namespace VTX
 						VTX_ACTION( new Open( mapBuffers ) );
 					} );
 
-					const Worker::CallbackError * error = new Worker::CallbackError( [ fetcher ]( const std::exception & p_e ) {
-						VTX_ERROR( p_e.what() );
-						delete fetcher->getBuffer();
-						delete fetcher;
-					} );
+					const Worker::CallbackError * error
+						= new Worker::CallbackError( [ fetcher ]( const std::exception & p_e ) {
+							  VTX_ERROR( p_e.what() );
+							  delete fetcher->getBuffer();
+							  delete fetcher;
+						  } );
 
 					VTX_WORKER( fetcher, success, error );
 				}
@@ -126,7 +128,7 @@ namespace VTX
 			class Save : public BaseAction
 			{
 			  public:
-				explicit Save( Path * p_path ) : _path( p_path ) {}
+				explicit Save( FilePath * p_path ) : _path( p_path ) {}
 
 				virtual void execute() override
 				{
@@ -136,7 +138,7 @@ namespace VTX
 				}
 
 			  private:
-				Path * _path;
+				FilePath * _path;
 			};
 
 			class ToggleCameraController : public BaseAction
@@ -144,7 +146,13 @@ namespace VTX
 			  public:
 				explicit ToggleCameraController() {}
 
-				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->toggleCameraController(); };
+				virtual void execute() override
+				{
+					VTXApp::get()
+						.getStateMachine()
+						.getItem<State::Visualization>( ID::State::VISUALIZATION )
+						->toggleCameraController();
+				};
 			};
 
 			class ChangeCameraController : public BaseAction
@@ -152,7 +160,13 @@ namespace VTX
 			  public:
 				explicit ChangeCameraController( const ID::VTX_ID & p_controllerId ) : _id( p_controllerId ) {}
 
-				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->setCameraController( _id ); };
+				virtual void execute() override
+				{
+					VTXApp::get()
+						.getStateMachine()
+						.getItem<State::Visualization>( ID::State::VISUALIZATION )
+						->setCameraController( _id );
+				};
 
 			  private:
 				const ID::VTX_ID _id;
@@ -163,7 +177,13 @@ namespace VTX
 			  public:
 				explicit ResetCameraController() {}
 
-				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->resetCameraController(); };
+				virtual void execute() override
+				{
+					VTXApp::get()
+						.getStateMachine()
+						.getItem<State::Visualization>( ID::State::VISUALIZATION )
+						->resetCameraController();
+				};
 
 			  private:
 			};
@@ -171,7 +191,10 @@ namespace VTX
 			class Snapshot : public BaseAction
 			{
 			  public:
-				explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const Path & p_path ) : _mode( p_mode ), _path( p_path ) {}
+				explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const FilePath & p_path ) :
+					_mode( p_mode ), _path( p_path )
+				{
+				}
 
 				virtual void execute() override
 				{
@@ -199,7 +222,7 @@ namespace VTX
 
 			  private:
 				const Worker::Snapshoter::MODE _mode;
-				const Path					   _path;
+				const FilePath				   _path;
 			};
 		} // namespace Main
 	}	  // namespace Action

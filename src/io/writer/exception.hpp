@@ -16,7 +16,7 @@ namespace VTX
 			class Exception : public BaseWriter<std::exception>
 			{
 			  public:
-				void writeFile( const Path & p_path, const std::exception & ) override;
+				void writeFile( const FilePath & p_path, const std::exception & ) override;
 			};
 		} // namespace Writer
 	}	  // namespace IO

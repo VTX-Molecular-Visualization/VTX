@@ -16,15 +16,12 @@ namespace VTX
 		  public:
 			inline const Math::Transform & getTransform() const { return _transform; };
 
-			inline void rotate( const float p_angle, const Vec3f & p_axis ) { _transform.rotate( p_angle, p_axis ); }
-
-			inline void setScale( const float & p_scale ) { _transform.setScale( p_scale ); }
-			inline void setScale( const Mat4f & p_scale ) { _transform.setScale( p_scale ); }
-
-			inline void setTranslation( const Vec3f & p_translation ) { _transform.setTranslation( p_translation ); }
-			inline void setTranslation( const Mat4f & p_translation ) { _transform.setTranslation( p_translation ); }
-
-			inline void applyTransform( const Math::Transform & p_transform ) { _transform = p_transform; };
+			void rotate( const float, const Vec3f & );
+			void setScale( const float & );
+			void setScale( const Mat4f & );
+			void setTranslation( const Vec3f & );
+			void setTranslation( const Mat4f & );
+			void applyTransform( const Math::Transform & );
 
 		  protected:
 			Math::Transform _transform;

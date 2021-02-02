@@ -69,6 +69,8 @@ namespace VTX
 
 						atom.getMoleculePtr()->computeRepresentationTargets();
 					}
+
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 				}
 			};
 

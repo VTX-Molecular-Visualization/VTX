@@ -12,11 +12,11 @@ layout( location = ATOM_RADIUS ) in float aSphereRad;
 layout( location = ATOM_VISIBILITY ) in unsigned short aSphereVis;
 layout( location = ATOM_SELECTION ) in unsigned short aSphereSel;
 
-uniform mat4  uMVMatrix;
-uniform mat4  uProjMatrix;
-uniform float uRadiusAdd	 = 0.f; // TODO: for SAS ?
-uniform float uRadiusFixed	 = 1.f;
-uniform bool  uIsRadiusFixed = false;
+uniform mat4  u_MVMatrix;
+uniform mat4  u_projMatrix;
+uniform float u_radiusAdd	 = 0.f; // TODO: for SAS ?
+uniform float u_radiusFixed	 = 1.f;
+uniform bool  u_isRadiusFixed = false;
 
 flat out vec3			vViewSpherePos; // Sphere position in view space.
 flat out vec3			vSphereColor;
@@ -29,9 +29,9 @@ flat out float			vDotViewSpherePos;
 
 void main()
 {
-	vViewSpherePos = vec3( uMVMatrix * vec4( aSpherePos, 1.f ) );
+	vViewSpherePos = vec3( u_MVMatrix * vec4( aSpherePos, 1.f ) );
 	vSphereColor   = aSphereColor;
-	vSphereRad	   = uIsRadiusFixed ? uRadiusFixed : aSphereRad + uRadiusAdd;
+	vSphereRad	   = u_isRadiusFixed ? u_radiusFixed : aSphereRad + u_radiusAdd;
 	vSphereVis	   = aSphereVis;
 	vSphereSel	   = aSphereSel;
 

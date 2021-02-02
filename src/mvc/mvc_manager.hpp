@@ -6,7 +6,7 @@
 #endif
 
 #include "id.hpp"
-#include "model/base_model_3d.hpp"
+#include "model/base_model.hpp"
 #include "mvc_data.hpp"
 #include "view/base_view_3d.hpp"
 #include <type_traits>

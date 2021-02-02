@@ -6,11 +6,15 @@
 #endif
 
 #include "base_state.hpp"
-#include "model/path.hpp"
 #include "worker/snapshoter.hpp"
 
 namespace VTX
 {
+	namespace Model
+	{
+		class Path;
+	}
+
 	namespace State
 	{
 		class Export : public BaseState

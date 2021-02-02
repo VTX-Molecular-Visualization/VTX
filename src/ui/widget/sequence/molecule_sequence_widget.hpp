@@ -7,7 +7,6 @@
 
 #include "chain_sequence_widget.hpp"
 #include "model/molecule.hpp"
-#include "model/residue.hpp"
 #include "ui/widget/view_item_widget.hpp"
 #include <QHBoxLayout>
 #include <QLabel>
@@ -19,6 +18,10 @@
 
 namespace VTX
 {
+	namespace Model
+	{
+		class Residue;
+	}
 	namespace UI
 	{
 		namespace Widget

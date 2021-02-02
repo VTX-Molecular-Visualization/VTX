@@ -26,7 +26,11 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _transformable.rotate( _angle, _axis ); }
+				virtual void execute() override
+				{
+					_transformable.rotate( _angle, _axis );
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+				}
 
 			  private:
 				Generic::BaseTransformable & _transformable;
@@ -44,9 +48,17 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _transformable.setScale( _scale ); }
+				virtual void execute() override
+				{
+					_transformable.setScale( _scale );
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+				}
 
-				virtual void undo() override { _transformable.setScale( _scaleOld ); }
+				virtual void undo() override
+				{
+					_transformable.setScale( _scaleOld );
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+				}
 
 			  private:
 				Generic::BaseTransformable & _transformable;
@@ -63,9 +75,17 @@ namespace VTX
 				{
 				}
 
-				virtual void execute() override { _transformable.setTranslation( _translation ); }
+				virtual void execute() override
+				{
+					_transformable.setTranslation( _translation );
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+				}
 
-				virtual void undo() override { _transformable.setTranslation( _translationOld ); }
+				virtual void undo() override
+				{
+					_transformable.setTranslation( _translationOld );
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+				}
 
 			  private:
 				Generic::BaseTransformable & _transformable;

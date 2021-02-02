@@ -6,9 +6,9 @@
 #endif
 
 #include "base_worker.hpp"
-#include "io/reader/base_reader.hpp"
-#include "model/mesh_triangle.hpp"
-#include "model/molecule.hpp"
+#include "define.hpp"
+#include <map>
+#include <vector>
 
 namespace VTX
 {
@@ -25,8 +25,10 @@ namespace VTX
 				UNKNOWN,
 			};
 
-			explicit Loader( const std::vector<Path *> & p_paths ) : _paths( p_paths ) {}
-			explicit Loader( const std::map<Path *, std::string *> & p_buffers ) : _mapFileNameBuffer( p_buffers ) {}
+			explicit Loader( const std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {}
+			explicit Loader( const std::map<FilePath *, std::string *> & p_buffers ) : _mapFileNameBuffer( p_buffers )
+			{
+			}
 			~Loader()
 			{
 				_paths.clear();
@@ -36,10 +38,10 @@ namespace VTX
 			virtual void work() override;
 
 		  private:
-			std::vector<Path *>				_paths			   = std::vector<Path *>();
-			std::map<Path *, std::string *> _mapFileNameBuffer = std::map<Path *, std::string *>();
+			std::vector<FilePath *>				_paths			   = std::vector<FilePath *>();
+			std::map<FilePath *, std::string *> _mapFileNameBuffer = std::map<FilePath *, std::string *>();
 
-			MODE _getMode( const Path & ) const;
+			MODE _getMode( const FilePath & ) const;
 		};
 	} // namespace Worker
 } // namespace VTX

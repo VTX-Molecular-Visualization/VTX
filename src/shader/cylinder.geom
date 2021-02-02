@@ -3,8 +3,8 @@
 layout( lines ) in;
 layout( triangle_strip, max_vertices = 4 ) out;
 
-uniform mat4  uProjMatrix;
-uniform float uCylRad;
+uniform mat4  u_projMatrix;
+uniform float u_cylRad;
 
 flat in vec3		   vVertexColor[]; // One color per atom.
 flat in unsigned short vVertexVis[];
@@ -18,19 +18,19 @@ flat out unsigned short vertexSel[ 2 ];
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
 	viewImpPos	= v1;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gl_Position = u_projMatrix * vec4( viewImpPos, 1.f );
 	EmitVertex();
 
 	viewImpPos	= v2;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gl_Position = u_projMatrix * vec4( viewImpPos, 1.f );
 	EmitVertex();
 
 	viewImpPos	= v3;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gl_Position = u_projMatrix * vec4( viewImpPos, 1.f );
 	EmitVertex();
 
 	viewImpPos	= v4;
-	gl_Position = uProjMatrix * vec4( viewImpPos, 1.f );
+	gl_Position = u_projMatrix * vec4( viewImpPos, 1.f );
 	EmitVertex();
 
 	EndPrimitive();
@@ -77,13 +77,13 @@ void main()
 	const float dV0 = length( viewImpPos0 );
 	const float dV1 = length( viewImpPos1 );
 
-	const float sinAngle = uCylRad / dV0;
+	const float sinAngle = u_cylRad / dV0;
 	float		angle	 = asin( sinAngle );
-	const vec3	y1		 = y * uCylRad;
-	const vec3	x2		 = x * uCylRad * cos( angle );
+	const vec3	y1		 = y * u_cylRad;
+	const vec3	x2		 = x * u_cylRad * cos( angle );
 	const vec3	y2		 = y1 * sinAngle;
-	angle				 = asin( uCylRad / dV1 );
-	const vec3 x3		 = x * ( dV1 - uCylRad ) * tan( angle );
+	angle				 = asin( u_cylRad / dV1 );
+	const vec3 x3		 = x * ( dV1 - u_cylRad ) * tan( angle );
 
 	// Compute impostors vertices.
 	const vec3 v1 = viewImpPos0 - x2 + y2;

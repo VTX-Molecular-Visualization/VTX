@@ -6,11 +6,15 @@
 #endif
 
 #include "base_reader.hpp"
-#include "model/mesh_triangle.hpp"
-#include "model/molecule.hpp"
 
 namespace VTX
 {
+	namespace Model
+	{
+		class MeshTriangle;
+		class Molecule;
+	} // namespace Model
+
 	namespace IO
 	{
 		namespace Reader
@@ -18,8 +22,8 @@ namespace VTX
 			class LibAssimp : public BaseReader<Model::Molecule>, public BaseReader<Model::MeshTriangle>
 			{
 			  public:
-				void readFile( const Path &, Model::MeshTriangle & ) override;
-				void readFile( const Path &, Model::Molecule & ) override;
+				void readFile( const FilePath &, Model::MeshTriangle & ) override;
+				void readFile( const FilePath &, Model::Molecule & ) override;
 			};
 		} // namespace Reader
 	}	  // namespace IO

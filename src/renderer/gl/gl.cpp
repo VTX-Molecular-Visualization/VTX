@@ -1,5 +1,4 @@
 #include "gl.hpp"
-#include "generic/factory.hpp"
 #include "model/molecule.hpp"
 #include "view/base_view_3d_molecule.hpp"
 #include "vtx_app.hpp"
@@ -58,14 +57,14 @@ namespace VTX::Renderer::GL
 		BaseRenderer::resize( p_width, p_height );
 
 		// Init pass.
-		_passGeometric->init( *_programManager, p_width, p_height );
-		_passLinearizeDepth->init( *_programManager, _width, _height );
-		_passSSAO->init( *_programManager, p_width, p_height );
-		_passBlur->init( *_programManager, p_width, p_height );
-		_passShading->init( *_programManager, p_width, p_height );
-		_passOutline->init( *_programManager, p_width, p_height );
-		_passSelection->init( *_programManager, p_width, p_height );
-		_passFXAA->init( *_programManager, p_width, p_height );
+		_passGeometric->init( p_width, p_height );
+		_passLinearizeDepth->init( _width, _height );
+		_passSSAO->init( p_width, p_height );
+		_passBlur->init( p_width, p_height );
+		_passShading->init( p_width, p_height );
+		_passOutline->init( p_width, p_height );
+		_passSelection->init( p_width, p_height );
+		_passFXAA->init( p_width, p_height );
 
 		// Init VAO.
 		_initQuadVAO();
@@ -118,6 +117,11 @@ namespace VTX::Renderer::GL
 
 	void GL::renderFrame( const Object3D::Scene & p_scene )
 	{
+		if ( !VTXApp::get().MASK )
+		{
+			return;
+		}
+
 		gl()->glViewport( 0, 0, _width, _height );
 
 		// TODO: do not change each frame
@@ -155,6 +159,8 @@ namespace VTX::Renderer::GL
 		{
 			_passFXAA->render( p_scene, *this );
 		}
+
+		VTXApp::get().MASK = VTX_SETTING().forceRenderer ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
 	};
 
 	void GL::setShading() { _passShading->set(); }

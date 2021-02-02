@@ -1,6 +1,12 @@
 #include "lib_assimp.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "model/atom.hpp"
+#include "model/bond.hpp"
+#include "model/chain.hpp"
+#include "model/mesh_triangle.hpp"
+#include "model/molecule.hpp"
+#include "model/residue.hpp"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -11,7 +17,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			void LibAssimp::readFile( const Path & p_path, Model::MeshTriangle & p_mesh )
+			void LibAssimp::readFile( const FilePath & p_path, Model::MeshTriangle & p_mesh )
 			{
 				Assimp::Importer Importer;
 
@@ -82,7 +88,7 @@ namespace VTX
 				}
 			}
 
-			void LibAssimp::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			void LibAssimp::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 			{
 				Assimp::Importer Importer;
 

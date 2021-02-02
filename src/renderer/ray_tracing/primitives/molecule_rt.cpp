@@ -4,6 +4,9 @@
 #include "../materials/metal.hpp"
 #include "../materials/phong_material.hpp"
 #include "cylinder.hpp"
+#include "model/atom.hpp"
+#include "model/bond.hpp"
+#include "model/chain.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "sphere.hpp"
 
@@ -50,7 +53,7 @@ namespace VTX
 			//					   0.6f * jaune,
 			//					   shininess ),									   // jaune ocre
 			//	new MatteMaterial( rouge, roughness ), // rouge clair
-			//	new MatteMaterial( blanc, 0.5f ),	   // blanc qui pète
+			//	new MatteMaterial( blanc, 0.5f ),	   // blanc qui pï¿½te
 			//	new MatteMaterial( rouge, roughness ), // rouge clair
 			//	new MatteMaterial( rouge, roughness )  // rouge clair
 			//};

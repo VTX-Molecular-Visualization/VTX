@@ -1,5 +1,6 @@
 #include "render_effect_preset.hpp"
 #include "renderer/gl/gl.hpp"
+#include "ui/main_window.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Model::Renderer

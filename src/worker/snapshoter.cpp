@@ -6,6 +6,7 @@
 #endif
 #include "renderer/gl/gl.hpp"
 #include "renderer/ray_tracing/ray_tracer.hpp"
+#include "ui/main_window.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
 #include <stb/stb_image_write.h>
@@ -15,13 +16,13 @@ namespace VTX
 {
 	namespace Worker
 	{
-		bool Snapshoter::takeSnapshotGL( const Path & p_path )
+		bool Snapshoter::takeSnapshotGL( const FilePath & p_path )
 		{
 			QImage image = VTXApp::get().getMainWindow().getOpenGLWidget().grabFramebuffer();
 			return image.save( QString( p_path.string().c_str() ), "png" );
 		}
 
-		bool Snapshoter::takeSnapshotRTCPU( const Path & p_path ) const
+		bool Snapshoter::takeSnapshotRTCPU( const FilePath & p_path ) const
 		{
 			Renderer::GL::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
@@ -39,7 +40,7 @@ namespace VTX
 			return res;
 		}
 
-		bool Snapshoter::takeSnapshotRTOptix( const Path & p_path ) const
+		bool Snapshoter::takeSnapshotRTOptix( const FilePath & p_path ) const
 		{
 			const Renderer::GL::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 

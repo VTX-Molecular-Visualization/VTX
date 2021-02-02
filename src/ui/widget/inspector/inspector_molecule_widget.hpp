@@ -44,9 +44,8 @@ namespace VTX
 					QLabel *						_fullnameLabel	 = nullptr;
 					QLabel *						_nbAtomsLabel	 = nullptr;
 
-					void _onTransformChange( const Math::Transform & _transform ) { _model->applyTransform( _transform ); }
-
-					void setModelEnableFromCheckBox( const int checkboxState ) { _model->setEnable( checkboxState > 0 ); }
+					void _onTransformChange( const Math::Transform & );
+					void setModelEnableFromCheckBox( const int );
 				};
 
 			} // namespace Inspector

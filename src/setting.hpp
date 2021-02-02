@@ -7,6 +7,7 @@
 
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "generic/base_colorable.hpp"
 #include "style.hpp"
 #include <QString>
 
@@ -47,6 +48,8 @@ namespace VTX
 		// Rendering.
 		static const bool ACTIVE_RENDERER_DEFAULT;
 		bool			  activeRenderer = ACTIVE_RENDERER_DEFAULT;
+		static const bool FORCE_RENDERER_DEFAULT;
+		bool			  forceRenderer = 0;
 
 		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
 		Color::Rgb				backgroundColor = BACKGROUND_COLOR_DEFAULT;
@@ -181,7 +184,7 @@ namespace VTX
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
 
-		inline static std::vector<VTX::Path> recentLoadingPath = { "Recent 1", "Recent 2", "Recent 3" };
+		inline static std::vector<VTX::FilePath> recentLoadingPath = { "Recent 1", "Recent 2", "Recent 3" };
 
 		void backup();
 		void recover();

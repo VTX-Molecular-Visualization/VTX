@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "math/vec3.hpp"
 #include <filesystem>
 #include <glm/detail/qualifier.hpp>
 #include <glm/detail/type_quat.hpp>
@@ -36,7 +35,7 @@ namespace VTX
 	using Quatf = glm::quat;
 	using Quatd = glm::dquat;
 
-	using Path = std::filesystem::path;
+	using FilePath = std::filesystem::path;
 
 	// VTX.
 	constexpr int VTX_VERSION_MAJOR	   = 0;
@@ -81,6 +80,16 @@ namespace VTX
 	constexpr Vec3f CAMERA_FRONT_DEFAULT = Vec3f( 0.f, 0.f, -1.f );
 
 	constexpr uint INVALID_ID = UINT_MAX;
+
+	// Mask.
+	using VTX_MASK = unsigned char;
+
+	constexpr VTX_MASK VTX_MASK_NEED_UPDATE		  = 0xFF;
+	constexpr VTX_MASK VTX_MASK_NO_UPDATE		  = 0x00;
+	constexpr VTX_MASK VTX_MASK_SELECTION_UPDATED = 0x01;
+	constexpr VTX_MASK VTX_MASK_CAMERA_UPDATED	  = 0x02;
+	constexpr VTX_MASK VTX_MASK_3D_MODEL_UPDATED  = 0x04;
+	constexpr VTX_MASK VTX_MASK_UNIFORM_UPDATED	  = 0x08;
 } // namespace VTX
 
 #endif

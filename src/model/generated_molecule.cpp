@@ -2,7 +2,10 @@
 #include "atom.hpp"
 #include "chain.hpp"
 #include "id.hpp"
+#include "model/bond.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "residue.hpp"
+#include "selection.hpp"
 #include "selection/selection_manager.hpp"
 #include "tool/chrono.hpp"
 #include <map>

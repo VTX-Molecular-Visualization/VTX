@@ -1,5 +1,6 @@
 #include "selection_manager.hpp"
 #include "event/event_manager.hpp"
+#include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "tool/logger.hpp"
 #include <string>

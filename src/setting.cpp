@@ -1,6 +1,6 @@
 #include "setting.hpp"
 #include "io/serializer.hpp"
-#include "renderer/gl/pass/shading.hpp"
+#include "renderer/base_renderer.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -24,6 +24,7 @@ namespace VTX
 
 	// Rendering.
 	const bool				  Setting::ACTIVE_RENDERER_DEFAULT		= true;
+	const bool				  Setting::FORCE_RENDERER_DEFAULT		= false;
 	const Color::Rgb		  Setting::BACKGROUND_COLOR_DEFAULT		= Color::Rgb::BLACK;
 	const int				  Setting::REPRESENTATION_DEFAULT_INDEX = 0;
 	const float				  Setting::ATOMS_RADIUS_DEFAULT			= 0.4f;
