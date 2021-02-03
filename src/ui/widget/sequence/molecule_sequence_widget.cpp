@@ -609,8 +609,11 @@ namespace VTX
 				}
 				void MoleculeSequenceWidget::_clearSelection() const
 				{
-					VTX_ACTION( new Action::Selection::ClearSelection(
-						VTX::Selection::SelectionManager::get().getSelectionModel() ) );
+					Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+					if ( !selectionModel.isEmpty() )
+					{
+						VTX_ACTION( new Action::Selection::ClearSelection( selectionModel ) );
+					}
 				}
 
 				void MoleculeSequenceWidget::repaintSelection() const

@@ -595,6 +595,8 @@ namespace VTX
 			_representations.erase( &p_representation );
 		}
 
+		bool Selection::isEmpty() const { return _items.size() <= 0; }
+
 		void Selection::clear()
 		{
 			_clearWithoutNotify();

@@ -92,6 +92,7 @@ namespace VTX
 			bool isRepresentationSelected( Representation::InstantiatedRepresentation & ) const;
 			uint getRepresentationSelectedCount() const;
 
+			bool			   isEmpty() const;
 			void			   clear();
 			const Math::AABB & getAABB() const { return _aabb; }
 			void			   receiveEvent( const Event::VTXEvent & p_event ) override;
