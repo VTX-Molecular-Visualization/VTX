@@ -248,77 +248,162 @@ namespace VTX
 			class UnselectMolecule : public BaseAction
 			{
 			  public:
-				explicit UnselectMolecule( Model::Selection & p_selection, Model::Molecule & p_molecule ) :
-					_selection( p_selection ), _molecule( p_molecule )
+				explicit UnselectMolecule( Model::Selection & p_selection,
+										   Model::Molecule &  p_molecule,
+										   bool				  p_check = false ) :
+					_selection( p_selection ),
+					_check( p_check )
 				{
+					_molecules.emplace_back( &p_molecule );
+				}
+				explicit UnselectMolecule( Model::Selection &					  p_selection,
+										   const std::vector<Model::Molecule *> & p_molecules,
+										   bool									  p_check = false ) :
+					_selection( p_selection ),
+					_check( p_check )
+				{
+					_molecules.resize( p_molecules.size() );
+					for ( int i = 0; i < _molecules.size(); i++ )
+						_molecules[ i ] = p_molecules[ i ];
 				}
 
 				virtual void execute() override
 				{
-					_selection.unselectMolecule( _molecule );
+					if ( _check )
+						_selection.unselectMolecules( _molecules );
+					else
+						_selection.unselectMoleculesWithCheck( _molecules );
+
 					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
-				Model::Selection & _selection;
-				Model::Molecule &  _molecule;
+				Model::Selection &			   _selection;
+				std::vector<Model::Molecule *> _molecules = std::vector<Model::Molecule *>();
+				const bool					   _check;
 			};
 
 			class UnselectChain : public BaseAction
 			{
 			  public:
-				explicit UnselectChain( Model::Selection & p_selection, Model::Chain & p_chain ) :
-					_selection( p_selection ), _chain( p_chain )
+				explicit UnselectChain( Model::Selection & p_selection, Model::Chain & p_chain, bool p_check = false ) :
+					_selection( p_selection ), _check( p_check )
 				{
+					_chains.emplace_back( &p_chain );
+				}
+				explicit UnselectChain( Model::Selection &			  p_selection,
+										std::vector<Model::Chain *> & p_chains,
+										bool						  p_check = false ) :
+					_selection( p_selection ),
+					_check( p_check )
+				{
+					_chains.resize( p_chains.size() );
+					for ( int i = 0; i < p_chains.size(); i++ )
+						_chains[ i ] = p_chains[ i ];
 				}
 
 				virtual void execute() override
 				{
-					_selection.unselectChain( _chain );
+					if ( _check )
+						_selection.unselectChains( _chains );
+					else
+						_selection.unselectChainsWithCheck( _chains );
+
 					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
-				Model::Selection & _selection;
-				Model::Chain &	   _chain;
+				Model::Selection &			_selection;
+				std::vector<Model::Chain *> _chains = std::vector<Model::Chain *>();
+				const bool					_check;
 			};
 
 			class UnselectResidue : public BaseAction
 			{
 			  public:
-				explicit UnselectResidue( Model::Selection & p_selection, Model::Residue & p_residue ) :
-					_selection( p_selection ), _residue( p_residue )
+				explicit UnselectResidue( Model::Selection & p_selection,
+										  Model::Residue &	 p_residue,
+										  bool				 p_check = false ) :
+					_selection( p_selection ),
+					_check( p_check )
 				{
+					_residues.emplace_back( &p_residue );
+				}
+				explicit UnselectResidue( Model::Selection &			  p_selection,
+										  std::vector<Model::Residue *> & p_residues,
+										  bool							  p_check = false ) :
+					_selection( p_selection ),
+					_check( p_check )
+				{
+					_residues.resize( p_residues.size() );
+					for ( int i = 0; i < p_residues.size(); i++ )
+						_residues[ i ] = p_residues[ i ];
 				}
 
 				virtual void execute() override
 				{
-					_selection.unselectResidue( _residue );
+					if ( _check )
+						_selection.unselectResidues( _residues );
+					else
+						_selection.unselectResiduesWithCheck( _residues );
+
 					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
-				Model::Selection & _selection;
-				Model::Residue &   _residue;
+				Model::Selection &			  _selection;
+				std::vector<Model::Residue *> _residues = std::vector<Model::Residue *>();
+				const bool					  _check;
 			};
 
 			class UnselectAtom : public BaseAction
 			{
 			  public:
-				explicit UnselectAtom( Model::Selection & p_selection, Model::Atom & p_atom ) :
-					_selection( p_selection ), _atom( p_atom )
+				explicit UnselectAtom( Model::Selection & p_selection, Model::Atom & p_atom, bool p_check = false ) :
+					_selection( p_selection ), _check( p_check )
 				{
+					_atoms.emplace_back( &p_atom );
+				}
+				explicit UnselectAtom( Model::Selection &			p_selection,
+									   std::vector<Model::Atom *> & p_atoms,
+									   bool							p_check = false ) :
+					_selection( p_selection ),
+					_check( p_check )
+				{
+					_atoms.resize( p_atoms.size() );
+					for ( int i = 0; i < p_atoms.size(); i++ )
+						_atoms[ i ] = p_atoms[ i ];
 				}
 
 				virtual void execute() override
 				{
-					_selection.unselectAtom( _atom );
+					if ( _check )
+						_selection.unselectAtoms( _atoms );
+					else
+						_selection.unselectAtomsWithCheck( _atoms );
+
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+				}
+
+			  private:
+				Model::Selection &		   _selection;
+				std::vector<Model::Atom *> _atoms = std::vector<Model::Atom *>();
+				const bool				   _check;
+			};
+
+			class ClearSelection : public BaseAction
+			{
+			  public:
+				explicit ClearSelection( Model::Selection & p_selection ) : _selection( p_selection ) {}
+
+				virtual void execute() override
+				{
+					_selection.clear();
 					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
 
 			  private:
 				Model::Selection & _selection;
-				Model::Atom &	   _atom;
 			};
 
 			///////////////////////////// ACTION ON SELECTION ///////////////////////////////

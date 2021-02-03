@@ -1,4 +1,6 @@
 #include "molecule_sequence_widget.hpp"
+#include "action/action_manager.hpp"
+#include "action/selection.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
@@ -575,16 +577,14 @@ namespace VTX
 				}
 				void MoleculeSequenceWidget::_select( std::vector<Model::Residue *> & p_residues ) const
 				{
-					VTX::Selection::SelectionManager::get().getSelectionModel().selectResidues( p_residues, true );
+					VTX_ACTION( new Action::Selection::SelectResidue(
+						VTX::Selection::SelectionManager::get().getSelectionModel(), p_residues, true ) );
 				}
 				void MoleculeSequenceWidget::_unselect( std::vector<Model::Residue *> & p_residues,
 														const bool						p_checkData ) const
 				{
-					if ( p_checkData )
-						VTX::Selection::SelectionManager::get().getSelectionModel().unselectResiduesWithCheck(
-							p_residues );
-					else
-						VTX::Selection::SelectionManager::get().getSelectionModel().unselectResidues( p_residues );
+					VTX_ACTION( new Action::Selection::UnselectResidue(
+						VTX::Selection::SelectionManager::get().getSelectionModel(), p_residues, p_checkData ) );
 				}
 				void MoleculeSequenceWidget::_toggleSelect( std::vector<Model::Residue *> & p_residues ) const
 				{
@@ -596,14 +596,21 @@ namespace VTX
 						Model::Residue * const residue = *it;
 
 						if ( selection.isResidueSelected( *residue ) )
-							selection.unselectResidue( *residue );
+						{
+							VTX_ACTION( new Action::Selection::UnselectResidue(
+								VTX::Selection::SelectionManager::get().getSelectionModel(), *residue ) );
+						}
 						else
-							selection.selectResidue( *residue, true );
+						{
+							VTX_ACTION( new Action::Selection::SelectResidue(
+								VTX::Selection::SelectionManager::get().getSelectionModel(), *residue ) );
+						}
 					}
 				}
 				void MoleculeSequenceWidget::_clearSelection() const
 				{
-					VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+					VTX_ACTION( new Action::Selection::ClearSelection(
+						VTX::Selection::SelectionManager::get().getSelectionModel() ) );
 				}
 
 				void MoleculeSequenceWidget::repaintSelection() const

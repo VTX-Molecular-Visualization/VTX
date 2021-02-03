@@ -1,4 +1,6 @@
 #include "scene_widget.hpp"
+#include "action/action_manager.hpp"
+#include "action/selection.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
 #include "model/selection.hpp"
@@ -168,7 +170,8 @@ namespace VTX
 				}
 				void SceneWidget::mousePressEvent( QMouseEvent * p_event )
 				{
-					VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+					VTX_ACTION( new Action::Selection::ClearSelection(
+						VTX::Selection::SelectionManager::get().getSelectionModel() ) );
 				}
 				void SceneWidget::dragEnterEvent( QDragEnterEvent * p_event )
 				{
