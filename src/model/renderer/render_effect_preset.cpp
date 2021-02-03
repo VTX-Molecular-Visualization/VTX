@@ -16,29 +16,29 @@ namespace VTX::Model::Renderer
 		_ssaoIntensity
 			= Util::Math::clamp( p_ssaoIntensity, VTX::Setting::AO_INTENSITY_MIN, VTX::Setting::AO_INTENSITY_MAX );
 		_notifyDataChanged();
-	};
+	}
 	void RenderEffectPreset::setSSAOBlurSize( const int p_ssaoBlurSize )
 	{
 		_ssaoBlurSize
 			= Util::Math::clamp( p_ssaoBlurSize, VTX::Setting::AO_BLUR_SIZE_MIN, VTX::Setting::AO_BLUR_SIZE_MAX );
 		_notifyDataChanged();
-	};
+	}
 
 	void RenderEffectPreset::enableOutline( const bool p_enable )
 	{
 		_outline = p_enable;
 		_notifyDataChanged();
-	};
+	}
 	void RenderEffectPreset::setOutlineThickness( const float p_oulineThickness )
 	{
 		_oulineThickness = p_oulineThickness;
 		_notifyDataChanged();
-	};
+	}
 	void RenderEffectPreset::setOutlineColor( const Color::Rgb & p_outlineColor )
 	{
 		_outlineColor = p_outlineColor;
 		_notifyDataChanged();
-	};
+	}
 
 	void RenderEffectPreset::enableFog( const bool p_enable )
 	{
@@ -49,17 +49,17 @@ namespace VTX::Model::Renderer
 	{
 		_fogNear = p_fogNear <= _fogFar ? p_fogNear : _fogFar;
 		_notifyDataChanged();
-	};
+	}
 	void RenderEffectPreset::setFogFar( const float p_fogFar )
 	{
 		_fogFar = p_fogFar > _fogNear ? p_fogFar : _fogNear;
 		_notifyDataChanged();
-	};
+	}
 	void RenderEffectPreset::setFogDensity( const float p_fogDensity )
 	{
 		_fogDensity = Util::Math::clamp( p_fogDensity, 0.0f, 1.0f );
 		_notifyDataChanged();
-	};
+	}
 	void RenderEffectPreset::setFogColor( const Color::Rgb & p_fogColor )
 	{
 		_fogColor = p_fogColor;

@@ -7,6 +7,7 @@
 
 #include "base_action.hpp"
 #include "model/renderer/render_effect_preset.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX::Action::Renderer
 {
@@ -14,7 +15,11 @@ namespace VTX::Action::Renderer
 	{
 	  public:
 		ApplyRenderEffectPreset( const Model::Renderer::RenderEffectPreset & p_preset ) : _preset( p_preset ) {};
-		virtual void execute() override { _preset.apply(); };
+		virtual void execute() override
+		{
+			_preset.apply();
+			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		};
 
 	  private:
 		const Model::Renderer::RenderEffectPreset & _preset;

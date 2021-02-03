@@ -18,7 +18,7 @@ namespace VTX::View::D3
 			  _model->getMolecule()->getRepresentationData() )
 		{
 			if ( !representationData.first->hasToDrawCylinder() )
-				return;
+				continue;
 
 			const Model::Representation::CylinderData & cylinderData = representationData.first->getCylinderData();
 			_gl()->glUniform1f( _uRadiusLoc, cylinderData._radius );

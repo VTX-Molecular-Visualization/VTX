@@ -11,6 +11,7 @@
 #include "renderer/base_renderer.hpp"
 #include "setting.hpp"
 #include "util/math.hpp"
+#include <string>
 
 namespace VTX::Model::Renderer
 {
@@ -53,7 +54,7 @@ namespace VTX::Model::Renderer
 		Color::Rgb getFogColor() const { return _fogColor; };
 		void	   setFogColor( const Color::Rgb & p_fogColor );
 
-		void RenderEffectPreset::apply() const;
+		void apply() const;
 
 	  protected:
 		RenderEffectPreset() : BaseModel( ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET ) {};
@@ -65,21 +66,21 @@ namespace VTX::Model::Renderer
 		std::string _name;
 		std::string _iconPath;
 
-		VTX::Renderer::SHADING _shading = VTX::Renderer::SHADING::DIFFUSE; // Setting::SHADING_DEFAULT;
+		VTX::Renderer::SHADING _shading = Setting::SHADING_DEFAULT;
 
-		bool _ssao			= true;
-		int	 _ssaoIntensity = 5;  // Setting::AO_INTENSITY_DEFAULT;
-		int	 _ssaoBlurSize	= 17; // Setting::AO_BLUR_SIZE_DEFAULT;
+		bool _ssao			= Setting::ACTIVE_AO_DEFAULT;
+		int	 _ssaoIntensity =  Setting::AO_INTENSITY_DEFAULT;
+		int	 _ssaoBlurSize	=  Setting::AO_BLUR_SIZE_DEFAULT;
 
-		bool	   _outline = false;
+		bool	   _outline = Setting::ACTIVE_OUTLINE_DEFAULT;
 		float	   _oulineThickness;
-		Color::Rgb _outlineColor = Color::Rgb::WHITE; // Setting::OUTLINE_COLOR_DEFAULT;
+		Color::Rgb _outlineColor = Setting::OUTLINE_COLOR_DEFAULT;
 
-		bool	   _fog		   = false;
-		float	   _fogNear	   = 400.0f;			// Setting::FOG_NEAR_DEFAULT;
-		float	   _fogFar	   = 600.0f;			// Setting::FOG_FAR_DEFAULT;
-		float	   _fogDensity = 0.8f;				// Setting::FOG_DENSITY_DEFAULT;
-		Color::Rgb _fogColor   = Color::Rgb::WHITE; // Setting::FOG_COLOR_DEFAULT;
+		bool	   _fog		   = Setting::ACTIVE_FOG_DEFAULT;
+		float	   _fogNear	   = Setting::FOG_NEAR_DEFAULT;
+		float	   _fogFar	   = Setting::FOG_FAR_DEFAULT;
+		float	   _fogDensity = Setting::FOG_DENSITY_DEFAULT;
+		Color::Rgb _fogColor   = Setting::FOG_COLOR_DEFAULT;
 	};
 
 } // namespace VTX::Model::Renderer
