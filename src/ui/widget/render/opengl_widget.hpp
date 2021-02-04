@@ -48,8 +48,10 @@ namespace VTX
 			void switchRenderer( const Renderer::MODE );
 
 		  private:
-			QElapsedTimer _timer   = QElapsedTimer();
-			QPainter	  _painter = QPainter();
+			QElapsedTimer _timer		= QElapsedTimer();
+			QElapsedTimer _frameTimer	= QElapsedTimer();
+			uint		  _frameCounter = 0u;
+			QPainter	  _painter		= QPainter();
 
 			Renderer::BaseRenderer * _renderer	 = nullptr;
 			Renderer::GL::GL *		 _rendererGL = nullptr;

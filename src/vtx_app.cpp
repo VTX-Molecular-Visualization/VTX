@@ -49,15 +49,11 @@ namespace VTX
 		VTX_INFO( "Application started" );
 
 		// Start timers.
-		_timer		  = new QTimer( this );
-		_elapsedTimer = new QElapsedTimer();
-		_fpsTimer	  = new QElapsedTimer();
-
+		_timer = new QTimer( this );
 		connect( _timer, &QTimer::timeout, this, &VTXApp::_update );
-
 		_timer->start( 0 );
-		_elapsedTimer->start();
-		_fpsTimer->start();
+		_elapsedTimer.start();
+		_tickTimer.start();
 
 		VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
 		// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
@@ -78,8 +74,6 @@ namespace VTX
 		_timer->stop();
 
 		delete _timer;
-		delete _elapsedTimer;
-		delete _fpsTimer;
 
 		if ( _stateMachine != nullptr )
 		{
@@ -121,8 +115,8 @@ namespace VTX
 	void VTXApp::_update()
 	{
 		// Elapsed time.
-		float elapsed = _elapsedTimer->nsecsElapsed() * 1e-9;
-		_elapsedTimer->restart();
+		float elapsed = _elapsedTimer.nsecsElapsed() * 1e-9;
+		_elapsedTimer.restart();
 
 		// State machine.
 		_stateMachine->update( elapsed );
@@ -137,14 +131,15 @@ namespace VTX
 		Worker::WorkerManager::get().update( elapsed );
 
 		// Tickrate.
-		_frameCounter++;
-		if ( _fpsTimer->elapsed() >= 1000 )
+		_tickCounter++;
+		if ( _tickTimer.elapsed() >= 1000 )
 		{
-			VTX_STAT().FPS = _frameCounter;
+			VTX_STAT().tickRate = _tickCounter / ( _tickTimer.elapsed() * 1e-3 );
 			VTX_INFO( "FPS: " + std::to_string( VTX_STAT().FPS ) + " - "
-					  + " Render time: " + std::to_string( VTX_STAT().renderTime ) );
-			_frameCounter = 0;
-			_fpsTimer->restart();
+					  + "Tickrate: " + std::to_string( VTX_STAT().tickRate ) + " - "
+					  + "Render time: " + std::to_string( VTX_STAT().renderTime ) + " ms" );
+			_tickCounter = 0;
+			_tickTimer.restart();
 		}
 	}
 

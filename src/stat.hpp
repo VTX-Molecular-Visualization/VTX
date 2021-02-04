@@ -9,6 +9,7 @@ namespace VTX
 {
 	struct Stat
 	{
+		uint  tickRate	 = 0;
 		uint  FPS		 = 666u;
 		float renderTime = 0.f; // Miliseconds.
 	};

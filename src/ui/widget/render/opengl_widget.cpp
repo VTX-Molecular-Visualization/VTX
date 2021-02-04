@@ -59,13 +59,22 @@ namespace VTX::UI::Widget::Render
 		VTX_PROGRAM_MANAGER( _gl );
 		switchRenderer( Setting::MODE_DEFAULT );
 		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT, defaultFramebufferObject() );
+		_frameTimer.start();
 	}
 
 	void OpenGLWidget::paintGL()
 	{
+		_frameCounter++;
+		if ( _frameTimer.elapsed() >= 1000 )
+		{
+			VTX_STAT().FPS = _frameCounter / ( _frameTimer.elapsed() * 1e-3 );
+			_frameCounter  = 0;
+			_frameTimer.restart();
+		}
+
 		_timer.start();
 
-		getRenderer().renderFrame( VTXApp::get().getScene() );		
+		getRenderer().renderFrame( VTXApp::get().getScene() );
 		_painter.begin( this );
 		_painter.setPen( Qt::white );
 		_painter.drawText( 0, 10, QString::fromStdString( std::to_string( VTX_STAT().FPS ) ) );
