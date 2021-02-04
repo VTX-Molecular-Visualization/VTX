@@ -13,7 +13,7 @@ namespace VTX::UI::Widget::Settings
 	void SettingWidget::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
-		setMinimumSize( 200, 200 );
+		setMinimumSize( 350, 400 );
 
 		_menu = new CustomWidget::DockWindowMainWidget<QWidget>( this );
 		_menu->setObjectName( "settingMenuBar" );

@@ -155,7 +155,8 @@ namespace VTX::UI::Widget::Settings
 		_fogColor->setEnabled( fogEnabled );
 	}
 
-	void RenderEffectPresetEditor::setPreset( Model::Renderer::RenderEffectPreset * const p_model )
+	void RenderEffectPresetEditor::setPreset( Model::Renderer::RenderEffectPreset * const p_model,
+											  const bool								  p_updateRender )
 	{
 		if ( _preset == p_model )
 			return;
@@ -172,16 +173,19 @@ namespace VTX::UI::Widget::Settings
 
 		_currentPresetView->setEditor( this );
 
+		_updateRender = p_updateRender;
 		refresh();
+		_updateRender = true;
 	}
 
 	void RenderEffectPresetEditor::_onShadingChange( const int p_newIndex )
 	{
 		const VTX::Renderer::SHADING shading = VTX::Renderer::SHADING( p_newIndex );
 
-		if ( shading != _preset->getShading() )
+		if ( shading != _preset->getShading() ) {
 			_preset->setShading( shading );
-		_preset->apply();
+			_applyPreset();
+		}
 	}
 
 	void RenderEffectPresetEditor::_onSSAOStateChanged( const int p_state )
@@ -190,7 +194,7 @@ namespace VTX::UI::Widget::Settings
 		if ( enable != _preset->isSSAOEnabled() )
 		{
 			_preset->enableSSAO( enable );
-			_preset->apply();
+			_applyPreset();
 		}
 	}
 	void RenderEffectPresetEditor::_onSSAOIntensityChanged( const int p_value )
@@ -198,7 +202,7 @@ namespace VTX::UI::Widget::Settings
 		if ( p_value != _preset->getSSAOIntensity() )
 		{
 			_preset->setSSAOIntensity( p_value );
-			_preset->apply();
+			_applyPreset();
 		}
 	}
 	void RenderEffectPresetEditor::_onSSAOBlurSizeChanged( const int p_value )
@@ -206,7 +210,7 @@ namespace VTX::UI::Widget::Settings
 		if ( p_value != _preset->getSSAOBlurSize() )
 		{
 			_preset->setSSAOBlurSize( p_value );
-			_preset->apply();
+			_applyPreset();
 		}
 	}
 
@@ -216,7 +220,7 @@ namespace VTX::UI::Widget::Settings
 		if ( enable != _preset->isOutlineEnabled() )
 		{
 			_preset->enableOutline( enable );
-			_preset->apply();
+			_applyPreset();
 		}
 	}
 	void RenderEffectPresetEditor::_onOutlineThicknessChanged( const float p_value )
@@ -224,7 +228,7 @@ namespace VTX::UI::Widget::Settings
 		if ( p_value != _preset->getOutlineThickness() )
 		{
 			_preset->setOutlineThickness( p_value );
-			_preset->apply();
+			_applyPreset();
 		}
 	}
 	void RenderEffectPresetEditor::_onOutlineColorChanged( const Color::Rgb & p_color )
@@ -232,7 +236,7 @@ namespace VTX::UI::Widget::Settings
 		if ( p_color != _preset->getOutlineColor() )
 		{
 			_preset->setOutlineColor( p_color );
-			_preset->apply();
+			_applyPreset();
 		}
 	}
 
@@ -242,7 +246,7 @@ namespace VTX::UI::Widget::Settings
 		if ( enable != _preset->isFogEnabled() )
 		{
 			_preset->enableFog( enable );
-			_preset->apply();
+			_applyPreset();
 		}
 	}
 	void RenderEffectPresetEditor::_onFogNearChanged()
@@ -251,7 +255,7 @@ namespace VTX::UI::Widget::Settings
 		if ( value != _preset->getFogNear() )
 		{
 			_preset->setFogNear( value );
-			_preset->apply();
+			_applyPreset();
 		}
 	}
 	void RenderEffectPresetEditor::_onFogFarChanged()
@@ -260,7 +264,7 @@ namespace VTX::UI::Widget::Settings
 		if ( value != _preset->getFogFar() )
 		{
 			_preset->setFogFar( value );
-			_preset->apply();
+			_applyPreset();
 		}
 	}
 	void RenderEffectPresetEditor::_onFogDensityChanged( const float p_value )
@@ -268,7 +272,7 @@ namespace VTX::UI::Widget::Settings
 		if ( p_value != _preset->getFogDensity() )
 		{
 			_preset->setFogDensity( p_value );
-			_preset->apply();
+			_applyPreset();
 		}
 	}
 	void RenderEffectPresetEditor::_onFogColorChanged( const Color::Rgb & p_color )
@@ -276,9 +280,16 @@ namespace VTX::UI::Widget::Settings
 		if ( p_color != _preset->getFogColor() )
 		{
 			_preset->setFogColor( p_color );
-			_preset->apply();
+			_applyPreset();
 		}
 	}
+
+	void RenderEffectPresetEditor::_applyPreset() const 
+	{ 
+		if (_updateRender)
+			_preset->apply();
+	}
+
 
 	void RenderEffectPresetEditor::_addItem( QWidget * const p_widget, const QString & p_label )
 	{

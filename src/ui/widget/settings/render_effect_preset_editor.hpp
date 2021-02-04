@@ -38,18 +38,20 @@ namespace VTX::UI::Widget::Settings
 		void refresh();
 
 		const Model::Renderer::RenderEffectPreset * const getPreset() const { return _preset; };
-		void setPreset( Model::Renderer::RenderEffectPreset * const p_model );
+		void setPreset( Model::Renderer::RenderEffectPreset * const p_model, const bool p_updateRender = true );
 
 	  protected:
 		RenderEffectPresetEditor( QWidget * const p_parent );
 
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
+		void _applyPreset() const;
 
 	  private:
 		int														  _itemCount		 = 0;
 		Model::Renderer::RenderEffectPreset *					  _preset			 = nullptr;
 		VTX::View::UI::Widget::Renderer::RenderEffectPresetView * _currentPresetView = nullptr;
+		bool													  _updateRender	 = true;
 
 		QGridLayout * _layout = nullptr;
 

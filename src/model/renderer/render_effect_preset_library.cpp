@@ -1,4 +1,5 @@
 #include "render_effect_preset_library.hpp"
+#include "renderer/base_renderer.hpp"
 #include "mvc/mvc_manager.hpp"
 
 namespace VTX::Model::Renderer

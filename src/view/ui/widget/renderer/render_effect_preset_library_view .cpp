@@ -43,7 +43,7 @@ namespace VTX::View::UI::Widget::Renderer
 		horizontalLayout->addItem( verticalLayout );
 		// horizontalLayout->addStretch( 2 );
 
-		_refreshView();
+		_renderPresetEditor->setPreset( _model->getPreset( _presetList->currentIndex() ), false );
 	}
 
 	void RenderEffectPresetLibraryView::_setupSlots()
@@ -78,7 +78,7 @@ namespace VTX::View::UI::Widget::Renderer
 	}
 	void RenderEffectPresetLibraryView::_refreshPresetDisplayed()
 	{
-		int currentIndex = _presetList->currentIndex();
+		const int currentIndex = _presetList->currentIndex();
 		_renderPresetEditor->setPreset( _model->getPreset( currentIndex ) );
 	}
 

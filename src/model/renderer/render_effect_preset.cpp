@@ -1,10 +1,30 @@
 #include "render_effect_preset.hpp"
 #include "renderer/gl/gl.hpp"
+#include "setting.hpp"
 #include "ui/main_window.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Model::Renderer
 {
+	RenderEffectPreset::RenderEffectPreset() : BaseModel( ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET )
+	{
+		_shading = Setting::SHADING_DEFAULT;
+
+		_ssao		   = Setting::ACTIVE_AO_DEFAULT;
+		_ssaoIntensity = Setting::AO_INTENSITY_DEFAULT;
+		_ssaoBlurSize  = Setting::AO_BLUR_SIZE_DEFAULT;
+
+		_outline		 = Setting::ACTIVE_OUTLINE_DEFAULT;
+		_outlineThickness = Setting::OUTLINE_THICKNESS_DEFAULT;
+		_outlineColor	 = Setting::OUTLINE_COLOR_DEFAULT;
+
+		_fog		= Setting::ACTIVE_FOG_DEFAULT;
+		_fogNear	= Setting::FOG_NEAR_DEFAULT;
+		_fogFar		= Setting::FOG_FAR_DEFAULT;
+		_fogDensity = Setting::FOG_DENSITY_DEFAULT;
+		_fogColor	= Setting::FOG_COLOR_DEFAULT;
+	}
+
 	void RenderEffectPreset::enableSSAO( const bool p_enable )
 	{
 		_ssao = p_enable;
@@ -29,9 +49,9 @@ namespace VTX::Model::Renderer
 		_outline = p_enable;
 		_notifyDataChanged();
 	}
-	void RenderEffectPreset::setOutlineThickness( const float p_oulineThickness )
+	void RenderEffectPreset::setOutlineThickness( const float p_outlineThickness )
 	{
-		_oulineThickness = p_oulineThickness;
+		_outlineThickness = p_outlineThickness;
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setOutlineColor( const Color::Rgb & p_outlineColor )

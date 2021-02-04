@@ -9,7 +9,6 @@
 #include "id.hpp"
 #include "model/base_model.hpp"
 #include "renderer/base_renderer.hpp"
-#include "setting.hpp"
 #include "util/math.hpp"
 #include <string>
 
@@ -38,8 +37,8 @@ namespace VTX::Model::Renderer
 
 		bool			   isOutlineEnabled() const { return _outline; };
 		void			   enableOutline( const bool p_enable );
-		float			   getOutlineThickness() const { return _oulineThickness; };
-		void			   setOutlineThickness( const float p_oulineThickness );
+		float			   getOutlineThickness() const { return _outlineThickness; };
+		void			   setOutlineThickness( const float p_outlineThickness );
 		const Color::Rgb & getOutlineColor() const { return _outlineColor; };
 		void			   setOutlineColor( const Color::Rgb & p_outlineColor );
 
@@ -57,7 +56,7 @@ namespace VTX::Model::Renderer
 		void apply() const;
 
 	  protected:
-		RenderEffectPreset() : BaseModel( ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET ) {};
+		RenderEffectPreset();
 		~RenderEffectPreset() = default;
 
 		void _notifyDataChanged();
@@ -66,21 +65,21 @@ namespace VTX::Model::Renderer
 		std::string _name;
 		std::string _iconPath;
 
-		VTX::Renderer::SHADING _shading = Setting::SHADING_DEFAULT;
+		VTX::Renderer::SHADING _shading;
 
-		bool _ssao			= Setting::ACTIVE_AO_DEFAULT;
-		int	 _ssaoIntensity =  Setting::AO_INTENSITY_DEFAULT;
-		int	 _ssaoBlurSize	=  Setting::AO_BLUR_SIZE_DEFAULT;
+		bool _ssao;
+		int	 _ssaoIntensity;
+		int	 _ssaoBlurSize;
 
-		bool	   _outline = Setting::ACTIVE_OUTLINE_DEFAULT;
-		float	   _oulineThickness;
-		Color::Rgb _outlineColor = Setting::OUTLINE_COLOR_DEFAULT;
+		bool  _outline;
+		float	   _outlineThickness;
+		Color::Rgb _outlineColor;
 
-		bool	   _fog		   = Setting::ACTIVE_FOG_DEFAULT;
-		float	   _fogNear	   = Setting::FOG_NEAR_DEFAULT;
-		float	   _fogFar	   = Setting::FOG_FAR_DEFAULT;
-		float	   _fogDensity = Setting::FOG_DENSITY_DEFAULT;
-		Color::Rgb _fogColor   = Setting::FOG_COLOR_DEFAULT;
+		bool	   _fog;
+		float	   _fogNear;
+		float	   _fogFar;
+		float	   _fogDensity;
+		Color::Rgb _fogColor;
 	};
 
 } // namespace VTX::Model::Renderer
