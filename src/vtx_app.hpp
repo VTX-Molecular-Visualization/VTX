@@ -57,6 +57,8 @@ namespace VTX
 	  private:
 		QTimer *		_timer		  = nullptr;
 		QElapsedTimer * _elapsedTimer = nullptr;
+		QElapsedTimer * _fpsTimer	  = nullptr;
+		uint			_frameCounter = 0u;
 
 		Setting				  _setting		= Setting();
 		Stat				  _stat			= Stat();

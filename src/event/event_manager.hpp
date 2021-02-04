@@ -18,6 +18,7 @@
 #include <set>
 
 //#define DELAY_EVENTS
+//#define DELAY_EVENTS_QT
 
 namespace VTX
 {
@@ -44,7 +45,7 @@ namespace VTX
 			void registerEventReceiverWheel( BaseEventReceiverWheel * const );
 			void unregisterEventReceiverWheel( BaseEventReceiverWheel * const );
 
-			void fireEventVTX( VTXEvent * const, const bool = false );
+			void fireEventVTX( VTXEvent * const );
 			void fireEventKeyboard( QKeyEvent * const );
 			void fireEventMouse( QMouseEvent * const );
 			void fireEventWheel( QWheelEvent * const );
@@ -60,24 +61,26 @@ namespace VTX
 			std::set<BaseEventReceiverWheel *>	  _receiversWheel	 = std::set<BaseEventReceiverWheel *>();
 
 			// Event queues.
-			std::queue<VTXEvent *>	_eventQueueVTX		= std::queue<VTXEvent *>();
-			std::queue<QKeyEvent>	_eventQueueKeyboard = std::queue<QKeyEvent>();
-			std::queue<QMouseEvent> _eventQueueMouse	= std::queue<QMouseEvent>();
-			std::queue<QWheelEvent> _eventQueueWheel	= std::queue<QWheelEvent>();
+			std::queue<VTXEvent *>	  _eventQueueVTX	  = std::queue<VTXEvent *>();
+			std::queue<QKeyEvent *>	  _eventQueueKeyboard = std::queue<QKeyEvent *>();
+			std::queue<QMouseEvent *> _eventQueueMouse	  = std::queue<QMouseEvent *>();
+			std::queue<QWheelEvent *> _eventQueueWheel	  = std::queue<QWheelEvent *>();
 
 			EventManager()						 = default;
 			EventManager( const EventManager & ) = delete;
 			EventManager & operator=( const EventManager & ) = delete;
 			~EventManager();
 
-			// void _handlerWindowEvent( const SDL_WindowEvent & );
 			void _flushVTXEvent( VTXEvent * const );
+			void _flushEventKeyboard( QKeyEvent * const );
+			void _flushEventMouse( QMouseEvent * const );
+			void _flushEventWheel( QWheelEvent * const );
 		};
 	} // namespace Event
 
-	inline void VTX_EVENT( VTX::Event::VTXEvent * const p_event, const bool p_force = false )
+	inline void VTX_EVENT( VTX::Event::VTXEvent * const p_event )
 	{
-		Event::EventManager::get().fireEventVTX( p_event, p_force );
+		Event::EventManager::get().fireEventVTX( p_event );
 	}
 } // namespace VTX
 #endif

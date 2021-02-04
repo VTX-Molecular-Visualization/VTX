@@ -49,7 +49,6 @@ namespace VTX
 
 		  private:
 			QElapsedTimer _timer   = QElapsedTimer();
-			uint		  _counter = 0;
 			QPainter	  _painter = QPainter();
 
 			Renderer::BaseRenderer * _renderer	 = nullptr;

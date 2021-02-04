@@ -58,31 +58,37 @@ namespace VTX
 				void RenderWidget::mouseMoveEvent( QMouseEvent * p_event )
 				{
 					Event::EventManager::get().fireEventMouse( p_event );
+					p_event->accept();
 				}
 
 				void RenderWidget::mousePressEvent( QMouseEvent * p_event )
 				{
 					Event::EventManager::get().fireEventMouse( p_event );
+					p_event->accept();
 				}
 
 				void RenderWidget::mouseReleaseEvent( QMouseEvent * p_event )
 				{
 					Event::EventManager::get().fireEventMouse( p_event );
+					p_event->accept();
 				}
 
 				void RenderWidget::keyPressEvent( QKeyEvent * p_event )
 				{
 					Event::EventManager::get().fireEventKeyboard( p_event );
+					p_event->accept();
 				}
 
 				void RenderWidget::keyReleaseEvent( QKeyEvent * p_event )
 				{
 					Event::EventManager::get().fireEventKeyboard( p_event );
+					p_event->accept();
 				}
 
 				void RenderWidget::wheelEvent( QWheelEvent * p_event )
 				{
 					Event::EventManager::get().fireEventWheel( p_event );
+					p_event->accept();
 				}
 
 			} // namespace Render

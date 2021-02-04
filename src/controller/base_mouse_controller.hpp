@@ -16,7 +16,10 @@ namespace VTX
 {
 	namespace Controller
 	{
-		class BaseMouseController : virtual public BaseController, public Event::BaseEventReceiverMouse, public Event::BaseEventReceiverWheel
+		class BaseMouseController :
+			virtual public BaseController,
+			public Event::BaseEventReceiverMouse,
+			public Event::BaseEventReceiverWheel
 		{
 		  public:
 			virtual void receiveEvent( const QMouseEvent & p_event ) override
@@ -85,11 +88,14 @@ namespace VTX
 				mousePosition.x		= p_event.pos().x();
 				mousePosition.y		= p_event.pos().y();
 
-				_deltaMousePosition = mousePosition - _mousePosition;
-				_mousePosition		= mousePosition;
+				_deltaMousePosition += ( mousePosition - _mousePosition );
+				_mousePosition = mousePosition;
 			}
 
-			virtual void _handleMouseWheelEvent( const QWheelEvent & p_event ) { _deltaMouseWheel = p_event.angleDelta().y(); }
+			virtual void _handleMouseWheelEvent( const QWheelEvent & p_event )
+			{
+				_deltaMouseWheel += p_event.angleDelta().y();
+			}
 		};
 	} // namespace Controller
 } // namespace VTX
