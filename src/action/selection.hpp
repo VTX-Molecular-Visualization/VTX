@@ -92,6 +92,66 @@ namespace VTX
 				std::vector<Model::ID> _models = std::vector<Model::ID>();
 				const bool			   _appendToSelection;
 			};
+			class UnselectModels : public BaseAction
+			{
+			  public:
+				explicit UnselectModels( Model::Selection & p_selection, const std::vector<Model::ID> & p_models ) :
+					_selection( p_selection )
+				{
+					_models.resize( p_models.size() );
+					for ( int i = 0; i < _models.size(); i++ )
+						_models[ i ] = p_models[ i ];
+				}
+
+				virtual void execute() override
+				{
+					std::vector<Model::Molecule *> molecules = std::vector<Model::Molecule *>();
+					std::vector<Model::Chain *>	   chains	 = std::vector<Model::Chain *>();
+					std::vector<Model::Residue *>  residues	 = std::vector<Model::Residue *>();
+					std::vector<Model::Atom *>	   atoms	 = std::vector<Model::Atom *>();
+
+					for ( const Model::ID modelId : _models )
+					{
+						ID::VTX_ID modelTypeId = MVC::MvcManager::get().getModelTypeID( modelId );
+
+						if ( modelTypeId == ID::Model::MODEL_MOLECULE )
+						{
+							Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
+							molecules.emplace_back( &model );
+						}
+						else if ( modelTypeId == ID::Model::MODEL_CHAIN )
+						{
+							Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
+							chains.emplace_back( &model );
+						}
+						else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
+						{
+							Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+							residues.emplace_back( &model );
+						}
+						else if ( modelTypeId == ID::Model::MODEL_ATOM )
+						{
+							Model::Atom & model = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
+							atoms.emplace_back( &model );
+						}
+					}
+
+					if ( molecules.size() > 0 )
+						_selection.unselectMolecules( molecules );
+					if ( chains.size() > 0 )
+						_selection.unselectChains( chains );
+					if ( residues.size() > 0 )
+						_selection.unselectResidues( residues );
+					if ( atoms.size() > 0 )
+						_selection.unselectAtoms( atoms );
+
+					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+				}
+
+			  private:
+				Model::Selection &	   _selection;
+				std::vector<Model::ID> _models = std::vector<Model::ID>();
+			};
 
 			class Orient : public BaseAction
 			{
@@ -412,49 +472,49 @@ namespace VTX
 			  public:
 				explicit ChangeVisibility( const Model::Selection &		p_selection,
 										   const Generic::BaseVisible & p_objReference,
+										   const ID::VTX_ID				p_objRefTypeId,
 										   const VISIBILITY_MODE		p_mode ) :
 					Visible::ChangeVisibility( p_mode ),
-					_selection( p_selection ), _objReference( p_objReference )
+					_selection( p_selection ), _objReference( p_objReference ), _objRefTypeId( p_objRefTypeId )
 				{
 				}
 
 				virtual void execute() override
 				{
-					bool visible	   = _getVisibilityBool( _objReference );
-					bool applyToParent = true;
+					bool visible = _getVisibilityBool( _objReference );
+
+					const bool setVisibiltyOnMolecule = _objRefTypeId == ID::Model::MODEL_MOLECULE;
+					const bool setVisibiltyOnChain = setVisibiltyOnMolecule || _objRefTypeId == ID::Model::MODEL_CHAIN;
 
 					for ( const std::pair<Model::ID, Model::Selection::MapChainIds> molIds : _selection.getItems() )
 					{
 						Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
-						applyToParent			   = true;
 
-						for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> chainIds : molIds.second )
-						{
-							Model::Chain & chain = *molecule.getChain( chainIds.first );
-							for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> residueIds :
-								  chainIds.second )
-							{
-								Model::Residue * const residue = molecule.getResidue( residueIds.first );
-								residue->setVisible( visible );
-							}
-
-							if ( chain.getResidueCount() == chainIds.second.size() )
-							{
-								chain.setVisible( visible );
-							}
-							else
-							{
-								applyToParent = false;
-							}
-						}
-
-						if ( applyToParent && molecule.getChainCount() == molIds.second.size() )
+						if ( setVisibiltyOnMolecule
+							 && molIds.second.getFullySelectedChildCount() == molecule.getChainCount() )
 						{
 							molecule.setVisible( visible );
 						}
 						else
 						{
-							applyToParent = false;
+							for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> chainIds : molIds.second )
+							{
+								Model::Chain & chain = *molecule.getChain( chainIds.first );
+
+								if ( setVisibiltyOnChain
+									 && chainIds.second.getFullySelectedChildCount() == chain.getResidueCount() )
+								{
+									chain.setVisible( visible );
+									continue;
+								}
+
+								for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> residueIds :
+									  chainIds.second )
+								{
+									Model::Residue * const residue = molecule.getResidue( residueIds.first );
+									residue->setVisible( visible );
+								}
+							}
 						}
 
 						molecule.computeRepresentationTargets();
@@ -466,6 +526,7 @@ namespace VTX
 			  private:
 				const Model::Selection &	 _selection;
 				const Generic::BaseVisible & _objReference;
+				const ID::VTX_ID			 _objRefTypeId;
 			};
 			////////////////////////////////////////////////////////////////////////////////////////
 		} // namespace Selection

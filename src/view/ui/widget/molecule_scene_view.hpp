@@ -26,7 +26,9 @@ namespace VTX
 		{
 			namespace Widget
 			{
-				class MoleculeSceneView : public View::BaseView<Model::Molecule>, public VTX::UI::Widget::Scene::SceneItemWidget
+				class MoleculeSceneView :
+					public View::BaseView<Model::Molecule>,
+					public VTX::UI::Widget::Scene::SceneItemWidget
 				{
 					VTX_WIDGET
 					VTX_VIEW
@@ -40,6 +42,8 @@ namespace VTX
 				  protected:
 					void _setupUi( const QString & ) override;
 					void _setupSlots() override;
+
+					void selectionChanged( const QItemSelection &, const QItemSelection & ) override;
 
 					QMimeData * _getDataForDrag() override;
 
@@ -64,7 +68,11 @@ namespace VTX
 					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Residue & p_model ) const;
 
 					void _selectModelAction( const Model::ID & p_modelId, const bool p_appendToSelection ) const;
-					void _selectModelAction( const std::vector<Model::ID> & p_modelId, const bool p_appendToSelection ) const;
+					void _selectModelAction( const std::vector<Model::ID> & p_modelId,
+											 const bool						p_appendToSelection ) const;
+
+					void _unselectModelAction( const Model::ID & p_modelId ) const;
+					void _unselectModelAction( const std::vector<Model::ID> & p_modelId ) const;
 
 					void _doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const;
 

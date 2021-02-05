@@ -86,8 +86,9 @@ namespace VTX
 			if ( isVisible() != p_visible )
 			{
 				BaseVisible::setVisible( p_visible );
-
 				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::CHAIN_VISIBILITY, _index ) );
+				_moleculePtr->propagateEventToViews(
+					new Event::VTXEventValue<uint>( Event::Model::CHAIN_VISIBILITY, _index ) );
 			}
 		}
 

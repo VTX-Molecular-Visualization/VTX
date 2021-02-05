@@ -13,6 +13,7 @@
 #include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
 #include "model/configuration/molecule.hpp"
+#include "model/selection.hpp"
 #include "representation/instantiated_representation.hpp"
 #include "representation/representation_target.hpp"
 #include <iostream>
@@ -185,7 +186,7 @@ namespace VTX
 				refreshColors();
 			}
 			inline void refreshColors() { _fillBufferAtomColors(); }
-			void		refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const );
+			void		refreshSelection( const Selection::MapChainIds * const );
 			void		refreshBondsBuffer();
 
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
@@ -222,6 +223,8 @@ namespace VTX
 			bool mergeTopology( const Molecule & );
 
 			void createSecondaryStructure();
+
+			void propagateEventToViews( const Event::VTXEvent * const p_event ) { _notifyViews( p_event ); }
 
 		  protected:
 			void _init() override;
@@ -280,7 +283,7 @@ namespace VTX
 
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();
-			void _fillBufferAtomSelections( const std::map<uint, std::map<uint, std::vector<uint>>> * const = nullptr );
+			void _fillBufferAtomSelections( const Selection::MapChainIds * const = nullptr );
 
 #ifdef _DEBUG
 		  public:

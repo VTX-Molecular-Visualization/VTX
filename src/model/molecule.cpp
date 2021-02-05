@@ -239,7 +239,7 @@ namespace VTX
 			_buffer->setAtomSelections( _bufferAtomSelection );
 		}
 
-		void Molecule::refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection )
+		void Molecule::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
 		{
 			_fillBufferAtomSelections( p_selection );
 			_secondaryStructure->refreshSelection( p_selection );

@@ -20,7 +20,7 @@ namespace VTX
 					setUniformRowHeights( true );
 					setHeaderHidden( true );
 					setColumnCount( 1 );
-					setSelectionMode( QAbstractItemView::MultiSelection );
+					setSelectionMode( QAbstractItemView::ExtendedSelection );
 
 					setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents );
 					setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
@@ -36,13 +36,19 @@ namespace VTX
 
 				void SceneItemWidget::_setupSlots()
 				{
-					connect( this, &QTreeWidget::customContextMenuRequested, this, &SceneItemWidget::_onCustomContextMenuCalled );
+					connect( this,
+							 &QTreeWidget::customContextMenuRequested,
+							 this,
+							 &SceneItemWidget::_onCustomContextMenuCalled );
 					_contextMenu->addAction( "Delete", this, &SceneItemWidget::_deleteAction, QKeySequence::Delete );
 				}
 
 				void SceneItemWidget::localize() {}
 
-				void SceneItemWidget::_onCustomContextMenuCalled( const QPoint & p_clicPos ) { _contextMenu->popup( mapToGlobal( p_clicPos ) ); }
+				void SceneItemWidget::_onCustomContextMenuCalled( const QPoint & p_clicPos )
+				{
+					_contextMenu->popup( mapToGlobal( p_clicPos ) );
+				}
 
 				void SceneItemWidget::mousePressEvent( QMouseEvent * p_event )
 				{
@@ -55,7 +61,8 @@ namespace VTX
 				void SceneItemWidget::dragEnterEvent( QDragEnterEvent * p_event )
 				{
 					BaseManualWidget::dragEnterEvent( p_event );
-					if ( p_event->mimeData()->hasFormat( VTX::UI::MimeType::getQStringMimeType( VTX::UI::MimeType::ApplicationMimeType::SCENE_ITEM ) ) )
+					if ( p_event->mimeData()->hasFormat( VTX::UI::MimeType::getQStringMimeType(
+							 VTX::UI::MimeType::ApplicationMimeType::SCENE_ITEM ) ) )
 						p_event->acceptProposedAction();
 				}
 				void SceneItemWidget::mouseMoveEvent( QMouseEvent * p_event )
