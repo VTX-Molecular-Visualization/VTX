@@ -22,6 +22,7 @@ namespace VTX
 			  public:
 				void readFile( const Path &, Model::Molecule & ) override;
 				void readBuffer( const std::string &, const Path &, Model::Molecule & ) override;
+				void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
 
 			  private:
 				void prepareChemfiles() const;

@@ -3,8 +3,11 @@
 #include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
+#include <QDir>
+#include <QFileInfo>
 #include <algorithm>
 #include <magic_enum.hpp>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -44,6 +47,37 @@ namespace VTX
 				chemfiles::set_warning_callback( callback );
 			}
 
+			void LibChemfiles::fillTrajectoryFrames( chemfiles::Trajectory & p_trajectory,
+													 Model::Molecule &		 p_molecule ) const
+			{
+				// Fill other frames.
+				Tool::Chrono timeReadingFrames;
+				timeReadingFrames.start();
+				int startingFrame = 1;
+				for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )
+				{
+					Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
+					chemfiles::Frame					  frame			= p_trajectory.read_step( frameIdx );
+					const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
+					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
+					{
+						const chemfiles::Vector3D & position = positions[ positionIdx ];
+						moleculeFrame[ positionIdx ]		 = { position[ 0 ], position[ 1 ], position[ 2 ] };
+					}
+#ifdef _DEBUG
+					if ( frameIdx % 100 == 0 )
+					{
+						VTX_DEBUG( "Frames from " + std::to_string( startingFrame ) + " to "
+								   + std::to_string( frameIdx )
+								   + " read in: " + std::to_string( timeReadingFrames.intervalTime() ) + "s" );
+						startingFrame = frameIdx;
+					}
+#endif // DEBUG
+				}
+				timeReadingFrames.stop();
+				VTX_INFO( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
+			}
+
 			void LibChemfiles::readTrajectory( chemfiles::Trajectory & p_trajectory,
 											   const Path &			   p_path,
 											   Model::Molecule &	   p_molecule ) const
@@ -55,18 +89,13 @@ namespace VTX
 					throw Exception::IOException( "Trajectory is empty" );
 				}
 
-				Tool::Chrono chrono;
-				chrono.start();
-				chemfiles::Frame frame = p_trajectory.read();
-				chrono.stop();
-				VTX_INFO( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
-				const chemfiles::Topology & topology = frame.topology();
-
-				if ( topology.bonds().size() == 0 )
+				// if opening a DCD file check if a topology file is present in the same folder
+				QFileInfo fileInfo( QString::fromStdString( p_path.string() ) );
+				if ( fileInfo.suffix().toStdString() == "dcd" )
 				{
-					// check if a topology file is present in the same folder
-					std::string filePathWithoutExt			= p_path.string().substr( 0, p_path.string().size() - 3 );
-					std::vector<std::string> topExtensions	= { "xyz", "pdb", "mol2" };
+					std::string filePathWithoutExt
+						= QString( fileInfo.path() + QDir::separator() + fileInfo.baseName() ).toStdString();
+					std::vector<std::string> topExtensions	= { ".xyz", ".pdb", ".mol2" };
 					std::string				 foundExtension = "";
 					for ( size_t ext = 0; ext < topExtensions.size(); ext++ )
 					{
@@ -82,34 +111,48 @@ namespace VTX
 					if ( foundExtension != "" )
 					{
 						chemfiles::Trajectory topolgy_file( filePathWithoutExt + foundExtension, 'r' );
-						if ( frame.size() != topolgy_file.read_step( 0 ).topology().size() )
-						{
-							throw Exception::IOException( "Data count missmatch" );
-						}
-						else
-						{
-							p_trajectory.set_topology( filePathWithoutExt + foundExtension );
-							frame = p_trajectory.read();
-						}
-					}
-					else
-					{
-						// If no residue, create a fake one.
-						// TODO: check file format instead of residue count?
-						VTX_INFO( "No residues found" );
-						chemfiles::Residue residue = chemfiles::Residue( "" );
-						for ( uint i = 0; i < frame.size(); ++i )
-						{
-							residue.add_atom( i );
-						}
-						frame.add_residue( residue );
+						p_trajectory.set_topology( filePathWithoutExt + foundExtension );
 					}
 				}
 
+				Tool::Chrono chrono;
+				chrono.start();
+				chemfiles::Frame frame = p_trajectory.read();
+				chrono.stop();
+				VTX_INFO( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
+
+				// test DCD traj exporter
+				// std::string			  filePath	= p_path.string().substr( 0, p_path.string().size() - 4 );
+				// std::string			  frameFile = filePath + "_testExport.dcd";
+				// chemfiles::Trajectory inTraj	= chemfiles::Trajectory( p_path.string() );
+				// auto				  outTraj	= chemfiles::Trajectory( frameFile, 'w' );
+				// for ( size_t frameIdx = 0; frameIdx < inTraj.nsteps(); frameIdx++ )
+				//{
+				//	// set DCD properties before writing the file; the exporter will save these informations in the
+				//	// binary file
+				//	chemfiles::Frame frame = inTraj.read_step( frameIdx );
+				//	frame.set( "frames_number", inTraj.nsteps() );
+				//	outTraj.write( frame );
+				//}
+
+				const chemfiles::Topology &				topology = frame.topology();
 				const std::vector<chemfiles::Residue> & residues = topology.residues();
 				const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
 				Model::Configuration::Molecule &		config	 = p_molecule.getConfiguration();
 				p_molecule.setPath( p_path );
+
+				if ( topology.bonds().size() == 0 )
+				{
+					// If no residue, create a fake one.
+					// TODO: check file format instead of residue count?
+					VTX_INFO( "No residues found" );
+					chemfiles::Residue residue = chemfiles::Residue( "" );
+					for ( uint i = 0; i < frame.size(); ++i )
+					{
+						residue.add_atom( i );
+					}
+					frame.add_residue( residue );
+				}
 
 				if ( frame.size() != topology.size() )
 				{
@@ -152,19 +195,6 @@ namespace VTX
 					}
 					VTX_DEBUG( propResidue );
 				}
-
-				// if ( residues.size() == 0 )
-				//{
-				//	// If no residue, create a fake one.
-				//	// TODO: check file format instead of residue count?
-				//	VTX_INFO( "No residues found" );
-				//	chemfiles::Residue residue = chemfiles::Residue( "" );
-				//	for ( uint i = 0; i < frame.size(); ++i )
-				//	{
-				//		residue.add_atom( i );
-				//	}
-				//	frame.add_residue( residue );
-				//}
 
 				// Create models.
 				p_molecule.getFrames().resize( p_trajectory.nsteps() );
@@ -423,31 +453,12 @@ namespace VTX
 					}
 				}
 
-				// Fill other frames.
-				Tool::Chrono timeReadingFrames;
-				timeReadingFrames.start();
-				int startingFrame = 1;
-				for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )
-				{
-					Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
-					frame												= p_trajectory.read_step( frameIdx );
-					const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
-					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
-					{
-						const chemfiles::Vector3D & position = positions[ positionIdx ];
-						moleculeFrame[ positionIdx ]		 = { position[ 0 ], position[ 1 ], position[ 2 ] };
-					}
-					// if ( frameIdx % 100 == 0 )
-					//{
-					//	timeReadingFrames.stop();
-					//	VTX_INFO( "Frames from " + std::to_string( startingFrame ) + " to " + std::to_string( frameIdx )
-					//			  + " read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
-					//	startingFrame = frameIdx;
-					//	timeReadingFrames.start();
-					//}
-				}
-				timeReadingFrames.stop();
-				VTX_INFO( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
+				// TODO: launch the filling of trajectory frames in another thread
+				// std::thread fillFrames(
+				//	&LibChemfiles::fillTrajectoryFrames, this, std::ref( p_trajectory ), std::ref( p_molecule ) );
+				// fillFrames.detach();
+
+				fillTrajectoryFrames( p_trajectory, p_molecule );
 
 				// Bonds.
 				// Sort by residus.

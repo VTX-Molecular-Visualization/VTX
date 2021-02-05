@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DockWidgetKeywordEditor</class>
+ <widget class="QDockWidget" name="DockWidgetKeywordEditor">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>372</width>
+    <height>327</height>
+   </rect>
+  </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../../../../asset/qt_resources/sprite/keyword_editor.png</normaloff>
+    <normalon>../../../../asset/qt_resources/sprite/keyword_editor.png</normalon>../../../../asset/qt_resources/sprite/keyword_editor.png</iconset>
+  </property>
+  <property name="floating">
+   <bool>true</bool>
+  </property>
+  <property name="windowTitle">
+   <string>Keyword Editor</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+    </item>
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="pushButtonOpenKeyfile">
+        <property name="text">
+         <string>Open</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButtonOpenKeyfile</sender>
+   <signal>clicked()</signal>
+   <receiver>DockWidgetKeywordEditor</receiver>
+   <slot>onOpenKeyfilePushButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>180</x>
+     <y>105</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>12</x>
+     <y>152</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>onOpenKeyfilePushButtonClicked()</slot>
+ </slots>
+</ui>
