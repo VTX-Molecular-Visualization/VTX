@@ -9,7 +9,6 @@
 #include "ui/main_window.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
-#include <stb/stb_image_write.h>
 #include <vector>
 
 namespace VTX
@@ -33,11 +32,11 @@ namespace VTX
 			rt->init( width, height, renderer.getOutputFbo() );
 			rt->renderFrame( VTXApp::get().getScene() );
 			const std::vector<uchar> & pixels = rt->getPixels();
-			stbi_flip_vertically_on_write( true );
-			stbi_write_png_compression_level = 0;
-			bool res = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
+			// stbi_flip_vertically_on_write( true );
+			// stbi_write_png_compression_level = 0;
+			// bool res = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
 			delete rt;
-			return res;
+			return false;
 		}
 
 		bool Snapshoter::takeSnapshotRTOptix( const FilePath & p_path ) const
