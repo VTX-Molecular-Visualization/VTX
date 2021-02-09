@@ -48,11 +48,7 @@ namespace VTX
 			BaseState::update( p_deltaTime );
 
 			VTXApp::get().getScene().update( p_deltaTime );
-
-			if ( VTX_SETTING().activeRenderer )
-			{
-				VTXApp::get().renderScene();
-			}
+			VTXApp::get().renderScene();
 		}
 
 		void Visualization::toggleCameraController()

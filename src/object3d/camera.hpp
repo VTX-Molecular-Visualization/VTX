@@ -73,12 +73,14 @@ namespace VTX
 				_near = Util::Math::max( 1e-1f, p_near );
 				_updateProjectionMatrix();
 			}
+
 			inline void setFar( const float p_far )
 			{
 				// Avoid too little value.
 				_far = Util::Math::max( 1e-1f, p_far );
 				_updateProjectionMatrix();
 			}
+
 			inline void setFov( const float p_fov )
 			{
 				_fov = p_fov;
@@ -102,7 +104,7 @@ namespace VTX
 			void rotateYaw( const float );
 			void rotateRoll( const float );
 
-			void rotateAround( const Quatd &, const Vec3f &, const float );
+			void rotateAround( const Quatf &, const Vec3f &, const float );
 
 			void lookAt( const Vec3f &, const Vec3f & );
 

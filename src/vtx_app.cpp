@@ -135,9 +135,9 @@ namespace VTX
 		if ( _tickTimer.elapsed() >= 1000 )
 		{
 			VTX_STAT().tickRate = _tickCounter / ( _tickTimer.elapsed() * 1e-3 );
-			VTX_INFO( "FPS: " + std::to_string( VTX_STAT().FPS ) + " - "
-					  + "Tickrate: " + std::to_string( VTX_STAT().tickRate ) + " - "
-					  + "Render time: " + std::to_string( VTX_STAT().renderTime ) + " ms" );
+			//VTX_INFO( "FPS: " + std::to_string( VTX_STAT().FPS ) + " - "
+			//		  + "Tickrate: " + std::to_string( VTX_STAT().tickRate ) + " - "
+			//		  + "Render time: " + std::to_string( VTX_STAT().renderTime ) + " ms" );
 			_tickCounter = 0;
 			_tickTimer.restart();
 		}
@@ -145,7 +145,7 @@ namespace VTX
 
 	void VTXApp::renderScene() const
 	{
-		if ( MASK )
+		if ( VTX_SETTING().activeRenderer && MASK )
 		{
 			_mainWindow->getOpenGLWidget().update();
 		}
