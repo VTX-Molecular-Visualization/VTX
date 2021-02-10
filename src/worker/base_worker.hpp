@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include <QObject>
 #include <functional>
 #include <thread>
 
@@ -12,8 +13,10 @@ namespace VTX
 {
 	namespace Worker
 	{
-		class BaseWorker
+		class BaseWorker : public QObject
 		{
+			Q_OBJECT
+
 		  public:
 			virtual ~BaseWorker()	   = default;
 			virtual void		work() = 0;

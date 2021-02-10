@@ -43,6 +43,9 @@ namespace VTX
 		Selection::SelectionManager::get();
 		Worker::WorkerManager::get();
 
+		// Create network manager.
+		_networkManager = new QNetworkAccessManager( this );
+
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );
 
@@ -74,6 +77,7 @@ namespace VTX
 		_timer->stop();
 
 		delete _timer;
+		delete _networkManager;
 
 		if ( _stateMachine != nullptr )
 		{
@@ -135,7 +139,7 @@ namespace VTX
 		if ( _tickTimer.elapsed() >= 1000 )
 		{
 			VTX_STAT().tickRate = _tickCounter / ( _tickTimer.elapsed() * 1e-3 );
-			//VTX_INFO( "FPS: " + std::to_string( VTX_STAT().FPS ) + " - "
+			// VTX_INFO( "FPS: " + std::to_string( VTX_STAT().FPS ) + " - "
 			//		  + "Tickrate: " + std::to_string( VTX_STAT().tickRate ) + " - "
 			//		  + "Render time: " + std::to_string( VTX_STAT().renderTime ) + " ms" );
 			_tickCounter = 0;

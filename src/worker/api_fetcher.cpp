@@ -1,69 +1,23 @@
 #include "api_fetcher.hpp"
 #include "exception.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX
 {
 	namespace Worker
 	{
-		void ApiFetcher::work()
+		ApiFetcher::ApiFetcher( const std::string & p_url ) : _url( QUrl( p_url.c_str() ) )
 		{
-			std::string url = _url;
-			CURL *		curl;
-			CURLcode	result;
-			curl_global_init( CURL_GLOBAL_DEFAULT );
-			curl = curl_easy_init();
-			if ( curl )
-			{
-				curl_easy_setopt( curl, CURLOPT_URL, url.c_str() );
-				curl_easy_setopt( curl, CURLOPT_WRITEFUNCTION, ApiFetcher::_writeCallback );
-				curl_easy_setopt( curl, CURLOPT_WRITEDATA, _buffer );
-				curl_easy_setopt( curl, CURLOPT_NOPROGRESS, FALSE );
-				curl_easy_setopt( curl, CURLOPT_XFERINFOFUNCTION, ApiFetcher::_progressCallback );
-				curl_easy_setopt( curl, CURLOPT_ACCEPT_ENCODING, "gzip" );
-
-				result = curl_easy_perform( curl );
-				if ( result == CURLE_OK )
-				{
-					long code;
-					curl_easy_getinfo( curl, CURLINFO_RESPONSE_CODE, &code );
-
-					if ( code == 200 )
-					{
-						if ( _buffer->empty() )
-						{
-							_isFinished = true;
-							curl_easy_cleanup( curl );
-							curl_global_cleanup();
-							throw Exception::HTTPException( "Empty buffer" );
-						}
-					}
-					else
-					{
-						_isFinished = true;
-						curl_easy_cleanup( curl );
-						curl_global_cleanup();
-						throw Exception::HTTPException( "Protocol error: " + std::to_string( code ) );
-					}
-				}
-				else
-				{
-					_isFinished = true;
-					curl_easy_cleanup( curl );
-					curl_global_cleanup();
-					throw Exception::HTTPException( "cURL failed: " + std::to_string( result ) );
-				}
-				curl_easy_cleanup( curl );
-			}
-			else
-			{
-				_isFinished = true;
-				curl_global_cleanup();
-				throw Exception::HTTPException( "cURL failed" );
-			}
-
-			_isFinished = true;
-			curl_global_cleanup();
+			connect( &VTX_NETWORK_MANAGER(), &QNetworkAccessManager::finished, this, &ApiFetcher::_onReplyFinished );
 		}
 
+		void ApiFetcher::work() { VTX_NETWORK_MANAGER().get( QNetworkRequest( _url ) ); }
+
+		void ApiFetcher::_onReplyFinished( QNetworkReply * const p_reply )
+		{
+			*_buffer	= p_reply->readAll().toStdString();
+			_progress	= 1.f;
+			_isFinished = true;
+		}
 	} // namespace Worker
 } // namespace VTX

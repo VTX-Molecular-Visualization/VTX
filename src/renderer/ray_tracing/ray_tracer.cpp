@@ -17,7 +17,6 @@
 #include "util/sampler.hpp"
 #include "vtx_app.hpp"
 #include <atomic>
-#include <stb/stb_image_write.h>
 #include <thread>
 
 namespace VTX
