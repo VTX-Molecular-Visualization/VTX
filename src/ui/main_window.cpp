@@ -42,6 +42,7 @@ namespace VTX::UI
 		_setupDock();
 
 		_mainMenuBar->setCurrentTab( 0 );
+		_renderWidget->setFocus();
 
 		_loadStyleSheet( VTX_SETTING().STYLESHEET_FILE_DEFAULT );
 	}

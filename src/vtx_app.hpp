@@ -55,8 +55,10 @@ namespace VTX
 		bool notify( QObject * const, QEvent * const ) override;
 
 	  private:
-		QTimer *		_timer		  = nullptr;
-		QElapsedTimer * _elapsedTimer = nullptr;
+		QTimer *	  _timer		= nullptr;
+		QElapsedTimer _elapsedTimer = QElapsedTimer();
+		QElapsedTimer _tickTimer	= QElapsedTimer();
+		uint		  _tickCounter	= 0u;
 
 		Setting				  _setting		= Setting();
 		Stat				  _stat			= Stat();

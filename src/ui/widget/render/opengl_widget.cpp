@@ -58,48 +58,36 @@ namespace VTX::UI::Widget::Render
 
 		VTX_PROGRAM_MANAGER( _gl );
 		switchRenderer( Setting::MODE_DEFAULT );
-		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
-		_timer.start();
+		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT, defaultFramebufferObject() );
+		_frameTimer.start();
 	}
 
 	void OpenGLWidget::paintGL()
 	{
-		getRenderer().renderFrame( VTXApp::get().getScene() );
-
-		// TODO: write directly in defaultFramebufferObject()
-		_gl->glBlitNamedFramebuffer( getRendererGL().getRenderedFBO(),
-									 defaultFramebufferObject(),
-									 0,
-									 0,
-									 size().width(),
-									 size().height(),
-									 0,
-									 0,
-									 size().width(),
-									 size().height(),
-									 GL_COLOR_BUFFER_BIT,
-									 GL_NEAREST );
-
-		_counter++;
-		if ( _timer.elapsed() >= 1000.f )
+		_frameCounter++;
+		if ( _frameTimer.elapsed() >= 1000 )
 		{
-			uint fps	   = _counter / ( _timer.elapsed() / 1000.f );
-			VTX_STAT().FPS = fps;
-			_counter	   = 0;
-			_timer.restart();
+			VTX_STAT().FPS = _frameCounter / ( _frameTimer.elapsed() * 1e-3 );
+			_frameCounter  = 0;
+			_frameTimer.restart();
 		}
 
+		_timer.start();
+
+		getRenderer().renderFrame( VTXApp::get().getScene() );
 		_painter.begin( this );
 		_painter.setPen( Qt::white );
 		_painter.drawText( 0, 10, QString::fromStdString( std::to_string( VTX_STAT().FPS ) ) );
 		_painter.end();
+
+		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6;
 	}
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )
 	{
 		makeCurrent();
 		VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
-		getRenderer().resize( p_width, p_height );
+		getRenderer().resize( p_width, p_height, defaultFramebufferObject() );
 		doneCurrent();
 	}
 

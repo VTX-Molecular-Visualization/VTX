@@ -15,7 +15,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_noiseTexture );
 	}
 
-	void SSAO::init( const uint p_width, const uint p_height )
+	void SSAO::init( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
@@ -80,7 +80,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glUniform1f( _uNoiseSizeLoc, float( _noiseTextureSize ) );
 	}
 
-	void SSAO::resize( const uint p_width, const uint p_height )
+	void SSAO::resize( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glDeleteTextures( 1, &_texture );
 		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );

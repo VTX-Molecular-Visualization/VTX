@@ -49,13 +49,11 @@ namespace VTX
 		VTX_INFO( "Application started" );
 
 		// Start timers.
-		_timer		  = new QTimer( this );
-		_elapsedTimer = new QElapsedTimer();
-
+		_timer = new QTimer( this );
 		connect( _timer, &QTimer::timeout, this, &VTXApp::_update );
-
 		_timer->start( 0 );
-		_elapsedTimer->start();
+		_elapsedTimer.start();
+		_tickTimer.start();
 
 		VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
 		// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
@@ -76,9 +74,7 @@ namespace VTX
 		_timer->stop();
 
 		delete _timer;
-		delete _elapsedTimer;
 
-		// Respect this order!
 		if ( _stateMachine != nullptr )
 		{
 			delete _stateMachine;
@@ -118,24 +114,42 @@ namespace VTX
 
 	void VTXApp::_update()
 	{
-		// TODO: check if QTimer and QElapsedTimer can be fused.
-		float deltaTime = _elapsedTimer->elapsed() / 1000.f;
-		_elapsedTimer->restart();
+		// Elapsed time.
+		float elapsed = _elapsedTimer.nsecsElapsed() * 1e-9;
+		_elapsedTimer.restart();
 
 		// State machine.
-		_stateMachine->update( deltaTime );
+		_stateMachine->update( elapsed );
 
 		// Event manager.
-		Event::EventManager::get().update( deltaTime );
+		Event::EventManager::get().update( elapsed );
 
 		// Action manager.
-		Action::ActionManager::get().update( deltaTime );
+		Action::ActionManager::get().update( elapsed );
 
 		// Worker manager.
-		Worker::WorkerManager::get().update( deltaTime );
+		Worker::WorkerManager::get().update( elapsed );
+
+		// Tickrate.
+		_tickCounter++;
+		if ( _tickTimer.elapsed() >= 1000 )
+		{
+			VTX_STAT().tickRate = _tickCounter / ( _tickTimer.elapsed() * 1e-3 );
+			//VTX_INFO( "FPS: " + std::to_string( VTX_STAT().FPS ) + " - "
+			//		  + "Tickrate: " + std::to_string( VTX_STAT().tickRate ) + " - "
+			//		  + "Render time: " + std::to_string( VTX_STAT().renderTime ) + " ms" );
+			_tickCounter = 0;
+			_tickTimer.restart();
+		}
 	}
 
-	void VTXApp::renderScene() const { _mainWindow->getOpenGLWidget().update(); }
+	void VTXApp::renderScene() const
+	{
+		if ( VTX_SETTING().activeRenderer && MASK )
+		{
+			_mainWindow->getOpenGLWidget().update();
+		}
+	}
 
 	bool VTXApp::notify( QObject * const receiver, QEvent * const event )
 	{

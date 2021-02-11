@@ -12,7 +12,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_texture );
 	}
 
-	void Shading::init( const uint p_width, const uint p_height )
+	void Shading::init( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
@@ -34,7 +34,7 @@ namespace VTX::Renderer::GL::Pass
 		set();
 	}
 
-	void Shading::resize( const uint p_width, const uint p_height )
+	void Shading::resize( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glDeleteTextures( 1, &_texture );
 		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );

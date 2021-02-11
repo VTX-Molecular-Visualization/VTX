@@ -14,7 +14,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_depthTexture );
 	}
 
-	void Geometric::init( const uint p_width, const uint p_height )
+	void Geometric::init( const uint p_width, const uint p_height, const GL & )
 	{
 		// TODO: Only when using point sprites.
 		/*glEnable( GL_PROGRAM_POINT_SIZE );
@@ -58,7 +58,7 @@ namespace VTX::Renderer::GL::Pass
 		}
 	}
 
-	void Geometric::resize( const uint p_width, const uint p_height )
+	void Geometric::resize( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glDeleteTextures( 1, &_viewPositionsNormalsCompressedTexture );
 		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_viewPositionsNormalsCompressedTexture );

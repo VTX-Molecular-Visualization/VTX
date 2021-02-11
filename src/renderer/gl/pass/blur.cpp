@@ -13,7 +13,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_texture );
 	}
 
-	void Blur::init( const uint p_width, const uint p_height )
+	void Blur::init( const uint p_width, const uint p_height, const GL & )
 	{
 		// first pass fbo/texture
 		gl()->glCreateFramebuffers( 1, &_fboFirstPass );
@@ -48,7 +48,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glUniform1i( _uBlurSizeLoc, VTX_SETTING().aoBlurSize );
 	}
 
-	void Blur::resize( const uint p_width, const uint p_height )
+	void Blur::resize( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glDeleteTextures( 1, &_textureFirstPass );
 		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_textureFirstPass );

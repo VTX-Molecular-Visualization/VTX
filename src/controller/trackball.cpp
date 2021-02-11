@@ -1,5 +1,6 @@
 #include "trackball.hpp"
 #include "object3d/scene.hpp"
+#include "tool/logger.hpp"
 #include "util/math.hpp"
 
 namespace VTX
@@ -28,7 +29,7 @@ namespace VTX
 			float deltaDistance = 0.f;
 			if ( _deltaMouseWheel != 0.f )
 			{
-				deltaDistance	 = _deltaMouseWheel * 0.01f * p_deltaTime;
+				deltaDistance	 = _deltaMouseWheel * 0.1f * p_deltaTime;
 				_deltaMouseWheel = 0;
 			}
 
@@ -132,10 +133,11 @@ namespace VTX
 					distance = Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 				}
 
-				Quatd rotation = Quatd( Vec3d( _velocity.y, _velocity.x, _velocity.z ) * (double)p_deltaTime );
+				Quatf rotation = Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * p_deltaTime );
 				_camera.rotateAround( rotation, _target, distance );
 				float d = Util::Math::distance( _camera.getPosition(), _target );
-				// VTX_INFO( std::to_string( distance ) + " / " + std::to_string( d ) );
+				// VTX_LOG_FILE( std::to_string( p_deltaTime ) + " / " + std::to_string( distance ) + " / "
+				//			  + std::to_string( d ) );
 				_needUpdate = false;
 			}
 

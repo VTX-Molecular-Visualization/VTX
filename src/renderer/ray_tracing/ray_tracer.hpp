@@ -23,14 +23,12 @@ namespace VTX
 			RayTracer( OpenGLFunctions * const p_gl ) : BaseRenderer( p_gl ) {}
 			~RayTracer() = default;
 
-			virtual void init( const uint, const uint ) override;
+			virtual void init( const uint, const uint, const GLuint ) override;
 			virtual void renderFrame( const Object3D::Scene & ) override;
 			virtual void setShading() override;
-			virtual void resize( const uint, const uint ) override;
+			virtual void resize( const uint, const uint, const GLuint ) override;
 
 			const inline std::vector<uchar> & getPixels() const { return _pixels; }
-
-			virtual const GLuint & getRenderedTexture() const override { return _texture; }
 
 		  private:
 			void _initScene( const Object3D::Scene & );

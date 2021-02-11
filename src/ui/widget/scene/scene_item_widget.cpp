@@ -1,4 +1,5 @@
 #include "scene_item_widget.hpp"
+#include "tool/logger.hpp"
 #include "ui/mime_type.hpp"
 #include "vtx_app.hpp"
 #include <QDrag>

@@ -9,10 +9,11 @@ namespace VTX::Renderer::GL::Pass
 	Selection::~Selection()
 	{
 		gl()->glDeleteFramebuffers( 1, &_fbo );
+
 		gl()->glDeleteTextures( 1, &_texture );
 	}
 
-	void Selection::init( const uint p_width, const uint p_height )
+	void Selection::init( const uint p_width, const uint p_height, const GL & p_renderer )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
@@ -23,7 +24,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
 
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		updateOutputFBO( p_renderer );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Selection", { "shading/selection.frag" } );
 
@@ -36,7 +37,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );
 	}
 
-	void Selection::resize( const uint p_width, const uint p_height )
+	void Selection::resize( const uint p_width, const uint p_height, const GL & p_renderer )
 	{
 		gl()->glDeleteTextures( 1, &_texture );
 		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
@@ -46,12 +47,19 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
 
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		updateOutputFBO( p_renderer );
 	}
 
 	void Selection::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+		if ( VTX_SETTING().activeAA )
+		{
+			gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+		}
+		else
+		{
+			gl()->glBindFramebuffer( GL_FRAMEBUFFER, p_renderer.getOutputFbo() );
+		}
 
 		gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
 		gl()->glBindTextureUnit( 1,
@@ -77,6 +85,17 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 		gl()->glBindVertexArray( 0 );
 
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+		if ( VTX_SETTING().activeAA == false )
+		{
+			gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+		}
+	}
+
+	void Selection::updateOutputFBO( const GL & p_renderer )
+	{
+		if ( VTX_SETTING().activeAA )
+		{
+			gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		}
 	}
 } // namespace VTX::Renderer::GL::Pass

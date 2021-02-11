@@ -65,10 +65,10 @@ namespace VTX
 			_updateRotation();
 		}
 
-		void Camera::rotateAround( const Quatd & p_rotation, const Vec3f & p_target, const float p_distance )
+		void Camera::rotateAround( const Quatf & p_rotation, const Vec3f & p_target, const float p_distance )
 		{
-			_rotation = (Quatd)_rotation * p_rotation;
-			_position = (Quatd)_rotation * Vec3d( 0.0, 0.0, (double)p_distance ) + (Vec3d)p_target;
+			_rotation = Util::Math::normalize( _rotation * p_rotation );
+			_position = _rotation * Vec3f( 0.0, 0.0, p_distance ) + p_target;
 			_updateRotation();
 		}
 
