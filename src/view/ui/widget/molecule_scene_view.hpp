@@ -6,86 +6,96 @@
 #endif
 
 #include "event/base_event_receiver_vtx.hpp"
+#include "generic/base_visible.hpp"
+#include "id.hpp"
 #include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
+#include "model/selection.hpp"
+#include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/scene/scene_item_widget.hpp"
 #include "view/base_view.hpp"
+#include <QKeyEvent>
+#include <QList>
 #include <QMenu>
-#include <QMouseEvent>
-#include <QPoint>
-#include <QTreeWidget>
+#include <QMimeData>
+#include <QString>
+#include <QTreeWidgetItem>
 #include <QWidget>
+#include <map>
 
-namespace VTX
+namespace VTX::View::UI::Widget
 {
-	namespace View
+	class MoleculeSceneView : public View::BaseView<Model::Molecule>, public VTX::UI::Widget::Scene::SceneItemWidget
 	{
-		namespace UI
-		{
-			namespace Widget
-			{
-				class MoleculeSceneView :
-					public View::BaseView<Model::Molecule>,
-					public VTX::UI::Widget::Scene::SceneItemWidget
-				{
-					VTX_WIDGET
-					VTX_VIEW
+		VTX_WIDGET
+		VTX_VIEW
 
-				  public:
-					void			  localize() override;
-					void			  notify( const Event::VTXEvent * const p_event ) override;
-					void			  receiveEvent( const Event::VTXEvent & p_event ) override;
-					const Model::ID & getModelID() const override { return _model->getId(); };
+	  protected:
+		inline static const Qt::ItemDataRole MODEL_ID_ROLE	   = Qt::ItemDataRole( Qt::UserRole );
+		inline static const Qt::ItemDataRole EXPAND_STATE_ROLE = Qt::ItemDataRole( Qt::UserRole + 1 );
 
-				  protected:
-					void _setupUi( const QString & ) override;
-					void _setupSlots() override;
+	  public:
+		void localize() override;
+		void notify( const Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-					void selectionChanged( const QItemSelection &, const QItemSelection & ) override;
+		const Model::ID & getModelID() const override { return _model->getId(); };
 
-					QMimeData * _getDataForDrag() override;
+	  protected:
+		void _setupUi( const QString & ) override;
+		void _setupSlots() override;
 
-				  private:
-					QMenu *					_contextMenu;
-					const QTreeWidgetItem * _lastItemClicked = nullptr;
+		virtual void keyPressEvent( QKeyEvent * p_event ) override;
+		void		 mouseMoveEvent( QMouseEvent * p_event ) override;
 
-					MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
+		bool		_canDragObjectAtPos( const QPoint & p_position ) override;
+		QMimeData * _getDataForDrag() override;
 
-					void _buildTree();
+	  private:
+		QMenu *											_contextMenu;
+		const QTreeWidgetItem *							_lastItemClicked = nullptr;
+		std::map<Model::ID, QList<QTreeWidgetItem *> *> _mapLoadedItems
+			= std::map<Model::ID, QList<QTreeWidgetItem *> *>();
+		int _enableSignalCounter = 0;
 
-					void _onItemChanged( const QTreeWidgetItem * const, const int ) const;
-					void _onItemClicked( const QTreeWidgetItem * const, const int );
-					void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;
-					void _onItemExpanded( const QTreeWidgetItem * const );
-					void _onItemCollapsed( const QTreeWidgetItem * const );
+		MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
+		~MoleculeSceneView();
 
-					void _deleteAction() override;
+		void _rebuildTree();
+		void _enableSignals( const bool p_enable );
 
-					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Molecule & p_model ) const;
-					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Chain & p_model ) const;
-					void _refreshItem( QTreeWidgetItem * const p_itemWidget, const Model::Residue & p_model ) const;
+		void _onItemChanged( const QTreeWidgetItem * const, const int ) const;
+		void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;
+		void _onItemExpanded( QTreeWidgetItem * const );
+		void _onItemCollapsed( QTreeWidgetItem * const );
 
-					void _selectModelAction( const Model::ID & p_modelId, const bool p_appendToSelection ) const;
-					void _selectModelAction( const std::vector<Model::ID> & p_modelId,
-											 const bool						p_appendToSelection ) const;
+		void _deleteAction() override;
+		void _doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const;
 
-					void _unselectModelAction( const Model::ID & p_modelId ) const;
-					void _unselectModelAction( const std::vector<Model::ID> & p_modelId ) const;
+		void _expandAll( QTreeWidgetItem * const p_from );
+		void _expandMolecule( QTreeWidgetItem * const, const bool p_forceExpandChildren = false );
+		void _expandChain( QTreeWidgetItem * const, const bool p_forceExpandChildren = false );
+		void _expandResidue( QTreeWidgetItem * const, const bool p_forceExpandChildren = false );
 
-					void _doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const;
+		void _collapseItem( QTreeWidgetItem & p_item );
 
-					inline Model::ID _getModelID( const QTreeWidgetItem & p_item ) const
-					{
-						const QVariant & dataID = p_item.data( 0, Qt::UserRole );
-						return dataID.value<VTX::Model::ID>();
-					}
-				};
+		void _fillListWithItemChildren( const QTreeWidgetItem & p_parent, QList<QTreeWidgetItem *> & p_list ) const;
 
-			} // namespace Widget
-		}	  // namespace UI
-	}		  // namespace View
-} // namespace VTX
+		void _applyMoleculeDataOnItem( const Model::Molecule & p_molecule, QTreeWidgetItem & p_item ) const;
+		void _applyChainDataOnItem( const Model::Chain & p_molecule, QTreeWidgetItem & p_item ) const;
+		void _applyResidueDataOnItem( const Model::Residue & p_molecule, QTreeWidgetItem & p_item ) const;
+		void _applyAtomDataOnItem( const Model::Atom & p_molecule, QTreeWidgetItem & p_item ) const;
+
+		void _refreshItemVisibility( QTreeWidgetItem * const	  p_itemWidget,
+									 const Generic::BaseVisible & p_baseVisible ) const;
+		void _refreshSelection( const Model::Selection & p_selection );
+
+		Model::ID _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;
+		bool	  _getItemExpandState( const QTreeWidgetItem & p_item ) const;
+	};
+
+} // namespace VTX::View::UI::Widget
 
 #endif

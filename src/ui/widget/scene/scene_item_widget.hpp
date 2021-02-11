@@ -33,7 +33,7 @@ namespace VTX
 						setMinimumHeight( minimumHeight );
 
 						int columnWidth = sizeHintForColumn( 0 );
-						if ( columnWidth  > 0)
+						if ( columnWidth > 0 )
 							setMinimumWidth( columnWidth );
 					};
 
@@ -42,21 +42,26 @@ namespace VTX
 				  protected:
 					SceneItemWidget( QWidget * p_parent );
 
+					virtual bool _canDragObjectAtPos( const QPoint & p_position ) { return true; } 
+
 					void _setupUi( const QString & p_name ) override;
 					void _setupSlots() override;
 
 					void _onCustomContextMenuCalled( const QPoint & p_clicPos );
 
-					void mousePressEvent( QMouseEvent * p_event ) override;
-					void mouseMoveEvent( QMouseEvent * p_event ) override;
-					void dragEnterEvent( QDragEnterEvent * p_event ) override;
+					void		 mousePressEvent( QMouseEvent * p_event ) override;
+					virtual void mouseMoveEvent( QMouseEvent * p_event ) override;
+					void		 dragEnterEvent( QDragEnterEvent * p_event ) override;
 
 					QMenu * _contextMenu = nullptr;
 
 					virtual void		_deleteAction()	  = 0;
 					virtual QMimeData * _getDataForDrag() = 0;
 
-					const Qt::CheckState _getCheckState( const bool p_enable ) const { return p_enable ? Qt::CheckState::Checked : Qt::CheckState::Unchecked; };
+					const Qt::CheckState _getCheckState( const bool p_enable ) const
+					{
+						return p_enable ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
+					};
 
 				  private:
 					QPoint _dragStartPosition;
