@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>372</width>
-    <height>327</height>
+    <width>374</width>
+    <height>954</height>
    </rect>
   </property>
   <property name="windowIcon">
@@ -19,15 +19,841 @@
    <bool>true</bool>
   </property>
   <property name="windowTitle">
-   <string>Keyword Editor</string>
+   <string>Tinker-hp - Keyword Editor</string>
   </property>
   <widget class="QWidget" name="dockWidgetContents">
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,1,0">
+    <item row="2" column="0">
+     <widget class="CollapsingGroupboxWidget" name="groupBoxAdditionnalKeywords">
+      <property name="title">
+       <string>Additionnal Keywords</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="leftMargin">
+        <number>9</number>
+       </property>
+       <property name="topMargin">
+        <number>9</number>
+       </property>
+       <property name="rightMargin">
+        <number>9</number>
+       </property>
+       <property name="bottomMargin">
+        <number>9</number>
+       </property>
+       <item>
+        <widget class="QTextBrowser" name="textBrowserAdditionnalKeywords">
+         <property name="undoRedoEnabled">
+          <bool>true</bool>
+         </property>
+         <property name="readOnly">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
     <item row="1" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+     <widget class="CollapsingGroupboxWidget" name="groupBoxDynamic">
+      <property name="title">
+       <string>Dynamic</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="leftMargin">
+        <number>9</number>
+       </property>
+       <property name="topMargin">
+        <number>9</number>
+       </property>
+       <property name="rightMargin">
+        <number>9</number>
+       </property>
+       <property name="bottomMargin">
+        <number>9</number>
+       </property>
+       <item>
+        <widget class="QWidget" name="widgetDynamic" native="true">
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="labelIntegrator">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Integrators: &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BEEMAN&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: The default one&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;VERLET&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: Verlet&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BBK&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: Langevin Dynamics for constant temperature simulations&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOAB&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: Langevin Dynamics for constant temperature simulations&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;RESPA&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: Bonded/non bonded respa-split with a velocity-verlet inner loop and with a 0.25 fs default timestep for the inner loop&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABRESPA&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: Bonded/non bonded respa-split for Langevin dynamics with a BAOAB inner loop, the default timestep for the inner loop is also 0.25 fs&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;RESPA1&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: (Bonded)/(short range non bonded)/(long range non bonded) three level respa1-split with a velocity verlet inner loop. The default timesteps are 0.25 fs for the inner loop and 2 fs for the intermediate one&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABRESPA1&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: (Bonded)/(short range non bonded)/(long range non bonded) three level respa1-split for Langevin dynamics with a BAOAB inner loop. The default timesteps are 0.25 fs for the inner loop and 2 fs for the intermediate one&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABPISTON&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: Constant pressure BAOAB Langevin dynamics with a Langevin Piston pressure control and a BAOAB evolution of the volume extended variable. The default mass of the piston is 2e&lt;/span&gt;&lt;span style=&quot; font-size:9pt; vertical-align:super;&quot;&gt;-5&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; atomic units and the default friction for the piston is 20.0 ps&lt;/span&gt;&lt;span style=&quot; font-size:9pt; vertical-align:super;&quot;&gt;-1&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Integrator</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBoxIntegrator">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Integrators: &lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BEEMAN&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: The default one&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;VERLET&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: Verlet&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BBK&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: Langevin Dynamics for constant temperature simulations&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOAB&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: Langevin Dynamics for constant temperature simulations&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;RESPA&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: Bonded/non bonded respa-split with a velocity-verlet inner loop and with a 0.25 fs default timestep for the inner loop&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABRESPA&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: Bonded/non bonded respa-split for Langevin dynamics with a BAOAB inner loop, the default timestep for the inner loop is also 0.25 fs&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;RESPA1&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: (Bonded)/(short range non bonded)/(long range non bonded) three level respa1-split with a velocity verlet inner loop. The default timesteps are 0.25 fs for the inner loop and 2 fs for the intermediate one&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABRESPA1&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: (Bonded)/(short range non bonded)/(long range non bonded) three level respa1-split for Langevin dynamics with a BAOAB inner loop. The default timesteps are 0.25 fs for the inner loop and 2 fs for the intermediate one&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABPISTON&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;: Constant pressure BAOAB Langevin dynamics with a Langevin Piston pressure control and a BAOAB evolution of the volume extended variable. The default mass of the piston is 2e&lt;/span&gt;&lt;span style=&quot; font-size:9pt; vertical-align:super;&quot;&gt;-5&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; atomic units and the default friction for the piston is 20.0 ps&lt;/span&gt;&lt;span style=&quot; font-size:9pt; vertical-align:super;&quot;&gt;-1&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>BEEMAN</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>VERLET</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>BBK</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>BAOAB</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>RESPA</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>BAOABRESPA</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>RESPA1</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>BAOABRESPA1</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>BAOABPISTON</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0">
+            <item>
+             <widget class="QLabel" name="labelFriction">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Friction of all the Langevin integrators (&lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BBK&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOAB&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABRESPA&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABRESPA1&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; and &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABPISTON&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;), the default being 1 ps&lt;/span&gt;&lt;span style=&quot; font-size:9pt; vertical-align:super;&quot;&gt;-1&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Friction</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBoxFriction">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Friction of all the Langevin integrators (&lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BBK&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOAB&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABRESPA&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABRESPA1&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; and &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABPISTON&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;), the default being 1 ps&lt;/span&gt;&lt;span style=&quot; font-size:9pt; vertical-align:super;&quot;&gt;-1&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="suffix">
+               <string/>
+              </property>
+              <property name="value">
+               <number>1</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_4">
+            <item>
+             <widget class="QLabel" name="labelInnerTimestep">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;The inner timestep for &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;RESPA&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABRESPA&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;RESPA1&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; and &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABRESPA1.&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; Value in ps.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Inner timestep</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBoxInnerTimestep">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;The inner timestep for &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;RESPA&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABRESPA&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;RESPA1&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; and &lt;/span&gt;&lt;span style=&quot; font-size:9pt; font-weight:600;&quot;&gt;BAOABRESPA1.&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; Value in ps.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="value">
+               <number>1</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QLabel" name="labelIntermediateTimestep">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the intermediate timestep for &lt;span style=&quot; font-weight:600;&quot;&gt;RESPA1&lt;/span&gt; and &lt;span style=&quot; font-weight:600;&quot;&gt;BAOABRESPA1&lt;/span&gt;. value in ps.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Intermediate timestep</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBoxIntermediateTimestep">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the intermediate timestep for &lt;span style=&quot; font-weight:600;&quot;&gt;RESPA1&lt;/span&gt; and &lt;span style=&quot; font-weight:600;&quot;&gt;BAOABRESPA1&lt;/span&gt;. value in ps.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="value">
+               <number>1</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_8">
+            <item>
+             <widget class="QLabel" name="labelThermostat">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The thermostats available in Tinker-HP are &lt;span style=&quot; font-weight:600;&quot;&gt;Berendsen&lt;/span&gt;, &lt;span style=&quot; font-weight:600;&quot;&gt;Bussi&lt;/span&gt; (which is the default one) and &lt;span style=&quot; font-weight:600;&quot;&gt;Andersen&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Thermostat</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBoxThermostat">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The thermostats available in Tinker-HP are &lt;span style=&quot; font-weight:600;&quot;&gt;Berendsen&lt;/span&gt;, &lt;span style=&quot; font-weight:600;&quot;&gt;Bussi&lt;/span&gt; (which is the default one) and &lt;span style=&quot; font-weight:600;&quot;&gt;Andersen&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <item>
+               <property name="text">
+                <string>ANDERSEN</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>BERENDSEN</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>BUSSI</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <item>
+             <widget class="QLabel" name="labelBarostat">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The barostats available in Tinker-HP are the &lt;span style=&quot; font-weight:600;&quot;&gt;Berendsen&lt;/span&gt; (which is the default one) and the &lt;span style=&quot; font-weight:600;&quot;&gt;Monte-Carlo&lt;/span&gt; one&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Barostat</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBoxBarostat">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The barostats available in Tinker-HP are the &lt;span style=&quot; font-weight:600;&quot;&gt;Berendsen&lt;/span&gt; (which is the default one) and the &lt;span style=&quot; font-weight:600;&quot;&gt;Monte-Carlo&lt;/span&gt; one&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <item>
+               <property name="text">
+                <string>BERENDSEN</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>MONTE-CARLO</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QLabel" name="labelPolarizationEquations">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The algorithm used to converge the polarization equations (compute the dipoles solution):&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Divide and Conquer Jacobi/DIIS&lt;/span&gt; (default)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;PCG&lt;/span&gt; (Conjugate Gradient with a diagonal preconditioner)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Jacobi/DIIS&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;TCG&lt;/span&gt; (Truncated Conjugate Gradient)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Polarization solver</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBoxPolarizationEquations">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The algorithm used to converge the polarization equations (compute the dipoles solution):&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Divide and Conquer Jacobi/DIIS&lt;/span&gt; (default)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;PCG&lt;/span&gt; (Conjugate Gradient with a diagonal preconditioner)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Jacobi/DIIS&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;TCG&lt;/span&gt; (Truncated Conjugate Gradient)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <item>
+               <property name="text">
+                <string>D&amp;C Jacobi/DIIS</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>PCG</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Jacobi/DIIS</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>TCG</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_23">
+            <item>
+             <widget class="QLabel" name="labelShortRangePolarizationSolver">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The algorithm used to converge the polarization equations (compute the dipoles solution) for short range real space at the intermediate time steps. By default, this is done using the same algorithm as the one used to solve the complete polarization equations at the outer time steps. But one can chose a different algorithm to solve the short range. TCG is chosen as a short range polarization solver, one can define all the related option for this solver in the &amp;quot;TCG parameters for short range polarization&amp;quot; groupbox displayed below. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Divide and Conquer Jacobi/DIIS&lt;/span&gt; (default)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;PCG&lt;/span&gt; (Conjugate Gradient with a diagonal preconditioner)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Jacobi/DIIS&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;TCG&lt;/span&gt; (Truncated Conjugate Gradient)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Short range polarization solver</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="comboBoxShortRangePolarizationSolver">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The algorithm used to converge the polarization equations (compute the dipoles solution) for short range real space at the intermediate time steps. By default, this is done using the same algorithm as the one used to solve the complete polarization equations at the outer time steps. But one can chose a different algorithm to solve the short range. TCG is chosen as a short range polarization solver, one can define all the related option for this solver in the &amp;quot;TCG parameters for short range polarization&amp;quot; groupbox displayed below. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Divide and Conquer Jacobi/DIIS&lt;/span&gt; (default)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;PCG&lt;/span&gt; (Conjugate Gradient with a diagonal preconditioner)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Jacobi/DIIS&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;TCG&lt;/span&gt; (Truncated Conjugate Gradient)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="currentIndex">
+               <number>0</number>
+              </property>
+              <item>
+               <property name="text">
+                <string>D&amp;C Jacobi/DIIS</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>PCG</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Jacobi/DIIS</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>TCG</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item>
+             <widget class="QLabel" name="labelMassPiston">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mass of the piston (in atomic units).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Mass of the piston</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBoxMassPiston">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mass of the piston (in atomic units).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_24">
+            <item>
+             <widget class="QLabel" name="labelFrictionPiston">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Friction of the piston (in ps&lt;span style=&quot; vertical-align:super;&quot;&gt;-1&lt;/span&gt;).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Friction piston</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBoxFrictionPiston">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Friction of the piston (in ps&lt;span style=&quot; vertical-align:super;&quot;&gt;-1&lt;/span&gt;).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="CollapsingGroupboxWidget" name="groupBoxTcgParameters">
+            <property name="title">
+             <string>TCG parameters</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_7">
+             <item>
+              <widget class="QWidget" name="widgetContainingTcgParameters" native="true">
+               <layout class="QVBoxLayout" name="verticalLayout_4">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_11">
+                  <item>
+                   <widget class="QLabel" name="labelTcgOrder">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Order of the TCG truncation, TCG1 or TCG2, default is TCG2.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <property name="text">
+                     <string>TCG order</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBoxTcgOrder">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Order of the TCG truncation, TCG1 or TCG2, default is TCG2.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>TCG2</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TCG1</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_12">
+                  <item>
+                   <widget class="QLabel" name="labelDiagPrec">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Use of a diagonal preconditioner, default is yes.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <property name="text">
+                     <string>Diagonal preconditioner</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBoxDiagPrec">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Use of a diagonal preconditioner, default is yes.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>Yes</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>No</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_13">
+                  <item>
+                   <widget class="QLabel" name="labelTcgGuess">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Use of a ”direct guess” (polarizability x permanent electric field) as a guess., default is no.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <property name="text">
+                     <string>Direct guess</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBoxTcgGuess">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Use of a ”direct guess” (polarizability x permanent electric field) as a guess., default is no.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>No</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Yes</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_14">
+                  <item>
+                   <widget class="QLabel" name="labelTcgPeek">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Use of a peek step, default is yes. When a peek step is used, a Jacobi Over Relaxation (JOR) is applied to the TCG values of the dipoles with a parameter &lt;/span&gt;&lt;span style=&quot; font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;&quot;&gt;ω.&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; By default, this value is &lt;/span&gt;&lt;span style=&quot; font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;&quot;&gt;ω&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; = 1. (regular Jacobi step) but the following keywords can modify this.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <property name="text">
+                     <string>Peek step</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBoxTcgPeek">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Use of a peek step, default is yes. When a peek step is used, a Jacobi Over Relaxation (JOR) is applied to the TCG values of the dipoles with a parameter &lt;/span&gt;&lt;span style=&quot; font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;&quot;&gt;ω.&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; By default, this value is &lt;/span&gt;&lt;span style=&quot; font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;&quot;&gt;ω&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; = 1. (regular Jacobi step) but the following keywords can modify this.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>Yes</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>No</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QWidget" name="widgetPeekStep" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_2">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_15">
+                     <item>
+                      <widget class="QLabel" name="labelTcgOmega">
+                       <property name="text">
+                        <string>Omega ( ω )</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="spinBoxTcgOmega">
+                       <property name="value">
+                        <number>1</number>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_16">
+                     <item>
+                      <widget class="QLabel" name="labelTcgMegaFit">
+                       <property name="text">
+                        <string>Fitting</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QComboBox" name="comboBoxTcgMegaFit">
+                       <item>
+                        <property name="text">
+                         <string>Yes</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>No</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_17">
+                     <item>
+                      <widget class="QLabel" name="labelTcgMegaFitFreq">
+                       <property name="text">
+                        <string>Fitting frequency</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QSpinBox" name="spinBoxTcgMegaFitFreq">
+                       <property name="maximum">
+                        <number>100000000</number>
+                       </property>
+                       <property name="value">
+                        <number>1000</number>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="CollapsingGroupboxWidget" name="groupBoxTcgShortParameters">
+            <property name="title">
+             <string>TCG parameters of short range polarization solver</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <widget class="QWidget" name="widgetTcgParametersShort" native="true">
+               <layout class="QVBoxLayout" name="verticalLayout_8">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_18">
+                  <item>
+                   <widget class="QLabel" name="labelTcgOrderShort">
+                    <property name="text">
+                     <string>TCG order</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBoxTcgOrderShort">
+                    <item>
+                     <property name="text">
+                      <string>TCG2</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>TCG1</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_22">
+                  <item>
+                   <widget class="QLabel" name="labelDiagPrecShort">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Use of a diagonal preconditioner, default is yes.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <property name="text">
+                     <string>Diagonal preconditioner</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBoxDiagPrecShort">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Use of a diagonal preconditioner, default is yes.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>Yes</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>No</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_20">
+                  <item>
+                   <widget class="QLabel" name="labelTcgGuessShort">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Use of a ”direct guess” (polarizability x permanent electric field) as a guess., default is no.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <property name="text">
+                     <string>Direct guess</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBoxTcgGuessShort">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Use of a ”direct guess” (polarizability x permanent electric field) as a guess., default is no.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>No</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Yes</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_21">
+                  <item>
+                   <widget class="QLabel" name="labelTcgPeekShort">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Use of a peek step, default is yes. When a peek step is used, a Jacobi Over Relaxation (JOR) is applied to the TCG values of the dipoles with a parameter &lt;/span&gt;&lt;span style=&quot; font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;&quot;&gt;ω.&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; By default, this value is &lt;/span&gt;&lt;span style=&quot; font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;&quot;&gt;ω&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; = 1. (regular Jacobi step) but the following keywords can modify this.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <property name="text">
+                     <string>Peek step</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="comboBoxTcgPeekShort">
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt;Use of a peek step, default is yes. When a peek step is used, a Jacobi Over Relaxation (JOR) is applied to the TCG values of the dipoles with a parameter &lt;/span&gt;&lt;span style=&quot; font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;&quot;&gt;ω.&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; By default, this value is &lt;/span&gt;&lt;span style=&quot; font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;&quot;&gt;ω&lt;/span&gt;&lt;span style=&quot; font-size:9pt;&quot;&gt; = 1. (regular Jacobi step) but the following keywords can modify this.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>Yes</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>No</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_19">
+                  <item>
+                   <widget class="QLabel" name="labelTcgOmegaShort">
+                    <property name="text">
+                     <string>Omega (ω)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSpinBox" name="spinBoxTcgOmegaShort">
+                    <property name="value">
+                     <number>1</number>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
     <item row="0" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
       <item>
        <widget class="QPushButton" name="pushButtonOpenKeyfile">
         <property name="text">
@@ -37,9 +863,43 @@
       </item>
      </layout>
     </item>
+    <item row="4" column="0">
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item row="3" column="0">
+     <widget class="QPushButton" name="pushButtonGenerate">
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Generate keyword file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Generate</string>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CollapsingGroupboxWidget</class>
+   <extends>QGroupBox</extends>
+   <header>ui/widget/custom_widget/collapsing_groupbox_widget.hpp</header>
+   <container>1</container>
+   <slots>
+    <slot>toggleBodyVisibility(bool)</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -49,8 +909,8 @@
    <slot>onOpenKeyfilePushButtonClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>180</x>
-     <y>105</y>
+     <x>363</x>
+     <y>50</y>
     </hint>
     <hint type="destinationlabel">
      <x>12</x>
@@ -58,8 +918,110 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>comboBoxPolarizationEquations</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>DockWidgetKeywordEditor</receiver>
+   <slot>comboBoxPolEquaIndexChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>344</x>
+     <y>275</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>373</x>
+     <y>309</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBoxTcgPeek</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>DockWidgetKeywordEditor</receiver>
+   <slot>comboBoxPeekStepIndexChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>334</x>
+     <y>433</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>373</x>
+     <y>433</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBoxTcgMegaFit</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>DockWidgetKeywordEditor</receiver>
+   <slot>comboBoxFittingIndexChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>334</x>
+     <y>487</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>373</x>
+     <y>522</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBoxShortRangePolarizationSolver</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>DockWidgetKeywordEditor</receiver>
+   <slot>comboBoxShortRangePolSolndexChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>254</x>
+     <y>301</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>373</x>
+     <y>350</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBoxIntegrator</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>DockWidgetKeywordEditor</receiver>
+   <slot>comboBoxIntegratorIndexChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>266</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>373</x>
+     <y>89</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonGenerate</sender>
+   <signal>clicked()</signal>
+   <receiver>DockWidgetKeywordEditor</receiver>
+   <slot>onGenerateKeyfilePushButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>228</x>
+     <y>921</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>377</x>
+     <y>852</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>onOpenKeyfilePushButtonClicked()</slot>
+  <slot>comboBoxPolEquaIndexChanged(QString)</slot>
+  <slot>comboBoxPeekStepIndexChanged(QString)</slot>
+  <slot>comboBoxFittingIndexChanged(QString)</slot>
+  <slot>comboBoxShortRangePolSolndexChanged(QString)</slot>
+  <slot>comboBoxIntegratorIndexChanged(QString)</slot>
+  <slot>onGenerateKeyfilePushButtonClicked()</slot>
  </slots>
 </ui>

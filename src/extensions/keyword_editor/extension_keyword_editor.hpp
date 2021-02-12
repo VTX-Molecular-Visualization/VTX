@@ -1,3 +1,6 @@
+#ifndef KEYWORDEDITOR_H
+#define KEYWORDEDITOR_H
+
 #include <QFile>
 #include <QString>
 #include <QVariant>
@@ -7,12 +10,16 @@
 class ExtensionKeywordEditor
 {
   public:
-	ExtensionKeywordEditor( QString filepath );
+	ExtensionKeywordEditor();
 	~ExtensionKeywordEditor();
 
-	void readKeywordFile();
+	void readKeywordFile( QString filepath );
+	void writeKeywordFile( QString newFilePath );
 
   private:
-	QFile *									 keywordFile;
 	std::vector<std::pair<QString, QString>> keywords;
+
+	friend class ExtensionKeywordEditorGUI;
 };
+
+#endif

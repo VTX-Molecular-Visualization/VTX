@@ -3,28 +3,27 @@
 #include <QTextStream>
 #include <QVariant>
 
-ExtensionKeywordEditor::ExtensionKeywordEditor( QString filepath )
-{
-	keywordFile = new QFile( filepath );
-	if ( !keywordFile->exists() )
-	{
-		// return error
-	}
-}
+ExtensionKeywordEditor::ExtensionKeywordEditor() {}
 
 ExtensionKeywordEditor::~ExtensionKeywordEditor() {}
 
-void ExtensionKeywordEditor::readKeywordFile()
+void ExtensionKeywordEditor::readKeywordFile( QString filepath )
 {
-	if ( keywordFile->open( QIODevice::ReadOnly ) )
+	QFile keywordFile( filepath );
+	if ( !keywordFile.exists() )
 	{
-		QTextStream in( keywordFile );
+		// return error
+	}
+
+	if ( keywordFile.open( QIODevice::ReadOnly ) )
+	{
+		QTextStream in( &keywordFile );
 		while ( !in.atEnd() )
 		{
 			QString line = in.readLine();
 
 			// ignore lines starting with "#" corresponding to comments
-			if ( line.indexOf( "#" ) == 0 )
+			if ( line.indexOf( "#" ) == 0 || line.isEmpty() )
 			{
 				continue;
 			}
@@ -41,5 +40,22 @@ void ExtensionKeywordEditor::readKeywordFile()
 			}
 		}
 	}
-	keywordFile->close();
+	keywordFile.close();
+}
+
+void ExtensionKeywordEditor::writeKeywordFile( QString newFilePath )
+{
+	QFile keywordFile( newFilePath );
+	if ( !keywordFile.exists() )
+	{
+		// return error
+	}
+
+	if ( keywordFile.open( QIODevice::ReadWrite ) )
+	{
+		QTextStream stream( &keywordFile );
+		stream << "something" << Qt::endl;
+
+		keywordFile.close();
+	}
 }

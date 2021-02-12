@@ -6,6 +6,8 @@
 	<file>sprite/camera_recenter_icon.png</file>
 	<file>sprite/camera_trackball_mode.png</file>
 	<file>sprite/camera_vessel_mode.png</file>
+	<file>sprite/checkbox_checked.png</file>
+	<file>sprite/checkbox_unchecked.png</file>
 	<file>sprite/close_icon.png</file>
 	<file>sprite/copy_selection_icon.png</file>
 	<file>sprite/delete_selection_icon.png</file>

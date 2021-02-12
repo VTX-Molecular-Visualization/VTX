@@ -13,8 +13,17 @@ class ExtensionKeywordEditorGUI : public QDockWidget
 	void loadSettings();
 	void saveSettings();
 
+	void populateInterfaceWithValues();
+
   private slots:
 	void onOpenKeyfilePushButtonClicked();
+	void onGenerateKeyfilePushButtonClicked();
+
+	void comboBoxIntegratorIndexChanged( QString newSelectedItem );
+	void comboBoxShortRangePolSolndexChanged( QString newSelectedItem );
+	void comboBoxPolEquaIndexChanged( QString newSelectedItem );
+	void comboBoxPeekStepIndexChanged( QString newSelectedItem );
+	void comboBoxFittingIndexChanged( QString newSelectedItem );
 
   private:
 	ExtensionKeywordEditor *	keywordEditor = nullptr;
