@@ -91,11 +91,7 @@ namespace VTX::View::UI::Widget
 	{
 		SceneItemWidget::_setupUi( p_name );
 		setSelectionModel( new VTX::UI::Widget ::Scene::MoleculeSelectionModel( _model, model(), this ) );
-
-		setDragDropMode( DragDropMode::NoDragDrop );
-		this->setDragEnabled( false );
-		this->setDragDropOverwriteMode( false );
-		setDefaultDropAction( Qt::DropAction::IgnoreAction );
+		setExpandsOnDoubleClick( false );
 
 		_rebuildTree();
 	}
@@ -540,131 +536,132 @@ namespace VTX::View::UI::Widget
 		const Model::Selection::MapMoleculeIds::const_iterator itMoleculeItem
 			= p_selection.getItems().find( _model->getId() );
 
-		if ( itMoleculeItem == p_selection.getItems().end() )
-			return;
-
 		_enableSignals( false );
 		QItemSelection selection = QItemSelection();
 
-		QTreeWidgetItem * const moleculeItem = topLevelItem( 0 );
-		selection.append( QItemSelectionRange( indexFromItem( moleculeItem ) ) );
-
-		if ( moleculeItem->isExpanded() )
+		if ( itMoleculeItem != p_selection.getItems().end() )
 		{
-			const Model::Chain * topChain			  = nullptr;
-			const Model::Chain * previousChain		  = nullptr;
-			QModelIndex			 topChainItemIndex	  = QModelIndex();
-			QModelIndex			 bottomChainItemIndex = QModelIndex();
+			QTreeWidgetItem * const moleculeItem = topLevelItem( 0 );
+			selection.append( QItemSelectionRange( indexFromItem( moleculeItem ) ) );
 
-			for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : itMoleculeItem->second )
+			if ( moleculeItem->isExpanded() )
 			{
-				const Model::Chain & chain = *_model->getChain( pairChain.first );
+				const Model::Chain * topChain			  = nullptr;
+				const Model::Chain * previousChain		  = nullptr;
+				QModelIndex			 topChainItemIndex	  = QModelIndex();
+				QModelIndex			 bottomChainItemIndex = QModelIndex();
 
-				QTreeWidgetItem * const chainItem = moleculeItem->child( chain.getIndex() );
-
-				if ( topChainItemIndex.isValid() )
+				for ( const std::pair<uint, Model::Selection::MapResidueIds> & pairChain : itMoleculeItem->second )
 				{
-					// if not contiguous, add new range
-					if ( chain.getIndex() != uint( previousChain->getIndex() + 1 ) )
-					{
-						selection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
-						topChainItemIndex = indexFromItem( chainItem );
-						topChain		  = &chain;
-					}
+					const Model::Chain & chain = *_model->getChain( pairChain.first );
 
-					bottomChainItemIndex = indexFromItem( chainItem );
-				}
-				else
-				{
-					topChainItemIndex	 = indexFromItem( chainItem );
-					topChain			 = &chain;
-					bottomChainItemIndex = indexFromItem( chainItem );
-				}
+					QTreeWidgetItem * const chainItem = moleculeItem->child( chain.getIndex() );
 
-				previousChain = &chain;
-
-				if ( !chainItem->isExpanded() )
-					continue;
-
-				const Model::Residue * topResidue			  = nullptr;
-				const Model::Residue * previousResidue		  = nullptr;
-				QModelIndex			   topResidueItemIndex	  = QModelIndex();
-				QModelIndex			   bottomResidueItemIndex = QModelIndex();
-				for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
-				{
-					const Model::Residue &	residue = *_model->getResidue( pairResidue.first );
-					QTreeWidgetItem * const residueItem
-						= chainItem->child( residue.getIndex() - chain.getIndexFirstResidue() );
-
-					if ( topResidueItemIndex.isValid() )
+					if ( topChainItemIndex.isValid() )
 					{
 						// if not contiguous, add new range
-						if ( residue.getIndex() != uint( previousResidue->getIndex() + 1 ) )
+						if ( chain.getIndex() != uint( previousChain->getIndex() + 1 ) )
 						{
-							selection.append( QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
-							topResidueItemIndex = indexFromItem( residueItem );
-							topResidue			= &residue;
+							selection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
+							topChainItemIndex = indexFromItem( chainItem );
+							topChain		  = &chain;
 						}
 
-						bottomResidueItemIndex = indexFromItem( residueItem );
+						bottomChainItemIndex = indexFromItem( chainItem );
 					}
 					else
 					{
-						topResidueItemIndex	   = indexFromItem( residueItem );
-						topResidue			   = &residue;
-						bottomResidueItemIndex = indexFromItem( residueItem );
+						topChainItemIndex	 = indexFromItem( chainItem );
+						topChain			 = &chain;
+						bottomChainItemIndex = indexFromItem( chainItem );
 					}
 
-					previousResidue = &residue;
+					previousChain = &chain;
 
-					if ( !residueItem->isExpanded() )
+					if ( !chainItem->isExpanded() )
 						continue;
 
-					const Model::Atom * topAtom				= nullptr;
-					const Model::Atom * previousAtom		= nullptr;
-					QModelIndex			topAtomItemIndex	= QModelIndex();
-					QModelIndex			bottomAtomItemIndex = QModelIndex();
-					for ( const uint & atomId : pairResidue.second )
+					const Model::Residue * topResidue			  = nullptr;
+					const Model::Residue * previousResidue		  = nullptr;
+					QModelIndex			   topResidueItemIndex	  = QModelIndex();
+					QModelIndex			   bottomResidueItemIndex = QModelIndex();
+					for ( const std::pair<uint, Model::Selection::VecAtomIds> & pairResidue : pairChain.second )
 					{
-						const Model::Atom &		atom	 = *_model->getAtom( atomId );
-						QTreeWidgetItem * const atomItem = residueItem->child( atomId - residue.getIndexFirstAtom() );
+						const Model::Residue &	residue = *_model->getResidue( pairResidue.first );
+						QTreeWidgetItem * const residueItem
+							= chainItem->child( residue.getIndex() - chain.getIndexFirstResidue() );
 
-						if ( topAtomItemIndex.isValid() )
+						if ( topResidueItemIndex.isValid() )
 						{
 							// if not contiguous, add new range
-							if ( atom.getIndex() != uint( previousAtom->getIndex() + 1 ) )
+							if ( residue.getIndex() != uint( previousResidue->getIndex() + 1 ) )
 							{
-								selection.append( QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
-								topAtom			 = &atom;
-								topAtomItemIndex = indexFromItem( atomItem );
+								selection.append( QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
+								topResidueItemIndex = indexFromItem( residueItem );
+								topResidue			= &residue;
 							}
 
-							bottomAtomItemIndex = indexFromItem( atomItem );
+							bottomResidueItemIndex = indexFromItem( residueItem );
 						}
 						else
 						{
-							topAtomItemIndex	= indexFromItem( atomItem );
-							topAtom				= &atom;
-							bottomAtomItemIndex = indexFromItem( atomItem );
+							topResidueItemIndex	   = indexFromItem( residueItem );
+							topResidue			   = &residue;
+							bottomResidueItemIndex = indexFromItem( residueItem );
 						}
 
-						previousAtom = &atom;
+						previousResidue = &residue;
+
+						if ( !residueItem->isExpanded() )
+							continue;
+
+						const Model::Atom * topAtom				= nullptr;
+						const Model::Atom * previousAtom		= nullptr;
+						QModelIndex			topAtomItemIndex	= QModelIndex();
+						QModelIndex			bottomAtomItemIndex = QModelIndex();
+						for ( const uint & atomId : pairResidue.second )
+						{
+							const Model::Atom &		atom = *_model->getAtom( atomId );
+							QTreeWidgetItem * const atomItem
+								= residueItem->child( atomId - residue.getIndexFirstAtom() );
+
+							if ( topAtomItemIndex.isValid() )
+							{
+								// if not contiguous, add new range
+								if ( atom.getIndex() != uint( previousAtom->getIndex() + 1 ) )
+								{
+									selection.append( QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
+									topAtom			 = &atom;
+									topAtomItemIndex = indexFromItem( atomItem );
+								}
+
+								bottomAtomItemIndex = indexFromItem( atomItem );
+							}
+							else
+							{
+								topAtomItemIndex	= indexFromItem( atomItem );
+								topAtom				= &atom;
+								bottomAtomItemIndex = indexFromItem( atomItem );
+							}
+
+							previousAtom = &atom;
+						}
+						if ( topAtomItemIndex.isValid() )
+						{
+							selection.append( QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
+						}
 					}
-					if ( topAtomItemIndex.isValid() )
+
+					if ( topResidueItemIndex.isValid() )
 					{
-						selection.append( QItemSelectionRange( topAtomItemIndex, bottomAtomItemIndex ) );
+						selection.append( QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
 					}
 				}
 
-				if ( topResidueItemIndex.isValid() )
+				if ( topChainItemIndex.isValid() )
 				{
-					selection.append( QItemSelectionRange( topResidueItemIndex, bottomResidueItemIndex ) );
+					selection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
 				}
-			}
-
-			if ( topChainItemIndex.isValid() )
-			{
-				selection.append( QItemSelectionRange( topChainItemIndex, bottomChainItemIndex ) );
 			}
 		}
 

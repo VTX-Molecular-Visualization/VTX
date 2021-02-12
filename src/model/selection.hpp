@@ -122,6 +122,16 @@ namespace VTX::Model
 		bool isAtomSelected( const Atom & ) const;
 		uint getAtomSelectedCount() const;
 
+		void selectModels( const std::vector<Model::Molecule *> & p_molecules,
+						   const std::vector<Model::Chain *> &	  p_chains,
+						   const std::vector<Model::Residue *> &  p_residus,
+						   const std::vector<Model::Atom *> &	  p_atoms,
+						   const bool							  p_appendToSelection = false );
+		void unselectModels( const std::vector<Model::Molecule *> & p_molecules,
+							 const std::vector<Model::Chain *> &	p_chains,
+							 const std::vector<Model::Residue *> &	p_residus,
+							 const std::vector<Model::Atom *> &		p_atoms );
+
 		void selectRepresentation( Representation::InstantiatedRepresentation &,
 								   const bool p_appendToSelection = false );
 		void selectRepresentations( const std::vector<Representation::InstantiatedRepresentation *> &,

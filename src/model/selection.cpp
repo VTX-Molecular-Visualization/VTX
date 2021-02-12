@@ -8,6 +8,7 @@
 #include "residue.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
+#include <unordered_set>
 
 namespace VTX
 {
@@ -735,6 +736,77 @@ namespace VTX
 			{
 				p_molecule->refreshSelection( nullptr );
 			}
+		}
+
+		void Selection::selectModels( const std::vector<Model::Molecule *> & p_molecules,
+									  const std::vector<Model::Chain *> &	 p_chains,
+									  const std::vector<Model::Residue *> &	 p_residus,
+									  const std::vector<Model::Atom *> &	 p_atoms,
+									  const bool							 p_appendToSelection )
+		{
+			if ( !p_appendToSelection )
+				_clearWithoutNotify();
+
+			std::unordered_set<Model::Molecule *> moleculeSet = std::unordered_set<Model::Molecule *>();
+
+			for ( Model::Molecule * const it : p_molecules )
+			{
+				_selectMolecule( *it );
+				moleculeSet.emplace( it );
+			}
+			for ( const Model::Chain * const it : p_chains )
+			{
+				_selectChain( *it );
+				moleculeSet.emplace( it->getMoleculePtr() );
+			}
+			for ( const Model::Residue * const it : p_residus )
+			{
+				_selectResidue( *it );
+				moleculeSet.emplace( it->getMoleculePtr() );
+			}
+			for ( const Model::Atom * const it : p_atoms )
+			{
+				_selectAtom( *it );
+				moleculeSet.emplace( it->getMoleculePtr() );
+			}
+
+			for ( Model::Molecule * const it : moleculeSet )
+				it->refreshSelection( &_items[ it->getId() ] );
+
+			_notifyDataChanged();
+		}
+		void Selection::unselectModels( const std::vector<Model::Molecule *> & p_molecules,
+										const std::vector<Model::Chain *> &	   p_chains,
+										const std::vector<Model::Residue *> &  p_residus,
+										const std::vector<Model::Atom *> &	   p_atoms )
+		{
+			std::unordered_set<Model::Molecule *> moleculeSet = std::unordered_set<Model::Molecule *>();
+
+			for ( Model::Molecule * const it : p_molecules )
+			{
+				_unselectMolecule( *it );
+				moleculeSet.emplace( it );
+			}
+			for ( const Model::Chain * const it : p_chains )
+			{
+				_unselectChain( *it );
+				moleculeSet.emplace( it->getMoleculePtr() );
+			}
+			for ( const Model::Residue * const it : p_residus )
+			{
+				_unselectResidue( *it );
+				moleculeSet.emplace( it->getMoleculePtr() );
+			}
+			for ( const Model::Atom * const it : p_atoms )
+			{
+				_unselectAtom( *it );
+				moleculeSet.emplace( it->getMoleculePtr() );
+			}
+
+			for ( Model::Molecule * const it : moleculeSet )
+				it->refreshSelection( &_items[ it->getId() ] );
+
+			_notifyDataChanged();
 		}
 
 		void Selection::_selectRepresentation( Representation::InstantiatedRepresentation & p_representation )

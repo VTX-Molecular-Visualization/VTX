@@ -41,9 +41,6 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					if ( !_appendToSelection )
-						_selection.clear();
-
 					std::vector<Model::Molecule *> molecules = std::vector<Model::Molecule *>();
 					std::vector<Model::Chain *>	   chains	 = std::vector<Model::Chain *>();
 					std::vector<Model::Residue *>  residues	 = std::vector<Model::Residue *>();
@@ -75,14 +72,7 @@ namespace VTX
 						}
 					}
 
-					if ( molecules.size() > 0 )
-						_selection.selectMolecules( molecules, true );
-					if ( chains.size() > 0 )
-						_selection.selectChains( chains, true );
-					if ( residues.size() > 0 )
-						_selection.selectResidues( residues, true );
-					if ( atoms.size() > 0 )
-						_selection.selectAtoms( atoms, true );
+					_selection.selectModels( molecules, chains, residues, atoms, _appendToSelection );
 
 					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
@@ -136,14 +126,7 @@ namespace VTX
 						}
 					}
 
-					if ( molecules.size() > 0 )
-						_selection.unselectMolecules( molecules );
-					if ( chains.size() > 0 )
-						_selection.unselectChains( chains );
-					if ( residues.size() > 0 )
-						_selection.unselectResidues( residues );
-					if ( atoms.size() > 0 )
-						_selection.unselectAtoms( atoms );
+					_selection.unselectModels( molecules, chains, residues, atoms );
 
 					VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 				}
