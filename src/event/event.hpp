@@ -84,8 +84,12 @@ namespace VTX
 		// Other events.
 		struct VTXEventLog : public VTXEvent
 		{
-			VTXEventLog( const VTX_EVENT & p_event, const std::string & p_level, const std::string & p_date, const std::string & p_message ) :
-				VTXEvent( p_event ), level( p_level ), date( p_date ), message( p_message )
+			VTXEventLog( const VTX_EVENT &	 p_event,
+						 const std::string & p_level,
+						 const std::string & p_date,
+						 const std::string & p_message ) :
+				VTXEvent( p_event ),
+				level( p_level ), date( p_date ), message( p_message )
 			{
 			}
 			std::string level;

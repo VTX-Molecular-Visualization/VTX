@@ -43,15 +43,15 @@ namespace VTX
 			}
 
 		  protected:
-			std::set<int> _pressedButtons = std::set<int>();
+			std::set<int> _pressedKeys = std::set<int>();
 
-			virtual void _handleKeyDownEvent( const int & p_key ) { _pressedButtons.emplace( p_key ); }
+			virtual void _handleKeyDownEvent( const int & p_key ) { _pressedKeys.emplace( p_key ); }
+			virtual void _handleKeyUpEvent( const int & p_key ) { _pressedKeys.erase( p_key ); }
 
-			virtual void _handleKeyUpEvent( const int & p_key ) { _pressedButtons.erase( p_key ); }
+			// virtual void _handleKeyPressedEvent( const int & p_key ) { std::cout << "_handleKeyPressedEvent" <<
+			// std::endl; }
 
-			// virtual void _handleKeyPressedEvent( const int & p_key ) { std::cout << "_handleKeyPressedEvent" << std::endl; }
-
-			bool _isKeyPressed( const int & p_key ) { return _pressedButtons.find( p_key ) != _pressedButtons.end(); }
+			bool _isKeyPressed( const int & p_key ) { return _pressedKeys.find( p_key ) != _pressedKeys.end(); }
 		};
 	} // namespace Controller
 } // namespace VTX
