@@ -8,12 +8,13 @@
 #include "base_worker.hpp"
 #include "define.hpp"
 #include <QNetworkReply>
+#include <QObject>
 
 namespace VTX
 {
 	namespace Worker
 	{
-		class ApiFetcher : public Worker::BaseWorker
+		class ApiFetcher : public QObject, public Worker::BaseWorker
 		{
 			Q_OBJECT
 
@@ -32,4 +33,3 @@ namespace VTX
 	} // namespace Worker
 } // namespace VTX
 #endif
-
