@@ -242,10 +242,12 @@ namespace VTX
 
 				virtual void execute() override
 				{
+					Math::AABB aabb = _molecule.getAABB();
+					aabb.translate( _molecule.getTransform().getTranslationVector() );
 					VTXApp::get()
 						.getStateMachine()
 						.getItem<State::Visualization>( ID::State::VISUALIZATION )
-						->orientCameraController( _molecule.getAABB() );
+						->orientCameraController( aabb );
 				}
 
 			  private:
