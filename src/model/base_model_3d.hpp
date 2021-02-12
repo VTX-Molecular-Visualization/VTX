@@ -28,7 +28,7 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
-			inline const Math::AABB &		  getAABB() const { return _aabb; }
+			inline virtual const Math::AABB & getAABB() const { return _aabb; }
 			inline const B * const			  getBuffer() const { return _buffer; }
 			inline B * const				  getBuffer() { return _buffer; }
 			inline const std::vector<Vec3f> & getBufferAABBCorners() const { return _bufferAABBCorners; }
