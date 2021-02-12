@@ -44,6 +44,7 @@ namespace VTX
 
 					_openGLWidget->setSizeHint( Style::RENDER_PREFERED_SIZE );
 					setFocusPolicy( Qt::StrongFocus );
+					setFeatures( DockWidgetFeature::DockWidgetClosable );
 					setWidget( _openGLWidget );
 				}
 

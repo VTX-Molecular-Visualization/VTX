@@ -6,6 +6,7 @@
 #endif
 
 #include "base_action.hpp"
+#include "base_action_undonable.hpp"
 #include "generic/base_transformable.hpp"
 #include "vtx_app.hpp"
 

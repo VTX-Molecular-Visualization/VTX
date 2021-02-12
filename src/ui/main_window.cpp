@@ -88,7 +88,7 @@ namespace VTX::UI
 		addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _inspectorWidget, Qt::Orientation::Horizontal );
 		addDockWidget( Qt::DockWidgetArea::BottomDockWidgetArea, _consoleWidget, Qt::Orientation::Vertical );
 
-		//_sequenceWidget->hide();
+		_sequenceWidget->hide();
 		//_selectionWidget->hide();
 
 		// Create an emplacement for the widget before setting it floating to prevent warning
