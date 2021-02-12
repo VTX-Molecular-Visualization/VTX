@@ -33,6 +33,8 @@ namespace VTX
 
 			void update( const float & p_deltaTime ) override
 			{
+				BaseMouseController::update( p_deltaTime );
+
 				if ( _isOrienting )
 				{
 					_orientTime += p_deltaTime;

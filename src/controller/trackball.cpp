@@ -1,5 +1,9 @@
 #include "trackball.hpp"
+#include "action/action_manager.hpp"
+#include "action/selection.hpp"
+#include "model/selection.hpp"
 #include "object3d/scene.hpp"
+#include "selection/selection_manager.hpp"
 #include "tool/logger.hpp"
 #include "util/math.hpp"
 
@@ -25,11 +29,18 @@ namespace VTX
 
 		void Trackball::_updateInputs( const float & p_deltaTime )
 		{
+			// Deselect
+			if ( _mouseLeftClick )
+			{
+				VTX_ACTION(
+					new Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
+			}
+
 			// Wheel.
 			float deltaDistance = 0.f;
 			if ( _deltaMouseWheel != 0.f )
 			{
-				deltaDistance	 = _deltaMouseWheel * 0.1f * p_deltaTime;
+				deltaDistance	 = _deltaMouseWheel * 10.0f * p_deltaTime;
 				_deltaMouseWheel = 0;
 			}
 
