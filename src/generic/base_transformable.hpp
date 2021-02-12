@@ -14,7 +14,7 @@ namespace VTX
 		class BaseTransformable
 		{
 		  public:
-			inline const Math::Transform & getTransform() const { return _transform; };
+			inline virtual const Math::Transform & getTransform() const { return _transform; };
 
 			void rotate( const float, const Vec3f & );
 			void setScale( const float & );

@@ -63,6 +63,9 @@ namespace VTX
 
 			void print() const;
 
+			const Math::Transform & getTransform() const override;
+			const Math::AABB &		getAABB() const override;
+
 		  protected:
 			void _init() override;
 			void _fillBuffer() override;

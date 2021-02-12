@@ -46,7 +46,8 @@ namespace VTX
 					void wheelEvent( QWheelEvent * ) override;
 
 				  private:
-					CustomWidget::DockWindowMainWidget<OpenGLWidget> * const _openGLWidget = new CustomWidget::DockWindowMainWidget<OpenGLWidget>( this );
+					CustomWidget::DockWindowMainWidget<OpenGLWidget> * const _openGLWidget
+						= new CustomWidget::DockWindowMainWidget<OpenGLWidget>( this );
 				};
 			} // namespace Render
 		}	  // namespace Widget

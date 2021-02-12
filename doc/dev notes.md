@@ -18,6 +18,8 @@ Dans vtx_app.cpp, à la fin de la fonction start(), lancer une action Open ou Op
 
 Tous les Widgets héritants de BaseManualWidget doivent avoir au début de leur déclaration de classe la directive VTX_MANUAL_WIDGET_DECLARATION pour leur bon fonctionnement.
 
+On peut faire hériter une classe fille de QObject et d'une autre classe qui n'en hérite pas mais il faut que QObject soit la première classe dans la liste des classes héritées.
+
 ## Bugs à savoir (se reporter à Asana aussi)
 
 - Ne pas lancer de VTX\_EVENT dans le receive d'un autre event. Attention car VTX\_DEBUG|INFO|LOG lancent aussi un event pour logger dans la console, donc faut pas le faire. Pour afficher du debug dans la fonction receive, il faut utiliser VTX_CONSOLE (qui log dans la console Windows mais pas dans celle de VTX). C'est à cause du mutex qui deadlock.

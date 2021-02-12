@@ -8,6 +8,7 @@
 #include "setting.hpp"
 #include "stat.hpp"
 #include <QElapsedTimer>
+#include <QNetworkAccessManager>
 #include <QTimer>
 #include <QtWidgets/QApplication>
 
@@ -41,16 +42,18 @@ namespace VTX
 		void goToState( const std::string &, void * const = nullptr );
 		void renderScene() const;
 
-		inline Setting &				   getSetting() { return _setting; }
-		inline const Setting &			   getSetting() const { return _setting; }
-		inline Stat &					   getStat() { return _stat; }
-		inline const Stat &				   getStat() const { return _stat; }
-		inline Object3D::Scene &		   getScene() { return *_scene; }
-		inline const Object3D::Scene &	   getScene() const { return *_scene; }
-		inline const UI::MainWindow &	   getMainWindow() const { return *_mainWindow; }
-		inline UI::MainWindow &			   getMainWindow() { return *_mainWindow; }
-		inline State::StateMachine &	   getStateMachine() { return *_stateMachine; }
-		inline const State::StateMachine & getStateMachine() const { return *_stateMachine; }
+		inline Object3D::Scene &			 getScene() { return *_scene; }
+		inline const Object3D::Scene &		 getScene() const { return *_scene; }
+		inline const UI::MainWindow &		 getMainWindow() const { return *_mainWindow; }
+		inline UI::MainWindow &				 getMainWindow() { return *_mainWindow; }
+		inline State::StateMachine &		 getStateMachine() { return *_stateMachine; }
+		inline const State::StateMachine &	 getStateMachine() const { return *_stateMachine; }
+		inline Setting &					 getSetting() { return _setting; }
+		inline const Setting &				 getSetting() const { return _setting; }
+		inline Stat &						 getStat() { return _stat; }
+		inline const Stat &					 getStat() const { return _stat; }
+		inline QNetworkAccessManager &		 getNetworkManager() { return *_networkManager; }
+		inline const QNetworkAccessManager & getNetworkManager() const { return *_networkManager; }
 
 		bool notify( QObject * const, QEvent * const ) override;
 
@@ -59,6 +62,8 @@ namespace VTX
 		QElapsedTimer _elapsedTimer = QElapsedTimer();
 		QElapsedTimer _tickTimer	= QElapsedTimer();
 		uint		  _tickCounter	= 0u;
+
+		QNetworkAccessManager * _networkManager = nullptr;
 
 		Setting				  _setting		= Setting();
 		Stat				  _stat			= Stat();
@@ -75,8 +80,9 @@ namespace VTX
 		void _update();
 	};
 
-	inline Setting & VTX_SETTING() { return VTXApp::get().getSetting(); }
-	inline Stat &	 VTX_STAT() { return VTXApp::get().getStat(); }
+	inline Setting &			   VTX_SETTING() { return VTXApp::get().getSetting(); }
+	inline Stat &				   VTX_STAT() { return VTXApp::get().getStat(); }
+	inline QNetworkAccessManager & VTX_NETWORK_MANAGER() { return VTXApp::get().getNetworkManager(); }
 
 } // namespace VTX
 

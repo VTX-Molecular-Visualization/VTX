@@ -188,6 +188,10 @@ namespace VTX
 			_buffer->setIndices( _buffferIndices );
 		}
 
+		const Math::AABB & SecondaryStructure::getAABB() const { return _molecule->getAABB(); }
+
+		const Math::Transform & SecondaryStructure::getTransform() const { return _molecule->getTransform(); };
+
 		void SecondaryStructure::_computeAABB() {}
 
 		void SecondaryStructure::_instantiate3DViews()
