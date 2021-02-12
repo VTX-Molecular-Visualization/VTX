@@ -56,9 +56,11 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void TransformWidget::_refresh()
 	{
+		blockSignals( true );
 		_positionWidget->setData( _transform.getTranslationVector() );
 		_rotationWidget->setData( _transform.getEulerAngles() );
 		_scaleWidget->setData( _transform.getScaleVector() );
+		blockSignals( false );
 	}
 
 	void TransformWidget::localize() {};
