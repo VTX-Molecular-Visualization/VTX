@@ -42,7 +42,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void FloatFieldWidget::_onTextFieldEdited()
 	{
-		const uint newValue = _textField->text().toInt();
+		const float newValue = _textField->text().toFloat();
 		if ( newValue != _value )
 		{
 			setValue( newValue );

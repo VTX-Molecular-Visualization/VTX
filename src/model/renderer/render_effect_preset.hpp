@@ -53,6 +53,21 @@ namespace VTX::Model::Renderer
 		Color::Rgb getFogColor() const { return _fogColor; };
 		void	   setFogColor( const Color::Rgb & p_fogColor );
 
+		Color::Rgb getBackgroundColor() const { return _backgroundColor; };
+		void	   setBackgroundColor( const Color::Rgb & p_backgroundColor );
+		Color::Rgb getCameraLightColor() const { return _cameraLightColor; };
+		void	   setCameraLightColor( const Color::Rgb & p_cameraLightColor );
+		float	   getCameraFOV() const { return _cameraFOV; };
+		void	   setCameraFOV( const float p_cameraFOV );
+		float	   getCameraNearClip() const { return _cameraNearClip; };
+		void	   setCameraNearClip( const float p_cameraNearClip );
+		float	   getCameraFarClip() const { return _cameraFarClip; };
+		void	   setCameraFarClip( const float p_cameraFarClip );
+		float	   getAA() const { return _antiAliasing; };
+		void	   setAA( const float p_antiAliasing );
+		bool	   isPerspectiveProjection() const { return _perspectiveProjection; };
+		void	   setPerspectiveProjection( const bool p_perspectiveProjection );
+
 		void apply() const;
 
 	  protected:
@@ -71,7 +86,7 @@ namespace VTX::Model::Renderer
 		int	 _ssaoIntensity;
 		int	 _ssaoBlurSize;
 
-		bool  _outline;
+		bool	   _outline;
 		float	   _outlineThickness;
 		Color::Rgb _outlineColor;
 
@@ -80,6 +95,14 @@ namespace VTX::Model::Renderer
 		float	   _fogFar;
 		float	   _fogDensity;
 		Color::Rgb _fogColor;
+
+		Color::Rgb _backgroundColor;
+		Color::Rgb _cameraLightColor;
+		float	   _cameraFOV;
+		float	   _cameraNearClip;
+		float	   _cameraFarClip;
+		bool	   _antiAliasing;
+		bool	   _perspectiveProjection;
 	};
 
 } // namespace VTX::Model::Renderer

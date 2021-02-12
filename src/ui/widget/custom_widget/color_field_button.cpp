@@ -24,19 +24,26 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		connect( this, &QPushButton::clicked, this, &ColorFieldButton::_onClickButton );
 		connect( _colorDialog,
-				 QOverload<const QColor &>::of( &QColorDialog::colorSelected ),
+				 QOverload<const QColor &>::of( &QColorDialog::currentColorChanged ),
 				 this,
 				 &ColorFieldButton::_onColorChanged );
+		connect( _colorDialog, &QColorDialog::rejected, this, &ColorFieldButton::_onCanceled );
 	}
 
 	void ColorFieldButton::_onClickButton()
 	{
+		_colorOnDialogOpen = _color;
 		_colorDialog->setCurrentColor( _getQColorFromRgbColor( _color ) );
 		_colorDialog->open();
 	}
 	void ColorFieldButton::_onColorChanged( const QColor & p_color )
 	{
 		setColor( _getRgbColorFromQColor( p_color ) );
+		emit onValueChange( _color );
+	}
+	void ColorFieldButton::_onCanceled()
+	{
+		setColor( _colorOnDialogOpen );
 		emit onValueChange( _color );
 	}
 
@@ -46,7 +53,9 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void ColorFieldButton::setEnabled( const bool p_enable )
 	{
-		_colorDialog->close();
+		if ( !p_enable && _colorDialog->isVisible() )
+			_colorDialog->reject();
+
 		QPushButton::setEnabled( p_enable );
 	}
 
