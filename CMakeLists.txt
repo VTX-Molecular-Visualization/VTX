@@ -132,7 +132,6 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 # Set link directories.
 link_directories(${PATH_LIB}/assimp/lib/x64)
 link_directories(${PATH_LIB}/chemfiles/lib/x64)
-link_directories(${PATH_LIB}/StackWalker/lib/x64)
 
 # Declare executable with source files.
 add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESOURCES})
@@ -151,7 +150,6 @@ target_include_directories(VTX PRIVATE ${PATH_LIB_SRC})
 target_include_directories(VTX PRIVATE ${PATH_LIB}/msgpack)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/assimp/include)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/chemfiles/include)
-target_include_directories(VTX PRIVATE ${PATH_LIB}/StackWalker/include)
 
 # Link libs.
 target_link_libraries(VTX PRIVATE assimp-vc142-mt)
@@ -159,7 +157,6 @@ target_link_libraries(VTX PRIVATE IrrXML)
 target_link_libraries(VTX PRIVATE zlib)
 target_link_libraries(VTX PRIVATE zlibstatic)
 target_link_libraries(VTX PRIVATE chemfiles)
-target_link_libraries(VTX PRIVATE StackWalker)
 target_link_libraries(VTX PRIVATE Qt5::Core)
 target_link_libraries(VTX PRIVATE Qt5::Gui)
 target_link_libraries(VTX PRIVATE Qt5::Widgets)
