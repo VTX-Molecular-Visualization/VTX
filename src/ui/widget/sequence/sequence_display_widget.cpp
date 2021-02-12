@@ -1,4 +1,6 @@
 #include "sequence_display_widget.hpp"
+#include "action/action_manager.hpp"
+#include "action/residue.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "model/selection.hpp"
@@ -39,9 +41,9 @@ namespace VTX::UI::Widget::Sequence
 	void SequenceDisplayWidget::mouseDoubleClickEvent( QMouseEvent * p_event )
 	{
 		const Model::Residue * const residue = _getResidueFromLocaleXPos( p_event->localPos().x() );
+		VTX_ACTION(new VTX::Action::Residue::Orient(*residue));
+	
 		p_event->accept();
-
-		VTX_INFO( "float click on " + residue->getSymbolName() );
 	}
 
 	Model::Residue * const SequenceDisplayWidget::getResidueAtPos( const QPoint & p_pos )
