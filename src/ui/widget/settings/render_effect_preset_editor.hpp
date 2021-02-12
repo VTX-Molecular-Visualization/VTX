@@ -51,7 +51,7 @@ namespace VTX::UI::Widget::Settings
 		int														  _itemCount		 = 0;
 		Model::Renderer::RenderEffectPreset *					  _preset			 = nullptr;
 		VTX::View::UI::Widget::Renderer::RenderEffectPresetView * _currentPresetView = nullptr;
-		bool													  _updateRender	 = true;
+		bool													  _updateRender		 = true;
 
 		QGridLayout * _layout = nullptr;
 
@@ -73,6 +73,14 @@ namespace VTX::UI::Widget::Settings
 		FloatFieldWidget * _fogDensity = nullptr;
 		ColorFieldButton * _fogColor   = nullptr;
 
+		ColorFieldButton * _backgroundColor	 = nullptr;
+		ColorFieldButton * _cameraLightColor = nullptr;
+		FloatFieldWidget * _cameraFOV		 = nullptr;
+		QSpinBox *		   _cameraNear		 = nullptr;
+		QSpinBox *		   _cameraFar		 = nullptr;
+		QCheckBox *		   _antialiasing	 = nullptr;
+		QCheckBox *		   _perspective		 = nullptr;
+
 		void _addItem( QWidget * const p_widget, const QString & p_label );
 		void _addSpace();
 
@@ -93,6 +101,14 @@ namespace VTX::UI::Widget::Settings
 		void _onFogFarChanged();
 		void _onFogDensityChanged( const float p_value );
 		void _onFogColorChanged( const Color::Rgb & p_color );
+
+		void _onBackgroundColorChanged( const Color::Rgb & p_color );
+		void _onCameraLightColorChanged( const Color::Rgb & p_color );
+		void _onCameraFOVChanged( const float p_value );
+		void _onCameraNearChanged( const float p_value );
+		void _onCameraFarChanged( const float p_value );
+		void _onAntialiasingChanged( const int p_state );
+		void _onPerspectiveChanged( const int p_state );
 	};
 
 } // namespace VTX::UI::Widget::Settings

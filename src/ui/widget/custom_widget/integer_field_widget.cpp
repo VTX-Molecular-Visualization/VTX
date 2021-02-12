@@ -39,7 +39,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void IntegerFieldWidget::_onTextFieldEdited()
 	{
-		const uint newValue = _textField->text().toInt();
+		const int newValue = _textField->text().toInt();
 		if ( newValue != _value )
 		{
 			setValue( newValue );

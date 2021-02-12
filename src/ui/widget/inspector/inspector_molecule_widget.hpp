@@ -12,47 +12,38 @@
 #include "ui/widget/view_item_widget.hpp"
 #include <QWidget>
 
-namespace VTX
+namespace VTX::UI::Widget::Inspector
 {
-	namespace UI
+	class InspectorMoleculeWidget : public ViewItemWidget<Model::Molecule>
 	{
-		namespace Widget
-		{
-			namespace Inspector
-			{
-				class InspectorMoleculeWidget : public ViewItemWidget<Model::Molecule>
-				{
-					VTX_WIDGET
+		VTX_WIDGET
 
-				  public:
-					~InspectorMoleculeWidget();
-					void refresh() override;
-					void localize() override;
+	  public:
+		~InspectorMoleculeWidget();
+		void refresh() override;
+		void localize() override;
 
-				  protected:
-					InspectorMoleculeWidget( QWidget * p_parent ) : ViewItemWidget( p_parent ) {};
+	  protected:
+		InspectorMoleculeWidget( QWidget * p_parent ) : ViewItemWidget( p_parent ) {};
 
-					void		 _setupUi( const QString & p_name ) override;
-					virtual void _setupSlots() override;
+		void		 _setupUi( const QString & p_name ) override;
+		virtual void _setupSlots() override;
 
-				  private:
-					CustomWidget::CollapsingHeaderWidget * _mainWidget		 = nullptr;
-					InspectorSection *					   _infoSection		 = nullptr;
-					InspectorSection *					   _transformSection = nullptr;
+	  private:
+		CustomWidget::CollapsingHeaderWidget * _mainWidget		 = nullptr;
+		InspectorSection *					   _infoSection		 = nullptr;
+		InspectorSection *					   _transformSection = nullptr;
 
-					CustomWidget::TransformWidget * _transformWidget = nullptr;
-					QLabel *						_fullnameLabel	 = nullptr;
-					QLabel *						_nbChainsLabel	 = nullptr;
-					QLabel *						_nbResiduesLabel = nullptr;
-					QLabel *						_nbAtomsLabel	 = nullptr;
+		CustomWidget::TransformWidget * _transformWidget = nullptr;
+		QLabel *						_fullnameLabel	 = nullptr;
+		QLabel *						_nbChainsLabel	 = nullptr;
+		QLabel *						_nbResiduesLabel = nullptr;
+		QLabel *						_nbAtomsLabel	 = nullptr;
 
-					void _onTransformChange( const Math::Transform & );
-					void setModelEnableFromCheckBox( const int );
-				};
+		void _onTransformChange( const Math::Transform & );
+		void setModelEnableFromCheckBox( const int );
+	};
 
-			} // namespace Inspector
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+} // namespace VTX::UI::Widget::Inspector
 
 #endif

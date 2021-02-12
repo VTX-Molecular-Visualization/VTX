@@ -46,11 +46,14 @@ namespace VTX::UI::Widget::CustomWidget
 		QImage		   _colorImage;
 
 		Color::Rgb _color;
+		Color::Rgb _colorOnDialogOpen;
 
 		void _fillImageWithColor( const Color::Rgb & p_color );
 
-		void	   _onClickButton();
-		void	   _onColorChanged( const QColor & p_color );
+		void _onClickButton();
+		void _onColorChanged( const QColor & p_color );
+		void _onCanceled();
+
 		Color::Rgb _getRgbColorFromQColor( const QColor & p_color ) const;
 		QColor	   _getQColorFromRgbColor( const Color::Rgb & p_color ) const;
 	};

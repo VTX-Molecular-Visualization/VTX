@@ -8,6 +8,7 @@
 #include "base_action.hpp"
 #include "base_action_undonable.hpp"
 #include "generic/base_transformable.hpp"
+#include "math/transform.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -92,6 +93,34 @@ namespace VTX
 				Generic::BaseTransformable & _transformable;
 				const Vec3f					 _translation;
 				const Mat4f					 _translationOld;
+			};
+
+			class ApplyTransform : public BaseActionUndonable
+			{
+			  public:
+				explicit ApplyTransform( Generic::BaseTransformable & p_transformable,
+										 const Math::Transform &	  p_transform ) :
+					_transformable( p_transformable ),
+					_transform( p_transform ), _transformOld( p_transformable.getTransform() )
+				{
+				}
+
+				virtual void execute() override
+				{
+					_transformable.applyTransform( _transform );
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+				}
+
+				virtual void undo() override
+				{
+					_transformable.applyTransform( _transformOld );
+					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+				}
+
+			  private:
+				Generic::BaseTransformable & _transformable;
+				const Math::Transform		 _transform;
+				const Math::Transform		 _transformOld;
 			};
 		} // namespace Transformable
 	}	  // namespace Action
