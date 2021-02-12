@@ -13,6 +13,7 @@
 #include "io/reader/psf.hpp"
 #include "math/aabb.hpp"
 #include "model/configuration/molecule.hpp"
+#include "model/selection.hpp"
 #include "representation/instantiated_representation.hpp"
 #include "representation/representation_target.hpp"
 #include <iostream>
@@ -65,7 +66,9 @@ namespace VTX
 			inline Chain * const				getChain( const uint p_idx ) { return _chains[ p_idx ]; }
 			inline const Chain * const			getChain( const uint p_idx ) const { return _chains[ p_idx ]; }
 			const Chain * const					getPreviousChain( const uint p_idBaseChain ) const;
+			Chain * const						getPreviousChain( const uint p_idBaseChain );
 			const Chain * const					getNextChain( const uint p_idBaseChain ) const;
+			Chain * const						getNextChain( const uint p_idBaseChain );
 			inline std::vector<Chain *> &		getChains() { return _chains; }
 			inline const std::vector<Chain *> & getChains() const { return _chains; }
 			void								removeChain( const uint p_id,
@@ -76,6 +79,10 @@ namespace VTX
 			Residue &							  addResidue();
 			inline Residue * const				  getResidue( const uint p_idx ) { return _residues[ p_idx ]; }
 			inline const Residue * const		  getResidue( const uint p_idx ) const { return _residues[ p_idx ]; }
+			const Residue * const				  getPreviousResidue( const uint p_idBaseResidue ) const;
+			Residue * const						  getPreviousResidue( const uint p_idBaseResidue );
+			const Residue * const				  getNextResidue( const uint p_idBaseResidue ) const;
+			Residue * const						  getNextResidue( const uint p_idBaseResidue );
 			inline std::vector<Residue *> &		  getResidues() { return _residues; }
 			inline const std::vector<Residue *> & getResidues() const { return _residues; }
 			void								  removeResidue( const uint p_id,
@@ -179,7 +186,7 @@ namespace VTX
 				refreshColors();
 			}
 			inline void refreshColors() { _fillBufferAtomColors(); }
-			void		refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const );
+			void		refreshSelection( const Selection::MapChainIds * const );
 			void		refreshBondsBuffer();
 
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
@@ -216,6 +223,8 @@ namespace VTX
 			bool mergeTopology( const Molecule & );
 
 			void createSecondaryStructure();
+
+			void propagateEventToViews( const Event::VTXEvent * const p_event ) { _notifyViews( p_event ); }
 
 		  protected:
 			void _init() override;
@@ -274,7 +283,7 @@ namespace VTX
 
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();
-			void _fillBufferAtomSelections( const std::map<uint, std::map<uint, std::vector<uint>>> * const = nullptr );
+			void _fillBufferAtomSelections( const Selection::MapChainIds * const = nullptr );
 
 #ifdef _DEBUG
 		  public:

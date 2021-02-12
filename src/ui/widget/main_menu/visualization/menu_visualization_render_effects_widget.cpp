@@ -1,79 +1,71 @@
 #include "menu_visualization_render_effects_widget.hpp"
 #include "action/main.hpp"
+#include "model/renderer/render_effect_preset.hpp"
+#include "model/renderer/render_effect_preset_library.hpp"
+#include "ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/filesystem.hpp"
+#include "vtx_app.hpp"
 #include "worker/snapshoter.hpp"
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu::Visualization
 {
-	namespace UI
+	MenuVisualizationRenderEffectsWidget::~MenuVisualizationRenderEffectsWidget() {}
+
+	void MenuVisualizationRenderEffectsWidget::_setupUi( const QString & p_name )
 	{
-		namespace Widget
+		MenuToolBlockWidget::_setupUi( p_name );
+
+		_presetButtons.clear();
+
+		for ( int i = 0; i < Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount(); i++ )
 		{
-			namespace MainMenu
-			{
-				namespace Visualization
-				{
-					MenuVisualizationRenderEffectsWidget::~MenuVisualizationRenderEffectsWidget() {}
+			const Model::Renderer::RenderEffectPreset * const renderEffectPreset
+				= Model::Renderer::RenderEffectPresetLibrary::get().getPreset( i );
 
-					void MenuVisualizationRenderEffectsWidget::_setupUi( const QString & p_name )
-					{
-						MenuToolBlockWidget::_setupUi( p_name );
+			RenderEffectPresetButton * const button = WidgetFactory::get().instantiateWidget<RenderEffectPresetButton>(
+				this, "applyRenderEffectPresetButton" );
 
-						// Predefined presets
-						_predefinedPreset1 = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "applyRenderPresetButton" );
-						_predefinedPreset1->setData( "Preset 1", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
-						pushButton( *_predefinedPreset1, 0 );
+			button->setRenderEffectID( i );
+			button->setData( QString::fromStdString( renderEffectPreset->getName() ),
+							 QString::fromStdString( renderEffectPreset->getIconPath() ),
+							 Qt::Orientation::Horizontal );
+			pushButton( *button, i / 3 );
+			_presetButtons.emplace_back( button );
+		}
 
-						_predefinedPreset2 = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "applyRenderPresetButton" );
-						_predefinedPreset2->setData( "Preset 2", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
-						pushButton( *_predefinedPreset2, 0 );
+		// Add Preset
+		_createPreset
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "createRenderPresetButton" );
+		_createPreset->setData( "Preset\nSettings", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
+		pushButtonInNextColumn( *_createPreset );
 
-						_predefinedPreset3 = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "applyRenderPresetButton" );
-						_predefinedPreset3->setData( "Preset 3", ":/sprite/new_session_icon.png", Qt::Orientation::Horizontal );
-						pushButton( *_predefinedPreset3, 0 );
+		// Fullscreen / snapshot
+		_fullscreen = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleFullscreenButton" );
+		_fullscreen->setData( "Fullscreen", ":/sprite/fullscreen_icon.png", Qt::Orientation::Horizontal );
+		const int lastColumn = pushButtonInNextColumn( *_fullscreen );
 
-						// Custom presets
-						_customPreset1 = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "applyRenderPresetButton" );
-						_customPreset1->setData( "Custom Preset 1", "", Qt::Orientation::Horizontal );
-						pushButton( *_customPreset1, 1 );
+		_takeSnapshot = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "takeSnapshotButton" );
+		_takeSnapshot->setData( "Snapshot", ":/sprite/screenshot_icon.png", Qt::Orientation::Horizontal );
+		pushButton( *_takeSnapshot, lastColumn );
 
-						_customPreset2 = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "applyRenderPresetButton" );
-						_customPreset2->setData( "Custom Preset 2", "", Qt::Orientation::Horizontal );
-						pushButton( *_customPreset2, 1 );
+		validate();
+	}
+	void MenuVisualizationRenderEffectsWidget::_setupSlots()
+	{
+		_createPreset->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_openPresetSettings );
+		_takeSnapshot->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_takeSnapshotAction );
+	}
+	void MenuVisualizationRenderEffectsWidget::localize() { setTitle( "Render Effects" ); }
 
-						_customPreset3 = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "applyRenderPresetButton" );
-						_customPreset3->setData( "Custom Preset 3", "", Qt::Orientation::Horizontal );
-						pushButton( *_customPreset3, 1 );
+	void MenuVisualizationRenderEffectsWidget::_takeSnapshotAction() const
+	{
+		VTX_ACTION( new Action::Main::Snapshot(
+			Worker::Snapshoter::MODE::GL, Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) ) );
+	}
+	void MenuVisualizationRenderEffectsWidget::_openPresetSettings() const
+	{
+		VTXApp::get().getMainWindow().openSettingWindow( UI::Widget::Settings::SETTING_MENU::RENDER_EFFECTS );
+	}
 
-						// Add Preset
-						_createPreset = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "createRenderPresetButton" );
-						_createPreset->setData( "Add\nPreset", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
-						pushButton( *_createPreset, 2 );
-
-						// Fullscreen / snapshot
-						_fullscreen = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleFullscreenButton" );
-						_fullscreen->setData( "Fullscreen", ":/sprite/fullscreen_icon.png", Qt::Orientation::Horizontal );
-						pushButton( *_fullscreen, 3 );
-
-						_takeSnapshot = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "takeSnapshotButton" );
-						_takeSnapshot->setData( "Snapshot", ":/sprite/screenshot_icon.png", Qt::Orientation::Horizontal );
-						pushButton( *_takeSnapshot, 3 );
-
-						validate();
-					}
-					void MenuVisualizationRenderEffectsWidget::_setupSlots()
-					{
-						_takeSnapshot->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_takeSnapshotAction );
-					}
-					void MenuVisualizationRenderEffectsWidget::localize() { setTitle( "Render Effects" ); }
-
-					void MenuVisualizationRenderEffectsWidget::_takeSnapshotAction() const
-					{
-						VTX_ACTION( new Action::Main::Snapshot( Worker::Snapshoter::MODE::GL, Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) ) );
-					}
-				} // namespace Visualization
-			}	  // namespace MainMenu
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+} // namespace VTX::UI::Widget::MainMenu::Visualization

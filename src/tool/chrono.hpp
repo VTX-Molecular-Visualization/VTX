@@ -6,6 +6,7 @@
 #endif
 
 #include <chrono>
+#include <string>
 
 namespace VTX
 {
@@ -17,9 +18,10 @@ namespace VTX
 			using Duration = std::chrono::duration<float>;
 
 		  public:
-			void   start() { begin = Clock::now(); }
-			void   stop() { end = Clock::now(); }
-			float elapsedTime() const { return ( std::chrono::duration_cast<Duration>( end - begin ) ).count(); }
+			void		start() { begin = Clock::now(); }
+			void		stop() { end = Clock::now(); }
+			float		elapsedTime() const { return ( std::chrono::duration_cast<Duration>( end - begin ) ).count(); }
+			std::string elapsedTimeStr() const { return std::to_string( elapsedTime() ); }
 
 		  private:
 			Clock::time_point begin;

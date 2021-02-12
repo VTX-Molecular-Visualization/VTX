@@ -6,10 +6,10 @@
 #endif
 
 #include "color/rgb.hpp"
+#include "color_field_button.hpp"
 #include "generic/base_colorable.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QBoxLayout>
-#include <QColorDialog>
 #include <QComboBox>
 #include <QHBoxLayout>
 #include <QPushButton>
@@ -51,7 +51,7 @@ namespace VTX
 					void _setupSlots() override;
 
 					void _colorModeChange( int index );
-					void _openColorDialog();
+					void _applyColor( const Color::Rgb & p_color );
 
 				  private:
 					Generic::COLOR_MODE _colorMode;
@@ -59,9 +59,8 @@ namespace VTX
 
 					QHBoxLayout * _layout;
 
-					QPushButton *  _colorSetButton;
-					QComboBox *	   _colorModeComboBox;
-					QColorDialog * _colorDialog;
+					ColorFieldButton * _colorSetButton;
+					QComboBox *		   _colorModeComboBox;
 				};
 			} // namespace CustomWidget
 		}	  // namespace Widget

@@ -31,7 +31,10 @@ namespace VTX
 						void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 					  protected:
-						MenuVisualizationCameraActionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) { _registerEvent( Event::Global::CONTROLLER_CHANGE ); };
+						MenuVisualizationCameraActionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
+						{
+							_registerEvent( Event::Global::CONTROLLER_CHANGE );
+						};
 						void _setupUi( const QString & p_name ) override;
 						void _setupSlots() override;
 
@@ -52,6 +55,8 @@ namespace VTX
 						void _updateCameraModeFeedback();
 
 						void _recenterCamera() const;
+						void _focusCamera() const;
+						void _orientCamera() const;
 						void _setTrackballController() const;
 						void _setFreeflyController() const;
 						void _setVesselController() const;

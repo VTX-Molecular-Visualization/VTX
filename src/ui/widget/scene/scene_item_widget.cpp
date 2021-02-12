@@ -21,7 +21,8 @@ namespace VTX
 					setUniformRowHeights( true );
 					setHeaderHidden( true );
 					setColumnCount( 1 );
-					setSelectionMode( QAbstractItemView::MultiSelection );
+					setSelectionMode( QAbstractItemView::ExtendedSelection );
+					setSelectionBehavior( SelectionBehavior::SelectRows );
 
 					setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustToContents );
 					setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
@@ -71,6 +72,9 @@ namespace VTX
 					BaseManualWidget::mouseMoveEvent( p_event );
 
 					if ( !( p_event->buttons() & Qt::LeftButton ) )
+						return;
+
+					if ( !_canDragObjectAtPos( _dragStartPosition ) )
 						return;
 
 					if ( ( p_event->pos() - _dragStartPosition ).manhattanLength() < QApplication::startDragDistance() )

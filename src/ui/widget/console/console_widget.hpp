@@ -10,33 +10,25 @@
 #include <QDockWidget>
 #include <QListWidget>
 
-namespace VTX
+namespace VTX::UI::Widget::Console
 {
-	namespace UI
+	class ConsoleWidget : public BaseManualWidget<QDockWidget>
 	{
-		namespace Widget
-		{
-			namespace Console
-			{
-				class ConsoleWidget : public BaseManualWidget<QDockWidget>
-				{
-					VTX_WIDGET
+		VTX_WIDGET
 
-				  public:
-					~ConsoleWidget();
-					void receiveEvent( const Event::VTXEvent & p_event ) override;
+	  public:
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-				  protected:
-					ConsoleWidget( QWidget * );
-					void _setupUi( const QString & p_name ) override;
-					void _setupSlots() override;
-					void localize() override;
+	  protected:
+		ConsoleWidget( QWidget * );
+		~ConsoleWidget() = default;
 
-				  private:
-					CustomWidget::DockWindowMainWidget<QListWidget> * _listWidget = nullptr;
-				};
-			} // namespace Console
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
+		void localize() override;
+
+	  private:
+		CustomWidget::DockWindowMainWidget<QListWidget> * _listWidget = nullptr;
+	};
+} // namespace VTX::UI::Widget::Console
 #endif

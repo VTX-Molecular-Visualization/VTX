@@ -10,36 +10,24 @@
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu::Visualization
 {
-	namespace UI
+	class MenuVisualizationRepresentationWidget : public MenuToolBlockWidget
 	{
-		namespace Widget
-		{
-			namespace MainMenu
-			{
-				namespace Visualization
-				{
-					class MenuVisualizationRepresentationWidget : public MenuToolBlockWidget
-					{
-						VTX_WIDGET
+		VTX_WIDGET
 
-					  public:
-						~MenuVisualizationRepresentationWidget();
-						void localize() override;
+	  public:
+		~MenuVisualizationRepresentationWidget();
+		void localize() override;
 
-					  protected:
-						MenuVisualizationRepresentationWidget( QWidget * p_parent );
-						void _setupUi( const QString & p_name ) override;
-						void _setupSlots() override;
+	  protected:
+		MenuVisualizationRepresentationWidget( QWidget * p_parent );
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 
-					  private:
-						std::vector<RepresentationPresetButton *> _buttons	 = std::vector<RepresentationPresetButton *>();
-						MenuToolButtonWidget *					  _addPreset = nullptr;
-					};
-				} // namespace Visualization
-			}	  // namespace MainMenu
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+	  private:
+		std::vector<RepresentationPresetButton *> _buttons	 = std::vector<RepresentationPresetButton *>();
+		MenuToolButtonWidget *					  _addPreset = nullptr;
+	};
+} // namespace VTX::UI::Widget::MainMenu::Visualization
 #endif

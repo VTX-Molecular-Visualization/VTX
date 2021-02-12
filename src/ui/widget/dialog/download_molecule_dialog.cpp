@@ -38,6 +38,8 @@ namespace VTX
 						Qt::Orientation::Horizontal,
 						this );
 					verticalLayout->addWidget( _dialogButtons );
+
+					_fileLineEdit->setFocus();
 				}
 
 				void DownloadMoleculeDialog::_setupSlots()

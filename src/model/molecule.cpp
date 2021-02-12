@@ -68,21 +68,6 @@ namespace VTX
 			return *bond;
 		}
 
-		const Chain * const Molecule::getPreviousChain( const uint p_idBaseChain ) const
-		{
-			for ( int i = p_idBaseChain - 1; i >= 0; i++ )
-				if ( _chains[ i ] != nullptr )
-					return _chains[ i ];
-			return nullptr;
-		}
-		const Chain * const Molecule::getNextChain( const uint p_idBaseChain ) const
-		{
-			for ( int i = p_idBaseChain + 1; i < _chains.size(); i++ )
-				if ( _chains[ i ] != nullptr )
-					return _chains[ i ];
-			return nullptr;
-		}
-
 		void Molecule::_init()
 		{
 			// Fill buffers.
@@ -254,7 +239,7 @@ namespace VTX
 			_buffer->setAtomSelections( _bufferAtomSelection );
 		}
 
-		void Molecule::refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection )
+		void Molecule::refreshSelection( const Model::Selection::MapChainIds * const p_selection )
 		{
 			_fillBufferAtomSelections( p_selection );
 			_secondaryStructure->refreshSelection( p_selection );
@@ -425,6 +410,80 @@ namespace VTX
 				BaseVisible::setVisible( p_visible );
 				_notifyViews( new Event::VTXEvent( Event::Model::MOLECULE_VISIBILITY ) );
 			}
+		}
+
+		const Chain * const Molecule::getPreviousChain( const uint p_idBaseChain ) const
+		{
+			if ( p_idBaseChain == 0 )
+				return nullptr;
+
+			for ( uint i = p_idBaseChain - 1; i > 0; i-- )
+				if ( _chains[ i ] != nullptr )
+					return _chains[ i ];
+
+			return _chains[ 0 ];
+		}
+		Chain * const Molecule::getPreviousChain( const uint p_idBaseChain )
+		{
+			if ( p_idBaseChain == 0 )
+				return nullptr;
+
+			for ( uint i = p_idBaseChain - 1; i > 0; i-- )
+				if ( _chains[ i ] != nullptr )
+					return _chains[ i ];
+
+			return _chains[ 0 ];
+		}
+		const Chain * const Molecule::getNextChain( const uint p_idBaseChain ) const
+		{
+			for ( uint i = p_idBaseChain + 1; i < _chains.size(); i++ )
+				if ( _chains[ i ] != nullptr )
+					return _chains[ i ];
+			return nullptr;
+		}
+		Chain * const Molecule::getNextChain( const uint p_idBaseChain )
+		{
+			for ( uint i = p_idBaseChain + 1; i < _chains.size(); i++ )
+				if ( _chains[ i ] != nullptr )
+					return _chains[ i ];
+			return nullptr;
+		}
+
+		const Residue * const Molecule::getPreviousResidue( const uint p_idBaseResidue ) const
+		{
+			if ( p_idBaseResidue == 0 )
+				return nullptr;
+
+			for ( uint i = p_idBaseResidue - 1; i > 0; i-- )
+				if ( _residues[ i ] != nullptr )
+					return _residues[ i ];
+
+			return _residues[ 0 ];
+		}
+		Residue * const Molecule::getPreviousResidue( const uint p_idBaseResidue )
+		{
+			if ( p_idBaseResidue == 0 )
+				return nullptr;
+
+			for ( uint i = p_idBaseResidue - 1; i > 0; i-- )
+				if ( _residues[ i ] != nullptr )
+					return _residues[ i ];
+
+			return _residues[ 0 ];
+		}
+		const Residue * const Molecule::getNextResidue( const uint p_idBaseResidue ) const
+		{
+			for ( uint i = p_idBaseResidue + 1; i < _residues.size(); i++ )
+				if ( _residues[ i ] != nullptr )
+					return _residues[ i ];
+			return nullptr;
+		}
+		Residue * const Molecule::getNextResidue( const uint p_idBaseResidue )
+		{
+			for ( uint i = p_idBaseResidue + 1; i < _residues.size(); i++ )
+				if ( _residues[ i ] != nullptr )
+					return _residues[ i ];
+			return nullptr;
 		}
 
 		void Molecule::removeChain( const uint p_id,

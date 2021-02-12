@@ -27,7 +27,7 @@ namespace VTX
 						if ( _sizeHintOverrided )
 							return _sizeHint;
 						else
-							return sizeHint();
+							return W::sizeHint();
 					};
 
 					inline void setSizeHint( const QSize & p_sizeHint )

@@ -47,6 +47,15 @@ namespace VTX
 					_fullnameLabel = new QLabel( this );
 					_fullnameLabel->setWordWrap( true );
 					_infoSection->appendField( "Full Name", _fullnameLabel );
+
+					_nbChainsLabel = new QLabel( this );
+					_nbChainsLabel->setWordWrap( true );
+					_infoSection->appendField( "Nb Chains", _nbChainsLabel );
+
+					_nbResiduesLabel = new QLabel( this );
+					_nbResiduesLabel->setWordWrap( true );
+					_infoSection->appendField( "Nb Residues", _nbResiduesLabel );
+
 					_nbAtomsLabel = new QLabel( this );
 					_nbAtomsLabel->setWordWrap( true );
 					_infoSection->appendField( "Nb Atoms", _nbAtomsLabel );
@@ -79,6 +88,8 @@ namespace VTX
 					_transformWidget->setData( _model->getTransform() );
 
 					_fullnameLabel->setText( QString::fromStdString( _model->getName() ) );
+					_nbChainsLabel->setText( QString::fromStdString( std::to_string( _model->getChainCount() ) ) );
+					_nbResiduesLabel->setText( QString::fromStdString( std::to_string( _model->getResidueCount() ) ) );
 					_nbAtomsLabel->setText( QString::fromStdString( std::to_string( _model->getAtomCount() ) ) );
 				}
 

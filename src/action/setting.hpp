@@ -9,6 +9,8 @@
 #include "io/reader/setting.hpp"
 #include "io/writer/setting.hpp"
 #include "model/molecule.hpp"
+#include "object3d/scene.hpp"
+#include "renderer/base_renderer.hpp"
 #include "renderer/gl/gl.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
@@ -185,7 +187,7 @@ namespace VTX
 			class ChangeShading : public BaseAction
 			{
 			  public:
-				ChangeShading( const Renderer::SHADING p_shading ) : _shading( p_shading ) {}
+				ChangeShading( const VTX::Renderer::SHADING p_shading ) : _shading( p_shading ) {}
 
 				virtual void execute() override
 				{
@@ -197,7 +199,7 @@ namespace VTX
 				virtual void displayUsage() override { VTX_INFO( "DIFFUSE|GLOSSY|TOON|FLAT_COLOR" ); }
 
 			  private:
-				const Renderer::SHADING _shading;
+				const VTX::Renderer::SHADING _shading;
 			};
 
 			class ActiveVerticalSync : public BaseAction
@@ -534,7 +536,7 @@ namespace VTX
 			class ChangeRenderMode : public BaseAction
 			{
 			  public:
-				ChangeRenderMode( const Renderer::MODE p_mode ) : _mode( p_mode ) {}
+				ChangeRenderMode( const VTX::Renderer::MODE p_mode ) : _mode( p_mode ) {}
 
 				virtual void execute() override
 				{
@@ -544,9 +546,10 @@ namespace VTX
 				};
 
 			  private:
-				const Renderer::MODE _mode;
+				const VTX::Renderer::MODE _mode;
 			};
 		} // namespace Setting
 	}	  // namespace Action
 } // namespace VTX
+
 #endif

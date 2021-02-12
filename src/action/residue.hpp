@@ -6,6 +6,8 @@
 #endif
 
 #include "model/residue.hpp"
+#include "model/molecule.hpp"
+#include "model/secondary_structure.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "util/molecule.hpp"
@@ -84,7 +86,7 @@ namespace VTX
 			class Orient : public BaseAction
 			{
 			  public:
-				explicit Orient( Model::Residue & p_residue ) : _residue( p_residue ) {}
+				explicit Orient( const Model::Residue & p_residue ) : _residue( p_residue ) {}
 
 				virtual void execute() override
 				{
@@ -95,7 +97,7 @@ namespace VTX
 				}
 
 			  private:
-				Model::Residue & _residue;
+				const Model::Residue & _residue;
 			};
 		} // namespace Residue
 	}	  // namespace Action

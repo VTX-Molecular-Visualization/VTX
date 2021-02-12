@@ -42,6 +42,8 @@ namespace VTX
 
 					CustomWidget::TransformWidget * _transformWidget = nullptr;
 					QLabel *						_fullnameLabel	 = nullptr;
+					QLabel *						_nbChainsLabel	 = nullptr;
+					QLabel *						_nbResiduesLabel = nullptr;
 					QLabel *						_nbAtomsLabel	 = nullptr;
 
 					void _onTransformChange( const Math::Transform & );

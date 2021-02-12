@@ -61,7 +61,10 @@ namespace VTX
 
 				inline int getRepresentationCount() const { return (int)_representations.size(); };
 
-				inline void addRepresentation( BaseRepresentation * const p_representation ) { _representations.emplace_back( p_representation ); };
+				inline void addRepresentation( BaseRepresentation * const p_representation )
+				{
+					_representations.emplace_back( p_representation );
+				};
 				inline void removeRepresentation( const int p_index )
 				{
 					if ( 0 <= p_index && p_index < _representations.size() )
@@ -69,7 +72,8 @@ namespace VTX
 				};
 
 			  private:
-				inline RepresentationLibrary() : BaseModel( ID::Model::MODEL_SELECTION_LIBRARY ) { init(); };
+				inline RepresentationLibrary() : BaseModel( ID::Model::MODEL_REPRESENTATION_LIBRARY ) { init(); };
+				~RepresentationLibrary() = default;
 				void init();
 
 				std::vector<BaseRepresentation *> _representations;

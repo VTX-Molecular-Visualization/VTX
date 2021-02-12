@@ -8,18 +8,22 @@
 #include "model/residue.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "setting.hpp"
 
 namespace VTX
 {
 	namespace Representation
 	{
-		void RepresentationManager::instantiateRepresentation(
-			Model::Representation::BaseRepresentation * p_representation,
-			Generic::BaseRepresentable *				p_target )
+		RepresentationManager::RepresentationManager()
 		{
-			Model::Representation::InstantiatedRepresentation * instantiatedRepresentation
-				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
-					p_representation );
+			setDefaultRepresentationIndex( VTX::Setting::REPRESENTATION_DEFAULT_INDEX );
+		}
+
+		void RepresentationManager::instantiateRepresentation( BaseRepresentation *			p_representation,
+															   Generic::BaseRepresentable * p_target )
+		{
+			InstantiatedRepresentation * instantiatedRepresentation
+				= MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>( p_representation );
 
 			p_target->addRepresentation( instantiatedRepresentation );
 
@@ -29,18 +33,16 @@ namespace VTX
 
 			_recomputeRepresentableData( *p_target );
 
-			VTX_EVENT( new Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation>(
-				Event::REPRESENTATION_ADDED, instantiatedRepresentation ) );
+			VTX_EVENT( new Event::VTXEventPtr<InstantiatedRepresentation>( Event::REPRESENTATION_ADDED,
+																		   instantiatedRepresentation ) );
 		};
-		void RepresentationManager::instantiateRepresentation(
-			Model::Representation::BaseRepresentation * p_representation,
-			const Model::Selection * const				p_selection )
+		void RepresentationManager::instantiateRepresentation( BaseRepresentation *			  p_representation,
+															   const Model::Selection * const p_selection )
 		{
 			std::set<Model::Molecule *> molecules = std::set<Model::Molecule *>();
 
-			Model::Representation::InstantiatedRepresentation * instantiatedRepresentation
-				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
-					p_representation );
+			InstantiatedRepresentation * instantiatedRepresentation
+				= MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>( p_representation );
 			_mapRepresentablesLinkedToRepresentation.emplace( instantiatedRepresentation,
 															  std::unordered_set<Generic::BaseRepresentable *>() );
 
@@ -61,13 +63,12 @@ namespace VTX
 				_recomputeRepresentableData( molecule );
 			}
 
-			VTX_EVENT( new Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation>(
-				Event::REPRESENTATION_ADDED, instantiatedRepresentation ) );
+			VTX_EVENT( new Event::VTXEventPtr<InstantiatedRepresentation>( Event::REPRESENTATION_ADDED,
+																		   instantiatedRepresentation ) );
 		};
 
-		void RepresentationManager::addToRepresentation(
-			Model::Representation::InstantiatedRepresentation * p_representation,
-			Generic::BaseRepresentable *						p_target )
+		void RepresentationManager::addToRepresentation( InstantiatedRepresentation * p_representation,
+														 Generic::BaseRepresentable * p_target )
 		{
 			p_target->addRepresentation( p_representation );
 			_recomputeRepresentableData( *p_target );
@@ -75,10 +76,9 @@ namespace VTX
 			_mapRepresentablesLinkedToRepresentation[ p_representation ].emplace( p_target );
 		};
 
-		void RepresentationManager::removeRepresentation(
-			const Model::Representation::InstantiatedRepresentation * const p_representation,
-			Generic::BaseRepresentable *									p_target,
-			bool															p_update )
+		void RepresentationManager::removeRepresentation( const InstantiatedRepresentation * const p_representation,
+														  Generic::BaseRepresentable *			   p_target,
+														  bool									   p_update )
 		{
 			_mapRepresentablesLinkedToRepresentation[ p_representation ].erase( p_target );
 			p_target->removeRepresentation( p_representation );
@@ -86,8 +86,7 @@ namespace VTX
 			if ( p_update )
 				_recomputeRepresentableData( *p_target );
 		};
-		void RepresentationManager::deleteRepresentation(
-			Model::Representation::InstantiatedRepresentation * p_representation )
+		void RepresentationManager::deleteRepresentation( InstantiatedRepresentation * p_representation )
 		{
 			std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *> molecules
 				= std::unordered_map<const Model::Molecule *, Generic::BaseRepresentable *>();
@@ -104,8 +103,8 @@ namespace VTX
 
 			_mapRepresentablesLinkedToRepresentation.erase( p_representation );
 
-			VTX_EVENT( new Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation>(
-				Event::REPRESENTATION_REMOVED, p_representation ) );
+			VTX_EVENT(
+				new Event::VTXEventPtr<InstantiatedRepresentation>( Event::REPRESENTATION_REMOVED, p_representation ) );
 
 			delete p_representation;
 			p_representation = nullptr;
@@ -138,7 +137,7 @@ namespace VTX
 		};
 
 		const std::unordered_set<Generic::BaseRepresentable *> & RepresentationManager::getTargets(
-			const Model::Representation::InstantiatedRepresentation * p_representation )
+			const InstantiatedRepresentation * p_representation )
 		{
 			return _mapRepresentablesLinkedToRepresentation[ p_representation ];
 		}
@@ -146,10 +145,9 @@ namespace VTX
 		const Model::Representation::InstantiatedRepresentation * const RepresentationManager::getRepresentationByName(
 			const std::string & p_representationName )
 		{
-			const Model::Representation::InstantiatedRepresentation * res = nullptr;
+			const InstantiatedRepresentation * res = nullptr;
 
-			for ( std::pair<const Model::Representation::InstantiatedRepresentation *,
-							std::unordered_set<Generic::BaseRepresentable *>> item :
+			for ( std::pair<const InstantiatedRepresentation *, std::unordered_set<Generic::BaseRepresentable *>> item :
 				  _mapRepresentablesLinkedToRepresentation )
 			{
 				if ( item.first->getName().compare( p_representationName ) == 0 )
@@ -164,12 +162,11 @@ namespace VTX
 
 		void RepresentationManager::setDefaultRepresentationIndex( const int p_defaultRepresentationIndex )
 		{
-			Model::Representation::BaseRepresentation * const defaultRep
+			BaseRepresentation * const defaultRep
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( p_defaultRepresentationIndex );
 
-			Model::Representation::InstantiatedRepresentation * instantiatedDefautRep
-				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
-					defaultRep );
+			InstantiatedRepresentation * instantiatedDefautRep
+				= MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>( defaultRep );
 
 			_defaultRepresentationSet.clear();
 			_defaultRepresentationSet.emplace( instantiatedDefautRep );
