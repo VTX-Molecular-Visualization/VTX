@@ -526,6 +526,9 @@ namespace VTX
 					  atomIndex < _residues[ p_id ]->getIndexFirstAtom() + _residues[ p_id ]->getAtomCount();
 					  atomIndex++ )
 				{
+					if ( _atoms[ atomIndex ] == nullptr )
+						continue;
+
 					removeAtom( atomIndex, p_delete, true, true, false );
 				}
 			}
@@ -604,9 +607,10 @@ namespace VTX
 				const Bond * const bond = _bonds[ bondId ];
 				if ( bond != nullptr && bond->getIndexFirstAtom() == p_id )
 				{
-					removeBond( bondId, p_delete, false );
 					Model::Residue * const other			  = getAtom( bond->getIndexSecondAtom() )->getResiduePtr();
 					std::vector<uint> &	   otherExtraResidues = other->getIndexExtraBondEnd();
+
+					removeBond( bondId, p_delete, false );
 
 					otherExtraResidues.erase(
 						std::find( otherExtraResidues.begin(), otherExtraResidues.end(), bondId ) );
@@ -617,9 +621,10 @@ namespace VTX
 				const Bond * const bond = _bonds[ bondId ];
 				if ( bond != nullptr && bond->getIndexSecondAtom() == p_id )
 				{
-					removeBond( bondId, p_delete, false );
 					Model::Residue * const other			  = getAtom( bond->getIndexFirstAtom() )->getResiduePtr();
 					std::vector<uint> &	   otherExtraResidues = other->getIndexExtraBondStart();
+
+					removeBond( bondId, p_delete, false );
 
 					otherExtraResidues.erase(
 						std::find( otherExtraResidues.begin(), otherExtraResidues.end(), bondId ) );

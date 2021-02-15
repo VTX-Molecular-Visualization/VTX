@@ -161,7 +161,7 @@ namespace VTX
 				if ( isMoleculeSelected( molecule ) )
 				{
 					_unselectMolecule( molecule );
-					molecule.refreshSelection( &_items[ molecule.getId() ] );
+					molecule.refreshSelection( nullptr );
 				}
 			}
 

@@ -88,8 +88,7 @@ namespace VTX::View::UI::Widget
 		void _applyResidueDataOnItem( const Model::Residue & p_molecule, QTreeWidgetItem & p_item ) const;
 		void _applyAtomDataOnItem( const Model::Atom & p_molecule, QTreeWidgetItem & p_item ) const;
 
-		void _refreshItemVisibility( QTreeWidgetItem * const	  p_itemWidget,
-									 const Generic::BaseVisible & p_baseVisible ) const;
+		void _refreshItemVisibility( QTreeWidgetItem * const p_itemWidget, const Generic::BaseVisible & p_baseVisible );
 		void _refreshSelection( const Model::Selection & p_selection );
 
 		Model::ID _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;

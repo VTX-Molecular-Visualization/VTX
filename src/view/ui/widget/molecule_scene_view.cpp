@@ -524,11 +524,15 @@ namespace VTX::View::UI::Widget
 	}
 
 	void MoleculeSceneView::_refreshItemVisibility( QTreeWidgetItem * const		 p_itemWidget,
-													const Generic::BaseVisible & p_baseVisible ) const
+													const Generic::BaseVisible & p_baseVisible )
 	{
+		_enableSignals( false );
+
 		const Qt::CheckState newCheckState = _getCheckState( p_baseVisible.isVisible() );
 		if ( p_itemWidget->checkState( 0 ) != newCheckState )
 			p_itemWidget->setCheckState( 0, newCheckState );
+
+		_enableSignals( true );
 	}
 	void MoleculeSceneView::_refreshSelection( const Model::Selection & p_selection )
 	{
