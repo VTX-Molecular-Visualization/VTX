@@ -5,8 +5,8 @@
 #pragma once
 #endif
 
-#include "model/residue.hpp"
 #include "model/molecule.hpp"
+#include "model/residue.hpp"
 #include "model/secondary_structure.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
@@ -93,7 +93,7 @@ namespace VTX
 					VTXApp::get()
 						.getStateMachine()
 						.getItem<State::Visualization>( ID::State::VISUALIZATION )
-						->orientCameraController( _residue.getAABB() );
+						->orientCameraController( _residue.getWorldAABB() );
 				}
 
 			  private:

@@ -91,7 +91,7 @@ namespace VTX
 					VTXApp::get()
 						.getStateMachine()
 						.getItem<State::Visualization>( ID::State::VISUALIZATION )
-						->orientCameraController( _chain.getAABB() );
+						->orientCameraController( _chain.getWorldAABB() );
 				}
 
 			  private:

@@ -412,6 +412,13 @@ namespace VTX
 			}
 		}
 
+		Math::AABB Molecule::getWorldAABB() const
+		{
+			Math::AABB res = getAABB();
+			res.translate( getTransform().getTranslationVector() );
+			return res;
+		}
+
 		const Chain * const Molecule::getPreviousChain( const uint p_idBaseChain ) const
 		{
 			if ( p_idBaseChain == 0 )
@@ -495,10 +502,10 @@ namespace VTX
 			{
 				// Delete Residues
 				for ( uint residueIndex = _chains[ p_id ]->getIndexFirstResidue();
-					  residueIndex < _chains[ p_id ]->getIndexFirstResidue() + _chains[ p_id ]->getResidueCount();
+					  residueIndex < (_chains[ p_id ]->getIndexFirstResidue() + _chains[ p_id ]->getResidueCount());
 					  residueIndex++ )
 				{
-					removeResidue( residueIndex, p_delete, p_recursive, true, false );
+					removeResidue( residueIndex, p_delete, p_recursive, false, false );
 				}
 			}
 
@@ -529,7 +536,7 @@ namespace VTX
 					if ( _atoms[ atomIndex ] == nullptr )
 						continue;
 
-					removeAtom( atomIndex, p_delete, true, true, false );
+					removeAtom( atomIndex, p_delete, true, false, false );
 				}
 			}
 

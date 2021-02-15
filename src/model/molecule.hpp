@@ -179,6 +179,8 @@ namespace VTX
 			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
 			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
+			Math::AABB getWorldAABB() const;
+
 			inline const Generic::COLOR_MODE getColorMode() const { return _colorMode; }
 			inline void						 setColorMode( const Generic::COLOR_MODE p_colorMode )
 			{
@@ -223,7 +225,6 @@ namespace VTX
 			bool mergeTopology( const Molecule & );
 
 			void createSecondaryStructure();
-
 			void propagateEventToViews( const Event::VTXEvent * const p_event ) { _notifyViews( p_event ); }
 
 		  protected:

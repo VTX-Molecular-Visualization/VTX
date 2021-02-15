@@ -10,7 +10,23 @@
 
 namespace VTX::UI::Widget::MainMenu::Visualization
 {
-	MenuVisualizationSelectionActionWidget::~MenuVisualizationSelectionActionWidget() {}
+	MenuVisualizationSelectionActionWidget::MenuVisualizationSelectionActionWidget( QWidget * p_parent ) :
+		MenuToolBlockWidget( p_parent )
+	{
+		_registerEvent( Event::Global::SELECTION_CHANGE );
+	};
+
+	void MenuVisualizationSelectionActionWidget::receiveEvent( const Event::VTXEvent & p_event )
+	{
+		if ( p_event.name == Event::SELECTION_CHANGE )
+		{
+			const Event::VTXEventPtr<Model::Selection> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+
+			const bool enableSelection = castedEvent.ptr->getMoleculeSelectedCount() > 0;
+			_enableButtons( enableSelection );
+		}
+	}
 
 	void MenuVisualizationSelectionActionWidget::_setupUi( const QString & p_name )
 	{
@@ -37,6 +53,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_hide = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "hideSelectionButton" );
 		_hide->setData( "Hide", ":/sprite/hide_selection_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_hide, 1 );
+
+		_enableButtons( false );
 
 		validate();
 	}
@@ -79,4 +97,14 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		VTX_ACTION( new Action::Selection::ChangeVisibility(
 			selectionModel, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
 	}
+
+	void MenuVisualizationSelectionActionWidget::_enableButtons( const bool p_enable )
+	{
+		_copy->setEnabled( p_enable );
+		_extract->setEnabled( p_enable );
+		_delete->setEnabled( p_enable );
+		_show->setEnabled( p_enable );
+		_hide->setEnabled( p_enable );
+	}
+
 } // namespace VTX::UI::Widget::MainMenu::Visualization

@@ -14,26 +14,22 @@ namespace VTX::Model
 {
 	GeneratedMolecule::GeneratedMolecule() : Model::Molecule( ID::Model::MODEL_GENERATED_MOLECULE ) {}
 
-	void GeneratedMolecule::copyFromSelection( const Model::Selection & p_selection )
+	void GeneratedMolecule::copyFromSelection(
+		const std::pair<Model::ID, Model::Selection::MapChainIds> & p_moleculeSelectionData )
 	{
 		Tool::Chrono chrono;
 		chrono.start();
 
-		if ( p_selection.getMoleculeSelectedCount() < 1 )
-			throw Exception::VTXException( "Generate molecule from empty selection" );
-		if ( p_selection.getMoleculeSelectedCount() > 1 )
-			throw Exception::VTXException( "Generate molecule from multiple molecule. Not allowed currently." );
-
-		const std::pair<const ID, const Model::Selection::MapChainIds> & moleculeData
-			= *( p_selection.getItems().begin() );
-		const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+		const Model::Molecule & molecule
+			= MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeSelectionData.first );
 
 		// Copy molecule properties.
 		_copyMoleculeData( molecule, "copy of " );
 
 		std::map<const uint, const uint> mapAtomIds = std::map<const uint, const uint>();
 
-		for ( const std::pair<const ID, const Model::Selection::MapResidueIds> & chainData : moleculeData.second )
+		for ( const std::pair<const ID, const Model::Selection::MapResidueIds> & chainData :
+			  p_moleculeSelectionData.second )
 		{
 			const Model::Chain & chain			= *molecule.getChain( chainData.first );
 			Model::Chain &		 generatedChain = addChain();
@@ -142,20 +138,13 @@ namespace VTX::Model
 		chrono.stop();
 	}
 
-	void GeneratedMolecule::extractFromSelection( const Model::Selection & p_selection )
+	void GeneratedMolecule::extractFromSelection(
+		const std::pair<Model::ID, Model::Selection::MapChainIds> & p_moleculeSelectionData )
 	{
 		Tool::Chrono chrono = Tool::Chrono();
 		chrono.start();
 
-		if ( p_selection.getMoleculeSelectedCount() < 1 )
-			throw Exception::VTXException( "Generate molecule from empty selection" );
-		if ( p_selection.getMoleculeSelectedCount() > 1 )
-			throw Exception::VTXException( "Generate molecule from multiple molecule. Not allowed currently." );
-
-		const std::pair<const ID, const Model::Selection::MapChainIds> & moleculeData
-			= *( p_selection.getItems().begin() );
-
-		Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+		Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeSelectionData.first );
 
 		_externalBondExtractData.clear();
 		_externalBondExtractData.reserve( molecule.getBondCount() );
@@ -163,7 +152,8 @@ namespace VTX::Model
 
 		_copyMoleculeData( molecule, "extract of " );
 
-		for ( const std::pair<const ID, const Model::Selection::MapResidueIds> & chainData : moleculeData.second )
+		for ( const std::pair<const ID, const Model::Selection::MapResidueIds> & chainData :
+			  p_moleculeSelectionData.second )
 		{
 			const Model::Chain * const chain = molecule.getChain( chainData.first );
 
@@ -231,8 +221,6 @@ namespace VTX::Model
 
 		VTX_INFO( "Extract done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 
-		VTX::Selection::SelectionManager::get().getSelectionModel().clear();
-
 		molecule.forceNotifyDataChanged();
 		molecule.refreshBondsBuffer();
 	};
@@ -257,6 +245,7 @@ namespace VTX::Model
 			addUnknownAtomSymbol( unknownSymbol );
 
 		getBufferAtomRadius().reserve( p_molecule.getAtomCount() );
+		_transform = p_molecule.getTransform();
 	}
 
 	void GeneratedMolecule::_copyChainData( Model::Chain & p_chain, const Model::Chain & p_chainSource )

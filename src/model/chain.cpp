@@ -108,6 +108,12 @@ namespace VTX
 
 			return aabb;
 		}
+		const Math::AABB Chain::getWorldAABB() const
+		{
+			Math::AABB aabb = getAABB();
+			aabb.translate( getMoleculePtr()->getTransform().getTranslationVector() );
+			return aabb;
+		}
 
 	} // namespace Model
 } // namespace VTX

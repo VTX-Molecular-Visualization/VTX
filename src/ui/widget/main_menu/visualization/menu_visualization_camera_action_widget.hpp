@@ -10,60 +10,46 @@
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu::Visualization
 {
-	namespace UI
+	class MenuVisualizationCameraActionWidget : public MenuToolBlockWidget
 	{
-		namespace Widget
+		VTX_WIDGET
+
+	  public:
+		~MenuVisualizationCameraActionWidget();
+		void localize() override;
+
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
+
+	  protected:
+		MenuVisualizationCameraActionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 		{
-			namespace MainMenu
-			{
-				namespace Visualization
-				{
-					class MenuVisualizationCameraActionWidget : public MenuToolBlockWidget
-					{
-						VTX_WIDGET
+			_registerEvent( Event::Global::CONTROLLER_CHANGE );
+		};
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 
-					  public:
-						~MenuVisualizationCameraActionWidget();
-						void localize() override;
+	  private:
+		// Selection focus
+		MenuToolButtonWidget * _center	 = nullptr;
+		MenuToolButtonWidget * _reorient = nullptr;
 
-						void receiveEvent( const Event::VTXEvent & p_event ) override;
+		// Camera Mode
+		MenuToolButtonWidget * _trackball = nullptr;
+		MenuToolButtonWidget * _freefly	  = nullptr;
+		MenuToolButtonWidget * _vessel	  = nullptr;
 
-					  protected:
-						MenuVisualizationCameraActionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
-						{
-							_registerEvent( Event::Global::CONTROLLER_CHANGE );
-						};
-						void _setupUi( const QString & p_name ) override;
-						void _setupSlots() override;
+		// Viewpoints
+		MenuToolButtonWidget * _createViewpoint = nullptr;
 
-					  private:
-						// Selection focus
-						MenuToolButtonWidget * _center	 = nullptr;
-						MenuToolButtonWidget * _focus	 = nullptr;
-						MenuToolButtonWidget * _reorient = nullptr;
+		void _updateCameraModeFeedback();
 
-						// Camera Mode
-						MenuToolButtonWidget * _trackball = nullptr;
-						MenuToolButtonWidget * _freefly	  = nullptr;
-						MenuToolButtonWidget * _vessel	  = nullptr;
-
-						// Viewpoints
-						MenuToolButtonWidget * _createViewpoint = nullptr;
-
-						void _updateCameraModeFeedback();
-
-						void _recenterCamera() const;
-						void _focusCamera() const;
-						void _orientCamera() const;
-						void _setTrackballController() const;
-						void _setFreeflyController() const;
-						void _setVesselController() const;
-					};
-				} // namespace Visualization
-			}	  // namespace MainMenu
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+		void _recenterCamera() const;
+		void _orientCamera() const;
+		void _setTrackballController() const;
+		void _setFreeflyController() const;
+		void _setVesselController() const;
+	};
+} // namespace VTX::UI::Widget::MainMenu::Visualization
 #endif

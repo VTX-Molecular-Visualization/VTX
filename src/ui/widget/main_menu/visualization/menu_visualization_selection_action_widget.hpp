@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
@@ -16,13 +17,16 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		VTX_WIDGET
 
 	  public:
-		~MenuVisualizationSelectionActionWidget();
 		void localize() override;
 
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
+
 	  protected:
-		MenuVisualizationSelectionActionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
+		MenuVisualizationSelectionActionWidget( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
+
+		void _enableButtons( const bool p_enable );
 
 	  private:
 		// Selection actions 1

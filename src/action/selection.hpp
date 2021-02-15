@@ -513,15 +513,14 @@ namespace VTX::Action::Selection
 
 		virtual void execute() override
 		{
+			std::vector<Model::Molecule *> moleculesToDelete = std::vector<Model::Molecule *>();
 			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 
 				if ( molIds.second.getFullySelectedChildCount() == molecule.getChainCount() )
 				{
-					VTXApp::get().getScene().removeMolecule( &molecule );
-					MVC::MvcManager::get().deleteModel( &molecule );
-
+					moleculesToDelete.emplace_back( &molecule );
 					continue;
 				}
 
@@ -558,6 +557,12 @@ namespace VTX::Action::Selection
 			}
 
 			_selection.clear();
+
+			for ( Model::Molecule * moleculeToDelete : moleculesToDelete ) 
+			{
+				VTXApp::get().getScene().removeMolecule( moleculeToDelete );
+				MVC::MvcManager::get().deleteModel( moleculeToDelete );
+			}
 
 			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
