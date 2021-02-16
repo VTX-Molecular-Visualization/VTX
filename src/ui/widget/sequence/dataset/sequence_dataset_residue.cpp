@@ -1,116 +1,99 @@
 #include "sequence_dataset_residue.hpp"
 #include "style.hpp"
 
-namespace VTX
+namespace VTX::UI::Widget::Sequence::Dataset
 {
-	namespace UI
+	SequenceDisplayDataset_Residue::SequenceDisplayDataset_Residue( const Model::Chain & p_chain,
+																	const uint			 p_startIndexChar,
+																	const uint			 p_startResidueIndex,
+																	const uint			 p_endResidueIndex ) :
+		SequenceDisplayDataset( p_startIndexChar, p_endResidueIndex - p_startResidueIndex + 1 ),
+		_startResidueIndex( p_startResidueIndex ), _endResidueIndex( p_endResidueIndex ), _linkedChain( p_chain ) {};
+
+	void SequenceDisplayDataset_Residue::appendToSequence( QString & p_string ) const
 	{
-		namespace Widget
+		const uint size			  = _endResidueIndex - _startResidueIndex + 1;
+		QString	   sequenceString = QString( size, ' ' );
+
+		const Model::Molecule * const molecule		  = _linkedChain.getMoleculePtr();
+		const uint					  chainFirstIndex = _linkedChain.getIndexFirstResidue();
+
+		for ( uint i = 0; i < size; i++ )
 		{
-			namespace Sequence
-			{
-				namespace Dataset
-				{
-					SequenceDisplayDataset_Residue::SequenceDisplayDataset_Residue( const Model::Chain & p_chain,
-																					const uint p_startIndexChar,
-																					const uint p_startResidueIndex,
-																					const uint p_endResidueIndex ) :
-						SequenceDisplayDataset( p_startIndexChar, p_endResidueIndex - p_startResidueIndex + 1 ),
-						_startResidueIndex( p_startResidueIndex ), _endResidueIndex( p_endResidueIndex ),
-						_linkedChain( p_chain ) {};
+			const Model::Residue * const residue = molecule->getResidue( chainFirstIndex + _startResidueIndex + i );
 
-					void SequenceDisplayDataset_Residue::appendToSequence( QString & p_string ) const
-					{
-						const uint size			  = _endResidueIndex - _startResidueIndex + 1;
-						QString	   sequenceString = QString( size, ' ' );
+			if ( residue == nullptr )
+				sequenceString[ i ] = '-';
+			else
+				sequenceString[ i ] = residue->getSymbolShort()[ 0 ];
+		}
 
-						const Model::Molecule * const molecule		  = _linkedChain.getMoleculePtr();
-						const uint					  chainFirstIndex = _linkedChain.getIndexFirstResidue();
+		p_string.append( sequenceString );
+	}
 
-						for ( uint i = 0; i < size; i++ )
-						{
-							const Model::Residue * const residue
-								= molecule->getResidue( chainFirstIndex + _startResidueIndex + i );
+	void SequenceDisplayDataset_Residue::appendToScale( QString & p_scale, const bool p_startBloc ) const
+	{
+		uint currentIndexChar;
+		uint currentLocalIndexResidue;
 
-							if ( residue == nullptr )
-								sequenceString[ i ] = '-';
-							else
-								sequenceString[ i ] = residue->getSymbolShort()[ 0 ];
-						}
+		const int originalIndexFirstResidue
+			= _linkedChain.getMoleculePtr()
+				  ->getResidue( _linkedChain.getIndexFirstResidue() + _startResidueIndex )
+				  ->getIndexInOriginalChain();
 
-						p_string.append( sequenceString );
-					}
+		if ( p_startBloc )
+		{
+			const std::string firstResidueStr	 = std::to_string( originalIndexFirstResidue );
+			const uint		  lastCharFirstIndex = _drawInScale( p_scale, firstResidueStr, _startIndexChar, false );
 
-					void SequenceDisplayDataset_Residue::appendToScale( QString &  p_scale,
-																		const bool p_startBloc ) const
-					{
-						uint currentIndexChar;
-						uint currentLocalIndexResidue;
+			const std::string strSecondIndex	 = std::to_string( originalIndexFirstResidue + 1 );
+			const uint		  nextValidCharIndex = lastCharFirstIndex + ( (uint)strSecondIndex.size() / 2 ) + 1;
+			const int nextValidOriginalIndex	 = originalIndexFirstResidue + ( nextValidCharIndex - _startIndexChar );
 
-						const uint firstResidue
-							= _linkedChain.getMoleculePtr()
-								  ->getResidue( _linkedChain.getIndexFirstResidue() + _startResidueIndex )
-								  ->getIndexInOriginalChain();
+			const uint moduloStep = nextValidOriginalIndex % Style::SEQUENCE_CHAIN_SCALE_STEP;
+			const uint step		  = moduloStep == 0 ? 0 : ( Style::SEQUENCE_CHAIN_SCALE_STEP - moduloStep );
 
-						if ( p_startBloc )
-						{
-							const std::string firstResidueStr = std::to_string( firstResidue );
-							const uint		  lastCharFirstIndex
-								= _drawInScale( p_scale, firstResidueStr, _startIndexChar, false );
+			currentIndexChar		 = nextValidCharIndex + step;
+			currentLocalIndexResidue = currentIndexChar - _startIndexChar;
+		}
+		else
+		{
+			uint moduloStep = originalIndexFirstResidue % Style::SEQUENCE_CHAIN_SCALE_STEP;
+			uint step		= moduloStep == 0 ? 0 : Style::SEQUENCE_CHAIN_SCALE_STEP - moduloStep;
 
-							const std::string strSecondIndex = std::to_string( firstResidue + 1 );
-							const uint nextValidIndex = lastCharFirstIndex + ( (uint)strSecondIndex.size() / 2 ) + 1;
-							const uint residueNextValidIndex = firstResidue + ( nextValidIndex - _startIndexChar );
+			currentIndexChar		 = _startIndexChar + step;
+			currentLocalIndexResidue = step;
+		}
 
-							const uint moduloStep = residueNextValidIndex % Style::SEQUENCE_CHAIN_SCALE_STEP;
-							const uint step = moduloStep == 0 ? 0 : ( Style::SEQUENCE_CHAIN_SCALE_STEP - moduloStep );
+		uint endIndex = _endResidueIndex - _startResidueIndex;
+		for ( ; currentLocalIndexResidue <= endIndex; currentLocalIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP )
+		{
+			const int currentOriginalResidueIndex = originalIndexFirstResidue + currentLocalIndexResidue;
 
-							currentIndexChar		 = nextValidIndex + step;
-							currentLocalIndexResidue = _startResidueIndex + ( currentIndexChar - _startIndexChar );
-						}
-						else
-						{
-							uint moduloStep = firstResidue % Style::SEQUENCE_CHAIN_SCALE_STEP;
-							uint step		= moduloStep == 0 ? 0 : Style::SEQUENCE_CHAIN_SCALE_STEP - moduloStep;
+			std::string strIndex = std::to_string( currentOriginalResidueIndex );
+			_drawInScale( p_scale, strIndex, currentIndexChar, true );
 
-							currentIndexChar		 = _startIndexChar + step;
-							currentLocalIndexResidue = _startResidueIndex + step;
-						}
+			currentIndexChar += Style::SEQUENCE_CHAIN_SCALE_STEP;
+		}
+	}
 
-						for ( ; currentLocalIndexResidue <= _endResidueIndex;
-							  currentLocalIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP )
-						{
-							const uint currentResidueIndex = firstResidue + currentLocalIndexResidue;
+	Model::Residue * const SequenceDisplayDataset_Residue::getResidueAtCharIndex( const uint p_charIndex )
+	{
+		const uint firstIndexInOriginlaChain
+			= _linkedChain.getMoleculePtr()
+				  ->getResidue( _linkedChain.getIndexFirstResidue() + _startResidueIndex )
+				  ->getIndex();
+		uint residueIndex = firstIndexInOriginlaChain + p_charIndex - _startIndexChar;
+		return _linkedChain.getMoleculePtr()->getResidue( residueIndex );
+	}
 
-							std::string strIndex = std::to_string( currentResidueIndex );
-							_drawInScale( p_scale, strIndex, currentIndexChar, true );
+	bool SequenceDisplayDataset_Residue::isResidueInScope( const uint p_residueIndex ) const
+	{
+		return _startResidueIndex <= p_residueIndex && p_residueIndex <= _endResidueIndex;
+	}
 
-							currentIndexChar += Style::SEQUENCE_CHAIN_SCALE_STEP;
-						}
-					}
-
-					Model::Residue * const SequenceDisplayDataset_Residue::getResidueAtCharIndex(
-						const uint p_charIndex )
-					{
-						const uint firstIndexInOriginlaChain
-							= _linkedChain.getMoleculePtr()
-								  ->getResidue( _linkedChain.getIndexFirstResidue() + _startResidueIndex )
-								  ->getIndex();
-						uint residueIndex = firstIndexInOriginlaChain + p_charIndex - _startIndexChar;
-						return _linkedChain.getMoleculePtr()->getResidue( residueIndex );
-					}
-
-					bool SequenceDisplayDataset_Residue::isResidueInScope( const uint p_residueIndex ) const
-					{
-						return _startResidueIndex <= p_residueIndex && p_residueIndex <= _endResidueIndex;
-					}
-
-					uint SequenceDisplayDataset_Residue::getCharIndexOfResidue( const uint p_residueIndex ) const
-					{
-						return _startIndexChar + p_residueIndex - _startResidueIndex;
-					}
-				} // namespace Dataset
-			}	  // namespace Sequence
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+	uint SequenceDisplayDataset_Residue::getCharIndexOfResidue( const uint p_residueIndex ) const
+	{
+		return _startIndexChar + p_residueIndex - _startResidueIndex;
+	}
+} // namespace VTX::UI::Widget::Sequence::Dataset

@@ -44,6 +44,7 @@ namespace VTX
 		static const int STATUS_PROGRESS_BAR_WIDTH;
 
 		static const QString MOLECULE_FILE_FILTERS;
+		static const QString OPEN_FILE_FILTERS;
 
 		// Rendering.
 		static const bool ACTIVE_RENDERER_DEFAULT;

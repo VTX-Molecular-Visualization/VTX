@@ -20,7 +20,7 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
 	  private:
@@ -37,7 +37,7 @@ namespace VTX::Action::Renderer
 		{
 			_preset.setShading( _shading );
 			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
 	  private:
@@ -55,7 +55,7 @@ namespace VTX::Action::Renderer
 		{
 			_preset.enableSSAO( _enable );
 			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
 	  private:
@@ -107,7 +107,7 @@ namespace VTX::Action::Renderer
 		{
 			_preset.enableOutline( _enable );
 			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
 	  private:
@@ -159,7 +159,7 @@ namespace VTX::Action::Renderer
 		{
 			_preset.enableFog( _enable );
 			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
 	  private:
@@ -279,7 +279,7 @@ namespace VTX::Action::Renderer
 		{
 			_preset.setCameraFOV( _fov );
 			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 		};
 
 	  private:
@@ -296,7 +296,7 @@ namespace VTX::Action::Renderer
 		{
 			_preset.setCameraNearClip( _near );
 			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 		};
 
 	  private:
@@ -313,7 +313,7 @@ namespace VTX::Action::Renderer
 		{
 			_preset.setCameraFarClip( _far );
 			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 		};
 
 	  private:
@@ -331,7 +331,7 @@ namespace VTX::Action::Renderer
 		{
 			_preset.setAA( _enable );
 			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
 	  private:

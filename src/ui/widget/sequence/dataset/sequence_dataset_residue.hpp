@@ -9,51 +9,38 @@
 #include "model/molecule.hpp"
 #include "sequence_dataset.hpp"
 
-namespace VTX
+namespace VTX::UI::Widget::Sequence::Dataset
 {
-	namespace UI
+	class SequenceDisplayDataset_Residue : public SequenceDisplayDataset
 	{
-		namespace Widget
+	  public:
+		SequenceDisplayDataset_Residue( const Model::Chain & p_chain,
+										const uint			 p_startIndexChar,
+										const uint			 p_startResidueIndex,
+										const uint			 p_endResidueIndex );
+		void appendToSequence( QString & p_sequenceString ) const override;
+		void appendToScale( QString & p_scale, const bool p_startBloc ) const override;
+
+		Model::Residue * const getResidueAtCharIndex( const uint p_charIndex ) override;
+		bool				   isResidueInScope( const uint p_residueIndex ) const override;
+		uint				   getCharIndexOfResidue( const uint p_residueIndex ) const override;
+
+		Model::Residue * const getFirstResidue() const override
 		{
-			namespace Sequence
-			{
-				namespace Dataset
-				{
-					class SequenceDisplayDataset_Residue : public SequenceDisplayDataset
-					{
-					  public:
-						SequenceDisplayDataset_Residue( const Model::Chain & p_chain,
-														const uint			 p_startIndexChar,
-														const uint			 p_startResidueIndex,
-														const uint			 p_endResidueIndex );
-						void appendToSequence( QString & p_sequenceString ) const override;
-						void appendToScale( QString & p_scale, const bool p_startBloc ) const override;
+			return _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue()
+															  + _startResidueIndex );
+		};
+		Model::Residue * const getLastResidue() const override
+		{
+			return _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue() + _endResidueIndex );
+		};
 
-						Model::Residue * const getResidueAtCharIndex( const uint p_charIndex ) override;
-						bool				   isResidueInScope( const uint p_residueIndex ) const override;
-						uint				   getCharIndexOfResidue( const uint p_residueIndex ) const override;
+		uint getPaintLength( const uint p_charIndex ) const override { return 1; };
 
-						Model::Residue * const getFirstResidue() const override
-						{
-							return _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue()
-																			  + _startResidueIndex );
-						};
-						Model::Residue * const getLastResidue() const override
-						{
-							return _linkedChain.getMoleculePtr()->getResidue( _linkedChain.getIndexFirstResidue()
-																			  + _endResidueIndex );
-						};
-
-						uint getPaintLength( const uint p_charIndex ) const override { return 1; };
-
-					  private:
-						const Model::Chain & _linkedChain;
-						uint				 _startResidueIndex;
-						uint				 _endResidueIndex;
-					};
-				} // namespace Dataset
-			}	  // namespace Sequence
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+	  private:
+		const Model::Chain & _linkedChain;
+		uint				 _startResidueIndex;
+		uint				 _endResidueIndex;
+	};
+} // namespace VTX::UI::Widget::Sequence::Dataset
 #endif

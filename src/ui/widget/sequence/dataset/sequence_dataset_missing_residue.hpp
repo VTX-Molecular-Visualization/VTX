@@ -10,39 +10,34 @@
 #include "model/residue.hpp"
 #include "sequence_dataset.hpp"
 #include "style.hpp"
+#include <QString>
 
-namespace VTX
+namespace VTX::UI::Widget::Sequence::Dataset
 {
-	namespace UI
+	class SequenceDisplayDataset_MissingResidue : public SequenceDisplayDataset
 	{
-		namespace Widget
+		// Use of unbreakable space (U+00A0) instead of normal space because rich text in QLabel
+		inline static const QString TOO_LONG_STR = "   ";
+
+	  public:
+		SequenceDisplayDataset_MissingResidue( const uint p_startIndexChar,
+											   const uint p_startResidueIndexInOriginalChain,
+											   const uint p_size ) :
+			SequenceDisplayDataset( p_startIndexChar, p_size ),
+			_startResidueIndexInOriginalChain( p_startResidueIndexInOriginalChain ),
+			_isTooLong( p_size > Style::SEQUENCE_MAX_MISSING_RESIDUE_BEFORE_COLLAPSE )
 		{
-			namespace Sequence
-			{
-				namespace Dataset
-				{
-					class SequenceDisplayDataset_MissingResidue : public SequenceDisplayDataset
-					{
-					  public:
-						SequenceDisplayDataset_MissingResidue( const uint p_startIndexChar, const uint p_startResidueIndexInOriginalChain, const uint p_size ) :
-							SequenceDisplayDataset( p_startIndexChar, p_size ), _startResidueIndexInOriginalChain( p_startResidueIndexInOriginalChain ),
-							_isTooLong( p_size > Style::SEQUENCE_MAX_MISSING_RESIDUE_BEFORE_COLLAPSE )
-						{
-							_charCount = _isTooLong ? 1 : p_size;
-						};
+			_charCount = _isTooLong ? uint( TOO_LONG_STR.size() ) : p_size;
+		};
 
-						void appendToSequence( QString & p_sequenceString ) const override;
-						void appendToScale( QString & p_scale, const bool p_startBloc ) const override;
+		void appendToSequence( QString & p_sequenceString ) const override;
+		void appendToScale( QString & p_scale, const bool p_startBloc ) const override;
 
-						const bool isFinishingBlock( bool p_startBlock ) const override { return _isTooLong; };
+		const bool isFinishingBlock( bool p_startBlock ) const override { return _isTooLong; };
 
-					  private:
-						const bool _isTooLong;
-						const uint _startResidueIndexInOriginalChain;
-					};
-				} // namespace Dataset
-			}	  // namespace Sequence
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+	  private:
+		const bool _isTooLong;
+		const uint _startResidueIndexInOriginalChain;
+	};
+} // namespace VTX::UI::Widget::Sequence::Dataset
 #endif

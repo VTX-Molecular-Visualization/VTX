@@ -115,7 +115,7 @@ namespace VTX
 			_bufferAABBIndices = std::vector<uint>();
 			for ( const Residue * const elem : _residues )
 			{
-				const Math::AABB & aabb = elem->getAABB();
+				const Math::AABB & aabb = elem->getWorldAABB();
 
 				const Vec3f & min = aabb.getMin();
 				const Vec3f & max = aabb.getMax();

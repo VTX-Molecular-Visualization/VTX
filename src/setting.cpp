@@ -21,6 +21,7 @@ namespace VTX
 	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;
 
 	const QString Setting::MOLECULE_FILE_FILTERS = "Molecule file (*.pdb *.cif)";
+	const QString Setting::OPEN_FILE_FILTERS	 = "VTX file (*.vtx, *.pdb *.cif)";
 
 	// Rendering.
 	const bool				  Setting::ACTIVE_RENDERER_DEFAULT		= true;

@@ -10,67 +10,61 @@
 #include <QString>
 #include <vector>
 
-namespace VTX
+namespace VTX::Model
 {
-	namespace Model
+	class Molecule;
+	class Residue;
+} // namespace VTX::Model
+
+namespace VTX::UI::Widget::Sequence
+{
+	class SequenceChainData
 	{
-		class Molecule;
-		class Residue;
-	} // namespace Model
-	namespace UI
-	{
-		namespace Widget
-		{
-			namespace Sequence
-			{
-				class SequenceChainData
-				{
-				  public:
-					SequenceChainData( const Model::Chain & p_chain );
-					~SequenceChainData();
+	  public:
+		SequenceChainData( const Model::Chain & p_chain );
+		~SequenceChainData();
 
-					const QString & getSequenceString() const { return _strSequence; };
-					const QString & getScale() const { return _strScale; }
+		const QString & getSequenceString() const { return _strSequence; };
+		const QString & getScale() const { return _strScale; }
 
-					inline uint getResidueCount() const { return _chain.getResidueCount(); };
-					inline uint getIndexFirstResidue() const { return _chain.getIndexFirstResidue(); };
-					inline Model::Molecule * const getMoleculePtr() const { return _chain.getMoleculePtr(); };
-					inline uint					   getChainIndex() const { return _chain.getIndex(); };
+		inline uint					   getResidueCount() const { return _chain.getResidueCount(); };
+		inline uint					   getIndexFirstResidue() const { return _chain.getIndexFirstResidue(); };
+		inline Model::Molecule * const getMoleculePtr() const { return _chain.getMoleculePtr(); };
+		inline uint					   getChainIndex() const { return _chain.getIndex(); };
 
-					Model::Residue * const getResidueFromCharIndex( const uint p_charIndex ) const;
-					Model::Residue * const getClosestResidueFromCharIndex( const uint p_charIndex,
-																		   const bool takeForward ) const;
-					uint				   getCharIndex( const uint p_residueIndex ) const;
-					uint				   getPaintCharIndex( const uint p_residueIndex ) const;
-					uint				   getPaintLength( const uint p_localResidueIndex ) const;
-					inline uint			   getCharCount() const { return _dataset.back()->getLastCharIndex(); };
+		Model::Residue * const getResidueFromCharIndex( const uint p_charIndex ) const;
+		Model::Residue * const getClosestResidueFromCharIndex( const uint p_charIndex, const bool takeForward ) const;
+		uint				   getCharIndex( const uint p_residueIndex ) const;
+		uint				   getPaintCharIndex( const uint p_residueIndex ) const;
+		uint				   getPaintLength( const uint p_localResidueIndex ) const;
+		inline uint			   getCharCount() const { return _dataset.back()->getLastCharIndex(); };
 
-				  private:
-					const Model::Molecule &						   _molecule;
-					const Model::Chain &						   _chain;
-					std::vector<Dataset::SequenceDisplayDataset *> _dataset
-						= std::vector<Dataset::SequenceDisplayDataset *>();
+	  private:
+		const Model::Molecule &						   _molecule;
+		const Model::Chain &						   _chain;
+		std::vector<Dataset::SequenceDisplayDataset *> _dataset = std::vector<Dataset::SequenceDisplayDataset *>();
 
-					Model::Residue * const _getResidue( const uint p_localResidueIndex ) const;
+		uint _emplaceResidueDataSet( const uint p_localCharIndex,
+									 const uint p_startResidueIndex,
+									 const uint p_endResidueIndex );
 
-					Dataset::SequenceDisplayDataset * const getDataset( const uint p_residueIndex ) const;
-					Dataset::SequenceDisplayDataset * const getDataset_recursive(
-						const std::vector<Dataset::SequenceDisplayDataset *> p_vec,
-						const uint											 p_residueIndex,
-						const uint											 p_indexMin,
-						const uint											 p_indexMax,
-						const bool											 p_minHasChanged ) const;
+		Model::Residue * const _getResidue( const uint p_localResidueIndex ) const;
 
-					void _generateDataSet();
-					void _generateString();
+		Dataset::SequenceDisplayDataset * const getDataset( const uint p_residueIndex ) const;
+		Dataset::SequenceDisplayDataset * const getDataset_recursive(
+			const std::vector<Dataset::SequenceDisplayDataset *> p_vec,
+			const uint											 p_residueIndex,
+			const uint											 p_indexMin,
+			const uint											 p_indexMax,
+			const bool											 p_minHasChanged ) const;
 
-				  private:
-					QString _strSequence;
-					QString _strScale;
-				};
+		void _generateDataSet();
+		void _generateString();
 
-			} // namespace Sequence
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+	  private:
+		QString _strSequence;
+		QString _strScale;
+	};
+
+} // namespace VTX::UI::Widget::Sequence
 #endif
