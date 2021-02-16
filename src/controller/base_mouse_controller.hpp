@@ -114,7 +114,7 @@ namespace VTX
 
 			virtual void _handleMouseWheelEvent( const QWheelEvent & p_event )
 			{
-				_deltaMouseWheel += p_event.angleDelta().y();
+				_deltaMouseWheel = p_event.angleDelta().y();
 			}
 
 		  private:

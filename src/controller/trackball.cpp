@@ -40,7 +40,7 @@ namespace VTX
 			float deltaDistance = 0.f;
 			if ( _deltaMouseWheel != 0.f )
 			{
-				deltaDistance	 = _deltaMouseWheel * 10.0f * p_deltaTime;
+				deltaDistance	 = _deltaMouseWheel * 0.001f;
 				_deltaMouseWheel = 0;
 			}
 
