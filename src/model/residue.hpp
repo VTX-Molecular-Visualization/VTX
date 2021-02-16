@@ -123,6 +123,7 @@ namespace VTX
 			void setVisible( const bool p_visible );
 
 			const Math::AABB getAABB() const;
+			const Math::AABB Residue::getWorldAABB() const;
 
 		  private:
 			TYPE	_type				  = TYPE::STANDARD;

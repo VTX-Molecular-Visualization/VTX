@@ -13,9 +13,14 @@ namespace VTX
 		const Math::AABB Atom::getAABB() const
 		{
 			Vec3f &	   position = getMoleculePtr()->getAtomPositionFrame( getMoleculePtr()->getFrame() )[ _index ];
-			Math::AABB aabb
-				= Math::AABB( position + getMoleculePtr()->getTransform().getTranslationVector(), getVdwRadius() );
+			Math::AABB aabb		= Math::AABB( position, getVdwRadius() );
 
+			return aabb;
+		}
+		const Math::AABB Atom::getWorldAABB() const
+		{
+			Math::AABB aabb = getAABB();
+			aabb.translate( getMoleculePtr()->getTransform().getTranslationVector() );
 			return aabb;
 		}
 

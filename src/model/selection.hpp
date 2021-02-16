@@ -142,10 +142,10 @@ namespace VTX::Model
 		bool isRepresentationSelected( Representation::InstantiatedRepresentation & ) const;
 		uint getRepresentationSelectedCount() const;
 
-		bool			   isEmpty() const;
-		void			   clear();
-		const Math::AABB & getAABB() const { return _aabb; }
-		void			   receiveEvent( const Event::VTXEvent & p_event ) override;
+		bool	   isEmpty() const;
+		void	   clear();
+		Math::AABB getAABB() const;
+		void	   receiveEvent( const Event::VTXEvent & p_event ) override;
 
 	  protected:
 		Selection() : BaseModel( ID::Model::MODEL_SELECTION )
@@ -162,7 +162,7 @@ namespace VTX::Model
 		MapMoleculeIds										   _items = MapMoleculeIds();
 		std::set<Representation::InstantiatedRepresentation *> _representations
 			= std::set<Representation::InstantiatedRepresentation *>();
-		Math::AABB _aabb = Math::AABB();
+		std::map<Model::ID, Math::AABB> _mapSelectionAABB = std::map<Model::ID, Math::AABB>();
 
 		void _selectMolecule( const Molecule & );
 		void _unselectMolecule( const Molecule & );

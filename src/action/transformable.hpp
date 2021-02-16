@@ -11,118 +11,107 @@
 #include "math/transform.hpp"
 #include "vtx_app.hpp"
 
-namespace VTX
+namespace VTX::Action::Transformable
 {
-	namespace Action
+	class Rotate : public BaseAction
 	{
-		namespace Transformable
+	  public:
+		explicit Rotate( Generic::BaseTransformable & p_transformable, const float p_angle, const Vec3f & p_axis ) :
+			_transformable( p_transformable ), _angle( p_angle ), _axis( p_axis )
 		{
-			class Rotate : public BaseAction
-			{
-			  public:
-				explicit Rotate( Generic::BaseTransformable & p_transformable,
-								 const float				  p_angle,
-								 const Vec3f &				  p_axis ) :
-					_transformable( p_transformable ),
-					_angle( p_angle ), _axis( p_axis )
-				{
-				}
+		}
 
-				virtual void execute() override
-				{
-					_transformable.rotate( _angle, _axis );
-					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-				}
+		virtual void execute() override
+		{
+			_transformable.rotate( _angle, _axis );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-			  private:
-				Generic::BaseTransformable & _transformable;
-				const float					 _angle;
-				const Vec3f					 _axis;
-			};
+	  private:
+		Generic::BaseTransformable & _transformable;
+		const float					 _angle;
+		const Vec3f					 _axis;
+	};
 
-			template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseTransformable, T>::value>>
-			class SetScale : public BaseActionUndonable
-			{
-			  public:
-				explicit SetScale( T & p_transformable, const float p_scale ) :
-					_transformable( p_transformable ), _scale( p_scale ),
-					_scaleOld( p_transformable.getTransform().getScale() )
-				{
-				}
+	template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseTransformable, T>::value>>
+	class SetScale : public BaseActionUndonable
+	{
+	  public:
+		explicit SetScale( T & p_transformable, const float p_scale ) :
+			_transformable( p_transformable ), _scale( p_scale ), _scaleOld( p_transformable.getTransform().getScale() )
+		{
+		}
 
-				virtual void execute() override
-				{
-					_transformable.setScale( _scale );
-					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-				}
+		virtual void execute() override
+		{
+			_transformable.setScale( _scale );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-				virtual void undo() override
-				{
-					_transformable.setScale( _scaleOld );
-					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-				}
+		virtual void undo() override
+		{
+			_transformable.setScale( _scaleOld );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-			  private:
-				Generic::BaseTransformable & _transformable;
-				const float					 _scale;
-				const Mat4f					 _scaleOld;
-			};
+	  private:
+		Generic::BaseTransformable & _transformable;
+		const float					 _scale;
+		const Mat4f					 _scaleOld;
+	};
 
-			class SetTranslation : public BaseActionUndonable
-			{
-			  public:
-				explicit SetTranslation( Generic::BaseTransformable & p_transformable, const Vec3f & p_translation ) :
-					_transformable( p_transformable ), _translation( p_translation ),
-					_translationOld( p_transformable.getTransform().getTranslation() )
-				{
-				}
+	class SetTranslation : public BaseActionUndonable
+	{
+	  public:
+		explicit SetTranslation( Generic::BaseTransformable & p_transformable, const Vec3f & p_translation ) :
+			_transformable( p_transformable ), _translation( p_translation ),
+			_translationOld( p_transformable.getTransform().getTranslation() )
+		{
+		}
 
-				virtual void execute() override
-				{
-					_transformable.setTranslation( _translation );
-					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-				}
+		virtual void execute() override
+		{
+			_transformable.setTranslation( _translation );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-				virtual void undo() override
-				{
-					_transformable.setTranslation( _translationOld );
-					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-				}
+		virtual void undo() override
+		{
+			_transformable.setTranslation( _translationOld );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-			  private:
-				Generic::BaseTransformable & _transformable;
-				const Vec3f					 _translation;
-				const Mat4f					 _translationOld;
-			};
+	  private:
+		Generic::BaseTransformable & _transformable;
+		const Vec3f					 _translation;
+		const Mat4f					 _translationOld;
+	};
 
-			class ApplyTransform : public BaseActionUndonable
-			{
-			  public:
-				explicit ApplyTransform( Generic::BaseTransformable & p_transformable,
-										 const Math::Transform &	  p_transform ) :
-					_transformable( p_transformable ),
-					_transform( p_transform ), _transformOld( p_transformable.getTransform() )
-				{
-				}
+	class ApplyTransform : public BaseActionUndonable
+	{
+	  public:
+		explicit ApplyTransform( Generic::BaseTransformable & p_transformable, const Math::Transform & p_transform ) :
+			_transformable( p_transformable ), _transform( p_transform ),
+			_transformOld( p_transformable.getTransform() )
+		{
+		}
 
-				virtual void execute() override
-				{
-					_transformable.applyTransform( _transform );
-					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-				}
+		virtual void execute() override
+		{
+			_transformable.applyTransform( _transform );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-				virtual void undo() override
-				{
-					_transformable.applyTransform( _transformOld );
-					VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-				}
+		virtual void undo() override
+		{
+			_transformable.applyTransform( _transformOld );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-			  private:
-				Generic::BaseTransformable & _transformable;
-				const Math::Transform		 _transform;
-				const Math::Transform		 _transformOld;
-			};
-		} // namespace Transformable
-	}	  // namespace Action
-} // namespace VTX
+	  private:
+		Generic::BaseTransformable & _transformable;
+		const Math::Transform		 _transform;
+		const Math::Transform		 _transformOld;
+	};
+} // namespace VTX::Action::Transformable
 #endif

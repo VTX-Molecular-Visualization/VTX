@@ -185,6 +185,7 @@ namespace VTX
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
 			const Math::AABB getAABB() const;
+			const Math::AABB getWorldAABB() const;
 
 		  private:
 			uint	  _index	  = 0;

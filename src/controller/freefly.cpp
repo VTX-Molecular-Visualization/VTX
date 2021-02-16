@@ -1,4 +1,6 @@
 #include "freefly.hpp"
+#include "action/action_manager.hpp"
+#include "action/selection.hpp"
 #include "object3d/scene.hpp"
 
 namespace VTX
@@ -7,13 +9,19 @@ namespace VTX
 	{
 		void Freefly::_updateInputs( const float & p_deltaTime )
 		{
+			// Deselect
+			if ( _mouseLeftClick )
+			{
+				VTX_ACTION(
+					new Action::Selection::ClearSelection( Selection::SelectionManager::get().getSelectionModel() ) );
+			}
+
 			// Rotation.
 			if ( _mouseLeftPressed )
 			{
 				_camera.rotate( Vec3f(
 					-VTX_SETTING().rotationSpeed * _deltaMousePosition.y * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f ),
 					-VTX_SETTING().rotationSpeed * _deltaMousePosition.x,
-
 					0.f ) );
 				_deltaMousePosition.x = 0;
 				_deltaMousePosition.y = 0;

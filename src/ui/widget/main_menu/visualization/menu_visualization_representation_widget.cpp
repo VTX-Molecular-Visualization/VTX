@@ -31,8 +31,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			_buttons.emplace_back( button );
 		}
 
-		_addPreset = WidgetFactory::get().instantiateWidget<RepresentationPresetButton>(
-			this, "addNewVisualModelPresetButton" );
+		_addPreset
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "addNewVisualModelPresetButton" );
 		_addPreset->setData( "Add\nPreset", ":/sprite/representation_new_preset_icon.png", Qt::Orientation::Vertical );
 		pushButtonInNextColumn( *_addPreset );
 

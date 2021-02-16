@@ -412,6 +412,13 @@ namespace VTX
 			}
 		}
 
+		Math::AABB Molecule::getWorldAABB() const
+		{
+			Math::AABB res = getAABB();
+			res.translate( getTransform().getTranslationVector() );
+			return res;
+		}
+
 		const Chain * const Molecule::getPreviousChain( const uint p_idBaseChain ) const
 		{
 			if ( p_idBaseChain == 0 )
@@ -495,10 +502,10 @@ namespace VTX
 			{
 				// Delete Residues
 				for ( uint residueIndex = _chains[ p_id ]->getIndexFirstResidue();
-					  residueIndex < _chains[ p_id ]->getIndexFirstResidue() + _chains[ p_id ]->getResidueCount();
+					  residueIndex < (_chains[ p_id ]->getIndexFirstResidue() + _chains[ p_id ]->getResidueCount());
 					  residueIndex++ )
 				{
-					removeResidue( residueIndex, p_delete, p_recursive, true, false );
+					removeResidue( residueIndex, p_delete, p_recursive, false, false );
 				}
 			}
 
@@ -526,7 +533,10 @@ namespace VTX
 					  atomIndex < _residues[ p_id ]->getIndexFirstAtom() + _residues[ p_id ]->getAtomCount();
 					  atomIndex++ )
 				{
-					removeAtom( atomIndex, p_delete, true, true, false );
+					if ( _atoms[ atomIndex ] == nullptr )
+						continue;
+
+					removeAtom( atomIndex, p_delete, true, false, false );
 				}
 			}
 
@@ -604,9 +614,10 @@ namespace VTX
 				const Bond * const bond = _bonds[ bondId ];
 				if ( bond != nullptr && bond->getIndexFirstAtom() == p_id )
 				{
-					removeBond( bondId, p_delete, false );
 					Model::Residue * const other			  = getAtom( bond->getIndexSecondAtom() )->getResiduePtr();
 					std::vector<uint> &	   otherExtraResidues = other->getIndexExtraBondEnd();
+
+					removeBond( bondId, p_delete, false );
 
 					otherExtraResidues.erase(
 						std::find( otherExtraResidues.begin(), otherExtraResidues.end(), bondId ) );
@@ -617,9 +628,10 @@ namespace VTX
 				const Bond * const bond = _bonds[ bondId ];
 				if ( bond != nullptr && bond->getIndexSecondAtom() == p_id )
 				{
-					removeBond( bondId, p_delete, false );
 					Model::Residue * const other			  = getAtom( bond->getIndexFirstAtom() )->getResiduePtr();
 					std::vector<uint> &	   otherExtraResidues = other->getIndexExtraBondStart();
+
+					removeBond( bondId, p_delete, false );
 
 					otherExtraResidues.erase(
 						std::find( otherExtraResidues.begin(), otherExtraResidues.end(), bondId ) );

@@ -56,6 +56,13 @@ namespace VTX
 			return aabb;
 		}
 
+		const Math::AABB Residue::getWorldAABB() const
+		{
+			Math::AABB aabb = getAABB();
+			aabb.translate( getMoleculePtr()->getTransform().getTranslationVector() );
+			return aabb;
+		}
+
 		const std::string Residue::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {
 			"---", // UNKNOWN
 			"ALA", // ALA
