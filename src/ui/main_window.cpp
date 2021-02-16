@@ -14,11 +14,10 @@ namespace VTX::UI
 	{
 		_registerEvent( Event::Global::CHANGE_STATE );
 
-		_mainMenuBar = WidgetFactory::get().instantiateWidget<Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
-		this->setMenuBar( _mainMenuBar );
-
 		_renderWidget = WidgetFactory::get().instantiateWidget<Widget::Render::RenderWidget>( this, "renderWidget" );
-		_sceneWidget  = WidgetFactory::get().instantiateWidget<Widget::Scene::SceneWidget>( this, "sceneWidget" );
+		_mainMenuBar  = WidgetFactory::get().instantiateWidget<Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
+		this->setMenuBar( _mainMenuBar );
+		_sceneWidget = WidgetFactory::get().instantiateWidget<Widget::Scene::SceneWidget>( this, "sceneWidget" );
 		_inspectorWidget
 			= WidgetFactory::get().instantiateWidget<Widget::Inspector::InspectorWidget>( this, "inspectorWidget" );
 		_consoleWidget
@@ -29,7 +28,6 @@ namespace VTX::UI
 			= WidgetFactory::get().instantiateWidget<Widget::Selection::SelectionWidget>( this, "selectionWidget" );
 		_settingWidget
 			= WidgetFactory::get().instantiateWidget<Widget::Settings::SettingWidget>( this, "settingWidget" );
-
 		_statusBarWidget
 			= WidgetFactory::get().instantiateWidget<Widget::StatusBar::StatusBarWidget>( this, "statusBar" );
 		_statusBarWidget->setFixedHeight( 25 );
