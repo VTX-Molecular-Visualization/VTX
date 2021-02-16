@@ -40,7 +40,7 @@ namespace VTX
 			float deltaDistance = 0.f;
 			if ( _deltaMouseWheel != 0.f )
 			{
-				deltaDistance	 = _deltaMouseWheel * 0.001f;
+				deltaDistance	 = _deltaMouseWheel * 0.00001 * Util::Math::distance( _camera.getPosition(), _target );
 				_deltaMouseWheel = 0;
 			}
 
