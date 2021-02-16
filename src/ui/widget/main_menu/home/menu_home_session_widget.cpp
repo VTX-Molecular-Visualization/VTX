@@ -25,8 +25,12 @@ namespace VTX
 					{
 						// TODO : Filter file type
 						const QString filename = QFileDialog::getOpenFileName( this, "Open Molecule", "", "*" );
-						FilePath *	  path	   = new FilePath( filename.toStdString() );
+						if ( filename.isEmpty() )
+						{
+							return;
+						}
 
+						FilePath * path = new FilePath( filename.toStdString() );
 						VTX_ACTION( new Action::Main::Open( path ), true );
 					}
 
