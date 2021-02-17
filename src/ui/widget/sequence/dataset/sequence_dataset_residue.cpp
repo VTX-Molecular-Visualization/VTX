@@ -21,17 +21,15 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		for ( uint i = 0; i < size; i++ )
 		{
 			const Model::Residue * const residue = molecule->getResidue( chainFirstIndex + _startResidueIndex + i );
-
-			if ( residue == nullptr )
-				sequenceString[ i ] = '-';
-			else
-				sequenceString[ i ] = residue->getSymbolShort()[ 0 ];
+			sequenceString[ i ]					 = residue->getSymbolShort()[ 0 ];
 		}
 
 		p_string.append( sequenceString );
 	}
 
-	void SequenceDisplayDataset_Residue::appendToScale( QString & p_scale, const bool p_startBloc ) const
+	void SequenceDisplayDataset_Residue::appendToScale( QString &  p_scale,
+														uint &	   p_lastIndexCharWritten,
+														const bool p_startBloc ) const
 	{
 		uint currentIndexChar;
 		uint currentLocalIndexResidue;
@@ -43,11 +41,11 @@ namespace VTX::UI::Widget::Sequence::Dataset
 
 		if ( p_startBloc )
 		{
-			const std::string firstResidueStr	 = std::to_string( originalIndexFirstResidue );
-			const uint		  lastCharFirstIndex = _drawInScale( p_scale, firstResidueStr, _startIndexChar, false );
+			const std::string firstResidueStr = std::to_string( originalIndexFirstResidue );
+			p_lastIndexCharWritten			  = _drawInScale( p_scale, firstResidueStr, _startIndexChar, false );
 
 			const std::string strSecondIndex	 = std::to_string( originalIndexFirstResidue + 1 );
-			const uint		  nextValidCharIndex = lastCharFirstIndex + ( (uint)strSecondIndex.size() / 2 ) + 1;
+			const uint		  nextValidCharIndex = p_lastIndexCharWritten + ( (uint)strSecondIndex.size() / 2 ) + 1;
 			const int nextValidOriginalIndex	 = originalIndexFirstResidue + ( nextValidCharIndex - _startIndexChar );
 
 			const uint moduloStep = nextValidOriginalIndex % Style::SEQUENCE_CHAIN_SCALE_STEP;
@@ -63,15 +61,28 @@ namespace VTX::UI::Widget::Sequence::Dataset
 
 			currentIndexChar		 = _startIndexChar + step;
 			currentLocalIndexResidue = step;
+
+			const int charOffset
+				= int( std::to_string( originalIndexFirstResidue + currentLocalIndexResidue ).size() ) / 2;
+
+			if ( ( currentIndexChar - charOffset ) <= ( p_lastIndexCharWritten + 1 ) )
+			{
+				currentIndexChar += Style::SEQUENCE_CHAIN_SCALE_STEP;
+				currentLocalIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP;
+			}
 		}
 
-		uint endIndex = _endResidueIndex - _startResidueIndex;
+		const uint								  endIndex = _endResidueIndex - _startResidueIndex;
+		const std::vector<Model::Residue *> & residues = _linkedChain.getMoleculePtr()->getResidues();
+		const uint residueIndexOffset				   = _linkedChain.getIndexFirstResidue() + _startResidueIndex;
 		for ( ; currentLocalIndexResidue <= endIndex; currentLocalIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP )
 		{
-			const int currentOriginalResidueIndex = originalIndexFirstResidue + currentLocalIndexResidue;
+			// const int currentOriginalResidueIndex = originalIndexFirstResidue + currentLocalIndexResidue;
+			const int currentOriginalResidueIndex
+				= residues[ residueIndexOffset + currentLocalIndexResidue ]->getIndexInOriginalChain();
 
-			std::string strIndex = std::to_string( currentOriginalResidueIndex );
-			_drawInScale( p_scale, strIndex, currentIndexChar, true );
+			std::string strIndex   = std::to_string( currentOriginalResidueIndex );
+			p_lastIndexCharWritten = _drawInScale( p_scale, strIndex, currentIndexChar, true );
 
 			currentIndexChar += Style::SEQUENCE_CHAIN_SCALE_STEP;
 		}

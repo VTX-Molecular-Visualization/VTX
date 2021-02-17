@@ -78,7 +78,7 @@ namespace VTX::UI::Widget::Sequence
 
 			uint residueScaleIndex = residue->getIndexInOriginalChain();
 
-			bool	   isMissingResidue = residueScaleIndex != previousResidueScaleIndex + 1;
+			bool	   isMissingResidue = residueScaleIndex > previousResidueScaleIndex + 1;
 			const bool isUnknownResidue = residue->getSymbolShort() == "?" || residue->getSymbolShort() == "-";
 
 			if ( isMissingResidue )
@@ -123,13 +123,10 @@ namespace VTX::UI::Widget::Sequence
 				startSequentialResidueChainStartIndex = false;
 				lastResidueWasUnknown				  = true;
 			}
-			else
+			else if ( !startSequentialResidueChainStartIndex )
 			{
-				if ( !startSequentialResidueChainStartIndex )
-				{
-					sequentialResidueChainStartIndex	  = localResidueIndex;
-					startSequentialResidueChainStartIndex = true;
-				}
+				sequentialResidueChainStartIndex	  = localResidueIndex;
+				startSequentialResidueChainStartIndex = true;
 			}
 
 			previousResidueScaleIndex = residueScaleIndex;
@@ -181,11 +178,11 @@ namespace VTX::UI::Widget::Sequence
 
 		_strScale = QString( scaleLength, ' ' );
 
-		bool startBlock = true;
-
+		bool startBlock			  = true;
+		uint lastIndexCharWritten = 0;
 		for ( auto it : _dataset )
 		{
-			it->appendToScale( _strScale, startBlock );
+			it->appendToScale( _strScale, lastIndexCharWritten, startBlock );
 			startBlock = it->isFinishingBlock( startBlock );
 		}
 	}

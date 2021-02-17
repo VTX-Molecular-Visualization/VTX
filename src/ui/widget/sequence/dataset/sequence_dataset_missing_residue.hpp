@@ -31,7 +31,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		};
 
 		void appendToSequence( QString & p_sequenceString ) const override;
-		void appendToScale( QString & p_scale, const bool p_startBloc ) const override;
+		void appendToScale( QString & p_scale, uint & p_lastIndexCharWritten, const bool p_startBloc ) const override;
 
 		const bool isFinishingBlock( bool p_startBlock ) const override { return _isTooLong; };
 

@@ -14,25 +14,27 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		}
 	}
 
-	void SequenceDisplayDataset_MissingResidue::appendToScale( QString & p_scale, const bool p_startBloc ) const
+	void SequenceDisplayDataset_MissingResidue::appendToScale( QString &  p_scale,
+															   uint &	  p_lastIndexCharWritten,
+															   const bool p_startBloc ) const
 	{
 		if ( _isTooLong )
 			return;
 
-		int	 currentIndexChar;
-		uint currentIndexResidue;
+		uint currentIndexChar;
+		int	 currentIndexResidue;
 
-		const uint firstResidue = _startResidueIndexInOriginalChain;
-		const uint endResidue	= _startResidueIndexInOriginalChain + _charCount;
+		const int firstResidue = _startResidueIndexInOriginalChain;
+		const int endResidue   = _startResidueIndexInOriginalChain + _charCount;
 
 		if ( p_startBloc )
 		{
-			const std::string firstResidueStr	 = std::to_string( firstResidue );
-			const uint		  lastCharFirstIndex = _drawInScale( p_scale, firstResidueStr, _startIndexChar, false );
+			const std::string firstResidueStr = std::to_string( firstResidue );
+			p_lastIndexCharWritten			  = _drawInScale( p_scale, firstResidueStr, _startIndexChar, false );
 
 			const std::string strSecondIndex = std::to_string( firstResidue + 1 );
 
-			const uint nextValidIndex = lastCharFirstIndex + ( (uint)strSecondIndex.size() / 2 ) + 1;
+			const uint nextValidIndex = p_lastIndexCharWritten + ( (uint)strSecondIndex.size() / 2 ) + 1;
 
 			currentIndexChar
 				= nextValidIndex + ( ( firstResidue + nextValidIndex ) % Style::SEQUENCE_CHAIN_SCALE_STEP );
@@ -47,12 +49,21 @@ namespace VTX::UI::Widget::Sequence::Dataset
 
 			currentIndexChar	= _startIndexChar + step;
 			currentIndexResidue = firstResidue + step;
+
+			const int charOffset
+				= int( std::to_string( _startResidueIndexInOriginalChain + currentIndexResidue ).size() ) / 2;
+
+			if ( ( currentIndexChar - charOffset ) <= ( p_lastIndexCharWritten + 1 ) )
+			{
+				currentIndexChar += Style::SEQUENCE_CHAIN_SCALE_STEP;
+				currentIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP;
+			}
 		}
 
 		for ( ; currentIndexResidue <= endResidue; currentIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP )
 		{
-			std::string strIndex = std::to_string( currentIndexResidue );
-			_drawInScale( p_scale, strIndex, currentIndexChar, true );
+			std::string strIndex   = std::to_string( currentIndexResidue );
+			p_lastIndexCharWritten = _drawInScale( p_scale, strIndex, currentIndexChar, true );
 
 			currentIndexChar += Style::SEQUENCE_CHAIN_SCALE_STEP;
 		}

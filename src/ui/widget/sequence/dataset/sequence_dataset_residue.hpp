@@ -19,7 +19,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 										const uint			 p_startResidueIndex,
 										const uint			 p_endResidueIndex );
 		void appendToSequence( QString & p_sequenceString ) const override;
-		void appendToScale( QString & p_scale, const bool p_startBloc ) const override;
+		void appendToScale( QString & p_scale, uint & p_lastIndexCharWritten, const bool p_startBloc ) const override;
 
 		Model::Residue * const getResidueAtCharIndex( const uint p_charIndex ) override;
 		bool				   isResidueInScope( const uint p_residueIndex ) const override;
