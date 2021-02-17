@@ -108,6 +108,7 @@ namespace VTX::UI::Widget::Sequence
 				{
 					localCharIndex += _emplaceResidueDataSet(
 						localCharIndex, sequentialResidueChainStartIndex, localResidueIndex - 1 );
+					lastResidueWasUnknown = false;
 				}
 
 				bool spaceBefore = localResidueIndex > 0 && !lastResidueWasUnknown;

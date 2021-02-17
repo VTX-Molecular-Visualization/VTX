@@ -42,10 +42,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 		}
 		else
 		{
-			uint moduloStep = firstResidue % Style::SEQUENCE_CHAIN_SCALE_STEP;
-			uint step		= moduloStep == 0
-								  ? 0
-								  : Style::SEQUENCE_CHAIN_SCALE_STEP - ( firstResidue % Style::SEQUENCE_CHAIN_SCALE_STEP );
+			const uint step = _getStepToNextValidIndex( firstResidue );
 
 			currentIndexChar	= _startIndexChar + step;
 			currentIndexResidue = firstResidue + step;

@@ -6,8 +6,10 @@
 #endif
 
 #include "model/residue.hpp"
+#include "style.hpp"
 #include <QPoint>
 #include <QString>
+#include <cmath>
 
 namespace VTX::UI::Widget::Sequence::Dataset
 {
@@ -61,6 +63,21 @@ namespace VTX::UI::Widget::Sequence::Dataset
 
 			return p_charIndex - indexOffset + indexTxtSize - 1;
 		}
+
+		inline uint _getStepToNextValidIndex( const int p_originalIndex ) const
+		{
+			const int moduloStep = p_originalIndex % Style::SEQUENCE_CHAIN_SCALE_STEP;
+
+			uint step;
+			if ( moduloStep < 0 )
+				step = std::abs( moduloStep );
+			else if ( moduloStep > 0 )
+				step = Style::SEQUENCE_CHAIN_SCALE_STEP - moduloStep;
+			else
+				step = 0;
+
+			return step;
+		};
 	};
 
 } // namespace VTX::UI::Widget::Sequence::Dataset

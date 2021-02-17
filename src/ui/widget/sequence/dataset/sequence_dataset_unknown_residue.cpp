@@ -39,20 +39,19 @@ namespace VTX::UI::Widget::Sequence::Dataset
 															   uint &	 p_lastIndexCharWritten,
 															   bool		 p_startBloc ) const
 	{
-		if ( p_startBloc || ( ( _residueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) == 0 ) )
+		const bool		  indexInitialized = _residueIndex != (uint)INT_MIN;
+		const std::string residueIndexStr  = indexInitialized ? std::to_string( _residueIndex ) : "?";
+
+		const bool center		   = !p_startBloc;
+		uint	   charIndexOffset = center ? ( (uint)_residue->getSymbolStr().length() / 2 ) : 0;
+		charIndexOffset += _spaceBefore ? 1 : 0;
+
+		const uint firstIndexPosition = _startIndexChar + charIndexOffset - ( int( residueIndexStr.size() ) / 2 );
+
+		if ( p_startBloc || ( firstIndexPosition > ( p_lastIndexCharWritten + 1 ) ) )
 		{
-			const bool		  indexInitialized = _residueIndex != (uint)INT_MIN;
-			const std::string residueIndexStr  = indexInitialized ? std::to_string( _residueIndex ) : "?";
-
-			const bool center		   = !p_startBloc;
-			uint	   charIndexOffset = center ? ( (uint)_residue->getSymbolStr().length() / 2 ) : 0;
-			charIndexOffset += _spaceBefore ? 1 : 0;
-
-			if ( p_startBloc || _startIndexChar > p_lastIndexCharWritten )
-			{
-				p_lastIndexCharWritten
-					= _drawInScale( p_scale, residueIndexStr, _startIndexChar + charIndexOffset, center );
-			}
+			p_lastIndexCharWritten
+				= _drawInScale( p_scale, residueIndexStr, _startIndexChar + charIndexOffset, center );
 		}
 	}
 

@@ -48,16 +48,14 @@ namespace VTX::UI::Widget::Sequence::Dataset
 			const uint		  nextValidCharIndex = p_lastIndexCharWritten + ( (uint)strSecondIndex.size() / 2 ) + 1;
 			const int nextValidOriginalIndex	 = originalIndexFirstResidue + ( nextValidCharIndex - _startIndexChar );
 
-			const uint moduloStep = nextValidOriginalIndex % Style::SEQUENCE_CHAIN_SCALE_STEP;
-			const uint step		  = moduloStep == 0 ? 0 : ( Style::SEQUENCE_CHAIN_SCALE_STEP - moduloStep );
+			const uint step = _getStepToNextValidIndex( nextValidOriginalIndex );
 
 			currentIndexChar		 = nextValidCharIndex + step;
 			currentLocalIndexResidue = currentIndexChar - _startIndexChar;
 		}
 		else
 		{
-			uint moduloStep = originalIndexFirstResidue % Style::SEQUENCE_CHAIN_SCALE_STEP;
-			uint step		= moduloStep == 0 ? 0 : Style::SEQUENCE_CHAIN_SCALE_STEP - moduloStep;
+			const uint step = _getStepToNextValidIndex( originalIndexFirstResidue );
 
 			currentIndexChar		 = _startIndexChar + step;
 			currentLocalIndexResidue = step;
@@ -72,7 +70,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 			}
 		}
 
-		const uint								  endIndex = _endResidueIndex - _startResidueIndex;
+		const uint							  endIndex = _endResidueIndex - _startResidueIndex;
 		const std::vector<Model::Residue *> & residues = _linkedChain.getMoleculePtr()->getResidues();
 		const uint residueIndexOffset				   = _linkedChain.getIndexFirstResidue() + _startResidueIndex;
 		for ( ; currentLocalIndexResidue <= endIndex; currentLocalIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP )
