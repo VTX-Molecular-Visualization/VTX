@@ -58,6 +58,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// Fullscreen / snapshot
 		_fullscreen = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleFullscreenButton" );
 		_fullscreen->setData( "Fullscreen", ":/sprite/fullscreen_icon.png", Qt::Orientation::Horizontal );
+		_updateFullscreenButton( VTXApp::get().getMainWindow().getWindowMode() );
 		const int lastColumn = pushButtonInNextColumn( *_fullscreen );
 
 		_takeSnapshot = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "takeSnapshotButton" );

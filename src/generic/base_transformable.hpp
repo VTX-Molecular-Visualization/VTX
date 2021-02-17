@@ -25,6 +25,7 @@ namespace VTX
 
 		  protected:
 			Math::Transform _transform;
+			virtual void	_transformModifiedEvent() {};
 		};
 	} // namespace Generic
 } // namespace VTX
