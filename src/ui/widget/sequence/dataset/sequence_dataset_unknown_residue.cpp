@@ -48,7 +48,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 			uint	   charIndexOffset = center ? ( (uint)_residue->getSymbolStr().length() / 2 ) : 0;
 			charIndexOffset += _spaceBefore ? 1 : 0;
 
-			if ( _startIndexChar > p_lastIndexCharWritten )
+			if ( p_startBloc || _startIndexChar > p_lastIndexCharWritten )
 			{
 				p_lastIndexCharWritten
 					= _drawInScale( p_scale, residueIndexStr, _startIndexChar + charIndexOffset, center );
