@@ -9,6 +9,7 @@ namespace VTX
 	const Style::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT = Style::SYMBOL_DISPLAY_MODE::SHORT;
 	const int						 Setting::WINDOW_WIDTH_DEFAULT		  = 1280;
 	const int						 Setting::WINDOW_HEIGHT_DEFAULT		  = 720;
+	const bool						 Setting::WINDOW_FULLSCREEN_DEFAULT	  = false;
 
 	const char * Setting::STYLESHEET_FILE_DEFAULT		 = ":/stylesheet.css";
 	const int	 Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT	 = 200;

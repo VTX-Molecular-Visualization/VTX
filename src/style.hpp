@@ -12,6 +12,7 @@
 #include <QFont>
 #include <QPalette>
 #include <QPixmap>
+#include <QSize>
 #include <iostream>
 
 namespace VTX
@@ -32,6 +33,9 @@ namespace VTX
 				static IconConst instance;
 				return instance;
 			};
+
+			const QPixmap FULLSCREEN_ICON;
+			const QPixmap WINDOWED_ICON;
 
 			const QPixmap UNFOLDED_PIXMAP;
 			const QPixmap FOLDED_PIXMAP;
@@ -59,7 +63,8 @@ namespace VTX
 					res = &ATOM_SYMBOL;
 				else
 				{
-					std::cout << "[WARNING] - Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." << std::endl;
+					std::cout << "[WARNING] - Symbol for model " + p_id + " not managed in IconConst::getModelSymbol."
+							  << std::endl;
 					// VTX_WARNING( "Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." );
 					res = nullptr;
 				}
@@ -68,12 +73,18 @@ namespace VTX
 			};
 
 		  private:
-			inline IconConst() :
-				UNFOLDED_PIXMAP( QPixmap( ":/sprite/treeview_unfolded_molecule_icon.png" ) ), FOLDED_PIXMAP( QPixmap( ":/sprite/treeview_folded_molecule_icon.png" ) ),
-				CLOSE_PIXMAP( QPixmap( ":/sprite/close_icon.png" ) ), MOLECULE_SYMBOL( QPixmap( ":/sprite/symbol/molecule_symbol_icon.png" ) ),
-				CHAIN_SYMBOL( QPixmap( ":/sprite/symbol/chain_symbol_icon.png" ) ), RESIDUE_SYMBOL( QPixmap( ":/sprite/symbol/residue_symbol_icon.png" ) ),
-				ATOM_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ), TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ),
-				REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ) {};
+			IconConst() :
+				UNFOLDED_PIXMAP( QPixmap( ":/sprite/treeview_unfolded_molecule_icon.png" ) ),
+				FOLDED_PIXMAP( QPixmap( ":/sprite/treeview_folded_molecule_icon.png" ) ),
+				CLOSE_PIXMAP( QPixmap( ":/sprite/close_icon.png" ) ),
+				MOLECULE_SYMBOL( QPixmap( ":/sprite/symbol/molecule_symbol_icon.png" ) ),
+				CHAIN_SYMBOL( QPixmap( ":/sprite/symbol/chain_symbol_icon.png" ) ),
+				RESIDUE_SYMBOL( QPixmap( ":/sprite/symbol/residue_symbol_icon.png" ) ),
+				ATOM_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
+				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ),
+				REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
+				FULLSCREEN_ICON( QPixmap( ":/sprite/fullscreen_icon.png" ) ),
+				WINDOWED_ICON( QPixmap( ":/sprite/windowed_icon.png" ) ) {};
 		};
 
 		inline static const QSize INSPECTOR_PREFERED_SIZE = QSize( 150, 1000 );
@@ -93,7 +104,8 @@ namespace VTX
 
 		inline static const int SCENE_SPACE_BETWEEN_ITEMS = 4;
 
-		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION = VTX::Selection::SelectionType::RESIDUE;
+		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION
+			= VTX::Selection::SelectionType::RESIDUE;
 
 		inline static const QFont TOOL_MENU_BUTTON_FONT = QFont( "Helvetica", 10 );
 		inline static const QFont SEQUENCE_DISPLAY_FONT = QFont( "Courier", 10 );

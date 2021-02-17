@@ -91,6 +91,7 @@ namespace VTX
 			"HOH", // HOH
 			"HEM", // HEM
 			"PO4", // PO4
+			"MEL", // MEL
 		};
 
 		const std::string Residue::SYMBOL_SHORT_STR[ (int)SYMBOL::COUNT ] = {
@@ -121,6 +122,7 @@ namespace VTX
 			"O", // HOH
 			"?", // HEM
 			"?", // PO4
+			"?", // MEL
 		};
 
 		const std::string Residue::SYMBOL_NAME[ (int)SYMBOL::COUNT ] = {
@@ -151,6 +153,7 @@ namespace VTX
 			"Water",				// HOH
 			"H�me",					// HEM
 			"Groupement phosphate", // PO4
+			"Melagatran",			// MEL
 		};
 
 		// http://jmol.sourceforge.net/jscolors/#Jmolcolors : Protein "amino" colors
@@ -182,6 +185,7 @@ namespace VTX
 			{ 255, 105, 180 }, // HOH
 			{ 255, 105, 180 }, // HEM
 			{ 255, 105, 180 }, // PO4
+			{ 255, 105, 180 }, // MEL
 		};
 	} // namespace Model
 } // namespace VTX

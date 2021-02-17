@@ -25,6 +25,14 @@ namespace VTX
 {
 	namespace UI
 	{
+		enum class WindowMode
+		{
+			Fullscreen = Qt::WindowState::WindowActive | Qt::WindowState::WindowFullScreen,
+			Windowed   = !Qt::WindowState::WindowFullScreen,
+			Maximized  = Qt::WindowState::WindowActive | Qt::WindowState::WindowMaximized,
+			Minimized  = Qt::WindowState::WindowActive | Qt::WindowState::WindowMinimized,
+		};
+
 		class MainWindow : public Widget::BaseWidget<QMainWindow, Ui_MainWindow>
 		{
 			Q_OBJECT
@@ -32,6 +40,7 @@ namespace VTX
 		  public:
 			MainWindow( QWidget * = 0 );
 			~MainWindow();
+			void setupUi();
 
 			inline const Widget::Render::OpenGLWidget & getOpenGLWidget() const
 			{
@@ -46,6 +55,13 @@ namespace VTX
 			void toggleSequenceWindow() const;
 			void openSettingWindow() const;
 			void openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const;
+
+			WindowMode getWindowMode();
+			void	   setWindowMode( const WindowMode & p_mode );
+			void	   toggleWindowState();
+
+		  protected:
+			void resizeEvent( QResizeEvent * p_event ) override;
 
 		  private:
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
@@ -90,6 +106,8 @@ namespace VTX
 			void _setupSlots();
 			void _setupDock();
 			void _toggleWidget( QWidget * widget );
+
+			WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
 		};
 
 	} // namespace UI

@@ -37,8 +37,8 @@ namespace VTX
 			REPRESENTATION_ADDED,
 			REPRESENTATION_REMOVED,
 			CONTROLLER_CHANGE,
-			DOCK_WINDOW_VISIBILITY_CHANGE
-
+			DOCK_WINDOW_VISIBILITY_CHANGE,
+			MAIN_WINDOW_MODE_CHANGE,
 		};
 
 		// Model events for notifier pattern (model->views)[1-n].

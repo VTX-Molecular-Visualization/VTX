@@ -57,6 +57,7 @@ namespace VTX
 		// Create UI.
 		_initQt();
 		_mainWindow = new UI::MainWindow();
+		_mainWindow->setupUi();
 		_mainWindow->show();
 
 		// Create singletons.

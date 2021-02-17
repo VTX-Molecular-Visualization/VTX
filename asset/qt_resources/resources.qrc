@@ -44,6 +44,7 @@
 	<file>sprite/treeview_folded_molecule_icon.png</file>
 	<file>sprite/treeview_unfolded_molecule_icon.png</file>
 	<file>sprite/undock_icon.png</file>
+	<file>sprite/windowed_icon.png</file>
 	<file>stylesheet.css</file>
 </qresource>
 </RCC>

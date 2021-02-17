@@ -31,8 +31,10 @@ namespace VTX
 		static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
 		Style::SYMBOL_DISPLAY_MODE				symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
 
-		static const int WINDOW_WIDTH_DEFAULT;
-		static const int WINDOW_HEIGHT_DEFAULT;
+		static const int  WINDOW_WIDTH_DEFAULT;
+		static const int  WINDOW_HEIGHT_DEFAULT;
+		static const bool WINDOW_FULLSCREEN_DEFAULT;
+		bool			  windowFullscreen = WINDOW_FULLSCREEN_DEFAULT;
 
 		static const char * STYLESHEET_FILE_DEFAULT;
 		static const int	CONSOLE_WIDGET_HEIGHT_DEFAULT;
