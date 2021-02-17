@@ -48,8 +48,19 @@ namespace VTX::UI::Widget::Render
 
 	void OpenGLWidget::initializeGL()
 	{
+		VTX_INFO( "Initializing OpenGL..." );
 		_gl = context()->versionFunctions<OpenGLFunctions>();
 		_gl->initializeOpenGLFunctions();
+
+		const uchar * glVersion	  = _gl->glGetString( GL_VERSION );
+		const uchar * glslVersion = _gl->glGetString( GL_SHADING_LANGUAGE_VERSION );
+		const uchar * glVendor	  = _gl->glGetString( GL_VENDOR );
+		const uchar * glRenderer  = _gl->glGetString( GL_RENDERER );
+
+		VTX_INFO( "GL version: " + std::string( (const char *)glVersion ) );
+		VTX_INFO( "GLSL version: " + std::string( (const char *)glslVersion ) );
+		VTX_INFO( "GL device: " + std::string( (const char *)glVendor ) + " "
+				  + std::string( (const char *)glRenderer ) );
 
 #ifdef _DEBUG
 		_gl->glEnable( GL_DEBUG_OUTPUT );

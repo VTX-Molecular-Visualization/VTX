@@ -19,6 +19,7 @@
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "visible.hpp"
+#include "vtx_app.hpp"
 #include <vector>
 
 namespace VTX::Action::Selection
@@ -141,10 +142,11 @@ namespace VTX::Action::Selection
 
 		virtual void execute() override
 		{
+			const Math::AABB target = _selection.isEmpty() ? VTXApp::get().getScene().getAABB() : _selection.getAABB();
 			VTXApp::get()
 				.getStateMachine()
 				.getItem<State::Visualization>( ID::State::VISUALIZATION )
-				->orientCameraController( _selection.getAABB() );
+				->orientCameraController( target );
 		}
 
 	  private:
@@ -558,7 +560,7 @@ namespace VTX::Action::Selection
 
 			_selection.clear();
 
-			for ( Model::Molecule * moleculeToDelete : moleculesToDelete ) 
+			for ( Model::Molecule * moleculeToDelete : moleculesToDelete )
 			{
 				VTXApp::get().getScene().removeMolecule( moleculeToDelete );
 				MVC::MvcManager::get().deleteModel( moleculeToDelete );

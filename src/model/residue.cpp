@@ -126,34 +126,34 @@ namespace VTX
 		};
 
 		const std::string Residue::SYMBOL_NAME[ (int)SYMBOL::COUNT ] = {
-			"Unknown",				// UNKNOWN
-			"Alanine",				// ALA
-			"Arginine",				// ARG
-			"Asparagine",			// ASN
-			"Aspartate",			// ASP
-			"Cysteine",				// CYS
-			"Glutamine",			// GLN
-			"Glutamate",			// GLU
-			"Glycine",				// GLY
-			"Histidine",			// HIS
-			"Isoleucine",			// ILE
-			"Leucine",				// LEU
-			"Lysine",				// LYS
-			"Methionine",			// MET
-			"Phenylalanine",		// PHE
-			"Proline",				// PRO
-			"Serine",				// SER
-			"Threonine",			// THR
-			"Tryptophan",			// TRP
-			"Tyrosine",				// TYR
-			"Valine",				// VAL
-			"?",					// ASX
-			"?",					// GLX
-			"Water",				// WAT
-			"Water",				// HOH
-			"H�me",					// HEM
-			"Groupement phosphate", // PO4
-			"Melagatran",			// MEL
+			"Unknown",		   // UNKNOWN
+			"Alanine",		   // ALA
+			"Arginine",		   // ARG
+			"Asparagine",	   // ASN
+			"Aspartate",	   // ASP
+			"Cysteine",		   // CYS
+			"Glutamine",	   // GLN
+			"Glutamate",	   // GLU
+			"Glycine",		   // GLY
+			"Histidine",	   // HIS
+			"Isoleucine",	   // ILE
+			"Leucine",		   // LEU
+			"Lysine",		   // LYS
+			"Methionine",	   // MET
+			"Phenylalanine",   // PHE
+			"Proline",		   // PRO
+			"Serine",		   // SER
+			"Threonine",	   // THR
+			"Tryptophan",	   // TRP
+			"Tyrosine",		   // TYR
+			"Valine",		   // VAL
+			"?",			   // ASX
+			"?",			   // GLX
+			"Water",		   // WAT
+			"Water",		   // HOH
+			"Heme",			   // HEM
+			"Phosphate group", // PO4
+			"Melagatran",		// MEL
 		};
 
 		// http://jmol.sourceforge.net/jscolors/#Jmolcolors : Protein "amino" colors

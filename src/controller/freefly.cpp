@@ -30,6 +30,7 @@ namespace VTX
 			{
 				_camera.rotateRoll( VTX_SETTING().rotationSpeed * _deltaMousePosition.x );
 				_deltaMousePosition.x = 0;
+				_deltaMousePosition.y = 0;
 			}
 
 			// Translation.

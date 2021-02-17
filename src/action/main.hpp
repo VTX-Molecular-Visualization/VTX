@@ -12,12 +12,12 @@
 #include "io/writer/vtx.hpp"
 #include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "network/network_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
-#include "worker/api_fetcher.hpp"
 #include "worker/loader.hpp"
 #include "worker/saver.hpp"
 #include "worker/snapshoter.hpp"
@@ -49,7 +49,7 @@ namespace VTX
 			class Open : public BaseAction
 			{
 			  public:
-				explicit Open( FilePath * p_path ) { _paths.emplace_back( p_path ); }
+				explicit Open( FilePath * const p_path ) { _paths.emplace_back( p_path ); }
 				explicit Open( const std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {}
 				explicit Open( const std::map<FilePath *, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
 
@@ -95,31 +95,7 @@ namespace VTX
 			  public:
 				explicit OpenApi( const std::string & p_id ) : _id( p_id ) {}
 
-				virtual void execute() override
-				{
-					Worker::ApiFetcher * const fetcher = new Worker::ApiFetcher( API_URL_MMTF + _id );
-
-					std::string		 id	  = _id;
-					FilePath * const path = new FilePath( id + ".mmtf" );
-
-					const Worker::CallbackSuccess * success = new Worker::CallbackSuccess( [ fetcher, path ]( void ) {
-						std::map<FilePath *, std::string *> & mapBuffers = std::map<FilePath *, std::string *>();
-						mapBuffers.emplace( path, fetcher->getBuffer() );
-						delete fetcher;
-
-						// Open the buffer.
-						VTX_ACTION( new Open( mapBuffers ) );
-					} );
-
-					const Worker::CallbackError * error
-						= new Worker::CallbackError( [ fetcher ]( const std::exception & p_e ) {
-							  VTX_ERROR( p_e.what() );
-							  delete fetcher->getBuffer();
-							  delete fetcher;
-						  } );
-
-					VTX_WORKER( fetcher, success, error );
-				}
+				void execute() override { VTX_NETWORK_MANAGER().downloadMMTF( _id ); }
 
 			  private:
 				const std::string _id;

@@ -9,36 +9,13 @@
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "worker/worker_manager.hpp"
-#include <QLoggingCategory>
 #include <QPalette>
-#include <QWindow>
 #include <exception>
 
 namespace VTX
 {
 	int ZERO = 0;
-	VTXApp::VTXApp() : QApplication( ZERO, nullptr )
-	{
-		QGamepadManager * ptrManager = QGamepadManager::instance();
-
-		/******************************
-		 * Workaround code so gamepads are detected
-		 *****************************/
-		QWindow * wnd = new QWindow();
-		wnd->show();
-		delete wnd;
-		processEvents();
-		/********************************
-		 * End workaround code
-		 ********************************/
-
-		QList<int> lstDevices = ptrManager->connectedGamepads();
-
-		if ( !lstDevices.isEmpty() )
-			VTX_DEBUG( "--------------FOUND" );
-		else
-			VTX_DEBUG( "--------------NOT FOUND" );
-	}
+	VTXApp::VTXApp() : QApplication( ZERO, nullptr ) {}
 
 	VTXApp::~VTXApp() {}
 
@@ -67,9 +44,6 @@ namespace VTX
 		Selection::SelectionManager::get();
 		Worker::WorkerManager::get();
 
-		// Create network manager.
-		_networkManager = new QNetworkAccessManager( this );
-
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );
 
@@ -82,8 +56,8 @@ namespace VTX
 		_elapsedTimer.start();
 		_tickTimer.start();
 
-		VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
-		// VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
+		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
+		VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
 
 //#define RT_ENABLED
 #ifdef RT_ENABLED
@@ -101,7 +75,6 @@ namespace VTX
 		_timer->stop();
 
 		delete _timer;
-		delete _networkManager;
 
 		if ( _stateMachine != nullptr )
 		{
@@ -127,7 +100,7 @@ namespace VTX
 		Style::applyApplicationPaletteInPalette( appPalette );
 		setPalette( appPalette );
 
-		QLoggingCategory::setFilterRules( QStringLiteral( "qt.gamepad.debug=true" ) );
+		// QLoggingCategory::setFilterRules( QStringLiteral( "qt.gamepad.debug=true" ) );
 		QGamepadManager::instance()->connectedGamepads();
 	}
 
