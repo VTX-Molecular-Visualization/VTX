@@ -41,9 +41,11 @@ namespace VTX::UI::Widget::Sequence
 	void SequenceDisplayWidget::mouseDoubleClickEvent( QMouseEvent * p_event )
 	{
 		const Model::Residue * const residue = _getResidueFromLocaleXPos( p_event->localPos().x() );
-		VTX_ACTION(new VTX::Action::Residue::Orient(*residue));
-	
-		p_event->accept();
+		if ( residue != nullptr )
+		{
+			VTX_ACTION( new VTX::Action::Residue::Orient( *residue ) );
+			p_event->accept();
+		}
 	}
 
 	Model::Residue * const SequenceDisplayWidget::getResidueAtPos( const QPoint & p_pos )

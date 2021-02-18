@@ -45,7 +45,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 			p_lastIndexCharWritten			  = _drawInScale( p_scale, firstResidueStr, _startIndexChar, false );
 
 			const std::string strSecondIndex	 = std::to_string( originalIndexFirstResidue + 1 );
-			const uint		  nextValidCharIndex = p_lastIndexCharWritten + ( (uint)strSecondIndex.size() / 2 ) + 1;
+			const uint		  nextValidCharIndex = p_lastIndexCharWritten + ( (uint)strSecondIndex.size() / 2 ) + 2;
 			const int nextValidOriginalIndex	 = originalIndexFirstResidue + ( nextValidCharIndex - _startIndexChar );
 
 			const uint step = _getStepToNextValidIndex( nextValidOriginalIndex );
@@ -88,11 +88,8 @@ namespace VTX::UI::Widget::Sequence::Dataset
 
 	Model::Residue * const SequenceDisplayDataset_Residue::getResidueAtCharIndex( const uint p_charIndex )
 	{
-		const uint firstIndexInOriginlaChain
-			= _linkedChain.getMoleculePtr()
-				  ->getResidue( _linkedChain.getIndexFirstResidue() + _startResidueIndex )
-				  ->getIndex();
-		uint residueIndex = firstIndexInOriginlaChain + p_charIndex - _startIndexChar;
+		const uint residueIndex
+			= _linkedChain.getIndexFirstResidue() + _startResidueIndex + ( p_charIndex - _startIndexChar );
 		return _linkedChain.getMoleculePtr()->getResidue( residueIndex );
 	}
 

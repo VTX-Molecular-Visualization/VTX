@@ -34,7 +34,7 @@ namespace VTX::UI::Widget::Sequence::Dataset
 
 			const std::string strSecondIndex = std::to_string( firstResidue + 1 );
 
-			const uint nextValidIndex = p_lastIndexCharWritten + ( (uint)strSecondIndex.size() / 2 ) + 1;
+			const uint nextValidIndex = p_lastIndexCharWritten + ( (uint)strSecondIndex.size() / 2 ) + 2;
 
 			currentIndexChar
 				= nextValidIndex + ( ( firstResidue + nextValidIndex ) % Style::SEQUENCE_CHAIN_SCALE_STEP );

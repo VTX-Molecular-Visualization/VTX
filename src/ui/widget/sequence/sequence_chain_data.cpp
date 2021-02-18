@@ -135,7 +135,8 @@ namespace VTX::UI::Widget::Sequence
 
 		if ( startSequentialResidueChainStartIndex )
 		{
-			_emplaceResidueDataSet( localCharIndex, sequentialResidueChainStartIndex, residueCount - 1 );
+			localCharIndex
+				+= _emplaceResidueDataSet( localCharIndex, sequentialResidueChainStartIndex, residueCount - 1 );
 		}
 
 		_dataset.emplace_back( new Dataset::SequenceDisplayDataset_EndHtmlColorTag( localCharIndex ) );
