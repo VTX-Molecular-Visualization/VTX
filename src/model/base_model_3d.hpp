@@ -30,7 +30,12 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
-			inline virtual const Math::AABB & getAABB() const { return _aabb; }
+			inline virtual const Math::AABB & getAABB() const
+			{
+				if ( !_aabb.isValid() )
+					_computeAABB();
+				return _aabb;
+			}
 			inline virtual const Math::AABB & getWorldAABB() const
 			{
 				if ( !_worldAabb.isValid() )
@@ -47,7 +52,7 @@ namespace VTX
 			inline const std::vector<uint> &  getBufferAABBIndices() const { return _bufferAABBIndices; }
 			inline bool						  isInit() const { return _isInit; }
 
-			inline void referenceLinkedAABB( Math::AABB * const _aabb ) { _linkedAABBs.emplace( _aabb ); }
+			inline void referenceLinkedAABB( Math::AABB * const p_aabb ) { _linkedAABBs.emplace( p_aabb ); }
 
 			void render( const Object3D::Camera & p_camera ) override
 			{
@@ -83,7 +88,7 @@ namespace VTX
 			}
 
 		  protected:
-			Math::AABB							   _aabb;
+			mutable Math::AABB					   _aabb;
 			mutable Math::AABB					   _worldAabb;
 			std::vector<Generic::BaseRenderable *> _renderables		  = std::vector<Generic::BaseRenderable *>();
 			B *									   _buffer			  = nullptr;
@@ -117,7 +122,7 @@ namespace VTX
 
 			virtual void _init() {};
 			virtual void _fillBuffer()		   = 0;
-			virtual void _computeAABB()		   = 0;
+			virtual void _computeAABB() const  = 0;
 			virtual void _instantiate3DViews() = 0;
 			inline void	 _addRenderable( Generic::BaseRenderable * const p_renderable )
 			{

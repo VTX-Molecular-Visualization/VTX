@@ -97,13 +97,18 @@ namespace VTX
 			_buffer->setBonds( _bufferBonds );
 		}
 
-		void Molecule::_computeAABB()
+		void Molecule::_computeAABB() const
 		{
-			for ( AtomPositionsFrame frame : _atomPositionsFrames )
+			for ( const Model::Atom * const atom : _atoms )
 			{
-				for ( const Vec3f & pos : frame )
+				if ( atom == nullptr )
+					continue;
+
+				const uint	atomIndex  = atom->getIndex();
+				const float atomRadius = atom->getVdwRadius();
+				for ( const AtomPositionsFrame & frame : _atomPositionsFrames )
 				{
-					_aabb.extend( pos );
+					_aabb.extend( frame[ atomIndex ], atomRadius );
 				}
 			}
 		}
@@ -508,6 +513,8 @@ namespace VTX
 
 			_chains[ p_id ] = nullptr;
 
+			_aabb.invalidate();
+
 			// Notify
 			if ( p_notifyViews )
 				_notifyDataChanged();
@@ -574,6 +581,8 @@ namespace VTX
 					}
 				}
 			}
+
+			_aabb.invalidate();
 
 			// Notify
 			if ( p_notifyViews )
@@ -664,6 +673,8 @@ namespace VTX
 					}
 				}
 			}
+
+			_aabb.invalidate();
 
 			// Notify
 			if ( p_notifyViews )

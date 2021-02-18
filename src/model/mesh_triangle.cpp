@@ -19,7 +19,7 @@ namespace VTX
 			_buffer->setIndices( _indices );
 		}
 
-		void MeshTriangle::_computeAABB()
+		void MeshTriangle::_computeAABB() const
 		{
 			_aabb.invalidate();
 			for ( const Vec3f & v : _vertices )

@@ -69,7 +69,7 @@ namespace VTX
 		  protected:
 			void _init() override;
 			void _fillBuffer() override;
-			void _computeAABB() override;
+			void _computeAABB() const override;
 			void _instantiate3DViews() override;
 
 		  private:

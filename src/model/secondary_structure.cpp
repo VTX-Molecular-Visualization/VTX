@@ -192,7 +192,7 @@ namespace VTX
 
 		const Math::Transform & SecondaryStructure::getTransform() const { return _molecule->getTransform(); };
 
-		void SecondaryStructure::_computeAABB() {}
+		void SecondaryStructure::_computeAABB() const {}
 
 		void SecondaryStructure::_instantiate3DViews()
 		{
