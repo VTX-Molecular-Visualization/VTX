@@ -18,7 +18,7 @@ namespace VTX
 			Shortcut() = default;
 
 		  protected:
-			void _handleKeyDownEvent( const int & ) override;
+			void _handleKeyDownEvent( const ScanCode & ) override;
 			void update( const float & ) override {}
 
 		  private:

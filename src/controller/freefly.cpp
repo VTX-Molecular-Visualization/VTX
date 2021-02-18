@@ -36,27 +36,27 @@ namespace VTX
 			// Translation.
 			Vec3f translation = VEC3F_ZERO;
 
-			if ( _isKeyPressed( Qt::Key_Z ) || _isKeyPressed( Qt::Key_Up ) )
+			if ( _isKeyPressed( ScanCode::Z ) || _isKeyPressed( ScanCode::Up ) )
 			{
 				translation.z++;
 			}
-			if ( _isKeyPressed( Qt::Key_S ) || _isKeyPressed( Qt::Key_Down ) )
+			if ( _isKeyPressed( ScanCode::S ) || _isKeyPressed( ScanCode::Down ) )
 			{
 				translation.z--;
 			}
-			if ( _isKeyPressed( Qt::Key_Q ) || _isKeyPressed( Qt::Key_Left ) )
+			if ( _isKeyPressed( ScanCode::Q ) || _isKeyPressed( ScanCode::Left ) )
 			{
 				translation.x--;
 			}
-			if ( _isKeyPressed( Qt::Key_D ) || _isKeyPressed( Qt::Key_Right ) )
+			if ( _isKeyPressed( ScanCode::D ) || _isKeyPressed( ScanCode::Right ) )
 			{
 				translation.x++;
 			}
-			if ( _isKeyPressed( Qt::Key_R ) )
+			if ( _isKeyPressed( ScanCode::R ) )
 			{
 				translation.y++;
 			}
-			if ( _isKeyPressed( Qt::Key_F ) )
+			if ( _isKeyPressed( ScanCode::F ) )
 			{
 				translation.y--;
 			}
@@ -69,11 +69,11 @@ namespace VTX
 			translation *= VTX_SETTING().translationSpeed;
 			translation *= p_deltaTime;
 
-			if ( _isKeyPressed( Qt::Key_Shift ) )
+			if ( _isKeyPressed( ScanCode::Shift ) )
 			{
 				translation *= VTX_SETTING().translationFactorSpeed;
 			}
-			if ( _isKeyPressed( Qt::Key_Control ) )
+			if ( _isKeyPressed( ScanCode::Control ) )
 			{
 				translation /= VTX_SETTING().translationFactorSpeed;
 			}

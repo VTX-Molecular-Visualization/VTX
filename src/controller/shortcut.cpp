@@ -13,12 +13,12 @@ namespace VTX
 {
 	namespace Controller
 	{
-		void Shortcut::_handleKeyDownEvent( const int & p_key )
+		void Shortcut::_handleKeyDownEvent( const ScanCode & p_key )
 		{
 			// TODO: link with action and UI button.
 			switch ( p_key )
 			{
-			case Qt::Key_F1:
+			case ScanCode::F1:
 				if ( QApplication::keyboardModifiers() & Qt::ControlModifier )
 				{
 					VTX_ACTION( new Action::Main::ResetCameraController() );
@@ -28,20 +28,20 @@ namespace VTX
 					VTX_ACTION( new Action::Main::ToggleCameraController() );
 				}
 				break;
-			case Qt::Key_F2:
+			case ScanCode::F2:
 				VTX_ACTION( new Action::Setting::ChangeRepresentation(
 					( VTX_SETTING().representation + 1 )
 					% Model::Representation::RepresentationLibrary::get().getRepresentationCount() ) );
 				break;
-			case Qt::Key_F3:
+			case ScanCode::F3:
 				VTX_ACTION( new Action::Setting::ChangeColorMode(
 					Generic::COLOR_MODE( ( (uint)VTX_SETTING().colorMode + 1 ) % 4 ) ) );
 				break;
-			case Qt::Key_F4:
+			case ScanCode::F4:
 				VTX_ACTION( new Action::Setting::ChangeShading(
 					Renderer::SHADING( ( (uint)VTX_SETTING().shading + 1 ) % (uint)Renderer::SHADING::COUNT ) ) );
 				break;
-			case Qt::Key_F5:
+			case ScanCode::F5:
 				VTX_ACTION(
 					new Action::Viewpoint::Create( *VTXApp::get().getScene().getPaths()[ 0 ],
 												   VTXApp::get().getScene().getCamera(),
@@ -51,9 +51,11 @@ namespace VTX
 													   ->getCurrentCameraController() ) );
 				break;
 
-			case Qt::Key_F10: VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().activeRenderer ) ); break;
+			case ScanCode::F10:
+				VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().activeRenderer ) );
+				break;
 
-			case Qt::Key_F11:
+			case ScanCode::F11:
 				VTX_ACTION( new Action::Setting::ChangeRenderMode(
 					Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)Renderer::MODE::COUNT ) ) );
 				break;

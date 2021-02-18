@@ -100,8 +100,9 @@ namespace VTX
 		Style::applyApplicationPaletteInPalette( appPalette );
 		setPalette( appPalette );
 
-		// QLoggingCategory::setFilterRules( QStringLiteral( "qt.gamepad.debug=true" ) );
-		QGamepadManager::instance()->connectedGamepads();
+#ifdef _DEBUG
+		QLoggingCategory::setFilterRules( QStringLiteral( "qt.gamepad.debug=true" ) );
+#endif
 	}
 
 	void VTXApp::goToState( const std::string & p_name, void * const p_arg )
