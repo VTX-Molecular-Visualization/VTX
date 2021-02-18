@@ -10,7 +10,8 @@ int main( int p_argc, char * p_argv[] )
 	try
 	{
 		VTXApp & app = VTXApp::get();
-		app.start();
+		app.start();	
+
 		return app.exec();
 	}
 	catch ( const std::exception & p_e )

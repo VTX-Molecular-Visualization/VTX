@@ -69,35 +69,35 @@ namespace VTX
 			_deltaMousePosition.y = 0;
 
 			// Keyboard.
-			if ( _isKeyPressed( Qt::Key_Z ) || _isKeyPressed( Qt::Key_Up ) )
+			if ( _isKeyPressed( ScanCode::Z ) || _isKeyPressed( ScanCode::Up ) )
 			{
 				deltaDistance = 1.5f * p_deltaTime;
 			}
-			if ( _isKeyPressed( Qt::Key_S ) || _isKeyPressed( Qt::Key_Down ) )
+			if ( _isKeyPressed( ScanCode::S ) || _isKeyPressed( ScanCode::Down ) )
 			{
 				deltaDistance = -1.5f * p_deltaTime;
 			}
-			if ( _isKeyPressed( Qt::Key_D ) || _isKeyPressed( Qt::Key_Right ) )
+			if ( _isKeyPressed( ScanCode::D ) || _isKeyPressed( ScanCode::Right ) )
 			{
 				deltaVelocity.x = 1e4f * p_deltaTime;
 			}
-			if ( _isKeyPressed( Qt::Key_Q ) || _isKeyPressed( Qt::Key_Left ) )
+			if ( _isKeyPressed( ScanCode::Q ) || _isKeyPressed( ScanCode::Left ) )
 			{
 				deltaVelocity.x = -1e4f * p_deltaTime;
 			}
-			if ( _isKeyPressed( Qt::Key_R ) )
+			if ( _isKeyPressed( ScanCode::R ) )
 			{
 				deltaVelocity.y = 1e4f * p_deltaTime;
 			}
-			if ( _isKeyPressed( Qt::Key_F ) )
+			if ( _isKeyPressed( ScanCode::F ) )
 			{
 				deltaVelocity.y = -1e4f * p_deltaTime;
 			}
-			if ( _isKeyPressed( Qt::Key_E ) )
+			if ( _isKeyPressed( ScanCode::E ) )
 			{
 				deltaVelocity.z = 1e4f * p_deltaTime;
 			}
-			if ( _isKeyPressed( Qt::Key_A ) )
+			if ( _isKeyPressed( ScanCode::A ) )
 			{
 				deltaVelocity.z = -1e4f * p_deltaTime;
 			}
@@ -107,11 +107,11 @@ namespace VTX
 			{
 				deltaDistance *= VTX_SETTING().translationSpeed;
 
-				if ( _isKeyPressed( Qt::Key_Shift ) )
+				if ( _isKeyPressed( ScanCode::Shift ) )
 				{
 					deltaDistance *= VTX_SETTING().translationFactorSpeed;
 				}
-				if ( _isKeyPressed( Qt::Key_Control ) )
+				if ( _isKeyPressed( ScanCode::Control ) )
 				{
 					deltaDistance /= VTX_SETTING().translationFactorSpeed;
 				}
