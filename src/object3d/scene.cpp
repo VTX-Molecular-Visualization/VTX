@@ -40,6 +40,7 @@ namespace VTX
 		{
 			_molecules.emplace( p_molecule, 0.f );
 			_aabb.extend( p_molecule->getAABB() );
+			p_molecule->referenceLinkedAABB( &_aabb );
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, p_molecule ) );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
@@ -47,7 +48,7 @@ namespace VTX
 		void Scene::removeMolecule( MoleculePtr const p_molecule )
 		{
 			_molecules.erase( p_molecule );
-			_computeAABB();
+			_aabb.invalidate();
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_REMOVED, p_molecule ) );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
@@ -58,6 +59,7 @@ namespace VTX
 		{
 			_meshes.emplace_back( p_mesh );
 			_aabb.extend( p_mesh->getAABB() );
+			p_mesh->referenceLinkedAABB( &_aabb );
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_ADDED, p_mesh ) );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
@@ -65,21 +67,28 @@ namespace VTX
 		void Scene::removeMesh( MeshTrianglePtr const p_mesh )
 		{
 			_meshes.erase( std::find( _meshes.begin(), _meshes.end(), p_mesh ) );
-			_computeAABB();
+			_aabb.invalidate();
 			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_REMOVED, p_mesh ) );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		}
 
+		const Math::AABB & Scene::getAABB()
+		{
+			if ( !_aabb.isValid() )
+				_computeAABB();
+
+			return _aabb;
+		}
 		void Scene::_computeAABB()
 		{
 			_aabb.invalidate();
 			for ( const PairMoleculePtrFloat & mol : _molecules )
 			{
-				_aabb.extend( mol.first->getAABB() );
+				_aabb.extend( mol.first->getWorldAABB() );
 			}
 			for ( const MeshTrianglePtr & mesh : _meshes )
 			{
-				_aabb.extend( mesh->getAABB() );
+				_aabb.extend( mesh->getWorldAABB() );
 			}
 		}
 

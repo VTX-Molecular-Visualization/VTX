@@ -17,6 +17,7 @@
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
+#include <QWindow>
 
 namespace VTX
 {
@@ -67,6 +68,16 @@ namespace VTX
 						VTX_ERROR( "Cannot save settings: " + std::string( p_e.what() ) );
 					}
 				}
+			};
+
+			class WindowMode : public BaseAction
+			{
+			  public:
+				explicit WindowMode( const UI::WindowMode & p_windowMode ) : _windowMode( p_windowMode ) {}
+				void execute() override { VTXApp::get().getMainWindow().setWindowMode( _windowMode ); }
+
+			  private:
+				const UI::WindowMode _windowMode;
 			};
 
 			class ChangeDisplayMode : public BaseAction

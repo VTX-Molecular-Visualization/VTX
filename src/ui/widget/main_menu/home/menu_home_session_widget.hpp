@@ -10,51 +10,39 @@
 #include <QMenu>
 #include <QWidget>
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu::Home
 {
-	namespace UI
+	class MenuHomeSessionWidget : public MenuToolBlockWidget
 	{
-		namespace Widget
-		{
-			namespace MainMenu
-			{
-				namespace Home
-				{
-					class MenuHomeSessionWidget : public MenuToolBlockWidget
-					{
-						VTX_WIDGET
+		VTX_WIDGET
 
-					  public:
-						~MenuHomeSessionWidget();
-						void localize() override;
+	  public:
+		~MenuHomeSessionWidget();
+		void localize() override;
 
-					  protected:
-						MenuHomeSessionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
-						void _setupUi( const QString & p_name ) override;
-						void _setupSlots() override;
+	  protected:
+		MenuHomeSessionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 
-					  private:
-						MenuToolButtonWidget * _newSessionButton		= nullptr;
-						MenuToolButtonWidget * _openSessionButton		= nullptr;
-						MenuToolButtonWidget * _openRecentSessionButton = nullptr;
-						MenuToolButtonWidget * _saveSessionButton		= nullptr;
-						MenuToolButtonWidget * _saveAsSessionButton		= nullptr;
-						MenuToolButtonWidget * _loadSettingsButton		= nullptr;
-						MenuToolButtonWidget * _saveSettingsButton		= nullptr;
+	  private:
+		MenuToolButtonWidget * _newSessionButton		= nullptr;
+		MenuToolButtonWidget * _openSessionButton		= nullptr;
+		MenuToolButtonWidget * _openRecentSessionButton = nullptr;
+		MenuToolButtonWidget * _saveSessionButton		= nullptr;
+		MenuToolButtonWidget * _saveAsSessionButton		= nullptr;
+		MenuToolButtonWidget * _loadSettingsButton		= nullptr;
+		MenuToolButtonWidget * _saveSettingsButton		= nullptr;
 
-						QMenu * _recentSessionMenu = nullptr;
+		QMenu * _recentSessionMenu = nullptr;
 
-					  private:
-						void _openFile();
-						void _loadRecentSession( const int & p_ptrSessionIndex ) const;
-						void _loadSettings() const;
-						void _saveSettings() const;
+	  private:
+		void _openFile();
+		void _loadRecentSession( const int & p_ptrSessionIndex ) const;
+		void _loadSettings() const;
+		void _saveSettings() const;
 
-						QMenu * const MenuHomeSessionWidget::_generateRecentSessionsMenu() const;
-					};
-				} // namespace Home
-			}	  // namespace MainMenu
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+		QMenu * const MenuHomeSessionWidget::_generateRecentSessionsMenu() const;
+	};
+} // namespace VTX::UI::Widget::MainMenu::Home
 #endif

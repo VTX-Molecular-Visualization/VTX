@@ -42,7 +42,7 @@ namespace VTX
 			inline const MapMoleculePtrFloat &	 getMolecules() const { return _molecules; };
 			inline const VectorPathPtr &		 getPaths() const { return _paths; };
 			inline const VectorMeshTrianglePtr & getMeshes() const { return _meshes; };
-			inline const Math::AABB &			 getAABB() const { return _aabb; }
+			const Math::AABB &					 getAABB();
 
 			void addMolecule( MoleculePtr const );
 			void removeMolecule( MoleculePtr const );

@@ -1,71 +1,69 @@
 #include "sequence_dataset_missing_residue.hpp"
 
-namespace VTX
+namespace VTX::UI::Widget::Sequence::Dataset
 {
-	namespace UI
+	void SequenceDisplayDataset_MissingResidue::appendToSequence( QString & p_sequenceString ) const
 	{
-		namespace Widget
+		if ( _isTooLong )
 		{
-			namespace Sequence
+			p_sequenceString.append( TOO_LONG_STR );
+		}
+		else
+		{
+			p_sequenceString.append( QString( _charCount, '-' ) );
+		}
+	}
+
+	void SequenceDisplayDataset_MissingResidue::appendToScale( QString &  p_scale,
+															   uint &	  p_lastIndexCharWritten,
+															   const bool p_startBloc ) const
+	{
+		if ( _isTooLong )
+			return;
+
+		uint currentIndexChar;
+		int	 currentIndexResidue;
+
+		const int firstResidue = _startResidueIndexInOriginalChain;
+		const int endResidue   = _startResidueIndexInOriginalChain + _charCount;
+
+		if ( p_startBloc )
+		{
+			const std::string firstResidueStr = std::to_string( firstResidue );
+			p_lastIndexCharWritten			  = _drawInScale( p_scale, firstResidueStr, _startIndexChar, false );
+
+			const std::string strSecondIndex = std::to_string( firstResidue + 1 );
+
+			const uint nextValidIndex = p_lastIndexCharWritten + ( (uint)strSecondIndex.size() / 2 ) + 2;
+
+			currentIndexChar
+				= nextValidIndex + ( ( firstResidue + nextValidIndex ) % Style::SEQUENCE_CHAIN_SCALE_STEP );
+			currentIndexResidue = firstResidue + currentIndexChar - _startIndexChar;
+		}
+		else
+		{
+			const uint step = _getStepToNextValidIndex( firstResidue );
+
+			currentIndexChar	= _startIndexChar + step;
+			currentIndexResidue = firstResidue + step;
+
+			const int charOffset
+				= int( std::to_string( _startResidueIndexInOriginalChain + currentIndexResidue ).size() ) / 2;
+
+			if ( ( currentIndexChar - charOffset ) <= ( p_lastIndexCharWritten + 1 ) )
 			{
-				namespace Dataset
-				{
-					void SequenceDisplayDataset_MissingResidue::appendToSequence( QString & p_sequenceString ) const
-					{
-						if ( _isTooLong )
-						{
-							// Use of unbreakable space (U+00A0) instead of normal space because rich text in QLabel collapse consecutive space and break scale alignment
-							p_sequenceString.append( " " );
-						}
-						else
-						{
-							p_sequenceString.append( QString( _charCount, '-' ) );
-						}
-					}
+				currentIndexChar += Style::SEQUENCE_CHAIN_SCALE_STEP;
+				currentIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP;
+			}
+		}
 
-					void SequenceDisplayDataset_MissingResidue::appendToScale( QString & p_scale, const bool p_startBloc ) const
-					{
-						if ( _isTooLong )
-							return;
+		for ( ; currentIndexResidue <= endResidue; currentIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP )
+		{
+			std::string strIndex   = std::to_string( currentIndexResidue );
+			p_lastIndexCharWritten = _drawInScale( p_scale, strIndex, currentIndexChar, true );
 
-						int	 currentIndexChar;
-						uint currentIndexResidue;
+			currentIndexChar += Style::SEQUENCE_CHAIN_SCALE_STEP;
+		}
+	}
 
-						const uint firstResidue = _startResidueIndexInOriginalChain;
-						const uint endResidue	= _startResidueIndexInOriginalChain + _charCount;
-
-						if ( p_startBloc )
-						{
-							const std::string firstResidueStr	 = std::to_string( firstResidue );
-							const uint		  lastCharFirstIndex = _drawInScale( p_scale, firstResidueStr, _startIndexChar, false );
-
-							const std::string strSecondIndex = std::to_string( firstResidue + 1 );
-
-							const uint nextValidIndex = lastCharFirstIndex + ( (uint)strSecondIndex.size() / 2 ) + 1;
-
-							currentIndexChar	= nextValidIndex + ( ( firstResidue + nextValidIndex ) % Style::SEQUENCE_CHAIN_SCALE_STEP );
-							currentIndexResidue = firstResidue + currentIndexChar - _startIndexChar;
-						}
-						else
-						{
-							uint moduloStep = firstResidue % Style::SEQUENCE_CHAIN_SCALE_STEP;
-							uint step		= moduloStep == 0 ? 0 : Style::SEQUENCE_CHAIN_SCALE_STEP - ( firstResidue % Style::SEQUENCE_CHAIN_SCALE_STEP );
-
-							currentIndexChar	= _startIndexChar + step;
-							currentIndexResidue = firstResidue + step;
-						}
-
-						for ( ; currentIndexResidue <= endResidue; currentIndexResidue += Style::SEQUENCE_CHAIN_SCALE_STEP )
-						{
-							std::string strIndex = std::to_string( currentIndexResidue );
-							_drawInScale( p_scale, strIndex, currentIndexChar, true );
-
-							currentIndexChar += Style::SEQUENCE_CHAIN_SCALE_STEP;
-						}
-					}
-
-				} // namespace Dataset
-			}	  // namespace Sequence
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+} // namespace VTX::UI::Widget::Sequence::Dataset

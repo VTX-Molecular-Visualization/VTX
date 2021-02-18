@@ -13,6 +13,8 @@
 #include "math/aabb.hpp"
 #include "model/base_model.hpp"
 #include "tool/logger.hpp"
+#include <unordered_set>
+#include <vector>
 
 namespace VTX
 {
@@ -29,11 +31,23 @@ namespace VTX
 
 		  public:
 			inline virtual const Math::AABB & getAABB() const { return _aabb; }
+			inline virtual const Math::AABB & getWorldAABB() const
+			{
+				if ( !_worldAabb.isValid() )
+				{
+					_worldAabb = _aabb;
+					_worldAabb.translate( getTransform().getTranslationVector() );
+				}
+
+				return _worldAabb;
+			}
 			inline const B * const			  getBuffer() const { return _buffer; }
 			inline B * const				  getBuffer() { return _buffer; }
 			inline const std::vector<Vec3f> & getBufferAABBCorners() const { return _bufferAABBCorners; }
 			inline const std::vector<uint> &  getBufferAABBIndices() const { return _bufferAABBIndices; }
 			inline bool						  isInit() const { return _isInit; }
+
+			inline void referenceLinkedAABB( Math::AABB * const _aabb ) { _linkedAABBs.emplace( _aabb ); }
 
 			void render( const Object3D::Camera & p_camera ) override
 			{
@@ -51,7 +65,6 @@ namespace VTX
 					_buffer->unbindAABB();
 				}
 			}
-
 			void init( OpenGLFunctions * const p_gl )
 			{
 				_buffer = new B( p_gl );
@@ -71,6 +84,7 @@ namespace VTX
 
 		  protected:
 			Math::AABB							   _aabb;
+			mutable Math::AABB					   _worldAabb;
 			std::vector<Generic::BaseRenderable *> _renderables		  = std::vector<Generic::BaseRenderable *>();
 			B *									   _buffer			  = nullptr;
 			bool								   _isInit			  = false;
@@ -78,15 +92,28 @@ namespace VTX
 			std::vector<uint>					   _bufferAABBIndices = std::vector<uint>();
 			Generic::BaseRenderable *			   _viewBox			  = nullptr;
 
+			std::unordered_set<Math::AABB *> _linkedAABBs = std::unordered_set<Math::AABB *>();
+
 			BaseModel3D( const ID::VTX_ID & p_typeId ) : BaseModel( p_typeId ) {}
 			virtual ~BaseModel3D()
 			{
+				_linkedAABBs.clear();
+
 				if ( _buffer != nullptr )
 				{
 					_buffer->free();
 					delete _buffer;
 				}
 			}
+
+			virtual void _transformModifiedEvent() override { _invalidateWorldAABB(); };
+			void		 _invalidateWorldAABB()
+			{
+				_worldAabb.invalidate();
+
+				for ( Math::AABB * const aabb : _linkedAABBs )
+					aabb->invalidate();
+			};
 
 			virtual void _init() {};
 			virtual void _fillBuffer()		   = 0;

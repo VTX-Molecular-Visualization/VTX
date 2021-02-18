@@ -89,9 +89,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	void MenuVisualizationCameraActionWidget::_orientCamera() const
 	{
 		const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
-
-		if ( selection.getItems().size() > 0 )
-			VTX_ACTION( new Action::Selection::Orient( selection ) );
+		VTX_ACTION( new Action::Selection::Orient( selection ) );
 	}
 
 	void MenuVisualizationCameraActionWidget::_setTrackballController() const

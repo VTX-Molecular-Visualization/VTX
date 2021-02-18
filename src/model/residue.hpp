@@ -66,6 +66,7 @@ namespace VTX
 				HOH,
 				HEM,
 				PO4,
+				MEL,
 				COUNT
 			};
 

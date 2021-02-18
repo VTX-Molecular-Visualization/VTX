@@ -115,7 +115,7 @@ namespace VTX
 			_bufferAABBIndices = std::vector<uint>();
 			for ( const Residue * const elem : _residues )
 			{
-				const Math::AABB & aabb = elem->getAABB();
+				const Math::AABB & aabb = elem->getWorldAABB();
 
 				const Vec3f & min = aabb.getMin();
 				const Vec3f & max = aabb.getMax();
@@ -174,11 +174,11 @@ namespace VTX
 				switch ( colorMode )
 				{
 				case Generic::COLOR_MODE::ATOM:
-					//if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
+					// if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
 					//{
 					//	_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
 					//}
-					//else
+					// else
 					{
 						_bufferAtomColors[ i ] = _atoms[ i ]->getColor();
 					}
@@ -412,13 +412,6 @@ namespace VTX
 			}
 		}
 
-		Math::AABB Molecule::getWorldAABB() const
-		{
-			Math::AABB res = getAABB();
-			res.translate( getTransform().getTranslationVector() );
-			return res;
-		}
-
 		const Chain * const Molecule::getPreviousChain( const uint p_idBaseChain ) const
 		{
 			if ( p_idBaseChain == 0 )
@@ -502,7 +495,7 @@ namespace VTX
 			{
 				// Delete Residues
 				for ( uint residueIndex = _chains[ p_id ]->getIndexFirstResidue();
-					  residueIndex < (_chains[ p_id ]->getIndexFirstResidue() + _chains[ p_id ]->getResidueCount());
+					  residueIndex < ( _chains[ p_id ]->getIndexFirstResidue() + _chains[ p_id ]->getResidueCount() );
 					  residueIndex++ )
 				{
 					removeResidue( residueIndex, p_delete, p_recursive, false, false );
