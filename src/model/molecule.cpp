@@ -15,6 +15,7 @@
 #include "view/d3/cylinder.hpp"
 #include "view/d3/sphere.hpp"
 #include "vtx_app.hpp"
+#include <algorithm>
 
 namespace VTX
 {
@@ -85,6 +86,19 @@ namespace VTX
 				_setRepresentableMolecule( this );
 				computeRepresentationTargets();
 			}
+		}
+
+		bool Molecule::isEmpty()
+		{
+			for ( uint i = 0; i < getChainCount(); i++ )
+			{
+				if ( _chains[ i ] != nullptr )
+				{
+					return false;
+				}
+			}
+
+			return true;
 		}
 
 		void Molecule::_fillBuffer()
@@ -582,11 +596,18 @@ namespace VTX
 				}
 			}
 
-			_aabb.invalidate();
+			if ( p_checkParentUpdate && parent->getResidueCount() == 0 )
+			{
+				removeChain( parent->getIndex(), p_delete, true, p_notifyViews );
+			}
+			else
+			{
+				_aabb.invalidate();
 
-			// Notify
-			if ( p_notifyViews )
-				_notifyDataChanged();
+				// Notify
+				if ( p_notifyViews )
+					_notifyDataChanged();
+			}
 		}
 
 		void Molecule::removeAtom( const uint p_id,
@@ -674,11 +695,18 @@ namespace VTX
 				}
 			}
 
-			_aabb.invalidate();
+			if ( p_checkParentUpdate && parent->getAtomCount() == 0 )
+			{
+				removeResidue( parent->getIndex(), p_delete, true, p_checkParentUpdate, p_notifyViews );
+			}
+			else
+			{
+				_aabb.invalidate();
 
-			// Notify
-			if ( p_notifyViews )
-				_notifyDataChanged();
+				// Notify
+				if ( p_notifyViews )
+					_notifyDataChanged();
+			}
 		}
 
 		void Molecule::removeBond( const uint p_id, const bool p_delete, const bool p_notifyViews )

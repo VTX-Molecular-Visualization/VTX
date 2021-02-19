@@ -184,6 +184,9 @@ namespace VTX
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name ) { _name = p_name; };
 
+			// Mask BaseVisible::setVisible
+			void setVisible( const bool p_visible );
+
 			const Math::AABB getAABB() const;
 			const Math::AABB getWorldAABB() const;
 

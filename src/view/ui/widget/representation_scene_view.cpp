@@ -5,7 +5,11 @@
 #include "model/selection.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
+#include "ui/contextual_menu.hpp"
+#include "ui/main_window.hpp"
 #include "ui/mime_type.hpp"
+#include "ui/widget/contextual_menu/contextual_menu_instantiated_representation.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX::View::UI::Widget
 {
@@ -21,6 +25,8 @@ namespace VTX::View::UI::Widget
 		representationView->setIcon( 0, VTX::Style::IconConst::get().REPRESENTATION_SYMBOL );
 		representationView->setCheckState( 0, Qt::CheckState::Checked );
 
+		setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
+
 		addTopLevelItem( representationView );
 	}
 	void RepresentationSceneView::_setupSlots()
@@ -28,6 +34,10 @@ namespace VTX::View::UI::Widget
 		SceneItemWidget::_setupSlots();
 
 		connect( this, &QTreeWidget::itemClicked, this, &RepresentationSceneView::_onItemClicked );
+		connect( this,
+				 &QTreeWidget::customContextMenuRequested,
+				 this,
+				 &RepresentationSceneView::_onCustomContextMenuCalled );
 	}
 	void RepresentationSceneView::localize() {}
 
@@ -37,6 +47,14 @@ namespace VTX::View::UI::Widget
 		VTX_ACTION( new Action::Selection::SelectRepresentation( selectionModel, *_model ) );
 	}
 
+	void RepresentationSceneView::_onCustomContextMenuCalled( const QPoint & p_clicPos )
+	{
+		VTXApp::get()
+			.getMainWindow()
+			.getContextualMenu()
+			.displayMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuInstantiatedRepresentation>(
+				VTX::UI::ContextualMenu::Menu::InstantiatedRepresentation, _model, mapToGlobal( p_clicPos ) );
+	}
 	void RepresentationSceneView::setTarget( Generic::BaseRepresentable & p_renderable )
 	{
 		if ( _representable != nullptr )
@@ -53,7 +71,6 @@ namespace VTX::View::UI::Widget
 		_model->setPriority( p_position );
 	}
 
-	void		RepresentationSceneView::_deleteAction() { VTX_ACTION( new Action::DeleteRepresentation( _model ) ); }
 	QMimeData * RepresentationSceneView::_getDataForDrag()
 	{
 		return VTX::UI::MimeType::generateInstantiatedRepresentationData( *_model );

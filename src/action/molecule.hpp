@@ -247,57 +247,26 @@ namespace VTX::Action::Molecule
 	class Copy : public BaseAction
 	{
 	  public:
-		explicit Copy( const Model::Selection & p_source ) : _selection( p_source ) {}
+		explicit Copy( const Model::Molecule & p_target ) : _target( p_target ) {}
 		virtual void execute() override
 		{
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeSelectionData :
-				  _selection.getItems() )
-			{
-				Model::GeneratedMolecule * generatedMolecule
-					= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
-				generatedMolecule->copyFromSelection( moleculeSelectionData );
-				VTX_EVENT(
-					new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+			Model::GeneratedMolecule * generatedMolecule
+				= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
-				const float offset = generatedMolecule->getAABB().radius() + _selection.getAABB().radius()
-									 + VTX::Setting::COPIED_MOLECULE_OFFSET;
+			generatedMolecule->copyFromMolecule( _target );
 
-				generatedMolecule->setTranslation( VTX::Vec3f( offset, 0, 0 ) );
-				VTXApp::get().getScene().addMolecule( generatedMolecule );
-			}
+			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+
+			const float offset = generatedMolecule->getAABB().radius() + _target.getAABB().radius()
+								 + VTX::Setting::COPIED_MOLECULE_OFFSET;
+			generatedMolecule->setTranslation( VTX::Vec3f( offset, 0, 0 ) );
+
+			VTXApp::get().getScene().addMolecule( generatedMolecule );
 		}
 
 	  private:
-		const Model::Selection & _selection;
+		const Model::Molecule & _target;
 	};
 
-	class Extract : public BaseAction
-	{
-	  public:
-		explicit Extract( const Model::Selection & p_source ) : _selection( p_source ) {}
-		virtual void execute() override
-		{
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeSelectionData :
-				  _selection.getItems() )
-			{
-				const Model::ID & idMolSource = _selection.getItems().begin()->first;
-				Model::Molecule & molecule	  = MVC::MvcManager::get().getModel<Model::Molecule>( idMolSource );
-
-				Model::GeneratedMolecule * const generatedMolecule
-					= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
-				generatedMolecule->extractFromSelection( moleculeSelectionData );
-
-				VTX_EVENT(
-					new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
-
-				VTXApp::get().getScene().addMolecule( generatedMolecule );
-			}
-			
-			VTX::Selection::SelectionManager::get().getSelectionModel().clear();
-		}
-
-	  private:
-		const Model::Selection & _selection;
-	};
 } // namespace VTX::Action::Molecule
 #endif

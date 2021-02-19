@@ -23,7 +23,7 @@ namespace VTX::UI
 			setWindowMode( WindowMode::Windowed );
 	}
 
-	MainWindow::~MainWindow() {}
+	MainWindow::~MainWindow() { delete _contextualMenu; }
 
 	void MainWindow::receiveEvent( const Event::VTXEvent & p_event )
 	{
@@ -39,10 +39,10 @@ namespace VTX::UI
 	void MainWindow::setupUi()
 	{
 		_renderWidget = WidgetFactory::get().instantiateWidget<Widget::Render::RenderWidget>( this, "renderWidget" );
-		_mainMenuBar = WidgetFactory::get().instantiateWidget<Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
+		_mainMenuBar  = WidgetFactory::get().instantiateWidget<Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
 		setMenuBar( _mainMenuBar );
 
-		_sceneWidget  = WidgetFactory::get().instantiateWidget<Widget::Scene::SceneWidget>( this, "sceneWidget" );
+		_sceneWidget = WidgetFactory::get().instantiateWidget<Widget::Scene::SceneWidget>( this, "sceneWidget" );
 		_inspectorWidget
 			= WidgetFactory::get().instantiateWidget<Widget::Inspector::InspectorWidget>( this, "inspectorWidget" );
 		_consoleWidget
@@ -58,6 +58,8 @@ namespace VTX::UI
 			= WidgetFactory::get().instantiateWidget<Widget::StatusBar::StatusBarWidget>( this, "statusBar" );
 		_statusBarWidget->setFixedHeight( 25 );
 		setStatusBar( _statusBarWidget );
+
+		_contextualMenu = new ContextualMenu();
 
 		_setupSlots();
 

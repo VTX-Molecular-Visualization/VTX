@@ -41,7 +41,7 @@ namespace VTX::View::UI::Widget
 		void _setupSlots() override;
 
 		void		_onItemClicked( QTreeWidgetItem *, int );
-		void		_deleteAction() override;
+		void		_onCustomContextMenuCalled( const QPoint & p_clicPos );
 		QMimeData * _getDataForDrag() override;
 
 	  private:
