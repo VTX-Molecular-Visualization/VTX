@@ -10,6 +10,17 @@ namespace VTX
 		Molecule * const Atom::getMoleculePtr() const { return _residuePtr->getChainPtr()->getMoleculePtr(); };
 		Chain * const	 Atom::getChainPtr() const { return _residuePtr->getChainPtr(); }
 
+		void Atom::setVisible( const bool p_visible )
+		{
+			if ( isVisible() != p_visible )
+			{
+				BaseVisible ::setVisible( p_visible );
+				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::ATOM_VISIBILITY, _index ) );
+				getMoleculePtr()->propagateEventToViews(
+					new Event::VTXEventValue<uint>( Event::Model::ATOM_VISIBILITY, _index ) );
+			}
+		}
+
 		const Math::AABB Atom::getAABB() const
 		{
 			Vec3f &	   position = getMoleculePtr()->getAtomPositionFrame( getMoleculePtr()->getFrame() )[ _index ];

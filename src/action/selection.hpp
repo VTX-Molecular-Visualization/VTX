@@ -7,9 +7,12 @@
 
 #include "action/visible.hpp"
 #include "base_action.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "id.hpp"
 #include "model/atom.hpp"
 #include "model/chain.hpp"
+#include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "model/selection.hpp"
@@ -133,24 +136,6 @@ namespace VTX::Action::Selection
 	  private:
 		Model::Selection &	   _selection;
 		std::vector<Model::ID> _models = std::vector<Model::ID>();
-	};
-
-	class Orient : public BaseAction
-	{
-	  public:
-		explicit Orient( const Model::Selection & p_selection ) : _selection( p_selection ) {}
-
-		virtual void execute() override
-		{
-			const Math::AABB target = _selection.isEmpty() ? VTXApp::get().getScene().getAABB() : _selection.getAABB();
-			VTXApp::get()
-				.getStateMachine()
-				.getItem<State::Visualization>( ID::State::VISUALIZATION )
-				->orientCameraController( target );
-		}
-
-	  private:
-		const Model::Selection & _selection;
 	};
 
 	class SelectMolecule : public BaseAction
@@ -447,6 +432,24 @@ namespace VTX::Action::Selection
 	};
 
 	///////////////////////////// ACTION ON SELECTION ///////////////////////////////
+	class Orient : public BaseAction
+	{
+	  public:
+		explicit Orient( const Model::Selection & p_selection ) : _selection( p_selection ) {}
+
+		virtual void execute() override
+		{
+			const Math::AABB target = _selection.isEmpty() ? VTXApp::get().getScene().getAABB() : _selection.getAABB();
+			VTXApp::get()
+				.getStateMachine()
+				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				->orientCameraController( target );
+		}
+
+	  private:
+		const Model::Selection & _selection;
+	};
+
 	class ChangeVisibility : public Visible::ChangeVisibility
 	{
 	  public:
@@ -479,20 +482,34 @@ namespace VTX::Action::Selection
 				{
 					molecule.setVisible( _visible );
 				}
-
-				for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainIds : molIds.second )
+				else
 				{
-					Model::Chain & chain = *molecule.getChain( chainIds.first );
-
-					if ( chainIds.second.getFullySelectedChildCount() == chain.getResidueCount() )
+					for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainIds : molIds.second )
 					{
-						chain.setVisible( _visible );
-					}
+						Model::Chain & chain = *molecule.getChain( chainIds.first );
 
-					for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueIds : chainIds.second )
-					{
-						Model::Residue * const residue = molecule.getResidue( residueIds.first );
-						residue->setVisible( _visible );
+						if ( chainIds.second.getFullySelectedChildCount() == chain.getResidueCount() )
+						{
+							chain.setVisible( _visible );
+							continue;
+						}
+
+						for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueIds : chainIds.second )
+						{
+							Model::Residue & residue = *molecule.getResidue( residueIds.first );
+
+							if ( residueIds.second.getFullySelectedChildCount() == residue.getAtomCount() )
+							{
+								residue.setVisible( _visible );
+								continue;
+							}
+
+							for ( const uint atomId : residueIds.second )
+							{
+								Model::Atom * const atom = molecule.getAtom( atomId );
+								atom->setVisible( _visible );
+							}
+						}
 					}
 				}
 
@@ -508,6 +525,61 @@ namespace VTX::Action::Selection
 		bool					 _visible;
 	};
 
+	class Copy : public BaseAction
+	{
+	  public:
+		explicit Copy( const Model::Selection & p_source ) : _selection( p_source ) {}
+		virtual void execute() override
+		{
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeSelectionData :
+				  _selection.getItems() )
+			{
+				Model::GeneratedMolecule * generatedMolecule
+					= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+				generatedMolecule->copyFromSelection( moleculeSelectionData );
+				VTX_EVENT(
+					new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+
+				const float offset = generatedMolecule->getAABB().radius() + _selection.getAABB().radius()
+									 + VTX::Setting::COPIED_MOLECULE_OFFSET;
+
+				generatedMolecule->setTranslation( VTX::Vec3f( offset, 0, 0 ) );
+				VTXApp::get().getScene().addMolecule( generatedMolecule );
+			}
+		}
+
+	  private:
+		const Model::Selection & _selection;
+	};
+
+	class Extract : public BaseAction
+	{
+	  public:
+		explicit Extract( const Model::Selection & p_source ) : _selection( p_source ) {}
+		virtual void execute() override
+		{
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeSelectionData :
+				  _selection.getItems() )
+			{
+				const Model::ID & idMolSource = _selection.getItems().begin()->first;
+				Model::Molecule & molecule	  = MVC::MvcManager::get().getModel<Model::Molecule>( idMolSource );
+
+				Model::GeneratedMolecule * const generatedMolecule
+					= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+				generatedMolecule->extractFromSelection( moleculeSelectionData );
+
+				VTX_EVENT(
+					new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+
+				VTXApp::get().getScene().addMolecule( generatedMolecule );
+			}
+
+			VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+		}
+
+	  private:
+		const Model::Selection & _selection;
+	};
 	class Delete : public BaseAction
 	{
 	  public:
@@ -553,9 +625,16 @@ namespace VTX::Action::Selection
 					}
 				}
 
-				// Call notify only once after all modif in molecule
-				molecule.forceNotifyDataChanged();
-				molecule.refreshBondsBuffer();
+				if ( molecule.isEmpty() )
+				{
+					moleculesToDelete.emplace_back( &molecule );
+				}
+				else
+				{
+					// Call notify only once after all modif in molecule
+					molecule.forceNotifyDataChanged();
+					molecule.refreshBondsBuffer();
+				}
 			}
 
 			_selection.clear();

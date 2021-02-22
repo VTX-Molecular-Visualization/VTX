@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "ui/widget/settings/setting_widget_enum.hpp"
+#include "contextual_menu.hpp"
 #include "ui_main_window.h"
 #include "widget/base_widget.hpp"
 #include "widget/console/console_widget.hpp"
@@ -17,6 +17,7 @@
 #include "widget/selection/selection_widget.hpp"
 #include "widget/sequence/sequence_widget.hpp"
 #include "widget/settings/setting_widget.hpp"
+#include "widget/settings/setting_widget_enum.hpp"
 #include "widget/status_bar/status_bar_widget.hpp"
 #include <QCloseEvent>
 #include <QMainWindow>
@@ -51,6 +52,8 @@ namespace VTX
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
 			void closeEvent( QCloseEvent * ) override;
 
+			const ContextualMenu & getContextualMenu() { return *_contextualMenu; }
+
 			bool getWidgetVisibility( const ID::VTX_ID & p_winId ) const;
 			void toggleSequenceWindow() const;
 			void openSettingWindow() const;
@@ -73,6 +76,8 @@ namespace VTX
 			Widget::Sequence::SequenceWidget *	 _sequenceWidget  = nullptr;
 			Widget::Selection::SelectionWidget * _selectionWidget = nullptr;
 			Widget::Settings::SettingWidget *	 _settingWidget	  = nullptr;
+
+			ContextualMenu * _contextualMenu = nullptr;
 
 			Widget::StatusBar::StatusBarWidget * _statusBarWidget = nullptr;
 

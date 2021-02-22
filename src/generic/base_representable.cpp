@@ -83,14 +83,14 @@ namespace VTX
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::ATOM ) )
 				{
 					const uint			  nextAtom	 = residue->getIndexFirstAtom() + residue->getAtomCount();
-					std::pair<uint, uint> rangeAtoms = std::pair( residue->getIndexFirstAtom(), 1 );
-					for ( uint i = residue->getIndexFirstAtom() + 1; i < nextAtom; i++ )
+					std::pair<uint, uint> rangeAtoms = std::pair( residue->getIndexFirstAtom(), 0 );
+					for ( uint i = residue->getIndexFirstAtom(); i < nextAtom; i++ )
 					{
-						if ( _molecule->getAtom( i ) == nullptr )
+						if ( _molecule->getAtom( i ) == nullptr || !_molecule->getAtom( i )->isVisible() )
 						{
 							if ( rangeAtoms.second > 0 )
 								representationTargets.appendAtoms( rangeAtoms );
-							rangeAtoms.first  = i+1;
+							rangeAtoms.first  = i + 1;
 							rangeAtoms.second = 0;
 						}
 						else
@@ -106,6 +106,7 @@ namespace VTX
 				{
 					const std::pair<uint, uint> rangeBonds
 						= std::pair( residue->getIndiceFirstBond(), residue->getBondIndiceCount() );
+
 					representationTargets.appendBonds(
 						rangeBonds, residue->getIndexExtraBondStart(), residue->getIndexExtraBondEnd() );
 				}

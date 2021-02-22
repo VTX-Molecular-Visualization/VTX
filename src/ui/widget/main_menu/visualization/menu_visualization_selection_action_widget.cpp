@@ -1,6 +1,5 @@
 #include "menu_visualization_selection_action_widget.hpp"
 #include "action/action_manager.hpp"
-#include "action/molecule.hpp"
 #include "action/selection.hpp"
 #include "action/visible.hpp"
 #include "model/selection.hpp"
@@ -72,12 +71,12 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	void MenuVisualizationSelectionActionWidget::_copySelection() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Molecule::Copy( selectionModel ) );
+		VTX_ACTION( new Action::Selection::Copy( selectionModel ) );
 	}
 	void MenuVisualizationSelectionActionWidget::_extractSelection() const
 	{
 		const Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		VTX_ACTION( new Action::Molecule::Extract( selectionModel ) );
+		VTX_ACTION( new Action::Selection::Extract( selectionModel ) );
 	}
 	void MenuVisualizationSelectionActionWidget::_deleteSelection() const
 	{

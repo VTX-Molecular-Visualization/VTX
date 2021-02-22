@@ -52,8 +52,16 @@ namespace VTX::Model
 
 	  public:
 		void copyFromSelection( const std::pair<Model::ID, Model::Selection::MapChainIds> & p_moleculeSelectionData );
+		void copyFromMolecule( const Model::Molecule & p_molecule );
+		void copyFromChain( const Model::Chain & p_chain );
+		void copyFromResidue( const Model::Residue & p_residue );
+		void copyFromAtom( const Model::Atom & p_atom );
+
 		void extractFromSelection(
 			const std::pair<Model::ID, Model::Selection::MapChainIds> & p_moleculeSelectionData );
+		void extractChain( const Model::Chain & p_chain );
+		void extractResidue( const Model::Residue & p_residue );
+		void extractAtom( const Model::Atom & p_atom );
 
 	  protected:
 		GeneratedMolecule();
@@ -65,6 +73,23 @@ namespace VTX::Model
 							   const Model::Residue & p_residueSource,
 							   Model::Chain * const	  p_parent );
 		void _copyAtomData( Model::Atom & p_atom, const Model::Atom & p_atomSource, Model::Residue * const p_parent );
+
+		void _computeBonds( const Model::Molecule & p_source, const std::map<const uint, const uint> & p_mapAtomIds );
+		void _applyExtraBondsData();
+		void _validateBuffers();
+
+		void			 _copyFullMolecule( const Model::Molecule &			   p_moleculeSource,
+											std::map<const uint, const uint> & p_mapAtomIds );
+		Model::Chain &	 _copyFullChain( const Model::Chain &				p_source,
+										 const Model::Molecule &			p_moleculeSource,
+										 std::map<const uint, const uint> & p_mapAtomIds );
+		Model::Residue & _copyFullResidue( const Model::Residue &			  p_source,
+										   const Model::Molecule &			  p_moleculeSource,
+										   Model::Chain * const				  p_parent,
+										   std::map<const uint, const uint> & p_mapAtomIds );
+		Model::Atom &	 _copyAtom( const Model::Atom &		p_source,
+									const Model::Molecule & p_moleculeSource,
+									Model::Residue * const	p_parent );
 
 		Model::Chain & _extractFullChain( Model::Molecule & p_fromMolecule, const uint p_index );
 

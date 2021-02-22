@@ -63,6 +63,7 @@ namespace VTX::View::UI::Widget
 		MoleculeSceneView( Model::Molecule * const p_model, QWidget * const p_parent );
 		~MoleculeSceneView();
 
+		void _clearLoadedItems();
 		void _rebuildTree();
 		void _enableSignals( const bool p_enable );
 
@@ -70,8 +71,8 @@ namespace VTX::View::UI::Widget
 		void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;
 		void _onItemExpanded( QTreeWidgetItem * const );
 		void _onItemCollapsed( QTreeWidgetItem * const );
+		void _onCustomContextMenuCalled( const QPoint & p_clicPos );
 
-		void _deleteAction() override;
 		void _doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const;
 
 		void _expandAll( QTreeWidgetItem * const p_from );
@@ -91,8 +92,18 @@ namespace VTX::View::UI::Widget
 		void _refreshItemVisibility( QTreeWidgetItem * const p_itemWidget, const Generic::BaseVisible & p_baseVisible );
 		void _refreshSelection( const Model::Selection & p_selection );
 
+		QTreeWidgetItem * const _getMoleculeTreeWidgetItem() const;
+		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Chain & p_chain ) const;
+		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Residue & p_residue ) const;
+		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Atom & p_atom ) const;
+
+		bool _isMoleculeExpanded() const;
+		bool _isChainExpanded( const Model::Chain & p_chain ) const;
+		bool _isResidueExpanded( const Model::Residue & p_residue ) const;
+
 		Model::ID _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;
 		bool	  _getItemExpandState( const QTreeWidgetItem & p_item ) const;
+		int		  _getMinimumHeight() const;
 	};
 
 } // namespace VTX::View::UI::Widget

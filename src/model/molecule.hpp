@@ -112,8 +112,7 @@ namespace VTX
 			inline const SecondaryStructure & getSecondaryStructure() const { return *_secondaryStructure; }
 			inline SecondaryStructure &		  getSecondaryStructure() { return *_secondaryStructure; }
 
-			inline const std::string & getSequence() const { return _sequence; }
-			inline std::string &	   getSequence() { return _sequence; }
+			bool isEmpty();
 
 			inline const bool isAtomVisible( const uint p_idx ) const
 			{
@@ -269,9 +268,6 @@ namespace VTX
 
 			// Secondary structure.
 			SecondaryStructure * _secondaryStructure = nullptr;
-
-			// Sequence.
-			std::string _sequence;
 
 			uint _currentFrame = 0u;
 			bool _isPlaying	   = true;
