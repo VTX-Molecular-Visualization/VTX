@@ -192,7 +192,8 @@ namespace VTX
 			{
 				switch ( colorMode )
 				{
-				case Generic::COLOR_MODE::ATOM:
+				case Generic::COLOR_MODE::ATOM_CHAIN:
+				case Generic::COLOR_MODE::ATOM_PROTEIN:
 					// if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
 					//{
 					//	_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();

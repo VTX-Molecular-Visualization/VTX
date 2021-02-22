@@ -145,9 +145,15 @@ namespace VTX
 
 					switch ( currentRepresentation->getColorMode() )
 					{
-					case Generic::COLOR_MODE::ATOM:
+					case Generic::COLOR_MODE::ATOM_CHAIN:
 						if ( atom->getSymbol() == Model::Atom::SYMBOL::A_C )
 							p_colorBuffer[ i ] = atom->getChainPtr()->getColor();
+						else
+							p_colorBuffer[ i ] = atom->getColor();
+						break;
+					case Generic::COLOR_MODE::ATOM_PROTEIN:
+						if ( atom->getSymbol() == Model::Atom::SYMBOL::A_C )
+							p_colorBuffer[ i ] = currentRepresentation->getColor();
 						else
 							p_colorBuffer[ i ] = atom->getColor();
 						break;

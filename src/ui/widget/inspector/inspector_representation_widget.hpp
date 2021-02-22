@@ -15,47 +15,39 @@
 #include "ui/widget/view_item_widget.hpp"
 #include <QWidget>
 
-namespace VTX
+namespace VTX::UI::Widget::Inspector
 {
-	namespace UI
+	class InspectorRepresentationWidget : public ViewItemWidget<Model::Representation::InstantiatedRepresentation>
 	{
-		namespace Widget
-		{
-			namespace Inspector
-			{
-				class InspectorRepresentationWidget : public ViewItemWidget<Model::Representation::InstantiatedRepresentation>
-				{
-					VTX_WIDGET
+		VTX_WIDGET
 
-				  public:
-					~InspectorRepresentationWidget();
-					void refresh() override;
-					void localize() override;
+	  public:
+		~InspectorRepresentationWidget();
+		void refresh() override;
+		void localize() override;
 
-				  protected:
-					InspectorRepresentationWidget( QWidget * p_parent ) : ViewItemWidget( p_parent ) {};
+	  protected:
+		InspectorRepresentationWidget( QWidget * p_parent ) : ViewItemWidget( p_parent ) {};
 
-					void		 _setupUi( const QString & p_name ) override;
-					virtual void _setupSlots() override;
+		void		 _setupUi( const QString & p_name ) override;
+		virtual void _setupSlots() override;
 
-				  private:
-					CustomWidget::CollapsingHeaderWidget * _mainWidget = nullptr;
-					bool _isRefreshing = false;
+	  private:
+		CustomWidget::CollapsingHeaderWidget * _mainWidget	 = nullptr;
+		bool								   _isRefreshing = false;
 
-					InspectorSection * _targetSection = nullptr;
+		InspectorSection * _targetSection = nullptr;
 
-					CustomWidget::RepresentableFieldWidget * _targetsField	 = nullptr;
-					CustomWidget::ColorModeFieldWidget *	 _colorModeField = nullptr;
+		CustomWidget::RepresentableFieldWidget * _targetsField	 = nullptr;
+		CustomWidget::ColorModeFieldWidget *	 _colorModeField = nullptr;
 
-					void setModelEnableFromCheckBox( const int checkboxState ) { _model->setEnable( checkboxState > 0 ); }
+		void setModelEnableFromCheckBox( const int checkboxState ) { _model->setEnable( checkboxState > 0 ); }
 
-					void _onTargetChange();
-					void _onColorModeChange();
-				};
+		void _onTargetChange();
+		void _onColorModeChange();
+		void _onColorChange();
+	};
 
-			} // namespace Inspector
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+} // namespace VTX::UI::Widget::Inspector
 
 #endif
