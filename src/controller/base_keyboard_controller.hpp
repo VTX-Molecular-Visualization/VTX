@@ -56,8 +56,6 @@ namespace VTX
 				{
 				case QEvent::KeyPress:
 				{
-					std::cout << p_event.nativeScanCode() << std::endl;
-
 					// TOFIX: workaround beacause KeyRelease triggered after 1 second.
 					// if ( p_event.isAutoRepeat() == false )
 					//{

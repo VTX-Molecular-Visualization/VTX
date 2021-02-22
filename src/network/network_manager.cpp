@@ -13,12 +13,14 @@ namespace VTX
 			_id = p_id;
 			VTX_INFO( "Downloading " + p_id + "..." );
 
+			
 			QNetworkRequest request;
 			request.setUrl( QUrl( std::string( API_URL_MMTF + p_id ).c_str() ) );
 			QNetworkReply * const reply = _networkManager.get( request );
 			connect( reply, &QNetworkReply::errorOccurred, this, &NetworkManager::_errorOccured );
 			connect( reply, &QNetworkReply::downloadProgress, this, &NetworkManager::_downloadProgress );
 			connect( reply, &QNetworkReply::finished, this, &NetworkManager::_finished );
+			
 		}
 
 		void NetworkManager::_finished()
@@ -45,6 +47,10 @@ namespace VTX
 
 		void NetworkManager::_downloadProgress( const qint64 p_bytesReceived, const qint64 p_bytesTotal )
 		{
+			if (p_bytesReceived == 0) {
+				return;
+			}
+
 			float percent = p_bytesReceived / p_bytesTotal;
 			// VTX_DEBUG( std::to_string( p_bytesReceived ) + " / " + std::to_string( p_bytesTotal ) );
 			VTX_EVENT( new Event::VTXEventValue<float>( Event::Global::UPDATE_PROGRESS_BAR, percent ) );
