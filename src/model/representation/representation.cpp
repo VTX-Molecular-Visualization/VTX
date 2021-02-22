@@ -1,6 +1,6 @@
 #include "representation.hpp"
 #include "color/rgb.hpp"
-#include "model/chain.hpp"
+#include "model/residue.hpp"
 #include "representation_enum.hpp"
 #include "setting.hpp"
 #include "vtx_app.hpp"
@@ -9,8 +9,8 @@ namespace VTX::Model::Representation
 {
 	BaseRepresentation::BaseRepresentation( const ID::VTX_ID & p_typeId ) : BaseModel( p_typeId )
 	{
-		const int randomColorIndex = getId() % Model::Chain::NB_COLORS;
-		_color					   = Model::Chain::CHAIN_ID_COLOR_ATOM[ randomColorIndex ];
+		const int randomColorIndex = getId() % int( Model::Residue::SYMBOL::COUNT );
+		_color					   = Model::Residue::SYMBOL_COLOR[ randomColorIndex ];
 	};
 	BaseRepresentation::~BaseRepresentation()
 	{
@@ -87,6 +87,24 @@ namespace VTX::Model::Representation
 	{
 		_representationType = Generic::REPRESENTATION::CARTOON;
 		_dataTargeted		= VTX::Representation::FlagDataTargeted::RIBBON;
+
+		_ribbonData = new RibbonData();
+	}
+
+	Representation_BallAndStickAndCartoon::Representation_BallAndStickAndCartoon() :
+		BaseRepresentation( ID::Model::MODEL_REPRESENTATION_CARTOON )
+	{
+		_representationType = Generic::REPRESENTATION::CARTOON;
+		_dataTargeted		= VTX::Representation::FlagDataTargeted::ATOM | VTX::Representation::FlagDataTargeted::BOND
+						| VTX::Representation::FlagDataTargeted::RIBBON;
+
+		_sphereData					= new SphereData();
+		_sphereData->_radiusFixed	= Util::Math::max( VTX_SETTING().bondsRadius, VTX_SETTING().atomsRadius );
+		_sphereData->_radiusAdd		= 0;
+		_sphereData->_isRadiusFixed = true;
+
+		_cylinderData		   = new CylinderData();
+		_cylinderData->_radius = VTX_SETTING().bondsRadius;
 
 		_ribbonData = new RibbonData();
 	}

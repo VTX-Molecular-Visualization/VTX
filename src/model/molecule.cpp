@@ -4,6 +4,7 @@
 #include "model/atom.hpp"
 #include "model/bond.hpp"
 #include "model/chain.hpp"
+#include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
 #include "model/secondary_structure.hpp"
 #include "model/selection.hpp"
@@ -185,7 +186,9 @@ namespace VTX
 			Generic::COLOR_MODE colorMode = _colorMode;
 			if ( colorMode == Generic::COLOR_MODE::INHERITED )
 			{
-				colorMode = VTX_SETTING().colorMode;
+				colorMode = Model::Representation::RepresentationLibrary::get()
+								.getRepresentation( VTX_SETTING().REPRESENTATION_DEFAULT_INDEX )
+								->getColorMode();
 			}
 
 			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
@@ -193,14 +196,23 @@ namespace VTX
 				switch ( colorMode )
 				{
 				case Generic::COLOR_MODE::ATOM_CHAIN:
-				case Generic::COLOR_MODE::ATOM_PROTEIN:
-					// if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
-					//{
-					//	_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
-					//}
-					// else
+					if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
+					{
+						_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
+					}
+					else
 					{
 						_bufferAtomColors[ i ] = _atoms[ i ]->getColor();
+					}
+					break;
+				case Generic::COLOR_MODE::ATOM_PROTEIN:
+					if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
+					{
+						_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
+					}
+					else
+					{
+						_bufferAtomColors[ i ] = _color;
 					}
 					break;
 				case Generic::COLOR_MODE::RESIDUE:

@@ -73,6 +73,7 @@ namespace VTX
 			TRACE,
 			SAS,
 			CARTOON,
+			BALL_AND_STICK_AND_CARTOON,
 			COUNT
 		};
 	} // namespace Generic

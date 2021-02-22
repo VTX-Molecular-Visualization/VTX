@@ -1,6 +1,6 @@
 #include "render_effect_preset_library.hpp"
-#include "renderer/base_renderer.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "renderer/base_renderer.hpp"
 
 namespace VTX::Model::Renderer
 {
@@ -90,7 +90,7 @@ namespace VTX::Model::Renderer
 
 		// Preset 3
 		RenderEffectPreset * const preset3 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
-		preset3->setName( "Gloubiboulga" );
+		preset3->setName( "White BG" );
 		preset3->setShading( VTX::Renderer::SHADING::FLAT_COLOR );
 
 		preset3->setSSAOIntensity( 5 );
@@ -98,14 +98,12 @@ namespace VTX::Model::Renderer
 		preset3->enableSSAO( true );
 
 		preset3->setOutlineThickness( 1.0f );
-		preset3->setOutlineColor( Color::Rgb( 200, 70, 140 ) );
+		preset3->setOutlineColor( Color::Rgb::BLACK );
 		preset3->enableOutline( true );
 
-		preset3->setFogNear( 50.0f );
-		preset3->setFogFar( 200.0f );
-		preset3->setFogDensity( 0.8f );
-		preset3->setFogColor( Color::Rgb( 50, 50, 50 ) );
 		preset3->enableFog( false );
+
+		preset3->setBackgroundColor( Color::Rgb::WHITE );
 		addPreset( preset3 );
 		//
 	}

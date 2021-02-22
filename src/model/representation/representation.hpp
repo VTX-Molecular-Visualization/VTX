@@ -115,5 +115,11 @@ namespace VTX::Model::Representation
 		Representation_Cartoon();
 	};
 
+	class Representation_BallAndStickAndCartoon : public BaseRepresentation
+	{
+	  public:
+		Representation_BallAndStickAndCartoon();
+	};
+
 } // namespace VTX::Model::Representation
 #endif
