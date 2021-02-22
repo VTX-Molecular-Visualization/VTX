@@ -7,7 +7,11 @@
 #include "sequence_display_widget.hpp"
 #include "style.hpp"
 #include "tool/logger.hpp"
+#include "ui/contextual_menu.hpp"
+#include "ui/main_window.hpp"
+#include "ui/widget/contextual_menu/contextual_menu_residue.hpp"
 #include "ui/widget_factory.hpp"
+#include "vtx_app.hpp"
 #include <QScrollBar>
 #include <algorithm>
 
@@ -343,15 +347,29 @@ namespace VTX::UI::Widget::Sequence
 	}
 	void MoleculeSequenceWidget::mouseReleaseEvent( QMouseEvent * p_event )
 	{
-		if ( p_event->button() != Qt::MouseButton::LeftButton )
-			return;
+		const QPoint		   globalMousePos  = p_event->globalPos();
+		const QPoint		   currentMousePos = _scrollAreaContent->mapFromGlobal( globalMousePos );
+		Model::Residue * const residueHovered  = _getResidueAtPos( currentMousePos );
 
-		// We update these data here if from to click selection is used and no move has been done
-		// (_lastDragSelectionPosition and _lastResidueHovered may not be up to date)
-		const QPoint currentMousePos = _scrollAreaContent->mapFromGlobal( p_event->globalPos() );
-		_lastDragSelectionPosition	 = currentMousePos;
-		_lastResidueHovered			 = _getResidueAtPos( _lastDragSelectionPosition );
-		_frameSelection.clear();
+		if ( p_event->button() != Qt::MouseButton::LeftButton )
+		{
+			// We update these data here if from to click selection is used and no move has been done
+			// (_lastDragSelectionPosition and _lastResidueHovered may not be up to date)
+			_lastDragSelectionPosition = currentMousePos;
+			_lastResidueHovered		   = residueHovered;
+			_frameSelection.clear();
+		}
+		else if ( p_event->button() == Qt::MouseButton::RightButton )
+		{
+			if ( residueHovered != nullptr )
+			{
+				VTXApp::get()
+					.getMainWindow()
+					.getContextualMenu()
+					.displayMenu<UI::Widget::ContextualMenu::ContextualMenuResidue>(
+						VTX::UI::ContextualMenu::Menu::Residue, residueHovered, globalMousePos );
+			}
+		}
 	}
 
 	void MoleculeSequenceWidget::_applySelection( const bool p_select, Model::Residue * p_residue )
