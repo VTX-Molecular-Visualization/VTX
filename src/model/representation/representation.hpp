@@ -18,6 +18,9 @@ namespace VTX::Model::Representation
 	class BaseRepresentation : public BaseModel
 	{
 	  public:
+		static const Color::Rgb & generateProteinColor( const int p_seed );
+
+	  public:
 		BaseRepresentation( const ID::VTX_ID & p_typeId );
 		~BaseRepresentation();
 

@@ -68,6 +68,7 @@ namespace VTX
 			};
 
 			Model::Molecule * const getMolecule() const { return _molecule; };
+			void setRepresentableMolecule( Model::Molecule * const p_molecule ) { _molecule = p_molecule; };
 
 		  protected:
 			std::set<const Model::Representation::InstantiatedRepresentation *> _representations
@@ -79,7 +80,6 @@ namespace VTX
 												  VTX::Representation::RepresentationTarget>();
 
 			bool _isResidueVisible( const Model::Residue & p_residue ) const;
-			void _setRepresentableMolecule( Model::Molecule * const p_molecule ) { _molecule = p_molecule; };
 
 		  private:
 			Model::Molecule * _molecule = nullptr;

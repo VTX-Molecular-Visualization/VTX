@@ -11,7 +11,7 @@ namespace VTX
 		void			 Residue::setChainPtr( Chain * const p_chain )
 		{
 			_chainPtr = p_chain;
-			_setRepresentableMolecule( p_chain->getMoleculePtr() );
+			setRepresentableMolecule( p_chain->getMoleculePtr() );
 		}
 
 		const Atom * const Residue::findFirstAtomByName( const std::string & p_name ) const
@@ -153,7 +153,7 @@ namespace VTX
 			"Water",		   // HOH
 			"Heme",			   // HEM
 			"Phosphate group", // PO4
-			"Melagatran",		// MEL
+			"Melagatran",	   // MEL
 		};
 
 		// http://jmol.sourceforge.net/jscolors/#Jmolcolors : Protein "amino" colors

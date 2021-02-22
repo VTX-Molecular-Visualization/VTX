@@ -7,10 +7,15 @@
 
 namespace VTX::Model::Representation
 {
+	const Color::Rgb & BaseRepresentation::generateProteinColor( const int p_seed )
+	{
+		const int randomColorIndex = p_seed % int( Model::Residue::SYMBOL::COUNT );
+		return Model::Residue::SYMBOL_COLOR[ randomColorIndex ];
+	}
+
 	BaseRepresentation::BaseRepresentation( const ID::VTX_ID & p_typeId ) : BaseModel( p_typeId )
 	{
-		const int randomColorIndex = getId() % int( Model::Residue::SYMBOL::COUNT );
-		_color					   = Model::Residue::SYMBOL_COLOR[ randomColorIndex ];
+		_color = generateProteinColor( getId() );
 	};
 	BaseRepresentation::~BaseRepresentation()
 	{

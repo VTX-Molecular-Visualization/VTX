@@ -84,7 +84,7 @@ namespace VTX
 				// Create secondary structure mesh.
 				createSecondaryStructure();
 
-				_setRepresentableMolecule( this );
+				setRepresentableMolecule( this );
 				computeRepresentationTargets();
 			}
 		}

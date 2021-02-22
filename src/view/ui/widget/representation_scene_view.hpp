@@ -8,6 +8,7 @@
 #include "event/base_event_receiver_vtx.hpp"
 #include "generic/base_representable.hpp"
 #include "model/representation/instantiated_representation.hpp"
+#include "model/selection.hpp"
 #include "ui/widget/scene/scene_item_widget.hpp"
 #include "view/base_view.hpp"
 #include <QMenu>
@@ -25,6 +26,7 @@ namespace VTX::View::UI::Widget
 	  public:
 		void localize() override;
 		void notify( const Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		void setTarget( Generic::BaseRepresentable & p_renderable );
 		void updatePosInSceneHierarchy( const int p_position ) override;
@@ -33,12 +35,11 @@ namespace VTX::View::UI::Widget
 
 	  protected:
 		RepresentationSceneView( Model::Representation::InstantiatedRepresentation * const p_model,
-								 QWidget * const										   p_parent ) :
-			View::BaseView<Model::Representation::InstantiatedRepresentation>( p_model ),
-			SceneItemWidget( p_parent ) {};
+								 QWidget * const										   p_parent );
 
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
+		void _refreshSelection( const Model::Selection & p_selection );
 
 		void		_onItemClicked( QTreeWidgetItem *, int );
 		void		_onCustomContextMenuCalled( const QPoint & p_clicPos );

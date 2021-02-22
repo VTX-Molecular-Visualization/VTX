@@ -191,7 +191,7 @@ namespace VTX::Model
 				_unselectChain( *it );
 		}
 
-		_refreshMoleculeSelection( p_chains[ 0 ]->getMoleculePtr());
+		_refreshMoleculeSelection( p_chains[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
 	}
 
@@ -247,7 +247,7 @@ namespace VTX::Model
 			if ( isAtomSelected( *it ) )
 				_unselectAtom( *it );
 		}
-		
+
 		_refreshMoleculeSelection( p_atoms[ 0 ]->getMoleculePtr() );
 		_notifyDataChanged();
 	}
@@ -801,7 +801,7 @@ namespace VTX::Model
 			moleculeSet.emplace( it->getMoleculePtr() );
 		}
 
-		for (Model::Molecule* const it : moleculeSet)
+		for ( Model::Molecule * const it : moleculeSet )
 		{
 			_refreshMoleculeSelection( it );
 		}
@@ -818,7 +818,7 @@ namespace VTX::Model
 		_representations.erase( &p_representation );
 	}
 
-	bool Selection::isEmpty() const { return _items.size() <= 0; }
+	bool Selection::isEmpty() const { return _items.size() <= 0 && _representations.size() <= 0; }
 
 	void Selection::clear()
 	{

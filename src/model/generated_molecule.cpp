@@ -618,6 +618,7 @@ namespace VTX::Model
 
 			Model::Residue & residue = *getResidue( currentResidueIndex );
 			residue.setIndex( currentResidueIndex );
+			residue.setRepresentableMolecule( this );
 
 			// Clear extra bond, will be filled at end of process
 			residue.getIndexExtraBondStart().clear();

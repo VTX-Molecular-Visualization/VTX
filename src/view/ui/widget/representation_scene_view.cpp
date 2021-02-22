@@ -2,7 +2,6 @@
 #include "action/action_manager.hpp"
 #include "action/representable.hpp"
 #include "action/selection.hpp"
-#include "model/selection.hpp"
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
 #include "ui/contextual_menu.hpp"
@@ -13,6 +12,25 @@
 
 namespace VTX::View::UI::Widget
 {
+	RepresentationSceneView::RepresentationSceneView( Model::Representation::InstantiatedRepresentation * const p_model,
+													  QWidget * const p_parent ) :
+		View::BaseView<Model::Representation::InstantiatedRepresentation>( p_model ),
+		SceneItemWidget( p_parent )
+	{
+		_registerEvent( Event::Global::SELECTION_CHANGE );
+	}
+
+	void RepresentationSceneView::receiveEvent( const Event::VTXEvent & p_event )
+	{
+		if ( p_event.name == Event::Global::SELECTION_CHANGE )
+		{
+			const Event::VTXEventPtr<Model::Selection> & castedEvent
+				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
+
+			_refreshSelection( *castedEvent.ptr );
+		}
+	}
+
 	void RepresentationSceneView::notify( const Event::VTXEvent * const p_event ) {}
 
 	void RepresentationSceneView::_setupUi( const QString & p_name )
@@ -69,6 +87,13 @@ namespace VTX::View::UI::Widget
 	{
 		SceneItemWidget::updatePosInSceneHierarchy( p_position );
 		_model->setPriority( p_position );
+	}
+
+	void RepresentationSceneView::_refreshSelection( const Model::Selection & p_selection )
+	{
+		blockSignals( true );
+		topLevelItem( 0 )->setSelected( p_selection.isRepresentationSelected( *_model ) );
+		blockSignals( false );
 	}
 
 	QMimeData * RepresentationSceneView::_getDataForDrag()
