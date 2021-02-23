@@ -7,16 +7,17 @@
 
 #include "base_worker.hpp"
 #include "generic/base_updatable.hpp"
+#include "tool/logger.hpp"
+#include <QThreadPool>
 
 namespace VTX
 {
 	namespace Worker
 	{
-		using CallbackSuccess = std::function<void( void )>;
-		using CallbackError	  = std::function<void( const std::exception & )>;
-
-		class WorkerManager final : public Generic::BaseUpdatable
+		class WorkerManager final : public QObject
 		{
+			Q_OBJECT
+
 		  public:
 			inline static WorkerManager & get()
 			{
@@ -24,34 +25,28 @@ namespace VTX
 				return instance;
 			}
 
-			// Sync.
-			void run( BaseWorker * const p_woker );
-			// Async.
-			void run( BaseWorker * const p_woker, const CallbackSuccess * const, const CallbackError * const );
+			void run( BaseWorker * const p_worker )
+			{
+				p_worker->setParent( this );
 
-			virtual void update( const float & p_deltaTime ) override;
+				connect( p_worker, &Worker::BaseWorker::resultReady, this, []( uint p_returnCode ) {
+					VTX_DEBUG( "RETURN CODE: " + std::to_string( p_returnCode ) );
+				} );
+				// connect( p_worker, &Worker::BaseWorker::finished, this, &QObject::deleteLater );
+
+				VTX_DEBUG( "Start" );
+				p_worker->start();
+			}
 
 		  private:
-			BaseWorker *			_worker			 = nullptr;
-			const CallbackSuccess * _success		 = nullptr;
-			const CallbackError *	_error			 = nullptr;
-			std::exception_ptr		_threadException = nullptr;
-
 			WorkerManager()						   = default;
 			WorkerManager( const WorkerManager & ) = delete;
 			WorkerManager & operator=( const WorkerManager & ) = delete;
 			~WorkerManager()								   = default;
-
-			void _clean();
 		};
 	} // namespace Worker
 
-	// TODO: will be deleted when all workers will be threaded.
 	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker ) { Worker::WorkerManager::get().run( p_worker ); }
-	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker, const Worker::CallbackSuccess * const p_success, const Worker::CallbackError * const p_error )
-	{
-		Worker::WorkerManager::get().run( p_worker, p_success, p_error );
-	}
 	inline void VTX_ASYNC( const std::function<void( void )> & p_function ) { std::thread( p_function ).detach(); }
 } // namespace VTX
 #endif

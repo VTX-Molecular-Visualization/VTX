@@ -7,8 +7,9 @@ namespace VTX
 {
 	namespace Worker
 	{
-		void Saver::work()
+		uint Saver::_run()
 		{
+			bool		 result = 0;
 			Tool::Chrono chrono;
 
 			chrono.start();
@@ -24,6 +25,7 @@ namespace VTX
 			{
 				VTX_ERROR( "Error saving file" );
 				VTX_ERROR( p_e.what() );
+				result = 0;
 			}
 
 			delete writer;
@@ -39,6 +41,7 @@ namespace VTX
 			chrono.stop();
 			VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 
+			return result;
 		} // namespace Worker
 	}	  // namespace Worker
 } // namespace VTX

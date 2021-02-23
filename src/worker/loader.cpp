@@ -18,8 +18,7 @@ namespace VTX
 {
 	namespace Worker
 	{
-		// TODO: some cleanup, remove ptr?
-		void Loader::work()
+		uint Loader::_run()
 		{
 			Model::Configuration::Molecule config = Model::Configuration::Molecule();
 
@@ -163,8 +162,6 @@ namespace VTX
 				chrono.stop();
 				VTX_INFO( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
-
-			_isFinished = true;
 		}
 
 		Loader::MODE Loader::_getMode( const FilePath & p_path ) const

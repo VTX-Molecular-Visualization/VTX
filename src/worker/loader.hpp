@@ -16,6 +16,8 @@ namespace VTX
 	{
 		class Loader : public Worker::BaseWorker
 		{
+			Q_OBJECT
+
 		  public:
 			enum class MODE : int
 			{
@@ -35,7 +37,7 @@ namespace VTX
 				_mapFileNameBuffer.clear();
 			}
 
-			virtual void work() override;
+			uint _run() override;
 
 		  private:
 			std::vector<FilePath *>				_paths			   = std::vector<FilePath *>();

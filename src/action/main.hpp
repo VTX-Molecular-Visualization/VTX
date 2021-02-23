@@ -58,11 +58,11 @@ namespace VTX
 					Worker::Loader * loader = nullptr;
 					if ( _paths.empty() == false )
 					{
-						loader = new Worker::Loader( _paths );
+						// loader = new Worker::Loader( _paths );
 					}
 					else if ( _buffers.empty() == false )
 					{
-						loader = new Worker::Loader( _buffers );
+						// loader = new Worker::Loader( _buffers );
 					}
 					if ( loader == nullptr )
 					{
@@ -174,24 +174,9 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					Worker::Snapshoter snapshoter;
-
-					if ( _mode == Worker::Snapshoter::MODE::GL && snapshoter.takeSnapshotGL( _path ) )
-					{
-						VTX_INFO( "Snapshot taken: " + _path.filename().string() );
-					}
-					else if ( _mode == Worker::Snapshoter::MODE::RT_CPU && snapshoter.takeSnapshotRTCPU( _path ) )
-					{
-						VTX_INFO( "Render computed: " + _path.filename().string() );
-					}
-					else if ( _mode == Worker::Snapshoter::MODE::RT_OPTIX && snapshoter.takeSnapshotRTOptix( _path ) )
-					{
-						VTX_INFO( "Render computed: " + _path.filename().string() );
-					}
-					else
-					{
-						VTX_WARNING( "Failed: " + _path.string() );
-					}
+					Worker::Snapshoter * const worker = new Worker::Snapshoter(
+						_mode, _path, VTXApp::get().getMainWindow().getOpenGLWidget().grabFramebuffer() );
+					VTX_WORKER( worker );
 				};
 
 				virtual void displayUsage() override { VTX_INFO( "No parameters" ); }

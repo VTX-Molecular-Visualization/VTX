@@ -1,6 +1,4 @@
 #include "snapshoter.hpp"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "define.hpp"
 #ifdef CUDA_DEFINED
 #include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
 #endif
@@ -15,13 +13,13 @@ namespace VTX
 {
 	namespace Worker
 	{
-		bool Snapshoter::takeSnapshotGL( const FilePath & p_path )
+		const bool Snapshoter::_takeSnapshotGL() const
 		{
-			QImage image = VTXApp::get().getMainWindow().getOpenGLWidget().grabFramebuffer();
-			return image.save( QString( p_path.string().c_str() ), "png" );
+			return _image.save( QString( _path.string().c_str() ), "png" );
 		}
 
-		bool Snapshoter::takeSnapshotRTCPU( const FilePath & p_path ) const
+		// TOREDO
+		const bool Snapshoter::_takeSnapshotRTCPU() const
 		{
 			Renderer::GL::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
@@ -39,7 +37,8 @@ namespace VTX
 			return false;
 		}
 
-		bool Snapshoter::takeSnapshotRTOptix( const FilePath & p_path ) const
+		// TOREDO
+		const bool Snapshoter::_takeSnapshotRTOptix() const
 		{
 			const Renderer::GL::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
