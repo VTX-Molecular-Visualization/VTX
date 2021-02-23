@@ -23,14 +23,13 @@ namespace VTX::UI::Widget::Scene
 
 		setHorizontalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
 		setVerticalScrollBarPolicy( Qt::ScrollBarPolicy::ScrollBarAlwaysOff );
-
-		setAcceptDrops( true );
 	}
 
 	void SceneItemWidget::_setupSlots() {}
 
 	void SceneItemWidget::localize() {}
 
+	void SceneItemWidget::updatePosInSceneHierarchy( const int p_position ) { _refreshSize(); };
 	void SceneItemWidget::mousePressEvent( QMouseEvent * p_event )
 	{
 		QTreeWidget::mousePressEvent( p_event );
@@ -65,4 +64,42 @@ namespace VTX::UI::Widget::Scene
 
 		drag->exec( Qt::CopyAction | Qt::MoveAction );
 	}
+
+	void SceneItemWidget::_onItemExpanded( QTreeWidgetItem * const ) { _refreshSize(); }
+	void SceneItemWidget::_onItemCollapsed( QTreeWidgetItem * const ) { _refreshSize(); }
+
+	void SceneItemWidget::_refreshSize()
+	{
+		setMinimumHeight( _getMinimumHeight() );
+		setMinimumWidth( sizeHintForColumn( 0 ) );
+	}
+	int SceneItemWidget::_getMinimumHeight() const
+	{
+		int nbItemDisplayed = 1;
+
+		QModelIndex ptr		   = indexFromItem( topLevelItem( 0 ) );
+		uint		childCount = 0;
+		while ( ptr.isValid() && nbItemDisplayed < 4 )
+		{
+			const QModelIndex & child = ptr.model()->index( 0, 0, ptr );
+			if ( isExpanded( ptr ) && child.isValid() )
+			{
+				ptr = child;
+				nbItemDisplayed++;
+				childCount = 0;
+			}
+			else
+			{
+				childCount++;
+
+				ptr = ptr.model()->index( childCount, 0, ptr.parent() );
+
+				if ( ptr.isValid() )
+					nbItemDisplayed++;
+			}
+		}
+
+		return nbItemDisplayed > 3 ? 0 : ( rowHeight( model()->index( 0, 0 ) ) * nbItemDisplayed );
+	}
+
 } // namespace VTX::UI::Widget::Scene

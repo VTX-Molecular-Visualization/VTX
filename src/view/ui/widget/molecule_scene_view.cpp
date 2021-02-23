@@ -183,17 +183,12 @@ namespace VTX::View::UI::Widget
 		}
 
 		_refreshSelection( Selection::SelectionManager::get().getSelectionModel() );
-
-		setMinimumHeight( _getMinimumHeight() );
-		setMinimumWidth( sizeHintForColumn( 0 ) );
+		SceneItemWidget::_onItemExpanded( p_item );
 	}
 	void MoleculeSceneView::_onItemCollapsed( QTreeWidgetItem * const p_item )
 	{
-		// Minimum height is bad when full collapsed => we force it.
 		_collapseItem( *p_item );
-
-		setMinimumHeight( _getMinimumHeight() );
-		setMinimumWidth( sizeHintForColumn( 0 ) );
+		SceneItemWidget::_onItemCollapsed( p_item );
 	}
 
 	int MoleculeSceneView::_getMinimumHeight() const

@@ -21,15 +21,7 @@ namespace VTX::UI::Widget::Scene
 
 	  public:
 		void		 localize() override;
-		virtual void updatePosInSceneHierarchy( const int p_position )
-		{
-			int minimumHeight = rowHeight( model()->index( 0, 0 ) );
-			setMinimumHeight( minimumHeight );
-
-			int columnWidth = sizeHintForColumn( 0 );
-			if ( columnWidth > 0 )
-				setMinimumWidth( columnWidth );
-		};
+		virtual void updatePosInSceneHierarchy( const int p_position );
 
 		virtual const Model::ID & getModelID() const = 0;
 
@@ -41,11 +33,15 @@ namespace VTX::UI::Widget::Scene
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
-		void _onCustomContextMenuCalled( const QPoint & p_clicPos );
-
 		void		 mousePressEvent( QMouseEvent * p_event ) override;
 		virtual void mouseMoveEvent( QMouseEvent * p_event ) override;
 		void		 dragEnterEvent( QDragEnterEvent * p_event ) override;
+
+		virtual void _onItemExpanded( QTreeWidgetItem * const );
+		virtual void _onItemCollapsed( QTreeWidgetItem * const );
+
+		virtual void _refreshSize();
+		virtual int	 _getMinimumHeight() const;
 
 		virtual QMimeData * _getDataForDrag() = 0;
 

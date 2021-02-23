@@ -69,8 +69,8 @@ namespace VTX::View::UI::Widget
 
 		void _onItemChanged( const QTreeWidgetItem * const, const int ) const;
 		void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;
-		void _onItemExpanded( QTreeWidgetItem * const );
-		void _onItemCollapsed( QTreeWidgetItem * const );
+		void _onItemExpanded( QTreeWidgetItem * const ) override;
+		void _onItemCollapsed( QTreeWidgetItem * const ) override;
 		void _onCustomContextMenuCalled( const QPoint & p_clicPos );
 
 		void _doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const;
