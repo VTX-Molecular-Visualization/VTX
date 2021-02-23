@@ -2,9 +2,7 @@
 #define __VTX_UI_WIDGET_COLLAPSING_GROUPBOX_WIDGET__
 
 #include <QBoxLayout>
-#include <QDockWidget>
 #include <QGroupBox>
-#include <QHash>
 #include <QLabel>
 #include <QPushButton>
 #include <QWidget>
@@ -23,5 +21,4 @@ class CollapsingGroupboxWidget : public QGroupBox
   public slots:
 	void toggleBodyVisibility( bool checked );
 };
-
 #endif

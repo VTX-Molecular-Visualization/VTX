@@ -1,19 +1,42 @@
 #include "extension_keyword_editor_gui.hpp"
+//#include "vtx_app.hpp"
 #include <QFileDialog>
 #include <QPushButton>
 #include <QStandardPaths>
-
-ExtensionKeywordEditorGUI::ExtensionKeywordEditorGUI( QWidget * parent ) : QDockWidget( parent )
+//
+// namespace VTX
+//{
+//	namespace UI
+//	{
+//		namespace Widget
+//		{
+//			namespace MainMenu
+//			{
+//				namespace Extensions
+//				{
+ExtensionKeywordEditorGUI::ExtensionKeywordEditorGUI( QWidget * parent )
 {
 	ui.setupUi( this );
 
-	// set up save/load settings button
-	// QWidget *	  title_bar = new QWidget();
+	// make window savable and lockable
+	// QWidget *	  title_bar = this->titleBarWidget();
 	// QHBoxLayout * layout	= new QHBoxLayout();
 	// title_bar->setLayout( layout );
-	// QPushButton * button = new QPushButton();
-	// layout->addWidget( button );
-	// this->setTitleBarWidget( title_bar );
+	// QPushButton * settingButton = new QPushButton();
+	// QIcon		  settingsIcon	= QIcon( ":/sprite/settings_icon.png" );
+	// settingButton->setIcon( settingsIcon );
+	// settingButton->setStyleSheet( "QPushButton { background-color: rgba(255, 255, 255, 0); }"
+	// ); layout->addWidget( settingButton ); this->setTitleBarWidget( title_bar );
+	// QObject::connect( settingButton, SIGNAL( clicked() ), this, SLOT(
+	// onSettingsButtonClicked() )
+	// );
+
+	QIcon winIcon = QIcon::fromTheme( ":/sprite/keyword_editor.png" );
+	this->setWindowIcon( winIcon );
+
+	QIcon infoIcon = QIcon( ":/sprite/info_button.png" );
+	ui.labelIntegratorInfo->setPixmap( infoIcon.pixmap( 16, 16 ) );
+	ui.labelIntegratorInfo->setStyleSheet( "QLabel { background-color: rgba(255, 255, 255, 0); }" );
 }
 
 void ExtensionKeywordEditorGUI::onOpenKeyfilePushButtonClicked()
@@ -22,12 +45,10 @@ void ExtensionKeywordEditorGUI::onOpenKeyfilePushButtonClicked()
 													 tr( "Open Keyword file" ),
 													 QString( QStandardPaths::DocumentsLocation ),
 													 tr( "Keyword file (*.key);;All files (*.*)" ) );
-
 	if ( fileName != "" )
 	{
 		keywordEditor = new ExtensionKeywordEditor();
-		keywordEditor->readKeywordFile( fileName );
-		if ( keywordEditor->keywords.size() != 0 )
+		if ( keywordEditor->readKeywordFile( fileName ) )
 		{
 			populateInterfaceWithValues();
 		}
@@ -88,8 +109,63 @@ void ExtensionKeywordEditorGUI::onGenerateKeyfilePushButtonClicked()
 				keywordsWithValue.append( "polar-algshort 5" );
 			}
 		}
-		if ( ui.widgetContainingTcgParameters->isEnabled() ) {}
-		if ( ui.widgetTcgParametersShort->isEnabled() ) {}
+		if ( ui.widgetContainingTcgParameters->isEnabled() )
+		{
+			if ( ui.comboBoxTcgOrder->isEnabled() )
+			{
+				keywordsWithValue.append( "tcgorder " + ui.comboBoxTcgOrder->currentText() );
+			}
+			if ( ui.comboBoxDiagPrec->isEnabled() )
+			{
+				keywordsWithValue.append( "tcgprec " + QString::number( ui.comboBoxDiagPrec->currentIndex() ) );
+			}
+			if ( ui.comboBoxTcgGuess->isEnabled() )
+			{
+				keywordsWithValue.append( "tcgguess " + QString::number( ui.comboBoxTcgGuess->currentIndex() ) );
+			}
+			if ( ui.comboBoxTcgPeek->isEnabled() )
+			{
+				keywordsWithValue.append( "tcgpeek  " + QString::number( ui.comboBoxTcgPeek->currentIndex() ) );
+			}
+			if ( ui.spinBoxTcgOmega->isEnabled() )
+			{
+				keywordsWithValue.append( "tcgomega  " + QString::number( ui.spinBoxTcgOmega->value() ) );
+			}
+			if ( ui.comboBoxTcgMegaFit->isEnabled() )
+			{
+				keywordsWithValue.append( "tcgomegafit " + QString::number( ui.comboBoxTcgMegaFit->currentIndex() ) );
+			}
+			if ( ui.spinBoxTcgMegaFitFreq->isEnabled() )
+			{
+				keywordsWithValue.append( "tcgomegafitfreq " + QString::number( ui.spinBoxTcgMegaFitFreq->value() ) );
+			}
+		}
+		if ( ui.widgetTcgParametersShort->isEnabled() )
+		{
+			if ( ui.comboBoxTcgOrderShort->isEnabled() )
+			{
+				keywordsWithValue.append( "tcgordershort " + ui.comboBoxTcgOrderShort->currentText() );
+			}
+			if ( ui.comboBoxDiagPrecShort->isEnabled() )
+			{
+				keywordsWithValue.append( "tcgprecshort "
+										  + QString::number( ui.comboBoxDiagPrecShort->currentIndex() ) );
+			}
+			if ( ui.comboBoxTcgGuessShort->isEnabled() )
+			{
+				keywordsWithValue.append( "tcgguessshort "
+										  + QString::number( ui.comboBoxTcgGuessShort->currentIndex() ) );
+			}
+			if ( ui.comboBoxTcgPeekShort->isEnabled() )
+			{
+				keywordsWithValue.append( "tcgpeekshort  "
+										  + QString::number( ui.comboBoxTcgPeekShort->currentIndex() ) );
+			}
+			if ( ui.spinBoxTcgOmegaShort->isEnabled() )
+			{
+				keywordsWithValue.append( "tcgomegashort  " + QString::number( ui.spinBoxTcgOmegaShort->value() ) );
+			}
+		}
 		if ( ui.spinBoxMassPiston->isEnabled() )
 		{
 			keywordsWithValue.append( "masspiston " + QString::number( ui.spinBoxMassPiston->value() ) );
@@ -98,69 +174,72 @@ void ExtensionKeywordEditorGUI::onGenerateKeyfilePushButtonClicked()
 		{
 			keywordsWithValue.append( "frictionpiston " + QString::number( ui.spinBoxFrictionPiston->value() ) );
 		}
-
-		keywordsWithValue.append( ui.textBrowserAdditionnalKeywords->toPlainText() );
-
-		keywordEditor->writeKeywordFile( fileName );
+		if ( !ui.textBrowserAdditionnalKeywords->toPlainText().isEmpty() )
+		{
+			keywordsWithValue.append( ui.textBrowserAdditionnalKeywords->toPlainText() );
+		}
+		keywordEditor->writeKeywordFile( fileName, keywordsWithValue );
 	}
 }
 
-void ExtensionKeywordEditorGUI::loadSettings() {}
-
-void ExtensionKeywordEditorGUI::saveSettings() {}
-
 void ExtensionKeywordEditorGUI::populateInterfaceWithValues()
 {
-	std::vector<std::pair<QString, QString>> * keywords = &keywordEditor->keywords;
-	for ( size_t keyword = 0; keyword < keywords->size(); keyword++ )
+	std::vector<std::pair<QString, QString>> * keywords = keywordEditor->getKeywords();
+	if ( keywords != nullptr )
 	{
-		if ( keywords->at( keyword ).first == "integrator" )
+		for ( size_t keyword = 0; keyword < keywords->size(); keyword++ )
 		{
-			ui.comboBoxIntegrator->setCurrentText( keywords->at( keyword ).second.toUpper() );
-		}
-		else if ( keywords->at( keyword ).first == "friction" )
-		{
-			ui.spinBoxFriction->setValue( keywords->at( keyword ).second.toInt() );
-		}
-		else if ( keywords->at( keyword ).first == "dshort" )
-		{
-			ui.spinBoxInnerTimestep->setValue( keywords->at( keyword ).second.toInt() );
-		}
-		else if ( keywords->at( keyword ).first == "dinter" )
-		{
-			ui.spinBoxIntermediateTimestep->setValue( keywords->at( keyword ).second.toInt() );
-		}
-		else if ( keywords->at( keyword ).first == "thermostat" )
-		{
-			ui.comboBoxThermostat->setCurrentText( keywords->at( keyword ).second );
-		}
-		else if ( keywords->at( keyword ).first == "barostat" )
-		{
-			ui.comboBoxBarostat->setCurrentText( keywords->at( keyword ).second );
-		}
-		else if ( keywords->at( keyword ).first == "polar-alg" )
-		{
-			if ( keywords->at( keyword ).second.toInt() < 5 )
+			if ( keywords->at( keyword ).first == "integrator" )
 			{
-				ui.comboBoxPolarizationEquations->setCurrentIndex( keywords->at( keyword ).second.toInt() );
+				ui.comboBoxIntegrator->setCurrentText( keywords->at( keyword ).second.toUpper() );
 			}
-			else if ( keywords->at( keyword ).second.toInt() == 5 )
+			else if ( keywords->at( keyword ).first == "friction" )
 			{
-				ui.comboBoxPolarizationEquations->setCurrentIndex( 0 );
+				ui.spinBoxFriction->setValue( keywords->at( keyword ).second.toInt() );
 			}
-		}
-		// if the keyword is not present in the interface -> add to the additionnal keywords
-		else
-		{
-			ui.textBrowserAdditionnalKeywords->append( keywords->at( keyword ).first + " "
-													   + keywords->at( keyword ).second );
+			else if ( keywords->at( keyword ).first == "dshort" )
+			{
+				ui.spinBoxInnerTimestep->setValue( keywords->at( keyword ).second.toInt() );
+			}
+			else if ( keywords->at( keyword ).first == "dinter" )
+			{
+				ui.spinBoxIntermediateTimestep->setValue( keywords->at( keyword ).second.toInt() );
+			}
+			else if ( keywords->at( keyword ).first == "thermostat" )
+			{
+				ui.comboBoxThermostat->setCurrentText( keywords->at( keyword ).second );
+			}
+			else if ( keywords->at( keyword ).first == "barostat" )
+			{
+				ui.comboBoxBarostat->setCurrentText( keywords->at( keyword ).second );
+			}
+			else if ( keywords->at( keyword ).first == "polar-alg" )
+			{
+				if ( keywords->at( keyword ).second.toInt() < 5 )
+				{
+					ui.comboBoxPolarizationEquations->setCurrentIndex( keywords->at( keyword ).second.toInt() );
+				}
+				else if ( keywords->at( keyword ).second.toInt() == 5 )
+				{
+					ui.comboBoxPolarizationEquations->setCurrentIndex( 0 );
+				}
+			}
+			// populate tcg parameters
+			// populate tcg short parameters
+			// if the keyword is not present in the interface -> add to the additionnal keywords
+			else
+			{
+				ui.textBrowserAdditionnalKeywords->append( keywords->at( keyword ).first + " "
+														   + keywords->at( keyword ).second );
+			}
 		}
 	}
 }
 
 void ExtensionKeywordEditorGUI::comboBoxIntegratorIndexChanged( QString newSelectedItem )
 {
-	// if RESPA1 and BAOABRESPA1 integrators are used, enable short range polarization solver widgets
+	// if RESPA1 and BAOABRESPA1 integrators are used, enable short range polarization solver
+	// widgets
 	if ( newSelectedItem == "RESPA1" || newSelectedItem == "BAOABRESPA1" )
 	{
 		ui.labelShortRangePolarizationSolver->setEnabled( true );
@@ -180,7 +259,8 @@ void ExtensionKeywordEditorGUI::comboBoxIntegratorIndexChanged( QString newSelec
 							 ui.comboBoxShortRangePolarizationSolver,
 							 SLOT( setCurrentText( QString ) ) );
 	}
-	// For all the Langevin integrators (BBK, BAOAB, BAOABRESPA, BAOABRESPA1 and BAOABPISTON) enable the friction
+	// For all the Langevin integrators (BBK, BAOAB, BAOABRESPA, BAOABRESPA1 and BAOABPISTON) enable
+	// the friction
 	if ( newSelectedItem.contains( "BAOAB" ) || newSelectedItem == "BBK" )
 	{
 		ui.labelFriction->setEnabled( true );
@@ -284,3 +364,8 @@ void ExtensionKeywordEditorGUI::comboBoxFittingIndexChanged( QString newSelected
 		ui.spinBoxTcgMegaFitFreq->setEnabled( false );
 	}
 }
+//				} // namespace Extensions
+//			}	  // namespace MainMenu
+//		}		  // namespace Widget
+//	}			  // namespace UI
+//} // namespace VTX

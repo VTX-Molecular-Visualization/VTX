@@ -39,12 +39,7 @@ namespace VTX
 					{
 						if ( _keywordEditorWindow == nullptr )
 						{
-							_keywordEditorWindow = new ExtensionKeywordEditorGUI();
-							QIcon icon			 = QIcon::fromTheme( ":/sprite/keyword_editor.png" );
-							if ( icon.isNull() )
-								VTX_WARNING( "icon :/sprite/keyword_editor.png not found." );
-							else
-								_keywordEditorWindow->setWindowIcon( icon );
+							_keywordEditorWindow = new ExtensionKeywordEditorGUI( this );
 							_keywordEditorWindow->show();
 						}
 						else

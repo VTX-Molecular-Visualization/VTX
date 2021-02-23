@@ -121,20 +121,6 @@ namespace VTX
 				chrono.stop();
 				VTX_INFO( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
 
-				// test DCD traj exporter
-				// std::string			  filePath	= p_path.string().substr( 0, p_path.string().size() - 4 );
-				// std::string			  frameFile = filePath + "_testExport.dcd";
-				// chemfiles::Trajectory inTraj	= chemfiles::Trajectory( p_path.string() );
-				// auto				  outTraj	= chemfiles::Trajectory( frameFile, 'w' );
-				// for ( size_t frameIdx = 0; frameIdx < inTraj.nsteps(); frameIdx++ )
-				//{
-				//	// set DCD properties before writing the file; the exporter will save these informations in the
-				//	// binary file
-				//	chemfiles::Frame frame = inTraj.read_step( frameIdx );
-				//	frame.set( "frames_number", inTraj.nsteps() );
-				//	outTraj.write( frame );
-				//}
-
 				const chemfiles::Topology &				topology = frame.topology();
 				const std::vector<chemfiles::Residue> & residues = topology.residues();
 				const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();

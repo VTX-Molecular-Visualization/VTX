@@ -5,9 +5,11 @@
 #pragma once
 #endif
 
-#include "extensions/keyword_editor/extension_keyword_editor_gui.hpp"
+#include "ui/widget/base_manual_widget.hpp"
+#include "ui/widget/main_menu/extensions/extension_keyword_editor_gui.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
+#include <QDockWidget>
 #include <QWidget>
 
 namespace VTX

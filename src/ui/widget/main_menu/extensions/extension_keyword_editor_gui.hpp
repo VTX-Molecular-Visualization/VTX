@@ -1,17 +1,30 @@
-#ifndef KEYWORDEDITORFORM_H
-#define KEYWORDEDITORFORM_H
+#ifndef __VTX_UI_WIDGET_KEYWORDEDITOR__
+#define __VTX_UI_WIDGET_KEYWORDEDITOR__
 
-#include "extension_keyword_editor.hpp"
-#include "extensions/keyword_editor/forms/ui_keyword_editor_main_window.h"
+//#ifdef _MSC_VER
+//#pragma once
+//#endif
 
+#include "extensions/keyword_editor/extension_keyword_editor.hpp"
+#include "ui/qt_form/ui_keyword_editor_main_window.h"
+#include <QDockWidget>
+
+// namespace VTX
+//{
+//	namespace UI
+//	{
+//		namespace Widget
+//		{
+//			namespace MainMenu
+//			{
+//				namespace Extensions
+//				{
 class ExtensionKeywordEditorGUI : public QDockWidget
 {
 	Q_OBJECT
 
   public:
 	explicit ExtensionKeywordEditorGUI( QWidget * parent = nullptr );
-	void loadSettings();
-	void saveSettings();
 
 	void populateInterfaceWithValues();
 
@@ -26,8 +39,13 @@ class ExtensionKeywordEditorGUI : public QDockWidget
 	void comboBoxFittingIndexChanged( QString newSelectedItem );
 
   private:
-	ExtensionKeywordEditor *	keywordEditor = nullptr;
-	Ui::DockWidgetKeywordEditor ui;
+	ExtensionKeywordEditor * keywordEditor = nullptr;
+	Ui::DockWidget			 ui;
 };
+//				} // namespace Extensions
+//			}	  // namespace MainMenu
+//		}		  // namespace Widget
+//	}			  // namespace UI
+//} // namespace VTX
 
 #endif

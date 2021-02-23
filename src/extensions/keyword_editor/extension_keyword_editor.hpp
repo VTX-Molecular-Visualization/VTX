@@ -13,13 +13,12 @@ class ExtensionKeywordEditor
 	ExtensionKeywordEditor();
 	~ExtensionKeywordEditor();
 
-	void readKeywordFile( QString filepath );
-	void writeKeywordFile( QString newFilePath );
+	bool									   readKeywordFile( QString filepath );
+	void									   writeKeywordFile( QString newFilePath, QStringList & keywordsWithValue );
+	std::vector<std::pair<QString, QString>> * getKeywords();
 
   private:
 	std::vector<std::pair<QString, QString>> keywords;
-
-	friend class ExtensionKeywordEditorGUI;
 };
 
 #endif

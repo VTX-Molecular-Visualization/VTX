@@ -3,10 +3,9 @@
 CollapsingGroupboxWidget::CollapsingGroupboxWidget( QWidget * p_parent )
 {
 	this->setStyleSheet(
-		"CollapsingGroupboxWidget  { margin-top: 6px; }"
 		"CollapsingGroupboxWidget::indicator:unchecked { image: url(:/sprite/checkbox_unchecked.png); }"
 		"CollapsingGroupboxWidget::indicator:checked { image: url(:/sprite/checkbox_checked.png); }"
-		"CollapsingGroupboxWidget::title { subcontrol-origin: margin; left: 7px; padding: 0px 5px 0px 5px;}" );
+		"CollapsingGroupboxWidget::title { subcontrol-origin: margin; left: 0px; padding: 0px 5px 0px 0px;}" );
 
 	if ( !this->isCheckable() )
 	{
@@ -30,7 +29,8 @@ void CollapsingGroupboxWidget::toggleBodyVisibility( bool checked )
 
 void CollapsingGroupboxWidget::collapse()
 {
-	// check if there is a widget containing all the widgets of the groupbox in order to make it invisible
+	// check if there is a widget containing all the widgets of the groupbox in order to make it
+	// invisible
 	QWidget * containingWidget = this->findChild<QWidget *>( "", Qt::FindDirectChildrenOnly );
 	if ( containingWidget != nullptr )
 	{
@@ -55,7 +55,7 @@ void CollapsingGroupboxWidget::collapse()
 		"border-right: 0px; margin-top: 6px;}"
 		"CollapsingGroupboxWidget::indicator:unchecked { image: url(:/sprite/checkbox_unchecked.png); }"
 		"CollapsingGroupboxWidget::indicator:checked { image: url(:/sprite/checkbox_checked.png); }"
-		"CollapsingGroupboxWidget::title { subcontrol-origin: margin; left: 7px; padding: 0px 5px 0px 5px;}" );
+		"CollapsingGroupboxWidget::title { subcontrol-origin: margin; left: 0px; padding: 0px 5px 0px 0px;}" );
 }
 
 void CollapsingGroupboxWidget::expand()
@@ -81,9 +81,9 @@ void CollapsingGroupboxWidget::expand()
 	}
 	this->updateGeometry();
 	this->setStyleSheet(
-		"CollapsingGroupboxWidget  { border-top: 1px solid #111111; border-bottom: 1px solid #111111; border-left: 1px "
-		"solid #111111; border-right: 1px solid #111111; margin-top: 6px;}"
+		"CollapsingGroupboxWidget  { border-top: 1px solid #111111; border-bottom: 1px solid #111111; "
+		"border-left: 1px solid #111111; border-right: 1px solid #111111; margin-top: 6px;}"
 		"CollapsingGroupboxWidget::indicator:unchecked { image: url(:/sprite/checkbox_unchecked.png); }"
 		"CollapsingGroupboxWidget::indicator:checked { image: url(:/sprite/checkbox_checked.png); }"
-		"CollapsingGroupboxWidget::title { subcontrol-origin: margin; left: 7px; padding: 0px 5px 0px 5px;}" );
+		"CollapsingGroupboxWidget::title { subcontrol-origin: margin; left: 0px; padding: 0px 5px 0px 0px;}" );
 }
