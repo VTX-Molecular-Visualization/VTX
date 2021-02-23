@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#define QT_NO_BEARERMANAGEMENT
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QObject>
