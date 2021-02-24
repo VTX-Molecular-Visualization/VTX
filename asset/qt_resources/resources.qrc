@@ -15,6 +15,7 @@
 	<file>sprite/fullscreen_icon.png</file>
 	<file>sprite/hide_hydrogen_icon.png</file>
 	<file>sprite/hide_selection_icon.png</file>
+	<file>sprite/hide_sequence_icon.png</file>
 	<file>sprite/hide_solvant_icon.png</file>
 	<file>sprite/hide_water_icon.png</file>
 	<file>sprite/load_molecule_icon.png</file>
@@ -36,6 +37,7 @@
 	<file>sprite/settings_icon.png</file>
 	<file>sprite/show_hydrogen_icon.png</file>
 	<file>sprite/show_selection_icon.png</file>
+	<file>sprite/show_sequence_icon.png</file>
 	<file>sprite/show_solvant_icon.png</file>
 	<file>sprite/show_water_icon.png</file>
 	<file>sprite/symbol/atom_symbol_icon.png</file>
