@@ -112,7 +112,9 @@ namespace VTX
 
 		inline static const QColor BLACK_COLOR			  = QColor( 0, 0, 0 );
 		inline static const QColor BACKGROUND_COLOR		  = QColor( 34, 34, 34 );
+		inline static const QColor CANCELED_COLOR		  = QColor( 71, 71, 71);
 		inline static const QColor HIGHLIGHTED_COLOR	  = QColor( 85, 85, 85 );
+		inline static const QColor CANCELED_TEXT_COLOR	  = QColor( 185, 185, 185 );
 		inline static const QColor TEXT_COLOR			  = QColor( 255, 255, 255 );
 		inline static const QColor PLACEHOLDER_TEXT_COLOR = QColor( 200, 200, 200 );
 
@@ -122,12 +124,15 @@ namespace VTX
 			p_palette.setColor( QPalette::ColorRole::WindowText, TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::WindowText, TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::Base, BACKGROUND_COLOR );
+			p_palette.setColor( QPalette::ColorGroup::Disabled, QPalette::ColorRole::Base, CANCELED_COLOR );
 			p_palette.setColor( QPalette::ColorRole::Text, TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::PlaceholderText, PLACEHOLDER_TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::ToolTipBase, BLACK_COLOR );
 			p_palette.setColor( QPalette::ColorRole::ToolTipText, TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::Button, BACKGROUND_COLOR );
+			p_palette.setColor( QPalette::ColorGroup::Disabled, QPalette::ColorRole::Button, CANCELED_COLOR );
 			p_palette.setColor( QPalette::ColorRole::ButtonText, TEXT_COLOR );
+			p_palette.setColor( QPalette::ColorGroup::Disabled, QPalette::ColorRole::ButtonText, CANCELED_TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::BrightText, TEXT_COLOR );
 
 			p_palette.setColor( QPalette::ColorRole::Light, HIGHLIGHTED_COLOR );
