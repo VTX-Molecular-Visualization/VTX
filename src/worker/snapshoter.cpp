@@ -15,7 +15,17 @@ namespace VTX
 	{
 		const bool Snapshoter::_takeSnapshotGL() const
 		{
-			return _image.save( QString( _path.string().c_str() ), "png" );
+			bool result = _image.save( QString( _path.string().c_str() ), "png" );
+			if ( result )
+			{
+				VTX_INFO( "Snapshot taken: " + _path.filename().string() );
+			}
+			else
+			{
+				VTX_ERROR( "Snapshot failed" );
+			}
+
+			return result;
 		}
 
 		// TOREDO
@@ -33,6 +43,7 @@ namespace VTX
 			// stbi_flip_vertically_on_write( true );
 			// stbi_write_png_compression_level = 0;
 			// bool res = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
+			// VTX_INFO( "Render computed: " + _path.filename().string() );
 			delete rt;
 			return false;
 		}
@@ -53,6 +64,7 @@ namespace VTX
 			stbi_flip_vertically_on_write( true );
 			stbi_write_png_compression_level = 0;
 			bool res = stbi_write_png( p_path.string().c_str(), width, height, 4, pixels.data(), 0 );
+			// VTX_INFO( "Render computed: " + _path.filename().string() );
 			delete ort;
 			return res;
 #else

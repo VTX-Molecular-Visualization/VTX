@@ -21,12 +21,12 @@ namespace VTX
 			BaseWorker()		  = default;
 			virtual ~BaseWorker() = default;
 
-			void run() override { emit resultReady( _run() ); }
+			void run() override { emit resultReady( this, _run() ); }
 
 			virtual uint _run() = 0;
 
 		  signals:
-			void resultReady( uint p_returnCode );
+			void resultReady( BaseWorker *, const uint p_returnCode );
 		};
 	} // namespace Worker
 } // namespace VTX

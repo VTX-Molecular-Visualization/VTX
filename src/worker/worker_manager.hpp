@@ -19,22 +19,21 @@ namespace VTX
 			Q_OBJECT
 
 		  public:
+			using Callback = std::function<void( const uint )>;
+
 			inline static WorkerManager & get()
 			{
 				static WorkerManager instance;
 				return instance;
 			}
 
-			void run( BaseWorker * const p_worker )
+			void run( BaseWorker * p_worker, Callback * const p_callback = nullptr )
 			{
 				p_worker->setParent( this );
-
-				connect( p_worker, &Worker::BaseWorker::resultReady, this, []( uint p_returnCode ) {
-					VTX_DEBUG( "RETURN CODE: " + std::to_string( p_returnCode ) );
-				} );
+				_workers.emplace( p_worker, p_callback );
+				connect( p_worker, &Worker::BaseWorker::resultReady, this, &WorkerManager::_onResultReady );
 				// connect( p_worker, &Worker::BaseWorker::finished, this, &QObject::deleteLater );
 
-				VTX_DEBUG( "Start" );
 				p_worker->start();
 			}
 
@@ -42,7 +41,46 @@ namespace VTX
 			WorkerManager()						   = default;
 			WorkerManager( const WorkerManager & ) = delete;
 			WorkerManager & operator=( const WorkerManager & ) = delete;
-			~WorkerManager()								   = default;
+			~WorkerManager()
+			{
+				// Stop and delete all running threads.
+				for ( const std::pair<BaseWorker *, Callback *> & pair : _workers )
+				{
+					pair.first->terminate();
+
+					if ( pair.second != nullptr )
+					{
+						delete pair.second;
+					}
+
+					delete pair.first;
+				}
+			}
+
+			std::map<BaseWorker *, Callback *> _workers = std::map<BaseWorker *, Callback *>();
+
+			void _onResultReady( BaseWorker * p_worker, const uint p_returnCode )
+			{
+				VTX_DEBUG( "RETURN CODE: " + std::to_string( p_returnCode ) );
+
+				if ( p_worker == nullptr )
+				{
+					VTX_DEBUG( "Worker null" );
+				}
+				else
+				{
+					// Call callback and delete all.
+					Callback * callback = _workers.at( p_worker );
+					if ( callback != nullptr )
+					{
+						( *callback )( p_returnCode );
+						delete callback;
+					}
+
+					_workers.erase( _workers.find( p_worker ) );
+					delete p_worker;
+				}
+			}
 		};
 	} // namespace Worker
 
