@@ -35,7 +35,11 @@
    <item row="1" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QListWidget" name="listWidgetSavedSettings"/>
+      <widget class="QListWidget" name="listWidgetSavedSettings">
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+      </widget>
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -87,38 +91,6 @@
     <hint type="destinationlabel">
      <x>331</x>
      <y>169</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButtonLoadSetting</sender>
-   <signal>clicked()</signal>
-   <receiver>DialogSettings</receiver>
-   <slot>onLoadSettingsClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>287</x>
-     <y>55</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>338</x>
-     <y>121</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButtonRemoveSetting</sender>
-   <signal>clicked()</signal>
-   <receiver>DialogSettings</receiver>
-   <slot>onRemoveSettingsClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>272</x>
-     <y>87</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>330</x>
-     <y>197</y>
     </hint>
    </hints>
   </connection>

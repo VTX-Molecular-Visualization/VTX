@@ -43,7 +43,7 @@ namespace VTX
 
 					_extensionsMenu = WidgetFactory::get().instantiateWidget<Extensions::MenuExtensionsWidget>(
 						this, "extensionsMenu" );
-					_tabWidget->addTab( _extensionsMenu, "Extensions" );
+					_tabWidget->addTab( _extensionsMenu, "Modules" );
 
 					_tabWidget->setCurrentIndex( 0 );
 				}

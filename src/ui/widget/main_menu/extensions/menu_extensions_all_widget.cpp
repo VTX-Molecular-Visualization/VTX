@@ -33,7 +33,7 @@ namespace VTX
 						_keywordEditor->setTriggerAction( this,
 														  &MenuExtensionsAllWidgets::_showKeywordEditorWindowAction );
 					}
-					void MenuExtensionsAllWidgets::localize() { setTitle( "All Extensions" ); }
+					void MenuExtensionsAllWidgets::localize() { setTitle( "All Modules" ); }
 
 					void MenuExtensionsAllWidgets::_showKeywordEditorWindowAction()
 					{

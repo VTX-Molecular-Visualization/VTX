@@ -7,45 +7,54 @@
 
 #include "extensions/keyword_editor/extension_keyword_editor.hpp"
 #include "ui/qt_form/ui_keyword_editor_main_window.h"
+#include "ui/widget/custom_widget/settings_window.hpp"
 #include <QDockWidget>
 
-// namespace VTX
-//{
-//	namespace UI
-//	{
-//		namespace Widget
-//		{
-//			namespace MainMenu
-//			{
-//				namespace Extensions
-//				{
-class ExtensionKeywordEditorGUI : public QDockWidget
+namespace VTX
 {
-	Q_OBJECT
+	namespace UI
+	{
+		namespace Widget
+		{
+			namespace MainMenu
+			{
+				namespace Extensions
+				{
+					class ExtensionKeywordEditorGUI : public QDockWidget
+					{
+						Q_OBJECT
 
-  public:
-	explicit ExtensionKeywordEditorGUI( QWidget * parent = nullptr );
+					  public:
+						explicit ExtensionKeywordEditorGUI( QWidget * parent );
 
-	void populateInterfaceWithValues();
+						void populateInterfaceWithValues();
 
-  private slots:
-	void onOpenKeyfilePushButtonClicked();
-	void onGenerateKeyfilePushButtonClicked();
+					  private slots:
+						void onExitButtonClicked();
+						void onSettingsButtonClicked();
+						void saveSettingsClicked();
+						void loadSettingsClicked();
+						void removeSettingsClicked();
 
-	void comboBoxIntegratorIndexChanged( QString newSelectedItem );
-	void comboBoxShortRangePolSolndexChanged( QString newSelectedItem );
-	void comboBoxPolEquaIndexChanged( QString newSelectedItem );
-	void comboBoxPeekStepIndexChanged( QString newSelectedItem );
-	void comboBoxFittingIndexChanged( QString newSelectedItem );
+						void onOpenKeyfilePushButtonClicked();
+						void onGenerateKeyfilePushButtonClicked();
 
-  private:
-	ExtensionKeywordEditor * keywordEditor = nullptr;
-	Ui::DockWidget			 ui;
-};
-//				} // namespace Extensions
-//			}	  // namespace MainMenu
-//		}		  // namespace Widget
-//	}			  // namespace UI
-//} // namespace VTX
+						void comboBoxIntegratorIndexChanged( QString newSelectedItem );
+						void comboBoxShortRangePolSolndexChanged( QString newSelectedItem );
+						void comboBoxPolEquaIndexChanged( QString newSelectedItem );
+						void comboBoxPeekStepIndexChanged( QString newSelectedItem );
+						void comboBoxFittingIndexChanged( QString newSelectedItem );
+
+					  private:
+						ExtensionKeywordEditor * keywordEditor = nullptr;
+
+						SettingsWindowWidget * settingsWindow = nullptr;
+						Ui::DockWidget		   ui;
+					};
+				} // namespace Extensions
+			}	  // namespace MainMenu
+		}		  // namespace Widget
+	}			  // namespace UI
+} // namespace VTX
 
 #endif

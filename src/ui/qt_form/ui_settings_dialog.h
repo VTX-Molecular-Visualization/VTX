@@ -6,8 +6,8 @@
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
-#ifndef SETTINGS_DIALOG_H
-#define SETTINGS_DIALOG_H
+#ifndef UI_SETTINGS_DIALOG_H
+#define UI_SETTINGS_DIALOG_H
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
@@ -62,6 +62,7 @@ public:
         horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
         listWidgetSavedSettings = new QListWidget(DialogSettings);
         listWidgetSavedSettings->setObjectName(QString::fromUtf8("listWidgetSavedSettings"));
+        listWidgetSavedSettings->setSelectionBehavior(QAbstractItemView::SelectRows);
 
         horizontalLayout_2->addWidget(listWidgetSavedSettings);
 
@@ -90,8 +91,6 @@ public:
 
         retranslateUi(DialogSettings);
         QObject::connect(pushButtonSaveSettings, SIGNAL(clicked()), DialogSettings, SLOT(onSaveSettingsClicked()));
-        QObject::connect(pushButtonLoadSetting, SIGNAL(clicked()), DialogSettings, SLOT(onLoadSettingsClicked()));
-        QObject::connect(pushButtonRemoveSetting, SIGNAL(clicked()), DialogSettings, SLOT(onRemoveSettingsClicked()));
 
         QMetaObject::connectSlotsByName(DialogSettings);
     } // setupUi
@@ -113,4 +112,4 @@ namespace Ui {
 
 QT_END_NAMESPACE
 
-#endif // SETTINGS_DIALOG_H
+#endif // UI_SETTINGS_DIALOG_H

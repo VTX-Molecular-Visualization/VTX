@@ -4,7 +4,7 @@ CustomQDockWidget::CustomQDockWidget( QWidget * p_parent )
 {
 	if ( settingsWindow == nullptr )
 	{
-		settingsWindow = new SettingsWindowWidget( this );
+		// settingsWindow = new SettingsWindowWidget( this );
 	}
 }
 

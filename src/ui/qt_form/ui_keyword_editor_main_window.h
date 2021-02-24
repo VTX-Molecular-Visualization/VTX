@@ -41,7 +41,6 @@ public:
     QVBoxLayout *verticalLayout_9;
     QHBoxLayout *horizontalLayout_2;
     QSpacerItem *horizontalSpacer;
-    QPushButton *pushButtonSettings;
     QPushButton *pushButtonOpenKeyfile;
     QWidget *widgetDynamic;
     QVBoxLayout *verticalLayout_6;
@@ -134,6 +133,7 @@ public:
         if (DockWidget->objectName().isEmpty())
             DockWidget->setObjectName(QString::fromUtf8("DockWidget"));
         DockWidget->resize(400, 1008);
+        DockWidget->setFloating(true);
         dockWidgetContents = new QWidget();
         dockWidgetContents->setObjectName(QString::fromUtf8("dockWidgetContents"));
         gridLayout = new QGridLayout(dockWidgetContents);
@@ -159,11 +159,6 @@ public:
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
         horizontalLayout_2->addItem(horizontalSpacer);
-
-        pushButtonSettings = new QPushButton(tabDynamic);
-        pushButtonSettings->setObjectName(QString::fromUtf8("pushButtonSettings"));
-
-        horizontalLayout_2->addWidget(pushButtonSettings);
 
         pushButtonOpenKeyfile = new QPushButton(tabDynamic);
         pushButtonOpenKeyfile->setObjectName(QString::fromUtf8("pushButtonOpenKeyfile"));
@@ -411,6 +406,7 @@ public:
         verticalLayout_7->setObjectName(QString::fromUtf8("verticalLayout_7"));
         widgetContainingTcgParameters = new QWidget(groupBoxTcgParameters);
         widgetContainingTcgParameters->setObjectName(QString::fromUtf8("widgetContainingTcgParameters"));
+        widgetContainingTcgParameters->setAutoFillBackground(false);
         verticalLayout_4 = new QVBoxLayout(widgetContainingTcgParameters);
         verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
         verticalLayout_4->setContentsMargins(0, 0, 0, 0);
@@ -724,6 +720,13 @@ public:
         DockWidget->setWidget(dockWidgetContents);
 
         retranslateUi(DockWidget);
+        QObject::connect(pushButtonOpenKeyfile, SIGNAL(clicked()), DockWidget, SLOT(onOpenKeyfilePushButtonClicked()));
+        QObject::connect(comboBoxIntegrator, SIGNAL(currentIndexChanged(QString)), DockWidget, SLOT(comboBoxIntegratorIndexChanged(QString)));
+        QObject::connect(comboBoxPolarizationEquations, SIGNAL(currentIndexChanged(QString)), DockWidget, SLOT(comboBoxPolEquaIndexChanged(QString)));
+        QObject::connect(comboBoxShortRangePolarizationSolver, SIGNAL(currentIndexChanged(QString)), DockWidget, SLOT(comboBoxShortRangePolSolndexChanged(QString)));
+        QObject::connect(comboBoxTcgPeek, SIGNAL(currentIndexChanged(QString)), DockWidget, SLOT(comboBoxPeekStepIndexChanged(QString)));
+        QObject::connect(comboBoxTcgMegaFit, SIGNAL(currentIndexChanged(QString)), DockWidget, SLOT(comboBoxFittingIndexChanged(QString)));
+        QObject::connect(pushButtonGenerate, SIGNAL(clicked()), DockWidget, SLOT(onGenerateKeyfilePushButtonClicked()));
 
         tabWidgetKeywordEditor->setCurrentIndex(0);
         comboBoxThermostat->setCurrentIndex(0);
@@ -740,8 +743,7 @@ public:
 
     void retranslateUi(QDockWidget *DockWidget)
     {
-        DockWidget->setWindowTitle(QCoreApplication::translate("DockWidget", "DockWidget", nullptr));
-        pushButtonSettings->setText(QCoreApplication::translate("DockWidget", "Settings", nullptr));
+        DockWidget->setWindowTitle(QCoreApplication::translate("DockWidget", "Tinker-HP - Keyword Editor", nullptr));
         pushButtonOpenKeyfile->setText(QCoreApplication::translate("DockWidget", "Open", nullptr));
 #if QT_CONFIG(tooltip)
         labelIntegrator->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Integrators: </span></p><p><span style=\" font-size:9pt; font-weight:600;\">BEEMAN</span><span style=\" font-size:9pt;\">: The default one</span></p><p><span style=\" font-size:9pt; font-weight:600;\">VERLET</span><span style=\" font-size:9pt;\">: Verlet</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BBK</span><span style=\" font-size:9pt;\">: Langevin Dynamics for constant temperature simulations</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOAB</span><span style=\" font-size:9pt;\">: Langevin Dynamics for constant temperature simulations</span></p><p><span style=\" font-size:9pt; font-weight:600;\">RESPA</span><span style=\" font-size:9pt;\">: Bonded/non bonded respa-split with a velocity-verlet inner loop and with a 0.25 fs default timestep for the inner loop</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">: Bonded/non bonded respa-split for Langevin dynamics "
