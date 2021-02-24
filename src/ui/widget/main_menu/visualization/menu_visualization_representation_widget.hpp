@@ -28,6 +28,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	  private:
 		std::vector<RepresentationPresetButton *> _buttons	 = std::vector<RepresentationPresetButton *>();
 		MenuToolButtonWidget *					  _addPreset = nullptr;
+
+		void _addPresetAction();
 	};
 } // namespace VTX::UI::Widget::MainMenu::Visualization
 #endif

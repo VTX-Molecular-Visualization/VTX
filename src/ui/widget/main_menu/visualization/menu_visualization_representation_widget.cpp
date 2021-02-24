@@ -1,6 +1,9 @@
 #include "menu_visualization_representation_widget.hpp"
 #include "model/representation/representation_library.hpp"
+#include "ui/main_window.hpp"
+#include "ui/widget/settings/setting_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX::UI::Widget::MainMenu::Visualization
 {
@@ -38,7 +41,19 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		validate();
 	}
-	void MenuVisualizationRepresentationWidget::_setupSlots() {}
+	void MenuVisualizationRepresentationWidget::_setupSlots()
+	{
+		connect( _addPreset,
+				 &MenuToolButtonWidget::clicked,
+				 this,
+				 &MenuVisualizationRepresentationWidget::_addPresetAction );
+	}
 
 	void MenuVisualizationRepresentationWidget::localize() { setTitle( "Representation" ); }
+
+	void MenuVisualizationRepresentationWidget::_addPresetAction()
+	{
+		VTXApp::get().getMainWindow().openSettingWindow( Settings::SETTING_MENU::REPRESENTATIONS );
+	}
+
 } // namespace VTX::UI::Widget::MainMenu::Visualization
