@@ -193,19 +193,19 @@ namespace VTX
 								settings.value( "sr_polarization_solver" ).toInt() );
 							ui.spinBoxMassPiston->setValue( settings.value( "piston_mass" ).toInt() );
 							ui.spinBoxFrictionPiston->setValue( settings.value( "piston_friction" ).toInt() );
-							// settings.setValue( "tcg_roder", ui.comboBoxTcgOrder->currentIndex() );
-							// settings.setValue( "diagonal_preconditioner", ui.comboBoxDiagPrec->currentIndex() );
-							// settings.setValue( "tcg_guess", ui.comboBoxTcgGuess->currentIndex() );
-							// settings.setValue( "peek_step", ui.comboBoxTcgPeek->currentIndex() );
-							// settings.setValue( "omega", ui.spinBoxTcgOmega->value() );
-							// settings.setValue( "fitting", ui.comboBoxTcgMegaFit->currentIndex() );
-							// settings.setValue( "fitting_frequency", ui.spinBoxTcgMegaFitFreq->value() );
-							// settings.setValue( "tcg_order_short", ui.comboBoxTcgOrderShort->currentIndex() );
-							// settings.setValue( "diagonal_preconditioner_short",
-							//				   ui.comboBoxDiagPrecShort->currentIndex() );
-							// settings.setValue( "direct_guess_short", ui.comboBoxTcgGuessShort->currentIndex() );
-							// settings.setValue( "peek_step_short", ui.comboBoxTcgPeekShort->currentIndex() );
-							// settings.setValue( "omega_short", ui.spinBoxTcgOmegaShort->value() );
+							ui.comboBoxTcgOrder->setCurrentIndex( settings.value( "tcg_roder" ).toInt() );
+							ui.comboBoxDiagPrec->setCurrentIndex( settings.value( "diagonal_preconditioner" ).toInt() );
+							ui.comboBoxTcgGuess->setCurrentIndex( settings.value( "tcg_guess" ).toInt() );
+							ui.comboBoxTcgPeek->setCurrentIndex( settings.value( "peek_step" ).toInt() );
+							ui.spinBoxTcgOmega->setValue( settings.value( "omega" ).toInt() );
+							ui.comboBoxTcgMegaFit->setCurrentIndex( settings.value( "fitting" ).toInt() );
+							ui.spinBoxTcgMegaFitFreq->setValue( settings.value( "fitting_frequency" ).toInt() );
+							ui.comboBoxTcgOrderShort->setCurrentIndex( settings.value( "tcg_order_short" ).toInt() );
+							ui.comboBoxDiagPrecShort->setCurrentIndex(
+								settings.value( "diagonal_preconditioner_short" ).toInt() );
+							ui.comboBoxTcgGuessShort->setCurrentIndex( settings.value( "direct_guess_short" ).toInt() );
+							ui.comboBoxTcgPeekShort->setCurrentIndex( settings.value( "peek_step_short" ).toInt() );
+							ui.spinBoxTcgOmegaShort->setValue( settings.value( "omega_short" ).toInt() );
 							ui.textBrowserAdditionnalKeywords->setText(
 								settings.value( "additional_keywords" ).toString() );
 							settings.endGroup();
