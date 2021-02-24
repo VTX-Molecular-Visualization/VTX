@@ -37,12 +37,12 @@ namespace VTX
 				ballsAndsticks->setIconPath( "" );
 				_representations.emplace_back( ballsAndsticks );
 
-				Representation_BallAndStickAndCartoon * ballStickAndCartoon
-					= MVC::MvcManager::get().instantiateModel<Representation_BallAndStickAndCartoon>();
-				ballStickAndCartoon->setName( "Stick and Cartoon" );
-				ballStickAndCartoon->setColorMode( Generic::COLOR_MODE::CHAIN );
-				ballStickAndCartoon->setIconPath( "" );
-				_representations.emplace_back( ballStickAndCartoon );
+				Representation_StickAndCartoon * stickAndCartoon
+					= MVC::MvcManager::get().instantiateModel<Representation_StickAndCartoon>();
+				stickAndCartoon->setName( "Stick + Cartoon" );
+				stickAndCartoon->setColorMode( Generic::COLOR_MODE::CHAIN );
+				stickAndCartoon->setIconPath( "" );
+				_representations.emplace_back( stickAndCartoon );
 
 				Representation_Cartoon * cartoon = MVC::MvcManager::get().instantiateModel<Representation_Cartoon>();
 				cartoon->setName( "Cartoon" );
