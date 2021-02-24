@@ -23,6 +23,13 @@ namespace VTX
 	{
 		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
 
+		// Create singletons.
+		MVC::MvcManager::get();
+		Action::ActionManager::get();
+		Event::EventManager::get();
+		Selection::SelectionManager::get();
+		Worker::WorkerManager::get();
+
 		// Create scene.
 		_scene = new Object3D::Scene();
 		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
@@ -36,13 +43,6 @@ namespace VTX
 		_mainWindow = new UI::MainWindow();
 		_mainWindow->setupUi();
 		_mainWindow->show();
-
-		// Create singletons.
-		MVC::MvcManager::get();
-		Action::ActionManager::get();
-		Event::EventManager::get();
-		Selection::SelectionManager::get();
-		Worker::WorkerManager::get();
 
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );

@@ -49,7 +49,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 		if ( !filename.isNull() )
 		{
 			FilePath * const path = new FilePath( filename.toStdString() );
-			VTX_ACTION( new Action::Main::Open( path ), true );
+			VTX_ACTION( new Action::Main::Open( path ) );
 		}
 	}
 	void MenuHomeMoleculeWidget::_downloadMoleculeFile() { _downloadMoleculeDialog->show(); }

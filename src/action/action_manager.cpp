@@ -11,23 +11,9 @@ namespace VTX
 {
 	namespace Action
 	{
-		void ActionManager::execute( BaseAction * const p_action, const bool p_flush )
-		{
-			if ( p_flush )
-			{
-				_flushAction( p_action );
-			}
-			else
-			{
-#ifdef DELAY_ACTIONS
-				_actionQueue.emplace( p_action );
-#else
-				_flushAction( p_action );
-#endif
-			}
-		}
+		void ActionManager::execute( BaseAction * const p_action ) { _flushAction( p_action ); }
 
-		void ActionManager::execute( const std::string & p_action, const bool p_flush )
+		void ActionManager::execute( const std::string & p_action )
 		{
 			std::istringstream		 iss( p_action );
 			std::string				 word;
@@ -145,7 +131,7 @@ namespace VTX
 
 			if ( action != nullptr )
 			{
-				execute( action, p_flush );
+				execute( action );
 			}
 			else
 			{

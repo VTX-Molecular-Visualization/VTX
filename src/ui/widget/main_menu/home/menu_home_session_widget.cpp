@@ -75,7 +75,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 		if ( !filename.isNull() )
 		{
 			FilePath * path = new FilePath( filename.toStdString() );
-			VTX_ACTION( new Action::Main::Open( path ), true );
+			VTX_ACTION( new Action::Main::Open( path ) );
 		}
 	}
 
