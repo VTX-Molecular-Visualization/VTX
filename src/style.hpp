@@ -37,6 +37,9 @@ namespace VTX
 			const QPixmap FULLSCREEN_ICON;
 			const QPixmap WINDOWED_ICON;
 
+			const QPixmap SHOW_SEQUENCE_ICON;
+			const QPixmap HIDE_SEQUENCE_ICON;
+
 			const QPixmap UNFOLDED_PIXMAP;
 			const QPixmap FOLDED_PIXMAP;
 			const QPixmap CLOSE_PIXMAP;
@@ -84,7 +87,9 @@ namespace VTX
 				TOOLTAB_SEPARATOR( QPixmap( ":/sprite/main_menu_separator.png" ) ),
 				REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
 				FULLSCREEN_ICON( QPixmap( ":/sprite/fullscreen_icon.png" ) ),
-				WINDOWED_ICON( QPixmap( ":/sprite/windowed_icon.png" ) ) {};
+				WINDOWED_ICON( QPixmap( ":/sprite/windowed_icon.png" ) ),
+				SHOW_SEQUENCE_ICON( QPixmap( ":/sprite/show_sequence_icon.png" ) ),
+				HIDE_SEQUENCE_ICON( QPixmap( ":/sprite/hide_sequence_icon.png" ) ) {};
 		};
 
 		inline static const QSize INSPECTOR_PREFERED_SIZE = QSize( 200, 1000 );
@@ -120,7 +125,9 @@ namespace VTX
 
 		inline static const QColor BLACK_COLOR			  = QColor( 0, 0, 0 );
 		inline static const QColor BACKGROUND_COLOR		  = QColor( 34, 34, 34 );
+		inline static const QColor CANCELED_COLOR		  = QColor( 71, 71, 71 );
 		inline static const QColor HIGHLIGHTED_COLOR	  = QColor( 85, 85, 85 );
+		inline static const QColor CANCELED_TEXT_COLOR	  = QColor( 185, 185, 185 );
 		inline static const QColor TEXT_COLOR			  = QColor( 255, 255, 255 );
 		inline static const QColor PLACEHOLDER_TEXT_COLOR = QColor( 200, 200, 200 );
 
@@ -130,12 +137,15 @@ namespace VTX
 			p_palette.setColor( QPalette::ColorRole::WindowText, TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::WindowText, TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::Base, BACKGROUND_COLOR );
+			p_palette.setColor( QPalette::ColorGroup::Disabled, QPalette::ColorRole::Base, CANCELED_COLOR );
 			p_palette.setColor( QPalette::ColorRole::Text, TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::PlaceholderText, PLACEHOLDER_TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::ToolTipBase, BLACK_COLOR );
 			p_palette.setColor( QPalette::ColorRole::ToolTipText, TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::Button, BACKGROUND_COLOR );
+			p_palette.setColor( QPalette::ColorGroup::Disabled, QPalette::ColorRole::Button, CANCELED_COLOR );
 			p_palette.setColor( QPalette::ColorRole::ButtonText, TEXT_COLOR );
+			p_palette.setColor( QPalette::ColorGroup::Disabled, QPalette::ColorRole::ButtonText, CANCELED_TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::BrightText, TEXT_COLOR );
 
 			p_palette.setColor( QPalette::ColorRole::Light, HIGHLIGHTED_COLOR );

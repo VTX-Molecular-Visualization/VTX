@@ -32,23 +32,23 @@ namespace VTX
 
 				Representation_BallsAndSticks * ballsAndsticks
 					= MVC::MvcManager::get().instantiateModel<Representation_BallsAndSticks>();
-				ballsAndsticks->setName( "Balls And Sticks" );
+				ballsAndsticks->setName( "Ball And Stick" );
 				ballsAndsticks->setColorMode( Generic::COLOR_MODE::CHAIN );
 				ballsAndsticks->setIconPath( "" );
 				_representations.emplace_back( ballsAndsticks );
-
-				Representation_BallAndStickAndCartoon * ballStickAndCartoon
-					= MVC::MvcManager::get().instantiateModel<Representation_BallAndStickAndCartoon>();
-				ballStickAndCartoon->setName( "Stick and Cartoon" );
-				ballStickAndCartoon->setColorMode( Generic::COLOR_MODE::CHAIN );
-				ballStickAndCartoon->setIconPath( "" );
-				_representations.emplace_back( ballStickAndCartoon );
 
 				Representation_Cartoon * cartoon = MVC::MvcManager::get().instantiateModel<Representation_Cartoon>();
 				cartoon->setName( "Cartoon" );
 				cartoon->setColorMode( Generic::COLOR_MODE::CHAIN );
 				cartoon->setIconPath( "" );
 				_representations.emplace_back( cartoon );
+
+				Representation_StickAndCartoon * stickAndCartoon
+					= MVC::MvcManager::get().instantiateModel<Representation_StickAndCartoon>();
+				stickAndCartoon->setName( "Stick + Cartoon" );
+				stickAndCartoon->setColorMode( Generic::COLOR_MODE::CHAIN );
+				stickAndCartoon->setIconPath( "" );
+				_representations.emplace_back( stickAndCartoon );
 			}
 		} // namespace Representation
 	}	  // namespace Model

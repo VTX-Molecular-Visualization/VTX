@@ -115,6 +115,7 @@ namespace VTX::Model
 		void _extractBond( const BondExtractData & p_bondData );
 
 		std::vector<BondExtractData> _externalBondExtractData = std::vector<BondExtractData>();
+		std::string					 _defaultName;
 	};
 } // namespace VTX::Model
 

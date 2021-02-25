@@ -97,7 +97,7 @@ namespace VTX::Model::Representation
 	}
 
 	Representation_BallAndStickAndCartoon::Representation_BallAndStickAndCartoon() :
-		BaseRepresentation( ID::Model::MODEL_REPRESENTATION_CARTOON )
+		BaseRepresentation( ID::Model::MODEL_REPRESENTATION_BALLSTICKANDCARTOON )
 	{
 		_representationType = Generic::REPRESENTATION::CARTOON;
 		_dataTargeted		= VTX::Representation::FlagDataTargeted::ATOM | VTX::Representation::FlagDataTargeted::BOND
@@ -105,6 +105,24 @@ namespace VTX::Model::Representation
 
 		_sphereData					= new SphereData();
 		_sphereData->_radiusFixed	= Util::Math::max( VTX_SETTING().bondsRadius, VTX_SETTING().atomsRadius );
+		_sphereData->_radiusAdd		= 0;
+		_sphereData->_isRadiusFixed = true;
+
+		_cylinderData		   = new CylinderData();
+		_cylinderData->_radius = VTX_SETTING().bondsRadius;
+
+		_ribbonData = new RibbonData();
+	}
+
+	Representation_StickAndCartoon::Representation_StickAndCartoon() :
+		BaseRepresentation( ID::Model::MODEL_REPRESENTATION_STICKANDCARTOON )
+	{
+		_representationType = Generic::REPRESENTATION::CARTOON;
+		_dataTargeted		= VTX::Representation::FlagDataTargeted::ATOM | VTX::Representation::FlagDataTargeted::BOND
+						| VTX::Representation::FlagDataTargeted::RIBBON;
+
+		_sphereData					= new SphereData();
+		_sphereData->_radiusFixed	= VTX_SETTING().bondsRadius;
 		_sphereData->_radiusAdd		= 0;
 		_sphereData->_isRadiusFixed = true;
 

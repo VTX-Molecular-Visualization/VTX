@@ -124,5 +124,11 @@ namespace VTX::Model::Representation
 		Representation_BallAndStickAndCartoon();
 	};
 
+	class Representation_StickAndCartoon : public BaseRepresentation
+	{
+	  public:
+		Representation_StickAndCartoon();
+	};
+
 } // namespace VTX::Model::Representation
 #endif

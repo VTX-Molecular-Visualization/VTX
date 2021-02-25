@@ -76,7 +76,7 @@ namespace VTX::Model::Renderer
 
 		// Preset 2
 		RenderEffectPreset * const preset2 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
-		preset2->setName( "Good diffuse" );
+		preset2->setName( "Good Diffuse" );
 		preset2->setShading( VTX::Renderer::SHADING::DIFFUSE );
 
 		preset2->setSSAOIntensity( 17 );
