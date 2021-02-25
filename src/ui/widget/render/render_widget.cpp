@@ -43,9 +43,14 @@ namespace VTX
 					BaseManualWidget::_setupUi( p_name );
 
 					_openGLWidget->setSizeHint( Style::RENDER_PREFERED_SIZE );
+					_openGLWidget->setMinimumSizeHint( Style::RENDER_MINIMUM_SIZE );
+
 					setFocusPolicy( Qt::StrongFocus );
 					setFeatures( DockWidgetFeature::DockWidgetClosable );
 					setWidget( _openGLWidget );
+
+					_openGLWidget->setMinimumSize( Style::RENDER_MINIMUM_SIZE );
+					_openGLWidget->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred );
 				}
 
 				void RenderWidget::_setupSlots() {}

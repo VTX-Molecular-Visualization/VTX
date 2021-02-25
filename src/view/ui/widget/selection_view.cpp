@@ -410,10 +410,7 @@ namespace VTX::View::UI::Widget
 												  const Model::Selection::MapChainIds & p_children ) const
 	{
 		p_item.setData( NAME_COLUMN_INDEX, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( p_molecule.getId() ) );
-		p_item.setText( NAME_COLUMN_INDEX,
-						QString::fromStdString( p_molecule.getDefaultName() + " - "
-												+ std::to_string( p_children.getFullySelectedChildCount() ) + '/'
-												+ std::to_string( p_molecule.getChainCount() ) ) );
+		p_item.setText( NAME_COLUMN_INDEX, QString::fromStdString( p_molecule.getDefaultName() ) );
 		p_item.setIcon( NAME_COLUMN_INDEX, *VTX::Style::IconConst::get().getModelSymbol( p_molecule.getTypeId() ) );
 
 		const QTreeWidgetItem::ChildIndicatorPolicy childIndicatorPolicy
@@ -427,10 +424,7 @@ namespace VTX::View::UI::Widget
 											   const Model::Selection::MapResidueIds & p_children ) const
 	{
 		p_item.setData( NAME_COLUMN_INDEX, MODEL_ID_ROLE, QVariant::fromValue( p_chain.getId() ) );
-		p_item.setText( NAME_COLUMN_INDEX,
-						QString::fromStdString( p_chain.getDefaultName() + " - "
-												+ std::to_string( p_children.getFullySelectedChildCount() ) + '/'
-												+ std::to_string( p_chain.getResidueCount() ) ) );
+		p_item.setText( NAME_COLUMN_INDEX, QString::fromStdString( p_chain.getDefaultName() + " - " ) );
 		p_item.setIcon( NAME_COLUMN_INDEX, *VTX::Style::IconConst::get().getModelSymbol( p_chain.getTypeId() ) );
 
 		QTreeWidgetItem::ChildIndicatorPolicy childIndicator
@@ -447,9 +441,7 @@ namespace VTX::View::UI::Widget
 		p_item.setData( NAME_COLUMN_INDEX, MODEL_ID_ROLE, QVariant::fromValue( p_residue.getId() ) );
 		p_item.setText( NAME_COLUMN_INDEX,
 						QString::fromStdString( p_residue.getSymbolStr() + " "
-												+ std::to_string( p_residue.getIndexInOriginalChain() ) + " - "
-												+ std::to_string( p_children.getFullySelectedChildCount() ) + '/'
-												+ std::to_string( p_residue.getAtomCount() ) ) );
+												+ std::to_string( p_residue.getIndexInOriginalChain() ) ) );
 		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_residue.getTypeId() ) );
 
 		// Always show indicator, if residue has no child, it is remove from the molecule

@@ -26,14 +26,19 @@ namespace VTX
 
 		void Scene::clear()
 		{
-			for ( const PairMoleculePtrFloat & mol : _molecules )
+			while ( _molecules.size() > 0 )
 			{
-				MVC::MvcManager::get().deleteModel( mol.first );
+				MoleculePtr const molecule = _molecules.begin()->first;
+				removeMolecule( molecule );
+				MVC::MvcManager::get().deleteModel( molecule );
 			}
+
 			_molecules.clear();
 
 			MVC::MvcManager::get().deleteAllModels( _meshes );
+			_meshes.clear();
 			MVC::MvcManager::get().deleteAllModels( _paths );
+			_paths.clear();
 		}
 
 		void Scene::addMolecule( MoleculePtr const p_molecule )

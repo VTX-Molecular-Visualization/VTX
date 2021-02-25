@@ -7,38 +7,34 @@
 
 #include "molecule_sequence_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
+#include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include <QDockWidget>
+#include <QScrollArea>
 #include <QVBoxLayout>
 #include <unordered_set>
 
-namespace VTX
+namespace VTX::UI::Widget::Sequence
 {
-	namespace UI
+	class SequenceWidget : public BaseManualWidget<QDockWidget>
 	{
-		namespace Widget
-		{
-			namespace Sequence
-			{
-				class SequenceWidget : public BaseManualWidget<QDockWidget>
-				{
-					VTX_WIDGET
+		VTX_WIDGET
 
-				  public:
-					void receiveEvent( const Event::VTXEvent & p_event ) override;
-					void localize() override;
-					void refreshSelection() const;
+	  public:
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void localize() override;
+		void refreshSelection() const;
 
-				  protected:
-					SequenceWidget( QWidget * p_parent );
-					void _setupUi( const QString & p_name ) override;
-					void _setupSlots() override;
+	  protected:
+		SequenceWidget( QWidget * p_parent );
 
-				  private:
-					QVBoxLayout *								 _layout = nullptr;
-					std::unordered_set<MoleculeSequenceWidget *> _moleculeWidgets;
-				};
-			} // namespace Sequence
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
+
+	  private:
+		CustomWidget::DockWindowMainWidget<QScrollArea> * _scrollArea = nullptr;
+
+		QVBoxLayout *								 _layout = nullptr;
+		std::unordered_set<MoleculeSequenceWidget *> _moleculeWidgets;
+	};
+} // namespace VTX::UI::Widget::Sequence
 #endif

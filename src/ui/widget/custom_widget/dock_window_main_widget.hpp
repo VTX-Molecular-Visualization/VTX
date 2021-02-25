@@ -8,40 +8,46 @@
 #include <QWidget>
 #include <type_traits>
 
-namespace VTX
+namespace VTX::UI::Widget::CustomWidget
 {
-	namespace UI
+	template<typename W, typename = std::enable_if<std::is_base_of<W, QWidget>::value>>
+	class DockWindowMainWidget : public W
 	{
-		namespace Widget
+	  public:
+		DockWindowMainWidget( QWidget * p_parent = nullptr ) : W( p_parent ) {};
+
+		QSize sizeHint() const override
 		{
-			namespace CustomWidget
-			{
-				template<typename W, typename = std::enable_if<std::is_base_of<W, QWidget>::value>>
-				class DockWindowMainWidget : public W
-				{
-				  public:
-					DockWindowMainWidget( QWidget * p_parent = nullptr ) : W( p_parent ) {};
+			if ( _sizeHintOverrided )
+				return _sizeHint;
+			else
+				return W::sizeHint();
+		};
 
-					QSize sizeHint() const override
-					{
-						if ( _sizeHintOverrided )
-							return _sizeHint;
-						else
-							return W::sizeHint();
-					};
+		QSize minimumSizeHint() const override
+		{
+			if ( _minimumSizeHintOverrided )
+				return _minimumSizeHint;
+			else
+				return W::minimumSizeHint();
+		};
 
-					inline void setSizeHint( const QSize & p_sizeHint )
-					{
-						_sizeHint		   = p_sizeHint;
-						_sizeHintOverrided = true;
-					};
+		inline void setSizeHint( const QSize & p_sizeHint )
+		{
+			_sizeHint		   = p_sizeHint;
+			_sizeHintOverrided = true;
+		};
+		inline void setMinimumSizeHint( const QSize & p_sizeHint )
+		{
+			_minimumSizeHint		  = p_sizeHint;
+			_minimumSizeHintOverrided = true;
+		};
 
-				  private:
-					bool  _sizeHintOverrided = false;
-					QSize _sizeHint;
-				};
-			} // namespace CustomWidget
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+	  private:
+		bool  _sizeHintOverrided = false;
+		QSize _sizeHint;
+		bool  _minimumSizeHintOverrided = false;
+		QSize _minimumSizeHint;
+	};
+} // namespace VTX::UI::Widget::CustomWidget
 #endif

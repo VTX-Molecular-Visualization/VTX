@@ -60,15 +60,16 @@ namespace VTX::UI::Widget::MainMenu::Home
 	}
 	void MenuHomeSessionWidget::_setupSlots()
 	{
+		_newSessionButton->setTriggerAction( this, &MenuHomeSessionWidget::_newSession );
 		_openSessionButton->setTriggerAction( this, &MenuHomeSessionWidget::_openFile );
 		_loadSettingsButton->setTriggerAction( this, &MenuHomeSessionWidget::_loadSettings );
 		_saveSettingsButton->setTriggerAction( this, &MenuHomeSessionWidget::_saveSettings );
 	}
 	void MenuHomeSessionWidget::localize() {}
 
+	void MenuHomeSessionWidget::_newSession() { VTX_ACTION( new Action::Main::New(), true ); }
 	void MenuHomeSessionWidget::_openFile()
 	{
-		// TODO : Filter file type
 		const QString filename
 			= QFileDialog::getOpenFileName( this, "Open Molecule", "", VTX_SETTING().OPEN_FILE_FILTERS );
 

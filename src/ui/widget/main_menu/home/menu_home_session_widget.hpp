@@ -37,6 +37,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 		QMenu * _recentSessionMenu = nullptr;
 
 	  private:
+		void _newSession();
 		void _openFile();
 		void _loadRecentSession( const int & p_ptrSessionIndex ) const;
 		void _loadSettings() const;

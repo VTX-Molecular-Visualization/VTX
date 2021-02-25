@@ -141,6 +141,7 @@ namespace VTX::UI::Widget::Scene
 		scrollArea->setWidgetResizable( true );
 		scrollArea->setSizeAdjustPolicy( QAbstractScrollArea::SizeAdjustPolicy::AdjustIgnored );
 		scrollArea->setSizeHint( Style::SCENE_PREFERED_SIZE );
+		scrollArea->setMinimumSizeHint( Style::SCENE_MINIMUM_SIZE );
 
 		setWidget( scrollArea );
 
