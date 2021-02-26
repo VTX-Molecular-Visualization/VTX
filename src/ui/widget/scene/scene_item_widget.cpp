@@ -36,6 +36,8 @@ namespace VTX::UI::Widget::Scene
 
 		if ( p_event->button() == Qt::LeftButton )
 			_dragStartPosition = p_event->pos();
+
+		p_event->accept();
 	}
 
 	void SceneItemWidget::dragEnterEvent( QDragEnterEvent * p_event )

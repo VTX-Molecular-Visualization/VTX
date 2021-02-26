@@ -9,15 +9,9 @@
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
 #include "ui/contextual_menu.hpp"
-#include "ui/main_window.hpp"
 #include "ui/mime_type.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_atom.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_chain.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_molecule.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_residue.hpp"
 #include "ui/widget/scene/molecule_selection_model.hpp"
 #include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX::View::UI::Widget
 {
@@ -232,43 +226,58 @@ namespace VTX::View::UI::Widget
 		const ID::VTX_ID & modelTypeId	 = MVC::MvcManager::get().getModelTypeID( modelId );
 		const QPoint	   globalClicPos = mapToGlobal( p_clicPos );
 
+		Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+
 		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
-			VTXApp::get()
-				.getMainWindow()
-				.getContextualMenu()
-				.displayMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuMolecule>(
-					VTX::UI::ContextualMenu::Menu::Molecule, &molecule, globalClicPos );
+			if ( selection.isMoleculeFullySelected( molecule ) )
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+			}
+			else
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Molecule, &molecule, globalClicPos );
+			}
 		}
 		else if ( modelTypeId == ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & chain = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
-			VTXApp::get()
-				.getMainWindow()
-				.getContextualMenu()
-				.displayMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuChain>(
-					VTX::UI::ContextualMenu::Menu::Chain, &chain, globalClicPos );
+			if ( selection.isChainFullySelected( chain ) )
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+			}
+			else
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Chain, &chain, globalClicPos );
+			}
 		}
 		else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
 		{
 			Model::Residue & residue = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
-			VTXApp::get()
-				.getMainWindow()
-				.getContextualMenu()
-				.displayMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuResidue>(
-					VTX::UI::ContextualMenu::Menu::Residue, &residue, globalClicPos );
+			if ( selection.isResidueFullySelected( residue ) )
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+			}
+			else
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Residue, &residue, globalClicPos );
+			}
 		}
 		else if ( modelTypeId == ID::Model::MODEL_ATOM )
 		{
 			Model::Atom & atom = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
-			VTXApp::get()
-				.getMainWindow()
-				.getContextualMenu()
-				.displayMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuAtom>(
-					VTX::UI::ContextualMenu::Menu::Atom, &atom, globalClicPos );
+			if ( selection.isAtomSelected( atom ) )
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+			}
+			else
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Atom, &atom, globalClicPos );
+			}
 		}
 	}
+
 	void MoleculeSceneView::_rebuildTree()
 	{
 		collapseItem( topLevelItem( 0 ) );

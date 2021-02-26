@@ -142,10 +142,13 @@ namespace VTX::Model
 		bool isRepresentationSelected( Representation::InstantiatedRepresentation & ) const;
 		uint getRepresentationSelectedCount() const;
 
-		bool	   isEmpty() const;
-		void	   clear();
+		bool isEmpty() const;
+		void clear();
+
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
+
+		void	   getItemTypes( std::set<ID::VTX_ID> & p_types ) const;
 		Math::AABB getAABB() const;
-		void	   receiveEvent( const Event::VTXEvent & p_event ) override;
 
 	  protected:
 		Selection() : BaseModel( ID::Model::MODEL_SELECTION )

@@ -10,36 +10,33 @@
 #include <QDialogButtonBox>
 #include <QLineEdit>
 
-namespace VTX
+namespace VTX::UI::Widget::Dialog
 {
-	namespace UI
+	class DownloadMoleculeDialog : public BaseManualWidget<QDialog>
 	{
-		namespace Widget
-		{
-			namespace Dialog
-			{
-				class DownloadMoleculeDialog : public BaseManualWidget<QDialog>
-				{
-					VTX_WIDGET
+		VTX_WIDGET
 
-				  public:
-					void localize() override;
-					void cancelAction();
-					void openAction();
+	  public:
+		static void openDialog();
+		static void openDialog( const QString & p_txt );
 
-				  protected:
-					DownloadMoleculeDialog( QWidget * p_parent );
+		void localize() override;
+		void cancelAction();
+		void openAction();
 
-					void _setupUi( const QString & p_name ) override;
-					void _setupSlots() override;
+	  protected:
+		DownloadMoleculeDialog( QWidget * p_parent );
 
-				  private:
-					QLineEdit *		   _fileLineEdit  = nullptr;
-					QDialogButtonBox * _dialogButtons = nullptr;
-				};
-			} // namespace Dialog
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
+
+	  private:
+		inline static DownloadMoleculeDialog * _instance = nullptr;
+		static DownloadMoleculeDialog &		   _getInstance();
+
+		QLineEdit *		   _fileLineEdit  = nullptr;
+		QDialogButtonBox * _dialogButtons = nullptr;
+	};
+} // namespace VTX::UI::Widget::Dialog
 
 #endif

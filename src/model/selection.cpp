@@ -867,6 +867,44 @@ namespace VTX::Model
 		VTX_EVENT( new Event::VTXEventPtr( Event ::SELECTION_CHANGE, this ) );
 	}
 
+	void Selection::getItemTypes( std::set<ID::VTX_ID> & p_types ) const
+	{
+		p_types.clear();
+
+		for ( const std::pair<Model::ID, MapChainIds> & molData : getItems() )
+		{
+			const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molData.first );
+			if ( isMoleculeFullySelected( molecule ) )
+			{
+				p_types.emplace( molecule.getTypeId() );
+				continue;
+			}
+
+			for ( const std::pair<Model::ID, MapResidueIds> & chainData : molData.second )
+			{
+				const Model::Chain & chain = *molecule.getChain( chainData.first );
+				if ( isChainFullySelected( chain ) )
+				{
+					p_types.emplace( chain.getTypeId() );
+					continue;
+				}
+
+				for ( const std::pair<Model::ID, VecAtomIds> & residueData : chainData.second )
+				{
+					const Model::Residue & residue = *molecule.getResidue( residueData.first );
+					if ( isResidueFullySelected( residue ) )
+					{
+						p_types.emplace( residue.getTypeId() );
+					}
+					else
+					{
+						p_types.emplace( ID::Model::MODEL_ATOM );
+					}
+				}
+			}
+		}
+	}
+
 	Math::AABB Selection::getAABB() const
 	{
 		Math::AABB res = Math::AABB();

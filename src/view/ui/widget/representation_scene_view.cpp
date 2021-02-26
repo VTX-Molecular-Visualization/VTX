@@ -5,10 +5,7 @@
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
 #include "ui/contextual_menu.hpp"
-#include "ui/main_window.hpp"
 #include "ui/mime_type.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_instantiated_representation.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX::View::UI::Widget
 {
@@ -67,11 +64,8 @@ namespace VTX::View::UI::Widget
 
 	void RepresentationSceneView::_onCustomContextMenuCalled( const QPoint & p_clicPos )
 	{
-		VTXApp::get()
-			.getMainWindow()
-			.getContextualMenu()
-			.displayMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuInstantiatedRepresentation>(
-				VTX::UI::ContextualMenu::Menu::InstantiatedRepresentation, _model, mapToGlobal( p_clicPos ) );
+		VTX::UI::ContextualMenu::pop(
+			VTX::UI::ContextualMenu::Menu::InstantiatedRepresentation, _model, mapToGlobal( p_clicPos ) );
 	}
 	void RepresentationSceneView::setTarget( Generic::BaseRepresentable & p_renderable )
 	{

@@ -8,10 +8,7 @@
 #include "style.hpp"
 #include "tool/logger.hpp"
 #include "ui/contextual_menu.hpp"
-#include "ui/main_window.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_residue.hpp"
 #include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
 #include <QScrollBar>
 #include <algorithm>
 
@@ -351,7 +348,7 @@ namespace VTX::UI::Widget::Sequence
 		const QPoint		   currentMousePos = _scrollAreaContent->mapFromGlobal( globalMousePos );
 		Model::Residue * const residueHovered  = _getResidueAtPos( currentMousePos );
 
-		if ( p_event->button() != Qt::MouseButton::LeftButton )
+		if ( p_event->button() == Qt::MouseButton::LeftButton )
 		{
 			// We update these data here if from to click selection is used and no move has been done
 			// (_lastDragSelectionPosition and _lastResidueHovered may not be up to date)
@@ -363,11 +360,15 @@ namespace VTX::UI::Widget::Sequence
 		{
 			if ( residueHovered != nullptr )
 			{
-				VTXApp::get()
-					.getMainWindow()
-					.getContextualMenu()
-					.displayMenu<UI::Widget::ContextualMenu::ContextualMenuResidue>(
-						VTX::UI::ContextualMenu::Menu::Residue, residueHovered, globalMousePos );
+				Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+				if ( selection.isResidueSelected( *residueHovered ) )
+				{
+					UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Selection, &selection, globalMousePos );
+				}
+				else
+				{
+					UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Residue, residueHovered, globalMousePos );
+				}
 			}
 		}
 	}

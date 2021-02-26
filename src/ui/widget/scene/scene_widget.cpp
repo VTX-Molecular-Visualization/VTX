@@ -5,13 +5,16 @@
 #include "model/representation/representation.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "object3d/scene.hpp"
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
+#include "ui/contextual_menu.hpp"
 #include "ui/mime_type.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 #include "view/ui/widget/representation_scene_view.hpp"
+#include "vtx_app.hpp"
 #include <QScrollArea>
 #include <algorithm>
 
@@ -157,10 +160,30 @@ namespace VTX::UI::Widget::Scene
 	}
 	void SceneWidget::mousePressEvent( QMouseEvent * p_event )
 	{
-		Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
-		if ( !selectionModel.isEmpty() )
+		// Click on header
+		if ( !_scrollAreaContent->rect().contains( _scrollAreaContent->mapFromGlobal( p_event->globalPos() ) ) )
 		{
-			VTX_ACTION( new Action::Selection::ClearSelection( selectionModel ) );
+			BaseManualWidget::mousePressEvent( p_event );
+			return;
+		}
+
+		if ( p_event->buttons() & ( Qt::MouseButton::LeftButton | Qt::MouseButton::RightButton ) )
+		{
+			Model::Selection & selectionModel = VTX::Selection::SelectionManager::get().getSelectionModel();
+			if ( !selectionModel.isEmpty() )
+			{
+				VTX_ACTION( new Action::Selection::ClearSelection( selectionModel ) );
+			}
+
+			p_event->accept();
+		}
+
+		if ( p_event->buttons() & Qt::MouseButton::RightButton )
+		{
+			Object3D::Scene & scene = VTXApp::get().getScene();
+			UI::ContextualMenu::pop( UI::ContextualMenu::Menu::Scene, &scene, p_event->globalPos() );
+
+			p_event->accept();
 		}
 	}
 	void SceneWidget::dragEnterEvent( QDragEnterEvent * p_event )

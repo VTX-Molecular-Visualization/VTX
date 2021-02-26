@@ -28,12 +28,7 @@ namespace VTX::Action::Main
 	class New : public BaseAction
 	{
 	  public:
-		virtual void execute() override
-		{
-			VTXApp::get().getScene().clear();
-			Model::Path * path = MVC::MvcManager::get().instantiateModel<Model::Path>();
-			VTXApp::get().getScene().addPath( path );
-		}
+		virtual void execute() override { VTXApp::get().getScene().reset(); }
 	};
 
 	class Quit : public BaseAction
@@ -111,6 +106,12 @@ namespace VTX::Action::Main
 
 	  private:
 		FilePath * _path;
+	};
+
+	class ResetScene : public BaseAction
+	{
+	  public:
+		virtual void execute() override { VTXApp::get().getScene().reset(); }
 	};
 
 	class ToggleCameraController : public BaseAction
