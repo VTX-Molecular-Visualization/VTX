@@ -224,6 +224,9 @@ namespace VTX
 			void createSecondaryStructure();
 			void propagateEventToViews( const Event::VTXEvent * const p_event ) { _notifyViews( p_event ); }
 
+			const std::string & getDisplayName() const { return _displayName; };
+			void				setDisplayName( const std::string & p_name );
+
 		  protected:
 			void _init() override;
 			void _fillBuffer() override;
@@ -236,6 +239,8 @@ namespace VTX
 			~Molecule();
 
 		  private:
+			std::string _displayName;
+
 			// Configuration.
 			Configuration::Molecule _configuration = Configuration::Molecule();
 

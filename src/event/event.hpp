@@ -50,6 +50,7 @@ namespace VTX
 			CHAIN_VISIBILITY,
 			RESIDUE_VISIBILITY,
 			ATOM_VISIBILITY,
+			DISPLAY_NAME_CHANGE,
 		};
 
 		// Base event without args.

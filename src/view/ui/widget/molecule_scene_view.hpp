@@ -42,6 +42,7 @@ namespace VTX::View::UI::Widget
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 		const Model::ID & getModelID() const override { return _model->getId(); };
+		void			  openRenameEditor();
 
 	  protected:
 		void _setupUi( const QString & ) override;

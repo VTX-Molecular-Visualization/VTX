@@ -25,6 +25,8 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
+		void _renameAction();
+
 		void _orientAction();
 		void _showAction();
 		void _hideAction();

@@ -268,5 +268,23 @@ namespace VTX::Action::Molecule
 		const Model::Molecule & _target;
 	};
 
+	class Rename : public BaseActionUndonable
+	{
+	  public:
+		explicit Rename( Model::Molecule & p_target, const std::string & p_newName ) :
+			_target( p_target ), _oldName( p_target.getDisplayName() ), _newName( p_newName )
+		{
+		}
+
+		void execute() override { _target.setDisplayName( _newName ); }
+		void undo() override { _target.setDisplayName( _oldName ); }
+
+	  private:
+		Model::Molecule & _target;
+
+		const std::string _oldName;
+		const std::string _newName;
+	};
+
 } // namespace VTX::Action::Molecule
 #endif

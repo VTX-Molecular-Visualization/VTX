@@ -2,6 +2,7 @@
 #include "action/action_manager.hpp"
 #include "action/molecule.hpp"
 #include "action/visible.hpp"
+#include "view/ui/widget/molecule_scene_view.hpp"
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -11,6 +12,8 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuMolecule::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
 	void ContextualMenuMolecule::_setupSlots()
 	{
+		addAction( "Rename", this, &ContextualMenuMolecule::_renameAction );
+		addSeparator();
 		addAction( "Orient", this, &ContextualMenuMolecule::_orientAction );
 		addAction( "Show", this, &ContextualMenuMolecule::_showAction );
 		addAction( "Hide", this, &ContextualMenuMolecule::_hideAction );
@@ -26,6 +29,14 @@ namespace VTX::UI::Widget::ContextualMenu
 		setTitle( QString::fromStdString( p_target->getPdbIdCode() ) );
 	}
 
+	void ContextualMenuMolecule::_renameAction()
+	{
+		View::UI::Widget::MoleculeSceneView * const molSceneView
+			= MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSceneView>( _target,
+																				   ID::View::UI_MOLECULE_STRUCTURE );
+
+		molSceneView->openRenameEditor();
+	}
 	void ContextualMenuMolecule::_orientAction() { VTX_ACTION( new Action::Molecule::Orient( *_target ) ); }
 	void ContextualMenuMolecule::_showAction()
 	{

@@ -69,6 +69,10 @@ namespace VTX::View::UI::Widget
 		{
 			_rebuildTree();
 		}
+		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
+		{
+			topLevelItem( 0 )->setText( 0, QString::fromStdString( _model->getDisplayName() ) );
+		}
 	}
 
 	void MoleculeSceneView::receiveEvent( const Event::VTXEvent & p_event )
@@ -104,6 +108,7 @@ namespace VTX::View::UI::Widget
 		setExpandsOnDoubleClick( false );
 
 		setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
+		setEditTriggers( EditTrigger::SelectedClicked );
 
 		_rebuildTree();
 	}
@@ -130,7 +135,19 @@ namespace VTX::View::UI::Widget
 	void MoleculeSceneView::_onItemChanged( const QTreeWidgetItem * const p_item, const int p_column ) const
 	{
 		if ( p_column == 0 )
+		{
+			if ( p_item == topLevelItem( 0 ) )
+			{
+				const std::string itemTxt = p_item->text( 0 ).toStdString();
+				if ( itemTxt != _model->getDisplayName() )
+				{
+					VTX_ACTION( new Action::Molecule::Rename( *_model, itemTxt ) );
+					return;
+				}
+			}
+
 			_doEnableStateChangeAction( p_item );
+		}
 	}
 	void MoleculeSceneView::_onItemDoubleClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
 	{
@@ -286,6 +303,7 @@ namespace VTX::View::UI::Widget
 		_clearLoadedItems();
 
 		QTreeWidgetItem * const moleculeView = new QTreeWidgetItem();
+		moleculeView->setFlags( moleculeView->flags() | Qt::ItemFlag::ItemIsEditable );
 
 		_applyMoleculeDataOnItem( *_model, *moleculeView );
 		_refreshItemVisibility( moleculeView, *_model );
@@ -574,7 +592,7 @@ namespace VTX::View::UI::Widget
 													  QTreeWidgetItem &		  p_item ) const
 	{
 		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( p_molecule.getId() ) );
-		p_item.setText( 0, QString::fromStdString( p_molecule.getDefaultName() ) );
+		p_item.setText( 0, QString::fromStdString( p_molecule.getDisplayName() ) );
 		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_molecule.getTypeId() ) );
 
 		const QTreeWidgetItem::ChildIndicatorPolicy childIndicatorPolicy
@@ -875,6 +893,11 @@ namespace VTX::View::UI::Widget
 	{
 		// Can only drag from the molecule
 		return itemAt( p_position ) == topLevelItem( 0 );
+	}
+
+	void MoleculeSceneView::openRenameEditor()
+	{
+		editItem( topLevelItem( 0 ) );
 	}
 
 } // namespace VTX::View::UI::Widget

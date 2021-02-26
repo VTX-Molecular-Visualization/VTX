@@ -2,16 +2,19 @@
 #include "action/action_manager.hpp"
 #include "action/selection.hpp"
 #include "action/visible.hpp"
+#include "view/ui/widget/molecule_scene_view.hpp"
 
 namespace VTX::UI::Widget::ContextualMenu
 {
 	ContextualMenuSelection::ContextualMenuSelection( QWidget * const p_parent ) : ContextualMenuTemplate( p_parent )
 	{
+		_actions.emplace_back( ActionData( "Rename", TypeMask::Molecule, &ContextualMenuSelection::_renameAction ) );
 		_actions.emplace_back( ActionData( "Orient", TypeMask::All, &ContextualMenuSelection::_orientAction ) );
 		_actions.emplace_back( ActionData( "Show", TypeMask::AllButAtom, &ContextualMenuSelection::_showAction ) );
 		_actions.emplace_back( ActionData( "Hide", TypeMask::AllButAtom, &ContextualMenuSelection::_hideAction ) );
 		_actions.emplace_back( ActionData( "Copy", TypeMask::All, &ContextualMenuSelection::_copyAction ) );
-		_actions.emplace_back( ActionData( "Extract", TypeMask::All, &ContextualMenuSelection::_extractAction ) );
+		_actions.emplace_back(
+			ActionData( "Extract", TypeMask::AllButMolecule, &ContextualMenuSelection::_extractAction ) );
 		_actions.emplace_back(
 			ActionData( "Delete", TypeMask::All, &ContextualMenuSelection::_deleteAction, QKeySequence::Delete ) );
 	}
@@ -63,6 +66,17 @@ namespace VTX::UI::Widget::ContextualMenu
 		return res;
 	}
 
+	void ContextualMenuSelection::_renameAction()
+	{
+		const Model::ID &		moleculeId = _target->getItems().begin()->first;
+		const Model::Molecule & molecule   = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeId );
+
+		View::UI::Widget::MoleculeSceneView & moleculeSceneView
+			= *MVC::MvcManager::get().getView<View::UI::Widget::MoleculeSceneView>( &molecule,
+																					ID::View::UI_MOLECULE_STRUCTURE );
+
+		moleculeSceneView.openRenameEditor();
+	}
 	void ContextualMenuSelection::_orientAction() { VTX_ACTION( new Action::Selection::Orient( *_target ) ); }
 	void ContextualMenuSelection::_showAction()
 	{

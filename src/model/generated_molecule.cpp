@@ -491,8 +491,7 @@ namespace VTX::Model
 		// Copy molecule properties.
 		setName( p_namePrefix + p_molecule.getName() );
 		setPdbIdCode( "none" );
-		_defaultName = p_namePrefix + p_molecule.getDefaultName();
-		setDefaultName( &_defaultName );
+		setDisplayName( p_namePrefix + p_molecule.getDefaultName() );
 		setColor( Color::Rgb::randomPastel() );
 
 		for ( int i = 0; i < p_molecule.getAtomPositionFrames().size(); i++ )

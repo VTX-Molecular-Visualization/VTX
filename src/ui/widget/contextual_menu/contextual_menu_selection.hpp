@@ -23,7 +23,8 @@ namespace VTX::UI::Widget::ContextualMenu
 		None = 0,
 		All	 = 0xFFFF,
 
-		AllButAtom = ~Atom,
+		AllButMolecule = ~Molecule,
+		AllButAtom	   = ~Atom,
 	};
 
 	inline TypeMask operator&( const TypeMask p_lhs, const TypeMask p_rhs )
@@ -78,6 +79,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _setupSlots() override;
 		void _updateActionsWithSelection();
 
+		void _renameAction();
 		void _orientAction();
 		void _showAction();
 		void _hideAction();

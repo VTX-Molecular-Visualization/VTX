@@ -39,7 +39,7 @@ namespace VTX
 		void Molecule::setPdbIdCode( const std::string & p_pdbId )
 		{
 			_pdbIdCode = p_pdbId;
-			BaseModel::setDefaultName( &_pdbIdCode );
+			setDisplayName( _pdbIdCode );
 		}
 
 		Chain & Molecule::addChain()
@@ -72,6 +72,8 @@ namespace VTX
 
 		void Molecule::_init()
 		{
+			BaseModel::setDefaultName( &_displayName );
+
 			// Fill buffers.
 			if ( _atomPositionsFrames.size() > 0 )
 			{
@@ -734,6 +736,12 @@ namespace VTX
 
 			if ( p_notifyViews )
 				_notifyDataChanged();
+		}
+
+		void Molecule::setDisplayName( const std::string & p_name )
+		{
+			_displayName = p_name;
+			_notifyViews( new Event::VTXEvent( Event::Model::DISPLAY_NAME_CHANGE ) );
 		}
 
 	} // namespace Model
