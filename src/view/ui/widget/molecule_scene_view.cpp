@@ -71,7 +71,7 @@ namespace VTX::View::UI::Widget
 		}
 		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
 		{
-			topLevelItem( 0 )->setText( 0, QString::fromStdString( _model->getDisplayName() ) );
+			_getMoleculeTreeWidgetItem()->setText( 0, QString::fromStdString( _model->getDisplayName() ) );
 		}
 	}
 
@@ -94,6 +94,17 @@ namespace VTX::View::UI::Widget
 			return;
 			// Reimplement expand all action to prevent useless multiple call to refreshSelection
 			//_expandAll( currentItem() );
+		}
+		else if ( p_event->key() == Qt::Key::Key_F2 )
+		{
+			const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+			// Override rename key binding because multiple selection with molecule make it fail
+			if ( currentItem() == _getMoleculeTreeWidgetItem() && selection.isMoleculeFullySelected( *_model )
+				 && selection.getItems().size() == 1 )
+			{
+				openRenameEditor();
+			}
 		}
 		else
 		{
@@ -136,7 +147,7 @@ namespace VTX::View::UI::Widget
 	{
 		if ( p_column == 0 )
 		{
-			if ( p_item == topLevelItem( 0 ) )
+			if ( p_item == _getMoleculeTreeWidgetItem() )
 			{
 				const std::string itemTxt = p_item->text( 0 ).toStdString();
 				if ( itemTxt != _model->getDisplayName() )
@@ -297,7 +308,7 @@ namespace VTX::View::UI::Widget
 
 	void MoleculeSceneView::_rebuildTree()
 	{
-		collapseItem( topLevelItem( 0 ) );
+		collapseItem( _getMoleculeTreeWidgetItem() );
 
 		clear();
 		_clearLoadedItems();
@@ -702,7 +713,7 @@ namespace VTX::View::UI::Widget
 
 		if ( itMoleculeItem != p_selection.getItems().end() )
 		{
-			QTreeWidgetItem * const moleculeItem = topLevelItem( 0 );
+			QTreeWidgetItem * const moleculeItem = _getMoleculeTreeWidgetItem();
 			selection.append( QItemSelectionRange( indexFromItem( moleculeItem ) ) );
 
 			if ( moleculeItem->isExpanded() )
@@ -892,12 +903,9 @@ namespace VTX::View::UI::Widget
 	bool		MoleculeSceneView::_canDragObjectAtPos( const QPoint & p_position )
 	{
 		// Can only drag from the molecule
-		return itemAt( p_position ) == topLevelItem( 0 );
+		return itemAt( p_position ) == _getMoleculeTreeWidgetItem();
 	}
 
-	void MoleculeSceneView::openRenameEditor()
-	{
-		editItem( topLevelItem( 0 ) );
-	}
+	void MoleculeSceneView::openRenameEditor() { editItem( _getMoleculeTreeWidgetItem() ); }
 
 } // namespace VTX::View::UI::Widget
