@@ -51,7 +51,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		VTX_WIDGET
 
 	  private:
-		struct ActionData
+		class ActionData
 		{
 		  public:
 			ActionData( const QString & p_name,
@@ -66,6 +66,16 @@ namespace VTX::UI::Widget::ContextualMenu
 			void ( ContextualMenuSelection::*action )();
 			const TypeMask	   validTypes;
 			const QKeySequence shortcut;
+			bool			   isSeparator = false;
+		};
+
+		class ActionDataSection : public ActionData
+		{
+		  public:
+			ActionDataSection( const QString & p_name ) : ActionData( p_name, TypeMask::All, nullptr )
+			{
+				isSeparator = true;
+			};
 		};
 
 	  public:

@@ -9,6 +9,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	ContextualMenuSelection::ContextualMenuSelection( QWidget * const p_parent ) : ContextualMenuTemplate( p_parent )
 	{
 		_actions.emplace_back( ActionData( "Rename", TypeMask::Molecule, &ContextualMenuSelection::_renameAction ) );
+		_actions.emplace_back( ActionDataSection( "Edit" ) );
 		_actions.emplace_back( ActionData( "Orient", TypeMask::All, &ContextualMenuSelection::_orientAction ) );
 		_actions.emplace_back( ActionData( "Show", TypeMask::AllButAtom, &ContextualMenuSelection::_showAction ) );
 		_actions.emplace_back( ActionData( "Hide", TypeMask::AllButAtom, &ContextualMenuSelection::_hideAction ) );
@@ -25,7 +26,10 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		for ( const ActionData & actionData : _actions )
 		{
-			addAction( actionData.name, this, actionData.action, actionData.shortcut );
+			if ( actionData.isSeparator )
+				addSection( actionData.name );
+			else
+				addAction( actionData.name, this, actionData.action, actionData.shortcut );
 		}
 
 		connect(
