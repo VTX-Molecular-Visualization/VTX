@@ -51,7 +51,6 @@ namespace VTX::UI::Widget::Settings
 		int														  _itemCount		 = 0;
 		Model::Renderer::RenderEffectPreset *					  _preset			 = nullptr;
 		VTX::View::UI::Widget::Renderer::RenderEffectPresetView * _currentPresetView = nullptr;
-		bool													  _updateRender		 = true;
 
 		QGridLayout * _layout = nullptr;
 

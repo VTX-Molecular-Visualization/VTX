@@ -424,7 +424,7 @@ namespace VTX::View::UI::Widget
 											   const Model::Selection::MapResidueIds & p_children ) const
 	{
 		p_item.setData( NAME_COLUMN_INDEX, MODEL_ID_ROLE, QVariant::fromValue( p_chain.getId() ) );
-		p_item.setText( NAME_COLUMN_INDEX, QString::fromStdString( p_chain.getDefaultName() + " - " ) );
+		p_item.setText( NAME_COLUMN_INDEX, QString::fromStdString( p_chain.getDefaultName() ) );
 		p_item.setIcon( NAME_COLUMN_INDEX, *VTX::Style::IconConst::get().getModelSymbol( p_chain.getTypeId() ) );
 
 		QTreeWidgetItem::ChildIndicatorPolicy childIndicator
