@@ -11,7 +11,7 @@ class SettingsWindowWidget : public QDialog
 	Q_OBJECT
 
   public:
-	SettingsWindowWidget( QWidget * p_parent, QString extensionName );
+	SettingsWindowWidget( QWidget * p_parent );
 	~SettingsWindowWidget() {};
 
 	void populateSettingsList( QStringList * settingsNameList );

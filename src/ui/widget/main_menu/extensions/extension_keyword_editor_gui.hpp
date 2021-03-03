@@ -6,7 +6,8 @@
 //#endif
 
 #include "extensions/keyword_editor/extension_keyword_editor.hpp"
-#include "ui/qt_form/ui_keyword_editor_main_window.h"
+#include "ui/qt_form/ui_keyword_editor_main_window2.h"
+#include "ui/widget/custom_widget/custom_qdockwidget.hpp"
 #include "ui/widget/custom_widget/settings_window.hpp"
 #include <QDockWidget>
 
@@ -20,25 +21,24 @@ namespace VTX
 			{
 				namespace Extensions
 				{
-					class ExtensionKeywordEditorGUI : public QDockWidget
+					class ExtensionKeywordEditorGUI : public CustomQDockWidget
 					{
 						Q_OBJECT
 
 					  public:
 						explicit ExtensionKeywordEditorGUI( QWidget * parent );
 
+						QString				moduleIcon() override;
+						QString				moduleTitle() override;
+						std::vector<bool> * moduleWindowProperties() override;
+						QWidget *			moduleWidget() override;
+
 						void populateInterfaceWithValues();
 
 					  private slots:
-						void onExitButtonClicked();
-						void onSettingsButtonClicked();
-						void saveSettingsClicked();
-						void loadSettingsClicked();
-						void removeSettingsClicked();
 
 						void onOpenKeyfilePushButtonClicked();
 						void onGenerateKeyfilePushButtonClicked();
-
 						void comboBoxIntegratorIndexChanged( QString newSelectedItem );
 						void comboBoxShortRangePolSolndexChanged( QString newSelectedItem );
 						void comboBoxPolEquaIndexChanged( QString newSelectedItem );
@@ -47,9 +47,7 @@ namespace VTX
 
 					  private:
 						ExtensionKeywordEditor * keywordEditor = nullptr;
-
-						SettingsWindowWidget * settingsWindow = nullptr;
-						Ui::DockWidget		   ui;
+						Ui::KeywordEditorGUI	 ui;
 					};
 				} // namespace Extensions
 			}	  // namespace MainMenu

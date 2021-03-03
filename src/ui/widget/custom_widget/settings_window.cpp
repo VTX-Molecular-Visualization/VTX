@@ -1,9 +1,6 @@
 #include "settings_window.hpp"
 
-SettingsWindowWidget::SettingsWindowWidget( QWidget * p_parent, QString extensionName ) : QDialog( p_parent )
-{
-	ui.setupUi( this );
-}
+SettingsWindowWidget::SettingsWindowWidget( QWidget * p_parent ) : QDialog( p_parent ) { ui.setupUi( this ); }
 
 void SettingsWindowWidget::populateSettingsList( QStringList * settingsNameList )
 {

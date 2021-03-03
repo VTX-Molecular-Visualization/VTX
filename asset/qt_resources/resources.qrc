@@ -36,9 +36,9 @@
 	<file>sprite/saveas_session_icon.png</file>
 	<file>sprite/save_molecule_icon.png</file>
 	<file>sprite/save_session_icon.png</file>
+	<file>sprite/save_settings.png</file>
+	<file>sprite/save_settings_hovered.png</file>
 	<file>sprite/screenshot_icon.png</file>
-	<file>sprite/settings_icon.png</file>
-	<file>sprite/settings_icon_hovered.png</file>
 	<file>sprite/show_hydrogen_icon.png</file>
 	<file>sprite/show_selection_icon.png</file>
 	<file>sprite/show_solvant_icon.png</file>
@@ -50,6 +50,7 @@
 	<file>sprite/treeview_folded_molecule_icon.png</file>
 	<file>sprite/treeview_unfolded_molecule_icon.png</file>
 	<file>sprite/undock_icon.png</file>
+	<file>sprite/undock_icon_hovered.png</file>
 	<file>stylesheet.css</file>
 </qresource>
 </RCC>
