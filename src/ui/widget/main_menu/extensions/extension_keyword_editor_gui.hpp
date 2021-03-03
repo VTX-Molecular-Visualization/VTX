@@ -6,7 +6,7 @@
 //#endif
 
 #include "extensions/keyword_editor/extension_keyword_editor.hpp"
-#include "ui/qt_form/ui_keyword_editor_main_window2.h"
+#include "ui/qt_form/ui_keyword_editor_main_window.h"
 #include "ui/widget/custom_widget/custom_qdockwidget.hpp"
 #include "ui/widget/custom_widget/settings_window.hpp"
 #include <QDockWidget>
@@ -32,8 +32,10 @@ namespace VTX
 						QString				moduleTitle() override;
 						std::vector<bool> * moduleWindowProperties() override;
 						QWidget *			moduleWidget() override;
-
-						void populateInterfaceWithValues();
+						QString				moduleCitations() override;
+						void				saveSettings( QSettings * savedSettings ) override;
+						void				loadSettings( QSettings * settings ) override;
+						void				populateInterfaceWithValues();
 
 					  private slots:
 

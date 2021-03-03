@@ -12,12 +12,10 @@
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QComboBox>
-#include <QtWidgets/QDockWidget>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QPushButton>
-#include <QtWidgets/QScrollArea>
 #include <QtWidgets/QSpacerItem>
 #include <QtWidgets/QSpinBox>
 #include <QtWidgets/QTabWidget>
@@ -28,14 +26,10 @@
 
 QT_BEGIN_NAMESPACE
 
-class Ui_DockWidget
+class Ui_KeywordEditorGUI
 {
 public:
-    QWidget *dockWidgetContents;
     QGridLayout *gridLayout;
-    QScrollArea *scrollArea;
-    QWidget *scrollAreaWidgetContents;
-    QGridLayout *gridLayout_2;
     QTabWidget *tabWidgetKeywordEditor;
     QWidget *tabDynamic;
     QVBoxLayout *verticalLayout_9;
@@ -128,27 +122,14 @@ public:
     QSpacerItem *verticalSpacer;
     QWidget *tab_2;
 
-    void setupUi(QDockWidget *DockWidget)
+    void setupUi(QWidget *KeywordEditorGUI)
     {
-        if (DockWidget->objectName().isEmpty())
-            DockWidget->setObjectName(QString::fromUtf8("DockWidget"));
-        DockWidget->resize(400, 1008);
-        DockWidget->setFloating(true);
-        dockWidgetContents = new QWidget();
-        dockWidgetContents->setObjectName(QString::fromUtf8("dockWidgetContents"));
-        gridLayout = new QGridLayout(dockWidgetContents);
+        if (KeywordEditorGUI->objectName().isEmpty())
+            KeywordEditorGUI->setObjectName(QString::fromUtf8("KeywordEditorGUI"));
+        KeywordEditorGUI->resize(400, 1089);
+        gridLayout = new QGridLayout(KeywordEditorGUI);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
-        scrollArea = new QScrollArea(dockWidgetContents);
-        scrollArea->setObjectName(QString::fromUtf8("scrollArea"));
-        scrollArea->setFrameShape(QFrame::NoFrame);
-        scrollArea->setWidgetResizable(true);
-        scrollAreaWidgetContents = new QWidget();
-        scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 382, 971));
-        gridLayout_2 = new QGridLayout(scrollAreaWidgetContents);
-        gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
-        gridLayout_2->setContentsMargins(0, 0, 0, 0);
-        tabWidgetKeywordEditor = new QTabWidget(scrollAreaWidgetContents);
+        tabWidgetKeywordEditor = new QTabWidget(KeywordEditorGUI);
         tabWidgetKeywordEditor->setObjectName(QString::fromUtf8("tabWidgetKeywordEditor"));
         tabDynamic = new QWidget();
         tabDynamic->setObjectName(QString::fromUtf8("tabDynamic"));
@@ -711,22 +692,10 @@ public:
         tab_2->setObjectName(QString::fromUtf8("tab_2"));
         tabWidgetKeywordEditor->addTab(tab_2, QString());
 
-        gridLayout_2->addWidget(tabWidgetKeywordEditor, 0, 0, 1, 1);
+        gridLayout->addWidget(tabWidgetKeywordEditor, 0, 0, 1, 1);
 
-        scrollArea->setWidget(scrollAreaWidgetContents);
 
-        gridLayout->addWidget(scrollArea, 0, 0, 1, 1);
-
-        DockWidget->setWidget(dockWidgetContents);
-
-        retranslateUi(DockWidget);
-        QObject::connect(pushButtonOpenKeyfile, SIGNAL(clicked()), DockWidget, SLOT(onOpenKeyfilePushButtonClicked()));
-        QObject::connect(comboBoxIntegrator, SIGNAL(currentIndexChanged(QString)), DockWidget, SLOT(comboBoxIntegratorIndexChanged(QString)));
-        QObject::connect(comboBoxPolarizationEquations, SIGNAL(currentIndexChanged(QString)), DockWidget, SLOT(comboBoxPolEquaIndexChanged(QString)));
-        QObject::connect(comboBoxShortRangePolarizationSolver, SIGNAL(currentIndexChanged(QString)), DockWidget, SLOT(comboBoxShortRangePolSolndexChanged(QString)));
-        QObject::connect(comboBoxTcgPeek, SIGNAL(currentIndexChanged(QString)), DockWidget, SLOT(comboBoxPeekStepIndexChanged(QString)));
-        QObject::connect(comboBoxTcgMegaFit, SIGNAL(currentIndexChanged(QString)), DockWidget, SLOT(comboBoxFittingIndexChanged(QString)));
-        QObject::connect(pushButtonGenerate, SIGNAL(clicked()), DockWidget, SLOT(onGenerateKeyfilePushButtonClicked()));
+        retranslateUi(KeywordEditorGUI);
 
         tabWidgetKeywordEditor->setCurrentIndex(0);
         comboBoxThermostat->setCurrentIndex(0);
@@ -738,241 +707,241 @@ public:
         comboBoxTcgMegaFit->setCurrentIndex(1);
 
 
-        QMetaObject::connectSlotsByName(DockWidget);
+        QMetaObject::connectSlotsByName(KeywordEditorGUI);
     } // setupUi
 
-    void retranslateUi(QDockWidget *DockWidget)
+    void retranslateUi(QWidget *KeywordEditorGUI)
     {
-        DockWidget->setWindowTitle(QCoreApplication::translate("DockWidget", "Tinker-HP - Keyword Editor", nullptr));
-        pushButtonOpenKeyfile->setText(QCoreApplication::translate("DockWidget", "Open", nullptr));
+        KeywordEditorGUI->setWindowTitle(QCoreApplication::translate("KeywordEditorGUI", "Form", nullptr));
+        pushButtonOpenKeyfile->setText(QCoreApplication::translate("KeywordEditorGUI", "Open", nullptr));
 #if QT_CONFIG(tooltip)
-        labelIntegrator->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Integrators: </span></p><p><span style=\" font-size:9pt; font-weight:600;\">BEEMAN</span><span style=\" font-size:9pt;\">: The default one</span></p><p><span style=\" font-size:9pt; font-weight:600;\">VERLET</span><span style=\" font-size:9pt;\">: Verlet</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BBK</span><span style=\" font-size:9pt;\">: Langevin Dynamics for constant temperature simulations</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOAB</span><span style=\" font-size:9pt;\">: Langevin Dynamics for constant temperature simulations</span></p><p><span style=\" font-size:9pt; font-weight:600;\">RESPA</span><span style=\" font-size:9pt;\">: Bonded/non bonded respa-split with a velocity-verlet inner loop and with a 0.25 fs default timestep for the inner loop</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">: Bonded/non bonded respa-split for Langevin dynamics "
+        labelIntegrator->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Integrators: </span></p><p><span style=\" font-size:9pt; font-weight:600;\">BEEMAN</span><span style=\" font-size:9pt;\">: The default one</span></p><p><span style=\" font-size:9pt; font-weight:600;\">VERLET</span><span style=\" font-size:9pt;\">: Verlet</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BBK</span><span style=\" font-size:9pt;\">: Langevin Dynamics for constant temperature simulations</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOAB</span><span style=\" font-size:9pt;\">: Langevin Dynamics for constant temperature simulations</span></p><p><span style=\" font-size:9pt; font-weight:600;\">RESPA</span><span style=\" font-size:9pt;\">: Bonded/non bonded respa-split with a velocity-verlet inner loop and with a 0.25 fs default timestep for the inner loop</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">: Bonded/non bonded respa-split for Langevin dynamics "
                         "with a BAOAB inner loop, the default timestep for the inner loop is also 0.25 fs</span></p><p><span style=\" font-size:9pt; font-weight:600;\">RESPA1</span><span style=\" font-size:9pt;\">: (Bonded)/(short range non bonded)/(long range non bonded) three level respa1-split with a velocity verlet inner loop. The default timesteps are 0.25 fs for the inner loop and 2 fs for the intermediate one</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA1</span><span style=\" font-size:9pt;\">: (Bonded)/(short range non bonded)/(long range non bonded) three level respa1-split for Langevin dynamics with a BAOAB inner loop. The default timesteps are 0.25 fs for the inner loop and 2 fs for the intermediate one</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOABPISTON</span><span style=\" font-size:9pt;\">: Constant pressure BAOAB Langevin dynamics with a Langevin Piston pressure control and a BAOAB evolution of the volume extended variable. The default mass of the piston is 2e</span><span"
                         " style=\" font-size:9pt; vertical-align:super;\">-5</span><span style=\" font-size:9pt;\"> atomic units and the default friction for the piston is 20.0 ps</span><span style=\" font-size:9pt; vertical-align:super;\">-1</span><span style=\" font-size:9pt;\">.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelIntegrator->setText(QCoreApplication::translate("DockWidget", "Integrator", nullptr));
-        comboBoxIntegrator->setItemText(0, QCoreApplication::translate("DockWidget", "BEEMAN", nullptr));
-        comboBoxIntegrator->setItemText(1, QCoreApplication::translate("DockWidget", "VERLET", nullptr));
-        comboBoxIntegrator->setItemText(2, QCoreApplication::translate("DockWidget", "BBK", nullptr));
-        comboBoxIntegrator->setItemText(3, QCoreApplication::translate("DockWidget", "BAOAB", nullptr));
-        comboBoxIntegrator->setItemText(4, QCoreApplication::translate("DockWidget", "RESPA", nullptr));
-        comboBoxIntegrator->setItemText(5, QCoreApplication::translate("DockWidget", "BAOABRESPA", nullptr));
-        comboBoxIntegrator->setItemText(6, QCoreApplication::translate("DockWidget", "RESPA1", nullptr));
-        comboBoxIntegrator->setItemText(7, QCoreApplication::translate("DockWidget", "BAOABRESPA1", nullptr));
-        comboBoxIntegrator->setItemText(8, QCoreApplication::translate("DockWidget", "BAOABPISTON", nullptr));
+        labelIntegrator->setText(QCoreApplication::translate("KeywordEditorGUI", "Integrator", nullptr));
+        comboBoxIntegrator->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "BEEMAN", nullptr));
+        comboBoxIntegrator->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "VERLET", nullptr));
+        comboBoxIntegrator->setItemText(2, QCoreApplication::translate("KeywordEditorGUI", "BBK", nullptr));
+        comboBoxIntegrator->setItemText(3, QCoreApplication::translate("KeywordEditorGUI", "BAOAB", nullptr));
+        comboBoxIntegrator->setItemText(4, QCoreApplication::translate("KeywordEditorGUI", "RESPA", nullptr));
+        comboBoxIntegrator->setItemText(5, QCoreApplication::translate("KeywordEditorGUI", "BAOABRESPA", nullptr));
+        comboBoxIntegrator->setItemText(6, QCoreApplication::translate("KeywordEditorGUI", "RESPA1", nullptr));
+        comboBoxIntegrator->setItemText(7, QCoreApplication::translate("KeywordEditorGUI", "BAOABRESPA1", nullptr));
+        comboBoxIntegrator->setItemText(8, QCoreApplication::translate("KeywordEditorGUI", "BAOABPISTON", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxIntegrator->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Integrators: </span></p><p><span style=\" font-size:9pt; font-weight:600;\">BEEMAN</span><span style=\" font-size:9pt;\">: The default one</span></p><p><span style=\" font-size:9pt; font-weight:600;\">VERLET</span><span style=\" font-size:9pt;\">: Verlet</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BBK</span><span style=\" font-size:9pt;\">: Langevin Dynamics for constant temperature simulations</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOAB</span><span style=\" font-size:9pt;\">: Langevin Dynamics for constant temperature simulations</span></p><p><span style=\" font-size:9pt; font-weight:600;\">RESPA</span><span style=\" font-size:9pt;\">: Bonded/non bonded respa-split with a velocity-verlet inner loop and with a 0.25 fs default timestep for the inner loop</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">: Bonded/non bonded respa-split for Langevin dynamics "
+        comboBoxIntegrator->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Integrators: </span></p><p><span style=\" font-size:9pt; font-weight:600;\">BEEMAN</span><span style=\" font-size:9pt;\">: The default one</span></p><p><span style=\" font-size:9pt; font-weight:600;\">VERLET</span><span style=\" font-size:9pt;\">: Verlet</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BBK</span><span style=\" font-size:9pt;\">: Langevin Dynamics for constant temperature simulations</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOAB</span><span style=\" font-size:9pt;\">: Langevin Dynamics for constant temperature simulations</span></p><p><span style=\" font-size:9pt; font-weight:600;\">RESPA</span><span style=\" font-size:9pt;\">: Bonded/non bonded respa-split with a velocity-verlet inner loop and with a 0.25 fs default timestep for the inner loop</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">: Bonded/non bonded respa-split for Langevin dynamics "
                         "with a BAOAB inner loop, the default timestep for the inner loop is also 0.25 fs</span></p><p><span style=\" font-size:9pt; font-weight:600;\">RESPA1</span><span style=\" font-size:9pt;\">: (Bonded)/(short range non bonded)/(long range non bonded) three level respa1-split with a velocity verlet inner loop. The default timesteps are 0.25 fs for the inner loop and 2 fs for the intermediate one</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA1</span><span style=\" font-size:9pt;\">: (Bonded)/(short range non bonded)/(long range non bonded) three level respa1-split for Langevin dynamics with a BAOAB inner loop. The default timesteps are 0.25 fs for the inner loop and 2 fs for the intermediate one</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOABPISTON</span><span style=\" font-size:9pt;\">: Constant pressure BAOAB Langevin dynamics with a Langevin Piston pressure control and a BAOAB evolution of the volume extended variable. The default mass of the piston is 2e</span><span"
                         " style=\" font-size:9pt; vertical-align:super;\">-5</span><span style=\" font-size:9pt;\"> atomic units and the default friction for the piston is 20.0 ps</span><span style=\" font-size:9pt; vertical-align:super;\">-1</span><span style=\" font-size:9pt;\">.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelIntegratorInfo->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">For all the Langevin integrators (</span><span style=\" font-size:9pt; font-weight:600;\">BBK, BAOAB, BAOABRESPA, BAOABRESPA1 </span><span style=\" font-size:9pt;\">and</span><span style=\" font-size:9pt; font-weight:600;\"> BAOABPISTON</span><span style=\" font-size:9pt;\">), the friction (in ps</span><span style=\" font-size:9pt; vertical-align:super;\">-1</span><span style=\" font-size:9pt;\">) can be controlled by the </span><span style=\" font-size:9pt; font-style:italic;\">Friction</span><span style=\" font-size:9pt;\"> parameter, the default being 1 ps</span><span style=\" font-size:9pt; vertical-align:super;\">-1</span><span style=\" font-size:9pt;\">.</span></p><p><span style=\" font-size:9pt;\">For </span><span style=\" font-size:9pt; font-weight:600;\">RESPA, BAOABRESPA, RESPA1 </span><span style=\" font-size:9pt;\">and</span><span style=\" font-size:9pt; font-weight:600;\"> BAOABRESPA1</span><span style=\" font-size:9pt;\">, the inner timestep c"
+        labelIntegratorInfo->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">For all the Langevin integrators (</span><span style=\" font-size:9pt; font-weight:600;\">BBK, BAOAB, BAOABRESPA, BAOABRESPA1 </span><span style=\" font-size:9pt;\">and</span><span style=\" font-size:9pt; font-weight:600;\"> BAOABPISTON</span><span style=\" font-size:9pt;\">), the friction (in ps</span><span style=\" font-size:9pt; vertical-align:super;\">-1</span><span style=\" font-size:9pt;\">) can be controlled by the </span><span style=\" font-size:9pt; font-style:italic;\">Friction</span><span style=\" font-size:9pt;\"> parameter, the default being 1 ps</span><span style=\" font-size:9pt; vertical-align:super;\">-1</span><span style=\" font-size:9pt;\">.</span></p><p><span style=\" font-size:9pt;\">For </span><span style=\" font-size:9pt; font-weight:600;\">RESPA, BAOABRESPA, RESPA1 </span><span style=\" font-size:9pt;\">and</span><span style=\" font-size:9pt; font-weight:600;\"> BAOABRESPA1</span><span style=\" font-size:9pt;\">, the inner timestep c"
                         "an be imposed by the </span><span style=\" font-size:9pt; font-style:italic;\">Inner timestep</span><span style=\" font-size:9pt;\"> parameter, value in ps.</span></p><p><span style=\" font-size:9pt;\">For </span><span style=\" font-size:9pt; font-weight:600;\">RESPA1</span><span style=\" font-size:9pt;\"> and </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA1</span><span style=\" font-size:9pt;\">, the intermediate timestep can be imposed by the </span><span style=\" font-size:9pt; font-style:italic;\">Intermediate timestep</span><span style=\" font-size:9pt;\"> parameter, value in ps.</span></p><p><span style=\" font-size:9pt;\">For </span><span style=\" font-size:9pt; font-weight:600;\">BAOABPISTON</span><span style=\" font-size:9pt;\">, the mass of the piston (in atomic units) can be set by the parameters </span><span style=\" font-size:9pt; font-style:italic;\">Piston mass</span><span style=\" font-size:9pt;\"> and </span><span style=\" font-size:9pt; font-style:italic;\">Piston friction<"
                         "/span><span style=\" font-size:9pt;\"> (in ps</span><span style=\" font-size:9pt; vertical-align:super;\">-1</span><span style=\" font-size:9pt;\">).</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
         labelIntegratorInfo->setText(QString());
 #if QT_CONFIG(tooltip)
-        labelFriction->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Friction of all the Langevin integrators (</span><span style=\" font-size:9pt; font-weight:600;\">BBK</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOAB</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA1</span><span style=\" font-size:9pt;\"> and </span><span style=\" font-size:9pt; font-weight:600;\">BAOABPISTON</span><span style=\" font-size:9pt;\">), the default being 1 ps</span><span style=\" font-size:9pt; vertical-align:super;\">-1</span><span style=\" font-size:9pt;\">.</span></p></body></html>", nullptr));
+        labelFriction->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Friction of all the Langevin integrators (</span><span style=\" font-size:9pt; font-weight:600;\">BBK</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOAB</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA1</span><span style=\" font-size:9pt;\"> and </span><span style=\" font-size:9pt; font-weight:600;\">BAOABPISTON</span><span style=\" font-size:9pt;\">), the default being 1 ps</span><span style=\" font-size:9pt; vertical-align:super;\">-1</span><span style=\" font-size:9pt;\">.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelFriction->setText(QCoreApplication::translate("DockWidget", "Friction", nullptr));
+        labelFriction->setText(QCoreApplication::translate("KeywordEditorGUI", "Friction", nullptr));
 #if QT_CONFIG(tooltip)
-        spinBoxFriction->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Friction of all the Langevin integrators (</span><span style=\" font-size:9pt; font-weight:600;\">BBK</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOAB</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA1</span><span style=\" font-size:9pt;\"> and </span><span style=\" font-size:9pt; font-weight:600;\">BAOABPISTON</span><span style=\" font-size:9pt;\">), the default being 1 ps</span><span style=\" font-size:9pt; vertical-align:super;\">-1</span><span style=\" font-size:9pt;\">.</span></p></body></html>", nullptr));
+        spinBoxFriction->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Friction of all the Langevin integrators (</span><span style=\" font-size:9pt; font-weight:600;\">BBK</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOAB</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA1</span><span style=\" font-size:9pt;\"> and </span><span style=\" font-size:9pt; font-weight:600;\">BAOABPISTON</span><span style=\" font-size:9pt;\">), the default being 1 ps</span><span style=\" font-size:9pt; vertical-align:super;\">-1</span><span style=\" font-size:9pt;\">.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
         spinBoxFriction->setSuffix(QString());
 #if QT_CONFIG(tooltip)
-        labelInnerTimestep->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">The inner timestep for </span><span style=\" font-size:9pt; font-weight:600;\">RESPA</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">RESPA1</span><span style=\" font-size:9pt;\"> and </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA1.</span><span style=\" font-size:9pt;\"> Value in ps.</span></p></body></html>", nullptr));
+        labelInnerTimestep->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">The inner timestep for </span><span style=\" font-size:9pt; font-weight:600;\">RESPA</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">RESPA1</span><span style=\" font-size:9pt;\"> and </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA1.</span><span style=\" font-size:9pt;\"> Value in ps.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelInnerTimestep->setText(QCoreApplication::translate("DockWidget", "Inner timestep", nullptr));
+        labelInnerTimestep->setText(QCoreApplication::translate("KeywordEditorGUI", "Inner timestep", nullptr));
 #if QT_CONFIG(tooltip)
-        spinBoxInnerTimestep->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">The inner timestep for </span><span style=\" font-size:9pt; font-weight:600;\">RESPA</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">RESPA1</span><span style=\" font-size:9pt;\"> and </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA1.</span><span style=\" font-size:9pt;\"> Value in ps.</span></p></body></html>", nullptr));
-#endif // QT_CONFIG(tooltip)
-#if QT_CONFIG(tooltip)
-        labelIntermediateTimestep->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>Set the intermediate timestep for <span style=\" font-weight:600;\">RESPA1</span> and <span style=\" font-weight:600;\">BAOABRESPA1</span>. value in ps.</p></body></html>", nullptr));
-#endif // QT_CONFIG(tooltip)
-        labelIntermediateTimestep->setText(QCoreApplication::translate("DockWidget", "Intermediate timestep", nullptr));
-#if QT_CONFIG(tooltip)
-        spinBoxIntermediateTimestep->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>Set the intermediate timestep for <span style=\" font-weight:600;\">RESPA1</span> and <span style=\" font-weight:600;\">BAOABRESPA1</span>. value in ps.</p></body></html>", nullptr));
+        spinBoxInnerTimestep->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">The inner timestep for </span><span style=\" font-size:9pt; font-weight:600;\">RESPA</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">, </span><span style=\" font-size:9pt; font-weight:600;\">RESPA1</span><span style=\" font-size:9pt;\"> and </span><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA1.</span><span style=\" font-size:9pt;\"> Value in ps.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelThermostat->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>The thermostats available in Tinker-HP are <span style=\" font-weight:600;\">Berendsen</span>, <span style=\" font-weight:600;\">Bussi</span> (which is the default one) and <span style=\" font-weight:600;\">Andersen</span>.</p></body></html>", nullptr));
+        labelIntermediateTimestep->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>Set the intermediate timestep for <span style=\" font-weight:600;\">RESPA1</span> and <span style=\" font-weight:600;\">BAOABRESPA1</span>. value in ps.</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelThermostat->setText(QCoreApplication::translate("DockWidget", "Thermostat", nullptr));
-        comboBoxThermostat->setItemText(0, QCoreApplication::translate("DockWidget", "ANDERSEN", nullptr));
-        comboBoxThermostat->setItemText(1, QCoreApplication::translate("DockWidget", "BERENDSEN", nullptr));
-        comboBoxThermostat->setItemText(2, QCoreApplication::translate("DockWidget", "BUSSI", nullptr));
+        labelIntermediateTimestep->setText(QCoreApplication::translate("KeywordEditorGUI", "Intermediate timestep", nullptr));
+#if QT_CONFIG(tooltip)
+        spinBoxIntermediateTimestep->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>Set the intermediate timestep for <span style=\" font-weight:600;\">RESPA1</span> and <span style=\" font-weight:600;\">BAOABRESPA1</span>. value in ps.</p></body></html>", nullptr));
+#endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(tooltip)
+        labelThermostat->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>The thermostats available in Tinker-HP are <span style=\" font-weight:600;\">Berendsen</span>, <span style=\" font-weight:600;\">Bussi</span> (which is the default one) and <span style=\" font-weight:600;\">Andersen</span>.</p></body></html>", nullptr));
+#endif // QT_CONFIG(tooltip)
+        labelThermostat->setText(QCoreApplication::translate("KeywordEditorGUI", "Thermostat", nullptr));
+        comboBoxThermostat->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "ANDERSEN", nullptr));
+        comboBoxThermostat->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "BERENDSEN", nullptr));
+        comboBoxThermostat->setItemText(2, QCoreApplication::translate("KeywordEditorGUI", "BUSSI", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxThermostat->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>The thermostats available in Tinker-HP are <span style=\" font-weight:600;\">Berendsen</span>, <span style=\" font-weight:600;\">Bussi</span> (which is the default one) and <span style=\" font-weight:600;\">Andersen</span>.</p></body></html>", nullptr));
+        comboBoxThermostat->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>The thermostats available in Tinker-HP are <span style=\" font-weight:600;\">Berendsen</span>, <span style=\" font-weight:600;\">Bussi</span> (which is the default one) and <span style=\" font-weight:600;\">Andersen</span>.</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelBarostat->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>The barostats available in Tinker-HP are the <span style=\" font-weight:600;\">Berendsen</span> (which is the default one) and the <span style=\" font-weight:600;\">Monte-Carlo</span> one</p></body></html>", nullptr));
+        labelBarostat->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>The barostats available in Tinker-HP are the <span style=\" font-weight:600;\">Berendsen</span> (which is the default one) and the <span style=\" font-weight:600;\">Monte-Carlo</span> one</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelBarostat->setText(QCoreApplication::translate("DockWidget", "Barostat", nullptr));
-        comboBoxBarostat->setItemText(0, QCoreApplication::translate("DockWidget", "BERENDSEN", nullptr));
-        comboBoxBarostat->setItemText(1, QCoreApplication::translate("DockWidget", "MONTE-CARLO", nullptr));
+        labelBarostat->setText(QCoreApplication::translate("KeywordEditorGUI", "Barostat", nullptr));
+        comboBoxBarostat->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "BERENDSEN", nullptr));
+        comboBoxBarostat->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "MONTE-CARLO", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxBarostat->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>The barostats available in Tinker-HP are the <span style=\" font-weight:600;\">Berendsen</span> (which is the default one) and the <span style=\" font-weight:600;\">Monte-Carlo</span> one</p></body></html>", nullptr));
+        comboBoxBarostat->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>The barostats available in Tinker-HP are the <span style=\" font-weight:600;\">Berendsen</span> (which is the default one) and the <span style=\" font-weight:600;\">Monte-Carlo</span> one</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelPolarizationEquations->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>The algorithm used to converge the polarization equations (compute the dipoles solution):</p><p><span style=\" font-weight:600;\">Divide and Conquer Jacobi/DIIS</span> (default)</p><p><span style=\" font-weight:600;\">PCG</span> (Conjugate Gradient with a diagonal preconditioner)</p><p><span style=\" font-weight:600;\">Jacobi/DIIS</span></p><p><span style=\" font-weight:600;\">TCG</span> (Truncated Conjugate Gradient)</p></body></html>", nullptr));
+        labelPolarizationEquations->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>The algorithm used to converge the polarization equations (compute the dipoles solution):</p><p><span style=\" font-weight:600;\">Divide and Conquer Jacobi/DIIS</span> (default)</p><p><span style=\" font-weight:600;\">PCG</span> (Conjugate Gradient with a diagonal preconditioner)</p><p><span style=\" font-weight:600;\">Jacobi/DIIS</span></p><p><span style=\" font-weight:600;\">TCG</span> (Truncated Conjugate Gradient)</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelPolarizationEquations->setText(QCoreApplication::translate("DockWidget", "Polarization solver", nullptr));
-        comboBoxPolarizationEquations->setItemText(0, QCoreApplication::translate("DockWidget", "D&C Jacobi/DIIS", nullptr));
-        comboBoxPolarizationEquations->setItemText(1, QCoreApplication::translate("DockWidget", "PCG", nullptr));
-        comboBoxPolarizationEquations->setItemText(2, QCoreApplication::translate("DockWidget", "Jacobi/DIIS", nullptr));
-        comboBoxPolarizationEquations->setItemText(3, QCoreApplication::translate("DockWidget", "TCG", nullptr));
+        labelPolarizationEquations->setText(QCoreApplication::translate("KeywordEditorGUI", "Polarization solver", nullptr));
+        comboBoxPolarizationEquations->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "D&C Jacobi/DIIS", nullptr));
+        comboBoxPolarizationEquations->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "PCG", nullptr));
+        comboBoxPolarizationEquations->setItemText(2, QCoreApplication::translate("KeywordEditorGUI", "Jacobi/DIIS", nullptr));
+        comboBoxPolarizationEquations->setItemText(3, QCoreApplication::translate("KeywordEditorGUI", "TCG", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxPolarizationEquations->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>The algorithm used to converge the polarization equations (compute the dipoles solution):</p><p><span style=\" font-weight:600;\">Divide and Conquer Jacobi/DIIS</span> (default)</p><p><span style=\" font-weight:600;\">PCG</span> (Conjugate Gradient with a diagonal preconditioner)</p><p><span style=\" font-weight:600;\">Jacobi/DIIS</span></p><p><span style=\" font-weight:600;\">TCG</span> (Truncated Conjugate Gradient)</p></body></html>", nullptr));
+        comboBoxPolarizationEquations->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>The algorithm used to converge the polarization equations (compute the dipoles solution):</p><p><span style=\" font-weight:600;\">Divide and Conquer Jacobi/DIIS</span> (default)</p><p><span style=\" font-weight:600;\">PCG</span> (Conjugate Gradient with a diagonal preconditioner)</p><p><span style=\" font-weight:600;\">Jacobi/DIIS</span></p><p><span style=\" font-weight:600;\">TCG</span> (Truncated Conjugate Gradient)</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelShortRangePolarizationSolver->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>The algorithm used to converge the polarization equations (compute the dipoles solution) for short range real space at the intermediate time steps. By default, this is done using the same algorithm as the one used to solve the complete polarization equations at the outer time steps. But one can chose a different algorithm to solve the short range. TCG is chosen as a short range polarization solver, one can define all the related option for this solver in the &quot;TCG parameters for short range polarization&quot; groupbox displayed below. </p><p><span style=\" font-weight:600;\">Divide and Conquer Jacobi/DIIS</span> (default)</p><p><span style=\" font-weight:600;\">PCG</span> (Conjugate Gradient with a diagonal preconditioner)</p><p><span style=\" font-weight:600;\">Jacobi/DIIS</span></p><p><span style=\" font-weight:600;\">TCG</span> (Truncated Conjugate Gradient)</p></body></html>", nullptr));
+        labelShortRangePolarizationSolver->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>The algorithm used to converge the polarization equations (compute the dipoles solution) for short range real space at the intermediate time steps. By default, this is done using the same algorithm as the one used to solve the complete polarization equations at the outer time steps. But one can chose a different algorithm to solve the short range. TCG is chosen as a short range polarization solver, one can define all the related option for this solver in the &quot;TCG parameters for short range polarization&quot; groupbox displayed below. </p><p><span style=\" font-weight:600;\">Divide and Conquer Jacobi/DIIS</span> (default)</p><p><span style=\" font-weight:600;\">PCG</span> (Conjugate Gradient with a diagonal preconditioner)</p><p><span style=\" font-weight:600;\">Jacobi/DIIS</span></p><p><span style=\" font-weight:600;\">TCG</span> (Truncated Conjugate Gradient)</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelShortRangePolarizationSolver->setText(QCoreApplication::translate("DockWidget", "Short range polarization solver", nullptr));
-        comboBoxShortRangePolarizationSolver->setItemText(0, QCoreApplication::translate("DockWidget", "D&C Jacobi/DIIS", nullptr));
-        comboBoxShortRangePolarizationSolver->setItemText(1, QCoreApplication::translate("DockWidget", "PCG", nullptr));
-        comboBoxShortRangePolarizationSolver->setItemText(2, QCoreApplication::translate("DockWidget", "Jacobi/DIIS", nullptr));
-        comboBoxShortRangePolarizationSolver->setItemText(3, QCoreApplication::translate("DockWidget", "TCG", nullptr));
+        labelShortRangePolarizationSolver->setText(QCoreApplication::translate("KeywordEditorGUI", "Short range polarization solver", nullptr));
+        comboBoxShortRangePolarizationSolver->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "D&C Jacobi/DIIS", nullptr));
+        comboBoxShortRangePolarizationSolver->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "PCG", nullptr));
+        comboBoxShortRangePolarizationSolver->setItemText(2, QCoreApplication::translate("KeywordEditorGUI", "Jacobi/DIIS", nullptr));
+        comboBoxShortRangePolarizationSolver->setItemText(3, QCoreApplication::translate("KeywordEditorGUI", "TCG", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxShortRangePolarizationSolver->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>The algorithm used to converge the polarization equations (compute the dipoles solution) for short range real space at the intermediate time steps. By default, this is done using the same algorithm as the one used to solve the complete polarization equations at the outer time steps. But one can chose a different algorithm to solve the short range. TCG is chosen as a short range polarization solver, one can define all the related option for this solver in the &quot;TCG parameters for short range polarization&quot; groupbox displayed below. </p><p><span style=\" font-weight:600;\">Divide and Conquer Jacobi/DIIS</span> (default)</p><p><span style=\" font-weight:600;\">PCG</span> (Conjugate Gradient with a diagonal preconditioner)</p><p><span style=\" font-weight:600;\">Jacobi/DIIS</span></p><p><span style=\" font-weight:600;\">TCG</span> (Truncated Conjugate Gradient)</p></body></html>", nullptr));
+        comboBoxShortRangePolarizationSolver->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>The algorithm used to converge the polarization equations (compute the dipoles solution) for short range real space at the intermediate time steps. By default, this is done using the same algorithm as the one used to solve the complete polarization equations at the outer time steps. But one can chose a different algorithm to solve the short range. TCG is chosen as a short range polarization solver, one can define all the related option for this solver in the &quot;TCG parameters for short range polarization&quot; groupbox displayed below. </p><p><span style=\" font-weight:600;\">Divide and Conquer Jacobi/DIIS</span> (default)</p><p><span style=\" font-weight:600;\">PCG</span> (Conjugate Gradient with a diagonal preconditioner)</p><p><span style=\" font-weight:600;\">Jacobi/DIIS</span></p><p><span style=\" font-weight:600;\">TCG</span> (Truncated Conjugate Gradient)</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelMassPiston->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>Mass of the piston (in atomic units).</p></body></html>", nullptr));
+        labelMassPiston->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>Mass of the piston (in atomic units).</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelMassPiston->setText(QCoreApplication::translate("DockWidget", "Piston mass", nullptr));
+        labelMassPiston->setText(QCoreApplication::translate("KeywordEditorGUI", "Piston mass", nullptr));
 #if QT_CONFIG(tooltip)
-        spinBoxMassPiston->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>Mass of the piston (in atomic units).</p></body></html>", nullptr));
+        spinBoxMassPiston->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>Mass of the piston (in atomic units).</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelFrictionPiston->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>Friction of the piston (in ps<span style=\" vertical-align:super;\">-1</span>).</p></body></html>", nullptr));
+        labelFrictionPiston->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>Friction of the piston (in ps<span style=\" vertical-align:super;\">-1</span>).</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelFrictionPiston->setText(QCoreApplication::translate("DockWidget", "Piston friction", nullptr));
+        labelFrictionPiston->setText(QCoreApplication::translate("KeywordEditorGUI", "Piston friction", nullptr));
 #if QT_CONFIG(tooltip)
-        spinBoxFrictionPiston->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>Friction of the piston (in ps<span style=\" vertical-align:super;\">-1</span>).</p></body></html>", nullptr));
+        spinBoxFrictionPiston->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>Friction of the piston (in ps<span style=\" vertical-align:super;\">-1</span>).</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        groupBoxTcgParameters->setTitle(QCoreApplication::translate("DockWidget", "TCG parameters", nullptr));
+        groupBoxTcgParameters->setTitle(QCoreApplication::translate("KeywordEditorGUI", "TCG parameters", nullptr));
 #if QT_CONFIG(tooltip)
-        labelTcgOrder->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Order of the TCG truncation, TCG1 or TCG2, default is TCG2.</span></p></body></html>", nullptr));
+        labelTcgOrder->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Order of the TCG truncation, TCG1 or TCG2, default is TCG2.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelTcgOrder->setText(QCoreApplication::translate("DockWidget", "TCG order", nullptr));
-        comboBoxTcgOrder->setItemText(0, QCoreApplication::translate("DockWidget", "TCG2", nullptr));
-        comboBoxTcgOrder->setItemText(1, QCoreApplication::translate("DockWidget", "TCG1", nullptr));
+        labelTcgOrder->setText(QCoreApplication::translate("KeywordEditorGUI", "TCG order", nullptr));
+        comboBoxTcgOrder->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "TCG2", nullptr));
+        comboBoxTcgOrder->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "TCG1", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxTcgOrder->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Order of the TCG truncation, TCG1 or TCG2, default is TCG2.</span></p></body></html>", nullptr));
+        comboBoxTcgOrder->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Order of the TCG truncation, TCG1 or TCG2, default is TCG2.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelDiagPrec->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a diagonal preconditioner, default is yes.</span></p></body></html>", nullptr));
+        labelDiagPrec->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a diagonal preconditioner, default is yes.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelDiagPrec->setText(QCoreApplication::translate("DockWidget", "Diagonal preconditioner", nullptr));
-        comboBoxDiagPrec->setItemText(0, QCoreApplication::translate("DockWidget", "No", nullptr));
-        comboBoxDiagPrec->setItemText(1, QCoreApplication::translate("DockWidget", "Yes", nullptr));
+        labelDiagPrec->setText(QCoreApplication::translate("KeywordEditorGUI", "Diagonal preconditioner", nullptr));
+        comboBoxDiagPrec->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "No", nullptr));
+        comboBoxDiagPrec->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "Yes", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxDiagPrec->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a diagonal preconditioner, default is yes.</span></p></body></html>", nullptr));
+        comboBoxDiagPrec->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a diagonal preconditioner, default is yes.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelTcgGuess->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a \342\200\235direct guess\342\200\235 (polarizability x permanent electric field) as a guess., default is no.</span></p></body></html>", nullptr));
+        labelTcgGuess->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a \342\200\235direct guess\342\200\235 (polarizability x permanent electric field) as a guess., default is no.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelTcgGuess->setText(QCoreApplication::translate("DockWidget", "Direct guess", nullptr));
-        comboBoxTcgGuess->setItemText(0, QCoreApplication::translate("DockWidget", "No", nullptr));
-        comboBoxTcgGuess->setItemText(1, QCoreApplication::translate("DockWidget", "Yes", nullptr));
+        labelTcgGuess->setText(QCoreApplication::translate("KeywordEditorGUI", "Direct guess", nullptr));
+        comboBoxTcgGuess->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "No", nullptr));
+        comboBoxTcgGuess->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "Yes", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxTcgGuess->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a \342\200\235direct guess\342\200\235 (polarizability x permanent electric field) as a guess., default is no.</span></p></body></html>", nullptr));
+        comboBoxTcgGuess->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a \342\200\235direct guess\342\200\235 (polarizability x permanent electric field) as a guess., default is no.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelTcgPeek->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a peek step, default is yes. When a peek step is used, a Jacobi Over Relaxation (JOR) is applied to the TCG values of the dipoles with a parameter </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211.</span><span style=\" font-size:9pt;\"> By default, this value is </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211</span><span style=\" font-size:9pt;\"> = 1. (regular Jacobi step) but the following keywords can modify this.</span></p></body></html>", nullptr));
+        labelTcgPeek->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a peek step, default is yes. When a peek step is used, a Jacobi Over Relaxation (JOR) is applied to the TCG values of the dipoles with a parameter </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211.</span><span style=\" font-size:9pt;\"> By default, this value is </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211</span><span style=\" font-size:9pt;\"> = 1. (regular Jacobi step) but the following keywords can modify this.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelTcgPeek->setText(QCoreApplication::translate("DockWidget", "Peek step", nullptr));
-        comboBoxTcgPeek->setItemText(0, QCoreApplication::translate("DockWidget", "No", nullptr));
-        comboBoxTcgPeek->setItemText(1, QCoreApplication::translate("DockWidget", "Yes", nullptr));
+        labelTcgPeek->setText(QCoreApplication::translate("KeywordEditorGUI", "Peek step", nullptr));
+        comboBoxTcgPeek->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "No", nullptr));
+        comboBoxTcgPeek->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "Yes", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxTcgPeek->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a peek step, default is yes. When a peek step is used, a Jacobi Over Relaxation (JOR) is applied to the TCG values of the dipoles with a parameter </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211.</span><span style=\" font-size:9pt;\"> By default, this value is </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211</span><span style=\" font-size:9pt;\"> = 1. (regular Jacobi step) but the following keywords can modify this.</span></p></body></html>", nullptr));
+        comboBoxTcgPeek->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a peek step, default is yes. When a peek step is used, a Jacobi Over Relaxation (JOR) is applied to the TCG values of the dipoles with a parameter </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211.</span><span style=\" font-size:9pt;\"> By default, this value is </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211</span><span style=\" font-size:9pt;\"> = 1. (regular Jacobi step) but the following keywords can modify this.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelTcgOmega->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Value of the \317\211 parameter</span></p></body></html>", nullptr));
+        labelTcgOmega->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Value of the \317\211 parameter</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelTcgOmega->setText(QCoreApplication::translate("DockWidget", "Omega ( \317\211 )", nullptr));
+        labelTcgOmega->setText(QCoreApplication::translate("KeywordEditorGUI", "Omega ( \317\211 )", nullptr));
 #if QT_CONFIG(tooltip)
-        spinBoxTcgOmega->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Value of the \317\211 parameter</span></p></body></html>", nullptr));
+        spinBoxTcgOmega->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Value of the \317\211 parameter</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelTcgMegaFit->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>Impose a regular fitting of the \317\211 parameter to match at regular intervals the fully converged polarization energy.</p></body></html>", nullptr));
+        labelTcgMegaFit->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>Impose a regular fitting of the \317\211 parameter to match at regular intervals the fully converged polarization energy.</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelTcgMegaFit->setText(QCoreApplication::translate("DockWidget", "Fitting", nullptr));
-        comboBoxTcgMegaFit->setItemText(0, QCoreApplication::translate("DockWidget", "No", nullptr));
-        comboBoxTcgMegaFit->setItemText(1, QCoreApplication::translate("DockWidget", "Yes", nullptr));
+        labelTcgMegaFit->setText(QCoreApplication::translate("KeywordEditorGUI", "Fitting", nullptr));
+        comboBoxTcgMegaFit->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "No", nullptr));
+        comboBoxTcgMegaFit->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "Yes", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxTcgMegaFit->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>Impose a regular fitting of the \317\211 parameter to match at regular intervals the fully converged polarization energy.</p></body></html>", nullptr));
+        comboBoxTcgMegaFit->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>Impose a regular fitting of the \317\211 parameter to match at regular intervals the fully converged polarization energy.</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelTcgMegaFitFreq->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>Number of timesteps between two updates of the fitted \317\211 parameter. The default of x is 1000.</p></body></html>", nullptr));
+        labelTcgMegaFitFreq->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>Number of timesteps between two updates of the fitted \317\211 parameter. The default of x is 1000.</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelTcgMegaFitFreq->setText(QCoreApplication::translate("DockWidget", "Fitting frequency", nullptr));
+        labelTcgMegaFitFreq->setText(QCoreApplication::translate("KeywordEditorGUI", "Fitting frequency", nullptr));
 #if QT_CONFIG(tooltip)
-        spinBoxTcgMegaFitFreq->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>Number of timesteps between two updates of the fitted \317\211 parameter. The default of x is 1000.</p></body></html>", nullptr));
+        spinBoxTcgMegaFitFreq->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>Number of timesteps between two updates of the fitted \317\211 parameter. The default of x is 1000.</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        groupBoxTcgShortParameters->setTitle(QCoreApplication::translate("DockWidget", "TCG parameters of short range polarization solver", nullptr));
-        labelTcgOrderShort->setText(QCoreApplication::translate("DockWidget", "TCG order", nullptr));
-        comboBoxTcgOrderShort->setItemText(0, QCoreApplication::translate("DockWidget", "TCG2", nullptr));
-        comboBoxTcgOrderShort->setItemText(1, QCoreApplication::translate("DockWidget", "TCG1", nullptr));
+        groupBoxTcgShortParameters->setTitle(QCoreApplication::translate("KeywordEditorGUI", "TCG parameters of short range polarization solver", nullptr));
+        labelTcgOrderShort->setText(QCoreApplication::translate("KeywordEditorGUI", "TCG order", nullptr));
+        comboBoxTcgOrderShort->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "TCG2", nullptr));
+        comboBoxTcgOrderShort->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "TCG1", nullptr));
 
 #if QT_CONFIG(tooltip)
-        labelDiagPrecShort->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a diagonal preconditioner, default is yes.</span></p></body></html>", nullptr));
+        labelDiagPrecShort->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a diagonal preconditioner, default is yes.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelDiagPrecShort->setText(QCoreApplication::translate("DockWidget", "Diagonal preconditioner", nullptr));
-        comboBoxDiagPrecShort->setItemText(0, QCoreApplication::translate("DockWidget", "Yes", nullptr));
-        comboBoxDiagPrecShort->setItemText(1, QCoreApplication::translate("DockWidget", "No", nullptr));
+        labelDiagPrecShort->setText(QCoreApplication::translate("KeywordEditorGUI", "Diagonal preconditioner", nullptr));
+        comboBoxDiagPrecShort->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "Yes", nullptr));
+        comboBoxDiagPrecShort->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "No", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxDiagPrecShort->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a diagonal preconditioner, default is yes.</span></p></body></html>", nullptr));
+        comboBoxDiagPrecShort->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a diagonal preconditioner, default is yes.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelTcgGuessShort->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a \342\200\235direct guess\342\200\235 (polarizability x permanent electric field) as a guess., default is no.</span></p></body></html>", nullptr));
+        labelTcgGuessShort->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a \342\200\235direct guess\342\200\235 (polarizability x permanent electric field) as a guess., default is no.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelTcgGuessShort->setText(QCoreApplication::translate("DockWidget", "Direct guess", nullptr));
-        comboBoxTcgGuessShort->setItemText(0, QCoreApplication::translate("DockWidget", "No", nullptr));
-        comboBoxTcgGuessShort->setItemText(1, QCoreApplication::translate("DockWidget", "Yes", nullptr));
+        labelTcgGuessShort->setText(QCoreApplication::translate("KeywordEditorGUI", "Direct guess", nullptr));
+        comboBoxTcgGuessShort->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "No", nullptr));
+        comboBoxTcgGuessShort->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "Yes", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxTcgGuessShort->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a \342\200\235direct guess\342\200\235 (polarizability x permanent electric field) as a guess., default is no.</span></p></body></html>", nullptr));
+        comboBoxTcgGuessShort->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a \342\200\235direct guess\342\200\235 (polarizability x permanent electric field) as a guess., default is no.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelTcgPeekShort->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a peek step, default is yes. When a peek step is used, a Jacobi Over Relaxation (JOR) is applied to the TCG values of the dipoles with a parameter </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211.</span><span style=\" font-size:9pt;\"> By default, this value is </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211</span><span style=\" font-size:9pt;\"> = 1. (regular Jacobi step) but the following keywords can modify this.</span></p></body></html>", nullptr));
+        labelTcgPeekShort->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a peek step, default is yes. When a peek step is used, a Jacobi Over Relaxation (JOR) is applied to the TCG values of the dipoles with a parameter </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211.</span><span style=\" font-size:9pt;\"> By default, this value is </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211</span><span style=\" font-size:9pt;\"> = 1. (regular Jacobi step) but the following keywords can modify this.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelTcgPeekShort->setText(QCoreApplication::translate("DockWidget", "Peek step", nullptr));
-        comboBoxTcgPeekShort->setItemText(0, QCoreApplication::translate("DockWidget", "Yes", nullptr));
-        comboBoxTcgPeekShort->setItemText(1, QCoreApplication::translate("DockWidget", "No", nullptr));
+        labelTcgPeekShort->setText(QCoreApplication::translate("KeywordEditorGUI", "Peek step", nullptr));
+        comboBoxTcgPeekShort->setItemText(0, QCoreApplication::translate("KeywordEditorGUI", "Yes", nullptr));
+        comboBoxTcgPeekShort->setItemText(1, QCoreApplication::translate("KeywordEditorGUI", "No", nullptr));
 
 #if QT_CONFIG(tooltip)
-        comboBoxTcgPeekShort->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a peek step, default is yes. When a peek step is used, a Jacobi Over Relaxation (JOR) is applied to the TCG values of the dipoles with a parameter </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211.</span><span style=\" font-size:9pt;\"> By default, this value is </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211</span><span style=\" font-size:9pt;\"> = 1. (regular Jacobi step) but the following keywords can modify this.</span></p></body></html>", nullptr));
+        comboBoxTcgPeekShort->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Use of a peek step, default is yes. When a peek step is used, a Jacobi Over Relaxation (JOR) is applied to the TCG values of the dipoles with a parameter </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211.</span><span style=\" font-size:9pt;\"> By default, this value is </span><span style=\" font-family:'Arial Unicode MS','DejaVu Sans','Athena','Gentium','Palatino Linotype','Lucida Sans Unicode','Lucida Grande','Code2000','sans-serif'; font-size:14px; color:#202122; background-color:#fcfcfc;\">\317\211</span><span style=\" font-size:9pt;\"> = 1. (regular Jacobi step) but the following keywords can modify this.</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        labelTcgOmegaShort->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Value of the \317\211 parameter</span></p></body></html>", nullptr));
+        labelTcgOmegaShort->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Value of the \317\211 parameter</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        labelTcgOmegaShort->setText(QCoreApplication::translate("DockWidget", "Omega (\317\211)", nullptr));
+        labelTcgOmegaShort->setText(QCoreApplication::translate("KeywordEditorGUI", "Omega (\317\211)", nullptr));
 #if QT_CONFIG(tooltip)
-        spinBoxTcgOmegaShort->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p><span style=\" font-size:9pt;\">Value of the \317\211 parameter</span></p></body></html>", nullptr));
+        spinBoxTcgOmegaShort->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Value of the \317\211 parameter</span></p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        groupBoxAdditionnalKeywords->setTitle(QCoreApplication::translate("DockWidget", "Additionnal Keywords", nullptr));
+        groupBoxAdditionnalKeywords->setTitle(QCoreApplication::translate("KeywordEditorGUI", "Additionnal Keywords", nullptr));
 #if QT_CONFIG(tooltip)
-        pushButtonGenerate->setToolTip(QCoreApplication::translate("DockWidget", "<html><head/><body><p>Generate keyword file</p></body></html>", nullptr));
+        pushButtonGenerate->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p>Generate keyword file</p></body></html>", nullptr));
 #endif // QT_CONFIG(tooltip)
-        pushButtonGenerate->setText(QCoreApplication::translate("DockWidget", "Generate", nullptr));
-        tabWidgetKeywordEditor->setTabText(tabWidgetKeywordEditor->indexOf(tabDynamic), QCoreApplication::translate("DockWidget", "Dynamic", nullptr));
-        tabWidgetKeywordEditor->setTabText(tabWidgetKeywordEditor->indexOf(tab_2), QCoreApplication::translate("DockWidget", "Free Energy", nullptr));
+        pushButtonGenerate->setText(QCoreApplication::translate("KeywordEditorGUI", "Generate", nullptr));
+        tabWidgetKeywordEditor->setTabText(tabWidgetKeywordEditor->indexOf(tabDynamic), QCoreApplication::translate("KeywordEditorGUI", "Dynamic", nullptr));
+        tabWidgetKeywordEditor->setTabText(tabWidgetKeywordEditor->indexOf(tab_2), QCoreApplication::translate("KeywordEditorGUI", "Free Energy", nullptr));
     } // retranslateUi
 
 };
 
 namespace Ui {
-    class DockWidget: public Ui_DockWidget {};
+    class KeywordEditorGUI: public Ui_KeywordEditorGUI {};
 } // namespace Ui
 
 QT_END_NAMESPACE

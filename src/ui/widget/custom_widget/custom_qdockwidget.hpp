@@ -2,8 +2,10 @@
 #define __VTX_UI_WIDGET_CUSTOM_QDOCK_WIDGET__
 
 #include "ui/qt_form/ui_custom_qdock_widget.h"
+#include "ui/widget/custom_widget/citations_window.hpp"
 #include "ui/widget/custom_widget/settings_window.hpp"
 #include <QDockWidget>
+#include <QSettings>
 #include <QWidget>
 
 namespace VTX
@@ -19,13 +21,14 @@ namespace VTX
 			  public:
 				CustomQDockWidget( QWidget * p_parent );
 				~CustomQDockWidget() {};
-				void setupModuleWindow();
 
-				virtual QString				moduleIcon()			 = 0;
-				virtual QString				moduleTitle()			 = 0;
-				virtual std::vector<bool> * moduleWindowProperties() = 0;
-				virtual QWidget *			moduleWidget()			 = 0;
-				virtual QSettings *			saveSettings()			 = 0;
+				virtual QString				moduleIcon()							  = 0;
+				virtual QString				moduleTitle()							  = 0;
+				virtual std::vector<bool> * moduleWindowProperties()				  = 0;
+				virtual QString				moduleCitations()						  = 0;
+				virtual QWidget *			moduleWidget()							  = 0;
+				virtual void				saveSettings( QSettings * savedSettings ) = 0;
+				virtual void				loadSettings( QSettings * settings )	  = 0;
 
 			  private:
 				void setWindowContent( QWidget * moduleWidget );
@@ -38,7 +41,6 @@ namespace VTX
 			  public slots:
 				void onUndockButtonClicked();
 				void onExitButtonClicked();
-				void onLockButtonClicked();
 				void onCitationsButtonClicked();
 				// settings slots
 				void onSettingsButtonClicked();
@@ -47,8 +49,11 @@ namespace VTX
 				void removeSettingsClicked();
 
 			  protected:
-				SettingsWindowWidget * settingsWindow = nullptr;
-				Ui::CustomDockWidget   ui;
+				void setupModuleWindow();
+
+				SettingsWindowWidget *	settingsWindow	= nullptr;
+				CitationsWindowWidget * citationsWindow = nullptr;
+				Ui::CustomDockWidget	ui;
 			};
 		} // namespace Widget
 	}	  // namespace UI

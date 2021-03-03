@@ -8,6 +8,8 @@
 	<file>sprite/camera_vessel_mode.png</file>
 	<file>sprite/checkbox_checked.png</file>
 	<file>sprite/checkbox_unchecked.png</file>
+	<file>sprite/citations_icon.png</file>
+	<file>sprite/citations_icon_hovered.png</file>
 	<file>sprite/close_icon.png</file>
 	<file>sprite/close_icon_hovered.png</file>
 	<file>sprite/copy_selection_icon.png</file>
@@ -22,6 +24,8 @@
 	<file>sprite/info_button.png</file>
 	<file>sprite/keyword_editor.png</file>
 	<file>sprite/load_molecule_icon.png</file>
+	<file>sprite/lock_window_icon.png</file>
+	<file>sprite/lock_window_icon_hovered.png</file>
 	<file>sprite/logo.png</file>
 	<file>sprite/logoWhite.png</file>
 	<file>sprite/main_menu_separator.png</file>
@@ -51,6 +55,8 @@
 	<file>sprite/treeview_unfolded_molecule_icon.png</file>
 	<file>sprite/undock_icon.png</file>
 	<file>sprite/undock_icon_hovered.png</file>
+	<file>sprite/unlock_window_icon.png</file>
+	<file>sprite/unlock_window_icon_hovered.png</file>
 	<file>stylesheet.css</file>
 </qresource>
 </RCC>

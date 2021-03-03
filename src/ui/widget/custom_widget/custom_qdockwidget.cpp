@@ -95,7 +95,7 @@ namespace VTX
 			{
 				if ( windowProperties != nullptr )
 				{
-					if ( windowProperties->size() == 3 )
+					if ( windowProperties->size() == 2 )
 					{
 						QWidget *	  title_bar	  = this->titleBarWidget();
 						QHBoxLayout * titleLayout = static_cast<QHBoxLayout *>( title_bar->layout() );
@@ -123,45 +123,22 @@ namespace VTX
 								settingButton, SIGNAL( clicked() ), this, SLOT( onSettingsButtonClicked() ) );
 							titleLayout->addWidget( settingButton );
 						}
-						// if window is lockable
-						if ( windowProperties->at( 1 ) )
-						{
-							QPushButton * lockButton = new QPushButton( title_bar );
-							lockButton->setToolTip( "Lock window" );
-
-							lockButton->setStyleSheet(
-								"QPushButton {"
-								"border-image: url(:/sprite/save_settings.png);"
-								"background-color: rgba(255, 255, 255, 0);"
-								"background-repeat: no-repeat;"
-								"width: 10px;"
-								"height : 10px;"
-								"}"
-								"QPushButton:hover {"
-								"border-image: url(:/sprite/save_settings_hovered.png);"
-								"background-color: rgba(255, 255, 255, 0);"
-								"background-repeat: no-repeat;"
-								"}" );
-
-							QObject::connect( lockButton, SIGNAL( clicked() ), this, SLOT( onLockButtonClicked() ) );
-							titleLayout->addWidget( lockButton );
-						}
 						// if window is citable
-						if ( windowProperties->at( 2 ) )
+						if ( windowProperties->at( 1 ) )
 						{
 							QPushButton * citeButton = new QPushButton( title_bar );
 							citeButton->setToolTip( "Open citations window" );
 
 							citeButton->setStyleSheet(
 								"QPushButton {"
-								"border-image: url(:/sprite/save_settings.png);"
+								"border-image: url(:/sprite/citations_icon.png);"
 								"background-color: rgba(255, 255, 255, 0);"
 								"background-repeat: no-repeat;"
 								"width: 10px;"
 								"height : 10px;"
 								"}"
 								"QPushButton:hover {"
-								"border-image: url(:/sprite/save_settings_hovered.png);"
+								"border-image: url(:/sprite/citations_icon_hovered.png);"
 								"background-color: rgba(255, 255, 255, 0);"
 								"background-repeat: no-repeat;"
 								"}" );
@@ -224,21 +201,30 @@ namespace VTX
 				titleLayout->addWidget( exitButton );
 			}
 
-			// QString CustomQDockWidget::moduleIcon() { return QString(); }
-
-			// QString CustomQDockWidget::moduleTitle() { return QString(); }
-
-			// std::vector<bool> * CustomQDockWidget::moduleWindowProperties() { return new std::vector<bool>(); }
-
-			// QWidget * CustomQDockWidget::moduleWidget() { return nullptr; }
-
 			void CustomQDockWidget::onUndockButtonClicked() { this->setFloating( true ); }
 
 			void CustomQDockWidget::onExitButtonClicked() { this->hide(); }
 
-			void CustomQDockWidget::onLockButtonClicked() {}
-
-			void CustomQDockWidget::onCitationsButtonClicked() {}
+			void CustomQDockWidget::onCitationsButtonClicked()
+			{
+				if ( citationsWindow == nullptr )
+				{
+					citationsWindow = new CitationsWindowWidget( this );
+					citationsWindow->ui.textBrowserCitations->setText( moduleCitations() );
+					citationsWindow->show();
+				}
+				else
+				{
+					if ( citationsWindow->isVisible() )
+					{
+						citationsWindow->raise();
+					}
+					else
+					{
+						citationsWindow->show();
+					}
+				}
+			}
 
 			void CustomQDockWidget::onSettingsButtonClicked()
 			{
@@ -246,7 +232,8 @@ namespace VTX
 				{
 					settingsWindow = new SettingsWindowWidget( this );
 					// check if settings have been saved before
-					QSettings settings = QSettings( "Qubit", "KeywordEditor" );
+					QString	  moduleNameWithoutSpaces = moduleTitle().remove( QRegularExpression( "\\s" ) );
+					QSettings settings				  = QSettings( "Qubit", moduleNameWithoutSpaces );
 					if ( settings.childGroups().size() != 0 )
 					{
 						settingsWindow->populateSettingsList( &settings.childGroups() );
@@ -280,74 +267,36 @@ namespace VTX
 
 			void CustomQDockWidget::saveSettingsClicked()
 			{
-				// QString settingName = settingsWindow->ui.lineEditSettingsName->text();
-				// if ( settingName != "" )
-				//{
-				//	QSettings settings = QSettings( "Qubit", "KeywordEditor" );
-				//	// save the values of all the widgets
-				//	settings.beginGroup( settingName );
-				//	settings.setValue( "integrator", ui.comboBoxIntegrator->currentIndex() );
-				//	settings.setValue( "friction", ui.spinBoxFriction->value() );
-				//	settings.setValue( "inner_timestep", ui.spinBoxInnerTimestep->value() );
-				//	settings.setValue( "inter_timestep", ui.spinBoxIntermediateTimestep->value() );
-				//	settings.setValue( "thermostat", ui.comboBoxThermostat->currentIndex() );
-				//	settings.setValue( "barostat", ui.comboBoxBarostat->currentIndex() );
-				//	settings.setValue( "polarisation_solver", ui.comboBoxPolarizationEquations->currentIndex() );
-				//	settings.setValue( "sr_polarization_solver", ui.comboBoxShortRangePolarizationSolver->currentIndex()
-				//); 	settings.setValue( "piston_mass", ui.spinBoxMassPiston->value() ); 	settings.setValue(
-				//"piston_friction", ui.spinBoxFrictionPiston->value() ); 	settings.setValue( "tcg_roder",
-				// ui.comboBoxTcgOrder->currentIndex() ); 	settings.setValue( "diagonal_preconditioner",
-				// ui.comboBoxDiagPrec->currentIndex() ); 	settings.setValue( "tcg_guess",
-				// ui.comboBoxTcgGuess->currentIndex() ); 	settings.setValue( "peek_step",
-				// ui.comboBoxTcgPeek->currentIndex() ); 	settings.setValue( "omega", ui.spinBoxTcgOmega->value() );
-				//	settings.setValue( "fitting", ui.comboBoxTcgMegaFit->currentIndex() );
-				//	settings.setValue( "fitting_frequency", ui.spinBoxTcgMegaFitFreq->value() );
-				//	settings.setValue( "tcg_order_short", ui.comboBoxTcgOrderShort->currentIndex() );
-				//	settings.setValue( "diagonal_preconditioner_short", ui.comboBoxDiagPrecShort->currentIndex() );
-				//	settings.setValue( "direct_guess_short", ui.comboBoxTcgGuessShort->currentIndex() );
-				//	settings.setValue( "peek_step_short", ui.comboBoxTcgPeekShort->currentIndex() );
-				//	settings.setValue( "omega_short", ui.spinBoxTcgOmegaShort->value() );
-				//	settings.setValue( "additional_keywords", ui.textBrowserAdditionnalKeywords->toPlainText() );
-				//	settings.endGroup();
-				//}
-				// settingsWindow->ui.lineEditSettingsName->clear();
+				QString settingName = settingsWindow->ui.lineEditSettingsName->text();
+				if ( settingName != "" )
+				{
+					QString		moduleNameWithoutSpaces = moduleTitle().remove( QRegularExpression( "\\s" ) );
+					QSettings * settings				= new QSettings( "Qubit", moduleNameWithoutSpaces );
+					settings->beginGroup( settingName );
+					saveSettings( settings );
+					settings->endGroup();
+					settingsWindow->ui.lineEditSettingsName->clear();
+					delete settings;
+				}
 			}
 
 			void CustomQDockWidget::loadSettingsClicked()
 			{
-				// QList<QListWidgetItem *> selectedListItem =
-				// settingsWindow->ui.listWidgetSavedSettings->selectedItems(); if (
-				// settingsWindow->ui.listWidgetSavedSettings->selectedItems().size() == 1 )
-				//{
-				//	QSettings settings			  = QSettings( "Qubit", "KeywordEditor" );
-				//	QString	  settingsProfileName = selectedListItem[ 0 ]->text();
-				//	settings.beginGroup( settingsProfileName );
-				//	ui.comboBoxIntegrator->setCurrentIndex( settings.value( "integrator" ).toInt() );
-				//	ui.spinBoxFriction->setValue( settings.value( "friction" ).toInt() );
-				//	ui.spinBoxInnerTimestep->setValue( settings.value( "inner_timestep" ).toInt() );
-				//	ui.spinBoxIntermediateTimestep->setValue( settings.value( "inter_timestep" ).toInt() );
-				//	ui.comboBoxThermostat->setCurrentIndex( settings.value( "thermostat" ).toInt() );
-				//	ui.comboBoxBarostat->setCurrentIndex( settings.value( "barostat" ).toInt() );
-				//	ui.comboBoxPolarizationEquations->setCurrentIndex( settings.value( "polarisation_solver" ).toInt()
-				//); 	ui.comboBoxShortRangePolarizationSolver->setCurrentIndex( settings.value(
-				//"sr_polarization_solver"
-				//).toInt() ); 	ui.spinBoxMassPiston->setValue( settings.value( "piston_mass" ).toInt() );
-				//	ui.spinBoxFrictionPiston->setValue( settings.value( "piston_friction" ).toInt() );
-				//	ui.comboBoxTcgOrder->setCurrentIndex( settings.value( "tcg_roder" ).toInt() );
-				//	ui.comboBoxDiagPrec->setCurrentIndex( settings.value( "diagonal_preconditioner" ).toInt() );
-				//	ui.comboBoxTcgGuess->setCurrentIndex( settings.value( "tcg_guess" ).toInt() );
-				//	ui.comboBoxTcgPeek->setCurrentIndex( settings.value( "peek_step" ).toInt() );
-				//	ui.spinBoxTcgOmega->setValue( settings.value( "omega" ).toInt() );
-				//	ui.comboBoxTcgMegaFit->setCurrentIndex( settings.value( "fitting" ).toInt() );
-				//	ui.spinBoxTcgMegaFitFreq->setValue( settings.value( "fitting_frequency" ).toInt() );
-				//	ui.comboBoxTcgOrderShort->setCurrentIndex( settings.value( "tcg_order_short" ).toInt() );
-				//	ui.comboBoxDiagPrecShort->setCurrentIndex( settings.value( "diagonal_preconditioner_short" ).toInt()
-				//); 	ui.comboBoxTcgGuessShort->setCurrentIndex( settings.value( "direct_guess_short" ).toInt() );
-				//	ui.comboBoxTcgPeekShort->setCurrentIndex( settings.value( "peek_step_short" ).toInt() );
-				//	ui.spinBoxTcgOmegaShort->setValue( settings.value( "omega_short" ).toInt() );
-				//	ui.textBrowserAdditionnalKeywords->setText( settings.value( "additional_keywords" ).toString() );
-				//	settings.endGroup();
-				//}
+				QList<QListWidgetItem *> selectedListItem = settingsWindow->ui.listWidgetSavedSettings->selectedItems();
+				if ( settingsWindow->ui.listWidgetSavedSettings->selectedItems().size() == 1 )
+				{
+					QString		moduleNameWithoutSpaces = moduleTitle().remove( QRegularExpression( "\\s" ) );
+					QSettings * settings				= new QSettings( "Qubit", moduleNameWithoutSpaces );
+					QString		settingsProfileName		= selectedListItem[ 0 ]->text();
+
+					if ( settings->childGroups().contains( settingsProfileName ) )
+					{
+						settings->beginGroup( settingsProfileName );
+						loadSettings( settings );
+						settings->endGroup();
+					}
+					delete settings;
+				}
 			}
 
 			void CustomQDockWidget::removeSettingsClicked()
@@ -355,11 +304,15 @@ namespace VTX
 				QList<QListWidgetItem *> selectedListItem = settingsWindow->ui.listWidgetSavedSettings->selectedItems();
 				if ( selectedListItem.size() == 1 )
 				{
-					QSettings settings		  = QSettings( "Qubit", "KeywordEditor" );
-					QString	  selectedProfile = selectedListItem[ 0 ]->text();
-					settings.remove( selectedProfile );
-					delete settingsWindow->ui.listWidgetSavedSettings->takeItem(
-						settingsWindow->ui.listWidgetSavedSettings->row( selectedListItem[ 0 ] ) );
+					QString	  moduleNameWithoutSpaces = moduleTitle().remove( QRegularExpression( "\\s" ) );
+					QSettings settings				  = QSettings( "Qubit", moduleNameWithoutSpaces );
+					QString	  selectedProfile		  = selectedListItem[ 0 ]->text();
+					if ( settings.childGroups().contains( selectedProfile ) )
+					{
+						settings.remove( selectedProfile );
+						delete settingsWindow->ui.listWidgetSavedSettings->takeItem(
+							settingsWindow->ui.listWidgetSavedSettings->row( selectedListItem[ 0 ] ) );
+					}
 				}
 			}
 		} // namespace Widget

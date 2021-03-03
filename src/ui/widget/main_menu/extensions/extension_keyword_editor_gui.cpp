@@ -43,10 +43,8 @@ namespace VTX
 					{
 						// set window properties:
 						// 0: savable
-						// 1: lockable
-						// 2: citable
+						// 1: citable
 						std::vector<bool> * windowProperties = new std::vector<bool>();
-						windowProperties->push_back( true );
 						windowProperties->push_back( true );
 						windowProperties->push_back( true );
 						return windowProperties;
@@ -56,6 +54,68 @@ namespace VTX
 					{
 						// set module window widgets with a widget containing all the module's widgets
 						return ui.tabWidgetKeywordEditor;
+					}
+
+					QString ExtensionKeywordEditorGUI::moduleCitations() { return QString( "" ); }
+
+					void ExtensionKeywordEditorGUI::saveSettings( QSettings * settings )
+					{
+						// save the values of all the widgets
+						settings->setValue( "integrator", ui.comboBoxIntegrator->currentIndex() );
+						settings->setValue( "friction", ui.spinBoxFriction->value() );
+						settings->setValue( "inner_timestep", ui.spinBoxInnerTimestep->value() );
+						settings->setValue( "inter_timestep", ui.spinBoxIntermediateTimestep->value() );
+						settings->setValue( "thermostat", ui.comboBoxThermostat->currentIndex() );
+						settings->setValue( "barostat", ui.comboBoxBarostat->currentIndex() );
+						settings->setValue( "polarisation_solver", ui.comboBoxPolarizationEquations->currentIndex() );
+						settings->setValue( "sr_polarization_solver",
+											ui.comboBoxShortRangePolarizationSolver->currentIndex() );
+						settings->setValue( "piston_mass", ui.spinBoxMassPiston->value() );
+						settings->setValue( "piston_friction", ui.spinBoxFrictionPiston->value() );
+						settings->setValue( "tcg_roder", ui.comboBoxTcgOrder->currentIndex() );
+						settings->setValue( "diagonal_preconditioner", ui.comboBoxDiagPrec->currentIndex() );
+						settings->setValue( "tcg_guess", ui.comboBoxTcgGuess->currentIndex() );
+						settings->setValue( "peek_step", ui.comboBoxTcgPeek->currentIndex() );
+						settings->setValue( "omega", ui.spinBoxTcgOmega->value() );
+						settings->setValue( "fitting", ui.comboBoxTcgMegaFit->currentIndex() );
+						settings->setValue( "fitting_frequency", ui.spinBoxTcgMegaFitFreq->value() );
+						settings->setValue( "tcg_order_short", ui.comboBoxTcgOrderShort->currentIndex() );
+						settings->setValue( "diagonal_preconditioner_short", ui.comboBoxDiagPrecShort->currentIndex() );
+						settings->setValue( "direct_guess_short", ui.comboBoxTcgGuessShort->currentIndex() );
+						settings->setValue( "peek_step_short", ui.comboBoxTcgPeekShort->currentIndex() );
+						settings->setValue( "omega_short", ui.spinBoxTcgOmegaShort->value() );
+						settings->setValue( "additional_keywords", ui.textBrowserAdditionnalKeywords->toPlainText() );
+					}
+
+					void ExtensionKeywordEditorGUI::loadSettings( QSettings * settings )
+					{
+						ui.comboBoxIntegrator->setCurrentIndex( settings->value( "integrator" ).toInt() );
+						ui.spinBoxFriction->setValue( settings->value( "friction" ).toInt() );
+						ui.spinBoxInnerTimestep->setValue( settings->value( "inner_timestep" ).toInt() );
+						ui.spinBoxIntermediateTimestep->setValue( settings->value( "inter_timestep" ).toInt() );
+						ui.comboBoxThermostat->setCurrentIndex( settings->value( "thermostat" ).toInt() );
+						ui.comboBoxBarostat->setCurrentIndex( settings->value( "barostat" ).toInt() );
+						ui.comboBoxPolarizationEquations->setCurrentIndex(
+							settings->value( "polarisation_solver" ).toInt() );
+						ui.comboBoxShortRangePolarizationSolver->setCurrentIndex(
+							settings->value( "sr_polarization_solver" ).toInt() );
+						ui.spinBoxMassPiston->setValue( settings->value( "piston_mass" ).toInt() );
+						ui.spinBoxFrictionPiston->setValue( settings->value( "piston_friction" ).toInt() );
+						ui.comboBoxTcgOrder->setCurrentIndex( settings->value( "tcg_roder" ).toInt() );
+						ui.comboBoxDiagPrec->setCurrentIndex( settings->value( "diagonal_preconditioner" ).toInt() );
+						ui.comboBoxTcgGuess->setCurrentIndex( settings->value( "tcg_guess" ).toInt() );
+						ui.comboBoxTcgPeek->setCurrentIndex( settings->value( "peek_step" ).toInt() );
+						ui.spinBoxTcgOmega->setValue( settings->value( "omega" ).toInt() );
+						ui.comboBoxTcgMegaFit->setCurrentIndex( settings->value( "fitting" ).toInt() );
+						ui.spinBoxTcgMegaFitFreq->setValue( settings->value( "fitting_frequency" ).toInt() );
+						ui.comboBoxTcgOrderShort->setCurrentIndex( settings->value( "tcg_order_short" ).toInt() );
+						ui.comboBoxDiagPrecShort->setCurrentIndex(
+							settings->value( "diagonal_preconditioner_short" ).toInt() );
+						ui.comboBoxTcgGuessShort->setCurrentIndex( settings->value( "direct_guess_short" ).toInt() );
+						ui.comboBoxTcgPeekShort->setCurrentIndex( settings->value( "peek_step_short" ).toInt() );
+						ui.spinBoxTcgOmegaShort->setValue( settings->value( "omega_short" ).toInt() );
+						ui.textBrowserAdditionnalKeywords->setText(
+							settings->value( "additional_keywords" ).toString() );
 					}
 
 					void ExtensionKeywordEditorGUI::onOpenKeyfilePushButtonClicked()
