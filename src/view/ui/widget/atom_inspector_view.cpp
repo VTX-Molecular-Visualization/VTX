@@ -4,7 +4,6 @@
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
-#include "view/ui/widget/representation/instantiated_representation_inspector_view.hpp"
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>

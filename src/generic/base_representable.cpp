@@ -20,6 +20,8 @@ namespace VTX
 
 		void BaseRepresentable::setRepresentation( InstantiatedRepresentation * const p_representation )
 		{
+			removeRepresentation();
+
 			_representation = p_representation;
 			p_representation->setTarget( this );
 			computeRepresentationTargets();

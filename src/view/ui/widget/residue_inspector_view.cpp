@@ -3,7 +3,6 @@
 #include "representation/representation_manager.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
-#include "view/ui/widget/representation/instantiated_representation_inspector_view.hpp"
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>
@@ -49,9 +48,8 @@ namespace VTX::View::UI::Widget
 
 		_representationSection
 			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
-		_representationWidget
-			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::ItemRepresentationInspector>(
-				this, "inspector_instantiated_representation" );
+		_representationWidget = VTX::UI::WidgetFactory::get().instantiateWidget<RepresentationInspectorSection>(
+			this, "inspector_instantiated_representation" );
 		_representationSection->setBody( _representationWidget );
 
 		_infoSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(

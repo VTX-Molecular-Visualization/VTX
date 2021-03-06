@@ -15,7 +15,6 @@
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/colormode_field_widget.hpp"
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"
-#include "ui/widget/inspector/inspector_item_widget.hpp"
 #include "ui/widget/representation/ball_and_stick_representation_widget.hpp"
 #include "ui/widget/representation/ball_stick_and_cartoon_representation_widget.hpp"
 #include "ui/widget/representation/base_representation_widget.hpp"
@@ -33,9 +32,9 @@
 #include <QWidget>
 #include <vector>
 
-namespace VTX::View::UI::Widget::Representation
+namespace VTX::UI::Widget::Representation
 {
-	class ItemRepresentationInspector : public VTX::UI::Widget::Inspector::InspectorItemWidget
+	class RepresentationInspectorSection : public VTX::UI::Widget::BaseManualWidget<QWidget>
 	{
 		VTX_WIDGET
 		VTX_VIEW
@@ -67,8 +66,8 @@ namespace VTX::View::UI::Widget::Representation
 		}
 
 	  protected:
-		ItemRepresentationInspector( QWidget * const p_parent );
-		~ItemRepresentationInspector();
+		RepresentationInspectorSection( QWidget * const p_parent );
+		~RepresentationInspectorSection();
 
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
@@ -109,6 +108,6 @@ namespace VTX::View::UI::Widget::Representation
 		void _instantiateRepresentationIfNeeded();
 	};
 
-} // namespace VTX::View::UI::Widget::Representation
+} // namespace VTX::UI::Widget::Representation
 
 #endif

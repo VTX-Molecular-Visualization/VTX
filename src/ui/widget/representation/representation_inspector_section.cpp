@@ -1,4 +1,4 @@
-#include "instantiated_representation_inspector_view.hpp"
+#include "representation_inspector_section.hpp"
 #include "action/action_manager.hpp"
 #include "action/chain.hpp"
 #include "action/molecule.hpp"
@@ -17,21 +17,21 @@
 #include <QVBoxLayout>
 #include <string>
 
-namespace VTX::View::UI::Widget::Representation
+namespace VTX::UI::Widget::Representation
 {
-	ItemRepresentationInspector::ItemRepresentationInspector( QWidget * const p_parent ) :
-		InspectorItemWidget( p_parent )
+	RepresentationInspectorSection::RepresentationInspectorSection( QWidget * const p_parent ) :
+		BaseManualWidget( p_parent )
 	{
 		_representationSettingsWidget = std::vector<BaseRepresentationWidget *>();
 		_representationSettingsWidget.resize( int( Generic::REPRESENTATION::COUNT ) );
 	}
-	ItemRepresentationInspector ::~ItemRepresentationInspector() {}
+	RepresentationInspectorSection ::~RepresentationInspectorSection() {}
 
-	void ItemRepresentationInspector::_setupUi( const QString & p_name )
+	void RepresentationInspectorSection::_setupUi( const QString & p_name )
 	{
 		const int INDENT_SIZE = 20;
 
-		InspectorItemWidget::_setupUi( p_name );
+		BaseManualWidget::_setupUi( p_name );
 
 		_titleWidget = new QPushButton( this );
 		_titleWidget->setFlat( true );
@@ -103,36 +103,36 @@ namespace VTX::View::UI::Widget::Representation
 		mainLayout->addItem( titleLayout );
 		mainLayout->addWidget( _representationWidget );
 	}
-	void ItemRepresentationInspector::_setupSlots()
+	void RepresentationInspectorSection::_setupSlots()
 	{
-		InspectorItemWidget::_setupSlots();
-
-		connect( _titleWidget, &QPushButton::clicked, this, &ItemRepresentationInspector::_toggleSettingDisplay );
+		connect( _titleWidget, &QPushButton::clicked, this, &RepresentationInspectorSection::_toggleSettingDisplay );
 
 		connect( _representationPreset,
 				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
 				 this,
-				 &ItemRepresentationInspector::_representationPresetChange );
+				 &RepresentationInspectorSection::_representationPresetChange );
 
 		for ( int i = 0; i < _representationSettingsWidget.size(); i++ )
 		{
 			connect( _representationSettingsWidget[ i ],
 					 &VTX::UI::Widget::Representation::BaseRepresentationWidget::onDataChange,
 					 this,
-					 &ItemRepresentationInspector::_representationDataChange );
+					 &RepresentationInspectorSection::_representationDataChange );
 		}
 
 		connect( _colorModeWidget,
 				 &ColorModeFieldWidget::colorModeChanged,
 				 this,
-				 &ItemRepresentationInspector::_colorModeChanged );
+				 &RepresentationInspectorSection::_colorModeChanged );
 
-		connect(
-			_colorModeWidget, &ColorModeFieldWidget::colorChanged, this, &ItemRepresentationInspector::_colorChanged );
+		connect( _colorModeWidget,
+				 &ColorModeFieldWidget::colorChanged,
+				 this,
+				 &RepresentationInspectorSection::_colorChanged );
 	}
 
-	void ItemRepresentationInspector::_setTarget( Model::BaseModel * const			 p_model,
-												  Generic::BaseRepresentable * const p_representable )
+	void RepresentationInspectorSection::_setTarget( Model::BaseModel * const			p_model,
+													 Generic::BaseRepresentable * const p_representable )
 	{
 		_targetModel = p_model;
 		_target		 = p_representable;
@@ -156,7 +156,7 @@ namespace VTX::View::UI::Widget::Representation
 		blockSignals( false );
 	}
 
-	void ItemRepresentationInspector::_refresh()
+	void RepresentationInspectorSection::_refresh()
 	{
 		_titleWidget->setText( QString::fromStdString( _representation->getName() ) );
 
@@ -180,9 +180,9 @@ namespace VTX::View::UI::Widget::Representation
 		_colorModeWidget->setColor( _representation->getColor() );
 	}
 
-	void ItemRepresentationInspector::localize() { InspectorItemWidget::localize(); }
+	void RepresentationInspectorSection::localize() {}
 
-	void ItemRepresentationInspector::_toggleSettingDisplay()
+	void RepresentationInspectorSection::_toggleSettingDisplay()
 	{
 		bool newVisibleState = !_representationWidget->isVisible();
 		_representationWidget->setVisible( newVisibleState );
@@ -193,7 +193,7 @@ namespace VTX::View::UI::Widget::Representation
 		_titleWidget->setIcon( icon );
 	}
 
-	void ItemRepresentationInspector::_representationPresetChange( const int p_presetIndex )
+	void RepresentationInspectorSection::_representationPresetChange( const int p_presetIndex )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -215,7 +215,7 @@ namespace VTX::View::UI::Widget::Representation
 			VTX_ACTION( new Action::Residue::ChangeRepresentationPreset( *residue, p_presetIndex ) );
 		}
 	}
-	void ItemRepresentationInspector::_representationDataChange()
+	void RepresentationInspectorSection::_representationDataChange()
 	{
 		if ( signalsBlocked() )
 			return;
@@ -223,7 +223,7 @@ namespace VTX::View::UI::Widget::Representation
 		_instantiateRepresentationIfNeeded();
 	}
 
-	void ItemRepresentationInspector::_colorModeChanged( const Generic::COLOR_MODE & p_colorMode )
+	void RepresentationInspectorSection::_colorModeChanged( const Generic::COLOR_MODE & p_colorMode )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -231,7 +231,7 @@ namespace VTX::View::UI::Widget::Representation
 		_instantiateRepresentationIfNeeded();
 		VTX_ACTION( new Action::ChangeRepresentationColorMode( _representation, p_colorMode ) );
 	}
-	void ItemRepresentationInspector::_colorChanged( const Color::Rgb & p_color )
+	void RepresentationInspectorSection::_colorChanged( const Color::Rgb & p_color )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -239,7 +239,7 @@ namespace VTX::View::UI::Widget::Representation
 		_instantiateRepresentationIfNeeded();
 		VTX_ACTION( new Action::ChangeRepresentationColor( _representation, p_color ) );
 	}
-	void ItemRepresentationInspector::_spheresRadiusChanged( const float p_radius )
+	void RepresentationInspectorSection::_spheresRadiusChanged( const float p_radius )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -247,7 +247,7 @@ namespace VTX::View::UI::Widget::Representation
 		_instantiateRepresentationIfNeeded();
 		VTX_ACTION( new Action::ChangeRepresentationSphereRadius( _representation, p_radius ) );
 	}
-	void ItemRepresentationInspector::_spheresRadiusAddChanged( const float p_radius )
+	void RepresentationInspectorSection::_spheresRadiusAddChanged( const float p_radius )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -255,7 +255,7 @@ namespace VTX::View::UI::Widget::Representation
 		_instantiateRepresentationIfNeeded();
 		VTX_ACTION( new Action::ChangeRepresentationSphereRadiusAdd( _representation, p_radius ) );
 	}
-	void ItemRepresentationInspector::_sticksRadiusChanged( const float p_radius )
+	void RepresentationInspectorSection::_sticksRadiusChanged( const float p_radius )
 	{
 		if ( signalsBlocked() )
 			return;
@@ -264,7 +264,7 @@ namespace VTX::View::UI::Widget::Representation
 		VTX_ACTION( new Action::ChangeRepresentationCylinderRadius( _representation, p_radius ) );
 	}
 
-	void ItemRepresentationInspector::_instantiateRepresentationIfNeeded()
+	void RepresentationInspectorSection::_instantiateRepresentationIfNeeded()
 	{
 		if ( !_representationHasBeenModified )
 		{
@@ -288,7 +288,7 @@ namespace VTX::View::UI::Widget::Representation
 			_representationHasBeenModified = true;
 		}
 	}
-	void ItemRepresentationInspector::_populateRepresentationModeComboBox()
+	void RepresentationInspectorSection::_populateRepresentationModeComboBox()
 	{
 		const Model::Representation::RepresentationLibrary & representationLibrary
 			= Model::Representation::RepresentationLibrary::get();
@@ -302,4 +302,4 @@ namespace VTX::View::UI::Widget::Representation
 		}
 	}
 
-} // namespace VTX::View::UI::Widget::Representation
+} // namespace VTX::UI::Widget::Representation

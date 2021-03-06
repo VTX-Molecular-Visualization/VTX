@@ -126,12 +126,12 @@ namespace VTX
 		void Chain::setRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation )
 		{
 			BaseRepresentable::setRepresentation( p_representation );
-			_notifyDataChanged();
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
 		void Chain::removeRepresentation()
 		{
 			BaseRepresentable::removeRepresentation();
-			_notifyDataChanged();
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
 
 	} // namespace Model

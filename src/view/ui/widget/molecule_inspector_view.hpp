@@ -10,8 +10,8 @@
 #include "ui/widget/custom_widget/transform_widget.hpp"
 #include "ui/widget/inspector/inspector_item_widget.hpp"
 #include "ui/widget/inspector/inspector_section.hpp"
+#include "ui/widget/representation/representation_inspector_section.hpp"
 #include "view/base_view.hpp"
-#include "view/ui/widget/representation/instantiated_representation_inspector_view.hpp"
 #include <QWidget>
 
 namespace VTX::View::UI::Widget
@@ -23,11 +23,12 @@ namespace VTX::View::UI::Widget
 		VTX_WIDGET
 		VTX_VIEW
 
-		using TransformWidget		  = VTX::UI::Widget::CustomWidget::TransformWidget;
-		using CollapsingHeaderWidget  = VTX::UI::Widget::CustomWidget::CollapsingHeaderWidget;
-		using InspectorSection		  = VTX::UI::Widget::Inspector::InspectorSection;
-		using InspectorSectionVLayout = VTX::UI::Widget::Inspector::InspectorSectionVLayout;
-		using SectionFlag			  = VTX::UI::Widget::Inspector::SectionFlag;
+		using TransformWidget				 = VTX::UI::Widget::CustomWidget::TransformWidget;
+		using CollapsingHeaderWidget		 = VTX::UI::Widget::CustomWidget::CollapsingHeaderWidget;
+		using InspectorSection				 = VTX::UI::Widget::Inspector::InspectorSection;
+		using InspectorSectionVLayout		 = VTX::UI::Widget::Inspector::InspectorSectionVLayout;
+		using RepresentationInspectorSection = VTX::UI::Widget::Representation::RepresentationInspectorSection;
+		using SectionFlag					 = VTX::UI::Widget::Inspector::SectionFlag;
 
 	  public:
 		~MoleculeInspectorView();
@@ -50,7 +51,7 @@ namespace VTX::View::UI::Widget
 
 		TransformWidget * _transformWidget = nullptr;
 
-		Representation::ItemRepresentationInspector * _representationWidget;
+		RepresentationInspectorSection * _representationWidget;
 
 		QLabel * _fullnameLabel	  = nullptr;
 		QLabel * _nbChainsLabel	  = nullptr;
