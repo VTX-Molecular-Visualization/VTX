@@ -74,7 +74,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		_refresh();
 
-		emit colorModeChanged();
+		emit colorModeChanged( _colorMode );
 	}
 
 	void ColorModeFieldWidget::setColor( const Color::Rgb & p_color )
@@ -96,7 +96,7 @@ namespace VTX::UI::Widget::CustomWidget
 	void ColorModeFieldWidget::_applyColor( const Color::Rgb & p_color )
 	{
 		_color = p_color;
-		emit colorChanged();
+		emit colorChanged( _color );
 	}
 
 	void ColorModeFieldWidget::localize() {};

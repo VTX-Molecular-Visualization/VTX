@@ -45,11 +45,7 @@ namespace VTX
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void				setMoleculePtr( Molecule * const p_molecule )
-			{
-				_moleculePtr = p_molecule;
-				setRepresentableMolecule( p_molecule );
-			}
+			void					setMoleculePtr( Molecule * const p_molecule );
 
 			static Color::Rgb getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
 
@@ -71,6 +67,9 @@ namespace VTX
 
 			const Math::AABB getAABB() const;
 			const Math::AABB getWorldAABB() const;
+
+			void setRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation );
+			void removeRepresentation();
 
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;

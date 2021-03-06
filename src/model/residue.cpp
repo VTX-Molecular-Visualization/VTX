@@ -11,6 +11,8 @@ namespace VTX
 		void			 Residue::setChainPtr( Chain * const p_chain )
 		{
 			_chainPtr = p_chain;
+
+			setParent( _chainPtr );
 			setRepresentableMolecule( p_chain->getMoleculePtr() );
 		}
 
@@ -61,6 +63,18 @@ namespace VTX
 			Math::AABB aabb = getAABB();
 			aabb.translate( getMoleculePtr()->getTransform().getTranslationVector() );
 			return aabb;
+		}
+
+		void Residue::setRepresentation(
+			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation )
+		{
+			BaseRepresentable::setRepresentation( p_representation );
+			_notifyDataChanged();
+		}
+		void Residue::removeRepresentation()
+		{
+			BaseRepresentable::removeRepresentation();
+			_notifyDataChanged();
 		}
 
 		const std::string Residue::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {

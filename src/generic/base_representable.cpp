@@ -14,44 +14,47 @@ namespace VTX
 	{
 		BaseRepresentable::~BaseRepresentable()
 		{
-			while ( _representations.size() > 0 )
-			{
-				// erase _representations.begin() in _representations
-				Representation::RepresentationManager::get().removeRepresentation(
-					*_representations.begin(), this, false );
-			}
-
+			removeRepresentation();
 			_molecule = nullptr;
 		}
 
-		const std::set<const Model::Representation::InstantiatedRepresentation *> & BaseRepresentable::
-			getRepresentations() const
+		void BaseRepresentable::setRepresentation( InstantiatedRepresentation * const p_representation )
 		{
-			if ( _representations.size() == 0 )
-			{
-				if ( _molecule->_representations.size() == 0 )
-					return Representation::RepresentationManager::get().getDefaultRepresentationSet();
-				else
-					return _molecule->getRepresentations();
-			}
-			else
-				return _representations;
+			_representation = p_representation;
+			p_representation->setTarget( this );
+			computeRepresentationTargets();
 		}
+
+		void BaseRepresentable::removeRepresentation()
+		{
+			if ( _representation != nullptr )
+				delete _representation;
+
+			_representation = nullptr;
+		}
+
+		void BaseRepresentable::setDefaultRepresentation()
+		{
+			Model::Representation::InstantiatedRepresentation * const defaultRepresentation
+				= Representation::RepresentationManager::get().instantiateDefaultRepresentation();
+			defaultRepresentation->setTarget( getMolecule() );
+
+			setRepresentation( defaultRepresentation );
+		}
+		void BaseRepresentable::setParent( BaseRepresentable * const p_parent ) { _parent = p_parent; }
+
+		bool BaseRepresentable::hasCustomRepresentation() const { return _representation != nullptr; }
 
 		const Model::Representation::InstantiatedRepresentation * const BaseRepresentable::getRepresentation() const
 		{
-			const std::set<const Model::Representation::InstantiatedRepresentation *> & representations
-				= getRepresentations();
-
-			const Model::Representation::InstantiatedRepresentation * res = *representations.cbegin();
-
-			for ( const Model::Representation::InstantiatedRepresentation * representation : representations )
-			{
-				if ( representation->getPriority() > res->getPriority() )
-					res = representation;
-			}
-
-			return res;
+			if ( _representation == nullptr )
+				return _parent->getRepresentation();
+			else
+				return _representation;
+		}
+		Model::Representation::InstantiatedRepresentation * const BaseRepresentable::getCustomRepresentation()
+		{
+			return _representation;
 		}
 
 		void BaseRepresentable::computeRepresentationTargets()

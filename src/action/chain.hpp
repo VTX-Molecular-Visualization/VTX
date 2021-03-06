@@ -10,6 +10,8 @@
 #include "model/chain.hpp"
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
+#include "model/representation/instantiated_representation.hpp"
+#include "model/representation/representation_library.hpp"
 #include "model/secondary_structure.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -83,6 +85,33 @@ namespace VTX::Action::Chain
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
+	};
+
+	class ChangeRepresentationPreset : public BaseAction
+	{
+	  public:
+		explicit ChangeRepresentationPreset( Model::Chain & p_chain, const int p_indexPreset ) :
+			_chain( p_chain ), _indexPreset( p_indexPreset )
+		{
+		}
+
+		virtual void execute() override
+		{
+			Model::Representation::BaseRepresentation * const preset
+				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
+
+			Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
+				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>( preset );
+			instantiatedRepresentation->setTarget( &_chain );
+
+			_chain.setRepresentation( instantiatedRepresentation );
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Model::Chain & _chain;
+		const int	   _indexPreset;
 	};
 
 	class Orient : public BaseAction

@@ -33,8 +33,8 @@ namespace VTX::UI::Widget::CustomWidget
 		void			   setColor( const Color::Rgb & p_color );
 
 	  signals:
-		void colorModeChanged();
-		void colorChanged();
+		void colorModeChanged( const Generic::COLOR_MODE & p_colorMode );
+		void colorChanged( const Color::Rgb & p_color );
 
 	  protected:
 		ColorModeFieldWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};

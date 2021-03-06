@@ -8,7 +8,6 @@
 #include "define.hpp"
 #include "representation/representation_target.hpp"
 #include <map>
-#include <set>
 
 namespace VTX
 {
@@ -27,42 +26,41 @@ namespace VTX
 		class BaseRepresentable
 		{
 		  public:
+			using InstantiatedRepresentation = Model::Representation::InstantiatedRepresentation;
+			using RepresentationTarget		 = VTX::Representation::RepresentationTarget;
+
 			~BaseRepresentable();
 
-			const std::set<const Model::Representation::InstantiatedRepresentation *> & getRepresentations() const;
-			const Model::Representation::InstantiatedRepresentation * const				getRepresentation() const;
+			const InstantiatedRepresentation * const getRepresentation() const;
+			InstantiatedRepresentation * const		 getCustomRepresentation();
+			void setRepresentation( InstantiatedRepresentation * const p_representation );
+			void removeRepresentation();
 
-			const std::map<const Model::Representation::InstantiatedRepresentation *,
-						   VTX::Representation::RepresentationTarget> &
-			getRepresentationData() const
+			bool hasCustomRepresentation() const;
+
+			const std::map<const InstantiatedRepresentation *, RepresentationTarget> & getRepresentationData() const
 			{
 				return _representationTargets;
 			}
 
-			void addRepresentation( const Model::Representation::InstantiatedRepresentation * p_representation )
-			{
-				_representations.emplace( p_representation );
-			};
-			void removeRepresentation( const Model::Representation::InstantiatedRepresentation * p_representation )
-			{
-				_representations.erase( p_representation );
-			};
+			void setDefaultRepresentation();
+			void setParent( BaseRepresentable * p_parent );
 
 			void computeRepresentationTargets();
 			void computeColorBuffer();
 
 			const std::map<uint, uint> & getRepresentationAtoms(
-				const Model::Representation::InstantiatedRepresentation * const p_representation ) const
+				const InstantiatedRepresentation * const p_representation ) const
 			{
 				return _representationTargets.at( p_representation ).getAtoms();
 			};
 			const std::map<uint, uint> & getRepresentationBonds(
-				const Model::Representation::InstantiatedRepresentation * const p_representation ) const
+				const InstantiatedRepresentation * const p_representation ) const
 			{
 				return _representationTargets.at( p_representation ).getBonds();
 			};
 			const std::map<uint, uint> & getRepresentationRibbons(
-				const Model::Representation::InstantiatedRepresentation * const p_representation ) const
+				const InstantiatedRepresentation * const p_representation ) const
 			{
 				return _representationTargets.at( p_representation ).getRibbons();
 			};
@@ -71,18 +69,16 @@ namespace VTX
 			void setRepresentableMolecule( Model::Molecule * const p_molecule ) { _molecule = p_molecule; };
 
 		  protected:
-			std::set<const Model::Representation::InstantiatedRepresentation *> _representations
-				= std::set<const Model::Representation::InstantiatedRepresentation *>();
+			InstantiatedRepresentation * _representation = nullptr;
 
-			mutable std::map<const Model::Representation::InstantiatedRepresentation *,
-							 VTX::Representation::RepresentationTarget>
-				_representationTargets = std::map<const Model::Representation::InstantiatedRepresentation *,
-												  VTX::Representation::RepresentationTarget>();
+			mutable std::map<const InstantiatedRepresentation *, RepresentationTarget> _representationTargets
+				= std::map<const InstantiatedRepresentation *, RepresentationTarget>();
 
 			bool _isResidueVisible( const Model::Residue & p_residue ) const;
 
 		  private:
-			Model::Molecule * _molecule = nullptr;
+			Model::Molecule *		  _molecule = nullptr;
+			const BaseRepresentable * _parent	= nullptr;
 		};
 	} // namespace Generic
 } // namespace VTX

@@ -4,7 +4,6 @@
 #include "event/event_manager.hpp"
 #include "molecule.hpp"
 #include "mvc/mvc_manager.hpp"
-#include "representation/instantiated_representation.hpp"
 #include "residue.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
@@ -107,28 +106,6 @@ namespace VTX::Model
 			_selectAtom( *it );
 
 		_refreshMoleculeSelection( p_atoms[ 0 ]->getMoleculePtr() );
-		_notifyDataChanged();
-	}
-
-	void Selection::selectRepresentation( Representation::InstantiatedRepresentation & p_representation,
-										  const bool								   p_appendToSelection )
-	{
-		if ( !p_appendToSelection )
-			_clearWithoutNotify();
-
-		_selectRepresentation( p_representation );
-		_notifyDataChanged();
-	}
-	void Selection::selectRepresentations(
-		const std::vector<Representation::InstantiatedRepresentation *> & p_representations,
-		const bool														  p_appendToSelection )
-	{
-		if ( !p_appendToSelection )
-			_clearWithoutNotify();
-
-		for ( const auto it : p_representations )
-			_selectRepresentation( *it );
-
 		_notifyDataChanged();
 	}
 
@@ -252,34 +229,6 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
-	void Selection::unselectRepresentation( Representation::InstantiatedRepresentation & p_representation )
-	{
-		_unselectRepresentation( p_representation );
-		_notifyDataChanged();
-	}
-	void Selection::unselectRepresentations(
-		const std::vector<Representation::InstantiatedRepresentation *> & p_representations )
-	{
-		if ( p_representations.size() == 0 )
-			return;
-
-		for ( const auto it : p_representations )
-			_unselectRepresentation( *it );
-
-		_notifyDataChanged();
-	}
-	void Selection::unselectRepresentationsWithCheck(
-		const std::vector<Representation::InstantiatedRepresentation *> & p_representations )
-	{
-		for ( const auto it : p_representations )
-		{
-			if ( isRepresentationSelected( *it ) )
-				_unselectRepresentation( *it );
-		}
-
-		_notifyDataChanged();
-	}
-
 	bool Selection::isMoleculeSelected( const Molecule & p_molecule ) const
 	{
 		const ID & id = p_molecule.getId();
@@ -374,10 +323,6 @@ namespace VTX::Model
 
 		return std::find( atomVector.begin(), atomVector.end(), index ) != atomVector.end();
 	}
-	bool Selection::isRepresentationSelected( Representation::InstantiatedRepresentation & p_representation ) const
-	{
-		return _representations.find( &p_representation ) != _representations.end();
-	}
 
 	uint Selection::getMoleculeSelectedCount() const { return (uint)_items.size(); }
 	uint Selection::getChainSelectedCount() const
@@ -404,7 +349,6 @@ namespace VTX::Model
 					res += (uint)mapResidus.second.size();
 		return res;
 	}
-	uint Selection::getRepresentationSelectedCount() const { return (uint)_representations.size(); }
 
 	void Selection::_selectMolecule( const Molecule & p_molecule )
 	{
@@ -809,16 +753,7 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
-	void Selection::_selectRepresentation( Representation::InstantiatedRepresentation & p_representation )
-	{
-		_representations.emplace( &p_representation );
-	}
-	void Selection::_unselectRepresentation( Representation::InstantiatedRepresentation & p_representation )
-	{
-		_representations.erase( &p_representation );
-	}
-
-	bool Selection::isEmpty() const { return _items.size() <= 0 && _representations.size() <= 0; }
+	bool Selection::isEmpty() const { return _items.size() <= 0; }
 
 	void Selection::clear()
 	{
@@ -834,7 +769,6 @@ namespace VTX::Model
 		}
 
 		_items.clear();
-		_representations.clear();
 		_mapSelectionAABB.clear();
 	}
 
@@ -851,13 +785,6 @@ namespace VTX::Model
 			const Event::VTXEventPtr<Model::Molecule> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 			unselectMolecule( *castedEvent.ptr );
-		}
-		else if ( p_event.name == Event::REPRESENTATION_REMOVED )
-		{
-			const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>(
-					p_event );
-			unselectRepresentation( *castedEvent.ptr );
 		}
 	}
 

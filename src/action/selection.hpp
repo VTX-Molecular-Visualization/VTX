@@ -252,27 +252,6 @@ namespace VTX::Action::Selection
 		const bool		   _appendToSelection;
 	};
 
-	class SelectRepresentation : public BaseAction
-	{
-	  public:
-		explicit SelectRepresentation( Model::Selection &								   p_selection,
-									   Model::Representation::InstantiatedRepresentation & p_representation ) :
-			_selection( p_selection ),
-			_representation( p_representation )
-		{
-		}
-
-		virtual void execute() override
-		{
-			_selection.selectRepresentation( _representation );
-			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-		}
-
-	  private:
-		Model::Selection &									_selection;
-		Model::Representation::InstantiatedRepresentation & _representation;
-	};
-
 	class UnselectMolecule : public BaseAction
 	{
 	  public:

@@ -44,9 +44,11 @@ namespace VTX::Model::Representation
 
 		bool			   hasToDrawSphere() const { return _sphereData != nullptr; };
 		const SphereData & getSphereData() const { return *_sphereData; };
+		SphereData &	   getSphereData() { return *_sphereData; };
 
 		bool				 hasToDrawCylinder() const { return _cylinderData != nullptr; };
 		const CylinderData & getCylinderData() const { return *_cylinderData; };
+		CylinderData &		 getCylinderData() { return *_cylinderData; };
 
 		bool			   hasToDrawRibbon() const { return _ribbonData != nullptr; };
 		const RibbonData & getRibbonData() const { return *_ribbonData; };
@@ -83,6 +85,9 @@ namespace VTX::Model::Representation
 	{
 	  public:
 		Representation_VanDerWaals();
+
+		float getSphereRadiusOffset() { return _sphereData->_radiusAdd; };
+		void  setSphereRadiusOffset( const float p_offset ) { _sphereData->_radiusAdd = p_offset; };
 	};
 	class Representation_Sticks : public BaseRepresentation
 	{

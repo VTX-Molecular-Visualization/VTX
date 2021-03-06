@@ -20,10 +20,6 @@ namespace VTX::Model
 	class Chain;
 	class Residue;
 	class Atom;
-	namespace Representation
-	{
-		class InstantiatedRepresentation;
-	}
 
 	class Selection : public BaseModel, public VTX::Event::BaseEventReceiverVTX
 	{
@@ -78,15 +74,6 @@ namespace VTX::Model
 		inline const MapMoleculeIds & getItems() const { return _items; }
 		inline MapMoleculeIds &		  getItems() { return _items; }
 
-		inline const std::set<Representation::InstantiatedRepresentation *> & getRepresentations() const
-		{
-			return _representations;
-		}
-		inline std::set<Representation::InstantiatedRepresentation *> & getRepresentations()
-		{
-			return _representations;
-		}
-
 		void selectMolecule( Molecule &, const bool p_appendToSelection = false );
 		void selectMolecules( const std::vector<Molecule *> &, const bool p_appendToSelection = false );
 		void unselectMolecule( Molecule & );
@@ -132,16 +119,6 @@ namespace VTX::Model
 							 const std::vector<Model::Residue *> &	p_residus,
 							 const std::vector<Model::Atom *> &		p_atoms );
 
-		void selectRepresentation( Representation::InstantiatedRepresentation &,
-								   const bool p_appendToSelection = false );
-		void selectRepresentations( const std::vector<Representation::InstantiatedRepresentation *> &,
-									const bool p_appendToSelection = false );
-		void unselectRepresentation( Representation::InstantiatedRepresentation & );
-		void unselectRepresentations( const std::vector<Representation::InstantiatedRepresentation *> & );
-		void unselectRepresentationsWithCheck( const std::vector<Representation::InstantiatedRepresentation *> & );
-		bool isRepresentationSelected( Representation::InstantiatedRepresentation & ) const;
-		uint getRepresentationSelectedCount() const;
-
 		bool isEmpty() const;
 		void clear();
 
@@ -155,16 +132,13 @@ namespace VTX::Model
 		{
 			_registerEvent( Event::MOLECULE_REMOVED );
 			_registerEvent( Event::MOLECULE_STRUCTURE_CHANGE );
-			_registerEvent( Event::REPRESENTATION_REMOVED );
 		}
 		~Selection() = default;
 
 		void _notifyDataChanged();
 
 	  private:
-		MapMoleculeIds										   _items = MapMoleculeIds();
-		std::set<Representation::InstantiatedRepresentation *> _representations
-			= std::set<Representation::InstantiatedRepresentation *>();
+		MapMoleculeIds					_items			  = MapMoleculeIds();
 		std::map<Model::ID, Math::AABB> _mapSelectionAABB = std::map<Model::ID, Math::AABB>();
 
 		void _selectMolecule( const Molecule & );
@@ -189,9 +163,6 @@ namespace VTX::Model
 		void _removeChain( const Chain & );
 		void _removeResidue( const Residue & );
 		void _removeAtom( const Atom & );
-
-		void _selectRepresentation( Representation::InstantiatedRepresentation & );
-		void _unselectRepresentation( Representation::InstantiatedRepresentation & );
 
 		void _clearWithoutNotify();
 

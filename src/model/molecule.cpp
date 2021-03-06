@@ -87,6 +87,7 @@ namespace VTX
 				createSecondaryStructure();
 
 				setRepresentableMolecule( this );
+				setDefaultRepresentation();
 				computeRepresentationTargets();
 			}
 		}
@@ -102,6 +103,18 @@ namespace VTX
 			}
 
 			return true;
+		}
+
+		void Molecule::setRepresentation(
+			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation )
+		{
+			BaseRepresentable::setRepresentation( p_representation );
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
+		}
+		void Molecule::removeRepresentation()
+		{
+			BaseRepresentable::removeRepresentation();
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
 
 		void Molecule::_fillBuffer()

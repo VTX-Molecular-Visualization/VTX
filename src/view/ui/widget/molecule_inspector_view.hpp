@@ -5,31 +5,62 @@
 #pragma once
 #endif
 
-#include "base_widget_view.hpp"
 #include "model/molecule.hpp"
-#include "ui/widget/inspector/inspector_molecule_widget.hpp"
-#include "ui/widget_factory.hpp"
+#include "ui/widget/custom_widget/collapsing_header_widget.hpp"
+#include "ui/widget/custom_widget/transform_widget.hpp"
+#include "ui/widget/inspector/inspector_item_widget.hpp"
+#include "ui/widget/inspector/inspector_section.hpp"
+#include "view/base_view.hpp"
+#include "view/ui/widget/representation/instantiated_representation_inspector_view.hpp"
 #include <QWidget>
 
-namespace VTX
+namespace VTX::View::UI::Widget
 {
-	namespace View
+	class MoleculeInspectorView :
+		public BaseView<Model::Molecule>,
+		public VTX::UI::Widget::Inspector::InspectorItemWidget
 	{
-		namespace UI
-		{
-			namespace Widget
-			{
-				class MoleculeInspectorView : public BaseWidgetView<Model::Molecule, VTX::UI::Widget::Inspector::InspectorMoleculeWidget>
-				{
-					VTX_VIEW
+		VTX_WIDGET
+		VTX_VIEW
 
-				  private:
-					MoleculeInspectorView( Model::Molecule * const p_molecule, QWidget * p_parent ) : BaseWidgetView( p_molecule, "MoleculeInspector", p_parent ) {};
-				};
+		using TransformWidget		  = VTX::UI::Widget::CustomWidget::TransformWidget;
+		using CollapsingHeaderWidget  = VTX::UI::Widget::CustomWidget::CollapsingHeaderWidget;
+		using InspectorSection		  = VTX::UI::Widget::Inspector::InspectorSection;
+		using InspectorSectionVLayout = VTX::UI::Widget::Inspector::InspectorSectionVLayout;
+		using SectionFlag			  = VTX::UI::Widget::Inspector::SectionFlag;
 
-			} // namespace Widget
-		}	  // namespace UI
-	}		  // namespace View
-} // namespace VTX
+	  public:
+		~MoleculeInspectorView();
+		void notify( const Event::VTXEvent * const p_event ) override;
+
+		void localize() override;
+
+	  protected:
+		MoleculeInspectorView( Model::Molecule * const p_molecule, QWidget * p_parent = nullptr );
+
+		void		 _setupUi( const QString & p_name ) override;
+		virtual void _setupSlots() override;
+		void		 _refresh( const SectionFlag & p_flag = SectionFlag::ALL ) override;
+
+	  private:
+		CollapsingHeaderWidget *  _mainWidget			 = nullptr;
+		InspectorSection *		  _transformSection		 = nullptr;
+		InspectorSection *		  _representationSection = nullptr;
+		InspectorSectionVLayout * _infoSection			 = nullptr;
+
+		TransformWidget * _transformWidget = nullptr;
+
+		Representation::ItemRepresentationInspector * _representationWidget;
+
+		QLabel * _fullnameLabel	  = nullptr;
+		QLabel * _nbChainsLabel	  = nullptr;
+		QLabel * _nbResiduesLabel = nullptr;
+		QLabel * _nbAtomsLabel	  = nullptr;
+
+		void _onTransformChange( const Math::Transform & );
+		void setModelEnableFromCheckBox( const int );
+	};
+
+} // namespace VTX::View::UI::Widget
 
 #endif

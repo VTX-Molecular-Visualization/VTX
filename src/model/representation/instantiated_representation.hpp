@@ -13,65 +13,67 @@
 #include "representation_data.hpp"
 #include "representation_enum.hpp"
 
-namespace VTX
+namespace VTX::Model
 {
-	namespace Model
+	class Molecule;
+}
+namespace VTX::Generic
+{
+	class BaseRepresentable;
+}
+
+namespace VTX::Model::Representation
+{
+	class InstantiatedRepresentation : public BaseModel, public Generic::BaseObjectOverride
 	{
-		namespace Representation
+	  public:
+		InstantiatedRepresentation( BaseRepresentation * const p_linkedRepresentation );
+		InstantiatedRepresentation( const InstantiatedRepresentation * const p_source );
+
+		~InstantiatedRepresentation() {}
+
+		void setTarget( Generic::BaseRepresentable * p_target ) { _target = p_target; }
+
+		const std::string & getName() const { return _linkedRepresentation->getName(); };
+
+		const Color::Rgb &			getColor() const { return _color.getValue(); }
+		void						setColor( const Color::Rgb & p_color );
+		const Generic::COLOR_MODE & getColorMode() const { return _colorMode.getValue(); }
+		void						setColorMode( const Generic::COLOR_MODE & p_colorMode );
+
+		const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const
 		{
-			class InstantiatedRepresentation : public BaseModel, public Generic::BaseObjectOverride
-			{
-			  public:
-				InstantiatedRepresentation( BaseRepresentation * const p_linkedRepresentation ) :
-					BaseModel( ID::Model::MODEL_INTANTIATED_REPRESENTATION ), _linkedRepresentation( p_linkedRepresentation )
-				{
-					setName( _linkedRepresentation->getName() + " (instantiated)" );
-					_color	   = &_linkedRepresentation->getColor();
-					_colorMode = &_linkedRepresentation->getColorMode();
+			return _linkedRepresentation->getFlagDataTargeted();
+		};
 
-					_priority = getId();
-				};
+		bool			   hasToDrawSphere() const { return _linkedRepresentation->hasToDrawSphere(); };
+		const SphereData & getSphereData() const { return _sphereData.getValue(); };
+		void			   setSphereFixedRadius( const float p_radius );
+		void			   setSphereAddRadius( const float p_radius );
 
-				~InstantiatedRepresentation() {}
+		bool				 hasToDrawCylinder() const { return _linkedRepresentation->hasToDrawCylinder(); };
+		const CylinderData & getCylinderData() const { return _cylinderData.getValue(); };
+		void				 setCylinderRadius( const float p_radius );
 
-				const std::string & getName() const { return _name; };
-				void				setName( const std::string & p_name ) { _name = std::string( p_name ); };
+		bool			   hasToDrawRibbon() const { return _linkedRepresentation->hasToDrawRibbon(); };
+		const RibbonData & getRibbonData() const { return _ribbonData.getValue(); };
 
-				int	 getPriority() const { return _priority; };
-				void setPriority( const int p_priority );
+		const BaseRepresentation * const getLinkedRepresentation() const { return _linkedRepresentation; }
+		BaseRepresentation * const		 getLinkedRepresentation() { return _linkedRepresentation; }
 
-				const Color::Rgb &			getColor() const { return *_color; }
-				void						setColor( const Color::Rgb & p_color );
-				const Generic::COLOR_MODE & getColorMode() const { return *_colorMode; }
-				void						setColorMode( const Generic::COLOR_MODE & p_colorMode );
+	  protected:
+		BaseRepresentation * const	 _linkedRepresentation;
+		Generic::BaseRepresentable * _target = nullptr;
 
-				const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const { return _linkedRepresentation->getFlagDataTargeted(); };
+		Generic::OverridableParameter<Color::Rgb>		   _color;
+		Generic::OverridableParameter<Generic::COLOR_MODE> _colorMode;
 
-				bool			   hasToDrawSphere() const { return _linkedRepresentation->hasToDrawSphere(); };
-				const SphereData & getSphereData() const { return _linkedRepresentation->getSphereData(); };
+		Generic::OverridableParameter<SphereData>	_sphereData;
+		Generic::OverridableParameter<CylinderData> _cylinderData;
+		Generic::OverridableParameter<RibbonData>	_ribbonData;
 
-				bool				 hasToDrawCylinder() const { return _linkedRepresentation->hasToDrawCylinder(); };
-				const CylinderData & getCylinderData() const { return _linkedRepresentation->getCylinderData(); };
+		void _updateTargets( const VTX::Representation::MoleculeComputationFlag & p_flag );
+	};
 
-				bool			   hasToDrawRibbon() const { return _linkedRepresentation->hasToDrawRibbon(); };
-				const RibbonData & getRibbonData() const { return _linkedRepresentation->getRibbonData(); };
-
-			  protected:
-				BaseRepresentation * const _linkedRepresentation;
-				int						   _priority = 0;
-
-				std::string			  _name;
-				Color::Rgb *		  _color;
-				Generic::COLOR_MODE * _colorMode;
-
-				SphereData *   _sphereData	 = nullptr;
-				CylinderData * _cylinderData = nullptr;
-				RibbonData *   _ribbonData	 = nullptr;
-
-				void _updateTargets( const VTX::Representation::MoleculeComputationFlag & p_flag ) const;
-			};
-
-		} // namespace Representation
-	}	  // namespace Model
-} // namespace VTX
+} // namespace VTX::Model::Representation
 #endif

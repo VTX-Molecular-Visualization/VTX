@@ -1,14 +1,16 @@
 #include "inspector_widget.hpp"
-#include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
 #include "model/representation/representation_library.hpp"
 #include "model/selection.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
+#include "view/ui/widget/atom_inspector_view.hpp"
+#include "view/ui/widget/chain_inspector_view.hpp"
 #include "view/ui/widget/molecule_inspector_view.hpp"
-#include "view/ui/widget/representation_inspector_view.hpp"
+#include "view/ui/widget/residue_inspector_view.hpp"
 #include <type_traits>
+#include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
 {
@@ -29,15 +31,41 @@ namespace VTX::UI::Widget::Inspector
 	{
 		clear();
 
-		for ( const auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getItems() )
+		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molData :
+			  VTX::Selection::SelectionManager::get().getSelectionModel().getItems() )
 		{
-			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( it.first );
-			_addMolecule( &molecule );
-		}
+			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molData.first );
+			if ( molData.second.getFullySelectedChildCount() == molecule.getChainCount() )
+			{
+				_addMolecule( &molecule );
+				continue;
+			}
 
-		for ( auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getRepresentations() )
-		{
-			_addRepresentation( it );
+			for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainData : molData.second )
+			{
+				Model::Chain * const chain = molecule.getChain( chainData.first );
+				if ( chainData.second.getFullySelectedChildCount() == chain->getResidueCount() )
+				{
+					_addChain( chain );
+					continue;
+				}
+
+				for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueData : chainData.second )
+				{
+					Model::Residue * const residue = molecule.getResidue( residueData.first );
+					if ( residueData.second.getFullySelectedChildCount() == residue->getAtomCount() )
+					{
+						_addResidue( residue );
+						continue;
+					}
+
+					for ( const uint & atomID : residueData.second )
+					{
+						Model::Atom * const atom = molecule.getAtom( atomID );
+						_addAtom( atom );
+					}
+				}
+			}
 		}
 	}
 
@@ -80,14 +108,22 @@ namespace VTX::UI::Widget::Inspector
 	void InspectorWidget::_addMolecule( Model::Molecule * const p_molecule )
 	{
 		_addInspectorView<Model::Molecule, View::UI::Widget::MoleculeInspectorView>(
-			p_molecule, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
+			p_molecule, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE, "MoleculeInspector" );
 	}
-	void InspectorWidget::_addRepresentation(
-		Model::Representation::InstantiatedRepresentation * const p_representation )
+	void InspectorWidget::_addChain( Model::Chain * const p_molecule )
 	{
-		_addInspectorView<Model::Representation::InstantiatedRepresentation,
-						  View::UI::Widget::RepresentationInspectorView>( p_representation,
-																		  ID::View::UI_INSPECTOR_REPRESENTATION );
+		_addInspectorView<Model::Chain, View::UI::Widget::ChainInspectorView>(
+			p_molecule, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE, "ChainInspector" );
+	}
+	void InspectorWidget::_addResidue( Model::Residue * const p_molecule )
+	{
+		_addInspectorView<Model::Residue, View::UI::Widget::ResidueInspectorView>(
+			p_molecule, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE, "ResidueInspector" );
+	}
+	void InspectorWidget::_addAtom( Model::Atom * const p_atom )
+	{
+		_addInspectorView<Model::Atom, View::UI::Widget::AtomInspectorView>(
+			p_atom, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE, "AtomInspector" );
 	}
 
 	void InspectorWidget::_setupSlots() {}

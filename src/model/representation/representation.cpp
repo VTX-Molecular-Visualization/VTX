@@ -99,7 +99,7 @@ namespace VTX::Model::Representation
 	Representation_BallAndStickAndCartoon::Representation_BallAndStickAndCartoon() :
 		BaseRepresentation( ID::Model::MODEL_REPRESENTATION_BALLSTICKANDCARTOON )
 	{
-		_representationType = Generic::REPRESENTATION::CARTOON;
+		_representationType = Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON;
 		_dataTargeted		= VTX::Representation::FlagDataTargeted::ATOM | VTX::Representation::FlagDataTargeted::BOND
 						| VTX::Representation::FlagDataTargeted::RIBBON;
 
@@ -117,7 +117,7 @@ namespace VTX::Model::Representation
 	Representation_StickAndCartoon::Representation_StickAndCartoon() :
 		BaseRepresentation( ID::Model::MODEL_REPRESENTATION_STICKANDCARTOON )
 	{
-		_representationType = Generic::REPRESENTATION::CARTOON;
+		_representationType = Generic::REPRESENTATION::STICK_AND_CARTOON;
 		_dataTargeted		= VTX::Representation::FlagDataTargeted::ATOM | VTX::Representation::FlagDataTargeted::BOND
 						| VTX::Representation::FlagDataTargeted::RIBBON;
 

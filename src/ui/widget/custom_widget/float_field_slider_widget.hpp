@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_WIDGET_CUSTOM_FLOAT_FIELD__
-#define __VTX_UI_WIDGET_CUSTOM_FLOAT_FIELD__
+#ifndef __VTX_UI_WIDGET_CUSTOM_FLOAT_FIELD_SLIDER__
+#define __VTX_UI_WIDGET_CUSTOM_FLOAT_FIELD_SLIDER__
 
 #ifdef _MSC_VER
 #pragma once
@@ -13,19 +13,21 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class FloatFieldWidget : public BaseManualWidget<QWidget>
+	class FloatFieldSliderWidget : public BaseManualWidget<QWidget>
 	{
 		VTX_WIDGET
 		Q_OBJECT
 
 	  public:
-		~FloatFieldWidget() = default;
+		~FloatFieldSliderWidget() = default;
 
 		const float getValue() const { return _value; };
 		void		setValue( const float p_value );
 
 		void localize() override;
 		void setNbDecimals( const int p_nbDecimals );
+		void setMin( const float p_min );
+		void setMax( const float p_max );
 		void setMinMax( const float p_min, const float p_max );
 		void setEnabled( const bool p_enable );
 
@@ -33,7 +35,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void onValueChange( const float p_value );
 
 	  protected:
-		FloatFieldWidget( QWidget * p_parent );
+		FloatFieldSliderWidget( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();

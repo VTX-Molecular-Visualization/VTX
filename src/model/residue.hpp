@@ -126,6 +126,9 @@ namespace VTX
 			const Math::AABB getAABB() const;
 			const Math::AABB getWorldAABB() const;
 
+			void setRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation );
+			void removeRepresentation();
+
 		  private:
 			TYPE	_type				  = TYPE::STANDARD;
 			uint	_index				  = 0;

@@ -66,6 +66,14 @@ namespace VTX
 
 		const Color::Rgb Chain::CHAIN_ID_UNKNOWN_COLOR = Color::Rgb::WHITE;
 
+		void Chain::setMoleculePtr( Molecule * const p_molecule )
+		{
+			_moleculePtr = p_molecule;
+
+			setParent( p_molecule );
+			setRepresentableMolecule( p_molecule );
+		}
+
 		Color::Rgb Chain::getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
 		{
 			if ( p_chainId.empty() )
@@ -113,6 +121,17 @@ namespace VTX
 			Math::AABB aabb = getAABB();
 			aabb.translate( getMoleculePtr()->getTransform().getTranslationVector() );
 			return aabb;
+		}
+
+		void Chain::setRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation )
+		{
+			BaseRepresentable::setRepresentation( p_representation );
+			_notifyDataChanged();
+		}
+		void Chain::removeRepresentation()
+		{
+			BaseRepresentable::removeRepresentation();
+			_notifyDataChanged();
 		}
 
 	} // namespace Model

@@ -8,6 +8,8 @@
 #include "event/event_manager.hpp"
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
+#include "model/representation/instantiated_representation.hpp"
+#include "model/representation/representation_library.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
@@ -87,6 +89,33 @@ namespace VTX::Action::Molecule
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
+	};
+
+	class ChangeRepresentationPreset : public BaseAction
+	{
+	  public:
+		explicit ChangeRepresentationPreset( Model::Molecule & p_molecule, const int p_indexPreset ) :
+			_molecule( p_molecule ), _indexPreset( p_indexPreset )
+		{
+		}
+
+		virtual void execute() override
+		{
+			Model::Representation::BaseRepresentation * const preset
+				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
+
+			Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
+				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>( preset );
+			instantiatedRepresentation->setTarget( &_molecule );
+
+			_molecule.setRepresentation( instantiatedRepresentation );
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Model::Molecule & _molecule;
+		const int		  _indexPreset;
 	};
 
 	class ChangeFPS : public BaseAction
