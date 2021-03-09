@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Tinker-HP Keyword Editor</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -1226,8 +1226,127 @@
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButtonOpenKeyfile</sender>
+   <signal>clicked()</signal>
+   <receiver>KeywordEditorGUI</receiver>
+   <slot>onOpenKeyfilePushButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>337</x>
+     <y>49</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>393</x>
+     <y>65</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButtonGenerate</sender>
+   <signal>clicked()</signal>
+   <receiver>KeywordEditorGUI</receiver>
+   <slot>onGenerateKeyfilePushButtonClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>150</x>
+     <y>1040</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>955</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBoxIntegrator</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>KeywordEditorGUI</receiver>
+   <slot>comboBoxIntegratorIndexChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>229</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>407</x>
+     <y>119</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBoxShortRangePolarizationSolver</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>KeywordEditorGUI</receiver>
+   <slot>comboBoxShortRangePolSolndexChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>272</x>
+     <y>295</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>394</x>
+     <y>300</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBoxPolarizationEquations</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>KeywordEditorGUI</receiver>
+   <slot>comboBoxPolEquaIndexChanged(QString)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>283</x>
+     <y>268</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>403</x>
+     <y>239</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBoxTcgPeek</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>KeywordEditorGUI</receiver>
+   <slot>comboBoxPeekStepIndexChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>277</x>
+     <y>510</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>397</x>
+     <y>485</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBoxTcgMegaFit</sender>
+   <signal>currentIndexChanged(QString)</signal>
+   <receiver>KeywordEditorGUI</receiver>
+   <slot>comboBoxFittingIndexChanged()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>312</x>
+     <y>568</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>571</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <slots>
   <slot>comboBoxIntegratorIndexChanged(QString)</slot>
+  <slot>onOpenKeyfilePushButtonClicked()</slot>
+  <slot>onGenerateKeyfilePushButtonClicked()</slot>
+  <slot>comboBoxShortRangePolSolndexChanged(QString)</slot>
+  <slot>comboBoxPolEquaIndexChanged(QString)</slot>
+  <slot>comboBoxPeekStepIndexChanged()</slot>
+  <slot>comboBoxFittingIndexChanged()</slot>
  </slots>
 </ui>

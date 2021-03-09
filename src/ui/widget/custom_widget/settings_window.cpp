@@ -1,6 +1,10 @@
 #include "settings_window.hpp"
+#include < QPainter>
 
-SettingsWindowWidget::SettingsWindowWidget( QWidget * p_parent ) : QDialog( p_parent ) { ui.setupUi( this ); }
+SettingsWindowWidget::SettingsWindowWidget( QWidget * p_parent ) : QDialog( p_parent, Qt::WindowCloseButtonHint )
+{
+	ui.setupUi( this );
+}
 
 void SettingsWindowWidget::populateSettingsList( QStringList * settingsNameList )
 {

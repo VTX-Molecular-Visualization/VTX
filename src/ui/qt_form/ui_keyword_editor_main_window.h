@@ -696,6 +696,13 @@ public:
 
 
         retranslateUi(KeywordEditorGUI);
+        QObject::connect(pushButtonOpenKeyfile, SIGNAL(clicked()), KeywordEditorGUI, SLOT(onOpenKeyfilePushButtonClicked()));
+        QObject::connect(pushButtonGenerate, SIGNAL(clicked()), KeywordEditorGUI, SLOT(onGenerateKeyfilePushButtonClicked()));
+        QObject::connect(comboBoxIntegrator, SIGNAL(currentIndexChanged(QString)), KeywordEditorGUI, SLOT(comboBoxIntegratorIndexChanged(QString)));
+        QObject::connect(comboBoxShortRangePolarizationSolver, SIGNAL(currentIndexChanged(QString)), KeywordEditorGUI, SLOT(comboBoxShortRangePolSolndexChanged(QString)));
+        QObject::connect(comboBoxPolarizationEquations, SIGNAL(currentIndexChanged(QString)), KeywordEditorGUI, SLOT(comboBoxPolEquaIndexChanged(QString)));
+        QObject::connect(comboBoxTcgPeek, SIGNAL(currentIndexChanged(QString)), KeywordEditorGUI, SLOT(comboBoxPeekStepIndexChanged()));
+        QObject::connect(comboBoxTcgMegaFit, SIGNAL(currentIndexChanged(QString)), KeywordEditorGUI, SLOT(comboBoxFittingIndexChanged()));
 
         tabWidgetKeywordEditor->setCurrentIndex(0);
         comboBoxThermostat->setCurrentIndex(0);
@@ -712,7 +719,7 @@ public:
 
     void retranslateUi(QWidget *KeywordEditorGUI)
     {
-        KeywordEditorGUI->setWindowTitle(QCoreApplication::translate("KeywordEditorGUI", "Form", nullptr));
+        KeywordEditorGUI->setWindowTitle(QCoreApplication::translate("KeywordEditorGUI", "Tinker-HP Keyword Editor", nullptr));
         pushButtonOpenKeyfile->setText(QCoreApplication::translate("KeywordEditorGUI", "Open", nullptr));
 #if QT_CONFIG(tooltip)
         labelIntegrator->setToolTip(QCoreApplication::translate("KeywordEditorGUI", "<html><head/><body><p><span style=\" font-size:9pt;\">Integrators: </span></p><p><span style=\" font-size:9pt; font-weight:600;\">BEEMAN</span><span style=\" font-size:9pt;\">: The default one</span></p><p><span style=\" font-size:9pt; font-weight:600;\">VERLET</span><span style=\" font-size:9pt;\">: Verlet</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BBK</span><span style=\" font-size:9pt;\">: Langevin Dynamics for constant temperature simulations</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOAB</span><span style=\" font-size:9pt;\">: Langevin Dynamics for constant temperature simulations</span></p><p><span style=\" font-size:9pt; font-weight:600;\">RESPA</span><span style=\" font-size:9pt;\">: Bonded/non bonded respa-split with a velocity-verlet inner loop and with a 0.25 fs default timestep for the inner loop</span></p><p><span style=\" font-size:9pt; font-weight:600;\">BAOABRESPA</span><span style=\" font-size:9pt;\">: Bonded/non bonded respa-split for Langevin dynamics "

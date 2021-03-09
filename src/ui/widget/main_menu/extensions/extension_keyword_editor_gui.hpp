@@ -35,7 +35,9 @@ namespace VTX
 						QString				moduleCitations() override;
 						void				saveSettings( QSettings * savedSettings ) override;
 						void				loadSettings( QSettings * settings ) override;
-						void				populateInterfaceWithValues();
+
+					  private:
+						void populateInterfaceWithValues();
 
 					  private slots:
 

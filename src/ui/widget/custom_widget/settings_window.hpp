@@ -12,7 +12,6 @@ class SettingsWindowWidget : public QDialog
   public:
 	SettingsWindowWidget( QWidget * p_parent );
 	~SettingsWindowWidget() {};
-
 	void			   populateSettingsList( QStringList * settingsNameList );
 	Ui::DialogSettings ui;
 

@@ -156,6 +156,7 @@ namespace VTX
 				QWidget *	  title_bar	   = this->titleBarWidget();
 				QHBoxLayout * titleLayout  = static_cast<QHBoxLayout *>( title_bar->layout() );
 				QPushButton * undockButton = new QPushButton( title_bar );
+				undockButton->setObjectName( "dockButton" );
 				undockButton->setToolTip( "Dock window" );
 				undockButton->setStyleSheet(
 					"QPushButton {"
@@ -201,7 +202,27 @@ namespace VTX
 				titleLayout->addWidget( exitButton );
 			}
 
-			void CustomQDockWidget::onUndockButtonClicked() { this->setFloating( true ); }
+			void CustomQDockWidget::onUndockButtonClicked()
+			{
+				QWidget *	  title_bar	 = this->titleBarWidget();
+				QPushButton * dockButton = title_bar->findChild<QPushButton *>( "dockButton" );
+				if ( !this->isFloating() )
+				{
+					this->setFloating( true );
+					if ( dockButton != nullptr )
+					{
+						dockButton->setToolTip( "Dock window" );
+					}
+				}
+				else
+				{
+					this->setFloating( false );
+					if ( dockButton != nullptr )
+					{
+						dockButton->setToolTip( "Undock window" );
+					}
+				}
+			}
 
 			void CustomQDockWidget::onExitButtonClicked() { this->hide(); }
 
@@ -210,7 +231,7 @@ namespace VTX
 				if ( citationsWindow == nullptr )
 				{
 					citationsWindow = new CitationsWindowWidget( this );
-					citationsWindow->ui.textBrowserCitations->setText( moduleCitations() );
+					citationsWindow->ui.textBrowserCitations->setMarkdown( moduleCitations() );
 					citationsWindow->show();
 				}
 				else

@@ -13,6 +13,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QLabel>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QTextBrowser>
 #include <QtWidgets/QVBoxLayout>
 
@@ -25,12 +26,13 @@ public:
     QVBoxLayout *verticalLayout;
     QLabel *labelCitations;
     QTextBrowser *textBrowserCitations;
+    QPushButton *pushButtonCopyCitations;
 
     void setupUi(QDialog *DialogCitations)
     {
         if (DialogCitations->objectName().isEmpty())
             DialogCitations->setObjectName(QString::fromUtf8("DialogCitations"));
-        DialogCitations->resize(400, 300);
+        DialogCitations->resize(405, 300);
         verticalLayout_2 = new QVBoxLayout(DialogCitations);
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
         verticalLayout = new QVBoxLayout();
@@ -42,14 +44,24 @@ public:
 
         textBrowserCitations = new QTextBrowser(DialogCitations);
         textBrowserCitations->setObjectName(QString::fromUtf8("textBrowserCitations"));
+        textBrowserCitations->setStyleSheet(QString::fromUtf8("background-color: rgb(255, 255, 255);\n"
+"color: rgb(0, 0, 0);\n"
+""));
+        textBrowserCitations->setOpenExternalLinks(true);
 
         verticalLayout->addWidget(textBrowserCitations);
+
+        pushButtonCopyCitations = new QPushButton(DialogCitations);
+        pushButtonCopyCitations->setObjectName(QString::fromUtf8("pushButtonCopyCitations"));
+
+        verticalLayout->addWidget(pushButtonCopyCitations);
 
 
         verticalLayout_2->addLayout(verticalLayout);
 
 
         retranslateUi(DialogCitations);
+        QObject::connect(pushButtonCopyCitations, SIGNAL(clicked()), DialogCitations, SLOT(onCopyCitationsToClipboardPressed()));
 
         QMetaObject::connectSlotsByName(DialogCitations);
     } // setupUi
@@ -58,6 +70,10 @@ public:
     {
         DialogCitations->setWindowTitle(QCoreApplication::translate("DialogCitations", "Citations", nullptr));
         labelCitations->setText(QCoreApplication::translate("DialogCitations", "If you use this tool in your project please cite the following papers:", nullptr));
+#if QT_CONFIG(tooltip)
+        pushButtonCopyCitations->setToolTip(QCoreApplication::translate("DialogCitations", "Copy citations to clipbord", nullptr));
+#endif // QT_CONFIG(tooltip)
+        pushButtonCopyCitations->setText(QCoreApplication::translate("DialogCitations", "Copy", nullptr));
     } // retranslateUi
 
 };

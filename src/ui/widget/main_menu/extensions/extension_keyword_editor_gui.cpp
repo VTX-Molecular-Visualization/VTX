@@ -56,7 +56,16 @@ namespace VTX
 						return ui.tabWidgetKeywordEditor;
 					}
 
-					QString ExtensionKeywordEditorGUI::moduleCitations() { return QString( "" ); }
+					QString ExtensionKeywordEditorGUI::moduleCitations()
+					{
+						return QString(
+							"Tinker-HP: a Massively Parallel Molecular Dynamics Package for Multiscale Simulations of "
+							"Large Complex Systems with Advanced Polarizable Force Fields. L. Lagardère, L.-H. Jolly, "
+							"F. Lipparini, F. Aviat, B. Stamm, Z. F. Jing, M. Harger, H. Torabifard, G. A. Cisneros, "
+							"M. J. Schnieders, N. Gresh, Y. Maday, P. Ren, J. W. Ponder, J.-P. Piquemal, Chem. Sci., "
+							"2018, 9, 956-972 (Open Access) "
+							"[https://doi.org/10.1039/C7SC04531J](https://doi.org/10.1039/C7SC04531J) " );
+					}
 
 					void ExtensionKeywordEditorGUI::saveSettings( QSettings * settings )
 					{

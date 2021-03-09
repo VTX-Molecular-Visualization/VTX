@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>405</width>
     <height>300</height>
    </rect>
   </property>
@@ -24,7 +24,16 @@
       </widget>
      </item>
      <item>
-      <widget class="QTextBrowser" name="textBrowserCitations"/>
+      <widget class="QTextBrowser" name="textBrowserCitations">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 255, 255);
+color: rgb(0, 0, 0);
+</string>
+       </property>
+       <property name="openExternalLinks">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonCopyCitations">
