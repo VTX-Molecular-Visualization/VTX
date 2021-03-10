@@ -2,12 +2,13 @@
 
 namespace VTX::UI::Widget::Representation
 {
-	void CartoonRepresentationWidget::localize() {};
 	void CartoonRepresentationWidget::_setupUi( const QString & p_name )
 	{
 		BaseRepresentationWidget::_setupUi( p_name );
+		_addSSColorModeInLayout( "Cartoon color mode" );
 	};
-	void CartoonRepresentationWidget::_setupSlots() {};
 
-	void CartoonRepresentationWidget::refresh() {}
+	void CartoonRepresentationWidget::_refresh() { _refreshSSColorModeWidget(); }
+
+	void CartoonRepresentationWidget::localize() {};
 } // namespace VTX::UI::Widget::Representation

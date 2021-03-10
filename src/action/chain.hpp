@@ -7,6 +7,7 @@
 
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
+#include "generic/base_colorable.hpp"
 #include "model/chain.hpp"
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
@@ -36,12 +37,7 @@ namespace VTX::Action::Chain
 		{
 			_chain.setColor( _color );
 			_chain.getMoleculePtr()->refreshColors();
-
-			if ( _chain.getMoleculePtr()->getSecondaryStructure().getColorMode()
-				 == Model::SecondaryStructure::COLOR_MODE::CHAIN )
-			{
-				_chain.getMoleculePtr()->getSecondaryStructure().refreshColors();
-			}
+			_chain.getMoleculePtr()->getSecondaryStructure().refreshColors();
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}

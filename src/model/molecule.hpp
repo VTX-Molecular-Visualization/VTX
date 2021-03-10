@@ -7,6 +7,7 @@
 
 #include "base_model_3d.hpp"
 #include "buffer/molecule.hpp"
+#include "color/rgb.hpp"
 #include "define.hpp"
 #include "generic/base_representable.hpp"
 #include "io/reader/prm.hpp"
@@ -181,12 +182,6 @@ namespace VTX
 			void setRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation );
 			void removeRepresentation();
 
-			inline const Generic::COLOR_MODE getColorMode() const { return _colorMode; }
-			inline void						 setColorMode( const Generic::COLOR_MODE p_colorMode )
-			{
-				_colorMode = p_colorMode;
-				refreshColors();
-			}
 			inline void refreshColors() { _fillBufferAtomColors(); }
 			void		refreshSelection( const Selection::MapChainIds * const );
 			void		refreshBondsBuffer();

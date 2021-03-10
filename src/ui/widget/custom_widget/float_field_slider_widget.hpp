@@ -43,6 +43,8 @@ namespace VTX::UI::Widget::CustomWidget
 		void _onTextFieldEdited();
 		void _onInternalValueChanged( const int p_newValue );
 
+		void _emitOnValueChangeSignal();
+
 	  private:
 		QSlider *	_slider	   = nullptr;
 		QLineEdit * _textField = nullptr;

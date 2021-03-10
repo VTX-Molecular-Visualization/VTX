@@ -4,8 +4,7 @@ namespace VTX::UI::Widget::Representation
 {
 	void SasRepresentationWidget::localize() {};
 	void SasRepresentationWidget::_setupUi( const QString & p_name ) { BaseRepresentationWidget::_setupUi( p_name ); };
-	void SasRepresentationWidget::_setupSlots() {};
 
-	void SasRepresentationWidget::refresh() {}
+	void SasRepresentationWidget::_refresh() {}
 
 } // namespace VTX::UI::Widget::Representation

@@ -13,16 +13,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		const Color::Rgb SecondaryStructure::COLORS_JMOL[ uint( VALUE::COUNT ) ]
-			= { Color::Rgb( 1.f, 0.f, 0.5f ),	// HELIX_ALPHA_RIGHT
-				Color::Rgb( 1.f, 0.f, 0.5f ),	// HELIX_ALPHA_LEFT
-				Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
-				Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_LEFT
-				Color::Rgb( 0.37f, 0.f, 0.5f ), // HELIX_PI
-				Color::Rgb( 1.f, 0.78f, 0.f ),	// STRAND
-				Color::Rgb( 0.37f, 0.5f, 1.f ), // TURN
-				Color::Rgb::WHITE };			// COIL
-
 		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) :
 			BaseModel3D( ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
 		{
@@ -117,20 +107,6 @@ namespace VTX
 
 					// Add secondary structure type.
 					_bufferSecondaryStructures.emplace_back( ushort( residue->getSecondaryStructure() ) );
-
-					// Add color.
-					switch ( _colorMode )
-					{
-					case COLOR_MODE::JMOL:
-						_bufferColors.emplace_back( COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
-						break;
-					case COLOR_MODE::PROTEIN:
-						_bufferColors.emplace_back( residue->getMoleculePtr()->getColor() );
-						break;
-					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue->getChainPtr()->getColor() ); break;
-					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue->getColor() ); break;
-					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
-					}
 				}
 
 				// Add indices and save mapping.
@@ -168,7 +144,7 @@ namespace VTX
 			_bufferDirections.shrink_to_fit();
 			_bufferNormals.shrink_to_fit();
 			_bufferSecondaryStructures.shrink_to_fit();
-			_bufferColors.shrink_to_fit();
+			_bufferColors.resize( _bufferSecondaryStructures.size() );
 			_buffferIndices.shrink_to_fit();
 
 			chrono.stop();
@@ -278,25 +254,36 @@ namespace VTX
 				uint idxFirstResidue = chain->getIndexFirstResidue();
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
-					const Residue * const	  residue = _molecule->getResidue( idxFirstResidue + residueIdx );
-					const Model::Atom * const CA	  = residue->findFirstAtomByName( "CA" );
-					const Model::Atom * const O		  = residue->findFirstAtomByName( "O" );
+					const Residue * const residue = _molecule->getResidue( idxFirstResidue + residueIdx );
+
+					if ( residue == nullptr )
+						continue;
+
+					const Model::Atom * const CA = residue->findFirstAtomByName( "CA" );
+					const Model::Atom * const O	 = residue->findFirstAtomByName( "O" );
 
 					if ( CA == nullptr || O == nullptr )
 					{
 						continue;
 					}
 
-					switch ( _colorMode )
+					switch ( residue->getRepresentation()->getSecondaryStructureColorMode() )
 					{
-					case COLOR_MODE::JMOL:
-						_bufferColors.emplace_back( COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
+						_bufferColors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
 						break;
-					case COLOR_MODE::PROTEIN:
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
 						_bufferColors.emplace_back( residue->getMoleculePtr()->getColor() );
 						break;
-					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue->getChainPtr()->getColor() ); break;
-					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue->getColor() ); break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
+						_bufferColors.emplace_back( residue->getRepresentation()->getColor() );
+						break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
+						_bufferColors.emplace_back( residue->getChainPtr()->getColor() );
+						break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
+						_bufferColors.emplace_back( residue->getColor() );
+						break;
 
 					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
 					}

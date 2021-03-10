@@ -2,9 +2,9 @@
 #include "action/action_manager.hpp"
 #include "action/chain.hpp"
 #include "action/molecule.hpp"
-#include "action/representable.hpp"
 #include "action/residue.hpp"
 #include "model/chain.hpp"
+#include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
 #include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
@@ -22,15 +22,12 @@ namespace VTX::UI::Widget::Representation
 	RepresentationInspectorSection::RepresentationInspectorSection( QWidget * const p_parent ) :
 		BaseManualWidget( p_parent )
 	{
-		_representationSettingsWidget = std::vector<BaseRepresentationWidget *>();
-		_representationSettingsWidget.resize( int( Generic::REPRESENTATION::COUNT ) );
 	}
+
 	RepresentationInspectorSection ::~RepresentationInspectorSection() {}
 
 	void RepresentationInspectorSection::_setupUi( const QString & p_name )
 	{
-		const int INDENT_SIZE = 20;
-
 		BaseManualWidget::_setupUi( p_name );
 
 		_titleWidget = new QPushButton( this );
@@ -42,56 +39,8 @@ namespace VTX::UI::Widget::Representation
 		_representationPreset = new QComboBox( _representationWidget );
 		_populateRepresentationModeComboBox();
 
-		QHBoxLayout * const representationSettingsHLayout = new QHBoxLayout();
-		QVBoxLayout * const representationSettingsVLayout = new QVBoxLayout();
-
-		_representationSettingsWidget[ int( Generic::REPRESENTATION::BALL_AND_STICK ) ]
-			= VTX::UI::WidgetFactory::get().instantiateWidget<BallAndStickRepresentationWidget>(
-				_representationWidget, "ball_and_stick_representation_widget" );
-		_representationSettingsWidget[ int( Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON ) ]
-			= VTX::UI::WidgetFactory::get().instantiateWidget<BallStickAndCartoonRepresentationWidget>(
-				_representationWidget, "ball_stick_and_cartoon_representation_widget" );
-		_representationSettingsWidget[ int( Generic::REPRESENTATION::CARTOON ) ]
-			= VTX::UI::WidgetFactory::get().instantiateWidget<CartoonRepresentationWidget>(
-				_representationWidget, "cartoon_representation_widget" );
-		_representationSettingsWidget[ int( Generic::REPRESENTATION::SAS ) ]
-			= VTX::UI::WidgetFactory::get().instantiateWidget<SasRepresentationWidget>( _representationWidget,
-																						"sas_representation_widget" );
-		_representationSettingsWidget[ int( Generic::REPRESENTATION::STICK ) ]
-			= VTX::UI::WidgetFactory::get().instantiateWidget<StickRepresentationWidget>(
-				_representationWidget, "stick_representation_widget" );
-		_representationSettingsWidget[ int( Generic::REPRESENTATION::STICK_AND_CARTOON ) ]
-			= VTX::UI::WidgetFactory::get().instantiateWidget<StickAndCartoonRepresentationWidget>(
-				_representationWidget, "stick_and_cartoon_representation_widget" );
-		_representationSettingsWidget[ int( Generic::REPRESENTATION::TRACE ) ]
-			= VTX::UI::WidgetFactory::get().instantiateWidget<TraceRepresentationWidget>(
-				_representationWidget, "trace_representation_widget" );
-		_representationSettingsWidget[ int( Generic::REPRESENTATION::VAN_DER_WAALS ) ]
-			= VTX::UI::WidgetFactory::get().instantiateWidget<VdwRepresentationWidget>( _representationWidget,
-																						"vdw_representation_widget" );
-
-		for ( int i = 0; i < _representationSettingsWidget.size(); i++ )
-		{
-			representationSettingsVLayout->addWidget( _representationSettingsWidget[ i ] );
-			_representationSettingsWidget[ i ]->setVisible( false );
-		}
-
-		representationSettingsHLayout->addSpacing( INDENT_SIZE );
-		representationSettingsHLayout->addItem( representationSettingsVLayout );
-
-		QHBoxLayout * const colorModeHorizontalLayout = new QHBoxLayout();
-		_colorModeLabel								  = new QLabel( _representationWidget );
-		_colorModeLabel->setText( "Color Mode" );
-		_colorModeWidget = VTX::UI::WidgetFactory::get().instantiateWidget<ColorModeFieldWidget>( _representationWidget,
-																								  "colorModeWidget" );
-
-		colorModeHorizontalLayout->addWidget( _colorModeLabel );
-		colorModeHorizontalLayout->addWidget( _colorModeWidget );
-
-		QVBoxLayout * const settingLayout = new QVBoxLayout( _representationWidget );
-		settingLayout->addWidget( _representationPreset );
-		settingLayout->addItem( representationSettingsHLayout );
-		settingLayout->addItem( colorModeHorizontalLayout );
+		_settingLayout = new QVBoxLayout( _representationWidget );
+		_settingLayout->addWidget( _representationPreset );
 
 		_representationWidget->setVisible( false );
 
@@ -111,24 +60,6 @@ namespace VTX::UI::Widget::Representation
 				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
 				 this,
 				 &RepresentationInspectorSection::_representationPresetChange );
-
-		for ( int i = 0; i < _representationSettingsWidget.size(); i++ )
-		{
-			connect( _representationSettingsWidget[ i ],
-					 &VTX::UI::Widget::Representation::BaseRepresentationWidget::onDataChange,
-					 this,
-					 &RepresentationInspectorSection::_representationDataChange );
-		}
-
-		connect( _colorModeWidget,
-				 &ColorModeFieldWidget::colorModeChanged,
-				 this,
-				 &RepresentationInspectorSection::_colorModeChanged );
-
-		connect( _colorModeWidget,
-				 &ColorModeFieldWidget::colorChanged,
-				 this,
-				 &RepresentationInspectorSection::_colorChanged );
 	}
 
 	void RepresentationInspectorSection::_setTarget( Model::BaseModel * const			p_model,
@@ -168,16 +99,67 @@ namespace VTX::UI::Widget::Representation
 		const int representationTypeIndex = int( linkedRep->getRepresentationType() );
 
 		_representationPreset->setCurrentIndex( representationPresetIndex );
-		_representationSettingsWidget[ representationTypeIndex ]->setRepresentation( _representation );
 
-		for ( int i = 0; i < _representationSettingsWidget.size(); i++ )
+		if ( _representationSettingWidget != nullptr )
 		{
-			const bool visible = i == representationTypeIndex;
-			_representationSettingsWidget[ i ]->setVisible( visible );
+			_settingLayout->takeAt( _settingLayout->count() - 1 );
+			delete _representationSettingWidget;
 		}
 
-		_colorModeWidget->setColorMode( _representation->getColorMode() );
-		_colorModeWidget->setColor( _representation->getColor() );
+		_representationSettingWidget
+			= _instantiateRepresentationSettingWidget( Generic::REPRESENTATION( representationTypeIndex ) );
+
+		_representationSettingWidget->setRepresentation( _representation );
+
+		_settingLayout->addWidget( _representationSettingWidget );
+
+		connect( _representationSettingWidget,
+				 &VTX::UI::Widget::Representation::BaseRepresentationWidget::onDataChange,
+				 this,
+				 &RepresentationInspectorSection::_representationDataChange );
+	}
+
+	BaseRepresentationWidget * RepresentationInspectorSection::_instantiateRepresentationSettingWidget(
+		const Generic::REPRESENTATION & p_representation )
+	{
+		BaseRepresentationWidget * res = nullptr;
+		switch ( p_representation )
+		{
+		case Generic::REPRESENTATION::BALL_AND_STICK:
+			res = VTX::UI::WidgetFactory::get().instantiateWidget<BallAndStickRepresentationWidget>(
+				_representationWidget, "ball_and_stick_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON:
+			res = VTX::UI::WidgetFactory::get().instantiateWidget<BallStickAndCartoonRepresentationWidget>(
+				_representationWidget, "ball_stick_and_cartoon_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::CARTOON:
+			res = VTX::UI::WidgetFactory::get().instantiateWidget<CartoonRepresentationWidget>(
+				_representationWidget, "cartoon_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::SAS:
+			res = VTX::UI::WidgetFactory::get().instantiateWidget<SasRepresentationWidget>(
+				_representationWidget, "sas_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::STICK:
+			res = VTX::UI::WidgetFactory::get().instantiateWidget<StickRepresentationWidget>(
+				_representationWidget, "stick_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::STICK_AND_CARTOON:
+			res = VTX::UI::WidgetFactory::get().instantiateWidget<StickAndCartoonRepresentationWidget>(
+				_representationWidget, "stick_and_cartoon_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::TRACE:
+			res = VTX::UI::WidgetFactory::get().instantiateWidget<TraceRepresentationWidget>(
+				_representationWidget, "trace_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::VAN_DER_WAALS:
+			res = VTX::UI::WidgetFactory::get().instantiateWidget<VdwRepresentationWidget>(
+				_representationWidget, "vdw_representation_widget" );
+			break;
+		}
+
+		return res;
 	}
 
 	void RepresentationInspectorSection::localize() {}
@@ -197,6 +179,8 @@ namespace VTX::UI::Widget::Representation
 	{
 		if ( signalsBlocked() )
 			return;
+
+		_representationSettingWidget->setRepresentation( nullptr );
 
 		const ID::VTX_ID & typeId = _targetModel->getTypeId();
 		if ( typeId == ID::Model::MODEL_MOLECULE )
@@ -220,51 +204,10 @@ namespace VTX::UI::Widget::Representation
 		if ( signalsBlocked() )
 			return;
 
-		_instantiateRepresentationIfNeeded();
+		_setRepresentationIfNeeded();
 	}
 
-	void RepresentationInspectorSection::_colorModeChanged( const Generic::COLOR_MODE & p_colorMode )
-	{
-		if ( signalsBlocked() )
-			return;
-
-		_instantiateRepresentationIfNeeded();
-		VTX_ACTION( new Action::ChangeRepresentationColorMode( _representation, p_colorMode ) );
-	}
-	void RepresentationInspectorSection::_colorChanged( const Color::Rgb & p_color )
-	{
-		if ( signalsBlocked() )
-			return;
-
-		_instantiateRepresentationIfNeeded();
-		VTX_ACTION( new Action::ChangeRepresentationColor( _representation, p_color ) );
-	}
-	void RepresentationInspectorSection::_spheresRadiusChanged( const float p_radius )
-	{
-		if ( signalsBlocked() )
-			return;
-
-		_instantiateRepresentationIfNeeded();
-		VTX_ACTION( new Action::ChangeRepresentationSphereRadius( _representation, p_radius ) );
-	}
-	void RepresentationInspectorSection::_spheresRadiusAddChanged( const float p_radius )
-	{
-		if ( signalsBlocked() )
-			return;
-
-		_instantiateRepresentationIfNeeded();
-		VTX_ACTION( new Action::ChangeRepresentationSphereRadiusAdd( _representation, p_radius ) );
-	}
-	void RepresentationInspectorSection::_sticksRadiusChanged( const float p_radius )
-	{
-		if ( signalsBlocked() )
-			return;
-
-		_instantiateRepresentationIfNeeded();
-		VTX_ACTION( new Action::ChangeRepresentationCylinderRadius( _representation, p_radius ) );
-	}
-
-	void RepresentationInspectorSection::_instantiateRepresentationIfNeeded()
+	void RepresentationInspectorSection::_setRepresentationIfNeeded()
 	{
 		if ( !_representationHasBeenModified )
 		{

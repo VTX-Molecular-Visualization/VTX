@@ -88,7 +88,8 @@ namespace VTX
 
 				setRepresentableMolecule( this );
 				setDefaultRepresentation();
-				computeRepresentationTargets();
+
+				_secondaryStructure->refreshColors();
 			}
 		}
 
@@ -197,50 +198,7 @@ namespace VTX
 		void Molecule::_fillBufferAtomColors()
 		{
 			_bufferAtomColors.resize( _atoms.size() );
-
-			Generic::COLOR_MODE colorMode = _colorMode;
-			if ( colorMode == Generic::COLOR_MODE::INHERITED )
-			{
-				colorMode = Model::Representation::RepresentationLibrary::get()
-								.getRepresentation( VTX_SETTING().REPRESENTATION_DEFAULT_INDEX )
-								->getColorMode();
-			}
-
-			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
-			{
-				switch ( colorMode )
-				{
-				case Generic::COLOR_MODE::ATOM_CHAIN:
-					if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
-					{
-						_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
-					}
-					else
-					{
-						_bufferAtomColors[ i ] = _atoms[ i ]->getColor();
-					}
-					break;
-				case Generic::COLOR_MODE::ATOM_PROTEIN:
-					if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
-					{
-						_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
-					}
-					else
-					{
-						_bufferAtomColors[ i ] = _color;
-					}
-					break;
-				case Generic::COLOR_MODE::RESIDUE:
-					_bufferAtomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor();
-					break;
-				case Generic::COLOR_MODE::CHAIN: _bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor(); break;
-				case Generic::COLOR_MODE::PROTEIN: _bufferAtomColors[ i ] = _color; break;
-
-				default: break;
-				}
-			}
-
-			_buffer->setAtomColors( _bufferAtomColors );
+			computeColorBuffer();
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()

@@ -11,8 +11,7 @@ namespace VTX::UI::Widget::Representation
 	{
 		BaseRepresentationWidget::_setupUi( p_name );
 	};
-	void TraceRepresentationWidget::_setupSlots() {};
 
-	void TraceRepresentationWidget::refresh() {}
+	void TraceRepresentationWidget::_refresh() {}
 
 } // namespace VTX::UI::Widget::Representation

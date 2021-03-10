@@ -4,6 +4,7 @@
 #include "model/molecule.hpp"
 #include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
+#include "model/secondary_structure.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
 #include "vtx_app.hpp"
@@ -25,6 +26,8 @@ namespace VTX
 			_representation = p_representation;
 			p_representation->setTarget( this );
 			computeRepresentationTargets();
+			computeColorBuffer();
+			getMolecule()->getSecondaryStructure().refreshColors();
 		}
 
 		void BaseRepresentable::removeRepresentation()
@@ -131,6 +134,9 @@ namespace VTX
 		{
 			std::vector<Color::Rgb> p_colorBuffer = _molecule->getBufferAtomColors();
 
+			if ( p_colorBuffer.size() == 0 )
+				return;
+
 			for ( Model::Residue * const residue : _molecule->getResidues() )
 			{
 				// Skip hidden items.
@@ -158,13 +164,20 @@ namespace VTX
 						break;
 					case Generic::COLOR_MODE::ATOM_PROTEIN:
 						if ( atom->getSymbol() == Model::Atom::SYMBOL::A_C )
+							p_colorBuffer[ i ] = _molecule->getColor();
+						else
+							p_colorBuffer[ i ] = atom->getColor();
+						break;
+					case Generic::COLOR_MODE::ATOM_CUSTOM:
+						if ( atom->getSymbol() == Model::Atom::SYMBOL::A_C )
 							p_colorBuffer[ i ] = currentRepresentation->getColor();
 						else
 							p_colorBuffer[ i ] = atom->getColor();
 						break;
 					case Generic::COLOR_MODE::RESIDUE: p_colorBuffer[ i ] = atom->getResiduePtr()->getColor(); break;
 					case Generic::COLOR_MODE::CHAIN: p_colorBuffer[ i ] = atom->getChainPtr()->getColor(); break;
-					case Generic::COLOR_MODE::PROTEIN: p_colorBuffer[ i ] = currentRepresentation->getColor(); break;
+					case Generic::COLOR_MODE::PROTEIN: p_colorBuffer[ i ] = _molecule->getColor(); break;
+					case Generic::COLOR_MODE::CUSTOM: p_colorBuffer[ i ] = currentRepresentation->getColor(); break;
 
 					default: break;
 					}

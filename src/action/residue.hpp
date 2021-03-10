@@ -36,12 +36,7 @@ namespace VTX::Action::Residue
 		{
 			_residue.setColor( _color );
 			_residue.getMoleculePtr()->refreshColors();
-
-			if ( _residue.getMoleculePtr()->getSecondaryStructure().getColorMode()
-				 == Model::SecondaryStructure::COLOR_MODE::RESIDUE )
-			{
-				_residue.getMoleculePtr()->getSecondaryStructure().refreshColors();
-			}
+			_residue.getMoleculePtr()->getSecondaryStructure().refreshColors();
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}

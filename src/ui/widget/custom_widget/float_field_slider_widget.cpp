@@ -46,7 +46,7 @@ namespace VTX::UI::Widget::CustomWidget
 		if ( newValue != _value )
 		{
 			setValue( newValue );
-			emit onValueChange( _value );
+			_emitOnValueChangeSignal();
 		}
 	}
 	void FloatFieldSliderWidget::_onInternalValueChanged( const int p_sliderValue )
@@ -56,18 +56,20 @@ namespace VTX::UI::Widget::CustomWidget
 		if ( abs( newValue - _value ) > FLT_EPSILON )
 		{
 			setValue( newValue );
-			emit onValueChange( _value );
+			_emitOnValueChangeSignal();
 		}
 	}
 
 	void FloatFieldSliderWidget::_refresh()
 	{
+		blockSignals( true );
 		const int sliderValue = int( std::round( ( ( _value - _min ) / ( _max - _min ) ) * 100 ) );
 		_slider->setValue( sliderValue );
 
 		std::stringstream strStream;
 		strStream << std::fixed << std::setprecision( _nbDecimals ) << _value;
 		_textField->setText( QString::fromStdString( strStream.str() ) );
+		blockSignals( false );
 	}
 
 	void FloatFieldSliderWidget::localize() {};
@@ -93,7 +95,7 @@ namespace VTX::UI::Widget::CustomWidget
 		if ( _value < _min )
 		{
 			_value = _min;
-			emit onValueChange( _value );
+			_emitOnValueChangeSignal();
 		}
 
 		_refresh();
@@ -107,7 +109,7 @@ namespace VTX::UI::Widget::CustomWidget
 		if ( _value > _max )
 		{
 			_value = _max;
-			emit onValueChange( _value );
+			_emitOnValueChangeSignal();
 		}
 
 		_refresh();
@@ -129,6 +131,12 @@ namespace VTX::UI::Widget::CustomWidget
 		QWidget::setEnabled( p_enable );
 		_slider->setEnabled( p_enable );
 		_textField->setEnabled( p_enable );
+	}
+
+	void FloatFieldSliderWidget::_emitOnValueChangeSignal()
+	{
+		if ( !signalsBlocked() )
+			emit onValueChange( _value );
 	}
 
 } // namespace VTX::UI::Widget::CustomWidget

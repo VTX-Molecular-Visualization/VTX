@@ -6,6 +6,7 @@
 #endif
 
 #include "event/event_manager.hpp"
+#include "generic/base_colorable.hpp"
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/instantiated_representation.hpp"
@@ -24,25 +25,6 @@
 
 namespace VTX::Action::Molecule
 {
-	class ChangeColorMode : public BaseAction
-	{
-	  public:
-		explicit ChangeColorMode( Model::Molecule & p_molecule, const Generic::COLOR_MODE p_colorMode ) :
-			_molecule( p_molecule ), _colorMode( p_colorMode )
-		{
-		}
-
-		virtual void execute() override
-		{
-			_molecule.setColorMode( _colorMode );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
-
-	  private:
-		Model::Molecule &		  _molecule;
-		const Generic::COLOR_MODE _colorMode;
-	};
-
 	class ChangeColor : public BaseAction
 	{
 	  public:
@@ -55,11 +37,7 @@ namespace VTX::Action::Molecule
 		{
 			_molecule.setColor( _color );
 			_molecule.refreshColors();
-
-			if ( _molecule.getSecondaryStructure().getColorMode() == Model::SecondaryStructure::COLOR_MODE::PROTEIN )
-			{
-				_molecule.getSecondaryStructure().refreshColors();
-			}
+			_molecule.getSecondaryStructure().refreshColors();
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
@@ -238,8 +216,8 @@ namespace VTX::Action::Molecule
 	class ChangeColorModeSecondaryStructure : public BaseAction
 	{
 	  public:
-		explicit ChangeColorModeSecondaryStructure( Model::Molecule &							p_molecule,
-													const Model::SecondaryStructure::COLOR_MODE p_colorMode ) :
+		explicit ChangeColorModeSecondaryStructure( Model::Molecule &								p_molecule,
+													const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode ) :
 			_molecule( p_molecule ),
 			_colorMode( p_colorMode )
 		{
@@ -252,8 +230,8 @@ namespace VTX::Action::Molecule
 		}
 
 	  private:
-		Model::Molecule &							_molecule;
-		const Model::SecondaryStructure::COLOR_MODE _colorMode;
+		Model::Molecule &							  _molecule;
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
 	};
 
 	class Orient : public BaseAction

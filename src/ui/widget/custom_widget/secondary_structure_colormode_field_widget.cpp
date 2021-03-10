@@ -1,4 +1,4 @@
-#include "colormode_field_widget.hpp"
+#include "secondary_structure_colormode_field_widget.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/settings/setting_widget.hpp"
 #include "ui/widget_factory.hpp"
@@ -6,7 +6,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	void ColorModeFieldWidget::_setupUi( const QString & p_name )
+	void SecondaryStructureColorModeFieldWidget::_setupUi( const QString & p_name )
 	{
 		setObjectName( p_name );
 		setAcceptDrops( true );
@@ -17,7 +17,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_colorModeComboBox = new QComboBox( this );
 
 		QStringList colorModeList = QStringList();
-		for ( const std::string colorModeStrings : Generic::COLOR_MODE_STRING )
+		for ( const std::string colorModeStrings : Generic::SECONDARY_STRUCTURE_COLOR_MODE_STRING )
 			colorModeList.append( QString::fromStdString( colorModeStrings ) );
 
 		_colorModeComboBox->addItems( colorModeList );
@@ -34,29 +34,30 @@ namespace VTX::UI::Widget::CustomWidget
 		_layout->addWidget( _openColorSettingsButton );
 	}
 
-	void ColorModeFieldWidget::_setupSlots()
+	void SecondaryStructureColorModeFieldWidget::_setupSlots()
 	{
 		connect( _colorModeComboBox,
 				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
 				 this,
-				 &ColorModeFieldWidget::_colorModeChange );
+				 &SecondaryStructureColorModeFieldWidget::_colorModeChange );
 		connect( _colorSetButton,
 				 QOverload<const Color::Rgb &>::of( &ColorFieldButton::onValueChange ),
 				 this,
-				 &ColorModeFieldWidget::_applyColor );
-		connect( _openColorSettingsButton, &QPushButton::clicked, this, &ColorModeFieldWidget::_openColorSettings );
+				 &SecondaryStructureColorModeFieldWidget::_applyColor );
+		connect( _openColorSettingsButton,
+				 &QPushButton::clicked,
+				 this,
+				 &SecondaryStructureColorModeFieldWidget::_openColorSettings );
 	}
 
-	void ColorModeFieldWidget::_refresh()
+	void SecondaryStructureColorModeFieldWidget::_refresh()
 	{
-		const Generic::COLOR_MODE currentColorMode = Generic::COLOR_MODE( _colorModeComboBox->currentIndex() );
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE currentColorMode
+			= Generic::SECONDARY_STRUCTURE_COLOR_MODE( _colorModeComboBox->currentIndex() );
 
-		const bool displayColorSetButton = currentColorMode == Generic::COLOR_MODE::PROTEIN
-										   || currentColorMode == Generic::COLOR_MODE::ATOM_PROTEIN
-										   || currentColorMode == Generic::COLOR_MODE::CUSTOM
-										   || currentColorMode == Generic::COLOR_MODE::ATOM_CUSTOM;
-		const bool displayColorSettingButton
-			= currentColorMode == Generic::COLOR_MODE::CHAIN || currentColorMode == Generic::COLOR_MODE::ATOM_CHAIN;
+		const bool displayColorSetButton = currentColorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN
+										   || currentColorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM;
+		const bool displayColorSettingButton = currentColorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN;
 
 		if ( displayColorSetButton )
 			_colorSetButton->show();
@@ -69,38 +70,39 @@ namespace VTX::UI::Widget::CustomWidget
 			_openColorSettingsButton->hide();
 	}
 
-	void ColorModeFieldWidget::setColorMode( const Generic::COLOR_MODE p_colorMode )
+	void SecondaryStructureColorModeFieldWidget::setColorMode(
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
 	{
 		_colorMode = p_colorMode;
-		_colorModeComboBox->setCurrentIndex( (int)_colorMode );
+		_colorModeComboBox->setCurrentIndex( int( _colorMode ) );
 
 		_refresh();
 
 		emit colorModeChanged( _colorMode );
 	}
 
-	void ColorModeFieldWidget::setColor( const Color::Rgb & p_color )
+	void SecondaryStructureColorModeFieldWidget::setColor( const Color::Rgb & p_color )
 	{
 		_color = p_color;
 		_colorSetButton->setColor( p_color );
 	}
 
-	void ColorModeFieldWidget::_openColorSettings()
+	void SecondaryStructureColorModeFieldWidget::_openColorSettings()
 	{
 		VTXApp::get().getMainWindow().openSettingWindow( Widget::Settings::SETTING_MENU::COLORS );
 	}
 
-	void ColorModeFieldWidget::_colorModeChange( int p_index )
+	void SecondaryStructureColorModeFieldWidget::_colorModeChange( int p_index )
 	{
-		const Generic::COLOR_MODE colorMode = (Generic::COLOR_MODE)p_index;
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE colorMode = Generic::SECONDARY_STRUCTURE_COLOR_MODE( p_index );
 		setColorMode( colorMode );
 	}
-	void ColorModeFieldWidget::_applyColor( const Color::Rgb & p_color )
+	void SecondaryStructureColorModeFieldWidget::_applyColor( const Color::Rgb & p_color )
 	{
 		_color = p_color;
 		emit colorChanged( _color );
 	}
 
-	void ColorModeFieldWidget::localize() {};
+	void SecondaryStructureColorModeFieldWidget::localize() {};
 
 } // namespace VTX::UI::Widget::CustomWidget

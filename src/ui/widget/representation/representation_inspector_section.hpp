@@ -8,13 +8,8 @@
 #include "color/rgb.hpp"
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
 #include "model/representation/instantiated_representation.hpp"
-#include "model/residue.hpp"
 #include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/colormode_field_widget.hpp"
-#include "ui/widget/custom_widget/float_field_slider_widget.hpp"
 #include "ui/widget/representation/ball_and_stick_representation_widget.hpp"
 #include "ui/widget/representation/ball_stick_and_cartoon_representation_widget.hpp"
 #include "ui/widget/representation/base_representation_widget.hpp"
@@ -29,6 +24,7 @@
 #include <QDoubleSpinBox>
 #include <QLabel>
 #include <QPushButton>
+#include <QVBoxLayout>
 #include <QWidget>
 #include <vector>
 
@@ -40,7 +36,6 @@ namespace VTX::UI::Widget::Representation
 		VTX_VIEW
 
 		using InstantiatedRepresentation = Model::Representation::InstantiatedRepresentation;
-		using ColorModeFieldWidget		 = VTX::UI::Widget::CustomWidget::ColorModeFieldWidget;
 		using BaseRepresentationWidget	 = VTX::UI::Widget::Representation::BaseRepresentationWidget;
 
 		using BallAndStickRepresentationWidget = VTX::UI::Widget::Representation::BallAndStickRepresentationWidget;
@@ -84,28 +79,22 @@ namespace VTX::UI::Widget::Representation
 
 		bool _representationHasBeenModified = false;
 
-		QPushButton *							_titleWidget;
-		QWidget *								_representationWidget;
-		QComboBox *								_representationPreset;
-		std::vector<BaseRepresentationWidget *> _representationSettingsWidget;
-		StickRepresentationWidget *				_stickWidget;
-		VdwRepresentationWidget *				_vdwWidget;
+		QPushButton *			   _titleWidget					= nullptr;
+		QWidget *				   _representationWidget		= nullptr;
+		QComboBox *				   _representationPreset		= nullptr;
+		QVBoxLayout *			   _settingLayout				= nullptr;
+		BaseRepresentationWidget * _representationSettingWidget = nullptr;
 
-		QLabel *			   _colorModeLabel;
-		ColorModeFieldWidget * _colorModeWidget;
+		BaseRepresentationWidget * _instantiateRepresentationSettingWidget(
+			const Generic::REPRESENTATION & p_representation );
 
 		void _toggleSettingDisplay();
 		void _representationPresetChange( const int p_resetIndex );
 		void _representationDataChange();
-		void _colorChanged( const Color::Rgb & p_color );
-		void _colorModeChanged( const Generic::COLOR_MODE & p_colorMode );
-		void _spheresRadiusChanged( const float p_radius );
-		void _spheresRadiusAddChanged( const float p_radius );
-		void _sticksRadiusChanged( const float p_radius );
 
 		void _populateRepresentationModeComboBox();
 
-		void _instantiateRepresentationIfNeeded();
+		void _setRepresentationIfNeeded();
 	};
 
 } // namespace VTX::UI::Widget::Representation

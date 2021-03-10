@@ -36,6 +36,13 @@ namespace VTX::Model::Representation
 		Generic::COLOR_MODE &		getColorMode() { return _colorMode; }
 		void setColorMode( const Generic::COLOR_MODE & p_colorMode ) { _colorMode = p_colorMode; }
 
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & getSecondaryStructureColorMode() const { return _ssColorMode; }
+		Generic::SECONDARY_STRUCTURE_COLOR_MODE & getSecondaryStructureColorMode() { return _ssColorMode; }
+		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
+		{
+			_ssColorMode = p_colorMode;
+		}
+
 		const Color::Rgb & getColor() const { return _color; };
 		Color::Rgb &	   getColor() { return _color; };
 		void			   setColor( const Color::Rgb & p_color ) { _color = Color::Rgb( p_color ); };
@@ -56,11 +63,12 @@ namespace VTX::Model::Representation
 	  protected:
 		Generic::REPRESENTATION _representationType = Generic::REPRESENTATION::VAN_DER_WAALS;
 
-		std::string							  _name;
-		std::string							  _iconPath;
-		Color::Rgb							  _color;
-		VTX::Representation::FlagDataTargeted _dataTargeted = VTX::Representation::FlagDataTargeted::NONE;
-		Generic::COLOR_MODE					  _colorMode	= Generic::COLOR_MODE::PROTEIN;
+		std::string								_name;
+		std::string								_iconPath;
+		Color::Rgb								_color;
+		VTX::Representation::FlagDataTargeted	_dataTargeted = VTX::Representation::FlagDataTargeted::NONE;
+		Generic::COLOR_MODE						_colorMode	  = Generic::COLOR_MODE::PROTEIN;
+		Generic::SECONDARY_STRUCTURE_COLOR_MODE _ssColorMode  = Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
 
 		SphereData *   _sphereData	 = nullptr;
 		CylinderData * _cylinderData = nullptr;

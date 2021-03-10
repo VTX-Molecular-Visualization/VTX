@@ -75,7 +75,13 @@ namespace VTX
 				return *_override;
 			}
 
-			void setValue( T & p_value ) { *_override = p_value; }
+			void setValue( T & p_value )
+			{
+				if ( _override == nullptr )
+					_override = new T( p_value );
+				else
+					*_override = p_value;
+			}
 			void setValue( const T & p_value )
 			{
 				if ( _override == nullptr )

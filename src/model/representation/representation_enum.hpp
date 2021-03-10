@@ -38,9 +38,10 @@ namespace VTX
 
 		enum class MoleculeComputationFlag : int
 		{
-			Targets		= 1 << 0,
-			ColorBuffer = 1 << 1,
-			ALL			= 0xFFFF,
+			Targets			   = 1 << 0,
+			ColorBuffer		   = 1 << 1,
+			SecondaryStructure = 1 << 2,
+			ALL				   = 0xFFFF,
 		};
 
 		inline MoleculeComputationFlag operator&( const MoleculeComputationFlag p_lhs,

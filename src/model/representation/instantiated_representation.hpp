@@ -9,6 +9,7 @@
 #include "generic/base_objectoverride.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"
+#include "model/secondary_structure.hpp"
 #include "representation.hpp"
 #include "representation_data.hpp"
 #include "representation_enum.hpp"
@@ -16,7 +17,9 @@
 namespace VTX::Model
 {
 	class Molecule;
-}
+	class SecondaryStructure;
+
+} // namespace VTX::Model
 namespace VTX::Generic
 {
 	class BaseRepresentable;
@@ -32,6 +35,7 @@ namespace VTX::Model::Representation
 
 		~InstantiatedRepresentation() {}
 
+		const Generic::BaseRepresentable * const getTarget() const { return _target; }
 		void setTarget( Generic::BaseRepresentable * p_target ) { _target = p_target; }
 
 		const std::string & getName() const { return _linkedRepresentation->getName(); };
@@ -40,6 +44,9 @@ namespace VTX::Model::Representation
 		void						setColor( const Color::Rgb & p_color );
 		const Generic::COLOR_MODE & getColorMode() const { return _colorMode.getValue(); }
 		void						setColorMode( const Generic::COLOR_MODE & p_colorMode );
+
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & getSecondaryStructureColorMode() const;
+		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
 
 		const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const
 		{
@@ -65,8 +72,9 @@ namespace VTX::Model::Representation
 		BaseRepresentation * const	 _linkedRepresentation;
 		Generic::BaseRepresentable * _target = nullptr;
 
-		Generic::OverridableParameter<Color::Rgb>		   _color;
-		Generic::OverridableParameter<Generic::COLOR_MODE> _colorMode;
+		Generic::OverridableParameter<Color::Rgb>							   _color;
+		Generic::OverridableParameter<Generic::COLOR_MODE>					   _colorMode;
+		Generic::OverridableParameter<Generic::SECONDARY_STRUCTURE_COLOR_MODE> _ssColorMode;
 
 		Generic::OverridableParameter<SphereData>	_sphereData;
 		Generic::OverridableParameter<CylinderData> _cylinderData;
