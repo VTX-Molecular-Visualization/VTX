@@ -5,6 +5,7 @@
 #include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
 #include "model/secondary_structure.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
 #include "vtx_app.hpp"
@@ -19,32 +20,35 @@ namespace VTX
 			_molecule = nullptr;
 		}
 
+		void BaseRepresentable::applyRepresentation( InstantiatedRepresentation * const p_representation )
+		{
+			setRepresentation( p_representation );
+			computeAllRepresentationData();
+		}
+
 		void BaseRepresentable::setRepresentation( InstantiatedRepresentation * const p_representation )
 		{
 			removeRepresentation();
 
 			_representation = p_representation;
 			p_representation->setTarget( this );
-			computeRepresentationTargets();
-			computeColorBuffer();
-			getMolecule()->getSecondaryStructure().refreshColors();
 		}
 
 		void BaseRepresentable::removeRepresentation()
 		{
 			if ( _representation != nullptr )
-				delete _representation;
+				MVC::MvcManager::get().deleteModel( _representation );
 
 			_representation = nullptr;
 		}
 
-		void BaseRepresentable::setDefaultRepresentation()
+		void BaseRepresentable::applyDefaultRepresentation()
 		{
 			Model::Representation::InstantiatedRepresentation * const defaultRepresentation
 				= Representation::RepresentationManager::get().instantiateDefaultRepresentation();
 			defaultRepresentation->setTarget( getMolecule() );
 
-			setRepresentation( defaultRepresentation );
+			applyRepresentation( defaultRepresentation );
 		}
 		void BaseRepresentable::setParent( BaseRepresentable * const p_parent ) { _parent = p_parent; }
 
@@ -60,6 +64,13 @@ namespace VTX
 		Model::Representation::InstantiatedRepresentation * const BaseRepresentable::getCustomRepresentation()
 		{
 			return _representation;
+		}
+
+		void BaseRepresentable::computeAllRepresentationData()
+		{
+			computeRepresentationTargets();
+			computeColorBuffer();
+			_molecule->getSecondaryStructure().refreshColors();
 		}
 
 		void BaseRepresentable::computeRepresentationTargets()

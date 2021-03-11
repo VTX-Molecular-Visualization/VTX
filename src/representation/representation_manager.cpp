@@ -40,7 +40,7 @@ namespace VTX::Representation
 			= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
 				p_representation );
 
-		p_target.setRepresentation( instantiatedRepresentation );
+		p_target.applyRepresentation( instantiatedRepresentation );
 	}
 
 	void RepresentationManager::instantiateRepresentation( BaseRepresentation * const p_representation,
@@ -55,7 +55,7 @@ namespace VTX::Representation
 					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
 						p_representation );
 
-				molecule.setRepresentation( instantiatedRepresentation );
+				molecule.applyRepresentation( instantiatedRepresentation );
 				continue;
 			}
 
@@ -68,7 +68,7 @@ namespace VTX::Representation
 						= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
 							p_representation );
 
-					chain.setRepresentation( instantiatedRepresentation );
+					chain.applyRepresentation( instantiatedRepresentation );
 					continue;
 				}
 
@@ -80,7 +80,7 @@ namespace VTX::Representation
 						= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
 							p_representation );
 
-					residue.setRepresentation( instantiatedRepresentation );
+					residue.applyRepresentation( instantiatedRepresentation );
 				}
 			}
 		}

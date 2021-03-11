@@ -34,6 +34,9 @@ namespace VTX
 			const InstantiatedRepresentation * const getRepresentation() const;
 			InstantiatedRepresentation * const		 getCustomRepresentation();
 			void setRepresentation( InstantiatedRepresentation * const p_representation );
+			void applyRepresentation( InstantiatedRepresentation * const p_representation );
+			void applyDefaultRepresentation();
+			
 			void removeRepresentation();
 
 			bool hasCustomRepresentation() const;
@@ -42,10 +45,9 @@ namespace VTX
 			{
 				return _representationTargets;
 			}
-
-			void setDefaultRepresentation();
 			void setParent( BaseRepresentable * p_parent );
 
+			void computeAllRepresentationData();
 			void computeRepresentationTargets();
 			void computeColorBuffer();
 

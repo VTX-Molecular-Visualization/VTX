@@ -24,6 +24,11 @@ namespace VTX::View::UI::Widget::Representation
 		};
 
 	  protected:
+		~InstantiatedRepresentationView()
+		{
+			if ( _target != nullptr )
+				_target->notifyInstantiatedRepresentationViewDeleted();
+		}
 		void _refreshView() override { _target->refresh(); };
 
 	  private:

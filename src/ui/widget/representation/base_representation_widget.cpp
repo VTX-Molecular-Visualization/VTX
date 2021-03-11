@@ -24,6 +24,8 @@ namespace VTX::UI::Widget::Representation
 		}
 	}
 
+	void BaseRepresentationWidget::notifyInstantiatedRepresentationViewDeleted() { _representationView = nullptr; }
+
 	void BaseRepresentationWidget::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );

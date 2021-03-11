@@ -105,6 +105,8 @@ namespace VTX
 				return modelPtr;
 			}
 
+			bool doesModelExists( const Model::ID & p_id ) { return _container.find( p_id ) != _container.end(); }
+
 			const ID::VTX_ID & getModelTypeID( const Model::ID & p_id )
 			{
 				return _container[ p_id ]->getModel().getTypeId();

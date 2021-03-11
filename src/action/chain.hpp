@@ -100,7 +100,7 @@ namespace VTX::Action::Chain
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>( preset );
 			instantiatedRepresentation->setTarget( &_chain );
 
-			_chain.setRepresentation( instantiatedRepresentation );
+			_chain.applyRepresentation( instantiatedRepresentation );
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}

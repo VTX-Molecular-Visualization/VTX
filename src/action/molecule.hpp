@@ -86,7 +86,7 @@ namespace VTX::Action::Molecule
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>( preset );
 			instantiatedRepresentation->setTarget( &_molecule );
 
-			_molecule.setRepresentation( instantiatedRepresentation );
+			_molecule.applyRepresentation( instantiatedRepresentation );
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}

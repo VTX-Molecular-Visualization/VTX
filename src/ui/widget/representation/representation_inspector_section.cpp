@@ -215,17 +215,17 @@ namespace VTX::UI::Widget::Representation
 			if ( typeId == ID::Model::MODEL_MOLECULE )
 			{
 				Model::Molecule * const molecule = static_cast<Model::Molecule *>( _targetModel );
-				molecule->setRepresentation( _representation );
+				molecule->applyRepresentation( _representation );
 			}
 			else if ( typeId == ID::Model::MODEL_CHAIN )
 			{
 				Model::Chain * const chain = static_cast<Model::Chain *>( _targetModel );
-				chain->setRepresentation( _representation );
+				chain->applyRepresentation( _representation );
 			}
 			else if ( typeId == ID::Model::MODEL_RESIDUE )
 			{
 				Model::Residue * const residue = static_cast<Model::Residue *>( _targetModel );
-				residue->setRepresentation( _representation );
+				residue->applyRepresentation( _representation );
 			}
 
 			_representationHasBeenModified = true;

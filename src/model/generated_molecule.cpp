@@ -494,6 +494,12 @@ namespace VTX::Model
 		setDisplayName( p_namePrefix + p_molecule.getDefaultName() );
 		setColor( Color::Rgb::randomPastel() );
 
+		if ( p_molecule.hasCustomRepresentation() )
+		{
+			setRepresentation( MVC::MvcManager::get().instantiateModel<Representation::InstantiatedRepresentation>(
+				p_molecule.getRepresentation() ) );
+		}
+
 		for ( int i = 0; i < p_molecule.getAtomPositionFrames().size(); i++ )
 		{
 			const AtomPositionsFrame & atomPosFrame			 = p_molecule.getAtomPositionFrames()[ i ];
@@ -516,6 +522,13 @@ namespace VTX::Model
 		p_chain.setName( p_chainSource.getName() );
 		p_chain.setIndexFirstResidue( getResidueCount() );
 		p_chain.setColor( Model::Chain::getChainIdColor( p_chain.getName() ) );
+
+		if ( p_chainSource.hasCustomRepresentation() )
+		{
+			p_chain.setRepresentation(
+				MVC::MvcManager::get().instantiateModel<Representation::InstantiatedRepresentation>(
+					p_chainSource.getRepresentation() ) );
+		}
 	}
 	void GeneratedMolecule::_copyResidueData( Model::Residue &		 p_residue,
 											  const Model::Residue & p_residueSource,
@@ -531,6 +544,13 @@ namespace VTX::Model
 		// TODO copy secondary structure
 		p_residue.setSecondaryStructure( p_residueSource.getSecondaryStructure() );
 		p_residue.setAtomType( p_residueSource.getAtomType() );
+
+		if ( p_residueSource.hasCustomRepresentation() )
+		{
+			p_residue.setRepresentation(
+				MVC::MvcManager::get().instantiateModel<Representation::InstantiatedRepresentation>(
+					p_residueSource.getRepresentation() ) );
+		}
 	}
 	void GeneratedMolecule::_copyAtomData( Model::Atom &		  p_atom,
 										   const Model::Atom &	  p_atomSource,

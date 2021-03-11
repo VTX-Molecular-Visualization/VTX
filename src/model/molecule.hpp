@@ -179,7 +179,7 @@ namespace VTX
 			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
 			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
-			void setRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation );
+			void applyRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation );
 			void removeRepresentation();
 
 			inline void refreshColors() { _fillBufferAtomColors(); }

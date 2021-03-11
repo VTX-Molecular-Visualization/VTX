@@ -65,10 +65,10 @@ namespace VTX
 			return aabb;
 		}
 
-		void Residue::setRepresentation(
-			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation )
+		void Residue::applyRepresentation(
+			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation)
 		{
-			BaseRepresentable::setRepresentation( p_representation );
+			BaseRepresentable::applyRepresentation( p_representation );
 			_notifyDataChanged();
 		}
 		void Residue::removeRepresentation()

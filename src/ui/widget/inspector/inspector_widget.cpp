@@ -9,7 +9,6 @@
 #include "view/ui/widget/chain_inspector_view.hpp"
 #include "view/ui/widget/molecule_inspector_view.hpp"
 #include "view/ui/widget/residue_inspector_view.hpp"
-#include <type_traits>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
@@ -73,9 +72,12 @@ namespace VTX::UI::Widget::Inspector
 	{
 		for ( const ViewData viewData : _inspectorViewsData )
 		{
-			Model::BaseModel & model = MVC::MvcManager::get().getModel<Model::BaseModel>( viewData._modelID );
-			_verticalLayout->removeWidget( viewData._widget );
-			MVC::MvcManager::get().deleteView( &model, viewData._viewID );
+			if ( MVC::MvcManager::get().doesModelExists( viewData._modelID ) )
+			{
+				Model::BaseModel & model = MVC::MvcManager::get().getModel<Model::BaseModel>( viewData._modelID );
+				_verticalLayout->removeWidget( viewData._widget );
+				MVC::MvcManager::get().deleteView( &model, viewData._viewID );
+			}
 		}
 
 		_inspectorViewsData.clear();

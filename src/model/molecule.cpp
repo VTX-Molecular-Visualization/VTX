@@ -87,9 +87,15 @@ namespace VTX
 				createSecondaryStructure();
 
 				setRepresentableMolecule( this );
-				setDefaultRepresentation();
 
-				_secondaryStructure->refreshColors();
+				if ( hasCustomRepresentation() )
+				{
+					computeAllRepresentationData();
+				}
+				else
+				{
+					applyDefaultRepresentation();
+				}
 			}
 		}
 
@@ -106,10 +112,10 @@ namespace VTX
 			return true;
 		}
 
-		void Molecule::setRepresentation(
-			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation )
+		void Molecule::applyRepresentation(
+			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation)
 		{
-			BaseRepresentable::setRepresentation( p_representation );
+			BaseRepresentable::applyRepresentation( p_representation );
 			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
 		void Molecule::removeRepresentation()

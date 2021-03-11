@@ -123,9 +123,10 @@ namespace VTX
 			return aabb;
 		}
 
-		void Chain::setRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation )
+		void Chain::applyRepresentation(
+			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation )
 		{
-			BaseRepresentable::setRepresentation( p_representation );
+			BaseRepresentable::applyRepresentation( p_representation );
 			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
 		void Chain::removeRepresentation()

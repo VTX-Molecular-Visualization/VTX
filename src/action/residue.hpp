@@ -100,7 +100,7 @@ namespace VTX::Action::Residue
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>( preset );
 			instantiatedRepresentation->setTarget( &_residue );
 
-			_residue.setRepresentation( instantiatedRepresentation );
+			_residue.applyRepresentation( instantiatedRepresentation );
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}

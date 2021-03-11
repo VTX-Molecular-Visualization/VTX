@@ -28,6 +28,7 @@ namespace VTX::UI::Widget::Representation
 		~BaseRepresentationWidget();
 		void setRepresentation( Model::Representation::InstantiatedRepresentation * const p_representation );
 		void refresh();
+		void notifyInstantiatedRepresentationViewDeleted();
 
 	  signals:
 		void onDataChange();

@@ -243,8 +243,12 @@ namespace VTX
 
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
-				const Chain * const chain		 = _molecule->getChain( chainIdx );
-				uint				residueCount = chain->getResidueCount();
+				const Chain * const chain = _molecule->getChain( chainIdx );
+
+				if ( chain == nullptr )
+					continue;
+
+				uint residueCount = chain->getResidueCount();
 
 				if ( residueCount < 4 )
 				{
