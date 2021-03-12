@@ -6,6 +6,7 @@
 #endif
 
 #include "base_worker.hpp"
+#include "event/event_manager.hpp"
 #include "generic/base_updatable.hpp"
 #include "tool/logger.hpp"
 #include <QThreadPool>
@@ -32,8 +33,9 @@ namespace VTX
 				p_worker->setParent( this );
 				_workers.emplace( p_worker, p_callback );
 				connect( p_worker, &Worker::BaseWorker::resultReady, this, &WorkerManager::_onResultReady );
-				// connect( p_worker, &Worker::BaseWorker::finished, this, &QObject::deleteLater );
+				connect( p_worker, &Worker::BaseWorker::updateProgress, this, &WorkerManager::_onUpdateProgress );
 
+				VTX_DEBUG( "Starting thread" );
 				p_worker->start();
 			}
 
@@ -61,7 +63,7 @@ namespace VTX
 
 			void _onResultReady( BaseWorker * p_worker, const uint p_returnCode )
 			{
-				VTX_DEBUG( "RETURN CODE: " + std::to_string( p_returnCode ) );
+				VTX_DEBUG( "Thread finished: " + std::to_string( p_returnCode ) );
 
 				if ( p_worker == nullptr )
 				{
@@ -80,6 +82,11 @@ namespace VTX
 					_workers.erase( _workers.find( p_worker ) );
 					delete p_worker;
 				}
+			}
+
+			void _onUpdateProgress( BaseWorker * p_worker, const uint p_progress )
+			{
+				VTX_EVENT( new Event::VTXEventValue<float>( Event::Global::UPDATE_PROGRESS_BAR, p_progress ) );
 			}
 		};
 	} // namespace Worker

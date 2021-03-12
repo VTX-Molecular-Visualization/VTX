@@ -27,6 +27,10 @@ namespace VTX
 
 		  signals:
 			void resultReady( BaseWorker *, const uint p_returnCode );
+			void updateProgress( BaseWorker *, const uint p_progress );
+
+		  protected:
+			void _updateProgress( const uint p_progress ) { emit updateProgress( this, p_progress ); }
 		};
 	} // namespace Worker
 } // namespace VTX

@@ -15,6 +15,12 @@ namespace VTX
 	{
 		const bool Snapshoter::_takeSnapshotGL() const
 		{
+			if ( std::filesystem::exists( _path ) )
+			{
+				VTX_ERROR( "File already exists" );
+				return 0;
+			}
+
 			bool result = _image.save( QString( _path.string().c_str() ), "png" );
 			if ( result )
 			{

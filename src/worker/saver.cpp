@@ -9,7 +9,7 @@ namespace VTX
 	{
 		uint Saver::_run()
 		{
-			bool		 result = 0;
+			bool		 result = 1;
 			Tool::Chrono chrono;
 
 			chrono.start();
