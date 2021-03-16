@@ -1,9 +1,4 @@
 #include "extension_keyword_editor_gui.hpp"
-//#include "vtx_app.hpp"
-#include <QFileDialog>
-#include <QPushButton>
-#include <QSpacerItem>
-#include <QStandardPaths>
 
 namespace VTX
 {

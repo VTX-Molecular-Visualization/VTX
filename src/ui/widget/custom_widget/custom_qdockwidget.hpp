@@ -5,7 +5,9 @@
 #include "ui/widget/custom_widget/citations_window.hpp"
 #include "ui/widget/custom_widget/settings_window.hpp"
 #include <QDockWidget>
+#include <QFileDialog>
 #include <QSettings>
+#include <QStandardPaths>
 #include <QWidget>
 
 namespace VTX

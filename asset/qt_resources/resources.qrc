@@ -1,5 +1,7 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+	<file>sprite/add_icon.png</file>
+	<file>sprite/add_icon_hovered.png</file>
 	<file>sprite/add_viewpoint.png</file>
 	<file>sprite/camera_focus_icon.png</file>
 	<file>sprite/camera_freefly_mode.png</file>
@@ -12,6 +14,7 @@
 	<file>sprite/citations_icon_hovered.png</file>
 	<file>sprite/close_icon.png</file>
 	<file>sprite/close_icon_hovered.png</file>
+	<file>sprite/cloud_connector.png</file>
 	<file>sprite/copy_selection_icon.png</file>
 	<file>sprite/delete_selection_icon.png</file>
 	<file>sprite/download_molecule_icon.png</file>
@@ -22,6 +25,7 @@
 	<file>sprite/hide_solvant_icon.png</file>
 	<file>sprite/hide_water_icon.png</file>
 	<file>sprite/info_button.png</file>
+	<file>sprite/job_manager.png</file>
 	<file>sprite/keyword_editor.png</file>
 	<file>sprite/load_molecule_icon.png</file>
 	<file>sprite/lock_window_icon.png</file>
@@ -32,11 +36,19 @@
 	<file>sprite/new_session_icon.png</file>
 	<file>sprite/openrecent_session_icon.png</file>
 	<file>sprite/open_session_icon.png</file>
+	<file>sprite/pause_icon.png</file>
+	<file>sprite/pause_icon_hovered.png</file>
+	<file>sprite/refresh_icon.png</file>
+	<file>sprite/refresh_icon_hovered.png</file>
+	<file>sprite/remove_icon.png</file>
+	<file>sprite/remove_icon_hovered.png</file>
 	<file>sprite/representation_icon.png</file>
 	<file>sprite/representation_new_preset_icon.png</file>
 	<file>sprite/representation_sas_icon.png</file>
 	<file>sprite/representation_stick_icon.png</file>
 	<file>sprite/representation_trace_icon.png</file>
+	<file>sprite/resume_icon.png</file>
+	<file>sprite/resume_icon_hovered.png</file>
 	<file>sprite/saveas_session_icon.png</file>
 	<file>sprite/save_molecule_icon.png</file>
 	<file>sprite/save_session_icon.png</file>
@@ -47,6 +59,8 @@
 	<file>sprite/show_selection_icon.png</file>
 	<file>sprite/show_solvant_icon.png</file>
 	<file>sprite/show_water_icon.png</file>
+	<file>sprite/stop_icon.png</file>
+	<file>sprite/stop_icon_hovered.png</file>
 	<file>sprite/symbol/atom_symbol_icon.png</file>
 	<file>sprite/symbol/chain_symbol_icon.png</file>
 	<file>sprite/symbol/molecule_symbol_icon.png</file>

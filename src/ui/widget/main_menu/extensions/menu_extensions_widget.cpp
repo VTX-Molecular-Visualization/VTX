@@ -18,6 +18,7 @@ namespace VTX
 						MenuTooltabWidget::_setupUi( p_name );
 
 						_allExtensions = addToolBlock<MenuExtensionsAllWidgets>( "allWidgetsBlockWidget" );
+						_jobs		   = addToolBlock<MenuExtensionsJobsWidgets>( "jobsWidgetsBlockWidget" );
 					}
 					void MenuExtensionsWidget::_setupSlots() {}
 					void MenuExtensionsWidget::localize() {}

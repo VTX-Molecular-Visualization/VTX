@@ -103,7 +103,7 @@ namespace VTX
 						if ( windowProperties->at( 0 ) )
 						{
 							QPushButton * settingButton = new QPushButton( title_bar );
-							settingButton->setToolTip( "Save settings window" );
+							settingButton->setToolTip( "Settings" );
 
 							settingButton->setStyleSheet(
 								"QPushButton {"
@@ -127,7 +127,7 @@ namespace VTX
 						if ( windowProperties->at( 1 ) )
 						{
 							QPushButton * citeButton = new QPushButton( title_bar );
-							citeButton->setToolTip( "Open citations window" );
+							citeButton->setToolTip( "Citations" );
 
 							citeButton->setStyleSheet(
 								"QPushButton {"
@@ -157,7 +157,7 @@ namespace VTX
 				QHBoxLayout * titleLayout  = static_cast<QHBoxLayout *>( title_bar->layout() );
 				QPushButton * undockButton = new QPushButton( title_bar );
 				undockButton->setObjectName( "dockButton" );
-				undockButton->setToolTip( "Dock window" );
+				undockButton->setToolTip( "Dock" );
 				undockButton->setStyleSheet(
 					"QPushButton {"
 					"border-image: url(:/sprite/undock_icon.png);"
@@ -182,7 +182,7 @@ namespace VTX
 				QWidget *	  title_bar	  = this->titleBarWidget();
 				QHBoxLayout * titleLayout = static_cast<QHBoxLayout *>( title_bar->layout() );
 				QPushButton * exitButton  = new QPushButton( title_bar );
-				exitButton->setToolTip( "Close window" );
+				exitButton->setToolTip( "Close" );
 				exitButton->setStyleSheet(
 					"QPushButton {"
 					"border-image: url(:/sprite/close_icon.png);"
@@ -211,7 +211,7 @@ namespace VTX
 					this->setFloating( true );
 					if ( dockButton != nullptr )
 					{
-						dockButton->setToolTip( "Dock window" );
+						dockButton->setToolTip( "Dock" );
 					}
 				}
 				else
@@ -219,7 +219,7 @@ namespace VTX
 					this->setFloating( false );
 					if ( dockButton != nullptr )
 					{
-						dockButton->setToolTip( "Undock window" );
+						dockButton->setToolTip( "Undock" );
 					}
 				}
 			}
@@ -231,6 +231,8 @@ namespace VTX
 				if ( citationsWindow == nullptr )
 				{
 					citationsWindow = new CitationsWindowWidget( this );
+					citationsWindow->setWindowTitle( windowTitle() + " - Citations" );
+					citationsWindow->setWindowModality( Qt::WindowModality::WindowModal );
 					citationsWindow->ui.textBrowserCitations->setMarkdown( moduleCitations() );
 					citationsWindow->show();
 				}
@@ -252,6 +254,8 @@ namespace VTX
 				if ( settingsWindow == nullptr )
 				{
 					settingsWindow = new SettingsWindowWidget( this );
+					settingsWindow->setWindowTitle( windowTitle() + " - Settings" );
+					settingsWindow->setWindowModality( Qt::WindowModality::WindowModal );
 					// check if settings have been saved before
 					QString	  moduleNameWithoutSpaces = moduleTitle().remove( QRegularExpression( "\\s" ) );
 					QSettings settings				  = QSettings( "Qubit", moduleNameWithoutSpaces );

@@ -46,6 +46,7 @@ namespace VTX
 
 					  private:
 						void _openFile();
+						void _saveFile();
 						void _loadRecentSession( const int & p_ptrSessionIndex ) const;
 						void _loadSettings() const;
 						void _saveSettings() const;

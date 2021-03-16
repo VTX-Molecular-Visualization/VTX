@@ -1,5 +1,7 @@
 #include "saver.hpp"
+#include "io/writer/chemfilesWriter.hpp"
 #include "io/writer/vtx.hpp"
+#include "selection/selection_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 
@@ -14,30 +16,42 @@ namespace VTX
 			chrono.start();
 			VTX_INFO( "Saving " + _path->filename().string() );
 
-			IO::Writer::VTX * writer = new IO::Writer::VTX();
+			// Create Writer.
+			IO::Writer::ChemfilesWriter * writer = new IO::Writer::ChemfilesWriter();
 
+			// Write.
 			try
 			{
-				writer->writeFile( *_path, VTXApp::get() );
+				// if selection is not empty -> export selected structures
+				if ( !VTX::Selection::SelectionManager::get().getSelectionModel().getItems().empty() )
+				{
+					for ( const auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getItems() )
+					{
+						Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( it.first );
+						writer->writeFile( _path->filename().string(), molecule );
+					}
+				}
+				// else export all the structures imported in the scene
+				else
+				{
+					for ( const auto it : VTXApp::get().getScene().getMolecules() )
+					{
+						Model::Molecule * molecule = it.first;
+						writer->writeFile( _path->string(), *molecule );
+					}
+				}
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Error saving file" );
+				VTX_ERROR( "Error writing file" );
 				VTX_ERROR( p_e.what() );
 			}
 
 			delete writer;
-
-			// Rename if extension is missing.
-			if ( std::filesystem::exists( *_path ) && _path->extension() != ".vtx" )
-			{
-				std::filesystem::rename( *_path, Path( _path->string() + ".vtx" ) );
-			}
-
 			delete _path;
 
 			chrono.stop();
-			VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			VTX_INFO( "File created in " + std::to_string( chrono.elapsedTime() ) + "s" );
 
 		} // namespace Worker
 	}	  // namespace Worker

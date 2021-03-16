@@ -10,6 +10,7 @@
 #include "define.hpp"
 #include "io/reader/vtx.hpp"
 #include "io/writer/vtx.hpp"
+#include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
@@ -110,11 +111,12 @@ namespace VTX
 						VTX_ACTION( new Open( mapBuffers ) );
 					} );
 
-					const Worker::CallbackError * error = new Worker::CallbackError( [ fetcher ]( const std::exception & p_e ) {
-						VTX_ERROR( p_e.what() );
-						delete fetcher->getBuffer();
-						delete fetcher;
-					} );
+					const Worker::CallbackError * error
+						= new Worker::CallbackError( [ fetcher ]( const std::exception & p_e ) {
+							  VTX_ERROR( p_e.what() );
+							  delete fetcher->getBuffer();
+							  delete fetcher;
+						  } );
 
 					VTX_WORKER( fetcher, success, error );
 				}
@@ -130,7 +132,16 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					Worker::Saver * saver = new Worker::Saver( _path );
+					Worker::Saver * saver = nullptr;
+					if ( _path->empty() == false )
+					{
+						saver = new Worker::Saver( _path );
+					}
+					if ( saver == nullptr )
+					{
+						return;
+					}
+
 					VTX_WORKER( saver );
 					delete saver;
 				}
@@ -144,7 +155,13 @@ namespace VTX
 			  public:
 				explicit ToggleCameraController() {}
 
-				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->toggleCameraController(); };
+				virtual void execute() override
+				{
+					VTXApp::get()
+						.getStateMachine()
+						.getItem<State::Visualization>( ID::State::VISUALIZATION )
+						->toggleCameraController();
+				};
 			};
 
 			class ChangeCameraController : public BaseAction
@@ -152,7 +169,13 @@ namespace VTX
 			  public:
 				explicit ChangeCameraController( const ID::VTX_ID & p_controllerId ) : _id( p_controllerId ) {}
 
-				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->setCameraController( _id ); };
+				virtual void execute() override
+				{
+					VTXApp::get()
+						.getStateMachine()
+						.getItem<State::Visualization>( ID::State::VISUALIZATION )
+						->setCameraController( _id );
+				};
 
 			  private:
 				const ID::VTX_ID _id;
@@ -163,7 +186,13 @@ namespace VTX
 			  public:
 				explicit ResetCameraController() {}
 
-				virtual void execute() override { VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->resetCameraController(); };
+				virtual void execute() override
+				{
+					VTXApp::get()
+						.getStateMachine()
+						.getItem<State::Visualization>( ID::State::VISUALIZATION )
+						->resetCameraController();
+				};
 
 			  private:
 			};
@@ -171,7 +200,10 @@ namespace VTX
 			class Snapshot : public BaseAction
 			{
 			  public:
-				explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const Path & p_path ) : _mode( p_mode ), _path( p_path ) {}
+				explicit Snapshot( const Worker::Snapshoter::MODE p_mode, const Path & p_path ) :
+					_mode( p_mode ), _path( p_path )
+				{
+				}
 
 				virtual void execute() override
 				{

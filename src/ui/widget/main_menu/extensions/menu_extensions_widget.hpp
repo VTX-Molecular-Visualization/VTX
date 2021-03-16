@@ -6,6 +6,7 @@
 #endif
 
 #include "menu_extensions_all_widget.hpp"
+#include "menu_extensions_jobs.hpp"
 #include "ui/widget/main_menu/menu_tooltab_widget.hpp"
 #include <QWidget>
 
@@ -33,7 +34,8 @@ namespace VTX
 						void _setupSlots() override;
 
 					  private:
-						MenuExtensionsAllWidgets * _allExtensions = nullptr;
+						MenuExtensionsAllWidgets *	_allExtensions = nullptr;
+						MenuExtensionsJobsWidgets * _jobs		   = nullptr;
 					};
 				} // namespace Extensions
 			}	  // namespace MainMenu

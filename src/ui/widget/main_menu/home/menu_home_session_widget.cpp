@@ -23,11 +23,29 @@ namespace VTX
 
 					void MenuHomeSessionWidget::_openFile()
 					{
-						// TODO : Filter file type
-						const QString filename = QFileDialog::getOpenFileName( this, "Open Molecule", "", "*" );
-						Path *		  path	   = new Path( filename.toStdString() );
+						const QString filename = QFileDialog::getOpenFileName(
+							this,
+							"Open Molecule",
+							QString( QStandardPaths::DocumentsLocation ),
+							"Common molecule files (*.mol2 *.pdb *.xyz *.mmtf *.mmcif *.cif *.sdf "
+							"*.cif *.gro *.smi *.cml);;Trajectory files (*.arc *.dcd *.nc *.trr *.xtc *.trj);;PDB file "
+							"(*.pdb);; mol2 file (*.mol2);;XYZ files (*.xyz);;All files (*.*)" );
+						Path * path = new Path( filename.toStdString() );
 
 						VTX_ACTION( new Action::Main::Open( path ), true );
+					}
+
+					void MenuHomeSessionWidget::_saveFile()
+					{
+						const QString filename = QFileDialog::getSaveFileName(
+							this,
+							tr( "Save File" ),
+							QDir::homePath(),
+							tr( "PDB file (*.pdb);;mol2 file (*.mol2);;xyz file (*.xyz);;mmtf file (*.mmtf);;SDF file "
+								"(*.sdf);;CIF file (*.cif);;Tinker file (*.arc)" ) );
+						Path * path = new Path( filename.toStdString() );
+
+						VTX_ACTION( new Action::Main::Save( path ), true );
 					}
 
 					void MenuHomeSessionWidget::_setupUi( const QString & p_name )
@@ -36,32 +54,45 @@ namespace VTX
 
 						setTitle( "Session" );
 
-						_newSessionButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "newSessionButton" );
+						_newSessionButton
+							= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "newSessionButton" );
 						_newSessionButton->setData( "New", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
 						pushButton( *_newSessionButton, 0 );
 
-						_openSessionButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "openSessionButton" );
-						_openSessionButton->setData( "Open", ":/sprite/open_session_icon.png", Qt::Orientation::Horizontal );
+						_openSessionButton
+							= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "openSessionButton" );
+						_openSessionButton->setData(
+							"Open", ":/sprite/open_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_openSessionButton, 1 );
 
-						_openRecentSessionButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "openRecentSessionButton" );
-						_openRecentSessionButton->setData( "Recent", ":/sprite/openrecent_session_icon.png", Qt::Orientation::Horizontal );
+						_openRecentSessionButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>(
+							this, "openRecentSessionButton" );
+						_openRecentSessionButton->setData(
+							"Recent", ":/sprite/openrecent_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_openRecentSessionButton, 1 );
 
-						_saveSessionButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "saveSessionButton" );
-						_saveSessionButton->setData( "Save", ":/sprite/save_session_icon.png", Qt::Orientation::Horizontal );
+						_saveSessionButton
+							= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "saveSessionButton" );
+						_saveSessionButton->setData(
+							"Save", ":/sprite/save_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_saveSessionButton, 2 );
 
-						_saveAsSessionButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "saveAsSessionButton" );
-						_saveAsSessionButton->setData( "Save as...", ":/sprite/saveas_session_icon.png", Qt::Orientation::Horizontal );
+						_saveAsSessionButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>(
+							this, "saveAsSessionButton" );
+						_saveAsSessionButton->setData(
+							"Save as...", ":/sprite/saveas_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_saveAsSessionButton, 2 );
 
-						_loadSettingsButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "loadSettingsButton" );
-						_loadSettingsButton->setData( "Load settings", ":/sprite/open_session_icon.png", Qt::Orientation::Horizontal );
+						_loadSettingsButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>(
+							this, "loadSettingsButton" );
+						_loadSettingsButton->setData(
+							"Load settings", ":/sprite/open_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_loadSettingsButton, 3 );
 
-						_saveSettingsButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "saveSettingsButton" );
-						_saveSettingsButton->setData( "Save settings", ":/sprite/saveas_session_icon.png", Qt::Orientation::Horizontal );
+						_saveSettingsButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>(
+							this, "saveSettingsButton" );
+						_saveSettingsButton->setData(
+							"Save settings", ":/sprite/saveas_session_icon.png", Qt::Orientation::Horizontal );
 						pushButton( *_saveSettingsButton, 3 );
 
 						QMenu * const recentSessionMenu = _generateRecentSessionsMenu();
@@ -73,6 +104,7 @@ namespace VTX
 					{
 						_openSessionButton->setTriggerAction( this, &MenuHomeSessionWidget::_openFile );
 						_loadSettingsButton->setTriggerAction( this, &MenuHomeSessionWidget::_loadSettings );
+						_saveAsSessionButton->setTriggerAction( this, &MenuHomeSessionWidget::_saveFile );
 						_saveSettingsButton->setTriggerAction( this, &MenuHomeSessionWidget::_saveSettings );
 					}
 					void MenuHomeSessionWidget::localize() {}
@@ -86,11 +118,15 @@ namespace VTX
 
 						for ( const VTX::Path & recentFile : recentFiles )
 						{
-							CustomWidget::IndexedAction * const action = new CustomWidget::IndexedAction( actionIndex, recentSessionMenu );
-							const QString						path   = QString::fromStdString( recentFile.string() );
+							CustomWidget::IndexedAction * const action
+								= new CustomWidget::IndexedAction( actionIndex, recentSessionMenu );
+							const QString path = QString::fromStdString( recentFile.string() );
 							action->setText( path );
 
-							connect( action, &CustomWidget::IndexedAction::triggeredWithIndex, this, &MenuHomeSessionWidget::_loadRecentSession );
+							connect( action,
+									 &CustomWidget::IndexedAction::triggeredWithIndex,
+									 this,
+									 &MenuHomeSessionWidget::_loadRecentSession );
 
 							recentSessionMenu->addAction( action );
 							actionIndex++;

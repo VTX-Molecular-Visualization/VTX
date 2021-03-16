@@ -54,7 +54,6 @@ namespace VTX
 							}
 						}
 					}
-
 				} // namespace Extensions
 			}	  // namespace MainMenu
 		}		  // namespace Widget
