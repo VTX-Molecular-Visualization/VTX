@@ -14,10 +14,11 @@ namespace VTX::Renderer::GL::Pass
 	  public:
 		Shading( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
 		virtual ~Shading();
-		virtual void init( ProgramManager &, const uint, const uint ) override;
-		virtual void resize( const uint, const uint ) override;
-		virtual void render( const Object3D::Scene &, const GL & ) override;
-		void		 set();
+
+		void init( const uint, const uint, const GL & ) override;
+		void resize( const uint, const uint, const GL & ) override;
+		void render( const Object3D::Scene &, const GL & ) override;
+		void set();
 
 		inline const GLuint & getTexture() const { return _texture; }
 		inline const GLuint & getFbo() const { return _fbo; }

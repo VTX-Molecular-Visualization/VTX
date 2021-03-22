@@ -16,13 +16,15 @@ namespace VTX
 	{
 		enum class COLOR_MODE : int
 		{
-			ATOM,
+			ATOM_CHAIN,
+			ATOM_PROTEIN,
 			RESIDUE,
 			CHAIN,
 			PROTEIN,
 			INHERITED
 		};
-		static const std::vector<std::string> COLOR_MODE_STRING { "Atom", "Residue", "Chain", "Protein", "Inherited" };
+		static const std::vector<std::string> COLOR_MODE_STRING { "Atom-Chain", "Atom-Protein", "Residue",
+																  "Chain",		"Protein",		"Inherited" };
 
 		class BaseColorable
 		{

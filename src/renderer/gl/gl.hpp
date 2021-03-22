@@ -23,11 +23,12 @@ namespace VTX::Renderer::GL
 		GL( OpenGLFunctions * const p_gl );
 		~GL();
 
-		virtual void init( const uint, const uint ) override;
-		virtual void renderFrame( const Object3D::Scene & ) override;
-		virtual void setShading() override;
-		virtual void activeSSAO( const bool ) override;
-		virtual void resize( const uint, const uint ) override;
+		void init( const uint, const uint, const GLuint ) override;
+		void renderFrame( const Object3D::Scene & ) override;
+		void setShading() override;
+		void activeSSAO( const bool ) override;
+		void activeAA( const bool ) override;
+		void resize( const uint, const uint, const GLuint ) override;
 
 		inline const Pass::Geometric &		getPassGeometric() const { return *_passGeometric; }
 		inline const Pass::LinearizeDepth & getPassLinearizeDepth() const { return *_passLinearizeDepth; }
@@ -40,9 +41,6 @@ namespace VTX::Renderer::GL
 
 		inline const GLuint & getQuadVAO() const { return _quadVAO; }
 		inline const GLuint & getQuadVBO() const { return _quadVBO; }
-
-		const GLuint & getRenderedTexture() const;
-		const GLuint & getRenderedFBO() const;
 
 	  private:
 		Pass::Geometric *	   _passGeometric	   = nullptr;

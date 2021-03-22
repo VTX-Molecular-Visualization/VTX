@@ -5,53 +5,45 @@
 #pragma once
 #endif
 
+#include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu::Visualization
 {
-	namespace UI
+	class MenuVisualizationSelectionActionWidget : public MenuToolBlockWidget
 	{
-		namespace Widget
-		{
-			namespace MainMenu
-			{
-				namespace Visualization
-				{
-					class MenuVisualizationSelectionActionWidget : public MenuToolBlockWidget
-					{
-						VTX_WIDGET
+		VTX_WIDGET
 
-					  public:
-						~MenuVisualizationSelectionActionWidget();
-						void localize() override;
+	  public:
+		void localize() override;
 
-					  protected:
-						MenuVisualizationSelectionActionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
-						void _setupUi( const QString & p_name ) override;
-						void _setupSlots() override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-					  private:
-						// Selection actions 1
-						MenuToolButtonWidget * _extract = nullptr;
-						MenuToolButtonWidget * _copy	= nullptr;
-						MenuToolButtonWidget * _delete	= nullptr;
+	  protected:
+		MenuVisualizationSelectionActionWidget( QWidget * p_parent );
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 
-						// Visibility actions
-						MenuToolButtonWidget * _show = nullptr;
-						MenuToolButtonWidget * _hide = nullptr;
+		void _enableButtons( const bool p_enable );
 
-						void _copySelection() const;
-						void _extractSelection() const;
-						void _deleteSelection() const;
+	  private:
+		// Selection actions 1
+		MenuToolButtonWidget * _extract = nullptr;
+		MenuToolButtonWidget * _copy	= nullptr;
+		MenuToolButtonWidget * _delete	= nullptr;
 
-						void _showSelection() const;
-						void _hideSelection() const;
-					};
-				} // namespace Visualization
-			}	  // namespace MainMenu
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+		// Visibility actions
+		MenuToolButtonWidget * _show = nullptr;
+		MenuToolButtonWidget * _hide = nullptr;
+
+		void _copySelection() const;
+		void _extractSelection() const;
+		void _deleteSelection() const;
+
+		void _showSelection() const;
+		void _hideSelection() const;
+	};
+} // namespace VTX::UI::Widget::MainMenu::Visualization
 #endif

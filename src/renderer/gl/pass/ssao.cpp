@@ -1,5 +1,7 @@
 #include "ssao.hpp"
+#include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include "util/sampler.hpp"
 #include "vtx_app.hpp"
 #include <random>
@@ -13,7 +15,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_noiseTexture );
 	}
 
-	void SSAO::init( ProgramManager & p_programManager, const uint p_width, const uint p_height )
+	void SSAO::init( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
@@ -26,7 +28,7 @@ namespace VTX::Renderer::GL::Pass
 
 		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 
-		_program = p_programManager.createProgram( "SSAO", { "shading/ssao.frag" } );
+		_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { "shading/ssao.frag" } );
 
 		_uProjMatrixLoc	 = gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
 		_uAoKernelLoc	 = gl()->glGetUniformLocation( _program->getId(), "uAoKernel" );
@@ -78,7 +80,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glUniform1f( _uNoiseSizeLoc, float( _noiseTextureSize ) );
 	}
 
-	void SSAO::resize( const uint p_width, const uint p_height )
+	void SSAO::resize( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glDeleteTextures( 1, &_texture );
 		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
@@ -101,11 +103,16 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 
-		// TODO don't update each frame
-		gl()->glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
+		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+		{
+			gl()->glUniformMatrix4fv(
+				_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
+		}
 
-		gl()->glUniformMatrix4fv(
-			_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
+		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
+		{
+			gl()->glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
+		}
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
 		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );

@@ -7,6 +7,7 @@
 #include "lights/quad_light.hpp"
 #include "materials/flat_color_material.hpp"
 #include "materials/matte.hpp"
+#include "object3d/camera.hpp"
 #include "primitives/cylinder.hpp"
 #include "primitives/molecule_rt.hpp"
 #include "primitives/plane.hpp"
@@ -16,7 +17,6 @@
 #include "util/sampler.hpp"
 #include "vtx_app.hpp"
 #include <atomic>
-#include <stb/stb_image_write.h>
 #include <thread>
 
 namespace VTX
@@ -27,7 +27,8 @@ namespace VTX
 		{
 		  public:
 			CameraRayTracing( const Object3D::Camera & p_camera, const uint p_width, const uint p_height ) :
-				_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ), _right( p_camera.getRight() ), _width( p_width ), _height( p_height )
+				_pos( p_camera.getPosition() ), _front( p_camera.getFront() ), _up( p_camera.getUp() ),
+				_right( p_camera.getRight() ), _width( p_width ), _height( p_height )
 			{
 				//
 				//
@@ -152,11 +153,11 @@ namespace VTX
 
 		const uint RayTracer::TILE_SIZE = 32;
 
-		void RayTracer::init( const uint p_width, const uint p_height )
+		void RayTracer::init( const uint p_width, const uint p_height, const GLuint p_fbo )
 		{
 			VTX_INFO( "Initializing ray tracer..." );
 
-			resize( p_width, p_height );
+			resize( p_width, p_height, p_fbo );
 
 			_integrator = new RayCastIntegrator;
 			//_integrator	  = new DirectLightingIntegrator;
@@ -209,9 +210,10 @@ namespace VTX
 
 			for ( uint i = 0; i < nbThreads; ++i )
 			{
-				threadPool.emplace_back( std::thread( [ this, nbThreads, &camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, &nextTileId ]() {
-					_renderTiles( _pixels, camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, nextTileId );
-				} ) );
+				threadPool.emplace_back( std::thread(
+					[ this, nbThreads, &camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, &nextTileId ]() {
+						_renderTiles( _pixels, camera, nbPixelSamples, i, nbTilesX, nbTilesY, nbTiles, nextTileId );
+					} ) );
 			}
 			for ( std::thread & t : threadPool )
 			{
@@ -233,9 +235,9 @@ namespace VTX
 
 		void RayTracer::setShading() {}
 
-		void RayTracer::resize( const uint p_width, const uint p_height )
+		void RayTracer::resize( const uint p_width, const uint p_height, const GLuint p_fbo )
 		{
-			BaseRenderer::resize( p_width, p_height );
+			BaseRenderer::resize( p_width, p_height, p_fbo );
 
 			_pixels.resize( _width * _height * 3 );
 		}
@@ -408,7 +410,10 @@ namespace VTX
 			}
 		}
 
-		Color::Rgb RayTracer::_renderPixel( const CameraRayTracing & p_camera, const float p_x, const float p_y, const uint p_nbPixelSamples )
+		Color::Rgb RayTracer::_renderPixel( const CameraRayTracing & p_camera,
+											const float				 p_x,
+											const float				 p_y,
+											const uint				 p_nbPixelSamples )
 		{
 			Color::Rgb color = Color::Rgb::BLACK;
 

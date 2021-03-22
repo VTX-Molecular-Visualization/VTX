@@ -7,14 +7,9 @@
 
 #include "generic/base_opengl.hpp"
 #include "renderer/base_renderer.hpp"
-#include "renderer/gl/gl.hpp"
-#include "renderer/ray_tracing/ray_tracer.hpp"
 #include <QElapsedTimer>
 #include <QOpenGLWidget>
 #include <QPainter>
-#ifdef OPTIX_DEFINED
-#include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
-#endif
 
 namespace VTX
 {
@@ -23,7 +18,6 @@ namespace VTX
 		namespace GL
 		{
 			class GL;
-			class ProgramManager;
 		} // namespace GL
 		class RayTracer;
 #ifdef OPTIX_DEFINED
@@ -42,15 +36,10 @@ namespace VTX
 			OpenGLWidget( QWidget * p_parent = 0 );
 			~OpenGLWidget();
 
-			inline Renderer::BaseRenderer &				getRenderer() { return *_renderer; }
-			inline const Renderer::BaseRenderer &		getRenderer() const { return *_renderer; }
-			inline Renderer::GL::GL &					getRendererGL() { return *_rendererGL; }
-			inline const Renderer::GL::GL &				getRendererGL() const { return *_rendererGL; }
-			inline Renderer::GL::ProgramManager &		getProgramManager() { return _renderer->getProgramManager(); }
-			inline const Renderer::GL::ProgramManager & getProgramManager() const
-			{
-				return _renderer->getProgramManager();
-			}
+			inline Renderer::BaseRenderer &		  getRenderer() { return *_renderer; }
+			inline const Renderer::BaseRenderer & getRenderer() const { return *_renderer; }
+			inline Renderer::GL::GL &			  getRendererGL() { return *_rendererGL; }
+			inline const Renderer::GL::GL &		  getRendererGL() const { return *_rendererGL; }
 
 			void initializeGL() override;
 			void paintGL() override;
@@ -59,9 +48,10 @@ namespace VTX
 			void switchRenderer( const Renderer::MODE );
 
 		  private:
-			QElapsedTimer _timer   = QElapsedTimer();
-			uint		  _counter = 0;
-			QPainter	  _painter = QPainter();
+			QElapsedTimer _timer		= QElapsedTimer();
+			QElapsedTimer _frameTimer	= QElapsedTimer();
+			uint		  _frameCounter = 0u;
+			QPainter	  _painter		= QPainter();
 
 			Renderer::BaseRenderer * _renderer	 = nullptr;
 			Renderer::GL::GL *		 _rendererGL = nullptr;

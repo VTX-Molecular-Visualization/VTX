@@ -1,4 +1,8 @@
 #include "opengl_widget.hpp"
+#include "object3d/camera.hpp"
+#include "object3d/scene.hpp"
+#include "renderer/gl/gl.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
 #include <QMainWindow>
@@ -37,62 +41,64 @@ namespace VTX::UI::Widget::Render
 		}
 #endif
 
+		Renderer::GL::ProgramManager::get().dispose();
+
 		doneCurrent();
 	}
 
 	void OpenGLWidget::initializeGL()
 	{
+		VTX_INFO( "Initializing OpenGL..." );
 		_gl = context()->versionFunctions<OpenGLFunctions>();
 		_gl->initializeOpenGLFunctions();
+
+		const uchar * glVersion	  = _gl->glGetString( GL_VERSION );
+		const uchar * glslVersion = _gl->glGetString( GL_SHADING_LANGUAGE_VERSION );
+		const uchar * glVendor	  = _gl->glGetString( GL_VENDOR );
+		const uchar * glRenderer  = _gl->glGetString( GL_RENDERER );
+
+		VTX_INFO( "GL version: " + std::string( (const char *)glVersion ) );
+		VTX_INFO( "GLSL version: " + std::string( (const char *)glslVersion ) );
+		VTX_INFO( "GL device: " + std::string( (const char *)glVendor ) + " "
+				  + std::string( (const char *)glRenderer ) );
 
 #ifdef _DEBUG
 		_gl->glEnable( GL_DEBUG_OUTPUT );
 		_gl->glDebugMessageCallback( VTX::Util::OpenGL::debugMessageCallback, NULL );
 #endif
 
+		VTX_PROGRAM_MANAGER( _gl );
 		switchRenderer( Setting::MODE_DEFAULT );
-		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
-		_timer.start();
+		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT, defaultFramebufferObject() );
+		_frameTimer.start();
 	}
 
 	void OpenGLWidget::paintGL()
 	{
-		getRenderer().renderFrame( VTXApp::get().getScene() );
-
-		// TODO: write directly in defaultFramebufferObject()
-		_gl->glBlitNamedFramebuffer( getRendererGL().getRenderedFBO(),
-									 defaultFramebufferObject(),
-									 0,
-									 0,
-									 size().width(),
-									 size().height(),
-									 0,
-									 0,
-									 size().width(),
-									 size().height(),
-									 GL_COLOR_BUFFER_BIT,
-									 GL_NEAREST );
-
-		_counter++;
-		if ( _timer.elapsed() >= 1000.f )
+		_frameCounter++;
+		if ( _frameTimer.elapsed() >= 1000 )
 		{
-			uint fps	   = _counter / ( _timer.elapsed() / 1000.f );
-			VTX_STAT().FPS = fps;
-			_counter	   = 0;
-			_timer.restart();
+			VTX_STAT().FPS = _frameCounter / ( _frameTimer.elapsed() * 1e-3 );
+			_frameCounter  = 0;
+			_frameTimer.restart();
 		}
 
+		_timer.start();
+
+		getRenderer().renderFrame( VTXApp::get().getScene() );
 		_painter.begin( this );
 		_painter.setPen( Qt::white );
-		_painter.drawText( 10, 10, QString::fromStdString( "FPS: " + std::to_string( VTX_STAT().FPS ) ) );
+		_painter.drawText( 0, 10, QString::fromStdString( std::to_string( VTX_STAT().FPS ) ) );
 		_painter.end();
+
+		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6;
 	}
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )
 	{
 		makeCurrent();
 		VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
-		getRenderer().resize( p_width, p_height );
+		getRenderer().resize( p_width, p_height, defaultFramebufferObject() );
 		doneCurrent();
 	}
 

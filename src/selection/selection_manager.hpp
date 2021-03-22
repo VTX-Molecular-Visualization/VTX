@@ -5,15 +5,14 @@
 #pragma once
 #endif
 
-#include "model/atom.hpp"
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
-#include "model/residue.hpp"
-#include "model/selection.hpp"
 #include <unordered_set>
 
 namespace VTX
 {
+	namespace Model
+	{
+		class Selection;
+	}
 	namespace Selection
 	{
 		class SelectionManager final

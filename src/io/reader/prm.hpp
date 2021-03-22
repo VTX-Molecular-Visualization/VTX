@@ -7,11 +7,14 @@
 
 #include "base_reader_line.hpp"
 #include "define.hpp"
-#include "model/configuration/molecule.hpp"
 #include <vector>
 
 namespace VTX
 {
+	namespace Model::Configuration
+	{
+		struct Molecule;
+	}
 	namespace IO
 	{
 		namespace Reader

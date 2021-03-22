@@ -10,8 +10,6 @@ namespace VTX
 	{
 		MeshTriangle::MeshTriangle() : BaseModel3D( ID::Model::MODEL_MESH_TRIANGLE ) {}
 
-		void MeshTriangle::_init() {}
-
 		void MeshTriangle::_fillBuffer()
 		{
 			_buffer->setPositions( _vertices );
@@ -21,7 +19,7 @@ namespace VTX
 			_buffer->setIndices( _indices );
 		}
 
-		void MeshTriangle::_computeAABB()
+		void MeshTriangle::_computeAABB() const
 		{
 			_aabb.invalidate();
 			for ( const Vec3f & v : _vertices )
@@ -30,11 +28,15 @@ namespace VTX
 			}
 		}
 
-		void MeshTriangle::_instantiate3DViews() { _addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Triangle>( this, ID::View::D3_TRIANGLE ) ); }
+		void MeshTriangle::_instantiate3DViews()
+		{
+			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Triangle>( this, ID::View::D3_TRIANGLE ) );
+		}
 
 		void MeshTriangle::print() const
 		{
-			VTX_INFO( "Faces: " + std::to_string( _indices.size() / 3 ) + " / Vertices: " + std::to_string( _vertices.size() ) + " / Normals: " + std::to_string( _normals.size() )
+			VTX_INFO( "Faces: " + std::to_string( _indices.size() / 3 ) + " / Vertices: "
+					  + std::to_string( _vertices.size() ) + " / Normals: " + std::to_string( _normals.size() )
 					  + " / Indices: " + std::to_string( _indices.size() ) );
 
 			VTX_DEBUG( "Sizeof mesh triangle: " + std::to_string( sizeof( *this ) ) );

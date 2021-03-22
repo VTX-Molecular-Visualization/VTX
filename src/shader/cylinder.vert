@@ -12,8 +12,8 @@ layout( location = ATOM_RADIUS ) in float aVertexRad;
 layout( location = ATOM_VISIBILITY ) in unsigned short aVertexVis;
 layout( location = ATOM_SELECTION ) in unsigned short aVertexSel;
 
-uniform mat4 uMVMatrix;
-uniform mat4 uProjMatrix;
+uniform mat4 u_MVMatrix;
+uniform mat4 u_projMatrix;
 
 flat out vec3			vVertexColor;
 flat out unsigned short vVertexVis;
@@ -26,5 +26,5 @@ void main()
 	vVertexSel	 = aVertexSel;
 
 	// Vertex position in view space.
-	gl_Position = uMVMatrix * vec4( aVertexPosition, 1.f );
+	gl_Position = u_MVMatrix * vec4( aVertexPosition, 1.f );
 }

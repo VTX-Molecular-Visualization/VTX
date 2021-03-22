@@ -5,8 +5,10 @@
 #pragma once
 #endif
 
+#include "event/event_manager.hpp"
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
+#include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "setting.hpp"
@@ -18,220 +20,271 @@
 #include "visible.hpp"
 #include "vtx_app.hpp"
 
-namespace VTX
+namespace VTX::Action::Molecule
 {
-	namespace Action
+	class ChangeColorMode : public BaseAction
 	{
-		namespace Molecule
+	  public:
+		explicit ChangeColorMode( Model::Molecule & p_molecule, const Generic::COLOR_MODE p_colorMode ) :
+			_molecule( p_molecule ), _colorMode( p_colorMode )
 		{
-			class ChangeColorMode : public BaseAction
+		}
+
+		virtual void execute() override
+		{
+			_molecule.setColorMode( _colorMode );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Model::Molecule &		  _molecule;
+		const Generic::COLOR_MODE _colorMode;
+	};
+
+	class ChangeColor : public BaseAction
+	{
+	  public:
+		explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgb & p_color ) :
+			_molecule( p_molecule ), _color( p_color )
+		{
+		}
+
+		virtual void execute() override
+		{
+			_molecule.setColor( _color );
+			_molecule.refreshColors();
+
+			if ( _molecule.getSecondaryStructure().getColorMode() == Model::SecondaryStructure::COLOR_MODE::PROTEIN )
 			{
-			  public:
-				explicit ChangeColorMode( Model::Molecule & p_molecule, const Generic::COLOR_MODE p_colorMode ) : _molecule( p_molecule ), _colorMode( p_colorMode ) {}
+				_molecule.getSecondaryStructure().refreshColors();
+			}
 
-				virtual void execute() override { _molecule.setColorMode( _colorMode ); }
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-			  private:
-				Model::Molecule &		  _molecule;
-				const Generic::COLOR_MODE _colorMode;
-			};
+	  private:
+		Model::Molecule & _molecule;
+		const Color::Rgb  _color;
+	};
 
-			class ChangeColor : public BaseAction
+	class ChangeVisibility : public Visible::ChangeVisibility
+	{
+	  public:
+		explicit ChangeVisibility( Model::Molecule & p_molecule, const VISIBILITY_MODE p_mode ) :
+			Visible::ChangeVisibility( p_molecule, p_mode )
+		{
+		}
+
+		virtual void execute() override
+		{
+			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-			  public:
-				explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgb & p_color ) : _molecule( p_molecule ), _color( p_color ) {}
+				const bool		  newVisibility = _getVisibilityBool( *visible );
+				Model::Molecule * molecule		= ( (Model::Molecule *)visible );
+				molecule->setVisible( newVisibility );
+				molecule->computeRepresentationTargets();
+			}
 
-				virtual void execute() override
-				{
-					_molecule.setColor( _color );
-					_molecule.refreshColors();
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+	};
 
-					if ( _molecule.getSecondaryStructure().getColorMode() == Model::SecondaryStructure::COLOR_MODE::PROTEIN )
-					{
-						_molecule.getSecondaryStructure().refreshColors();
-					}
-				}
+	class ChangeFPS : public BaseAction
+	{
+	  public:
+		explicit ChangeFPS( Model::Molecule & p_molecule, const int p_fps ) : _molecule( p_molecule ), _fps( p_fps ) {}
 
-			  private:
-				Model::Molecule & _molecule;
-				const Color::Rgb  _color;
-			};
+		virtual void execute() override
+		{
+			_molecule.setFPS( Util::Math::clamp( _fps, 0, int( VTX::Setting::VIDEO_FPS_DEFAULT ) ) );
+		}
 
-			class ChangeVisibility : public Visible::ChangeVisibility
-			{
-			  public:
-				explicit ChangeVisibility( Model::Molecule & p_molecule, const VISIBILITY_MODE p_mode ) : Visible::ChangeVisibility( p_molecule, p_mode ) {}
+	  private:
+		Model::Molecule & _molecule;
+		const int		  _fps;
+	};
 
-				virtual void execute() override
-				{
-					for ( Generic::BaseVisible * const visible : _visibles )
-					{
-						const bool		  newVisibility = _getVisibilityBool( *visible );
-						Model::Molecule * molecule		= ( (Model::Molecule *)visible );
-						molecule->setVisible( newVisibility );
-						molecule->computeRepresentationTargets();
-					}
-				}
-			};
+	class ChangeFrame : public BaseAction
+	{
+	  public:
+		explicit ChangeFrame( Model::Molecule & p_molecule, const int p_frame ) :
+			_molecule( p_molecule ), _frame( p_frame )
+		{
+		}
 
-			class ChangeFPS : public BaseAction
-			{
-			  public:
-				explicit ChangeFPS( Model::Molecule & p_molecule, const int p_fps ) : _molecule( p_molecule ), _fps( p_fps ) {}
+		virtual void execute() override
+		{
+			_molecule.setFrame( Util::Math::clamp( _frame, 0, (int)_molecule.getFrameCount() - 1 ) );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-				virtual void execute() override { _molecule.setFPS( Util::Math::clamp( _fps, 0, int( VTX::Setting::VIDEO_FPS_DEFAULT ) ) ); }
+	  private:
+		Model::Molecule & _molecule;
+		const int		  _frame;
+	};
 
-			  private:
-				Model::Molecule & _molecule;
-				const int		  _fps;
-			};
+	class ChangeIsPlaying : public BaseAction
+	{
+	  public:
+		explicit ChangeIsPlaying( Model::Molecule & p_molecule, const bool p_isPlaying ) :
+			_molecule( p_molecule ), _isPlaying( p_isPlaying )
+		{
+		}
 
-			class ChangeFrame : public BaseAction
-			{
-			  public:
-				explicit ChangeFrame( Model::Molecule & p_molecule, const int p_frame ) : _molecule( p_molecule ), _frame( p_frame ) {}
+		virtual void execute() override { _molecule.setIsPlaying( _isPlaying ); }
 
-				virtual void execute() override { _molecule.setFrame( Util::Math::clamp( _frame, 0, (int)_molecule.getFrameCount() - 1 ) ); }
+	  private:
+		Model::Molecule & _molecule;
+		const bool		  _isPlaying;
+	};
 
-			  private:
-				Model::Molecule & _molecule;
-				const int		  _frame;
-			};
+	class ChangeShowIon : public BaseAction
+	{
+	  public:
+		explicit ChangeShowIon( Model::Molecule & p_molecule, const bool p_showIon ) :
+			_molecule( p_molecule ), _showIon( p_showIon )
+		{
+		}
 
-			class ChangeIsPlaying : public BaseAction
-			{
-			  public:
-				explicit ChangeIsPlaying( Model::Molecule & p_molecule, const bool p_isPlaying ) : _molecule( p_molecule ), _isPlaying( p_isPlaying ) {}
+		virtual void execute() override
+		{
+			_molecule.setShowIon( _showIon );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-				virtual void execute() override { _molecule.setIsPlaying( _isPlaying ); }
+	  private:
+		Model::Molecule & _molecule;
+		const bool		  _showIon;
+	};
 
-			  private:
-				Model::Molecule & _molecule;
-				const bool		  _isPlaying;
-			};
+	class ChangeShowSolvent : public BaseAction
+	{
+	  public:
+		explicit ChangeShowSolvent( Model::Molecule & p_molecule, const bool p_showSolvent ) :
+			_molecule( p_molecule ), _showSolvent( p_showSolvent )
+		{
+		}
 
-			class ChangeShowIon : public BaseAction
-			{
-			  public:
-				explicit ChangeShowIon( Model::Molecule & p_molecule, const bool p_showIon ) : _molecule( p_molecule ), _showIon( p_showIon ) {}
+		virtual void execute() override
+		{
+			_molecule.setShowSolvent( _showSolvent );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-				virtual void execute() override { _molecule.setShowIon( _showIon ); }
+	  private:
+		Model::Molecule & _molecule;
+		const bool		  _showSolvent;
+	};
 
-			  private:
-				Model::Molecule & _molecule;
-				const bool		  _showIon;
-			};
+	class ComputeSecondaryStructure : public BaseAction
+	{
+	  public:
+		explicit ComputeSecondaryStructure( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
 
-			class ChangeShowSolvent : public BaseAction
-			{
-			  public:
-				explicit ChangeShowSolvent( Model::Molecule & p_molecule, const bool p_showSolvent ) : _molecule( p_molecule ), _showSolvent( p_showSolvent ) {}
+		virtual void execute() override
+		{
+			Util::SecondaryStructure::computeSecondaryStructure( _molecule );
+			_molecule.createSecondaryStructure();
+		}
 
-				virtual void execute() override { _molecule.setShowSolvent( _showSolvent ); }
+	  private:
+		Model::Molecule & _molecule;
+	};
 
-			  private:
-				Model::Molecule & _molecule;
-				const bool		  _showSolvent;
-			};
+	class Delete : public BaseAction
+	{
+	  public:
+		explicit Delete( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
 
-			class ComputeSecondaryStructure : public BaseAction
-			{
-			  public:
-				explicit ComputeSecondaryStructure( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
+		virtual void execute() override
+		{
+			VTXApp::get().getScene().removeMolecule( &_molecule );
+			MVC::MvcManager::get().deleteModel( &_molecule );
+		}
 
-				virtual void execute() override
-				{
-					Util::SecondaryStructure::computeSecondaryStructure( _molecule );
-					_molecule.createSecondaryStructure();
-				}
+	  private:
+		Model::Molecule & _molecule;
+	};
 
-			  private:
-				Model::Molecule & _molecule;
-			};
+	class ChangeColorModeSecondaryStructure : public BaseAction
+	{
+	  public:
+		explicit ChangeColorModeSecondaryStructure( Model::Molecule &							p_molecule,
+													const Model::SecondaryStructure::COLOR_MODE p_colorMode ) :
+			_molecule( p_molecule ),
+			_colorMode( p_colorMode )
+		{
+		}
 
-			class Delete : public BaseAction
-			{
-			  public:
-				explicit Delete( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
+		virtual void execute() override
+		{
+			_molecule.getSecondaryStructure().setColorMode( _colorMode );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-				virtual void execute() override
-				{
-					VTXApp::get().getScene().removeMolecule( &_molecule );
-					MVC::MvcManager::get().deleteModel( &_molecule );
-				}
+	  private:
+		Model::Molecule &							_molecule;
+		const Model::SecondaryStructure::COLOR_MODE _colorMode;
+	};
 
-			  private:
-				Model::Molecule & _molecule;
-			};
+	class Orient : public BaseAction
+	{
+	  public:
+		explicit Orient( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
 
-			class ChangeColorModeSecondaryStructure : public BaseAction
-			{
-			  public:
-				explicit ChangeColorModeSecondaryStructure( Model::Molecule & p_molecule, const Model::SecondaryStructure::COLOR_MODE p_colorMode ) :
-					_molecule( p_molecule ), _colorMode( p_colorMode )
-				{
-				}
+		virtual void execute() override
+		{
+			VTXApp::get()
+				.getStateMachine()
+				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				->orientCameraController( _molecule.getWorldAABB() );
+		}
 
-				virtual void execute() override { _molecule.getSecondaryStructure().setColorMode( _colorMode ); }
+	  private:
+		Model::Molecule & _molecule;
+	};
 
-			  private:
-				Model::Molecule &							_molecule;
-				const Model::SecondaryStructure::COLOR_MODE _colorMode;
-			};
+	class Copy : public BaseAction
+	{
+	  public:
+		explicit Copy( const Model::Molecule & p_target ) : _target( p_target ) {}
+		virtual void execute() override
+		{
+			Model::GeneratedMolecule * generatedMolecule
+				= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
 
-			class Orient : public BaseAction
-			{
-			  public:
-				explicit Orient( Model::Molecule & p_molecule ) : _molecule( p_molecule ) {}
+			generatedMolecule->copyFromMolecule( _target );
 
-				virtual void execute() override
-				{
-					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->orientCameraController( _molecule.getAABB() );
-				}
+			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
 
-			  private:
-				Model::Molecule & _molecule;
-			};
+			const float offset = generatedMolecule->getAABB().radius() + _target.getAABB().radius()
+								 + VTX::Setting::COPIED_MOLECULE_OFFSET;
+			generatedMolecule->setTranslation( VTX::Vec3f( offset, 0, 0 ) );
 
-			class Copy : public BaseAction
-			{
-			  public:
-				explicit Copy( const Model::Selection & p_source ) : _selection( p_source ) {}
-				virtual void execute() override
-				{
-					Model::GeneratedMolecule * generatedMolecule = MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
-					generatedMolecule->copyFromSelection( _selection );
-					VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+			VTXApp::get().getScene().addMolecule( generatedMolecule );
+		}
 
-					generatedMolecule->setTranslation( VTX::Vec3f( 10, 0, 0 ) );
-					VTXApp::get().getScene().addMolecule( generatedMolecule );
-				}
+	  private:
+		const Model::Molecule & _target;
+	};
 
-			  private:
-				const Model::Selection & _selection;
-			};
+	class Rename : public BaseActionUndonable
+	{
+	  public:
+		explicit Rename( Model::Molecule & p_target, const std::string & p_newName ) :
+			_target( p_target ), _oldName( p_target.getDisplayName() ), _newName( p_newName )
+		{
+		}
 
-			class Extract : public BaseAction
-			{
-			  public:
-				explicit Extract( const Model::Selection & p_source ) : _selection( p_source ) {}
-				virtual void execute() override
-				{
-					const Model::ID & idMolSource = _selection.getItems().begin()->first;
-					Model::Molecule & molecule	  = MVC::MvcManager::get().getModel<Model::Molecule>( idMolSource );
+		void execute() override { _target.setDisplayName( _newName ); }
+		void undo() override { _target.setDisplayName( _oldName ); }
 
-					Model::GeneratedMolecule * const generatedMolecule = MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
-					generatedMolecule->extractFromSelection( _selection );
+	  private:
+		Model::Molecule & _target;
 
-					VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+		const std::string _oldName;
+		const std::string _newName;
+	};
 
-					VTXApp::get().getScene().addMolecule( generatedMolecule );
-				}
-
-			  private:
-				const Model::Selection & _selection;
-			};
-		} // namespace Molecule
-	}	  // namespace Action
-} // namespace VTX
+} // namespace VTX::Action::Molecule
 #endif

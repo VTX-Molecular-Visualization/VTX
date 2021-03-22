@@ -11,7 +11,7 @@ namespace VTX
 {
 	namespace Renderer
 	{
-		TriangleMesh::TriangleMesh( const Path & meshToLoad )
+		TriangleMesh::TriangleMesh( const FilePath & meshToLoad )
 		{
 			Assimp::Importer importer;
 

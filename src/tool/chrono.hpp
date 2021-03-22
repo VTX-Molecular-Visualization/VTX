@@ -6,6 +6,7 @@
 #endif
 
 #include <chrono>
+#include <string>
 
 namespace VTX
 {

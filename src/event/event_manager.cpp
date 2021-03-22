@@ -1,4 +1,5 @@
 #include "event_manager.hpp"
+#include "tool/logger.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -15,7 +16,8 @@ namespace VTX
 			}
 		}
 
-		void EventManager::registerEventReceiverVTX( const VTX_EVENT & p_event, BaseEventReceiverVTX * const p_receiver )
+		void EventManager::registerEventReceiverVTX( const VTX_EVENT &			  p_event,
+													 BaseEventReceiverVTX * const p_receiver )
 		{
 			if ( _receiversVTX.find( p_event ) == _receiversVTX.end() )
 			{
@@ -25,19 +27,41 @@ namespace VTX
 			_receiversVTX.at( p_event ).emplace( p_receiver );
 		}
 
-		void EventManager::unregisterEventReceiverVTX( const VTX_EVENT & p_event, BaseEventReceiverVTX * const p_receiver ) { _receiversVTX.at( p_event ).erase( p_receiver ); }
+		void EventManager::unregisterEventReceiverVTX( const VTX_EVENT &			p_event,
+													   BaseEventReceiverVTX * const p_receiver )
+		{
+			_receiversVTX.at( p_event ).erase( p_receiver );
+		}
 
-		void EventManager::registerEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver ) { _receiversKeyboard.emplace( p_receiver ); }
+		void EventManager::registerEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver )
+		{
+			_receiversKeyboard.emplace( p_receiver );
+		}
 
-		void EventManager::unregisterEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver ) { _receiversKeyboard.erase( p_receiver ); }
+		void EventManager::unregisterEventReceiverKeyboard( BaseEventReceiverKeyboard * const p_receiver )
+		{
+			_receiversKeyboard.erase( p_receiver );
+		}
 
-		void EventManager::registerEventReceiverMouse( BaseEventReceiverMouse * const p_receiver ) { _receiversMouse.emplace( p_receiver ); }
+		void EventManager::registerEventReceiverMouse( BaseEventReceiverMouse * const p_receiver )
+		{
+			_receiversMouse.emplace( p_receiver );
+		}
 
-		void EventManager::unregisterEventReceiverMouse( BaseEventReceiverMouse * const p_receiver ) { _receiversMouse.erase( p_receiver ); }
+		void EventManager::unregisterEventReceiverMouse( BaseEventReceiverMouse * const p_receiver )
+		{
+			_receiversMouse.erase( p_receiver );
+		}
 
-		void EventManager::registerEventReceiverWheel( BaseEventReceiverWheel * const p_receiver ) { _receiversWheel.emplace( p_receiver ); }
+		void EventManager::registerEventReceiverWheel( BaseEventReceiverWheel * const p_receiver )
+		{
+			_receiversWheel.emplace( p_receiver );
+		}
 
-		void EventManager::unregisterEventReceiverWheel( BaseEventReceiverWheel * const p_receiver ) { _receiversWheel.erase( p_receiver ); }
+		void EventManager::unregisterEventReceiverWheel( BaseEventReceiverWheel * const p_receiver )
+		{
+			_receiversWheel.erase( p_receiver );
+		}
 
 		void EventManager::fireEventVTX( VTXEvent * const p_event )
 		{
@@ -50,42 +74,54 @@ namespace VTX
 #endif
 		}
 
-		void EventManager::fireEventKeyboard( QKeyEvent * const p_event ) { _eventQueueKeyboard.emplace( *p_event ); }
+		void EventManager::fireEventKeyboard( QKeyEvent * const p_event )
+		{
+#ifdef DELAY_EVENTS_QT
+			_eventQueueKeyboard.emplace( p_event );
+#else
+			_flushEventKeyboard( p_event );
+#endif
+		}
 
-		void EventManager::fireEventMouse( QMouseEvent * const p_event ) { _eventQueueMouse.emplace( *p_event ); }
+		void EventManager::fireEventMouse( QMouseEvent * const p_event )
+		{
+#ifdef DELAY_EVENTS_QT
+			_eventQueueMouse.emplace( p_event );
+#else
+			_flushEventMouse( p_event );
+#endif
+		}
 
-		void EventManager::fireEventWheel( QWheelEvent * const p_event ) { _eventQueueWheel.emplace( *p_event ); }
+		void EventManager::fireEventWheel( QWheelEvent * const p_event )
+		{
+#ifdef DELAY_EVENTS_QT
+			_eventQueueWheel.emplace( p_event );
+#else
+			_flushEventWheel( p_event );
+#endif
+		}
 
 		void EventManager::update( const float & p_deltaTime )
 		{
 			// Input events.
 			while ( _eventQueueKeyboard.empty() == false )
 			{
-				const QKeyEvent & event = _eventQueueKeyboard.front();
-				for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
-				{
-					receiver->receiveEvent( event );
-				}
+				QKeyEvent * const event = _eventQueueKeyboard.front();
+				_flushEventKeyboard( event );
 				_eventQueueKeyboard.pop();
 			}
 
 			while ( _eventQueueMouse.empty() == false )
 			{
-				const QMouseEvent & event = _eventQueueMouse.front();
-				for ( Event::BaseEventReceiverMouse * const receiver : _receiversMouse )
-				{
-					receiver->receiveEvent( event );
-				}
+				QMouseEvent * const event = _eventQueueMouse.front();
+				_flushEventMouse( event );
 				_eventQueueMouse.pop();
 			}
 
 			while ( _eventQueueWheel.empty() == false )
 			{
-				const QWheelEvent & event = _eventQueueWheel.front();
-				for ( Event::BaseEventReceiverWheel * const receiver : _receiversWheel )
-				{
-					receiver->receiveEvent( event );
-				}
+				QWheelEvent * const event = _eventQueueWheel.front();
+				_flushEventWheel( event );
 				_eventQueueWheel.pop();
 			}
 
@@ -111,7 +147,30 @@ namespace VTX
 					receiver->receiveEvent( *p_event );
 				}
 			}
-			delete p_event;
+		}
+
+		void EventManager::_flushEventKeyboard( QKeyEvent * const p_event )
+		{
+			for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
+			{
+				receiver->receiveEvent( *p_event );
+			}
+		}
+
+		void EventManager::_flushEventMouse( QMouseEvent * const p_event )
+		{
+			for ( Event::BaseEventReceiverMouse * const receiver : _receiversMouse )
+			{
+				receiver->receiveEvent( *p_event );
+			}
+		}
+
+		void EventManager::_flushEventWheel( QWheelEvent * const p_event )
+		{
+			for ( Event::BaseEventReceiverWheel * const receiver : _receiversWheel )
+			{
+				receiver->receiveEvent( *p_event );
+			}
 		}
 
 	} // namespace Event

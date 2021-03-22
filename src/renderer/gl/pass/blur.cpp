@@ -1,5 +1,6 @@
 #include "blur.hpp"
 #include "renderer/gl/gl.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Renderer::GL::Pass
@@ -12,7 +13,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_texture );
 	}
 
-	void Blur::init( ProgramManager & p_programManager, const uint p_width, const uint p_height )
+	void Blur::init( const uint p_width, const uint p_height, const GL & )
 	{
 		// first pass fbo/texture
 		gl()->glCreateFramebuffers( 1, &_fboFirstPass );
@@ -38,7 +39,7 @@ namespace VTX::Renderer::GL::Pass
 
 		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 
-		_program = p_programManager.createProgram( "Blur", { "shading/bilateral_blur.frag" } );
+		_program = VTX_PROGRAM_MANAGER().createProgram( "Blur", { "shading/bilateral_blur.frag" } );
 
 		_uBlurSizeLoc			 = gl()->glGetUniformLocation( _program->getId(), "uBlurSize" );
 		_uInvDirectionTexSizeLoc = gl()->glGetUniformLocation( _program->getId(), "uInvDirectionTexSize" );
@@ -47,7 +48,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glUniform1i( _uBlurSizeLoc, VTX_SETTING().aoBlurSize );
 	}
 
-	void Blur::resize( const uint p_width, const uint p_height )
+	void Blur::resize( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glDeleteTextures( 1, &_textureFirstPass );
 		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_textureFirstPass );
@@ -80,8 +81,12 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glBindTextureUnit( 1, p_renderer.getPassLinearizeDepth().getTexture() );
 
 		_program->use();
-		// TODO don't update each frame
-		gl()->glUniform1i( _uBlurSizeLoc, VTX_SETTING().aoBlurSize );
+
+		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
+		{
+			gl()->glUniform1i( _uBlurSizeLoc, VTX_SETTING().aoBlurSize );
+		}
+
 		gl()->glUniform2i( _uInvDirectionTexSizeLoc, 1, 0 );
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );

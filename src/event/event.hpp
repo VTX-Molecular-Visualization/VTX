@@ -37,8 +37,8 @@ namespace VTX
 			REPRESENTATION_ADDED,
 			REPRESENTATION_REMOVED,
 			CONTROLLER_CHANGE,
-			DOCK_WINDOW_VISIBILITY_CHANGE
-
+			DOCK_WINDOW_VISIBILITY_CHANGE,
+			MAIN_WINDOW_MODE_CHANGE,
 		};
 
 		// Model events for notifier pattern (model->views)[1-n].
@@ -49,6 +49,8 @@ namespace VTX
 			MOLECULE_VISIBILITY,
 			CHAIN_VISIBILITY,
 			RESIDUE_VISIBILITY,
+			ATOM_VISIBILITY,
+			DISPLAY_NAME_CHANGE,
 		};
 
 		// Base event without args.
@@ -84,8 +86,12 @@ namespace VTX
 		// Other events.
 		struct VTXEventLog : public VTXEvent
 		{
-			VTXEventLog( const VTX_EVENT & p_event, const std::string & p_level, const std::string & p_date, const std::string & p_message ) :
-				VTXEvent( p_event ), level( p_level ), date( p_date ), message( p_message )
+			VTXEventLog( const VTX_EVENT &	 p_event,
+						 const std::string & p_level,
+						 const std::string & p_date,
+						 const std::string & p_message ) :
+				VTXEvent( p_event ),
+				level( p_level ), date( p_date ), message( p_message )
 			{
 			}
 			std::string level;

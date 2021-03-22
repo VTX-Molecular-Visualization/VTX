@@ -50,12 +50,18 @@ namespace VTX
 			ActionManager & operator=( const ActionManager & ) = delete;
 			~ActionManager()								   = default;
 
-			void _flushAction( BaseAction * const);
+			void _flushAction( BaseAction * const );
 			void _purgeBuffer();
 		};
 	} // namespace Action
 
-	inline void VTX_ACTION( VTX::Action::BaseAction * const p_action, const bool p_force = false ) { Action::ActionManager::get().execute( p_action, p_force ); }
-	inline void VTX_ACTION( const std::string & p_action, const bool p_force = false ) { Action::ActionManager::get().execute( p_action, p_force ); }
+	inline void VTX_ACTION( VTX::Action::BaseAction * const p_action, const bool p_force = false )
+	{
+		Action::ActionManager::get().execute( p_action, p_force );
+	}
+	inline void VTX_ACTION( const std::string & p_action, const bool p_force = false )
+	{
+		Action::ActionManager::get().execute( p_action, p_force );
+	}
 } // namespace VTX
 #endif

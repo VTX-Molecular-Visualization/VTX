@@ -1,62 +1,46 @@
 #include "menu_home_molecule_widget.hpp"
 #include "action/main.hpp"
+#include "ui/dialog.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
-#include <QFileDialog>
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu::Home
 {
-	namespace UI
+	MenuHomeMoleculeWidget::~MenuHomeMoleculeWidget() {}
+
+	void MenuHomeMoleculeWidget::_setupUi( const QString & p_name )
 	{
-		namespace Widget
-		{
-			namespace MainMenu
-			{
-				namespace Home
-				{
-					MenuHomeMoleculeWidget::~MenuHomeMoleculeWidget() {}
+		MenuToolBlockWidget::_setupUi( p_name );
 
-					void MenuHomeMoleculeWidget::_loadMoleculeFile()
-					{
-						// TODO : Filter file type
-						const QString filename = QFileDialog::getOpenFileName( this, "Open Molecule", "", VTX_SETTING().MOLECULE_FILE_FILTERS );
-						Path *		  path	   = new Path( filename.toStdString() );
+		_loadMoleculeButton
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "loadMoleculeButton" );
+		_loadMoleculeButton->setData( "Load", ":/sprite/load_molecule_icon.png", Qt::Orientation::Vertical );
+		pushButton( *_loadMoleculeButton, 0 );
 
-						VTX_ACTION( new Action::Main::Open( path ), true );
-					}
-					void MenuHomeMoleculeWidget::_downloadMoleculeFile() { _downloadMoleculeDialog->show(); }
+		_downloadMoleculeButton
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "downloadMoleculeButton" );
+		_downloadMoleculeButton->setData(
+			"Download", ":/sprite/download_molecule_icon.png", Qt::Orientation::Vertical );
+		pushButton( *_downloadMoleculeButton, 1 );
 
-					void MenuHomeMoleculeWidget::_saveMoleculeFile() {}
+		_saveMoleculeButton
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "saveMoleculeButton" );
+		_saveMoleculeButton->setData( "Save", ":/sprite/save_molecule_icon.png", Qt::Orientation::Vertical );
+		pushButton( *_saveMoleculeButton, 2 );
 
-					void MenuHomeMoleculeWidget::_setupUi( const QString & p_name )
-					{
-						MenuToolBlockWidget::_setupUi( p_name );
+		validate();
+	}
+	void MenuHomeMoleculeWidget::_setupSlots()
+	{
+		_loadMoleculeButton->setTriggerAction( this, &MenuHomeMoleculeWidget::_loadMoleculeFile );
+		_downloadMoleculeButton->setTriggerAction( this, &MenuHomeMoleculeWidget::_downloadMoleculeFile );
+		_saveMoleculeButton->setTriggerAction( this, &MenuHomeMoleculeWidget::_saveMoleculeFile );
+	}
+	void MenuHomeMoleculeWidget::localize() { setTitle( "Molecule" ); }
 
-						_loadMoleculeButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "loadMoleculeButton" );
-						_loadMoleculeButton->setData( "Load", ":/sprite/load_molecule_icon.png", Qt::Orientation::Vertical );
-						pushButton( *_loadMoleculeButton, 0 );
+	void MenuHomeMoleculeWidget::_loadMoleculeFile() { UI::Dialog::openLoadMoleculeDialog( this ); }
+	void MenuHomeMoleculeWidget::_downloadMoleculeFile() { UI::Dialog::openDownloadMoleculeDialog(); }
 
-						_downloadMoleculeButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "downloadMoleculeButton" );
-						_downloadMoleculeButton->setData( "Download", ":/sprite/download_molecule_icon.png", Qt::Orientation::Vertical );
-						pushButton( *_downloadMoleculeButton, 1 );
+	void MenuHomeMoleculeWidget::_saveMoleculeFile() {}
 
-						_saveMoleculeButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "saveMoleculeButton" );
-						_saveMoleculeButton->setData( "Save", ":/sprite/save_molecule_icon.png", Qt::Orientation::Vertical );
-						pushButton( *_saveMoleculeButton, 2 );
-
-						validate();
-
-						_downloadMoleculeDialog = WidgetFactory::get().instantiateWidget<Dialog::DownloadMoleculeDialog>( this, "downloadMoleculeDialog" );
-					}
-					void MenuHomeMoleculeWidget::_setupSlots()
-					{
-						_loadMoleculeButton->setTriggerAction( this, &MenuHomeMoleculeWidget::_loadMoleculeFile );
-						_downloadMoleculeButton->setTriggerAction( this, &MenuHomeMoleculeWidget::_downloadMoleculeFile );
-						_saveMoleculeButton->setTriggerAction( this, &MenuHomeMoleculeWidget::_saveMoleculeFile );
-					}
-					void MenuHomeMoleculeWidget::localize() { setTitle( "Molecule" ); }
-				} // namespace Home
-			}	  // namespace MainMenu
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+} // namespace VTX::UI::Widget::MainMenu::Home

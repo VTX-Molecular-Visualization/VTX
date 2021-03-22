@@ -9,10 +9,14 @@
 #pragma warning( push, 0 )
 //#include <mmtf/mmtf.hpp>
 #pragma warning( pop )
-#include "model/molecule.hpp"
 
 namespace VTX
 {
+	namespace Model
+	{
+		class Molecule;
+	}
+
 	namespace IO
 	{
 		namespace Reader
@@ -20,8 +24,8 @@ namespace VTX
 			class LibMMTF : public BaseReader<Model::Molecule>
 			{
 			  public:
-				[[deprecated]] void readFile( const Path &, Model::Molecule & ) override {}
-				[[deprecated]] void readBuffer( const std::string &, const Path &, Model::Molecule & ) override {}
+				[[deprecated]] void readFile( const FilePath &, Model::Molecule & ) override {}
+				[[deprecated]] void readBuffer( const std::string &, const FilePath &, Model::Molecule & ) override {}
 
 			  private:
 				// void _readStructureData( const mmtf::StructureData &, Model::Molecule & );

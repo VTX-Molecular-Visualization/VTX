@@ -5,59 +5,64 @@
 #pragma once
 #endif
 
-#include "camera.hpp"
 #include "generic/base_updatable.hpp"
-#include "model/mesh_triangle.hpp"
-#include "model/molecule.hpp"
-#include "model/path.hpp"
+#include "math/aabb.hpp"
+#include <map>
 #include <vector>
 
-namespace VTX
+namespace VTX::Model
 {
-	namespace Object3D
+	class MeshTriangle;
+	class Molecule;
+	class Path;
+} // namespace VTX::Model
+
+namespace VTX::Object3D
+{
+	class Camera;
+	class Scene : public Generic::BaseUpdatable
 	{
-		class Scene : public Generic::BaseUpdatable
-		{
-		  public:
-			using MoleculePtr			= Model::Molecule *;
-			using PathPtr				= Model::Path *;
-			using MeshTrianglePtr		= Model::MeshTriangle *;
-			using MapMoleculePtrFloat	= std::map<MoleculePtr, float>;
-			using PairMoleculePtrFloat	= std::pair<const MoleculePtr, float>;
-			using VectorPathPtr			= std::vector<PathPtr>;
-			using VectorMeshTrianglePtr = std::vector<MeshTrianglePtr>;
+	  public:
+		using MoleculePtr			= Model::Molecule *;
+		using PathPtr				= Model::Path *;
+		using MeshTrianglePtr		= Model::MeshTriangle *;
+		using MapMoleculePtrFloat	= std::map<MoleculePtr, float>;
+		using PairMoleculePtrFloat	= std::pair<const MoleculePtr, float>;
+		using VectorPathPtr			= std::vector<PathPtr>;
+		using VectorMeshTrianglePtr = std::vector<MeshTrianglePtr>;
 
-			Scene();
-			~Scene() { clear(); }
+		Scene();
+		~Scene();
 
-			inline Camera &						 getCamera() { return _camera; }
-			inline const Camera &				 getCamera() const { return _camera; }
-			inline MapMoleculePtrFloat &		 getMolecules() { return _molecules; };
-			inline const MapMoleculePtrFloat &	 getMolecules() const { return _molecules; };
-			inline const VectorPathPtr &		 getPaths() const { return _paths; };
-			inline const VectorMeshTrianglePtr & getMeshes() const { return _meshes; };
-			inline const Math::AABB &			 getAABB() const { return _aabb; }
+		inline Camera &						 getCamera() { return *_camera; }
+		inline const Camera &				 getCamera() const { return *_camera; }
+		inline MapMoleculePtrFloat &		 getMolecules() { return _molecules; };
+		inline const MapMoleculePtrFloat &	 getMolecules() const { return _molecules; };
+		inline const VectorPathPtr &		 getPaths() const { return _paths; };
+		inline const VectorMeshTrianglePtr & getMeshes() const { return _meshes; };
+		const Math::AABB &					 getAABB();
 
-			void addMolecule( MoleculePtr const );
-			void removeMolecule( MoleculePtr const );
-			void addPath( PathPtr const );
-			void addMesh( MeshTrianglePtr const );
-			void removeMesh( MeshTrianglePtr const );
+		void addMolecule( MoleculePtr const );
+		void removeMolecule( MoleculePtr const );
+		void addPath( PathPtr const );
+		void addMesh( MeshTrianglePtr const );
+		void removeMesh( MeshTrianglePtr const );
 
-			void clear();
+		void clear();
+		void reset();
 
-			virtual void update( const float & ) override;
+		virtual void update( const float & ) override;
 
-		  private:
-			void _computeAABB();
+	  private:
+		void _computeAABB();
+		void _createDefaultPath();
 
-		  private:
-			Camera				  _camera = Camera();
-			Math::AABB			  _aabb;
-			MapMoleculePtrFloat	  _molecules = MapMoleculePtrFloat();
-			VectorPathPtr		  _paths	 = VectorPathPtr();
-			VectorMeshTrianglePtr _meshes	 = VectorMeshTrianglePtr();
-		};
-	} // namespace Object3D
-} // namespace VTX
+	  private:
+		Camera *			  _camera = nullptr;
+		Math::AABB			  _aabb;
+		MapMoleculePtrFloat	  _molecules = MapMoleculePtrFloat();
+		VectorPathPtr		  _paths	 = VectorPathPtr();
+		VectorMeshTrianglePtr _meshes	 = VectorMeshTrianglePtr();
+	};
+} // namespace VTX::Object3D
 #endif

@@ -17,7 +17,7 @@ namespace VTX
 			class Setting : public BaseWriter<::VTX::Setting>
 			{
 			  public:
-				void writeFile( const Path & p_path, const ::VTX::Setting & p_data ) override;
+				void writeFile( const FilePath & p_path, const ::VTX::Setting & p_data ) override;
 			};
 		} // namespace Writer
 	}	  // namespace IO

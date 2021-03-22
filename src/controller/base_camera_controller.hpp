@@ -1,11 +1,12 @@
-#ifndef __VTX_BASE_GAMEPAD_CONTROLLER__
-#define __VTX_BASE_GAMEPAD_CONTROLLER__
+#ifndef __VTX_BASE_CAMERA_CONTROLLER__
+#define __VTX_BASE_CAMERA_CONTROLLER__
 
 #ifdef _MSC_VER
 #pragma once
 #endif
 
 #include "base_controller.hpp"
+#include "base_gamepad_controller.hpp"
 #include "base_keyboard_controller.hpp"
 #include "base_mouse_controller.hpp"
 #include "math/aabb.hpp"
@@ -14,9 +15,17 @@
 
 namespace VTX
 {
+	namespace Object3D
+	{
+		class Camera;
+	}
+
 	namespace Controller
 	{
-		class BaseCameraController : public BaseMouseController, public BaseKeyboardController
+		class BaseCameraController :
+			public BaseMouseController,
+			public BaseKeyboardController,
+			public BaseGamepadController
 		{
 		  public:
 			explicit BaseCameraController( Object3D::Camera & p_camera ) : _camera( p_camera ) {}
@@ -28,6 +37,8 @@ namespace VTX
 
 			void update( const float & p_deltaTime ) override
 			{
+				BaseMouseController::update( p_deltaTime );
+
 				if ( _isOrienting )
 				{
 					_orientTime += p_deltaTime;

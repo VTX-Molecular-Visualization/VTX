@@ -8,7 +8,7 @@ namespace VTX
 	{
 		namespace Writer
 		{
-			void Setting::writeFile( const Path & p_path, const ::VTX::Setting & p_setting )
+			void Setting::writeFile( const FilePath & p_path, const ::VTX::Setting & p_setting )
 			{
 				IO::Serializer serializer = IO::Serializer();
 				nlohmann::json json		  = serializer.serialize( p_setting );

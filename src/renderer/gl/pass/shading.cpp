@@ -1,5 +1,7 @@
 #include "shading.hpp"
+#include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Renderer::GL::Pass
@@ -10,7 +12,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_texture );
 	}
 
-	void Shading::init( ProgramManager & p_programManager, const uint p_width, const uint p_height )
+	void Shading::init( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
@@ -23,16 +25,16 @@ namespace VTX::Renderer::GL::Pass
 
 		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 
-		_toonShading	= p_programManager.createProgram( "ToonShading", { "shading/shading_toon.frag" } );
-		_diffuseShading = p_programManager.createProgram( "DiffuseShading", { "shading/shading_diffuse.frag" } );
-		_glossyShading	= p_programManager.createProgram( "GlossyShading", { "shading/shading_glossy.frag" } );
-		_flatShading	= p_programManager.createProgram( "FlatShading", { "shading/shading_flat.frag" } );
+		_toonShading	= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { "shading/shading_toon.frag" } );
+		_diffuseShading = VTX_PROGRAM_MANAGER().createProgram( "DiffuseShading", { "shading/shading_diffuse.frag" } );
+		_glossyShading	= VTX_PROGRAM_MANAGER().createProgram( "GlossyShading", { "shading/shading_glossy.frag" } );
+		_flatShading	= VTX_PROGRAM_MANAGER().createProgram( "FlatShading", { "shading/shading_flat.frag" } );
 
 		// Use setting value.
 		set();
 	}
 
-	void Shading::resize( const uint p_width, const uint p_height )
+	void Shading::resize( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glDeleteTextures( 1, &_texture );
 		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
@@ -56,22 +58,29 @@ namespace VTX::Renderer::GL::Pass
 
 		_currentShading->use();
 
-		// TODO: do not update each frame
-		const Color::Rgb & bgColor = VTX_SETTING().backgroundColor;
-		gl()->glUniform3f( _uBackgroundColorLoc, bgColor.getR(), bgColor.getG(), bgColor.getB() );
-		gl()->glUniform1f( _uFogNear, VTX_SETTING().fogNear );
-		gl()->glUniform1f( _uFogFar, VTX_SETTING().fogFar );
-		gl()->glUniform1f( _uFogDensity, VTX_SETTING().activeFog ? VTX_SETTING().fogDensity : 0.f );
-		const Color::Rgb & fogColor = VTX_SETTING().fogColor;
-		gl()->glUniform3f( _uFogColor, fogColor.getR(), fogColor.getG(), fogColor.getB() );
+		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
+		{
+			const Color::Rgb & bgColor = VTX_SETTING().backgroundColor;
+			gl()->glUniform3f( _uBackgroundColorLoc, bgColor.getR(), bgColor.getG(), bgColor.getB() );
+			gl()->glUniform1f( _uFogNear, VTX_SETTING().fogNear );
+			gl()->glUniform1f( _uFogFar, VTX_SETTING().fogFar );
+			gl()->glUniform1f( _uFogDensity, VTX_SETTING().activeFog ? VTX_SETTING().fogDensity : 0.f );
+			const Color::Rgb & fogColor = VTX_SETTING().fogColor;
+			gl()->glUniform3f( _uFogColor, fogColor.getR(), fogColor.getG(), fogColor.getB() );
+
+			const Color::Rgb & lightColor = VTX_SETTING().lightColor;
+			gl()->glUniform3f( _uLightColor, lightColor.getR(), lightColor.getG(), lightColor.getB() );
+		}
+
 		// TODO: no need for flat shading
 		// TODO: let the user choose where's the light
 		// TODO: distinguish "view" and "world" lights
-		const Vec4f & lightPosition
-			= p_scene.getCamera().getViewMatrix() * Vec4f( p_scene.getCamera().getPosition(), 1.f );
-		gl()->glUniform3f( _uLightPosition, lightPosition.x, lightPosition.y, lightPosition.z );
-		const Color::Rgb & lightColor = VTX_SETTING().lightColor;
-		gl()->glUniform3f( _uLightColor, lightColor.getR(), lightColor.getG(), lightColor.getB() );
+		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+		{
+			const Vec4f & lightPosition
+				= p_scene.getCamera().getViewMatrix() * Vec4f( p_scene.getCamera().getPosition(), 1.f );
+			gl()->glUniform3f( _uLightPosition, lightPosition.x, lightPosition.y, lightPosition.z );
+		}
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
 		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );

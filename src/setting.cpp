@@ -1,6 +1,6 @@
 #include "setting.hpp"
 #include "io/serializer.hpp"
-#include "renderer/gl/pass/shading.hpp"
+#include "renderer/base_renderer.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -9,20 +9,24 @@ namespace VTX
 	const Style::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT = Style::SYMBOL_DISPLAY_MODE::SHORT;
 	const int						 Setting::WINDOW_WIDTH_DEFAULT		  = 1280;
 	const int						 Setting::WINDOW_HEIGHT_DEFAULT		  = 720;
+	const bool						 Setting::WINDOW_FULLSCREEN_DEFAULT	  = false;
 
 	const char * Setting::STYLESHEET_FILE_DEFAULT		 = ":/stylesheet.css";
 	const int	 Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT	 = 200;
 	const int	 Setting::SCENE_WIDGET_WIDTH_DEFAULT	 = 50;
 	const int	 Setting::INSPECTOR_WIDGET_WIDTH_DEFAULT = 50;
-	const int	 Setting::RENDER_WIDGET_HEIGHT_DEFAULT	 = Setting::WINDOW_HEIGHT_DEFAULT - Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT;
+	const int	 Setting::RENDER_WIDGET_HEIGHT_DEFAULT
+		= Setting::WINDOW_HEIGHT_DEFAULT - Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT;
 
 	const int Setting::STATUS_PROGRESS_BAR_CHUNKS = 10;
 	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;
 
-	const QString Setting::MOLECULE_FILE_FILTERS = "Molecule file (*.pdb *.cif)";
+	const QString Setting::MOLECULE_FILE_FILTERS = "Molecule file (*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm)";
+	const QString Setting::OPEN_FILE_FILTERS	 = "VTX file (*.vtx, *.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm)";
 
 	// Rendering.
 	const bool				  Setting::ACTIVE_RENDERER_DEFAULT		= true;
+	const bool				  Setting::FORCE_RENDERER_DEFAULT		= false;
 	const Color::Rgb		  Setting::BACKGROUND_COLOR_DEFAULT		= Color::Rgb::BLACK;
 	const int				  Setting::REPRESENTATION_DEFAULT_INDEX = 0;
 	const float				  Setting::ATOMS_RADIUS_DEFAULT			= 0.4f;
@@ -42,6 +46,9 @@ namespace VTX
 	const int				  Setting::AO_BLUR_SIZE_MIN				= 1;
 	const int				  Setting::AO_BLUR_SIZE_MAX				= 99;
 	const bool				  Setting::ACTIVE_OUTLINE_DEFAULT		= false;
+	const float				  Setting::OUTLINE_THICKNESS_DEFAULT	= 1.0f;
+	const float				  Setting::OUTLINE_THICKNESS_MIN		= 0.1f;
+	const float				  Setting::OUTLINE_THICKNESS_MAX		= 10.0f;
 	const Color::Rgb		  Setting::OUTLINE_COLOR_DEFAULT		= Color::Rgb::WHITE;
 	const bool				  Setting::ACTIVE_FOG_DEFAULT			= false;
 	const float				  Setting::FOG_NEAR_DEFAULT				= 400.f;
@@ -80,6 +87,9 @@ namespace VTX
 	const bool	Setting::CONTROLLER_Y_AXIS_INVERTED			   = false;
 	const float Setting::CONTROLLER_ELASTICITY_FACTOR		   = 4.0f;
 	const float Setting::CONTROLLER_ELASTICITY_THRESHOLD	   = 1e-4f;
+
+	// Molecule
+	const float Setting::COPIED_MOLECULE_OFFSET = 5.0f;
 
 	// Auto rotate.
 	const float Setting::AUTO_ROTATE_SPEED_DEFAULT = 0.0f;

@@ -1,5 +1,7 @@
 #include "linearize_depth.hpp"
+#include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Renderer::GL::Pass
@@ -10,7 +12,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_texture );
 	}
 
-	void LinearizeDepth::init( ProgramManager & p_programManager, const uint p_width, const uint p_height )
+	void LinearizeDepth::init( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
@@ -23,12 +25,12 @@ namespace VTX::Renderer::GL::Pass
 
 		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 
-		_program = p_programManager.createProgram( "LinearizeDepth", { "shading/linearize_depth.frag" } );
+		_program = VTX_PROGRAM_MANAGER().createProgram( "LinearizeDepth", { "shading/linearize_depth.frag" } );
 
 		_uClipInfoLoc = gl()->glGetUniformLocation( _program->getId(), "uClipInfo" );
 	}
 
-	void LinearizeDepth::resize( const uint p_width, const uint p_height )
+	void LinearizeDepth::resize( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glDeleteTextures( 1, &_texture );
 		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
@@ -48,12 +50,15 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getDepthTexture() );
 
 		_program->use();
-		// TODO don't update each frame
-		const Object3D::Camera & cam	 = VTXApp::get().getScene().getCamera();
-		const float				 camNear = cam.getNear();
-		const float				 camFar	 = cam.getFar();
-		// clipInfo.w: 0 = orhto ; 1 = perspective
-		gl()->glUniform4f( _uClipInfoLoc, camNear * camFar, camFar, camFar - camNear, 1.f );
+
+		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+		{
+			const Object3D::Camera & cam	 = p_scene.getCamera();
+			const float				 camNear = cam.getNear();
+			const float				 camFar	 = cam.getFar();
+			// clipInfo.w: 0 = orhto ; 1 = perspective
+			gl()->glUniform4f( _uClipInfoLoc, camNear * camFar, camFar, camFar - camNear, 1.f );
+		}
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
 

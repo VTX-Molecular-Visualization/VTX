@@ -17,6 +17,36 @@ namespace VTX
 		class BaseKeyboardController : virtual public BaseController, public Event::BaseEventReceiverKeyboard
 		{
 		  public:
+			// ScanCode from AZERTY layout.
+			enum class ScanCode : uint
+			{
+				F1		= 59,
+				F2		= 60,
+				F3		= 61,
+				F4		= 62,
+				F5		= 63,
+				F6		= 64,
+				F7		= 65,
+				F8		= 66,
+				F9		= 67,
+				F10		= 68,
+				F11		= 87,
+				Z		= 17,
+				S		= 31,
+				Q		= 30,
+				D		= 32,
+				A		= 16,
+				E		= 18,
+				R		= 19,
+				F		= 33,
+				Left	= 331,
+				Right	= 333,
+				Up		= 328,
+				Down	= 336,
+				Control = 29,
+				Shift	= 42
+			};
+
 			virtual void receiveEvent( const QKeyEvent & p_event ) override
 			{
 				if ( isActive() == false )
@@ -27,31 +57,30 @@ namespace VTX
 				case QEvent::KeyPress:
 				{
 					// TOFIX: workaround beacause KeyRelease triggered after 1 second.
-					/*if ( p_event.isAutoRepeat() == false )
-					{*/
-					_handleKeyDownEvent( p_event.key() );
-					/*}
-					else
-					{
-						_handleKeyPressedEvent( p_event.key() );
-					}*/
+					// if ( p_event.isAutoRepeat() == false )
+					//{
+					_handleKeyDownEvent( ScanCode( p_event.nativeScanCode() ) );
+					//}
+					// else
+					//{
+					//	_handleKeyPressedEvent( ScanCode( p_event.nativeScanCode() ) );
+					//}
 					break;
 				}
-				case QEvent::KeyRelease: _handleKeyUpEvent( p_event.key() ); break;
+				case QEvent::KeyRelease: _handleKeyUpEvent( ScanCode( p_event.nativeScanCode() ) ); break;
 				default: break;
 				}
 			}
 
 		  protected:
-			std::set<int> _pressedButtons = std::set<int>();
+			std::set<ScanCode> _pressedKeys = std::set<ScanCode>();
 
-			virtual void _handleKeyDownEvent( const int & p_key ) { _pressedButtons.emplace( p_key ); }
+			virtual void _handleKeyDownEvent( const ScanCode & p_key ) { _pressedKeys.emplace( p_key ); }
+			virtual void _handleKeyUpEvent( const ScanCode & p_key ) { _pressedKeys.erase( p_key ); }
 
-			virtual void _handleKeyUpEvent( const int & p_key ) { _pressedButtons.erase( p_key ); }
+			virtual void _handleKeyPressedEvent( const ScanCode & p_key ) {}
 
-			// virtual void _handleKeyPressedEvent( const int & p_key ) { std::cout << "_handleKeyPressedEvent" << std::endl; }
-
-			bool _isKeyPressed( const int & p_key ) { return _pressedButtons.find( p_key ) != _pressedButtons.end(); }
+			bool _isKeyPressed( const ScanCode & p_key ) { return _pressedKeys.find( p_key ) != _pressedKeys.end(); }
 		};
 	} // namespace Controller
 } // namespace VTX

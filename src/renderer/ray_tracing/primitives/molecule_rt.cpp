@@ -4,6 +4,9 @@
 #include "../materials/metal.hpp"
 #include "../materials/phong_material.hpp"
 #include "cylinder.hpp"
+#include "model/atom.hpp"
+#include "model/bond.hpp"
+#include "model/chain.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "sphere.hpp"
 
@@ -50,7 +53,7 @@ namespace VTX
 			//					   0.6f * jaune,
 			//					   shininess ),									   // jaune ocre
 			//	new MatteMaterial( rouge, roughness ), // rouge clair
-			//	new MatteMaterial( blanc, 0.5f ),	   // blanc qui pète
+			//	new MatteMaterial( blanc, 0.5f ),	   // blanc qui pï¿½te
 			//	new MatteMaterial( rouge, roughness ), // rouge clair
 			//	new MatteMaterial( rouge, roughness )  // rouge clair
 			//};
@@ -79,7 +82,7 @@ namespace VTX
 			{
 				if ( p_molecule->isAtomVisible( i ) )
 				{
-					Model::Chain * chainPtr = p_molecule->getAtom( i ).getChainPtr();
+					Model::Chain * chainPtr = p_molecule->getAtom( i )->getChainPtr();
 
 					if ( mapMtls.find( chainPtr ) == mapMtls.end() )
 					{
@@ -89,11 +92,12 @@ namespace VTX
 						mapMtls[ chainPtr ] = _materials.back();
 					}
 
-					primitives.emplace_back( new Renderer::Sphere( tAtomPositions[ i ],
-																   rep == Generic::REPRESENTATION::VAN_DER_WAALS ? p_molecule->getAtomRadius( i )
-																   : rep == Generic::REPRESENTATION::SAS		 ? p_molecule->getAtomRadius( i ) + 1.4f
-																												 : radius,
-																   mapMtls[ chainPtr ] ) );
+					primitives.emplace_back( new Renderer::Sphere(
+						tAtomPositions[ i ],
+						rep == Generic::REPRESENTATION::VAN_DER_WAALS ? p_molecule->getAtomRadius( i )
+						: rep == Generic::REPRESENTATION::SAS		  ? p_molecule->getAtomRadius( i ) + 1.4f
+																	  : radius,
+						mapMtls[ chainPtr ] ) );
 				}
 			}
 
@@ -101,11 +105,12 @@ namespace VTX
 			{
 				for ( uint i = 0; i < nbBonds; ++i )
 				{
-					const Model::Bond & bond = p_molecule->getBond( i );
+					const Model::Bond & bond = *p_molecule->getBond( i );
 					const Vec3f &		a1	 = tAtomPositions[ bond.getIndexFirstAtom() ];
 					const Vec3f &		a2	 = tAtomPositions[ bond.getIndexSecondAtom() ];
 
-					primitives.emplace_back( new Renderer::Cylinder( a1, a2, 0.25f, mapMtls[ p_molecule->getAtom( bond.getIndexFirstAtom() ).getChainPtr() ] ) );
+					primitives.emplace_back( new Renderer::Cylinder(
+						a1, a2, 0.25f, mapMtls[ p_molecule->getAtom( bond.getIndexFirstAtom() )->getChainPtr() ] ) );
 				}
 			}
 

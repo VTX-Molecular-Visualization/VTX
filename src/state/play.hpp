@@ -6,10 +6,14 @@
 #endif
 
 #include "base_state.hpp"
-#include "model/path.hpp"
 
 namespace VTX
 {
+	namespace Model
+	{
+		class Path;
+	}
+
 	namespace State
 	{
 		class Play : public BaseState

@@ -8,6 +8,7 @@
 #include "base_model_3d.hpp"
 #include "buffer/secondary_structure.hpp"
 #include "color/rgb.hpp"
+#include "model/selection.hpp"
 
 namespace VTX
 {
@@ -39,10 +40,6 @@ namespace VTX
 				RESIDUE
 
 			};
-			enum class ALGO : int
-			{
-				STRIDE
-			};
 
 			static const Color::Rgb COLORS_JMOL[ uint( VALUE::COUNT ) ];
 
@@ -59,14 +56,20 @@ namespace VTX
 
 			const std::vector<uint> &	 getIndices() const { return _buffferIndices; }
 			const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToIndices; }
-			inline void refreshSelection( const std::map<uint, std::map<uint, std::vector<uint>>> * const p_selection = nullptr ) { _fillBufferSelections( p_selection ); }
+			inline void refreshSelection( const Model::Selection::MapChainIds * const p_selection = nullptr )
+			{
+				_fillBufferSelections( p_selection );
+			}
 
 			void print() const;
+
+			const Math::Transform & getTransform() const override;
+			const Math::AABB &		getAABB() const override;
 
 		  protected:
 			void _init() override;
 			void _fillBuffer() override;
-			void _computeAABB() override;
+			void _computeAABB() const override;
 			void _instantiate3DViews() override;
 
 		  private:
@@ -88,7 +91,7 @@ namespace VTX
 			~SecondaryStructure() = default;
 
 			void _fillBufferColors();
-			void _fillBufferSelections( const std::map<uint, std::map<uint, std::vector<uint>>> * const = nullptr );
+			void _fillBufferSelections( const Model::Selection::MapChainIds * const = nullptr );
 			void _flipTest( Vec3f &, Vec3f & ) const;
 		};
 

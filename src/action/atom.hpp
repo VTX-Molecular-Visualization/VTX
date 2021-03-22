@@ -5,79 +5,156 @@
 #pragma once
 #endif
 
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "model/atom.hpp"
+#include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
+#include "model/residue.hpp"
+#include "model/selection.hpp"
+#include "mvc/mvc_manager.hpp"
+#include "object3d/scene.hpp"
+#include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "util/molecule.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
 
-namespace VTX
+namespace VTX::Action::Atom
 {
-	namespace Action
+	class ChangeColor : public BaseAction
 	{
-		namespace Atom
+	  public:
+		explicit ChangeColor( Model::Atom & p_atom, const Color::Rgb & p_color ) : _atom( p_atom ), _color( p_color ) {}
+
+		virtual void execute() override
 		{
-			class ChangeColor : public BaseAction
+			//_atom.setColor( _color );
+			//_atom.getMoleculePtr()->setColorMode();
+		}
+
+	  private:
+		Model::Atom &	 _atom;
+		const Color::Rgb _color;
+	};
+
+	class ChangeVisibility : public Visible::ChangeVisibility
+	{
+	  public:
+		explicit ChangeVisibility( Model::Atom & p_atom, const VISIBILITY_MODE p_mode ) :
+			Visible::ChangeVisibility( p_atom, p_mode )
+		{
+		}
+
+		virtual void execute() override
+		{
+			// _visibles will always has a size of 1, we can perform computeRepresentationTargets in the loop
+			for ( Generic::BaseVisible * const visible : _visibles )
 			{
-			  public:
-				explicit ChangeColor( Model::Atom & p_atom, const Color::Rgb & p_color ) : _atom( p_atom ), _color( p_color ) {}
+				Model::Atom & atom			= *( (Model::Atom *)visible );
+				const bool	  newVisibility = _getVisibilityBool( atom );
 
-				virtual void execute() override
-				{
-					//_atom.setColor( _color );
-					//_atom.getMoleculePtr()->setColorMode();
-				}
+				atom.setVisible( newVisibility );
 
-			  private:
-				Model::Atom &	 _atom;
-				const Color::Rgb _color;
-			};
+				atom.getMoleculePtr()->computeRepresentationTargets();
+			}
 
-			class ChangeVisibility : public Visible::ChangeVisibility
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+	};
+
+	class Orient : public BaseAction
+	{
+	  public:
+		explicit Orient( Model::Atom & p_atom ) : _atom( p_atom ) {}
+
+		virtual void execute() override
+		{
+			VTXApp::get()
+				.getStateMachine()
+				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				->orientCameraController( _atom.getWorldAABB() );
+		}
+
+	  private:
+		Model::Atom & _atom;
+	};
+
+	class Delete : public BaseAction
+	{
+	  public:
+		explicit Delete( Model::Atom & p_atom ) : _atom( p_atom ) {}
+
+		virtual void execute() override
+		{
+			VTX::Selection::SelectionManager::get().getSelectionModel().unselectAtom( _atom );
+
+			Model::Molecule * const molecule = _atom.getMoleculePtr();
+			molecule->removeAtom( _atom.getIndex() );
+
+			if ( molecule->isEmpty() )
 			{
-			  public:
-				explicit ChangeVisibility( Model::Atom & p_atom, const VISIBILITY_MODE p_mode ) : Visible::ChangeVisibility( p_atom, p_mode ) {}
-
-				virtual void execute() override
-				{
-					Visible::ChangeVisibility::execute();
-
-					for ( Generic::BaseVisible * const visible : _visibles )
-					{
-						const Model::Atom & atom = *( (Model::Atom *)visible );
-
-						if ( _mode == VISIBILITY_MODE::ALL || _mode == VISIBILITY_MODE::SOLO )
-						{
-							for ( uint i = 0; i < atom.getResiduePtr()->getAtomCount(); ++i )
-							{
-								atom.getMoleculePtr()
-									->getAtom( atom.getResiduePtr()->getIndexFirstAtom() + i )
-									.setVisible( _mode == VISIBILITY_MODE::ALL
-												 || ( _mode == VISIBILITY_MODE::SOLO && atom.getResiduePtr()->getIndexFirstAtom() + i == atom.getIndex() ) );
-							}
-						}
-
-						atom.getMoleculePtr()->computeRepresentationTargets();
-					}
-				}
-			};
-
-			class Orient : public BaseAction
+				VTXApp::get().getScene().removeMolecule( molecule );
+				MVC::MvcManager::get().deleteModel( molecule );
+			}
+			else
 			{
-			  public:
-				explicit Orient( Model::Atom & p_atom ) : _atom( p_atom ) {}
+				molecule->refreshBondsBuffer();
+			}
 
-				virtual void execute() override
-				{
-					VTXApp::get().getStateMachine().getItem<State::Visualization>( ID::State::VISUALIZATION )->orientCameraController( _atom.getAABB() );
-				}
+			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
 
-			  private:
-				Model::Atom & _atom;
-			};
-		} // namespace Atom
-	}	  // namespace Action
-} // namespace VTX
+	  private:
+		Model::Atom & _atom;
+	};
+
+	class Copy : public BaseAction
+	{
+	  public:
+		explicit Copy( const Model::Atom & p_target ) : _target( p_target ) {}
+		virtual void execute() override
+		{
+			Model::GeneratedMolecule * generatedMolecule
+				= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+
+			generatedMolecule->copyFromAtom( _target );
+
+			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+
+			const float offset = generatedMolecule->getAABB().radius() + _target.getAABB().radius()
+								 + VTX::Setting::COPIED_MOLECULE_OFFSET;
+			generatedMolecule->setTranslation( VTX::Vec3f( offset, 0, 0 ) );
+
+			VTXApp::get().getScene().addMolecule( generatedMolecule );
+		}
+
+	  private:
+		const Model::Atom & _target;
+	};
+
+	class Extract : public BaseAction
+	{
+	  public:
+		explicit Extract( const Model::Atom & p_target ) : _target( p_target ) {}
+		virtual void execute() override
+		{
+			Model::GeneratedMolecule * const generatedMolecule
+				= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+
+			generatedMolecule->extractAtom( _target );
+
+			VTX_EVENT( new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+
+			VTXApp::get().getScene().addMolecule( generatedMolecule );
+
+			VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+		}
+
+	  private:
+		const Model::Atom & _target;
+	};
+} // namespace VTX::Action::Atom
 #endif

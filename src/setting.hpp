@@ -7,6 +7,7 @@
 
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "generic/base_colorable.hpp"
 #include "style.hpp"
 #include <QString>
 
@@ -30,8 +31,10 @@ namespace VTX
 		static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
 		Style::SYMBOL_DISPLAY_MODE				symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
 
-		static const int WINDOW_WIDTH_DEFAULT;
-		static const int WINDOW_HEIGHT_DEFAULT;
+		static const int  WINDOW_WIDTH_DEFAULT;
+		static const int  WINDOW_HEIGHT_DEFAULT;
+		static const bool WINDOW_FULLSCREEN_DEFAULT;
+		bool			  windowFullscreen = WINDOW_FULLSCREEN_DEFAULT;
 
 		static const char * STYLESHEET_FILE_DEFAULT;
 		static const int	CONSOLE_WIDGET_HEIGHT_DEFAULT;
@@ -43,10 +46,13 @@ namespace VTX
 		static const int STATUS_PROGRESS_BAR_WIDTH;
 
 		static const QString MOLECULE_FILE_FILTERS;
+		static const QString OPEN_FILE_FILTERS;
 
 		// Rendering.
 		static const bool ACTIVE_RENDERER_DEFAULT;
 		bool			  activeRenderer = ACTIVE_RENDERER_DEFAULT;
+		static const bool FORCE_RENDERER_DEFAULT;
+		bool			  forceRenderer = FORCE_RENDERER_DEFAULT;
 
 		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
 		Color::Rgb				backgroundColor = BACKGROUND_COLOR_DEFAULT;
@@ -88,6 +94,11 @@ namespace VTX
 
 		static const bool ACTIVE_OUTLINE_DEFAULT;
 		bool			  activeOutline = ACTIVE_OUTLINE_DEFAULT;
+
+		static const float OUTLINE_THICKNESS_DEFAULT;
+		static const float OUTLINE_THICKNESS_MIN;
+		static const float OUTLINE_THICKNESS_MAX;
+		bool			   outlineThickness = OUTLINE_THICKNESS_DEFAULT;
 
 		static const Color::Rgb OUTLINE_COLOR_DEFAULT;
 		Color::Rgb				outlineColor = OUTLINE_COLOR_DEFAULT;
@@ -158,6 +169,9 @@ namespace VTX
 		static const float CONTROLLER_ELASTICITY_FACTOR;
 		static const float CONTROLLER_ELASTICITY_THRESHOLD;
 
+		// Molecules
+		static const float COPIED_MOLECULE_OFFSET;
+
 		// Auto rotate.
 		static const float AUTO_ROTATE_SPEED_DEFAULT;
 		static const float AUTO_ROTATE_SPEED_MIN;
@@ -173,7 +187,7 @@ namespace VTX
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
 
-		inline static std::vector<VTX::Path> recentLoadingPath = { "Recent 1", "Recent 2", "Recent 3" };
+		inline static std::vector<VTX::FilePath> recentLoadingPath = { "Recent 1", "Recent 2", "Recent 3" };
 
 		void backup();
 		void recover();

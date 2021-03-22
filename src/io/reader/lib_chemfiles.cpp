@@ -1,5 +1,10 @@
-#include "lib_chemfiles.hpp"
 #include "color/rgb.hpp"
+#include "lib_chemfiles.hpp"
+#include "model/atom.hpp"
+#include "model/bond.hpp"
+#include "model/chain.hpp"
+#include "model/molecule.hpp"
+#include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
@@ -17,7 +22,7 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			void LibChemfiles::readFile( const Path & p_path, Model::Molecule & p_molecule )
+			void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 			{
 				prepareChemfiles();
 				chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string() );
@@ -26,7 +31,7 @@ namespace VTX
 			}
 
 			void LibChemfiles::readBuffer( const std::string & p_buffer,
-										   const Path &		   p_path,
+										   const FilePath &	   p_path,
 										   Model::Molecule &   p_molecule )
 			{
 				std::string extension = p_path.extension().string().substr( 1, p_path.extension().string().size() );
@@ -79,7 +84,7 @@ namespace VTX
 			}
 
 			void LibChemfiles::readTrajectory( chemfiles::Trajectory & p_trajectory,
-											   const Path &			   p_path,
+											   const FilePath &		   p_path,
 											   Model::Molecule &	   p_molecule ) const
 			{
 				VTX_INFO( std::to_string( p_trajectory.nsteps() ) + " frames found" );
@@ -182,19 +187,30 @@ namespace VTX
 					VTX_DEBUG( propResidue );
 				}
 
+				// If no residue, create a fake one.
+				// TODO: check file format instead of residue count?
+				bool hasTopology = true;
+				if ( residues.size() == 0 )
+				{
+					hasTopology = false;
+					VTX_INFO( "No residues found" );
+					chemfiles::Residue residue = chemfiles::Residue( "" );
+					for ( uint i = 0; i < frame.size(); ++i )
+					{
+						residue.add_atom( i );
+					}
+					frame.add_residue( residue );
+				}
+
 				// Create models.
 				p_molecule.getFrames().resize( p_trajectory.nsteps() );
-				for ( uint frameNum = 0; frameNum < p_trajectory.nsteps(); frameNum++ )
-				{
-					Model::Molecule::AtomPositionsFrame & framePositions = p_molecule.getAtomPositionFrame( frameNum );
-					framePositions.resize( frame.size() );
-				}
+				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
 				p_molecule.getResidues().resize( topology.residues().size() );
 				p_molecule.getAtoms().resize( frame.size() );
 				p_molecule.getBufferAtomRadius().resize( frame.size() );
 				p_molecule.getBufferAtomVisibilities().resize( frame.size(), 1u );
 				p_molecule.getBufferAtomSelection().resize( frame.size(), 0u );
-				Model::Molecule::AtomPositionsFrame & modelFrame = p_molecule.getAtomPositionFrame( 0 );
+				modelFrame.resize( frame.size() );
 
 				Model::Chain * modelChain;
 				std::string	   lastChainName   = "";
@@ -218,7 +234,7 @@ namespace VTX
 						// Create chain.
 						p_molecule.addChain();
 						chainModelId++;
-						modelChain = &p_molecule.getChain( chainModelId );
+						modelChain = p_molecule.getChain( chainModelId );
 						modelChain->setIndex( chainModelId );
 						if ( chainName != "" )
 						{
@@ -232,7 +248,7 @@ namespace VTX
 						oldIndexInChain = INT_MIN;
 					}
 
-					modelChain = &p_molecule.getChain( chainModelId );
+					modelChain = p_molecule.getChain( chainModelId );
 					modelChain->setResidueCount( modelChain->getResidueCount() + 1 );
 
 					// Create residue.
@@ -240,7 +256,6 @@ namespace VTX
 					p_molecule.getResidues()[ residueIdx ] = modelResidue;
 					modelResidue->setIndex( residueIdx );
 
-					modelResidue->setMoleculePtr( &p_molecule );
 					modelResidue->setChainPtr( modelChain );
 					modelResidue->setIndexFirstAtom( uint( *residue.begin() ) );
 					modelResidue->setAtomCount( uint( residue.size() ) );
@@ -363,8 +378,6 @@ namespace VTX
 						Model::Atom * modelAtom			= MVC::MvcManager::get().instantiateModel<Model::Atom>();
 						p_molecule.getAtoms()[ atomId ] = modelAtom;
 						modelAtom->setIndex( atomId );
-						modelAtom->setMoleculePtr( &p_molecule );
-						modelAtom->setChainPtr( modelChain );
 						modelAtom->setResiduePtr( modelResidue );
 						std::string atomSymbol = atom.type();
 						std::transform(
@@ -456,8 +469,8 @@ namespace VTX
 				{
 					const chemfiles::Bond & bond = bonds[ boundIdx ];
 
-					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) ).getResiduePtr();
-					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) ).getResiduePtr();
+					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) )->getResiduePtr();
+					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) )->getResiduePtr();
 
 					if ( residueStart == residueEnd )
 					{
@@ -476,11 +489,11 @@ namespace VTX
 				p_molecule.getBufferBonds().resize( bonds.size() * 2 );
 				for ( const std::pair<uint, std::vector<const chemfiles::Bond *>> & pair : mapResidueBonds )
 				{
-					Model::Residue &							 residue	 = p_molecule.getResidue( pair.first );
+					Model::Residue * const						 residue	 = p_molecule.getResidue( pair.first );
 					const std::vector<const chemfiles::Bond *> & vectorBonds = pair.second;
 
-					residue.setIndexFirstBond( counter );
-					residue.setBondCount( uint( vectorBonds.size() ) );
+					residue->setIndexFirstBond( counter );
+					residue->setBondCount( uint( vectorBonds.size() ) );
 
 					for ( uint i = 0; i < vectorBonds.size(); ++i, ++counter )
 					{
@@ -504,8 +517,8 @@ namespace VTX
 					Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
 					p_molecule.getBonds()[ counter ]  = modelBond;
 
-					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) ).getResiduePtr();
-					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) ).getResiduePtr();
+					Model::Residue * residueStart = p_molecule.getAtom( uint( bond[ 0 ] ) )->getResiduePtr();
+					Model::Residue * residueEnd	  = p_molecule.getAtom( uint( bond[ 1 ] ) )->getResiduePtr();
 
 					modelBond->setMoleculePtr( &p_molecule );
 					modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
@@ -521,3 +534,4 @@ namespace VTX
 		} // namespace Reader
 	}	  // namespace IO
 } // namespace VTX
+

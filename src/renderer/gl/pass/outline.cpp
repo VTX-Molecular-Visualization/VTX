@@ -1,5 +1,7 @@
 #include "outline.hpp"
+#include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
+#include "renderer/gl/program_manager.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Renderer::GL::Pass
@@ -10,7 +12,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDeleteTextures( 1, &_texture );
 	}
 
-	void Outline::init( ProgramManager & p_programManager, const uint p_width, const uint p_height )
+	void Outline::init( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
@@ -23,7 +25,7 @@ namespace VTX::Renderer::GL::Pass
 
 		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 
-		_program = p_programManager.createProgram( "Outline", { "shading/outline.frag" } );
+		_program = VTX_PROGRAM_MANAGER().createProgram( "Outline", { "shading/outline.frag" } );
 
 		_program->use();
 
@@ -34,7 +36,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );
 	}
 
-	void Outline::resize( const uint p_width, const uint p_height )
+	void Outline::resize( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glDeleteTextures( 1, &_texture );
 		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
@@ -56,11 +58,17 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 
-		// TODO: do not update each frame
-		gl()->glUniformMatrix4fv(
-			_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
-		const Color::Rgb & lineColor = VTX_SETTING().outlineColor;
-		gl()->glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );
+		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
+		{
+			gl()->glUniformMatrix4fv(
+				_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
+		}
+
+		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
+		{
+			const Color::Rgb & lineColor = VTX_SETTING().outlineColor;
+			gl()->glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );
+		}
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
 		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );

@@ -37,8 +37,8 @@ namespace VTX
 
 			inline const std::vector<ushort> & getVisibilities() const { return _visibilities; }
 			inline std::vector<ushort> &	   getVisibilities() { return _visibilities; }
-			inline const ushort &			   getVisibilitie( const uint p_idx ) const { return _visibilities[ p_idx ]; }
-			inline ushort &					   getVisibilitie( const uint p_idx ) { return _visibilities[ p_idx ]; }
+			inline const ushort & getVisibilitie( const uint p_idx ) const { return _visibilities[ p_idx ]; }
+			inline ushort &		  getVisibilitie( const uint p_idx ) { return _visibilities[ p_idx ]; }
 
 			inline const std::vector<uint> & getIndices() const { return _indices; }
 			inline std::vector<uint> &		 getIndices() { return _indices; }
@@ -57,8 +57,7 @@ namespace VTX
 			MeshTriangle();
 			~MeshTriangle() = default;
 
-			void _init() override;
-			void _computeAABB() override;
+			void _computeAABB() const override;
 			void _fillBuffer() override;
 			void _instantiate3DViews() override;
 		};

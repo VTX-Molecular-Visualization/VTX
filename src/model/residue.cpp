@@ -1,18 +1,27 @@
 #include "residue.hpp"
+#include "atom.hpp"
+#include "chain.hpp"
 #include "molecule.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
+		Molecule * const Residue::getMoleculePtr() const { return _chainPtr->getMoleculePtr(); };
+		void			 Residue::setChainPtr( Chain * const p_chain )
+		{
+			_chainPtr = p_chain;
+			setRepresentableMolecule( p_chain->getMoleculePtr() );
+		}
+
 		const Atom * const Residue::findFirstAtomByName( const std::string & p_name ) const
 		{
 			for ( uint i = 0; i < _atomCount; ++i )
 			{
-				const Atom & atom = _moleculePtr->getAtom( _indexFirstAtom + i );
-				if ( atom.getName() == p_name )
+				const Atom * const atom = getMoleculePtr()->getAtom( _indexFirstAtom + i );
+				if ( atom != nullptr && atom->getName() == p_name )
 				{
-					return &atom;
+					return atom;
 				}
 			}
 
@@ -24,8 +33,9 @@ namespace VTX
 			if ( isVisible() != p_visible )
 			{
 				BaseVisible ::setVisible( p_visible );
-
 				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
+				getMoleculePtr()->propagateEventToViews(
+					new Event::VTXEventValue<uint>( Event::Model::RESIDUE_VISIBILITY, _index ) );
 			}
 		}
 
@@ -35,10 +45,21 @@ namespace VTX
 
 			for ( uint i = 0; i < _atomCount; ++i )
 			{
-				const Atom & atom = _moleculePtr->getAtom( _indexFirstAtom + i );
-				aabb.extend( atom.getAABB() );
+				const Atom * const atom = getMoleculePtr()->getAtom( _indexFirstAtom + i );
+
+				if ( atom == nullptr )
+					continue;
+
+				aabb.extend( atom->getAABB() );
 			}
 
+			return aabb;
+		}
+
+		const Math::AABB Residue::getWorldAABB() const
+		{
+			Math::AABB aabb = getAABB();
+			aabb.translate( getMoleculePtr()->getTransform().getTranslationVector() );
 			return aabb;
 		}
 
@@ -70,6 +91,7 @@ namespace VTX
 			"HOH", // HOH
 			"HEM", // HEM
 			"PO4", // PO4
+			"MEL", // MEL
 		};
 
 		const std::string Residue::SYMBOL_SHORT_STR[ (int)SYMBOL::COUNT ] = {
@@ -100,36 +122,38 @@ namespace VTX
 			"O", // HOH
 			"?", // HEM
 			"?", // PO4
+			"?", // MEL
 		};
 
 		const std::string Residue::SYMBOL_NAME[ (int)SYMBOL::COUNT ] = {
-			"Unknown",				// UNKNOWN
-			"Alanine",				// ALA
-			"Arginine",				// ARG
-			"Asparagine",			// ASN
-			"Aspartate",			// ASP
-			"Cysteine",				// CYS
-			"Glutamine",			// GLN
-			"Glutamate",			// GLU
-			"Glycine",				// GLY
-			"Histidine",			// HIS
-			"Isoleucine",			// ILE
-			"Leucine",				// LEU
-			"Lysine",				// LYS
-			"Methionine",			// MET
-			"Phenylalanine",		// PHE
-			"Proline",				// PRO
-			"Serine",				// SER
-			"Threonine",			// THR
-			"Tryptophan",			// TRP
-			"Tyrosine",				// TYR
-			"Valine",				// VAL
-			"?",					// ASX
-			"?",					// GLX
-			"Water",				// WAT
-			"Water",				// HOH
-			"Hême",					// HEM
-			"Groupement phosphate", // PO4
+			"Unknown",		   // UNKNOWN
+			"Alanine",		   // ALA
+			"Arginine",		   // ARG
+			"Asparagine",	   // ASN
+			"Aspartate",	   // ASP
+			"Cysteine",		   // CYS
+			"Glutamine",	   // GLN
+			"Glutamate",	   // GLU
+			"Glycine",		   // GLY
+			"Histidine",	   // HIS
+			"Isoleucine",	   // ILE
+			"Leucine",		   // LEU
+			"Lysine",		   // LYS
+			"Methionine",	   // MET
+			"Phenylalanine",   // PHE
+			"Proline",		   // PRO
+			"Serine",		   // SER
+			"Threonine",	   // THR
+			"Tryptophan",	   // TRP
+			"Tyrosine",		   // TYR
+			"Valine",		   // VAL
+			"?",			   // ASX
+			"?",			   // GLX
+			"Water",		   // WAT
+			"Water",		   // HOH
+			"Heme",			   // HEM
+			"Phosphate group", // PO4
+			"Melagatran",	   // MEL
 		};
 
 		// http://jmol.sourceforge.net/jscolors/#Jmolcolors : Protein "amino" colors
@@ -161,6 +185,7 @@ namespace VTX
 			{ 255, 105, 180 }, // HOH
 			{ 255, 105, 180 }, // HEM
 			{ 255, 105, 180 }, // PO4
+			{ 255, 105, 180 }, // MEL
 		};
 	} // namespace Model
 } // namespace VTX

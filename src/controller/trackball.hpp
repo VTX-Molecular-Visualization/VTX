@@ -15,7 +15,7 @@ namespace VTX
 		{
 		  public:
 			explicit Trackball( Object3D::Camera & p_camera, const Vec3f p_target, const float p_distance ) :
-				BaseCameraController( p_camera ), _target( p_target ), _distance( p_distance )
+				BaseCameraController( p_camera ), _target( p_target ), _distanceForced( p_distance )
 			{
 			}
 
@@ -24,7 +24,7 @@ namespace VTX
 
 			inline const Vec3f & getTarget() const { return _target; }
 			inline void			 setTarget( const Vec3f & p_target ) { _target = p_target; }
-			inline void			 setDistance( const float & p_distance ) { _distance = p_distance; }
+			inline void			 setDistanceForced( const float & p_distance ) { _distanceForced = p_distance; }
 
 		  protected:
 			void _updateInputs( const float & ) override;
@@ -32,9 +32,9 @@ namespace VTX
 			void _computeOrientPositions( const Math::AABB & ) override;
 
 		  private:
-			Vec3f _target	= VEC3F_ZERO;
-			float _distance = 0.f;
-			Vec3f _velocity = VEC3F_ZERO;
+			Vec3f _target		  = VEC3F_ZERO;
+			float _distanceForced = 0.f;
+			Vec3f _velocity		  = VEC3F_ZERO;
 
 			float _orientStartingDistance = 0.f;
 			float _orientTargetDistance	  = 0.f;

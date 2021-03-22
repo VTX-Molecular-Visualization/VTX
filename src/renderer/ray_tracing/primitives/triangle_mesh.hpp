@@ -6,7 +6,6 @@
 #endif
 
 #include "../bvh.hpp"
-
 #include "model/molecule.hpp"
 
 namespace VTX
@@ -20,7 +19,7 @@ namespace VTX
 		  public:
 			friend Triangle;
 			TriangleMesh() = default;
-			explicit TriangleMesh( const Path & meshToLoad );
+			explicit TriangleMesh( const FilePath & meshToLoad );
 			explicit TriangleMesh( const Model::Molecule * p_molecule );
 
 			~TriangleMesh()
@@ -48,7 +47,8 @@ namespace VTX
 		  private:
 			void _computeAABB() override
 			{
-				if ( _bvh.isBuilt() ) _aabb = _bvh.getAABB();
+				if ( _bvh.isBuilt() )
+					_aabb = _bvh.getAABB();
 				// TODO: else compute it !
 			}
 
@@ -136,9 +136,11 @@ namespace VTX
 				int kz = ( fabsf( rd.x ) > fabsf( rd.y ) ) ? ( ( fabsf( rd.x ) > fabsf( rd.z ) ) ? 0 : 2 )
 														   : ( ( fabsf( rd.y ) > fabsf( rd.z ) ) ? 1 : 2 );
 				int kx = kz + 1;
-				if ( kx == 3 ) kx = 0;
+				if ( kx == 3 )
+					kx = 0;
 				int ky = kx + 1;
-				if ( ky == 3 ) ky = 0;
+				if ( ky == 3 )
+					ky = 0;
 				Vec3f d = _permute( rd, kx, ky, kz );
 				p0t		= _permute( p0t, kx, ky, kz );
 				p1t		= _permute( p1t, kx, ky, kz );
@@ -175,9 +177,11 @@ namespace VTX
 				}
 
 				// Perform triangle edge and determinant tests
-				if ( ( e0 < 0.f || e1 < 0.f || e2 < 0.f ) && ( e0 > 0.f || e1 > 0.f || e2 > 0.f ) ) return false;
+				if ( ( e0 < 0.f || e1 < 0.f || e2 < 0.f ) && ( e0 > 0.f || e1 > 0.f || e2 > 0.f ) )
+					return false;
 				float det = e0 + e1 + e2;
-				if ( det == 0.f ) return false;
+				if ( det == 0.f )
+					return false;
 
 				// Compute scaled hit distance to triangle and test against ray  range
 				p0t.z *= Sz;
@@ -215,7 +219,8 @@ namespace VTX
 				float maxE = Util::Math::max( fabsf( e0 ), Util::Math::max( fabsf( e1 ), fabsf( e2 ) ) );
 				float deltaT
 					= 3.f * ( _gamma( 3 ) * maxE * maxZt + deltaE * maxZt + deltaZ * maxE ) * std::abs( invDet );
-				if ( t <= deltaT ) return false;
+				if ( t <= deltaT )
+					return false;
 
 				p_intersection._point = b0 * v0 + b1 * v1 + b2 * v2;
 				// p_ray.getPointAtT( t );

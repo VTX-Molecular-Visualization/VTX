@@ -22,7 +22,11 @@ namespace VTX
 	{
 		class Molecule;
 		class Chain;
-		class Residue : public BaseModel, public Generic::BaseColorable, public Generic::BaseVisible, public Generic::BaseRepresentable
+		class Residue :
+			public BaseModel,
+			public Generic::BaseColorable,
+			public Generic::BaseVisible,
+			public Generic::BaseRepresentable
 		{
 			VTX_MODEL
 
@@ -62,6 +66,7 @@ namespace VTX
 				HOH,
 				HEM,
 				PO4,
+				MEL,
 				COUNT
 			};
 
@@ -71,20 +76,15 @@ namespace VTX
 			static const std::string SYMBOL_NAME[ (int)SYMBOL::COUNT ];
 			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
 
-			inline TYPE				getType() const { return _type; }
-			inline void				setType( const TYPE p_type ) { _type = p_type; }
-			inline uint				getIndex() const { return _index; };
-			inline void				setIndex( const uint p_index ) { _index = p_index; };
-			inline int				getIndexInOriginalChain() const { return _indexInOriginalChain; };
-			inline void				setIndexInOriginalChain( const int p_index ) { _indexInOriginalChain = p_index; };
-			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void				setMoleculePtr( Molecule * const p_molecule )
-			{
-				_moleculePtr = p_molecule;
-				_setRepresentableMolecule( p_molecule );
-			}
+			inline TYPE			 getType() const { return _type; }
+			inline void			 setType( const TYPE p_type ) { _type = p_type; }
+			inline uint			 getIndex() const { return _index; };
+			inline void			 setIndex( const uint p_index ) { _index = p_index; };
+			inline int			 getIndexInOriginalChain() const { return _indexInOriginalChain; };
+			inline void			 setIndexInOriginalChain( const int p_index ) { _indexInOriginalChain = p_index; };
+			Molecule * const	 getMoleculePtr() const;
 			inline Chain * const getChainPtr() const { return _chainPtr; }
-			inline void			 setChainPtr( Chain * const p_chain ) { _chainPtr = p_chain; }
+			void				 setChainPtr( Chain * const p_chain );
 
 			inline const SYMBOL		   getSymbol() const { return _symbol; };
 			inline const std::string & getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; }
@@ -111,23 +111,26 @@ namespace VTX
 			inline const std::vector<uint> & getIndexExtraBondEnd() const { return _indexExtraBondEnd; };
 			inline std::vector<uint> &		 getIndexExtraBondEnd() { return _indexExtraBondEnd; };
 
-			inline Atom::TYPE					   getAtomType() const { return _atomType; }
-			inline void							   setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
+			inline Atom::TYPE getAtomType() const { return _atomType; }
+			inline void		  setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
 			inline const SecondaryStructure::VALUE getSecondaryStructure() const { return _secondaryStructure; };
-			inline void							   setSecondaryStructure( const SecondaryStructure::VALUE p_structure ) { _secondaryStructure = p_structure; };
-			const Atom * const					   findFirstAtomByName( const std::string & ) const;
+			inline void							   setSecondaryStructure( const SecondaryStructure::VALUE p_structure )
+			{
+				_secondaryStructure = p_structure;
+			};
+			const Atom * const findFirstAtomByName( const std::string & ) const;
 
 			// Mask BaseVisible::setVisible
 			void setVisible( const bool p_visible );
 
 			const Math::AABB getAABB() const;
+			const Math::AABB getWorldAABB() const;
 
 		  private:
-			TYPE	   _type				 = TYPE::STANDARD;
-			uint	   _index				 = 0;
-			int		   _indexInOriginalChain = INT_MIN;
-			Molecule * _moleculePtr			 = nullptr;
-			Chain *	   _chainPtr			 = nullptr;
+			TYPE	_type				  = TYPE::STANDARD;
+			uint	_index				  = 0;
+			int		_indexInOriginalChain = INT_MIN;
+			Chain * _chainPtr			  = nullptr;
 
 			SYMBOL _symbol = SYMBOL::UNKNOWN;
 
@@ -137,8 +140,8 @@ namespace VTX
 			uint					  _bondCount		   = 0;
 			std::vector<uint>		  _indexExtraBondStart = std::vector<uint>();
 			std::vector<uint>		  _indexExtraBondEnd   = std::vector<uint>();
-			Atom::TYPE				  _atomType			   = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
-			SecondaryStructure::VALUE _secondaryStructure  = SecondaryStructure::VALUE::COIL;
+			Atom::TYPE				  _atomType = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
+			SecondaryStructure::VALUE _secondaryStructure = SecondaryStructure::VALUE::COIL;
 
 			Residue() : BaseModel( ID::Model::MODEL_RESIDUE ) {}
 		};

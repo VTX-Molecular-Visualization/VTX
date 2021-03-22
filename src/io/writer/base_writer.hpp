@@ -20,7 +20,7 @@ namespace VTX
 			  public:
 				virtual ~BaseWriter() = default;
 
-				virtual void writeFile( const Path &, const T & ) = 0;
+				virtual void writeFile( const FilePath &, const T & ) = 0;
 			};
 		} // namespace Writer
 	}	  // namespace IO

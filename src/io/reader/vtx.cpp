@@ -1,5 +1,7 @@
 #include "vtx.hpp"
 #include "io/serializer.hpp"
+#include "util/filesystem.hpp"
+#include <nlohmann/json.hpp>
 
 namespace VTX
 {
@@ -7,12 +9,12 @@ namespace VTX
 	{
 		namespace Reader
 		{
-			void VTX::readFile( const Path & p_path, VTXApp & p_app )
+			void VTX::readFile( const FilePath & p_path, VTXApp & p_app )
 			{
 				IO::Serializer serializer = IO::Serializer();
-				std::ifstream  is( p_path );
+				std::ifstream  ifs( p_path );
 				nlohmann::json json;
-				is >> json;
+				ifs >> json;
 				serializer.deserialize( json, p_app );
 			}
 		} // namespace Reader

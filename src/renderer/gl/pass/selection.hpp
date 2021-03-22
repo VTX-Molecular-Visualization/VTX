@@ -14,12 +14,15 @@ namespace VTX::Renderer::GL::Pass
 	  public:
 		Selection( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
 		virtual ~Selection();
-		virtual void init( ProgramManager &, const uint, const uint ) override;
-		virtual void resize( const uint, const uint ) override;
-		virtual void render( const Object3D::Scene &, const GL & ) override;
+
+		void init( const uint, const uint, const GL & ) override;
+		void resize( const uint, const uint, const GL & ) override;
+		void render( const Object3D::Scene &, const GL & ) override;
 
 		inline const GLuint & getTexture() const { return _texture; }
 		inline const GLuint & getFbo() const { return _fbo; }
+
+		void updateOutputFBO( const GL & );
 
 	  private:
 		GLuint	  _fbo			  = GL_INVALID_VALUE;

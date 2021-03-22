@@ -1,5 +1,4 @@
 #include "gl.hpp"
-#include "generic/factory.hpp"
 #include "model/molecule.hpp"
 #include "view/base_view_3d_molecule.hpp"
 #include "vtx_app.hpp"
@@ -41,31 +40,22 @@ namespace VTX::Renderer::GL
 		delete _passFXAA;
 	}
 
-	const GLuint & GL::getRenderedTexture() const
-	{
-		return VTX_SETTING().activeAA ? _passFXAA->getTexture() : _passSelection->getTexture();
-	}
-	const GLuint & GL::getRenderedFBO() const
-	{
-		return VTX_SETTING().activeAA ? _passFXAA->getFbo() : _passSelection->getFbo();
-	}
-
-	void GL::init( const uint p_width, const uint p_height )
+	void GL::init( const uint p_width, const uint p_height, const GLuint p_fbo )
 	{
 		VTX_INFO( "Initializing renderer..." );
 
 		// Set size.
-		BaseRenderer::resize( p_width, p_height );
+		BaseRenderer::resize( p_width, p_height, p_fbo );
 
 		// Init pass.
-		_passGeometric->init( *_programManager, p_width, p_height );
-		_passLinearizeDepth->init( *_programManager, _width, _height );
-		_passSSAO->init( *_programManager, p_width, p_height );
-		_passBlur->init( *_programManager, p_width, p_height );
-		_passShading->init( *_programManager, p_width, p_height );
-		_passOutline->init( *_programManager, p_width, p_height );
-		_passSelection->init( *_programManager, p_width, p_height );
-		_passFXAA->init( *_programManager, p_width, p_height );
+		_passGeometric->init( p_width, p_height, *this );
+		_passLinearizeDepth->init( _width, _height, *this );
+		_passSSAO->init( p_width, p_height, *this );
+		_passBlur->init( p_width, p_height, *this );
+		_passShading->init( p_width, p_height, *this );
+		_passOutline->init( p_width, p_height, *this );
+		_passSelection->init( p_width, p_height, *this );
+		_passFXAA->init( p_width, p_height, *this );
 
 		// Init VAO.
 		_initQuadVAO();
@@ -73,20 +63,20 @@ namespace VTX::Renderer::GL
 		VTX_INFO( "Renderer initialized" );
 	}
 
-	void GL::resize( const uint p_width, const uint p_height )
+	void GL::resize( const uint p_width, const uint p_height, const GLuint p_fbo )
 	{
 		if ( p_width != _width || p_height != _height )
 		{
-			BaseRenderer::resize( p_width, p_height );
+			BaseRenderer::resize( p_width, p_height, p_fbo );
 
-			_passGeometric->resize( _width, _height );
-			_passLinearizeDepth->resize( _width, _height );
-			_passSSAO->resize( _width, _height );
-			_passBlur->resize( _width, _height );
-			_passShading->resize( _width, _height );
-			_passOutline->resize( _width, _height );
-			_passSelection->resize( _width, _height );
-			_passFXAA->resize( _width, _height );
+			_passGeometric->resize( _width, _height, *this );
+			_passLinearizeDepth->resize( _width, _height, *this );
+			_passSSAO->resize( _width, _height, *this );
+			_passBlur->resize( _width, _height, *this );
+			_passShading->resize( _width, _height, *this );
+			_passOutline->resize( _width, _height, *this );
+			_passSelection->resize( _width, _height, *this );
+			_passFXAA->resize( _width, _height, *this );
 		}
 	}
 
@@ -155,6 +145,8 @@ namespace VTX::Renderer::GL
 		{
 			_passFXAA->render( p_scene, *this );
 		}
+
+		VTXApp::get().MASK = VTX_SETTING().forceRenderer ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
 	};
 
 	void GL::setShading() { _passShading->set(); }
@@ -166,4 +158,7 @@ namespace VTX::Renderer::GL
 			_passBlur->clearTexture();
 		}
 	}
+
+	void GL::activeAA( const bool p_active ) { _passSelection->updateOutputFBO( *this ); }
+
 } // namespace VTX::Renderer::GL

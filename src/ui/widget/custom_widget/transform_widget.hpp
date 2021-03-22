@@ -12,52 +12,43 @@
 #include <QFrame>
 #include <QSpinBox>
 
-namespace VTX
+namespace VTX::UI::Widget::CustomWidget
 {
-	namespace UI
+	class TransformWidget : public BaseManualWidget<QFrame>
 	{
-		namespace Widget
+		VTX_WIDGET
+		Q_OBJECT
+
+	  public:
+		~TransformWidget() {};
+
+		void setData( const Math::Transform & p_data )
 		{
-			namespace CustomWidget
-			{
-				class TransformWidget : public BaseManualWidget<QFrame>
-				{
-					VTX_WIDGET
-					Q_OBJECT
+			_transform = p_data;
+			_refresh();
+		};
 
-				  public:
-					~TransformWidget() {};
+		void localize() override;
 
-					void setData( const Math::Transform & p_data )
-					{
-						_transform = p_data;
-						_refresh();
-					};
+	  signals:
+		void onValueChange( const Math::Transform & value ) const;
 
-					void localize() override;
+	  protected:
+		TransformWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
+		void _refresh();
 
-				  signals:
-					void onValueChange( const Math::Transform & value ) const;
+	  private:
+		Vector3Widget * _positionWidget;
+		Vector3Widget * _rotationWidget;
+		Vector3Widget * _scaleWidget;
 
-				  protected:
-					TransformWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
-					void _setupUi( const QString & p_name ) override;
-					void _setupSlots() override;
-					void _refresh();
+		void _onPositionChange( const Vec3f & p_position );
+		void _onRotationChange( const Vec3f & p_euler );
+		void _onScaleChange( const Vec3f & p_scale );
 
-				  private:
-					Vector3Widget * _positionWidget;
-					Vector3Widget * _rotationWidget;
-					Vector3Widget * _scaleWidget;
-
-					void _onPositionChange( const Vec3f & p_position );
-					void _onRotationChange( const Vec3f & p_euler );
-					void _onScaleChange( const Vec3f & p_scale );
-
-					Math::Transform _transform = Math::Transform();
-				};
-			} // namespace CustomWidget
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+		Math::Transform _transform = Math::Transform();
+	};
+} // namespace VTX::UI::Widget::CustomWidget
 #endif

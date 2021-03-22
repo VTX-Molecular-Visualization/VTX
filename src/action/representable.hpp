@@ -13,78 +13,147 @@
 #include "model/representation/representation.hpp"
 #include "model/selection.hpp"
 #include "representation/representation_manager.hpp"
+#include "vtx_app.hpp"
 
-namespace VTX
+namespace VTX::Action
 {
-	namespace Action
+	class RepresentableAddRepresentation : public BaseAction
 	{
-		class RepresentableAddRepresentation : public BaseAction
+	  public:
+		explicit RepresentableAddRepresentation( Generic::BaseRepresentable &					   p_representable,
+												 Model::Representation::BaseRepresentation * const p_representation ) :
+			_representable( &p_representable ),
+			_representation( p_representation )
 		{
-		  public:
-			explicit RepresentableAddRepresentation( Generic::BaseRepresentable & p_representable, Model::Representation::BaseRepresentation * p_representation ) :
-				_representable( &p_representable ), _representation( p_representation )
-			{
-			}
-			explicit RepresentableAddRepresentation( const Model::Selection * const p_selection, Model::Representation::BaseRepresentation * p_representation ) :
-				_selection( p_selection ), _representation( p_representation )
-			{
-			}
+		}
+		explicit RepresentableAddRepresentation( const Model::Selection * const				 p_selection,
+												 Model::Representation::BaseRepresentation * p_representation ) :
+			_selection( p_selection ),
+			_representation( p_representation )
+		{
+		}
 
-			void execute()
-			{
-				if ( _selection != nullptr )
-					Representation::RepresentationManager::get().instantiateRepresentation( _representation, _selection );
-				else
-					Representation::RepresentationManager::get().instantiateRepresentation( _representation, _representable );
-			};
+		void execute()
+		{
+			if ( _selection != nullptr )
+				Representation::RepresentationManager::get().instantiateRepresentation( _representation, _selection );
+			else
+				Representation::RepresentationManager::get().instantiateRepresentation( _representation,
+																						_representable );
 
-		  private:
-			const Model::Selection * const	   _selection	  = nullptr;
-			Generic::BaseRepresentable * const _representable = nullptr;
-
-			Model::Representation::BaseRepresentation * _representation;
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		};
 
-		class RepresentableRemoveRepresentation : public BaseAction
+	  private:
+		const Model::Selection * const	   _selection	  = nullptr;
+		Generic::BaseRepresentable * const _representable = nullptr;
+
+		Model::Representation::BaseRepresentation * const _representation;
+	};
+
+	class RepresentableRemoveRepresentation : public BaseAction
+	{
+	  public:
+		explicit RepresentableRemoveRepresentation(
+			Generic::BaseRepresentable &									p_representable,
+			const Model::Representation::InstantiatedRepresentation * const p_representation ) :
+			_representable( &p_representable ),
+			_representation( p_representation )
 		{
-		  public:
-			explicit RepresentableRemoveRepresentation( Generic::BaseRepresentable & p_representable, const Model::Representation::InstantiatedRepresentation * p_representation ) :
-				_representable( &p_representable ), _representation( p_representation )
-			{
-			}
+		}
 
-			void execute() { Representation::RepresentationManager::get().removeRepresentation( _representation, _representable, true ); };
+		void execute()
+		{
+			Representation::RepresentationManager::get().removeRepresentation( _representation, _representable, true );
 
-		  private:
-			Generic::BaseRepresentable * const						  _representable;
-			const Model::Representation::InstantiatedRepresentation * _representation;
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		};
 
-		class ChangeRepresentationColorMode : public BaseAction
+	  private:
+		Generic::BaseRepresentable * const								_representable;
+		const Model::Representation::InstantiatedRepresentation * const _representation;
+	};
+
+	class DeleteRepresentation : public BaseAction
+	{
+	  public:
+		explicit DeleteRepresentation( Model::Representation::InstantiatedRepresentation * const p_representation ) :
+			_representation( p_representation )
 		{
-		  public:
-			explicit ChangeRepresentationColorMode( Model::Representation::BaseRepresentation * const p_representation, const Generic::COLOR_MODE & p_colorMode ) :
-				_representation( p_representation ), _colorMode( p_colorMode )
-			{
-			}
-			explicit ChangeRepresentationColorMode( Model::Representation::InstantiatedRepresentation * const p_representation, const Generic::COLOR_MODE & p_colorMode ) :
-				_instantiatedRepresentation( p_representation ), _colorMode( p_colorMode )
-			{
-			}
+		}
 
-			void execute()
-			{
-				if ( _representation != nullptr )
-					_representation->setColorMode( _colorMode );
-				else
-					_instantiatedRepresentation->setColorMode( _colorMode );
-			};
-
-		  private:
-			const Generic::COLOR_MODE								  _colorMode;
-			Model::Representation::BaseRepresentation * const		  _representation			  = nullptr;
-			Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation = nullptr;
+		void execute()
+		{
+			Representation::RepresentationManager::get().deleteRepresentation( _representation );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		};
-	} // namespace Action
-} // namespace VTX
+
+	  private:
+		Model::Representation::InstantiatedRepresentation * const _representation;
+	};
+
+	class ChangeRepresentationColorMode : public BaseAction
+	{
+	  public:
+		explicit ChangeRepresentationColorMode( Model::Representation::BaseRepresentation * const p_representation,
+												const Generic::COLOR_MODE &						  p_colorMode ) :
+			_representation( p_representation ),
+			_colorMode( p_colorMode )
+		{
+		}
+		explicit ChangeRepresentationColorMode(
+			Model::Representation::InstantiatedRepresentation * const p_representation,
+			const Generic::COLOR_MODE &								  p_colorMode ) :
+			_instantiatedRepresentation( p_representation ),
+			_colorMode( p_colorMode )
+		{
+		}
+
+		void execute()
+		{
+			if ( _representation != nullptr )
+				_representation->setColorMode( _colorMode );
+			else
+				_instantiatedRepresentation->setColorMode( _colorMode );
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		};
+
+	  private:
+		const Generic::COLOR_MODE								  _colorMode;
+		Model::Representation::BaseRepresentation * const		  _representation			  = nullptr;
+		Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation = nullptr;
+	};
+	class ChangeRepresentationColor : public BaseAction
+	{
+	  public:
+		explicit ChangeRepresentationColor( Model::Representation::BaseRepresentation * const p_representation,
+											const Color::Rgb &								  p_color ) :
+			_representation( p_representation ),
+			_color( p_color )
+		{
+		}
+		explicit ChangeRepresentationColor( Model::Representation::InstantiatedRepresentation * const p_representation,
+											const Color::Rgb &										  p_color ) :
+			_instantiatedRepresentation( p_representation ),
+			_color( p_color )
+		{
+		}
+
+		void execute()
+		{
+			if ( _representation != nullptr )
+				_representation->setColor( _color );
+			else
+				_instantiatedRepresentation->setColor( _color );
+
+			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		};
+
+	  private:
+		const Color::Rgb										  _color;
+		Model::Representation::BaseRepresentation * const		  _representation			  = nullptr;
+		Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation = nullptr;
+	};
+} // namespace VTX::Action
 #endif

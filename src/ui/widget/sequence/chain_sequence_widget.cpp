@@ -16,7 +16,16 @@ namespace VTX
 		{
 			namespace Sequence
 			{
-				ChainSequenceWidget::ChainSequenceWidget( QWidget * p_parent ) : ViewItemWidget( p_parent ) { _registerEvent( Event::Global::SELECTION_CHANGE ); }
+				ChainSequenceWidget::ChainSequenceWidget( QWidget * p_parent ) : ViewItemWidget( p_parent )
+				{
+					_registerEvent( Event::Global::SELECTION_CHANGE );
+				}
+
+				ChainSequenceWidget::~ChainSequenceWidget()
+				{
+					if ( _chainData != nullptr )
+						delete _chainData;
+				}
 
 				void ChainSequenceWidget::_setupUi( const QString & p_name )
 				{
@@ -56,7 +65,8 @@ namespace VTX
 					return _sequenceDisplayWidget->getResidueAtPos( localPos );
 				}
 
-				Model::Residue & ChainSequenceWidget::getClosestResidueFromPos( const QPoint & p_pos, const bool p_takeForward ) const
+				Model::Residue & ChainSequenceWidget::getClosestResidueFromPos( const QPoint & p_pos,
+																				const bool	   p_takeForward ) const
 				{
 					const QPoint localPos = _sequenceDisplayWidget->mapFrom( parentWidget(), p_pos );
 					return *( _sequenceDisplayWidget->getClosestResidueFromPos( localPos, p_takeForward ) );

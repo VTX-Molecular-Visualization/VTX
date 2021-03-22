@@ -7,54 +7,48 @@
 
 #include "event/base_event_receiver_vtx.hpp"
 #include "generic/base_representable.hpp"
-#include "model/chain.hpp"
-#include "model/representation/representation.hpp"
-#include "model/residue.hpp"
+#include "model/representation/instantiated_representation.hpp"
+#include "model/selection.hpp"
 #include "ui/widget/scene/scene_item_widget.hpp"
 #include "view/base_view.hpp"
 #include <QMenu>
 #include <QTreeWidget>
 
-namespace VTX
+namespace VTX::View::UI::Widget
 {
-	namespace View
+	class RepresentationSceneView :
+		public View::BaseView<Model::Representation::InstantiatedRepresentation>,
+		public VTX::UI::Widget::Scene::SceneItemWidget
 	{
-		namespace UI
-		{
-			namespace Widget
-			{
-				class RepresentationSceneView : public View::BaseView<Model::Representation::InstantiatedRepresentation>, public VTX::UI::Widget::Scene::SceneItemWidget
-				{
-					VTX_VIEW
-					VTX_WIDGET
+		VTX_VIEW
+		VTX_WIDGET
 
-				  public:
-					void localize() override;
-					void notify( const Event::VTXEvent * const p_event ) override;
+	  public:
+		void localize() override;
+		void notify( const Event::VTXEvent * const p_event ) override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-					void setTarget( Generic::BaseRepresentable & p_renderable );
-					void updatePosInSceneHierarchy( const int p_position ) override;
+		void setTarget( Generic::BaseRepresentable & p_renderable );
+		void updatePosInSceneHierarchy( const int p_position ) override;
 
-					const Model::ID & getModelID() const override { return _model->getId(); };
+		const Model::ID & getModelID() const override { return _model->getId(); };
 
-				  protected:
-					RepresentationSceneView( Model::Representation::InstantiatedRepresentation * const p_model, QWidget * const p_parent ) :
-						View::BaseView<Model::Representation::InstantiatedRepresentation>( p_model ), SceneItemWidget( p_parent ) {};
+	  protected:
+		RepresentationSceneView( Model::Representation::InstantiatedRepresentation * const p_model,
+								 QWidget * const										   p_parent );
 
-					void _setupUi( const QString & ) override;
-					void _setupSlots() override;
+		void _setupUi( const QString & ) override;
+		void _setupSlots() override;
+		void _refreshSelection( const Model::Selection & p_selection );
 
-					void		_onItemClicked( QTreeWidgetItem *, int );
-					void		_deleteAction() override;
-					QMimeData * _getDataForDrag() override;
+		void		_onItemClicked( QTreeWidgetItem *, int );
+		void		_onCustomContextMenuCalled( const QPoint & p_clicPos );
+		QMimeData * _getDataForDrag() override;
 
-				  private:
-					Generic::BaseRepresentable * _representable = nullptr;
-				};
+	  private:
+		Generic::BaseRepresentable * _representable = nullptr;
+	};
 
-			} // namespace Widget
-		}	  // namespace UI
-	}		  // namespace View
-} // namespace VTX
+} // namespace VTX::View::UI::Widget
 
 #endif

@@ -1,15 +1,37 @@
 #include "atom.hpp"
+#include "chain.hpp"
 #include "molecule.hpp"
+#include "residue.hpp"
 
 namespace VTX
 {
 	namespace Model
 	{
+		Molecule * const Atom::getMoleculePtr() const { return _residuePtr->getChainPtr()->getMoleculePtr(); };
+		Chain * const	 Atom::getChainPtr() const { return _residuePtr->getChainPtr(); }
+
+		void Atom::setVisible( const bool p_visible )
+		{
+			if ( isVisible() != p_visible )
+			{
+				BaseVisible ::setVisible( p_visible );
+				_notifyViews( new Event::VTXEventValue<uint>( Event::Model::ATOM_VISIBILITY, _index ) );
+				getMoleculePtr()->propagateEventToViews(
+					new Event::VTXEventValue<uint>( Event::Model::ATOM_VISIBILITY, _index ) );
+			}
+		}
+
 		const Math::AABB Atom::getAABB() const
 		{
-			Vec3f &	   position = _moleculePtr->getAtomPositionFrame( _moleculePtr->getFrame() )[ _index ];
+			Vec3f &	   position = getMoleculePtr()->getAtomPositionFrame( getMoleculePtr()->getFrame() )[ _index ];
 			Math::AABB aabb		= Math::AABB( position, getVdwRadius() );
 
+			return aabb;
+		}
+		const Math::AABB Atom::getWorldAABB() const
+		{
+			Math::AABB aabb = getAABB();
+			aabb.translate( getMoleculePtr()->getTransform().getTranslationVector() );
 			return aabb;
 		}
 

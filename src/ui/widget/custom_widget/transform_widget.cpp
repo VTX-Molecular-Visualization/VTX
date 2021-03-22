@@ -29,6 +29,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_scaleWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_scale_widget" );
 		_scaleWidget->setSpinBoxMinMax( 0.01, 10000 );
 		_scaleWidget->setSpinBoxStep( 0.2 );
+		_scaleWidget->setDragValueFactor( 0.01f );
 
 		mainLayout->addWidget( positionLabel, 0, 0 );
 		mainLayout->addWidget( _positionWidget, 0, 1 );
@@ -56,9 +57,11 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void TransformWidget::_refresh()
 	{
+		blockSignals( true );
 		_positionWidget->setData( _transform.getTranslationVector() );
 		_rotationWidget->setData( _transform.getEulerAngles() );
 		_scaleWidget->setData( _transform.getScaleVector() );
+		blockSignals( false );
 	}
 
 	void TransformWidget::localize() {};

@@ -1,5 +1,7 @@
 #include "export.hpp"
 #include "action/main.hpp"
+#include "model/path.hpp"
+#include "model/viewpoint.hpp"
 #include "util/filesystem.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
@@ -107,7 +109,7 @@ namespace VTX
 
 			VTX_INFO( "Encoding video" );
 
-			Path files = Util::Filesystem::getVideosBatchPath( _directoryName );
+			FilePath files = Util::Filesystem::getVideosBatchPath( _directoryName );
 			files /= "frame%06d.png";
 			std::string command = Util::Filesystem::FFMPEG_EXE_FILE.string() + " -f image2 -framerate "
 								  + std::to_string( Setting::VIDEO_FPS_DEFAULT ) + " -i " + files.string()

@@ -4,7 +4,9 @@
 #include "controller/trackball.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
-#include "generic/factory.hpp"
+#include "model/molecule.hpp"
+#include "object3d/camera.hpp"
+#include "object3d/scene.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -23,9 +25,10 @@ namespace VTX
 		{
 			// Create controller.
 			addItem( ID::Controller::FREEFLY, new Controller::Freefly( VTXApp::get().getScene().getCamera() ) );
-			addItem(
-				ID::Controller::TRACKBALL,
-				new Controller::Trackball( VTXApp::get().getScene().getCamera(), VTXApp::get().getScene().getAABB().centroid(), VTXApp::get().getScene().getAABB().diameter() ) );
+			addItem( ID::Controller::TRACKBALL,
+					 new Controller::Trackball( VTXApp::get().getScene().getCamera(),
+												VTXApp::get().getScene().getAABB().centroid(),
+												VTXApp::get().getScene().getAABB().diameter() ) );
 			addItem( ID::Controller::SHORTCUT, new Controller::Shortcut() );
 
 			if ( _cameraController == ID::Controller::FREEFLY )
@@ -45,11 +48,7 @@ namespace VTX
 			BaseState::update( p_deltaTime );
 
 			VTXApp::get().getScene().update( p_deltaTime );
-
-			if ( VTX_SETTING().activeRenderer )
-			{
-				VTXApp::get().renderScene();
-			}
+			VTXApp::get().renderScene();
 		}
 
 		void Visualization::toggleCameraController()
@@ -110,12 +109,34 @@ namespace VTX
 				const Controller::Freefly * const freefly = getItem<Controller::Freefly>( ID::Controller::FREEFLY );
 				if ( freefly->isOrienting() )
 				{
-					getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->setDistance( Util::Math::distance( p_aabb.centroid(), freefly->getOrientTargetPosition() ) );
+					getItem<Controller::Trackball>( ID::Controller::TRACKBALL )
+						->setDistanceForced(
+							Util::Math::distance( p_aabb.centroid(), freefly->getOrientTargetPosition() ) );
 				}
 			}
 		}
 
-		void Visualization::receiveEvent( const Event::VTXEvent & p_event ) { resetCameraController(); }
+		void Visualization::receiveEvent( const Event::VTXEvent & p_event )
+		{
+			// Recenter when add the first element in scene
+			if ( p_event.name == Event::MOLECULE_ADDED )
+			{
+				if ( VTXApp::get().getScene().getMolecules().size() == 1
+					 && VTXApp::get().getScene().getMeshes().size() == 0 )
+				{
+					const Event::VTXEventPtr<Model::Molecule> & castedEvent
+						= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
+
+					orientCameraController( castedEvent.ptr->getAABB() );
+				}
+			}
+			else if ( p_event.name == Event::MESH_ADDED )
+			{
+				if ( VTXApp::get().getScene().getMolecules().size() == 0
+					 && VTXApp::get().getScene().getMeshes().size() == 1 )
+					resetCameraController();
+			}
+		}
 
 	} // namespace State
 } // namespace VTX

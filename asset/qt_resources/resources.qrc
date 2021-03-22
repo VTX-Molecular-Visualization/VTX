@@ -5,6 +5,7 @@
 	<file>sprite/add_viewpoint.png</file>
 	<file>sprite/camera_focus_icon.png</file>
 	<file>sprite/camera_freefly_mode.png</file>
+	<file>sprite/camera_orient_icon.png</file>
 	<file>sprite/camera_recenter_icon.png</file>
 	<file>sprite/camera_trackball_mode.png</file>
 	<file>sprite/camera_vessel_mode.png</file>
@@ -22,6 +23,7 @@
 	<file>sprite/fullscreen_icon.png</file>
 	<file>sprite/hide_hydrogen_icon.png</file>
 	<file>sprite/hide_selection_icon.png</file>
+	<file>sprite/hide_sequence_icon.png</file>
 	<file>sprite/hide_solvant_icon.png</file>
 	<file>sprite/hide_water_icon.png</file>
 	<file>sprite/info_button.png</file>
@@ -55,8 +57,10 @@
 	<file>sprite/save_settings.png</file>
 	<file>sprite/save_settings_hovered.png</file>
 	<file>sprite/screenshot_icon.png</file>
+	<file>sprite/settings_icon.png</file>
 	<file>sprite/show_hydrogen_icon.png</file>
 	<file>sprite/show_selection_icon.png</file>
+	<file>sprite/show_sequence_icon.png</file>
 	<file>sprite/show_solvant_icon.png</file>
 	<file>sprite/show_water_icon.png</file>
 	<file>sprite/stop_icon.png</file>
