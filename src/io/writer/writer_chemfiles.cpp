@@ -1,4 +1,4 @@
-#include "chemfilesWriter.hpp"
+#include "writer_chemfiles.hpp"
 #include "tool/chrono.hpp"
 
 namespace VTX
@@ -53,19 +53,20 @@ namespace VTX
 				frame.reserve( p_molecule.getAtomCount() );
 				frame.set( "name", p_molecule.getName() );
 				// add residues
-				for ( VTX::uint residue = 0; residue < p_molecule.getResidueCount(); residue++ )
+				for ( uint residue = 0; residue < p_molecule.getResidueCount(); residue++ )
 				{
-					const VTX::Model::Residue & res = p_molecule.getResidue( residue );
-					frame.add_residue( chemfiles::Residue( res.getSymbolStr() ) );
-					for ( uint atom = 0; atom < res.getAtomCount(); atom++ ) {}
-				}
-				// add atoms
-				for ( VTX::uint atom = 0; atom < p_molecule.getAtomCount(); atom++ )
-				{
-					const VTX::Model::Atom & atm	 = p_molecule.getAtom( atom );
-					VTX::Vec3f				 atmPos	 = p_molecule.getAtomPositionFrame( 0 )[ atom ];
-					chemfiles::Vector3D		 atomPos = chemfiles::Vector3D( atmPos[ 0 ], atmPos[ 1 ], atmPos[ 2 ] );
-					frame.add_atom( chemfiles::Atom( atm.getSymbolStr() ), atomPos );
+					const VTX::Model::Residue & res				= p_molecule.getResidue( residue );
+					uint						firstResAtomIdx = res.getIndexFirstAtom();
+					chemfiles::Residue			chemRes			= chemfiles::Residue( res.getSymbolStr(), ++residue );
+					for ( firstResAtomIdx; firstResAtomIdx < res.getAtomCount(); ++firstResAtomIdx )
+					{
+						const VTX::Model::Atom & atm	 = p_molecule.getAtom( firstResAtomIdx );
+						VTX::Vec3f				 atmPos	 = p_molecule.getAtomPositionFrame( 0 )[ firstResAtomIdx ];
+						chemfiles::Vector3D		 atomPos = chemfiles::Vector3D( atmPos[ 0 ], atmPos[ 1 ], atmPos[ 2 ] );
+						frame.add_atom( chemfiles::Atom( atm.getSymbolStr() ), atomPos );
+						chemRes.add_atom( firstResAtomIdx );
+					}
+					frame.add_residue( chemRes );
 				}
 				// add bonds
 				for ( VTX::uint bond = 0; bond < p_molecule.getBondCount(); bond++ )

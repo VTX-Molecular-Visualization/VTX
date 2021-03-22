@@ -439,12 +439,14 @@ namespace VTX
 					}
 				}
 
-				// TODO: launch the filling of trajectory frames in another thread
-				// std::thread fillFrames(
-				//	&LibChemfiles::fillTrajectoryFrames, this, std::ref( p_trajectory ), std::ref( p_molecule ) );
-				// fillFrames.detach();
-
-				fillTrajectoryFrames( p_trajectory, p_molecule );
+				if ( p_trajectory.nsteps() > 1 )
+				{
+					// TODO: launch the filling of trajectory frames in another thread
+					// std::thread fillFrames(
+					//	&LibChemfiles::fillTrajectoryFrames, this, std::ref( p_trajectory ), std::ref( p_molecule ) );
+					// fillFrames.detach();
+					fillTrajectoryFrames( p_trajectory, p_molecule );
+				}
 
 				// Bonds.
 				// Sort by residus.

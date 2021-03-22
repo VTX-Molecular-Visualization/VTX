@@ -1,6 +1,6 @@
 #include "saver.hpp"
-#include "io/writer/chemfilesWriter.hpp"
 #include "io/writer/vtx.hpp"
+#include "io/writer/writer_chemfiles.hpp"
 #include "selection/selection_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
