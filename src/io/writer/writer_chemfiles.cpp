@@ -1,4 +1,7 @@
 #include "writer_chemfiles.hpp"
+#include "model/atom.hpp"
+#include "model/bond.hpp"
+#include "model/residue.hpp"
 #include "tool/chrono.hpp"
 
 namespace VTX
@@ -7,7 +10,7 @@ namespace VTX
 	{
 		namespace Writer
 		{
-			void ChemfilesWriter::writeFile( const Path & p_path, const Model::Molecule & p_molecule )
+			void ChemfilesWriter::writeFile( const FilePath & p_path, const Model::Molecule & p_molecule )
 			{
 				chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string(), 'a' );
 
@@ -46,7 +49,7 @@ namespace VTX
 			}
 
 			void ChemfilesWriter::writeTrajectory( chemfiles::Trajectory & p_trajectory,
-												   const Path &			   p_path,
+												   const FilePath &		   p_path,
 												   const Model::Molecule & p_molecule ) const
 			{
 				auto frame = chemfiles::Frame();
@@ -55,15 +58,15 @@ namespace VTX
 				// add residues
 				for ( uint residue = 0; residue < p_molecule.getResidueCount(); residue++ )
 				{
-					const VTX::Model::Residue & res				= p_molecule.getResidue( residue );
-					uint						firstResAtomIdx = res.getIndexFirstAtom();
-					chemfiles::Residue			chemRes			= chemfiles::Residue( res.getSymbolStr(), ++residue );
-					for ( firstResAtomIdx; firstResAtomIdx < res.getAtomCount(); ++firstResAtomIdx )
+					const VTX::Model::Residue * res				= p_molecule.getResidue( residue );
+					uint						firstResAtomIdx = res->getIndexFirstAtom();
+					chemfiles::Residue			chemRes			= chemfiles::Residue( res->getSymbolStr(), ++residue );
+					for ( firstResAtomIdx; firstResAtomIdx < res->getAtomCount(); ++firstResAtomIdx )
 					{
-						const VTX::Model::Atom & atm	 = p_molecule.getAtom( firstResAtomIdx );
+						const VTX::Model::Atom * atm	 = p_molecule.getAtom( firstResAtomIdx );
 						VTX::Vec3f				 atmPos	 = p_molecule.getAtomPositionFrame( 0 )[ firstResAtomIdx ];
 						chemfiles::Vector3D		 atomPos = chemfiles::Vector3D( atmPos[ 0 ], atmPos[ 1 ], atmPos[ 2 ] );
-						frame.add_atom( chemfiles::Atom( atm.getSymbolStr() ), atomPos );
+						frame.add_atom( chemfiles::Atom( atm->getSymbolStr() ), atomPos );
 						chemRes.add_atom( firstResAtomIdx );
 					}
 					frame.add_residue( chemRes );
@@ -71,8 +74,8 @@ namespace VTX
 				// add bonds
 				for ( VTX::uint bond = 0; bond < p_molecule.getBondCount(); bond++ )
 				{
-					const VTX::Model::Bond & bnd = p_molecule.getBond( bond );
-					frame.add_bond( bnd.getIndexFirstAtom(), bnd.getIndexSecondAtom() );
+					const VTX::Model::Bond * bnd = p_molecule.getBond( bond );
+					frame.add_bond( bnd->getIndexFirstAtom(), bnd->getIndexSecondAtom() );
 				}
 				p_trajectory.write( frame );
 			}

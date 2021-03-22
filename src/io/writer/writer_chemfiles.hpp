@@ -17,11 +17,11 @@ namespace VTX
 			class ChemfilesWriter
 			{
 			  public:
-				void writeFile( const Path &, const Model::Molecule & );
+				void writeFile( const FilePath &, const Model::Molecule & );
 				void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
 
 			  private:
-				void writeTrajectory( chemfiles::Trajectory &, const Path &, const Model::Molecule & ) const;
+				void writeTrajectory( chemfiles::Trajectory &, const FilePath &, const Model::Molecule & ) const;
 			};
 		} // namespace Writer
 	}	  // namespace IO
