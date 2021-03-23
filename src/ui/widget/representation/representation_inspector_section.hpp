@@ -9,6 +9,7 @@
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
 #include "model/representation/instantiated_representation.hpp"
+#include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/representation/ball_and_stick_representation_widget.hpp"
 #include "ui/widget/representation/ball_stick_and_cartoon_representation_widget.hpp"
@@ -30,71 +31,58 @@
 
 namespace VTX::UI::Widget::Representation
 {
-	class RepresentationInspectorSection : public VTX::UI::Widget::BaseManualWidget<QWidget>
+	class RepresentationInspectorSection :
+		public BaseManualWidget<QWidget>,
+		TMultiDataField<Model::Representation::InstantiatedRepresentation>
 	{
+		Q_OBJECT
 		VTX_WIDGET
-		VTX_VIEW
 
 		using InstantiatedRepresentation = Model::Representation::InstantiatedRepresentation;
-		using BaseRepresentationWidget	 = VTX::UI::Widget::Representation::BaseRepresentationWidget;
-
-		using BallAndStickRepresentationWidget = VTX::UI::Widget::Representation::BallAndStickRepresentationWidget;
-		using BallStickAndCartoonRepresentationWidget
-			= VTX::UI::Widget::Representation::BallStickAndCartoonRepresentationWidget;
-		using CartoonRepresentationWidget = VTX::UI::Widget::Representation::CartoonRepresentationWidget;
-		using SasRepresentationWidget	  = VTX::UI::Widget::Representation::SasRepresentationWidget;
-		using StickRepresentationWidget	  = VTX::UI::Widget::Representation::StickRepresentationWidget;
-		using StickAndCartoonRepresentationWidget
-			= VTX::UI::Widget::Representation::StickAndCartoonRepresentationWidget;
-		using TraceRepresentationWidget = VTX::UI::Widget::Representation::TraceRepresentationWidget;
-		using VdwRepresentationWidget	= VTX::UI::Widget::Representation::VdwRepresentationWidget;
 
 	  public:
 		void localize() override;
+		void refresh();
 
-		template<typename T,
-				 typename = std::enable_if<std::is_base_of<Model::BaseModel, T>::value>,
-				 typename = std::enable_if<std::is_base_of<Generic::BaseRepresentable, T>::value>>
-		void setTarget( T * const p_target )
-		{
-			_setTarget( p_target, p_target );
-		}
+		void resetState() override;
+		void updateWithNewValue( const InstantiatedRepresentation & p_representation ) override;
+
+	  signals:
+		void onRepresentationPresetChange( const int p_presetIndex );
+		void onRepresentationChange( const InstantiatedRepresentation &			p_representation,
+									 const Model::Representation::MEMBER_FLAG & p_flag );
+		void onRepresentationColorChange( const InstantiatedRepresentation & p_representation,
+										  const Color::Rgb &				 p_color,
+										  const bool						 p_ssColor );
 
 	  protected:
-		RepresentationInspectorSection( QWidget * const p_parent );
+		RepresentationInspectorSection( QWidget * const p_parent = nullptr );
 		~RepresentationInspectorSection();
 
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
 
-		void _setTarget( Model::BaseModel * const p_model, Generic::BaseRepresentable * const p_representable );
-
-		void _refresh();
+		void _displayDifferentsDataFeedback() override;
 
 	  private:
-		Generic::BaseRepresentable *						_target		 = nullptr;
-		Model::BaseModel *									_targetModel = nullptr;
-		int													_representationIndex;
-		Model::Representation::InstantiatedRepresentation * _representation = nullptr;
+		CustomWidget::QPushButtonMultiField * _titleWidget				   = nullptr;
+		QWidget *							  _representationWidget		   = nullptr;
+		CustomWidget::QComboBoxMultiField *	  _representationPreset		   = nullptr;
+		QVBoxLayout *						  _settingLayout			   = nullptr;
+		BaseRepresentationWidget *			  _representationSettingWidget = nullptr;
 
-		bool _representationHasBeenModified = false;
+		Model::Representation::InstantiatedRepresentation * _dummyRepresentation;
+		int													_baseRepresentationIndex = -1;
 
-		QPushButton *			   _titleWidget					= nullptr;
-		QWidget *				   _representationWidget		= nullptr;
-		QComboBox *				   _representationPreset		= nullptr;
-		QVBoxLayout *			   _settingLayout				= nullptr;
-		BaseRepresentationWidget * _representationSettingWidget = nullptr;
-
-		BaseRepresentationWidget * _instantiateRepresentationSettingWidget(
-			const Generic::REPRESENTATION & p_representation );
+		void _instantiateRepresentationSettingWidget( const Generic::REPRESENTATION & p_representation );
+		void _deleteRepresentationSettingWidget();
 
 		void _toggleSettingDisplay();
 		void _representationPresetChange( const int p_resetIndex );
-		void _representationDataChange();
+		void _representationDataChange( const Model::Representation::MEMBER_FLAG & p_flagDataModified );
+		void _representationColorChange( const Color::Rgb & p_color, const bool p_ssColor );
 
 		void _populateRepresentationModeComboBox();
-
-		void _setRepresentationIfNeeded();
 	};
 
 } // namespace VTX::UI::Widget::Representation

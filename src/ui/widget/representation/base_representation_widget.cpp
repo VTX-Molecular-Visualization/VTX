@@ -6,23 +6,15 @@
 #include "id.hpp"
 #include "model/molecule.hpp"
 #include "tool/logger.hpp"
-#include "view/ui/widget/representation/instantiated_representation_view.hpp"
 #include <QLabel>
 #include <string>
 
 namespace VTX::UI::Widget::Representation
 {
-	BaseRepresentationWidget::BaseRepresentationWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
+	BaseRepresentationWidget::BaseRepresentationWidget( QWidget * p_parent ) :
+		BaseManualWidget( p_parent ), TMultiDataField() {};
 
-	BaseRepresentationWidget::~BaseRepresentationWidget()
-	{
-		if ( _representationView != nullptr )
-		{
-			MVC::MvcManager::get().deleteView( _instantiatedRepresentation,
-											   ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
-			_representationView = nullptr;
-		}
-	}
+	BaseRepresentationWidget::~BaseRepresentationWidget() {}
 
 	void BaseRepresentationWidget::notifyInstantiatedRepresentationViewDeleted() { _representationView = nullptr; }
 
@@ -77,39 +69,21 @@ namespace VTX::UI::Widget::Representation
 
 	void BaseRepresentationWidget::refresh()
 	{
-		blockSignals( true );
+		const bool oldBlockState = blockSignals( true );
 		_refresh();
-		blockSignals( false );
+		blockSignals( oldBlockState );
 	}
 
-	void BaseRepresentationWidget::setRepresentation(
-		Model::Representation::InstantiatedRepresentation * const p_representation )
+	void BaseRepresentationWidget::setRepresentation( InstantiatedRepresentation * const p_representation )
 	{
-		if ( _representationView != nullptr )
-		{
-			MVC::MvcManager::get().deleteView( _instantiatedRepresentation,
-											   ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
-			_representationView = nullptr;
-		}
-
 		_instantiatedRepresentation = p_representation;
-
-		if ( _instantiatedRepresentation != nullptr )
-		{
-			_representationView
-				= MVC::MvcManager::get()
-					  .instantiateView<View::UI::Widget::Representation::InstantiatedRepresentationView>(
-						  _instantiatedRepresentation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
-
-			_representationView->setTarget( this );
-
-			refresh();
-		}
+		refresh();
 	}
 
-	void BaseRepresentationWidget::_addSphereWidgetInLayout( const QString & p_label,
-															 const float	 p_min,
-															 const float	 p_max )
+	void BaseRepresentationWidget::_addSphereWidgetInLayout( const QString &						  p_label,
+															 const float							  p_min,
+															 const float							  p_max,
+															 const Model::Representation::MEMBER_FLAG p_sphereFlag )
 	{
 		QLabel * const sphereLabel = new QLabel( this );
 		sphereLabel->setText( p_label );
@@ -121,6 +95,8 @@ namespace VTX::UI::Widget::Representation
 		const int row = _layout->rowCount();
 		_layout->addWidget( sphereLabel, row, 0 );
 		_layout->addWidget( _sphereWidget, row, 1 );
+
+		_sphereFlag = p_sphereFlag;
 	}
 	void BaseRepresentationWidget::_addCylinderWidgetInLayout( const QString & p_label,
 															   const float	   p_min,
@@ -163,11 +139,24 @@ namespace VTX::UI::Widget::Representation
 		_layout->addWidget( _ssColorModeWidget, row, 1 );
 	}
 
-	void BaseRepresentationWidget::_setSphereValue( const float p_value ) { _sphereWidget->setValue( p_value ); }
+	void BaseRepresentationWidget::_setSphereValue( const float p_value )
+	{
+		_sphereWidget->updateWithNewValue( p_value );
+	}
+	void BaseRepresentationWidget::_addSphereValue( const float p_value )
+	{
+		_sphereWidget->updateWithNewValue( p_value );
+	}
 	void BaseRepresentationWidget::_setCylinderValue( const float p_value ) { _cylinderWidget->setValue( p_value ); }
+	void BaseRepresentationWidget::_addCylinderValue( const float p_value )
+	{
+		_cylinderWidget->updateWithNewValue( p_value );
+	}
 
 	void BaseRepresentationWidget::_refreshColorModeWidget()
 	{
+		_colorModeWidget->resetState();
+
 		const Generic::COLOR_MODE & colorMode = _instantiatedRepresentation->getColorMode();
 
 		if ( colorMode != _colorModeWidget->getColorMode() )
@@ -179,13 +168,38 @@ namespace VTX::UI::Widget::Representation
 		}
 		else if ( colorMode == Generic::COLOR_MODE::ATOM_PROTEIN || colorMode == Generic::COLOR_MODE::PROTEIN )
 		{
-			_colorModeWidget->setColor( _instantiatedRepresentation->getTarget()->getMolecule()->getColor() );
+			_colorModeWidget->resetState();
+			for ( const Generic::BaseRepresentable * const target : _targets )
+			{
+				_colorModeWidget->updateWithNewValue( std::pair( colorMode, target->getMolecule()->getColor() ) );
+			}
+		}
+	}
+	void BaseRepresentationWidget::_refreshColorModeWidget( const InstantiatedRepresentation & p_representation )
+	{
+		const Generic::COLOR_MODE & colorMode = p_representation.getColorMode();
+
+		if ( colorMode != _colorModeWidget->getColorMode() )
+			_colorModeWidget->setColorMode( colorMode );
+
+		if ( colorMode == Generic::COLOR_MODE::ATOM_CUSTOM || colorMode == Generic::COLOR_MODE::CUSTOM )
+		{
+			_colorModeWidget->setColor( p_representation.getColor() );
+		}
+		else if ( colorMode == Generic::COLOR_MODE::ATOM_PROTEIN || colorMode == Generic::COLOR_MODE::PROTEIN )
+		{
+			_colorModeWidget->resetState();
+			for ( const Generic::BaseRepresentable * const target : _targets )
+				_colorModeWidget->updateWithNewValue( std::pair( colorMode, target->getMolecule()->getColor() ) );
 		}
 	}
 	void BaseRepresentationWidget::_refreshSSColorModeWidget()
 	{
+		_ssColorModeWidget->resetState();
+
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode
 			= _instantiatedRepresentation->getSecondaryStructureColorMode();
+
 		_ssColorModeWidget->setColorMode( colorMode );
 
 		if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM )
@@ -194,8 +208,70 @@ namespace VTX::UI::Widget::Representation
 		}
 		else if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
 		{
-			_ssColorModeWidget->setColor( _instantiatedRepresentation->getTarget()->getMolecule()->getColor() );
+			_ssColorModeWidget->resetState();
+			for ( const Generic::BaseRepresentable * const target : _targets )
+			{
+				_ssColorModeWidget->updateWithNewValue( std::pair( colorMode, target->getMolecule()->getColor() ) );
+			}
 		}
+	}
+	void BaseRepresentationWidget::_refreshSSColorModeWidget( const InstantiatedRepresentation & p_representation )
+	{
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getSecondaryStructureColorMode();
+		_ssColorModeWidget->setColorMode( colorMode );
+
+		if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM )
+		{
+			_ssColorModeWidget->setColor( p_representation.getColor() );
+		}
+		else if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
+		{
+			_ssColorModeWidget->resetState();
+			for ( const Generic::BaseRepresentable * const target : _targets )
+			{
+				_ssColorModeWidget->updateWithNewValue( std::pair( colorMode, target->getMolecule()->getColor() ) );
+			}
+		}
+	}
+
+	void BaseRepresentationWidget::_addColorModeValue( const InstantiatedRepresentation & p_representation )
+	{
+		std::pair<Generic::COLOR_MODE, Color::Rgb> pair = std::pair<Generic::COLOR_MODE, Color::Rgb>();
+
+		Generic::COLOR_MODE colorMode = p_representation.getColorMode();
+		pair.first					  = colorMode;
+
+		if ( colorMode == Generic::COLOR_MODE::ATOM_CUSTOM || colorMode == Generic::COLOR_MODE::CUSTOM )
+		{
+			pair.second = p_representation.getColor();
+		}
+		else if ( colorMode == Generic::COLOR_MODE::ATOM_PROTEIN || colorMode == Generic::COLOR_MODE::PROTEIN )
+		{
+			pair.second = p_representation.getTarget()->getMolecule()->getColor();
+		}
+
+		_colorModeWidget->updateWithNewValue( pair );
+	}
+	void BaseRepresentationWidget::_addSSColorModeValue( const InstantiatedRepresentation & p_representation )
+	{
+		std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgb> pair
+			= std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgb>();
+
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode
+			= _instantiatedRepresentation->getSecondaryStructureColorMode();
+
+		pair.first = colorMode;
+
+		if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM )
+		{
+			pair.second = _instantiatedRepresentation->getColor();
+		}
+		else if ( colorMode == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN )
+		{
+			pair.second = _instantiatedRepresentation->getTarget()->getMolecule()->getColor();
+		}
+
+		_ssColorModeWidget->updateWithNewValue( pair );
 	}
 
 	void BaseRepresentationWidget::_onSphereRadiusChange( const float p_newRadius )
@@ -203,110 +279,72 @@ namespace VTX::UI::Widget::Representation
 		if ( signalsBlocked() )
 			return;
 
-		VTX_ACTION(
-			new Action::InstantiatedRepresentation::ChangeSphereRadius( _instantiatedRepresentation, p_newRadius ) );
+		_instantiatedRepresentation->setSphereRadius( p_newRadius );
 
-		emit onDataChange();
+		emit onDataChange( _sphereFlag );
 	}
 	void BaseRepresentationWidget::_onCylinderRadiusChange( const float p_newRadius )
 	{
 		if ( signalsBlocked() )
 			return;
 
-		VTX_ACTION(
-			new Action::InstantiatedRepresentation::ChangeCylinderRadius( _instantiatedRepresentation, p_newRadius ) );
+		_instantiatedRepresentation->setCylinderRadius( p_newRadius );
 
-		emit onDataChange();
+		emit onDataChange( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS );
 	}
 	void BaseRepresentationWidget::_colorModeChanged( const Generic::COLOR_MODE & p_colorMode )
 	{
 		if ( signalsBlocked() )
 			return;
 
-		VTX_ACTION(
-			new Action::InstantiatedRepresentation::ChangeColorMode( _instantiatedRepresentation, p_colorMode ) );
+		_instantiatedRepresentation->setColorMode( p_colorMode );
 
-		emit onDataChange();
+		emit onDataChange( Model::Representation::MEMBER_FLAG::COLOR_MODE );
 	}
 	void BaseRepresentationWidget::_ssColorModeChanged( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
 	{
 		if ( signalsBlocked() )
 			return;
 
-		VTX_ACTION( new Action::InstantiatedRepresentation::ChangeSecondaryStructureColorMode(
-			_instantiatedRepresentation, p_colorMode ) );
+		_instantiatedRepresentation->setSecondaryStructureColorMode( p_colorMode );
 
-		emit onDataChange();
+		emit onDataChange( Model::Representation::MEMBER_FLAG::SS_COLOR_MODE );
 	}
 	void BaseRepresentationWidget::_colorChanged( const Color::Rgb & p_color )
 	{
 		if ( signalsBlocked() )
 			return;
 
-		bool actionSend = false;
-		switch ( _instantiatedRepresentation->getColorMode() )
-		{
-		case Generic::COLOR_MODE::ATOM_CUSTOM:
-		case Generic::COLOR_MODE::CUSTOM:
-			VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _instantiatedRepresentation, p_color ) );
-			actionSend = true;
-			break;
-
-		case Generic::COLOR_MODE::ATOM_PROTEIN:
-		case Generic::COLOR_MODE::PROTEIN:
-			VTX_ACTION( new Action::Molecule::ChangeColor( *_instantiatedRepresentation->getTarget()->getMolecule(),
-														   p_color ) );
-			actionSend = true;
-			break;
-
-		case Generic::COLOR_MODE::ATOM_CHAIN:
-		case Generic::COLOR_MODE::CHAIN:
-		case Generic::COLOR_MODE::RESIDUE: break;
-
-		default:
-			VTX_WARNING( "COLOR_MODE " + std::to_string( int( _instantiatedRepresentation->getColorMode() ) )
-						 + " not managed in BaseRepresentationWidget::_colorChanged." );
-			break;
-		}
-
-		if ( actionSend )
-			emit onDataChange();
-
-		_refreshColorModeWidget();
+		emit onColorChange( p_color, false );
 	}
 	void BaseRepresentationWidget::_ssColorChanged( const Color::Rgb & p_color )
 	{
 		if ( signalsBlocked() )
 			return;
 
-		bool actionSend = false;
-		switch ( _instantiatedRepresentation->getSecondaryStructureColorMode() )
-		{
-		case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-			VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _instantiatedRepresentation, p_color ) );
-			actionSend = true;
-			break;
-
-		case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
-			VTX_ACTION( new Action::Molecule::ChangeColor( *_instantiatedRepresentation->getTarget()->getMolecule(),
-														   p_color ) );
-			actionSend = true;
-			break;
-
-		case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
-		case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
-		case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE: break;
-
-		default:
-			VTX_WARNING( "SECONDARY_STRUCTURE_COLOR_MODE "
-						 + std::to_string( int( _instantiatedRepresentation->getSecondaryStructureColorMode() ) )
-						 + " not managed in BaseRepresentationWidget::_ssColorChanged." );
-			break;
-		}
-
-		if ( actionSend )
-			emit onDataChange();
-
-		_refreshSSColorModeWidget();
+		emit onColorChange( p_color, true );
 	}
+
+	void BaseRepresentationWidget::resetState()
+	{
+		if ( _sphereWidget != nullptr )
+			_sphereWidget->resetState();
+		if ( _cylinderWidget != nullptr )
+			_cylinderWidget->resetState();
+		if ( _colorModeWidget != nullptr )
+			_colorModeWidget->resetState();
+		if ( _ssColorModeWidget != nullptr )
+			_ssColorModeWidget->resetState();
+
+		_targets.clear();
+	}
+
+	void BaseRepresentationWidget::updateWithNewValue(
+		const Model::Representation::InstantiatedRepresentation & p_value )
+	{
+		_targets.emplace( p_value.getTarget() );
+	};
+
+	void BaseRepresentationWidget::_displayDifferentsDataFeedback() {}
+
 } // namespace VTX::UI::Widget::Representation

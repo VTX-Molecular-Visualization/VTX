@@ -42,7 +42,8 @@ namespace VTX::Model::Representation
 		BaseRepresentation( ID::Model::MODEL_REPRESENTATION_BALLSANDSTICKS )
 	{
 		_representationType = Generic::REPRESENTATION::BALL_AND_STICK;
-		_dataTargeted		= VTX::Representation::FlagDataTargeted::ATOM | VTX::Representation::FlagDataTargeted::BOND;
+		_dataTargeted		= VTX::Representation::FlagDataTargeted( VTX::Representation::FlagDataTargeted::ATOM
+																 | VTX::Representation::FlagDataTargeted::BOND );
 
 		_sphereData					= new SphereData();
 		_sphereData->_radiusFixed	= Util::Math::max( VTX_SETTING().bondsRadius, VTX_SETTING().atomsRadius );
@@ -56,7 +57,8 @@ namespace VTX::Model::Representation
 	Representation_Sticks::Representation_Sticks() : BaseRepresentation( ID::Model::MODEL_REPRESENTATION_STICKS )
 	{
 		_representationType = Generic::REPRESENTATION::STICK;
-		_dataTargeted		= VTX::Representation::FlagDataTargeted::ATOM | VTX::Representation::FlagDataTargeted::BOND;
+		_dataTargeted		= VTX::Representation::FlagDataTargeted( VTX::Representation::FlagDataTargeted::ATOM
+																 | VTX::Representation::FlagDataTargeted::BOND );
 
 		_sphereData					= new SphereData();
 		_sphereData->_radiusFixed	= VTX_SETTING().bondsRadius;
@@ -70,7 +72,8 @@ namespace VTX::Model::Representation
 	Representation_Trace::Representation_Trace() : BaseRepresentation( ID::Model::MODEL_REPRESENTATION_STICKS )
 	{
 		_representationType = Generic::REPRESENTATION::TRACE;
-		_dataTargeted		= VTX::Representation::FlagDataTargeted::ATOM | VTX::Representation::FlagDataTargeted::BOND;
+		_dataTargeted		= VTX::Representation::FlagDataTargeted( VTX::Representation::FlagDataTargeted::ATOM
+																 | VTX::Representation::FlagDataTargeted::BOND );
 
 		_sphereData					= new SphereData();
 		_sphereData->_radiusFixed	= VTX_SETTING().atomsRadius;
@@ -81,7 +84,8 @@ namespace VTX::Model::Representation
 	Representation_Sas::Representation_Sas() : BaseRepresentation( ID::Model::MODEL_REPRESENTATION_SAS )
 	{
 		_representationType = Generic::REPRESENTATION::SAS;
-		_dataTargeted		= VTX::Representation::FlagDataTargeted::ATOM | VTX::Representation::FlagDataTargeted::BOND;
+		_dataTargeted		= VTX::Representation::FlagDataTargeted( VTX::Representation::FlagDataTargeted::ATOM
+																 | VTX::Representation::FlagDataTargeted::BOND );
 
 		_sphereData					= new SphereData();
 		_sphereData->_isRadiusFixed = false;
@@ -100,8 +104,9 @@ namespace VTX::Model::Representation
 		BaseRepresentation( ID::Model::MODEL_REPRESENTATION_BALLSTICKANDCARTOON )
 	{
 		_representationType = Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON;
-		_dataTargeted		= VTX::Representation::FlagDataTargeted::ATOM | VTX::Representation::FlagDataTargeted::BOND
-						| VTX::Representation::FlagDataTargeted::RIBBON;
+		_dataTargeted		= VTX::Representation::FlagDataTargeted( VTX::Representation::FlagDataTargeted::ATOM
+																 | VTX::Representation::FlagDataTargeted::BOND
+																 | VTX::Representation::FlagDataTargeted::RIBBON );
 
 		_sphereData					= new SphereData();
 		_sphereData->_radiusFixed	= Util::Math::max( VTX_SETTING().bondsRadius, VTX_SETTING().atomsRadius );
@@ -118,8 +123,9 @@ namespace VTX::Model::Representation
 		BaseRepresentation( ID::Model::MODEL_REPRESENTATION_STICKANDCARTOON )
 	{
 		_representationType = Generic::REPRESENTATION::STICK_AND_CARTOON;
-		_dataTargeted		= VTX::Representation::FlagDataTargeted::ATOM | VTX::Representation::FlagDataTargeted::BOND
-						| VTX::Representation::FlagDataTargeted::RIBBON;
+		_dataTargeted		= VTX::Representation::FlagDataTargeted( VTX::Representation::FlagDataTargeted::ATOM
+																 | VTX::Representation::FlagDataTargeted::BOND
+																 | VTX::Representation::FlagDataTargeted::RIBBON );
 
 		_sphereData					= new SphereData();
 		_sphereData->_radiusFixed	= VTX_SETTING().bondsRadius;

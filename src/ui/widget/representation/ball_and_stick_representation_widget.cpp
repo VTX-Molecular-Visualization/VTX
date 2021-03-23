@@ -1,12 +1,5 @@
 #include "ball_and_stick_representation_widget.hpp"
-#include "action/action_manager.hpp"
-#include "action/instantiated_representation.hpp"
-#include "action/molecule.hpp"
 #include "setting.hpp"
-#include "tool/logger.hpp"
-#include "ui/widget_factory.hpp"
-#include <QGridLayout>
-#include <string>
 
 namespace VTX::UI::Widget::Representation
 {
@@ -14,10 +7,14 @@ namespace VTX::UI::Widget::Representation
 	{
 		BaseRepresentationWidget::_setupUi( p_name );
 
-		_addSphereWidgetInLayout( "Balls radius", Setting::ATOMS_RADIUS_MIN, Setting::ATOMS_RADIUS_MAX );
+		_addSphereWidgetInLayout( "Balls radius",
+								  Setting::ATOMS_RADIUS_MIN,
+								  Setting::ATOMS_RADIUS_MAX,
+								  Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED );
 		_addCylinderWidgetInLayout( "Sticks radius", Setting::BONDS_RADIUS_MIN, Setting::BONDS_RADIUS_MAX );
 		_addColorModeInLayout( "Color mode" );
 	};
+	void BallAndStickRepresentationWidget::localize() {};
 
 	void BallAndStickRepresentationWidget::_refresh()
 	{
@@ -27,5 +24,12 @@ namespace VTX::UI::Widget::Representation
 		_refreshColorModeWidget();
 	}
 
-	void BallAndStickRepresentationWidget::localize() {};
+	void BallAndStickRepresentationWidget::updateWithNewValue( const InstantiatedRepresentation & p_representation )
+	{
+		BaseRepresentationWidget::updateWithNewValue( p_representation );
+
+		_addSphereValue( p_representation.getSphereData()._radiusFixed );
+		_addCylinderValue( p_representation.getCylinderData()._radius );
+		_addColorModeValue( p_representation );
+	}
 } // namespace VTX::UI::Widget::Representation

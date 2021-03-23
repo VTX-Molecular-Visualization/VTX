@@ -40,5 +40,64 @@ namespace VTX
 			_transform = p_transform;
 			_transformModifiedEvent();
 		}
+
+		void BaseTransformable::applyTransform( const Math::Transform &		 p_transform,
+												const TransformComposantMask p_mask )
+		{
+			if ( p_mask == TransformComposantMask::TRANSFORM )
+			{
+				_transform = p_transform;
+			}
+			else
+			{
+				if ( bool( p_mask & TransformComposantMask::TRANSLATE_VECTOR ) )
+				{
+					const Vec3f appliedTranslation = p_transform.getTranslationVector();
+					Vec3f		newTranslation	   = _transform.getTranslationVector();
+
+					if ( bool( p_mask & TransformComposantMask::TRANSLATE_X ) )
+						newTranslation.x = appliedTranslation.x;
+					if ( bool( p_mask & TransformComposantMask::TRANSLATE_Y ) )
+						newTranslation.y = appliedTranslation.y;
+					if ( bool( p_mask & TransformComposantMask::TRANSLATE_Z ) )
+						newTranslation.z = appliedTranslation.z;
+
+					_transform.setTranslation( newTranslation );
+				}
+
+				if ( bool( p_mask & TransformComposantMask::EULER_VECTOR ) )
+				{
+					const Vec3f appliedEuler = p_transform.getEulerAngles();
+					Vec3f		newEuler	 = _transform.getEulerAngles();
+
+					if ( bool( p_mask & TransformComposantMask::EULER_X ) )
+						newEuler.x = appliedEuler.x;
+					if ( bool( p_mask & TransformComposantMask::EULER_Y ) )
+						newEuler.y = appliedEuler.y;
+					if ( bool( p_mask & TransformComposantMask::EULER_Z ) )
+						newEuler.z = appliedEuler.z;
+
+					_transform.setRotation( newEuler );
+				}
+
+				if ( bool( p_mask & TransformComposantMask::SCALE_VECTOR ) )
+				{
+					const Vec3f appliedScale = p_transform.getScaleVector();
+					Vec3f		newScale	 = _transform.getScaleVector();
+
+					if ( bool( p_mask & TransformComposantMask::SCALE_X ) )
+						newScale.x = appliedScale.x;
+					if ( bool( p_mask & TransformComposantMask::SCALE_Y ) )
+						newScale.y = appliedScale.y;
+					if ( bool( p_mask & TransformComposantMask::SCALE_Z ) )
+						newScale.z = appliedScale.z;
+
+					_transform.setScale( newScale );
+				}
+			}
+
+			_transformModifiedEvent();
+		}
+
 	} // namespace Generic
 } // namespace VTX

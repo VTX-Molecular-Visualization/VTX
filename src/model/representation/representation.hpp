@@ -15,6 +15,16 @@
 
 namespace VTX::Model::Representation
 {
+	enum MEMBER_FLAG
+	{
+		SPHERE_RADIUS_FIXED = 1 << 0,
+		SPHERE_RADIUS_ADD	= 1 << 1,
+		CYLINDER_RADIUS		= 1 << 2,
+		COLOR				= 1 << 3,
+		COLOR_MODE			= 1 << 4,
+		SS_COLOR_MODE		= 1 << 5,
+	};
+
 	class BaseRepresentation : public BaseModel
 	{
 	  public:
@@ -37,7 +47,7 @@ namespace VTX::Model::Representation
 		void setColorMode( const Generic::COLOR_MODE & p_colorMode ) { _colorMode = p_colorMode; }
 
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & getSecondaryStructureColorMode() const { return _ssColorMode; }
-		Generic::SECONDARY_STRUCTURE_COLOR_MODE & getSecondaryStructureColorMode() { return _ssColorMode; }
+		Generic::SECONDARY_STRUCTURE_COLOR_MODE &		getSecondaryStructureColorMode() { return _ssColorMode; }
 		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
 		{
 			_ssColorMode = p_colorMode;

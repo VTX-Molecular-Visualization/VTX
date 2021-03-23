@@ -68,8 +68,12 @@ namespace VTX
 			const Math::AABB getAABB() const;
 			const Math::AABB getWorldAABB() const;
 
-			void applyRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation );
+			void applyRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation,
+									  const bool p_recompute = true );
 			void removeRepresentation();
+
+		  protected:
+			Chain() : BaseModel( ID::Model::MODEL_CHAIN ) {}
 
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;
@@ -79,8 +83,6 @@ namespace VTX
 			std::string _name			   = "unknown";
 			uint		_indexFirstResidue = 0;
 			uint		_residueCount	   = 0;
-
-			Chain() : BaseModel( ID::Model::MODEL_CHAIN ) {}
 		}; // namespace Model
 
 	} // namespace Model

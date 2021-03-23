@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDoubleValidator>
 #include <QLabel>
@@ -15,7 +16,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class FloatFieldDraggableWidget : public BaseManualWidget<QWidget>
+	class FloatFieldDraggableWidget : public BaseManualWidget<QWidget>, public TMultiDataFieldEquatable<float>
 	{
 		VTX_WIDGET
 		Q_OBJECT
@@ -38,6 +39,10 @@ namespace VTX::UI::Widget::CustomWidget
 		void setDragValueFactor( const float p_factor );
 		void setEnabled( const bool p_enable );
 
+		// MultiDataField Implementation //////////////////////////////
+		void resetState() override;
+		//////////////////////////////////////////////////////////////
+
 	  signals:
 		void onValueChange( const float p_value );
 
@@ -54,6 +59,12 @@ namespace VTX::UI::Widget::CustomWidget
 
 		void _onTextFieldEdited();
 		void _onInternalValueChanged( const float p_newValue );
+
+		// MultiDataField Implementation //////////////////////////////
+		void		  _displayDifferentsDataFeedback();
+		const float & _getValue() const { return _value; }
+		void		  _setSingleValue( const float & p_value ) { setValue( p_value ); };
+		//////////////////////////////////////////////////////////////
 
 	  private:
 		QLabel *	_label	   = nullptr;

@@ -583,7 +583,7 @@ namespace VTX::Action::Selection
 
 					if ( chainIds.second.getFullySelectedChildCount() == chain.getResidueCount() )
 					{
-						molecule.removeChain( chain.getIndex(), true, true, false );
+						molecule.removeChain( chain.getIndex(), true, true, true );
 						continue;
 					}
 
@@ -593,13 +593,13 @@ namespace VTX::Action::Selection
 
 						if ( residueIds.second.getFullySelectedChildCount() == residue.getAtomCount() )
 						{
-							molecule.removeResidue( residue.getIndex(), true, true, true, false );
+							molecule.removeResidue( residue.getIndex(), true, true, true, true );
 							continue;
 						}
 
 						for ( const uint atomId : residueIds.second )
 						{
-							molecule.removeAtom( atomId, true, true, true, false );
+							molecule.removeAtom( atomId, true, true, true, true );
 						}
 					}
 				}

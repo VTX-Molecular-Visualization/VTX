@@ -1,18 +1,13 @@
 #include "representation_inspector_section.hpp"
 #include "action/action_manager.hpp"
-#include "action/chain.hpp"
-#include "action/molecule.hpp"
-#include "action/residue.hpp"
-#include "model/chain.hpp"
-#include "model/molecule.hpp"
 #include "model/representation/representation.hpp"
 #include "model/representation/representation_library.hpp"
-#include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
 #include "ui/widget/representation/base_representation_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "view/ui/widget/inspector/all_inspector_view.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <string>
@@ -20,23 +15,27 @@
 namespace VTX::UI::Widget::Representation
 {
 	RepresentationInspectorSection::RepresentationInspectorSection( QWidget * const p_parent ) :
-		BaseManualWidget( p_parent )
+		BaseManualWidget( p_parent ), TMultiDataField()
 	{
 	}
 
-	RepresentationInspectorSection ::~RepresentationInspectorSection() {}
+	RepresentationInspectorSection ::~RepresentationInspectorSection()
+	{
+		if ( _dummyRepresentation != nullptr )
+			MVC::MvcManager::get().deleteModel( _dummyRepresentation );
+	}
 
 	void RepresentationInspectorSection::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_titleWidget = new QPushButton( this );
+		_titleWidget = new CustomWidget::QPushButtonMultiField( this );
 		_titleWidget->setFlat( true );
 		_titleWidget->setIcon( Style::IconConst::get().FOLDED_PIXMAP );
 
 		_representationWidget = new QWidget( this );
 
-		_representationPreset = new QComboBox( _representationWidget );
+		_representationPreset = new CustomWidget::QComboBoxMultiField( _representationWidget );
 		_populateRepresentationModeComboBox();
 
 		_settingLayout = new QVBoxLayout( _representationWidget );
@@ -62,104 +61,87 @@ namespace VTX::UI::Widget::Representation
 				 &RepresentationInspectorSection::_representationPresetChange );
 	}
 
-	void RepresentationInspectorSection::_setTarget( Model::BaseModel * const			p_model,
-													 Generic::BaseRepresentable * const p_representable )
+	void RepresentationInspectorSection::refresh()
 	{
-		_targetModel = p_model;
-		_target		 = p_representable;
+		const bool oldBlockState = blockSignals( true );
 
-		if ( _target->hasCustomRepresentation() )
-		{
-			_representation				   = _target->getCustomRepresentation();
-			_representationHasBeenModified = true;
-		}
-		else
-		{
-			_representation
-				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
-					_target->getRepresentation() );
-			_representation->setTarget( _target );
-			_representationHasBeenModified = false;
-		}
+		if ( _representationSettingWidget != nullptr )
+			_representationSettingWidget->refresh();
 
-		blockSignals( true );
-		_refresh();
-		blockSignals( false );
+		blockSignals( oldBlockState );
 	}
 
-	void RepresentationInspectorSection::_refresh()
+	void RepresentationInspectorSection::_instantiateRepresentationSettingWidget(
+		const Generic::REPRESENTATION & p_representation )
 	{
-		_titleWidget->setText( QString::fromStdString( _representation->getName() ) );
+		switch ( p_representation )
+		{
+		case Generic::REPRESENTATION::BALL_AND_STICK:
+			_representationSettingWidget
+				= VTX::UI::WidgetFactory::get().instantiateWidget<BallAndStickRepresentationWidget>(
+					_representationWidget, "ball_and_stick_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON:
+			_representationSettingWidget
+				= VTX::UI::WidgetFactory::get().instantiateWidget<BallStickAndCartoonRepresentationWidget>(
+					_representationWidget, "ball_stick_and_cartoon_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::CARTOON:
+			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<CartoonRepresentationWidget>(
+				_representationWidget, "cartoon_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::SAS:
+			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<SasRepresentationWidget>(
+				_representationWidget, "sas_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::STICK:
+			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<StickRepresentationWidget>(
+				_representationWidget, "stick_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::STICK_AND_CARTOON:
+			_representationSettingWidget
+				= VTX::UI::WidgetFactory::get().instantiateWidget<StickAndCartoonRepresentationWidget>(
+					_representationWidget, "stick_and_cartoon_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::TRACE:
+			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<TraceRepresentationWidget>(
+				_representationWidget, "trace_representation_widget" );
+			break;
+		case Generic::REPRESENTATION::VAN_DER_WAALS:
+			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<VdwRepresentationWidget>(
+				_representationWidget, "vdw_representation_widget" );
+			break;
+		default:
+			VTX_WARNING( "Widget setting for representation " + std::to_string( int( p_representation ) )
+						 + " not managed in RepresentationInspectorSection::_instantiateRepresentationSettingWidget." );
+			_representationSettingWidget = nullptr;
+			break;
+		}
 
-		const Model::Representation::BaseRepresentation * const linkedRep = _representation->getLinkedRepresentation();
+		if ( _representationSettingWidget != nullptr )
+		{
+			_settingLayout->addWidget( _representationSettingWidget );
 
-		const int representationPresetIndex
-			= Model::Representation::RepresentationLibrary::get().getRepresentationIndex( linkedRep );
+			connect( _representationSettingWidget,
+					 &VTX::UI::Widget::Representation::BaseRepresentationWidget::onDataChange,
+					 this,
+					 &RepresentationInspectorSection::_representationDataChange );
 
-		const int representationTypeIndex = int( linkedRep->getRepresentationType() );
-
-		_representationPreset->setCurrentIndex( representationPresetIndex );
-
+			connect( _representationSettingWidget,
+					 &VTX::UI::Widget::Representation::BaseRepresentationWidget::onColorChange,
+					 this,
+					 &RepresentationInspectorSection::_representationColorChange );
+		}
+	}
+	void RepresentationInspectorSection::_deleteRepresentationSettingWidget()
+	{
 		if ( _representationSettingWidget != nullptr )
 		{
 			_settingLayout->takeAt( _settingLayout->count() - 1 );
 			delete _representationSettingWidget;
+
+			_representationSettingWidget = nullptr;
 		}
-
-		_representationSettingWidget
-			= _instantiateRepresentationSettingWidget( Generic::REPRESENTATION( representationTypeIndex ) );
-
-		_representationSettingWidget->setRepresentation( _representation );
-
-		_settingLayout->addWidget( _representationSettingWidget );
-
-		connect( _representationSettingWidget,
-				 &VTX::UI::Widget::Representation::BaseRepresentationWidget::onDataChange,
-				 this,
-				 &RepresentationInspectorSection::_representationDataChange );
-	}
-
-	BaseRepresentationWidget * RepresentationInspectorSection::_instantiateRepresentationSettingWidget(
-		const Generic::REPRESENTATION & p_representation )
-	{
-		BaseRepresentationWidget * res = nullptr;
-		switch ( p_representation )
-		{
-		case Generic::REPRESENTATION::BALL_AND_STICK:
-			res = VTX::UI::WidgetFactory::get().instantiateWidget<BallAndStickRepresentationWidget>(
-				_representationWidget, "ball_and_stick_representation_widget" );
-			break;
-		case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON:
-			res = VTX::UI::WidgetFactory::get().instantiateWidget<BallStickAndCartoonRepresentationWidget>(
-				_representationWidget, "ball_stick_and_cartoon_representation_widget" );
-			break;
-		case Generic::REPRESENTATION::CARTOON:
-			res = VTX::UI::WidgetFactory::get().instantiateWidget<CartoonRepresentationWidget>(
-				_representationWidget, "cartoon_representation_widget" );
-			break;
-		case Generic::REPRESENTATION::SAS:
-			res = VTX::UI::WidgetFactory::get().instantiateWidget<SasRepresentationWidget>(
-				_representationWidget, "sas_representation_widget" );
-			break;
-		case Generic::REPRESENTATION::STICK:
-			res = VTX::UI::WidgetFactory::get().instantiateWidget<StickRepresentationWidget>(
-				_representationWidget, "stick_representation_widget" );
-			break;
-		case Generic::REPRESENTATION::STICK_AND_CARTOON:
-			res = VTX::UI::WidgetFactory::get().instantiateWidget<StickAndCartoonRepresentationWidget>(
-				_representationWidget, "stick_and_cartoon_representation_widget" );
-			break;
-		case Generic::REPRESENTATION::TRACE:
-			res = VTX::UI::WidgetFactory::get().instantiateWidget<TraceRepresentationWidget>(
-				_representationWidget, "trace_representation_widget" );
-			break;
-		case Generic::REPRESENTATION::VAN_DER_WAALS:
-			res = VTX::UI::WidgetFactory::get().instantiateWidget<VdwRepresentationWidget>(
-				_representationWidget, "vdw_representation_widget" );
-			break;
-		}
-
-		return res;
 	}
 
 	void RepresentationInspectorSection::localize() {}
@@ -180,57 +162,24 @@ namespace VTX::UI::Widget::Representation
 		if ( signalsBlocked() )
 			return;
 
-		_representationSettingWidget->setRepresentation( nullptr );
-
-		const ID::VTX_ID & typeId = _targetModel->getTypeId();
-		if ( typeId == ID::Model::MODEL_MOLECULE )
-		{
-			Model::Molecule * const molecule = static_cast<Model::Molecule *>( _targetModel );
-			VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( *molecule, p_presetIndex ) );
-		}
-		else if ( typeId == ID::Model::MODEL_CHAIN )
-		{
-			Model::Chain * const chain = static_cast<Model::Chain *>( _targetModel );
-			VTX_ACTION( new Action::Chain::ChangeRepresentationPreset( *chain, p_presetIndex ) );
-		}
-		else if ( typeId == ID::Model::MODEL_RESIDUE )
-		{
-			Model::Residue * const residue = static_cast<Model::Residue *>( _targetModel );
-			VTX_ACTION( new Action::Residue::ChangeRepresentationPreset( *residue, p_presetIndex ) );
-		}
+		emit onRepresentationPresetChange( p_presetIndex );
 	}
-	void RepresentationInspectorSection::_representationDataChange()
+	void RepresentationInspectorSection::_representationDataChange(
+		const Model::Representation::MEMBER_FLAG & p_flagDataModified )
 	{
 		if ( signalsBlocked() )
 			return;
 
-		_setRepresentationIfNeeded();
+		emit onRepresentationChange( *_dummyRepresentation, p_flagDataModified );
 	}
-
-	void RepresentationInspectorSection::_setRepresentationIfNeeded()
+	void RepresentationInspectorSection::_representationColorChange( const Color::Rgb & p_color, const bool p_ssColor )
 	{
-		if ( !_representationHasBeenModified )
-		{
-			const ID::VTX_ID & typeId = _targetModel->getTypeId();
-			if ( typeId == ID::Model::MODEL_MOLECULE )
-			{
-				Model::Molecule * const molecule = static_cast<Model::Molecule *>( _targetModel );
-				molecule->applyRepresentation( _representation );
-			}
-			else if ( typeId == ID::Model::MODEL_CHAIN )
-			{
-				Model::Chain * const chain = static_cast<Model::Chain *>( _targetModel );
-				chain->applyRepresentation( _representation );
-			}
-			else if ( typeId == ID::Model::MODEL_RESIDUE )
-			{
-				Model::Residue * const residue = static_cast<Model::Residue *>( _targetModel );
-				residue->applyRepresentation( _representation );
-			}
+		if ( signalsBlocked() )
+			return;
 
-			_representationHasBeenModified = true;
-		}
+		emit onRepresentationColorChange( *_dummyRepresentation, p_color, p_ssColor );
 	}
+
 	void RepresentationInspectorSection::_populateRepresentationModeComboBox()
 	{
 		const Model::Representation::RepresentationLibrary & representationLibrary
@@ -244,5 +193,70 @@ namespace VTX::UI::Widget::Representation
 			_representationPreset->addItem( QString::fromStdString( representation.getName() ) );
 		}
 	}
+
+	void RepresentationInspectorSection::resetState()
+	{
+		_titleWidget->resetState();
+		_representationPreset->resetState();
+
+		if ( _representationSettingWidget != nullptr )
+		{
+			_deleteRepresentationSettingWidget();
+		}
+
+		_baseRepresentationIndex = -1;
+		_state					 = MultiDataField::State::Uninitialized;
+	}
+
+	void RepresentationInspectorSection::updateWithNewValue( const InstantiatedRepresentation & p_representation )
+	{
+		const bool oldBlockState = blockSignals( true );
+
+		const int baseRepresentationIndex = Model::Representation::RepresentationLibrary::get().getRepresentationIndex(
+			p_representation.getLinkedRepresentation() );
+
+		_titleWidget->updateWithNewValue( p_representation.getName() );
+		_representationPreset->updateWithNewValue( baseRepresentationIndex );
+
+		if ( _baseRepresentationIndex == -1 )
+		{
+			if ( _dummyRepresentation != nullptr )
+				MVC::MvcManager::get().deleteModel( _dummyRepresentation );
+
+			_dummyRepresentation
+				= MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>( &p_representation );
+
+			VTX::View::Inspector::InstantiatedRepresentationView * const representationView
+				= MVC::MvcManager::get().instantiateView<VTX::View::Inspector::InstantiatedRepresentationView>(
+					_dummyRepresentation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
+
+			representationView->setLinkedInspector( this );
+
+			_instantiateRepresentationSettingWidget(
+				p_representation.getLinkedRepresentation()->getRepresentationType() );
+
+			_representationSettingWidget->setRepresentation( _dummyRepresentation );
+
+			_settingLayout->addWidget( _representationSettingWidget );
+			_baseRepresentationIndex = baseRepresentationIndex;
+		}
+
+		if ( !hasDifferentData() )
+		{
+			if ( baseRepresentationIndex == _baseRepresentationIndex )
+			{
+				_representationSettingWidget->updateWithNewValue( p_representation );
+				_state = MultiDataField::State::Identical;
+			}
+			else // Can't managed modifications on multiple representation presets
+			{
+				_state = MultiDataField::State::Different;
+				_deleteRepresentationSettingWidget();
+			}
+		}
+
+		blockSignals( oldBlockState );
+	}
+	void RepresentationInspectorSection::_displayDifferentsDataFeedback() {}
 
 } // namespace VTX::UI::Widget::Representation

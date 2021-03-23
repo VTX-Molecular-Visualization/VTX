@@ -21,4 +21,13 @@ namespace VTX::UI::Widget::Representation
 		_setCylinderValue( _instantiatedRepresentation->getCylinderData()._radius );
 		_refreshColorModeWidget();
 	}
+
+	void StickRepresentationWidget::updateWithNewValue( const InstantiatedRepresentation & p_representation )
+	{
+		BaseRepresentationWidget::updateWithNewValue( p_representation );
+
+		_addCylinderValue( p_representation.getCylinderData()._radius );
+		_addColorModeValue( p_representation );
+	}
+
 } // namespace VTX::UI::Widget::Representation

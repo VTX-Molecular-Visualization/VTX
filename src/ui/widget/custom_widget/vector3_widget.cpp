@@ -93,4 +93,28 @@ namespace VTX::UI::Widget::CustomWidget
 	}
 
 	void Vector3Widget::localize() {};
+
+	void Vector3Widget::resetState()
+	{
+		TMultiDataField::resetState();
+
+		_widgetX->resetState();
+		_widgetY->resetState();
+		_widgetZ->resetState();
+	}
+
+	void Vector3Widget::updateWithNewValue( const Vec3f & p_value )
+	{
+		_widgetX->updateWithNewValue( p_value.x );
+		_widgetY->updateWithNewValue( p_value.y );
+		_widgetZ->updateWithNewValue( p_value.z );
+
+		if ( !_widgetX->hasIdenticalData() && !_widgetY->hasIdenticalData() && !_widgetZ->hasIdenticalData() )
+		{
+			_state = MultiDataField::State::Different;
+		}
+	}
+
+	void Vector3Widget::_displayDifferentsDataFeedback() {}
+
 } // namespace VTX::UI::Widget::CustomWidget

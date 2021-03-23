@@ -62,14 +62,18 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void FloatFieldSliderWidget::_refresh()
 	{
-		blockSignals( true );
+		const bool oldBlockState = blockSignals( true );
+
 		const int sliderValue = int( std::round( ( ( _value - _min ) / ( _max - _min ) ) * 100 ) );
+		_slider->blockSignals( true );
 		_slider->setValue( sliderValue );
+		_slider->blockSignals( false );
 
 		std::stringstream strStream;
 		strStream << std::fixed << std::setprecision( _nbDecimals ) << _value;
 		_textField->setText( QString::fromStdString( strStream.str() ) );
-		blockSignals( false );
+
+		blockSignals( oldBlockState );
 	}
 
 	void FloatFieldSliderWidget::localize() {};
@@ -139,4 +143,23 @@ namespace VTX::UI::Widget::CustomWidget
 			emit onValueChange( _value );
 	}
 
+	void FloatFieldSliderWidget::resetState()
+	{
+		TMultiDataFieldEquatable::resetState();
+		_refresh();
+	}
+
+	void FloatFieldSliderWidget::_setSingleValue( const float & p_value )
+	{
+		const bool oldBlockState = blockSignals( true );
+		setValue( p_value );
+		blockSignals( oldBlockState );
+	}
+
+	void FloatFieldSliderWidget::_displayDifferentsDataFeedback()
+	{
+		_textFieldValidator->blockSignals( true );
+		_textField->setText( "-" );
+		_textFieldValidator->blockSignals( false );
+	}
 } // namespace VTX::UI::Widget::CustomWidget

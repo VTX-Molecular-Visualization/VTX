@@ -66,15 +66,16 @@ namespace VTX
 		}
 
 		void Residue::applyRepresentation(
-			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation)
+			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation,
+			const bool													   p_recompute )
 		{
-			BaseRepresentable::applyRepresentation( p_representation );
-			_notifyDataChanged();
+			BaseRepresentable::applyRepresentation( p_representation, p_recompute );
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
 		void Residue::removeRepresentation()
 		{
 			BaseRepresentable::removeRepresentation();
-			_notifyDataChanged();
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
 
 		const std::string Residue::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {

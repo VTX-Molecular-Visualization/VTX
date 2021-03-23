@@ -7,8 +7,13 @@ namespace VTX::UI::Widget::Representation
 		BaseRepresentationWidget::_setupUi( p_name );
 		_addSSColorModeInLayout( "Cartoon color mode" );
 	};
+	void CartoonRepresentationWidget::localize() {};
 
 	void CartoonRepresentationWidget::_refresh() { _refreshSSColorModeWidget(); }
 
-	void CartoonRepresentationWidget::localize() {};
+	void CartoonRepresentationWidget::updateWithNewValue( const InstantiatedRepresentation & p_representation )
+	{
+		BaseRepresentationWidget::updateWithNewValue( p_representation );
+		_addSSColorModeValue( p_representation );
+	}
 } // namespace VTX::UI::Widget::Representation

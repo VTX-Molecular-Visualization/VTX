@@ -22,29 +22,46 @@
 #include "state/visualization.hpp"
 #include "util/molecule.hpp"
 #include "visible.hpp"
+#include <unordered_set>
 
 namespace VTX::Action::Chain
 {
 	class ChangeColor : public BaseAction
 	{
 	  public:
-		explicit ChangeColor( Model::Chain & p_chain, const Color::Rgb & p_color ) :
-			_chain( p_chain ), _color( p_color )
+		explicit ChangeColor( Model::Chain & p_chain, const Color::Rgb & p_color ) : _color( p_color )
 		{
+			_chains.emplace( &p_chain );
+		}
+		explicit ChangeColor( const std::unordered_set<Model::Chain *> & p_chains, const Color::Rgb & p_color ) :
+			_color( p_color )
+		{
+			for ( Model::Chain * const chain : p_chains )
+				_chains.emplace( chain );
 		}
 
 		virtual void execute() override
 		{
-			_chain.setColor( _color );
-			_chain.getMoleculePtr()->refreshColors();
-			_chain.getMoleculePtr()->getSecondaryStructure().refreshColors();
+			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+
+			for ( Model::Chain * const chain : _chains )
+			{
+				chain->setColor( _color );
+				molecules.emplace( chain->getMolecule() );
+			}
+
+			for ( Model::Molecule * const molecule : molecules )
+			{
+				molecule->refreshColors();
+				molecule->getSecondaryStructure().refreshColors();
+			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
-		Model::Chain &	 _chain;
-		const Color::Rgb _color;
+		std::unordered_set<Model::Chain *> _chains = std::unordered_set<Model::Chain *>();
+		const Color::Rgb				   _color;
 	};
 
 	class ChangeVisibility : public Visible::ChangeVisibility
@@ -87,8 +104,16 @@ namespace VTX::Action::Chain
 	{
 	  public:
 		explicit ChangeRepresentationPreset( Model::Chain & p_chain, const int p_indexPreset ) :
-			_chain( p_chain ), _indexPreset( p_indexPreset )
+			_indexPreset( p_indexPreset )
 		{
+			_chains.emplace( &p_chain );
+		}
+		explicit ChangeRepresentationPreset( const std::unordered_set<Model::Chain *> & p_chains,
+											 const int									p_indexPreset ) :
+			_indexPreset( p_indexPreset )
+		{
+			for ( Model::Chain * const chain : p_chains )
+				_chains.emplace( chain );
 		}
 
 		virtual void execute() override
@@ -96,18 +121,30 @@ namespace VTX::Action::Chain
 			Model::Representation::BaseRepresentation * const preset
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
-			Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
-				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>( preset );
-			instantiatedRepresentation->setTarget( &_chain );
+			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 
-			_chain.applyRepresentation( instantiatedRepresentation );
+			for ( Model::Chain * const chain : _chains )
+			{
+				Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
+					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
+						preset );
+
+				// Compute molecules at end
+				chain->applyRepresentation( instantiatedRepresentation, false );
+				molecules.emplace( chain->getMolecule() );
+			}
+
+			for ( Model::Molecule * const molecule : molecules )
+			{
+				molecule->computeAllRepresentationData();
+			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
-		Model::Chain & _chain;
-		const int	   _indexPreset;
+		std::unordered_set<Model::Chain *> _chains = std::unordered_set<Model::Chain *>();
+		const int						   _indexPreset;
 	};
 
 	class Orient : public BaseAction
@@ -202,5 +239,59 @@ namespace VTX::Action::Chain
 	  private:
 		const Model::Chain & _target;
 	};
+
+	class ApplyRepresentation : public BaseAction
+	{
+	  public:
+		explicit ApplyRepresentation( const std::unordered_set<Model::Chain *> &				p_chains,
+									  const Model::Representation::InstantiatedRepresentation & p_source,
+									  const Model::Representation::MEMBER_FLAG &				p_flag ) :
+			_representation( p_source ),
+			_flag( p_flag )
+		{
+			for ( Model::Chain * const chain : p_chains )
+				_chains.emplace( chain );
+		}
+
+		virtual void execute() override
+		{
+			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+
+			for ( Model::Chain * const chain : _chains )
+			{
+				Model::Representation::InstantiatedRepresentation * chainRepresentation;
+
+				if ( chain->hasCustomRepresentation() )
+				{
+					chainRepresentation = chain->getCustomRepresentation();
+				}
+				else
+				{
+					chainRepresentation
+						= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
+							chain->getRepresentation() );
+
+					// Compute molecules at end
+					chain->applyRepresentation( chainRepresentation, false );
+				}
+
+				chainRepresentation->applyData( _representation, _flag, false );
+				molecules.emplace( chain->getMolecule() );
+			}
+
+			for ( Model::Molecule * const molecule : molecules )
+			{
+				molecule->computeAllRepresentationData();
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Chain *>						  _chains = std::unordered_set<Model::Chain *>();
+		const Model::Representation::InstantiatedRepresentation & _representation;
+		const Model::Representation::MEMBER_FLAG				  _flag;
+	};
+
 } // namespace VTX::Action::Chain
 #endif

@@ -10,6 +10,7 @@
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/instantiated_representation.hpp"
+#include "model/representation/representation.hpp"
 #include "model/representation/representation_library.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -22,29 +23,39 @@
 #include "util/secondary_structure.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
+#include <unordered_set>
 
 namespace VTX::Action::Molecule
 {
 	class ChangeColor : public BaseAction
 	{
 	  public:
-		explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgb & p_color ) :
-			_molecule( p_molecule ), _color( p_color )
+		explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgb & p_color ) : _color( p_color )
 		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeColor( const std::unordered_set<Model::Molecule *> & p_molecules, const Color::Rgb & p_color ) :
+			_color( p_color )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
 		}
 
 		virtual void execute() override
 		{
-			_molecule.setColor( _color );
-			_molecule.refreshColors();
-			_molecule.getSecondaryStructure().refreshColors();
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				molecule->setColor( _color );
+				molecule->refreshColors();
+				molecule->getSecondaryStructure().refreshColors();
+			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
-		Model::Molecule & _molecule;
-		const Color::Rgb  _color;
+		std::unordered_set<Model::Molecule *> _molecules = std::unordered_set<Model::Molecule *>();
+		const Color::Rgb					  _color;
 	};
 
 	class ChangeVisibility : public Visible::ChangeVisibility
@@ -73,8 +84,16 @@ namespace VTX::Action::Molecule
 	{
 	  public:
 		explicit ChangeRepresentationPreset( Model::Molecule & p_molecule, const int p_indexPreset ) :
-			_molecule( p_molecule ), _indexPreset( p_indexPreset )
+			_indexPreset( p_indexPreset )
 		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeRepresentationPreset( const std::unordered_set<Model::Molecule *> & p_molecules,
+											 const int									   p_indexPreset ) :
+			_indexPreset( p_indexPreset )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
 		}
 
 		virtual void execute() override
@@ -82,18 +101,21 @@ namespace VTX::Action::Molecule
 			Model::Representation::BaseRepresentation * const preset
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
-			Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
-				= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>( preset );
-			instantiatedRepresentation->setTarget( &_molecule );
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
+					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
+						preset );
 
-			_molecule.applyRepresentation( instantiatedRepresentation );
+				molecule->applyRepresentation( instantiatedRepresentation );
+			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
-		Model::Molecule & _molecule;
-		const int		  _indexPreset;
+		std::unordered_set<Model::Molecule *> _molecules;
+		const int							  _indexPreset;
 	};
 
 	class ChangeFPS : public BaseAction
@@ -291,6 +313,50 @@ namespace VTX::Action::Molecule
 
 		const std::string _oldName;
 		const std::string _newName;
+	};
+
+	class ApplyRepresentation : public BaseAction
+	{
+	  public:
+		explicit ApplyRepresentation( const std::unordered_set<Model::Molecule *> &				p_molecules,
+									  const Model::Representation::InstantiatedRepresentation & p_source,
+									  const Model::Representation::MEMBER_FLAG &				p_flag ) :
+			_representation( p_source ),
+			_flag( p_flag )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				Model::Representation::InstantiatedRepresentation * moleculeRepresentation;
+
+				if ( molecule->hasCustomRepresentation() )
+				{
+					moleculeRepresentation = molecule->getCustomRepresentation();
+				}
+				else
+				{
+					moleculeRepresentation
+						= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
+							molecule->getRepresentation() );
+
+					molecule->applyRepresentation( moleculeRepresentation );
+				}
+
+				moleculeRepresentation->applyData( _representation, _flag );
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *>					  _molecules = std::unordered_set<Model::Molecule *>();
+		const Model::Representation::InstantiatedRepresentation & _representation;
+		const Model::Representation::MEMBER_FLAG				  _flag;
 	};
 
 } // namespace VTX::Action::Molecule

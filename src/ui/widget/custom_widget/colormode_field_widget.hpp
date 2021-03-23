@@ -8,7 +8,9 @@
 #include "color/rgb.hpp"
 #include "color_field_button.hpp"
 #include "generic/base_colorable.hpp"
+#include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
+#include "ui/widget/custom_widget/qt_multi_data_field.hpp"
 #include <QBoxLayout>
 #include <QComboBox>
 #include <QHBoxLayout>
@@ -17,7 +19,9 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class ColorModeFieldWidget : public BaseManualWidget<QWidget>
+	class ColorModeFieldWidget :
+		public BaseManualWidget<QWidget>,
+		TMultiDataField<std::pair<Generic::COLOR_MODE, Color::Rgb>>
 	{
 		Q_OBJECT
 		VTX_WIDGET
@@ -32,21 +36,30 @@ namespace VTX::UI::Widget::CustomWidget
 		const Color::Rgb & getColor() { return _color; };
 		void			   setColor( const Color::Rgb & p_color );
 
+		void updateWithNewValue( const std::pair<Generic::COLOR_MODE, Color::Rgb> & p_value ) override;
+		void resetState() override;
+
 	  signals:
 		void colorModeChanged( const Generic::COLOR_MODE & p_colorMode );
 		void colorChanged( const Color::Rgb & p_color );
 
 	  protected:
-		ColorModeFieldWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
+		ColorModeFieldWidget( QWidget * p_parent ) :
+			BaseManualWidget( p_parent ), TMultiDataField<std::pair<Generic::COLOR_MODE, Color::Rgb>>() {};
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
 		void _refresh();
 
+		void _displayDifferentsDataFeedback() override;
+
 		void _colorModeChange( int index );
 		void _applyColor( const Color::Rgb & p_color );
 		void _openColorSettings();
+
+		bool _hasToDisplayColorButton( const Generic::COLOR_MODE & p_colorMode ) const;
+		bool _hasToDisplaySettingButton( const Generic::COLOR_MODE & p_colorMode ) const;
 
 	  private:
 		Generic::COLOR_MODE _colorMode;
@@ -54,9 +67,9 @@ namespace VTX::UI::Widget::CustomWidget
 
 		QHBoxLayout * _layout;
 
-		ColorFieldButton * _colorSetButton;
-		QPushButton *	   _openColorSettingsButton;
-		QComboBox *		   _colorModeComboBox;
+		ColorFieldButton *	  _colorSetButton;
+		QPushButton *		  _openColorSettingsButton;
+		QComboBoxMultiField * _colorModeComboBox;
 	};
 } // namespace VTX::UI::Widget::CustomWidget
 #endif

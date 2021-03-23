@@ -16,6 +16,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "vtx_app.hpp"
+#include <unordered_set>
 
 namespace VTX::Action::InstantiatedRepresentation
 {
@@ -45,20 +46,45 @@ namespace VTX::Action::InstantiatedRepresentation
 	  public:
 		explicit ChangeColor( Model::Representation::InstantiatedRepresentation * const p_representation,
 							  const Color::Rgb &										p_color ) :
-			_instantiatedRepresentation( p_representation ),
 			_color( p_color )
 		{
+			_instantiatedRepresentations.emplace( p_representation );
+		}
+
+		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseRepresentable, T>::value>>
+		explicit ChangeColor( const std::unordered_set<T *> & p_representables, const Color::Rgb & p_color ) :
+			_color( p_color )
+		{
+			for ( T * const representable : p_representables )
+			{
+				_instantiatedRepresentations.emplace( representable->getCustomRepresentation() );
+			}
 		}
 
 		void execute()
 		{
-			_instantiatedRepresentation->setColor( _color );
+			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+
+			for ( Model::Representation::InstantiatedRepresentation * const representation :
+				  _instantiatedRepresentations )
+			{
+				representation->setColor( _color, false, true );
+				molecules.emplace( representation->getTarget()->getMolecule() );
+			}
+
+			for ( Model::Molecule * const molecule : molecules )
+			{
+				molecule->computeColorBuffer();
+				molecule->getSecondaryStructure().refreshColors();
+			}
+
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
 	  private:
-		const Color::Rgb										  _color;
-		Model::Representation::InstantiatedRepresentation * const _instantiatedRepresentation;
+		const Color::Rgb														_color;
+		std::unordered_set<Model::Representation::InstantiatedRepresentation *> _instantiatedRepresentations
+			= std::unordered_set<Model::Representation::InstantiatedRepresentation *>();
 	};
 
 	class ChangeSecondaryStructureColorMode : public BaseAction
@@ -95,26 +121,7 @@ namespace VTX::Action::InstantiatedRepresentation
 
 		void execute()
 		{
-			switch ( _instantiatedRepresentation->getLinkedRepresentation()->getRepresentationType() )
-			{
-			case Generic::REPRESENTATION::BALL_AND_STICK:
-			case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON:
-				_instantiatedRepresentation->setSphereFixedRadius( _radius );
-				if ( _radius < _instantiatedRepresentation->getCylinderData()._radius )
-					_instantiatedRepresentation->setCylinderRadius( _radius );
-				break;
-
-			case Generic::REPRESENTATION::SAS:
-			case Generic::REPRESENTATION::VAN_DER_WAALS:
-				_instantiatedRepresentation->setSphereAddRadius( _radius );
-				break;
-
-			case Generic::REPRESENTATION::STICK:
-			case Generic::REPRESENTATION::STICK_AND_CARTOON:
-			case Generic::REPRESENTATION::CARTOON:
-			case Generic::REPRESENTATION::TRACE: break;
-			}
-
+			_instantiatedRepresentation->setSphereRadius( _radius );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
@@ -134,27 +141,7 @@ namespace VTX::Action::InstantiatedRepresentation
 
 		void execute()
 		{
-			switch ( _instantiatedRepresentation->getLinkedRepresentation()->getRepresentationType() )
-			{
-			case Generic::REPRESENTATION::BALL_AND_STICK:
-			case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON:
-				_instantiatedRepresentation->setCylinderRadius( _radius );
-				if ( _radius > _instantiatedRepresentation->getSphereData()._radiusFixed )
-					_instantiatedRepresentation->setSphereFixedRadius( _radius );
-				break;
-
-			case Generic::REPRESENTATION::STICK:
-			case Generic::REPRESENTATION::STICK_AND_CARTOON:
-			case Generic::REPRESENTATION::TRACE:
-				_instantiatedRepresentation->setSphereFixedRadius( _radius );
-				_instantiatedRepresentation->setCylinderRadius( _radius );
-				break;
-
-			case Generic::REPRESENTATION::VAN_DER_WAALS:
-			case Generic::REPRESENTATION::CARTOON:
-			case Generic::REPRESENTATION::SAS: break;
-			}
-
+			_instantiatedRepresentation->setCylinderRadius( _radius );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 

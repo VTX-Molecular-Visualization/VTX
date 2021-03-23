@@ -29,24 +29,28 @@ namespace VTX::Model::Representation
 {
 	class InstantiatedRepresentation : public BaseModel, public Generic::BaseObjectOverride
 	{
-	  public:
-		InstantiatedRepresentation( BaseRepresentation * const p_linkedRepresentation );
-		InstantiatedRepresentation( const InstantiatedRepresentation * const p_source );
+		VTX_MODEL
 
+	  public:
 		~InstantiatedRepresentation() {}
 
-		const Generic::BaseRepresentable * const getTarget() const { return _target; }
-		void setTarget( Generic::BaseRepresentable * p_target ) { _target = p_target; }
+		const Generic::BaseRepresentable * const getTarget() const;
+		Generic::BaseRepresentable * const		 getTarget();
+		void									 setTarget( Generic::BaseRepresentable * p_target );
 
 		const std::string & getName() const { return _linkedRepresentation->getName(); };
 
-		const Color::Rgb &			getColor() const { return _color.getValue(); }
-		void						setColor( const Color::Rgb & p_color );
+		const Color::Rgb & getColor() const { return _color.getValue(); }
+		void setColor( const Color::Rgb & p_color, const bool p_recomputeBuffers = true, const bool p_notify = true );
 		const Generic::COLOR_MODE & getColorMode() const { return _colorMode.getValue(); }
-		void						setColorMode( const Generic::COLOR_MODE & p_colorMode );
+		void						setColorMode( const Generic::COLOR_MODE & p_colorMode,
+												  const bool				  p_recomputeBuffers = true,
+												  const bool				  p_notify			 = true );
 
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & getSecondaryStructureColorMode() const;
-		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
+		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode,
+											 const bool										 p_recomputeBuffers = true,
+											 const bool										 p_notify = true );
 
 		const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const
 		{
@@ -55,21 +59,28 @@ namespace VTX::Model::Representation
 
 		bool			   hasToDrawSphere() const { return _linkedRepresentation->hasToDrawSphere(); };
 		const SphereData & getSphereData() const { return _sphereData.getValue(); };
-		void			   setSphereFixedRadius( const float p_radius );
-		void			   setSphereAddRadius( const float p_radius );
+		void			   setSphereRadius( const float p_radius, const bool p_notify = true );
 
 		bool				 hasToDrawCylinder() const { return _linkedRepresentation->hasToDrawCylinder(); };
 		const CylinderData & getCylinderData() const { return _cylinderData.getValue(); };
-		void				 setCylinderRadius( const float p_radius );
+		void				 setCylinderRadius( const float p_radius, const bool p_notify = true );
 
 		bool			   hasToDrawRibbon() const { return _linkedRepresentation->hasToDrawRibbon(); };
 		const RibbonData & getRibbonData() const { return _ribbonData.getValue(); };
+
+		void applyData( const InstantiatedRepresentation & p_source,
+						const MEMBER_FLAG &				   p_flag,
+						const bool						   p_recomputeBuffers = true );
 
 		const BaseRepresentation * const getLinkedRepresentation() const { return _linkedRepresentation; }
 		BaseRepresentation * const		 getLinkedRepresentation() { return _linkedRepresentation; }
 
 	  protected:
-		BaseRepresentation * const	 _linkedRepresentation;
+		InstantiatedRepresentation( BaseRepresentation * const p_linkedRepresentation );
+		InstantiatedRepresentation( const InstantiatedRepresentation * const p_source );
+
+		BaseRepresentation * const _linkedRepresentation;
+
 		Generic::BaseRepresentable * _target = nullptr;
 
 		Generic::OverridableParameter<Color::Rgb>							   _color;
@@ -80,7 +91,7 @@ namespace VTX::Model::Representation
 		Generic::OverridableParameter<CylinderData> _cylinderData;
 		Generic::OverridableParameter<RibbonData>	_ribbonData;
 
-		void _updateTargets( const VTX::Representation::MoleculeComputationFlag & p_flag );
+		void _updateTarget( const VTX::Representation::MoleculeComputationFlag & p_flag );
 	};
 
 } // namespace VTX::Model::Representation

@@ -106,9 +106,23 @@ namespace VTX::UI::Widget::CustomWidget
 		QColor displayedColor = _getQColorFromRgbColor( displayedColorRGB );
 
 		painter.fillRect( rect, displayedColor );
+		// painter.drawText( rect, text() );
 
 		painter.setWorldMatrixEnabled( true );
 		painter.restore();
+	}
+
+	void ColorFieldButton::resetState()
+	{
+		TMultiDataFieldEquatable::resetState();
+
+		setText( "" );
+		_refresh();
+	}
+	void ColorFieldButton::_displayDifferentsDataFeedback()
+	{
+		setColor( Color::Rgb::BLACK );
+		setText( "-" );
 	}
 
 } // namespace VTX::UI::Widget::CustomWidget

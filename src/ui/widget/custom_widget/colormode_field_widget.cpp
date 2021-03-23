@@ -14,7 +14,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		_layout = new QHBoxLayout( this );
 
-		_colorModeComboBox = new QComboBox( this );
+		_colorModeComboBox = new QComboBoxMultiField( this );
 
 		QStringList colorModeList = QStringList();
 		for ( const std::string colorModeStrings : Generic::COLOR_MODE_STRING )
@@ -55,6 +55,7 @@ namespace VTX::UI::Widget::CustomWidget
 										   || currentColorMode == Generic::COLOR_MODE::ATOM_PROTEIN
 										   || currentColorMode == Generic::COLOR_MODE::CUSTOM
 										   || currentColorMode == Generic::COLOR_MODE::ATOM_CUSTOM;
+
 		const bool displayColorSettingButton
 			= currentColorMode == Generic::COLOR_MODE::CHAIN || currentColorMode == Generic::COLOR_MODE::ATOM_CHAIN;
 
@@ -102,5 +103,35 @@ namespace VTX::UI::Widget::CustomWidget
 	}
 
 	void ColorModeFieldWidget::localize() {};
+
+	bool ColorModeFieldWidget::_hasToDisplayColorButton( const Generic::COLOR_MODE & p_colorMode ) const
+	{
+		return p_colorMode == Generic::COLOR_MODE::PROTEIN || p_colorMode == Generic::COLOR_MODE::ATOM_PROTEIN
+			   || p_colorMode == Generic::COLOR_MODE::CUSTOM || p_colorMode == Generic::COLOR_MODE::ATOM_CUSTOM;
+	}
+	bool ColorModeFieldWidget::_hasToDisplaySettingButton( const Generic::COLOR_MODE & p_colorMode ) const
+	{
+		return p_colorMode == Generic::COLOR_MODE::CHAIN || p_colorMode == Generic::COLOR_MODE::ATOM_CHAIN;
+	}
+
+	void ColorModeFieldWidget::updateWithNewValue( const std::pair<Generic::COLOR_MODE, Color::Rgb> & p_value )
+	{
+		_colorModeComboBox->updateWithNewValue( int( p_value.first ) );
+		_colorSetButton->updateWithNewValue( p_value.second );
+
+		_refresh();
+
+		if ( !_colorModeComboBox->hasIdenticalData() )
+		{
+			_colorSetButton->hide();
+			_openColorSettingsButton->hide();
+		}
+	}
+	void ColorModeFieldWidget::resetState()
+	{
+		_colorModeComboBox->resetState();
+		_colorSetButton->resetState();
+	}
+	void ColorModeFieldWidget::_displayDifferentsDataFeedback() {}
 
 } // namespace VTX::UI::Widget::CustomWidget

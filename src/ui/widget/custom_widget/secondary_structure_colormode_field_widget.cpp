@@ -14,7 +14,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		_layout = new QHBoxLayout( this );
 
-		_colorModeComboBox = new QComboBox( this );
+		_colorModeComboBox = new CustomWidget::QComboBoxMultiField( this );
 
 		QStringList colorModeList = QStringList();
 		for ( const std::string colorModeStrings : Generic::SECONDARY_STRUCTURE_COLOR_MODE_STRING )
@@ -104,5 +104,20 @@ namespace VTX::UI::Widget::CustomWidget
 	}
 
 	void SecondaryStructureColorModeFieldWidget::localize() {};
+
+	void SecondaryStructureColorModeFieldWidget::updateWithNewValue(
+		const std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgb> & p_value )
+	{
+		_colorModeComboBox->updateWithNewValue( int( p_value.first ) );
+		_colorSetButton->updateWithNewValue( p_value.second );
+
+		_refresh();
+	}
+	void SecondaryStructureColorModeFieldWidget::resetState()
+	{
+		_colorModeComboBox->resetState();
+		_colorSetButton->resetState();
+	}
+	void SecondaryStructureColorModeFieldWidget::_displayDifferentsDataFeedback() {}
 
 } // namespace VTX::UI::Widget::CustomWidget

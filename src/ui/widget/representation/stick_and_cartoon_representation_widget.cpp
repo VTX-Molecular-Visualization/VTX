@@ -12,6 +12,7 @@ namespace VTX::UI::Widget::Representation
 		_addColorModeInLayout( "Color mode" );
 		_addSSColorModeInLayout( "Cartoon color mode" );
 	};
+	void StickAndCartoonRepresentationWidget::localize() {};
 
 	void StickAndCartoonRepresentationWidget::_refresh()
 	{
@@ -20,5 +21,12 @@ namespace VTX::UI::Widget::Representation
 		_refreshSSColorModeWidget();
 	}
 
-	void StickAndCartoonRepresentationWidget::localize() {};
+	void StickAndCartoonRepresentationWidget::updateWithNewValue( const InstantiatedRepresentation & p_representation )
+	{
+		BaseRepresentationWidget::updateWithNewValue( p_representation );
+
+		_addCylinderValue( p_representation.getCylinderData()._radius );
+		_addColorModeValue( p_representation );
+		_addSSColorModeValue( p_representation );
+	}
 } // namespace VTX::UI::Widget::Representation

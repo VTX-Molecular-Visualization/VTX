@@ -54,11 +54,13 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void TransformWidget::_refresh()
 	{
-		blockSignals( true );
+		const bool oldBlockState = blockSignals( true );
+
 		_positionWidget->setData( _transform.getTranslationVector() );
 		_rotationWidget->setData( _transform.getEulerAngles() );
 		_scaleWidget->setData( _transform.getScaleVector() );
-		blockSignals( false );
+
+		blockSignals( oldBlockState );
 	}
 
 	void TransformWidget::localize() {};
@@ -78,4 +80,28 @@ namespace VTX::UI::Widget::CustomWidget
 		_transform.setScale( p_scale );
 		emit onValueChange( _transform );
 	}
+
+	void TransformWidget::resetState()
+	{
+		TMultiDataField::resetState();
+
+		_positionWidget->resetState();
+		_rotationWidget->resetState();
+		_scaleWidget->resetState();
+	}
+
+	void TransformWidget::updateWithNewValue( const Math::Transform & p_value )
+	{
+		_positionWidget->updateWithNewValue( p_value.getTranslationVector() );
+		_rotationWidget->updateWithNewValue( p_value.getEulerAngles() );
+		_scaleWidget->updateWithNewValue( p_value.getScaleVector() );
+
+		if ( !_positionWidget->hasIdenticalData() && !_rotationWidget->hasIdenticalData()
+			 && !_scaleWidget->hasIdenticalData() )
+		{
+			_state = MultiDataField::State::Different;
+		}
+	}
+	void TransformWidget::_displayDifferentsDataFeedback() {}
+
 } // namespace VTX::UI::Widget::CustomWidget

@@ -6,6 +6,7 @@
 #endif
 
 #include "float_field_draggable_widget.hpp"
+#include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QBoxLayout>
 #include <QEvent>
@@ -16,12 +17,11 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class Vector3Widget : public BaseManualWidget<QWidget>
+	class Vector3Widget : public BaseManualWidget<QWidget>, public TMultiDataField<Vec3f>
 	{
 		VTX_WIDGET
 		Q_OBJECT
 
-	  private:
 	  public:
 		~Vector3Widget() {};
 
@@ -36,15 +36,24 @@ namespace VTX::UI::Widget::CustomWidget
 
 		void setDragValueFactor( const float p_factor );
 
+		// MultiDataField Implementation //////////////////////////////
+		void resetState() override;
+		void updateWithNewValue( const Vec3f & p_value ) override;
+		//////////////////////////////////////////////////////////////
+
 	  signals:
 		void onValueChange( const Vec3f & value );
 
 	  protected:
-		Vector3Widget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
+		Vector3Widget( QWidget * p_parent ) : BaseManualWidget( p_parent ), TMultiDataField<Vec3f>() {};
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();
+
+		// MultiDataField Implementation //////////////////////////////
+		void _displayDifferentsDataFeedback();
+		//////////////////////////////////////////////////////////////
 
 		void _onInternalValueXChanged( const float p_newValue );
 		void _onInternalValueYChanged( const float p_newValue );

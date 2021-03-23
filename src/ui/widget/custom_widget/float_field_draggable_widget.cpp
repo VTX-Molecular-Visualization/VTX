@@ -8,7 +8,8 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	FloatFieldDraggableWidget::FloatFieldDraggableWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
+	FloatFieldDraggableWidget::FloatFieldDraggableWidget( QWidget * p_parent ) :
+		BaseManualWidget( p_parent ), TMultiDataFieldEquatable()
 	{
 		_min = FLOAT_MIN;
 		_max = FLOAT_MAX;
@@ -191,6 +192,19 @@ namespace VTX::UI::Widget::CustomWidget
 	bool FloatFieldDraggableWidget::_canDragAtPos( const QPoint & p_globalPos ) const
 	{
 		return _label->rect().contains( _label->mapFromGlobal( p_globalPos ) );
+	}
+
+	void FloatFieldDraggableWidget::resetState()
+	{
+		TMultiDataFieldEquatable::resetState();
+		_refresh();
+	}
+
+	void FloatFieldDraggableWidget::_displayDifferentsDataFeedback()
+	{
+		_textFieldValidator->blockSignals( true );
+		_textField->setText( "-" );
+		_textFieldValidator->blockSignals( false );
 	}
 
 } // namespace VTX::UI::Widget::CustomWidget

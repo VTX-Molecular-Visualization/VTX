@@ -13,6 +13,10 @@
 #include "model/residue.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
+#include "ui/widget/inspector/multiple_atom_inspector_widget.hpp"
+#include "ui/widget/inspector/multiple_chain_inspector_widget.hpp"
+#include "ui/widget/inspector/multiple_molecule_inspector_widget.hpp"
+#include "ui/widget/inspector/multiple_residue_inspector_widget.hpp"
 #include "view/ui/widget/base_widget_view.hpp"
 #include <QDockWidget>
 #include <QScrollArea>
@@ -47,35 +51,18 @@ namespace VTX::UI::Widget::Inspector
 	  protected:
 		InspectorWidget( QWidget * p_parent );
 
-		void _addMolecule( Model::Molecule * const p_molecule );
-		void _addChain( Model::Chain * const p_molecule );
-		void _addResidue( Model::Residue * const p_molecule );
-		void _addAtom( Model::Atom * const p_atom );
-
-		void _addRepresentation( Model::Representation::InstantiatedRepresentation * const p_representation );
-
-		template<typename M,
-				 typename V,
-				 typename = std::enable_if<std::is_base_of<Model::BaseModel, M>::value>,
-				 typename = std::enable_if<std::is_base_of<QWidget, V>::value>>
-		void _addInspectorView( M * const p_model, const ID::VTX_ID & m_viewId, const std::string & p_widgetName )
-		{
-			V * const inspectorViewWidget
-				= WidgetFactory::get().instantiateViewWidget<V>( p_model, m_viewId, this, p_widgetName );
-
-			_inspectorViewsData.emplace_back( ViewData( p_model->getId(), m_viewId, inspectorViewWidget ) );
-			_verticalLayout->insertWidget( _verticalLayout->count() - 1, inspectorViewWidget );
-		}
-
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
-
-		void _addInspectorInLayout();
 
 	  private:
 		QWidget *										  _scrollWidget	  = nullptr;
 		CustomWidget::DockWindowMainWidget<QScrollArea> * _scrollArea	  = nullptr;
 		QVBoxLayout *									  _verticalLayout = nullptr;
+
+		MultipleMoleculeWidget * _moleculesInspector = nullptr;
+		MultipleChainWidget *	 _chainsInspector	 = nullptr;
+		MultipleResidueWidget *	 _residuesInspector	 = nullptr;
+		MultipleAtomWidget *	 _atomsInspector	 = nullptr;
 
 		std::vector<ViewData> _inspectorViewsData = std::vector<ViewData>();
 	};

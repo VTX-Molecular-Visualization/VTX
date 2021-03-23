@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDoubleValidator>
 #include <QLineEdit>
@@ -13,7 +14,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class FloatFieldSliderWidget : public BaseManualWidget<QWidget>
+	class FloatFieldSliderWidget : public BaseManualWidget<QWidget>, public UI::TMultiDataFieldEquatable<float>
 	{
 		VTX_WIDGET
 		Q_OBJECT
@@ -31,6 +32,10 @@ namespace VTX::UI::Widget::CustomWidget
 		void setMinMax( const float p_min, const float p_max );
 		void setEnabled( const bool p_enable );
 
+		// MultiDataField Implementation //////////////////////////////
+		void resetState() override;
+		//////////////////////////////////////////////////////////////
+
 	  signals:
 		void onValueChange( const float p_value );
 
@@ -39,6 +44,12 @@ namespace VTX::UI::Widget::CustomWidget
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();
+
+		// MultiDataField Implementation //////////////////////////////
+		void		  _displayDifferentsDataFeedback();
+		const float & _getValue() const { return _value; }
+		void		  _setSingleValue( const float & p_value );
+		//////////////////////////////////////////////////////////////
 
 		void _onTextFieldEdited();
 		void _onInternalValueChanged( const int p_newValue );
@@ -56,6 +67,8 @@ namespace VTX::UI::Widget::CustomWidget
 		float _value = 0;
 		float _min;
 		float _max;
+
+		int _blockSignalsCounter = 0;
 	};
 } // namespace VTX::UI::Widget::CustomWidget
 #endif

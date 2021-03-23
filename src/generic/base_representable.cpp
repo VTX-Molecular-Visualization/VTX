@@ -20,10 +20,12 @@ namespace VTX
 			_molecule = nullptr;
 		}
 
-		void BaseRepresentable::applyRepresentation( InstantiatedRepresentation * const p_representation )
+		void BaseRepresentable::applyRepresentation( InstantiatedRepresentation * const p_representation,
+													 const bool							p_recompute )
 		{
 			setRepresentation( p_representation );
-			computeAllRepresentationData();
+			if ( p_recompute )
+				computeAllRepresentationData();
 		}
 
 		void BaseRepresentable::setRepresentation( InstantiatedRepresentation * const p_representation )
