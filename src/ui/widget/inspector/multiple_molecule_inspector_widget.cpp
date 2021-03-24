@@ -86,6 +86,11 @@ namespace VTX::UI::Widget::Inspector
 				 &Representation::RepresentationInspectorSection::onRepresentationColorChange,
 				 this,
 				 &MultipleMoleculeWidget::_onRepresentationColorChange );
+
+		connect( _representationWidget,
+				 &Representation::RepresentationInspectorSection::onRevertRepresentation,
+				 this,
+				 &MultipleMoleculeWidget::_onRevertRepresentation );
 	};
 
 	void MultipleMoleculeWidget::refresh( const SectionFlag & p_flag )
@@ -267,4 +272,10 @@ namespace VTX::UI::Widget::Inspector
 			}
 		}
 	} // namespace VTX::UI::Widget::Inspector
+
+	void MultipleMoleculeWidget::_onRevertRepresentation() const
+	{
+		VTX_ACTION( new Action::Molecule::RemoveRepresentation( _targets ) );
+	}
+
 } // namespace VTX::UI::Widget::Inspector

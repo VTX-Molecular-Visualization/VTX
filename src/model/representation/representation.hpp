@@ -23,6 +23,8 @@ namespace VTX::Model::Representation
 		COLOR				= 1 << 3,
 		COLOR_MODE			= 1 << 4,
 		SS_COLOR_MODE		= 1 << 5,
+
+		ALL = 0xFFFF
 	};
 
 	class BaseRepresentation : public BaseModel
@@ -69,6 +71,7 @@ namespace VTX::Model::Representation
 
 		bool			   hasToDrawRibbon() const { return _ribbonData != nullptr; };
 		const RibbonData & getRibbonData() const { return *_ribbonData; };
+		RibbonData &	   getRibbonData() { return *_ribbonData; };
 
 	  protected:
 		Generic::REPRESENTATION _representationType = Generic::REPRESENTATION::VAN_DER_WAALS;

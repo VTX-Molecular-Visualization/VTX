@@ -239,14 +239,14 @@ namespace VTX
 
 		void SecondaryStructure::_fillBufferColors()
 		{
-			_bufferColors.clear();
-
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
 				const Chain * const chain = _molecule->getChain( chainIdx );
 
 				if ( chain == nullptr )
+				{
 					continue;
+				}
 
 				uint residueCount = chain->getResidueCount();
 
@@ -274,27 +274,26 @@ namespace VTX
 					switch ( residue->getRepresentation()->getSecondaryStructureColorMode() )
 					{
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
-						_bufferColors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
+						_bufferColors[ residue->getIndex() ]
+							= Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ];
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
-						_bufferColors.emplace_back( residue->getMoleculePtr()->getColor() );
+						_bufferColors[ residue->getIndex() ] = residue->getMoleculePtr()->getColor();
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-						_bufferColors.emplace_back( residue->getRepresentation()->getColor() );
+						_bufferColors[ residue->getIndex() ] = residue->getRepresentation()->getColor();
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
-						_bufferColors.emplace_back( residue->getChainPtr()->getColor() );
+						_bufferColors[ residue->getIndex() ] = residue->getChainPtr()->getColor();
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
-						_bufferColors.emplace_back( residue->getColor() );
+						_bufferColors[ residue->getIndex() ] = residue->getColor();
 						break;
 
 					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
 					}
 				}
 			}
-
-			_bufferColors.shrink_to_fit();
 
 			_buffer->setControlPointColors( _bufferColors );
 		}

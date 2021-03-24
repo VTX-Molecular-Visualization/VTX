@@ -92,7 +92,7 @@ namespace VTX::UI::Widget::Inspector
 						{
 							Model::Residue * const residue = molecule.getResidue( residueData.first );
 
-							if ( chainData.second.getFullySelectedChildCount() == chain->getResidueCount() )
+							if ( residueData.second.getFullySelectedChildCount() == residue->getAtomCount() )
 							{
 								_residuesInspector->addTarget( residue, false );
 								_residuesInspector->setVisible( true );

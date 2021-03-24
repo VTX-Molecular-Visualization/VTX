@@ -66,6 +66,7 @@ namespace VTX::UI::Widget::Inspector
 		void _onRepresentationColorChange( const Model::Representation::InstantiatedRepresentation & p_representation,
 										   const Color::Rgb &										 p_color,
 										   const bool												 p_ssColor ) const;
+		void _onRevertRepresentation() const;
 	};
 } // namespace VTX::UI::Widget::Inspector
 

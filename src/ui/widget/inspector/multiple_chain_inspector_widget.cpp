@@ -66,6 +66,11 @@ namespace VTX::UI::Widget::Inspector
 				 &Representation::RepresentationInspectorSection::onRepresentationColorChange,
 				 this,
 				 &MultipleChainWidget::_onRepresentationColorChange );
+
+		connect( _representationWidget,
+				 &Representation::RepresentationInspectorSection::onRevertRepresentation,
+				 this,
+				 &MultipleChainWidget::_onRevertRepresentation );
 	};
 
 	void MultipleChainWidget::refresh( const SectionFlag & p_flag )
@@ -164,7 +169,7 @@ namespace VTX::UI::Widget::Inspector
 		VTX_ACTION( new Action::Chain::ChangeRepresentationPreset( _targets, p_presetIndex ) );
 
 		//_freezeRefresh( false );
-		//refresh();
+		// refresh();
 	}
 	void MultipleChainWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
@@ -238,6 +243,11 @@ namespace VTX::UI::Widget::Inspector
 		}
 
 		VTX_ACTION( new Action::Molecule::ChangeColor( molecules, p_color ) );
+	}
+
+	void MultipleChainWidget::_onRevertRepresentation() const
+	{
+		VTX_ACTION( new Action::Chain::RemoveRepresentation( _targets ) );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

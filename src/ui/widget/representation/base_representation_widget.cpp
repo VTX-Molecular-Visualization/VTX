@@ -139,10 +139,7 @@ namespace VTX::UI::Widget::Representation
 		_layout->addWidget( _ssColorModeWidget, row, 1 );
 	}
 
-	void BaseRepresentationWidget::_setSphereValue( const float p_value )
-	{
-		_sphereWidget->updateWithNewValue( p_value );
-	}
+	void BaseRepresentationWidget::_setSphereValue( const float p_value ) { _sphereWidget->setValue( p_value ); }
 	void BaseRepresentationWidget::_addSphereValue( const float p_value )
 	{
 		_sphereWidget->updateWithNewValue( p_value );
@@ -297,7 +294,7 @@ namespace VTX::UI::Widget::Representation
 		if ( signalsBlocked() )
 			return;
 
-		_instantiatedRepresentation->setColorMode( p_colorMode );
+		_instantiatedRepresentation->setColorMode( p_colorMode, false );
 
 		emit onDataChange( Model::Representation::MEMBER_FLAG::COLOR_MODE );
 	}
@@ -306,7 +303,7 @@ namespace VTX::UI::Widget::Representation
 		if ( signalsBlocked() )
 			return;
 
-		_instantiatedRepresentation->setSecondaryStructureColorMode( p_colorMode );
+		_instantiatedRepresentation->setSecondaryStructureColorMode( p_colorMode, false );
 
 		emit onDataChange( Model::Representation::MEMBER_FLAG::SS_COLOR_MODE );
 	}

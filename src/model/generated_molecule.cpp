@@ -496,8 +496,9 @@ namespace VTX::Model
 
 		if ( p_molecule.hasCustomRepresentation() )
 		{
-			setRepresentation( MVC::MvcManager::get().instantiateModel<Representation::InstantiatedRepresentation>(
-				p_molecule.getRepresentation() ) );
+			Representation::InstantiatedRepresentation * const representation
+				= Representation::InstantiatedRepresentation::instantiateCopy( p_molecule.getRepresentation() );
+			setRepresentation( representation );
 		}
 
 		for ( int i = 0; i < p_molecule.getAtomPositionFrames().size(); i++ )
@@ -525,9 +526,9 @@ namespace VTX::Model
 
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
-			p_chain.setRepresentation(
-				MVC::MvcManager::get().instantiateModel<Representation::InstantiatedRepresentation>(
-					p_chainSource.getRepresentation() ) );
+			Representation::InstantiatedRepresentation * const representation
+				= Representation::InstantiatedRepresentation::instantiateCopy( p_chainSource.getRepresentation() );
+			setRepresentation( representation );
 		}
 	}
 	void GeneratedMolecule::_copyResidueData( Model::Residue &		 p_residue,
@@ -547,9 +548,9 @@ namespace VTX::Model
 
 		if ( p_residueSource.hasCustomRepresentation() )
 		{
-			p_residue.setRepresentation(
-				MVC::MvcManager::get().instantiateModel<Representation::InstantiatedRepresentation>(
-					p_residueSource.getRepresentation() ) );
+			Representation::InstantiatedRepresentation * const representation
+				= Representation::InstantiatedRepresentation::instantiateCopy( p_residueSource.getRepresentation() );
+			setRepresentation( representation );
 		}
 	}
 	void GeneratedMolecule::_copyAtomData( Model::Atom &		  p_atom,

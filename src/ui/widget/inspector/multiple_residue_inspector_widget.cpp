@@ -68,6 +68,11 @@ namespace VTX::UI::Widget::Inspector
 				 &Representation::RepresentationInspectorSection::onRepresentationColorChange,
 				 this,
 				 &MultipleResidueWidget::_onRepresentationColorChange );
+
+		connect( _representationWidget,
+				 &Representation::RepresentationInspectorSection::onRevertRepresentation,
+				 this,
+				 &MultipleResidueWidget::_onRevertRepresentation );
 	};
 
 	void MultipleResidueWidget::refresh( const SectionFlag & p_flag )
@@ -176,7 +181,7 @@ namespace VTX::UI::Widget::Inspector
 			_freezeRefresh( true );
 			VTX_ACTION( new Action::Residue::ApplyRepresentation( _targets, p_representation, p_flag ) );
 			_freezeRefresh( false );
-			//refresh();
+			// refresh();
 		}
 	}
 
@@ -242,6 +247,10 @@ namespace VTX::UI::Widget::Inspector
 		}
 
 		VTX_ACTION( new Action::Molecule::ChangeColor( molecules, p_color ) );
+	}
+	void MultipleResidueWidget::_onRevertRepresentation() const
+	{
+		VTX_ACTION( new Action::Residue::RemoveRepresentation( _targets ) );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

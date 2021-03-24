@@ -2,13 +2,43 @@
 #include "generic/base_representable.hpp"
 #include "model/molecule.hpp"
 #include "model/secondary_structure.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Model::Representation
 {
-	InstantiatedRepresentation::InstantiatedRepresentation( BaseRepresentation * const p_linkedRepresentation ) :
+	InstantiatedRepresentation * const InstantiatedRepresentation::instantiateCopy(
+		const InstantiatedRepresentation * const p_source )
+	{
+		InstantiatedRepresentation * const res
+			= MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>( p_source->_linkedRepresentation );
+
+		if ( p_source->_color.isOverrided() )
+			res->_color.setValue( p_source->_color.getValue() );
+
+		if ( p_source->_colorMode.isOverrided() )
+			res->_colorMode.setValue( p_source->_colorMode.getValue() );
+
+		if ( p_source->_ssColorMode.isOverrided() )
+			res->_ssColorMode.setValue( p_source->_ssColorMode.getValue() );
+
+		if ( p_source->_sphereData.isOverrided() )
+			res->_sphereData.setValue( p_source->_sphereData.getValue() );
+
+		if ( p_source->_cylinderData.isOverrided() )
+			res->_cylinderData.setValue( p_source->_cylinderData.getValue() );
+
+		if ( p_source->_ribbonData.isOverrided() )
+			res->_ribbonData.setValue( p_source->_ribbonData.getValue() );
+
+		res->setTarget( p_source->_target );
+
+		return res;
+	}
+
+	InstantiatedRepresentation::InstantiatedRepresentation( const BaseRepresentation * const p_linkedRepresentation ) :
 		BaseModel( ID::Model::MODEL_INTANTIATED_REPRESENTATION ), _linkedRepresentation( p_linkedRepresentation ),
 		_color( Generic::OverridableParameter<Color::Rgb>( _linkedRepresentation->getColor() ) ),
 		_colorMode( Generic::OverridableParameter( _linkedRepresentation->getColorMode() ) ),
@@ -17,27 +47,17 @@ namespace VTX::Model::Representation
 		_cylinderData( Generic::OverridableParameter( _linkedRepresentation->getCylinderData() ) ),
 		_ribbonData( Generic::OverridableParameter( _linkedRepresentation->getRibbonData() ) ) {};
 
-	InstantiatedRepresentation::InstantiatedRepresentation( const InstantiatedRepresentation * const p_source ) :
-		InstantiatedRepresentation( p_source->_linkedRepresentation )
+	void InstantiatedRepresentation::setLinkedRepresentation( const BaseRepresentation * const p_linkedRepresentation )
 	{
-		if ( p_source->_color.isOverrided() )
-			_color.setValue( p_source->_color.getValue() );
+		_linkedRepresentation = p_linkedRepresentation;
 
-		if ( p_source->_colorMode.isOverrided() )
-			_colorMode.setValue( p_source->_colorMode.getValue() );
-
-		if ( p_source->_ssColorMode.isOverrided() )
-			_ssColorMode.setValue( p_source->_ssColorMode.getValue() );
-
-		if ( p_source->_sphereData.isOverrided() )
-			_sphereData.setValue( p_source->_sphereData.getValue() );
-		if ( p_source->_cylinderData.isOverrided() )
-			_cylinderData.setValue( p_source->_cylinderData.getValue() );
-		if ( p_source->_ribbonData.isOverrided() )
-			_ribbonData.setValue( p_source->_ribbonData.getValue() );
-
-		setTarget( p_source->_target );
-	};
+		_color		  = Generic::OverridableParameter<Color::Rgb>( _linkedRepresentation->getColor() );
+		_colorMode	  = Generic::OverridableParameter( _linkedRepresentation->getColorMode() );
+		_ssColorMode  = Generic::OverridableParameter( _linkedRepresentation->getSecondaryStructureColorMode() );
+		_sphereData	  = Generic::OverridableParameter( _linkedRepresentation->getSphereData() );
+		_cylinderData = Generic::OverridableParameter( _linkedRepresentation->getCylinderData() );
+		_ribbonData	  = Generic::OverridableParameter( _linkedRepresentation->getRibbonData() );
+	}
 
 	const Generic::BaseRepresentable * const InstantiatedRepresentation::getTarget() const { return _target; }
 	Generic::BaseRepresentable * const		 InstantiatedRepresentation::getTarget() { return _target; }
@@ -165,13 +185,13 @@ namespace VTX::Model::Representation
 												const MEMBER_FLAG &				   p_flag,
 												const bool						   p_recomputeBuffers )
 	{
-		if ( p_flag & MEMBER_FLAG::SPHERE_RADIUS_FIXED )
+		if ( p_flag & MEMBER_FLAG::SPHERE_RADIUS_FIXED && p_source.hasToDrawSphere() )
 			setSphereRadius( p_source.getSphereData()._radiusFixed, false );
 
-		if ( p_flag & MEMBER_FLAG::SPHERE_RADIUS_ADD )
+		if ( p_flag & MEMBER_FLAG::SPHERE_RADIUS_ADD && p_source.hasToDrawSphere() )
 			setSphereRadius( p_source.getSphereData()._radiusAdd, false );
 
-		if ( p_flag & MEMBER_FLAG::CYLINDER_RADIUS )
+		if ( p_flag & MEMBER_FLAG::CYLINDER_RADIUS && p_source.hasToDrawCylinder() )
 			setCylinderRadius( p_source.getCylinderData()._radius, false );
 
 		if ( p_flag & MEMBER_FLAG::COLOR_MODE )

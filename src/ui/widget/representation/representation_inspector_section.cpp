@@ -43,6 +43,12 @@ namespace VTX::UI::Widget::Representation
 
 		_representationWidget->setVisible( false );
 
+		_revertButton = new QPushButton( this );
+		_revertButton->setText( "Revert" );
+		QHBoxLayout * buttonsLayout = new QHBoxLayout();
+		buttonsLayout->addStretch( 1000 );
+		buttonsLayout->addWidget( _revertButton );
+
 		QHBoxLayout * titleLayout = new QHBoxLayout();
 		titleLayout->addWidget( _titleWidget );
 		titleLayout->addStretch( 1000 );
@@ -50,6 +56,7 @@ namespace VTX::UI::Widget::Representation
 		QVBoxLayout * const mainLayout = new QVBoxLayout( this );
 		mainLayout->addItem( titleLayout );
 		mainLayout->addWidget( _representationWidget );
+		mainLayout->addItem( buttonsLayout );
 	}
 	void RepresentationInspectorSection::_setupSlots()
 	{
@@ -59,6 +66,8 @@ namespace VTX::UI::Widget::Representation
 				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
 				 this,
 				 &RepresentationInspectorSection::_representationPresetChange );
+
+		connect( _revertButton, &QPushButton::clicked, this, &RepresentationInspectorSection::_revertRepresentation );
 	}
 
 	void RepresentationInspectorSection::refresh()
@@ -146,7 +155,7 @@ namespace VTX::UI::Widget::Representation
 
 	void RepresentationInspectorSection::localize() {}
 
-	void RepresentationInspectorSection::_toggleSettingDisplay()
+	void RepresentationInspectorSection::_toggleSettingDisplay() const
 	{
 		bool newVisibleState = !_representationWidget->isVisible();
 		_representationWidget->setVisible( newVisibleState );
@@ -179,6 +188,8 @@ namespace VTX::UI::Widget::Representation
 
 		emit onRepresentationColorChange( *_dummyRepresentation, p_color, p_ssColor );
 	}
+
+	void RepresentationInspectorSection::_revertRepresentation() { emit onRevertRepresentation(); }
 
 	void RepresentationInspectorSection::_populateRepresentationModeComboBox()
 	{
@@ -220,11 +231,18 @@ namespace VTX::UI::Widget::Representation
 
 		if ( _baseRepresentationIndex == -1 )
 		{
-			if ( _dummyRepresentation != nullptr )
-				MVC::MvcManager::get().deleteModel( _dummyRepresentation );
+			if ( _dummyRepresentation == nullptr )
+			{
+				_dummyRepresentation = InstantiatedRepresentation::instantiateCopy( &p_representation );
+			}
+			else
+			{
+				MVC::MvcManager::get().deleteView( _dummyRepresentation,
+												   ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
 
-			_dummyRepresentation
-				= MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>( &p_representation );
+				_dummyRepresentation->setLinkedRepresentation( p_representation.getLinkedRepresentation() );
+				_dummyRepresentation->applyData( p_representation, Model::Representation::MEMBER_FLAG::ALL, false );
+			}
 
 			VTX::View::Inspector::InstantiatedRepresentationView * const representationView
 				= MVC::MvcManager::get().instantiateView<VTX::View::Inspector::InstantiatedRepresentationView>(
@@ -237,7 +255,6 @@ namespace VTX::UI::Widget::Representation
 
 			_representationSettingWidget->setRepresentation( _dummyRepresentation );
 
-			_settingLayout->addWidget( _representationSettingWidget );
 			_baseRepresentationIndex = baseRepresentationIndex;
 		}
 

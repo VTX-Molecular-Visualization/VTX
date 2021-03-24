@@ -54,6 +54,7 @@ namespace VTX::UI::Widget::Representation
 		void onRepresentationColorChange( const InstantiatedRepresentation & p_representation,
 										  const Color::Rgb &				 p_color,
 										  const bool						 p_ssColor );
+		void onRevertRepresentation();
 
 	  protected:
 		RepresentationInspectorSection( QWidget * const p_parent = nullptr );
@@ -70,6 +71,7 @@ namespace VTX::UI::Widget::Representation
 		CustomWidget::QComboBoxMultiField *	  _representationPreset		   = nullptr;
 		QVBoxLayout *						  _settingLayout			   = nullptr;
 		BaseRepresentationWidget *			  _representationSettingWidget = nullptr;
+		QPushButton *						  _revertButton				   = nullptr;
 
 		Model::Representation::InstantiatedRepresentation * _dummyRepresentation;
 		int													_baseRepresentationIndex = -1;
@@ -77,10 +79,11 @@ namespace VTX::UI::Widget::Representation
 		void _instantiateRepresentationSettingWidget( const Generic::REPRESENTATION & p_representation );
 		void _deleteRepresentationSettingWidget();
 
-		void _toggleSettingDisplay();
+		void _toggleSettingDisplay() const;
 		void _representationPresetChange( const int p_resetIndex );
 		void _representationDataChange( const Model::Representation::MEMBER_FLAG & p_flagDataModified );
 		void _representationColorChange( const Color::Rgb & p_color, const bool p_ssColor );
+		void _revertRepresentation();
 
 		void _populateRepresentationModeComboBox();
 	};

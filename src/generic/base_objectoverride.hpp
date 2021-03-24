@@ -91,10 +91,12 @@ namespace VTX
 			}
 			bool isOverrided() const { return _override != nullptr; }
 
-			OverridableParameter<T> & operator=( OverridableParameter<T> & p_source )
+			OverridableParameter<T> operator=( OverridableParameter<T> & p_source )
 			{
-				_source	  = p_source._source;
-				_override = p_source._override;
+				OverridableParameter<T> res = OverridableParameter<T>( p_source._source );
+				res._override				= p_source._override;
+
+				return res;
 			}
 
 		  private:

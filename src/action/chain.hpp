@@ -147,6 +147,38 @@ namespace VTX::Action::Chain
 		const int						   _indexPreset;
 	};
 
+	class RemoveRepresentation : public BaseAction
+	{
+	  public:
+		explicit RemoveRepresentation( Model::Chain & p_chain ) { _chains.emplace( &p_chain ); }
+		explicit RemoveRepresentation( const std::unordered_set<Model::Chain *> & p_chains )
+		{
+			for ( Model::Chain * const chain : p_chains )
+				_chains.emplace( chain );
+		}
+
+		virtual void execute() override
+		{
+			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+
+			for ( Model::Chain * const chain : _chains )
+			{
+				chain->removeRepresentation();
+				molecules.emplace( chain->getMolecule() );
+			}
+
+			for ( Model::Molecule * const molecule : molecules )
+			{
+				molecule->computeAllRepresentationData();
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Chain *> _chains = std::unordered_set<Model::Chain *>();
+	};
+
 	class Orient : public BaseAction
 	{
 	  public:
@@ -268,11 +300,8 @@ namespace VTX::Action::Chain
 				else
 				{
 					chainRepresentation
-						= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
-							chain->getRepresentation() );
-
-					// Compute molecules at end
-					chain->applyRepresentation( chainRepresentation, false );
+						= Model::Representation::InstantiatedRepresentation::instantiateCopy( &_representation );
+					chain->setRepresentation( chainRepresentation );
 				}
 
 				chainRepresentation->applyData( _representation, _flag, false );

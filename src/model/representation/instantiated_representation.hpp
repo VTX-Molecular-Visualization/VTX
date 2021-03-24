@@ -32,11 +32,13 @@ namespace VTX::Model::Representation
 		VTX_MODEL
 
 	  public:
-		~InstantiatedRepresentation() {}
+		static InstantiatedRepresentation * const instantiateCopy( const InstantiatedRepresentation * const p_source );
 
 		const Generic::BaseRepresentable * const getTarget() const;
 		Generic::BaseRepresentable * const		 getTarget();
 		void									 setTarget( Generic::BaseRepresentable * p_target );
+
+		void setLinkedRepresentation( const BaseRepresentation * const p_linkedRepresentation );
 
 		const std::string & getName() const { return _linkedRepresentation->getName(); };
 
@@ -73,13 +75,12 @@ namespace VTX::Model::Representation
 						const bool						   p_recomputeBuffers = true );
 
 		const BaseRepresentation * const getLinkedRepresentation() const { return _linkedRepresentation; }
-		BaseRepresentation * const		 getLinkedRepresentation() { return _linkedRepresentation; }
 
 	  protected:
-		InstantiatedRepresentation( BaseRepresentation * const p_linkedRepresentation );
-		InstantiatedRepresentation( const InstantiatedRepresentation * const p_source );
+		InstantiatedRepresentation( const BaseRepresentation * const p_linkedRepresentation );
+		~InstantiatedRepresentation() {}
 
-		BaseRepresentation * const _linkedRepresentation;
+		const BaseRepresentation * _linkedRepresentation = nullptr;
 
 		Generic::BaseRepresentable * _target = nullptr;
 

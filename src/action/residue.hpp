@@ -144,6 +144,39 @@ namespace VTX::Action::Residue
 		std::unordered_set<Model::Residue *> _residues = std::unordered_set<Model::Residue *>();
 		const int							 _indexPreset;
 	};
+
+	class RemoveRepresentation : public BaseAction
+	{
+	  public:
+		explicit RemoveRepresentation( Model::Residue & p_chain ) { _residues.emplace( &p_chain ); }
+		explicit RemoveRepresentation( const std::unordered_set<Model::Residue *> & p_chains )
+		{
+			for ( Model::Residue * const residue : p_chains )
+				_residues.emplace( residue );
+		}
+
+		virtual void execute() override
+		{
+			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+
+			for ( Model::Residue * const residue : _residues )
+			{
+				residue->removeRepresentation();
+				molecules.emplace( residue->getMolecule() );
+			}
+
+			for ( Model::Molecule * const molecule : molecules )
+			{
+				molecule->computeAllRepresentationData();
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Residue *> _residues = std::unordered_set<Model::Residue *>();
+	};
+
 	class Orient : public BaseAction
 	{
 	  public:
@@ -264,9 +297,8 @@ namespace VTX::Action::Residue
 				}
 				else
 				{
-					residueRepresentation
-						= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
-							residue->getRepresentation() );
+					residueRepresentation = Model::Representation::InstantiatedRepresentation::instantiateCopy(
+						residue->getRepresentation() );
 
 					// Compute molecules at end
 					residue->applyRepresentation( residueRepresentation, false );

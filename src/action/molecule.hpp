@@ -118,6 +118,30 @@ namespace VTX::Action::Molecule
 		const int							  _indexPreset;
 	};
 
+	class RemoveRepresentation : public BaseAction
+	{
+	  public:
+		explicit RemoveRepresentation( Model::Molecule & p_chain ) { _molecules.emplace( &p_chain ); }
+		explicit RemoveRepresentation( const std::unordered_set<Model::Molecule *> & p_chains )
+		{
+			for ( Model::Molecule * const molecule : p_chains )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				molecule->removeRepresentation();
+				molecule->computeAllRepresentationData();
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *> _molecules = std::unordered_set<Model::Molecule *>();
+	};
 	class ChangeFPS : public BaseAction
 	{
 	  public:
@@ -340,9 +364,8 @@ namespace VTX::Action::Molecule
 				}
 				else
 				{
-					moleculeRepresentation
-						= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
-							molecule->getRepresentation() );
+					moleculeRepresentation = Model::Representation::InstantiatedRepresentation::instantiateCopy(
+						molecule->getRepresentation() );
 
 					molecule->applyRepresentation( moleculeRepresentation );
 				}
