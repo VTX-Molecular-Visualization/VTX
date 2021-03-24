@@ -46,6 +46,7 @@ namespace VTX
 		{
 			Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
 			_chains.emplace_back( chain );
+			_realChainCount++;
 			return *chain;
 		}
 
@@ -113,7 +114,7 @@ namespace VTX
 		}
 
 		void Molecule::applyRepresentation(
-			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation)
+			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation )
 		{
 			BaseRepresentable::applyRepresentation( p_representation );
 			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
@@ -518,6 +519,7 @@ namespace VTX
 				MVC::MvcManager::get().deleteModel( _chains[ p_id ] );
 
 			_chains[ p_id ] = nullptr;
+			_realChainCount--;
 
 			_aabb.invalidate();
 
@@ -558,34 +560,10 @@ namespace VTX
 			// Update parent indexes
 			if ( p_checkParentUpdate )
 			{
-				if ( parent->getIndexFirstResidue() == p_id )
-				{
-					while ( parent->getResidueCount() > 0
-							&& parent->getMoleculePtr()->getResidue( parent->getIndexFirstResidue() ) == nullptr )
-					{
-						parent->setIndexFirstResidue( parent->getIndexFirstResidue() + 1 );
-						parent->setResidueCount( parent->getResidueCount() - 1 );
-					}
+				parent->removeToResidues( p_id );
 
-					if ( parent->getResidueCount() == 0 )
-						removeChain( parent->getIndex(), p_delete, false, false );
-				}
-				else
-				{
-					uint lastResidueIndex = parent->getIndexFirstResidue() + parent->getResidueCount() - 1;
-					if ( lastResidueIndex == p_id )
-					{
-						while ( parent->getResidueCount() > 0
-								&& parent->getMoleculePtr()->getResidue( lastResidueIndex ) == nullptr )
-						{
-							parent->setResidueCount( parent->getResidueCount() - 1 );
-							lastResidueIndex--;
-						}
-
-						if ( parent->getResidueCount() == 0 )
-							removeChain( parent->getIndex(), p_delete, false, false );
-					}
-				}
+				if ( parent->getResidueCount() == 0 )
+					removeChain( parent->getIndex(), p_delete, false, false );
 			}
 
 			if ( p_checkParentUpdate && parent->getResidueCount() == 0 )
@@ -663,28 +641,7 @@ namespace VTX
 			// Update parent indexes
 			if ( p_checkParentUpdate )
 			{
-				if ( parent->getIndexFirstAtom() == p_id )
-				{
-					while ( parent->getAtomCount() > 0
-							&& parent->getMoleculePtr()->getAtom( parent->getIndexFirstAtom() ) == nullptr )
-					{
-						parent->setIndexFirstAtom( parent->getIndexFirstAtom() + 1 );
-						parent->setAtomCount( parent->getAtomCount() - 1 );
-					}
-				}
-				else
-				{
-					uint lastResidueIndex = parent->getIndexFirstAtom() + parent->getAtomCount() - 1;
-					if ( lastResidueIndex == p_id )
-					{
-						while ( parent->getAtomCount() > 0
-								&& parent->getMoleculePtr()->getAtom( lastResidueIndex ) == nullptr )
-						{
-							parent->setAtomCount( parent->getAtomCount() - 1 );
-							lastResidueIndex--;
-						}
-					}
-				}
+				parent->removeToAtoms( p_id );
 			}
 
 			if ( p_checkParentUpdate && parent->getAtomCount() == 0 )

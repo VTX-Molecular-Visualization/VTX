@@ -342,7 +342,7 @@ namespace VTX::Model
 		{
 			const Model::Chain * const chain = molecule.getChain( chainData.first );
 
-			if ( chain->getResidueCount() == chainData.second.getFullySelectedChildCount() )
+			if ( chain->getRealResidueCount() == chainData.second.getFullySelectedChildCount() )
 			{
 				_extractFullChain( molecule, chainData.first );
 				continue;
@@ -355,7 +355,7 @@ namespace VTX::Model
 			for ( const std::pair<const ID, const Model::Selection::VecAtomIds> & residueData : chainData.second )
 			{
 				const Model::Residue * const residue = molecule.getResidue( residueData.first );
-				if ( residue->getAtomCount() == residueData.second.getFullySelectedChildCount() )
+				if ( residue->getRealAtomCount() == residueData.second.getFullySelectedChildCount() )
 				{
 					_extractFullResidue( molecule, residueData.first, &generatedChain );
 					continue;

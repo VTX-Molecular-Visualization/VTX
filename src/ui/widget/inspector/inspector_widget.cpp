@@ -69,7 +69,7 @@ namespace VTX::UI::Widget::Inspector
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molData.first );
 
-			if ( molData.second.getFullySelectedChildCount() == molecule.getChainCount() )
+			if ( molData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 			{
 				_moleculesInspector->addTarget( &molecule, false );
 				_moleculesInspector->setVisible( true );
@@ -80,7 +80,7 @@ namespace VTX::UI::Widget::Inspector
 				{
 					Model::Chain * const chain = molecule.getChain( chainData.first );
 
-					if ( chainData.second.getFullySelectedChildCount() == chain->getResidueCount() )
+					if ( chainData.second.getFullySelectedChildCount() == chain->getRealResidueCount() )
 					{
 						_chainsInspector->addTarget( chain, false );
 						_chainsInspector->setVisible( true );
@@ -92,7 +92,7 @@ namespace VTX::UI::Widget::Inspector
 						{
 							Model::Residue * const residue = molecule.getResidue( residueData.first );
 
-							if ( residueData.second.getFullySelectedChildCount() == residue->getAtomCount() )
+							if ( residueData.second.getFullySelectedChildCount() == residue->getRealAtomCount() )
 							{
 								_residuesInspector->addTarget( residue, false );
 								_residuesInspector->setVisible( true );

@@ -72,6 +72,7 @@ namespace VTX
 			Chain * const						getNextChain( const uint p_idBaseChain );
 			inline std::vector<Chain *> &		getChains() { return _chains; }
 			inline const std::vector<Chain *> & getChains() const { return _chains; }
+			uint								getRealChainCount() const { return _realChainCount; };
 			void								removeChain( const uint p_id,
 															 const bool p_delete	  = true,
 															 const bool p_recursive	  = true,
@@ -238,6 +239,7 @@ namespace VTX
 
 		  private:
 			std::string _displayName;
+			uint		_realChainCount = 0;
 
 			// Configuration.
 			Configuration::Molecule _configuration = Configuration::Molecule();

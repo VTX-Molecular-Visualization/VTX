@@ -99,7 +99,7 @@ namespace VTX
 			inline uint						 getIndexFirstAtom() const { return _indexFirstAtom; };
 			inline void						 setIndexFirstAtom( const uint p_id ) { _indexFirstAtom = p_id; };
 			inline uint						 getAtomCount() const { return _atomCount; };
-			inline void						 setAtomCount( const uint p_count ) { _atomCount = p_count; };
+			void							 setAtomCount( const uint p_count );
 			inline uint						 getIndexFirstBond() const { return _indexFirstBond; };
 			inline void						 setIndexFirstBond( const uint p_id ) { _indexFirstBond = p_id; };
 			inline uint						 getBondCount() const { return _bondCount; };
@@ -110,6 +110,8 @@ namespace VTX
 			inline std::vector<uint> &		 getIndexExtraBondStart() { return _indexExtraBondStart; };
 			inline const std::vector<uint> & getIndexExtraBondEnd() const { return _indexExtraBondEnd; };
 			inline std::vector<uint> &		 getIndexExtraBondEnd() { return _indexExtraBondEnd; };
+			inline uint						 getRealAtomCount() const { return _realAtomCount; };
+			void							 removeToAtoms( const uint p_atomIndex );
 
 			inline Atom::TYPE getAtomType() const { return _atomType; }
 			inline void		  setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
@@ -140,6 +142,7 @@ namespace VTX
 
 			uint					  _indexFirstAtom	   = 0;
 			uint					  _atomCount		   = 0;
+			uint					  _realAtomCount	   = 0;
 			uint					  _indexFirstBond	   = 0;
 			uint					  _bondCount		   = 0;
 			std::vector<uint>		  _indexExtraBondStart = std::vector<uint>();

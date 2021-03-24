@@ -49,7 +49,7 @@ namespace VTX::Representation
 		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molData : p_selection.getItems() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molData.first );
-			if ( molData.second.getFullySelectedChildCount() == molecule.getChainCount() )
+			if ( molData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 			{
 				InstantiatedRepresentation * const instantiatedRepresentation
 					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
@@ -62,7 +62,7 @@ namespace VTX::Representation
 			for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainData : molData.second )
 			{
 				Model::Chain & chain = *molecule.getChain( chainData.first );
-				if ( chainData.second.getFullySelectedChildCount() == chain.getResidueCount() )
+				if ( chainData.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
 				{
 					InstantiatedRepresentation * const instantiatedRepresentation
 						= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(

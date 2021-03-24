@@ -16,6 +16,38 @@ namespace VTX
 			setRepresentableMolecule( p_chain->getMoleculePtr() );
 		}
 
+		void Residue::setAtomCount( const uint p_count )
+		{
+			_atomCount	   = p_count;
+			_realAtomCount = p_count;
+		}
+		void Residue::removeToAtoms( const uint p_atomIndex )
+		{
+			const Model::Molecule * const moleculePtr = getMoleculePtr();
+			if ( p_atomIndex == _indexFirstAtom )
+			{
+				while ( _atomCount > 0 && moleculePtr->getAtom( _indexFirstAtom ) == nullptr )
+				{
+					_indexFirstAtom++;
+					_atomCount--;
+				}
+			}
+			else
+			{
+				uint lastResidueIndex = _indexFirstAtom + _atomCount - 1;
+				if ( lastResidueIndex == p_atomIndex )
+				{
+					while ( _atomCount > 0 && moleculePtr->getAtom( lastResidueIndex ) == nullptr )
+					{
+						_atomCount--;
+						lastResidueIndex--;
+					}
+				}
+			}
+
+			_realAtomCount--;
+		}
+
 		const Atom * const Residue::findFirstAtomByName( const std::string & p_name ) const
 		{
 			for ( uint i = 0; i < _atomCount; ++i )

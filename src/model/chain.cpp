@@ -74,6 +74,37 @@ namespace VTX
 			setRepresentableMolecule( p_molecule );
 		}
 
+		void Chain::setResidueCount( const uint p_count )
+		{
+			_residueCount	  = p_count;
+			_realResidueCount = p_count;
+		}
+		void Chain::removeToResidues( const uint p_residueIndex )
+		{
+			if ( _indexFirstResidue == p_residueIndex )
+			{
+				while ( _residueCount > 0 && getMoleculePtr()->getResidue( _indexFirstResidue ) == nullptr )
+				{
+					_indexFirstResidue++;
+					_residueCount--;
+				}
+			}
+			else
+			{
+				uint lastResidueIndex = _indexFirstResidue + _residueCount - 1;
+				if ( lastResidueIndex == p_residueIndex )
+				{
+					while ( _residueCount > 0 && getMoleculePtr()->getResidue( lastResidueIndex ) == nullptr )
+					{
+						_residueCount--;
+						lastResidueIndex--;
+					}
+				}
+			}
+
+			_realResidueCount--;
+		}
+
 		Color::Rgb Chain::getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
 		{
 			if ( p_chainId.empty() )

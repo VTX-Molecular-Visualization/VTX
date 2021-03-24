@@ -58,7 +58,9 @@ namespace VTX
 			inline uint getIndexFirstResidue() const { return _indexFirstResidue; };
 			inline void setIndexFirstResidue( const uint p_id ) { _indexFirstResidue = p_id; };
 			inline uint getResidueCount() const { return _residueCount; };
-			inline void setResidueCount( const uint p_count ) { _residueCount = p_count; };
+			void		setResidueCount( const uint p_count );
+			uint		getRealResidueCount() const { return _realResidueCount; };
+			void		removeToResidues( const uint p_residueIndex );
 
 			inline uint getIndexLastResidue() const { return _indexFirstResidue + _residueCount - 1; };
 
@@ -83,6 +85,7 @@ namespace VTX
 			std::string _name			   = "unknown";
 			uint		_indexFirstResidue = 0;
 			uint		_residueCount	   = 0;
+			uint		_realResidueCount  = 0;
 		}; // namespace Model
 
 	} // namespace Model

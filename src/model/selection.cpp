@@ -240,7 +240,7 @@ namespace VTX::Model
 		MapMoleculeIds::const_iterator it = _items.find( id );
 
 		return _items.find( id ) != _items.end()
-			   && it->second.getFullySelectedChildCount() == p_molecule.getChainCount();
+			   && it->second.getFullySelectedChildCount() == p_molecule.getRealChainCount();
 	}
 	bool Selection::isChainSelected( const Chain & p_chain ) const
 	{
@@ -263,7 +263,7 @@ namespace VTX::Model
 		const MapChainIds &			chainMap = _items.at( moleculeId );
 		MapChainIds::const_iterator it		 = chainMap.find( p_chain.getIndex() );
 
-		return it != chainMap.end() && it->second.getFullySelectedChildCount() == p_chain.getResidueCount();
+		return it != chainMap.end() && it->second.getFullySelectedChildCount() == p_chain.getRealResidueCount();
 	}
 	bool Selection::isResidueSelected( const Residue & p_residue ) const
 	{
@@ -298,7 +298,7 @@ namespace VTX::Model
 		const MapResidueIds &		  residueMap = chainMap.at( chainIndex );
 		MapResidueIds::const_iterator it		 = residueMap.find( p_residue.getIndex() );
 
-		return it != residueMap.end() && it->second.getFullySelectedChildCount() == p_residue.getAtomCount();
+		return it != residueMap.end() && it->second.getFullySelectedChildCount() == p_residue.getRealAtomCount();
 	}
 	bool Selection::isAtomSelected( const Atom & p_atom ) const
 	{
@@ -406,7 +406,7 @@ namespace VTX::Model
 
 		VecAtomIds & atoms = _items[ moleculeParent.getId() ][ chainParent.getIndex() ][ residueParent.getIndex() ];
 		atoms._addFullChild();
-		if ( atoms.getFullySelectedChildCount() == residueParent.getAtomCount() )
+		if ( atoms.getFullySelectedChildCount() == residueParent.getRealAtomCount() )
 			_referenceFullResidue( residueParent );
 	}
 	void Selection::_referenceFullResidue( const Residue & p_residue )
@@ -416,7 +416,7 @@ namespace VTX::Model
 
 		MapResidueIds & residues = _items[ moleculeParent.getId() ][ chainParent.getIndex() ];
 		residues._addFullChild();
-		if ( residues.getFullySelectedChildCount() == chainParent.getResidueCount() )
+		if ( residues.getFullySelectedChildCount() == chainParent.getRealResidueCount() )
 			_referenceFullChain( chainParent );
 	}
 	void Selection::_referenceFullChain( const Chain & p_chain )
@@ -434,7 +434,7 @@ namespace VTX::Model
 		const Molecule & moleculeParent = *chainParent.getMoleculePtr();
 
 		VecAtomIds & atoms = _items[ moleculeParent.getId() ][ chainParent.getIndex() ][ residueParent.getIndex() ];
-		const bool	 propagateToParent = atoms.getFullySelectedChildCount() == residueParent.getAtomCount();
+		const bool	 propagateToParent = atoms.getFullySelectedChildCount() == residueParent.getRealAtomCount();
 		atoms._removeFullChild();
 		if ( propagateToParent )
 			_unreferenceFullResidue( residueParent );
@@ -445,7 +445,7 @@ namespace VTX::Model
 		const Molecule & moleculeParent = *chainParent.getMoleculePtr();
 
 		MapResidueIds & residues		  = _items[ moleculeParent.getId() ][ chainParent.getIndex() ];
-		const bool		propagateToParent = residues.getFullySelectedChildCount() == chainParent.getResidueCount();
+		const bool		propagateToParent = residues.getFullySelectedChildCount() == chainParent.getRealResidueCount();
 		residues._removeFullChild();
 		if ( propagateToParent )
 			_unreferenceFullChain( chainParent );
@@ -589,7 +589,7 @@ namespace VTX::Model
 		VecAtomIds & atoms = _items[ moleculeParent.getId() ][ chainParent.getIndex() ][ p_residue.getIndex() ];
 
 		// All atoms already added
-		if ( atoms.getFullySelectedChildCount() >= p_residue.getAtomCount() )
+		if ( atoms.getFullySelectedChildCount() >= p_residue.getRealAtomCount() )
 			return;
 
 		atoms._setFullChildrenCount( p_residue.getAtomCount() );

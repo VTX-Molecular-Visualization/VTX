@@ -457,7 +457,8 @@ namespace VTX::Action::Selection
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 
-				if ( setVisibiltyOnMolecule && molIds.second.getFullySelectedChildCount() == molecule.getChainCount() )
+				if ( setVisibiltyOnMolecule
+					 && molIds.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 				{
 					molecule.setVisible( _visible );
 				}
@@ -467,7 +468,7 @@ namespace VTX::Action::Selection
 					{
 						Model::Chain & chain = *molecule.getChain( chainIds.first );
 
-						if ( chainIds.second.getFullySelectedChildCount() == chain.getResidueCount() )
+						if ( chainIds.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
 						{
 							chain.setVisible( _visible );
 							continue;
@@ -477,7 +478,7 @@ namespace VTX::Action::Selection
 						{
 							Model::Residue & residue = *molecule.getResidue( residueIds.first );
 
-							if ( residueIds.second.getFullySelectedChildCount() == residue.getAtomCount() )
+							if ( residueIds.second.getFullySelectedChildCount() == residue.getRealAtomCount() )
 							{
 								residue.setVisible( _visible );
 								continue;
@@ -571,7 +572,7 @@ namespace VTX::Action::Selection
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 
-				if ( molIds.second.getFullySelectedChildCount() == molecule.getChainCount() )
+				if ( molIds.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 				{
 					moleculesToDelete.emplace_back( &molecule );
 					continue;
@@ -581,7 +582,7 @@ namespace VTX::Action::Selection
 				{
 					Model::Chain & chain = *molecule.getChain( chainIds.first );
 
-					if ( chainIds.second.getFullySelectedChildCount() == chain.getResidueCount() )
+					if ( chainIds.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
 					{
 						molecule.removeChain( chain.getIndex(), true, true, true );
 						continue;
@@ -591,7 +592,7 @@ namespace VTX::Action::Selection
 					{
 						Model::Residue & residue = *molecule.getResidue( residueIds.first );
 
-						if ( residueIds.second.getFullySelectedChildCount() == residue.getAtomCount() )
+						if ( residueIds.second.getFullySelectedChildCount() == residue.getRealAtomCount() )
 						{
 							molecule.removeResidue( residue.getIndex(), true, true, true, true );
 							continue;
