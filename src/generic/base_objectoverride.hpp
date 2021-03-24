@@ -91,17 +91,17 @@ namespace VTX
 			}
 			bool isOverrided() const { return _override != nullptr; }
 
-			OverridableParameter<T> operator=( OverridableParameter<T> & p_source )
+			OverridableParameter<T> & operator=( const OverridableParameter<T> & p_source )
 			{
-				OverridableParameter<T> res = OverridableParameter<T>( p_source._source );
-				res._override				= p_source._override;
+				_source	  = p_source._source;
+				_override = p_source._override;
 
-				return res;
+				return *this;
 			}
 
 		  private:
-			const T * const _source;
-			T *				_override = nullptr;
+			const T * _source	= nullptr;
+			T *		  _override = nullptr;
 		};
 
 	} // namespace Generic
