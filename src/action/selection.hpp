@@ -14,6 +14,8 @@
 #include "model/chain.hpp"
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
+#include "model/representation/instantiated_representation.hpp"
+#include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -411,24 +413,6 @@ namespace VTX::Action::Selection
 	};
 
 	///////////////////////////// ACTION ON SELECTION ///////////////////////////////
-	class Orient : public BaseAction
-	{
-	  public:
-		explicit Orient( const Model::Selection & p_selection ) : _selection( p_selection ) {}
-
-		virtual void execute() override
-		{
-			const Math::AABB target = _selection.isEmpty() ? VTXApp::get().getScene().getAABB() : _selection.getAABB();
-			VTXApp::get()
-				.getStateMachine()
-				.getItem<State::Visualization>( ID::State::VISUALIZATION )
-				->orientCameraController( target );
-		}
-
-	  private:
-		const Model::Selection & _selection;
-	};
-
 	class ChangeVisibility : public Visible::ChangeVisibility
 	{
 	  public:
@@ -503,6 +487,93 @@ namespace VTX::Action::Selection
 		const Model::Selection & _selection;
 		const ID::VTX_ID		 _objRefTypeId;
 		bool					 _visible;
+	};
+
+	class ChangeRepresentationPreset : public BaseAction
+	{
+	  public:
+		explicit ChangeRepresentationPreset( Model::Selection & p_selection, const int p_indexPreset ) :
+			_selection( p_selection ), _indexPreset( p_indexPreset )
+		{
+		}
+
+		virtual void execute() override
+		{
+			Model::Representation::BaseRepresentation * const preset
+				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+
+				if ( moleculeData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
+				{
+					Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
+						= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
+							preset );
+
+					molecule.applyRepresentation( instantiatedRepresentation );
+				}
+				else
+				{
+					for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainData :
+						  moleculeData.second )
+					{
+						Model::Chain * const chain = molecule.getChain( chainData.first );
+
+						if ( chainData.second.getFullySelectedChildCount() == chain->getRealResidueCount() )
+						{
+							Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
+								= MVC::MvcManager::get()
+									  .instantiateModel<Model::Representation::InstantiatedRepresentation>( preset );
+
+							chain->applyRepresentation( instantiatedRepresentation );
+						}
+						else
+						{
+							for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueData :
+								  chainData.second )
+							{
+								Model::Residue * const residue = molecule.getResidue( residueData.first );
+
+								Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
+									= MVC::MvcManager::get()
+										  .instantiateModel<Model::Representation::InstantiatedRepresentation>(
+											  preset );
+
+								residue->applyRepresentation( instantiatedRepresentation );
+							}
+						}
+					}
+
+					molecule.computeAllRepresentationData();
+				}
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Model::Selection & _selection;
+		const int		   _indexPreset;
+	};
+
+	class Orient : public BaseAction
+	{
+	  public:
+		explicit Orient( const Model::Selection & p_selection ) : _selection( p_selection ) {}
+
+		virtual void execute() override
+		{
+			const Math::AABB target = _selection.isEmpty() ? VTXApp::get().getScene().getAABB() : _selection.getAABB();
+			VTXApp::get()
+				.getStateMachine()
+				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				->orientCameraController( target );
+		}
+
+	  private:
+		const Model::Selection & _selection;
 	};
 
 	class Copy : public BaseAction

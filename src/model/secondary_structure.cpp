@@ -54,8 +54,6 @@ namespace VTX
 					// Use backbone to compute spline data.
 					// Find alpha carbon.
 					const Model::Atom * const CA = residue->findFirstAtomByName( "CA" );
-					// Find oxygen.
-					const Model::Atom * const O = residue->findFirstAtomByName( "O" );
 
 					// Not an amine acid (water, heme, or phosphate groupment).
 					if ( CA == nullptr )
@@ -63,6 +61,9 @@ namespace VTX
 						// What to do, skip residue, skip all the chain or split the chain into multiple ribbons?
 						continue;
 					}
+
+					// Find oxygen.
+					const Model::Atom * const O = residue->findFirstAtomByName( "O" );
 					// Missing oxygen atom.
 					if ( O == nullptr )
 					{
@@ -239,6 +240,7 @@ namespace VTX
 
 		void SecondaryStructure::_fillBufferColors()
 		{
+			_bufferColors.clear();
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
 				const Chain * const chain = _molecule->getChain( chainIdx );
@@ -274,20 +276,19 @@ namespace VTX
 					switch ( residue->getRepresentation()->getSecondaryStructureColorMode() )
 					{
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
-						_bufferColors[ residue->getIndex() ]
-							= Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ];
+						_bufferColors.emplace_back(Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ]);
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
-						_bufferColors[ residue->getIndex() ] = residue->getMoleculePtr()->getColor();
+						_bufferColors.emplace_back(residue->getMoleculePtr()->getColor());
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-						_bufferColors[ residue->getIndex() ] = residue->getRepresentation()->getColor();
+						_bufferColors.emplace_back(residue->getRepresentation()->getColor());
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
-						_bufferColors[ residue->getIndex() ] = residue->getChainPtr()->getColor();
+						_bufferColors.emplace_back(residue->getChainPtr()->getColor());
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
-						_bufferColors[ residue->getIndex() ] = residue->getColor();
+						_bufferColors.emplace_back(residue->getColor());
 						break;
 
 					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
@@ -295,6 +296,7 @@ namespace VTX
 				}
 			}
 
+			_bufferColors.shrink_to_fit();
 			_buffer->setControlPointColors( _bufferColors );
 		}
 

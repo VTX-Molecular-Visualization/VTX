@@ -2,21 +2,36 @@
 #include "action/action_manager.hpp"
 #include "action/residue.hpp"
 #include "action/visible.hpp"
+#include "model/representation/representation.hpp"
+#include "model/representation/representation_library.hpp"
+#include "ui/widget_factory.hpp"
 
 namespace VTX::UI::Widget::ContextualMenu
 {
 	ContextualMenuResidue::ContextualMenuResidue( QWidget * const p_parent ) : ContextualMenuTemplate( p_parent ) {}
 	ContextualMenuResidue ::~ContextualMenuResidue() {}
 
-	void ContextualMenuResidue::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
+	void ContextualMenuResidue::_setupUi( const QString & p_name )
+	{
+		BaseManualWidget::_setupUi( p_name );
+		_representationMenu
+			= WidgetFactory::get().instantiateWidget<CustomWidget::SetRepresentationMenu>( this, "RepresentationMenu" );
+	}
 	void ContextualMenuResidue::_setupSlots()
 	{
+		addMenu( _representationMenu );
+		addSeparator();
 		addAction( "Orient", this, &ContextualMenuResidue::_orientAction );
 		addAction( "Show", this, &ContextualMenuResidue::_showAction );
 		addAction( "Hide", this, &ContextualMenuResidue::_hideAction );
 		addAction( "Copy", this, &ContextualMenuResidue::_copyAction );
 		addAction( "Extract", this, &ContextualMenuResidue::_extractAction );
 		addAction( "Delete", this, &ContextualMenuResidue::_deleteAction, QKeySequence::Delete );
+
+		connect( _representationMenu,
+				 &CustomWidget::SetRepresentationMenu ::onRepresentationChange,
+				 this,
+				 &ContextualMenuResidue::_applyRepresentationAction );
 	}
 
 	void ContextualMenuResidue::localize() {}
@@ -43,5 +58,10 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuResidue::_copyAction() { VTX_ACTION( new Action::Residue::Copy( *_target ) ); }
 	void ContextualMenuResidue::_extractAction() { VTX_ACTION( new Action::Residue::Extract( *_target ) ); }
 	void ContextualMenuResidue::_deleteAction() { VTX_ACTION( new Action::Residue::Delete( *_target ) ); }
+
+	void ContextualMenuResidue::_applyRepresentationAction( const int p_representationIndex )
+	{
+		VTX_ACTION( new Action::Residue::ChangeRepresentationPreset( *_target, p_representationIndex ) );
+	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

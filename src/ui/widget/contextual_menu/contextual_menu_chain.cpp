@@ -2,21 +2,36 @@
 #include "action/action_manager.hpp"
 #include "action/chain.hpp"
 #include "action/visible.hpp"
+#include "model/representation/representation.hpp"
+#include "model/representation/representation_library.hpp"
+#include "ui/widget_factory.hpp"
 
 namespace VTX::UI::Widget::ContextualMenu
 {
 	ContextualMenuChain::ContextualMenuChain( QWidget * const p_parent ) : ContextualMenuTemplate( p_parent ) {}
 	ContextualMenuChain ::~ContextualMenuChain() {}
 
-	void ContextualMenuChain::_setupUi( const QString & p_name ) { BaseManualWidget::_setupUi( p_name ); }
+	void ContextualMenuChain::_setupUi( const QString & p_name )
+	{
+		BaseManualWidget::_setupUi( p_name );
+		_representationMenu
+			= WidgetFactory::get().instantiateWidget<CustomWidget::SetRepresentationMenu>( this, "RepresentationMenu" );
+	}
 	void ContextualMenuChain::_setupSlots()
 	{
+		addMenu( _representationMenu );
+		addSeparator();
 		addAction( "Orient", this, &ContextualMenuChain::_orientAction );
 		addAction( "Show", this, &ContextualMenuChain::_showAction );
 		addAction( "Hide", this, &ContextualMenuChain::_hideAction );
 		addAction( "Copy", this, &ContextualMenuChain::_copyAction );
 		addAction( "Extract", this, &ContextualMenuChain::_extractAction );
 		addAction( "Delete", this, &ContextualMenuChain::_deleteAction, QKeySequence::Delete );
+
+		connect( _representationMenu,
+				 &CustomWidget::SetRepresentationMenu ::onRepresentationChange,
+				 this,
+				 &ContextualMenuChain::_applyRepresentationAction );
 	}
 
 	void ContextualMenuChain::localize() {}
@@ -44,5 +59,10 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuChain::_extractAction() { VTX_ACTION( new Action::Chain::Extract( *_target ) ); }
 
 	void ContextualMenuChain::_deleteAction() { VTX_ACTION( new Action::Chain::Delete( *_target ) ); }
+
+	void ContextualMenuChain::_applyRepresentationAction( const int p_representationIndex )
+	{
+		VTX_ACTION( new Action::Chain::ChangeRepresentationPreset( *_target, p_representationIndex ) );
+	}
 
 } // namespace VTX::UI::Widget::ContextualMenu
