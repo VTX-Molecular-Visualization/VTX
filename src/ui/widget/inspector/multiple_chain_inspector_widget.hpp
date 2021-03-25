@@ -57,6 +57,7 @@ namespace VTX::UI::Widget::Inspector
 										   const Color::Rgb &										 p_color,
 										   const bool												 p_ssColor );
 		void _onRevertRepresentation() const;
+		void _onApplyRepresentationToChildren() const;
 
 		void _resetFieldStates( const SectionFlag & p_flag );
 		void _changeMoleculesColor( const Color::Rgb & p_color ) const;

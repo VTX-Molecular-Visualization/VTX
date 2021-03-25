@@ -73,6 +73,7 @@ namespace VTX
 			void applyRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation,
 									  const bool p_recompute = true );
 			void removeRepresentation();
+			void removeChildrenRepresentations() const;
 
 		  protected:
 			Chain() : BaseModel( ID::Model::MODEL_CHAIN ) {}

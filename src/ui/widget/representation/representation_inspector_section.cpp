@@ -45,8 +45,12 @@ namespace VTX::UI::Widget::Representation
 
 		_revertButton = new QPushButton( this );
 		_revertButton->setText( "Revert" );
+		_applyToChildrenButton = new QPushButton( this );
+		_applyToChildrenButton->setText( "Apply to children" );
+
 		QHBoxLayout * buttonsLayout = new QHBoxLayout();
 		buttonsLayout->addStretch( 1000 );
+		buttonsLayout->addWidget( _applyToChildrenButton );
 		buttonsLayout->addWidget( _revertButton );
 
 		QHBoxLayout * titleLayout = new QHBoxLayout();
@@ -68,6 +72,10 @@ namespace VTX::UI::Widget::Representation
 				 &RepresentationInspectorSection::_representationPresetChange );
 
 		connect( _revertButton, &QPushButton::clicked, this, &RepresentationInspectorSection::_revertRepresentation );
+		connect( _applyToChildrenButton,
+				 &QPushButton::clicked,
+				 this,
+				 &RepresentationInspectorSection::_applyRepresentationToChildren );
 	}
 
 	void RepresentationInspectorSection::refresh()
@@ -78,6 +86,12 @@ namespace VTX::UI::Widget::Representation
 			_representationSettingWidget->refresh();
 
 		blockSignals( oldBlockState );
+	}
+
+	void RepresentationInspectorSection::setActionButtonVisibility( const ActionButtons & p_buttons )
+	{
+		_applyToChildrenButton->setVisible( p_buttons & ActionButtons::ApplyToChildren );
+		_revertButton->setVisible( p_buttons & ActionButtons::Revert );
 	}
 
 	void RepresentationInspectorSection::_instantiateRepresentationSettingWidget(
@@ -190,6 +204,7 @@ namespace VTX::UI::Widget::Representation
 	}
 
 	void RepresentationInspectorSection::_revertRepresentation() { emit onRevertRepresentation(); }
+	void RepresentationInspectorSection::_applyRepresentationToChildren() { emit onApplyRepresentationToChildren(); }
 
 	void RepresentationInspectorSection::_populateRepresentationModeComboBox()
 	{

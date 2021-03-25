@@ -166,6 +166,18 @@ namespace VTX
 			BaseRepresentable::removeRepresentation();
 			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
+		void Chain::removeChildrenRepresentations() const
+		{
+			for ( uint i = _indexFirstResidue; i < _indexFirstResidue + _residueCount; i++ )
+			{
+				Model::Residue * const residue = getMoleculePtr()->getResidue( i );
+
+				if ( residue == nullptr )
+					continue;
+
+				residue->removeRepresentation();
+			}
+		}
 
 	} // namespace Model
 } // namespace VTX

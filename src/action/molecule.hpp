@@ -142,6 +142,31 @@ namespace VTX::Action::Molecule
 	  private:
 		std::unordered_set<Model::Molecule *> _molecules = std::unordered_set<Model::Molecule *>();
 	};
+	class RemoveChildrenRepresentations : public BaseAction
+	{
+	  public:
+		explicit RemoveChildrenRepresentations( Model::Molecule & p_chain ) { _molecules.emplace( &p_chain ); }
+		explicit RemoveChildrenRepresentations( const std::unordered_set<Model::Molecule *> & p_chains )
+		{
+			for ( Model::Molecule * const molecule : p_chains )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				molecule->removeChildrenRepresentations();
+				molecule->computeAllRepresentationData();
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *> _molecules = std::unordered_set<Model::Molecule *>();
+	};
+
 	class ChangeFPS : public BaseAction
 	{
 	  public:

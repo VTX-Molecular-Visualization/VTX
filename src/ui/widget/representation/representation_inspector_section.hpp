@@ -38,6 +38,16 @@ namespace VTX::UI::Widget::Representation
 		Q_OBJECT
 		VTX_WIDGET
 
+	  public:
+		enum ActionButtons
+		{
+			ApplyToChildren = 1 << 0,
+			Revert			= 1 << 1,
+
+			All	 = 0xFFFF,
+			None = 0,
+		};
+
 		using InstantiatedRepresentation = Model::Representation::InstantiatedRepresentation;
 
 	  public:
@@ -47,6 +57,8 @@ namespace VTX::UI::Widget::Representation
 		void resetState() override;
 		void updateWithNewValue( const InstantiatedRepresentation & p_representation ) override;
 
+		void setActionButtonVisibility( const ActionButtons & p_buttons );
+
 	  signals:
 		void onRepresentationPresetChange( const int p_presetIndex );
 		void onRepresentationChange( const InstantiatedRepresentation &			p_representation,
@@ -55,6 +67,7 @@ namespace VTX::UI::Widget::Representation
 										  const Color::Rgb &				 p_color,
 										  const bool						 p_ssColor );
 		void onRevertRepresentation();
+		void onApplyRepresentationToChildren();
 
 	  protected:
 		RepresentationInspectorSection( QWidget * const p_parent = nullptr );
@@ -71,6 +84,7 @@ namespace VTX::UI::Widget::Representation
 		CustomWidget::QComboBoxMultiField *	  _representationPreset		   = nullptr;
 		QVBoxLayout *						  _settingLayout			   = nullptr;
 		BaseRepresentationWidget *			  _representationSettingWidget = nullptr;
+		QPushButton *						  _applyToChildrenButton	   = nullptr;
 		QPushButton *						  _revertButton				   = nullptr;
 
 		Model::Representation::InstantiatedRepresentation * _dummyRepresentation;
@@ -84,6 +98,7 @@ namespace VTX::UI::Widget::Representation
 		void _representationDataChange( const Model::Representation::MEMBER_FLAG & p_flagDataModified );
 		void _representationColorChange( const Color::Rgb & p_color, const bool p_ssColor );
 		void _revertRepresentation();
+		void _applyRepresentationToChildren();
 
 		void _populateRepresentationModeComboBox();
 	};

@@ -182,6 +182,7 @@ namespace VTX
 
 			void applyRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation );
 			void removeRepresentation();
+			void removeChildrenRepresentations() const;
 
 			inline void refreshColors() { _fillBufferAtomColors(); }
 			void		refreshSelection( const Selection::MapChainIds * const );

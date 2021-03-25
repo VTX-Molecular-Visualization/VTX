@@ -29,6 +29,8 @@ namespace VTX::UI::Widget::Inspector
 		_representationWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::RepresentationInspectorSection>(
 				this, "inspector_instantiated_representation" );
+		_representationWidget->setActionButtonVisibility(
+			Representation::RepresentationInspectorSection::ActionButtons::All );
 
 		_representationSection->setBody( _representationWidget );
 
@@ -71,6 +73,11 @@ namespace VTX::UI::Widget::Inspector
 				 &Representation::RepresentationInspectorSection::onRevertRepresentation,
 				 this,
 				 &MultipleChainWidget::_onRevertRepresentation );
+
+		connect( _representationWidget,
+				 &Representation::RepresentationInspectorSection::onApplyRepresentationToChildren,
+				 this,
+				 &MultipleChainWidget::_onApplyRepresentationToChildren );
 	};
 
 	void MultipleChainWidget::refresh( const SectionFlag & p_flag )
@@ -248,6 +255,10 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleChainWidget::_onRevertRepresentation() const
 	{
 		VTX_ACTION( new Action::Chain::RemoveRepresentation( _targets ) );
+	}
+	void MultipleChainWidget::_onApplyRepresentationToChildren() const
+	{
+		VTX_ACTION( new Action::Chain::RemoveChildrenRepresentations( _targets ) );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

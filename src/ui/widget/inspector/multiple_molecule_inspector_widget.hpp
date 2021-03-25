@@ -67,6 +67,8 @@ namespace VTX::UI::Widget::Inspector
 										   const Color::Rgb &										 p_color,
 										   const bool												 p_ssColor ) const;
 		void _onRevertRepresentation() const;
+		void _onApplyRepresentationToChildren() const;
+		
 	};
 } // namespace VTX::UI::Widget::Inspector
 

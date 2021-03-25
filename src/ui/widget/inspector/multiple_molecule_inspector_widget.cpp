@@ -35,6 +35,8 @@ namespace VTX::UI::Widget::Inspector
 		_representationWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::RepresentationInspectorSection>(
 				this, "inspector_instantiated_representation" );
+		_representationWidget->setActionButtonVisibility(
+			Representation::RepresentationInspectorSection::ActionButtons::All );
 
 		_representationSection->setBody( _representationWidget );
 
@@ -91,6 +93,11 @@ namespace VTX::UI::Widget::Inspector
 				 &Representation::RepresentationInspectorSection::onRevertRepresentation,
 				 this,
 				 &MultipleMoleculeWidget::_onRevertRepresentation );
+
+		connect( _representationWidget,
+				 &Representation::RepresentationInspectorSection::onApplyRepresentationToChildren,
+				 this,
+				 &MultipleMoleculeWidget::_onApplyRepresentationToChildren );
 	};
 
 	void MultipleMoleculeWidget::refresh( const SectionFlag & p_flag )
@@ -276,6 +283,10 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleMoleculeWidget::_onRevertRepresentation() const
 	{
 		VTX_ACTION( new Action::Molecule::RemoveRepresentation( _targets ) );
+	}
+	void MultipleMoleculeWidget::_onApplyRepresentationToChildren() const
+	{
+		VTX_ACTION( new Action::Molecule::RemoveChildrenRepresentations( _targets ) );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

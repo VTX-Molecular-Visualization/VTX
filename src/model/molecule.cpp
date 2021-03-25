@@ -124,6 +124,17 @@ namespace VTX
 			BaseRepresentable::removeRepresentation();
 			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
+		void Molecule::removeChildrenRepresentations() const
+		{
+			for ( Model::Chain * const chain : _chains )
+			{
+				if (chain == nullptr)
+					continue;
+				
+				chain->removeRepresentation();
+				chain->removeChildrenRepresentations();
+			}
+		}
 
 		void Molecule::_fillBuffer()
 		{

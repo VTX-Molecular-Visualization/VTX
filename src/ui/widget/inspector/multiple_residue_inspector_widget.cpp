@@ -32,6 +32,9 @@ namespace VTX::UI::Widget::Inspector
 			= VTX::UI::WidgetFactory::get().instantiateWidget<Representation::RepresentationInspectorSection>(
 				this, "inspector_instantiated_representation" );
 
+		_representationWidget->setActionButtonVisibility(
+			Representation::RepresentationInspectorSection::ActionButtons::Revert );
+
 		_representationSection->setBody( _representationWidget );
 
 		_infoSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
