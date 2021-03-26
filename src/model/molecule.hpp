@@ -227,6 +227,9 @@ namespace VTX
 			const std::string & getDisplayName() const { return _displayName; };
 			void				setDisplayName( const std::string & p_name );
 
+			// Hide BaseColorable::setColor
+			void setColor( const Color::Rgb & p_color );
+
 		  protected:
 			void _init() override;
 			void _fillBuffer() override;

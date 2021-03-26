@@ -1,5 +1,7 @@
 #include "molecule.hpp"
 #include "color/rgb.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "id.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
@@ -128,9 +130,9 @@ namespace VTX
 		{
 			for ( Model::Chain * const chain : _chains )
 			{
-				if (chain == nullptr)
+				if ( chain == nullptr )
 					continue;
-				
+
 				chain->removeRepresentation();
 				chain->removeChildrenRepresentations();
 			}
@@ -687,6 +689,12 @@ namespace VTX
 		{
 			_displayName = p_name;
 			_notifyViews( new Event::VTXEvent( Event::Model::DISPLAY_NAME_CHANGE ) );
+		}
+
+		void Molecule::setColor( const Color::Rgb & p_color )
+		{
+			Generic::BaseColorable::setColor( p_color );
+			VTX_EVENT( new Event::VTXEventRef( Event::Global::MOLECULE_COLOR_CHANGE, p_color ) );
 		}
 
 	} // namespace Model

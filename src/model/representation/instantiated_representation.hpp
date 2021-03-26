@@ -6,6 +6,7 @@
 #endif
 
 #include "color/rgb.hpp"
+#include "event/base_event_receiver_vtx.hpp"
 #include "generic/base_objectoverride.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"
@@ -27,12 +28,14 @@ namespace VTX::Generic
 
 namespace VTX::Model::Representation
 {
-	class InstantiatedRepresentation : public BaseModel, public Generic::BaseObjectOverride
+	class InstantiatedRepresentation : public BaseModel, public Generic::BaseObjectOverride, Event::BaseEventReceiverVTX
 	{
 		VTX_MODEL
 
 	  public:
 		static InstantiatedRepresentation * const instantiateCopy( const InstantiatedRepresentation * const p_source );
+
+		virtual void receiveEvent( const Event::VTXEvent & p_event );
 
 		const Generic::BaseRepresentable * const getTarget() const;
 		Generic::BaseRepresentable * const		 getTarget();

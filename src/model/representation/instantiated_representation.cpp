@@ -1,4 +1,5 @@
 #include "instantiated_representation.hpp"
+#include "event/event.hpp"
 #include "generic/base_representable.hpp"
 #include "model/molecule.hpp"
 #include "model/secondary_structure.hpp"
@@ -45,7 +46,24 @@ namespace VTX::Model::Representation
 		_ssColorMode( Generic::OverridableParameter( _linkedRepresentation->getSecondaryStructureColorMode() ) ),
 		_sphereData( Generic::OverridableParameter( _linkedRepresentation->getSphereData() ) ),
 		_cylinderData( Generic::OverridableParameter( _linkedRepresentation->getCylinderData() ) ),
-		_ribbonData( Generic::OverridableParameter( _linkedRepresentation->getRibbonData() ) ) {};
+		_ribbonData( Generic::OverridableParameter( _linkedRepresentation->getRibbonData() ) )
+	{
+		_registerEvent( Event::Global::MOLECULE_COLOR_CHANGE );
+	};
+
+	void InstantiatedRepresentation::receiveEvent( const Event::VTXEvent & p_event )
+	{
+		if ( p_event.name == Event::Global::MOLECULE_COLOR_CHANGE )
+		{
+			const bool useMoleculeColor
+				= _colorMode.getValue() == Generic::COLOR_MODE::ATOM_PROTEIN
+				  || _colorMode.getValue() == Generic::COLOR_MODE::PROTEIN
+				  || _ssColorMode.getValue() == Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN;
+
+			if ( useMoleculeColor )
+				_notifyDataChanged();
+		}
+	}
 
 	void InstantiatedRepresentation::setLinkedRepresentation( const BaseRepresentation * const p_linkedRepresentation )
 	{

@@ -200,6 +200,21 @@ namespace VTX::UI::Widget::Representation
 		if ( signalsBlocked() )
 			return;
 
+		bool changeRepresentationColor = p_ssColor
+										 && _dummyRepresentation->getSecondaryStructureColorMode()
+												== Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM;
+
+		changeRepresentationColor
+			= changeRepresentationColor
+			  || ( !p_ssColor
+				   && ( _dummyRepresentation->getColorMode() == Generic::COLOR_MODE::CUSTOM
+						|| _dummyRepresentation->getColorMode() == Generic::COLOR_MODE::ATOM_CUSTOM ) );
+
+		if ( changeRepresentationColor )
+		{
+			_dummyRepresentation->setColor( p_color );
+		}
+
 		emit onRepresentationColorChange( *_dummyRepresentation, p_color, p_ssColor );
 	}
 
