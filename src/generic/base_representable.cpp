@@ -150,7 +150,7 @@ namespace VTX
 			if ( p_colorBuffer.size() == 0 )
 				return;
 
-			for ( Model::Residue * const residue : _molecule->getResidues() )
+			for ( const Model::Residue * const residue : _molecule->getResidues() )
 			{
 				// Skip hidden items.
 				if ( residue == nullptr || !_isResidueVisible( *residue ) )
@@ -158,6 +158,45 @@ namespace VTX
 
 				const Model::Representation::InstantiatedRepresentation * const currentRepresentation
 					= residue->getRepresentation();
+
+				COLOR_MODE colorMode = currentRepresentation->getColorMode();
+
+				if ( colorMode == Generic::COLOR_MODE::INHERITED )
+				{
+					const COLOR_MODE & chainColorMode = residue->getChainPtr()->getRepresentation()->getColorMode();
+					if ( chainColorMode != Generic::COLOR_MODE::INHERITED )
+					{
+						colorMode = chainColorMode;
+					}
+					else
+					{
+						const COLOR_MODE & moleculeColorMode = _molecule->getRepresentation()->getColorMode();
+						if ( moleculeColorMode != Generic::COLOR_MODE::INHERITED )
+							colorMode = moleculeColorMode;
+						else
+							colorMode = Setting::COLOR_MODE_DEFAULT;
+					}
+				}
+
+				bool	   colorCarbon = false;
+				Color::Rgb color;
+
+				switch ( colorMode )
+				{
+				case Generic::COLOR_MODE::ATOM_CHAIN: colorCarbon = true; [[fallthrough]];
+				case Generic::COLOR_MODE::CHAIN: color = residue->getChainPtr()->getColor(); break;
+
+				case Generic::COLOR_MODE::ATOM_PROTEIN: colorCarbon = true; [[fallthrough]];
+				case Generic::COLOR_MODE::PROTEIN: color = _molecule->getColor(); break;
+
+				case Generic::COLOR_MODE::ATOM_CUSTOM: colorCarbon = true; [[fallthrough]];
+				case Generic::COLOR_MODE::CUSTOM: color = currentRepresentation->getColor(); break;
+
+				case Generic::COLOR_MODE::RESIDUE:
+					colorCarbon = false;
+					color		= residue->getColor();
+					break;
+				}
 
 				for ( uint i = residue->getIndexFirstAtom(); i < residue->getIndexFirstAtom() + residue->getAtomCount();
 					  i++ )
@@ -167,32 +206,13 @@ namespace VTX
 					if ( atom == nullptr )
 						continue;
 
-					switch ( currentRepresentation->getColorMode() )
+					if ( colorCarbon && atom->getSymbol() != Model::Atom::SYMBOL::A_C )
 					{
-					case Generic::COLOR_MODE::ATOM_CHAIN:
-						if ( atom->getSymbol() == Model::Atom::SYMBOL::A_C )
-							p_colorBuffer[ i ] = atom->getChainPtr()->getColor();
-						else
-							p_colorBuffer[ i ] = atom->getColor();
-						break;
-					case Generic::COLOR_MODE::ATOM_PROTEIN:
-						if ( atom->getSymbol() == Model::Atom::SYMBOL::A_C )
-							p_colorBuffer[ i ] = _molecule->getColor();
-						else
-							p_colorBuffer[ i ] = atom->getColor();
-						break;
-					case Generic::COLOR_MODE::ATOM_CUSTOM:
-						if ( atom->getSymbol() == Model::Atom::SYMBOL::A_C )
-							p_colorBuffer[ i ] = currentRepresentation->getColor();
-						else
-							p_colorBuffer[ i ] = atom->getColor();
-						break;
-					case Generic::COLOR_MODE::RESIDUE: p_colorBuffer[ i ] = atom->getResiduePtr()->getColor(); break;
-					case Generic::COLOR_MODE::CHAIN: p_colorBuffer[ i ] = atom->getChainPtr()->getColor(); break;
-					case Generic::COLOR_MODE::PROTEIN: p_colorBuffer[ i ] = _molecule->getColor(); break;
-					case Generic::COLOR_MODE::CUSTOM: p_colorBuffer[ i ] = currentRepresentation->getColor(); break;
-
-					default: break;
+						p_colorBuffer[ i ] = atom->getColor();
+					}
+					else
+					{
+						p_colorBuffer[ i ] = color;
 					}
 				}
 			}

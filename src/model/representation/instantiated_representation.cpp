@@ -186,13 +186,13 @@ namespace VTX::Model::Representation
 												const bool						   p_recomputeBuffers )
 	{
 		if ( p_flag & MEMBER_FLAG::SPHERE_RADIUS_FIXED && p_source.hasToDrawSphere() )
-			setSphereRadius( p_source.getSphereData()._radiusFixed, false );
+			_sphereData.getValue()._radiusFixed = p_source.getSphereData()._radiusFixed;
 
 		if ( p_flag & MEMBER_FLAG::SPHERE_RADIUS_ADD && p_source.hasToDrawSphere() )
-			setSphereRadius( p_source.getSphereData()._radiusAdd, false );
+			_sphereData.getValue()._radiusAdd = p_source.getSphereData()._radiusAdd;
 
 		if ( p_flag & MEMBER_FLAG::CYLINDER_RADIUS && p_source.hasToDrawCylinder() )
-			setCylinderRadius( p_source.getCylinderData()._radius, false );
+			_cylinderData.getValue()._radius = p_source.getCylinderData()._radius;
 
 		if ( p_flag & MEMBER_FLAG::COLOR_MODE )
 			setColorMode( p_source.getColorMode(), p_recomputeBuffers, false );
