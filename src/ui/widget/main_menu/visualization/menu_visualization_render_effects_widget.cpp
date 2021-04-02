@@ -52,7 +52,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// Add Preset
 		_createPreset
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "createRenderPresetButton" );
-		_createPreset->setData( "Preset\nSettings", ":/sprite/new_session_icon.png", Qt::Orientation::Vertical );
+		_createPreset->setData( "Preset\nSettings", ":/sprite/settings_icon.png", Qt::Orientation::Vertical );
 		pushButtonInNextColumn( *_createPreset );
 
 		// Fullscreen / snapshot

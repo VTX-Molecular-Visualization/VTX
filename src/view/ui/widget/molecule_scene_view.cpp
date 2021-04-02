@@ -9,15 +9,9 @@
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
 #include "ui/contextual_menu.hpp"
-#include "ui/main_window.hpp"
 #include "ui/mime_type.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_atom.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_chain.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_molecule.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_residue.hpp"
 #include "ui/widget/scene/molecule_selection_model.hpp"
 #include "ui/widget_factory.hpp"
-#include "vtx_app.hpp"
 
 namespace VTX::View::UI::Widget
 {
@@ -75,6 +69,10 @@ namespace VTX::View::UI::Widget
 		{
 			_rebuildTree();
 		}
+		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
+		{
+			_getMoleculeTreeWidgetItem()->setText( 0, QString::fromStdString( _model->getDisplayName() ) );
+		}
 	}
 
 	void MoleculeSceneView::receiveEvent( const Event::VTXEvent & p_event )
@@ -97,6 +95,17 @@ namespace VTX::View::UI::Widget
 			// Reimplement expand all action to prevent useless multiple call to refreshSelection
 			//_expandAll( currentItem() );
 		}
+		else if ( p_event->key() == Qt::Key::Key_F2 )
+		{
+			const Model::Selection & selection = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+			// Override rename key binding because multiple selection with molecule make it fail
+			if ( currentItem() == _getMoleculeTreeWidgetItem() && selection.isMoleculeFullySelected( *_model )
+				 && selection.getItems().size() == 1 )
+			{
+				openRenameEditor();
+			}
+		}
 		else
 		{
 			SceneItemWidget::keyPressEvent( p_event );
@@ -110,6 +119,7 @@ namespace VTX::View::UI::Widget
 		setExpandsOnDoubleClick( false );
 
 		setContextMenuPolicy( Qt::ContextMenuPolicy::CustomContextMenu );
+		setEditTriggers( EditTrigger::SelectedClicked );
 
 		_rebuildTree();
 	}
@@ -136,7 +146,19 @@ namespace VTX::View::UI::Widget
 	void MoleculeSceneView::_onItemChanged( const QTreeWidgetItem * const p_item, const int p_column ) const
 	{
 		if ( p_column == 0 )
+		{
+			if ( p_item == _getMoleculeTreeWidgetItem() )
+			{
+				const std::string itemTxt = p_item->text( 0 ).toStdString();
+				if ( itemTxt != _model->getDisplayName() )
+				{
+					VTX_ACTION( new Action::Molecule::Rename( *_model, itemTxt ) );
+					return;
+				}
+			}
+
 			_doEnableStateChangeAction( p_item );
+		}
 	}
 	void MoleculeSceneView::_onItemDoubleClicked( const QTreeWidgetItem * const p_item, const int p_column ) const
 	{
@@ -232,51 +254,67 @@ namespace VTX::View::UI::Widget
 		const ID::VTX_ID & modelTypeId	 = MVC::MvcManager::get().getModelTypeID( modelId );
 		const QPoint	   globalClicPos = mapToGlobal( p_clicPos );
 
+		Model::Selection & selection = Selection::SelectionManager::get().getSelectionModel();
+
 		if ( modelTypeId == ID::Model::MODEL_MOLECULE )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
-			VTXApp::get()
-				.getMainWindow()
-				.getContextualMenu()
-				.displayMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuMolecule>(
-					VTX::UI::ContextualMenu::Menu::Molecule, &molecule, globalClicPos );
+			if ( selection.isMoleculeFullySelected( molecule ) )
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+			}
+			else
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Molecule, &molecule, globalClicPos );
+			}
 		}
 		else if ( modelTypeId == ID::Model::MODEL_CHAIN )
 		{
 			Model::Chain & chain = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
-			VTXApp::get()
-				.getMainWindow()
-				.getContextualMenu()
-				.displayMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuChain>(
-					VTX::UI::ContextualMenu::Menu::Chain, &chain, globalClicPos );
+			if ( selection.isChainFullySelected( chain ) )
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+			}
+			else
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Chain, &chain, globalClicPos );
+			}
 		}
 		else if ( modelTypeId == ID::Model::MODEL_RESIDUE )
 		{
 			Model::Residue & residue = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
-			VTXApp::get()
-				.getMainWindow()
-				.getContextualMenu()
-				.displayMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuResidue>(
-					VTX::UI::ContextualMenu::Menu::Residue, &residue, globalClicPos );
+			if ( selection.isResidueFullySelected( residue ) )
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+			}
+			else
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Residue, &residue, globalClicPos );
+			}
 		}
 		else if ( modelTypeId == ID::Model::MODEL_ATOM )
 		{
 			Model::Atom & atom = MVC::MvcManager::get().getModel<Model::Atom>( modelId );
-			VTXApp::get()
-				.getMainWindow()
-				.getContextualMenu()
-				.displayMenu<VTX::UI::Widget::ContextualMenu::ContextualMenuAtom>(
-					VTX::UI::ContextualMenu::Menu::Atom, &atom, globalClicPos );
+			if ( selection.isAtomSelected( atom ) )
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Selection, &selection, globalClicPos );
+			}
+			else
+			{
+				VTX::UI::ContextualMenu::pop( VTX::UI::ContextualMenu::Menu::Atom, &atom, globalClicPos );
+			}
 		}
 	}
+
 	void MoleculeSceneView::_rebuildTree()
 	{
-		collapseItem( topLevelItem( 0 ) );
+		collapseItem( _getMoleculeTreeWidgetItem() );
 
 		clear();
 		_clearLoadedItems();
 
 		QTreeWidgetItem * const moleculeView = new QTreeWidgetItem();
+		moleculeView->setFlags( moleculeView->flags() | Qt::ItemFlag::ItemIsEditable );
 
 		_applyMoleculeDataOnItem( *_model, *moleculeView );
 		_refreshItemVisibility( moleculeView, *_model );
@@ -565,7 +603,7 @@ namespace VTX::View::UI::Widget
 													  QTreeWidgetItem &		  p_item ) const
 	{
 		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue<VTX::Model::ID>( p_molecule.getId() ) );
-		p_item.setText( 0, QString::fromStdString( p_molecule.getDefaultName() ) );
+		p_item.setText( 0, QString::fromStdString( p_molecule.getDisplayName() ) );
 		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_molecule.getTypeId() ) );
 
 		const QTreeWidgetItem::ChildIndicatorPolicy childIndicatorPolicy
@@ -675,7 +713,7 @@ namespace VTX::View::UI::Widget
 
 		if ( itMoleculeItem != p_selection.getItems().end() )
 		{
-			QTreeWidgetItem * const moleculeItem = topLevelItem( 0 );
+			QTreeWidgetItem * const moleculeItem = _getMoleculeTreeWidgetItem();
 			selection.append( QItemSelectionRange( indexFromItem( moleculeItem ) ) );
 
 			if ( moleculeItem->isExpanded() )
@@ -865,7 +903,9 @@ namespace VTX::View::UI::Widget
 	bool		MoleculeSceneView::_canDragObjectAtPos( const QPoint & p_position )
 	{
 		// Can only drag from the molecule
-		return itemAt( p_position ) == topLevelItem( 0 );
+		return itemAt( p_position ) == _getMoleculeTreeWidgetItem();
 	}
+
+	void MoleculeSceneView::openRenameEditor() { editItem( _getMoleculeTreeWidgetItem() ); }
 
 } // namespace VTX::View::UI::Widget

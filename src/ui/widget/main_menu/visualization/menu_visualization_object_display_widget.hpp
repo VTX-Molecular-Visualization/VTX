@@ -9,38 +9,30 @@
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu::Visualization
 {
-	namespace UI
+	class MenuVisualizationObjectDisplayWidget : public MenuToolBlockWidget
 	{
-		namespace Widget
-		{
-			namespace MainMenu
-			{
-				namespace Visualization
-				{
-					class MenuVisualizationObjectDisplayWidget : public MenuToolBlockWidget
-					{
-						VTX_WIDGET
+		VTX_WIDGET
 
-					  public:
-						~MenuVisualizationObjectDisplayWidget();
-						void localize() override;
+	  public:
+		~MenuVisualizationObjectDisplayWidget();
+		void localize() override;
 
-					  protected:
-						MenuVisualizationObjectDisplayWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
-						void _setupUi( const QString & p_name ) override;
-						void _setupSlots() override;
+	  protected:
+		MenuVisualizationObjectDisplayWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 
-					  private:
-						// Show / Hide Molecular Objects
-						MenuToolButtonWidget * _showWater	  = nullptr;
-						MenuToolButtonWidget * _showSolvant	  = nullptr;
-						MenuToolButtonWidget * _showHydrogens = nullptr;
-					}; // namespace Visualization
-				}	   // namespace Visualization
-			}		   // namespace MainMenu
-		}			   // namespace Widget
-	}				   // namespace UI
-} // namespace VTX
+	  private:
+		// Show / Hide Molecular Objects
+		MenuToolButtonWidget * _showWater	  = nullptr;
+		MenuToolButtonWidget * _showSolvant	  = nullptr;
+		MenuToolButtonWidget * _showHydrogens = nullptr;
+
+		void _toggleWaterVisibilityAction() const;
+		void _toggleSolventVisibilityAction() const;
+		void _toggleHydrogenVisibilityAction() const;
+	}; // namespace Visualization
+} // namespace VTX::UI::Widget::MainMenu::Visualization
 #endif

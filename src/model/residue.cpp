@@ -11,7 +11,41 @@ namespace VTX
 		void			 Residue::setChainPtr( Chain * const p_chain )
 		{
 			_chainPtr = p_chain;
+
+			setParent( _chainPtr );
 			setRepresentableMolecule( p_chain->getMoleculePtr() );
+		}
+
+		void Residue::setAtomCount( const uint p_count )
+		{
+			_atomCount	   = p_count;
+			_realAtomCount = p_count;
+		}
+		void Residue::removeToAtoms( const uint p_atomIndex )
+		{
+			const Model::Molecule * const moleculePtr = getMoleculePtr();
+			if ( p_atomIndex == _indexFirstAtom )
+			{
+				while ( _atomCount > 0 && moleculePtr->getAtom( _indexFirstAtom ) == nullptr )
+				{
+					_indexFirstAtom++;
+					_atomCount--;
+				}
+			}
+			else
+			{
+				uint lastResidueIndex = _indexFirstAtom + _atomCount - 1;
+				if ( lastResidueIndex == p_atomIndex )
+				{
+					while ( _atomCount > 0 && moleculePtr->getAtom( lastResidueIndex ) == nullptr )
+					{
+						_atomCount--;
+						lastResidueIndex--;
+					}
+				}
+			}
+
+			_realAtomCount--;
 		}
 
 		const Atom * const Residue::findFirstAtomByName( const std::string & p_name ) const
@@ -61,6 +95,19 @@ namespace VTX
 			Math::AABB aabb = getAABB();
 			aabb.translate( getMoleculePtr()->getTransform().getTranslationVector() );
 			return aabb;
+		}
+
+		void Residue::applyRepresentation(
+			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation,
+			const bool													   p_recompute )
+		{
+			BaseRepresentable::applyRepresentation( p_representation, p_recompute );
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
+		}
+		void Residue::removeRepresentation()
+		{
+			BaseRepresentable::removeRepresentation();
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
 
 		const std::string Residue::SYMBOL_STR[ (int)SYMBOL::COUNT ] = {

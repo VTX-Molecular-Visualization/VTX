@@ -66,6 +66,45 @@ namespace VTX
 
 		const Color::Rgb Chain::CHAIN_ID_UNKNOWN_COLOR = Color::Rgb::WHITE;
 
+		void Chain::setMoleculePtr( Molecule * const p_molecule )
+		{
+			_moleculePtr = p_molecule;
+
+			setParent( p_molecule );
+			setRepresentableMolecule( p_molecule );
+		}
+
+		void Chain::setResidueCount( const uint p_count )
+		{
+			_residueCount	  = p_count;
+			_realResidueCount = p_count;
+		}
+		void Chain::removeToResidues( const uint p_residueIndex )
+		{
+			if ( _indexFirstResidue == p_residueIndex )
+			{
+				while ( _residueCount > 0 && getMoleculePtr()->getResidue( _indexFirstResidue ) == nullptr )
+				{
+					_indexFirstResidue++;
+					_residueCount--;
+				}
+			}
+			else
+			{
+				uint lastResidueIndex = _indexFirstResidue + _residueCount - 1;
+				if ( lastResidueIndex == p_residueIndex )
+				{
+					while ( _residueCount > 0 && getMoleculePtr()->getResidue( lastResidueIndex ) == nullptr )
+					{
+						_residueCount--;
+						lastResidueIndex--;
+					}
+				}
+			}
+
+			_realResidueCount--;
+		}
+
 		Color::Rgb Chain::getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm )
 		{
 			if ( p_chainId.empty() )
@@ -113,6 +152,31 @@ namespace VTX
 			Math::AABB aabb = getAABB();
 			aabb.translate( getMoleculePtr()->getTransform().getTranslationVector() );
 			return aabb;
+		}
+
+		void Chain::applyRepresentation(
+			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation,
+			const bool													   p_recompute )
+		{
+			BaseRepresentable::applyRepresentation( p_representation, p_recompute );
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
+		}
+		void Chain::removeRepresentation()
+		{
+			BaseRepresentable::removeRepresentation();
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
+		}
+		void Chain::removeChildrenRepresentations() const
+		{
+			for ( uint i = _indexFirstResidue; i < _indexFirstResidue + _residueCount; i++ )
+			{
+				Model::Residue * const residue = getMoleculePtr()->getResidue( i );
+
+				if ( residue == nullptr )
+					continue;
+
+				residue->removeRepresentation();
+			}
 		}
 
 	} // namespace Model

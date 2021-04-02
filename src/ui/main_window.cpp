@@ -6,6 +6,7 @@
 #include <QAction>
 #include <QFileDialog>
 #include <QSettings>
+#include <QSize>
 #include <iostream>
 
 namespace VTX::UI
@@ -116,6 +117,8 @@ namespace VTX::UI
 
 	void MainWindow::resizeEvent( QResizeEvent * p_event )
 	{
+		QMainWindow::resizeEvent( p_event );
+
 		if ( p_event->type() == QEvent::Type::WindowStateChange )
 		{
 			WindowMode newMode = _getWindowModeFromWindowState( windowState() );

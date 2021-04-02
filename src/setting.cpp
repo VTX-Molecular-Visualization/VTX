@@ -21,8 +21,8 @@ namespace VTX
 	const int Setting::STATUS_PROGRESS_BAR_CHUNKS = 10;
 	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;
 
-	const QString Setting::MOLECULE_FILE_FILTERS = "Molecule file (*.pdb *.cif *.mmtf *.arc *.psf *.prm)";
-	const QString Setting::OPEN_FILE_FILTERS	 = "VTX file (*.vtx, *.pdb *.cif *.mmtf *.arc *.psf *.prm)";
+	const QString Setting::MOLECULE_FILE_FILTERS = "Molecule file (*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm)";
+	const QString Setting::OPEN_FILE_FILTERS	 = "VTX file (*.vtx, *.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm)";
 
 	// Rendering.
 	const bool				  Setting::ACTIVE_RENDERER_DEFAULT		= true;
@@ -30,11 +30,14 @@ namespace VTX
 	const Color::Rgb		  Setting::BACKGROUND_COLOR_DEFAULT		= Color::Rgb::BLACK;
 	const int				  Setting::REPRESENTATION_DEFAULT_INDEX = 0;
 	const float				  Setting::ATOMS_RADIUS_DEFAULT			= 0.4f;
-	const float				  Setting::ATOMS_RADIUS_MIN				= 0.f;
+	const float				  Setting::ATOMS_RADIUS_MIN				= 0.01f;
 	const float				  Setting::ATOMS_RADIUS_MAX				= 1.f;
 	const float				  Setting::BONDS_RADIUS_DEFAULT			= 0.15f;
-	const float				  Setting::BONDS_RADIUS_MIN				= 0.f;
+	const float				  Setting::BONDS_RADIUS_MIN				= 0.01f;
 	const float				  Setting::BONDS_RADIUS_MAX				= 1.f;
+	const float				  Setting::ATOMS_RADIUS_ADD_DEFAULT		= 0.f;
+	const float				  Setting::ATOMS_RADIUS_ADD_MIN			= -1.f;
+	const float				  Setting::ATOMS_RADIUS_ADD_MAX			= 1.f;
 	const Generic::COLOR_MODE Setting::COLOR_MODE_DEFAULT			= Generic::COLOR_MODE::CHAIN;
 	const Renderer::SHADING	  Setting::SHADING_DEFAULT				= Renderer::SHADING::DIFFUSE;
 	const bool				  Setting::ACTIVE_VSYNC_DEFAULT			= false;

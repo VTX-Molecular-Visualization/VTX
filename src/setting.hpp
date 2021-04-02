@@ -69,6 +69,9 @@ namespace VTX
 		static const float BONDS_RADIUS_MIN;
 		static const float BONDS_RADIUS_MAX;
 		float			   bondsRadius = BONDS_RADIUS_DEFAULT;
+		static const float ATOMS_RADIUS_ADD_DEFAULT;
+		static const float ATOMS_RADIUS_ADD_MIN;
+		static const float ATOMS_RADIUS_ADD_MAX;
 
 		static const Generic::COLOR_MODE COLOR_MODE_DEFAULT;
 		Generic::COLOR_MODE				 colorMode = COLOR_MODE_DEFAULT;

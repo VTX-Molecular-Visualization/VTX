@@ -1,61 +1,73 @@
 #include "download_molecule_dialog.hpp"
 #include "action/main.hpp"
+#include "ui/main_window.hpp"
+#include "ui/widget_factory.hpp"
+#include "vtx_app.hpp"
 #include <QPushButton>
 #include <string>
 
-namespace VTX
+namespace VTX::UI::Widget::Dialog
 {
-	namespace UI
+	DownloadMoleculeDialog & DownloadMoleculeDialog::_getInstance()
 	{
-		namespace Widget
+		if ( _instance == nullptr )
 		{
-			namespace Dialog
-			{
-				DownloadMoleculeDialog::DownloadMoleculeDialog( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
+			_instance = WidgetFactory::get().instantiateWidget<Dialog::DownloadMoleculeDialog>(
+				&VTXApp::get().getMainWindow(), "downloadMoleculeDialog" );
+		}
 
-				void DownloadMoleculeDialog::cancelAction() { close(); }
-				void DownloadMoleculeDialog::openAction()
-				{
-					const std::string lineEditText = _fileLineEdit->text().toStdString();
-					VTX_ACTION( new Action::Main::OpenApi( lineEditText ) );
+		return *_instance;
+	}
 
-					close();
-				}
+	void DownloadMoleculeDialog::openDialog() { _getInstance().show(); }
+	void DownloadMoleculeDialog::openDialog( const QString & p_txt )
+	{
+		_getInstance()._fileLineEdit->setText( p_txt );
+		openDialog();
+	}
 
-				void DownloadMoleculeDialog::_setupUi( const QString & p_name )
-				{
-					BaseManualWidget::_setupUi( p_name );
-					this->setWindowFlag( Qt::WindowFlags::enum_type::FramelessWindowHint, true );
-					this->setWindowModality( Qt::WindowModality::ApplicationModal );
+	DownloadMoleculeDialog::DownloadMoleculeDialog( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 
-					QVBoxLayout * verticalLayout = new QVBoxLayout( this );
+	void DownloadMoleculeDialog::cancelAction() { close(); }
+	void DownloadMoleculeDialog::openAction()
+	{
+		const std::string lineEditText = _fileLineEdit->text().toStdString();
+		VTX_ACTION( new Action::Main::OpenApi( lineEditText ) );
 
-					_fileLineEdit = new QLineEdit( this );
-					verticalLayout->addWidget( _fileLineEdit );
+		close();
+	}
 
-					_dialogButtons = new QDialogButtonBox(
-						QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open,
-						Qt::Orientation::Horizontal,
-						this );
-					verticalLayout->addWidget( _dialogButtons );
+	void DownloadMoleculeDialog::_setupUi( const QString & p_name )
+	{
+		BaseManualWidget::_setupUi( p_name );
+		this->setWindowFlag( Qt::WindowFlags::enum_type::FramelessWindowHint, true );
+		this->setWindowModality( Qt::WindowModality::ApplicationModal );
 
-					_fileLineEdit->setFocus();
-				}
+		QVBoxLayout * verticalLayout = new QVBoxLayout( this );
 
-				void DownloadMoleculeDialog::_setupSlots()
-				{
-					QPushButton * cancelButton = _dialogButtons->button( QDialogButtonBox::StandardButton::Cancel );
-					connect( cancelButton, &QPushButton::clicked, this, &DownloadMoleculeDialog::cancelAction );
+		_fileLineEdit = new QLineEdit( this );
+		verticalLayout->addWidget( _fileLineEdit );
 
-					QPushButton * openButton = _dialogButtons->button( QDialogButtonBox::StandardButton::Open );
-					connect( openButton, &QPushButton::clicked, this, &DownloadMoleculeDialog::openAction );
-				}
-				void DownloadMoleculeDialog::localize()
-				{
-					this->setWindowTitle( "Download Molecule" );
-					_fileLineEdit->setPlaceholderText( "Enter pdb id code" );
-				}
-			} // namespace Dialog
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+		_dialogButtons
+			= new QDialogButtonBox( QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open,
+									Qt::Orientation::Horizontal,
+									this );
+		verticalLayout->addWidget( _dialogButtons );
+
+		_fileLineEdit->setFocus();
+	}
+
+	void DownloadMoleculeDialog::_setupSlots()
+	{
+		QPushButton * cancelButton = _dialogButtons->button( QDialogButtonBox::StandardButton::Cancel );
+		connect( cancelButton, &QPushButton::clicked, this, &DownloadMoleculeDialog::cancelAction );
+
+		QPushButton * openButton = _dialogButtons->button( QDialogButtonBox::StandardButton::Open );
+		connect( openButton, &QPushButton::clicked, this, &DownloadMoleculeDialog::openAction );
+	}
+	void DownloadMoleculeDialog::localize()
+	{
+		this->setWindowTitle( "Download Molecule" );
+		_fileLineEdit->setPlaceholderText( "Enter pdb id code" );
+	}
+} // namespace VTX::UI::Widget::Dialog

@@ -8,7 +8,10 @@
 #include "base_model_3d.hpp"
 #include "buffer/secondary_structure.hpp"
 #include "color/rgb.hpp"
+#include "generic/base_colorable.hpp"
 #include "model/selection.hpp"
+#include <string>
+#include <vector>
 
 namespace VTX
 {
@@ -32,20 +35,10 @@ namespace VTX
 				COIL			  = 7,
 				COUNT
 			};
-			enum class COLOR_MODE : int
-			{
-				JMOL,
-				PROTEIN,
-				CHAIN,
-				RESIDUE
 
-			};
-
-			static const Color::Rgb COLORS_JMOL[ uint( VALUE::COUNT ) ];
-
-			inline Model::Molecule * const getMolecule() { return _molecule; }
-			inline const COLOR_MODE		   getColorMode() const { return _colorMode; }
-			inline void					   setColorMode( const COLOR_MODE p_colorMode )
+			inline Model::Molecule * const						 getMolecule() { return _molecule; }
+			inline const Generic::SECONDARY_STRUCTURE_COLOR_MODE getColorMode() const { return _colorMode; }
+			inline void setColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE p_colorMode )
 			{
 				_colorMode = p_colorMode;
 				refreshColors();
@@ -73,8 +66,8 @@ namespace VTX
 			void _instantiate3DViews() override;
 
 		  private:
-			Model::Molecule * const _molecule;
-			COLOR_MODE				_colorMode = COLOR_MODE::JMOL;
+			Model::Molecule * const					_molecule;
+			Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode = Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
 
 			std::vector<Vec3f>		_bufferPositions		   = std::vector<Vec3f>();
 			std::vector<Vec3f>		_bufferDirections		   = std::vector<Vec3f>();

@@ -22,7 +22,8 @@ namespace VTX::UI
 			Chain,
 			Residue,
 			Atom,
-			InstantiatedRepresentation,
+			Selection,
+			Scene,
 
 			COUNT
 		};
@@ -30,25 +31,31 @@ namespace VTX::UI
 		ContextualMenu();
 		~ContextualMenu();
 
+		template<typename P>
+		static void pop( const Menu & p_menu, P * const p_target, const QPoint & p_worldPos )
+		{
+			return _getInstance().displayMenu<P>( p_menu, p_target, p_worldPos );
+		}
+
 		template<typename T, typename = std::enable_if<std::is_base_of<QMenu, T>::value>>
 		const T * const getMenu( const Menu & p_menu ) const
 		{
 			return dynamic_cast<T *>( _menus[ int( p_menu ) ] );
 		}
 
-		template<typename T,
-				 typename P,
-				 typename
-				 = std::enable_if<std::is_base_of<Widget::ContextualMenu::ContextualMenuTemplate<P>, T>::value>>
+		template<typename P>
 		void displayMenu( const Menu & p_menu, P * const p_target, const QPoint & p_worldPos ) const
 		{
-			T * const menu = dynamic_cast<T *>( _menus[ int( p_menu ) ] );
+			Widget::ContextualMenu::ContextualMenuTemplate<P> * const menu
+				= dynamic_cast<Widget::ContextualMenu::ContextualMenuTemplate<P> *>( _menus[ int( p_menu ) ] );
 			menu->setTarget( p_target );
 			_menus[ int( p_menu ) ]->popup( p_worldPos );
 		}
 
 	  private:
 		std::vector<QMenu *> _menus = std::vector<QMenu *>();
+
+		static const ContextualMenu & _getInstance();
 
 		void _buildMenus();
 	};

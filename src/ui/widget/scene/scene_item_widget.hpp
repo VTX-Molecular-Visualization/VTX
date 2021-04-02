@@ -33,7 +33,7 @@ namespace VTX::UI::Widget::Scene
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
-		void		 mousePressEvent( QMouseEvent * p_event ) override;
+		virtual void mousePressEvent( QMouseEvent * p_event ) override;
 		virtual void mouseMoveEvent( QMouseEvent * p_event ) override;
 		void		 dragEnterEvent( QDragEnterEvent * p_event ) override;
 

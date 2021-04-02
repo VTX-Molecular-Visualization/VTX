@@ -7,36 +7,27 @@
 
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu
 {
-	namespace UI
+	class RepresentationPresetButton : public MenuToolButtonWidget
 	{
-		namespace Widget
+		VTX_WIDGET
+
+	  public:
+		void _setupSlots() override
 		{
-			namespace MainMenu
-			{
-				class RepresentationPresetButton : public MenuToolButtonWidget
-				{
-					VTX_WIDGET
+			MenuToolButtonWidget::_setupSlots();
+			connect( this, &QToolButton::clicked, this, &RepresentationPresetButton::_onButtonClicked );
+		}
+		void setRepresentationID( const int p_id ) { _id = p_id; };
 
-				  public:
-					void _setupSlots() override
-					{
-						MenuToolButtonWidget::_setupSlots();
-						connect( this, &QToolButton::clicked, this, &RepresentationPresetButton::_onButtonClicked );
-					}
-					void setRepresentationID( const int p_id ) { _id = p_id; };
+	  protected:
+		RepresentationPresetButton( QWidget * p_parent ) : MenuToolButtonWidget( p_parent ) {};
 
-				  protected:
-					RepresentationPresetButton( QWidget * p_parent ) : MenuToolButtonWidget( p_parent ) {};
+	  private:
+		int _id = -1;
 
-				  private:
-					int _id = -1;
-
-					void _onButtonClicked();
-				};
-			} // namespace MainMenu
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+		void _onButtonClicked();
+	};
+} // namespace VTX::UI::Widget::MainMenu
 #endif

@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "id.hpp"
 #include <map>
 #include <set>
 #include <unordered_set>
@@ -16,6 +17,7 @@ namespace VTX::Generic
 
 namespace VTX::Model
 {
+	class Molecule;
 	class Selection;
 	namespace Representation
 	{
@@ -33,7 +35,7 @@ namespace VTX::Representation
 		using InstantiatedRepresentation = Model::Representation::InstantiatedRepresentation;
 
 		using MapRepresentationRepresentables
-			= std::map<const InstantiatedRepresentation *, std::unordered_set<Generic::BaseRepresentable *>>;
+			= std::map<InstantiatedRepresentation *, std::unordered_set<Generic::BaseRepresentable *>>;
 
 		inline static RepresentationManager & get()
 		{
@@ -41,21 +43,23 @@ namespace VTX::Representation
 			return instance;
 		}
 
-		void instantiateRepresentation( BaseRepresentation * p_representation, Generic::BaseRepresentable * p_target );
-		void instantiateRepresentation( BaseRepresentation *		   p_representation,
-										const Model::Selection * const p_selection );
-		void addToRepresentation( InstantiatedRepresentation * p_representation,
-								  Generic::BaseRepresentable * p_target );
-		void removeRepresentation( const InstantiatedRepresentation * const p_representation,
-								   Generic::BaseRepresentable *				p_target,
-								   bool										p_update );
-		void deleteRepresentation( InstantiatedRepresentation * p_representation );
-		void removeRepresentation( BaseRepresentation * p_representation );
-		const InstantiatedRepresentation * const getRepresentationByName( const std::string & p_representationName );
-		void setDefaultRepresentationIndex( const int p_defaultRepresentationIndex );
-		std::set<const InstantiatedRepresentation *> &			 getDefaultRepresentationSet();
+		void						 setDefaultRepresentationIndex( const int p_defaultRepresentationIndex );
+		InstantiatedRepresentation * instantiateDefaultRepresentation();
+
+	  private:
+		BaseRepresentation * _defaultBaseRepresentation = nullptr;
+
+	  public:
+		void instantiateRepresentation( BaseRepresentation * const	 p_representation,
+										Generic::BaseRepresentable & p_target );
+		void instantiateRepresentation( BaseRepresentation * const p_representation,
+										const Model::Selection &   p_selection );
+
+		void deleteRepresentation( const BaseRepresentation *& p_representation );
+
+		InstantiatedRepresentation * const getRepresentationByName( const std::string & p_representationName );
 		const std::unordered_set<Generic::BaseRepresentable *> & getTargets(
-			const InstantiatedRepresentation * p_representation );
+			InstantiatedRepresentation * p_representation );
 
 	  protected:
 		RepresentationManager();
@@ -63,13 +67,12 @@ namespace VTX::Representation
 		RepresentationManager & operator=( const RepresentationManager & ) = delete;
 		~RepresentationManager() {};
 
-		void _recomputeRepresentableData( Generic::BaseRepresentable & p_representable );
-
 	  private:
-		MapRepresentationRepresentables _mapRepresentablesLinkedToRepresentation = MapRepresentationRepresentables();
+		using MoleculeRepresentationData
+			= std::map<Generic::BaseRepresentable *, std::set<InstantiatedRepresentation *>>;
 
-		std::set<const InstantiatedRepresentation *> & _defaultRepresentationSet
-			= std::set<const InstantiatedRepresentation *>();
+		MapRepresentationRepresentables _mapRepresentablesLinkedToRepresentation = MapRepresentationRepresentables();
+		std::set<InstantiatedRepresentation *> & _defaultRepresentationSet = std::set<InstantiatedRepresentation *>();
 	};
 } // namespace VTX::Representation
 #endif

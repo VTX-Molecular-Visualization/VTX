@@ -175,8 +175,9 @@ namespace VTX::UI::Widget::Sequence
 		const uint lastResidueOffset
 			= ( uint )( sequenceLength < Style::SEQUENCE_CHAIN_SCALE_STEP ? lastResidueIndexStr.size()
 																		  : ( lastResidueIndexStr.size() / 2 ) );
-		const uint scaleLength
-			= sequenceLength - ( lastResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) + lastResidueOffset;
+		uint scaleLength = sequenceLength - ( lastResidueIndex % Style::SEQUENCE_CHAIN_SCALE_STEP ) + lastResidueOffset;
+
+		scaleLength = sequenceLength < scaleLength ? scaleLength : sequenceLength;
 
 		_strScale = QString( scaleLength, ' ' );
 

@@ -6,6 +6,7 @@
 #endif
 
 #include "buffer/base_buffer_opengl.hpp"
+#include "event/event.hpp"
 #include "generic/base_renderable.hpp"
 #include "generic/base_transformable.hpp"
 #include "generic/base_visible.hpp"
@@ -111,8 +112,12 @@ namespace VTX
 				}
 			}
 
-			virtual void _transformModifiedEvent() override { _invalidateWorldAABB(); };
-			void		 _invalidateWorldAABB()
+			virtual void _transformModifiedEvent() override
+			{
+				_invalidateWorldAABB();
+				_notifyViews( new VTX::Event::VTXEvent( Event::Model::TRANSFORM_CHANGE ) );
+			};
+			void _invalidateWorldAABB()
 			{
 				_worldAabb.invalidate();
 

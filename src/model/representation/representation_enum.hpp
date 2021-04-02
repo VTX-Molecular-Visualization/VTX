@@ -9,60 +9,23 @@ namespace VTX
 {
 	namespace Representation
 	{
-		enum class FlagDataTargeted : int
+		enum FlagDataTargeted
 		{
 			NONE   = 0,
-			ATOM   = 1 << 1,
-			BOND   = 1 << 2,
-			RIBBON = 1 << 3,
+			ATOM   = 1 << 0,
+			BOND   = 1 << 1,
+			RIBBON = 1 << 2,
 		};
 
-		inline FlagDataTargeted operator|( FlagDataTargeted p_lhs, FlagDataTargeted p_rhs )
+		enum MoleculeComputationFlag
 		{
-			return static_cast<FlagDataTargeted>( static_cast<int>( p_lhs ) | static_cast<int>( p_rhs ) );
-		}
-		inline FlagDataTargeted & operator|=( FlagDataTargeted & lhs, FlagDataTargeted rhs )
-		{
-			lhs = lhs | rhs;
-			return lhs;
-		}
-		inline FlagDataTargeted operator&( FlagDataTargeted lhs, FlagDataTargeted rhs )
-		{
-			return static_cast<FlagDataTargeted>( static_cast<int>( lhs ) & static_cast<int>( rhs ) );
-		}
-		inline FlagDataTargeted & operator&=( FlagDataTargeted & lhs, FlagDataTargeted rhs )
-		{
-			lhs = lhs & rhs;
-			return lhs;
-		}
-
-		enum class MoleculeComputationFlag : int
-		{
-			Targets		= 1 << 1,
-			ColorBuffer = 1 << 2,
-			ALL			= 0xFFFF,
+			Targets			   = 1 << 0,
+			ColorBuffer		   = 1 << 1,
+			SecondaryStructure = 1 << 2,
+			ALL				   = 0xFFFF,
 		};
-
-		inline MoleculeComputationFlag operator&( MoleculeComputationFlag p_lhs, MoleculeComputationFlag p_rhs )
-		{
-			return static_cast<MoleculeComputationFlag>( int( p_lhs ) & int( p_rhs ) );
-		}
-		inline MoleculeComputationFlag operator&=( MoleculeComputationFlag lhs, MoleculeComputationFlag rhs )
-		{
-			lhs = lhs & rhs;
-			return lhs;
-		}
-		inline MoleculeComputationFlag operator|( MoleculeComputationFlag lhs, MoleculeComputationFlag rhs )
-		{
-			return static_cast<MoleculeComputationFlag>( int( lhs ) | int( rhs ) );
-		}
-		inline MoleculeComputationFlag operator|=( MoleculeComputationFlag lhs, MoleculeComputationFlag rhs )
-		{
-			lhs = ( MoleculeComputationFlag )( int( lhs ) | int( rhs ) );
-			return lhs;
-		}
-
 	} // namespace Representation
+
 	namespace Generic
 	{
 		enum class REPRESENTATION : int
@@ -74,6 +37,7 @@ namespace VTX
 			SAS,
 			CARTOON,
 			BALL_AND_STICK_AND_CARTOON,
+			STICK_AND_CARTOON,
 			COUNT
 		};
 	} // namespace Generic

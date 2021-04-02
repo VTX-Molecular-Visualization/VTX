@@ -4,7 +4,6 @@
 #include "event/event_manager.hpp"
 #include "molecule.hpp"
 #include "mvc/mvc_manager.hpp"
-#include "representation/instantiated_representation.hpp"
 #include "residue.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
@@ -107,28 +106,6 @@ namespace VTX::Model
 			_selectAtom( *it );
 
 		_refreshMoleculeSelection( p_atoms[ 0 ]->getMoleculePtr() );
-		_notifyDataChanged();
-	}
-
-	void Selection::selectRepresentation( Representation::InstantiatedRepresentation & p_representation,
-										  const bool								   p_appendToSelection )
-	{
-		if ( !p_appendToSelection )
-			_clearWithoutNotify();
-
-		_selectRepresentation( p_representation );
-		_notifyDataChanged();
-	}
-	void Selection::selectRepresentations(
-		const std::vector<Representation::InstantiatedRepresentation *> & p_representations,
-		const bool														  p_appendToSelection )
-	{
-		if ( !p_appendToSelection )
-			_clearWithoutNotify();
-
-		for ( const auto it : p_representations )
-			_selectRepresentation( *it );
-
 		_notifyDataChanged();
 	}
 
@@ -252,34 +229,6 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
-	void Selection::unselectRepresentation( Representation::InstantiatedRepresentation & p_representation )
-	{
-		_unselectRepresentation( p_representation );
-		_notifyDataChanged();
-	}
-	void Selection::unselectRepresentations(
-		const std::vector<Representation::InstantiatedRepresentation *> & p_representations )
-	{
-		if ( p_representations.size() == 0 )
-			return;
-
-		for ( const auto it : p_representations )
-			_unselectRepresentation( *it );
-
-		_notifyDataChanged();
-	}
-	void Selection::unselectRepresentationsWithCheck(
-		const std::vector<Representation::InstantiatedRepresentation *> & p_representations )
-	{
-		for ( const auto it : p_representations )
-		{
-			if ( isRepresentationSelected( *it ) )
-				_unselectRepresentation( *it );
-		}
-
-		_notifyDataChanged();
-	}
-
 	bool Selection::isMoleculeSelected( const Molecule & p_molecule ) const
 	{
 		const ID & id = p_molecule.getId();
@@ -291,7 +240,7 @@ namespace VTX::Model
 		MapMoleculeIds::const_iterator it = _items.find( id );
 
 		return _items.find( id ) != _items.end()
-			   && it->second.getFullySelectedChildCount() == p_molecule.getChainCount();
+			   && it->second.getFullySelectedChildCount() == p_molecule.getRealChainCount();
 	}
 	bool Selection::isChainSelected( const Chain & p_chain ) const
 	{
@@ -314,7 +263,7 @@ namespace VTX::Model
 		const MapChainIds &			chainMap = _items.at( moleculeId );
 		MapChainIds::const_iterator it		 = chainMap.find( p_chain.getIndex() );
 
-		return it != chainMap.end() && it->second.getFullySelectedChildCount() == p_chain.getResidueCount();
+		return it != chainMap.end() && it->second.getFullySelectedChildCount() == p_chain.getRealResidueCount();
 	}
 	bool Selection::isResidueSelected( const Residue & p_residue ) const
 	{
@@ -349,7 +298,7 @@ namespace VTX::Model
 		const MapResidueIds &		  residueMap = chainMap.at( chainIndex );
 		MapResidueIds::const_iterator it		 = residueMap.find( p_residue.getIndex() );
 
-		return it != residueMap.end() && it->second.getFullySelectedChildCount() == p_residue.getAtomCount();
+		return it != residueMap.end() && it->second.getFullySelectedChildCount() == p_residue.getRealAtomCount();
 	}
 	bool Selection::isAtomSelected( const Atom & p_atom ) const
 	{
@@ -373,10 +322,6 @@ namespace VTX::Model
 		const uint &	   index	  = p_atom.getIndex();
 
 		return std::find( atomVector.begin(), atomVector.end(), index ) != atomVector.end();
-	}
-	bool Selection::isRepresentationSelected( Representation::InstantiatedRepresentation & p_representation ) const
-	{
-		return _representations.find( &p_representation ) != _representations.end();
 	}
 
 	uint Selection::getMoleculeSelectedCount() const { return (uint)_items.size(); }
@@ -404,7 +349,6 @@ namespace VTX::Model
 					res += (uint)mapResidus.second.size();
 		return res;
 	}
-	uint Selection::getRepresentationSelectedCount() const { return (uint)_representations.size(); }
 
 	void Selection::_selectMolecule( const Molecule & p_molecule )
 	{
@@ -462,7 +406,7 @@ namespace VTX::Model
 
 		VecAtomIds & atoms = _items[ moleculeParent.getId() ][ chainParent.getIndex() ][ residueParent.getIndex() ];
 		atoms._addFullChild();
-		if ( atoms.getFullySelectedChildCount() == residueParent.getAtomCount() )
+		if ( atoms.getFullySelectedChildCount() == residueParent.getRealAtomCount() )
 			_referenceFullResidue( residueParent );
 	}
 	void Selection::_referenceFullResidue( const Residue & p_residue )
@@ -472,7 +416,7 @@ namespace VTX::Model
 
 		MapResidueIds & residues = _items[ moleculeParent.getId() ][ chainParent.getIndex() ];
 		residues._addFullChild();
-		if ( residues.getFullySelectedChildCount() == chainParent.getResidueCount() )
+		if ( residues.getFullySelectedChildCount() == chainParent.getRealResidueCount() )
 			_referenceFullChain( chainParent );
 	}
 	void Selection::_referenceFullChain( const Chain & p_chain )
@@ -490,7 +434,7 @@ namespace VTX::Model
 		const Molecule & moleculeParent = *chainParent.getMoleculePtr();
 
 		VecAtomIds & atoms = _items[ moleculeParent.getId() ][ chainParent.getIndex() ][ residueParent.getIndex() ];
-		const bool	 propagateToParent = atoms.getFullySelectedChildCount() == residueParent.getAtomCount();
+		const bool	 propagateToParent = atoms.getFullySelectedChildCount() == residueParent.getRealAtomCount();
 		atoms._removeFullChild();
 		if ( propagateToParent )
 			_unreferenceFullResidue( residueParent );
@@ -501,7 +445,7 @@ namespace VTX::Model
 		const Molecule & moleculeParent = *chainParent.getMoleculePtr();
 
 		MapResidueIds & residues		  = _items[ moleculeParent.getId() ][ chainParent.getIndex() ];
-		const bool		propagateToParent = residues.getFullySelectedChildCount() == chainParent.getResidueCount();
+		const bool		propagateToParent = residues.getFullySelectedChildCount() == chainParent.getRealResidueCount();
 		residues._removeFullChild();
 		if ( propagateToParent )
 			_unreferenceFullChain( chainParent );
@@ -645,7 +589,7 @@ namespace VTX::Model
 		VecAtomIds & atoms = _items[ moleculeParent.getId() ][ chainParent.getIndex() ][ p_residue.getIndex() ];
 
 		// All atoms already added
-		if ( atoms.getFullySelectedChildCount() >= p_residue.getAtomCount() )
+		if ( atoms.getFullySelectedChildCount() >= p_residue.getRealAtomCount() )
 			return;
 
 		atoms._setFullChildrenCount( p_residue.getAtomCount() );
@@ -809,16 +753,7 @@ namespace VTX::Model
 		_notifyDataChanged();
 	}
 
-	void Selection::_selectRepresentation( Representation::InstantiatedRepresentation & p_representation )
-	{
-		_representations.emplace( &p_representation );
-	}
-	void Selection::_unselectRepresentation( Representation::InstantiatedRepresentation & p_representation )
-	{
-		_representations.erase( &p_representation );
-	}
-
-	bool Selection::isEmpty() const { return _items.size() <= 0 && _representations.size() <= 0; }
+	bool Selection::isEmpty() const { return _items.size() <= 0; }
 
 	void Selection::clear()
 	{
@@ -834,7 +769,6 @@ namespace VTX::Model
 		}
 
 		_items.clear();
-		_representations.clear();
 		_mapSelectionAABB.clear();
 	}
 
@@ -852,19 +786,50 @@ namespace VTX::Model
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 			unselectMolecule( *castedEvent.ptr );
 		}
-		else if ( p_event.name == Event::REPRESENTATION_REMOVED )
-		{
-			const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>(
-					p_event );
-			unselectRepresentation( *castedEvent.ptr );
-		}
 	}
 
 	void Selection::_notifyDataChanged()
 	{
 		BaseModel::_notifyDataChanged();
 		VTX_EVENT( new Event::VTXEventPtr( Event ::SELECTION_CHANGE, this ) );
+	}
+
+	void Selection::getItemTypes( std::set<ID::VTX_ID> & p_types ) const
+	{
+		p_types.clear();
+
+		for ( const std::pair<Model::ID, MapChainIds> & molData : getItems() )
+		{
+			const Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molData.first );
+			if ( isMoleculeFullySelected( molecule ) )
+			{
+				p_types.emplace( molecule.getTypeId() );
+				continue;
+			}
+
+			for ( const std::pair<Model::ID, MapResidueIds> & chainData : molData.second )
+			{
+				const Model::Chain & chain = *molecule.getChain( chainData.first );
+				if ( isChainFullySelected( chain ) )
+				{
+					p_types.emplace( chain.getTypeId() );
+					continue;
+				}
+
+				for ( const std::pair<Model::ID, VecAtomIds> & residueData : chainData.second )
+				{
+					const Model::Residue & residue = *molecule.getResidue( residueData.first );
+					if ( isResidueFullySelected( residue ) )
+					{
+						p_types.emplace( residue.getTypeId() );
+					}
+					else
+					{
+						p_types.emplace( ID::Model::MODEL_ATOM );
+					}
+				}
+			}
+		}
 	}
 
 	Math::AABB Selection::getAABB() const

@@ -105,6 +105,8 @@ namespace VTX
 				return modelPtr;
 			}
 
+			bool doesModelExists( const Model::ID & p_id ) { return _container.find( p_id ) != _container.end(); }
+
 			const ID::VTX_ID & getModelTypeID( const Model::ID & p_id )
 			{
 				return _container[ p_id ]->getModel().getTypeId();
@@ -159,7 +161,8 @@ namespace VTX
 
 			inline const bool hasView( const Model::BaseModel * const p_model, const ID::VTX_ID & p_id )
 			{
-				return _container[ p_model->getId() ]->hasView( p_id );
+				return _container.find( p_model->getId() ) != _container.end()
+					   && _container[ p_model->getId() ]->hasView( p_id );
 			};
 
 			inline void notifyViews( const Model::BaseModel * const p_caller, const Event::VTXEvent * const p_event )

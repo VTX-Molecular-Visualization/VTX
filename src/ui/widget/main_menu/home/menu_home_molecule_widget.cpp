@@ -1,8 +1,8 @@
 #include "menu_home_molecule_widget.hpp"
 #include "action/main.hpp"
+#include "ui/dialog.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
-#include <QFileDialog>
 
 namespace VTX::UI::Widget::MainMenu::Home
 {
@@ -29,9 +29,6 @@ namespace VTX::UI::Widget::MainMenu::Home
 		pushButton( *_saveMoleculeButton, 2 );
 
 		validate();
-
-		_downloadMoleculeDialog
-			= WidgetFactory::get().instantiateWidget<Dialog::DownloadMoleculeDialog>( this, "downloadMoleculeDialog" );
 	}
 	void MenuHomeMoleculeWidget::_setupSlots()
 	{
@@ -41,18 +38,8 @@ namespace VTX::UI::Widget::MainMenu::Home
 	}
 	void MenuHomeMoleculeWidget::localize() { setTitle( "Molecule" ); }
 
-	void MenuHomeMoleculeWidget::_loadMoleculeFile()
-	{
-		const QString filename
-			= QFileDialog::getOpenFileName( this, "Open Molecule", "", VTX_SETTING().MOLECULE_FILE_FILTERS );
-
-		if ( !filename.isNull() )
-		{
-			FilePath * const path = new FilePath( filename.toStdString() );
-			VTX_ACTION( new Action::Main::Open( path ) );
-		}
-	}
-	void MenuHomeMoleculeWidget::_downloadMoleculeFile() { _downloadMoleculeDialog->show(); }
+	void MenuHomeMoleculeWidget::_loadMoleculeFile() { UI::Dialog::openLoadMoleculeDialog( this ); }
+	void MenuHomeMoleculeWidget::_downloadMoleculeFile() { UI::Dialog::openDownloadMoleculeDialog(); }
 
 	void MenuHomeMoleculeWidget::_saveMoleculeFile() {}
 

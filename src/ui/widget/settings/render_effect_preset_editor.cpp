@@ -31,7 +31,7 @@ namespace VTX::UI::Widget::Settings
 
 		_enableOutline = new QCheckBox( this );
 		_outlineThickness
-			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldWidget>( this, "outlineThickness" );
+			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( this, "outlineThickness" );
 		_outlineThickness->setMinMax( Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );
 		_outlineColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "outlineColor" );
 
@@ -42,13 +42,13 @@ namespace VTX::UI::Widget::Settings
 		_farFog = new QSpinBox( this );
 		_farFog->setMinimum( Setting::FOG_FAR_MIN );
 		_farFog->setMaximum( Setting::FOG_FAR_MAX );
-		_fogDensity = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldWidget>( this, "fogDensity" );
+		_fogDensity = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( this, "fogDensity" );
 		_fogDensity->setMinMax( 0.0f, 1.0f );
 		_fogColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "fogColor" );
 
 		_backgroundColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "backgroundColor" );
 		_cameraLightColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "lightColor" );
-		_cameraFOV		  = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldWidget>( this, "cameraFov" );
+		_cameraFOV = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( this, "cameraFov" );
 		_cameraFOV->setMinMax( Setting::CAMERA_FOV_MIN, Setting::CAMERA_FOV_MAX );
 		_cameraNear = new QSpinBox( this );
 		_cameraNear->setMinimum( Setting::CAMERA_NEAR_MIN );
@@ -121,7 +121,7 @@ namespace VTX::UI::Widget::Settings
 				 this,
 				 &RenderEffectPresetEditor::_onOutlineStateChanged );
 		connect( _outlineThickness,
-				 QOverload<float>::of( &FloatFieldWidget::onValueChange ),
+				 QOverload<float>::of( &FloatFieldSliderWidget::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onOutlineThicknessChanged );
 		connect( _outlineColor,
@@ -140,7 +140,7 @@ namespace VTX::UI::Widget::Settings
 		connect(
 			_farFog, QOverload<int>::of( &QSpinBox::valueChanged ), this, &RenderEffectPresetEditor::_onFogFarChanged );
 		connect( _fogDensity,
-				 QOverload<float>::of( &FloatFieldWidget::onValueChange ),
+				 QOverload<float>::of( &FloatFieldSliderWidget::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onFogDensityChanged );
 		connect( _fogColor,
@@ -157,7 +157,7 @@ namespace VTX::UI::Widget::Settings
 				 this,
 				 &RenderEffectPresetEditor::_onCameraLightColorChanged );
 		connect( _cameraFOV,
-				 QOverload<float>::of( &FloatFieldWidget::onValueChange ),
+				 QOverload<float>::of( &FloatFieldSliderWidget::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onCameraFOVChanged );
 
@@ -237,125 +237,123 @@ namespace VTX::UI::Widget::Settings
 
 		_currentPresetView->setEditor( this );
 
-		_updateRender = p_updateRender;
+		blockSignals( !p_updateRender );
 		refresh();
-		_updateRender = true;
+		blockSignals( false );
 	}
 
 	void RenderEffectPresetEditor::_onShadingChange( const int p_newIndex )
 	{
 		const VTX::Renderer::SHADING shading = VTX::Renderer::SHADING( p_newIndex );
-		if ( shading != _preset->getShading() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeShading( *_preset, shading ) );
+		if ( !signalsBlocked() && shading != _preset->getShading() )
+			VTX_ACTION( new Action::Renderer::ChangeShading( *_preset, shading ) );
 	}
 
 	void RenderEffectPresetEditor::_onSSAOStateChanged( const int p_state )
 	{
 		const bool enable = p_state != 0;
-		if ( enable != _preset->isSSAOEnabled() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::EnableSSAO( *_preset, enable ) );
+		if ( !signalsBlocked() && enable != _preset->isSSAOEnabled() )
+			VTX_ACTION( new Action::Renderer::EnableSSAO( *_preset, enable ) );
 	}
 	void RenderEffectPresetEditor::_onSSAOIntensityChanged( const int p_value )
 	{
-		if ( p_value != _preset->getSSAOIntensity() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeSSAOIntensity( *_preset, p_value ) );
+		if ( !signalsBlocked() && p_value != _preset->getSSAOIntensity() )
+			VTX_ACTION( new Action::Renderer::ChangeSSAOIntensity( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onSSAOBlurSizeChanged( const int p_value )
 	{
-		if ( p_value != _preset->getSSAOBlurSize() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeSSAOBlurSize( *_preset, p_value ) );
+		if ( !signalsBlocked() && p_value != _preset->getSSAOBlurSize() )
+			VTX_ACTION( new Action::Renderer::ChangeSSAOBlurSize( *_preset, p_value ) );
 	}
 
 	void RenderEffectPresetEditor::_onOutlineStateChanged( const int p_state )
 	{
 		const bool enable = p_state != 0;
-		if ( enable != _preset->isOutlineEnabled() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::EnableOutline( *_preset, enable ) );
+		if ( !signalsBlocked() && enable != _preset->isOutlineEnabled() )
+			VTX_ACTION( new Action::Renderer::EnableOutline( *_preset, enable ) );
 	}
 	void RenderEffectPresetEditor::_onOutlineThicknessChanged( const float p_value )
 	{
-		if ( p_value != _preset->getOutlineThickness() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeOutlineThickness( *_preset, p_value ) );
+		if ( !signalsBlocked() && p_value != _preset->getOutlineThickness() )
+			VTX_ACTION( new Action::Renderer::ChangeOutlineThickness( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onOutlineColorChanged( const Color::Rgb & p_color )
 	{
-		if ( p_color != _preset->getOutlineColor() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeOutlineColor( *_preset, p_color ) );
+		if ( !signalsBlocked() && p_color != _preset->getOutlineColor() )
+			VTX_ACTION( new Action::Renderer::ChangeOutlineColor( *_preset, p_color ) );
 	}
 
 	void RenderEffectPresetEditor::_onFogStateChanged( const int p_state )
 	{
 		const bool enable = p_state != 0;
-		if ( enable != _preset->isFogEnabled() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::EnableFog( *_preset, enable ) );
+		if ( !signalsBlocked() && enable != _preset->isFogEnabled() )
+			VTX_ACTION( new Action::Renderer::EnableFog( *_preset, enable ) );
 	}
 	void RenderEffectPresetEditor::_onFogNearChanged()
 	{
 		const int value = _nearFog->value();
-		if ( value != _preset->getFogNear() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeFogNear( *_preset, value ) );
+		if ( !signalsBlocked() && value != _preset->getFogNear() )
+			VTX_ACTION( new Action::Renderer::ChangeFogNear( *_preset, value ) );
 	}
 	void RenderEffectPresetEditor::_onFogFarChanged()
 	{
 		const int value = _farFog->value();
-		if ( value != _preset->getFogFar() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeFogFar( *_preset, value ) );
+		if ( !signalsBlocked() && value != _preset->getFogFar() )
+			VTX_ACTION( new Action::Renderer::ChangeFogFar( *_preset, value ) );
 	}
 	void RenderEffectPresetEditor::_onFogDensityChanged( const float p_value )
 	{
-		if ( p_value != _preset->getFogDensity() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeFogDensity( *_preset, p_value ) );
+		if ( !signalsBlocked() && p_value != _preset->getFogDensity() )
+			VTX_ACTION( new Action::Renderer::ChangeFogDensity( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onFogColorChanged( const Color::Rgb & p_color )
 	{
-		if ( p_color != _preset->getFogColor() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeFogColor( *_preset, p_color ) );
+		if ( !signalsBlocked() && p_color != _preset->getFogColor() )
+			VTX_ACTION( new Action::Renderer::ChangeFogColor( *_preset, p_color ) );
 	}
 
 	void RenderEffectPresetEditor::_onBackgroundColorChanged( const Color::Rgb & p_color )
 	{
-		if ( p_color != _preset->getBackgroundColor() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeBackgroundColor( *_preset, p_color ) );
+		if ( !signalsBlocked() && p_color != _preset->getBackgroundColor() )
+			VTX_ACTION( new Action::Renderer::ChangeBackgroundColor( *_preset, p_color ) );
 	}
 	void RenderEffectPresetEditor::_onCameraLightColorChanged( const Color::Rgb & p_color )
 	{
-		if ( p_color != _preset->getCameraLightColor() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeCameraLightColor( *_preset, p_color ) );
+		if ( !signalsBlocked() && p_color != _preset->getCameraLightColor() )
+			VTX_ACTION( new Action::Renderer::ChangeCameraLightColor( *_preset, p_color ) );
 	}
 	void RenderEffectPresetEditor::_onCameraFOVChanged( const float p_value )
 	{
-		if ( p_value != _preset->getCameraFOV() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeCameraFOV( *_preset, p_value ) );
+		if ( !signalsBlocked() && p_value != _preset->getCameraFOV() )
+			VTX_ACTION( new Action::Renderer::ChangeCameraFOV( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onCameraNearChanged( const float p_value )
 	{
-		if ( p_value != _preset->getCameraNearClip() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeCameraNear( *_preset, p_value ) );
+		if ( !signalsBlocked() && p_value != _preset->getCameraNearClip() )
+			VTX_ACTION( new Action::Renderer::ChangeCameraNear( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onCameraFarChanged( const float p_value )
 	{
-		if ( p_value != _preset->getCameraFarClip() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeCameraFar( *_preset, p_value ) );
+		if ( !signalsBlocked() && p_value != _preset->getCameraFarClip() )
+			VTX_ACTION( new Action::Renderer::ChangeCameraFar( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onAntialiasingChanged( const int p_state )
 	{
 		const bool enable = p_state != 0;
-		if ( enable != _preset->isFogEnabled() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::EnableCameraAntialiasing( *_preset, enable ) );
+		if ( !signalsBlocked() && enable != _preset->isFogEnabled() )
+			VTX_ACTION( new Action::Renderer::EnableCameraAntialiasing( *_preset, enable ) );
 	}
 	void RenderEffectPresetEditor::_onPerspectiveChanged( const int p_state )
 	{
 		const bool enable = p_state != 0;
-		if ( enable != _preset->isFogEnabled() )
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ChangeCameraPerspective( *_preset, enable ) );
+		if ( !signalsBlocked() && enable != _preset->isFogEnabled() )
+			VTX_ACTION( new Action::Renderer::ChangeCameraPerspective( *_preset, enable ) );
 	}
 
 	void RenderEffectPresetEditor::_applyPreset() const
 	{
-		if ( _updateRender )
-		{
-			VTX_ACTION_ENQUEUE( new Action::Renderer::ApplyRenderEffectPreset( *_preset ) );
-		}
+		if ( !signalsBlocked() )
+			VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *_preset ) );
 	}
 
 	void RenderEffectPresetEditor::_addItem( QWidget * const p_widget, const QString & p_label )

@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "ui/widget/dialog/download_molecule_dialog.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>
@@ -29,8 +28,6 @@ namespace VTX::UI::Widget::MainMenu::Home
 		MenuToolButtonWidget * _loadMoleculeButton	   = nullptr;
 		MenuToolButtonWidget * _downloadMoleculeButton = nullptr;
 		MenuToolButtonWidget * _saveMoleculeButton	   = nullptr;
-
-		Dialog::DownloadMoleculeDialog * _downloadMoleculeDialog = nullptr;
 
 	  private:
 		void _loadMoleculeFile();

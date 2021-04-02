@@ -1,13 +1,18 @@
 #include "contextual_menu.hpp"
+#include "ui/main_window.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_atom.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_chain.hpp"
-#include "ui/widget/contextual_menu/contextual_menu_instantiated_representation.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_molecule.hpp"
 #include "ui/widget/contextual_menu/contextual_menu_residue.hpp"
+#include "ui/widget/contextual_menu/contextual_menu_scene.hpp"
+#include "ui/widget/contextual_menu/contextual_menu_selection.hpp"
 #include "ui/widget_factory.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX::UI
 {
+	const ContextualMenu & ContextualMenu::_getInstance() { return VTXApp::get().getMainWindow().getContextualMenu(); }
+
 	ContextualMenu::ContextualMenu() { _buildMenus(); }
 
 	ContextualMenu ::~ContextualMenu()
@@ -36,9 +41,12 @@ namespace VTX::UI
 		_menus[ int( Menu::Atom ) ]
 			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuAtom>(
 				nullptr, "contextualMenuAtom" );
-		_menus[ int( Menu::InstantiatedRepresentation ) ]
-			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuInstantiatedRepresentation>(
-				nullptr, "contextualMenuInstantiatedRepresentation" );
+		_menus[ int( Menu::Selection ) ]
+			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuSelection>(
+				nullptr, "contextualMenuSelection" );
+		_menus[ int( Menu::Scene ) ]
+			= WidgetFactory::get().instantiateWidget<Widget::ContextualMenu::ContextualMenuScene>(
+				nullptr, "contextualMenuScene" );
 	}
 
 } // namespace VTX::UI

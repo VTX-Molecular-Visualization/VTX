@@ -1,5 +1,7 @@
 #include "molecule.hpp"
 #include "color/rgb.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "id.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
@@ -39,13 +41,14 @@ namespace VTX
 		void Molecule::setPdbIdCode( const std::string & p_pdbId )
 		{
 			_pdbIdCode = p_pdbId;
-			BaseModel::setDefaultName( &_pdbIdCode );
+			setDisplayName( _pdbIdCode );
 		}
 
 		Chain & Molecule::addChain()
 		{
 			Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
 			_chains.emplace_back( chain );
+			_realChainCount++;
 			return *chain;
 		}
 
@@ -72,6 +75,8 @@ namespace VTX
 
 		void Molecule::_init()
 		{
+			BaseModel::setDefaultName( &_displayName );
+
 			// Fill buffers.
 			if ( _atomPositionsFrames.size() > 0 )
 			{
@@ -85,7 +90,15 @@ namespace VTX
 				createSecondaryStructure();
 
 				setRepresentableMolecule( this );
-				computeRepresentationTargets();
+
+				if ( hasCustomRepresentation() )
+				{
+					computeAllRepresentationData();
+				}
+				else
+				{
+					applyDefaultRepresentation();
+				}
 			}
 		}
 
@@ -100,6 +113,29 @@ namespace VTX
 			}
 
 			return true;
+		}
+
+		void Molecule::applyRepresentation(
+			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation )
+		{
+			BaseRepresentable::applyRepresentation( p_representation );
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
+		}
+		void Molecule::removeRepresentation()
+		{
+			BaseRepresentable::removeRepresentation();
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
+		}
+		void Molecule::removeChildrenRepresentations() const
+		{
+			for ( Model::Chain * const chain : _chains )
+			{
+				if ( chain == nullptr )
+					continue;
+
+				chain->removeRepresentation();
+				chain->removeChildrenRepresentations();
+			}
 		}
 
 		void Molecule::_fillBuffer()
@@ -182,50 +218,7 @@ namespace VTX
 		void Molecule::_fillBufferAtomColors()
 		{
 			_bufferAtomColors.resize( _atoms.size() );
-
-			Generic::COLOR_MODE colorMode = _colorMode;
-			if ( colorMode == Generic::COLOR_MODE::INHERITED )
-			{
-				colorMode = Model::Representation::RepresentationLibrary::get()
-								.getRepresentation( VTX_SETTING().REPRESENTATION_DEFAULT_INDEX )
-								->getColorMode();
-			}
-
-			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
-			{
-				switch ( colorMode )
-				{
-				case Generic::COLOR_MODE::ATOM_CHAIN:
-					if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
-					{
-						_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
-					}
-					else
-					{
-						_bufferAtomColors[ i ] = _atoms[ i ]->getColor();
-					}
-					break;
-				case Generic::COLOR_MODE::ATOM_PROTEIN:
-					if ( _atoms[ i ]->getSymbol() == Atom::SYMBOL::A_C )
-					{
-						_bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor();
-					}
-					else
-					{
-						_bufferAtomColors[ i ] = _color;
-					}
-					break;
-				case Generic::COLOR_MODE::RESIDUE:
-					_bufferAtomColors[ i ] = _atoms[ i ]->getResiduePtr()->getColor();
-					break;
-				case Generic::COLOR_MODE::CHAIN: _bufferAtomColors[ i ] = _atoms[ i ]->getChainPtr()->getColor(); break;
-				case Generic::COLOR_MODE::PROTEIN: _bufferAtomColors[ i ] = _color; break;
-
-				default: break;
-				}
-			}
-
-			_buffer->setAtomColors( _bufferAtomColors );
+			computeColorBuffer();
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()
@@ -539,6 +532,7 @@ namespace VTX
 				MVC::MvcManager::get().deleteModel( _chains[ p_id ] );
 
 			_chains[ p_id ] = nullptr;
+			_realChainCount--;
 
 			_aabb.invalidate();
 
@@ -579,34 +573,10 @@ namespace VTX
 			// Update parent indexes
 			if ( p_checkParentUpdate )
 			{
-				if ( parent->getIndexFirstResidue() == p_id )
-				{
-					while ( parent->getResidueCount() > 0
-							&& parent->getMoleculePtr()->getResidue( parent->getIndexFirstResidue() ) == nullptr )
-					{
-						parent->setIndexFirstResidue( parent->getIndexFirstResidue() + 1 );
-						parent->setResidueCount( parent->getResidueCount() - 1 );
-					}
+				parent->removeToResidues( p_id );
 
-					if ( parent->getResidueCount() == 0 )
-						removeChain( parent->getIndex(), p_delete, false, false );
-				}
-				else
-				{
-					uint lastResidueIndex = parent->getIndexFirstResidue() + parent->getResidueCount() - 1;
-					if ( lastResidueIndex == p_id )
-					{
-						while ( parent->getResidueCount() > 0
-								&& parent->getMoleculePtr()->getResidue( lastResidueIndex ) == nullptr )
-						{
-							parent->setResidueCount( parent->getResidueCount() - 1 );
-							lastResidueIndex--;
-						}
-
-						if ( parent->getResidueCount() == 0 )
-							removeChain( parent->getIndex(), p_delete, false, false );
-					}
-				}
+				if ( parent->getResidueCount() == 0 )
+					removeChain( parent->getIndex(), p_delete, false, false );
 			}
 
 			if ( p_checkParentUpdate && parent->getResidueCount() == 0 )
@@ -684,28 +654,7 @@ namespace VTX
 			// Update parent indexes
 			if ( p_checkParentUpdate )
 			{
-				if ( parent->getIndexFirstAtom() == p_id )
-				{
-					while ( parent->getAtomCount() > 0
-							&& parent->getMoleculePtr()->getAtom( parent->getIndexFirstAtom() ) == nullptr )
-					{
-						parent->setIndexFirstAtom( parent->getIndexFirstAtom() + 1 );
-						parent->setAtomCount( parent->getAtomCount() - 1 );
-					}
-				}
-				else
-				{
-					uint lastResidueIndex = parent->getIndexFirstAtom() + parent->getAtomCount() - 1;
-					if ( lastResidueIndex == p_id )
-					{
-						while ( parent->getAtomCount() > 0
-								&& parent->getMoleculePtr()->getAtom( lastResidueIndex ) == nullptr )
-						{
-							parent->setAtomCount( parent->getAtomCount() - 1 );
-							lastResidueIndex--;
-						}
-					}
-				}
+				parent->removeToAtoms( p_id );
 			}
 
 			if ( p_checkParentUpdate && parent->getAtomCount() == 0 )
@@ -734,6 +683,18 @@ namespace VTX
 
 			if ( p_notifyViews )
 				_notifyDataChanged();
+		}
+
+		void Molecule::setDisplayName( const std::string & p_name )
+		{
+			_displayName = p_name;
+			_notifyViews( new Event::VTXEvent( Event::Model::DISPLAY_NAME_CHANGE ) );
+		}
+
+		void Molecule::setColor( const Color::Rgb & p_color )
+		{
+			Generic::BaseColorable::setColor( p_color );
+			VTX_EVENT( new Event::VTXEventRef( Event::Global::MOLECULE_COLOR_CHANGE, p_color ) );
 		}
 
 	} // namespace Model
