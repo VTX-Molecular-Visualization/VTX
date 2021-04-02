@@ -21,7 +21,7 @@ namespace VTX::Model
 	class Selection;
 	namespace Representation
 	{
-		class BaseRepresentation;
+		class Representation;
 		class InstantiatedRepresentation;
 	} // namespace Representation
 } // namespace VTX::Model
@@ -31,7 +31,7 @@ namespace VTX::Representation
 	class RepresentationManager final
 	{
 	  public:
-		using BaseRepresentation		 = Model::Representation::BaseRepresentation;
+		using Representation			 = Model::Representation::Representation;
 		using InstantiatedRepresentation = Model::Representation::InstantiatedRepresentation;
 
 		using MapRepresentationRepresentables
@@ -47,15 +47,14 @@ namespace VTX::Representation
 		InstantiatedRepresentation * instantiateDefaultRepresentation();
 
 	  private:
-		BaseRepresentation * _defaultBaseRepresentation = nullptr;
+		Representation * _defaultBaseRepresentation = nullptr;
 
 	  public:
-		void instantiateRepresentation( BaseRepresentation * const	 p_representation,
+		void instantiateRepresentation( Representation * const		 p_representation,
 										Generic::BaseRepresentable & p_target );
-		void instantiateRepresentation( BaseRepresentation * const p_representation,
-										const Model::Selection &   p_selection );
+		void instantiateRepresentation( Representation * const p_representation, const Model::Selection & p_selection );
 
-		void deleteRepresentation( const BaseRepresentation *& p_representation );
+		void deleteRepresentation( const Representation *& p_representation );
 
 		InstantiatedRepresentation * const getRepresentationByName( const std::string & p_representationName );
 		const std::unordered_set<Generic::BaseRepresentable *> & getTargets(

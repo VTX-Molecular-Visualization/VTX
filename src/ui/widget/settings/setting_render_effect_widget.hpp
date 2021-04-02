@@ -6,7 +6,6 @@
 #endif
 
 #include "ui/widget/base_manual_widget.hpp"
-#include "view/base_view.hpp"
 #include "view/ui/widget/renderer/render_effect_preset_library_view.hpp"
 #include <QString>
 #include <QWidget>

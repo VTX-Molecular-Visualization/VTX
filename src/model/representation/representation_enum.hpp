@@ -40,6 +40,11 @@ namespace VTX
 			STICK_AND_CARTOON,
 			COUNT
 		};
+
+		inline static const std::vector<std::string> REPRESENTATION_STRING
+			= { "Ball and Stick",		  "Van Der Waals",	  "Stick", "Trace", "SAS", "Cartoon",
+				"Ball Stick and Cartoon", "Stick and Cartoon" };
+
 	} // namespace Generic
 } // namespace VTX
 #endif

@@ -30,4 +30,16 @@ namespace VTX::UI::Widget::Representation
 		_addColorModeValue( p_representation );
 	}
 
+	void StickRepresentationWidget::_onCylinderRadiusChange( const float p_newRadius )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		_instantiatedRepresentation->setCylinderRadius( p_newRadius );
+
+		emit onDataChange(
+			Model::Representation::MEMBER_FLAG( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS
+												| Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
+	}
+
 } // namespace VTX::UI::Widget::Representation

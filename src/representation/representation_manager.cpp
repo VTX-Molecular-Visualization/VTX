@@ -33,7 +33,7 @@ namespace VTX::Representation
 		_defaultRepresentationSet.emplace( instantiatedDefautRep );
 	}
 
-	void RepresentationManager::instantiateRepresentation( BaseRepresentation * const	p_representation,
+	void RepresentationManager::instantiateRepresentation( Representation * const		p_representation,
 														   Generic::BaseRepresentable & p_target )
 	{
 		Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
@@ -43,8 +43,8 @@ namespace VTX::Representation
 		p_target.applyRepresentation( instantiatedRepresentation );
 	}
 
-	void RepresentationManager::instantiateRepresentation( BaseRepresentation * const p_representation,
-														   const Model::Selection &	  p_selection )
+	void RepresentationManager::instantiateRepresentation( Representation * const	p_representation,
+														   const Model::Selection & p_selection )
 	{
 		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molData : p_selection.getItems() )
 		{
@@ -86,7 +86,7 @@ namespace VTX::Representation
 		}
 	}
 
-	void RepresentationManager::deleteRepresentation( const BaseRepresentation *& p_representation )
+	void RepresentationManager::deleteRepresentation( const Representation *& p_representation )
 	{
 		delete p_representation;
 		p_representation = nullptr;

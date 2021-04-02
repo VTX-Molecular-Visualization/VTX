@@ -1,9 +1,12 @@
 #include "render_effect_preset_library.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "renderer/base_renderer.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX::Model::Renderer
 {
+	RenderEffectPresetLibrary & RenderEffectPresetLibrary::get() { return VTXApp::get().getRenderEffectLibrary(); }
+
 	RenderEffectPresetLibrary ::~RenderEffectPresetLibrary()
 	{
 		while ( _presets.size() > 0 )

@@ -98,7 +98,7 @@ namespace VTX::Action::Molecule
 
 		virtual void execute() override
 		{
-			Model::Representation::BaseRepresentation * const preset
+			Model::Representation::Representation * const preset
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
 			for ( Model::Molecule * const molecule : _molecules )

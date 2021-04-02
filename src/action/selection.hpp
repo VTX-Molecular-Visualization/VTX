@@ -499,7 +499,7 @@ namespace VTX::Action::Selection
 
 		virtual void execute() override
 		{
-			Model::Representation::BaseRepresentation * const preset
+			Model::Representation::Representation * const preset
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
 			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _selection.getItems() )

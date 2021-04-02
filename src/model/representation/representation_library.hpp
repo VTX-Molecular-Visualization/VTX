@@ -5,7 +5,9 @@
 #pragma once
 #endif
 
+#include "event/event.hpp"
 #include "model/base_model.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "representation.hpp"
 #include <vector>
 
@@ -13,31 +15,33 @@ namespace VTX::Model::Representation
 {
 	class RepresentationLibrary : public BaseModel
 	{
+		VTX_MODEL
+
 	  public:
-		inline static RepresentationLibrary & get()
-		{
-			static RepresentationLibrary instance;
-			return instance;
-		};
+		static RepresentationLibrary & get();
 
-		BaseRepresentation * const		 getRepresentation( const int p_index );
-		const BaseRepresentation * const getRepresentation( const int p_index ) const;
-		BaseRepresentation * const		 getRepresentationByName( const std::string & p_name );
-		const BaseRepresentation * const getRepresentationByName( const std::string & p_name ) const;
+		Representation * const				  getRepresentation( const int p_index );
+		const Representation * const		  getRepresentation( const int p_index ) const;
+		Representation * const				  getRepresentationByName( const std::string & p_name );
+		const Representation * const		  getRepresentationByName( const std::string & p_name ) const;
+		const std::vector<Representation *> & getRepresentations() { return _representations; };
 
-		int getRepresentationIndex( const BaseRepresentation * const p_representation ) const;
+		int getRepresentationIndex( const Representation * const p_representation ) const;
 
 		int getRepresentationCount() const;
 
-		void addRepresentation( BaseRepresentation * const p_representation );
-		void removeRepresentation( const int p_index );
+		void addRepresentation( Representation * const p_representation, const bool p_notify = true );
+		void removeRepresentation( const int p_index, const bool p_notify = true );
 
-	  private:
+	  protected:
 		inline RepresentationLibrary() : BaseModel( ID::Model::MODEL_REPRESENTATION_LIBRARY ) { _init(); };
 		~RepresentationLibrary() = default;
-		void _init();
 
-		std::vector<BaseRepresentation *> _representations;
+		virtual void _onRepresentationChange( const Event::VTXEvent * const p_event );
+
+	  private:
+		void						  _init();
+		std::vector<Representation *> _representations;
 	};
 } // namespace VTX::Model::Representation
 #endif

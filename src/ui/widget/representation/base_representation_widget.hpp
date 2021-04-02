@@ -36,10 +36,8 @@ namespace VTX::UI::Widget::Representation
 		void refresh();
 
 		void setRepresentation( InstantiatedRepresentation * const p_representation );
-		void notifyInstantiatedRepresentationViewDeleted();
 
 		// MultiDataField Implementation //////////////////////////////
-		// TODO : Remove => BaseRepresentationWidget is virtual and children override this function
 		virtual void updateWithNewValue( const Model::Representation::InstantiatedRepresentation & p_value ) override;
 		void		 resetState() override;
 		//////////////////////////////////////////////////////////////
@@ -95,8 +93,6 @@ namespace VTX::UI::Widget::Representation
 		CustomWidget::SecondaryStructureColorModeFieldWidget * _ssColorModeWidget = nullptr;
 
 	  private:
-		View::UI::Widget::Representation::InstantiatedRepresentationView * _representationView = nullptr;
-
 		QGridLayout *										   _layout = nullptr;
 		std::unordered_set<const Generic::BaseRepresentable *> _targets
 			= std::unordered_set<const Generic::BaseRepresentable *>();

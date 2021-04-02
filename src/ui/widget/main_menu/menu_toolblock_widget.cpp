@@ -82,6 +82,33 @@ namespace VTX::UI::Widget::MainMenu
 		_gridLayout->setRowMinimumHeight( titleRow, 16 );
 	}
 
+	void MenuToolBlockWidget::reset()
+	{
+		_gridLayout->removeWidget( _title );
+
+		while ( _gridLayout->count() > 0 )
+		{
+			QLayoutItem * const item = _gridLayout->takeAt( _gridLayout->count() - 1 );
+
+			_gridLayout->removeItem( item );
+
+			if ( item->widget() != nullptr )
+				delete item->widget();
+		}
+		delete _gridLayout;
+
+		_gridLayout = new QGridLayout( this );
+		_gridLayout->setObjectName( "gridLayout" );
+		_gridLayout->setVerticalSpacing( 1 );
+		_gridLayout->setHorizontalSpacing( 0 );
+		_gridLayout->setContentsMargins( 0, 0, 0, 0 );
+
+		if ( _tmpStructure != nullptr )
+			delete _tmpStructure;
+
+		_tmpStructure = new TmpGridStructure();
+	}
+
 	void MenuToolBlockWidget::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );

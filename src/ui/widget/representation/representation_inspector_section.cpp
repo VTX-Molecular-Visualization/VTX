@@ -35,8 +35,8 @@ namespace VTX::UI::Widget::Representation
 
 		_representationWidget = new QWidget( this );
 
-		_representationPreset = new CustomWidget::QComboBoxMultiField( _representationWidget );
-		_populateRepresentationModeComboBox();
+		_representationPreset
+			= WidgetFactory::get().instantiateWidget<RepresentationLibraryComboBox>( this, "RepresentationPreset" );
 
 		_settingLayout = new QVBoxLayout( _representationWidget );
 		_settingLayout->addWidget( _representationPreset );
@@ -81,6 +81,9 @@ namespace VTX::UI::Widget::Representation
 	void RepresentationInspectorSection::refresh()
 	{
 		const bool oldBlockState = blockSignals( true );
+
+		if ( !hasDifferentData() )
+			_titleWidget->setText( QString::fromStdString( _dummyRepresentation->getName() ) );
 
 		if ( _representationSettingWidget != nullptr )
 			_representationSettingWidget->refresh();
@@ -220,20 +223,6 @@ namespace VTX::UI::Widget::Representation
 
 	void RepresentationInspectorSection::_revertRepresentation() { emit onRevertRepresentation(); }
 	void RepresentationInspectorSection::_applyRepresentationToChildren() { emit onApplyRepresentationToChildren(); }
-
-	void RepresentationInspectorSection::_populateRepresentationModeComboBox()
-	{
-		const Model::Representation::RepresentationLibrary & representationLibrary
-			= Model::Representation::RepresentationLibrary::get();
-
-		for ( int i = 0; i < representationLibrary.getRepresentationCount(); i++ )
-		{
-			const Model::Representation::BaseRepresentation & representation
-				= *representationLibrary.getRepresentation( i );
-
-			_representationPreset->addItem( QString::fromStdString( representation.getName() ) );
-		}
-	}
 
 	void RepresentationInspectorSection::resetState()
 	{

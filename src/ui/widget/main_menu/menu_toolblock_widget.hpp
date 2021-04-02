@@ -59,6 +59,7 @@ namespace VTX::UI::Widget::MainMenu
 
 		void pushButton( MenuToolButtonWidget & p_toolButton, const int p_column );
 		int	 pushButtonInNextColumn( MenuToolButtonWidget & p_toolButton );
+		void reset();
 
 	  protected:
 		MenuToolBlockWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )

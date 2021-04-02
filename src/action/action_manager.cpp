@@ -85,7 +85,7 @@ namespace VTX
 				}
 				else if ( command == "set_representation_molecule" )
 				{
-					Model::Representation::BaseRepresentation * const representation
+					Model::Representation::Representation * const representation
 						= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 					action = new RepresentableSetRepresentation( molecule, representation );
 				}
@@ -95,7 +95,7 @@ namespace VTX
 				}
 				else if ( command == "set_representation_chain" )
 				{
-					Model::Representation::BaseRepresentation * const representation
+					Model::Representation::Representation * const representation
 						= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 					const int idChain = std::stoi( words.at( 2 ) );
 					action = new RepresentableSetRepresentation( *molecule.getChains()[ idChain ], representation );
@@ -107,7 +107,7 @@ namespace VTX
 				}
 				else if ( command == "set_representation_residue" )
 				{
-					Model::Representation::BaseRepresentation * const representation
+					Model::Representation::Representation * const representation
 						= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 					const int indexResidue = std::stoi( words.at( 2 ) );
 					action

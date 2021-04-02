@@ -17,12 +17,7 @@ namespace VTX::Model::Renderer
 		VTX_MODEL
 
 	  public:
-		inline static RenderEffectPresetLibrary & get()
-		{
-			static RenderEffectPresetLibrary instance
-				= *MVC::MvcManager::get().instantiateModel<RenderEffectPresetLibrary>();
-			return instance;
-		};
+		static RenderEffectPresetLibrary & get();
 
 		RenderEffectPreset * const		 getPreset( const int p_index );
 		const RenderEffectPreset * const getPreset( const int p_index ) const;

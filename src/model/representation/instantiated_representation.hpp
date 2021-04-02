@@ -7,6 +7,7 @@
 
 #include "color/rgb.hpp"
 #include "event/base_event_receiver_vtx.hpp"
+#include "event/event.hpp"
 #include "generic/base_objectoverride.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"
@@ -41,7 +42,7 @@ namespace VTX::Model::Representation
 		Generic::BaseRepresentable * const		 getTarget();
 		void									 setTarget( Generic::BaseRepresentable * p_target );
 
-		void setLinkedRepresentation( const BaseRepresentation * const p_linkedRepresentation );
+		void setLinkedRepresentation( const Representation * const p_linkedRepresentation );
 
 		const std::string & getName() const { return _linkedRepresentation->getName(); };
 
@@ -59,31 +60,31 @@ namespace VTX::Model::Representation
 
 		const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const
 		{
-			return _linkedRepresentation->getFlagDataTargeted();
+			return _linkedRepresentation->getData().getFlagDataTargeted();
 		};
 
-		bool			   hasToDrawSphere() const { return _linkedRepresentation->hasToDrawSphere(); };
+		bool			   hasToDrawSphere() const { return _linkedRepresentation->getData().hasToDrawSphere(); };
 		const SphereData & getSphereData() const { return _sphereData.getValue(); };
 		void			   setSphereRadius( const float p_radius, const bool p_notify = true );
 
-		bool				 hasToDrawCylinder() const { return _linkedRepresentation->hasToDrawCylinder(); };
+		bool				 hasToDrawCylinder() const { return _linkedRepresentation->getData().hasToDrawCylinder(); };
 		const CylinderData & getCylinderData() const { return _cylinderData.getValue(); };
 		void				 setCylinderRadius( const float p_radius, const bool p_notify = true );
 
-		bool			   hasToDrawRibbon() const { return _linkedRepresentation->hasToDrawRibbon(); };
+		bool			   hasToDrawRibbon() const { return _linkedRepresentation->getData().hasToDrawRibbon(); };
 		const RibbonData & getRibbonData() const { return _ribbonData.getValue(); };
 
 		void applyData( const InstantiatedRepresentation & p_source,
 						const MEMBER_FLAG &				   p_flag,
 						const bool						   p_recomputeBuffers = true );
 
-		const BaseRepresentation * const getLinkedRepresentation() const { return _linkedRepresentation; }
+		const Representation * const getLinkedRepresentation() const { return _linkedRepresentation; }
 
 	  protected:
-		InstantiatedRepresentation( const BaseRepresentation * const p_linkedRepresentation );
-		~InstantiatedRepresentation() {}
+		InstantiatedRepresentation( const Representation * const p_linkedRepresentation );
+		~InstantiatedRepresentation();
 
-		const BaseRepresentation * _linkedRepresentation = nullptr;
+		const Representation * _linkedRepresentation = nullptr;
 
 		Generic::BaseRepresentable * _target = nullptr;
 
@@ -95,7 +96,13 @@ namespace VTX::Model::Representation
 		Generic::OverridableParameter<CylinderData> _cylinderData;
 		Generic::OverridableParameter<RibbonData>	_ribbonData;
 
+		void _refreshSourceValues();
+
 		void _updateTarget( const VTX::Representation::MoleculeComputationFlag & p_flag );
+
+	  private:
+		void	   _onLinkedRepresentationChange( const Event::VTXEvent * const p_event );
+		ID::VTX_ID getRepresentationViewID() const;
 	};
 
 } // namespace VTX::Model::Representation

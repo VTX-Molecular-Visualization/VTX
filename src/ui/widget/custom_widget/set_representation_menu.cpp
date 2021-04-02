@@ -32,7 +32,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	QAction * SetRepresentationMenu::_generateSetRepresentationAction( const int p_representationIndex )
 	{
-		const Model::Representation::BaseRepresentation * const representation
+		const Model::Representation::Representation * const representation
 			= Model::Representation::RepresentationLibrary::get().getRepresentation( p_representationIndex );
 
 		CustomWidget::IndexedAction * const res = new CustomWidget::IndexedAction( p_representationIndex, this );

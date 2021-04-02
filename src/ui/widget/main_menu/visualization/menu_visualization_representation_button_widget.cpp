@@ -16,7 +16,7 @@ namespace VTX::UI::Widget::MainMenu
 {
 	void RepresentationPresetButton::_onButtonClicked()
 	{
-		Model::Representation::BaseRepresentation * representation
+		Model::Representation::Representation * representation
 			= Model::Representation::RepresentationLibrary::get().getRepresentation( _id );
 		const Model::Selection & target = VTX::Selection::SelectionManager::get().getSelectionModel();
 

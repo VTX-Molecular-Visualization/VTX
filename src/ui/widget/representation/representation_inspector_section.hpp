@@ -15,6 +15,7 @@
 #include "ui/widget/representation/ball_stick_and_cartoon_representation_widget.hpp"
 #include "ui/widget/representation/base_representation_widget.hpp"
 #include "ui/widget/representation/cartoon_representation_widget.hpp"
+#include "ui/widget/representation/representation_library_combo_box.hpp"
 #include "ui/widget/representation/sas_representation_widget.hpp"
 #include "ui/widget/representation/stick_and_cartoon_representation_widget.hpp"
 #include "ui/widget/representation/stick_representation_widget.hpp"
@@ -81,7 +82,7 @@ namespace VTX::UI::Widget::Representation
 	  private:
 		CustomWidget::QPushButtonMultiField * _titleWidget				   = nullptr;
 		QWidget *							  _representationWidget		   = nullptr;
-		CustomWidget::QComboBoxMultiField *	  _representationPreset		   = nullptr;
+		RepresentationLibraryComboBox *		  _representationPreset		   = nullptr;
 		QVBoxLayout *						  _settingLayout			   = nullptr;
 		BaseRepresentationWidget *			  _representationSettingWidget = nullptr;
 		QPushButton *						  _applyToChildrenButton	   = nullptr;
@@ -99,8 +100,6 @@ namespace VTX::UI::Widget::Representation
 		void _representationColorChange( const Color::Rgb & p_color, const bool p_ssColor );
 		void _revertRepresentation();
 		void _applyRepresentationToChildren();
-
-		void _populateRepresentationModeComboBox();
 	};
 
 } // namespace VTX::UI::Widget::Representation

@@ -124,6 +124,7 @@ namespace VTX
 		void Molecule::removeRepresentation()
 		{
 			BaseRepresentable::removeRepresentation();
+			applyDefaultRepresentation();
 			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
 		void Molecule::removeChildrenRepresentations() const

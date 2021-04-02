@@ -118,7 +118,7 @@ namespace VTX::Action::Chain
 
 		virtual void execute() override
 		{
-			Model::Representation::BaseRepresentation * const preset
+			Model::Representation::Representation * const preset
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
 			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();

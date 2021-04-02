@@ -3,6 +3,8 @@
 #include "action/main.hpp"
 #include "action/setting.hpp"
 #include "event/event_manager.hpp"
+#include "model/renderer/render_effect_preset_library.hpp"
+#include "model/representation/representation_library.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "renderer/gl/program_manager.hpp"
 #include "selection/selection_manager.hpp"
@@ -31,18 +33,23 @@ namespace VTX
 		_stateMachine = new State::StateMachine();
 		_stateMachine->goToState( ID::State::VISUALIZATION );
 
-		// Create UI.
-		_initQt();
-		_mainWindow = new UI::MainWindow();
-		_mainWindow->setupUi();
-		_mainWindow->show();
-
 		// Create singletons.
 		MVC::MvcManager::get();
 		Action::ActionManager::get();
 		Event::EventManager::get();
 		Selection::SelectionManager::get();
 		Worker::WorkerManager::get();
+
+		// Create Databases
+		_representationLibrary
+			= MVC::MvcManager::get().instantiateModel<Model::Representation::RepresentationLibrary>();
+		_renderEffectLibrary = MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
+
+		// Create UI.
+		_initQt();
+		_mainWindow = new UI::MainWindow();
+		_mainWindow->setupUi();
+		_mainWindow->show();
 
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );
