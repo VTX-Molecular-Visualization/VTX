@@ -8,41 +8,31 @@
 #include "ui/qt_form/ui_cloud_connector_window.h"
 #include "ui/widget/custom_widget/custom_qdockwidget.hpp"
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu::Extensions
 {
-	namespace UI
+	class ExtensionCloudConnectorGUI : public CustomQDockWidget
 	{
-		namespace Widget
-		{
-			namespace MainMenu
-			{
-				namespace Extensions
-				{
-					class ExtensionCloudConnectorGUI : public CustomQDockWidget
-					{
-						Q_OBJECT
+		Q_OBJECT
 
-					  public:
-						explicit ExtensionCloudConnectorGUI( QWidget * parent );
+	  public:
+		explicit ExtensionCloudConnectorGUI( QWidget * parent );
 
-						QString				moduleIcon() override;
-						QString				moduleTitle() override;
-						std::vector<bool> * moduleWindowProperties() override;
-						QWidget *			moduleWidget() override;
-						QString				moduleCitations() override;
-						void				saveSettings( QSettings * savedSettings ) override;
-						void				loadSettings( QSettings * settings ) override;
+		QString				moduleIcon() override;
+		QString				moduleTitle() override;
+		std::vector<bool> * moduleWindowProperties() override;
+		QWidget *			moduleWidget() override;
+		QString				moduleCitations() override;
+		void				saveSettings( QSettings * savedSettings ) override;
+		void				loadSettings( QSettings * settings ) override;
 
-					  private:
-					  private slots:
+	  private:
+	  private slots:
+		void onPushButtonConnectCloudClicked();
+		void onPushButtonConnectRemoveClicked();
 
-					  private:
-						Ui::ManageCloudsWindowDialog ui;
-					};
-				} // namespace Extensions
-			}	  // namespace MainMenu
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+	  private:
+		Ui::ManageCloudsWindowDialog ui;
+	};
+} // namespace VTX::UI::Widget::MainMenu::Extensions
 
 #endif

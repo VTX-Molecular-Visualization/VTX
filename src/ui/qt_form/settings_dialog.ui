@@ -19,7 +19,7 @@
      <item>
       <widget class="QLineEdit" name="lineEditSettingsName">
        <property name="placeholderText">
-        <string>Enter the name of the settings profile</string>
+        <string>Enter a name for saved settings</string>
        </property>
       </widget>
      </item>
