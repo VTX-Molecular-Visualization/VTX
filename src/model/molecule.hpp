@@ -7,6 +7,7 @@
 
 #include "base_model_3d.hpp"
 #include "buffer/molecule.hpp"
+#include "color/rgb.hpp"
 #include "define.hpp"
 #include "generic/base_representable.hpp"
 #include "io/reader/prm.hpp"
@@ -71,6 +72,7 @@ namespace VTX
 			Chain * const						getNextChain( const uint p_idBaseChain );
 			inline std::vector<Chain *> &		getChains() { return _chains; }
 			inline const std::vector<Chain *> & getChains() const { return _chains; }
+			uint								getRealChainCount() const { return _realChainCount; };
 			void								removeChain( const uint p_id,
 															 const bool p_delete	  = true,
 															 const bool p_recursive	  = true,
@@ -178,12 +180,10 @@ namespace VTX
 			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
 			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
-			inline const Generic::COLOR_MODE getColorMode() const { return _colorMode; }
-			inline void						 setColorMode( const Generic::COLOR_MODE p_colorMode )
-			{
-				_colorMode = p_colorMode;
-				refreshColors();
-			}
+			void applyRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation );
+			void removeRepresentation();
+			void removeChildrenRepresentations() const;
+
 			inline void refreshColors() { _fillBufferAtomColors(); }
 			void		refreshSelection( const Selection::MapChainIds * const );
 			void		refreshBondsBuffer();
@@ -227,6 +227,9 @@ namespace VTX
 			const std::string & getDisplayName() const { return _displayName; };
 			void				setDisplayName( const std::string & p_name );
 
+			// Hide BaseColorable::setColor
+			void setColor( const Color::Rgb & p_color );
+
 		  protected:
 			void _init() override;
 			void _fillBuffer() override;
@@ -240,6 +243,7 @@ namespace VTX
 
 		  private:
 			std::string _displayName;
+			uint		_realChainCount = 0;
 
 			// Configuration.
 			Configuration::Molecule _configuration = Configuration::Molecule();

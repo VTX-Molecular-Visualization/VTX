@@ -6,8 +6,12 @@
 #endif
 
 #include "event/event_manager.hpp"
+#include "generic/base_colorable.hpp"
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
+#include "model/representation/instantiated_representation.hpp"
+#include "model/representation/representation.hpp"
+#include "model/representation/representation_library.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
@@ -19,52 +23,39 @@
 #include "util/secondary_structure.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
+#include <unordered_set>
 
 namespace VTX::Action::Molecule
 {
-	class ChangeColorMode : public BaseAction
-	{
-	  public:
-		explicit ChangeColorMode( Model::Molecule & p_molecule, const Generic::COLOR_MODE p_colorMode ) :
-			_molecule( p_molecule ), _colorMode( p_colorMode )
-		{
-		}
-
-		virtual void execute() override
-		{
-			_molecule.setColorMode( _colorMode );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
-
-	  private:
-		Model::Molecule &		  _molecule;
-		const Generic::COLOR_MODE _colorMode;
-	};
-
 	class ChangeColor : public BaseAction
 	{
 	  public:
-		explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgb & p_color ) :
-			_molecule( p_molecule ), _color( p_color )
+		explicit ChangeColor( Model::Molecule & p_molecule, const Color::Rgb & p_color ) : _color( p_color )
 		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeColor( const std::unordered_set<Model::Molecule *> & p_molecules, const Color::Rgb & p_color ) :
+			_color( p_color )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
 		}
 
 		virtual void execute() override
 		{
-			_molecule.setColor( _color );
-			_molecule.refreshColors();
-
-			if ( _molecule.getSecondaryStructure().getColorMode() == Model::SecondaryStructure::COLOR_MODE::PROTEIN )
+			for ( Model::Molecule * const molecule : _molecules )
 			{
-				_molecule.getSecondaryStructure().refreshColors();
+				molecule->setColor( _color );
+				molecule->refreshColors();
+				molecule->getSecondaryStructure().refreshColors();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
-		Model::Molecule & _molecule;
-		const Color::Rgb  _color;
+		std::unordered_set<Model::Molecule *> _molecules = std::unordered_set<Model::Molecule *>();
+		const Color::Rgb					  _color;
 	};
 
 	class ChangeVisibility : public Visible::ChangeVisibility
@@ -87,6 +78,93 @@ namespace VTX::Action::Molecule
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
+	};
+
+	class ChangeRepresentationPreset : public BaseAction
+	{
+	  public:
+		explicit ChangeRepresentationPreset( Model::Molecule & p_molecule, const int p_indexPreset ) :
+			_indexPreset( p_indexPreset )
+		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeRepresentationPreset( const std::unordered_set<Model::Molecule *> & p_molecules,
+											 const int									   p_indexPreset ) :
+			_indexPreset( p_indexPreset )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			Model::Representation::BaseRepresentation * const preset
+				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
+
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
+					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
+						preset );
+
+				molecule->applyRepresentation( instantiatedRepresentation );
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *> _molecules;
+		const int							  _indexPreset;
+	};
+
+	class RemoveRepresentation : public BaseAction
+	{
+	  public:
+		explicit RemoveRepresentation( Model::Molecule & p_chain ) { _molecules.emplace( &p_chain ); }
+		explicit RemoveRepresentation( const std::unordered_set<Model::Molecule *> & p_chains )
+		{
+			for ( Model::Molecule * const molecule : p_chains )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				molecule->removeRepresentation();
+				molecule->computeAllRepresentationData();
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *> _molecules = std::unordered_set<Model::Molecule *>();
+	};
+	class RemoveChildrenRepresentations : public BaseAction
+	{
+	  public:
+		explicit RemoveChildrenRepresentations( Model::Molecule & p_chain ) { _molecules.emplace( &p_chain ); }
+		explicit RemoveChildrenRepresentations( const std::unordered_set<Model::Molecule *> & p_chains )
+		{
+			for ( Model::Molecule * const molecule : p_chains )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				molecule->removeChildrenRepresentations();
+				molecule->computeAllRepresentationData();
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *> _molecules = std::unordered_set<Model::Molecule *>();
 	};
 
 	class ChangeFPS : public BaseAction
@@ -209,8 +287,8 @@ namespace VTX::Action::Molecule
 	class ChangeColorModeSecondaryStructure : public BaseAction
 	{
 	  public:
-		explicit ChangeColorModeSecondaryStructure( Model::Molecule &							p_molecule,
-													const Model::SecondaryStructure::COLOR_MODE p_colorMode ) :
+		explicit ChangeColorModeSecondaryStructure( Model::Molecule &								p_molecule,
+													const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode ) :
 			_molecule( p_molecule ),
 			_colorMode( p_colorMode )
 		{
@@ -223,8 +301,8 @@ namespace VTX::Action::Molecule
 		}
 
 	  private:
-		Model::Molecule &							_molecule;
-		const Model::SecondaryStructure::COLOR_MODE _colorMode;
+		Model::Molecule &							  _molecule;
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
 	};
 
 	class Orient : public BaseAction
@@ -284,6 +362,49 @@ namespace VTX::Action::Molecule
 
 		const std::string _oldName;
 		const std::string _newName;
+	};
+
+	class ApplyRepresentation : public BaseAction
+	{
+	  public:
+		explicit ApplyRepresentation( const std::unordered_set<Model::Molecule *> &				p_molecules,
+									  const Model::Representation::InstantiatedRepresentation & p_source,
+									  const Model::Representation::MEMBER_FLAG &				p_flag ) :
+			_representation( p_source ),
+			_flag( p_flag )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				Model::Representation::InstantiatedRepresentation * moleculeRepresentation;
+
+				if ( molecule->hasCustomRepresentation() )
+				{
+					moleculeRepresentation = molecule->getCustomRepresentation();
+				}
+				else
+				{
+					moleculeRepresentation = Model::Representation::InstantiatedRepresentation::instantiateCopy(
+						molecule->getRepresentation() );
+
+					molecule->applyRepresentation( moleculeRepresentation );
+				}
+
+				moleculeRepresentation->applyData( _representation, _flag );
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *>					  _molecules = std::unordered_set<Model::Molecule *>();
+		const Model::Representation::InstantiatedRepresentation & _representation;
+		const Model::Representation::MEMBER_FLAG				  _flag;
 	};
 
 } // namespace VTX::Action::Molecule

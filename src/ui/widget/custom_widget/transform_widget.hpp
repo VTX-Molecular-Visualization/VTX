@@ -6,6 +6,7 @@
 #endif
 
 #include "math/transform.hpp"
+#include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "vector3_widget.hpp"
 #include <QBoxLayout>
@@ -14,7 +15,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class TransformWidget : public BaseManualWidget<QFrame>
+	class TransformWidget : public BaseManualWidget<QFrame>, public TMultiDataField<Math::Transform>
 	{
 		VTX_WIDGET
 		Q_OBJECT
@@ -30,14 +31,23 @@ namespace VTX::UI::Widget::CustomWidget
 
 		void localize() override;
 
+		// MultiDataField Implementation //////////////////////////////
+		void resetState() override;
+		void updateWithNewValue( const Math::Transform & p_value ) override;
+		//////////////////////////////////////////////////////////////
+
 	  signals:
 		void onValueChange( const Math::Transform & value ) const;
 
 	  protected:
-		TransformWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
+		TransformWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ), TMultiDataField<Math::Transform>() {};
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();
+
+		// MultiDataField Implementation //////////////////////////////
+		void _displayDifferentsDataFeedback();
+		//////////////////////////////////////////////////////////////
 
 	  private:
 		Vector3Widget * _positionWidget;

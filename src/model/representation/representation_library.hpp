@@ -9,76 +9,35 @@
 #include "representation.hpp"
 #include <vector>
 
-namespace VTX
+namespace VTX::Model::Representation
 {
-	namespace Model
+	class RepresentationLibrary : public BaseModel
 	{
-		namespace Representation
+	  public:
+		inline static RepresentationLibrary & get()
 		{
-			class RepresentationLibrary : public BaseModel
-			{
-			  public:
-				inline static RepresentationLibrary & get()
-				{
-					static RepresentationLibrary instance;
-					return instance;
-				};
+			static RepresentationLibrary instance;
+			return instance;
+		};
 
-				BaseRepresentation * const getRepresentation( const int p_index )
-				{
-					if ( 0 <= p_index && p_index < _representations.size() )
-						return _representations[ p_index ];
+		BaseRepresentation * const		 getRepresentation( const int p_index );
+		const BaseRepresentation * const getRepresentation( const int p_index ) const;
+		BaseRepresentation * const		 getRepresentationByName( const std::string & p_name );
+		const BaseRepresentation * const getRepresentationByName( const std::string & p_name ) const;
 
-					return nullptr;
-				};
-				const BaseRepresentation * const getRepresentation( const int p_index ) const
-				{
-					if ( 0 <= p_index && p_index < _representations.size() )
-						return _representations[ p_index ];
+		int getRepresentationIndex( const BaseRepresentation * const p_representation ) const;
 
-					return nullptr;
-				};
-				BaseRepresentation * const getRepresentationByName( const std::string & p_name )
-				{
-					for ( BaseRepresentation * const it : _representations )
-					{
-						if ( it->getName() == p_name )
-							return it;
-					}
+		int getRepresentationCount() const;
 
-					return nullptr;
-				};
-				const BaseRepresentation * const getRepresentationByName( const std::string & p_name ) const
-				{
-					for ( auto it : _representations )
-					{
-						if ( it->getName() == p_name )
-							return it;
-					}
+		void addRepresentation( BaseRepresentation * const p_representation );
+		void removeRepresentation( const int p_index );
 
-					return nullptr;
-				};
+	  private:
+		inline RepresentationLibrary() : BaseModel( ID::Model::MODEL_REPRESENTATION_LIBRARY ) { _init(); };
+		~RepresentationLibrary() = default;
+		void _init();
 
-				inline int getRepresentationCount() const { return (int)_representations.size(); };
-
-				inline void addRepresentation( BaseRepresentation * const p_representation )
-				{
-					_representations.emplace_back( p_representation );
-				};
-				inline void removeRepresentation( const int p_index )
-				{
-					if ( 0 <= p_index && p_index < _representations.size() )
-						_representations.erase( _representations.begin() + p_index );
-				};
-
-			  private:
-				inline RepresentationLibrary() : BaseModel( ID::Model::MODEL_REPRESENTATION_LIBRARY ) { init(); };
-				~RepresentationLibrary() = default;
-				void init();
-
-				std::vector<BaseRepresentation *> _representations;
-			};
-		} // namespace Representation
-	}	  // namespace Model
-} // namespace VTX
+		std::vector<BaseRepresentation *> _representations;
+	};
+} // namespace VTX::Model::Representation
 #endif

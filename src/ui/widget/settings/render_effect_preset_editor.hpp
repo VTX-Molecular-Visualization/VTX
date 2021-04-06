@@ -9,7 +9,7 @@
 #include "model/renderer/render_effect_preset.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/color_field_button.hpp"
-#include "ui/widget/custom_widget/float_field_widget.hpp"
+#include "ui/widget/custom_widget/float_field_slider_widget.hpp"
 #include "ui/widget/custom_widget/integer_field_widget.hpp"
 #include "view/base_view.hpp"
 #include "view/ui/widget/renderer/render_effect_preset_view.hpp"
@@ -28,7 +28,7 @@ namespace VTX::UI::Widget::Settings
 
 	  private:
 		using IntegerFieldWidget = VTX::UI::Widget::CustomWidget::IntegerFieldWidget;
-		using FloatFieldWidget	 = VTX::UI::Widget::CustomWidget::FloatFieldWidget;
+		using FloatFieldSliderWidget	 = VTX::UI::Widget::CustomWidget::FloatFieldSliderWidget;
 		using ColorFieldButton	 = VTX::UI::Widget::CustomWidget::ColorFieldButton;
 
 		inline static const QStringList SHADING = { "Diffuse", "Glossy", "Toon", "Flat Color" };
@@ -61,7 +61,7 @@ namespace VTX::UI::Widget::Settings
 		IntegerFieldWidget * _ssaoBlurSize	= nullptr;
 
 		QCheckBox *		   _enableOutline	 = nullptr;
-		FloatFieldWidget * _outlineThickness = nullptr;
+		FloatFieldSliderWidget * _outlineThickness = nullptr;
 		ColorFieldButton * _outlineColor	 = nullptr;
 
 		QCheckBox * _enableFog = nullptr;
@@ -69,12 +69,12 @@ namespace VTX::UI::Widget::Settings
 		// CustomWidget::QRangeScrollBar * const _nearFarRangeFog = nullptr;
 		QSpinBox *		   _nearFog	   = nullptr;
 		QSpinBox *		   _farFog	   = nullptr;
-		FloatFieldWidget * _fogDensity = nullptr;
+		FloatFieldSliderWidget * _fogDensity = nullptr;
 		ColorFieldButton * _fogColor   = nullptr;
 
 		ColorFieldButton * _backgroundColor	 = nullptr;
 		ColorFieldButton * _cameraLightColor = nullptr;
-		FloatFieldWidget * _cameraFOV		 = nullptr;
+		FloatFieldSliderWidget * _cameraFOV		   = nullptr;
 		QSpinBox *		   _cameraNear		 = nullptr;
 		QSpinBox *		   _cameraFar		 = nullptr;
 		QCheckBox *		   _antialiasing	 = nullptr;

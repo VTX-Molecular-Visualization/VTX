@@ -7,6 +7,7 @@
 
 #include "contextual_menu_template.hpp"
 #include "model/selection.hpp"
+#include "ui/widget/custom_widget/set_representation_menu.hpp"
 #include <QMenu>
 #include <vector>
 
@@ -51,21 +52,59 @@ namespace VTX::UI::Widget::ContextualMenu
 		VTX_WIDGET
 
 	  private:
-		struct ActionData
+		class ItemData
+		{
+		  public:
+			ItemData( const QString & p_name, const TypeMask p_validTypes ) :
+				_name( p_name ), validTypes( p_validTypes ) {};
+			virtual ~ItemData() {};
+
+			virtual void appendToMenu( ContextualMenuSelection * const p_menu ) const = 0;
+
+			const TypeMask validTypes;
+
+		  protected:
+			const QString _name;
+		};
+		class ActionData : public ItemData
 		{
 		  public:
 			ActionData( const QString & p_name,
 						const TypeMask	p_validTypes,
 						void ( ContextualMenuSelection::*p_action )(),
 						const QKeySequence p_shortcut = QKeySequence() ) :
-				name( p_name ),
-				validTypes( p_validTypes ), action( p_action ), shortcut( p_shortcut ) {};
+				ItemData( p_name, p_validTypes ),
+				action( p_action ), shortcut( p_shortcut ) {};
+
 			ActionData() : ActionData( "-empty-", TypeMask::None, nullptr ) {};
 
-			const QString name;
+			void appendToMenu( ContextualMenuSelection * const p_menu ) const override
+			{
+				p_menu->addAction( _name, p_menu, action, shortcut );
+			}
+
 			void ( ContextualMenuSelection::*action )();
-			const TypeMask	   validTypes;
 			const QKeySequence shortcut;
+		};
+		class ActionDataSection : public ItemData
+		{
+		  public:
+			ActionDataSection( const QString & p_name, const TypeMask p_validTypes ) :
+				ItemData( p_name, p_validTypes ) {};
+			void appendToMenu( ContextualMenuSelection * const p_menu ) const override { p_menu->addSection( _name ); }
+		};
+		class SubMenuData : public ItemData
+		{
+		  public:
+			SubMenuData( const QString & p_name, const TypeMask p_validTypes, QMenu * const p_menu ) :
+				ItemData( p_name, p_validTypes ), _menu( p_menu )
+			{
+				_menu->setTitle( _name );
+			};
+
+			void appendToMenu( ContextualMenuSelection * const p_menu ) const override { p_menu->addMenu( _menu ); }
+
+			QMenu * const _menu;
 		};
 
 	  public:
@@ -87,9 +126,14 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _extractAction();
 		void _deleteAction();
 
+		void _applyRepresentationAction( const int p_representationIndex );
+
 	  private:
-		std::vector<ActionData> _actions = std::vector<ActionData>();
+		std::vector<ItemData *> _actions = std::vector<ItemData *>();
 		TypeMask				_getTypeMaskFromTypeSet( const std::set<ID::VTX_ID> & p_typeIds );
+		void					_updateCurrentRepresentationFeedback();
+
+		CustomWidget::SetRepresentationMenu * _representationMenu;
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu

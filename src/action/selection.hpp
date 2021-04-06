@@ -14,6 +14,8 @@
 #include "model/chain.hpp"
 #include "model/generated_molecule.hpp"
 #include "model/molecule.hpp"
+#include "model/representation/instantiated_representation.hpp"
+#include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -252,27 +254,6 @@ namespace VTX::Action::Selection
 		const bool		   _appendToSelection;
 	};
 
-	class SelectRepresentation : public BaseAction
-	{
-	  public:
-		explicit SelectRepresentation( Model::Selection &								   p_selection,
-									   Model::Representation::InstantiatedRepresentation & p_representation ) :
-			_selection( p_selection ),
-			_representation( p_representation )
-		{
-		}
-
-		virtual void execute() override
-		{
-			_selection.selectRepresentation( _representation );
-			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
-		}
-
-	  private:
-		Model::Selection &									_selection;
-		Model::Representation::InstantiatedRepresentation & _representation;
-	};
-
 	class UnselectMolecule : public BaseAction
 	{
 	  public:
@@ -432,24 +413,6 @@ namespace VTX::Action::Selection
 	};
 
 	///////////////////////////// ACTION ON SELECTION ///////////////////////////////
-	class Orient : public BaseAction
-	{
-	  public:
-		explicit Orient( const Model::Selection & p_selection ) : _selection( p_selection ) {}
-
-		virtual void execute() override
-		{
-			const Math::AABB target = _selection.isEmpty() ? VTXApp::get().getScene().getAABB() : _selection.getAABB();
-			VTXApp::get()
-				.getStateMachine()
-				.getItem<State::Visualization>( ID::State::VISUALIZATION )
-				->orientCameraController( target );
-		}
-
-	  private:
-		const Model::Selection & _selection;
-	};
-
 	class ChangeVisibility : public Visible::ChangeVisibility
 	{
 	  public:
@@ -478,7 +441,8 @@ namespace VTX::Action::Selection
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 
-				if ( setVisibiltyOnMolecule && molIds.second.getFullySelectedChildCount() == molecule.getChainCount() )
+				if ( setVisibiltyOnMolecule
+					 && molIds.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 				{
 					molecule.setVisible( _visible );
 				}
@@ -488,7 +452,7 @@ namespace VTX::Action::Selection
 					{
 						Model::Chain & chain = *molecule.getChain( chainIds.first );
 
-						if ( chainIds.second.getFullySelectedChildCount() == chain.getResidueCount() )
+						if ( chainIds.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
 						{
 							chain.setVisible( _visible );
 							continue;
@@ -498,7 +462,7 @@ namespace VTX::Action::Selection
 						{
 							Model::Residue & residue = *molecule.getResidue( residueIds.first );
 
-							if ( residueIds.second.getFullySelectedChildCount() == residue.getAtomCount() )
+							if ( residueIds.second.getFullySelectedChildCount() == residue.getRealAtomCount() )
 							{
 								residue.setVisible( _visible );
 								continue;
@@ -523,6 +487,93 @@ namespace VTX::Action::Selection
 		const Model::Selection & _selection;
 		const ID::VTX_ID		 _objRefTypeId;
 		bool					 _visible;
+	};
+
+	class ChangeRepresentationPreset : public BaseAction
+	{
+	  public:
+		explicit ChangeRepresentationPreset( Model::Selection & p_selection, const int p_indexPreset ) :
+			_selection( p_selection ), _indexPreset( p_indexPreset )
+		{
+		}
+
+		virtual void execute() override
+		{
+			Model::Representation::BaseRepresentation * const preset
+				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+
+				if ( moleculeData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
+				{
+					Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
+						= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
+							preset );
+
+					molecule.applyRepresentation( instantiatedRepresentation );
+				}
+				else
+				{
+					for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainData :
+						  moleculeData.second )
+					{
+						Model::Chain * const chain = molecule.getChain( chainData.first );
+
+						if ( chainData.second.getFullySelectedChildCount() == chain->getRealResidueCount() )
+						{
+							Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
+								= MVC::MvcManager::get()
+									  .instantiateModel<Model::Representation::InstantiatedRepresentation>( preset );
+
+							chain->applyRepresentation( instantiatedRepresentation );
+						}
+						else
+						{
+							for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueData :
+								  chainData.second )
+							{
+								Model::Residue * const residue = molecule.getResidue( residueData.first );
+
+								Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
+									= MVC::MvcManager::get()
+										  .instantiateModel<Model::Representation::InstantiatedRepresentation>(
+											  preset );
+
+								residue->applyRepresentation( instantiatedRepresentation );
+							}
+						}
+					}
+
+					molecule.computeAllRepresentationData();
+				}
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Model::Selection & _selection;
+		const int		   _indexPreset;
+	};
+
+	class Orient : public BaseAction
+	{
+	  public:
+		explicit Orient( const Model::Selection & p_selection ) : _selection( p_selection ) {}
+
+		virtual void execute() override
+		{
+			const Math::AABB target = _selection.isEmpty() ? VTXApp::get().getScene().getAABB() : _selection.getAABB();
+			VTXApp::get()
+				.getStateMachine()
+				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				->orientCameraController( target );
+		}
+
+	  private:
+		const Model::Selection & _selection;
 	};
 
 	class Copy : public BaseAction
@@ -592,7 +643,7 @@ namespace VTX::Action::Selection
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 
-				if ( molIds.second.getFullySelectedChildCount() == molecule.getChainCount() )
+				if ( molIds.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 				{
 					moleculesToDelete.emplace_back( &molecule );
 					continue;
@@ -602,9 +653,9 @@ namespace VTX::Action::Selection
 				{
 					Model::Chain & chain = *molecule.getChain( chainIds.first );
 
-					if ( chainIds.second.getFullySelectedChildCount() == chain.getResidueCount() )
+					if ( chainIds.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
 					{
-						molecule.removeChain( chain.getIndex(), true, true, false );
+						molecule.removeChain( chain.getIndex(), true, true, true );
 						continue;
 					}
 
@@ -612,15 +663,15 @@ namespace VTX::Action::Selection
 					{
 						Model::Residue & residue = *molecule.getResidue( residueIds.first );
 
-						if ( residueIds.second.getFullySelectedChildCount() == residue.getAtomCount() )
+						if ( residueIds.second.getFullySelectedChildCount() == residue.getRealAtomCount() )
 						{
-							molecule.removeResidue( residue.getIndex(), true, true, true, false );
+							molecule.removeResidue( residue.getIndex(), true, true, true, true );
 							continue;
 						}
 
 						for ( const uint atomId : residueIds.second )
 						{
-							molecule.removeAtom( atomId, true, true, true, false );
+							molecule.removeAtom( atomId, true, true, true, true );
 						}
 					}
 				}

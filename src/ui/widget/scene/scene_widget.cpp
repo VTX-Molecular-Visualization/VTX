@@ -2,7 +2,6 @@
 #include "action/action_manager.hpp"
 #include "action/selection.hpp"
 #include "model/molecule.hpp"
-#include "model/representation/representation.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
@@ -13,7 +12,6 @@
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
-#include "view/ui/widget/representation_scene_view.hpp"
 #include "vtx_app.hpp"
 #include <QScrollArea>
 #include <algorithm>
@@ -24,9 +22,6 @@ namespace VTX::UI::Widget::Scene
 	{
 		_registerEvent( Event::Global::MOLECULE_ADDED );
 		_registerEvent( Event::Global::MOLECULE_REMOVED );
-
-		_registerEvent( Event::Global::REPRESENTATION_ADDED );
-		_registerEvent( Event::Global::REPRESENTATION_REMOVED );
 	}
 
 	void SceneWidget::receiveEvent( const Event::VTXEvent & p_event )
@@ -57,35 +52,6 @@ namespace VTX::UI::Widget::Scene
 
 			MVC::MvcManager::get().deleteView<View::UI::Widget::MoleculeSceneView>( molecule,
 																					ID::View::UI_MOLECULE_STRUCTURE );
-		}
-		else if ( p_event.name == Event::Global::REPRESENTATION_ADDED )
-		{
-			const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>(
-					p_event );
-
-			View::UI::Widget::RepresentationSceneView * const representationSceneWidget
-				= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::RepresentationSceneView>(
-					castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION, _scrollAreaContent, "representationSceneView" );
-
-			_addWidgetInLayout( representationSceneWidget );
-		}
-		else if ( p_event.name == Event::Global::REPRESENTATION_REMOVED )
-		{
-			const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Representation::InstantiatedRepresentation> &>(
-					p_event );
-
-			View::UI::Widget::RepresentationSceneView * const representationSceneWidget
-				= MVC::MvcManager::get().getView<View::UI::Widget::RepresentationSceneView>(
-					castedEvent.ptr, ID::View::UI_SCENE_REPRESENTATION );
-
-			_removeWidgetInLayout( representationSceneWidget );
-
-			MVC::MvcManager::get()
-				.deleteView<View::UI::Widget::RepresentationSceneView,
-							Model::Representation::InstantiatedRepresentation>( castedEvent.ptr,
-																				ID::View::UI_SCENE_REPRESENTATION );
 		}
 	}
 

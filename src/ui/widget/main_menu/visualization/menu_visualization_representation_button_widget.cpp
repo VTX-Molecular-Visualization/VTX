@@ -12,36 +12,27 @@
 #include "selection/selection_manager.hpp"
 #include "vtx_app.hpp"
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu
 {
-	namespace UI
+	void RepresentationPresetButton::_onButtonClicked()
 	{
-		namespace Widget
+		Model::Representation::BaseRepresentation * representation
+			= Model::Representation::RepresentationLibrary::get().getRepresentation( _id );
+		const Model::Selection & target = VTX::Selection::SelectionManager::get().getSelectionModel();
+
+		if ( target.getItems().size() > 0 )
 		{
-			namespace MainMenu
+			VTX_ACTION( new Action::RepresentableSetRepresentation( &target, representation ) );
+		}
+		else
+		{
+			Object3D::Scene::MapMoleculePtrFloat & mapMolFloat = VTXApp::get().getScene().getMolecules();
+			if ( mapMolFloat.size() > 0 )
 			{
-				void RepresentationPresetButton::_onButtonClicked()
-				{
-					Model::Representation::BaseRepresentation * representation
-						= Model::Representation::RepresentationLibrary::get().getRepresentation( _id );
-					const Model::Selection & target = VTX::Selection::SelectionManager::get().getSelectionModel();
+				Model::Molecule & molecule = *mapMolFloat.begin()->first;
+				VTX_ACTION( new Action::RepresentableSetRepresentation( molecule, representation ) );
+			}
+		}
+	};
 
-					if ( target.getItems().size() > 0 )
-					{
-						VTX_ACTION( new Action::RepresentableAddRepresentation( &target, representation ) );
-					}
-					else
-					{
-						Object3D::Scene::MapMoleculePtrFloat & mapMolFloat = VTXApp::get().getScene().getMolecules();
-						if ( mapMolFloat.size() > 0 )
-						{
-							Model::Molecule & molecule = *mapMolFloat.begin()->first;
-							VTX_ACTION( new Action::RepresentableAddRepresentation( molecule, representation ) );
-						}
-					}
-				};
-
-			} // namespace MainMenu
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+} // namespace VTX::UI::Widget::MainMenu

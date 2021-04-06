@@ -4,6 +4,8 @@
 #include "model/molecule.hpp"
 #include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
+#include "model/secondary_structure.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
 #include "vtx_app.hpp"
@@ -14,44 +16,63 @@ namespace VTX
 	{
 		BaseRepresentable::~BaseRepresentable()
 		{
-			while ( _representations.size() > 0 )
-			{
-				// erase _representations.begin() in _representations
-				Representation::RepresentationManager::get().removeRepresentation(
-					*_representations.begin(), this, false );
-			}
-
+			removeRepresentation();
 			_molecule = nullptr;
 		}
 
-		const std::set<const Model::Representation::InstantiatedRepresentation *> & BaseRepresentable::
-			getRepresentations() const
+		void BaseRepresentable::applyRepresentation( InstantiatedRepresentation * const p_representation,
+													 const bool							p_recompute )
 		{
-			if ( _representations.size() == 0 )
-			{
-				if ( _molecule->_representations.size() == 0 )
-					return Representation::RepresentationManager::get().getDefaultRepresentationSet();
-				else
-					return _molecule->getRepresentations();
-			}
-			else
-				return _representations;
+			setRepresentation( p_representation );
+			if ( p_recompute )
+				computeAllRepresentationData();
 		}
+
+		void BaseRepresentable::setRepresentation( InstantiatedRepresentation * const p_representation )
+		{
+			removeRepresentation();
+
+			_representation = p_representation;
+			p_representation->setTarget( this );
+		}
+
+		void BaseRepresentable::removeRepresentation()
+		{
+			if ( _representation != nullptr )
+				MVC::MvcManager::get().deleteModel( _representation );
+
+			_representation = nullptr;
+		}
+
+		void BaseRepresentable::applyDefaultRepresentation()
+		{
+			Model::Representation::InstantiatedRepresentation * const defaultRepresentation
+				= Representation::RepresentationManager::get().instantiateDefaultRepresentation();
+			defaultRepresentation->setTarget( getMolecule() );
+
+			applyRepresentation( defaultRepresentation );
+		}
+		void BaseRepresentable::setParent( BaseRepresentable * const p_parent ) { _parent = p_parent; }
+
+		bool BaseRepresentable::hasCustomRepresentation() const { return _representation != nullptr; }
 
 		const Model::Representation::InstantiatedRepresentation * const BaseRepresentable::getRepresentation() const
 		{
-			const std::set<const Model::Representation::InstantiatedRepresentation *> & representations
-				= getRepresentations();
+			if ( _representation == nullptr )
+				return _parent->getRepresentation();
+			else
+				return _representation;
+		}
+		Model::Representation::InstantiatedRepresentation * const BaseRepresentable::getCustomRepresentation()
+		{
+			return _representation;
+		}
 
-			const Model::Representation::InstantiatedRepresentation * res = *representations.cbegin();
-
-			for ( const Model::Representation::InstantiatedRepresentation * representation : representations )
-			{
-				if ( representation->getPriority() > res->getPriority() )
-					res = representation;
-			}
-
-			return res;
+		void BaseRepresentable::computeAllRepresentationData()
+		{
+			computeRepresentationTargets();
+			computeColorBuffer();
+			_molecule->getSecondaryStructure().refreshColors();
 		}
 
 		void BaseRepresentable::computeRepresentationTargets()
@@ -126,7 +147,10 @@ namespace VTX
 		{
 			std::vector<Color::Rgb> p_colorBuffer = _molecule->getBufferAtomColors();
 
-			for ( Model::Residue * const residue : _molecule->getResidues() )
+			if ( p_colorBuffer.size() == 0 )
+				return;
+
+			for ( const Model::Residue * const residue : _molecule->getResidues() )
 			{
 				// Skip hidden items.
 				if ( residue == nullptr || !_isResidueVisible( *residue ) )
@@ -134,6 +158,45 @@ namespace VTX
 
 				const Model::Representation::InstantiatedRepresentation * const currentRepresentation
 					= residue->getRepresentation();
+
+				COLOR_MODE colorMode = currentRepresentation->getColorMode();
+
+				if ( colorMode == Generic::COLOR_MODE::INHERITED )
+				{
+					const COLOR_MODE & chainColorMode = residue->getChainPtr()->getRepresentation()->getColorMode();
+					if ( chainColorMode != Generic::COLOR_MODE::INHERITED )
+					{
+						colorMode = chainColorMode;
+					}
+					else
+					{
+						const COLOR_MODE & moleculeColorMode = _molecule->getRepresentation()->getColorMode();
+						if ( moleculeColorMode != Generic::COLOR_MODE::INHERITED )
+							colorMode = moleculeColorMode;
+						else
+							colorMode = Setting::COLOR_MODE_DEFAULT;
+					}
+				}
+
+				bool	   colorCarbon = false;
+				Color::Rgb color;
+
+				switch ( colorMode )
+				{
+				case Generic::COLOR_MODE::ATOM_CHAIN: colorCarbon = true; [[fallthrough]];
+				case Generic::COLOR_MODE::CHAIN: color = residue->getChainPtr()->getColor(); break;
+
+				case Generic::COLOR_MODE::ATOM_PROTEIN: colorCarbon = true; [[fallthrough]];
+				case Generic::COLOR_MODE::PROTEIN: color = _molecule->getColor(); break;
+
+				case Generic::COLOR_MODE::ATOM_CUSTOM: colorCarbon = true; [[fallthrough]];
+				case Generic::COLOR_MODE::CUSTOM: color = currentRepresentation->getColor(); break;
+
+				case Generic::COLOR_MODE::RESIDUE:
+					colorCarbon = false;
+					color		= residue->getColor();
+					break;
+				}
 
 				for ( uint i = residue->getIndexFirstAtom(); i < residue->getIndexFirstAtom() + residue->getAtomCount();
 					  i++ )
@@ -143,25 +206,13 @@ namespace VTX
 					if ( atom == nullptr )
 						continue;
 
-					switch ( currentRepresentation->getColorMode() )
+					if ( colorCarbon && atom->getSymbol() != Model::Atom::SYMBOL::A_C )
 					{
-					case Generic::COLOR_MODE::ATOM_CHAIN:
-						if ( atom->getSymbol() == Model::Atom::SYMBOL::A_C )
-							p_colorBuffer[ i ] = atom->getChainPtr()->getColor();
-						else
-							p_colorBuffer[ i ] = atom->getColor();
-						break;
-					case Generic::COLOR_MODE::ATOM_PROTEIN:
-						if ( atom->getSymbol() == Model::Atom::SYMBOL::A_C )
-							p_colorBuffer[ i ] = currentRepresentation->getColor();
-						else
-							p_colorBuffer[ i ] = atom->getColor();
-						break;
-					case Generic::COLOR_MODE::RESIDUE: p_colorBuffer[ i ] = atom->getResiduePtr()->getColor(); break;
-					case Generic::COLOR_MODE::CHAIN: p_colorBuffer[ i ] = atom->getChainPtr()->getColor(); break;
-					case Generic::COLOR_MODE::PROTEIN: p_colorBuffer[ i ] = currentRepresentation->getColor(); break;
-
-					default: break;
+						p_colorBuffer[ i ] = atom->getColor();
+					}
+					else
+					{
+						p_colorBuffer[ i ] = color;
 					}
 				}
 			}

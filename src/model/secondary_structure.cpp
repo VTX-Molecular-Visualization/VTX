@@ -13,16 +13,6 @@ namespace VTX
 {
 	namespace Model
 	{
-		const Color::Rgb SecondaryStructure::COLORS_JMOL[ uint( TYPE::COUNT ) ]
-			= { Color::Rgb( 1.f, 0.f, 0.5f ),	// HELIX_ALPHA_RIGHT
-				Color::Rgb( 1.f, 0.f, 0.5f ),	// HELIX_ALPHA_LEFT
-				Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
-				Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_LEFT
-				Color::Rgb( 0.37f, 0.f, 0.5f ), // HELIX_PI
-				Color::Rgb( 1.f, 0.78f, 0.f ),	// STRAND
-				Color::Rgb( 0.37f, 0.5f, 1.f ), // TURN
-				Color::Rgb::WHITE };			// COIL
-
 		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) :
 			BaseModel3D( ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
 		{
@@ -68,8 +58,6 @@ namespace VTX
 					// Use backbone to compute spline data.
 					// Find alpha carbon.
 					const Model::Atom * const CA = residue->findFirstAtomByName( "CA" );
-					// Find oxygen.
-					const Model::Atom * const O = residue->findFirstAtomByName( "O" );
 
 					// Not an amine acid (water, heme, or phosphate groupment).
 					if ( CA == nullptr ) /// TODO: what to do ?
@@ -80,6 +68,9 @@ namespace VTX
 						// VTX_DEBUG( msg );
 						continue;
 					}
+
+					// Find oxygen.
+					const Model::Atom * const O = residue->findFirstAtomByName( "O" );
 					// Missing oxygen atom.
 					if ( O == nullptr ) /// TODO: what to do?
 					{
@@ -124,6 +115,7 @@ namespace VTX
 					case COLOR_MODE::RESIDUE: colors.emplace_back( residue->getColor() ); break;
 					default: colors.emplace_back( Color::Rgb::WHITE ); break;
 					}
+					_bufferSecondaryStructures.emplace_back( ushort( residue->getSecondaryStructure() ) );
 				}
 
 				// Update buffers and index mapping if SS is constructed.
@@ -189,6 +181,12 @@ namespace VTX
 			_bufferIndices.shrink_to_fit();
 
 			// std::cout << "-------> " << _bufferIndices.size() << std::endl;
+			_bufferPositions.shrink_to_fit();
+			_bufferDirections.shrink_to_fit();
+			_bufferNormals.shrink_to_fit();
+			_bufferSecondaryStructures.shrink_to_fit();
+			_bufferColors.resize( _bufferSecondaryStructures.size() );
+			_buffferIndices.shrink_to_fit();
 
 			chrono.stop();
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
@@ -212,7 +210,7 @@ namespace VTX
 
 		void SecondaryStructure::_computeAABB() const
 		{
-			/// TODO peut-être ?
+			/// TODO peut-ï¿½tre ?
 		}
 
 		void SecondaryStructure::_instantiate3DViews()
@@ -230,11 +228,16 @@ namespace VTX
 		void SecondaryStructure::_fillBufferColors()
 		{
 			_bufferColors.clear();
-
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
-				const Chain * const chain		 = _molecule->getChain( chainIdx );
-				uint				residueCount = chain->getResidueCount();
+				const Chain * const chain = _molecule->getChain( chainIdx );
+
+				if ( chain == nullptr )
+				{
+					continue;
+				}
+
+				uint residueCount = chain->getResidueCount();
 
 				if ( residueCount < 4 )
 				{
@@ -244,25 +247,36 @@ namespace VTX
 				uint idxFirstResidue = chain->getIndexFirstResidue();
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
-					const Residue * const	  residue = _molecule->getResidue( idxFirstResidue + residueIdx );
-					const Model::Atom * const CA	  = residue->findFirstAtomByName( "CA" );
-					const Model::Atom * const O		  = residue->findFirstAtomByName( "O" );
+					const Residue * const residue = _molecule->getResidue( idxFirstResidue + residueIdx );
+
+					if ( residue == nullptr )
+						continue;
+
+					const Model::Atom * const CA = residue->findFirstAtomByName( "CA" );
+					const Model::Atom * const O	 = residue->findFirstAtomByName( "O" );
 
 					if ( CA == nullptr || O == nullptr )
 					{
 						continue;
 					}
 
-					switch ( _colorMode )
+					switch ( residue->getRepresentation()->getSecondaryStructureColorMode() )
 					{
-					case COLOR_MODE::JMOL:
-						_bufferColors.emplace_back( COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
+						_bufferColors.emplace_back(Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ]);
 						break;
-					case COLOR_MODE::PROTEIN:
-						_bufferColors.emplace_back( residue->getMoleculePtr()->getColor() );
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
+						_bufferColors.emplace_back(residue->getMoleculePtr()->getColor());
 						break;
-					case COLOR_MODE::CHAIN: _bufferColors.emplace_back( residue->getChainPtr()->getColor() ); break;
-					case COLOR_MODE::RESIDUE: _bufferColors.emplace_back( residue->getColor() ); break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
+						_bufferColors.emplace_back(residue->getRepresentation()->getColor());
+						break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
+						_bufferColors.emplace_back(residue->getChainPtr()->getColor());
+						break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
+						_bufferColors.emplace_back(residue->getColor());
+						break;
 
 					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
 					}
@@ -270,7 +284,6 @@ namespace VTX
 			}
 
 			_bufferColors.shrink_to_fit();
-
 			_buffer->setControlPointColors( _bufferColors );
 		}
 

@@ -31,7 +31,7 @@ namespace VTX::UI::Widget::Settings
 
 		_enableOutline = new QCheckBox( this );
 		_outlineThickness
-			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldWidget>( this, "outlineThickness" );
+			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( this, "outlineThickness" );
 		_outlineThickness->setMinMax( Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );
 		_outlineColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "outlineColor" );
 
@@ -42,13 +42,13 @@ namespace VTX::UI::Widget::Settings
 		_farFog = new QSpinBox( this );
 		_farFog->setMinimum( Setting::FOG_FAR_MIN );
 		_farFog->setMaximum( Setting::FOG_FAR_MAX );
-		_fogDensity = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldWidget>( this, "fogDensity" );
+		_fogDensity = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( this, "fogDensity" );
 		_fogDensity->setMinMax( 0.0f, 1.0f );
 		_fogColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "fogColor" );
 
 		_backgroundColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "backgroundColor" );
 		_cameraLightColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "lightColor" );
-		_cameraFOV		  = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldWidget>( this, "cameraFov" );
+		_cameraFOV = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( this, "cameraFov" );
 		_cameraFOV->setMinMax( Setting::CAMERA_FOV_MIN, Setting::CAMERA_FOV_MAX );
 		_cameraNear = new QSpinBox( this );
 		_cameraNear->setMinimum( Setting::CAMERA_NEAR_MIN );
@@ -121,7 +121,7 @@ namespace VTX::UI::Widget::Settings
 				 this,
 				 &RenderEffectPresetEditor::_onOutlineStateChanged );
 		connect( _outlineThickness,
-				 QOverload<float>::of( &FloatFieldWidget::onValueChange ),
+				 QOverload<float>::of( &FloatFieldSliderWidget::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onOutlineThicknessChanged );
 		connect( _outlineColor,
@@ -140,7 +140,7 @@ namespace VTX::UI::Widget::Settings
 		connect(
 			_farFog, QOverload<int>::of( &QSpinBox::valueChanged ), this, &RenderEffectPresetEditor::_onFogFarChanged );
 		connect( _fogDensity,
-				 QOverload<float>::of( &FloatFieldWidget::onValueChange ),
+				 QOverload<float>::of( &FloatFieldSliderWidget::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onFogDensityChanged );
 		connect( _fogColor,
@@ -157,7 +157,7 @@ namespace VTX::UI::Widget::Settings
 				 this,
 				 &RenderEffectPresetEditor::_onCameraLightColorChanged );
 		connect( _cameraFOV,
-				 QOverload<float>::of( &FloatFieldWidget::onValueChange ),
+				 QOverload<float>::of( &FloatFieldSliderWidget::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onCameraFOVChanged );
 

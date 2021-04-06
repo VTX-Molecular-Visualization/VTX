@@ -22,7 +22,6 @@ namespace VTX::UI
 			Chain,
 			Residue,
 			Atom,
-			InstantiatedRepresentation,
 			Selection,
 			Scene,
 

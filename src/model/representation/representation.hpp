@@ -15,6 +15,18 @@
 
 namespace VTX::Model::Representation
 {
+	enum MEMBER_FLAG
+	{
+		SPHERE_RADIUS_FIXED = 1 << 0,
+		SPHERE_RADIUS_ADD	= 1 << 1,
+		CYLINDER_RADIUS		= 1 << 2,
+		COLOR				= 1 << 3,
+		COLOR_MODE			= 1 << 4,
+		SS_COLOR_MODE		= 1 << 5,
+
+		ALL = 0xFFFF
+	};
+
 	class BaseRepresentation : public BaseModel
 	{
 	  public:
@@ -36,6 +48,13 @@ namespace VTX::Model::Representation
 		Generic::COLOR_MODE &		getColorMode() { return _colorMode; }
 		void setColorMode( const Generic::COLOR_MODE & p_colorMode ) { _colorMode = p_colorMode; }
 
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & getSecondaryStructureColorMode() const { return _ssColorMode; }
+		Generic::SECONDARY_STRUCTURE_COLOR_MODE &		getSecondaryStructureColorMode() { return _ssColorMode; }
+		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode )
+		{
+			_ssColorMode = p_colorMode;
+		}
+
 		const Color::Rgb & getColor() const { return _color; };
 		Color::Rgb &	   getColor() { return _color; };
 		void			   setColor( const Color::Rgb & p_color ) { _color = Color::Rgb( p_color ); };
@@ -44,21 +63,25 @@ namespace VTX::Model::Representation
 
 		bool			   hasToDrawSphere() const { return _sphereData != nullptr; };
 		const SphereData & getSphereData() const { return *_sphereData; };
+		SphereData &	   getSphereData() { return *_sphereData; };
 
 		bool				 hasToDrawCylinder() const { return _cylinderData != nullptr; };
 		const CylinderData & getCylinderData() const { return *_cylinderData; };
+		CylinderData &		 getCylinderData() { return *_cylinderData; };
 
 		bool			   hasToDrawRibbon() const { return _ribbonData != nullptr; };
 		const RibbonData & getRibbonData() const { return *_ribbonData; };
+		RibbonData &	   getRibbonData() { return *_ribbonData; };
 
 	  protected:
 		Generic::REPRESENTATION _representationType = Generic::REPRESENTATION::VAN_DER_WAALS;
 
-		std::string							  _name;
-		std::string							  _iconPath;
-		Color::Rgb							  _color;
-		VTX::Representation::FlagDataTargeted _dataTargeted = VTX::Representation::FlagDataTargeted::NONE;
-		Generic::COLOR_MODE					  _colorMode	= Generic::COLOR_MODE::PROTEIN;
+		std::string								_name;
+		std::string								_iconPath;
+		Color::Rgb								_color;
+		VTX::Representation::FlagDataTargeted	_dataTargeted = VTX::Representation::FlagDataTargeted::NONE;
+		Generic::COLOR_MODE						_colorMode	  = Generic::COLOR_MODE::PROTEIN;
+		Generic::SECONDARY_STRUCTURE_COLOR_MODE _ssColorMode  = Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
 
 		SphereData *   _sphereData	 = nullptr;
 		CylinderData * _cylinderData = nullptr;
@@ -83,6 +106,9 @@ namespace VTX::Model::Representation
 	{
 	  public:
 		Representation_VanDerWaals();
+
+		float getSphereRadiusOffset() { return _sphereData->_radiusAdd; };
+		void  setSphereRadiusOffset( const float p_offset ) { _sphereData->_radiusAdd = p_offset; };
 	};
 	class Representation_Sticks : public BaseRepresentation
 	{

@@ -1,10 +1,11 @@
-#ifndef __VTX_UI_WIDGET_CUSTOM_FLOAT_FIELD__
-#define __VTX_UI_WIDGET_CUSTOM_FLOAT_FIELD__
+#ifndef __VTX_UI_WIDGET_CUSTOM_FLOAT_FIELD_SLIDER__
+#define __VTX_UI_WIDGET_CUSTOM_FLOAT_FIELD_SLIDER__
 
 #ifdef _MSC_VER
 #pragma once
 #endif
 
+#include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDoubleValidator>
 #include <QLineEdit>
@@ -13,33 +14,47 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class FloatFieldWidget : public BaseManualWidget<QWidget>
+	class FloatFieldSliderWidget : public BaseManualWidget<QWidget>, public UI::TMultiDataFieldEquatable<float>
 	{
 		VTX_WIDGET
 		Q_OBJECT
 
 	  public:
-		~FloatFieldWidget() = default;
+		~FloatFieldSliderWidget() = default;
 
 		const float getValue() const { return _value; };
 		void		setValue( const float p_value );
 
 		void localize() override;
 		void setNbDecimals( const int p_nbDecimals );
+		void setMin( const float p_min );
+		void setMax( const float p_max );
 		void setMinMax( const float p_min, const float p_max );
 		void setEnabled( const bool p_enable );
+
+		// MultiDataField Implementation //////////////////////////////
+		void resetState() override;
+		//////////////////////////////////////////////////////////////
 
 	  signals:
 		void onValueChange( const float p_value );
 
 	  protected:
-		FloatFieldWidget( QWidget * p_parent );
+		FloatFieldSliderWidget( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();
 
+		// MultiDataField Implementation //////////////////////////////
+		void		  _displayDifferentsDataFeedback();
+		const float & _getValue() const { return _value; }
+		void		  _setSingleValue( const float & p_value );
+		//////////////////////////////////////////////////////////////
+
 		void _onTextFieldEdited();
 		void _onInternalValueChanged( const int p_newValue );
+
+		void _emitOnValueChangeSignal();
 
 	  private:
 		QSlider *	_slider	   = nullptr;
@@ -52,6 +67,8 @@ namespace VTX::UI::Widget::CustomWidget
 		float _value = 0;
 		float _min;
 		float _max;
+
+		int _blockSignalsCounter = 0;
 	};
 } // namespace VTX::UI::Widget::CustomWidget
 #endif

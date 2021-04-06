@@ -18,14 +18,39 @@ namespace VTX
 		{
 			ATOM_CHAIN,
 			ATOM_PROTEIN,
+			ATOM_CUSTOM,
 			RESIDUE,
 			CHAIN,
 			PROTEIN,
+			CUSTOM,
 			INHERITED
 		};
-		static const std::vector<std::string> COLOR_MODE_STRING { "Atom-Chain", "Atom-Protein", "Residue",
-																  "Chain",		"Protein",		"Inherited" };
+		static const std::vector<std::string> COLOR_MODE_STRING { "Atom-Chain", "Atom-Object", "Atom-Custom",
+																  "Residue",	"Chain",	   "Object",
+																  "Custom",		"Inherited" };
 
+		enum class SECONDARY_STRUCTURE_COLOR_MODE : int
+		{
+			JMOL,
+			PROTEIN,
+			CHAIN,
+			RESIDUE,
+			CUSTOM
+		};
+		inline static const std::vector<std::string> SECONDARY_STRUCTURE_COLOR_MODE_STRING { "JMOL",
+																							 "Object",
+																							 "Chain",
+																							 "Residue",
+																							 "Custom" };
+
+		inline static const Color::Rgb COLORS_JMOL[] = { Color::Rgb( 1.f, 0.f, 0.5f ),	 // HELIX_ALPHA_RIGHT
+														 Color::Rgb( 1.f, 0.f, 0.5f ),	 // HELIX_ALPHA_LEFT
+														 Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_RIGHT
+														 Color::Rgb( 0.62f, 0.f, 0.5f ), // HELIX_3_10_LEFT
+														 Color::Rgb( 0.37f, 0.f, 0.5f ), // HELIX_PI
+														 Color::Rgb( 1.f, 0.78f, 0.f ),	 // STRAND
+														 Color::Rgb( 0.37f, 0.5f, 1.f ), // TURN
+														 Color::Rgb::WHITE };			 // COIL
 		class BaseColorable
 		{
 		  public:

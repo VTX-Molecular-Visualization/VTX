@@ -15,20 +15,17 @@ namespace VTX::UI::Widget::CustomWidget
 		QLabel * const positionLabel = new QLabel();
 		positionLabel->setText( "position" );
 		_positionWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_position_widget" );
-		_positionWidget->setSpinBoxMinMax( -10000, 10000 );
-		_positionWidget->setSpinBoxStep( 1 );
+		_positionWidget->setMinMax( -10000, 10000 );
 
 		QLabel * const rotationLabel = new QLabel();
 		rotationLabel->setText( "rotation" );
 		_rotationWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_rotation_widget" );
-		_rotationWidget->setSpinBoxMinMax( -10000, 10000 );
-		_rotationWidget->setSpinBoxStep( 5 );
+		_rotationWidget->setMinMax( -10000, 10000 );
 
 		QLabel * const scaleLabel = new QLabel();
 		scaleLabel->setText( "scale" );
 		_scaleWidget = WidgetFactory::get().instantiateWidget<Vector3Widget>( this, "transform_scale_widget" );
-		_scaleWidget->setSpinBoxMinMax( 0.01, 10000 );
-		_scaleWidget->setSpinBoxStep( 0.2 );
+		_scaleWidget->setMinMax( 0.01, 10000 );
 		_scaleWidget->setDragValueFactor( 0.01f );
 
 		mainLayout->addWidget( positionLabel, 0, 0 );
@@ -57,11 +54,13 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void TransformWidget::_refresh()
 	{
-		blockSignals( true );
+		const bool oldBlockState = blockSignals( true );
+
 		_positionWidget->setData( _transform.getTranslationVector() );
 		_rotationWidget->setData( _transform.getEulerAngles() );
 		_scaleWidget->setData( _transform.getScaleVector() );
-		blockSignals( false );
+
+		blockSignals( oldBlockState );
 	}
 
 	void TransformWidget::localize() {};
@@ -81,4 +80,28 @@ namespace VTX::UI::Widget::CustomWidget
 		_transform.setScale( p_scale );
 		emit onValueChange( _transform );
 	}
+
+	void TransformWidget::resetState()
+	{
+		TMultiDataField::resetState();
+
+		_positionWidget->resetState();
+		_rotationWidget->resetState();
+		_scaleWidget->resetState();
+	}
+
+	void TransformWidget::updateWithNewValue( const Math::Transform & p_value )
+	{
+		_positionWidget->updateWithNewValue( p_value.getTranslationVector() );
+		_rotationWidget->updateWithNewValue( p_value.getEulerAngles() );
+		_scaleWidget->updateWithNewValue( p_value.getScaleVector() );
+
+		if ( !_positionWidget->hasIdenticalData() && !_rotationWidget->hasIdenticalData()
+			 && !_scaleWidget->hasIdenticalData() )
+		{
+			_state = MultiDataField::State::Different;
+		}
+	}
+	void TransformWidget::_displayDifferentsDataFeedback() {}
+
 } // namespace VTX::UI::Widget::CustomWidget

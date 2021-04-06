@@ -6,72 +6,97 @@
 #endif
 
 #include "color/rgb.hpp"
+#include "event/base_event_receiver_vtx.hpp"
 #include "generic/base_objectoverride.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"
+#include "model/secondary_structure.hpp"
 #include "representation.hpp"
 #include "representation_data.hpp"
 #include "representation_enum.hpp"
 
-namespace VTX
+namespace VTX::Model
 {
-	namespace Model
+	class Molecule;
+	class SecondaryStructure;
+
+} // namespace VTX::Model
+namespace VTX::Generic
+{
+	class BaseRepresentable;
+}
+
+namespace VTX::Model::Representation
+{
+	class InstantiatedRepresentation : public BaseModel, public Generic::BaseObjectOverride, Event::BaseEventReceiverVTX
 	{
-		namespace Representation
+		VTX_MODEL
+
+	  public:
+		static InstantiatedRepresentation * const instantiateCopy( const InstantiatedRepresentation * const p_source );
+
+		virtual void receiveEvent( const Event::VTXEvent & p_event );
+
+		const Generic::BaseRepresentable * const getTarget() const;
+		Generic::BaseRepresentable * const		 getTarget();
+		void									 setTarget( Generic::BaseRepresentable * p_target );
+
+		void setLinkedRepresentation( const BaseRepresentation * const p_linkedRepresentation );
+
+		const std::string & getName() const { return _linkedRepresentation->getName(); };
+
+		const Color::Rgb & getColor() const { return _color.getValue(); }
+		void setColor( const Color::Rgb & p_color, const bool p_recomputeBuffers = true, const bool p_notify = true );
+		const Generic::COLOR_MODE & getColorMode() const { return _colorMode.getValue(); }
+		void						setColorMode( const Generic::COLOR_MODE & p_colorMode,
+												  const bool				  p_recomputeBuffers = true,
+												  const bool				  p_notify			 = true );
+
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & getSecondaryStructureColorMode() const;
+		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode,
+											 const bool										 p_recomputeBuffers = true,
+											 const bool										 p_notify = true );
+
+		const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const
 		{
-			class InstantiatedRepresentation : public BaseModel, public Generic::BaseObjectOverride
-			{
-			  public:
-				InstantiatedRepresentation( BaseRepresentation * const p_linkedRepresentation ) :
-					BaseModel( ID::Model::MODEL_INTANTIATED_REPRESENTATION ), _linkedRepresentation( p_linkedRepresentation )
-				{
-					setName( _linkedRepresentation->getName() + " (instantiated)" );
-					_color	   = &_linkedRepresentation->getColor();
-					_colorMode = &_linkedRepresentation->getColorMode();
+			return _linkedRepresentation->getFlagDataTargeted();
+		};
 
-					_priority = getId();
-				};
+		bool			   hasToDrawSphere() const { return _linkedRepresentation->hasToDrawSphere(); };
+		const SphereData & getSphereData() const { return _sphereData.getValue(); };
+		void			   setSphereRadius( const float p_radius, const bool p_notify = true );
 
-				~InstantiatedRepresentation() {}
+		bool				 hasToDrawCylinder() const { return _linkedRepresentation->hasToDrawCylinder(); };
+		const CylinderData & getCylinderData() const { return _cylinderData.getValue(); };
+		void				 setCylinderRadius( const float p_radius, const bool p_notify = true );
 
-				const std::string & getName() const { return _name; };
-				void				setName( const std::string & p_name ) { _name = std::string( p_name ); };
+		bool			   hasToDrawRibbon() const { return _linkedRepresentation->hasToDrawRibbon(); };
+		const RibbonData & getRibbonData() const { return _ribbonData.getValue(); };
 
-				int	 getPriority() const { return _priority; };
-				void setPriority( const int p_priority );
+		void applyData( const InstantiatedRepresentation & p_source,
+						const MEMBER_FLAG &				   p_flag,
+						const bool						   p_recomputeBuffers = true );
 
-				const Color::Rgb &			getColor() const { return *_color; }
-				void						setColor( const Color::Rgb & p_color );
-				const Generic::COLOR_MODE & getColorMode() const { return *_colorMode; }
-				void						setColorMode( const Generic::COLOR_MODE & p_colorMode );
+		const BaseRepresentation * const getLinkedRepresentation() const { return _linkedRepresentation; }
 
-				const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const { return _linkedRepresentation->getFlagDataTargeted(); };
+	  protected:
+		InstantiatedRepresentation( const BaseRepresentation * const p_linkedRepresentation );
+		~InstantiatedRepresentation() {}
 
-				bool			   hasToDrawSphere() const { return _linkedRepresentation->hasToDrawSphere(); };
-				const SphereData & getSphereData() const { return _linkedRepresentation->getSphereData(); };
+		const BaseRepresentation * _linkedRepresentation = nullptr;
 
-				bool				 hasToDrawCylinder() const { return _linkedRepresentation->hasToDrawCylinder(); };
-				const CylinderData & getCylinderData() const { return _linkedRepresentation->getCylinderData(); };
+		Generic::BaseRepresentable * _target = nullptr;
 
-				bool			   hasToDrawRibbon() const { return _linkedRepresentation->hasToDrawRibbon(); };
-				const RibbonData & getRibbonData() const { return _linkedRepresentation->getRibbonData(); };
+		Generic::OverridableParameter<Color::Rgb>							   _color;
+		Generic::OverridableParameter<Generic::COLOR_MODE>					   _colorMode;
+		Generic::OverridableParameter<Generic::SECONDARY_STRUCTURE_COLOR_MODE> _ssColorMode;
 
-			  protected:
-				BaseRepresentation * const _linkedRepresentation;
-				int						   _priority = 0;
+		Generic::OverridableParameter<SphereData>	_sphereData;
+		Generic::OverridableParameter<CylinderData> _cylinderData;
+		Generic::OverridableParameter<RibbonData>	_ribbonData;
 
-				std::string			  _name;
-				Color::Rgb *		  _color;
-				Generic::COLOR_MODE * _colorMode;
+		void _updateTarget( const VTX::Representation::MoleculeComputationFlag & p_flag );
+	};
 
-				SphereData *   _sphereData	 = nullptr;
-				CylinderData * _cylinderData = nullptr;
-				RibbonData *   _ribbonData	 = nullptr;
-
-				void _updateTargets( const VTX::Representation::MoleculeComputationFlag & p_flag ) const;
-			};
-
-		} // namespace Representation
-	}	  // namespace Model
-} // namespace VTX
+} // namespace VTX::Model::Representation
 #endif

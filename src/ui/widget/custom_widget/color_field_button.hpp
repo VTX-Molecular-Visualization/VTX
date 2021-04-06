@@ -6,6 +6,7 @@
 #endif
 
 #include "color/rgb.hpp"
+#include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QColor>
 #include <QColorDialog>
@@ -15,7 +16,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class ColorFieldButton : public BaseManualWidget<QPushButton>
+	class ColorFieldButton : public BaseManualWidget<QPushButton>, public TMultiDataFieldEquatable<Color::Rgb>
 	{
 		VTX_WIDGET
 		Q_OBJECT
@@ -30,6 +31,8 @@ namespace VTX::UI::Widget::CustomWidget
 
 		void setEnabled( const bool p_enable );
 
+		void resetState() override;
+
 	  signals:
 		void onValueChange( const Color::Rgb & p_newColor );
 
@@ -38,6 +41,10 @@ namespace VTX::UI::Widget::CustomWidget
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();
+
+		const Color::Rgb & _getValue() const override { return _color; }
+		void			   _setSingleValue( const Color::Rgb & p_value ) override { setColor( p_value ); }
+		void			   _displayDifferentsDataFeedback() override;
 
 		virtual void paintEvent( QPaintEvent * ) override;
 

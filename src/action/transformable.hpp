@@ -9,6 +9,7 @@
 #include "base_action_undonable.hpp"
 #include "generic/base_transformable.hpp"
 #include "math/transform.hpp"
+#include "model/molecule.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Action::Transformable
@@ -87,31 +88,47 @@ namespace VTX::Action::Transformable
 		const Mat4f					 _translationOld;
 	};
 
-	class ApplyTransform : public BaseActionUndonable
+	class ApplyTransform : public BaseAction
 	{
 	  public:
-		explicit ApplyTransform( Generic::BaseTransformable & p_transformable, const Math::Transform & p_transform ) :
-			_transformable( p_transformable ), _transform( p_transform ),
-			_transformOld( p_transformable.getTransform() )
+		explicit ApplyTransform( Model::Molecule &										  p_transformable,
+								 const Math::Transform &								  p_transform,
+								 const Generic::BaseTransformable::TransformComposantMask p_mask
+								 = Generic::BaseTransformable::TransformComposantMask::TRANSFORM ) :
+			_transform( p_transform ),
+			_mask( p_mask )
 		{
+			_transformables.emplace_back( &p_transformable );
+		}
+		explicit ApplyTransform( const std::unordered_set<Model::Molecule *> &			  p_transformables,
+								 const Math::Transform &								  p_transform,
+								 const Generic::BaseTransformable::TransformComposantMask p_mask
+								 = Generic::BaseTransformable::TransformComposantMask::TRANSFORM ) :
+			_transform( p_transform ),
+			_mask( p_mask )
+		{
+			_transformables.reserve( p_transformables.size() );
+
+			for ( Model::Molecule * const molecule : p_transformables )
+			{
+				_transformables.emplace_back( molecule );
+			}
 		}
 
 		virtual void execute() override
 		{
-			_transformable.applyTransform( _transform );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
+			for ( Generic::BaseTransformable * const transformable : _transformables )
+			{
+				transformable->applyTransform( _transform, _mask );
+			}
 
-		virtual void undo() override
-		{
-			_transformable.applyTransform( _transformOld );
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
-		Generic::BaseTransformable & _transformable;
-		const Math::Transform		 _transform;
-		const Math::Transform		 _transformOld;
+		const Math::Transform									 _transform;
+		const Generic::BaseTransformable::TransformComposantMask _mask;
+		std::vector<Generic::BaseTransformable *> _transformables = std::vector<Generic::BaseTransformable *>();
 	};
 } // namespace VTX::Action::Transformable
 #endif

@@ -342,7 +342,7 @@ namespace VTX::Model
 		{
 			const Model::Chain * const chain = molecule.getChain( chainData.first );
 
-			if ( chain->getResidueCount() == chainData.second.getFullySelectedChildCount() )
+			if ( chain->getRealResidueCount() == chainData.second.getFullySelectedChildCount() )
 			{
 				_extractFullChain( molecule, chainData.first );
 				continue;
@@ -355,7 +355,7 @@ namespace VTX::Model
 			for ( const std::pair<const ID, const Model::Selection::VecAtomIds> & residueData : chainData.second )
 			{
 				const Model::Residue * const residue = molecule.getResidue( residueData.first );
-				if ( residue->getAtomCount() == residueData.second.getFullySelectedChildCount() )
+				if ( residue->getRealAtomCount() == residueData.second.getFullySelectedChildCount() )
 				{
 					_extractFullResidue( molecule, residueData.first, &generatedChain );
 					continue;
@@ -494,6 +494,13 @@ namespace VTX::Model
 		setDisplayName( p_namePrefix + p_molecule.getDefaultName() );
 		setColor( Color::Rgb::randomPastel() );
 
+		if ( p_molecule.hasCustomRepresentation() )
+		{
+			Representation::InstantiatedRepresentation * const representation
+				= Representation::InstantiatedRepresentation::instantiateCopy( p_molecule.getRepresentation() );
+			setRepresentation( representation );
+		}
+
 		for ( int i = 0; i < p_molecule.getAtomPositionFrames().size(); i++ )
 		{
 			const AtomPositionsFrame & atomPosFrame			 = p_molecule.getAtomPositionFrames()[ i ];
@@ -516,6 +523,13 @@ namespace VTX::Model
 		p_chain.setName( p_chainSource.getName() );
 		p_chain.setIndexFirstResidue( getResidueCount() );
 		p_chain.setColor( Model::Chain::getChainIdColor( p_chain.getName() ) );
+
+		if ( p_chainSource.hasCustomRepresentation() )
+		{
+			Representation::InstantiatedRepresentation * const representation
+				= Representation::InstantiatedRepresentation::instantiateCopy( p_chainSource.getRepresentation() );
+			setRepresentation( representation );
+		}
 	}
 	void GeneratedMolecule::_copyResidueData( Model::Residue &		 p_residue,
 											  const Model::Residue & p_residueSource,
@@ -531,6 +545,13 @@ namespace VTX::Model
 		// TODO copy secondary structure
 		p_residue.setSecondaryStructure( p_residueSource.getSecondaryStructure() );
 		p_residue.setAtomType( p_residueSource.getAtomType() );
+
+		if ( p_residueSource.hasCustomRepresentation() )
+		{
+			Representation::InstantiatedRepresentation * const representation
+				= Representation::InstantiatedRepresentation::instantiateCopy( p_residueSource.getRepresentation() );
+			setRepresentation( representation );
+		}
 	}
 	void GeneratedMolecule::_copyAtomData( Model::Atom &		  p_atom,
 										   const Model::Atom &	  p_atomSource,

@@ -45,11 +45,7 @@ namespace VTX
 			inline uint				getIndex() const { return _index; };
 			inline void				setIndex( const uint p_index ) { _index = p_index; };
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
-			inline void				setMoleculePtr( Molecule * const p_molecule )
-			{
-				_moleculePtr = p_molecule;
-				setRepresentableMolecule( p_molecule );
-			}
+			void					setMoleculePtr( Molecule * const p_molecule );
 
 			static Color::Rgb getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
 
@@ -62,7 +58,9 @@ namespace VTX
 			inline uint getIndexFirstResidue() const { return _indexFirstResidue; };
 			inline void setIndexFirstResidue( const uint p_id ) { _indexFirstResidue = p_id; };
 			inline uint getResidueCount() const { return _residueCount; };
-			inline void setResidueCount( const uint p_count ) { _residueCount = p_count; };
+			void		setResidueCount( const uint p_count );
+			uint		getRealResidueCount() const { return _realResidueCount; };
+			void		removeToResidues( const uint p_residueIndex );
 
 			inline uint getIndexLastResidue() const { return _indexFirstResidue + _residueCount - 1; };
 
@@ -72,6 +70,14 @@ namespace VTX
 			const Math::AABB getAABB() const;
 			const Math::AABB getWorldAABB() const;
 
+			void applyRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation,
+									  const bool p_recompute = true );
+			void removeRepresentation();
+			void removeChildrenRepresentations() const;
+
+		  protected:
+			Chain() : BaseModel( ID::Model::MODEL_CHAIN ) {}
+
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;
 			uint	   _index		= 0;
@@ -80,8 +86,7 @@ namespace VTX
 			std::string _name			   = "unknown";
 			uint		_indexFirstResidue = 0;
 			uint		_residueCount	   = 0;
-
-			Chain() : BaseModel( ID::Model::MODEL_CHAIN ) {}
+			uint		_realResidueCount  = 0;
 		}; // namespace Model
 
 	} // namespace Model

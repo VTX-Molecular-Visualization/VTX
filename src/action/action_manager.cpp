@@ -83,54 +83,40 @@ namespace VTX
 					action = new Setting::ChangeColorMode(
 						magic_enum::enum_cast<Generic::COLOR_MODE>( words.at( 1 ) ).value() );
 				}
-				else if ( command == "add_representation_molecule" )
+				else if ( command == "set_representation_molecule" )
 				{
-					Model::Representation::BaseRepresentation * representation
+					Model::Representation::BaseRepresentation * const representation
 						= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
-					action = new RepresentableAddRepresentation( molecule, representation );
+					action = new RepresentableSetRepresentation( molecule, representation );
 				}
 				else if ( command == "remove_representation_molecule" )
 				{
-					const Model::Representation::InstantiatedRepresentation * instantiatedRepresentation
-						= Representation::RepresentationManager::get().getRepresentationByName( words.at( 1 ) );
-
-					action = new RepresentableRemoveRepresentation( molecule, instantiatedRepresentation );
+					action = new RepresentableRemoveRepresentation( molecule );
 				}
-				else if ( command == "add_representation_chain" )
+				else if ( command == "set_representation_chain" )
 				{
-					Model::Representation::BaseRepresentation * representation
+					Model::Representation::BaseRepresentation * const representation
 						= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 					const int idChain = std::stoi( words.at( 2 ) );
-					action			  = new RepresentableAddRepresentation(
-						   *( *VTXApp::get().getScene().getMolecules().begin() ).first->getChains()[ idChain ],
-						   representation );
+					action = new RepresentableSetRepresentation( *molecule.getChains()[ idChain ], representation );
 				}
 				else if ( command == "remove_representation_chain" )
 				{
-					const Model::Representation::InstantiatedRepresentation * instantiatedRepresentation
-						= Representation::RepresentationManager::get().getRepresentationByName( words.at( 1 ) );
-					const int idChain = std::stoi( words.at( 2 ) );
-					action			  = new RepresentableRemoveRepresentation(
-						   *( *VTXApp::get().getScene().getMolecules().begin() ).first->getChains()[ idChain ],
-						   instantiatedRepresentation );
+					const int idChain = std::stoi( words.at( 1 ) );
+					action			  = new RepresentableRemoveRepresentation( *molecule.getChains()[ idChain ] );
 				}
-				else if ( command == "add_representation_residue" )
+				else if ( command == "set_representation_residue" )
 				{
-					Model::Representation::BaseRepresentation * representation
+					Model::Representation::BaseRepresentation * const representation
 						= Model::Representation::RepresentationLibrary::get().getRepresentationByName( words.at( 1 ) );
 					const int indexResidue = std::stoi( words.at( 2 ) );
-					action				   = new RepresentableAddRepresentation(
-						*( *VTXApp::get().getScene().getMolecules().begin() ).first->getResidues()[ indexResidue ],
-						representation );
+					action
+						= new RepresentableSetRepresentation( *molecule.getResidues()[ indexResidue ], representation );
 				}
 				else if ( command == "remove_representation_residue" )
 				{
-					const Model::Representation::InstantiatedRepresentation * instantiatedRepresentation
-						= Representation::RepresentationManager::get().getRepresentationByName( words.at( 1 ) );
-					const int indexResidue = std::stoi( words.at( 2 ) );
-					action				   = new RepresentableRemoveRepresentation(
-						*( *VTXApp::get().getScene().getMolecules().begin() ).first->getResidues()[ indexResidue ],
-						instantiatedRepresentation );
+					const int indexResidue = std::stoi( words.at( 1 ) );
+					action = new RepresentableRemoveRepresentation( *molecule.getResidues()[ indexResidue ] );
 				}
 			}
 			catch ( const std::exception & )

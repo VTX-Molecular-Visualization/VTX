@@ -7,6 +7,7 @@
 
 #include "contextual_menu_template.hpp"
 #include "model/chain.hpp"
+#include "ui/widget/custom_widget/set_representation_menu.hpp"
 #include <QMenu>
 
 namespace VTX::UI::Widget::ContextualMenu
@@ -30,8 +31,12 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _hideAction();
 		void _copyAction();
 		void _extractAction();
-
 		void _deleteAction();
+
+		void _applyRepresentationAction( const int p_representationIndex );
+
+	  private:
+		CustomWidget::SetRepresentationMenu * _representationMenu;
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu
