@@ -107,15 +107,20 @@ namespace VTX
 					// Add color.
 					switch ( _colorMode )
 					{
-					case COLOR_MODE::JMOL:
-						colors.emplace_back( COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
+						colors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
 						break;
-					case COLOR_MODE::PROTEIN: colors.emplace_back( residue->getMoleculePtr()->getColor() ); break;
-					case COLOR_MODE::CHAIN: colors.emplace_back( residue->getChainPtr()->getColor() ); break;
-					case COLOR_MODE::RESIDUE: colors.emplace_back( residue->getColor() ); break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
+						colors.emplace_back( residue->getMoleculePtr()->getColor() );
+						break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
+						colors.emplace_back( residue->getChainPtr()->getColor() );
+						break;
+					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
+						colors.emplace_back( residue->getColor() );
+						break;
 					default: colors.emplace_back( Color::Rgb::WHITE ); break;
 					}
-					_bufferSecondaryStructures.emplace_back( ushort( residue->getSecondaryStructure() ) );
 				}
 
 				// Update buffers and index mapping if SS is constructed.
@@ -179,14 +184,6 @@ namespace VTX
 			_bufferSSTypes.shrink_to_fit();
 			_bufferColors.shrink_to_fit();
 			_bufferIndices.shrink_to_fit();
-
-			// std::cout << "-------> " << _bufferIndices.size() << std::endl;
-			_bufferPositions.shrink_to_fit();
-			_bufferDirections.shrink_to_fit();
-			_bufferNormals.shrink_to_fit();
-			_bufferSecondaryStructures.shrink_to_fit();
-			_bufferColors.resize( _bufferSecondaryStructures.size() );
-			_buffferIndices.shrink_to_fit();
 
 			chrono.stop();
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
@@ -263,19 +260,19 @@ namespace VTX
 					switch ( residue->getRepresentation()->getSecondaryStructureColorMode() )
 					{
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
-						_bufferColors.emplace_back(Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ]);
+						_bufferColors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
-						_bufferColors.emplace_back(residue->getMoleculePtr()->getColor());
+						_bufferColors.emplace_back( residue->getMoleculePtr()->getColor() );
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-						_bufferColors.emplace_back(residue->getRepresentation()->getColor());
+						_bufferColors.emplace_back( residue->getRepresentation()->getColor() );
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
-						_bufferColors.emplace_back(residue->getChainPtr()->getColor());
+						_bufferColors.emplace_back( residue->getChainPtr()->getColor() );
 						break;
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
-						_bufferColors.emplace_back(residue->getColor());
+						_bufferColors.emplace_back( residue->getColor() );
 						break;
 
 					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
