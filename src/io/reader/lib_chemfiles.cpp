@@ -219,39 +219,39 @@ namespace VTX
 						{
 							if ( secondaryStructure == "extended" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::STRAND );
+								modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::STRAND );
 							}
 							else if ( secondaryStructure == "turn" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::TURN );
+								modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::TURN );
 							}
 							else if ( secondaryStructure == "coil" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
+								modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::COIL );
 							}
 							else if ( secondaryStructure == "right-handed alpha helix" )
 							{
 								modelResidue->setSecondaryStructure(
-									Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT );
+									Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT );
 							}
 							else if ( secondaryStructure == "left-handed alpha helix" )
 							{
 								modelResidue->setSecondaryStructure(
-									Model::SecondaryStructure::VALUE::HELIX_ALPHA_LEFT );
+									Model::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT );
 							}
 							else if ( secondaryStructure == "right-handed 3-10 helix" )
 							{
 								modelResidue->setSecondaryStructure(
-									Model::SecondaryStructure::VALUE::HELIX_3_10_RIGHT );
+									Model::SecondaryStructure::TYPE::HELIX_3_10_RIGHT );
 							}
 							else if ( secondaryStructure == "left-handed 3-10 helix" )
 							{
 								modelResidue->setSecondaryStructure(
-									Model::SecondaryStructure::VALUE::HELIX_3_10_LEFT );
+									Model::SecondaryStructure::TYPE::HELIX_3_10_LEFT );
 							}
 							else if ( secondaryStructure == "pi helix" )
 							{
-								modelResidue->setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_PI );
+								modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_PI );
 							}
 							else if ( secondaryStructure == "right-handed omega helix" )
 							{

@@ -23,9 +23,8 @@ namespace VTX
 			void bind() override;
 			void unbind() override;
 
-			void setControlPointPositions( const std::vector<Vec3f> & );
+			void setControlPointPositions( const std::vector<Vec4f> & );
 			void setControlPointDirections( const std::vector<Vec3f> & );
-			void setControlPointNormals( const std::vector<Vec3f> & );
 			void setControlPointSecondaryStructure( const std::vector<ushort> & );
 			void setControlPointColors( const std::vector<Color::Rgb> & );
 			void setControlPointSelections( const std::vector<ushort> & );
@@ -40,15 +39,13 @@ namespace VTX
 			{
 				CONTROL_POINT_POSITION			  = 0,
 				CONTROL_POINT_DIRECTION			  = 1,
-				CONTROL_POINT_NORMAL			  = 2,
-				CONTROL_POINT_SECONDARY_STRUCTURE = 3,
-				CONTROL_POINT_COLOR				  = 4,
-				CONTROL_POINT_SELECTION			  = 5,
+				CONTROL_POINT_SECONDARY_STRUCTURE = 2,
+				CONTROL_POINT_COLOR				  = 3,
+				CONTROL_POINT_SELECTION			  = 4,
 			};
 
 			GLuint _vboPositions		   = GL_INVALID_VALUE;
 			GLuint _vboDirections		   = GL_INVALID_VALUE;
-			GLuint _vboNormals			   = GL_INVALID_VALUE;
 			GLuint _vboSecondaryStructures = GL_INVALID_VALUE;
 			GLuint _vboColors			   = GL_INVALID_VALUE;
 			GLuint _vboSelections		   = GL_INVALID_VALUE;

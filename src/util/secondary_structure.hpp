@@ -47,9 +47,9 @@ namespace VTX
 					psi[ residueCount - 1 ] = PI_2f;
 
 					p_molecule.getResidue( idxFirstResidue )
-						->setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
+						->setSecondaryStructure( Model::SecondaryStructure::TYPE::COIL );
 					p_molecule.getResidue( idxFirstResidue + residueCount - 1 )
-						->setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
+						->setSecondaryStructure( Model::SecondaryStructure::TYPE::COIL );
 
 					for ( uint residueIdx = 1; residueIdx < residueCount - 1; ++residueIdx )
 					{
@@ -57,7 +57,7 @@ namespace VTX
 						Model::Residue &	   residue1 = *p_molecule.getResidue( idxFirstResidue + residueIdx );
 						const Model::Residue & residue2 = *p_molecule.getResidue( idxFirstResidue + residueIdx + 1 );
 
-						residue1.setSecondaryStructure( Model::SecondaryStructure::VALUE::COIL );
+						residue1.setSecondaryStructure( Model::SecondaryStructure::TYPE::COIL );
 
 						const Model::Atom * C0	= residue0.findFirstAtomByName( "C" );
 						const Model::Atom * N1	= residue1.findFirstAtomByName( "N" );
@@ -111,7 +111,7 @@ namespace VTX
 								{
 									Model::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
 									residue.setSecondaryStructure(
-										Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT );
+										Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT );
 								}
 							}
 							RHelixCount = 0;
@@ -136,7 +136,7 @@ namespace VTX
 								for ( uint k = firstHelixIdx; k < residueIdx; k++ )
 								{
 									Model::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
-									residue.setSecondaryStructure( Model::SecondaryStructure::VALUE::HELIX_ALPHA_LEFT );
+									residue.setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT );
 								}
 							}
 							LHelixCount = 0;
@@ -162,7 +162,7 @@ namespace VTX
 								for ( uint k = firstStrandIdx; k < residueIdx; k++ )
 								{
 									Model::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
-									residue.setSecondaryStructure( Model::SecondaryStructure::VALUE::STRAND );
+									residue.setSecondaryStructure( Model::SecondaryStructure::TYPE::STRAND );
 								}
 							}
 							strandCount = 0;
@@ -177,11 +177,11 @@ namespace VTX
 
 						if ( ( residue0.getSecondaryStructure() == residue2.getSecondaryStructure() )
 							 && ( ( residue0.getSecondaryStructure()
-									== Model::SecondaryStructure::VALUE::HELIX_ALPHA_RIGHT )
+									== Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT )
 								  || ( residue0.getSecondaryStructure()
-									   == Model::SecondaryStructure::VALUE::HELIX_ALPHA_LEFT )
+									   == Model::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT )
 								  || ( residue0.getSecondaryStructure()
-									   == Model::SecondaryStructure::VALUE::STRAND ) ) )
+									   == Model::SecondaryStructure::TYPE::STRAND ) ) )
 
 						{
 							residue.setSecondaryStructure( residue0.getSecondaryStructure() );
