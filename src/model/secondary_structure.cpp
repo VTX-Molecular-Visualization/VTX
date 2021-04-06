@@ -45,8 +45,8 @@ namespace VTX
 				// Not enought residues.
 				if ( residueCount < 4 ) /// TODO: what to do ?
 				{
-					VTX_DEBUG( "Chain residue count < 4" );
-					std::cout << "residue count < 4 in chain " << chain->getName() << std::endl;
+					// VTX_DEBUG( "Chain residue count < 4" );
+					// std::cout << "residue count < 4 in chain " << chain->getName() << std::endl;
 					continue;
 				}
 
@@ -77,7 +77,7 @@ namespace VTX
 						// What to do, skip residue, skip all the chain or split the chain into multiple ribbons?
 						const std::string msg = "Missing carbon alpha in chain " + chain->getName() + " residue "
 												+ residue->getSymbolName();
-						VTX_DEBUG( msg );
+						// VTX_DEBUG( msg );
 						continue;
 					}
 					// Missing oxygen atom.
@@ -85,7 +85,7 @@ namespace VTX
 					{
 						const std::string msg
 							= "Missing oxygen in chain " + chain->getName() + " residue " + residue->getSymbolName();
-						VTX_DEBUG( msg );
+						// VTX_DEBUG( msg );
 						continue;
 					}
 					/// TODO: For all these "what to do ?" I think we should render it with spheres or b&s...
@@ -136,7 +136,7 @@ namespace VTX
 
 					const size_t nbControlPoints = caPositions.size();
 
-					_residueToPositions.emplace( residueIndex[ 0 ], uint( _bufferCaPositions.size() ) );
+					//_residueToPositions.emplace( residueIndex[ 0 ], uint( _bufferCaPositions.size() ) );
 					const uint offset = uint( _bufferCaPositions.size() );
 
 					// Add segment with duplicate first index to evaluate B-spline at 0-1.
@@ -159,11 +159,12 @@ namespace VTX
 					}
 
 					// Update mappping.
+					/*
 					_residueToPositions.emplace( residueIndex[ nbControlPoints - 1 ],
 												 uint( _bufferCaPositions.size() + nbControlPoints - 1 ) );
 					_residueToPositions.emplace( residueIndex[ nbControlPoints - 2 ],
 												 uint( _bufferCaPositions.size() + nbControlPoints - 2 ) );
-
+*/
 					/// TODO: better on GPU ?
 					_checkOrientationAndFlip( caODirections );
 
@@ -177,9 +178,9 @@ namespace VTX
 			}
 
 			// Reverse indices to render the other side.
-			/*::vector<uint> indicesReverse = _bufferIndices;
-			std::reverse( indicesReverse.begin(), indicesReverse.end() );
-			_bufferIndices.insert( _bufferIndices.end(), indicesReverse.begin(), indicesReverse.end() );*/
+			// std::vector<uint> indicesReverse = _bufferIndices;
+			// std::reverse( indicesReverse.begin(), indicesReverse.end() );
+			//_bufferIndices.insert( _bufferIndices.end(), indicesReverse.begin(), indicesReverse.end() );
 
 			_bufferCaPositions.shrink_to_fit();
 			_bufferCaODirections.shrink_to_fit();
@@ -187,7 +188,7 @@ namespace VTX
 			_bufferColors.shrink_to_fit();
 			_bufferIndices.shrink_to_fit();
 
-			std::cout << "-------> " << _bufferIndices.size() << std::endl;
+			// std::cout << "-------> " << _bufferIndices.size() << std::endl;
 
 			chrono.stop();
 			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
@@ -209,8 +210,9 @@ namespace VTX
 
 		const Math::Transform & SecondaryStructure::getTransform() const { return _molecule->getTransform(); };
 
-		void SecondaryStructure::_computeAABB() const{ 
-			///TODO peut-être ?
+		void SecondaryStructure::_computeAABB() const
+		{
+			/// TODO peut-être ?
 		}
 
 		void SecondaryStructure::_instantiate3DViews()
@@ -221,64 +223,8 @@ namespace VTX
 
 		void SecondaryStructure::setCurrentFrame()
 		{
-			/// TODO: re do !
+			// TODO: redo with dynamic.
 			VTX_WARNING( "SecondaryStructure::setCurrentFrame() not implemented" );
-			/*const Molecule::AtomPositionsFrame & positions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
-
-			_bufferCaPositions.clear();
-			_bufferCaODirections.clear();
-
-			Vec3f directionLast;
-			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
-			{
-				const Chain * const chain		 = _molecule->getChain( chainIdx );
-				uint				residueCount = chain->getResidueCount();
-
-				if ( residueCount < 4 )
-				{
-					VTX_DEBUG( "Chain residue count < 4" );
-					continue;
-				}
-
-				uint validResidueCount = 0;
-				uint idxFirstResidue   = chain->getIndexFirstResidue();
-				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
-				{
-					const Residue * const	  residue = _molecule->getResidue( idxFirstResidue + residueIdx );
-					const Model::Atom * const CA	  = residue->findFirstAtomByName( "CA" );
-					const Model::Atom * const O		  = residue->findFirstAtomByName( "O" );
-
-					if ( CA == nullptr )
-					{
-						continue;
-					}
-					if ( O == nullptr )
-					{
-						VTX_DEBUG( "Missing oxygen atom in amine acid" );
-						continue;
-					}
-
-					const Vec3f & positionCA = positions[ CA->getIndex() ];
-					const Vec3f & positionO	 = positions[ O->getIndex() ];
-
-					_bufferCaPositions.emplace_back( positionCA );
-
-					Vec3f direction = Util::Math::normalize( positionO - positionCA );
-					if ( validResidueCount > 0 )
-					{
-						_flipTest( direction, directionLast );
-					}
-					_bufferCaODirections.emplace_back( direction );
-
-					validResidueCount++;
-				}
-			}
-
-			_bufferCaPositions.shrink_to_fit();
-			_bufferCaODirections.shrink_to_fit();*/
-
-			_buffer->setControlPointPositions( _bufferCaPositions );
-			_buffer->setControlPointDirections( _bufferCaODirections );
 		}
 
 		void SecondaryStructure::_fillBufferColors()

@@ -51,12 +51,12 @@ const mat4	BSPLINE_MAT = ( 1.f / 6.f ) * mat4( -1.f,  3.f, -3.f, 1.f,
 												 1.f,  4.f,  1.f, 0.f );
 // clang-format on
 
-const float DIRECTION_FACTOR[] = float[]( 4.f, // HELIX_ALPHA_RIGHT
-										  4.f, // HELIX_ALPHA_LEFT
-										  4.f, // HELIX_3_10_RIGHT
-										  4.f, // HELIX_3_10_LEFT
-										  4.f, // HELIX_PI
-										  4.f, // STRAND
+const float DIRECTION_FACTOR[] = float[]( 2.f, // HELIX_ALPHA_RIGHT
+										  2.f, // HELIX_ALPHA_LEFT
+										  2.f, // HELIX_3_10_RIGHT
+										  2.f, // HELIX_3_10_LEFT
+										  2.f, // HELIX_PI
+										  3.f, // STRAND
 										  1.f, // TURN
 										  1.f  // COIL
 );
@@ -130,7 +130,8 @@ void main()
 
 	teOut.viewPosition = vec3( u_MVMatrix * vec4( position, 1.f ) );
 	teOut.normal = vec3( u_normalMatrix * vec4( normal, 1.f ) );
-	teOut.color = mix( tcOut[ 1 ].color, tcOut[ 2 ].color, gl_TessCoord.x );
+	//teOut.color = mix( tcOut[ 1 ].color, tcOut[ 2 ].color, gl_TessCoord.x );
+	teOut.color =  tcOut[ 1 ].color;
 	teOut.selection = tcOut[ 1 ].selection;
 
 	gl_Position = u_projMatrix * vec4( teOut.viewPosition, 1.f );

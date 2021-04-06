@@ -20,11 +20,7 @@ void main()
 {
 	vsOut.position	= vao_controlPointPosition;
 	vsOut.direction = vao_controlPointDirection;
-	/// TODO: change it! Just for debug
-	if (vao_ssType < 5us) vsOut.color = vec3(0.8f,0.f,0.f);
-	else if (vao_ssType == 5us) vsOut.color = vec3( 0.9f,0.9f,0.f);
-	else vsOut.color = vsOut.color = vec3(0.1f,0.1f,0.9f);
-	//vsOut.color		= vao_color;
+	vsOut.color		= vao_color;
 	vsOut.ssType	= vao_ssType;
 	vsOut.selection = vao_controlPointSelection;
 }
