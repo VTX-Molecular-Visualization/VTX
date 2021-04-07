@@ -3,14 +3,12 @@
 
 #ifdef _MSC_VER
 #pragma once
-#endif
-
 #define __STDC_LIB_EXT1__ 1
+#endif
 
 #include <algorithm>
 #include <chrono>
-#include <ctime>
-#include <iostream>
+#include <string>
 #include <time.h>
 
 namespace VTX
@@ -19,17 +17,20 @@ namespace VTX
 	{
 		namespace Time
 		{
-			inline __time64_t getNow()
-			{
-				return std::chrono::system_clock::to_time_t( std::chrono::system_clock::now() );
-			}
+			// inline std::chrono::steady_clock::time_point getNow() { return std::chrono::high_resolution_clock::now();
+			// }
 
 			static std::string getNowString()
 			{
-				__time64_t now = getNow();
+#ifdef __STDC_LIB_EXT1__
+				__time64_t now = std::chrono::system_clock::to_time_t( std::chrono::system_clock::now() );
 				char	   nowStr[ 26 ];
 				ctime_s( nowStr, 26 * sizeof( char ), &now );
 				std::string string( nowStr );
+#else
+				time_t		result = time( NULL );
+				std::string string( ctime( &result ) );
+#endif
 
 				// Substring to remove newline.
 				return string.substr( 11, string.length() - 17 );
