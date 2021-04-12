@@ -6,7 +6,6 @@ namespace VTX::Buffer
 	{
 		gl()->glCreateBuffers( 1, &_vboPositions );
 		gl()->glCreateBuffers( 1, &_vboDirections );
-		gl()->glCreateBuffers( 1, &_vboNormals );
 		gl()->glCreateBuffers( 1, &_vboSecondaryStructures );
 		gl()->glCreateBuffers( 1, &_vboColors );
 		gl()->glCreateBuffers( 1, &_vboSelections );
@@ -19,8 +18,8 @@ namespace VTX::Buffer
 		// Control point position.
 		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
 		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, _vboPositions, 0, sizeof( Vec3f ) );
-		gl()->glVertexArrayAttribFormat( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, 3, GL_FLOAT, GL_FALSE, 0 );
+			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, _vboPositions, 0, sizeof( Vec4f ) );
+		gl()->glVertexArrayAttribFormat( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, 4, GL_FLOAT, GL_FALSE, 0 );
 		gl()->glVertexArrayAttribBinding(
 			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
 
@@ -31,14 +30,6 @@ namespace VTX::Buffer
 		gl()->glVertexArrayAttribFormat( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, 3, GL_FLOAT, GL_FALSE, 0 );
 		gl()->glVertexArrayAttribBinding(
 			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
-
-		// Control point normal.
-		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL );
-		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL, _vboNormals, 0, sizeof( Vec3f ) );
-		gl()->glVertexArrayAttribFormat( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL, 3, GL_FLOAT, GL_FALSE, 0 );
-		gl()->glVertexArrayAttribBinding(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL, ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL );
 
 		// Control point secondary structure.
 		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
@@ -73,7 +64,6 @@ namespace VTX::Buffer
 		{
 			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
 			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
-			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_NORMAL );
 			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
 			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
 			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
@@ -88,10 +78,6 @@ namespace VTX::Buffer
 		if ( _vboDirections != GL_INVALID_VALUE )
 		{
 			gl()->glDeleteBuffers( 1, &_vboDirections );
-		}
-		if ( _vboNormals != GL_INVALID_VALUE )
-		{
-			gl()->glDeleteBuffers( 1, &_vboNormals );
 		}
 		if ( _vboSecondaryStructures != GL_INVALID_VALUE )
 		{
@@ -114,22 +100,16 @@ namespace VTX::Buffer
 	void SecondaryStructure::bind() { gl()->glBindVertexArray( _vao ); }
 	void SecondaryStructure::unbind() { gl()->glBindVertexArray( 0 ); }
 
-	void SecondaryStructure::setControlPointPositions( const std::vector<Vec3f> & p_positions )
+	void SecondaryStructure::setControlPointPositions( const std::vector<Vec4f> & p_positions )
 	{
 		gl()->glNamedBufferData(
-			_vboPositions, GLsizei( p_positions.size() ) * sizeof( Vec3f ), p_positions.data(), GL_STATIC_DRAW );
+			_vboPositions, GLsizei( p_positions.size() ) * sizeof( Vec4f ), p_positions.data(), GL_STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setControlPointDirections( const std::vector<Vec3f> & p_directions )
 	{
 		gl()->glNamedBufferData(
 			_vboDirections, GLsizei( p_directions.size() ) * sizeof( Vec3f ), p_directions.data(), GL_STATIC_DRAW );
-	}
-
-	void SecondaryStructure::setControlPointNormals( const std::vector<Vec3f> & p_normals )
-	{
-		gl()->glNamedBufferData(
-			_vboNormals, GLsizei( p_normals.size() ) * sizeof( Vec3f ), p_normals.data(), GL_STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setControlPointSecondaryStructure( const std::vector<ushort> & p_ss )

@@ -9,14 +9,11 @@
 #include "define.hpp"
 #include <fstream>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
+#include <Windows.h>
 #include <direct.h>
-#include <windows.h>
-#define GetCurrentDir _getcwd
 #else
-#include <limits.h>
 #include <unistd.h>
-#define GetCurrentDir getcwd
 #endif
 
 namespace VTX
@@ -28,42 +25,37 @@ namespace VTX
 			// Test only.
 			static const FilePath DATA_DIR = "../data";
 
-			inline const FilePath getCurrentDir()
-			{
-				char * buff;
-				buff = GetCurrentDir( 0, NULL );
-				FilePath currentWorkingDir( buff );
-				return currentWorkingDir;
-			}
-
 			inline const FilePath getExecutableFile()
 			{
-#ifdef _WIN32
+#ifdef _MSC_VER
 				wchar_t path[ MAX_PATH ] = { 0 };
 				GetModuleFileNameW( NULL, path, MAX_PATH );
-				FilePath exe( path );
-				return exe;
+				return FilePath( path );
 #else
-				char	result[ PATH_MAX ];
-				ssize_t count = readlink( "/proc/self/exe", result, PATH_MAX );
-				return std::string( result, ( count > 0 ) ? count : 0 );
+				char rawPathName[ PATH_MAX ];
+				realpath( "/proc/self/exe", rawPathName );
+				return Path( rawPathName );
 #endif
 			}
 
 			static const FilePath EXECUTABLE_FILE = getExecutableFile();
-			static const FilePath EXECUTABLE_DIR  = EXECUTABLE_FILE.parent_path();
-			static const FilePath SHADERS_DIR	  = FilePath( EXECUTABLE_DIR.string() + "/../../shaders" );
-			static const FilePath SNAPSHOTS_DIR	  = FilePath( EXECUTABLE_DIR.string() + "/../../snapshots" );
-			static const FilePath RENDERS_DIR	  = FilePath( EXECUTABLE_DIR.string() + "/../../renders" );
-			static const FilePath PATHS_DIR		  = FilePath( EXECUTABLE_DIR.string() + "/../../paths" );
-			static const FilePath VIDEOS_DIR	  = FilePath( EXECUTABLE_DIR.string() + "/../../videos" );
-			static const FilePath LOGS_DIR		  = FilePath( EXECUTABLE_DIR.string() + "/../../logs" );
-			static const FilePath LIBS_DIR		  = FilePath( EXECUTABLE_DIR.string() + "/.." );
+#ifdef _MSC_VER
+			static const FilePath EXECUTABLE_DIR = EXECUTABLE_FILE.parent_path().parent_path().parent_path();
+#else
+			static const Path EXECUTABLE_DIR = EXECUTABLE_FILE.parent_path().parent_path();
+#endif
+
+			static const FilePath SHADERS_DIR	= FilePath( EXECUTABLE_DIR.string() + "/shaders" );
+			static const FilePath SNAPSHOTS_DIR = FilePath( EXECUTABLE_DIR.string() + "/snapshots" );
+			static const FilePath RENDERS_DIR	= FilePath( EXECUTABLE_DIR.string() + "/renders" );
+			static const FilePath PATHS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/paths" );
+			static const FilePath VIDEOS_DIR	= FilePath( EXECUTABLE_DIR.string() + "/videos" );
+			static const FilePath LOGS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/logs" );
 
 			static const std::string IMGUI_INI_FILE
-				= FilePath( EXECUTABLE_DIR.string() + "/../../imgui.ini" ).string(); // TOFIX
+				= FilePath( EXECUTABLE_DIR.string() + "/imgui.ini" ).string(); // TOFIX
 			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/../../setting.json" );
-			static const FilePath FFMPEG_EXE_FILE	= FilePath( LIBS_DIR.string() + "/ffmpeg.exe" );
+			static const FilePath FFMPEG_EXE_FILE	= FilePath( "bin/ffmpeg.exe" );
 
 			inline FilePath * const getDataPathPtr( const std::string & p_filename )
 			{

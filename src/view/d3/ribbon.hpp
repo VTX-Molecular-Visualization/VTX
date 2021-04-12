@@ -27,7 +27,6 @@ namespace VTX
 
 			  private:
 				GLint _uCamPositionLoc = GL_INVALID_INDEX;
-				GLint _uMaxIndiceLoc   = GL_INVALID_INDEX;
 
 				explicit Ribbon( Model::SecondaryStructure * const p_model ) : BaseView3D( p_model ) {}
 			};
