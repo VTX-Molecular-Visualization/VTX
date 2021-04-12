@@ -17,6 +17,7 @@
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
+#include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
@@ -121,24 +122,7 @@ namespace VTX::Action::Chain
 			Model::Representation::Representation * const preset
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
-			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
-
-			for ( Model::Chain * const chain : _chains )
-			{
-				Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
-					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
-						preset );
-
-				// Compute molecules at end
-				chain->applyRepresentation( instantiatedRepresentation, false );
-				molecules.emplace( chain->getMolecule() );
-			}
-
-			for ( Model::Molecule * const molecule : molecules )
-			{
-				molecule->computeAllRepresentationData();
-			}
-
+			Representation::RepresentationManager::get().instantiateRepresentations( preset, _chains );
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
@@ -159,19 +143,7 @@ namespace VTX::Action::Chain
 
 		virtual void execute() override
 		{
-			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
-
-			for ( Model::Chain * const chain : _chains )
-			{
-				chain->removeRepresentation();
-				molecules.emplace( chain->getMolecule() );
-			}
-
-			for ( Model::Molecule * const molecule : molecules )
-			{
-				molecule->computeAllRepresentationData();
-			}
-
+			Representation::RepresentationManager::get().removeInstantiatedRepresentations( _chains );
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
@@ -319,32 +291,7 @@ namespace VTX::Action::Chain
 
 		virtual void execute() override
 		{
-			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
-
-			for ( Model::Chain * const chain : _chains )
-			{
-				Model::Representation::InstantiatedRepresentation * chainRepresentation;
-
-				if ( chain->hasCustomRepresentation() )
-				{
-					chainRepresentation = chain->getCustomRepresentation();
-				}
-				else
-				{
-					chainRepresentation
-						= Model::Representation::InstantiatedRepresentation::instantiateCopy( &_representation );
-					chain->setRepresentation( chainRepresentation );
-				}
-
-				chainRepresentation->applyData( _representation, _flag, false );
-				molecules.emplace( chain->getMolecule() );
-			}
-
-			for ( Model::Molecule * const molecule : molecules )
-			{
-				molecule->computeAllRepresentationData();
-			}
-
+			Representation::RepresentationManager::get().applyRepresentation( _chains, _representation, _flag );
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 

@@ -134,6 +134,8 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::clearTargets()
 	{
+		_resetFieldStates( SectionFlag::ALL );
+		
 		for ( Model::Chain * const chain : _targets )
 		{
 			// unlink inspector to prevent target update in view destructor

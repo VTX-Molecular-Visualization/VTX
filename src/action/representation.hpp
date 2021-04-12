@@ -16,6 +16,7 @@
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
+#include "setting.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Action::Representation
@@ -175,5 +176,61 @@ namespace VTX::Action::Representation
 		const float									  _radius;
 		Model::Representation::Representation * const _representation;
 	};
+
+	class AddNewPresetInLibrary : public BaseAction
+	{
+	  public:
+		explicit AddNewPresetInLibrary( const std::string & p_representationName ) :
+			_representationName( p_representationName )
+		{
+		}
+
+		void execute()
+		{
+			Model::Representation::Representation * const newRepresentation
+				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>(
+					VTX::Setting::DEFAULT_REPRESENTATION_TYPE );
+
+			newRepresentation->setName( _representationName );
+			Model::Representation::RepresentationLibrary::get().addRepresentation( newRepresentation );
+		};
+
+		const std::string _representationName;
+	};
+
+	class CopyPresetInLibrary : public BaseAction
+	{
+	  public:
+		explicit CopyPresetInLibrary( const int p_representationIndex ) : _representationIndex( p_representationIndex )
+		{
+		}
+
+		void execute()
+		{
+			Model::Representation::RepresentationLibrary::get().copyRepresentation( _representationIndex );
+		};
+
+	  private:
+		const int _representationIndex;
+	};
+
+	class DeletePresetInLibrary : public BaseAction
+	{
+	  public:
+		explicit DeletePresetInLibrary( const int p_representationIndex ) :
+			_representationIndex( p_representationIndex )
+		{
+		}
+
+		void execute()
+		{
+			Model::Representation::RepresentationLibrary::get().deleteRepresentation( _representationIndex );
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		};
+
+	  private:
+		const int _representationIndex;
+	};
+
 } // namespace VTX::Action::Representation
 #endif

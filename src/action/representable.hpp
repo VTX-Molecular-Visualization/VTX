@@ -39,7 +39,7 @@ namespace VTX::Action
 		{
 			if ( _selection != nullptr )
 			{
-				Representation::RepresentationManager::get().instantiateRepresentation( _representation, *_selection );
+				Representation::RepresentationManager::get().instantiateRepresentations( _representation, *_selection );
 			}
 			else
 			{

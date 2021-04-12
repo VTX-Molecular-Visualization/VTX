@@ -34,8 +34,6 @@ namespace VTX::Model::Representation
 		VTX_MODEL
 
 	  public:
-		static InstantiatedRepresentation * const instantiateCopy( const InstantiatedRepresentation * const p_source );
-
 		virtual void receiveEvent( const Event::VTXEvent & p_event );
 
 		const Generic::BaseRepresentable * const getTarget() const;
@@ -58,9 +56,9 @@ namespace VTX::Model::Representation
 											 const bool										 p_recomputeBuffers = true,
 											 const bool										 p_notify = true );
 
-		const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const
+		VTX::Representation::FlagDataTargeted getFlagDataTargeted() const
 		{
-			return _linkedRepresentation->getData().getFlagDataTargeted();
+			return VTX::Representation::getFlagDataTargeted( _linkedRepresentation->getRepresentationType() );
 		};
 
 		bool			   hasToDrawSphere() const { return _linkedRepresentation->getData().hasToDrawSphere(); };
@@ -76,9 +74,19 @@ namespace VTX::Model::Representation
 
 		void applyData( const InstantiatedRepresentation & p_source,
 						const MEMBER_FLAG &				   p_flag,
-						const bool						   p_recomputeBuffers = true );
+						const bool						   p_recomputeBuffers = true,
+						const bool						   p_notify			  = true );
 
+		const Generic::REPRESENTATION & getRepresentationType() const
+		{
+			return _linkedRepresentation->getRepresentationType();
+		}
 		const Representation * const getLinkedRepresentation() const { return _linkedRepresentation; }
+
+		void		copy( const InstantiatedRepresentation & p_source );
+		MEMBER_FLAG getOverridedMembersFlag() const;
+		void		refreshSourceValues();
+		void		onLinkedRepresentationChange( const Event::VTXEvent * const p_event );
 
 	  protected:
 		InstantiatedRepresentation( const Representation * const p_linkedRepresentation );
@@ -96,13 +104,9 @@ namespace VTX::Model::Representation
 		Generic::OverridableParameter<CylinderData> _cylinderData;
 		Generic::OverridableParameter<RibbonData>	_ribbonData;
 
-		void _refreshSourceValues();
+		virtual void _onDataChange() {}
 
 		void _updateTarget( const VTX::Representation::MoleculeComputationFlag & p_flag );
-
-	  private:
-		void	   _onLinkedRepresentationChange( const Event::VTXEvent * const p_event );
-		ID::VTX_ID getRepresentationViewID() const;
 	};
 
 } // namespace VTX::Model::Representation

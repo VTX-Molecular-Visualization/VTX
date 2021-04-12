@@ -14,8 +14,6 @@ namespace VTX::UI::Widget::Representation
 	BaseRepresentationWidget::BaseRepresentationWidget( QWidget * p_parent ) :
 		BaseManualWidget( p_parent ), TMultiDataField() {};
 
-	BaseRepresentationWidget::~BaseRepresentationWidget() {}
-
 	void BaseRepresentationWidget::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );

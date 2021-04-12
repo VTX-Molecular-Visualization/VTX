@@ -101,15 +101,7 @@ namespace VTX::Action::Molecule
 			Model::Representation::Representation * const preset
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
-			for ( Model::Molecule * const molecule : _molecules )
-			{
-				Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
-					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
-						preset );
-
-				molecule->applyRepresentation( instantiatedRepresentation );
-			}
-
+			Representation::RepresentationManager::get().instantiateRepresentations( preset, _molecules );
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
@@ -130,12 +122,7 @@ namespace VTX::Action::Molecule
 
 		virtual void execute() override
 		{
-			for ( Model::Molecule * const molecule : _molecules )
-			{
-				molecule->removeRepresentation();
-				molecule->computeAllRepresentationData();
-			}
-
+			Representation::RepresentationManager::get().removeInstantiatedRepresentations( _molecules );
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
@@ -379,25 +366,7 @@ namespace VTX::Action::Molecule
 
 		virtual void execute() override
 		{
-			for ( Model::Molecule * const molecule : _molecules )
-			{
-				Model::Representation::InstantiatedRepresentation * moleculeRepresentation;
-
-				if ( molecule->hasCustomRepresentation() )
-				{
-					moleculeRepresentation = molecule->getCustomRepresentation();
-				}
-				else
-				{
-					moleculeRepresentation = Model::Representation::InstantiatedRepresentation::instantiateCopy(
-						molecule->getRepresentation() );
-
-					molecule->applyRepresentation( moleculeRepresentation );
-				}
-
-				moleculeRepresentation->applyData( _representation, _flag );
-			}
-
+			Representation::RepresentationManager::get().applyRepresentation( _molecules, _representation, _flag );
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 

@@ -16,6 +16,7 @@ namespace VTX
 	namespace Generic
 	{
 		enum class COLOR_MODE;
+		enum class REPRESENTATION;
 	} // namespace Generic
 
 	namespace Renderer
@@ -59,6 +60,11 @@ namespace VTX
 
 		static const int REPRESENTATION_DEFAULT_INDEX;
 		int				 representation = REPRESENTATION_DEFAULT_INDEX;
+
+		static const Generic::REPRESENTATION DEFAULT_REPRESENTATION_TYPE;
+		Generic::REPRESENTATION				 defaultRepresentationType = DEFAULT_REPRESENTATION_TYPE;
+		static const std::string			 NEW_REPRESENTATION_DEFAULT_NAME;
+		std::string							 newRepresentationDefaultName = NEW_REPRESENTATION_DEFAULT_NAME;
 
 		static const float ATOMS_RADIUS_DEFAULT;
 		static const float ATOMS_RADIUS_MIN;

@@ -75,6 +75,8 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleAtomWidget::clearTargets()
 	{
+		_resetFieldStates( SectionFlag::ALL );
+		
 		for ( Model::Atom * const atom : _targets )
 		{
 			// unlink inspector to prevent target update in view destructor

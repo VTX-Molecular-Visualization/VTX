@@ -73,7 +73,8 @@ namespace VTX::Model::Representation
 		_data->setLinkedRepresentation( this );
 
 		if ( p_notify )
-			_notifyDataChanged();
-
-	} // namespace VTX::Model::Representation
+		{
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_TYPE_CHANGE ) );
+		}
+	}
 } // namespace VTX::Model::Representation

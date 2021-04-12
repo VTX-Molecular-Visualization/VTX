@@ -1,5 +1,6 @@
 #include "representation_library_view.hpp"
 #include "action/action_manager.hpp"
+#include "action/representation.hpp"
 #include "id.hpp"
 #include "model/representation/representation.hpp"
 #include "ui/widget_factory.hpp"
@@ -15,14 +16,13 @@ namespace VTX::View::UI::Widget::Representation
 	{
 	}
 
-	void RepresentationLibraryView::notify( const Event::VTXEvent * const p_event ) {}
-
 	void RepresentationLibraryView::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
 		setContentsMargins( 0, 0, 0, 0 );
 
 		QHBoxLayout * const horizontalLayout = new QHBoxLayout( this );
+		QHBoxLayout * const headerLayout	 = new QHBoxLayout();
 		QVBoxLayout * const verticalLayout	 = new QVBoxLayout();
 
 		const int currentIndex = 0;
@@ -33,13 +33,22 @@ namespace VTX::View::UI::Widget::Representation
 		_representationPresetEditor = VTX::UI::WidgetFactory::get().instantiateWidget<RepresentationPresetEditor>(
 			this, "renderEffectPresetEdition" );
 
-		verticalLayout->addWidget( _presetList );
-		verticalLayout->addWidget( _representationPresetEditor );
-		// verticalLayout->addStretch( 1 );
+		_addPresetButton = new QPushButton( this );
+		_addPresetButton->setIcon( QIcon( ":/sprite/add_preset_icon.png" ) );
+		_copyPresetButton = new QPushButton( this );
+		_copyPresetButton->setIcon( QIcon( ":/sprite/copy_preset_icon.png" ) );
+		_deletePresetButton = new QPushButton( this );
+		_deletePresetButton->setIcon( QIcon( ":/sprite/delete_preset_icon.png" ) );
 
-		// horizontalLayout->addStretch( 2 );
+		headerLayout->addWidget( _presetList, 10 );
+		headerLayout->addWidget( _addPresetButton );
+		headerLayout->addWidget( _copyPresetButton );
+		headerLayout->addWidget( _deletePresetButton );
+
+		verticalLayout->addItem( headerLayout );
+		verticalLayout->addWidget( _representationPresetEditor );
+
 		horizontalLayout->addItem( verticalLayout );
-		// horizontalLayout->addStretch( 2 );
 
 		_representationPresetEditor->setPreset( _model->getRepresentation( _presetList->currentIndex() ), false );
 	}
@@ -50,6 +59,10 @@ namespace VTX::View::UI::Widget::Representation
 				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
 				 this,
 				 &RepresentationLibraryView::_onPresetIndexChanged );
+
+		connect( _addPresetButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onAddPreset );
+		connect( _copyPresetButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onCopyPreset );
+		connect( _deletePresetButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onDeletePreset );
 	}
 
 	void RepresentationLibraryView::localize() {}
@@ -57,6 +70,19 @@ namespace VTX::View::UI::Widget::Representation
 	void RepresentationLibraryView::_refreshView() { _refreshPresetDisplayed(); }
 
 	void RepresentationLibraryView::_onPresetIndexChanged( const int p_newIndex ) { _refreshPresetDisplayed(); }
+
+	void RepresentationLibraryView::_onAddPreset() const
+	{
+		VTX_ACTION( new Action::Representation::AddNewPresetInLibrary( Setting::NEW_REPRESENTATION_DEFAULT_NAME ) );
+	}
+	void RepresentationLibraryView::_onCopyPreset() const
+	{
+		VTX_ACTION( new Action::Representation::CopyPresetInLibrary( _presetList->currentIndex() ) );
+	}
+	void RepresentationLibraryView::_onDeletePreset() const
+	{
+		VTX_ACTION( new Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ) );
+	}
 
 	void RepresentationLibraryView::_buildPresetList()
 	{

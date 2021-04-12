@@ -32,7 +32,6 @@ namespace VTX::UI::Widget::Representation
 		using InstantiatedRepresentation	 = Model::Representation::InstantiatedRepresentation;
 		using InstantiatedRepresentationView = View::UI::Widget::Representation::InstantiatedRepresentationView;
 
-		~BaseRepresentationWidget();
 		void refresh();
 
 		void setRepresentation( InstantiatedRepresentation * const p_representation );

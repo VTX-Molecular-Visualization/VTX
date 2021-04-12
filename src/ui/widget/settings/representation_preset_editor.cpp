@@ -136,7 +136,7 @@ namespace VTX::UI::Widget::Settings
 	{
 		switch ( _preset->getRepresentationType() )
 		{
-		case Generic::REPRESENTATION::BALL_AND_STICK: _refreshBallStickAndCartoonRepresentation(); break;
+		case Generic::REPRESENTATION::BALL_AND_STICK: _refreshBallAndStickRepresentation(); break;
 		case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON: _refreshBallStickAndCartoonRepresentation(); break;
 		case Generic::REPRESENTATION::STICK: _refreshStickRepresentation(); break;
 		case Generic::REPRESENTATION::STICK_AND_CARTOON: _refreshStickAndCartoonRepresentation(); break;

@@ -70,13 +70,12 @@ namespace VTX
 			const Math::AABB getAABB() const;
 			const Math::AABB getWorldAABB() const;
 
-			void applyRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation,
-									  const bool p_recompute = true );
-			void removeRepresentation();
 			void removeChildrenRepresentations() const;
 
 		  protected:
 			Chain() : BaseModel( ID::Model::MODEL_CHAIN ) {}
+
+			void _onRepresentationChange() override;
 
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;

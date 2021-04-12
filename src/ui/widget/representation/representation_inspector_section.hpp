@@ -6,6 +6,7 @@
 #endif
 
 #include "color/rgb.hpp"
+#include "event/event.hpp"
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
 #include "model/representation/instantiated_representation.hpp"
@@ -56,7 +57,10 @@ namespace VTX::UI::Widget::Representation
 		void refresh();
 
 		void resetState() override;
+		void resetState( const bool p_deleteViews, const bool p_deleteDataWidget );
+
 		void updateWithNewValue( const InstantiatedRepresentation & p_representation ) override;
+		void updateWithNewValue( const InstantiatedRepresentation & p_representation, const bool p_instantiateViews );
 
 		void setActionButtonVisibility( const ActionButtons & p_buttons );
 
@@ -88,6 +92,9 @@ namespace VTX::UI::Widget::Representation
 		QPushButton *						  _applyToChildrenButton	   = nullptr;
 		QPushButton *						  _revertButton				   = nullptr;
 
+		std::unordered_set<const InstantiatedRepresentation *> _representations
+			= std::unordered_set<const InstantiatedRepresentation *>();
+
 		Model::Representation::InstantiatedRepresentation * _dummyRepresentation;
 		int													_baseRepresentationIndex = -1;
 
@@ -100,6 +107,9 @@ namespace VTX::UI::Widget::Representation
 		void _representationColorChange( const Color::Rgb & p_color, const bool p_ssColor );
 		void _revertRepresentation();
 		void _applyRepresentationToChildren();
+
+		void _onTargetedRepresentationChange( const Event::VTXEvent * const p_event );
+		void _onDummyChange( const Event::VTXEvent * const p_event );
 	};
 
 } // namespace VTX::UI::Widget::Representation

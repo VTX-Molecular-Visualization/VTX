@@ -83,6 +83,11 @@ namespace VTX
 
 		delete _timer;
 
+		MVC::MvcManager::get().deleteModel( _representationLibrary );
+		MVC::MvcManager::get().deleteModel( _renderEffectLibrary );
+
+		Selection::SelectionManager::get().deleteModel();
+
 		if ( _stateMachine != nullptr )
 		{
 			delete _stateMachine;

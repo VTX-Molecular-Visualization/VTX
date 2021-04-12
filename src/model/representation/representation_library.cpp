@@ -9,6 +9,14 @@ namespace VTX::Model::Representation
 {
 	RepresentationLibrary & RepresentationLibrary::get() { return VTXApp::get().getRepresentationLibrary(); };
 
+	RepresentationLibrary ::~RepresentationLibrary()
+	{
+		while ( _representations.size() > 0 )
+		{
+			deleteRepresentation( 0, false );
+		}
+	}
+
 	Representation * const RepresentationLibrary::getRepresentation( const int p_index )
 	{
 		if ( 0 <= p_index && p_index < _representations.size() )
@@ -70,8 +78,19 @@ namespace VTX::Model::Representation
 		if ( p_notify )
 			_notifyDataChanged();
 	};
-	void RepresentationLibrary::removeRepresentation( const int p_index, const bool p_notify )
+	void RepresentationLibrary::copyRepresentation( const int p_index, const bool p_notify )
 	{
+		Representation * const sourceRepresentation = _representations[ p_index ];
+		Representation * const copiedRepresentation
+			= MVC::MvcManager::get().instantiateModel<Representation>( *sourceRepresentation );
+		copiedRepresentation->setName( "copy of " + sourceRepresentation->getName() );
+
+		addRepresentation( copiedRepresentation, p_notify );
+	}
+	Representation * RepresentationLibrary::removeRepresentation( const int p_index, const bool p_notify )
+	{
+		Representation * const removedRepresentation = _representations[ p_index ];
+
 		MVC::MvcManager::get().deleteView( _representations[ p_index ], ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
 
 		if ( 0 <= p_index && p_index < _representations.size() )
@@ -79,7 +98,13 @@ namespace VTX::Model::Representation
 
 		if ( p_notify )
 			_notifyDataChanged();
+
+		return removedRepresentation;
 	};
+	void RepresentationLibrary::deleteRepresentation( const int p_index, const bool p_notify )
+	{
+		MVC::MvcManager::get().deleteModel( removeRepresentation( p_index, p_notify ) );
+	}
 
 	void RepresentationLibrary::_init()
 	{

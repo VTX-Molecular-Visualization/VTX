@@ -21,7 +21,8 @@ namespace VTX::Model::Representation
 		COLOR_MODE			= 1 << 4,
 		SS_COLOR_MODE		= 1 << 5,
 
-		ALL = 0xFFFF
+		NONE = 0,
+		ALL	 = 0xFFFF
 	};
 
 	class Representation;
@@ -47,7 +48,10 @@ namespace VTX::Model::Representation
 		Generic::SECONDARY_STRUCTURE_COLOR_MODE &		getSecondaryStructureColorMode();
 		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
 
-		const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const { return _dataTargeted; };
+		const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const
+		{
+			return VTX::Representation::getFlagDataTargeted( _representationType );
+		};
 
 		bool			   hasToDrawSphere() const { return _sphereData != nullptr; };
 		const SphereData & getSphereData() const { return *_sphereData; };
@@ -70,10 +74,9 @@ namespace VTX::Model::Representation
 	  protected:
 		const Generic::REPRESENTATION _representationType = Generic::REPRESENTATION::COUNT;
 
-		VTX::Representation::FlagDataTargeted _dataTargeted = VTX::Representation::FlagDataTargeted::NONE;
-		SphereData *						  _sphereData	= nullptr;
-		CylinderData *						  _cylinderData = nullptr;
-		RibbonData *						  _ribbonData	= nullptr;
+		SphereData *   _sphereData	 = nullptr;
+		CylinderData * _cylinderData = nullptr;
+		RibbonData *   _ribbonData	 = nullptr;
 
 		Generic::COLOR_MODE						_colorMode	 = Generic::COLOR_MODE::ATOM_CHAIN;
 		Generic::SECONDARY_STRUCTURE_COLOR_MODE _ssColorMode = Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;

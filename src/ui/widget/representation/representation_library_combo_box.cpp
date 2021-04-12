@@ -12,7 +12,9 @@ namespace VTX::UI::Widget::Representation
 	}
 	RepresentationLibraryComboBox::~RepresentationLibraryComboBox()
 	{
-		MVC::MvcManager::get().deleteView( &Model::Representation::RepresentationLibrary::get(), _viewID );
+		// Check view if setting window destroy before combo box (view can be destroyed twice)
+		if ( MVC::MvcManager::get().hasView( &Model::Representation::RepresentationLibrary::get(), _viewID ) )
+			MVC::MvcManager::get().deleteView( &Model::Representation::RepresentationLibrary::get(), _viewID );
 	}
 
 	void RepresentationLibraryComboBox::_setupUi( const QString & p_name )
@@ -54,13 +56,18 @@ namespace VTX::UI::Widget::Representation
 
 	void RepresentationLibraryComboBox::_onRepresentationLibraryChange( const Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
+		if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE || p_event->name == Event::Model::DATA_CHANGE )
 		{
 			_fillItemList();
 
 			if ( hasDifferentData() )
 				_displayDifferentsDataFeedback();
 		}
+	}
+
+	void RepresentationLibraryComboBox::wheelEvent( QWheelEvent * event )
+	{
+		// Don't scroll on wheel event
 	}
 
 } // namespace VTX::UI::Widget::Representation

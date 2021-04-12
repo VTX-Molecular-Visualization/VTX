@@ -26,6 +26,7 @@ namespace VTX
 
 			inline const Model::Selection & getSelectionModel() const { return *_selectionModel; }
 			inline Model::Selection &		getSelectionModel() { return *_selectionModel; }
+			void							deleteModel();
 
 			// For further feature: multiselecction.
 			// void addSelectionObject();

@@ -30,12 +30,14 @@ namespace VTX::Model::Representation
 
 		int getRepresentationCount() const;
 
-		void addRepresentation( Representation * const p_representation, const bool p_notify = true );
-		void removeRepresentation( const int p_index, const bool p_notify = true );
+		void			 addRepresentation( Representation * const p_representation, const bool p_notify = true );
+		void			 copyRepresentation( const int p_index, const bool p_notify = true );
+		Representation * removeRepresentation( const int p_index, const bool p_notify = true );
+		void			 deleteRepresentation( const int p_index, const bool p_notify = true );
 
 	  protected:
 		inline RepresentationLibrary() : BaseModel( ID::Model::MODEL_REPRESENTATION_LIBRARY ) { _init(); };
-		~RepresentationLibrary() = default;
+		~RepresentationLibrary();
 
 		virtual void _onRepresentationChange( const Event::VTXEvent * const p_event );
 

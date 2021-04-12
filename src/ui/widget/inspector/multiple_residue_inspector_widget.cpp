@@ -132,6 +132,8 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleResidueWidget::clearTargets()
 	{
+		_resetFieldStates( SectionFlag::ALL );
+		
 		for ( Model::Residue * const residue : _targets )
 		{
 			// unlink inspector to prevent target update in view destructor

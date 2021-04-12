@@ -170,6 +170,8 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::clearTargets()
 	{
+		_resetFieldStates( SectionFlag::ALL);
+
 		for ( Model::Molecule * const molecule : _targets )
 		{
 			// unlink inspector to prevent target update in view destructor

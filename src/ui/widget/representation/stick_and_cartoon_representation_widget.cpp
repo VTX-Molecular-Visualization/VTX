@@ -37,8 +37,9 @@ namespace VTX::UI::Widget::Representation
 
 		_instantiatedRepresentation->setCylinderRadius( p_newRadius );
 
-		emit onDataChange( Model::Representation::MEMBER_FLAG(Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS
-						   | Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED) );
+		emit onDataChange(
+			Model::Representation::MEMBER_FLAG( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS
+												| Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
 	}
 
 } // namespace VTX::UI::Widget::Representation

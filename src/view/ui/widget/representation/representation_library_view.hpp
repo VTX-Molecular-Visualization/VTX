@@ -28,7 +28,6 @@ namespace VTX::View::UI::Widget::Representation
 
 	  public:
 		void localize() override;
-		void notify( const Event::VTXEvent * const p_event ) override;
 
 	  protected:
 		RepresentationLibraryView( Model::Representation::RepresentationLibrary * const p_model,
@@ -39,12 +38,20 @@ namespace VTX::View::UI::Widget::Representation
 		void _refreshView() override;
 
 		void _onPresetIndexChanged( const int p_newIndex );
+		void _onAddPreset() const;
+		void _onCopyPreset() const;
+		void _onDeletePreset() const;
+
 		void _refreshPresetDisplayed();
 		void _buildPresetList();
 
 	  private:
-		RepresentationLibraryComboBox * _presetList;
-		RepresentationPresetEditor *	_representationPresetEditor;
+		RepresentationLibraryComboBox * _presetList					= nullptr;
+		RepresentationPresetEditor *	_representationPresetEditor = nullptr;
+
+		QPushButton * _addPresetButton	  = nullptr;
+		QPushButton * _copyPresetButton	  = nullptr;
+		QPushButton * _deletePresetButton = nullptr;
 	};
 } // namespace VTX::View::UI::Widget::Representation
 #endif

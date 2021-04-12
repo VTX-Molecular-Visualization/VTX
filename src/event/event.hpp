@@ -56,6 +56,7 @@ namespace VTX
 			DISPLAY_NAME_CHANGE,
 			QUICK_ACCESS_CHANGE,
 			SUBITEM_DATA_CHANGE,
+			REPRESENTATION_TYPE_CHANGE,
 		};
 
 		// Base event without args.

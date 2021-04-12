@@ -71,10 +71,12 @@ namespace VTX
 			{
 				const MvcData * const mvc = _container[ p_model->getId() ];
 				_container.erase( p_model->getId() );
+
 				for ( const std::pair<ID::VTX_ID, View::BaseView<Model::BaseModel> *> & pair : mvc->getViews() )
 				{
 					delete pair.second;
 				}
+
 				delete mvc;
 				delete p_model;
 			}
@@ -174,7 +176,7 @@ namespace VTX
 			MvcManager()					 = default;
 			MvcManager( const MvcManager & ) = delete;
 			MvcManager & operator=( const MvcManager & ) = delete;
-			~MvcManager() { assert( _container.size() != 0 ); }
+			~MvcManager() { assert( _container.size() == 0 ); }
 
 			std::unordered_map<uint, MvcData *> _container = std::unordered_map<uint, MvcData *>();
 		};

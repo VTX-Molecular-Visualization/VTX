@@ -6,38 +6,31 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
-#include "view/callback_view.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Model::Representation
 {
-	InstantiatedRepresentation * const InstantiatedRepresentation::instantiateCopy(
-		const InstantiatedRepresentation * const p_source )
+	void InstantiatedRepresentation::copy( const InstantiatedRepresentation & p_source )
 	{
-		InstantiatedRepresentation * const res
-			= MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>( p_source->_linkedRepresentation );
+		if ( p_source._color.isOverrided() )
+			_color.setValue( p_source._color.getValue() );
 
-		if ( p_source->_color.isOverrided() )
-			res->_color.setValue( p_source->_color.getValue() );
+		if ( p_source._colorMode.isOverrided() )
+			_colorMode.setValue( p_source._colorMode.getValue() );
 
-		if ( p_source->_colorMode.isOverrided() )
-			res->_colorMode.setValue( p_source->_colorMode.getValue() );
+		if ( p_source._ssColorMode.isOverrided() )
+			_ssColorMode.setValue( p_source._ssColorMode.getValue() );
 
-		if ( p_source->_ssColorMode.isOverrided() )
-			res->_ssColorMode.setValue( p_source->_ssColorMode.getValue() );
+		if ( p_source._sphereData.isOverrided() )
+			_sphereData.setValue( p_source._sphereData.getValue() );
 
-		if ( p_source->_sphereData.isOverrided() )
-			res->_sphereData.setValue( p_source->_sphereData.getValue() );
+		if ( p_source._cylinderData.isOverrided() )
+			_cylinderData.setValue( p_source._cylinderData.getValue() );
 
-		if ( p_source->_cylinderData.isOverrided() )
-			res->_cylinderData.setValue( p_source->_cylinderData.getValue() );
+		if ( p_source._ribbonData.isOverrided() )
+			_ribbonData.setValue( p_source._ribbonData.getValue() );
 
-		if ( p_source->_ribbonData.isOverrided() )
-			res->_ribbonData.setValue( p_source->_ribbonData.getValue() );
-
-		res->setTarget( p_source->_target );
-
-		return res;
+		_target = p_source._target;
 	}
 
 	InstantiatedRepresentation::InstantiatedRepresentation( const Representation * const p_linkedRepresentation ) :
@@ -51,29 +44,14 @@ namespace VTX::Model::Representation
 		_ribbonData( Generic::OverridableParameter( _linkedRepresentation->getData().getRibbonData() ) )
 	{
 		_registerEvent( Event::Global::MOLECULE_COLOR_CHANGE );
-
-		View::CallbackView<const Representation, InstantiatedRepresentation> * const view
-			= MVC::MvcManager::get()
-				  .instantiateView<View::CallbackView<const Representation, InstantiatedRepresentation>>(
-					  _linkedRepresentation, getRepresentationViewID() );
-		view->setCallback( this, &InstantiatedRepresentation::_onLinkedRepresentationChange );
 	}
 
-	InstantiatedRepresentation::~InstantiatedRepresentation()
-	{
-		MVC::MvcManager::get().deleteView( _linkedRepresentation, getRepresentationViewID() );
-	}
-	ID::VTX_ID InstantiatedRepresentation::getRepresentationViewID() const
-	{
-		return ID::VTX_ID( ID::View::INSTANTIATED_REPRESENTATION_ON_REPRESENTATION + std::to_string( getId() ) );
-	}
+	InstantiatedRepresentation::~InstantiatedRepresentation() {}
 
-	void InstantiatedRepresentation::_onLinkedRepresentationChange( const Event::VTXEvent * const p_event )
+	void InstantiatedRepresentation::onLinkedRepresentationChange( const Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DATA_CHANGE )
+		if ( p_event->name == Event::Model::REPRESENTATION_TYPE_CHANGE || p_event->name == Event::Model::DATA_CHANGE )
 		{
-			_refreshSourceValues();
-
 			if ( _target != nullptr )
 				_updateTarget( VTX::Representation::MoleculeComputationFlag::ALL );
 		}
@@ -95,7 +73,7 @@ namespace VTX::Model::Representation
 		}
 	}
 
-	void InstantiatedRepresentation::_refreshSourceValues()
+	void InstantiatedRepresentation::refreshSourceValues()
 	{
 		_color.resetSource( &_linkedRepresentation->getColor() );
 		_colorMode.resetSource( &_linkedRepresentation->getData().getColorMode() );
@@ -242,7 +220,8 @@ namespace VTX::Model::Representation
 
 	void InstantiatedRepresentation::applyData( const InstantiatedRepresentation & p_source,
 												const MEMBER_FLAG &				   p_flag,
-												const bool						   p_recomputeBuffers )
+												const bool						   p_recomputeBuffers,
+												const bool						   p_notify )
 	{
 		if ( p_flag & MEMBER_FLAG::SPHERE_RADIUS_FIXED && p_source.hasToDrawSphere() )
 			_sphereData.getValue()._radiusFixed = p_source.getSphereData()._radiusFixed;
@@ -262,22 +241,54 @@ namespace VTX::Model::Representation
 		if ( p_flag & MEMBER_FLAG::COLOR )
 			setColor( p_source.getColor(), p_recomputeBuffers, false );
 
-		_notifyDataChanged();
+		if ( p_notify )
+			_notifyDataChanged();
+	}
+
+	MEMBER_FLAG InstantiatedRepresentation::getOverridedMembersFlag() const
+	{
+		MEMBER_FLAG res = MEMBER_FLAG::NONE;
+
+		if ( hasToDrawSphere() && _sphereData.isOverrided() )
+		{
+			res = MEMBER_FLAG( res | MEMBER_FLAG::SPHERE_RADIUS_ADD );
+			res = MEMBER_FLAG( res | MEMBER_FLAG::SPHERE_RADIUS_FIXED );
+		}
+
+		if ( hasToDrawCylinder() && _cylinderData.isOverrided() )
+			res = MEMBER_FLAG( res | MEMBER_FLAG::CYLINDER_RADIUS );
+
+		if ( _colorMode.isOverrided() )
+			res = MEMBER_FLAG( res | MEMBER_FLAG::COLOR_MODE );
+
+		if ( _ssColorMode.isOverrided() )
+			res = MEMBER_FLAG( res | MEMBER_FLAG::SS_COLOR_MODE );
+
+		if ( _color.isOverrided() )
+			res = MEMBER_FLAG( res | MEMBER_FLAG::COLOR );
+
+		return res;
 	}
 
 	void InstantiatedRepresentation::_updateTarget( const VTX::Representation::MoleculeComputationFlag & p_flag )
 	{
+		if ( _target == nullptr )
+			return;
+
 		if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::Targets ) != 0 )
 			_target->getMolecule()->computeRepresentationTargets();
 
 		if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::ColorBuffer ) != 0 )
-		{
 			_target->getMolecule()->computeColorBuffer();
+
+		const VTX::Representation::MoleculeComputationFlag ssColorFlag = VTX::Representation::MoleculeComputationFlag(
+			VTX::Representation::MoleculeComputationFlag::SecondaryStructure
+			| VTX::Representation::MoleculeComputationFlag::ColorBuffer );
+
+		if ( ( int( p_flag & ssColorFlag ) != 0 ) )
+		{
 			_target->getMolecule()->getSecondaryStructure().refreshColors();
 		}
-
-		if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::SecondaryStructure ) != 0 )
-			_target->getMolecule()->getSecondaryStructure().refreshColors();
 	}
 
 } // namespace VTX::Model::Representation

@@ -11,6 +11,7 @@
 #include "model/secondary_structure.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "representation/representation_manager.hpp"
 #include "tool/logger.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/secondary_structure.hpp"
@@ -97,7 +98,7 @@ namespace VTX
 				}
 				else
 				{
-					applyDefaultRepresentation();
+					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation( *this );
 				}
 			}
 		}
@@ -115,17 +116,14 @@ namespace VTX
 			return true;
 		}
 
-		void Molecule::applyRepresentation(
-			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation )
+		void Molecule::removeRepresentation( const bool p_notify )
 		{
-			BaseRepresentable::applyRepresentation( p_representation );
-			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
-		}
-		void Molecule::removeRepresentation()
-		{
-			BaseRepresentable::removeRepresentation();
-			applyDefaultRepresentation();
-			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
+			BaseRepresentable::removeRepresentation( false );
+
+			VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation( *this );
+
+			if ( p_notify )
+				_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
 		void Molecule::removeChildrenRepresentations() const
 		{
@@ -137,6 +135,10 @@ namespace VTX
 				chain->removeRepresentation();
 				chain->removeChildrenRepresentations();
 			}
+		}
+		void Molecule::_onRepresentationChange()
+		{
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
 
 		void Molecule::_fillBuffer()

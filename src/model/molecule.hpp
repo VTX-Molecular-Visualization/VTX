@@ -180,8 +180,7 @@ namespace VTX
 			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
 			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
-			void applyRepresentation( Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation );
-			void removeRepresentation();
+			void removeRepresentation( const bool p_notify = true );
 			void removeChildrenRepresentations() const;
 
 			inline void refreshColors() { _fillBufferAtomColors(); }
@@ -236,6 +235,8 @@ namespace VTX
 			void _computeAABB() const override;
 			void _fillBufferAABB() override;
 			void _instantiate3DViews() override;
+
+			void _onRepresentationChange() override;
 
 			Molecule();
 			Molecule( const ID::VTX_ID & p_typeId );

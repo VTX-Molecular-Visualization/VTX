@@ -64,7 +64,11 @@ namespace VTX::Model::Representation
 		RepresentationData_VanDerWaals();
 
 		float getSphereRadius() const override { return _sphereData->_radiusAdd; }
-		void  setSphereRadius( float p_radius ) override { _sphereData->_radiusAdd = p_radius; }
+		void  setSphereRadius( float p_radius ) override
+		{
+			_sphereData->_radiusAdd = p_radius;
+			notifyRepresentationDataChange();
+		}
 	};
 	class RepresentationData_Sticks : public RepresentationData
 	{

@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+	<file>sprite/add_preset_icon.png</file>
 	<file>sprite/add_viewpoint.png</file>
 	<file>sprite/camera_focus_icon.png</file>
 	<file>sprite/camera_freefly_mode.png</file>
@@ -8,7 +9,9 @@
 	<file>sprite/camera_trackball_mode.png</file>
 	<file>sprite/camera_vessel_mode.png</file>
 	<file>sprite/close_icon.png</file>
+	<file>sprite/copy_preset_icon.png</file>
 	<file>sprite/copy_selection_icon.png</file>
+	<file>sprite/delete_preset_icon.png</file>
 	<file>sprite/delete_selection_icon.png</file>
 	<file>sprite/download_molecule_icon.png</file>
 	<file>sprite/extract_selection_icon.png</file>

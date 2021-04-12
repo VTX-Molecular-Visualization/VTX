@@ -32,4 +32,29 @@ namespace VTX::UI::Widget::Representation
 		_addCylinderValue( p_representation.getCylinderData()._radius );
 		_addColorModeValue( p_representation );
 	}
+
+	void BallAndStickRepresentationWidget::_onSphereRadiusChange( const float p_newRadius )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		_instantiatedRepresentation->setSphereRadius( p_newRadius );
+
+		emit onDataChange(
+			Model::Representation::MEMBER_FLAG( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS
+												| Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
+	}
+
+	void BallAndStickRepresentationWidget::_onCylinderRadiusChange( const float p_newRadius )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		_instantiatedRepresentation->setCylinderRadius( p_newRadius );
+
+		emit onDataChange(
+			Model::Representation::MEMBER_FLAG( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS
+												| Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
+	}
+
 } // namespace VTX::UI::Widget::Representation

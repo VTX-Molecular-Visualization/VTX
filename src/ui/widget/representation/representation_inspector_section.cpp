@@ -3,10 +3,12 @@
 #include "model/representation/representation.hpp"
 #include "model/representation/representation_library.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
 #include "ui/widget/representation/base_representation_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "view/callback_view.hpp"
 #include "view/ui/widget/inspector/all_inspector_view.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -21,6 +23,12 @@ namespace VTX::UI::Widget::Representation
 
 	RepresentationInspectorSection ::~RepresentationInspectorSection()
 	{
+		for ( const InstantiatedRepresentation * const representation : _representations )
+		{
+			MVC::MvcManager::get().deleteView( representation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
+		}
+		_representations.clear();
+
 		if ( _dummyRepresentation != nullptr )
 			MVC::MvcManager::get().deleteModel( _dummyRepresentation );
 	}
@@ -224,14 +232,32 @@ namespace VTX::UI::Widget::Representation
 	void RepresentationInspectorSection::_revertRepresentation() { emit onRevertRepresentation(); }
 	void RepresentationInspectorSection::_applyRepresentationToChildren() { emit onApplyRepresentationToChildren(); }
 
-	void RepresentationInspectorSection::resetState()
+	void RepresentationInspectorSection::resetState() { resetState( true, true ); }
+	void RepresentationInspectorSection::resetState( const bool p_deleteViews, const bool p_deleteDataWidget )
 	{
+		if ( p_deleteViews )
+		{
+			for ( const InstantiatedRepresentation * const representation : _representations )
+			{
+				if ( MVC::MvcManager::get().hasView( representation,
+													 ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION ) )
+				{
+					MVC::MvcManager::get().deleteView( representation,
+													   ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
+				}
+			}
+			_representations.clear();
+		}
+
 		_titleWidget->resetState();
 		_representationPreset->resetState();
 
 		if ( _representationSettingWidget != nullptr )
 		{
-			_deleteRepresentationSettingWidget();
+			if ( p_deleteDataWidget )
+				_deleteRepresentationSettingWidget();
+			else
+				_representationSettingWidget->resetState();
 		}
 
 		_baseRepresentationIndex = -1;
@@ -239,6 +265,11 @@ namespace VTX::UI::Widget::Representation
 	}
 
 	void RepresentationInspectorSection::updateWithNewValue( const InstantiatedRepresentation & p_representation )
+	{
+		updateWithNewValue( p_representation, true );
+	}
+	void RepresentationInspectorSection::updateWithNewValue( const InstantiatedRepresentation & p_representation,
+															 const bool							p_instantiateViews )
 	{
 		const bool oldBlockState = blockSignals( true );
 
@@ -252,47 +283,80 @@ namespace VTX::UI::Widget::Representation
 		{
 			if ( _dummyRepresentation == nullptr )
 			{
-				_dummyRepresentation = InstantiatedRepresentation::instantiateCopy( &p_representation );
+				_dummyRepresentation
+					= VTX::Representation::RepresentationManager::get().instantiateDummy( p_representation );
+
+				View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection> * const
+					representationView
+					= MVC::MvcManager::get()
+						  .instantiateView<
+							  View::CallbackView<InstantiatedRepresentation, RepresentationInspectorSection>>(
+							  _dummyRepresentation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
+
+				representationView->setCallback( this, &RepresentationInspectorSection::_onDummyChange );
 			}
 			else
 			{
-				MVC::MvcManager::get().deleteView( _dummyRepresentation,
-												   ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
-
 				_dummyRepresentation->setLinkedRepresentation( p_representation.getLinkedRepresentation() );
-				_dummyRepresentation->applyData( p_representation, Model::Representation::MEMBER_FLAG::ALL, false );
+				_dummyRepresentation->applyData(
+					p_representation, p_representation.getOverridedMembersFlag(), false, false );
 			}
 
-			VTX::View::Inspector::InstantiatedRepresentationView * const representationView
-				= MVC::MvcManager::get().instantiateView<VTX::View::Inspector::InstantiatedRepresentationView>(
-					_dummyRepresentation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
-
-			representationView->setLinkedInspector( this );
-
-			_instantiateRepresentationSettingWidget(
-				p_representation.getLinkedRepresentation()->getRepresentationType() );
+			if ( _representationSettingWidget == nullptr )
+				_instantiateRepresentationSettingWidget( p_representation.getRepresentationType() );
 
 			_representationSettingWidget->setRepresentation( _dummyRepresentation );
+			_representationSettingWidget->updateWithNewValue( *_dummyRepresentation );
 
 			_baseRepresentationIndex = baseRepresentationIndex;
 		}
-
-		if ( !hasDifferentData() )
+		else
 		{
-			if ( baseRepresentationIndex == _baseRepresentationIndex )
+			if ( !hasDifferentData() )
 			{
-				_representationSettingWidget->updateWithNewValue( p_representation );
-				_state = MultiDataField::State::Identical;
+				if ( baseRepresentationIndex == _baseRepresentationIndex )
+				{
+					_representationSettingWidget->updateWithNewValue( p_representation );
+					_state = MultiDataField::State::Identical;
+				}
+				else // Can't managed modifications on multiple representation presets
+				{
+					_state = MultiDataField::State::Different;
+					_deleteRepresentationSettingWidget();
+				}
 			}
-			else // Can't managed modifications on multiple representation presets
+		}
+
+		if ( p_instantiateViews )
+		{
+			if ( _representations.find( &p_representation ) == _representations.end() )
 			{
-				_state = MultiDataField::State::Different;
-				_deleteRepresentationSettingWidget();
+				View::CallbackView<const InstantiatedRepresentation, RepresentationInspectorSection> * const
+					viewOnRepresentation
+					= MVC::MvcManager::get()
+						  .instantiateView<
+							  View::CallbackView<const InstantiatedRepresentation, RepresentationInspectorSection>>(
+							  &p_representation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
+
+				viewOnRepresentation->setCallback( this,
+												   &RepresentationInspectorSection::_onTargetedRepresentationChange );
+				_representations.emplace( &p_representation );
 			}
 		}
 
 		blockSignals( oldBlockState );
 	}
+
 	void RepresentationInspectorSection::_displayDifferentsDataFeedback() {}
+
+	void RepresentationInspectorSection::_onTargetedRepresentationChange( const Event::VTXEvent * const p_event )
+	{
+		resetState( false, p_event->name == Event::Model::REPRESENTATION_TYPE_CHANGE );
+
+		for ( const InstantiatedRepresentation * const representation : _representations )
+			updateWithNewValue( *representation, false );
+	}
+
+	void RepresentationInspectorSection::_onDummyChange( const Event::VTXEvent * const p_event ) { refresh(); }
 
 } // namespace VTX::UI::Widget::Representation

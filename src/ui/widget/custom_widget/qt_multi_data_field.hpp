@@ -87,8 +87,10 @@ namespace VTX::UI::Widget::CustomWidget
 
 		void _displayDifferentsDataFeedback() override
 		{
+			const bool previousSignalState = blockSignals( true );
 			setCurrentIndex( -1 );
 			setCurrentText( "-" );
+			blockSignals( previousSignalState );
 		}
 
 	  private:
