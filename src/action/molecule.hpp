@@ -284,27 +284,6 @@ namespace VTX::Action::Molecule
 		Model::Molecule & _molecule;
 	};
 
-	class ChangeColorModeSecondaryStructure : public BaseAction
-	{
-	  public:
-		explicit ChangeColorModeSecondaryStructure( Model::Molecule &								p_molecule,
-													const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode ) :
-			_molecule( p_molecule ),
-			_colorMode( p_colorMode )
-		{
-		}
-
-		virtual void execute() override
-		{
-			_molecule.getSecondaryStructure().setColorMode( _colorMode );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
-
-	  private:
-		Model::Molecule &							  _molecule;
-		const Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
-	};
-
 	class Orient : public BaseAction
 	{
 	  public:

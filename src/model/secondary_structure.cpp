@@ -16,17 +16,32 @@ namespace VTX
 		SecondaryStructure::SecondaryStructure( Molecule * const p_molecule ) :
 			BaseModel3D( ID::Model::MODEL_SECONDARY_STRUCTURE ), _molecule( p_molecule )
 		{
-			/// TODO: refacto.
 			Tool::Chrono chrono;
 			chrono.start();
 			VTX_INFO( "Creating secondary structure..." );
 
-			const Molecule::AtomPositionsFrame & positions = p_molecule->getAtomPositionFrame( p_molecule->getFrame() );
+			refresh( false );
+
+			chrono.stop();
+			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
+		}
+
+		void SecondaryStructure::refresh( const bool p_refreshBuffers )
+		{
+			_bufferCaPositions.clear();
+			_bufferCaODirections.clear();
+			_bufferSSTypes.clear();
+			_bufferColors.clear();
+			_bufferIndices.clear();
+			_residueToPositions.clear();
+			_residueToIndices.clear();
+
+			const Molecule::AtomPositionsFrame & positions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
 
 			float dirFlag = 0.f; // Loop over chains (1 chain = 1 ribbon).
-			for ( uint chainIdx = 0; chainIdx < p_molecule->getChainCount(); ++chainIdx )
+			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
-				const Chain * const chain = p_molecule->getChain( chainIdx );
+				const Chain * const chain = _molecule->getChain( chainIdx );
 				if ( chain == nullptr ) /// TODO: possible ? what to do ?
 					continue;
 
@@ -50,7 +65,7 @@ namespace VTX
 				uint idxFirstResidue = chain->getIndexFirstResidue();
 				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
 				{
-					const Residue * const residue = p_molecule->getResidue( idxFirstResidue + residueIdx );
+					const Residue * const residue = _molecule->getResidue( idxFirstResidue + residueIdx );
 
 					if ( residue == nullptr ) /// TODO: possible? what to do?
 						continue;
@@ -93,33 +108,43 @@ namespace VTX
 					caPositions.emplace_back(
 						Vec4f( positionCA, float( _bufferCaPositions.size() + caPositions.size() ) ) );
 					caODirections.emplace_back( directionCAO );
+
+					// Add secondary structure type.
+					ssTypes.emplace_back( ushort( residue->getSecondaryStructure() ) );
+
+					// Add color.
+					if ( residue->getRepresentation() != nullptr )
+					{
+						switch ( residue->getRepresentation()->getSecondaryStructureColorMode() )
+						{
+						case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
+							colors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
+							break;
+						case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
+							colors.emplace_back( residue->getMoleculePtr()->getColor() );
+							break;
+						case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
+							colors.emplace_back( residue->getChainPtr()->getColor() );
+							break;
+						case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
+							colors.emplace_back( residue->getColor() );
+							break;
+						default: colors.emplace_back( Color::Rgb::WHITE ); break;
+						}
+					}
+					else
+					{
+						colors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
+					}
+
 					// Repeat first control point.
 					if ( caPositions.size() == 1 )
 					{
 						caPositions.emplace_back(
 							Vec4f( positionCA, float( _bufferCaPositions.size() + caPositions.size() ) ) );
 						caODirections.emplace_back( directionCAO );
-					}
-
-					// Add secondary structure type.
-					ssTypes.emplace_back( ushort( residue->getSecondaryStructure() ) );
-
-					// Add color.
-					switch ( _colorMode )
-					{
-					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
-						colors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
-						break;
-					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
-						colors.emplace_back( residue->getMoleculePtr()->getColor() );
-						break;
-					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
-						colors.emplace_back( residue->getChainPtr()->getColor() );
-						break;
-					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::RESIDUE:
-						colors.emplace_back( residue->getColor() );
-						break;
-					default: colors.emplace_back( Color::Rgb::WHITE ); break;
+						ssTypes.emplace_back( ssTypes.back() );
+						colors.emplace_back( colors.back() );
 					}
 				}
 
@@ -130,6 +155,8 @@ namespace VTX
 					caPositions.emplace_back( caPositions.back() );
 					caPositions.back().w++; // Don't forget to increase direction flag.
 					caODirections.emplace_back( caODirections.back() );
+					ssTypes.emplace_back( ssTypes.back() );
+					colors.emplace_back( colors.back() );
 
 					const size_t nbControlPoints = caPositions.size();
 
@@ -137,10 +164,10 @@ namespace VTX
 					const uint offset = uint( _bufferCaPositions.size() );
 
 					// Add segment with duplicate first index to evaluate B-spline at 0-1.
-					/*_bufferIndices.emplace_back( offset );
+					_bufferIndices.emplace_back( offset );
 					_bufferIndices.emplace_back( offset );
 					_bufferIndices.emplace_back( offset + 1 );
-					_bufferIndices.emplace_back( offset + 2 );*/
+					_bufferIndices.emplace_back( offset + 2 );
 
 					for ( uint i = 1; i < nbControlPoints - 2; ++i )
 					{
@@ -175,9 +202,9 @@ namespace VTX
 			}
 
 			// Reverse indices to render the other side.
-			// std::vector<uint> indicesReverse = _bufferIndices;
-			// std::reverse( indicesReverse.begin(), indicesReverse.end() );
-			//_bufferIndices.insert( _bufferIndices.end(), indicesReverse.begin(), indicesReverse.end() );
+			std::vector<uint> indicesReverse = _bufferIndices;
+			std::reverse( indicesReverse.begin(), indicesReverse.end() );
+			_bufferIndices.insert( _bufferIndices.end(), indicesReverse.begin(), indicesReverse.end() );
 
 			_bufferCaPositions.shrink_to_fit();
 			_bufferCaODirections.shrink_to_fit();
@@ -185,20 +212,38 @@ namespace VTX
 			_bufferColors.shrink_to_fit();
 			_bufferIndices.shrink_to_fit();
 
-			chrono.stop();
-			VTX_INFO( "Secondary structure created in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			if ( p_refreshBuffers )
+			{
+				{
+					_fillBuffer();
+					if ( _molecule->hasCustomRepresentation() )
+					{
+						_molecule->computeAllRepresentationData();
+					}
+					else
+					{
+						_molecule->applyDefaultRepresentation();
+					}
+				}
+			}
 		}
 
 		void SecondaryStructure::_init() {}
 
 		void SecondaryStructure::_fillBuffer()
 		{
+			assert( _bufferCaPositions.size() == _bufferCaODirections.size() );
+			assert( _bufferCaPositions.size() == _bufferSSTypes.size() );
+			assert( _bufferCaPositions.size() == _bufferColors.size() );
+
 			_buffer->setControlPointPositions( _bufferCaPositions );
 			_buffer->setControlPointDirections( _bufferCaODirections );
 			_buffer->setControlPointSecondaryStructure( _bufferSSTypes );
 			_buffer->setControlPointColors( _bufferColors );
-			refreshSelection();
+
 			_buffer->setIndices( _bufferIndices );
+
+			refreshSelection();
 		}
 
 		const Math::AABB & SecondaryStructure::getAABB() const { return _molecule->getAABB(); }
@@ -214,12 +259,6 @@ namespace VTX
 		{
 			_addRenderable(
 				MVC::MvcManager::get().instantiateView<View::D3::Ribbon>( this, ID::View::D3_RIBBON_PATCH ) );
-		}
-
-		void SecondaryStructure::setCurrentFrame()
-		{
-			// TODO: redo with dynamic.
-			VTX_WARNING( "SecondaryStructure::setCurrentFrame() not implemented" );
 		}
 
 		void SecondaryStructure::_fillBufferColors()
@@ -276,6 +315,11 @@ namespace VTX
 						break;
 
 					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
+					}
+
+					if ( residueIdx == 0 || residueIdx == residueCount - 1 )
+					{
+						_bufferColors.emplace_back( _bufferColors.back() );
 					}
 				}
 			}
