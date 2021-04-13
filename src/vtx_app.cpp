@@ -2,6 +2,7 @@
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
+#include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
 #include "model/representation/representation_library.hpp"
@@ -146,6 +147,9 @@ namespace VTX
 
 		// Worker manager.
 		Worker::WorkerManager::get().update( elapsed );
+
+		// Call late update event for processes at end of frame
+		VTX_EVENT( new Event::VTXEvent( Event::Global::LATE_UPDATE ) );
 
 		// Tickrate.
 		_tickCounter++;

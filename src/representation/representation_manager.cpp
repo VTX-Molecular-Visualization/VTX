@@ -50,8 +50,6 @@ namespace VTX::Representation
 
 		_mapRepresentationInstances[ p_representation ].emplace( instantiatedRepresentation );
 
-		p_target.computeAllRepresentationData();
-
 		return instantiatedRepresentation;
 	}
 

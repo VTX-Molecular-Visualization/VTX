@@ -25,9 +25,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_label = new QLabel( this );
 		_label->setMouseTracking( true );
 
-		_textField			= new QLineEdit( this );
-		_textFieldValidator = new QDoubleValidator();
-		_textFieldValidator->setRange( _min, _max );
+		_textField = new QLineEdit( this );
 
 		mainLayout->addWidget( _label, 1 );
 		mainLayout->addWidget( _textField, 1 );
@@ -152,12 +150,12 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_nbDecimals = p_nbDecimals;
 		_epsilon	= float( 1 / std::pow( _nbDecimals, 10 ) );
+		_refresh();
 	}
 
 	void FloatFieldDraggableWidget::setMin( const float p_min )
 	{
 		_min = p_min;
-		_textFieldValidator->setRange( _min, _max );
 
 		_value = _value < _min ? _min : _value;
 		_refresh();
@@ -165,7 +163,6 @@ namespace VTX::UI::Widget::CustomWidget
 	void FloatFieldDraggableWidget::setMax( const float p_max )
 	{
 		_max = p_max;
-		_textFieldValidator->setRange( _min, _max );
 
 		_value = _value > _max ? _max : _value;
 		_refresh();
@@ -174,8 +171,6 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_min = p_min;
 		_max = p_max;
-
-		_textFieldValidator->setRange( _min, _max );
 
 		_value = Util::Math::clamp( _value, p_min, p_max );
 		_refresh();
@@ -202,9 +197,9 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void FloatFieldDraggableWidget::_displayDifferentsDataFeedback()
 	{
-		_textFieldValidator->blockSignals( true );
+		_textField->blockSignals( true );
 		_textField->setText( "-" );
-		_textFieldValidator->blockSignals( false );
+		_textField->blockSignals( false );
 	}
 
 } // namespace VTX::UI::Widget::CustomWidget

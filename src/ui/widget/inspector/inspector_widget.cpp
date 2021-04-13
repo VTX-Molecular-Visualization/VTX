@@ -71,7 +71,7 @@ namespace VTX::UI::Widget::Inspector
 
 			if ( molData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
 			{
-				_moleculesInspector->addTarget( &molecule, false );
+				_moleculesInspector->addTarget( &molecule );
 				_moleculesInspector->setVisible( true );
 			}
 			else
@@ -82,7 +82,7 @@ namespace VTX::UI::Widget::Inspector
 
 					if ( chainData.second.getFullySelectedChildCount() == chain->getRealResidueCount() )
 					{
-						_chainsInspector->addTarget( chain, false );
+						_chainsInspector->addTarget( chain );
 						_chainsInspector->setVisible( true );
 					}
 					else
@@ -94,7 +94,7 @@ namespace VTX::UI::Widget::Inspector
 
 							if ( residueData.second.getFullySelectedChildCount() == residue->getRealAtomCount() )
 							{
-								_residuesInspector->addTarget( residue, false );
+								_residuesInspector->addTarget( residue );
 								_residuesInspector->setVisible( true );
 							}
 							else
@@ -102,7 +102,7 @@ namespace VTX::UI::Widget::Inspector
 								for ( const uint & atomID : residueData.second )
 								{
 									Model::Atom * const atom = molecule.getAtom( atomID );
-									_atomsInspector->addTarget( atom, false );
+									_atomsInspector->addTarget( atom );
 									_atomsInspector->setVisible( true );
 								}
 							}

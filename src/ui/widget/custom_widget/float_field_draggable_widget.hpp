@@ -7,7 +7,6 @@
 
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
-#include <QDoubleValidator>
 #include <QLabel>
 #include <QLineEdit>
 #include <QMouseEvent>
@@ -70,10 +69,8 @@ namespace VTX::UI::Widget::CustomWidget
 		QLabel *	_label	   = nullptr;
 		QLineEdit * _textField = nullptr;
 
-		QDoubleValidator * _textFieldValidator = nullptr;
-
-		int _nbDecimals = 2;
-		int _epsilon	= 0.01f;
+		int	  _nbDecimals = 2;
+		float _epsilon	  = 0.01f;
 
 		float _value = 0;
 		float _min;

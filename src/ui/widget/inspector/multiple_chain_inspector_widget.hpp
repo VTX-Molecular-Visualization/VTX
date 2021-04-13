@@ -10,28 +10,20 @@
 #include "model/representation/representation.hpp"
 #include "ui//widget/custom_widget/qt_multi_data_field.hpp"
 #include "ui/multi_data_field.hpp"
-#include "ui/widget/inspector/inspector_item_widget.hpp"
 #include "ui/widget/inspector/inspector_section.hpp"
+#include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include "ui/widget/representation/representation_inspector_section.hpp"
 #include <QWidget>
-#include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleChainWidget : public InspectorItemWidget
+	class MultipleChainWidget : public MultipleModelInspectorWidget<Model::Chain>
 	{
 		VTX_WIDGET
 
 	  public:
 		~MultipleChainWidget();
-
 		void localize() override;
-
-		void clearTargets();
-		void addTarget( Model::Chain * const p_target, const bool p_refresh = true );
-		void removeTarget( Model::Chain * const p_target, const bool p_refresh = true );
-
-		void refresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
 
 	  protected:
 		MultipleChainWidget( QWidget * p_parent = nullptr );
@@ -39,9 +31,10 @@ namespace VTX::UI::Widget::Inspector
 		void		 _setupUi( const QString & p_name ) override;
 		virtual void _setupSlots() override;
 
-	  private:
-		std::unordered_set<Model::Chain *> _targets = std::unordered_set<Model::Chain *>();
+		void _resetFieldStates( const SectionFlag & p_flag ) override;
+		void _endOfFrameRefresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
 
+	  private:
 		InspectorSection *		  _representationSection = nullptr;
 		InspectorSectionVLayout * _infoSection			 = nullptr;
 
@@ -59,7 +52,6 @@ namespace VTX::UI::Widget::Inspector
 		void _onRevertRepresentation() const;
 		void _onApplyRepresentationToChildren() const;
 
-		void _resetFieldStates( const SectionFlag & p_flag );
 		void _changeMoleculesColor( const Color::Rgb & p_color ) const;
 	};
 } // namespace VTX::UI::Widget::Inspector

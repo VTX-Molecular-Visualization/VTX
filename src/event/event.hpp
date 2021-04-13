@@ -40,6 +40,7 @@ namespace VTX
 			CONTROLLER_CHANGE,
 			DOCK_WINDOW_VISIBILITY_CHANGE,
 			MAIN_WINDOW_MODE_CHANGE,
+			LATE_UPDATE,
 		};
 
 		// Model events for notifier pattern (model->views)[1-n].

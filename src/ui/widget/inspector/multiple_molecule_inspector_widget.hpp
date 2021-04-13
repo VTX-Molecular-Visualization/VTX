@@ -11,29 +11,21 @@
 #include "ui//widget/custom_widget/qt_multi_data_field.hpp"
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/custom_widget/transform_widget.hpp"
-#include "ui/widget/inspector/inspector_item_widget.hpp"
 #include "ui/widget/inspector/inspector_section.hpp"
+#include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include "ui/widget/representation/representation_inspector_section.hpp"
 #include "view/base_view.hpp"
 #include <QWidget>
-#include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleMoleculeWidget : public InspectorItemWidget
+	class MultipleMoleculeWidget : public MultipleModelInspectorWidget<Model::Molecule>
 	{
 		VTX_WIDGET
 
 	  public:
 		~MultipleMoleculeWidget();
-
 		void localize() override;
-
-		void clearTargets();
-		void addTarget( Model::Molecule * const p_target, const bool p_refresh = true );
-		void removeTarget( Model::Molecule * const p_target, const bool p_refresh = true );
-
-		void refresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
 
 	  protected:
 		MultipleMoleculeWidget( QWidget * p_parent = nullptr );
@@ -41,9 +33,10 @@ namespace VTX::UI::Widget::Inspector
 		void		 _setupUi( const QString & p_name ) override;
 		virtual void _setupSlots() override;
 
-	  private:
-		std::unordered_set<Model::Molecule *> _targets = std::unordered_set<Model::Molecule *>();
+		void _resetFieldStates( const SectionFlag & p_flag ) override;
+		void _endOfFrameRefresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
 
+	  private:
 		InspectorSection *		  _transformSection		 = nullptr;
 		InspectorSection *		  _representationSection = nullptr;
 		InspectorSectionVLayout * _infoSection			 = nullptr;
@@ -57,8 +50,6 @@ namespace VTX::UI::Widget::Inspector
 		CustomWidget::QLabelMultiField * _nbResiduesLabel = nullptr;
 		CustomWidget::QLabelMultiField * _nbAtomsLabel	  = nullptr;
 
-		void _resetFieldStates( const SectionFlag & p_flag );
-
 		void _onTransformChange( const Math::Transform & ) const;
 		void _onRepresentationPresetChange( const int p_presetIndex ) const;
 		void _onRepresentationChange( const Model::Representation::InstantiatedRepresentation & p_representation,
@@ -68,7 +59,6 @@ namespace VTX::UI::Widget::Inspector
 										   const bool												 p_ssColor ) const;
 		void _onRevertRepresentation() const;
 		void _onApplyRepresentationToChildren() const;
-		
 	};
 } // namespace VTX::UI::Widget::Inspector
 

@@ -8,7 +8,6 @@
 #include "style.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget_factory.hpp"
-#include "view/ui/widget/inspector/all_inspector_view.hpp"
 #include <QBoxLayout>
 #include <QGridLayout>
 #include <QLabel>
@@ -16,13 +15,14 @@
 
 namespace VTX::UI::Widget::Inspector
 {
-	MultipleChainWidget::MultipleChainWidget( QWidget * p_parent ) : InspectorItemWidget( p_parent ) {};
+	MultipleChainWidget::MultipleChainWidget( QWidget * p_parent ) :
+		MultipleModelInspectorWidget( p_parent, ID::View::UI_INSPECTOR_CHAIN ) {};
 
 	MultipleChainWidget::~MultipleChainWidget() {}
 
 	void MultipleChainWidget::_setupUi( const QString & p_name )
 	{
-		InspectorItemWidget::_setupUi( p_name );
+		MultipleModelInspectorWidget::_setupUi( p_name );
 
 		_representationSection
 			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
@@ -80,22 +80,24 @@ namespace VTX::UI::Widget::Inspector
 				 &MultipleChainWidget::_onApplyRepresentationToChildren );
 	};
 
-	void MultipleChainWidget::refresh( const SectionFlag & p_flag )
+	void MultipleChainWidget::_endOfFrameRefresh( const SectionFlag & p_flag )
 	{
-		if ( _isRefreshFreezed() )
-			return;
+		MultipleModelInspectorWidget::_endOfFrameRefresh( p_flag );
 
+		bool blockSignalState = blockSignals( true );
 		_resetFieldStates( p_flag );
 
-		if ( _targets.size() > 0 )
+		const std::unordered_set<Model::Chain *> & targets = _getTargets();
+
+		if ( targets.size() > 0 )
 		{
-			const QString headerTitle = QString::fromStdString( "Chain (" + std::to_string( _targets.size() ) + ")" );
+			const QString headerTitle = QString::fromStdString( "Chain (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
 			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( ID::Model::MODEL_CHAIN );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
-			for ( const Model::Chain * chain : _targets )
+			for ( const Model::Chain * chain : targets )
 			{
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
@@ -111,6 +113,7 @@ namespace VTX::UI::Widget::Inspector
 				}
 			}
 		}
+		blockSignals( blockSignalState );
 	}
 
 	void MultipleChainWidget::_resetFieldStates( const SectionFlag & p_flag )
@@ -132,53 +135,9 @@ namespace VTX::UI::Widget::Inspector
 		_infoSection->localize();
 	}
 
-	void MultipleChainWidget::clearTargets()
-	{
-		_resetFieldStates( SectionFlag::ALL );
-		
-		for ( Model::Chain * const chain : _targets )
-		{
-			// unlink inspector to prevent target update in view destructor
-			MVC::MvcManager::get()
-				.getView<View::Inspector::ChainInspectorView>( chain, ID::View::UI_INSPECTOR_CHAIN )
-				->setLinkedInspector( nullptr );
-			MVC::MvcManager::get().deleteView( chain, ID::View::UI_INSPECTOR_CHAIN );
-		}
-
-		_targets.clear();
-	}
-	void MultipleChainWidget::addTarget( Model::Chain * const p_target, const bool p_refresh )
-	{
-		_targets.emplace( p_target );
-
-		View::Inspector::ChainInspectorView * const view
-			= MVC::MvcManager::get().instantiateView<View::Inspector::ChainInspectorView>(
-				p_target, ID::View::UI_INSPECTOR_CHAIN );
-
-		view->setLinkedInspector( this );
-
-		if ( p_refresh )
-			refresh();
-	}
-	void MultipleChainWidget::removeTarget( Model::Chain * const p_target, const bool p_refresh )
-	{
-		_targets.erase( p_target );
-
-		if ( MVC::MvcManager::get().hasView( p_target, ID::View::UI_INSPECTOR_CHAIN ) )
-			MVC::MvcManager::get().deleteView( p_target, ID::View::UI_INSPECTOR_CHAIN );
-
-		if ( p_refresh )
-			refresh();
-	}
-
 	void MultipleChainWidget::_onRepresentationPresetChange( const int p_presetIndex )
 	{
-		//_freezeRefresh( true );
-
-		VTX_ACTION( new Action::Chain::ChangeRepresentationPreset( _targets, p_presetIndex ) );
-
-		//_freezeRefresh( false );
-		// refresh();
+		VTX_ACTION( new Action::Chain::ChangeRepresentationPreset( _getTargets(), p_presetIndex ) );
 	}
 	void MultipleChainWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
@@ -186,7 +145,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new Action::Chain::ApplyRepresentation( _targets, p_representation, p_flag ) );
+			VTX_ACTION( new Action::Chain::ApplyRepresentation( _getTargets(), p_representation, p_flag ) );
 		}
 	}
 
@@ -202,7 +161,7 @@ namespace VTX::UI::Widget::Inspector
 				switch ( p_representation.getSecondaryStructureColorMode() )
 				{
 				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _targets, p_color ) );
+					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _getTargets(), p_color ) );
 					break;
 
 				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
@@ -223,7 +182,7 @@ namespace VTX::UI::Widget::Inspector
 				{
 				case Generic::COLOR_MODE::ATOM_CUSTOM:
 				case Generic::COLOR_MODE::CUSTOM:
-					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _targets, p_color ) );
+					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _getTargets(), p_color ) );
 					break;
 
 				case Generic::COLOR_MODE::ATOM_PROTEIN:
@@ -246,7 +205,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 
-		for ( const Model::Chain * const item : _targets )
+		for ( const Model::Chain * const item : _getTargets() )
 		{
 			molecules.emplace( item->getMoleculePtr() );
 		}
@@ -256,11 +215,11 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleChainWidget::_onRevertRepresentation() const
 	{
-		VTX_ACTION( new Action::Chain::RemoveRepresentation( _targets ) );
+		VTX_ACTION( new Action::Chain::RemoveRepresentation( _getTargets() ) );
 	}
 	void MultipleChainWidget::_onApplyRepresentationToChildren() const
 	{
-		VTX_ACTION( new Action::Chain::RemoveChildrenRepresentations( _targets ) );
+		VTX_ACTION( new Action::Chain::RemoveChildrenRepresentations( _getTargets() ) );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

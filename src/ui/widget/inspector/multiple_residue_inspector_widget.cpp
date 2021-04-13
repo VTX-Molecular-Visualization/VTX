@@ -9,7 +9,6 @@
 #include "style.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget_factory.hpp"
-#include "view/ui/widget/inspector/all_inspector_view.hpp"
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>
@@ -18,13 +17,14 @@
 
 namespace VTX::UI::Widget::Inspector
 {
-	MultipleResidueWidget::MultipleResidueWidget( QWidget * p_parent ) : InspectorItemWidget( p_parent ) {};
+	MultipleResidueWidget::MultipleResidueWidget( QWidget * p_parent ) :
+		MultipleModelInspectorWidget( p_parent, ID::View::UI_INSPECTOR_RESIDUE ) {};
 
 	MultipleResidueWidget::~MultipleResidueWidget() {}
 
 	void MultipleResidueWidget::_setupUi( const QString & p_name )
 	{
-		InspectorItemWidget::_setupUi( p_name );
+		MultipleModelInspectorWidget::_setupUi( p_name );
 
 		_representationSection
 			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
@@ -78,22 +78,23 @@ namespace VTX::UI::Widget::Inspector
 				 &MultipleResidueWidget::_onRevertRepresentation );
 	};
 
-	void MultipleResidueWidget::refresh( const SectionFlag & p_flag )
+	void MultipleResidueWidget::_endOfFrameRefresh( const SectionFlag & p_flag )
 	{
-		if ( _isRefreshFreezed() )
-			return;
+		MultipleModelInspectorWidget::_endOfFrameRefresh();
 
 		_resetFieldStates( p_flag );
 
-		if ( _targets.size() > 0 )
+		const std::unordered_set<Model::Residue *> & targets = _getTargets();
+
+		if ( targets.size() > 0 )
 		{
-			const QString headerTitle = QString::fromStdString( "Residue (" + std::to_string( _targets.size() ) + ")" );
+			const QString headerTitle = QString::fromStdString( "Residue (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
 			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( ID::Model::MODEL_RESIDUE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
-			for ( const Model::Residue * residue : _targets )
+			for ( const Model::Residue * residue : targets )
 			{
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
@@ -130,52 +131,9 @@ namespace VTX::UI::Widget::Inspector
 		_infoSection->localize();
 	}
 
-	void MultipleResidueWidget::clearTargets()
-	{
-		_resetFieldStates( SectionFlag::ALL );
-		
-		for ( Model::Residue * const residue : _targets )
-		{
-			// unlink inspector to prevent target update in view destructor
-			MVC::MvcManager::get()
-				.getView<View::Inspector::ResidueInspectorView>( residue, ID::View::UI_INSPECTOR_RESIDUE )
-				->setLinkedInspector( nullptr );
-			MVC::MvcManager::get().deleteView( residue, ID::View::UI_INSPECTOR_RESIDUE );
-		}
-
-		_targets.clear();
-	}
-	void MultipleResidueWidget::addTarget( Model::Residue * const p_target, const bool p_refresh )
-	{
-		_targets.emplace( p_target );
-
-		View::Inspector::ResidueInspectorView * const view
-			= MVC::MvcManager::get().instantiateView<View::Inspector::ResidueInspectorView>(
-				p_target, ID::View::UI_INSPECTOR_RESIDUE );
-
-		view->setLinkedInspector( this );
-
-		if ( p_refresh )
-			refresh();
-	}
-	void MultipleResidueWidget::removeTarget( Model::Residue * const p_target, const bool p_refresh )
-	{
-		_targets.erase( p_target );
-
-		if ( MVC::MvcManager::get().hasView( p_target, ID::View::UI_INSPECTOR_RESIDUE ) )
-			MVC::MvcManager::get().deleteView( p_target, ID::View::UI_INSPECTOR_RESIDUE );
-
-		if ( p_refresh )
-			refresh();
-	}
 	void MultipleResidueWidget::_onRepresentationPresetChange( const int p_presetIndex )
 	{
-		_freezeRefresh( true );
-
-		VTX_ACTION( new Action::Residue::ChangeRepresentationPreset( _targets, p_presetIndex ) );
-
-		_freezeRefresh( false );
-		refresh();
+		VTX_ACTION( new Action::Residue::ChangeRepresentationPreset( _getTargets(), p_presetIndex ) );
 	}
 	void MultipleResidueWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
@@ -183,10 +141,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			_freezeRefresh( true );
-			VTX_ACTION( new Action::Residue::ApplyRepresentation( _targets, p_representation, p_flag ) );
-			_freezeRefresh( false );
-			// refresh();
+			VTX_ACTION( new Action::Residue::ApplyRepresentation( _getTargets(), p_representation, p_flag ) );
 		}
 	}
 
@@ -202,7 +157,7 @@ namespace VTX::UI::Widget::Inspector
 				switch ( p_representation.getSecondaryStructureColorMode() )
 				{
 				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _targets, p_color ) );
+					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _getTargets(), p_color ) );
 					break;
 
 				case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN: _changeMoleculesColor( p_color ); break;
@@ -223,7 +178,7 @@ namespace VTX::UI::Widget::Inspector
 				{
 				case Generic::COLOR_MODE::ATOM_CUSTOM:
 				case Generic::COLOR_MODE::CUSTOM:
-					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _targets, p_color ) );
+					VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _getTargets(), p_color ) );
 					break;
 
 				case Generic::COLOR_MODE::ATOM_PROTEIN:
@@ -246,7 +201,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 
-		for ( const Model::Residue * const item : _targets )
+		for ( const Model::Residue * const item : _getTargets() )
 		{
 			molecules.emplace( item->getMoleculePtr() );
 		}
@@ -255,7 +210,7 @@ namespace VTX::UI::Widget::Inspector
 	}
 	void MultipleResidueWidget::_onRevertRepresentation() const
 	{
-		VTX_ACTION( new Action::Residue::RemoveRepresentation( _targets ) );
+		VTX_ACTION( new Action::Residue::RemoveRepresentation( _getTargets() ) );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

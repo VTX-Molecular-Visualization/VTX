@@ -7,7 +7,6 @@
 #include "style.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget_factory.hpp"
-#include "view/ui/widget/inspector/all_inspector_view.hpp"
 #include <QBoxLayout>
 #include <QFont>
 #include <QGridLayout>
@@ -16,13 +15,17 @@
 
 namespace VTX::UI::Widget::Inspector
 {
-	MultipleMoleculeWidget::MultipleMoleculeWidget( QWidget * p_parent ) : InspectorItemWidget( p_parent ) {};
+	MultipleMoleculeWidget::MultipleMoleculeWidget( QWidget * p_parent ) :
+		MultipleModelInspectorWidget( p_parent, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE )
+	{
+		_registerEvent( Event::Global::LATE_UPDATE );
+	};
 
 	MultipleMoleculeWidget::~MultipleMoleculeWidget() {}
 
 	void MultipleMoleculeWidget::_setupUi( const QString & p_name )
 	{
-		InspectorItemWidget::_setupUi( p_name );
+		MultipleModelInspectorWidget::_setupUi( p_name );
 
 		_transformSection
 			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
@@ -100,23 +103,24 @@ namespace VTX::UI::Widget::Inspector
 				 &MultipleMoleculeWidget::_onApplyRepresentationToChildren );
 	};
 
-	void MultipleMoleculeWidget::refresh( const SectionFlag & p_flag )
+	void MultipleMoleculeWidget::_endOfFrameRefresh( const SectionFlag & p_flag )
 	{
-		if ( _isRefreshFreezed() )
-			return;
+		MultipleModelInspectorWidget::_endOfFrameRefresh( p_flag );
 
+		bool blockSignalState = blockSignals( true );
 		_resetFieldStates( p_flag );
 
-		if ( _targets.size() > 0 )
+		const std::unordered_set<Model::Molecule *> & targets = _getTargets();
+
+		if ( targets.size() > 0 )
 		{
-			const QString headerTitle
-				= QString::fromStdString( "Molecule (" + std::to_string( _targets.size() ) + ")" );
+			const QString headerTitle = QString::fromStdString( "Molecule (" + std::to_string( targets.size() ) + ")" );
 			_getHeader()->setHeaderTitle( headerTitle );
 
 			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( ID::Model::MODEL_MOLECULE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
-			for ( const Model::Molecule * molecule : _targets )
+			for ( const Model::Molecule * molecule : targets )
 			{
 				if ( bool( p_flag & SectionFlag::TRANSFORM ) )
 				{
@@ -141,6 +145,7 @@ namespace VTX::UI::Widget::Inspector
 				}
 			}
 		}
+		blockSignals( blockSignalState );
 	}
 
 	void MultipleMoleculeWidget::_resetFieldStates( const SectionFlag & p_flag )
@@ -168,55 +173,16 @@ namespace VTX::UI::Widget::Inspector
 		_infoSection->localize();
 	}
 
-	void MultipleMoleculeWidget::clearTargets()
-	{
-		_resetFieldStates( SectionFlag::ALL);
-
-		for ( Model::Molecule * const molecule : _targets )
-		{
-			// unlink inspector to prevent target update in view destructor
-			MVC::MvcManager::get()
-				.getView<View::Inspector::MoleculeInspectorView>( molecule, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE )
-				->setLinkedInspector( nullptr );
-			MVC::MvcManager::get().deleteView( molecule, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
-		}
-
-		_targets.clear();
-	}
-	void MultipleMoleculeWidget::addTarget( Model::Molecule * const p_target, const bool p_refresh )
-	{
-		_targets.emplace( p_target );
-
-		View::Inspector::MoleculeInspectorView * const view
-			= MVC::MvcManager::get().instantiateView<View::Inspector::MoleculeInspectorView>(
-				p_target, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
-
-		view->setLinkedInspector( this );
-
-		if ( p_refresh )
-			refresh();
-	}
-	void MultipleMoleculeWidget::removeTarget( Model::Molecule * const p_target, const bool p_refresh )
-	{
-		_targets.erase( p_target );
-
-		if ( MVC::MvcManager::get().hasView( p_target, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE ) )
-			MVC::MvcManager::get().deleteView( p_target, ID::View::UI_INSPECTOR_MOLECULE_STRUCTURE );
-
-		if ( p_refresh )
-			refresh();
-	}
-
 	void MultipleMoleculeWidget::_onTransformChange( const Math::Transform & p_transform ) const
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new Action::Transformable::ApplyTransform( _targets, p_transform ) );
+			VTX_ACTION( new Action::Transformable::ApplyTransform( _getTargets(), p_transform ) );
 		}
 	}
 	void MultipleMoleculeWidget::_onRepresentationPresetChange( const int p_presetIndex ) const
 	{
-		VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( _targets, p_presetIndex ) );
+		VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( _getTargets(), p_presetIndex ) );
 	}
 	void MultipleMoleculeWidget::_onRepresentationChange(
 		const Model::Representation::InstantiatedRepresentation & p_representation,
@@ -224,7 +190,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		if ( !signalsBlocked() )
 		{
-			VTX_ACTION( new Action::Molecule::ApplyRepresentation( _targets, p_representation, p_flag ) );
+			VTX_ACTION( new Action::Molecule::ApplyRepresentation( _getTargets(), p_representation, p_flag ) );
 		}
 	}
 
@@ -238,11 +204,11 @@ namespace VTX::UI::Widget::Inspector
 			switch ( p_representation.getSecondaryStructureColorMode() )
 			{
 			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
-				VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _targets, p_color ) );
+				VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _getTargets(), p_color ) );
 				break;
 
 			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
-				VTX_ACTION( new Action::Molecule::ChangeColor( _targets, p_color ) );
+				VTX_ACTION( new Action::Molecule::ChangeColor( _getTargets(), p_color ) );
 				break;
 
 			case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
@@ -262,12 +228,12 @@ namespace VTX::UI::Widget::Inspector
 			{
 			case Generic::COLOR_MODE::ATOM_CUSTOM:
 			case Generic::COLOR_MODE::CUSTOM:
-				VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _targets, p_color ) );
+				VTX_ACTION( new Action::InstantiatedRepresentation::ChangeColor( _getTargets(), p_color ) );
 				break;
 
 			case Generic::COLOR_MODE::ATOM_PROTEIN:
 			case Generic::COLOR_MODE::PROTEIN:
-				VTX_ACTION( new Action::Molecule::ChangeColor( _targets, p_color ) );
+				VTX_ACTION( new Action::Molecule::ChangeColor( _getTargets(), p_color ) );
 				break;
 
 			case Generic::COLOR_MODE::ATOM_CHAIN:
@@ -284,11 +250,11 @@ namespace VTX::UI::Widget::Inspector
 
 	void MultipleMoleculeWidget::_onRevertRepresentation() const
 	{
-		VTX_ACTION( new Action::Molecule::RemoveRepresentation( _targets ) );
+		VTX_ACTION( new Action::Molecule::RemoveRepresentation( _getTargets() ) );
 	}
 	void MultipleMoleculeWidget::_onApplyRepresentationToChildren() const
 	{
-		VTX_ACTION( new Action::Molecule::RemoveChildrenRepresentations( _targets ) );
+		VTX_ACTION( new Action::Molecule::RemoveChildrenRepresentations( _getTargets() ) );
 	}
 
 } // namespace VTX::UI::Widget::Inspector

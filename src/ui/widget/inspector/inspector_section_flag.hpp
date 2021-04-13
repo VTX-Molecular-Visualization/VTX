@@ -13,6 +13,7 @@ namespace VTX::UI::Widget::Inspector
 		REPRESENTATION = 1 << 1,
 		INFOS		   = 1 << 2,
 
+		NONE = 0,
 		ALL = 0xFFFF
 	};
 

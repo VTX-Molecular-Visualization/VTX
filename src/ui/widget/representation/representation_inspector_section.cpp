@@ -9,7 +9,6 @@
 #include "ui/widget/representation/base_representation_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/callback_view.hpp"
-#include "view/ui/widget/inspector/all_inspector_view.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <string>
@@ -23,11 +22,7 @@ namespace VTX::UI::Widget::Representation
 
 	RepresentationInspectorSection ::~RepresentationInspectorSection()
 	{
-		for ( const InstantiatedRepresentation * const representation : _representations )
-		{
-			MVC::MvcManager::get().deleteView( representation, ID::View::UI_INSPECTOR_INSTANTIATED_REPRESENTATION );
-		}
-		_representations.clear();
+		// Views "UI_INSPECTOR_INSTANTIATED_REPRESENTATION" delete with models
 
 		if ( _dummyRepresentation != nullptr )
 			MVC::MvcManager::get().deleteModel( _dummyRepresentation );
