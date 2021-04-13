@@ -115,8 +115,8 @@ namespace VTX
 
 			inline Atom::TYPE getAtomType() const { return _atomType; }
 			inline void		  setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
-			inline const SecondaryStructure::VALUE getSecondaryStructure() const { return _secondaryStructure; };
-			inline void							   setSecondaryStructure( const SecondaryStructure::VALUE p_structure )
+			inline const SecondaryStructure::TYPE getSecondaryStructure() const { return _secondaryStructure; };
+			inline void							   setSecondaryStructure( const SecondaryStructure::TYPE p_structure )
 			{
 				_secondaryStructure = p_structure;
 			};
@@ -148,7 +148,7 @@ namespace VTX
 			std::vector<uint>		  _indexExtraBondStart = std::vector<uint>();
 			std::vector<uint>		  _indexExtraBondEnd   = std::vector<uint>();
 			Atom::TYPE				  _atomType = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
-			SecondaryStructure::VALUE _secondaryStructure = SecondaryStructure::VALUE::COIL;
+			SecondaryStructure::TYPE _secondaryStructure = SecondaryStructure::TYPE::COIL;
 
 			Residue() : BaseModel( ID::Model::MODEL_RESIDUE ) {}
 		};

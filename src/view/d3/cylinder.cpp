@@ -14,7 +14,7 @@ namespace VTX::View::D3
 		BaseView3D::render( p_camera );
 
 		for ( const std::pair<const Model::Representation::InstantiatedRepresentation *,
-							  VTX::Representation::RepresentationTarget> representationData :
+							  VTX::Representation::RepresentationTarget> & representationData :
 			  _model->getMolecule()->getRepresentationData() )
 		{
 			if ( !representationData.first->hasToDrawCylinder() )

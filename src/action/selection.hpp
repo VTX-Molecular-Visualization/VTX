@@ -685,12 +685,13 @@ namespace VTX::Action::Selection
 					// Call notify only once after all modif in molecule
 					molecule.forceNotifyDataChanged();
 					molecule.refreshBondsBuffer();
+					molecule.refreshSecondaryStructure();
 				}
 			}
 
 			_selection.clear();
 
-			for ( Model::Molecule * moleculeToDelete : moleculesToDelete )
+			for ( Model::Molecule * const moleculeToDelete : moleculesToDelete )
 			{
 				VTXApp::get().getScene().removeMolecule( moleculeToDelete );
 				MVC::MvcManager::get().deleteModel( moleculeToDelete );

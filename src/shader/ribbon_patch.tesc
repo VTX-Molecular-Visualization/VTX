@@ -1,103 +1,145 @@
+// Implementation of:
+// Instant visualization of secondary structures of molecular models
+// P. Hermosilla & V. Guallar & A. Vinacua & P.P. Vázquez
+// Eurographics Workshop on Visual Computing for Biology and Medicine (2015)
+
 #version 450
 
 layout( vertices = 4 ) out;
 
 uniform vec3 u_camPosition;
 
-in vec3				   vs_position[];
-in vec3				   vs_direction[];
-in vec3				   vs_normal[];
-flat in unsigned short vs_secondaryStructure[];
-flat in vec3		   vs_color[];
-flat in unsigned short vs_selection[];
+in VsOut
+{
+	vec4				position;
+	vec3				direction;
+	flat vec3			color;
+	flat unsigned short ssType;
+	flat unsigned short selection;
+}
+vsOut[];
 
-out vec3				tc_position[];
-out vec3				tc_direction[];
-out vec3				tc_normal[];
-flat out unsigned short tc_secondaryStructure[];
-flat out vec3			tc_color[];
-flat out unsigned short tc_selection[];
+out TcOut
+{
+	vec3				position;
+	vec3				direction;
+	vec3				normal;
+	flat vec3			color;
+	flat unsigned short ssType;
+	flat unsigned short selection;
+}
+tcOut[];
 
 // Values from original paper.
-const float MAX_DISTANCE				 = 160.f;
-const float MIN_DISTANCE				 = 10.f;
-const uint	MAX_SUBDIVISION_LEVEL		 = 12u;
-const uint	MIN_SUBDIVISION_LEVEL		 = 2u;
-const uint	MAX_SUBDIVISION_LEVEL_HELIX	 = 8u;
-const uint	MIN_SUBDIVISION_LEVEL_HELIX	 = 2u;
-const uint	MAX_SUBDIVISION_LEVEL_STRAND = 8u;
-const uint	MIN_SUBDIVISION_LEVEL_STRAND = 2u;
-const uint	MAX_SUBDIVISION_LEVEL_OTHER	 = 8u;
-const uint	MIN_SUBDIVISION_LEVEL_OTHER	 = 2u;
+const float MAX_DISTANCE   = 160.f;
+const float MIN_DISTANCE   = 10.f;
+const float RANGE_DISTANCE = MAX_DISTANCE - MIN_DISTANCE;
+
+// Tessellation level limits in u
+const float MIN_TESS_BSPLINE   = 2.f;
+const float MAX_TESS_BSPLINE   = 18.f;
+const float RANGE_TESS_BSPLINE = MAX_TESS_BSPLINE - MIN_TESS_BSPLINE;
+
+const float MAX_TESS_HELIX	= 18.f;
+const float MIN_TESS_HELIX	= 2.f;
+const float MAX_TESS_STRAND = 18.f;
+const float MIN_TESS_STRAND = 2.f;
+const float MAX_TESS_OTHER	= 12.f;
+const float MIN_TESS_OTHER	= 2.f;
 
 // Map with ss.
-const uint[] MIN = uint[]( MIN_SUBDIVISION_LEVEL_HELIX,	 // HELIX_ALPHA_RIGHT
-						   MIN_SUBDIVISION_LEVEL_HELIX,	 // HELIX_ALPHA_LEFT
-						   MIN_SUBDIVISION_LEVEL_HELIX,	 // HELIX_3_10_RIGHT
-						   MIN_SUBDIVISION_LEVEL_HELIX,	 // HELIX_3_10_LEFT
-						   MIN_SUBDIVISION_LEVEL_HELIX,	 // HELIX_PI
-						   MIN_SUBDIVISION_LEVEL_STRAND, // STRAND
-						   MIN_SUBDIVISION_LEVEL_OTHER,	 // TURN
-						   MIN_SUBDIVISION_LEVEL_OTHER	 // COIL
+const float[] MIN_TESS_SS = float[]( MIN_TESS_HELIX,  // HELIX_ALPHA_RIGHT
+									 MIN_TESS_HELIX,  // HELIX_ALPHA_LEFT
+									 MIN_TESS_HELIX,  // HELIX_3_10_RIGHT
+									 MIN_TESS_HELIX,  // HELIX_3_10_LEFT
+									 MIN_TESS_HELIX,  // HELIX_PI
+									 MIN_TESS_STRAND, // STRAND
+									 MIN_TESS_OTHER,  // TURN
+									 MIN_TESS_OTHER	  // COIL
 );
 
-const uint[] MAX = uint[]( MAX_SUBDIVISION_LEVEL_HELIX,	 // HELIX_ALPHA_RIGHT
-						   MAX_SUBDIVISION_LEVEL_HELIX,	 // HELIX_ALPHA_LEFT
-						   MAX_SUBDIVISION_LEVEL_HELIX,	 // HELIX_3_10_RIGHT
-						   MAX_SUBDIVISION_LEVEL_HELIX,	 // HELIX_3_10_LEFT
-						   MAX_SUBDIVISION_LEVEL_HELIX,	 // HELIX_PI
-						   MAX_SUBDIVISION_LEVEL_STRAND, // STRAND
-						   MAX_SUBDIVISION_LEVEL_OTHER,	 // TURN
-						   MAX_SUBDIVISION_LEVEL_OTHER	 // COIL
+const float[] MAX_TESS_SS = float[]( MAX_TESS_HELIX,  // HELIX_ALPHA_RIGHT
+									 MAX_TESS_HELIX,  // HELIX_ALPHA_LEFT
+									 MAX_TESS_HELIX,  // HELIX_3_10_RIGHT
+									 MAX_TESS_HELIX,  // HELIX_3_10_LEFT
+									 MAX_TESS_HELIX,  // HELIX_PI
+									 MAX_TESS_STRAND, // STRAND
+									 MAX_TESS_OTHER,  // TURN
+									 MAX_TESS_OTHER	  // COIL
 );
 
-float getDistance( vec3 p_point ) { return clamp( ( distance( p_point, u_camPosition ) - MIN_DISTANCE ) / MAX_DISTANCE, 0.f, 1.f ); }
+float computeTessellationFactor( vec3 p_point )
+{
+	return 1.f - clamp( ( length( p_point - u_camPosition ) - MIN_DISTANCE ) / RANGE_DISTANCE, 0.f, 1.f );
+}
 
 void main()
 {
 	// Transmit data.
-	tc_position[ gl_InvocationID ]			 = vs_position[ gl_InvocationID ];
-	tc_direction[ gl_InvocationID ]			 = vs_direction[ gl_InvocationID ];
-	tc_normal[ gl_InvocationID ]			 = vs_normal[ gl_InvocationID ];
-	tc_secondaryStructure[ gl_InvocationID ] = vs_secondaryStructure[ gl_InvocationID ];
-	tc_color[ gl_InvocationID ]				 = vs_color[ gl_InvocationID ];
-	tc_selection[ gl_InvocationID ]			 = vs_selection[ gl_InvocationID ];
+	tcOut[ gl_InvocationID ].position  = vsOut[ gl_InvocationID ].position.xyz;
+	tcOut[ gl_InvocationID ].direction = vsOut[ gl_InvocationID ].direction;
+	tcOut[ gl_InvocationID ].ssType	   = vsOut[ gl_InvocationID ].ssType;
+	tcOut[ gl_InvocationID ].color	   = vsOut[ gl_InvocationID ].color;
+	tcOut[ gl_InvocationID ].selection = vsOut[ gl_InvocationID ].selection;
 
-	// if ( gl_InvocationID == 0 )
-	//{
-	/*
-	https://gamedev.stackexchange.com/questions/87616/opengl-quad-tessellation-control-shader
+	// Normals are known only for the two center controls points.
+	if ( gl_InvocationID == 1 || gl_InvocationID == 2 )
+	{
+		// dir = 1 in backbones direction and -1 in the reverse direction.
+		const float dir = vsOut[ gl_InvocationID + 1 ].position.w - vsOut[ gl_InvocationID ].position.w;
+		tcOut[ gl_InvocationID ].direction *= dir;
+		const vec3 v02 = normalize( ( vsOut[ gl_InvocationID + 1 ].position.xyz - vsOut[ gl_InvocationID - 1 ].position.xyz ));
 
-	Y (V)   1-----2
-	^       |     |
-	|       |     |
-	|       0-----3
-	|
-	+-------> X (U)
+		tcOut[ gl_InvocationID ].normal = normalize( cross( v02, tcOut[ gl_InvocationID ].direction ) );
+	}
 
-	gl_TessLevelOuter[0] - for edge defined by u=0 (i.e. edge 0-1)
-	gl_TessLevelOuter[1] - for edge defined by v=0 (i.e. edge 0-3)
-	gl_TessLevelOuter[2] - for edge defined by u=1 (i.e. edge 2-3)
-	gl_TessLevelOuter[3] - for edge defined by v=1 (i.e. edge 1-2)
-	gl_TessLevelInner[0] - tess. in horizontal (u) direction
-	gl_TessLevelInner[1] - tess. in vertical (v) direction
-	*/
+	// Compute tessellation levels
+	if ( gl_InvocationID == 0 )
+	{
+		// From OpenGL SuperBible 6th
+		/*
+			(0,1)            outer3           (1,1)
+			  -----------------------------------
+			  |              inner1             |
+			  |        -----------------        |
+			o |     i |                 | i     | o
+			u |     n |                 | n     | u
+			t |     n |                 | n     | t
+			e + c0  e + c1           c2 + e  c3 + e
+			r |     r |                 | r     | r
+			0 |     0 |                 | 0     | 2
+			  |       |                 |       |
+			  |        -----------------        |
+		v     |              inner1             |
+		^	  -----------------------------------
+		|	(0,0)            outer1           (1,0)
+		|
+		+-----> u
+		*/
 
-	/*
-	gl_TessLevelOuter[ 0 ] = 10.f;
-	gl_TessLevelOuter[ 1 ] = 10.f;
-	gl_TessLevelOuter[ 2 ] = 10.f;
-	gl_TessLevelOuter[ 3 ] = 10.f;
-	gl_TessLevelInner[ 0 ] = 10.f;
-	gl_TessLevelInner[ 1 ] = 10.f;
-	*/
+		// Patch is defined for the two center controls points.
+		const vec3 c1 = vsOut[ 1 ].position.xyz;
+		const vec3 c2 = vsOut[ 2 ].position.xyz;
 
-	gl_TessLevelOuter[ 0 ] = getDistance( vs_position[ 1 ] ) * MAX[ vs_secondaryStructure[ 1 ] ] + MIN[ vs_secondaryStructure[ 1 ] ];
-	gl_TessLevelOuter[ 1 ] = max( getDistance( vs_position[ 1 ] ), getDistance( vs_position[ 2 ] ) ) * MAX_SUBDIVISION_LEVEL + MIN_SUBDIVISION_LEVEL;
-	gl_TessLevelOuter[ 2 ] = getDistance( vs_position[ 2 ] ) * MAX[ vs_secondaryStructure[ 2 ] ] + MIN[ vs_secondaryStructure[ 2 ] ];
-	gl_TessLevelOuter[ 3 ] = gl_TessLevelOuter[ 1 ];
-	gl_TessLevelInner[ 0 ] = gl_TessLevelOuter[ 1 ];
-	gl_TessLevelInner[ 1 ] = max( gl_TessLevelOuter[ 0 ], gl_TessLevelOuter[ 2 ] );
+		// Adaptive tessellation factors wrt the distance of the central control points and the camera.
+		const float tessFactorC1 = computeTessellationFactor( c1 );
+		const float tessFactorC2 = computeTessellationFactor( c2 );
 
-	//}
+		// Tessellation limits wrt secondary structure type.
+		const float tessMinC1 = MIN_TESS_SS[ vsOut[ 1 ].ssType ];
+		const float tessMaxC1 = MAX_TESS_SS[ vsOut[ 1 ].ssType ];
+		const float tessMinC2 = MIN_TESS_SS[ vsOut[ 2 ].ssType ];
+		const float tessMaxC2 = MAX_TESS_SS[ vsOut[ 2 ].ssType ];
+
+		const float vTessC1			  = tessFactorC1 * ( tessMaxC1 - tessMinC1 ) + tessMinC1;
+		const float vTessC2			  = tessFactorC2 * ( tessMaxC2 - tessMinC2 ) + tessMinC2;
+		const float uTesselationLevel = max( tessFactorC1, tessFactorC2 ) * ( RANGE_TESS_BSPLINE ) + MIN_TESS_BSPLINE;
+
+		gl_TessLevelOuter[ 0 ] = vTessC1;
+		gl_TessLevelOuter[ 1 ] = uTesselationLevel;
+		gl_TessLevelOuter[ 2 ] = vTessC2;
+		gl_TessLevelOuter[ 3 ] = uTesselationLevel;
+		gl_TessLevelInner[ 0 ] = max( vTessC1, vTessC2 );
+		gl_TessLevelInner[ 1 ] = uTesselationLevel;
+	}
 }

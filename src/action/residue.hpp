@@ -214,6 +214,7 @@ namespace VTX::Action::Residue
 			else
 			{
 				molecule->refreshBondsBuffer();
+				molecule->refreshSecondaryStructure();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
