@@ -37,16 +37,10 @@ namespace VTX
 				COUNT
 			};
 
-			inline Model::Molecule * const						 getMolecule() { return _molecule; }
-			inline const Generic::SECONDARY_STRUCTURE_COLOR_MODE getColorMode() const { return _colorMode; }
-			inline void setColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE p_colorMode )
-			{
-				_colorMode = p_colorMode;
-				refreshColors();
-			}
-			inline void refreshColors() { _fillBufferColors(); }
+			inline Model::Molecule * const getMolecule() { return _molecule; }
+			inline void					   refreshColors() { _fillBufferColors(); }
 
-			void setCurrentFrame();
+			void refresh( const bool p_refreshBuffers = true );
 
 			const std::vector<uint> &	 getIndices() const { return _bufferIndices; }
 			const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToIndices; }
@@ -67,8 +61,7 @@ namespace VTX
 			void _instantiate3DViews() override;
 
 		  private:
-			Model::Molecule * const					_molecule;
-			Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode = Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
+			Model::Molecule * const _molecule;
 
 			// Carbon alpha (Ca) positions.
 			// Add an extra float increasing along the backbone (to determine direction for two sided ss).

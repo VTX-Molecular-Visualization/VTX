@@ -392,8 +392,8 @@ namespace VTX
 					const float u1 = dot( p, q );
 					const float v1 = dot( p, r );
 
-					u = u1 / std::sqrtf( u );
-					v = v1 / std::sqrtf( v );
+					u = u1 / sqrtf( u );
+					v = v1 / sqrtf( v );
 
 					if ( std::abs( u ) > 0.01f || std::abs( v ) > 0.01f )
 					{

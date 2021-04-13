@@ -57,8 +57,8 @@ const float DIRECTION_FACTOR[] = float[]( 2.f, // HELIX_ALPHA_RIGHT
 										  2.f, // HELIX_3_10_LEFT
 										  2.f, // HELIX_PI
 										  3.f, // STRAND
-										  1.f, // TURN
-										  1.f  // COIL
+										  0.5f, // TURN
+										  0.5f  // COIL
 );
 
 const float RADIUS = 0.4f;
