@@ -65,8 +65,8 @@ namespace VTX
 					{
 						reader->readFile( *path, *molecule );
 						molecule->print();
-						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
-						VTXApp::get().getScene().addMolecule( molecule );
+						// VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
+						// VTXApp::get().getScene().addMolecule( molecule );
 					}
 					catch ( const std::exception & p_e )
 					{
@@ -86,8 +86,8 @@ namespace VTX
 					{
 						reader->readFile( *path, *mesh );
 						mesh->print();
-						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
-						VTXApp::get().getScene().addMesh( mesh );
+						// VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
+						// VTXApp::get().getScene().addMesh( mesh );
 					}
 					catch ( const std::exception & p_e )
 					{
@@ -143,8 +143,8 @@ namespace VTX
 					{
 						reader->readBuffer( *pair.second, *pair.first, *molecule );
 						molecule->print();
-						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
-						VTXApp::get().getScene().addMolecule( molecule );
+						// VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
+						// VTXApp::get().getScene().addMolecule( molecule );
 					}
 					catch ( const std::exception & p_e )
 					{

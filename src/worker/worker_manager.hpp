@@ -15,13 +15,13 @@ namespace VTX
 {
 	namespace Worker
 	{
+		using Callback = std::function<void( const uint )>;
+
 		class WorkerManager final : public QObject
 		{
 			Q_OBJECT
 
 		  public:
-			using Callback = std::function<void( const uint )>;
-
 			inline static WorkerManager & get()
 			{
 				static WorkerManager instance;
@@ -91,7 +91,10 @@ namespace VTX
 		};
 	} // namespace Worker
 
-	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker ) { Worker::WorkerManager::get().run( p_worker ); }
+	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker, Worker::Callback * const p_callback = nullptr )
+	{
+		Worker::WorkerManager::get().run( p_worker, p_callback );
+	}
 	inline void VTX_ASYNC( const std::function<void( void )> & p_function ) { std::thread( p_function ).detach(); }
 } // namespace VTX
 #endif

@@ -60,20 +60,10 @@ namespace VTX::Action::Main
 				return;
 			}
 
-			/*
-			const Worker::CallbackSuccess * success
-				= new Worker::CallbackSuccess( [ loader ]( void ) { delete loader; } );
-			const Worker::CallbackError * error
-				= new Worker::CallbackError( [ loader ]( const std::exception & p_e ) {
-					  VTX_ERROR( p_e.what() );
-					  delete loader;
-				  } );
+			Worker::Callback * const callback
+				= new Worker::Callback( []( const uint p_code ) { VTX_DEBUG( "Thread callback ok" ); } );
 
-			VTX_WORKER( loader, success, error );
-			*/
-
-			VTX_WORKER( loader );
-			delete loader;
+			VTX_WORKER( loader, callback );
 		}
 
 	  private:
