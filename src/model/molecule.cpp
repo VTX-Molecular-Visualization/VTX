@@ -284,7 +284,7 @@ namespace VTX
 
 			_currentFrame = p_frameIdx;
 			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
-			_secondaryStructure->setCurrentFrame();
+			//_secondaryStructure->setCurrentFrame();
 		}
 
 		void Molecule::print() const
@@ -429,6 +429,17 @@ namespace VTX
 			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule * const>( this );
 			_secondaryStructure->init( getBuffer()->gl() );
 			_secondaryStructure->print();
+		}
+
+		void Molecule::refreshSecondaryStructure()
+		{
+			if ( _secondaryStructure == nullptr )
+			{
+				VTX_ERROR( "No secondary structure" );
+				return;
+			}
+
+			_secondaryStructure->refresh();
 		}
 
 		void Molecule::setVisible( const bool p_visible )

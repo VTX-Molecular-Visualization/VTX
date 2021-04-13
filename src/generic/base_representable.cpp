@@ -62,9 +62,20 @@ namespace VTX
 		const Model::Representation::InstantiatedRepresentation * const BaseRepresentable::getRepresentation() const
 		{
 			if ( _representation == nullptr )
-				return _parent->getRepresentation();
+			{
+				if ( _parent == nullptr )
+				{
+					return nullptr;
+				}
+				else
+				{
+					return _parent->getRepresentation();
+				}
+			}
 			else
+			{
 				return _representation;
+			}
 		}
 		Model::Representation::InstantiatedRepresentation * const BaseRepresentable::getCustomRepresentation()
 		{

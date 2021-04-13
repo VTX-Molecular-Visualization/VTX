@@ -221,6 +221,7 @@ namespace VTX
 			bool mergeTopology( const Molecule & );
 
 			void createSecondaryStructure();
+			void refreshSecondaryStructure();
 			void propagateEventToViews( const Event::VTXEvent * const p_event ) { _notifyViews( p_event ); }
 
 			const std::string & getDisplayName() const { return _displayName; };
