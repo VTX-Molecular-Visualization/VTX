@@ -67,7 +67,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 	}
 	void MenuHomeSessionWidget::localize() {}
 
-	void MenuHomeSessionWidget::_newSession() { VTX_ACTION( new Action::Main::New(), true ); }
+	void MenuHomeSessionWidget::_newSession() { VTX_ACTION( new Action::Main::New() ); }
 	void MenuHomeSessionWidget::_openFile()
 	{
 		const QString filename
