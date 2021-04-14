@@ -147,6 +147,8 @@ namespace VTX
 					receiver->receiveEvent( *p_event );
 				}
 			}
+
+			delete p_event;
 		}
 
 		void EventManager::_flushEventKeyboard( QKeyEvent * const p_event )
