@@ -9,8 +9,9 @@
 #include "id.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/qt_multi_data_field.hpp"
-#include <QWidget>
+#include <QIcon>
 #include <QWheelEvent>
+#include <QWidget>
 
 namespace VTX::UI::Widget::Representation
 {
@@ -19,24 +20,29 @@ namespace VTX::UI::Widget::Representation
 		VTX_WIDGET
 
 	  private:
-		inline static int ID_VIEW_COUNTER = 0;
+		inline static int	ID_VIEW_COUNTER						= 0;
+		inline static QIcon NOT_DEFAULT_REPRESENTATION_FEEDABCK = QIcon();
 
 	  public:
 		~RepresentationLibraryComboBox();
 		void localize() override;
+
+		void setHighlightDefaultRepresentation( const bool p_highlight );
 
 	  protected:
 		RepresentationLibraryComboBox( QWidget * p_parent = nullptr );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
-		 void wheelEvent( QWheelEvent * event ) override;
+		void wheelEvent( QWheelEvent * event ) override;
 
 	  private:
 		void _onRepresentationLibraryChange( const Event::VTXEvent * const p_event );
 		void _fillItemList();
+		void _updateHighlightDefaultRepresentationFeedback();
 
-		ID::VTX_ID _viewID;
+		const ID::VTX_ID _viewID;
+		bool			 _highlightDefault = false;
 	};
 } // namespace VTX::UI::Widget::Representation
 #endif

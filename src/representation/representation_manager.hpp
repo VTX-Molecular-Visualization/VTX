@@ -25,6 +25,7 @@ namespace VTX::Model
 	{
 		class Representation;
 		class InstantiatedRepresentation;
+		class RepresentationLibrary;
 	} // namespace Representation
 } // namespace VTX::Model
 
@@ -35,6 +36,7 @@ namespace VTX::Representation
 	  public:
 		using Representation			 = Model::Representation::Representation;
 		using InstantiatedRepresentation = Model::Representation::InstantiatedRepresentation;
+		using RepresentationLibrary		 = Model::Representation::RepresentationLibrary;
 
 		using MapRepresentationRepresentables
 			= std::map<InstantiatedRepresentation *, std::unordered_set<Generic::BaseRepresentable *>>;
@@ -44,11 +46,6 @@ namespace VTX::Representation
 			static RepresentationManager instance;
 			return instance;
 		}
-
-		void setDefaultRepresentationIndex( const int p_defaultRepresentationIndex );
-
-	  private:
-		Representation * _defaultBaseRepresentation = nullptr;
 
 	  public:
 		InstantiatedRepresentation * instantiateRepresentation( const Representation * const p_representation,
@@ -163,6 +160,8 @@ namespace VTX::Representation
 
 		void _instantiateViewOnRepresentation( const Representation * const p_representation );
 		void _deleteViewOnRepresentation( const Representation * const p_representation ) const;
+
+		void _applyNextBaseRepresentationOnInstances( const Representation * const p_defaultRepresentation );
 
 		void _onRepresentationChange( const Representation * const	representation,
 									  const Event::VTXEvent * const p_event );

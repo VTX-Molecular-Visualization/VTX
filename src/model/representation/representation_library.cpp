@@ -1,6 +1,9 @@
 #include "representation_library.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "id.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "setting.hpp"
 #include "view/callback_view.hpp"
 #include "vtx_app.hpp"
 #include <string>
@@ -8,6 +11,12 @@
 namespace VTX::Model::Representation
 {
 	RepresentationLibrary & RepresentationLibrary::get() { return VTXApp::get().getRepresentationLibrary(); };
+
+	RepresentationLibrary::RepresentationLibrary() : BaseModel( ID::Model::MODEL_REPRESENTATION_LIBRARY )
+	{
+		_init();
+		_defaultRepresentation = _representations[ Setting::REPRESENTATION_DEFAULT_INDEX ];
+	}
 
 	RepresentationLibrary ::~RepresentationLibrary()
 	{
@@ -77,13 +86,18 @@ namespace VTX::Model::Representation
 
 		if ( p_notify )
 			_notifyDataChanged();
+
+		const int newRepresentationIndex = int( _representations.size() ) - 1;
+		VTX_EVENT( new Event::VTXEventValue<int>( Event::Global::REPRESENTATION_ADDED, newRepresentationIndex ) );
 	};
 	void RepresentationLibrary::copyRepresentation( const int p_index, const bool p_notify )
 	{
 		Representation * const sourceRepresentation = _representations[ p_index ];
 		Representation * const copiedRepresentation
 			= MVC::MvcManager::get().instantiateModel<Representation>( *sourceRepresentation );
+
 		copiedRepresentation->setName( "copy of " + sourceRepresentation->getName() );
+		copiedRepresentation->setQuickAccess( false );
 
 		addRepresentation( copiedRepresentation, p_notify );
 	}
@@ -99,12 +113,39 @@ namespace VTX::Model::Representation
 		if ( p_notify )
 			_notifyDataChanged();
 
+		VTX_EVENT( new Event::VTXEventValue<int>( Event::Global::REPRESENTATION_REMOVED, p_index ) );
+
 		return removedRepresentation;
 	};
+
+	bool RepresentationLibrary::canDeleteRepresentation( Representation * const p_representation ) const
+	{
+		return p_representation != _defaultRepresentation;
+	}
+
+	void RepresentationLibrary::deleteRepresentation( const Representation * const p_representation,
+													  const bool				   p_notify )
+	{
+		const int representationIndex = getRepresentationIndex( p_representation );
+		deleteRepresentation( representationIndex, p_notify );
+	}
+
 	void RepresentationLibrary::deleteRepresentation( const int p_index, const bool p_notify )
 	{
 		MVC::MvcManager::get().deleteModel( removeRepresentation( p_index, p_notify ) );
 	}
+
+	void RepresentationLibrary::setDefaultRepresentation( const int p_representationIndex )
+	{
+		_defaultRepresentation		 = _representations[ p_representationIndex ];
+		VTX_SETTING().representation = p_representationIndex;
+		_notifyDataChanged();
+	}
+	int RepresentationLibrary::getDefaultRepresentationIndex() const
+	{
+		return getRepresentationIndex( _defaultRepresentation );
+	}
+	Representation * RepresentationLibrary::getDefaultRepresentation() { return _defaultRepresentation; }
 
 	void RepresentationLibrary::_init()
 	{

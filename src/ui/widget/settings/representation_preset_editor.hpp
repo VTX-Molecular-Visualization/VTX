@@ -39,6 +39,7 @@ namespace VTX::UI::Widget::Settings
 			SS_COLOR_MODE,
 			COLOR,
 			QUICK_ACCESS,
+			SET_DEFAULT,
 		};
 
 		struct ParameterLine
@@ -55,7 +56,8 @@ namespace VTX::UI::Widget::Settings
 
 			void setVisible( const bool p_visible )
 			{
-				_label->setVisible( p_visible );
+				if ( _label != nullptr )
+					_label->setVisible( p_visible );
 				_widget->setVisible( p_visible );
 			}
 
@@ -86,8 +88,9 @@ namespace VTX::UI::Widget::Settings
 
 		std::map<PARAMETER, ParameterLine *> _parameterWidgets;
 
+		void _addParameter( const PARAMETER & p_parameter, QWidget * const p_widget );
 		void _addParameter( const PARAMETER & p_parameter, QWidget * const p_widget, const QString & p_label );
-		void _addSpace();
+		void _addSpace( const int p_spaceSize = 10 );
 		void _populateRepresentationTypeComboBox( QComboBox * const p_comboBox ) const;
 
 		void _setParameterVisibility( const PARAMETER & p_parameter, const bool p_visible );
@@ -117,6 +120,7 @@ namespace VTX::UI::Widget::Settings
 		void _onColorModeChanged( const int p_index );
 		void _onColorChanged( const Color::Rgb & p_color );
 		void _onSSColorModeChanged( const int p_index );
+		void _onSetDefault();
 	};
 
 } // namespace VTX::UI::Widget::Settings

@@ -11,6 +11,7 @@
 	<file>sprite/close_icon.png</file>
 	<file>sprite/copy_preset_icon.png</file>
 	<file>sprite/copy_selection_icon.png</file>
+	<file>sprite/default_item_icon.png</file>
 	<file>sprite/delete_preset_icon.png</file>
 	<file>sprite/delete_selection_icon.png</file>
 	<file>sprite/download_molecule_icon.png</file>

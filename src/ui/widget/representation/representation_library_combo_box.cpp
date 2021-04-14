@@ -1,13 +1,16 @@
 #include "representation_library_combo_box.hpp"
 #include "model/representation/representation_library.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "representation/representation_manager.hpp"
+#include "style.hpp"
 #include "view/callback_view.hpp"
 
 namespace VTX::UI::Widget::Representation
 {
-	RepresentationLibraryComboBox::RepresentationLibraryComboBox( QWidget * p_parent ) : BaseManualWidget( p_parent )
+	RepresentationLibraryComboBox::RepresentationLibraryComboBox( QWidget * p_parent ) :
+		BaseManualWidget( p_parent ),
+		_viewID( ID::View::UI_REPRESENTATION_LIBRARY_COMBO_BOX + std::to_string( ID_VIEW_COUNTER ) )
 	{
-		_viewID = ID::View::UI_REPRESENTATION_LIBRARY_COMBO_BOX + std::to_string( ID_VIEW_COUNTER );
 		ID_VIEW_COUNTER++;
 	}
 	RepresentationLibraryComboBox::~RepresentationLibraryComboBox()
@@ -33,6 +36,12 @@ namespace VTX::UI::Widget::Representation
 	void RepresentationLibraryComboBox::_setupSlots() {}
 	void RepresentationLibraryComboBox::localize() {}
 
+	void RepresentationLibraryComboBox::setHighlightDefaultRepresentation( const bool p_highlight )
+	{
+		_highlightDefault = p_highlight;
+		_updateHighlightDefaultRepresentationFeedback();
+	}
+
 	void RepresentationLibraryComboBox::_fillItemList()
 	{
 		const bool oldSignalState		= blockSignals( true );
@@ -45,6 +54,9 @@ namespace VTX::UI::Widget::Representation
 			addItem( QString::fromStdString( preset->getName() ) );
 		}
 
+		if ( _highlightDefault )
+			_updateHighlightDefaultRepresentationFeedback();
+
 		if ( previousCurrentIndex >= count() )
 		{
 			previousCurrentIndex = count() - 1;
@@ -52,6 +64,21 @@ namespace VTX::UI::Widget::Representation
 
 		setCurrentIndex( previousCurrentIndex );
 		blockSignals( oldSignalState );
+	}
+
+	void RepresentationLibraryComboBox::_updateHighlightDefaultRepresentationFeedback()
+	{
+		for ( int i = 0; i < count(); i++ )
+		{
+			const bool displayDefaultFeedback
+				= _highlightDefault
+				  && Model::Representation::RepresentationLibrary::get().getDefaultRepresentationIndex() == i;
+
+			const QIcon & displayedIcon
+				= displayDefaultFeedback ? Style::IconConst::get().DEFAULT_ITEM : NOT_DEFAULT_REPRESENTATION_FEEDABCK;
+
+			setItemIcon( i, displayedIcon );
+		}
 	}
 
 	void RepresentationLibraryComboBox::_onRepresentationLibraryChange( const Event::VTXEvent * const p_event )

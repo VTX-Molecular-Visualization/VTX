@@ -14,6 +14,7 @@ namespace VTX::View::UI::Widget::Representation
 		View::BaseView<Model::Representation::RepresentationLibrary>( p_model ),
 		VTX::UI::Widget::BaseManualWidget<QWidget>( p_parent )
 	{
+		_registerEvent( Event::Global::REPRESENTATION_ADDED );
 	}
 
 	void RepresentationLibraryView::_setupUi( const QString & p_name )
@@ -28,8 +29,9 @@ namespace VTX::View::UI::Widget::Representation
 		const int currentIndex = 0;
 		_presetList
 			= VTX::UI::WidgetFactory::get().instantiateWidget<RepresentationLibraryComboBox>( this, "PresetList" );
-
+		_presetList->setHighlightDefaultRepresentation( true );
 		_presetList->setCurrentIndex( currentIndex );
+
 		_representationPresetEditor = VTX::UI::WidgetFactory::get().instantiateWidget<RepresentationPresetEditor>(
 			this, "renderEffectPresetEdition" );
 
@@ -63,6 +65,17 @@ namespace VTX::View::UI::Widget::Representation
 		connect( _addPresetButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onAddPreset );
 		connect( _copyPresetButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onCopyPreset );
 		connect( _deletePresetButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onDeletePreset );
+	}
+
+	void RepresentationLibraryView::receiveEvent( const Event::VTXEvent & p_event )
+	{
+		if ( p_event.name == Event::Global::REPRESENTATION_ADDED )
+		{
+			const Event::VTXEventValue<int> & castedEvent = dynamic_cast<const Event::VTXEventValue<int> &>( p_event );
+			const int						  representationIndex = castedEvent.value;
+
+			_presetList->setCurrentIndex( representationIndex );
+		}
 	}
 
 	void RepresentationLibraryView::localize() {}
@@ -102,8 +115,12 @@ namespace VTX::View::UI::Widget::Representation
 	}
 	void RepresentationLibraryView::_refreshPresetDisplayed()
 	{
-		const int currentIndex = _presetList->currentIndex();
-		_representationPresetEditor->setPreset( _model->getRepresentation( currentIndex ) );
+		const int									  currentIndex	 = _presetList->currentIndex();
+		Model::Representation::Representation * const representation = _model->getRepresentation( currentIndex );
+
+		_representationPresetEditor->setPreset( representation );
+
+		_deletePresetButton->setEnabled( _model->canDeleteRepresentation( representation ) );
 	}
 
 } // namespace VTX::View::UI::Widget::Representation

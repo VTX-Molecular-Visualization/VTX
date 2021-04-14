@@ -5,6 +5,7 @@
 #include "model/residue.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "representation/representation_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "view/d3/ribbon.hpp"
@@ -214,16 +215,14 @@ namespace VTX
 
 			if ( p_refreshBuffers )
 			{
+				_fillBuffer();
+				if ( _molecule->hasCustomRepresentation() )
 				{
-					_fillBuffer();
-					if ( _molecule->hasCustomRepresentation() )
-					{
-						_molecule->computeAllRepresentationData();
-					}
-					else
-					{
-						_molecule->applyDefaultRepresentation();
-					}
+					_molecule->computeAllRepresentationData();
+				}
+				else
+				{
+					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation( *_molecule );
 				}
 			}
 		}

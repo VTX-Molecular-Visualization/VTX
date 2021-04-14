@@ -224,7 +224,29 @@ namespace VTX::Action::Representation
 
 		void execute()
 		{
-			Model::Representation::RepresentationLibrary::get().deleteRepresentation( _representationIndex );
+			const Model::Representation::Representation * representation
+				= Model::Representation::RepresentationLibrary::get().getRepresentation( _representationIndex );
+
+			VTX::Representation::RepresentationManager::get().deleteRepresentation( representation );
+
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		};
+
+	  private:
+		const int _representationIndex;
+	};
+
+	class SetAsDefaultRepresentation : public BaseAction
+	{
+	  public:
+		explicit SetAsDefaultRepresentation( const int p_representationIndex ) :
+			_representationIndex( p_representationIndex )
+		{
+		}
+
+		void execute()
+		{
+			Model::Representation::RepresentationLibrary::get().setDefaultRepresentation( _representationIndex );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 

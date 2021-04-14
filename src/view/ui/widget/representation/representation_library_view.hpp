@@ -28,6 +28,7 @@ namespace VTX::View::UI::Widget::Representation
 
 	  public:
 		void localize() override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
 	  protected:
 		RepresentationLibraryView( Model::Representation::RepresentationLibrary * const p_model,

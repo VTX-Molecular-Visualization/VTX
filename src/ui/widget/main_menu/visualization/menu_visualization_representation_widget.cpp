@@ -79,6 +79,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			"Preset\nSettings", ":/sprite/representation_new_preset_icon.png", Qt::Orientation::Vertical );
 		pushButtonInNextColumn( *_addPreset );
 
+		_setupSlots();
+
 		validate();
 	}
 	void MenuVisualizationRepresentationWidget::_refreshNames()

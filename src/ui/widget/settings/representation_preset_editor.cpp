@@ -49,8 +49,9 @@ namespace VTX::UI::Widget::Settings
 		CustomWidget::ColorFieldButton * const colorButtonWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorFieldButton>( this,
 																							   "ColorButtonWidget" );
-
-		QCheckBox * const quickAccess = new QCheckBox( this );
+		QCheckBox * const	quickAccess		 = new QCheckBox( this );
+		QPushButton * const setDefaultButton = new QPushButton( this );
+		setDefaultButton->setText( "Set As Default" );
 
 		QHBoxLayout * const hboxLayout = new QHBoxLayout( this );
 		QVBoxLayout * const vboxLayout = new QVBoxLayout();
@@ -69,6 +70,8 @@ namespace VTX::UI::Widget::Settings
 		_addParameter( PARAMETER::COLOR_MODE, colorModeWidget, QString( "Color Mode" ) );
 		_addParameter( PARAMETER::SS_COLOR_MODE, ssColorModeWidget, QString( "SS Color Mode" ) );
 		_addParameter( PARAMETER::COLOR, colorButtonWidget, QString( "Custom color" ) );
+		_addSpace( 30 );
+		_addParameter( PARAMETER::SET_DEFAULT, setDefaultButton );
 
 		vboxLayout->addItem( _layout );
 		vboxLayout->addStretch( 1000 );
@@ -115,6 +118,11 @@ namespace VTX::UI::Widget::Settings
 				 &Widget::CustomWidget::ColorFieldButton::onValueChange,
 				 this,
 				 &RepresentationPresetEditor::_onColorChanged );
+
+		connect( _getParameter<QPushButton>( PARAMETER::SET_DEFAULT ),
+				 &QPushButton::clicked,
+				 this,
+				 &RepresentationPresetEditor::_onSetDefault );
 	}
 
 	void RepresentationPresetEditor::localize() {}
@@ -309,11 +317,31 @@ namespace VTX::UI::Widget::Settings
 		if ( !signalsBlocked() && p_color != _preset->getColor() )
 			VTX_ACTION( new Action::Representation::ChangeColor( _preset, p_color ) );
 	}
+	void RepresentationPresetEditor::_onSetDefault()
+	{
+		if ( !signalsBlocked()
+			 && _preset != Model::Representation::RepresentationLibrary::get().getDefaultRepresentation() )
+		{
+			const int presetIndex
+				= Model::Representation::RepresentationLibrary::get().getRepresentationIndex( _preset );
+			VTX_ACTION( new Action::Representation::SetAsDefaultRepresentation( presetIndex ) );
+		}
+	}
 
 	void RepresentationPresetEditor::_applyPreset() const
 	{
 		// if ( !signalsBlocked() )
 		//	VTX_ACTION( new Action::Representation::ApplyRepresentationPreset( *_preset ) );
+	}
+
+	void RepresentationPresetEditor::_addParameter( const PARAMETER & p_parameter, QWidget * const p_widget )
+	{
+		_layout->addWidget( p_widget, _itemCount, 0, 1, 2, Qt::AlignmentFlag::AlignCenter );
+
+		ParameterLine * const parameter	 = new ParameterLine( nullptr, p_widget );
+		_parameterWidgets[ p_parameter ] = parameter;
+
+		_itemCount++;
 	}
 
 	void RepresentationPresetEditor::_addParameter( const PARAMETER & p_parameter,
@@ -326,15 +354,14 @@ namespace VTX::UI::Widget::Settings
 		_layout->addWidget( label, _itemCount, 0 );
 		_layout->addWidget( p_widget, _itemCount, 1 );
 
-		ParameterLine * const parameter = new ParameterLine( label, p_widget );
-
+		ParameterLine * const parameter	 = new ParameterLine( label, p_widget );
 		_parameterWidgets[ p_parameter ] = parameter;
 
 		_itemCount++;
 	}
-	void RepresentationPresetEditor::_addSpace()
+	void RepresentationPresetEditor::_addSpace( const int p_spaceSize )
 	{
-		_layout->addItem( new QSpacerItem( 0, 10 ), _itemCount, 0, 2, 1 );
+		_layout->addItem( new QSpacerItem( 0, p_spaceSize ), _itemCount, 0, 2, 1 );
 		_itemCount++;
 	}
 

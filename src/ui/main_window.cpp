@@ -175,6 +175,7 @@ namespace VTX::UI
 	{
 		_settingWidget->setCurrentMenu( p_menuIndex );
 		_settingWidget->show();
+		_settingWidget->raise();
 	}
 
 	WindowMode MainWindow::_getWindowModeFromWindowState( const Qt::WindowStates & p_state )
