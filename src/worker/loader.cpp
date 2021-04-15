@@ -54,10 +54,10 @@ namespace VTX
 				else if ( mode == MODE::MOLECULE )
 				{
 					// Create reader.
-					IO::Reader::LibChemfiles * reader = new IO::Reader::LibChemfiles();
+					IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles();
 
 					// Set PRM.
-					Model::Molecule * molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+					Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 					molecule->setConfiguration( config );
 
 					// Load.
@@ -65,8 +65,7 @@ namespace VTX
 					{
 						reader->readFile( *path, *molecule );
 						molecule->print();
-						// VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
-						// VTXApp::get().getScene().addMolecule( molecule );
+						_molecules.emplace_back( molecule );
 					}
 					catch ( const std::exception & p_e )
 					{
@@ -79,15 +78,14 @@ namespace VTX
 				}
 				else if ( mode == MODE::MESH )
 				{
-					IO::Reader::LibAssimp * reader = new IO::Reader::LibAssimp();
-					Model::MeshTriangle *	mesh   = MVC::MvcManager::get().instantiateModel<Model::MeshTriangle>();
+					IO::Reader::LibAssimp * const reader = new IO::Reader::LibAssimp();
+					Model::MeshTriangle * const	  mesh = MVC::MvcManager::get().instantiateModel<Model::MeshTriangle>();
 
 					try
 					{
 						reader->readFile( *path, *mesh );
 						mesh->print();
-						// VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
-						// VTXApp::get().getScene().addMesh( mesh );
+						_meshes.emplace_back( mesh );
 					}
 					catch ( const std::exception & p_e )
 					{
@@ -100,7 +98,7 @@ namespace VTX
 				}
 				else if ( mode == MODE::VTX )
 				{
-					IO::Reader::VTX * reader = new IO::Reader::VTX();
+					IO::Reader::VTX * const reader = new IO::Reader::VTX();
 
 					try
 					{
@@ -143,8 +141,7 @@ namespace VTX
 					{
 						reader->readBuffer( *pair.second, *pair.first, *molecule );
 						molecule->print();
-						// VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
-						// VTXApp::get().getScene().addMolecule( molecule );
+						_molecules.emplace_back( molecule );
 					}
 					catch ( const std::exception & p_e )
 					{

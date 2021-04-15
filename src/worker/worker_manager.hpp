@@ -34,7 +34,7 @@ namespace VTX
 				_workers.emplace( p_worker, p_callback );
 				connect( p_worker, &Worker::BaseWorker::resultReady, this, &WorkerManager::_onResultReady );
 				connect( p_worker, &Worker::BaseWorker::updateProgress, this, &WorkerManager::_onUpdateProgress );
-
+				connect( p_worker, &Worker::BaseWorker::finished, p_worker, &QObject::deleteLater );
 				VTX_DEBUG( "Starting thread" );
 				p_worker->start();
 			}
@@ -48,7 +48,8 @@ namespace VTX
 				// Stop and delete all running threads.
 				for ( const std::pair<BaseWorker *, Callback *> & pair : _workers )
 				{
-					pair.first->terminate();
+					pair.first->quit();
+					pair.first->wait();
 
 					if ( pair.second != nullptr )
 					{
@@ -71,6 +72,9 @@ namespace VTX
 				}
 				else
 				{
+					p_worker->quit(); // Useful?
+					p_worker->wait();
+
 					// Call callback and delete all.
 					Callback * callback = _workers.at( p_worker );
 					if ( callback != nullptr )
@@ -78,6 +82,7 @@ namespace VTX
 						( *callback )( p_returnCode );
 						delete callback;
 					}
+
 
 					_workers.erase( _workers.find( p_worker ) );
 					delete p_worker;

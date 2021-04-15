@@ -12,6 +12,12 @@
 
 namespace VTX
 {
+	namespace Model
+	{
+		class Molecule;
+		class MeshTriangle;
+	} // namespace Model
+
 	namespace Worker
 	{
 		class Loader : public Worker::BaseWorker
@@ -37,11 +43,17 @@ namespace VTX
 				_mapFileNameBuffer.clear();
 			}
 
+			inline std::vector<Model::Molecule *> *		getMolecules() { return &_molecules; }
+			inline std::vector<Model::MeshTriangle *> * getMeshes() { return &_meshes; }
+
 			uint _run() override;
 
 		  private:
 			std::vector<FilePath *>				_paths			   = std::vector<FilePath *>();
 			std::map<FilePath *, std::string *> _mapFileNameBuffer = std::map<FilePath *, std::string *>();
+
+			std::vector<Model::Molecule *>	   _molecules = std::vector<Model::Molecule *>();
+			std::vector<Model::MeshTriangle *> _meshes	  = std::vector<Model::MeshTriangle *>();
 
 			MODE _getMode( const FilePath & ) const;
 		};
