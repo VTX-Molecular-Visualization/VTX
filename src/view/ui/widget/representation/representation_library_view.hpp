@@ -43,8 +43,7 @@ namespace VTX::View::UI::Widget::Representation
 		void _onCopyPreset() const;
 		void _onDeletePreset() const;
 
-		void _refreshPresetDisplayed();
-		void _buildPresetList();
+		void _refreshPresetDisplayed( const bool p_applyPreset );
 
 	  private:
 		RepresentationLibraryComboBox * _presetList					= nullptr;

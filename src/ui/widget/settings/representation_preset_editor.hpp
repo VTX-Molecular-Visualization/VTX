@@ -77,7 +77,6 @@ namespace VTX::UI::Widget::Settings
 
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
-		void _applyPreset() const;
 		void _catchModelEvent( const Event::VTXEvent * const p_event ) override;
 
 	  private:

@@ -54,6 +54,7 @@ namespace VTX
 
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );
+		_renderEffectLibrary->applyPreset( getSetting().renderEffectDefaultIndex );
 
 		VTX_INFO( "Application started" );
 

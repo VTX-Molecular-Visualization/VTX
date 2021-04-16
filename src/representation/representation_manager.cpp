@@ -128,10 +128,12 @@ namespace VTX::Representation
 	void RepresentationManager::deleteRepresentation( const Representation *& p_representation )
 	{
 		if ( _mapRepresentationInstances.find( p_representation ) != _mapRepresentationInstances.end() )
+		{
 			_applyNextBaseRepresentationOnInstances( p_representation );
 
-		_mapRepresentationInstances.erase( p_representation );
-		_deleteViewOnRepresentation( p_representation );
+			_mapRepresentationInstances.erase( p_representation );
+			_deleteViewOnRepresentation( p_representation );
+		}
 
 		const int representationIndex = RepresentationLibrary::get().getRepresentationIndex( p_representation );
 		RepresentationLibrary::get().deleteRepresentation( representationIndex );

@@ -77,4 +77,7 @@ namespace VTX::Model::Representation
 			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_TYPE_CHANGE ) );
 		}
 	}
+
+	void Representation::copyDataFrom( const Representation & p_source ) { _data->copyData( *( p_source._data ) ); }
+
 } // namespace VTX::Model::Representation

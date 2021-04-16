@@ -3,6 +3,7 @@
 #include "action/renderer.hpp"
 #include "setting.hpp"
 #include "ui/widget_factory.hpp"
+#include "view/callback_view.hpp"
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -11,13 +12,17 @@
 namespace VTX::UI::Widget::Settings
 {
 	RenderEffectPresetEditor::RenderEffectPresetEditor( QWidget * const p_parent ) :
-		VTX::UI::Widget::BaseManualWidget<QScrollArea>( p_parent )
+		VTX::UI::Widget::BaseManualWidget<QScrollArea>( p_parent ),
+		EditorView( ID::View::UI_REPRESENTATION_EDITOR_PRESET )
 	{
 	}
 
 	void RenderEffectPresetEditor::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
+
+		_name		 = new QLineEdit( this );
+		_quickAccess = new QCheckBox( this );
 
 		_shading = new QComboBox( this );
 		_shading->addItems( SHADING );
@@ -67,6 +72,9 @@ namespace VTX::UI::Widget::Settings
 		_layout->setColumnStretch( 0, 1 );
 		_layout->setColumnStretch( 1, 10 );
 
+		_addItem( _name, QString( "Name" ) );
+		_addItem( _quickAccess, QString( "QuickAccess" ) );
+		_addSpace();
 		_addItem( _shading, QString( "Shading" ) );
 		_addSpace();
 		_addItem( _enableSSAO, QString( "SSAO" ) );
@@ -98,6 +106,9 @@ namespace VTX::UI::Widget::Settings
 	}
 	void RenderEffectPresetEditor::_setupSlots()
 	{
+		connect( _name, &QLineEdit::editingFinished, this, &RenderEffectPresetEditor::_onNameChanged );
+		connect( _quickAccess, &QCheckBox::clicked, this, &RenderEffectPresetEditor::_onQuickAccessChanged );
+
 		connect( _shading,
 				 QOverload<int>::of( &QComboBox::currentIndexChanged ),
 				 this,
@@ -181,8 +192,13 @@ namespace VTX::UI::Widget::Settings
 
 	void RenderEffectPresetEditor::localize() {}
 
+	void RenderEffectPresetEditor::_catchModelEvent( const Event::VTXEvent * const p_event ) { refresh(); }
+
 	void RenderEffectPresetEditor::refresh()
 	{
+		_name->setText( QString::fromStdString( _preset->getName() ) );
+		_quickAccess->setChecked( _preset->hasQuickAccess() );
+
 		_shading->setCurrentIndex( (int)_preset->getShading() );
 
 		const bool ssaoEnabled = _preset->isSSAOEnabled();
@@ -225,21 +241,26 @@ namespace VTX::UI::Widget::Settings
 		if ( _preset == p_model )
 			return;
 
-		if ( _currentPresetView != nullptr )
-		{
-			MVC::MvcManager::get().deleteView( _preset, ID::View::UI_RENDER_EFFECT_PRESET );
-		}
-
 		_preset = p_model;
 
-		_currentPresetView = MVC::MvcManager::get().instantiateView<View::UI::Widget::Renderer::RenderEffectPresetView>(
-			_preset, ID::View::UI_RENDER_EFFECT_PRESET );
-
-		_currentPresetView->setEditor( this );
+		createTempView( _preset );
 
 		blockSignals( !p_updateRender );
 		refresh();
 		blockSignals( false );
+	}
+
+	void RenderEffectPresetEditor::_onNameChanged()
+	{
+		const std::string strName = _name->text().toStdString();
+
+		if ( !signalsBlocked() && _preset->getName() != strName )
+			VTX_ACTION( new Action::Renderer::ChangeName( *_preset, strName ) );
+	}
+	void RenderEffectPresetEditor::_onQuickAccessChanged( const bool p_quickAccess )
+	{
+		if ( !signalsBlocked() && _preset->hasQuickAccess() != p_quickAccess )
+			VTX_ACTION( new Action::Renderer::ChangeQuickAccess( *_preset, p_quickAccess ) );
 	}
 
 	void RenderEffectPresetEditor::_onShadingChange( const int p_newIndex )
@@ -350,10 +371,10 @@ namespace VTX::UI::Widget::Settings
 			VTX_ACTION( new Action::Renderer::ChangeCameraPerspective( *_preset, enable ) );
 	}
 
-	void RenderEffectPresetEditor::_applyPreset() const
+	void RenderEffectPresetEditor::_addItem( QWidget * const p_widget )
 	{
-		if ( !signalsBlocked() )
-			VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *_preset ) );
+		_layout->addWidget( p_widget, _itemCount, 0, 1, 2, Qt::AlignmentFlag::AlignCenter );
+		_itemCount++;
 	}
 
 	void RenderEffectPresetEditor::_addItem( QWidget * const p_widget, const QString & p_label )
@@ -366,9 +387,9 @@ namespace VTX::UI::Widget::Settings
 
 		_itemCount++;
 	}
-	void RenderEffectPresetEditor::_addSpace()
+	void RenderEffectPresetEditor::_addSpace( const int p_space )
 	{
-		_layout->addItem( new QSpacerItem( 0, 10 ), _itemCount, 0, 2, 1 );
+		_layout->addItem( new QSpacerItem( 0, p_space ), _itemCount, 0, 2, 1 );
 		_itemCount++;
 	}
 } // namespace VTX::UI::Widget::Settings

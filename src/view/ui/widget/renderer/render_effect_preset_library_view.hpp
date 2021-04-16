@@ -7,10 +7,12 @@
 
 #include "model/renderer/render_effect_preset_library.hpp"
 #include "ui/widget/base_manual_widget.hpp"
+#include "ui/widget/renderer/render_effect_library_combo_box.hpp"
 #include "ui/widget/settings/render_effect_preset_editor.hpp"
 #include "view/base_view.hpp"
-#include <QTabWidget>
-#include <vector>
+#include <QComboBox>
+#include <QPushButton>
+#include <QWidget>
 
 namespace VTX::View::UI::Widget::Renderer
 {
@@ -21,10 +23,12 @@ namespace VTX::View::UI::Widget::Renderer
 		VTX_WIDGET
 		VTX_VIEW
 
-		using RenderEffectPresetEditor = VTX::UI::Widget::Settings::RenderEffectPresetEditor;
+		using RenderEffectPresetEditor	  = VTX::UI::Widget::Settings::RenderEffectPresetEditor;
+		using RenderEffectLibraryComboBox = VTX::UI::Widget::Renderer::RenderEffectLibraryComboBox;
 
 	  public:
 		void localize() override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
 		void notify( const Event::VTXEvent * const p_event ) override;
 
 	  protected:
@@ -36,12 +40,20 @@ namespace VTX::View::UI::Widget::Renderer
 		void _refreshView() override;
 
 		void _onPresetIndexChanged( const int p_newIndex );
-		void _refreshPresetDisplayed();
-		void _buildPresetList();
+		void _onAddPreset() const;
+		void _onCopyPreset() const;
+		void _onDeletePreset() const;
+
+		void _refreshPresetDisplayed( const bool p_updateRenderer );
+		void _refreshDeletePresetButton();
 
 	  private:
-		QComboBox *				   _presetList;
-		RenderEffectPresetEditor * _renderPresetEditor;
+		RenderEffectLibraryComboBox * _presetList		  = nullptr;
+		QPushButton *				  _addPresetButton	  = nullptr;
+		QPushButton *				  _copyPresetButton	  = nullptr;
+		QPushButton *				  _deletePresetButton = nullptr;
+
+		RenderEffectPresetEditor * _renderPresetEditor = nullptr;
 	};
 
 } // namespace VTX::View::UI::Widget::Renderer

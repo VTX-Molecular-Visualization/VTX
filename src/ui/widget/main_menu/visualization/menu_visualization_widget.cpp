@@ -1,4 +1,5 @@
 #include "menu_visualization_widget.hpp"
+#include "model/renderer/render_effect_preset_library.hpp"
 #include "model/representation/representation_library.hpp"
 #include "ui/widget_factory.hpp"
 
@@ -20,8 +21,15 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			"RepresentationBlockWidget" );
 		addToolBlock( _representation );
 
-		_objectDisplay	 = addToolBlock<MenuVisualizationObjectDisplayWidget>( "objectDisplayBlockWidget" );
-		_renderEffects	 = addToolBlock<MenuVisualizationRenderEffectsWidget>( "renderEffectsBlockWidget" );
+		_objectDisplay = addToolBlock<MenuVisualizationObjectDisplayWidget>( "objectDisplayBlockWidget" );
+
+		_renderEffects = WidgetFactory::get().instantiateViewWidget<MenuVisualizationRenderEffectsWidget>(
+			&Model::Renderer::RenderEffectPresetLibrary::get(),
+			ID::View::UI_MENU_VISUALIZATION_RENDER_EFFECT_LIBRARY,
+			this,
+			"renderEffectsBlockWidget" );
+		addToolBlock( _renderEffects );
+
 		_selectionAction = addToolBlock<MenuVisualizationSelectionActionWidget>( "selectionBlockWidget" );
 		_windows		 = addToolBlock<MenuVisualizationWindowsWidget>( "windowsBlockWidget" );
 	}

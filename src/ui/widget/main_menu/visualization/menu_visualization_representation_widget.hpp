@@ -42,6 +42,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		std::map<int, RepresentationPresetButton *> _buttons   = std::map<int, RepresentationPresetButton *>();
 		MenuToolButtonWidget *						_addPreset = nullptr;
 
+		void _instantiateUI();
 		void _addPresetAction();
 	};
 } // namespace VTX::UI::Widget::MainMenu::Visualization

@@ -20,10 +20,11 @@ namespace VTX::Model::Renderer
 
 	  public:
 		const std::string & getName() const { return _name; };
-		void				setName( const std::string & p_name ) { _name = std::string( p_name ); };
-
+		void				setName( const std::string & p_name );
 		const std::string & getIconPath() const { return _iconPath; };
-		void				setIconPath( const std::string & p_iconPath ) { _iconPath = std::string( p_iconPath ); };
+		void				setIconPath( const std::string & p_iconPath );
+		bool				hasQuickAccess() const { return _quickAccess; }
+		void				setQuickAccess( const bool p_quickAccess );
 
 		const VTX::Renderer::SHADING & getShading() const { return _shading; }
 		void						   setShading( VTX::Renderer::SHADING p_shading ) { _shading = p_shading; }
@@ -69,16 +70,16 @@ namespace VTX::Model::Renderer
 		void	   setPerspectiveProjection( const bool p_perspectiveProjection );
 
 		void apply() const;
+		void copyFrom( const RenderEffectPreset & p_source );
 
 	  protected:
 		RenderEffectPreset();
 		~RenderEffectPreset() = default;
 
-		void _notifyDataChanged();
-
 	  private:
 		std::string _name;
 		std::string _iconPath;
+		bool		_quickAccess = false;
 
 		VTX::Renderer::SHADING _shading;
 

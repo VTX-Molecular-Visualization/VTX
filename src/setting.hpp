@@ -64,7 +64,6 @@ namespace VTX
 		static const Generic::REPRESENTATION DEFAULT_REPRESENTATION_TYPE;
 		Generic::REPRESENTATION				 defaultRepresentationType = DEFAULT_REPRESENTATION_TYPE;
 		static const std::string			 NEW_REPRESENTATION_DEFAULT_NAME;
-		std::string							 newRepresentationDefaultName = NEW_REPRESENTATION_DEFAULT_NAME;
 
 		static const float ATOMS_RADIUS_DEFAULT;
 		static const float ATOMS_RADIUS_MIN;
@@ -81,6 +80,10 @@ namespace VTX
 
 		static const Generic::COLOR_MODE COLOR_MODE_DEFAULT;
 		Generic::COLOR_MODE				 colorMode = COLOR_MODE_DEFAULT;
+
+		static const std::string NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME;
+		static const int		 RENDER_EFFECT_DEFAULT_INDEX;
+		int						 renderEffectDefaultIndex = RENDER_EFFECT_DEFAULT_INDEX;
 
 		static const Renderer::SHADING SHADING_DEFAULT;
 		Renderer::SHADING			   shading = SHADING_DEFAULT;

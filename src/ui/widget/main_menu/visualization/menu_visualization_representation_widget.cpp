@@ -20,7 +20,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	{
 		if ( p_event->name == Event::Model::DATA_CHANGE )
 		{
-			_refreshView();
+			//_refreshView();
 		}
 		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
 		{
@@ -35,7 +35,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	void MenuVisualizationRepresentationWidget::_setupUi( const QString & p_name )
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
-		_refreshView();
+		_instantiateUI();
 	}
 	void MenuVisualizationRepresentationWidget::_setupSlots()
 	{
@@ -49,6 +49,13 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	{
 		reset();
 
+		_instantiateUI();
+		_setupSlots();
+		localize();
+	}
+
+	void MenuVisualizationRepresentationWidget::_instantiateUI()
+	{
 		_buttons.clear();
 
 		int quickAccessRepresentationCount = 0;
@@ -79,10 +86,9 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			"Preset\nSettings", ":/sprite/representation_new_preset_icon.png", Qt::Orientation::Vertical );
 		pushButtonInNextColumn( *_addPreset );
 
-		_setupSlots();
-
 		validate();
 	}
+
 	void MenuVisualizationRepresentationWidget::_refreshNames()
 	{
 		for ( int i = 0; i < Model::Representation::RepresentationLibrary::get().getRepresentationCount(); i++ )

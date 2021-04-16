@@ -52,7 +52,7 @@ namespace VTX::View::UI::Widget::Representation
 
 		horizontalLayout->addItem( verticalLayout );
 
-		_representationPresetEditor->setPreset( _model->getRepresentation( _presetList->currentIndex() ), false );
+		_refreshPresetDisplayed( false );
 	}
 
 	void RepresentationLibraryView::_setupSlots()
@@ -80,9 +80,9 @@ namespace VTX::View::UI::Widget::Representation
 
 	void RepresentationLibraryView::localize() {}
 
-	void RepresentationLibraryView::_refreshView() { _refreshPresetDisplayed(); }
+	void RepresentationLibraryView::_refreshView() { _refreshPresetDisplayed( true ); }
 
-	void RepresentationLibraryView::_onPresetIndexChanged( const int p_newIndex ) { _refreshPresetDisplayed(); }
+	void RepresentationLibraryView::_onPresetIndexChanged( const int p_newIndex ) { _refreshPresetDisplayed( false ); }
 
 	void RepresentationLibraryView::_onAddPreset() const
 	{
@@ -97,28 +97,12 @@ namespace VTX::View::UI::Widget::Representation
 		VTX_ACTION( new Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ) );
 	}
 
-	void RepresentationLibraryView::_buildPresetList()
-	{
-		int previousCurrentIndex = _presetList->currentIndex();
-
-		for ( const Model::Representation::Representation * const preset : _model->getRepresentations() )
-		{
-			_presetList->addItem( QString::fromStdString( preset->getName() ) );
-		}
-
-		if ( previousCurrentIndex >= _presetList->count() )
-		{
-			previousCurrentIndex = _presetList->count() - 1;
-		}
-
-		_presetList->setCurrentIndex( previousCurrentIndex );
-	}
-	void RepresentationLibraryView::_refreshPresetDisplayed()
+	void RepresentationLibraryView::_refreshPresetDisplayed( const bool p_applyPreset )
 	{
 		const int									  currentIndex	 = _presetList->currentIndex();
 		Model::Representation::Representation * const representation = _model->getRepresentation( currentIndex );
 
-		_representationPresetEditor->setPreset( representation );
+		_representationPresetEditor->setPreset( representation, p_applyPreset );
 
 		_deletePresetButton->setEnabled( _model->canDeleteRepresentation( representation ) );
 	}

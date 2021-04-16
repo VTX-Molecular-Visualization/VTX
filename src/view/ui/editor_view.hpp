@@ -6,6 +6,7 @@
 #endif
 
 #include "event/event.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "view/base_view.hpp"
 #include "view/callback_view.hpp"
@@ -20,13 +21,13 @@ namespace VTX::View::UI
 		EditorView( const ID::VTX_ID & p_viewId ) : _viewId( p_viewId ) {}
 		virtual ~EditorView()
 		{
-			if ( _view != nullptr )
+			if ( _view != nullptr && MVC::MvcManager::get().hasView( _target, _viewId ) )
 				MVC::MvcManager::get().deleteView( _target, _viewId );
 		}
 
 		void createTempView( T * const p_target )
 		{
-			if ( _view != nullptr )
+			if ( _view != nullptr && MVC::MvcManager::get().hasView( _target, _viewId ) )
 				MVC::MvcManager::get().deleteView( _target, _viewId );
 
 			_target = p_target;

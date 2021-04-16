@@ -94,7 +94,9 @@ namespace VTX::Model::Representation
 	{
 		Representation * const sourceRepresentation = _representations[ p_index ];
 		Representation * const copiedRepresentation
-			= MVC::MvcManager::get().instantiateModel<Representation>( *sourceRepresentation );
+			= MVC::MvcManager::get().instantiateModel<Representation>( sourceRepresentation->getRepresentationType() );
+
+		copiedRepresentation->copyDataFrom( *sourceRepresentation );
 
 		copiedRepresentation->setName( "copy of " + sourceRepresentation->getName() );
 		copiedRepresentation->setQuickAccess( false );
@@ -103,17 +105,24 @@ namespace VTX::Model::Representation
 	}
 	Representation * RepresentationLibrary::removeRepresentation( const int p_index, const bool p_notify )
 	{
-		Representation * const removedRepresentation = _representations[ p_index ];
-
-		MVC::MvcManager::get().deleteView( _representations[ p_index ], ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
+		Representation * removedRepresentation;
 
 		if ( 0 <= p_index && p_index < _representations.size() )
+		{
+			removedRepresentation = _representations[ p_index ];
+
+			MVC::MvcManager::get().deleteView( _representations[ p_index ], ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
 			_representations.erase( _representations.begin() + p_index );
 
-		if ( p_notify )
-			_notifyDataChanged();
+			if ( p_notify )
+				_notifyDataChanged();
 
-		VTX_EVENT( new Event::VTXEventValue<int>( Event::Global::REPRESENTATION_REMOVED, p_index ) );
+			VTX_EVENT( new Event::VTXEventValue<int>( Event::Global::REPRESENTATION_REMOVED, p_index ) );
+		}
+		else
+		{
+			removedRepresentation = nullptr;
+		}
 
 		return removedRepresentation;
 	};
@@ -132,7 +141,10 @@ namespace VTX::Model::Representation
 
 	void RepresentationLibrary::deleteRepresentation( const int p_index, const bool p_notify )
 	{
-		MVC::MvcManager::get().deleteModel( removeRepresentation( p_index, p_notify ) );
+		const Representation * const representationToDelete = removeRepresentation( p_index, p_notify );
+
+		if ( representationToDelete != nullptr )
+			MVC::MvcManager::get().deleteModel( representationToDelete );
 	}
 
 	void RepresentationLibrary::setDefaultRepresentation( const int p_representationIndex )

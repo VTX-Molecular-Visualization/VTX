@@ -328,12 +328,6 @@ namespace VTX::UI::Widget::Settings
 		}
 	}
 
-	void RepresentationPresetEditor::_applyPreset() const
-	{
-		// if ( !signalsBlocked() )
-		//	VTX_ACTION( new Action::Representation::ApplyRepresentationPreset( *_preset ) );
-	}
-
 	void RepresentationPresetEditor::_addParameter( const PARAMETER & p_parameter, QWidget * const p_widget )
 	{
 		_layout->addWidget( p_widget, _itemCount, 0, 1, 2, Qt::AlignmentFlag::AlignCenter );
