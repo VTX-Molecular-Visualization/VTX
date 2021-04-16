@@ -20,7 +20,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	{
 		if ( p_event->name == Event::Model::DATA_CHANGE )
 		{
-			//_refreshView();
+			_refreshView();
 		}
 		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
 		{

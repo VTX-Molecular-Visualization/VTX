@@ -34,8 +34,9 @@ namespace VTX::View::UI::Widget::Renderer
 			_presetList->setCurrentIndex( representationIndex );
 			_refreshDeletePresetButton();
 		}
-		else if ( p_event.name == Event::Global::RENDER_EFFECT_REMOVED)
+		else if ( p_event.name == Event::Global::RENDER_EFFECT_REMOVED )
 		{
+			_refreshPresetDisplayed( true );
 			_refreshDeletePresetButton();
 		}
 	}
@@ -122,9 +123,9 @@ namespace VTX::View::UI::Widget::Renderer
 		Model::Renderer::RenderEffectPreset * const currentPreset = _model->getPreset( currentIndex );
 		_renderPresetEditor->setPreset( currentPreset, p_updateRenderer );
 	}
-	void RenderEffectPresetLibraryView::_refreshDeletePresetButton() {
+	void RenderEffectPresetLibraryView::_refreshDeletePresetButton()
+	{
 		_deletePresetButton->setEnabled( _model->getPresetCount() > 1 );
 	}
-
 
 } // namespace VTX::View::UI::Widget::Renderer

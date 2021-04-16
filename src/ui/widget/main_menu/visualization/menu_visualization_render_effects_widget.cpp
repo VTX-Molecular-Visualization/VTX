@@ -45,7 +45,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 	void MenuVisualizationRenderEffectsWidget::notify( const Event::VTXEvent * const p_event )
 	{
-		if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE || p_event->name == Event::Model::QUICK_ACCESS_CHANGE )
+		if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE || p_event->name == Event::Model::QUICK_ACCESS_CHANGE
+			 || p_event->name == Event::Model::DATA_CHANGE )
 		{
 			_refreshView();
 		}
