@@ -64,7 +64,7 @@ namespace VTX::Model::Renderer
 		void	   setCameraNearClip( const float p_cameraNearClip );
 		float	   getCameraFarClip() const { return _cameraFarClip; };
 		void	   setCameraFarClip( const float p_cameraFarClip );
-		float	   getAA() const { return _antiAliasing; };
+		bool	   getAA() const { return _antiAliasing; };
 		void	   setAA( const float p_antiAliasing );
 		bool	   isPerspectiveProjection() const { return _perspectiveProjection; };
 		void	   setPerspectiveProjection( const bool p_perspectiveProjection );

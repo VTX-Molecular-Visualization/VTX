@@ -361,13 +361,13 @@ namespace VTX::UI::Widget::Settings
 	void RenderEffectPresetEditor::_onAntialiasingChanged( const int p_state )
 	{
 		const bool enable = p_state != 0;
-		if ( !signalsBlocked() && enable != _preset->isFogEnabled() )
+		if ( !signalsBlocked() && enable != _preset->getAA() )
 			VTX_ACTION( new Action::Renderer::EnableCameraAntialiasing( *_preset, enable ) );
 	}
 	void RenderEffectPresetEditor::_onPerspectiveChanged( const int p_state )
 	{
 		const bool enable = p_state != 0;
-		if ( !signalsBlocked() && enable != _preset->isFogEnabled() )
+		if ( !signalsBlocked() && enable != _preset->isPerspectiveProjection() )
 			VTX_ACTION( new Action::Renderer::ChangeCameraPerspective( *_preset, enable ) );
 	}
 
