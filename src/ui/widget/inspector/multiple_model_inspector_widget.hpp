@@ -40,7 +40,8 @@ namespace VTX::UI::Widget::Inspector
 
 				for ( T * const target : _targets )
 				{
-					MVC::MvcManager::get().deleteView( target, _callbackViewId );
+					if ( MVC::MvcManager::get().hasView( target, _callbackViewId ) )
+						MVC::MvcManager::get().deleteView( target, _callbackViewId );
 				}
 				_targets.clear();
 
