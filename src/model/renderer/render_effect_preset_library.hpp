@@ -40,6 +40,9 @@ namespace VTX::Model::Renderer
 		void applyPreset( const RenderEffectPreset & p_preset );
 		bool isAppliedPreset( const RenderEffectPreset & p_preset ) const;
 		bool isAppliedPreset( const RenderEffectPreset * const & p_preset ) const;
+		int	 getAppliedPresetIndex() const;
+
+		void setQuickAccessToPreset( RenderEffectPreset & p_preset, const bool p_quikAccess );
 
 	  private:
 		RenderEffectPresetLibrary();
@@ -47,9 +50,11 @@ namespace VTX::Model::Renderer
 
 		void _init();
 		void _onPresetChange( const Event::VTXEvent * const p_event );
+		int	 _getNbPresetWithQuickAccess() const;
 
 		std::vector<RenderEffectPreset *> _presets;
-		const RenderEffectPreset *		  _appliedPreset = nullptr;
+		const RenderEffectPreset *		  _appliedPreset		   = nullptr;
+		RenderEffectPreset *			  _lastPresetQuickAccessed = nullptr;
 	};
 } // namespace VTX::Model::Renderer
 #endif

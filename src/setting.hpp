@@ -84,6 +84,7 @@ namespace VTX
 		static const std::string NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME;
 		static const int		 RENDER_EFFECT_DEFAULT_INDEX;
 		int						 renderEffectDefaultIndex = RENDER_EFFECT_DEFAULT_INDEX;
+		static const int		 MAX_QUICK_ACCESS_COUNT	  = 6;
 
 		static const Renderer::SHADING SHADING_DEFAULT;
 		Renderer::SHADING			   shading = SHADING_DEFAULT;

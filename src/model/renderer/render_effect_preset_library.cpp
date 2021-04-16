@@ -97,8 +97,8 @@ namespace VTX::Model::Renderer
 			MVC::MvcManager::get().deleteView( _presets[ p_index ], ID::View::RENDER_EFFECT_LIBRARY_ON_ITEMS );
 
 			removedPreset = _presets[ p_index ];
-			
-			if ( removedPreset == _appliedPreset ) 
+
+			if ( removedPreset == _appliedPreset )
 			{
 				const int newAppliedPreset = p_index == ( _presets.size() - 1 ) ? p_index - 1 : p_index + 1;
 				applyPreset( newAppliedPreset );
@@ -161,13 +161,51 @@ namespace VTX::Model::Renderer
 	{
 		return p_preset == _appliedPreset;
 	}
+	int RenderEffectPresetLibrary::getAppliedPresetIndex() const
+	{
+		for ( int i = 0; i < _presets.size(); i++ )
+		{
+			if ( _presets[ i ] == _appliedPreset )
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	void RenderEffectPresetLibrary::setQuickAccessToPreset( RenderEffectPreset & p_preset, const bool p_quickAccess )
+	{
+		if ( p_quickAccess )
+		{
+			const int quickAccessCount = _getNbPresetWithQuickAccess();
+
+			if ( quickAccessCount >= Setting::MAX_QUICK_ACCESS_COUNT && _lastPresetQuickAccessed != nullptr )
+				_lastPresetQuickAccessed->setQuickAccess( false );
+		}
+
+		p_preset.setQuickAccess( p_quickAccess );
+
+		if ( p_quickAccess )
+			_lastPresetQuickAccessed = &p_preset;
+	}
+
+	int RenderEffectPresetLibrary::_getNbPresetWithQuickAccess() const
+	{
+		int res = 0;
+		for ( const RenderEffectPreset * preset : _presets )
+		{
+			if ( preset->hasQuickAccess() )
+				res++;
+		}
+		return res;
+	}
 
 	void RenderEffectPresetLibrary::_init()
 	{
 		// Preset 1
 		RenderEffectPreset * const preset1 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
 		preset1->setName( "Default" );
-		preset1->setQuickAccess( true );
+		setQuickAccessToPreset( *preset1, true );
 		preset1->setShading( VTX::Renderer::SHADING::DIFFUSE );
 
 		preset1->setSSAOIntensity( 5 );
@@ -182,7 +220,7 @@ namespace VTX::Model::Renderer
 		// Preset 2
 		RenderEffectPreset * const preset2 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
 		preset2->setName( "Good Diffuse" );
-		preset2->setQuickAccess( true );
+		setQuickAccessToPreset( *preset2, true );
 		preset2->setShading( VTX::Renderer::SHADING::DIFFUSE );
 
 		preset2->setSSAOIntensity( 17 );
@@ -197,7 +235,7 @@ namespace VTX::Model::Renderer
 		// Preset 3
 		RenderEffectPreset * const preset3 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
 		preset3->setName( "White BG" );
-		preset3->setQuickAccess( true );
+		setQuickAccessToPreset( *preset3, true );
 		preset3->setShading( VTX::Renderer::SHADING::FLAT_COLOR );
 
 		preset3->setSSAOIntensity( 5 );

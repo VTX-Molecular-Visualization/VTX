@@ -99,7 +99,6 @@ namespace VTX::Model::Representation
 		copiedRepresentation->copyDataFrom( *sourceRepresentation );
 
 		copiedRepresentation->setName( "copy of " + sourceRepresentation->getName() );
-		copiedRepresentation->setQuickAccess( false );
 
 		addRepresentation( copiedRepresentation, p_notify );
 	}

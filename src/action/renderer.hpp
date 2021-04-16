@@ -48,7 +48,10 @@ namespace VTX::Action::Renderer
 		ChangeQuickAccess( Model::Renderer::RenderEffectPreset & p_preset, const bool p_quickAccess ) :
 			_preset( p_preset ), _quickAccess( p_quickAccess ) {};
 
-		virtual void execute() override { _preset.setQuickAccess( _quickAccess ); };
+		virtual void execute() override
+		{
+			Model::Renderer::RenderEffectPresetLibrary::get().setQuickAccessToPreset( _preset, _quickAccess );
+		};
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;

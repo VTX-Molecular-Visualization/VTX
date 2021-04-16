@@ -26,4 +26,13 @@ namespace VTX::UI::Widget::Settings
 
 	void SettingRenderEffectWidget::_setupSlots() {};
 	void SettingRenderEffectWidget::localize() {};
+
+	void SettingRenderEffectWidget::showEvent( QShowEvent * p_event )
+	{
+		BaseManualWidget::showEvent( p_event );
+
+		const int currentPresetUsed = Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPresetIndex();
+		_presetLibrary->selectPreset( currentPresetUsed );
+	}
+
 } // namespace VTX::UI::Widget::Settings

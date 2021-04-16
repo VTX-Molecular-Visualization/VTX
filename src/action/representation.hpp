@@ -47,7 +47,10 @@ namespace VTX::Action::Representation
 		{
 		}
 
-		void execute() { _representation->setQuickAccess( _quickAccess ); };
+		void execute()
+		{
+			VTX::Representation::RepresentationManager::get().setQuickAccessToPreset( _representation, _quickAccess );
+		};
 
 	  private:
 		const bool									  _quickAccess;

@@ -137,6 +137,7 @@ namespace VTX::Representation
 		}
 
 		void deleteRepresentation( const Representation *& p_representation );
+		void setQuickAccessToPreset( Representation * const p_representation, const bool p_quickAccess );
 
 		InstantiatedRepresentation * const getRepresentationByName( const std::string & p_representationName );
 		const std::unordered_set<Generic::BaseRepresentable *> & getTargets(
@@ -158,6 +159,8 @@ namespace VTX::Representation
 		MapRepresentationInstances		_mapRepresentationInstances				 = MapRepresentationInstances();
 		MapRepresentationRepresentables _mapRepresentablesLinkedToRepresentation = MapRepresentationRepresentables();
 
+		Representation * _lastRepresentationQuickAccessed = nullptr;
+
 		void _instantiateViewOnRepresentation( const Representation * const p_representation );
 		void _deleteViewOnRepresentation( const Representation * const p_representation ) const;
 
@@ -165,6 +168,7 @@ namespace VTX::Representation
 
 		void _onRepresentationChange( const Representation * const	representation,
 									  const Event::VTXEvent * const p_event );
+		int	 _getRepresentationWithQuickAccessCount() const;
 	};
 } // namespace VTX::Representation
 #endif

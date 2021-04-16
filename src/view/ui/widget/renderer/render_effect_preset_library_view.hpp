@@ -31,6 +31,8 @@ namespace VTX::View::UI::Widget::Renderer
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
 		void notify( const Event::VTXEvent * const p_event ) override;
 
+		void selectPreset( const int p_presetIndex );
+
 	  protected:
 		RenderEffectPresetLibraryView( Model::Renderer::RenderEffectPresetLibrary * const p_model,
 									   QWidget * const									  p_parent );

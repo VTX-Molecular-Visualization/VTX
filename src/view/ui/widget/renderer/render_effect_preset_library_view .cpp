@@ -93,6 +93,12 @@ namespace VTX::View::UI::Widget::Renderer
 
 	void RenderEffectPresetLibraryView::localize() {}
 
+	void RenderEffectPresetLibraryView::selectPreset( const int p_presetIndex )
+	{
+		const int currentIndex = p_presetIndex < 0 ? 0 : p_presetIndex;
+		_presetList->setCurrentIndex( currentIndex );
+	}
+
 	void RenderEffectPresetLibraryView::_refreshView() { _refreshPresetDisplayed( true ); }
 
 	void RenderEffectPresetLibraryView::_onPresetIndexChanged( const int p_newIndex )

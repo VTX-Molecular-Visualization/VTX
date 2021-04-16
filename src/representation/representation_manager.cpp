@@ -219,6 +219,33 @@ namespace VTX::Representation
 		return res;
 	}
 
+	void RepresentationManager::setQuickAccessToPreset( Representation * const p_representation,
+														const bool			   p_quickAccess )
+	{
+		if ( p_quickAccess )
+		{
+			const int quickAccessCount = _getRepresentationWithQuickAccessCount();
+
+			if ( quickAccessCount >= Setting::MAX_QUICK_ACCESS_COUNT && _lastRepresentationQuickAccessed != nullptr )
+				_lastRepresentationQuickAccessed->setQuickAccess( false );
+		}
+
+		p_representation->setQuickAccess( p_quickAccess );
+
+		if ( p_quickAccess )
+			_lastRepresentationQuickAccessed = p_representation;
+	}
+	int RepresentationManager::_getRepresentationWithQuickAccessCount() const
+	{
+		int res = 0;
+		for ( const Representation * representation : RepresentationLibrary::get().getRepresentations() )
+		{
+			if ( representation->hasQuickAccess() )
+				res++;
+		}
+		return res;
+	}
+
 	RepresentationManager::InstantiatedRepresentation * RepresentationManager::instantiateDummy(
 		const InstantiatedRepresentation & p_source )
 	{
