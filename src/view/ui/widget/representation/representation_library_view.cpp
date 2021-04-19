@@ -3,6 +3,7 @@
 #include "action/representation.hpp"
 #include "id.hpp"
 #include "model/representation/representation.hpp"
+#include "ui/dialog.hpp"
 #include "ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -92,9 +93,13 @@ namespace VTX::View::UI::Widget::Representation
 	{
 		VTX_ACTION( new Action::Representation::CopyPresetInLibrary( _presetList->currentIndex() ) );
 	}
-	void RepresentationLibraryView::_onDeletePreset() const
+	void RepresentationLibraryView::_onDeletePreset()
 	{
-		VTX_ACTION( new Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ) );
+		VTX::UI::Dialog::confirmActionDialog(
+			this,
+			new Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ),
+			"Confirm",
+			"Are you sure to delete thie preset ?" );
 	}
 
 	void RepresentationLibraryView::_refreshPresetDisplayed( const bool p_applyPreset )

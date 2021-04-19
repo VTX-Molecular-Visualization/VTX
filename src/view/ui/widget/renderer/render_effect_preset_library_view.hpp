@@ -44,7 +44,7 @@ namespace VTX::View::UI::Widget::Renderer
 		void _onPresetIndexChanged( const int p_newIndex );
 		void _onAddPreset() const;
 		void _onCopyPreset() const;
-		void _onDeletePreset() const;
+		void _onDeletePreset();
 
 		void _refreshPresetDisplayed( const bool p_updateRenderer );
 		void _refreshDeletePresetButton();

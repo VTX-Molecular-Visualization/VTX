@@ -6,6 +6,7 @@
 #include "render_effect_preset_library_view.hpp"
 #include "render_effect_preset_view.hpp"
 #include "setting.hpp"
+#include "ui/dialog.hpp"
 #include "ui/widget_factory.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -117,9 +118,13 @@ namespace VTX::View::UI::Widget::Renderer
 	{
 		VTX_ACTION( new Action::Renderer::CopyPresetInLibrary( _presetList->currentIndex() ) );
 	}
-	void RenderEffectPresetLibraryView::_onDeletePreset() const
+	void RenderEffectPresetLibraryView::_onDeletePreset()
 	{
-		VTX_ACTION( new Action::Renderer::DeletePresetInLibrary( _presetList->currentIndex() ) );
+		VTX::UI::Dialog::confirmActionDialog(
+			this,
+			new Action::Renderer::DeletePresetInLibrary( _presetList->currentIndex() ),
+			"Confirm",
+			"Are you sure to delete thie preset ?" );
 	}
 
 	void RenderEffectPresetLibraryView::_refreshPresetDisplayed( const bool p_updateRenderer )

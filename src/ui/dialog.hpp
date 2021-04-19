@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "action/base_action.hpp"
 #include <QString>
 #include <QWidget>
 
@@ -17,6 +18,11 @@ namespace VTX::UI
 		static void openDownloadMoleculeDialog( const QString & p_pdbCode );
 
 		static void openLoadMoleculeDialog( QWidget * const p_caller );
+
+		static void confirmActionDialog( QWidget * const			p_caller,
+										 Action::BaseAction * const p_action,
+										 const QString &			p_title,
+										 const QString &			p_message );
 	};
 
 } // namespace VTX::UI

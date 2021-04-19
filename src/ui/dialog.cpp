@@ -3,6 +3,7 @@
 #include "action/main.hpp"
 #include "ui/widget/dialog/download_molecule_dialog.hpp"
 #include <QFileDialog>
+#include <QMessageBox>
 
 namespace VTX::UI
 {
@@ -21,6 +22,27 @@ namespace VTX::UI
 		{
 			FilePath * const path = new FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Open( path ), true );
+		}
+	}
+
+	void Dialog::confirmActionDialog( QWidget * const			 p_caller,
+									  Action::BaseAction * const p_action,
+									  const QString &			 p_title,
+									  const QString &			 p_message )
+	{
+		const int res = QMessageBox::warning( p_caller,
+											  p_title,
+											  p_message,
+											  ( QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No ),
+											  QMessageBox::StandardButton::No );
+
+		if ( res == QMessageBox::StandardButton::Yes )
+		{
+			VTX_ACTION( p_action );
+		}
+		else
+		{
+			delete p_action;
 		}
 	}
 
