@@ -74,11 +74,14 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			button->setData( QString::fromStdString( representation->getName() ),
 							 QString::fromStdString( representation->getIconPath() ),
 							 Qt::Orientation::Horizontal );
-			pushButton( *button, quickAccessRepresentationCount / 3 );
+			pushButton( *button, quickAccessRepresentationCount / MAX_ROW_COUNT );
 			_buttons.emplace( i, button );
 
 			quickAccessRepresentationCount++;
 		}
+
+		for ( int i = 0; i < getColumnCount(); i++ )
+			setRowCountInColumn( i, MAX_ROW_COUNT );
 
 		_addPreset
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "addNewVisualModelPresetButton" );

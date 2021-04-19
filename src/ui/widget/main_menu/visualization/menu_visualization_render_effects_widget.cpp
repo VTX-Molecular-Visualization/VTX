@@ -81,11 +81,14 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			button->setData( QString::fromStdString( renderEffectPreset->getName() ),
 							 QString::fromStdString( renderEffectPreset->getIconPath() ),
 							 Qt::Orientation::Horizontal );
-			pushButton( *button, quickAccessRepresentationCount / 3 );
+			pushButton( *button, quickAccessRepresentationCount / MAX_ROW_COUNT );
 			_presetButtons.emplace_back( button );
 
 			quickAccessRepresentationCount++;
 		}
+
+		for ( int i = 0; i < getColumnCount(); i++ )
+			setRowCountInColumn( i, MAX_ROW_COUNT );
 
 		// Add Preset
 		_createPreset

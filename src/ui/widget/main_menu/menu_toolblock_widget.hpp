@@ -18,31 +18,51 @@ namespace VTX::UI::Widget::MainMenu
 	{
 		VTX_WIDGET
 
+	  public:
+		inline static const size_t MAX_COLUMN_COUNT		 = 5;
+		inline static const size_t MAX_ROW_COUNT		 = 3;
+		inline static const int	   GRID_LAYOUT_ROW_COUNT = 6;
+
 	  private:
+		class ColumnData
+		{
+		  public:
+			ColumnData( const int p_maxRowCount ) { _data.reserve( p_maxRowCount ); }
+
+			void addButton( MenuToolButtonWidget * const p_widget ) { _data.emplace_back( p_widget ); }
+			MenuToolButtonWidget * const getButton( const int p_row ) { return _data[ p_row ]; }
+			int							 getRowCount() const { return int( _data.size() ); }
+
+			void setNbRows( const int p_size ) { _forcedSize = p_size; }
+			int	 getNbRowsDisplayed() const { return _forcedSize > 0 ? _forcedSize : int( _data.size() ); }
+
+		  private:
+			std::vector<MenuToolButtonWidget *> _data		= std::vector<MenuToolButtonWidget *>();
+			int									_forcedSize = -1;
+		};
+
 		class TmpGridStructure
 		{
-		  private:
-			inline static const size_t MAX_COLUMN_COUNT		 = 5;
-			inline static const size_t MAX_ROW_COUNT		 = 3;
-			inline static const int	   GRID_LAYOUT_ROW_COUNT = 6;
-
 		  public:
 			TmpGridStructure()
 			{
-				_columnsData = std::vector<std::vector<MenuToolButtonWidget *> *>();
+				_columnsData = std::vector<ColumnData>();
 				_columnsData.reserve( MAX_COLUMN_COUNT );
 			};
 			~TmpGridStructure();
 
-			const size_t getNbColumns() { return _columnsData.size(); };
+			const int getNbColumns() { return int( _columnsData.size() ); };
+			void	  setNbRowsInColumn( const int p_column, const int p_size )
+			{
+				_columnsData[ p_column ].setNbRows( p_size );
+			}
 
 			void pushWidgetInColumn( const int p_column, MenuToolButtonWidget * const p_widget );
 			void fillGridLayout( QGridLayout & p_gridLayout, const int p_startRow = 0 );
 
 		  private:
-			void addNewColumn( const size_t p_nbColumns = 1 );
-
-			std::vector<std::vector<MenuToolButtonWidget *> *> _columnsData;
+			void					addNewColumn( const size_t p_nbColumns = 1 );
+			std::vector<ColumnData> _columnsData;
 		};
 
 	  public:
@@ -68,6 +88,12 @@ namespace VTX::UI::Widget::MainMenu
 		};
 		virtual void _setupUi( const QString & p_name ) override;
 		virtual void _setupSlots() override;
+
+		int	 getColumnCount() const { return _tmpStructure->getNbColumns(); }
+		void setRowCountInColumn( const int p_column, const int p_nbRows )
+		{
+			_tmpStructure->setNbRowsInColumn( p_column, p_nbRows );
+		}
 
 	  private:
 		QGridLayout * _gridLayout = nullptr;
