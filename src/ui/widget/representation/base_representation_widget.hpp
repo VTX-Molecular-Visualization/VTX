@@ -31,6 +31,7 @@ namespace VTX::UI::Widget::Representation
 	  public:
 		using InstantiatedRepresentation	 = Model::Representation::InstantiatedRepresentation;
 		using InstantiatedRepresentationView = View::UI::Widget::Representation::InstantiatedRepresentationView;
+		using MEMBER_FLAG					 = Model::Representation::MEMBER_FLAG;
 
 		void refresh();
 
@@ -67,10 +68,10 @@ namespace VTX::UI::Widget::Representation
 		void _addColorModeInLayout( const QString & p_label );
 		void _addSSColorModeInLayout( const QString & p_label );
 
-		void _setSphereValue( const float p_value );
-		void _addSphereValue( const float p_value );
-		void _setCylinderValue( const float p_value );
-		void _addCylinderValue( const float p_value );
+		void _setSphereValue( const float p_value, const bool p_overrided );
+		void _addSphereValue( const float p_value, const bool p_overrided );
+		void _setCylinderValue( const float p_value, const bool p_overrided );
+		void _addCylinderValue( const float p_value, const bool p_overrided );
 
 		void _refreshColorModeWidget();
 		void _refreshSSColorModeWidget();
@@ -90,6 +91,11 @@ namespace VTX::UI::Widget::Representation
 		CustomWidget::FloatFieldSliderWidget *				   _cylinderWidget	  = nullptr;
 		CustomWidget::ColorModeFieldWidget *				   _colorModeWidget	  = nullptr;
 		CustomWidget::SecondaryStructureColorModeFieldWidget * _ssColorModeWidget = nullptr;
+
+		QLabel * _sphereLabel	   = nullptr;
+		QLabel * _cylinderLabel	   = nullptr;
+		QLabel * _colorModeLabel   = nullptr;
+		QLabel * _ssColorModeLabel = nullptr;
 
 	  private:
 		QGridLayout *										   _layout = nullptr;

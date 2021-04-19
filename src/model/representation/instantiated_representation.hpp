@@ -85,6 +85,7 @@ namespace VTX::Model::Representation
 
 		void		copy( const InstantiatedRepresentation & p_source );
 		MEMBER_FLAG getOverridedMembersFlag() const;
+		bool		isMemberOverrided( const MEMBER_FLAG & p_member ) const;
 		void		refreshSourceValues();
 		void		onLinkedRepresentationChange( const Event::VTXEvent * const p_event );
 

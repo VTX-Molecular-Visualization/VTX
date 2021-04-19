@@ -95,6 +95,11 @@ namespace VTX
 				HIDE_SEQUENCE_ICON( QPixmap( ":/sprite/hide_sequence_icon.png" ) ) {};
 		};
 
+		namespace WidgetProperty
+		{
+			inline const char * const OVERIDDEN_PARAMETER = "OVERIDDEN_PARAMETER";
+		}
+
 		inline static const QSize INSPECTOR_PREFERED_SIZE = QSize( 200, 1000 );
 		inline static const QSize INSPECTOR_MINIMUM_SIZE  = QSize( 50, 50 );
 		inline static const QSize RENDER_PREFERED_SIZE	  = QSize( 1000, 1000 );

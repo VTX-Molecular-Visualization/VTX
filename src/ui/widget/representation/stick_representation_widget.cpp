@@ -18,7 +18,9 @@ namespace VTX::UI::Widget::Representation
 
 	void StickRepresentationWidget::_refresh()
 	{
-		_setCylinderValue( _instantiatedRepresentation->getCylinderData()._radius );
+		_setCylinderValue( _instantiatedRepresentation->getCylinderData()._radius,
+						   _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::CYLINDER_RADIUS ) );
+
 		_refreshColorModeWidget();
 	}
 
@@ -26,7 +28,9 @@ namespace VTX::UI::Widget::Representation
 	{
 		BaseRepresentationWidget::updateWithNewValue( p_representation );
 
-		_addCylinderValue( p_representation.getCylinderData()._radius );
+		_addCylinderValue( p_representation.getCylinderData()._radius,
+						   p_representation.isMemberOverrided( MEMBER_FLAG::CYLINDER_RADIUS ) );
+
 		_addColorModeValue( p_representation );
 	}
 

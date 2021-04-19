@@ -5,7 +5,9 @@
 #include "generic/base_representable.hpp"
 #include "id.hpp"
 #include "model/molecule.hpp"
+#include "style.hpp"
 #include "tool/logger.hpp"
+#include "util/ui.hpp"
 #include <QLabel>
 #include <string>
 
@@ -81,15 +83,15 @@ namespace VTX::UI::Widget::Representation
 															 const float							  p_max,
 															 const Model::Representation::MEMBER_FLAG p_sphereFlag )
 	{
-		QLabel * const sphereLabel = new QLabel( this );
-		sphereLabel->setText( p_label );
+		_sphereLabel = new QLabel( this );
+		_sphereLabel->setText( p_label );
 
 		_sphereWidget = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
 			this, "sphereWidget" );
 		_sphereWidget->setMinMax( p_min, p_max );
 
 		const int row = _layout->rowCount();
-		_layout->addWidget( sphereLabel, row, 0 );
+		_layout->addWidget( _sphereLabel, row, 0 );
 		_layout->addWidget( _sphereWidget, row, 1 );
 
 		_sphereFlag = p_sphereFlag;
@@ -98,57 +100,77 @@ namespace VTX::UI::Widget::Representation
 															   const float	   p_min,
 															   const float	   p_max )
 	{
-		QLabel * const cylinderLabel = new QLabel( this );
-		cylinderLabel->setText( p_label );
+		_cylinderLabel = new QLabel( this );
+		_cylinderLabel->setText( p_label );
 
 		_cylinderWidget = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
 			this, "cylinderWidget" );
 		_cylinderWidget->setMinMax( p_min, p_max );
 
 		const int row = _layout->rowCount();
-		_layout->addWidget( cylinderLabel, row, 0 );
+		_layout->addWidget( _cylinderLabel, row, 0 );
 		_layout->addWidget( _cylinderWidget, row, 1 );
 	}
 	void BaseRepresentationWidget::_addColorModeInLayout( const QString & p_label )
 	{
-		QLabel * const colorModeLabel = new QLabel( this );
-		colorModeLabel->setText( p_label );
+		_colorModeLabel = new QLabel( this );
+		_colorModeLabel->setText( p_label );
 
 		_colorModeWidget = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorModeFieldWidget>(
 			this, "colorModeWidget" );
 
 		const int row = _layout->rowCount();
-		_layout->addWidget( colorModeLabel, row, 0 );
+		_layout->addWidget( _colorModeLabel, row, 0 );
 		_layout->addWidget( _colorModeWidget, row, 1 );
 	}
 	void BaseRepresentationWidget::_addSSColorModeInLayout( const QString & p_label )
 	{
-		QLabel * const ssColorModeLabel = new QLabel( this );
-		ssColorModeLabel->setText( p_label );
+		_ssColorModeLabel = new QLabel( this );
+		_ssColorModeLabel->setText( p_label );
 
 		_ssColorModeWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::SecondaryStructureColorModeFieldWidget>(
 				this, "ssColorModeWidget" );
 
 		const int row = _layout->rowCount();
-		_layout->addWidget( ssColorModeLabel, row, 0 );
+		_layout->addWidget( _ssColorModeLabel, row, 0 );
 		_layout->addWidget( _ssColorModeWidget, row, 1 );
 	}
 
-	void BaseRepresentationWidget::_setSphereValue( const float p_value ) { _sphereWidget->setValue( p_value ); }
-	void BaseRepresentationWidget::_addSphereValue( const float p_value )
+	void BaseRepresentationWidget::_setSphereValue( const float p_value, const bool p_overrided )
 	{
+		Util::UI::setDynamicProperty( _sphereLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, p_overrided );
+		_sphereWidget->setValue( p_value );
+	}
+	void BaseRepresentationWidget::_addSphereValue( const float p_value, const bool p_overrided )
+	{
+		// Display Overrided feedback only when all members are overridden
+		if ( _sphereLabel->property( Style::WidgetProperty::OVERIDDEN_PARAMETER ).toBool() && !p_overrided )
+			Util::UI::setDynamicProperty( _sphereLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, p_overrided );
+
 		_sphereWidget->updateWithNewValue( p_value );
 	}
-	void BaseRepresentationWidget::_setCylinderValue( const float p_value ) { _cylinderWidget->setValue( p_value ); }
-	void BaseRepresentationWidget::_addCylinderValue( const float p_value )
+	void BaseRepresentationWidget::_setCylinderValue( const float p_value, const bool p_overrided )
 	{
+		Util::UI::setDynamicProperty( _cylinderLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, p_overrided );
+		_cylinderWidget->setValue( p_value );
+	}
+	void BaseRepresentationWidget::_addCylinderValue( const float p_value, const bool p_overrided )
+	{
+		// Display Overrided feedback only when all members are overridden
+		if ( _cylinderLabel->property( Style::WidgetProperty::OVERIDDEN_PARAMETER ).toBool() && !p_overrided )
+			Util::UI::setDynamicProperty( _cylinderLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, p_overrided );
+
 		_cylinderWidget->updateWithNewValue( p_value );
 	}
 
 	void BaseRepresentationWidget::_refreshColorModeWidget()
 	{
 		_colorModeWidget->resetState();
+
+		const bool overriden = _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::COLOR_MODE );
+
+		Util::UI::setDynamicProperty( _colorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, overriden );
 
 		const Generic::COLOR_MODE & colorMode = _instantiatedRepresentation->getColorMode();
 
@@ -170,6 +192,12 @@ namespace VTX::UI::Widget::Representation
 	}
 	void BaseRepresentationWidget::_refreshColorModeWidget( const InstantiatedRepresentation & p_representation )
 	{
+		const bool overriden = _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::COLOR_MODE );
+
+		// Display Overrided feedback only when all members are overridden
+		if ( _colorModeLabel->property( Style::WidgetProperty::OVERIDDEN_PARAMETER ).toBool() && !overriden )
+			Util::UI::setDynamicProperty( _colorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, overriden );
+
 		const Generic::COLOR_MODE & colorMode = p_representation.getColorMode();
 
 		if ( colorMode != _colorModeWidget->getColorMode() )
@@ -189,6 +217,10 @@ namespace VTX::UI::Widget::Representation
 	void BaseRepresentationWidget::_refreshSSColorModeWidget()
 	{
 		_ssColorModeWidget->resetState();
+
+		const bool overriden = _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::SS_COLOR_MODE );
+
+		Util::UI::setDynamicProperty( _ssColorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, overriden );
 
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode
 			= _instantiatedRepresentation->getSecondaryStructureColorMode();
@@ -210,6 +242,12 @@ namespace VTX::UI::Widget::Representation
 	}
 	void BaseRepresentationWidget::_refreshSSColorModeWidget( const InstantiatedRepresentation & p_representation )
 	{
+		const bool overriden = _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::SS_COLOR_MODE );
+
+		// Display Overrided feedback only when all members are overridden
+		if ( _ssColorModeLabel->property( Style::WidgetProperty::OVERIDDEN_PARAMETER ).toBool() && !overriden )
+			Util::UI::setDynamicProperty( _ssColorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, overriden );
+
 		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & colorMode = p_representation.getSecondaryStructureColorMode();
 		_ssColorModeWidget->setColorMode( colorMode );
 
@@ -321,13 +359,25 @@ namespace VTX::UI::Widget::Representation
 	void BaseRepresentationWidget::resetState()
 	{
 		if ( _sphereWidget != nullptr )
+		{
+			Util::UI::setDynamicProperty( _sphereLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
 			_sphereWidget->resetState();
+		}
 		if ( _cylinderWidget != nullptr )
+		{
+			Util::UI::setDynamicProperty( _cylinderLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
 			_cylinderWidget->resetState();
+		}
 		if ( _colorModeWidget != nullptr )
+		{
+			Util::UI::setDynamicProperty( _colorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
 			_colorModeWidget->resetState();
+		}
 		if ( _ssColorModeWidget != nullptr )
+		{
+			Util::UI::setDynamicProperty( _ssColorModeLabel, Style::WidgetProperty::OVERIDDEN_PARAMETER, true );
 			_ssColorModeWidget->resetState();
+		}
 
 		_targets.clear();
 	}

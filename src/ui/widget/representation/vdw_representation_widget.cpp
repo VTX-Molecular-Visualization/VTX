@@ -21,7 +21,8 @@ namespace VTX::UI::Widget::Representation
 
 	void VdwRepresentationWidget::_refresh()
 	{
-		_setSphereValue( _instantiatedRepresentation->getSphereData()._radiusAdd );
+		_setSphereValue( _instantiatedRepresentation->getSphereData()._radiusAdd,
+						 _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::SPHERE_RADIUS_ADD ) );
 		_refreshColorModeWidget();
 	}
 
@@ -29,7 +30,8 @@ namespace VTX::UI::Widget::Representation
 	{
 		BaseRepresentationWidget::updateWithNewValue( p_representation );
 
-		_addSphereValue( p_representation.getSphereData()._radiusAdd );
+		_addSphereValue( p_representation.getSphereData()._radiusAdd,
+						 p_representation.isMemberOverrided( MEMBER_FLAG::SPHERE_RADIUS_ADD ) );
 		_addColorModeValue( p_representation );
 	}
 

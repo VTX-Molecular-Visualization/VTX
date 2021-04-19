@@ -6,7 +6,9 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
+#include "tool/logger.hpp"
 #include "vtx_app.hpp"
+#include <string>
 
 namespace VTX::Model::Representation
 {
@@ -268,6 +270,22 @@ namespace VTX::Model::Representation
 			res = MEMBER_FLAG( res | MEMBER_FLAG::COLOR );
 
 		return res;
+	}
+	bool InstantiatedRepresentation::isMemberOverrided( const MEMBER_FLAG & p_member ) const
+	{
+		switch ( p_member )
+		{
+		case SPHERE_RADIUS_FIXED: return _sphereData.isOverrided(); break;
+		case SPHERE_RADIUS_ADD: return _sphereData.isOverrided(); break;
+		case CYLINDER_RADIUS: return _cylinderData.isOverrided(); break;
+		case COLOR: return _color.isOverrided(); break;
+		case COLOR_MODE: return _colorMode.isOverrided(); break;
+		case SS_COLOR_MODE: return _ssColorMode.isOverrided(); break;
+		default:
+			VTX_WARNING( "MEMBER_FLAG " + std::to_string( int( p_member ) )
+						 + " not managed in InstantiatedRepresentation::isMemberOverrided." );
+			return false;
+		}
 	}
 
 	void InstantiatedRepresentation::_updateTarget( const VTX::Representation::MoleculeComputationFlag & p_flag )

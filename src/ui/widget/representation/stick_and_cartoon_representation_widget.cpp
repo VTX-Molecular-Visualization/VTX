@@ -16,7 +16,8 @@ namespace VTX::UI::Widget::Representation
 
 	void StickAndCartoonRepresentationWidget::_refresh()
 	{
-		_setCylinderValue( _instantiatedRepresentation->getCylinderData()._radius );
+		_setCylinderValue( _instantiatedRepresentation->getCylinderData()._radius,
+						   _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::CYLINDER_RADIUS ) );
 		_refreshColorModeWidget();
 		_refreshSSColorModeWidget();
 	}
@@ -25,7 +26,8 @@ namespace VTX::UI::Widget::Representation
 	{
 		BaseRepresentationWidget::updateWithNewValue( p_representation );
 
-		_addCylinderValue( p_representation.getCylinderData()._radius );
+		_addCylinderValue( p_representation.getCylinderData()._radius,
+						   p_representation.isMemberOverrided( MEMBER_FLAG::CYLINDER_RADIUS ) );
 		_addColorModeValue( p_representation );
 		_addSSColorModeValue( p_representation );
 	}
