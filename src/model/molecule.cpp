@@ -373,7 +373,7 @@ namespace VTX
 		{
 			const uint frameCount = getFrameCount();
 
-			if ( frameCount < 2 || !isPlaying() || getPlayMode() == Trajectory::PlayMode::Stop )
+			if ( !hasTrajectory() || !isPlaying() || getPlayMode() == Trajectory::PlayMode::Stop )
 				return;
 
 			_trajectoryTimer += p_deltaTime;

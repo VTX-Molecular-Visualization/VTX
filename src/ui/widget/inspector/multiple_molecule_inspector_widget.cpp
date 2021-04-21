@@ -140,7 +140,11 @@ namespace VTX::UI::Widget::Inspector
 
 				if ( bool( p_flag & SectionFlag::TRAJECTORY ) )
 				{
-					_trajectoryWidget->updateWithNewValue( *molecule );
+					if ( molecule->hasTrajectory() )
+					{
+						_trajectorySection->setVisible( true );
+						_trajectoryWidget->updateWithNewValue( *molecule );
+					}
 				}
 				else if ( bool( p_flag & SectionFlag::TRAJECTORY_TIMER ) )
 				{
@@ -172,7 +176,10 @@ namespace VTX::UI::Widget::Inspector
 			_representationWidget->resetState();
 
 		if ( bool( p_flag & SectionFlag::TRAJECTORY ) )
+		{
 			_trajectoryWidget->resetState();
+			_trajectorySection->setVisible( false );
+		}
 
 		if ( bool( p_flag & SectionFlag::INFOS ) )
 		{

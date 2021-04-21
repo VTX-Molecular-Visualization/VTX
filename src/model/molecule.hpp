@@ -188,6 +188,7 @@ namespace VTX
 			void		refreshSelection( const Selection::MapChainIds * const );
 			void		refreshBondsBuffer();
 
+			inline bool									   hasTrajectory() { return _atomPositionsFrames.size() >= 2; }
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
 			inline uint									   getFrame() const { return _currentFrame; }
