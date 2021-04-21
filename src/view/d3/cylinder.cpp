@@ -7,7 +7,7 @@ namespace VTX::View::D3
 		return VTX_PROGRAM_MANAGER().createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
 	}
 
-	void Cylinder::_init() { _uRadiusLoc = _gl()->glGetUniformLocation( _program->getId(), "u_cylRad" ); }
+	void Cylinder::_init() { _uRadiusLoc = _program->getUniformLocation( "u_cylRad" ); }
 
 	void Cylinder::render( const Object3D::Camera & p_camera )
 	{

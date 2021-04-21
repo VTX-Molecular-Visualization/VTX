@@ -49,9 +49,9 @@ namespace VTX::View
 			assert( _program != nullptr );
 
 			// Create camera uniforms.
-			_uModelViewMatrixLoc = _gl()->glGetUniformLocation( _program->getId(), "u_MVMatrix" );
-			_uProjMatrixLoc		 = _gl()->glGetUniformLocation( _program->getId(), "u_projMatrix" );
-			_uNormalMatrixLoc	 = _gl()->glGetUniformLocation( _program->getId(), "u_normalMatrix" );
+			_uModelViewMatrixLoc = _program->getUniformLocation( "u_MVMatrix" );
+			_uProjMatrixLoc		 = _program->getUniformLocation( "u_projMatrix" );
+			_uNormalMatrixLoc	 = _program->getUniformLocation( "u_normalMatrix" );
 
 			_init();
 		}

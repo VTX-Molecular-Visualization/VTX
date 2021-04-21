@@ -23,7 +23,13 @@ namespace VTX::Renderer::GL
 		void attachShader( const GLuint );
 		void link();
 		void detachShaders();
-		void use();
+
+		int getUniformLocation( const std::string & p_name ) const
+		{
+			return _gl->glGetUniformLocation( _id, p_name.c_str() );
+		}
+
+		void use() { _gl->glUseProgram( _id ); }
 
 	  private:
 		GLuint		_id	  = GL_INVALID_INDEX;

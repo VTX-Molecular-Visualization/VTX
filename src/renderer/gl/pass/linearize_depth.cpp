@@ -27,7 +27,7 @@ namespace VTX::Renderer::GL::Pass
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "LinearizeDepth", { "shading/linearize_depth.frag" } );
 
-		_uClipInfoLoc = gl()->glGetUniformLocation( _program->getId(), "uClipInfo" );
+		_uClipInfoLoc = _program->getUniformLocation( "uClipInfo" );
 	}
 
 	void LinearizeDepth::resize( const uint p_width, const uint p_height, const GL & )

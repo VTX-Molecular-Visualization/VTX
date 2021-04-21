@@ -12,9 +12,9 @@ namespace VTX::View::D3
 
 	void Sphere::_init()
 	{
-		_uRadiusFixedLoc   = _gl()->glGetUniformLocation( _program->getId(), "u_radiusFixed" );
-		_uRadiusAddLoc	   = _gl()->glGetUniformLocation( _program->getId(), "u_radiusAdd" );
-		_uIsRadiusFixedLoc = _gl()->glGetUniformLocation( _program->getId(), "u_isRadiusFixed" );
+		_uRadiusFixedLoc   = _program->getUniformLocation( "u_radiusFixed" );
+		_uRadiusAddLoc	   = _program->getUniformLocation( "u_radiusAdd" );
+		_uIsRadiusFixedLoc = _program->getUniformLocation( "u_isRadiusFixed" );
 	}
 
 	void Sphere::render( const Object3D::Camera & p_camera )

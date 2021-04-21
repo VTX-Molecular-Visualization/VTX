@@ -30,11 +30,11 @@ namespace VTX::Renderer::GL::Pass
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { "shading/ssao.frag" } );
 
-		_uProjMatrixLoc	 = gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
-		_uAoKernelLoc	 = gl()->glGetUniformLocation( _program->getId(), "uAoKernel" );
-		_uAoIntensityLoc = gl()->glGetUniformLocation( _program->getId(), "uAoIntensity" );
-		_uKernelSizeLoc	 = gl()->glGetUniformLocation( _program->getId(), "uKernelSize" );
-		_uNoiseSizeLoc	 = gl()->glGetUniformLocation( _program->getId(), "uNoiseSize" );
+		_uProjMatrixLoc	 = _program->getUniformLocation( "uProjMatrix" );
+		_uAoKernelLoc	 = _program->getUniformLocation( "uAoKernel" );
+		_uAoIntensityLoc = _program->getUniformLocation( "uAoIntensity" );
+		_uKernelSizeLoc	 = _program->getUniformLocation( "uKernelSize" );
+		_uNoiseSizeLoc	 = _program->getUniformLocation( "uNoiseSize" );
 
 		// generate random ao kernel
 		std::vector<Vec3f> aoKernel( _kernelSize );

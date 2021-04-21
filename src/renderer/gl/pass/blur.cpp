@@ -41,8 +41,8 @@ namespace VTX::Renderer::GL::Pass
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Blur", { "shading/bilateral_blur.frag" } );
 
-		_uBlurSizeLoc			 = gl()->glGetUniformLocation( _program->getId(), "uBlurSize" );
-		_uInvDirectionTexSizeLoc = gl()->glGetUniformLocation( _program->getId(), "uInvDirectionTexSize" );
+		_uBlurSizeLoc			 = _program->getUniformLocation( "uBlurSize" );
+		_uInvDirectionTexSizeLoc = _program->getUniformLocation( "uInvDirectionTexSize" );
 
 		_program->use();
 		gl()->glUniform1i( _uBlurSizeLoc, VTX_SETTING().aoBlurSize );

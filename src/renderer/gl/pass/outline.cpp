@@ -29,8 +29,8 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 
-		_uProjMatrixLoc = gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
-		_uLineColorLoc	= gl()->glGetUniformLocation( _program->getId(), "uLineColor" );
+		_uProjMatrixLoc = _program->getUniformLocation( "uProjMatrix" );
+		_uLineColorLoc	= _program->getUniformLocation( "uLineColor" );
 
 		const Color::Rgb & lineColor = VTX_SETTING().outlineColor;
 		gl()->glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );

@@ -100,12 +100,12 @@ namespace VTX::Renderer::GL::Pass
 		}
 
 		_currentShading->use();
-		_uBackgroundColorLoc = gl()->glGetUniformLocation( _currentShading->getId(), "uBackgroundColor" );
-		_uFogNear			 = gl()->glGetUniformLocation( _currentShading->getId(), "uFogNear" );
-		_uFogFar			 = gl()->glGetUniformLocation( _currentShading->getId(), "uFogFar" );
-		_uFogDensity		 = gl()->glGetUniformLocation( _currentShading->getId(), "uFogDensity" );
-		_uFogColor			 = gl()->glGetUniformLocation( _currentShading->getId(), "uFogColor" );
-		_uLightPosition		 = gl()->glGetUniformLocation( _currentShading->getId(), "uLightPosition" );
-		_uLightColor		 = gl()->glGetUniformLocation( _currentShading->getId(), "uLightColor" );
+		_uBackgroundColorLoc = _currentShading->getUniformLocation( "uBackgroundColor" );
+		_uFogNear			 = _currentShading->getUniformLocation( "uFogNear" );
+		_uFogFar			 = _currentShading->getUniformLocation( "uFogFar" );
+		_uFogDensity		 = _currentShading->getUniformLocation( "uFogDensity" );
+		_uFogColor			 = _currentShading->getUniformLocation( "uFogColor" );
+		_uLightPosition		 = _currentShading->getUniformLocation( "uLightPosition" );
+		_uLightColor		 = _currentShading->getUniformLocation( "uLightColor" );
 	}
 } // namespace VTX::Renderer::GL::Pass
