@@ -34,7 +34,6 @@ namespace VTX::Renderer::GL::Pass
 		_uAoKernelLoc	 = _program->getUniformLocation( "uAoKernel" );
 		_uAoIntensityLoc = _program->getUniformLocation( "uAoIntensity" );
 		_uKernelSizeLoc	 = _program->getUniformLocation( "uKernelSize" );
-		_uNoiseSizeLoc	 = _program->getUniformLocation( "uNoiseSize" );
 
 		// generate random ao kernel
 		std::vector<Vec3f> aoKernel( _kernelSize );
@@ -74,10 +73,10 @@ namespace VTX::Renderer::GL::Pass
 			_noiseTexture, 0, 0, 0, _noiseTextureSize, _noiseTextureSize, GL_RGB, GL_FLOAT, noise.data() );
 
 		_program->use();
-		gl()->glUniform3fv( _uAoKernelLoc, _kernelSize, (const GLfloat *)aoKernel.data() );
-		gl()->glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
-		gl()->glUniform1i( _uKernelSizeLoc, _kernelSize );
-		gl()->glUniform1f( _uNoiseSizeLoc, float( _noiseTextureSize ) );
+		_program->setVec3fArray( "uAoKernel", _kernelSize, aoKernel.data() );
+		_program->setInt( "uAoIntensity", VTX_SETTING().aoIntensity );
+		_program->setInt( "uKernelSize", _kernelSize );
+		_program->setFloat( "uNoiseSize", float( _noiseTextureSize ) );
 	}
 
 	void SSAO::resize( const uint p_width, const uint p_height, const GL & )
@@ -105,13 +104,12 @@ namespace VTX::Renderer::GL::Pass
 
 		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
 		{
-			gl()->glUniformMatrix4fv(
-				_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
+			_program->setMat4f( "uProjMatrix", p_scene.getCamera().getProjectionMatrix() );
 		}
 
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
-			gl()->glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
+			_program->setInt( "uAoIntensity", VTX_SETTING().aoIntensity );
 		}
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );

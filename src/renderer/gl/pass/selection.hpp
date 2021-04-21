@@ -25,11 +25,10 @@ namespace VTX::Renderer::GL::Pass
 		void updateOutputFBO( const GL & );
 
 	  private:
-		GLuint	  _fbo			  = GL_INVALID_VALUE;
-		GLuint	  _texture		  = GL_INVALID_VALUE;
-		Program * _program		  = nullptr;
-		GLint	  _uProjMatrixLoc = GL_INVALID_INDEX;
-		GLint	  _uLineColorLoc  = GL_INVALID_INDEX;
+		GLuint	  _fbo			 = GL_INVALID_VALUE;
+		GLuint	  _texture		 = GL_INVALID_VALUE;
+		Program * _program		 = nullptr;
+		GLint	  _uLineColorLoc = GL_INVALID_INDEX;
 	};
 } // namespace VTX::Renderer::GL::Pass
 

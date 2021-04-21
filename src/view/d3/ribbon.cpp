@@ -35,8 +35,9 @@ namespace VTX::View::D3
 		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
 		{
 			const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
-			_gl()->glUniform3fv( _uCamPositionLoc, 1, (const GLfloat *)Util::Math::value_ptr( cam.getPosition() ) );
+			_program->setVec3f( "u_camPosition", cam.getPosition() );
 		}
+		/// TODO: remove
 		//_gl()->glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		for ( const std::pair<const Model::Representation::InstantiatedRepresentation *,
 							  VTX::Representation::RepresentationTarget> & representationData :

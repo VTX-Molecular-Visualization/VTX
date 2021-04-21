@@ -7,7 +7,7 @@ namespace VTX::View::D3
 		return VTX_PROGRAM_MANAGER().createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
 	}
 
-	void Cylinder::_init() { _uRadiusLoc = _program->getUniformLocation( "u_cylRad" ); }
+	void Cylinder::_init() {}
 
 	void Cylinder::render( const Object3D::Camera & p_camera )
 	{
@@ -21,7 +21,9 @@ namespace VTX::View::D3
 				continue;
 
 			const Model::Representation::CylinderData & cylinderData = representationData.first->getCylinderData();
-			_gl()->glUniform1f( _uRadiusLoc, cylinderData._radius );
+
+			/// TODO: put a mask
+			_program->setFloat( "u_cylRad", cylinderData._radius );
 
 			for ( const std::pair<uint, uint> & pair : representationData.second.getBonds() )
 			{

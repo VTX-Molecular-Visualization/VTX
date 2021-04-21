@@ -28,17 +28,13 @@ namespace VTX::View
 
 			// Update camera uniforms.
 			// TO CHECK.
+			/// TODO ! ^^
 			/// if ( VTXApp::get().MASK )
 			//{
 			const Mat4f MVMatrix = p_camera.getViewMatrix() * _model->getTransform().get();
-			_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
-			_gl()->glUniformMatrix4fv(
-				_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( p_camera.getProjectionMatrix() ) );
-			_gl()->glUniformMatrix4fv(
-				_uNormalMatrixLoc,
-				1,
-				GL_FALSE,
-				Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
+			_program->setMat4f( "u_MVMatrix", MVMatrix );
+			_program->setMat4f( "u_projMatrix", p_camera.getProjectionMatrix() );
+			_program->setMat4f( "u_normalMatrix", Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) );
 			//}
 		}
 

@@ -61,15 +61,18 @@ namespace VTX::Renderer::GL::Pass
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
 			const Color::Rgb & bgColor = VTX_SETTING().backgroundColor;
-			gl()->glUniform3f( _uBackgroundColorLoc, bgColor.getR(), bgColor.getG(), bgColor.getB() );
-			gl()->glUniform1f( _uFogNear, VTX_SETTING().fogNear );
-			gl()->glUniform1f( _uFogFar, VTX_SETTING().fogFar );
-			gl()->glUniform1f( _uFogDensity, VTX_SETTING().activeFog ? VTX_SETTING().fogDensity : 0.f );
+			/// TODO: use a value_ptr ?
+			_currentShading->setVec3f( "uBackgroundColor", bgColor.getR(), bgColor.getG(), bgColor.getB() );
+			_currentShading->setFloat( "uFogNear", VTX_SETTING().fogNear );
+			_currentShading->setFloat( "uFogFar", VTX_SETTING().fogFar );
+			_currentShading->setFloat( "uFogDensity", VTX_SETTING().activeFog ? VTX_SETTING().fogDensity : 0.f );
 			const Color::Rgb & fogColor = VTX_SETTING().fogColor;
-			gl()->glUniform3f( _uFogColor, fogColor.getR(), fogColor.getG(), fogColor.getB() );
+			/// TODO: use a value_ptr ?
+			_currentShading->setVec3f( "uFogColor", fogColor.getR(), fogColor.getG(), fogColor.getB() );
 
 			const Color::Rgb & lightColor = VTX_SETTING().lightColor;
-			gl()->glUniform3f( _uLightColor, lightColor.getR(), lightColor.getG(), lightColor.getB() );
+			/// TODO: use a value_ptr ?
+			_currentShading->setVec3f( "uLightColor", lightColor.getR(), lightColor.getG(), lightColor.getB() );
 		}
 
 		// TODO: no need for flat shading
@@ -79,7 +82,7 @@ namespace VTX::Renderer::GL::Pass
 		{
 			const Vec4f & lightPosition
 				= p_scene.getCamera().getViewMatrix() * Vec4f( p_scene.getCamera().getPosition(), 1.f );
-			gl()->glUniform3f( _uLightPosition, lightPosition.x, lightPosition.y, lightPosition.z );
+			_currentShading->setVec3f( "uLightPosition", lightPosition );
 		}
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
@@ -100,12 +103,5 @@ namespace VTX::Renderer::GL::Pass
 		}
 
 		_currentShading->use();
-		_uBackgroundColorLoc = _currentShading->getUniformLocation( "uBackgroundColor" );
-		_uFogNear			 = _currentShading->getUniformLocation( "uFogNear" );
-		_uFogFar			 = _currentShading->getUniformLocation( "uFogFar" );
-		_uFogDensity		 = _currentShading->getUniformLocation( "uFogDensity" );
-		_uFogColor			 = _currentShading->getUniformLocation( "uFogColor" );
-		_uLightPosition		 = _currentShading->getUniformLocation( "uLightPosition" );
-		_uLightColor		 = _currentShading->getUniformLocation( "uLightColor" );
 	}
 } // namespace VTX::Renderer::GL::Pass

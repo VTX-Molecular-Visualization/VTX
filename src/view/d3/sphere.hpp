@@ -25,8 +25,6 @@ namespace VTX
 				void						  _init() override;
 
 			  private:
-				GLint _uRadiusFixedLoc	 = GL_INVALID_INDEX;
-				GLint _uRadiusAddLoc	 = GL_INVALID_INDEX;
 				GLint _uIsRadiusFixedLoc = GL_INVALID_INDEX;
 
 				explicit Sphere( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}

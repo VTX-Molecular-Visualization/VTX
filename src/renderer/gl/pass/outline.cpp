@@ -29,11 +29,9 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 
-		_uProjMatrixLoc = _program->getUniformLocation( "uProjMatrix" );
-		_uLineColorLoc	= _program->getUniformLocation( "uLineColor" );
-
 		const Color::Rgb & lineColor = VTX_SETTING().outlineColor;
-		gl()->glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );
+		/// TODO: use a value_ptr ?
+		_program->setVec3f( "uLineColor", lineColor.getR(), lineColor.getG(), lineColor.getB() );
 	}
 
 	void Outline::resize( const uint p_width, const uint p_height, const GL & )
@@ -58,16 +56,11 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 
-		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
-		{
-			gl()->glUniformMatrix4fv(
-				_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
-		}
-
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
 			const Color::Rgb & lineColor = VTX_SETTING().outlineColor;
-			gl()->glUniform3f( _uLineColorLoc, lineColor.getR(), lineColor.getG(), lineColor.getB() );
+			/// TODO: use a value_ptr ?
+			_program->setVec3f( "uLineColor", lineColor.getR(), lineColor.getG(), lineColor.getB() );
 		}
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );

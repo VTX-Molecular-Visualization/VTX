@@ -33,10 +33,7 @@ namespace VTX::Renderer::GL::Pass
 
 		GLint _uBackgroundColorLoc = GL_INVALID_INDEX;
 		// Fog.
-		GLint _uFogNear	   = GL_INVALID_INDEX;
-		GLint _uFogFar	   = GL_INVALID_INDEX;
-		GLint _uFogDensity = GL_INVALID_INDEX;
-		GLint _uFogColor   = GL_INVALID_INDEX;
+		GLint _uFogColor = GL_INVALID_INDEX;
 		// Lights.
 		GLint _uLightPosition = GL_INVALID_INDEX;
 		GLint _uLightColor	  = GL_INVALID_INDEX;

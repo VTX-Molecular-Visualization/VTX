@@ -26,8 +26,6 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "LinearizeDepth", { "shading/linearize_depth.frag" } );
-
-		_uClipInfoLoc = _program->getUniformLocation( "uClipInfo" );
 	}
 
 	void LinearizeDepth::resize( const uint p_width, const uint p_height, const GL & )
@@ -56,8 +54,8 @@ namespace VTX::Renderer::GL::Pass
 			const Object3D::Camera & cam	 = p_scene.getCamera();
 			const float				 camNear = cam.getNear();
 			const float				 camFar	 = cam.getFar();
-			// clipInfo.w: 0 = orhto ; 1 = perspective
-			gl()->glUniform4f( _uClipInfoLoc, camNear * camFar, camFar, camFar - camNear, 1.f );
+			// clipInfo.w: 0 = ortho ; 1 = perspective (always perspective for now).
+			_program->setVec4f( "uClipInfo", camNear * camFar, camFar, camFar - camNear, 1.f );
 		}
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );

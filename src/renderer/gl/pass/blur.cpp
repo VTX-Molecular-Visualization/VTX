@@ -41,11 +41,8 @@ namespace VTX::Renderer::GL::Pass
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Blur", { "shading/bilateral_blur.frag" } );
 
-		_uBlurSizeLoc			 = _program->getUniformLocation( "uBlurSize" );
-		_uInvDirectionTexSizeLoc = _program->getUniformLocation( "uInvDirectionTexSize" );
-
 		_program->use();
-		gl()->glUniform1i( _uBlurSizeLoc, VTX_SETTING().aoBlurSize );
+		_program->setInt( "uBlurSize", VTX_SETTING().aoBlurSize );
 	}
 
 	void Blur::resize( const uint p_width, const uint p_height, const GL & )
@@ -84,10 +81,11 @@ namespace VTX::Renderer::GL::Pass
 
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
-			gl()->glUniform1i( _uBlurSizeLoc, VTX_SETTING().aoBlurSize );
+			_program->setInt( "uBlurSize", VTX_SETTING().aoBlurSize );
 		}
 
-		gl()->glUniform2i( _uInvDirectionTexSizeLoc, 1, 0 );
+		/// TODO: rename uInvDirectionTexSize
+		_program->setVec2i( "uInvDirectionTexSize", 1, 0 );
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
 
@@ -102,7 +100,8 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glBindTextureUnit( 0, _textureFirstPass );
 		gl()->glBindTextureUnit( 1, p_renderer.getPassLinearizeDepth().getTexture() );
 
-		gl()->glUniform2i( _uInvDirectionTexSizeLoc, 0, 1 );
+		/// TODO: rename uInvDirectionTexSize
+		_program->setVec2i( "uInvDirectionTexSize", 0, 1 );
 
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
 

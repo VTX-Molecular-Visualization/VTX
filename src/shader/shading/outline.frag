@@ -5,7 +5,6 @@ layout( binding = 1 ) uniform sampler2D linearDepthTexture;
 
 layout( location = 0 ) out vec4 fragColor;
 
-uniform mat4 uProjMatrix;
 uniform vec3 uLineColor;
 
 #define USE_TEXTURE_GATHER
