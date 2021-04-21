@@ -35,7 +35,7 @@ namespace VTX::UI::Widget::Representation
 {
 	class RepresentationInspectorSection :
 		public BaseManualWidget<QWidget>,
-		TMultiDataField<Model::Representation::InstantiatedRepresentation>
+		public TMultiDataField<const Model::Representation::InstantiatedRepresentation>
 	{
 		Q_OBJECT
 		VTX_WIDGET
@@ -54,6 +54,7 @@ namespace VTX::UI::Widget::Representation
 
 	  public:
 		void localize() override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
 		void refresh();
 
 		void resetState() override;
@@ -63,6 +64,7 @@ namespace VTX::UI::Widget::Representation
 		void updateWithNewValue( const InstantiatedRepresentation & p_representation, const bool p_instantiateViews );
 
 		void setActionButtonVisibility( const ActionButtons & p_buttons );
+		void setDirty();
 
 	  signals:
 		void onRepresentationPresetChange( const int p_presetIndex );
@@ -97,6 +99,7 @@ namespace VTX::UI::Widget::Representation
 
 		Model::Representation::InstantiatedRepresentation * _dummyRepresentation;
 		int													_baseRepresentationIndex = -1;
+		bool												_isDirty				 = false;
 
 		void _instantiateRepresentationSettingWidget( const Generic::REPRESENTATION & p_representation );
 		void _deleteRepresentationSettingWidget();
@@ -109,6 +112,8 @@ namespace VTX::UI::Widget::Representation
 		void _applyRepresentationToChildren();
 
 		void _onTargetedRepresentationChange( const Event::VTXEvent * const p_event );
+		void _recomputeUi();
+
 		void _onDummyChange( const Event::VTXEvent * const p_event );
 	};
 

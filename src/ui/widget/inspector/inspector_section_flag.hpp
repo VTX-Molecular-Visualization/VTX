@@ -9,12 +9,14 @@ namespace VTX::UI::Widget::Inspector
 {
 	enum class SectionFlag : int
 	{
-		TRANSFORM	   = 1 << 0,
-		REPRESENTATION = 1 << 1,
-		INFOS		   = 1 << 2,
+		TRANSFORM		 = 1 << 0,
+		REPRESENTATION	 = 1 << 1,
+		TRAJECTORY		 = 1 << 2,
+		TRAJECTORY_TIMER = 1 << 3,
+		INFOS			 = 1 << 4,
 
 		NONE = 0,
-		ALL = 0xFFFF
+		ALL	 = 0xFFFF
 	};
 
 	inline SectionFlag operator|( const SectionFlag p_lhs, const SectionFlag p_rhs )

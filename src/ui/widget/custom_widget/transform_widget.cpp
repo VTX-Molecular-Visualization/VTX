@@ -38,18 +38,9 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void TransformWidget::_setupSlots()
 	{
-		connect( _positionWidget,
-				 QOverload<const Vec3f &>::of( &Vector3Widget::onValueChange ),
-				 this,
-				 &TransformWidget::_onPositionChange );
-		connect( _rotationWidget,
-				 QOverload<const Vec3f &>::of( &Vector3Widget::onValueChange ),
-				 this,
-				 &TransformWidget::_onRotationChange );
-		connect( _scaleWidget,
-				 QOverload<const Vec3f &>::of( &Vector3Widget::onValueChange ),
-				 this,
-				 &TransformWidget::_onScaleChange );
+		connect( _positionWidget, &Vector3Widget::onValueChange, this, &TransformWidget::_onPositionChange );
+		connect( _rotationWidget, &Vector3Widget::onValueChange, this, &TransformWidget::_onRotationChange );
+		connect( _scaleWidget, &Vector3Widget::onValueChange, this, &TransformWidget::_onScaleChange );
 	}
 
 	void TransformWidget::_refresh()

@@ -94,6 +94,14 @@ namespace VTX::UI::Widget::Inspector
 			{
 				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::REPRESENTATION );
 			}
+			else if ( p_event->name == Event::Model::TRAJECTORY_DATA_CHANGE )
+			{
+				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::TRAJECTORY );
+			}
+			else if ( p_event->name == Event::Model::TRAJECTORY_FRAME_CHANGE )
+			{
+				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::TRAJECTORY_TIMER );
+			}
 		}
 
 		virtual void _endOfFrameEvent()

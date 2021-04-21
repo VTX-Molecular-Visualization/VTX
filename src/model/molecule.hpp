@@ -17,6 +17,7 @@
 #include "model/selection.hpp"
 #include "representation/instantiated_representation.hpp"
 #include "representation/representation_target.hpp"
+#include "trajectory/trajectory_enum.hpp"
 #include <iostream>
 #include <map>
 #include <string>
@@ -191,13 +192,22 @@ namespace VTX
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
 			inline uint									   getFrame() const { return _currentFrame; }
 			void										   setFrame( const uint );
-			inline const uint getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
-			inline uint		  getFPS() const { return _fps; }
-			void			  setFPS( const uint p_fps ) { _fps = p_fps; }
-			inline bool		  isPlaying() const { return _isPlaying; }
-			inline void		  setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
-			inline bool		  showSolvent() const { return _showSolvent; }
-			inline void		  setShowSolvent( const bool p_showSolvent )
+			void										   applyNextFrame( const uint p_frameCount = 1 );
+			inline const uint			getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
+			inline uint					getFPS() const { return _fps; }
+			void						setFPS( const uint p_fps );
+			inline bool					isPlaying() const { return _isPlaying; }
+			void						setIsPlaying( const bool p_isPlaying );
+			inline Trajectory::PlayMode getPlayMode() const { return _playMode; }
+			void						setPlayMode( const Trajectory::PlayMode & p_playMode );
+
+			void updateTrajectory( const float & p_deltaTime );
+
+			bool isAtEndOfTrajectoryPlay();
+			void resetTrajectoryPlay();
+
+			inline bool showSolvent() const { return _showSolvent; }
+			inline void setShowSolvent( const bool p_showSolvent )
 			{
 				_showSolvent = p_showSolvent;
 				_fillBufferAtomVisibilities();
@@ -280,10 +290,15 @@ namespace VTX
 			// Secondary structure.
 			SecondaryStructure * _secondaryStructure = nullptr;
 
-			uint _currentFrame = 0u;
-			bool _isPlaying	   = true;
-			uint _fps		   = 1u;
+			// Trajectory
+			uint				 _currentFrame	   = 0u;
+			bool				 _isPlaying		   = true;
+			uint				 _fps			   = 1u;
+			Trajectory::PlayMode _playMode		   = Trajectory::PlayMode::Loop;
+			uint				 _dynamicLoopCount = 0;
+			float				 _trajectoryTimer  = 0;
 
+			// Element visibility
 			bool _showSolvent = true;
 			bool _showIon	  = true;
 

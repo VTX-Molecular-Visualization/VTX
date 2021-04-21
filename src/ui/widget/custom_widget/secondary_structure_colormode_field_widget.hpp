@@ -21,7 +21,7 @@ namespace VTX::UI::Widget::CustomWidget
 {
 	class SecondaryStructureColorModeFieldWidget :
 		public BaseManualWidget<QWidget>,
-		TMultiDataField<std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgb>>
+		public TMultiDataField<const std::pair<Generic::SECONDARY_STRUCTURE_COLOR_MODE, Color::Rgb>>
 	{
 		Q_OBJECT
 		VTX_WIDGET

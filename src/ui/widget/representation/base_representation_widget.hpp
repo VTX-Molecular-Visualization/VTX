@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::Representation
 {
 	class BaseRepresentationWidget :
 		public VTX::UI::Widget::BaseManualWidget<QWidget>,
-		public TMultiDataField<Model::Representation::InstantiatedRepresentation>
+		public TMultiDataField<const Model::Representation::InstantiatedRepresentation>
 	{
 		Q_OBJECT
 		VTX_WIDGET

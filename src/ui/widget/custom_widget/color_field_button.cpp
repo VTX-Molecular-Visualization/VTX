@@ -5,7 +5,8 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	ColorFieldButton::ColorFieldButton( QWidget * p_parent ) : BaseManualWidget( p_parent ) {};
+	ColorFieldButton::ColorFieldButton( QWidget * p_parent ) :
+		BaseManualWidget( p_parent ), TMultiDataFieldEquatable<const Color::Rgb>() {};
 
 	void ColorFieldButton::_setupUi( const QString & p_name )
 	{

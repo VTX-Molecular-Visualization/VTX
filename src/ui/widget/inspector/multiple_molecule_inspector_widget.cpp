@@ -40,8 +40,13 @@ namespace VTX::UI::Widget::Inspector
 				this, "inspector_instantiated_representation" );
 		_representationWidget->setActionButtonVisibility(
 			Representation::RepresentationInspectorSection::ActionButtons::All );
-
 		_representationSection->setBody( _representationWidget );
+
+		_trajectorySection
+			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
+		_trajectoryWidget = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::TrajectoryWidget>(
+			this, "inspector_trajectory" );
+		_trajectorySection->setBody( _trajectoryWidget );
 
 		_infoSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
 			this, "inspector_item_section" );
@@ -63,6 +68,7 @@ namespace VTX::UI::Widget::Inspector
 
 		_appendSection( _transformSection );
 		_appendSection( _representationSection );
+		_appendSection( _trajectorySection );
 		_appendSection( _infoSection );
 
 		const bool oldBlockState = blockSignals( true );
@@ -120,7 +126,7 @@ namespace VTX::UI::Widget::Inspector
 			const QPixmap * symbolPixmap = Style::IconConst::get().getModelSymbol( ID::Model::MODEL_MOLECULE );
 			_getHeader()->setHeaderIcon( *symbolPixmap );
 
-			for ( const Model::Molecule * molecule : targets )
+			for ( Model::Molecule * molecule : targets )
 			{
 				if ( bool( p_flag & SectionFlag::TRANSFORM ) )
 				{
@@ -130,6 +136,15 @@ namespace VTX::UI::Widget::Inspector
 				if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 				{
 					_representationWidget->updateWithNewValue( *molecule->getRepresentation() );
+				}
+
+				if ( bool( p_flag & SectionFlag::TRAJECTORY ) )
+				{
+					_trajectoryWidget->updateWithNewValue( *molecule );
+				}
+				else if ( bool( p_flag & SectionFlag::TRAJECTORY_TIMER ) )
+				{
+					_trajectoryWidget->refreshTimer();
 				}
 
 				if ( bool( p_flag & SectionFlag::INFOS ) )
@@ -156,6 +171,9 @@ namespace VTX::UI::Widget::Inspector
 		if ( bool( p_flag & SectionFlag::REPRESENTATION ) )
 			_representationWidget->resetState();
 
+		if ( bool( p_flag & SectionFlag::TRAJECTORY ) )
+			_trajectoryWidget->resetState();
+
 		if ( bool( p_flag & SectionFlag::INFOS ) )
 		{
 			_fullnameLabel->resetState();
@@ -169,6 +187,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 		_transformSection->setHeaderTitle( "Transform" );
 		_representationSection->setHeaderTitle( "Representations" );
+		_trajectorySection->setHeaderTitle( "Trajectory" );
 		_infoSection->setHeaderTitle( "Infos" );
 		_infoSection->localize();
 	}

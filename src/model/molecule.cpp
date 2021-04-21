@@ -26,7 +26,11 @@ namespace VTX
 	namespace Model
 	{
 		Molecule::Molecule() : Molecule( ID::Model::MODEL_MOLECULE ) {}
-		Molecule::Molecule( const ID::VTX_ID & p_typeId ) : BaseModel3D( ID::Model::MODEL_MOLECULE ) {}
+		Molecule::Molecule( const ID::VTX_ID & p_typeId ) : BaseModel3D( ID::Model::MODEL_MOLECULE )
+		{
+			_playMode = Setting::DEFAULT_TRAJECTORY_PLAY_MODE;
+			_fps	  = Setting::DEFAULT_TRAJECTORY_SPEED;
+		}
 
 		Molecule::~Molecule()
 		{
@@ -285,6 +289,162 @@ namespace VTX
 			_currentFrame = p_frameIdx;
 			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
 			//_secondaryStructure->setCurrentFrame();
+
+			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_FRAME_CHANGE ) );
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+		void Molecule::applyNextFrame( const uint p_frameCount )
+		{
+			int		  newFrame	= _currentFrame;
+			const int lastFrame = getFrameCount() - 1;
+
+			const bool playForward = _playMode == Trajectory::PlayMode::Once || _playMode == Trajectory::PlayMode::Loop
+									 || ( _playMode == Trajectory::PlayMode::PingPong && _dynamicLoopCount % 2 == 0 );
+
+			if ( playForward )
+			{
+				newFrame += p_frameCount;
+
+				if ( newFrame >= lastFrame )
+				{
+					_dynamicLoopCount += 1 + ( newFrame / ( getFrameCount() + 1 ) );
+					if ( _playMode == Trajectory::PlayMode::Loop )
+						newFrame = newFrame % getFrameCount();
+					else
+						newFrame = lastFrame;
+				}
+			}
+			else
+			{
+				newFrame -= p_frameCount;
+
+				if ( newFrame <= 0 )
+				{
+					_dynamicLoopCount += 1 + ( std::abs( newFrame ) / ( getFrameCount() + 1 ) );
+
+					if ( _playMode == Trajectory::PlayMode::RevertLoop )
+						newFrame = ( getFrameCount() + newFrame ) % getFrameCount();
+					else
+						newFrame = 0;
+				}
+			}
+
+			setFrame( newFrame );
+
+			const bool playFinished = ( _playMode == Trajectory::PlayMode::Once && _currentFrame == lastFrame )
+									  || ( _playMode == Trajectory::PlayMode::RevertOnce && _currentFrame == 0 );
+
+			if ( playFinished )
+			{
+				setIsPlaying( false );
+			}
+		}
+
+		void Molecule::setFPS( const uint p_fps )
+		{
+			if ( _fps != p_fps )
+			{
+				_fps = p_fps;
+				_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_DATA_CHANGE ) );
+			}
+		}
+		void Molecule::setIsPlaying( const bool p_isPlaying )
+		{
+			if ( _isPlaying != p_isPlaying )
+			{
+				_isPlaying		  = p_isPlaying;
+				_dynamicLoopCount = 0;
+				_trajectoryTimer  = 0;
+
+				_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_DATA_CHANGE ) );
+			}
+		}
+		void Molecule::setPlayMode( const Trajectory::PlayMode & p_playMode )
+		{
+			if ( _playMode != p_playMode )
+			{
+				_playMode = p_playMode;
+				_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_DATA_CHANGE ) );
+			}
+		}
+
+		void Molecule::updateTrajectory( const float & p_deltaTime )
+		{
+			const uint frameCount = getFrameCount();
+
+			if ( frameCount < 2 || !isPlaying() || getPlayMode() == Trajectory::PlayMode::Stop )
+				return;
+
+			_trajectoryTimer += p_deltaTime;
+
+			const uint fps = getFPS();
+
+			if ( fps == 0u )
+			{
+				applyNextFrame();
+			}
+			else
+			{
+				const uint frame	 = getFrame();
+				uint	   nextFrame = frame;
+
+				float offset = 1.f / float( fps );
+				while ( _trajectoryTimer >= offset )
+				{
+					nextFrame++;
+					_trajectoryTimer -= offset;
+				}
+
+				if ( nextFrame != frame )
+				{
+					applyNextFrame( nextFrame - frame );
+				}
+			}
+		}
+
+		bool Molecule::isAtEndOfTrajectoryPlay()
+		{
+			bool res;
+
+			switch ( _playMode )
+			{
+			case Trajectory::PlayMode::Once: res = _currentFrame >= getFrameCount() - 1; break;
+			case Trajectory::PlayMode::RevertOnce: res = _currentFrame <= 0; break;
+			case Trajectory::PlayMode::Loop:
+			case Trajectory::PlayMode::RevertLoop:
+			case Trajectory::PlayMode::PingPong:
+			case Trajectory::PlayMode::Stop: res = false; break;
+			default:
+				VTX_WARNING( "PlayMode " + std::to_string( int( _playMode ) )
+							 + "not managed in Molecule::isAtEndOfTrajectoryPlay." );
+				res = false;
+				break;
+			}
+
+			return res;
+		}
+		void Molecule::resetTrajectoryPlay()
+		{
+			int frame;
+			switch ( _playMode )
+			{
+			case Trajectory::PlayMode::Loop:
+			case Trajectory::PlayMode::PingPong:
+			case Trajectory::PlayMode::Stop:
+			case Trajectory::PlayMode::Once: frame = 0; break;
+			case Trajectory::PlayMode::RevertOnce:
+			case Trajectory::PlayMode::RevertLoop: frame = getFrameCount() - 1; break;
+			default:
+				VTX_WARNING( "PlayMode " + std::to_string( int( _playMode ) )
+							 + "not managed in Molecule::resetTrajectoryPlay." );
+				frame = 0;
+				break;
+			}
+
+			_trajectoryTimer  = 0;
+			_dynamicLoopCount = 0;
+			setFrame( frame );
 		}
 
 		void Molecule::print() const

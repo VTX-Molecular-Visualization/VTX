@@ -2,6 +2,7 @@
 #include "io/serializer.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "renderer/base_renderer.hpp"
+#include "trajectory/trajectory_enum.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -100,6 +101,12 @@ namespace VTX
 
 	// Molecule
 	const float Setting::COPIED_MOLECULE_OFFSET = 5.0f;
+
+	// Trajectory
+	const int				   Setting::MIN_TRAJECTORY_SPEED		 = 1;
+	const int				   Setting::MAX_TRAJECTORY_SPEED		 = 60;
+	const int				   Setting::DEFAULT_TRAJECTORY_SPEED	 = 5;
+	const Trajectory::PlayMode Setting::DEFAULT_TRAJECTORY_PLAY_MODE = Trajectory::PlayMode::Loop;
 
 	// Auto rotate.
 	const float Setting::AUTO_ROTATE_SPEED_DEFAULT = 0.0f;

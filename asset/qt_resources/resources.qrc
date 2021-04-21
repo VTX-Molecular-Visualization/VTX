@@ -48,6 +48,12 @@
 	<file>sprite/symbol/chain_symbol_icon.png</file>
 	<file>sprite/symbol/molecule_symbol_icon.png</file>
 	<file>sprite/symbol/residue_symbol_icon.png</file>
+	<file>sprite/trajectory_first_frame_icon.png</file>
+	<file>sprite/trajectory_last_frame_icon.png</file>
+	<file>sprite/trajectory_next_frame_icon.png</file>
+	<file>sprite/trajectory_pause_icon.png</file>
+	<file>sprite/trajectory_play_icon.png</file>
+	<file>sprite/trajectory_previous_frame_icon.png</file>
 	<file>sprite/treeview_folded_molecule_icon.png</file>
 	<file>sprite/treeview_unfolded_molecule_icon.png</file>
 	<file>sprite/undock_icon.png</file>

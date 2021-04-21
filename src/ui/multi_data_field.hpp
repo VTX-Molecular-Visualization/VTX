@@ -38,7 +38,7 @@ namespace VTX::UI
 	{
 	  public:
 		TMultiDataField() : MultiDataField() {};
-		virtual void updateWithNewValue( const T & p_value ) = 0;
+		virtual void updateWithNewValue( T & p_value ) = 0;
 	};
 
 	template<typename T>
@@ -46,7 +46,7 @@ namespace VTX::UI
 	{
 	  public:
 		TMultiDataFieldEquatable() : TMultiDataField() {};
-		virtual void updateWithNewValue( const T & p_value )
+		virtual void updateWithNewValue( T & p_value )
 		{
 			switch ( _state )
 			{

@@ -25,6 +25,11 @@ namespace VTX
 		enum class MODE;
 	} // namespace Renderer
 
+	namespace Trajectory
+	{
+		enum class PlayMode;
+	}
+
 	class Setting
 	{
 	  public:
@@ -184,6 +189,14 @@ namespace VTX
 
 		// Molecules
 		static const float COPIED_MOLECULE_OFFSET;
+
+		// Trajectory
+		static const int				  MIN_TRAJECTORY_SPEED;
+		static const int				  MAX_TRAJECTORY_SPEED;
+		static const int				  DEFAULT_TRAJECTORY_SPEED;
+		int								  defaultTrajectorySpeed;
+		static const Trajectory::PlayMode DEFAULT_TRAJECTORY_PLAY_MODE;
+		Trajectory::PlayMode			  defaultTrajectoryPlayMode;
 
 		// Auto rotate.
 		static const float AUTO_ROTATE_SPEED_DEFAULT;
