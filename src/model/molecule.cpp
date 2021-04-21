@@ -136,7 +136,9 @@ namespace VTX
 				if ( chain == nullptr )
 					continue;
 
-				chain->removeRepresentation();
+				VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
+					*chain, false, false );
+
 				chain->removeChildrenRepresentations();
 			}
 		}

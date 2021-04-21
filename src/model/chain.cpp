@@ -1,5 +1,6 @@
 #include "chain.hpp"
 #include "molecule.hpp"
+#include "representation/representation_manager.hpp"
 #include "residue.hpp"
 
 namespace VTX
@@ -163,7 +164,8 @@ namespace VTX
 				if ( residue == nullptr )
 					continue;
 
-				residue->removeRepresentation();
+				VTX::Representation::RepresentationManager::get().removeInstantiatedRepresentation(
+					*residue, false, false );
 			}
 		}
 
