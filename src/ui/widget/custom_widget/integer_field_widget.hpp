@@ -26,6 +26,10 @@ namespace VTX::UI::Widget::CustomWidget
 		void	  setValue( const int p_value );
 
 		void localize() override;
+		int	 getMin() { return _min; };
+		int	 getMax() { return _max; };
+		void setMin( const int p_min );
+		void setMax( const int p_max );
 		void setMinMax( const int p_min, const int p_max );
 		void setSingleStep( const int p_step );
 		void setPageStep( const int p_step );
