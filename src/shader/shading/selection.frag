@@ -15,7 +15,7 @@ void main()
 	const uint selection			= uint( unpackHalf2x16( viewPositionNormal.w ).x );
 
 	const vec2 texCoord = gl_FragCoord.xy / vec2( textureSize( linearDepthTexture, 0 ) );
-	if ( selection == 0us )
+	if ( selection == 0 )
 	{
 		fragColor = vec4( texture( colorTexture, texCoord ).xyz, 1.f );
 	}

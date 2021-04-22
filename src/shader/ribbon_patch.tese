@@ -116,7 +116,7 @@ void main()
 
 	float arrayOffset = 0.f;
 	// If last segment of a strand ().
-	if ( ( tcOut[ 1 ].ssType == 5us ) && ( tcOut[ 1 ].ssType != tcOut[ 2 ].ssType ) )
+	if ( ( tcOut[ 1 ].ssType == 5 ) && ( tcOut[ 1 ].ssType != tcOut[ 2 ].ssType ) )
 		arrayOffset = mix( ARROW_OFFSET, 0.f, gl_TessCoord.x );
 
 

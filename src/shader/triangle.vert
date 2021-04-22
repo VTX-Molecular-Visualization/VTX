@@ -15,7 +15,7 @@ flat out vec3	vColor;
 
 void main()
 {
-	if ( aVertexVis == 0us )
+	if ( aVertexVis == 0 )
 	{
 		return;
 	}
