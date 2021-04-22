@@ -9,7 +9,11 @@
 #include "event/event_manager.hpp"
 #include "generic/base_updatable.hpp"
 #include "tool/logger.hpp"
+#include <QMetaType>
 #include <QThreadPool>
+#include <string>
+
+Q_DECLARE_METATYPE( std::string )
 
 namespace VTX
 {
@@ -32,15 +36,19 @@ namespace VTX
 			{
 				p_worker->setParent( this );
 				_workers.emplace( p_worker, p_callback );
-				connect( p_worker, &Worker::BaseWorker::resultReady, this, &WorkerManager::_onResultReady );
-				connect( p_worker, &Worker::BaseWorker::updateProgress, this, &WorkerManager::_onUpdateProgress );
+				connect( p_worker, &Worker::BaseWorker::resultReady, this, &WorkerManager::_resultReady );
+				connect( p_worker, &Worker::BaseWorker::updateProgress, this, &WorkerManager::_updateProgress );
+				connect( p_worker, &Worker::BaseWorker::logInfo, this, &WorkerManager::_logInfo );
+				connect( p_worker, &Worker::BaseWorker::logWarning, this, &WorkerManager::_logWarning );
+				connect( p_worker, &Worker::BaseWorker::logError, this, &WorkerManager::_logError );
+				connect( p_worker, &Worker::BaseWorker::logDebug, this, &WorkerManager::_logDebug );
 				connect( p_worker, &Worker::BaseWorker::finished, p_worker, &QObject::deleteLater );
 				VTX_DEBUG( "Starting thread" );
 				p_worker->start();
 			}
 
 		  private:
-			WorkerManager()						   = default;
+			WorkerManager() { qRegisterMetaType<std::string>(); }
 			WorkerManager( const WorkerManager & ) = delete;
 			WorkerManager & operator=( const WorkerManager & ) = delete;
 			~WorkerManager()
@@ -62,37 +70,34 @@ namespace VTX
 
 			std::map<BaseWorker *, Callback *> _workers = std::map<BaseWorker *, Callback *>();
 
-			void _onResultReady( BaseWorker * p_worker, const uint p_returnCode )
+		  private slots:
+			void _resultReady( BaseWorker * p_worker, const uint p_returnCode )
 			{
 				VTX_DEBUG( "Thread finished: " + std::to_string( p_returnCode ) );
 
-				if ( p_worker == nullptr )
+				assert( p_worker != nullptr );
+
+				// Call callback and delete all.
+				Callback * callback = _workers.at( p_worker );
+				if ( callback != nullptr )
 				{
-					VTX_DEBUG( "Worker null" );
+					( *callback )( p_returnCode );
+					delete callback;
 				}
-				else
-				{
-					p_worker->quit(); // Useful?
-					p_worker->wait();
 
-					// Call callback and delete all.
-					Callback * callback = _workers.at( p_worker );
-					if ( callback != nullptr )
-					{
-						( *callback )( p_returnCode );
-						delete callback;
-					}
-
-
-					_workers.erase( _workers.find( p_worker ) );
-					delete p_worker;
-				}
+				_workers.erase( _workers.find( p_worker ) );
+				delete p_worker;
 			}
 
-			void _onUpdateProgress( BaseWorker * p_worker, const uint p_progress )
+			void _updateProgress( BaseWorker * p_worker, const uint p_progress )
 			{
 				VTX_EVENT( new Event::VTXEventValue<float>( Event::Global::UPDATE_PROGRESS_BAR, p_progress ) );
 			}
+
+			void _logInfo( const std::string p_msg ) { VTX_INFO( p_msg ); }
+			void _logWarning( const std::string p_msg ) { VTX_WARNING( p_msg ); }
+			void _logError( const std::string p_msg ) { VTX_ERROR( p_msg ); }
+			void _logDebug( const std::string p_msg ) { VTX_DEBUG( p_msg ); }
 		};
 	} // namespace Worker
 

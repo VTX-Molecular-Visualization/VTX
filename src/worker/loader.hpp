@@ -43,8 +43,8 @@ namespace VTX
 				_mapFileNameBuffer.clear();
 			}
 
-			inline std::vector<Model::Molecule *> *		getMolecules() { return &_molecules; }
-			inline std::vector<Model::MeshTriangle *> * getMeshes() { return &_meshes; }
+			inline std::vector<Model::Molecule *> &		getMolecules() { return _molecules; }
+			inline std::vector<Model::MeshTriangle *> & getMeshes() { return _meshes; }
 
 			uint _run() override;
 

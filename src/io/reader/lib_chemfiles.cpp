@@ -42,7 +42,7 @@ namespace VTX
 			void LibChemfiles::prepareChemfiles() const
 			{
 #ifdef _DEBUG
-				chemfiles::warning_callback_t callback = []( const std::string & p_log ) { VTX_WARNING( p_log ); };
+				chemfiles::warning_callback_t callback = []( const std::string & p_log ) { /*VTX_WARNING( p_log );*/ };
 #else
 				chemfiles::warning_callback_t callback = []( const std::string & p_log ) { /*VTX_WARNING( p_log );*/ };
 #endif
@@ -53,7 +53,7 @@ namespace VTX
 											   const FilePath &		   p_path,
 											   Model::Molecule &	   p_molecule ) const
 			{
-				VTX_INFO( std::to_string( p_trajectory.nsteps() ) + " frames found" );
+				// VTX_INFO( std::to_string( p_trajectory.nsteps() ) + " frames found" );
 
 				if ( p_trajectory.nsteps() == 0 )
 				{
@@ -64,7 +64,7 @@ namespace VTX
 				chrono.start();
 				chemfiles::Frame frame = p_trajectory.read();
 				chrono.stop();
-				VTX_INFO( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
+				// VTX_INFO( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
 				const chemfiles::Topology &				topology = frame.topology();
 				const std::vector<chemfiles::Residue> & residues = topology.residues();
 				const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
@@ -97,7 +97,7 @@ namespace VTX
 					{
 						propAtom += " " + it->first;
 					}
-					VTX_DEBUG( propAtom );
+					// VTX_DEBUG( propAtom );
 				}
 
 				if ( residues.size() > 0 )
@@ -110,7 +110,7 @@ namespace VTX
 					{
 						propResidue += " " + it->first;
 					}
-					VTX_DEBUG( propResidue );
+					// VTX_DEBUG( propResidue );
 				}
 
 				// If no residue, create a fake one.
@@ -119,7 +119,7 @@ namespace VTX
 				if ( residues.size() == 0 )
 				{
 					hasTopology = false;
-					VTX_INFO( "No residues found" );
+					// VTX_INFO( "No residues found" );
 					chemfiles::Residue residue = chemfiles::Residue( "" );
 					for ( uint i = 0; i < frame.size(); ++i )
 					{
@@ -246,8 +246,7 @@ namespace VTX
 							}
 							else if ( secondaryStructure == "left-handed 3-10 helix" )
 							{
-								modelResidue->setSecondaryStructure(
-									Model::SecondaryStructure::TYPE::HELIX_3_10_LEFT );
+								modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_3_10_LEFT );
 							}
 							else if ( secondaryStructure == "pi helix" )
 							{
@@ -381,7 +380,7 @@ namespace VTX
 				// Fill other frames.
 				for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )
 				{
-					VTX_INFO( "Frame " + std::to_string( frameIdx ) );
+					// VTX_INFO( "Frame " + std::to_string( frameIdx ) );
 					Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
 
 					frame												   = p_trajectory.read_step( frameIdx );

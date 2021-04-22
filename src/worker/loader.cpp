@@ -44,12 +44,12 @@ namespace VTX
 			for ( const FilePath * path : _paths )
 			{
 				chrono.start();
-				VTX_INFO( "Loading " + path->filename().string() );
+				_logInfo( "Loading " + path->filename().string() );
 				MODE mode = _getMode( *path );
 
 				if ( mode == MODE::UNKNOWN )
 				{
-					VTX_ERROR( "Format not supported" );
+					_logError( "Format not supported" );
 				}
 				else if ( mode == MODE::MOLECULE )
 				{
@@ -64,13 +64,12 @@ namespace VTX
 					try
 					{
 						reader->readFile( *path, *molecule );
-						molecule->print();
 						_molecules.emplace_back( molecule );
 					}
 					catch ( const std::exception & p_e )
 					{
-						VTX_ERROR( "Error loading file" );
-						VTX_ERROR( p_e.what() );
+						_logError( "Error loading file" );
+						_logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( molecule );
 					}
 
@@ -84,13 +83,12 @@ namespace VTX
 					try
 					{
 						reader->readFile( *path, *mesh );
-						mesh->print();
 						_meshes.emplace_back( mesh );
 					}
 					catch ( const std::exception & p_e )
 					{
-						VTX_ERROR( "Error loading file" );
-						VTX_ERROR( p_e.what() );
+						_logError( "Error loading file" );
+						_logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( mesh );
 					}
 
@@ -103,11 +101,11 @@ namespace VTX
 					try
 					{
 						reader->readFile( *path, VTXApp::get() );
-						VTX_INFO( "App loaded " );
+						_logInfo( "App loaded " );
 					}
 					catch ( const std::exception & p_e )
 					{
-						VTX_ERROR( "Cannot load app: " + std::string( p_e.what() ) );
+						_logError( "Cannot load app: " + std::string( p_e.what() ) );
 					}
 
 					delete reader;
@@ -116,19 +114,19 @@ namespace VTX
 				delete path;
 
 				chrono.stop();
-				VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+				_logInfo( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
 			// Load all buffers.
 			for ( const std::pair<FilePath *, std::string *> & pair : _mapFileNameBuffer )
 			{
 				chrono.start();
-				VTX_INFO( "Loading " + pair.first->filename().string() );
+				_logInfo( "Loading " + pair.first->filename().string() );
 				MODE mode = _getMode( *pair.first );
 
 				if ( mode != MODE::MOLECULE )
 				{
-					VTX_ERROR( "Format not supported" );
+					_logError( "Format not supported" );
 				}
 				else
 				{
@@ -140,13 +138,12 @@ namespace VTX
 					try
 					{
 						reader->readBuffer( *pair.second, *pair.first, *molecule );
-						molecule->print();
 						_molecules.emplace_back( molecule );
 					}
 					catch ( const std::exception & p_e )
 					{
-						VTX_ERROR( "Error loading file" );
-						VTX_ERROR( p_e.what() );
+						_logError( "Error loading file" );
+						_logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( molecule );
 					}
 
@@ -157,7 +154,7 @@ namespace VTX
 				delete pair.second;
 
 				chrono.stop();
-				VTX_INFO( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+				_logInfo( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
 			return 1;

@@ -13,7 +13,7 @@ namespace VTX
 			Tool::Chrono chrono;
 
 			chrono.start();
-			VTX_INFO( "Saving " + _path->filename().string() );
+			_logInfo( "Saving " + _path->filename().string() );
 
 			IO::Writer::VTX * writer = new IO::Writer::VTX();
 
@@ -23,8 +23,8 @@ namespace VTX
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Error saving file" );
-				VTX_ERROR( p_e.what() );
+				_logError( "Error saving file" );
+				_logError( p_e.what() );
 				result = 0;
 			}
 
@@ -39,7 +39,7 @@ namespace VTX
 			delete _path;
 
 			chrono.stop();
-			VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			_logInfo( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 
 			return result;
 		} // namespace Worker

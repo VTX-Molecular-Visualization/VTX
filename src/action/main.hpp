@@ -60,16 +60,21 @@ namespace VTX::Action::Main
 				return;
 			}
 
-			Worker::Callback * callback = new Worker::Callback( [ &loader ]( const uint p_code ) {
-				VTX_DEBUG( "Thread callback ok" );
-				for ( Model::Molecule * molecule : *( loader->getMolecules() ) )
+			Worker::Callback * callback = new Worker::Callback( [ loader ]( const uint p_code ) {
+				for ( Model::Molecule * const molecule : loader->getMolecules() )
 				{
+					molecule->print();
 					VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
 					VTXApp::get().getScene().addMolecule( molecule );
 				}
+				for ( Model::MeshTriangle * const mesh : loader->getMeshes() )
+				{
+					VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
+					VTXApp::get().getScene().addMesh( mesh );
+				}
 			} );
 
-			VTX_WORKER( loader );
+			VTX_WORKER( loader, callback );
 		}
 
 	  private:

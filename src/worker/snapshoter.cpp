@@ -17,18 +17,18 @@ namespace VTX
 		{
 			if ( std::filesystem::exists( _path ) )
 			{
-				VTX_ERROR( "File already exists" );
+				_logError( "File already exists" );
 				return 0;
 			}
 
 			bool result = _image.save( QString( _path.string().c_str() ), "png" );
 			if ( result )
 			{
-				VTX_INFO( "Snapshot taken: " + _path.filename().string() );
+				_logInfo( "Snapshot taken: " + _path.filename().string() );
 			}
 			else
 			{
-				VTX_ERROR( "Snapshot failed" );
+				_logError( "Snapshot failed" );
 			}
 
 			return result;
@@ -74,7 +74,7 @@ namespace VTX
 			delete ort;
 			return res;
 #else
-			VTX_WARNING( "Optix unavailable!" );
+			_logWarning( "Optix unavailable!" );
 			return false;
 #endif
 		}
