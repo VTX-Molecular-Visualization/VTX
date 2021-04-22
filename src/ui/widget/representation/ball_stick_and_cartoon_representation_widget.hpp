@@ -22,6 +22,9 @@ namespace VTX::UI::Widget::Representation
 			BaseRepresentationWidget( p_parent ) {};
 		void _setupUi( const QString & p_name ) override;
 		void _refresh() override;
+
+		void _onSphereRadiusChange( const float p_newRadius ) override;
+		void _onCylinderRadiusChange( const float p_newRadius ) override;
 	};
 } // namespace VTX::UI::Widget::Representation
 #endif

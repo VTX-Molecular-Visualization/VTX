@@ -5,27 +5,19 @@
 namespace VTX::UI::Widget::MainMenu
 {
 	///// MenuToolBlockWidget::TmpGridStructure /////
-	MenuToolBlockWidget::TmpGridStructure::~TmpGridStructure()
-	{
-		while ( !_columnsData.empty() )
-		{
-			std::vector<MenuToolButtonWidget *> * lastRow = _columnsData.back();
-			_columnsData.pop_back();
-			delete lastRow;
-		}
-	}
+	MenuToolBlockWidget::TmpGridStructure::~TmpGridStructure() {}
 	void MenuToolBlockWidget::TmpGridStructure::fillGridLayout( QGridLayout & p_gridLayout, const int p_startRow )
 	{
 		for ( int iCol = 0; iCol < _columnsData.size(); iCol++ )
 		{
-			int				nbRows		= (int)_columnsData[ iCol ]->size();
-			int				gridRowSpan = GRID_LAYOUT_ROW_COUNT / nbRows;
-			Qt::Orientation orientation = nbRows <= 1 ? Qt::Orientation::Vertical : Qt::Orientation::Horizontal;
+			const int			  nbRows	  = _columnsData[ iCol ].getRowCount();
+			const int			  gridRowSpan = GRID_LAYOUT_ROW_COUNT / _columnsData[ iCol ].getNbRowsDisplayed();
+			const Qt::Orientation orientation = nbRows <= 1 ? Qt::Orientation::Vertical : Qt::Orientation::Horizontal;
 
 			for ( int iRow = 0; iRow < nbRows; iRow++ )
 			{
 				int							 gridRow	= p_startRow + iRow * gridRowSpan;
-				MenuToolButtonWidget * const toolButton = ( *( _columnsData[ iCol ] ) )[ iRow ];
+				MenuToolButtonWidget * const toolButton = _columnsData[ iCol ].getButton( iRow );
 				toolButton->setOrientation( orientation );
 
 				p_gridLayout.addWidget( toolButton, gridRow, iCol, gridRowSpan, 1 );
@@ -38,16 +30,14 @@ namespace VTX::UI::Widget::MainMenu
 		if ( getNbColumns() <= p_column )
 			addNewColumn( p_column - ( getNbColumns() - 1 ) );
 
-		_columnsData[ p_column ]->push_back( p_widget );
+		_columnsData[ p_column ].addButton( p_widget );
 	};
 	void MenuToolBlockWidget::TmpGridStructure::addNewColumn( const size_t p_nbColumns )
 	{
 		for ( int i = 0; i < p_nbColumns; i++ )
 		{
-			std::vector<MenuToolButtonWidget *> * newRows = new std::vector<MenuToolButtonWidget *>();
-			newRows->reserve( MAX_ROW_COUNT );
-
-			_columnsData.push_back( newRows );
+			ColumnData newColumn = ColumnData( MAX_ROW_COUNT );
+			_columnsData.emplace_back( newColumn );
 		}
 	}
 
@@ -80,6 +70,33 @@ namespace VTX::UI::Widget::MainMenu
 		_gridLayout->addItem( titleLayout, titleRow, 0, 1, _gridLayout->columnCount() );
 
 		_gridLayout->setRowMinimumHeight( titleRow, 16 );
+	}
+
+	void MenuToolBlockWidget::reset()
+	{
+		_gridLayout->removeWidget( _title );
+
+		while ( _gridLayout->count() > 0 )
+		{
+			QLayoutItem * const item = _gridLayout->takeAt( _gridLayout->count() - 1 );
+
+			_gridLayout->removeItem( item );
+
+			if ( item->widget() != nullptr )
+				delete item->widget();
+		}
+		delete _gridLayout;
+
+		_gridLayout = new QGridLayout( this );
+		_gridLayout->setObjectName( "gridLayout" );
+		_gridLayout->setVerticalSpacing( 1 );
+		_gridLayout->setHorizontalSpacing( 0 );
+		_gridLayout->setContentsMargins( 0, 0, 0, 0 );
+
+		if ( _tmpStructure != nullptr )
+			delete _tmpStructure;
+
+		_tmpStructure = new TmpGridStructure();
 	}
 
 	void MenuToolBlockWidget::_setupUi( const QString & p_name )

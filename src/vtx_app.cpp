@@ -2,7 +2,10 @@
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
+#include "event/event.hpp"
 #include "event/event_manager.hpp"
+#include "model/renderer/render_effect_preset_library.hpp"
+#include "model/representation/representation_library.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "renderer/gl/program_manager.hpp"
 #include "selection/selection_manager.hpp"
@@ -23,13 +26,6 @@ namespace VTX
 	{
 		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
 
-		// Create singletons.
-		MVC::MvcManager::get();
-		Action::ActionManager::get();
-		Event::EventManager::get();
-		Selection::SelectionManager::get();
-		Worker::WorkerManager::get();
-
 		// Create scene.
 		_scene = new Object3D::Scene();
 		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
@@ -37,6 +33,18 @@ namespace VTX
 		// Create statemachine.
 		_stateMachine = new State::StateMachine();
 		_stateMachine->goToState( ID::State::VISUALIZATION );
+
+		// Create singletons.
+		MVC::MvcManager::get();
+		Action::ActionManager::get();
+		Event::EventManager::get();
+		Selection::SelectionManager::get();
+		Worker::WorkerManager::get();
+
+		// Create Databases
+		_representationLibrary
+			= MVC::MvcManager::get().instantiateModel<Model::Representation::RepresentationLibrary>();
+		_renderEffectLibrary = MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
 
 		// Create UI.
 		_initQt();
@@ -46,6 +54,7 @@ namespace VTX
 
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );
+		_renderEffectLibrary->applyPreset( getSetting().renderEffectDefaultIndex );
 
 		VTX_INFO( "Application started" );
 
@@ -75,6 +84,11 @@ namespace VTX
 		_timer->stop();
 
 		delete _timer;
+
+		MVC::MvcManager::get().deleteModel( _representationLibrary );
+		MVC::MvcManager::get().deleteModel( _renderEffectLibrary );
+
+		Selection::SelectionManager::get().deleteModel();
 
 		if ( _stateMachine != nullptr )
 		{
@@ -134,6 +148,9 @@ namespace VTX
 
 		// Worker manager.
 		// Worker::WorkerManager::get().update( elapsed );
+
+		// Call late update event for processes at end of frame
+		VTX_EVENT( new Event::VTXEvent( Event::Global::LATE_UPDATE ) );
 
 		// Tickrate.
 		_tickCounter++;

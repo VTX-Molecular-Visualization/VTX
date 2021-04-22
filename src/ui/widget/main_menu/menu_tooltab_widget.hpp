@@ -12,43 +12,42 @@
 #include <string>
 #include <type_traits>
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu
 {
-	namespace UI
+	class MenuTooltabWidget : public BaseManualWidget<QWidget>
 	{
-		namespace Widget
+		VTX_WIDGET
+
+	  public:
+		~MenuTooltabWidget();
+
+		template<typename W, typename = std::enable_if<std::is_base_of<W, Widget::BaseManualWidgetInitializer>::value>>
+		W * addToolBlock( const std::string & p_name )
 		{
-			namespace MainMenu
-			{
-				class MenuTooltabWidget : public BaseManualWidget<QWidget>
-				{
-					VTX_WIDGET
+			if ( _horizontalLayout->count() > 1 )
+				_addSeparator();
 
-				  public:
-					~MenuTooltabWidget();
+			W * toolblock = WidgetFactory::get().instantiateWidget<W>( this, p_name );
+			_horizontalLayout->insertWidget( _horizontalLayout->count() - 1, toolblock );
 
-					template<typename W, typename = std::enable_if<std::is_base_of<W, Widget::BaseManualWidgetInitializer>::value>>
-					W * addToolBlock( const std::string & p_name )
-					{
-						if ( _horizontalLayout->count() > 1 )
-							_addSeparator();
+			return toolblock;
+		}
+		template<typename W, typename = std::enable_if<std::is_base_of<W, Widget::BaseManualWidgetInitializer>::value>>
+		void addToolBlock( W * const p_widget )
+		{
+			if ( _horizontalLayout->count() > 1 )
+				_addSeparator();
 
-						W * toolblock = WidgetFactory::get().instantiateWidget<W>( this, p_name );
-						_horizontalLayout->insertWidget( _horizontalLayout->count() - 1, toolblock );
+			_horizontalLayout->insertWidget( _horizontalLayout->count() - 1, p_widget );
+		}
 
-						return toolblock;
-					}
+	  protected:
+		MenuTooltabWidget( QWidget * p_parent = nullptr );
+		void _setupUi( const QString & p_name ) override;
+		void _addSeparator();
 
-				  protected:
-					MenuTooltabWidget( QWidget * p_parent = nullptr );
-					void _setupUi( const QString & p_name ) override;
-					void _addSeparator();
-
-				  private:
-					QHBoxLayout * _horizontalLayout = nullptr;
-				};
-			} // namespace MainMenu
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+	  private:
+		QHBoxLayout * _horizontalLayout = nullptr;
+	};
+} // namespace VTX::UI::Widget::MainMenu
 #endif

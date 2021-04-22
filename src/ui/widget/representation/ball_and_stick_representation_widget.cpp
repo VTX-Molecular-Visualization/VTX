@@ -18,8 +18,10 @@ namespace VTX::UI::Widget::Representation
 
 	void BallAndStickRepresentationWidget::_refresh()
 	{
-		_setSphereValue( _instantiatedRepresentation->getSphereData()._radiusFixed );
-		_setCylinderValue( _instantiatedRepresentation->getCylinderData()._radius );
+		_setSphereValue( _instantiatedRepresentation->getSphereData()._radiusFixed,
+						 _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
+		_setCylinderValue( _instantiatedRepresentation->getCylinderData()._radius,
+						   _instantiatedRepresentation->isMemberOverrided( MEMBER_FLAG::CYLINDER_RADIUS ) );
 
 		_refreshColorModeWidget();
 	}
@@ -28,8 +30,35 @@ namespace VTX::UI::Widget::Representation
 	{
 		BaseRepresentationWidget::updateWithNewValue( p_representation );
 
-		_addSphereValue( p_representation.getSphereData()._radiusFixed );
-		_addCylinderValue( p_representation.getCylinderData()._radius );
+		_addSphereValue( p_representation.getSphereData()._radiusFixed,
+						 p_representation.isMemberOverrided( MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
+		_addCylinderValue( p_representation.getCylinderData()._radius,
+						   p_representation.isMemberOverrided( MEMBER_FLAG::CYLINDER_RADIUS ) );
 		_addColorModeValue( p_representation );
 	}
+
+	void BallAndStickRepresentationWidget::_onSphereRadiusChange( const float p_newRadius )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		_instantiatedRepresentation->setSphereRadius( p_newRadius );
+
+		emit onDataChange(
+			Model::Representation::MEMBER_FLAG( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS
+												| Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
+	}
+
+	void BallAndStickRepresentationWidget::_onCylinderRadiusChange( const float p_newRadius )
+	{
+		if ( signalsBlocked() )
+			return;
+
+		_instantiatedRepresentation->setCylinderRadius( p_newRadius );
+
+		emit onDataChange(
+			Model::Representation::MEMBER_FLAG( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS
+												| Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) );
+	}
+
 } // namespace VTX::UI::Widget::Representation

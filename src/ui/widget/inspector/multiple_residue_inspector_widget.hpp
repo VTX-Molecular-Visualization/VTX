@@ -10,29 +10,21 @@
 #include "model/residue.hpp"
 #include "ui//widget/custom_widget/qt_multi_data_field.hpp"
 #include "ui/multi_data_field.hpp"
-#include "ui/widget/inspector/inspector_item_widget.hpp"
 #include "ui/widget/inspector/inspector_section.hpp"
+#include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include "ui/widget/representation/representation_inspector_section.hpp"
 #include "view/base_view.hpp"
 #include <QWidget>
-#include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleResidueWidget : public InspectorItemWidget
+	class MultipleResidueWidget : public MultipleModelInspectorWidget<Model::Residue>
 	{
 		VTX_WIDGET
 
 	  public:
 		~MultipleResidueWidget();
-
 		void localize() override;
-
-		void clearTargets();
-		void addTarget( Model::Residue * const p_target, const bool p_refresh = true );
-		void removeTarget( Model::Residue * const p_target, const bool p_refresh = true );
-
-		void refresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
 
 	  protected:
 		MultipleResidueWidget( QWidget * p_parent = nullptr );
@@ -40,9 +32,9 @@ namespace VTX::UI::Widget::Inspector
 		void		 _setupUi( const QString & p_name ) override;
 		virtual void _setupSlots() override;
 
-	  private:
-		std::unordered_set<Model::Residue *> _targets = std::unordered_set<Model::Residue *>();
+		void _endOfFrameRefresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
 
+	  private:
 		InspectorSection *		  _representationSection = nullptr;
 		InspectorSectionVLayout * _infoSection			 = nullptr;
 

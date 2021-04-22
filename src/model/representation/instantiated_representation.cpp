@@ -6,50 +6,60 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
+#include "tool/logger.hpp"
 #include "vtx_app.hpp"
+#include <string>
 
 namespace VTX::Model::Representation
 {
-	InstantiatedRepresentation * const InstantiatedRepresentation::instantiateCopy(
-		const InstantiatedRepresentation * const p_source )
+	void InstantiatedRepresentation::copy( const InstantiatedRepresentation & p_source )
 	{
-		InstantiatedRepresentation * const res
-			= MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>( p_source->_linkedRepresentation );
+		if ( p_source._color.isOverrided() )
+			_color.setValue( p_source._color.getValue() );
 
-		if ( p_source->_color.isOverrided() )
-			res->_color.setValue( p_source->_color.getValue() );
+		if ( p_source._colorMode.isOverrided() )
+			_colorMode.setValue( p_source._colorMode.getValue() );
 
-		if ( p_source->_colorMode.isOverrided() )
-			res->_colorMode.setValue( p_source->_colorMode.getValue() );
+		if ( p_source._ssColorMode.isOverrided() )
+			_ssColorMode.setValue( p_source._ssColorMode.getValue() );
 
-		if ( p_source->_ssColorMode.isOverrided() )
-			res->_ssColorMode.setValue( p_source->_ssColorMode.getValue() );
+		if ( p_source._sphereData.isOverrided() )
+			_sphereData.setValue( p_source._sphereData.getValue() );
 
-		if ( p_source->_sphereData.isOverrided() )
-			res->_sphereData.setValue( p_source->_sphereData.getValue() );
+		if ( p_source._cylinderData.isOverrided() )
+			_cylinderData.setValue( p_source._cylinderData.getValue() );
 
-		if ( p_source->_cylinderData.isOverrided() )
-			res->_cylinderData.setValue( p_source->_cylinderData.getValue() );
+		if ( p_source._ribbonData.isOverrided() )
+			_ribbonData.setValue( p_source._ribbonData.getValue() );
 
-		if ( p_source->_ribbonData.isOverrided() )
-			res->_ribbonData.setValue( p_source->_ribbonData.getValue() );
-
-		res->setTarget( p_source->_target );
-
-		return res;
+		_target = p_source._target;
 	}
 
-	InstantiatedRepresentation::InstantiatedRepresentation( const BaseRepresentation * const p_linkedRepresentation ) :
+	InstantiatedRepresentation::InstantiatedRepresentation( const Representation * const p_linkedRepresentation ) :
 		BaseModel( ID::Model::MODEL_INTANTIATED_REPRESENTATION ), _linkedRepresentation( p_linkedRepresentation ),
 		_color( Generic::OverridableParameter<Color::Rgb>( _linkedRepresentation->getColor() ) ),
-		_colorMode( Generic::OverridableParameter( _linkedRepresentation->getColorMode() ) ),
-		_ssColorMode( Generic::OverridableParameter( _linkedRepresentation->getSecondaryStructureColorMode() ) ),
-		_sphereData( Generic::OverridableParameter( _linkedRepresentation->getSphereData() ) ),
-		_cylinderData( Generic::OverridableParameter( _linkedRepresentation->getCylinderData() ) ),
-		_ribbonData( Generic::OverridableParameter( _linkedRepresentation->getRibbonData() ) )
+		_colorMode( Generic::OverridableParameter( _linkedRepresentation->getData().getColorMode() ) ),
+		_ssColorMode(
+			Generic::OverridableParameter( _linkedRepresentation->getData().getSecondaryStructureColorMode() ) ),
+		_sphereData( Generic::OverridableParameter( _linkedRepresentation->getData().getSphereData() ) ),
+		_cylinderData( Generic::OverridableParameter( _linkedRepresentation->getData().getCylinderData() ) ),
+		_ribbonData( Generic::OverridableParameter( _linkedRepresentation->getData().getRibbonData() ) )
 	{
 		_registerEvent( Event::Global::MOLECULE_COLOR_CHANGE );
-	};
+	}
+
+	InstantiatedRepresentation::~InstantiatedRepresentation() {}
+
+	void InstantiatedRepresentation::onLinkedRepresentationChange( const Event::VTXEvent * const p_event )
+	{
+		if ( p_event->name == Event::Model::REPRESENTATION_TYPE_CHANGE || p_event->name == Event::Model::DATA_CHANGE )
+		{
+			if ( _target != nullptr )
+				_updateTarget( VTX::Representation::MoleculeComputationFlag::ALL );
+		}
+
+		_notifyViews( new Event::VTXEvent( *p_event ) );
+	}
 
 	void InstantiatedRepresentation::receiveEvent( const Event::VTXEvent & p_event )
 	{
@@ -65,16 +75,27 @@ namespace VTX::Model::Representation
 		}
 	}
 
-	void InstantiatedRepresentation::setLinkedRepresentation( const BaseRepresentation * const p_linkedRepresentation )
+	void InstantiatedRepresentation::refreshSourceValues()
+	{
+		_color.resetSource( &_linkedRepresentation->getColor() );
+		_colorMode.resetSource( &_linkedRepresentation->getData().getColorMode() );
+		_ssColorMode.resetSource( &_linkedRepresentation->getData().getSecondaryStructureColorMode() );
+		_sphereData.resetSource( &_linkedRepresentation->getData().getSphereData() );
+		_cylinderData.resetSource( &_linkedRepresentation->getData().getCylinderData() );
+		_ribbonData.resetSource( &_linkedRepresentation->getData().getRibbonData() );
+	}
+
+	void InstantiatedRepresentation::setLinkedRepresentation( const Representation * const p_linkedRepresentation )
 	{
 		_linkedRepresentation = p_linkedRepresentation;
 
-		_color		  = Generic::OverridableParameter<Color::Rgb>( _linkedRepresentation->getColor() );
-		_colorMode	  = Generic::OverridableParameter( _linkedRepresentation->getColorMode() );
-		_ssColorMode  = Generic::OverridableParameter( _linkedRepresentation->getSecondaryStructureColorMode() );
-		_sphereData	  = Generic::OverridableParameter( _linkedRepresentation->getSphereData() );
-		_cylinderData = Generic::OverridableParameter( _linkedRepresentation->getCylinderData() );
-		_ribbonData	  = Generic::OverridableParameter( _linkedRepresentation->getRibbonData() );
+		_color	   = Generic::OverridableParameter<Color::Rgb>( _linkedRepresentation->getColor() );
+		_colorMode = Generic::OverridableParameter( _linkedRepresentation->getData().getColorMode() );
+		_ssColorMode
+			= Generic::OverridableParameter( _linkedRepresentation->getData().getSecondaryStructureColorMode() );
+		_sphereData	  = Generic::OverridableParameter( _linkedRepresentation->getData().getSphereData() );
+		_cylinderData = Generic::OverridableParameter( _linkedRepresentation->getData().getCylinderData() );
+		_ribbonData	  = Generic::OverridableParameter( _linkedRepresentation->getData().getRibbonData() );
 	}
 
 	const Generic::BaseRepresentable * const InstantiatedRepresentation::getTarget() const { return _target; }
@@ -201,7 +222,8 @@ namespace VTX::Model::Representation
 
 	void InstantiatedRepresentation::applyData( const InstantiatedRepresentation & p_source,
 												const MEMBER_FLAG &				   p_flag,
-												const bool						   p_recomputeBuffers )
+												const bool						   p_recomputeBuffers,
+												const bool						   p_notify )
 	{
 		if ( p_flag & MEMBER_FLAG::SPHERE_RADIUS_FIXED && p_source.hasToDrawSphere() )
 			_sphereData.getValue()._radiusFixed = p_source.getSphereData()._radiusFixed;
@@ -221,22 +243,70 @@ namespace VTX::Model::Representation
 		if ( p_flag & MEMBER_FLAG::COLOR )
 			setColor( p_source.getColor(), p_recomputeBuffers, false );
 
-		_notifyDataChanged();
+		if ( p_notify )
+			_notifyDataChanged();
+	}
+
+	MEMBER_FLAG InstantiatedRepresentation::getOverridedMembersFlag() const
+	{
+		MEMBER_FLAG res = MEMBER_FLAG::NONE;
+
+		if ( hasToDrawSphere() && _sphereData.isOverrided() )
+		{
+			res = MEMBER_FLAG( res | MEMBER_FLAG::SPHERE_RADIUS_ADD );
+			res = MEMBER_FLAG( res | MEMBER_FLAG::SPHERE_RADIUS_FIXED );
+		}
+
+		if ( hasToDrawCylinder() && _cylinderData.isOverrided() )
+			res = MEMBER_FLAG( res | MEMBER_FLAG::CYLINDER_RADIUS );
+
+		if ( _colorMode.isOverrided() )
+			res = MEMBER_FLAG( res | MEMBER_FLAG::COLOR_MODE );
+
+		if ( _ssColorMode.isOverrided() )
+			res = MEMBER_FLAG( res | MEMBER_FLAG::SS_COLOR_MODE );
+
+		if ( _color.isOverrided() )
+			res = MEMBER_FLAG( res | MEMBER_FLAG::COLOR );
+
+		return res;
+	}
+	bool InstantiatedRepresentation::isMemberOverrided( const MEMBER_FLAG & p_member ) const
+	{
+		switch ( p_member )
+		{
+		case SPHERE_RADIUS_FIXED: return _sphereData.isOverrided(); break;
+		case SPHERE_RADIUS_ADD: return _sphereData.isOverrided(); break;
+		case CYLINDER_RADIUS: return _cylinderData.isOverrided(); break;
+		case COLOR: return _color.isOverrided(); break;
+		case COLOR_MODE: return _colorMode.isOverrided(); break;
+		case SS_COLOR_MODE: return _ssColorMode.isOverrided(); break;
+		default:
+			VTX_WARNING( "MEMBER_FLAG " + std::to_string( int( p_member ) )
+						 + " not managed in InstantiatedRepresentation::isMemberOverrided." );
+			return false;
+		}
 	}
 
 	void InstantiatedRepresentation::_updateTarget( const VTX::Representation::MoleculeComputationFlag & p_flag )
 	{
+		if ( _target == nullptr )
+			return;
+
 		if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::Targets ) != 0 )
 			_target->getMolecule()->computeRepresentationTargets();
 
 		if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::ColorBuffer ) != 0 )
-		{
 			_target->getMolecule()->computeColorBuffer();
+
+		const VTX::Representation::MoleculeComputationFlag ssColorFlag = VTX::Representation::MoleculeComputationFlag(
+			VTX::Representation::MoleculeComputationFlag::SecondaryStructure
+			| VTX::Representation::MoleculeComputationFlag::ColorBuffer );
+
+		if ( ( int( p_flag & ssColorFlag ) != 0 ) )
+		{
 			_target->getMolecule()->getSecondaryStructure().refreshColors();
 		}
-
-		if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::SecondaryStructure ) != 0 )
-			_target->getMolecule()->getSecondaryStructure().refreshColors();
 	}
 
 } // namespace VTX::Model::Representation

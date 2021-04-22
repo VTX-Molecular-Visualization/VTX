@@ -21,6 +21,8 @@ namespace VTX::UI::Widget::Representation
 		StickRepresentationWidget( QWidget * p_parent = nullptr ) : BaseRepresentationWidget( p_parent ) {};
 		void _setupUi( const QString & p_name ) override;
 		void _refresh() override;
+
+		void _onCylinderRadiusChange( const float p_newRadius ) override;
 	};
 } // namespace VTX::UI::Widget::Representation
 #endif

@@ -5,8 +5,31 @@
 #pragma once
 #endif
 
+#include "tool/logger.hpp"
+
 namespace VTX
 {
+	namespace Generic
+	{
+		enum class REPRESENTATION : int
+		{
+			BALL_AND_STICK,
+			VAN_DER_WAALS,
+			STICK,
+			TRACE,
+			SAS,
+			CARTOON,
+			BALL_AND_STICK_AND_CARTOON,
+			STICK_AND_CARTOON,
+			COUNT
+		};
+
+		inline static const std::vector<std::string> REPRESENTATION_STRING
+			= { "Ball and Stick",		  "Van Der Waals",	  "Stick", "Trace", "SAS", "Cartoon",
+				"Ball Stick and Cartoon", "Stick and Cartoon" };
+
+	} // namespace Generic
+
 	namespace Representation
 	{
 		enum FlagDataTargeted
@@ -22,24 +45,48 @@ namespace VTX
 			Targets			   = 1 << 0,
 			ColorBuffer		   = 1 << 1,
 			SecondaryStructure = 1 << 2,
-			ALL				   = 0xFFFF,
+
+			ALL = 0xFFFF,
 		};
+
+		static FlagDataTargeted getFlagDataTargeted( const Generic::REPRESENTATION & p_representation )
+		{
+			Representation::FlagDataTargeted res = Representation::FlagDataTargeted::NONE;
+
+			switch ( p_representation )
+			{
+			case Generic::REPRESENTATION::VAN_DER_WAALS:
+			case Generic::REPRESENTATION::SAS:
+				res = Representation::FlagDataTargeted( Representation::FlagDataTargeted::ATOM );
+				break;
+
+			case Generic::REPRESENTATION::CARTOON:
+				res = Representation::FlagDataTargeted( Representation::FlagDataTargeted::RIBBON );
+				break;
+
+			case Generic::REPRESENTATION::BALL_AND_STICK:
+			case Generic::REPRESENTATION::STICK:
+			case Generic::REPRESENTATION::TRACE:
+				res = Representation::FlagDataTargeted( Representation::FlagDataTargeted::ATOM
+														| Representation::FlagDataTargeted::BOND );
+				break;
+
+			case Generic::REPRESENTATION::STICK_AND_CARTOON:
+			case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON:
+				res = Representation::FlagDataTargeted( Representation::FlagDataTargeted::ATOM
+														| Representation::FlagDataTargeted::BOND
+														| Representation::FlagDataTargeted::RIBBON );
+				break;
+
+			default:
+				VTX_WARNING( "Representation " + std::to_string( int( p_representation ) )
+							 + " not managed in Representation::getFlagDataTargeted" );
+				break;
+			}
+
+			return res;
+		}
 	} // namespace Representation
 
-	namespace Generic
-	{
-		enum class REPRESENTATION : int
-		{
-			BALL_AND_STICK,
-			VAN_DER_WAALS,
-			STICK,
-			TRACE,
-			SAS,
-			CARTOON,
-			BALL_AND_STICK_AND_CARTOON,
-			STICK_AND_CARTOON,
-			COUNT
-		};
-	} // namespace Generic
 } // namespace VTX
 #endif

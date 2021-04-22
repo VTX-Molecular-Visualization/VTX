@@ -21,7 +21,7 @@ namespace VTX::UI::Widget::CustomWidget
 {
 	class ColorModeFieldWidget :
 		public BaseManualWidget<QWidget>,
-		TMultiDataField<std::pair<Generic::COLOR_MODE, Color::Rgb>>
+		public TMultiDataField<const std::pair<Generic::COLOR_MODE, Color::Rgb>>
 	{
 		Q_OBJECT
 		VTX_WIDGET
@@ -45,7 +45,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 	  protected:
 		ColorModeFieldWidget( QWidget * p_parent ) :
-			BaseManualWidget( p_parent ), TMultiDataField<std::pair<Generic::COLOR_MODE, Color::Rgb>>() {};
+			BaseManualWidget( p_parent ), TMultiDataField<const std::pair<Generic::COLOR_MODE, Color::Rgb>>() {};
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;

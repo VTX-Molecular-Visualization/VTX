@@ -19,8 +19,8 @@ in TcOut
 	vec3				direction;
 	vec3				normal;
 	flat vec3			color;
-	flat unsigned short ssType;
-	flat unsigned short selection;
+	flat uint ssType;
+	flat uint selection;
 }
 tcOut[];
 
@@ -29,7 +29,7 @@ out TeOut
 	vec3				viewPosition;
 	vec3				normal;
 	vec3				color;
-	flat unsigned short selection;
+	flat uint selection;
 }
 teOut;
 
@@ -116,7 +116,7 @@ void main()
 
 	float arrayOffset = 0.f;
 	// If last segment of a strand ().
-	if ( ( tcOut[ 1 ].ssType == 5us ) && ( tcOut[ 1 ].ssType != tcOut[ 2 ].ssType ) )
+	if ( ( tcOut[ 1 ].ssType == 5 ) && ( tcOut[ 1 ].ssType != tcOut[ 2 ].ssType ) )
 		arrayOffset = mix( ARROW_OFFSET, 0.f, gl_TessCoord.x );
 
 

@@ -97,16 +97,8 @@ namespace VTX
 			return aabb;
 		}
 
-		void Residue::applyRepresentation(
-			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation,
-			const bool													   p_recompute )
+		void Residue::_onRepresentationChange()
 		{
-			BaseRepresentable::applyRepresentation( p_representation, p_recompute );
-			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
-		}
-		void Residue::removeRepresentation()
-		{
-			BaseRepresentable::removeRepresentation();
 			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
 		}
 

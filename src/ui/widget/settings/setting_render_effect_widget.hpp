@@ -6,8 +6,8 @@
 #endif
 
 #include "ui/widget/base_manual_widget.hpp"
-#include "view/base_view.hpp"
 #include "view/ui/widget/renderer/render_effect_preset_library_view.hpp"
+#include <QShowEvent>
 #include <QString>
 #include <QWidget>
 
@@ -25,6 +25,8 @@ namespace VTX::UI::Widget::Settings
 		SettingRenderEffectWidget( QWidget * const );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
+
+		void showEvent( QShowEvent * p_event ) override;
 
 	  private:
 		View::UI::Widget::Renderer::RenderEffectPresetLibraryView * _presetLibrary;

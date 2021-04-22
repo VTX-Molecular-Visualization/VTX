@@ -7,23 +7,29 @@
 
 #include "color/rgb.hpp"
 #include <QString>
+#include <QStyle>
+#include <QVariant>
+#include <QWidget>
 
-namespace VTX
+namespace VTX::Util::UI
 {
-	namespace Util
+	static void appendColorHtmlTag( QString & p_txt, const VTX::Color::Rgb & p_color )
 	{
-		namespace UI
-		{
-			static void appendColorHtmlTag( QString & p_txt, const VTX::Color::Rgb & p_color )
-			{
-				const QString colorString = QString::fromStdString( p_color.toHexaString() );
-				const QString tag		  = QString( "<font color=" + colorString + ">" );
+		const QString colorString = QString::fromStdString( p_color.toHexaString() );
+		const QString tag		  = QString( "<font color=" + colorString + ">" );
 
-				p_txt.append( tag );
-			}
-			static void appendEndColorHtmlTag( QString & p_txt ) { p_txt.append( "</font>" ); }
-		} // namespace UI
-	}	  // namespace Util
-} // namespace VTX
+		p_txt.append( tag );
+	}
+	static void appendEndColorHtmlTag( QString & p_txt ) { p_txt.append( "</font>" ); }
+
+	static void setDynamicProperty( QWidget * const p_widget, const char * const p_property, const QVariant & p_value )
+	{
+		p_widget->setProperty( p_property, p_value );
+
+		// Need manual refresh when property changed when widget is displayed
+		p_widget->style()->unpolish( p_widget );
+		p_widget->style()->polish( p_widget );
+	}
+} // namespace VTX::Util::UI
 
 #endif

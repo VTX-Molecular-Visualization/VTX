@@ -1,5 +1,5 @@
-#ifndef __VTX_UI_WIDGET_INSPECTOR_MOLECULE__
-#define __VTX_UI_WIDGET_INSPECTOR_MOLECULE__
+#ifndef __VTX_UI_WIDGET_INSPECTOR_ITEM__
+#define __VTX_UI_WIDGET_INSPECTOR_ITEM__
 
 #ifdef _MSC_VER
 #pragma once
@@ -17,7 +17,7 @@ namespace VTX::UI::Widget::Inspector
 	{
 	  public:
 		virtual void localize() override {};
-		virtual void refresh( const SectionFlag & _flag = SectionFlag::ALL ) {};
+		virtual void refresh( const SectionFlag & p_flag = SectionFlag::ALL ) {};
 
 		void setExpanded( const bool p_expanded );
 
@@ -27,16 +27,12 @@ namespace VTX::UI::Widget::Inspector
 		virtual void _setupUi( const QString & p_name ) override;
 		virtual void _setupSlots() override {};
 
-		void _freezeRefresh( const bool p_freeze );
-		bool _isRefreshFreezed() const;
-
 		void								   _appendSection( InspectorSection * p_section );
 		CustomWidget::CollapsingHeaderWidget * _getHeader() { return _mainWidget; }
 
 	  private:
-		CustomWidget::CollapsingHeaderWidget * _mainWidget	   = nullptr;
-		QVBoxLayout *						   _contentLayout  = nullptr;
-		bool								   _refreshFreezed = false;
+		CustomWidget::CollapsingHeaderWidget * _mainWidget	  = nullptr;
+		QVBoxLayout *						   _contentLayout = nullptr;
 	};
 
 } // namespace VTX::UI::Widget::Inspector

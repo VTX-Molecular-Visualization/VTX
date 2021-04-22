@@ -35,10 +35,10 @@ namespace VTX
 			inline const Color::Rgb &			   getColor( const uint p_idx ) const { return _colors[ p_idx ]; }
 			inline Color::Rgb &					   getColor( const uint p_idx ) { return _colors[ p_idx ]; }
 
-			inline const std::vector<ushort> & getVisibilities() const { return _visibilities; }
-			inline std::vector<ushort> &	   getVisibilities() { return _visibilities; }
-			inline const ushort & getVisibilitie( const uint p_idx ) const { return _visibilities[ p_idx ]; }
-			inline ushort &		  getVisibilitie( const uint p_idx ) { return _visibilities[ p_idx ]; }
+			inline const std::vector<uint> & getVisibilities() const { return _visibilities; }
+			inline std::vector<uint> &		 getVisibilities() { return _visibilities; }
+			inline const uint &				 getVisibilitie( const uint p_idx ) const { return _visibilities[ p_idx ]; }
+			inline uint &					 getVisibilitie( const uint p_idx ) { return _visibilities[ p_idx ]; }
 
 			inline const std::vector<uint> & getIndices() const { return _indices; }
 			inline std::vector<uint> &		 getIndices() { return _indices; }
@@ -51,7 +51,7 @@ namespace VTX
 			std::vector<Vec3f>		_vertices;
 			std::vector<Vec3f>		_normals;
 			std::vector<Color::Rgb> _colors;
-			std::vector<ushort>		_visibilities;
+			std::vector<uint>		_visibilities;
 			std::vector<uint>		_indices;
 
 			MeshTriangle();

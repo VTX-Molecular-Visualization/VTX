@@ -20,6 +20,7 @@
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
+#include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
@@ -499,56 +500,10 @@ namespace VTX::Action::Selection
 
 		virtual void execute() override
 		{
-			Model::Representation::BaseRepresentation * const preset
+			Model::Representation::Representation * const preset
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _selection.getItems() )
-			{
-				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
-
-				if ( moleculeData.second.getFullySelectedChildCount() == molecule.getRealChainCount() )
-				{
-					Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
-						= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
-							preset );
-
-					molecule.applyRepresentation( instantiatedRepresentation );
-				}
-				else
-				{
-					for ( const std::pair<Model::ID, Model::Selection::MapResidueIds> & chainData :
-						  moleculeData.second )
-					{
-						Model::Chain * const chain = molecule.getChain( chainData.first );
-
-						if ( chainData.second.getFullySelectedChildCount() == chain->getRealResidueCount() )
-						{
-							Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
-								= MVC::MvcManager::get()
-									  .instantiateModel<Model::Representation::InstantiatedRepresentation>( preset );
-
-							chain->applyRepresentation( instantiatedRepresentation );
-						}
-						else
-						{
-							for ( const std::pair<Model::ID, Model::Selection::VecAtomIds> & residueData :
-								  chainData.second )
-							{
-								Model::Residue * const residue = molecule.getResidue( residueData.first );
-
-								Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
-									= MVC::MvcManager::get()
-										  .instantiateModel<Model::Representation::InstantiatedRepresentation>(
-											  preset );
-
-								residue->applyRepresentation( instantiatedRepresentation );
-							}
-						}
-					}
-
-					molecule.computeAllRepresentationData();
-				}
-			}
+			Representation::RepresentationManager::get().instantiateRepresentations( preset, _selection );
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}

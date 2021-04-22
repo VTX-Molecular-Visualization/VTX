@@ -16,6 +16,7 @@ namespace VTX
 	namespace Generic
 	{
 		enum class COLOR_MODE;
+		enum class REPRESENTATION;
 	} // namespace Generic
 
 	namespace Renderer
@@ -23,6 +24,11 @@ namespace VTX
 		enum class SHADING;
 		enum class MODE;
 	} // namespace Renderer
+
+	namespace Trajectory
+	{
+		enum class PlayMode;
+	}
 
 	class Setting
 	{
@@ -60,6 +66,10 @@ namespace VTX
 		static const int REPRESENTATION_DEFAULT_INDEX;
 		int				 representation = REPRESENTATION_DEFAULT_INDEX;
 
+		static const Generic::REPRESENTATION DEFAULT_REPRESENTATION_TYPE;
+		Generic::REPRESENTATION				 defaultRepresentationType = DEFAULT_REPRESENTATION_TYPE;
+		static const std::string			 NEW_REPRESENTATION_DEFAULT_NAME;
+
 		static const float ATOMS_RADIUS_DEFAULT;
 		static const float ATOMS_RADIUS_MIN;
 		static const float ATOMS_RADIUS_MAX;
@@ -75,6 +85,11 @@ namespace VTX
 
 		static const Generic::COLOR_MODE COLOR_MODE_DEFAULT;
 		Generic::COLOR_MODE				 colorMode = COLOR_MODE_DEFAULT;
+
+		static const std::string NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME;
+		static const int		 RENDER_EFFECT_DEFAULT_INDEX;
+		int						 renderEffectDefaultIndex = RENDER_EFFECT_DEFAULT_INDEX;
+		static const int		 MAX_QUICK_ACCESS_COUNT	  = 6;
 
 		static const Renderer::SHADING SHADING_DEFAULT;
 		Renderer::SHADING			   shading = SHADING_DEFAULT;
@@ -174,6 +189,14 @@ namespace VTX
 
 		// Molecules
 		static const float COPIED_MOLECULE_OFFSET;
+
+		// Trajectory
+		static const int				  MIN_TRAJECTORY_SPEED;
+		static const int				  MAX_TRAJECTORY_SPEED;
+		static const int				  DEFAULT_TRAJECTORY_SPEED;
+		int								  defaultTrajectorySpeed;
+		static const Trajectory::PlayMode DEFAULT_TRAJECTORY_PLAY_MODE;
+		Trajectory::PlayMode			  defaultTrajectoryPlayMode;
 
 		// Auto rotate.
 		static const float AUTO_ROTATE_SPEED_DEFAULT;

@@ -5,6 +5,7 @@
 #include "model/residue.hpp"
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "representation/representation_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "view/d3/ribbon.hpp"
@@ -58,7 +59,7 @@ namespace VTX
 				// Temporary vectors, merged with buffers is SS is constructed.
 				std::vector<Vec4f>		caPositions;
 				std::vector<Vec3f>		caODirections;
-				std::vector<ushort>		ssTypes;
+				std::vector<uint>		ssTypes;
 				std::vector<Color::Rgb> colors;
 				std::vector<uint>		residueIndex;
 
@@ -110,7 +111,7 @@ namespace VTX
 					caODirections.emplace_back( directionCAO );
 
 					// Add secondary structure type.
-					ssTypes.emplace_back( ushort( residue->getSecondaryStructure() ) );
+					ssTypes.emplace_back( uint( residue->getSecondaryStructure() ) );
 
 					// Add color.
 					if ( residue->getRepresentation() != nullptr )
@@ -214,16 +215,14 @@ namespace VTX
 
 			if ( p_refreshBuffers )
 			{
+				_fillBuffer();
+				if ( _molecule->hasCustomRepresentation() )
 				{
-					_fillBuffer();
-					if ( _molecule->hasCustomRepresentation() )
-					{
-						_molecule->computeAllRepresentationData();
-					}
-					else
-					{
-						_molecule->applyDefaultRepresentation();
-					}
+					_molecule->computeAllRepresentationData();
+				}
+				else
+				{
+					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation( *_molecule );
 				}
 			}
 		}

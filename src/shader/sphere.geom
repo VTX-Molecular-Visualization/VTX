@@ -8,8 +8,8 @@ uniform mat4 u_projMatrix;
 flat in vec3		   vViewSpherePos[]; // Sphere position in view space.
 flat in vec3		   vSphereColor[];
 flat in float		   vSphereRad[];
-flat in unsigned short vSphereVis[];
-flat in unsigned short vSphereSel[];
+flat in uint vSphereVis[];
+flat in uint vSphereSel[];
 // Impostor vectors.
 flat in vec3  vImpU[];
 flat in vec3  vImpV[];
@@ -20,7 +20,7 @@ flat out vec3			viewSpherePos; // Sphere position in view space.
 flat out vec3			sphereColor;
 flat out float			sphereRad;
 flat out float			dotViewSpherePos;
-flat out unsigned short sphereSel;
+flat out uint sphereSel;
 
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
@@ -46,7 +46,7 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 void main()
 {
 	// Do not emit primitive if sphere is not visible.
-	if ( vSphereVis[ 0 ] == 0us )
+	if ( vSphereVis[ 0 ] == 0 )
 	{
 		return;
 	}

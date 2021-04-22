@@ -109,39 +109,7 @@ namespace VTX::Object3D
 		for ( PairMoleculePtrFloat & pair : _molecules )
 		{
 			MoleculePtr const molecule = pair.first;
-			float			  time	   = pair.second;
-
-			const uint frameCount = molecule->getFrameCount();
-			if ( molecule->isPlaying() == false || frameCount < 2 )
-			{
-				continue;
-			}
-
-			const uint frame = molecule->getFrame();
-			const uint fps	 = molecule->getFPS();
-
-			uint nextFrame = frame;
-
-			if ( fps == 0u )
-			{
-				molecule->setFrame( ++nextFrame % frameCount );
-			}
-			else
-			{
-				time += p_deltaTime;
-				float offset = 1.f / float( fps );
-				while ( time >= offset )
-				{
-					nextFrame++;
-					time -= offset;
-				}
-
-				pair.second = time;
-				if ( nextFrame != frame )
-				{
-					molecule->setFrame( nextFrame % frameCount );
-				}
-			}
+			molecule->updateTrajectory( p_deltaTime );
 		}
 
 		// Auto rotate.

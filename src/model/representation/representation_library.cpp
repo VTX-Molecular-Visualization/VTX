@@ -1,26 +1,48 @@
 #include "representation_library.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "id.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "setting.hpp"
+#include "view/callback_view.hpp"
+#include "vtx_app.hpp"
+#include <string>
 
 namespace VTX::Model::Representation
 {
-	BaseRepresentation * const RepresentationLibrary::getRepresentation( const int p_index )
+	RepresentationLibrary & RepresentationLibrary::get() { return VTXApp::get().getRepresentationLibrary(); };
+
+	RepresentationLibrary::RepresentationLibrary() : BaseModel( ID::Model::MODEL_REPRESENTATION_LIBRARY )
+	{
+		_init();
+		_defaultRepresentation = _representations[ Setting::REPRESENTATION_DEFAULT_INDEX ];
+	}
+
+	RepresentationLibrary ::~RepresentationLibrary()
+	{
+		while ( _representations.size() > 0 )
+		{
+			deleteRepresentation( 0, false );
+		}
+	}
+
+	Representation * const RepresentationLibrary::getRepresentation( const int p_index )
 	{
 		if ( 0 <= p_index && p_index < _representations.size() )
 			return _representations[ p_index ];
 
 		return nullptr;
 	};
-	const BaseRepresentation * const RepresentationLibrary::getRepresentation( const int p_index ) const
+	const Representation * const RepresentationLibrary::getRepresentation( const int p_index ) const
 	{
 		if ( 0 <= p_index && p_index < _representations.size() )
 			return _representations[ p_index ];
 
 		return nullptr;
 	};
-	BaseRepresentation * const RepresentationLibrary::getRepresentationByName( const std::string & p_name )
+	Representation * const RepresentationLibrary::getRepresentationByName( const std::string & p_name )
 	{
-		for ( BaseRepresentation * const representation : _representations )
+		for ( Representation * const representation : _representations )
 		{
 			if ( representation->getName() == p_name )
 				return representation;
@@ -28,9 +50,9 @@ namespace VTX::Model::Representation
 
 		return nullptr;
 	};
-	const BaseRepresentation * const RepresentationLibrary::getRepresentationByName( const std::string & p_name ) const
+	const Representation * const RepresentationLibrary::getRepresentationByName( const std::string & p_name ) const
 	{
-		for ( const BaseRepresentation * const representation : _representations )
+		for ( const Representation * const representation : _representations )
 		{
 			if ( representation->getName() == p_name )
 				return representation;
@@ -39,7 +61,7 @@ namespace VTX::Model::Representation
 		return nullptr;
 	};
 
-	int RepresentationLibrary::getRepresentationIndex( const BaseRepresentation * const p_representation ) const
+	int RepresentationLibrary::getRepresentationIndex( const Representation * const p_representation ) const
 	{
 		for ( int i = 0; i < _representations.size(); i++ )
 		{
@@ -52,55 +74,151 @@ namespace VTX::Model::Representation
 
 	int RepresentationLibrary::getRepresentationCount() const { return int( _representations.size() ); };
 
-	void RepresentationLibrary::addRepresentation( BaseRepresentation * const p_representation )
+	void RepresentationLibrary::addRepresentation( Representation * const p_representation, const bool p_notify )
 	{
 		_representations.emplace_back( p_representation );
+
+		View::CallbackView<Representation, RepresentationLibrary> * const callbackView
+			= MVC::MvcManager::get().instantiateView<View::CallbackView<Representation, RepresentationLibrary>>(
+				p_representation, ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
+
+		callbackView->setCallback( this, &RepresentationLibrary::_onRepresentationChange );
+
+		if ( p_notify )
+			_notifyDataChanged();
+
+		const int newRepresentationIndex = int( _representations.size() ) - 1;
+		VTX_EVENT( new Event::VTXEventValue<int>( Event::Global::REPRESENTATION_ADDED, newRepresentationIndex ) );
 	};
-	void RepresentationLibrary::removeRepresentation( const int p_index )
+	void RepresentationLibrary::copyRepresentation( const int p_index, const bool p_notify )
 	{
+		Representation * const sourceRepresentation = _representations[ p_index ];
+		Representation * const copiedRepresentation
+			= MVC::MvcManager::get().instantiateModel<Representation>( sourceRepresentation->getRepresentationType() );
+
+		copiedRepresentation->copyDataFrom( *sourceRepresentation );
+
+		copiedRepresentation->setName( "copy of " + sourceRepresentation->getName() );
+
+		addRepresentation( copiedRepresentation, p_notify );
+	}
+	Representation * RepresentationLibrary::removeRepresentation( const int p_index, const bool p_notify )
+	{
+		Representation * removedRepresentation;
+
 		if ( 0 <= p_index && p_index < _representations.size() )
+		{
+			removedRepresentation = _representations[ p_index ];
+
+			MVC::MvcManager::get().deleteView( _representations[ p_index ], ID::View::REPRESENTATION_LIBRARY_ON_ITEMS );
 			_representations.erase( _representations.begin() + p_index );
+
+			if ( p_notify )
+				_notifyDataChanged();
+
+			VTX_EVENT( new Event::VTXEventValue<int>( Event::Global::REPRESENTATION_REMOVED, p_index ) );
+		}
+		else
+		{
+			removedRepresentation = nullptr;
+		}
+
+		return removedRepresentation;
 	};
+
+	bool RepresentationLibrary::canDeleteRepresentation( Representation * const p_representation ) const
+	{
+		return p_representation != _defaultRepresentation;
+	}
+
+	void RepresentationLibrary::deleteRepresentation( const Representation * const p_representation,
+													  const bool				   p_notify )
+	{
+		const int representationIndex = getRepresentationIndex( p_representation );
+		deleteRepresentation( representationIndex, p_notify );
+	}
+
+	void RepresentationLibrary::deleteRepresentation( const int p_index, const bool p_notify )
+	{
+		const Representation * const representationToDelete = removeRepresentation( p_index, p_notify );
+
+		if ( representationToDelete != nullptr )
+			MVC::MvcManager::get().deleteModel( representationToDelete );
+	}
+
+	void RepresentationLibrary::setDefaultRepresentation( const int p_representationIndex )
+	{
+		_defaultRepresentation		 = _representations[ p_representationIndex ];
+		VTX_SETTING().representation = p_representationIndex;
+		_notifyDataChanged();
+	}
+	int RepresentationLibrary::getDefaultRepresentationIndex() const
+	{
+		return getRepresentationIndex( _defaultRepresentation );
+	}
+	Representation * RepresentationLibrary::getDefaultRepresentation() { return _defaultRepresentation; }
 
 	void RepresentationLibrary::_init()
 	{
-		Representation_Sticks * stick = MVC::MvcManager::get().instantiateModel<Representation_Sticks>();
+		Generic::REPRESENTATION representationType = Generic::REPRESENTATION::STICK;
+
+		Representation * const stick
+			= MVC::MvcManager::get().instantiateModel<Representation, Generic::REPRESENTATION>( representationType );
 		stick->setName( "Stick" );
-		stick->setStickRadius( 0.15f );
-		stick->setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
+		stick->getData().setCylinderRadius( 0.15f );
+		stick->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
 		stick->setIconPath( ":/sprite/representation_stick_icon.png" );
-		_representations.emplace_back( stick );
+		stick->setQuickAccess( true );
+		addRepresentation( stick, false );
 
-		Representation_VanDerWaals * vdw = MVC::MvcManager::get().instantiateModel<Representation_VanDerWaals>();
+		representationType		   = Generic::REPRESENTATION::VAN_DER_WAALS;
+		Representation * const vdw = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 		vdw->setName( "VdW" );
-		vdw->setColorMode( Generic::COLOR_MODE::CHAIN );
+		vdw->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
+		vdw->getData().setSphereRadius( 0 );
 		vdw->setIconPath( ":/sprite/representation_trace_icon.png" );
-		_representations.emplace_back( vdw );
+		addRepresentation( vdw, false );
 
-		Representation_Sas * sas = MVC::MvcManager::get().instantiateModel<Representation_Sas>();
+		representationType		   = Generic::REPRESENTATION::SAS;
+		Representation * const sas = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 		sas->setName( "SAS" );
-		sas->setColorMode( Generic::COLOR_MODE::CHAIN );
+		sas->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
 		sas->setIconPath( ":/sprite/representation_sas_icon.png" );
-		_representations.emplace_back( sas );
+		sas->setQuickAccess( true );
+		addRepresentation( sas, false );
 
-		Representation_BallsAndSticks * ballsAndsticks
-			= MVC::MvcManager::get().instantiateModel<Representation_BallsAndSticks>();
+		representationType = Generic::REPRESENTATION::BALL_AND_STICK;
+		Representation * const ballsAndsticks
+			= MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 		ballsAndsticks->setName( "Ball And Stick" );
-		ballsAndsticks->setColorMode( Generic::COLOR_MODE::CHAIN );
+		ballsAndsticks->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
 		ballsAndsticks->setIconPath( "" );
-		_representations.emplace_back( ballsAndsticks );
+		addRepresentation( ballsAndsticks, false );
 
-		Representation_Cartoon * cartoon = MVC::MvcManager::get().instantiateModel<Representation_Cartoon>();
+		representationType			   = Generic::REPRESENTATION::CARTOON;
+		Representation * const cartoon = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 		cartoon->setName( "Cartoon" );
-		cartoon->setColorMode( Generic::COLOR_MODE::CHAIN );
+		cartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
 		cartoon->setIconPath( "" );
-		_representations.emplace_back( cartoon );
+		cartoon->setQuickAccess( true );
+		addRepresentation( cartoon, false );
 
-		Representation_StickAndCartoon * stickAndCartoon
-			= MVC::MvcManager::get().instantiateModel<Representation_StickAndCartoon>();
+		representationType = Generic::REPRESENTATION::STICK_AND_CARTOON;
+		Representation * const stickAndCartoon
+			= MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 		stickAndCartoon->setName( "Stick + Cartoon" );
-		stickAndCartoon->setColorMode( Generic::COLOR_MODE::CHAIN );
+		stickAndCartoon->getData().setCylinderRadius( 0.15f );
+		stickAndCartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
 		stickAndCartoon->setIconPath( "" );
-		_representations.emplace_back( stickAndCartoon );
+		addRepresentation( stickAndCartoon, false );
 	}
+
+	void RepresentationLibrary::_onRepresentationChange( const Event::VTXEvent * const p_event )
+	{
+		if ( p_event->name == Event::Model::DATA_CHANGE )
+			_notifyViews( new Event::VTXEvent( Event::Model::SUBITEM_DATA_CHANGE ) );
+		else
+			_notifyViews( new Event::VTXEvent( *p_event ) );
+	}
+
 } // namespace VTX::Model::Representation

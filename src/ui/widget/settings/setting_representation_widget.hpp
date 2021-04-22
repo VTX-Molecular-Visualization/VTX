@@ -6,6 +6,8 @@
 #endif
 
 #include "ui/widget/base_manual_widget.hpp"
+#include "view/ui/widget/representation/representation_library_view.hpp"
+#include <QString>
 #include <QWidget>
 
 namespace VTX::UI::Widget::Settings
@@ -13,6 +15,8 @@ namespace VTX::UI::Widget::Settings
 	class SettingRepresentationWidget : public BaseManualWidget<QWidget>
 	{
 		VTX_WIDGET
+
+		using RepresentationLibraryView = View::UI::Widget::Representation::RepresentationLibraryView;
 
 	  public:
 		void receiveEvent( const Event::VTXEvent & p_event ) override;
@@ -22,6 +26,9 @@ namespace VTX::UI::Widget::Settings
 		SettingRepresentationWidget( QWidget * const );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
+
+	  private:
+		RepresentationLibraryView * _presetLibrary;
 	};
 } // namespace VTX::UI::Widget::Settings
 #endif

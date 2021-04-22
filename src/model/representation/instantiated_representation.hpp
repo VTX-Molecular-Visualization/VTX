@@ -7,6 +7,7 @@
 
 #include "color/rgb.hpp"
 #include "event/base_event_receiver_vtx.hpp"
+#include "event/event.hpp"
 #include "generic/base_objectoverride.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"
@@ -33,15 +34,13 @@ namespace VTX::Model::Representation
 		VTX_MODEL
 
 	  public:
-		static InstantiatedRepresentation * const instantiateCopy( const InstantiatedRepresentation * const p_source );
-
 		virtual void receiveEvent( const Event::VTXEvent & p_event );
 
 		const Generic::BaseRepresentable * const getTarget() const;
 		Generic::BaseRepresentable * const		 getTarget();
 		void									 setTarget( Generic::BaseRepresentable * p_target );
 
-		void setLinkedRepresentation( const BaseRepresentation * const p_linkedRepresentation );
+		void setLinkedRepresentation( const Representation * const p_linkedRepresentation );
 
 		const std::string & getName() const { return _linkedRepresentation->getName(); };
 
@@ -57,33 +56,44 @@ namespace VTX::Model::Representation
 											 const bool										 p_recomputeBuffers = true,
 											 const bool										 p_notify = true );
 
-		const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const
+		VTX::Representation::FlagDataTargeted getFlagDataTargeted() const
 		{
-			return _linkedRepresentation->getFlagDataTargeted();
+			return VTX::Representation::getFlagDataTargeted( _linkedRepresentation->getRepresentationType() );
 		};
 
-		bool			   hasToDrawSphere() const { return _linkedRepresentation->hasToDrawSphere(); };
+		bool			   hasToDrawSphere() const { return _linkedRepresentation->getData().hasToDrawSphere(); };
 		const SphereData & getSphereData() const { return _sphereData.getValue(); };
 		void			   setSphereRadius( const float p_radius, const bool p_notify = true );
 
-		bool				 hasToDrawCylinder() const { return _linkedRepresentation->hasToDrawCylinder(); };
+		bool				 hasToDrawCylinder() const { return _linkedRepresentation->getData().hasToDrawCylinder(); };
 		const CylinderData & getCylinderData() const { return _cylinderData.getValue(); };
 		void				 setCylinderRadius( const float p_radius, const bool p_notify = true );
 
-		bool			   hasToDrawRibbon() const { return _linkedRepresentation->hasToDrawRibbon(); };
+		bool			   hasToDrawRibbon() const { return _linkedRepresentation->getData().hasToDrawRibbon(); };
 		const RibbonData & getRibbonData() const { return _ribbonData.getValue(); };
 
 		void applyData( const InstantiatedRepresentation & p_source,
 						const MEMBER_FLAG &				   p_flag,
-						const bool						   p_recomputeBuffers = true );
+						const bool						   p_recomputeBuffers = true,
+						const bool						   p_notify			  = true );
 
-		const BaseRepresentation * const getLinkedRepresentation() const { return _linkedRepresentation; }
+		const Generic::REPRESENTATION & getRepresentationType() const
+		{
+			return _linkedRepresentation->getRepresentationType();
+		}
+		const Representation * const getLinkedRepresentation() const { return _linkedRepresentation; }
+
+		void		copy( const InstantiatedRepresentation & p_source );
+		MEMBER_FLAG getOverridedMembersFlag() const;
+		bool		isMemberOverrided( const MEMBER_FLAG & p_member ) const;
+		void		refreshSourceValues();
+		void		onLinkedRepresentationChange( const Event::VTXEvent * const p_event );
 
 	  protected:
-		InstantiatedRepresentation( const BaseRepresentation * const p_linkedRepresentation );
-		~InstantiatedRepresentation() {}
+		InstantiatedRepresentation( const Representation * const p_linkedRepresentation );
+		~InstantiatedRepresentation();
 
-		const BaseRepresentation * _linkedRepresentation = nullptr;
+		const Representation * _linkedRepresentation = nullptr;
 
 		Generic::BaseRepresentable * _target = nullptr;
 
@@ -94,6 +104,8 @@ namespace VTX::Model::Representation
 		Generic::OverridableParameter<SphereData>	_sphereData;
 		Generic::OverridableParameter<CylinderData> _cylinderData;
 		Generic::OverridableParameter<RibbonData>	_ribbonData;
+
+		virtual void _onDataChange() {}
 
 		void _updateTarget( const VTX::Representation::MoleculeComputationFlag & p_flag );
 	};

@@ -12,24 +12,26 @@
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"
 #include "ui/widget/custom_widget/integer_field_widget.hpp"
 #include "view/base_view.hpp"
+#include "view/ui/editor_view.hpp"
 #include "view/ui/widget/renderer/render_effect_preset_view.hpp"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QGridLayout>
-#include <QPushButton>
 #include <QScrollArea>
 #include <QSpinBox>
 
 namespace VTX::UI::Widget::Settings
 {
-	class RenderEffectPresetEditor : public VTX::UI::Widget::BaseManualWidget<QScrollArea>
+	class RenderEffectPresetEditor :
+		public VTX::UI::Widget::BaseManualWidget<QScrollArea>,
+		View::UI::EditorView<Model::Renderer::RenderEffectPreset>
 	{
 		VTX_WIDGET
 
 	  private:
-		using IntegerFieldWidget = VTX::UI::Widget::CustomWidget::IntegerFieldWidget;
-		using FloatFieldSliderWidget	 = VTX::UI::Widget::CustomWidget::FloatFieldSliderWidget;
-		using ColorFieldButton	 = VTX::UI::Widget::CustomWidget::ColorFieldButton;
+		using IntegerFieldWidget	 = VTX::UI::Widget::CustomWidget::IntegerFieldWidget;
+		using FloatFieldSliderWidget = VTX::UI::Widget::CustomWidget::FloatFieldSliderWidget;
+		using ColorFieldButton		 = VTX::UI::Widget::CustomWidget::ColorFieldButton;
 
 		inline static const QStringList SHADING = { "Diffuse", "Glossy", "Toon", "Flat Color" };
 
@@ -45,7 +47,8 @@ namespace VTX::UI::Widget::Settings
 
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
-		void _applyPreset() const;
+
+		void _catchModelEvent( const Event::VTXEvent * const p_event ) override;
 
 	  private:
 		int														  _itemCount		 = 0;
@@ -54,36 +57,43 @@ namespace VTX::UI::Widget::Settings
 
 		QGridLayout * _layout = nullptr;
 
+		QLineEdit * _name		 = nullptr;
+		QCheckBox * _quickAccess = nullptr;
+
 		QComboBox * _shading = nullptr;
 
 		QCheckBox *			 _enableSSAO	= nullptr;
 		IntegerFieldWidget * _ssaoIntensity = nullptr;
 		IntegerFieldWidget * _ssaoBlurSize	= nullptr;
 
-		QCheckBox *		   _enableOutline	 = nullptr;
+		QCheckBox *				 _enableOutline	   = nullptr;
 		FloatFieldSliderWidget * _outlineThickness = nullptr;
-		ColorFieldButton * _outlineColor	 = nullptr;
+		ColorFieldButton *		 _outlineColor	   = nullptr;
 
 		QCheckBox * _enableFog = nullptr;
 		// TODO RangeScrollBar
 		// CustomWidget::QRangeScrollBar * const _nearFarRangeFog = nullptr;
-		QSpinBox *		   _nearFog	   = nullptr;
-		QSpinBox *		   _farFog	   = nullptr;
+		QSpinBox *				 _nearFog	 = nullptr;
+		QSpinBox *				 _farFog	 = nullptr;
 		FloatFieldSliderWidget * _fogDensity = nullptr;
-		ColorFieldButton * _fogColor   = nullptr;
+		ColorFieldButton *		 _fogColor	 = nullptr;
 
-		ColorFieldButton * _backgroundColor	 = nullptr;
-		ColorFieldButton * _cameraLightColor = nullptr;
+		ColorFieldButton *		 _backgroundColor  = nullptr;
+		ColorFieldButton *		 _cameraLightColor = nullptr;
 		FloatFieldSliderWidget * _cameraFOV		   = nullptr;
-		QSpinBox *		   _cameraNear		 = nullptr;
-		QSpinBox *		   _cameraFar		 = nullptr;
-		QCheckBox *		   _antialiasing	 = nullptr;
-		QCheckBox *		   _perspective		 = nullptr;
+		QSpinBox *				 _cameraNear	   = nullptr;
+		QSpinBox *				 _cameraFar		   = nullptr;
+		QCheckBox *				 _antialiasing	   = nullptr;
+		QCheckBox *				 _perspective	   = nullptr;
 
+		void _addItem( QWidget * const p_widget );
 		void _addItem( QWidget * const p_widget, const QString & p_label );
-		void _addSpace();
+		void _addSpace( const int p_space = 10 );
 
 		void _fillShaderComboBox();
+
+		void _onNameChanged();
+		void _onQuickAccessChanged( const bool p_quickAccess );
 
 		void _onShadingChange( const int p_newIndex );
 

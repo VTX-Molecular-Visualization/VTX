@@ -9,15 +9,15 @@
 #include "ui//widget/custom_widget/qt_multi_data_field.hpp"
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
-#include "ui/widget/inspector/inspector_item_widget.hpp"
 #include "ui/widget/inspector/inspector_section.hpp"
+#include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include "view/base_view.hpp"
 #include <QWidget>
 #include <unordered_set>
 
 namespace VTX::UI::Widget::Inspector
 {
-	class MultipleAtomWidget : public InspectorItemWidget
+	class MultipleAtomWidget : public MultipleModelInspectorWidget<Model::Atom>
 	{
 		VTX_WIDGET
 
@@ -25,11 +25,6 @@ namespace VTX::UI::Widget::Inspector
 		~MultipleAtomWidget();
 
 		void localize() override;
-		void refresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
-
-		void clearTargets();
-		void addTarget( Model::Atom * const p_target, const bool p_refresh = true );
-		void removeTarget( Model::Atom * const p_target, const bool p_refresh = true );
 
 	  protected:
 		MultipleAtomWidget( QWidget * p_parent = nullptr );
@@ -37,9 +32,9 @@ namespace VTX::UI::Widget::Inspector
 		void		 _setupUi( const QString & p_name ) override;
 		virtual void _setupSlots() override;
 
-	  private:
-		std::unordered_set<Model::Atom *> _targets = std::unordered_set<Model::Atom *>();
+		void _endOfFrameRefresh( const SectionFlag & p_flag = SectionFlag ::ALL ) override;
 
+	  private:
 		InspectorSectionVLayout *		 _infoSection	= nullptr;
 		CustomWidget::QLabelMultiField * _fullnameLabel = nullptr;
 

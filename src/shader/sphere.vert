@@ -9,8 +9,8 @@
 layout( location = ATOM_POSITION ) in vec3 aSpherePos;
 layout( location = ATOM_COLOR ) in vec3 aSphereColor;
 layout( location = ATOM_RADIUS ) in float aSphereRad;
-layout( location = ATOM_VISIBILITY ) in unsigned short aSphereVis;
-layout( location = ATOM_SELECTION ) in unsigned short aSphereSel;
+layout( location = ATOM_VISIBILITY ) in uint aSphereVis;
+layout( location = ATOM_SELECTION ) in uint aSphereSel;
 
 uniform mat4  u_MVMatrix;
 uniform mat4  u_projMatrix;
@@ -21,8 +21,8 @@ uniform bool  u_isRadiusFixed = false;
 flat out vec3			vViewSpherePos; // Sphere position in view space.
 flat out vec3			vSphereColor;
 flat out float			vSphereRad;
-flat out unsigned short vSphereVis;
-flat out unsigned short vSphereSel;
+flat out uint vSphereVis;
+flat out uint vSphereSel;
 flat out vec3			vImpU; // Impostor vectors.
 flat out vec3			vImpV;
 flat out float			vDotViewSpherePos;

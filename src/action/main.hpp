@@ -98,12 +98,21 @@ namespace VTX::Action::Main
 	  public:
 		explicit Save( FilePath * p_path ) : _path( p_path ) {}
 
-		virtual void execute() override
-		{
-			Worker::Saver * saver = new Worker::Saver( _path );
-			VTX_WORKER( saver );
-			delete saver;
-		}
+				virtual void execute() override
+				{
+					Worker::Saver * saver = nullptr;
+					if ( _path->empty() == false )
+					{
+						saver = new Worker::Saver( _path );
+					}
+					if ( saver == nullptr )
+					{
+						return;
+					}
+
+					VTX_WORKER( saver );
+					delete saver;
+				}
 
 	  private:
 		FilePath * _path;

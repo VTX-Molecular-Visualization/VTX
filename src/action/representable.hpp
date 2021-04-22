@@ -22,14 +22,14 @@ namespace VTX::Action
 	class RepresentableSetRepresentation : public BaseAction
 	{
 	  public:
-		explicit RepresentableSetRepresentation( Generic::BaseRepresentable &					   p_representable,
-												 Model::Representation::BaseRepresentation * const p_representation ) :
+		explicit RepresentableSetRepresentation( Generic::BaseRepresentable &				   p_representable,
+												 Model::Representation::Representation * const p_representation ) :
 			_representable( &p_representable ),
 			_representation( p_representation )
 		{
 		}
-		explicit RepresentableSetRepresentation( const Model::Selection * const				 p_selection,
-												 Model::Representation::BaseRepresentation * p_representation ) :
+		explicit RepresentableSetRepresentation( const Model::Selection * const			 p_selection,
+												 Model::Representation::Representation * p_representation ) :
 			_selection( p_selection ),
 			_representation( p_representation )
 		{
@@ -39,7 +39,7 @@ namespace VTX::Action
 		{
 			if ( _selection != nullptr )
 			{
-				Representation::RepresentationManager::get().instantiateRepresentation( _representation, *_selection );
+				Representation::RepresentationManager::get().instantiateRepresentations( _representation, *_selection );
 			}
 			else
 			{
@@ -54,7 +54,7 @@ namespace VTX::Action
 		const Model::Selection * const	   _selection	  = nullptr;
 		Generic::BaseRepresentable * const _representable = nullptr;
 
-		Model::Representation::BaseRepresentation * const _representation;
+		Model::Representation::Representation * const _representation;
 	};
 	class RepresentableRemoveRepresentation : public BaseAction
 	{

@@ -23,7 +23,7 @@ namespace VTX::UI::Widget::Representation
 {
 	class BaseRepresentationWidget :
 		public VTX::UI::Widget::BaseManualWidget<QWidget>,
-		public TMultiDataField<Model::Representation::InstantiatedRepresentation>
+		public TMultiDataField<const Model::Representation::InstantiatedRepresentation>
 	{
 		Q_OBJECT
 		VTX_WIDGET
@@ -31,15 +31,13 @@ namespace VTX::UI::Widget::Representation
 	  public:
 		using InstantiatedRepresentation	 = Model::Representation::InstantiatedRepresentation;
 		using InstantiatedRepresentationView = View::UI::Widget::Representation::InstantiatedRepresentationView;
+		using MEMBER_FLAG					 = Model::Representation::MEMBER_FLAG;
 
-		~BaseRepresentationWidget();
 		void refresh();
 
 		void setRepresentation( InstantiatedRepresentation * const p_representation );
-		void notifyInstantiatedRepresentationViewDeleted();
 
 		// MultiDataField Implementation //////////////////////////////
-		// TODO : Remove => BaseRepresentationWidget is virtual and children override this function
 		virtual void updateWithNewValue( const Model::Representation::InstantiatedRepresentation & p_value ) override;
 		void		 resetState() override;
 		//////////////////////////////////////////////////////////////
@@ -70,10 +68,10 @@ namespace VTX::UI::Widget::Representation
 		void _addColorModeInLayout( const QString & p_label );
 		void _addSSColorModeInLayout( const QString & p_label );
 
-		void _setSphereValue( const float p_value );
-		void _addSphereValue( const float p_value );
-		void _setCylinderValue( const float p_value );
-		void _addCylinderValue( const float p_value );
+		void _setSphereValue( const float p_value, const bool p_overrided );
+		void _addSphereValue( const float p_value, const bool p_overrided );
+		void _setCylinderValue( const float p_value, const bool p_overrided );
+		void _addCylinderValue( const float p_value, const bool p_overrided );
 
 		void _refreshColorModeWidget();
 		void _refreshSSColorModeWidget();
@@ -94,9 +92,12 @@ namespace VTX::UI::Widget::Representation
 		CustomWidget::ColorModeFieldWidget *				   _colorModeWidget	  = nullptr;
 		CustomWidget::SecondaryStructureColorModeFieldWidget * _ssColorModeWidget = nullptr;
 
-	  private:
-		View::UI::Widget::Representation::InstantiatedRepresentationView * _representationView = nullptr;
+		QLabel * _sphereLabel	   = nullptr;
+		QLabel * _cylinderLabel	   = nullptr;
+		QLabel * _colorModeLabel   = nullptr;
+		QLabel * _ssColorModeLabel = nullptr;
 
+	  private:
 		QGridLayout *										   _layout = nullptr;
 		std::unordered_set<const Generic::BaseRepresentable *> _targets
 			= std::unordered_set<const Generic::BaseRepresentable *>();

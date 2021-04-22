@@ -6,6 +6,7 @@
 #endif
 
 #include "color/rgb.hpp"
+#include "event/event.hpp"
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"
 #include "model/representation/instantiated_representation.hpp"
@@ -15,6 +16,7 @@
 #include "ui/widget/representation/ball_stick_and_cartoon_representation_widget.hpp"
 #include "ui/widget/representation/base_representation_widget.hpp"
 #include "ui/widget/representation/cartoon_representation_widget.hpp"
+#include "ui/widget/representation/representation_library_combo_box.hpp"
 #include "ui/widget/representation/sas_representation_widget.hpp"
 #include "ui/widget/representation/stick_and_cartoon_representation_widget.hpp"
 #include "ui/widget/representation/stick_representation_widget.hpp"
@@ -33,7 +35,7 @@ namespace VTX::UI::Widget::Representation
 {
 	class RepresentationInspectorSection :
 		public BaseManualWidget<QWidget>,
-		TMultiDataField<Model::Representation::InstantiatedRepresentation>
+		public TMultiDataField<const Model::Representation::InstantiatedRepresentation>
 	{
 		Q_OBJECT
 		VTX_WIDGET
@@ -52,12 +54,17 @@ namespace VTX::UI::Widget::Representation
 
 	  public:
 		void localize() override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
 		void refresh();
 
 		void resetState() override;
+		void resetState( const bool p_deleteViews, const bool p_deleteDataWidget );
+
 		void updateWithNewValue( const InstantiatedRepresentation & p_representation ) override;
+		void updateWithNewValue( const InstantiatedRepresentation & p_representation, const bool p_instantiateViews );
 
 		void setActionButtonVisibility( const ActionButtons & p_buttons );
+		void setDirty();
 
 	  signals:
 		void onRepresentationPresetChange( const int p_presetIndex );
@@ -81,14 +88,18 @@ namespace VTX::UI::Widget::Representation
 	  private:
 		CustomWidget::QPushButtonMultiField * _titleWidget				   = nullptr;
 		QWidget *							  _representationWidget		   = nullptr;
-		CustomWidget::QComboBoxMultiField *	  _representationPreset		   = nullptr;
+		RepresentationLibraryComboBox *		  _representationPreset		   = nullptr;
 		QVBoxLayout *						  _settingLayout			   = nullptr;
 		BaseRepresentationWidget *			  _representationSettingWidget = nullptr;
 		QPushButton *						  _applyToChildrenButton	   = nullptr;
 		QPushButton *						  _revertButton				   = nullptr;
 
+		std::unordered_set<const InstantiatedRepresentation *> _representations
+			= std::unordered_set<const InstantiatedRepresentation *>();
+
 		Model::Representation::InstantiatedRepresentation * _dummyRepresentation;
 		int													_baseRepresentationIndex = -1;
+		bool												_isDirty				 = false;
 
 		void _instantiateRepresentationSettingWidget( const Generic::REPRESENTATION & p_representation );
 		void _deleteRepresentationSettingWidget();
@@ -100,7 +111,10 @@ namespace VTX::UI::Widget::Representation
 		void _revertRepresentation();
 		void _applyRepresentationToChildren();
 
-		void _populateRepresentationModeComboBox();
+		void _onTargetedRepresentationChange( const Event::VTXEvent * const p_event );
+		void _recomputeUi();
+
+		void _onDummyChange( const Event::VTXEvent * const p_event );
 	};
 
 } // namespace VTX::UI::Widget::Representation

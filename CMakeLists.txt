@@ -126,7 +126,7 @@ set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form")
+set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form" "src/extensions/keyword_editor/forms/")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set link directories.

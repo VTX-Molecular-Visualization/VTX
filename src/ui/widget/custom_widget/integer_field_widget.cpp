@@ -83,11 +83,33 @@ namespace VTX::UI::Widget::CustomWidget
 		_value = Util::Math::clamp( _value, p_min, p_max );
 		_refresh();
 	};
+	void IntegerFieldWidget::setSingleStep( const int p_step ) { _slider->setSingleStep( p_step ); }
+	void IntegerFieldWidget::setPageStep( const int p_step ) { _slider->setPageStep( p_step ); }
+
 	void IntegerFieldWidget::setEnabled( const bool p_enable )
 	{
 		QWidget::setEnabled( p_enable );
 		_slider->setEnabled( p_enable );
 		_textField->setEnabled( p_enable );
+	}
+
+	void IntegerFieldWidget::resetState()
+	{
+		TMultiDataFieldEquatable::resetState();
+		_refresh();
+	}
+	void IntegerFieldWidget::_setSingleValue( const int & p_value )
+	{
+		const bool oldBlockState = blockSignals( true );
+		setValue( p_value );
+		blockSignals( oldBlockState );
+	}
+
+	void IntegerFieldWidget::_displayDifferentsDataFeedback()
+	{
+		_textFieldValidator->blockSignals( true );
+		_textField->setText( "-" );
+		_textFieldValidator->blockSignals( false );
 	}
 
 } // namespace VTX::UI::Widget::CustomWidget

@@ -34,9 +34,9 @@ namespace VTX::Buffer
 		// Control point secondary structure.
 		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
 		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, _vboSecondaryStructures, 0, sizeof( ushort ) );
+			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, _vboSecondaryStructures, 0, sizeof( uint ) );
 		gl()->glVertexArrayAttribIFormat(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, GL_UNSIGNED_SHORT, 0 );
+			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, GL_UNSIGNED_INT, 0 );
 		gl()->glVertexArrayAttribBinding( _vao,
 										  ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE,
 										  ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
@@ -52,8 +52,8 @@ namespace VTX::Buffer
 		// Control point selection.
 		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
 		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, _vboSelections, 0, sizeof( ushort ) );
-		gl()->glVertexArrayAttribIFormat( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, 1, GL_UNSIGNED_SHORT, 0 );
+			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, _vboSelections, 0, sizeof( uint ) );
+		gl()->glVertexArrayAttribIFormat( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, 1, GL_UNSIGNED_INT, 0 );
 		gl()->glVertexArrayAttribBinding(
 			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
 	}
@@ -112,10 +112,10 @@ namespace VTX::Buffer
 			_vboDirections, GLsizei( p_directions.size() ) * sizeof( Vec3f ), p_directions.data(), GL_STATIC_DRAW );
 	}
 
-	void SecondaryStructure::setControlPointSecondaryStructure( const std::vector<ushort> & p_ss )
+	void SecondaryStructure::setControlPointSecondaryStructure( const std::vector<uint> & p_ss )
 	{
 		gl()->glNamedBufferData(
-			_vboSecondaryStructures, GLsizei( p_ss.size() ) * sizeof( ushort ), p_ss.data(), GL_STATIC_DRAW );
+			_vboSecondaryStructures, GLsizei( p_ss.size() ) * sizeof( uint ), p_ss.data(), GL_STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setControlPointColors( const std::vector<Color::Rgb> & p_colors )
@@ -124,10 +124,10 @@ namespace VTX::Buffer
 			_vboColors, GLsizei( p_colors.size() ) * sizeof( Color::Rgb ), p_colors.data(), GL_STATIC_DRAW );
 	}
 
-	void SecondaryStructure::setControlPointSelections( const std::vector<ushort> & p_selections )
+	void SecondaryStructure::setControlPointSelections( const std::vector<uint> & p_selections )
 	{
 		gl()->glNamedBufferData(
-			_vboSelections, GLsizei( p_selections.size() ) * sizeof( ushort ), p_selections.data(), GL_STATIC_DRAW );
+			_vboSelections, GLsizei( p_selections.size() ) * sizeof( uint ), p_selections.data(), GL_STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setIndices( const std::vector<uint> & p_indices )

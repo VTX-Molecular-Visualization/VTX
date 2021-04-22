@@ -91,6 +91,12 @@ namespace VTX
 			}
 			bool isOverrided() const { return _override != nullptr; }
 
+			void resetSource( const T * const p_sourceValue )
+			{
+				_source	  = p_sourceValue;
+				_override = nullptr;
+			}
+
 			OverridableParameter<T> & operator=( const OverridableParameter<T> & p_source )
 			{
 				_source	  = p_source._source;

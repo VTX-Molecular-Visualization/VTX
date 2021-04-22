@@ -9,6 +9,7 @@
 #include "io/reader/setting.hpp"
 #include "io/writer/setting.hpp"
 #include "model/molecule.hpp"
+#include "model/representation/representation_library.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
 #include "renderer/gl/gl.hpp"
@@ -127,9 +128,7 @@ namespace VTX
 
 				virtual void execute() override
 				{
-					VTX_SETTING().representation = _representationIndex;
-
-					VTX::Representation::RepresentationManager::get().setDefaultRepresentationIndex(
+					VTX::Model::Representation::RepresentationLibrary::get().setDefaultRepresentation(
 						_representationIndex );
 
 					for ( const Object3D::Scene::PairMoleculePtrFloat & pair : VTXApp::get().getScene().getMolecules() )

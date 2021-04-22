@@ -12,7 +12,10 @@
 
 namespace VTX::UI::Widget::MainMenu::Visualization
 {
-	MenuVisualizationRenderEffectsWidget::MenuVisualizationRenderEffectsWidget( QWidget * p_parent ) :
+	MenuVisualizationRenderEffectsWidget::MenuVisualizationRenderEffectsWidget(
+		Model::Renderer::RenderEffectPresetLibrary * const _renderEffectLibrary,
+		QWidget *										   p_parent ) :
+		View::BaseView<Model::Renderer::RenderEffectPresetLibrary>( _renderEffectLibrary ),
 		MenuToolBlockWidget( p_parent )
 	{
 		_registerEvent( Event::Global::MAIN_WINDOW_MODE_CHANGE );
@@ -30,13 +33,46 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	void MenuVisualizationRenderEffectsWidget::_setupUi( const QString & p_name )
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
+		_instantiateUI();
+	}
+	void MenuVisualizationRenderEffectsWidget::_setupSlots()
+	{
+		_createPreset->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_openPresetSettings );
+		_takeSnapshot->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_takeSnapshotAction );
+		_fullscreen->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_toggleWindowState );
+	}
+	void MenuVisualizationRenderEffectsWidget::localize() { setTitle( "Render Effects" ); }
 
+	void MenuVisualizationRenderEffectsWidget::notify( const Event::VTXEvent * const p_event )
+	{
+		if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE || p_event->name == Event::Model::QUICK_ACCESS_CHANGE
+			 || p_event->name == Event::Model::DATA_CHANGE )
+		{
+			_refreshView();
+		}
+	}
+
+	void MenuVisualizationRenderEffectsWidget::_refreshView()
+	{
+		reset();
+
+		_instantiateUI();
+		_setupSlots();
+		localize();
+	}
+
+	void MenuVisualizationRenderEffectsWidget::_instantiateUI()
+	{
 		_presetButtons.clear();
 
+		int quickAccessRepresentationCount = 0;
 		for ( int i = 0; i < Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount(); i++ )
 		{
 			const Model::Renderer::RenderEffectPreset * const renderEffectPreset
 				= Model::Renderer::RenderEffectPresetLibrary::get().getPreset( i );
+
+			if ( !renderEffectPreset->hasQuickAccess() )
+				continue;
 
 			RenderEffectPresetButton * const button = WidgetFactory::get().instantiateWidget<RenderEffectPresetButton>(
 				this, "applyRenderEffectPresetButton" );
@@ -45,9 +81,14 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			button->setData( QString::fromStdString( renderEffectPreset->getName() ),
 							 QString::fromStdString( renderEffectPreset->getIconPath() ),
 							 Qt::Orientation::Horizontal );
-			pushButton( *button, i / 3 );
+			pushButton( *button, quickAccessRepresentationCount / MAX_ROW_COUNT );
 			_presetButtons.emplace_back( button );
+
+			quickAccessRepresentationCount++;
 		}
+
+		for ( int i = 0; i < getColumnCount(); i++ )
+			setRowCountInColumn( i, MAX_ROW_COUNT );
 
 		// Add Preset
 		_createPreset
@@ -67,13 +108,6 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		validate();
 	}
-	void MenuVisualizationRenderEffectsWidget::_setupSlots()
-	{
-		_createPreset->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_openPresetSettings );
-		_takeSnapshot->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_takeSnapshotAction );
-		_fullscreen->setTriggerAction( this, &MenuVisualizationRenderEffectsWidget::_toggleWindowState );
-	}
-	void MenuVisualizationRenderEffectsWidget::localize() { setTitle( "Render Effects" ); }
 
 	void MenuVisualizationRenderEffectsWidget::_updateFullscreenButton( const WindowMode & p_mode )
 	{

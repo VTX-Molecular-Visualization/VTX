@@ -16,6 +16,7 @@
 #include "model/selection.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "object3d/scene.hpp"
+#include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
@@ -118,25 +119,10 @@ namespace VTX::Action::Residue
 
 		virtual void execute() override
 		{
-			Model::Representation::BaseRepresentation * const preset
+			Model::Representation::Representation * const preset
 				= Model::Representation::RepresentationLibrary::get().getRepresentation( _indexPreset );
 
-			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
-
-			for ( Model::Residue * const residue : _residues )
-			{
-				Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation
-					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>(
-						preset );
-
-				residue->applyRepresentation( instantiatedRepresentation, false );
-
-				molecules.emplace( residue->getMolecule() );
-			}
-
-			for ( Model::Molecule * const molecule : molecules )
-				molecule->computeAllRepresentationData();
-
+			Representation::RepresentationManager::get().instantiateRepresentations( preset, _residues );
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
@@ -157,19 +143,7 @@ namespace VTX::Action::Residue
 
 		virtual void execute() override
 		{
-			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
-
-			for ( Model::Residue * const residue : _residues )
-			{
-				residue->removeRepresentation();
-				molecules.emplace( residue->getMolecule() );
-			}
-
-			for ( Model::Molecule * const molecule : molecules )
-			{
-				molecule->computeAllRepresentationData();
-			}
-
+			Representation::RepresentationManager::get().removeInstantiatedRepresentations( _residues );
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
@@ -286,32 +260,7 @@ namespace VTX::Action::Residue
 
 		virtual void execute() override
 		{
-			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
-
-			for ( Model::Residue * const residue : _residues )
-			{
-				Model::Representation::InstantiatedRepresentation * residueRepresentation;
-
-				if ( residue->hasCustomRepresentation() )
-				{
-					residueRepresentation = residue->getCustomRepresentation();
-				}
-				else
-				{
-					residueRepresentation = Model::Representation::InstantiatedRepresentation::instantiateCopy(
-						residue->getRepresentation() );
-
-					// Compute molecules at end
-					residue->applyRepresentation( residueRepresentation, false );
-				}
-
-				residueRepresentation->applyData( _representation, _flag, false );
-				molecules.emplace( residue->getMolecule() );
-			}
-
-			for ( Model::Molecule * const molecule : molecules )
-				molecule->computeAllRepresentationData();
-
+			Representation::RepresentationManager::get().applyRepresentation( _residues, _representation, _flag );
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 

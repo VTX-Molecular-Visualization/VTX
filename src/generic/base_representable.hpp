@@ -35,10 +35,10 @@ namespace VTX
 			InstantiatedRepresentation * const		 getCustomRepresentation();
 			void setRepresentation( InstantiatedRepresentation * const p_representation );
 			void applyRepresentation( InstantiatedRepresentation * const p_representation,
-									  const bool						 p_recompute = true );
-			void applyDefaultRepresentation();
+									  const bool						 p_recompute = true,
+									  const bool						 p_notify	 = true );
 
-			void removeRepresentation();
+			void removeRepresentation( const bool p_notify = true );
 
 			bool hasCustomRepresentation() const;
 
@@ -46,6 +46,7 @@ namespace VTX
 			{
 				return _representationTargets;
 			}
+			bool hasParent();
 			void setParent( BaseRepresentable * p_parent );
 
 			void computeAllRepresentationData();
@@ -69,7 +70,8 @@ namespace VTX
 			};
 
 			Model::Molecule * const getMolecule() const { return _molecule; };
-			void setRepresentableMolecule( Model::Molecule * const p_molecule ) { _molecule = p_molecule; };
+			void		 setRepresentableMolecule( Model::Molecule * const p_molecule ) { _molecule = p_molecule; };
+			virtual void _onRepresentationChange() {};
 
 		  protected:
 			InstantiatedRepresentation * _representation = nullptr;

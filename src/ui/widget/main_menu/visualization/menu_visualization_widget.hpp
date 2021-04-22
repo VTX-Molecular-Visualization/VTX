@@ -14,40 +14,28 @@
 #include "ui/widget/main_menu/menu_tooltab_widget.hpp"
 #include <QWidget>
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu::Visualization
 {
-	namespace UI
+	class MenuVisualizationWidget : public MenuTooltabWidget
 	{
-		namespace Widget
-		{
-			namespace MainMenu
-			{
-				namespace Visualization
-				{
-					class MenuVisualizationWidget : public MenuTooltabWidget
-					{
-						VTX_WIDGET
+		VTX_WIDGET
 
-					  public:
-						~MenuVisualizationWidget();
-						void localize() override;
+	  public:
+		~MenuVisualizationWidget();
+		void localize() override;
 
-					  protected:
-						MenuVisualizationWidget( QWidget * p_parent = nullptr );
-						void _setupUi( const QString & p_name ) override;
-						void _setupSlots() override;
+	  protected:
+		MenuVisualizationWidget( QWidget * p_parent = nullptr );
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 
-					  private:
-						MenuVisualizationCameraActionWidget *	 _cameraAction	  = nullptr;
-						MenuVisualizationRepresentationWidget *	 _representation  = nullptr;
-						MenuVisualizationObjectDisplayWidget *	 _objectDisplay	  = nullptr;
-						MenuVisualizationRenderEffectsWidget *	 _renderEffects	  = nullptr;
-						MenuVisualizationSelectionActionWidget * _selectionAction = nullptr;
-						MenuVisualizationWindowsWidget *		 _windows		  = nullptr;
-					};
-				} // namespace Visualization
-			}	  // namespace MainMenu
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+	  private:
+		MenuVisualizationCameraActionWidget *	 _cameraAction	  = nullptr;
+		MenuVisualizationRepresentationWidget *	 _representation  = nullptr;
+		MenuVisualizationObjectDisplayWidget *	 _objectDisplay	  = nullptr;
+		MenuVisualizationRenderEffectsWidget *	 _renderEffects	  = nullptr;
+		MenuVisualizationSelectionActionWidget * _selectionAction = nullptr;
+		MenuVisualizationWindowsWidget *		 _windows		  = nullptr;
+	};
+} // namespace VTX::UI::Widget::MainMenu::Visualization
 #endif

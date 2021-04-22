@@ -1,6 +1,8 @@
 #include "setting.hpp"
 #include "io/serializer.hpp"
+#include "model/representation/representation_enum.hpp"
 #include "renderer/base_renderer.hpp"
+#include "trajectory/trajectory_enum.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -25,45 +27,51 @@ namespace VTX
 	const QString Setting::OPEN_FILE_FILTERS	 = "VTX file (*.vtx, *.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm)";
 
 	// Rendering.
-	const bool				  Setting::ACTIVE_RENDERER_DEFAULT		= true;
-	const bool				  Setting::FORCE_RENDERER_DEFAULT		= false;
-	const Color::Rgb		  Setting::BACKGROUND_COLOR_DEFAULT		= Color::Rgb::BLACK;
-	const int				  Setting::REPRESENTATION_DEFAULT_INDEX = 0;
-	const float				  Setting::ATOMS_RADIUS_DEFAULT			= 0.4f;
-	const float				  Setting::ATOMS_RADIUS_MIN				= 0.01f;
-	const float				  Setting::ATOMS_RADIUS_MAX				= 1.f;
-	const float				  Setting::BONDS_RADIUS_DEFAULT			= 0.15f;
-	const float				  Setting::BONDS_RADIUS_MIN				= 0.01f;
-	const float				  Setting::BONDS_RADIUS_MAX				= 1.f;
-	const float				  Setting::ATOMS_RADIUS_ADD_DEFAULT		= 0.f;
-	const float				  Setting::ATOMS_RADIUS_ADD_MIN			= -1.f;
-	const float				  Setting::ATOMS_RADIUS_ADD_MAX			= 1.f;
-	const Generic::COLOR_MODE Setting::COLOR_MODE_DEFAULT			= Generic::COLOR_MODE::CHAIN;
-	const Renderer::SHADING	  Setting::SHADING_DEFAULT				= Renderer::SHADING::DIFFUSE;
-	const bool				  Setting::ACTIVE_VSYNC_DEFAULT			= false;
-	const bool				  Setting::ACTIVE_AO_DEFAULT			= true;
-	const int				  Setting::AO_INTENSITY_DEFAULT			= 5;
-	const int				  Setting::AO_INTENSITY_MIN				= 1;
-	const int				  Setting::AO_INTENSITY_MAX				= 20;
-	const int				  Setting::AO_BLUR_SIZE_DEFAULT			= 17;
-	const int				  Setting::AO_BLUR_SIZE_MIN				= 1;
-	const int				  Setting::AO_BLUR_SIZE_MAX				= 99;
-	const bool				  Setting::ACTIVE_OUTLINE_DEFAULT		= false;
-	const float				  Setting::OUTLINE_THICKNESS_DEFAULT	= 1.0f;
-	const float				  Setting::OUTLINE_THICKNESS_MIN		= 0.1f;
-	const float				  Setting::OUTLINE_THICKNESS_MAX		= 10.0f;
-	const Color::Rgb		  Setting::OUTLINE_COLOR_DEFAULT		= Color::Rgb::WHITE;
-	const bool				  Setting::ACTIVE_FOG_DEFAULT			= false;
-	const float				  Setting::FOG_NEAR_DEFAULT				= 400.f;
-	const float				  Setting::FOG_NEAR_MIN					= 0.f;
-	const float				  Setting::FOG_NEAR_MAX					= 1000.f;
-	const float				  Setting::FOG_FAR_DEFAULT				= 600.f;
-	const float				  Setting::FOG_FAR_MIN					= 0.f;
-	const float				  Setting::FOG_FAR_MAX					= 1000.f;
-	const float				  Setting::FOG_DENSITY_DEFAULT			= 0.8f;
-	const Color::Rgb		  Setting::FOG_COLOR_DEFAULT			= Color::Rgb::WHITE;
-	const bool				  Setting::ACTIVE_AA_DEFAULT			= true;
-	const Color::Rgb		  Setting::LIGHT_COLOR_DEFAULT			= Color::Rgb::WHITE;
+	const bool					  Setting::ACTIVE_RENDERER_DEFAULT		   = true;
+	const bool					  Setting::FORCE_RENDERER_DEFAULT		   = false;
+	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT		   = Color::Rgb::BLACK;
+	const int					  Setting::REPRESENTATION_DEFAULT_INDEX	   = 0;
+	const Generic::REPRESENTATION Setting::DEFAULT_REPRESENTATION_TYPE	   = Generic::REPRESENTATION::STICK;
+	const std::string			  Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
+	const float					  Setting::ATOMS_RADIUS_DEFAULT			   = 0.4f;
+	const float					  Setting::ATOMS_RADIUS_MIN				   = 0.01f;
+	const float					  Setting::ATOMS_RADIUS_MAX				   = 1.f;
+	const float					  Setting::BONDS_RADIUS_DEFAULT			   = 0.15f;
+	const float					  Setting::BONDS_RADIUS_MIN				   = 0.01f;
+	const float					  Setting::BONDS_RADIUS_MAX				   = 1.f;
+	const float					  Setting::ATOMS_RADIUS_ADD_DEFAULT		   = 0.f;
+	const float					  Setting::ATOMS_RADIUS_ADD_MIN			   = -1.f;
+	const float					  Setting::ATOMS_RADIUS_ADD_MAX			   = 1.f;
+	const Generic::COLOR_MODE	  Setting::COLOR_MODE_DEFAULT			   = Generic::COLOR_MODE::CHAIN;
+
+	const std::string Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME = "New render preset";
+	const int		  Setting::RENDER_EFFECT_DEFAULT_INDEX			 = 0;
+
+	const Renderer::SHADING Setting::SHADING_DEFAULT		   = Renderer::SHADING::DIFFUSE;
+	const bool				Setting::ACTIVE_VSYNC_DEFAULT	   = false;
+	const bool				Setting::ACTIVE_AO_DEFAULT		   = true;
+	const int				Setting::AO_INTENSITY_DEFAULT	   = 5;
+	const int				Setting::AO_INTENSITY_MIN		   = 1;
+	const int				Setting::AO_INTENSITY_MAX		   = 20;
+	const int				Setting::AO_BLUR_SIZE_DEFAULT	   = 17;
+	const int				Setting::AO_BLUR_SIZE_MIN		   = 1;
+	const int				Setting::AO_BLUR_SIZE_MAX		   = 99;
+	const bool				Setting::ACTIVE_OUTLINE_DEFAULT	   = false;
+	const float				Setting::OUTLINE_THICKNESS_DEFAULT = 1.0f;
+	const float				Setting::OUTLINE_THICKNESS_MIN	   = 0.1f;
+	const float				Setting::OUTLINE_THICKNESS_MAX	   = 10.0f;
+	const Color::Rgb		Setting::OUTLINE_COLOR_DEFAULT	   = Color::Rgb::WHITE;
+	const bool				Setting::ACTIVE_FOG_DEFAULT		   = false;
+	const float				Setting::FOG_NEAR_DEFAULT		   = 400.f;
+	const float				Setting::FOG_NEAR_MIN			   = 0.f;
+	const float				Setting::FOG_NEAR_MAX			   = 1000.f;
+	const float				Setting::FOG_FAR_DEFAULT		   = 600.f;
+	const float				Setting::FOG_FAR_MIN			   = 0.f;
+	const float				Setting::FOG_FAR_MAX			   = 1000.f;
+	const float				Setting::FOG_DENSITY_DEFAULT	   = 0.8f;
+	const Color::Rgb		Setting::FOG_COLOR_DEFAULT		   = Color::Rgb::WHITE;
+	const bool				Setting::ACTIVE_AA_DEFAULT		   = true;
+	const Color::Rgb		Setting::LIGHT_COLOR_DEFAULT	   = Color::Rgb::WHITE;
 
 	// Camera.
 	const float Setting::CAMERA_NEAR_DEFAULT		= 0.f;
@@ -93,6 +101,12 @@ namespace VTX
 
 	// Molecule
 	const float Setting::COPIED_MOLECULE_OFFSET = 5.0f;
+
+	// Trajectory
+	const int				   Setting::MIN_TRAJECTORY_SPEED		 = 1;
+	const int				   Setting::MAX_TRAJECTORY_SPEED		 = 60;
+	const int				   Setting::DEFAULT_TRAJECTORY_SPEED	 = 5;
+	const Trajectory::PlayMode Setting::DEFAULT_TRAJECTORY_PLAY_MODE = Trajectory::PlayMode::Loop;
 
 	// Auto rotate.
 	const float Setting::AUTO_ROTATE_SPEED_DEFAULT = 0.0f;

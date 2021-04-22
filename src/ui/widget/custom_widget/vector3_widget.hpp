@@ -17,7 +17,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class Vector3Widget : public BaseManualWidget<QWidget>, public TMultiDataField<Vec3f>
+	class Vector3Widget : public BaseManualWidget<QWidget>, public TMultiDataField<const Vec3f>
 	{
 		VTX_WIDGET
 		Q_OBJECT
@@ -45,7 +45,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void onValueChange( const Vec3f & value );
 
 	  protected:
-		Vector3Widget( QWidget * p_parent ) : BaseManualWidget( p_parent ), TMultiDataField<Vec3f>() {};
+		Vector3Widget( QWidget * p_parent ) : BaseManualWidget( p_parent ), TMultiDataField<const Vec3f>() {};
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;

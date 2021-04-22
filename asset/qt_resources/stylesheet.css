@@ -1,7 +1,13 @@
 /* For all widgets */
 QWidget
 {
-	/*border: 1px solid white*/ /*Debug*/
+	/*Debug*/
+	/*border: 1px solid white*/ 
+}
+
+QWidget:disabled
+{
+	color: #808080;
 }
 
 /* Window resize area */
@@ -34,7 +40,6 @@ QDockWidget::close-button, QDockWidget::float-button
 	border: none;
 }
 
-
 QTabWidget::pane
 {
 	border-left: 0px;
@@ -42,6 +47,7 @@ QTabWidget::pane
 	
 	padding-top: 0px;
 }
+
 QTabBar::tab
 {
 	background: black;
@@ -56,7 +62,7 @@ QTabBar::tab:selected, QTabBar::tab:hover
 }
 QTabBar::tab:selected
 {
-	background: #222222; /* same as the pane color */
+	background: #222222; /*same as the pane color*/
 }
 
 
@@ -134,6 +140,10 @@ QLabel#inspector_item_section_header_icon
 	background-color: #79C0FE;
 }
 
+QLabel[OVERIDDEN_PARAMETER="true"]
+{
+	font : bold;
+}
 
 QScrollBar#SequenceScrollbar:horizontal {
     border: 2px solid grey;

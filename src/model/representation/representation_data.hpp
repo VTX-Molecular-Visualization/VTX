@@ -5,36 +5,86 @@
 #pragma once
 #endif
 
-namespace VTX
+#include "color/rgb.hpp"
+#include "generic/base_colorable.hpp"
+#include "representation_enum.hpp"
+#include "representation_primitive.hpp"
+
+namespace VTX::Model::Representation
 {
-	namespace Model
+	enum MEMBER_FLAG
 	{
-		namespace Representation
+		SPHERE_RADIUS_FIXED = 1 << 0,
+		SPHERE_RADIUS_ADD	= 1 << 1,
+		CYLINDER_RADIUS		= 1 << 2,
+		COLOR				= 1 << 3,
+		COLOR_MODE			= 1 << 4,
+		SS_COLOR_MODE		= 1 << 5,
+
+		NONE = 0,
+		ALL	 = 0xFFFF
+	};
+
+	class Representation;
+
+	class RepresentationData
+	{
+	  public:
+		RepresentationData( const Generic::REPRESENTATION & p_representationType );
+		~RepresentationData();
+
+		void setLinkedRepresentation( Representation * const p_representation )
 		{
-			class SphereData
-			{
-			  public:
-				SphereData() {};
+			_linkedRepresentation = p_representation;
+		}
 
-				float _radiusFixed	 = 1.0f;
-				float _radiusAdd	 = 0.f;
-				bool  _isRadiusFixed = true;
-			};
+		const Generic::REPRESENTATION & getRepresentationType() const;
 
-			class CylinderData
-			{
-			  public:
-				CylinderData() {};
-				float _radius = 1.0f;
-			};
+		const Generic::COLOR_MODE & getColorMode() const;
+		Generic::COLOR_MODE &		getColorMode();
+		void						setColorMode( const Generic::COLOR_MODE & p_colorMode );
 
-			class RibbonData
-			{
-			  public:
-				RibbonData() {};
-			};
+		const Generic::SECONDARY_STRUCTURE_COLOR_MODE & getSecondaryStructureColorMode() const;
+		Generic::SECONDARY_STRUCTURE_COLOR_MODE &		getSecondaryStructureColorMode();
+		void setSecondaryStructureColorMode( const Generic::SECONDARY_STRUCTURE_COLOR_MODE & p_colorMode );
 
-		} // namespace Representation
-	}	  // namespace Model
-} // namespace VTX
+		const VTX::Representation::FlagDataTargeted & getFlagDataTargeted() const
+		{
+			return VTX::Representation::getFlagDataTargeted( _representationType );
+		};
+
+		bool			   hasToDrawSphere() const { return _sphereData != nullptr; };
+		const SphereData & getSphereData() const { return *_sphereData; };
+		SphereData &	   getSphereData() { return *_sphereData; };
+		virtual float	   getSphereRadius() const { return _sphereData == nullptr ? 0 : _sphereData->_radiusFixed; };
+		virtual void	   setSphereRadius( float p_radius );
+
+		bool				 hasToDrawCylinder() const { return _cylinderData != nullptr; };
+		const CylinderData & getCylinderData() const { return *_cylinderData; };
+		CylinderData &		 getCylinderData() { return *_cylinderData; };
+		virtual float getCylinderRadius() const { return _cylinderData == nullptr ? 0 : _cylinderData->_radius; };
+		virtual void  setCylinderRadius( float p_radius );
+
+		bool			   hasToDrawRibbon() const { return _ribbonData != nullptr; };
+		const RibbonData & getRibbonData() const { return *_ribbonData; };
+		RibbonData &	   getRibbonData() { return *_ribbonData; };
+
+		void copyData( const RepresentationData & p_source );
+
+	  protected:
+		const Generic::REPRESENTATION _representationType = Generic::REPRESENTATION::COUNT;
+
+		SphereData *   _sphereData	 = nullptr;
+		CylinderData * _cylinderData = nullptr;
+		RibbonData *   _ribbonData	 = nullptr;
+
+		Generic::COLOR_MODE						_colorMode	 = Generic::COLOR_MODE::ATOM_CHAIN;
+		Generic::SECONDARY_STRUCTURE_COLOR_MODE _ssColorMode = Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
+
+		void notifyRepresentationDataChange();
+
+	  private:
+		Representation * _linkedRepresentation = nullptr;
+	};
+} // namespace VTX::Model::Representation
 #endif

@@ -4,6 +4,7 @@
 #include "id.hpp"
 #include "model/bond.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "representation/representation_manager.hpp"
 #include "residue.hpp"
 #include "selection.hpp"
 #include "selection/selection_manager.hpp"
@@ -496,9 +497,7 @@ namespace VTX::Model
 
 		if ( p_molecule.hasCustomRepresentation() )
 		{
-			Representation::InstantiatedRepresentation * const representation
-				= Representation::InstantiatedRepresentation::instantiateCopy( p_molecule.getRepresentation() );
-			setRepresentation( representation );
+			VTX::Representation::RepresentationManager::get().instantiateCopy( p_molecule.getRepresentation(), *this );
 		}
 
 		for ( int i = 0; i < p_molecule.getAtomPositionFrames().size(); i++ )
@@ -526,9 +525,8 @@ namespace VTX::Model
 
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
-			Representation::InstantiatedRepresentation * const representation
-				= Representation::InstantiatedRepresentation::instantiateCopy( p_chainSource.getRepresentation() );
-			setRepresentation( representation );
+			VTX::Representation::RepresentationManager::get().instantiateCopy( p_chainSource.getRepresentation(),
+																			   *this );
 		}
 	}
 	void GeneratedMolecule::_copyResidueData( Model::Residue &		 p_residue,
@@ -548,9 +546,8 @@ namespace VTX::Model
 
 		if ( p_residueSource.hasCustomRepresentation() )
 		{
-			Representation::InstantiatedRepresentation * const representation
-				= Representation::InstantiatedRepresentation::instantiateCopy( p_residueSource.getRepresentation() );
-			setRepresentation( representation );
+			VTX::Representation::RepresentationManager::get().instantiateCopy( p_residueSource.getRepresentation(),
+																			   *this );
 		}
 	}
 	void GeneratedMolecule::_copyAtomData( Model::Atom &		  p_atom,

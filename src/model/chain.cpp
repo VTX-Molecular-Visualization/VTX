@@ -154,18 +154,6 @@ namespace VTX
 			return aabb;
 		}
 
-		void Chain::applyRepresentation(
-			Generic::BaseRepresentable::InstantiatedRepresentation * const p_representation,
-			const bool													   p_recompute )
-		{
-			BaseRepresentable::applyRepresentation( p_representation, p_recompute );
-			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
-		}
-		void Chain::removeRepresentation()
-		{
-			BaseRepresentable::removeRepresentation();
-			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
-		}
 		void Chain::removeChildrenRepresentations() const
 		{
 			for ( uint i = _indexFirstResidue; i < _indexFirstResidue + _residueCount; i++ )
@@ -179,5 +167,9 @@ namespace VTX
 			}
 		}
 
+		void Chain::_onRepresentationChange()
+		{
+			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
+		}
 	} // namespace Model
 } // namespace VTX

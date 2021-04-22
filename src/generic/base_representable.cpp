@@ -21,37 +21,40 @@ namespace VTX
 		}
 
 		void BaseRepresentable::applyRepresentation( InstantiatedRepresentation * const p_representation,
-													 const bool							p_recompute )
+													 const bool							p_recompute,
+													 const bool							p_notify )
 		{
 			setRepresentation( p_representation );
+
 			if ( p_recompute )
 				computeAllRepresentationData();
+
+			if ( p_notify )
+				_onRepresentationChange();
 		}
 
 		void BaseRepresentable::setRepresentation( InstantiatedRepresentation * const p_representation )
 		{
-			removeRepresentation();
+			removeRepresentation( false );
 
 			_representation = p_representation;
 			p_representation->setTarget( this );
 		}
 
-		void BaseRepresentable::removeRepresentation()
+		void BaseRepresentable::removeRepresentation( const bool p_notify )
 		{
 			if ( _representation != nullptr )
+			{
 				MVC::MvcManager::get().deleteModel( _representation );
+				_representation = nullptr;
 
-			_representation = nullptr;
+				if ( p_notify )
+					_onRepresentationChange();
+			}
 		}
 
-		void BaseRepresentable::applyDefaultRepresentation()
-		{
-			Model::Representation::InstantiatedRepresentation * const defaultRepresentation
-				= Representation::RepresentationManager::get().instantiateDefaultRepresentation();
-			defaultRepresentation->setTarget( getMolecule() );
+		bool BaseRepresentable::hasParent() { return _parent != nullptr; }
 
-			applyRepresentation( defaultRepresentation );
-		}
 		void BaseRepresentable::setParent( BaseRepresentable * const p_parent ) { _parent = p_parent; }
 
 		bool BaseRepresentable::hasCustomRepresentation() const { return _representation != nullptr; }

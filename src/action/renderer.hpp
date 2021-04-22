@@ -8,6 +8,8 @@
 #include "base_action.hpp"
 #include "color/rgb.hpp"
 #include "model/renderer/render_effect_preset.hpp"
+#include "model/renderer/render_effect_preset_library.hpp"
+#include "mvc/mvc_manager.hpp"
 #include "renderer/base_renderer.hpp"
 #include "vtx_app.hpp"
 
@@ -19,12 +21,41 @@ namespace VTX::Action::Renderer
 		ApplyRenderEffectPreset( const Model::Renderer::RenderEffectPreset & p_preset ) : _preset( p_preset ) {};
 		virtual void execute() override
 		{
-			_preset.apply();
+			Model::Renderer::RenderEffectPresetLibrary::get().applyPreset( _preset );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
 	  private:
 		const Model::Renderer::RenderEffectPreset & _preset;
+	};
+
+	class ChangeName : public BaseAction
+	{
+	  public:
+		ChangeName( Model::Renderer::RenderEffectPreset & p_preset, const std::string & p_name ) :
+			_preset( p_preset ), _name( p_name ) {};
+
+		virtual void execute() override { _preset.setName( _name ); };
+
+	  private:
+		Model::Renderer::RenderEffectPreset & _preset;
+		const std::string					  _name;
+	};
+
+	class ChangeQuickAccess : public BaseAction
+	{
+	  public:
+		ChangeQuickAccess( Model::Renderer::RenderEffectPreset & p_preset, const bool p_quickAccess ) :
+			_preset( p_preset ), _quickAccess( p_quickAccess ) {};
+
+		virtual void execute() override
+		{
+			Model::Renderer::RenderEffectPresetLibrary::get().setQuickAccessToPreset( _preset, _quickAccess );
+		};
+
+	  private:
+		Model::Renderer::RenderEffectPreset & _preset;
+		const bool							  _quickAccess;
 	};
 
 	class ChangeShading : public BaseAction
@@ -36,8 +67,12 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setShading( _shading );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+			}
 		};
 
 	  private:
@@ -54,8 +89,11 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.enableSSAO( _enable );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+			}
 		};
 
 	  private:
@@ -71,8 +109,11 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setSSAOIntensity( _intensity );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			}
 		};
 
 	  private:
@@ -88,8 +129,11 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setSSAOBlurSize( _blurSize );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			}
 		};
 
 	  private:
@@ -106,8 +150,12 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.enableOutline( _enable );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+			}
 		};
 
 	  private:
@@ -123,8 +171,11 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setOutlineThickness( _thickness );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			}
 		};
 
 	  private:
@@ -140,8 +191,11 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setOutlineColor( _color );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			}
 		};
 
 	  private:
@@ -158,8 +212,11 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.enableFog( _enable );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+			}
 		};
 
 	  private:
@@ -175,8 +232,11 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setFogNear( _near );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			}
 		};
 
 	  private:
@@ -192,8 +252,11 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setFogFar( _far );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			}
 		};
 
 	  private:
@@ -209,8 +272,11 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setFogDensity( _density );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			}
 		};
 
 	  private:
@@ -226,8 +292,12 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setFogColor( _color );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			}
 		};
 
 	  private:
@@ -244,8 +314,12 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setBackgroundColor( _color );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			}
 		};
 
 	  private:
@@ -261,8 +335,12 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setCameraLightColor( _color );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			}
 		};
 
 	  private:
@@ -278,8 +356,12 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setCameraFOV( _fov );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
+
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
+			}
 		};
 
 	  private:
@@ -295,8 +377,12 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setCameraNearClip( _near );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
+
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
+			}
 		};
 
 	  private:
@@ -312,8 +398,12 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setCameraFarClip( _far );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
+
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
+			}
 		};
 
 	  private:
@@ -330,8 +420,12 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setAA( _enable );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+			}
 		};
 
 	  private:
@@ -347,13 +441,60 @@ namespace VTX::Action::Renderer
 		virtual void execute() override
 		{
 			_preset.setPerspectiveProjection( _perspective );
-			_preset.apply();
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			}
 		};
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
 		const bool							  _perspective;
+	};
+
+	class AddNewPresetInLibrary : public BaseAction
+	{
+	  public:
+		explicit AddNewPresetInLibrary( const std::string & p_presetName ) : _presetName( p_presetName ) {}
+
+		void execute()
+		{
+			Model::Renderer::RenderEffectPreset * const newRenderEffect
+				= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
+
+			newRenderEffect->setName( _presetName );
+			Model::Renderer::RenderEffectPresetLibrary::get().addPreset( newRenderEffect );
+		};
+
+		const std::string _presetName;
+	};
+
+	class CopyPresetInLibrary : public BaseAction
+	{
+	  public:
+		explicit CopyPresetInLibrary( const int p_presetIndex ) : _presetIndex( p_presetIndex ) {}
+
+		void execute() { Model::Renderer::RenderEffectPresetLibrary::get().copyPreset( _presetIndex ); };
+
+	  private:
+		const int _presetIndex;
+	};
+
+	class DeletePresetInLibrary : public BaseAction
+	{
+	  public:
+		explicit DeletePresetInLibrary( const int p_presetIndex ) : _presetIndex( p_presetIndex ) {}
+
+		void execute()
+		{
+			Model::Renderer::RenderEffectPresetLibrary::get().deletePreset( _presetIndex );
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+		};
+
+	  private:
+		const int _presetIndex;
 	};
 } // namespace VTX::Action::Renderer
 #endif

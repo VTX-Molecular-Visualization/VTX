@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "event/event.hpp"
 #include "model/base_model.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "render_effect_preset.hpp"
@@ -17,34 +18,43 @@ namespace VTX::Model::Renderer
 		VTX_MODEL
 
 	  public:
-		inline static RenderEffectPresetLibrary & get()
-		{
-			static RenderEffectPresetLibrary instance
-				= *MVC::MvcManager::get().instantiateModel<RenderEffectPresetLibrary>();
-			return instance;
-		};
+		static RenderEffectPresetLibrary & get();
 
 		RenderEffectPreset * const		 getPreset( const int p_index );
 		const RenderEffectPreset * const getPreset( const int p_index ) const;
 		RenderEffectPreset * const		 getPresetByName( const std::string & p_name );
 		const RenderEffectPreset * const getPresetByName( const std::string & p_name ) const;
+		int								 getPresetIndex( const RenderEffectPreset * const ) const;
 
 		inline const std::vector<RenderEffectPreset *> & getPresets() const { return _presets; };
 		inline int										 getPresetCount() const { return (int)_presets.size(); };
 
-		void addPreset( RenderEffectPreset * const p_representation );
-		void removePreset( const int p_index );
+		void					   addPreset( RenderEffectPreset * const p_preset, const bool p_notify = true );
+		void					   copyPreset( const int p_index );
+		RenderEffectPreset * const removePreset( const int p_index );
+		void					   deletePreset( const int p_index );
+
+		bool canDeleteItem( RenderEffectPreset * const p_preset ) const;
+
+		void applyPreset( const int p_presetIndex );
+		void applyPreset( const RenderEffectPreset & p_preset );
+		bool isAppliedPreset( const RenderEffectPreset & p_preset ) const;
+		bool isAppliedPreset( const RenderEffectPreset * const & p_preset ) const;
+		int	 getAppliedPresetIndex() const;
+
+		void setQuickAccessToPreset( RenderEffectPreset & p_preset, const bool p_quikAccess );
 
 	  private:
-		inline RenderEffectPresetLibrary() : BaseModel( ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET_LIBRARY )
-		{
-			_init();
-		};
+		RenderEffectPresetLibrary();
 		~RenderEffectPresetLibrary();
 
 		void _init();
+		void _onPresetChange( const Event::VTXEvent * const p_event );
+		int	 _getNbPresetWithQuickAccess() const;
 
 		std::vector<RenderEffectPreset *> _presets;
+		const RenderEffectPreset *		  _appliedPreset		   = nullptr;
+		RenderEffectPreset *			  _lastPresetQuickAccessed = nullptr;
 	};
 } // namespace VTX::Model::Renderer
 #endif
