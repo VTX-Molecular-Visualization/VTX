@@ -66,17 +66,23 @@ namespace VTX::Renderer::GL
 		void bind( const Target p_target = Target::DRAW_FRAMEBUFFER ) const
 		{
 			_gl->glBindFramebuffer( GLenum( p_target ), _id );
+
+			_checkStatus();
 		}
 
 		void attachTexture( const Texture2D & p_texture, const Attachment p_attachment, const int p_level = 0 ) const
 		{
 			_gl->glNamedFramebufferTexture( _id, GLenum( p_attachment ), p_texture.getId(), p_level );
+
+			_checkStatus();
 		}
 
 		void setDrawBuffers( const std::vector<Attachment> & p_drawBuffers ) const
 		{
 			_gl->glNamedFramebufferDrawBuffers(
 				_id, GLsizei( p_drawBuffers.size() ), (const GLenum *)( p_drawBuffers.data() ) );
+
+			_checkStatus();
 		}
 
 	  private:

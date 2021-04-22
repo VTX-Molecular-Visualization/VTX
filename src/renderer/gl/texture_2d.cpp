@@ -44,17 +44,18 @@ namespace VTX::Renderer::GL
 		const int width	 = p_width == -1 ? _width : p_width;
 		const int height = p_height == -1 ? _height : p_height;
 
-		_gl->glTextureSubImage2D( _id, p_level, p_offsetX, p_offsetY, width, height, p_format, p_type, p_pixels );
+		_gl->glTextureSubImage2D(
+			_id, p_level, p_offsetX, p_offsetY, width, height, GLenum( p_format ), GLenum( p_type ), p_pixels );
 	}
 
 	void Texture2D::_create()
 	{
 		_gl->glCreateTextures( GL_TEXTURE_2D, 1, &_id );
-		_gl->glTextureParameteri( _id, GL_TEXTURE_WRAP_S, _wrappingS );
-		_gl->glTextureParameteri( _id, GL_TEXTURE_WRAP_T, _wrappingT );
-		_gl->glTextureParameteri( _id, GL_TEXTURE_MIN_FILTER, _minFilter );
-		_gl->glTextureParameteri( _id, GL_TEXTURE_MAG_FILTER, _magFilter );
-		_gl->glTextureStorage2D( _id, 1, _format, _width, _height );
+		_gl->glTextureParameteri( _id, GL_TEXTURE_WRAP_S, GLint( _wrappingS ) );
+		_gl->glTextureParameteri( _id, GL_TEXTURE_WRAP_T, GLint( _wrappingT ) );
+		_gl->glTextureParameteri( _id, GL_TEXTURE_MIN_FILTER, GLint( _minFilter ) );
+		_gl->glTextureParameteri( _id, GL_TEXTURE_MAG_FILTER, GLint( _magFilter ) );
+		_gl->glTextureStorage2D( _id, 1, GLenum( _format ), _width, _height );
 	}
 
 	void Texture2D::_destroy() { _gl->glDeleteTextures( 1, &_id ); }

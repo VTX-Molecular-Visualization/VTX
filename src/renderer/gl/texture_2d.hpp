@@ -13,8 +13,9 @@ namespace VTX::Renderer::GL
 	class Texture2D : public Generic::BaseOpenGL
 	{
 	  public:
-		enum Type // See http://docs.gl/gl4/glTexSubImage2D.
+		enum class Type : GLenum
 		{
+			// See http://docs.gl/gl4/glTexSubImage2D.
 			UNSIGNED_BYTE				= GL_UNSIGNED_BYTE,
 			BYTE						= GL_BYTE,
 			UNSIGNED_SHORT				= GL_UNSIGNED_SHORT,
@@ -36,8 +37,9 @@ namespace VTX::Renderer::GL
 			UNSIGNED_INT_2_10_10_10_REV = GL_UNSIGNED_INT_2_10_10_10_REV
 
 		};
-		enum Format // See http://docs.gl/gl4/glTexSubImage2D.
+		enum class Format : GLenum
 		{
+			// See http://docs.gl/gl4/glTexSubImage2D.
 			RED				= GL_RED,
 			RG				= GL_RG,
 			RGB				= GL_RGB,
@@ -46,8 +48,9 @@ namespace VTX::Renderer::GL
 			DEPTH_COMPONENT = GL_DEPTH_COMPONENT,
 			STENCIL_INDEX	= GL_STENCIL_INDEX
 		};
-		enum InternalFormat // See http://docs.gl/gl4/glTexStorage2D.
+		enum class InternalFormat : GLenum
 		{
+			// See http://docs.gl/gl4/glTexStorage2D.
 			R8	 = GL_R8,
 			R16F = GL_R16F,
 			R32F = GL_R32F,
@@ -60,16 +63,18 @@ namespace VTX::Renderer::GL
 			DEPTH_COMPONENT32F = GL_DEPTH_COMPONENT32F
 			/// TODO: complete
 		};
-		enum Wrapping // See http://docs.gl/gl4/glTexParameter.
+		enum class Wrapping : GLint
 		{
+			// See http://docs.gl/gl4/glTexParameter.
 			CLAMP_TO_EDGE		 = GL_CLAMP_TO_EDGE,
 			CLAMP_TO_BORDER		 = GL_CLAMP_TO_BORDER,
 			MIRRORED_REPEAT		 = GL_MIRRORED_REPEAT,
 			REPEAT				 = GL_REPEAT,
 			MIRROR_CLAMP_TO_EDGE = GL_MIRROR_CLAMP_TO_EDGE
 		};
-		enum Filter // See http://docs.gl/gl4/glTexParameter.
+		enum class Filter : GLint
 		{
+			// See http://docs.gl/gl4/glTexParameter.
 			NEAREST				   = GL_NEAREST,
 			LINEAR				   = GL_LINEAR,
 			NEAREST_MIPMAP_NEAREST = GL_NEAREST_MIPMAP_NEAREST,
