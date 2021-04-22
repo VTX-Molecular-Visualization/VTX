@@ -44,20 +44,11 @@ namespace VTX::View
 			_program = _createProgram();
 			assert( _program != nullptr );
 
-			// Create camera uniforms.
-			_uModelViewMatrixLoc = _program->getUniformLocation( "u_MVMatrix" );
-			_uProjMatrixLoc		 = _program->getUniformLocation( "u_projMatrix" );
-			_uNormalMatrixLoc	 = _program->getUniformLocation( "u_normalMatrix" );
-
 			_init();
 		}
 
 	  protected:
 		Renderer::GL::Program * _program = nullptr;
-
-		GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
-		GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
-		GLint _uNormalMatrixLoc	   = GL_INVALID_INDEX;
 
 		explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
 		virtual ~BaseView3D() = default;

@@ -25,8 +25,6 @@ namespace VTX
 				void						  _init() override;
 
 			  private:
-				GLint _uRadiusLoc = GL_INVALID_INDEX;
-
 				explicit Cylinder( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 			};
 		} // namespace D3

@@ -6,24 +6,21 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	Shading::~Shading()
-	{
-		gl()->glDeleteFramebuffers( 1, &_fbo );
-		gl()->glDeleteTextures( 1, &_texture );
-	}
+	Shading::~Shading() { gl()->glDeleteFramebuffers( 1, &_fbo ); }
 
 	void Shading::init( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
+		_texture.create( p_width,
+						 p_height,
+						 Texture2D::InternalFormat::RGBA16F,
+						 Texture2D::Wrapping::CLAMP_TO_EDGE,
+						 Texture2D::Wrapping::CLAMP_TO_EDGE,
+						 Texture2D::Filter::NEAREST,
+						 Texture2D::Filter::NEAREST );
 
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture.getId(), 0 );
 
 		_toonShading	= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { "shading/shading_toon.frag" } );
 		_diffuseShading = VTX_PROGRAM_MANAGER().createProgram( "DiffuseShading", { "shading/shading_diffuse.frag" } );
@@ -36,15 +33,9 @@ namespace VTX::Renderer::GL::Pass
 
 	void Shading::resize( const uint p_width, const uint p_height, const GL & )
 	{
-		gl()->glDeleteTextures( 1, &_texture );
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
+		_texture.resize( p_width, p_height );
 
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture.getId(), 0 );
 	}
 
 	void Shading::render( const Object3D::Scene & p_scene, const GL & p_renderer )

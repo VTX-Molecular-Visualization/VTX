@@ -8,11 +8,7 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	SSAO::~SSAO()
-	{
-		gl()->glDeleteFramebuffers( 1, &_fbo );
-		gl()->glDeleteTextures( 1, &_noiseTexture );
-	}
+	SSAO::~SSAO() { gl()->glDeleteFramebuffers( 1, &_fbo ); }
 
 	void SSAO::init( const uint p_width, const uint p_height, const GL & )
 	{
@@ -20,7 +16,7 @@ namespace VTX::Renderer::GL::Pass
 
 		_texture.create( p_width,
 						 p_height,
-						 Texture2D::Format::R8,
+						 Texture2D::InternalFormat::R8,
 						 Texture2D::Wrapping::CLAMP_TO_EDGE,
 						 Texture2D::Wrapping::CLAMP_TO_EDGE,
 						 Texture2D::Filter::NEAREST,
@@ -29,11 +25,6 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture.getId(), 0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { "shading/ssao.frag" } );
-
-		_uProjMatrixLoc	 = _program->getUniformLocation( "uProjMatrix" );
-		_uAoKernelLoc	 = _program->getUniformLocation( "uAoKernel" );
-		_uAoIntensityLoc = _program->getUniformLocation( "uAoIntensity" );
-		_uKernelSizeLoc	 = _program->getUniformLocation( "uKernelSize" );
 
 		// generate random ao kernel
 		std::vector<Vec3f> aoKernel( _kernelSize );
@@ -63,14 +54,15 @@ namespace VTX::Renderer::GL::Pass
 			noise[ i ] = Util::Math::normalize( noise[ i ] );
 		}
 
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_noiseTexture );
-		gl()->glTextureParameteri( _noiseTexture, GL_TEXTURE_WRAP_S, GL_REPEAT );
-		gl()->glTextureParameteri( _noiseTexture, GL_TEXTURE_WRAP_T, GL_REPEAT );
-		gl()->glTextureParameteri( _noiseTexture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _noiseTexture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _noiseTexture, 1, GL_RGB16F, _noiseTextureSize, _noiseTextureSize );
-		gl()->glTextureSubImage2D(
-			_noiseTexture, 0, 0, 0, _noiseTextureSize, _noiseTextureSize, GL_RGB, GL_FLOAT, noise.data() );
+		_noiseTexture.create( _noiseTextureSize,
+							  _noiseTextureSize,
+							  Texture2D::InternalFormat::RGB16F,
+							  Texture2D::Wrapping::REPEAT,
+							  Texture2D::Wrapping::REPEAT,
+							  Texture2D::Filter::NEAREST,
+							  Texture2D::Filter::NEAREST );
+
+		_noiseTexture.fill( noise.data() );
 
 		_program->use();
 		_program->setVec3fArray( "uAoKernel", _kernelSize, aoKernel.data() );
@@ -90,7 +82,7 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
 		gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
-		gl()->glBindTextureUnit( 1, _noiseTexture );
+		gl()->glBindTextureUnit( 1, _noiseTexture.getId() );
 		gl()->glBindTextureUnit( 2, p_renderer.getPassLinearizeDepth().getTexture() );
 
 		_program->use();

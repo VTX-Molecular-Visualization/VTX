@@ -8,9 +8,7 @@ namespace VTX::Renderer::GL::Pass
 	Blur::~Blur()
 	{
 		gl()->glDeleteFramebuffers( 1, &_fboFirstPass );
-		gl()->glDeleteTextures( 1, &_textureFirstPass );
 		gl()->glDeleteFramebuffers( 1, &_fbo );
-		gl()->glDeleteTextures( 1, &_texture );
 	}
 
 	void Blur::init( const uint p_width, const uint p_height, const GL & )
@@ -18,26 +16,28 @@ namespace VTX::Renderer::GL::Pass
 		// first pass fbo/texture
 		gl()->glCreateFramebuffers( 1, &_fboFirstPass );
 
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_textureFirstPass );
-		gl()->glTextureParameteri( _textureFirstPass, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _textureFirstPass, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _textureFirstPass, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _textureFirstPass, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _textureFirstPass, 1, GL_R16F, p_width, p_height );
+		_textureFirstPass.create( p_width,
+								  p_height,
+								  Texture2D::InternalFormat::R16F,
+								  Texture2D::Wrapping::CLAMP_TO_EDGE,
+								  Texture2D::Wrapping::CLAMP_TO_EDGE,
+								  Texture2D::Filter::NEAREST,
+								  Texture2D::Filter::NEAREST );
 
-		gl()->glNamedFramebufferTexture( _fboFirstPass, GL_COLOR_ATTACHMENT0, _textureFirstPass, 0 );
+		gl()->glNamedFramebufferTexture( _fboFirstPass, GL_COLOR_ATTACHMENT0, _textureFirstPass.getId(), 0 );
 
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _texture, 1, GL_R16F, p_width, p_height );
+		_texture.create( p_width,
+						 p_height,
+						 Texture2D::InternalFormat::R16F,
+						 Texture2D::Wrapping::CLAMP_TO_EDGE,
+						 Texture2D::Wrapping::CLAMP_TO_EDGE,
+						 Texture2D::Filter::NEAREST,
+						 Texture2D::Filter::NEAREST );
 		clearTexture();
 
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture.getId(), 0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Blur", { "shading/bilateral_blur.frag" } );
 
@@ -47,26 +47,13 @@ namespace VTX::Renderer::GL::Pass
 
 	void Blur::resize( const uint p_width, const uint p_height, const GL & )
 	{
-		gl()->glDeleteTextures( 1, &_textureFirstPass );
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_textureFirstPass );
-		gl()->glTextureParameteri( _textureFirstPass, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _textureFirstPass, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _textureFirstPass, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _textureFirstPass, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _textureFirstPass, 1, GL_R16F, p_width, p_height );
+		_textureFirstPass.resize( p_width, p_height );
+		_texture.resize( p_width, p_height );
 
-		gl()->glNamedFramebufferTexture( _fboFirstPass, GL_COLOR_ATTACHMENT0, _textureFirstPass, 0 );
-
-		gl()->glDeleteTextures( 1, &_texture );
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _texture, 1, GL_R16F, p_width, p_height );
 		clearTexture();
 
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		gl()->glNamedFramebufferTexture( _fboFirstPass, GL_COLOR_ATTACHMENT0, _textureFirstPass.getId(), 0 );
+		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture.getId(), 0 );
 	}
 
 	void Blur::render( const Object3D::Scene & p_scene, const GL & p_renderer )
@@ -97,7 +84,7 @@ namespace VTX::Renderer::GL::Pass
 
 		gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
 
-		gl()->glBindTextureUnit( 0, _textureFirstPass );
+		gl()->glBindTextureUnit( 0, _textureFirstPass.getId() );
 		gl()->glBindTextureUnit( 1, p_renderer.getPassLinearizeDepth().getTexture() );
 
 		/// TODO: rename uInvDirectionTexSize
@@ -114,8 +101,9 @@ namespace VTX::Renderer::GL::Pass
 
 	void Blur::clearTexture()
 	{
+		// TODO: wrap it !
 		float clearColor = 1.f;
-		gl()->glClearTexImage( _texture, 0, GL_RED, GL_FLOAT, &clearColor );
+		gl()->glClearTexImage( _texture.getId(), 0, GL_RED, GL_FLOAT, &clearColor );
 	}
 
 } // namespace VTX::Renderer::GL::Pass

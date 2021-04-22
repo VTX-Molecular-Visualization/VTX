@@ -6,31 +6,30 @@
 #endif
 
 #include "base_pass.hpp"
+#include "renderer/gl/texture_2d.hpp"
 
 namespace VTX::Renderer::GL::Pass
 {
 	class Blur : public BasePass
 	{
 	  public:
-		Blur( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
+		Blur( OpenGLFunctions * const p_gl ) : BasePass( p_gl ), _textureFirstPass( p_gl ), _texture( p_gl ) {}
 		virtual ~Blur();
 
 		void init( const uint, const uint, const GL & ) override;
 		void resize( const uint, const uint, const GL & ) override;
 		void render( const Object3D::Scene &, const GL & ) override;
 
-		inline const GLuint & getTexture() const { return _texture; }
+		inline const GLuint getTexture() const { return _texture.getId(); }
 
 		void clearTexture();
 
 	  private:
-		Program * _program				   = nullptr;
-		GLuint	  _fboFirstPass			   = GL_INVALID_VALUE;
-		GLuint	  _fbo					   = GL_INVALID_VALUE;
-		GLuint	  _textureFirstPass		   = GL_INVALID_VALUE;
-		GLuint	  _texture				   = GL_INVALID_VALUE;
-		GLint	  _uBlurSizeLoc			   = GL_INVALID_INDEX;
-		GLint	  _uInvDirectionTexSizeLoc = GL_INVALID_INDEX;
+		Program * _program		= nullptr;
+		GLuint	  _fboFirstPass = GL_INVALID_VALUE;
+		GLuint	  _fbo			= GL_INVALID_VALUE;
+		Texture2D _textureFirstPass;
+		Texture2D _texture;
 	};
 } // namespace VTX::Renderer::GL::Pass
 

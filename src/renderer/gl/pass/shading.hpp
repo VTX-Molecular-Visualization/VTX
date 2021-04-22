@@ -6,13 +6,14 @@
 #endif
 
 #include "base_pass.hpp"
+#include "renderer/gl/texture_2d.hpp"
 
 namespace VTX::Renderer::GL::Pass
 {
 	class Shading : public BasePass
 	{
 	  public:
-		Shading( OpenGLFunctions * const p_gl ) : BasePass( p_gl ) {}
+		Shading( OpenGLFunctions * const p_gl ) : BasePass( p_gl ), _texture( p_gl ) {}
 		virtual ~Shading();
 
 		void init( const uint, const uint, const GL & ) override;
@@ -20,23 +21,17 @@ namespace VTX::Renderer::GL::Pass
 		void render( const Object3D::Scene &, const GL & ) override;
 		void set();
 
-		inline const GLuint & getTexture() const { return _texture; }
+		inline const GLuint	  getTexture() const { return _texture.getId(); }
 		inline const GLuint & getFbo() const { return _fbo; }
 
 	  private:
+		GLuint	  _fbo = GL_INVALID_VALUE;
+		Texture2D _texture;
+
 		Program * _diffuseShading = nullptr;
 		Program * _glossyShading  = nullptr;
 		Program * _toonShading	  = nullptr;
 		Program * _flatShading	  = nullptr;
-		GLuint	  _fbo			  = GL_INVALID_VALUE;
-		GLuint	  _texture		  = GL_INVALID_VALUE;
-
-		GLint _uBackgroundColorLoc = GL_INVALID_INDEX;
-		// Fog.
-		GLint _uFogColor = GL_INVALID_INDEX;
-		// Lights.
-		GLint _uLightPosition = GL_INVALID_INDEX;
-		GLint _uLightColor	  = GL_INVALID_INDEX;
 
 		Program * _currentShading = nullptr;
 	};

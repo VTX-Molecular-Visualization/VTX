@@ -15,8 +15,6 @@ namespace VTX::View::D3
 
 	void Ribbon::_init()
 	{
-		_uCamPositionLoc = _program->getUniformLocation( "u_camPosition" );
-
 		GLint maxPatchVertices = 0;
 		GLint maxTessGenLevel  = 0;
 

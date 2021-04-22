@@ -13,7 +13,7 @@ namespace VTX::Renderer::GL::Pass
 	class SSAO : public BasePass
 	{
 	  public:
-		SSAO( OpenGLFunctions * const p_gl ) : BasePass( p_gl ), _texture( p_gl ) {}
+		SSAO( OpenGLFunctions * const p_gl ) : BasePass( p_gl ), _texture( p_gl ), _noiseTexture( p_gl ) {}
 		virtual ~SSAO();
 
 		void init( const uint, const uint, const GL & ) override;
@@ -26,12 +26,7 @@ namespace VTX::Renderer::GL::Pass
 		Program * _program = nullptr;
 		GLuint	  _fbo	   = GL_INVALID_VALUE;
 		Texture2D _texture;
-		GLuint	  _noiseTexture		= GL_INVALID_VALUE;
-		GLint	  _uProjMatrixLoc	= GL_INVALID_INDEX;
-		GLint	  _uAoKernelLoc		= GL_INVALID_INDEX;
-		GLint	  _uKernelSizeLoc	= GL_INVALID_INDEX;
-		GLint	  _uAoIntensityLoc	= GL_INVALID_INDEX;
-		GLint	  _uNoiseSizeLoc	= GL_INVALID_INDEX;
+		Texture2D _noiseTexture;
 		uint	  _kernelSize		= 16;
 		uint	  _noiseTextureSize = 64;
 	};

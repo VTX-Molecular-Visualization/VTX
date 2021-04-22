@@ -6,24 +6,21 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	Outline::~Outline()
-	{
-		gl()->glDeleteFramebuffers( 1, &_fbo );
-		gl()->glDeleteTextures( 1, &_texture );
-	}
+	Outline::~Outline() { gl()->glDeleteFramebuffers( 1, &_fbo ); }
 
 	void Outline::init( const uint p_width, const uint p_height, const GL & )
 	{
 		gl()->glCreateFramebuffers( 1, &_fbo );
 
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
+		_texture.create( p_width,
+						 p_height,
+						 Texture2D::InternalFormat::RGBA16F,
+						 Texture2D::Wrapping::CLAMP_TO_EDGE,
+						 Texture2D::Wrapping::CLAMP_TO_EDGE,
+						 Texture2D::Filter::LINEAR,
+						 Texture2D::Filter::LINEAR );
 
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture.getId(), 0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Outline", { "shading/outline.frag" } );
 
@@ -36,15 +33,8 @@ namespace VTX::Renderer::GL::Pass
 
 	void Outline::resize( const uint p_width, const uint p_height, const GL & )
 	{
-		gl()->glDeleteTextures( 1, &_texture );
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
-
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		_texture.resize( p_width, p_height );
+		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture.getId(), 0 );
 	}
 
 	void Outline::render( const Object3D::Scene & p_scene, const GL & p_renderer )
