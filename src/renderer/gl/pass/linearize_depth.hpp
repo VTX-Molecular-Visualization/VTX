@@ -6,6 +6,7 @@
 #endif
 
 #include "base_pass.hpp"
+#include "renderer/gl/framebuffer.hpp"
 #include "renderer/gl/texture_2d.hpp"
 
 namespace VTX::Renderer::GL::Pass
@@ -13,8 +14,8 @@ namespace VTX::Renderer::GL::Pass
 	class LinearizeDepth : public BasePass
 	{
 	  public:
-		LinearizeDepth( OpenGLFunctions * const p_gl ) : BasePass( p_gl ), _texture( p_gl ) {}
-		virtual ~LinearizeDepth();
+		LinearizeDepth( OpenGLFunctions * const p_gl ) : BasePass( p_gl ), _fbo( p_gl ), _texture( p_gl ) {}
+		virtual ~LinearizeDepth() = default;
 
 		void init( const uint, const uint, const GL & ) override;
 		void resize( const uint, const uint, const GL & ) override;
@@ -23,9 +24,9 @@ namespace VTX::Renderer::GL::Pass
 		inline const GLuint getTexture() const { return _texture.getId(); }
 
 	  private:
-		Program * _program = nullptr;
-		GLuint	  _fbo	   = GL_INVALID_VALUE;
-		Texture2D _texture;
+		Program *	_program = nullptr;
+		Framebuffer _fbo;
+		Texture2D	_texture;
 	};
 } // namespace VTX::Renderer::GL::Pass
 

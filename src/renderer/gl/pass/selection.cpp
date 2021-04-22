@@ -6,12 +6,8 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	Selection::~Selection() { gl()->glDeleteFramebuffers( 1, &_fbo ); }
-
 	void Selection::init( const uint p_width, const uint p_height, const GL & p_renderer )
 	{
-		gl()->glCreateFramebuffers( 1, &_fbo );
-
 		_texture.create( p_width,
 						 p_height,
 						 Texture2D::InternalFormat::RGBA16F,
@@ -42,7 +38,7 @@ namespace VTX::Renderer::GL::Pass
 	{
 		if ( VTX_SETTING().activeAA )
 		{
-			gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+			_fbo.bind();
 		}
 		else
 		{
@@ -79,7 +75,7 @@ namespace VTX::Renderer::GL::Pass
 	{
 		if ( VTX_SETTING().activeAA )
 		{
-			gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture.getId(), 0 );
+			_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 		}
 	}
 } // namespace VTX::Renderer::GL::Pass

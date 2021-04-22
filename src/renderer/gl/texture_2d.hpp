@@ -95,6 +95,8 @@ namespace VTX::Renderer::GL
 
 		void resize( const int p_width, const int p_height );
 
+		void bindToUnit( const int p_unit ) const { _gl->glBindTextureUnit( p_unit, _id ); }
+
 		void fill( const void * p_pixels,
 				   const Format p_format  = Format::RGB,
 				   const Type	p_type	  = Type::FLOAT,
@@ -102,7 +104,7 @@ namespace VTX::Renderer::GL
 				   const int	p_offsetX = 0,
 				   const int	p_offsetY = 0,
 				   const int	p_width	  = -1,
-				   const int	p_height  = -1 );
+				   const int	p_height  = -1 ) const;
 
 	  private:
 		void _create();

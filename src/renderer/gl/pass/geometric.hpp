@@ -6,6 +6,7 @@
 #endif
 
 #include "base_pass.hpp"
+#include "renderer/gl/framebuffer.hpp"
 #include "renderer/gl/texture_2d.hpp"
 
 namespace VTX::Renderer::GL::Pass
@@ -14,11 +15,11 @@ namespace VTX::Renderer::GL::Pass
 	{
 	  public:
 		Geometric( OpenGLFunctions * const p_gl ) :
-			BasePass( p_gl ), _viewPositionsNormalsCompressedTexture( p_gl ), _colorsTexture( p_gl ),
+			BasePass( p_gl ), _fbo( p_gl ), _viewPositionsNormalsCompressedTexture( p_gl ), _colorsTexture( p_gl ),
 			_depthTexture( p_gl )
 		{
 		}
-		virtual ~Geometric();
+		virtual ~Geometric() = default;
 
 		void init( const uint, const uint, const GL & ) override;
 		void resize( const uint, const uint, const GL & ) override;
@@ -32,10 +33,10 @@ namespace VTX::Renderer::GL::Pass
 		inline const GLuint getDepthTexture() const { return _depthTexture.getId(); }
 
 	  private:
-		GLuint	  _fbo = GL_INVALID_VALUE;
-		Texture2D _viewPositionsNormalsCompressedTexture;
-		Texture2D _colorsTexture;
-		Texture2D _depthTexture;
+		Framebuffer _fbo;
+		Texture2D	_viewPositionsNormalsCompressedTexture;
+		Texture2D	_colorsTexture;
+		Texture2D	_depthTexture;
 	};
 } // namespace VTX::Renderer::GL::Pass
 

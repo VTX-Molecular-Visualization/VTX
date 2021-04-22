@@ -6,12 +6,8 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	Shading::~Shading() { gl()->glDeleteFramebuffers( 1, &_fbo ); }
-
 	void Shading::init( const uint p_width, const uint p_height, const GL & )
 	{
-		gl()->glCreateFramebuffers( 1, &_fbo );
-
 		_texture.create( p_width,
 						 p_height,
 						 Texture2D::InternalFormat::RGBA16F,
@@ -20,7 +16,7 @@ namespace VTX::Renderer::GL::Pass
 						 Texture2D::Filter::NEAREST,
 						 Texture2D::Filter::NEAREST );
 
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture.getId(), 0 );
+		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_toonShading	= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { "shading/shading_toon.frag" } );
 		_diffuseShading = VTX_PROGRAM_MANAGER().createProgram( "DiffuseShading", { "shading/shading_diffuse.frag" } );
@@ -35,12 +31,12 @@ namespace VTX::Renderer::GL::Pass
 	{
 		_texture.resize( p_width, p_height );
 
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture.getId(), 0 );
+		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 	}
 
 	void Shading::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+		_fbo.bind();
 
 		gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
 		gl()->glBindTextureUnit( 1, p_renderer.getPassGeometric().getColorsTexture() );
@@ -79,7 +75,6 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
 		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 		gl()->glBindVertexArray( 0 );
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 	}
 
 	void Shading::set()

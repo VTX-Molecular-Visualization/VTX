@@ -39,7 +39,7 @@ namespace VTX::Renderer::GL
 						  const int	   p_offsetX,
 						  const int	   p_offsetY,
 						  const int	   p_width,
-						  const int	   p_height )
+						  const int	   p_height ) const
 	{
 		const int width	 = p_width == -1 ? _width : p_width;
 		const int height = p_height == -1 ? _height : p_height;

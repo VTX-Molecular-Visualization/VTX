@@ -35,8 +35,6 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
 		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 		gl()->glBindVertexArray( 0 );
-
-		gl()->glBindFramebuffer( GL_READ_FRAMEBUFFER, 0 );
 	}
 
 } // namespace VTX::Renderer::GL::Pass

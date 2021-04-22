@@ -5,17 +5,8 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	Blur::~Blur()
-	{
-		gl()->glDeleteFramebuffers( 1, &_fboFirstPass );
-		gl()->glDeleteFramebuffers( 1, &_fbo );
-	}
-
 	void Blur::init( const uint p_width, const uint p_height, const GL & )
 	{
-		// first pass fbo/texture
-		gl()->glCreateFramebuffers( 1, &_fboFirstPass );
-
 		_textureFirstPass.create( p_width,
 								  p_height,
 								  Texture2D::InternalFormat::R16F,
@@ -24,9 +15,7 @@ namespace VTX::Renderer::GL::Pass
 								  Texture2D::Filter::NEAREST,
 								  Texture2D::Filter::NEAREST );
 
-		gl()->glNamedFramebufferTexture( _fboFirstPass, GL_COLOR_ATTACHMENT0, _textureFirstPass.getId(), 0 );
-
-		gl()->glCreateFramebuffers( 1, &_fbo );
+		_fboFirstPass.attachTexture( _textureFirstPass, Framebuffer::Attachment::COLOR0 );
 
 		_texture.create( p_width,
 						 p_height,
@@ -37,7 +26,7 @@ namespace VTX::Renderer::GL::Pass
 						 Texture2D::Filter::NEAREST );
 		clearTexture();
 
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture.getId(), 0 );
+		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Blur", { "shading/bilateral_blur.frag" } );
 
@@ -52,15 +41,14 @@ namespace VTX::Renderer::GL::Pass
 
 		clearTexture();
 
-		gl()->glNamedFramebufferTexture( _fboFirstPass, GL_COLOR_ATTACHMENT0, _textureFirstPass.getId(), 0 );
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture.getId(), 0 );
+		_fboFirstPass.attachTexture( _textureFirstPass, Framebuffer::Attachment::COLOR0 );
+		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 	}
 
 	void Blur::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
 		// TODO: clean up !!!!!!!!!!!!!!!
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fboFirstPass );
-
+		_fboFirstPass.bind();
 		gl()->glBindTextureUnit( 0, p_renderer.getPassSSAO().getTexture() );
 		gl()->glBindTextureUnit( 1, p_renderer.getPassLinearizeDepth().getTexture() );
 
@@ -80,9 +68,7 @@ namespace VTX::Renderer::GL::Pass
 
 		gl()->glBindVertexArray( 0 );
 
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+		_fbo.bind();
 
 		gl()->glBindTextureUnit( 0, _textureFirstPass.getId() );
 		gl()->glBindTextureUnit( 1, p_renderer.getPassLinearizeDepth().getTexture() );
@@ -95,8 +81,6 @@ namespace VTX::Renderer::GL::Pass
 		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 
 		gl()->glBindVertexArray( 0 );
-
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 	}
 
 	void Blur::clearTexture()
