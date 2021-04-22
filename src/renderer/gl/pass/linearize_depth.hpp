@@ -21,7 +21,7 @@ namespace VTX::Renderer::GL::Pass
 		void resize( const uint, const uint, const GL & ) override;
 		void render( const Object3D::Scene &, const GL & ) override;
 
-		inline const GLuint getTexture() const { return _texture.getId(); }
+		inline const Texture2D & getTexture() const { return _texture; }
 
 	  private:
 		Program *	_program = nullptr;

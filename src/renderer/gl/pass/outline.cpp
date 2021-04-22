@@ -38,8 +38,8 @@ namespace VTX::Renderer::GL::Pass
 	{
 		_fbo.bind();
 
-		gl()->glBindTextureUnit( 0, p_renderer.getPassShading().getTexture() );
-		gl()->glBindTextureUnit( 1, p_renderer.getPassLinearizeDepth().getTexture() );
+		p_renderer.getPassShading().getTexture().bindToUnit( 0 );
+		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 1 );
 
 		_program->use();
 

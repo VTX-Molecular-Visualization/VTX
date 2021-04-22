@@ -40,14 +40,7 @@ namespace VTX::Renderer::GL::Pass
 		_fbo.attachTexture( _colorsTexture, Framebuffer::Attachment::COLOR1 );
 		_fbo.attachTexture( _depthTexture, Framebuffer::Attachment::DEPTH );
 
-		static const GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-		gl()->glNamedFramebufferDrawBuffers( _fbo.getId(), 2, drawBuffers );
-
-		GLenum fboStatus = gl()->glCheckNamedFramebufferStatus( _fbo.getId(), GL_FRAMEBUFFER );
-		if ( fboStatus != GL_FRAMEBUFFER_COMPLETE )
-		{
-			VTX_WARNING( "Framebuffer not complete: " + std::to_string( fboStatus ) );
-		}
+		_fbo.setDrawBuffers( { Framebuffer::Attachment::COLOR0, Framebuffer::Attachment::COLOR1 } );
 	}
 
 	void Geometric::resize( const uint p_width, const uint p_height, const GL & )

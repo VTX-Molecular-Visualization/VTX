@@ -25,12 +25,12 @@ namespace VTX::Renderer::GL::Pass
 		void resize( const uint, const uint, const GL & ) override;
 		void render( const Object3D::Scene &, const GL & ) override;
 
-		inline const GLuint getViewPositionsNormalsCompressedTexture() const
+		inline const Texture2D & getViewPositionsNormalsCompressedTexture() const
 		{
-			return _viewPositionsNormalsCompressedTexture.getId();
+			return _viewPositionsNormalsCompressedTexture;
 		}
-		inline const GLuint getColorsTexture() const { return _colorsTexture.getId(); }
-		inline const GLuint getDepthTexture() const { return _depthTexture.getId(); }
+		inline const Texture2D & getColorsTexture() const { return _colorsTexture; }
+		inline const Texture2D & getDepthTexture() const { return _depthTexture; }
 
 	  private:
 		Framebuffer _fbo;

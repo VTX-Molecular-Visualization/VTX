@@ -14,7 +14,7 @@ namespace VTX::Renderer::GL
 	class Framebuffer : public Generic::BaseOpenGL
 	{
 	  public:
-		enum Attachment
+		enum class Attachment : GLenum
 		{
 			COLOR0	= GL_COLOR_ATTACHMENT0,
 			COLOR1	= GL_COLOR_ATTACHMENT1,
@@ -51,7 +51,7 @@ namespace VTX::Renderer::GL
 			DEPTH	= GL_DEPTH_ATTACHMENT,
 			STENCIL = GL_STENCIL_ATTACHMENT
 		};
-		enum Target
+		enum class Target : GLenum
 		{
 			DRAW_FRAMEBUFFER = GL_DRAW_FRAMEBUFFER,
 			READ_FRAMEBUFFER = GL_READ_FRAMEBUFFER,
@@ -63,12 +63,24 @@ namespace VTX::Renderer::GL
 
 		int getId() const { return _id; }
 
-		void bind( const Target p_target = Target::DRAW_FRAMEBUFFER ) { _gl->glBindFramebuffer( p_target, _id ); }
-
-		void attachTexture( const Texture2D & p_texture, const Attachment p_attachment, const int p_level = 0 )
+		void bind( const Target p_target = Target::DRAW_FRAMEBUFFER ) const
 		{
-			_gl->glNamedFramebufferTexture( _id, p_attachment, p_texture.getId(), p_level );
+			_gl->glBindFramebuffer( GLenum( p_target ), _id );
 		}
+
+		void attachTexture( const Texture2D & p_texture, const Attachment p_attachment, const int p_level = 0 ) const
+		{
+			_gl->glNamedFramebufferTexture( _id, GLenum( p_attachment ), p_texture.getId(), p_level );
+		}
+
+		void setDrawBuffers( const std::vector<Attachment> & p_drawBuffers ) const
+		{
+			_gl->glNamedFramebufferDrawBuffers(
+				_id, GLsizei( p_drawBuffers.size() ), (const GLenum *)( p_drawBuffers.data() ) );
+		}
+
+	  private:
+		void _checkStatus() const;
 
 	  private:
 		GLuint _id = GL_INVALID_INDEX;

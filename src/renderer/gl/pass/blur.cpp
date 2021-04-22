@@ -49,8 +49,8 @@ namespace VTX::Renderer::GL::Pass
 	{
 		// TODO: clean up !!!!!!!!!!!!!!!
 		_fboFirstPass.bind();
-		gl()->glBindTextureUnit( 0, p_renderer.getPassSSAO().getTexture() );
-		gl()->glBindTextureUnit( 1, p_renderer.getPassLinearizeDepth().getTexture() );
+		p_renderer.getPassSSAO().getTexture().bindToUnit( 0 );
+		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 1 );
 
 		_program->use();
 
@@ -70,8 +70,8 @@ namespace VTX::Renderer::GL::Pass
 
 		_fbo.bind();
 
-		gl()->glBindTextureUnit( 0, _textureFirstPass.getId() );
-		gl()->glBindTextureUnit( 1, p_renderer.getPassLinearizeDepth().getTexture() );
+		_textureFirstPass.bindToUnit( 0 );
+		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 1 );
 
 		/// TODO: rename uInvDirectionTexSize
 		_program->setVec2i( "uInvDirectionTexSize", 0, 1 );

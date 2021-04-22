@@ -28,7 +28,7 @@ namespace VTX::Renderer::GL::Pass
 	{
 		gl()->glBindFramebuffer( GL_FRAMEBUFFER, p_renderer.getOutputFbo() );
 
-		gl()->glBindTextureUnit( 0, p_renderer.getPassSelection().getTexture() );
+		p_renderer.getPassSelection().getTexture().bindToUnit( 0 );
 
 		_program->use();
 

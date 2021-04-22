@@ -38,10 +38,10 @@ namespace VTX::Renderer::GL::Pass
 	{
 		_fbo.bind();
 
-		gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
-		gl()->glBindTextureUnit( 1, p_renderer.getPassGeometric().getColorsTexture() );
+		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
+		p_renderer.getPassGeometric().getColorsTexture().bindToUnit( 1 );
 		// If SSAO/Blur disabled, texture is previoulsy cleared.
-		gl()->glBindTextureUnit( 2, p_renderer.getPassBlur().getTexture() );
+		p_renderer.getPassBlur().getTexture().bindToUnit( 2 );
 
 		_currentShading->use();
 

@@ -77,9 +77,9 @@ namespace VTX::Renderer::GL::Pass
 	{
 		_fbo.bind();
 
-		gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
-		gl()->glBindTextureUnit( 1, _noiseTexture.getId() );
-		gl()->glBindTextureUnit( 2, p_renderer.getPassLinearizeDepth().getTexture() );
+		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
+		_noiseTexture.bindToUnit( 1 );
+		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 2 );
 
 		_program->use();
 

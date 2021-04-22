@@ -22,8 +22,8 @@ namespace VTX::Renderer::GL::Pass
 		void render( const Object3D::Scene &, const GL & ) override;
 		void set();
 
-		inline const GLuint getTexture() const { return _texture.getId(); }
-		inline const GLuint getFbo() const { return _fbo.getId(); }
+		inline const Texture2D &   getTexture() const { return _texture; }
+		inline const Framebuffer & getFbo() const { return _fbo; }
 
 	  private:
 		Framebuffer _fbo;

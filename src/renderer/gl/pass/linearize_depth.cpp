@@ -32,7 +32,7 @@ namespace VTX::Renderer::GL::Pass
 	{
 		_fbo.bind();
 
-		gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getDepthTexture() );
+		p_renderer.getPassGeometric().getDepthTexture().bindToUnit( 0 );
 
 		_program->use();
 

@@ -45,11 +45,16 @@ namespace VTX::Renderer::GL::Pass
 			gl()->glBindFramebuffer( GL_FRAMEBUFFER, p_renderer.getOutputFbo() );
 		}
 
-		gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
-		gl()->glBindTextureUnit( 1,
-								 VTX_SETTING().activeOutline ? p_renderer.getPassOutline().getTexture()
-															 : p_renderer.getPassShading().getTexture() );
-		gl()->glBindTextureUnit( 2, p_renderer.getPassLinearizeDepth().getTexture() );
+		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
+		if ( VTX_SETTING().activeOutline )
+		{
+			p_renderer.getPassOutline().getTexture().bindToUnit( 1 );
+		}
+		else
+		{
+			p_renderer.getPassShading().getTexture().bindToUnit( 1 );
+		}
+		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 2 );
 
 		_program->use();
 
