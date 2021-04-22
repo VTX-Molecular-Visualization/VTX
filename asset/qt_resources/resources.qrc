@@ -1,8 +1,8 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-	<file>sprite/add_preset_icon.png</file>
 	<file>sprite/add_icon.png</file>
 	<file>sprite/add_icon_hovered.png</file>
+	<file>sprite/add_preset_icon.png</file>
 	<file>sprite/add_viewpoint.png</file>
 	<file>sprite/camera_focus_icon.png</file>
 	<file>sprite/camera_freefly_mode.png</file>
@@ -28,7 +28,7 @@
 	<file>sprite/hide_hydrogen_icon.png</file>
 	<file>sprite/hide_selection_icon.png</file>
 	<file>sprite/hide_sequence_icon.png</file>
-	<file>sprite/hide_solvant_icon.png</file>
+	<file>sprite/hide_solvent_icon.png</file>
 	<file>sprite/hide_water_icon.png</file>
 	<file>sprite/info_button.png</file>
 	<file>sprite/job_manager.png</file>
@@ -65,7 +65,7 @@
 	<file>sprite/show_hydrogen_icon.png</file>
 	<file>sprite/show_selection_icon.png</file>
 	<file>sprite/show_sequence_icon.png</file>
-	<file>sprite/show_solvant_icon.png</file>
+	<file>sprite/show_solvent_icon.png</file>
 	<file>sprite/show_water_icon.png</file>
 	<file>sprite/stop_icon.png</file>
 	<file>sprite/stop_icon_hovered.png</file>
@@ -85,6 +85,7 @@
 	<file>sprite/undock_icon_hovered.png</file>
 	<file>sprite/unlock_window_icon.png</file>
 	<file>sprite/unlock_window_icon_hovered.png</file>
+	<file>sprite/windowed_icon.png</file>
 	<file>stylesheet.css</file>
 </qresource>
 </RCC>

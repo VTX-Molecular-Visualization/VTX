@@ -85,6 +85,9 @@ namespace VTX
 
 		delete _timer;
 
+		// Prevent events throw for nothing when app quit
+		Event::EventManager::get().freezeEvent( true );
+
 		MVC::MvcManager::get().deleteModel( _representationLibrary );
 		MVC::MvcManager::get().deleteModel( _renderEffectLibrary );
 

@@ -207,18 +207,14 @@ namespace VTX
 			bool isAtEndOfTrajectoryPlay();
 			void resetTrajectoryPlay();
 
+			inline bool showWater() const { return _showWater; }
+			void		setShowWater( const bool p_showWater );
+			inline bool showHydrogen() const { return _showHydrogen; }
+			void		setShowHydrogen( const bool p_showHydrogen );
 			inline bool showSolvent() const { return _showSolvent; }
-			inline void setShowSolvent( const bool p_showSolvent )
-			{
-				_showSolvent = p_showSolvent;
-				_fillBufferAtomVisibilities();
-			}
+			void		setShowSolvent( const bool p_showSolvent );
 			inline bool showIon() const { return _showIon; }
-			inline void setShowIon( const bool p_showIon )
-			{
-				_showIon = p_showIon;
-				_fillBufferAtomVisibilities();
-			}
+			void		setShowIon( const bool p_showIon );
 
 			// At least one residue
 			inline bool hasTopology() const { return getResidueCount() > 1; }
@@ -300,8 +296,10 @@ namespace VTX
 			float				 _trajectoryTimer  = 0;
 
 			// Element visibility
-			bool _showSolvent = true;
-			bool _showIon	  = true;
+			bool _showWater	   = true;
+			bool _showSolvent  = true;
+			bool _showHydrogen = true;
+			bool _showIon	   = true;
 
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();

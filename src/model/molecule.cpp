@@ -247,6 +247,16 @@ namespace VTX
 				{
 					_bufferAtomVisibilities[ i ] = 0u;
 				}
+				else if ( _showHydrogen == false && atom->getSymbol() == Atom::SYMBOL::A_H )
+				{
+					_bufferAtomVisibilities[ i ] = 0u;
+				}
+				else if ( _showWater == false
+						  && ( atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::HOH
+							   || atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::WAT ) )
+				{
+					_bufferAtomVisibilities[ i ] = 0u;
+				}
 			}
 
 			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
@@ -447,6 +457,31 @@ namespace VTX
 			_trajectoryTimer  = 0;
 			_dynamicLoopCount = 0;
 			setFrame( frame );
+		}
+
+		void Molecule::setShowWater( const bool p_showWater )
+		{
+			_showWater = p_showWater;
+			_fillBufferAtomVisibilities();
+			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
+		}
+		void Molecule::setShowHydrogen( const bool p_showHydrogen )
+		{
+			_showHydrogen = p_showHydrogen;
+			_fillBufferAtomVisibilities();
+			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
+		}
+		void Molecule::setShowSolvent( const bool p_showSolvent )
+		{
+			_showSolvent = p_showSolvent;
+			_fillBufferAtomVisibilities();
+			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
+		}
+		void Molecule::setShowIon( const bool p_showIon )
+		{
+			_showIon = p_showIon;
+			_fillBufferAtomVisibilities();
+			VTX_EVENT( new Event::VTXEvent( Event::Global::MOLECULE_ELEMENT_DISPLAY_CHANGE ) );
 		}
 
 		void Molecule::print() const
