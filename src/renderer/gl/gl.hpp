@@ -23,7 +23,7 @@ namespace VTX::Renderer::GL
 		GL( OpenGLFunctions * const p_gl );
 		~GL();
 
-		void init( const uint, const uint, const GLuint ) override;
+		void init( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId ) override;
 		void renderFrame( const Object3D::Scene & ) override;
 		void setShading() override;
 		void activeSSAO( const bool ) override;

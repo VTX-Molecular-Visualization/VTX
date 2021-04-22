@@ -58,8 +58,22 @@ namespace VTX::Renderer::GL
 			FRAMEBUFFER		 = GL_FRAMEBUFFER
 		};
 
-		Framebuffer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) { _gl->glCreateFramebuffers( 1, &_id ); }
-		~Framebuffer() { _gl->glDeleteFramebuffers( 1, &_id ); }
+		Framebuffer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
+
+		~Framebuffer() { _destroy(); }
+
+		void create()
+		{
+			assert( _id == GL_INVALID_INDEX );
+
+			_gl->glCreateFramebuffers( 1, &_id );
+		}
+		void assign( const int p_id )
+		{
+			if ( _id != GL_INVALID_INDEX )
+				_destroy();
+			_id = p_id;
+		}
 
 		int getId() const { return _id; }
 
@@ -73,8 +87,6 @@ namespace VTX::Renderer::GL
 		void attachTexture( const Texture2D & p_texture, const Attachment p_attachment, const int p_level = 0 ) const
 		{
 			_gl->glNamedFramebufferTexture( _id, GLenum( p_attachment ), p_texture.getId(), p_level );
-
-			_checkStatus();
 		}
 
 		void setDrawBuffers( const std::vector<Attachment> & p_drawBuffers ) const
@@ -86,6 +98,7 @@ namespace VTX::Renderer::GL
 		}
 
 	  private:
+		void _destroy() { _gl->glDeleteFramebuffers( 1, &_id ); }
 		void _checkStatus() const;
 
 	  private:

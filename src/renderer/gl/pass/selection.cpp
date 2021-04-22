@@ -16,6 +16,7 @@ namespace VTX::Renderer::GL::Pass
 						 Texture2D::Filter::LINEAR,
 						 Texture2D::Filter::LINEAR );
 
+		_fbo.create();
 		updateOutputFBO( p_renderer );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Selection", { "shading/selection.frag" } );
@@ -42,7 +43,7 @@ namespace VTX::Renderer::GL::Pass
 		}
 		else
 		{
-			gl()->glBindFramebuffer( GL_FRAMEBUFFER, p_renderer.getOutputFbo() );
+			p_renderer.getOutputFramebuffer().bind();
 		}
 
 		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );

@@ -36,6 +36,7 @@ namespace VTX::Renderer::GL::Pass
 							  Texture2D::Filter::NEAREST,
 							  Texture2D::Filter::NEAREST );
 
+		_fbo.create();
 		_fbo.attachTexture( _viewPositionsNormalsCompressedTexture, Framebuffer::Attachment::COLOR0 );
 		_fbo.attachTexture( _colorsTexture, Framebuffer::Attachment::COLOR1 );
 		_fbo.attachTexture( _depthTexture, Framebuffer::Attachment::DEPTH );

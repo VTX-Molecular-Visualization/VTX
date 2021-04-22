@@ -16,6 +16,7 @@ namespace VTX::Renderer::GL::Pass
 						 Texture2D::Filter::NEAREST,
 						 Texture2D::Filter::NEAREST );
 
+		_fbo.create();
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "LinearizeDepth", { "shading/linearize_depth.frag" } );

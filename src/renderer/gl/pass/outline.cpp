@@ -16,6 +16,7 @@ namespace VTX::Renderer::GL::Pass
 						 Texture2D::Filter::LINEAR,
 						 Texture2D::Filter::LINEAR );
 
+		_fbo.create();
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Outline", { "shading/outline.frag" } );

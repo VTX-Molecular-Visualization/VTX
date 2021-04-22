@@ -40,12 +40,12 @@ namespace VTX::Renderer::GL
 		delete _passFXAA;
 	}
 
-	void GL::init( const uint p_width, const uint p_height, const GLuint p_fbo )
+	void GL::init( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId )
 	{
 		VTX_INFO( "Initializing renderer..." );
 
 		// Set size.
-		BaseRenderer::resize( p_width, p_height, p_fbo );
+		BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
 
 		// Init pass.
 		_passGeometric->init( p_width, p_height, *this );
@@ -63,11 +63,11 @@ namespace VTX::Renderer::GL
 		VTX_INFO( "Renderer initialized" );
 	}
 
-	void GL::resize( const uint p_width, const uint p_height, const GLuint p_fbo )
+	void GL::resize( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId )
 	{
 		if ( p_width != _width || p_height != _height )
 		{
-			BaseRenderer::resize( p_width, p_height, p_fbo );
+			BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
 
 			_passGeometric->resize( _width, _height, *this );
 			_passLinearizeDepth->resize( _width, _height, *this );

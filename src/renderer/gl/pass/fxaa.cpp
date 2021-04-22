@@ -26,7 +26,7 @@ namespace VTX::Renderer::GL::Pass
 
 	void FXAA::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, p_renderer.getOutputFbo() );
+		p_renderer.getOutputFramebuffer().bind();
 
 		p_renderer.getPassSelection().getTexture().bindToUnit( 0 );
 
