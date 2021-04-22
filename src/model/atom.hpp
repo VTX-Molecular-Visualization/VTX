@@ -149,7 +149,7 @@ namespace VTX
 				COUNT
 			};
 
-			enum class TYPE : int
+			enum class TYPE : uint
 			{
 				NORMAL,
 				SOLVENT,

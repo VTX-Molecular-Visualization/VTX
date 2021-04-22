@@ -3,7 +3,7 @@
 layout( location = 0 ) in vec3 aVertexPosition;
 layout( location = 1 ) in vec3 aVertexNormal;
 layout( location = 2 ) in vec3 aVertexColor;
-layout( location = 3 ) in unsigned short aVertexVis;
+layout( location = 3 ) in uint aVertexVis;
 
 uniform mat4 u_MVMatrix;
 uniform mat4 u_projMatrix;

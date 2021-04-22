@@ -39,16 +39,16 @@ namespace VTX::Buffer
 		// Visbility.
 		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
 		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::ATOM_VISIBILITY, _vboAtomVisibilities, 0, sizeof( ushort ) );
-		gl()->glVertexArrayAttribIFormat( _vao, ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, GL_UNSIGNED_SHORT, 0 );
+			_vao, ATTRIBUTE_LOCATION::ATOM_VISIBILITY, _vboAtomVisibilities, 0, sizeof( uint ) );
+		gl()->glVertexArrayAttribIFormat( _vao, ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, GL_UNSIGNED_INT, 0 );
 		gl()->glVertexArrayAttribBinding(
 			_vao, ATTRIBUTE_LOCATION::ATOM_VISIBILITY, ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
 
 		// Selection.
 		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::ATOM_SELECTION );
 		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::ATOM_SELECTION, _vboAtomSelections, 0, sizeof( ushort ) );
-		gl()->glVertexArrayAttribIFormat( _vao, ATTRIBUTE_LOCATION::ATOM_SELECTION, 1, GL_UNSIGNED_SHORT, 0 );
+			_vao, ATTRIBUTE_LOCATION::ATOM_SELECTION, _vboAtomSelections, 0, sizeof( uint ) );
+		gl()->glVertexArrayAttribIFormat( _vao, ATTRIBUTE_LOCATION::ATOM_SELECTION, 1, GL_UNSIGNED_INT, 0 );
 		gl()->glVertexArrayAttribBinding(
 			_vao, ATTRIBUTE_LOCATION::ATOM_SELECTION, ATTRIBUTE_LOCATION::ATOM_SELECTION );
 	}
@@ -113,20 +113,18 @@ namespace VTX::Buffer
 			_vboAtomColors, sizeof( Color::Rgb ) * GLsizei( p_colors.size() ), p_colors.data(), GL_STATIC_DRAW );
 	}
 
-	void Molecule::setAtomVisibilities( const std::vector<ushort> & p_visibilities )
+	void Molecule::setAtomVisibilities( const std::vector<uint> & p_visibilities )
 	{
 		gl()->glNamedBufferData( _vboAtomVisibilities,
-								 sizeof( ushort ) * GLsizei( p_visibilities.size() ),
+								 sizeof( uint ) * GLsizei( p_visibilities.size() ),
 								 p_visibilities.data(),
 								 GL_STATIC_DRAW );
 	}
 
-	void Molecule::setAtomSelections( const std::vector<ushort> & p_selections )
+	void Molecule::setAtomSelections( const std::vector<uint> & p_selections )
 	{
-		gl()->glNamedBufferData( _vboAtomSelections,
-								 sizeof( ushort ) * GLsizei( p_selections.size() ),
-								 p_selections.data(),
-								 GL_STATIC_DRAW );
+		gl()->glNamedBufferData(
+			_vboAtomSelections, sizeof( uint ) * GLsizei( p_selections.size() ), p_selections.data(), GL_STATIC_DRAW );
 	}
 
 	void Molecule::setBonds( const std::vector<uint> & p_bonds )
