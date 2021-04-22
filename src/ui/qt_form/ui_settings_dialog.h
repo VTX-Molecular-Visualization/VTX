@@ -97,8 +97,8 @@ public:
 
     void retranslateUi(QDialog *DialogSettings)
     {
-        DialogSettings->setWindowTitle(QCoreApplication::translate("DialogSettings", "Settings", nullptr));
-        lineEditSettingsName->setPlaceholderText(QCoreApplication::translate("DialogSettings", "Enter a name for saved settings", nullptr));
+        DialogSettings->setWindowTitle(QCoreApplication::translate("DialogSettings", "Window settings", nullptr));
+        lineEditSettingsName->setPlaceholderText(QCoreApplication::translate("DialogSettings", "Enter the name of the settings profile", nullptr));
         pushButtonSaveSettings->setText(QCoreApplication::translate("DialogSettings", "Save", nullptr));
         pushButtonLoadSetting->setText(QCoreApplication::translate("DialogSettings", "Load", nullptr));
         pushButtonRemoveSetting->setText(QCoreApplication::translate("DialogSettings", "Remove", nullptr));
