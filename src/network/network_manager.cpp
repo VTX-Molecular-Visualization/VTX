@@ -13,14 +13,15 @@ namespace VTX
 			_id = p_id;
 			VTX_INFO( "Downloading " + p_id + "..." );
 
-			
 			QNetworkRequest request;
+			//request.setSslConfiguration( QSslConfiguration::defaultDtlsConfiguration() );
+			//request.setRawHeader( QByteArray( "Authorization" ), QByteArray( "Basic" ) );
 			request.setUrl( QUrl( std::string( API_URL_MMTF + p_id ).c_str() ) );
 			QNetworkReply * const reply = _networkManager.get( request );
 			connect( reply, &QNetworkReply::errorOccurred, this, &NetworkManager::_errorOccured );
+			connect( reply, &QNetworkReply::sslErrors, this, &NetworkManager::_sslErrors );
 			connect( reply, &QNetworkReply::downloadProgress, this, &NetworkManager::_downloadProgress );
 			connect( reply, &QNetworkReply::finished, this, &NetworkManager::_finished );
-			
 		}
 
 		void NetworkManager::_finished()
@@ -45,9 +46,20 @@ namespace VTX
 			VTX_DEBUG( "Network error: " + std::to_string( p_error ) );
 		}
 
+		void NetworkManager::_sslErrors( const QList<QSslError> & p_sslErrors )
+		{
+			VTX_ERROR( QSslSocket::sslLibraryBuildVersionString().toStdString() );
+			VTX_ERROR( QSslSocket::sslLibraryVersionString().toStdString() );
+			for ( int i = 0; i < p_sslErrors.size(); i++ )
+			{
+				VTX_ERROR( p_sslErrors.at( i ).errorString().toStdString() );
+			}
+		}
+
 		void NetworkManager::_downloadProgress( const qint64 p_bytesReceived, const qint64 p_bytesTotal )
 		{
-			if (p_bytesReceived == 0) {
+			if ( p_bytesReceived == 0 )
+			{
 				return;
 			}
 

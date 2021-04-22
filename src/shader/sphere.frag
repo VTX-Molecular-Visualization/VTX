@@ -9,7 +9,7 @@ flat in vec3		   viewSpherePos;
 flat in vec3		   sphereColor;
 flat in float		   sphereRad;
 flat in float		   dotViewSpherePos;
-flat in unsigned short sphereSel;
+flat in uint sphereSel;
 
 // 3 16 bits for position.
 // 3 16 bits for normal.

@@ -36,8 +36,8 @@ namespace VTX::Buffer
 		// Visbility.
 		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
 		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, _vboVisibilities, 0, sizeof( ushort ) );
-		gl()->glVertexArrayAttribIFormat( _vao, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, GL_UNSIGNED_SHORT, 0 );
+			_vao, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, _vboVisibilities, 0, sizeof( uint ) );
+		gl()->glVertexArrayAttribIFormat( _vao, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, GL_UNSIGNED_INT, 0 );
 		gl()->glVertexArrayAttribBinding(
 			_vao, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
 	}
@@ -97,10 +97,10 @@ namespace VTX::Buffer
 			_vboColors, sizeof( Color::Rgb ) * GLsizei( p_colors.size() ), p_colors.data(), GL_STATIC_DRAW );
 	}
 
-	void MeshTriangle::setVisibilities( const std::vector<ushort> & p_visibilities )
+	void MeshTriangle::setVisibilities( const std::vector<uint> & p_visibilities )
 	{
 		gl()->glNamedBufferData( _vboVisibilities,
-								 sizeof( ushort ) * GLsizei( p_visibilities.size() ),
+								 sizeof( uint ) * GLsizei( p_visibilities.size() ),
 								 p_visibilities.data(),
 								 GL_STATIC_DRAW );
 	}

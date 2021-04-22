@@ -5,7 +5,7 @@ in TeOut
 	vec3				viewPosition;
 	vec3				normal;
 	vec3				color;
-	flat unsigned short selection;
+	flat uint selection;
 }
 teOut;
 

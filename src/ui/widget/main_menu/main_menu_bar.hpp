@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "extensions/menu_extensions_widget.hpp"
 #include "home/menu_home_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "visualization/menu_visualization_widget.hpp"
@@ -35,10 +36,11 @@ namespace VTX
 					void _setupSlots() override;
 
 				  private:
-					QTabWidget *							 _tabWidget = nullptr;
-					Home::MenuHomeWidget *					 _mainMenu	= nullptr;
-					Visualization::MenuVisualizationWidget * _viewMenu	= nullptr;
-					QLabel *								 _movieMenu = nullptr;
+					QTabWidget *							 _tabWidget		 = nullptr;
+					Home::MenuHomeWidget *					 _mainMenu		 = nullptr;
+					Visualization::MenuVisualizationWidget * _viewMenu		 = nullptr;
+					QLabel *								 _movieMenu		 = nullptr;
+					Extensions::MenuExtensionsWidget *		 _extensionsMenu = nullptr;
 				};
 			} // namespace MainMenu
 		}	  // namespace Widget

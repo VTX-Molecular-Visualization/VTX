@@ -12,7 +12,7 @@ uniform vec3 uLineColor;
 void main()
 {
 	const uvec4			 viewPositionNormal = texelFetch( gbViewPositionNormal, ivec2( gl_FragCoord.xy ), 0 );
-	const unsigned short selection			= unsigned short( unpackHalf2x16( viewPositionNormal.w ).x );
+	const uint selection			= uint( unpackHalf2x16( viewPositionNormal.w ).x );
 
 	const vec2 texCoord = gl_FragCoord.xy / vec2( textureSize( linearDepthTexture, 0 ) );
 	if ( selection == 0us )

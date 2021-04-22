@@ -19,8 +19,8 @@ in TcOut
 	vec3				direction;
 	vec3				normal;
 	flat vec3			color;
-	flat unsigned short ssType;
-	flat unsigned short selection;
+	flat uint ssType;
+	flat uint selection;
 }
 tcOut[];
 
@@ -29,7 +29,7 @@ out TeOut
 	vec3				viewPosition;
 	vec3				normal;
 	vec3				color;
-	flat unsigned short selection;
+	flat uint selection;
 }
 teOut;
 

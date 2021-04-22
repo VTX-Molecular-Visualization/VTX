@@ -9,15 +9,15 @@
 layout( location = ATOM_POSITION ) in vec3 aVertexPosition;
 layout( location = ATOM_COLOR ) in vec3 aVertexColor;
 layout( location = ATOM_RADIUS ) in float aVertexRad;
-layout( location = ATOM_VISIBILITY ) in unsigned short aVertexVis;
-layout( location = ATOM_SELECTION ) in unsigned short aVertexSel;
+layout( location = ATOM_VISIBILITY ) in uint aVertexVis;
+layout( location = ATOM_SELECTION ) in uint aVertexSel;
 
 uniform mat4 u_MVMatrix;
 uniform mat4 u_projMatrix;
 
 flat out vec3			vVertexColor;
-flat out unsigned short vVertexVis;
-flat out unsigned short vVertexSel;
+flat out uint vVertexVis;
+flat out uint vVertexSel;
 
 void main()
 {

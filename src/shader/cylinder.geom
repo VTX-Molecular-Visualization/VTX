@@ -7,13 +7,13 @@ uniform mat4  u_projMatrix;
 uniform float u_cylRad;
 
 flat in vec3		   vVertexColor[]; // One color per atom.
-flat in unsigned short vVertexVis[];
-flat in unsigned short vVertexSel[];
+flat in uint vVertexVis[];
+flat in uint vVertexSel[];
 
 smooth out vec3			viewImpPos;		  // Impostor position in view space.
 flat out vec3			viewCylVert[ 2 ]; // Cylinder vertices position in view space.
 flat out vec3			colors[ 2 ];
-flat out unsigned short vertexSel[ 2 ];
+flat out uint vertexSel[ 2 ];
 
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {

@@ -69,9 +69,9 @@ namespace VTX
 			// Ca -> O directions.
 			std::vector<Vec3f> _bufferCaODirections = std::vector<Vec3f>();
 			// Secondary structure types.
-			std::vector<ushort>		_bufferSSTypes	  = std::vector<ushort>();
+			std::vector<uint>		_bufferSSTypes	  = std::vector<uint>();
 			std::vector<Color::Rgb> _bufferColors	  = std::vector<Color::Rgb>();
-			std::vector<ushort>		_bufferSelections = std::vector<ushort>();
+			std::vector<uint>		_bufferSelections = std::vector<uint>();
 			std::vector<uint>		_bufferIndices	  = std::vector<uint>();
 
 			std::map<uint, uint> _residueToIndices	 = std::map<uint, uint>();

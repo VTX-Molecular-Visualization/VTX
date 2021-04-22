@@ -169,12 +169,12 @@ namespace VTX
 			inline const std::vector<float> &		 getBufferAtomRadius() const { return _bufferAtomRadius; }
 			inline std::vector<Color::Rgb> &		 getBufferAtomColors() { return _bufferAtomColors; }
 			inline const std::vector<Color::Rgb> &	 getBufferAtomColors() const { return _bufferAtomColors; }
-			inline std::vector<ushort> &			 getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
-			inline const std::vector<ushort> & getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
-			inline std::vector<ushort> &	   getBufferAtomSelection() { return _bufferAtomSelection; }
-			inline const std::vector<ushort> & getBufferAtomSelection() const { return _bufferAtomSelection; }
-			inline std::vector<uint> &		   getBufferBonds() { return _bufferBonds; }
-			inline const std::vector<uint> &   getBufferBonds() const { return _bufferBonds; }
+			inline std::vector<uint> &				 getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
+			inline const std::vector<uint> & getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
+			inline std::vector<uint> &		 getBufferAtomSelection() { return _bufferAtomSelection; }
+			inline const std::vector<uint> & getBufferAtomSelection() const { return _bufferAtomSelection; }
+			inline std::vector<uint> &		 getBufferBonds() { return _bufferBonds; }
+			inline const std::vector<uint> & getBufferBonds() const { return _bufferBonds; }
 
 			inline const uint getChainCount() const { return uint( _chains.size() ); }
 			inline const uint getResidueCount() const { return uint( _residues.size() ); }
@@ -284,8 +284,8 @@ namespace VTX
 
 			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
 			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
-			std::vector<ushort>		_bufferAtomVisibilities = std::vector<ushort>();
-			std::vector<ushort>		_bufferAtomSelection	= std::vector<ushort>();
+			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
+			std::vector<uint>		_bufferAtomSelection	= std::vector<uint>();
 			std::vector<uint>		_bufferBonds			= std::vector<uint>();
 
 			// Secondary structure.
