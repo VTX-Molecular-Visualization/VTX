@@ -1,5 +1,5 @@
-#include "color/rgb.hpp"
 #include "lib_chemfiles.hpp"
+#include "color/rgb.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
 #include "model/chain.hpp"
@@ -64,6 +64,7 @@ namespace VTX
 					Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
 					chemfiles::Frame					  frame			= p_trajectory.read_step( frameIdx );
 					const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
+					moleculeFrame.resize( positions.size() );
 					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
 					{
 						const chemfiles::Vector3D & position = positions[ positionIdx ];
@@ -320,8 +321,7 @@ namespace VTX
 							}
 							else if ( secondaryStructure == "left-handed 3-10 helix" )
 							{
-								modelResidue->setSecondaryStructure(
-									Model::SecondaryStructure::TYPE::HELIX_3_10_LEFT );
+								modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_3_10_LEFT );
 							}
 							else if ( secondaryStructure == "pi helix" )
 							{
@@ -534,4 +534,3 @@ namespace VTX
 		} // namespace Reader
 	}	  // namespace IO
 } // namespace VTX
-

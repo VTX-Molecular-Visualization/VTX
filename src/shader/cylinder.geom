@@ -39,7 +39,7 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 void main()
 {
 	// Do not emit primitive if cylinder is not visible.
-	if ( vVertexVis[ 0 ] == 0us || vVertexVis[ 1 ] == 0us )
+	if ( vVertexVis[ 0 ] == 0 || vVertexVis[ 1 ] == 0 )
 	{
 		return;
 	}

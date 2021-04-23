@@ -46,7 +46,7 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 void main()
 {
 	// Do not emit primitive if sphere is not visible.
-	if ( vSphereVis[ 0 ] == 0us )
+	if ( vSphereVis[ 0 ] == 0 )
 	{
 		return;
 	}
