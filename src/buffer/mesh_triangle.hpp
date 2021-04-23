@@ -18,8 +18,12 @@ namespace VTX
 		class MeshTriangle : public BaseBufferOpenGL
 		{
 		  public:
-			MeshTriangle( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ), _vao( p_gl ) {};
-			~MeshTriangle() = default; /// TODO free buffers !
+			MeshTriangle( OpenGLFunctions * const p_gl ) :
+				BaseBufferOpenGL( p_gl ), _vboPositions( p_gl ), _vboNormals( p_gl ), _vboColors( p_gl ),
+				_vboVisibilities( p_gl ), _ibo( p_gl ), _vao( p_gl ) {};
+			~MeshTriangle() = default;
+
+			const Renderer::GL::VertexArray & getVao() const override { return _vao; }
 
 			void bind() override;
 			void unbind() override;
@@ -32,7 +36,6 @@ namespace VTX
 
 		  protected:
 			void _generate() override;
-			void _free() override;
 
 		  private:
 			enum ATTRIBUTE_LOCATION
@@ -43,11 +46,11 @@ namespace VTX
 				VERTEX_VISIBILITY = 3,
 			};
 
-			GLuint					  _vboPositions	   = GL_INVALID_VALUE;
-			GLuint					  _vboNormals	   = GL_INVALID_VALUE;
-			GLuint					  _vboColors	   = GL_INVALID_VALUE;
-			GLuint					  _vboVisibilities = GL_INVALID_VALUE;
-			GLuint					  _ibo			   = GL_INVALID_VALUE;
+			Renderer::GL::Buffer	  _vboPositions;
+			Renderer::GL::Buffer	  _vboNormals;
+			Renderer::GL::Buffer	  _vboColors;
+			Renderer::GL::Buffer	  _vboVisibilities;
+			Renderer::GL::Buffer	  _ibo;
 			Renderer::GL::VertexArray _vao;
 		};
 	} // namespace Buffer

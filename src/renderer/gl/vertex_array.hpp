@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "buffer.hpp"
 #include "define.hpp"
 #include "generic/base_opengl.hpp"
 
@@ -27,6 +28,22 @@ namespace VTX::Renderer::GL
 			/// TODO: complete if needed.
 		};
 
+		enum class DrawMode : GLenum
+		{
+			POINTS					 = GL_POINTS,
+			LINE_STRIP				 = GL_LINE_STRIP,
+			LINE_LOOP				 = GL_LINE_LOOP,
+			LINES					 = GL_LINES,
+			LINE_STRIP_ADJACENCY	 = GL_LINE_STRIP_ADJACENCY,
+			LINES_ADJACENCY			 = GL_LINES_ADJACENCY,
+			TRIANGLE_STRIP			 = GL_TRIANGLE_STRIP,
+			TRIANGLE_FAN			 = GL_TRIANGLE_FAN,
+			TRIANGLES				 = GL_TRIANGLES,
+			TRIANGLE_STRIP_ADJACENCY = GL_TRIANGLE_STRIP_ADJACENCY,
+			TRIANGLES_ADJACENCY		 = GL_TRIANGLES_ADJACENCY,
+			PATCHES					 = GL_PATCHES
+		};
+
 		VertexArray( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 		~VertexArray() { _gl->glDeleteVertexArrays( 1, &_id ); }
 
@@ -37,6 +54,11 @@ namespace VTX::Renderer::GL
 		void bind() const { _gl->glBindVertexArray( _id ); }
 		void unbind() const { _gl->glBindVertexArray( 0 ); }
 
+		void bindElementBuffer( const Buffer & p_elementBuffer ) const
+		{
+			_gl->glVertexArrayElementBuffer( _id, p_elementBuffer.getId() );
+		}
+		/// TODO: remove vbo GLuint version
 		void bindElementBuffer( const GLuint p_elementBuffer ) const
 		{
 			_gl->glVertexArrayElementBuffer( _id, p_elementBuffer );
@@ -47,6 +69,14 @@ namespace VTX::Renderer::GL
 			_gl->glEnableVertexArrayAttrib( _id, p_bindingIndex );
 		}
 
+		void setVertexBuffer( const GLuint	 p_bindingIndex,
+							  const Buffer & p_vertexBuffer,
+							  const GLsizei	 p_stride,
+							  const GLintptr p_offset = 0 ) const
+		{
+			_gl->glVertexArrayVertexBuffer( _id, p_bindingIndex, p_vertexBuffer.getId(), p_offset, p_stride );
+		}
+		/// TODO: remove vbo GLuint version
 		void setVertexBuffer( const GLuint	 p_bindingIndex,
 							  const GLuint	 p_vertexBuffer,
 							  const GLsizei	 p_stride,
@@ -80,8 +110,21 @@ namespace VTX::Renderer::GL
 			_gl->glVertexArrayAttribBinding( _id, p_attributeIndex, p_bindingIndex );
 		}
 
-		void drawArray();
-		void drawElement();
+		void drawArray( const DrawMode p_mode, const GLint p_first, const GLsizei p_count ) const
+		{
+			bind();
+			_gl->glDrawArrays( GLenum( p_mode ), p_first, p_count );
+			unbind();
+		}
+		void drawElement( const DrawMode p_mode,
+						  const GLsizei	 p_count,
+						  const Type	 p_type,
+						  const GLvoid * p_offset = 0 ) const
+		{
+			bind();
+			_gl->glDrawElements( GLenum( p_mode ), p_count, GLenum( p_type ), p_offset );
+			unbind();
+		}
 
 	  private:
 		GLuint _id = GL_INVALID_INDEX;

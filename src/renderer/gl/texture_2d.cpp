@@ -2,8 +2,8 @@
 
 namespace VTX::Renderer::GL
 {
-	void Texture2D::create( const int			 p_width,
-							const int			 p_height,
+	void Texture2D::create( const GLsizei		 p_width,
+							const GLsizei		 p_height,
 							const InternalFormat p_format,
 							const Wrapping		 p_wrappingS,
 							const Wrapping		 p_wrappingT,
@@ -24,7 +24,7 @@ namespace VTX::Renderer::GL
 		_create();
 	}
 
-	void Texture2D::resize( const int p_width, const int p_height )
+	void Texture2D::resize( const GLsizei p_width, const GLsizei p_height )
 	{
 		_destroy();
 		_width	= p_width;
@@ -32,14 +32,14 @@ namespace VTX::Renderer::GL
 		_create();
 	}
 
-	void Texture2D::fill( const void * p_pixels,
-						  const Format p_format,
-						  const Type   p_type,
-						  const int	   p_level,
-						  const int	   p_offsetX,
-						  const int	   p_offsetY,
-						  const int	   p_width,
-						  const int	   p_height ) const
+	void Texture2D::fill( const void *	p_pixels,
+						  const Format	p_format,
+						  const Type	p_type,
+						  const GLint	p_level,
+						  const GLint	p_offsetX,
+						  const GLint	p_offsetY,
+						  const GLsizei p_width,
+						  const GLsizei p_height ) const
 	{
 		const int width	 = p_width == -1 ? _width : p_width;
 		const int height = p_height == -1 ? _height : p_height;

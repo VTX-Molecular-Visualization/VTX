@@ -6,7 +6,7 @@
 
 namespace VTX::Renderer::GL
 {
-	GL::GL( OpenGLFunctions * const p_gl ) : BaseRenderer( p_gl )
+	GL::GL( OpenGLFunctions * const p_gl ) : BaseRenderer( p_gl ), _quadVAO( p_gl ), _quadVBO( p_gl )
 	{
 		_passGeometric		= new Pass::Geometric( p_gl );
 		_passLinearizeDepth = new Pass::LinearizeDepth( p_gl );
@@ -20,16 +20,6 @@ namespace VTX::Renderer::GL
 
 	GL::~GL()
 	{
-		if ( _quadVAO != GL_INVALID_VALUE )
-		{
-			gl()->glDisableVertexArrayAttrib( _quadVAO, 0 );
-			gl()->glDeleteVertexArrays( 1, &_quadVAO );
-		}
-		if ( _quadVBO != GL_INVALID_VALUE )
-		{
-			gl()->glDeleteBuffers( 1, &_quadVBO );
-		}
-
 		delete _passGeometric;
 		delete _passLinearizeDepth;
 		delete _passSSAO;
@@ -85,7 +75,7 @@ namespace VTX::Renderer::GL
 		// Init quad vao/vbo for deferred shading.
 
 		// clang-format off
-			Vec2f quadVertices[] =
+			std::vector<Vec2f> quadVertices =
 			{
 				Vec2f(-1.f,  1.f),
 				Vec2f(-1.f,  -1.f),
@@ -94,16 +84,16 @@ namespace VTX::Renderer::GL
 			};
 		// clang-format on
 
-		gl()->glCreateBuffers( 1, &_quadVBO );
+		_quadVBO.create();
 
-		gl()->glCreateVertexArrays( 1, &_quadVAO );
+		_quadVAO.create();
 
-		gl()->glEnableVertexArrayAttrib( _quadVAO, 0 );
-		gl()->glVertexArrayVertexBuffer( _quadVAO, 0, _quadVBO, 0, sizeof( Vec2f ) );
-		gl()->glVertexArrayAttribFormat( _quadVAO, 0, 2, GL_FLOAT, GL_FALSE, 0 );
-		gl()->glVertexArrayAttribBinding( _quadVAO, 0, 0 );
+		_quadVAO.enableAttribute( 0 );
+		_quadVAO.setVertexBuffer( 0, _quadVBO.getId(), sizeof( Vec2f ) );
+		_quadVAO.setAttributeFormat( 0, 2, VertexArray::Type::FLOAT );
+		_quadVAO.setAttributeBinding( 0, 0 );
 
-		gl()->glNamedBufferData( _quadVBO, sizeof( quadVertices ), quadVertices, GL_STATIC_DRAW );
+		_quadVBO.set<Vec2f>( quadVertices, Buffer::Usage::STATIC_DRAW );
 	}
 
 	void GL::renderFrame( const Object3D::Scene & p_scene )
@@ -111,6 +101,7 @@ namespace VTX::Renderer::GL
 		gl()->glViewport( 0, 0, _width, _height );
 
 		// TODO: do not change each frame
+		/// TODO2: why this?
 		if ( VTX_SETTING().cameraNear == 0.f )
 		{
 			gl()->glEnable( GL_DEPTH_CLAMP );

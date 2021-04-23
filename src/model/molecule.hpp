@@ -216,7 +216,7 @@ namespace VTX
 			void print() const;
 
 			void setVisible( const bool );
-			void render( const Object3D::Camera & ) override;
+			void render( const Object3D::Camera & ) const override;
 
 			bool mergeTopology( const Molecule & );
 

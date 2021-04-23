@@ -68,7 +68,7 @@ namespace VTX::Renderer::GL
 
 			_gl->glCreateFramebuffers( 1, &_id );
 		}
-		void assign( const int p_id )
+		void assign( const GLuint p_id )
 		{
 			if ( _id != GL_INVALID_INDEX )
 				_destroy();
@@ -84,7 +84,7 @@ namespace VTX::Renderer::GL
 			_checkStatus();
 		}
 
-		void attachTexture( const Texture2D & p_texture, const Attachment p_attachment, const int p_level = 0 ) const
+		void attachTexture( const Texture2D & p_texture, const Attachment p_attachment, const GLint p_level = 0 ) const
 		{
 			_gl->glNamedFramebufferTexture( _id, GLenum( p_attachment ), p_texture.getId(), p_level );
 		}

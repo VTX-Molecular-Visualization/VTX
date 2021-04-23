@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "buffer.hpp"
 #include "pass/blur.hpp"
 #include "pass/fxaa.hpp"
 #include "pass/geometric.hpp"
@@ -14,6 +15,7 @@
 #include "pass/shading.hpp"
 #include "pass/ssao.hpp"
 #include "renderer/base_renderer.hpp"
+#include "vertex_array.hpp"
 
 namespace VTX::Renderer::GL
 {
@@ -39,8 +41,8 @@ namespace VTX::Renderer::GL
 		inline const Pass::Selection &		getPassSelection() const { return *_passSelection; }
 		inline const Pass::FXAA &			getPassFXAA() const { return *_passFXAA; }
 
-		inline const GLuint & getQuadVAO() const { return _quadVAO; }
-		inline const GLuint & getQuadVBO() const { return _quadVBO; }
+		inline const VertexArray & getQuadVAO() const { return _quadVAO; }
+		inline const Buffer &	   getQuadVBO() const { return _quadVBO; }
 
 	  private:
 		Pass::Geometric *	   _passGeometric	   = nullptr;
@@ -52,8 +54,8 @@ namespace VTX::Renderer::GL
 		Pass::Selection *	   _passSelection	   = nullptr;
 		Pass::FXAA *		   _passFXAA		   = nullptr;
 
-		GLuint _quadVAO = GL_INVALID_VALUE;
-		GLuint _quadVBO = GL_INVALID_VALUE;
+		VertexArray _quadVAO;
+		Buffer		_quadVBO;
 
 		void _initQuadVAO();
 	};

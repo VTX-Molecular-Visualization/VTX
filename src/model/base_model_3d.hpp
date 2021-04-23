@@ -55,7 +55,7 @@ namespace VTX
 
 			inline void referenceLinkedAABB( Math::AABB * const p_aabb ) { _linkedAABBs.emplace( p_aabb ); }
 
-			void render( const Object3D::Camera & p_camera ) override
+			void render( const Object3D::Camera & p_camera ) const override
 			{
 				_buffer->bind();
 				for ( Generic::BaseRenderable * const renderable : _renderables )
@@ -107,7 +107,6 @@ namespace VTX
 
 				if ( _buffer != nullptr )
 				{
-					_buffer->free();
 					delete _buffer;
 				}
 			}

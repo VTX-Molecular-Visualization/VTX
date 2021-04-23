@@ -46,10 +46,6 @@ namespace VTX::Renderer::GL::Pass
 			_program->setVec4f( "uClipInfo", camNear * camFar, camFar, camFar - camNear, 1.f );
 		}
 
-		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
-
-		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-
-		gl()->glBindVertexArray( 0 );
+		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 	}
 } // namespace VTX::Renderer::GL::Pass

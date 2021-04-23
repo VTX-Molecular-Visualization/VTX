@@ -64,11 +64,7 @@ namespace VTX::Renderer::GL::Pass
 		/// TODO: rename uInvDirectionTexSize
 		_program->setVec2i( "uInvDirectionTexSize", 1, 0 );
 
-		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
-
-		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-
-		gl()->glBindVertexArray( 0 );
+		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 
 		_fbo.bind();
 
@@ -78,11 +74,7 @@ namespace VTX::Renderer::GL::Pass
 		/// TODO: rename uInvDirectionTexSize
 		_program->setVec2i( "uInvDirectionTexSize", 0, 1 );
 
-		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
-
-		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-
-		gl()->glBindVertexArray( 0 );
+		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 	}
 
 	void Blur::clearTexture()

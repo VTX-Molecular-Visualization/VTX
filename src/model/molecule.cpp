@@ -325,7 +325,7 @@ namespace VTX
 			VTX_DEBUG( "Sizeof bond: " + std::to_string( sizeof( *_bonds[ 0 ] ) ) );
 		}
 
-		void Molecule::render( const Object3D::Camera & p_camera )
+		void Molecule::render( const Object3D::Camera & p_camera ) const
 		{
 			BaseModel3D::render( p_camera );
 			_secondaryStructure->render( p_camera );
@@ -427,6 +427,7 @@ namespace VTX
 			}
 
 			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule * const>( this );
+			/// TODO: this is strange
 			_secondaryStructure->init( getBuffer()->gl() );
 			_secondaryStructure->print();
 		}

@@ -9,7 +9,7 @@ namespace VTX::View::D3
 
 	void Cylinder::_init() {}
 
-	void Cylinder::render( const Object3D::Camera & p_camera )
+	void Cylinder::render( const Object3D::Camera & p_camera ) const
 	{
 		BaseView3D::render( p_camera );
 
@@ -26,8 +26,11 @@ namespace VTX::View::D3
 
 				for ( const std::pair<uint, uint> & pair : representationData.second.getBonds() )
 				{
-					_gl()->glDrawElements(
-						GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
+					/// TODO: use glDrawRangeElements?
+					_model->getBuffer()->getVao().drawElement( Renderer::GL::VertexArray::DrawMode::LINES,
+															   pair.second,
+															   Renderer::GL::VertexArray::Type::UNSIGNED_INT,
+															   (void *)( pair.first * sizeof( uint ) ) );
 				}
 			}
 		}

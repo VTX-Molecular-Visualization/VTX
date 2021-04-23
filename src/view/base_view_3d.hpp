@@ -22,7 +22,7 @@ namespace VTX::View
 		VTX_VIEW
 
 	  public:
-		virtual void render( const Object3D::Camera & p_camera ) override
+		virtual void render( const Object3D::Camera & p_camera ) const override
 		{
 			_program->use();
 
@@ -53,7 +53,7 @@ namespace VTX::View
 		explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
 		virtual ~BaseView3D() = default;
 
-		inline OpenGLFunctions * const _gl() { return _model->getBuffer()->gl(); }
+		inline OpenGLFunctions * const _gl() const { return _model->getBuffer()->gl(); }
 
 		virtual Renderer::GL::Program * const _createProgram() = 0;
 		virtual void						  _init() {}

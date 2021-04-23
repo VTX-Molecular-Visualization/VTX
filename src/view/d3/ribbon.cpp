@@ -26,7 +26,7 @@ namespace VTX::View::D3
 		VTX_DEBUG( "Max supported tessellation levels: " + std::to_string( maxTessGenLevel ) );
 	}
 
-	void Ribbon::render( const Object3D::Camera & p_camera )
+	void Ribbon::render( const Object3D::Camera & p_camera ) const
 	{
 		BaseView3D::render( p_camera );
 
@@ -46,8 +46,10 @@ namespace VTX::View::D3
 
 			for ( const std::pair<uint, uint> & ribbonData : representationData.second.getRibbons() )
 			{
-				_gl()->glDrawElements(
-					GL_PATCHES, ribbonData.second, GL_UNSIGNED_INT, (void *)( ribbonData.first * sizeof( uint ) ) );
+				_model->getBuffer()->getVao().drawElement( Renderer::GL::VertexArray::DrawMode::PATCHES,
+														   ribbonData.second,
+														   Renderer::GL::VertexArray::Type::UNSIGNED_INT,
+														   (void *)( ribbonData.first * sizeof( uint ) ) );
 			}
 		}
 		//_gl()->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );

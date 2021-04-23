@@ -12,7 +12,7 @@ namespace VTX::View::D3
 
 	void Sphere::_init() {}
 
-	void Sphere::render( const Object3D::Camera & p_camera )
+	void Sphere::render( const Object3D::Camera & p_camera ) const
 	{
 		BaseView3D::render( p_camera );
 
@@ -31,7 +31,8 @@ namespace VTX::View::D3
 
 				for ( const std::pair<uint, uint> & pair : representationData.second.getAtoms() )
 				{
-					_gl()->glDrawArrays( GL_POINTS, pair.first, pair.second );
+					_model->getBuffer()->getVao().drawArray(
+						Renderer::GL::VertexArray::DrawMode::POINTS, pair.first, pair.second );
 				}
 			}
 		}

@@ -94,9 +94,7 @@ namespace VTX::Renderer::GL::Pass
 			_program->setInt( "uAoIntensity", VTX_SETTING().aoIntensity );
 		}
 
-		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
-		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-		gl()->glBindVertexArray( 0 );
+		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 	}
 
 } // namespace VTX::Renderer::GL::Pass

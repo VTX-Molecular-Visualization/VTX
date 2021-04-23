@@ -19,7 +19,7 @@ namespace VTX
 		  public:
 			virtual ~BaseRenderable() = default;
 
-			virtual void render( const Object3D::Camera & ) = 0;
+			virtual void render( const Object3D::Camera & ) const = 0;
 			virtual void init() {};
 		};
 	} // namespace Generic

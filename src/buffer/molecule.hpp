@@ -18,8 +18,12 @@ namespace VTX
 		class Molecule : public BaseBufferOpenGL
 		{
 		  public:
-			Molecule( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ), _vao( p_gl ) {};
+			Molecule( OpenGLFunctions * const p_gl ) :
+				BaseBufferOpenGL( p_gl ), _vboAtomPositions( p_gl ), _vboAtomRadii( p_gl ), _vboAtomColors( p_gl ),
+				_vboAtomVisibilities( p_gl ), _vboAtomSelections( p_gl ), _iboBonds( p_gl ), _vao( p_gl ) {};
 			~Molecule() = default;
+
+			const Renderer::GL::VertexArray & getVao() const override { return _vao; }
 
 			void bind() override;
 			void unbind() override;
@@ -33,7 +37,6 @@ namespace VTX
 
 		  protected:
 			void _generate() override;
-			void _free() override;
 
 		  private:
 			enum ATTRIBUTE_LOCATION
@@ -45,12 +48,12 @@ namespace VTX
 				ATOM_SELECTION	= 4,
 			};
 
-			GLuint					  _vboAtomPositions	   = GL_INVALID_VALUE;
-			GLuint					  _vboAtomRadius	   = GL_INVALID_VALUE;
-			GLuint					  _vboAtomColors	   = GL_INVALID_VALUE;
-			GLuint					  _vboAtomVisibilities = GL_INVALID_VALUE;
-			GLuint					  _vboAtomSelections   = GL_INVALID_VALUE;
-			GLuint					  _iboBonds			   = GL_INVALID_VALUE;
+			Renderer::GL::Buffer	  _vboAtomPositions;
+			Renderer::GL::Buffer	  _vboAtomRadii;
+			Renderer::GL::Buffer	  _vboAtomColors;
+			Renderer::GL::Buffer	  _vboAtomVisibilities;
+			Renderer::GL::Buffer	  _vboAtomSelections;
+			Renderer::GL::Buffer	  _iboBonds;
 			Renderer::GL::VertexArray _vao;
 		};
 	} // namespace Buffer

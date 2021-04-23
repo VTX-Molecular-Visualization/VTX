@@ -41,11 +41,11 @@ namespace VTX::Renderer::GL
 
 		// ===================================== Uniform setters.
 		// =============== Scalars.
-		void setInt( const std::string & p_name, const int p_value ) const
+		void setInt( const std::string & p_name, const GLint p_value ) const
 		{
 			_gl->glUniform1i( getUniformLocation( p_name ), p_value );
 		}
-		void setFloat( const std::string & p_name, const float p_value ) const
+		void setFloat( const std::string & p_name, const GLfloat p_value ) const
 		{
 			_gl->glUniform1f( getUniformLocation( p_name ), p_value );
 		}
@@ -68,19 +68,19 @@ namespace VTX::Renderer::GL
 		{
 			_gl->glUniform4fv( getUniformLocation( p_name ), 1, Util::Math::value_ptr( p_value ) );
 		}
-		void setVec2f( const std::string & p_name, const float p_x, const float p_y ) const
+		void setVec2f( const std::string & p_name, const GLfloat p_x, const GLfloat p_y ) const
 		{
 			_gl->glUniform2f( getUniformLocation( p_name ), p_x, p_y );
 		}
-		void setVec3f( const std::string & p_name, const float p_x, const float p_y, const float p_z ) const
+		void setVec3f( const std::string & p_name, const GLfloat p_x, const GLfloat p_y, const GLfloat p_z ) const
 		{
 			_gl->glUniform3f( getUniformLocation( p_name ), p_x, p_y, p_z );
 		}
 		void setVec4f( const std::string & p_name,
-					   const float		   p_x,
-					   const float		   p_y,
-					   const float		   p_z,
-					   const float		   p_w ) const
+					   const GLfloat	   p_x,
+					   const GLfloat	   p_y,
+					   const GLfloat	   p_z,
+					   const GLfloat	   p_w ) const
 		{
 			_gl->glUniform4f( getUniformLocation( p_name ), p_x, p_y, p_z, p_w );
 		}
@@ -98,15 +98,19 @@ namespace VTX::Renderer::GL
 		{
 			_gl->glUniform4iv( getUniformLocation( p_name ), 1, Util::Math::value_ptr( p_value ) );
 		}
-		void setVec2i( const std::string & p_name, const int p_x, const int p_y ) const
+		void setVec2i( const std::string & p_name, const GLint p_x, const GLint p_y ) const
 		{
 			_gl->glUniform2i( getUniformLocation( p_name ), p_x, p_y );
 		}
-		void setVec3i( const std::string & p_name, const int p_x, const int p_y, const int p_z ) const
+		void setVec3i( const std::string & p_name, const GLint p_x, const GLint p_y, const GLint p_z ) const
 		{
 			_gl->glUniform3i( getUniformLocation( p_name ), p_x, p_y, p_z );
 		}
-		void setVec4i( const std::string & p_name, const int p_x, const int p_y, const int p_z, const int p_w ) const
+		void setVec4i( const std::string & p_name,
+					   const GLint		   p_x,
+					   const GLint		   p_y,
+					   const GLint		   p_z,
+					   const GLint		   p_w ) const
 		{
 			_gl->glUniform4i( getUniformLocation( p_name ), p_x, p_y, p_z, p_w );
 		}
@@ -122,7 +126,7 @@ namespace VTX::Renderer::GL
 		}
 
 		// =============== Arrays.
-		void setVec3fArray( const std::string & p_name, const int p_count, const Vec3f * p_array ) const
+		void setVec3fArray( const std::string & p_name, const GLsizei p_count, const Vec3f * p_array ) const
 		{
 			_gl->glUniform3fv( getUniformLocation( p_name ), p_count, (const GLfloat *)p_array );
 		}
