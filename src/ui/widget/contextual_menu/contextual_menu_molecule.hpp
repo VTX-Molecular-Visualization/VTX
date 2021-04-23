@@ -28,6 +28,10 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		void _renameAction();
 
+		void _toggleWatersVisibilityAction();
+		void _toggleSolventVisibilityAction();
+		void _toggleHydrogensVisibilityAction();
+
 		void _orientAction();
 		void _showAction();
 		void _hideAction();
@@ -38,6 +42,9 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	  private:
 		CustomWidget::SetRepresentationMenu * _representationMenu;
+		QAction *							  _toggleWaterAction;
+		QAction *							  _toggleSolventAction;
+		QAction *							  _toggleHydrogenAction;
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu
