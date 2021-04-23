@@ -17,18 +17,18 @@ namespace VTX::View::D3
 							  VTX::Representation::RepresentationTarget> & representationData :
 			  _model->getMolecule()->getRepresentationData() )
 		{
-			if ( !representationData.first->hasToDrawCylinder() )
-				continue;
-
-			const Model::Representation::CylinderData & cylinderData = representationData.first->getCylinderData();
-
-			/// TODO: put a mask
-			_program->setFloat( "u_cylRad", cylinderData._radius );
-
-			for ( const std::pair<uint, uint> & pair : representationData.second.getBonds() )
+			if ( representationData.first->hasToDrawCylinder() )
 			{
-				_gl()->glDrawElements(
-					GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
+				const Model::Representation::CylinderData & cylinderData = representationData.first->getCylinderData();
+
+				/// TODO: put a mask
+				_program->setFloat( "u_cylRad", cylinderData._radius );
+
+				for ( const std::pair<uint, uint> & pair : representationData.second.getBonds() )
+				{
+					_gl()->glDrawElements(
+						GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
+				}
 			}
 		}
 	}

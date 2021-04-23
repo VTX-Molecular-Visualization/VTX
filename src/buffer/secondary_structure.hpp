@@ -8,6 +8,7 @@
 #include "base_buffer_opengl.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "renderer/gl/vertex_array.hpp"
 #include <vector>
 
 namespace VTX
@@ -17,7 +18,7 @@ namespace VTX
 		class SecondaryStructure : public BaseBufferOpenGL
 		{
 		  public:
-			SecondaryStructure( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
+			SecondaryStructure( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ), _vao( p_gl ) {};
 			~SecondaryStructure() = default;
 
 			void bind() override;
@@ -44,13 +45,13 @@ namespace VTX
 				CONTROL_POINT_SELECTION			  = 4,
 			};
 
-			GLuint _vboPositions		   = GL_INVALID_VALUE;
-			GLuint _vboDirections		   = GL_INVALID_VALUE;
-			GLuint _vboSecondaryStructures = GL_INVALID_VALUE;
-			GLuint _vboColors			   = GL_INVALID_VALUE;
-			GLuint _vboSelections		   = GL_INVALID_VALUE;
-			GLuint _ibo					   = GL_INVALID_VALUE;
-			GLuint _vao					   = GL_INVALID_VALUE;
+			GLuint					  _vboPositions			  = GL_INVALID_VALUE;
+			GLuint					  _vboDirections		  = GL_INVALID_VALUE;
+			GLuint					  _vboSecondaryStructures = GL_INVALID_VALUE;
+			GLuint					  _vboColors			  = GL_INVALID_VALUE;
+			GLuint					  _vboSelections		  = GL_INVALID_VALUE;
+			GLuint					  _ibo					  = GL_INVALID_VALUE;
+			Renderer::GL::VertexArray _vao;
 		};
 	} // namespace Buffer
 } // namespace VTX

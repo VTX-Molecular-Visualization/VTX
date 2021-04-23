@@ -30,8 +30,9 @@ namespace VTX::Renderer::GL
 		{
 			const int loc = _gl->glGetUniformLocation( _id, p_name.c_str() );
 #ifdef _DEBUG
-			if ( loc == -1 )
-				VTX_WARNING( p_name + " is not a uniform variable of GLSL program " + std::to_string( _id ) );
+			/// TODO: handle it
+			// if ( loc == -1 )
+			//	VTX_WARNING( p_name + " is not a uniform variable of GLSL program " + std::to_string( _id ) );
 #endif
 			return loc;
 		}

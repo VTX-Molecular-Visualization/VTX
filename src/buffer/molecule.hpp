@@ -8,6 +8,7 @@
 #include "base_buffer_opengl.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "renderer/gl/vertex_array.hpp"
 #include <vector>
 
 namespace VTX
@@ -17,7 +18,7 @@ namespace VTX
 		class Molecule : public BaseBufferOpenGL
 		{
 		  public:
-			Molecule( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
+			Molecule( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ), _vao( p_gl ) {};
 			~Molecule() = default;
 
 			void bind() override;
@@ -44,13 +45,13 @@ namespace VTX
 				ATOM_SELECTION	= 4,
 			};
 
-			GLuint _vboAtomPositions	= GL_INVALID_VALUE;
-			GLuint _vboAtomRadius		= GL_INVALID_VALUE;
-			GLuint _vboAtomColors		= GL_INVALID_VALUE;
-			GLuint _vboAtomVisibilities = GL_INVALID_VALUE;
-			GLuint _vboAtomSelections	= GL_INVALID_VALUE;
-			GLuint _iboBonds			= GL_INVALID_VALUE;
-			GLuint _vao					= GL_INVALID_VALUE;
+			GLuint					  _vboAtomPositions	   = GL_INVALID_VALUE;
+			GLuint					  _vboAtomRadius	   = GL_INVALID_VALUE;
+			GLuint					  _vboAtomColors	   = GL_INVALID_VALUE;
+			GLuint					  _vboAtomVisibilities = GL_INVALID_VALUE;
+			GLuint					  _vboAtomSelections   = GL_INVALID_VALUE;
+			GLuint					  _iboBonds			   = GL_INVALID_VALUE;
+			Renderer::GL::VertexArray _vao;
 		};
 	} // namespace Buffer
 } // namespace VTX

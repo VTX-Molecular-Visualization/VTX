@@ -11,56 +11,58 @@ namespace VTX::Buffer
 		gl()->glCreateBuffers( 1, &_vboSelections );
 		gl()->glCreateBuffers( 1, &_ibo );
 
-		gl()->glCreateVertexArrays( 1, &_vao );
+		_vao.create();
 
-		gl()->glVertexArrayElementBuffer( _vao, _ibo );
+		_vao.bindElementBuffer( _ibo );
 
 		// Control point position.
-		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
-		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, _vboPositions, 0, sizeof( Vec4f ) );
-		gl()->glVertexArrayAttribFormat( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, 4, GL_FLOAT, GL_FALSE, 0 );
-		gl()->glVertexArrayAttribBinding(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, _vboPositions, sizeof( Vec4f ) );
+		/// TODO: MANDATORY: change namespace hierarchy
+		_vao.setAttributeFormat(
+			ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION, 4, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION,
+								  ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
 
 		// Control point direction.
-		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
-		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, _vboDirections, 0, sizeof( Vec3f ) );
-		gl()->glVertexArrayAttribFormat( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, 3, GL_FLOAT, GL_FALSE, 0 );
-		gl()->glVertexArrayAttribBinding(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, _vboDirections, sizeof( Vec3f ) );
+		/// TODO: MANDATORY: change namespace hierarchy
+		_vao.setAttributeFormat(
+			ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION, 3, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION,
+								  ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
 
 		// Control point secondary structure.
-		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
-		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, _vboSecondaryStructures, 0, sizeof( ushort ) );
-		gl()->glVertexArrayAttribIFormat(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, GL_UNSIGNED_SHORT, 0 );
-		gl()->glVertexArrayAttribBinding( _vao,
-										  ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE,
-										  ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
+		_vao.setVertexBuffer(
+			ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, _vboSecondaryStructures, sizeof( ushort ) );
+		/// TODO: MANDATORY: change namespace hierarchy
+		_vao.setAttributeFormat(
+			ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, Renderer::GL::VertexArray::Type::UNSIGNED_SHORT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE,
+								  ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
 
 		// Control point color.
-		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
-		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, _vboColors, 0, sizeof( Color::Rgb ) );
-		gl()->glVertexArrayAttribFormat( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, GL_FLOAT, GL_FALSE, 0 );
-		gl()->glVertexArrayAttribBinding(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, _vboColors, sizeof( Color::Rgb ) );
+		/// TODO: MANDATORY: change namespace hierarchy
+		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
 
 		// Control point selection.
-		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
-		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, _vboSelections, 0, sizeof( ushort ) );
-		gl()->glVertexArrayAttribIFormat( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, 1, GL_UNSIGNED_SHORT, 0 );
-		gl()->glVertexArrayAttribBinding(
-			_vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, _vboSelections, sizeof( ushort ) );
+		/// TODO: MANDATORY: change namespace hierarchy
+		_vao.setAttributeFormat(
+			ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, 1, Renderer::GL::VertexArray::Type::UNSIGNED_SHORT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION,
+								  ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
 	}
 
 	void SecondaryStructure::_free()
 	{
-		if ( _vao != GL_INVALID_VALUE )
+		/*if ( _vao != GL_INVALID_VALUE )
 		{
 			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_POSITION );
 			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_DIRECTION );
@@ -69,7 +71,7 @@ namespace VTX::Buffer
 			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
 
 			gl()->glDeleteVertexArrays( 1, &_vao );
-		}
+		}*/
 
 		if ( _vboPositions != GL_INVALID_VALUE )
 		{
@@ -97,8 +99,8 @@ namespace VTX::Buffer
 		}
 	}
 
-	void SecondaryStructure::bind() { gl()->glBindVertexArray( _vao ); }
-	void SecondaryStructure::unbind() { gl()->glBindVertexArray( 0 ); }
+	void SecondaryStructure::bind() { _vao.bind(); }
+	void SecondaryStructure::unbind() { _vao.unbind(); }
 
 	void SecondaryStructure::setControlPointPositions( const std::vector<Vec4f> & p_positions )
 	{

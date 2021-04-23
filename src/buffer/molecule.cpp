@@ -12,60 +12,50 @@ namespace VTX::Buffer
 		gl()->glCreateBuffers( 1, &_vboAtomSelections );
 		gl()->glCreateBuffers( 1, &_iboBonds );
 
-		gl()->glCreateVertexArrays( 1, &_vao );
+		_vao.create();
 
-		gl()->glVertexArrayElementBuffer( _vao, _iboBonds );
+		_vao.bindElementBuffer( _iboBonds );
 
 		// Position.
-		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::ATOM_POSITION );
-		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::ATOM_POSITION, _vboAtomPositions, 0, sizeof( Vec3f ) );
-		gl()->glVertexArrayAttribFormat( _vao, ATTRIBUTE_LOCATION::ATOM_POSITION, 3, GL_FLOAT, GL_FALSE, 0 );
-		gl()->glVertexArrayAttribBinding( _vao, ATTRIBUTE_LOCATION::ATOM_POSITION, ATTRIBUTE_LOCATION::ATOM_POSITION );
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_POSITION );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_POSITION, _vboAtomPositions, sizeof( Vec3f ) );
+		/// TODO: MANDATORY: change namespace hierarchy
+		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::ATOM_POSITION, 3, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_POSITION, ATTRIBUTE_LOCATION::ATOM_POSITION );
 
 		// Color.
-		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::ATOM_COLOR );
-		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::ATOM_COLOR, _vboAtomColors, 0, sizeof( Color::Rgb ) );
-		gl()->glVertexArrayAttribFormat( _vao, ATTRIBUTE_LOCATION::ATOM_COLOR, 3, GL_FLOAT, GL_FALSE, 0 );
-		gl()->glVertexArrayAttribBinding( _vao, ATTRIBUTE_LOCATION::ATOM_COLOR, ATTRIBUTE_LOCATION::ATOM_COLOR );
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_COLOR );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_COLOR, _vboAtomColors, sizeof( Color::Rgb ) );
+		/// TODO: MANDATORY: change namespace hierarchy
+		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::ATOM_COLOR, 3, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_COLOR, ATTRIBUTE_LOCATION::ATOM_COLOR );
 
 		// Radius.
-		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::ATOM_RADIUS );
-		gl()->glVertexArrayVertexBuffer( _vao, ATTRIBUTE_LOCATION::ATOM_RADIUS, _vboAtomRadius, 0, sizeof( float ) );
-		gl()->glVertexArrayAttribFormat( _vao, ATTRIBUTE_LOCATION::ATOM_RADIUS, 1, GL_FLOAT, GL_FALSE, 0 );
-		gl()->glVertexArrayAttribBinding( _vao, ATTRIBUTE_LOCATION::ATOM_RADIUS, ATTRIBUTE_LOCATION::ATOM_RADIUS );
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_RADIUS );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_RADIUS, _vboAtomRadius, sizeof( float ) );
+		/// TODO: MANDATORY: change namespace hierarchy
+		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::ATOM_RADIUS, 1, Renderer::GL::VertexArray::Type::FLOAT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_RADIUS, ATTRIBUTE_LOCATION::ATOM_RADIUS );
 
 		// Visbility.
-		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
-		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::ATOM_VISIBILITY, _vboAtomVisibilities, 0, sizeof( ushort ) );
-		gl()->glVertexArrayAttribIFormat( _vao, ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, GL_UNSIGNED_SHORT, 0 );
-		gl()->glVertexArrayAttribBinding(
-			_vao, ATTRIBUTE_LOCATION::ATOM_VISIBILITY, ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, _vboAtomVisibilities, sizeof( ushort ) );
+		/// TODO: MANDATORY: change namespace hierarchy
+		_vao.setAttributeFormat(
+			ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, Renderer::GL::VertexArray::Type::UNSIGNED_SHORT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
 
 		// Selection.
-		gl()->glEnableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::ATOM_SELECTION );
-		gl()->glVertexArrayVertexBuffer(
-			_vao, ATTRIBUTE_LOCATION::ATOM_SELECTION, _vboAtomSelections, 0, sizeof( ushort ) );
-		gl()->glVertexArrayAttribIFormat( _vao, ATTRIBUTE_LOCATION::ATOM_SELECTION, 1, GL_UNSIGNED_SHORT, 0 );
-		gl()->glVertexArrayAttribBinding(
-			_vao, ATTRIBUTE_LOCATION::ATOM_SELECTION, ATTRIBUTE_LOCATION::ATOM_SELECTION );
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_SELECTION );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_SELECTION, _vboAtomSelections, sizeof( ushort ) );
+		/// TODO: MANDATORY: change namespace hierarchy
+		_vao.setAttributeFormat(
+			ATTRIBUTE_LOCATION::ATOM_SELECTION, 1, Renderer::GL::VertexArray::Type::UNSIGNED_SHORT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_SELECTION, ATTRIBUTE_LOCATION::ATOM_SELECTION );
 	}
 
 	void Molecule::_free()
 	{
-		if ( _vao != GL_INVALID_VALUE )
-		{
-			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::ATOM_POSITION );
-			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::ATOM_COLOR );
-			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::ATOM_RADIUS );
-			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
-			gl()->glDisableVertexArrayAttrib( _vao, ATTRIBUTE_LOCATION::ATOM_SELECTION );
-
-			gl()->glDeleteVertexArrays( 1, &_vao );
-		}
-
 		if ( _vboAtomPositions != GL_INVALID_VALUE )
 		{
 			gl()->glDeleteBuffers( 1, &_vboAtomPositions );
@@ -92,8 +82,8 @@ namespace VTX::Buffer
 		}
 	}
 
-	void Molecule::bind() { gl()->glBindVertexArray( _vao ); }
-	void Molecule::unbind() { gl()->glBindVertexArray( 0 ); }
+	void Molecule::bind() { _vao.bind(); }
+	void Molecule::unbind() { _vao.unbind(); }
 
 	void Molecule::setAtomPositions( const std::vector<Vec3f> & p_positions )
 	{

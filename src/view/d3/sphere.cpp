@@ -20,19 +20,19 @@ namespace VTX::View::D3
 							  VTX::Representation::RepresentationTarget> & representationData :
 			  _model->getMolecule()->getRepresentationData() )
 		{
-			if ( !representationData.first->hasToDrawSphere() )
-				continue;
-
-			const Model::Representation::SphereData & sphereData = representationData.first->getSphereData();
-
-			/// TODO: put a mask
-			_program->setFloat( "u_radiusFixed", sphereData._radiusFixed );
-			_program->setFloat( "u_radiusAdd", sphereData._radiusAdd );
-			_program->setBool( "u_isRadiusFixed", sphereData._isRadiusFixed );
-
-			for ( const std::pair<uint, uint> & pair : representationData.second.getAtoms() )
+			if ( representationData.first->hasToDrawSphere() )
 			{
-				_gl()->glDrawArrays( GL_POINTS, pair.first, pair.second );
+				const Model::Representation::SphereData & sphereData = representationData.first->getSphereData();
+
+				/// TODO: put a mask
+				_program->setFloat( "u_radiusFixed", sphereData._radiusFixed );
+				_program->setFloat( "u_radiusAdd", sphereData._radiusAdd );
+				_program->setBool( "u_isRadiusFixed", sphereData._isRadiusFixed );
+
+				for ( const std::pair<uint, uint> & pair : representationData.second.getAtoms() )
+				{
+					_gl()->glDrawArrays( GL_POINTS, pair.first, pair.second );
+				}
 			}
 		}
 	}

@@ -8,6 +8,7 @@
 #include "base_buffer_opengl.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "renderer/gl/vertex_array.hpp"
 #include <vector>
 
 namespace VTX
@@ -17,8 +18,8 @@ namespace VTX
 		class MeshTriangle : public BaseBufferOpenGL
 		{
 		  public:
-			MeshTriangle( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
-			~MeshTriangle() = default;
+			MeshTriangle( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ), _vao( p_gl ) {};
+			~MeshTriangle() = default; /// TODO free buffers !
 
 			void bind() override;
 			void unbind() override;
@@ -42,12 +43,12 @@ namespace VTX
 				VERTEX_VISIBILITY = 3,
 			};
 
-			GLuint _vboPositions	= GL_INVALID_VALUE;
-			GLuint _vboNormals		= GL_INVALID_VALUE;
-			GLuint _vboColors		= GL_INVALID_VALUE;
-			GLuint _vboVisibilities = GL_INVALID_VALUE;
-			GLuint _ibo				= GL_INVALID_VALUE;
-			GLuint _vao				= GL_INVALID_VALUE;
+			GLuint					  _vboPositions	   = GL_INVALID_VALUE;
+			GLuint					  _vboNormals	   = GL_INVALID_VALUE;
+			GLuint					  _vboColors	   = GL_INVALID_VALUE;
+			GLuint					  _vboVisibilities = GL_INVALID_VALUE;
+			GLuint					  _ibo			   = GL_INVALID_VALUE;
+			Renderer::GL::VertexArray _vao;
 		};
 	} // namespace Buffer
 } // namespace VTX
