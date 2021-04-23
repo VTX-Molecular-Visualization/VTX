@@ -2,6 +2,7 @@
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "ui/widget/dialog/download_molecule_dialog.hpp"
+#include "util/ui.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -15,13 +16,16 @@ namespace VTX::UI
 
 	void Dialog::openLoadMoleculeDialog( QWidget * const p_caller )
 	{
-		const QString filename
-			= QFileDialog::getOpenFileName( p_caller, "Open Molecule", "", VTX_SETTING().MOLECULE_FILE_FILTERS );
+		const QStringList filenames
+			= QFileDialog::getOpenFileNames( p_caller, "Open Molecule", "", VTX_SETTING().MOLECULE_FILE_FILTERS );
 
-		if ( !filename.isNull() )
+		if ( !filenames.isEmpty() )
 		{
-			FilePath * const path = new FilePath( filename.toStdString() );
-			VTX_ACTION( new Action::Main::Open( path ), true );
+			std::vector<FilePath *> filepathes = std::vector<FilePath *>();
+			for ( const QString & qstr : filenames )
+				filepathes.emplace_back( new FilePath( qstr.toStdString() ) );
+
+			VTX_ACTION( new Action::Main::Open( filepathes ), true );
 		}
 	}
 
