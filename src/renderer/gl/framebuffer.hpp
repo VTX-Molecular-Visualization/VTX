@@ -82,13 +82,18 @@ namespace VTX::Renderer::GL
 
 			assert( _gl->glIsFramebuffer( _id ) );
 		}
-		void destroy() { _gl->glDeleteFramebuffers( 1, &_id ); }
+		void destroy()
+		{
+			if ( _handleDeletion )
+				_gl->glDeleteFramebuffers( 1, &_id );
+		}
 
 		void assign( const GLuint p_id )
 		{
 			assert( _gl->glIsFramebuffer( p_id ) );
 
-			_id = p_id;
+			_id				= p_id;
+			_handleDeletion = false;
 		}
 
 		int getId() const { return _id; }
@@ -127,6 +132,8 @@ namespace VTX::Renderer::GL
 	  private:
 		GLuint _id	   = GL_INVALID_INDEX;
 		Target _target = Target::DRAW_FRAMEBUFFER;
+		/// TODO: this is a fix to handle Qt framebuffer
+		bool _handleDeletion = true;
 	};
 } // namespace VTX::Renderer::GL
 
