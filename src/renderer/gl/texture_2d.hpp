@@ -111,6 +111,14 @@ namespace VTX::Renderer::GL
 				   const GLsizei p_width   = -1,
 				   const GLsizei p_height  = -1 ) const;
 
+		inline void clear( const void * p_data,
+						   const Format p_format,
+						   const Type	p_type,
+						   const GLint	p_level = 0 ) const
+		{
+			_gl->glClearTexImage( _id, p_level, GLenum( p_format ), GLenum( p_type ), p_data );
+		}
+
 	  private:
 		void _create();
 		void _destroy();

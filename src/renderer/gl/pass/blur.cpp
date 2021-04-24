@@ -79,9 +79,8 @@ namespace VTX::Renderer::GL::Pass
 
 	void Blur::clearTexture()
 	{
-		// TODO: wrap it !
-		float clearColor = 1.f;
-		gl()->glClearTexImage( _texture.getId(), 0, GL_RED, GL_FLOAT, &clearColor );
+		const float value = 1.f;
+		_texture.clear( &value, Texture2D::Format::RED, Texture2D::Type::FLOAT );
 	}
 
 } // namespace VTX::Renderer::GL::Pass

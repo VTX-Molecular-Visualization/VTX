@@ -14,9 +14,9 @@ namespace VTX::Renderer::GL
 	class Framebuffer : public Generic::BaseOpenGL
 	{
 	  public:
-		// See http://docs.gl/gl4/glFramebufferTexture.
 		enum class Attachment : GLenum
 		{
+			// See http://docs.gl/gl4/glFramebufferTexture.
 			COLOR0	= GL_COLOR_ATTACHMENT0,
 			COLOR1	= GL_COLOR_ATTACHMENT1,
 			COLOR2	= GL_COLOR_ATTACHMENT2,
@@ -52,16 +52,16 @@ namespace VTX::Renderer::GL
 			DEPTH	= GL_DEPTH_ATTACHMENT,
 			STENCIL = GL_STENCIL_ATTACHMENT
 		};
-		// See http://docs.gl/gl4/glFramebufferTexture.
 		enum class Target : GLenum
 		{
+			// See http://docs.gl/gl4/glFramebufferTexture.
 			DRAW_FRAMEBUFFER = GL_DRAW_FRAMEBUFFER,
 			READ_FRAMEBUFFER = GL_READ_FRAMEBUFFER,
 			FRAMEBUFFER		 = GL_FRAMEBUFFER
 		};
-		// See http://docs.gl/gl4/glClear.
 		enum class ClearBuffer : GLbitfield
 		{
+			// See http://docs.gl/gl4/glClear.
 			COLOR		= GL_COLOR_BUFFER_BIT,
 			DEPTH		= GL_DEPTH_BUFFER_BIT,
 			STENCIL		= GL_STENCIL_BUFFER_BIT,
