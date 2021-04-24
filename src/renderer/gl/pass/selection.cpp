@@ -16,7 +16,7 @@ namespace VTX::Renderer::GL::Pass
 						 Texture2D::Filter::LINEAR,
 						 Texture2D::Filter::LINEAR );
 
-		_fbo.create();
+		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
 		updateOutputFBO( p_renderer );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Selection", { "shading/selection.frag" } );
@@ -43,7 +43,7 @@ namespace VTX::Renderer::GL::Pass
 		}
 		else
 		{
-			p_renderer.getOutputFramebuffer().bind();
+			_gl->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, p_renderer.getOutputFramebuffer() );
 		}
 
 		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
@@ -71,7 +71,7 @@ namespace VTX::Renderer::GL::Pass
 
 		if ( VTX_SETTING().activeAA == false )
 		{
-			gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+			gl()->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 		}
 	}
 

@@ -37,18 +37,18 @@ namespace VTX::Renderer
 	class BaseRenderer : public Generic::BaseOpenGL
 	{
 	  public:
-		BaseRenderer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ), _outputFramebuffer( p_gl ) {}
+		BaseRenderer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 		virtual ~BaseRenderer() = default;
 
-		inline const uint			   getWidth() const { return _width; }
-		inline const uint			   getHeight() const { return _height; }
-		inline const GL::Framebuffer & getOutputFramebuffer() const { return _outputFramebuffer; }
+		inline const uint	getWidth() const { return _width; }
+		inline const uint	getHeight() const { return _height; }
+		inline const GLuint getOutputFramebuffer() const { return _outputFramebuffer; }
 
 		virtual void resize( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId )
 		{
-			_outputFramebuffer.assign( p_outputFramebufferId );
-			_width	= p_width;
-			_height = p_height;
+			_outputFramebuffer = p_outputFramebufferId;
+			_width			   = p_width;
+			_height			   = p_height;
 		}
 
 		virtual void init( const uint, const uint, const GLuint ) = 0;
@@ -62,9 +62,9 @@ namespace VTX::Renderer
 		virtual void activeAA( const bool ) {}
 
 	  protected:
-		uint			_width	= 0;
-		uint			_height = 0;
-		GL::Framebuffer _outputFramebuffer;
+		uint   _width			  = 0;
+		uint   _height			  = 0;
+		GLuint _outputFramebuffer = GL_INVALID_INDEX;
 	};
 } // namespace VTX::Renderer
 

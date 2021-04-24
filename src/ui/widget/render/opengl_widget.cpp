@@ -70,6 +70,7 @@ namespace VTX::UI::Widget::Render
 		VTX_PROGRAM_MANAGER( _gl );
 		switchRenderer( Setting::MODE_DEFAULT );
 		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT, defaultFramebufferObject() );
+
 		_frameTimer.start();
 	}
 
@@ -86,12 +87,13 @@ namespace VTX::UI::Widget::Render
 		_timer.start();
 
 		getRenderer().renderFrame( VTXApp::get().getScene() );
+
+		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6;
+
 		_painter.begin( this );
 		_painter.setPen( Qt::white );
 		_painter.drawText( 0, 10, QString::fromStdString( std::to_string( VTX_STAT().FPS ) ) );
 		_painter.end();
-
-		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6;
 	}
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )

@@ -15,7 +15,7 @@ namespace VTX::Renderer::GL::Pass
 								  Texture2D::Filter::NEAREST,
 								  Texture2D::Filter::NEAREST );
 
-		_fboFirstPass.create();
+		_fboFirstPass.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
 		_fboFirstPass.attachTexture( _textureFirstPass, Framebuffer::Attachment::COLOR0 );
 
 		_texture.create( p_width,
@@ -27,7 +27,7 @@ namespace VTX::Renderer::GL::Pass
 						 Texture2D::Filter::NEAREST );
 		clearTexture();
 
-		_fbo.create();
+		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Blur", { "shading/bilateral_blur.frag" } );
@@ -75,6 +75,8 @@ namespace VTX::Renderer::GL::Pass
 		_program->setVec2i( "uInvDirectionTexSize", 0, 1 );
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
+
+		_fbo.unbind();
 	}
 
 	void Blur::clearTexture()

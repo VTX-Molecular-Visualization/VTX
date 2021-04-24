@@ -62,35 +62,48 @@ namespace VTX::Renderer::GL
 
 		~Framebuffer() { _destroy(); }
 
-		void create()
+		void create( const Target & p_target )
 		{
 			assert( _id == GL_INVALID_INDEX );
 
+			_target = p_target;
 			_gl->glCreateFramebuffers( 1, &_id );
+
+			assert( _gl->glIsFramebuffer( _id ) );
 		}
 		void assign( const GLuint p_id )
 		{
+			assert( _gl->glIsFramebuffer( p_id ) );
+
 			if ( _id != GL_INVALID_INDEX )
 				_destroy();
-			_id = p_id;
+
+			_id		= p_id;
+			_target = Target::FRAMEBUFFER;
 		}
 
 		int getId() const { return _id; }
 
-		void bind( const Target p_target = Target::DRAW_FRAMEBUFFER ) const
+		void bind() const
 		{
-			_gl->glBindFramebuffer( GLenum( p_target ), _id );
+			assert( _gl->glIsFramebuffer( _id ) );
 
-			_checkStatus();
+			_gl->glBindFramebuffer( GLenum( _target ), _id );
 		}
+		void unbind() const { _gl->glBindFramebuffer( GLenum( _target ), 0 ); }
 
 		void attachTexture( const Texture2D & p_texture, const Attachment p_attachment, const GLint p_level = 0 ) const
 		{
+			assert( _gl->glIsFramebuffer( _id ) );
+			assert( _gl->glIsTexture( p_texture.getId() ) );
+
 			_gl->glNamedFramebufferTexture( _id, GLenum( p_attachment ), p_texture.getId(), p_level );
 		}
 
 		void setDrawBuffers( const std::vector<Attachment> & p_drawBuffers ) const
 		{
+			assert( _gl->glIsFramebuffer( _id ) );
+
 			_gl->glNamedFramebufferDrawBuffers(
 				_id, GLsizei( p_drawBuffers.size() ), (const GLenum *)( p_drawBuffers.data() ) );
 
@@ -102,7 +115,8 @@ namespace VTX::Renderer::GL
 		void _checkStatus() const;
 
 	  private:
-		GLuint _id = GL_INVALID_INDEX;
+		GLuint _id	   = GL_INVALID_INDEX;
+		Target _target = Target::DRAW_FRAMEBUFFER;
 	};
 } // namespace VTX::Renderer::GL
 

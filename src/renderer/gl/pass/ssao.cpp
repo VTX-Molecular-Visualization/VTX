@@ -18,7 +18,7 @@ namespace VTX::Renderer::GL::Pass
 						 Texture2D::Filter::NEAREST,
 						 Texture2D::Filter::NEAREST );
 
-		_fbo.create();
+		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { "shading/ssao.frag" } );

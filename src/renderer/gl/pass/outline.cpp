@@ -16,7 +16,7 @@ namespace VTX::Renderer::GL::Pass
 						 Texture2D::Filter::LINEAR,
 						 Texture2D::Filter::LINEAR );
 
-		_fbo.create();
+		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
 		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Outline", { "shading/outline.frag" } );
@@ -52,5 +52,7 @@ namespace VTX::Renderer::GL::Pass
 		}
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
+
+		_fbo.unbind();
 	}
 } // namespace VTX::Renderer::GL::Pass

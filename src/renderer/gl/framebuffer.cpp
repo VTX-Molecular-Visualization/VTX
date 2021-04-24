@@ -7,7 +7,7 @@ namespace VTX::Renderer::GL
 	void Framebuffer::_checkStatus() const
 	{
 		// Error messages come from http://docs.gl/gl4/glCheckFramebufferStatus.
-		const GLenum status = _gl->glCheckNamedFramebufferStatus( _id, GL_FRAMEBUFFER );
+		const GLenum status = _gl->glCheckNamedFramebufferStatus( _id, GLenum( _target ) );
 		if ( status != GL_FRAMEBUFFER_COMPLETE )
 		{
 			switch ( status )

@@ -34,8 +34,12 @@ namespace VTX::Renderer::GL
 	{
 		VTX_INFO( "Initializing renderer..." );
 
+		/// TODO: here we cannot set the output framebuffer cause it isn't create
+		/// So "assert( _gl->glIsFramebuffer( p_id ) );" fails in Framebuffer::asign
 		// Set size.
-		BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
+		// BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
+		_width	= p_width;
+		_height = p_height;
 
 		// Init pass.
 		_passGeometric->init( p_width, p_height, *this );
