@@ -88,28 +88,28 @@ namespace VTX::Renderer::GL
 		Texture2D( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 		~Texture2D() { _destroy(); }
 
-		void create( const int			  p_width,
-					 const int			  p_height,
+		void create( const GLsizei		  p_width,
+					 const GLsizei		  p_height,
 					 const InternalFormat p_format	  = InternalFormat::RGBA32F,
 					 const Wrapping		  p_wrappingS = Wrapping::REPEAT,
 					 const Wrapping		  p_wrappingT = Wrapping::REPEAT,
 					 const Filter		  p_minFilter = Filter::NEAREST_MIPMAP_LINEAR,
 					 const Filter		  p_magFilter = Filter::LINEAR );
 
-		int getId() const { return _id; }
+		inline int getId() const { return _id; }
 
-		void resize( const int p_width, const int p_height );
+		void resize( const GLsizei p_width, const GLsizei p_height );
 
-		void bindToUnit( const int p_unit ) const { _gl->glBindTextureUnit( p_unit, _id ); }
+		inline void bindToUnit( const int p_unit ) const { _gl->glBindTextureUnit( p_unit, _id ); }
 
-		void fill( const void * p_pixels,
-				   const Format p_format  = Format::RGB,
-				   const Type	p_type	  = Type::FLOAT,
-				   const int	p_level	  = 0,
-				   const int	p_offsetX = 0,
-				   const int	p_offsetY = 0,
-				   const int	p_width	  = -1,
-				   const int	p_height  = -1 ) const;
+		void fill( const void *	 p_pixels,
+				   const Format	 p_format  = Format::RGB,
+				   const Type	 p_type	   = Type::FLOAT,
+				   const GLint	 p_level   = 0,
+				   const GLint	 p_offsetX = 0,
+				   const GLint	 p_offsetY = 0,
+				   const GLsizei p_width   = -1,
+				   const GLsizei p_height  = -1 ) const;
 
 	  private:
 		void _create();
@@ -118,8 +118,8 @@ namespace VTX::Renderer::GL
 	  private:
 		GLuint _id = GL_INVALID_INDEX;
 
-		int			   _width	  = 0;
-		int			   _height	  = 0;
+		GLsizei		   _width	  = 0;
+		GLsizei		   _height	  = 0;
 		InternalFormat _format	  = InternalFormat::RGBA32F;
 		Wrapping	   _wrappingS = Wrapping::REPEAT;
 		Wrapping	   _wrappingT = Wrapping::REPEAT;

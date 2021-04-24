@@ -93,7 +93,7 @@ namespace VTX::Renderer::GL
 		_quadVAO.create();
 
 		_quadVAO.enableAttribute( 0 );
-		_quadVAO.setVertexBuffer( 0, _quadVBO.getId(), sizeof( Vec2f ) );
+		_quadVAO.setVertexBuffer( 0, _quadVBO, sizeof( Vec2f ) );
 		_quadVAO.setAttributeFormat( 0, 2, VertexArray::Type::FLOAT );
 		_quadVAO.setAttributeBinding( 0, 0 );
 

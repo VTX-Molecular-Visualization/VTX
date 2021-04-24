@@ -33,7 +33,7 @@ namespace VTX::Renderer::GL
 	{
 		for ( const PairStringToGLuint & pair : _shaders )
 		{
-			gl()->glDeleteShader( pair.second );
+			_gl->glDeleteShader( pair.second );
 		}
 
 		for ( const PairStringToProgram & pair : _programs )
@@ -52,7 +52,7 @@ namespace VTX::Renderer::GL
 
 		if ( _programs.find( p_name ) == _programs.end() )
 		{
-			_programs[ p_name ] = new Program( gl() );
+			_programs[ p_name ] = new Program( _gl );
 			Program & program	= *_programs[ p_name ];
 			program.create( p_name );
 
@@ -110,27 +110,27 @@ namespace VTX::Renderer::GL
 		GLuint shaderId = getShader( name );
 		if ( shaderId == GL_INVALID_INDEX )
 		{
-			shaderId			   = gl()->glCreateShader( (int)type );
+			shaderId			   = _gl->glCreateShader( (int)type );
 			FilePath		  path = Util::Filesystem::getShadersPath( p_path.string() );
 			const std::string src  = Util::Filesystem::readPath( path );
 			if ( src.empty() )
 			{
-				gl()->glDeleteShader( shaderId );
+				_gl->glDeleteShader( shaderId );
 				return GL_INVALID_INDEX;
 			}
 
 			const GLchar * shaderCode = src.c_str();
-			gl()->glShaderSource( shaderId, 1, &shaderCode, 0 );
-			gl()->glCompileShader( shaderId );
+			_gl->glShaderSource( shaderId, 1, &shaderCode, 0 );
+			_gl->glCompileShader( shaderId );
 			GLint compiled;
-			gl()->glGetShaderiv( shaderId, GL_COMPILE_STATUS, &compiled );
+			_gl->glGetShaderiv( shaderId, GL_COMPILE_STATUS, &compiled );
 			if ( compiled == GL_FALSE )
 			{
 				std::string error = "Error compiling shader: ";
 				error += name;
 				error += "\n";
 				error += _getShaderErrors( shaderId );
-				gl()->glDeleteShader( shaderId );
+				_gl->glDeleteShader( shaderId );
 				VTX_ERROR( error );
 				return GL_INVALID_INDEX;
 			}
@@ -157,13 +157,13 @@ namespace VTX::Renderer::GL
 	std::string ProgramManager::_getShaderErrors( const GLuint p_shader )
 	{
 		GLint length;
-		gl()->glGetShaderiv( p_shader, GL_INFO_LOG_LENGTH, &length );
+		_gl->glGetShaderiv( p_shader, GL_INFO_LOG_LENGTH, &length );
 		if ( length == 0 )
 		{
 			return "";
 		}
 		std::vector<GLchar> log( length );
-		gl()->glGetShaderInfoLog( p_shader, length, &length, &log[ 0 ] );
+		_gl->glGetShaderInfoLog( p_shader, length, &length, &log[ 0 ] );
 		return std::string( log.begin(), log.end() );
 	}
 } // namespace VTX::Renderer::GL

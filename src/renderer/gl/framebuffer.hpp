@@ -14,6 +14,7 @@ namespace VTX::Renderer::GL
 	class Framebuffer : public Generic::BaseOpenGL
 	{
 	  public:
+		// See http://docs.gl/gl4/glFramebufferTexture.
 		enum class Attachment : GLenum
 		{
 			COLOR0	= GL_COLOR_ATTACHMENT0,
@@ -51,16 +52,26 @@ namespace VTX::Renderer::GL
 			DEPTH	= GL_DEPTH_ATTACHMENT,
 			STENCIL = GL_STENCIL_ATTACHMENT
 		};
+		// See http://docs.gl/gl4/glFramebufferTexture.
 		enum class Target : GLenum
 		{
 			DRAW_FRAMEBUFFER = GL_DRAW_FRAMEBUFFER,
 			READ_FRAMEBUFFER = GL_READ_FRAMEBUFFER,
 			FRAMEBUFFER		 = GL_FRAMEBUFFER
 		};
+		// See http://docs.gl/gl4/glClear.
+		enum class ClearBuffer : GLbitfield
+		{
+			COLOR		= GL_COLOR_BUFFER_BIT,
+			DEPTH		= GL_DEPTH_BUFFER_BIT,
+			STENCIL		= GL_STENCIL_BUFFER_BIT,
+			COLOR_DEPTH = COLOR | DEPTH,
+			ALL			= COLOR | DEPTH | STENCIL
+		};
 
 		Framebuffer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 
-		~Framebuffer() { _destroy(); }
+		~Framebuffer() { destroy(); }
 
 		void create( const Target & p_target )
 		{
@@ -71,18 +82,18 @@ namespace VTX::Renderer::GL
 
 			assert( _gl->glIsFramebuffer( _id ) );
 		}
+		void destroy() { _gl->glDeleteFramebuffers( 1, &_id ); }
+
 		void assign( const GLuint p_id )
 		{
 			assert( _gl->glIsFramebuffer( p_id ) );
 
-			if ( _id != GL_INVALID_INDEX )
-				_destroy();
-
-			_id		= p_id;
-			_target = Target::FRAMEBUFFER;
+			_id = p_id;
 		}
 
 		int getId() const { return _id; }
+
+		void clear( const ClearBuffer p_clear ) const { _gl->glClear( GLbitfield( p_clear ) ); }
 
 		void bind() const
 		{
@@ -111,7 +122,6 @@ namespace VTX::Renderer::GL
 		}
 
 	  private:
-		void _destroy() { _gl->glDeleteFramebuffers( 1, &_id ); }
 		void _checkStatus() const;
 
 	  private:

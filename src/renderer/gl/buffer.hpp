@@ -29,12 +29,12 @@ namespace VTX::Renderer::GL
 		Buffer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 		~Buffer() { _gl->glDeleteBuffers( 1, &_id ); }
 
-		void create() { _gl->glCreateBuffers( 1, &_id ); }
+		inline void create() { _gl->glCreateBuffers( 1, &_id ); }
 
-		GLuint getId() const { return _id; }
+		inline GLuint getId() const { return _id; }
 
 		template<typename T>
-		void set( const std::vector<T> & p_vector, const Usage & p_usage ) const
+		inline void set( const std::vector<T> & p_vector, const Usage & p_usage ) const
 		{
 			_gl->glNamedBufferData( _id, sizeof( T ) * GLsizei( p_vector.size() ), p_vector.data(), GLenum( p_usage ) );
 		}

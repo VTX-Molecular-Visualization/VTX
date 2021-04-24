@@ -26,15 +26,13 @@ namespace VTX::Renderer::GL::Pass
 
 	void FXAA::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
-		_gl->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, p_renderer.getOutputFramebuffer() );
+		p_renderer.getOutputFramebuffer().bind();
 
 		p_renderer.getPassSelection().getTexture().bindToUnit( 0 );
 
 		_program->use();
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
-
-		_gl->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
 	}
 
 } // namespace VTX::Renderer::GL::Pass

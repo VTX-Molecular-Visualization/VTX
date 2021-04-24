@@ -75,8 +75,6 @@ namespace VTX::Renderer::GL::Pass
 		_program->setVec2i( "uInvDirectionTexSize", 0, 1 );
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
-
-		_fbo.unbind();
 	}
 
 	void Blur::clearTexture()

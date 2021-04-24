@@ -43,7 +43,7 @@ namespace VTX::Renderer::GL::Pass
 		}
 		else
 		{
-			_gl->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, p_renderer.getOutputFramebuffer() );
+			p_renderer.getOutputFramebuffer().bind();
 		}
 
 		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
@@ -68,11 +68,6 @@ namespace VTX::Renderer::GL::Pass
 		}
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
-
-		if ( VTX_SETTING().activeAA == false )
-		{
-			gl()->glBindFramebuffer( GL_DRAW_FRAMEBUFFER, 0 );
-		}
 	}
 
 	void Selection::updateOutputFBO( const GL & p_renderer )

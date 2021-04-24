@@ -58,7 +58,7 @@ namespace VTX::Renderer::GL::Pass
 	void Geometric::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
 		_fbo.bind();
-		gl()->glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		_fbo.clear( Framebuffer::ClearBuffer::COLOR_DEPTH );
 
 		for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 		{
@@ -68,8 +68,6 @@ namespace VTX::Renderer::GL::Pass
 		{
 			mesh->render( p_scene.getCamera() );
 		}
-
-		_fbo.unbind();
 	}
 
 } // namespace VTX::Renderer::GL::Pass
