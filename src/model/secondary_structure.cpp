@@ -251,7 +251,7 @@ namespace VTX
 
 		void SecondaryStructure::_computeAABB() const
 		{
-			/// TODO peut-�tre ?
+			/// TODO
 		}
 
 		void SecondaryStructure::_instantiate3DViews()

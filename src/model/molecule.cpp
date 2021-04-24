@@ -428,7 +428,7 @@ namespace VTX
 
 			_secondaryStructure = MVC::MvcManager::get().instantiateModel<SecondaryStructure, Molecule * const>( this );
 			/// TODO: this is strange
-			_secondaryStructure->init( getBuffer()->gl() );
+			_secondaryStructure->init( getBuffer()->getGL() );
 			_secondaryStructure->print();
 		}
 

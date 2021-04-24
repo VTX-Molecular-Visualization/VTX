@@ -28,7 +28,7 @@ namespace VTX
 			const uint width  = renderer.getWidth();
 			const uint height = renderer.getHeight();
 
-			Renderer::RayTracer * rt = new Renderer::RayTracer( renderer.gl() );
+			Renderer::RayTracer * rt = new Renderer::RayTracer( renderer.getGL() );
 			rt->init( width, height, renderer.getOutputFramebuffer().getId() );
 			rt->renderFrame( VTXApp::get().getScene() );
 			const std::vector<uchar> & pixels = rt->getPixels();

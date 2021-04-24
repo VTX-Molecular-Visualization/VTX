@@ -100,7 +100,7 @@ namespace VTX::Renderer::GL
 
 		void resize( const GLsizei p_width, const GLsizei p_height );
 
-		inline void bindToUnit( const int p_unit ) const { _gl->glBindTextureUnit( p_unit, _id ); }
+		inline void bindToUnit( const GLuint p_unit ) const { _gl->glBindTextureUnit( p_unit, _id ); }
 
 		void fill( const void *	 p_pixels,
 				   const Format	 p_format  = Format::RGB,

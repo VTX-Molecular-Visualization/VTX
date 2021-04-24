@@ -102,22 +102,20 @@ namespace VTX::Renderer::GL
 
 	void GL::renderFrame( const Object3D::Scene & p_scene )
 	{
-		gl()->glViewport( 0, 0, _width, _height );
-
 		// TODO: do not change each frame
 		/// TODO2: why this?
 		if ( VTX_SETTING().cameraNear == 0.f )
 		{
-			gl()->glEnable( GL_DEPTH_CLAMP );
+			enableDepthClamp();
 		}
 		else
 		{
-			gl()->glDisable( GL_DEPTH_CLAMP );
+			disableDepthClamp();
 		}
 
-		gl()->glEnable( GL_DEPTH_TEST );
+		enableDepthTest();
 		_passGeometric->render( p_scene, *this );
-		gl()->glDisable( GL_DEPTH_TEST );
+		disableDepthTest();
 
 		_passLinearizeDepth->render( p_scene, *this );
 

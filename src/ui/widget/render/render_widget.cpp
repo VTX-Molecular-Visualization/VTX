@@ -27,13 +27,13 @@ namespace VTX
 					{
 						const Event::VTXEventPtr<Model::Molecule> & castedEvent
 							= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-						castedEvent.ptr->init( getOpenGLWidget().gl() );
+						castedEvent.ptr->init( getOpenGLWidget().getGL() );
 					}
 					else if ( p_event.name == Event::Global::MESH_CREATED )
 					{
 						const Event::VTXEventPtr<Model::MeshTriangle> & castedEvent
 							= dynamic_cast<const Event::VTXEventPtr<Model::MeshTriangle> &>( p_event );
-						castedEvent.ptr->init( getOpenGLWidget().gl() );
+						castedEvent.ptr->init( getOpenGLWidget().getGL() );
 					}
 					_openGLWidget->doneCurrent();
 				}
