@@ -144,7 +144,8 @@ namespace VTX
 					distance = Util::Math::clamp( distance - deltaDistance, 0.1f, 10000.f );
 				}
 
-				Quatf rotation = Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z ) * p_deltaTime );
+				Quatf rotation = Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z )
+										* ( VTX_SETTING().controllerElasticityActive ? p_deltaTime : 0.2f ) );
 				_camera.rotateAround( rotation, _target, distance );
 				float d = Util::Math::distance( _camera.getPosition(), _target );
 				// VTX_LOG_FILE( std::to_string( p_deltaTime ) + " / " + std::to_string( distance ) + " / "
@@ -153,7 +154,14 @@ namespace VTX
 			}
 
 			// Handle elasticity.
-			_updateElasticity( p_deltaTime );
+			if ( VTX_SETTING().controllerElasticityActive )
+			{
+				_updateElasticity( p_deltaTime );
+			}
+			else
+			{
+				_velocity = VEC3F_ZERO;
+			}
 		}
 
 		void Trackball::_updateElasticity( const float & p_deltaTime )
@@ -161,7 +169,7 @@ namespace VTX
 			if ( _velocity != VEC3F_ZERO )
 			{
 				_velocity = Util::Math::linearInterpolation(
-					_velocity, VEC3F_ZERO, p_deltaTime * Setting::CONTROLLER_ELASTICITY_FACTOR );
+					_velocity, VEC3F_ZERO, p_deltaTime * VTX_SETTING().controllerElasticityFactor );
 
 				Vec3f::bool_type res = Util::Math::lessThan( Util::Math::abs( _velocity ),
 															 Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );
