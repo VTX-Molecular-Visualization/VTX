@@ -185,7 +185,7 @@ namespace VTX
 		bool			  yAxisInverted = CONTROLLER_Y_AXIS_INVERTED;
 
 		static const bool CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
-		bool			  controllerElasticityActive = CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
+		bool			  activeControllerElasticity = CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
 
 		static const float CONTROLLER_ELASTICITY_FACTOR_DEFAULT;
 		static const float CONTROLLER_ELASTICITY_FACTOR_MIN;

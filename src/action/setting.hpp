@@ -526,6 +526,34 @@ namespace VTX
 				const bool _active;
 			};
 
+			class ActiveControllerElasticity : public BaseAction
+			{
+			  public:
+				explicit ActiveControllerElasticity( const bool p_active ) : _active( p_active ) {}
+
+				virtual void execute() override { VTX_SETTING().activeControllerElasticity = _active; };
+
+			  private:
+				const bool _active;
+			};
+
+			class ChangeControllerElasticity : public BaseAction
+			{
+			  public:
+				explicit ChangeControllerElasticity( const float p_elasticity ) : _elasticity( p_elasticity ) {}
+
+				virtual void execute() override
+				{
+					VTX_SETTING().controllerElasticityFactor
+						= Util::Math::clamp( _elasticity,
+											 VTX::Setting::CONTROLLER_ELASTICITY_FACTOR_MIN,
+											 VTX::Setting::CONTROLLER_ELASTICITY_FACTOR_MAX );
+				};
+
+			  private:
+				const float _elasticity;
+			};
+
 			class ChangeAutoRotateSpeed : public BaseAction
 			{
 			  public:
