@@ -44,17 +44,17 @@ namespace VTX
 			for ( const FilePath * path : _paths )
 			{
 				chrono.start();
-				_logInfo( "Loading " + path->filename().string() );
+				emit logInfo( "Loading " + path->filename().string() );
 				MODE mode = _getMode( *path );
 
 				if ( mode == MODE::UNKNOWN )
 				{
-					_logError( "Format not supported" );
+					emit logError( "Format not supported" );
 				}
 				else if ( mode == MODE::MOLECULE )
 				{
 					// Create reader.
-					IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles();
+					IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles( this );
 
 					// Set PRM.
 					Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
@@ -68,8 +68,8 @@ namespace VTX
 					}
 					catch ( const std::exception & p_e )
 					{
-						_logError( "Error loading file" );
-						_logError( p_e.what() );
+						emit logError( "Error loading file" );
+						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( molecule );
 					}
 
@@ -87,8 +87,8 @@ namespace VTX
 					}
 					catch ( const std::exception & p_e )
 					{
-						_logError( "Error loading file" );
-						_logError( p_e.what() );
+						emit logError( "Error loading file" );
+						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( mesh );
 					}
 
@@ -101,11 +101,11 @@ namespace VTX
 					try
 					{
 						reader->readFile( *path, VTXApp::get() );
-						_logInfo( "App loaded " );
+						emit logInfo( "App loaded " );
 					}
 					catch ( const std::exception & p_e )
 					{
-						_logError( "Cannot load app: " + std::string( p_e.what() ) );
+						emit logError( "Cannot load app: " + std::string( p_e.what() ) );
 					}
 
 					delete reader;
@@ -114,24 +114,24 @@ namespace VTX
 				delete path;
 
 				chrono.stop();
-				_logInfo( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+				emit logInfo( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
 			// Load all buffers.
 			for ( const std::pair<FilePath *, std::string *> & pair : _mapFileNameBuffer )
 			{
 				chrono.start();
-				_logInfo( "Loading " + pair.first->filename().string() );
+				emit logInfo( "Loading " + pair.first->filename().string() );
 				MODE mode = _getMode( *pair.first );
 
 				if ( mode != MODE::MOLECULE )
 				{
-					_logError( "Format not supported" );
+					emit logError( "Format not supported" );
 				}
 				else
 				{
 					// Create reader.
-					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles();
+					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles( this );
 					Model::Molecule *		   molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 
 					// Load.
@@ -142,8 +142,8 @@ namespace VTX
 					}
 					catch ( const std::exception & p_e )
 					{
-						_logError( "Error loading file" );
-						_logError( p_e.what() );
+						emit logError( "Error loading file" );
+						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( molecule );
 					}
 
@@ -154,7 +154,7 @@ namespace VTX
 				delete pair.second;
 
 				chrono.stop();
-				_logInfo( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+				emit logInfo( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
 			return 1;

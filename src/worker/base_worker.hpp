@@ -26,21 +26,12 @@ namespace VTX
 			virtual uint _run() = 0;
 
 		  signals:
-			void resultReady( BaseWorker *, const uint p_returnCode );
-			void updateProgress( BaseWorker *, const uint p_progress );
-
+			void resultReady( BaseWorker *, const uint p_returnCode ) const;
+			void updateProgress( BaseWorker *, const uint p_progress ) const;
 			void logInfo( const std::string p_msg ) const;
 			void logWarning( const std::string p_msg ) const;
 			void logError( const std::string p_msg ) const;
 			void logDebug( const std::string p_msg ) const;
-
-		  protected:
-			void _updateProgress( const uint p_progress ) { emit updateProgress( this, p_progress ); }
-
-			void _logInfo( const std::string & p_msg ) const { emit logInfo( p_msg ); }
-			void _logWarning( const std::string & p_msg ) const { emit logWarning( p_msg ); }
-			void _logError( const std::string & p_msg ) const { emit logError( p_msg ); }
-			void _logDebug( const std::string & p_msg ) const { emit logDebug( p_msg ); }
 		};
 	} // namespace Worker
 } // namespace VTX
