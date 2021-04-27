@@ -9,9 +9,13 @@ uniform mat4 u_MVMatrix;
 uniform mat4 u_projMatrix;
 uniform mat4 u_normalMatrix;
 
-smooth out vec3 vViewPosition;
-smooth out vec3 vNormal;
-flat out vec3	vColor;
+out VsOut
+{
+	smooth vec3 viewPosition;
+	smooth vec3 normal;
+	flat vec3	color;
+}
+vsOut;
 
 void main()
 {
@@ -20,9 +24,9 @@ void main()
 		return;
 	}
 
-	vViewPosition = vec3( u_MVMatrix * vec4( aVertexPosition, 1.f ) );
-	vNormal		  = vec3( u_normalMatrix * vec4( aVertexNormal, 1.f ) );
-	vColor		  = aVertexColor;
+	vsOut.viewPosition = vec3( u_MVMatrix * vec4( aVertexPosition, 1.f ) );
+	vsOut.normal		  = vec3( u_normalMatrix * vec4( aVertexNormal, 1.f ) );
+	vsOut.color		  = aVertexColor;
 
-	gl_Position = u_projMatrix * vec4( vViewPosition, 1.f );
+	gl_Position = u_projMatrix * vec4( vsOut.viewPosition, 1.f );
 }
