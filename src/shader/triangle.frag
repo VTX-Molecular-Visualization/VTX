@@ -18,9 +18,7 @@ layout( location = 1 ) out vec4 outColor;
 
 void main()
 {
-	uvec4 colorNormal = uvec4( 0 );
-
-	// Compress color and normal.
+	// Compress position and normal.
 	uvec4 viewPositionNormalCompressed;
 	viewPositionNormalCompressed.x = packHalf2x16( fsIn.viewPosition.xy );
 	viewPositionNormalCompressed.y = packHalf2x16( vec2( fsIn.viewPosition.z, fsIn.normal.x ) );

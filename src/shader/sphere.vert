@@ -35,7 +35,7 @@ void main()
 {
 	vsOut.viewSpherePos	 = vec3( u_MVMatrix * vec4( aSpherePos, 1.f ) );
 	vsOut.sphereColor	 = aSphereColor;
-	vsOut.sphereRadius		 = u_isRadiusFixed ? u_radiusFixed : aSphereRadius + u_radiusAdd;
+	vsOut.sphereRadius	 = u_isRadiusFixed ? u_radiusFixed : aSphereRadius + u_radiusAdd;
 	vsOut.sphereVisible	 = aSphereVisible;
 	vsOut.sphereSelected = sphereSelected;
 

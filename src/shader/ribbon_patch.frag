@@ -20,13 +20,13 @@ layout( location = 1 ) out vec4 outColor;
 void main()
 {
 	vec3 normal = teIn.normal;
-	vec3 color  = teIn.color;
-	if ( dot(normal, teIn.viewPosition) > 0.f )
+	vec3 color	= teIn.color;
+	if ( dot( normal, teIn.viewPosition ) > 0.f )
 	{
 		normal = -normal;
 	}
 
-	// Compress color and normal.
+	// Compress position and normal.
 	uvec4 viewPositionNormalCompressed;
 	viewPositionNormalCompressed.x = packHalf2x16( teIn.viewPosition.xy );
 	viewPositionNormalCompressed.y = packHalf2x16( vec2( teIn.viewPosition.z, normal.x ) );

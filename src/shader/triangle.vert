@@ -25,8 +25,8 @@ void main()
 	}
 
 	vsOut.viewPosition = vec3( u_MVMatrix * vec4( aVertexPosition, 1.f ) );
-	vsOut.normal		  = vec3( u_normalMatrix * vec4( aVertexNormal, 1.f ) );
-	vsOut.color		  = aVertexColor;
+	vsOut.normal	   = vec3( u_normalMatrix * vec4( aVertexNormal, 1.f ) );
+	vsOut.color		   = aVertexColor;
 
 	gl_Position = u_projMatrix * vec4( vsOut.viewPosition, 1.f );
 }

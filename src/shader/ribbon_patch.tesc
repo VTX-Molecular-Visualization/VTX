@@ -88,7 +88,8 @@ void main()
 		// dir = 1 in backbones direction and -1 in the reverse direction.
 		const float dir = vsIn[ gl_InvocationID + 1 ].position.w - vsIn[ gl_InvocationID ].position.w;
 		tcOut[ gl_InvocationID ].direction *= dir;
-		const vec3 v02 = normalize( ( vsIn[ gl_InvocationID + 1 ].position.xyz - vsIn[ gl_InvocationID - 1 ].position.xyz ));
+		const vec3 v02
+			= normalize( ( vsIn[ gl_InvocationID + 1 ].position.xyz - vsIn[ gl_InvocationID - 1 ].position.xyz ) );
 
 		tcOut[ gl_InvocationID ].normal = normalize( cross( v02, tcOut[ gl_InvocationID ].direction ) );
 	}

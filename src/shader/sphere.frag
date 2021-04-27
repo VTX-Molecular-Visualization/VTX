@@ -2,8 +2,7 @@
 
 //#define SHOW_IMPOSTORS
 
-uniform mat4  u_projMatrix;
-
+uniform mat4 u_projMatrix;
 
 in GsOut
 {
@@ -48,7 +47,7 @@ void main()
 #ifdef SHOW_IMPOSTORS
 		// Show impostors for debugging purpose.
 		uvec4 colorNormal = uvec4( 0 );
-		// fill G-buffers.
+		// Compress position and normal.
 		uvec4 viewPositionNormalCompressed;
 		viewPositionNormalCompressed.x = packHalf2x16( gsIn.viewImpPos.xy );
 		viewPositionNormalCompressed.y = packHalf2x16( vec2( gsIn.viewImpPos.z, -gsIn.viewSpherePos.x ) );

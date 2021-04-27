@@ -25,9 +25,9 @@ vsOut;
 
 void main()
 {
-	vsOut.vertexColor = aVertexColor;
+	vsOut.vertexColor	 = aVertexColor;
 	vsOut.vertexVisible	 = aVertexVis;
-	vsOut.vertexSelected	 = aVertexSel;
+	vsOut.vertexSelected = aVertexSel;
 
 	// Vertex position in view space.
 	gl_Position = u_MVMatrix * vec4( aVertexPosition, 1.f );

@@ -53,7 +53,7 @@ void main()
 #ifdef SHOW_IMPOSTORS
 		// Show impostors for debugging purpose.
 		uvec4 colorNormal = uvec4( 0 );
-		// Fill G-buffers.
+		// Compress position and normal.
 		uvec4 viewPositionNormalCompressed;
 		viewPositionNormalCompressed.x = packHalf2x16( gsIn.viewImpostorPosition.xy );
 		viewPositionNormalCompressed.y = packHalf2x16( vec2( gsIn.viewImpostorPosition.z, -rayDir.x ) );
@@ -79,12 +79,13 @@ void main()
 		if ( y < 0.f || y > d0 )
 		{
 #ifdef SHOW_IMPOSTORS
-			// fill G-buffers
+			// Compress position and normal.
 			uvec4 viewPositionNormalCompressed;
 			viewPositionNormalCompressed.x = packHalf2x16( gsIn.viewImpostorPosition.xy );
 			viewPositionNormalCompressed.y = packHalf2x16( vec2( gsIn.viewImpostorPosition.z, -rayDir.x ) );
 			viewPositionNormalCompressed.z = packHalf2x16( -rayDir.yz );
-			viewPositionNormalCompressed.w = packHalf2x16( vec2( gsIn.vertexSelected[ 0 ] & gsIn.vertexSelected[ 1 ], 0 ) );
+			viewPositionNormalCompressed.w
+				= packHalf2x16( vec2( gsIn.vertexSelected[ 0 ] & gsIn.vertexSelected[ 1 ], 0 ) );
 
 			// Output data.
 			outViewPositionNormal = viewPositionNormalCompressed;
@@ -107,12 +108,13 @@ void main()
 			// Color with good color extremity.
 			const vec3 color = gsIn.colors[ int( y > d0 * 0.5f ) ];
 
-			// Compress color and normal.
+			// Compress position and normal.
 			uvec4 viewPositionNormalCompressed;
 			viewPositionNormalCompressed.x = packHalf2x16( hit.xy );
 			viewPositionNormalCompressed.y = packHalf2x16( vec2( hit.z, normal.x ) );
 			viewPositionNormalCompressed.z = packHalf2x16( normal.yz );
-			viewPositionNormalCompressed.w = packHalf2x16( vec2( gsIn.vertexSelected[ 0 ] & gsIn.vertexSelected[ 1 ], 0 ) );
+			viewPositionNormalCompressed.w
+				= packHalf2x16( vec2( gsIn.vertexSelected[ 0 ] & gsIn.vertexSelected[ 1 ], 0 ) );
 
 			// Output data.
 			outViewPositionNormal = viewPositionNormalCompressed;

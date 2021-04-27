@@ -51,17 +51,17 @@ const mat4	BSPLINE_MAT = ( 1.f / 6.f ) * mat4( -1.f,  3.f, -3.f, 1.f,
 												 1.f,  4.f,  1.f, 0.f );
 // clang-format on
 
-const float DIRECTION_FACTOR[] = float[]( 2.f, // HELIX_ALPHA_RIGHT
-										  2.f, // HELIX_ALPHA_LEFT
-										  2.f, // HELIX_3_10_RIGHT
-										  2.f, // HELIX_3_10_LEFT
-										  2.f, // HELIX_PI
-										  3.f, // STRAND
+const float DIRECTION_FACTOR[] = float[]( 2.f,	// HELIX_ALPHA_RIGHT
+										  2.f,	// HELIX_ALPHA_LEFT
+										  2.f,	// HELIX_3_10_RIGHT
+										  2.f,	// HELIX_3_10_LEFT
+										  2.f,	// HELIX_PI
+										  3.f,	// STRAND
 										  0.5f, // TURN
-										  0.5f  // COIL
+										  0.5f	// COIL
 );
 
-const float RADIUS = 0.4f;
+const float RADIUS		 = 0.4f;
 const float ARROW_OFFSET = 3.f;
 
 // TODO: simplify
@@ -93,7 +93,7 @@ void main()
 
 	// Get tangent.
 	const vec3 tangent = normalize( p13 - p02 );
-	
+
 	// Interpolate direction along spline.
 	const vec3 d01 = mix( tcIn[ 0 ].direction, tcIn[ 1 ].direction, u23 );
 	const vec3 d12 = mix( tcIn[ 1 ].direction, tcIn[ 2 ].direction, u13 );
@@ -108,8 +108,8 @@ void main()
 	const vec3 normal = normalize( mix( tcIn[ 1 ].normal, tcIn[ 2 ].normal, gl_TessCoord.x ) );
 
 	// Make direction orthogonal to tangent.
-	direction = cross(normal, tangent);
-		
+	direction = cross( normal, tangent );
+
 	// Interpolate direction factor between the two center control points.
 	const float directionFactor
 		= mix( DIRECTION_FACTOR[ tcIn[ 1 ].ssType ], DIRECTION_FACTOR[ tcIn[ 2 ].ssType ], gl_TessCoord.x );
@@ -119,19 +119,18 @@ void main()
 	if ( ( tcIn[ 1 ].ssType == 5us ) && ( tcIn[ 1 ].ssType != tcIn[ 2 ].ssType ) )
 		arrayOffset = mix( ARROW_OFFSET, 0.f, gl_TessCoord.x );
 
-
 	// Move vertex along direction
 	const vec3 d = direction * ( directionFactor + arrayOffset ) * RADIUS;
-	position +=  d * ( 2.f * gl_TessCoord.y - 1.f );
+	position += d * ( 2.f * gl_TessCoord.y - 1.f );
 
 	// Move vertex along normal
-	const vec3 n = normal * (directionFactor + arrayOffset) / directionFactor * RADIUS;
+	const vec3 n = normal * ( directionFactor + arrayOffset ) / directionFactor * RADIUS;
 	position += n * ( 2.f * gl_TessCoord.y - 1.f ); // TODO: Check when double sided
 
 	teOut.viewPosition = vec3( u_MVMatrix * vec4( position, 1.f ) );
-	teOut.normal = vec3( u_normalMatrix * vec4( normal, 1.f ) );
-	teOut.color = mix( tcIn[ 1 ].color, tcIn[ 2 ].color, gl_TessCoord.x );
-	//teOut.color =  tcIn[ 1 ].color;
+	teOut.normal	   = vec3( u_normalMatrix * vec4( normal, 1.f ) );
+	teOut.color		   = mix( tcIn[ 1 ].color, tcIn[ 2 ].color, gl_TessCoord.x );
+	// teOut.color =  tcIn[ 1 ].color;
 	teOut.selection = tcIn[ 1 ].selection;
 
 	gl_Position = u_projMatrix * vec4( teOut.viewPosition, 1.f );
