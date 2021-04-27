@@ -15,15 +15,19 @@ layout( location = ATOM_SELECTION ) in unsigned short aVertexSel;
 uniform mat4 u_MVMatrix;
 uniform mat4 u_projMatrix;
 
-flat out vec3			vVertexColor;
-flat out unsigned short vVertexVis;
-flat out unsigned short vVertexSel;
+out VsOut
+{
+	flat vec3			vertexColor;
+	flat unsigned short vertexVisible;
+	flat unsigned short vertexSelected;
+}
+vsOut;
 
 void main()
 {
-	vVertexColor = aVertexColor;
-	vVertexVis	 = aVertexVis;
-	vVertexSel	 = aVertexSel;
+	vsOut.vertexColor = aVertexColor;
+	vsOut.vertexVisible	 = aVertexVis;
+	vsOut.vertexSelected	 = aVertexSel;
 
 	// Vertex position in view space.
 	gl_Position = u_MVMatrix * vec4( aVertexPosition, 1.f );
