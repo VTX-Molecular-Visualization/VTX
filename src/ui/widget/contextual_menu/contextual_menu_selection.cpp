@@ -10,37 +10,48 @@ namespace VTX::UI::Widget::ContextualMenu
 	ContextualMenuSelection::ContextualMenuSelection( QWidget * const p_parent ) : ContextualMenuTemplate( p_parent )
 	{
 		_actions.emplace_back(
-			new ActionData( "Rename", TypeMask::Molecule, &ContextualMenuSelection::_renameAction ) );
+			new ActionData( "Rename", TypeMask::Molecule, this, &ContextualMenuSelection::_renameAction ) );
 
 		_representationMenu = WidgetFactory::get().instantiateWidget<CustomWidget::SetRepresentationMenu>(
 			this, "SetRepresentationMenu" );
-		_actions.emplace_back( new SubMenuData( "Representation", TypeMask::AllButAtom, _representationMenu ) );
-		_actions.emplace_back( new ActionDataSection( "Show/Hide", TypeMask::Molecule ) );
+		_actions.emplace_back( new SubMenuData( "Representation", TypeMask::AllButAtom, this, _representationMenu ) );
+		_actions.emplace_back( new ActionDataSection( "Show/Hide", TypeMask::Molecule, this ) );
 
 		ActionData * const toggleWatersAction = new ActionData(
-			"Toggle Waters", TypeMask::Molecule, &ContextualMenuSelection::_toggleWaterVisibilityAction );
-		toggleWatersAction->setRefreshFunction( this, &ContextualMenuSelection ::_refreshToggleWaterText );
+			"Toggle Waters", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleWaterVisibilityAction );
+		toggleWatersAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleWaterText );
 		_actions.emplace_back( toggleWatersAction );
 
 		ActionData * const toggleSolventAction = new ActionData(
-			"Toggle Solvent", TypeMask::Molecule, &ContextualMenuSelection::_toggleSolventVisibilityAction );
-		toggleSolventAction->setRefreshFunction( this, &ContextualMenuSelection ::_refreshToggleSolventText );
+			"Toggle Solvent", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleSolventVisibilityAction );
+		toggleSolventAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleSolventText );
 		_actions.emplace_back( toggleSolventAction );
 
 		ActionData * const toggleHydogensAction = new ActionData(
-			"Toggle Hydrogens", TypeMask::Molecule, &ContextualMenuSelection::_toggleHydrogenVisibilityAction );
-		toggleHydogensAction->setRefreshFunction( this, &ContextualMenuSelection ::_refreshToggleHydrogenText );
+			"Toggle Hydrogens", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleHydrogenVisibilityAction );
+		toggleHydogensAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleHydrogenText );
 		_actions.emplace_back( toggleHydogensAction );
 
-		_actions.emplace_back( new ActionDataSection( "Edit", TypeMask::All ) );
-		_actions.emplace_back( new ActionData( "Orient", TypeMask::All, &ContextualMenuSelection::_orientAction ) );
-		_actions.emplace_back( new ActionData( "Show", TypeMask::AllButAtom, &ContextualMenuSelection::_showAction ) );
-		_actions.emplace_back( new ActionData( "Hide", TypeMask::AllButAtom, &ContextualMenuSelection::_hideAction ) );
-		_actions.emplace_back( new ActionData( "Copy", TypeMask::All, &ContextualMenuSelection::_copyAction ) );
+		_actions.emplace_back( new ActionDataSection( "Trajectory", TypeMask::Molecule, this ) );
+		ActionData * const toggleTrajectoryPlayAction = new ActionData(
+			"Toggle Playing", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleTrajectoryPlayingAction );
+
+		toggleTrajectoryPlayAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleTrajectoryPlay );
+		toggleTrajectoryPlayAction->setCheckFunction( &ContextualMenuSelection ::_checkToggleTrajectoryPlayAction );
+		_actions.emplace_back( toggleTrajectoryPlayAction );
+
+		_actions.emplace_back( new ActionDataSection( "Edit", TypeMask::All, this ) );
 		_actions.emplace_back(
-			new ActionData( "Extract", TypeMask::AllButMolecule, &ContextualMenuSelection::_extractAction ) );
+			new ActionData( "Orient", TypeMask::All, this, &ContextualMenuSelection::_orientAction ) );
 		_actions.emplace_back(
-			new ActionData( "Delete", TypeMask::All, &ContextualMenuSelection::_deleteAction, QKeySequence::Delete ) );
+			new ActionData( "Show", TypeMask::AllButAtom, this, &ContextualMenuSelection::_showAction ) );
+		_actions.emplace_back(
+			new ActionData( "Hide", TypeMask::AllButAtom, this, &ContextualMenuSelection::_hideAction ) );
+		_actions.emplace_back( new ActionData( "Copy", TypeMask::All, this, &ContextualMenuSelection::_copyAction ) );
+		_actions.emplace_back(
+			new ActionData( "Extract", TypeMask::AllButMolecule, this, &ContextualMenuSelection::_extractAction ) );
+		_actions.emplace_back( new ActionData(
+			"Delete", TypeMask::All, this, &ContextualMenuSelection::_deleteAction, QKeySequence::Delete ) );
 	}
 	ContextualMenuSelection ::~ContextualMenuSelection()
 	{
@@ -81,7 +92,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		for ( int i = 0; i < _actions.size(); i++ )
 		{
 			ItemData * const itemData	   = _actions[ i ];
-			const bool		 actionVisible = bool( itemData->validTypes & selectionTypeMask );
+			const bool		 actionVisible = bool( itemData->validTypes & selectionTypeMask ) && itemData->check();
 
 			if ( actionVisible )
 				itemData->refresh();
@@ -131,6 +142,11 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_toggleHydrogenVisibilityAction()
 	{
 		VTX_ACTION( new Action::Selection::ToggleHydrogensVisibility( *_target ) );
+	}
+
+	void ContextualMenuSelection::_toggleTrajectoryPlayingAction()
+	{
+		VTX_ACTION( new Action::Selection::ToggleTrajectoryPlaying( *_target ) );
 	}
 
 	void ContextualMenuSelection::_orientAction() { VTX_ACTION( new Action::Selection::Orient( *_target ) ); }
@@ -261,6 +277,32 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		QString text = displayShowHydrogen ? "Show hydrogens" : "Hide hydrogens";
 		_action.setText( text );
+	}
+
+	void ContextualMenuSelection::_refreshToggleTrajectoryPlay( QAction & _action ) const
+	{
+		bool displayPlay = true;
+		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getItems() )
+		{
+			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			if ( molecule.hasTrajectory() )
+				displayPlay = displayPlay && !molecule.isPlaying();
+		}
+
+		QString text = displayPlay ? "Play" : "Pause";
+		_action.setText( text );
+	}
+
+	bool ContextualMenuSelection::_checkToggleTrajectoryPlayAction() const
+	{
+		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getItems() )
+		{
+			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			if ( molecule.hasTrajectory() )
+				return true;
+		}
+
+		return false;
 	}
 
 } // namespace VTX::UI::Widget::ContextualMenu

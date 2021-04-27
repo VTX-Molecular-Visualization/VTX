@@ -29,6 +29,11 @@ namespace VTX::UI::Widget::ContextualMenu
 			= addAction( "Toggle Solvent", this, &ContextualMenuMolecule::_toggleSolventVisibilityAction );
 		_toggleHydrogenAction
 			= addAction( "Toggle Hydrogen", this, &ContextualMenuMolecule::_toggleHydrogensVisibilityAction );
+
+		addSeparator();
+		_toggleTrajectoryPlayingAction
+			= addAction( "Toggle Play", this, &ContextualMenuMolecule::_toggleTrajectoryPlayingActions );
+
 		addSeparator();
 		addAction( "Orient", this, &ContextualMenuMolecule::_orientAction );
 		addAction( "Show", this, &ContextualMenuMolecule::_showAction );
@@ -56,6 +61,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		_toggleSolventAction->setText( p_target->showSolvent() ? "Hide Solvent" : "Show Solvent" );
 		_toggleHydrogenAction->setText( p_target->showHydrogen() ? "Hide Hydrogens" : "Show Hydrogens" );
 
+		_toggleTrajectoryPlayingAction->setVisible( p_target->hasTrajectory() );
+		_toggleTrajectoryPlayingAction->setText( p_target->isPlaying() ? "Pause" : "Play" );
+
 		_representationMenu->tickCurrentRepresentation( representationIndex );
 	}
 
@@ -79,6 +87,13 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		VTX_ACTION( new Action::Molecule::ChangeShowHydrogen( *_target, !_target->showHydrogen() ) );
 	}
+
+	void ContextualMenuMolecule::_toggleTrajectoryPlayingActions()
+	{
+		const bool newIsPlaying = !_target->isPlaying();
+		VTX_ACTION( new Action::Molecule::ChangeIsPlaying( *_target, newIsPlaying ) );
+	}
+
 	void ContextualMenuMolecule::_orientAction() { VTX_ACTION( new Action::Molecule::Orient( *_target ) ); }
 	void ContextualMenuMolecule::_showAction()
 	{
