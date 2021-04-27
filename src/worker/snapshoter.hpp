@@ -23,10 +23,7 @@ namespace VTX
 				RT_OPTIX
 			};
 
-			explicit Snapshoter( const MODE & p_mode, const FilePath & p_path, QImage & p_image ) :
-				_mode( p_mode ), _path( p_path )
-			{
-			}
+			explicit Snapshoter( const MODE & p_mode, const FilePath & p_path ) : _mode( p_mode ), _path( p_path ) {}
 
 		  protected:
 			void _run() override

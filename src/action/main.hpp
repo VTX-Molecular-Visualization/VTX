@@ -184,8 +184,7 @@ namespace VTX::Action::Main
 
 		virtual void execute() override
 		{
-			Worker::Snapshoter * const worker = new Worker::Snapshoter(
-				_mode, _path, VTXApp::get().getMainWindow().getOpenGLWidget().grabFramebuffer() );
+			Worker::Snapshoter * const worker = new Worker::Snapshoter( _mode, _path );
 			VTX_WORKER( worker );
 		};
 

@@ -46,6 +46,7 @@ namespace VTX
 			inline std::vector<Model::Molecule *> &		getMolecules() { return _molecules; }
 			inline std::vector<Model::MeshTriangle *> & getMeshes() { return _meshes; }
 
+		  protected:
 			uint _run() override;
 
 		  private:

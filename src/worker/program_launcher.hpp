@@ -18,6 +18,7 @@ namespace VTX
 		  public:
 			explicit ProgramLauncher( const std::string & p_command ) : _command( p_command ) {}
 
+		  protected:
 			uint _run() override;
 
 		  private:

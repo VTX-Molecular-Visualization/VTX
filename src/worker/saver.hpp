@@ -20,6 +20,7 @@ namespace VTX
 			explicit Saver( FilePath * const p_path ) : _path( p_path ) {}
 			~Saver() {}
 
+		  protected:
 			uint _run() override;
 
 		  private:
