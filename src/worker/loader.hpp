@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "base_worker.hpp"
+#include "base_thread.hpp"
 #include "define.hpp"
 #include <map>
 #include <vector>
@@ -20,7 +20,7 @@ namespace VTX
 
 	namespace Worker
 	{
-		class Loader : public Worker::BaseWorker
+		class Loader : public Worker::BaseThread
 		{
 			Q_OBJECT
 

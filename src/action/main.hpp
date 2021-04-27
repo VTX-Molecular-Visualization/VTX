@@ -60,19 +60,21 @@ namespace VTX::Action::Main
 				return;
 			}
 
-			Worker::Callback * callback = new Worker::Callback( [ loader ]( const uint p_code ) {
-				for ( Model::Molecule * const molecule : loader->getMolecules() )
+			Worker::Callback * callback = new Worker::Callback(
+				[ loader ]( const uint p_code )
 				{
-					molecule->print();
-					VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
-					VTXApp::get().getScene().addMolecule( molecule );
-				}
-				for ( Model::MeshTriangle * const mesh : loader->getMeshes() )
-				{
-					VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
-					VTXApp::get().getScene().addMesh( mesh );
-				}
-			} );
+					for ( Model::Molecule * const molecule : loader->getMolecules() )
+					{
+						molecule->print();
+						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
+						VTXApp::get().getScene().addMolecule( molecule );
+					}
+					for ( Model::MeshTriangle * const mesh : loader->getMeshes() )
+					{
+						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
+						VTXApp::get().getScene().addMesh( mesh );
+					}
+				} );
 
 			VTX_WORKER( loader, callback );
 		}
@@ -98,21 +100,22 @@ namespace VTX::Action::Main
 	  public:
 		explicit Save( FilePath * p_path ) : _path( p_path ) {}
 
-				virtual void execute() override
-				{
-					Worker::Saver * saver = nullptr;
-					if ( _path->empty() == false )
-					{
-						saver = new Worker::Saver( _path );
-					}
-					if ( saver == nullptr )
-					{
-						return;
-					}
+		virtual void execute() override
+		{
+			Worker::Saver * saver = nullptr;
+			if ( _path->empty() == false )
+			{
+				saver = new Worker::Saver( _path );
+			}
+			if ( saver == nullptr )
+			{
+				return;
+			}
 
-					VTX_WORKER( saver );
-					delete saver;
-				}
+			Worker::Callback * callback = new Worker::Callback( [ saver ]( const uint p_code ) {} );
+			VTX_WORKER( saver, callback );
+			delete saver;
+		}
 
 	  private:
 		FilePath * _path;

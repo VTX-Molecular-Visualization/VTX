@@ -7,35 +7,79 @@
 #include "ui/main_window.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
+#include <QPainter>
+#include <QSvgRenderer>
 #include <vector>
 
 namespace VTX
 {
 	namespace Worker
 	{
-		const bool Snapshoter::_takeSnapshotGL() const
+		const void Snapshoter::_takeSnapshotGL()
 		{
 			if ( std::filesystem::exists( _path ) )
 			{
-				emit logError( "File already exists" );
-				return 0;
+				VTX_ERROR( "File already exists" );
 			}
 
-			bool result = _image.save( QString( _path.string().c_str() ), "png" );
-			if ( result )
+			QSvgRenderer watermarkSvg( QString( ":/sprite/logo_vect.svg" ) );
+			QSize		 watermarkSize = watermarkSvg.defaultSize();
+			// QSize		 imageSize	   = _image.size();
+
+			// Compute ratio.
+
+			QImage watermarkImg( watermarkSize, QImage::Format_ARGB32 );
+			// img.fill( 0x00000000 );
+			QPainter watermarkPainter = QPainter( &watermarkImg );
+			watermarkSvg.render( &watermarkPainter );
+
+			// Compute watermark color.
+			// watermarkImg.invertPixels( QImage::InvertRgba );
+			Color::Rgb watermakColor
+				= VTX_SETTING().backgroundColor.brightness() > 0.5f ? Color::Rgb::BLACK : Color::Rgb::WHITE;
+			// watermakColor.oppose();
+
+			QColor qWatermarkColor = watermakColor.toQColor();
+
+			/*
+		   if ( VTX_SETTING().backgroundColor.brightness() < 0.5f )
+		   {
+			   watermarkImg.invertPixels( QImage::InvertRgb );
+		   }
+		   */
+
+			// Apply the color.
+
+			for ( int i = 0; i < watermarkImg.width(); ++i )
 			{
-				emit logInfo( "Snapshot taken: " + _path.filename().string() );
+				for ( int j = 0; j < watermarkImg.height(); ++j )
+				{
+					qWatermarkColor.setAlpha( watermarkImg.pixelColor( i, j ).alpha() == 255 ? 255 : 0 );
+					watermarkImg.setPixelColor( i, j, qWatermarkColor );
+				}
+			}
+
+			// TODO: force max quality.
+			QImage render = VTXApp::get().getMainWindow().getOpenGLWidget().grabFramebuffer();
+			// TODO: reset quality.
+
+			QPainter imagePainter = QPainter( &render );
+			// imagePainter.drawImage( render.rect(), watermarkImg );
+
+			if ( render.save( QString( _path.string().c_str() ), "png" ) )
+			{
+				VTX_INFO( "Snapshot taken: " + _path.filename().string() );
 			}
 			else
 			{
-				emit logError( "Snapshot failed" );
+				VTX_ERROR( "Snapshot failed" );
 			}
-
-			return result;
 		}
 
+		void Snapshoter::_addWatermark() { QImage watermark( ":/sprite/logo_vect.svg" ); }
+
 		// TOREDO
-		const bool Snapshoter::_takeSnapshotRTCPU() const
+		const void Snapshoter::_takeSnapshotRTCPU() const
 		{
 			Renderer::GL::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
@@ -51,11 +95,10 @@ namespace VTX
 			// bool res = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
 			// VTX_INFO( "Render computed: " + _path.filename().string() );
 			delete rt;
-			return false;
 		}
 
 		// TOREDO
-		const bool Snapshoter::_takeSnapshotRTOptix() const
+		const void Snapshoter::_takeSnapshotRTOptix() const
 		{
 			const Renderer::GL::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
@@ -72,10 +115,8 @@ namespace VTX
 			bool res = stbi_write_png( p_path.string().c_str(), width, height, 4, pixels.data(), 0 );
 			// VTX_INFO( "Render computed: " + _path.filename().string() );
 			delete ort;
-			return res;
 #else
-			emit logWarning( "Optix unavailable!" );
-			return false;
+			VTX_WARNING( "Optix unavailable!" );
 #endif
 		}
 

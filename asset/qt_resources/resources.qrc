@@ -1,8 +1,8 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-	<file>sprite/add_preset_icon.png</file>
 	<file>sprite/add_icon.png</file>
 	<file>sprite/add_icon_hovered.png</file>
+	<file>sprite/add_preset_icon.png</file>
 	<file>sprite/add_viewpoint.png</file>
 	<file>sprite/camera_focus_icon.png</file>
 	<file>sprite/camera_freefly_mode.png</file>
@@ -38,6 +38,8 @@
 	<file>sprite/lock_window_icon_hovered.png</file>
 	<file>sprite/logo.png</file>
 	<file>sprite/logoWhite.png</file>
+	<file>sprite/logo_vect.svg</file>
+	<file>sprite/logo_vect_no_text.svg</file>
 	<file>sprite/main_menu_separator.png</file>
 	<file>sprite/new_session_icon.png</file>
 	<file>sprite/openrecent_session_icon.png</file>
@@ -85,6 +87,7 @@
 	<file>sprite/undock_icon_hovered.png</file>
 	<file>sprite/unlock_window_icon.png</file>
 	<file>sprite/unlock_window_icon_hovered.png</file>
+	<file>sprite/windowed_icon.png</file>
 	<file>stylesheet.css</file>
 </qresource>
 </RCC>

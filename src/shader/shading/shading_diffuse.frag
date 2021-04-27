@@ -41,9 +41,9 @@ void main()
 	if ( data.viewPosition.z == 0.f )
 	{
 		if ( uFogDensity != 0.f )
-			fragColor = vec4( mix( uBackgroundColor, uFogColor, uFogDensity ) * uLightColor, 1.f );
+			fragColor = vec4( mix( uBackgroundColor, uFogColor, uFogDensity ) * uLightColor, 0.f );
 		else
-			fragColor = vec4( uBackgroundColor, 1.f );
+			fragColor = vec4( uBackgroundColor, 0.f );
 		return;
 	}
 
@@ -57,5 +57,5 @@ void main()
 	const float fogFactor = smoothstep( uFogNear, uFogFar, -data.viewPosition.z ) * uFogDensity;
 	const vec3	color	  = texelFetch( gbColor, texCoord, 0 ).xyz * cosTheta * ambientOcclusion;
 
-	fragColor = vec4( mix( color, uFogColor, fogFactor ) * uLightColor, 1.f );
+	fragColor = vec4( mix( color, uFogColor, fogFactor ) * uLightColor, 0.f );
 }

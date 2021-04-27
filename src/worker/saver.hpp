@@ -5,14 +5,14 @@
 #pragma once
 #endif
 
-#include "base_worker.hpp"
+#include "base_thread.hpp"
 #include "define.hpp"
 
 namespace VTX
 {
 	namespace Worker
 	{
-		class Saver : public Worker::BaseWorker
+		class Saver : public Worker::BaseThread
 		{
 			Q_OBJECT
 
