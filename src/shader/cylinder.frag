@@ -1,6 +1,6 @@
 #version 450
 
-#define SHOW_IMPOSTORS
+//#define SHOW_IMPOSTORS
 
 uniform mat4  u_projMatrix;
 uniform float u_cylRad;
