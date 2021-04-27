@@ -71,6 +71,7 @@ namespace VTX
 		  protected:
 			void closeEvent( QCloseEvent * event ) override;
 			void resizeEvent( QResizeEvent * p_event ) override;
+			void showEvent( QShowEvent * event ) override;
 
 		  private:
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;

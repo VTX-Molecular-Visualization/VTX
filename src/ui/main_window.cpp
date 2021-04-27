@@ -185,12 +185,25 @@ namespace VTX::UI
 		}
 	}
 
+	void MainWindow::showEvent( QShowEvent * p_event )
+	{
+		QMainWindow::showEvent( p_event );
+
+		if ( !_renderWidget->getOpenGLWidget().isValid() )
+		{
+			_renderWidget->show();
+			_renderWidget->hide();
+		}
+	}
+
 	void MainWindow::closeEvent( QCloseEvent * p_event )
 	{
 		saveLayout();
 
 		VTXApp::get().stop();
 		p_event->accept();
+
+		QMainWindow::closeEvent( p_event );
 	}
 
 	const QWidget & MainWindow::getWidget( const ID::VTX_ID & p_winId ) const
