@@ -16,7 +16,7 @@ namespace VTX
 	{
 		BaseRepresentable::~BaseRepresentable()
 		{
-			removeRepresentation();
+			Representation::RepresentationManager::get().removeInstantiatedRepresentation( *this, false, false );
 			_molecule = nullptr;
 		}
 

@@ -74,12 +74,19 @@ namespace VTX::UI::Widget::Sequence
 		_scrollArea = new CustomWidget::DockWindowMainWidget<QScrollArea>( this );
 		_scrollArea->setSizeHint( Style::SEQUENCE_PREFERED_SIZE );
 		_scrollArea->setSizeHint( Style::SEQUENCE_MINIMUM_SIZE );
+		//_scrollArea->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred );
 
 		_scrollArea->setContentsMargins( 0, 0, 0, 0 );
 
 		QWidget * const scrollWidget = new QWidget( _scrollArea );
 		scrollWidget->setContentsMargins( 0, 0, 0, 0 );
-		scrollWidget->setSizePolicy( QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum );
+
+		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
+											  QSizePolicy::Policy::MinimumExpanding,
+											  QSizePolicy::ControlType::Frame );
+		sizePolicy.setHorizontalStretch( 10 );
+		sizePolicy.setVerticalStretch( 10 );
+		scrollWidget->setSizePolicy( sizePolicy );
 
 		_layout = new QVBoxLayout( scrollWidget );
 		_layout->setContentsMargins( 0, 0, 0, 0 );

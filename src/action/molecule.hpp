@@ -346,39 +346,110 @@ namespace VTX::Action::Molecule
 	class ChangeShowIon : public BaseAction
 	{
 	  public:
-		explicit ChangeShowIon( Model::Molecule & p_molecule, const bool p_showIon ) :
-			_molecule( p_molecule ), _showIon( p_showIon )
+		explicit ChangeShowIon( Model::Molecule & p_molecule, const bool p_showIon ) : _showIon( p_showIon )
 		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeShowIon( std::unordered_set<Model::Molecule *> & p_molecules, const bool p_showIon ) :
+			_showIon( p_showIon )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
 		}
 
 		virtual void execute() override
 		{
-			_molecule.setShowIon( _showIon );
+			for ( Model::Molecule * const molecule : _molecules )
+				molecule->setShowIon( _showIon );
+
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
-		Model::Molecule & _molecule;
-		const bool		  _showIon;
+		std::unordered_set<Model::Molecule *> _molecules;
+		const bool							  _showIon;
 	};
 
 	class ChangeShowSolvent : public BaseAction
 	{
 	  public:
 		explicit ChangeShowSolvent( Model::Molecule & p_molecule, const bool p_showSolvent ) :
-			_molecule( p_molecule ), _showSolvent( p_showSolvent )
+			_showSolvent( p_showSolvent )
 		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeShowSolvent( std::unordered_set<Model::Molecule *> & p_molecules, const bool p_showSolvent ) :
+			_showSolvent( p_showSolvent )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
 		}
 
 		virtual void execute() override
 		{
-			_molecule.setShowSolvent( _showSolvent );
+			for ( Model::Molecule * const molecule : _molecules )
+				molecule->setShowSolvent( _showSolvent );
+
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
-		Model::Molecule & _molecule;
-		const bool		  _showSolvent;
+		std::unordered_set<Model::Molecule *> _molecules;
+		const bool							  _showSolvent;
+	};
+
+	class ChangeShowWater : public BaseAction
+	{
+	  public:
+		explicit ChangeShowWater( Model::Molecule & p_molecule, const bool p_showWater ) : _showWater( p_showWater )
+		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeShowWater( std::unordered_set<Model::Molecule *> & p_molecules, const bool p_showWater ) :
+			_showWater( p_showWater )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+				molecule->setShowWater( _showWater );
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *> _molecules;
+		const bool							  _showWater;
+	};
+	class ChangeShowHydrogen : public BaseAction
+	{
+	  public:
+		explicit ChangeShowHydrogen( Model::Molecule & p_molecule, const bool p_showHydrogen ) :
+			_showHydrogen( p_showHydrogen )
+		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeShowHydrogen( std::unordered_set<Model::Molecule *> & p_molecules, const bool p_showHydrogen ) :
+			_showHydrogen( p_showHydrogen )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+				molecule->setShowHydrogen( _showHydrogen );
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *> _molecules;
+		const bool							  _showHydrogen;
 	};
 
 	class ComputeSecondaryStructure : public BaseAction

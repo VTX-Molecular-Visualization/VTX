@@ -30,7 +30,14 @@ namespace VTX::UI::Widget::Console
 		_listWidget->setSizeHint( Style::CONSOLE_PREFERED_SIZE );
 		_listWidget->setMinimumSizeHint( Style::CONSOLE_MINIMUM_SIZE );
 
-		this->setWidget( _listWidget );
+		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
+											  QSizePolicy::Policy::MinimumExpanding,
+											  QSizePolicy::ControlType::Frame );
+		sizePolicy.setHorizontalStretch( 10 );
+		sizePolicy.setVerticalStretch( 10 );
+		_listWidget->setSizePolicy( sizePolicy );
+
+		setWidget( _listWidget );
 	}
 
 	void ConsoleWidget::_setupSlots() {};

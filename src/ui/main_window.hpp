@@ -50,7 +50,6 @@ namespace VTX
 			inline Widget::Render::OpenGLWidget & getOpenGLWidget() { return _renderWidget->getOpenGLWidget(); }
 
 			void receiveEvent( const Event::VTXEvent & p_event ) override;
-			void closeEvent( QCloseEvent * ) override;
 
 			const ContextualMenu & getContextualMenu() { return *_contextualMenu; }
 
@@ -63,8 +62,16 @@ namespace VTX
 			void	   setWindowMode( const WindowMode & p_mode );
 			void	   toggleWindowState();
 
+			bool hasValidLayoutSave() const;
+			void loadLastLayout();
+			void saveLayout() const;
+			void deleteLayoutSaveFile() const;
+			void restoreDefaultLayout();
+
 		  protected:
+			void closeEvent( QCloseEvent * event ) override;
 			void resizeEvent( QResizeEvent * p_event ) override;
+			void showEvent( QShowEvent * event ) override;
 
 		  private:
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
@@ -85,31 +92,10 @@ namespace VTX
 			void _onDockWindowVisibilityChange( bool p_visible );
 
 			// Functions.
-			inline const QWidget & getWidget( const ID::VTX_ID & p_winId ) const
-			{
-				const QWidget * widget = nullptr;
-
-				if ( p_winId == ID::UI::Window::RENDER )
-					widget = _renderWidget;
-				else if ( p_winId == ID::UI::Window::SCENE )
-					widget = _sceneWidget;
-				else if ( p_winId == ID::UI::Window::INSPECTOR )
-					widget = _inspectorWidget;
-				else if ( p_winId == ID::UI::Window::CONSOLE )
-					widget = _consoleWidget;
-				else if ( p_winId == ID::UI::Window::SEQUENCE )
-					widget = _sequenceWidget;
-				else if ( p_winId == ID::UI::Window::SELECTION )
-					widget = _selectionWidget;
-				else if ( p_winId == ID::UI::Window::SETTINGS )
-					widget = _settingWidget;
-
-				return *widget;
-			}
+			const QWidget & getWidget( const ID::VTX_ID & p_winId ) const;
 
 			void _loadStyleSheet( const char * p_stylesheetPath );
 			void _setupSlots();
-			void _setupDock();
 			void _toggleWidget( QWidget * widget );
 
 			WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );

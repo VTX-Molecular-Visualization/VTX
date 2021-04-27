@@ -59,12 +59,29 @@ namespace VTX::UI::Widget::ContextualMenu
 				_name( p_name ), validTypes( p_validTypes ) {};
 			virtual ~ItemData() {};
 
-			virtual void appendToMenu( ContextualMenuSelection * const p_menu ) const = 0;
+			virtual void appendToMenu( ContextualMenuSelection * const p_menu ) = 0;
+
+			void setRefreshFunction( const ContextualMenuSelection * const p_caller,
+									 void ( ContextualMenuSelection::*p_refreshFunc )( QAction & ) const )
+			{
+				_refreshFunctionCaller = p_caller;
+				_refreshFunction	   = p_refreshFunc;
+			}
+
+			virtual void refresh()
+			{
+				if ( _refreshFunctionCaller != nullptr && _action != nullptr )
+					( _refreshFunctionCaller->*_refreshFunction )( *_action );
+			};
 
 			const TypeMask validTypes;
 
 		  protected:
+			QAction *	  _action = nullptr;
 			const QString _name;
+
+			const ContextualMenuSelection * _refreshFunctionCaller				   = nullptr;
+			void ( ContextualMenuSelection::*_refreshFunction )( QAction & ) const = nullptr;
 		};
 		class ActionData : public ItemData
 		{
@@ -78,9 +95,9 @@ namespace VTX::UI::Widget::ContextualMenu
 
 			ActionData() : ActionData( "-empty-", TypeMask::None, nullptr ) {};
 
-			void appendToMenu( ContextualMenuSelection * const p_menu ) const override
+			void appendToMenu( ContextualMenuSelection * const p_menu ) override
 			{
-				p_menu->addAction( _name, p_menu, action, shortcut );
+				_action = p_menu->addAction( _name, p_menu, action, shortcut );
 			}
 
 			void ( ContextualMenuSelection::*action )();
@@ -91,7 +108,10 @@ namespace VTX::UI::Widget::ContextualMenu
 		  public:
 			ActionDataSection( const QString & p_name, const TypeMask p_validTypes ) :
 				ItemData( p_name, p_validTypes ) {};
-			void appendToMenu( ContextualMenuSelection * const p_menu ) const override { p_menu->addSection( _name ); }
+			void appendToMenu( ContextualMenuSelection * const p_menu ) override
+			{
+				_action = p_menu->addSection( _name );
+			}
 		};
 		class SubMenuData : public ItemData
 		{
@@ -102,7 +122,7 @@ namespace VTX::UI::Widget::ContextualMenu
 				_menu->setTitle( _name );
 			};
 
-			void appendToMenu( ContextualMenuSelection * const p_menu ) const override { p_menu->addMenu( _menu ); }
+			void appendToMenu( ContextualMenuSelection * const p_menu ) override { _action = p_menu->addMenu( _menu ); }
 
 			QMenu * const _menu;
 		};
@@ -119,6 +139,11 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _updateActionsWithSelection();
 
 		void _renameAction();
+
+		void _toggleWaterVisibilityAction();
+		void _toggleSolventVisibilityAction();
+		void _toggleHydrogenVisibilityAction();
+
 		void _orientAction();
 		void _showAction();
 		void _hideAction();
@@ -129,11 +154,15 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _applyRepresentationAction( const int p_representationIndex );
 
 	  private:
-		std::vector<ItemData *> _actions = std::vector<ItemData *>();
-		TypeMask				_getTypeMaskFromTypeSet( const std::set<ID::VTX_ID> & p_typeIds );
-		void					_updateCurrentRepresentationFeedback();
-
+		std::vector<ItemData *>				  _actions = std::vector<ItemData *>();
 		CustomWidget::SetRepresentationMenu * _representationMenu;
+
+		TypeMask _getTypeMaskFromTypeSet( const std::set<ID::VTX_ID> & p_typeIds );
+		void	 _updateCurrentRepresentationFeedback();
+
+		void _refreshToggleWaterText( QAction & _action ) const;
+		void _refreshToggleSolventText( QAction & _action ) const;
+		void _refreshToggleHydrogenText( QAction & _action ) const;
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu

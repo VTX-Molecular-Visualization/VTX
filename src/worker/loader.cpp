@@ -23,19 +23,24 @@ namespace VTX
 			Model::Configuration::Molecule config = Model::Configuration::Molecule();
 
 			// Load PRM or PSF file firstly.
-			for ( std::vector<FilePath *>::iterator it = _paths.begin(); it != _paths.end(); it++ )
+			std::vector<FilePath *>::iterator itPath = _paths.begin();
+			while ( itPath != _paths.end() )
 			{
-				if ( ( *it )->extension() == ".prm" )
+				if ( ( *itPath )->extension() == ".prm" )
 				{
 					IO::Reader::PRM reader = IO::Reader::PRM();
-					reader.readFile( **it, config );
-					_paths.erase( it-- );
+					reader.readFile( **itPath, config );
+					itPath = _paths.erase( itPath );
 				}
-				else if ( ( *it )->extension() == ".psf" )
+				else if ( ( *itPath )->extension() == ".psf" )
 				{
 					IO::Reader::PSF reader = IO::Reader::PSF();
-					reader.readFile( **it, config );
-					_paths.erase( it-- );
+					reader.readFile( **itPath, config );
+					itPath = _paths.erase( itPath );
+				}
+				else
+				{
+					++itPath;
 				}
 			}
 

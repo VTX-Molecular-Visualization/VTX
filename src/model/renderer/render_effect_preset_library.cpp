@@ -218,23 +218,8 @@ namespace VTX::Model::Renderer
 		//
 
 		// Preset 2
-		RenderEffectPreset * const preset2 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
-		preset2->setName( "Good Diffuse" );
-		setQuickAccessToPreset( *preset2, true );
-		preset2->setShading( VTX::Renderer::SHADING::DIFFUSE );
-
-		preset2->setSSAOIntensity( 17 );
-		preset2->setSSAOBlurSize( 80 );
-		preset2->enableSSAO( true );
-
-		preset2->enableOutline( false );
-		preset2->enableFog( false );
-		addPreset( preset2, false );
-		//
-
-		// Preset 3
 		RenderEffectPreset * const preset3 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
-		preset3->setName( "White BG" );
+		preset3->setName( "Sketch" );
 		setQuickAccessToPreset( *preset3, true );
 		preset3->setShading( VTX::Renderer::SHADING::FLAT_COLOR );
 

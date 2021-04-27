@@ -23,6 +23,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_timeline
 			= WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldWidget>( this, "trajectory_timeline" );
 		_timeline->setSingleStep( 1 );
+		_timeline->setMin( 0 );
 
 		_backToStartButton = new QPushButton( this );
 		_backToStartButton->setIcon( QIcon( ":/sprite/trajectory_first_frame_icon.png" ) );
@@ -100,6 +101,9 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_molecules.clear();
 		_timeline->resetState();
+		const bool oldBlockSignals = _timeline->blockSignals( true );
+		_timeline->setMax( 0 );
+		_timeline->blockSignals( oldBlockSignals );
 
 		_playButton->setIcon( QIcon( ":/sprite/trajectory_play_icon.png" ) );
 
@@ -111,10 +115,15 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_molecules.emplace( &p_molecule );
 
-		_timeline->setMinMax( 0, p_molecule.getFrameCount() - 1 );
-		int pageStep = p_molecule.getFrameCount() / 10;
-		pageStep	 = pageStep < 1 ? 1 : pageStep;
-		_timeline->setPageStep( pageStep );
+		const uint currentMax = uint( _timeline->getMax() );
+		if ( ( p_molecule.getFrameCount() - 1 ) > currentMax )
+		{
+			_timeline->setMinMax( 0, p_molecule.getFrameCount() - 1 );
+
+			int pageStep = p_molecule.getFrameCount() / 10;
+			pageStep	 = pageStep < 1 ? 1 : pageStep;
+			_timeline->setPageStep( pageStep );
+		}
 
 		if ( p_molecule.isPlaying() )
 			_playButton->setIcon( QIcon( ":/sprite/trajectory_pause_icon.png" ) );

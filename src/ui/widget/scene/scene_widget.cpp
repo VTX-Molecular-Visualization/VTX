@@ -95,7 +95,6 @@ namespace VTX::UI::Widget::Scene
 		BaseManualWidget::_setupUi( p_name );
 
 		_scrollAreaContent = new QWidget( this );
-		_scrollAreaContent->setSizePolicy( QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum );
 
 		_layout = new QVBoxLayout( _scrollAreaContent );
 		_layout->setSizeConstraint( QLayout::SizeConstraint::SetMinAndMaxSize );
@@ -105,6 +104,15 @@ namespace VTX::UI::Widget::Scene
 
 		CustomWidget::DockWindowMainWidget<QScrollArea> * const scrollArea
 			= new CustomWidget::DockWindowMainWidget<QScrollArea>( this );
+		scrollArea->setMinimumSize( Style::SCENE_MINIMUM_SIZE );
+
+		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
+											  QSizePolicy::Policy::MinimumExpanding,
+											  QSizePolicy::ControlType::Frame );
+		sizePolicy.setHorizontalStretch( 10 );
+		sizePolicy.setVerticalStretch( 10 );
+
+		scrollArea->setSizePolicy( sizePolicy );
 		scrollArea->setFrameShape( QFrame::Shape::NoFrame );
 		scrollArea->setWidget( _scrollAreaContent );
 		scrollArea->setWidgetResizable( true );

@@ -28,7 +28,7 @@
 	<file>sprite/hide_hydrogen_icon.png</file>
 	<file>sprite/hide_selection_icon.png</file>
 	<file>sprite/hide_sequence_icon.png</file>
-	<file>sprite/hide_solvant_icon.png</file>
+	<file>sprite/hide_solvent_icon.png</file>
 	<file>sprite/hide_water_icon.png</file>
 	<file>sprite/info_button.png</file>
 	<file>sprite/job_manager.png</file>
@@ -67,7 +67,7 @@
 	<file>sprite/show_hydrogen_icon.png</file>
 	<file>sprite/show_selection_icon.png</file>
 	<file>sprite/show_sequence_icon.png</file>
-	<file>sprite/show_solvant_icon.png</file>
+	<file>sprite/show_solvent_icon.png</file>
 	<file>sprite/show_water_icon.png</file>
 	<file>sprite/stop_icon.png</file>
 	<file>sprite/stop_icon_hovered.png</file>

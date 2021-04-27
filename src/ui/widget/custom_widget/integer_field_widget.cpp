@@ -18,10 +18,8 @@ namespace VTX::UI::Widget::CustomWidget
 		QHBoxLayout * const mainLayout = new QHBoxLayout( this );
 		mainLayout->setSpacing( 2 );
 
-		_slider				= new QSlider( Qt::Orientation::Horizontal, this );
-		_textField			= new QLineEdit( this );
-		_textFieldValidator = new QIntValidator();
-		_textFieldValidator->setRange( _min, _max );
+		_slider	   = new QSlider( Qt::Orientation::Horizontal, this );
+		_textField = new QLineEdit( this );
 
 		mainLayout->addWidget( _slider, 10 );
 		mainLayout->addWidget( _textField, 1 );
@@ -71,12 +69,31 @@ namespace VTX::UI::Widget::CustomWidget
 			_refresh();
 		}
 	};
+	void IntegerFieldWidget::setMin( const int p_min )
+	{
+		_min = p_min;
+		_max = _min > _max ? _min : _max;
+
+		_slider->setMinimum( _min );
+
+		_value = _value < _min ? _min : _value;
+		_refresh();
+	};
+	void IntegerFieldWidget::setMax( const int p_max )
+	{
+		_max = p_max;
+		_min = _min > _max ? _max : _min;
+
+		_slider->setMaximum( _max );
+		_value = _value > _max ? _max : _value;
+
+		_refresh();
+	};
 	void IntegerFieldWidget::setMinMax( const int p_min, const int p_max )
 	{
 		_min = p_min;
 		_max = p_max;
 
-		_textFieldValidator->setRange( _min, _max );
 		_slider->setMinimum( _min );
 		_slider->setMaximum( _max );
 
@@ -105,11 +122,6 @@ namespace VTX::UI::Widget::CustomWidget
 		blockSignals( oldBlockState );
 	}
 
-	void IntegerFieldWidget::_displayDifferentsDataFeedback()
-	{
-		_textFieldValidator->blockSignals( true );
-		_textField->setText( "-" );
-		_textFieldValidator->blockSignals( false );
-	}
+	void IntegerFieldWidget::_displayDifferentsDataFeedback() { _textField->setText( "-" ); }
 
 } // namespace VTX::UI::Widget::CustomWidget
