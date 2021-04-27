@@ -140,11 +140,11 @@ namespace VTX
 				std::string str = jsonMolecule.at( "PATH" ).get<std::string>();
 				if ( str.find( "/" ) != std::string::npos || str.find( "\\" ) != std::string::npos )
 				{
-					VTX_ACTION( new Action::Main::Open( new FilePath( str ) ), true );
+					VTX_ACTION( new Action::Main::Open( new FilePath( str ) ) );
 				}
 				else
 				{
-					VTX_ACTION( new Action::Main::OpenApi( FilePath( str ).stem().string() ), true );
+					VTX_ACTION( new Action::Main::OpenApi( FilePath( str ).stem().string() ) );
 				}
 			}
 

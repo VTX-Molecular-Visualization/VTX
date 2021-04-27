@@ -150,7 +150,7 @@ namespace VTX
 		Action::ActionManager::get().update( elapsed );
 
 		// Worker manager.
-		Worker::WorkerManager::get().update( elapsed );
+		// Worker::WorkerManager::get().update( elapsed );
 
 		// Call late update event for processes at end of frame
 		VTX_EVENT( new Event::VTXEvent( Event::Global::LATE_UPDATE ) );

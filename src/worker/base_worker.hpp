@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include <QThread>
 #include <functional>
 #include <thread>
 
@@ -12,17 +13,25 @@ namespace VTX
 {
 	namespace Worker
 	{
-		class BaseWorker
+		class BaseWorker : public QThread
 		{
-		  public:
-			virtual ~BaseWorker()	   = default;
-			virtual void		work() = 0;
-			inline const bool	isFinished() const { return _isFinished; }
-			virtual const float getProgress() const { return _progress; }
+			Q_OBJECT
 
-		  protected:
-			bool  _isFinished = false;
-			float _progress	  = 0.f; // The thread % [0-1]
+		  public:
+			BaseWorker()		  = default;
+			virtual ~BaseWorker() = default;
+
+			void run() override { emit resultReady( this, _run() ); }
+
+			virtual uint _run() = 0;
+
+		  signals:
+			void resultReady( BaseWorker *, const uint p_returnCode ) const;
+			void updateProgress( BaseWorker *, const uint p_progress ) const;
+			void logInfo( const std::string p_msg ) const;
+			void logWarning( const std::string p_msg ) const;
+			void logError( const std::string p_msg ) const;
+			void logDebug( const std::string p_msg ) const;
 		};
 	} // namespace Worker
 } // namespace VTX

@@ -25,7 +25,7 @@ namespace VTX::UI
 			for ( const QString & qstr : filenames )
 				filepathes.emplace_back( new FilePath( qstr.toStdString() ) );
 
-			VTX_ACTION( new Action::Main::Open( filepathes ), true );
+			VTX_ACTION( new Action::Main::Open( filepathes ) );
 		}
 	}
 

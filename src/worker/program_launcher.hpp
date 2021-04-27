@@ -13,10 +13,12 @@ namespace VTX
 	{
 		class ProgramLauncher : public Worker::BaseWorker
 		{
+			Q_OBJECT
+
 		  public:
 			explicit ProgramLauncher( const std::string & p_command ) : _command( p_command ) {}
 
-			virtual void work() override;
+			uint _run() override;
 
 		  private:
 			std::string _command;

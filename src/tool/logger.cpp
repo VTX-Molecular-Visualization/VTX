@@ -9,7 +9,7 @@ namespace VTX
 {
 	namespace Tool
 	{
-		void Logger::_log( const LEVEL p_level, const std::string & p_message )
+		void Logger::log( const LEVEL & p_level, const std::string & p_message )
 		{
 			std::string level( magic_enum::enum_name( p_level ).substr( 8 ) );
 			std::string date( Util::Time::getNowString() );

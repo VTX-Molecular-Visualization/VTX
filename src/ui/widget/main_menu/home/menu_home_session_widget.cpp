@@ -67,7 +67,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 	}
 	void MenuHomeSessionWidget::localize() {}
 
-	void MenuHomeSessionWidget::_newSession() { VTX_ACTION( new Action::Main::New(), true ); }
+	void MenuHomeSessionWidget::_newSession() { VTX_ACTION( new Action::Main::New() ); }
 	void MenuHomeSessionWidget::_openFile()
 	{
 		const QString filename
@@ -76,7 +76,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 		if ( !filename.isNull() )
 		{
 			FilePath * path = new FilePath( filename.toStdString() );
-			VTX_ACTION( new Action::Main::Open( path ), true );
+			VTX_ACTION( new Action::Main::Open( path ) );
 		}
 	}
 

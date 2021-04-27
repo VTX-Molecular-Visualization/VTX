@@ -17,19 +17,6 @@ namespace VTX
 		class Logger final
 		{
 		  public:
-			inline static Logger & get()
-			{
-				static Logger instance;
-				return instance;
-			}
-
-			inline void logDebug( const std::string & p_debug ) { _log( LEVEL::LOG_LVL_DEBUG, p_debug ); }
-			inline void logInfo( const std::string & p_info ) { _log( LEVEL::LOG_LVL_INFO, p_info ); }
-			inline void logWarning( const std::string & p_warning ) { _log( LEVEL::LOG_LVL_WARNING, p_warning ); }
-			inline void logError( const std::string & p_error ) { _log( LEVEL::LOG_LVL_ERROR, p_error ); }
-			void		logInFile( const std::string & );
-
-		  private:
 			enum class LEVEL
 			{
 				LOG_LVL_DEBUG,
@@ -38,14 +25,27 @@ namespace VTX
 				LOG_LVL_ERROR,
 			};
 
+			inline static Logger & get()
+			{
+				static Logger instance;
+				return instance;
+			}
+
+			inline void logDebug( const std::string & p_debug ) { log( LEVEL::LOG_LVL_DEBUG, p_debug ); }
+			inline void logInfo( const std::string & p_info ) { log( LEVEL::LOG_LVL_INFO, p_info ); }
+			inline void logWarning( const std::string & p_warning ) { log( LEVEL::LOG_LVL_WARNING, p_warning ); }
+			inline void logError( const std::string & p_error ) { log( LEVEL::LOG_LVL_ERROR, p_error ); }
+
+			void log( const LEVEL &, const std::string & );
+			void logInFile( const std::string & );
+
+		  private:
 			IO::Writer::Log _writer = IO::Writer::Log( Util::Time::getTimestamp() );
 
 			Logger()				 = default;
 			Logger( const Logger & ) = delete;
 			Logger & operator=( const Logger & ) = delete;
 			~Logger()							 = default;
-
-			void _log( const LEVEL, const std::string & );
 		};
 	} // namespace Tool
 
@@ -55,6 +55,10 @@ namespace VTX
 	inline void VTX_ERROR( const std::string & p_str ) { Tool::Logger::get().logError( p_str ); }
 	inline void VTX_CONSOLE( const std::string & p_str ) { std::cout << p_str << std::endl; }
 	inline void VTX_LOG_FILE( const std::string & p_str ) { Tool::Logger::get().logInFile( p_str ); }
+	inline void VTX_LOG( const Tool::Logger::LEVEL & p_level, const std::string & p_str )
+	{
+		Tool::Logger::get().log( p_level, p_str );
+	}
 } // namespace VTX
 
 #endif

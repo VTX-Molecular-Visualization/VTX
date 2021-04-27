@@ -1,6 +1,4 @@
 #include "snapshoter.hpp"
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "define.hpp"
 #ifdef CUDA_DEFINED
 #include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
 #endif
@@ -15,13 +13,29 @@ namespace VTX
 {
 	namespace Worker
 	{
-		bool Snapshoter::takeSnapshotGL( const FilePath & p_path )
+		const bool Snapshoter::_takeSnapshotGL() const
 		{
-			QImage image = VTXApp::get().getMainWindow().getOpenGLWidget().grabFramebuffer();
-			return image.save( QString( p_path.string().c_str() ), "png" );
+			if ( std::filesystem::exists( _path ) )
+			{
+				emit logError( "File already exists" );
+				return 0;
+			}
+
+			bool result = _image.save( QString( _path.string().c_str() ), "png" );
+			if ( result )
+			{
+				emit logInfo( "Snapshot taken: " + _path.filename().string() );
+			}
+			else
+			{
+				emit logError( "Snapshot failed" );
+			}
+
+			return result;
 		}
 
-		bool Snapshoter::takeSnapshotRTCPU( const FilePath & p_path ) const
+		// TOREDO
+		const bool Snapshoter::_takeSnapshotRTCPU() const
 		{
 			Renderer::GL::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
@@ -35,11 +49,13 @@ namespace VTX
 			// stbi_flip_vertically_on_write( true );
 			// stbi_write_png_compression_level = 0;
 			// bool res = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
+			// VTX_INFO( "Render computed: " + _path.filename().string() );
 			delete rt;
 			return false;
 		}
 
-		bool Snapshoter::takeSnapshotRTOptix( const FilePath & p_path ) const
+		// TOREDO
+		const bool Snapshoter::_takeSnapshotRTOptix() const
 		{
 			const Renderer::GL::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
@@ -54,10 +70,11 @@ namespace VTX
 			stbi_flip_vertically_on_write( true );
 			stbi_write_png_compression_level = 0;
 			bool res = stbi_write_png( p_path.string().c_str(), width, height, 4, pixels.data(), 0 );
+			// VTX_INFO( "Render computed: " + _path.filename().string() );
 			delete ort;
 			return res;
 #else
-			VTX_WARNING( "Optix unavailable!" );
+			emit logWarning( "Optix unavailable!" );
 			return false;
 #endif
 		}

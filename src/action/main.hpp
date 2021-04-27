@@ -1,5 +1,5 @@
-#ifndef __VTX_ACTION_NEW__
-#define __VTX_ACTION_NEW__
+#ifndef __VTX_ACTION_MAIN__
+#define __VTX_ACTION_MAIN__
 
 #ifdef _MSC_VER
 #pragma once
@@ -60,20 +60,21 @@ namespace VTX::Action::Main
 				return;
 			}
 
-			/*
-			const Worker::CallbackSuccess * success
-				= new Worker::CallbackSuccess( [ loader ]( void ) { delete loader; } );
-			const Worker::CallbackError * error
-				= new Worker::CallbackError( [ loader ]( const std::exception & p_e ) {
-					  VTX_ERROR( p_e.what() );
-					  delete loader;
-				  } );
+			Worker::Callback * callback = new Worker::Callback( [ loader ]( const uint p_code ) {
+				for ( Model::Molecule * const molecule : loader->getMolecules() )
+				{
+					molecule->print();
+					VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
+					VTXApp::get().getScene().addMolecule( molecule );
+				}
+				for ( Model::MeshTriangle * const mesh : loader->getMeshes() )
+				{
+					VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
+					VTXApp::get().getScene().addMesh( mesh );
+				}
+			} );
 
-			VTX_WORKER( loader, success, error );
-			*/
-
-			VTX_WORKER( loader );
-			delete loader;
+			VTX_WORKER( loader, callback );
 		}
 
 	  private:
@@ -180,24 +181,9 @@ namespace VTX::Action::Main
 
 		virtual void execute() override
 		{
-			Worker::Snapshoter snapshoter;
-
-			if ( _mode == Worker::Snapshoter::MODE::GL && snapshoter.takeSnapshotGL( _path ) )
-			{
-				VTX_INFO( "Snapshot taken: " + _path.filename().string() );
-			}
-			else if ( _mode == Worker::Snapshoter::MODE::RT_CPU && snapshoter.takeSnapshotRTCPU( _path ) )
-			{
-				VTX_INFO( "Render computed: " + _path.filename().string() );
-			}
-			else if ( _mode == Worker::Snapshoter::MODE::RT_OPTIX && snapshoter.takeSnapshotRTOptix( _path ) )
-			{
-				VTX_INFO( "Render computed: " + _path.filename().string() );
-			}
-			else
-			{
-				VTX_WARNING( "Failed: " + _path.string() );
-			}
+			Worker::Snapshoter * const worker = new Worker::Snapshoter(
+				_mode, _path, VTXApp::get().getMainWindow().getOpenGLWidget().grabFramebuffer() );
+			VTX_WORKER( worker );
 		};
 
 		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
@@ -206,5 +192,6 @@ namespace VTX::Action::Main
 		const Worker::Snapshoter::MODE _mode;
 		const FilePath				   _path;
 	};
+
 } // namespace VTX::Action::Main
 #endif

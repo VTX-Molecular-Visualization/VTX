@@ -14,11 +14,13 @@ namespace VTX
 	{
 		class Saver : public Worker::BaseWorker
 		{
+			Q_OBJECT
+
 		  public:
 			explicit Saver( FilePath * const p_path ) : _path( p_path ) {}
 			~Saver() {}
 
-			virtual void work() override;
+			uint _run() override;
 
 		  private:
 			FilePath * const _path;

@@ -184,7 +184,14 @@ namespace VTX
 		static const bool CONTROLLER_Y_AXIS_INVERTED;
 		bool			  yAxisInverted = CONTROLLER_Y_AXIS_INVERTED;
 
-		static const float CONTROLLER_ELASTICITY_FACTOR;
+		static const bool CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
+		bool			  activeControllerElasticity = CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
+
+		static const float CONTROLLER_ELASTICITY_FACTOR_DEFAULT;
+		static const float CONTROLLER_ELASTICITY_FACTOR_MIN;
+		static const float CONTROLLER_ELASTICITY_FACTOR_MAX;
+		float			   controllerElasticityFactor = CONTROLLER_ELASTICITY_FACTOR_DEFAULT;
+
 		static const float CONTROLLER_ELASTICITY_THRESHOLD;
 
 		// Molecules

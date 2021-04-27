@@ -12,12 +12,13 @@ namespace VTX
 {
 	namespace Worker
 	{
-		void Saver::work()
+		uint Saver::_run()
 		{
+			bool		 result = 1;
 			Tool::Chrono chrono;
 
 			chrono.start();
-			VTX_INFO( "Saving " + _path->filename().string() );
+			emit logInfo( "Saving " + _path->filename().string() );
 
 			// Create Writer.
 			IO::Writer::ChemfilesWriter * writer = new IO::Writer::ChemfilesWriter();
@@ -46,16 +47,18 @@ namespace VTX
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Error writing file" );
-				VTX_ERROR( p_e.what() );
+				emit logError( "Error saving file" );
+				emit logError( p_e.what() );
+				result = 0;
 			}
 
 			delete writer;
 			delete _path;
 
 			chrono.stop();
-			VTX_INFO( "File created in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			emit logInfo( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 
+			return result;
 		} // namespace Worker
 	}	  // namespace Worker
 } // namespace VTX

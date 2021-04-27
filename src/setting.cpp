@@ -96,7 +96,10 @@ namespace VTX
 	const float Setting::CONTROLLER_ROTATION_SPEED_MIN		   = 0.001f;
 	const float Setting::CONTROLLER_ROTATION_SPEED_MAX		   = 0.01f;
 	const bool	Setting::CONTROLLER_Y_AXIS_INVERTED			   = false;
-	const float Setting::CONTROLLER_ELASTICITY_FACTOR		   = 4.0f;
+	const bool	Setting::CONTROLLER_ELASTICITY_ACTIVE_DEFAULT  = true;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR_DEFAULT  = 6.0f;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR_MIN	   = 1.0f;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR_MAX	   = 40.0f;
 	const float Setting::CONTROLLER_ELASTICITY_THRESHOLD	   = 1e-4f;
 
 	// Molecule

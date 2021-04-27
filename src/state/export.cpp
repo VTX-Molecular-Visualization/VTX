@@ -55,7 +55,7 @@ namespace VTX
 				_actions = _arg.path->getCurrentActions( time );
 				for ( const std::string & action : *_actions )
 				{
-					VTX_ACTION( action, true );
+					VTX_ACTION( action );
 				}
 			}
 
@@ -76,8 +76,7 @@ namespace VTX
 			std::string fileName   = "frame" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
 
 			VTX_ACTION( new Action::Main::Snapshot(
-							_arg.mode, Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ),
-						true );
+				_arg.mode, Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ) );
 
 			VTX_INFO( std::to_string( ( uint )( _frame * 100 / _frameCount ) ) + "%" );
 

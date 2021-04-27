@@ -18,8 +18,7 @@ namespace VTX
 {
 	namespace Worker
 	{
-		// TODO: some cleanup, remove ptr?
-		void Loader::work()
+		uint Loader::_run()
 		{
 			Model::Configuration::Molecule config = Model::Configuration::Molecule();
 
@@ -50,34 +49,32 @@ namespace VTX
 			for ( const FilePath * path : _paths )
 			{
 				chrono.start();
-				VTX_INFO( "Loading " + path->filename().string() );
+				emit logInfo( "Loading " + path->filename().string() );
 				MODE mode = _getMode( *path );
 
 				if ( mode == MODE::UNKNOWN )
 				{
-					VTX_ERROR( "Format not supported" );
+					emit logError( "Format not supported" );
 				}
 				else if ( mode == MODE::MOLECULE )
 				{
 					// Create reader.
-					IO::Reader::LibChemfiles * reader = new IO::Reader::LibChemfiles();
+					IO::Reader::LibChemfiles * const reader = new IO::Reader::LibChemfiles( this );
 
 					// Set PRM.
-					Model::Molecule * molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+					Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 					molecule->setConfiguration( config );
 
 					// Load.
 					try
 					{
 						reader->readFile( *path, *molecule );
-						molecule->print();
-						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
-						VTXApp::get().getScene().addMolecule( molecule );
+						_molecules.emplace_back( molecule );
 					}
 					catch ( const std::exception & p_e )
 					{
-						VTX_ERROR( "Error loading file" );
-						VTX_ERROR( p_e.what() );
+						emit logError( "Error loading file" );
+						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( molecule );
 					}
 
@@ -85,20 +82,18 @@ namespace VTX
 				}
 				else if ( mode == MODE::MESH )
 				{
-					IO::Reader::LibAssimp * reader = new IO::Reader::LibAssimp();
-					Model::MeshTriangle *	mesh   = MVC::MvcManager::get().instantiateModel<Model::MeshTriangle>();
+					IO::Reader::LibAssimp * const reader = new IO::Reader::LibAssimp();
+					Model::MeshTriangle * const	  mesh = MVC::MvcManager::get().instantiateModel<Model::MeshTriangle>();
 
 					try
 					{
 						reader->readFile( *path, *mesh );
-						mesh->print();
-						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
-						VTXApp::get().getScene().addMesh( mesh );
+						_meshes.emplace_back( mesh );
 					}
 					catch ( const std::exception & p_e )
 					{
-						VTX_ERROR( "Error loading file" );
-						VTX_ERROR( p_e.what() );
+						emit logError( "Error loading file" );
+						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( mesh );
 					}
 
@@ -106,16 +101,16 @@ namespace VTX
 				}
 				else if ( mode == MODE::VTX )
 				{
-					IO::Reader::VTX * reader = new IO::Reader::VTX();
+					IO::Reader::VTX * const reader = new IO::Reader::VTX();
 
 					try
 					{
 						reader->readFile( *path, VTXApp::get() );
-						VTX_INFO( "App loaded " );
+						emit logInfo( "App loaded " );
 					}
 					catch ( const std::exception & p_e )
 					{
-						VTX_ERROR( "Cannot load app: " + std::string( p_e.what() ) );
+						emit logError( "Cannot load app: " + std::string( p_e.what() ) );
 					}
 
 					delete reader;
@@ -124,38 +119,36 @@ namespace VTX
 				delete path;
 
 				chrono.stop();
-				VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+				emit logInfo( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
 			// Load all buffers.
 			for ( const std::pair<FilePath *, std::string *> & pair : _mapFileNameBuffer )
 			{
 				chrono.start();
-				VTX_INFO( "Loading " + pair.first->filename().string() );
+				emit logInfo( "Loading " + pair.first->filename().string() );
 				MODE mode = _getMode( *pair.first );
 
 				if ( mode != MODE::MOLECULE )
 				{
-					VTX_ERROR( "Format not supported" );
+					emit logError( "Format not supported" );
 				}
 				else
 				{
 					// Create reader.
-					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles();
+					IO::Reader::LibChemfiles * reader	= new IO::Reader::LibChemfiles( this );
 					Model::Molecule *		   molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 
 					// Load.
 					try
 					{
 						reader->readBuffer( *pair.second, *pair.first, *molecule );
-						molecule->print();
-						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
-						VTXApp::get().getScene().addMolecule( molecule );
+						_molecules.emplace_back( molecule );
 					}
 					catch ( const std::exception & p_e )
 					{
-						VTX_ERROR( "Error loading file" );
-						VTX_ERROR( p_e.what() );
+						emit logError( "Error loading file" );
+						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( molecule );
 					}
 
@@ -166,10 +159,10 @@ namespace VTX
 				delete pair.second;
 
 				chrono.stop();
-				VTX_INFO( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+				emit logInfo( "Buffer treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 			}
 
-			_isFinished = true;
+			return 1;
 		}
 
 		Loader::MODE Loader::_getMode( const FilePath & p_path ) const
