@@ -22,7 +22,7 @@ in TcOut
 	flat unsigned short ssType;
 	flat unsigned short selection;
 }
-tcOut[];
+tcIn[];
 
 out TeOut
 {
@@ -82,9 +82,9 @@ void main()
 	const float u02 = u / 2.f;
 
 	// Interpolate position along spline.
-	const vec3 p01 = mix( tcOut[ 0 ].position, tcOut[ 1 ].position, u23 );
-	const vec3 p12 = mix( tcOut[ 1 ].position, tcOut[ 2 ].position, u13 );
-	const vec3 p23 = mix( tcOut[ 2 ].position, tcOut[ 3 ].position, u03 );
+	const vec3 p01 = mix( tcIn[ 0 ].position, tcIn[ 1 ].position, u23 );
+	const vec3 p12 = mix( tcIn[ 1 ].position, tcIn[ 2 ].position, u13 );
+	const vec3 p23 = mix( tcIn[ 2 ].position, tcIn[ 3 ].position, u03 );
 
 	const vec3 p02 = mix( p01, p12, u12 );
 	const vec3 p13 = mix( p12, p23, u02 );
@@ -95,9 +95,9 @@ void main()
 	const vec3 tangent = normalize( p13 - p02 );
 	
 	// Interpolate direction along spline.
-	const vec3 d01 = mix( tcOut[ 0 ].direction, tcOut[ 1 ].direction, u23 );
-	const vec3 d12 = mix( tcOut[ 1 ].direction, tcOut[ 2 ].direction, u13 );
-	const vec3 d23 = mix( tcOut[ 2 ].direction, tcOut[ 3 ].direction, u03 );
+	const vec3 d01 = mix( tcIn[ 0 ].direction, tcIn[ 1 ].direction, u23 );
+	const vec3 d12 = mix( tcIn[ 1 ].direction, tcIn[ 2 ].direction, u13 );
+	const vec3 d23 = mix( tcIn[ 2 ].direction, tcIn[ 3 ].direction, u03 );
 
 	const vec3 d02 = mix( d01, d12, u12 );
 	const vec3 d13 = mix( d12, d23, u02 );
@@ -105,18 +105,18 @@ void main()
 	vec3 direction = normalize( mix( d02, d13, u ) );
 
 	// Interpolate normal linearly (only known for the two center control points).
-	const vec3 normal = normalize( mix( tcOut[ 1 ].normal, tcOut[ 2 ].normal, gl_TessCoord.x ) );
+	const vec3 normal = normalize( mix( tcIn[ 1 ].normal, tcIn[ 2 ].normal, gl_TessCoord.x ) );
 
 	// Make direction orthogonal to tangent.
 	direction = cross(normal, tangent);
 		
 	// Interpolate direction factor between the two center control points.
 	const float directionFactor
-		= mix( DIRECTION_FACTOR[ tcOut[ 1 ].ssType ], DIRECTION_FACTOR[ tcOut[ 2 ].ssType ], gl_TessCoord.x );
+		= mix( DIRECTION_FACTOR[ tcIn[ 1 ].ssType ], DIRECTION_FACTOR[ tcIn[ 2 ].ssType ], gl_TessCoord.x );
 
 	float arrayOffset = 0.f;
 	// If last segment of a strand ().
-	if ( ( tcOut[ 1 ].ssType == 5us ) && ( tcOut[ 1 ].ssType != tcOut[ 2 ].ssType ) )
+	if ( ( tcIn[ 1 ].ssType == 5us ) && ( tcIn[ 1 ].ssType != tcIn[ 2 ].ssType ) )
 		arrayOffset = mix( ARROW_OFFSET, 0.f, gl_TessCoord.x );
 
 
@@ -130,9 +130,9 @@ void main()
 
 	teOut.viewPosition = vec3( u_MVMatrix * vec4( position, 1.f ) );
 	teOut.normal = vec3( u_normalMatrix * vec4( normal, 1.f ) );
-	//teOut.color = mix( tcOut[ 1 ].color, tcOut[ 2 ].color, gl_TessCoord.x );
-	teOut.color =  tcOut[ 1 ].color;
-	teOut.selection = tcOut[ 1 ].selection;
+	teOut.color = mix( tcIn[ 1 ].color, tcIn[ 2 ].color, gl_TessCoord.x );
+	//teOut.color =  tcIn[ 1 ].color;
+	teOut.selection = tcIn[ 1 ].selection;
 
 	gl_Position = u_projMatrix * vec4( teOut.viewPosition, 1.f );
 }
