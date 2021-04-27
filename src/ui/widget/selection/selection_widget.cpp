@@ -41,6 +41,15 @@ namespace VTX::UI::Widget::Selection
 		_mainWidget = new CustomWidget::DockWindowMainWidget<QWidget>( this );
 		_mainWidget->setSizeHint( Style::SELECTION_PREFERED_SIZE );
 		_mainWidget->setMinimumSizeHint( Style::SELECTION_MINIMUM_SIZE );
+		_mainWidget->setMinimumSize( Style::SELECTION_MINIMUM_SIZE );
+
+		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
+											  QSizePolicy::Policy::MinimumExpanding,
+											  QSizePolicy::ControlType::Frame );
+		sizePolicy.setHorizontalStretch( 10 );
+		sizePolicy.setVerticalStretch( 5 );
+
+		_mainWidget->setSizePolicy( sizePolicy );
 
 		_layout				   = new QVBoxLayout( _mainWidget );
 		_selectionTypeComboBox = new QComboBox( this );

@@ -27,7 +27,6 @@ namespace VTX::UI::Widget::Inspector
 		BaseManualWidget::_setupUi( p_name );
 
 		_scrollWidget = new QWidget( this );
-		_scrollWidget->setSizePolicy( QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum );
 
 		_verticalLayout = new QVBoxLayout( _scrollWidget );
 		_verticalLayout->setSizeConstraint( QLayout::SizeConstraint::SetMinAndMaxSize );
@@ -35,6 +34,15 @@ namespace VTX::UI::Widget::Inspector
 		_verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 
 		_scrollArea = new CustomWidget::DockWindowMainWidget<QScrollArea>( this );
+		_scrollArea->setMinimumSize( Style::INSPECTOR_MINIMUM_SIZE );
+
+		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
+											  QSizePolicy::Policy::MinimumExpanding,
+											  QSizePolicy::ControlType::Frame );
+		sizePolicy.setHorizontalStretch( 10 );
+		sizePolicy.setVerticalStretch( 10 );
+		_scrollArea->setSizePolicy( sizePolicy );
+
 		_scrollArea->setFrameShape( QFrame::Shape::NoFrame );
 		_scrollArea->setWidget( _scrollWidget );
 		_scrollArea->setWidgetResizable( true );

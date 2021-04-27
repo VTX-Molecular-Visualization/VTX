@@ -100,17 +100,17 @@ namespace VTX
 			inline const char * const OVERIDDEN_PARAMETER = "OVERIDDEN_PARAMETER";
 		}
 
-		inline static const QSize INSPECTOR_PREFERED_SIZE = QSize( 200, 1000 );
+		inline static const QSize INSPECTOR_PREFERED_SIZE = QSize( 300, 100 );
 		inline static const QSize INSPECTOR_MINIMUM_SIZE  = QSize( 50, 50 );
 		inline static const QSize RENDER_PREFERED_SIZE	  = QSize( 1000, 1000 );
 		inline static const QSize RENDER_MINIMUM_SIZE	  = QSize( 400, 236 );
-		inline static const QSize SCENE_PREFERED_SIZE	  = QSize( 200, 1000 );
+		inline static const QSize SCENE_PREFERED_SIZE	  = QSize( 250, 100 );
 		inline static const QSize SCENE_MINIMUM_SIZE	  = QSize( 50, 50 );
-		inline static const QSize CONSOLE_PREFERED_SIZE	  = QSize( 1000, 100 );
+		inline static const QSize CONSOLE_PREFERED_SIZE	  = QSize( 100, 100 );
 		inline static const QSize CONSOLE_MINIMUM_SIZE	  = QSize( 100, 80 );
-		inline static const QSize SEQUENCE_PREFERED_SIZE  = QSize( 1000, 80 );
+		inline static const QSize SEQUENCE_PREFERED_SIZE  = QSize( 100, 80 );
 		inline static const QSize SEQUENCE_MINIMUM_SIZE	  = QSize( 50, 50 );
-		inline static const QSize SELECTION_PREFERED_SIZE = QSize( 200, 500 );
+		inline static const QSize SELECTION_PREFERED_SIZE = QSize( 250, 100 );
 		inline static const QSize SELECTION_MINIMUM_SIZE  = QSize( 20, 20 );
 
 		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;

@@ -50,7 +50,7 @@ namespace VTX
 													   .getItem<State::Visualization>( ID::State::VISUALIZATION )
 													   ->getCurrentCameraController() ) );
 				break;
-
+			case ScanCode::F6: VTX_ACTION( new Action::Setting::RestoreLayout() ); break;
 			case ScanCode::F10:
 				VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().activeRenderer ) );
 				break;
