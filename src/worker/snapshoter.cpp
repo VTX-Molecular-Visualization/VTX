@@ -2,6 +2,8 @@
 #ifdef CUDA_DEFINED
 #include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
 #endif
+#include "action/action_manager.hpp"
+#include "action/setting.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/ray_tracing/ray_tracer.hpp"
 #include "ui/main_window.hpp"
@@ -15,13 +17,51 @@ namespace VTX
 {
 	namespace Worker
 	{
-		const void Snapshoter::_takeSnapshotGL()
+		const void Snapshoter::_takeSnapshotGL() const
 		{
 			if ( std::filesystem::exists( _path ) )
 			{
 				VTX_ERROR( "File already exists" );
+				return;
 			}
 
+			// Force AA and disable coutner.
+			UI::Widget::Render::OpenGLWidget & glWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
+			glWidget.setShowCounter( false );
+			const bool activeAA = VTX_SETTING().activeAA;
+			if ( activeAA == false )
+			{
+				VTX_ACTION( new Action::Setting::ActiveAA( true ) );
+			}
+			glWidget.update();
+
+			// Grab image.
+			QImage render = glWidget.grabFramebuffer();
+
+			// Restore values.
+			glWidget.setShowCounter( true );
+			if ( activeAA == false )
+			{
+				VTX_ACTION( new Action::Setting::ActiveAA( false ) );
+			}
+			glWidget.update();
+
+			// Add watermark.
+			_addWatermark( render );
+
+			// Save.
+			if ( render.save( QString( _path.string().c_str() ), "png" ) )
+			{
+				VTX_INFO( "Snapshot taken: " + _path.filename().string() );
+			}
+			else
+			{
+				VTX_ERROR( "Snapshot failed" );
+			}
+		}
+
+		void Snapshoter::_addWatermark( QImage & p_image ) const
+		{
 			QSvgRenderer watermarkSvg( QString( ":/sprite/logo_vect.svg" ) );
 			QSize		 watermarkSize = watermarkSvg.defaultSize();
 			// QSize		 imageSize	   = _image.size();
@@ -59,24 +99,9 @@ namespace VTX
 				}
 			}
 
-			// TODO: force max quality.
-			QImage render = VTXApp::get().getMainWindow().getOpenGLWidget().grabFramebuffer();
-			// TODO: reset quality.
-
-			QPainter imagePainter = QPainter( &render );
+			QPainter imagePainter = QPainter( &p_image );
 			// imagePainter.drawImage( render.rect(), watermarkImg );
-
-			if ( render.save( QString( _path.string().c_str() ), "png" ) )
-			{
-				VTX_INFO( "Snapshot taken: " + _path.filename().string() );
-			}
-			else
-			{
-				VTX_ERROR( "Snapshot failed" );
-			}
 		}
-
-		void Snapshoter::_addWatermark() { QImage watermark( ":/sprite/logo_vect.svg" ); }
 
 		// TOREDO
 		const void Snapshoter::_takeSnapshotRTCPU() const

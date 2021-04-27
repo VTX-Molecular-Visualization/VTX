@@ -38,11 +38,11 @@ namespace VTX
 			}
 
 		  private:
-			const void _takeSnapshotGL();
+			const void _takeSnapshotGL() const;
 			const void _takeSnapshotRTCPU() const;
 			const void _takeSnapshotRTOptix() const;
 
-			void _addWatermark();
+			void _addWatermark( QImage & ) const;
 
 		  private:
 			const MODE	   _mode;
