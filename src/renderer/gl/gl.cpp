@@ -42,14 +42,14 @@ namespace VTX::Renderer::GL
 		_height = p_height;
 
 		// Init pass.
-		_passGeometric->init( p_width, p_height, *this );
+		_passGeometric->init( _width, _height, *this );
 		_passLinearizeDepth->init( _width, _height, *this );
-		_passSSAO->init( p_width, p_height, *this );
-		_passBlur->init( p_width, p_height, *this );
-		_passShading->init( p_width, p_height, *this );
-		_passOutline->init( p_width, p_height, *this );
-		_passSelection->init( p_width, p_height, *this );
-		_passFXAA->init( p_width, p_height, *this );
+		_passSSAO->init( _width, _height, *this );
+		_passBlur->init( _width, _height, *this );
+		_passShading->init( _width, _height, *this );
+		_passOutline->init( _width, _height, *this );
+		_passSelection->init( _width, _height, *this );
+		_passFXAA->init( _width, _height, *this );
 
 		// Init VAO.
 		_initQuadVAO();
