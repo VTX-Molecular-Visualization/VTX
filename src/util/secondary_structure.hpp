@@ -110,8 +110,7 @@ namespace VTX
 								for ( uint k = firstHelixIdx; k < residueIdx; k++ )
 								{
 									Model::Residue & residue = *p_molecule.getResidue( idxFirstResidue + k );
-									residue.setSecondaryStructure(
-										Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT );
+									residue.setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT );
 								}
 							}
 							RHelixCount = 0;
@@ -180,8 +179,7 @@ namespace VTX
 									== Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT )
 								  || ( residue0.getSecondaryStructure()
 									   == Model::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT )
-								  || ( residue0.getSecondaryStructure()
-									   == Model::SecondaryStructure::TYPE::STRAND ) ) )
+								  || ( residue0.getSecondaryStructure() == Model::SecondaryStructure::TYPE::STRAND ) ) )
 
 						{
 							residue.setSecondaryStructure( residue0.getSecondaryStructure() );
@@ -201,6 +199,62 @@ namespace VTX
 				p_molecule.getConfiguration().isSecondaryStructureLoadedFromFile = false;
 				chrono.stop();
 				VTX_INFO( "Secondary structure computed in " + std::to_string( chrono.elapsedTime() ) + "s" );
+			}
+
+			static Model::SecondaryStructure::TYPE pdbFormattedToEnumSecondaryStructure( const std::string & p_str )
+			{
+				Model::SecondaryStructure::TYPE res = Model::SecondaryStructure::TYPE::COUNT;
+
+				if ( p_str == "extended" )
+					res = Model::SecondaryStructure::TYPE::STRAND;
+				else if ( p_str == "turn" )
+					res = Model::SecondaryStructure::TYPE::TURN;
+				else if ( p_str == "coil" )
+					res = Model::SecondaryStructure::TYPE::COIL;
+				else if ( p_str == "right-handed alpha helix" )
+					res = Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT;
+				else if ( p_str == "left-handed alpha helix" )
+					res = Model::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT;
+				else if ( p_str == "right-handed 3-10 helix" )
+					res = Model::SecondaryStructure::TYPE::HELIX_3_10_RIGHT;
+				else if ( p_str == "left-handed 3-10 helix" )
+					res = Model::SecondaryStructure::TYPE::HELIX_3_10_LEFT;
+				else if ( p_str == "pi helix" )
+					res = Model::SecondaryStructure::TYPE::HELIX_PI;
+				else if ( p_str == "right-handed omega helix" ) // ?
+					res = Model::SecondaryStructure::TYPE::COUNT;
+				else if ( p_str == "left-handed omega helix" ) // ?
+					res = Model::SecondaryStructure::TYPE::COUNT;
+				else if ( p_str == "right-handed gamma helix" ) // ?
+					res = Model::SecondaryStructure::TYPE::COUNT;
+				else if ( p_str == "left-handed gamma helix" ) // ?
+					res = Model::SecondaryStructure::TYPE::COUNT;
+				else if ( p_str == "2 - 7 ribbon / helix" ) // ?
+					res = Model::SecondaryStructure::TYPE::COUNT;
+				else if ( p_str == "polyproline" ) // ?
+					res = Model::SecondaryStructure::TYPE::COUNT;
+
+				return res;
+			}
+
+			static std::string enumToPdbFormattedSecondaryStructure( const Model::SecondaryStructure::TYPE p_enum )
+			{
+				std::string res;
+
+				switch ( p_enum )
+				{
+				case Model::SecondaryStructure::TYPE::STRAND: res = "extended"; break;
+				case Model::SecondaryStructure::TYPE::TURN: res = "turn"; break;
+				case Model::SecondaryStructure::TYPE::COIL: res = "coil"; break;
+				case Model::SecondaryStructure::TYPE::HELIX_ALPHA_RIGHT: res = "right-handed alpha helix"; break;
+				case Model::SecondaryStructure::TYPE::HELIX_ALPHA_LEFT: res = "left-handed alpha helix"; break;
+				case Model::SecondaryStructure::TYPE::HELIX_3_10_RIGHT: res = "right-handed 3-10 helix"; break;
+				case Model::SecondaryStructure::TYPE::HELIX_3_10_LEFT: res = "left-handed 3-10 helix"; break;
+				case Model::SecondaryStructure::TYPE::HELIX_PI: res = "pi helix"; break;
+				default: res = ""; break;
+				}
+
+				return res;
 			}
 
 		} // namespace SecondaryStructure

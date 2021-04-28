@@ -19,7 +19,7 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuScene::localize() {}
 
-	void ContextualMenuScene::_loadMoleculeAction() { UI::Dialog::openLoadMoleculeDialog( this ); }
+	void ContextualMenuScene::_loadMoleculeAction() { UI::Dialog::openLoadMoleculeDialog(); }
 	void ContextualMenuScene::_downloadMoleculeAction() { UI::Dialog::openDownloadMoleculeDialog(); }
 	void ContextualMenuScene::_clearAction() { VTX_ACTION( new Action::Main::ResetScene() ); }
 

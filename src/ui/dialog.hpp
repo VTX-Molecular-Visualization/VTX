@@ -17,7 +17,8 @@ namespace VTX::UI
 		static void openDownloadMoleculeDialog();
 		static void openDownloadMoleculeDialog( const QString & p_pdbCode );
 
-		static void openLoadMoleculeDialog( QWidget * const p_caller );
+		static void openLoadMoleculeDialog();
+		static void openExportMoleculeDialog();
 
 		static void openLoadSessionDialog();
 		static void openSaveSessionDialog();

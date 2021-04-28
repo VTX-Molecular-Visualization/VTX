@@ -1,8 +1,10 @@
 #include "writer_chemfiles.hpp"
 #include "model/atom.hpp"
 #include "model/bond.hpp"
+#include "model/chain.hpp"
 #include "model/residue.hpp"
 #include "tool/chrono.hpp"
+#include "util/secondary_structure.hpp"
 
 namespace VTX
 {
@@ -13,8 +15,16 @@ namespace VTX
 			void ChemfilesWriter::writeFile( const FilePath & p_path, const Model::Molecule & p_molecule )
 			{
 				chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string(), 'a' );
+				writeTrajectory( trajectory, p_molecule );
+			}
+			void ChemfilesWriter::writeBuffer( std::string & p_buffer, const Model::Molecule & p_molecule )
+			{
+				chemfiles::Trajectory & trajectory = chemfiles::Trajectory::memory_writer( "PDB" );
+				writeTrajectory( trajectory, p_molecule );
 
-				writeTrajectory( trajectory, p_path, p_molecule );
+				chemfiles::span<const char> & span
+					= trajectory.memory_buffer().value_or( chemfiles::span<const char>() );
+				p_buffer.append( span.begin(), span.end() );
 			}
 
 			void ChemfilesWriter::fillTrajectoryFrames( chemfiles::Trajectory & p_trajectory,
@@ -49,19 +59,31 @@ namespace VTX
 			}
 
 			void ChemfilesWriter::writeTrajectory( chemfiles::Trajectory & p_trajectory,
-												   const FilePath &		   p_path,
 												   const Model::Molecule & p_molecule ) const
 			{
 				auto frame = chemfiles::Frame();
 				frame.reserve( p_molecule.getAtomCount() );
 				frame.set( "name", p_molecule.getName() );
+				frame.set( "pdb_idcode", p_molecule.getPdbIdCode() );
+
 				// add residues
 				for ( uint residue = 0; residue < p_molecule.getResidueCount(); residue++ )
 				{
-					const VTX::Model::Residue * res				= p_molecule.getResidue( residue );
-					uint						firstResAtomIdx = res->getIndexFirstAtom();
-					chemfiles::Residue			chemRes			= chemfiles::Residue( res->getSymbolStr(), ++residue );
-					for ( firstResAtomIdx; firstResAtomIdx < res->getAtomCount(); ++firstResAtomIdx )
+					const VTX::Model::Residue * res	  = p_molecule.getResidue( residue );
+					const Model::Chain * const	chain = res->getChainPtr();
+
+					uint			   firstResAtomIdx = res->getIndexFirstAtom();
+					const uint		   atomCount	   = firstResAtomIdx + res->getAtomCount();
+					chemfiles::Residue chemRes
+						= chemfiles::Residue( res->getSymbolStr(), res->getIndexInOriginalChain() );
+					chemRes.set( "chainname", chain->getName() );
+					chemRes.set( "chainid", chain->getName() );
+					chemRes.set( "secondary_structure",
+								 Util::SecondaryStructure::enumToPdbFormattedSecondaryStructure(
+									 res->getSecondaryStructure() ) );
+					chemRes.set( "is_standard_pdb", res->getType() == Model::Residue::TYPE::STANDARD );
+
+					for ( firstResAtomIdx; firstResAtomIdx < atomCount; ++firstResAtomIdx )
 					{
 						const VTX::Model::Atom * atm	 = p_molecule.getAtom( firstResAtomIdx );
 						VTX::Vec3f				 atmPos	 = p_molecule.getAtomPositionFrame( 0 )[ firstResAtomIdx ];

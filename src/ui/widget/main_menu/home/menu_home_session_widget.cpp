@@ -111,17 +111,18 @@ namespace VTX::UI::Widget::MainMenu::Home
 	void MenuHomeSessionWidget::_openFile() { Dialog::openLoadSessionDialog(); }
 	void MenuHomeSessionWidget::_saveSession() const
 	{
-		FilePath filePath = VTXApp::get().getCurrentPath();
-		if ( filePath.empty() )
+		FilePath * const filePath = new FilePath( VTXApp::get().getCurrentPath() );
+		if ( filePath->empty() )
 			Dialog::openSaveSessionDialog();
 		else
-			VTX_ACTION( new Action::Main::Save( &filePath ) );
+			VTX_ACTION( new Action::Main::Save( filePath ) );
 	}
 	void MenuHomeSessionWidget::_saveAsSession() const { Dialog::openSaveSessionDialog(); }
 
 	void MenuHomeSessionWidget::_loadRecentSession( const int & p_ptrSessionIndex ) const
 	{
-		VTX_ACTION( new Action::Main::Open( &Setting::getRecentLoadingPath( p_ptrSessionIndex ) ) );
+		FilePath * const path = new FilePath( Setting::getRecentLoadingPath( p_ptrSessionIndex ) );
+		VTX_ACTION( new Action::Main::Open( path ) );
 	}
 
 	void MenuHomeSessionWidget::_loadSettings() const { VTX_ACTION( new Action::Setting::Load() ); }

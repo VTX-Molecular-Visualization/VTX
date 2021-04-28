@@ -14,10 +14,10 @@ namespace VTX::UI
 		UI::Widget::Dialog::DownloadMoleculeDialog::openDialog( p_pdbCode );
 	}
 
-	void Dialog::openLoadMoleculeDialog( QWidget * const p_caller )
+	void Dialog::openLoadMoleculeDialog()
 	{
-		const QStringList filenames
-			= QFileDialog::getOpenFileNames( p_caller, "Open Molecule", "", VTX_SETTING().MOLECULE_FILE_FILTERS );
+		const QStringList filenames = QFileDialog::getOpenFileNames(
+			&VTXApp::get().getMainWindow(), "Open Molecule", "", VTX_SETTING().MOLECULE_FILE_FILTERS );
 
 		if ( !filenames.isEmpty() )
 		{
@@ -26,6 +26,17 @@ namespace VTX::UI
 				filepathes.emplace_back( new FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::Open( filepathes ) );
+		}
+	}
+	void Dialog::openExportMoleculeDialog()
+	{
+		const QString filename = QFileDialog::getSaveFileName(
+			&VTXApp::get().getMainWindow(), "Export molecule", "", VTX_SETTING().MOLECULE_FILE_FILTERS );
+
+		if ( !filename.isNull() )
+		{
+			FilePath * path = new FilePath( filename.toStdString() );
+			VTX_ACTION( new Action::Main::Save( path ) );
 		}
 	}
 

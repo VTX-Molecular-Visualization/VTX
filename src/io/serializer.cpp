@@ -1,6 +1,8 @@
 #include "serializer.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
+#include "io/reader/lib_chemfiles.hpp"
+#include "io/writer/writer_chemfiles.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
@@ -30,12 +32,21 @@ namespace VTX
 				jsonArrayPaths.emplace_back( serialize( *path ) );
 			}
 
-			return { { "MOLECULES", jsonArrayMolecules }, { "PATHS", jsonArrayPaths } };
+			return {
+				{ "CAMERA_POSITION", serialize( p_scene.getCamera().getPosition() ) },
+				{ "CAMERA_ROTATION", serialize( p_scene.getCamera().getRotation() ) },
+				/*{ "MOLECULES", jsonArrayMolecules },
+				{ "PATHS", jsonArrayPaths }*/
+			};
 		}
 
 		nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
 		{
-			return { { "PATH", p_molecule.getPath().string() } };
+			Writer::ChemfilesWriter chemfileWriter = Writer::ChemfilesWriter();
+			std::string				buffer		   = std::string();
+			chemfileWriter.writeBuffer( buffer, p_molecule );
+
+			return { { "MOLECULE_DATA", buffer } };
 		}
 
 		nlohmann::json Serializer::serialize( const Model::Path & p_path ) const
@@ -133,32 +144,34 @@ namespace VTX
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Object3D::Scene & p_scene ) const
 		{
-			p_scene.clear();
+			Vec3f cameraPos;
+			deserialize( p_json.at( "CAMERA_POSITION" ), cameraPos );
+			Quatf cameraRot;
+			deserialize( p_json.at( "CAMERA_ROTATION" ), cameraRot );
 
-			for ( const nlohmann::json & jsonMolecule : p_json.at( "MOLECULES" ) )
-			{
-				std::string str = jsonMolecule.at( "PATH" ).get<std::string>();
-				if ( str.find( "/" ) != std::string::npos || str.find( "\\" ) != std::string::npos )
-				{
-					VTX_ACTION( new Action::Main::Open( new FilePath( str ) ) );
-				}
-				else
-				{
-					VTX_ACTION( new Action::Main::OpenApi( FilePath( str ).stem().string() ) );
-				}
-			}
+			p_scene.getCamera().setPosition( cameraPos );
+			p_scene.getCamera().setRotation( cameraRot );
 
-			for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
-			{
-				Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
-				deserialize( jsonPath, *path );
-				p_scene.addPath( path );
-			}
+			// for ( const nlohmann::json & jsonMolecule : p_json.at( "MOLECULES" ) )
+			//{
+			//	Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+			//	deserialize( jsonMolecule, *molecule );
+			//	p_scene.addMolecule( molecule );
+			//}
+
+			// for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
+			//{
+			//	Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
+			//	deserialize( jsonPath, *path );
+			//	p_scene.addPath( path );
+			//}
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Model::Molecule & p_molecule ) const
 		{
-			// Nothing to do at this time, actually the file is just reloaded.
+			const std::string		 buffer = p_json.at( "MOLECULE_DATA" ).get<std::string>();
+			IO::Reader::LibChemfiles reader = IO::Reader::LibChemfiles( nullptr );
+			reader.readBuffer( buffer, "mol.pdb", p_molecule );
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const
