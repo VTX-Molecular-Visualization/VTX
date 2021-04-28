@@ -263,10 +263,10 @@ namespace VTX
 					modelResidue->setIndexFirstAtom( uint( *residue.begin() ) );
 					modelResidue->setAtomCount( uint( residue.size() ) );
 					std::string residueSymbol = residue.name();
-					std::transform(
-						residueSymbol.begin(), residueSymbol.end(), residueSymbol.begin(), []( unsigned char c ) {
-							return std::toupper( c );
-						} );
+					std::transform( residueSymbol.begin(),
+									residueSymbol.end(),
+									residueSymbol.begin(),
+									[]( unsigned char c ) { return std::toupper( c ); } );
 					std::optional symbol = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
 					symbol.has_value() ? modelResidue->setSymbol( symbol.value() )
 									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
@@ -291,7 +291,7 @@ namespace VTX
 					{
 						std::string secondaryStructure
 							= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
-						emit _loader->logDebug( secondaryStructure );
+						// emit _loader->logDebug( secondaryStructure );
 						if ( secondaryStructure != "" )
 						{
 							if ( secondaryStructure == "extended" )
@@ -382,10 +382,10 @@ namespace VTX
 						modelAtom->setIndex( atomId );
 						modelAtom->setResiduePtr( modelResidue );
 						std::string atomSymbol = atom.type();
-						std::transform(
-							atomSymbol.begin(), atomSymbol.end(), atomSymbol.begin(), []( unsigned char c ) {
-								return std::toupper( c );
-							} );
+						std::transform( atomSymbol.begin(),
+										atomSymbol.end(),
+										atomSymbol.begin(),
+										[]( unsigned char c ) { return std::toupper( c ); } );
 
 						// emit _loader->logInfo( atom.name() + " " + atom.type() );
 
