@@ -8,24 +8,33 @@
 #include "base_thread.hpp"
 #include "define.hpp"
 
-namespace VTX
+namespace VTX::Worker
 {
-	namespace Worker
+	class Saver : public Worker::BaseThread
 	{
-		class Saver : public Worker::BaseThread
+		Q_OBJECT
+
+		enum class MODE : int
 		{
-			Q_OBJECT
-
-		  public:
-			explicit Saver( FilePath * const p_path ) : _path( p_path ) {}
-			~Saver() {}
-
-		  protected:
-			uint _run() override;
-
-		  private:
-			FilePath * const _path;
+			MOLECULE,
+			VTX,
+			UNKNOWN,
 		};
-	} // namespace Worker
-} // namespace VTX
+
+	  public:
+		explicit Saver( FilePath * const p_path ) : _path( p_path ) {}
+		~Saver() {}
+
+	  protected:
+		uint _run() override;
+
+	  private:
+		FilePath * const _path;
+
+		bool _saveMolecule();
+		bool _saveSession();
+
+		MODE _getMode( const FilePath & ) const;
+	};
+} // namespace VTX::Worker
 #endif

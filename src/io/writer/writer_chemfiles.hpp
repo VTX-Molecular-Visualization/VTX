@@ -7,6 +7,7 @@
 
 #include "model/molecule.hpp"
 #include <chemfiles.hpp>
+#include <string>
 
 namespace VTX
 {
@@ -18,10 +19,11 @@ namespace VTX
 			{
 			  public:
 				void writeFile( const FilePath &, const Model::Molecule & );
+				void writeBuffer( std::string &, const Model::Molecule & );
 				void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
 
 			  private:
-				void writeTrajectory( chemfiles::Trajectory &, const FilePath &, const Model::Molecule & ) const;
+				void writeTrajectory( chemfiles::Trajectory &, const Model::Molecule & ) const;
 			};
 		} // namespace Writer
 	}	  // namespace IO

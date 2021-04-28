@@ -28,6 +28,8 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		void _renameAction();
 
+		void _toggleTrajectoryPlayingActions();
+
 		void _toggleWatersVisibilityAction();
 		void _toggleSolventVisibilityAction();
 		void _toggleHydrogensVisibilityAction();
@@ -45,6 +47,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		QAction *							  _toggleWaterAction;
 		QAction *							  _toggleSolventAction;
 		QAction *							  _toggleHydrogenAction;
+		QAction *							  _toggleTrajectoryPlayingAction;
 	};
 
 } // namespace VTX::UI::Widget::ContextualMenu

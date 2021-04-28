@@ -305,7 +305,7 @@ namespace VTX::Action::Molecule
 		{
 			for ( Model::Molecule * const molecule : _molecules )
 			{
-				if ( molecule->isAtEndOfTrajectoryPlay() )
+				if ( molecule->isAtEndOfTrajectoryPlay() && _isPlaying )
 					molecule->resetTrajectoryPlay();
 
 				molecule->setIsPlaying( _isPlaying );

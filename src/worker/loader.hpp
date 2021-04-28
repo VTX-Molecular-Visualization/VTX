@@ -18,6 +18,11 @@ namespace VTX
 		class MeshTriangle;
 	} // namespace Model
 
+	namespace Object3D
+	{
+		class Scene;
+	}
+
 	namespace Worker
 	{
 		class Loader : public Worker::BaseThread
@@ -45,6 +50,7 @@ namespace VTX
 
 			inline std::vector<Model::Molecule *> &		getMolecules() { return _molecules; }
 			inline std::vector<Model::MeshTriangle *> & getMeshes() { return _meshes; }
+			inline Object3D::Scene *					getScene() { return _scene; }
 
 		  protected:
 			uint _run() override;
@@ -55,6 +61,8 @@ namespace VTX
 
 			std::vector<Model::Molecule *>	   _molecules = std::vector<Model::Molecule *>();
 			std::vector<Model::MeshTriangle *> _meshes	  = std::vector<Model::MeshTriangle *>();
+
+			Object3D::Scene * _scene = nullptr;
 
 			MODE _getMode( const FilePath & ) const;
 		};

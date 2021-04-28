@@ -77,6 +77,9 @@ namespace VTX::Action::Main
 				} );
 
 			VTX_WORKER( loader, callback );
+
+			for ( FilePath * const path : _paths )
+				VTXApp::get().setCurrentPath( *path, true );
 		}
 
 	  private:
@@ -114,7 +117,7 @@ namespace VTX::Action::Main
 
 			Worker::Callback * callback = new Worker::Callback( [ saver ]( const uint p_code ) {} );
 			VTX_WORKER( saver, callback );
-			delete saver;
+			VTXApp::get().setCurrentPath( *_path, true );
 		}
 
 	  private:

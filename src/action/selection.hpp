@@ -602,6 +602,42 @@ namespace VTX::Action::Selection
 		Model::Selection & _selection;
 	};
 
+	class ToggleTrajectoryPlaying : public BaseAction
+	{
+	  public:
+		explicit ToggleTrajectoryPlaying( Model::Selection & p_selection ) : _selection( p_selection ) {}
+
+		virtual void execute() override
+		{
+			bool play = true;
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+				if ( molecule.hasTrajectory() )
+					play = play && !molecule.isPlaying();
+			}
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+
+				if ( molecule.hasTrajectory() )
+				{
+					if ( molecule.isAtEndOfTrajectoryPlay() && play )
+						molecule.resetTrajectoryPlay();
+
+					molecule.setIsPlaying( play );
+				}
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Model::Selection & _selection;
+	};
+
 	class ChangeRepresentationPreset : public BaseAction
 	{
 	  public:

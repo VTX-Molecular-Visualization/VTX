@@ -263,25 +263,37 @@ namespace VTX::UI
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		const QSettings settings( QSettings::IniFormat, QSettings::Scope::UserScope, "CNAM", "VTX" );
+		const QSettings settings( QSettings::IniFormat,
+								  QSettings::Scope::UserScope,
+								  QString::fromStdString( Setting::ORGANIZATION_NAME ),
+								  QString::fromStdString( Setting::PROJECT_NAME ) );
 		return settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 	}
 
 	void MainWindow::loadLastLayout()
 	{
-		const QSettings settings( QSettings::IniFormat, QSettings::Scope::UserScope, "CNAM", "VTX" );
+		const QSettings settings( QSettings::IniFormat,
+								  QSettings::Scope::UserScope,
+								  QString::fromStdString( Setting::ORGANIZATION_NAME ),
+								  QString::fromStdString( Setting::PROJECT_NAME ) );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 	}
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QSettings::IniFormat, QSettings::Scope::UserScope, "CNAM", "VTX" );
+		QSettings settings( QSettings::IniFormat,
+							QSettings::Scope::UserScope,
+							QString::fromStdString( Setting::ORGANIZATION_NAME ),
+							QString::fromStdString( Setting::PROJECT_NAME ) );
 		settings.setValue( "Geometry", saveGeometry() );
 		settings.setValue( "WindowState", saveState() );
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QSettings::IniFormat, QSettings::Scope::UserScope, "CNAM", "VTX" );
+		QSettings settings( QSettings::IniFormat,
+							QSettings::Scope::UserScope,
+							QString::fromStdString( Setting::ORGANIZATION_NAME ),
+							QString::fromStdString( Setting::PROJECT_NAME ) );
 		settings.clear();
 	}
 

@@ -20,7 +20,29 @@ namespace VTX
 			chrono.start();
 			emit logInfo( "Saving " + _path->filename().string() );
 
-			// Create Writer.
+			const MODE mode = _getMode( *_path );
+
+			switch ( _getMode( *_path ) )
+			{
+			case MODE::UNKNOWN: emit logError( "Format not supported" ); break;
+			case MODE::MOLECULE: result = _saveMolecule(); break;
+			case MODE::VTX: result = _saveSession(); break;
+
+			default: emit logError( "Mode " + std::to_string( int( mode ) ) + "  not supported" ); break;
+			}
+
+			delete _path;
+
+			chrono.stop();
+			emit logInfo( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+
+			return result;
+		}
+
+		bool Saver::_saveMolecule()
+		{
+			bool result = 1;
+
 			IO::Writer::ChemfilesWriter * writer = new IO::Writer::ChemfilesWriter();
 
 			// Write.
@@ -53,12 +75,49 @@ namespace VTX
 			}
 
 			delete writer;
-			delete _path;
-
-			chrono.stop();
-			emit logInfo( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
 
 			return result;
-		} // namespace Worker
-	}	  // namespace Worker
+		}
+		bool Saver::_saveSession()
+		{
+			bool result = 1;
+
+			IO::Writer::VTX * writer = new IO::Writer::VTX();
+
+			// Write.
+			try
+			{
+				writer->writeFile( _path->string(), VTXApp::get() );
+			}
+			catch ( const std::exception & p_e )
+			{
+				emit logError( "Error saving file" );
+				emit logError( p_e.what() );
+				result = 0;
+			}
+
+			delete writer;
+
+			return result;
+		}
+
+		Saver::MODE Saver::_getMode( const FilePath & p_path ) const
+		{
+			FilePath extension = p_path.extension();
+
+			if ( extension == ".sdf" || extension == ".pdb" || extension == ".mmtf" || extension == ".cif"
+				 || extension == ".arc" || extension == ".xyz" || extension == ".dcd" || extension == ".mol2" )
+			{
+				return MODE::MOLECULE;
+			}
+			else if ( extension == ".vtx" )
+			{
+				return MODE::VTX;
+			}
+			else
+			{
+				return MODE::UNKNOWN;
+			}
+		}
+	} // namespace Worker
 } // namespace VTX

@@ -38,7 +38,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 	}
 	void MenuHomeMoleculeWidget::localize() { setTitle( "Molecule" ); }
 
-	void MenuHomeMoleculeWidget::_loadMoleculeFile() { UI::Dialog::openLoadMoleculeDialog( this ); }
+	void MenuHomeMoleculeWidget::_loadMoleculeFile() { UI::Dialog::openLoadMoleculeDialog(); }
 	void MenuHomeMoleculeWidget::_downloadMoleculeFile() { UI::Dialog::openDownloadMoleculeDialog(); }
 
 	void MenuHomeMoleculeWidget::_saveMoleculeFile() {}

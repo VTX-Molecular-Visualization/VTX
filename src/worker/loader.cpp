@@ -106,6 +106,7 @@ namespace VTX
 					try
 					{
 						reader->readFile( *path, VTXApp::get() );
+						_scene = &VTXApp::get().getScene();
 						emit logInfo( "App loaded " );
 					}
 					catch ( const std::exception & p_e )

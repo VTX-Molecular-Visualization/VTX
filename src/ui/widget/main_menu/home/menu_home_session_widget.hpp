@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QMenu>
@@ -20,8 +21,10 @@ namespace VTX::UI::Widget::MainMenu::Home
 		~MenuHomeSessionWidget();
 		void localize() override;
 
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
+
 	  protected:
-		MenuHomeSessionWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent ) {};
+		MenuHomeSessionWidget( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
@@ -42,8 +45,10 @@ namespace VTX::UI::Widget::MainMenu::Home
 		void _loadRecentSession( const int & p_ptrSessionIndex ) const;
 		void _loadSettings() const;
 		void _saveSettings() const;
+		void _saveSession() const;
+		void _saveAsSession() const;
 
-		QMenu * const MenuHomeSessionWidget::_generateRecentSessionsMenu() const;
+		void _refreshRecentFiles();
 	};
 } // namespace VTX::UI::Widget::MainMenu::Home
 #endif
