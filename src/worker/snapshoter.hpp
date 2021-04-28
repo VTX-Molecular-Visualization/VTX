@@ -15,8 +15,6 @@ namespace VTX
 	{
 		class Snapshoter : public Worker::BaseWorker
 		{
-			Q_OBJECT
-
 		  public:
 			enum class MODE : int
 			{
@@ -25,31 +23,30 @@ namespace VTX
 				RT_OPTIX
 			};
 
-			explicit Snapshoter( const MODE & p_mode, const FilePath & p_path, const QImage & p_image ) :
-				_mode( p_mode ), _path( p_path ), _image( p_image )
-			{
-			}
+			explicit Snapshoter( const MODE & p_mode, const FilePath & p_path ) : _mode( p_mode ), _path( p_path ) {}
 
-			uint _run() override
+		  protected:
+			void _run() override
 			{
 				switch ( _mode )
 				{
-				case MODE::GL: return _takeSnapshotGL();
-				case MODE::RT_CPU: return _takeSnapshotRTCPU();
-				case MODE::RT_OPTIX: return _takeSnapshotRTOptix();
-				default: return 0;
+				case MODE::GL: _takeSnapshotGL(); break;
+				case MODE::RT_CPU: _takeSnapshotRTCPU(); break;
+				case MODE::RT_OPTIX: _takeSnapshotRTOptix(); break;
+				default: break;
 				}
 			}
 
 		  private:
-			const bool _takeSnapshotGL() const;
-			const bool _takeSnapshotRTCPU() const;
-			const bool _takeSnapshotRTOptix() const;
+			const void _takeSnapshotGL() const;
+			const void _takeSnapshotRTCPU() const;
+			const void _takeSnapshotRTOptix() const;
+
+			void _addWatermark( QImage & ) const;
 
 		  private:
 			const MODE	   _mode;
 			const FilePath _path;
-			const QImage   _image;
 		};
 	} // namespace Worker
 } // namespace VTX

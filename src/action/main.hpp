@@ -60,19 +60,21 @@ namespace VTX::Action::Main
 				return;
 			}
 
-			Worker::Callback * callback = new Worker::Callback( [ loader ]( const uint p_code ) {
-				for ( Model::Molecule * const molecule : loader->getMolecules() )
+			Worker::Callback * callback = new Worker::Callback(
+				[ loader ]( const uint p_code )
 				{
-					molecule->print();
-					VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
-					VTXApp::get().getScene().addMolecule( molecule );
-				}
-				for ( Model::MeshTriangle * const mesh : loader->getMeshes() )
-				{
-					VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
-					VTXApp::get().getScene().addMesh( mesh );
-				}
-			} );
+					for ( Model::Molecule * const molecule : loader->getMolecules() )
+					{
+						molecule->print();
+						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
+						VTXApp::get().getScene().addMolecule( molecule );
+					}
+					for ( Model::MeshTriangle * const mesh : loader->getMeshes() )
+					{
+						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
+						VTXApp::get().getScene().addMesh( mesh );
+					}
+				} );
 
 			VTX_WORKER( loader, callback );
 
@@ -113,7 +115,8 @@ namespace VTX::Action::Main
 				return;
 			}
 
-			VTX_WORKER( saver );
+			Worker::Callback * callback = new Worker::Callback( [ saver ]( const uint p_code ) {} );
+			VTX_WORKER( saver, callback );
 			VTXApp::get().setCurrentPath( *_path, true );
 		}
 
@@ -184,8 +187,7 @@ namespace VTX::Action::Main
 
 		virtual void execute() override
 		{
-			Worker::Snapshoter * const worker = new Worker::Snapshoter(
-				_mode, _path, VTXApp::get().getMainWindow().getOpenGLWidget().grabFramebuffer() );
+			Worker::Snapshoter * const worker = new Worker::Snapshoter( _mode, _path );
 			VTX_WORKER( worker );
 		};
 

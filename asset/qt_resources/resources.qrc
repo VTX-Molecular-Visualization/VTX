@@ -38,6 +38,8 @@
 	<file>sprite/lock_window_icon_hovered.png</file>
 	<file>sprite/logo.png</file>
 	<file>sprite/logoWhite.png</file>
+	<file>sprite/logo_vect.svg</file>
+	<file>sprite/logo_vect_no_text.svg</file>
 	<file>sprite/main_menu_separator.png</file>
 	<file>sprite/new_session_icon.png</file>
 	<file>sprite/openrecent_session_icon.png</file>

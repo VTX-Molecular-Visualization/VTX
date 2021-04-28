@@ -2,40 +2,119 @@
 #ifdef CUDA_DEFINED
 #include "renderer/optix_ray_tracer/optix_ray_tracer.hpp"
 #endif
+#include "action/action_manager.hpp"
+#include "action/setting.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/ray_tracing/ray_tracer.hpp"
 #include "ui/main_window.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
+#include <QPainter>
+#include <QSvgRenderer>
 #include <vector>
 
 namespace VTX
 {
 	namespace Worker
 	{
-		const bool Snapshoter::_takeSnapshotGL() const
+		const void Snapshoter::_takeSnapshotGL() const
 		{
 			if ( std::filesystem::exists( _path ) )
 			{
-				emit logError( "File already exists" );
-				return 0;
+				VTX_ERROR( "File already exists" );
+				return;
 			}
 
-			bool result = _image.save( QString( _path.string().c_str() ), "png" );
-			if ( result )
+			// Force AA and disable coutner.
+			UI::Widget::Render::OpenGLWidget & glWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
+			glWidget.setShowCounter( false );
+			const bool activeAA = VTX_SETTING().activeAA;
+			if ( activeAA == false )
 			{
-				emit logInfo( "Snapshot taken: " + _path.filename().string() );
+				VTX_ACTION( new Action::Setting::ActiveAA( true ) );
+			}
+			glWidget.update();
+
+			// Grab image.
+			QImage render = glWidget.grabFramebuffer();
+
+			// Restore values.
+			glWidget.setShowCounter( true );
+			if ( activeAA == false )
+			{
+				VTX_ACTION( new Action::Setting::ActiveAA( false ) );
+			}
+			glWidget.update();
+
+			// Add watermark.
+			_addWatermark( render );
+
+			// Save.
+			if ( render.save( QString( _path.string().c_str() ), "png" ) )
+			{
+				VTX_INFO( "Snapshot taken: " + _path.filename().string() );
 			}
 			else
 			{
-				emit logError( "Snapshot failed" );
+				VTX_ERROR( "Snapshot failed" );
 			}
+		}
 
-			return result;
+		void Snapshoter::_addWatermark( QImage & p_image ) const
+		{
+			QSvgRenderer watermarkSvg( QString( ":/sprite/logo_vect.svg" ) );
+			QSize		 watermarkSize = watermarkSvg.defaultSize();
+			// QSize		 imageSize	   = _image.size();
+
+			// Compute ratio.
+			// watermarkSvg.setAspectRatioMode( Qt::AspectRatioMode::KeepAspectRatioByExpanding );
+
+			QImage watermarkImg( watermarkSize, QImage::Format_ARGB32 );
+			// img.fill( 0x00000000 );
+			QPainter watermarkPainter = QPainter( &watermarkImg );
+			watermarkSvg.render( &watermarkPainter );
+
+			// Compute watermark color.
+			// watermarkImg.invertPixels( QImage::InvertRgba );
+			Color::Rgb watermakColor
+				= VTX_SETTING().backgroundColor.brightness() > 0.5f ? Color::Rgb::BLACK : Color::Rgb::WHITE;
+			// watermakColor.oppose();
+
+			QColor qWatermarkColor = watermakColor.toQColor();
+
+			/*
+		   if ( VTX_SETTING().backgroundColor.brightness() < 0.5f )
+		   {
+			   watermarkImg.invertPixels( QImage::InvertRgb );
+		   }
+		   */
+
+			// Apply the color.
+
+			for ( int i = 0; i < watermarkImg.width(); ++i )
+			{
+				for ( int j = 0; j < watermarkImg.height(); ++j )
+				{
+					qWatermarkColor.setAlpha( watermarkImg.pixelColor( i, j ).alpha() == 255 ? 255 : 0 );
+					// qWatermarkColor.setAlpha( watermarkImg.pixelColor( i, j ).alpha() );
+					watermarkImg.setPixelColor( i, j, qWatermarkColor );
+				}
+			}
+			uint  desiredHeight = p_image.size().height() / 6;
+			float ratio			= (float)desiredHeight / (float)watermarkSize.height();
+			watermarkSize.setHeight( desiredHeight );
+			VTX_DEBUG( std::to_string( ratio ) );
+			watermarkSize.setWidth( watermarkSize.width() * ratio );
+
+			QRect	 rect		  = QRect( QPoint( p_image.size().width() - watermarkSize.width(),
+										   p_image.size().height() - watermarkSize.height() ),
+								   watermarkSize );
+			QPainter imagePainter = QPainter( &p_image );
+			imagePainter.drawImage( rect, watermarkImg );
 		}
 
 		// TOREDO
-		const bool Snapshoter::_takeSnapshotRTCPU() const
+		const void Snapshoter::_takeSnapshotRTCPU() const
 		{
 			Renderer::GL::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
@@ -51,11 +130,10 @@ namespace VTX
 			// bool res = stbi_write_png( p_path.string().c_str(), width, height, 3, pixels.data(), 0 );
 			// VTX_INFO( "Render computed: " + _path.filename().string() );
 			delete rt;
-			return false;
 		}
 
 		// TOREDO
-		const bool Snapshoter::_takeSnapshotRTOptix() const
+		const void Snapshoter::_takeSnapshotRTOptix() const
 		{
 			const Renderer::GL::GL & renderer = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
 
@@ -72,10 +150,8 @@ namespace VTX
 			bool res = stbi_write_png( p_path.string().c_str(), width, height, 4, pixels.data(), 0 );
 			// VTX_INFO( "Render computed: " + _path.filename().string() );
 			delete ort;
-			return res;
 #else
-			emit logWarning( "Optix unavailable!" );
-			return false;
+			VTX_WARNING( "Optix unavailable!" );
 #endif
 		}
 

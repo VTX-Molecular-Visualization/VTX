@@ -5,7 +5,7 @@
 #pragma once
 #endif
 
-#include "base_worker.hpp"
+#include "base_thread.hpp"
 #include "define.hpp"
 #include <map>
 #include <vector>
@@ -25,7 +25,7 @@ namespace VTX
 
 	namespace Worker
 	{
-		class Loader : public Worker::BaseWorker
+		class Loader : public Worker::BaseThread
 		{
 			Q_OBJECT
 
@@ -52,6 +52,7 @@ namespace VTX
 			inline std::vector<Model::MeshTriangle *> & getMeshes() { return _meshes; }
 			inline Object3D::Scene *					getScene() { return _scene; }
 
+		  protected:
 			uint _run() override;
 
 		  private:

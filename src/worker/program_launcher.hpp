@@ -5,19 +5,20 @@
 #pragma once
 #endif
 
-#include "base_worker.hpp"
+#include "base_thread.hpp"
 
 namespace VTX
 {
 	namespace Worker
 	{
-		class ProgramLauncher : public Worker::BaseWorker
+		class ProgramLauncher : public Worker::BaseThread
 		{
 			Q_OBJECT
 
 		  public:
 			explicit ProgramLauncher( const std::string & p_command ) : _command( p_command ) {}
 
+		  protected:
 			uint _run() override;
 
 		  private:

@@ -41,6 +41,8 @@ namespace VTX
 			inline Renderer::GL::GL &			  getRendererGL() { return *_rendererGL; }
 			inline const Renderer::GL::GL &		  getRendererGL() const { return *_rendererGL; }
 
+			inline void setShowCounter( const bool p_show ) { _showCounter = p_show; }
+
 			void initializeGL() override;
 			void paintGL() override;
 			void resizeGL( int, int ) override;
@@ -52,6 +54,7 @@ namespace VTX
 			QElapsedTimer _frameTimer	= QElapsedTimer();
 			uint		  _frameCounter = 0u;
 			QPainter	  _painter		= QPainter();
+			bool		  _showCounter	= true;
 
 			Renderer::BaseRenderer * _renderer	 = nullptr;
 			Renderer::GL::GL *		 _rendererGL = nullptr;

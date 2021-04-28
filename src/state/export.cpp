@@ -78,7 +78,7 @@ namespace VTX
 			VTX_ACTION( new Action::Main::Snapshot(
 				_arg.mode, Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ) );
 
-			VTX_INFO( std::to_string( ( uint )( _frame * 100 / _frameCount ) ) + "%" );
+			VTX_INFO( std::to_string( (uint)( _frame * 100 / _frameCount ) ) + "%" );
 
 			if ( _frame == _frameCount - 1 )
 			{
@@ -114,8 +114,9 @@ namespace VTX
 								  + std::to_string( Setting::VIDEO_FPS_DEFAULT ) + " -i " + files.string()
 								  + " -vcodec libx264 -crf " + std::to_string( Setting::VIDEO_CRF_DEFAULT ) + " "
 								  + Util::Filesystem::getVideosPath( _directoryName + ".mp4" ).string();
-			Worker::ProgramLauncher * worker = new Worker::ProgramLauncher( command );
-			VTX_WORKER( worker );
+			Worker::ProgramLauncher * worker   = new Worker::ProgramLauncher( command );
+			Worker::Callback *		  callback = new Worker::Callback( []( const uint p_code ) {} );
+			VTX_WORKER( worker, callback );
 			delete worker;
 
 			// Clean frames

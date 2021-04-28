@@ -5,12 +5,12 @@
 #pragma once
 #endif
 
-#include "base_worker.hpp"
+#include "base_thread.hpp"
 #include "define.hpp"
 
 namespace VTX::Worker
 {
-	class Saver : public Worker::BaseWorker
+	class Saver : public Worker::BaseThread
 	{
 		Q_OBJECT
 
@@ -25,6 +25,7 @@ namespace VTX::Worker
 		explicit Saver( FilePath * const p_path ) : _path( p_path ) {}
 		~Saver() {}
 
+	  protected:
 		uint _run() override;
 
 	  private:

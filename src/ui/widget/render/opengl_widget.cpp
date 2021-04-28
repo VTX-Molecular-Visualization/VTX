@@ -86,10 +86,14 @@ namespace VTX::UI::Widget::Render
 		_timer.start();
 
 		getRenderer().renderFrame( VTXApp::get().getScene() );
-		_painter.begin( this );
-		_painter.setPen( Qt::white );
-		_painter.drawText( 0, 10, QString::fromStdString( std::to_string( VTX_STAT().FPS ) ) );
-		_painter.end();
+
+		if ( _showCounter )
+		{
+			_painter.begin( this );
+			_painter.setPen( Qt::white );
+			_painter.drawText( 0, 10, QString::fromStdString( std::to_string( VTX_STAT().FPS ) ) );
+			_painter.end();
+		}
 
 		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6;
 	}

@@ -7,7 +7,7 @@ namespace VTX
 	{
 		uint ProgramLauncher::_run()
 		{
-			VTX_DEBUG( _command );
+			VTX_CONSOLE( _command );
 			return system( _command.c_str() );
 		}
 

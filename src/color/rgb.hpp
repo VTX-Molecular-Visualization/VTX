@@ -6,6 +6,7 @@
 #endif
 
 #include "util/math.hpp"
+#include <QColor>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -177,6 +178,20 @@ namespace VTX
 				_b = powf( _b, p_gamma );
 			}
 
+			inline void oppose()
+			{
+				_r = 1.f - _r;
+				_g = 1.f - _g;
+				_b = 1.f - _b;
+			}
+
+			inline const float brightness() const
+			{
+				return ( ( _r * 299.f ) + ( _g * 587.f ) + ( _b * 114.f ) ) / 1000.f;
+			}
+
+			inline QColor toQColor() { return QColor( _r * 255, _g * 255, _b * 255, 255 ); }
+
 			friend std::ostream & operator<<( std::ostream & p_os, const Rgb & p_c );
 
 			static const Rgb BLACK;
@@ -193,6 +208,7 @@ namespace VTX
 			{
 				return Rgb( Util::Math::randomFloat(), Util::Math::randomFloat(), Util::Math::randomFloat() );
 			}
+
 			static inline Rgb randomPastel() { return random() * 0.5f + 0.5f; }
 
 		  private:
