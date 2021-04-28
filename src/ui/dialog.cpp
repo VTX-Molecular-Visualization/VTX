@@ -16,8 +16,10 @@ namespace VTX::UI
 
 	void Dialog::openLoadMoleculeDialog()
 	{
-		const QStringList filenames = QFileDialog::getOpenFileNames(
-			&VTXApp::get().getMainWindow(), "Open Molecule", "", VTX_SETTING().MOLECULE_FILE_FILTERS );
+		const QStringList filenames = QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
+																	 "Open molecule",
+																	 VTX_SETTING().DEFAULT_MOLECULE_FOLDER,
+																	 VTX_SETTING().MOLECULE_FILE_FILTERS );
 
 		if ( !filenames.isEmpty() )
 		{
@@ -30,8 +32,10 @@ namespace VTX::UI
 	}
 	void Dialog::openExportMoleculeDialog()
 	{
-		const QString filename = QFileDialog::getSaveFileName(
-			&VTXApp::get().getMainWindow(), "Export molecule", "", VTX_SETTING().MOLECULE_FILE_FILTERS );
+		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
+															   "Export molecule",
+															   VTX_SETTING().DEFAULT_MOLECULE_FOLDER,
+															   VTX_SETTING().MOLECULE_FILE_FILTERS );
 
 		if ( !filename.isNull() )
 		{
@@ -42,8 +46,10 @@ namespace VTX::UI
 
 	void Dialog::openSaveSessionDialog()
 	{
-		const QString filename = QFileDialog::getSaveFileName(
-			&VTXApp::get().getMainWindow(), "Save session", "", VTX_SETTING().SAVE_FILE_FILTERS );
+		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
+															   "Save session",
+															   VTX_SETTING().DEFAULT_SAVE_FOLDER,
+															   VTX_SETTING().SAVE_FILE_FILTERS );
 
 		if ( !filename.isNull() )
 		{
@@ -53,8 +59,10 @@ namespace VTX::UI
 	}
 	void Dialog::openLoadSessionDialog()
 	{
-		const QString filename = QFileDialog::getOpenFileName(
-			&VTXApp::get().getMainWindow(), "Open Molecule", "", VTX_SETTING().OPEN_FILE_FILTERS );
+		const QString filename = QFileDialog::getOpenFileName( &VTXApp::get().getMainWindow(),
+															   "Open session",
+															   VTX_SETTING().DEFAULT_SAVE_FOLDER,
+															   VTX_SETTING().OPEN_FILE_FILTERS );
 
 		if ( !filename.isNull() )
 		{

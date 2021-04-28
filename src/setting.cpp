@@ -29,6 +29,9 @@ namespace VTX
 	const int Setting::STATUS_PROGRESS_BAR_CHUNKS = 10;
 	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;
 
+	const QString Setting::DEFAULT_SAVE_FOLDER	   = "../save";
+	const QString Setting::DEFAULT_MOLECULE_FOLDER = "../data";
+
 	const QString Setting::MOLECULE_EXTENSIONS = "*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm";
 	const QString Setting::VTX_EXTENSIONS	   = "*.vtx";
 

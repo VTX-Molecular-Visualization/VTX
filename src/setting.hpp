@@ -55,6 +55,8 @@ namespace VTX
 		static const int STATUS_PROGRESS_BAR_CHUNKS;
 		static const int STATUS_PROGRESS_BAR_WIDTH;
 
+		static const QString DEFAULT_SAVE_FOLDER;
+		static const QString DEFAULT_MOLECULE_FOLDER;
 		static const QString MOLECULE_EXTENSIONS;
 		static const QString VTX_EXTENSIONS;
 		static const QString MOLECULE_FILE_FILTERS;
