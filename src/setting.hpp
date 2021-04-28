@@ -10,6 +10,7 @@
 #include "generic/base_colorable.hpp"
 #include "style.hpp"
 #include <QString>
+#include <list>
 
 namespace VTX
 {
@@ -34,6 +35,9 @@ namespace VTX
 	{
 	  public:
 		// UI.
+		static const std::string ORGANIZATION_NAME;
+		static const std::string PROJECT_NAME;
+
 		static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
 		Style::SYMBOL_DISPLAY_MODE				symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
 
@@ -51,8 +55,11 @@ namespace VTX
 		static const int STATUS_PROGRESS_BAR_CHUNKS;
 		static const int STATUS_PROGRESS_BAR_WIDTH;
 
+		static const QString MOLECULE_EXTENSIONS;
+		static const QString VTX_EXTENSIONS;
 		static const QString MOLECULE_FILE_FILTERS;
 		static const QString OPEN_FILE_FILTERS;
+		static const QString SAVE_FILE_FILTERS;
 
 		// Rendering.
 		static const bool ACTIVE_RENDERER_DEFAULT;
@@ -220,7 +227,10 @@ namespace VTX
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
 
-		inline static std::vector<VTX::FilePath> recentLoadingPath = { "Recent 1", "Recent 2", "Recent 3" };
+		static const int					   RECENT_PATH_SAVED_MAX_COUNT;
+		inline static std::list<VTX::FilePath> recentLoadingPath = std::list<VTX::FilePath>();
+		static void							   enqueueNewLoadingPath( FilePath & );
+		static VTX::FilePath				   getRecentLoadingPath( const int p_index );
 
 		void backup();
 		void recover();

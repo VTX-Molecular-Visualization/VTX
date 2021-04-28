@@ -29,6 +29,29 @@ namespace VTX::UI
 		}
 	}
 
+	void Dialog::openSaveSessionDialog()
+	{
+		const QString filename = QFileDialog::getSaveFileName(
+			&VTXApp::get().getMainWindow(), "Save session", "", VTX_SETTING().SAVE_FILE_FILTERS );
+
+		if ( !filename.isNull() )
+		{
+			FilePath * path = new FilePath( filename.toStdString() );
+			VTX_ACTION( new Action::Main::Save( path ) );
+		}
+	}
+	void Dialog::openLoadSessionDialog()
+	{
+		const QString filename = QFileDialog::getOpenFileName(
+			&VTXApp::get().getMainWindow(), "Open Molecule", "", VTX_SETTING().OPEN_FILE_FILTERS );
+
+		if ( !filename.isNull() )
+		{
+			FilePath * path = new FilePath( filename.toStdString() );
+			VTX_ACTION( new Action::Main::Open( path ) );
+		}
+	}
+
 	void Dialog::confirmActionDialog( QWidget * const			 p_caller,
 									  Action::BaseAction * const p_action,
 									  const QString &			 p_title,

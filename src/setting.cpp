@@ -1,4 +1,6 @@
 #include "setting.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "io/serializer.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "renderer/base_renderer.hpp"
@@ -8,6 +10,10 @@
 namespace VTX
 {
 	// UI.
+
+	const std::string Setting::ORGANIZATION_NAME = "CNAM";
+	const std::string Setting::PROJECT_NAME		 = "VTX";
+
 	const Style::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT = Style::SYMBOL_DISPLAY_MODE::SHORT;
 	const int						 Setting::WINDOW_WIDTH_DEFAULT		  = 1280;
 	const int						 Setting::WINDOW_HEIGHT_DEFAULT		  = 720;
@@ -23,8 +29,12 @@ namespace VTX
 	const int Setting::STATUS_PROGRESS_BAR_CHUNKS = 10;
 	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;
 
-	const QString Setting::MOLECULE_FILE_FILTERS = "Molecule file (*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm)";
-	const QString Setting::OPEN_FILE_FILTERS	 = "VTX file (*.vtx, *.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm)";
+	const QString Setting::MOLECULE_EXTENSIONS = "*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm";
+	const QString Setting::VTX_EXTENSIONS	   = "*.vtx";
+
+	const QString Setting::MOLECULE_FILE_FILTERS = "Molecule file (" + MOLECULE_EXTENSIONS + ")";
+	const QString Setting::OPEN_FILE_FILTERS	 = "VTX file (" + VTX_EXTENSIONS + " " + MOLECULE_EXTENSIONS + ")";
+	const QString Setting::SAVE_FILE_FILTERS	 = "VTX file (" + VTX_EXTENSIONS + ")";
 
 	// Rendering.
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT		   = true;
@@ -127,6 +137,39 @@ namespace VTX
 
 	// Dev.
 	const Renderer::MODE Setting::MODE_DEFAULT = Renderer::MODE::GL;
+
+	const int Setting::RECENT_PATH_SAVED_MAX_COUNT = 6;
+	void	  Setting::enqueueNewLoadingPath( FilePath & p_path )
+	{
+		for ( std::list<FilePath>::const_iterator & itPath = recentLoadingPath.cbegin();
+			  itPath != recentLoadingPath.cend();
+			  itPath++ )
+		{
+			if ( *itPath == p_path )
+			{
+				recentLoadingPath.erase( itPath );
+				break;
+			}
+		}
+
+		recentLoadingPath.emplace_front( p_path );
+		if ( recentLoadingPath.size() > RECENT_PATH_SAVED_MAX_COUNT )
+			recentLoadingPath.pop_back();
+
+		VTX_EVENT( new Event::VTXEvent( Event::Global::RECENT_FILES_CHANGE ) );
+	}
+	VTX::FilePath Setting::getRecentLoadingPath( const int p_index )
+	{
+		if ( p_index < 0 || p_index >= recentLoadingPath.size() )
+			return FilePath();
+
+		std::list<FilePath>::iterator it = recentLoadingPath.begin();
+
+		for ( int i = 0; i < p_index; i++ )
+			it++;
+
+		return *it;
+	}
 
 	void Setting::backup()
 	{

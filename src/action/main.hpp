@@ -75,6 +75,9 @@ namespace VTX::Action::Main
 			} );
 
 			VTX_WORKER( loader, callback );
+
+			for ( FilePath * const path : _paths )
+				VTXApp::get().setCurrentPath( *path, true );
 		}
 
 	  private:
@@ -98,21 +101,21 @@ namespace VTX::Action::Main
 	  public:
 		explicit Save( FilePath * p_path ) : _path( p_path ) {}
 
-				virtual void execute() override
-				{
-					Worker::Saver * saver = nullptr;
-					if ( _path->empty() == false )
-					{
-						saver = new Worker::Saver( _path );
-					}
-					if ( saver == nullptr )
-					{
-						return;
-					}
+		virtual void execute() override
+		{
+			Worker::Saver * saver = nullptr;
+			if ( _path->empty() == false )
+			{
+				saver = new Worker::Saver( _path );
+			}
+			if ( saver == nullptr )
+			{
+				return;
+			}
 
-					VTX_WORKER( saver );
-					delete saver;
-				}
+			VTX_WORKER( saver );
+			VTXApp::get().setCurrentPath( *_path, true );
+		}
 
 	  private:
 		FilePath * _path;
