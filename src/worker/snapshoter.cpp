@@ -50,7 +50,7 @@ namespace VTX
 			_addWatermark( render );
 
 			// Save.
-			if ( render.save( QString( _path.string().c_str() ), "png" ) )
+			if ( render.save( QString( _path.string().c_str() ), "png", 0 ) )
 			{
 				VTX_INFO( "Snapshot taken: " + _path.filename().string() );
 			}
@@ -64,52 +64,43 @@ namespace VTX
 		{
 			QSvgRenderer watermarkSvg( QString( ":/sprite/logo_vect.svg" ) );
 			QSize		 watermarkSize = watermarkSvg.defaultSize();
-			// QSize		 imageSize	   = _image.size();
 
-			// Compute ratio.
-			// watermarkSvg.setAspectRatioMode( Qt::AspectRatioMode::KeepAspectRatioByExpanding );
-
-			QImage watermarkImg( watermarkSize, QImage::Format_ARGB32 );
-			// img.fill( 0x00000000 );
+			// Compute size.
+			// TODO: min/max?
+			uint  desiredHeight = p_image.size().height() / 6;
+			float ratio			= (float)desiredHeight / (float)watermarkSize.height();
+			watermarkSize.setHeight( desiredHeight );
+			watermarkSize.setWidth( watermarkSize.width() * ratio );
+			watermarkSvg.setAspectRatioMode( Qt::AspectRatioMode::KeepAspectRatioByExpanding );
+			QImage	 watermarkImg( watermarkSize, QImage::Format_RGBA8888 );
 			QPainter watermarkPainter = QPainter( &watermarkImg );
+			// watermarkPainter.setRenderHint( QPainter::Antialiasing, true );
+			// watermarkPainter.setRenderHint( QPainter::LosslessImageRendering, true );
+
 			watermarkSvg.render( &watermarkPainter );
 
 			// Compute watermark color.
-			// watermarkImg.invertPixels( QImage::InvertRgba );
 			Color::Rgb watermakColor
 				= VTX_SETTING().backgroundColor.brightness() > 0.5f ? Color::Rgb::BLACK : Color::Rgb::WHITE;
-			// watermakColor.oppose();
-
 			QColor qWatermarkColor = watermakColor.toQColor();
 
-			/*
-		   if ( VTX_SETTING().backgroundColor.brightness() < 0.5f )
-		   {
-			   watermarkImg.invertPixels( QImage::InvertRgb );
-		   }
-		   */
-
 			// Apply the color.
-
 			for ( int i = 0; i < watermarkImg.width(); ++i )
 			{
 				for ( int j = 0; j < watermarkImg.height(); ++j )
 				{
-					qWatermarkColor.setAlpha( watermarkImg.pixelColor( i, j ).alpha() == 255 ? 255 : 0 );
-					// qWatermarkColor.setAlpha( watermarkImg.pixelColor( i, j ).alpha() );
+					// qWatermarkColor.setAlpha( watermarkImg.pixelColor( i, j ).alpha() == 255 ? 127 : 0 );
+					qWatermarkColor.setAlpha( watermarkImg.pixelColor( i, j ).alpha() );
 					watermarkImg.setPixelColor( i, j, qWatermarkColor );
 				}
 			}
-			uint  desiredHeight = p_image.size().height() / 6;
-			float ratio			= (float)desiredHeight / (float)watermarkSize.height();
-			watermarkSize.setHeight( desiredHeight );
-			VTX_DEBUG( std::to_string( ratio ) );
-			watermarkSize.setWidth( watermarkSize.width() * ratio );
 
-			QRect	 rect		  = QRect( QPoint( p_image.size().width() - watermarkSize.width(),
-										   p_image.size().height() - watermarkSize.height() ),
-								   watermarkSize );
+			QRect	 rect		  = QRect( QPoint( p_image.size().width() - watermarkImg.width(),
+										   p_image.size().height() - watermarkImg.height() ),
+								   watermarkImg.size() );
 			QPainter imagePainter = QPainter( &p_image );
+			// imagePainter.setRenderHint( QPainter::Antialiasing, true );
+			// imagePainter.setRenderHint( QPainter::LosslessImageRendering, true );
 			imagePainter.drawImage( rect, watermarkImg );
 		}
 
