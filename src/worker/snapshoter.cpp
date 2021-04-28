@@ -67,6 +67,7 @@ namespace VTX
 			// QSize		 imageSize	   = _image.size();
 
 			// Compute ratio.
+			// watermarkSvg.setAspectRatioMode( Qt::AspectRatioMode::KeepAspectRatioByExpanding );
 
 			QImage watermarkImg( watermarkSize, QImage::Format_ARGB32 );
 			// img.fill( 0x00000000 );
@@ -95,12 +96,21 @@ namespace VTX
 				for ( int j = 0; j < watermarkImg.height(); ++j )
 				{
 					qWatermarkColor.setAlpha( watermarkImg.pixelColor( i, j ).alpha() == 255 ? 255 : 0 );
+					// qWatermarkColor.setAlpha( watermarkImg.pixelColor( i, j ).alpha() );
 					watermarkImg.setPixelColor( i, j, qWatermarkColor );
 				}
 			}
+			uint  desiredHeight = p_image.size().height() / 6;
+			float ratio			= (float)desiredHeight / (float)watermarkSize.height();
+			watermarkSize.setHeight( desiredHeight );
+			VTX_DEBUG( std::to_string( ratio ) );
+			watermarkSize.setWidth( watermarkSize.width() * ratio );
 
+			QRect	 rect		  = QRect( QPoint( p_image.size().width() - watermarkSize.width(),
+										   p_image.size().height() - watermarkSize.height() ),
+								   watermarkSize );
 			QPainter imagePainter = QPainter( &p_image );
-			// imagePainter.drawImage( render.rect(), watermarkImg );
+			imagePainter.drawImage( rect, watermarkImg );
 		}
 
 		// TOREDO
