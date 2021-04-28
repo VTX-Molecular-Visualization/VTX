@@ -5,12 +5,10 @@ namespace VTX
 {
 	namespace Worker
 	{
-		void ProgramLauncher::work()
+		uint ProgramLauncher::_run()
 		{
-			VTX_DEBUG( _command );
-			_progress = 0.f;
-			system( _command.c_str() );
-			_progress = 1.f;
+			VTX_CONSOLE( _command );
+			return system( _command.c_str() );
 		}
 
 	} // namespace Worker

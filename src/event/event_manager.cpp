@@ -140,11 +140,14 @@ namespace VTX
 
 		void EventManager::_flushVTXEvent( VTXEvent * const p_event )
 		{
-			if ( _receiversVTX.find( p_event->name ) != _receiversVTX.end() )
+			if ( !_freeze )
 			{
-				for ( BaseEventReceiverVTX * const receiver : _receiversVTX.at( p_event->name ) )
+				if ( _receiversVTX.find( p_event->name ) != _receiversVTX.end() )
 				{
-					receiver->receiveEvent( *p_event );
+					for ( BaseEventReceiverVTX * const receiver : _receiversVTX.at( p_event->name ) )
+					{
+						receiver->receiveEvent( *p_event );
+					}
 				}
 			}
 
@@ -153,27 +156,38 @@ namespace VTX
 
 		void EventManager::_flushEventKeyboard( QKeyEvent * const p_event )
 		{
-			for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
+			if ( !_freeze )
 			{
-				receiver->receiveEvent( *p_event );
+				for ( Event::BaseEventReceiverKeyboard * const receiver : _receiversKeyboard )
+				{
+					receiver->receiveEvent( *p_event );
+				}
 			}
-		}
+		} // namespace Event
 
 		void EventManager::_flushEventMouse( QMouseEvent * const p_event )
 		{
-			for ( Event::BaseEventReceiverMouse * const receiver : _receiversMouse )
+			if ( !_freeze )
 			{
-				receiver->receiveEvent( *p_event );
+				for ( Event::BaseEventReceiverMouse * const receiver : _receiversMouse )
+				{
+					receiver->receiveEvent( *p_event );
+				}
 			}
 		}
 
 		void EventManager::_flushEventWheel( QWheelEvent * const p_event )
 		{
-			for ( Event::BaseEventReceiverWheel * const receiver : _receiversWheel )
+			if ( !_freeze )
 			{
-				receiver->receiveEvent( *p_event );
+				for ( Event::BaseEventReceiverWheel * const receiver : _receiversWheel )
+				{
+					receiver->receiveEvent( *p_event );
+				}
 			}
 		}
+
+		void EventManager::freezeEvent( const bool p_freeze ) { _freeze = p_freeze; }
 
 	} // namespace Event
 } // namespace VTX

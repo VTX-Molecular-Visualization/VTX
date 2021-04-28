@@ -11,46 +11,37 @@
 #include <QDockWidget>
 #include <QVBoxLayout>
 
-namespace VTX
+namespace VTX::UI::Widget::Render
 {
-	namespace UI
+	class RenderWidget : public BaseManualWidget<QDockWidget>
 	{
-		namespace Widget
-		{
-			namespace Render
-			{
-				class RenderWidget : public BaseManualWidget<QDockWidget>
-				{
-					VTX_WIDGET
+		VTX_WIDGET
 
-				  public:
-					~RenderWidget();
-					void localize() override;
+	  public:
+		~RenderWidget();
+		void localize() override;
 
-					inline const OpenGLWidget & getOpenGLWidget() const { return *_openGLWidget; }
-					inline OpenGLWidget &		getOpenGLWidget() { return *_openGLWidget; }
+		inline const OpenGLWidget & getOpenGLWidget() const { return *_openGLWidget; }
+		inline OpenGLWidget &		getOpenGLWidget() { return *_openGLWidget; }
 
-					void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
 
-				  protected:
-					RenderWidget( QWidget * p_parent );
+	  protected:
+		RenderWidget( QWidget * p_parent );
 
-					void _setupUi( const QString & p_name ) override;
-					void _setupSlots() override;
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 
-					void mouseMoveEvent( QMouseEvent * ) override;
-					void mousePressEvent( QMouseEvent * ) override;
-					void mouseReleaseEvent( QMouseEvent * ) override;
-					void keyPressEvent( QKeyEvent * ) override;
-					void keyReleaseEvent( QKeyEvent * ) override;
-					void wheelEvent( QWheelEvent * ) override;
+		void mouseMoveEvent( QMouseEvent * ) override;
+		void mousePressEvent( QMouseEvent * ) override;
+		void mouseReleaseEvent( QMouseEvent * ) override;
+		void keyPressEvent( QKeyEvent * ) override;
+		void keyReleaseEvent( QKeyEvent * ) override;
+		void wheelEvent( QWheelEvent * ) override;
 
-				  private:
-					CustomWidget::DockWindowMainWidget<OpenGLWidget> * const _openGLWidget
+	  private:
+		CustomWidget::DockWindowMainWidget<OpenGLWidget> * const _openGLWidget
 						= new CustomWidget::DockWindowMainWidget<OpenGLWidget>( this );
-				};
-			} // namespace Render
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+	};
+} // namespace VTX::UI::Widget::Render
 #endif

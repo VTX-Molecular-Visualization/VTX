@@ -8,16 +8,17 @@
 #include "ui/multi_data_field.hpp"
 #include <QComboBox>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QWidget>
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class QLabelMultiField : public QLabel, public TMultiDataFieldEquatable<std::string>
+	class QLabelMultiField : public QLabel, public TMultiDataFieldEquatable<const std::string>
 	{
 	  public:
 		QLabelMultiField( QWidget * const p_parent = nullptr ) :
-			QLabel( p_parent ), TMultiDataFieldEquatable<std::string>() {};
+			QLabel( p_parent ), TMultiDataFieldEquatable<const std::string>() {};
 
 		void resetState() override
 		{
@@ -39,11 +40,11 @@ namespace VTX::UI::Widget::CustomWidget
 		std::string _value;
 	};
 
-	class QPushButtonMultiField : public QPushButton, public TMultiDataFieldEquatable<std::string>
+	class QPushButtonMultiField : public QPushButton, public TMultiDataFieldEquatable<const std::string>
 	{
 	  public:
 		QPushButtonMultiField( QWidget * const p_parent = nullptr ) :
-			QPushButton( p_parent ), TMultiDataFieldEquatable<std::string>() {};
+			QPushButton( p_parent ), TMultiDataFieldEquatable<const std::string>() {};
 
 		void resetState() override
 		{
@@ -59,17 +60,18 @@ namespace VTX::UI::Widget::CustomWidget
 			setText( QString::fromStdString( p_value ) );
 			_value = p_value;
 		}
-		void _displayDifferentsDataFeedback() override { setText( "-" ); }
+
+		virtual void _displayDifferentsDataFeedback() override { setText( "-" ); }
 
 	  private:
 		std::string _value;
 	};
 
-	class QComboBoxMultiField : public QComboBox, public TMultiDataFieldEquatable<int>
+	class QComboBoxMultiField : public QComboBox, public TMultiDataFieldEquatable<const int>
 	{
 	  public:
 		QComboBoxMultiField( QWidget * const p_parent = nullptr ) :
-			QComboBox( p_parent ), TMultiDataFieldEquatable<int>() {};
+			QComboBox( p_parent ), TMultiDataFieldEquatable<const int>() {};
 
 		void resetState() override
 		{
@@ -95,6 +97,32 @@ namespace VTX::UI::Widget::CustomWidget
 
 	  private:
 		int _index = -1;
+	};
+
+	class QLineEditMultiField : public QLineEdit, public TMultiDataFieldEquatable<const std::string>
+	{
+	  public:
+		QLineEditMultiField( QWidget * const p_parent = nullptr ) :
+			QLineEdit( p_parent ), TMultiDataFieldEquatable<const std::string>() {};
+
+		void resetState() override
+		{
+			TMultiDataField::resetState();
+			_value = "";
+			setText( "" );
+		}
+
+	  protected:
+		const std::string & _getValue() const override { return _value; }
+		void				_setSingleValue( const std::string & p_value ) override
+		{
+			setText( QString::fromStdString( p_value ) );
+			_value = p_value;
+		}
+		virtual void _displayDifferentsDataFeedback() override { setText( "-" ); }
+
+	  private:
+		std::string _value;
 	};
 } // namespace VTX::UI::Widget::CustomWidget
 #endif

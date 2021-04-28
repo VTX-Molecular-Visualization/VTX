@@ -8,8 +8,12 @@
 #include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
+#include "worker/loader.hpp"
+#include <QDir>
+#include <QFileInfo>
 #include <algorithm>
 #include <magic_enum.hpp>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -21,10 +25,10 @@ namespace VTX
 		{
 			void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 			{
-				prepareChemfiles();
+				_prepareChemfiles();
 				chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string() );
 
-				readTrajectory( trajectory, p_path, p_molecule );
+				_readTrajectory( trajectory, p_path, p_molecule );
 			}
 
 			void LibChemfiles::readBuffer( const std::string & p_buffer,
@@ -33,43 +37,116 @@ namespace VTX
 			{
 				std::string extension = p_path.extension().string().substr( 1, p_path.extension().string().size() );
 				std::transform( extension.begin(), extension.end(), extension.begin(), toupper );
-				prepareChemfiles();
+				_prepareChemfiles();
 				chemfiles::Trajectory trajectory
 					= chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), extension );
-				readTrajectory( trajectory, p_path, p_molecule );
+				_readTrajectory( trajectory, p_path, p_molecule );
 			}
 
-			void LibChemfiles::prepareChemfiles() const
+			void LibChemfiles::_prepareChemfiles() const
 			{
 #ifdef _DEBUG
-				chemfiles::warning_callback_t callback = []( const std::string & p_log ) { VTX_WARNING( p_log ); };
+				chemfiles::warning_callback_t callback
+					= [ & ]( const std::string & p_log ) { emit _loader->logWarning( p_log ); };
 #else
 				chemfiles::warning_callback_t callback = []( const std::string & p_log ) { /*VTX_WARNING( p_log );*/ };
 #endif
 				chemfiles::set_warning_callback( callback );
 			}
 
-			void LibChemfiles::readTrajectory( chemfiles::Trajectory & p_trajectory,
-											   const FilePath &		   p_path,
-											   Model::Molecule &	   p_molecule ) const
+			void LibChemfiles::fillTrajectoryFrames( chemfiles::Trajectory & p_trajectory,
+													 Model::Molecule &		 p_molecule ) const
 			{
-				VTX_INFO( std::to_string( p_trajectory.nsteps() ) + " frames found" );
+				// Fill other frames.
+				Tool::Chrono timeReadingFrames;
+				timeReadingFrames.start();
+				int startingFrame = 1;
+				for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )
+				{
+					Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
+					chemfiles::Frame					  frame			= p_trajectory.read_step( frameIdx );
+					const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
+					moleculeFrame.resize( positions.size() );
+					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
+					{
+						const chemfiles::Vector3D & position = positions[ positionIdx ];
+						moleculeFrame[ positionIdx ]		 = { position[ 0 ], position[ 1 ], position[ 2 ] };
+					}
+#ifdef _DEBUG
+					if ( frameIdx % 100 == 0 )
+					{
+						emit _loader->logDebug( "Frames from " + std::to_string( startingFrame ) + " to "
+												+ std::to_string( frameIdx ) + " read in: "
+												+ std::to_string( timeReadingFrames.intervalTime() ) + "s" );
+						startingFrame = frameIdx;
+					}
+#endif // DEBUG
+				}
+				timeReadingFrames.stop();
+				emit _loader->logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
+			}
+
+			void LibChemfiles::_readTrajectory( chemfiles::Trajectory & p_trajectory,
+												const FilePath &		p_path,
+												Model::Molecule &		p_molecule ) const
+			{
+				emit _loader->logInfo( std::to_string( p_trajectory.nsteps() ) + " frames found" );
 
 				if ( p_trajectory.nsteps() == 0 )
 				{
 					throw Exception::IOException( "Trajectory is empty" );
 				}
 
+				// if opening a DCD file check if a topology file is present in the same folder
+				QFileInfo fileInfo( QString::fromStdString( p_path.string() ) );
+				if ( fileInfo.suffix().toStdString() == "dcd" )
+				{
+					std::string filePathWithoutExt
+						= QString( fileInfo.path() + QDir::separator() + fileInfo.baseName() ).toStdString();
+					std::vector<std::string> topExtensions	= { ".xyz", ".pdb", ".mol2" };
+					std::string				 foundExtension = "";
+					for ( size_t ext = 0; ext < topExtensions.size(); ext++ )
+					{
+						std::fstream topFile;
+						topFile.open( filePathWithoutExt + topExtensions[ ext ] );
+						if ( topFile.is_open() )
+						{
+							topFile.close();
+							foundExtension = topExtensions[ ext ];
+							break;
+						}
+					}
+					if ( foundExtension != "" )
+					{
+						chemfiles::Trajectory topolgy_file( filePathWithoutExt + foundExtension, 'r' );
+						p_trajectory.set_topology( filePathWithoutExt + foundExtension );
+					}
+				}
+
 				Tool::Chrono chrono;
 				chrono.start();
 				chemfiles::Frame frame = p_trajectory.read();
 				chrono.stop();
-				VTX_INFO( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
+				emit _loader->logInfo( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
+
 				const chemfiles::Topology &				topology = frame.topology();
 				const std::vector<chemfiles::Residue> & residues = topology.residues();
 				const std::vector<chemfiles::Bond> &	bonds	 = topology.bonds();
 				Model::Configuration::Molecule &		config	 = p_molecule.getConfiguration();
 				p_molecule.setPath( p_path );
+
+				if ( topology.bonds().size() == 0 )
+				{
+					// If no residue, create a fake one.
+					// TODO: check file format instead of residue count?
+					emit			   _loader->logInfo( "No residues found" );
+					chemfiles::Residue residue = chemfiles::Residue( "" );
+					for ( uint i = 0; i < frame.size(); ++i )
+					{
+						residue.add_atom( i );
+					}
+					frame.add_residue( residue );
+				}
 
 				if ( frame.size() != topology.size() )
 				{
@@ -97,7 +174,7 @@ namespace VTX
 					{
 						propAtom += " " + it->first;
 					}
-					VTX_DEBUG( propAtom );
+					emit _loader->logDebug( propAtom );
 				}
 
 				if ( residues.size() > 0 )
@@ -110,7 +187,7 @@ namespace VTX
 					{
 						propResidue += " " + it->first;
 					}
-					VTX_DEBUG( propResidue );
+					emit _loader->logDebug( propResidue );
 				}
 
 				// If no residue, create a fake one.
@@ -119,7 +196,7 @@ namespace VTX
 				if ( residues.size() == 0 )
 				{
 					hasTopology = false;
-					VTX_INFO( "No residues found" );
+					emit			   _loader->logInfo( "No residues found" );
 					chemfiles::Residue residue = chemfiles::Residue( "" );
 					for ( uint i = 0; i < frame.size(); ++i )
 					{
@@ -186,10 +263,10 @@ namespace VTX
 					modelResidue->setIndexFirstAtom( uint( *residue.begin() ) );
 					modelResidue->setAtomCount( uint( residue.size() ) );
 					std::string residueSymbol = residue.name();
-					std::transform(
-						residueSymbol.begin(), residueSymbol.end(), residueSymbol.begin(), []( unsigned char c ) {
-							return std::toupper( c );
-						} );
+					std::transform( residueSymbol.begin(),
+									residueSymbol.end(),
+									residueSymbol.begin(),
+									[]( unsigned char c ) { return std::toupper( c ); } );
 					std::optional symbol = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
 					symbol.has_value() ? modelResidue->setSymbol( symbol.value() )
 									   : p_molecule.addUnknownResidueSymbol( residueSymbol );
@@ -214,7 +291,7 @@ namespace VTX
 					{
 						std::string secondaryStructure
 							= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
-						// VTX_DEBUG( secondaryStructure );
+						// emit _loader->logDebug( secondaryStructure );
 						if ( secondaryStructure != "" )
 						{
 							if ( secondaryStructure == "extended" )
@@ -246,8 +323,7 @@ namespace VTX
 							}
 							else if ( secondaryStructure == "left-handed 3-10 helix" )
 							{
-								modelResidue->setSecondaryStructure(
-									Model::SecondaryStructure::TYPE::HELIX_3_10_LEFT );
+								modelResidue->setSecondaryStructure( Model::SecondaryStructure::TYPE::HELIX_3_10_LEFT );
 							}
 							else if ( secondaryStructure == "pi helix" )
 							{
@@ -291,7 +367,7 @@ namespace VTX
 
 					if ( residue.size() == 0 )
 					{
-						VTX_WARNING( "Empty residue found" );
+						emit _loader->logWarning( "Empty residue found" );
 					}
 					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 					{
@@ -306,12 +382,12 @@ namespace VTX
 						modelAtom->setIndex( atomId );
 						modelAtom->setResiduePtr( modelResidue );
 						std::string atomSymbol = atom.type();
-						std::transform(
-							atomSymbol.begin(), atomSymbol.end(), atomSymbol.begin(), []( unsigned char c ) {
-								return std::toupper( c );
-							} );
+						std::transform( atomSymbol.begin(),
+										atomSymbol.end(),
+										atomSymbol.begin(),
+										[]( unsigned char c ) { return std::toupper( c ); } );
 
-						// VTX_INFO( atom.name() + " " + atom.type() );
+						// emit _loader->logInfo( atom.name() + " " + atom.type() );
 
 						std::optional symbol = magic_enum::enum_cast<Model::Atom::SYMBOL>( "A_" + atomSymbol );
 
@@ -378,20 +454,13 @@ namespace VTX
 					}
 				}
 
-				// Fill other frames.
-				for ( uint frameIdx = 1; frameIdx < p_trajectory.nsteps(); ++frameIdx )
+				if ( p_trajectory.nsteps() > 1 )
 				{
-					VTX_INFO( "Frame " + std::to_string( frameIdx ) );
-					Model::Molecule::AtomPositionsFrame & moleculeFrame = p_molecule.getAtomPositionFrame( frameIdx );
-
-					frame												   = p_trajectory.read_step( frameIdx );
-					const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
-					moleculeFrame.resize( positions.size() );
-					for ( uint positionIdx = 0; positionIdx < positions.size(); ++positionIdx )
-					{
-						const chemfiles::Vector3D & position = positions[ positionIdx ];
-						moleculeFrame[ positionIdx ]		 = { position[ 0 ], position[ 1 ], position[ 2 ] };
-					}
+					// TODO: launch the filling of trajectory frames in another thread
+					// std::thread fillFrames(
+					//	&LibChemfiles::fillTrajectoryFrames, this, std::ref( p_trajectory ), std::ref( p_molecule ) );
+					// fillFrames.detach();
+					fillTrajectoryFrames( p_trajectory, p_molecule );
 				}
 
 				// Bonds.
@@ -464,7 +533,6 @@ namespace VTX
 					p_molecule.getBufferBonds()[ counter * 2u + 1u ] = uint( bond[ 1 ] );
 				}
 			}
-
 		} // namespace Reader
 	}	  // namespace IO
 } // namespace VTX

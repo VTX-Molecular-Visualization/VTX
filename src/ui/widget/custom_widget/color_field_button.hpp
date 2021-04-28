@@ -16,7 +16,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class ColorFieldButton : public BaseManualWidget<QPushButton>, public TMultiDataFieldEquatable<Color::Rgb>
+	class ColorFieldButton : public BaseManualWidget<QPushButton>, public TMultiDataFieldEquatable<const Color::Rgb>
 	{
 		VTX_WIDGET
 		Q_OBJECT

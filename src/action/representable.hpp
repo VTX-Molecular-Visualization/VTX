@@ -66,7 +66,7 @@ namespace VTX::Action
 
 		void execute()
 		{
-			_representable->removeRepresentation();
+			Representation::RepresentationManager::get().removeInstantiatedRepresentation( *_representable );
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		};
 

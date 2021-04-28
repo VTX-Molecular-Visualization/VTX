@@ -24,6 +24,17 @@ namespace VTX::UI::Widget::ContextualMenu
 		addSeparator();
 		addMenu( _representationMenu );
 		addSeparator();
+		_toggleWaterAction = addAction( "Toggle Waters", this, &ContextualMenuMolecule::_toggleWatersVisibilityAction );
+		_toggleSolventAction
+			= addAction( "Toggle Solvent", this, &ContextualMenuMolecule::_toggleSolventVisibilityAction );
+		_toggleHydrogenAction
+			= addAction( "Toggle Hydrogen", this, &ContextualMenuMolecule::_toggleHydrogensVisibilityAction );
+
+		addSeparator();
+		_toggleTrajectoryPlayingAction
+			= addAction( "Toggle Play", this, &ContextualMenuMolecule::_toggleTrajectoryPlayingActions );
+
+		addSeparator();
 		addAction( "Orient", this, &ContextualMenuMolecule::_orientAction );
 		addAction( "Show", this, &ContextualMenuMolecule::_showAction );
 		addAction( "Hide", this, &ContextualMenuMolecule::_hideAction );
@@ -46,6 +57,13 @@ namespace VTX::UI::Widget::ContextualMenu
 		const int representationIndex = Model::Representation::RepresentationLibrary::get().getRepresentationIndex(
 			p_target->getRepresentation()->getLinkedRepresentation() );
 
+		_toggleWaterAction->setText( p_target->showWater() ? "Hide Waters" : "Show Waters" );
+		_toggleSolventAction->setText( p_target->showSolvent() ? "Hide Solvent" : "Show Solvent" );
+		_toggleHydrogenAction->setText( p_target->showHydrogen() ? "Hide Hydrogens" : "Show Hydrogens" );
+
+		_toggleTrajectoryPlayingAction->setVisible( p_target->hasTrajectory() );
+		_toggleTrajectoryPlayingAction->setText( p_target->isPlaying() ? "Pause" : "Play" );
+
 		_representationMenu->tickCurrentRepresentation( representationIndex );
 	}
 
@@ -57,6 +75,25 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		molSceneView->openRenameEditor();
 	}
+	void ContextualMenuMolecule::_toggleWatersVisibilityAction()
+	{
+		VTX_ACTION( new Action::Molecule::ChangeShowWater( *_target, !_target->showWater() ) );
+	}
+	void ContextualMenuMolecule::_toggleSolventVisibilityAction()
+	{
+		VTX_ACTION( new Action::Molecule::ChangeShowSolvent( *_target, !_target->showSolvent() ) );
+	}
+	void ContextualMenuMolecule::_toggleHydrogensVisibilityAction()
+	{
+		VTX_ACTION( new Action::Molecule::ChangeShowHydrogen( *_target, !_target->showHydrogen() ) );
+	}
+
+	void ContextualMenuMolecule::_toggleTrajectoryPlayingActions()
+	{
+		const bool newIsPlaying = !_target->isPlaying();
+		VTX_ACTION( new Action::Molecule::ChangeIsPlaying( *_target, newIsPlaying ) );
+	}
+
 	void ContextualMenuMolecule::_orientAction() { VTX_ACTION( new Action::Molecule::Orient( *_target ) ); }
 	void ContextualMenuMolecule::_showAction()
 	{

@@ -36,10 +36,10 @@ namespace VTX::Buffer
 		// Control point secondary structure.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
 		_vao.setVertexBuffer(
-			ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, _vboSecondaryStructures, sizeof( ushort ) );
+			ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, _vboSecondaryStructures, sizeof( uint ) );
 		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat(
-			ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, Renderer::GL::VertexArray::Type::UNSIGNED_SHORT );
+			ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE,
 								  ATTRIBUTE_LOCATION::CONTROL_POINT_SECONDARY_STRUCTURE );
 
@@ -52,10 +52,10 @@ namespace VTX::Buffer
 
 		// Control point selection.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, _vboSelections, sizeof( ushort ) );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, _vboSelections, sizeof( uint ) );
 		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat(
-			ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, 1, Renderer::GL::VertexArray::Type::UNSIGNED_SHORT );
+			ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION,
 								  ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
 	}
@@ -73,7 +73,7 @@ namespace VTX::Buffer
 		_vboDirections.set<Vec3f>( p_directions, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
-	void SecondaryStructure::setControlPointSecondaryStructure( const std::vector<ushort> & p_ss )
+	void SecondaryStructure::setControlPointSecondaryStructure( const std::vector<uint> & p_ss )
 	{
 		_vboSecondaryStructures.set<ushort>( p_ss, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
@@ -83,7 +83,7 @@ namespace VTX::Buffer
 		_vboColors.set<Color::Rgb>( p_colors, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
-	void SecondaryStructure::setControlPointSelections( const std::vector<ushort> & p_selections )
+	void SecondaryStructure::setControlPointSelections( const std::vector<uint> & p_selections )
 	{
 		_vboSelections.set<ushort>( p_selections, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}

@@ -5,9 +5,6 @@
 #pragma once
 #endif
 
-#include <functional>
-#include <thread>
-
 namespace VTX
 {
 	namespace Worker
@@ -15,14 +12,13 @@ namespace VTX
 		class BaseWorker
 		{
 		  public:
-			virtual ~BaseWorker()	   = default;
-			virtual void		work() = 0;
-			inline const bool	isFinished() const { return _isFinished; }
-			virtual const float getProgress() const { return _progress; }
+			BaseWorker()		  = default;
+			virtual ~BaseWorker() = default;
+
+			void run() { _run(); }
 
 		  protected:
-			bool  _isFinished = false;
-			float _progress	  = 0.f; // The thread % [0-1]
+			virtual void _run() = 0;
 		};
 	} // namespace Worker
 } // namespace VTX

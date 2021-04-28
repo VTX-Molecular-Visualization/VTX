@@ -14,7 +14,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class FloatFieldSliderWidget : public BaseManualWidget<QWidget>, public UI::TMultiDataFieldEquatable<float>
+	class FloatFieldSliderWidget : public BaseManualWidget<QWidget>, public UI::TMultiDataFieldEquatable<const float>
 	{
 		VTX_WIDGET
 		Q_OBJECT

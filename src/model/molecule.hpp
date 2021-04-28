@@ -17,6 +17,7 @@
 #include "model/selection.hpp"
 #include "representation/instantiated_representation.hpp"
 #include "representation/representation_target.hpp"
+#include "trajectory/trajectory_enum.hpp"
 #include <iostream>
 #include <map>
 #include <string>
@@ -168,12 +169,12 @@ namespace VTX
 			inline const std::vector<float> &		 getBufferAtomRadius() const { return _bufferAtomRadius; }
 			inline std::vector<Color::Rgb> &		 getBufferAtomColors() { return _bufferAtomColors; }
 			inline const std::vector<Color::Rgb> &	 getBufferAtomColors() const { return _bufferAtomColors; }
-			inline std::vector<ushort> &			 getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
-			inline const std::vector<ushort> & getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
-			inline std::vector<ushort> &	   getBufferAtomSelection() { return _bufferAtomSelection; }
-			inline const std::vector<ushort> & getBufferAtomSelection() const { return _bufferAtomSelection; }
-			inline std::vector<uint> &		   getBufferBonds() { return _bufferBonds; }
-			inline const std::vector<uint> &   getBufferBonds() const { return _bufferBonds; }
+			inline std::vector<uint> &				 getBufferAtomVisibilities() { return _bufferAtomVisibilities; }
+			inline const std::vector<uint> & getBufferAtomVisibilities() const { return _bufferAtomVisibilities; }
+			inline std::vector<uint> &		 getBufferAtomSelection() { return _bufferAtomSelection; }
+			inline const std::vector<uint> & getBufferAtomSelection() const { return _bufferAtomSelection; }
+			inline std::vector<uint> &		 getBufferBonds() { return _bufferBonds; }
+			inline const std::vector<uint> & getBufferBonds() const { return _bufferBonds; }
 
 			inline const uint getChainCount() const { return uint( _chains.size() ); }
 			inline const uint getResidueCount() const { return uint( _residues.size() ); }
@@ -187,27 +188,33 @@ namespace VTX
 			void		refreshSelection( const Selection::MapChainIds * const );
 			void		refreshBondsBuffer();
 
+			inline bool									   hasTrajectory() { return _atomPositionsFrames.size() >= 2; }
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }
 			inline const std::vector<AtomPositionsFrame> & getFrames() const { return _atomPositionsFrames; }
 			inline uint									   getFrame() const { return _currentFrame; }
 			void										   setFrame( const uint );
-			inline const uint getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
-			inline uint		  getFPS() const { return _fps; }
-			void			  setFPS( const uint p_fps ) { _fps = p_fps; }
-			inline bool		  isPlaying() const { return _isPlaying; }
-			inline void		  setIsPlaying( const bool p_isPlaying ) { _isPlaying = p_isPlaying; }
-			inline bool		  showSolvent() const { return _showSolvent; }
-			inline void		  setShowSolvent( const bool p_showSolvent )
-			{
-				_showSolvent = p_showSolvent;
-				_fillBufferAtomVisibilities();
-			}
+			void										   applyNextFrame( const uint p_frameCount = 1 );
+			inline const uint			getFrameCount() const { return uint( _atomPositionsFrames.size() ); }
+			inline uint					getFPS() const { return _fps; }
+			void						setFPS( const uint p_fps );
+			inline bool					isPlaying() const { return _isPlaying; }
+			void						setIsPlaying( const bool p_isPlaying );
+			inline Trajectory::PlayMode getPlayMode() const { return _playMode; }
+			void						setPlayMode( const Trajectory::PlayMode & p_playMode );
+
+			void updateTrajectory( const float & p_deltaTime );
+
+			bool isAtEndOfTrajectoryPlay();
+			void resetTrajectoryPlay();
+
+			inline bool showWater() const { return _showWater; }
+			void		setShowWater( const bool p_showWater );
+			inline bool showHydrogen() const { return _showHydrogen; }
+			void		setShowHydrogen( const bool p_showHydrogen );
+			inline bool showSolvent() const { return _showSolvent; }
+			void		setShowSolvent( const bool p_showSolvent );
 			inline bool showIon() const { return _showIon; }
-			inline void setShowIon( const bool p_showIon )
-			{
-				_showIon = p_showIon;
-				_fillBufferAtomVisibilities();
-			}
+			void		setShowIon( const bool p_showIon );
 
 			// At least one residue
 			inline bool hasTopology() const { return getResidueCount() > 1; }
@@ -273,19 +280,26 @@ namespace VTX
 
 			std::vector<float>		_bufferAtomRadius		= std::vector<float>();
 			std::vector<Color::Rgb> _bufferAtomColors		= std::vector<Color::Rgb>();
-			std::vector<ushort>		_bufferAtomVisibilities = std::vector<ushort>();
-			std::vector<ushort>		_bufferAtomSelection	= std::vector<ushort>();
+			std::vector<uint>		_bufferAtomVisibilities = std::vector<uint>();
+			std::vector<uint>		_bufferAtomSelection	= std::vector<uint>();
 			std::vector<uint>		_bufferBonds			= std::vector<uint>();
 
 			// Secondary structure.
 			SecondaryStructure * _secondaryStructure = nullptr;
 
-			uint _currentFrame = 0u;
-			bool _isPlaying	   = true;
-			uint _fps		   = 1u;
+			// Trajectory
+			uint				 _currentFrame	   = 0u;
+			bool				 _isPlaying		   = true;
+			uint				 _fps			   = 1u;
+			Trajectory::PlayMode _playMode		   = Trajectory::PlayMode::Loop;
+			uint				 _dynamicLoopCount = 0;
+			float				 _trajectoryTimer  = 0;
 
-			bool _showSolvent = true;
-			bool _showIon	  = true;
+			// Element visibility
+			bool _showWater	   = true;
+			bool _showSolvent  = true;
+			bool _showHydrogen = true;
+			bool _showIon	   = true;
 
 			void _fillBufferAtomColors();
 			void _fillBufferAtomVisibilities();

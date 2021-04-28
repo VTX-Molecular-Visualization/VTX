@@ -11,7 +11,7 @@ in GsOut
 	flat vec3			sphereColor;
 	flat float			sphereRadius;
 	flat float			dotViewSpherePos;
-	flat unsigned short sphereSelected;
+	flat uint sphereSelected;
 }
 gsIn;
 

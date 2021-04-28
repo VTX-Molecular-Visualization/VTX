@@ -18,6 +18,7 @@
 #include "setting.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
+#include "trajectory/trajectory_enum.hpp"
 #include "util/math.hpp"
 #include "util/molecule.hpp"
 #include "util/secondary_structure.hpp"
@@ -157,88 +158,298 @@ namespace VTX::Action::Molecule
 	class ChangeFPS : public BaseAction
 	{
 	  public:
-		explicit ChangeFPS( Model::Molecule & p_molecule, const int p_fps ) : _molecule( p_molecule ), _fps( p_fps ) {}
+		explicit ChangeFPS( Model::Molecule & p_molecule, const int p_fps ) : _fps( p_fps )
+		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeFPS( std::unordered_set<Model::Molecule *> & p_molecules, const int p_fps ) : _fps( p_fps )
+		{
+			for ( Model::Molecule * molecule : p_molecules )
+				_molecules.emplace( molecule );
+		}
 
 		virtual void execute() override
 		{
-			_molecule.setFPS( Util::Math::clamp( _fps, 0, int( VTX::Setting::VIDEO_FPS_DEFAULT ) ) );
+			for ( Model::Molecule * molecule : _molecules )
+				molecule->setFPS(
+					Util::Math::clamp( _fps, VTX::Setting::MIN_TRAJECTORY_SPEED, VTX::Setting::MAX_TRAJECTORY_SPEED ) );
 		}
 
 	  private:
-		Model::Molecule & _molecule;
-		const int		  _fps;
+		std::unordered_set<Model::Molecule *> _molecules;
+		const int							  _fps;
 	};
 
 	class ChangeFrame : public BaseAction
 	{
 	  public:
-		explicit ChangeFrame( Model::Molecule & p_molecule, const int p_frame ) :
-			_molecule( p_molecule ), _frame( p_frame )
+		explicit ChangeFrame( Model::Molecule & p_molecule, const int p_frame, const bool p_pause = false ) :
+			_frame( p_frame ), _pause( p_pause )
 		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeFrame( std::unordered_set<Model::Molecule *> & p_molecules,
+							  const int								  p_frame,
+							  const bool							  p_pause = false ) :
+			_frame( p_frame ),
+			_pause( p_pause )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
 		}
 
 		virtual void execute() override
 		{
-			_molecule.setFrame( Util::Math::clamp( _frame, 0, (int)_molecule.getFrameCount() - 1 ) );
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				molecule->setFrame( Util::Math::clamp( _frame, 0, (int)molecule->getFrameCount() - 1 ) );
+				if ( _pause )
+					molecule->setIsPlaying( false );
+			}
+
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
-		Model::Molecule & _molecule;
-		const int		  _frame;
+		std::unordered_set<Model::Molecule *> _molecules;
+		const int							  _frame;
+		const int							  _pause;
+	};
+
+	class PreviousFrame : public BaseAction
+	{
+	  public:
+		explicit PreviousFrame( Model::Molecule & p_molecule, const bool p_pause = false ) : _pause( p_pause )
+		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit PreviousFrame( std::unordered_set<Model::Molecule *> & p_molecules, const bool p_pause = false ) :
+			_pause( p_pause )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				const int previousFrame		   = molecule->getFrame() - 1;
+				const int clampedPreviousFrame = previousFrame < 0 ? 0 : previousFrame;
+
+				molecule->setFrame( clampedPreviousFrame );
+
+				if ( _pause )
+					molecule->setIsPlaying( false );
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *> _molecules;
+		const bool							  _pause;
+	};
+
+	class NextFrame : public BaseAction
+	{
+	  public:
+		explicit NextFrame( Model::Molecule & p_molecule, const bool p_pause = false ) : _pause( p_pause )
+		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit NextFrame( std::unordered_set<Model::Molecule *> & p_molecules, const bool p_pause = false ) :
+			_pause( p_pause )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				const int nextFrame		   = molecule->getFrame() + 1;
+				const int lastFrame		   = molecule->getFrameCount() - 1;
+				const int clampedNextFrame = nextFrame > lastFrame ? lastFrame : nextFrame;
+
+				molecule->setFrame( clampedNextFrame );
+
+				if ( _pause )
+					molecule->setIsPlaying( false );
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *> _molecules;
+		const bool							  _pause;
 	};
 
 	class ChangeIsPlaying : public BaseAction
 	{
 	  public:
-		explicit ChangeIsPlaying( Model::Molecule & p_molecule, const bool p_isPlaying ) :
-			_molecule( p_molecule ), _isPlaying( p_isPlaying )
+		explicit ChangeIsPlaying( Model::Molecule & p_molecule, const bool p_isPlaying ) : _isPlaying( p_isPlaying )
 		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeIsPlaying( std::unordered_set<Model::Molecule *> & p_molecules, const bool p_isPlaying ) :
+			_isPlaying( p_isPlaying )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
 		}
 
-		virtual void execute() override { _molecule.setIsPlaying( _isPlaying ); }
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+			{
+				if ( molecule->isAtEndOfTrajectoryPlay() && _isPlaying )
+					molecule->resetTrajectoryPlay();
+
+				molecule->setIsPlaying( _isPlaying );
+			}
+		}
 
 	  private:
-		Model::Molecule & _molecule;
-		const bool		  _isPlaying;
+		std::unordered_set<Model::Molecule *> _molecules = std::unordered_set<Model::Molecule *>();
+		const bool							  _isPlaying;
+	};
+	class ChangePlayMode : public BaseAction
+	{
+	  public:
+		explicit ChangePlayMode( Model::Molecule & p_molecule, const Trajectory::PlayMode & p_playMode ) :
+			_playMode( p_playMode )
+		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangePlayMode( std::unordered_set<Model::Molecule *> & p_molecules,
+								 const Trajectory::PlayMode &			 p_playMode ) :
+			_playMode( p_playMode )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+				molecule->setPlayMode( _playMode );
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *> _molecules = std::unordered_set<Model::Molecule *>();
+		const Trajectory::PlayMode			  _playMode;
 	};
 
 	class ChangeShowIon : public BaseAction
 	{
 	  public:
-		explicit ChangeShowIon( Model::Molecule & p_molecule, const bool p_showIon ) :
-			_molecule( p_molecule ), _showIon( p_showIon )
+		explicit ChangeShowIon( Model::Molecule & p_molecule, const bool p_showIon ) : _showIon( p_showIon )
 		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeShowIon( std::unordered_set<Model::Molecule *> & p_molecules, const bool p_showIon ) :
+			_showIon( p_showIon )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
 		}
 
 		virtual void execute() override
 		{
-			_molecule.setShowIon( _showIon );
+			for ( Model::Molecule * const molecule : _molecules )
+				molecule->setShowIon( _showIon );
+
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
-		Model::Molecule & _molecule;
-		const bool		  _showIon;
+		std::unordered_set<Model::Molecule *> _molecules;
+		const bool							  _showIon;
 	};
 
 	class ChangeShowSolvent : public BaseAction
 	{
 	  public:
 		explicit ChangeShowSolvent( Model::Molecule & p_molecule, const bool p_showSolvent ) :
-			_molecule( p_molecule ), _showSolvent( p_showSolvent )
+			_showSolvent( p_showSolvent )
 		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeShowSolvent( std::unordered_set<Model::Molecule *> & p_molecules, const bool p_showSolvent ) :
+			_showSolvent( p_showSolvent )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
 		}
 
 		virtual void execute() override
 		{
-			_molecule.setShowSolvent( _showSolvent );
+			for ( Model::Molecule * const molecule : _molecules )
+				molecule->setShowSolvent( _showSolvent );
+
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
-		Model::Molecule & _molecule;
-		const bool		  _showSolvent;
+		std::unordered_set<Model::Molecule *> _molecules;
+		const bool							  _showSolvent;
+	};
+
+	class ChangeShowWater : public BaseAction
+	{
+	  public:
+		explicit ChangeShowWater( Model::Molecule & p_molecule, const bool p_showWater ) : _showWater( p_showWater )
+		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeShowWater( std::unordered_set<Model::Molecule *> & p_molecules, const bool p_showWater ) :
+			_showWater( p_showWater )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+				molecule->setShowWater( _showWater );
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *> _molecules;
+		const bool							  _showWater;
+	};
+	class ChangeShowHydrogen : public BaseAction
+	{
+	  public:
+		explicit ChangeShowHydrogen( Model::Molecule & p_molecule, const bool p_showHydrogen ) :
+			_showHydrogen( p_showHydrogen )
+		{
+			_molecules.emplace( &p_molecule );
+		}
+		explicit ChangeShowHydrogen( std::unordered_set<Model::Molecule *> & p_molecules, const bool p_showHydrogen ) :
+			_showHydrogen( p_showHydrogen )
+		{
+			for ( Model::Molecule * const molecule : p_molecules )
+				_molecules.emplace( molecule );
+		}
+
+		virtual void execute() override
+		{
+			for ( Model::Molecule * const molecule : _molecules )
+				molecule->setShowHydrogen( _showHydrogen );
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Model::Molecule *> _molecules;
+		const bool							  _showHydrogen;
 	};
 
 	class ComputeSecondaryStructure : public BaseAction

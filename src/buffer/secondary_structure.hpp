@@ -31,9 +31,9 @@ namespace VTX
 
 			void setControlPointPositions( const std::vector<Vec4f> & );
 			void setControlPointDirections( const std::vector<Vec3f> & );
-			void setControlPointSecondaryStructure( const std::vector<ushort> & );
+			void setControlPointSecondaryStructure( const std::vector<uint> & );
 			void setControlPointColors( const std::vector<Color::Rgb> & );
-			void setControlPointSelections( const std::vector<ushort> & );
+			void setControlPointSelections( const std::vector<uint> & );
 			void setIndices( const std::vector<uint> & );
 
 		  protected:

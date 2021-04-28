@@ -39,18 +39,18 @@ namespace VTX::Buffer
 
 		// Visibility.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, _vboAtomVisibilities, sizeof( ushort ) );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, _vboAtomVisibilities, sizeof( uint ) );
 		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat(
-			ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, Renderer::GL::VertexArray::Type::UNSIGNED_SHORT );
+			ATTRIBUTE_LOCATION::ATOM_VISIBILITY, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_VISIBILITY, ATTRIBUTE_LOCATION::ATOM_VISIBILITY );
 
 		// Selection.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::ATOM_SELECTION );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_SELECTION, _vboAtomSelections, sizeof( ushort ) );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::ATOM_SELECTION, _vboAtomSelections, sizeof( uint ) );
 		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat(
-			ATTRIBUTE_LOCATION::ATOM_SELECTION, 1, Renderer::GL::VertexArray::Type::UNSIGNED_SHORT );
+			ATTRIBUTE_LOCATION::ATOM_SELECTION, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::ATOM_SELECTION, ATTRIBUTE_LOCATION::ATOM_SELECTION );
 	}
 
@@ -72,12 +72,12 @@ namespace VTX::Buffer
 		_vboAtomColors.set<Color::Rgb>( p_colors, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
-	void Molecule::setAtomVisibilities( const std::vector<ushort> & p_visibilities )
+	void Molecule::setAtomVisibilities( const std::vector<uint> & p_visibilities )
 	{
 		_vboAtomVisibilities.set<ushort>( p_visibilities, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
-	void Molecule::setAtomSelections( const std::vector<ushort> & p_selections )
+	void Molecule::setAtomSelections( const std::vector<uint> & p_selections )
 	{
 		_vboAtomSelections.set<ushort>( p_selections, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}

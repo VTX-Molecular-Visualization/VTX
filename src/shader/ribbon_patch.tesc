@@ -14,8 +14,8 @@ in VsOut
 	vec4				position;
 	vec3				direction;
 	flat vec3			color;
-	flat unsigned short ssType;
-	flat unsigned short selection;
+	flat uint ssType;
+	flat uint selection;
 }
 vsIn[];
 
@@ -25,8 +25,8 @@ out TcOut
 	vec3				direction;
 	vec3				normal;
 	flat vec3			color;
-	flat unsigned short ssType;
-	flat unsigned short selection;
+	flat uint ssType;
+	flat uint selection;
 }
 tcOut[];
 

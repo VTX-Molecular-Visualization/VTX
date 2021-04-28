@@ -126,7 +126,7 @@ set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form")
+set(CMAKE_AUTOUIC_SEARCH_PATHS "src/ui/qt_form" "src/view/ui/qt_form" "src/extensions/keyword_editor/forms/")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Set link directories.
@@ -141,7 +141,8 @@ find_package(Qt5 COMPONENTS Core REQUIRED)
 find_package(Qt5 COMPONENTS Gui REQUIRED)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt5 COMPONENTS Network REQUIRED)
-find_package(Qt5 COMPONENTS Gamepad REQUIRED)
+find_package(Qt5 COMPONENTS Gamepad REQUIRED) 
+find_package(Qt5 COMPONENTS Svg REQUIRED)
 
 # Includes directories.
 target_include_directories(VTX PRIVATE ${PATH_SRC})
@@ -162,6 +163,7 @@ target_link_libraries(VTX PRIVATE Qt5::Gui)
 target_link_libraries(VTX PRIVATE Qt5::Widgets)
 target_link_libraries(VTX PRIVATE Qt5::Network)
 target_link_libraries(VTX PRIVATE Qt5::Gamepad)
+target_link_libraries(VTX PRIVATE Qt5::Svg)
 
 # TODO: Find optional packages.
 if(0)
@@ -195,6 +197,7 @@ add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_dif
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Widgets> $<TARGET_FILE_DIR:VTX>)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Network> $<TARGET_FILE_DIR:VTX>)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gamepad> $<TARGET_FILE_DIR:VTX>)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Svg> $<TARGET_FILE_DIR:VTX>)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::QWindowsIntegrationPlugin> $<TARGET_FILE_DIR:VTX>/platforms/$<TARGET_FILE_NAME:Qt5::QWindowsIntegrationPlugin>)
 
 # Create custom target for GPU sources that copy files to build direcctory.

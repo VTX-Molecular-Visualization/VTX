@@ -59,7 +59,7 @@ namespace VTX
 				// Temporary vectors, merged with buffers is SS is constructed.
 				std::vector<Vec4f>		caPositions;
 				std::vector<Vec3f>		caODirections;
-				std::vector<ushort>		ssTypes;
+				std::vector<uint>		ssTypes;
 				std::vector<Color::Rgb> colors;
 				std::vector<uint>		residueIndex;
 
@@ -111,7 +111,7 @@ namespace VTX
 					caODirections.emplace_back( directionCAO );
 
 					// Add secondary structure type.
-					ssTypes.emplace_back( ushort( residue->getSecondaryStructure() ) );
+					ssTypes.emplace_back( uint( residue->getSecondaryStructure() ) );
 
 					// Add color.
 					if ( residue->getRepresentation() != nullptr )

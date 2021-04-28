@@ -15,7 +15,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class FloatFieldDraggableWidget : public BaseManualWidget<QWidget>, public TMultiDataFieldEquatable<float>
+	class FloatFieldDraggableWidget : public BaseManualWidget<QWidget>, public TMultiDataFieldEquatable<const float>
 	{
 		VTX_WIDGET
 		Q_OBJECT

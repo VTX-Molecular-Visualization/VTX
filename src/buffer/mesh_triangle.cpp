@@ -37,7 +37,7 @@ namespace VTX::Buffer
 
 		// Visbility.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY );
-		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, _vboVisibilities, sizeof( ushort ) );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, _vboVisibilities, sizeof( uint ) );
 		/// TODO: MANDATORY: change namespace hierarchy
 		_vao.setAttributeFormat(
 			ATTRIBUTE_LOCATION::VERTEX_VISIBILITY, 1, Renderer::GL::VertexArray::Type::UNSIGNED_SHORT );
@@ -62,9 +62,9 @@ namespace VTX::Buffer
 		_vboColors.set<Color::Rgb>( p_colors, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
-	void MeshTriangle::setVisibilities( const std::vector<ushort> & p_visibilities )
+	void MeshTriangle::setVisibilities( const std::vector<uint> & p_visibilities )
 	{
-		_vboVisibilities.set<ushort>( p_visibilities, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboVisibilities.set<uint>( p_visibilities, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
 	void MeshTriangle::setIndices( const std::vector<uint> & p_indices )

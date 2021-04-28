@@ -10,6 +10,7 @@
 #include "generic/base_colorable.hpp"
 #include "style.hpp"
 #include <QString>
+#include <list>
 
 namespace VTX
 {
@@ -25,10 +26,18 @@ namespace VTX
 		enum class MODE;
 	} // namespace Renderer
 
+	namespace Trajectory
+	{
+		enum class PlayMode;
+	}
+
 	class Setting
 	{
 	  public:
 		// UI.
+		static const std::string ORGANIZATION_NAME;
+		static const std::string PROJECT_NAME;
+
 		static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
 		Style::SYMBOL_DISPLAY_MODE				symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
 
@@ -46,8 +55,13 @@ namespace VTX
 		static const int STATUS_PROGRESS_BAR_CHUNKS;
 		static const int STATUS_PROGRESS_BAR_WIDTH;
 
+		static const QString DEFAULT_SAVE_FOLDER;
+		static const QString DEFAULT_MOLECULE_FOLDER;
+		static const QString MOLECULE_EXTENSIONS;
+		static const QString VTX_EXTENSIONS;
 		static const QString MOLECULE_FILE_FILTERS;
 		static const QString OPEN_FILE_FILTERS;
+		static const QString SAVE_FILE_FILTERS;
 
 		// Rendering.
 		static const bool ACTIVE_RENDERER_DEFAULT;
@@ -179,11 +193,26 @@ namespace VTX
 		static const bool CONTROLLER_Y_AXIS_INVERTED;
 		bool			  yAxisInverted = CONTROLLER_Y_AXIS_INVERTED;
 
-		static const float CONTROLLER_ELASTICITY_FACTOR;
+		static const bool CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
+		bool			  activeControllerElasticity = CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
+
+		static const float CONTROLLER_ELASTICITY_FACTOR_DEFAULT;
+		static const float CONTROLLER_ELASTICITY_FACTOR_MIN;
+		static const float CONTROLLER_ELASTICITY_FACTOR_MAX;
+		float			   controllerElasticityFactor = CONTROLLER_ELASTICITY_FACTOR_DEFAULT;
+
 		static const float CONTROLLER_ELASTICITY_THRESHOLD;
 
 		// Molecules
 		static const float COPIED_MOLECULE_OFFSET;
+
+		// Trajectory
+		static const int				  MIN_TRAJECTORY_SPEED;
+		static const int				  MAX_TRAJECTORY_SPEED;
+		static const int				  DEFAULT_TRAJECTORY_SPEED;
+		int								  defaultTrajectorySpeed;
+		static const Trajectory::PlayMode DEFAULT_TRAJECTORY_PLAY_MODE;
+		Trajectory::PlayMode			  defaultTrajectoryPlayMode;
 
 		// Auto rotate.
 		static const float AUTO_ROTATE_SPEED_DEFAULT;
@@ -200,7 +229,10 @@ namespace VTX
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
 
-		inline static std::vector<VTX::FilePath> recentLoadingPath = { "Recent 1", "Recent 2", "Recent 3" };
+		static const int					   RECENT_PATH_SAVED_MAX_COUNT;
+		inline static std::list<VTX::FilePath> recentLoadingPath = std::list<VTX::FilePath>();
+		static void							   enqueueNewLoadingPath( FilePath & );
+		static VTX::FilePath				   getRecentLoadingPath( const int p_index );
 
 		void backup();
 		void recover();

@@ -18,14 +18,27 @@ namespace VTX::UI::Widget::Representation
 	RepresentationInspectorSection::RepresentationInspectorSection( QWidget * const p_parent ) :
 		BaseManualWidget( p_parent ), TMultiDataField()
 	{
+		_registerEvent( Event::Global::LATE_UPDATE );
 	}
 
-	RepresentationInspectorSection ::~RepresentationInspectorSection()
+	RepresentationInspectorSection::~RepresentationInspectorSection()
 	{
 		// Views "UI_INSPECTOR_INSTANTIATED_REPRESENTATION" delete with models
 
 		if ( _dummyRepresentation != nullptr )
 			MVC::MvcManager::get().deleteModel( _dummyRepresentation );
+	}
+
+	void RepresentationInspectorSection::receiveEvent( const Event::VTXEvent & p_event )
+	{
+		if ( p_event.name == Event::Global::LATE_UPDATE )
+		{
+			if ( _isDirty )
+			{
+				_recomputeUi();
+				_isDirty = false;
+			}
+		}
 	}
 
 	void RepresentationInspectorSection::_setupUi( const QString & p_name )
@@ -347,7 +360,13 @@ namespace VTX::UI::Widget::Representation
 	void RepresentationInspectorSection::_onTargetedRepresentationChange( const Event::VTXEvent * const p_event )
 	{
 		resetState( false, p_event->name == Event::Model::REPRESENTATION_TYPE_CHANGE );
+		setDirty();
+	}
 
+	void RepresentationInspectorSection::setDirty() { _isDirty = true; }
+
+	void RepresentationInspectorSection::_recomputeUi()
+	{
 		for ( const InstantiatedRepresentation * const representation : _representations )
 			updateWithNewValue( *representation, false );
 	}

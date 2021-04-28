@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QLineEdit>
 #include <QSlider>
@@ -13,7 +14,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class IntegerFieldWidget : public BaseManualWidget<QWidget>
+	class IntegerFieldWidget : public BaseManualWidget<QWidget>, public UI::TMultiDataFieldEquatable<const int>
 	{
 		VTX_WIDGET
 		Q_OBJECT
@@ -25,8 +26,17 @@ namespace VTX::UI::Widget::CustomWidget
 		void	  setValue( const int p_value );
 
 		void localize() override;
+		int	 getMin() { return _min; };
+		int	 getMax() { return _max; };
+		void setMin( const int p_min );
+		void setMax( const int p_max );
 		void setMinMax( const int p_min, const int p_max );
+		void setSingleStep( const int p_step );
+		void setPageStep( const int p_step );
+
 		void setEnabled( const bool p_enable );
+
+		void resetState() override;
 
 	  signals:
 		void onValueChange( const int p_value );
@@ -36,6 +46,10 @@ namespace VTX::UI::Widget::CustomWidget
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();
+
+		void		_displayDifferentsDataFeedback();
+		const int & _getValue() const { return _value; }
+		void		_setSingleValue( const int & p_value );
 
 		void _onTextFieldEdited();
 		void _onInternalValueChanged( const int p_newValue );

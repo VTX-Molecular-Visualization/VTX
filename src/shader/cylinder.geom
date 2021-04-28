@@ -9,8 +9,8 @@ uniform float u_cylRad;
 in VsOut
 {
 	flat vec3			vertexColor;
-	flat unsigned short vertexVisible;
-	flat unsigned short vertexSelected;
+	flat uint vertexVisible;
+	flat uint vertexSelected;
 }
 vsIn[];
 
@@ -19,7 +19,7 @@ out GsOut
 	smooth vec3			viewImpostorPosition; // Impostor position in view space.
 	flat vec3			viewVertices[ 2 ];	  // Cylinder vertices position in view space.
 	flat vec3			colors[ 2 ];
-	flat unsigned short vertexSelected[ 2 ];
+	flat uint vertexSelected[ 2 ];
 }
 gsOut;
 
@@ -47,7 +47,11 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 void main()
 {
 	// Do not emit primitive if cylinder is not visible.
+<<<<<<< HEAD
 	if ( vsIn[ 0 ].vertexVisible == 0us || vsIn[ 1 ].vertexVisible == 0us )
+=======
+	if ( vVertexVis[ 0 ] == 0 || vVertexVis[ 1 ] == 0 )
+>>>>>>> origin/dev
 	{
 		return;
 	}

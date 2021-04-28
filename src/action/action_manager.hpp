@@ -13,8 +13,6 @@
 #include <queue>
 #include <string>
 
-//#define DELAY_ACTIONS
-
 namespace VTX
 {
 	namespace Action
@@ -31,12 +29,13 @@ namespace VTX
 				return instance;
 			}
 
-			void execute( BaseAction * const, const bool = false );
-			void execute( const std::string &, const bool = false );
-			bool canUndo() const;
-			void undo();
-			bool canRedo() const;
-			void redo();
+			void		execute( BaseAction * const );
+			void		execute( const std::string & );
+			inline void enqueue( BaseAction * const p_action ) { _actionQueue.emplace( p_action ); }
+			bool		canUndo() const;
+			void		undo();
+			bool		canRedo() const;
+			void		redo();
 
 			virtual void update( const float & p_deltaTime ) override;
 
@@ -55,13 +54,16 @@ namespace VTX
 		};
 	} // namespace Action
 
-	inline void VTX_ACTION( VTX::Action::BaseAction * const p_action, const bool p_force = false )
+	inline void VTX_ACTION( VTX::Action::BaseAction * const p_action )
 	{
-		Action::ActionManager::get().execute( p_action, p_force );
+		Action::ActionManager::get().execute( p_action );
 	}
-	inline void VTX_ACTION( const std::string & p_action, const bool p_force = false )
+
+	inline void VTX_ACTION_ENQUEUE( VTX::Action::BaseAction * const p_action )
 	{
-		Action::ActionManager::get().execute( p_action, p_force );
+		Action::ActionManager::get().enqueue( p_action );
 	}
+
+	inline void VTX_ACTION( const std::string & p_action ) { Action::ActionManager::get().execute( p_action ); }
 } // namespace VTX
 #endif

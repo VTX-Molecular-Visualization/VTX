@@ -52,6 +52,8 @@ namespace VTX
 
 			virtual void update( const float & p_deltaTime ) override;
 
+			void freezeEvent( const bool p_freeze );
+
 		  private:
 			// Input events.
 			MapStringVectorBaseEventReceiverVTXPtr _receiversVTX
@@ -65,6 +67,8 @@ namespace VTX
 			std::queue<QKeyEvent *>	  _eventQueueKeyboard = std::queue<QKeyEvent *>();
 			std::queue<QMouseEvent *> _eventQueueMouse	  = std::queue<QMouseEvent *>();
 			std::queue<QWheelEvent *> _eventQueueWheel	  = std::queue<QWheelEvent *>();
+
+			bool _freeze = false;
 
 			EventManager()						 = default;
 			EventManager( const EventManager & ) = delete;

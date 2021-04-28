@@ -24,7 +24,8 @@ namespace VTX
 					_tabWidget = new QTabWidget( this );
 					_tabWidget->setObjectName( "tabWidget" );
 
-					_tabWidget->setSizePolicy( QSizePolicy( QSizePolicy::Policy::Maximum, QSizePolicy::Policy::Maximum ) );
+					_tabWidget->setSizePolicy(
+						QSizePolicy( QSizePolicy::Policy::Maximum, QSizePolicy::Policy::Maximum ) );
 
 					QFont menuBarFont;
 					menuBarFont.setPointSize( 10 );
@@ -33,11 +34,16 @@ namespace VTX
 					_mainMenu = WidgetFactory::get().instantiateWidget<Home::MenuHomeWidget>( this, "mainMenu" );
 					_tabWidget->addTab( _mainMenu, "Main" );
 
-					_viewMenu = WidgetFactory::get().instantiateWidget<Visualization::MenuVisualizationWidget>( this, "visualizationMenu" );
+					_viewMenu = WidgetFactory::get().instantiateWidget<Visualization::MenuVisualizationWidget>(
+						this, "visualizationMenu" );
 					_tabWidget->addTab( _viewMenu, "Visualization" );
 
 					_movieMenu = new QLabel( "movieMenu", this );
 					_tabWidget->addTab( _movieMenu, "Movie" );
+
+					_extensionsMenu = WidgetFactory::get().instantiateWidget<Extensions::MenuExtensionsWidget>(
+						this, "extensionsMenu" );
+					_tabWidget->addTab( _extensionsMenu, "Modules" );
 
 					_tabWidget->setCurrentIndex( 0 );
 				}

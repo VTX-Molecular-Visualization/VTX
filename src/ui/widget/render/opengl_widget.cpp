@@ -79,7 +79,7 @@ namespace VTX::UI::Widget::Render
 		_frameCounter++;
 		if ( _frameTimer.elapsed() >= 1000 )
 		{
-			VTX_STAT().FPS = _frameCounter / ( _frameTimer.elapsed() * 1e-3 );
+			VTX_STAT().FPS = _frameCounter / ( _frameTimer.elapsed() * 1e-3f );
 			_frameCounter  = 0;
 			_frameTimer.restart();
 		}
@@ -88,12 +88,17 @@ namespace VTX::UI::Widget::Render
 
 		getRenderer().renderFrame( VTXApp::get().getScene() );
 
-		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6;
+		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6f;
 
-		_painter.begin( this );
-		_painter.setPen( Qt::white );
-		_painter.drawText( 0, 10, QString::fromStdString( std::to_string( VTX_STAT().FPS ) ) );
-		_painter.end();
+		if ( _showCounter )
+		{
+			_painter.begin( this );
+			_painter.setPen( Qt::white );
+			_painter.drawText( 0, 10, QString::fromStdString( std::to_string( VTX_STAT().FPS ) ) );
+			_painter.end();
+		}
+
+		
 	}
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )

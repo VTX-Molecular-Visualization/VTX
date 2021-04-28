@@ -15,7 +15,7 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class TransformWidget : public BaseManualWidget<QFrame>, public TMultiDataField<Math::Transform>
+	class TransformWidget : public BaseManualWidget<QFrame>, public TMultiDataField<const Math::Transform>
 	{
 		VTX_WIDGET
 		Q_OBJECT
@@ -40,7 +40,8 @@ namespace VTX::UI::Widget::CustomWidget
 		void onValueChange( const Math::Transform & value ) const;
 
 	  protected:
-		TransformWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ), TMultiDataField<Math::Transform>() {};
+		TransformWidget( QWidget * p_parent ) :
+			BaseManualWidget( p_parent ), TMultiDataField<const Math::Transform>() {};
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();

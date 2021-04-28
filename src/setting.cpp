@@ -1,12 +1,19 @@
 #include "setting.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "io/serializer.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "renderer/base_renderer.hpp"
+#include "trajectory/trajectory_enum.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
 {
 	// UI.
+
+	const std::string Setting::ORGANIZATION_NAME = "CNAM";
+	const std::string Setting::PROJECT_NAME		 = "VTX";
+
 	const Style::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT = Style::SYMBOL_DISPLAY_MODE::SHORT;
 	const int						 Setting::WINDOW_WIDTH_DEFAULT		  = 1280;
 	const int						 Setting::WINDOW_HEIGHT_DEFAULT		  = 720;
@@ -22,8 +29,15 @@ namespace VTX
 	const int Setting::STATUS_PROGRESS_BAR_CHUNKS = 10;
 	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;
 
-	const QString Setting::MOLECULE_FILE_FILTERS = "Molecule file (*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm)";
-	const QString Setting::OPEN_FILE_FILTERS	 = "VTX file (*.vtx, *.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm)";
+	const QString Setting::DEFAULT_SAVE_FOLDER	   = "../save";
+	const QString Setting::DEFAULT_MOLECULE_FOLDER = "../data";
+
+	const QString Setting::MOLECULE_EXTENSIONS = "*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm";
+	const QString Setting::VTX_EXTENSIONS	   = "*.vtx";
+
+	const QString Setting::MOLECULE_FILE_FILTERS = "Molecule file (" + MOLECULE_EXTENSIONS + ")";
+	const QString Setting::OPEN_FILE_FILTERS	 = "VTX file (" + VTX_EXTENSIONS + " " + MOLECULE_EXTENSIONS + ")";
+	const QString Setting::SAVE_FILE_FILTERS	 = "VTX file (" + VTX_EXTENSIONS + ")";
 
 	// Rendering.
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT		   = true;
@@ -95,11 +109,20 @@ namespace VTX
 	const float Setting::CONTROLLER_ROTATION_SPEED_MIN		   = 0.001f;
 	const float Setting::CONTROLLER_ROTATION_SPEED_MAX		   = 0.01f;
 	const bool	Setting::CONTROLLER_Y_AXIS_INVERTED			   = false;
-	const float Setting::CONTROLLER_ELASTICITY_FACTOR		   = 4.0f;
+	const bool	Setting::CONTROLLER_ELASTICITY_ACTIVE_DEFAULT  = true;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR_DEFAULT  = 6.0f;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR_MIN	   = 1.0f;
+	const float Setting::CONTROLLER_ELASTICITY_FACTOR_MAX	   = 40.0f;
 	const float Setting::CONTROLLER_ELASTICITY_THRESHOLD	   = 1e-4f;
 
 	// Molecule
 	const float Setting::COPIED_MOLECULE_OFFSET = 5.0f;
+
+	// Trajectory
+	const int				   Setting::MIN_TRAJECTORY_SPEED		 = 1;
+	const int				   Setting::MAX_TRAJECTORY_SPEED		 = 60;
+	const int				   Setting::DEFAULT_TRAJECTORY_SPEED	 = 5;
+	const Trajectory::PlayMode Setting::DEFAULT_TRAJECTORY_PLAY_MODE = Trajectory::PlayMode::Loop;
 
 	// Auto rotate.
 	const float Setting::AUTO_ROTATE_SPEED_DEFAULT = 0.0f;
@@ -117,6 +140,39 @@ namespace VTX
 
 	// Dev.
 	const Renderer::MODE Setting::MODE_DEFAULT = Renderer::MODE::GL;
+
+	const int Setting::RECENT_PATH_SAVED_MAX_COUNT = 6;
+	void	  Setting::enqueueNewLoadingPath( FilePath & p_path )
+	{
+		for ( std::list<FilePath>::const_iterator & itPath = recentLoadingPath.cbegin();
+			  itPath != recentLoadingPath.cend();
+			  itPath++ )
+		{
+			if ( *itPath == p_path )
+			{
+				recentLoadingPath.erase( itPath );
+				break;
+			}
+		}
+
+		recentLoadingPath.emplace_front( p_path );
+		if ( recentLoadingPath.size() > RECENT_PATH_SAVED_MAX_COUNT )
+			recentLoadingPath.pop_back();
+
+		VTX_EVENT( new Event::VTXEvent( Event::Global::RECENT_FILES_CHANGE ) );
+	}
+	VTX::FilePath Setting::getRecentLoadingPath( const int p_index )
+	{
+		if ( p_index < 0 || p_index >= recentLoadingPath.size() )
+			return FilePath();
+
+		std::list<FilePath>::iterator it = recentLoadingPath.begin();
+
+		for ( int i = 0; i < p_index; i++ )
+			it++;
+
+		return *it;
+	}
 
 	void Setting::backup()
 	{

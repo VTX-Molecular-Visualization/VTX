@@ -490,6 +490,154 @@ namespace VTX::Action::Selection
 		bool					 _visible;
 	};
 
+	class ToggleWatersVisibility : public BaseAction
+	{
+	  public:
+		explicit ToggleWatersVisibility( Model::Selection & p_selection ) : _selection( p_selection ) {}
+
+		virtual void execute() override
+		{
+			bool showWater = true;
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+				showWater				   = showWater && !molecule.showWater();
+			}
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+				molecule.setShowWater( showWater );
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Model::Selection & _selection;
+	};
+
+	class ToggleSolventVisibility : public BaseAction
+	{
+	  public:
+		explicit ToggleSolventVisibility( Model::Selection & p_selection ) : _selection( p_selection ) {}
+
+		virtual void execute() override
+		{
+			bool showSolvent = true;
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+				showSolvent				   = showSolvent && !molecule.showSolvent();
+			}
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+				molecule.setShowSolvent( showSolvent );
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Model::Selection & _selection;
+	};
+
+	class ToggleHydrogensVisibility : public BaseAction
+	{
+	  public:
+		explicit ToggleHydrogensVisibility( Model::Selection & p_selection ) : _selection( p_selection ) {}
+
+		virtual void execute() override
+		{
+			bool showHydrogen = true;
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+				showHydrogen			   = showHydrogen && !molecule.showHydrogen();
+			}
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+				molecule.setShowHydrogen( showHydrogen );
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Model::Selection & _selection;
+	};
+
+	class ToggleIonsVisibility : public BaseAction
+	{
+	  public:
+		explicit ToggleIonsVisibility( Model::Selection & p_selection ) : _selection( p_selection ) {}
+
+		virtual void execute() override
+		{
+			bool showIons = true;
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+				showIons				   = showIons && !molecule.showIon();
+			}
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+				molecule.setShowIon( showIons );
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Model::Selection & _selection;
+	};
+
+	class ToggleTrajectoryPlaying : public BaseAction
+	{
+	  public:
+		explicit ToggleTrajectoryPlaying( Model::Selection & p_selection ) : _selection( p_selection ) {}
+
+		virtual void execute() override
+		{
+			bool play = true;
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+				if ( molecule.hasTrajectory() )
+					play = play && !molecule.isPlaying();
+			}
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+			{
+				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
+
+				if ( molecule.hasTrajectory() )
+				{
+					if ( molecule.isAtEndOfTrajectoryPlay() && play )
+						molecule.resetTrajectoryPlay();
+
+					molecule.setIsPlaying( play );
+				}
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Model::Selection & _selection;
+	};
+
 	class ChangeRepresentationPreset : public BaseAction
 	{
 	  public:
