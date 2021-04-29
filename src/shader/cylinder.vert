@@ -8,6 +8,7 @@
 
 layout( location = ATOM_POSITION ) in vec3 aVertexPosition;
 layout( location = ATOM_COLOR ) in vec3 aVertexColor;
+// TODO: this is not used!
 layout( location = ATOM_RADIUS ) in float aVertexRad;
 layout( location = ATOM_VISIBILITY ) in uint aVertexVis;
 layout( location = ATOM_SELECTION ) in uint aVertexSel;
@@ -17,7 +18,7 @@ uniform mat4 u_projMatrix;
 
 out VsOut
 {
-	flat vec3			vertexColor;
+	flat vec3 vertexColor;
 	flat uint vertexVisible;
 	flat uint vertexSelected;
 }

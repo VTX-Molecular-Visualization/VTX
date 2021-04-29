@@ -74,12 +74,12 @@ namespace VTX::Buffer
 
 	void Molecule::setAtomVisibilities( const std::vector<uint> & p_visibilities )
 	{
-		_vboAtomVisibilities.set<ushort>( p_visibilities, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboAtomVisibilities.set<uint>( p_visibilities, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
 	void Molecule::setAtomSelections( const std::vector<uint> & p_selections )
 	{
-		_vboAtomSelections.set<ushort>( p_selections, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboAtomSelections.set<uint>( p_selections, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
 	void Molecule::setBonds( const std::vector<uint> & p_bonds )

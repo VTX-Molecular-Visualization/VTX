@@ -26,6 +26,7 @@ namespace VTX::Renderer::GL
 			DYNAMIC_READ = GL_DYNAMIC_READ,
 			DYNAMIC_COPY = GL_DYNAMIC_COPY
 		};
+
 		UniformBuffer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 		~UniformBuffer() { _gl->glDeleteBuffers( 1, &_id ); }
 

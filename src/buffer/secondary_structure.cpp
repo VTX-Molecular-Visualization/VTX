@@ -75,7 +75,7 @@ namespace VTX::Buffer
 
 	void SecondaryStructure::setControlPointSecondaryStructure( const std::vector<uint> & p_ss )
 	{
-		_vboSecondaryStructures.set<ushort>( p_ss, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboSecondaryStructures.set<uint>( p_ss, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setControlPointColors( const std::vector<Color::Rgb> & p_colors )
@@ -85,7 +85,7 @@ namespace VTX::Buffer
 
 	void SecondaryStructure::setControlPointSelections( const std::vector<uint> & p_selections )
 	{
-		_vboSelections.set<ushort>( p_selections, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+		_vboSelections.set<uint>( p_selections, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setIndices( const std::vector<uint> & p_indices )
