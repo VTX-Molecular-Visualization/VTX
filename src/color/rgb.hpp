@@ -208,7 +208,7 @@ namespace VTX
 
 			static inline Rgb randomPastel() { return random() * 0.5f + 0.5f; }
 
-		  private:
+		  protected:
 			float _r = 0.f;
 			float _g = 0.f;
 			float _b = 0.f;

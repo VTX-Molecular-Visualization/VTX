@@ -71,8 +71,8 @@ namespace VTX
 			float ratio			= (float)desiredHeight / (float)watermarkSize.height();
 			watermarkSize.setHeight( desiredHeight );
 			watermarkSize.setWidth( watermarkSize.width() * ratio );
+			QImage watermarkImg( watermarkSize, QImage::Format_RGBA8888 );
 			watermarkSvg.setAspectRatioMode( Qt::AspectRatioMode::KeepAspectRatioByExpanding );
-			QImage	 watermarkImg( watermarkSize, QImage::Format_RGBA8888 );
 			QPainter watermarkPainter = QPainter( &watermarkImg );
 			// watermarkPainter.setRenderHint( QPainter::Antialiasing, true );
 			// watermarkPainter.setRenderHint( QPainter::LosslessImageRendering, true );
