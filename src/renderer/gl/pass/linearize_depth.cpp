@@ -6,48 +6,34 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	LinearizeDepth::~LinearizeDepth()
-	{
-		gl()->glDeleteFramebuffers( 1, &_fbo );
-		gl()->glDeleteTextures( 1, &_texture );
-	}
-
 	void LinearizeDepth::init( const uint p_width, const uint p_height, const GL & )
 	{
-		gl()->glCreateFramebuffers( 1, &_fbo );
+		_texture.create( p_width,
+						 p_height,
+						 Texture2D::InternalFormat::R32F,
+						 Texture2D::Wrapping::CLAMP_TO_EDGE,
+						 Texture2D::Wrapping::CLAMP_TO_EDGE,
+						 Texture2D::Filter::NEAREST,
+						 Texture2D::Filter::NEAREST );
 
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _texture, 1, GL_R16F, p_width, p_height );
-
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
+		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "LinearizeDepth", { "shading/linearize_depth.frag" } );
-
-		_uClipInfoLoc = gl()->glGetUniformLocation( _program->getId(), "uClipInfo" );
 	}
 
 	void LinearizeDepth::resize( const uint p_width, const uint p_height, const GL & )
 	{
-		gl()->glDeleteTextures( 1, &_texture );
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _texture, 1, GL_R16F, p_width, p_height );
+		_texture.resize( p_width, p_height );
 
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 	}
 
 	void LinearizeDepth::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+		_fbo.bind();
 
-		gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getDepthTexture() );
+		p_renderer.getPassGeometric().getDepthTexture().bindToUnit( 0 );
 
 		_program->use();
 
@@ -56,16 +42,10 @@ namespace VTX::Renderer::GL::Pass
 			const Object3D::Camera & cam	 = p_scene.getCamera();
 			const float				 camNear = cam.getNear();
 			const float				 camFar	 = cam.getFar();
-			// clipInfo.w: 0 = orhto ; 1 = perspective
-			gl()->glUniform4f( _uClipInfoLoc, camNear * camFar, camFar, camFar - camNear, 1.f );
+			// clipInfo.w: 0 = ortho ; 1 = perspective (always perspective for now).
+			_program->setVec4f( "uClipInfo", camNear * camFar, camFar, camFar - camNear, 1.f );
 		}
 
-		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
-
-		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-
-		gl()->glBindVertexArray( 0 );
-
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 	}
 } // namespace VTX::Renderer::GL::Pass

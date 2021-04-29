@@ -8,6 +8,7 @@
 #include "base_buffer_opengl.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"
+#include "renderer/gl/vertex_array.hpp"
 #include <vector>
 
 namespace VTX
@@ -17,8 +18,13 @@ namespace VTX
 		class SecondaryStructure : public BaseBufferOpenGL
 		{
 		  public:
-			SecondaryStructure( OpenGLFunctions * const p_gl ) : BaseBufferOpenGL( p_gl ) {};
+			SecondaryStructure( OpenGLFunctions * const p_gl ) :
+				BaseBufferOpenGL( p_gl ), _vboPositions( p_gl ), _vboDirections( p_gl ),
+				_vboSecondaryStructures( p_gl ), _vboColors( p_gl ), _vboSelections( p_gl ), _ibo( p_gl ),
+				_vao( p_gl ) {};
 			~SecondaryStructure() = default;
+
+			const Renderer::GL::VertexArray & getVao() const override { return _vao; }
 
 			void bind() override;
 			void unbind() override;
@@ -32,7 +38,6 @@ namespace VTX
 
 		  protected:
 			void _generate() override;
-			void _free() override;
 
 		  private:
 			enum ATTRIBUTE_LOCATION
@@ -44,13 +49,13 @@ namespace VTX
 				CONTROL_POINT_SELECTION			  = 4,
 			};
 
-			GLuint _vboPositions		   = GL_INVALID_VALUE;
-			GLuint _vboDirections		   = GL_INVALID_VALUE;
-			GLuint _vboSecondaryStructures = GL_INVALID_VALUE;
-			GLuint _vboColors			   = GL_INVALID_VALUE;
-			GLuint _vboSelections		   = GL_INVALID_VALUE;
-			GLuint _ibo					   = GL_INVALID_VALUE;
-			GLuint _vao					   = GL_INVALID_VALUE;
+			Renderer::GL::Buffer	  _vboPositions;
+			Renderer::GL::Buffer	  _vboDirections;
+			Renderer::GL::Buffer	  _vboSecondaryStructures;
+			Renderer::GL::Buffer	  _vboColors;
+			Renderer::GL::Buffer	  _vboSelections;
+			Renderer::GL::Buffer	  _ibo;
+			Renderer::GL::VertexArray _vao;
 		};
 	} // namespace Buffer
 } // namespace VTX

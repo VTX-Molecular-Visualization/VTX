@@ -8,6 +8,7 @@
 #include "console_progress_bar.hpp"
 #include "integrators/base_integrator.hpp"
 #include "renderer/base_renderer.hpp"
+#include "renderer/gl/framebuffer.hpp"
 #include "rt_scene.hpp"
 #include <vector>
 
@@ -23,7 +24,7 @@ namespace VTX
 			RayTracer( OpenGLFunctions * const p_gl ) : BaseRenderer( p_gl ) {}
 			~RayTracer() = default;
 
-			virtual void init( const uint, const uint, const GLuint ) override;
+			virtual void init( const uint, const uint, const GLuint p_outputFramebufferId ) override;
 			virtual void renderFrame( const Object3D::Scene & ) override;
 			virtual void setShading() override;
 			virtual void resize( const uint, const uint, const GLuint ) override;

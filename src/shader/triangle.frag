@@ -1,8 +1,12 @@
 #version 450
 
-smooth in vec3 vViewPosition;
-smooth in vec3 vNormal;
-flat in vec3   vColor;
+in VsOut
+{
+	smooth vec3 viewPosition;
+	smooth vec3 normal;
+	flat vec3	color;
+}
+fsIn;
 
 // 3 16 bits for position.
 // 3 16 bits for normal.
@@ -14,16 +18,14 @@ layout( location = 1 ) out vec4 outColor;
 
 void main()
 {
-	uvec4 colorNormal = uvec4( 0 );
-
-	// Compress color and normal.
+	// Compress position and normal.
 	uvec4 viewPositionNormalCompressed;
-	viewPositionNormalCompressed.x = packHalf2x16( vViewPosition.xy );
-	viewPositionNormalCompressed.y = packHalf2x16( vec2( vViewPosition.z, vNormal.x ) );
-	viewPositionNormalCompressed.z = packHalf2x16( vNormal.yz );
+	viewPositionNormalCompressed.x = packHalf2x16( fsIn.viewPosition.xy );
+	viewPositionNormalCompressed.y = packHalf2x16( vec2( fsIn.viewPosition.z, fsIn.normal.x ) );
+	viewPositionNormalCompressed.z = packHalf2x16( fsIn.normal.yz );
 	viewPositionNormalCompressed.w = 0; // Padding.
 
 	// Output data.
 	outViewPositionNormal = viewPositionNormalCompressed;
-	outColor			  = vec4( vColor, 32.f ); // w = specular shininess.
+	outColor			  = vec4( fsIn.color, 32.f ); // w = specular shininess.
 }

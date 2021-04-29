@@ -6,7 +6,7 @@
 
 namespace VTX::Renderer::GL
 {
-	GL::GL( OpenGLFunctions * const p_gl ) : BaseRenderer( p_gl )
+	GL::GL( OpenGLFunctions * const p_gl ) : BaseRenderer( p_gl ), _quadVAO( p_gl ), _quadVBO( p_gl )
 	{
 		_passGeometric		= new Pass::Geometric( p_gl );
 		_passLinearizeDepth = new Pass::LinearizeDepth( p_gl );
@@ -20,16 +20,6 @@ namespace VTX::Renderer::GL
 
 	GL::~GL()
 	{
-		if ( _quadVAO != GL_INVALID_VALUE )
-		{
-			gl()->glDisableVertexArrayAttrib( _quadVAO, 0 );
-			gl()->glDeleteVertexArrays( 1, &_quadVAO );
-		}
-		if ( _quadVBO != GL_INVALID_VALUE )
-		{
-			gl()->glDeleteBuffers( 1, &_quadVBO );
-		}
-
 		delete _passGeometric;
 		delete _passLinearizeDepth;
 		delete _passSSAO;
@@ -40,22 +30,26 @@ namespace VTX::Renderer::GL
 		delete _passFXAA;
 	}
 
-	void GL::init( const uint p_width, const uint p_height, const GLuint p_fbo )
+	void GL::init( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId )
 	{
 		VTX_INFO( "Initializing renderer..." );
 
+		/// TODO: here we cannot set the output framebuffer cause it isn't create
+		/// So "assert( _gl->glIsFramebuffer( p_id ) );" fails in Framebuffer::asign
 		// Set size.
-		BaseRenderer::resize( p_width, p_height, p_fbo );
+		//BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
+		_width	= p_width;
+		_height = p_height;
 
 		// Init pass.
-		_passGeometric->init( p_width, p_height, *this );
+		_passGeometric->init( _width, _height, *this );
 		_passLinearizeDepth->init( _width, _height, *this );
-		_passSSAO->init( p_width, p_height, *this );
-		_passBlur->init( p_width, p_height, *this );
-		_passShading->init( p_width, p_height, *this );
-		_passOutline->init( p_width, p_height, *this );
-		_passSelection->init( p_width, p_height, *this );
-		_passFXAA->init( p_width, p_height, *this );
+		_passSSAO->init( _width, _height, *this );
+		_passBlur->init( _width, _height, *this );
+		_passShading->init( _width, _height, *this );
+		_passOutline->init( _width, _height, *this );
+		_passSelection->init( _width, _height, *this );
+		_passFXAA->init( _width, _height, *this );
 
 		// Init VAO.
 		_initQuadVAO();
@@ -63,11 +57,11 @@ namespace VTX::Renderer::GL
 		VTX_INFO( "Renderer initialized" );
 	}
 
-	void GL::resize( const uint p_width, const uint p_height, const GLuint p_fbo )
+	void GL::resize( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId )
 	{
 		if ( p_width != _width || p_height != _height )
 		{
-			BaseRenderer::resize( p_width, p_height, p_fbo );
+			BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
 
 			_passGeometric->resize( _width, _height, *this );
 			_passLinearizeDepth->resize( _width, _height, *this );
@@ -85,7 +79,7 @@ namespace VTX::Renderer::GL
 		// Init quad vao/vbo for deferred shading.
 
 		// clang-format off
-			Vec2f quadVertices[] =
+			std::vector<Vec2f> quadVertices =
 			{
 				Vec2f(-1.f,  1.f),
 				Vec2f(-1.f,  -1.f),
@@ -94,35 +88,34 @@ namespace VTX::Renderer::GL
 			};
 		// clang-format on
 
-		gl()->glCreateBuffers( 1, &_quadVBO );
+		_quadVBO.create();
 
-		gl()->glCreateVertexArrays( 1, &_quadVAO );
+		_quadVAO.create();
 
-		gl()->glEnableVertexArrayAttrib( _quadVAO, 0 );
-		gl()->glVertexArrayVertexBuffer( _quadVAO, 0, _quadVBO, 0, sizeof( Vec2f ) );
-		gl()->glVertexArrayAttribFormat( _quadVAO, 0, 2, GL_FLOAT, GL_FALSE, 0 );
-		gl()->glVertexArrayAttribBinding( _quadVAO, 0, 0 );
+		_quadVAO.enableAttribute( 0 );
+		_quadVAO.setVertexBuffer( 0, _quadVBO, sizeof( Vec2f ) );
+		_quadVAO.setAttributeFormat( 0, 2, VertexArray::Type::FLOAT );
+		_quadVAO.setAttributeBinding( 0, 0 );
 
-		gl()->glNamedBufferData( _quadVBO, sizeof( quadVertices ), quadVertices, GL_STATIC_DRAW );
+		_quadVBO.set<Vec2f>( quadVertices, Buffer::Usage::STATIC_DRAW );
 	}
 
 	void GL::renderFrame( const Object3D::Scene & p_scene )
 	{
-		gl()->glViewport( 0, 0, _width, _height );
-
 		// TODO: do not change each frame
+		/// TODO2: why this?
 		if ( VTX_SETTING().cameraNear == 0.f )
 		{
-			gl()->glEnable( GL_DEPTH_CLAMP );
+			enableDepthClamp();
 		}
 		else
 		{
-			gl()->glDisable( GL_DEPTH_CLAMP );
+			disableDepthClamp();
 		}
 
-		gl()->glEnable( GL_DEPTH_TEST );
+		enableDepthTest();
 		_passGeometric->render( p_scene, *this );
-		gl()->glDisable( GL_DEPTH_TEST );
+		disableDepthTest();
 
 		_passLinearizeDepth->render( p_scene, *this );
 

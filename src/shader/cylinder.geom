@@ -6,31 +6,39 @@ layout( triangle_strip, max_vertices = 4 ) out;
 uniform mat4  u_projMatrix;
 uniform float u_cylRad;
 
-flat in vec3		   vVertexColor[]; // One color per atom.
-flat in uint vVertexVis[];
-flat in uint vVertexSel[];
+in VsOut
+{
+	flat vec3 vertexColor;
+	flat uint vertexVisible;
+	flat uint vertexSelected;
+}
+vsIn[];
 
-smooth out vec3			viewImpPos;		  // Impostor position in view space.
-flat out vec3			viewCylVert[ 2 ]; // Cylinder vertices position in view space.
-flat out vec3			colors[ 2 ];
-flat out uint vertexSel[ 2 ];
+out GsOut
+{
+	smooth vec3 viewImpostorPosition; // Impostor position in view space.
+	flat vec3	viewVertices[ 2 ];	  // Cylinder vertices position in view space.
+	flat vec3	colors[ 2 ];
+	flat uint	vertexSelected[ 2 ];
+}
+gsOut;
 
 void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 {
-	viewImpPos	= v1;
-	gl_Position = u_projMatrix * vec4( viewImpPos, 1.f );
+	gsOut.viewImpostorPosition = v1;
+	gl_Position				   = u_projMatrix * vec4( gsOut.viewImpostorPosition, 1.f );
 	EmitVertex();
 
-	viewImpPos	= v2;
-	gl_Position = u_projMatrix * vec4( viewImpPos, 1.f );
+	gsOut.viewImpostorPosition = v2;
+	gl_Position				   = u_projMatrix * vec4( gsOut.viewImpostorPosition, 1.f );
 	EmitVertex();
 
-	viewImpPos	= v3;
-	gl_Position = u_projMatrix * vec4( viewImpPos, 1.f );
+	gsOut.viewImpostorPosition = v3;
+	gl_Position				   = u_projMatrix * vec4( gsOut.viewImpostorPosition, 1.f );
 	EmitVertex();
 
-	viewImpPos	= v4;
-	gl_Position = u_projMatrix * vec4( viewImpPos, 1.f );
+	gsOut.viewImpostorPosition = v4;
+	gl_Position				   = u_projMatrix * vec4( gsOut.viewImpostorPosition, 1.f );
 	EmitVertex();
 
 	EndPrimitive();
@@ -39,30 +47,30 @@ void emitQuad( const vec3 v1, const vec3 v2, const vec3 v3, const vec3 v4 )
 void main()
 {
 	// Do not emit primitive if cylinder is not visible.
-	if ( vVertexVis[ 0 ] == 0 || vVertexVis[ 1 ] == 0 )
+	if ( vsIn[ 0 ].vertexVisible == 0 || vsIn[ 1 ].vertexVisible == 0 )
 	{
 		return;
 	}
 
 	// Output data.
-	viewCylVert[ 0 ] = gl_in[ 0 ].gl_Position.xyz;
-	viewCylVert[ 1 ] = gl_in[ 1 ].gl_Position.xyz;
-	colors[ 0 ]		 = vVertexColor[ 0 ];
-	colors[ 1 ]		 = vVertexColor[ 1 ];
-	vertexSel[ 0 ]	 = vVertexSel[ 0 ];
-	vertexSel[ 1 ]	 = vVertexSel[ 1 ];
+	gsOut.viewVertices[ 0 ]	  = gl_in[ 0 ].gl_Position.xyz;
+	gsOut.viewVertices[ 1 ]	  = gl_in[ 1 ].gl_Position.xyz;
+	gsOut.colors[ 0 ]		  = vsIn[ 0 ].vertexColor;
+	gsOut.colors[ 1 ]		  = vsIn[ 1 ].vertexColor;
+	gsOut.vertexSelected[ 0 ] = vsIn[ 0 ].vertexSelected;
+	gsOut.vertexSelected[ 1 ] = vsIn[ 1 ].vertexSelected;
 
 	// Flip is vertex 0 is farther than vertex 1.
 	vec3 viewImpPos0, viewImpPos1;
-	if ( viewCylVert[ 0 ].z < viewCylVert[ 1 ].z )
+	if ( gsOut.viewVertices[ 0 ].z < gsOut.viewVertices[ 1 ].z )
 	{
-		viewImpPos0 = viewCylVert[ 1 ];
-		viewImpPos1 = viewCylVert[ 0 ];
+		viewImpPos0 = gsOut.viewVertices[ 1 ];
+		viewImpPos1 = gsOut.viewVertices[ 0 ];
 	}
 	else
 	{
-		viewImpPos0 = viewCylVert[ 0 ];
-		viewImpPos1 = viewCylVert[ 1 ];
+		viewImpPos0 = gsOut.viewVertices[ 0 ];
+		viewImpPos1 = gsOut.viewVertices[ 1 ];
 	}
 
 	// Compute normalized view vector to cylinder center.

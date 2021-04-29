@@ -19,15 +19,13 @@ namespace VTX
 				VTX_VIEW
 
 			  public:
-				void render( const Object3D::Camera & p_camera ) override;
+				void render( const Object3D::Camera & p_camera ) const override;
 
 			  protected:
 				Renderer::GL::Program * const _createProgram() override;
 				void						  _init() override;
 
 			  private:
-				GLint _uCamPositionLoc = GL_INVALID_INDEX;
-
 				explicit Ribbon( Model::SecondaryStructure * const p_model ) : BaseView3D( p_model ) {}
 			};
 		} // namespace D3

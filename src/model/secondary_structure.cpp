@@ -153,11 +153,11 @@ namespace VTX
 				if ( caPositions.size() >= 4 )
 				{
 					// Repeat last control point.
-					caPositions.emplace_back( caPositions.back() );
-					caPositions.back().w++; // Don't forget to increase direction flag.
-					caODirections.emplace_back( caODirections.back() );
-					ssTypes.emplace_back( ssTypes.back() );
-					colors.emplace_back( colors.back() );
+					// caPositions.emplace_back( caPositions.back() );
+					// caPositions.back().w++; // Don't forget to increase direction flag.
+					// caODirections.emplace_back( caODirections.back() );
+					// ssTypes.emplace_back( ssTypes.back() );
+					// colors.emplace_back( colors.back() );
 
 					const size_t nbControlPoints = caPositions.size();
 
@@ -251,7 +251,7 @@ namespace VTX
 
 		void SecondaryStructure::_computeAABB() const
 		{
-			/// TODO peut-�tre ?
+			/// TODO
 		}
 
 		void SecondaryStructure::_instantiate3DViews()

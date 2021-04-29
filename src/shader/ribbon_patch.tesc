@@ -17,7 +17,7 @@ in VsOut
 	flat uint ssType;
 	flat uint selection;
 }
-vsOut[];
+vsIn[];
 
 out TcOut
 {
@@ -76,19 +76,20 @@ float computeTessellationFactor( vec3 p_point )
 void main()
 {
 	// Transmit data.
-	tcOut[ gl_InvocationID ].position  = vsOut[ gl_InvocationID ].position.xyz;
-	tcOut[ gl_InvocationID ].direction = vsOut[ gl_InvocationID ].direction;
-	tcOut[ gl_InvocationID ].ssType	   = vsOut[ gl_InvocationID ].ssType;
-	tcOut[ gl_InvocationID ].color	   = vsOut[ gl_InvocationID ].color;
-	tcOut[ gl_InvocationID ].selection = vsOut[ gl_InvocationID ].selection;
+	tcOut[ gl_InvocationID ].position  = vsIn[ gl_InvocationID ].position.xyz;
+	tcOut[ gl_InvocationID ].direction = vsIn[ gl_InvocationID ].direction;
+	tcOut[ gl_InvocationID ].ssType	   = vsIn[ gl_InvocationID ].ssType;
+	tcOut[ gl_InvocationID ].color	   = vsIn[ gl_InvocationID ].color;
+	tcOut[ gl_InvocationID ].selection = vsIn[ gl_InvocationID ].selection;
 
 	// Normals are known only for the two center controls points.
 	if ( gl_InvocationID == 1 || gl_InvocationID == 2 )
 	{
 		// dir = 1 in backbones direction and -1 in the reverse direction.
-		const float dir = vsOut[ gl_InvocationID + 1 ].position.w - vsOut[ gl_InvocationID ].position.w;
+		const float dir = vsIn[ gl_InvocationID + 1 ].position.w - vsIn[ gl_InvocationID ].position.w;
 		tcOut[ gl_InvocationID ].direction *= dir;
-		const vec3 v02 = normalize( ( vsOut[ gl_InvocationID + 1 ].position.xyz - vsOut[ gl_InvocationID - 1 ].position.xyz ));
+		const vec3 v02
+			= normalize( ( vsIn[ gl_InvocationID + 1 ].position.xyz - vsIn[ gl_InvocationID - 1 ].position.xyz ) );
 
 		tcOut[ gl_InvocationID ].normal = normalize( cross( v02, tcOut[ gl_InvocationID ].direction ) );
 	}
@@ -118,18 +119,18 @@ void main()
 		*/
 
 		// Patch is defined for the two center controls points.
-		const vec3 c1 = vsOut[ 1 ].position.xyz;
-		const vec3 c2 = vsOut[ 2 ].position.xyz;
+		const vec3 c1 = vsIn[ 1 ].position.xyz;
+		const vec3 c2 = vsIn[ 2 ].position.xyz;
 
 		// Adaptive tessellation factors wrt the distance of the central control points and the camera.
 		const float tessFactorC1 = computeTessellationFactor( c1 );
 		const float tessFactorC2 = computeTessellationFactor( c2 );
 
 		// Tessellation limits wrt secondary structure type.
-		const float tessMinC1 = MIN_TESS_SS[ vsOut[ 1 ].ssType ];
-		const float tessMaxC1 = MAX_TESS_SS[ vsOut[ 1 ].ssType ];
-		const float tessMinC2 = MIN_TESS_SS[ vsOut[ 2 ].ssType ];
-		const float tessMaxC2 = MAX_TESS_SS[ vsOut[ 2 ].ssType ];
+		const float tessMinC1 = MIN_TESS_SS[ vsIn[ 1 ].ssType ];
+		const float tessMaxC1 = MAX_TESS_SS[ vsIn[ 1 ].ssType ];
+		const float tessMinC2 = MIN_TESS_SS[ vsIn[ 2 ].ssType ];
+		const float tessMaxC2 = MAX_TESS_SS[ vsIn[ 2 ].ssType ];
 
 		const float vTessC1			  = tessFactorC1 * ( tessMaxC1 - tessMinC1 ) + tessMinC1;
 		const float vTessC2			  = tessFactorC2 * ( tessMaxC2 - tessMinC2 ) + tessMinC2;

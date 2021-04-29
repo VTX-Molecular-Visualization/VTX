@@ -23,6 +23,7 @@ namespace VTX
 {
 	namespace Renderer
 	{
+		/// TODO: Use GL Wrapper !
 		class RayTracer::CameraRayTracing
 		{
 		  public:
@@ -153,11 +154,11 @@ namespace VTX
 
 		const uint RayTracer::TILE_SIZE = 32;
 
-		void RayTracer::init( const uint p_width, const uint p_height, const GLuint p_fbo )
+		void RayTracer::init( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId )
 		{
 			VTX_INFO( "Initializing ray tracer..." );
 
-			resize( p_width, p_height, p_fbo );
+			resize( p_width, p_height, p_outputFramebufferId );
 
 			_integrator = new RayCastIntegrator;
 			//_integrator	  = new DirectLightingIntegrator;
@@ -166,12 +167,12 @@ namespace VTX
 			VTX_INFO( "Init Scene" );
 			_initScene( VTXApp::get().getScene() );
 
-			gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-			gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-			gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-			gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-			gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-			gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
+			_gl->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
+			_gl->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+			_gl->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+			_gl->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+			_gl->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+			_gl->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
 
 			VTX_INFO( "Ray tracer initialized" );
 		}
@@ -220,10 +221,10 @@ namespace VTX
 				t.join();
 			}
 
-			gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, _width, _height );
+			_gl->glTextureStorage2D( _texture, 1, GL_RGBA16F, _width, _height );
 
-			gl()->glBindTexture( GL_TEXTURE_2D, _texture );
-			gl()->glTextureSubImage2D( _texture, 0, 0, 0, _width, _height, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
+			_gl->glBindTexture( GL_TEXTURE_2D, _texture );
+			_gl->glTextureSubImage2D( _texture, 0, 0, 0, _width, _height, GL_RGB, GL_UNSIGNED_BYTE, _pixels.data() );
 
 			chrono.stop();
 			//_progressBar.stop();
@@ -235,9 +236,9 @@ namespace VTX
 
 		void RayTracer::setShading() {}
 
-		void RayTracer::resize( const uint p_width, const uint p_height, const GLuint p_fbo )
+		void RayTracer::resize( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId )
 		{
-			BaseRenderer::resize( p_width, p_height, p_fbo );
+			BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
 
 			_pixels.resize( _width * _height * 3 );
 		}
