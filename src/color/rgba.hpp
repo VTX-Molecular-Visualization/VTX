@@ -35,6 +35,8 @@ namespace VTX
 			inline float getA() const { return _a; }
 			inline void	 setA( const float p_a ) { _a = p_a; }
 
+			inline QColor toQColor() const override { return QColor( _r * 255, _g * 255, _b * 255, 255 ); }
+
 		  protected:
 			float _a = 0.f;
 		};

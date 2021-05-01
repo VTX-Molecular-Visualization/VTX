@@ -187,7 +187,7 @@ namespace VTX
 
 			inline const float brightness() const { return ( _r * 0.299f ) + ( _g * 0.587f ) + ( _b * 0.114f ); }
 
-			inline QColor toQColor() { return QColor( _r * 255, _g * 255, _b * 255, 255 ); }
+			inline QColor toQColor() const { return QColor( _r * 255, _g * 255, _b * 255 ); }
 
 			friend std::ostream & operator<<( std::ostream & p_os, const Rgb & p_c );
 
