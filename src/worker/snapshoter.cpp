@@ -30,25 +30,42 @@ namespace VTX
 			// Force AA and disable coutner.
 			UI::Widget::Render::OpenGLWidget & glWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
 			glWidget.setShowCounter( false );
+			/*
 			const bool activeAA = VTX_SETTING().activeAA;
 			if ( activeAA == false )
 			{
 				VTX_ACTION( new Action::Setting::ActiveAA( true ) );
 			}
+			*/
 			glWidget.update();
 
 			// Grab image.
 			QImage render = glWidget.grabFramebuffer();
+
+			for ( int i = 0; i < render.width(); ++i )
+			{
+				for ( int j = 0; j < render.height(); ++j )
+				{
+					int	   r, g, b, a;
+					QColor qColor = render.pixelColor( i, j );
+					qColor.getRgb( &r, &g, &b, &a );
+
+					VTX_LOG_FILE( "R:" + std::to_string( r ) + " G:" + std::to_string( g ) + " B:" + std::to_string( b )
+								  + " A:" + std::to_string( a ) );
+				}
+			}
 
 			// Create a new one.
 			// QImage image( render.size(), QImage::Format_ARGB32 );
 
 			// Restore values.
 			glWidget.setShowCounter( true );
+			/*
 			if ( activeAA == false )
 			{
 				VTX_ACTION( new Action::Setting::ActiveAA( false ) );
 			}
+			*/
 			glWidget.update();
 
 			// Add watermark.
@@ -77,7 +94,7 @@ namespace VTX
 			float ratio			= desiredHeight / (float)watermarkSize.height();
 			watermarkSize.setHeight( desiredHeight );
 			watermarkSize.setWidth( watermarkSize.width() * ratio );
-			QImage watermarkImg( watermarkSize, QImage::Format_ARGB32 );
+			QImage watermarkImg( watermarkSize, QImage::Format_RGBA64_Premultiplied );
 
 			// watermarkSvg.setAspectRatioMode( Qt::AspectRatioMode::KeepAspectRatioByExpanding );
 			QPainter watermarkPainter = QPainter( &watermarkImg );

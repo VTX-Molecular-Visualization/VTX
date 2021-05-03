@@ -37,7 +37,8 @@ namespace VTX::Renderer::GL::Pass
 
 	void Shading::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
-		_fbo.bind();
+		//_fbo.bind();
+		p_renderer.getOutputFramebuffer().bind();
 
 		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
 		p_renderer.getPassGeometric().getColorsTexture().bindToUnit( 1 );
@@ -50,7 +51,8 @@ namespace VTX::Renderer::GL::Pass
 		{
 			const Color::Rgb & bgColor = VTX_SETTING().backgroundColor;
 			/// TODO: use a value_ptr ?
-			_currentShading->setVec3f( "uBackgroundColor", bgColor.getR(), bgColor.getG(), bgColor.getB() );
+			_currentShading->setVec4f(
+				"uBackgroundColor", bgColor.getR(), bgColor.getG(), bgColor.getB(), VTX_SETTING().backgroundOpacity );
 			_currentShading->setFloat( "uFogNear", VTX_SETTING().fogNear );
 			_currentShading->setFloat( "uFogFar", VTX_SETTING().fogFar );
 			_currentShading->setFloat( "uFogDensity", VTX_SETTING().activeFog ? VTX_SETTING().fogDensity : 0.f );

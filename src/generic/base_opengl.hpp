@@ -26,6 +26,12 @@ namespace VTX
 			inline void disableDepthClamp() const { _gl->glDisable( GL_DEPTH_CLAMP ); }
 			inline void enableDepthTest() const { _gl->glEnable( GL_DEPTH_TEST ); }
 			inline void disableDepthTest() const { _gl->glDisable( GL_DEPTH_TEST ); }
+			inline void enableBlend() const
+			{
+				_gl->glEnable( GL_BLEND );
+				_gl->glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+			}
+			inline void disableBlend() const { _gl->glDisable( GL_BLEND ); }
 
 		  protected:
 			OpenGLFunctions * _gl = nullptr;

@@ -43,6 +43,7 @@ namespace VTX
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT		   = true;
 	const bool					  Setting::FORCE_RENDERER_DEFAULT		   = false;
 	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT		   = Color::Rgb::BLACK;
+	const float					  Setting::BACKGROUND_OPACITY_DEFAULT	   = 0.f;
 	const int					  Setting::REPRESENTATION_DEFAULT_INDEX	   = 0;
 	const Generic::REPRESENTATION Setting::DEFAULT_REPRESENTATION_TYPE	   = Generic::REPRESENTATION::STICK;
 	const std::string			  Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
@@ -83,7 +84,7 @@ namespace VTX
 	const float				Setting::FOG_FAR_MAX			   = 1000.f;
 	const float				Setting::FOG_DENSITY_DEFAULT	   = 0.8f;
 	const Color::Rgb		Setting::FOG_COLOR_DEFAULT		   = Color::Rgb::WHITE;
-	const bool				Setting::ACTIVE_AA_DEFAULT		   = true;
+	const bool				Setting::ACTIVE_AA_DEFAULT		   = false;
 	const Color::Rgb		Setting::LIGHT_COLOR_DEFAULT	   = Color::Rgb::WHITE;
 
 	// Camera.
