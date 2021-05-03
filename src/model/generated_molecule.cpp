@@ -569,7 +569,7 @@ namespace VTX::Model
 		const uint	   previousFirstResidueIndex = chain.getIndexFirstResidue();
 		const uint	   indexFirstResidue		 = getResidueCount();
 
-		getChains().emplace_back( &chain );
+		_addChain( &chain );
 
 		// Check contiguous atom ranges
 		uint firstResidueIndex = previousFirstResidueIndex;

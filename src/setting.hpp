@@ -37,6 +37,8 @@ namespace VTX
 		// UI.
 		static const std::string ORGANIZATION_NAME;
 		static const std::string PROJECT_NAME;
+		static const std::string LAYOUT_SETTINGS_FOLDER;
+		static const std::string LAYOUT_SETTINGS_FILENAME;
 
 		static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
 		Style::SYMBOL_DISPLAY_MODE				symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;

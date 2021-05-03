@@ -104,7 +104,6 @@ namespace VTX::View::UI::Widget
 
 		Model::ID _getModelIDFromItem( const QTreeWidgetItem & p_item ) const;
 		bool	  _getItemExpandState( const QTreeWidgetItem & p_item ) const;
-		int		  _getMinimumHeight() const;
 	};
 
 } // namespace VTX::View::UI::Widget

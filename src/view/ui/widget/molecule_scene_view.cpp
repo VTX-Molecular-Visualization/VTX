@@ -213,35 +213,6 @@ namespace VTX::View::UI::Widget
 		SceneItemWidget::_onItemCollapsed( p_item );
 	}
 
-	int MoleculeSceneView::_getMinimumHeight() const
-	{
-		int nbItemDisplayed = 1;
-
-		QModelIndex ptr		   = indexFromItem( topLevelItem( 0 ) );
-		uint		childCount = 0;
-		while ( ptr.isValid() && nbItemDisplayed < 4 )
-		{
-			const QModelIndex & child = ptr.model()->index( 0, 0, ptr );
-			if ( isExpanded( ptr ) && child.isValid() )
-			{
-				ptr = child;
-				nbItemDisplayed++;
-				childCount = 0;
-			}
-			else
-			{
-				childCount++;
-
-				ptr = ptr.model()->index( childCount, 0, ptr.parent() );
-
-				if ( ptr.isValid() )
-					nbItemDisplayed++;
-			}
-		}
-
-		return nbItemDisplayed > 3 ? 0 : ( rowHeight( model()->index( 0, 0 ) ) * nbItemDisplayed );
-	}
-
 	void MoleculeSceneView::_onCustomContextMenuCalled( const QPoint & p_clicPos )
 	{
 		VTX::UI::ContextualMenu::Menu menuType	   = VTX::UI::ContextualMenu::Menu::COUNT;

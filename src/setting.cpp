@@ -11,8 +11,10 @@ namespace VTX
 {
 	// UI.
 
-	const std::string Setting::ORGANIZATION_NAME = "CNAM";
-	const std::string Setting::PROJECT_NAME		 = "VTX";
+	const std::string Setting::ORGANIZATION_NAME		= "CNAM_GBCM";
+	const std::string Setting::PROJECT_NAME				= "VTX";
+	const std::string Setting::LAYOUT_SETTINGS_FOLDER	= PROJECT_NAME;
+	const std::string Setting::LAYOUT_SETTINGS_FILENAME = "Settings";
 
 	const Style::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT = Style::SYMBOL_DISPLAY_MODE::SHORT;
 	const int						 Setting::WINDOW_WIDTH_DEFAULT		  = 1280;

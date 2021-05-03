@@ -2,7 +2,9 @@
 #include "tool/logger.hpp"
 #include "ui/mime_type.hpp"
 #include "vtx_app.hpp"
+#include <QAbstractItemModel>
 #include <QDrag>
+#include <stack>
 
 namespace VTX::UI::Widget::Scene
 {
@@ -77,27 +79,43 @@ namespace VTX::UI::Widget::Scene
 	}
 	int SceneItemWidget::_getMinimumHeight() const
 	{
-		int nbItemDisplayed = 1;
+		int nbItemDisplayed = 0;
 
 		QModelIndex ptr		   = indexFromItem( topLevelItem( 0 ) );
 		uint		childCount = 0;
-		while ( ptr.isValid() && nbItemDisplayed < 4 )
+
+		std::stack<std::pair<QModelIndex, int>> stack = std::stack<std::pair<QModelIndex, int>>();
+		stack.push( std::pair<QModelIndex, int>( ptr, 0 ) );
+
+		while ( stack.size() > 0 && nbItemDisplayed < 4 )
 		{
-			const QModelIndex & child = ptr.model()->index( 0, 0, ptr );
-			if ( isExpanded( ptr ) && child.isValid() )
+			if ( !ptr.isValid() )
 			{
-				ptr = child;
+				stack.pop();
+
+				if ( stack.size() > 1 )
+				{
+					std::pair<QModelIndex, int> pair = stack.top();
+					ptr								 = pair.first.model()->index( pair.second, 0, pair.first.parent() );
+				}
+			}
+			else if ( itemFromIndex( ptr )->isHidden() )
+			{
+				childCount++;
+				ptr = ptr.model()->index( childCount, 0, ptr.parent() );
+			}
+			else if ( isExpanded( ptr ) )
+			{
 				nbItemDisplayed++;
+				stack.push( std::pair<QModelIndex, int>( ptr, childCount ) );
+				ptr		   = ptr.model()->index( 0, 0, ptr );
 				childCount = 0;
 			}
 			else
 			{
+				nbItemDisplayed++;
 				childCount++;
-
 				ptr = ptr.model()->index( childCount, 0, ptr.parent() );
-
-				if ( ptr.isValid() )
-					nbItemDisplayed++;
 			}
 		}
 

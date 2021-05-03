@@ -265,8 +265,8 @@ namespace VTX::UI
 	{
 		const QSettings settings( QSettings::IniFormat,
 								  QSettings::Scope::UserScope,
-								  QString::fromStdString( Setting::ORGANIZATION_NAME ),
-								  QString::fromStdString( Setting::PROJECT_NAME ) );
+								  QString::fromStdString( Setting::LAYOUT_SETTINGS_FOLDER ),
+								  QString::fromStdString( Setting::LAYOUT_SETTINGS_FILENAME ) );
 		return settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 	}
 
@@ -274,8 +274,8 @@ namespace VTX::UI
 	{
 		const QSettings settings( QSettings::IniFormat,
 								  QSettings::Scope::UserScope,
-								  QString::fromStdString( Setting::ORGANIZATION_NAME ),
-								  QString::fromStdString( Setting::PROJECT_NAME ) );
+								  QString::fromStdString( Setting::LAYOUT_SETTINGS_FOLDER ),
+								  QString::fromStdString( Setting::LAYOUT_SETTINGS_FILENAME ) );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 	}
@@ -283,8 +283,8 @@ namespace VTX::UI
 	{
 		QSettings settings( QSettings::IniFormat,
 							QSettings::Scope::UserScope,
-							QString::fromStdString( Setting::ORGANIZATION_NAME ),
-							QString::fromStdString( Setting::PROJECT_NAME ) );
+							QString::fromStdString( Setting::LAYOUT_SETTINGS_FOLDER ),
+							QString::fromStdString( Setting::LAYOUT_SETTINGS_FILENAME ) );
 		settings.setValue( "Geometry", saveGeometry() );
 		settings.setValue( "WindowState", saveState() );
 	}
@@ -292,8 +292,8 @@ namespace VTX::UI
 	{
 		QSettings settings( QSettings::IniFormat,
 							QSettings::Scope::UserScope,
-							QString::fromStdString( Setting::ORGANIZATION_NAME ),
-							QString::fromStdString( Setting::PROJECT_NAME ) );
+							QString::fromStdString( Setting::LAYOUT_SETTINGS_FOLDER ),
+							QString::fromStdString( Setting::LAYOUT_SETTINGS_FILENAME ) );
 		settings.clear();
 	}
 
