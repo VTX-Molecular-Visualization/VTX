@@ -3,7 +3,6 @@
 #include "action/setting.hpp"
 #include "generic/base_colorable.hpp"
 #include "io/reader/lib_chemfiles.hpp"
-#include "io/writer/writer_chemfiles.hpp"
 #include "model/chain.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -51,45 +50,10 @@ namespace VTX
 			std::string				buffer		   = std::string();
 			chemfileWriter.writeBuffer( buffer, p_molecule );
 
-			nlohmann::json jsonArrayRepresentations = nlohmann::json::array();
-			nlohmann::json jsonRepresentation		= { { "PATH", serialize( Vec2i( -1, -1 ) ) },
-													{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
-			jsonArrayRepresentations.emplace_back( jsonRepresentation );
-
-			for ( const Model::Chain * const chain : p_molecule.getChains() )
-			{
-				if ( chain == nullptr )
-					continue;
-
-				if ( chain->hasCustomRepresentation() )
-				{
-					jsonRepresentation = { { "PATH", serialize( Vec2i( chain->getIndex(), -1 ) ) },
-										   { "REPRESENTATION", serialize( *chain->getRepresentation() ) } };
-
-					jsonArrayRepresentations.emplace_back( jsonRepresentation );
-				}
-
-				for ( uint residueIndex = 0; residueIndex < chain->getResidueCount(); residueIndex++ )
-				{
-					const Model::Residue * const residue
-						= p_molecule.getResidue( chain->getIndexFirstResidue() + residueIndex );
-
-					if ( residue == nullptr )
-						continue;
-
-					if ( residue->hasCustomRepresentation() )
-					{
-						jsonRepresentation = { { "PATH", serialize( Vec2i( chain->getIndex(), int( residueIndex ) ) ) },
-											   { "REPRESENTATION", serialize( *residue->getRepresentation() ) } };
-
-						jsonArrayRepresentations.emplace_back( jsonRepresentation );
-					}
-				}
-			}
-
 			return { { "TRANSFORM", serialize( p_molecule.getTransform() ) },
 					 { "DATA", buffer },
-					 { "REPRESENTATIONS", jsonArrayRepresentations },
+					 { "REPRESENTATIONS", _serializeMoleculeRepresentations( p_molecule, chemfileWriter ) },
+					 { "VISIBILITIES", _serializeMoleculeVisibilities( p_molecule, chemfileWriter ) },
 					 { "NAME", p_molecule.getName() },
 					 { "PDB_ID", p_molecule.getPdbIdCode() } };
 		}
@@ -266,46 +230,8 @@ namespace VTX
 			IO::Reader::LibChemfiles reader = IO::Reader::LibChemfiles( nullptr );
 			reader.readBuffer( buffer, "mol.pdb", p_molecule );
 
-			for ( const nlohmann::json & jsonRepresentations : p_json.at( "REPRESENTATIONS" ) )
-			{
-				Vec2i path;
-				deserialize( jsonRepresentations.at( "PATH" ), path );
-
-				const bool chainValid	= path.x == -1 || uint( path.x ) < p_molecule.getChainCount();
-				const bool residueValid = chainValid
-										  && ( path.y == -1
-											   || ( ( p_molecule.getChain( path.x )->getIndexFirstResidue() + path.y )
-													< p_molecule.getResidueCount() ) );
-
-				// Currently prevent app from crash when lodading out of range (because of deletion)
-				if ( !chainValid || !residueValid )
-				{
-					continue;
-				}
-
-				Model::Representation::InstantiatedRepresentation * const representation
-					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>();
-				deserialize( jsonRepresentations.at( "REPRESENTATION" ), *representation );
-
-				if ( path.x == -1 )
-				{
-					Representation::RepresentationManager::get().assignRepresentation(
-						representation, p_molecule, false, false );
-				}
-				else if ( path.y == -1 )
-				{
-					Model::Chain & chain = *p_molecule.getChain( path.x );
-					Representation::RepresentationManager::get().assignRepresentation(
-						representation, chain, false, false );
-				}
-				else
-				{
-					Model::Chain &	 chain	 = *p_molecule.getChain( path.x );
-					Model::Residue & residue = *p_molecule.getResidue( chain.getIndexFirstResidue() + path.y );
-					Representation::RepresentationManager::get().assignRepresentation(
-						representation, residue, false, false );
-				}
-			}
+			_deserializeMoleculeRepresentations( p_json.at( "REPRESENTATIONS" ), p_molecule );
+			_deserializeMoleculeVisibilities( p_json.at( "VISIBILITIES" ), p_molecule );
 
 			p_molecule.setName( p_json.at( "NAME" ).get<std::string>() );
 			p_molecule.setPdbIdCode( p_json.at( "PDB_ID" ).get<std::string>() );
@@ -494,5 +420,164 @@ namespace VTX
 			VTX_ACTION( new Action::Setting::ChangeAutoRotateSpeed( autoRotateSpeed ) );
 		}
 
+		nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,
+																	  const Writer::ChemfilesWriter & p_writer ) const
+		{
+			nlohmann::json jsonArrayRepresentations = nlohmann::json::array();
+			nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", ID::Model::MODEL_MOLECULE },
+													{ "INDEX", 0 },
+													{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
+			jsonArrayRepresentations.emplace_back( jsonRepresentation );
+
+			for ( const Model::Chain * const chain : p_molecule.getChains() )
+			{
+				if ( chain == nullptr )
+					continue;
+
+				const Model::Representation::InstantiatedRepresentation * const chainCustomRep
+					= chain->hasCustomRepresentation() ? chain->getRepresentation() : nullptr;
+
+				for ( uint residueIndex = 0; residueIndex < chain->getResidueCount(); residueIndex++ )
+				{
+					const Model::Residue * const residue
+						= p_molecule.getResidue( chain->getIndexFirstResidue() + residueIndex );
+
+					if ( residue == nullptr )
+						continue;
+
+					if ( residue->hasCustomRepresentation() )
+					{
+						const uint newResidueIndex = p_writer.getNewResidueIndex( *residue );
+						jsonRepresentation		   = { { "TARGET_TYPE", ID::Model::MODEL_RESIDUE },
+											   { "INDEX", newResidueIndex },
+											   { "REPRESENTATION", serialize( *residue->getRepresentation() ) } };
+
+						jsonArrayRepresentations.emplace_back( jsonRepresentation );
+					}
+					else if ( chainCustomRep != nullptr )
+					{
+						const uint newResidueIndex = p_writer.getNewResidueIndex( *residue );
+						jsonRepresentation		   = { { "TARGET_TYPE", ID::Model::MODEL_RESIDUE },
+											   { "INDEX", newResidueIndex },
+											   { "REPRESENTATION", serialize( *chainCustomRep ) } };
+
+						jsonArrayRepresentations.emplace_back( jsonRepresentation );
+					}
+				}
+			}
+
+			return jsonArrayRepresentations;
+		}
+		nlohmann::json Serializer::_serializeMoleculeVisibilities( const Model::Molecule &		   p_molecule,
+																   const Writer::ChemfilesWriter & p_writer ) const
+		{
+			nlohmann::json jsonChainVisibilitiesArray	= nlohmann::json::array();
+			nlohmann::json jsonResidueVisibilitiesArray = nlohmann::json::array();
+			nlohmann::json jsonAtomVisibilitiesArray	= nlohmann::json::array();
+
+			for ( const Model::Chain * const chain : p_molecule.getChains() )
+			{
+				if ( chain == nullptr )
+					continue;
+
+				if ( !chain->isVisible() )
+				{
+					if ( p_writer.isChainMerged( *chain ) )
+					{
+						for ( uint residueIndex = chain->getIndexFirstResidue();
+							  residueIndex <= chain->getIndexLastResidue();
+							  residueIndex++ )
+						{
+							const Model::Residue * const residue = p_molecule.getResidue( residueIndex );
+
+							if ( residue == nullptr )
+								continue;
+
+							jsonResidueVisibilitiesArray.emplace_back( p_writer.getNewResidueIndex( *residue ) );
+						}
+					}
+					else
+					{
+						jsonChainVisibilitiesArray.emplace_back( chain->getIndex() );
+					}
+				}
+			}
+
+			for ( const Model::Residue * const residue : p_molecule.getResidues() )
+			{
+				if ( residue == nullptr )
+					continue;
+
+				if ( !residue->isVisible() )
+					jsonResidueVisibilitiesArray.emplace_back( p_writer.getNewResidueIndex( *residue ) );
+			}
+
+			for ( const Model::Atom * const atom : p_molecule.getAtoms() )
+			{
+				if ( atom == nullptr )
+					continue;
+
+				if ( !atom->isVisible() )
+					jsonAtomVisibilitiesArray.emplace_back( p_writer.getNewAtomIndex( *atom ) );
+			}
+
+			return { { "CHAINS", jsonChainVisibilitiesArray },
+					 { "RESIDUES", jsonResidueVisibilitiesArray },
+					 { "ATOMS", jsonAtomVisibilitiesArray } };
+		}
+
+		void Serializer::_deserializeMoleculeRepresentations( const nlohmann::json & p_json,
+															  Model::Molecule &		 p_molecule ) const
+		{
+			for ( const nlohmann::json & jsonRepresentations : p_json )
+			{
+				const ID::VTX_ID type  = jsonRepresentations.at( "TARGET_TYPE" ).get<ID::VTX_ID>();
+				const uint		 index = jsonRepresentations.at( "INDEX" ).get<uint>();
+
+				const bool dataValid = ( type == ID::Model::MODEL_MOLECULE )
+									   || ( type == ID::Model::MODEL_CHAIN && index < p_molecule.getChainCount() )
+									   || ( type == ID::Model::MODEL_RESIDUE && index < p_molecule.getResidueCount() );
+
+				// Currently prevent app from crash when lodading out of range (because of deletion)
+				if ( !dataValid )
+					continue;
+
+				Model::Representation::InstantiatedRepresentation * const representation
+					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>();
+				deserialize( jsonRepresentations.at( "REPRESENTATION" ), *representation );
+
+				if ( type == ID::Model::MODEL_MOLECULE )
+				{
+					Representation::RepresentationManager::get().assignRepresentation(
+						representation, p_molecule, false, false );
+				}
+				else if ( type == ID::Model::MODEL_CHAIN )
+				{
+					Representation::RepresentationManager::get().assignRepresentation(
+						representation, *p_molecule.getChain( index ), false, false );
+				}
+				else if ( type == ID::Model::MODEL_RESIDUE )
+				{
+					Representation::RepresentationManager::get().assignRepresentation(
+						representation, *p_molecule.getResidue( index ), false, false );
+				}
+			}
+		}
+		void Serializer::_deserializeMoleculeVisibilities( const nlohmann::json & p_json,
+														   Model::Molecule &	  p_molecule ) const
+		{
+			for ( const uint invisibleChainIndex : p_json.at( "CHAINS" ) )
+			{
+				p_molecule.getChain( invisibleChainIndex )->setVisible( false );
+			}
+			for ( const uint invisibleResidueIndex : p_json.at( "RESIDUES" ) )
+			{
+				p_molecule.getResidue( invisibleResidueIndex )->setVisible( false );
+			}
+			for ( const uint invisibleAtomIndex : p_json.at( "ATOMS" ) )
+			{
+				p_molecule.getAtom( invisibleAtomIndex )->setVisible( false );
+			}
+		}
 	} // namespace IO
 } // namespace VTX

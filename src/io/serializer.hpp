@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "io/writer/writer_chemfiles.hpp"
 #include "math/transform.hpp"
 #include "util/math.hpp"
 #include <nlohmann/json.hpp>
@@ -75,6 +76,15 @@ namespace VTX
 			template<typename T, glm::qualifier Q>
 			void deserialize( const nlohmann::json &, glm::qua<T, Q> & ) const;
 			void deserialize( const nlohmann::json &, Setting & ) const;
+
+		  private:
+			nlohmann::json _serializeMoleculeRepresentations( const Model::Molecule &,
+															  const VTX::IO::Writer::ChemfilesWriter & ) const;
+			nlohmann::json _serializeMoleculeVisibilities( const Model::Molecule &,
+														   const VTX::IO::Writer::ChemfilesWriter & ) const;
+
+			void _deserializeMoleculeRepresentations( const nlohmann::json &, Model::Molecule & ) const;
+			void _deserializeMoleculeVisibilities( const nlohmann::json &, Model::Molecule & ) const;
 		};
 
 	} // namespace IO
