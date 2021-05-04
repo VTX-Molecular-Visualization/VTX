@@ -42,21 +42,6 @@ namespace VTX
 			// Grab image.
 			QImage render = glWidget.grabFramebuffer();
 
-			/*
-			for ( int i = 0; i < render.width(); ++i )
-			{
-				for ( int j = 0; j < render.height(); ++j )
-				{
-					int	   r, g, b, a;
-					QColor qColor = render.pixelColor( i, j );
-					qColor.getRgb( &r, &g, &b, &a );
-
-					VTX_LOG_FILE( "R:" + std::to_string( r ) + " G:" + std::to_string( g ) + " B:" + std::to_string( b )
-								  + " A:" + std::to_string( a ) );
-				}
-			}
-			*/
-
 			// Create a new one.
 			// QImage image( render.size(), QImage::Format_ARGB32 );
 
@@ -135,7 +120,7 @@ namespace VTX
 				}
 			}
 
-			if ( VTX_SETTING().backgroundColor.brightness() < 0.5f )
+			if ( VTX_SETTING().backgroundColor.brightness() < 0.5f && VTX_SETTING().backgroundOpacity > 0.5f )
 			{
 				watermarkImg.invertPixels( QImage::InvertMode::InvertRgb );
 			}

@@ -127,8 +127,6 @@ namespace VTX::Renderer::GL
 			_passBlur->render( p_scene, *this );
 		}
 
-		enableBlend();
-
 		_passShading->render( p_scene, *this );
 
 		if ( VTX_SETTING().activeOutline )
@@ -142,8 +140,6 @@ namespace VTX::Renderer::GL
 		{
 			_passFXAA->render( p_scene, *this );
 		}
-
-		disableBlend();
 
 		VTXApp::get().MASK = VTX_SETTING().forceRenderer ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
 	};

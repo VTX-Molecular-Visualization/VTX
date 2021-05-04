@@ -84,7 +84,7 @@ namespace VTX
 	const float				Setting::FOG_FAR_MAX			   = 1000.f;
 	const float				Setting::FOG_DENSITY_DEFAULT	   = 0.8f;
 	const Color::Rgb		Setting::FOG_COLOR_DEFAULT		   = Color::Rgb::WHITE;
-	const bool				Setting::ACTIVE_AA_DEFAULT		   = false;
+	const bool				Setting::ACTIVE_AA_DEFAULT		   = true;
 	const Color::Rgb		Setting::LIGHT_COLOR_DEFAULT	   = Color::Rgb::WHITE;
 
 	// Camera.
