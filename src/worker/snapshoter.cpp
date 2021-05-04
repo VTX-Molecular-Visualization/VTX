@@ -42,6 +42,7 @@ namespace VTX
 			// Grab image.
 			QImage render = glWidget.grabFramebuffer();
 
+			/*
 			for ( int i = 0; i < render.width(); ++i )
 			{
 				for ( int j = 0; j < render.height(); ++j )
@@ -54,6 +55,7 @@ namespace VTX
 								  + " A:" + std::to_string( a ) );
 				}
 			}
+			*/
 
 			// Create a new one.
 			// QImage image( render.size(), QImage::Format_ARGB32 );

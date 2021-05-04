@@ -37,8 +37,7 @@ namespace VTX::Renderer::GL::Pass
 
 	void Shading::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
-		//_fbo.bind();
-		p_renderer.getOutputFramebuffer().bind();
+		_fbo.bind();
 
 		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
 		p_renderer.getPassGeometric().getColorsTexture().bindToUnit( 1 );

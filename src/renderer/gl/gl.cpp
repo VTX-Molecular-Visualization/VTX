@@ -102,7 +102,7 @@ namespace VTX::Renderer::GL
 
 	void GL::renderFrame( const Object3D::Scene & p_scene )
 	{
-		_gl->glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+		//_gl->glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
 		// TODO: do not change each frame
 		/// TODO2: why this?
@@ -131,19 +131,19 @@ namespace VTX::Renderer::GL
 
 		_passShading->render( p_scene, *this );
 
-		disableBlend();
-
 		if ( VTX_SETTING().activeOutline )
 		{
 			_passOutline->render( p_scene, *this );
 		}
 
-		//_passSelection->render( p_scene, *this );
+		_passSelection->render( p_scene, *this );
 
 		if ( VTX_SETTING().activeAA )
 		{
 			_passFXAA->render( p_scene, *this );
 		}
+
+		disableBlend();
 
 		VTXApp::get().MASK = VTX_SETTING().forceRenderer ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
 	};
