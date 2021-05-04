@@ -314,6 +314,22 @@ namespace VTX::Action::Setting
 		const Color::Rgb _color;
 	};
 
+	class ChangeOutlineThickness : public BaseAction
+	{
+	  public:
+		explicit ChangeOutlineThickness( const float p_thickness ) : _thickness( p_thickness ) {}
+
+		virtual void execute() override
+		{
+			VTX_SETTING().outlineThickness = Util::Math::clamp(
+				_thickness, VTX::Setting::OUTLINE_THICKNESS_MIN, VTX::Setting::OUTLINE_THICKNESS_MAX );
+			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		};
+
+	  private:
+		const float _thickness;
+	};
+
 	class ActiveFog : public BaseAction
 	{
 	  public:

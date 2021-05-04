@@ -5,7 +5,8 @@ layout( binding = 1 ) uniform sampler2D linearDepthTexture;
 
 layout( location = 0 ) out vec4 fragColor;
 
-uniform vec3 uLineColor;
+uniform vec3  uLineColor;
+uniform float uThickness;
 
 #define USE_TEXTURE_GATHER
 
@@ -35,7 +36,6 @@ void main()
 	fragColor = edgeDepth > threshold + 0.025 ? vec4( uLineColor, 1.f ) : texture( colorTexture, texCoord );
 
 #else
-
 	const ivec2 texCoord = ivec2( gl_FragCoord.xy );
 
 	// Get current pixel depth.

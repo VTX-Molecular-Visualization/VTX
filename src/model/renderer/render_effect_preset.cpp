@@ -77,7 +77,8 @@ namespace VTX::Model::Renderer
 	}
 	void RenderEffectPreset::setOutlineThickness( const float p_outlineThickness )
 	{
-		_outlineThickness = p_outlineThickness;
+		_outlineThickness
+			= Util::Math::clamp( p_outlineThickness, Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setOutlineColor( const Color::Rgb & p_outlineColor )
@@ -166,6 +167,8 @@ namespace VTX::Model::Renderer
 		// Outline
 		VTX_SETTING().activeOutline = _outline;
 		VTX_SETTING().outlineColor	= _outlineColor;
+		VTX_DEBUG( std::to_string( _outlineThickness ) );
+		VTX_SETTING().outlineThickness = _outlineThickness;
 		rendererGL.activeOutline( _outline );
 
 		// Fog

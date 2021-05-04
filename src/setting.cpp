@@ -43,7 +43,7 @@ namespace VTX
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT		   = true;
 	const bool					  Setting::FORCE_RENDERER_DEFAULT		   = false;
 	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT		   = Color::Rgb::BLACK;
-	const float					  Setting::BACKGROUND_OPACITY_DEFAULT	   = 0.f;
+	const float					  Setting::BACKGROUND_OPACITY_DEFAULT	   = 0.0f;
 	const int					  Setting::REPRESENTATION_DEFAULT_INDEX	   = 0;
 	const Generic::REPRESENTATION Setting::DEFAULT_REPRESENTATION_TYPE	   = Generic::REPRESENTATION::STICK;
 	const std::string			  Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
@@ -71,9 +71,9 @@ namespace VTX
 	const int				Setting::AO_BLUR_SIZE_MIN		   = 1;
 	const int				Setting::AO_BLUR_SIZE_MAX		   = 99;
 	const bool				Setting::ACTIVE_OUTLINE_DEFAULT	   = false;
-	const float				Setting::OUTLINE_THICKNESS_DEFAULT = 1.0f;
-	const float				Setting::OUTLINE_THICKNESS_MIN	   = 0.1f;
-	const float				Setting::OUTLINE_THICKNESS_MAX	   = 10.0f;
+	const float				Setting::OUTLINE_THICKNESS_DEFAULT = 0.1f;
+	const float				Setting::OUTLINE_THICKNESS_MIN	   = 0.00001f;
+	const float				Setting::OUTLINE_THICKNESS_MAX	   = 0.1;
 	const Color::Rgb		Setting::OUTLINE_COLOR_DEFAULT	   = Color::Rgb::WHITE;
 	const bool				Setting::ACTIVE_FOG_DEFAULT		   = false;
 	const float				Setting::FOG_NEAR_DEFAULT		   = 400.f;
