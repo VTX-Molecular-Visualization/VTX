@@ -240,5 +240,5 @@ void main()
 	}
 	// =====================================================================================
 
-	fragColor = vec4( texture( image, aaTexCoord ).xyz, 1.f );
+	fragColor = vec4( texture( image, aaTexCoord ) );
 }
