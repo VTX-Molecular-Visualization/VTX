@@ -533,7 +533,9 @@ namespace VTX
 		void Molecule::render( const Object3D::Camera & p_camera )
 		{
 			BaseModel3D::render( p_camera );
-			_secondaryStructure->render( p_camera );
+
+			if ( _secondaryStructure != nullptr )
+				_secondaryStructure->render( p_camera );
 		}
 
 		bool Molecule::mergeTopology( const Molecule & p_molecule )

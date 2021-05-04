@@ -35,6 +35,10 @@ namespace VTX::Model::Representation
 		_target = p_source._target;
 	}
 
+	InstantiatedRepresentation::InstantiatedRepresentation() : BaseModel( ID::Model::MODEL_INTANTIATED_REPRESENTATION )
+	{
+	}
+
 	InstantiatedRepresentation::InstantiatedRepresentation( const Representation * const p_linkedRepresentation ) :
 		BaseModel( ID::Model::MODEL_INTANTIATED_REPRESENTATION ), _linkedRepresentation( p_linkedRepresentation ),
 		_color( Generic::OverridableParameter<Color::Rgb>( _linkedRepresentation->getColor() ) ),

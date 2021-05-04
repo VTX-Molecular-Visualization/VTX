@@ -13,6 +13,7 @@
 #include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "network/network_manager.hpp"
+#include "setting.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "tool/logger.hpp"
@@ -20,6 +21,7 @@
 #include "vtx_app.hpp"
 #include "worker/loader.hpp"
 #include "worker/saver.hpp"
+#include "worker/scene_loader.hpp"
 #include "worker/snapshoter.hpp"
 #include "worker/worker_manager.hpp"
 
@@ -46,40 +48,78 @@ namespace VTX::Action::Main
 
 		virtual void execute() override
 		{
-			Worker::Loader * loader = nullptr;
-			if ( _paths.empty() == false )
+			bool loadScene = false;
+			for ( const FilePath * const path : _paths )
 			{
-				loader = new Worker::Loader( _paths );
-			}
-			else if ( _buffers.empty() == false )
-			{
-				loader = new Worker::Loader( _buffers );
-			}
-			if ( loader == nullptr )
-			{
-				return;
+				loadScene = loadScene || path->extension() == ".vtx";
 			}
 
-			Worker::Callback * callback = new Worker::Callback(
-				[ loader ]( const uint p_code )
+			if ( loadScene )
+			{
+				if ( _paths.empty() )
+					return;
+
+				Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
+				VTX_WORKER( sceneLoader );
+
+				if ( sceneLoader->getScene() != nullptr )
 				{
-					for ( Model::Molecule * const molecule : loader->getMolecules() )
+					for ( const std::pair<Model::Molecule * const, float> & molecule :
+						  sceneLoader->getScene()->getMolecules() )
 					{
-						molecule->print();
-						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
-						VTXApp::get().getScene().addMolecule( molecule );
+						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule.first ) );
+						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, molecule.first ) );
 					}
-					for ( Model::MeshTriangle * const mesh : loader->getMeshes() )
+				}
+
+				for ( FilePath * const path : _paths )
+				{
+					VTXApp::get().setCurrentPath( *path, true );
+					delete path;
+				}
+			}
+			else
+			{
+				Worker::Loader * loader = nullptr;
+				if ( _paths.empty() == false )
+				{
+					loader = new Worker::Loader( _paths );
+				}
+				else if ( _buffers.empty() == false )
+				{
+					loader = new Worker::Loader( _buffers );
+				}
+				if ( loader == nullptr )
+				{
+					return;
+				}
+
+				Worker::Callback * callback = new Worker::Callback(
+					[ loader ]( const uint p_code )
 					{
-						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
-						VTXApp::get().getScene().addMesh( mesh );
-					}
-				} );
+						for ( Model::Molecule * const molecule : loader->getMolecules() )
+						{
+							molecule->print();
+							VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
+							VTXApp::get().getScene().addMolecule( molecule );
+						}
+						for ( Model::MeshTriangle * const mesh : loader->getMeshes() )
+						{
+							VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
+							VTXApp::get().getScene().addMesh( mesh );
+						}
 
-			VTX_WORKER( loader, callback );
+						for ( std::pair<const FilePath *, bool> pairPathState : loader->getPathsState() )
+						{
+							if ( pairPathState.second )
+								VTX::Setting::enqueueNewLoadingPath( *pairPathState.first );
+						}
 
-			for ( FilePath * const path : _paths )
-				VTXApp::get().setCurrentPath( *path, true );
+						VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
+					} );
+
+				VTX_WORKER( loader, callback );
+			}
 		}
 
 	  private:
@@ -117,7 +157,11 @@ namespace VTX::Action::Main
 
 			Worker::Callback * callback = new Worker::Callback( [ saver ]( const uint p_code ) {} );
 			VTX_WORKER( saver, callback );
-			VTXApp::get().setCurrentPath( *_path, true );
+
+			if ( _path->extension() == ".vtx" )
+				VTXApp::get().setCurrentPath( *_path, true );
+			else
+				VTX::Setting::enqueueNewLoadingPath( *_path );
 		}
 
 	  private:

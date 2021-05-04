@@ -57,6 +57,9 @@ namespace VTX
 
 			void render( const Object3D::Camera & p_camera ) override
 			{
+				if ( _buffer == nullptr )
+					return;
+
 				_buffer->bind();
 				for ( Generic::BaseRenderable * const renderable : _renderables )
 				{

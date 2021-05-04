@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "math/transform.hpp"
 #include "util/math.hpp"
 #include <nlohmann/json.hpp>
 
@@ -23,6 +24,10 @@ namespace VTX
 		class Molecule;
 		class Path;
 		class Viewpoint;
+		namespace Representation
+		{
+			class InstantiatedRepresentation;
+		}
 	} // namespace Model
 
 	namespace Color
@@ -40,9 +45,15 @@ namespace VTX
 			nlohmann::json serialize( const Model::Molecule & ) const;
 			nlohmann::json serialize( const Model::Path & ) const;
 			nlohmann::json serialize( const Model::Viewpoint & ) const;
+			nlohmann::json serialize( const Model::Representation::InstantiatedRepresentation & ) const;
 			nlohmann::json serialize( const Color::Rgb & ) const;
-			template<int L, typename T, glm::qualifier Q>
-			nlohmann::json serialize( const glm::vec<L, T, Q> & ) const;
+			nlohmann::json serialize( const Math::Transform & ) const;
+			template<typename T, glm::qualifier Q>
+			nlohmann::json serialize( const glm::vec<2, T, Q> & ) const;
+			template<typename T, glm::qualifier Q>
+			nlohmann::json serialize( const glm::vec<3, T, Q> & ) const;
+			template<typename T, glm::qualifier Q>
+			nlohmann::json serialize( const glm::vec<4, T, Q> & ) const;
 			template<typename T, glm::qualifier Q>
 			nlohmann::json serialize( const glm::qua<T, Q> & ) const;
 			nlohmann::json serialize( const Setting & ) const;
@@ -52,9 +63,15 @@ namespace VTX
 			void deserialize( const nlohmann::json &, Model::Molecule & ) const;
 			void deserialize( const nlohmann::json &, Model::Path & ) const;
 			void deserialize( const nlohmann::json &, Model::Viewpoint & ) const;
+			void deserialize( const nlohmann::json &, Model::Representation::InstantiatedRepresentation & ) const;
 			void deserialize( const nlohmann::json &, Color::Rgb & ) const;
-			template<int L, typename T, glm::qualifier Q>
-			void deserialize( const nlohmann::json &, glm::vec<L, T, Q> & ) const;
+			void deserialize( const nlohmann::json &, Math::Transform & ) const;
+			template<typename T, glm::qualifier Q>
+			void deserialize( const nlohmann::json &, glm::vec<2, T, Q> & ) const;
+			template<typename T, glm::qualifier Q>
+			void deserialize( const nlohmann::json &, glm::vec<3, T, Q> & ) const;
+			template<typename T, glm::qualifier Q>
+			void deserialize( const nlohmann::json &, glm::vec<4, T, Q> & ) const;
 			template<typename T, glm::qualifier Q>
 			void deserialize( const nlohmann::json &, glm::qua<T, Q> & ) const;
 			void deserialize( const nlohmann::json &, Setting & ) const;

@@ -44,12 +44,15 @@ namespace VTX::Object3D
 		_createDefaultPath();
 	}
 
-	void Scene::addMolecule( MoleculePtr const p_molecule )
+	void Scene::addMolecule( MoleculePtr const p_molecule, const bool p_sendEvent )
 	{
 		_molecules.emplace( p_molecule, 0.f );
 		_aabb.extend( p_molecule->getAABB() );
 		p_molecule->referenceLinkedAABB( &_aabb );
-		VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, p_molecule ) );
+
+		if ( p_sendEvent )
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, p_molecule ) );
+
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	}
 

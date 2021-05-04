@@ -29,20 +29,30 @@ namespace VTX::Representation
 		const bool					 p_recompute,
 		const bool					 p_notify )
 	{
-		removeInstantiatedRepresentation( p_target, false, false );
-
 		InstantiatedRepresentation * const instantiatedRepresentation
 			= MVC::MvcManager::get().instantiateModel<InstantiatedRepresentation>( p_representation );
 
-		p_target.applyRepresentation( instantiatedRepresentation, p_recompute, p_notify );
-
-		if ( _mapRepresentationInstances.find( p_representation ) == _mapRepresentationInstances.end() )
-			_instantiateViewOnRepresentation( p_representation );
-
-		_mapRepresentationInstances[ p_representation ].emplace( instantiatedRepresentation );
+		assignRepresentation( instantiatedRepresentation, p_target, p_recompute, p_notify );
 
 		return instantiatedRepresentation;
 	}
+
+	void RepresentationManager::assignRepresentation( InstantiatedRepresentation * const p_instantiatedRepresentation,
+													  Generic::BaseRepresentable &		 p_target,
+													  const bool						 p_recompute,
+													  const bool						 p_notify )
+	{
+		removeInstantiatedRepresentation( p_target, false, false );
+
+		p_target.applyRepresentation( p_instantiatedRepresentation, p_recompute, p_notify );
+
+		const Representation * const representation = p_instantiatedRepresentation->getLinkedRepresentation();
+
+		if ( _mapRepresentationInstances.find( representation ) == _mapRepresentationInstances.end() )
+			_instantiateViewOnRepresentation( representation );
+
+		_mapRepresentationInstances[ representation ].emplace( p_instantiatedRepresentation );
+	};
 
 	void RepresentationManager::applyRepresentation( Generic::BaseRepresentable &				p_representable,
 													 const InstantiatedRepresentation &			p_source,
