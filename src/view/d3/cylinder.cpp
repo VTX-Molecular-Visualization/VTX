@@ -7,9 +7,9 @@ namespace VTX::View::D3
 		return VTX_PROGRAM_MANAGER().createProgram( "Cylinder", { "cylinder.vert", "cylinder.geom", "cylinder.frag" } );
 	}
 
-	void Cylinder::_init() { _uRadiusLoc = _gl()->glGetUniformLocation( _program->getId(), "u_cylRad" ); }
+	void Cylinder::_init() {}
 
-	void Cylinder::render( const Object3D::Camera & p_camera )
+	void Cylinder::render( const Object3D::Camera & p_camera ) const
 	{
 		BaseView3D::render( p_camera );
 
@@ -17,16 +17,21 @@ namespace VTX::View::D3
 							  VTX::Representation::RepresentationTarget> & representationData :
 			  _model->getMolecule()->getRepresentationData() )
 		{
-			if ( !representationData.first->hasToDrawCylinder() )
-				continue;
-
-			const Model::Representation::CylinderData & cylinderData = representationData.first->getCylinderData();
-			_gl()->glUniform1f( _uRadiusLoc, cylinderData._radius );
-
-			for ( const std::pair<uint, uint> & pair : representationData.second.getBonds() )
+			if ( representationData.first->hasToDrawCylinder() )
 			{
-				_gl()->glDrawElements(
-					GL_LINES, pair.second, GL_UNSIGNED_INT, (void *)( pair.first * sizeof( uint ) ) );
+				const Model::Representation::CylinderData & cylinderData = representationData.first->getCylinderData();
+
+				/// TODO: put a mask
+				_program->setFloat( "u_cylRad", cylinderData._radius );
+
+				for ( const std::pair<uint, uint> & pair : representationData.second.getBonds() )
+				{
+					/// TODO: use glDrawRangeElements?
+					_model->getBuffer()->getVao().drawElement( Renderer::GL::VertexArray::DrawMode::LINES,
+															   pair.second,
+															   Renderer::GL::VertexArray::Type::UNSIGNED_INT,
+															   (void *)( pair.first * sizeof( uint ) ) );
+				}
 			}
 		}
 	}

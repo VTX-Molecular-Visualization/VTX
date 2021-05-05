@@ -70,6 +70,7 @@ namespace VTX::UI::Widget::Render
 		VTX_PROGRAM_MANAGER( _gl );
 		switchRenderer( Setting::MODE_DEFAULT );
 		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT, defaultFramebufferObject() );
+
 		_frameTimer.start();
 	}
 
@@ -78,7 +79,7 @@ namespace VTX::UI::Widget::Render
 		_frameCounter++;
 		if ( _frameTimer.elapsed() >= 1000 )
 		{
-			VTX_STAT().FPS = _frameCounter / ( _frameTimer.elapsed() * 1e-3 );
+			VTX_STAT().FPS = _frameCounter / ( _frameTimer.elapsed() * 1e-3f );
 			_frameCounter  = 0;
 			_frameTimer.restart();
 		}
@@ -86,6 +87,8 @@ namespace VTX::UI::Widget::Render
 		_timer.start();
 
 		getRenderer().renderFrame( VTXApp::get().getScene() );
+
+		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6f;
 
 		if ( _showCounter )
 		{
@@ -95,7 +98,7 @@ namespace VTX::UI::Widget::Render
 			_painter.end();
 		}
 
-		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6;
+		
 	}
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )

@@ -19,7 +19,7 @@ namespace VTX
 				VTX_VIEW
 
 			  public:
-				void render( const Object3D::Camera & p_camera ) override;
+				void render( const Object3D::Camera & p_camera ) const override;
 
 			  protected:
 				Renderer::GL::Program * const _createProgram() override;

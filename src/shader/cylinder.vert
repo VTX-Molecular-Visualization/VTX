@@ -8,6 +8,7 @@
 
 layout( location = ATOM_POSITION ) in vec3 aVertexPosition;
 layout( location = ATOM_COLOR ) in vec3 aVertexColor;
+// TODO: this is not used!
 layout( location = ATOM_RADIUS ) in float aVertexRad;
 layout( location = ATOM_VISIBILITY ) in uint aVertexVis;
 layout( location = ATOM_SELECTION ) in uint aVertexSel;
@@ -15,15 +16,19 @@ layout( location = ATOM_SELECTION ) in uint aVertexSel;
 uniform mat4 u_MVMatrix;
 uniform mat4 u_projMatrix;
 
-flat out vec3			vVertexColor;
-flat out uint vVertexVis;
-flat out uint vVertexSel;
+out VsOut
+{
+	flat vec3 vertexColor;
+	flat uint vertexVisible;
+	flat uint vertexSelected;
+}
+vsOut;
 
 void main()
 {
-	vVertexColor = aVertexColor;
-	vVertexVis	 = aVertexVis;
-	vVertexSel	 = aVertexSel;
+	vsOut.vertexColor	 = aVertexColor;
+	vsOut.vertexVisible	 = aVertexVis;
+	vsOut.vertexSelected = aVertexSel;
 
 	// Vertex position in view space.
 	gl_Position = u_MVMatrix * vec4( aVertexPosition, 1.f );

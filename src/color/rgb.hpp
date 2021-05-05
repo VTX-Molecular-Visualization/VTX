@@ -185,12 +185,9 @@ namespace VTX
 				_b = 1.f - _b;
 			}
 
-			inline const float brightness() const
-			{
-				return ( ( _r * 299.f ) + ( _g * 587.f ) + ( _b * 114.f ) ) / 1000.f;
-			}
+			inline const float brightness() const { return ( _r * 0.299f ) + ( _g * 0.587f ) + ( _b * 0.114f ); }
 
-			inline QColor toQColor() { return QColor( _r * 255, _g * 255, _b * 255, 255 ); }
+			inline QColor toQColor() const { return QColor( _r * 255, _g * 255, _b * 255 ); }
 
 			friend std::ostream & operator<<( std::ostream & p_os, const Rgb & p_c );
 
@@ -211,7 +208,7 @@ namespace VTX
 
 			static inline Rgb randomPastel() { return random() * 0.5f + 0.5f; }
 
-		  private:
+		  protected:
 			float _r = 0.f;
 			float _g = 0.f;
 			float _b = 0.f;

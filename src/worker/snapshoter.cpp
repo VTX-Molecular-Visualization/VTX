@@ -13,6 +13,8 @@
 #include <QSvgRenderer>
 #include <vector>
 
+//#define VTX_DEBUG_WATERMARK
+
 namespace VTX
 {
 	namespace Worker
@@ -38,6 +40,9 @@ namespace VTX
 			// Grab image.
 			QImage render = glWidget.grabFramebuffer();
 
+			// Create a new one.
+			// QImage image( render.size(), QImage::Format_ARGB32 );
+
 			// Restore values.
 			glWidget.setShowCounter( true );
 			if ( activeAA == false )
@@ -49,8 +54,9 @@ namespace VTX
 			// Add watermark.
 			_addWatermark( render );
 
+#ifndef VTX_DEBUG_WATERMARK
 			// Save.
-			if ( render.save( QString( _path.string().c_str() ), "png" ) )
+			if ( render.save( QString( _path.string().c_str() ), "png", 0 ) )
 			{
 				VTX_INFO( "Snapshot taken: " + _path.filename().string() );
 			}
@@ -58,57 +64,71 @@ namespace VTX
 			{
 				VTX_ERROR( "Snapshot failed" );
 			}
+#endif
 		}
 
 		void Snapshoter::_addWatermark( QImage & p_image ) const
 		{
 			QSvgRenderer watermarkSvg( QString( ":/sprite/logo_vect.svg" ) );
 			QSize		 watermarkSize = watermarkSvg.defaultSize();
-			// QSize		 imageSize	   = _image.size();
 
-			// Compute ratio.
-			// watermarkSvg.setAspectRatioMode( Qt::AspectRatioMode::KeepAspectRatioByExpanding );
-
+			// Compute size.
+			uint  desiredHeight = p_image.size().height() / 6;
+			float ratio			= desiredHeight / (float)watermarkSize.height();
+			watermarkSize.setHeight( desiredHeight );
+			watermarkSize.setWidth( watermarkSize.width() * ratio );
 			QImage watermarkImg( watermarkSize, QImage::Format_ARGB32 );
-			// img.fill( 0x00000000 );
+
+			// watermarkSvg.setAspectRatioMode( Qt::AspectRatioMode::KeepAspectRatioByExpanding );
 			QPainter watermarkPainter = QPainter( &watermarkImg );
+
 			watermarkSvg.render( &watermarkPainter );
 
 			// Compute watermark color.
-			// watermarkImg.invertPixels( QImage::InvertRgba );
-			Color::Rgb watermakColor
-				= VTX_SETTING().backgroundColor.brightness() > 0.5f ? Color::Rgb::BLACK : Color::Rgb::WHITE;
-			// watermakColor.oppose();
-
-			QColor qWatermarkColor = watermakColor.toQColor();
-
-			/*
-		   if ( VTX_SETTING().backgroundColor.brightness() < 0.5f )
-		   {
-			   watermarkImg.invertPixels( QImage::InvertRgb );
-		   }
-		   */
+			// Color::Rgb watermakColor
+			//	= VTX_SETTING().backgroundColor.brightness() > 0.5f ? Color::Rgb::BLACK : Color::Rgb::WHITE;
+			// QColor qWatermarkColor = watermakColor.toQColor();
 
 			// Apply the color.
-
 			for ( int i = 0; i < watermarkImg.width(); ++i )
 			{
 				for ( int j = 0; j < watermarkImg.height(); ++j )
 				{
-					qWatermarkColor.setAlpha( watermarkImg.pixelColor( i, j ).alpha() == 255 ? 255 : 0 );
-					// qWatermarkColor.setAlpha( watermarkImg.pixelColor( i, j ).alpha() );
-					watermarkImg.setPixelColor( i, j, qWatermarkColor );
+					int	   r, g, b, a;
+					QColor qColor = watermarkImg.pixelColor( i, j );
+					qColor.getRgb( &r, &g, &b, &a );
+
+					if ( a == 205 && r == 205 && g == 205 && b == 205 )
+					{
+						qColor.setAlpha( 0 );
+					}
+					else
+					{
+						qColor.setAlpha( qColor.alpha() / 2 );
+					}
+
+					watermarkImg.setPixelColor( i, j, qColor );
+
+					// QColor color = watermarkImg.pixelColor( i, j );
+					// VTX_LOG_FILE( "R:" + std::to_string( qColor.red() ) + " G:" + std::to_string( qColor.green() )
+					//			  + " B:" + std::to_string( qColor.blue() )
+					//			  + " A:" + std::to_string( qColor.alpha() ) );
 				}
 			}
-			uint  desiredHeight = p_image.size().height() / 6;
-			float ratio			= (float)desiredHeight / (float)watermarkSize.height();
-			watermarkSize.setHeight( desiredHeight );
-			VTX_DEBUG( std::to_string( ratio ) );
-			watermarkSize.setWidth( watermarkSize.width() * ratio );
 
-			QRect	 rect		  = QRect( QPoint( p_image.size().width() - watermarkSize.width(),
-										   p_image.size().height() - watermarkSize.height() ),
-								   watermarkSize );
+			if ( VTX_SETTING().backgroundColor.brightness() < 0.5f )
+			{
+				watermarkImg.invertPixels( QImage::InvertMode::InvertRgb );
+			}
+
+#ifdef VTX_DEBUG_WATERMARK
+			watermarkImg.save( QString( _path.string().c_str() ), "png", 0 );
+			return;
+#endif
+
+			QRect	 rect		  = QRect( QPoint( p_image.size().width() - watermarkImg.width(),
+										   p_image.size().height() - watermarkImg.height() ),
+								   watermarkImg.size() );
 			QPainter imagePainter = QPainter( &p_image );
 			imagePainter.drawImage( rect, watermarkImg );
 		}
@@ -121,8 +141,8 @@ namespace VTX
 			const uint width  = renderer.getWidth();
 			const uint height = renderer.getHeight();
 
-			Renderer::RayTracer * rt = new Renderer::RayTracer( renderer.gl() );
-			rt->init( width, height, renderer.getOutputFbo() );
+			Renderer::RayTracer * rt = new Renderer::RayTracer( renderer.getGL() );
+			rt->init( width, height, renderer.getOutputFramebuffer().getId() );
 			rt->renderFrame( VTXApp::get().getScene() );
 			const std::vector<uchar> & pixels = rt->getPixels();
 			// stbi_flip_vertically_on_write( true );

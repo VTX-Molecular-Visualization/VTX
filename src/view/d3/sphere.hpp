@@ -18,17 +18,13 @@ namespace VTX
 				VTX_VIEW
 
 			  public:
-				void render( const Object3D::Camera & p_camera ) override;
+				void render( const Object3D::Camera & p_camera ) const override;
 
 			  protected:
 				Renderer::GL::Program * const _createProgram() override;
 				void						  _init() override;
 
 			  private:
-				GLint _uRadiusFixedLoc	 = GL_INVALID_INDEX;
-				GLint _uRadiusAddLoc	 = GL_INVALID_INDEX;
-				GLint _uIsRadiusFixedLoc = GL_INVALID_INDEX;
-
 				explicit Sphere( Model::Molecule * const p_model ) : BaseView3DMolecule( p_model ) {}
 			};
 		} // namespace D3

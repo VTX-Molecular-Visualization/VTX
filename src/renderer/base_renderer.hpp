@@ -6,6 +6,7 @@
 #endif
 
 #include "generic/base_opengl.hpp"
+#include "gl/framebuffer.hpp"
 #include "object3d/scene.hpp"
 #include <vector>
 
@@ -36,18 +37,18 @@ namespace VTX::Renderer
 	class BaseRenderer : public Generic::BaseOpenGL
 	{
 	  public:
-		BaseRenderer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
+		BaseRenderer( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ), _outputFramebuffer( p_gl ) {}
 		virtual ~BaseRenderer() = default;
 
-		inline const uint	getWidth() const { return _width; }
-		inline const uint	getHeight() const { return _height; }
-		inline const GLuint getOutputFbo() const { return _outputFbo; }
+		inline const uint			   getWidth() const { return _width; }
+		inline const uint			   getHeight() const { return _height; }
+		inline const GL::Framebuffer & getOutputFramebuffer() const { return _outputFramebuffer; }
 
-		virtual void resize( const uint p_width, const uint p_height, const GLuint p_fbo )
+		virtual void resize( const uint p_width, const uint p_height, const GLuint p_outputFramebufferId )
 		{
-			_width	   = p_width;
-			_height	   = p_height;
-			_outputFbo = p_fbo;
+			_outputFramebuffer.assign( p_outputFramebufferId );
+			_width	= p_width;
+			_height = p_height;
 		}
 
 		virtual void init( const uint, const uint, const GLuint ) = 0;
@@ -61,9 +62,9 @@ namespace VTX::Renderer
 		virtual void activeAA( const bool ) {}
 
 	  protected:
-		uint   _width	  = 0;
-		uint   _height	  = 0;
-		GLuint _outputFbo = GL_INVALID_INDEX;
+		uint			_width	= 0;
+		uint			_height = 0;
+		GL::Framebuffer _outputFramebuffer;
 	};
 } // namespace VTX::Renderer
 

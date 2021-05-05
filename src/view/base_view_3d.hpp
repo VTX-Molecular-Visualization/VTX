@@ -22,23 +22,19 @@ namespace VTX::View
 		VTX_VIEW
 
 	  public:
-		virtual void render( const Object3D::Camera & p_camera ) override
+		virtual void render( const Object3D::Camera & p_camera ) const override
 		{
 			_program->use();
 
 			// Update camera uniforms.
 			// TO CHECK.
+			/// TODO ! ^^
 			/// if ( VTXApp::get().MASK )
 			//{
 			const Mat4f MVMatrix = p_camera.getViewMatrix() * _model->getTransform().get();
-			_gl()->glUniformMatrix4fv( _uModelViewMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( MVMatrix ) );
-			_gl()->glUniformMatrix4fv(
-				_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( p_camera.getProjectionMatrix() ) );
-			_gl()->glUniformMatrix4fv(
-				_uNormalMatrixLoc,
-				1,
-				GL_FALSE,
-				Util::Math::value_ptr( Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) ) );
+			_program->setMat4f( "u_MVMatrix", MVMatrix );
+			_program->setMat4f( "u_projMatrix", p_camera.getProjectionMatrix() );
+			_program->setMat4f( "u_normalMatrix", Util::Math::transpose( Util::Math::inverse( MVMatrix ) ) );
 			//}
 		}
 
@@ -48,25 +44,16 @@ namespace VTX::View
 			_program = _createProgram();
 			assert( _program != nullptr );
 
-			// Create camera uniforms.
-			_uModelViewMatrixLoc = _gl()->glGetUniformLocation( _program->getId(), "u_MVMatrix" );
-			_uProjMatrixLoc		 = _gl()->glGetUniformLocation( _program->getId(), "u_projMatrix" );
-			_uNormalMatrixLoc	 = _gl()->glGetUniformLocation( _program->getId(), "u_normalMatrix" );
-
 			_init();
 		}
 
 	  protected:
 		Renderer::GL::Program * _program = nullptr;
 
-		GLint _uModelViewMatrixLoc = GL_INVALID_INDEX;
-		GLint _uProjMatrixLoc	   = GL_INVALID_INDEX;
-		GLint _uNormalMatrixLoc	   = GL_INVALID_INDEX;
-
 		explicit BaseView3D( T * const p_model ) : BaseView( p_model ) {}
 		virtual ~BaseView3D() = default;
 
-		inline OpenGLFunctions * const _gl() { return _model->getBuffer()->gl(); }
+		inline OpenGLFunctions * const _gl() const { return _model->getBuffer()->getGL(); }
 
 		virtual Renderer::GL::Program * const _createProgram() = 0;
 		virtual void						  _init() {}

@@ -74,10 +74,10 @@ namespace VTX
 						vertex.y	   = mesh->mVertices[ v ].y;
 						vertex.z	   = mesh->mVertices[ v ].z;
 
-						Vec3f & normale = p_mesh.getNormal( currentVertex );
-						normale.x		= mesh->mNormals[ v ].x;
-						normale.y		= mesh->mNormals[ v ].y;
-						normale.z		= mesh->mNormals[ v ].z;
+						Vec3f & normal = p_mesh.getNormal( currentVertex );
+						normal.x	   = mesh->mNormals[ v ].x;
+						normal.y	   = mesh->mNormals[ v ].y;
+						normal.z	   = mesh->mNormals[ v ].z;
 
 						// TODO: read mtl if exists !
 						Color::Rgb & color = p_mesh.getColor( currentVertex );

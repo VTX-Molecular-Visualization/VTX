@@ -1,9 +1,9 @@
+#include "render_effect_preset_library_view.hpp"
 #include "action/action_manager.hpp"
 #include "action/renderer.hpp"
 #include "event/event_manager.hpp"
 #include "id.hpp"
 #include "model/renderer/render_effect_preset.hpp"
-#include "render_effect_preset_library_view.hpp"
 #include "render_effect_preset_view.hpp"
 #include "setting.hpp"
 #include "ui/dialog.hpp"
@@ -124,7 +124,7 @@ namespace VTX::View::UI::Widget::Renderer
 			this,
 			new Action::Renderer::DeletePresetInLibrary( _presetList->currentIndex() ),
 			"Confirm",
-			"Are you sure to delete thie preset ?" );
+			"Are you sure to delete this preset ?" );
 	}
 
 	void RenderEffectPresetLibraryView::_refreshPresetDisplayed( const bool p_updateRenderer )

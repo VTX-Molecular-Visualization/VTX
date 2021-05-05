@@ -8,33 +8,20 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	SSAO::~SSAO()
-	{
-		gl()->glDeleteFramebuffers( 1, &_fbo );
-		gl()->glDeleteTextures( 1, &_texture );
-		gl()->glDeleteTextures( 1, &_noiseTexture );
-	}
-
 	void SSAO::init( const uint p_width, const uint p_height, const GL & )
 	{
-		gl()->glCreateFramebuffers( 1, &_fbo );
+		_texture.create( p_width,
+						 p_height,
+						 Texture2D::InternalFormat::R8,
+						 Texture2D::Wrapping::CLAMP_TO_EDGE,
+						 Texture2D::Wrapping::CLAMP_TO_EDGE,
+						 Texture2D::Filter::NEAREST,
+						 Texture2D::Filter::NEAREST );
 
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _texture, 1, GL_R8, p_width, p_height );
-
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
+		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { "shading/ssao.frag" } );
-
-		_uProjMatrixLoc	 = gl()->glGetUniformLocation( _program->getId(), "uProjMatrix" );
-		_uAoKernelLoc	 = gl()->glGetUniformLocation( _program->getId(), "uAoKernel" );
-		_uAoIntensityLoc = gl()->glGetUniformLocation( _program->getId(), "uAoIntensity" );
-		_uKernelSizeLoc	 = gl()->glGetUniformLocation( _program->getId(), "uKernelSize" );
-		_uNoiseSizeLoc	 = gl()->glGetUniformLocation( _program->getId(), "uNoiseSize" );
 
 		// generate random ao kernel
 		std::vector<Vec3f> aoKernel( _kernelSize );
@@ -64,61 +51,50 @@ namespace VTX::Renderer::GL::Pass
 			noise[ i ] = Util::Math::normalize( noise[ i ] );
 		}
 
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_noiseTexture );
-		gl()->glTextureParameteri( _noiseTexture, GL_TEXTURE_WRAP_S, GL_REPEAT );
-		gl()->glTextureParameteri( _noiseTexture, GL_TEXTURE_WRAP_T, GL_REPEAT );
-		gl()->glTextureParameteri( _noiseTexture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _noiseTexture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _noiseTexture, 1, GL_RGB16F, _noiseTextureSize, _noiseTextureSize );
-		gl()->glTextureSubImage2D(
-			_noiseTexture, 0, 0, 0, _noiseTextureSize, _noiseTextureSize, GL_RGB, GL_FLOAT, noise.data() );
+		_noiseTexture.create( _noiseTextureSize,
+							  _noiseTextureSize,
+							  Texture2D::InternalFormat::RGB16F,
+							  Texture2D::Wrapping::REPEAT,
+							  Texture2D::Wrapping::REPEAT,
+							  Texture2D::Filter::NEAREST,
+							  Texture2D::Filter::NEAREST );
+
+		_noiseTexture.fill( noise.data() );
 
 		_program->use();
-		gl()->glUniform3fv( _uAoKernelLoc, _kernelSize, (const GLfloat *)aoKernel.data() );
-		gl()->glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
-		gl()->glUniform1i( _uKernelSizeLoc, _kernelSize );
-		gl()->glUniform1f( _uNoiseSizeLoc, float( _noiseTextureSize ) );
+		_program->setVec3fArray( "uAoKernel", _kernelSize, aoKernel.data() );
+		_program->setInt( "uAoIntensity", VTX_SETTING().aoIntensity );
+		_program->setInt( "uKernelSize", _kernelSize );
+		_program->setFloat( "uNoiseSize", float( _noiseTextureSize ) );
 	}
 
 	void SSAO::resize( const uint p_width, const uint p_height, const GL & )
 	{
-		gl()->glDeleteTextures( 1, &_texture );
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _texture, 1, GL_R8, p_width, p_height );
-
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		_texture.resize( p_width, p_height );
+		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 	}
 
 	void SSAO::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+		_fbo.bind();
 
-		gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
-		gl()->glBindTextureUnit( 1, _noiseTexture );
-		gl()->glBindTextureUnit( 2, p_renderer.getPassLinearizeDepth().getTexture() );
+		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
+		_noiseTexture.bindToUnit( 1 );
+		p_renderer.getPassLinearizeDepth().getTexture().bindToUnit( 2 );
 
 		_program->use();
 
 		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
 		{
-			gl()->glUniformMatrix4fv(
-				_uProjMatrixLoc, 1, GL_FALSE, Util::Math::value_ptr( ( p_scene.getCamera().getProjectionMatrix() ) ) );
+			_program->setMat4f( "uProjMatrix", p_scene.getCamera().getProjectionMatrix() );
 		}
 
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
-			gl()->glUniform1i( _uAoIntensityLoc, VTX_SETTING().aoIntensity );
+			_program->setInt( "uAoIntensity", VTX_SETTING().aoIntensity );
 		}
 
-		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
-		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-		gl()->glBindVertexArray( 0 );
-
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 	}
 
 } // namespace VTX::Renderer::GL::Pass

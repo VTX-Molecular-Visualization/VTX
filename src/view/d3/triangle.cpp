@@ -7,10 +7,12 @@ namespace VTX::View::D3
 		return VTX_PROGRAM_MANAGER().createProgram( "Triangle", { "triangle.vert", "triangle.frag" } );
 	}
 
-	void Triangle::render( const Object3D::Camera & p_camera )
+	void Triangle::render( const Object3D::Camera & p_camera ) const
 	{
 		BaseView3D::render( p_camera );
 
-		_gl()->glDrawElements( GL_TRIANGLES, uint( _model->getIndices().size() ), GL_UNSIGNED_INT, 0 );
+		_model->getBuffer()->getVao().drawElement( Renderer::GL::VertexArray::DrawMode::TRIANGLES,
+												   GLsizei( _model->getIndices().size() ),
+												   Renderer::GL::VertexArray::Type::UNSIGNED_INT );
 	}
 } // namespace VTX::View::D3

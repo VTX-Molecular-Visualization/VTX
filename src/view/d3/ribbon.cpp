@@ -15,8 +15,6 @@ namespace VTX::View::D3
 
 	void Ribbon::_init()
 	{
-		_uCamPositionLoc = _gl()->glGetUniformLocation( _program->getId(), "u_camPosition" );
-
 		GLint maxPatchVertices = 0;
 		GLint maxTessGenLevel  = 0;
 
@@ -28,15 +26,16 @@ namespace VTX::View::D3
 		VTX_DEBUG( "Max supported tessellation levels: " + std::to_string( maxTessGenLevel ) );
 	}
 
-	void Ribbon::render( const Object3D::Camera & p_camera )
+	void Ribbon::render( const Object3D::Camera & p_camera ) const
 	{
 		BaseView3D::render( p_camera );
 
 		if ( VTXApp::get().MASK & VTX_MASK_CAMERA_UPDATED )
 		{
 			const Object3D::Camera & cam = VTXApp::get().getScene().getCamera();
-			_gl()->glUniform3fv( _uCamPositionLoc, 1, (const GLfloat *)Util::Math::value_ptr( cam.getPosition() ) );
+			_program->setVec3f( "u_camPosition", cam.getPosition() );
 		}
+		/// TODO: remove
 		//_gl()->glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 		for ( const std::pair<const Model::Representation::InstantiatedRepresentation *,
 							  VTX::Representation::RepresentationTarget> & representationData :
@@ -47,8 +46,10 @@ namespace VTX::View::D3
 
 			for ( const std::pair<uint, uint> & ribbonData : representationData.second.getRibbons() )
 			{
-				_gl()->glDrawElements(
-					GL_PATCHES, ribbonData.second, GL_UNSIGNED_INT, (void *)( ribbonData.first * sizeof( uint ) ) );
+				_model->getBuffer()->getVao().drawElement( Renderer::GL::VertexArray::DrawMode::PATCHES,
+														   ribbonData.second,
+														   Renderer::GL::VertexArray::Type::UNSIGNED_INT,
+														   (void *)( ribbonData.first * sizeof( uint ) ) );
 			}
 		}
 		//_gl()->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );

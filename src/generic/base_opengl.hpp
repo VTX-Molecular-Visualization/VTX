@@ -19,7 +19,13 @@ namespace VTX
 			BaseOpenGL( OpenGLFunctions * const p_gl ) : _gl( p_gl ) {}
 			virtual ~BaseOpenGL() = default;
 
-			inline OpenGLFunctions * const gl() { return _gl; }
+			/// TODO: this must not exist. GL refactoring should solve this.
+			inline OpenGLFunctions * const getGL() const { return _gl; }
+
+			inline void enableDepthClamp() const { _gl->glEnable( GL_DEPTH_CLAMP ); }
+			inline void disableDepthClamp() const { _gl->glDisable( GL_DEPTH_CLAMP ); }
+			inline void enableDepthTest() const { _gl->glEnable( GL_DEPTH_TEST ); }
+			inline void disableDepthTest() const { _gl->glDisable( GL_DEPTH_TEST ); }
 
 		  protected:
 			OpenGLFunctions * _gl = nullptr;

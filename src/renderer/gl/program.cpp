@@ -12,7 +12,7 @@ namespace VTX::Renderer::GL
 		{
 			// Detach but don't delete shaders, can be used by other programs.
 			detachShaders();
-			gl()->glDeleteProgram( _id );
+			_gl->glDeleteProgram( _id );
 		}
 	}
 
@@ -21,7 +21,7 @@ namespace VTX::Renderer::GL
 		if ( _id == GL_INVALID_INDEX )
 		{
 			_name = p_name;
-			_id	  = gl()->glCreateProgram();
+			_id	  = _gl->glCreateProgram();
 		}
 		else
 		{
@@ -37,7 +37,7 @@ namespace VTX::Renderer::GL
 			return;
 		}
 
-		gl()->glAttachShader( _id, p_shaderId );
+		_gl->glAttachShader( _id, p_shaderId );
 	}
 
 	void Program::link()
@@ -51,15 +51,15 @@ namespace VTX::Renderer::GL
 		}
 
 		GLint linked;
-		gl()->glLinkProgram( _id );
-		gl()->glGetProgramiv( _id, GL_LINK_STATUS, &linked );
+		_gl->glLinkProgram( _id );
+		_gl->glGetProgramiv( _id, GL_LINK_STATUS, &linked );
 		if ( linked == GL_FALSE )
 		{
 			std::string error = "Error linking program: ";
 			error += _name;
 			error += "\n";
 			error += _getProgramErrors();
-			gl()->glDeleteProgram( _id );
+			_gl->glDeleteProgram( _id );
 			VTX_ERROR( error );
 			return;
 		}
@@ -68,27 +68,25 @@ namespace VTX::Renderer::GL
 	void Program::detachShaders()
 	{
 		GLint nbShaders = 0;
-		gl()->glGetProgramiv( _id, GL_ATTACHED_SHADERS, &nbShaders );
+		_gl->glGetProgramiv( _id, GL_ATTACHED_SHADERS, &nbShaders );
 		std::vector<GLuint> shaders( nbShaders );
-		gl()->glGetAttachedShaders( _id, nbShaders, nullptr, shaders.data() );
+		_gl->glGetAttachedShaders( _id, nbShaders, nullptr, shaders.data() );
 		for ( GLuint shader : shaders )
 		{
-			gl()->glDetachShader( _id, shader );
+			_gl->glDetachShader( _id, shader );
 		}
 	}
-
-	void Program::use() { gl()->glUseProgram( _id ); }
 
 	std::string Program::_getProgramErrors()
 	{
 		GLint length;
-		gl()->glGetProgramiv( _id, GL_INFO_LOG_LENGTH, &length );
+		_gl->glGetProgramiv( _id, GL_INFO_LOG_LENGTH, &length );
 		if ( length == 0 )
 		{
 			return "";
 		}
 		std::vector<GLchar> log( length );
-		gl()->glGetProgramInfoLog( _id, length, &length, &log[ 0 ] );
+		_gl->glGetProgramInfoLog( _id, length, &length, &log[ 0 ] );
 		return std::string( log.begin(), log.end() );
 	}
 } // namespace VTX::Renderer::GL

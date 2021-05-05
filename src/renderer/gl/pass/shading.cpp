@@ -6,24 +6,18 @@
 
 namespace VTX::Renderer::GL::Pass
 {
-	Shading::~Shading()
-	{
-		gl()->glDeleteFramebuffers( 1, &_fbo );
-		gl()->glDeleteTextures( 1, &_texture );
-	}
-
 	void Shading::init( const uint p_width, const uint p_height, const GL & )
 	{
-		gl()->glCreateFramebuffers( 1, &_fbo );
+		_texture.create( p_width,
+						 p_height,
+						 Texture2D::InternalFormat::RGBA16F,
+						 Texture2D::Wrapping::CLAMP_TO_EDGE,
+						 Texture2D::Wrapping::CLAMP_TO_EDGE,
+						 Texture2D::Filter::NEAREST,
+						 Texture2D::Filter::NEAREST );
 
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
-
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		_fbo.create( Framebuffer::Target::DRAW_FRAMEBUFFER );
+		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 
 		_toonShading	= VTX_PROGRAM_MANAGER().createProgram( "ToonShading", { "shading/shading_toon.frag" } );
 		_diffuseShading = VTX_PROGRAM_MANAGER().createProgram( "DiffuseShading", { "shading/shading_diffuse.frag" } );
@@ -36,40 +30,37 @@ namespace VTX::Renderer::GL::Pass
 
 	void Shading::resize( const uint p_width, const uint p_height, const GL & )
 	{
-		gl()->glDeleteTextures( 1, &_texture );
-		gl()->glCreateTextures( GL_TEXTURE_2D, 1, &_texture );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		gl()->glTextureParameteri( _texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-		gl()->glTextureStorage2D( _texture, 1, GL_RGBA16F, p_width, p_height );
+		_texture.resize( p_width, p_height );
 
-		gl()->glNamedFramebufferTexture( _fbo, GL_COLOR_ATTACHMENT0, _texture, 0 );
+		_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 	}
 
 	void Shading::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, _fbo );
+		_fbo.bind();
 
-		gl()->glBindTextureUnit( 0, p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture() );
-		gl()->glBindTextureUnit( 1, p_renderer.getPassGeometric().getColorsTexture() );
+		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
+		p_renderer.getPassGeometric().getColorsTexture().bindToUnit( 1 );
 		// If SSAO/Blur disabled, texture is previoulsy cleared.
-		gl()->glBindTextureUnit( 2, p_renderer.getPassBlur().getTexture() );
+		p_renderer.getPassBlur().getTexture().bindToUnit( 2 );
 
 		_currentShading->use();
 
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
 			const Color::Rgb & bgColor = VTX_SETTING().backgroundColor;
-			gl()->glUniform3f( _uBackgroundColorLoc, bgColor.getR(), bgColor.getG(), bgColor.getB() );
-			gl()->glUniform1f( _uFogNear, VTX_SETTING().fogNear );
-			gl()->glUniform1f( _uFogFar, VTX_SETTING().fogFar );
-			gl()->glUniform1f( _uFogDensity, VTX_SETTING().activeFog ? VTX_SETTING().fogDensity : 0.f );
+			/// TODO: use a value_ptr ?
+			_currentShading->setVec3f( "uBackgroundColor", bgColor.getR(), bgColor.getG(), bgColor.getB() );
+			_currentShading->setFloat( "uFogNear", VTX_SETTING().fogNear );
+			_currentShading->setFloat( "uFogFar", VTX_SETTING().fogFar );
+			_currentShading->setFloat( "uFogDensity", VTX_SETTING().activeFog ? VTX_SETTING().fogDensity : 0.f );
 			const Color::Rgb & fogColor = VTX_SETTING().fogColor;
-			gl()->glUniform3f( _uFogColor, fogColor.getR(), fogColor.getG(), fogColor.getB() );
+			/// TODO: use a value_ptr ?
+			_currentShading->setVec3f( "uFogColor", fogColor.getR(), fogColor.getG(), fogColor.getB() );
 
 			const Color::Rgb & lightColor = VTX_SETTING().lightColor;
-			gl()->glUniform3f( _uLightColor, lightColor.getR(), lightColor.getG(), lightColor.getB() );
+			/// TODO: use a value_ptr ?
+			_currentShading->setVec3f( "uLightColor", lightColor.getR(), lightColor.getG(), lightColor.getB() );
 		}
 
 		// TODO: no need for flat shading
@@ -79,13 +70,10 @@ namespace VTX::Renderer::GL::Pass
 		{
 			const Vec4f & lightPosition
 				= p_scene.getCamera().getViewMatrix() * Vec4f( p_scene.getCamera().getPosition(), 1.f );
-			gl()->glUniform3f( _uLightPosition, lightPosition.x, lightPosition.y, lightPosition.z );
+			_currentShading->setVec3f( "uLightPosition", lightPosition );
 		}
 
-		gl()->glBindVertexArray( p_renderer.getQuadVAO() );
-		gl()->glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-		gl()->glBindVertexArray( 0 );
-		gl()->glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );
 	}
 
 	void Shading::set()
@@ -100,12 +88,5 @@ namespace VTX::Renderer::GL::Pass
 		}
 
 		_currentShading->use();
-		_uBackgroundColorLoc = gl()->glGetUniformLocation( _currentShading->getId(), "uBackgroundColor" );
-		_uFogNear			 = gl()->glGetUniformLocation( _currentShading->getId(), "uFogNear" );
-		_uFogFar			 = gl()->glGetUniformLocation( _currentShading->getId(), "uFogFar" );
-		_uFogDensity		 = gl()->glGetUniformLocation( _currentShading->getId(), "uFogDensity" );
-		_uFogColor			 = gl()->glGetUniformLocation( _currentShading->getId(), "uFogColor" );
-		_uLightPosition		 = gl()->glGetUniformLocation( _currentShading->getId(), "uLightPosition" );
-		_uLightColor		 = gl()->glGetUniformLocation( _currentShading->getId(), "uLightColor" );
 	}
 } // namespace VTX::Renderer::GL::Pass
