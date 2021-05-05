@@ -105,6 +105,7 @@ namespace VTX
 
 					 { "ACTIVE_RENDERER", p_setting.activeRenderer },
 					 { "BACKGROUND_COLOR", serialize( p_setting.backgroundColor ) },
+					 { "BACKGROUND_OPACITY", p_setting.backgroundOpacity },
 					 { "REPRESENTATION", p_setting.representation },
 					 { "ATOMS_RADIUS", p_setting.atomsRadius },
 					 { "BONDS_RADIUS", p_setting.bondsRadius },
@@ -116,6 +117,7 @@ namespace VTX
 					 { "AO_BLUR_SIZE", p_setting.aoBlurSize },
 					 { "ACTIVE_OUTLINE", p_setting.activeOutline },
 					 { "OUTLINE_COLOR", serialize( p_setting.outlineColor ) },
+					 { "OUTLINE_THICKNESS", p_setting.outlineThickness },
 					 { "ACTIVE_FOG", p_setting.activeFog },
 					 { "FOG_NEAR", p_setting.fogNear },
 					 { "FOG_FAR", p_setting.fogFar },
@@ -248,6 +250,8 @@ namespace VTX
 			Color::Rgb bgColor = Color::Rgb();
 			deserialize( p_json.at( "BACKGROUND_COLOR" ), bgColor );
 			VTX_ACTION( new Action::Setting::ChangeBackgroundColor( bgColor ) );
+			VTX_ACTION(
+				new Action::Setting::ChangeBackgroundOpacity( p_json.at( "BACKGROUND_OPACITY" ).get<float>() ) );
 			VTX_ACTION( new Action::Setting::ChangeRepresentation( p_json.at( "REPRESENTATION" ).get<int>() ) );
 			VTX_ACTION( new Action::Setting::ChangeAtomsRadius( p_json.at( "ATOMS_RADIUS" ).get<float>() ) );
 			VTX_ACTION( new Action::Setting::ChangeBondsRadius( p_json.at( "BONDS_RADIUS" ).get<float>() ) );
@@ -261,6 +265,7 @@ namespace VTX
 			Color::Rgb outlinColor = Color::Rgb();
 			deserialize( p_json.at( "OUTLINE_COLOR" ), outlinColor );
 			VTX_ACTION( new Action::Setting::ChangeOutlineColor( outlinColor ) );
+			VTX_ACTION( new Action::Setting::ChangeOutlineThickness( p_json.at( "OUTLINE_THICKNESS" ).get<float>() ) );
 			VTX_ACTION( new Action::Setting::ActiveFog( p_json.at( "ACTIVE_FOG" ).get<bool>() ) );
 			VTX_ACTION( new Action::Setting::ChangeFogNear( p_json.at( "FOG_NEAR" ).get<float>() ) );
 			VTX_ACTION( new Action::Setting::ChangeFogFar( p_json.at( "FOG_FAR" ).get<float>() ) );

@@ -128,6 +128,21 @@ namespace VTX::Action::Setting
 		const Color::Rgb _color;
 	};
 
+	class ChangeBackgroundOpacity : public BaseAction
+	{
+	  public:
+		explicit ChangeBackgroundOpacity( const float p_opacity ) : _opacity( p_opacity ) {}
+
+		virtual void execute() override
+		{
+			VTX_SETTING().backgroundOpacity = Util::Math::clamp( _opacity, 0.f, 1.f );
+			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		};
+
+	  private:
+		const float _opacity;
+	};
+
 	class ChangeRepresentation : public BaseAction
 	{
 	  public:

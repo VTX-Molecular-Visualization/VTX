@@ -43,7 +43,7 @@ namespace VTX
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT		   = true;
 	const bool					  Setting::FORCE_RENDERER_DEFAULT		   = false;
 	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT		   = Color::Rgb::BLACK;
-	const float					  Setting::BACKGROUND_OPACITY_DEFAULT	   = 0.0f;
+	const float					  Setting::BACKGROUND_OPACITY_DEFAULT	   = 1.0f;
 	const int					  Setting::REPRESENTATION_DEFAULT_INDEX	   = 0;
 	const Generic::REPRESENTATION Setting::DEFAULT_REPRESENTATION_TYPE	   = Generic::REPRESENTATION::STICK;
 	const std::string			  Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
