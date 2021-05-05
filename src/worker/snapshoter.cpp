@@ -81,11 +81,11 @@ namespace VTX
 			float ratio			= desiredHeight / (float)watermarkSize.height();
 			watermarkSize.setHeight( desiredHeight );
 			watermarkSize.setWidth( watermarkSize.width() * ratio );
-			QImage watermarkImg( watermarkSize, QImage::Format_RGBA64_Premultiplied );
+			QImage watermarkImg( watermarkSize, QImage::Format_ARGB32 );
 
 			// watermarkSvg.setAspectRatioMode( Qt::AspectRatioMode::KeepAspectRatioByExpanding );
 			QPainter watermarkPainter = QPainter( &watermarkImg );
-
+			// watermarkPainter.setCompositionMode( QPainter::CompositionMode::CompositionMode_SourceIn );
 			watermarkSvg.render( &watermarkPainter );
 
 			// Compute watermark color.
@@ -102,21 +102,20 @@ namespace VTX
 					QColor qColor = watermarkImg.pixelColor( i, j );
 					qColor.getRgb( &r, &g, &b, &a );
 
-					if ( a == 205 && r == 205 && g == 205 && b == 205 )
-					{
-						qColor.setAlpha( 0 );
-					}
-					else
-					{
-						qColor.setAlpha( qColor.alpha() / 2 );
-					}
+					// if ( a == 205 && r == 205 && g == 205 && b == 205 )
+					//{
+					//	qColor.setAlpha( 0 );
+					//}
+					// else
+					//{
+					// qColor.setAlpha( qColor.alpha() / 2 );
+					//}
 
-					watermarkImg.setPixelColor( i, j, qColor );
+					// watermarkImg.setPixelColor( i, j, qColor );
 
-					// QColor color = watermarkImg.pixelColor( i, j );
-					// VTX_LOG_FILE( "R:" + std::to_string( qColor.red() ) + " G:" + std::to_string( qColor.green() )
-					//			  + " B:" + std::to_string( qColor.blue() )
-					//			  + " A:" + std::to_string( qColor.alpha() ) );
+					QColor color = watermarkImg.pixelColor( i, j );
+					VTX_LOG_FILE( "R:" + std::to_string( r ) + " G:" + std::to_string( r ) + " B:" + std::to_string( b )
+								  + " A:" + std::to_string( a ) );
 				}
 			}
 
