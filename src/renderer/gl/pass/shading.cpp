@@ -50,7 +50,8 @@ namespace VTX::Renderer::GL::Pass
 		{
 			const Color::Rgb & bgColor = VTX_SETTING().backgroundColor;
 			/// TODO: use a value_ptr ?
-			_currentShading->setVec3f( "uBackgroundColor", bgColor.getR(), bgColor.getG(), bgColor.getB() );
+			_currentShading->setVec4f(
+				"uBackgroundColor", bgColor.getR(), bgColor.getG(), bgColor.getB(), VTX_SETTING().backgroundOpacity );
 			_currentShading->setFloat( "uFogNear", VTX_SETTING().fogNear );
 			_currentShading->setFloat( "uFogFar", VTX_SETTING().fogFar );
 			_currentShading->setFloat( "uFogDensity", VTX_SETTING().activeFog ? VTX_SETTING().fogDensity : 0.f );

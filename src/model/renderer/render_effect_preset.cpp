@@ -27,6 +27,7 @@ namespace VTX::Model::Renderer
 		_fogColor	= Setting::FOG_COLOR_DEFAULT;
 
 		_backgroundColor	   = Setting::BACKGROUND_COLOR_DEFAULT;
+		_backgroundOpacity	   = Setting::BACKGROUND_OPACITY_DEFAULT;
 		_cameraLightColor	   = Setting::LIGHT_COLOR_DEFAULT;
 		_cameraFOV			   = Setting::CAMERA_FOV_DEFAULT;
 		_cameraNearClip		   = Setting::CAMERA_NEAR_DEFAULT;
@@ -77,7 +78,8 @@ namespace VTX::Model::Renderer
 	}
 	void RenderEffectPreset::setOutlineThickness( const float p_outlineThickness )
 	{
-		_outlineThickness = p_outlineThickness;
+		_outlineThickness
+			= Util::Math::clamp( p_outlineThickness, Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setOutlineColor( const Color::Rgb & p_outlineColor )
@@ -111,10 +113,14 @@ namespace VTX::Model::Renderer
 		_fogColor = p_fogColor;
 		_notifyDataChanged();
 	}
-
 	void RenderEffectPreset::setBackgroundColor( const Color::Rgb & p_backgroundColor )
 	{
 		_backgroundColor = p_backgroundColor;
+		_notifyDataChanged();
+	}
+	void RenderEffectPreset::setBackgroundOpacity( const float p_backgroundOpacity )
+	{
+		_backgroundOpacity = p_backgroundOpacity;
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setCameraLightColor( const Color::Rgb & p_cameraLightColor )
@@ -164,8 +170,9 @@ namespace VTX::Model::Renderer
 		rendererGL.activeSSAO( _ssao );
 
 		// Outline
-		VTX_SETTING().activeOutline = _outline;
-		VTX_SETTING().outlineColor	= _outlineColor;
+		VTX_SETTING().activeOutline	   = _outline;
+		VTX_SETTING().outlineColor	   = _outlineColor;
+		VTX_SETTING().outlineThickness = _outlineThickness;
 		rendererGL.activeOutline( _outline );
 
 		// Fog
@@ -178,6 +185,7 @@ namespace VTX::Model::Renderer
 
 		// Camera
 		VTX_SETTING().backgroundColor	= _backgroundColor;
+		VTX_SETTING().backgroundOpacity = _backgroundOpacity;
 		VTX_SETTING().lightColor		= _cameraLightColor;
 		VTX_SETTING().cameraFov			= _cameraFOV;
 		VTX_SETTING().cameraNear		= _cameraNearClip;
@@ -215,6 +223,7 @@ namespace VTX::Model::Renderer
 		_fogColor	= p_source._fogColor;
 
 		_backgroundColor	   = p_source._backgroundColor;
+		_backgroundOpacity	   = p_source._backgroundOpacity;
 		_cameraLightColor	   = p_source._cameraLightColor;
 		_cameraFOV			   = p_source._cameraFOV;
 		_cameraNearClip		   = p_source._cameraNearClip;

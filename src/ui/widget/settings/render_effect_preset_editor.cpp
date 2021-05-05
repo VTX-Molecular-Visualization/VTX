@@ -52,6 +52,9 @@ namespace VTX::UI::Widget::Settings
 		_fogColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "fogColor" );
 
 		_backgroundColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "backgroundColor" );
+		_backgroundOpacity
+			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( this, "backgroundOpacity" );
+		_backgroundOpacity->setMinMax( 0.f, 1.f );
 		_cameraLightColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "lightColor" );
 		_cameraFOV = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( this, "cameraFov" );
 		_cameraFOV->setMinMax( Setting::CAMERA_FOV_MIN, Setting::CAMERA_FOV_MAX );
@@ -92,6 +95,7 @@ namespace VTX::UI::Widget::Settings
 		_addItem( _fogColor, QString( "Color" ) );
 		_addSpace();
 		_addItem( _backgroundColor, QString( "Background color" ) );
+		_addItem( _backgroundOpacity, QString( "Background opacity (snapshot only)" ) );
 		_addItem( _cameraLightColor, QString( "Light Color" ) );
 		_addItem( _cameraFOV, QString( "FOV" ) );
 		_addItem( _cameraNear, QString( "Near clip" ) );
@@ -163,6 +167,10 @@ namespace VTX::UI::Widget::Settings
 				 QOverload<const Color::Rgb &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onBackgroundColorChanged );
+		connect( _backgroundOpacity,
+				 QOverload<float>::of( &FloatFieldSliderWidget::onValueChange ),
+				 this,
+				 &RenderEffectPresetEditor::_onBackgroundOpacityChanged );
 		connect( _cameraLightColor,
 				 QOverload<const Color::Rgb &>::of( &ColorFieldButton::onValueChange ),
 				 this,
@@ -227,6 +235,7 @@ namespace VTX::UI::Widget::Settings
 		_fogColor->setEnabled( fogEnabled );
 
 		_backgroundColor->setColor( _preset->getBackgroundColor() );
+		_backgroundOpacity->setValue( _preset->getBackgroundOpacity() );
 		_cameraLightColor->setColor( _preset->getCameraLightColor() );
 		_cameraFOV->setValue( _preset->getCameraFOV() );
 		_cameraNear->setValue( _preset->getCameraNearClip() );
@@ -332,11 +341,15 @@ namespace VTX::UI::Widget::Settings
 		if ( !signalsBlocked() && p_color != _preset->getFogColor() )
 			VTX_ACTION( new Action::Renderer::ChangeFogColor( *_preset, p_color ) );
 	}
-
 	void RenderEffectPresetEditor::_onBackgroundColorChanged( const Color::Rgb & p_color )
 	{
 		if ( !signalsBlocked() && p_color != _preset->getBackgroundColor() )
 			VTX_ACTION( new Action::Renderer::ChangeBackgroundColor( *_preset, p_color ) );
+	}
+	void RenderEffectPresetEditor::_onBackgroundOpacityChanged( const float p_opacity )
+	{
+		if ( !signalsBlocked() && p_opacity != _preset->getBackgroundOpacity() )
+			VTX_ACTION( new Action::Renderer::ChangeBackgroundOpacity( *_preset, p_opacity ) );
 	}
 	void RenderEffectPresetEditor::_onCameraLightColorChanged( const Color::Rgb & p_color )
 	{

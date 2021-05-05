@@ -11,13 +11,13 @@ uniform vec3 uLineColor;
 
 void main()
 {
-	const uvec4			 viewPositionNormal = texelFetch( gbViewPositionNormal, ivec2( gl_FragCoord.xy ), 0 );
-	const uint selection			= uint( unpackHalf2x16( viewPositionNormal.w ).x );
+	const uvec4 viewPositionNormal = texelFetch( gbViewPositionNormal, ivec2( gl_FragCoord.xy ), 0 );
+	const uint	selection		   = uint( unpackHalf2x16( viewPositionNormal.w ).x );
 
 	const vec2 texCoord = gl_FragCoord.xy / vec2( textureSize( linearDepthTexture, 0 ) );
 	if ( selection == 0 )
 	{
-		fragColor = vec4( texture( colorTexture, texCoord ).xyz, 1.f );
+		fragColor = texture( colorTexture, texCoord );
 	}
 	else
 	{
@@ -39,6 +39,6 @@ void main()
 		const float edgeDepth = sqrt( depthDiff0 * depthDiff0 + depthDiff1 * depthDiff1 );
 
 		// Apply outline if edge depth is greater than threshold.
-		fragColor = vec4( edgeDepth > threshold + 0.025 ? uLineColor : texture( colorTexture, texCoord ).xyz, 1.f );
+		fragColor = edgeDepth > threshold + 0.025 ? vec4( uLineColor, 1.f ) : texture( colorTexture, texCoord );
 	}
 }
