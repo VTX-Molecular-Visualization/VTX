@@ -3,6 +3,8 @@
 #include "action/setting.hpp"
 #include "generic/base_colorable.hpp"
 #include "io/reader/lib_chemfiles.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
 #include "model/chain.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -13,6 +15,8 @@
 #include "model/residue.hpp"
 #include "model/viewpoint.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "representation/representation_manager.hpp"
 
 namespace VTX
@@ -202,14 +206,13 @@ namespace VTX
 			Quatf cameraRot;
 			deserialize( p_json.at( "CAMERA_ROTATION" ), cameraRot );
 
-			p_scene.getCamera().setPosition( cameraPos );
-			p_scene.getCamera().setRotation( cameraRot );
-
 			for ( const nlohmann::json & jsonMolecule : p_json.at( "MOLECULES" ) )
 			{
 				Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 				deserialize( jsonMolecule, *molecule );
-				p_scene.addMolecule( molecule, false );
+				
+				VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
+				p_scene.addMolecule( molecule );
 			}
 
 			for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
@@ -218,6 +221,10 @@ namespace VTX
 				deserialize( jsonPath, *path );
 				p_scene.addPath( path );
 			}
+
+			VTXApp::get().getStateMachine().getItem<State::Visualization>(ID::State::VISUALIZATION)->resetCameraController();
+			p_scene.getCamera().setPosition( cameraPos );
+			p_scene.getCamera().setRotation( cameraRot );
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Model::Molecule & p_molecule ) const

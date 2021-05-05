@@ -62,16 +62,6 @@ namespace VTX::Action::Main
 				Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
 				VTX_WORKER( sceneLoader );
 
-				if ( sceneLoader->getScene() != nullptr )
-				{
-					for ( const std::pair<Model::Molecule * const, float> & molecule :
-						  sceneLoader->getScene()->getMolecules() )
-					{
-						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule.first ) );
-						VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_ADDED, molecule.first ) );
-					}
-				}
-
 				for ( FilePath * const path : _paths )
 				{
 					VTXApp::get().setCurrentPath( *path, true );

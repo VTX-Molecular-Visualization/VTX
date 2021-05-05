@@ -88,6 +88,7 @@ namespace VTX
 
 			_camera.setPosition( defaultPos );
 			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
+			_isOrienting = false;
 		}
 
 		void Freefly::_computeOrientPositions( const Math::AABB & p_aabb )
