@@ -22,9 +22,6 @@ namespace VTX
 	{
 		namespace Filesystem
 		{
-			// Test only.
-			static const FilePath DATA_DIR = "../data";
-
 			inline const FilePath getExecutableFile()
 			{
 #ifdef _MSC_VER
@@ -51,6 +48,9 @@ namespace VTX
 			static const FilePath PATHS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/paths" );
 			static const FilePath VIDEOS_DIR	= FilePath( EXECUTABLE_DIR.string() + "/videos" );
 			static const FilePath LOGS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/logs" );
+
+			static const FilePath DATA_DIR		  = "../data";
+			static const FilePath SHADERS_DIR_SRC = "../src/shader";
 
 			static const std::string IMGUI_INI_FILE
 				= FilePath( EXECUTABLE_DIR.string() + "/imgui.ini" ).string(); // TOFIX
@@ -125,6 +125,16 @@ namespace VTX
 				file.close();
 
 				return result;
+			}
+
+			inline const bool removeAll( const FilePath & p_filePath )
+			{
+				return std::filesystem::remove_all( p_filePath );
+			}
+
+			inline void copy( const FilePath & p_from, const FilePath & p_to )
+			{
+				std::filesystem::copy( p_from, p_to, std::filesystem::copy_options::recursive );
 			}
 		} // namespace Filesystem
 	}	  // namespace Util

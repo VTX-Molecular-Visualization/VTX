@@ -29,11 +29,13 @@ namespace VTX
 		class ProgramManager : public Generic::BaseOpenGL
 		{
 		  public:
-			using MapStringToEnum	  = std::map<std::string, SHADER_TYPE>;
-			using MapStringToProgram  = std::map<std::string, Program *>;
-			using PairStringToProgram = std::pair<const std::string, Program *>;
-			using MapStringToGLuint	  = std::map<std::string, GLuint>;
-			using PairStringToGLuint  = std::pair<const std::string, GLuint>;
+			using MapStringToEnum	   = std::map<std::string, SHADER_TYPE>;
+			using MapStringToProgram   = std::map<std::string, Program *>;
+			using PairStringToProgram  = std::pair<const std::string, Program *>;
+			using MapStringToGLuint	   = std::map<std::string, GLuint>;
+			using PairStringToGLuint   = std::pair<const std::string, GLuint>;
+			using MapGLuintToFilePath  = std::map<GLuint, FilePath>;
+			using PairGLuintToFilePath = std::pair<GLuint, FilePath>;
 
 			inline static ProgramManager & get( OpenGLFunctions * const p_gl = nullptr )
 			{
@@ -44,8 +46,8 @@ namespace VTX
 			Program * const createProgram( const std::string &, const std::vector<std::string> & );
 			void			deleteProgram( const std::string & );
 			Program * const getProgram( const std::string & );
-
-			GLuint getShader( const std::string & ) const;
+			void			refreshShaders();
+			GLuint			getShader( const std::string & ) const;
 
 			void dispose();
 
@@ -53,8 +55,9 @@ namespace VTX
 			static SHADER_TYPE			 getShaderType( const FilePath & );
 
 		  private:
-			MapStringToProgram _programs = MapStringToProgram();
-			MapStringToGLuint  _shaders	 = MapStringToGLuint();
+			MapStringToProgram	_programs	 = MapStringToProgram();
+			MapStringToGLuint	_shaders	 = MapStringToGLuint();
+			MapGLuintToFilePath _shaderPaths = MapGLuintToFilePath();
 
 			ProgramManager( OpenGLFunctions * const p_gl ) : BaseOpenGL( p_gl ) {}
 			~ProgramManager();

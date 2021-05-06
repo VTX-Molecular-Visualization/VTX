@@ -43,6 +43,7 @@ namespace VTX::Renderer::GL
 
 		_shaders.clear();
 		_programs.clear();
+		_shaderPaths.clear();
 	}
 
 	Program * const ProgramManager::createProgram( const std::string &				p_name,
@@ -58,7 +59,11 @@ namespace VTX::Renderer::GL
 
 			for ( const std::string & shader : p_shaders )
 			{
-				program.attachShader( _createShader( shader ) );
+				GLuint id = _createShader( shader );
+				if ( id != GL_INVALID_INDEX )
+				{
+					program.attachShader( id );
+				}
 			}
 
 			program.link();
@@ -134,6 +139,8 @@ namespace VTX::Renderer::GL
 				VTX_ERROR( error );
 				return GL_INVALID_INDEX;
 			}
+			_shaders.emplace( name, shaderId );
+			_shaderPaths.emplace( shaderId, p_path );
 			VTX_DEBUG( "Shader created: " + name );
 		}
 		else
@@ -165,5 +172,33 @@ namespace VTX::Renderer::GL
 		std::vector<GLchar> log( length );
 		_gl->glGetShaderInfoLog( p_shader, length, &length, &log[ 0 ] );
 		return std::string( log.begin(), log.end() );
+	}
+
+	void ProgramManager::refreshShaders()
+	{
+		for ( const PairStringToGLuint & pair : _shaders )
+		{
+			GLuint			  shaderId = pair.second;
+			FilePath		  path	   = Util::Filesystem::getShadersPath( _shaderPaths[ shaderId ].string() );
+			const std::string src	   = Util::Filesystem::readPath( path );
+
+			const GLchar * shaderCode = src.c_str();
+			_gl->glShaderSource( shaderId, 1, &shaderCode, 0 );
+			_gl->glCompileShader( shaderId );
+			GLint compiled;
+			_gl->glGetShaderiv( shaderId, GL_COMPILE_STATUS, &compiled );
+			if ( compiled == GL_FALSE )
+			{
+				std::string error = "Error compiling shader: ";
+				error += path.filename().string();
+				error += "\n";
+				error += _getShaderErrors( shaderId );
+				VTX_ERROR( error );
+			}
+			else
+			{
+				VTX_DEBUG( path.filename().string() + " refreshed" );
+			}
+		}
 	}
 } // namespace VTX::Renderer::GL
