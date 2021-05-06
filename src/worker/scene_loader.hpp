@@ -12,12 +12,6 @@
 
 namespace VTX
 {
-	namespace Model
-	{
-		class Molecule;
-		class MeshTriangle;
-	} // namespace Model
-
 	namespace Object3D
 	{
 		class Scene;

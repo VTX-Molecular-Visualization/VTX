@@ -38,12 +38,12 @@ namespace VTX::Model::Representation
 		RepresentationData &	   getData() { return *_data; }
 
 		const Generic::REPRESENTATION & getRepresentationType() const { return _data->getRepresentationType(); }
-		
-		void copyDataFrom( const Representation & p_source );
 
+		void copyDataFrom( const Representation & p_source );
 
 	  protected:
 		Representation( const Generic::REPRESENTATION & p_type );
+		Representation();
 
 	  private:
 		std::string _name;

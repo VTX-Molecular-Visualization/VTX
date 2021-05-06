@@ -4,7 +4,7 @@
 #include "io/reader/lib_chemfiles.hpp"
 #include "io/reader/prm.hpp"
 #include "io/reader/psf.hpp"
-#include "io/reader/vtx.hpp"
+#include "io/reader/serialized_object.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -106,7 +106,7 @@ namespace VTX
 				}
 				else if ( mode == MODE::VTX )
 				{
-					IO::Reader::VTX * const reader = new IO::Reader::VTX();
+					IO::Reader::SerializedObject<VTXApp> * const reader = new IO::Reader::SerializedObject<VTXApp>();
 
 					try
 					{

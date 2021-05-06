@@ -49,13 +49,19 @@ namespace VTX::Model::Representation
 
 	void RepresentationData::setSphereRadius( float p_radius )
 	{
-		_sphereData->_radiusFixed = p_radius;
-		notifyRepresentationDataChange();
+		if ( _sphereData != nullptr )
+		{
+			_sphereData->_radiusFixed = p_radius;
+			notifyRepresentationDataChange();
+		}
 	}
 	void RepresentationData::setCylinderRadius( float p_radius )
 	{
-		_cylinderData->_radius = p_radius;
-		notifyRepresentationDataChange();
+		if ( _cylinderData != nullptr )
+		{
+			_cylinderData->_radius = p_radius;
+			notifyRepresentationDataChange();
+		}
 	}
 
 	void RepresentationData::copyData( const RepresentationData & p_source )

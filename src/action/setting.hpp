@@ -6,8 +6,8 @@
 #endif
 
 #include "base_action.hpp"
-#include "io/reader/setting.hpp"
-#include "io/writer/setting.hpp"
+#include "io/reader/serialized_object.hpp"
+#include "io/writer/serialized_object.hpp"
 #include "model/molecule.hpp"
 #include "model/representation/representation_library.hpp"
 #include "object3d/scene.hpp"
@@ -49,7 +49,7 @@ namespace VTX::Action::Setting
 				return;
 			}
 
-			IO::Reader::Setting reader = IO::Reader::Setting();
+			IO::Reader::SerializedObject<VTX::Setting> reader = IO::Reader::SerializedObject<VTX::Setting>();
 			try
 			{
 				reader.readFile( path, VTX_SETTING() );
@@ -68,7 +68,7 @@ namespace VTX::Action::Setting
 		explicit Save() {}
 		virtual void execute() override
 		{
-			IO::Writer::Setting writer = IO::Writer::Setting();
+			IO::Writer::SerializedObject<VTX::Setting> writer = IO::Writer::SerializedObject<VTX::Setting>();
 			try
 			{
 				writer.writeFile( Util::Filesystem::SETTING_JSON_FILE, VTX_SETTING() );

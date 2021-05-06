@@ -7,6 +7,7 @@
 
 #include "../exception.hpp"
 #include "define.hpp"
+#include "tool/logger.hpp"
 #include <fstream>
 
 #ifdef _MSC_VER
@@ -51,9 +52,11 @@ namespace VTX
 			static const FilePath PATHS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/paths" );
 			static const FilePath VIDEOS_DIR	= FilePath( EXECUTABLE_DIR.string() + "/videos" );
 			static const FilePath LOGS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/logs" );
+			static const FilePath LIBRARIES_DIR = FilePath( EXECUTABLE_DIR.string() + "/libraries" );
 
-			static const std::string IMGUI_INI_FILE
-				= FilePath( EXECUTABLE_DIR.string() + "/imgui.ini" ).string(); // TOFIX
+			static const FilePath REPRESENTATION_LIBRARY_DIR = FilePath( LIBRARIES_DIR.string() + "/representations" );
+			static const FilePath RENDER_PRESET_LIBRARY_DIR	 = FilePath( LIBRARIES_DIR.string() + "/render_effects" );
+
 			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/../../setting.json" );
 			static const FilePath FFMPEG_EXE_FILE	= FilePath( "bin/ffmpeg.exe" );
 
@@ -109,6 +112,18 @@ namespace VTX
 				return FilePath( LOGS_DIR ) /= p_filename;
 			}
 
+			inline const FilePath getRepresentationLibraryDirectory()
+			{
+				std::filesystem::create_directories( LIBRARIES_DIR );
+				std::filesystem::create_directories( REPRESENTATION_LIBRARY_DIR );
+
+				return REPRESENTATION_LIBRARY_DIR;
+			}
+			inline const FilePath getRepresentationPath( const std::string & p_filename )
+			{
+				return getRepresentationLibraryDirectory() / p_filename;
+			}
+
 			inline const std::string readPath( const FilePath & p_path )
 			{
 				std::ifstream file;
@@ -125,6 +140,18 @@ namespace VTX
 				file.close();
 
 				return result;
+			}
+
+			inline const void clearDirectory( const FilePath & p_directory )
+			{
+				try
+				{
+					std::filesystem::remove_all( p_directory );
+				}
+				catch ( const std::exception & e )
+				{
+					VTX_ERROR( "Error when clear directory " + p_directory.string() + " : " + e.what() );
+				}
 			}
 		} // namespace Filesystem
 	}	  // namespace Util

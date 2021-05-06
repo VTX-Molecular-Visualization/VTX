@@ -8,8 +8,6 @@
 #include "action/action_manager.hpp"
 #include "base_action.hpp"
 #include "define.hpp"
-#include "io/reader/vtx.hpp"
-#include "io/writer/vtx.hpp"
 #include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "network/network_manager.hpp"

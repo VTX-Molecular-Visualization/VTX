@@ -1,10 +1,10 @@
 #include "serializer.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "generic/base_colorable.hpp"
 #include "io/reader/lib_chemfiles.hpp"
-#include "state/state_machine.hpp"
-#include "state/visualization.hpp"
 #include "model/chain.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
@@ -15,9 +15,9 @@
 #include "model/residue.hpp"
 #include "model/viewpoint.hpp"
 #include "mvc/mvc_manager.hpp"
-#include "event/event.hpp"
-#include "event/event_manager.hpp"
 #include "representation/representation_manager.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
 
 namespace VTX
 {
@@ -122,6 +122,32 @@ namespace VTX
 			return json;
 		}
 
+		nlohmann::json Serializer::serialize(
+			const Model::Representation::RepresentationLibrary & p_representationLibrary ) const
+		{
+			nlohmann::json jsonArray = nlohmann::json::array();
+
+			for ( int i = 0; i < p_representationLibrary.getRepresentationCount(); i++ )
+			{
+				jsonArray.emplace_back( serialize( *p_representationLibrary.getRepresentation( i ) ) );
+			}
+
+			return { { "REPRESENTATION_LIBRARY", jsonArray } };
+		}
+		nlohmann::json Serializer::serialize( const Model::Representation::Representation & p_representation ) const
+		{
+			return {
+				{ "NAME", p_representation.getName() },
+				{ "COLOR", serialize( p_representation.getColor() ) },
+				{ "QUICK_ACCESS", p_representation.hasQuickAccess() },
+				{ "TYPE", p_representation.getRepresentationType() },
+				{ "SPHERE_RADIUS", p_representation.getData().getSphereRadius() },
+				{ "CYLINDER_RADIUS", p_representation.getData().getCylinderRadius() },
+				{ "COLOR_MODE", p_representation.getData().getColorMode() },
+				{ "SS_COLOR_MODE", p_representation.getData().getSecondaryStructureColorMode() },
+			};
+		}
+
 		nlohmann::json Serializer::serialize( const Color::Rgb & p_color ) const
 		{
 			return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() } };
@@ -222,7 +248,10 @@ namespace VTX
 				p_scene.addPath( path );
 			}
 
-			VTXApp::get().getStateMachine().getItem<State::Visualization>(ID::State::VISUALIZATION)->resetCameraController();
+			VTXApp::get()
+				.getStateMachine()
+				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				->resetCameraController();
 			p_scene.getCamera().setPosition( cameraPos );
 			p_scene.getCamera().setRotation( cameraRot );
 		}
@@ -321,6 +350,40 @@ namespace VTX
 				deserialize( p_json.at( "COLOR" ), color );
 				p_representation.setColor( color );
 			}
+		}
+
+		void Serializer::deserialize( const nlohmann::json &						 p_json,
+									  Model::Representation::RepresentationLibrary & p_representationLibrary ) const
+		{
+			p_representationLibrary.clear( false );
+
+			for ( const nlohmann::json & jsonRepresentation : p_json.at( "REPRESENTATION_LIBRARY" ) )
+			{
+				Model::Representation::Representation * const representation
+					= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
+
+				deserialize( jsonRepresentation, *representation );
+
+				p_representationLibrary.addRepresentation( representation, false );
+			}
+
+			p_representationLibrary.forceNotifyDataChanged();
+		}
+		void Serializer::deserialize( const nlohmann::json &				  p_json,
+									  Model::Representation::Representation & p_representation ) const
+		{
+			p_representation.setName( p_json.at( "NAME" ).get<std::string>() );
+			Color::Rgb color;
+			deserialize( p_json.at( "COLOR" ), color );
+			p_representation.setColor( color );
+			p_representation.setQuickAccess( p_json.at( "QUICK_ACCESS" ).get<bool>() );
+
+			p_representation.changeRepresentationType( p_json.at( "TYPE" ).get<Generic::REPRESENTATION>(), false );
+			p_representation.getData().setSphereRadius( p_json.at( "SPHERE_RADIUS" ).get<float>() );
+			p_representation.getData().setCylinderRadius( p_json.at( "CYLINDER_RADIUS" ).get<float>() );
+			p_representation.getData().setColorMode( p_json.at( "COLOR_MODE" ).get<Generic::COLOR_MODE>() );
+			p_representation.getData().setSecondaryStructureColorMode(
+				p_json.at( "SS_COLOR_MODE" ).get<Generic::SECONDARY_STRUCTURE_COLOR_MODE>() );
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgb & p_color ) const
