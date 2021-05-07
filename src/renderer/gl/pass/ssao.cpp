@@ -24,7 +24,7 @@ namespace VTX::Renderer::GL::Pass
 		_program = VTX_PROGRAM_MANAGER().createProgram( "SSAO", { "shading/ssao.frag" } );
 
 		// generate random ao kernel
-		std::vector<Vec3f> aoKernel( _kernelSize );
+		_aoKernel.resize( _kernelSize );
 
 		for ( uint i = 0; i < _kernelSize; i++ )
 		{
@@ -37,7 +37,7 @@ namespace VTX::Renderer::GL::Pass
 			float scale = float( i ) / float( _kernelSize );
 			scale		= Util::Math::linearInterpolation( 0.01f, 1.f, scale * scale );
 			v *= scale;
-			aoKernel[ i ] = v;
+			_aoKernel[ i ] = v;
 		}
 
 		// generate noise texture
@@ -62,7 +62,7 @@ namespace VTX::Renderer::GL::Pass
 		_noiseTexture.fill( noise.data() );
 
 		_program->use();
-		_program->setVec3fArray( "uAoKernel", _kernelSize, aoKernel.data() );
+		_program->setVec3fArray( "uAoKernel", _kernelSize, _aoKernel.data() );
 		_program->setInt( "uAoIntensity", VTX_SETTING().aoIntensity );
 		_program->setInt( "uKernelSize", _kernelSize );
 		_program->setFloat( "uNoiseSize", float( _noiseTextureSize ) );
@@ -91,7 +91,10 @@ namespace VTX::Renderer::GL::Pass
 
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
+			_program->setVec3fArray( "uAoKernel", _kernelSize, _aoKernel.data() );
 			_program->setInt( "uAoIntensity", VTX_SETTING().aoIntensity );
+			_program->setInt( "uKernelSize", _kernelSize );
+			_program->setFloat( "uNoiseSize", float( _noiseTextureSize ) );
 		}
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );

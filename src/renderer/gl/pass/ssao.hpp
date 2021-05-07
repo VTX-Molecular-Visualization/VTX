@@ -26,12 +26,13 @@ namespace VTX::Renderer::GL::Pass
 		inline const Texture2D & getTexture() const { return _texture; }
 
 	  private:
-		Program *	_program = nullptr;
-		Framebuffer _fbo;
-		Texture2D	_texture;
-		Texture2D	_noiseTexture;
-		uint		_kernelSize		  = 16;
-		uint		_noiseTextureSize = 64;
+		Program *		   _program = nullptr;
+		Framebuffer		   _fbo;
+		Texture2D		   _texture;
+		Texture2D		   _noiseTexture;
+		uint			   _kernelSize		 = 16;
+		uint			   _noiseTextureSize = 64;
+		std::vector<Vec3f> _aoKernel;
 	};
 } // namespace VTX::Renderer::GL::Pass
 
