@@ -12,9 +12,79 @@
 #include "mvc/mvc_manager.hpp"
 #include "renderer/base_renderer.hpp"
 #include "vtx_app.hpp"
+#include "worker/render_effect_loader.hpp"
+#include "worker/render_effect_saver.hpp"
+#include "worker/worker_manager.hpp"
 
 namespace VTX::Action::Renderer
 {
+	class ReloadPresets : public BaseAction
+	{
+	  public:
+		ReloadPresets() {};
+		virtual void execute() override
+		{
+			Worker::RenderEffectPresetLibraryLoader * libraryLoader
+				= new Worker::RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary::get() );
+			VTX_WORKER( libraryLoader );
+		};
+	};
+
+	class SavePreset : public BaseAction
+	{
+	  public:
+		SavePreset( const Model::Renderer::RenderEffectPreset & p_representation )
+		{
+			_renderEffectPresets.emplace( &p_representation );
+		};
+		SavePreset( const std::unordered_set<const Model::Renderer::RenderEffectPreset *> & p_representations )
+		{
+			for ( const Model::Renderer::RenderEffectPreset * const representation : p_representations )
+				_renderEffectPresets.emplace( representation );
+		};
+		SavePreset( Model::Renderer::RenderEffectPresetLibrary & p_library )
+		{
+			for ( int i = 0; i < p_library.getPresetCount(); i++ )
+				_renderEffectPresets.emplace( p_library.getPreset( i ) );
+			_clearDirectory = true;
+		};
+
+		void setAsync( const bool p_async ) { _async = p_async; }
+
+		virtual void execute() override
+		{
+			if ( _clearDirectory )
+			{
+				Util::Filesystem::clearDirectory( Util::Filesystem::REPRESENTATION_LIBRARY_DIR );
+			}
+
+			for ( const Model::Renderer::RenderEffectPreset * const renderEffect : _renderEffectPresets )
+			{
+				if ( _async )
+				{
+					Worker::RenderEffectPresetSaverThread * librarySaver
+						= new Worker::RenderEffectPresetSaverThread( renderEffect );
+					Worker::Callback * callback = new Worker::Callback( [ librarySaver ]( const uint p_code ) {} );
+
+					VTX_WORKER( librarySaver, callback );
+				}
+				else
+				{
+					Worker::RenderEffectPresetSaver * librarySaver
+						= new Worker::RenderEffectPresetSaver( renderEffect );
+					VTX_WORKER( librarySaver );
+				}
+			}
+		};
+
+	  private:
+		std::unordered_set<const Model::Renderer::RenderEffectPreset *> _renderEffectPresets
+			= std::unordered_set<const Model::Renderer::RenderEffectPreset *>();
+
+		bool _clearDirectory = false;
+		bool _async			 = true;
+	};
+
 	class ApplyRenderEffectPreset : public BaseAction
 	{
 	  public:

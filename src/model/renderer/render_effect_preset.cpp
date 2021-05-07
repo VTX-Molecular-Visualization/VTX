@@ -137,7 +137,7 @@ namespace VTX::Model::Renderer
 		_cameraFarClip = p_cameraFarClip;
 		_notifyDataChanged();
 	}
-	void RenderEffectPreset::setAA( const float p_antiAliasing )
+	void RenderEffectPreset::setAA( const bool p_antiAliasing )
 	{
 		_antiAliasing = p_antiAliasing;
 		_notifyDataChanged();

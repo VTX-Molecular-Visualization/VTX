@@ -44,6 +44,8 @@ namespace VTX::Model::Renderer
 
 		void setQuickAccessToPreset( RenderEffectPreset & p_preset, const bool p_quikAccess );
 
+		void clear( const bool p_notify = true );
+
 	  private:
 		RenderEffectPresetLibrary();
 		~RenderEffectPresetLibrary();

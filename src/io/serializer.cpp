@@ -9,9 +9,9 @@
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "model/representation/instantiated_representation.hpp"
 #include "model/representation/representation.hpp"
-#include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
 #include "model/viewpoint.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -122,18 +122,6 @@ namespace VTX
 			return json;
 		}
 
-		nlohmann::json Serializer::serialize(
-			const Model::Representation::RepresentationLibrary & p_representationLibrary ) const
-		{
-			nlohmann::json jsonArray = nlohmann::json::array();
-
-			for ( int i = 0; i < p_representationLibrary.getRepresentationCount(); i++ )
-			{
-				jsonArray.emplace_back( serialize( *p_representationLibrary.getRepresentation( i ) ) );
-			}
-
-			return { { "REPRESENTATION_LIBRARY", jsonArray } };
-		}
 		nlohmann::json Serializer::serialize( const Model::Representation::Representation & p_representation ) const
 		{
 			return {
@@ -145,6 +133,32 @@ namespace VTX
 				{ "CYLINDER_RADIUS", p_representation.getData().getCylinderRadius() },
 				{ "COLOR_MODE", p_representation.getData().getColorMode() },
 				{ "SS_COLOR_MODE", p_representation.getData().getSecondaryStructureColorMode() },
+			};
+		}
+		nlohmann::json Serializer::serialize( const Model::Renderer::RenderEffectPreset & p_preset ) const
+		{
+			return {
+				{ "NAME", p_preset.getName() },
+				{ "QUICK_ACCESS", p_preset.hasQuickAccess() },
+				{ "SHADING", p_preset.getShading() },
+				{ "SSAO", p_preset.isSSAOEnabled() },
+				{ "SSAO_INTENSITY", p_preset.getSSAOIntensity() },
+				{ "SSAO_BLUR_SIZE", p_preset.getSSAOBlurSize() },
+				{ "OUTLINE", p_preset.isOutlineEnabled() },
+				{ "OUTLINE_THICKNESS", p_preset.getOutlineThickness() },
+				{ "OUTLINE_COLOR", serialize( p_preset.getOutlineColor() ) },
+				{ "FOG", p_preset.isFogEnabled() },
+				{ "FOG_NEAR", p_preset.getFogNear() },
+				{ "FOG_FAR", p_preset.getFogFar() },
+				{ "FOG_DENSITY", p_preset.getFogDensity() },
+				{ "FOG_COLOR", serialize( p_preset.getFogColor() ) },
+				{ "BACKGROUND_COLOR", serialize( p_preset.getBackgroundColor() ) },
+				{ "CAMERA_LIGHT_COLOR", serialize( p_preset.getCameraLightColor() ) },
+				{ "CAMERA_FOV", p_preset.getCameraFOV() },
+				{ "CAMERA_NEAR_CLIP", p_preset.getCameraNearClip() },
+				{ "CAMERA_FAR_CLIP", p_preset.getCameraFarClip() },
+				{ "CAMERA_AA", p_preset.getAA() },
+				{ "CAMERA_PERSPECTIVE_PROJECTION", p_preset.isPerspectiveProjection() },
 			};
 		}
 
@@ -236,7 +250,7 @@ namespace VTX
 			{
 				Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
 				deserialize( jsonMolecule, *molecule );
-				
+
 				VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
 				p_scene.addMolecule( molecule );
 			}
@@ -352,23 +366,6 @@ namespace VTX
 			}
 		}
 
-		void Serializer::deserialize( const nlohmann::json &						 p_json,
-									  Model::Representation::RepresentationLibrary & p_representationLibrary ) const
-		{
-			p_representationLibrary.clear( false );
-
-			for ( const nlohmann::json & jsonRepresentation : p_json.at( "REPRESENTATION_LIBRARY" ) )
-			{
-				Model::Representation::Representation * const representation
-					= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
-
-				deserialize( jsonRepresentation, *representation );
-
-				p_representationLibrary.addRepresentation( representation, false );
-			}
-
-			p_representationLibrary.forceNotifyDataChanged();
-		}
 		void Serializer::deserialize( const nlohmann::json &				  p_json,
 									  Model::Representation::Representation & p_representation ) const
 		{
@@ -384,6 +381,37 @@ namespace VTX
 			p_representation.getData().setColorMode( p_json.at( "COLOR_MODE" ).get<Generic::COLOR_MODE>() );
 			p_representation.getData().setSecondaryStructureColorMode(
 				p_json.at( "SS_COLOR_MODE" ).get<Generic::SECONDARY_STRUCTURE_COLOR_MODE>() );
+		}
+		void Serializer::deserialize( const nlohmann::json &				p_json,
+									  Model::Renderer::RenderEffectPreset & p_preset ) const
+		{
+			Color::Rgb color;
+
+			p_preset.setName( p_json.at( "NAME" ).get<std::string>() );
+			p_preset.setQuickAccess( p_json.at( "QUICK_ACCESS" ).get<bool>() );
+			p_preset.setShading( p_json.at( "SHADING" ).get<Renderer::SHADING>() );
+			p_preset.enableSSAO( p_json.at( "SSAO" ).get<bool>() );
+			p_preset.setSSAOIntensity( p_json.at( "SSAO_INTENSITY" ).get<int>() );
+			p_preset.setSSAOBlurSize( p_json.at( "SSAO_BLUR_SIZE" ).get<int>() );
+			p_preset.enableOutline( p_json.at( "OUTLINE" ).get<bool>() );
+			p_preset.setOutlineThickness( p_json.at( "OUTLINE_THICKNESS" ).get<float>() );
+			deserialize( p_json.at( "OUTLINE_COLOR" ), color );
+			p_preset.setOutlineColor( color );
+			p_preset.enableFog( p_json.at( "FOG" ).get<bool>() );
+			p_preset.setFogNear( p_json.at( "FOG_NEAR" ).get<float>() );
+			p_preset.setFogFar( p_json.at( "FOG_FAR" ).get<float>() );
+			p_preset.setFogDensity( p_json.at( "FOG_DENSITY" ).get<float>() );
+			deserialize( p_json.at( "FOG_COLOR" ), color );
+			p_preset.setFogColor( color );
+			deserialize( p_json.at( "BACKGROUND_COLOR" ), color );
+			p_preset.setBackgroundColor( color );
+			deserialize( p_json.at( "CAMERA_LIGHT_COLOR" ), color );
+			p_preset.setCameraLightColor( color );
+			p_preset.setCameraFOV( p_json.at( "CAMERA_FOV" ).get<float>() );
+			p_preset.setCameraNearClip( p_json.at( "CAMERA_NEAR_CLIP" ).get<float>() );
+			p_preset.setCameraFarClip( p_json.at( "CAMERA_FAR_CLIP" ).get<float>() );
+			p_preset.setAA( p_json.at( "CAMERA_AA" ).get<bool>() );
+			p_preset.setPerspectiveProjection( p_json.at( "CAMERA_PERSPECTIVE_PROJECTION" ).get<bool>() );
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgb & p_color ) const

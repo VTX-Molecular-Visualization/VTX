@@ -77,10 +77,10 @@ namespace VTX
 	const float				Setting::OUTLINE_THICKNESS_MAX	   = 10.0f;
 	const Color::Rgb		Setting::OUTLINE_COLOR_DEFAULT	   = Color::Rgb::WHITE;
 	const bool				Setting::ACTIVE_FOG_DEFAULT		   = false;
-	const float				Setting::FOG_NEAR_DEFAULT		   = 400.f;
+	const float				Setting::FOG_NEAR_DEFAULT		   = 30;
 	const float				Setting::FOG_NEAR_MIN			   = 0.f;
 	const float				Setting::FOG_NEAR_MAX			   = 1000.f;
-	const float				Setting::FOG_FAR_DEFAULT		   = 600.f;
+	const float				Setting::FOG_FAR_DEFAULT		   = 80.f;
 	const float				Setting::FOG_FAR_MIN			   = 0.f;
 	const float				Setting::FOG_FAR_MAX			   = 1000.f;
 	const float				Setting::FOG_DENSITY_DEFAULT	   = 0.8f;

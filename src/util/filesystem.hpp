@@ -124,6 +124,18 @@ namespace VTX
 				return getRepresentationLibraryDirectory() / p_filename;
 			}
 
+			inline const FilePath getRenderEffectPresetLibraryDirectory()
+			{
+				std::filesystem::create_directories( LIBRARIES_DIR );
+				std::filesystem::create_directories( RENDER_PRESET_LIBRARY_DIR );
+
+				return RENDER_PRESET_LIBRARY_DIR;
+			}
+			inline const FilePath getRenderEffectPath( const std::string & p_filename )
+			{
+				return getRenderEffectPresetLibraryDirectory() / p_filename;
+			}
+
 			inline const std::string readPath( const FilePath & p_path )
 			{
 				std::ifstream file;

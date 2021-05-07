@@ -1,10 +1,14 @@
 #include "render_effect_preset_library.hpp"
+#include "action/action_manager.hpp"
+#include "action/renderer.hpp"
 #include "event/event_manager.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "renderer/base_renderer.hpp"
 #include "setting.hpp"
 #include "view/callback_view.hpp"
 #include "vtx_app.hpp"
+#include "worker/render_effect_loader.hpp"
+#include "worker/worker_manager.hpp"
 
 namespace VTX::Model::Renderer
 {
@@ -13,15 +17,22 @@ namespace VTX::Model::Renderer
 	RenderEffectPresetLibrary::RenderEffectPresetLibrary() :
 		BaseModel( ID::Model::MODEL_RENDERER_RENDER_EFFECT_PRESET_LIBRARY )
 	{
-		_init();
+		Worker::RenderEffectPresetLibraryLoader * libraryLoader = new Worker::RenderEffectPresetLibraryLoader( *this );
+		libraryLoader->activeNotify( false );
+		VTX_WORKER( libraryLoader );
+
+		if ( _presets.size() <= 0 )
+		{
+			_init();
+		}
 	};
 	RenderEffectPresetLibrary ::~RenderEffectPresetLibrary()
 	{
-		while ( _presets.size() > 0 )
-		{
-			MVC::MvcManager::get().deleteModel<RenderEffectPreset>( _presets[ _presets.size() - 1 ] );
-			_presets.pop_back();
-		}
+		Action::Renderer::SavePreset * const saveAction = new Action::Renderer::SavePreset( *this );
+		saveAction->setAsync( false );
+
+		VTX_ACTION( saveAction );
+		clear( false );
 	};
 
 	RenderEffectPreset * const RenderEffectPresetLibrary::getPreset( const int p_index )
@@ -198,6 +209,18 @@ namespace VTX::Model::Renderer
 				res++;
 		}
 		return res;
+	}
+
+	void RenderEffectPresetLibrary::clear( const bool p_notify )
+	{
+		while ( _presets.size() > 0 )
+		{
+			MVC::MvcManager::get().deleteModel<RenderEffectPreset>( _presets.back() );
+			_presets.pop_back();
+		}
+
+		if ( p_notify )
+			_notifyDataChanged();
 	}
 
 	void RenderEffectPresetLibrary::_init()
