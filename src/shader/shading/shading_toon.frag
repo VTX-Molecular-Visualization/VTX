@@ -4,7 +4,7 @@ layout( binding = 0 ) uniform usampler2D gbViewPositionNormal;
 layout( binding = 1 ) uniform sampler2D gbColor;
 layout( binding = 2 ) uniform sampler2D gbAmbientOcclusion;
 
-uniform vec3 uBackgroundColor;
+uniform vec4 uBackgroundColor;
 
 uniform float uFogNear;
 uniform float uFogFar;
@@ -41,9 +41,9 @@ void main()
 	if ( data.viewPosition.z == 0.f )
 	{
 		if ( uFogDensity != 0.f )
-			fragColor = vec4( mix( uBackgroundColor, uFogColor, uFogDensity ) * uLightColor, 1.f );
+			fragColor = vec4( mix( vec3( uBackgroundColor ), uFogColor, uFogDensity ), uBackgroundColor.w );
 		else
-			fragColor = vec4( uBackgroundColor, 1.f );
+			fragColor = uBackgroundColor;
 		return;
 	}
 
@@ -67,5 +67,5 @@ void main()
 	const float fogFactor = smoothstep( uFogNear, uFogFar, -data.viewPosition.z ) * uFogDensity;
 	const vec3	color	  = texelFetch( gbColor, texCoord, 0 ).xyz * lighting * ambientOcclusion;
 
-	fragColor = vec4( mix( color, uBackgroundColor, fogFactor ) * uLightColor, 1.f );
+	fragColor = vec4( mix( color, uFogColor, fogFactor ) * uLightColor, 1.f );
 }

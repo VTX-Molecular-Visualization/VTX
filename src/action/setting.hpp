@@ -128,6 +128,21 @@ namespace VTX::Action::Setting
 		const Color::Rgb _color;
 	};
 
+	class ChangeBackgroundOpacity : public BaseAction
+	{
+	  public:
+		explicit ChangeBackgroundOpacity( const float p_opacity ) : _opacity( p_opacity ) {}
+
+		virtual void execute() override
+		{
+			VTX_SETTING().backgroundOpacity = Util::Math::clamp( _opacity, 0.f, 1.f );
+			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		};
+
+	  private:
+		const float _opacity;
+	};
+
 	class ChangeRepresentation : public BaseAction
 	{
 	  public:
@@ -312,6 +327,22 @@ namespace VTX::Action::Setting
 
 	  private:
 		const Color::Rgb _color;
+	};
+
+	class ChangeOutlineThickness : public BaseAction
+	{
+	  public:
+		explicit ChangeOutlineThickness( const float p_thickness ) : _thickness( p_thickness ) {}
+
+		virtual void execute() override
+		{
+			VTX_SETTING().outlineThickness = Util::Math::clamp(
+				_thickness, VTX::Setting::OUTLINE_THICKNESS_MIN, VTX::Setting::OUTLINE_THICKNESS_MAX );
+			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		};
+
+	  private:
+		const float _thickness;
 	};
 
 	class ActiveFog : public BaseAction

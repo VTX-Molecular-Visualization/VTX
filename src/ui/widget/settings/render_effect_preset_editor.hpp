@@ -78,13 +78,14 @@ namespace VTX::UI::Widget::Settings
 		FloatFieldSliderWidget * _fogDensity = nullptr;
 		ColorFieldButton *		 _fogColor	 = nullptr;
 
-		ColorFieldButton *		 _backgroundColor  = nullptr;
-		ColorFieldButton *		 _cameraLightColor = nullptr;
-		FloatFieldSliderWidget * _cameraFOV		   = nullptr;
-		QSpinBox *				 _cameraNear	   = nullptr;
-		QSpinBox *				 _cameraFar		   = nullptr;
-		QCheckBox *				 _antialiasing	   = nullptr;
-		QCheckBox *				 _perspective	   = nullptr;
+		ColorFieldButton *		 _backgroundColor	= nullptr;
+		FloatFieldSliderWidget * _backgroundOpacity = nullptr;
+		ColorFieldButton *		 _cameraLightColor	= nullptr;
+		FloatFieldSliderWidget * _cameraFOV			= nullptr;
+		QSpinBox *				 _cameraNear		= nullptr;
+		QSpinBox *				 _cameraFar			= nullptr;
+		QCheckBox *				 _antialiasing		= nullptr;
+		QCheckBox *				 _perspective		= nullptr;
 
 		void _addItem( QWidget * const p_widget );
 		void _addItem( QWidget * const p_widget, const QString & p_label );
@@ -112,6 +113,7 @@ namespace VTX::UI::Widget::Settings
 		void _onFogColorChanged( const Color::Rgb & p_color );
 
 		void _onBackgroundColorChanged( const Color::Rgb & p_color );
+		void _onBackgroundOpacityChanged( const float p_color );
 		void _onCameraLightColorChanged( const Color::Rgb & p_color );
 		void _onCameraFOVChanged( const float p_value );
 		void _onCameraNearChanged( const float p_value );

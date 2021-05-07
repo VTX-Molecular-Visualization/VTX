@@ -37,7 +37,7 @@ namespace VTX::Renderer::GL
 		/// TODO: here we cannot set the output framebuffer cause it isn't create
 		/// So "assert( _gl->glIsFramebuffer( p_id ) );" fails in Framebuffer::asign
 		// Set size.
-		//BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
+		// BaseRenderer::resize( p_width, p_height, p_outputFramebufferId );
 		_width	= p_width;
 		_height = p_height;
 
@@ -102,6 +102,8 @@ namespace VTX::Renderer::GL
 
 	void GL::renderFrame( const Object3D::Scene & p_scene )
 	{
+		//_gl->glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+
 		// TODO: do not change each frame
 		/// TODO2: why this?
 		if ( VTX_SETTING().cameraNear == 0.f )

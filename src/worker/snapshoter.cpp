@@ -30,11 +30,13 @@ namespace VTX
 			// Force AA and disable coutner.
 			UI::Widget::Render::OpenGLWidget & glWidget = VTXApp::get().getMainWindow().getOpenGLWidget();
 			glWidget.setShowCounter( false );
+			/*
 			const bool activeAA = VTX_SETTING().activeAA;
 			if ( activeAA == false )
 			{
 				VTX_ACTION( new Action::Setting::ActiveAA( true ) );
 			}
+			*/
 			glWidget.update();
 
 			// Grab image.
@@ -45,10 +47,12 @@ namespace VTX
 
 			// Restore values.
 			glWidget.setShowCounter( true );
+			/*
 			if ( activeAA == false )
 			{
 				VTX_ACTION( new Action::Setting::ActiveAA( false ) );
 			}
+			*/
 			glWidget.update();
 
 			// Add watermark.
@@ -77,7 +81,7 @@ namespace VTX
 			float ratio			= desiredHeight / (float)watermarkSize.height();
 			watermarkSize.setHeight( desiredHeight );
 			watermarkSize.setWidth( watermarkSize.width() * ratio );
-			QImage watermarkImg( watermarkSize, QImage::Format_ARGB32 );
+			QImage watermarkImg( watermarkSize, QImage::Format_RGBA64_Premultiplied );
 
 			// watermarkSvg.setAspectRatioMode( Qt::AspectRatioMode::KeepAspectRatioByExpanding );
 			QPainter watermarkPainter = QPainter( &watermarkImg );
@@ -116,7 +120,7 @@ namespace VTX
 				}
 			}
 
-			if ( VTX_SETTING().backgroundColor.brightness() < 0.5f )
+			if ( VTX_SETTING().backgroundColor.brightness() < 0.5f && VTX_SETTING().backgroundOpacity > 0.5f )
 			{
 				watermarkImg.invertPixels( QImage::InvertMode::InvertRgb );
 			}

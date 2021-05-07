@@ -71,6 +71,8 @@ namespace VTX
 
 		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
 		Color::Rgb				backgroundColor = BACKGROUND_COLOR_DEFAULT;
+		static const float		BACKGROUND_OPACITY_DEFAULT;
+		float					backgroundOpacity = BACKGROUND_OPACITY_DEFAULT;
 
 		static const int REPRESENTATION_DEFAULT_INDEX;
 		int				 representation = REPRESENTATION_DEFAULT_INDEX;

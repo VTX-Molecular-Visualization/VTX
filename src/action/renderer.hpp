@@ -399,6 +399,29 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPreset & _preset;
 		const Color::Rgb					  _color;
 	};
+
+	class ChangeBackgroundOpacity : public BaseAction
+	{
+	  public:
+		ChangeBackgroundOpacity( Model::Renderer::RenderEffectPreset & p_preset, const float p_opacity ) :
+			_preset( p_preset ), _opacity( p_opacity ) {};
+
+		virtual void execute() override
+		{
+			_preset.setBackgroundOpacity( _opacity );
+
+			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+			{
+				_preset.apply();
+				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			}
+		};
+
+	  private:
+		Model::Renderer::RenderEffectPreset & _preset;
+		const float							  _opacity;
+	};
+
 	class ChangeCameraLightColor : public BaseAction
 	{
 	  public:
