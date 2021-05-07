@@ -31,7 +31,7 @@ namespace VTX::Worker
 				try
 				{
 					reader->readFile( fileIterator->path(), *preset );
-					_library.addPreset( preset, false );
+					_library.addPreset( preset, _notify );
 				}
 				catch ( const std::exception & p_e )
 				{
@@ -47,8 +47,41 @@ namespace VTX::Worker
 
 		delete reader;
 
-		if ( _notify )
-			_library.forceNotifyDataChanged();
+		chrono.stop();
+
+		VTX_INFO( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
+	}
+
+	void RenderEffectPresetLoader::_run()
+	{
+		Tool::Chrono chrono;
+
+		IO::Reader::SerializedObject<Model::Renderer::RenderEffectPreset> * const reader
+			= new IO::Reader::SerializedObject<Model::Renderer::RenderEffectPreset>();
+
+		chrono.start();
+
+		for ( const FilePath * path : _paths )
+		{
+			Model::Renderer::RenderEffectPreset * const preset
+				= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
+
+			try
+			{
+				reader->readFile( *path, *preset );
+				Model::Renderer::RenderEffectPresetLibrary::get().addPreset( preset, true );
+			}
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Cannot load render effect preset at " + path->string() + " : "
+						   + std::string( p_e.what() ) );
+				MVC::MvcManager::get().deleteModel( preset );
+			}
+
+			VTX_INFO( "render effect preset " + path->filename().string() + " loaded." );
+		}
+
+		delete reader;
 
 		chrono.stop();
 

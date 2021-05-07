@@ -175,7 +175,7 @@ namespace VTX::Model::Representation
 	{
 		while ( _representations.size() > 0 )
 		{
-			deleteRepresentation( int(_representations.size() - 1), p_notify );
+			deleteRepresentation( int( _representations.size() - 1 ), p_notify );
 		}
 	}
 

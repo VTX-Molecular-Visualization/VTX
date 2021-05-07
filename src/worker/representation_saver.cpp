@@ -46,7 +46,6 @@ namespace VTX::Worker
 
 		chrono.start();
 		VTX_INFO( "Saving " + _representation->getName() );
-		const FilePath path = Util::Filesystem::getRepresentationPath( _representation->getName() );
 
 		IO::Writer::SerializedObject<Model::Representation::Representation> * writer
 			= new IO::Writer::SerializedObject<Model::Representation::Representation>();
@@ -54,7 +53,7 @@ namespace VTX::Worker
 		// Write.
 		try
 		{
-			writer->writeFile( path.string(), *_representation );
+			writer->writeFile( _path.string(), *_representation );
 		}
 		catch ( const std::exception & p_e )
 		{

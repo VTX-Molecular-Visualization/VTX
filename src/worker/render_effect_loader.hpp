@@ -8,7 +8,6 @@
 #include "base_worker.hpp"
 #include "define.hpp"
 #include "util/filesystem.hpp"
-#include <map>
 #include <vector>
 
 namespace VTX
@@ -45,6 +44,23 @@ namespace VTX
 			const FilePath * const						 _path;
 			Model::Renderer::RenderEffectPresetLibrary & _library;
 			bool										 _notify = true;
+		};
+
+		class RenderEffectPresetLoader : public Worker::BaseWorker
+		{
+		  public:
+			explicit RenderEffectPresetLoader( const FilePath & p_paths ) { _paths.emplace_back( &p_paths ); }
+			explicit RenderEffectPresetLoader( const std::vector<const FilePath *> & p_paths )
+			{
+				for ( const FilePath * const path : p_paths )
+					_paths.emplace_back( path );
+			}
+
+		  protected:
+			void _run() override;
+
+		  private:
+			std::vector<const FilePath *> _paths = std::vector<const FilePath *>();
 		};
 	} // namespace Worker
 } // namespace VTX

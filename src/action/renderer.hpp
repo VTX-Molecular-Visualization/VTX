@@ -33,14 +33,14 @@ namespace VTX::Action::Renderer
 	class SavePreset : public BaseAction
 	{
 	  public:
-		SavePreset( const Model::Renderer::RenderEffectPreset & p_representation )
+		SavePreset( const Model::Renderer::RenderEffectPreset & p_preset )
 		{
-			_renderEffectPresets.emplace( &p_representation );
+			_renderEffectPresets.emplace( &p_preset );
 		};
-		SavePreset( const std::unordered_set<const Model::Renderer::RenderEffectPreset *> & p_representations )
+		SavePreset( const std::unordered_set<const Model::Renderer::RenderEffectPreset *> & p_presets )
 		{
-			for ( const Model::Renderer::RenderEffectPreset * const representation : p_representations )
-				_renderEffectPresets.emplace( representation );
+			for ( const Model::Renderer::RenderEffectPreset * const preset : p_presets )
+				_renderEffectPresets.emplace( preset );
 		};
 		SavePreset( Model::Renderer::RenderEffectPresetLibrary & p_library )
 		{
@@ -55,7 +55,7 @@ namespace VTX::Action::Renderer
 		{
 			if ( _clearDirectory )
 			{
-				Util::Filesystem::clearDirectory( Util::Filesystem::REPRESENTATION_LIBRARY_DIR );
+				Util::Filesystem::clearDirectory( Util::Filesystem::RENDER_EFFECT_PRESET_LIBRARY_DIR );
 			}
 
 			for ( const Model::Renderer::RenderEffectPreset * const renderEffect : _renderEffectPresets )
@@ -70,8 +70,11 @@ namespace VTX::Action::Renderer
 				}
 				else
 				{
+					FilePath path = Util::Filesystem::getRenderEffectPath( renderEffect->getName() );
+					Util::Filesystem::generateUniqueFileName( path );
+
 					Worker::RenderEffectPresetSaver * librarySaver
-						= new Worker::RenderEffectPresetSaver( renderEffect );
+						= new Worker::RenderEffectPresetSaver( renderEffect, path );
 					VTX_WORKER( librarySaver );
 				}
 			}

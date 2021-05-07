@@ -46,6 +46,9 @@ namespace VTX::View::UI::Widget::Renderer
 		void _onCopyPreset() const;
 		void _onDeletePreset();
 
+		void _onImportPreset();
+		void _onReloadLibrary();
+
 		void _refreshPresetDisplayed( const bool p_updateRenderer );
 		void _refreshDeletePresetButton();
 
@@ -54,6 +57,9 @@ namespace VTX::View::UI::Widget::Renderer
 		QPushButton *				  _addPresetButton	  = nullptr;
 		QPushButton *				  _copyPresetButton	  = nullptr;
 		QPushButton *				  _deletePresetButton = nullptr;
+
+		QPushButton * _importPresetButton = nullptr;
+		QPushButton * _reloadButton		  = nullptr;
 
 		RenderEffectPresetEditor * _renderPresetEditor = nullptr;
 	};

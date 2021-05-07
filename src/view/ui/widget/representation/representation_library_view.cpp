@@ -25,6 +25,7 @@ namespace VTX::View::UI::Widget::Representation
 
 		QHBoxLayout * const horizontalLayout = new QHBoxLayout( this );
 		QHBoxLayout * const headerLayout	 = new QHBoxLayout();
+		QHBoxLayout * const bottomLayout	 = new QHBoxLayout();
 		QVBoxLayout * const verticalLayout	 = new QVBoxLayout();
 
 		const int currentIndex = 0;
@@ -43,13 +44,23 @@ namespace VTX::View::UI::Widget::Representation
 		_deletePresetButton = new QPushButton( this );
 		_deletePresetButton->setIcon( QIcon( ":/sprite/delete_preset_icon.png" ) );
 
+		_importPresetButton = new QPushButton( this );
+		_importPresetButton->setText( "Import" );
+		_reloadLibraryButton = new QPushButton( this );
+		_reloadLibraryButton->setText( "Reload" );
+
 		headerLayout->addWidget( _presetList, 10 );
 		headerLayout->addWidget( _addPresetButton );
 		headerLayout->addWidget( _copyPresetButton );
 		headerLayout->addWidget( _deletePresetButton );
 
+		bottomLayout->addStretch( 100 );
+		bottomLayout->addWidget( _importPresetButton );
+		bottomLayout->addWidget( _reloadLibraryButton );
+
 		verticalLayout->addItem( headerLayout );
 		verticalLayout->addWidget( _representationPresetEditor );
+		verticalLayout->addItem( bottomLayout );
 
 		horizontalLayout->addItem( verticalLayout );
 
@@ -66,6 +77,9 @@ namespace VTX::View::UI::Widget::Representation
 		connect( _addPresetButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onAddPreset );
 		connect( _copyPresetButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onCopyPreset );
 		connect( _deletePresetButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onDeletePreset );
+
+		connect( _importPresetButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onImportPreset );
+		connect( _reloadLibraryButton, &QPushButton::clicked, this, &RepresentationLibraryView::_onReloadLibrary );
 	}
 
 	void RepresentationLibraryView::receiveEvent( const Event::VTXEvent & p_event )
@@ -99,16 +113,24 @@ namespace VTX::View::UI::Widget::Representation
 			this,
 			new Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ),
 			"Confirm",
-			"Are you sure to delete thie preset ?" );
+			"Are you sure to delete this preset ?" );
+	}
+	void RepresentationLibraryView::_onImportPreset() const { VTX::UI::Dialog::importRepresentationPresetDialog(); }
+	void RepresentationLibraryView::_onReloadLibrary()
+	{
+		VTX::UI::Dialog::confirmActionDialog( this,
+											  new Action::Representation::ReloadPresets(),
+											  "Confirm",
+											  "Are you sure to reload all presets ? Current changes will be lost." );
 	}
 
 	void RepresentationLibraryView::_refreshPresetDisplayed( const bool p_applyPreset )
 	{
-		const int									  currentIndex	 = _presetList->currentIndex();
+		const int currentIndex = _presetList->currentIndex();
+
 		Model::Representation::Representation * const representation = _model->getRepresentation( currentIndex );
 
 		_representationPresetEditor->setPreset( representation, p_applyPreset );
-
 		_deletePresetButton->setEnabled( _model->canDeleteRepresentation( representation ) );
 	}
 

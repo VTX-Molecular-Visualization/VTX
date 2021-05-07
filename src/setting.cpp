@@ -31,16 +31,6 @@ namespace VTX
 	const int Setting::STATUS_PROGRESS_BAR_CHUNKS = 10;
 	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;
 
-	const QString Setting::DEFAULT_SAVE_FOLDER	   = "../save";
-	const QString Setting::DEFAULT_MOLECULE_FOLDER = "../data";
-
-	const QString Setting::MOLECULE_EXTENSIONS = "*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm";
-	const QString Setting::VTX_EXTENSIONS	   = "*.vtx";
-
-	const QString Setting::MOLECULE_FILE_FILTERS = "Molecule file (" + MOLECULE_EXTENSIONS + ")";
-	const QString Setting::OPEN_FILE_FILTERS	 = "VTX file (" + VTX_EXTENSIONS + " " + MOLECULE_EXTENSIONS + ")";
-	const QString Setting::SAVE_FILE_FILTERS	 = "VTX file (" + VTX_EXTENSIONS + ")";
-
 	// Rendering.
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT		   = true;
 	const bool					  Setting::FORCE_RENDERER_DEFAULT		   = false;

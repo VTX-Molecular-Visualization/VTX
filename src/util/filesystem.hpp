@@ -8,6 +8,7 @@
 #include "../exception.hpp"
 #include "define.hpp"
 #include "tool/logger.hpp"
+#include <QString>
 #include <fstream>
 
 #ifdef _MSC_VER
@@ -54,8 +55,21 @@ namespace VTX
 			static const FilePath LOGS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/logs" );
 			static const FilePath LIBRARIES_DIR = FilePath( EXECUTABLE_DIR.string() + "/libraries" );
 
+			static const QString DEFAULT_SAVE_FOLDER	 = "../save";
+			static const QString DEFAULT_MOLECULE_FOLDER = "../data";
+
+			static const QString MOLECULE_EXTENSIONS = "*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm";
+			static const QString VTX_EXTENSIONS		 = "*.vtx";
+
+			static const QString MOLECULE_FILE_FILTERS = "Molecule file (" + MOLECULE_EXTENSIONS + ")";
+			static const QString OPEN_FILE_FILTERS = "VTX file (" + VTX_EXTENSIONS + " " + MOLECULE_EXTENSIONS + ")";
+			static const QString SAVE_FILE_FILTERS = "VTX file (" + VTX_EXTENSIONS + ")";
+
+			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
+			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
+
 			static const FilePath REPRESENTATION_LIBRARY_DIR = FilePath( LIBRARIES_DIR.string() + "/representations" );
-			static const FilePath RENDER_PRESET_LIBRARY_DIR	 = FilePath( LIBRARIES_DIR.string() + "/render_effects" );
+			static const FilePath RENDER_EFFECT_PRESET_LIBRARY_DIR	 = FilePath( LIBRARIES_DIR.string() + "/render_effects" );
 
 			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/../../setting.json" );
 			static const FilePath FFMPEG_EXE_FILE	= FilePath( "bin/ffmpeg.exe" );
@@ -127,9 +141,9 @@ namespace VTX
 			inline const FilePath getRenderEffectPresetLibraryDirectory()
 			{
 				std::filesystem::create_directories( LIBRARIES_DIR );
-				std::filesystem::create_directories( RENDER_PRESET_LIBRARY_DIR );
+				std::filesystem::create_directories( RENDER_EFFECT_PRESET_LIBRARY_DIR );
 
-				return RENDER_PRESET_LIBRARY_DIR;
+				return RENDER_EFFECT_PRESET_LIBRARY_DIR;
 			}
 			inline const FilePath getRenderEffectPath( const std::string & p_filename )
 			{
@@ -154,7 +168,46 @@ namespace VTX
 				return result;
 			}
 
-			inline const void clearDirectory( const FilePath & p_directory )
+			inline void generateUniqueFileName( FilePath & p_path )
+			{
+				uint counter = 2;
+
+				std::string defaultFileName = p_path.filename().string();
+
+				while ( std::filesystem::exists( p_path ) )
+				{
+					p_path.replace_filename( defaultFileName + " " + std::to_string( counter ) );
+					counter++;
+				}
+			}
+
+			inline bool copyFile( const FilePath & p_from, FilePath & p_to, const bool p_forceCreateNew )
+			{
+				bool succeed = false;
+
+				if ( std::filesystem::exists( p_to ) )
+				{
+					if ( p_forceCreateNew )
+						generateUniqueFileName( p_to );
+					else
+						std::filesystem::remove( p_to );
+				}
+
+				try
+				{
+					std::filesystem::copy( p_from, p_to );
+					succeed = true;
+				}
+				catch ( std::exception e )
+				{
+					VTX_WARNING( "Cannot copy file " + p_from.string() + " to " + p_to.string() + " : " + e.what() );
+					succeed = false;
+				}
+
+				return succeed;
+			}
+
+			inline void clearDirectory( const FilePath & p_directory )
 			{
 				try
 				{

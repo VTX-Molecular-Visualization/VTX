@@ -46,7 +46,6 @@ namespace VTX::Worker
 
 		chrono.start();
 		VTX_INFO( "Saving " + _preset->getName() );
-		const FilePath path = Util::Filesystem::getRenderEffectPath( _preset->getName() );
 
 		IO::Writer::SerializedObject<Model::Renderer::RenderEffectPreset> * writer
 			= new IO::Writer::SerializedObject<Model::Renderer::RenderEffectPreset>();
@@ -54,7 +53,7 @@ namespace VTX::Worker
 		// Write.
 		try
 		{
-			writer->writeFile( path.string(), *_preset );
+			writer->writeFile( _path.string(), *_preset );
 		}
 		catch ( const std::exception & p_e )
 		{

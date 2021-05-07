@@ -78,7 +78,12 @@ namespace VTX::Action::Representation
 				}
 				else
 				{
-					Worker::RepresentationSaver * librarySaver = new Worker::RepresentationSaver( representation );
+					FilePath path = Util::Filesystem::getRepresentationPath( representation->getName() );
+					Util::Filesystem::generateUniqueFileName( path );
+
+					Worker::RepresentationSaver * librarySaver
+						= new Worker::RepresentationSaver( representation, path );
+
 					VTX_WORKER( librarySaver );
 				}
 			}
