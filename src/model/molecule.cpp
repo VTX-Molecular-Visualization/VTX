@@ -52,9 +52,13 @@ namespace VTX
 		Chain & Molecule::addChain()
 		{
 			Chain * const chain = MVC::MvcManager::get().instantiateModel<Chain>();
-			_chains.emplace_back( chain );
-			_realChainCount++;
+			_addChain( chain );
 			return *chain;
+		}
+		void Molecule::_addChain( Model::Chain * const p_chain )
+		{
+			_chains.emplace_back( p_chain );
+			_realChainCount++;
 		}
 
 		Residue & Molecule::addResidue()
@@ -237,6 +241,10 @@ namespace VTX
 			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
 			{
 				const Atom * const atom = _atoms[ i ];
+
+				if ( atom == nullptr )
+					continue;
+
 				// Solvent hidden.
 				if ( _showSolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
 				{
@@ -525,7 +533,9 @@ namespace VTX
 		void Molecule::render( const Object3D::Camera & p_camera ) const
 		{
 			BaseModel3D::render( p_camera );
-			_secondaryStructure->render( p_camera );
+
+			if ( _secondaryStructure != nullptr )
+				_secondaryStructure->render( p_camera );
 		}
 
 		bool Molecule::mergeTopology( const Molecule & p_molecule )

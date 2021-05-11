@@ -106,6 +106,8 @@ namespace VTX
 			delete _mainWindow;
 		}
 
+		Setting::cleanRecentPaths();
+
 		exit();
 	}
 

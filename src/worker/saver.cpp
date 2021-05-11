@@ -54,7 +54,7 @@ namespace VTX
 					for ( const auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getItems() )
 					{
 						Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( it.first );
-						writer->writeFile( _path->filename().string(), molecule );
+						writer->writeFile( _path->string(), molecule );
 					}
 				}
 				// else export all the structures imported in the scene

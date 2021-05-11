@@ -74,7 +74,7 @@ namespace VTX
 		}
 
 		inline const FilePath & getCurrentPath() const { return _currentFilePath; }
-		inline void				setCurrentPath( FilePath & p_filePath, const bool p_addInRecentPath = true )
+		inline void				setCurrentPath( const FilePath & p_filePath, const bool p_addInRecentPath = true )
 		{
 			_currentFilePath = p_filePath;
 			if ( p_addInRecentPath )

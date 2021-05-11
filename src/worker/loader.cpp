@@ -55,6 +55,7 @@ namespace VTX
 				if ( mode == MODE::UNKNOWN )
 				{
 					emit logError( "Format not supported" );
+					_pathState.emplace( path, false );
 				}
 				else if ( mode == MODE::MOLECULE )
 				{
@@ -70,12 +71,14 @@ namespace VTX
 					{
 						reader->readFile( *path, *molecule );
 						_molecules.emplace_back( molecule );
+						_pathState.emplace( path, true );
 					}
 					catch ( const std::exception & p_e )
 					{
 						emit logError( "Error loading file" );
 						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( molecule );
+						_pathState.emplace( path, false );
 					}
 
 					delete reader;
@@ -89,12 +92,14 @@ namespace VTX
 					{
 						reader->readFile( *path, *mesh );
 						_meshes.emplace_back( mesh );
+						_pathState.emplace( path, true );
 					}
 					catch ( const std::exception & p_e )
 					{
 						emit logError( "Error loading file" );
 						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( mesh );
+						_pathState.emplace( path, false );
 					}
 
 					delete reader;
@@ -108,16 +113,19 @@ namespace VTX
 						reader->readFile( *path, VTXApp::get() );
 						_scene = &VTXApp::get().getScene();
 						emit logInfo( "App loaded " );
+						_pathState.emplace( path, true );
 					}
 					catch ( const std::exception & p_e )
 					{
 						emit logError( "Cannot load app: " + std::string( p_e.what() ) );
+						_pathState.emplace( path, false );
 					}
 
 					delete reader;
 				}
 
-				delete path;
+				// Path deleted in callback => save path in recent path when loading works
+				// delete path;
 
 				chrono.stop();
 				emit logInfo( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );

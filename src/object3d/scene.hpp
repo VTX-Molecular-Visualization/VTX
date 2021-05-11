@@ -42,7 +42,7 @@ namespace VTX::Object3D
 		inline const VectorMeshTrianglePtr & getMeshes() const { return _meshes; };
 		const Math::AABB &					 getAABB();
 
-		void addMolecule( MoleculePtr const );
+		void addMolecule( MoleculePtr const, const bool p_sendEvent = true );
 		void removeMolecule( MoleculePtr const );
 		void addPath( PathPtr const );
 		void addMesh( MeshTrianglePtr const );

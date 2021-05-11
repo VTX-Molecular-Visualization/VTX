@@ -91,6 +91,7 @@ namespace VTX::Model::Representation
 
 	  protected:
 		InstantiatedRepresentation( const Representation * const p_linkedRepresentation );
+		InstantiatedRepresentation();
 		~InstantiatedRepresentation();
 
 		const Representation * _linkedRepresentation = nullptr;

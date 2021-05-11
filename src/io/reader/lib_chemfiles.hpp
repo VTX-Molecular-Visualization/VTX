@@ -38,6 +38,11 @@ namespace VTX
 
 				void _prepareChemfiles() const;
 				void _readTrajectory( chemfiles::Trajectory &, const FilePath &, Model::Molecule & ) const;
+
+				void _logError( const std::string & p_log ) const;
+				void _logWarning( const std::string & p_log ) const;
+				void _logInfo( const std::string & p_log ) const;
+				void _logDebug( const std::string & p_log ) const;
 			};
 		} // namespace Reader
 	}	  // namespace IO

@@ -12,6 +12,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <algorithm>
+#include <iostream>
 #include <magic_enum.hpp>
 #include <thread>
 #include <unordered_map>
@@ -27,7 +28,6 @@ namespace VTX
 			{
 				_prepareChemfiles();
 				chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string() );
-
 				_readTrajectory( trajectory, p_path, p_molecule );
 			}
 
@@ -46,8 +46,9 @@ namespace VTX
 			void LibChemfiles::_prepareChemfiles() const
 			{
 #ifdef _DEBUG
-				chemfiles::warning_callback_t callback
-					= [ & ]( const std::string & p_log ) { emit _loader->logWarning( p_log ); };
+				chemfiles::warning_callback_t callback;
+				callback = [ & ]( const std::string & p_log ) { _logWarning( p_log ); };
+
 #else
 				chemfiles::warning_callback_t callback = []( const std::string & p_log ) { /*VTX_WARNING( p_log );*/ };
 #endif
@@ -75,22 +76,22 @@ namespace VTX
 #ifdef _DEBUG
 					if ( frameIdx % 100 == 0 )
 					{
-						emit _loader->logDebug( "Frames from " + std::to_string( startingFrame ) + " to "
-												+ std::to_string( frameIdx ) + " read in: "
-												+ std::to_string( timeReadingFrames.intervalTime() ) + "s" );
+						_logDebug( "Frames from " + std::to_string( startingFrame ) + " to "
+								   + std::to_string( frameIdx )
+								   + " read in: " + std::to_string( timeReadingFrames.intervalTime() ) + "s" );
 						startingFrame = frameIdx;
 					}
 #endif // DEBUG
 				}
 				timeReadingFrames.stop();
-				emit _loader->logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
+				_logInfo( "Frames read in: " + std::to_string( timeReadingFrames.elapsedTime() ) + "s" );
 			}
 
 			void LibChemfiles::_readTrajectory( chemfiles::Trajectory & p_trajectory,
 												const FilePath &		p_path,
 												Model::Molecule &		p_molecule ) const
 			{
-				emit _loader->logInfo( std::to_string( p_trajectory.nsteps() ) + " frames found" );
+				_logInfo( std::to_string( p_trajectory.nsteps() ) + " frames found" );
 
 				if ( p_trajectory.nsteps() == 0 )
 				{
@@ -127,7 +128,8 @@ namespace VTX
 				chrono.start();
 				chemfiles::Frame frame = p_trajectory.read();
 				chrono.stop();
-				emit _loader->logInfo( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
+
+				_logInfo( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
 
 				const chemfiles::Topology &				topology = frame.topology();
 				const std::vector<chemfiles::Residue> & residues = topology.residues();
@@ -135,11 +137,11 @@ namespace VTX
 				Model::Configuration::Molecule &		config	 = p_molecule.getConfiguration();
 				p_molecule.setPath( p_path );
 
-				if ( topology.bonds().size() == 0 )
+				if ( topology.residues().size() == 0 )
 				{
 					// If no residue, create a fake one.
 					// TODO: check file format instead of residue count?
-					emit			   _loader->logInfo( "No residues found" );
+					_logInfo( "No residues found" );
 					chemfiles::Residue residue = chemfiles::Residue( "" );
 					for ( uint i = 0; i < frame.size(); ++i )
 					{
@@ -174,7 +176,7 @@ namespace VTX
 					{
 						propAtom += " " + it->first;
 					}
-					emit _loader->logDebug( propAtom );
+					_logDebug( propAtom );
 				}
 
 				if ( residues.size() > 0 )
@@ -187,7 +189,7 @@ namespace VTX
 					{
 						propResidue += " " + it->first;
 					}
-					emit _loader->logDebug( propResidue );
+					_logDebug( propResidue );
 				}
 
 				// If no residue, create a fake one.
@@ -196,7 +198,7 @@ namespace VTX
 				if ( residues.size() == 0 )
 				{
 					hasTopology = false;
-					emit			   _loader->logInfo( "No residues found" );
+					_logInfo( "No residues found" );
 					chemfiles::Residue residue = chemfiles::Residue( "" );
 					for ( uint i = 0; i < frame.size(); ++i )
 					{
@@ -291,7 +293,7 @@ namespace VTX
 					{
 						std::string secondaryStructure
 							= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
-						// emit _loader->logDebug( secondaryStructure );
+						// _logDebug( secondaryStructure );
 						if ( secondaryStructure != "" )
 						{
 							if ( secondaryStructure == "extended" )
@@ -367,7 +369,7 @@ namespace VTX
 
 					if ( residue.size() == 0 )
 					{
-						emit _loader->logWarning( "Empty residue found" );
+						_logWarning( "Empty residue found" );
 					}
 					for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 					{
@@ -381,13 +383,14 @@ namespace VTX
 						p_molecule.getAtoms()[ atomId ] = modelAtom;
 						modelAtom->setIndex( atomId );
 						modelAtom->setResiduePtr( modelResidue );
+						modelAtom->setName( atom.name() );
 						std::string atomSymbol = atom.type();
 						std::transform( atomSymbol.begin(),
 										atomSymbol.end(),
 										atomSymbol.begin(),
 										[]( unsigned char c ) { return std::toupper( c ); } );
 
-						// emit _loader->logInfo( atom.name() + " " + atom.type() );
+						// _logInfo( atom.name() + " " + atom.type() );
 
 						std::optional symbol = magic_enum::enum_cast<Model::Atom::SYMBOL>( "A_" + atomSymbol );
 
@@ -532,6 +535,36 @@ namespace VTX
 					p_molecule.getBufferBonds()[ counter * 2u ]		 = uint( bond[ 0 ] );
 					p_molecule.getBufferBonds()[ counter * 2u + 1u ] = uint( bond[ 1 ] );
 				}
+			}
+
+			void LibChemfiles::_logError( const std::string & p_log ) const
+			{
+				if ( _loader != nullptr )
+					emit _loader->logDebug( p_log );
+				else
+					VTX_ERROR( p_log );
+			}
+
+			void LibChemfiles::_logWarning( const std::string & p_log ) const
+			{
+				if ( _loader != nullptr )
+					emit _loader->logWarning( p_log );
+				else
+					VTX_WARNING( p_log );
+			}
+			void LibChemfiles::_logInfo( const std::string & p_log ) const
+			{
+				if ( _loader != nullptr )
+					emit _loader->logInfo( p_log );
+				else
+					VTX_INFO( p_log );
+			}
+			void LibChemfiles::_logDebug( const std::string & p_log ) const
+			{
+				if ( _loader != nullptr )
+					emit _loader->logDebug( p_log );
+				else
+					VTX_DEBUG( p_log );
 			}
 		} // namespace Reader
 	}	  // namespace IO

@@ -1,13 +1,23 @@
 #include "serializer.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
+#include "generic/base_colorable.hpp"
 #include "io/reader/lib_chemfiles.hpp"
-#include "io/writer/writer_chemfiles.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
+#include "model/chain.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
+#include "model/representation/instantiated_representation.hpp"
+#include "model/representation/representation.hpp"
+#include "model/representation/representation_library.hpp"
+#include "model/residue.hpp"
 #include "model/viewpoint.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
+#include "representation/representation_manager.hpp"
 
 namespace VTX
 {
@@ -32,12 +42,10 @@ namespace VTX
 				jsonArrayPaths.emplace_back( serialize( *path ) );
 			}
 
-			return {
-				{ "CAMERA_POSITION", serialize( p_scene.getCamera().getPosition() ) },
-				{ "CAMERA_ROTATION", serialize( p_scene.getCamera().getRotation() ) },
-				/*{ "MOLECULES", jsonArrayMolecules },
-				{ "PATHS", jsonArrayPaths }*/
-			};
+			return { { "CAMERA_POSITION", serialize( p_scene.getCamera().getPosition() ) },
+					 { "CAMERA_ROTATION", serialize( p_scene.getCamera().getRotation() ) },
+					 { "MOLECULES", jsonArrayMolecules },
+					 { "PATHS", jsonArrayPaths } };
 		}
 
 		nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
@@ -46,7 +54,12 @@ namespace VTX
 			std::string				buffer		   = std::string();
 			chemfileWriter.writeBuffer( buffer, p_molecule );
 
-			return { { "MOLECULE_DATA", buffer } };
+			return { { "TRANSFORM", serialize( p_molecule.getTransform() ) },
+					 { "DATA", buffer },
+					 { "REPRESENTATIONS", _serializeMoleculeRepresentations( p_molecule, chemfileWriter ) },
+					 { "VISIBILITIES", _serializeMoleculeVisibilities( p_molecule, chemfileWriter ) },
+					 { "NAME", p_molecule.getName() },
+					 { "PDB_ID", p_molecule.getPdbIdCode() } };
 		}
 
 		nlohmann::json Serializer::serialize( const Model::Path & p_path ) const
@@ -82,15 +95,59 @@ namespace VTX
 					 { "ACTIONS", jsonArray } };
 		}
 
+		nlohmann::json Serializer::serialize(
+			const Model::Representation::InstantiatedRepresentation & p_representation ) const
+		{
+			nlohmann::json json = nlohmann::json();
+
+			const Model::Representation::Representation * const linkedRep = p_representation.getLinkedRepresentation();
+			const int											presetIndex
+				= Model::Representation::RepresentationLibrary::get().getRepresentationIndex( linkedRep );
+
+			json[ "REPRESENTATION_PRESET_INDEX" ] = presetIndex;
+
+			if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_ADD ) )
+				json[ "SPHERE_RADIUS_ADD" ] = p_representation.getSphereData()._radiusAdd;
+			if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SPHERE_RADIUS_FIXED ) )
+				json[ "SPHERE_RADIUS_FIXED" ] = p_representation.getSphereData()._radiusFixed;
+			if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS ) )
+				json[ "CYLINDER_RADIUS" ] = p_representation.getCylinderData()._radius;
+			if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::COLOR_MODE ) )
+				json[ "COLOR_MODE" ] = p_representation.getColorMode();
+			if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SS_COLOR_MODE ) )
+				json[ "SS_COLOR_MODE" ] = p_representation.getSecondaryStructureColorMode();
+			if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::COLOR ) )
+				json[ "COLOR" ] = serialize( p_representation.getColor() );
+
+			return json;
+		}
+
 		nlohmann::json Serializer::serialize( const Color::Rgb & p_color ) const
 		{
 			return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() } };
 		}
 
-		template<int L, typename T, glm::qualifier Q>
-		nlohmann::json Serializer::serialize( const glm::vec<L, T, Q> & p_vec ) const
+		nlohmann::json Serializer::serialize( const Math::Transform & p_transform ) const
+		{
+			return { { "POSITION", serialize( p_transform.getTranslationVector() ) },
+					 { "ROTATION", serialize( p_transform.getEulerAngles() ) },
+					 { "SCALE", serialize( p_transform.getScaleVector() ) } };
+		}
+
+		template<typename T, glm::qualifier Q>
+		nlohmann::json Serializer::serialize( const glm::vec<2, T, Q> & p_vec ) const
+		{
+			return nlohmann::json( { { "X", p_vec.x }, { "Y", p_vec.y } } );
+		}
+		template<typename T, glm::qualifier Q>
+		nlohmann::json Serializer::serialize( const glm::vec<3, T, Q> & p_vec ) const
 		{
 			return nlohmann::json( { { "X", p_vec.x }, { "Y", p_vec.y }, { "Z", p_vec.z } } );
+		}
+		template<typename T, glm::qualifier Q>
+		nlohmann::json Serializer::serialize( const glm::vec<4, T, Q> & p_vec ) const
+		{
+			return nlohmann::json( { { "X", p_vec.x }, { "Y", p_vec.y }, { "Z", p_vec.z }, { "W", p_vec.w } } );
 		}
 
 		template<typename T, glm::qualifier Q>
@@ -151,29 +208,42 @@ namespace VTX
 			Quatf cameraRot;
 			deserialize( p_json.at( "CAMERA_ROTATION" ), cameraRot );
 
+			for ( const nlohmann::json & jsonMolecule : p_json.at( "MOLECULES" ) )
+			{
+				Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+				deserialize( jsonMolecule, *molecule );
+				
+				VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
+				p_scene.addMolecule( molecule );
+			}
+
+			for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
+			{
+				Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
+				deserialize( jsonPath, *path );
+				p_scene.addPath( path );
+			}
+
+			VTXApp::get().getStateMachine().getItem<State::Visualization>(ID::State::VISUALIZATION)->resetCameraController();
 			p_scene.getCamera().setPosition( cameraPos );
 			p_scene.getCamera().setRotation( cameraRot );
-
-			// for ( const nlohmann::json & jsonMolecule : p_json.at( "MOLECULES" ) )
-			//{
-			//	Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
-			//	deserialize( jsonMolecule, *molecule );
-			//	p_scene.addMolecule( molecule );
-			//}
-
-			// for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
-			//{
-			//	Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
-			//	deserialize( jsonPath, *path );
-			//	p_scene.addPath( path );
-			//}
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Model::Molecule & p_molecule ) const
 		{
-			const std::string		 buffer = p_json.at( "MOLECULE_DATA" ).get<std::string>();
+			Math::Transform transform;
+			deserialize( p_json.at( "TRANSFORM" ), transform );
+			p_molecule.applyTransform( transform );
+
+			const std::string		 buffer = p_json.at( "DATA" ).get<std::string>();
 			IO::Reader::LibChemfiles reader = IO::Reader::LibChemfiles( nullptr );
 			reader.readBuffer( buffer, "mol.pdb", p_molecule );
+
+			_deserializeMoleculeRepresentations( p_json.at( "REPRESENTATIONS" ), p_molecule );
+			_deserializeMoleculeVisibilities( p_json.at( "VISIBILITIES" ), p_molecule );
+
+			p_molecule.setName( p_json.at( "NAME" ).get<std::string>() );
+			p_molecule.setPdbIdCode( p_json.at( "PDB_ID" ).get<std::string>() );
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const
@@ -217,6 +287,44 @@ namespace VTX
 			}
 		}
 
+		void Serializer::deserialize( const nlohmann::json &							  p_json,
+									  Model::Representation::InstantiatedRepresentation & p_representation ) const
+		{
+			const int representationPresetIndex = p_json.at( "REPRESENTATION_PRESET_INDEX" ).get<int>();
+			const Model::Representation::Representation * const sourceRepresentation
+				= Model::Representation::RepresentationLibrary::get().getRepresentation( representationPresetIndex );
+
+			p_representation.setLinkedRepresentation( sourceRepresentation );
+
+			if ( p_json.contains( "SPHERE_RADIUS_ADD" ) && !p_representation.getSphereData()._isRadiusFixed )
+			{
+				p_representation.setSphereRadius( p_json.at( "SPHERE_RADIUS_ADD" ).get<float>() );
+			}
+			if ( p_json.contains( "SPHERE_RADIUS_FIXED" ) && p_representation.getSphereData()._isRadiusFixed )
+			{
+				p_representation.setSphereRadius( p_json.at( "SPHERE_RADIUS_FIXED" ).get<float>() );
+			}
+			if ( p_json.contains( "CYLINDER_RADIUS" ) )
+			{
+				p_representation.setCylinderRadius( p_json.at( "CYLINDER_RADIUS" ).get<float>() );
+			}
+			if ( p_json.contains( "COLOR_MODE" ) )
+			{
+				p_representation.setColorMode( p_json.at( "COLOR_MODE" ).get<Generic::COLOR_MODE>() );
+			}
+			if ( p_json.contains( "SS_COLOR_MODE" ) )
+			{
+				p_representation.setSecondaryStructureColorMode(
+					p_json.at( "SS_COLOR_MODE" ).get<Generic::SECONDARY_STRUCTURE_COLOR_MODE>() );
+			}
+			if ( p_json.contains( "COLOR" ) )
+			{
+				Color::Rgb color;
+				deserialize( p_json.at( "COLOR" ), color );
+				p_representation.setColor( color );
+			}
+		}
+
 		void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgb & p_color ) const
 		{
 			p_color.setR( p_json.at( "R" ).get<float>() );
@@ -224,12 +332,40 @@ namespace VTX
 			p_color.setB( p_json.at( "B" ).get<float>() );
 		}
 
-		template<int L, typename T, glm::qualifier Q>
-		void Serializer::deserialize( const nlohmann::json & p_json, glm::vec<L, T, Q> & p_vec ) const
+		void Serializer::deserialize( const nlohmann::json & p_json, Math::Transform & p_transform ) const
+		{
+			Vec3f position;
+			deserialize( p_json.at( "POSITION" ), position );
+			Vec3f euler;
+			deserialize( p_json.at( "ROTATION" ), euler );
+			Vec3f scale;
+			deserialize( p_json.at( "SCALE" ), scale );
+
+			p_transform.setTranslation( position );
+			p_transform.setRotation( euler );
+			p_transform.setScale( scale );
+		}
+
+		template<typename T, glm::qualifier Q>
+		void Serializer::deserialize( const nlohmann::json & p_json, glm::vec<2, T, Q> & p_vec ) const
+		{
+			p_vec.x = p_json.at( "X" ).get<T>();
+			p_vec.y = p_json.at( "Y" ).get<T>();
+		}
+		template<typename T, glm::qualifier Q>
+		void Serializer::deserialize( const nlohmann::json & p_json, glm::vec<3, T, Q> & p_vec ) const
 		{
 			p_vec.x = p_json.at( "X" ).get<T>();
 			p_vec.y = p_json.at( "Y" ).get<T>();
 			p_vec.z = p_json.at( "Z" ).get<T>();
+		}
+		template<typename T, glm::qualifier Q>
+		void Serializer::deserialize( const nlohmann::json & p_json, glm::vec<4, T, Q> & p_vec ) const
+		{
+			p_vec.x = p_json.at( "X" ).get<T>();
+			p_vec.y = p_json.at( "Y" ).get<T>();
+			p_vec.z = p_json.at( "Z" ).get<T>();
+			p_vec.w = p_json.at( "W" ).get<T>();
 		}
 
 		template<typename T, glm::qualifier Q>
@@ -296,5 +432,164 @@ namespace VTX
 			VTX_ACTION( new Action::Setting::ChangeAutoRotateSpeed( autoRotateSpeed ) );
 		}
 
+		nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,
+																	  const Writer::ChemfilesWriter & p_writer ) const
+		{
+			nlohmann::json jsonArrayRepresentations = nlohmann::json::array();
+			nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", ID::Model::MODEL_MOLECULE },
+													{ "INDEX", 0 },
+													{ "REPRESENTATION", serialize( *p_molecule.getRepresentation() ) } };
+			jsonArrayRepresentations.emplace_back( jsonRepresentation );
+
+			for ( const Model::Chain * const chain : p_molecule.getChains() )
+			{
+				if ( chain == nullptr )
+					continue;
+
+				const Model::Representation::InstantiatedRepresentation * const chainCustomRep
+					= chain->hasCustomRepresentation() ? chain->getRepresentation() : nullptr;
+
+				for ( uint residueIndex = 0; residueIndex < chain->getResidueCount(); residueIndex++ )
+				{
+					const Model::Residue * const residue
+						= p_molecule.getResidue( chain->getIndexFirstResidue() + residueIndex );
+
+					if ( residue == nullptr )
+						continue;
+
+					if ( residue->hasCustomRepresentation() )
+					{
+						const uint newResidueIndex = p_writer.getNewResidueIndex( *residue );
+						jsonRepresentation		   = { { "TARGET_TYPE", ID::Model::MODEL_RESIDUE },
+											   { "INDEX", newResidueIndex },
+											   { "REPRESENTATION", serialize( *residue->getRepresentation() ) } };
+
+						jsonArrayRepresentations.emplace_back( jsonRepresentation );
+					}
+					else if ( chainCustomRep != nullptr )
+					{
+						const uint newResidueIndex = p_writer.getNewResidueIndex( *residue );
+						jsonRepresentation		   = { { "TARGET_TYPE", ID::Model::MODEL_RESIDUE },
+											   { "INDEX", newResidueIndex },
+											   { "REPRESENTATION", serialize( *chainCustomRep ) } };
+
+						jsonArrayRepresentations.emplace_back( jsonRepresentation );
+					}
+				}
+			}
+
+			return jsonArrayRepresentations;
+		}
+		nlohmann::json Serializer::_serializeMoleculeVisibilities( const Model::Molecule &		   p_molecule,
+																   const Writer::ChemfilesWriter & p_writer ) const
+		{
+			nlohmann::json jsonChainVisibilitiesArray	= nlohmann::json::array();
+			nlohmann::json jsonResidueVisibilitiesArray = nlohmann::json::array();
+			nlohmann::json jsonAtomVisibilitiesArray	= nlohmann::json::array();
+
+			for ( const Model::Chain * const chain : p_molecule.getChains() )
+			{
+				if ( chain == nullptr )
+					continue;
+
+				if ( !chain->isVisible() )
+				{
+					if ( p_writer.isChainMerged( *chain ) )
+					{
+						for ( uint residueIndex = chain->getIndexFirstResidue();
+							  residueIndex <= chain->getIndexLastResidue();
+							  residueIndex++ )
+						{
+							const Model::Residue * const residue = p_molecule.getResidue( residueIndex );
+
+							if ( residue == nullptr )
+								continue;
+
+							jsonResidueVisibilitiesArray.emplace_back( p_writer.getNewResidueIndex( *residue ) );
+						}
+					}
+					else
+					{
+						jsonChainVisibilitiesArray.emplace_back( chain->getIndex() );
+					}
+				}
+			}
+
+			for ( const Model::Residue * const residue : p_molecule.getResidues() )
+			{
+				if ( residue == nullptr )
+					continue;
+
+				if ( !residue->isVisible() )
+					jsonResidueVisibilitiesArray.emplace_back( p_writer.getNewResidueIndex( *residue ) );
+			}
+
+			for ( const Model::Atom * const atom : p_molecule.getAtoms() )
+			{
+				if ( atom == nullptr )
+					continue;
+
+				if ( !atom->isVisible() )
+					jsonAtomVisibilitiesArray.emplace_back( p_writer.getNewAtomIndex( *atom ) );
+			}
+
+			return { { "CHAINS", jsonChainVisibilitiesArray },
+					 { "RESIDUES", jsonResidueVisibilitiesArray },
+					 { "ATOMS", jsonAtomVisibilitiesArray } };
+		}
+
+		void Serializer::_deserializeMoleculeRepresentations( const nlohmann::json & p_json,
+															  Model::Molecule &		 p_molecule ) const
+		{
+			for ( const nlohmann::json & jsonRepresentations : p_json )
+			{
+				const ID::VTX_ID type  = jsonRepresentations.at( "TARGET_TYPE" ).get<ID::VTX_ID>();
+				const uint		 index = jsonRepresentations.at( "INDEX" ).get<uint>();
+
+				const bool dataValid = ( type == ID::Model::MODEL_MOLECULE )
+									   || ( type == ID::Model::MODEL_CHAIN && index < p_molecule.getChainCount() )
+									   || ( type == ID::Model::MODEL_RESIDUE && index < p_molecule.getResidueCount() );
+
+				// Currently prevent app from crash when lodading out of range (because of deletion)
+				if ( !dataValid )
+					continue;
+
+				Model::Representation::InstantiatedRepresentation * const representation
+					= MVC::MvcManager::get().instantiateModel<Model::Representation::InstantiatedRepresentation>();
+				deserialize( jsonRepresentations.at( "REPRESENTATION" ), *representation );
+
+				if ( type == ID::Model::MODEL_MOLECULE )
+				{
+					Representation::RepresentationManager::get().assignRepresentation(
+						representation, p_molecule, false, false );
+				}
+				else if ( type == ID::Model::MODEL_CHAIN )
+				{
+					Representation::RepresentationManager::get().assignRepresentation(
+						representation, *p_molecule.getChain( index ), false, false );
+				}
+				else if ( type == ID::Model::MODEL_RESIDUE )
+				{
+					Representation::RepresentationManager::get().assignRepresentation(
+						representation, *p_molecule.getResidue( index ), false, false );
+				}
+			}
+		}
+		void Serializer::_deserializeMoleculeVisibilities( const nlohmann::json & p_json,
+														   Model::Molecule &	  p_molecule ) const
+		{
+			for ( const uint invisibleChainIndex : p_json.at( "CHAINS" ) )
+			{
+				p_molecule.getChain( invisibleChainIndex )->setVisible( false );
+			}
+			for ( const uint invisibleResidueIndex : p_json.at( "RESIDUES" ) )
+			{
+				p_molecule.getResidue( invisibleResidueIndex )->setVisible( false );
+			}
+			for ( const uint invisibleAtomIndex : p_json.at( "ATOMS" ) )
+			{
+				p_molecule.getAtom( invisibleAtomIndex )->setVisible( false );
+			}
+		}
 	} // namespace IO
 } // namespace VTX

@@ -37,6 +37,8 @@ namespace VTX
 		// UI.
 		static const std::string ORGANIZATION_NAME;
 		static const std::string PROJECT_NAME;
+		static const std::string LAYOUT_SETTINGS_FOLDER;
+		static const std::string LAYOUT_SETTINGS_FILENAME;
 
 		static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
 		Style::SYMBOL_DISPLAY_MODE				symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
@@ -231,10 +233,11 @@ namespace VTX
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
 
-		static const int					   RECENT_PATH_SAVED_MAX_COUNT;
-		inline static std::list<VTX::FilePath> recentLoadingPath = std::list<VTX::FilePath>();
-		static void							   enqueueNewLoadingPath( FilePath & );
-		static VTX::FilePath				   getRecentLoadingPath( const int p_index );
+		static const int							   RECENT_PATH_SAVED_MAX_COUNT;
+		inline static std::list<const VTX::FilePath *> recentLoadingPath = std::list<const VTX::FilePath *>();
+		static void									   enqueueNewLoadingPath( const FilePath & );
+		static const VTX::FilePath *				   getRecentLoadingPath( const int p_index );
+		static void									   cleanRecentPaths();
 
 		void backup();
 		void recover();

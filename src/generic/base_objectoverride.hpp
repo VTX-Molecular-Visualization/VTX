@@ -56,9 +56,13 @@ namespace VTX
 		template<typename T>
 		class OverridableParameter final
 		{
+		  private:
+			inline static T defaultValue = T();
+
 		  public:
 			OverridableParameter( const T * const p_source ) : _source( p_source ) {};
 			OverridableParameter( const T & p_source ) : _source( &p_source ) {};
+			OverridableParameter() : _source( &defaultValue ) {};
 
 			~OverridableParameter()
 			{

@@ -92,10 +92,6 @@ namespace VTX
 
 		void Visualization::resetCameraController()
 		{
-			if ( getItem<VTX::Controller::BaseCameraController>( _cameraController )->isOrienting() )
-			{
-				return;
-			}
 			getItem<Controller::Trackball>( ID::Controller::TRACKBALL )->reset();
 			getItem<Controller::Freefly>( ID::Controller::FREEFLY )->reset();
 		}

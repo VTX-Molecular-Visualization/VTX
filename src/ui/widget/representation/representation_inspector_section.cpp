@@ -231,7 +231,7 @@ namespace VTX::UI::Widget::Representation
 
 		if ( changeRepresentationColor )
 		{
-			_dummyRepresentation->setColor( p_color );
+			_dummyRepresentation->setColor( p_color, false, true );
 		}
 
 		emit onRepresentationColorChange( *_dummyRepresentation, p_color, p_ssColor );

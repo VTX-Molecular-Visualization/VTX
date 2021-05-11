@@ -52,6 +52,11 @@ namespace VTX::Representation
 																Generic::BaseRepresentable & p_target,
 																const bool					 p_recompute = true,
 																const bool					 p_notify	 = true );
+		void assignRepresentation( InstantiatedRepresentation * const p_instantiatedRepresentation,
+								   Generic::BaseRepresentable &		  p_target,
+								   const bool						  p_recompute = true,
+								   const bool						  p_notify	  = true );
+
 		RepresentationManager::InstantiatedRepresentation * instantiateCopy(
 			const InstantiatedRepresentation * const p_source,
 			Generic::BaseRepresentable &			 p_target );
@@ -79,13 +84,15 @@ namespace VTX::Representation
 
 		void applyRepresentation( Generic::BaseRepresentable &				 p_representable,
 								  const InstantiatedRepresentation &		 p_source,
-								  const Model::Representation::MEMBER_FLAG & p_flag,
-								  const bool								 p_recompute = true );
+								  const Model::Representation::MEMBER_FLAG & p_flag
+								  = Model::Representation::MEMBER_FLAG::ALL,
+								  const bool p_recompute = true );
 
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseRepresentable, T>::value>>
 		void applyRepresentation( std::unordered_set<T *>					 p_representables,
 								  const InstantiatedRepresentation &		 p_source,
-								  const Model::Representation::MEMBER_FLAG & p_flag )
+								  const Model::Representation::MEMBER_FLAG & p_flag
+								  = Model::Representation::MEMBER_FLAG::ALL )
 		{
 			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 

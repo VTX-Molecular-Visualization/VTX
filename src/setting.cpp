@@ -11,8 +11,10 @@ namespace VTX
 {
 	// UI.
 
-	const std::string Setting::ORGANIZATION_NAME = "CNAM";
-	const std::string Setting::PROJECT_NAME		 = "VTX";
+	const std::string Setting::ORGANIZATION_NAME		= "CNAM_GBCM";
+	const std::string Setting::PROJECT_NAME				= "VTX";
+	const std::string Setting::LAYOUT_SETTINGS_FOLDER	= PROJECT_NAME;
+	const std::string Setting::LAYOUT_SETTINGS_FILENAME = "Settings";
 
 	const Style::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT = Style::SYMBOL_DISPLAY_MODE::SHORT;
 	const int						 Setting::WINDOW_WIDTH_DEFAULT		  = 1280;
@@ -143,36 +145,45 @@ namespace VTX
 	const Renderer::MODE Setting::MODE_DEFAULT = Renderer::MODE::GL;
 
 	const int Setting::RECENT_PATH_SAVED_MAX_COUNT = 6;
-	void	  Setting::enqueueNewLoadingPath( FilePath & p_path )
+	void	  Setting::enqueueNewLoadingPath( const FilePath & p_path )
 	{
-		for ( std::list<FilePath>::const_iterator & itPath = recentLoadingPath.cbegin();
+		for ( std::list<const FilePath *>::const_iterator & itPath = recentLoadingPath.cbegin();
 			  itPath != recentLoadingPath.cend();
 			  itPath++ )
 		{
-			if ( *itPath == p_path )
+			if ( **itPath == p_path )
 			{
+				delete *itPath;
 				recentLoadingPath.erase( itPath );
 				break;
 			}
 		}
 
-		recentLoadingPath.emplace_front( p_path );
+		recentLoadingPath.emplace_front( new FilePath( p_path ) );
 		if ( recentLoadingPath.size() > RECENT_PATH_SAVED_MAX_COUNT )
 			recentLoadingPath.pop_back();
 
 		VTX_EVENT( new Event::VTXEvent( Event::Global::RECENT_FILES_CHANGE ) );
 	}
-	VTX::FilePath Setting::getRecentLoadingPath( const int p_index )
+	const VTX::FilePath * Setting::getRecentLoadingPath( const int p_index )
 	{
 		if ( p_index < 0 || p_index >= recentLoadingPath.size() )
-			return FilePath();
+			return nullptr;
 
-		std::list<FilePath>::iterator it = recentLoadingPath.begin();
+		std::list<const FilePath *>::iterator it = recentLoadingPath.begin();
 
 		for ( int i = 0; i < p_index; i++ )
 			it++;
 
 		return *it;
+	}
+	void Setting::cleanRecentPaths()
+	{
+		while ( recentLoadingPath.size() > 0 )
+		{
+			delete recentLoadingPath.front();
+			recentLoadingPath.pop_front();
+		}
 	}
 
 	void Setting::backup()

@@ -244,6 +244,8 @@ namespace VTX
 			void _fillBufferAABB() override;
 			void _instantiate3DViews() override;
 
+			void _addChain( Model::Chain * const p_chain );
+
 			void _onRepresentationChange() override;
 
 			Molecule();

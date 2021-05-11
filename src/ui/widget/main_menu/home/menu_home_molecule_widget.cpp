@@ -41,6 +41,6 @@ namespace VTX::UI::Widget::MainMenu::Home
 	void MenuHomeMoleculeWidget::_loadMoleculeFile() { UI::Dialog::openLoadMoleculeDialog(); }
 	void MenuHomeMoleculeWidget::_downloadMoleculeFile() { UI::Dialog::openDownloadMoleculeDialog(); }
 
-	void MenuHomeMoleculeWidget::_saveMoleculeFile() {}
+	void MenuHomeMoleculeWidget::_saveMoleculeFile() { UI::Dialog::openExportMoleculeDialog(); }
 
 } // namespace VTX::UI::Widget::MainMenu::Home

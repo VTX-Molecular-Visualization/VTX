@@ -189,6 +189,7 @@ namespace VTX
 			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
 			_target	  = VTXApp::get().getScene().getAABB().centroid();
 			_velocity = VEC3F_ZERO;
+			_isOrienting = false;
 		}
 
 		void Trackball::_computeOrientPositions( const Math::AABB & p_aabb )
