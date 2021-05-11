@@ -202,9 +202,16 @@ namespace VTX::Model::Renderer
 
 	void RenderEffectPresetLibrary::_init()
 	{
+		// Preset default
+		RenderEffectPreset * const preset0 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
+		preset0->setName( "Default" );
+		setQuickAccessToPreset( *preset0, true );
+		addPreset( preset0, false );
+		//
+
 		// Preset 1
 		RenderEffectPreset * const preset1 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
-		preset1->setName( "Default" );
+		preset1->setName( "Preset 1" );
 		setQuickAccessToPreset( *preset1, true );
 		preset1->setShading( VTX::Renderer::SHADING::DIFFUSE );
 
