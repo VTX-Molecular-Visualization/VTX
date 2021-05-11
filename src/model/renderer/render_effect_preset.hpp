@@ -71,7 +71,6 @@ namespace VTX::Model::Renderer
 		bool	   isPerspectiveProjection() const { return _perspectiveProjection; };
 		void	   setPerspectiveProjection( const bool p_perspectiveProjection );
 
-		void apply() const;
 		void copyFrom( const RenderEffectPreset & p_source );
 
 	  protected:

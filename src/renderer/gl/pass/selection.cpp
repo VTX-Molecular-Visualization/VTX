@@ -1,4 +1,5 @@
 #include "selection.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/gl/program_manager.hpp"
@@ -23,7 +24,7 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 
-		const Color::Rgb & lineColor = VTX_SETTING().outlineColor;
+		const Color::Rgb & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
 		/// TODO: use a value_ptr ?
 		_program->setVec3f( "uLineColor", lineColor.getR(), lineColor.getG(), lineColor.getB() );
 	}
@@ -37,7 +38,7 @@ namespace VTX::Renderer::GL::Pass
 
 	void Selection::render( const Object3D::Scene & p_scene, const GL & p_renderer )
 	{
-		if ( VTX_SETTING().activeAA )
+		if ( VTX_RENDER_EFFECT().getAA() )
 		{
 			_fbo.bind();
 		}
@@ -47,7 +48,7 @@ namespace VTX::Renderer::GL::Pass
 		}
 
 		p_renderer.getPassGeometric().getViewPositionsNormalsCompressedTexture().bindToUnit( 0 );
-		if ( VTX_SETTING().activeOutline )
+		if ( VTX_RENDER_EFFECT().isOutlineEnabled() )
 		{
 			p_renderer.getPassOutline().getTexture().bindToUnit( 1 );
 		}
@@ -72,7 +73,7 @@ namespace VTX::Renderer::GL::Pass
 
 	void Selection::updateOutputFBO( const GL & p_renderer )
 	{
-		if ( VTX_SETTING().activeAA )
+		if ( VTX_RENDER_EFFECT().getAA() )
 		{
 			_fbo.attachTexture( _texture, Framebuffer::Attachment::COLOR0 );
 		}

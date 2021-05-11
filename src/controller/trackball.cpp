@@ -187,8 +187,8 @@ namespace VTX
 									 / ( tan( Util::Math::radians( _camera.getFov() ) * 0.5f ) );
 			_camera.setPosition( defaultPos );
 			_camera.setRotation( Vec3f( 0.f, 0.f, 0.f ) );
-			_target	  = VTXApp::get().getScene().getAABB().centroid();
-			_velocity = VEC3F_ZERO;
+			_target		 = VTXApp::get().getScene().getAABB().centroid();
+			_velocity	 = VEC3F_ZERO;
 			_isOrienting = false;
 		}
 

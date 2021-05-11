@@ -28,10 +28,10 @@ namespace VTX
 	{
 		enum class WindowMode
 		{
-			Fullscreen = Qt::WindowState::WindowActive | Qt::WindowState::WindowFullScreen,
-			Windowed   = !Qt::WindowState::WindowFullScreen,
-			Maximized  = Qt::WindowState::WindowActive | Qt::WindowState::WindowMaximized,
-			Minimized  = Qt::WindowState::WindowActive | Qt::WindowState::WindowMinimized,
+			Fullscreen,
+			Windowed,
+			Maximized,
+			Minimized,
 		};
 
 		class MainWindow : public Widget::BaseWidget<QMainWindow, Ui_MainWindow>
@@ -87,6 +87,8 @@ namespace VTX
 			ContextualMenu * _contextualMenu = nullptr;
 
 			Widget::StatusBar::StatusBarWidget * _statusBarWidget = nullptr;
+
+			Qt::WindowStates _lastWindowedState = Qt::WindowState::WindowMinimized;
 
 			// Actions.
 			void _onDockWindowVisibilityChange( bool p_visible );

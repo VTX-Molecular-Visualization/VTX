@@ -1,11 +1,16 @@
 #include "setting.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
+#include "io/reader/serialized_object.hpp"
 #include "io/serializer.hpp"
+#include "io/writer/serialized_object.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "renderer/base_renderer.hpp"
 #include "trajectory/trajectory_enum.hpp"
+#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
+#include <exception>
+#include <string>
 
 namespace VTX
 {
@@ -178,9 +183,29 @@ namespace VTX
 
 	void Setting::backup()
 	{
-		IO::Serializer serializer = IO::Serializer();
-		_backup					  = serializer.serialize( *this );
+		IO::Writer::SerializedObject<VTX::Setting> writer = IO::Writer::SerializedObject<VTX::Setting>();
+		try
+		{
+			writer.writeFile( Util::Filesystem::SETTING_JSON_FILE, *this );
+			VTX_INFO( "Settings Saved " );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Cannot save settings: " + std::string( p_e.what() ) );
+		}
 	}
-	void Setting::recover() { IO::Serializer serializer = IO::Serializer(); }
+	void Setting::recover()
+	{
+		IO::Reader::SerializedObject<VTX::Setting> reader = IO::Reader::SerializedObject<VTX::Setting>();
+		try
+		{
+			reader.readFile( Util::Filesystem::SETTING_JSON_FILE, VTX_SETTING() );
+			VTX_INFO( "Settings loaded " );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Cannot load settings: " + std::string( p_e.what() ) );
+		}
+	}
 
 } // namespace VTX

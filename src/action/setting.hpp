@@ -9,12 +9,14 @@
 #include "io/reader/serialized_object.hpp"
 #include "io/writer/serialized_object.hpp"
 #include "model/molecule.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "model/representation/representation_library.hpp"
 #include "object3d/scene.hpp"
 #include "renderer/base_renderer.hpp"
 #include "renderer/gl/gl.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
+#include "trajectory/trajectory_enum.hpp"
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
@@ -85,7 +87,11 @@ namespace VTX::Action::Setting
 	{
 	  public:
 		explicit WindowMode( const UI::WindowMode & p_windowMode ) : _windowMode( p_windowMode ) {}
-		void execute() override { VTXApp::get().getMainWindow().setWindowMode( _windowMode ); }
+		void execute() override
+		{
+			VTX_SETTING().windowFullscreen = _windowMode == UI::WindowMode::Fullscreen;
+			VTXApp::get().getMainWindow().setWindowMode( _windowMode );
+		}
 
 	  private:
 		const UI::WindowMode _windowMode;
@@ -113,6 +119,17 @@ namespace VTX::Action::Setting
 		const bool _active;
 	};
 
+	class ForceRenderer : public BaseAction
+	{
+	  public:
+		explicit ForceRenderer( const bool p_force ) : _force( p_force ) {}
+
+		virtual void execute() override { VTX_SETTING().forceRenderer = _force; }
+
+	  private:
+		const bool _force;
+	};
+
 	class ChangeBackgroundColor : public BaseAction
 	{
 	  public:
@@ -120,7 +137,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().backgroundColor = _color;
+			VTX_RENDER_EFFECT().setBackgroundColor( _color );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
@@ -143,19 +160,34 @@ namespace VTX::Action::Setting
 		const float _opacity;
 	};
 
-	class ChangeRepresentation : public BaseAction
+	class ChangeDefaultRepresentation : public BaseAction
 	{
 	  public:
-		explicit ChangeRepresentation( const int p_representationIndex ) : _representationIndex( p_representationIndex )
+		explicit ChangeDefaultRepresentation( const int p_representationIndex ) :
+			_representationIndex( p_representationIndex )
 		{
 		}
 
 		virtual void execute() override
 		{
+			const VTX::Model::Representation::Representation * const previousDefaultRepresentation
+				= VTX::Model::Representation::RepresentationLibrary::get().getDefaultRepresentation();
+
 			VTX::Model::Representation::RepresentationLibrary::get().setDefaultRepresentation( _representationIndex );
 
-			for ( const Object3D::Scene::PairMoleculePtrFloat & pair : VTXApp::get().getScene().getMolecules() )
-				pair.first->computeRepresentationTargets();
+			VTX::Model::Representation::Representation * const newDefaultRepresentation
+				= VTX::Model::Representation::RepresentationLibrary::get().getDefaultRepresentation();
+
+			for ( Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
+				  Representation::RepresentationManager::get().getAllInstantiatedRepresentations(
+					  previousDefaultRepresentation ) )
+			{
+				if ( instantiatedRepresentation->getOverridedMembersFlag() == Model::Representation::MEMBER_FLAG::NONE )
+				{
+					Representation::RepresentationManager::get().instantiateRepresentation(
+						newDefaultRepresentation, *instantiatedRepresentation->getTarget() );
+				}
+			}
 
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
@@ -166,34 +198,25 @@ namespace VTX::Action::Setting
 		const int _representationIndex;
 	};
 
-	class ChangeAtomsRadius : public BaseAction
+	class ChangeDefaultRenderEffectPreset : public BaseAction
 	{
 	  public:
-		explicit ChangeAtomsRadius( const float p_atomsRadius ) : _atomsRadius( p_atomsRadius ) {}
-
-		virtual void execute() override
+		explicit ChangeDefaultRenderEffectPreset( const int p_renderEffectPresetIndex ) :
+			_renderEffectPresetIndex( p_renderEffectPresetIndex )
 		{
-			VTX_SETTING().atomsRadius = _atomsRadius;
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
 
-	  private:
-		const float _atomsRadius;
-	};
-
-	class ChangeBondsRadius : public BaseAction
-	{
-	  public:
-		explicit ChangeBondsRadius( const float p_bondsRadius ) : _bondsRadius( p_bondsRadius ) {}
-
 		virtual void execute() override
 		{
-			VTX_SETTING().bondsRadius = _bondsRadius;
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+			VTX_SETTING().renderEffectDefaultIndex = Util::Math::clamp(
+				_renderEffectPresetIndex, 0, VTX::Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount() );
+			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
+		virtual void displayUsage() override { VTX_INFO( "BALL_AND_STICK|VAN_DER_WAALS|STICK|SAS" ); }
+
 	  private:
-		const float _bondsRadius;
+		const int _renderEffectPresetIndex;
 	};
 
 	class ChangeColorMode : public BaseAction
@@ -203,11 +226,16 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().colorMode = _mode;
-			for ( const Object3D::Scene::PairMoleculePtrFloat & pair : VTXApp::get().getScene().getMolecules() )
+			for ( Model::Representation::Representation * const representation :
+				  Model::Representation::RepresentationLibrary::get().getRepresentations() )
 			{
-				pair.first->refreshColors();
+				for ( Model::Representation::InstantiatedRepresentation * const instantiatedRepresentation :
+					  Representation::RepresentationManager::get().getAllInstantiatedRepresentations( representation ) )
+				{
+					instantiatedRepresentation->setColorMode( _mode );
+				}
 			}
+
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
@@ -224,7 +252,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().shading = _shading;
+			VTX_RENDER_EFFECT().setShading( _shading );
 			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().setShading();
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
@@ -257,8 +285,9 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().activeAO = _active;
+			VTX_RENDER_EFFECT().enableSSAO( _active );
 			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeSSAO( _active );
+
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
@@ -273,8 +302,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().aoIntensity
-				= Util::Math::clamp( _intensity, VTX::Setting::AO_INTENSITY_MIN, VTX::Setting::AO_INTENSITY_MAX );
+			VTX_RENDER_EFFECT().setSSAOIntensity( _intensity );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
@@ -289,8 +317,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().aoBlurSize
-				= Util::Math::clamp( _blurSize, VTX::Setting::AO_BLUR_SIZE_MIN, VTX::Setting::AO_BLUR_SIZE_MAX );
+			VTX_RENDER_EFFECT().setSSAOBlurSize( _blurSize );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
@@ -305,7 +332,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().activeOutline = _active;
+			VTX_RENDER_EFFECT().enableOutline( _active );
 			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeOutline( _active );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
@@ -321,7 +348,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().outlineColor = _color;
+			VTX_RENDER_EFFECT().setOutlineColor( _color );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
@@ -336,8 +363,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().outlineThickness = Util::Math::clamp(
-				_thickness, VTX::Setting::OUTLINE_THICKNESS_MIN, VTX::Setting::OUTLINE_THICKNESS_MAX );
+			VTX_RENDER_EFFECT().setOutlineThickness( _thickness );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
@@ -352,7 +378,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().activeFog = _active;
+			VTX_RENDER_EFFECT().enableFog( _active );
 			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeFog( _active );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
@@ -368,8 +394,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().fogNear = Util::Math::min( _near, VTX_SETTING().fogFar );
-			VTX_SETTING().fogFar  = Util::Math::max( _near, VTX_SETTING().fogFar );
+			VTX_RENDER_EFFECT().setFogNear( _near );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
@@ -384,8 +409,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().fogNear = Util::Math::min( VTX_SETTING().fogNear, _far );
-			VTX_SETTING().fogFar  = Util::Math::max( VTX_SETTING().fogNear, _far );
+			VTX_RENDER_EFFECT().setFogFar( _far );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
@@ -400,7 +424,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().fogDensity = Util::Math::clamp( _density, 0.f, 1.f );
+			VTX_RENDER_EFFECT().setFogDensity( _density );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
@@ -415,7 +439,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().fogColor = _color;
+			VTX_RENDER_EFFECT().setFogColor( _color );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
@@ -430,7 +454,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().activeAA = _active;
+			VTX_RENDER_EFFECT().setAA( _active );
 			VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeAA( _active );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
@@ -446,7 +470,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().lightColor = _color;
+			VTX_RENDER_EFFECT().setCameraLightColor( _color );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
@@ -461,11 +485,11 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().cameraNear = Util::Math::min( _near, _far );
-			VTX_SETTING().cameraFar	 = Util::Math::max( _near, _far );
+			VTX_RENDER_EFFECT().setCameraNearClip( Util::Math::min( _near, _far ) );
+			VTX_RENDER_EFFECT().setCameraFarClip( Util::Math::max( _near, _far ) );
 
-			VTXApp::get().getScene().getCamera().setNear( VTX_SETTING().cameraNear );
-			VTXApp::get().getScene().getCamera().setFar( VTX_SETTING().cameraFar );
+			VTXApp::get().getScene().getCamera().setNear( VTX_RENDER_EFFECT().getCameraNearClip() );
+			VTXApp::get().getScene().getCamera().setFar( VTX_RENDER_EFFECT().getCameraFarClip() );
 		};
 
 	  private:
@@ -480,9 +504,8 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().cameraFov = _fov;
-
-			VTXApp::get().getScene().getCamera().setFov( VTX_SETTING().cameraFov );
+			VTX_RENDER_EFFECT().setCameraFOV( _fov );
+			VTXApp::get().getScene().getCamera().setFov( VTX_RENDER_EFFECT().getCameraFOV() );
 		};
 
 	  private:
@@ -496,8 +519,8 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().cameraPerspective = _perspective;
-			VTXApp::get().getScene().getCamera().setPerspective( VTX_SETTING().cameraPerspective );
+			VTX_RENDER_EFFECT().setPerspectiveProjection( _perspective );
+			VTXApp::get().getScene().getCamera().setPerspective( VTX_RENDER_EFFECT().isPerspectiveProjection() );
 		};
 
 	  private:
@@ -590,6 +613,32 @@ namespace VTX::Action::Setting
 		const float _elasticity;
 	};
 
+	class ChangeDefaultTrajectorySpeed : public BaseAction
+	{
+	  public:
+		explicit ChangeDefaultTrajectorySpeed( const int p_speed ) : _speed( p_speed ) {}
+
+		virtual void execute() override
+		{
+			VTX_SETTING().defaultTrajectorySpeed
+				= Util::Math::clamp( _speed, VTX::Setting::MIN_TRAJECTORY_SPEED, VTX::Setting::MAX_TRAJECTORY_SPEED );
+		};
+
+	  private:
+		const int _speed;
+	};
+
+	class ChangeDefaultTrajectoryPlayMode : public BaseAction
+	{
+	  public:
+		explicit ChangeDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_playMode ) : _playMode( p_playMode ) {}
+
+		virtual void execute() override { VTX_SETTING().defaultTrajectoryPlayMode = _playMode; };
+
+	  private:
+		const Trajectory::PlayMode _playMode;
+	};
+
 	class ChangeAutoRotateSpeed : public BaseAction
 	{
 	  public:
@@ -621,6 +670,55 @@ namespace VTX::Action::Setting
 
 	  private:
 		const VTX::Renderer::MODE _mode;
+	};
+
+	class ApplyAllSettings : public BaseAction
+	{
+	  public:
+		ApplyAllSettings( VTX::Setting & p_setting ) : _setting( p_setting ) {}
+
+		virtual void execute() override
+		{
+			VTX_ACTION( new Action::Setting::ChangeDisplayMode( _setting.symbolDisplayMode ) );
+			VTX_ACTION( new Action::Setting::WindowMode( _setting.windowFullscreen ? VTX::UI::WindowMode::Fullscreen
+																				   : VTX::UI::WindowMode::Windowed ) );
+
+			VTX_ACTION( new Action::Setting::ActiveRenderer( _setting.activeRenderer ) );
+			VTX_ACTION( new Action::Setting::ForceRenderer( _setting.forceRenderer ) );
+			VTX_ACTION( new Action::Setting::ChangeDefaultRepresentation( _setting.representationDefaultIndex ) );
+			VTX_ACTION( new Action::Setting::ChangeDefaultRenderEffectPreset( _setting.renderEffectDefaultIndex ) );
+
+			VTX_ACTION( new Action::Setting::ActiveVerticalSync( _setting.activeVSync ) );
+			VTX_ACTION( new Action::Setting::ChangeBackgroundOpacity( _setting.backgroundOpacity ) );
+
+			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( _setting.translationSpeed ) );
+			VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed( _setting.translationFactorSpeed ) );
+			VTX_ACTION( new Action::Setting::ChangeRotationSpeed( _setting.rotationSpeed ) );
+			VTX_ACTION( new Action::Setting::ActiveYAxisInversion( _setting.yAxisInverted ) );
+
+			VTX_ACTION( new Action::Setting::ActiveControllerElasticity( _setting.activeControllerElasticity ) );
+			VTX_ACTION( new Action::Setting::ChangeControllerElasticity( _setting.controllerElasticityFactor ) );
+
+			VTX_ACTION( new Action::Setting::ChangeDefaultTrajectorySpeed( _setting.defaultTrajectorySpeed ) );
+			VTX_ACTION( new Action::Setting::ChangeDefaultTrajectoryPlayMode( _setting.defaultTrajectoryPlayMode ) );
+
+			VTX_ACTION( new Action::Setting::ChangeAutoRotateSpeed( _setting.autoRotationSpeed ) );
+		}
+
+	  private:
+		VTX::Setting _setting;
+	};
+
+	class ReloadSetting : public BaseAction
+	{
+	  public:
+		ReloadSetting() {}
+
+		virtual void execute() override
+		{
+			VTX_ACTION( new Action::Setting::Load() );
+			VTX_ACTION( new Action::Setting::ApplyAllSettings( VTX_SETTING() ) );
+		}
 	};
 } // namespace VTX::Action::Setting
 

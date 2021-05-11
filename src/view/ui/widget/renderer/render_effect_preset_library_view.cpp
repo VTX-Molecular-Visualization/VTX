@@ -118,7 +118,7 @@ namespace VTX::View::UI::Widget::Renderer
 
 	void RenderEffectPresetLibraryView::_onPresetIndexChanged( const int p_newIndex )
 	{
-		const Model::Renderer::RenderEffectPreset * const currentPreset = _model->getPreset( p_newIndex );
+		Model::Renderer::RenderEffectPreset * const currentPreset = _model->getPreset( p_newIndex );
 		VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *currentPreset ) );
 
 		_refreshPresetDisplayed( false );

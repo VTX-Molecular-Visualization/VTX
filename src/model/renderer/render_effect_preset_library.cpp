@@ -155,13 +155,14 @@ namespace VTX::Model::Renderer
 
 	void RenderEffectPresetLibrary::applyPreset( const int p_presetIndex )
 	{
-		applyPreset( *_presets[ p_presetIndex ] );
+		if ( 0 <= p_presetIndex && p_presetIndex < _presets.size() )
+			applyPreset( *_presets[ p_presetIndex ] );
+		else
+			applyPreset( *_presets[ 0 ] );
 	}
-	void RenderEffectPresetLibrary::applyPreset( const RenderEffectPreset & p_preset )
+	void RenderEffectPresetLibrary::applyPreset( RenderEffectPreset & p_preset )
 	{
-		p_preset.apply();
 		_appliedPreset = &p_preset;
-
 		_notifyDataChanged();
 	}
 	bool RenderEffectPresetLibrary::isAppliedPreset( const RenderEffectPreset & p_preset ) const
@@ -172,7 +173,9 @@ namespace VTX::Model::Renderer
 	{
 		return p_preset == _appliedPreset;
 	}
-	int RenderEffectPresetLibrary::getAppliedPresetIndex() const
+	RenderEffectPreset &	   RenderEffectPresetLibrary::getAppliedPreset() { return *_appliedPreset; }
+	const RenderEffectPreset & RenderEffectPresetLibrary::getAppliedPreset() const { return *_appliedPreset; }
+	int						   RenderEffectPresetLibrary::getAppliedPresetIndex() const
 	{
 		for ( int i = 0; i < _presets.size(); i++ )
 		{

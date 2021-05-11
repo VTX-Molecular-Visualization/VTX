@@ -154,52 +154,6 @@ namespace VTX::Model::Renderer
 		_notifyDataChanged();
 	}
 
-	void RenderEffectPreset::apply() const
-	{
-		VTX::Renderer::GL::GL & rendererGL = VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL();
-		VTX::Object3D::Camera & camera	   = VTXApp::get().getScene().getCamera();
-
-		// Shading
-		VTX_SETTING().shading = _shading;
-		rendererGL.setShading();
-
-		// SSAO
-		VTX_SETTING().aoIntensity = _ssaoIntensity;
-		VTX_SETTING().aoBlurSize  = _ssaoBlurSize;
-		VTX_SETTING().activeAO	  = _ssao;
-		rendererGL.activeSSAO( _ssao );
-
-		// Outline
-		VTX_SETTING().activeOutline	   = _outline;
-		VTX_SETTING().outlineColor	   = _outlineColor;
-		VTX_SETTING().outlineThickness = _outlineThickness;
-		rendererGL.activeOutline( _outline );
-
-		// Fog
-		VTX_SETTING().activeFog	 = _fog;
-		VTX_SETTING().fogNear	 = _fogNear;
-		VTX_SETTING().fogFar	 = _fogFar;
-		VTX_SETTING().fogDensity = _fogDensity;
-		VTX_SETTING().fogColor	 = _fogColor;
-		rendererGL.activeFog( _fog );
-
-		// Camera
-		VTX_SETTING().backgroundColor	= _backgroundColor;
-		VTX_SETTING().backgroundOpacity = _backgroundOpacity;
-		VTX_SETTING().lightColor		= _cameraLightColor;
-		VTX_SETTING().cameraFov			= _cameraFOV;
-		VTX_SETTING().cameraNear		= _cameraNearClip;
-		VTX_SETTING().cameraFar			= _cameraFarClip;
-		VTX_SETTING().activeAA			= _antiAliasing;
-		VTX_SETTING().cameraPerspective = _perspectiveProjection;
-
-		camera.setFov( _cameraFOV );
-		camera.setNear( _cameraNearClip );
-		camera.setFar( _cameraFarClip );
-		camera.setPerspective( _perspectiveProjection );
-
-		rendererGL.activeAA( _antiAliasing );
-	}
 	void RenderEffectPreset::copyFrom( const RenderEffectPreset & p_source )
 	{
 		_name		 = p_source._name;

@@ -16,34 +16,34 @@ namespace VTX::Model::Representation
 		RepresentationData( Generic::REPRESENTATION::BALL_AND_STICK )
 	{
 		_sphereData					= new SphereData();
-		_sphereData->_radiusFixed	= Util::Math::max( VTX_SETTING().bondsRadius, VTX_SETTING().atomsRadius );
+		_sphereData->_radiusFixed	= Setting::ATOMS_RADIUS_DEFAULT;
 		_sphereData->_radiusAdd		= 0;
 		_sphereData->_isRadiusFixed = true;
 
 		_cylinderData		   = new CylinderData();
-		_cylinderData->_radius = VTX_SETTING().bondsRadius;
+		_cylinderData->_radius = Setting::BONDS_RADIUS_DEFAULT;
 	}
 
 	RepresentationData_Sticks::RepresentationData_Sticks() : RepresentationData( Generic::REPRESENTATION::STICK )
 	{
 		_sphereData					= new SphereData();
-		_sphereData->_radiusFixed	= VTX_SETTING().bondsRadius;
+		_sphereData->_radiusFixed	= Setting::BONDS_RADIUS_DEFAULT;
 		_sphereData->_radiusAdd		= 0;
 		_sphereData->_isRadiusFixed = true;
 
 		_cylinderData		   = new CylinderData();
-		_cylinderData->_radius = VTX_SETTING().bondsRadius;
+		_cylinderData->_radius = Setting::BONDS_RADIUS_DEFAULT;
 	}
 
 	RepresentationData_Trace::RepresentationData_Trace() : RepresentationData( Generic::REPRESENTATION::TRACE )
 	{
 		_sphereData					= new SphereData();
-		_sphereData->_radiusFixed	= VTX_SETTING().atomsRadius;
+		_sphereData->_radiusFixed	= Setting::BONDS_RADIUS_DEFAULT;
 		_sphereData->_radiusAdd		= -0.5f;
 		_sphereData->_isRadiusFixed = true;
 
 		_cylinderData		   = new CylinderData();
-		_cylinderData->_radius = VTX_SETTING().bondsRadius;
+		_cylinderData->_radius = Setting::BONDS_RADIUS_DEFAULT;
 	}
 
 	RepresentationData_Sas::RepresentationData_Sas() : RepresentationData( Generic::REPRESENTATION::SAS )
@@ -62,12 +62,12 @@ namespace VTX::Model::Representation
 		RepresentationData( Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON )
 	{
 		_sphereData					= new SphereData();
-		_sphereData->_radiusFixed	= Util::Math::max( VTX_SETTING().bondsRadius, VTX_SETTING().atomsRadius );
+		_sphereData->_radiusFixed	= Setting::ATOMS_RADIUS_DEFAULT;
 		_sphereData->_radiusAdd		= 0;
 		_sphereData->_isRadiusFixed = true;
 
 		_cylinderData		   = new CylinderData();
-		_cylinderData->_radius = VTX_SETTING().bondsRadius;
+		_cylinderData->_radius = Setting::BONDS_RADIUS_DEFAULT;
 
 		_ribbonData = new RibbonData();
 	}
@@ -76,12 +76,12 @@ namespace VTX::Model::Representation
 		RepresentationData( Generic::REPRESENTATION::STICK_AND_CARTOON )
 	{
 		_sphereData					= new SphereData();
-		_sphereData->_radiusFixed	= VTX_SETTING().bondsRadius;
+		_sphereData->_radiusFixed	= Setting::BONDS_RADIUS_DEFAULT;
 		_sphereData->_radiusAdd		= 0;
 		_sphereData->_isRadiusFixed = true;
 
 		_cylinderData		   = new CylinderData();
-		_cylinderData->_radius = VTX_SETTING().bondsRadius;
+		_cylinderData->_radius = Setting::BONDS_RADIUS_DEFAULT;
 
 		_ribbonData = new RibbonData();
 	}

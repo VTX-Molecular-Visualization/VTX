@@ -1,5 +1,6 @@
 #include "serializer.hpp"
 #include "action/main.hpp"
+#include "action/renderer.hpp"
 #include "action/setting.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
@@ -18,6 +19,8 @@
 #include "representation/representation_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
+#include "trajectory/trajectory_enum.hpp"
+#include <algorithm>
 
 namespace VTX
 {
@@ -199,39 +202,24 @@ namespace VTX
 		nlohmann::json Serializer::serialize( const Setting & p_setting ) const
 		{
 			return { { "SYMBOL_DISPLAY_MODE", p_setting.symbolDisplayMode },
-
+					 { "WINDOW_FULLSCREEN", p_setting.windowFullscreen },
 					 { "ACTIVE_RENDERER", p_setting.activeRenderer },
-					 { "BACKGROUND_COLOR", serialize( p_setting.backgroundColor ) },
-					 { "BACKGROUND_OPACITY", p_setting.backgroundOpacity },
-					 { "REPRESENTATION", p_setting.representation },
-					 { "ATOMS_RADIUS", p_setting.atomsRadius },
-					 { "BONDS_RADIUS", p_setting.bondsRadius },
-					 { "COLOR_MODE", p_setting.colorMode },
-					 { "SHADING", p_setting.shading },
+					 { "FORCE_RENDERER", p_setting.forceRenderer },
+					 { "REPRESENTATION", p_setting.representationDefaultIndex },
+					 { "RENDER_EFFECT_DEFAULT_INDEX", p_setting.renderEffectDefaultIndex },
 					 { "ACTIVE_VSYNC", p_setting.activeVSync },
-					 { "ACTIVE_AO", p_setting.activeAO },
-					 { "AO_INTENSITY", p_setting.aoIntensity },
-					 { "AO_BLUR_SIZE", p_setting.aoBlurSize },
-					 { "ACTIVE_OUTLINE", p_setting.activeOutline },
-					 { "OUTLINE_COLOR", serialize( p_setting.outlineColor ) },
-					 { "OUTLINE_THICKNESS", p_setting.outlineThickness },
-					 { "ACTIVE_FOG", p_setting.activeFog },
-					 { "FOG_NEAR", p_setting.fogNear },
-					 { "FOG_FAR", p_setting.fogFar },
-					 { "FOG_DENSITY", p_setting.fogDensity },
-					 { "FOG_COLOR", serialize( p_setting.fogColor ) },
-					 { "ACTIVE_AA", p_setting.activeAA },
-					 { "LIGHT_COLOR", serialize( p_setting.lightColor ) },
-
-					 { "CAMERA_NEAR", p_setting.cameraNear },
-					 { "CAMERA_FAR", p_setting.cameraFar },
-					 { "CAMERA_FOV", p_setting.cameraFov },
-					 { "CAMERA_PERSPECTIVE", p_setting.cameraPerspective },
+					 { "BACKGROUND_OPACITY", p_setting.backgroundOpacity },
 
 					 { "CONTROLLER_TRANSLATION_SPEED", p_setting.translationSpeed },
 					 { "CONTROLLER_TRANSLATION_FACTOR", p_setting.translationFactorSpeed },
 					 { "CONTROLLER_ROTATION_SPEED", p_setting.rotationSpeed },
 					 { "CONTROLLER_Y_AXIS_INVERTED", p_setting.yAxisInverted },
+
+					 { "ACTIVE_CONTROLLER_ELASTICITY", p_setting.activeControllerElasticity },
+					 { "CONTROLLER_ELASTICITY_FACTOR", p_setting.controllerElasticityFactor },
+
+					 { "DEFAULT_TRAJECTORY_SPEED", p_setting.defaultTrajectorySpeed },
+					 { "DEFAULT_TRAJECTORY_PLAY_MODE", p_setting.defaultTrajectoryPlayMode },
 
 					 { "AUTO_ROTATE_SPEED", serialize( p_setting.autoRotationSpeed ) } };
 		}
@@ -470,57 +458,46 @@ namespace VTX
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Setting & p_setting ) const
 		{
-			VTX_ACTION( new Action::Setting::ChangeDisplayMode(
-				p_json.at( "SYMBOL_DISPLAY_MODE" ).get<Style::SYMBOL_DISPLAY_MODE>() ) );
+			const Style::SYMBOL_DISPLAY_MODE symbolDisplayMode
+				= p_json.at( "SYMBOL_DISPLAY_MODE" ).get<Style::SYMBOL_DISPLAY_MODE>();
+			p_setting.symbolDisplayMode
+				= Style::SYMBOL_DISPLAY_MODE( int( symbolDisplayMode ) % int( Style::SYMBOL_DISPLAY_MODE::COUNT ) );
 
-			VTX_ACTION( new Action::Setting::ActiveRenderer( p_json.at( "ACTIVE_RENDERER" ).get<bool>() ) );
-			Color::Rgb bgColor = Color::Rgb();
-			deserialize( p_json.at( "BACKGROUND_COLOR" ), bgColor );
-			VTX_ACTION( new Action::Setting::ChangeBackgroundColor( bgColor ) );
-			VTX_ACTION(
-				new Action::Setting::ChangeBackgroundOpacity( p_json.at( "BACKGROUND_OPACITY" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeRepresentation( p_json.at( "REPRESENTATION" ).get<int>() ) );
-			VTX_ACTION( new Action::Setting::ChangeAtomsRadius( p_json.at( "ATOMS_RADIUS" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeBondsRadius( p_json.at( "BONDS_RADIUS" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeColorMode( p_json.at( "COLOR_MODE" ).get<Generic::COLOR_MODE>() ) );
-			VTX_ACTION( new Action::Setting::ChangeShading( p_json.at( "SHADING" ).get<Renderer::SHADING>() ) );
-			VTX_ACTION( new Action::Setting::ActiveVerticalSync( p_json.at( "ACTIVE_VSYNC" ).get<bool>() ) );
-			VTX_ACTION( new Action::Setting::ActiveAO( p_json.at( "ACTIVE_AO" ).get<bool>() ) );
-			VTX_ACTION( new Action::Setting::ChangeAOIntensity( p_json.at( "AO_INTENSITY" ).get<int>() ) );
-			VTX_ACTION( new Action::Setting::ChangeAOBlurSize( p_json.at( "AO_BLUR_SIZE" ).get<int>() ) );
-			VTX_ACTION( new Action::Setting::ActiveOutline( p_json.at( "ACTIVE_OUTLINE" ).get<bool>() ) );
-			Color::Rgb outlinColor = Color::Rgb();
-			deserialize( p_json.at( "OUTLINE_COLOR" ), outlinColor );
-			VTX_ACTION( new Action::Setting::ChangeOutlineColor( outlinColor ) );
-			VTX_ACTION( new Action::Setting::ChangeOutlineThickness( p_json.at( "OUTLINE_THICKNESS" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ActiveFog( p_json.at( "ACTIVE_FOG" ).get<bool>() ) );
-			VTX_ACTION( new Action::Setting::ChangeFogNear( p_json.at( "FOG_NEAR" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeFogFar( p_json.at( "FOG_FAR" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeFogDensity( p_json.at( "FOG_DENSITY" ).get<float>() ) );
-			Color::Rgb fogColor = Color::Rgb();
-			deserialize( p_json.at( "FOG_COLOR" ), fogColor );
-			VTX_ACTION( new Action::Setting::ChangeFogColor( fogColor ) );
-			VTX_ACTION( new Action::Setting::ActiveAA( p_json.at( "ACTIVE_AA" ).get<bool>() ) );
-			Color::Rgb lightColor = Color::Rgb();
-			deserialize( p_json.at( "LIGHT_COLOR" ), lightColor );
-			VTX_ACTION( new Action::Setting::ChangeLightColor( lightColor ) );
+			p_setting.windowFullscreen = p_json.at( "WINDOW_FULLSCREEN" ).get<bool>();
 
-			VTX_ACTION( new Action::Setting::ChangeCameraClip( p_json.at( "CAMERA_NEAR" ),
-															   p_json.at( "CAMERA_FAR" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeCameraFov( p_json.at( "CAMERA_FOV" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeCameraProjection( p_json.at( "CAMERA_PERSPECTIVE" ).get<bool>() ) );
+			p_setting.activeRenderer			 = p_json.at( "ACTIVE_RENDERER" ).get<bool>();
+			p_setting.forceRenderer				 = p_json.at( "FORCE_RENDERER" ).get<bool>();
+			p_setting.representationDefaultIndex = p_json.at( "REPRESENTATION" ).get<int>();
+			p_setting.renderEffectDefaultIndex	 = p_json.at( "RENDER_EFFECT_DEFAULT_INDEX" ).get<int>();
 
-			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed(
-				p_json.at( "CONTROLLER_TRANSLATION_SPEED" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed(
-				p_json.at( "CONTROLLER_TRANSLATION_FACTOR" ).get<float>() ) );
-			VTX_ACTION(
-				new Action::Setting::ChangeRotationSpeed( p_json.at( "CONTROLLER_ROTATION_SPEED" ).get<float>() ) );
-			VTX_ACTION(
-				new Action::Setting::ActiveYAxisInversion( p_json.at( "CONTROLLER_Y_AXIS_INVERTED" ).get<bool>() ) );
-			Vec3f autoRotateSpeed;
-			deserialize( p_json.at( "AUTO_ROTATE_SPEED" ), autoRotateSpeed );
-			VTX_ACTION( new Action::Setting::ChangeAutoRotateSpeed( autoRotateSpeed ) );
+			p_setting.activeVSync		= p_json.at( "ACTIVE_VSYNC" ).get<bool>();
+			p_setting.backgroundOpacity = std::clamp( p_json.at( "BACKGROUND_OPACITY" ).get<float>(), 0.f, 1.f );
+
+			p_setting.translationSpeed		 = std::clamp( p_json.at( "CONTROLLER_TRANSLATION_SPEED" ).get<float>(),
+													   Setting::CONTROLLER_TRANSLATION_SPEED_MIN,
+													   Setting::CONTROLLER_TRANSLATION_SPEED_MAX );
+			p_setting.translationFactorSpeed = std::clamp( p_json.at( "CONTROLLER_TRANSLATION_FACTOR" ).get<float>(),
+														   Setting::CONTROLLER_TRANSLATION_FACTOR_MIN,
+														   Setting::CONTROLLER_TRANSLATION_FACTOR_MAX );
+			p_setting.rotationSpeed			 = std::clamp( p_json.at( "CONTROLLER_ROTATION_SPEED" ).get<float>(),
+												   Setting::CONTROLLER_ROTATION_SPEED_MIN,
+												   Setting::CONTROLLER_ROTATION_SPEED_MAX );
+			p_setting.yAxisInverted			 = p_json.at( "CONTROLLER_Y_AXIS_INVERTED" ).get<bool>();
+
+			p_setting.activeControllerElasticity = p_json.at( "ACTIVE_CONTROLLER_ELASTICITY" ).get<bool>();
+			p_setting.controllerElasticityFactor = std::clamp( p_json.at( "CONTROLLER_ELASTICITY_FACTOR" ).get<float>(),
+															   Setting::CONTROLLER_ELASTICITY_FACTOR_MIN,
+															   Setting::CONTROLLER_ELASTICITY_FACTOR_MAX );
+
+			p_setting.defaultTrajectorySpeed = std::clamp( p_json.at( "DEFAULT_TRAJECTORY_SPEED" ).get<int>(),
+														   Setting::MIN_TRAJECTORY_SPEED,
+														   Setting::MAX_TRAJECTORY_SPEED );
+			const Trajectory::PlayMode playMode
+				= p_json.at( "DEFAULT_TRAJECTORY_PLAY_MODE" ).get<Trajectory::PlayMode>();
+			p_setting.defaultTrajectoryPlayMode
+				= Trajectory::PlayMode( int( playMode ) % int( Trajectory::PlayMode::COUNT ) );
+
+			deserialize( p_json.at( "AUTO_ROTATE_SPEED" ), p_setting.autoRotationSpeed );
 		}
 
 		nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,

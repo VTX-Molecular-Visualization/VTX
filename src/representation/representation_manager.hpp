@@ -149,6 +149,11 @@ namespace VTX::Representation
 		InstantiatedRepresentation * const getRepresentationByName( const std::string & p_representationName );
 		const std::unordered_set<Generic::BaseRepresentable *> & getTargets(
 			InstantiatedRepresentation * p_representation );
+		const std::unordered_set<InstantiatedRepresentation *> getAllInstantiatedRepresentations(
+			const Representation * const p_representation )
+		{
+			return _mapRepresentationInstances[ p_representation ];
+		}
 		InstantiatedRepresentation * instantiateDummy( const InstantiatedRepresentation & p_source );
 
 	  protected:

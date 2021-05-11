@@ -91,7 +91,7 @@ namespace VTX::Action::Renderer
 	class ApplyRenderEffectPreset : public BaseAction
 	{
 	  public:
-		ApplyRenderEffectPreset( const Model::Renderer::RenderEffectPreset & p_preset ) : _preset( p_preset ) {};
+		ApplyRenderEffectPreset( Model::Renderer::RenderEffectPreset & p_preset ) : _preset( p_preset ) {};
 		virtual void execute() override
 		{
 			Model::Renderer::RenderEffectPresetLibrary::get().applyPreset( _preset );
@@ -99,7 +99,7 @@ namespace VTX::Action::Renderer
 		};
 
 	  private:
-		const Model::Renderer::RenderEffectPreset & _preset;
+		Model::Renderer::RenderEffectPreset & _preset;
 	};
 
 	class ChangeName : public BaseAction
@@ -143,7 +143,6 @@ namespace VTX::Action::Renderer
 
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 			}
 		};
@@ -164,7 +163,6 @@ namespace VTX::Action::Renderer
 			_preset.enableSSAO( _enable );
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 			}
 		};
@@ -184,7 +182,6 @@ namespace VTX::Action::Renderer
 			_preset.setSSAOIntensity( _intensity );
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 			}
 		};
@@ -204,7 +201,6 @@ namespace VTX::Action::Renderer
 			_preset.setSSAOBlurSize( _blurSize );
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 			}
 		};
@@ -226,7 +222,6 @@ namespace VTX::Action::Renderer
 
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 			}
 		};
@@ -246,7 +241,6 @@ namespace VTX::Action::Renderer
 			_preset.setOutlineThickness( _thickness );
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 			}
 		};
@@ -266,7 +260,6 @@ namespace VTX::Action::Renderer
 			_preset.setOutlineColor( _color );
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 			}
 		};
@@ -287,7 +280,6 @@ namespace VTX::Action::Renderer
 			_preset.enableFog( _enable );
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 			}
 		};
@@ -307,7 +299,6 @@ namespace VTX::Action::Renderer
 			_preset.setFogNear( _near );
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 			}
 		};
@@ -327,7 +318,6 @@ namespace VTX::Action::Renderer
 			_preset.setFogFar( _far );
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 			}
 		};
@@ -347,7 +337,6 @@ namespace VTX::Action::Renderer
 			_preset.setFogDensity( _density );
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 			}
 		};
@@ -368,7 +357,6 @@ namespace VTX::Action::Renderer
 
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 			}
 		};
@@ -390,7 +378,6 @@ namespace VTX::Action::Renderer
 
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 			}
 		};
@@ -412,7 +399,6 @@ namespace VTX::Action::Renderer
 
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 			}
 		};
@@ -434,7 +420,6 @@ namespace VTX::Action::Renderer
 
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 			}
 		};
@@ -455,7 +440,6 @@ namespace VTX::Action::Renderer
 
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 			}
 		};
@@ -476,7 +460,6 @@ namespace VTX::Action::Renderer
 
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 			}
 		};
@@ -497,7 +480,6 @@ namespace VTX::Action::Renderer
 
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 			}
 		};
@@ -519,7 +501,6 @@ namespace VTX::Action::Renderer
 
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 			}
 		};
@@ -540,7 +521,6 @@ namespace VTX::Action::Renderer
 
 			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 			{
-				_preset.apply();
 				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 			}
 		};

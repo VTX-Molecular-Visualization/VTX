@@ -1,4 +1,5 @@
 #include "outline.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/gl/program_manager.hpp"
@@ -23,10 +24,10 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 
-		const Color::Rgb & lineColor = VTX_SETTING().outlineColor;
+		const Color::Rgb & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
 		/// TODO: use a value_ptr ?
 		_program->setVec3f( "uLineColor", lineColor.getR(), lineColor.getG(), lineColor.getB() );
-		_program->setFloat( "uThickness", VTX_SETTING().outlineThickness );
+		_program->setFloat( "uThickness", VTX_RENDER_EFFECT().getOutlineThickness() );
 	}
 
 	void Outline::resize( const uint p_width, const uint p_height, const GL & )
@@ -47,10 +48,10 @@ namespace VTX::Renderer::GL::Pass
 
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
-			const Color::Rgb & lineColor = VTX_SETTING().outlineColor;
+			const Color::Rgb & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
 			/// TODO: use a value_ptr ?
 			_program->setVec3f( "uLineColor", lineColor.getR(), lineColor.getG(), lineColor.getB() );
-			_program->setFloat( "uThickness", VTX_SETTING().outlineThickness );
+			_program->setFloat( "uThickness", VTX_RENDER_EFFECT().getOutlineThickness() );
 		}
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );

@@ -22,7 +22,9 @@ namespace VTX
 		enum class SYMBOL_DISPLAY_MODE : int
 		{
 			SHORT,
-			LONG
+			LONG,
+
+			COUNT
 		};
 
 		class IconConst
