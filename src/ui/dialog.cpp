@@ -72,8 +72,7 @@ namespace VTX::UI
 		}
 	}
 
-	void Dialog::confirmActionDialog( QWidget * const			 p_caller,
-									  Action::BaseAction * const p_action,
+	void Dialog::confirmActionDialog( Action::BaseAction * const p_action,
 									  const QString &			 p_title,
 									  const QString &			 p_message )
 	{

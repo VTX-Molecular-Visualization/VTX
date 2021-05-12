@@ -19,7 +19,7 @@ namespace VTX::UI
 		resize( winsize );
 
 		_lastWindowedState = ( windowState() & Qt::WindowState::WindowMaximized ) ? Qt::WindowState::WindowMaximized
-																				  : Qt::WindowState::WindowMinimized;
+																				  : Qt::WindowState::WindowNoState;
 
 		if ( VTX_SETTING().windowFullscreen )
 			setWindowMode( WindowMode::Fullscreen );

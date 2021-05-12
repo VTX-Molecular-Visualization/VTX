@@ -110,7 +110,6 @@ namespace VTX::View::UI::Widget::Representation
 	void RepresentationLibraryView::_onDeletePreset()
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			this,
 			new Action::Representation::DeletePresetInLibrary( _presetList->currentIndex() ),
 			"Confirm",
 			"Are you sure to delete this preset ?" );
@@ -118,8 +117,7 @@ namespace VTX::View::UI::Widget::Representation
 	void RepresentationLibraryView::_onImportPreset() const { VTX::UI::Dialog::importRepresentationPresetDialog(); }
 	void RepresentationLibraryView::_onReloadLibrary()
 	{
-		VTX::UI::Dialog::confirmActionDialog( this,
-											  new Action::Representation::ReloadPresets(),
+		VTX::UI::Dialog::confirmActionDialog( new Action::Representation::ReloadPresets(),
 											  "Confirm",
 											  "Are you sure to reload all presets ? Current changes will be lost." );
 	}

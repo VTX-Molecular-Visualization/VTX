@@ -639,6 +639,20 @@ namespace VTX::Action::Setting
 		const Trajectory::PlayMode _playMode;
 	};
 
+	class ChangeSymbolDisplayMode : public BaseAction
+	{
+	  public:
+		explicit ChangeSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE & p_displayMode ) :
+			_displayMode( p_displayMode )
+		{
+		}
+
+		virtual void execute() override { VTX_SETTING().symbolDisplayMode = _displayMode; };
+
+	  private:
+		const Style::SYMBOL_DISPLAY_MODE _displayMode;
+	};
+
 	class ChangeAutoRotateSpeed : public BaseAction
 	{
 	  public:
@@ -717,6 +731,18 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_ACTION( new Action::Setting::Load() );
+			VTX_ACTION( new Action::Setting::ApplyAllSettings( VTX_SETTING() ) );
+		}
+	};
+
+	class RestoreSetting : public BaseAction
+	{
+	  public:
+		RestoreSetting() {}
+
+		virtual void execute() override
+		{
+			VTX_SETTING().restore();
 			VTX_ACTION( new Action::Setting::ApplyAllSettings( VTX_SETTING() ) );
 		}
 	};

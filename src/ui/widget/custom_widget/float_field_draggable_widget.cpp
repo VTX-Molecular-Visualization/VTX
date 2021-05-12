@@ -21,11 +21,14 @@ namespace VTX::UI::Widget::CustomWidget
 
 		QHBoxLayout * const mainLayout = new QHBoxLayout( this );
 		mainLayout->setSpacing( 2 );
+		mainLayout->setContentsMargins( 0, 0, 0, 0 );
 
 		_label = new QLabel( this );
 		_label->setMouseTracking( true );
+		_label->setContentsMargins( 0, 0, 0, 0 );
 
 		_textField = new QLineEdit( this );
+		_textField->setContentsMargins( 0, 0, 0, 0 );
 
 		mainLayout->addWidget( _label, 1 );
 		mainLayout->addWidget( _textField, 1 );

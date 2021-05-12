@@ -17,9 +17,12 @@ namespace VTX::UI::Widget::CustomWidget
 
 		QHBoxLayout * const mainLayout = new QHBoxLayout( this );
 		mainLayout->setSpacing( 2 );
+		mainLayout->setContentsMargins(0, 0, 0, 0);
 
 		_slider	   = new QSlider( Qt::Orientation::Horizontal, this );
+		_slider->setContentsMargins(0, 0, 0, 0);
 		_textField = new QLineEdit( this );
+		_textField->setContentsMargins(0, 0, 0, 0);
 
 		mainLayout->addWidget( _slider, 10 );
 		mainLayout->addWidget( _textField, 1 );

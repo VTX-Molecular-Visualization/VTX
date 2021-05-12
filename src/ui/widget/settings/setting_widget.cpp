@@ -1,5 +1,9 @@
 #include "setting_widget.hpp"
+#include "setting_color_widget.hpp"
 #include "setting_menu_item.hpp"
+#include "setting_render_effect_widget.hpp"
+#include "setting_representation_widget.hpp"
+#include "setting_vtx_widget.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
@@ -13,7 +17,7 @@ namespace VTX::UI::Widget::Settings
 	void SettingWidget::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
-		setMinimumSize( 400, 600 );
+		setMinimumSize( 200, 200 );
 
 		_menu = new CustomWidget::DockWindowMainWidget<QWidget>( this );
 		_menu->setObjectName( "settingMenuBar" );
@@ -43,6 +47,9 @@ namespace VTX::UI::Widget::Settings
 		_addItem( WidgetFactory::get().instantiateWidget<SettingColorWidget>( _menu, "settingMenuButton" ),
 				  SETTING_MENU::COLORS,
 				  "Colors" );
+		_addItem( WidgetFactory::get().instantiateWidget<SettingVTXWidget>( _menu, "settingMenuButton" ),
+				  SETTING_MENU::VTX,
+				  "VTX" );
 
 		setCurrentMenu( _currentMenu, true );
 

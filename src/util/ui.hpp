@@ -30,6 +30,11 @@ namespace VTX::Util::UI
 		p_widget->style()->unpolish( p_widget );
 		p_widget->style()->polish( p_widget );
 	}
+
+	static Qt::CheckState getCheckState( const bool p_boolValue )
+	{
+		return p_boolValue ? Qt::CheckState::Checked : Qt::CheckState::Unchecked;
+	}
 } // namespace VTX::Util::UI
 
 #endif

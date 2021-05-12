@@ -20,11 +20,12 @@ namespace VTX::UI::Widget::CustomWidget
 
 		QHBoxLayout * const mainLayout = new QHBoxLayout( this );
 		mainLayout->setSpacing( 2 );
+		mainLayout->setContentsMargins( 0, 0, 0, 0 );
 
-		_slider				= new QSlider( Qt::Orientation::Horizontal, this );
-		_textField			= new QLineEdit( this );
-		_textFieldValidator = new QDoubleValidator();
-		_textFieldValidator->setRange( _min, _max );
+		_slider = new QSlider( Qt::Orientation::Horizontal, this );
+		_slider->setContentsMargins( 0, 0, 0, 0 );
+		_textField = new QLineEdit( this );
+		_textField->setContentsMargins( 0, 0, 0, 0 );
 
 		mainLayout->addWidget( _slider, 10 );
 		mainLayout->addWidget( _textField, 1 );
@@ -94,8 +95,6 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_min = p_min;
 
-		_textFieldValidator->setRange( _min, _max );
-
 		if ( _value < _min )
 		{
 			_value = _min;
@@ -107,8 +106,6 @@ namespace VTX::UI::Widget::CustomWidget
 	void FloatFieldSliderWidget::setMax( const float p_max )
 	{
 		_max = p_max;
-
-		_textFieldValidator->setRange( _min, _max );
 
 		if ( _value > _max )
 		{
@@ -123,7 +120,6 @@ namespace VTX::UI::Widget::CustomWidget
 		_min = p_min;
 		_max = p_max;
 
-		_textFieldValidator->setRange( _min, _max );
 		_slider->setMinimum( 0 );
 		_slider->setMaximum( 100 );
 
@@ -156,10 +152,5 @@ namespace VTX::UI::Widget::CustomWidget
 		blockSignals( oldBlockState );
 	}
 
-	void FloatFieldSliderWidget::_displayDifferentsDataFeedback()
-	{
-		_textFieldValidator->blockSignals( true );
-		_textField->setText( "-" );
-		_textFieldValidator->blockSignals( false );
-	}
+	void FloatFieldSliderWidget::_displayDifferentsDataFeedback() { _textField->setText( "-" ); }
 } // namespace VTX::UI::Widget::CustomWidget

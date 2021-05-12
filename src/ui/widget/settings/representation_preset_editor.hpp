@@ -83,7 +83,8 @@ namespace VTX::UI::Widget::Settings
 		int				 _itemCount = 0;
 		Representation * _preset	= nullptr;
 
-		QGridLayout * _layout = nullptr;
+		QWidget *	  _viewport = nullptr;
+		QGridLayout * _layout	= nullptr;
 
 		std::map<PARAMETER, ParameterLine *> _parameterWidgets;
 

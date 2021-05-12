@@ -14,6 +14,8 @@
 #include <QPixmap>
 #include <QSize>
 #include <iostream>
+#include <string>
+#include <vector>
 
 namespace VTX
 {
@@ -26,6 +28,8 @@ namespace VTX
 
 			COUNT
 		};
+
+		inline static const std::vector<std::string> SYMBOL_DISPLAY_MODE_STRING { "Short", "Long" };
 
 		class IconConst
 		{

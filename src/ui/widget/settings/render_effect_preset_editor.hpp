@@ -55,7 +55,8 @@ namespace VTX::UI::Widget::Settings
 		Model::Renderer::RenderEffectPreset *					  _preset			 = nullptr;
 		VTX::View::UI::Widget::Renderer::RenderEffectPresetView * _currentPresetView = nullptr;
 
-		QGridLayout * _layout = nullptr;
+		QWidget *	  _viewport = nullptr;
+		QGridLayout * _layout	= nullptr;
 
 		QLineEdit * _name		 = nullptr;
 		QCheckBox * _quickAccess = nullptr;

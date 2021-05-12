@@ -208,4 +208,31 @@ namespace VTX
 		}
 	}
 
+	void Setting::restore()
+	{
+		symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
+		windowFullscreen  = WINDOW_FULLSCREEN_DEFAULT;
+
+		activeRenderer			   = ACTIVE_RENDERER_DEFAULT;
+		forceRenderer			   = FORCE_RENDERER_DEFAULT;
+		representationDefaultIndex = REPRESENTATION_DEFAULT_INDEX;
+		renderEffectDefaultIndex   = RENDER_EFFECT_DEFAULT_INDEX;
+
+		activeVSync		  = ACTIVE_VSYNC_DEFAULT;
+		backgroundOpacity = BACKGROUND_OPACITY_DEFAULT;
+
+		translationSpeed	   = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
+		translationFactorSpeed = CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
+		rotationSpeed		   = CONTROLLER_ROTATION_SPEED_DEFAULT;
+		yAxisInverted		   = CONTROLLER_Y_AXIS_INVERTED;
+
+		activeControllerElasticity = CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
+		controllerElasticityFactor = CONTROLLER_ELASTICITY_FACTOR_DEFAULT;
+
+		defaultTrajectorySpeed	  = DEFAULT_TRAJECTORY_SPEED;
+		defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
+
+		autoRotationSpeed = Vec3f( AUTO_ROTATE_SPEED_DEFAULT );
+	}
+
 } // namespace VTX

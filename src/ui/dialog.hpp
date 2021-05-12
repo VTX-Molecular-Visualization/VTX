@@ -26,8 +26,7 @@ namespace VTX::UI
 		static void importRepresentationPresetDialog();
 		static void importRenderEffectPresetDialog();
 
-		static void confirmActionDialog( QWidget * const			p_caller,
-										 Action::BaseAction * const p_action,
+		static void confirmActionDialog( Action::BaseAction * const p_action,
 										 const QString &			p_title,
 										 const QString &			p_message );
 	};

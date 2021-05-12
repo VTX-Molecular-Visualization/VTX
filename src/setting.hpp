@@ -217,6 +217,7 @@ namespace VTX
 
 		void backup();
 		void recover();
+		void restore();
 
 		// Dev.
 		static const Renderer::MODE MODE_DEFAULT;
