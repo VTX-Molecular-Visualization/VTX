@@ -81,45 +81,25 @@ namespace VTX
 			float ratio			= desiredHeight / (float)watermarkSize.height();
 			watermarkSize.setHeight( desiredHeight );
 			watermarkSize.setWidth( watermarkSize.width() * ratio );
+
+			// Create image to render svg into.
 			QImage watermarkImg( watermarkSize, QImage::Format_RGBA64 );
 			watermarkImg.fill( QColor( 255, 255, 255, 0 ) );
-			// watermarkSvg.setAspectRatioMode( Qt::AspectRatioMode::KeepAspectRatioByExpanding );
 			QPainter watermarkPainter = QPainter( &watermarkImg );
-			// watermarkPainter.setCompositionMode( QPainter::CompositionMode::CompositionMode_SourceIn );
 			watermarkSvg.render( &watermarkPainter );
 
-			// Compute watermark color.
-			// Color::Rgb watermakColor
-			//	= VTX_SETTING().backgroundColor.brightness() > 0.5f ? Color::Rgb::BLACK : Color::Rgb::WHITE;
-			// QColor qWatermarkColor = watermakColor.toQColor();
-
-			// Apply the color.
-			/*
+			// Reduce alpha.
 			for ( int i = 0; i < watermarkImg.width(); ++i )
 			{
 				for ( int j = 0; j < watermarkImg.height(); ++j )
 				{
-					int	   r, g, b, a;
-					QColor qColor = watermarkImg.pixelColor( i, j );
-					qColor.getRgb( &r, &g, &b, &a );
-
-					// if ( a == 205 && r == 205 && g == 205 && b == 205 )
-					//{
-					//	qColor.setAlpha( 0 );
-					//}
-					// else
-					//{
-					// qColor.setAlpha( qColor.alpha() / 2 );
-					//}
-
-					// watermarkImg.setPixelColor( i, j, qColor );
-
-					VTX_LOG_FILE( "R:" + std::to_string( r ) + " G:" + std::to_string( r ) + " B:" + std::to_string( b )
-								  + " A:" + std::to_string( a ) );
+					QColor pixelColor = watermarkImg.pixelColor( i, j );
+					pixelColor.setAlpha( pixelColor.alpha() / 2 );
+					watermarkImg.setPixelColor( i, j, pixelColor );
 				}
 			}
-			*/
 
+			// Invert color to match background.
 			if ( VTX_SETTING().backgroundColor.brightness() < 0.5f && VTX_SETTING().backgroundOpacity > 0.5f )
 			{
 				watermarkImg.invertPixels( QImage::InvertMode::InvertRgb );
@@ -130,6 +110,7 @@ namespace VTX
 			return;
 #endif
 
+			// Paint watermark over the desired image.
 			QRect	 rect		  = QRect( QPoint( p_image.size().width() - watermarkImg.width(),
 										   p_image.size().height() - watermarkImg.height() ),
 								   watermarkImg.size() );
