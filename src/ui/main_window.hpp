@@ -88,8 +88,6 @@ namespace VTX
 
 			Widget::StatusBar::StatusBarWidget * _statusBarWidget = nullptr;
 
-			Qt::WindowStates _lastWindowedState = Qt::WindowState::WindowMinimized;
-
 			// Actions.
 			void _onDockWindowVisibilityChange( bool p_visible );
 

@@ -18,9 +18,6 @@ namespace VTX::UI
 		const QSize winsize = QSize( VTX_SETTING().WINDOW_WIDTH_DEFAULT, VTX_SETTING().WINDOW_HEIGHT_DEFAULT );
 		resize( winsize );
 
-		_lastWindowedState = ( windowState() & Qt::WindowState::WindowMaximized ) ? Qt::WindowState::WindowMaximized
-																				  : Qt::WindowState::WindowNoState;
-
 		if ( VTX_SETTING().windowFullscreen )
 			setWindowMode( WindowMode::Fullscreen );
 		else
@@ -250,15 +247,21 @@ namespace VTX::UI
 	WindowMode MainWindow::getWindowMode() { return _getWindowModeFromWindowState( windowState() ); }
 	void	   MainWindow::setWindowMode( const WindowMode & p_mode )
 	{
+		const Qt::WindowStates winStateBefore  = windowState();
+		const int			   iwinStateBefore = int( winStateBefore );
+
 		switch ( p_mode )
 		{
-		case WindowMode ::Fullscreen:
-			_lastWindowedState = windowState();
-			setWindowState( Qt::WindowState::WindowFullScreen );
+		case WindowMode::Fullscreen: setWindowState( windowState() | Qt::WindowState::WindowFullScreen ); break;
+		case WindowMode::Minimized: setWindowState( windowState() | Qt::WindowState::WindowMinimized ); break;
+		case WindowMode::Maximized: setWindowState( windowState() | Qt::WindowState::WindowMaximized ); break;
+		case WindowMode::Windowed:
+			const Qt::WindowStates winState = windowState();
+			const Qt::WindowStates mask
+				= Qt::WindowState::WindowMinimized | Qt::WindowState::WindowMaximized | Qt::WindowState::WindowActive;
+			setWindowState( winState & mask );
+
 			break;
-		case WindowMode::Minimized: setWindowState( Qt::WindowState::WindowMinimized ); break;
-		case WindowMode::Maximized: setWindowState( Qt::WindowState::WindowMaximized ); break;
-		case WindowMode::Windowed: setWindowState( _lastWindowedState ); break;
 		}
 
 		VTX_EVENT( new Event::VTXEventValue( Event::Global::MAIN_WINDOW_MODE_CHANGE, p_mode ) );
