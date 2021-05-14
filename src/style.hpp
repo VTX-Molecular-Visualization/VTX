@@ -103,8 +103,9 @@ namespace VTX
 
 		namespace WidgetProperty
 		{
-			inline const char * const OVERIDDEN_PARAMETER = "OVERIDDEN_PARAMETER";
-		}
+			inline const char * const OVERIDDEN_PARAMETER	= "OVERIDDEN_PARAMETER";
+			inline const char * const SETTING_SECTION_TITLE = "SETTING_SECTION_TITLE";
+		} // namespace WidgetProperty
 
 		inline static const QSize INSPECTOR_PREFERED_SIZE = QSize( 300, 100 );
 		inline static const QSize INSPECTOR_MINIMUM_SIZE  = QSize( 50, 50 );

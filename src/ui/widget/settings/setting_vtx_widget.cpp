@@ -275,6 +275,8 @@ namespace VTX::UI::Widget::Settings
 	void SettingVTXWidget::_startSection( const QString & p_title )
 	{
 		QLabel * const titleWidget = new QLabel( this );
+		Util::UI::setDynamicProperty( titleWidget, Style::WidgetProperty::OVERIDDEN_PARAMETER );
+
 		titleWidget->setText( p_title );
 		_settingsLayout->addWidget( titleWidget, _currentRow, 0, 1, 2, Qt::AlignmentFlag::AlignLeft );
 

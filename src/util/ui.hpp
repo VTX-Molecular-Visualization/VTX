@@ -30,6 +30,10 @@ namespace VTX::Util::UI
 		p_widget->style()->unpolish( p_widget );
 		p_widget->style()->polish( p_widget );
 	}
+	static void setDynamicProperty( QWidget * const p_widget, const char * const p_property )
+	{
+		setDynamicProperty( p_widget, p_property, true );
+	}
 
 	static Qt::CheckState getCheckState( const bool p_boolValue )
 	{
