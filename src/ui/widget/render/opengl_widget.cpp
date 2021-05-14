@@ -16,7 +16,7 @@ namespace VTX::UI::Widget::Render
 		format.setProfile( QSurfaceFormat::CoreProfile );
 		format.setRenderableType( QSurfaceFormat::OpenGL );
 		format.setSwapBehavior( QSurfaceFormat::DoubleBuffer );
-		format.setSwapInterval( VTX_SETTING().activeVSync );
+		format.setSwapInterval( VTX_SETTING().getVSync() );
 		QSurfaceFormat::setDefaultFormat( format );
 	}
 
@@ -97,8 +97,6 @@ namespace VTX::UI::Widget::Render
 			_painter.drawText( 0, 10, QString::fromStdString( std::to_string( VTX_STAT().FPS ) ) );
 			_painter.end();
 		}
-
-		
 	}
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )

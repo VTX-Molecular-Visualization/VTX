@@ -201,27 +201,27 @@ namespace VTX
 
 		nlohmann::json Serializer::serialize( const Setting & p_setting ) const
 		{
-			return { { "SYMBOL_DISPLAY_MODE", p_setting.symbolDisplayMode },
-					 { "WINDOW_FULLSCREEN", p_setting.windowFullscreen },
-					 { "ACTIVE_RENDERER", p_setting.activeRenderer },
-					 { "FORCE_RENDERER", p_setting.forceRenderer },
-					 { "REPRESENTATION", p_setting.representationDefaultIndex },
-					 { "RENDER_EFFECT_DEFAULT_INDEX", p_setting.renderEffectDefaultIndex },
-					 { "ACTIVE_VSYNC", p_setting.activeVSync },
-					 { "BACKGROUND_OPACITY", p_setting.backgroundOpacity },
+			return { { "SYMBOL_DISPLAY_MODE", p_setting.getSymbolDisplayMode() },
+					 { "WINDOW_FULLSCREEN", p_setting.getWindowFullscreen() },
+					 { "ACTIVE_RENDERER", p_setting.getActivateRenderer() },
+					 { "FORCE_RENDERER", p_setting.getForceRenderer() },
+					 { "REPRESENTATION", p_setting.getDefaultRepresentationIndex() },
+					 { "RENDER_EFFECT_DEFAULT_INDEX", p_setting.getDefaultRenderEffectPresetIndex() },
+					 { "ACTIVE_VSYNC", p_setting.getVSync() },
+					 { "BACKGROUND_OPACITY", p_setting.getSnapshotBackgroundOpacity() },
 
-					 { "CONTROLLER_TRANSLATION_SPEED", p_setting.translationSpeed },
-					 { "CONTROLLER_TRANSLATION_FACTOR", p_setting.translationFactorSpeed },
-					 { "CONTROLLER_ROTATION_SPEED", p_setting.rotationSpeed },
-					 { "CONTROLLER_Y_AXIS_INVERTED", p_setting.yAxisInverted },
+					 { "CONTROLLER_TRANSLATION_SPEED", p_setting.getTranslationSpeed() },
+					 { "CONTROLLER_TRANSLATION_FACTOR", p_setting.getTranslationSpeedFactor() },
+					 { "CONTROLLER_ROTATION_SPEED", p_setting.getRotationSpeed() },
+					 { "CONTROLLER_Y_AXIS_INVERTED", p_setting.getYAxisInverted() },
 
-					 { "ACTIVE_CONTROLLER_ELASTICITY", p_setting.activeControllerElasticity },
-					 { "CONTROLLER_ELASTICITY_FACTOR", p_setting.controllerElasticityFactor },
+					 { "ACTIVE_CONTROLLER_ELASTICITY", p_setting.getControllerElasticityActive() },
+					 { "CONTROLLER_ELASTICITY_FACTOR", p_setting.getControllerElasticityFactor() },
 
-					 { "DEFAULT_TRAJECTORY_SPEED", p_setting.defaultTrajectorySpeed },
-					 { "DEFAULT_TRAJECTORY_PLAY_MODE", p_setting.defaultTrajectoryPlayMode },
+					 { "DEFAULT_TRAJECTORY_SPEED", p_setting.getDefaultTrajectorySpeed() },
+					 { "DEFAULT_TRAJECTORY_PLAY_MODE", p_setting.getDefaultTrajectoryPlayMode() },
 
-					 { "AUTO_ROTATE_SPEED", serialize( p_setting.autoRotationSpeed ) } };
+					 { "AUTO_ROTATE_SPEED", serialize( p_setting.getAutoRotationSpeed() ) } };
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, VTXApp & p_app ) const
@@ -460,44 +460,36 @@ namespace VTX
 		{
 			const Style::SYMBOL_DISPLAY_MODE symbolDisplayMode
 				= p_json.at( "SYMBOL_DISPLAY_MODE" ).get<Style::SYMBOL_DISPLAY_MODE>();
-			p_setting.symbolDisplayMode
-				= Style::SYMBOL_DISPLAY_MODE( int( symbolDisplayMode ) % int( Style::SYMBOL_DISPLAY_MODE::COUNT ) );
+			p_setting.setSymbolDisplayMode(
+				Style::SYMBOL_DISPLAY_MODE( int( symbolDisplayMode ) % int( Style::SYMBOL_DISPLAY_MODE::COUNT ) ) );
 
-			p_setting.windowFullscreen = p_json.at( "WINDOW_FULLSCREEN" ).get<bool>();
+			p_setting.setWindowFullscreen( p_json.at( "WINDOW_FULLSCREEN" ).get<bool>() );
 
-			p_setting.activeRenderer			 = p_json.at( "ACTIVE_RENDERER" ).get<bool>();
-			p_setting.forceRenderer				 = p_json.at( "FORCE_RENDERER" ).get<bool>();
-			p_setting.representationDefaultIndex = p_json.at( "REPRESENTATION" ).get<int>();
-			p_setting.renderEffectDefaultIndex	 = p_json.at( "RENDER_EFFECT_DEFAULT_INDEX" ).get<int>();
+			p_setting.setActivateRenderer( p_json.at( "ACTIVE_RENDERER" ).get<bool>() );
+			p_setting.setForceRenderer( p_json.at( "FORCE_RENDERER" ).get<bool>() );
+			p_setting.setDefaultRepresentationIndex( p_json.at( "REPRESENTATION" ).get<int>() );
+			p_setting.setDefaultRenderEffectPresetIndex( p_json.at( "RENDER_EFFECT_DEFAULT_INDEX" ).get<int>() );
 
-			p_setting.activeVSync		= p_json.at( "ACTIVE_VSYNC" ).get<bool>();
-			p_setting.backgroundOpacity = std::clamp( p_json.at( "BACKGROUND_OPACITY" ).get<float>(), 0.f, 1.f );
+			p_setting.setVSync( p_json.at( "ACTIVE_VSYNC" ).get<bool>() );
+			p_setting.setSnapshotBackgroundOpacity( p_json.at( "BACKGROUND_OPACITY" ).get<float>() );
 
-			p_setting.translationSpeed		 = std::clamp( p_json.at( "CONTROLLER_TRANSLATION_SPEED" ).get<float>(),
-													   Setting::CONTROLLER_TRANSLATION_SPEED_MIN,
-													   Setting::CONTROLLER_TRANSLATION_SPEED_MAX );
-			p_setting.translationFactorSpeed = std::clamp( p_json.at( "CONTROLLER_TRANSLATION_FACTOR" ).get<float>(),
-														   Setting::CONTROLLER_TRANSLATION_FACTOR_MIN,
-														   Setting::CONTROLLER_TRANSLATION_FACTOR_MAX );
-			p_setting.rotationSpeed			 = std::clamp( p_json.at( "CONTROLLER_ROTATION_SPEED" ).get<float>(),
-												   Setting::CONTROLLER_ROTATION_SPEED_MIN,
-												   Setting::CONTROLLER_ROTATION_SPEED_MAX );
-			p_setting.yAxisInverted			 = p_json.at( "CONTROLLER_Y_AXIS_INVERTED" ).get<bool>();
+			p_setting.setTranslationSpeed( p_json.at( "CONTROLLER_TRANSLATION_SPEED" ).get<float>() );
+			p_setting.setTranslationSpeedFactor( p_json.at( "CONTROLLER_TRANSLATION_FACTOR" ).get<float>() );
+			p_setting.setRotationSpeed( p_json.at( "CONTROLLER_ROTATION_SPEED" ).get<float>() );
+			p_setting.setYAxisInverted( p_json.at( "CONTROLLER_Y_AXIS_INVERTED" ).get<bool>() );
 
-			p_setting.activeControllerElasticity = p_json.at( "ACTIVE_CONTROLLER_ELASTICITY" ).get<bool>();
-			p_setting.controllerElasticityFactor = std::clamp( p_json.at( "CONTROLLER_ELASTICITY_FACTOR" ).get<float>(),
-															   Setting::CONTROLLER_ELASTICITY_FACTOR_MIN,
-															   Setting::CONTROLLER_ELASTICITY_FACTOR_MAX );
+			p_setting.setControllerElasticityActive( p_json.at( "ACTIVE_CONTROLLER_ELASTICITY" ).get<bool>() );
+			p_setting.setControllerElasticityFactor( p_json.at( "CONTROLLER_ELASTICITY_FACTOR" ).get<float>() );
 
-			p_setting.defaultTrajectorySpeed = std::clamp( p_json.at( "DEFAULT_TRAJECTORY_SPEED" ).get<int>(),
-														   Setting::MIN_TRAJECTORY_SPEED,
-														   Setting::MAX_TRAJECTORY_SPEED );
+			p_setting.setDefaultTrajectorySpeed( p_json.at( "DEFAULT_TRAJECTORY_SPEED" ).get<int>() );
 			const Trajectory::PlayMode playMode
 				= p_json.at( "DEFAULT_TRAJECTORY_PLAY_MODE" ).get<Trajectory::PlayMode>();
-			p_setting.defaultTrajectoryPlayMode
-				= Trajectory::PlayMode( int( playMode ) % int( Trajectory::PlayMode::COUNT ) );
+			p_setting.setDefaultTrajectoryPlayMode(
+				Trajectory::PlayMode( int( playMode ) % int( Trajectory::PlayMode::COUNT ) ) );
 
-			deserialize( p_json.at( "AUTO_ROTATE_SPEED" ), p_setting.autoRotationSpeed );
+			Vec3f autoRotationSpeed;
+			deserialize( p_json.at( "AUTO_ROTATE_SPEED" ), autoRotationSpeed );
+			p_setting.setAutoRotationSpeed( autoRotationSpeed );
 		}
 
 		nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,

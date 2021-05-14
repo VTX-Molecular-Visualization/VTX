@@ -18,7 +18,7 @@ namespace VTX::UI
 		const QSize winsize = QSize( VTX_SETTING().WINDOW_WIDTH_DEFAULT, VTX_SETTING().WINDOW_HEIGHT_DEFAULT );
 		resize( winsize );
 
-		if ( VTX_SETTING().windowFullscreen )
+		if ( VTX_SETTING().getWindowFullscreen() )
 			setWindowMode( WindowMode::Fullscreen );
 		else
 			setWindowMode( WindowMode::Windowed );

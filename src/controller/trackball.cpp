@@ -105,15 +105,15 @@ namespace VTX
 			// Set values from settings.
 			if ( deltaDistance != 0.f )
 			{
-				deltaDistance *= VTX_SETTING().translationSpeed;
+				deltaDistance *= VTX_SETTING().getTranslationSpeed();
 
 				if ( _isKeyPressed( ScanCode::Shift ) )
 				{
-					deltaDistance *= VTX_SETTING().translationFactorSpeed;
+					deltaDistance *= VTX_SETTING().getTranslationSpeedFactor();
 				}
 				if ( _isKeyPressed( ScanCode::Control ) )
 				{
-					deltaDistance /= VTX_SETTING().translationFactorSpeed;
+					deltaDistance /= VTX_SETTING().getTranslationSpeedFactor();
 				}
 
 				_needUpdate = true;
@@ -121,10 +121,10 @@ namespace VTX
 
 			if ( deltaVelocity != VEC3F_ZERO )
 			{
-				_velocity.x += VTX_SETTING().rotationSpeed * deltaVelocity.x;
-				_velocity.y
-					+= VTX_SETTING().rotationSpeed * deltaVelocity.y * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f );
-				_velocity.z += VTX_SETTING().rotationSpeed * deltaVelocity.z;
+				_velocity.x += VTX_SETTING().getRotationSpeed() * deltaVelocity.x;
+				_velocity.y += VTX_SETTING().getRotationSpeed() * deltaVelocity.y
+							   * ( VTX_SETTING().getYAxisInverted() ? -1.f : 1.f );
+				_velocity.z += VTX_SETTING().getRotationSpeed() * deltaVelocity.z;
 			}
 
 			_needUpdate |= _velocity != VEC3F_ZERO;
@@ -145,7 +145,7 @@ namespace VTX
 				}
 
 				Quatf rotation = Quatf( Vec3f( _velocity.y, _velocity.x, _velocity.z )
-										* ( VTX_SETTING().activeControllerElasticity ? p_deltaTime : 0.2f ) );
+										* ( VTX_SETTING().getControllerElasticityActive() ? p_deltaTime : 0.2f ) );
 				_camera.rotateAround( rotation, _target, distance );
 				float d = Util::Math::distance( _camera.getPosition(), _target );
 				// VTX_LOG_FILE( std::to_string( p_deltaTime ) + " / " + std::to_string( distance ) + " / "
@@ -154,7 +154,7 @@ namespace VTX
 			}
 
 			// Handle elasticity.
-			if ( VTX_SETTING().activeControllerElasticity )
+			if ( VTX_SETTING().getControllerElasticityActive() )
 			{
 				_updateElasticity( p_deltaTime );
 			}
@@ -169,7 +169,7 @@ namespace VTX
 			if ( _velocity != VEC3F_ZERO )
 			{
 				_velocity = Util::Math::linearInterpolation(
-					_velocity, VEC3F_ZERO, p_deltaTime * VTX_SETTING().controllerElasticityFactor );
+					_velocity, VEC3F_ZERO, p_deltaTime * VTX_SETTING().getControllerElasticityFactor() );
 
 				Vec3f::bool_type res = Util::Math::lessThan( Util::Math::abs( _velocity ),
 															 Vec3f( Setting::CONTROLLER_ELASTICITY_THRESHOLD ) );

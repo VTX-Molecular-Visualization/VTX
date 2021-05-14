@@ -41,7 +41,7 @@ namespace VTX
 		_representationLibrary
 			= MVC::MvcManager::get().instantiateModel<Model::Representation::RepresentationLibrary>();
 		_renderEffectLibrary = MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
-		_renderEffectLibrary->applyPreset( _setting.renderEffectDefaultIndex );
+		_renderEffectLibrary->applyPreset( _setting.getDefaultRenderEffectPresetIndex() );
 
 		// Create scene.
 		_scene = new Object3D::Scene();
@@ -174,7 +174,7 @@ namespace VTX
 
 	void VTXApp::renderScene() const
 	{
-		if ( VTX_SETTING().activeRenderer && MASK )
+		if ( VTX_SETTING().getActivateRenderer() && MASK )
 		{
 			_mainWindow->getOpenGLWidget().update();
 		}

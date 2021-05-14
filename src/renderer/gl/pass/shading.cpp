@@ -51,8 +51,11 @@ namespace VTX::Renderer::GL::Pass
 		{
 			const Color::Rgb & bgColor = VTX_RENDER_EFFECT().getBackgroundColor();
 			/// TODO: use a value_ptr ?
-			_currentShading->setVec4f(
-				"uBackgroundColor", bgColor.getR(), bgColor.getG(), bgColor.getB(), VTX_SETTING().backgroundOpacity );
+			_currentShading->setVec4f( "uBackgroundColor",
+									   bgColor.getR(),
+									   bgColor.getG(),
+									   bgColor.getB(),
+									   VTX_SETTING().getSnapshotBackgroundOpacity() );
 			_currentShading->setFloat( "uFogNear", VTX_RENDER_EFFECT().getFogNear() );
 			_currentShading->setFloat( "uFogFar", VTX_RENDER_EFFECT().getFogFar() );
 			_currentShading->setFloat( "uFogDensity",

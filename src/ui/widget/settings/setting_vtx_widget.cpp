@@ -159,32 +159,32 @@ namespace VTX::UI::Widget::Settings
 	void SettingVTXWidget::_refreshData()
 	{
 		_activeControllerElasticityWidget->setCheckState(
-			Util::UI::getCheckState( VTX_SETTING().activeControllerElasticity ) );
+			Util::UI::getCheckState( VTX_SETTING().getControllerElasticityActive() ) );
 
 		const float elasticityValue
 			= 1
-			  - ( VTX_SETTING().controllerElasticityFactor - Setting::CONTROLLER_ELASTICITY_FACTOR_MIN )
+			  - ( VTX_SETTING().getControllerElasticityFactor() - Setting::CONTROLLER_ELASTICITY_FACTOR_MIN )
 					/ ( Setting::CONTROLLER_ELASTICITY_FACTOR_MAX - Setting::CONTROLLER_ELASTICITY_FACTOR_MIN );
 		_controllerElasticityFactorWidget->setValue( elasticityValue );
 
-		_controllerTranslationFactorWidget->setValue( VTX_SETTING().translationFactorSpeed );
-		_controllerTranslationSpeedWidget->setValue( VTX_SETTING().translationSpeed );
-		_controllerYAxisInvertedWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().yAxisInverted ) );
+		_controllerTranslationFactorWidget->setValue( VTX_SETTING().getTranslationSpeedFactor() );
+		_controllerTranslationSpeedWidget->setValue( VTX_SETTING().getTranslationSpeed() );
+		_controllerYAxisInvertedWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getYAxisInverted() ) );
 
-		_snapshotBackgroundOpacitySlider->setValue( VTX_SETTING().backgroundOpacity );
-		_vsyncWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().activeVSync ) );
-		_forceRendererWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().forceRenderer ) );
-		_fullscreenWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().windowFullscreen ) );
+		_snapshotBackgroundOpacitySlider->setValue( VTX_SETTING().getSnapshotBackgroundOpacity() );
+		_vsyncWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getVSync() ) );
+		_forceRendererWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getForceRenderer() ) );
+		_fullscreenWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getWindowFullscreen() ) );
 
-		_defaultTrajectoryPlayModeWidget->setCurrentIndex( int( VTX_SETTING().defaultTrajectoryPlayMode ) );
-		_defaultTrajectorySpeedWidget->setValue( VTX_SETTING().defaultTrajectorySpeed );
+		_defaultTrajectoryPlayModeWidget->setCurrentIndex( int( VTX_SETTING().getDefaultTrajectoryPlayMode() ) );
+		_defaultTrajectorySpeedWidget->setValue( VTX_SETTING().getDefaultTrajectorySpeed() );
 
-		_symbolDisplayModeWidget->setCurrentIndex( int( VTX_SETTING().symbolDisplayMode ) );
+		_symbolDisplayModeWidget->setCurrentIndex( int( VTX_SETTING().getSymbolDisplayMode() ) );
 	}
 
 	void SettingVTXWidget::_activeControllerElasticityAction( const bool p_activate )
 	{
-		if ( VTX_SETTING().activeControllerElasticity != p_activate )
+		if ( VTX_SETTING().getControllerElasticityActive() != p_activate )
 			VTX_ACTION( new Action::Setting::ActiveControllerElasticity( p_activate ) );
 	}
 	void SettingVTXWidget::_changeControllerElasticityFactorAction( const float p_value )
@@ -194,43 +194,43 @@ namespace VTX::UI::Widget::Settings
 				+ ( 1 - p_value )
 					  * ( Setting::CONTROLLER_ELASTICITY_FACTOR_MAX - Setting::CONTROLLER_ELASTICITY_FACTOR_MIN ) );
 
-		if ( VTX_SETTING().controllerElasticityFactor != elasticityValue )
+		if ( VTX_SETTING().getControllerElasticityFactor() != elasticityValue )
 			VTX_ACTION( new Action::Setting::ChangeControllerElasticity( elasticityValue ) );
 	}
 	void SettingVTXWidget::_changeControllerTranslationFactorAction( const float p_value )
 	{
-		if ( VTX_SETTING().translationFactorSpeed != p_value )
+		if ( VTX_SETTING().getTranslationSpeedFactor() != p_value )
 			VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed( p_value ) );
 	}
 	void SettingVTXWidget::_changeControllerTranslationSpeedAction( const float p_value )
 	{
-		if ( VTX_SETTING().translationSpeed != p_value )
+		if ( VTX_SETTING().getTranslationSpeed() != p_value )
 			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( p_value ) );
 	}
 	void SettingVTXWidget::_changeControllerYInversionAction( const bool p_invert )
 	{
-		if ( VTX_SETTING().yAxisInverted != p_invert )
+		if ( VTX_SETTING().getYAxisInverted() != p_invert )
 			VTX_ACTION( new Action::Setting::ActiveYAxisInversion( p_invert ) );
 	}
 
 	void SettingVTXWidget::_changeSnapshotBackgroundOpacity( const float p_opacity )
 	{
-		if ( VTX_SETTING().backgroundOpacity != p_opacity )
+		if ( VTX_SETTING().getSnapshotBackgroundOpacity() != p_opacity )
 			VTX_ACTION( new Action::Setting::ChangeBackgroundOpacity( p_opacity ) );
 	}
 	void SettingVTXWidget::_activeVSyncAction( const bool p_activate )
 	{
-		if ( VTX_SETTING().activeVSync != p_activate )
+		if ( VTX_SETTING().getVSync() != p_activate )
 			VTX_ACTION( new Action::Setting::ActiveVerticalSync( p_activate ) );
 	}
 	void SettingVTXWidget::_activeForceRendererAction( const bool p_activate )
 	{
-		if ( VTX_SETTING().forceRenderer != p_activate )
+		if ( VTX_SETTING().getForceRenderer() != p_activate )
 			VTX_ACTION( new Action::Setting::ForceRenderer( p_activate ) );
 	}
 	void SettingVTXWidget::_activeFullscreenAction( const bool p_activate )
 	{
-		if ( VTX_SETTING().windowFullscreen != p_activate )
+		if ( VTX_SETTING().getWindowFullscreen() != p_activate )
 		{
 			const WindowMode windowMode = p_activate ? WindowMode::Fullscreen : WindowMode::Windowed;
 			VTX_ACTION( new Action::Setting::WindowMode( windowMode ) );
@@ -239,19 +239,19 @@ namespace VTX::UI::Widget::Settings
 
 	void SettingVTXWidget::_changeDefaultTrajectorySpeed( const int p_fps )
 	{
-		if ( VTX_SETTING().defaultTrajectorySpeed != p_fps )
+		if ( VTX_SETTING().getDefaultTrajectorySpeed() != p_fps )
 			VTX_ACTION( new Action::Setting::ChangeDefaultTrajectorySpeed( p_fps ) );
 	}
 	void SettingVTXWidget::_changeDefaultTrajectoryPlayMode( const int p_playmode )
 	{
 		const Trajectory::PlayMode playMode = Trajectory::PlayMode( p_playmode );
-		if ( VTX_SETTING().defaultTrajectoryPlayMode != playMode )
+		if ( VTX_SETTING().getDefaultTrajectoryPlayMode() != playMode )
 			VTX_ACTION( new Action::Setting::ChangeDefaultTrajectoryPlayMode( playMode ) );
 	}
 	void SettingVTXWidget::_changeSymbolDisplayMode( const int p_displayMode )
 	{
 		const Style::SYMBOL_DISPLAY_MODE displayMode = Style::SYMBOL_DISPLAY_MODE( p_displayMode );
-		if ( VTX_SETTING().symbolDisplayMode != displayMode )
+		if ( VTX_SETTING().getSymbolDisplayMode() != displayMode )
 			VTX_ACTION( new Action::Setting::ChangeSymbolDisplayMode( displayMode ) );
 	}
 

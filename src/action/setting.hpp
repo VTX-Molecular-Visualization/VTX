@@ -89,7 +89,7 @@ namespace VTX::Action::Setting
 		explicit WindowMode( const UI::WindowMode & p_windowMode ) : _windowMode( p_windowMode ) {}
 		void execute() override
 		{
-			VTX_SETTING().windowFullscreen = _windowMode == UI::WindowMode::Fullscreen;
+			VTX_SETTING().setWindowFullscreen( _windowMode == UI::WindowMode::Fullscreen );
 			VTXApp::get().getMainWindow().setWindowMode( _windowMode );
 		}
 
@@ -97,23 +97,12 @@ namespace VTX::Action::Setting
 		const UI::WindowMode _windowMode;
 	};
 
-	class ChangeDisplayMode : public BaseAction
-	{
-	  public:
-		explicit ChangeDisplayMode( const Style::SYMBOL_DISPLAY_MODE p_mode ) : _mode( p_mode ) {}
-
-		virtual void execute() override { VTX_SETTING().symbolDisplayMode = _mode; };
-
-	  private:
-		const Style::SYMBOL_DISPLAY_MODE _mode;
-	};
-
 	class ActiveRenderer : public BaseAction
 	{
 	  public:
 		explicit ActiveRenderer( const bool p_active ) : _active( p_active ) {}
 
-		virtual void execute() override { VTX_SETTING().activeRenderer = _active; }
+		virtual void execute() override { VTX_SETTING().setActivateRenderer( _active ); }
 
 	  private:
 		const bool _active;
@@ -124,7 +113,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ForceRenderer( const bool p_force ) : _force( p_force ) {}
 
-		virtual void execute() override { VTX_SETTING().forceRenderer = _force; }
+		virtual void execute() override { VTX_SETTING().setForceRenderer( _force ); }
 
 	  private:
 		const bool _force;
@@ -152,7 +141,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().backgroundOpacity = Util::Math::clamp( _opacity, 0.f, 1.f );
+			VTX_SETTING().setSnapshotBackgroundOpacity( _opacity );
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		};
 
@@ -208,8 +197,10 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().renderEffectDefaultIndex = Util::Math::clamp(
-				_renderEffectPresetIndex, 0, VTX::Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount() );
+			VTX_SETTING().setDefaultRenderEffectPresetIndex(
+				Util::Math::clamp( _renderEffectPresetIndex,
+								   0,
+								   VTX::Model::Renderer::RenderEffectPresetLibrary::get().getPresetCount() ) );
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 		};
 
@@ -270,7 +261,7 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_SETTING().activeVSync = _active;
+			VTX_SETTING().setVSync( _active );
 			// TODO
 		};
 
@@ -532,12 +523,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeTranslationSpeed( const float p_speed ) : _speed( p_speed ) {}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().translationSpeed = Util::Math::clamp( _speed,
-																VTX::Setting::CONTROLLER_TRANSLATION_SPEED_MIN,
-																VTX::Setting::CONTROLLER_TRANSLATION_SPEED_MAX );
-		};
+		virtual void execute() override { VTX_SETTING().setTranslationSpeed( _speed ); };
 
 	  private:
 		const float _speed;
@@ -548,12 +534,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeTranslationFactorSpeed( const float p_factor ) : _factor( p_factor ) {}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().translationFactorSpeed = Util::Math::clamp( _factor,
-																	  VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MIN,
-																	  VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MAX );
-		};
+		virtual void execute() override { VTX_SETTING().setTranslationSpeedFactor( _factor ); };
 
 	  private:
 		const float _factor;
@@ -564,11 +545,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeRotationSpeed( const float p_speed ) : _speed( p_speed ) {}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().rotationSpeed = Util::Math::clamp(
-				_speed, VTX::Setting::CONTROLLER_ROTATION_SPEED_MIN, VTX::Setting::CONTROLLER_ROTATION_SPEED_MAX );
-		};
+		virtual void execute() override { VTX_SETTING().setRotationSpeed( _speed ); };
 
 	  private:
 		const float _speed;
@@ -579,7 +556,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ActiveYAxisInversion( const bool p_active ) : _active( p_active ) {}
 
-		virtual void execute() override { VTX_SETTING().yAxisInverted = _active; };
+		virtual void execute() override { VTX_SETTING().setYAxisInverted( _active ); };
 
 	  private:
 		const bool _active;
@@ -590,7 +567,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ActiveControllerElasticity( const bool p_active ) : _active( p_active ) {}
 
-		virtual void execute() override { VTX_SETTING().activeControllerElasticity = _active; };
+		virtual void execute() override { VTX_SETTING().setControllerElasticityActive( _active ); };
 
 	  private:
 		const bool _active;
@@ -601,13 +578,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeControllerElasticity( const float p_elasticity ) : _elasticity( p_elasticity ) {}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().controllerElasticityFactor
-				= Util::Math::clamp( _elasticity,
-									 VTX::Setting::CONTROLLER_ELASTICITY_FACTOR_MIN,
-									 VTX::Setting::CONTROLLER_ELASTICITY_FACTOR_MAX );
-		};
+		virtual void execute() override { VTX_SETTING().setControllerElasticityFactor( _elasticity ); };
 
 	  private:
 		const float _elasticity;
@@ -618,11 +589,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeDefaultTrajectorySpeed( const int p_speed ) : _speed( p_speed ) {}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().defaultTrajectorySpeed
-				= Util::Math::clamp( _speed, VTX::Setting::MIN_TRAJECTORY_SPEED, VTX::Setting::MAX_TRAJECTORY_SPEED );
-		};
+		virtual void execute() override { VTX_SETTING().setDefaultTrajectorySpeed( _speed ); };
 
 	  private:
 		const int _speed;
@@ -633,7 +600,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_playMode ) : _playMode( p_playMode ) {}
 
-		virtual void execute() override { VTX_SETTING().defaultTrajectoryPlayMode = _playMode; };
+		virtual void execute() override { VTX_SETTING().setDefaultTrajectoryPlayMode( _playMode ); };
 
 	  private:
 		const Trajectory::PlayMode _playMode;
@@ -647,7 +614,7 @@ namespace VTX::Action::Setting
 		{
 		}
 
-		virtual void execute() override { VTX_SETTING().symbolDisplayMode = _displayMode; };
+		virtual void execute() override { VTX_SETTING().setSymbolDisplayMode( _displayMode ); };
 
 	  private:
 		const Style::SYMBOL_DISPLAY_MODE _displayMode;
@@ -658,11 +625,7 @@ namespace VTX::Action::Setting
 	  public:
 		explicit ChangeAutoRotateSpeed( const Vec3f & p_value ) : _value( p_value ) {}
 
-		virtual void execute() override
-		{
-			VTX_SETTING().autoRotationSpeed
-				= Util::Math::clamp( _value, VTX::Setting::AUTO_ROTATE_SPEED_MIN, VTX::Setting::AUTO_ROTATE_SPEED_MAX );
-		}
+		virtual void execute() override { VTX_SETTING().setAutoRotationSpeed( _value ); }
 
 		virtual void displayUsage() override { VTX_INFO( "f f f|f" ); }
 
@@ -693,30 +656,32 @@ namespace VTX::Action::Setting
 
 		virtual void execute() override
 		{
-			VTX_ACTION( new Action::Setting::ChangeDisplayMode( _setting.symbolDisplayMode ) );
-			VTX_ACTION( new Action::Setting::WindowMode( _setting.windowFullscreen ? VTX::UI::WindowMode::Fullscreen
-																				   : VTX::UI::WindowMode::Windowed ) );
+			VTX_ACTION( new Action::Setting::ChangeSymbolDisplayMode( _setting.getSymbolDisplayMode() ) );
+			VTX_ACTION( new Action::Setting::WindowMode(
+				_setting.getWindowFullscreen() ? VTX::UI::WindowMode::Fullscreen : VTX::UI::WindowMode::Windowed ) );
 
-			VTX_ACTION( new Action::Setting::ActiveRenderer( _setting.activeRenderer ) );
-			VTX_ACTION( new Action::Setting::ForceRenderer( _setting.forceRenderer ) );
-			VTX_ACTION( new Action::Setting::ChangeDefaultRepresentation( _setting.representationDefaultIndex ) );
-			VTX_ACTION( new Action::Setting::ChangeDefaultRenderEffectPreset( _setting.renderEffectDefaultIndex ) );
+			VTX_ACTION( new Action::Setting::ActiveRenderer( _setting.getActivateRenderer() ) );
+			VTX_ACTION( new Action::Setting::ForceRenderer( _setting.getForceRenderer() ) );
+			VTX_ACTION( new Action::Setting::ChangeDefaultRepresentation( _setting.getDefaultRepresentationIndex() ) );
+			VTX_ACTION(
+				new Action::Setting::ChangeDefaultRenderEffectPreset( _setting.getDefaultRenderEffectPresetIndex() ) );
 
-			VTX_ACTION( new Action::Setting::ActiveVerticalSync( _setting.activeVSync ) );
-			VTX_ACTION( new Action::Setting::ChangeBackgroundOpacity( _setting.backgroundOpacity ) );
+			VTX_ACTION( new Action::Setting::ActiveVerticalSync( _setting.getVSync() ) );
+			VTX_ACTION( new Action::Setting::ChangeBackgroundOpacity( _setting.getSnapshotBackgroundOpacity() ) );
 
-			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( _setting.translationSpeed ) );
-			VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed( _setting.translationFactorSpeed ) );
-			VTX_ACTION( new Action::Setting::ChangeRotationSpeed( _setting.rotationSpeed ) );
-			VTX_ACTION( new Action::Setting::ActiveYAxisInversion( _setting.yAxisInverted ) );
+			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( _setting.getTranslationSpeed() ) );
+			VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed( _setting.getTranslationSpeedFactor() ) );
+			VTX_ACTION( new Action::Setting::ChangeRotationSpeed( _setting.getRotationSpeed() ) );
+			VTX_ACTION( new Action::Setting::ActiveYAxisInversion( _setting.getYAxisInverted() ) );
 
-			VTX_ACTION( new Action::Setting::ActiveControllerElasticity( _setting.activeControllerElasticity ) );
-			VTX_ACTION( new Action::Setting::ChangeControllerElasticity( _setting.controllerElasticityFactor ) );
+			VTX_ACTION( new Action::Setting::ActiveControllerElasticity( _setting.getControllerElasticityActive() ) );
+			VTX_ACTION( new Action::Setting::ChangeControllerElasticity( _setting.getControllerElasticityFactor() ) );
 
-			VTX_ACTION( new Action::Setting::ChangeDefaultTrajectorySpeed( _setting.defaultTrajectorySpeed ) );
-			VTX_ACTION( new Action::Setting::ChangeDefaultTrajectoryPlayMode( _setting.defaultTrajectoryPlayMode ) );
+			VTX_ACTION( new Action::Setting::ChangeDefaultTrajectorySpeed( _setting.getDefaultTrajectorySpeed() ) );
+			VTX_ACTION(
+				new Action::Setting::ChangeDefaultTrajectoryPlayMode( _setting.getDefaultTrajectoryPlayMode() ) );
 
-			VTX_ACTION( new Action::Setting::ChangeAutoRotateSpeed( _setting.autoRotationSpeed ) );
+			VTX_ACTION( new Action::Setting::ChangeAutoRotateSpeed( _setting.getAutoRotationSpeed() ) );
 		}
 
 	  private:

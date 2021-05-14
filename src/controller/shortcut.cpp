@@ -32,7 +32,7 @@ namespace VTX
 				break;
 			case ScanCode::F2:
 				VTX_ACTION( new Action::Setting::ChangeDefaultRepresentation(
-					( ( VTX_SETTING().representationDefaultIndex + 1 )
+					( ( VTX_SETTING().getDefaultRepresentationIndex() + 1 )
 					  % Model::Representation::RepresentationLibrary::get().getRepresentationCount() ) ) );
 				break;
 			case ScanCode::F3:
@@ -59,7 +59,7 @@ namespace VTX
 				break;
 			case ScanCode::F6: VTX_ACTION( new Action::Setting::RestoreLayout() ); break;
 			case ScanCode::F10:
-				VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().activeRenderer ) );
+				VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
 				break;
 
 			case ScanCode::F11:

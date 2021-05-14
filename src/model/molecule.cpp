@@ -28,8 +28,8 @@ namespace VTX
 		Molecule::Molecule() : Molecule( ID::Model::MODEL_MOLECULE ) {}
 		Molecule::Molecule( const ID::VTX_ID & p_typeId ) : BaseModel3D( ID::Model::MODEL_MOLECULE )
 		{
-			_playMode = VTX_SETTING().defaultTrajectoryPlayMode;
-			_fps	  = VTX_SETTING().defaultTrajectorySpeed;
+			_playMode = VTX_SETTING().getDefaultTrajectoryPlayMode();
+			_fps	  = VTX_SETTING().getDefaultTrajectorySpeed();
 		}
 
 		Molecule::~Molecule()

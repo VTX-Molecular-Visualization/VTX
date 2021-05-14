@@ -161,8 +161,8 @@ namespace VTX::Model::Representation
 
 	void RepresentationLibrary::setDefaultRepresentation( const int p_representationIndex )
 	{
-		_defaultRepresentation					 = _representations[ p_representationIndex ];
-		VTX_SETTING().representationDefaultIndex = p_representationIndex;
+		_defaultRepresentation = _representations[ p_representationIndex ];
+		VTX_SETTING().setDefaultRepresentationIndex( p_representationIndex );
 		_notifyDataChanged();
 	}
 	int RepresentationLibrary::getDefaultRepresentationIndex() const
