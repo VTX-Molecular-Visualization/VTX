@@ -19,7 +19,7 @@ namespace VTX::Action::Renderer
 	{
 		if ( _clearDirectory )
 		{
-			Util::Filesystem::clearDirectory( Util::Filesystem::RENDER_EFFECT_PRESET_LIBRARY_DIR );
+			Util::Filesystem::removeAll( Util::Filesystem::RENDER_EFFECT_PRESET_LIBRARY_DIR );
 		}
 
 		for ( const Model::Renderer::RenderEffectPreset * const renderEffect : _renderEffectPresets )

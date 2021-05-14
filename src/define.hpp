@@ -47,6 +47,8 @@ namespace VTX
 	constexpr int	  OPENGL_VERSION_MINOR = 5;
 	const std::string GLSL_VERSION		   = "#version 450";
 
+	constexpr bool DEV_MODE = true;
+
 	// API.
 	const std::string API_URL_MMTF = "http://mmtf.rcsb.org/v1.0/full/";
 

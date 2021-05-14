@@ -41,6 +41,7 @@ namespace VTX::UI
 	{
 		_mainMenuBar = WidgetFactory::get().instantiateWidget<Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
 		setMenuBar( _mainMenuBar );
+		setAcceptDrops( true );
 
 		_sceneWidget  = WidgetFactory::get().instantiateWidget<Widget::Scene::SceneWidget>( this, "sceneWidget" );
 		_renderWidget = WidgetFactory::get().instantiateWidget<Widget::Render::RenderWidget>( this, "renderWidget" );
@@ -204,6 +205,32 @@ namespace VTX::UI
 		p_event->accept();
 
 		QMainWindow::closeEvent( p_event );
+	}
+
+	void MainWindow::dragEnterEvent( QDragEnterEvent * p_event )
+	{
+		// if ( p_event->mimeData()->hasFormat( "text/plain" ) )
+		{
+			p_event->acceptProposedAction();
+		}
+	}
+
+	void MainWindow::dropEvent( QDropEvent * p_event )
+	{
+		const QMimeData * const mimeData = p_event->mimeData();
+
+		if ( mimeData->hasUrls() )
+		{
+			std::vector<FilePath *> _paths	= std::vector<FilePath *>();
+			const QList<QUrl> &		urlList = mimeData->urls();
+
+			for ( const QUrl & url : urlList )
+			{
+				_paths.emplace_back( new FilePath( url.toLocalFile().toStdString() ) );
+			}
+
+			VTX_ACTION( new Action::Main::Open( _paths ) );
+		}
 	}
 
 	const QWidget & MainWindow::getWidget( const ID::VTX_ID & p_winId ) const

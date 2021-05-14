@@ -41,11 +41,11 @@ namespace VTX
 				return instance;
 			}
 
-			Program * const createProgram( const std::string &, const std::vector<std::string> & );
+			Program * const createProgram( const std::string &, const std::vector<FilePath> & );
 			void			deleteProgram( const std::string & );
 			Program * const getProgram( const std::string & );
-
-			GLuint getShader( const std::string & ) const;
+			void			refreshShaders();
+			GLuint			getShader( const std::string & ) const;
 
 			void dispose();
 

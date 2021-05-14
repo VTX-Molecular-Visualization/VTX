@@ -24,9 +24,6 @@ namespace VTX
 	{
 		namespace Filesystem
 		{
-			// Test only.
-			static const FilePath DATA_DIR = "../data";
-
 			inline const FilePath getExecutableFile()
 			{
 #ifdef _MSC_VER
@@ -55,8 +52,10 @@ namespace VTX
 			static const FilePath LOGS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/logs" );
 			static const FilePath LIBRARIES_DIR = FilePath( EXECUTABLE_DIR.string() + "/libraries" );
 
-			static const QString DEFAULT_SAVE_FOLDER	 = "../save";
-			static const QString DEFAULT_MOLECULE_FOLDER = "../data";
+			static const FilePath DATA_DIR				  = "../data";
+			static const FilePath SHADERS_DIR_SRC		  = "../src/shader";
+			static const QString  DEFAULT_SAVE_FOLDER	  = "../save";
+			static const QString  DEFAULT_MOLECULE_FOLDER = "../data";
 
 			static const QString MOLECULE_EXTENSIONS = "*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm";
 			static const QString VTX_EXTENSIONS		 = "*.vtx";
@@ -69,7 +68,8 @@ namespace VTX
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
 
 			static const FilePath REPRESENTATION_LIBRARY_DIR = FilePath( LIBRARIES_DIR.string() + "/representations" );
-			static const FilePath RENDER_EFFECT_PRESET_LIBRARY_DIR	 = FilePath( LIBRARIES_DIR.string() + "/render_effects" );
+			static const FilePath RENDER_EFFECT_PRESET_LIBRARY_DIR
+				= FilePath( LIBRARIES_DIR.string() + "/render_effects" );
 
 			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/../../setting.json" );
 			static const FilePath FFMPEG_EXE_FILE	= FilePath( "bin/ffmpeg.exe" );
@@ -181,21 +181,13 @@ namespace VTX
 				}
 			}
 
-			inline bool copyFile( const FilePath & p_from, FilePath & p_to, const bool p_forceCreateNew )
+			inline bool copy( const FilePath & p_from, const FilePath & p_to )
 			{
-				bool succeed = false;
-
-				if ( std::filesystem::exists( p_to ) )
-				{
-					if ( p_forceCreateNew )
-						generateUniqueFileName( p_to );
-					else
-						std::filesystem::remove( p_to );
-				}
+				bool succeed;
 
 				try
 				{
-					std::filesystem::copy( p_from, p_to );
+					std::filesystem::copy( p_from, p_to, std::filesystem::copy_options::recursive );
 					succeed = true;
 				}
 				catch ( std::exception e )
@@ -207,16 +199,20 @@ namespace VTX
 				return succeed;
 			}
 
-			inline void clearDirectory( const FilePath & p_directory )
+			inline bool removeAll( const FilePath & p_directory )
 			{
+				bool succeed;
 				try
 				{
-					std::filesystem::remove_all( p_directory );
+					succeed = std::filesystem::remove_all( p_directory );
 				}
 				catch ( const std::exception & e )
 				{
 					VTX_ERROR( "Error when clear directory " + p_directory.string() + " : " + e.what() );
+					succeed = false;
 				}
+
+				return succeed;
 			}
 		} // namespace Filesystem
 	}	  // namespace Util

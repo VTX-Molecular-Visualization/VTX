@@ -45,20 +45,23 @@ namespace VTX::Renderer::GL
 		_programs.clear();
 	}
 
-	Program * const ProgramManager::createProgram( const std::string &				p_name,
-												   const std::vector<std::string> & p_shaders )
+	Program * const ProgramManager::createProgram( const std::string & p_name, const std::vector<FilePath> & p_shaders )
 	{
 		VTX_DEBUG( "Creating program: " + p_name );
 
 		if ( _programs.find( p_name ) == _programs.end() )
 		{
-			_programs[ p_name ] = new Program( _gl );
+			_programs[ p_name ] = new Program( _gl, p_shaders );
 			Program & program	= *_programs[ p_name ];
 			program.create( p_name );
 
-			for ( const std::string & shader : p_shaders )
+			for ( const FilePath & shader : p_shaders )
 			{
-				program.attachShader( _createShader( shader ) );
+				GLuint id = _createShader( shader );
+				if ( id != GL_INVALID_INDEX )
+				{
+					program.attachShader( id );
+				}
 			}
 
 			program.link();
@@ -134,6 +137,7 @@ namespace VTX::Renderer::GL
 				VTX_ERROR( error );
 				return GL_INVALID_INDEX;
 			}
+			_shaders.emplace( name, shaderId );
 			VTX_DEBUG( "Shader created: " + name );
 		}
 		else
@@ -165,5 +169,40 @@ namespace VTX::Renderer::GL
 		std::vector<GLchar> log( length );
 		_gl->glGetShaderInfoLog( p_shader, length, &length, &log[ 0 ] );
 		return std::string( log.begin(), log.end() );
+	}
+
+	void ProgramManager::refreshShaders()
+	{
+		for ( const PairStringToProgram & pair : _programs )
+		{
+			Program * const program = pair.second;
+			program->detachShaders();
+		}
+
+		// Delete shaders.
+		for ( const PairStringToGLuint & pair : _shaders )
+		{
+			_gl->glDeleteShader( pair.second );
+		}
+
+		_shaders.clear();
+
+		// Then recreate them.
+		for ( const PairStringToProgram & pair : _programs )
+		{
+			Program * const program = pair.second;
+			_gl->glDeleteProgram( program->getId() );
+			program->setId( _gl->glCreateProgram() );
+			for ( const FilePath & shader : program->getShaderPaths() )
+			{
+				GLuint id = _createShader( shader );
+				if ( id != GL_INVALID_INDEX )
+				{
+					program->attachShader( id );
+				}
+			}
+
+			program->link();
+		}
 	}
 } // namespace VTX::Renderer::GL

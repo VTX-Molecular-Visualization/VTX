@@ -81,47 +81,26 @@ namespace VTX
 			float ratio			= desiredHeight / (float)watermarkSize.height();
 			watermarkSize.setHeight( desiredHeight );
 			watermarkSize.setWidth( watermarkSize.width() * ratio );
-			QImage watermarkImg( watermarkSize, QImage::Format_RGBA64_Premultiplied );
 
-			// watermarkSvg.setAspectRatioMode( Qt::AspectRatioMode::KeepAspectRatioByExpanding );
+			// Create image to render svg into.
+			QImage watermarkImg( watermarkSize, QImage::Format_RGBA64 );
+			watermarkImg.fill( QColor( 255, 255, 255, 0 ) );
 			QPainter watermarkPainter = QPainter( &watermarkImg );
-
 			watermarkSvg.render( &watermarkPainter );
 
-			// Compute watermark color.
-			// Color::Rgb watermakColor
-			//	= VTX_SETTING().backgroundColor.brightness() > 0.5f ? Color::Rgb::BLACK : Color::Rgb::WHITE;
-			// QColor qWatermarkColor = watermakColor.toQColor();
-
-			// Apply the color.
+			// Reduce alpha.
 			for ( int i = 0; i < watermarkImg.width(); ++i )
 			{
 				for ( int j = 0; j < watermarkImg.height(); ++j )
 				{
-					int	   r, g, b, a;
-					QColor qColor = watermarkImg.pixelColor( i, j );
-					qColor.getRgb( &r, &g, &b, &a );
-
-					if ( a == 205 && r == 205 && g == 205 && b == 205 )
-					{
-						qColor.setAlpha( 0 );
-					}
-					else
-					{
-						qColor.setAlpha( qColor.alpha() / 2 );
-					}
-
-					watermarkImg.setPixelColor( i, j, qColor );
-
-					// QColor color = watermarkImg.pixelColor( i, j );
-					// VTX_LOG_FILE( "R:" + std::to_string( qColor.red() ) + " G:" + std::to_string( qColor.green() )
-					//			  + " B:" + std::to_string( qColor.blue() )
-					//			  + " A:" + std::to_string( qColor.alpha() ) );
+					QColor pixelColor = watermarkImg.pixelColor( i, j );
+					pixelColor.setAlpha( pixelColor.alpha() / 2 );
+					watermarkImg.setPixelColor( i, j, pixelColor );
 				}
 			}
 
-			if ( VTX_RENDER_EFFECT().getBackgroundColor().brightness() < 0.5f
-				 && VTX_SETTING().getSnapshotBackgroundOpacity() > 0.5f )
+			// Invert color to match background.
+			if ( VTX_RENDER_EFFECT().getBackgroundColor().brightness() < 0.5f && VTX_SETTING().getSnapshotBackgroundOpacity() > 0.5f )
 			{
 				watermarkImg.invertPixels( QImage::InvertMode::InvertRgb );
 			}
@@ -131,6 +110,7 @@ namespace VTX
 			return;
 #endif
 
+			// Paint watermark over the desired image.
 			QRect	 rect		  = QRect( QPoint( p_image.size().width() - watermarkImg.width(),
 										   p_image.size().height() - watermarkImg.height() ),
 								   watermarkImg.size() );

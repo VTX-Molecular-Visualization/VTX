@@ -172,7 +172,8 @@ namespace VTX::Action::Main
 			for ( FilePath * const path : _paths )
 			{
 				FilePath target = Util::Filesystem::getRepresentationPath( path->filename().string() );
-				if ( Util::Filesystem::copyFile( *path, target, true ) )
+				Util::Filesystem::generateUniqueFileName( target );
+				if ( Util::Filesystem::copy( *path, target ) )
 				{
 					Worker::RepresentationLoader * const loader = new Worker::RepresentationLoader( target );
 					VTX_WORKER( loader );
@@ -200,7 +201,8 @@ namespace VTX::Action::Main
 			for ( FilePath * const path : _paths )
 			{
 				FilePath target = Util::Filesystem::getRenderEffectPath( path->filename().string() );
-				if ( Util::Filesystem::copyFile( *path, target, true ) )
+				Util::Filesystem::generateUniqueFileName( target );
+				if ( Util::Filesystem::copy( *path, target ) )
 				{
 					Worker::RenderEffectPresetLoader * const loader = new Worker::RenderEffectPresetLoader( target );
 					VTX_WORKER( loader );

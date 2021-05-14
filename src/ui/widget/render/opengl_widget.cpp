@@ -90,7 +90,7 @@ namespace VTX::UI::Widget::Render
 
 		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6f;
 
-		if ( _showCounter )
+		if ( DEV_MODE && _showCounter )
 		{
 			_painter.begin( this );
 			_painter.setPen( Qt::white );

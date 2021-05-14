@@ -1,4 +1,5 @@
 #include "shortcut.hpp"
+#include "action/dev.hpp"
 #include "action/main.hpp"
 #include "action/setting.hpp"
 #include "action/viewpoint.hpp"
@@ -58,6 +59,12 @@ namespace VTX
 													   ->getCurrentCameraController() ) );
 				break;
 			case ScanCode::F6: VTX_ACTION( new Action::Setting::RestoreLayout() ); break;
+
+			case ScanCode::F8:
+				if ( DEV_MODE )
+					VTX_ACTION( new Action::Dev::CompileShaders() );
+				break;
+
 			case ScanCode::F10:
 				VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
 				break;

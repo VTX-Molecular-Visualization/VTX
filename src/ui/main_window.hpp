@@ -69,9 +69,11 @@ namespace VTX
 			void restoreDefaultLayout();
 
 		  protected:
-			void closeEvent( QCloseEvent * event ) override;
-			void resizeEvent( QResizeEvent * p_event ) override;
-			void showEvent( QShowEvent * event ) override;
+			void closeEvent( QCloseEvent * ) override;
+			void resizeEvent( QResizeEvent * ) override;
+			void showEvent( QShowEvent * ) override;
+			void dragEnterEvent( QDragEnterEvent * ) override;
+			void dropEvent( QDropEvent * ) override;
 
 		  private:
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
