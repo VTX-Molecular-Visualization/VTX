@@ -94,19 +94,15 @@ namespace VTX::UI::Widget::CustomWidget
 		painter.setWorldMatrixEnabled( false );
 		painter.setBrush( Qt::NoBrush );
 
-		const int	border = 4;
-		const QRect rect   = QRect( p_paintEvent->rect().x() + border,
-									p_paintEvent->rect().y() + border,
-									p_paintEvent->rect().width() - border * 2,
-									p_paintEvent->rect().height() - ( border * 2 + 1 ) );
+		const int border = 4;
 
-		Color::Rgb displayedColorRGB = _color;
-		if ( !isEnabled() )
-			displayedColorRGB /= 2;
+		const QRect colorRect	= QRect( border, border, width() - border * 2, height() - ( border * 2 + 1 ) );
+		const QRect paintedRect = colorRect.intersected( p_paintEvent->rect() );
 
-		QColor displayedColor = _getQColorFromRgbColor( displayedColorRGB );
+		const Color::Rgb displayedColorRGB = isEnabled() ? _color : ( _color / 2 );
+		const QColor	 displayedColor	   = _getQColorFromRgbColor( displayedColorRGB );
 
-		painter.fillRect( rect, displayedColor );
+		painter.fillRect( paintedRect, displayedColor );
 		// painter.drawText( rect, text() );
 
 		painter.setWorldMatrixEnabled( true );
