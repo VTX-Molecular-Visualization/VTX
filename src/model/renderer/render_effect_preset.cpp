@@ -27,7 +27,6 @@ namespace VTX::Model::Renderer
 		_fogColor	= Setting::FOG_COLOR_DEFAULT;
 
 		_backgroundColor	   = Setting::BACKGROUND_COLOR_DEFAULT;
-		_backgroundOpacity	   = Setting::BACKGROUND_OPACITY_DEFAULT;
 		_cameraLightColor	   = Setting::LIGHT_COLOR_DEFAULT;
 		_cameraFOV			   = Setting::CAMERA_FOV_DEFAULT;
 		_cameraNearClip		   = Setting::CAMERA_NEAR_DEFAULT;
@@ -118,11 +117,6 @@ namespace VTX::Model::Renderer
 		_backgroundColor = p_backgroundColor;
 		_notifyDataChanged();
 	}
-	void RenderEffectPreset::setBackgroundOpacity( const float p_backgroundOpacity )
-	{
-		_backgroundOpacity = p_backgroundOpacity;
-		_notifyDataChanged();
-	}
 	void RenderEffectPreset::setCameraLightColor( const Color::Rgb & p_cameraLightColor )
 	{
 		_cameraLightColor = p_cameraLightColor;
@@ -177,7 +171,6 @@ namespace VTX::Model::Renderer
 		_fogColor	= p_source._fogColor;
 
 		_backgroundColor	   = p_source._backgroundColor;
-		_backgroundOpacity	   = p_source._backgroundOpacity;
 		_cameraLightColor	   = p_source._cameraLightColor;
 		_cameraFOV			   = p_source._cameraFOV;
 		_cameraNearClip		   = p_source._cameraNearClip;

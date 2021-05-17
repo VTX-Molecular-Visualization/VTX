@@ -180,17 +180,6 @@ namespace VTX::Action::Renderer
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
 		}
 	};
-
-	void ChangeBackgroundOpacity::execute()
-	{
-		_preset.setBackgroundOpacity( _opacity );
-
-		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-		{
-			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-		}
-	};
-
 	void ChangeCameraLightColor::execute()
 	{
 		_preset.setCameraLightColor( _color );

@@ -23,8 +23,12 @@ namespace VTX::UI::Widget::Settings
 
 		QVBoxLayout * const mainLayout = new QVBoxLayout( this );
 		_settingsLayout				   = new QGridLayout( viewport );
-		_settingsLayout->setVerticalSpacing( 2 );
-		_settingsLayout->setHorizontalSpacing( 10 );
+		_settingsLayout->setMargin( 10 );
+		_settingsLayout->setVerticalSpacing( Style::DATA_GRID_VERTICAL_SPACE );
+		_settingsLayout->setHorizontalSpacing( Style::DATA_GRID_HORIZONTAL_SPACE );
+		_settingsLayout->setColumnStretch( 0, 1 );
+		_settingsLayout->setColumnStretch( 1, 10 );
+
 		QHBoxLayout * const bottomLayout = new QHBoxLayout( this );
 
 		// Controller
@@ -80,7 +84,7 @@ namespace VTX::UI::Widget::Settings
 		_finishSection();
 
 		_startSection( "Graphic" );
-		_addItemInLayout( _snapshotBackgroundOpacitySlider, "snapshot background opacity" );
+		_addItemInLayout( _snapshotBackgroundOpacitySlider, "Snapshot background opacity" );
 		_addItemInLayout( _vsyncWidget, "VSync" );
 		_addItemInLayout( _forceRendererWidget, "Force render" );
 		_addItemInLayout( _fullscreenWidget, "Full screen" );

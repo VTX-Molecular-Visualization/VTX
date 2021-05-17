@@ -248,19 +248,6 @@ namespace VTX::Action::Renderer
 		const Color::Rgb					  _color;
 	};
 
-	class ChangeBackgroundOpacity : public BaseAction
-	{
-	  public:
-		ChangeBackgroundOpacity( Model::Renderer::RenderEffectPreset & p_preset, const float p_opacity ) :
-			_preset( p_preset ), _opacity( p_opacity ) {};
-
-		virtual void execute() override;
-
-	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const float							  _opacity;
-	};
-
 	class ChangeCameraLightColor : public BaseAction
 	{
 	  public:

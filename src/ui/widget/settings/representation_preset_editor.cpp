@@ -60,6 +60,8 @@ namespace VTX::UI::Widget::Settings
 
 		_layout = new QGridLayout();
 		_layout->setMargin( 0 );
+		_layout->setVerticalSpacing( Style::DATA_GRID_VERTICAL_SPACE );
+		_layout->setHorizontalSpacing( Style::DATA_GRID_HORIZONTAL_SPACE );
 		_layout->setColumnStretch( 0, 1 );
 		_layout->setColumnStretch( 1, 10 );
 

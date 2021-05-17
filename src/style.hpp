@@ -130,7 +130,9 @@ namespace VTX
 		inline static const int			SEQUENCE_MAX_MISSING_RESIDUE_BEFORE_COLLAPSE = 5;
 		inline static const QChar		SEQUENCE_MISSING_RESIDUE_SYMBOL				 = '-';
 
-		inline static const int SCENE_SPACE_BETWEEN_ITEMS = 4;
+		inline static const int SCENE_SPACE_BETWEEN_ITEMS  = 4;
+		inline static const int DATA_GRID_VERTICAL_SPACE   = 2;
+		inline static const int DATA_GRID_HORIZONTAL_SPACE = 10;
 
 		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION
 			= VTX::Selection::SelectionType::RESIDUE;
