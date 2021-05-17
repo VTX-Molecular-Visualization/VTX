@@ -1,5 +1,6 @@
 #include "float_field_draggable_widget.hpp"
 #include "util/math.hpp"
+#include "style.hpp"
 #include <QHBoxLayout>
 #include <cmath>
 #include <iomanip>
@@ -20,7 +21,7 @@ namespace VTX::UI::Widget::CustomWidget
 		BaseManualWidget::_setupUi( p_name );
 
 		QHBoxLayout * const mainLayout = new QHBoxLayout( this );
-		mainLayout->setSpacing( 2 );
+		mainLayout->setSpacing( Style::DATA_GRID_HORIZONTAL_SPACE );
 		mainLayout->setContentsMargins( 0, 0, 0, 0 );
 
 		_label = new QLabel( this );
@@ -31,7 +32,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_textField->setContentsMargins( 0, 0, 0, 0 );
 
 		mainLayout->addWidget( _label, 1 );
-		mainLayout->addWidget( _textField, 1 );
+		mainLayout->addWidget( _textField, 10 );
 
 		setMouseTracking( true );
 	}

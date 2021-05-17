@@ -62,14 +62,14 @@ namespace VTX::UI::Widget::Settings
 			= VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( _viewport, "lightColor" );
 		_cameraFOV = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( _viewport, "cameraFov" );
 		_cameraFOV->setMinMax( Setting::CAMERA_FOV_MIN, Setting::CAMERA_FOV_MAX );
-		_cameraNear = new QSpinBox( this );
+		_cameraNear = new QSpinBox( _viewport );
 		_cameraNear->setMinimum( Setting::CAMERA_NEAR_MIN );
 		_cameraNear->setMaximum( Setting::CAMERA_NEAR_MAX );
-		_cameraFar = new QSpinBox( this );
+		_cameraFar = new QSpinBox( _viewport );
 		_cameraFar->setMinimum( Setting::CAMERA_FAR_MIN );
 		_cameraFar->setMaximum( Setting::CAMERA_FAR_MAX );
-		_antialiasing = new QCheckBox( this );
-		_perspective  = new QCheckBox( this );
+		_antialiasing = new QCheckBox( _viewport );
+		_perspective  = new QCheckBox( _viewport );
 
 		QHBoxLayout * const hboxLayout = new QHBoxLayout( _viewport );
 		QVBoxLayout * const vboxLayout = new QVBoxLayout();
