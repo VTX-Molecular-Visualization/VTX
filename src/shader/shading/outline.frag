@@ -7,12 +7,39 @@ layout( location = 0 ) out vec4 fragColor;
 
 uniform vec3  uLineColor;
 uniform float uThickness;
+uniform float uSensivity;
 
-#define USE_TEXTURE_GATHER
+#define V2 1
+//#define USE_TEXTURE_GATHER 1
 
 void main()
 {
-#ifdef USE_TEXTURE_GATHER
+
+#if V2
+
+	const vec2 texCoord = gl_FragCoord.xy / vec2( textureSize( linearDepthTexture, 0 ) );
+
+	// Get current pixel depth.
+	const float depthCenter = texture( linearDepthTexture, texCoord, 0 ).x;
+	// Get cross neighbor depth
+	const ivec2 offets[ 4 ]		= { ivec2( -1, -1 ), ivec2( -1, 1 ), ivec2( 1, 1 ), ivec2( 1, -1 ) };
+	const vec4	depthNeighbours = textureGatherOffsets( linearDepthTexture, texCoord, offets );
+
+	// Compute depth difference in cross: no need abs because squared for edge depth.
+	const float depthDiff0 = depthNeighbours.x - depthNeighbours.z;
+	const float depthDiff1 = depthNeighbours.y - depthNeighbours.w;
+
+	// Roberts cross operator for edge detection.
+	const float edgeDepth	   = sqrt( depthDiff0 * depthDiff0 + depthDiff1 * depthDiff1 ) * 100;
+	const float depthThreshold = ( 1.f / uSensivity ) * depthNeighbours.x;
+	const bool	isOutline	   = edgeDepth > depthThreshold ? true : false;
+
+	const float edge = edgeDepth;
+
+	fragColor = isOutline ? vec4( uLineColor, 1.f ) : texture( colorTexture, texCoord );
+
+#elif USE_TEXTURE_GATHER
+
 	const vec2 texCoord = gl_FragCoord.xy / vec2( textureSize( linearDepthTexture, 0 ) );
 
 	// Get current pixel depth.
@@ -36,6 +63,7 @@ void main()
 	fragColor = edgeDepth > threshold + 0.025 ? vec4( uLineColor, 1.f ) : texture( colorTexture, texCoord );
 
 #else
+
 	const ivec2 texCoord = ivec2( gl_FragCoord.xy );
 
 	// Get current pixel depth.
@@ -59,5 +87,6 @@ void main()
 
 	// Apply outline if edge depth is greater than threshold.
 	fragColor = vec4( edgeDepth > threshold ? uLineColor : texelFetch( colorTexture, texCoord, 0 ).xyz, 1.f );
+
 #endif
 }

@@ -28,6 +28,7 @@ namespace VTX::Renderer::GL::Pass
 		/// TODO: use a value_ptr ?
 		_program->setVec3f( "uLineColor", lineColor.getR(), lineColor.getG(), lineColor.getB() );
 		_program->setFloat( "uThickness", VTX_RENDER_EFFECT().getOutlineThickness() );
+		_program->setFloat( "uSeensivity", VTX_RENDER_EFFECT().getOutlineSensivity() );
 	}
 
 	void Outline::resize( const uint p_width, const uint p_height, const GL & )
@@ -52,6 +53,7 @@ namespace VTX::Renderer::GL::Pass
 			/// TODO: use a value_ptr ?
 			_program->setVec3f( "uLineColor", lineColor.getR(), lineColor.getG(), lineColor.getB() );
 			_program->setFloat( "uThickness", VTX_RENDER_EFFECT().getOutlineThickness() );
+			_program->setFloat( "uSensivity", VTX_RENDER_EFFECT().getOutlineSensivity() );
 		}
 
 		p_renderer.getQuadVAO().drawArray( VertexArray::DrawMode::TRIANGLE_STRIP, 0, 4 );

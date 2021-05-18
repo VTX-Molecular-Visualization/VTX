@@ -116,6 +116,15 @@ namespace VTX::Action::Renderer
 		}
 	};
 
+	void ChangeOutlineSensivity ::execute()
+	{
+		_preset.setOutlineSensivity( _sensivity );
+		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
+		{
+			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		}
+	};
+
 	void ChangeOutlineColor::execute()
 	{
 		_preset.setOutlineColor( _color );

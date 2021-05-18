@@ -161,6 +161,18 @@ namespace VTX::Action::Renderer
 		Model::Renderer::RenderEffectPreset & _preset;
 		const float							  _thickness;
 	};
+	class ChangeOutlineSensivity : public BaseAction
+	{
+	  public:
+		ChangeOutlineSensivity( Model::Renderer::RenderEffectPreset & p_preset, const float p_sensivity ) :
+			_preset( p_preset ), _sensivity( p_sensivity ) {};
+
+		virtual void execute() override;
+
+	  private:
+		Model::Renderer::RenderEffectPreset & _preset;
+		const float							  _sensivity;
+	};
 	class ChangeOutlineColor : public BaseAction
 	{
 	  public:
