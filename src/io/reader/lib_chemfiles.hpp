@@ -21,23 +21,20 @@ namespace VTX
 	{
 		class Loader;
 	}
-	namespace IO
+	namespace IO::Reader
 	{
-		namespace Reader
+		class LibChemfiles : public BaseReader<Model::Molecule>, ChemfilesIO
 		{
-			class LibChemfiles : public BaseReader<Model::Molecule>, ChemfilesIO
-			{
-			  public:
-				LibChemfiles( Worker::Loader * const p_loader );
+		  public:
+			LibChemfiles( Worker::Loader * const p_loader );
 
-				void readFile( const FilePath &, Model::Molecule & ) override;
-				void readBuffer( const std::string &, const FilePath &, Model::Molecule & ) override;
-				void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
+			void readFile( const FilePath &, Model::Molecule & ) override;
+			void readBuffer( const std::string &, const FilePath &, Model::Molecule & ) override;
+			void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
 
-			  private:
-				void _readTrajectory( chemfiles::Trajectory &, const FilePath &, Model::Molecule & ) const;
-			};
-		} // namespace Reader
-	}	  // namespace IO
+		  private:
+			void _readTrajectory( chemfiles::Trajectory &, const FilePath &, Model::Molecule & ) const;
+		};
+	} // namespace IO::Reader
 } // namespace VTX
 #endif

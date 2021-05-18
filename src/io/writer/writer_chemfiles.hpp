@@ -15,33 +15,27 @@
 #include <string>
 #include <unordered_set>
 
-namespace VTX
+namespace VTX::IO::Writer
 {
-	namespace IO
+	class ChemfilesWriter : BaseWriter<Model::Molecule>, ChemfilesIO
 	{
-		namespace Writer
-		{
-			class ChemfilesWriter : BaseWriter<Model::Molecule>, ChemfilesIO
-			{
-			  public:
-				ChemfilesWriter() : ChemfilesIO() {};
+	  public:
+		ChemfilesWriter() : ChemfilesIO() {};
 
-				void writeFile( const FilePath &, const Model::Molecule & );
-				void writeBuffer( std::string &, const Model::Molecule & );
-				void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
+		void writeFile( const FilePath &, const Model::Molecule & );
+		void writeBuffer( std::string &, const Model::Molecule & );
+		void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
 
-				bool isChainMerged( const Model::Chain & p_chain ) const;
-				uint getNewResidueIndex( const Model::Residue & ) const;
-				uint getNewAtomIndex( const Model::Atom & ) const;
+		bool isChainMerged( const Model::Chain & p_chain ) const;
+		uint getNewResidueIndex( const Model::Residue & ) const;
+		uint getNewAtomIndex( const Model::Atom & ) const;
 
-			  private:
-				void _writeTrajectory( chemfiles::Trajectory &, const Model::Molecule & );
+	  private:
+		void _writeTrajectory( chemfiles::Trajectory &, const Model::Molecule & );
 
-				std::unordered_set<uint> _mergedChains		   = std::unordered_set<uint>();
-				std::map<uint, uint>	 _mapNewResidueIndexes = std::map<uint, uint>();
-				std::map<uint, uint>	 _mapNewAtomIndexes	   = std::map<uint, uint>();
-			};
-		} // namespace Writer
-	}	  // namespace IO
-} // namespace VTX
+		std::unordered_set<uint> _mergedChains		   = std::unordered_set<uint>();
+		std::map<uint, uint>	 _mapNewResidueIndexes = std::map<uint, uint>();
+		std::map<uint, uint>	 _mapNewAtomIndexes	   = std::map<uint, uint>();
+	};
+} // namespace VTX::IO::Writer
 #endif
