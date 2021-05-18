@@ -15,12 +15,16 @@ namespace VTX
 		{
 			void ChemfilesWriter::writeFile( const FilePath & p_path, const Model::Molecule & p_molecule )
 			{
+				_prepareChemfiles();
+
 				chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string(), 'w' );
 				_writeTrajectory( trajectory, p_molecule );
 				trajectory.close();
 			}
 			void ChemfilesWriter::writeBuffer( std::string & p_buffer, const Model::Molecule & p_molecule )
 			{
+				_prepareChemfiles();
+
 				chemfiles::Trajectory & trajectory = chemfiles::Trajectory::memory_writer( "PDB" );
 				_writeTrajectory( trajectory, p_molecule );
 
@@ -127,6 +131,9 @@ namespace VTX
 
 						const bool stdPdb = residue->getType() == Model::Residue::TYPE::STANDARD
 											&& residue->getSymbol() != Model::Residue::SYMBOL::UNKNOWN;
+
+						if ( residue->hasInsertionCode() )
+							chemResidue.set( "insertion_code", std::string( 1, residue->getInsertionCode() ) );
 
 						chemResidue.set( "is_standard_pdb", stdPdb );
 

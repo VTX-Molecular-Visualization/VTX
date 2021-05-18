@@ -24,6 +24,8 @@ namespace VTX
 	{
 		namespace Reader
 		{
+			LibChemfiles::LibChemfiles( Worker::Loader * const p_loader ) : ChemfilesIO( p_loader ) {}
+
 			void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 			{
 				_prepareChemfiles();
@@ -41,18 +43,6 @@ namespace VTX
 				chemfiles::Trajectory trajectory
 					= chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), extension );
 				_readTrajectory( trajectory, p_path, p_molecule );
-			}
-
-			void LibChemfiles::_prepareChemfiles() const
-			{
-#ifdef _DEBUG
-				chemfiles::warning_callback_t callback;
-				callback = [ & ]( const std::string & p_log ) { _logWarning( p_log ); };
-
-#else
-				chemfiles::warning_callback_t callback = []( const std::string & p_log ) { /*VTX_WARNING( p_log );*/ };
-#endif
-				chemfiles::set_warning_callback( callback );
 			}
 
 			void LibChemfiles::fillTrajectoryFrames( chemfiles::Trajectory & p_trajectory,
@@ -283,6 +273,11 @@ namespace VTX
 					int indexInChain = (int)residue.id().value_or( INT_MIN );
 					assert( oldIndexInChain <= indexInChain );
 					modelResidue->setIndexInOriginalChain( indexInChain );
+
+					const std::string insertionCodeStr
+						= residue.properties().get( "insertion_code" ).value_or( " " ).as_string();
+					modelResidue->setInsertionCode( insertionCodeStr[ 0 ] );
+
 					oldIndexInChain = indexInChain;
 
 					mapResidueBonds.emplace( modelResidue->getIndex(), std::vector<const chemfiles::Bond *>() );
@@ -535,36 +530,6 @@ namespace VTX
 					p_molecule.getBufferBonds()[ counter * 2u ]		 = uint( bond[ 0 ] );
 					p_molecule.getBufferBonds()[ counter * 2u + 1u ] = uint( bond[ 1 ] );
 				}
-			}
-
-			void LibChemfiles::_logError( const std::string & p_log ) const
-			{
-				if ( _loader != nullptr )
-					emit _loader->logDebug( p_log );
-				else
-					VTX_ERROR( p_log );
-			}
-
-			void LibChemfiles::_logWarning( const std::string & p_log ) const
-			{
-				if ( _loader != nullptr )
-					emit _loader->logWarning( p_log );
-				else
-					VTX_WARNING( p_log );
-			}
-			void LibChemfiles::_logInfo( const std::string & p_log ) const
-			{
-				if ( _loader != nullptr )
-					emit _loader->logInfo( p_log );
-				else
-					VTX_INFO( p_log );
-			}
-			void LibChemfiles::_logDebug( const std::string & p_log ) const
-			{
-				if ( _loader != nullptr )
-					emit _loader->logDebug( p_log );
-				else
-					VTX_DEBUG( p_log );
 			}
 		} // namespace Reader
 	}	  // namespace IO

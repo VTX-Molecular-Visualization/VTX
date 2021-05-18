@@ -5,8 +5,12 @@
 #pragma once
 #endif
 
+#include "base_writer.hpp"
+#include "io/chemfiles_io.hpp"
 #include "model/molecule.hpp"
+#pragma warning( push, 0 )
 #include <chemfiles.hpp>
+#pragma warning( pop )
 #include <map>
 #include <string>
 #include <unordered_set>
@@ -17,9 +21,11 @@ namespace VTX
 	{
 		namespace Writer
 		{
-			class ChemfilesWriter
+			class ChemfilesWriter : BaseWriter<Model::Molecule>, ChemfilesIO
 			{
 			  public:
+				ChemfilesWriter() : ChemfilesIO() {};
+
 				void writeFile( const FilePath &, const Model::Molecule & );
 				void writeBuffer( std::string &, const Model::Molecule & );
 				void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
