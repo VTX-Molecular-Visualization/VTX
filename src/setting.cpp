@@ -43,7 +43,7 @@ namespace VTX
 
 	// Rendering.
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT		   = true;
-	const bool					  Setting::FORCE_RENDERER_DEFAULT		   = false;
+	const bool					  Setting::FORCE_RENDERER_DEFAULT		   = true;
 	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT		   = Color::Rgb::BLACK;
 	const float					  Setting::BACKGROUND_OPACITY_DEFAULT	   = 1.0f;
 	const int					  Setting::REPRESENTATION_DEFAULT_INDEX	   = 0;
@@ -72,10 +72,13 @@ namespace VTX
 	const int				Setting::AO_BLUR_SIZE_DEFAULT	   = 17;
 	const int				Setting::AO_BLUR_SIZE_MIN		   = 1;
 	const int				Setting::AO_BLUR_SIZE_MAX		   = 99;
-	const bool				Setting::ACTIVE_OUTLINE_DEFAULT	   = false;
-	const float				Setting::OUTLINE_THICKNESS_DEFAULT = 0.1f;
-	const float				Setting::OUTLINE_THICKNESS_MIN	   = 0.00001f;
-	const float				Setting::OUTLINE_THICKNESS_MAX	   = 0.1;
+	const bool				Setting::ACTIVE_OUTLINE_DEFAULT	   = true;
+	const float				Setting::OUTLINE_THICKNESS_DEFAULT = 1.f;
+	const float				Setting::OUTLINE_THICKNESS_MIN	   = 1.f;
+	const float				Setting::OUTLINE_THICKNESS_MAX	   = 10.f;
+	const float				Setting::OUTLINE_SENSIVITY_DEFAULT = 1.f;
+	const float				Setting::OUTLINE_SENSIVITY_MIN	   = 1.f;
+	const float				Setting::OUTLINE_SENSIVITY_MAX	   = 10.f;
 	const Color::Rgb		Setting::OUTLINE_COLOR_DEFAULT	   = Color::Rgb::WHITE;
 	const bool				Setting::ACTIVE_FOG_DEFAULT		   = false;
 	const float				Setting::FOG_NEAR_DEFAULT		   = 400.f;

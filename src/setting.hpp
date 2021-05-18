@@ -131,6 +131,11 @@ namespace VTX
 		static const float OUTLINE_THICKNESS_MAX;
 		bool			   outlineThickness = OUTLINE_THICKNESS_DEFAULT;
 
+		static const float OUTLINE_SENSIVITY_DEFAULT;
+		static const float OUTLINE_SENSIVITY_MIN;
+		static const float OUTLINE_SENSIVITY_MAX;
+		bool			   outlineSensivity = OUTLINE_SENSIVITY_DEFAULT;
+
 		static const Color::Rgb OUTLINE_COLOR_DEFAULT;
 		Color::Rgb				outlineColor = OUTLINE_COLOR_DEFAULT;
 
