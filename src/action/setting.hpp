@@ -350,7 +350,7 @@ namespace VTX::Action::Setting
 	class ChangeOutlineThickness : public BaseAction
 	{
 	  public:
-		explicit ChangeOutlineThickness( const float p_thickness ) : _thickness( p_thickness ) {}
+		explicit ChangeOutlineThickness( const uint p_thickness ) : _thickness( p_thickness ) {}
 
 		virtual void execute() override
 		{
@@ -359,7 +359,7 @@ namespace VTX::Action::Setting
 		};
 
 	  private:
-		const float _thickness;
+		const uint _thickness;
 	};
 
 	class ChangeOutlineSensivity : public BaseAction

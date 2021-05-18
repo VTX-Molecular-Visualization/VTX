@@ -76,7 +76,7 @@ namespace VTX::Model::Renderer
 		_outline = p_enable;
 		_notifyDataChanged();
 	}
-	void RenderEffectPreset::setOutlineThickness( const float p_outlineThickness )
+	void RenderEffectPreset::setOutlineThickness( const uint p_outlineThickness )
 	{
 		_outlineThickness
 			= Util::Math::clamp( p_outlineThickness, Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );

@@ -67,12 +67,12 @@ namespace VTX
 	const int				Setting::AO_BLUR_SIZE_MIN		   = 1;
 	const int				Setting::AO_BLUR_SIZE_MAX		   = 99;
 	const bool				Setting::ACTIVE_OUTLINE_DEFAULT	   = true;
-	const float				Setting::OUTLINE_THICKNESS_DEFAULT = 1.f;
-	const float				Setting::OUTLINE_THICKNESS_MIN	   = 1.f;
-	const float				Setting::OUTLINE_THICKNESS_MAX	   = 10.f;
-	const float				Setting::OUTLINE_SENSIVITY_DEFAULT = 0.5f;
+	const uint				Setting::OUTLINE_THICKNESS_DEFAULT = 0;
+	const uint				Setting::OUTLINE_THICKNESS_MIN	   = 1;
+	const uint				Setting::OUTLINE_THICKNESS_MAX	   = 10;
+	const float				Setting::OUTLINE_SENSIVITY_DEFAULT = 5.f;
 	const float				Setting::OUTLINE_SENSIVITY_MIN	   = 0.0f;
-	const float				Setting::OUTLINE_SENSIVITY_MAX	   = 1.f;
+	const float				Setting::OUTLINE_SENSIVITY_MAX	   = 10.f;
 	const Color::Rgb		Setting::OUTLINE_COLOR_DEFAULT	   = Color::Rgb::WHITE;
 	const bool				Setting::ACTIVE_FOG_DEFAULT		   = false;
 	const float				Setting::FOG_NEAR_DEFAULT		   = 30;

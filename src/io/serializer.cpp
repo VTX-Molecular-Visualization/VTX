@@ -405,7 +405,7 @@ namespace VTX
 			p_preset.setSSAOIntensity( p_json.at( "SSAO_INTENSITY" ).get<int>() );
 			p_preset.setSSAOBlurSize( p_json.at( "SSAO_BLUR_SIZE" ).get<int>() );
 			p_preset.enableOutline( p_json.at( "OUTLINE" ).get<bool>() );
-			p_preset.setOutlineThickness( p_json.at( "OUTLINE_THICKNESS" ).get<float>() );
+			p_preset.setOutlineThickness( p_json.at( "OUTLINE_THICKNESS" ).get<int>() );
 			p_preset.setOutlineSensivity( p_json.at( "OUTLINE_SENSIVITY" ).get<float>() );
 			deserialize( p_json.at( "OUTLINE_COLOR" ), color );
 			p_preset.setOutlineColor( color );

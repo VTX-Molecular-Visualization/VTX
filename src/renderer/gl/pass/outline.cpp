@@ -27,7 +27,7 @@ namespace VTX::Renderer::GL::Pass
 		const Color::Rgb & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
 		/// TODO: use a value_ptr ?
 		_program->setVec3f( "uLineColor", lineColor.getR(), lineColor.getG(), lineColor.getB() );
-		_program->setFloat( "uThickness", VTX_RENDER_EFFECT().getOutlineThickness() );
+		_program->setInt( "uThickness", VTX_RENDER_EFFECT().getOutlineThickness() );
 		_program->setFloat( "uSeensivity", VTX_RENDER_EFFECT().getOutlineSensivity() );
 	}
 
@@ -52,7 +52,7 @@ namespace VTX::Renderer::GL::Pass
 			const Color::Rgb & lineColor = VTX_RENDER_EFFECT().getOutlineColor();
 			/// TODO: use a value_ptr ?
 			_program->setVec3f( "uLineColor", lineColor.getR(), lineColor.getG(), lineColor.getB() );
-			_program->setFloat( "uThickness", VTX_RENDER_EFFECT().getOutlineThickness() );
+			_program->setInt( "uThickness", VTX_RENDER_EFFECT().getOutlineThickness() );
 			_program->setFloat( "uSensivity", VTX_RENDER_EFFECT().getOutlineSensivity() );
 		}
 
