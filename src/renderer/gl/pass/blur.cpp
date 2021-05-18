@@ -1,4 +1,5 @@
 #include "blur.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/gl/program_manager.hpp"
 #include "vtx_app.hpp"
@@ -33,7 +34,7 @@ namespace VTX::Renderer::GL::Pass
 		_program = VTX_PROGRAM_MANAGER().createProgram( "Blur", { "shading/bilateral_blur.frag" } );
 
 		_program->use();
-		_program->setInt( "uBlurSize", VTX_SETTING().aoBlurSize );
+		_program->setInt( "uBlurSize", VTX_RENDER_EFFECT().getSSAOBlurSize() );
 	}
 
 	void Blur::resize( const uint p_width, const uint p_height, const GL & )
@@ -58,7 +59,7 @@ namespace VTX::Renderer::GL::Pass
 
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
-			_program->setInt( "uBlurSize", VTX_SETTING().aoBlurSize );
+			_program->setInt( "uBlurSize", VTX_RENDER_EFFECT().getSSAOBlurSize() );
 		}
 
 		/// TODO: rename uInvDirectionTexSize

@@ -112,7 +112,9 @@ namespace VTX
 			inline std::vector<uint> &		 getIndexExtraBondEnd() { return _indexExtraBondEnd; };
 			inline uint						 getRealAtomCount() const { return _realAtomCount; };
 			void							 removeToAtoms( const uint p_atomIndex );
-
+			inline char						 getInsertionCode() const { return _insertionCode; }
+			inline void setInsertionCode( char p_insertionCode ) { _insertionCode = p_insertionCode; }
+			inline bool		  hasInsertionCode() const { return _insertionCode != ' '; }
 			inline Atom::TYPE getAtomType() const { return _atomType; }
 			inline void		  setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
 			inline const SecondaryStructure::TYPE getSecondaryStructure() const { return _secondaryStructure; };
@@ -148,6 +150,7 @@ namespace VTX
 			std::vector<uint>		  _indexExtraBondEnd   = std::vector<uint>();
 			Atom::TYPE				  _atomType = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
 			SecondaryStructure::TYPE _secondaryStructure = SecondaryStructure::TYPE::COIL;
+			char			  _insertionCode = ' ';
 
 			Residue() : BaseModel( ID::Model::MODEL_RESIDUE ) {}
 		};

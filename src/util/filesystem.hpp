@@ -7,6 +7,8 @@
 
 #include "../exception.hpp"
 #include "define.hpp"
+#include "tool/logger.hpp"
+#include <QString>
 #include <fstream>
 
 #ifdef _MSC_VER
@@ -48,12 +50,27 @@ namespace VTX
 			static const FilePath PATHS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/paths" );
 			static const FilePath VIDEOS_DIR	= FilePath( EXECUTABLE_DIR.string() + "/videos" );
 			static const FilePath LOGS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/logs" );
+			static const FilePath LIBRARIES_DIR = FilePath( EXECUTABLE_DIR.string() + "/libraries" );
 
-			static const FilePath DATA_DIR		  = "../data";
-			static const FilePath SHADERS_DIR_SRC = "../src/shader";
+			static const FilePath DATA_DIR				  = "../data";
+			static const FilePath SHADERS_DIR_SRC		  = "../src/shader";
+			static const QString  DEFAULT_SAVE_FOLDER	  = "../save";
+			static const QString  DEFAULT_MOLECULE_FOLDER = "../data";
 
-			static const std::string IMGUI_INI_FILE
-				= FilePath( EXECUTABLE_DIR.string() + "/imgui.ini" ).string(); // TOFIX
+			static const QString MOLECULE_EXTENSIONS = "*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm";
+			static const QString VTX_EXTENSIONS		 = "*.vtx";
+
+			static const QString MOLECULE_FILE_FILTERS = "Molecule file (" + MOLECULE_EXTENSIONS + ")";
+			static const QString OPEN_FILE_FILTERS = "VTX file (" + VTX_EXTENSIONS + " " + MOLECULE_EXTENSIONS + ")";
+			static const QString SAVE_FILE_FILTERS = "VTX file (" + VTX_EXTENSIONS + ")";
+
+			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
+			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
+
+			static const FilePath REPRESENTATION_LIBRARY_DIR = FilePath( LIBRARIES_DIR.string() + "/representations" );
+			static const FilePath RENDER_EFFECT_PRESET_LIBRARY_DIR
+				= FilePath( LIBRARIES_DIR.string() + "/render_effects" );
+
 			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/../../setting.json" );
 			static const FilePath FFMPEG_EXE_FILE	= FilePath( "bin/ffmpeg.exe" );
 
@@ -109,6 +126,30 @@ namespace VTX
 				return FilePath( LOGS_DIR ) /= p_filename;
 			}
 
+			inline const FilePath getRepresentationLibraryDirectory()
+			{
+				std::filesystem::create_directories( LIBRARIES_DIR );
+				std::filesystem::create_directories( REPRESENTATION_LIBRARY_DIR );
+
+				return REPRESENTATION_LIBRARY_DIR;
+			}
+			inline const FilePath getRepresentationPath( const std::string & p_filename )
+			{
+				return getRepresentationLibraryDirectory() / p_filename;
+			}
+
+			inline const FilePath getRenderEffectPresetLibraryDirectory()
+			{
+				std::filesystem::create_directories( LIBRARIES_DIR );
+				std::filesystem::create_directories( RENDER_EFFECT_PRESET_LIBRARY_DIR );
+
+				return RENDER_EFFECT_PRESET_LIBRARY_DIR;
+			}
+			inline const FilePath getRenderEffectPath( const std::string & p_filename )
+			{
+				return getRenderEffectPresetLibraryDirectory() / p_filename;
+			}
+
 			inline const std::string readPath( const FilePath & p_path )
 			{
 				std::ifstream file;
@@ -127,14 +168,51 @@ namespace VTX
 				return result;
 			}
 
-			inline const bool removeAll( const FilePath & p_filePath )
+			inline void generateUniqueFileName( FilePath & p_path )
 			{
-				return std::filesystem::remove_all( p_filePath );
+				uint counter = 2;
+
+				std::string defaultFileName = p_path.filename().string();
+
+				while ( std::filesystem::exists( p_path ) )
+				{
+					p_path.replace_filename( defaultFileName + " " + std::to_string( counter ) );
+					counter++;
+				}
 			}
 
-			inline void copy( const FilePath & p_from, const FilePath & p_to )
+			inline bool copy( const FilePath & p_from, const FilePath & p_to )
 			{
-				std::filesystem::copy( p_from, p_to, std::filesystem::copy_options::recursive );
+				bool succeed;
+
+				try
+				{
+					std::filesystem::copy( p_from, p_to, std::filesystem::copy_options::recursive );
+					succeed = true;
+				}
+				catch ( std::exception e )
+				{
+					VTX_WARNING( "Cannot copy file " + p_from.string() + " to " + p_to.string() + " : " + e.what() );
+					succeed = false;
+				}
+
+				return succeed;
+			}
+
+			inline bool removeAll( const FilePath & p_directory )
+			{
+				bool succeed;
+				try
+				{
+					succeed = std::filesystem::remove_all( p_directory );
+				}
+				catch ( const std::exception & e )
+				{
+					VTX_ERROR( "Error when clear directory " + p_directory.string() + " : " + e.what() );
+					succeed = false;
+				}
+
+				return succeed;
 			}
 		} // namespace Filesystem
 	}	  // namespace Util

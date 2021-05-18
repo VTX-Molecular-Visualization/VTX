@@ -38,6 +38,7 @@ namespace VTX
 				UNKNOWN,
 			};
 
+			explicit Loader( FilePath * const p_path ) { _paths.emplace_back( p_path ); }
 			explicit Loader( const std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {}
 			explicit Loader( const std::map<FilePath *, std::string *> & p_buffers ) : _mapFileNameBuffer( p_buffers )
 			{

@@ -21,59 +21,65 @@ namespace VTX::UI::Widget::Settings
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_name		 = new QLineEdit( this );
-		_quickAccess = new QCheckBox( this );
+		_viewport = new QWidget( this );
 
-		_shading = new QComboBox( this );
+		_name		 = new QLineEdit( _viewport );
+		_quickAccess = new QCheckBox( _viewport );
+
+		_shading = new QComboBox( _viewport );
 		_shading->addItems( SHADING );
 
-		_enableSSAO = new QCheckBox( this );
+		_enableSSAO = new QCheckBox( _viewport );
 
-		_ssaoIntensity = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldWidget>( this, "ssaoIntensity" );
+		_ssaoIntensity
+			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldWidget>( _viewport, "ssaoIntensity" );
 		_ssaoIntensity->setMinMax( Setting::AO_INTENSITY_MIN, Setting::AO_INTENSITY_MAX );
-		_ssaoBlurSize = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldWidget>( this, "ssaoBlurSize" );
+		_ssaoBlurSize
+			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldWidget>( _viewport, "ssaoBlurSize" );
 		_ssaoBlurSize->setMinMax( Setting::AO_BLUR_SIZE_MIN, Setting::AO_BLUR_SIZE_MAX );
 
-		_enableOutline = new QCheckBox( this );
+		_enableOutline = new QCheckBox( _viewport );
 		_outlineThickness
-			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( this, "outlineThickness" );
+			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( _viewport, "outlineThickness" );
 		_outlineThickness->setMinMax( Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );
-		_outlineColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "outlineColor" );
+		_outlineColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( _viewport, "outlineColor" );
 
-		_enableFog = new QCheckBox( this );
-		_nearFog   = new QSpinBox( this );
+		_enableFog = new QCheckBox( _viewport );
+		_nearFog   = new QSpinBox( _viewport );
 		_nearFog->setMinimum( Setting::FOG_NEAR_MIN );
 		_nearFog->setMaximum( Setting::FOG_NEAR_MAX );
-		_farFog = new QSpinBox( this );
+		_farFog = new QSpinBox( _viewport );
 		_farFog->setMinimum( Setting::FOG_FAR_MIN );
 		_farFog->setMaximum( Setting::FOG_FAR_MAX );
-		_fogDensity = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( this, "fogDensity" );
+		_fogDensity
+			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( _viewport, "fogDensity" );
 		_fogDensity->setMinMax( 0.0f, 1.0f );
-		_fogColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "fogColor" );
+		_fogColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( _viewport, "fogColor" );
 
-		_backgroundColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "backgroundColor" );
-		_backgroundOpacity
-			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( this, "backgroundOpacity" );
-		_backgroundOpacity->setMinMax( 0.f, 1.f );
-		_cameraLightColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "lightColor" );
-		_cameraFOV = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( this, "cameraFov" );
+		_backgroundColor
+			= VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( _viewport, "backgroundColor" );
+		_cameraLightColor
+			= VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( _viewport, "lightColor" );
+		_cameraFOV = VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( _viewport, "cameraFov" );
 		_cameraFOV->setMinMax( Setting::CAMERA_FOV_MIN, Setting::CAMERA_FOV_MAX );
-		_cameraNear = new QSpinBox( this );
+		_cameraNear = new QSpinBox( _viewport );
 		_cameraNear->setMinimum( Setting::CAMERA_NEAR_MIN );
 		_cameraNear->setMaximum( Setting::CAMERA_NEAR_MAX );
-		_cameraFar = new QSpinBox( this );
+		_cameraFar = new QSpinBox( _viewport );
 		_cameraFar->setMinimum( Setting::CAMERA_FAR_MIN );
 		_cameraFar->setMaximum( Setting::CAMERA_FAR_MAX );
-		_antialiasing = new QCheckBox( this );
-		_perspective  = new QCheckBox( this );
+		_antialiasing = new QCheckBox( _viewport );
+		_perspective  = new QCheckBox( _viewport );
 
-		QHBoxLayout * const hboxLayout = new QHBoxLayout( this );
+		QHBoxLayout * const hboxLayout = new QHBoxLayout( _viewport );
 		QVBoxLayout * const vboxLayout = new QVBoxLayout();
 
 		_layout = new QGridLayout();
 		_layout->setMargin( 0 );
 		_layout->setColumnStretch( 0, 1 );
 		_layout->setColumnStretch( 1, 10 );
+		_layout->setVerticalSpacing( Style::DATA_GRID_VERTICAL_SPACE );
+		_layout->setHorizontalSpacing( Style::DATA_GRID_HORIZONTAL_SPACE );
 
 		_addItem( _name, QString( "Name" ) );
 		_addItem( _quickAccess, QString( "QuickAccess" ) );
@@ -95,7 +101,6 @@ namespace VTX::UI::Widget::Settings
 		_addItem( _fogColor, QString( "Color" ) );
 		_addSpace();
 		_addItem( _backgroundColor, QString( "Background color" ) );
-		_addItem( _backgroundOpacity, QString( "Background opacity (snapshot only)" ) );
 		_addItem( _cameraLightColor, QString( "Light Color" ) );
 		_addItem( _cameraFOV, QString( "FOV" ) );
 		_addItem( _cameraNear, QString( "Near clip" ) );
@@ -107,6 +112,8 @@ namespace VTX::UI::Widget::Settings
 		vboxLayout->addStretch( 1000 );
 		hboxLayout->addItem( vboxLayout );
 		hboxLayout->addStretch( 1000 );
+
+		setWidget( _viewport );
 	}
 	void RenderEffectPresetEditor::_setupSlots()
 	{
@@ -167,10 +174,6 @@ namespace VTX::UI::Widget::Settings
 				 QOverload<const Color::Rgb &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onBackgroundColorChanged );
-		connect( _backgroundOpacity,
-				 QOverload<float>::of( &FloatFieldSliderWidget::onValueChange ),
-				 this,
-				 &RenderEffectPresetEditor::_onBackgroundOpacityChanged );
 		connect( _cameraLightColor,
 				 QOverload<const Color::Rgb &>::of( &ColorFieldButton::onValueChange ),
 				 this,
@@ -235,7 +238,6 @@ namespace VTX::UI::Widget::Settings
 		_fogColor->setEnabled( fogEnabled );
 
 		_backgroundColor->setColor( _preset->getBackgroundColor() );
-		_backgroundOpacity->setValue( _preset->getBackgroundOpacity() );
 		_cameraLightColor->setColor( _preset->getCameraLightColor() );
 		_cameraFOV->setValue( _preset->getCameraFOV() );
 		_cameraNear->setValue( _preset->getCameraNearClip() );
@@ -346,11 +348,6 @@ namespace VTX::UI::Widget::Settings
 		if ( !signalsBlocked() && p_color != _preset->getBackgroundColor() )
 			VTX_ACTION( new Action::Renderer::ChangeBackgroundColor( *_preset, p_color ) );
 	}
-	void RenderEffectPresetEditor::_onBackgroundOpacityChanged( const float p_opacity )
-	{
-		if ( !signalsBlocked() && p_opacity != _preset->getBackgroundOpacity() )
-			VTX_ACTION( new Action::Renderer::ChangeBackgroundOpacity( *_preset, p_opacity ) );
-	}
 	void RenderEffectPresetEditor::_onCameraLightColorChanged( const Color::Rgb & p_color )
 	{
 		if ( !signalsBlocked() && p_color != _preset->getCameraLightColor() )
@@ -392,7 +389,7 @@ namespace VTX::UI::Widget::Settings
 
 	void RenderEffectPresetEditor::_addItem( QWidget * const p_widget, const QString & p_label )
 	{
-		QLabel * const label = new QLabel( this );
+		QLabel * const label = new QLabel( _viewport );
 		label->setText( p_label );
 
 		_layout->addWidget( label, _itemCount, 0 );

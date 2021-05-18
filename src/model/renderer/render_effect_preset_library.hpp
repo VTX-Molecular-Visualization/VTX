@@ -36,13 +36,17 @@ namespace VTX::Model::Renderer
 
 		bool canDeleteItem( RenderEffectPreset * const p_preset ) const;
 
-		void applyPreset( const int p_presetIndex );
-		void applyPreset( const RenderEffectPreset & p_preset );
-		bool isAppliedPreset( const RenderEffectPreset & p_preset ) const;
-		bool isAppliedPreset( const RenderEffectPreset * const & p_preset ) const;
-		int	 getAppliedPresetIndex() const;
+		void					   applyPreset( const int p_presetIndex );
+		void					   applyPreset( RenderEffectPreset & p_preset );
+		bool					   isAppliedPreset( const RenderEffectPreset & p_preset ) const;
+		bool					   isAppliedPreset( const RenderEffectPreset * const & p_preset ) const;
+		const RenderEffectPreset & getAppliedPreset() const;
+		RenderEffectPreset &	   getAppliedPreset();
+		int						   getAppliedPresetIndex() const;
 
 		void setQuickAccessToPreset( RenderEffectPreset & p_preset, const bool p_quikAccess );
+
+		void clear( const bool p_notify = true );
 
 	  private:
 		RenderEffectPresetLibrary();
@@ -53,7 +57,7 @@ namespace VTX::Model::Renderer
 		int	 _getNbPresetWithQuickAccess() const;
 
 		std::vector<RenderEffectPreset *> _presets;
-		const RenderEffectPreset *		  _appliedPreset		   = nullptr;
+		RenderEffectPreset *			  _appliedPreset		   = nullptr;
 		RenderEffectPreset *			  _lastPresetQuickAccessed = nullptr;
 	};
 } // namespace VTX::Model::Renderer

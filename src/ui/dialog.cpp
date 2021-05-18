@@ -2,6 +2,7 @@
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
 #include "ui/widget/dialog/download_molecule_dialog.hpp"
+#include "util/filesystem.hpp"
 #include "util/ui.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
@@ -18,8 +19,8 @@ namespace VTX::UI
 	{
 		const QStringList filenames = QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
 																	 "Open molecule",
-																	 VTX_SETTING().DEFAULT_MOLECULE_FOLDER,
-																	 VTX_SETTING().MOLECULE_FILE_FILTERS );
+																	 Util::Filesystem::DEFAULT_MOLECULE_FOLDER,
+																	 Util::Filesystem::MOLECULE_FILE_FILTERS );
 
 		if ( !filenames.isEmpty() )
 		{
@@ -34,8 +35,8 @@ namespace VTX::UI
 	{
 		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
 															   "Export molecule",
-															   VTX_SETTING().DEFAULT_MOLECULE_FOLDER,
-															   VTX_SETTING().MOLECULE_FILE_FILTERS );
+															   Util::Filesystem::DEFAULT_MOLECULE_FOLDER,
+															   Util::Filesystem::MOLECULE_FILE_FILTERS );
 
 		if ( !filename.isNull() )
 		{
@@ -48,8 +49,8 @@ namespace VTX::UI
 	{
 		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
 															   "Save session",
-															   VTX_SETTING().DEFAULT_SAVE_FOLDER,
-															   VTX_SETTING().SAVE_FILE_FILTERS );
+															   Util::Filesystem::DEFAULT_SAVE_FOLDER,
+															   Util::Filesystem::SAVE_FILE_FILTERS );
 
 		if ( !filename.isNull() )
 		{
@@ -61,8 +62,8 @@ namespace VTX::UI
 	{
 		const QString filename = QFileDialog::getOpenFileName( &VTXApp::get().getMainWindow(),
 															   "Open session",
-															   VTX_SETTING().DEFAULT_SAVE_FOLDER,
-															   VTX_SETTING().OPEN_FILE_FILTERS );
+															   Util::Filesystem::DEFAULT_SAVE_FOLDER,
+															   Util::Filesystem::OPEN_FILE_FILTERS );
 
 		if ( !filename.isNull() )
 		{
@@ -71,12 +72,11 @@ namespace VTX::UI
 		}
 	}
 
-	void Dialog::confirmActionDialog( QWidget * const			 p_caller,
-									  Action::BaseAction * const p_action,
+	void Dialog::confirmActionDialog( Action::BaseAction * const p_action,
 									  const QString &			 p_title,
 									  const QString &			 p_message )
 	{
-		const int res = QMessageBox::warning( p_caller,
+		const int res = QMessageBox::warning( &VTXApp::get().getMainWindow(),
 											  p_title,
 											  p_message,
 											  ( QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No ),
@@ -89,6 +89,41 @@ namespace VTX::UI
 		else
 		{
 			delete p_action;
+		}
+	}
+
+	void Dialog::importRepresentationPresetDialog()
+	{
+		const QStringList filenames
+			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
+											 "Import representation preset",
+											 QString::fromStdString( Util::Filesystem::EXECUTABLE_DIR.string() ),
+											 Util::Filesystem::REPRESENTATION_PRESET_FILE_FILTERS );
+
+		if ( !filenames.isEmpty() )
+		{
+			std::vector<FilePath *> filepathes = std::vector<FilePath *>();
+			for ( const QString & qstr : filenames )
+				filepathes.emplace_back( new FilePath( qstr.toStdString() ) );
+
+			VTX_ACTION( new Action::Main::ImportRepresentationPreset( filepathes ) );
+		}
+	}
+	void Dialog::importRenderEffectPresetDialog()
+	{
+		const QStringList filenames
+			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
+											 "Import render effect preset",
+											 QString::fromStdString( Util::Filesystem::EXECUTABLE_DIR.string() ),
+											 Util::Filesystem::RENDER_EFFECT_PRESET_FILE_FILTERS );
+
+		if ( !filenames.isEmpty() )
+		{
+			std::vector<FilePath *> filepathes = std::vector<FilePath *>();
+			for ( const QString & qstr : filenames )
+				filepathes.emplace_back( new FilePath( qstr.toStdString() ) );
+
+			VTX_ACTION( new Action::Main::ImportRenderEffectPreset( filepathes ) );
 		}
 	}
 

@@ -8,6 +8,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "selection/selection_manager.hpp"
 #include "style.hpp"
+#include "tool/logger.hpp"
 #include "ui/contextual_menu.hpp"
 #include "ui/mime_type.hpp"
 #include "ui/widget/scene/molecule_selection_model.hpp"
@@ -19,6 +20,7 @@ namespace VTX::View::UI::Widget
 		View::BaseView<Model::Molecule>( p_model ), SceneItemWidget( p_parent )
 	{
 		_registerEvent( Event::Global::SELECTION_CHANGE );
+		_registerEvent( Event::Global::SETTINGS_CHANGE );
 	}
 
 	MoleculeSceneView ::~MoleculeSceneView() { _clearLoadedItems(); }
@@ -83,6 +85,16 @@ namespace VTX::View::UI::Widget
 				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
 
 			_refreshSelection( *castedEvent.ptr );
+		}
+		else if ( p_event.name == Event::Global::SETTINGS_CHANGE )
+		{
+			const Event::VTXEventRef<std::set<Setting::PARAMETER>> & castedEvent
+				= dynamic_cast<const Event::VTXEventRef<std::set<Setting::PARAMETER>> &>( p_event );
+
+			if ( castedEvent.ref.find( Setting::PARAMETER ::SYMBOL_DISPLAY_MODE ) != castedEvent.ref.end() )
+			{
+				_refreshSymbolDisplay( VTX_SETTING().getSymbolDisplayMode() );
+			}
 		}
 	}
 
@@ -595,9 +607,7 @@ namespace VTX::View::UI::Widget
 	void MoleculeSceneView::_applyResidueDataOnItem( const Model::Residue & p_residue, QTreeWidgetItem & p_item ) const
 	{
 		p_item.setData( 0, MODEL_ID_ROLE, QVariant::fromValue( p_residue.getId() ) );
-		p_item.setText( 0,
-						QString::fromStdString( p_residue.getSymbolStr() + " "
-												+ std::to_string( p_residue.getIndexInOriginalChain() ) ) );
+		_applyResidueNameOnItem( p_residue, p_item, VTX_SETTING().getSymbolDisplayMode() );
 		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_residue.getTypeId() ) );
 
 		// Always show indicator, if residue has no child, it is remove from the molecule
@@ -610,6 +620,27 @@ namespace VTX::View::UI::Widget
 						QString::fromStdString( p_atom.getSymbolStr() + " " + std::to_string( p_atom.getIndex() ) ) );
 		p_item.setIcon( 0, *VTX::Style::IconConst::get().getModelSymbol( p_atom.getTypeId() ) );
 		p_item.setChildIndicatorPolicy( QTreeWidgetItem::ChildIndicatorPolicy::DontShowIndicator );
+	}
+
+	void MoleculeSceneView::_applyResidueNameOnItem( const Model::Residue &				p_residue,
+													 QTreeWidgetItem &					p_item,
+													 const Style::SYMBOL_DISPLAY_MODE & p_symbolDisplayMode ) const
+	{
+		const std::string * text;
+		switch ( p_symbolDisplayMode )
+		{
+		case Style::SYMBOL_DISPLAY_MODE::SHORT: text = &p_residue.getSymbolStr(); break;
+		case Style::SYMBOL_DISPLAY_MODE::LONG: text = &p_residue.getSymbolName(); break;
+		default:
+			VTX_WARNING( "Symbol style " + std::to_string( int( p_symbolDisplayMode ) )
+						 + " not managed in MoleculeSceneView::_applyResidueNameOnItem." );
+
+			text = &p_residue.getSymbolStr();
+			break;
+		}
+
+		p_item.setText( 0,
+						QString::fromStdString( *text + " " + std::to_string( p_residue.getIndexInOriginalChain() ) ) );
 	}
 
 	void MoleculeSceneView::_doEnableStateChangeAction( const QTreeWidgetItem * const p_item ) const
@@ -816,6 +847,37 @@ namespace VTX::View::UI::Widget
 		_enableSignals( true );
 	}
 
+	void MoleculeSceneView::_refreshSymbolDisplay( const Style::SYMBOL_DISPLAY_MODE & p_displayMode )
+	{
+		_refreshSymbolDisplayRecursive( _getMoleculeTreeWidgetItem(), p_displayMode );
+		_clearLoadedItems();
+	}
+	void MoleculeSceneView::_refreshSymbolDisplayRecursive( QTreeWidgetItem * const			   p_item,
+															const Style::SYMBOL_DISPLAY_MODE & p_displayMode )
+	{
+		const Model::ID &  modelId	   = _getModelIDFromItem( *p_item );
+		const ID::VTX_ID & modelTypeId = MVC::MvcManager::get().getModelTypeID( modelId );
+
+		if ( modelTypeId == ID::Model::MODEL_CHAIN )
+		{
+			for ( int i = 0; i < p_item->childCount(); i++ )
+			{
+				QTreeWidgetItem * const child	= p_item->child( i );
+				const Model::ID &		modelId = _getModelIDFromItem( *child );
+				const Model::Residue &	residue = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
+
+				_applyResidueNameOnItem( residue, *child, p_displayMode );
+			}
+		}
+		else
+		{
+			for ( int i = 0; i < p_item->childCount(); i++ )
+			{
+				_refreshSymbolDisplayRecursive( p_item->child( i ), p_displayMode );
+			}
+		}
+	}
+
 	void MoleculeSceneView::_enableSignals( const bool p_enable )
 	{
 		if ( p_enable )
@@ -840,6 +902,26 @@ namespace VTX::View::UI::Widget
 	}
 
 	QTreeWidgetItem * const MoleculeSceneView::_getMoleculeTreeWidgetItem() const { return topLevelItem( 0 ); }
+	QTreeWidgetItem * const MoleculeSceneView::_getTreeWidgetItem( const Model::ID & p_id ) const
+	{
+		QTreeWidgetItem * res;
+
+		const ID::VTX_ID & typeID = MVC::MvcManager::get().getModelTypeID( p_id );
+
+		if ( typeID == ID::Model::MODEL_MOLECULE )
+			res = _getMoleculeTreeWidgetItem();
+		else if ( typeID == ID::Model::MODEL_CHAIN )
+			res = _getTreeWidgetItem( MVC::MvcManager::get().getModel<Model::Chain>( p_id ) );
+		else if ( typeID == ID::Model::MODEL_RESIDUE )
+			res = _getTreeWidgetItem( MVC::MvcManager::get().getModel<Model::Residue>( p_id ) );
+		else if ( typeID == ID::Model::MODEL_ATOM )
+			res = _getTreeWidgetItem( MVC::MvcManager::get().getModel<Model::Atom>( p_id ) );
+		else
+			res = nullptr;
+
+		return res;
+	}
+
 	QTreeWidgetItem * const MoleculeSceneView::_getTreeWidgetItem( const Model::Chain & p_chain ) const
 	{
 		return topLevelItem( 0 )->child( p_chain.getIndex() );
@@ -878,5 +960,10 @@ namespace VTX::View::UI::Widget
 	}
 
 	void MoleculeSceneView::openRenameEditor() { editItem( _getMoleculeTreeWidgetItem() ); }
+	void MoleculeSceneView::updatePosInSceneHierarchy( const int p_position )
+	{
+		SceneItemWidget::updatePosInSceneHierarchy( p_position );
+		_model->getConfiguration().sceneIndex = p_position;
+	}
 
 } // namespace VTX::View::UI::Widget

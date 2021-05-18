@@ -120,7 +120,7 @@ namespace VTX
 			delete worker;
 
 			// Clean frames
-			std::filesystem::remove_all( Util::Filesystem::getVideosBatchPath( _directoryName ) );
+			Util::Filesystem::removeAll( Util::Filesystem::getVideosBatchPath( _directoryName ) );
 		}
 
 	} // namespace State

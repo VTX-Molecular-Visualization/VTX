@@ -1,4 +1,6 @@
 #include "representation_library.hpp"
+#include "action/action_manager.hpp"
+#include "action/representation.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "id.hpp"
@@ -6,6 +8,8 @@
 #include "setting.hpp"
 #include "view/callback_view.hpp"
 #include "vtx_app.hpp"
+#include "worker/representation_loader.hpp"
+#include "worker/worker_manager.hpp"
 #include <string>
 
 namespace VTX::Model::Representation
@@ -14,16 +18,25 @@ namespace VTX::Model::Representation
 
 	RepresentationLibrary::RepresentationLibrary() : BaseModel( ID::Model::MODEL_REPRESENTATION_LIBRARY )
 	{
-		_init();
+		Worker::RepresentationLibraryLoader * libraryLoader = new Worker::RepresentationLibraryLoader( *this );
+		libraryLoader->activeNotify( false );
+		VTX_WORKER( libraryLoader );
+
+		if ( _representations.size() <= 0 )
+		{
+			_init();
+		}
+
 		_defaultRepresentation = _representations[ Setting::REPRESENTATION_DEFAULT_INDEX ];
 	}
 
 	RepresentationLibrary ::~RepresentationLibrary()
 	{
-		while ( _representations.size() > 0 )
-		{
-			deleteRepresentation( 0, false );
-		}
+		Action::Representation::SavePreset * const saveAction = new Action::Representation::SavePreset( *this );
+		saveAction->setAsync( false );
+
+		VTX_ACTION( saveAction );
+		clear( false );
 	}
 
 	Representation * const RepresentationLibrary::getRepresentation( const int p_index )
@@ -148,8 +161,8 @@ namespace VTX::Model::Representation
 
 	void RepresentationLibrary::setDefaultRepresentation( const int p_representationIndex )
 	{
-		_defaultRepresentation		 = _representations[ p_representationIndex ];
-		VTX_SETTING().representation = p_representationIndex;
+		_defaultRepresentation = _representations[ p_representationIndex ];
+		VTX_SETTING().setDefaultRepresentationIndex( p_representationIndex );
 		_notifyDataChanged();
 	}
 	int RepresentationLibrary::getDefaultRepresentationIndex() const
@@ -157,6 +170,14 @@ namespace VTX::Model::Representation
 		return getRepresentationIndex( _defaultRepresentation );
 	}
 	Representation * RepresentationLibrary::getDefaultRepresentation() { return _defaultRepresentation; }
+
+	void RepresentationLibrary::clear( const bool p_notify )
+	{
+		while ( _representations.size() > 0 )
+		{
+			deleteRepresentation( int( _representations.size() - 1 ), p_notify );
+		}
+	}
 
 	void RepresentationLibrary::_init()
 	{

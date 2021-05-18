@@ -43,6 +43,9 @@ namespace VTX::View::UI::Widget::Representation
 		void _onCopyPreset() const;
 		void _onDeletePreset();
 
+		void _onImportPreset() const;
+		void _onReloadLibrary();
+
 		void _refreshPresetDisplayed( const bool p_applyPreset );
 
 	  private:
@@ -52,6 +55,9 @@ namespace VTX::View::UI::Widget::Representation
 		QPushButton * _addPresetButton	  = nullptr;
 		QPushButton * _copyPresetButton	  = nullptr;
 		QPushButton * _deletePresetButton = nullptr;
+
+		QPushButton * _importPresetButton  = nullptr;
+		QPushButton * _reloadLibraryButton = nullptr;
 	};
 } // namespace VTX::View::UI::Widget::Representation
 #endif

@@ -1,4 +1,5 @@
 #include "camera.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "tool/logger.hpp"
 #include "vtx_app.hpp"
 
@@ -8,9 +9,9 @@ namespace VTX
 	{
 		// TODO? (20_05_27): _near, _far, _fov must be initialized in cpp because setting.hpp cannot be included in hpp
 		Camera::Camera() :
-			_near( Util::Math::max( 1e-1f, VTX_SETTING().cameraNear ) ), // Avoid to little value.
-			_far( Util::Math::max( _near, VTX_SETTING().cameraFar ) ), _fov( VTX_SETTING().cameraFov ),
-			_isPerspective( VTX_SETTING().cameraPerspective )
+			_near( Util::Math::max( 1e-1f, VTX_RENDER_EFFECT().getCameraNearClip() ) ), // Avoid to little value.
+			_far( Util::Math::max( _near, VTX_RENDER_EFFECT().getCameraFarClip() ) ),
+			_fov( VTX_RENDER_EFFECT().getCameraFOV() ), _isPerspective( VTX_RENDER_EFFECT().isPerspectiveProjection() )
 		{
 			_updateRotation();
 		}

@@ -22,42 +22,46 @@ namespace VTX::UI::Widget::Settings
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		QLineEdit * const nameWidget = new QLineEdit( this );
+		_viewport = new QWidget( this );
 
-		QComboBox * const representationTypeWidget = new QComboBox( this );
+		QLineEdit * const nameWidget = new QLineEdit( _viewport );
+
+		QComboBox * const representationTypeWidget = new QComboBox( _viewport );
 		_populateRepresentationTypeComboBox( representationTypeWidget );
 
 		CustomWidget::FloatFieldSliderWidget * const sphereRadiusWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
-				this, "SphereRadiusWidget" );
+				_viewport, "SphereRadiusWidget" );
 		CustomWidget::FloatFieldSliderWidget * const cylinderRadiusWidget
 			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
-				this, "CylinderRadiusWidget" );
+				_viewport, "CylinderRadiusWidget" );
 
-		QComboBox * const colorModeWidget = new QComboBox( this );
+		QComboBox * const colorModeWidget = new QComboBox( _viewport );
 		for ( const std::string & colorModeStr : Generic::COLOR_MODE_STRING )
 		{
 			colorModeWidget->addItem( QString::fromStdString( colorModeStr ) );
 		}
 
-		QComboBox * const ssColorModeWidget = new QComboBox( this );
+		QComboBox * const ssColorModeWidget = new QComboBox( _viewport );
 		for ( const std::string & colorModeStr : Generic::SECONDARY_STRUCTURE_COLOR_MODE_STRING )
 		{
 			ssColorModeWidget->addItem( QString::fromStdString( colorModeStr ) );
 		}
 
 		CustomWidget::ColorFieldButton * const colorButtonWidget
-			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorFieldButton>( this,
+			= VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::ColorFieldButton>( _viewport,
 																							   "ColorButtonWidget" );
-		QCheckBox * const	quickAccess		 = new QCheckBox( this );
-		QPushButton * const setDefaultButton = new QPushButton( this );
+		QCheckBox * const	quickAccess		 = new QCheckBox( _viewport );
+		QPushButton * const setDefaultButton = new QPushButton( _viewport );
 		setDefaultButton->setText( "Set As Default" );
 
-		QHBoxLayout * const hboxLayout = new QHBoxLayout( this );
+		QHBoxLayout * const hboxLayout = new QHBoxLayout( _viewport );
 		QVBoxLayout * const vboxLayout = new QVBoxLayout();
 
 		_layout = new QGridLayout();
 		_layout->setMargin( 0 );
+		_layout->setVerticalSpacing( Style::DATA_GRID_VERTICAL_SPACE );
+		_layout->setHorizontalSpacing( Style::DATA_GRID_HORIZONTAL_SPACE );
 		_layout->setColumnStretch( 0, 1 );
 		_layout->setColumnStretch( 1, 10 );
 
@@ -77,6 +81,8 @@ namespace VTX::UI::Widget::Settings
 		vboxLayout->addStretch( 1000 );
 		hboxLayout->addItem( vboxLayout );
 		hboxLayout->addStretch( 1000 );
+
+		setWidget( _viewport );
 	}
 	void RepresentationPresetEditor::_setupSlots()
 	{
@@ -342,7 +348,7 @@ namespace VTX::UI::Widget::Settings
 													QWidget * const	  p_widget,
 													const QString &	  p_label )
 	{
-		QLabel * const label = new QLabel( this );
+		QLabel * const label = new QLabel( _viewport );
 		label->setText( p_label );
 
 		_layout->addWidget( label, _itemCount, 0 );

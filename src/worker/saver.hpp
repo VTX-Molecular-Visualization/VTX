@@ -22,19 +22,20 @@ namespace VTX::Worker
 		};
 
 	  public:
-		explicit Saver( FilePath * const p_path ) : _path( p_path ) {}
+		explicit Saver( const FilePath * const p_path ) : _path( p_path ) {}
 		~Saver() {}
 
 	  protected:
 		uint _run() override;
 
 	  private:
-		FilePath * const _path;
+		const FilePath * const _path;
 
 		bool _saveMolecule();
 		bool _saveSession();
 
 		MODE _getMode( const FilePath & ) const;
 	};
+
 } // namespace VTX::Worker
 #endif

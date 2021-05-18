@@ -9,24 +9,56 @@
 #include "color/rgb.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
-#include "mvc/mvc_manager.hpp"
-#include "renderer/base_renderer.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::Action::Renderer
 {
+	class ReloadPresets : public BaseAction
+	{
+	  public:
+		ReloadPresets() {};
+		virtual void execute() override;
+	};
+
+	class SavePreset : public BaseAction
+	{
+	  public:
+		SavePreset( const Model::Renderer::RenderEffectPreset & p_preset )
+		{
+			_renderEffectPresets.emplace( &p_preset );
+		};
+		SavePreset( const std::unordered_set<const Model::Renderer::RenderEffectPreset *> & p_presets )
+		{
+			for ( const Model::Renderer::RenderEffectPreset * const preset : p_presets )
+				_renderEffectPresets.emplace( preset );
+		};
+		SavePreset( Model::Renderer::RenderEffectPresetLibrary & p_library )
+		{
+			for ( int i = 0; i < p_library.getPresetCount(); i++ )
+				_renderEffectPresets.emplace( p_library.getPreset( i ) );
+			_clearDirectory = true;
+		};
+
+		void setAsync( const bool p_async ) { _async = p_async; }
+
+		virtual void execute() override;
+
+	  private:
+		std::unordered_set<const Model::Renderer::RenderEffectPreset *> _renderEffectPresets
+			= std::unordered_set<const Model::Renderer::RenderEffectPreset *>();
+
+		bool _clearDirectory = false;
+		bool _async			 = true;
+	};
+
 	class ApplyRenderEffectPreset : public BaseAction
 	{
 	  public:
-		ApplyRenderEffectPreset( const Model::Renderer::RenderEffectPreset & p_preset ) : _preset( p_preset ) {};
-		virtual void execute() override
-		{
-			Model::Renderer::RenderEffectPresetLibrary::get().applyPreset( _preset );
-			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-		};
+		ApplyRenderEffectPreset( Model::Renderer::RenderEffectPreset & p_preset ) : _preset( p_preset ) {};
+		virtual void execute() override;
 
 	  private:
-		const Model::Renderer::RenderEffectPreset & _preset;
+		Model::Renderer::RenderEffectPreset & _preset;
 	};
 
 	class ChangeName : public BaseAction
@@ -35,7 +67,7 @@ namespace VTX::Action::Renderer
 		ChangeName( Model::Renderer::RenderEffectPreset & p_preset, const std::string & p_name ) :
 			_preset( p_preset ), _name( p_name ) {};
 
-		virtual void execute() override { _preset.setName( _name ); };
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -48,10 +80,7 @@ namespace VTX::Action::Renderer
 		ChangeQuickAccess( Model::Renderer::RenderEffectPreset & p_preset, const bool p_quickAccess ) :
 			_preset( p_preset ), _quickAccess( p_quickAccess ) {};
 
-		virtual void execute() override
-		{
-			Model::Renderer::RenderEffectPresetLibrary::get().setQuickAccessToPreset( _preset, _quickAccess );
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -64,16 +93,7 @@ namespace VTX::Action::Renderer
 		ChangeShading( Model::Renderer::RenderEffectPreset & p_preset, const VTX::Renderer::SHADING & p_shading ) :
 			_preset( p_preset ), _shading( p_shading ) {};
 
-		virtual void execute() override
-		{
-			_preset.setShading( _shading );
-
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -86,15 +106,7 @@ namespace VTX::Action::Renderer
 		EnableSSAO( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
 			_preset( p_preset ), _enable( p_enable ) {};
 
-		virtual void execute() override
-		{
-			_preset.enableSSAO( _enable );
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -106,15 +118,7 @@ namespace VTX::Action::Renderer
 		ChangeSSAOIntensity( Model::Renderer::RenderEffectPreset & p_preset, const int p_intensity ) :
 			_preset( p_preset ), _intensity( p_intensity ) {};
 
-		virtual void execute() override
-		{
-			_preset.setSSAOIntensity( _intensity );
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -126,15 +130,7 @@ namespace VTX::Action::Renderer
 		ChangeSSAOBlurSize( Model::Renderer::RenderEffectPreset & p_preset, const int p_blurSize ) :
 			_preset( p_preset ), _blurSize( p_blurSize ) {};
 
-		virtual void execute() override
-		{
-			_preset.setSSAOBlurSize( _blurSize );
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -147,16 +143,7 @@ namespace VTX::Action::Renderer
 		EnableOutline( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
 			_preset( p_preset ), _enable( p_enable ) {};
 
-		virtual void execute() override
-		{
-			_preset.enableOutline( _enable );
-
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -168,15 +155,7 @@ namespace VTX::Action::Renderer
 		ChangeOutlineThickness( Model::Renderer::RenderEffectPreset & p_preset, const float p_thickness ) :
 			_preset( p_preset ), _thickness( p_thickness ) {};
 
-		virtual void execute() override
-		{
-			_preset.setOutlineThickness( _thickness );
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -188,15 +167,7 @@ namespace VTX::Action::Renderer
 		ChangeOutlineColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgb & p_color ) :
 			_preset( p_preset ), _color( p_color ) {};
 
-		virtual void execute() override
-		{
-			_preset.setOutlineColor( _color );
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -209,15 +180,7 @@ namespace VTX::Action::Renderer
 		EnableFog( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
 			_preset( p_preset ), _enable( p_enable ) {};
 
-		virtual void execute() override
-		{
-			_preset.enableFog( _enable );
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -229,15 +192,7 @@ namespace VTX::Action::Renderer
 		ChangeFogNear( Model::Renderer::RenderEffectPreset & p_preset, const float p_near ) :
 			_preset( p_preset ), _near( p_near ) {};
 
-		virtual void execute() override
-		{
-			_preset.setFogNear( _near );
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -249,15 +204,7 @@ namespace VTX::Action::Renderer
 		ChangeFogFar( Model::Renderer::RenderEffectPreset & p_preset, const float p_far ) :
 			_preset( p_preset ), _far( p_far ) {};
 
-		virtual void execute() override
-		{
-			_preset.setFogFar( _far );
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -269,15 +216,7 @@ namespace VTX::Action::Renderer
 		ChangeFogDensity( Model::Renderer::RenderEffectPreset & p_preset, const float p_density ) :
 			_preset( p_preset ), _density( p_density ) {};
 
-		virtual void execute() override
-		{
-			_preset.setFogDensity( _density );
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -289,16 +228,7 @@ namespace VTX::Action::Renderer
 		ChangeFogColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgb & p_color ) :
 			_preset( p_preset ), _color( p_color ) {};
 
-		virtual void execute() override
-		{
-			_preset.setFogColor( _color );
-
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -311,42 +241,11 @@ namespace VTX::Action::Renderer
 		ChangeBackgroundColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgb & p_color ) :
 			_preset( p_preset ), _color( p_color ) {};
 
-		virtual void execute() override
-		{
-			_preset.setBackgroundColor( _color );
-
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
 		const Color::Rgb					  _color;
-	};
-
-	class ChangeBackgroundOpacity : public BaseAction
-	{
-	  public:
-		ChangeBackgroundOpacity( Model::Renderer::RenderEffectPreset & p_preset, const float p_opacity ) :
-			_preset( p_preset ), _opacity( p_opacity ) {};
-
-		virtual void execute() override
-		{
-			_preset.setBackgroundOpacity( _opacity );
-
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-			}
-		};
-
-	  private:
-		Model::Renderer::RenderEffectPreset & _preset;
-		const float							  _opacity;
 	};
 
 	class ChangeCameraLightColor : public BaseAction
@@ -355,16 +254,7 @@ namespace VTX::Action::Renderer
 		ChangeCameraLightColor( Model::Renderer::RenderEffectPreset & p_preset, const Color::Rgb & p_color ) :
 			_preset( p_preset ), _color( p_color ) {};
 
-		virtual void execute() override
-		{
-			_preset.setCameraLightColor( _color );
-
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -376,16 +266,7 @@ namespace VTX::Action::Renderer
 		ChangeCameraFOV( Model::Renderer::RenderEffectPreset & p_preset, const float p_fov ) :
 			_preset( p_preset ), _fov( p_fov ) {};
 
-		virtual void execute() override
-		{
-			_preset.setCameraFOV( _fov );
-
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -397,16 +278,7 @@ namespace VTX::Action::Renderer
 		ChangeCameraNear( Model::Renderer::RenderEffectPreset & p_preset, const float p_near ) :
 			_preset( p_preset ), _near( p_near ) {};
 
-		virtual void execute() override
-		{
-			_preset.setCameraNearClip( _near );
-
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -418,16 +290,7 @@ namespace VTX::Action::Renderer
 		ChangeCameraFar( Model::Renderer::RenderEffectPreset & p_preset, const float p_far ) :
 			_preset( p_preset ), _far( p_far ) {};
 
-		virtual void execute() override
-		{
-			_preset.setCameraFarClip( _far );
-
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -440,16 +303,7 @@ namespace VTX::Action::Renderer
 		EnableCameraAntialiasing( Model::Renderer::RenderEffectPreset & p_preset, const bool p_enable ) :
 			_preset( p_preset ), _enable( p_enable ) {};
 
-		virtual void execute() override
-		{
-			_preset.setAA( _enable );
-
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -461,16 +315,7 @@ namespace VTX::Action::Renderer
 		ChangeCameraPerspective( Model::Renderer::RenderEffectPreset & p_preset, const bool p_perspective ) :
 			_preset( p_preset ), _perspective( p_perspective ) {};
 
-		virtual void execute() override
-		{
-			_preset.setPerspectiveProjection( _perspective );
-
-			if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
-			{
-				_preset.apply();
-				VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
-			}
-		};
+		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
@@ -482,14 +327,7 @@ namespace VTX::Action::Renderer
 	  public:
 		explicit AddNewPresetInLibrary( const std::string & p_presetName ) : _presetName( p_presetName ) {}
 
-		void execute()
-		{
-			Model::Renderer::RenderEffectPreset * const newRenderEffect
-				= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
-
-			newRenderEffect->setName( _presetName );
-			Model::Renderer::RenderEffectPresetLibrary::get().addPreset( newRenderEffect );
-		};
+		virtual void execute() override;
 
 		const std::string _presetName;
 	};
@@ -499,7 +337,7 @@ namespace VTX::Action::Renderer
 	  public:
 		explicit CopyPresetInLibrary( const int p_presetIndex ) : _presetIndex( p_presetIndex ) {}
 
-		void execute() { Model::Renderer::RenderEffectPresetLibrary::get().copyPreset( _presetIndex ); };
+		virtual void execute() override;
 
 	  private:
 		const int _presetIndex;
@@ -510,11 +348,7 @@ namespace VTX::Action::Renderer
 	  public:
 		explicit DeletePresetInLibrary( const int p_presetIndex ) : _presetIndex( p_presetIndex ) {}
 
-		void execute()
-		{
-			Model::Renderer::RenderEffectPresetLibrary::get().deletePreset( _presetIndex );
-			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
-		};
+		virtual void execute() override;
 
 	  private:
 		const int _presetIndex;

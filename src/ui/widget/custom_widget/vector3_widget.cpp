@@ -1,4 +1,5 @@
 #include "vector3_widget.hpp"
+#include "style.hpp"
 #include "ui/widget_factory.hpp"
 
 namespace VTX::UI::Widget::CustomWidget
@@ -10,7 +11,7 @@ namespace VTX::UI::Widget::CustomWidget
 		const float spinBoxMinimumWidth = 50;
 
 		QHBoxLayout * const mainLayout = new QHBoxLayout( this );
-		mainLayout->setSpacing( 2 );
+		mainLayout->setSpacing( Style::DATA_GRID_HORIZONTAL_SPACE );
 
 		_widgetX = WidgetFactory::get().instantiateWidget<FloatFieldDraggableWidget>( this, "vector_widget_x" );
 		_widgetX->setLabel( "x" );

@@ -13,6 +13,7 @@
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "model/selection.hpp"
+#include "style.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/scene/scene_item_widget.hpp"
 #include "view/base_view.hpp"
@@ -43,6 +44,8 @@ namespace VTX::View::UI::Widget
 
 		const Model::ID & getModelID() const override { return _model->getId(); };
 		void			  openRenameEditor();
+
+		virtual void updatePosInSceneHierarchy( const int p_position ) override;
 
 	  protected:
 		void _setupUi( const QString & ) override;
@@ -90,10 +93,18 @@ namespace VTX::View::UI::Widget
 		void _applyResidueDataOnItem( const Model::Residue & p_molecule, QTreeWidgetItem & p_item ) const;
 		void _applyAtomDataOnItem( const Model::Atom & p_molecule, QTreeWidgetItem & p_item ) const;
 
+		void _applyResidueNameOnItem( const Model::Residue &			 p_molecule,
+									  QTreeWidgetItem &					 p_item,
+									  const Style::SYMBOL_DISPLAY_MODE & p_symbolDisplayMode ) const;
+
 		void _refreshItemVisibility( QTreeWidgetItem * const p_itemWidget, const Generic::BaseVisible & p_baseVisible );
 		void _refreshSelection( const Model::Selection & p_selection );
+		void _refreshSymbolDisplay( const Style::SYMBOL_DISPLAY_MODE & p_displayMode );
+		void _refreshSymbolDisplayRecursive( QTreeWidgetItem * const			p_item,
+											 const Style::SYMBOL_DISPLAY_MODE & p_displayMode );
 
 		QTreeWidgetItem * const _getMoleculeTreeWidgetItem() const;
+		QTreeWidgetItem * const _getTreeWidgetItem( const Model::ID & p_id ) const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Chain & p_chain ) const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Residue & p_residue ) const;
 		QTreeWidgetItem * const _getTreeWidgetItem( const Model::Atom & p_atom ) const;

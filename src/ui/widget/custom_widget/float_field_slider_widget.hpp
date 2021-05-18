@@ -7,7 +7,6 @@
 
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
-#include <QDoubleValidator>
 #include <QLineEdit>
 #include <QSlider>
 #include <QWidget>
@@ -59,8 +58,6 @@ namespace VTX::UI::Widget::CustomWidget
 	  private:
 		QSlider *	_slider	   = nullptr;
 		QLineEdit * _textField = nullptr;
-
-		QDoubleValidator * _textFieldValidator = nullptr;
 
 		int _nbDecimals = 2;
 

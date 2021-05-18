@@ -19,16 +19,16 @@ namespace VTX
 			// Rotation.
 			if ( _mouseLeftPressed )
 			{
-				_camera.rotate( Vec3f(
-					-VTX_SETTING().rotationSpeed * _deltaMousePosition.y * ( VTX_SETTING().yAxisInverted ? -1.f : 1.f ),
-					-VTX_SETTING().rotationSpeed * _deltaMousePosition.x,
-					0.f ) );
+				_camera.rotate( Vec3f( -VTX_SETTING().getRotationSpeed() * _deltaMousePosition.y
+										   * ( VTX_SETTING().getYAxisInverted() ? -1.f : 1.f ),
+									   -VTX_SETTING().getRotationSpeed() * _deltaMousePosition.x,
+									   0.f ) );
 				_deltaMousePosition.x = 0;
 				_deltaMousePosition.y = 0;
 			}
 			if ( _mouseRightPressed )
 			{
-				_camera.rotateRoll( VTX_SETTING().rotationSpeed * _deltaMousePosition.x );
+				_camera.rotateRoll( VTX_SETTING().getRotationSpeed() * _deltaMousePosition.x );
 				_deltaMousePosition.x = 0;
 				_deltaMousePosition.y = 0;
 			}
@@ -66,16 +66,16 @@ namespace VTX
 				return;
 			}
 
-			translation *= VTX_SETTING().translationSpeed;
+			translation *= VTX_SETTING().getTranslationSpeed();
 			translation *= p_deltaTime;
 
 			if ( _isKeyPressed( ScanCode::Shift ) )
 			{
-				translation *= VTX_SETTING().translationFactorSpeed;
+				translation *= VTX_SETTING().getTranslationSpeedFactor();
 			}
 			if ( _isKeyPressed( ScanCode::Control ) )
 			{
-				translation /= VTX_SETTING().translationFactorSpeed;
+				translation /= VTX_SETTING().getTranslationSpeedFactor();
 			}
 
 			_camera.move( translation );

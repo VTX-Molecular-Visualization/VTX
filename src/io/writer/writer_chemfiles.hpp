@@ -5,37 +5,37 @@
 #pragma once
 #endif
 
+#include "base_writer.hpp"
+#include "io/chemfiles_io.hpp"
 #include "model/molecule.hpp"
+#pragma warning( push, 0 )
 #include <chemfiles.hpp>
+#pragma warning( pop )
 #include <map>
 #include <string>
 #include <unordered_set>
 
-namespace VTX
+namespace VTX::IO::Writer
 {
-	namespace IO
+	class ChemfilesWriter : BaseWriter<Model::Molecule>, ChemfilesIO
 	{
-		namespace Writer
-		{
-			class ChemfilesWriter
-			{
-			  public:
-				void writeFile( const FilePath &, const Model::Molecule & );
-				void writeBuffer( std::string &, const Model::Molecule & );
-				void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
+	  public:
+		ChemfilesWriter() : ChemfilesIO() {};
 
-				bool isChainMerged( const Model::Chain & p_chain ) const;
-				uint getNewResidueIndex( const Model::Residue & ) const;
-				uint getNewAtomIndex( const Model::Atom & ) const;
+		void writeFile( const FilePath &, const Model::Molecule & );
+		void writeBuffer( std::string &, const Model::Molecule & );
+		void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
 
-			  private:
-				void _writeTrajectory( chemfiles::Trajectory &, const Model::Molecule & );
+		bool isChainMerged( const Model::Chain & p_chain ) const;
+		uint getNewResidueIndex( const Model::Residue & ) const;
+		uint getNewAtomIndex( const Model::Atom & ) const;
 
-				std::unordered_set<uint> _mergedChains		   = std::unordered_set<uint>();
-				std::map<uint, uint>	 _mapNewResidueIndexes = std::map<uint, uint>();
-				std::map<uint, uint>	 _mapNewAtomIndexes	   = std::map<uint, uint>();
-			};
-		} // namespace Writer
-	}	  // namespace IO
-} // namespace VTX
+	  private:
+		void _writeTrajectory( chemfiles::Trajectory &, const Model::Molecule & );
+
+		std::unordered_set<uint> _mergedChains		   = std::unordered_set<uint>();
+		std::map<uint, uint>	 _mapNewResidueIndexes = std::map<uint, uint>();
+		std::map<uint, uint>	 _mapNewAtomIndexes	   = std::map<uint, uint>();
+	};
+} // namespace VTX::IO::Writer
 #endif

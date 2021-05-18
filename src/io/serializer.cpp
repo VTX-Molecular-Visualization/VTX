@@ -1,23 +1,27 @@
 #include "serializer.hpp"
 #include "action/main.hpp"
+#include "action/renderer.hpp"
 #include "action/setting.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "generic/base_colorable.hpp"
 #include "io/reader/lib_chemfiles.hpp"
-#include "state/state_machine.hpp"
-#include "state/visualization.hpp"
 #include "model/chain.hpp"
+#include "model/configuration/molecule.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "model/representation/instantiated_representation.hpp"
 #include "model/representation/representation.hpp"
-#include "model/representation/representation_library.hpp"
 #include "model/residue.hpp"
 #include "model/viewpoint.hpp"
 #include "mvc/mvc_manager.hpp"
-#include "event/event.hpp"
-#include "event/event_manager.hpp"
 #include "representation/representation_manager.hpp"
+#include "state/state_machine.hpp"
+#include "state/visualization.hpp"
+#include "trajectory/trajectory_enum.hpp"
+#include <algorithm>
 
 namespace VTX
 {
@@ -33,7 +37,10 @@ namespace VTX
 			nlohmann::json jsonArrayMolecules = nlohmann::json::array();
 			for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 			{
-				jsonArrayMolecules.emplace_back( serialize( *pair.first ) );
+				nlohmann::json json = { { "INDEX", pair.first->getConfiguration().sceneIndex },
+										{ "MOLECULE", serialize( *pair.first ) } };
+
+				jsonArrayMolecules.emplace_back( json );
 			}
 
 			nlohmann::json jsonArrayPaths = nlohmann::json::array();
@@ -44,6 +51,7 @@ namespace VTX
 
 			return { { "CAMERA_POSITION", serialize( p_scene.getCamera().getPosition() ) },
 					 { "CAMERA_ROTATION", serialize( p_scene.getCamera().getRotation() ) },
+					 { "MOLECULE_COUNT", p_scene.getMolecules().size() },
 					 { "MOLECULES", jsonArrayMolecules },
 					 { "PATHS", jsonArrayPaths } };
 		}
@@ -59,7 +67,8 @@ namespace VTX
 					 { "REPRESENTATIONS", _serializeMoleculeRepresentations( p_molecule, chemfileWriter ) },
 					 { "VISIBILITIES", _serializeMoleculeVisibilities( p_molecule, chemfileWriter ) },
 					 { "NAME", p_molecule.getName() },
-					 { "PDB_ID", p_molecule.getPdbIdCode() } };
+					 { "PDB_ID", p_molecule.getPdbIdCode() },
+					 { "DISPLAY_NAME", p_molecule.getDisplayName() } };
 		}
 
 		nlohmann::json Serializer::serialize( const Model::Path & p_path ) const
@@ -122,6 +131,46 @@ namespace VTX
 			return json;
 		}
 
+		nlohmann::json Serializer::serialize( const Model::Representation::Representation & p_representation ) const
+		{
+			return {
+				{ "NAME", p_representation.getName() },
+				{ "COLOR", serialize( p_representation.getColor() ) },
+				{ "QUICK_ACCESS", p_representation.hasQuickAccess() },
+				{ "TYPE", p_representation.getRepresentationType() },
+				{ "SPHERE_RADIUS", p_representation.getData().getSphereRadius() },
+				{ "CYLINDER_RADIUS", p_representation.getData().getCylinderRadius() },
+				{ "COLOR_MODE", p_representation.getData().getColorMode() },
+				{ "SS_COLOR_MODE", p_representation.getData().getSecondaryStructureColorMode() },
+			};
+		}
+		nlohmann::json Serializer::serialize( const Model::Renderer::RenderEffectPreset & p_preset ) const
+		{
+			return {
+				{ "NAME", p_preset.getName() },
+				{ "QUICK_ACCESS", p_preset.hasQuickAccess() },
+				{ "SHADING", p_preset.getShading() },
+				{ "SSAO", p_preset.isSSAOEnabled() },
+				{ "SSAO_INTENSITY", p_preset.getSSAOIntensity() },
+				{ "SSAO_BLUR_SIZE", p_preset.getSSAOBlurSize() },
+				{ "OUTLINE", p_preset.isOutlineEnabled() },
+				{ "OUTLINE_THICKNESS", p_preset.getOutlineThickness() },
+				{ "OUTLINE_COLOR", serialize( p_preset.getOutlineColor() ) },
+				{ "FOG", p_preset.isFogEnabled() },
+				{ "FOG_NEAR", p_preset.getFogNear() },
+				{ "FOG_FAR", p_preset.getFogFar() },
+				{ "FOG_DENSITY", p_preset.getFogDensity() },
+				{ "FOG_COLOR", serialize( p_preset.getFogColor() ) },
+				{ "BACKGROUND_COLOR", serialize( p_preset.getBackgroundColor() ) },
+				{ "CAMERA_LIGHT_COLOR", serialize( p_preset.getCameraLightColor() ) },
+				{ "CAMERA_FOV", p_preset.getCameraFOV() },
+				{ "CAMERA_NEAR_CLIP", p_preset.getCameraNearClip() },
+				{ "CAMERA_FAR_CLIP", p_preset.getCameraFarClip() },
+				{ "CAMERA_AA", p_preset.getAA() },
+				{ "CAMERA_PERSPECTIVE_PROJECTION", p_preset.isPerspectiveProjection() },
+			};
+		}
+
 		nlohmann::json Serializer::serialize( const Color::Rgb & p_color ) const
 		{
 			return { { "R", p_color.getR() }, { "G", p_color.getG() }, { "B", p_color.getB() } };
@@ -158,42 +207,27 @@ namespace VTX
 
 		nlohmann::json Serializer::serialize( const Setting & p_setting ) const
 		{
-			return { { "SYMBOL_DISPLAY_MODE", p_setting.symbolDisplayMode },
+			return { { "SYMBOL_DISPLAY_MODE", p_setting.getSymbolDisplayMode() },
+					 { "WINDOW_FULLSCREEN", p_setting.getWindowFullscreen() },
+					 { "ACTIVE_RENDERER", p_setting.getActivateRenderer() },
+					 { "FORCE_RENDERER", p_setting.getForceRenderer() },
+					 { "REPRESENTATION", p_setting.getDefaultRepresentationIndex() },
+					 { "RENDER_EFFECT_DEFAULT_INDEX", p_setting.getDefaultRenderEffectPresetIndex() },
+					 { "ACTIVE_VSYNC", p_setting.getVSync() },
+					 { "BACKGROUND_OPACITY", p_setting.getSnapshotBackgroundOpacity() },
 
-					 { "ACTIVE_RENDERER", p_setting.activeRenderer },
-					 { "BACKGROUND_COLOR", serialize( p_setting.backgroundColor ) },
-					 { "BACKGROUND_OPACITY", p_setting.backgroundOpacity },
-					 { "REPRESENTATION", p_setting.representation },
-					 { "ATOMS_RADIUS", p_setting.atomsRadius },
-					 { "BONDS_RADIUS", p_setting.bondsRadius },
-					 { "COLOR_MODE", p_setting.colorMode },
-					 { "SHADING", p_setting.shading },
-					 { "ACTIVE_VSYNC", p_setting.activeVSync },
-					 { "ACTIVE_AO", p_setting.activeAO },
-					 { "AO_INTENSITY", p_setting.aoIntensity },
-					 { "AO_BLUR_SIZE", p_setting.aoBlurSize },
-					 { "ACTIVE_OUTLINE", p_setting.activeOutline },
-					 { "OUTLINE_COLOR", serialize( p_setting.outlineColor ) },
-					 { "OUTLINE_THICKNESS", p_setting.outlineThickness },
-					 { "ACTIVE_FOG", p_setting.activeFog },
-					 { "FOG_NEAR", p_setting.fogNear },
-					 { "FOG_FAR", p_setting.fogFar },
-					 { "FOG_DENSITY", p_setting.fogDensity },
-					 { "FOG_COLOR", serialize( p_setting.fogColor ) },
-					 { "ACTIVE_AA", p_setting.activeAA },
-					 { "LIGHT_COLOR", serialize( p_setting.lightColor ) },
+					 { "CONTROLLER_TRANSLATION_SPEED", p_setting.getTranslationSpeed() },
+					 { "CONTROLLER_TRANSLATION_FACTOR", p_setting.getTranslationSpeedFactor() },
+					 { "CONTROLLER_ROTATION_SPEED", p_setting.getRotationSpeed() },
+					 { "CONTROLLER_Y_AXIS_INVERTED", p_setting.getYAxisInverted() },
 
-					 { "CAMERA_NEAR", p_setting.cameraNear },
-					 { "CAMERA_FAR", p_setting.cameraFar },
-					 { "CAMERA_FOV", p_setting.cameraFov },
-					 { "CAMERA_PERSPECTIVE", p_setting.cameraPerspective },
+					 { "ACTIVE_CONTROLLER_ELASTICITY", p_setting.getControllerElasticityActive() },
+					 { "CONTROLLER_ELASTICITY_FACTOR", p_setting.getControllerElasticityFactor() },
 
-					 { "CONTROLLER_TRANSLATION_SPEED", p_setting.translationSpeed },
-					 { "CONTROLLER_TRANSLATION_FACTOR", p_setting.translationFactorSpeed },
-					 { "CONTROLLER_ROTATION_SPEED", p_setting.rotationSpeed },
-					 { "CONTROLLER_Y_AXIS_INVERTED", p_setting.yAxisInverted },
+					 { "DEFAULT_TRAJECTORY_SPEED", p_setting.getDefaultTrajectorySpeed() },
+					 { "DEFAULT_TRAJECTORY_PLAY_MODE", p_setting.getDefaultTrajectoryPlayMode() },
 
-					 { "AUTO_ROTATE_SPEED", serialize( p_setting.autoRotationSpeed ) } };
+					 { "AUTO_ROTATE_SPEED", serialize( p_setting.getAutoRotationSpeed() ) } };
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, VTXApp & p_app ) const
@@ -208,11 +242,24 @@ namespace VTX
 			Quatf cameraRot;
 			deserialize( p_json.at( "CAMERA_ROTATION" ), cameraRot );
 
+			const int					   moleculeCount = p_json.at( "MOLECULE_COUNT" ).get<int>();
+			std::vector<Model::Molecule *> molecules	 = std::vector<Model::Molecule *>();
+			molecules.resize( moleculeCount );
+
 			for ( const nlohmann::json & jsonMolecule : p_json.at( "MOLECULES" ) )
 			{
 				Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
-				deserialize( jsonMolecule, *molecule );
-				
+				deserialize( jsonMolecule.at( "MOLECULE" ), *molecule );
+
+				molecule->getConfiguration().sceneIndex				 = jsonMolecule.at( "INDEX" ).get<int>();
+				molecules[ molecule->getConfiguration().sceneIndex ] = molecule;
+			}
+
+			for ( Model::Molecule * const molecule : molecules )
+			{
+				if ( molecule == nullptr )
+					continue;
+
 				VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
 				p_scene.addMolecule( molecule );
 			}
@@ -224,7 +271,10 @@ namespace VTX
 				p_scene.addPath( path );
 			}
 
-			VTXApp::get().getStateMachine().getItem<State::Visualization>(ID::State::VISUALIZATION)->resetCameraController();
+			VTXApp::get()
+				.getStateMachine()
+				.getItem<State::Visualization>( ID::State::VISUALIZATION )
+				->resetCameraController();
 			p_scene.getCamera().setPosition( cameraPos );
 			p_scene.getCamera().setRotation( cameraRot );
 		}
@@ -244,6 +294,7 @@ namespace VTX
 
 			p_molecule.setName( p_json.at( "NAME" ).get<std::string>() );
 			p_molecule.setPdbIdCode( p_json.at( "PDB_ID" ).get<std::string>() );
+			p_molecule.setDisplayName( p_json.at( "DISPLAY_NAME" ).get<std::string>() );
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const
@@ -325,6 +376,54 @@ namespace VTX
 			}
 		}
 
+		void Serializer::deserialize( const nlohmann::json &				  p_json,
+									  Model::Representation::Representation & p_representation ) const
+		{
+			p_representation.setName( p_json.at( "NAME" ).get<std::string>() );
+			Color::Rgb color;
+			deserialize( p_json.at( "COLOR" ), color );
+			p_representation.setColor( color );
+			p_representation.setQuickAccess( p_json.at( "QUICK_ACCESS" ).get<bool>() );
+
+			p_representation.changeRepresentationType( p_json.at( "TYPE" ).get<Generic::REPRESENTATION>(), false );
+			p_representation.getData().setSphereRadius( p_json.at( "SPHERE_RADIUS" ).get<float>() );
+			p_representation.getData().setCylinderRadius( p_json.at( "CYLINDER_RADIUS" ).get<float>() );
+			p_representation.getData().setColorMode( p_json.at( "COLOR_MODE" ).get<Generic::COLOR_MODE>() );
+			p_representation.getData().setSecondaryStructureColorMode(
+				p_json.at( "SS_COLOR_MODE" ).get<Generic::SECONDARY_STRUCTURE_COLOR_MODE>() );
+		}
+		void Serializer::deserialize( const nlohmann::json &				p_json,
+									  Model::Renderer::RenderEffectPreset & p_preset ) const
+		{
+			Color::Rgb color;
+
+			p_preset.setName( p_json.at( "NAME" ).get<std::string>() );
+			p_preset.setQuickAccess( p_json.at( "QUICK_ACCESS" ).get<bool>() );
+			p_preset.setShading( p_json.at( "SHADING" ).get<Renderer::SHADING>() );
+			p_preset.enableSSAO( p_json.at( "SSAO" ).get<bool>() );
+			p_preset.setSSAOIntensity( p_json.at( "SSAO_INTENSITY" ).get<int>() );
+			p_preset.setSSAOBlurSize( p_json.at( "SSAO_BLUR_SIZE" ).get<int>() );
+			p_preset.enableOutline( p_json.at( "OUTLINE" ).get<bool>() );
+			p_preset.setOutlineThickness( p_json.at( "OUTLINE_THICKNESS" ).get<float>() );
+			deserialize( p_json.at( "OUTLINE_COLOR" ), color );
+			p_preset.setOutlineColor( color );
+			p_preset.enableFog( p_json.at( "FOG" ).get<bool>() );
+			p_preset.setFogNear( p_json.at( "FOG_NEAR" ).get<float>() );
+			p_preset.setFogFar( p_json.at( "FOG_FAR" ).get<float>() );
+			p_preset.setFogDensity( p_json.at( "FOG_DENSITY" ).get<float>() );
+			deserialize( p_json.at( "FOG_COLOR" ), color );
+			p_preset.setFogColor( color );
+			deserialize( p_json.at( "BACKGROUND_COLOR" ), color );
+			p_preset.setBackgroundColor( color );
+			deserialize( p_json.at( "CAMERA_LIGHT_COLOR" ), color );
+			p_preset.setCameraLightColor( color );
+			p_preset.setCameraFOV( p_json.at( "CAMERA_FOV" ).get<float>() );
+			p_preset.setCameraNearClip( p_json.at( "CAMERA_NEAR_CLIP" ).get<float>() );
+			p_preset.setCameraFarClip( p_json.at( "CAMERA_FAR_CLIP" ).get<float>() );
+			p_preset.setAA( p_json.at( "CAMERA_AA" ).get<bool>() );
+			p_preset.setPerspectiveProjection( p_json.at( "CAMERA_PERSPECTIVE_PROJECTION" ).get<bool>() );
+		}
+
 		void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgb & p_color ) const
 		{
 			p_color.setR( p_json.at( "R" ).get<float>() );
@@ -379,57 +478,38 @@ namespace VTX
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Setting & p_setting ) const
 		{
-			VTX_ACTION( new Action::Setting::ChangeDisplayMode(
-				p_json.at( "SYMBOL_DISPLAY_MODE" ).get<Style::SYMBOL_DISPLAY_MODE>() ) );
+			const Style::SYMBOL_DISPLAY_MODE symbolDisplayMode
+				= p_json.at( "SYMBOL_DISPLAY_MODE" ).get<Style::SYMBOL_DISPLAY_MODE>();
+			p_setting.setSymbolDisplayMode(
+				Style::SYMBOL_DISPLAY_MODE( int( symbolDisplayMode ) % int( Style::SYMBOL_DISPLAY_MODE::COUNT ) ) );
 
-			VTX_ACTION( new Action::Setting::ActiveRenderer( p_json.at( "ACTIVE_RENDERER" ).get<bool>() ) );
-			Color::Rgb bgColor = Color::Rgb();
-			deserialize( p_json.at( "BACKGROUND_COLOR" ), bgColor );
-			VTX_ACTION( new Action::Setting::ChangeBackgroundColor( bgColor ) );
-			VTX_ACTION(
-				new Action::Setting::ChangeBackgroundOpacity( p_json.at( "BACKGROUND_OPACITY" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeRepresentation( p_json.at( "REPRESENTATION" ).get<int>() ) );
-			VTX_ACTION( new Action::Setting::ChangeAtomsRadius( p_json.at( "ATOMS_RADIUS" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeBondsRadius( p_json.at( "BONDS_RADIUS" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeColorMode( p_json.at( "COLOR_MODE" ).get<Generic::COLOR_MODE>() ) );
-			VTX_ACTION( new Action::Setting::ChangeShading( p_json.at( "SHADING" ).get<Renderer::SHADING>() ) );
-			VTX_ACTION( new Action::Setting::ActiveVerticalSync( p_json.at( "ACTIVE_VSYNC" ).get<bool>() ) );
-			VTX_ACTION( new Action::Setting::ActiveAO( p_json.at( "ACTIVE_AO" ).get<bool>() ) );
-			VTX_ACTION( new Action::Setting::ChangeAOIntensity( p_json.at( "AO_INTENSITY" ).get<int>() ) );
-			VTX_ACTION( new Action::Setting::ChangeAOBlurSize( p_json.at( "AO_BLUR_SIZE" ).get<int>() ) );
-			VTX_ACTION( new Action::Setting::ActiveOutline( p_json.at( "ACTIVE_OUTLINE" ).get<bool>() ) );
-			Color::Rgb outlinColor = Color::Rgb();
-			deserialize( p_json.at( "OUTLINE_COLOR" ), outlinColor );
-			VTX_ACTION( new Action::Setting::ChangeOutlineColor( outlinColor ) );
-			VTX_ACTION( new Action::Setting::ChangeOutlineThickness( p_json.at( "OUTLINE_THICKNESS" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ActiveFog( p_json.at( "ACTIVE_FOG" ).get<bool>() ) );
-			VTX_ACTION( new Action::Setting::ChangeFogNear( p_json.at( "FOG_NEAR" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeFogFar( p_json.at( "FOG_FAR" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeFogDensity( p_json.at( "FOG_DENSITY" ).get<float>() ) );
-			Color::Rgb fogColor = Color::Rgb();
-			deserialize( p_json.at( "FOG_COLOR" ), fogColor );
-			VTX_ACTION( new Action::Setting::ChangeFogColor( fogColor ) );
-			VTX_ACTION( new Action::Setting::ActiveAA( p_json.at( "ACTIVE_AA" ).get<bool>() ) );
-			Color::Rgb lightColor = Color::Rgb();
-			deserialize( p_json.at( "LIGHT_COLOR" ), lightColor );
-			VTX_ACTION( new Action::Setting::ChangeLightColor( lightColor ) );
+			p_setting.setWindowFullscreen( p_json.at( "WINDOW_FULLSCREEN" ).get<bool>() );
 
-			VTX_ACTION( new Action::Setting::ChangeCameraClip( p_json.at( "CAMERA_NEAR" ),
-															   p_json.at( "CAMERA_FAR" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeCameraFov( p_json.at( "CAMERA_FOV" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeCameraProjection( p_json.at( "CAMERA_PERSPECTIVE" ).get<bool>() ) );
+			p_setting.setActivateRenderer( p_json.at( "ACTIVE_RENDERER" ).get<bool>() );
+			p_setting.setForceRenderer( p_json.at( "FORCE_RENDERER" ).get<bool>() );
+			p_setting.setDefaultRepresentationIndex( p_json.at( "REPRESENTATION" ).get<int>() );
+			p_setting.setDefaultRenderEffectPresetIndex( p_json.at( "RENDER_EFFECT_DEFAULT_INDEX" ).get<int>() );
 
-			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed(
-				p_json.at( "CONTROLLER_TRANSLATION_SPEED" ).get<float>() ) );
-			VTX_ACTION( new Action::Setting::ChangeTranslationFactorSpeed(
-				p_json.at( "CONTROLLER_TRANSLATION_FACTOR" ).get<float>() ) );
-			VTX_ACTION(
-				new Action::Setting::ChangeRotationSpeed( p_json.at( "CONTROLLER_ROTATION_SPEED" ).get<float>() ) );
-			VTX_ACTION(
-				new Action::Setting::ActiveYAxisInversion( p_json.at( "CONTROLLER_Y_AXIS_INVERTED" ).get<bool>() ) );
-			Vec3f autoRotateSpeed;
-			deserialize( p_json.at( "AUTO_ROTATE_SPEED" ), autoRotateSpeed );
-			VTX_ACTION( new Action::Setting::ChangeAutoRotateSpeed( autoRotateSpeed ) );
+			p_setting.setVSync( p_json.at( "ACTIVE_VSYNC" ).get<bool>() );
+			p_setting.setSnapshotBackgroundOpacity( p_json.at( "BACKGROUND_OPACITY" ).get<float>() );
+
+			p_setting.setTranslationSpeed( p_json.at( "CONTROLLER_TRANSLATION_SPEED" ).get<float>() );
+			p_setting.setTranslationSpeedFactor( p_json.at( "CONTROLLER_TRANSLATION_FACTOR" ).get<float>() );
+			p_setting.setRotationSpeed( p_json.at( "CONTROLLER_ROTATION_SPEED" ).get<float>() );
+			p_setting.setYAxisInverted( p_json.at( "CONTROLLER_Y_AXIS_INVERTED" ).get<bool>() );
+
+			p_setting.setControllerElasticityActive( p_json.at( "ACTIVE_CONTROLLER_ELASTICITY" ).get<bool>() );
+			p_setting.setControllerElasticityFactor( p_json.at( "CONTROLLER_ELASTICITY_FACTOR" ).get<float>() );
+
+			p_setting.setDefaultTrajectorySpeed( p_json.at( "DEFAULT_TRAJECTORY_SPEED" ).get<int>() );
+			const Trajectory::PlayMode playMode
+				= p_json.at( "DEFAULT_TRAJECTORY_PLAY_MODE" ).get<Trajectory::PlayMode>();
+			p_setting.setDefaultTrajectoryPlayMode(
+				Trajectory::PlayMode( int( playMode ) % int( Trajectory::PlayMode::COUNT ) ) );
+
+			Vec3f autoRotationSpeed;
+			deserialize( p_json.at( "AUTO_ROTATE_SPEED" ), autoRotationSpeed );
+			p_setting.setAutoRotationSpeed( autoRotationSpeed );
 		}
 
 		nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,

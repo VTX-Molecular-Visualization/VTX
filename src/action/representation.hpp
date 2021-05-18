@@ -17,10 +17,86 @@
 #include "mvc/mvc_manager.hpp"
 #include "representation/representation_manager.hpp"
 #include "setting.hpp"
+#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
+#include "worker/representation_loader.hpp"
+#include "worker/representation_saver.hpp"
+#include "worker/worker_manager.hpp"
+#include <unordered_set>
 
 namespace VTX::Action::Representation
 {
+	class ReloadPresets : public BaseAction
+	{
+	  public:
+		ReloadPresets() {};
+		virtual void execute() override
+		{
+			Worker::RepresentationLibraryLoader * libraryLoader
+				= new Worker::RepresentationLibraryLoader( Model::Representation::RepresentationLibrary::get() );
+			VTX_WORKER( libraryLoader );
+		};
+	};
+
+	class SavePreset : public BaseAction
+	{
+	  public:
+		SavePreset( const Model::Representation::Representation & p_representation )
+		{
+			_representations.emplace( &p_representation );
+		};
+		SavePreset( const std::unordered_set<const Model::Representation::Representation *> & p_representations )
+		{
+			for ( const Model::Representation::Representation * const representation : p_representations )
+				_representations.emplace( representation );
+		};
+		SavePreset( Model::Representation::RepresentationLibrary & p_library )
+		{
+			for ( int i = 0; i < p_library.getRepresentationCount(); i++ )
+				_representations.emplace( p_library.getRepresentation( i ) );
+			_clearDirectory = true;
+		};
+
+		void setAsync( const bool p_async ) { _async = p_async; }
+
+		virtual void execute() override
+		{
+			if ( _clearDirectory )
+			{
+				Util::Filesystem::removeAll( Util::Filesystem::REPRESENTATION_LIBRARY_DIR );
+			}
+
+			for ( const Model::Representation::Representation * const representation : _representations )
+			{
+				if ( _async )
+				{
+					Worker::RepresentationSaverThread * librarySaver
+						= new Worker::RepresentationSaverThread( representation );
+					Worker::Callback * callback = new Worker::Callback( [ librarySaver ]( const uint p_code ) {} );
+
+					VTX_WORKER( librarySaver, callback );
+				}
+				else
+				{
+					FilePath path = Util::Filesystem::getRepresentationPath( representation->getName() );
+					Util::Filesystem::generateUniqueFileName( path );
+
+					Worker::RepresentationSaver * librarySaver
+						= new Worker::RepresentationSaver( representation, path );
+
+					VTX_WORKER( librarySaver );
+				}
+			}
+		};
+
+	  private:
+		std::unordered_set<const Model::Representation::Representation *> _representations
+			= std::unordered_set<const Model::Representation::Representation *>();
+
+		bool _clearDirectory = false;
+		bool _async			 = true;
+	};
+
 	class ChangeName : public BaseAction
 	{
 	  public:

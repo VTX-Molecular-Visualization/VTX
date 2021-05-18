@@ -4,6 +4,7 @@
 #include "action/setting.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"
 #include "model/representation/representation_library.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -26,13 +27,8 @@ namespace VTX
 	{
 		VTX_INFO( "Starting application: " + Util::Filesystem::EXECUTABLE_FILE.string() );
 
-		// Create scene.
-		_scene = new Object3D::Scene();
-		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
-
-		// Create statemachine.
-		_stateMachine = new State::StateMachine();
-		_stateMachine->goToState( ID::State::VISUALIZATION );
+		// Load settings.
+		VTX_ACTION( new Action::Setting::Load() );
 
 		// Create singletons.
 		MVC::MvcManager::get();
@@ -45,17 +41,21 @@ namespace VTX
 		_representationLibrary
 			= MVC::MvcManager::get().instantiateModel<Model::Representation::RepresentationLibrary>();
 		_renderEffectLibrary = MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPresetLibrary>();
+		_renderEffectLibrary->applyPreset( _setting.getDefaultRenderEffectPresetIndex() );
+
+		// Create scene.
+		_scene = new Object3D::Scene();
+		_scene->getCamera().setScreenSize( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
+
+		// Create statemachine.
+		_stateMachine = new State::StateMachine();
+		_stateMachine->goToState( ID::State::VISUALIZATION );
 
 		// Create UI.
 		_initQt();
 		_mainWindow = new UI::MainWindow();
 		_mainWindow->setupUi();
 		_mainWindow->show();
-
-		// Load settings.
-		VTX_ACTION( new Action::Setting::Load() );
-		_renderEffectLibrary->applyPreset( getSetting().renderEffectDefaultIndex );
-
 		VTX_INFO( "Application started" );
 
 		// Start timers.
@@ -87,6 +87,8 @@ namespace VTX
 
 		// Prevent events throw for nothing when quitting app
 		Event::EventManager::get().freezeEvent( true );
+
+		_setting.backup();
 
 		MVC::MvcManager::get().deleteModel( _representationLibrary );
 		MVC::MvcManager::get().deleteModel( _renderEffectLibrary );
@@ -172,10 +174,15 @@ namespace VTX
 
 	void VTXApp::renderScene() const
 	{
-		if ( VTX_SETTING().activeRenderer && MASK )
+		if ( VTX_SETTING().getActivateRenderer() && MASK )
 		{
 			_mainWindow->getOpenGLWidget().update();
 		}
+	}
+
+	Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT()
+	{
+		return Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPreset();
 	}
 
 	bool VTXApp::notify( QObject * const receiver, QEvent * const event )

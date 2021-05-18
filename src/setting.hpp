@@ -41,12 +41,10 @@ namespace VTX
 		static const std::string LAYOUT_SETTINGS_FILENAME;
 
 		static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
-		Style::SYMBOL_DISPLAY_MODE				symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
 
 		static const int  WINDOW_WIDTH_DEFAULT;
 		static const int  WINDOW_HEIGHT_DEFAULT;
 		static const bool WINDOW_FULLSCREEN_DEFAULT;
-		bool			  windowFullscreen = WINDOW_FULLSCREEN_DEFAULT;
 
 		static const char * STYLESHEET_FILE_DEFAULT;
 		static const int	CONSOLE_WIDGET_HEIGHT_DEFAULT;
@@ -57,8 +55,6 @@ namespace VTX
 		static const int STATUS_PROGRESS_BAR_CHUNKS;
 		static const int STATUS_PROGRESS_BAR_WIDTH;
 
-		static const QString DEFAULT_SAVE_FOLDER;
-		static const QString DEFAULT_MOLECULE_FOLDER;
 		static const QString MOLECULE_EXTENSIONS;
 		static const QString VTX_EXTENSIONS;
 		static const QString MOLECULE_FILE_FILTERS;
@@ -67,69 +63,53 @@ namespace VTX
 
 		// Rendering.
 		static const bool ACTIVE_RENDERER_DEFAULT;
-		bool			  activeRenderer = ACTIVE_RENDERER_DEFAULT;
 		static const bool FORCE_RENDERER_DEFAULT;
-		bool			  forceRenderer = FORCE_RENDERER_DEFAULT;
 
 		static const Color::Rgb BACKGROUND_COLOR_DEFAULT;
-		Color::Rgb				backgroundColor = BACKGROUND_COLOR_DEFAULT;
 		static const float		BACKGROUND_OPACITY_DEFAULT;
-		float					backgroundOpacity = BACKGROUND_OPACITY_DEFAULT;
 
 		static const int REPRESENTATION_DEFAULT_INDEX;
-		int				 representation = REPRESENTATION_DEFAULT_INDEX;
 
 		static const Generic::REPRESENTATION DEFAULT_REPRESENTATION_TYPE;
-		Generic::REPRESENTATION				 defaultRepresentationType = DEFAULT_REPRESENTATION_TYPE;
 		static const std::string			 NEW_REPRESENTATION_DEFAULT_NAME;
 
 		static const float ATOMS_RADIUS_DEFAULT;
 		static const float ATOMS_RADIUS_MIN;
 		static const float ATOMS_RADIUS_MAX;
-		float			   atomsRadius = ATOMS_RADIUS_DEFAULT;
 
 		static const float BONDS_RADIUS_DEFAULT;
 		static const float BONDS_RADIUS_MIN;
 		static const float BONDS_RADIUS_MAX;
-		float			   bondsRadius = BONDS_RADIUS_DEFAULT;
+
 		static const float ATOMS_RADIUS_ADD_DEFAULT;
 		static const float ATOMS_RADIUS_ADD_MIN;
 		static const float ATOMS_RADIUS_ADD_MAX;
 
 		static const Generic::COLOR_MODE COLOR_MODE_DEFAULT;
-		Generic::COLOR_MODE				 colorMode = COLOR_MODE_DEFAULT;
 
 		static const std::string NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME;
 		static const int		 RENDER_EFFECT_DEFAULT_INDEX;
-		int						 renderEffectDefaultIndex = RENDER_EFFECT_DEFAULT_INDEX;
-		static const int		 MAX_QUICK_ACCESS_COUNT	  = 6;
+		static const int		 MAX_QUICK_ACCESS_COUNT = 6;
 
 		static const Renderer::SHADING SHADING_DEFAULT;
-		Renderer::SHADING			   shading = SHADING_DEFAULT;
 
 		static const bool ACTIVE_VSYNC_DEFAULT;
-		bool			  activeVSync = ACTIVE_VSYNC_DEFAULT;
 
 		static const bool ACTIVE_AO_DEFAULT;
-		bool			  activeAO = ACTIVE_AO_DEFAULT;
 
 		static const int AO_INTENSITY_DEFAULT;
 		static const int AO_INTENSITY_MIN;
 		static const int AO_INTENSITY_MAX;
-		int				 aoIntensity = AO_INTENSITY_DEFAULT;
 
 		static const int AO_BLUR_SIZE_DEFAULT;
 		static const int AO_BLUR_SIZE_MIN;
 		static const int AO_BLUR_SIZE_MAX;
-		int				 aoBlurSize = AO_BLUR_SIZE_DEFAULT;
 
 		static const bool ACTIVE_OUTLINE_DEFAULT;
-		bool			  activeOutline = ACTIVE_OUTLINE_DEFAULT;
 
 		static const float OUTLINE_THICKNESS_DEFAULT;
 		static const float OUTLINE_THICKNESS_MIN;
 		static const float OUTLINE_THICKNESS_MAX;
-		bool			   outlineThickness = OUTLINE_THICKNESS_DEFAULT;
 
 		static const float OUTLINE_SENSIVITY_DEFAULT;
 		static const float OUTLINE_SENSIVITY_MIN;
@@ -137,78 +117,60 @@ namespace VTX
 		bool			   outlineSensivity = OUTLINE_SENSIVITY_DEFAULT;
 
 		static const Color::Rgb OUTLINE_COLOR_DEFAULT;
-		Color::Rgb				outlineColor = OUTLINE_COLOR_DEFAULT;
 
 		static const bool ACTIVE_FOG_DEFAULT;
-		bool			  activeFog = ACTIVE_FOG_DEFAULT;
 
 		static const float FOG_NEAR_DEFAULT;
 		static const float FOG_NEAR_MIN;
 		static const float FOG_NEAR_MAX;
-		float			   fogNear = FOG_NEAR_DEFAULT;
 
 		static const float FOG_FAR_DEFAULT;
 		static const float FOG_FAR_MIN;
 		static const float FOG_FAR_MAX;
-		float			   fogFar = FOG_FAR_DEFAULT;
 
 		static const float FOG_DENSITY_DEFAULT;
-		float			   fogDensity = FOG_DENSITY_DEFAULT;
 
 		static const Color::Rgb FOG_COLOR_DEFAULT;
-		Color::Rgb				fogColor = FOG_COLOR_DEFAULT;
 
 		static const bool ACTIVE_AA_DEFAULT;
-		bool			  activeAA = ACTIVE_AA_DEFAULT;
 
 		static const Color::Rgb LIGHT_COLOR_DEFAULT;
-		Color::Rgb				lightColor = LIGHT_COLOR_DEFAULT;
 
 		// Camera.
 		static const float CAMERA_NEAR_DEFAULT;
 		static const float CAMERA_NEAR_MIN;
 		static const float CAMERA_NEAR_MAX;
-		float			   cameraNear = CAMERA_NEAR_DEFAULT;
 
 		static const float CAMERA_FAR_DEFAULT;
 		static const float CAMERA_FAR_MIN;
 		static const float CAMERA_FAR_MAX;
-		float			   cameraFar = CAMERA_FAR_DEFAULT;
 
 		static const float CAMERA_FOV_DEFAULT;
 		static const float CAMERA_FOV_MIN;
 		static const float CAMERA_FOV_MAX;
-		float			   cameraFov = CAMERA_FOV_DEFAULT;
 
 		static const bool CAMERA_PERSPECTIVE_DEFAULT;
-		bool			  cameraPerspective = CAMERA_PERSPECTIVE_DEFAULT;
 
 		// Controllers.
 		static const float CONTROLLER_TRANSLATION_SPEED_DEFAULT;
 		static const float CONTROLLER_TRANSLATION_SPEED_MIN;
 		static const float CONTROLLER_TRANSLATION_SPEED_MAX;
-		float			   translationSpeed = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
 
 		static const float CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
 		static const float CONTROLLER_TRANSLATION_FACTOR_MIN;
 		static const float CONTROLLER_TRANSLATION_FACTOR_MAX;
-		float			   translationFactorSpeed = CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
 
 		static const float CONTROLLER_ROTATION_SPEED_DEFAULT;
 		static const float CONTROLLER_ROTATION_SPEED_MIN;
 		static const float CONTROLLER_ROTATION_SPEED_MAX;
-		float			   rotationSpeed = CONTROLLER_ROTATION_SPEED_DEFAULT;
 
 		static const bool CONTROLLER_Y_AXIS_INVERTED;
-		bool			  yAxisInverted = CONTROLLER_Y_AXIS_INVERTED;
 
 		static const bool CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
-		bool			  activeControllerElasticity = CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
 
 		static const float CONTROLLER_ELASTICITY_FACTOR_DEFAULT;
 		static const float CONTROLLER_ELASTICITY_FACTOR_MIN;
 		static const float CONTROLLER_ELASTICITY_FACTOR_MAX;
-		float			   controllerElasticityFactor = CONTROLLER_ELASTICITY_FACTOR_DEFAULT;
 
 		static const float CONTROLLER_ELASTICITY_THRESHOLD;
 
@@ -219,15 +181,12 @@ namespace VTX
 		static const int				  MIN_TRAJECTORY_SPEED;
 		static const int				  MAX_TRAJECTORY_SPEED;
 		static const int				  DEFAULT_TRAJECTORY_SPEED;
-		int								  defaultTrajectorySpeed;
 		static const Trajectory::PlayMode DEFAULT_TRAJECTORY_PLAY_MODE;
-		Trajectory::PlayMode			  defaultTrajectoryPlayMode;
 
 		// Auto rotate.
 		static const float AUTO_ROTATE_SPEED_DEFAULT;
 		static const float AUTO_ROTATE_SPEED_MIN;
 		static const float AUTO_ROTATE_SPEED_MAX;
-		Vec3f			   autoRotationSpeed = Vec3f( AUTO_ROTATE_SPEED_DEFAULT );
 
 		// Video.
 		static const float PATH_DURATION_DEFAULT;
@@ -238,6 +197,71 @@ namespace VTX
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
 
+		// Parameters
+		enum class PARAMETER
+		{
+			WINDOW_FULL_SCREEN,
+			ACTIVATE_RENDERER,
+			FORCE_RENDERER,
+			VSYNC,
+			SNAPSHOT_BACKGROUND_OPACITY,
+
+			CONTROLLER_TRANSLATION_SPEED,
+			CONTROLLER_TRANSLATION_SPEED_FACTOR,
+			CONTROLLER_ROTATION_SPEED,
+			CONTROLLER_ACTIVATE_ELASTICTY,
+			CONTROLLER_ELASTICTY_FACTOR,
+			CONTROLLER_Y_INVERSION,
+
+			TRAJECTORY_DEFAULT_SPEED,
+			TRAJECTORY_DEFAULT_PLAY_MODE,
+			AUTO_ROTATION_DEFAULT_SPEED,
+
+			SYMBOL_DISPLAY_MODE,
+
+			COUNT,
+			ALL,
+		};
+
+		inline bool	 getWindowFullscreen() const { return windowFullscreen; }
+		void		 setWindowFullscreen( const bool p_fullscreen );
+		inline bool	 getActivateRenderer() const { return activeRenderer; }
+		void		 setActivateRenderer( const bool p_activeRenderer );
+		inline bool	 getForceRenderer() const { return forceRenderer; }
+		void		 setForceRenderer( const bool p_forceRenderer );
+		inline bool	 getVSync() const { return activeVSync; }
+		void		 setVSync( const bool p_activeVSync );
+		inline float getSnapshotBackgroundOpacity() const { return backgroundOpacity; }
+		void		 setSnapshotBackgroundOpacity( const float p_backgroundOpacity );
+
+		inline float getTranslationSpeed() const { return translationSpeed; }
+		void		 setTranslationSpeed( const float p_translationSpeed );
+		inline float getTranslationSpeedFactor() const { return translationFactorSpeed; }
+		void		 setTranslationSpeedFactor( const float p_translationFactorSpeed );
+		inline float getRotationSpeed() const { return rotationSpeed; }
+		void		 setRotationSpeed( const float p_rotationSpeed );
+		inline bool	 getControllerElasticityActive() const { return activeControllerElasticity; }
+		void		 setControllerElasticityActive( const bool p_activeControllerElasticity );
+		inline float getControllerElasticityFactor() const { return controllerElasticityFactor; }
+		void		 setControllerElasticityFactor( const float p_controllerElasticityFactor );
+		inline bool	 getYAxisInverted() const { return yAxisInverted; }
+		void		 setYAxisInverted( const bool p_yAxisInverted );
+
+		inline int getDefaultRepresentationIndex() const { return representationDefaultIndex; }
+		void	   setDefaultRepresentationIndex( const int p_representationDefaultIndex );
+		inline int getDefaultRenderEffectPresetIndex() const { return renderEffectDefaultIndex; }
+		void	   setDefaultRenderEffectPresetIndex( const int p_renderEffectDefaultIndex );
+
+		inline int							getDefaultTrajectorySpeed() const { return defaultTrajectorySpeed; }
+		void								setDefaultTrajectorySpeed( const int p_defaultTrajectorySpeed );
+		inline const Trajectory::PlayMode & getDefaultTrajectoryPlayMode() const { return defaultTrajectoryPlayMode; }
+		void				 setDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_defaultTrajectoryPlayMode );
+		inline const Vec3f & getAutoRotationSpeed() const { return autoRotationSpeed; }
+		void				 setAutoRotationSpeed( const Vec3f p_autoRotationSpeed );
+
+		inline const Style::SYMBOL_DISPLAY_MODE getSymbolDisplayMode() const { return symbolDisplayMode; }
+		void setSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE p_symbolDisplayMode );
+
 		static const int							   RECENT_PATH_SAVED_MAX_COUNT;
 		inline static std::list<const VTX::FilePath *> recentLoadingPath = std::list<const VTX::FilePath *>();
 		static void									   enqueueNewLoadingPath( const FilePath & );
@@ -246,13 +270,36 @@ namespace VTX
 
 		void backup();
 		void recover();
+		void restore();
 
 		// Dev.
 		static const Renderer::MODE MODE_DEFAULT;
 		Renderer::MODE				mode = MODE_DEFAULT;
 
 	  private:
-		nlohmann::json _backup;
+		bool  windowFullscreen	= WINDOW_FULLSCREEN_DEFAULT;
+		bool  activeRenderer	= ACTIVE_RENDERER_DEFAULT;
+		bool  forceRenderer		= FORCE_RENDERER_DEFAULT;
+		bool  activeVSync		= ACTIVE_VSYNC_DEFAULT;
+		float backgroundOpacity = BACKGROUND_OPACITY_DEFAULT;
+
+		float translationSpeed			 = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
+		float translationFactorSpeed	 = CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
+		float rotationSpeed				 = CONTROLLER_ROTATION_SPEED_DEFAULT;
+		bool  activeControllerElasticity = CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
+		float controllerElasticityFactor = CONTROLLER_ELASTICITY_FACTOR_DEFAULT;
+		bool  yAxisInverted				 = CONTROLLER_Y_AXIS_INVERTED;
+
+		int representationDefaultIndex = REPRESENTATION_DEFAULT_INDEX;
+		int renderEffectDefaultIndex   = RENDER_EFFECT_DEFAULT_INDEX;
+
+		int					 defaultTrajectorySpeed	   = DEFAULT_TRAJECTORY_SPEED;
+		Trajectory::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
+		Vec3f				 autoRotationSpeed		   = Vec3f( AUTO_ROTATE_SPEED_DEFAULT );
+
+		Style::SYMBOL_DISPLAY_MODE symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
+
+		void _sendDataChangedEvent( const PARAMETER & p_parameter );
 	};
 
 } // namespace VTX

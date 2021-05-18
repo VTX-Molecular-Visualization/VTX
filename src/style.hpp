@@ -14,6 +14,8 @@
 #include <QPixmap>
 #include <QSize>
 #include <iostream>
+#include <string>
+#include <vector>
 
 namespace VTX
 {
@@ -22,8 +24,12 @@ namespace VTX
 		enum class SYMBOL_DISPLAY_MODE : int
 		{
 			SHORT,
-			LONG
+			LONG,
+
+			COUNT
 		};
+
+		inline static const std::vector<std::string> SYMBOL_DISPLAY_MODE_STRING { "Short", "Long" };
 
 		class IconConst
 		{
@@ -97,8 +103,9 @@ namespace VTX
 
 		namespace WidgetProperty
 		{
-			inline const char * const OVERIDDEN_PARAMETER = "OVERIDDEN_PARAMETER";
-		}
+			inline const char * const OVERIDDEN_PARAMETER	= "OVERIDDEN_PARAMETER";
+			inline const char * const SETTING_SECTION_TITLE = "SETTING_SECTION_TITLE";
+		} // namespace WidgetProperty
 
 		inline static const QSize INSPECTOR_PREFERED_SIZE = QSize( 300, 100 );
 		inline static const QSize INSPECTOR_MINIMUM_SIZE  = QSize( 50, 50 );
@@ -123,7 +130,9 @@ namespace VTX
 		inline static const int			SEQUENCE_MAX_MISSING_RESIDUE_BEFORE_COLLAPSE = 5;
 		inline static const QChar		SEQUENCE_MISSING_RESIDUE_SYMBOL				 = '-';
 
-		inline static const int SCENE_SPACE_BETWEEN_ITEMS = 4;
+		inline static const int SCENE_SPACE_BETWEEN_ITEMS  = 4;
+		inline static const int DATA_GRID_VERTICAL_SPACE   = 2;
+		inline static const int DATA_GRID_HORIZONTAL_SPACE = 10;
 
 		inline static const VTX::Selection::SelectionType SELECTION_WINDOW_DEFAULT_SELECTION
 			= VTX::Selection::SelectionType::RESIDUE;

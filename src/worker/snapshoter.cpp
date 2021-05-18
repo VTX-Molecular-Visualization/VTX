@@ -100,7 +100,7 @@ namespace VTX
 			}
 
 			// Invert color to match background.
-			if ( VTX_SETTING().backgroundColor.brightness() < 0.5f && VTX_SETTING().backgroundOpacity > 0.5f )
+			if ( VTX_RENDER_EFFECT().getBackgroundColor().brightness() < 0.5f && VTX_SETTING().getSnapshotBackgroundOpacity() > 0.5f )
 			{
 				watermarkImg.invertPixels( QImage::InvertMode::InvertRgb );
 			}

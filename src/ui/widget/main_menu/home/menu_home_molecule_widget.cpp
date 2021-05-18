@@ -25,7 +25,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 		_saveMoleculeButton
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "saveMoleculeButton" );
-		_saveMoleculeButton->setData( "Save", ":/sprite/save_molecule_icon.png", Qt::Orientation::Vertical );
+		_saveMoleculeButton->setData( "Export", ":/sprite/save_molecule_icon.png", Qt::Orientation::Vertical );
 		pushButton( *_saveMoleculeButton, 2 );
 
 		validate();

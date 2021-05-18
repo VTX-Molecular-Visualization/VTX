@@ -41,6 +41,8 @@ namespace VTX::Model::Representation
 		int				 getDefaultRepresentationIndex() const;
 		Representation * getDefaultRepresentation();
 
+		void clear( const bool p_notify = true );
+
 	  protected:
 		RepresentationLibrary();
 		~RepresentationLibrary();

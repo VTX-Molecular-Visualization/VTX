@@ -20,8 +20,9 @@ namespace VTX
 	}
 	namespace Model::Renderer
 	{
+		class RenderEffectPreset;
 		class RenderEffectPresetLibrary;
-	}
+	} // namespace Model::Renderer
 	namespace State
 	{
 		class StateMachine;
@@ -108,8 +109,9 @@ namespace VTX
 		void _update();
 	};
 
-	inline Setting & VTX_SETTING() { return VTXApp::get().getSetting(); }
-	inline Stat &	 VTX_STAT() { return VTXApp::get().getStat(); }
+	Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT();
+	inline Setting &					  VTX_SETTING() { return VTXApp::get().getSetting(); }
+	inline Stat &						  VTX_STAT() { return VTXApp::get().getStat(); }
 
 } // namespace VTX
 

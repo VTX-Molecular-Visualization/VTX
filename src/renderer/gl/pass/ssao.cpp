@@ -1,4 +1,5 @@
 #include "ssao.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/gl/program_manager.hpp"
@@ -63,7 +64,7 @@ namespace VTX::Renderer::GL::Pass
 
 		_program->use();
 		_program->setVec3fArray( "uAoKernel", _kernelSize, _aoKernel.data() );
-		_program->setInt( "uAoIntensity", VTX_SETTING().aoIntensity );
+		_program->setInt( "uAoIntensity", VTX_RENDER_EFFECT().getSSAOIntensity() );
 		_program->setInt( "uKernelSize", _kernelSize );
 		_program->setFloat( "uNoiseSize", float( _noiseTextureSize ) );
 	}
@@ -92,7 +93,7 @@ namespace VTX::Renderer::GL::Pass
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
 			_program->setVec3fArray( "uAoKernel", _kernelSize, _aoKernel.data() );
-			_program->setInt( "uAoIntensity", VTX_SETTING().aoIntensity );
+			_program->setInt( "uAoIntensity", VTX_RENDER_EFFECT().getSSAOIntensity() );
 			_program->setInt( "uKernelSize", _kernelSize );
 			_program->setFloat( "uNoiseSize", float( _noiseTextureSize ) );
 		}

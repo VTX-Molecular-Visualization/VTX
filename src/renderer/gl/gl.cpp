@@ -1,5 +1,6 @@
 #include "gl.hpp"
 #include "model/molecule.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "view/base_view_3d_molecule.hpp"
 #include "vtx_app.hpp"
 #include <random>
@@ -106,7 +107,7 @@ namespace VTX::Renderer::GL
 
 		// TODO: do not change each frame
 		/// TODO2: why this?
-		if ( VTX_SETTING().cameraNear == 0.f )
+		if ( VTX_RENDER_EFFECT().getCameraNearClip() == 0.f )
 		{
 			enableDepthClamp();
 		}
@@ -121,7 +122,7 @@ namespace VTX::Renderer::GL
 
 		_passLinearizeDepth->render( p_scene, *this );
 
-		if ( VTX_SETTING().activeAO )
+		if ( VTX_RENDER_EFFECT().isSSAOEnabled() )
 		{
 			_passSSAO->render( p_scene, *this );
 			_passBlur->render( p_scene, *this );
@@ -129,19 +130,19 @@ namespace VTX::Renderer::GL
 
 		_passShading->render( p_scene, *this );
 
-		if ( VTX_SETTING().activeOutline )
+		if ( VTX_RENDER_EFFECT().isOutlineEnabled() )
 		{
 			_passOutline->render( p_scene, *this );
 		}
 
 		_passSelection->render( p_scene, *this );
 
-		if ( VTX_SETTING().activeAA )
+		if ( VTX_RENDER_EFFECT().getAA() )
 		{
 			_passFXAA->render( p_scene, *this );
 		}
 
-		VTXApp::get().MASK = VTX_SETTING().forceRenderer ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
+		VTXApp::get().MASK = VTX_SETTING().getForceRenderer() ? VTX_MASK_NEED_UPDATE : VTX_MASK_NO_UPDATE;
 	};
 
 	void GL::setShading() { _passShading->set(); }

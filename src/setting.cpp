@@ -1,16 +1,20 @@
 #include "setting.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
+#include "io/reader/serialized_object.hpp"
 #include "io/serializer.hpp"
+#include "io/writer/serialized_object.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "renderer/base_renderer.hpp"
 #include "trajectory/trajectory_enum.hpp"
+#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
+#include <exception>
+#include <string>
 
 namespace VTX
 {
 	// UI.
-
 	const std::string Setting::ORGANIZATION_NAME		= "CNAM_GBCM";
 	const std::string Setting::PROJECT_NAME				= "VTX";
 	const std::string Setting::LAYOUT_SETTINGS_FOLDER	= PROJECT_NAME;
@@ -30,16 +34,6 @@ namespace VTX
 
 	const int Setting::STATUS_PROGRESS_BAR_CHUNKS = 10;
 	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;
-
-	const QString Setting::DEFAULT_SAVE_FOLDER	   = "../save";
-	const QString Setting::DEFAULT_MOLECULE_FOLDER = "../data";
-
-	const QString Setting::MOLECULE_EXTENSIONS = "*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm";
-	const QString Setting::VTX_EXTENSIONS	   = "*.vtx";
-
-	const QString Setting::MOLECULE_FILE_FILTERS = "Molecule file (" + MOLECULE_EXTENSIONS + ")";
-	const QString Setting::OPEN_FILE_FILTERS	 = "VTX file (" + VTX_EXTENSIONS + " " + MOLECULE_EXTENSIONS + ")";
-	const QString Setting::SAVE_FILE_FILTERS	 = "VTX file (" + VTX_EXTENSIONS + ")";
 
 	// Rendering.
 	const bool					  Setting::ACTIVE_RENDERER_DEFAULT		   = true;
@@ -81,10 +75,10 @@ namespace VTX
 	const float				Setting::OUTLINE_SENSIVITY_MAX	   = 10.f;
 	const Color::Rgb		Setting::OUTLINE_COLOR_DEFAULT	   = Color::Rgb::WHITE;
 	const bool				Setting::ACTIVE_FOG_DEFAULT		   = false;
-	const float				Setting::FOG_NEAR_DEFAULT		   = 400.f;
+	const float				Setting::FOG_NEAR_DEFAULT		   = 30;
 	const float				Setting::FOG_NEAR_MIN			   = 0.f;
 	const float				Setting::FOG_NEAR_MAX			   = 1000.f;
-	const float				Setting::FOG_FAR_DEFAULT		   = 600.f;
+	const float				Setting::FOG_FAR_DEFAULT		   = 80.f;
 	const float				Setting::FOG_FAR_MIN			   = 0.f;
 	const float				Setting::FOG_FAR_MAX			   = 1000.f;
 	const float				Setting::FOG_DENSITY_DEFAULT	   = 0.8f;
@@ -188,12 +182,177 @@ namespace VTX
 			recentLoadingPath.pop_front();
 		}
 	}
-
 	void Setting::backup()
 	{
-		IO::Serializer serializer = IO::Serializer();
-		_backup					  = serializer.serialize( *this );
+		IO::Writer::SerializedObject<VTX::Setting> writer = IO::Writer::SerializedObject<VTX::Setting>();
+		try
+		{
+			writer.writeFile( Util::Filesystem::SETTING_JSON_FILE, *this );
+			VTX_INFO( "Settings Saved " );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Cannot save settings: " + std::string( p_e.what() ) );
+		}
 	}
-	void Setting::recover() { IO::Serializer serializer = IO::Serializer(); }
+	void Setting::recover()
+	{
+		IO::Reader::SerializedObject<VTX::Setting> reader = IO::Reader::SerializedObject<VTX::Setting>();
+		try
+		{
+			reader.readFile( Util::Filesystem::SETTING_JSON_FILE, VTX_SETTING() );
+			VTX_INFO( "Settings loaded " );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( "Cannot load settings: " + std::string( p_e.what() ) );
+		}
+	}
+
+	void Setting::setWindowFullscreen( const bool p_fullscreen )
+	{
+		windowFullscreen = p_fullscreen;
+		_sendDataChangedEvent( PARAMETER::WINDOW_FULL_SCREEN );
+	}
+	void Setting::setActivateRenderer( const bool p_activeRenderer )
+	{
+		activeRenderer = p_activeRenderer;
+		_sendDataChangedEvent( PARAMETER::ACTIVATE_RENDERER );
+	}
+	void Setting::setForceRenderer( const bool p_forceRenderer )
+	{
+		forceRenderer = p_forceRenderer;
+		_sendDataChangedEvent( PARAMETER::FORCE_RENDERER );
+	}
+	void Setting::setVSync( const bool p_activeVSync )
+	{
+		activeVSync = p_activeVSync;
+		_sendDataChangedEvent( PARAMETER::VSYNC );
+	}
+	void Setting::setSnapshotBackgroundOpacity( const float p_backgroundOpacity )
+	{
+		backgroundOpacity = Util::Math::clamp( p_backgroundOpacity, 0.f, 1.f );
+		_sendDataChangedEvent( PARAMETER::SNAPSHOT_BACKGROUND_OPACITY );
+	}
+
+	void Setting::setTranslationSpeed( const float p_translationSpeed )
+	{
+		translationSpeed = Util::Math::clamp(
+			p_translationSpeed, CONTROLLER_TRANSLATION_SPEED_MIN, CONTROLLER_TRANSLATION_SPEED_MAX );
+
+		_sendDataChangedEvent( PARAMETER::CONTROLLER_TRANSLATION_SPEED );
+	}
+	void Setting::setTranslationSpeedFactor( const float p_translationFactorSpeed )
+	{
+		translationFactorSpeed = Util::Math::clamp( p_translationFactorSpeed,
+													VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MIN,
+													VTX::Setting::CONTROLLER_TRANSLATION_FACTOR_MAX );
+
+		_sendDataChangedEvent( PARAMETER::CONTROLLER_TRANSLATION_SPEED_FACTOR );
+	}
+	void Setting::setRotationSpeed( const float p_rotationSpeed )
+	{
+		rotationSpeed = Util::Math::clamp(
+			p_rotationSpeed, VTX::Setting::CONTROLLER_ROTATION_SPEED_MIN, VTX::Setting::CONTROLLER_ROTATION_SPEED_MAX );
+		_sendDataChangedEvent( PARAMETER::CONTROLLER_ROTATION_SPEED );
+	}
+	void Setting::setControllerElasticityActive( const bool p_activeControllerElasticity )
+	{
+		activeControllerElasticity = p_activeControllerElasticity;
+		_sendDataChangedEvent( PARAMETER::CONTROLLER_ACTIVATE_ELASTICTY );
+	}
+	void Setting::setControllerElasticityFactor( const float p_controllerElasticityFactor )
+	{
+		controllerElasticityFactor = Util::Math::clamp( p_controllerElasticityFactor,
+														VTX::Setting::CONTROLLER_ELASTICITY_FACTOR_MIN,
+														VTX::Setting::CONTROLLER_ELASTICITY_FACTOR_MAX );
+		;
+		_sendDataChangedEvent( PARAMETER::CONTROLLER_ELASTICTY_FACTOR );
+	}
+	void Setting::setYAxisInverted( const bool p_yAxisInverted )
+	{
+		yAxisInverted = p_yAxisInverted;
+		_sendDataChangedEvent( PARAMETER::CONTROLLER_Y_INVERSION );
+	}
+
+	void Setting::setDefaultRepresentationIndex( const int p_representationDefaultIndex )
+	{
+		representationDefaultIndex = p_representationDefaultIndex;
+	}
+	void Setting::setDefaultRenderEffectPresetIndex( const int p_renderEffectDefaultIndex )
+	{
+		renderEffectDefaultIndex = p_renderEffectDefaultIndex;
+	}
+
+	void Setting::setDefaultTrajectorySpeed( const int p_defaultTrajectorySpeed )
+	{
+		defaultTrajectorySpeed = Util::Math::clamp(
+			p_defaultTrajectorySpeed, VTX::Setting::MIN_TRAJECTORY_SPEED, VTX::Setting::MAX_TRAJECTORY_SPEED );
+		_sendDataChangedEvent( PARAMETER::TRAJECTORY_DEFAULT_SPEED );
+	}
+	void Setting::setDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_defaultTrajectoryPlayMode )
+	{
+		defaultTrajectoryPlayMode = p_defaultTrajectoryPlayMode;
+		_sendDataChangedEvent( PARAMETER::TRAJECTORY_DEFAULT_PLAY_MODE );
+	}
+	void Setting::setAutoRotationSpeed( const Vec3f p_autoRotationSpeed )
+	{
+		autoRotationSpeed = Util::Math::clamp(
+			p_autoRotationSpeed, VTX::Setting::AUTO_ROTATE_SPEED_MIN, VTX::Setting::AUTO_ROTATE_SPEED_MAX );
+		_sendDataChangedEvent( PARAMETER::AUTO_ROTATION_DEFAULT_SPEED );
+	}
+
+	void Setting::setSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE p_symbolDisplayMode )
+	{
+		symbolDisplayMode = p_symbolDisplayMode;
+		_sendDataChangedEvent( PARAMETER::SYMBOL_DISPLAY_MODE );
+	}
+
+	void Setting::restore()
+	{
+		symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
+		windowFullscreen  = WINDOW_FULLSCREEN_DEFAULT;
+
+		activeRenderer			   = ACTIVE_RENDERER_DEFAULT;
+		forceRenderer			   = FORCE_RENDERER_DEFAULT;
+		representationDefaultIndex = REPRESENTATION_DEFAULT_INDEX;
+		renderEffectDefaultIndex   = RENDER_EFFECT_DEFAULT_INDEX;
+
+		activeVSync		  = ACTIVE_VSYNC_DEFAULT;
+		backgroundOpacity = BACKGROUND_OPACITY_DEFAULT;
+
+		translationSpeed	   = CONTROLLER_TRANSLATION_SPEED_DEFAULT;
+		translationFactorSpeed = CONTROLLER_TRANSLATION_FACTOR_DEFAULT;
+		rotationSpeed		   = CONTROLLER_ROTATION_SPEED_DEFAULT;
+		yAxisInverted		   = CONTROLLER_Y_AXIS_INVERTED;
+
+		activeControllerElasticity = CONTROLLER_ELASTICITY_ACTIVE_DEFAULT;
+		controllerElasticityFactor = CONTROLLER_ELASTICITY_FACTOR_DEFAULT;
+
+		defaultTrajectorySpeed	  = DEFAULT_TRAJECTORY_SPEED;
+		defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
+
+		autoRotationSpeed = Vec3f( AUTO_ROTATE_SPEED_DEFAULT );
+		_sendDataChangedEvent( PARAMETER::ALL );
+	}
+
+	void Setting::_sendDataChangedEvent( const PARAMETER & p_parameter )
+	{
+		std::set<PARAMETER> parameters = std::set<PARAMETER>();
+
+		if ( p_parameter == PARAMETER::ALL )
+		{
+			for ( int i = 0; i < int( PARAMETER::COUNT ); i++ )
+			{
+				parameters.emplace( PARAMETER( i ) );
+			}
+		}
+		else
+		{
+			parameters.emplace( p_parameter );
+		}
+
+		VTX_EVENT( new Event::VTXEventRef( Event::Global::SETTINGS_CHANGE, parameters ) );
+	}
 
 } // namespace VTX

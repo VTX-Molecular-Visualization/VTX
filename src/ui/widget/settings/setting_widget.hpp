@@ -5,9 +5,6 @@
 #pragma once
 #endif
 
-#include "setting_color_widget.hpp"
-#include "setting_render_effect_widget.hpp"
-#include "setting_representation_widget.hpp"
 #include "setting_widget_enum.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/base_manual_widget_initializer.hpp"
@@ -17,6 +14,7 @@
 #include <QPushButton>
 #include <QString>
 #include <QTabWidget>
+#include <QVBoxLayout>
 
 namespace VTX::UI::Widget::Settings
 {

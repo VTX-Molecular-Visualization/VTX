@@ -44,7 +44,7 @@ namespace VTX
 				}
 				else if ( command == "change_representation" )
 				{
-					action = new Setting::ChangeRepresentation( std::stoi( words.at( 1 ) ) );
+					action = new Setting::ChangeDefaultRepresentation( std::stoi( words.at( 1 ) ) );
 				}
 				else if ( command == "change_auto_rotate_speed" )
 				{

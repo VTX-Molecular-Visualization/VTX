@@ -45,6 +45,7 @@ namespace VTX
 			MAIN_WINDOW_MODE_CHANGE,
 			LATE_UPDATE,
 			RECENT_FILES_CHANGE,
+			SETTINGS_CHANGE,
 		};
 
 		// Model events for notifier pattern (model->views)[1-n].

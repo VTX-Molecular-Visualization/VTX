@@ -28,8 +28,13 @@ namespace VTX
 		namespace Representation
 		{
 			class InstantiatedRepresentation;
-		}
-	} // namespace Model
+			class Representation;
+		} // namespace Representation
+		namespace Renderer
+		{
+			class RenderEffectPreset;
+		} // namespace Renderer
+	}	  // namespace Model
 
 	namespace Color
 	{
@@ -47,6 +52,10 @@ namespace VTX
 			nlohmann::json serialize( const Model::Path & ) const;
 			nlohmann::json serialize( const Model::Viewpoint & ) const;
 			nlohmann::json serialize( const Model::Representation::InstantiatedRepresentation & ) const;
+
+			nlohmann::json serialize( const Model::Representation::Representation & ) const;
+			nlohmann::json serialize( const Model::Renderer::RenderEffectPreset & ) const;
+
 			nlohmann::json serialize( const Color::Rgb & ) const;
 			nlohmann::json serialize( const Math::Transform & ) const;
 			template<typename T, glm::qualifier Q>
@@ -65,6 +74,10 @@ namespace VTX
 			void deserialize( const nlohmann::json &, Model::Path & ) const;
 			void deserialize( const nlohmann::json &, Model::Viewpoint & ) const;
 			void deserialize( const nlohmann::json &, Model::Representation::InstantiatedRepresentation & ) const;
+
+			void deserialize( const nlohmann::json &, Model::Representation::Representation & ) const;
+			void deserialize( const nlohmann::json &, Model::Renderer::RenderEffectPreset & ) const;
+
 			void deserialize( const nlohmann::json &, Color::Rgb & ) const;
 			void deserialize( const nlohmann::json &, Math::Transform & ) const;
 			template<typename T, glm::qualifier Q>

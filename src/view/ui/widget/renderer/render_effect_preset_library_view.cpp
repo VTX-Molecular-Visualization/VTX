@@ -49,6 +49,7 @@ namespace VTX::View::UI::Widget::Renderer
 
 		QHBoxLayout * const horizontalLayout = new QHBoxLayout( this );
 		QHBoxLayout * const headerLayout	 = new QHBoxLayout();
+		QHBoxLayout * const bottomLayout	 = new QHBoxLayout();
 		QVBoxLayout * const verticalLayout	 = new QVBoxLayout();
 
 		const int currentIndex = 0;
@@ -67,13 +68,23 @@ namespace VTX::View::UI::Widget::Renderer
 		_renderPresetEditor = VTX::UI::WidgetFactory::get().instantiateWidget<RenderEffectPresetEditor>(
 			this, "renderEffectPresetEdition" );
 
+		_importPresetButton = new QPushButton( this );
+		_importPresetButton->setText( "Import" );
+		_reloadButton = new QPushButton( this );
+		_reloadButton->setText( "Reload" );
+
 		headerLayout->addWidget( _presetList, 10 );
 		headerLayout->addWidget( _addPresetButton );
 		headerLayout->addWidget( _copyPresetButton );
 		headerLayout->addWidget( _deletePresetButton );
 
+		bottomLayout->addStretch( 1000 );
+		bottomLayout->addWidget( _importPresetButton );
+		bottomLayout->addWidget( _reloadButton );
+
 		verticalLayout->addItem( headerLayout );
 		verticalLayout->addWidget( _renderPresetEditor );
+		verticalLayout->addItem( bottomLayout );
 
 		horizontalLayout->addItem( verticalLayout );
 
@@ -90,6 +101,9 @@ namespace VTX::View::UI::Widget::Renderer
 		connect( _addPresetButton, &QPushButton::clicked, this, &RenderEffectPresetLibraryView::_onAddPreset );
 		connect( _copyPresetButton, &QPushButton::clicked, this, &RenderEffectPresetLibraryView::_onCopyPreset );
 		connect( _deletePresetButton, &QPushButton::clicked, this, &RenderEffectPresetLibraryView::_onDeletePreset );
+
+		connect( _importPresetButton, &QPushButton::clicked, this, &RenderEffectPresetLibraryView::_onImportPreset );
+		connect( _reloadButton, &QPushButton::clicked, this, &RenderEffectPresetLibraryView::_onReloadLibrary );
 	}
 
 	void RenderEffectPresetLibraryView::localize() {}
@@ -104,7 +118,7 @@ namespace VTX::View::UI::Widget::Renderer
 
 	void RenderEffectPresetLibraryView::_onPresetIndexChanged( const int p_newIndex )
 	{
-		const Model::Renderer::RenderEffectPreset * const currentPreset = _model->getPreset( p_newIndex );
+		Model::Renderer::RenderEffectPreset * const currentPreset = _model->getPreset( p_newIndex );
 		VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *currentPreset ) );
 
 		_refreshPresetDisplayed( false );
@@ -121,10 +135,17 @@ namespace VTX::View::UI::Widget::Renderer
 	void RenderEffectPresetLibraryView::_onDeletePreset()
 	{
 		VTX::UI::Dialog::confirmActionDialog(
-			this,
 			new Action::Renderer::DeletePresetInLibrary( _presetList->currentIndex() ),
 			"Confirm",
 			"Are you sure to delete this preset ?" );
+	}
+
+	void RenderEffectPresetLibraryView::_onImportPreset() { VTX::UI::Dialog::importRenderEffectPresetDialog(); }
+	void RenderEffectPresetLibraryView::_onReloadLibrary()
+	{
+		VTX::UI::Dialog::confirmActionDialog( new Action::Renderer::ReloadPresets(),
+											  "Confirm",
+											  "Are you sure to reload all presets ? Current changes will be lost." );
 	}
 
 	void RenderEffectPresetLibraryView::_refreshPresetDisplayed( const bool p_updateRenderer )

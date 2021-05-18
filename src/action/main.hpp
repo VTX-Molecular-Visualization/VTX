@@ -8,8 +8,6 @@
 #include "action/action_manager.hpp"
 #include "base_action.hpp"
 #include "define.hpp"
-#include "io/reader/vtx.hpp"
-#include "io/writer/vtx.hpp"
 #include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "network/network_manager.hpp"
@@ -20,6 +18,8 @@
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "worker/loader.hpp"
+#include "worker/render_effect_loader.hpp"
+#include "worker/representation_loader.hpp"
 #include "worker/saver.hpp"
 #include "worker/scene_loader.hpp"
 #include "worker/snapshoter.hpp"
@@ -156,6 +156,64 @@ namespace VTX::Action::Main
 
 	  private:
 		FilePath * _path;
+	};
+
+	class ImportRepresentationPreset : public BaseAction
+	{
+	  public:
+		explicit ImportRepresentationPreset( FilePath * const p_path ) { _paths.emplace_back( p_path ); }
+		explicit ImportRepresentationPreset( const std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {}
+		virtual void execute() override
+		{
+			if ( _paths.empty() )
+				return;
+
+			bool fileHasBeenImported = false;
+			for ( FilePath * const path : _paths )
+			{
+				FilePath target = Util::Filesystem::getRepresentationPath( path->filename().string() );
+				Util::Filesystem::generateUniqueFileName( target );
+				if ( Util::Filesystem::copy( *path, target ) )
+				{
+					Worker::RepresentationLoader * const loader = new Worker::RepresentationLoader( target );
+					VTX_WORKER( loader );
+				}
+
+				delete path;
+			}
+		}
+
+	  private:
+		std::vector<FilePath *> _paths = std::vector<FilePath *>();
+	};
+
+	class ImportRenderEffectPreset : public BaseAction
+	{
+	  public:
+		explicit ImportRenderEffectPreset( FilePath * const p_path ) { _paths.emplace_back( p_path ); }
+		explicit ImportRenderEffectPreset( const std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {}
+		virtual void execute() override
+		{
+			if ( _paths.empty() )
+				return;
+
+			bool fileHasBeenImported = false;
+			for ( FilePath * const path : _paths )
+			{
+				FilePath target = Util::Filesystem::getRenderEffectPath( path->filename().string() );
+				Util::Filesystem::generateUniqueFileName( target );
+				if ( Util::Filesystem::copy( *path, target ) )
+				{
+					Worker::RenderEffectPresetLoader * const loader = new Worker::RenderEffectPresetLoader( target );
+					VTX_WORKER( loader );
+				}
+
+				delete path;
+			}
+		}
+
+	  private:
+		std::vector<FilePath *> _paths = std::vector<FilePath *>();
 	};
 
 	class ResetScene : public BaseAction

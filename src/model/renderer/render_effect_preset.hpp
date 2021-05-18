@@ -56,8 +56,6 @@ namespace VTX::Model::Renderer
 
 		Color::Rgb getBackgroundColor() const { return _backgroundColor; };
 		void	   setBackgroundColor( const Color::Rgb & p_backgroundColor );
-		float	   getBackgroundOpacity() const { return _backgroundOpacity; };
-		void	   setBackgroundOpacity( const float p_backgroundOpacity );
 		Color::Rgb getCameraLightColor() const { return _cameraLightColor; };
 		void	   setCameraLightColor( const Color::Rgb & p_cameraLightColor );
 		float	   getCameraFOV() const { return _cameraFOV; };
@@ -67,11 +65,10 @@ namespace VTX::Model::Renderer
 		float	   getCameraFarClip() const { return _cameraFarClip; };
 		void	   setCameraFarClip( const float p_cameraFarClip );
 		bool	   getAA() const { return _antiAliasing; };
-		void	   setAA( const float p_antiAliasing );
+		void	   setAA( const bool p_antiAliasing );
 		bool	   isPerspectiveProjection() const { return _perspectiveProjection; };
 		void	   setPerspectiveProjection( const bool p_perspectiveProjection );
 
-		void apply() const;
 		void copyFrom( const RenderEffectPreset & p_source );
 
 	  protected:
@@ -100,7 +97,6 @@ namespace VTX::Model::Renderer
 		Color::Rgb _fogColor;
 
 		Color::Rgb _backgroundColor;
-		float	   _backgroundOpacity;
 		Color::Rgb _cameraLightColor;
 		float	   _cameraFOV;
 		float	   _cameraNearClip;

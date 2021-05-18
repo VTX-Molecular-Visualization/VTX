@@ -1,4 +1,5 @@
 #include "shading.hpp"
+#include "model/renderer/render_effect_preset.hpp"
 #include "object3d/camera.hpp"
 #include "renderer/gl/gl.hpp"
 #include "renderer/gl/program_manager.hpp"
@@ -48,18 +49,22 @@ namespace VTX::Renderer::GL::Pass
 
 		if ( VTXApp::get().MASK & VTX_MASK_UNIFORM_UPDATED )
 		{
-			const Color::Rgb & bgColor = VTX_SETTING().backgroundColor;
+			const Color::Rgb & bgColor = VTX_RENDER_EFFECT().getBackgroundColor();
 			/// TODO: use a value_ptr ?
-			_currentShading->setVec4f(
-				"uBackgroundColor", bgColor.getR(), bgColor.getG(), bgColor.getB(), VTX_SETTING().backgroundOpacity );
-			_currentShading->setFloat( "uFogNear", VTX_SETTING().fogNear );
-			_currentShading->setFloat( "uFogFar", VTX_SETTING().fogFar );
-			_currentShading->setFloat( "uFogDensity", VTX_SETTING().activeFog ? VTX_SETTING().fogDensity : 0.f );
-			const Color::Rgb & fogColor = VTX_SETTING().fogColor;
+			_currentShading->setVec4f( "uBackgroundColor",
+									   bgColor.getR(),
+									   bgColor.getG(),
+									   bgColor.getB(),
+									   VTX_SETTING().getSnapshotBackgroundOpacity() );
+			_currentShading->setFloat( "uFogNear", VTX_RENDER_EFFECT().getFogNear() );
+			_currentShading->setFloat( "uFogFar", VTX_RENDER_EFFECT().getFogFar() );
+			_currentShading->setFloat( "uFogDensity",
+									   VTX_RENDER_EFFECT().isFogEnabled() ? VTX_RENDER_EFFECT().getFogDensity() : 0.f );
+			const Color::Rgb & fogColor = VTX_RENDER_EFFECT().getFogColor();
 			/// TODO: use a value_ptr ?
 			_currentShading->setVec3f( "uFogColor", fogColor.getR(), fogColor.getG(), fogColor.getB() );
 
-			const Color::Rgb & lightColor = VTX_SETTING().lightColor;
+			const Color::Rgb & lightColor = VTX_RENDER_EFFECT().getCameraLightColor();
 			/// TODO: use a value_ptr ?
 			_currentShading->setVec3f( "uLightColor", lightColor.getR(), lightColor.getG(), lightColor.getB() );
 		}
@@ -79,7 +84,7 @@ namespace VTX::Renderer::GL::Pass
 
 	void Shading::set()
 	{
-		switch ( VTX_SETTING().shading )
+		switch ( VTX_RENDER_EFFECT().getShading() )
 		{
 		case SHADING::TOON: _currentShading = _toonShading; break;
 		case SHADING::GLOSSY: _currentShading = _glossyShading; break;
