@@ -7,6 +7,7 @@
 #include "generic/base_colorable.hpp"
 #include "io/reader/lib_chemfiles.hpp"
 #include "model/chain.hpp"
+#include "model/configuration/molecule.hpp"
 #include "model/mesh_triangle.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
@@ -36,7 +37,10 @@ namespace VTX
 			nlohmann::json jsonArrayMolecules = nlohmann::json::array();
 			for ( const Object3D::Scene::PairMoleculePtrFloat & pair : p_scene.getMolecules() )
 			{
-				jsonArrayMolecules.emplace_back( serialize( *pair.first ) );
+				nlohmann::json json = { { "INDEX", pair.first->getConfiguration().sceneIndex },
+										{ "MOLECULE", serialize( *pair.first ) } };
+
+				jsonArrayMolecules.emplace_back( json );
 			}
 
 			nlohmann::json jsonArrayPaths = nlohmann::json::array();
@@ -47,6 +51,7 @@ namespace VTX
 
 			return { { "CAMERA_POSITION", serialize( p_scene.getCamera().getPosition() ) },
 					 { "CAMERA_ROTATION", serialize( p_scene.getCamera().getRotation() ) },
+					 { "MOLECULE_COUNT", p_scene.getMolecules().size() },
 					 { "MOLECULES", jsonArrayMolecules },
 					 { "PATHS", jsonArrayPaths } };
 		}
@@ -62,7 +67,8 @@ namespace VTX
 					 { "REPRESENTATIONS", _serializeMoleculeRepresentations( p_molecule, chemfileWriter ) },
 					 { "VISIBILITIES", _serializeMoleculeVisibilities( p_molecule, chemfileWriter ) },
 					 { "NAME", p_molecule.getName() },
-					 { "PDB_ID", p_molecule.getPdbIdCode() } };
+					 { "PDB_ID", p_molecule.getPdbIdCode() },
+					 { "DISPLAY_NAME", p_molecule.getDisplayName() } };
 		}
 
 		nlohmann::json Serializer::serialize( const Model::Path & p_path ) const
@@ -236,10 +242,23 @@ namespace VTX
 			Quatf cameraRot;
 			deserialize( p_json.at( "CAMERA_ROTATION" ), cameraRot );
 
+			const int					   moleculeCount = p_json.at( "MOLECULE_COUNT" ).get<int>();
+			std::vector<Model::Molecule *> molecules	 = std::vector<Model::Molecule *>();
+			molecules.resize( moleculeCount );
+
 			for ( const nlohmann::json & jsonMolecule : p_json.at( "MOLECULES" ) )
 			{
 				Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
-				deserialize( jsonMolecule, *molecule );
+				deserialize( jsonMolecule.at( "MOLECULE" ), *molecule );
+
+				molecule->getConfiguration().sceneIndex				 = jsonMolecule.at( "INDEX" ).get<int>();
+				molecules[ molecule->getConfiguration().sceneIndex ] = molecule;
+			}
+
+			for ( Model::Molecule * const molecule : molecules )
+			{
+				if ( molecule == nullptr )
+					continue;
 
 				VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
 				p_scene.addMolecule( molecule );
@@ -275,6 +294,7 @@ namespace VTX
 
 			p_molecule.setName( p_json.at( "NAME" ).get<std::string>() );
 			p_molecule.setPdbIdCode( p_json.at( "PDB_ID" ).get<std::string>() );
+			p_molecule.setDisplayName( p_json.at( "DISPLAY_NAME" ).get<std::string>() );
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const

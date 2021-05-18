@@ -45,6 +45,8 @@ namespace VTX::View::UI::Widget
 		const Model::ID & getModelID() const override { return _model->getId(); };
 		void			  openRenameEditor();
 
+		virtual void updatePosInSceneHierarchy( const int p_position ) override;
+
 	  protected:
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;

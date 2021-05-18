@@ -960,5 +960,10 @@ namespace VTX::View::UI::Widget
 	}
 
 	void MoleculeSceneView::openRenameEditor() { editItem( _getMoleculeTreeWidgetItem() ); }
+	void MoleculeSceneView::updatePosInSceneHierarchy( const int p_position )
+	{
+		SceneItemWidget::updatePosInSceneHierarchy( p_position );
+		_model->getConfiguration().sceneIndex = p_position;
+	}
 
 } // namespace VTX::View::UI::Widget
