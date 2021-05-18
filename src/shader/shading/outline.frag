@@ -41,7 +41,7 @@ void main()
 	const float edgeDepth = sqrt( depthDiff0 * depthDiff0 + depthDiff1 * depthDiff1 ) * 100.f;
 
 	// Compute threshold.
-	const float depthThreshold = ( 10.f / uSensivity ) * depthCenter; // max( 1.f, depthCenter );
+	const float depthThreshold = ( 1.f / uSensivity ) * depthCenter; // max( 1.f, depthCenter );
 
 	// Apply outline if edge depth is greater than threshold.
 	fragColor = edgeDepth > depthThreshold ? vec4( uLineColor, 1.f ) : texture( colorTexture, texCoord );
