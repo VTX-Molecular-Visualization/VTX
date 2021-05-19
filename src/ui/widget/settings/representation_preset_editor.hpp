@@ -8,11 +8,10 @@
 #include "color/rgb.hpp"
 #include "model/representation/representation.hpp"
 #include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/color_field_button.hpp"
-#include "ui/widget/custom_widget/float_field_slider_widget.hpp"
 #include "view/ui/editor_view.hpp"
 #include <QComboBox>
 #include <QGridLayout>
+#include <QLabel>
 #include <QScrollArea>
 #include <map>
 #include <type_traits>

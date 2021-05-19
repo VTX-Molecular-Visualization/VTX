@@ -23,7 +23,8 @@ namespace VTX::UI::Widget::Settings
 
 		_viewport = new QWidget( this );
 
-		_name		 = new QLineEdit( _viewport );
+		_name = WidgetFactory::get().instantiateWidget<CustomWidget::FilenameFieldWidget>( _viewport, "presetName" );
+
 		_quickAccess = new QCheckBox( _viewport );
 
 		_shading = new QComboBox( _viewport );
@@ -121,7 +122,10 @@ namespace VTX::UI::Widget::Settings
 	}
 	void RenderEffectPresetEditor::_setupSlots()
 	{
-		connect( _name, &QLineEdit::editingFinished, this, &RenderEffectPresetEditor::_onNameChanged );
+		connect( _name,
+				 &CustomWidget::FilenameFieldWidget::editingFinished,
+				 this,
+				 &RenderEffectPresetEditor::_onNameChanged );
 		connect( _quickAccess, &QCheckBox::clicked, this, &RenderEffectPresetEditor::_onQuickAccessChanged );
 
 		connect( _shading,

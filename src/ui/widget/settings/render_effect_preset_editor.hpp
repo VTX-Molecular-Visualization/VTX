@@ -9,6 +9,7 @@
 #include "model/renderer/render_effect_preset.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/color_field_button.hpp"
+#include "ui/widget/custom_widget/filename_field_widget.hpp"
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"
 #include "ui/widget/custom_widget/integer_field_widget.hpp"
 #include "view/base_view.hpp"
@@ -58,8 +59,8 @@ namespace VTX::UI::Widget::Settings
 		QWidget *	  _viewport = nullptr;
 		QGridLayout * _layout	= nullptr;
 
-		QLineEdit * _name		 = nullptr;
-		QCheckBox * _quickAccess = nullptr;
+		CustomWidget::FilenameFieldWidget * _name		 = nullptr;
+		QCheckBox *							_quickAccess = nullptr;
 
 		QComboBox * _shading = nullptr;
 
