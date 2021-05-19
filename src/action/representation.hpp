@@ -103,7 +103,7 @@ namespace VTX::Action::Representation
 		explicit ChangeName( Model::Representation::Representation * const p_representation,
 							 const std::string &						   p_name ) :
 			_representation( p_representation ),
-			_name( p_name )
+			_name( Model::Representation::RepresentationLibrary::get().getValidName( p_name ) )
 		{
 		}
 

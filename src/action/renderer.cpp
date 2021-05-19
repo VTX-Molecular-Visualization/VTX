@@ -47,6 +47,21 @@ namespace VTX::Action::Renderer
 	void ApplyRenderEffectPreset::execute()
 	{
 		Model::Renderer::RenderEffectPresetLibrary::get().applyPreset( _preset );
+
+		VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().setShading();
+		VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeSSAO( _preset.isSSAOEnabled() );
+		VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeOutline( _preset.isOutlineEnabled() );
+		VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeFog( _preset.isFogEnabled() );
+		VTXApp::get().getMainWindow().getOpenGLWidget().getRendererGL().activeAA( _preset.getAA() );
+
+		if ( _setAsDefault )
+		{
+			const int presetIndex = Model::Renderer::RenderEffectPresetLibrary::get().getPresetIndex( &_preset );
+
+			if ( presetIndex >= 0 )
+				VTX_SETTING().setDefaultRenderEffectPresetIndex( presetIndex );
+		}
+
 		VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 	};
 

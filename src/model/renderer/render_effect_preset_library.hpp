@@ -25,6 +25,7 @@ namespace VTX::Model::Renderer
 		RenderEffectPreset * const		 getPresetByName( const std::string & p_name );
 		const RenderEffectPreset * const getPresetByName( const std::string & p_name ) const;
 		int								 getPresetIndex( const RenderEffectPreset * const ) const;
+		int								 getPresetIndex( const std::string & ) const;
 
 		inline const std::vector<RenderEffectPreset *> & getPresets() const { return _presets; };
 		inline int										 getPresetCount() const { return (int)_presets.size(); };
@@ -43,6 +44,9 @@ namespace VTX::Model::Renderer
 		const RenderEffectPreset & getAppliedPreset() const;
 		RenderEffectPreset &	   getAppliedPreset();
 		int						   getAppliedPresetIndex() const;
+
+		std::string getValidName( const std::string & p_name ) const;
+		bool		isValidName( const std::string & p_name ) const;
 
 		void setQuickAccessToPreset( RenderEffectPreset & p_preset, const bool p_quikAccess );
 

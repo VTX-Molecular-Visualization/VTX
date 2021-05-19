@@ -134,7 +134,6 @@ namespace VTX
 		nlohmann::json Serializer::serialize( const Model::Representation::Representation & p_representation ) const
 		{
 			return {
-				{ "NAME", p_representation.getName() },
 				{ "COLOR", serialize( p_representation.getColor() ) },
 				{ "QUICK_ACCESS", p_representation.hasQuickAccess() },
 				{ "TYPE", p_representation.getRepresentationType() },
@@ -147,7 +146,6 @@ namespace VTX
 		nlohmann::json Serializer::serialize( const Model::Renderer::RenderEffectPreset & p_preset ) const
 		{
 			return {
-				{ "NAME", p_preset.getName() },
 				{ "QUICK_ACCESS", p_preset.hasQuickAccess() },
 				{ "SHADING", p_preset.getShading() },
 				{ "SSAO", p_preset.isSSAOEnabled() },
@@ -208,12 +206,22 @@ namespace VTX
 
 		nlohmann::json Serializer::serialize( const Setting & p_setting ) const
 		{
+			const std::string & defaultRepresentationName
+				= Model::Representation::RepresentationLibrary::get()
+					  .getRepresentation( p_setting.getDefaultRepresentationIndex() )
+					  ->getName();
+
+			const std::string & defaultRenderEffectPresetName
+				= Model::Renderer::RenderEffectPresetLibrary::get()
+					  .getPreset( p_setting.getDefaultRenderEffectPresetIndex() )
+					  ->getName();
+
 			return { { "SYMBOL_DISPLAY_MODE", p_setting.getSymbolDisplayMode() },
 					 { "WINDOW_FULLSCREEN", p_setting.getWindowFullscreen() },
 					 { "ACTIVE_RENDERER", p_setting.getActivateRenderer() },
 					 { "FORCE_RENDERER", p_setting.getForceRenderer() },
-					 { "REPRESENTATION", p_setting.getDefaultRepresentationIndex() },
-					 { "RENDER_EFFECT_DEFAULT_INDEX", p_setting.getDefaultRenderEffectPresetIndex() },
+					 { "REPRESENTATION", defaultRepresentationName },
+					 { "RENDER_EFFECT_DEFAULT", defaultRenderEffectPresetName },
 					 { "ACTIVE_VSYNC", p_setting.getVSync() },
 					 { "BACKGROUND_OPACITY", p_setting.getSnapshotBackgroundOpacity() },
 
@@ -380,7 +388,6 @@ namespace VTX
 		void Serializer::deserialize( const nlohmann::json &				  p_json,
 									  Model::Representation::Representation & p_representation ) const
 		{
-			p_representation.setName( p_json.at( "NAME" ).get<std::string>() );
 			Color::Rgb color;
 			deserialize( p_json.at( "COLOR" ), color );
 			p_representation.setColor( color );
@@ -398,7 +405,6 @@ namespace VTX
 		{
 			Color::Rgb color;
 
-			p_preset.setName( p_json.at( "NAME" ).get<std::string>() );
 			p_preset.setQuickAccess( p_json.at( "QUICK_ACCESS" ).get<bool>() );
 			p_preset.setShading( p_json.at( "SHADING" ).get<Renderer::SHADING>() );
 			p_preset.enableSSAO( p_json.at( "SSAO" ).get<bool>() );
@@ -489,8 +495,9 @@ namespace VTX
 
 			p_setting.setActivateRenderer( p_json.at( "ACTIVE_RENDERER" ).get<bool>() );
 			p_setting.setForceRenderer( p_json.at( "FORCE_RENDERER" ).get<bool>() );
-			p_setting.setDefaultRepresentationIndex( p_json.at( "REPRESENTATION" ).get<int>() );
-			p_setting.setDefaultRenderEffectPresetIndex( p_json.at( "RENDER_EFFECT_DEFAULT_INDEX" ).get<int>() );
+
+			p_setting.setTmpRepresentationDefaultName( p_json.at( "REPRESENTATION" ).get<std::string>() );
+			p_setting.setTmpRenderEffectPresetDefaultName( p_json.at( "RENDER_EFFECT_DEFAULT" ).get<std::string>() );
 
 			p_setting.setVSync( p_json.at( "ACTIVE_VSYNC" ).get<bool>() );
 			p_setting.setSnapshotBackgroundOpacity( p_json.at( "BACKGROUND_OPACITY" ).get<float>() );

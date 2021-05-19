@@ -24,7 +24,7 @@ namespace VTX::Model
 		const Model::Molecule & molecule
 			= MVC::MvcManager::get().getModel<Model::Molecule>( p_moleculeSelectionData.first );
 
-		_copyMoleculeData( molecule, "copy of " );
+		_copyMoleculeData( molecule, "Copy of " );
 
 		std::map<const uint, const uint> mapAtomIds = std::map<const uint, const uint>();
 
@@ -97,7 +97,7 @@ namespace VTX::Model
 		chrono.start();
 
 		const Model::Molecule & molecule = *p_chain.getMoleculePtr();
-		_copyMoleculeData( molecule, "copy of " );
+		_copyMoleculeData( molecule, "Copy of " );
 
 		std::map<const uint, const uint> mapAtomIds = std::map<const uint, const uint>();
 		_copyFullChain( p_chain, molecule, mapAtomIds );
@@ -114,7 +114,7 @@ namespace VTX::Model
 		chrono.start();
 
 		const Model::Molecule & molecule = *p_residue.getMoleculePtr();
-		_copyMoleculeData( molecule, "copy of " );
+		_copyMoleculeData( molecule, "Copy of " );
 
 		const Model::Chain & chain			= *p_residue.getChainPtr();
 		Model::Chain &		 generatedChain = addChain();
@@ -136,7 +136,7 @@ namespace VTX::Model
 		chrono.start();
 
 		const Model::Molecule & molecule = *p_atom.getMoleculePtr();
-		_copyMoleculeData( molecule, "copy of " );
+		_copyMoleculeData( molecule, "Copy of " );
 
 		const Model::Chain & chain			= *p_atom.getChainPtr();
 		Model::Chain &		 generatedChain = addChain();
@@ -159,7 +159,7 @@ namespace VTX::Model
 	void GeneratedMolecule::_copyFullMolecule( const Model::Molecule &			  p_moleculeSource,
 											   std::map<const uint, const uint> & p_mapAtomIds )
 	{
-		_copyMoleculeData( p_moleculeSource, "copy of " );
+		_copyMoleculeData( p_moleculeSource, "Copy of " );
 
 		for ( uint i = 0; i < p_moleculeSource.getChainCount(); i++ )
 		{

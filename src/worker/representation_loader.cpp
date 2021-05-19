@@ -30,6 +30,7 @@ namespace VTX::Worker
 				try
 				{
 					reader->readFile( fileIterator->path(), *representation );
+					representation->setName( fileIterator->path().filename().string() );
 					_library.addRepresentation( representation, false );
 				}
 				catch ( const std::exception & p_e )
