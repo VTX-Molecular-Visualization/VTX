@@ -65,7 +65,7 @@ namespace VTX::Action::Renderer
 	{
 	  public:
 		ChangeName( Model::Renderer::RenderEffectPreset & p_preset, const std::string & p_name ) :
-			_preset( p_preset ), _name( p_name ) {};
+			_preset( p_preset ), _name( Model::Renderer::RenderEffectPresetLibrary::get().getValidName( p_name ) ) {};
 
 		virtual void execute() override;
 

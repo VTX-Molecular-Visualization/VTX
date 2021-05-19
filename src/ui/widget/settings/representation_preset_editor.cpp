@@ -276,6 +276,13 @@ namespace VTX::UI::Widget::Settings
 	void RepresentationPresetEditor::_onRepresentationNameChange()
 	{
 		const std::string nameStr = _getParameter<QLineEdit>( PARAMETER::NAME )->text().toStdString();
+
+		if ( nameStr == "" )
+		{
+			_getParameter<QLineEdit>( PARAMETER::NAME )->setText( QString::fromStdString( _preset->getName() ) );
+			return;
+		}
+
 		if ( !signalsBlocked() && nameStr != _preset->getName() )
 			VTX_ACTION( new Action::Representation::ChangeName( _preset, nameStr ) );
 	}
