@@ -27,7 +27,18 @@ namespace VTX::Model::Representation
 			_init();
 		}
 
-		_defaultRepresentation = _representations[ Setting::REPRESENTATION_DEFAULT_INDEX ];
+		if ( VTX_SETTING().getTmpRepresentationDefaultName() != "" )
+		{
+			_defaultRepresentation = getRepresentationByName( VTX_SETTING().getTmpRepresentationDefaultName() );
+		}
+
+		if ( _defaultRepresentation == nullptr )
+		{
+			_defaultRepresentation = _representations[ Setting::REPRESENTATION_DEFAULT_INDEX ];
+		}
+
+		VTX_SETTING().setDefaultRepresentationIndex( getRepresentationIndex( _defaultRepresentation ) );
+		VTX_SETTING().setTmpRepresentationDefaultName( "" );
 	}
 
 	RepresentationLibrary ::~RepresentationLibrary()
@@ -111,7 +122,7 @@ namespace VTX::Model::Representation
 
 		copiedRepresentation->copyDataFrom( *sourceRepresentation );
 
-		copiedRepresentation->setName( "copy of " + sourceRepresentation->getName() );
+		copiedRepresentation->setName( getValidName( sourceRepresentation->getName() ) );
 
 		addRepresentation( copiedRepresentation, p_notify );
 	}
@@ -177,6 +188,29 @@ namespace VTX::Model::Representation
 		{
 			deleteRepresentation( int( _representations.size() - 1 ), p_notify );
 		}
+	}
+
+	std::string RepresentationLibrary::getValidName( const std::string & p_name ) const
+	{
+		const std::string & defaultStr = p_name;
+		std::string			validName  = defaultStr;
+
+		int counter = 2;
+		while ( !isValidName( validName ) )
+		{
+			validName = defaultStr + " (" + std::to_string( counter ) + ")";
+			counter++;
+		}
+
+		return validName;
+	}
+	bool RepresentationLibrary::isValidName( const std::string & p_name ) const
+	{
+		for ( const Representation * const representation : _representations )
+			if ( representation->getName() == p_name )
+				return false;
+
+		return true;
 	}
 
 	void RepresentationLibrary::_init()

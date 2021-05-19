@@ -2,6 +2,7 @@
 #include "action/main.hpp"
 #include "action/renderer.hpp"
 #include "action/setting.hpp"
+#include "define.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "generic/base_colorable.hpp"
@@ -134,7 +135,6 @@ namespace VTX
 		nlohmann::json Serializer::serialize( const Model::Representation::Representation & p_representation ) const
 		{
 			return {
-				{ "NAME", p_representation.getName() },
 				{ "COLOR", serialize( p_representation.getColor() ) },
 				{ "QUICK_ACCESS", p_representation.hasQuickAccess() },
 				{ "TYPE", p_representation.getRepresentationType() },
@@ -207,11 +207,16 @@ namespace VTX
 
 		nlohmann::json Serializer::serialize( const Setting & p_setting ) const
 		{
+			const std::string & defaultRepresentationName
+				= Model::Representation::RepresentationLibrary::get()
+					  .getRepresentation( p_setting.getDefaultRepresentationIndex() )
+					  ->getName();
+
 			return { { "SYMBOL_DISPLAY_MODE", p_setting.getSymbolDisplayMode() },
 					 { "WINDOW_FULLSCREEN", p_setting.getWindowFullscreen() },
 					 { "ACTIVE_RENDERER", p_setting.getActivateRenderer() },
 					 { "FORCE_RENDERER", p_setting.getForceRenderer() },
-					 { "REPRESENTATION", p_setting.getDefaultRepresentationIndex() },
+					 { "REPRESENTATION", defaultRepresentationName },
 					 { "RENDER_EFFECT_DEFAULT_INDEX", p_setting.getDefaultRenderEffectPresetIndex() },
 					 { "ACTIVE_VSYNC", p_setting.getVSync() },
 					 { "BACKGROUND_OPACITY", p_setting.getSnapshotBackgroundOpacity() },
@@ -379,7 +384,6 @@ namespace VTX
 		void Serializer::deserialize( const nlohmann::json &				  p_json,
 									  Model::Representation::Representation & p_representation ) const
 		{
-			p_representation.setName( p_json.at( "NAME" ).get<std::string>() );
 			Color::Rgb color;
 			deserialize( p_json.at( "COLOR" ), color );
 			p_representation.setColor( color );
@@ -487,7 +491,8 @@ namespace VTX
 
 			p_setting.setActivateRenderer( p_json.at( "ACTIVE_RENDERER" ).get<bool>() );
 			p_setting.setForceRenderer( p_json.at( "FORCE_RENDERER" ).get<bool>() );
-			p_setting.setDefaultRepresentationIndex( p_json.at( "REPRESENTATION" ).get<int>() );
+
+			p_setting.setTmpRepresentationDefaultName( p_json.at( "REPRESENTATION" ).get<std::string>() );
 			p_setting.setDefaultRenderEffectPresetIndex( p_json.at( "RENDER_EFFECT_DEFAULT_INDEX" ).get<int>() );
 
 			p_setting.setVSync( p_json.at( "ACTIVE_VSYNC" ).get<bool>() );

@@ -23,7 +23,7 @@ namespace VTX::IO::Reader
 			std::ifstream  is( p_path );
 			nlohmann::json json;
 			is >> json;
-			serializer.deserialize( json, p_data );
+			serializer.deserialize( json.at( "DATA" ), p_data );
 		}
 	};
 } // namespace VTX::IO::Reader

@@ -263,6 +263,12 @@ namespace VTX
 		static const VTX::FilePath *				   getRecentLoadingPath( const int p_index );
 		static void									   cleanRecentPaths();
 
+		const std::string & getTmpRepresentationDefaultName() const { return tmpRepresentationDefaultName; };
+		void				setTmpRepresentationDefaultName( const std::string & p_representationDefaultName )
+		{
+			tmpRepresentationDefaultName = p_representationDefaultName;
+		};
+
 		void backup();
 		void recover();
 		void restore();
@@ -287,6 +293,8 @@ namespace VTX
 
 		int representationDefaultIndex = REPRESENTATION_DEFAULT_INDEX;
 		int renderEffectDefaultIndex   = RENDER_EFFECT_DEFAULT_INDEX;
+
+		std::string tmpRepresentationDefaultName = "";
 
 		int					 defaultTrajectorySpeed	   = DEFAULT_TRAJECTORY_SPEED;
 		Trajectory::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
