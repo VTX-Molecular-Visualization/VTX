@@ -208,6 +208,7 @@ namespace VTX::UI::Widget::Settings
 	void RenderEffectPresetEditor::refresh()
 	{
 		_name->setText( QString::fromStdString( _preset->getName() ) );
+
 		_quickAccess->setChecked( _preset->hasQuickAccess() );
 
 		_shading->setCurrentIndex( (int)_preset->getShading() );
@@ -264,6 +265,12 @@ namespace VTX::UI::Widget::Settings
 	void RenderEffectPresetEditor::_onNameChanged()
 	{
 		const std::string strName = _name->text().toStdString();
+
+		if ( strName == "" )
+		{
+			_name->setText( QString::fromStdString( _preset->getName() ) );
+			return;
+		}
 
 		if ( !signalsBlocked() && _preset->getName() != strName )
 			VTX_ACTION( new Action::Renderer::ChangeName( *_preset, strName ) );

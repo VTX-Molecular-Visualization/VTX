@@ -27,10 +27,7 @@ namespace VTX::Model::Representation
 			_init();
 		}
 
-		if ( VTX_SETTING().getTmpRepresentationDefaultName() != "" )
-		{
-			_defaultRepresentation = getRepresentationByName( VTX_SETTING().getTmpRepresentationDefaultName() );
-		}
+		_defaultRepresentation = getRepresentationByName( VTX_SETTING().getTmpRepresentationDefaultName() );
 
 		if ( _defaultRepresentation == nullptr )
 		{

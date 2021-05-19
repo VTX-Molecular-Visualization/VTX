@@ -25,6 +25,11 @@ namespace VTX::Model::Renderer
 		{
 			_init();
 		}
+
+		const int defaultIndex = getPresetIndex( VTX_SETTING().getTmpRenderEffectPresetDefaultName() );
+		VTX_SETTING().setDefaultRepresentationIndex( defaultIndex == -1 ? Setting::RENDER_EFFECT_DEFAULT_INDEX
+																		: defaultIndex );
+		VTX_SETTING().setTmpRepresentationDefaultName( "" );
 	};
 	RenderEffectPresetLibrary ::~RenderEffectPresetLibrary()
 	{
@@ -93,7 +98,7 @@ namespace VTX::Model::Renderer
 		RenderEffectPreset * const		 copiedPreset = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
 		copiedPreset->copyFrom( *sourcePreset );
 
-		copiedPreset->setName( "copy of " + sourcePreset->getName() );
+		copiedPreset->setName( getValidName( sourcePreset->getName() ) );
 		copiedPreset->setQuickAccess( false );
 
 		addPreset( copiedPreset );
@@ -140,6 +145,18 @@ namespace VTX::Model::Renderer
 		for ( int i = 0; i < _presets.size(); i++ )
 		{
 			if ( _presets[ i ] == p_preset )
+			{
+				return i;
+			}
+		}
+
+		return -1;
+	}
+	int RenderEffectPresetLibrary::getPresetIndex( const std::string & p_presetName ) const
+	{
+		for ( int i = 0; i < _presets.size(); i++ )
+		{
+			if ( _presets[ i ]->getName() == p_presetName )
 			{
 				return i;
 			}
@@ -224,6 +241,28 @@ namespace VTX::Model::Renderer
 
 		if ( p_notify )
 			_notifyDataChanged();
+	}
+	std::string RenderEffectPresetLibrary::getValidName( const std::string & p_name ) const
+	{
+		const std::string & defaultStr = p_name;
+		std::string			validName  = defaultStr;
+
+		int counter = 2;
+		while ( !isValidName( validName ) )
+		{
+			validName = defaultStr + " (" + std::to_string( counter ) + ")";
+			counter++;
+		}
+
+		return validName;
+	}
+	bool RenderEffectPresetLibrary::isValidName( const std::string & p_name ) const
+	{
+		for ( const RenderEffectPreset * const representation : _presets )
+			if ( representation->getName() == p_name )
+				return false;
+
+		return true;
 	}
 
 	void RenderEffectPresetLibrary::_init()

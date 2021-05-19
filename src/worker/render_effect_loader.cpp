@@ -31,6 +31,7 @@ namespace VTX::Worker
 				try
 				{
 					reader->readFile( fileIterator->path(), *preset );
+					preset->setName( fileIterator->path().filename().string() );
 					_library.addPreset( preset, _notify );
 				}
 				catch ( const std::exception & p_e )
