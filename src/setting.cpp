@@ -9,6 +9,7 @@
 #include "trajectory/trajectory_enum.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
+#include <QSettings>
 #include <exception>
 #include <string>
 
@@ -157,6 +158,8 @@ namespace VTX
 		if ( recentLoadingPath.size() > RECENT_PATH_SAVED_MAX_COUNT )
 			recentLoadingPath.pop_back();
 
+		saveRecentPaths();
+
 		VTX_EVENT( new Event::VTXEvent( Event::Global::RECENT_FILES_CHANGE ) );
 	}
 	const VTX::FilePath * Setting::getRecentLoadingPath( const int p_index )
@@ -179,6 +182,52 @@ namespace VTX
 			recentLoadingPath.pop_front();
 		}
 	}
+
+	void Setting::loadRecentPaths()
+	{
+		const QSettings settings( QSettings::Format::NativeFormat,
+								  QSettings::Scope::UserScope,
+								  QString::fromStdString( Setting::PROJECT_NAME ),
+								  QString::fromStdString( Setting::PROJECT_NAME ) );
+
+		int		counter = 0;
+		QString key		= QString::fromStdString( "RecentLoadedPath" + std::to_string( counter ) );
+
+		while ( settings.contains( key ) )
+		{
+			const std::string strPath = settings.value( key ).toString().toStdString();
+
+			const FilePath * path = new FilePath( strPath );
+			if ( Util::Filesystem::exists( *path ) )
+			{
+				recentLoadingPath.push_back( path );
+			}
+			else
+			{
+				delete path;
+			}
+
+			counter++;
+			key = QString::fromStdString( "RecentLoadedPath" + std::to_string( counter ) );
+		}
+	}
+	void Setting::saveRecentPaths()
+	{
+		QSettings settings( QSettings::Format::NativeFormat,
+							QSettings::Scope::UserScope,
+							QString::fromStdString( Setting::PROJECT_NAME ),
+							QString::fromStdString( Setting::PROJECT_NAME ) );
+
+		int counter = 0;
+		for ( const FilePath * const path : recentLoadingPath )
+		{
+			const QString key = QString::fromStdString( "RecentLoadedPath" + std::to_string( counter ) );
+			settings.setValue( key, QString::fromStdString( path->string() ) );
+
+			counter++;
+		}
+	}
+
 	void Setting::backup()
 	{
 		IO::Writer::SerializedObject<VTX::Setting> writer = IO::Writer::SerializedObject<VTX::Setting>();

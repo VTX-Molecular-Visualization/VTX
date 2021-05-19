@@ -29,6 +29,7 @@ namespace VTX
 
 		// Load settings.
 		VTX_ACTION( new Action::Setting::Load() );
+		_setting.loadRecentPaths();
 
 		// Create singletons.
 		MVC::MvcManager::get();

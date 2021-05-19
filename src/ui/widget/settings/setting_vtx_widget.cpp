@@ -29,7 +29,7 @@ namespace VTX::UI::Widget::Settings
 		_settingsLayout->setColumnStretch( 0, 1 );
 		_settingsLayout->setColumnStretch( 1, 10 );
 
-		QHBoxLayout * const bottomLayout = new QHBoxLayout( this );
+		QHBoxLayout * const bottomLayout = new QHBoxLayout();
 
 		// Controller
 		_activeControllerElasticityWidget = new QCheckBox( viewport );

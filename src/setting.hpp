@@ -262,6 +262,8 @@ namespace VTX
 		static void									   enqueueNewLoadingPath( const FilePath & );
 		static const VTX::FilePath *				   getRecentLoadingPath( const int p_index );
 		static void									   cleanRecentPaths();
+		static void									   loadRecentPaths();
+		static void									   saveRecentPaths();
 
 		const std::string & getTmpRepresentationDefaultName() const { return _tmpRepresentationDefaultName; };
 		void				setTmpRepresentationDefaultName( const std::string & p_representationDefaultName )

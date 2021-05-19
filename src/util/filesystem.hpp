@@ -214,6 +214,8 @@ namespace VTX
 
 				return succeed;
 			}
+
+			inline bool exists( const FilePath & p_path ) { return std::filesystem::exists( p_path ); }
 		} // namespace Filesystem
 	}	  // namespace Util
 } // namespace VTX
