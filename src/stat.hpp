@@ -12,6 +12,7 @@ namespace VTX
 		uint  tickRate	 = 0;
 		uint  FPS		 = 666u;
 		float renderTime = 0.f; // Miliseconds.
+		uint  drawCalls	 = 0u;
 	};
 } // namespace VTX
 #endif

@@ -94,7 +94,10 @@ namespace VTX::UI::Widget::Render
 		{
 			_painter.begin( this );
 			_painter.setPen( Qt::white );
-			_painter.drawText( 0, 10, QString::fromStdString( std::to_string( VTX_STAT().FPS ) ) );
+			_painter.drawText( 0,
+							   10,
+							   QString::fromStdString( "FPS: " + std::to_string( VTX_STAT().FPS )
+													   + " - draw calls: " + std::to_string( VTX_STAT().drawCalls ) ) );
 			_painter.end();
 		}
 	}
