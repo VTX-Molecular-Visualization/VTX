@@ -42,6 +42,9 @@ namespace VTX::UI::Widget::Settings
 		_outlineThickness
 			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( _viewport, "outlineThickness" );
 		_outlineThickness->setMinMax( Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );
+		_outlineSensivity
+			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( _viewport, "outlineSensivity" );
+		_outlineSensivity->setMinMax( Setting::OUTLINE_SENSIVITY_MIN, Setting::OUTLINE_SENSIVITY_MAX );
 		_outlineColor = VTX::UI::WidgetFactory::get().instantiateWidget<ColorFieldButton>( _viewport, "outlineColor" );
 
 		_enableFog = new QCheckBox( _viewport );
@@ -92,6 +95,7 @@ namespace VTX::UI::Widget::Settings
 		_addSpace();
 		_addItem( _enableOutline, QString( "Outline" ) );
 		_addItem( _outlineThickness, QString( "Thickness" ) );
+		_addItem( _outlineSensivity, QString( "Sensivity" ) );
 		_addItem( _outlineColor, QString( "Color" ) );
 		_addSpace();
 		_addItem( _enableFog, QString( "Fog" ) );
@@ -146,6 +150,10 @@ namespace VTX::UI::Widget::Settings
 				 QOverload<float>::of( &FloatFieldSliderWidget::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onOutlineThicknessChanged );
+		connect( _outlineSensivity,
+				 QOverload<float>::of( &FloatFieldSliderWidget::onValueChange ),
+				 this,
+				 &RenderEffectPresetEditor::_onOutlineSensivityChanged );
 		connect( _outlineColor,
 				 QOverload<const Color::Rgb &>::of( &ColorFieldButton::onValueChange ),
 				 this,
@@ -224,6 +232,8 @@ namespace VTX::UI::Widget::Settings
 		_enableOutline->setChecked( outlineEnabled );
 		_outlineThickness->setValue( _preset->getOutlineThickness() );
 		_outlineThickness->setEnabled( outlineEnabled );
+		_outlineSensivity->setValue( _preset->getOutlineSensivity() );
+		_outlineSensivity->setEnabled( outlineEnabled );
 		_outlineColor->setColor( _preset->getOutlineColor() );
 		_outlineColor->setEnabled( outlineEnabled );
 
@@ -315,6 +325,11 @@ namespace VTX::UI::Widget::Settings
 	{
 		if ( !signalsBlocked() && p_value != _preset->getOutlineThickness() )
 			VTX_ACTION( new Action::Renderer::ChangeOutlineThickness( *_preset, p_value ) );
+	}
+	void RenderEffectPresetEditor::_onOutlineSensivityChanged( const float p_value )
+	{
+		if ( !signalsBlocked() && p_value != _preset->getOutlineSensivity() )
+			VTX_ACTION( new Action::Renderer::ChangeOutlineSensivity( *_preset, p_value ) );
 	}
 	void RenderEffectPresetEditor::_onOutlineColorChanged( const Color::Rgb & p_color )
 	{

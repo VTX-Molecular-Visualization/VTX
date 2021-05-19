@@ -350,7 +350,7 @@ namespace VTX::Action::Setting
 	class ChangeOutlineThickness : public BaseAction
 	{
 	  public:
-		explicit ChangeOutlineThickness( const float p_thickness ) : _thickness( p_thickness ) {}
+		explicit ChangeOutlineThickness( const uint p_thickness ) : _thickness( p_thickness ) {}
 
 		virtual void execute() override
 		{
@@ -359,7 +359,22 @@ namespace VTX::Action::Setting
 		};
 
 	  private:
-		const float _thickness;
+		const uint _thickness;
+	};
+
+	class ChangeOutlineSensivity : public BaseAction
+	{
+	  public:
+		explicit ChangeOutlineSensivity( const float p_sensivity ) : _sensivity( p_sensivity ) {}
+
+		virtual void execute() override
+		{
+			VTX_RENDER_EFFECT().setOutlineSensivity( _sensivity );
+			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;
+		};
+
+	  private:
+		const float _sensivity;
 	};
 
 	class ActiveFog : public BaseAction

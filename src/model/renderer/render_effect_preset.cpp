@@ -18,6 +18,7 @@ namespace VTX::Model::Renderer
 
 		_outline		  = Setting::ACTIVE_OUTLINE_DEFAULT;
 		_outlineThickness = Setting::OUTLINE_THICKNESS_DEFAULT;
+		_outlineSensivity = Setting::OUTLINE_SENSIVITY_DEFAULT;
 		_outlineColor	  = Setting::OUTLINE_COLOR_DEFAULT;
 
 		_fog		= Setting::ACTIVE_FOG_DEFAULT;
@@ -75,10 +76,16 @@ namespace VTX::Model::Renderer
 		_outline = p_enable;
 		_notifyDataChanged();
 	}
-	void RenderEffectPreset::setOutlineThickness( const float p_outlineThickness )
+	void RenderEffectPreset::setOutlineThickness( const uint p_outlineThickness )
 	{
 		_outlineThickness
 			= Util::Math::clamp( p_outlineThickness, Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );
+		_notifyDataChanged();
+	}
+	void RenderEffectPreset::setOutlineSensivity( const float p_outlineSensivity )
+	{
+		_outlineSensivity
+			= Util::Math::clamp( p_outlineSensivity, Setting::OUTLINE_SENSIVITY_MIN, Setting::OUTLINE_SENSIVITY_MAX );
 		_notifyDataChanged();
 	}
 	void RenderEffectPreset::setOutlineColor( const Color::Rgb & p_outlineColor )

@@ -59,7 +59,7 @@ namespace VTX
 	const int		  Setting::RENDER_EFFECT_DEFAULT_INDEX			 = 0;
 
 	const Renderer::SHADING Setting::SHADING_DEFAULT		   = Renderer::SHADING::DIFFUSE;
-	const bool				Setting::ACTIVE_VSYNC_DEFAULT	   = false;
+	const bool				Setting::ACTIVE_VSYNC_DEFAULT	   = true;
 	const bool				Setting::ACTIVE_AO_DEFAULT		   = true;
 	const int				Setting::AO_INTENSITY_DEFAULT	   = 5;
 	const int				Setting::AO_INTENSITY_MIN		   = 1;
@@ -68,9 +68,12 @@ namespace VTX
 	const int				Setting::AO_BLUR_SIZE_MIN		   = 1;
 	const int				Setting::AO_BLUR_SIZE_MAX		   = 99;
 	const bool				Setting::ACTIVE_OUTLINE_DEFAULT	   = false;
-	const float				Setting::OUTLINE_THICKNESS_DEFAULT = 0.1f;
-	const float				Setting::OUTLINE_THICKNESS_MIN	   = 0.00001f;
-	const float				Setting::OUTLINE_THICKNESS_MAX	   = 0.1;
+	const uint				Setting::OUTLINE_THICKNESS_DEFAULT = 2;
+	const uint				Setting::OUTLINE_THICKNESS_MIN	   = 1;
+	const uint				Setting::OUTLINE_THICKNESS_MAX	   = 5;
+	const float				Setting::OUTLINE_SENSIVITY_DEFAULT = 0.4f;
+	const float				Setting::OUTLINE_SENSIVITY_MIN	   = 0.01f;
+	const float				Setting::OUTLINE_SENSIVITY_MAX	   = 1.f;
 	const Color::Rgb		Setting::OUTLINE_COLOR_DEFAULT	   = Color::Rgb::WHITE;
 	const bool				Setting::ACTIVE_FOG_DEFAULT		   = false;
 	const float				Setting::FOG_NEAR_DEFAULT		   = 30;

@@ -14,9 +14,10 @@ namespace VTX
 			VTX_INFO( "Downloading " + p_id + "..." );
 
 			QNetworkRequest request;
-			//request.setSslConfiguration( QSslConfiguration::defaultDtlsConfiguration() );
-			//request.setRawHeader( QByteArray( "Authorization" ), QByteArray( "Basic" ) );
+			// request.setSslConfiguration( QSslConfiguration::defaultDtlsConfiguration() );
+			// request.setRawHeader( QByteArray( "Authorization" ), QByteArray( "Basic" ) );
 			request.setUrl( QUrl( std::string( API_URL_MMTF + p_id ).c_str() ) );
+			// request.setHeader( QNetworkRequest::ContentTypeHeader, "text/plain" );
 			QNetworkReply * const reply = _networkManager.get( request );
 			connect( reply, &QNetworkReply::errorOccurred, this, &NetworkManager::_errorOccured );
 			connect( reply, &QNetworkReply::sslErrors, this, &NetworkManager::_sslErrors );

@@ -69,6 +69,7 @@ namespace VTX::UI::Widget::Settings
 
 		QCheckBox *				 _enableOutline	   = nullptr;
 		FloatFieldSliderWidget * _outlineThickness = nullptr;
+		FloatFieldSliderWidget * _outlineSensivity = nullptr;
 		ColorFieldButton *		 _outlineColor	   = nullptr;
 
 		QCheckBox * _enableFog = nullptr;
@@ -105,6 +106,7 @@ namespace VTX::UI::Widget::Settings
 
 		void _onOutlineStateChanged( const int p_state );
 		void _onOutlineThicknessChanged( const float p_value );
+		void _onOutlineSensivityChanged( const float p_value );
 		void _onOutlineColorChanged( const Color::Rgb & p_color );
 
 		void _onFogStateChanged( const int p_state );
@@ -114,7 +116,6 @@ namespace VTX::UI::Widget::Settings
 		void _onFogColorChanged( const Color::Rgb & p_color );
 
 		void _onBackgroundColorChanged( const Color::Rgb & p_color );
-		void _onBackgroundOpacityChanged( const float p_color );
 		void _onCameraLightColorChanged( const Color::Rgb & p_color );
 		void _onCameraFOVChanged( const float p_value );
 		void _onCameraNearChanged( const float p_value );

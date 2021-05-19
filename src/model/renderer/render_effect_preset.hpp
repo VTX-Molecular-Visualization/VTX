@@ -38,8 +38,10 @@ namespace VTX::Model::Renderer
 
 		bool			   isOutlineEnabled() const { return _outline; };
 		void			   enableOutline( const bool p_enable );
-		float			   getOutlineThickness() const { return _outlineThickness; };
-		void			   setOutlineThickness( const float p_outlineThickness );
+		uint			   getOutlineThickness() const { return _outlineThickness; };
+		void			   setOutlineThickness( const uint p_outlineThickness );
+		float			   getOutlineSensivity() const { return _outlineSensivity; };
+		void			   setOutlineSensivity( const float p_outlineSensivity );
 		const Color::Rgb & getOutlineColor() const { return _outlineColor; };
 		void			   setOutlineColor( const Color::Rgb & p_outlineColor );
 
@@ -87,7 +89,8 @@ namespace VTX::Model::Renderer
 		int	 _ssaoBlurSize;
 
 		bool	   _outline;
-		float	   _outlineThickness;
+		uint	   _outlineThickness;
+		float	   _outlineSensivity;
 		Color::Rgb _outlineColor;
 
 		bool	   _fog;
