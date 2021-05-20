@@ -25,6 +25,8 @@ namespace VTX
 				LOG_LVL_ERROR,
 			};
 
+			inline static const std::vector<std::string> LEVEL_STR { "DEBUG", "INFO", "WARNING", "ERROR" };
+
 			inline static Logger & get()
 			{
 				static Logger instance;
