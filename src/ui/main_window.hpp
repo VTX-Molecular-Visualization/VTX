@@ -42,6 +42,7 @@ namespace VTX
 			MainWindow( QWidget * = 0 );
 			~MainWindow();
 			void setupUi();
+			void initWindowLayout();
 
 			inline const Widget::Render::OpenGLWidget & getOpenGLWidget() const
 			{
