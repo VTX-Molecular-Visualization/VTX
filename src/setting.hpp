@@ -85,7 +85,8 @@ namespace VTX
 		static const float ATOMS_RADIUS_ADD_MIN;
 		static const float ATOMS_RADIUS_ADD_MAX;
 
-		static const Generic::COLOR_MODE COLOR_MODE_DEFAULT;
+		static const Generic::COLOR_MODE					 COLOR_MODE_DEFAULT;
+		static const Generic::SECONDARY_STRUCTURE_COLOR_MODE SS_COLOR_MODE_DEFAULT;
 
 		static const std::string NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME;
 		static const int		 RENDER_EFFECT_DEFAULT_INDEX;
@@ -188,9 +189,10 @@ namespace VTX
 		static const float AUTO_ROTATE_SPEED_MAX;
 
 		// Video.
-		static const float PATH_DURATION_DEFAULT;
-		static const uint  VIDEO_FPS_DEFAULT;
-		static const uint  VIDEO_CRF_DEFAULT;
+		static const float		PATH_DURATION_DEFAULT;
+		static const ID::VTX_ID CONTROLLER_MODE_DEFAULT;
+		static const uint		VIDEO_FPS_DEFAULT;
+		static const uint		VIDEO_CRF_DEFAULT;
 
 		// Misc.
 		static const int  CONSOLE_SIZE;

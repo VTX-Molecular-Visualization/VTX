@@ -9,6 +9,7 @@
 #include "math/transform.hpp"
 #include "util/math.hpp"
 #include <nlohmann/json.hpp>
+#include <string>
 
 namespace VTX
 {
@@ -98,6 +99,15 @@ namespace VTX
 
 			void _deserializeMoleculeRepresentations( const nlohmann::json &, Model::Molecule & ) const;
 			void _deserializeMoleculeVisibilities( const nlohmann::json &, Model::Molecule & ) const;
+
+			template<typename T>
+			T _get( const nlohmann::json & p_json, const std::string & p_key, const T & p_defaultValue = T() ) const
+			{
+				if ( p_json.contains( p_key ) )
+					return p_json.at( p_key ).get<T>();
+				else
+					return p_defaultValue;
+			}
 		};
 
 	} // namespace IO
