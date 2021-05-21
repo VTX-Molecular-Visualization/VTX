@@ -54,17 +54,6 @@ namespace VTX::UI::Widget::MainMenu::Home
 		_saveAsSessionButton->setData( "Save as...", ":/sprite/saveas_session_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_saveAsSessionButton, 2 );
 
-		_loadSettingsButton
-			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "loadSettingsButton" );
-		_loadSettingsButton->setData( "Load settings", ":/sprite/open_session_icon.png", Qt::Orientation::Horizontal );
-		pushButton( *_loadSettingsButton, 3 );
-
-		_saveSettingsButton
-			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "saveSettingsButton" );
-		_saveSettingsButton->setData(
-			"Save settings", ":/sprite/saveas_session_icon.png", Qt::Orientation::Horizontal );
-		pushButton( *_saveSettingsButton, 3 );
-
 		_recentSessionMenu = new QMenu( _openRecentSessionButton );
 		_refreshRecentFiles();
 		_openRecentSessionButton->setMenu( _recentSessionMenu );
@@ -77,8 +66,6 @@ namespace VTX::UI::Widget::MainMenu::Home
 		_openSessionButton->setTriggerAction( this, &MenuHomeSessionWidget::_openFile );
 		_saveSessionButton->setTriggerAction( this, &MenuHomeSessionWidget::_saveSession );
 		_saveAsSessionButton->setTriggerAction( this, &MenuHomeSessionWidget::_saveAsSession );
-		_loadSettingsButton->setTriggerAction( this, &MenuHomeSessionWidget::_loadSettings );
-		_saveSettingsButton->setTriggerAction( this, &MenuHomeSessionWidget::_saveSettings );
 	}
 	void MenuHomeSessionWidget::localize() {}
 
@@ -107,15 +94,20 @@ namespace VTX::UI::Widget::MainMenu::Home
 		_openRecentSessionButton->setEnabled( actionIndex > 0 );
 	}
 
-	void MenuHomeSessionWidget::_newSession() { VTX_ACTION( new Action::Main::New() ); }
+	void MenuHomeSessionWidget::_newSession() { Dialog::createNewSessionDialog(); }
 	void MenuHomeSessionWidget::_openFile() { Dialog::openLoadSessionDialog(); }
 	void MenuHomeSessionWidget::_saveSession() const
 	{
-		FilePath * const filePath = new FilePath( VTXApp::get().getCurrentPath() );
-		if ( filePath->empty() )
+		const FilePath & filePath = VTXApp::get().getCurrentPath();
+
+		if ( filePath.empty() )
+		{
 			Dialog::openSaveSessionDialog();
+		}
 		else
-			VTX_ACTION( new Action::Main::Save( filePath ) );
+		{
+			VTX_ACTION( new Action::Main::Save( new FilePath( filePath ) ) );
+		}
 	}
 	void MenuHomeSessionWidget::_saveAsSession() const { Dialog::openSaveSessionDialog(); }
 
@@ -124,9 +116,5 @@ namespace VTX::UI::Widget::MainMenu::Home
 		FilePath * const path = new FilePath( *Setting::getRecentLoadingPath( p_ptrSessionIndex ) );
 		VTX_ACTION( new Action::Main::Open( path ) );
 	}
-
-	void MenuHomeSessionWidget::_loadSettings() const { VTX_ACTION( new Action::Setting::Load() ); }
-
-	void MenuHomeSessionWidget::_saveSettings() const { VTX_ACTION( new Action::Setting::Save() ); }
 
 } // namespace VTX::UI::Widget::MainMenu::Home

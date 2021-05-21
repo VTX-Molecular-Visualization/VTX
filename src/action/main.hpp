@@ -15,6 +15,7 @@
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
 #include "tool/logger.hpp"
+#include "ui/dialog.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "worker/loader.hpp"
@@ -30,7 +31,11 @@ namespace VTX::Action::Main
 	class New : public BaseAction
 	{
 	  public:
-		virtual void execute() override { VTXApp::get().getScene().reset(); }
+		virtual void execute() override
+		{
+			VTXApp::get().getScene().reset();
+			VTXApp::get().clearCurrentPath();
+		}
 	};
 
 	class Quit : public BaseAction
@@ -41,6 +46,27 @@ namespace VTX::Action::Main
 
 	class Open : public BaseAction
 	{
+	  private:
+		class LoadSceneClass
+		{
+		  public:
+			LoadSceneClass( std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {};
+
+			void _loadScene()
+			{
+				Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
+				VTX_WORKER( sceneLoader );
+
+				for ( FilePath * const path : _paths )
+				{
+					VTXApp::get().setCurrentPath( *path, true );
+					delete path;
+				}
+			}
+
+			std::vector<FilePath *> _paths;
+		};
+
 	  public:
 		explicit Open( FilePath * const p_path ) { _paths.emplace_back( p_path ); }
 		explicit Open( const std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {}
@@ -59,14 +85,20 @@ namespace VTX::Action::Main
 				if ( _paths.empty() )
 					return;
 
-				Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
-				VTX_WORKER( sceneLoader );
+				LoadSceneClass * const sceneClass = new LoadSceneClass( _paths );
 
-				for ( FilePath * const path : _paths )
-				{
-					VTXApp::get().setCurrentPath( *path, true );
-					delete path;
-				}
+				Worker::Callback callback = Worker::Callback(
+					[ sceneClass ]( const uint p_code )
+					{
+						if ( p_code )
+						{
+							VTXApp::get().getScene().clear();
+							sceneClass->_loadScene();
+						}
+
+						delete sceneClass;
+					} );
+				UI::Dialog::leavingSessionDialog( callback );
 			}
 			else
 			{
@@ -131,7 +163,11 @@ namespace VTX::Action::Main
 	class Save : public BaseAction
 	{
 	  public:
-		explicit Save( FilePath * p_path ) : _path( p_path ) {}
+		explicit Save( FilePath * p_path ) : _path( p_path ), _callback( nullptr ) {}
+		explicit Save( FilePath * p_path, Worker::Callback * const p_callback ) :
+			_path( p_path ), _callback( p_callback )
+		{
+		}
 
 		virtual void execute() override
 		{
@@ -145,8 +181,7 @@ namespace VTX::Action::Main
 				return;
 			}
 
-			Worker::Callback * callback = new Worker::Callback( [ saver ]( const uint p_code ) {} );
-			VTX_WORKER( saver, callback );
+			VTX_WORKER( saver, _callback );
 
 			if ( _path->extension() == ".vtx" )
 				VTXApp::get().setCurrentPath( *_path, true );
@@ -155,7 +190,8 @@ namespace VTX::Action::Main
 		}
 
 	  private:
-		FilePath * _path;
+		FilePath * const		 _path;
+		Worker::Callback * const _callback;
 	};
 
 	class ImportRepresentationPreset : public BaseAction

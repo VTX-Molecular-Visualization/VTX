@@ -22,8 +22,6 @@ namespace VTX
 		{
 			Tool::Chrono chrono;
 
-			VTX::VTXApp::get().getScene().clear();
-
 			for ( const FilePath * path : _paths )
 			{
 				chrono.start();

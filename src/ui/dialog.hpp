@@ -6,6 +6,7 @@
 #endif
 
 #include "action/base_action.hpp"
+#include "worker/worker_manager.hpp"
 #include <QString>
 #include <QWidget>
 
@@ -20,8 +21,12 @@ namespace VTX::UI
 		static void openLoadMoleculeDialog();
 		static void openExportMoleculeDialog();
 
+		static void createNewSessionDialog();
+
+		static void leavingSessionDialog( Worker::Callback & p_callbackSucceed );
+
 		static void openLoadSessionDialog();
-		static void openSaveSessionDialog();
+		static void openSaveSessionDialog( Worker::Callback * const p_callback = nullptr );
 
 		static void importRepresentationPresetDialog();
 		static void importRenderEffectPresetDialog();

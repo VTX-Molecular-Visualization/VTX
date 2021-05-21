@@ -34,8 +34,6 @@ namespace VTX::UI::Widget::MainMenu::Home
 		MenuToolButtonWidget * _openRecentSessionButton = nullptr;
 		MenuToolButtonWidget * _saveSessionButton		= nullptr;
 		MenuToolButtonWidget * _saveAsSessionButton		= nullptr;
-		MenuToolButtonWidget * _loadSettingsButton		= nullptr;
-		MenuToolButtonWidget * _saveSettingsButton		= nullptr;
 
 		QMenu * _recentSessionMenu = nullptr;
 
@@ -43,8 +41,6 @@ namespace VTX::UI::Widget::MainMenu::Home
 		void _newSession();
 		void _openFile();
 		void _loadRecentSession( const int & p_ptrSessionIndex ) const;
-		void _loadSettings() const;
-		void _saveSettings() const;
 		void _saveSession() const;
 		void _saveAsSession() const;
 

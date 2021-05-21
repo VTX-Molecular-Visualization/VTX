@@ -81,6 +81,7 @@ namespace VTX
 			if ( p_addInRecentPath )
 				Setting::enqueueNewLoadingPath( p_filePath );
 		}
+		inline void clearCurrentPath() { _currentFilePath = FilePath(); }
 
 		bool notify( QObject * const, QEvent * const ) override;
 

@@ -45,7 +45,59 @@ namespace VTX::UI
 		}
 	}
 
-	void Dialog::openSaveSessionDialog()
+	void Dialog::createNewSessionDialog()
+	{
+		Worker::Callback callback = Worker::Callback(
+			[]( const uint p_code )
+			{
+				if ( p_code )
+					VTX_ACTION( new Action::Main::New() );
+			} );
+
+		leavingSessionDialog( callback );
+	}
+
+	void Dialog::leavingSessionDialog( Worker::Callback & p_callback )
+	{
+		if ( VTXApp::get().getScene().isEmpty() && VTXApp::get().getCurrentPath().empty() )
+		{
+			p_callback( 1 );
+			return;
+		}
+
+		const int res = QMessageBox::warning( &VTXApp::get().getMainWindow(),
+											  "Save session",
+											  "All changes on current session will be lost. Continue ?",
+											  ( QMessageBox::StandardButton::Save | QMessageBox::StandardButton::Discard
+												| QMessageBox::StandardButton::Cancel ),
+											  QMessageBox::StandardButton::Cancel );
+
+		if ( res == QMessageBox::StandardButton::Save )
+		{
+			const FilePath & filePath = VTXApp::get().getCurrentPath();
+
+			Worker::Callback * threadCallback = new Worker::Callback( p_callback );
+
+			if ( filePath.empty() )
+			{
+				Dialog::openSaveSessionDialog( threadCallback );
+			}
+			else
+			{
+				VTX_ACTION( new Action::Main::Save( new FilePath( filePath ), threadCallback ) );
+			}
+		}
+		else if ( res == QMessageBox::StandardButton::Discard )
+		{
+			p_callback( 1 );
+		}
+		else
+		{
+			p_callback( 0 );
+		}
+	}
+
+	void Dialog::openSaveSessionDialog( Worker::Callback * const p_callback )
 	{
 		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
 															   "Save session",
@@ -55,7 +107,7 @@ namespace VTX::UI
 		if ( !filename.isNull() )
 		{
 			FilePath * path = new FilePath( filename.toStdString() );
-			VTX_ACTION( new Action::Main::Save( path ) );
+			VTX_ACTION( new Action::Main::Save( path, p_callback ) );
 		}
 	}
 	void Dialog::openLoadSessionDialog()
