@@ -14,14 +14,6 @@ namespace VTX::UI
 	MainWindow::MainWindow( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
 		_registerEvent( Event::Global::CHANGE_STATE );
-
-		const QSize winsize = QSize( VTX_SETTING().WINDOW_WIDTH_DEFAULT, VTX_SETTING().WINDOW_HEIGHT_DEFAULT );
-		resize( winsize );
-
-		if ( VTX_SETTING().getWindowFullscreen() )
-			setWindowMode( WindowMode::Fullscreen );
-		else
-			setWindowMode( WindowMode::Windowed );
 	}
 
 	MainWindow::~MainWindow() { delete _contextualMenu; }
@@ -39,6 +31,10 @@ namespace VTX::UI
 
 	void MainWindow::setupUi()
 	{
+		const QSize winsize = QSize( VTX_SETTING().WINDOW_WIDTH_DEFAULT, VTX_SETTING().WINDOW_HEIGHT_DEFAULT );
+		resize( winsize );
+		setWindowState( Qt::WindowState::WindowNoState );
+
 		_mainMenuBar = WidgetFactory::get().instantiateWidget<Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
 		setMenuBar( _mainMenuBar );
 		setAcceptDrops( true );
@@ -67,15 +63,22 @@ namespace VTX::UI
 
 		setDockOptions( DockOption::VerticalTabs | DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks );
 
+		_mainMenuBar->setCurrentTab( 0 );
+		_renderWidget->setFocus();
+
+		_loadStyleSheet( VTX_SETTING().STYLESHEET_FILE_DEFAULT );
+	}
+	void MainWindow::initWindowLayout()
+	{
 		if ( hasValidLayoutSave() )
 			loadLastLayout();
 		else
 			restoreDefaultLayout();
 
-		_mainMenuBar->setCurrentTab( 0 );
-		_renderWidget->setFocus();
-
-		_loadStyleSheet( VTX_SETTING().STYLESHEET_FILE_DEFAULT );
+		if ( VTX_SETTING().getWindowFullscreen() )
+			setWindowMode( WindowMode::Fullscreen );
+		else
+			setWindowMode( WindowMode::Windowed );
 	}
 
 	void MainWindow::_loadStyleSheet( const char * p_stylesheetPath )

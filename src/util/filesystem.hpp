@@ -37,6 +37,10 @@ namespace VTX
 #endif
 			}
 
+			// JSon save fail when size > 192
+			static const int		 MAX_FILE_LENGTH	  = 180;
+			static const std::string REGEX_VALID_FILENAME = "[^\\\\/:*?\"<>|]*";
+
 			static const FilePath EXECUTABLE_FILE = getExecutableFile();
 #ifdef _MSC_VER
 			static const FilePath EXECUTABLE_DIR = EXECUTABLE_FILE.parent_path().parent_path().parent_path();
@@ -214,6 +218,8 @@ namespace VTX
 
 				return succeed;
 			}
+
+			inline bool exists( const FilePath & p_path ) { return std::filesystem::exists( p_path ); }
 		} // namespace Filesystem
 	}	  // namespace Util
 } // namespace VTX

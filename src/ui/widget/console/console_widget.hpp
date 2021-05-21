@@ -7,8 +7,10 @@
 
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
+#include <QColor>
 #include <QDockWidget>
 #include <QListWidget>
+#include <string>
 
 namespace VTX::UI::Widget::Console
 {
@@ -29,6 +31,8 @@ namespace VTX::UI::Widget::Console
 
 	  private:
 		CustomWidget::DockWindowMainWidget<QListWidget> * _listWidget = nullptr;
+
+		QColor _getMessageColor( const std::string & p_level );
 	};
 } // namespace VTX::UI::Widget::Console
 #endif

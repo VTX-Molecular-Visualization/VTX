@@ -23,7 +23,8 @@ namespace VTX::UI::Widget::Settings
 
 		_viewport = new QWidget( this );
 
-		_name		 = new QLineEdit( _viewport );
+		_name = WidgetFactory::get().instantiateWidget<CustomWidget::FilenameFieldWidget>( _viewport, "presetName" );
+
 		_quickAccess = new QCheckBox( _viewport );
 
 		_shading = new QComboBox( _viewport );
@@ -121,7 +122,10 @@ namespace VTX::UI::Widget::Settings
 	}
 	void RenderEffectPresetEditor::_setupSlots()
 	{
-		connect( _name, &QLineEdit::editingFinished, this, &RenderEffectPresetEditor::_onNameChanged );
+		connect( _name,
+				 &CustomWidget::FilenameFieldWidget::editingFinished,
+				 this,
+				 &RenderEffectPresetEditor::_onNameChanged );
 		connect( _quickAccess, &QCheckBox::clicked, this, &RenderEffectPresetEditor::_onQuickAccessChanged );
 
 		connect( _shading,
@@ -216,6 +220,7 @@ namespace VTX::UI::Widget::Settings
 	void RenderEffectPresetEditor::refresh()
 	{
 		_name->setText( QString::fromStdString( _preset->getName() ) );
+
 		_quickAccess->setChecked( _preset->hasQuickAccess() );
 
 		_shading->setCurrentIndex( (int)_preset->getShading() );
@@ -274,6 +279,12 @@ namespace VTX::UI::Widget::Settings
 	void RenderEffectPresetEditor::_onNameChanged()
 	{
 		const std::string strName = _name->text().toStdString();
+
+		if ( strName == "" )
+		{
+			_name->setText( QString::fromStdString( _preset->getName() ) );
+			return;
+		}
 
 		if ( !signalsBlocked() && _preset->getName() != strName )
 			VTX_ACTION( new Action::Renderer::ChangeName( *_preset, strName ) );

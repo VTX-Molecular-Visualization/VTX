@@ -54,18 +54,20 @@ namespace VTX::Action::Renderer
 	class ApplyRenderEffectPreset : public BaseAction
 	{
 	  public:
-		ApplyRenderEffectPreset( Model::Renderer::RenderEffectPreset & p_preset ) : _preset( p_preset ) {};
+		ApplyRenderEffectPreset( Model::Renderer::RenderEffectPreset & p_preset, const bool p_setAsDefault = false ) :
+			_preset( p_preset ), _setAsDefault( p_setAsDefault ) {};
 		virtual void execute() override;
 
 	  private:
 		Model::Renderer::RenderEffectPreset & _preset;
+		const bool							  _setAsDefault;
 	};
 
 	class ChangeName : public BaseAction
 	{
 	  public:
 		ChangeName( Model::Renderer::RenderEffectPreset & p_preset, const std::string & p_name ) :
-			_preset( p_preset ), _name( p_name ) {};
+			_preset( p_preset ), _name( Model::Renderer::RenderEffectPresetLibrary::get().getValidName( p_name ) ) {};
 
 		virtual void execute() override;
 

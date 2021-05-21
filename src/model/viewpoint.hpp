@@ -8,6 +8,7 @@
 #include "base_model.hpp"
 #include "define.hpp"
 #include "id.hpp"
+#include "setting.hpp"
 
 namespace VTX
 {
@@ -38,8 +39,11 @@ namespace VTX
 			inline const void	 setDistance( const float p_distance ) { _distance = p_distance; }
 
 			inline const std::vector<std::string> & getActions() const { return _actions; }
-			inline void								addAction( const std::string & p_action ) { _actions.emplace_back( p_action ); }
-			inline void								removeAction( const std::vector<std::string>::const_iterator & p_action ) { _actions.erase( p_action ); }
+			inline void addAction( const std::string & p_action ) { _actions.emplace_back( p_action ); }
+			inline void removeAction( const std::vector<std::string>::const_iterator & p_action )
+			{
+				_actions.erase( p_action );
+			}
 
 		  private:
 			Path * const _path;
@@ -48,12 +52,15 @@ namespace VTX
 			Vec3f	   _position   = VEC3F_ZERO;
 			Vec3f	   _target	   = VEC3F_ZERO;
 			float	   _distance   = 0.f;
-			ID::VTX_ID _controller = ID::Controller::FREEFLY;
+			ID::VTX_ID _controller = Setting::CONTROLLER_MODE_DEFAULT;
 			/*************************************/
 			Quatf					 _rotation;
 			std::vector<std::string> _actions = std::vector<std::string>();
 
-			explicit Viewpoint( Path * const p_path ) : BaseModel( ID::Model::MODEL_VIEWPOINT ), _path( p_path ), _rotation( Quatf() ) {}
+			explicit Viewpoint( Path * const p_path ) :
+				BaseModel( ID::Model::MODEL_VIEWPOINT ), _path( p_path ), _rotation( Quatf() )
+			{
+			}
 
 		}; // namespace Camera
 	}	   // namespace Model

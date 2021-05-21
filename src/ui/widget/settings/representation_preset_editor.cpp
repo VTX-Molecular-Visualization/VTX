@@ -2,11 +2,13 @@
 #include "action/action_manager.hpp"
 #include "action/representation.hpp"
 #include "setting.hpp"
+#include "ui/widget/custom_widget/color_field_button.hpp"
+#include "ui/widget/custom_widget/filename_field_widget.hpp"
+#include "ui/widget/custom_widget/float_field_slider_widget.hpp"
 #include "ui/widget_factory.hpp"
 #include <QCheckBox>
 #include <QGridLayout>
 #include <QHBoxLayout>
-#include <QLabel>
 #include <QLineEdit>
 #include <QVBoxLayout>
 
@@ -24,7 +26,8 @@ namespace VTX::UI::Widget::Settings
 
 		_viewport = new QWidget( this );
 
-		QLineEdit * const nameWidget = new QLineEdit( _viewport );
+		CustomWidget::FilenameFieldWidget * const nameWidget
+			= WidgetFactory::get().instantiateWidget<CustomWidget::FilenameFieldWidget>( _viewport, "nameWidget" );
 
 		QComboBox * const representationTypeWidget = new QComboBox( _viewport );
 		_populateRepresentationTypeComboBox( representationTypeWidget );
@@ -86,7 +89,7 @@ namespace VTX::UI::Widget::Settings
 	}
 	void RepresentationPresetEditor::_setupSlots()
 	{
-		connect( _getParameter<QLineEdit>( PARAMETER::NAME ),
+		connect( _getParameter<CustomWidget::FilenameFieldWidget>( PARAMETER::NAME ),
 				 &QLineEdit::editingFinished,
 				 this,
 				 &RepresentationPresetEditor::_onRepresentationNameChange );
@@ -138,7 +141,8 @@ namespace VTX::UI::Widget::Settings
 	void RepresentationPresetEditor::refresh()
 	{
 		_getParameter<QComboBox>( PARAMETER::TYPE )->setCurrentIndex( int( _preset->getRepresentationType() ) );
-		_getParameter<QLineEdit>( PARAMETER::NAME )->setText( QString::fromStdString( _preset->getName() ) );
+		_getParameter<CustomWidget::FilenameFieldWidget>( PARAMETER::NAME )
+			->setText( QString::fromStdString( _preset->getName() ) );
 		_getParameter<QCheckBox>( PARAMETER::QUICK_ACCESS )
 			->setCheckState( _preset->hasQuickAccess() ? Qt::CheckState::Checked : Qt::CheckState::Unchecked );
 
@@ -275,7 +279,16 @@ namespace VTX::UI::Widget::Settings
 
 	void RepresentationPresetEditor::_onRepresentationNameChange()
 	{
-		const std::string nameStr = _getParameter<QLineEdit>( PARAMETER::NAME )->text().toStdString();
+		const std::string nameStr
+			= _getParameter<CustomWidget::FilenameFieldWidget>( PARAMETER::NAME )->text().toStdString();
+
+		if ( nameStr == "" )
+		{
+			_getParameter<CustomWidget::FilenameFieldWidget>( PARAMETER::NAME )
+				->setText( QString::fromStdString( _preset->getName() ) );
+			return;
+		}
+
 		if ( !signalsBlocked() && nameStr != _preset->getName() )
 			VTX_ACTION( new Action::Representation::ChangeName( _preset, nameStr ) );
 	}

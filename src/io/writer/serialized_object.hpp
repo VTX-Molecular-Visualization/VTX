@@ -20,8 +20,14 @@ namespace VTX::IO::Writer
 		void writeFile( const FilePath & p_path, const T & p_data ) override
 		{
 			IO::Serializer serializer = IO::Serializer();
-			nlohmann::json json		  = serializer.serialize( p_data );
-			std::ofstream  os( p_path );
+
+			nlohmann::json json = { { "_VERSION",
+									  { { "MAJOR", VTX_VERSION_MAJOR },
+										{ "MINOR", VTX_VERSION_MINOR },
+										{ "REVISION", VTX_VERSION_REVISION } } },
+									{ "DATA", serializer.serialize( p_data ) } };
+
+			std::ofstream os( p_path );
 			os << std::setw( 4 ) << json << std::endl;
 			os.close();
 		}

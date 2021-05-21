@@ -1,5 +1,7 @@
 #include "console_widget.hpp"
 #include "style.hpp"
+#include "tool/logger.hpp"
+#include "util/ui.hpp"
 #include "vtx_app.hpp"
 #include <QCoreApplication>
 #include <QListWidget>
@@ -15,10 +17,33 @@ namespace VTX::UI::Widget::Console
 
 	void ConsoleWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
-		const Event::VTXEventLog & event = dynamic_cast<const Event::VTXEventLog &>( p_event );
-		QListWidget * const		   list	 = _listWidget;
-		list->addItem( QString( ( "[" + event.date + "] " + "[" + event.level + "] " + event.message ).c_str() ) );
+		const Event::VTXEventLog & event   = dynamic_cast<const Event::VTXEventLog &>( p_event );
+		QListWidget * const		   list	   = _listWidget;
+		const std::string		   message = "[" + event.date + "] " + "[" + event.level + "] " + event.message;
+		QListWidgetItem * const	   newItem = new QListWidgetItem( QString::fromStdString( message ) );
+
+		newItem->setData( Qt::ForegroundRole, _getMessageColor( event.level ) );
+		list->addItem( newItem );
+
 		list->scrollToBottom();
+	}
+
+	QColor ConsoleWidget::_getMessageColor( const std::string & p_level )
+	{
+		QColor res;
+
+		if ( p_level == Tool::Logger::LEVEL_STR[ int( Tool::Logger::LEVEL::LOG_LVL_DEBUG ) ] )
+			res = Style::CONSOLE_DEBUG_COLOR;
+		else if ( p_level == Tool::Logger::LEVEL_STR[ int( Tool::Logger::LEVEL::LOG_LVL_INFO ) ] )
+			res = Style::CONSOLE_INFO_COLOR;
+		else if ( p_level == Tool::Logger::LEVEL_STR[ int( Tool::Logger::LEVEL::LOG_LVL_WARNING ) ] )
+			res = Style::CONSOLE_WARNING_COLOR;
+		else if ( p_level == Tool::Logger::LEVEL_STR[ int( Tool::Logger::LEVEL::LOG_LVL_ERROR ) ] )
+			res = Style::CONSOLE_ERROR_COLOR;
+		else
+			res = QColor();
+
+		return res;
 	}
 
 	void ConsoleWidget::_setupUi( const QString & p_name )

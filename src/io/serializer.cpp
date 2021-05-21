@@ -134,7 +134,6 @@ namespace VTX
 		nlohmann::json Serializer::serialize( const Model::Representation::Representation & p_representation ) const
 		{
 			return {
-				{ "NAME", p_representation.getName() },
 				{ "COLOR", serialize( p_representation.getColor() ) },
 				{ "QUICK_ACCESS", p_representation.hasQuickAccess() },
 				{ "TYPE", p_representation.getRepresentationType() },
@@ -147,7 +146,6 @@ namespace VTX
 		nlohmann::json Serializer::serialize( const Model::Renderer::RenderEffectPreset & p_preset ) const
 		{
 			return {
-				{ "NAME", p_preset.getName() },
 				{ "QUICK_ACCESS", p_preset.hasQuickAccess() },
 				{ "SHADING", p_preset.getShading() },
 				{ "SSAO", p_preset.isSSAOEnabled() },
@@ -208,12 +206,22 @@ namespace VTX
 
 		nlohmann::json Serializer::serialize( const Setting & p_setting ) const
 		{
+			const std::string & defaultRepresentationName
+				= Model::Representation::RepresentationLibrary::get()
+					  .getRepresentation( p_setting.getDefaultRepresentationIndex() )
+					  ->getName();
+
+			const std::string & defaultRenderEffectPresetName
+				= Model::Renderer::RenderEffectPresetLibrary::get()
+					  .getPreset( p_setting.getDefaultRenderEffectPresetIndex() )
+					  ->getName();
+
 			return { { "SYMBOL_DISPLAY_MODE", p_setting.getSymbolDisplayMode() },
 					 { "WINDOW_FULLSCREEN", p_setting.getWindowFullscreen() },
 					 { "ACTIVE_RENDERER", p_setting.getActivateRenderer() },
 					 { "FORCE_RENDERER", p_setting.getForceRenderer() },
-					 { "REPRESENTATION", p_setting.getDefaultRepresentationIndex() },
-					 { "RENDER_EFFECT_DEFAULT_INDEX", p_setting.getDefaultRenderEffectPresetIndex() },
+					 { "REPRESENTATION", defaultRepresentationName },
+					 { "RENDER_EFFECT_DEFAULT", defaultRenderEffectPresetName },
 					 { "ACTIVE_VSYNC", p_setting.getVSync() },
 					 { "BACKGROUND_OPACITY", p_setting.getSnapshotBackgroundOpacity() },
 
@@ -239,37 +247,50 @@ namespace VTX
 		void Serializer::deserialize( const nlohmann::json & p_json, Object3D::Scene & p_scene ) const
 		{
 			Vec3f cameraPos;
-			deserialize( p_json.at( "CAMERA_POSITION" ), cameraPos );
-			Quatf cameraRot;
-			deserialize( p_json.at( "CAMERA_ROTATION" ), cameraRot );
+			if ( p_json.contains( "CAMERA_POSITION" ) )
+				deserialize( p_json.at( "CAMERA_POSITION" ), cameraPos );
 
-			const int					   moleculeCount = p_json.at( "MOLECULE_COUNT" ).get<int>();
-			std::vector<Model::Molecule *> molecules	 = std::vector<Model::Molecule *>();
+			Quatf cameraRot;
+			if ( p_json.contains( "CAMERA_ROTATION" ) )
+				deserialize( p_json.at( "CAMERA_ROTATION" ), cameraRot );
+
+			std::vector<Model::Molecule *> molecules = std::vector<Model::Molecule *>();
+
+			const int moleculeCount = _get<int>( p_json, "MOLECULE_COUNT" );
 			molecules.resize( moleculeCount );
 
-			for ( const nlohmann::json & jsonMolecule : p_json.at( "MOLECULES" ) )
+			if ( p_json.contains( "MOLECULES" ) )
 			{
-				Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
-				deserialize( jsonMolecule.at( "MOLECULE" ), *molecule );
+				for ( const nlohmann::json & jsonMolecule : p_json.at( "MOLECULES" ) )
+				{
+					if ( jsonMolecule.contains( "MOLECULE" ) )
+					{
+						Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
+						deserialize( jsonMolecule.at( "MOLECULE" ), *molecule );
 
-				molecule->getConfiguration().sceneIndex				 = jsonMolecule.at( "INDEX" ).get<int>();
-				molecules[ molecule->getConfiguration().sceneIndex ] = molecule;
+						molecule->getConfiguration().sceneIndex = _get<int>( jsonMolecule, "INDEX", MAXINT );
+						molecules[ molecule->getConfiguration().sceneIndex ] = molecule;
+					}
+				}
+
+				for ( Model::Molecule * const molecule : molecules )
+				{
+					if ( molecule == nullptr )
+						continue;
+
+					VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
+					p_scene.addMolecule( molecule );
+				}
 			}
 
-			for ( Model::Molecule * const molecule : molecules )
+			if ( p_json.contains( "PATHS" ) )
 			{
-				if ( molecule == nullptr )
-					continue;
-
-				VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
-				p_scene.addMolecule( molecule );
-			}
-
-			for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
-			{
-				Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
-				deserialize( jsonPath, *path );
-				p_scene.addPath( path );
+				for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
+				{
+					Model::Path * const path = MVC::MvcManager::get().instantiateModel<Model::Path>();
+					deserialize( jsonPath, *path );
+					p_scene.addPath( path );
+				}
 			}
 
 			VTXApp::get()
@@ -282,35 +303,43 @@ namespace VTX
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Model::Molecule & p_molecule ) const
 		{
-			Math::Transform transform;
-			deserialize( p_json.at( "TRANSFORM" ), transform );
-			p_molecule.applyTransform( transform );
+			if ( p_json.contains( "TRANSFORM" ) )
+			{
+				Math::Transform transform;
+				deserialize( p_json.at( "TRANSFORM" ), transform );
+				p_molecule.applyTransform( transform );
+			}
 
-			const std::string		 buffer = p_json.at( "DATA" ).get<std::string>();
+			const std::string		 buffer = _get<std::string>( p_json, "DATA" );
 			IO::Reader::LibChemfiles reader = IO::Reader::LibChemfiles( nullptr );
 			reader.readBuffer( buffer, "mol.pdb", p_molecule );
 
-			_deserializeMoleculeRepresentations( p_json.at( "REPRESENTATIONS" ), p_molecule );
-			_deserializeMoleculeVisibilities( p_json.at( "VISIBILITIES" ), p_molecule );
+			if ( p_json.contains( "REPRESENTATIONS" ) )
+				_deserializeMoleculeRepresentations( p_json.at( "REPRESENTATIONS" ), p_molecule );
+			if ( p_json.contains( "VISIBILITIES" ) )
+				_deserializeMoleculeVisibilities( p_json.at( "VISIBILITIES" ), p_molecule );
 
-			p_molecule.setName( p_json.at( "NAME" ).get<std::string>() );
-			p_molecule.setPdbIdCode( p_json.at( "PDB_ID" ).get<std::string>() );
-			p_molecule.setDisplayName( p_json.at( "DISPLAY_NAME" ).get<std::string>() );
+			p_molecule.setName( _get<std::string>( p_json, "NAME" ) );
+			p_molecule.setPdbIdCode( _get<std::string>( p_json, "PDB_ID" ) );
+			p_molecule.setDisplayName( _get<std::string>( p_json, "DISPLAY_NAME" ) );
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const
 		{
-			p_path.setDurationMode( p_json.at( "MODE_DURATION" ).get<Model::Path::DURATION_MODE>() );
-			p_path.setInterpolationMode( p_json.at( "MODE_INTERPOLATION" ).get<Model::Path::INTERPOLATION_MODE>() );
-			p_path.setDuration( p_json.at( "DURATION" ).get<float>() );
-			p_path.setIsLooping( p_json.at( "IS_LOOPING" ).get<bool>() );
+			p_path.setDurationMode( _get<Model::Path::DURATION_MODE>( p_json, "MODE_DURATION" ) );
+			p_path.setInterpolationMode( _get<Model::Path::INTERPOLATION_MODE>( p_json, "MODE_INTERPOLATION" ) );
+			p_path.setDuration( _get<float>( p_json, "DURATION", Setting::PATH_DURATION_DEFAULT ) );
+			p_path.setIsLooping( _get<bool>( p_json, "IS_LOOPING" ) );
 
-			for ( const nlohmann::json & jsonViewpoint : p_json.at( "VIEWPOINTS" ) )
+			if ( p_json.contains( "VIEWPOINTS" ) )
 			{
-				Model::Viewpoint * const viewpoint
-					= MVC::MvcManager::get().instantiateModel<Model::Viewpoint>( &p_path );
-				deserialize( jsonViewpoint, *viewpoint );
-				p_path.addViewpoint( viewpoint );
+				for ( const nlohmann::json & jsonViewpoint : p_json.at( "VIEWPOINTS" ) )
+				{
+					Model::Viewpoint * const viewpoint
+						= MVC::MvcManager::get().instantiateModel<Model::Viewpoint>( &p_path );
+					deserialize( jsonViewpoint, *viewpoint );
+					p_path.addViewpoint( viewpoint );
+				}
 			}
 
 			p_path.refreshAllDurations();
@@ -318,24 +347,38 @@ namespace VTX
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Model::Viewpoint & p_viewpoint ) const
 		{
-			p_viewpoint.setDuration( p_json.at( "DURATION" ).get<float>() );
-			Vec3f position;
-			deserialize( p_json.at( "POSITION" ), position );
-			p_viewpoint.setPosition( position );
-			Vec3f target;
-			deserialize( p_json.at( "TARGET" ), target );
-			p_viewpoint.setTarget( target );
-			Quatf rotation;
-			deserialize( p_json.at( "ROTATION" ), rotation );
-			p_viewpoint.setRotation( rotation );
-			p_viewpoint.setDistance( p_json.at( "DISTANCE" ).get<float>() );
-			p_viewpoint.setController( p_json.at( "CONTROLLER" ).get<ID::VTX_ID>() );
-
-			for ( const nlohmann::json & jsonAction : p_json.at( "ACTIONS" ) )
+			p_viewpoint.setDuration( _get<float>( p_json, "DURATION" ) );
+			if ( p_json.contains( "POSITION" ) )
 			{
-				std::string action = jsonAction.get<std::string>();
-				std::replace( action.begin(), action.end(), '-', ' ' );
-				p_viewpoint.addAction( action );
+				Vec3f position;
+				deserialize( p_json.at( "POSITION" ), position );
+				p_viewpoint.setPosition( position );
+			}
+
+			if ( p_json.contains( "TARGET" ) )
+			{
+				Vec3f target;
+				deserialize( p_json.at( "TARGET" ), target );
+				p_viewpoint.setTarget( target );
+			}
+			if ( p_json.contains( "ROTATION" ) )
+			{
+				Quatf rotation;
+				deserialize( p_json.at( "ROTATION" ), rotation );
+				p_viewpoint.setRotation( rotation );
+			}
+
+			p_viewpoint.setDistance( _get<float>( p_json, "DISTANCE" ) );
+			p_viewpoint.setController( _get<ID::VTX_ID>( p_json, "CONTROLLER", Setting::CONTROLLER_MODE_DEFAULT ) );
+
+			if ( p_json.contains( "ACTIONS" ) )
+			{
+				for ( const nlohmann::json & jsonAction : p_json.at( "ACTIONS" ) )
+				{
+					std::string action = jsonAction.get<std::string>();
+					std::replace( action.begin(), action.end(), '-', ' ' );
+					p_viewpoint.addAction( action );
+				}
 			}
 		}
 
@@ -380,138 +423,188 @@ namespace VTX
 		void Serializer::deserialize( const nlohmann::json &				  p_json,
 									  Model::Representation::Representation & p_representation ) const
 		{
-			p_representation.setName( p_json.at( "NAME" ).get<std::string>() );
 			Color::Rgb color;
-			deserialize( p_json.at( "COLOR" ), color );
-			p_representation.setColor( color );
-			p_representation.setQuickAccess( p_json.at( "QUICK_ACCESS" ).get<bool>() );
+			if ( p_json.contains( "COLOR" ) )
+			{
+				deserialize( p_json.at( "COLOR" ), color );
+				p_representation.setColor( color );
+			}
 
-			p_representation.changeRepresentationType( p_json.at( "TYPE" ).get<Generic::REPRESENTATION>(), false );
-			p_representation.getData().setSphereRadius( p_json.at( "SPHERE_RADIUS" ).get<float>() );
-			p_representation.getData().setCylinderRadius( p_json.at( "CYLINDER_RADIUS" ).get<float>() );
-			p_representation.getData().setColorMode( p_json.at( "COLOR_MODE" ).get<Generic::COLOR_MODE>() );
-			p_representation.getData().setSecondaryStructureColorMode(
-				p_json.at( "SS_COLOR_MODE" ).get<Generic::SECONDARY_STRUCTURE_COLOR_MODE>() );
+			p_representation.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
+
+			p_representation.changeRepresentationType(
+				_get<Generic::REPRESENTATION>( p_json, "TYPE", Setting::DEFAULT_REPRESENTATION_TYPE ), false );
+			p_representation.getData().setSphereRadius(
+				_get<float>( p_json, "SPHERE_RADIUS", Setting::ATOMS_RADIUS_DEFAULT ) );
+			p_representation.getData().setCylinderRadius(
+				_get<float>( p_json, "CYLINDER_RADIUS", Setting::BONDS_RADIUS_DEFAULT ) );
+			p_representation.getData().setColorMode(
+				_get<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Setting::COLOR_MODE_DEFAULT ) );
+			p_representation.getData().setSecondaryStructureColorMode( _get<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
+				p_json, "SS_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
 		}
 		void Serializer::deserialize( const nlohmann::json &				p_json,
 									  Model::Renderer::RenderEffectPreset & p_preset ) const
 		{
 			Color::Rgb color;
 
-			p_preset.setName( p_json.at( "NAME" ).get<std::string>() );
-			p_preset.setQuickAccess( p_json.at( "QUICK_ACCESS" ).get<bool>() );
-			p_preset.setShading( p_json.at( "SHADING" ).get<Renderer::SHADING>() );
-			p_preset.enableSSAO( p_json.at( "SSAO" ).get<bool>() );
-			p_preset.setSSAOIntensity( p_json.at( "SSAO_INTENSITY" ).get<int>() );
-			p_preset.setSSAOBlurSize( p_json.at( "SSAO_BLUR_SIZE" ).get<int>() );
-			p_preset.enableOutline( p_json.at( "OUTLINE" ).get<bool>() );
-			p_preset.setOutlineThickness( p_json.at( "OUTLINE_THICKNESS" ).get<int>() );
-			p_preset.setOutlineSensivity( p_json.at( "OUTLINE_SENSIVITY" ).get<float>() );
-			deserialize( p_json.at( "OUTLINE_COLOR" ), color );
+			p_preset.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
+			p_preset.setShading( _get<Renderer::SHADING>( p_json, "SHADING", Setting::SHADING_DEFAULT ) );
+			p_preset.enableSSAO( _get<bool>( p_json, "SSAO", Setting::ACTIVE_AO_DEFAULT ) );
+			p_preset.setSSAOIntensity( _get<int>( p_json, "SSAO_INTENSITY", Setting::AO_INTENSITY_DEFAULT ) );
+			p_preset.setSSAOBlurSize( _get<int>( p_json, "SSAO_BLUR_SIZE", Setting::AO_BLUR_SIZE_DEFAULT ) );
+			p_preset.enableOutline( _get<bool>( p_json, "OUTLINE", Setting::ACTIVE_OUTLINE_DEFAULT ) );
+			p_preset.setOutlineThickness(
+				_get<int>( p_json, "OUTLINE_THICKNESS", Setting::OUTLINE_THICKNESS_DEFAULT ) );
+			p_preset.setOutlineSensivity(
+				_get<float>( p_json, "OUTLINE_SENSIVITY", Setting::OUTLINE_SENSIVITY_DEFAULT ) );
+
+			if ( p_json.contains( "OUTLINE_COLOR" ) )
+				deserialize( p_json.at( "OUTLINE_COLOR" ), color );
+			else
+				color = Setting::OUTLINE_COLOR_DEFAULT;
 			p_preset.setOutlineColor( color );
-			p_preset.enableFog( p_json.at( "FOG" ).get<bool>() );
-			p_preset.setFogNear( p_json.at( "FOG_NEAR" ).get<float>() );
-			p_preset.setFogFar( p_json.at( "FOG_FAR" ).get<float>() );
-			p_preset.setFogDensity( p_json.at( "FOG_DENSITY" ).get<float>() );
-			deserialize( p_json.at( "FOG_COLOR" ), color );
+
+			p_preset.enableFog( _get<bool>( p_json, "FOG", Setting::ACTIVE_FOG_DEFAULT ) );
+			p_preset.setFogNear( _get<float>( p_json, "FOG_NEAR", Setting::FOG_NEAR_DEFAULT ) );
+			p_preset.setFogFar( _get<float>( p_json, "FOG_FAR", Setting::FOG_FAR_DEFAULT ) );
+			p_preset.setFogDensity( _get<float>( p_json, "FOG_DENSITY", Setting::FOG_DENSITY_DEFAULT ) );
+
+			if ( p_json.contains( "FOG_COLOR" ) )
+				deserialize( p_json.at( "FOG_COLOR" ), color );
+			else
+				color = Setting::FOG_COLOR_DEFAULT;
 			p_preset.setFogColor( color );
-			deserialize( p_json.at( "BACKGROUND_COLOR" ), color );
+
+			if ( p_json.contains( "BACKGROUND_COLOR" ) )
+				deserialize( p_json.at( "BACKGROUND_COLOR" ), color );
+			else
+				color = Setting::BACKGROUND_COLOR_DEFAULT;
 			p_preset.setBackgroundColor( color );
-			deserialize( p_json.at( "CAMERA_LIGHT_COLOR" ), color );
+
+			if ( p_json.contains( "CAMERA_LIGHT_COLOR" ) )
+				deserialize( p_json.at( "CAMERA_LIGHT_COLOR" ), color );
+			else
+				color = Setting::LIGHT_COLOR_DEFAULT;
 			p_preset.setCameraLightColor( color );
-			p_preset.setCameraFOV( p_json.at( "CAMERA_FOV" ).get<float>() );
-			p_preset.setCameraNearClip( p_json.at( "CAMERA_NEAR_CLIP" ).get<float>() );
-			p_preset.setCameraFarClip( p_json.at( "CAMERA_FAR_CLIP" ).get<float>() );
-			p_preset.setAA( p_json.at( "CAMERA_AA" ).get<bool>() );
-			p_preset.setPerspectiveProjection( p_json.at( "CAMERA_PERSPECTIVE_PROJECTION" ).get<bool>() );
+
+			p_preset.setCameraFOV( _get<float>( p_json, "CAMERA_FOV", Setting::CAMERA_FOV_DEFAULT ) );
+			p_preset.setCameraNearClip( _get<float>( p_json, "CAMERA_NEAR_CLIP", Setting::CAMERA_NEAR_DEFAULT ) );
+			p_preset.setCameraFarClip( _get<float>( p_json, "CAMERA_FAR_CLIP", Setting::CAMERA_FAR_DEFAULT ) );
+			p_preset.setAA( _get<bool>( p_json, "CAMERA_AA", Setting::ACTIVE_AA_DEFAULT ) );
+			p_preset.setPerspectiveProjection(
+				_get<bool>( p_json, "CAMERA_PERSPECTIVE_PROJECTION", Setting::CAMERA_PERSPECTIVE_DEFAULT ) );
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Color::Rgb & p_color ) const
 		{
-			p_color.setR( p_json.at( "R" ).get<float>() );
-			p_color.setG( p_json.at( "G" ).get<float>() );
-			p_color.setB( p_json.at( "B" ).get<float>() );
+			p_color.setR( _get<float>( p_json, "R" ) );
+			p_color.setG( _get<float>( p_json, "G" ) );
+			p_color.setB( _get<float>( p_json, "B" ) );
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Math::Transform & p_transform ) const
 		{
-			Vec3f position;
-			deserialize( p_json.at( "POSITION" ), position );
-			Vec3f euler;
-			deserialize( p_json.at( "ROTATION" ), euler );
-			Vec3f scale;
-			deserialize( p_json.at( "SCALE" ), scale );
+			if ( p_json.contains( "POSITION" ) )
+			{
+				Vec3f position;
+				deserialize( p_json.at( "POSITION" ), position );
+				p_transform.setTranslation( position );
+			}
 
-			p_transform.setTranslation( position );
-			p_transform.setRotation( euler );
-			p_transform.setScale( scale );
+			if ( p_json.contains( "ROTATION" ) )
+			{
+				Vec3f euler;
+				deserialize( p_json.at( "ROTATION" ), euler );
+				p_transform.setRotation( euler );
+			}
+
+			if ( p_json.contains( "SCALE" ) )
+			{
+				Vec3f scale;
+				deserialize( p_json.at( "SCALE" ), scale );
+				p_transform.setScale( scale );
+			}
 		}
 
 		template<typename T, glm::qualifier Q>
 		void Serializer::deserialize( const nlohmann::json & p_json, glm::vec<2, T, Q> & p_vec ) const
 		{
-			p_vec.x = p_json.at( "X" ).get<T>();
-			p_vec.y = p_json.at( "Y" ).get<T>();
+			p_vec.x = _get<T>( p_json, "X" );
+			p_vec.y = _get<T>( p_json, "Y" );
 		}
 		template<typename T, glm::qualifier Q>
 		void Serializer::deserialize( const nlohmann::json & p_json, glm::vec<3, T, Q> & p_vec ) const
 		{
-			p_vec.x = p_json.at( "X" ).get<T>();
-			p_vec.y = p_json.at( "Y" ).get<T>();
-			p_vec.z = p_json.at( "Z" ).get<T>();
+			p_vec.x = _get<T>( p_json, "X" );
+			p_vec.y = _get<T>( p_json, "Y" );
+			p_vec.z = _get<T>( p_json, "Z" );
 		}
 		template<typename T, glm::qualifier Q>
 		void Serializer::deserialize( const nlohmann::json & p_json, glm::vec<4, T, Q> & p_vec ) const
 		{
-			p_vec.x = p_json.at( "X" ).get<T>();
-			p_vec.y = p_json.at( "Y" ).get<T>();
-			p_vec.z = p_json.at( "Z" ).get<T>();
-			p_vec.w = p_json.at( "W" ).get<T>();
+			p_vec.x = _get<T>( p_json, "X" );
+			p_vec.y = _get<T>( p_json, "Y" );
+			p_vec.z = _get<T>( p_json, "Z" );
+			p_vec.w = _get<T>( p_json, "W" );
 		}
 
 		template<typename T, glm::qualifier Q>
 		void Serializer::deserialize( const nlohmann::json & p_json, glm::qua<T, Q> & p_quat ) const
 		{
-			p_quat.x = p_json.at( "X" ).get<T>();
-			p_quat.y = p_json.at( "Y" ).get<T>();
-			p_quat.z = p_json.at( "Z" ).get<T>();
-			p_quat.w = p_json.at( "W" ).get<T>();
+			p_quat.x = _get<T>( p_json, "X" );
+			p_quat.y = _get<T>( p_json, "Y" );
+			p_quat.z = _get<T>( p_json, "Z" );
+			p_quat.w = _get<T>( p_json, "W" );
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, Setting & p_setting ) const
 		{
-			const Style::SYMBOL_DISPLAY_MODE symbolDisplayMode
-				= p_json.at( "SYMBOL_DISPLAY_MODE" ).get<Style::SYMBOL_DISPLAY_MODE>();
+			const Style::SYMBOL_DISPLAY_MODE symbolDisplayMode = _get<Style::SYMBOL_DISPLAY_MODE>(
+				p_json, "SYMBOL_DISPLAY_MODE", Setting::SYMBOL_DISPLAY_MODE_DEFAULT );
 			p_setting.setSymbolDisplayMode(
 				Style::SYMBOL_DISPLAY_MODE( int( symbolDisplayMode ) % int( Style::SYMBOL_DISPLAY_MODE::COUNT ) ) );
 
-			p_setting.setWindowFullscreen( p_json.at( "WINDOW_FULLSCREEN" ).get<bool>() );
+			p_setting.setWindowFullscreen(
+				_get<bool>( p_json, "WINDOW_FULLSCREEN", Setting::WINDOW_FULLSCREEN_DEFAULT ) );
 
-			p_setting.setActivateRenderer( p_json.at( "ACTIVE_RENDERER" ).get<bool>() );
-			p_setting.setForceRenderer( p_json.at( "FORCE_RENDERER" ).get<bool>() );
-			p_setting.setDefaultRepresentationIndex( p_json.at( "REPRESENTATION" ).get<int>() );
-			p_setting.setDefaultRenderEffectPresetIndex( p_json.at( "RENDER_EFFECT_DEFAULT_INDEX" ).get<int>() );
+			p_setting.setActivateRenderer( _get<bool>( p_json, "ACTIVE_RENDERER", Setting::ACTIVE_RENDERER_DEFAULT ) );
+			p_setting.setForceRenderer( _get<bool>( p_json, "FORCE_RENDERER", Setting::FORCE_RENDERER_DEFAULT ) );
 
-			p_setting.setVSync( p_json.at( "ACTIVE_VSYNC" ).get<bool>() );
-			p_setting.setSnapshotBackgroundOpacity( p_json.at( "BACKGROUND_OPACITY" ).get<float>() );
+			p_setting.setTmpRepresentationDefaultName( _get<std::string>( p_json, "REPRESENTATION" ) );
+			p_setting.setTmpRenderEffectPresetDefaultName( _get<std::string>( p_json, "RENDER_EFFECT_DEFAULT" ) );
 
-			p_setting.setTranslationSpeed( p_json.at( "CONTROLLER_TRANSLATION_SPEED" ).get<float>() );
-			p_setting.setTranslationSpeedFactor( p_json.at( "CONTROLLER_TRANSLATION_FACTOR" ).get<float>() );
-			p_setting.setRotationSpeed( p_json.at( "CONTROLLER_ROTATION_SPEED" ).get<float>() );
-			p_setting.setYAxisInverted( p_json.at( "CONTROLLER_Y_AXIS_INVERTED" ).get<bool>() );
+			p_setting.setVSync( _get<bool>( p_json, "ACTIVE_VSYNC", Setting::ACTIVE_VSYNC_DEFAULT ) );
+			p_setting.setSnapshotBackgroundOpacity(
+				_get<float>( p_json, "BACKGROUND_OPACITY", Setting::BACKGROUND_OPACITY_DEFAULT ) );
 
-			p_setting.setControllerElasticityActive( p_json.at( "ACTIVE_CONTROLLER_ELASTICITY" ).get<bool>() );
-			p_setting.setControllerElasticityFactor( p_json.at( "CONTROLLER_ELASTICITY_FACTOR" ).get<float>() );
+			p_setting.setTranslationSpeed(
+				_get<float>( p_json, "CONTROLLER_TRANSLATION_SPEED", Setting::CONTROLLER_TRANSLATION_SPEED_DEFAULT ) );
+			p_setting.setTranslationSpeedFactor( _get<float>(
+				p_json, "CONTROLLER_TRANSLATION_FACTOR", Setting::CONTROLLER_TRANSLATION_FACTOR_DEFAULT ) );
+			p_setting.setRotationSpeed(
+				_get<float>( p_json, "CONTROLLER_ROTATION_SPEED", Setting::CONTROLLER_ROTATION_SPEED_DEFAULT ) );
+			p_setting.setYAxisInverted(
+				_get<bool>( p_json, "CONTROLLER_Y_AXIS_INVERTED", Setting::CONTROLLER_Y_AXIS_INVERTED ) );
 
-			p_setting.setDefaultTrajectorySpeed( p_json.at( "DEFAULT_TRAJECTORY_SPEED" ).get<int>() );
-			const Trajectory::PlayMode playMode
-				= p_json.at( "DEFAULT_TRAJECTORY_PLAY_MODE" ).get<Trajectory::PlayMode>();
+			p_setting.setControllerElasticityActive(
+				_get<bool>( p_json, "ACTIVE_CONTROLLER_ELASTICITY", Setting::CONTROLLER_ELASTICITY_ACTIVE_DEFAULT ) );
+			p_setting.setControllerElasticityFactor(
+				_get<float>( p_json, "CONTROLLER_ELASTICITY_FACTOR", Setting::CONTROLLER_ELASTICITY_FACTOR_DEFAULT ) );
+
+			p_setting.setDefaultTrajectorySpeed(
+				_get<int>( p_json, "DEFAULT_TRAJECTORY_SPEED", Setting::DEFAULT_TRAJECTORY_SPEED ) );
+			const Trajectory::PlayMode playMode = _get<Trajectory::PlayMode>(
+				p_json, "DEFAULT_TRAJECTORY_PLAY_MODE", Setting::DEFAULT_TRAJECTORY_PLAY_MODE );
 			p_setting.setDefaultTrajectoryPlayMode(
 				Trajectory::PlayMode( int( playMode ) % int( Trajectory::PlayMode::COUNT ) ) );
 
-			Vec3f autoRotationSpeed;
-			deserialize( p_json.at( "AUTO_ROTATE_SPEED" ), autoRotationSpeed );
-			p_setting.setAutoRotationSpeed( autoRotationSpeed );
+			if ( p_json.contains( "AUTO_ROTATE_SPEED" ) )
+			{
+				Vec3f autoRotationSpeed;
+				deserialize( p_json.at( "AUTO_ROTATE_SPEED" ), autoRotationSpeed );
+				p_setting.setAutoRotationSpeed( autoRotationSpeed );
+			}
 		}
 
 		nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,
@@ -625,6 +718,9 @@ namespace VTX
 		{
 			for ( const nlohmann::json & jsonRepresentations : p_json )
 			{
+				if ( !jsonRepresentations.contains( "TARGET_TYPE" ) || !jsonRepresentations.contains( "INDEX" ) )
+					continue;
+
 				const ID::VTX_ID type  = jsonRepresentations.at( "TARGET_TYPE" ).get<ID::VTX_ID>();
 				const uint		 index = jsonRepresentations.at( "INDEX" ).get<uint>();
 
@@ -660,17 +756,28 @@ namespace VTX
 		void Serializer::_deserializeMoleculeVisibilities( const nlohmann::json & p_json,
 														   Model::Molecule &	  p_molecule ) const
 		{
-			for ( const uint invisibleChainIndex : p_json.at( "CHAINS" ) )
+			if ( p_json.contains( "CHAINS" ) )
 			{
-				p_molecule.getChain( invisibleChainIndex )->setVisible( false );
+				for ( const uint invisibleChainIndex : p_json.at( "CHAINS" ) )
+				{
+					p_molecule.getChain( invisibleChainIndex )->setVisible( false );
+				}
 			}
-			for ( const uint invisibleResidueIndex : p_json.at( "RESIDUES" ) )
+
+			if ( p_json.contains( "RESIDUES" ) )
 			{
-				p_molecule.getResidue( invisibleResidueIndex )->setVisible( false );
+				for ( const uint invisibleResidueIndex : p_json.at( "RESIDUES" ) )
+				{
+					p_molecule.getResidue( invisibleResidueIndex )->setVisible( false );
+				}
 			}
-			for ( const uint invisibleAtomIndex : p_json.at( "ATOMS" ) )
+
+			if ( p_json.contains( "ATOMS" ) )
 			{
-				p_molecule.getAtom( invisibleAtomIndex )->setVisible( false );
+				for ( const uint invisibleAtomIndex : p_json.at( "ATOMS" ) )
+				{
+					p_molecule.getAtom( invisibleAtomIndex )->setVisible( false );
+				}
 			}
 		}
 	} // namespace IO

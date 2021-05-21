@@ -85,7 +85,8 @@ namespace VTX
 		static const float ATOMS_RADIUS_ADD_MIN;
 		static const float ATOMS_RADIUS_ADD_MAX;
 
-		static const Generic::COLOR_MODE COLOR_MODE_DEFAULT;
+		static const Generic::COLOR_MODE					 COLOR_MODE_DEFAULT;
+		static const Generic::SECONDARY_STRUCTURE_COLOR_MODE SS_COLOR_MODE_DEFAULT;
 
 		static const std::string NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME;
 		static const int		 RENDER_EFFECT_DEFAULT_INDEX;
@@ -188,9 +189,10 @@ namespace VTX
 		static const float AUTO_ROTATE_SPEED_MAX;
 
 		// Video.
-		static const float PATH_DURATION_DEFAULT;
-		static const uint  VIDEO_FPS_DEFAULT;
-		static const uint  VIDEO_CRF_DEFAULT;
+		static const float		PATH_DURATION_DEFAULT;
+		static const ID::VTX_ID CONTROLLER_MODE_DEFAULT;
+		static const uint		VIDEO_FPS_DEFAULT;
+		static const uint		VIDEO_CRF_DEFAULT;
 
 		// Misc.
 		static const int  CONSOLE_SIZE;
@@ -266,6 +268,19 @@ namespace VTX
 		static void									   enqueueNewLoadingPath( const FilePath & );
 		static const VTX::FilePath *				   getRecentLoadingPath( const int p_index );
 		static void									   cleanRecentPaths();
+		static void									   loadRecentPaths();
+		static void									   saveRecentPaths();
+
+		const std::string & getTmpRepresentationDefaultName() const { return _tmpRepresentationDefaultName; };
+		void				setTmpRepresentationDefaultName( const std::string & p_representationDefaultName )
+		{
+			_tmpRepresentationDefaultName = p_representationDefaultName;
+		};
+		const std::string & getTmpRenderEffectPresetDefaultName() const { return _tmpRenderEffectDefaultName; };
+		void				setTmpRenderEffectPresetDefaultName( const std::string & p_tmpRenderEffectDefaultName )
+		{
+			_tmpRenderEffectDefaultName = p_tmpRenderEffectDefaultName;
+		};
 
 		void backup();
 		void recover();
@@ -291,6 +306,9 @@ namespace VTX
 
 		int representationDefaultIndex = REPRESENTATION_DEFAULT_INDEX;
 		int renderEffectDefaultIndex   = RENDER_EFFECT_DEFAULT_INDEX;
+
+		std::string _tmpRepresentationDefaultName = "";
+		std::string _tmpRenderEffectDefaultName	  = "";
 
 		int					 defaultTrajectorySpeed	   = DEFAULT_TRAJECTORY_SPEED;
 		Trajectory::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;

@@ -9,6 +9,7 @@
 #include "trajectory/trajectory_enum.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
+#include <QSettings>
 #include <exception>
 #include <string>
 
@@ -36,23 +37,25 @@ namespace VTX
 	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;
 
 	// Rendering.
-	const bool					  Setting::ACTIVE_RENDERER_DEFAULT		   = true;
-	const bool					  Setting::FORCE_RENDERER_DEFAULT		   = false;
-	const Color::Rgb			  Setting::BACKGROUND_COLOR_DEFAULT		   = Color::Rgb::BLACK;
-	const float					  Setting::BACKGROUND_OPACITY_DEFAULT	   = 1.0f;
-	const int					  Setting::REPRESENTATION_DEFAULT_INDEX	   = 0;
-	const Generic::REPRESENTATION Setting::DEFAULT_REPRESENTATION_TYPE	   = Generic::REPRESENTATION::STICK;
-	const std::string			  Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
-	const float					  Setting::ATOMS_RADIUS_DEFAULT			   = 0.4f;
-	const float					  Setting::ATOMS_RADIUS_MIN				   = 0.01f;
-	const float					  Setting::ATOMS_RADIUS_MAX				   = 1.f;
-	const float					  Setting::BONDS_RADIUS_DEFAULT			   = 0.15f;
-	const float					  Setting::BONDS_RADIUS_MIN				   = 0.01f;
-	const float					  Setting::BONDS_RADIUS_MAX				   = 1.f;
-	const float					  Setting::ATOMS_RADIUS_ADD_DEFAULT		   = 0.f;
-	const float					  Setting::ATOMS_RADIUS_ADD_MIN			   = -1.f;
-	const float					  Setting::ATOMS_RADIUS_ADD_MAX			   = 1.f;
-	const Generic::COLOR_MODE	  Setting::COLOR_MODE_DEFAULT			   = Generic::COLOR_MODE::CHAIN;
+	const bool									  Setting::ACTIVE_RENDERER_DEFAULT		= true;
+	const bool									  Setting::FORCE_RENDERER_DEFAULT		= false;
+	const Color::Rgb							  Setting::BACKGROUND_COLOR_DEFAULT		= Color::Rgb::BLACK;
+	const float									  Setting::BACKGROUND_OPACITY_DEFAULT	= 1.0f;
+	const int									  Setting::REPRESENTATION_DEFAULT_INDEX = 0;
+	const Generic::REPRESENTATION				  Setting::DEFAULT_REPRESENTATION_TYPE = Generic::REPRESENTATION::STICK;
+	const std::string							  Setting::NEW_REPRESENTATION_DEFAULT_NAME = "New representation";
+	const float									  Setting::ATOMS_RADIUS_DEFAULT			   = 0.4f;
+	const float									  Setting::ATOMS_RADIUS_MIN				   = 0.01f;
+	const float									  Setting::ATOMS_RADIUS_MAX				   = 1.f;
+	const float									  Setting::BONDS_RADIUS_DEFAULT			   = 0.15f;
+	const float									  Setting::BONDS_RADIUS_MIN				   = 0.01f;
+	const float									  Setting::BONDS_RADIUS_MAX				   = 1.f;
+	const float									  Setting::ATOMS_RADIUS_ADD_DEFAULT		   = 0.f;
+	const float									  Setting::ATOMS_RADIUS_ADD_MIN			   = -1.f;
+	const float									  Setting::ATOMS_RADIUS_ADD_MAX			   = 1.f;
+	const Generic::COLOR_MODE					  Setting::COLOR_MODE_DEFAULT			   = Generic::COLOR_MODE::CHAIN;
+	const Generic::SECONDARY_STRUCTURE_COLOR_MODE Setting::SS_COLOR_MODE_DEFAULT
+		= Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL;
 
 	const std::string Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME = "New render preset";
 	const int		  Setting::RENDER_EFFECT_DEFAULT_INDEX			 = 0;
@@ -130,9 +133,10 @@ namespace VTX
 	const float Setting::AUTO_ROTATE_SPEED_MAX	   = 1.0f;
 
 	// Video.
-	const float Setting::PATH_DURATION_DEFAULT = 5.f;
-	const uint	Setting::VIDEO_FPS_DEFAULT	   = 60;
-	const uint	Setting::VIDEO_CRF_DEFAULT	   = 10;
+	const float		 Setting::PATH_DURATION_DEFAULT	  = 5.f;
+	const ID::VTX_ID Setting::CONTROLLER_MODE_DEFAULT = ID::Controller::FREEFLY;
+	const uint		 Setting::VIDEO_FPS_DEFAULT		  = 60;
+	const uint		 Setting::VIDEO_CRF_DEFAULT		  = 10;
 
 	// Misc.
 	const int  Setting::CONSOLE_SIZE	   = 80;
@@ -160,6 +164,8 @@ namespace VTX
 		if ( recentLoadingPath.size() > RECENT_PATH_SAVED_MAX_COUNT )
 			recentLoadingPath.pop_back();
 
+		saveRecentPaths();
+
 		VTX_EVENT( new Event::VTXEvent( Event::Global::RECENT_FILES_CHANGE ) );
 	}
 	const VTX::FilePath * Setting::getRecentLoadingPath( const int p_index )
@@ -182,6 +188,52 @@ namespace VTX
 			recentLoadingPath.pop_front();
 		}
 	}
+
+	void Setting::loadRecentPaths()
+	{
+		const QSettings settings( QSettings::Format::NativeFormat,
+								  QSettings::Scope::UserScope,
+								  QString::fromStdString( Setting::PROJECT_NAME ),
+								  QString::fromStdString( Setting::PROJECT_NAME ) );
+
+		int		counter = 0;
+		QString key		= QString::fromStdString( "RecentLoadedPath" + std::to_string( counter ) );
+
+		while ( settings.contains( key ) )
+		{
+			const std::string strPath = settings.value( key ).toString().toStdString();
+
+			const FilePath * path = new FilePath( strPath );
+			if ( Util::Filesystem::exists( *path ) )
+			{
+				recentLoadingPath.push_back( path );
+			}
+			else
+			{
+				delete path;
+			}
+
+			counter++;
+			key = QString::fromStdString( "RecentLoadedPath" + std::to_string( counter ) );
+		}
+	}
+	void Setting::saveRecentPaths()
+	{
+		QSettings settings( QSettings::Format::NativeFormat,
+							QSettings::Scope::UserScope,
+							QString::fromStdString( Setting::PROJECT_NAME ),
+							QString::fromStdString( Setting::PROJECT_NAME ) );
+
+		int counter = 0;
+		for ( const FilePath * const path : recentLoadingPath )
+		{
+			const QString key = QString::fromStdString( "RecentLoadedPath" + std::to_string( counter ) );
+			settings.setValue( key, QString::fromStdString( path->string() ) );
+
+			counter++;
+		}
+	}
+
 	void Setting::backup()
 	{
 		IO::Writer::SerializedObject<VTX::Setting> writer = IO::Writer::SerializedObject<VTX::Setting>();

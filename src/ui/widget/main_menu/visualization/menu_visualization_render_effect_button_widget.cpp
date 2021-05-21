@@ -17,7 +17,7 @@ namespace VTX::UI::Widget::MainMenu
 		VTX::Model::Renderer::RenderEffectPreset * renderEffectPreset
 			= VTX::Model::Renderer::RenderEffectPresetLibrary::get().getPreset( _id );
 
-		VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *renderEffectPreset ) );
+		VTX_ACTION( new Action::Renderer::ApplyRenderEffectPreset( *renderEffectPreset, true ) );
 	};
 
 } // namespace VTX::UI::Widget::MainMenu

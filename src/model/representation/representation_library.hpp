@@ -41,6 +41,9 @@ namespace VTX::Model::Representation
 		int				 getDefaultRepresentationIndex() const;
 		Representation * getDefaultRepresentation();
 
+		std::string getValidName( const std::string & p_name ) const;
+		bool		isValidName( const std::string & p_name ) const;
+
 		void clear( const bool p_notify = true );
 
 	  protected:
