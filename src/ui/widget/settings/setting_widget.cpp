@@ -44,9 +44,9 @@ namespace VTX::UI::Widget::Settings
 		_addItem( WidgetFactory::get().instantiateWidget<SettingRenderEffectWidget>( _menu, "settingMenuButton" ),
 				  SETTING_MENU::RENDER_EFFECTS,
 				  "Render Effects" );
-		_addItem( WidgetFactory::get().instantiateWidget<SettingColorWidget>( _menu, "settingMenuButton" ),
+		/*_addItem( WidgetFactory::get().instantiateWidget<SettingColorWidget>( _menu, "settingMenuButton" ),
 				  SETTING_MENU::COLORS,
-				  "Colors" );
+				  "Colors" );*/
 		_addItem( WidgetFactory::get().instantiateWidget<SettingVTXWidget>( _menu, "settingMenuButton" ),
 				  SETTING_MENU::VTX,
 				  "VTX" );
