@@ -492,7 +492,7 @@ namespace VTX::View::UI::Widget
 
 		const int minColumnBorder
 			= ( option.rect.width() < option.rect.height() ? option.rect.width() : option.rect.height() );
-		const int size = ( minColumnBorder < _getSize() ? minColumnBorder : _getSize() ) - 2;
+		const int size = ( minColumnBorder < _getSize() ? minColumnBorder : _getSize() ) - 4;
 
 		const QRect rect = QRect( option.rect.x() + ( ( option.rect.width() - size ) / 2 ),
 								  option.rect.y() + ( ( option.rect.height() - size ) / 2 ),
@@ -504,8 +504,7 @@ namespace VTX::View::UI::Widget
 	QSize SelectionView::SelectionStyleItemDelegate::sizeHint( const QStyleOptionViewItem & option,
 															   const QModelIndex &			index ) const
 	{
-		const int size = _getSize();
-		return QSize( size, size );
+		return QStyledItemDelegate::sizeHint( option, index );
 	}
 
 	int SelectionView::SelectionStyleItemDelegate::_getSize() const
