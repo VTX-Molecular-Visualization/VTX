@@ -28,9 +28,26 @@ namespace VTX
 		void NetworkManager::_finished()
 		{
 			QNetworkReply * replyThis = qobject_cast<QNetworkReply *>( sender() );
+
 			if ( replyThis->error() )
 			{
 				VTX_ERROR( replyThis->errorString().toStdString() );
+				return;
+			}
+
+			QVariant statusCode = replyThis->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+			if ( !statusCode.isValid() )
+			{
+				VTX_ERROR( "Invalid HTTP response" );
+				return;
+			}
+			int status = statusCode.toInt();
+
+			if ( status != 200 )
+			{
+				VTX_ERROR( "HTTP " + std::to_string( status ) );
+				QString reason = replyThis->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+				VTX_ERROR( reason.toStdString() );
 				return;
 			}
 
