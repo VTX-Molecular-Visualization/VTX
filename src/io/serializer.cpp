@@ -718,7 +718,7 @@ namespace VTX
 		{
 			for ( const nlohmann::json & jsonRepresentations : p_json )
 			{
-				if ( !jsonRepresentations.contains( "TARGET_TYPE" ) || jsonRepresentations.contains( "INDEX" ) )
+				if ( !jsonRepresentations.contains( "TARGET_TYPE" ) || !jsonRepresentations.contains( "INDEX" ) )
 					continue;
 
 				const ID::VTX_ID type  = jsonRepresentations.at( "TARGET_TYPE" ).get<ID::VTX_ID>();
