@@ -50,7 +50,7 @@ namespace VTX
 	constexpr bool DEV_MODE = true;
 
 	// API.
-	const std::string API_URL_MMTF = "http://mmtf.rcsb.org/v1.0/full/";
+	const std::string API_URL_MMTF = "https://mmtf.rcsb.org/v1.0/full/";
 
 	// Constants.
 	constexpr float FLOAT_MIN = std::numeric_limits<float>::lowest();

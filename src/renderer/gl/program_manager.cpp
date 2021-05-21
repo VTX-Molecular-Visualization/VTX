@@ -191,8 +191,9 @@ namespace VTX::Renderer::GL
 		for ( const PairStringToProgram & pair : _programs )
 		{
 			Program * const program = pair.second;
-			_gl->glDeleteProgram( program->getId() );
-			program->setId( _gl->glCreateProgram() );
+			// Don't need to delete program.
+			//_gl->glDeleteProgram( program->getId() );
+			//program->setId( _gl->glCreateProgram() );
 			for ( const FilePath & shader : program->getShaderPaths() )
 			{
 				GLuint id = _createShader( shader );
