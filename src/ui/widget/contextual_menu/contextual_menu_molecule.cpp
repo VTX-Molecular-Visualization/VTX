@@ -4,6 +4,7 @@
 #include "action/visible.hpp"
 #include "model/representation/representation.hpp"
 #include "model/representation/representation_library.hpp"
+#include "ui/dialog.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 
@@ -40,6 +41,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Hide", this, &ContextualMenuMolecule::_hideAction );
 		addAction( "Copy", this, &ContextualMenuMolecule::_copyAction );
 		addAction( "Delete", this, &ContextualMenuMolecule::_deleteAction, QKeySequence::Delete );
+
+		addSeparator();
+		addAction( "Export", this, &ContextualMenuMolecule::_exportAction );
 
 		connect( _representationMenu,
 				 &CustomWidget::SetRepresentationMenu ::onRepresentationChange,
@@ -112,5 +116,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( *_target, p_representationIndex ) );
 	}
+
+	void ContextualMenuMolecule::_exportAction() { Dialog::openExportMoleculeDialog(); }
 
 } // namespace VTX::UI::Widget::ContextualMenu

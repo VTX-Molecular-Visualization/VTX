@@ -42,6 +42,8 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		void _applyRepresentationAction( const int p_representationIndex );
 
+		void _exportAction();
+
 	  private:
 		CustomWidget::SetRepresentationMenu * _representationMenu;
 		QAction *							  _toggleWaterAction;

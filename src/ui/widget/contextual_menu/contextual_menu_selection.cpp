@@ -2,6 +2,7 @@
 #include "action/action_manager.hpp"
 #include "action/selection.hpp"
 #include "action/visible.hpp"
+#include "ui/dialog.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
 
@@ -12,6 +13,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		_actions.emplace_back(
 			new ActionData( "Rename", TypeMask::Molecule, this, &ContextualMenuSelection::_renameAction ) );
 
+		_actions.emplace_back( new ActionDataSection( "Representation", TypeMask::AllButAtom, this ) );
 		_representationMenu = WidgetFactory::get().instantiateWidget<CustomWidget::SetRepresentationMenu>(
 			this, "SetRepresentationMenu" );
 		_actions.emplace_back( new SubMenuData( "Representation", TypeMask::AllButAtom, this, _representationMenu ) );
@@ -52,6 +54,10 @@ namespace VTX::UI::Widget::ContextualMenu
 			new ActionData( "Extract", TypeMask::AllButMolecule, this, &ContextualMenuSelection::_extractAction ) );
 		_actions.emplace_back( new ActionData(
 			"Delete", TypeMask::All, this, &ContextualMenuSelection::_deleteAction, QKeySequence::Delete ) );
+
+		_actions.emplace_back( new ActionDataSection( "Export", TypeMask::Molecule, this ) );
+		_actions.emplace_back(
+			new ActionData( "Export", TypeMask::Molecule, this, &ContextualMenuSelection::_exportAction ) );
 	}
 	ContextualMenuSelection ::~ContextualMenuSelection()
 	{
@@ -163,6 +169,7 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_copyAction() { VTX_ACTION( new Action::Selection::Copy( *_target ) ); }
 	void ContextualMenuSelection::_extractAction() { VTX_ACTION( new Action::Selection::Extract( *_target ) ); }
 	void ContextualMenuSelection::_deleteAction() { VTX_ACTION( new Action::Selection::Delete( *_target ) ); }
+	void ContextualMenuSelection::_exportAction() { UI::Dialog::openExportMoleculeDialog(); }
 
 	void ContextualMenuSelection::_applyRepresentationAction( const int p_representationIndex )
 	{
