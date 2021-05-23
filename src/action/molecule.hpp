@@ -74,6 +74,7 @@ namespace VTX::Action::Molecule
 				const bool		  newVisibility = _getVisibilityBool( *visible );
 				Model::Molecule * molecule		= ( (Model::Molecule *)visible );
 				molecule->setVisible( newVisibility );
+				molecule->refreshVisibilities();
 				molecule->computeRepresentationTargets();
 			}
 
