@@ -42,8 +42,10 @@ namespace VTX
 
 			void refresh( const bool p_refreshBuffers = true );
 
-			const std::vector<uint> &	 getIndices() const { return _bufferIndices; }
-			const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToIndices; }
+			inline const std::vector<uint> &	getIndices() const { return _bufferIndices; }
+			inline const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToIndices; }
+			inline std::map<uint, uint> &		getResidueToControlPointIndice() { return _residueToIndices; }
+
 			inline void refreshSelection( const Model::Selection::MapChainIds * const p_selection = nullptr )
 			{
 				_fillBufferSelections( p_selection );

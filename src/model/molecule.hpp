@@ -185,6 +185,7 @@ namespace VTX
 			void removeChildrenRepresentations() const;
 
 			inline void refreshColors() { _fillBufferAtomColors(); }
+			inline void refreshVisibilities() { _fillBufferAtomVisibilities(); }
 			void		refreshSelection( const Selection::MapChainIds * const );
 			void		refreshBondsBuffer();
 

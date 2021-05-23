@@ -56,7 +56,7 @@ namespace VTX::Action::Atom
 				const bool	  newVisibility = _getVisibilityBool( atom );
 
 				atom.setVisible( newVisibility );
-
+				atom.getMoleculePtr()->refreshVisibilities();
 				atom.getMoleculePtr()->computeRepresentationTargets();
 			}
 

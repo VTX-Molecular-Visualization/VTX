@@ -94,6 +94,7 @@ namespace VTX::Action::Residue
 					}
 				}
 
+				residue.getMoleculePtr()->refreshVisibilities();
 				residue.getMoleculePtr()->computeRepresentationTargets();
 			}
 

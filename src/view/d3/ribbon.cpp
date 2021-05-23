@@ -42,15 +42,15 @@ namespace VTX::View::D3
 			  _model->getMolecule()->getRepresentationData() )
 		{
 			if ( !representationData.first->hasToDrawRibbon() )
-				continue;
-
-			for ( const std::pair<uint, uint> & ribbonData : representationData.second.getRibbons() )
 			{
-				_model->getBuffer()->getVao().drawElement( Renderer::GL::VertexArray::DrawMode::PATCHES,
-														   ribbonData.second,
-														   Renderer::GL::VertexArray::Type::UNSIGNED_INT,
-														   (void *)( ribbonData.first * sizeof( uint ) ) );
+				continue;
 			}
+
+			const Representation::TargetRange & data = representationData.second.getRibbons();
+			_model->getBuffer()->getVao().drawElement( Renderer::GL::VertexArray::DrawMode::PATCHES,
+													   data.second,
+													   Renderer::GL::VertexArray::Type::UNSIGNED_INT,
+													   (void *)( data.first * sizeof( uint ) ) );
 		}
 		//_gl()->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	}

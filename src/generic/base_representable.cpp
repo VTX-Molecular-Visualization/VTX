@@ -93,66 +93,55 @@ namespace VTX
 		{
 			_molecule->_representationTargets.clear();
 
-			const Model::SecondaryStructure & secondaryStructure = _molecule->getSecondaryStructure();
-			const std::map<uint, uint>		  residueToControlPointIndices
-				= secondaryStructure.getResidueToControlPointIndice();
+			Model::SecondaryStructure & secondaryStructure		= _molecule->getSecondaryStructure();
+			std::map<uint, uint> & residueToControlPointIndices = secondaryStructure.getResidueToControlPointIndice();
 
 			for ( Model::Residue * const residue : _molecule->getResidues() )
 			{
 				// Skip hidden items.
 				if ( residue == nullptr || !_isResidueVisible( *residue ) )
+				{
 					continue;
+				}
 
 				const Model::Representation::InstantiatedRepresentation * const representation
 					= residue->getRepresentation();
 
 				if ( _molecule->_representationTargets.find( representation )
 					 == _molecule->_representationTargets.end() )
+				{
 					_molecule->_representationTargets.emplace( representation,
 															   VTX::Representation::RepresentationTarget() );
+				}
 
 				VTX::Representation::RepresentationTarget & representationTargets
-					= _molecule->_representationTargets.at( representation );
+					= _molecule->_representationTargets[ representation ];
 				const VTX::Representation::FlagDataTargeted dataFlag = representation->getFlagDataTargeted();
 
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::ATOM ) )
 				{
-					const uint			  nextAtom	 = residue->getIndexFirstAtom() + residue->getAtomCount();
-					std::pair<uint, uint> rangeAtoms = std::pair( residue->getIndexFirstAtom(), 0 );
-					for ( uint i = residue->getIndexFirstAtom(); i < nextAtom; i++ )
-					{
-						if ( _molecule->getAtom( i ) == nullptr || !_molecule->getAtom( i )->isVisible() )
-						{
-							if ( rangeAtoms.second > 0 )
-								representationTargets.appendAtoms( rangeAtoms );
-							rangeAtoms.first  = i + 1;
-							rangeAtoms.second = 0;
-						}
-						else
-						{
-							rangeAtoms.second++;
-						}
-					}
-
-					if ( rangeAtoms.second > 0 )
-						representationTargets.appendAtoms( rangeAtoms );
+					representationTargets.appendAtoms( residue->getIndexFirstAtom(), residue->getAtomCount() );
 				}
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::BOND ) )
 				{
-					const std::pair<uint, uint> rangeBonds
-						= std::pair( residue->getIndiceFirstBond(), residue->getBondIndiceCount() );
+					representationTargets.appendBonds( residue->getIndexFirstBond() * 2, residue->getBondCount() * 2 );
 
-					representationTargets.appendBonds(
-						rangeBonds, residue->getIndexExtraBondStart(), residue->getIndexExtraBondEnd() );
+					for ( const uint bond : residue->getIndexExtraBondStart() )
+					{
+						representationTargets.appendBonds( bond * 2, 2 );
+					}
+					for ( const uint bond : residue->getIndexExtraBondEnd() )
+					{
+						representationTargets.appendBonds( bond * 2, 2 );
+					}
 				}
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::RIBBON ) )
 				{
-					std::pair<uint, uint> rangeRibbons = std::pair( 0, 0 );
 					if ( residueToControlPointIndices.find( residue->getIndex() )
 						 != residueToControlPointIndices.end() )
-						rangeRibbons = std::pair( residueToControlPointIndices.at( residue->getIndex() ), 4 );
-
-					representationTargets.appendRibbons( rangeRibbons );
+					{
+						representationTargets.appendRibbons( residueToControlPointIndices[ residue->getIndex() ], 4 );
+					}
 				}
 			}
 		}

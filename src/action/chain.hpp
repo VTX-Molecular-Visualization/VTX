@@ -94,6 +94,7 @@ namespace VTX::Action::Chain
 					}
 				}
 
+				chain.getMoleculePtr()->refreshVisibilities();
 				chain.getMoleculePtr()->computeRepresentationTargets();
 			}
 

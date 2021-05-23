@@ -237,33 +237,56 @@ namespace VTX
 		void Molecule::_fillBufferAtomVisibilities()
 		{
 			_bufferAtomVisibilities.clear();
-			_bufferAtomVisibilities.resize( _atoms.size(), 1u );
-			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
+
+			if ( isVisible() == false )
 			{
-				const Atom * const atom = _atoms[ i ];
+				_bufferAtomVisibilities.resize( _atoms.size(), 0u );
+			}
+			else
+			{
+				_bufferAtomVisibilities.resize( _atoms.size(), 1u );
 
-				if ( atom == nullptr )
-					continue;
+				for ( uint i = 0; i < uint( _atoms.size() ); ++i )
+				{
+					const Atom * const atom = _atoms[ i ];
 
-				// Solvent hidden.
-				if ( _showSolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
-				{
-					_bufferAtomVisibilities[ i ] = 0u;
-				}
-				// Ion hidden.
-				else if ( _showIon == false && atom->getType() == Atom::TYPE::ION )
-				{
-					_bufferAtomVisibilities[ i ] = 0u;
-				}
-				else if ( _showHydrogen == false && atom->getSymbol() == Atom::SYMBOL::A_H )
-				{
-					_bufferAtomVisibilities[ i ] = 0u;
-				}
-				else if ( _showWater == false
-						  && ( atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::HOH
-							   || atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::WAT ) )
-				{
-					_bufferAtomVisibilities[ i ] = 0u;
+					if ( atom == nullptr )
+					{
+						continue;
+					}
+
+					if ( atom->getChainPtr()->isVisible() == false )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					else if ( atom->getResiduePtr()->isVisible() == false )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					else if ( atom->isVisible() == false )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					// Solvent hidden.
+					else if ( _showSolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					// Ion hidden.
+					else if ( _showIon == false && atom->getType() == Atom::TYPE::ION )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					else if ( _showHydrogen == false && atom->getSymbol() == Atom::SYMBOL::A_H )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					else if ( _showWater == false
+							  && ( atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::HOH
+								   || atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::WAT ) )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
 				}
 			}
 

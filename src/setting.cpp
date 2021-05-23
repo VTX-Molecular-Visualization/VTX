@@ -38,7 +38,7 @@ namespace VTX
 
 	// Rendering.
 	const bool									  Setting::ACTIVE_RENDERER_DEFAULT		= true;
-	const bool									  Setting::FORCE_RENDERER_DEFAULT		= false;
+	const bool									  Setting::FORCE_RENDERER_DEFAULT		= true;
 	const Color::Rgb							  Setting::BACKGROUND_COLOR_DEFAULT		= Color::Rgb::BLACK;
 	const float									  Setting::BACKGROUND_OPACITY_DEFAULT	= 1.0f;
 	const int									  Setting::REPRESENTATION_DEFAULT_INDEX = 0;

@@ -42,7 +42,8 @@ namespace VTX
 
 			bool hasCustomRepresentation() const;
 
-			const std::map<const InstantiatedRepresentation *, RepresentationTarget> & getRepresentationData() const
+			inline const std::map<const InstantiatedRepresentation *, RepresentationTarget> & getRepresentationData()
+				const
 			{
 				return _representationTargets;
 			}
@@ -53,21 +54,21 @@ namespace VTX
 			void computeRepresentationTargets();
 			void computeColorBuffer();
 
-			const std::map<uint, uint> & getRepresentationAtoms(
+			inline const Representation::TargetRange & getRepresentationAtoms(
 				const InstantiatedRepresentation * const p_representation ) const
 			{
-				return _representationTargets.at( p_representation ).getAtoms();
-			};
-			const std::map<uint, uint> & getRepresentationBonds(
+				return _representationTargets[ p_representation ].getAtoms();
+			}
+			inline const Representation::TargetRange & getRepresentationBonds(
 				const InstantiatedRepresentation * const p_representation ) const
 			{
-				return _representationTargets.at( p_representation ).getBonds();
-			};
-			const std::map<uint, uint> & getRepresentationRibbons(
+				return _representationTargets[ p_representation ].getBonds();
+			}
+			inline const Representation::TargetRange & getRepresentationRibbons(
 				const InstantiatedRepresentation * const p_representation ) const
 			{
-				return _representationTargets.at( p_representation ).getRibbons();
-			};
+				return _representationTargets[ p_representation ].getRibbons();
+			}
 
 			Model::Molecule * const getMolecule() const { return _molecule; };
 			void		 setRepresentableMolecule( Model::Molecule * const p_molecule ) { _molecule = p_molecule; };
