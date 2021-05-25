@@ -17,6 +17,7 @@
 	<file>sprite/close_icon.png</file>
 	<file>sprite/close_icon_hovered.png</file>
 	<file>sprite/cloud_connector.png</file>
+	<file>sprite/console_window_icon.png</file>
 	<file>sprite/copy_preset_icon.png</file>
 	<file>sprite/copy_selection_icon.png</file>
 	<file>sprite/default_item_icon.png</file>
@@ -27,10 +28,10 @@
 	<file>sprite/fullscreen_icon.png</file>
 	<file>sprite/hide_hydrogen_icon.png</file>
 	<file>sprite/hide_selection_icon.png</file>
-	<file>sprite/hide_sequence_icon.png</file>
 	<file>sprite/hide_solvent_icon.png</file>
 	<file>sprite/hide_water_icon.png</file>
 	<file>sprite/info_button.png</file>
+	<file>sprite/inspector_window_icon.png</file>
 	<file>sprite/job_manager.png</file>
 	<file>sprite/keyword_editor.png</file>
 	<file>sprite/load_molecule_icon.png</file>
@@ -50,6 +51,7 @@
 	<file>sprite/refresh_icon_hovered.png</file>
 	<file>sprite/remove_icon.png</file>
 	<file>sprite/remove_icon_hovered.png</file>
+	<file>sprite/render_window_icon.png</file>
 	<file>sprite/representation_icon.png</file>
 	<file>sprite/representation_new_preset_icon.png</file>
 	<file>sprite/representation_sas_icon.png</file>
@@ -62,11 +64,14 @@
 	<file>sprite/save_session_icon.png</file>
 	<file>sprite/save_settings.png</file>
 	<file>sprite/save_settings_hovered.png</file>
+	<file>sprite/scene_window_icon.png</file>
 	<file>sprite/screenshot_icon.png</file>
+	<file>sprite/selection_window_icon.png</file>
+	<file>sprite/sequence_window_icon.png</file>
 	<file>sprite/settings_icon.png</file>
+	<file>sprite/setting_window_icon.png</file>
 	<file>sprite/show_hydrogen_icon.png</file>
 	<file>sprite/show_selection_icon.png</file>
-	<file>sprite/show_sequence_icon.png</file>
 	<file>sprite/show_solvent_icon.png</file>
 	<file>sprite/show_water_icon.png</file>
 	<file>sprite/stop_icon.png</file>
@@ -88,6 +93,7 @@
 	<file>sprite/unlock_window_icon.png</file>
 	<file>sprite/unlock_window_icon_hovered.png</file>
 	<file>sprite/windowed_icon.png</file>
+	<file>sprite/windows_icon.png</file>
 	<file>stylesheet.css</file>
 </qresource>
 </RCC>

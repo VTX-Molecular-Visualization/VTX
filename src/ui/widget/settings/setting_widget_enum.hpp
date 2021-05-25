@@ -11,6 +11,8 @@ namespace VTX::UI::Widget::Settings
 	{
 		REPRESENTATIONS = 0,
 		RENDER_EFFECTS,
+		//! V0.1
+		// COLORS,
 		VTX,
 		COLORS,
 

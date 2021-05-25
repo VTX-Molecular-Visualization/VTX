@@ -11,17 +11,18 @@ namespace VTX::UI::Widget::MainMenu
 										const QString &		  p_iconUrl,
 										const Qt::Orientation p_orientation )
 	{
+		const QIcon & icon = p_iconUrl.isEmpty() ? QIcon() : QIcon::fromTheme( p_iconUrl );
+		setData( p_name, icon, p_orientation );
+	}
+	void MenuToolButtonWidget::setData( const QString &		  p_name,
+										const QIcon &		  p_icon,
+										const Qt::Orientation p_orientation )
+	{
 		if ( !p_name.isEmpty() )
 			setText( p_name );
 
-		if ( !p_iconUrl.isEmpty() )
-		{
-			QIcon icon = QIcon::fromTheme( p_iconUrl );
-			if ( icon.isNull() )
-				VTX_WARNING( "icon " + p_iconUrl.toStdString() + " not found." );
-			else
-				setIcon( icon );
-		}
+		if ( !p_icon.isNull() )
+			setIcon( p_icon );
 
 		updateButtonStyle( p_orientation );
 	}

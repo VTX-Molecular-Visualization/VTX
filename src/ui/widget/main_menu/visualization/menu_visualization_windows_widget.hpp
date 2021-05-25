@@ -6,46 +6,55 @@
 #endif
 
 #include "event/event.hpp"
+#include "id.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
+#include <QAction>
+#include <QMenu>
 #include <QWidget>
+#include <map>
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu::Visualization
 {
-	namespace UI
+	class MenuVisualizationWindowsWidget : public MenuToolBlockWidget
 	{
-		namespace Widget
-		{
-			namespace MainMenu
-			{
-				namespace Visualization
-				{
-					class MenuVisualizationWindowsWidget : public MenuToolBlockWidget
-					{
-						VTX_WIDGET
+		VTX_WIDGET
 
-					  public:
-						~MenuVisualizationWindowsWidget();
-						void localize() override;
-						void receiveEvent( const Event::VTXEvent & p_event ) override;
-						void refresh();
+	  public:
+		~MenuVisualizationWindowsWidget();
+		void localize() override;
+		void receiveEvent( const Event::VTXEvent & p_event ) override;
+		void refresh();
 
-					  protected:
-						MenuVisualizationWindowsWidget( QWidget * p_parent );
-						void _setupUi( const QString & p_name ) override;
-						void _setupSlots() override;
+	  protected:
+		MenuVisualizationWindowsWidget( QWidget * p_parent );
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 
-					  private:
-						// Render view tools
-						MenuToolButtonWidget * _minimap			= nullptr;
-						MenuToolButtonWidget * _infoUnderCursor = nullptr;
-						MenuToolButtonWidget * _sequence		= nullptr;
+		void _refreshButton( const ID::VTX_ID & p_id );
 
-						void _openSequenceWindow();
-					};
-				} // namespace Visualization
-			}	  // namespace MainMenu
-		}		  // namespace Widget
-	}			  // namespace UI
-} // namespace VTX
+	  private:
+		// !V0.1
+		// MenuToolButtonWidget * _minimap			= nullptr;
+		// MenuToolButtonWidget * _infoUnderCursor = nullptr;
+
+		MenuToolButtonWidget * _windowComboBoxButton = nullptr;
+
+		QMenu * _windowsMenu = nullptr;
+
+		std::map<const ID::VTX_ID *, QAction *> _mapWindowsActions = std::map<const ID::VTX_ID *, QAction *>();
+
+		void _instantiateButton( const ID::VTX_ID & p_id,
+								 void ( MenuVisualizationWindowsWidget::*p_action )(),
+								 const QKeySequence & p_shortcut = 0 );
+
+		void _toggleSceneWindow();
+		void _toggleRenderWindow();
+		void _toggleConsoleWindow();
+		void _toggleInspectorWindow();
+		void _toggleSettingWindow();
+		void _toggleSelectionWindow();
+		void _toggleSequenceWindow();
+	};
+} // namespace VTX::UI::Widget::MainMenu::Visualization
 #endif
