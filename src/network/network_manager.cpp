@@ -14,10 +14,7 @@ namespace VTX
 			VTX_INFO( "Downloading " + p_id + "..." );
 
 			QNetworkRequest request;
-			// request.setSslConfiguration( QSslConfiguration::defaultDtlsConfiguration() );
-			// request.setRawHeader( QByteArray( "Authorization" ), QByteArray( "Basic" ) );
 			request.setUrl( QUrl( std::string( API_URL_MMTF + p_id ).c_str() ) );
-			// request.setHeader( QNetworkRequest::ContentTypeHeader, "text/plain" );
 			QNetworkReply * const reply = _networkManager.get( request );
 			connect( reply, &QNetworkReply::errorOccurred, this, &NetworkManager::_errorOccured );
 			connect( reply, &QNetworkReply::sslErrors, this, &NetworkManager::_sslErrors );
@@ -28,9 +25,26 @@ namespace VTX
 		void NetworkManager::_finished()
 		{
 			QNetworkReply * replyThis = qobject_cast<QNetworkReply *>( sender() );
+
 			if ( replyThis->error() )
 			{
 				VTX_ERROR( replyThis->errorString().toStdString() );
+				return;
+			}
+
+			QVariant statusCode = replyThis->attribute( QNetworkRequest::HttpStatusCodeAttribute );
+			if ( !statusCode.isValid() )
+			{
+				VTX_ERROR( "Invalid HTTP response" );
+				return;
+			}
+			int status = statusCode.toInt();
+
+			if ( status != 200 )
+			{
+				VTX_ERROR( "HTTP " + std::to_string( status ) );
+				QString reason = replyThis->attribute( QNetworkRequest::HttpReasonPhraseAttribute ).toString();
+				VTX_ERROR( reason.toStdString() );
 				return;
 			}
 

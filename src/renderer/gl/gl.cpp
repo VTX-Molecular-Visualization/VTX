@@ -103,7 +103,7 @@ namespace VTX::Renderer::GL
 
 	void GL::renderFrame( const Object3D::Scene & p_scene )
 	{
-		//_gl->glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+		VTX_STAT().drawCalls = 0u;
 
 		// TODO: do not change each frame
 		/// TODO2: why this?
