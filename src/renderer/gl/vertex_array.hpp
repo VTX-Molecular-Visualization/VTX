@@ -8,6 +8,7 @@
 #include "buffer.hpp"
 #include "define.hpp"
 #include "generic/base_opengl.hpp"
+#include "vtx_app.hpp"
 
 namespace VTX::Renderer::GL
 {
@@ -104,6 +105,7 @@ namespace VTX::Renderer::GL
 			bind();
 			_gl->glDrawArrays( GLenum( p_mode ), p_first, p_count );
 			unbind();
+			VTX_STAT().drawCalls++;
 		}
 		inline void drawElement( const DrawMode p_mode,
 								 const GLsizei	p_count,
@@ -113,6 +115,7 @@ namespace VTX::Renderer::GL
 			bind();
 			_gl->glDrawElements( GLenum( p_mode ), p_count, GLenum( p_type ), p_offset );
 			unbind();
+			VTX_STAT().drawCalls++;
 		}
 
 	  private:
