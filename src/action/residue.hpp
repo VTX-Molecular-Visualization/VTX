@@ -53,7 +53,6 @@ namespace VTX::Action::Residue
 			for ( Model::Molecule * const molecule : molecules )
 			{
 				molecule->refreshColors();
-				molecule->getSecondaryStructure().refreshColors();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

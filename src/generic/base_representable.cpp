@@ -86,7 +86,7 @@ namespace VTX
 		{
 			computeRepresentationTargets();
 			computeColorBuffer();
-			_molecule->getSecondaryStructure().refreshColors();
+			_molecule->refreshColors();
 		}
 
 		void BaseRepresentable::computeRepresentationTargets()

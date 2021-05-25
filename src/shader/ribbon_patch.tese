@@ -15,20 +15,21 @@ uniform vec3 u_camPosition;
 
 in TcOut
 {
-	vec3				position;
-	vec3				direction;
-	vec3				normal;
-	flat vec3			color;
+	vec3	  position;
+	vec3	  direction;
+	vec3	  normal;
+	flat vec3 color;
 	flat uint ssType;
+	flat uint visibility;
 	flat uint selection;
 }
 tcIn[];
 
 out TeOut
 {
-	vec3				viewPosition;
-	vec3				normal;
-	vec3				color;
+	vec3	  viewPosition;
+	vec3	  normal;
+	vec3	  color;
 	flat uint selection;
 }
 teOut;
@@ -72,6 +73,11 @@ vec3 evaluateBSpline( const mat4x3 p_bspline, const float p_offset )
 
 void main()
 {
+	if ( tcIn[ 1 ].visibility == 0 )
+	{
+		return;
+	}
+
 	const float u = gl_TessCoord.x;
 
 	// Evaluate spline with De Boor's algorithm.

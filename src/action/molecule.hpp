@@ -48,7 +48,6 @@ namespace VTX::Action::Molecule
 			{
 				molecule->setColor( _color );
 				molecule->refreshColors();
-				molecule->getSecondaryStructure().refreshColors();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;

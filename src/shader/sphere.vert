@@ -20,14 +20,14 @@ uniform bool  u_isRadiusFixed = false;
 
 out VsOut
 {
-	flat vec3			viewSpherePos; // Sphere position in view space.
-	flat vec3			sphereColor;
-	flat float			sphereRadius;
-	flat uint sphereVisible;
-	flat uint sphereSelected;
-	flat vec3			vImpU; // Impostor vectors.
-	flat vec3			vImpV;
-	flat float			dotViewSpherePos;
+	flat vec3  viewSpherePos; // Sphere position in view space.
+	flat vec3  sphereColor;
+	flat float sphereRadius;
+	flat uint  sphereVisible;
+	flat uint  sphereSelected;
+	flat vec3  vImpU; // Impostor vectors.
+	flat vec3  vImpV;
+	flat float dotViewSpherePos;
 }
 vsOut;
 

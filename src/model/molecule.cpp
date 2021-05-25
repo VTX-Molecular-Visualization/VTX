@@ -222,11 +222,7 @@ namespace VTX
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
 		}
 
-		void Molecule::refreshBondsBuffer()
-		{
-			_buffer->setBonds( _bufferBonds );
-			computeRepresentationTargets();
-		}
+		void Molecule::refreshBondsBuffer() { _buffer->setBonds( _bufferBonds ); }
 
 		void Molecule::_fillBufferAtomColors()
 		{
@@ -331,7 +327,7 @@ namespace VTX
 
 			_currentFrame = p_frameIdx;
 			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
-			//_secondaryStructure->setCurrentFrame();
+			_secondaryStructure->refresh( true );
 
 			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_FRAME_CHANGE ) );
 
