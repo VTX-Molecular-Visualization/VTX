@@ -7,6 +7,7 @@
 
 #include "id.hpp"
 #include "selection/selection_enum.hpp"
+#include "tool/logger.hpp"
 #include <QChar>
 #include <QColor>
 #include <QFont>
@@ -43,8 +44,13 @@ namespace VTX
 			const QPixmap FULLSCREEN_ICON;
 			const QPixmap WINDOWED_ICON;
 
-			const QPixmap SHOW_SEQUENCE_ICON;
-			const QPixmap HIDE_SEQUENCE_ICON;
+			const QPixmap SCENE_WINDOW_ICON;
+			const QPixmap INSPECTOR_WINDOW_ICON;
+			const QPixmap RENDER_WINDOW_ICON;
+			const QPixmap SETTING_WINDOW_ICON;
+			const QPixmap SELECTION_WINDOW_ICON;
+			const QPixmap CONSOLE_WINDOW_ICON;
+			const QPixmap SEQUENCE_WINDOW_ICON;
 
 			const QPixmap UNFOLDED_PIXMAP;
 			const QPixmap FOLDED_PIXMAP;
@@ -59,6 +65,33 @@ namespace VTX
 			const QPixmap REPRESENTATION_SYMBOL;
 
 			const QPixmap TOOLTAB_SEPARATOR;
+
+			const QPixmap * const getWindowIcon( const ID::VTX_ID & p_id ) const
+			{
+				const QPixmap * res;
+
+				if ( p_id == ID::UI::Window::SCENE )
+					res = &SCENE_WINDOW_ICON;
+				else if ( p_id == ID::UI::Window::RENDER )
+					res = &RENDER_WINDOW_ICON;
+				else if ( p_id == ID::UI::Window::INSPECTOR )
+					res = &INSPECTOR_WINDOW_ICON;
+				else if ( p_id == ID::UI::Window::CONSOLE )
+					res = &CONSOLE_WINDOW_ICON;
+				else if ( p_id == ID::UI::Window::SETTINGS )
+					res = &SETTING_WINDOW_ICON;
+				else if ( p_id == ID::UI::Window::SELECTION )
+					res = &SELECTION_WINDOW_ICON;
+				else if ( p_id == ID::UI::Window::SEQUENCE )
+					res = &SEQUENCE_WINDOW_ICON;
+				else
+				{
+					VTX_WARNING( "Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." );
+					res = nullptr;
+				}
+
+				return res;
+			}
 
 			const QPixmap * const getModelSymbol( const ID::VTX_ID & p_id ) const
 			{
@@ -97,8 +130,13 @@ namespace VTX
 				REPRESENTATION_SYMBOL( QPixmap( ":/sprite/symbol/atom_symbol_icon.png" ) ),
 				FULLSCREEN_ICON( QPixmap( ":/sprite/fullscreen_icon.png" ) ),
 				WINDOWED_ICON( QPixmap( ":/sprite/windowed_icon.png" ) ),
-				SHOW_SEQUENCE_ICON( QPixmap( ":/sprite/show_sequence_icon.png" ) ),
-				HIDE_SEQUENCE_ICON( QPixmap( ":/sprite/hide_sequence_icon.png" ) ) {};
+				SCENE_WINDOW_ICON( QPixmap( ":/sprite/scene_window_icon.png" ) ),
+				INSPECTOR_WINDOW_ICON( QPixmap( ":/sprite/inspector_window_icon.png" ) ),
+				RENDER_WINDOW_ICON( QPixmap( ":/sprite/render_window_icon.png" ) ),
+				SETTING_WINDOW_ICON( QPixmap( ":/sprite/setting_window_icon.png" ) ),
+				SELECTION_WINDOW_ICON( QPixmap( ":/sprite/selection_window_icon.png" ) ),
+				CONSOLE_WINDOW_ICON( QPixmap( ":/sprite/console_window_icon.png" ) ),
+				SEQUENCE_WINDOW_ICON( QPixmap( ":/sprite/sequence_window_icon.png" ) ) {};
 		};
 
 		namespace WidgetProperty

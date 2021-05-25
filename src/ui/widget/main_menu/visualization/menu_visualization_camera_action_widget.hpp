@@ -38,10 +38,12 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// Camera Mode
 		MenuToolButtonWidget * _trackball = nullptr;
 		MenuToolButtonWidget * _freefly	  = nullptr;
-		MenuToolButtonWidget * _vessel	  = nullptr;
+		// !V0.1
+		// MenuToolButtonWidget * _vessel	  = nullptr;
 
 		// Viewpoints
-		MenuToolButtonWidget * _createViewpoint = nullptr;
+		// !V0.1
+		// MenuToolButtonWidget * _createViewpoint = nullptr;
 
 		void _updateCameraModeFeedback();
 

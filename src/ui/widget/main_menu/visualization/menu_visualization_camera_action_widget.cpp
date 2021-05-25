@@ -43,15 +43,17 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_freefly->setData( "Freecam", ":/sprite/camera_freefly_mode.png", Qt::Orientation::Horizontal );
 		pushButton( *_freefly, 1 );
 
-		_vessel = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton" );
-		_vessel->setData( "Vessel", ":/sprite/camera_vessel_mode.png", Qt::Orientation::Horizontal );
-		pushButton( *_vessel, 1 );
+		// !V0.1
+		//_vessel = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "centerCameraOnSelectionButton"
+		//); _vessel->setData( "Vessel", ":/sprite/camera_vessel_mode.png", Qt::Orientation::Horizontal ); pushButton(
+		// *_vessel, 1 );
 
+		// !V0.1
 		// Viewpoints
-		_createViewpoint
-			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "createViewpointButton" );
-		_createViewpoint->setData( "Add\nViewpoint", ":/sprite/add_viewpoint.png", Qt::Orientation::Horizontal );
-		pushButton( *_createViewpoint, 2 );
+		//_createViewpoint
+		//	= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "createViewpointButton" );
+		//_createViewpoint->setData( "Add\nViewpoint", ":/sprite/add_viewpoint.png", Qt::Orientation::Horizontal );
+		// pushButton( *_createViewpoint, 2 );
 
 		validate();
 
@@ -67,7 +69,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		_trackball->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setTrackballController );
 		_freefly->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setFreeflyController );
-		_vessel->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setVesselController );
+		// !V0.1
+		// _vessel->setTriggerAction( this, &MenuVisualizationCameraActionWidget::_setVesselController );
 	}
 
 	void MenuVisualizationCameraActionWidget::_updateCameraModeFeedback()
@@ -79,7 +82,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		_trackball->showActiveFeedback( currentControllerID == ID::Controller::TRACKBALL );
 		_freefly->showActiveFeedback( currentControllerID == ID::Controller::FREEFLY );
-		_vessel->showActiveFeedback( currentControllerID == ID::Controller::VESSEL );
+		// !V0.1
+		// _vessel->showActiveFeedback( currentControllerID == ID::Controller::VESSEL );
 	}
 
 	void MenuVisualizationCameraActionWidget::_recenterCamera() const

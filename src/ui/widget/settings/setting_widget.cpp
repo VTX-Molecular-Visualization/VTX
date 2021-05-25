@@ -44,9 +44,10 @@ namespace VTX::UI::Widget::Settings
 		_addItem( WidgetFactory::get().instantiateWidget<SettingRenderEffectWidget>( _menu, "settingMenuButton" ),
 				  SETTING_MENU::RENDER_EFFECTS,
 				  "Render Effects" );
-		/*_addItem( WidgetFactory::get().instantiateWidget<SettingColorWidget>( _menu, "settingMenuButton" ),
-				  SETTING_MENU::COLORS,
-				  "Colors" );*/
+		// !V0.1
+		//_addItem( WidgetFactory::get().instantiateWidget<SettingColorWidget>( _menu, "settingMenuButton" ),
+		//		  SETTING_MENU::COLORS,
+		//		  "Colors" );
 		_addItem( WidgetFactory::get().instantiateWidget<SettingVTXWidget>( _menu, "settingMenuButton" ),
 				  SETTING_MENU::VTX,
 				  "VTX" );
@@ -65,7 +66,6 @@ namespace VTX::UI::Widget::Settings
 	void SettingWidget::localize()
 	{
 		// Qt translate (not use currently)
-		// setWindowTitle( QCoreApplication::translate( "ConsoleWidget", "Console", nullptr ) );
 		setWindowTitle( "Settings" );
 	};
 

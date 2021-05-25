@@ -92,6 +92,30 @@ namespace VTX::UI
 
 	void MainWindow::_setupSlots()
 	{
+		connect( _renderWidget,
+				 &Widget::Sequence::SequenceWidget::visibilityChanged,
+				 this,
+				 &MainWindow::_onDockWindowVisibilityChange );
+		connect( _sceneWidget,
+				 &Widget::Sequence::SequenceWidget::visibilityChanged,
+				 this,
+				 &MainWindow::_onDockWindowVisibilityChange );
+		connect( _inspectorWidget,
+				 &Widget::Sequence::SequenceWidget::visibilityChanged,
+				 this,
+				 &MainWindow::_onDockWindowVisibilityChange );
+		connect( _selectionWidget,
+				 &Widget::Sequence::SequenceWidget::visibilityChanged,
+				 this,
+				 &MainWindow::_onDockWindowVisibilityChange );
+		connect( _consoleWidget,
+				 &Widget::Sequence::SequenceWidget::visibilityChanged,
+				 this,
+				 &MainWindow::_onDockWindowVisibilityChange );
+		connect( _settingWidget,
+				 &Widget::Sequence::SequenceWidget::visibilityChanged,
+				 this,
+				 &MainWindow::_onDockWindowVisibilityChange );
 		connect( _sequenceWidget,
 				 &Widget::Sequence::SequenceWidget::visibilityChanged,
 				 this,
@@ -236,9 +260,9 @@ namespace VTX::UI
 		}
 	}
 
-	const QWidget & MainWindow::getWidget( const ID::VTX_ID & p_winId ) const
+	QWidget & MainWindow::_getWidget( const ID::VTX_ID & p_winId ) const
 	{
-		const QWidget * widget = nullptr;
+		QWidget * widget = nullptr;
 
 		if ( p_winId == ID::UI::Window::RENDER )
 			widget = _renderWidget;
@@ -258,20 +282,18 @@ namespace VTX::UI
 		return *widget;
 	}
 
-	void MainWindow::_toggleWidget( QWidget * widget )
+	void MainWindow::showWidget( const ID::VTX_ID & p_winId, const bool p_show ) const
 	{
-		if ( widget->isVisible() )
-			widget->hide();
-		else
-			widget->show();
-	}
+		QWidget & widget = _getWidget( p_winId );
 
-	void MainWindow::toggleSequenceWindow() const
-	{
-		if ( _sequenceWidget->isVisible() )
-			_sequenceWidget->hide();
+		if ( p_show )
+			widget.show();
 		else
-			_sequenceWidget->show();
+			widget.hide();
+	}
+	void MainWindow::toggleWidget( const ID::VTX_ID & p_winId ) const
+	{
+		showWidget( p_winId, !_getWidget( p_winId ).isVisible() );
 	}
 
 	WindowMode MainWindow::getWindowMode() { return _getWindowModeFromWindowState( windowState() ); }
@@ -343,7 +365,7 @@ namespace VTX::UI
 
 	bool MainWindow::getWidgetVisibility( const ID::VTX_ID & p_winId ) const
 	{
-		return getWidget( p_winId ).isVisible();
+		return _getWidget( p_winId ).isVisible();
 	};
 
 	void MainWindow::openSettingWindow() const { _settingWidget->show(); }

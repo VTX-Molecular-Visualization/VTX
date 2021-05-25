@@ -48,7 +48,7 @@ namespace VTX::UI::Widget::MainMenu
 	}
 	int MenuToolBlockWidget::pushButtonInNextColumn( MenuToolButtonWidget & p_toolButton )
 	{
-		int column = int( _tmpStructure->getNbColumns() );
+		const int column = int( _tmpStructure->getNbColumns() );
 		pushButton( p_toolButton, column );
 		return column;
 	}
@@ -62,7 +62,7 @@ namespace VTX::UI::Widget::MainMenu
 		_tmpStructure = nullptr;
 
 		_gridLayout->setRowStretch( _gridLayout->rowCount(), 1000 );
-		int titleRow = _gridLayout->rowCount();
+		const int titleRow = _gridLayout->rowCount();
 
 		QVBoxLayout * const titleLayout = new QVBoxLayout();
 		titleLayout->addStretch( 1000 );
