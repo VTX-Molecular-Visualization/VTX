@@ -18,6 +18,7 @@ namespace VTX::UI::Widget::MainMenu
 
 	  public:
 		void setData( const QString & p_name, const QString & p_iconUrl, const Qt::Orientation p_orientation );
+		void setData( const QString & p_name, const QIcon & p_icon, const Qt::Orientation p_orientation );
 		void setName( const QString & p_name );
 		void setOrientation( const Qt::Orientation p_orientation );
 

@@ -55,7 +55,8 @@ namespace VTX
 			const ContextualMenu & getContextualMenu() { return *_contextualMenu; }
 
 			bool getWidgetVisibility( const ID::VTX_ID & p_winId ) const;
-			void toggleSequenceWindow() const;
+			void showWidget( const ID::VTX_ID & p_winId, const bool p_show ) const;
+			void toggleWidget( const ID::VTX_ID & p_winId ) const;
 			void openSettingWindow() const;
 			void openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const;
 
@@ -95,11 +96,10 @@ namespace VTX
 			void _onDockWindowVisibilityChange( bool p_visible );
 
 			// Functions.
-			const QWidget & getWidget( const ID::VTX_ID & p_winId ) const;
+			QWidget & _getWidget( const ID::VTX_ID & p_winId ) const;
 
 			void _loadStyleSheet( const char * p_stylesheetPath );
 			void _setupSlots();
-			void _toggleWidget( QWidget * widget );
 
 			WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
 		};

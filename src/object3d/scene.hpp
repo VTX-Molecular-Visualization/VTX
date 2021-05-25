@@ -48,6 +48,8 @@ namespace VTX::Object3D
 		void addMesh( MeshTrianglePtr const );
 		void removeMesh( MeshTrianglePtr const );
 
+		bool isEmpty() const;
+
 		void clear();
 		void reset();
 

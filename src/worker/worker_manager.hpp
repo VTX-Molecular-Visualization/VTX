@@ -79,8 +79,11 @@ namespace VTX
 				// Call callback and delete all.
 				Callback * callback = _workers.at( p_worker );
 
-				( *callback )( p_returnCode );
-				delete callback;
+				if ( callback != nullptr )
+				{
+					( *callback )( p_returnCode );
+					delete callback;
+				}
 
 				_workers.erase( _workers.find( p_worker ) );
 				delete p_worker;

@@ -4,6 +4,7 @@
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/selection_view.hpp"
 #include "vtx_app.hpp"
+#include "selection/selection_manager.hpp"
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QtGlobal>
@@ -23,10 +24,7 @@ namespace VTX::UI::Widget::Selection
 		{
 			const Event::VTXEventPtr<Model::Selection> & castedEvent
 				= dynamic_cast<const Event::VTXEventPtr<Model::Selection> &>( p_event );
-			View::UI::Widget::SelectionView * const item
-				= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::SelectionView>(
-					castedEvent.ptr, ID::View::UI_SELECTION, nullptr, "SelectionWidget" );
-			setWidget( item );
+			_addSelectionModel( castedEvent.ptr );
 		}
 		else if ( p_event.name == Event::Global::SELECTION_REMOVED )
 		{
@@ -63,6 +61,8 @@ namespace VTX::UI::Widget::Selection
 		_layout->addWidget( _selectionTypeComboBox );
 
 		setWidget( _mainWidget );
+		
+		_addSelectionModel( &VTX::Selection::SelectionManager::get().getSelectionModel() );
 	}
 
 	void SelectionWidget::_setupSlots()
@@ -87,6 +87,15 @@ namespace VTX::UI::Widget::Selection
 		this->setWindowTitle( "Selection" );
 		// this->setWindowTitle( QCoreApplication::translate( "SceneWidget", "Scene", nullptr ) );
 	}
+
+	void SelectionWidget::_addSelectionModel( Model::Selection * const p_selection ) 
+	{
+		View::UI::Widget::SelectionView * const item
+			= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::SelectionView>(
+				p_selection, ID::View::UI_SELECTION, nullptr, "SelectionWidget" );
+		_layout->insertWidget( _layout->count() - 1, item );
+	}
+
 
 	void SelectionWidget::_populateItemList()
 	{

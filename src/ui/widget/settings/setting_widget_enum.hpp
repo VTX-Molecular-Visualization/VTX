@@ -4,14 +4,17 @@
 #ifdef _MSC_VER
 #pragma once
 #endif
+
 namespace VTX::UI::Widget::Settings
 {
 	enum class SETTING_MENU
 	{
 		REPRESENTATIONS = 0,
 		RENDER_EFFECTS,
-		COLORS,
+		//! V0.1
+		// COLORS,
 		VTX,
+		COLORS,
 
 		COUNT
 	};

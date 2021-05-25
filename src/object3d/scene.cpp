@@ -21,6 +21,12 @@ namespace VTX::Object3D
 		delete _camera;
 	}
 
+	bool Scene::isEmpty() const
+	{
+		return _molecules.size() == 0 && _meshes.size() == 0
+			   && ( _paths.size() <= 0 || _paths[ 0 ]->getViewpoints().size() == 0 );
+	}
+
 	void Scene::clear()
 	{
 		while ( _molecules.size() > 0 )

@@ -174,6 +174,8 @@ namespace VTX::UI::Widget::ContextualMenu
 
 		void _applyRepresentationAction( const int p_representationIndex );
 
+		void _exportAction();
+
 	  private:
 		std::vector<ItemData *>				  _actions = std::vector<ItemData *>();
 		CustomWidget::SetRepresentationMenu * _representationMenu;

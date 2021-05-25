@@ -13,38 +13,30 @@
 #include <QMenuBar>
 #include <QTabWidget>
 
-namespace VTX
+namespace VTX::UI::Widget::MainMenu
 {
-	namespace UI
+	class MainMenuBar : public BaseManualWidget<QMenuBar>
 	{
-		namespace Widget
-		{
-			namespace MainMenu
-			{
-				class MainMenuBar : public BaseManualWidget<QMenuBar>
-				{
-					VTX_WIDGET
+		VTX_WIDGET
 
-				  public:
-					void		localize() override;
-					inline void setCurrentTab( int p_index ) { _tabWidget->setCurrentIndex( 0 ); };
+	  public:
+		void		localize() override;
+		inline void setCurrentTab( int p_index ) { _tabWidget->setCurrentIndex( 0 ); };
 
-				  protected:
-					MainMenuBar( QWidget * p_parent );
+	  protected:
+		MainMenuBar( QWidget * p_parent );
 
-					void _setupUi( const QString & p_name ) override;
-					void _setupSlots() override;
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 
-				  private:
-					QTabWidget *							 _tabWidget		 = nullptr;
-					Home::MenuHomeWidget *					 _mainMenu		 = nullptr;
-					Visualization::MenuVisualizationWidget * _viewMenu		 = nullptr;
-					QLabel *								 _movieMenu		 = nullptr;
-					Extensions::MenuExtensionsWidget *		 _extensionsMenu = nullptr;
-				};
-			} // namespace MainMenu
-		}	  // namespace Widget
-	}		  // namespace UI
-} // namespace VTX
+	  private:
+		QTabWidget *							 _tabWidget = nullptr;
+		Home::MenuHomeWidget *					 _mainMenu	= nullptr;
+		Visualization::MenuVisualizationWidget * _viewMenu	= nullptr;
+		// !V0.1
+		// QLabel *								 _movieMenu		 = nullptr;
+		Extensions::MenuExtensionsWidget * _extensionsMenu = nullptr;
+	};
+} // namespace VTX::UI::Widget::MainMenu
 
 #endif
