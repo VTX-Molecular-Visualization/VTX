@@ -85,7 +85,6 @@ namespace VTX
 		void BaseRepresentable::computeAllRepresentationData()
 		{
 			computeRepresentationTargets();
-			computeColorBuffer();
 			_molecule->refreshColors();
 		}
 
@@ -144,83 +143,6 @@ namespace VTX
 					}
 				}
 			}
-		}
-
-		void BaseRepresentable::computeColorBuffer()
-		{
-			std::vector<Color::Rgb> p_colorBuffer = _molecule->getBufferAtomColors();
-
-			if ( p_colorBuffer.size() == 0 )
-				return;
-
-			for ( const Model::Residue * const residue : _molecule->getResidues() )
-			{
-				// Skip hidden items.
-				if ( residue == nullptr || !_isResidueVisible( *residue ) )
-					continue;
-
-				const Model::Representation::InstantiatedRepresentation * const currentRepresentation
-					= residue->getRepresentation();
-
-				COLOR_MODE colorMode = currentRepresentation->getColorMode();
-
-				if ( colorMode == Generic::COLOR_MODE::INHERITED )
-				{
-					const COLOR_MODE & chainColorMode = residue->getChainPtr()->getRepresentation()->getColorMode();
-					if ( chainColorMode != Generic::COLOR_MODE::INHERITED )
-					{
-						colorMode = chainColorMode;
-					}
-					else
-					{
-						const COLOR_MODE & moleculeColorMode = _molecule->getRepresentation()->getColorMode();
-						if ( moleculeColorMode != Generic::COLOR_MODE::INHERITED )
-							colorMode = moleculeColorMode;
-						else
-							colorMode = Setting::COLOR_MODE_DEFAULT;
-					}
-				}
-
-				bool	   colorCarbon = false;
-				Color::Rgb color;
-
-				switch ( colorMode )
-				{
-				case Generic::COLOR_MODE::ATOM_CHAIN: colorCarbon = true; [[fallthrough]];
-				case Generic::COLOR_MODE::CHAIN: color = residue->getChainPtr()->getColor(); break;
-
-				case Generic::COLOR_MODE::ATOM_PROTEIN: colorCarbon = true; [[fallthrough]];
-				case Generic::COLOR_MODE::PROTEIN: color = _molecule->getColor(); break;
-
-				case Generic::COLOR_MODE::ATOM_CUSTOM: colorCarbon = true; [[fallthrough]];
-				case Generic::COLOR_MODE::CUSTOM: color = currentRepresentation->getColor(); break;
-
-				case Generic::COLOR_MODE::RESIDUE:
-					colorCarbon = false;
-					color		= residue->getColor();
-					break;
-				}
-
-				for ( uint i = residue->getIndexFirstAtom(); i < residue->getIndexFirstAtom() + residue->getAtomCount();
-					  i++ )
-				{
-					const Model::Atom * const atom = _molecule->getAtom( i );
-
-					if ( atom == nullptr )
-						continue;
-
-					if ( colorCarbon && atom->getSymbol() != Model::Atom::SYMBOL::A_C )
-					{
-						p_colorBuffer[ i ] = atom->getColor();
-					}
-					else
-					{
-						p_colorBuffer[ i ] = color;
-					}
-				}
-			}
-
-			_molecule->getBuffer()->setAtomColors( p_colorBuffer );
 		}
 
 		bool BaseRepresentable::_isResidueVisible( const Model::Residue & p_residue ) const

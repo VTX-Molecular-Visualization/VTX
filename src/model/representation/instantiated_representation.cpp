@@ -295,19 +295,21 @@ namespace VTX::Model::Representation
 	void InstantiatedRepresentation::_updateTarget( const VTX::Representation::MoleculeComputationFlag & p_flag )
 	{
 		if ( _target == nullptr )
+		{
 			return;
+		}
 
 		if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::Targets ) != 0 )
+		{
 			_target->getMolecule()->computeRepresentationTargets();
+		}
 
 		if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::ColorBuffer ) != 0 )
-			_target->getMolecule()->computeColorBuffer();
+		{
+			_target->getMolecule()->refreshColors();
+		}
 
-		const VTX::Representation::MoleculeComputationFlag ssColorFlag = VTX::Representation::MoleculeComputationFlag(
-			VTX::Representation::MoleculeComputationFlag::SecondaryStructure
-			| VTX::Representation::MoleculeComputationFlag::ColorBuffer );
-
-		if ( ( int( p_flag & ssColorFlag ) != 0 ) )
+		if ( int( p_flag & VTX::Representation::MoleculeComputationFlag::SecondaryStructure ) != 0 )
 		{
 			_target->getMolecule()->getSecondaryStructure().refreshColors();
 		}

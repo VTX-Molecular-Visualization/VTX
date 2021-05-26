@@ -227,7 +227,76 @@ namespace VTX
 		void Molecule::_fillBufferAtomColors()
 		{
 			_bufferAtomColors.resize( _atoms.size() );
-			computeColorBuffer();
+
+			for ( const Model::Residue * const residue : getResidues() )
+			{
+				// Skip hidden items.
+				if ( residue == nullptr || !_isResidueVisible( *residue ) )
+					continue;
+
+				const Model::Representation::InstantiatedRepresentation * const currentRepresentation
+					= residue->getRepresentation();
+
+				Generic::COLOR_MODE colorMode = currentRepresentation->getColorMode();
+
+				if ( colorMode == Generic::COLOR_MODE::INHERITED )
+				{
+					const Generic::COLOR_MODE & chainColorMode
+						= residue->getChainPtr()->getRepresentation()->getColorMode();
+					if ( chainColorMode != Generic::COLOR_MODE::INHERITED )
+					{
+						colorMode = chainColorMode;
+					}
+					else
+					{
+						const Generic::COLOR_MODE & moleculeColorMode = getRepresentation()->getColorMode();
+						if ( moleculeColorMode != Generic::COLOR_MODE::INHERITED )
+							colorMode = moleculeColorMode;
+						else
+							colorMode = Setting::COLOR_MODE_DEFAULT;
+					}
+				}
+
+				bool	   colorCarbon = false;
+				Color::Rgb color;
+
+				switch ( colorMode )
+				{
+				case Generic::COLOR_MODE::ATOM_CHAIN: colorCarbon = true; [[fallthrough]];
+				case Generic::COLOR_MODE::CHAIN: color = residue->getChainPtr()->getColor(); break;
+
+				case Generic::COLOR_MODE::ATOM_PROTEIN: colorCarbon = true; [[fallthrough]];
+				case Generic::COLOR_MODE::PROTEIN: color = getColor(); break;
+
+				case Generic::COLOR_MODE::ATOM_CUSTOM: colorCarbon = true; [[fallthrough]];
+				case Generic::COLOR_MODE::CUSTOM: color = currentRepresentation->getColor(); break;
+
+				case Generic::COLOR_MODE::RESIDUE:
+					colorCarbon = false;
+					color		= residue->getColor();
+					break;
+				}
+
+				for ( uint i = residue->getIndexFirstAtom(); i < residue->getIndexFirstAtom() + residue->getAtomCount();
+					  i++ )
+				{
+					const Model::Atom * const atom = getAtom( i );
+
+					if ( atom == nullptr )
+						continue;
+
+					if ( colorCarbon && atom->getSymbol() != Model::Atom::SYMBOL::A_C )
+					{
+						_bufferAtomColors[ i ] = atom->getColor();
+					}
+					else
+					{
+						_bufferAtomColors[ i ] = color;
+					}
+				}
+			}
+
+			_buffer->setAtomColors( _bufferAtomColors );
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()

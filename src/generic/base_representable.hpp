@@ -52,7 +52,6 @@ namespace VTX
 
 			void computeAllRepresentationData();
 			void computeRepresentationTargets();
-			void computeColorBuffer();
 
 			inline const Representation::TargetRange & getRepresentationAtoms(
 				const InstantiatedRepresentation * const p_representation ) const
