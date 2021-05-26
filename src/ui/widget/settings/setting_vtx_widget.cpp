@@ -47,6 +47,9 @@ namespace VTX::UI::Widget::Settings
 				viewport, "ControllerTranslationSpeedWidget" );
 		_controllerTranslationSpeedWidget->setMinMax( Setting::CONTROLLER_TRANSLATION_SPEED_MIN,
 													  Setting::CONTROLLER_TRANSLATION_SPEED_MAX );
+		_controllerRotationSpeedWidget = WidgetFactory::get().instantiateWidget<CustomWidget::FloatFieldSliderWidget>(
+			viewport, "ControllerRotationSpeedWidget" );
+		_controllerRotationSpeedWidget->setMinMax( 0.0f, 1.0f );
 		_controllerYAxisInvertedWidget = new QCheckBox( viewport );
 
 		// Graphic
@@ -80,6 +83,7 @@ namespace VTX::UI::Widget::Settings
 		_addItemInLayout( _controllerElasticityFactorWidget, "Elasticity strength" );
 		_addItemInLayout( _controllerTranslationFactorWidget, "Translation factor" );
 		_addItemInLayout( _controllerTranslationSpeedWidget, "Translation speed" );
+		_addItemInLayout( _controllerRotationSpeedWidget, "Rotation speed" );
 		_addItemInLayout( _controllerYAxisInvertedWidget, "Invert Y axis" );
 		_finishSection();
 
@@ -129,6 +133,10 @@ namespace VTX::UI::Widget::Settings
 				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
 				 this,
 				 &SettingVTXWidget::_changeControllerTranslationSpeedAction );
+		connect( _controllerRotationSpeedWidget,
+				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
+				 this,
+				 &SettingVTXWidget::_changeControllerRotationSpeedAction );
 		connect( _controllerYAxisInvertedWidget,
 				 &QCheckBox::stateChanged,
 				 this,
@@ -173,6 +181,12 @@ namespace VTX::UI::Widget::Settings
 
 		_controllerTranslationFactorWidget->setValue( VTX_SETTING().getTranslationSpeedFactor() );
 		_controllerTranslationSpeedWidget->setValue( VTX_SETTING().getTranslationSpeed() );
+
+		const float rotationSpeedValue
+			= ( VTX_SETTING().getRotationSpeed() - Setting::CONTROLLER_ROTATION_SPEED_MIN )
+			  / ( Setting::CONTROLLER_ROTATION_SPEED_MAX - Setting::CONTROLLER_ROTATION_SPEED_MIN );
+
+		_controllerRotationSpeedWidget->setValue( rotationSpeedValue );
 		_controllerYAxisInvertedWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getYAxisInverted() ) );
 
 		_snapshotBackgroundOpacitySlider->setValue( VTX_SETTING().getSnapshotBackgroundOpacity() );
@@ -210,6 +224,15 @@ namespace VTX::UI::Widget::Settings
 	{
 		if ( VTX_SETTING().getTranslationSpeed() != p_value )
 			VTX_ACTION( new Action::Setting::ChangeTranslationSpeed( p_value ) );
+	}
+	void SettingVTXWidget::_changeControllerRotationSpeedAction( const float p_value )
+	{
+		const float rotationSpeed
+			= Setting::CONTROLLER_ROTATION_SPEED_MIN
+			  + ( Setting::CONTROLLER_ROTATION_SPEED_MAX - Setting::CONTROLLER_ROTATION_SPEED_MIN ) * p_value;
+
+		if ( VTX_SETTING().getRotationSpeed() != rotationSpeed )
+			VTX_ACTION( new Action::Setting::ChangeRotationSpeed( rotationSpeed ) );
 	}
 	void SettingVTXWidget::_changeControllerYInversionAction( const bool p_invert )
 	{
