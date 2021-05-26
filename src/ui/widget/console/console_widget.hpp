@@ -10,6 +10,7 @@
 #include <QColor>
 #include <QDockWidget>
 #include <QListWidget>
+#include <QPushButton>
 #include <string>
 
 namespace VTX::UI::Widget::Console
@@ -30,7 +31,11 @@ namespace VTX::UI::Widget::Console
 		void localize() override;
 
 	  private:
-		CustomWidget::DockWindowMainWidget<QListWidget> * _listWidget = nullptr;
+		CustomWidget::DockWindowMainWidget<QWidget> * _mainWidget  = nullptr;
+		QListWidget *								  _listWidget  = nullptr;
+		QPushButton *								  _clearWidget = nullptr;
+
+		void _clearConsoleAction();
 
 		QColor _getMessageColor( const std::string & p_level );
 	};

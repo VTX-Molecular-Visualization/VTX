@@ -1,10 +1,14 @@
 #include "console_widget.hpp"
+#include "action/action_manager.hpp"
+#include "action/main.hpp"
 #include "style.hpp"
 #include "tool/logger.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
 #include <QCoreApplication>
+#include <QHBoxLayout>
 #include <QListWidget>
+#include <QVBoxLayout>
 #include <QWidget>
 #include <iostream>
 
@@ -13,19 +17,26 @@ namespace VTX::UI::Widget::Console
 	ConsoleWidget::ConsoleWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
 		_registerEvent( Event::Global::LOG_CONSOLE );
+		_registerEvent( Event::Global::CLEAR_CONSOLE );
 	}
 
 	void ConsoleWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
-		const Event::VTXEventLog & event   = dynamic_cast<const Event::VTXEventLog &>( p_event );
-		QListWidget * const		   list	   = _listWidget;
-		const std::string		   message = "[" + event.date + "] " + "[" + event.level + "] " + event.message;
-		QListWidgetItem * const	   newItem = new QListWidgetItem( QString::fromStdString( message ) );
+		if ( p_event.name == Event::Global::LOG_CONSOLE )
+		{
+			const Event::VTXEventLog & event = dynamic_cast<const Event::VTXEventLog &>( p_event );
 
-		newItem->setData( Qt::ForegroundRole, _getMessageColor( event.level ) );
-		list->addItem( newItem );
+			const std::string		message = "[" + event.date + "] " + "[" + event.level + "] " + event.message;
+			QListWidgetItem * const newItem = new QListWidgetItem( QString::fromStdString( message ) );
+			newItem->setData( Qt::ForegroundRole, _getMessageColor( event.level ) );
 
-		list->scrollToBottom();
+			_listWidget->addItem( newItem );
+			_listWidget->scrollToBottom();
+		}
+		else if ( p_event.name == Event::Global::CLEAR_CONSOLE )
+		{
+			_listWidget->clear();
+		}
 	}
 
 	QColor ConsoleWidget::_getMessageColor( const std::string & p_level )
@@ -50,10 +61,12 @@ namespace VTX::UI::Widget::Console
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_listWidget = new CustomWidget::DockWindowMainWidget<QListWidget>( this );
+		_mainWidget = new CustomWidget::DockWindowMainWidget<QWidget>( this );
+		_mainWidget->setSizeHint( Style::CONSOLE_PREFERED_SIZE );
+		_mainWidget->setMinimumSizeHint( Style::CONSOLE_MINIMUM_SIZE );
+
+		_listWidget = new QListWidget( this );
 		_listWidget->setObjectName( QString::fromUtf8( "logList" ) );
-		_listWidget->setSizeHint( Style::CONSOLE_PREFERED_SIZE );
-		_listWidget->setMinimumSizeHint( Style::CONSOLE_MINIMUM_SIZE );
 
 		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
 											  QSizePolicy::Policy::MinimumExpanding,
@@ -62,15 +75,36 @@ namespace VTX::UI::Widget::Console
 		sizePolicy.setVerticalStretch( 10 );
 		_listWidget->setSizePolicy( sizePolicy );
 
-		setWidget( _listWidget );
+		_clearWidget = new QPushButton( this );
+		_clearWidget->setText( "Clear" );
+		_clearWidget->setSizePolicy( QSizePolicy::Policy::Minimum, QSizePolicy::Policy::Minimum );
+
+		QVBoxLayout * const buttonsLayout = new QVBoxLayout();
+		buttonsLayout->setContentsMargins( 0, 0, 0, 0 );
+		buttonsLayout->addWidget( _clearWidget );
+		buttonsLayout->addStretch( 1000 );
+
+		QHBoxLayout * const mainLayout = new QHBoxLayout( _mainWidget );
+		mainLayout->setSpacing( 5 );
+		mainLayout->setContentsMargins( 0, 0, 0, 0 );
+
+		mainLayout->addWidget( _listWidget, 100 );
+		mainLayout->addLayout( buttonsLayout, 1 );
+
+		setWidget( _mainWidget );
 	}
 
-	void ConsoleWidget::_setupSlots() {};
+	void ConsoleWidget::_setupSlots()
+	{
+		connect( _clearWidget, &QPushButton::clicked, this, &ConsoleWidget::_clearConsoleAction );
+	};
 	void ConsoleWidget::localize()
 	{
 		// Qt translate (not use currently)
 		// setWindowTitle( QCoreApplication::translate( "ConsoleWidget", "Console", nullptr ) );
 		setWindowTitle( "Console" );
 	};
+
+	void ConsoleWidget::_clearConsoleAction() { VTX_ACTION( new Action::Main::ClearConsoleInterface() ); }
 
 } // namespace VTX::UI::Widget::Console
