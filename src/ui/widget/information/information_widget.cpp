@@ -53,7 +53,13 @@ namespace VTX::UI::Widget::Information
 		libraryDesc->setFrameShape( QFrame::Shape::Panel );
 		libraryDesc->setFrameShadow( QFrame::Shadow::Sunken );
 		libraryDesc->setText(
-			"<a href = \"https://www.qt.io\">Qt</a> - <a href \"https://chemfiles.org\">Chemfiles</a>" );
+			"<a href \"http://assimp.org/\">Assimp</a> - "
+			"<a href \"https://chemfiles.org/\">Chemfiles</a> - "
+			"<a href \"https://www.opengl.org/sdk/libs/GLM/\">GLM</a> - "
+			"<a href \"https://github.com/Neargye/magic_enum\">Magic enum</a> - "
+			"<a href \"https://github.com/nlohmann/json\">nlohmann</a> - "
+			"<a href = \"https://www.qt.io/\">Qt</a>"
+			"" );
 
 		QLabel * iconAuthorsTitle = new QLabel( this );
 		iconAuthorsTitle->setText( "Icon authors:" );
