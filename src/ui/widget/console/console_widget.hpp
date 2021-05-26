@@ -30,6 +30,8 @@ namespace VTX::UI::Widget::Console
 		void localize() override;
 
 	  private:
+		inline static uint _SIZE = 50;
+
 		CustomWidget::DockWindowMainWidget<QListWidget> * _listWidget = nullptr;
 
 		QColor _getMessageColor( const std::string & p_level );

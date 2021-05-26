@@ -25,6 +25,13 @@ namespace VTX::UI::Widget::Console
 		newItem->setData( Qt::ForegroundRole, _getMessageColor( event.level ) );
 		list->addItem( newItem );
 
+		if ( uint( list->count() ) > _SIZE )
+		{
+			QListWidgetItem * const itemToRemove = list->takeItem( 0 );
+			list->removeItemWidget( itemToRemove );
+			delete itemToRemove;
+		}
+
 		list->scrollToBottom();
 	}
 
