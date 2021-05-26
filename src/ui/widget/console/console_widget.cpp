@@ -30,16 +30,15 @@ namespace VTX::UI::Widget::Console
 			QListWidgetItem * const newItem = new QListWidgetItem( QString::fromStdString( message ) );
 			newItem->setData( Qt::ForegroundRole, _getMessageColor( event.level ) );
 
-		if ( uint( list->count() ) > _SIZE )
-		{
-			QListWidgetItem * const itemToRemove = list->takeItem( 0 );
-			list->removeItemWidget( itemToRemove );
-			delete itemToRemove;
-		}
+			_listWidget->addItem( newItem );
 
-		_listWidget->addItem( newItem );
-		_listWidget->scrollToBottom();
-			
+			if ( uint( _listWidget->count() ) > _SIZE )
+			{
+				QListWidgetItem * const itemToRemove = _listWidget->takeItem( 0 );
+				_listWidget->removeItemWidget( itemToRemove );
+				delete itemToRemove;
+			}
+
 			_listWidget->scrollToBottom();
 		}
 		else if ( p_event.name == Event::Global::CLEAR_CONSOLE )
@@ -74,7 +73,7 @@ namespace VTX::UI::Widget::Console
 		_mainWidget->setSizeHint( Style::CONSOLE_PREFERED_SIZE );
 		_mainWidget->setMinimumSizeHint( Style::CONSOLE_MINIMUM_SIZE );
 
-		_listWidget = new QListWidget( this );
+		_listWidget = new CustomWidget::DockWindowMainWidget<QListWidget>( this );
 		_listWidget->setObjectName( QString::fromUtf8( "logList" ) );
 
 		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,

@@ -33,9 +33,9 @@ namespace VTX::UI::Widget::Console
 	  private:
 		inline static uint _SIZE = 50;
 
-		CustomWidget::DockWindowMainWidget<QListWidget> * _listWidget = nullptr;
-		CustomWidget::DockWindowMainWidget<QWidget> * _mainWidget  = nullptr;
-		QPushButton *								  _clearWidget = nullptr;
+		CustomWidget::DockWindowMainWidget<QListWidget> * _listWidget  = nullptr;
+		CustomWidget::DockWindowMainWidget<QWidget> *	  _mainWidget  = nullptr;
+		QPushButton *									  _clearWidget = nullptr;
 
 		void _clearConsoleAction();
 
