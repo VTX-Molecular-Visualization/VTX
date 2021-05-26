@@ -37,12 +37,13 @@ if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
   endif()
 endif()
 
+
 if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
 	file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
-if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FFMPEG})
-	file(DOWNLOAD ${LIB_URL}/${FFMPEG} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FFMPEG} SHOW_PROGRESS)
-endif()
+#if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FFMPEG})
+#	file(DOWNLOAD ${LIB_URL}/${FFMPEG} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FFMPEG} SHOW_PROGRESS)
+#endif()
 
 message("Downloading dependencies... DONE")
 message("Copying all sources...")
@@ -205,6 +206,10 @@ add_custom_target(VTX_SHADERS COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE
 set_property(TARGET VTX_SHADERS APPEND PROPERTY SOURCES ${SHADERS}) # Workaround to add source to custom target.
 
 add_dependencies(VTX VTX_SHADERS)
+
+# Readme and license.
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/README.md ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../README.md)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/license.txt ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../license.txt)
 
 # Qt options
 set_property(TARGET VTX PROPERTY AUTOUIC_OPTIONS "--no-autoconnection")

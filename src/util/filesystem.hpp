@@ -56,7 +56,7 @@ namespace VTX
 			static const FilePath LOGS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/logs" );
 			static const FilePath LIBRARIES_DIR = FilePath( EXECUTABLE_DIR.string() + "/libraries" );
 
-			static const FilePath LICENSE_PATH = FilePath( EXECUTABLE_DIR.string() + "/../../doc/license.txt" );
+			static const FilePath LICENSE_PATH = FilePath( EXECUTABLE_DIR.string() + "/license.txt" );
 
 			static const FilePath DATA_DIR				  = "../data";
 			static const FilePath SHADERS_DIR_SRC		  = "../src/shader";
