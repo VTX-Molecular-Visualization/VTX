@@ -22,6 +22,7 @@ namespace VTX
 		enum Global
 		{
 			LOG_CONSOLE,
+			CLEAR_CONSOLE,
 			CHANGE_STATE,
 			UPDATE_PROGRESS_BAR,
 			MOLECULE_CREATED,

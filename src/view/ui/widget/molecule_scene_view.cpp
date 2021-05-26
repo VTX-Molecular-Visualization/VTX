@@ -659,7 +659,7 @@ namespace VTX::View::UI::Widget
 		{
 			Model::Molecule & model = MVC::MvcManager::get().getModel<Model::Molecule>( modelId );
 
-			if ( selection.isMoleculeSelected( model ) )
+			if ( selection.isMoleculeFullySelected( model ) )
 				VTX_ACTION( new Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
 				VTX_ACTION( new Action::Molecule::ChangeVisibility( model, visibilityMode ) );
@@ -668,7 +668,7 @@ namespace VTX::View::UI::Widget
 		{
 			Model::Chain & model = MVC::MvcManager::get().getModel<Model::Chain>( modelId );
 
-			if ( selection.isChainSelected( model ) )
+			if ( selection.isChainFullySelected( model ) )
 				VTX_ACTION( new Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
 				VTX_ACTION( new Action::Chain::ChangeVisibility( model, visibilityMode ) );
@@ -677,7 +677,7 @@ namespace VTX::View::UI::Widget
 		{
 			Model::Residue & model = MVC::MvcManager::get().getModel<Model::Residue>( modelId );
 
-			if ( selection.isResidueSelected( model ) )
+			if ( selection.isResidueFullySelected( model ) )
 				VTX_ACTION( new Action::Selection::ChangeVisibility( selection, model, modelTypeId, visibilityMode ) );
 			else
 				VTX_ACTION( new Action::Residue::ChangeVisibility( model, visibilityMode ) );

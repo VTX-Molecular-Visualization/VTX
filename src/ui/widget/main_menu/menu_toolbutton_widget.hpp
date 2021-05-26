@@ -40,13 +40,13 @@ namespace VTX::UI::Widget::MainMenu
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 
-		void updateButtonStyle()
+		void _updateButtonStyle()
 		{
 			const Qt::Orientation currOrientation
 				= width() > height() ? Qt::Orientation::Horizontal : Qt::Orientation::Vertical;
-			updateButtonStyle( currOrientation );
+			_updateButtonStyle( currOrientation );
 		}
-		virtual void updateButtonStyle( const Qt::Orientation p_orientation );
+		virtual void _updateButtonStyle( const Qt::Orientation p_orientation );
 
 	  private:
 		bool _hasActiveFeedback = false;

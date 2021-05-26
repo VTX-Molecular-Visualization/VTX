@@ -35,6 +35,8 @@ namespace VTX::UI
 		resize( winsize );
 		setWindowState( Qt::WindowState::WindowNoState );
 
+		setContextMenuPolicy( Qt::ContextMenuPolicy::PreventContextMenu );
+
 		_mainMenuBar = WidgetFactory::get().instantiateWidget<Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
 		setMenuBar( _mainMenuBar );
 		setAcceptDrops( true );
@@ -304,9 +306,14 @@ namespace VTX::UI
 		QWidget & widget = _getWidget( p_winId );
 
 		if ( p_show )
+		{
 			widget.show();
+			widget.raise();
+		}
 		else
+		{
 			widget.hide();
+		}
 	}
 	void MainWindow::toggleWidget( const ID::VTX_ID & p_winId ) const
 	{

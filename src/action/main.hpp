@@ -8,6 +8,8 @@
 #include "action/action_manager.hpp"
 #include "base_action.hpp"
 #include "define.hpp"
+#include "event/event.hpp"
+#include "event/event_manager.hpp"
 #include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "network/network_manager.hpp"
@@ -324,6 +326,15 @@ namespace VTX::Action::Main
 	  private:
 		const Worker::Snapshoter::MODE _mode;
 		const FilePath				   _path;
+	};
+
+	class ClearConsoleInterface : public BaseAction
+	{
+	  public:
+		explicit ClearConsoleInterface() {}
+
+		virtual void execute() override { VTX_EVENT( new Event::VTXEvent( Event::Global::CLEAR_CONSOLE ) ); };
+		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 	};
 
 } // namespace VTX::Action::Main

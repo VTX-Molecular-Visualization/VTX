@@ -1,5 +1,6 @@
 #include "menu_visualization_windows_widget.hpp"
 #include "ui/main_window.hpp"
+#include "ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 
@@ -26,12 +27,16 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		MenuToolBlockWidget::_setupUi( p_name );
 
 		_windowComboBoxButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "windowsButton" );
-		_windowComboBoxButton->setData( "Windows", ":/sprite/windows_icon.png", Qt::Orientation::Vertical );
+		_windowComboBoxButton->setData( "Panels", ":/sprite/windows_icon.png", Qt::Orientation::Vertical );
 		pushButton( *_windowComboBoxButton, 0 );
 
+		_settingsButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "settingsButton" );
+		_settingsButton->setData( "Settings", ":/sprite/settings_icon.png", Qt::Orientation::Vertical );
+		pushButton( *_settingsButton, 1 );
+
 		_informationButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "informationButton" );
-		_informationButton->setData( "Information", ":/sprite/info_button.png", Qt::Orientation::Vertical );
-		pushButton( *_informationButton, 1 );
+		_informationButton->setData( "Infos", ":/sprite/info_button.png", Qt::Orientation::Vertical );
+		pushButton( *_informationButton, 2 );
 
 		_windowsMenu = new QMenu( this );
 
@@ -41,7 +46,6 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_instantiateButton( ID::UI::Window::SELECTION, &MenuVisualizationWindowsWidget::_toggleSelectionWindow );
 		_instantiateButton( ID::UI::Window::SEQUENCE, &MenuVisualizationWindowsWidget::_toggleSequenceWindow );
 		_instantiateButton( ID::UI::Window::CONSOLE, &MenuVisualizationWindowsWidget::_toggleConsoleWindow );
-		_instantiateButton( ID::UI::Window::SETTINGS, &MenuVisualizationWindowsWidget::_toggleSettingWindow );
 
 		_windowComboBoxButton->setMenu( _windowsMenu );
 
@@ -63,6 +67,11 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 				 &MenuToolButtonWidget::clicked,
 				 this,
 				 &MenuVisualizationWindowsWidget::_displayInformationWindow );
+
+		connect( _settingsButton,
+				 &MenuToolButtonWidget::clicked,
+				 this,
+				 &MenuVisualizationWindowsWidget::_displaySettingsWindow );
 	}
 	void MenuVisualizationWindowsWidget::localize() { setTitle( "Windows" ); }
 	void MenuVisualizationWindowsWidget::refresh()
@@ -115,10 +124,6 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	{
 		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::INSPECTOR );
 	}
-	void MenuVisualizationWindowsWidget::_toggleSettingWindow()
-	{
-		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SETTINGS );
-	}
 	void MenuVisualizationWindowsWidget::_toggleSelectionWindow()
 	{
 		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SELECTION );
@@ -126,6 +131,11 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	void MenuVisualizationWindowsWidget::_toggleSequenceWindow()
 	{
 		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SEQUENCE );
+	}
+
+	void MenuVisualizationWindowsWidget::_displaySettingsWindow()
+	{
+		VTXApp::get().getMainWindow().openSettingWindow( Settings::SETTING_MENU::VTX );
 	}
 
 	void MenuVisualizationWindowsWidget::_displayInformationWindow()

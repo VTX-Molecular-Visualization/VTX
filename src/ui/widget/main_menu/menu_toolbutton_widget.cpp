@@ -1,6 +1,7 @@
 #include "menu_toolbutton_widget.hpp"
 #include "style.hpp"
 #include "tool/logger.hpp"
+#include <QLayout>
 #include <QPalette>
 
 namespace VTX::UI::Widget::MainMenu
@@ -24,12 +25,12 @@ namespace VTX::UI::Widget::MainMenu
 		if ( !p_icon.isNull() )
 			setIcon( p_icon );
 
-		updateButtonStyle( p_orientation );
+		_updateButtonStyle( p_orientation );
 	}
 
 	void MenuToolButtonWidget::setOrientation( const Qt::Orientation p_orientation )
 	{
-		updateButtonStyle( p_orientation );
+		_updateButtonStyle( p_orientation );
 	}
 
 	void MenuToolButtonWidget::showActiveFeedback( const bool p_activate )
@@ -54,29 +55,31 @@ namespace VTX::UI::Widget::MainMenu
 	void MenuToolButtonWidget::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
-		setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Minimum );
-		setFont( Style::TOOL_MENU_BUTTON_FONT );
 
+		setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::MinimumExpanding );
+		setFont( Style::TOOL_MENU_BUTTON_FONT );
 		setPopupMode( QToolButton::ToolButtonPopupMode::InstantPopup );
 	}
 	void MenuToolButtonWidget::_setupSlots() {}
 
-	void MenuToolButtonWidget::updateButtonStyle( const Qt::Orientation p_orientation )
+	void MenuToolButtonWidget::_updateButtonStyle( const Qt::Orientation p_orientation )
 	{
 		switch ( p_orientation )
 		{
 		case Qt::Orientation::Horizontal:
 			setToolButtonStyle( Qt::ToolButtonStyle::ToolButtonTextBesideIcon );
 			setIconSize( QSize( 16, 16 ) );
+			setContentsMargins( 2, 2, 2, 2 );
 			break;
 		case Qt::Orientation::Vertical:
 			setToolButtonStyle( Qt::ToolButtonStyle::ToolButtonTextUnderIcon );
-			setIconSize( QSize( 24, 24 ) );
+			setIconSize( QSize( 28, 28 ) );
+			setContentsMargins( 10, 2, 10, 2 );
 			break;
 		default:
 			VTX_WARNING( "Orientation " + ( std::to_string( p_orientation ) )
 						 + " not managed in BaseMenuToolButtonWidget::updateButtonStyle. Set Default" );
-			updateButtonStyle( Qt::Orientation::Vertical );
+			_updateButtonStyle( Qt::Orientation::Vertical );
 			break;
 		}
 	}
