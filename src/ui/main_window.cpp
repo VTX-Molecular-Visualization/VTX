@@ -52,6 +52,9 @@ namespace VTX::UI
 		_settingWidget
 			= WidgetFactory::get().instantiateWidget<Widget::Settings::SettingWidget>( this, "settingWidget" );
 
+		_informationWidget = WidgetFactory::get().instantiateWidget<Widget::Information::InformationWidget>(
+			this, "informationWidget" );
+
 		_statusBarWidget
 			= WidgetFactory::get().instantiateWidget<Widget::StatusBar::StatusBarWidget>( this, "statusBar" );
 		_statusBarWidget->setFixedHeight( 25 );
@@ -167,6 +170,12 @@ namespace VTX::UI
 			restoreDockWidget( _settingWidget );
 			_settingWidget->setFloating( false );
 		}
+		if ( dockWidgetArea( _informationWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
+		{
+			removeDockWidget( _informationWidget );
+			restoreDockWidget( _informationWidget );
+			_informationWidget->setFloating( false );
+		}
 
 		addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _sceneWidget, Qt::Orientation::Horizontal );
 		splitDockWidget( _sceneWidget, _selectionWidget, Qt::Orientation::Vertical );
@@ -179,6 +188,9 @@ namespace VTX::UI
 		// TODO check https://bugreports.qt.io/browse/QTBUG-88157 to remove useless tabifyDockWidget
 		tabifyDockWidget( _inspectorWidget, _settingWidget );
 		_settingWidget->setFloating( true );
+
+		tabifyDockWidget( _inspectorWidget, _informationWidget );
+		_informationWidget->setFloating( true );
 
 		if ( !_sceneWidget->isVisible() )
 			_sceneWidget->show();
@@ -195,6 +207,9 @@ namespace VTX::UI
 
 		if ( _settingWidget->isVisible() )
 			_settingWidget->hide();
+
+		if ( _settingWidget->isVisible() )
+			_informationWidget->hide();
 	}
 
 	void MainWindow::_onDockWindowVisibilityChange( const bool p_visible )
@@ -278,6 +293,8 @@ namespace VTX::UI
 			widget = _selectionWidget;
 		else if ( p_winId == ID::UI::Window::SETTINGS )
 			widget = _settingWidget;
+		else if ( p_winId == ID::UI::Window::INFORMATION )
+			widget = _informationWidget;
 
 		return *widget;
 	}
@@ -368,7 +385,6 @@ namespace VTX::UI
 		return _getWidget( p_winId ).isVisible();
 	};
 
-	void MainWindow::openSettingWindow() const { _settingWidget->show(); }
 	void MainWindow::openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const
 	{
 		_settingWidget->setCurrentMenu( p_menuIndex );

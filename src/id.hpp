@@ -16,14 +16,14 @@ namespace VTX
 		{
 			namespace Window
 			{
-				const VTX_ID SCENE	   = "SCENE";
-				const VTX_ID RENDER	   = "RENDER";
-				const VTX_ID INSPECTOR = "INSPECTOR";
-				const VTX_ID CONSOLE   = "CONSOLE";
-				const VTX_ID SEQUENCE  = "SEQUENCE";
-				const VTX_ID SELECTION = "SELECTION";
-				const VTX_ID SETTINGS  = "SETTINGS";
-
+				const VTX_ID SCENE		 = "SCENE";
+				const VTX_ID RENDER		 = "RENDER";
+				const VTX_ID INSPECTOR	 = "INSPECTOR";
+				const VTX_ID CONSOLE	 = "CONSOLE";
+				const VTX_ID SEQUENCE	 = "SEQUENCE";
+				const VTX_ID SELECTION	 = "SELECTION";
+				const VTX_ID SETTINGS	 = "SETTINGS";
+				const VTX_ID INFORMATION = "INFORMATION";
 			} // namespace Window
 
 			const VTX_ID USER_INTERFACE = "USER_INTERFACE";

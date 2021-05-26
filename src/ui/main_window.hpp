@@ -9,6 +9,7 @@
 #include "ui_main_window.h"
 #include "widget/base_widget.hpp"
 #include "widget/console/console_widget.hpp"
+#include "widget/information/information_widget.hpp"
 #include "widget/inspector/inspector_widget.hpp"
 #include "widget/main_menu/main_menu_bar.hpp"
 #include "widget/render/opengl_widget.hpp"
@@ -57,7 +58,6 @@ namespace VTX
 			bool getWidgetVisibility( const ID::VTX_ID & p_winId ) const;
 			void showWidget( const ID::VTX_ID & p_winId, const bool p_show ) const;
 			void toggleWidget( const ID::VTX_ID & p_winId ) const;
-			void openSettingWindow() const;
 			void openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const;
 
 			WindowMode getWindowMode();
@@ -80,13 +80,14 @@ namespace VTX
 		  private:
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
 
-			Widget::Render::RenderWidget *		 _renderWidget	  = nullptr;
-			Widget::Scene::SceneWidget *		 _sceneWidget	  = nullptr;
-			Widget::Inspector::InspectorWidget * _inspectorWidget = nullptr;
-			Widget::Console::ConsoleWidget *	 _consoleWidget	  = nullptr;
-			Widget::Sequence::SequenceWidget *	 _sequenceWidget  = nullptr;
-			Widget::Selection::SelectionWidget * _selectionWidget = nullptr;
-			Widget::Settings::SettingWidget *	 _settingWidget	  = nullptr;
+			Widget::Render::RenderWidget *			 _renderWidget		= nullptr;
+			Widget::Scene::SceneWidget *			 _sceneWidget		= nullptr;
+			Widget::Inspector::InspectorWidget *	 _inspectorWidget	= nullptr;
+			Widget::Console::ConsoleWidget *		 _consoleWidget		= nullptr;
+			Widget::Sequence::SequenceWidget *		 _sequenceWidget	= nullptr;
+			Widget::Selection::SelectionWidget *	 _selectionWidget	= nullptr;
+			Widget::Settings::SettingWidget *		 _settingWidget		= nullptr;
+			Widget::Information::InformationWidget * _informationWidget = nullptr;
 
 			ContextualMenu * _contextualMenu = nullptr;
 

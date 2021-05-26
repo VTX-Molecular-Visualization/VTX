@@ -41,6 +41,7 @@ namespace VTX::UI::Widget::Settings
 		CustomWidget::FloatFieldSliderWidget * _controllerElasticityFactorWidget  = nullptr;
 		CustomWidget::FloatFieldSliderWidget * _controllerTranslationFactorWidget = nullptr;
 		CustomWidget::FloatFieldSliderWidget * _controllerTranslationSpeedWidget  = nullptr;
+		CustomWidget::FloatFieldSliderWidget * _controllerRotationSpeedWidget	  = nullptr;
 		QCheckBox *							   _controllerYAxisInvertedWidget	  = nullptr;
 
 		// Graphic
@@ -62,6 +63,7 @@ namespace VTX::UI::Widget::Settings
 		void _changeControllerElasticityFactorAction( const float p_value );
 		void _changeControllerTranslationFactorAction( const float p_value );
 		void _changeControllerTranslationSpeedAction( const float p_value );
+		void _changeControllerRotationSpeedAction( const float p_value );
 		void _changeControllerYInversionAction( const bool p_invert );
 
 		void _changeSnapshotBackgroundOpacity( const float p_opacity );

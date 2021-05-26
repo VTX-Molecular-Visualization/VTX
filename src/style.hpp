@@ -207,6 +207,8 @@ namespace VTX
 			p_palette.setColor( QPalette::ColorRole::ButtonText, TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorGroup::Disabled, QPalette::ColorRole::ButtonText, CANCELED_TEXT_COLOR );
 			p_palette.setColor( QPalette::ColorRole::BrightText, TEXT_COLOR );
+			p_palette.setColor( QPalette::ColorRole::Link, TEXT_COLOR );
+			p_palette.setColor( QPalette::ColorRole::LinkVisited, TEXT_COLOR );
 
 			p_palette.setColor( QPalette::ColorRole::Light, HIGHLIGHTED_COLOR );
 			p_palette.setColor( QPalette::ColorRole::Midlight, BACKGROUND_COLOR );

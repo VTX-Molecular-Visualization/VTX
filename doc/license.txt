@@ -1,0 +1,43 @@
+VTX – a high performance molecular visualization and simulation suite
+Version v0.6 september 2020
+
+
+
+On behalf of the VTX developer community, an informal consortium of researchers also known as the VTX Core Development Consortium ("VCDC") formed by Conservatoire national des arts et métiers (Cnam, FRANCE), CNRS (FRANCE) and Sorbonne University (SU, FRANCE), (collectively, VCDC-Members, individually VCDC-Member), the VCDC hereby grant to the Licensee (as identified in the signature block below) a non-exclusive, non-sublicensable, non-transferable, revocable, non-commercial license to use the object and source code versions of the software known as “VTX Software” (the "Software"), for internal academic purposes only, including the right and license to incorporate improvements to the Software, for a period of five (5) years subject to the terms and conditions below. All rights, title, interest and copyright to the Software, to all portions thereof, and to any associated documentation shall at all times remain the property of CNAM, CNRS, SU.
+
+2.	A member of the VCDC will provide access to the Software to the Licensee, which may install the Software on a local network controlled by the Licensee's responsible official and for the use by the Licensee in accordance with this Agreement. The Software may be used beyond a local network or on a supercomputing center only if indicated by the Licensee in the Research Purpose section below. The Licensee may not sublicense the use of the Software, or make it available to third parties, without the prior written consent of at least one VCDC-Member.
+
+3.	The Licensee accepts the Software "as is” and understands that it is experimental in nature. The VCDC and VCDC-Members disclaim any and all representations and warranties, expressed or implied, or statutory, of any kind or nature with respect to the Software, including without limitation any warranty of merchantability or fitness for a particular purpose or non-infringement of any third-party patent, copyright, or any third-party right. The VCDC and all VCDC-Members, their trustees, faculty, staff, students and agents, shall not be liable to Licensee, its successors, assigns, contractors or sublicensees or any third party in any event for any damages or claims, whether direct or indirect, special, consequential or incidental, arising from the use of the Software.
+
+4.	Licensee agrees to indemnify, defend, and hold harmless VCDC and VCDC-Members, their personnel, affiliates, and each of their respective trustees, faculty, staff, employees, students, directors, officers, agents, successors and assigns (altogether the “VCDC Indemnitees”) from, for and against any and all judgments, settlements, losses, expenses, damages and/or liabilities and any and all court costs, attorneys’ fees, and expert witness fees and expenses that a VCDC Indemnitee may incur from any and all allegations, claims, suits, actions or proceedings (the “Claims”) arising out of, relating to, or incidental to Licensee’s breach of this Agreement or its use, development, modification, or other exploitation of Software, whether by or through Licensee, and including all Claims for infringement, injury to business, personal injury, and product liability.  The obligations set forth in this Section shall survive termination of this Agreement, shall continue even after assignment of rights and responsibilities, and shall not be limited by any provision of this Agreement outside this Section.
+
+    5. The Licensee may create computer programs that incorporate or modify the Software or resemble its structure, sequence or organization and may install and use such modified programs on computers for which use of the Software is authorized as described in Section 2. The Licensee may distribute binaries of the modified Software only over the public community VTX web site http://vtx.drugdesign.fr   Licensee grants to the VCDC and each VCDC-Member a non-exclusive license, with right to sub-license, to any and all source code that is delivered to the VCDC for possible inclusion in further releases of the Software.
+
+    6. The Licensee agrees, in perpetuity, not to disclose the Software to any third party and to use it only for the purposes of this Agreement, unless the VCDC gives prior written consent. In protecting the Software, the Licensee must use at least the same degree of care it uses to protect its own computer programs and other confidential information
+
+    7. The Licensee shall not use the Software (or any part thereof) in connection with the provision of consultancy, modeling or other services, whether for value or otherwise, on behalf of any third party who does not hold a current valid VTX Software License Agreement. 
+
+The Licensee shall not use the Software (or any part thereof) for a research program in collaboration with a third party who does not hold a current valid VTX Software License Agreement. 
+
+    8.  The user agrees that any reports or published results obtained with the Software will acknowledge its use by the appropriate citation. Considering the use of VTX, any published work which utilizes VTX shall give appropriate acknowledgement to the VTX developer community's contribution by including the following main reference:
+
+“VTX : a high performance molecular visualization and simulation suite. Matthieu Montes, Guillaume Levieux, Jean-Philippe Piquemal, Maxime Maria, 2020”
+
+8.	This license may be terminated upon twenty days’ notice for any breach of this Agreement, provided that that breach has not been corrected prior to the expiry of such notice.
+
+9.	Commercial use of the Software, or derivative works based thereon, REQUIRES A COMMERCIAL LICENSE. Should Licensee wish to make commercial use of the Software in the field of drug design, Licensee will contact the following address on behalf of the VCDC: robert@qubit-pharmaceuticals.com. Should Licencee wish to make commercial use of the Software in any other field, Licencee will contact one of the four creator designated below. Commercial Purposes include any sale, lease, license, or other transfer of the Software in its entirety or in part, to another entity.  Commercial Purposes also includes, without limitation, uses of the Software by any entity, including Licensee, to perform any service for sale or contract research, to produce or manufacture products for sale.
+
+10.	Notice. Any notices or disclosures required or provided by the terms of this agreement shall be in writing, and shall be delivered personally or sent by certified or registered mail, return receipt requested, postage prepaid or by internationally-recognized express mail service providing evidence of delivery. The effective date of any notice shall be the date of first receipt by the receiving Party or the date of refusal of receipt. Notices shall be sent to the addresses and addressees given below:
+
+
+Laboratoire GBCM, 2 rue Conte, 75003 Paris
+Technical contact: Prof. Matthieu Montes
+
+Laboratoire CEDRIC, 2 rue Conte, 75003 Paris
+Technical contact: MCF Guillaume Levieux
+
+Laboratoire XLIM, UMR CNRS 7252 123, avenue Albert Thomas - 87060 LIMOGES CEDEX
+Technical contact: Postdoc Maxime Maria
+
+Laboratoire de Chimie Théorique, Sorbonne Université, UMR 7616
+Technical contact: Prof. Jean-Philip Piquemal
