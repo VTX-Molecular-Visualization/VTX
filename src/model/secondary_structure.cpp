@@ -246,6 +246,7 @@ namespace VTX
 		void SecondaryStructure::refreshColors()
 		{
 			_bufferColors.clear();
+			_bufferColors.reserve( _bufferCaPositions.size() );
 			for ( const std::pair<uint, std::vector<uint>> & pair : _data )
 			{
 				const Chain * const chain = _molecule->getChain( pair.first );
@@ -283,6 +284,7 @@ namespace VTX
 		void SecondaryStructure::refreshVisibilities()
 		{
 			_bufferVisibilities.clear();
+			_bufferVisibilities.reserve( _bufferCaPositions.size() );
 			for ( const std::pair<uint, std::vector<uint>> & pair : _data )
 			{
 				const Chain * const chain = _molecule->getChain( pair.first );
@@ -331,6 +333,7 @@ namespace VTX
 				}
 			}
 
+			_bufferSelections.shrink_to_fit();
 			_buffer->setControlPointSelections( _bufferSelections );
 		}
 
