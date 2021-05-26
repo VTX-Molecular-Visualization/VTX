@@ -77,7 +77,7 @@ namespace VTX
 			static const FilePath RENDER_EFFECT_PRESET_LIBRARY_DIR
 				= FilePath( LIBRARIES_DIR.string() + "/render_effects" );
 
-			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/../setting.json" );
+			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/setting.json" );
 			static const FilePath FFMPEG_EXE_FILE	= FilePath( "bin/ffmpeg.exe" );
 
 			inline FilePath * const getDataPathPtr( const std::string & p_filename )
