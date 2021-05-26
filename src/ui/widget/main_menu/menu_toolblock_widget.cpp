@@ -19,9 +19,10 @@ namespace VTX::UI::Widget::MainMenu
 				int							 gridRow	= p_startRow + iRow * gridRowSpan;
 				MenuToolButtonWidget * const toolButton = _columnsData[ iCol ].getButton( iRow );
 				toolButton->setOrientation( orientation );
-
 				p_gridLayout.addWidget( toolButton, gridRow, iCol, gridRowSpan, 1 );
 			}
+
+			p_gridLayout.setColumnMinimumWidth( iCol, 64 );
 		}
 	}
 	void MenuToolBlockWidget::TmpGridStructure::pushWidgetInColumn( const int					 p_column,
@@ -56,20 +57,9 @@ namespace VTX::UI::Widget::MainMenu
 	void MenuToolBlockWidget::setTitle( const QString & p_title ) { _title->setText( p_title ); }
 	void MenuToolBlockWidget::validate()
 	{
-		_gridLayout->setRowStretch( 0, 1000 );
-		_tmpStructure->fillGridLayout( *_gridLayout, 1 );
+		_tmpStructure->fillGridLayout( *_gridLayout, 0 );
 		delete _tmpStructure;
 		_tmpStructure = nullptr;
-
-		_gridLayout->setRowStretch( _gridLayout->rowCount(), 1000 );
-		const int titleRow = _gridLayout->rowCount();
-
-		QVBoxLayout * const titleLayout = new QVBoxLayout();
-		titleLayout->addStretch( 1000 );
-		titleLayout->addWidget( _title );
-		_gridLayout->addItem( titleLayout, titleRow, 0, 1, _gridLayout->columnCount() );
-
-		_gridLayout->setRowMinimumHeight( titleRow, 16 );
 	}
 
 	void MenuToolBlockWidget::reset()
@@ -89,9 +79,10 @@ namespace VTX::UI::Widget::MainMenu
 
 		_gridLayout = new QGridLayout( this );
 		_gridLayout->setObjectName( "gridLayout" );
-		_gridLayout->setVerticalSpacing( 1 );
-		_gridLayout->setHorizontalSpacing( 0 );
+		_gridLayout->setVerticalSpacing( 2 );
+		_gridLayout->setHorizontalSpacing( 2 );
 		_gridLayout->setContentsMargins( 0, 0, 0, 0 );
+		_gridLayout->setSizeConstraint( QLayout::SizeConstraint::SetMinAndMaxSize );
 
 		if ( _tmpStructure != nullptr )
 			delete _tmpStructure;
@@ -104,18 +95,23 @@ namespace VTX::UI::Widget::MainMenu
 		BaseManualWidget::_setupUi( p_name );
 		setContentsMargins( 2, 2, 2, 2 );
 
-		setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
+		setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred );
 
-		_gridLayout = new QGridLayout( this );
+		_verticalLayout = new QVBoxLayout( this );
+		_verticalLayout->setContentsMargins( 0, 0, 0, 0 );
+
+		_gridLayout = new QGridLayout();
 		_gridLayout->setObjectName( "gridLayout" );
-		_gridLayout->setVerticalSpacing( 1 );
-		_gridLayout->setHorizontalSpacing( 0 );
+		_gridLayout->setVerticalSpacing( 2 );
+		_gridLayout->setHorizontalSpacing( 2 );
 		_gridLayout->setContentsMargins( 0, 0, 0, 0 );
+		_gridLayout->setSizeConstraint( QLayout::SizeConstraint::SetDefaultConstraint );
 
 		_title = new QLabel( this );
 		_title->setObjectName( "blockTitle" );
-		_title->setAlignment( Qt::AlignCenter );
-		_title->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
+
+		_verticalLayout->addLayout( _gridLayout, 5 );
+		_verticalLayout->addWidget( _title, 0, Qt::AlignmentFlag::AlignHCenter | Qt::AlignmentFlag::AlignBottom );
 	}
 	void MenuToolBlockWidget::_setupSlots() {}
 	void MenuToolBlockWidget::localize() {}

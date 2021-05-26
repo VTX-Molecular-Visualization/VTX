@@ -9,6 +9,7 @@
 #include "ui/widget/base_manual_widget.hpp"
 #include <QGridLayout>
 #include <QLabel>
+#include <QVBoxLayout>
 #include <QWidget>
 #include <vector>
 
@@ -96,8 +97,9 @@ namespace VTX::UI::Widget::MainMenu
 		}
 
 	  private:
-		QGridLayout * _gridLayout = nullptr;
-		QLabel *	  _title	  = nullptr;
+		QVBoxLayout * _verticalLayout = nullptr;
+		QGridLayout * _gridLayout	  = nullptr;
+		QLabel *	  _title		  = nullptr;
 
 		TmpGridStructure * _tmpStructure;
 	};

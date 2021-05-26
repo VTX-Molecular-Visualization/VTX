@@ -13,12 +13,13 @@ namespace VTX::UI::Widget::MainMenu
 		setGeometry( QRect( 0, 2, 800, 130 ) );
 		setMinimumSize( 800, 130 );
 		setContentsMargins( 10, 2, 10, 2 );
-		setSizePolicy( QSizePolicy( QSizePolicy::Policy::Maximum, QSizePolicy::Policy::Fixed ) );
+		setSizePolicy( QSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed ) );
 
 		_tabWidget = new QTabWidget( this );
 		_tabWidget->setObjectName( "tabWidget" );
 
-		_tabWidget->setSizePolicy( QSizePolicy( QSizePolicy::Policy::Maximum, QSizePolicy::Policy::Maximum ) );
+		_tabWidget->setSizePolicy( QSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed ) );
+		_tabWidget->setFixedHeight( 130 );
 
 		QFont menuBarFont;
 		menuBarFont.setPointSize( 10 );

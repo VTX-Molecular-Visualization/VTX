@@ -19,7 +19,9 @@ namespace VTX
 					QLabel * separator = new QLabel( this );
 					separator->setPixmap( Style::IconConst::get().TOOLTAB_SEPARATOR );
 
+					_horizontalLayout->insertSpacing( _horizontalLayout->count() - 1, 3 );
 					_horizontalLayout->insertWidget( _horizontalLayout->count() - 1, separator );
+					_horizontalLayout->insertSpacing( _horizontalLayout->count() - 1, 3 );
 				}
 
 				void MenuTooltabWidget::_setupUi( const QString & p_name )

@@ -39,6 +39,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// MenuToolButtonWidget * _infoUnderCursor = nullptr;
 
 		MenuToolButtonWidget * _windowComboBoxButton = nullptr;
+		MenuToolButtonWidget * _settingsButton		 = nullptr;
 		MenuToolButtonWidget * _informationButton	 = nullptr;
 
 		QMenu * _windowsMenu = nullptr;
@@ -53,10 +54,10 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void _toggleRenderWindow();
 		void _toggleConsoleWindow();
 		void _toggleInspectorWindow();
-		void _toggleSettingWindow();
 		void _toggleSelectionWindow();
 		void _toggleSequenceWindow();
 
+		void _displaySettingsWindow();
 		void _displayInformationWindow();
 	};
 } // namespace VTX::UI::Widget::MainMenu::Visualization
