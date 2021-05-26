@@ -36,9 +36,9 @@ namespace VTX::UI::Widget::MainMenu
 		//_movieMenu = new QLabel( "movieMenu", this );
 		//_tabWidget->addTab( _movieMenu, "Movie" );
 
-		_extensionsMenu
-			= WidgetFactory::get().instantiateWidget<Extensions::MenuExtensionsWidget>( this, "extensionsMenu" );
-		_tabWidget->addTab( _extensionsMenu, "Modules" );
+		//_extensionsMenu
+		//	= WidgetFactory::get().instantiateWidget<Extensions::MenuExtensionsWidget>( this, "extensionsMenu" );
+		//_tabWidget->addTab( _extensionsMenu, "Modules" );
 
 		_tabWidget->setCurrentIndex( 0 );
 	}

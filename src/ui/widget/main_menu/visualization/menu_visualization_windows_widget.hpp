@@ -54,7 +54,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void _toggleRenderWindow();
 		void _toggleConsoleWindow();
 		void _toggleInspectorWindow();
-		void _toggleSelectionWindow();
+		// !V0.1
+		// void _toggleSelectionWindow();
 		void _toggleSequenceWindow();
 
 		void _displaySettingsWindow();

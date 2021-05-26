@@ -80,8 +80,9 @@ namespace VTX
 					res = &CONSOLE_WINDOW_ICON;
 				else if ( p_id == ID::UI::Window::SETTINGS )
 					res = &SETTING_WINDOW_ICON;
-				else if ( p_id == ID::UI::Window::SELECTION )
-					res = &SELECTION_WINDOW_ICON;
+				// !V0.1
+				// else if ( p_id == ID::UI::Window::SELECTION )
+				//	res = &SELECTION_WINDOW_ICON;
 				else if ( p_id == ID::UI::Window::SEQUENCE )
 					res = &SEQUENCE_WINDOW_ICON;
 				else

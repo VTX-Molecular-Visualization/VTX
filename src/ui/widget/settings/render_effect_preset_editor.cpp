@@ -73,7 +73,9 @@ namespace VTX::UI::Widget::Settings
 		_cameraFar->setMinimum( Setting::CAMERA_FAR_MIN );
 		_cameraFar->setMaximum( Setting::CAMERA_FAR_MAX );
 		_antialiasing = new QCheckBox( _viewport );
-		_perspective  = new QCheckBox( _viewport );
+
+		// !V0.1
+		//_perspective  = new QCheckBox( _viewport );
 
 		QHBoxLayout * const hboxLayout = new QHBoxLayout( _viewport );
 		QVBoxLayout * const vboxLayout = new QVBoxLayout();
@@ -111,7 +113,8 @@ namespace VTX::UI::Widget::Settings
 		_addItem( _cameraNear, QString( "Near clip" ) );
 		_addItem( _cameraFar, QString( "Far clip" ) );
 		_addItem( _antialiasing, QString( "Antialiasing" ) );
-		_addItem( _perspective, QString( "Perspective projection" ) );
+		// !V0.1
+		//_addItem( _perspective, QString( "Perspective projection" ) );
 
 		vboxLayout->addItem( _layout );
 		vboxLayout->addStretch( 1000 );
@@ -207,10 +210,11 @@ namespace VTX::UI::Widget::Settings
 				 QOverload<int>::of( &QCheckBox::stateChanged ),
 				 this,
 				 &RenderEffectPresetEditor::_onAntialiasingChanged );
-		connect( _perspective,
-				 QOverload<int>::of( &QCheckBox::stateChanged ),
-				 this,
-				 &RenderEffectPresetEditor::_onPerspectiveChanged );
+		// !V0.1
+		// connect( _perspective,
+		//		 QOverload<int>::of( &QCheckBox::stateChanged ),
+		//		 this,
+		//		 &RenderEffectPresetEditor::_onPerspectiveChanged );
 	}
 
 	void RenderEffectPresetEditor::localize() {}
@@ -258,7 +262,8 @@ namespace VTX::UI::Widget::Settings
 		_cameraNear->setValue( _preset->getCameraNearClip() );
 		_cameraFar->setValue( _preset->getCameraFarClip() );
 		_antialiasing->setChecked( _preset->getAA() );
-		_perspective->setChecked( _preset->isPerspectiveProjection() );
+		// !V0.1
+		//_perspective->setChecked( _preset->isPerspectiveProjection() );
 	}
 
 	void RenderEffectPresetEditor::setPreset( Model::Renderer::RenderEffectPreset * const p_model,

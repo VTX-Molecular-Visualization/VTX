@@ -27,7 +27,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		MenuToolBlockWidget::_setupUi( p_name );
 
 		_windowComboBoxButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "windowsButton" );
-		_windowComboBoxButton->setData( "Panels", ":/sprite/windows_icon.png", Qt::Orientation::Vertical );
+		_windowComboBoxButton->setData( "Display", ":/sprite/windows_icon.png", Qt::Orientation::Vertical );
 		pushButton( *_windowComboBoxButton, 0 );
 
 		_settingsButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "settingsButton" );
@@ -35,7 +35,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		pushButton( *_settingsButton, 1 );
 
 		_informationButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "informationButton" );
-		_informationButton->setData( "Infos", ":/sprite/info_button.png", Qt::Orientation::Vertical );
+		_informationButton->setData( "About", ":/sprite/info_button.png", Qt::Orientation::Vertical );
 		pushButton( *_informationButton, 2 );
 
 		_windowsMenu = new QMenu( this );
@@ -43,7 +43,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_instantiateButton( ID::UI::Window::RENDER, &MenuVisualizationWindowsWidget::_toggleRenderWindow );
 		_instantiateButton( ID::UI::Window::SCENE, &MenuVisualizationWindowsWidget::_toggleSceneWindow );
 		_instantiateButton( ID::UI::Window::INSPECTOR, &MenuVisualizationWindowsWidget::_toggleInspectorWindow );
-		_instantiateButton( ID::UI::Window::SELECTION, &MenuVisualizationWindowsWidget::_toggleSelectionWindow );
+		// !V0.1
+		//_instantiateButton( ID::UI::Window::SELECTION, &MenuVisualizationWindowsWidget::_toggleSelectionWindow );
 		_instantiateButton( ID::UI::Window::SEQUENCE, &MenuVisualizationWindowsWidget::_toggleSequenceWindow );
 		_instantiateButton( ID::UI::Window::CONSOLE, &MenuVisualizationWindowsWidget::_toggleConsoleWindow );
 
@@ -124,10 +125,11 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	{
 		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::INSPECTOR );
 	}
-	void MenuVisualizationWindowsWidget::_toggleSelectionWindow()
-	{
-		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SELECTION );
-	}
+	// !V0.1
+	// void MenuVisualizationWindowsWidget::_toggleSelectionWindow()
+	//{
+	//	VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SELECTION );
+	//}
 	void MenuVisualizationWindowsWidget::_toggleSequenceWindow()
 	{
 		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SEQUENCE );

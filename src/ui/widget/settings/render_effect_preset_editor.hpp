@@ -88,7 +88,9 @@ namespace VTX::UI::Widget::Settings
 		QSpinBox *				 _cameraNear		= nullptr;
 		QSpinBox *				 _cameraFar			= nullptr;
 		QCheckBox *				 _antialiasing		= nullptr;
-		QCheckBox *				 _perspective		= nullptr;
+
+		// !V0.1
+		// QCheckBox *				 _perspective		= nullptr;
 
 		void _addItem( QWidget * const p_widget );
 		void _addItem( QWidget * const p_widget, const QString & p_label );

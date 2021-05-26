@@ -7,28 +7,32 @@
 
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
-#include <QDockWidget>
+#include <QDialog>
+#include <QPushButton>
 #include <QString>
 #include <QWidget>
 
 namespace VTX::UI::Widget::Information
 {
-	class InformationWidget : public BaseManualWidget<QDockWidget>
+	class InformationWidget : public BaseManualWidget<QDialog>
 	{
 		VTX_WIDGET
 
 	  public:
 		~InformationWidget() = default;
+		void localize() override;
 
 	  protected:
 		InformationWidget( QWidget * );
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
-		void localize() override;
 
 	  private:
-		CustomWidget::DockWindowMainWidget<QWidget> * _mainWidget = nullptr;
+		QPushButton * _websiteButton   = nullptr;
+		QPushButton * _gitButton	   = nullptr;
+		QPushButton * _docButton	   = nullptr;
+		QPushButton * _bugReportButton = nullptr;
 
 		QString _getVersionText() const;
 		QString _getLicenseText() const;

@@ -49,8 +49,9 @@ namespace VTX::UI
 			= WidgetFactory::get().instantiateWidget<Widget::Console::ConsoleWidget>( this, "consoleWidget" );
 		_sequenceWidget
 			= WidgetFactory::get().instantiateWidget<Widget::Sequence::SequenceWidget>( this, "sequenceWidget" );
-		_selectionWidget
-			= WidgetFactory::get().instantiateWidget<Widget::Selection::SelectionWidget>( this, "selectionWidget" );
+		// !V0.1
+		//_selectionWidget
+		//	= WidgetFactory::get().instantiateWidget<Widget::Selection::SelectionWidget>( this, "selectionWidget" );
 		_settingWidget
 			= WidgetFactory::get().instantiateWidget<Widget::Settings::SettingWidget>( this, "settingWidget" );
 
@@ -109,10 +110,11 @@ namespace VTX::UI
 				 &Widget::Sequence::SequenceWidget::visibilityChanged,
 				 this,
 				 &MainWindow::_onDockWindowVisibilityChange );
-		connect( _selectionWidget,
-				 &Widget::Sequence::SequenceWidget::visibilityChanged,
-				 this,
-				 &MainWindow::_onDockWindowVisibilityChange );
+		// !V0.1
+		// connect( _selectionWidget,
+		//		 &Widget::Sequence::SequenceWidget::visibilityChanged,
+		//		 this,
+		//		 &MainWindow::_onDockWindowVisibilityChange );
 		connect( _consoleWidget,
 				 &Widget::Sequence::SequenceWidget::visibilityChanged,
 				 this,
@@ -136,12 +138,13 @@ namespace VTX::UI
 			_sceneWidget->setFloating( false );
 		}
 
-		if ( dockWidgetArea( _selectionWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
-		{
-			removeDockWidget( _selectionWidget );
-			restoreDockWidget( _selectionWidget );
-			_selectionWidget->setFloating( false );
-		}
+		// !V0.1
+		// if ( dockWidgetArea( _selectionWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
+		//{
+		//	removeDockWidget( _selectionWidget );
+		//	restoreDockWidget( _selectionWidget );
+		//	_selectionWidget->setFloating( false );
+		//}
 		if ( dockWidgetArea( _sequenceWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
 		{
 			removeDockWidget( _sequenceWidget );
@@ -172,15 +175,10 @@ namespace VTX::UI
 			restoreDockWidget( _settingWidget );
 			_settingWidget->setFloating( false );
 		}
-		if ( dockWidgetArea( _informationWidget ) != Qt::DockWidgetArea::NoDockWidgetArea )
-		{
-			removeDockWidget( _informationWidget );
-			restoreDockWidget( _informationWidget );
-			_informationWidget->setFloating( false );
-		}
 
 		addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _sceneWidget, Qt::Orientation::Horizontal );
-		splitDockWidget( _sceneWidget, _selectionWidget, Qt::Orientation::Vertical );
+		// !V0.1
+		// splitDockWidget( _sceneWidget, _selectionWidget, Qt::Orientation::Vertical );
 		addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _sequenceWidget, Qt::Orientation::Horizontal );
 		splitDockWidget( _sequenceWidget, _renderWidget, Qt::Orientation::Vertical );
 		addDockWidget( Qt::DockWidgetArea::TopDockWidgetArea, _inspectorWidget, Qt::Orientation::Horizontal );
@@ -191,13 +189,11 @@ namespace VTX::UI
 		tabifyDockWidget( _inspectorWidget, _settingWidget );
 		_settingWidget->setFloating( true );
 
-		tabifyDockWidget( _inspectorWidget, _informationWidget );
-		_informationWidget->setFloating( true );
-
 		if ( !_sceneWidget->isVisible() )
 			_sceneWidget->show();
-		if ( !_selectionWidget->isVisible() )
-			_selectionWidget->show();
+		// !V0.1
+		// if ( !_selectionWidget->isVisible() )
+		//	_selectionWidget->show();
 		if ( !_sequenceWidget->isVisible() )
 			_sequenceWidget->show();
 		if ( !_renderWidget->isVisible() )
@@ -291,8 +287,9 @@ namespace VTX::UI
 			widget = _consoleWidget;
 		else if ( p_winId == ID::UI::Window::SEQUENCE )
 			widget = _sequenceWidget;
-		else if ( p_winId == ID::UI::Window::SELECTION )
-			widget = _selectionWidget;
+		// !V0.1
+		// else if ( p_winId == ID::UI::Window::SELECTION )
+		//	widget = _selectionWidget;
 		else if ( p_winId == ID::UI::Window::SETTINGS )
 			widget = _settingWidget;
 		else if ( p_winId == ID::UI::Window::INFORMATION )

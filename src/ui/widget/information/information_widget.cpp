@@ -15,37 +15,37 @@ namespace VTX::UI::Widget::Information
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_mainWidget = new CustomWidget::DockWindowMainWidget<QWidget>( this );
-		_mainWidget->setSizeHint( QSize( 500, 300 ) );
-		_mainWidget->setMinimumSizeHint( QSize( 500, 300 ) );
+		setWindowFlag( Qt::WindowType::WindowContextHelpButtonHint, false );
 
-		QLabel * const vtxLogo = new QLabel( _mainWidget );
+		QLabel * const vtxLogo = new QLabel( this );
 		QPixmap		   logo	   = QPixmap( ":/sprite/logo.png", nullptr, Qt::ImageConversionFlag::ColorOnly );
 		vtxLogo->setPixmap( logo );
 		vtxLogo->setScaledContents( true );
 		vtxLogo->setFixedSize( QSize( 64, 64 ) );
 
-		QLabel * versionLabel = new QLabel( _mainWidget );
+		QLabel * versionLabel = new QLabel( this );
 		versionLabel->setText( "Version: " + _getVersionText() );
 
-		QLabel * licenseTitle = new QLabel( _mainWidget );
+		QLabel * licenseTitle = new QLabel( this );
 		licenseTitle->setText( "License:" );
-		QScrollArea * const licenseScrollArea = new QScrollArea( _mainWidget );
-		QLabel * const		licenseTxt		  = new QLabel( _mainWidget );
+		QScrollArea * const licenseScrollArea = new QScrollArea( this );
+		QLabel * const		licenseTxt		  = new QLabel( this );
 		licenseTxt->setText( _getLicenseText() );
 		licenseTxt->setWordWrap( true );
 		licenseScrollArea->setWidget( licenseTxt );
 
-		QPushButton * const websiteButton = new QPushButton( _mainWidget );
-		websiteButton->setText( "Website" );
-		QPushButton * const gitButton = new QPushButton( _mainWidget );
-		gitButton->setText( "Git" );
-		QPushButton * const bugReportButton = new QPushButton( _mainWidget );
-		bugReportButton->setText( "Report bug" );
+		_websiteButton = new QPushButton( this );
+		_websiteButton->setText( "Website" );
+		_gitButton = new QPushButton( this );
+		_gitButton->setText( "Git" );
+		_docButton = new QPushButton( this );
+		_docButton->setText( "Doc" );
+		_bugReportButton = new QPushButton( this );
+		_bugReportButton->setText( "Report bug" );
 
-		QLabel * libraryTitle = new QLabel( _mainWidget );
+		QLabel * libraryTitle = new QLabel( this );
 		libraryTitle->setText( "External libraries:" );
-		QLabel * libraryDesc = new QLabel( _mainWidget );
+		QLabel * libraryDesc = new QLabel( this );
 		libraryDesc->setTextInteractionFlags( libraryDesc->textInteractionFlags()
 											  | Qt::TextInteractionFlag::LinksAccessibleByMouse );
 		libraryDesc->setOpenExternalLinks( true );
@@ -55,9 +55,9 @@ namespace VTX::UI::Widget::Information
 		libraryDesc->setText(
 			"<a href = \"https://www.qt.io\">Qt</a> - <a href \"https://chemfiles.org\">Chemfiles</a>" );
 
-		QLabel * iconAuthorsTitle = new QLabel( _mainWidget );
+		QLabel * iconAuthorsTitle = new QLabel( this );
 		iconAuthorsTitle->setText( "Icon authors:" );
-		QLabel * iconAuthors = new QLabel( _mainWidget );
+		QLabel * iconAuthors = new QLabel( this );
 		iconAuthors->setTextInteractionFlags( libraryDesc->textInteractionFlags()
 											  | Qt::TextInteractionFlag::LinksAccessibleByMouse );
 		iconAuthors->setOpenExternalLinks( true );
@@ -77,17 +77,18 @@ namespace VTX::UI::Widget::Information
 			"<a href = \"https://www.flaticon.com/authors/roundicons\">roundicons</a> - "
 			"<a href = \"https://www.flaticon.com/authors/vectors-market\">vectors-market</a>" );
 
-		QVBoxLayout * const mainVerticalLayout = new QVBoxLayout( _mainWidget );
+		QVBoxLayout * const mainVerticalLayout = new QVBoxLayout( this );
 		QHBoxLayout * const headerLayout	   = new QHBoxLayout();
 		QVBoxLayout * const vtxHeaderLayout	   = new QVBoxLayout();
 		QHBoxLayout * const buttonsLayout	   = new QHBoxLayout();
 
-		QLabel * vtxTitle = new QLabel( _mainWidget );
+		QLabel * vtxTitle = new QLabel( this );
 		vtxTitle->setText( "VTX" );
 
-		buttonsLayout->addWidget( websiteButton );
-		buttonsLayout->addWidget( gitButton );
-		buttonsLayout->addWidget( bugReportButton );
+		buttonsLayout->addWidget( _websiteButton );
+		buttonsLayout->addWidget( _gitButton );
+		buttonsLayout->addWidget( _docButton );
+		buttonsLayout->addWidget( _bugReportButton );
 		buttonsLayout->addStretch( 1000 );
 
 		vtxHeaderLayout->addWidget( vtxTitle );
@@ -110,16 +111,16 @@ namespace VTX::UI::Widget::Information
 		mainVerticalLayout->addWidget( iconAuthorsTitle );
 		mainVerticalLayout->addWidget( iconAuthors );
 
-		setWidget( _mainWidget );
+		setLayout( mainVerticalLayout );
 	}
 
 	void InformationWidget::_setupSlots() {};
 	void InformationWidget::localize()
 	{
 		// Qt translate (not use currently)
-		// setWindowTitle( QCoreApplication::translate( "ConsoleWidget", "Console", nullptr ) );
-		setWindowTitle( "Information" );
-	};
+		// setWindowTitle( QCoreApplication::translate( "About", "About", nullptr ) );
+		setWindowTitle( "About" );
+	}
 
 	QString InformationWidget::_getVersionText() const
 	{
