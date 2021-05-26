@@ -231,7 +231,7 @@ namespace VTX
 			for ( const Model::Residue * const residue : getResidues() )
 			{
 				// Skip hidden items.
-				if ( residue == nullptr || !_isResidueVisible( *residue ) )
+				if ( residue == nullptr )
 					continue;
 
 				const Model::Representation::InstantiatedRepresentation * const currentRepresentation
