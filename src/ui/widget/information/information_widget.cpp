@@ -46,12 +46,36 @@ namespace VTX::UI::Widget::Information
 		QLabel * libraryTitle = new QLabel( _mainWidget );
 		libraryTitle->setText( "External libraries:" );
 		QLabel * libraryDesc = new QLabel( _mainWidget );
-		libraryDesc->setTextFormat( Qt::TextFormat::RichText );
 		libraryDesc->setTextInteractionFlags( libraryDesc->textInteractionFlags()
 											  | Qt::TextInteractionFlag::LinksAccessibleByMouse );
 		libraryDesc->setOpenExternalLinks( true );
+		libraryDesc->setWordWrap( true );
+		libraryDesc->setFrameShape( QFrame::Shape::Panel );
+		libraryDesc->setFrameShadow( QFrame::Shadow::Sunken );
 		libraryDesc->setText(
 			"<a href = \"https://www.qt.io\">Qt</a> - <a href \"https://chemfiles.org\">Chemfiles</a>" );
+
+		QLabel * iconAuthorsTitle = new QLabel( _mainWidget );
+		iconAuthorsTitle->setText( "Icon authors:" );
+		QLabel * iconAuthors = new QLabel( _mainWidget );
+		iconAuthors->setTextInteractionFlags( libraryDesc->textInteractionFlags()
+											  | Qt::TextInteractionFlag::LinksAccessibleByMouse );
+		iconAuthors->setOpenExternalLinks( true );
+		iconAuthors->setWordWrap( true );
+		iconAuthors->setFrameShape( QFrame::Shape::Panel );
+		iconAuthors->setFrameShadow( QFrame::Shadow::Sunken );
+		iconAuthors->setText(
+			"<a href = \"https://www.flaticon.com/authors/alfredo-hernandez\">alfredo-hernandez</a> - "
+			"<a href = \"https://www.flaticon.com/authors/dinosoftlabs\">dinosoftlabs</a> - "
+			"<a href = \"https://www.flaticon.com/authors/freepik\">Freepik</a> - "
+			"<a href = \"https://www.flaticon.com/authors/good-ware\">good-ware</a> - "
+			"<a href = \"https://www.flaticon.com/authors/google\">google</a> - "
+			"<a href = \"https://www.flaticon.com/authors/itim2101\">itim2101</a> - "
+			"<a href = \"https://www.flaticon.com/authors/kiranshastry\">kiranshastry</a> - "
+			"<a href = \"https://www.flaticon.com/authors/mavadee\">mavadee</a> - "
+			"<a href = \"https://www.flaticon.com/authors/pixel-perfect\">pixel-perfect</a> - "
+			"<a href = \"https://www.flaticon.com/authors/roundicons\">roundicons</a> - "
+			"<a href = \"https://www.flaticon.com/authors/vectors-market\">vectors-market</a>" );
 
 		QVBoxLayout * const mainVerticalLayout = new QVBoxLayout( _mainWidget );
 		QHBoxLayout * const headerLayout	   = new QHBoxLayout();
@@ -79,8 +103,12 @@ namespace VTX::UI::Widget::Information
 		mainVerticalLayout->addItem( headerLayout );
 		mainVerticalLayout->addWidget( licenseTitle );
 		mainVerticalLayout->addWidget( licenseScrollArea );
+		mainVerticalLayout->addSpacing( 10 );
 		mainVerticalLayout->addWidget( libraryTitle );
 		mainVerticalLayout->addWidget( libraryDesc );
+		mainVerticalLayout->addSpacing( 10 );
+		mainVerticalLayout->addWidget( iconAuthorsTitle );
+		mainVerticalLayout->addWidget( iconAuthors );
 
 		setWidget( _mainWidget );
 	}
