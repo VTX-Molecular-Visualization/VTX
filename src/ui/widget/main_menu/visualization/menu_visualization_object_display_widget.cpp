@@ -41,15 +41,19 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_showWater->setData( "Hide Waters", ":/sprite/hide_water_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_showWater, 0 );
 
-		_showSolvent
-			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleSolventVisibilityButton" );
-		_showSolvent->setData( "Hide Solvents", ":/sprite/hide_solvent_icon.png", Qt::Orientation::Horizontal );
-		pushButton( *_showSolvent, 0 );
-
 		_showHydrogens
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleHydrogensVisibilityButton" );
 		_showHydrogens->setData( "Hide Hydrogens", ":/sprite/hide_hydrogen_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_showHydrogens, 0 );
+
+		_showSolvent
+			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleSolventVisibilityButton" );
+		_showSolvent->setData( "Hide Solvents", ":/sprite/hide_solvent_icon.png", Qt::Orientation::Horizontal );
+		pushButton( *_showSolvent, 1 );
+
+		_showIon = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleIonVisibilityButton" );
+		_showIon->setData( "Hide Ions", ":/sprite/show_solvent_icon.png", Qt::Orientation::Horizontal );
+		pushButton( *_showIon, 1 );
 
 		_refreshButtons();
 		validate();
@@ -61,15 +65,20 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 				 this,
 				 &MenuVisualizationObjectDisplayWidget::_toggleWaterVisibilityAction );
 
+		connect( _showHydrogens,
+				 &MenuToolButtonWidget::clicked,
+				 this,
+				 &MenuVisualizationObjectDisplayWidget::_toggleHydrogenVisibilityAction );
+
 		connect( _showSolvent,
 				 &MenuToolButtonWidget::clicked,
 				 this,
 				 &MenuVisualizationObjectDisplayWidget::_toggleSolventVisibilityAction );
 
-		connect( _showHydrogens,
+		connect( _showIon,
 				 &MenuToolButtonWidget::clicked,
 				 this,
-				 &MenuVisualizationObjectDisplayWidget::_toggleHydrogenVisibilityAction );
+				 &MenuVisualizationObjectDisplayWidget::_toggleIonVisibilityAction );
 	}
 	void MenuVisualizationObjectDisplayWidget::localize() { setTitle( "Object Display" ); }
 
@@ -83,23 +92,27 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		{
 			_displayWaterButton( false, true );
 			_displaySolventButton( false, true );
+			_displayIonButton( false, true );
 			_displayHydrogenButton( false, true );
 		}
 		else
 		{
 			bool displayShowWater	 = true;
 			bool displayShowSolvent	 = true;
+			bool displayShowIon		 = true;
 			bool displayShowHydrogen = true;
 
 			for ( const Model::Molecule * const molecule : molecules )
 			{
 				displayShowWater	= displayShowWater && !molecule->showWater();
 				displayShowSolvent	= displayShowSolvent && !molecule->showSolvent();
+				displayShowIon		= displayShowIon && !molecule->showIon();
 				displayShowHydrogen = displayShowHydrogen && !molecule->showHydrogen();
 			}
 
 			_displayWaterButton( true, displayShowWater );
 			_displaySolventButton( true, displayShowSolvent );
+			_displayIonButton( true, displayShowIon );
 			_displayHydrogenButton( true, displayShowHydrogen );
 		}
 	}
@@ -157,6 +170,16 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_showHydrogens->setName( buttonName );
 		_showHydrogens->setIcon( QIcon( iconPath ) );
 	}
+	void MenuVisualizationObjectDisplayWidget::_displayIonButton( const bool p_active, const bool p_show )
+	{
+		_showIon->setEnabled( p_active );
+
+		const QString buttonName = p_show ? "Show Ions" : "Hide Ions";
+		const QString iconPath	 = p_show ? ":/sprite/show_ion_icon.png" : ":/sprite/hide_ion_icon.png";
+
+		_showIon->setName( buttonName );
+		_showIon->setIcon( QIcon( iconPath ) );
+	}
 
 	void MenuVisualizationObjectDisplayWidget::_toggleWaterVisibilityAction() const
 	{
@@ -193,6 +216,18 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 			showHydrogen = showHydrogen && !molecule->showHydrogen();
 
 		VTX_ACTION( new Action::Molecule::ChangeShowHydrogen( molecules, showHydrogen ) );
+	}
+	void MenuVisualizationObjectDisplayWidget::_toggleIonVisibilityAction() const
+	{
+		std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
+		_fillContainerWithTarget( molecules );
+
+		bool showIon = true;
+
+		for ( const Model::Molecule * const molecule : molecules )
+			showIon = showIon && !molecule->showIon();
+
+		VTX_ACTION( new Action::Molecule::ChangeShowIon( molecules, showIon ) );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Visualization

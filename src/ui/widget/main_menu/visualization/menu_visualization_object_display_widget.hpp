@@ -32,8 +32,9 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	  private:
 		// Show / Hide Molecular Objects
 		MenuToolButtonWidget * _showWater	  = nullptr;
-		MenuToolButtonWidget * _showSolvent	  = nullptr;
 		MenuToolButtonWidget * _showHydrogens = nullptr;
+		MenuToolButtonWidget * _showSolvent	  = nullptr;
+		MenuToolButtonWidget * _showIon		  = nullptr;
 
 		void _refreshButtons();
 
@@ -42,10 +43,12 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void _displayWaterButton( const bool p_active, const bool p_show );
 		void _displaySolventButton( const bool p_active, const bool p_show );
 		void _displayHydrogenButton( const bool p_active, const bool p_show );
+		void _displayIonButton( const bool p_active, const bool p_show );
 
 		void _toggleWaterVisibilityAction() const;
 		void _toggleSolventVisibilityAction() const;
 		void _toggleHydrogenVisibilityAction() const;
+		void _toggleIonVisibilityAction() const;
 	}; // namespace Visualization
 } // namespace VTX::UI::Widget::MainMenu::Visualization
 #endif

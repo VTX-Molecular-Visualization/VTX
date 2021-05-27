@@ -68,12 +68,12 @@ namespace VTX::UI::Widget::MainMenu
 		{
 		case Qt::Orientation::Horizontal:
 			setToolButtonStyle( Qt::ToolButtonStyle::ToolButtonTextBesideIcon );
-			setIconSize( QSize( 16, 16 ) );
+			// setIconSize( QSize( 16, 16 ) );
 			setContentsMargins( 2, 2, 2, 2 );
 			break;
 		case Qt::Orientation::Vertical:
 			setToolButtonStyle( Qt::ToolButtonStyle::ToolButtonTextUnderIcon );
-			setIconSize( QSize( 28, 28 ) );
+			// setIconSize( QSize( 32, 32 ) );
 			setContentsMargins( 10, 2, 10, 2 );
 			break;
 		default:

@@ -219,7 +219,6 @@ namespace VTX::Model::Representation
 		stick->setName( "Stick" );
 		stick->getData().setCylinderRadius( 0.15f );
 		stick->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
-		stick->setIconPath( ":/sprite/representation_stick_icon.png" );
 		stick->setQuickAccess( true );
 		addRepresentation( stick, false );
 
@@ -228,14 +227,12 @@ namespace VTX::Model::Representation
 		vdw->setName( "VdW" );
 		vdw->getData().setColorMode( Generic::COLOR_MODE::ATOM_CHAIN );
 		vdw->getData().setSphereRadius( 0 );
-		vdw->setIconPath( ":/sprite/representation_trace_icon.png" );
 		addRepresentation( vdw, false );
 
 		representationType		   = Generic::REPRESENTATION::SAS;
 		Representation * const sas = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 		sas->setName( "SAS" );
 		sas->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
-		sas->setIconPath( ":/sprite/representation_sas_icon.png" );
 		sas->setQuickAccess( true );
 		addRepresentation( sas, false );
 
@@ -244,14 +241,12 @@ namespace VTX::Model::Representation
 			= MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 		ballsAndsticks->setName( "Ball And Stick" );
 		ballsAndsticks->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
-		ballsAndsticks->setIconPath( "" );
 		addRepresentation( ballsAndsticks, false );
 
 		representationType			   = Generic::REPRESENTATION::CARTOON;
 		Representation * const cartoon = MVC::MvcManager::get().instantiateModel<Representation>( representationType );
 		cartoon->setName( "Cartoon" );
 		cartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
-		cartoon->setIconPath( "" );
 		cartoon->setQuickAccess( true );
 		addRepresentation( cartoon, false );
 
@@ -261,7 +256,6 @@ namespace VTX::Model::Representation
 		stickAndCartoon->setName( "Stick + Cartoon" );
 		stickAndCartoon->getData().setCylinderRadius( 0.15f );
 		stickAndCartoon->getData().setColorMode( Generic::COLOR_MODE::CHAIN );
-		stickAndCartoon->setIconPath( "" );
 		addRepresentation( stickAndCartoon, false );
 	}
 

@@ -56,7 +56,8 @@ namespace VTX::UI::Widget::CustomWidget
 
 		void _colorModeChange( int index );
 		void _applyColor( const Color::Rgb & p_color );
-		void _openColorSettings();
+		// !V0.1
+		// void _openColorSettings();
 
 		bool _hasToDisplayColorButton( const Generic::COLOR_MODE & p_colorMode ) const;
 		bool _hasToDisplaySettingButton( const Generic::COLOR_MODE & p_colorMode ) const;
@@ -67,8 +68,9 @@ namespace VTX::UI::Widget::CustomWidget
 
 		QHBoxLayout * _layout;
 
-		ColorFieldButton *	  _colorSetButton;
-		QPushButton *		  _openColorSettingsButton;
+		ColorFieldButton * _colorSetButton;
+		// !V0.1
+		// QPushButton *		  _openColorSettingsButton;
 		QComboBoxMultiField * _colorModeComboBox;
 	};
 } // namespace VTX::UI::Widget::CustomWidget

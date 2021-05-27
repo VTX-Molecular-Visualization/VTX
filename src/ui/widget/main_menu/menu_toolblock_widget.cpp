@@ -10,15 +10,15 @@ namespace VTX::UI::Widget::MainMenu
 	{
 		for ( int iCol = 0; iCol < _columnsData.size(); iCol++ )
 		{
-			const int			  nbRows	  = _columnsData[ iCol ].getRowCount();
-			const int			  gridRowSpan = GRID_LAYOUT_ROW_COUNT / _columnsData[ iCol ].getNbRowsDisplayed();
-			const Qt::Orientation orientation = nbRows <= 1 ? Qt::Orientation::Vertical : Qt::Orientation::Horizontal;
+			const int nbRows	  = _columnsData[ iCol ].getRowCount();
+			const int gridRowSpan = GRID_LAYOUT_ROW_COUNT / _columnsData[ iCol ].getNbRowsDisplayed();
 
 			for ( int iRow = 0; iRow < nbRows; iRow++ )
 			{
 				int							 gridRow	= p_startRow + iRow * gridRowSpan;
 				MenuToolButtonWidget * const toolButton = _columnsData[ iCol ].getButton( iRow );
-				toolButton->setOrientation( orientation );
+				const int					 iconSize = 16 + ( ( 3 - _columnsData[ iCol ].getNbRowsDisplayed() ) * 8 );
+				toolButton->setIconSize( QSize( iconSize, iconSize ) );
 				p_gridLayout.addWidget( toolButton, gridRow, iCol, gridRowSpan, 1 );
 			}
 
@@ -75,14 +75,6 @@ namespace VTX::UI::Widget::MainMenu
 			if ( item->widget() != nullptr )
 				delete item->widget();
 		}
-		delete _gridLayout;
-
-		_gridLayout = new QGridLayout( this );
-		_gridLayout->setObjectName( "gridLayout" );
-		_gridLayout->setVerticalSpacing( 2 );
-		_gridLayout->setHorizontalSpacing( 2 );
-		_gridLayout->setContentsMargins( 0, 0, 0, 0 );
-		_gridLayout->setSizeConstraint( QLayout::SizeConstraint::SetMinAndMaxSize );
 
 		if ( _tmpStructure != nullptr )
 			delete _tmpStructure;

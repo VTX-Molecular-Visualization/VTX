@@ -34,6 +34,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		void _setupSlots() override;
 
 		void _refreshNames();
+		void _refreshIcons();
 		void _refreshView() override;
 
 		void notify( const Event::VTXEvent * const p_event ) override;

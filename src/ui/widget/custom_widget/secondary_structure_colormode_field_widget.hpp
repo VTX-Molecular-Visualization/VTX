@@ -57,7 +57,8 @@ namespace VTX::UI::Widget::CustomWidget
 
 		void _colorModeChange( int index );
 		void _applyColor( const Color::Rgb & p_color );
-		void _openColorSettings();
+		// !V0.1
+		// void _openColorSettings();
 
 	  private:
 		Generic::SECONDARY_STRUCTURE_COLOR_MODE _colorMode;
@@ -65,8 +66,9 @@ namespace VTX::UI::Widget::CustomWidget
 
 		QHBoxLayout * _layout;
 
-		ColorFieldButton *					_colorSetButton;
-		QPushButton *						_openColorSettingsButton;
+		ColorFieldButton * _colorSetButton;
+		// !V0.1
+		// QPushButton *						_openColorSettingsButton;
 		CustomWidget::QComboBoxMultiField * _colorModeComboBox;
 	};
 } // namespace VTX::UI::Widget::CustomWidget

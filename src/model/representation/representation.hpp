@@ -22,9 +22,6 @@ namespace VTX::Model::Representation
 		const std::string & getName() const { return _name; };
 		void				setName( const std::string & p_name );
 
-		const std::string & getIconPath() const { return _iconPath; };
-		void				setIconPath( const std::string & p_iconPath );
-
 		const Color::Rgb & getColor() const { return _color; }
 		Color::Rgb &	   getColor() { return _color; }
 		void			   setColor( const Color::Rgb & p_color );

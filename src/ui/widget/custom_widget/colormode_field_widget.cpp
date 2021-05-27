@@ -25,13 +25,15 @@ namespace VTX::UI::Widget::CustomWidget
 		_colorSetButton = WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "colorSetButton" );
 		_colorSetButton->hide();
 
-		_openColorSettingsButton = new QPushButton( this );
-		_openColorSettingsButton->setText( "Manage\nColors" );
-		_openColorSettingsButton->hide();
+		// !V0.1
+		//_openColorSettingsButton = new QPushButton( this );
+		//_openColorSettingsButton->setText( "Manage\nColors" );
+		//_openColorSettingsButton->hide();
 
 		_layout->addWidget( _colorModeComboBox );
 		_layout->addWidget( _colorSetButton );
-		_layout->addWidget( _openColorSettingsButton );
+		// !V0.1
+		//_layout->addWidget( _openColorSettingsButton );
 	}
 
 	void ColorModeFieldWidget::_setupSlots()
@@ -44,7 +46,8 @@ namespace VTX::UI::Widget::CustomWidget
 				 QOverload<const Color::Rgb &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &ColorModeFieldWidget::_applyColor );
-		connect( _openColorSettingsButton, &QPushButton::clicked, this, &ColorModeFieldWidget::_openColorSettings );
+		// !V0.1
+		// connect( _openColorSettingsButton, &QPushButton::clicked, this, &ColorModeFieldWidget::_openColorSettings );
 	}
 
 	void ColorModeFieldWidget::_refresh()
@@ -64,10 +67,11 @@ namespace VTX::UI::Widget::CustomWidget
 		else
 			_colorSetButton->hide();
 
-		if ( displayColorSettingButton )
-			_openColorSettingsButton->show();
-		else
-			_openColorSettingsButton->hide();
+		// !V0.1
+		// if ( displayColorSettingButton )
+		//	_openColorSettingsButton->show();
+		// else
+		//	_openColorSettingsButton->hide();
 	}
 
 	void ColorModeFieldWidget::setColorMode( const Generic::COLOR_MODE p_colorMode )
@@ -86,10 +90,11 @@ namespace VTX::UI::Widget::CustomWidget
 		_colorSetButton->setColor( p_color );
 	}
 
-	void ColorModeFieldWidget::_openColorSettings()
-	{
-		VTXApp::get().getMainWindow().openSettingWindow( Widget::Settings::SETTING_MENU::COLORS );
-	}
+	// !V0.1
+	// void ColorModeFieldWidget::_openColorSettings()
+	//{
+	//	VTXApp::get().getMainWindow().openSettingWindow( Widget::Settings::SETTING_MENU::COLORS );
+	//}
 
 	void ColorModeFieldWidget::_colorModeChange( int p_index )
 	{
@@ -124,7 +129,8 @@ namespace VTX::UI::Widget::CustomWidget
 		if ( !_colorModeComboBox->hasIdenticalData() )
 		{
 			_colorSetButton->hide();
-			_openColorSettingsButton->hide();
+			// !V0.1
+			//_openColorSettingsButton->hide();
 		}
 	}
 	void ColorModeFieldWidget::resetState()

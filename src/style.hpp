@@ -6,6 +6,7 @@
 #endif
 
 #include "id.hpp"
+#include "model/representation/representation_enum.hpp"
 #include "selection/selection_enum.hpp"
 #include "tool/logger.hpp"
 #include <QChar>
@@ -64,6 +65,15 @@ namespace VTX
 			const QPixmap ATOM_SYMBOL;
 			const QPixmap REPRESENTATION_SYMBOL;
 
+			const QPixmap REPRESENTATION_STICK_ICON;
+			const QPixmap REPRESENTATION_BALL_AND_STICK_ICON;
+			const QPixmap REPRESENTATION_VDW_ICON;
+			const QPixmap REPRESENTATION_CARTOON_ICON;
+			const QPixmap REPRESENTATION_STICK_AND_CARTOON_ICON;
+			const QPixmap REPRESENTATION_BALL_STICK_AND_CARTOON_ICON;
+			const QPixmap REPRESENTATION_TRACE_ICON;
+			const QPixmap REPRESENTATION_SAS_ICON;
+
 			const QPixmap TOOLTAB_SEPARATOR;
 
 			const QPixmap * const getWindowIcon( const ID::VTX_ID & p_id ) const
@@ -108,14 +118,39 @@ namespace VTX
 					res = &ATOM_SYMBOL;
 				else
 				{
-					std::cout << "[WARNING] - Symbol for model " + p_id + " not managed in IconConst::getModelSymbol."
-							  << std::endl;
-					// VTX_WARNING( "Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." );
+					VTX_WARNING( "Symbol for model " + p_id + " not managed in IconConst::getModelSymbol." );
 					res = nullptr;
 				}
 
 				return res;
 			};
+
+			const QPixmap * const getRepresentationIcon( const Generic::REPRESENTATION & p_representation ) const
+			{
+				const QPixmap * res;
+
+				switch ( p_representation )
+				{
+				case Generic::REPRESENTATION::BALL_AND_STICK: res = &REPRESENTATION_BALL_AND_STICK_ICON; break;
+				case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON:
+					res = &REPRESENTATION_BALL_STICK_AND_CARTOON_ICON;
+					break;
+				case Generic::REPRESENTATION::CARTOON: res = &REPRESENTATION_CARTOON_ICON; break;
+				case Generic::REPRESENTATION::SAS: res = &REPRESENTATION_SAS_ICON; break;
+				case Generic::REPRESENTATION::STICK: res = &REPRESENTATION_STICK_ICON; break;
+				case Generic::REPRESENTATION::STICK_AND_CARTOON: res = &REPRESENTATION_STICK_AND_CARTOON_ICON; break;
+				case Generic::REPRESENTATION::TRACE: res = &REPRESENTATION_TRACE_ICON; break;
+				case Generic::REPRESENTATION::VAN_DER_WAALS: res = &REPRESENTATION_VDW_ICON; break;
+				default:
+
+					VTX_WARNING( "Representation " + std::to_string( int( p_representation ) )
+								 + " not managed in IconConst::getRepresentationIcon." );
+					res = &REPRESENTATION_STICK_ICON;
+					break;
+				}
+
+				return res;
+			}
 
 		  private:
 			IconConst() :
@@ -137,7 +172,17 @@ namespace VTX
 				SETTING_WINDOW_ICON( QPixmap( ":/sprite/setting_window_icon.png" ) ),
 				SELECTION_WINDOW_ICON( QPixmap( ":/sprite/selection_window_icon.png" ) ),
 				CONSOLE_WINDOW_ICON( QPixmap( ":/sprite/console_window_icon.png" ) ),
-				SEQUENCE_WINDOW_ICON( QPixmap( ":/sprite/sequence_window_icon.png" ) ) {};
+				SEQUENCE_WINDOW_ICON( QPixmap( ":/sprite/sequence_window_icon.png" ) ),
+				REPRESENTATION_STICK_ICON( QPixmap( ":/sprite/representation_stick_icon.png" ) ),
+				REPRESENTATION_BALL_AND_STICK_ICON( QPixmap( ":/sprite/representation_ball_and_stick_icon.png" ) ),
+				REPRESENTATION_VDW_ICON( QPixmap( ":/sprite/representation_van_der_waals_icon.png" ) ),
+				REPRESENTATION_CARTOON_ICON( QPixmap( ":/sprite/representation_cartoon_icon.png" ) ),
+				REPRESENTATION_STICK_AND_CARTOON_ICON(
+					QPixmap( ":/sprite/representation_stick_and_cartoon_icon.png" ) ),
+				REPRESENTATION_BALL_STICK_AND_CARTOON_ICON(
+					QPixmap( ":/sprite/representation_ball_stick_and_cartoon_icon.png" ) ),
+				REPRESENTATION_TRACE_ICON( QPixmap( ":/sprite/representation_stick_icon.png" ) ),
+				REPRESENTATION_SAS_ICON( QPixmap( ":/sprite/representation_sas_icon.png" ) ) {};
 		};
 
 		namespace WidgetProperty

@@ -25,13 +25,15 @@ namespace VTX::UI::Widget::CustomWidget
 		_colorSetButton = WidgetFactory::get().instantiateWidget<ColorFieldButton>( this, "colorSetButton" );
 		_colorSetButton->hide();
 
-		_openColorSettingsButton = new QPushButton( this );
-		_openColorSettingsButton->setText( "Manage\nColors" );
-		_openColorSettingsButton->hide();
+		// !V0.1
+		//_openColorSettingsButton = new QPushButton( this );
+		//_openColorSettingsButton->setText( "Manage\nColors" );
+		//_openColorSettingsButton->hide();
 
 		_layout->addWidget( _colorModeComboBox );
 		_layout->addWidget( _colorSetButton );
-		_layout->addWidget( _openColorSettingsButton );
+		// !V0.1
+		//_layout->addWidget( _openColorSettingsButton );
 	}
 
 	void SecondaryStructureColorModeFieldWidget::_setupSlots()
@@ -44,10 +46,11 @@ namespace VTX::UI::Widget::CustomWidget
 				 QOverload<const Color::Rgb &>::of( &ColorFieldButton::onValueChange ),
 				 this,
 				 &SecondaryStructureColorModeFieldWidget::_applyColor );
-		connect( _openColorSettingsButton,
-				 &QPushButton::clicked,
-				 this,
-				 &SecondaryStructureColorModeFieldWidget::_openColorSettings );
+		// !V0.1
+		// connect( _openColorSettingsButton,
+		//		 &QPushButton::clicked,
+		//		 this,
+		//		 &SecondaryStructureColorModeFieldWidget::_openColorSettings );
 	}
 
 	void SecondaryStructureColorModeFieldWidget::_refresh()
@@ -64,10 +67,11 @@ namespace VTX::UI::Widget::CustomWidget
 		else
 			_colorSetButton->hide();
 
-		if ( displayColorSettingButton )
-			_openColorSettingsButton->show();
-		else
-			_openColorSettingsButton->hide();
+		// !V0.1
+		// if ( displayColorSettingButton )
+		//	_openColorSettingsButton->show();
+		// else
+		//	_openColorSettingsButton->hide();
 	}
 
 	void SecondaryStructureColorModeFieldWidget::setColorMode(
@@ -87,10 +91,11 @@ namespace VTX::UI::Widget::CustomWidget
 		_colorSetButton->setColor( p_color );
 	}
 
-	void SecondaryStructureColorModeFieldWidget::_openColorSettings()
-	{
-		VTXApp::get().getMainWindow().openSettingWindow( Widget::Settings::SETTING_MENU::COLORS );
-	}
+	// !V0.1
+	// void SecondaryStructureColorModeFieldWidget::_openColorSettings()
+	//{
+	//	VTXApp::get().getMainWindow().openSettingWindow( Widget::Settings::SETTING_MENU::COLORS );
+	//}
 
 	void SecondaryStructureColorModeFieldWidget::_colorModeChange( int p_index )
 	{

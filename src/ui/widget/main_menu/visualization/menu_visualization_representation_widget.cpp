@@ -22,13 +22,17 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		{
 			_refreshView();
 		}
+		else if ( p_event->name == Event::Model::QUICK_ACCESS_CHANGE )
+		{
+			_refreshView();
+		}
 		else if ( p_event->name == Event::Model::DISPLAY_NAME_CHANGE )
 		{
 			_refreshNames();
 		}
-		else if ( p_event->name == Event::Model::QUICK_ACCESS_CHANGE )
+		else if ( p_event->name == Event::Model::REPRESENTATION_TYPE_CHANGE )
 		{
-			_refreshView();
+			_refreshIcons();
 		}
 	}
 
@@ -72,7 +76,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 																					  "applyVisualModelPresetButton" );
 			button->setRepresentationID( i );
 			button->setData( QString::fromStdString( representation->getName() ),
-							 QString::fromStdString( representation->getIconPath() ),
+							 *Style::IconConst::get().getRepresentationIcon( representation->getRepresentationType() ),
 							 Qt::Orientation::Horizontal );
 			pushButton( *button, quickAccessRepresentationCount / MAX_ROW_COUNT );
 			_buttons.emplace( i, button );
@@ -103,6 +107,20 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 				continue;
 
 			_buttons[ i ]->setName( QString::fromStdString( representation->getName() ) );
+		}
+	}
+	void MenuVisualizationRepresentationWidget::_refreshIcons()
+	{
+		for ( int i = 0; i < Model::Representation::RepresentationLibrary::get().getRepresentationCount(); i++ )
+		{
+			const Model::Representation::Representation * const representation
+				= Model::Representation::RepresentationLibrary::get().getRepresentation( i );
+
+			if ( !representation->hasQuickAccess() )
+				continue;
+
+			_buttons[ i ]->setIcon(
+				*Style::IconConst::get().getRepresentationIcon( representation->getRepresentationType() ) );
 		}
 	}
 

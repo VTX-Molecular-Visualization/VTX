@@ -31,11 +31,7 @@ namespace VTX::Model::Representation
 		_name = std::string( p_name );
 		_notifyViews( new Event::VTXEvent( Event::Model::DISPLAY_NAME_CHANGE ) );
 	};
-	void Representation::setIconPath( const std::string & p_iconPath )
-	{
-		_iconPath = std::string( p_iconPath );
-		_notifyDataChanged();
-	};
+	
 	void Representation::setColor( const Color::Rgb & p_color )
 	{
 		_color = p_color;
@@ -46,6 +42,8 @@ namespace VTX::Model::Representation
 		_quickAccess = p_quickAccess;
 		_notifyViews( new Event::VTXEvent( Event::Model::QUICK_ACCESS_CHANGE ) );
 	};
+
+
 
 	void Representation::changeRepresentationType( const Generic::REPRESENTATION & p_newType, const bool p_notify )
 	{
