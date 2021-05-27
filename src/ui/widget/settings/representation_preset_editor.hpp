@@ -73,6 +73,7 @@ namespace VTX::UI::Widget::Settings
 
 	  protected:
 		RepresentationPresetEditor( QWidget * const p_parent );
+		~RepresentationPresetEditor();
 
 		void _setupUi( const QString & ) override;
 		void _setupSlots() override;
