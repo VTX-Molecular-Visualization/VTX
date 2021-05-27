@@ -15,7 +15,14 @@
 
 namespace VTX::View::UI::Widget
 {
-	SelectionView ::~SelectionView() { _mapLoadedItems.clear(); }
+	SelectionView ::~SelectionView()
+	{
+		_mapLoadedItems.clear();
+		if ( _styleItemDelegate != nullptr )
+		{
+			delete _styleItemDelegate;
+		}
+	}
 
 	void SelectionView::_setupUi( const QString & p_name )
 	{
@@ -25,7 +32,8 @@ namespace VTX::View::UI::Widget
 		setSelectionMode( QAbstractItemView::SelectionMode::NoSelection );
 		setExpandsOnDoubleClick( false );
 
-		this->setItemDelegateForColumn( REMOVE_COLUMN_INDEX, new SelectionStyleItemDelegate() );
+		_styleItemDelegate = new SelectionStyleItemDelegate();
+		this->setItemDelegateForColumn( REMOVE_COLUMN_INDEX, _styleItemDelegate );
 
 		header()->setStretchLastSection( false );
 		header()->setMinimumSectionSize( 10 );
