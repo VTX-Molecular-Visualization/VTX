@@ -14,6 +14,7 @@ namespace VTX::UI::Widget::MainMenu
 		VTX_WIDGET
 
 	  public:
+		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void setRenderEffectID( const int p_id ) { _id = p_id; };
 

@@ -207,6 +207,8 @@ namespace VTX
 		inline static const QSize SELECTION_PREFERED_SIZE = QSize( 250, 100 );
 		inline static const QSize SELECTION_MINIMUM_SIZE  = QSize( 20, 20 );
 
+		inline static const int MAIN_MENU_MAX_BUTTON_PRESET_WIDTH = 125;
+
 		inline static const int INSPECTOR_HEADER_HEIGHT				= 30;
 		inline static const int INSPECTOR_HEADER_NAME_SPACING		= 10;
 		inline static const int INSPECTOR_CONTENT_HORIZONTAL_OFFSET = 10;

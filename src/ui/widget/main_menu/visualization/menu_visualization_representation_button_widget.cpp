@@ -10,10 +10,23 @@
 #include "object3d/scene.hpp"
 #include "representation/representation_manager.hpp"
 #include "selection/selection_manager.hpp"
+#include "style.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::UI::Widget::MainMenu
 {
+	void RepresentationPresetButton::_setupUi( const QString & p_name )
+	{
+		MenuToolButtonWidget::_setupUi( p_name );
+		setMaximumWidth( Style::MAIN_MENU_MAX_BUTTON_PRESET_WIDTH );
+	}
+
+	void RepresentationPresetButton::_setupSlots()
+	{
+		MenuToolButtonWidget::_setupSlots();
+		connect( this, &QToolButton::clicked, this, &RepresentationPresetButton::_onButtonClicked );
+	}
+
 	void RepresentationPresetButton::_onButtonClicked()
 	{
 		Model::Representation::Representation * representation

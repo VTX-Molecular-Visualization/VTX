@@ -14,11 +14,8 @@ namespace VTX::UI::Widget::MainMenu
 		VTX_WIDGET
 
 	  public:
-		void _setupSlots() override
-		{
-			MenuToolButtonWidget::_setupSlots();
-			connect( this, &QToolButton::clicked, this, &RepresentationPresetButton::_onButtonClicked );
-		}
+		void _setupUi( const QString & p_name ) override;
+		void _setupSlots() override;
 		void setRepresentationID( const int p_id ) { _id = p_id; };
 
 	  protected:

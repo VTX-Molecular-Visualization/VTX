@@ -6,6 +6,12 @@
 
 namespace VTX::UI::Widget::MainMenu
 {
+	void RenderEffectPresetButton::_setupUi( const QString & p_name )
+	{
+		MenuToolButtonWidget::_setupUi( p_name );
+		setMaximumWidth( Style::MAIN_MENU_MAX_BUTTON_PRESET_WIDTH );
+	}
+
 	void RenderEffectPresetButton::_setupSlots()
 	{
 		MenuToolButtonWidget::_setupSlots();
