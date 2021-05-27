@@ -65,13 +65,17 @@ namespace VTX::Model::Representation
 			newData = new RepresentationData_BallStickAndCartoon();
 			break;
 		case Generic::REPRESENTATION::VAN_DER_WAALS: newData = new RepresentationData_VanDerWaals(); break;
-		case Generic::REPRESENTATION::SAS: newData = new RepresentationData_Sas(); break;
-		case Generic::REPRESENTATION::TRACE: newData = new RepresentationData_Trace(); break;
+		case Generic::REPRESENTATION::SAS:
+			newData = new RepresentationData_Sas();
+			break;
+			// !V0.1
+			// case Generic::REPRESENTATION::TRACE: newData = new RepresentationData_Trace(); break;
 		case Generic::REPRESENTATION::CARTOON: newData = new RepresentationData_Cartoon(); break;
 		default:
 			VTX_WARNING( "Type " + std::to_string( int( p_newType ) )
 						 + " not managed in Representation::changeRepresentationType." );
-			return;
+			newData = new RepresentationData_Sticks();
+			break;
 		}
 
 		if ( _data != nullptr )

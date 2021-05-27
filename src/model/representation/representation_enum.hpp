@@ -16,7 +16,8 @@ namespace VTX
 			BALL_AND_STICK,
 			VAN_DER_WAALS,
 			STICK,
-			TRACE,
+			// !V0.1
+			// TRACE,
 			SAS,
 			CARTOON,
 			BALL_AND_STICK_AND_CARTOON,
@@ -25,8 +26,8 @@ namespace VTX
 		};
 
 		inline static const std::vector<std::string> REPRESENTATION_STRING
-			= { "Ball and Stick",		  "Van Der Waals",	  "Stick", "Trace", "SAS", "Cartoon",
-				"Ball Stick and Cartoon", "Stick and Cartoon" };
+			= { "Ball and Stick", "Van Der Waals",			"Stick" /* !V0.1, "Trace" */, "SAS",
+				"Cartoon",		  "Ball Stick and Cartoon", "Stick and Cartoon" };
 
 	} // namespace Generic
 
@@ -66,10 +67,11 @@ namespace VTX
 
 			case Generic::REPRESENTATION::BALL_AND_STICK:
 			case Generic::REPRESENTATION::STICK:
-			case Generic::REPRESENTATION::TRACE:
-				res = Representation::FlagDataTargeted( Representation::FlagDataTargeted::ATOM
-														| Representation::FlagDataTargeted::BOND );
-				break;
+				// !V0.1
+				// case Generic::REPRESENTATION::TRACE:
+				//	res = Representation::FlagDataTargeted( Representation::FlagDataTargeted::ATOM
+				//											| Representation::FlagDataTargeted::BOND );
+				//	break;
 
 			case Generic::REPRESENTATION::STICK_AND_CARTOON:
 			case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON:

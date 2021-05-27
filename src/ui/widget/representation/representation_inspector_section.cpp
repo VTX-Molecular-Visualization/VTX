@@ -145,10 +145,11 @@ namespace VTX::UI::Widget::Representation
 				= VTX::UI::WidgetFactory::get().instantiateWidget<StickAndCartoonRepresentationWidget>(
 					_representationWidget, "stick_and_cartoon_representation_widget" );
 			break;
-		case Generic::REPRESENTATION::TRACE:
-			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<TraceRepresentationWidget>(
-				_representationWidget, "trace_representation_widget" );
-			break;
+			// !V0.1
+		// case Generic::REPRESENTATION::TRACE:
+		//	_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<TraceRepresentationWidget>(
+		//		_representationWidget, "trace_representation_widget" );
+		//	break;
 		case Generic::REPRESENTATION::VAN_DER_WAALS:
 			_representationSettingWidget = VTX::UI::WidgetFactory::get().instantiateWidget<VdwRepresentationWidget>(
 				_representationWidget, "vdw_representation_widget" );

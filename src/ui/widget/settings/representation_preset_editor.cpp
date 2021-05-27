@@ -166,8 +166,11 @@ namespace VTX::UI::Widget::Settings
 		case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON: _refreshBallStickAndCartoonRepresentation(); break;
 		case Generic::REPRESENTATION::STICK: _refreshStickRepresentation(); break;
 		case Generic::REPRESENTATION::STICK_AND_CARTOON: _refreshStickAndCartoonRepresentation(); break;
-		case Generic::REPRESENTATION::VAN_DER_WAALS: _refreshVanDerWaalsRepresentation(); break;
-		case Generic::REPRESENTATION::TRACE: _refreshTraceRepresentation(); break;
+		case Generic::REPRESENTATION::VAN_DER_WAALS:
+			_refreshVanDerWaalsRepresentation();
+			break;
+			// !V0.1
+		// case Generic::REPRESENTATION::TRACE: _refreshTraceRepresentation(); break;
 		case Generic::REPRESENTATION::SAS: _refreshSASRepresentation(); break;
 		case Generic::REPRESENTATION::CARTOON: _refreshCartoonRepresentation(); break;
 		}

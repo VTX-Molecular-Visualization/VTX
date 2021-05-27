@@ -35,16 +35,17 @@ namespace VTX::Model::Representation
 		_cylinderData->_radius = Setting::BONDS_RADIUS_DEFAULT;
 	}
 
-	RepresentationData_Trace::RepresentationData_Trace() : RepresentationData( Generic::REPRESENTATION::TRACE )
-	{
-		_sphereData					= new SphereData();
-		_sphereData->_radiusFixed	= Setting::BONDS_RADIUS_DEFAULT;
-		_sphereData->_radiusAdd		= -0.5f;
-		_sphereData->_isRadiusFixed = true;
+	// !V0.1
+	// RepresentationData_Trace::RepresentationData_Trace() : RepresentationData( Generic::REPRESENTATION::TRACE )
+	//{
+	//	_sphereData					= new SphereData();
+	//	_sphereData->_radiusFixed	= Setting::BONDS_RADIUS_DEFAULT;
+	//	_sphereData->_radiusAdd		= -0.5f;
+	//	_sphereData->_isRadiusFixed = true;
 
-		_cylinderData		   = new CylinderData();
-		_cylinderData->_radius = Setting::BONDS_RADIUS_DEFAULT;
-	}
+	//	_cylinderData		   = new CylinderData();
+	//	_cylinderData->_radius = Setting::BONDS_RADIUS_DEFAULT;
+	//}
 
 	RepresentationData_Sas::RepresentationData_Sas() : RepresentationData( Generic::REPRESENTATION::SAS )
 	{

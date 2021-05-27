@@ -177,7 +177,9 @@ namespace VTX::Model::Representation
 		case Generic::REPRESENTATION::STICK:
 		case Generic::REPRESENTATION::STICK_AND_CARTOON:
 		case Generic::REPRESENTATION::CARTOON:
-		case Generic::REPRESENTATION::TRACE: break;
+			// !V0.1
+			// case Generic::REPRESENTATION::TRACE:
+			break;
 		}
 
 		if ( p_notify && dataChanged )
@@ -205,7 +207,8 @@ namespace VTX::Model::Representation
 
 		case Generic::REPRESENTATION::STICK:
 		case Generic::REPRESENTATION::STICK_AND_CARTOON:
-		case Generic::REPRESENTATION::TRACE:
+			// !V0.1
+			// case Generic::REPRESENTATION::TRACE:
 			if ( _cylinderData.getValue()._radius != p_radius )
 			{
 				_sphereData.getValue()._radiusFixed = p_radius;

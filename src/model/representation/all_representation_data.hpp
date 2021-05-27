@@ -88,24 +88,25 @@ namespace VTX::Model::Representation
 			notifyRepresentationDataChange();
 		}
 	};
-	class RepresentationData_Trace : public RepresentationData
-	{
-	  public:
-		RepresentationData_Trace();
+	// !V0.1
+	// class RepresentationData_Trace : public RepresentationData
+	//{
+	//  public:
+	//	RepresentationData_Trace();
 
-		void setSphereRadius( float p_radius ) override
-		{
-			_sphereData->_radiusFixed = p_radius;
-			_cylinderData->_radius	  = p_radius;
-			notifyRepresentationDataChange();
-		}
-		void setCylinderRadius( float p_radius ) override
-		{
-			_sphereData->_radiusFixed = p_radius;
-			_cylinderData->_radius	  = p_radius;
-			notifyRepresentationDataChange();
-		}
-	};
+	//	void setSphereRadius( float p_radius ) override
+	//	{
+	//		_sphereData->_radiusFixed = p_radius;
+	//		_cylinderData->_radius	  = p_radius;
+	//		notifyRepresentationDataChange();
+	//	}
+	//	void setCylinderRadius( float p_radius ) override
+	//	{
+	//		_sphereData->_radiusFixed = p_radius;
+	//		_cylinderData->_radius	  = p_radius;
+	//		notifyRepresentationDataChange();
+	//	}
+	//};
 	class RepresentationData_Sas : public RepresentationData
 	{
 	  public:
