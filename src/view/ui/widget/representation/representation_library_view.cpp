@@ -33,6 +33,8 @@ namespace VTX::View::UI::Widget::Representation
 			= VTX::UI::WidgetFactory::get().instantiateWidget<RepresentationLibraryComboBox>( this, "PresetList" );
 		_presetList->setHighlightDefaultRepresentation( true );
 		_presetList->setCurrentIndex( currentIndex );
+		_presetList->setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Preferred );
+		_presetList->setMinimumWidth( 50 );
 
 		_representationPresetEditor = VTX::UI::WidgetFactory::get().instantiateWidget<RepresentationPresetEditor>(
 			this, "renderEffectPresetEdition" );
