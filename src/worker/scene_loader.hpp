@@ -22,15 +22,13 @@ namespace VTX
 		class SceneLoader : public Worker::BaseWorker
 		{
 		  public:
-			explicit SceneLoader( const std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {}
-			Object3D::Scene * getScene() { return _scene; }
+			explicit SceneLoader( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 
 		  protected:
 			void _run() override;
 
 		  private:
-			const std::vector<FilePath *> _paths;
-			Object3D::Scene *			  _scene = nullptr;
+			const std::vector<FilePath> _paths;
 		};
 	} // namespace Worker
 } // namespace VTX

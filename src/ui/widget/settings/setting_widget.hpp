@@ -32,6 +32,8 @@ namespace VTX::UI::Widget::Settings
 
 	  protected:
 		SettingWidget( QWidget * const );
+		~SettingWidget();
+
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 

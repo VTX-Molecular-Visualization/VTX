@@ -52,34 +52,34 @@ namespace VTX::Action::Main
 		class LoadSceneClass
 		{
 		  public:
-			LoadSceneClass( std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {};
+			LoadSceneClass( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {};
 
 			void _loadScene()
 			{
 				Worker::SceneLoader * sceneLoader = new Worker::SceneLoader( _paths );
 				VTX_WORKER( sceneLoader );
 
-				for ( FilePath * const path : _paths )
+				for ( const FilePath & path : _paths )
 				{
-					VTXApp::get().setCurrentPath( *path, true );
-					delete path;
+					VTXApp::get().setCurrentPath( path, true );
 				}
 			}
 
-			std::vector<FilePath *> _paths;
+		  private:
+			std::vector<FilePath> _paths;
 		};
 
 	  public:
-		explicit Open( FilePath * const p_path ) { _paths.emplace_back( p_path ); }
-		explicit Open( const std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {}
-		explicit Open( const std::map<FilePath *, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
+		explicit Open( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
+		explicit Open( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
+		explicit Open( const std::map<FilePath, std::string *> & p_buffers ) : _buffers( p_buffers ) {}
 
 		virtual void execute() override
 		{
 			bool loadScene = false;
-			for ( const FilePath * const path : _paths )
+			for ( const FilePath & path : _paths )
 			{
-				loadScene = loadScene || path->extension() == ".vtx";
+				loadScene = loadScene || path.extension() == ".vtx";
 			}
 
 			if ( loadScene )
@@ -89,7 +89,7 @@ namespace VTX::Action::Main
 
 				LoadSceneClass * const sceneClass = new LoadSceneClass( _paths );
 
-				Worker::Callback callback = Worker::Callback(
+				Worker::CallbackThread callback = Worker::CallbackThread(
 					[ sceneClass ]( const uint p_code )
 					{
 						if ( p_code )
@@ -118,7 +118,7 @@ namespace VTX::Action::Main
 					return;
 				}
 
-				Worker::Callback * callback = new Worker::Callback(
+				Worker::CallbackThread * callback = new Worker::CallbackThread(
 					[ loader ]( const uint p_code )
 					{
 						for ( Model::Molecule * const molecule : loader->getMolecules() )
@@ -136,19 +136,21 @@ namespace VTX::Action::Main
 						for ( std::pair<const FilePath *, bool> pairPathState : loader->getPathsState() )
 						{
 							if ( pairPathState.second )
+							{
 								VTX::Setting::enqueueNewLoadingPath( *pairPathState.first );
+							}
 						}
 
 						VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 					} );
 
-				VTX_WORKER( loader, callback );
+				VTX_THREAD( loader, callback );
 			}
 		}
 
 	  private:
-		std::vector<FilePath *>				_paths = std::vector<FilePath *>();
-		std::map<FilePath *, std::string *> _buffers;
+		std::vector<FilePath>			  _paths = std::vector<FilePath>();
+		std::map<FilePath, std::string *> _buffers;
 	};
 
 	class OpenApi : public BaseAction
@@ -165,8 +167,8 @@ namespace VTX::Action::Main
 	class Save : public BaseAction
 	{
 	  public:
-		explicit Save( FilePath * p_path ) : _path( p_path ), _callback( nullptr ) {}
-		explicit Save( FilePath * p_path, Worker::Callback * const p_callback ) :
+		explicit Save( const FilePath & p_path ) : _path( p_path ), _callback( nullptr ) {}
+		explicit Save( const FilePath & p_path, Worker::CallbackThread * const p_callback ) :
 			_path( p_path ), _callback( p_callback )
 		{
 		}
@@ -174,7 +176,7 @@ namespace VTX::Action::Main
 		virtual void execute() override
 		{
 			Worker::Saver * saver = nullptr;
-			if ( _path->empty() == false )
+			if ( _path.empty() == false )
 			{
 				saver = new Worker::Saver( _path );
 			}
@@ -183,75 +185,71 @@ namespace VTX::Action::Main
 				return;
 			}
 
-			VTX_WORKER( saver, _callback );
+			VTX_THREAD( saver, _callback );
 
-			if ( _path->extension() == ".vtx" )
-				VTXApp::get().setCurrentPath( *_path, true );
+			if ( _path.extension() == ".vtx" )
+				VTXApp::get().setCurrentPath( _path, true );
 			else
-				VTX::Setting::enqueueNewLoadingPath( *_path );
+				VTX::Setting::enqueueNewLoadingPath( _path );
 		}
 
 	  private:
-		FilePath * const		 _path;
-		Worker::Callback * const _callback;
+		const FilePath				   _path;
+		Worker::CallbackThread * const _callback;
 	};
 
 	class ImportRepresentationPreset : public BaseAction
 	{
 	  public:
-		explicit ImportRepresentationPreset( FilePath * const p_path ) { _paths.emplace_back( p_path ); }
-		explicit ImportRepresentationPreset( const std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {}
+		explicit ImportRepresentationPreset( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
+		explicit ImportRepresentationPreset( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 		virtual void execute() override
 		{
 			if ( _paths.empty() )
 				return;
 
 			bool fileHasBeenImported = false;
-			for ( FilePath * const path : _paths )
+			for ( const FilePath & path : _paths )
 			{
-				FilePath target = Util::Filesystem::getRepresentationPath( path->filename().string() );
+				FilePath target = Util::Filesystem::getRepresentationPath( path.filename().string() );
 				Util::Filesystem::generateUniqueFileName( target );
-				if ( Util::Filesystem::copy( *path, target ) )
+				if ( Util::Filesystem::copy( path, target ) )
 				{
 					Worker::RepresentationLoader * const loader = new Worker::RepresentationLoader( target );
 					VTX_WORKER( loader );
 				}
-
-				delete path;
 			}
 		}
 
 	  private:
-		std::vector<FilePath *> _paths = std::vector<FilePath *>();
+		std::vector<FilePath> _paths = std::vector<FilePath>();
 	};
 
 	class ImportRenderEffectPreset : public BaseAction
 	{
 	  public:
-		explicit ImportRenderEffectPreset( FilePath * const p_path ) { _paths.emplace_back( p_path ); }
-		explicit ImportRenderEffectPreset( const std::vector<FilePath *> & p_paths ) : _paths( p_paths ) {}
+		explicit ImportRenderEffectPreset( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
+		explicit ImportRenderEffectPreset( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 		virtual void execute() override
 		{
 			if ( _paths.empty() )
 				return;
 
 			bool fileHasBeenImported = false;
-			for ( FilePath * const path : _paths )
+			for ( const FilePath & path : _paths )
 			{
-				FilePath target = Util::Filesystem::getRenderEffectPath( path->filename().string() );
+				FilePath target = Util::Filesystem::getRenderEffectPath( path.filename().string() );
 				Util::Filesystem::generateUniqueFileName( target );
-				if ( Util::Filesystem::copy( *path, target ) )
+				if ( Util::Filesystem::copy( path, target ) )
 				{
 					Worker::RenderEffectPresetLoader * const loader = new Worker::RenderEffectPresetLoader( target );
 					VTX_WORKER( loader );
 				}
-
-				delete path;
 			}
 		}
 
 	  private:
-		std::vector<FilePath *> _paths = std::vector<FilePath *>();
+		std::vector<FilePath> _paths = std::vector<FilePath>();
 	};
 
 	class ResetScene : public BaseAction

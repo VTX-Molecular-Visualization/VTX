@@ -19,7 +19,7 @@ namespace VTX::Worker
 
 		_library.clear( false );
 
-		std::filesystem::directory_iterator fileIterator = std::filesystem::directory_iterator( *_path );
+		std::filesystem::directory_iterator fileIterator = std::filesystem::directory_iterator( _path );
 
 		while ( !fileIterator._At_end() )
 		{
@@ -62,24 +62,23 @@ namespace VTX::Worker
 
 		chrono.start();
 
-		for ( const FilePath * path : _paths )
+		for ( const FilePath & path : _paths )
 		{
 			Model::Renderer::RenderEffectPreset * const preset
 				= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
 
 			try
 			{
-				reader->readFile( *path, *preset );
+				reader->readFile( path, *preset );
 				Model::Renderer::RenderEffectPresetLibrary::get().addPreset( preset, true );
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load render effect preset at " + path->string() + " : "
-						   + std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load render effect preset at " + path.string() + " : " + std::string( p_e.what() ) );
 				MVC::MvcManager::get().deleteModel( preset );
 			}
 
-			VTX_INFO( "render effect preset " + path->filename().string() + " loaded." );
+			VTX_INFO( "render effect preset " + path.filename().string() + " loaded." );
 		}
 
 		delete reader;

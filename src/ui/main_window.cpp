@@ -261,12 +261,12 @@ namespace VTX::UI
 
 		if ( mimeData->hasUrls() )
 		{
-			std::vector<FilePath *> _paths	= std::vector<FilePath *>();
-			const QList<QUrl> &		urlList = mimeData->urls();
+			std::vector<FilePath> _paths  = std::vector<FilePath>();
+			const QList<QUrl> &	  urlList = mimeData->urls();
 
 			for ( const QUrl & url : urlList )
 			{
-				_paths.emplace_back( new FilePath( url.toLocalFile().toStdString() ) );
+				_paths.emplace_back( FilePath( url.toLocalFile().toStdString() ) );
 			}
 
 			VTX_ACTION( new Action::Main::Open( _paths ) );

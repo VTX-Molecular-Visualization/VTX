@@ -48,7 +48,6 @@ namespace VTX::Action::Molecule
 			{
 				molecule->setColor( _color );
 				molecule->refreshColors();
-				molecule->getSecondaryStructure().refreshColors();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
@@ -74,6 +73,7 @@ namespace VTX::Action::Molecule
 				const bool		  newVisibility = _getVisibilityBool( *visible );
 				Model::Molecule * molecule		= ( (Model::Molecule *)visible );
 				molecule->setVisible( newVisibility );
+				molecule->refreshVisibilities();
 				molecule->computeRepresentationTargets();
 			}
 

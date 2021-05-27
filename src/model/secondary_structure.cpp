@@ -33,9 +33,11 @@ namespace VTX
 			_bufferCaODirections.clear();
 			_bufferSSTypes.clear();
 			_bufferColors.clear();
+			_bufferVisibilities.clear();
 			_bufferIndices.clear();
 			_residueToPositions.clear();
 			_residueToIndices.clear();
+			_data.clear();
 
 			const Molecule::AtomPositionsFrame & positions = _molecule->getAtomPositionFrame( _molecule->getFrame() );
 
@@ -43,8 +45,10 @@ namespace VTX
 			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
 			{
 				const Chain * const chain = _molecule->getChain( chainIdx );
-				if ( chain == nullptr ) /// TODO: possible ? what to do ?
+				if ( chain == nullptr )
+				{
 					continue;
+				}
 
 				uint residueCount = chain->getResidueCount();
 
@@ -61,6 +65,7 @@ namespace VTX
 				std::vector<Vec3f>		caODirections;
 				std::vector<uint>		ssTypes;
 				std::vector<Color::Rgb> colors;
+				std::vector<uint>		visibilities;
 				std::vector<uint>		residueIndex;
 
 				uint idxFirstResidue = chain->getIndexFirstResidue();
@@ -68,8 +73,10 @@ namespace VTX
 				{
 					const Residue * const residue = _molecule->getResidue( idxFirstResidue + residueIdx );
 
-					if ( residue == nullptr ) /// TODO: possible? what to do?
+					if ( residue == nullptr )
+					{
 						continue;
+					}
 
 					// Use backbone to compute spline data.
 					// Find alpha carbon.
@@ -138,30 +145,18 @@ namespace VTX
 						colors.emplace_back( Generic::COLORS_JMOL[ uint( residue->getSecondaryStructure() ) ] );
 					}
 
-					// Repeat first control point.
-					if ( caPositions.size() == 1 )
-					{
-						caPositions.emplace_back(
-							Vec4f( positionCA, float( _bufferCaPositions.size() + caPositions.size() ) ) );
-						caODirections.emplace_back( directionCAO );
-						ssTypes.emplace_back( ssTypes.back() );
-						colors.emplace_back( colors.back() );
-					}
+					visibilities.emplace_back( uint( _molecule->isVisible() && chain->isVisible()
+													 && residue->isVisible() && CA->isVisible() && O->isVisible() ) );
 				}
 
 				// Update buffers and index mapping if SS is constructed.
 				if ( caPositions.size() >= 4 )
 				{
-					// Repeat last control point.
-					// caPositions.emplace_back( caPositions.back() );
-					// caPositions.back().w++; // Don't forget to increase direction flag.
-					// caODirections.emplace_back( caODirections.back() );
-					// ssTypes.emplace_back( ssTypes.back() );
-					// colors.emplace_back( colors.back() );
-
 					const size_t nbControlPoints = caPositions.size();
 
-					//_residueToPositions.emplace( residueIndex[ 0 ], uint( _bufferCaPositions.size() ) );
+					_residueToPositions.emplace( residueIndex[ 0 ], uint( _bufferCaPositions.size() ) );
+					_residueToIndices.emplace( residueIndex[ 0 ], uint( _bufferIndices.size() ) );
+
 					const uint offset = uint( _bufferCaPositions.size() );
 
 					// Add segment with duplicate first index to evaluate B-spline at 0-1.
@@ -172,10 +167,8 @@ namespace VTX
 
 					for ( uint i = 1; i < nbControlPoints - 2; ++i )
 					{
-						// map avec l'id des residue (in ibo) pour le drawcall
-						_residueToIndices.emplace( residueIndex[ i ], uint( _bufferIndices.size() ) );
-						// balec visibility
 						_residueToPositions.emplace( residueIndex[ i ], uint( _bufferCaPositions.size() + i ) );
+						_residueToIndices.emplace( residueIndex[ i ], uint( _bufferIndices.size() ) );
 
 						_bufferIndices.emplace_back( offset + i - 1 );
 						_bufferIndices.emplace_back( offset + i );
@@ -183,47 +176,35 @@ namespace VTX
 						_bufferIndices.emplace_back( offset + i + 2 );
 					}
 
-					// Update mappping.
-					/*
-					_residueToPositions.emplace( residueIndex[ nbControlPoints - 1 ],
-												 uint( _bufferCaPositions.size() + nbControlPoints - 1 ) );
-					_residueToPositions.emplace( residueIndex[ nbControlPoints - 2 ],
-												 uint( _bufferCaPositions.size() + nbControlPoints - 2 ) );
-*/
 					/// TODO: better on GPU ?
 					_checkOrientationAndFlip( caODirections );
 
 					// Merge buffers.
+					_data.emplace( chainIdx, residueIndex );
 					_bufferCaPositions.insert( _bufferCaPositions.end(), caPositions.cbegin(), caPositions.cend() );
 					_bufferCaODirections.insert(
 						_bufferCaODirections.end(), caODirections.cbegin(), caODirections.cend() );
 					_bufferSSTypes.insert( _bufferSSTypes.end(), ssTypes.cbegin(), ssTypes.cend() );
 					_bufferColors.insert( _bufferColors.end(), colors.cbegin(), colors.cend() );
+					_bufferVisibilities.insert( _bufferVisibilities.end(), visibilities.cbegin(), visibilities.cend() );
 				}
 			}
 
 			// Reverse indices to render the other side.
-			std::vector<uint> indicesReverse = _bufferIndices;
-			std::reverse( indicesReverse.begin(), indicesReverse.end() );
-			_bufferIndices.insert( _bufferIndices.end(), indicesReverse.begin(), indicesReverse.end() );
+			// std::vector<uint> indicesReverse = _bufferIndices;
+			// std::reverse( indicesReverse.begin(), indicesReverse.end() );
+			//_bufferIndices.insert( _bufferIndices.end(), indicesReverse.begin(), indicesReverse.end() );
 
 			_bufferCaPositions.shrink_to_fit();
 			_bufferCaODirections.shrink_to_fit();
 			_bufferSSTypes.shrink_to_fit();
 			_bufferColors.shrink_to_fit();
+			_bufferVisibilities.shrink_to_fit();
 			_bufferIndices.shrink_to_fit();
 
 			if ( p_refreshBuffers )
 			{
 				_fillBuffer();
-				if ( _molecule->hasCustomRepresentation() )
-				{
-					_molecule->computeAllRepresentationData();
-				}
-				else
-				{
-					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation( *_molecule );
-				}
 			}
 		}
 
@@ -234,11 +215,13 @@ namespace VTX
 			assert( _bufferCaPositions.size() == _bufferCaODirections.size() );
 			assert( _bufferCaPositions.size() == _bufferSSTypes.size() );
 			assert( _bufferCaPositions.size() == _bufferColors.size() );
+			assert( _bufferCaPositions.size() == _bufferVisibilities.size() );
 
 			_buffer->setControlPointPositions( _bufferCaPositions );
 			_buffer->setControlPointDirections( _bufferCaODirections );
 			_buffer->setControlPointSecondaryStructure( _bufferSSTypes );
 			_buffer->setControlPointColors( _bufferColors );
+			_buffer->setControlPointVisibilities( _bufferVisibilities );
 
 			_buffer->setIndices( _bufferIndices );
 
@@ -260,40 +243,16 @@ namespace VTX
 				MVC::MvcManager::get().instantiateView<View::D3::Ribbon>( this, ID::View::D3_RIBBON_PATCH ) );
 		}
 
-		void SecondaryStructure::_fillBufferColors()
+		void SecondaryStructure::refreshColors()
 		{
 			_bufferColors.clear();
-			for ( uint chainIdx = 0; chainIdx < _molecule->getChainCount(); ++chainIdx )
+			_bufferColors.reserve( _bufferCaPositions.size() );
+			for ( const std::pair<uint, std::vector<uint>> & pair : _data )
 			{
-				const Chain * const chain = _molecule->getChain( chainIdx );
-
-				if ( chain == nullptr )
+				const Chain * const chain = _molecule->getChain( pair.first );
+				for ( const uint residueIdx : pair.second )
 				{
-					continue;
-				}
-
-				uint residueCount = chain->getResidueCount();
-
-				if ( residueCount < 4 )
-				{
-					continue;
-				}
-
-				uint idxFirstResidue = chain->getIndexFirstResidue();
-				for ( uint residueIdx = 0; residueIdx < residueCount; ++residueIdx )
-				{
-					const Residue * const residue = _molecule->getResidue( idxFirstResidue + residueIdx );
-
-					if ( residue == nullptr )
-						continue;
-
-					const Model::Atom * const CA = residue->findFirstAtomByName( "CA" );
-					const Model::Atom * const O	 = residue->findFirstAtomByName( "O" );
-
-					if ( CA == nullptr || O == nullptr )
-					{
-						continue;
-					}
+					const Residue * const residue = _molecule->getResidue( residueIdx );
 
 					switch ( residue->getRepresentation()->getSecondaryStructureColorMode() )
 					{
@@ -315,16 +274,32 @@ namespace VTX
 
 					default: _bufferColors.emplace_back( Color::Rgb::WHITE ); break;
 					}
-
-					if ( residueIdx == 0 || residueIdx == residueCount - 1 )
-					{
-						_bufferColors.emplace_back( _bufferColors.back() );
-					}
 				}
 			}
 
 			_bufferColors.shrink_to_fit();
 			_buffer->setControlPointColors( _bufferColors );
+		}
+
+		void SecondaryStructure::refreshVisibilities()
+		{
+			_bufferVisibilities.clear();
+			_bufferVisibilities.reserve( _bufferCaPositions.size() );
+			for ( const std::pair<uint, std::vector<uint>> & pair : _data )
+			{
+				const Chain * const chain = _molecule->getChain( pair.first );
+				for ( const uint residueIdx : pair.second )
+				{
+					const Residue * const	  residue = _molecule->getResidue( residueIdx );
+					const Model::Atom * const CA	  = residue->findFirstAtomByName( "CA" );
+					const Model::Atom * const O		  = residue->findFirstAtomByName( "O" );
+					_bufferVisibilities.emplace_back( _molecule->isVisible() && chain->isVisible()
+													  && residue->isVisible() && CA->isVisible() && O->isVisible() );
+				}
+			}
+
+			_bufferVisibilities.shrink_to_fit();
+			_buffer->setControlPointVisibilities( _bufferVisibilities );
 		}
 
 		void SecondaryStructure::_checkOrientationAndFlip( std::vector<Vec3f> & p_directions )
@@ -358,6 +333,7 @@ namespace VTX
 				}
 			}
 
+			_bufferSelections.shrink_to_fit();
 			_buffer->setControlPointSelections( _bufferSelections );
 		}
 

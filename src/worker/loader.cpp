@@ -23,19 +23,19 @@ namespace VTX
 			Model::Configuration::Molecule config = Model::Configuration::Molecule();
 
 			// Load PRM or PSF file firstly.
-			std::vector<FilePath *>::iterator itPath = _paths.begin();
+			std::vector<FilePath>::iterator itPath = _paths.begin();
 			while ( itPath != _paths.end() )
 			{
-				if ( ( *itPath )->extension() == ".prm" )
+				if ( itPath->extension() == ".prm" )
 				{
 					IO::Reader::PRM reader = IO::Reader::PRM();
-					reader.readFile( **itPath, config );
+					reader.readFile( *itPath, config );
 					itPath = _paths.erase( itPath );
 				}
-				else if ( ( *itPath )->extension() == ".psf" )
+				else if ( itPath->extension() == ".psf" )
 				{
 					IO::Reader::PSF reader = IO::Reader::PSF();
-					reader.readFile( **itPath, config );
+					reader.readFile( *itPath, config );
 					itPath = _paths.erase( itPath );
 				}
 				else
@@ -46,16 +46,16 @@ namespace VTX
 
 			// Load all files.
 			Tool::Chrono chrono;
-			for ( const FilePath * path : _paths )
+			for ( FilePath & path : _paths )
 			{
 				chrono.start();
-				emit logInfo( "Loading " + path->filename().string() );
-				MODE mode = _getMode( *path );
+				emit logInfo( "Loading " + path.filename().string() );
+				MODE mode = _getMode( path );
 
 				if ( mode == MODE::UNKNOWN )
 				{
 					emit logError( "Format not supported" );
-					_pathState.emplace( path, false );
+					_pathState.emplace( &path, false );
 				}
 				else if ( mode == MODE::MOLECULE )
 				{
@@ -69,16 +69,16 @@ namespace VTX
 					// Load.
 					try
 					{
-						reader->readFile( *path, *molecule );
+						reader->readFile( path, *molecule );
 						_molecules.emplace_back( molecule );
-						_pathState.emplace( path, true );
+						_pathState.emplace( &path, true );
 					}
 					catch ( const std::exception & p_e )
 					{
 						emit logError( "Error loading file" );
 						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( molecule );
-						_pathState.emplace( path, false );
+						_pathState.emplace( &path, false );
 					}
 
 					delete reader;
@@ -90,16 +90,16 @@ namespace VTX
 
 					try
 					{
-						reader->readFile( *path, *mesh );
+						reader->readFile( path, *mesh );
 						_meshes.emplace_back( mesh );
-						_pathState.emplace( path, true );
+						_pathState.emplace( &path, true );
 					}
 					catch ( const std::exception & p_e )
 					{
 						emit logError( "Error loading file" );
 						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( mesh );
-						_pathState.emplace( path, false );
+						_pathState.emplace( &path, false );
 					}
 
 					delete reader;
@@ -110,15 +110,14 @@ namespace VTX
 
 					try
 					{
-						reader->readFile( *path, VTXApp::get() );
-						_scene = &VTXApp::get().getScene();
+						reader->readFile( path, VTXApp::get() );
 						emit logInfo( "App loaded " );
-						_pathState.emplace( path, true );
+						_pathState.emplace( &path, true );
 					}
 					catch ( const std::exception & p_e )
 					{
 						emit logError( "Cannot load app: " + std::string( p_e.what() ) );
-						_pathState.emplace( path, false );
+						_pathState.emplace( &path, false );
 					}
 
 					delete reader;
@@ -132,11 +131,11 @@ namespace VTX
 			}
 
 			// Load all buffers.
-			for ( const std::pair<FilePath *, std::string *> & pair : _mapFileNameBuffer )
+			for ( const std::pair<FilePath, std::string *> & pair : _mapFileNameBuffer )
 			{
 				chrono.start();
-				emit logInfo( "Loading " + pair.first->filename().string() );
-				MODE mode = _getMode( *pair.first );
+				emit logInfo( "Loading " + pair.first.filename().string() );
+				MODE mode = _getMode( pair.first );
 
 				if ( mode != MODE::MOLECULE )
 				{
@@ -151,7 +150,7 @@ namespace VTX
 					// Load.
 					try
 					{
-						reader->readBuffer( *pair.second, *pair.first, *molecule );
+						reader->readBuffer( *pair.second, pair.first, *molecule );
 						_molecules.emplace_back( molecule );
 					}
 					catch ( const std::exception & p_e )
@@ -164,7 +163,6 @@ namespace VTX
 					delete reader;
 				}
 
-				delete pair.first;
 				delete pair.second;
 
 				chrono.stop();

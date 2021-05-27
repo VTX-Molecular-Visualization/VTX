@@ -222,48 +222,136 @@ namespace VTX
 			_addRenderable( MVC::MvcManager::get().instantiateView<View::D3::Cylinder>( this, ID::View::D3_CYLINDER ) );
 		}
 
-		void Molecule::refreshBondsBuffer()
-		{
-			_buffer->setBonds( _bufferBonds );
-			computeRepresentationTargets();
-		}
+		void Molecule::refreshBondsBuffer() { _buffer->setBonds( _bufferBonds ); }
 
 		void Molecule::_fillBufferAtomColors()
 		{
 			_bufferAtomColors.resize( _atoms.size() );
-			computeColorBuffer();
+
+			for ( const Model::Residue * const residue : getResidues() )
+			{
+				// Skip hidden items.
+				if ( residue == nullptr )
+					continue;
+
+				const Model::Representation::InstantiatedRepresentation * const currentRepresentation
+					= residue->getRepresentation();
+
+				Generic::COLOR_MODE colorMode = currentRepresentation->getColorMode();
+
+				if ( colorMode == Generic::COLOR_MODE::INHERITED )
+				{
+					const Generic::COLOR_MODE & chainColorMode
+						= residue->getChainPtr()->getRepresentation()->getColorMode();
+					if ( chainColorMode != Generic::COLOR_MODE::INHERITED )
+					{
+						colorMode = chainColorMode;
+					}
+					else
+					{
+						const Generic::COLOR_MODE & moleculeColorMode = getRepresentation()->getColorMode();
+						if ( moleculeColorMode != Generic::COLOR_MODE::INHERITED )
+							colorMode = moleculeColorMode;
+						else
+							colorMode = Setting::COLOR_MODE_DEFAULT;
+					}
+				}
+
+				bool	   colorCarbon = false;
+				Color::Rgb color;
+
+				switch ( colorMode )
+				{
+				case Generic::COLOR_MODE::ATOM_CHAIN: colorCarbon = true; [[fallthrough]];
+				case Generic::COLOR_MODE::CHAIN: color = residue->getChainPtr()->getColor(); break;
+
+				case Generic::COLOR_MODE::ATOM_PROTEIN: colorCarbon = true; [[fallthrough]];
+				case Generic::COLOR_MODE::PROTEIN: color = getColor(); break;
+
+				case Generic::COLOR_MODE::ATOM_CUSTOM: colorCarbon = true; [[fallthrough]];
+				case Generic::COLOR_MODE::CUSTOM: color = currentRepresentation->getColor(); break;
+
+				case Generic::COLOR_MODE::RESIDUE:
+					colorCarbon = false;
+					color		= residue->getColor();
+					break;
+				}
+
+				for ( uint i = residue->getIndexFirstAtom(); i < residue->getIndexFirstAtom() + residue->getAtomCount();
+					  i++ )
+				{
+					const Model::Atom * const atom = getAtom( i );
+
+					if ( atom == nullptr )
+						continue;
+
+					if ( colorCarbon && atom->getSymbol() != Model::Atom::SYMBOL::A_C )
+					{
+						_bufferAtomColors[ i ] = atom->getColor();
+					}
+					else
+					{
+						_bufferAtomColors[ i ] = color;
+					}
+				}
+			}
+
+			_buffer->setAtomColors( _bufferAtomColors );
 		}
 
 		void Molecule::_fillBufferAtomVisibilities()
 		{
 			_bufferAtomVisibilities.clear();
-			_bufferAtomVisibilities.resize( _atoms.size(), 1u );
-			for ( uint i = 0; i < uint( _atoms.size() ); ++i )
+
+			if ( isVisible() == false )
 			{
-				const Atom * const atom = _atoms[ i ];
+				_bufferAtomVisibilities.resize( _atoms.size(), 0u );
+			}
+			else
+			{
+				_bufferAtomVisibilities.resize( _atoms.size(), 1u );
 
-				if ( atom == nullptr )
-					continue;
+				for ( uint i = 0; i < uint( _atoms.size() ); ++i )
+				{
+					const Atom * const atom = _atoms[ i ];
 
-				// Solvent hidden.
-				if ( _showSolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
-				{
-					_bufferAtomVisibilities[ i ] = 0u;
-				}
-				// Ion hidden.
-				else if ( _showIon == false && atom->getType() == Atom::TYPE::ION )
-				{
-					_bufferAtomVisibilities[ i ] = 0u;
-				}
-				else if ( _showHydrogen == false && atom->getSymbol() == Atom::SYMBOL::A_H )
-				{
-					_bufferAtomVisibilities[ i ] = 0u;
-				}
-				else if ( _showWater == false
-						  && ( atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::HOH
-							   || atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::WAT ) )
-				{
-					_bufferAtomVisibilities[ i ] = 0u;
+					if ( atom == nullptr )
+					{
+						continue;
+					}
+
+					if ( atom->getChainPtr()->isVisible() == false )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					else if ( atom->getResiduePtr()->isVisible() == false )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					else if ( atom->isVisible() == false )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					// Solvent hidden.
+					else if ( _showSolvent == false && atom->getType() == Atom::TYPE::SOLVENT )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					// Ion hidden.
+					else if ( _showIon == false && atom->getType() == Atom::TYPE::ION )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					else if ( _showHydrogen == false && atom->getSymbol() == Atom::SYMBOL::A_H )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
+					else if ( _showWater == false
+							  && ( atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::HOH
+								   || atom->getResiduePtr()->getSymbol() == Model::Residue::SYMBOL::WAT ) )
+					{
+						_bufferAtomVisibilities[ i ] = 0u;
+					}
 				}
 			}
 
@@ -308,7 +396,7 @@ namespace VTX
 
 			_currentFrame = p_frameIdx;
 			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
-			//_secondaryStructure->setCurrentFrame();
+			_secondaryStructure->refresh( true );
 
 			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_FRAME_CHANGE ) );
 

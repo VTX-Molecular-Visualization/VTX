@@ -71,6 +71,8 @@ namespace VTX::UI::Widget::MainMenu
 		{
 			if ( _tmpStructure != nullptr )
 				delete _tmpStructure;
+
+			delete _gridLayout;
 		};
 
 		void localize() override;

@@ -31,9 +31,11 @@ namespace VTX::UI::Widget::Console
 		void localize() override;
 
 	  private:
-		CustomWidget::DockWindowMainWidget<QWidget> * _mainWidget  = nullptr;
-		QListWidget *								  _listWidget  = nullptr;
-		QPushButton *								  _clearWidget = nullptr;
+		inline static uint _SIZE = 50;
+
+		CustomWidget::DockWindowMainWidget<QListWidget> * _listWidget  = nullptr;
+		CustomWidget::DockWindowMainWidget<QWidget> *	  _mainWidget  = nullptr;
+		QPushButton *									  _clearWidget = nullptr;
 
 		void _clearConsoleAction();
 

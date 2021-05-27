@@ -478,6 +478,7 @@ namespace VTX::Action::Selection
 					}
 				}
 
+				molecule.refreshVisibilities();
 				molecule.computeRepresentationTargets();
 			}
 

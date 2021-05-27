@@ -24,9 +24,9 @@ namespace VTX::UI
 
 		if ( !filenames.isEmpty() )
 		{
-			std::vector<FilePath *> filepathes = std::vector<FilePath *>();
+			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( new FilePath( qstr.toStdString() ) );
+				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::Open( filepathes ) );
 		}
@@ -40,14 +40,14 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			FilePath * path = new FilePath( filename.toStdString() );
+			const FilePath path = FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Save( path ) );
 		}
 	}
 
 	void Dialog::createNewSessionDialog()
 	{
-		Worker::Callback callback = Worker::Callback(
+		Worker::CallbackThread callback = Worker::CallbackThread(
 			[]( const uint p_code )
 			{
 				if ( p_code )
@@ -57,7 +57,7 @@ namespace VTX::UI
 		leavingSessionDialog( callback );
 	}
 
-	void Dialog::leavingSessionDialog( Worker::Callback & p_callback )
+	void Dialog::leavingSessionDialog( Worker::CallbackThread & p_callback )
 	{
 		if ( VTXApp::get().getScene().isEmpty() && VTXApp::get().getCurrentPath().empty() )
 		{
@@ -76,7 +76,7 @@ namespace VTX::UI
 		{
 			const FilePath & filePath = VTXApp::get().getCurrentPath();
 
-			Worker::Callback * threadCallback = new Worker::Callback( p_callback );
+			Worker::CallbackThread * threadCallback = new Worker::CallbackThread( p_callback );
 
 			if ( filePath.empty() )
 			{
@@ -84,7 +84,7 @@ namespace VTX::UI
 			}
 			else
 			{
-				VTX_ACTION( new Action::Main::Save( new FilePath( filePath ), threadCallback ) );
+				VTX_ACTION( new Action::Main::Save( FilePath( filePath ), threadCallback ) );
 			}
 		}
 		else if ( res == QMessageBox::StandardButton::Discard )
@@ -97,7 +97,7 @@ namespace VTX::UI
 		}
 	}
 
-	void Dialog::openSaveSessionDialog( Worker::Callback * const p_callback )
+	void Dialog::openSaveSessionDialog( Worker::CallbackThread * const p_callback )
 	{
 		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
 															   "Save session",
@@ -106,7 +106,7 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			FilePath * path = new FilePath( filename.toStdString() );
+			const FilePath path = FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Save( path, p_callback ) );
 		}
 	}
@@ -119,7 +119,7 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			FilePath * path = new FilePath( filename.toStdString() );
+			const FilePath path = FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Open( path ) );
 		}
 	}
@@ -154,9 +154,9 @@ namespace VTX::UI
 
 		if ( !filenames.isEmpty() )
 		{
-			std::vector<FilePath *> filepathes = std::vector<FilePath *>();
+			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( new FilePath( qstr.toStdString() ) );
+				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::ImportRepresentationPreset( filepathes ) );
 		}
@@ -171,9 +171,9 @@ namespace VTX::UI
 
 		if ( !filenames.isEmpty() )
 		{
-			std::vector<FilePath *> filepathes = std::vector<FilePath *>();
+			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( new FilePath( qstr.toStdString() ) );
+				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::ImportRenderEffectPreset( filepathes ) );
 		}

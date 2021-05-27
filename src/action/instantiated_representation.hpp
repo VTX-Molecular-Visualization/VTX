@@ -57,14 +57,15 @@ namespace VTX::Action::InstantiatedRepresentation
 		{
 			for ( T * const representable : p_representables )
 			{
-				if (representable->hasCustomRepresentation())
+				if ( representable->hasCustomRepresentation() )
 				{
 					_instantiatedRepresentations.emplace( representable->getCustomRepresentation() );
 				}
 				else
 				{
 					Model::Representation::InstantiatedRepresentation * instantiatedRepresentation
-						= VTX::Representation::RepresentationManager::get().instantiateCopy( representable->getRepresentation(), *representable );
+						= VTX::Representation::RepresentationManager::get().instantiateCopy(
+							representable->getRepresentation(), *representable );
 
 					representable->computeAllRepresentationData();
 					_instantiatedRepresentations.emplace( instantiatedRepresentation );
@@ -85,8 +86,7 @@ namespace VTX::Action::InstantiatedRepresentation
 
 			for ( Model::Molecule * const molecule : molecules )
 			{
-				molecule->computeColorBuffer();
-				molecule->getSecondaryStructure().refreshColors();
+				molecule->refreshColors();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_UNIFORM_UPDATED;

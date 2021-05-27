@@ -1,6 +1,6 @@
 #include "float_field_draggable_widget.hpp"
-#include "util/math.hpp"
 #include "style.hpp"
+#include "util/math.hpp"
 #include <QHBoxLayout>
 #include <cmath>
 #include <iomanip>
@@ -122,6 +122,7 @@ namespace VTX::UI::Widget::CustomWidget
 			emit onValueChange( _value );
 		}
 	}
+
 	void FloatFieldDraggableWidget::_onInternalValueChanged( const float p_value )
 	{
 		if ( abs( p_value - _value ) > _epsilon )

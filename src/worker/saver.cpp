@@ -17,11 +17,11 @@ namespace VTX::Worker
 		Tool::Chrono chrono;
 
 		chrono.start();
-		emit logInfo( "Saving " + _path->filename().string() );
+		emit logInfo( "Saving " + _path.filename().string() );
 
-		const MODE mode = _getMode( *_path );
+		const MODE mode = _getMode( _path );
 
-		switch ( _getMode( *_path ) )
+		switch ( mode )
 		{
 		case MODE::UNKNOWN: emit logError( "Format not supported" ); break;
 		case MODE::MOLECULE: result = _saveMolecule(); break;
@@ -29,8 +29,6 @@ namespace VTX::Worker
 
 		default: emit logError( "Mode " + std::to_string( int( mode ) ) + "  not supported" ); break;
 		}
-
-		delete _path;
 
 		chrono.stop();
 		emit logInfo( "File treated in " + std::to_string( chrono.elapsedTime() ) + "s" );
@@ -53,7 +51,7 @@ namespace VTX::Worker
 				for ( const auto it : VTX::Selection::SelectionManager::get().getSelectionModel().getItems() )
 				{
 					Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( it.first );
-					writer->writeFile( _path->string(), molecule );
+					writer->writeFile( _path.string(), molecule );
 				}
 			}
 			// else export all the structures imported in the scene
@@ -62,7 +60,7 @@ namespace VTX::Worker
 				for ( const auto it : VTXApp::get().getScene().getMolecules() )
 				{
 					Model::Molecule * molecule = it.first;
-					writer->writeFile( _path->string(), *molecule );
+					writer->writeFile( _path.string(), *molecule );
 				}
 			}
 		}
@@ -86,7 +84,7 @@ namespace VTX::Worker
 		// Write.
 		try
 		{
-			writer->writeFile( _path->string(), VTXApp::get() );
+			writer->writeFile( _path.string(), VTXApp::get() );
 		}
 		catch ( const std::exception & p_e )
 		{

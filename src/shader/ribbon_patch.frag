@@ -2,9 +2,10 @@
 
 in TeOut
 {
-	vec3				viewPosition;
-	vec3				normal;
-	vec3				color;
+	vec3	  viewPosition;
+	vec3	  normal;
+	vec3	  color;
+	flat uint visibility;
 	flat uint selection;
 }
 teIn;
@@ -19,6 +20,12 @@ layout( location = 1 ) out vec4 outColor;
 
 void main()
 {
+	// TODO: redo it in tessellation shader.
+	if ( teIn.visibility == 0 )
+	{
+		discard;
+	}
+
 	vec3 normal = teIn.normal;
 	vec3 color	= teIn.color;
 	if ( dot( normal, teIn.viewPosition ) > 0.f )

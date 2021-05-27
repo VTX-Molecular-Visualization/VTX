@@ -54,7 +54,6 @@ namespace VTX::Action::Chain
 			for ( Model::Molecule * const molecule : molecules )
 			{
 				molecule->refreshColors();
-				molecule->getSecondaryStructure().refreshColors();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
@@ -94,6 +93,7 @@ namespace VTX::Action::Chain
 					}
 				}
 
+				chain.getMoleculePtr()->refreshVisibilities();
 				chain.getMoleculePtr()->computeRepresentationTargets();
 			}
 

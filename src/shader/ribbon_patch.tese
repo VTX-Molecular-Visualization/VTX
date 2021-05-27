@@ -15,20 +15,22 @@ uniform vec3 u_camPosition;
 
 in TcOut
 {
-	vec3				position;
-	vec3				direction;
-	vec3				normal;
-	flat vec3			color;
+	vec3	  position;
+	vec3	  direction;
+	vec3	  normal;
+	flat vec3 color;
 	flat uint ssType;
+	flat uint visibility;
 	flat uint selection;
 }
 tcIn[];
 
 out TeOut
 {
-	vec3				viewPosition;
-	vec3				normal;
-	vec3				color;
+	vec3	  viewPosition;
+	vec3	  normal;
+	vec3	  color;
+	flat uint visibility;
 	flat uint selection;
 }
 teOut;
@@ -131,7 +133,8 @@ void main()
 	teOut.normal	   = vec3( u_normalMatrix * vec4( normal, 1.f ) );
 	teOut.color		   = mix( tcIn[ 1 ].color, tcIn[ 2 ].color, gl_TessCoord.x );
 	// teOut.color =  tcIn[ 1 ].color;
-	teOut.selection = tcIn[ 1 ].selection;
+	teOut.selection	 = tcIn[ 1 ].selection;
+	teOut.visibility = tcIn[ 1 ].visibility;
 
 	gl_Position = u_projMatrix * vec4( teOut.viewPosition, 1.f );
 }

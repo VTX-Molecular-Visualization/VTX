@@ -184,9 +184,18 @@ namespace VTX
 			void removeRepresentation( const bool p_notify = true );
 			void removeChildrenRepresentations() const;
 
-			inline void refreshColors() { _fillBufferAtomColors(); }
-			void		refreshSelection( const Selection::MapChainIds * const );
-			void		refreshBondsBuffer();
+			inline void refreshColors()
+			{
+				_fillBufferAtomColors();
+				_secondaryStructure->refreshColors();
+			}
+			inline void refreshVisibilities()
+			{
+				_fillBufferAtomVisibilities();
+				_secondaryStructure->refreshVisibilities();
+			}
+			void refreshSelection( const Selection::MapChainIds * const );
+			void refreshBondsBuffer();
 
 			inline bool									   hasTrajectory() { return _atomPositionsFrames.size() >= 2; }
 			inline std::vector<AtomPositionsFrame> &	   getFrames() { return _atomPositionsFrames; }

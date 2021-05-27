@@ -18,7 +18,7 @@ namespace VTX::Worker
 
 		_library.clear( false );
 
-		std::filesystem::directory_iterator fileIterator = std::filesystem::directory_iterator( *_path );
+		std::filesystem::directory_iterator fileIterator = std::filesystem::directory_iterator( _path );
 
 		while ( !fileIterator._At_end() )
 		{
@@ -64,23 +64,23 @@ namespace VTX::Worker
 
 		chrono.start();
 
-		for ( const FilePath * path : _paths )
+		for ( const FilePath & path : _paths )
 		{
 			Model::Representation::Representation * const representation
 				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
 
 			try
 			{
-				reader->readFile( *path, *representation );
+				reader->readFile( path, *representation );
 				Model::Representation::RepresentationLibrary::get().addRepresentation( representation, true );
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load representation at " + path->string() + " : " + std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load representation at " + path.string() + " : " + std::string( p_e.what() ) );
 				MVC::MvcManager::get().deleteModel( representation );
 			}
 
-			VTX_INFO( "representation " + path->filename().string() + " loaded." );
+			VTX_INFO( "representation " + path.filename().string() + " loaded." );
 		}
 
 		delete reader;

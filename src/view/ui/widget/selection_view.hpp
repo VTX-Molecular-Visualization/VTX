@@ -61,7 +61,8 @@ namespace VTX::View::UI::Widget
 		std::map<Model::ID, QList<QTreeWidgetItem *> *> _mapLoadedItems
 			= std::map<Model::ID, QList<QTreeWidgetItem *> *>();
 
-		int _enableSignalCounter = 0;
+		int							 _enableSignalCounter = 0;
+		SelectionStyleItemDelegate * _styleItemDelegate	  = nullptr;
 
 		void _onItemClicked( const QTreeWidgetItem * const, const int ) const;
 		void _onItemDoubleClicked( const QTreeWidgetItem * const, const int ) const;

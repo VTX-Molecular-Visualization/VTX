@@ -5,7 +5,6 @@
 #pragma once
 #endif
 
-#include "tool/logger.hpp"
 #include <iostream>
 
 namespace VTX
@@ -62,9 +61,9 @@ namespace VTX
 
 				switch ( p_severity )
 				{
-				case GL_DEBUG_SEVERITY_HIGH: VTX_WARNING( message ); break;
+				case GL_DEBUG_SEVERITY_HIGH:
 				case GL_DEBUG_SEVERITY_MEDIUM:
-				case GL_DEBUG_SEVERITY_LOW: VTX_DEBUG( message ); break;
+				case GL_DEBUG_SEVERITY_LOW: std::cout << message << std::endl;
 				default: break;
 				}
 			}

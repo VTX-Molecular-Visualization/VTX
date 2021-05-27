@@ -104,8 +104,6 @@ namespace VTX
 			inline void						 setIndexFirstBond( const uint p_id ) { _indexFirstBond = p_id; };
 			inline uint						 getBondCount() const { return _bondCount; };
 			inline void						 setBondCount( const uint p_count ) { _bondCount = p_count; };
-			inline uint						 getIndiceFirstBond() const { return _indexFirstBond * 2; };
-			inline uint						 getBondIndiceCount() const { return _bondCount * 2; };
 			inline const std::vector<uint> & getIndexExtraBondStart() const { return _indexExtraBondStart; };
 			inline std::vector<uint> &		 getIndexExtraBondStart() { return _indexExtraBondStart; };
 			inline const std::vector<uint> & getIndexExtraBondEnd() const { return _indexExtraBondEnd; };
@@ -113,12 +111,12 @@ namespace VTX
 			inline uint						 getRealAtomCount() const { return _realAtomCount; };
 			void							 removeToAtoms( const uint p_atomIndex );
 			inline char						 getInsertionCode() const { return _insertionCode; }
-			inline void setInsertionCode( char p_insertionCode ) { _insertionCode = p_insertionCode; }
+			inline void		  setInsertionCode( char p_insertionCode ) { _insertionCode = p_insertionCode; }
 			inline bool		  hasInsertionCode() const { return _insertionCode != ' '; }
 			inline Atom::TYPE getAtomType() const { return _atomType; }
 			inline void		  setAtomType( const Atom::TYPE p_atomType ) { _atomType = p_atomType; }
 			inline const SecondaryStructure::TYPE getSecondaryStructure() const { return _secondaryStructure; };
-			inline void							   setSecondaryStructure( const SecondaryStructure::TYPE p_structure )
+			inline void							  setSecondaryStructure( const SecondaryStructure::TYPE p_structure )
 			{
 				_secondaryStructure = p_structure;
 			};
@@ -141,16 +139,16 @@ namespace VTX
 
 			SYMBOL _symbol = SYMBOL::UNKNOWN;
 
-			uint					  _indexFirstAtom	   = 0;
-			uint					  _atomCount		   = 0;
-			uint					  _realAtomCount	   = 0;
-			uint					  _indexFirstBond	   = 0;
-			uint					  _bondCount		   = 0;
-			std::vector<uint>		  _indexExtraBondStart = std::vector<uint>();
-			std::vector<uint>		  _indexExtraBondEnd   = std::vector<uint>();
-			Atom::TYPE				  _atomType = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
+			uint					 _indexFirstAtom	  = 0;
+			uint					 _atomCount			  = 0;
+			uint					 _realAtomCount		  = 0;
+			uint					 _indexFirstBond	  = 0;
+			uint					 _bondCount			  = 0;
+			std::vector<uint>		 _indexExtraBondStart = std::vector<uint>();
+			std::vector<uint>		 _indexExtraBondEnd	  = std::vector<uint>();
+			Atom::TYPE				 _atomType			 = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
 			SecondaryStructure::TYPE _secondaryStructure = SecondaryStructure::TYPE::COIL;
-			char			  _insertionCode = ' ';
+			char					 _insertionCode		 = ' ';
 
 			Residue() : BaseModel( ID::Model::MODEL_RESIDUE ) {}
 		};

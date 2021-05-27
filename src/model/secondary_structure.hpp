@@ -38,12 +38,15 @@ namespace VTX
 			};
 
 			inline Model::Molecule * const getMolecule() { return _molecule; }
-			inline void					   refreshColors() { _fillBufferColors(); }
 
 			void refresh( const bool p_refreshBuffers = true );
+			void refreshColors();
+			void refreshVisibilities();
 
-			const std::vector<uint> &	 getIndices() const { return _bufferIndices; }
-			const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToIndices; }
+			inline const std::vector<uint> &	getIndices() const { return _bufferIndices; }
+			inline const std::map<uint, uint> & getResidueToControlPointIndice() const { return _residueToIndices; }
+			inline std::map<uint, uint> &		getResidueToControlPointIndice() { return _residueToIndices; }
+
 			inline void refreshSelection( const Model::Selection::MapChainIds * const p_selection = nullptr )
 			{
 				_fillBufferSelections( p_selection );
@@ -61,7 +64,8 @@ namespace VTX
 			void _instantiate3DViews() override;
 
 		  private:
-			Model::Molecule * const _molecule;
+			Model::Molecule * const			  _molecule;
+			std::map<uint, std::vector<uint>> _data = std::map<uint, std::vector<uint>>(); // Chain to residues.
 
 			// Carbon alpha (Ca) positions.
 			// Add an extra float increasing along the backbone (to determine direction for two sided ss).
@@ -69,10 +73,11 @@ namespace VTX
 			// Ca -> O directions.
 			std::vector<Vec3f> _bufferCaODirections = std::vector<Vec3f>();
 			// Secondary structure types.
-			std::vector<uint>		_bufferSSTypes	  = std::vector<uint>();
-			std::vector<Color::Rgb> _bufferColors	  = std::vector<Color::Rgb>();
-			std::vector<uint>		_bufferSelections = std::vector<uint>();
-			std::vector<uint>		_bufferIndices	  = std::vector<uint>();
+			std::vector<uint>		_bufferSSTypes		= std::vector<uint>();
+			std::vector<Color::Rgb> _bufferColors		= std::vector<Color::Rgb>();
+			std::vector<uint>		_bufferVisibilities = std::vector<uint>();
+			std::vector<uint>		_bufferSelections	= std::vector<uint>();
+			std::vector<uint>		_bufferIndices		= std::vector<uint>();
 
 			std::map<uint, uint> _residueToIndices	 = std::map<uint, uint>();
 			std::map<uint, uint> _residueToPositions = std::map<uint, uint>();
@@ -80,7 +85,6 @@ namespace VTX
 			SecondaryStructure( Molecule * const );
 			~SecondaryStructure() = default;
 
-			void _fillBufferColors();
 			void _fillBufferSelections( const Model::Selection::MapChainIds * const = nullptr );
 			void _checkOrientationAndFlip( std::vector<Vec3f> & p_directions );
 		};

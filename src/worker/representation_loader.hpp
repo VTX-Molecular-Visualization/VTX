@@ -24,12 +24,11 @@ namespace VTX
 		{
 		  public:
 			explicit RepresentationLibraryLoader( Model::Representation::RepresentationLibrary & p_library ) :
-				RepresentationLibraryLoader( p_library,
-											 new FilePath( Util::Filesystem::getRepresentationLibraryDirectory() ) )
+				RepresentationLibraryLoader( p_library, Util::Filesystem::getRepresentationLibraryDirectory() )
 			{
 			}
 			explicit RepresentationLibraryLoader( Model::Representation::RepresentationLibrary & p_library,
-												  const FilePath * const						 p_path ) :
+												  const FilePath &								 p_path ) :
 				_library( p_library ),
 				_path( p_path )
 			{
@@ -41,7 +40,7 @@ namespace VTX
 			void _run() override;
 
 		  private:
-			const FilePath * const						   _path;
+			FilePath									   _path;
 			Model::Representation::RepresentationLibrary & _library;
 			bool										   _notify = true;
 		};
@@ -49,18 +48,14 @@ namespace VTX
 		class RepresentationLoader : public Worker::BaseWorker
 		{
 		  public:
-			explicit RepresentationLoader( const FilePath & p_paths ) { _paths.emplace_back( &p_paths ); }
-			explicit RepresentationLoader( const std::vector<const FilePath *> & p_paths )
-			{
-				for ( const FilePath * const path : p_paths )
-					_paths.emplace_back( path );
-			}
+			explicit RepresentationLoader( const FilePath & p_paths ) { _paths.emplace_back( p_paths ); }
+			explicit RepresentationLoader( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 
 		  protected:
 			void _run() override;
 
 		  private:
-			std::vector<const FilePath *> _paths = std::vector<const FilePath *>();
+			std::vector<FilePath> _paths = std::vector<FilePath>();
 		};
 
 	} // namespace Worker

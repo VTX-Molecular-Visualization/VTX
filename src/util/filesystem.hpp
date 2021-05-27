@@ -56,7 +56,7 @@ namespace VTX
 			static const FilePath LOGS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/logs" );
 			static const FilePath LIBRARIES_DIR = FilePath( EXECUTABLE_DIR.string() + "/libraries" );
 
-			static const FilePath LICENSE_PATH = FilePath( EXECUTABLE_DIR.string() + "/../../doc/license.txt" );
+			static const FilePath LICENSE_PATH = FilePath( EXECUTABLE_DIR.string() + "/license.txt" );
 
 			static const FilePath DATA_DIR				  = "../data";
 			static const FilePath SHADERS_DIR_SRC		  = "../src/shader";
@@ -77,12 +77,12 @@ namespace VTX
 			static const FilePath RENDER_EFFECT_PRESET_LIBRARY_DIR
 				= FilePath( LIBRARIES_DIR.string() + "/render_effects" );
 
-			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/../setting.json" );
+			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/setting.json" );
 			static const FilePath FFMPEG_EXE_FILE	= FilePath( "bin/ffmpeg.exe" );
 
-			inline FilePath * const getDataPathPtr( const std::string & p_filename )
+			inline const FilePath getDataPath( const std::string & p_filename )
 			{
-				return new FilePath( DATA_DIR.string() + "/" + p_filename );
+				return FilePath( DATA_DIR.string() + "/" + p_filename );
 			}
 
 			inline const FilePath getShadersPath( const std::string & p_filename )

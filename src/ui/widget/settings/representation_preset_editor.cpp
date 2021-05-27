@@ -20,6 +20,14 @@ namespace VTX::UI::Widget::Settings
 	{
 	}
 
+	RepresentationPresetEditor::~RepresentationPresetEditor()
+	{
+		for ( const std::pair<PARAMETER, ParameterLine *> & pair : _parameterWidgets )
+		{
+			delete pair.second;
+		}
+	}
+
 	void RepresentationPresetEditor::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
@@ -351,6 +359,11 @@ namespace VTX::UI::Widget::Settings
 	{
 		_layout->addWidget( p_widget, _itemCount, 0, 1, 2, Qt::AlignmentFlag::AlignCenter );
 
+		if ( _parameterWidgets[ p_parameter ] != nullptr )
+		{
+			delete _parameterWidgets[ p_parameter ];
+		}
+
 		ParameterLine * const parameter	 = new ParameterLine( nullptr, p_widget );
 		_parameterWidgets[ p_parameter ] = parameter;
 
@@ -366,6 +379,11 @@ namespace VTX::UI::Widget::Settings
 
 		_layout->addWidget( label, _itemCount, 0 );
 		_layout->addWidget( p_widget, _itemCount, 1 );
+
+		if ( _parameterWidgets[ p_parameter ] != nullptr )
+		{
+			delete _parameterWidgets[ p_parameter ];
+		}
 
 		ParameterLine * const parameter	 = new ParameterLine( label, p_widget );
 		_parameterWidgets[ p_parameter ] = parameter;

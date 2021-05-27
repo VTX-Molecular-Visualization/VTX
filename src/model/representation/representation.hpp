@@ -41,10 +41,10 @@ namespace VTX::Model::Representation
 	  protected:
 		Representation( const Generic::REPRESENTATION & p_type );
 		Representation();
+		~Representation();
 
 	  private:
 		std::string _name;
-		std::string _iconPath;
 		Color::Rgb	_color;
 		bool		_quickAccess;
 

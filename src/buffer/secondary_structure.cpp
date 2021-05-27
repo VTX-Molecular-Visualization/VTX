@@ -8,6 +8,7 @@ namespace VTX::Buffer
 		_vboDirections.create();
 		_vboSecondaryStructures.create();
 		_vboColors.create();
+		_vboVisibilities.create();
 		_vboSelections.create();
 		_ibo.create();
 
@@ -50,6 +51,15 @@ namespace VTX::Buffer
 		_vao.setAttributeFormat( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, 3, Renderer::GL::VertexArray::Type::FLOAT );
 		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR, ATTRIBUTE_LOCATION::CONTROL_POINT_COLOR );
 
+		// Control point visibility.
+		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY );
+		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY, _vboVisibilities, sizeof( uint ) );
+		/// TODO: MANDATORY: change namespace hierarchy
+		_vao.setAttributeFormat(
+			ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY, 1, Renderer::GL::VertexArray::Type::UNSIGNED_INT );
+		_vao.setAttributeBinding( ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY,
+								  ATTRIBUTE_LOCATION::CONTROL_POINT_VISIBILITY );
+
 		// Control point selection.
 		_vao.enableAttribute( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION );
 		_vao.setVertexBuffer( ATTRIBUTE_LOCATION::CONTROL_POINT_SELECTION, _vboSelections, sizeof( uint ) );
@@ -81,6 +91,11 @@ namespace VTX::Buffer
 	void SecondaryStructure::setControlPointColors( const std::vector<Color::Rgb> & p_colors )
 	{
 		_vboColors.set<Color::Rgb>( p_colors, Renderer::GL::Buffer::Usage::STATIC_DRAW );
+	}
+
+	void SecondaryStructure::setControlPointVisibilities( const std::vector<uint> & p_visibilities )
+	{
+		_vboVisibilities.set<uint>( p_visibilities, Renderer::GL::Buffer::Usage::STATIC_DRAW );
 	}
 
 	void SecondaryStructure::setControlPointSelections( const std::vector<uint> & p_selections )

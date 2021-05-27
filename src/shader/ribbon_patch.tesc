@@ -11,21 +11,23 @@ uniform vec3 u_camPosition;
 
 in VsOut
 {
-	vec4				position;
-	vec3				direction;
-	flat vec3			color;
+	vec4	  position;
+	vec3	  direction;
+	flat vec3 color;
 	flat uint ssType;
+	flat uint visibility;
 	flat uint selection;
 }
 vsIn[];
 
 out TcOut
 {
-	vec3				position;
-	vec3				direction;
-	vec3				normal;
-	flat vec3			color;
+	vec3	  position;
+	vec3	  direction;
+	vec3	  normal;
+	flat vec3 color;
 	flat uint ssType;
+	flat uint visibility;
 	flat uint selection;
 }
 tcOut[];
@@ -76,11 +78,12 @@ float computeTessellationFactor( vec3 p_point )
 void main()
 {
 	// Transmit data.
-	tcOut[ gl_InvocationID ].position  = vsIn[ gl_InvocationID ].position.xyz;
-	tcOut[ gl_InvocationID ].direction = vsIn[ gl_InvocationID ].direction;
-	tcOut[ gl_InvocationID ].ssType	   = vsIn[ gl_InvocationID ].ssType;
-	tcOut[ gl_InvocationID ].color	   = vsIn[ gl_InvocationID ].color;
-	tcOut[ gl_InvocationID ].selection = vsIn[ gl_InvocationID ].selection;
+	tcOut[ gl_InvocationID ].position	= vsIn[ gl_InvocationID ].position.xyz;
+	tcOut[ gl_InvocationID ].direction	= vsIn[ gl_InvocationID ].direction;
+	tcOut[ gl_InvocationID ].ssType		= vsIn[ gl_InvocationID ].ssType;
+	tcOut[ gl_InvocationID ].visibility = vsIn[ gl_InvocationID ].visibility;
+	tcOut[ gl_InvocationID ].color		= vsIn[ gl_InvocationID ].color;
+	tcOut[ gl_InvocationID ].selection	= vsIn[ gl_InvocationID ].selection;
 
 	// Normals are known only for the two center controls points.
 	if ( gl_InvocationID == 1 || gl_InvocationID == 2 )
