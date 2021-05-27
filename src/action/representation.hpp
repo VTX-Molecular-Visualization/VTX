@@ -68,6 +68,8 @@ namespace VTX::Action::Representation
 
 			for ( const Model::Representation::Representation * const representation : _representations )
 			{
+				// Don't think it's a good idea to run a thread at app exit.
+				/*
 				if ( _async )
 				{
 					Worker::RepresentationSaverThread * librarySaver
@@ -77,6 +79,7 @@ namespace VTX::Action::Representation
 					VTX_WORKER( librarySaver, callback );
 				}
 				else
+				*/
 				{
 					FilePath path = Util::Filesystem::getRepresentationPath( representation->getName() );
 					Util::Filesystem::generateUniqueFileName( path );

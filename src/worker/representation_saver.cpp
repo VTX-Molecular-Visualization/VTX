@@ -9,6 +9,7 @@
 
 namespace VTX::Worker
 {
+	/*
 	uint RepresentationSaverThread::_run()
 	{
 		bool		 result = 1;
@@ -40,6 +41,8 @@ namespace VTX::Worker
 
 		return result;
 	}
+	*/
+
 	void RepresentationSaver::_run()
 	{
 		Tool::Chrono chrono;

@@ -18,6 +18,7 @@ namespace VTX
 
 	namespace Worker
 	{
+		/*
 		class RepresentationSaverThread : public Worker::BaseThread
 		{
 			Q_OBJECT
@@ -34,6 +35,8 @@ namespace VTX
 		  private:
 			const Model::Representation::Representation * const _representation;
 		};
+		*/
+
 		class RepresentationSaver : public Worker::BaseWorker
 		{
 		  public:

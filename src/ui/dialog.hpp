@@ -23,10 +23,10 @@ namespace VTX::UI
 
 		static void createNewSessionDialog();
 
-		static void leavingSessionDialog( Worker::Callback & p_callbackSucceed );
+		static void leavingSessionDialog( Worker::CallbackThread & p_callbackSucceed );
 
 		static void openLoadSessionDialog();
-		static void openSaveSessionDialog( Worker::Callback * const p_callback = nullptr );
+		static void openSaveSessionDialog( Worker::CallbackThread * const p_callback = nullptr );
 
 		static void importRepresentationPresetDialog();
 		static void importRenderEffectPresetDialog();

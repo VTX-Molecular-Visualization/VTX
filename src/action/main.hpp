@@ -89,7 +89,7 @@ namespace VTX::Action::Main
 
 				LoadSceneClass * const sceneClass = new LoadSceneClass( _paths );
 
-				Worker::Callback callback = Worker::Callback(
+				Worker::CallbackThread callback = Worker::CallbackThread(
 					[ sceneClass ]( const uint p_code )
 					{
 						if ( p_code )
@@ -118,7 +118,7 @@ namespace VTX::Action::Main
 					return;
 				}
 
-				Worker::Callback * callback = new Worker::Callback(
+				Worker::CallbackThread * callback = new Worker::CallbackThread(
 					[ loader ]( const uint p_code )
 					{
 						for ( Model::Molecule * const molecule : loader->getMolecules() )
@@ -142,7 +142,7 @@ namespace VTX::Action::Main
 						VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;
 					} );
 
-				VTX_WORKER( loader, callback );
+				VTX_THREAD( loader, callback );
 			}
 		}
 
@@ -166,7 +166,7 @@ namespace VTX::Action::Main
 	{
 	  public:
 		explicit Save( FilePath * p_path ) : _path( p_path ), _callback( nullptr ) {}
-		explicit Save( FilePath * p_path, Worker::Callback * const p_callback ) :
+		explicit Save( FilePath * p_path, Worker::CallbackThread * const p_callback ) :
 			_path( p_path ), _callback( p_callback )
 		{
 		}
@@ -183,7 +183,7 @@ namespace VTX::Action::Main
 				return;
 			}
 
-			VTX_WORKER( saver, _callback );
+			VTX_THREAD( saver, _callback );
 
 			if ( _path->extension() == ".vtx" )
 				VTXApp::get().setCurrentPath( *_path, true );
@@ -192,8 +192,8 @@ namespace VTX::Action::Main
 		}
 
 	  private:
-		FilePath * const		 _path;
-		Worker::Callback * const _callback;
+		FilePath * const			   _path;
+		Worker::CallbackThread * const _callback;
 	};
 
 	class ImportRepresentationPreset : public BaseAction

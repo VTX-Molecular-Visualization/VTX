@@ -20,7 +20,11 @@ namespace VTX
 {
 	namespace Worker
 	{
-		using Callback = std::function<void( const uint )>;
+		template<typename T>
+		using Callback = std::function<void( T )>;
+
+		using CallbackThread = Callback<uint>;
+		using CallbackWorker = Callback<void>;
 
 		class WorkerManager final : public QObject
 		{
@@ -33,10 +37,13 @@ namespace VTX
 				return instance;
 			}
 
-			void run( BaseThread * p_worker, Callback * const p_callback )
+			void run( BaseThread * p_worker, CallbackThread * const p_callback = nullptr )
 			{
 				p_worker->setParent( this );
-				_workers.emplace( p_worker, p_callback );
+				if ( p_callback != nullptr )
+				{
+					_workers.emplace( p_worker, p_callback );
+				}
 				connect( p_worker, &Worker::BaseThread::resultReady, this, &WorkerManager::_resultReady );
 				connect( p_worker, &Worker::BaseThread::updateProgress, this, &WorkerManager::_updateProgress );
 				connect( p_worker, &Worker::BaseThread::logInfo, this, &WorkerManager::_logInfo );
@@ -48,7 +55,16 @@ namespace VTX
 				p_worker->start();
 			}
 
-			void run( BaseWorker * p_worker ) { p_worker->run(); }
+			void run( BaseWorker * p_worker, CallbackWorker * const p_callback = nullptr )
+			{
+				p_worker->run();
+				if ( p_callback != nullptr )
+				{
+					( *p_callback )();
+					delete p_callback;
+				}
+				delete p_worker;
+			}
 
 		  private:
 			WorkerManager() { qRegisterMetaType<std::string>(); }
@@ -57,7 +73,7 @@ namespace VTX
 			~WorkerManager()
 			{
 				// Stop and delete all running threads.
-				for ( const std::pair<BaseThread *, Callback *> & pair : _workers )
+				for ( const std::pair<BaseThread *, CallbackThread *> & pair : _workers )
 				{
 					pair.first->quit();
 					pair.first->wait();
@@ -67,7 +83,7 @@ namespace VTX
 				}
 			}
 
-			std::map<BaseThread *, Callback *> _workers = std::map<BaseThread *, Callback *>();
+			std::map<BaseThread *, CallbackThread *> _workers = std::map<BaseThread *, CallbackThread *>();
 
 		  private slots:
 			void _resultReady( BaseThread * p_worker, const uint p_returnCode )
@@ -77,15 +93,14 @@ namespace VTX
 				assert( p_worker != nullptr );
 
 				// Call callback and delete all.
-				Callback * callback = _workers.at( p_worker );
-
-				if ( callback != nullptr )
+				if ( _workers.find( p_worker ) != _workers.end() )
 				{
+					CallbackThread * const callback = _workers[ p_worker ];
 					( *callback )( p_returnCode );
+					_workers.erase( _workers.find( p_worker ) );
 					delete callback;
 				}
 
-				_workers.erase( _workers.find( p_worker ) );
 				delete p_worker;
 			}
 
@@ -101,11 +116,16 @@ namespace VTX
 		};
 	} // namespace Worker
 
-	inline void VTX_WORKER( VTX::Worker::BaseThread * const p_worker, Worker::Callback * const p_callback )
+	inline void VTX_THREAD( VTX::Worker::BaseThread * const p_thread,
+							Worker::CallbackThread * const	p_callback = nullptr )
+	{
+		Worker::WorkerManager::get().run( p_thread, p_callback );
+	}
+	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker,
+							Worker::CallbackWorker * const	p_callback = nullptr )
 	{
 		Worker::WorkerManager::get().run( p_worker, p_callback );
 	}
-	inline void VTX_WORKER( VTX::Worker::BaseWorker * const p_worker ) { Worker::WorkerManager::get().run( p_worker ); }
-	inline void VTX_ASYNC( const std::function<void( void )> & p_function ) { std::thread( p_function ).detach(); }
+	// inline void VTX_ASYNC( const std::function<void( void )> & p_function ) { std::thread( p_function ).detach(); }
 } // namespace VTX
 #endif

@@ -47,7 +47,7 @@ namespace VTX::UI
 
 	void Dialog::createNewSessionDialog()
 	{
-		Worker::Callback callback = Worker::Callback(
+		Worker::CallbackThread callback = Worker::CallbackThread(
 			[]( const uint p_code )
 			{
 				if ( p_code )
@@ -57,7 +57,7 @@ namespace VTX::UI
 		leavingSessionDialog( callback );
 	}
 
-	void Dialog::leavingSessionDialog( Worker::Callback & p_callback )
+	void Dialog::leavingSessionDialog( Worker::CallbackThread & p_callback )
 	{
 		if ( VTXApp::get().getScene().isEmpty() && VTXApp::get().getCurrentPath().empty() )
 		{
@@ -76,7 +76,7 @@ namespace VTX::UI
 		{
 			const FilePath & filePath = VTXApp::get().getCurrentPath();
 
-			Worker::Callback * threadCallback = new Worker::Callback( p_callback );
+			Worker::CallbackThread * threadCallback = new Worker::CallbackThread( p_callback );
 
 			if ( filePath.empty() )
 			{
@@ -97,7 +97,7 @@ namespace VTX::UI
 		}
 	}
 
-	void Dialog::openSaveSessionDialog( Worker::Callback * const p_callback )
+	void Dialog::openSaveSessionDialog( Worker::CallbackThread * const p_callback )
 	{
 		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
 															   "Save session",
