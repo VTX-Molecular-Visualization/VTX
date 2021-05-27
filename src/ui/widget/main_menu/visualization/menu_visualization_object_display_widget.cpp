@@ -38,21 +38,21 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		// Selection focus
 		_showWater
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleWatersVisibilityButton" );
-		_showWater->setData( "Hide Waters", ":/sprite/hide_water_icon.png", Qt::Orientation::Horizontal );
+		_showWater->setData( "Waters", ":/sprite/hide_water_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_showWater, 0 );
 
 		_showHydrogens
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleHydrogensVisibilityButton" );
-		_showHydrogens->setData( "Hide Hydrogens", ":/sprite/hide_hydrogen_icon.png", Qt::Orientation::Horizontal );
+		_showHydrogens->setData( "Hydrogens", ":/sprite/hide_hydrogen_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_showHydrogens, 0 );
 
 		_showSolvent
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleSolventVisibilityButton" );
-		_showSolvent->setData( "Hide Solvents", ":/sprite/hide_solvent_icon.png", Qt::Orientation::Horizontal );
+		_showSolvent->setData( "Solvents", ":/sprite/hide_solvent_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_showSolvent, 1 );
 
 		_showIon = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleIonVisibilityButton" );
-		_showIon->setData( "Hide Ions", ":/sprite/show_solvent_icon.png", Qt::Orientation::Horizontal );
+		_showIon->setData( "Ions", ":/sprite/show_solvent_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_showIon, 1 );
 
 		_refreshButtons();
@@ -144,40 +144,28 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	{
 		_showWater->setEnabled( p_active );
 
-		const QString buttonName = p_show ? "Show Waters" : "Hide Waters";
-		const QString iconPath	 = p_show ? ":/sprite/show_water_icon.png" : ":/sprite/hide_water_icon.png";
-
-		_showWater->setName( buttonName );
+		const QString iconPath = p_show ? ":/sprite/show_water_icon.png" : ":/sprite/hide_water_icon.png";
 		_showWater->setIcon( QIcon( iconPath ) );
 	}
 	void MenuVisualizationObjectDisplayWidget::_displaySolventButton( const bool p_active, const bool p_show )
 	{
 		_showSolvent->setEnabled( p_active );
 
-		const QString buttonName = p_show ? "Show Solvents" : "Hide Solvents";
-		const QString iconPath	 = p_show ? ":/sprite/show_solvent_icon.png" : ":/sprite/hide_solvent_icon.png";
-
-		_showSolvent->setName( buttonName );
+		const QString iconPath = p_show ? ":/sprite/show_solvent_icon.png" : ":/sprite/hide_solvent_icon.png";
 		_showSolvent->setIcon( QIcon( iconPath ) );
 	}
 	void MenuVisualizationObjectDisplayWidget::_displayHydrogenButton( const bool p_active, const bool p_show )
 	{
 		_showHydrogens->setEnabled( p_active );
 
-		const QString buttonName = p_show ? "Show Hydrogens" : "Hide Hydrogens";
-		const QString iconPath	 = p_show ? ":/sprite/show_hydrogen_icon.png" : ":/sprite/hide_hydrogen_icon.png";
-
-		_showHydrogens->setName( buttonName );
+		const QString iconPath = p_show ? ":/sprite/show_hydrogen_icon.png" : ":/sprite/hide_hydrogen_icon.png";
 		_showHydrogens->setIcon( QIcon( iconPath ) );
 	}
 	void MenuVisualizationObjectDisplayWidget::_displayIonButton( const bool p_active, const bool p_show )
 	{
 		_showIon->setEnabled( p_active );
 
-		const QString buttonName = p_show ? "Show Ions" : "Hide Ions";
-		const QString iconPath	 = p_show ? ":/sprite/show_ion_icon.png" : ":/sprite/hide_ion_icon.png";
-
-		_showIon->setName( buttonName );
+		const QString iconPath = p_show ? ":/sprite/show_ion_icon.png" : ":/sprite/hide_ion_icon.png";
 		_showIon->setIcon( QIcon( iconPath ) );
 	}
 
