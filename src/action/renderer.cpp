@@ -28,9 +28,10 @@ namespace VTX::Action::Renderer
 			{
 				Worker::RenderEffectPresetSaverThread * librarySaver
 					= new Worker::RenderEffectPresetSaverThread( renderEffect );
-				Worker::Callback * callback = new Worker::Callback( [ librarySaver ]( const uint p_code ) {} );
+				Worker::CallbackThread * callback
+					= new Worker::CallbackThread( [ librarySaver ]( const uint p_code ) {} );
 
-				VTX_WORKER( librarySaver, callback );
+				VTX_THREAD( librarySaver, callback );
 			}
 			else
 			{

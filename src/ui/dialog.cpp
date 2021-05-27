@@ -24,9 +24,9 @@ namespace VTX::UI
 
 		if ( !filenames.isEmpty() )
 		{
-			std::vector<FilePath *> filepathes = std::vector<FilePath *>();
+			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( new FilePath( qstr.toStdString() ) );
+				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::Open( filepathes ) );
 		}
@@ -40,7 +40,7 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			FilePath * path = new FilePath( filename.toStdString() );
+			const FilePath path = FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Save( path ) );
 		}
 	}
@@ -84,7 +84,7 @@ namespace VTX::UI
 			}
 			else
 			{
-				VTX_ACTION( new Action::Main::Save( new FilePath( filePath ), threadCallback ) );
+				VTX_ACTION( new Action::Main::Save( FilePath( filePath ), threadCallback ) );
 			}
 		}
 		else if ( res == QMessageBox::StandardButton::Discard )
@@ -106,7 +106,7 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			FilePath * path = new FilePath( filename.toStdString() );
+			const FilePath path = FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Save( path, p_callback ) );
 		}
 	}
@@ -119,7 +119,7 @@ namespace VTX::UI
 
 		if ( !filename.isNull() )
 		{
-			FilePath * path = new FilePath( filename.toStdString() );
+			const FilePath path = FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Open( path ) );
 		}
 	}
@@ -154,9 +154,9 @@ namespace VTX::UI
 
 		if ( !filenames.isEmpty() )
 		{
-			std::vector<FilePath *> filepathes = std::vector<FilePath *>();
+			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( new FilePath( qstr.toStdString() ) );
+				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::ImportRepresentationPreset( filepathes ) );
 		}
@@ -171,9 +171,9 @@ namespace VTX::UI
 
 		if ( !filenames.isEmpty() )
 		{
-			std::vector<FilePath *> filepathes = std::vector<FilePath *>();
+			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
-				filepathes.emplace_back( new FilePath( qstr.toStdString() ) );
+				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
 
 			VTX_ACTION( new Action::Main::ImportRenderEffectPreset( filepathes ) );
 		}

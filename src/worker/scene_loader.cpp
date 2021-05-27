@@ -22,24 +22,22 @@ namespace VTX
 		{
 			Tool::Chrono chrono;
 
-			for ( const FilePath * path : _paths )
+			for ( const FilePath & path : _paths )
 			{
 				chrono.start();
-				VTX_INFO( "Loading " + path->filename().string() );
+				VTX_INFO( "Loading " + path.filename().string() );
 
 				IO::Reader::SerializedObject<VTXApp> * const reader = new IO::Reader::SerializedObject<VTXApp>();
 
 				try
 				{
-					reader->readFile( *path, VTXApp::get() );
+					reader->readFile( path, VTXApp::get() );
 					VTX_INFO( "App loaded " );
 				}
 				catch ( const std::exception & p_e )
 				{
 					VTX_ERROR( "Cannot load app: " + std::string( p_e.what() ) );
 				}
-
-				_scene = &VTXApp::get().getScene();
 
 				delete reader;
 

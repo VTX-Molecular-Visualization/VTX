@@ -80,9 +80,9 @@ namespace VTX
 			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/setting.json" );
 			static const FilePath FFMPEG_EXE_FILE	= FilePath( "bin/ffmpeg.exe" );
 
-			inline FilePath * const getDataPathPtr( const std::string & p_filename )
+			inline const FilePath getDataPath( const std::string & p_filename )
 			{
-				return new FilePath( DATA_DIR.string() + "/" + p_filename );
+				return FilePath( DATA_DIR.string() + "/" + p_filename );
 			}
 
 			inline const FilePath getShadersPath( const std::string & p_filename )

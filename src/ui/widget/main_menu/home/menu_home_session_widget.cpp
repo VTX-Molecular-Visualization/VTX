@@ -75,11 +75,11 @@ namespace VTX::UI::Widget::MainMenu::Home
 
 		int actionIndex = 0;
 
-		for ( const VTX::FilePath * const recentFile : Setting::recentLoadingPath )
+		for ( const VTX::FilePath & recentFile : Setting::recentLoadingPath )
 		{
 			CustomWidget::IndexedAction * const action
 				= new CustomWidget::IndexedAction( actionIndex, _recentSessionMenu );
-			const QString path = QString::fromStdString( recentFile->string() );
+			const QString path = QString::fromStdString( recentFile.string() );
 			action->setText( path );
 
 			connect( action,
@@ -106,15 +106,21 @@ namespace VTX::UI::Widget::MainMenu::Home
 		}
 		else
 		{
-			VTX_ACTION( new Action::Main::Save( new FilePath( filePath ) ) );
+			VTX_ACTION( new Action::Main::Save( FilePath( filePath ) ) );
 		}
 	}
 	void MenuHomeSessionWidget::_saveAsSession() const { Dialog::openSaveSessionDialog(); }
 
 	void MenuHomeSessionWidget::_loadRecentSession( const int & p_ptrSessionIndex ) const
 	{
-		FilePath * const path = new FilePath( *Setting::getRecentLoadingPath( p_ptrSessionIndex ) );
-		VTX_ACTION( new Action::Main::Open( path ) );
+		const FilePath * const recentPath = Setting::getRecentLoadingPath( p_ptrSessionIndex );
+
+		if ( recentPath == nullptr )
+		{
+			return;
+		}
+
+		VTX_ACTION( new Action::Main::Open( *recentPath ) );
 	}
 
 } // namespace VTX::UI::Widget::MainMenu::Home
