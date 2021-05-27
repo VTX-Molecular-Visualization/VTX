@@ -17,6 +17,7 @@ namespace VTX::Model::Representation
 		const int randomColorIndex = getId() % int( Model::Residue::SYMBOL::COUNT );
 		_color					   = Model::Residue::SYMBOL_COLOR[ randomColorIndex ];
 	}
+
 	Representation::Representation( const Generic::REPRESENTATION & p_type ) :
 		BaseModel( ID::Model::MODEL_REPRESENTATION )
 	{
@@ -24,28 +25,39 @@ namespace VTX::Model::Representation
 
 		const int randomColorIndex = getId() % int( Model::Residue::SYMBOL::COUNT );
 		_color					   = Model::Residue::SYMBOL_COLOR[ randomColorIndex ];
-	};
+	}
+
+	Representation::~Representation()
+	{
+		if ( _data != nullptr )
+		{
+			delete _data;
+		}
+	}
 
 	void Representation::setName( const std::string & p_name )
 	{
 		_name = std::string( p_name );
 		_notifyViews( new Event::VTXEvent( Event::Model::DISPLAY_NAME_CHANGE ) );
-	};
+	}
+
 	void Representation::setIconPath( const std::string & p_iconPath )
 	{
 		_iconPath = std::string( p_iconPath );
 		_notifyDataChanged();
-	};
+	}
+
 	void Representation::setColor( const Color::Rgb & p_color )
 	{
 		_color = p_color;
 		_notifyDataChanged();
 	}
+
 	void Representation::setQuickAccess( const bool p_quickAccess )
 	{
 		_quickAccess = p_quickAccess;
 		_notifyViews( new Event::VTXEvent( Event::Model::QUICK_ACCESS_CHANGE ) );
-	};
+	}
 
 	void Representation::changeRepresentationType( const Generic::REPRESENTATION & p_newType, const bool p_notify )
 	{

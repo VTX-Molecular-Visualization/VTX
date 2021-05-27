@@ -12,6 +12,14 @@ namespace VTX::UI::Widget::Settings
 {
 	SettingWidget::SettingWidget( QWidget * const p_parent ) : BaseManualWidget( p_parent ) {}
 
+	SettingWidget::~SettingWidget()
+	{
+		for ( const SettingMenuItem * const menu : _menus )
+		{
+			delete menu;
+		}
+	}
+
 	void SettingWidget::receiveEvent( const Event::VTXEvent & p_event ) {}
 
 	void SettingWidget::_setupUi( const QString & p_name )

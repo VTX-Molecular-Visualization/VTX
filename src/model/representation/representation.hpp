@@ -44,6 +44,7 @@ namespace VTX::Model::Representation
 	  protected:
 		Representation( const Generic::REPRESENTATION & p_type );
 		Representation();
+		~Representation();
 
 	  private:
 		std::string _name;
