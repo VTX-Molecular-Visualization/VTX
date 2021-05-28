@@ -64,7 +64,8 @@ namespace VTX::UI::Widget::MainMenu
 
 	void MenuToolBlockWidget::reset()
 	{
-		_gridLayout->removeWidget( _title );
+		for ( int i = 0; i < _gridLayout->columnCount(); i++ )
+			_gridLayout->setColumnMinimumWidth( i, 0 );
 
 		while ( _gridLayout->count() > 0 )
 		{
