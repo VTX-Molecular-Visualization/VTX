@@ -131,6 +131,9 @@ namespace VTX
 						case Generic::SECONDARY_STRUCTURE_COLOR_MODE::PROTEIN:
 							colors.emplace_back( residue->getMoleculePtr()->getColor() );
 							break;
+						case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CUSTOM:
+							colors.emplace_back( residue->getRepresentation()->getColor() );
+							break;
 						case Generic::SECONDARY_STRUCTURE_COLOR_MODE::CHAIN:
 							colors.emplace_back( residue->getChainPtr()->getColor() );
 							break;

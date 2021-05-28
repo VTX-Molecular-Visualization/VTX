@@ -317,6 +317,7 @@ namespace VTX
 
 					if ( atom == nullptr )
 					{
+						_bufferAtomVisibilities[ i ] = 0u;
 						continue;
 					}
 

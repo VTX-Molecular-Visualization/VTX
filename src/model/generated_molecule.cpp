@@ -377,7 +377,7 @@ namespace VTX::Model
 		VTX_INFO( "Extract done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 
 		molecule.forceNotifyDataChanged();
-		molecule.refreshBondsBuffer();
+		molecule.refreshStructure();
 	};
 
 	void GeneratedMolecule::_applyExtraBondsData()
@@ -427,7 +427,7 @@ namespace VTX::Model
 		VTX_INFO( "Extract done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 
 		molecule.forceNotifyDataChanged();
-		molecule.refreshBondsBuffer();
+		molecule.refreshStructure();
 	}
 	void GeneratedMolecule::extractResidue( const Model::Residue & p_residue )
 	{
@@ -455,7 +455,7 @@ namespace VTX::Model
 		VTX_INFO( "Extract done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 
 		molecule.forceNotifyDataChanged();
-		molecule.refreshBondsBuffer();
+		molecule.refreshStructure();
 	}
 	void GeneratedMolecule::extractAtom( const Model::Atom & p_atom )
 	{
@@ -480,7 +480,7 @@ namespace VTX::Model
 		_validateBuffers();
 
 		molecule.forceNotifyDataChanged();
-		molecule.refreshBondsBuffer();
+		molecule.refreshStructure();
 
 		chrono.stop();
 

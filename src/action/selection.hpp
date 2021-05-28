@@ -30,6 +30,29 @@
 
 namespace VTX::Action::Selection
 {
+	class SelectAll : public BaseAction
+	{
+	  public:
+		explicit SelectAll() {}
+
+		virtual void execute() override
+		{
+			const std::map<Model::Molecule *, float> & sceneMolecules = VTXApp::get().getScene().getMolecules();
+			std::vector<Model::Molecule *>			   molecules	  = std::vector<Model::Molecule *>();
+			molecules.resize( sceneMolecules.size() );
+			int counter = 0;
+
+			for ( const std::pair<Model::Molecule *, float> & sceneMolecule : sceneMolecules )
+			{
+				molecules[ counter ] = sceneMolecule.first;
+				counter++;
+			}
+
+			VTX::Selection::SelectionManager::get().getSelectionModel().selectMolecules( molecules );
+
+			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+		}
+	};
 	class SelectModels : public BaseAction
 	{
 	  public:
@@ -730,6 +753,9 @@ namespace VTX::Action::Selection
 			}
 
 			VTX::Selection::SelectionManager::get().getSelectionModel().clear();
+
+			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 
 	  private:
@@ -787,9 +813,8 @@ namespace VTX::Action::Selection
 				else
 				{
 					// Call notify only once after all modif in molecule
+					molecule.refreshStructure();
 					molecule.forceNotifyDataChanged();
-					molecule.refreshBondsBuffer();
-					molecule.refreshSecondaryStructure();
 				}
 			}
 

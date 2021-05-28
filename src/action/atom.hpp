@@ -100,8 +100,7 @@ namespace VTX::Action::Atom
 			}
 			else
 			{
-				molecule->refreshBondsBuffer();
-				molecule->refreshSecondaryStructure();
+				molecule->refreshStructure();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;
