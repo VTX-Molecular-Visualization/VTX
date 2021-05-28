@@ -160,8 +160,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _renameAction();
 
 		void _toggleWaterVisibilityAction();
-		void _toggleSolventVisibilityAction();
 		void _toggleHydrogenVisibilityAction();
+		void _toggleSolventVisibilityAction();
+		void _toggleIonVisibilityAction();
 
 		void _toggleTrajectoryPlayingAction();
 
@@ -184,8 +185,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		void	 _updateCurrentRepresentationFeedback();
 
 		void _refreshToggleWaterText( QAction & _action ) const;
-		void _refreshToggleSolventText( QAction & _action ) const;
 		void _refreshToggleHydrogenText( QAction & _action ) const;
+		void _refreshToggleSolventText( QAction & _action ) const;
+		void _refreshToggleIonText( QAction & _action ) const;
 
 		void _refreshToggleTrajectoryPlay( QAction & _action ) const;
 		bool _checkToggleTrajectoryPlayAction() const;

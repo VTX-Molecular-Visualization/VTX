@@ -48,7 +48,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		_showSolvent
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleSolventVisibilityButton" );
-		_showSolvent->setData( "Solvents", ":/sprite/hide_solvent_icon.png", Qt::Orientation::Horizontal );
+		_showSolvent->setData( "Solvent", ":/sprite/hide_solvent_icon.png", Qt::Orientation::Horizontal );
 		pushButton( *_showSolvent, 1 );
 
 		_showIon = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "toggleIonVisibilityButton" );

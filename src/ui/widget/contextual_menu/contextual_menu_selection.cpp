@@ -24,15 +24,20 @@ namespace VTX::UI::Widget::ContextualMenu
 		toggleWatersAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleWaterText );
 		_actions.emplace_back( toggleWatersAction );
 
+		ActionData * const toggleHydogensAction = new ActionData(
+			"Toggle Hydrogens", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleHydrogenVisibilityAction );
+		toggleHydogensAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleHydrogenText );
+		_actions.emplace_back( toggleHydogensAction );
+
 		ActionData * const toggleSolventAction = new ActionData(
 			"Toggle Solvent", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleSolventVisibilityAction );
 		toggleSolventAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleSolventText );
 		_actions.emplace_back( toggleSolventAction );
 
-		ActionData * const toggleHydogensAction = new ActionData(
-			"Toggle Hydrogens", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleHydrogenVisibilityAction );
-		toggleHydogensAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleHydrogenText );
-		_actions.emplace_back( toggleHydogensAction );
+		ActionData * const toggleIonAction = new ActionData(
+			"Toggle Ions", TypeMask::Molecule, this, &ContextualMenuSelection::_toggleIonVisibilityAction );
+		toggleIonAction->setRefreshFunction( &ContextualMenuSelection ::_refreshToggleIonText );
+		_actions.emplace_back( toggleIonAction );
 
 		_actions.emplace_back( new ActionDataSection( "Trajectory", TypeMask::Molecule, this ) );
 		ActionData * const toggleTrajectoryPlayAction = new ActionData(
@@ -141,13 +146,17 @@ namespace VTX::UI::Widget::ContextualMenu
 	{
 		VTX_ACTION( new Action::Selection::ToggleWatersVisibility( *_target ) );
 	}
+	void ContextualMenuSelection::_toggleHydrogenVisibilityAction()
+	{
+		VTX_ACTION( new Action::Selection::ToggleHydrogensVisibility( *_target ) );
+	}
 	void ContextualMenuSelection::_toggleSolventVisibilityAction()
 	{
 		VTX_ACTION( new Action::Selection::ToggleSolventVisibility( *_target ) );
 	}
-	void ContextualMenuSelection::_toggleHydrogenVisibilityAction()
+	void ContextualMenuSelection::_toggleIonVisibilityAction()
 	{
-		VTX_ACTION( new Action::Selection::ToggleHydrogensVisibility( *_target ) );
+		VTX_ACTION( new Action::Selection::ToggleIonsVisibility( *_target ) );
 	}
 
 	void ContextualMenuSelection::_toggleTrajectoryPlayingAction()
@@ -261,6 +270,18 @@ namespace VTX::UI::Widget::ContextualMenu
 		QString text = displayShowWater ? "Show waters" : "Hide waters";
 		_action.setText( text );
 	}
+	void ContextualMenuSelection::_refreshToggleHydrogenText( QAction & _action ) const
+	{
+		bool displayShowHydrogen = true;
+		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getItems() )
+		{
+			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
+			displayShowHydrogen		   = displayShowHydrogen && !molecule.showHydrogen();
+		}
+
+		QString text = displayShowHydrogen ? "Show hydrogens" : "Hide hydrogens";
+		_action.setText( text );
+	}
 	void ContextualMenuSelection::_refreshToggleSolventText( QAction & _action ) const
 	{
 		bool displayShowSolvent = true;
@@ -273,16 +294,16 @@ namespace VTX::UI::Widget::ContextualMenu
 		QString text = displayShowSolvent ? "Show solvent" : "Hide solvent";
 		_action.setText( text );
 	}
-	void ContextualMenuSelection::_refreshToggleHydrogenText( QAction & _action ) const
+	void ContextualMenuSelection::_refreshToggleIonText( QAction & _action ) const
 	{
-		bool displayShowHydrogen = true;
+		bool displayShowIon = true;
 		for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeData : _target->getItems() )
 		{
 			Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( moleculeData.first );
-			displayShowHydrogen		   = displayShowHydrogen && !molecule.showHydrogen();
+			displayShowIon			   = displayShowIon && !molecule.showIon();
 		}
 
-		QString text = displayShowHydrogen ? "Show hydrogens" : "Hide hydrogens";
+		QString text = displayShowIon ? "Show ions" : "Hide ions";
 		_action.setText( text );
 	}
 

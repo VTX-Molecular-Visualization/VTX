@@ -31,8 +31,9 @@ namespace VTX::UI::Widget::ContextualMenu
 		void _toggleTrajectoryPlayingActions();
 
 		void _toggleWatersVisibilityAction();
-		void _toggleSolventVisibilityAction();
 		void _toggleHydrogensVisibilityAction();
+		void _toggleSolventVisibilityAction();
+		void _toggleIonVisibilityAction();
 
 		void _orientAction();
 		void _showAction();
@@ -47,8 +48,9 @@ namespace VTX::UI::Widget::ContextualMenu
 	  private:
 		CustomWidget::SetRepresentationMenu * _representationMenu;
 		QAction *							  _toggleWaterAction;
-		QAction *							  _toggleSolventAction;
 		QAction *							  _toggleHydrogenAction;
+		QAction *							  _toggleSolventAction;
+		QAction *							  _toggleIonAction;
 		QAction *							  _toggleTrajectoryPlayingAction;
 	};
 
