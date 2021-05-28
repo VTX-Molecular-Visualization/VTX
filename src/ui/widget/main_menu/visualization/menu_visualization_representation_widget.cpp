@@ -90,7 +90,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_addPreset
 			= WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "addNewVisualModelPresetButton" );
 		_addPreset->setData(
-			"Preset\nSettings", ":/sprite/representation_new_preset_icon.png", Qt::Orientation::Vertical );
+			"Preset\nSettings", ":/sprite/representation_settings_icon.png", Qt::Orientation::Vertical );
 		pushButtonInNextColumn( *_addPreset );
 
 		validate();

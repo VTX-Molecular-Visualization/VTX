@@ -32,7 +32,6 @@
 	<file>sprite/hide_solvent_icon.png</file>
 	<file>sprite/hide_water_icon.png</file>
 	<file>sprite/info_button.png</file>
-	<file>sprite/inspector_window_icon.png</file>
 	<file>sprite/job_manager.png</file>
 	<file>sprite/keyword_editor.png</file>
 	<file>sprite/load_molecule_icon.png</file>
@@ -52,13 +51,14 @@
 	<file>sprite/refresh_icon_hovered.png</file>
 	<file>sprite/remove_icon.png</file>
 	<file>sprite/remove_icon_hovered.png</file>
-	<file>sprite/render_window_icon.png</file>
+	<file>sprite/render_effect_preset_icon.png</file>
+	<file>sprite/render_effect_settings_icon.png</file>
 	<file>sprite/representation_ball_and_stick_icon.png</file>
 	<file>sprite/representation_ball_stick_and_cartoon_icon.png</file>
 	<file>sprite/representation_cartoon_icon.png</file>
 	<file>sprite/representation_icon.png</file>
-	<file>sprite/representation_new_preset_icon.png</file>
 	<file>sprite/representation_sas_icon.png</file>
+	<file>sprite/representation_settings_icon.png</file>
 	<file>sprite/representation_stick_and_cartoon_icon.png</file>
 	<file>sprite/representation_stick_icon.png</file>
 	<file>sprite/representation_trace_icon.png</file>
