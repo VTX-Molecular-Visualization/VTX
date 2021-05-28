@@ -9,27 +9,23 @@ namespace VTX::UI::Widget::MainMenu
 	void MainMenuBar::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
+		setFixedHeight( 130 );
 
-		setGeometry( QRect( 0, 2, 800, 130 ) );
-		setMinimumSize( 800, 130 );
 		setContentsMargins( 10, 2, 10, 2 );
-		setSizePolicy( QSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed ) );
 
 		_tabWidget = new QTabWidget( this );
 		_tabWidget->setObjectName( "tabWidget" );
-
-		_tabWidget->setSizePolicy( QSizePolicy( QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Fixed ) );
-		_tabWidget->setFixedHeight( 130 );
+		_tabWidget->setFixedSize( size() );
 
 		QFont menuBarFont;
 		menuBarFont.setPointSize( 10 );
 		_tabWidget->setFont( menuBarFont );
 
-		_mainMenu = WidgetFactory::get().instantiateWidget<Home::MenuHomeWidget>( this, "mainMenu" );
+		_mainMenu = WidgetFactory::get().instantiateWidget<Home::MenuHomeWidget>( _tabWidget, "mainMenu" );
 		_tabWidget->addTab( _mainMenu, "Main" );
 
 		_viewMenu = WidgetFactory::get().instantiateWidget<Visualization::MenuVisualizationWidget>(
-			this, "visualizationMenu" );
+			_tabWidget, "visualizationMenu" );
 		_tabWidget->addTab( _viewMenu, "Visualization" );
 
 		// !V0.1
@@ -41,6 +37,12 @@ namespace VTX::UI::Widget::MainMenu
 		//_tabWidget->addTab( _extensionsMenu, "Modules" );
 
 		_tabWidget->setCurrentIndex( 0 );
+	}
+
+	void MainMenuBar::resizeEvent( QResizeEvent * p_event )
+	{
+		// Manually resize tabWidget width (SizePolicy doesn't seems to works).
+		_tabWidget->setFixedWidth( p_event->size().width() );
 	}
 
 	void MainMenuBar::_setupSlots() {}

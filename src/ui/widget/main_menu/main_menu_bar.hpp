@@ -12,6 +12,7 @@
 #include "ui/widget/base_manual_widget.hpp"
 #include "visualization/menu_visualization_widget.hpp"
 #include <QMenuBar>
+#include <QResizeEvent>
 #include <QTabWidget>
 
 namespace VTX::UI::Widget::MainMenu
@@ -26,6 +27,8 @@ namespace VTX::UI::Widget::MainMenu
 
 	  protected:
 		MainMenuBar( QWidget * p_parent );
+
+		void resizeEvent( QResizeEvent * p_event ) override;
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;

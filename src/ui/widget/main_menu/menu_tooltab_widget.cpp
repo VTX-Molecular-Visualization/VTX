@@ -28,6 +28,7 @@ namespace VTX
 				{
 					BaseManualWidget::_setupUi( p_name );
 					setContentsMargins( 2, 2, 2, 2 );
+					setSizePolicy( QSizePolicy::Policy::MinimumExpanding, QSizePolicy::Policy::Expanding );
 
 					_horizontalLayout = new QHBoxLayout( this );
 					_horizontalLayout->setContentsMargins( 0, 0, 0, 0 );
