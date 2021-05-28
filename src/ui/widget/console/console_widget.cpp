@@ -94,7 +94,7 @@ namespace VTX::UI::Widget::Console
 
 		QHBoxLayout * const mainLayout = new QHBoxLayout( _mainWidget );
 		mainLayout->setSpacing( 5 );
-		mainLayout->setContentsMargins( 0, 0, 0, 0 );
+		mainLayout->setContentsMargins( 0, 0, 2, 0 );
 
 		mainLayout->addWidget( _listWidget, 100 );
 		mainLayout->addLayout( buttonsLayout, 1 );

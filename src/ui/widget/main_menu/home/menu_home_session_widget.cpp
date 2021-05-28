@@ -98,16 +98,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 	void MenuHomeSessionWidget::_openFile() { Dialog::openLoadSessionDialog(); }
 	void MenuHomeSessionWidget::_saveSession() const
 	{
-		const FilePath & filePath = VTXApp::get().getCurrentPath();
-
-		if ( filePath.empty() )
-		{
-			Dialog::openSaveSessionDialog();
-		}
-		else
-		{
-			VTX_ACTION( new Action::Main::Save( FilePath( filePath ) ) );
-		}
+		VTX_ACTION( new Action::Main::Save( VTXApp::get().getCurrentPath() ) );
 	}
 	void MenuHomeSessionWidget::_saveAsSession() const { Dialog::openSaveSessionDialog(); }
 

@@ -167,6 +167,7 @@ namespace VTX::Action::Main
 	class Save : public BaseAction
 	{
 	  public:
+		explicit Save() : _path( "" ), _callback( nullptr ) {}
 		explicit Save( const FilePath & p_path ) : _path( p_path ), _callback( nullptr ) {}
 		explicit Save( const FilePath & p_path, Worker::CallbackThread * const p_callback ) :
 			_path( p_path ), _callback( p_callback )
@@ -175,15 +176,16 @@ namespace VTX::Action::Main
 
 		virtual void execute() override
 		{
-			Worker::Saver * saver = nullptr;
-			if ( _path.empty() == false )
+			if ( _path.empty() )
 			{
-				saver = new Worker::Saver( _path );
-			}
-			if ( saver == nullptr )
-			{
+				UI::Dialog::openSaveSessionDialog( _callback );
 				return;
 			}
+
+			Worker::Saver * const saver = new Worker::Saver( _path );
+
+			if ( saver == nullptr )
+				return;
 
 			VTX_THREAD( saver, _callback );
 
