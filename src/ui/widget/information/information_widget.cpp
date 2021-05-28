@@ -1,5 +1,6 @@
 #include "information_widget.hpp"
 #include "define.hpp"
+#include "style.hpp"
 #include "util/filesystem.hpp"
 #include <QLabel>
 #include <QPushButton>
@@ -11,6 +12,21 @@ namespace VTX::UI::Widget::Information
 {
 	InformationWidget::InformationWidget( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 
+	InformationWidget ::~InformationWidget()
+	{
+		if ( _movie != nullptr )
+			delete _movie;
+	}
+
+	void InformationWidget::showEvent( QShowEvent * p_event )
+	{
+		if ( _movie != nullptr )
+		{
+			_movie->stop();
+			_movie->start();
+		}
+	}
+
 	void InformationWidget::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
@@ -18,10 +34,24 @@ namespace VTX::UI::Widget::Information
 		setWindowFlag( Qt::WindowType::WindowContextHelpButtonHint, false );
 
 		QLabel * const vtxLogo = new QLabel( this );
-		QPixmap		   logo	   = QPixmap( ":/sprite/logo.png", nullptr, Qt::ImageConversionFlag::ColorOnly );
-		vtxLogo->setPixmap( logo );
+
+		if ( Style::VIDEO_IN_INFORMATION )
+		{
+			_movie = new QMovie( this );
+			_movie->setFileName( ":/video/video_intro.gif" );
+			vtxLogo->setFixedSize( QSize( 256, 144 ) );
+			vtxLogo->setAutoFillBackground( true );
+			vtxLogo->setMovie( _movie );
+		}
+		else
+		{
+			QPixmap logo = QPixmap( ":/sprite/logo.png", nullptr, Qt::ImageConversionFlag::ColorOnly );
+			vtxLogo->setPixmap( logo );
+			vtxLogo->setScaledContents( true );
+			vtxLogo->setFixedSize( QSize( 64, 64 ) );
+		}
+
 		vtxLogo->setScaledContents( true );
-		vtxLogo->setFixedSize( QSize( 64, 64 ) );
 
 		QLabel * versionLabel = new QLabel( this );
 		versionLabel->setText( "Version: " + _getVersionText() );
@@ -120,7 +150,10 @@ namespace VTX::UI::Widget::Information
 		setLayout( mainVerticalLayout );
 	}
 
-	void InformationWidget::_setupSlots() {};
+	void InformationWidget::_setupSlots()
+	{
+		connect( _movie, &QMovie::error, this, &InformationWidget::_displayMovieError );
+	};
 	void InformationWidget::localize()
 	{
 		// Qt translate (not use currently)
@@ -140,6 +173,11 @@ namespace VTX::UI::Widget::Information
 	QString InformationWidget::_getLicenseText() const
 	{
 		return QString::fromStdString( Util::Filesystem::readPath( Util::Filesystem::LICENSE_PATH ) );
+	}
+
+	void InformationWidget::_displayMovieError( QImageReader::ImageReaderError p_error )
+	{
+		VTX_ERROR( "Error when loading video : " + std::to_string( int( p_error ) ) );
 	}
 
 } // namespace VTX::UI::Widget::Information

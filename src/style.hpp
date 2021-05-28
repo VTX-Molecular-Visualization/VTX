@@ -234,6 +234,8 @@ namespace VTX
 		inline static const QFont TOOL_MENU_BUTTON_FONT = QFont( "Helvetica", 10 );
 		inline static const QFont SEQUENCE_DISPLAY_FONT = QFont( "Courier", 10 );
 
+		inline static const bool VIDEO_IN_INFORMATION = true;
+
 		inline static const QColor BLACK_COLOR			  = QColor( 0, 0, 0 );
 		inline static const QColor BACKGROUND_COLOR		  = QColor( 34, 34, 34 );
 		inline static const QColor CANCELED_COLOR		  = QColor( 71, 71, 71 );

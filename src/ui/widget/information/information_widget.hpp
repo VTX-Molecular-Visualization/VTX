@@ -8,9 +8,12 @@
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include <QDialog>
+#include <QMovie>
 #include <QPushButton>
+#include <QShowEvent>
 #include <QString>
 #include <QWidget>
+#include <QImageReader>
 
 namespace VTX::UI::Widget::Information
 {
@@ -19,7 +22,7 @@ namespace VTX::UI::Widget::Information
 		VTX_WIDGET
 
 	  public:
-		~InformationWidget() = default;
+		~InformationWidget();
 		void localize() override;
 
 	  protected:
@@ -27,6 +30,8 @@ namespace VTX::UI::Widget::Information
 
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
+
+		void showEvent( QShowEvent * p_event ) override;
 
 	  private:
 		QPushButton * _websiteButton   = nullptr;
@@ -36,6 +41,10 @@ namespace VTX::UI::Widget::Information
 
 		QString _getVersionText() const;
 		QString _getLicenseText() const;
+
+		QMovie * _movie = nullptr;
+
+		void _displayMovieError( QImageReader::ImageReaderError p_error );
 	};
 } // namespace VTX::UI::Widget::Information
 #endif

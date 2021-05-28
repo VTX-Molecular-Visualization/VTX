@@ -102,5 +102,6 @@
 	<file>sprite/windowed_icon.png</file>
 	<file>sprite/windows_icon.png</file>
 	<file>stylesheet.css</file>
+	<file>video/video_intro.gif</file>
 </qresource>
 </RCC>
