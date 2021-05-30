@@ -185,6 +185,7 @@ namespace VTX
 
 		// Auto rotate.
 		static const float AUTO_ROTATE_SPEED_DEFAULT;
+		static const Vec3f AUTO_ROTATE_ORIENTATION_DEFAULT;
 		static const float AUTO_ROTATE_SPEED_MIN;
 		static const float AUTO_ROTATE_SPEED_MAX;
 
@@ -256,9 +257,7 @@ namespace VTX
 		inline int							getDefaultTrajectorySpeed() const { return defaultTrajectorySpeed; }
 		void								setDefaultTrajectorySpeed( const int p_defaultTrajectorySpeed );
 		inline const Trajectory::PlayMode & getDefaultTrajectoryPlayMode() const { return defaultTrajectoryPlayMode; }
-		void				 setDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_defaultTrajectoryPlayMode );
-		inline const Vec3f & getAutoRotationSpeed() const { return autoRotationSpeed; }
-		void				 setAutoRotationSpeed( const Vec3f p_autoRotationSpeed );
+		void setDefaultTrajectoryPlayMode( const Trajectory::PlayMode p_defaultTrajectoryPlayMode );
 
 		inline const Style::SYMBOL_DISPLAY_MODE getSymbolDisplayMode() const { return symbolDisplayMode; }
 		void setSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE p_symbolDisplayMode );
@@ -312,7 +311,6 @@ namespace VTX
 
 		int					 defaultTrajectorySpeed	   = DEFAULT_TRAJECTORY_SPEED;
 		Trajectory::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
-		Vec3f				 autoRotationSpeed		   = Vec3f( AUTO_ROTATE_SPEED_DEFAULT );
 
 		Style::SYMBOL_DISPLAY_MODE symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
 

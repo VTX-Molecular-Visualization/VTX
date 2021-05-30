@@ -635,19 +635,6 @@ namespace VTX::Action::Setting
 		const Style::SYMBOL_DISPLAY_MODE _displayMode;
 	};
 
-	class ChangeAutoRotateSpeed : public BaseAction
-	{
-	  public:
-		explicit ChangeAutoRotateSpeed( const Vec3f & p_value ) : _value( p_value ) {}
-
-		virtual void execute() override { VTX_SETTING().setAutoRotationSpeed( _value ); }
-
-		virtual void displayUsage() override { VTX_INFO( "f f f|f" ); }
-
-	  private:
-		const Vec3f _value;
-	};
-
 	class ChangeRenderMode : public BaseAction
 	{
 	  public:
@@ -695,8 +682,6 @@ namespace VTX::Action::Setting
 			VTX_ACTION( new Action::Setting::ChangeDefaultTrajectorySpeed( _setting.getDefaultTrajectorySpeed() ) );
 			VTX_ACTION(
 				new Action::Setting::ChangeDefaultTrajectoryPlayMode( _setting.getDefaultTrajectoryPlayMode() ) );
-
-			VTX_ACTION( new Action::Setting::ChangeAutoRotateSpeed( _setting.getAutoRotationSpeed() ) );
 		}
 
 	  private:

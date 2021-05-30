@@ -44,9 +44,15 @@ namespace VTX::UI::Widget::Inspector
 
 		_trajectorySection
 			= VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSection>( this, "inspector_item_section" );
-		_trajectoryWidget = VTX::UI::WidgetFactory::get().instantiateWidget<CustomWidget::TrajectoryWidget>(
-			this, "inspector_trajectory" );
+		_trajectoryWidget
+			= WidgetFactory::get().instantiateWidget<CustomWidget::TrajectoryWidget>( this, "inspector_trajectory" );
 		_trajectorySection->setBody( _trajectoryWidget );
+
+		_autoRotateSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
+			this, "inspector_item_section" );
+		_autoRotateField = WidgetFactory::get().instantiateWidget<CustomWidget::AutoRotateWidget>(
+			this, "inspector_autoRotateVectorField" );
+		_autoRotateSection->setBody( _autoRotateField );
 
 		_infoSection = VTX::UI::WidgetFactory::get().instantiateWidget<InspectorSectionVLayout>(
 			this, "inspector_item_section" );
@@ -69,6 +75,7 @@ namespace VTX::UI::Widget::Inspector
 		_appendSection( _transformSection );
 		_appendSection( _representationSection );
 		_appendSection( _trajectorySection );
+		_appendSection( _autoRotateSection );
 		_appendSection( _infoSection );
 
 		const bool oldBlockState = blockSignals( true );
@@ -151,6 +158,11 @@ namespace VTX::UI::Widget::Inspector
 					_trajectoryWidget->refreshTimer();
 				}
 
+				if ( bool( p_flag & SectionFlag::AUTO_ROTATE ) )
+				{
+					_autoRotateField->updateWithNewValue( *molecule );
+				}
+
 				if ( bool( p_flag & SectionFlag::INFOS ) )
 				{
 					if ( !_fullnameLabel->hasDifferentData() )
@@ -179,6 +191,11 @@ namespace VTX::UI::Widget::Inspector
 		{
 			_trajectoryWidget->resetState();
 			_trajectorySection->setVisible( false );
+		}
+
+		if ( bool( p_flag & SectionFlag::AUTO_ROTATE ) )
+		{
+			_autoRotateField->resetState();
 		}
 
 		if ( bool( p_flag & SectionFlag::INFOS ) )

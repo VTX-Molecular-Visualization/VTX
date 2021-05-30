@@ -46,19 +46,6 @@ namespace VTX
 				{
 					action = new Setting::ChangeDefaultRepresentation( std::stoi( words.at( 1 ) ) );
 				}
-				else if ( command == "change_auto_rotate_speed" )
-				{
-					if ( words.size() == 2 )
-					{
-						action = new Setting::ChangeAutoRotateSpeed( Vec3f(
-							std::stof( words.at( 1 ) ), std::stof( words.at( 1 ) ), std::stof( words.at( 1 ) ) ) );
-					}
-					else
-					{
-						action = new Setting::ChangeAutoRotateSpeed( Vec3f(
-							std::stof( words.at( 1 ) ), std::stof( words.at( 2 ) ), std::stof( words.at( 3 ) ) ) );
-					}
-				}
 				else if ( command == "change_shading" )
 				{
 					action = new Setting::ChangeShading(

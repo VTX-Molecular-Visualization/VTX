@@ -128,9 +128,10 @@ namespace VTX
 	const Trajectory::PlayMode Setting::DEFAULT_TRAJECTORY_PLAY_MODE = Trajectory::PlayMode::Loop;
 
 	// Auto rotate.
-	const float Setting::AUTO_ROTATE_SPEED_DEFAULT = 0.0f;
-	const float Setting::AUTO_ROTATE_SPEED_MIN	   = 0.0f;
-	const float Setting::AUTO_ROTATE_SPEED_MAX	   = 1.0f;
+	const float Setting::AUTO_ROTATE_SPEED_DEFAULT		 = 2.0f;
+	const Vec3f Setting::AUTO_ROTATE_ORIENTATION_DEFAULT = Vec3f( 0.0f, 1.0f, 0.0f );
+	const float Setting::AUTO_ROTATE_SPEED_MIN			 = 0.1f;
+	const float Setting::AUTO_ROTATE_SPEED_MAX			 = 15.0f;
 
 	// Video.
 	const float		 Setting::PATH_DURATION_DEFAULT	  = 5.f;
@@ -342,12 +343,6 @@ namespace VTX
 		defaultTrajectoryPlayMode = p_defaultTrajectoryPlayMode;
 		_sendDataChangedEvent( PARAMETER::TRAJECTORY_DEFAULT_PLAY_MODE );
 	}
-	void Setting::setAutoRotationSpeed( const Vec3f p_autoRotationSpeed )
-	{
-		autoRotationSpeed = Util::Math::clamp(
-			p_autoRotationSpeed, VTX::Setting::AUTO_ROTATE_SPEED_MIN, VTX::Setting::AUTO_ROTATE_SPEED_MAX );
-		_sendDataChangedEvent( PARAMETER::AUTO_ROTATION_DEFAULT_SPEED );
-	}
 
 	void Setting::setSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE p_symbolDisplayMode )
 	{
@@ -379,7 +374,6 @@ namespace VTX
 		defaultTrajectorySpeed	  = DEFAULT_TRAJECTORY_SPEED;
 		defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
 
-		autoRotationSpeed = Vec3f( AUTO_ROTATE_SPEED_DEFAULT );
 		_sendDataChangedEvent( PARAMETER::ALL );
 	}
 

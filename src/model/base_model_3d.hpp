@@ -6,7 +6,9 @@
 #endif
 
 #include "buffer/base_buffer_opengl.hpp"
+#include "define.hpp"
 #include "event/event.hpp"
+#include "generic/base_auto_rotate.hpp"
 #include "generic/base_renderable.hpp"
 #include "generic/base_transformable.hpp"
 #include "generic/base_visible.hpp"
@@ -14,6 +16,7 @@
 #include "math/aabb.hpp"
 #include "model/base_model.hpp"
 #include "tool/logger.hpp"
+#include "util/math.hpp"
 #include <unordered_set>
 #include <vector>
 
@@ -26,7 +29,8 @@ namespace VTX
 			public BaseModel,
 			public Generic::BaseTransformable,
 			public Generic::BaseRenderable,
-			public Generic::BaseVisible
+			public Generic::BaseVisible,
+			public Generic::BaseAutoRotate
 		{
 			VTX_MODEL
 
@@ -54,6 +58,27 @@ namespace VTX
 			inline bool						  isInit() const { return _isInit; }
 
 			inline void referenceLinkedAABB( Math::AABB * const p_aabb ) { _linkedAABBs.emplace( p_aabb ); }
+
+			void setAutoRotationVector( const Vec3f p_value ) override
+			{
+				Generic::BaseAutoRotate::setAutoRotationVector( p_value );
+				_notifyViews( new Event::VTXEvent( Event::Model::AUTO_ROTATE_DATA_CHANGE ) );
+			}
+			void setAutoRotationNormalizedVector( const Vec3f p_value ) override
+			{
+				Generic::BaseAutoRotate::setAutoRotationNormalizedVector( p_value );
+				_notifyViews( new Event::VTXEvent( Event::Model::AUTO_ROTATE_DATA_CHANGE ) );
+			}
+			void setAutoRotationMagnitude( const float p_speed ) override
+			{
+				Generic::BaseAutoRotate::setAutoRotationMagnitude( p_speed );
+				_notifyViews( new Event::VTXEvent( Event::Model::AUTO_ROTATE_DATA_CHANGE ) );
+			}
+			void setAutoRotationPlaying( const bool p_play )
+			{
+				Generic::BaseAutoRotate::setAutoRotationPlaying( p_play );
+				_notifyViews( new Event::VTXEvent( Event::Model::AUTO_ROTATE_DATA_CHANGE ) );
+			}
 
 			void render( const Object3D::Camera & p_camera ) const override
 			{

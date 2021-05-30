@@ -114,6 +114,10 @@ namespace VTX::UI::Widget::CustomWidget
 		{
 			_state = MultiDataField::State::Different;
 		}
+		else
+		{
+			_data = p_value;
+		}
 	}
 
 	void Vector3Widget::_displayDifferentsDataFeedback() {}

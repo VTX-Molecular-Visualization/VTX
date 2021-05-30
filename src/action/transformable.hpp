@@ -7,10 +7,12 @@
 
 #include "base_action.hpp"
 #include "base_action_undonable.hpp"
+#include "generic/base_auto_rotate.hpp"
 #include "generic/base_transformable.hpp"
 #include "math/transform.hpp"
 #include "model/molecule.hpp"
 #include "vtx_app.hpp"
+#include <unordered_set>
 
 namespace VTX::Action::Transformable
 {
@@ -129,6 +131,67 @@ namespace VTX::Action::Transformable
 		const Math::Transform									 _transform;
 		const Generic::BaseTransformable::TransformComposantMask _mask;
 		std::vector<Generic::BaseTransformable *> _transformables = std::vector<Generic::BaseTransformable *>();
+	};
+
+	class SetAutoRotationOrientation : public BaseAction
+	{
+	  public:
+		explicit SetAutoRotationOrientation( const std::unordered_set<Generic::BaseAutoRotate *> p_autoRotateComponent,
+											 const Vec3f &										 p_orientation ) :
+			_autoRotateComponents( p_autoRotateComponent ),
+			_orientation( p_orientation )
+		{
+		}
+
+		virtual void execute() override
+		{
+			for ( Generic::BaseAutoRotate * const autoRotateComponent : _autoRotateComponents )
+				autoRotateComponent->setAutoRotationVector( _orientation );
+		}
+
+	  private:
+		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
+		const Vec3f									  _orientation;
+	};
+	class SetAutoRotationSpeed : public BaseAction
+	{
+	  public:
+		explicit SetAutoRotationSpeed( const std::unordered_set<Generic::BaseAutoRotate *> p_autoRotateComponent,
+									   const float										   p_speed ) :
+			_autoRotateComponents( p_autoRotateComponent ),
+			_speed( p_speed )
+		{
+		}
+
+		virtual void execute() override
+		{
+			for ( Generic::BaseAutoRotate * const autoRotateComponent : _autoRotateComponents )
+				autoRotateComponent->setAutoRotationMagnitude( _speed );
+		}
+
+	  private:
+		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
+		const float									  _speed;
+	};
+	class SetAutoRotationPlay : public BaseAction
+	{
+	  public:
+		explicit SetAutoRotationPlay( const std::unordered_set<Generic::BaseAutoRotate *> p_autoRotateComponent,
+									  const bool										  p_play ) :
+			_autoRotateComponents( p_autoRotateComponent ),
+			_play( p_play )
+		{
+		}
+
+		virtual void execute() override
+		{
+			for ( Generic::BaseAutoRotate * const autoRotateComponent : _autoRotateComponents )
+				autoRotateComponent->setAutoRotationPlaying( _play );
+		}
+
+	  private:
+		std::unordered_set<Generic::BaseAutoRotate *> _autoRotateComponents;
+		const bool									  _play;
 	};
 } // namespace VTX::Action::Transformable
 #endif

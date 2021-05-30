@@ -10,6 +10,7 @@
 #include "model/representation/representation.hpp"
 #include "ui//widget/custom_widget/qt_multi_data_field.hpp"
 #include "ui/multi_data_field.hpp"
+#include "ui/widget/custom_widget/auto_rotate_widget.hpp"
 #include "ui/widget/custom_widget/trajectory_widget.hpp"
 #include "ui/widget/custom_widget/transform_widget.hpp"
 #include "ui/widget/inspector/inspector_section.hpp"
@@ -41,11 +42,13 @@ namespace VTX::UI::Widget::Inspector
 		InspectorSection *		  _transformSection		 = nullptr;
 		InspectorSection *		  _representationSection = nullptr;
 		InspectorSection *		  _trajectorySection	 = nullptr;
+		InspectorSection *		  _autoRotateSection	 = nullptr;
 		InspectorSectionVLayout * _infoSection			 = nullptr;
 
 		CustomWidget::TransformWidget *					 _transformWidget	   = nullptr;
 		Representation::RepresentationInspectorSection * _representationWidget = nullptr;
 		CustomWidget::TrajectoryWidget *				 _trajectoryWidget	   = nullptr;
+		CustomWidget::AutoRotateWidget *				 _autoRotateField	   = nullptr;
 
 		CustomWidget::QLabelMultiField * _fullnameLabel	  = nullptr;
 		CustomWidget::QLabelMultiField * _nbChainsLabel	  = nullptr;

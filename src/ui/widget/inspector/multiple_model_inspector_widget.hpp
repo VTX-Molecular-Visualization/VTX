@@ -102,6 +102,10 @@ namespace VTX::UI::Widget::Inspector
 			{
 				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::TRAJECTORY_TIMER );
 			}
+			else if ( p_event->name == Event::Model::AUTO_ROTATE_DATA_CHANGE )
+			{
+				_sectionToRefresh = SectionFlag( _sectionToRefresh | SectionFlag::AUTO_ROTATE );
+			}
 		}
 
 		virtual void _endOfFrameEvent()

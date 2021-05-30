@@ -13,6 +13,7 @@ namespace VTX::UI::Widget::Inspector
 		REPRESENTATION	 = 1 << 1,
 		TRAJECTORY		 = 1 << 2,
 		TRAJECTORY_TIMER = 1 << 3,
+		AUTO_ROTATE		 = 1 << 3,
 		INFOS			 = 1 << 4,
 
 		NONE = 0,

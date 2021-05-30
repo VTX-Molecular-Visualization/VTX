@@ -234,9 +234,7 @@ namespace VTX
 					 { "CONTROLLER_ELASTICITY_FACTOR", p_setting.getControllerElasticityFactor() },
 
 					 { "DEFAULT_TRAJECTORY_SPEED", p_setting.getDefaultTrajectorySpeed() },
-					 { "DEFAULT_TRAJECTORY_PLAY_MODE", p_setting.getDefaultTrajectoryPlayMode() },
-
-					 { "AUTO_ROTATE_SPEED", serialize( p_setting.getAutoRotationSpeed() ) } };
+					 { "DEFAULT_TRAJECTORY_PLAY_MODE", p_setting.getDefaultTrajectoryPlayMode() } };
 		}
 
 		void Serializer::deserialize( const nlohmann::json & p_json, VTXApp & p_app ) const
@@ -598,13 +596,6 @@ namespace VTX
 				p_json, "DEFAULT_TRAJECTORY_PLAY_MODE", Setting::DEFAULT_TRAJECTORY_PLAY_MODE );
 			p_setting.setDefaultTrajectoryPlayMode(
 				Trajectory::PlayMode( int( playMode ) % int( Trajectory::PlayMode::COUNT ) ) );
-
-			if ( p_json.contains( "AUTO_ROTATE_SPEED" ) )
-			{
-				Vec3f autoRotationSpeed;
-				deserialize( p_json.at( "AUTO_ROTATE_SPEED" ), autoRotationSpeed );
-				p_setting.setAutoRotationSpeed( autoRotationSpeed );
-			}
 		}
 
 		nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,

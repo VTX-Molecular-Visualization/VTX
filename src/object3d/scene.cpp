@@ -121,22 +121,23 @@ namespace VTX::Object3D
 			molecule->updateTrajectory( p_deltaTime );
 		}
 
-		const Vec3f & autoRotationSpeed = VTX_SETTING().getAutoRotationSpeed();
-		// Auto rotate.
-		if ( autoRotationSpeed != VEC3F_ZERO )
+		for ( const PairMoleculePtrFloat & pair : _molecules )
 		{
-			for ( const PairMoleculePtrFloat & pair : _molecules )
+			if ( pair.first->isAutoRotationPlaying() )
 			{
-				pair.first->rotate( p_deltaTime * autoRotationSpeed.x, VEC3F_X );
-				pair.first->rotate( p_deltaTime * autoRotationSpeed.y, VEC3F_Y );
-				pair.first->rotate( p_deltaTime * autoRotationSpeed.z, VEC3F_Z );
+				pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().x, VEC3F_X );
+				pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().y, VEC3F_Y );
+				pair.first->rotate( p_deltaTime * pair.first->getAutoRotationVector().z, VEC3F_Z );
 			}
+		}
 
-			for ( const MeshTrianglePtr & mesh : _meshes )
+		for ( const MeshTrianglePtr & mesh : _meshes )
+		{
+			if ( mesh->isAutoRotationPlaying() )
 			{
-				mesh->rotate( p_deltaTime * autoRotationSpeed.x, VEC3F_X );
-				mesh->rotate( p_deltaTime * autoRotationSpeed.y, VEC3F_Y );
-				mesh->rotate( p_deltaTime * autoRotationSpeed.z, VEC3F_Z );
+				mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().x, VEC3F_X );
+				mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().y, VEC3F_Y );
+				mesh->rotate( p_deltaTime * mesh->getAutoRotationVector().z, VEC3F_Z );
 			}
 		}
 	}
