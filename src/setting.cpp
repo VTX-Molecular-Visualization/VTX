@@ -146,8 +146,10 @@ namespace VTX
 	// Dev.
 	const Renderer::MODE Setting::MODE_DEFAULT = Renderer::MODE::GL;
 
-	const int Setting::RECENT_PATH_SAVED_MAX_COUNT = 6;
-	void	  Setting::enqueueNewLoadingPath( const FilePath & p_path )
+	const int Setting::RECENT_PATH_SAVED_MAX_COUNT			= 10;
+	const int Setting::RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT = 20;
+
+	void Setting::enqueueNewLoadingPath( const FilePath & p_path )
 	{
 		for ( std::list<FilePath>::const_iterator itPath = recentLoadingPath.cbegin();
 			  itPath != recentLoadingPath.cend();
@@ -160,7 +162,7 @@ namespace VTX
 			}
 		}
 
-		recentLoadingPath.emplace_front( FilePath( p_path ) );
+		recentLoadingPath.emplace_front( p_path );
 		if ( recentLoadingPath.size() > RECENT_PATH_SAVED_MAX_COUNT )
 			recentLoadingPath.pop_back();
 
@@ -181,11 +183,49 @@ namespace VTX
 		return &( *it );
 	}
 
+	void Setting::enqueueNewDownloadCode( const std::string & p_code )
+	{
+		for ( std::list<std::string>::const_iterator itCode = recentDownloadCodes.cbegin();
+			  itCode != recentDownloadCodes.cend();
+			  itCode++ )
+		{
+			if ( *itCode == p_code )
+			{
+				recentDownloadCodes.erase( itCode );
+				break;
+			}
+		}
+
+		recentDownloadCodes.emplace_front( p_code );
+		if ( recentDownloadCodes.size() > RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT )
+			recentDownloadCodes.pop_back();
+
+		saveRecentPaths();
+
+		VTX_EVENT( new Event::VTXEvent( Event::Global::RECENT_DOWNLOAD_CODE_CHANGE ) );
+	}
+	const std::string * const Setting::getRecentDownloadCode( const int p_index )
+	{
+		if ( p_index < 0 || p_index >= recentDownloadCodes.size() )
+			return nullptr;
+
+		std::list<std::string>::iterator it = recentDownloadCodes.begin();
+
+		for ( int i = 0; i < p_index; i++ )
+			it++;
+
+		return &( *it );
+	}
+
 	void Setting::cleanRecentPaths()
 	{
 		while ( recentLoadingPath.size() > 0 )
 		{
 			recentLoadingPath.pop_front();
+		}
+		while ( recentDownloadCodes.size() > 0 )
+		{
+			recentDownloadCodes.pop_front();
 		}
 	}
 
@@ -212,6 +252,18 @@ namespace VTX
 			counter++;
 			key = QString::fromStdString( "RecentLoadedPath" + std::to_string( counter ) );
 		}
+
+		counter = 0;
+		key		= QString::fromStdString( "recentDownloadCode" + std::to_string( counter ) );
+
+		while ( settings.contains( key ) )
+		{
+			const std::string code = settings.value( key ).toString().toStdString();
+			recentDownloadCodes.push_back( code );
+
+			counter++;
+			key = QString::fromStdString( "recentDownloadCode" + std::to_string( counter ) );
+		}
 	}
 	void Setting::saveRecentPaths()
 	{
@@ -225,6 +277,15 @@ namespace VTX
 		{
 			const QString key = QString::fromStdString( "RecentLoadedPath" + std::to_string( counter ) );
 			settings.setValue( key, QString::fromStdString( path.string() ) );
+
+			counter++;
+		}
+
+		counter = 0;
+		for ( const std::string & code : recentDownloadCodes )
+		{
+			const QString key = QString::fromStdString( "recentDownloadCode" + std::to_string( counter ) );
+			settings.setValue( key, QString::fromStdString( code ) );
 
 			counter++;
 		}

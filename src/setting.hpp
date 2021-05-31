@@ -263,12 +263,18 @@ namespace VTX
 		void setSymbolDisplayMode( const Style::SYMBOL_DISPLAY_MODE p_symbolDisplayMode );
 
 		static const int					   RECENT_PATH_SAVED_MAX_COUNT;
+		static const int					   RECENT_DOWNLOAD_CODE_SAVED_MAX_COUNT;
 		inline static std::list<VTX::FilePath> recentLoadingPath = std::list<VTX::FilePath>();
 		static void							   enqueueNewLoadingPath( const FilePath & );
 		static const VTX::FilePath * const	   getRecentLoadingPath( const int p_index );
-		static void							   cleanRecentPaths();
-		static void							   loadRecentPaths();
-		static void							   saveRecentPaths();
+
+		inline static std::list<std::string> recentDownloadCodes = std::list<std::string>();
+		static void							 enqueueNewDownloadCode( const std::string & );
+		static const std::string * const	 getRecentDownloadCode( const int p_index );
+
+		static void cleanRecentPaths();
+		static void loadRecentPaths();
+		static void saveRecentPaths();
 
 		const std::string & getTmpRepresentationDefaultName() const { return _tmpRepresentationDefaultName; };
 		void				setTmpRepresentationDefaultName( const std::string & p_representationDefaultName )

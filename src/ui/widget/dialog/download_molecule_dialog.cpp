@@ -1,5 +1,6 @@
 #include "download_molecule_dialog.hpp"
 #include "action/main.hpp"
+#include "setting.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
@@ -18,23 +19,13 @@ namespace VTX::UI::Widget::Dialog
 
 		return *_instance;
 	}
+	DownloadMoleculeDialog::DownloadMoleculeDialog( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
 
 	void DownloadMoleculeDialog::openDialog() { _getInstance().show(); }
 	void DownloadMoleculeDialog::openDialog( const QString & p_txt )
 	{
-		_getInstance()._fileLineEdit->setText( p_txt );
+		_getInstance()._fileComboBox->setEditText( p_txt );
 		openDialog();
-	}
-
-	DownloadMoleculeDialog::DownloadMoleculeDialog( QWidget * p_parent ) : BaseManualWidget( p_parent ) {}
-
-	void DownloadMoleculeDialog::cancelAction() { close(); }
-	void DownloadMoleculeDialog::openAction()
-	{
-		const std::string lineEditText = _fileLineEdit->text().toStdString();
-		VTX_ACTION( new Action::Main::OpenApi( lineEditText ) );
-
-		close();
 	}
 
 	void DownloadMoleculeDialog::_setupUi( const QString & p_name )
@@ -43,10 +34,13 @@ namespace VTX::UI::Widget::Dialog
 		this->setWindowFlag( Qt::WindowFlags::enum_type::FramelessWindowHint, true );
 		this->setWindowModality( Qt::WindowModality::ApplicationModal );
 
-		QVBoxLayout * verticalLayout = new QVBoxLayout( this );
+		QVBoxLayout * const verticalLayout = new QVBoxLayout( this );
 
-		_fileLineEdit = new QLineEdit( this );
-		verticalLayout->addWidget( _fileLineEdit );
+		_fileComboBox = new QComboBox( this );
+		_fileComboBox->setEditable( true );
+		_fileComboBox->setInsertPolicy( QComboBox::InsertPolicy::NoInsert );
+
+		verticalLayout->addWidget( _fileComboBox );
 
 		_dialogButtons
 			= new QDialogButtonBox( QDialogButtonBox::StandardButton::Cancel | QDialogButtonBox::StandardButton::Open,
@@ -54,7 +48,8 @@ namespace VTX::UI::Widget::Dialog
 									this );
 		verticalLayout->addWidget( _dialogButtons );
 
-		_fileLineEdit->setFocus();
+		_refreshComboBoxList();
+		_fileComboBox->setFocus();
 	}
 
 	void DownloadMoleculeDialog::_setupSlots()
@@ -68,6 +63,33 @@ namespace VTX::UI::Widget::Dialog
 	void DownloadMoleculeDialog::localize()
 	{
 		this->setWindowTitle( "Download Molecule" );
-		_fileLineEdit->setPlaceholderText( "Enter pdb id code" );
+		_fileComboBox->setPlaceholderText( "Enter pdb id code" );
 	}
+
+	void DownloadMoleculeDialog::showEvent( QShowEvent * p_event )
+	{
+		BaseManualWidget::showEvent( p_event );
+		_refreshComboBoxList();
+		_fileComboBox->setFocus();
+	}
+
+	void DownloadMoleculeDialog::cancelAction() { close(); }
+	void DownloadMoleculeDialog::openAction()
+	{
+		const std::string code = _fileComboBox->currentText().toStdString();
+		VTX_ACTION( new Action::Main::OpenApi( code ) );
+
+		close();
+	}
+
+	void DownloadMoleculeDialog::_refreshComboBoxList()
+	{
+		_fileComboBox->clear();
+		for ( const std::string & recentCodes : VTX_SETTING().recentDownloadCodes )
+		{
+			_fileComboBox->addItem( QString::fromStdString( recentCodes ) );
+		}
+		_fileComboBox->setCurrentIndex( 0 );
+	}
+
 } // namespace VTX::UI::Widget::Dialog

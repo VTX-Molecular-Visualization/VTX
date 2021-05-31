@@ -135,6 +135,11 @@ namespace VTX::Action::Main
 							{
 								VTX::Setting::enqueueNewLoadingPath( filepath );
 							}
+							else if ( result.sourceType == Worker::Loader::SOURCE_TYPE::BUFFER )
+							{
+								VTX::Setting::enqueueNewDownloadCode(
+									Util::Filesystem::getFileNameWithoutExtension( filepath ).string() );
+							}
 
 							if ( result.molecule != nullptr )
 							{
