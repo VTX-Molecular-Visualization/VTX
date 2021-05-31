@@ -38,15 +38,32 @@ namespace VTX
 				UNKNOWN,
 			};
 
+			enum class SOURCE_TYPE : int
+			{
+				FILE,
+				BUFFER,
+				UNKNOWN,
+			};
+
+			struct Result
+			{
+				Result() {};
+				Result( const SOURCE_TYPE p_sourceType ) : sourceType( p_sourceType ) {};
+
+			  public:
+				bool				  state	   = false;
+				Model::Molecule *	  molecule = nullptr;
+				Model::MeshTriangle * mesh	   = nullptr;
+
+				SOURCE_TYPE sourceType = SOURCE_TYPE::UNKNOWN;
+			};
+
 			explicit Loader( const FilePath & p_path ) { _paths.emplace_back( p_path ); }
 			explicit Loader( const std::vector<FilePath> & p_paths ) : _paths( p_paths ) {}
 			explicit Loader( const std::map<FilePath, std::string *> & p_buffers ) : _mapFileNameBuffer( p_buffers ) {}
 			~Loader() = default;
 
-			inline std::vector<Model::Molecule *> &		getMolecules() { return _molecules; }
-			inline std::vector<Model::MeshTriangle *> & getMeshes() { return _meshes; }
-
-			inline const std::map<FilePath *, bool> & getPathsState() const { return _pathState; }
+			inline const std::map<FilePath, Result> & getPathsResult() const { return _pathResult; }
 
 		  protected:
 			uint _run() override;
@@ -55,9 +72,7 @@ namespace VTX
 			std::vector<FilePath>			  _paths			 = std::vector<FilePath>();
 			std::map<FilePath, std::string *> _mapFileNameBuffer = std::map<FilePath, std::string *>();
 
-			std::map<FilePath *, bool>		   _pathState = std::map<FilePath *, bool>();
-			std::vector<Model::Molecule *>	   _molecules = std::vector<Model::Molecule *>();
-			std::vector<Model::MeshTriangle *> _meshes	  = std::vector<Model::MeshTriangle *>();
+			std::map<FilePath, Result> _pathResult = std::map<FilePath, Result>();
 
 			MODE _getMode( const FilePath & ) const;
 		};

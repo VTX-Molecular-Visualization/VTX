@@ -74,7 +74,7 @@ namespace VTX
 		_elapsedTimer.start();
 		_tickTimer.start();
 
-		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPathPtr( "4hhb.pdb" ) ) );
+		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPath( "4hhb.pdb" ) ) );
 		VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
 
 //#define RT_ENABLED

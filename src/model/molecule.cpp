@@ -46,7 +46,6 @@ namespace VTX
 		void Molecule::setPdbIdCode( const std::string & p_pdbId )
 		{
 			_pdbIdCode = p_pdbId;
-			setDisplayName( _pdbIdCode );
 		}
 
 		Chain & Molecule::addChain()

@@ -52,10 +52,12 @@ namespace VTX
 				emit logInfo( "Loading " + path.filename().string() );
 				MODE mode = _getMode( path );
 
+				_pathResult.emplace( path, Result( SOURCE_TYPE::FILE ) );
+
 				if ( mode == MODE::UNKNOWN )
 				{
 					emit logError( "Format not supported" );
-					_pathState.emplace( &path, false );
+					_pathResult[ path ].state = false;
 				}
 				else if ( mode == MODE::MOLECULE )
 				{
@@ -70,15 +72,15 @@ namespace VTX
 					try
 					{
 						reader->readFile( path, *molecule );
-						_molecules.emplace_back( molecule );
-						_pathState.emplace( &path, true );
+						_pathResult[ path ].molecule = molecule;
+						_pathResult[ path ].state	 = true;
 					}
 					catch ( const std::exception & p_e )
 					{
 						emit logError( "Error loading file" );
 						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( molecule );
-						_pathState.emplace( &path, false );
+						_pathResult[ path ].state = false;
 					}
 
 					delete reader;
@@ -91,15 +93,15 @@ namespace VTX
 					try
 					{
 						reader->readFile( path, *mesh );
-						_meshes.emplace_back( mesh );
-						_pathState.emplace( &path, true );
+						_pathResult[ path ].mesh  = mesh;
+						_pathResult[ path ].state = true;
 					}
 					catch ( const std::exception & p_e )
 					{
 						emit logError( "Error loading file" );
 						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( mesh );
-						_pathState.emplace( &path, false );
+						_pathResult[ path ].state = false;
 					}
 
 					delete reader;
@@ -112,12 +114,12 @@ namespace VTX
 					{
 						reader->readFile( path, VTXApp::get() );
 						emit logInfo( "App loaded " );
-						_pathState.emplace( &path, true );
+						_pathResult[ path ].state = true;
 					}
 					catch ( const std::exception & p_e )
 					{
 						emit logError( "Cannot load app: " + std::string( p_e.what() ) );
-						_pathState.emplace( &path, false );
+						_pathResult[ path ].state = false;
 					}
 
 					delete reader;
@@ -137,6 +139,8 @@ namespace VTX
 				emit logInfo( "Loading " + pair.first.filename().string() );
 				MODE mode = _getMode( pair.first );
 
+				_pathResult.emplace( pair.first, Result( SOURCE_TYPE::BUFFER ) );
+
 				if ( mode != MODE::MOLECULE )
 				{
 					emit logError( "Format not supported" );
@@ -151,13 +155,15 @@ namespace VTX
 					try
 					{
 						reader->readBuffer( *pair.second, pair.first, *molecule );
-						_molecules.emplace_back( molecule );
+						_pathResult[ pair.first ].molecule = molecule;
+						_pathResult[ pair.first ].state	   = true;
 					}
 					catch ( const std::exception & p_e )
 					{
 						emit logError( "Error loading file" );
 						emit logError( p_e.what() );
 						MVC::MvcManager::get().deleteModel( molecule );
+						_pathResult[ pair.first ].state = false;
 					}
 
 					delete reader;

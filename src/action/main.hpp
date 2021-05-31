@@ -10,6 +10,7 @@
 #include "define.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
+#include "model/molecule.hpp"
 #include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "network/network_manager.hpp"
@@ -121,23 +122,32 @@ namespace VTX::Action::Main
 				Worker::CallbackThread * callback = new Worker::CallbackThread(
 					[ loader ]( const uint p_code )
 					{
-						for ( Model::Molecule * const molecule : loader->getMolecules() )
+						for ( const std::pair<FilePath, Worker::Loader::Result> & pairFilResult :
+							  loader->getPathsResult() )
 						{
-							molecule->print();
-							VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
-							VTXApp::get().getScene().addMolecule( molecule );
-						}
-						for ( Model::MeshTriangle * const mesh : loader->getMeshes() )
-						{
-							VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, mesh ) );
-							VTXApp::get().getScene().addMesh( mesh );
-						}
+							const FilePath &			   filepath = pairFilResult.first;
+							const Worker::Loader::Result & result	= pairFilResult.second;
 
-						for ( std::pair<const FilePath *, bool> pairPathState : loader->getPathsState() )
-						{
-							if ( pairPathState.second )
+							if ( !result.state )
+								continue;
+
+							if ( result.sourceType == Worker::Loader::SOURCE_TYPE::FILE )
 							{
-								VTX::Setting::enqueueNewLoadingPath( *pairPathState.first );
+								VTX::Setting::enqueueNewLoadingPath( filepath );
+							}
+
+							if ( result.molecule != nullptr )
+							{
+								result.molecule->setDisplayName(
+									Util::Filesystem::getFileNameWithoutExtension( filepath ).string() );
+								result.molecule->print();
+								VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, result.molecule ) );
+								VTXApp::get().getScene().addMolecule( result.molecule );
+							}
+							else if ( result.mesh != nullptr )
+							{
+								VTX_EVENT( new Event::VTXEventPtr( Event::Global::MESH_CREATED, result.mesh ) );
+								VTXApp::get().getScene().addMesh( result.mesh );
 							}
 						}
 

@@ -82,7 +82,7 @@ namespace VTX
 
 			inline const FilePath getDataPath( const std::string & p_filename )
 			{
-				return FilePath( DATA_DIR.string() + "/" + p_filename );
+				return FilePath( DATA_DIR / p_filename );
 			}
 
 			inline const FilePath getShadersPath( const std::string & p_filename )
@@ -172,6 +172,11 @@ namespace VTX
 				file.close();
 
 				return result;
+			}
+
+			inline FilePath getFileNameWithoutExtension( const FilePath & p_path )
+			{
+				return p_path.filename().replace_extension();
 			}
 
 			inline void generateUniqueFileName( FilePath & p_path )
