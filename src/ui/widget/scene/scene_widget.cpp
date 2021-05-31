@@ -103,7 +103,8 @@ namespace VTX::UI::Widget::Scene
 		_layout->setContentsMargins( 0, 0, 0, 0 );
 
 		CustomWidget::DockWindowMainWidget<QScrollArea> * const scrollArea
-			= new CustomWidget::DockWindowMainWidget<QScrollArea>( this );
+			= new CustomWidget::DockWindowMainWidget<QScrollArea>(
+				Style::RENDER_PREFERED_SIZE, Style::RENDER_MINIMUM_SIZE, this );
 		scrollArea->setMinimumSize( Style::SCENE_MINIMUM_SIZE );
 
 		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,

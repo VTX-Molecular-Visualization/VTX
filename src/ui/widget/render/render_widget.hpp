@@ -40,8 +40,7 @@ namespace VTX::UI::Widget::Render
 		void wheelEvent( QWheelEvent * ) override;
 
 	  private:
-		CustomWidget::DockWindowMainWidget<OpenGLWidget> * const _openGLWidget
-						= new CustomWidget::DockWindowMainWidget<OpenGLWidget>( this );
+		CustomWidget::DockWindowMainWidget<OpenGLWidget> * _openGLWidget;
 	};
 } // namespace VTX::UI::Widget::Render
 #endif

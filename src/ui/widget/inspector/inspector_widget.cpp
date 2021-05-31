@@ -33,7 +33,8 @@ namespace VTX::UI::Widget::Inspector
 		_verticalLayout->setSpacing( 4 );
 		_verticalLayout->setContentsMargins( 0, 0, 0, 0 );
 
-		_scrollArea = new CustomWidget::DockWindowMainWidget<QScrollArea>( this );
+		_scrollArea = new CustomWidget::DockWindowMainWidget<QScrollArea>(
+			Style::INSPECTOR_PREFERED_SIZE, Style::INSPECTOR_MINIMUM_SIZE, this );
 		_scrollArea->setMinimumSize( Style::INSPECTOR_MINIMUM_SIZE );
 
 		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,

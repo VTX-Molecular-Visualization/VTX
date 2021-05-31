@@ -36,8 +36,8 @@ namespace VTX::UI::Widget::Render
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_openGLWidget->setSizeHint( Style::RENDER_PREFERED_SIZE );
-		_openGLWidget->setMinimumSizeHint( Style::RENDER_MINIMUM_SIZE );
+		_openGLWidget = new CustomWidget::DockWindowMainWidget<OpenGLWidget>(
+			Style::RENDER_PREFERED_SIZE, Style::RENDER_MINIMUM_SIZE, this );
 
 		setFocusPolicy( Qt::StrongFocus );
 		setFeatures( DockWidgetFeature::DockWidgetClosable );

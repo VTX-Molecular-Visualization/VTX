@@ -103,6 +103,10 @@ namespace VTX
 			void _setupSlots();
 
 			WindowMode _getWindowModeFromWindowState( const Qt::WindowStates & p_state );
+
+			void	 _delayRestoreState();
+			void	 _restoreStateDelayedAction();
+			QTimer * _restoreStateTimer;
 		};
 
 	} // namespace UI

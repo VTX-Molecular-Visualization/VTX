@@ -69,11 +69,10 @@ namespace VTX::UI::Widget::Console
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_mainWidget = new CustomWidget::DockWindowMainWidget<QWidget>( this );
-		_mainWidget->setSizeHint( Style::CONSOLE_PREFERED_SIZE );
-		_mainWidget->setMinimumSizeHint( Style::CONSOLE_MINIMUM_SIZE );
+		_mainWidget = new CustomWidget::DockWindowMainWidget<QWidget>(
+			Style::CONSOLE_MINIMUM_SIZE, Style::CONSOLE_PREFERED_SIZE, this );
 
-		_listWidget = new CustomWidget::DockWindowMainWidget<QListWidget>( this );
+		_listWidget = new QListWidget( this );
 		_listWidget->setObjectName( QString::fromUtf8( "logList" ) );
 
 		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,

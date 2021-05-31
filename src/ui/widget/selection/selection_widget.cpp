@@ -1,10 +1,10 @@
 #include "selection_widget.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "selection/selection_manager.hpp"
 #include "style.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/selection_view.hpp"
 #include "vtx_app.hpp"
-#include "selection/selection_manager.hpp"
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QtGlobal>
@@ -36,9 +36,8 @@ namespace VTX::UI::Widget::Selection
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_mainWidget = new CustomWidget::DockWindowMainWidget<QWidget>( this );
-		_mainWidget->setSizeHint( Style::SELECTION_PREFERED_SIZE );
-		_mainWidget->setMinimumSizeHint( Style::SELECTION_MINIMUM_SIZE );
+		_mainWidget = new CustomWidget::DockWindowMainWidget<QWidget>(
+			Style::SELECTION_PREFERED_SIZE, Style::SELECTION_MINIMUM_SIZE, this );
 		_mainWidget->setMinimumSize( Style::SELECTION_MINIMUM_SIZE );
 
 		QSizePolicy sizePolicy = QSizePolicy( QSizePolicy::Policy::MinimumExpanding,
@@ -61,7 +60,7 @@ namespace VTX::UI::Widget::Selection
 		_layout->addWidget( _selectionTypeComboBox );
 
 		setWidget( _mainWidget );
-		
+
 		_addSelectionModel( &VTX::Selection::SelectionManager::get().getSelectionModel() );
 	}
 
@@ -88,14 +87,13 @@ namespace VTX::UI::Widget::Selection
 		// this->setWindowTitle( QCoreApplication::translate( "SceneWidget", "Scene", nullptr ) );
 	}
 
-	void SelectionWidget::_addSelectionModel( Model::Selection * const p_selection ) 
+	void SelectionWidget::_addSelectionModel( Model::Selection * const p_selection )
 	{
 		View::UI::Widget::SelectionView * const item
 			= WidgetFactory::get().instantiateViewWidget<View::UI::Widget::SelectionView>(
 				p_selection, ID::View::UI_SELECTION, nullptr, "SelectionWidget" );
 		_layout->insertWidget( _layout->count() - 1, item );
 	}
-
 
 	void SelectionWidget::_populateItemList()
 	{

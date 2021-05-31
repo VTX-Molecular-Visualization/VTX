@@ -76,15 +76,15 @@ namespace VTX::UI
 	}
 	void MainWindow::initWindowLayout()
 	{
-		if ( hasValidLayoutSave() )
-			loadLastLayout();
-		else
-			restoreDefaultLayout();
-
 		if ( VTX_SETTING().getWindowFullscreen() )
 			setWindowMode( WindowMode::Fullscreen );
 		else
 			setWindowMode( WindowMode::Windowed );
+
+		if ( hasValidLayoutSave() )
+			loadLastLayout();
+		else
+			restoreDefaultLayout();
 	}
 
 	void MainWindow::_loadStyleSheet( const char * p_stylesheetPath )
@@ -98,35 +98,15 @@ namespace VTX::UI
 
 	void MainWindow::_setupSlots()
 	{
-		connect( _renderWidget,
-				 &Widget::Sequence::SequenceWidget::visibilityChanged,
-				 this,
-				 &MainWindow::_onDockWindowVisibilityChange );
-		connect( _sceneWidget,
-				 &Widget::Sequence::SequenceWidget::visibilityChanged,
-				 this,
-				 &MainWindow::_onDockWindowVisibilityChange );
-		connect( _inspectorWidget,
-				 &Widget::Sequence::SequenceWidget::visibilityChanged,
-				 this,
-				 &MainWindow::_onDockWindowVisibilityChange );
+		connect( _renderWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+		connect( _sceneWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+		connect( _inspectorWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 		// !V0.1
-		// connect( _selectionWidget,
-		//		 &Widget::Sequence::SequenceWidget::visibilityChanged,
-		//		 this,
-		//		 &MainWindow::_onDockWindowVisibilityChange );
-		connect( _consoleWidget,
-				 &Widget::Sequence::SequenceWidget::visibilityChanged,
-				 this,
-				 &MainWindow::_onDockWindowVisibilityChange );
-		connect( _settingWidget,
-				 &Widget::Sequence::SequenceWidget::visibilityChanged,
-				 this,
-				 &MainWindow::_onDockWindowVisibilityChange );
-		connect( _sequenceWidget,
-				 &Widget::Sequence::SequenceWidget::visibilityChanged,
-				 this,
-				 &MainWindow::_onDockWindowVisibilityChange );
+		// connect( _selectionWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange
+		// );
+		connect( _consoleWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+		connect( _settingWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+		connect( _sequenceWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 	}
 
 	void MainWindow::restoreDefaultLayout()
@@ -333,7 +313,6 @@ namespace VTX::UI
 			const Qt::WindowStates mask
 				= Qt::WindowState::WindowMinimized | Qt::WindowState::WindowMaximized | Qt::WindowState::WindowActive;
 			setWindowState( winState & mask );
-
 			break;
 		}
 
@@ -364,8 +343,41 @@ namespace VTX::UI
 								  QString::fromStdString( Setting::LAYOUT_SETTINGS_FOLDER ),
 								  QString::fromStdString( Setting::LAYOUT_SETTINGS_FILENAME ) );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
-		restoreState( settings.value( "WindowState" ).toByteArray() );
+
+		// Delayed restore state because all widgets grows when restore in maximized (sizes are stored when maximized,
+		// but are restore to minimized and then grow when window state restored.
+		// Will be usefull when sizes of layouts not grows with window growing.
+		_delayRestoreState();
 	}
+
+	void MainWindow::_delayRestoreState()
+	{
+		// Hide all stuff
+		_renderWidget->hide();
+		_sceneWidget->hide();
+		_consoleWidget->hide();
+		_inspectorWidget->hide();
+		//_selectionWidget->hide();
+		_settingWidget->hide();
+
+		_restoreStateTimer = new QTimer( this );
+		_restoreStateTimer->setSingleShot( true );
+		connect( _restoreStateTimer, &QTimer::timeout, this, &MainWindow::_restoreStateDelayedAction );
+		_restoreStateTimer->start( 20 );
+	}
+	void MainWindow::_restoreStateDelayedAction()
+	{
+		const QSettings settings( QSettings::IniFormat,
+								  QSettings::Scope::UserScope,
+								  QString::fromStdString( Setting::LAYOUT_SETTINGS_FOLDER ),
+								  QString::fromStdString( Setting::LAYOUT_SETTINGS_FILENAME ) );
+
+		restoreState( settings.value( "WindowState" ).toByteArray() );
+		delete _restoreStateTimer;
+		_restoreStateTimer = nullptr;
+		show();
+	}
+
 	void MainWindow::saveLayout() const
 	{
 		QSettings settings( QSettings::IniFormat,

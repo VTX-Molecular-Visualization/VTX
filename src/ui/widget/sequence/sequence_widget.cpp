@@ -71,9 +71,8 @@ namespace VTX::UI::Widget::Sequence
 	{
 		BaseManualWidget::_setupUi( p_name );
 
-		_scrollArea = new CustomWidget::DockWindowMainWidget<QScrollArea>( this );
-		_scrollArea->setSizeHint( Style::SEQUENCE_PREFERED_SIZE );
-		_scrollArea->setSizeHint( Style::SEQUENCE_MINIMUM_SIZE );
+		_scrollArea = new CustomWidget::DockWindowMainWidget<QScrollArea>(
+			Style::SEQUENCE_PREFERED_SIZE, Style::SEQUENCE_MINIMUM_SIZE, this );
 		//_scrollArea->setSizePolicy( QSizePolicy::Policy::Preferred, QSizePolicy::Policy::Preferred );
 
 		_scrollArea->setContentsMargins( 0, 0, 0, 0 );

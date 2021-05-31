@@ -14,6 +14,13 @@ namespace VTX::UI::Widget::CustomWidget
 	class DockWindowMainWidget : public W
 	{
 	  public:
+		DockWindowMainWidget( const QSize & p_sizeHint,
+							  const QSize & p_minimumSizeHint,
+							  QWidget *		p_parent = nullptr ) :
+			_sizeHint( p_sizeHint ),
+			_sizeHintOverrided( true ), _minimumSizeHint( p_minimumSizeHint ), _minimumSizeHintOverrided( true ),
+			W( p_parent ) {};
+
 		DockWindowMainWidget( QWidget * p_parent = nullptr ) : W( p_parent ) {};
 
 		QSize sizeHint() const override
