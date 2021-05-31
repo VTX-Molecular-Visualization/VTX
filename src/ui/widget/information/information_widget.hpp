@@ -8,12 +8,12 @@
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include <QDialog>
+#include <QImageReader>
 #include <QMovie>
 #include <QPushButton>
 #include <QShowEvent>
 #include <QString>
 #include <QWidget>
-#include <QImageReader>
 
 namespace VTX::UI::Widget::Information
 {
@@ -45,6 +45,7 @@ namespace VTX::UI::Widget::Information
 		QMovie * _movie = nullptr;
 
 		void _displayMovieError( QImageReader::ImageReaderError p_error );
+		void _onFrameChange( const int p_frame );
 	};
 } // namespace VTX::UI::Widget::Information
 #endif

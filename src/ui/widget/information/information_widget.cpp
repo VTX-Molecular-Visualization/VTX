@@ -39,7 +39,7 @@ namespace VTX::UI::Widget::Information
 		{
 			_movie = new QMovie( this );
 			_movie->setFileName( ":/video/video_intro.gif" );
-			vtxLogo->setFixedSize( QSize( 256, 144 ) );
+			vtxLogo->setFixedSize( QSize( 131, 143 ) );
 			vtxLogo->setAutoFillBackground( true );
 			vtxLogo->setMovie( _movie );
 		}
@@ -152,6 +152,7 @@ namespace VTX::UI::Widget::Information
 
 	void InformationWidget::_setupSlots()
 	{
+		connect( _movie, &QMovie::frameChanged, this, &InformationWidget::_onFrameChange );
 		connect( _movie, &QMovie::error, this, &InformationWidget::_displayMovieError );
 	};
 	void InformationWidget::localize()
@@ -175,6 +176,10 @@ namespace VTX::UI::Widget::Information
 		return QString::fromStdString( Util::Filesystem::readPath( Util::Filesystem::LICENSE_PATH ) );
 	}
 
+	void InformationWidget::_onFrameChange( const int p_frame )
+	{
+		_movie->setPaused( p_frame == _movie->frameCount() - 1 );
+	}
 	void InformationWidget::_displayMovieError( QImageReader::ImageReaderError p_error )
 	{
 		VTX_ERROR( "Error when loading video : " + std::to_string( int( p_error ) ) );
