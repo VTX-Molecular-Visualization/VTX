@@ -46,6 +46,11 @@ namespace VTX::UI::Widget::Information
 
 		void _displayMovieError( QImageReader::ImageReaderError p_error );
 		void _onFrameChange( const int p_frame );
+
+		void _goToWebsite();
+		void _goToGit();
+		void _goToDocumentation();
+		void _goToBugReport();
 	};
 } // namespace VTX::UI::Widget::Information
 #endif

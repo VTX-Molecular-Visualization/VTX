@@ -2,6 +2,7 @@
 #include "define.hpp"
 #include "style.hpp"
 #include "util/filesystem.hpp"
+#include <QDesktopServices>
 #include <QLabel>
 #include <QPushButton>
 #include <QScrollArea>
@@ -154,6 +155,11 @@ namespace VTX::UI::Widget::Information
 	{
 		connect( _movie, &QMovie::frameChanged, this, &InformationWidget::_onFrameChange );
 		connect( _movie, &QMovie::error, this, &InformationWidget::_displayMovieError );
+
+		connect( _websiteButton, &QPushButton::clicked, this, &InformationWidget::_goToWebsite );
+		connect( _gitButton, &QPushButton::clicked, this, &InformationWidget::_goToGit );
+		connect( _docButton, &QPushButton::clicked, this, &InformationWidget::_goToDocumentation );
+		connect( _bugReportButton, &QPushButton::clicked, this, &InformationWidget::_goToBugReport );
 	};
 	void InformationWidget::localize()
 	{
@@ -185,4 +191,14 @@ namespace VTX::UI::Widget::Information
 		VTX_ERROR( "Error when loading video : " + std::to_string( int( p_error ) ) );
 	}
 
+	void InformationWidget::_goToWebsite() { QDesktopServices::openUrl( QString::fromStdString( VTX_WEBSITE_URL ) ); }
+	void InformationWidget::_goToGit() { QDesktopServices::openUrl( QString::fromStdString( VTX_GIT_URL ) ); }
+	void InformationWidget::_goToDocumentation()
+	{
+		QDesktopServices::openUrl( QString::fromStdString( VTX_DOCUMENTATION_URL ) );
+	}
+	void InformationWidget::_goToBugReport()
+	{
+		QDesktopServices::openUrl( QString::fromStdString( VTX_BUG_REPORT_URL ) );
+	}
 } // namespace VTX::UI::Widget::Information

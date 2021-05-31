@@ -47,6 +47,11 @@ namespace VTX
 	constexpr int	  OPENGL_VERSION_MINOR = 5;
 	const std::string GLSL_VERSION		   = "#version 450";
 
+	const std::string VTX_WEBSITE_URL		= "http://vtx.drugdesign.fr";
+	const std::string VTX_GIT_URL			= "http://vtx.drugdesign.fr";
+	const std::string VTX_DOCUMENTATION_URL = "http://vtx.drugdesign.fr";
+	const std::string VTX_BUG_REPORT_URL	= "http://vtx.drugdesign.fr";
+
 	constexpr bool DEV_MODE = true;
 
 	// API.
