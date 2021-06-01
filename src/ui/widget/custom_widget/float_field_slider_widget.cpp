@@ -1,5 +1,6 @@
 #include "float_field_slider_widget.hpp"
 #include "util/math.hpp"
+#include "util/ui.hpp"
 #include <QHBoxLayout>
 #include <cmath>
 #include <iomanip>
@@ -24,6 +25,8 @@ namespace VTX::UI::Widget::CustomWidget
 
 		_slider = new QSlider( Qt::Orientation::Horizontal, this );
 		_slider->setContentsMargins( 0, 0, 0, 0 );
+		Util::UI::filterEventOnWidget( _slider, QEvent::Type::Wheel );
+
 		_textField = new QLineEdit( this );
 		_textField->setContentsMargins( 0, 0, 0, 0 );
 
