@@ -196,11 +196,12 @@ namespace VTX
 			}
 			inline void refreshStructure()
 			{
+				computeAllRepresentationData();
 				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 				refreshBondsBuffer();
 				refreshSecondaryStructure();
 			}
-			
+
 			void refreshSelection( const Selection::MapChainIds * const );
 			void refreshBondsBuffer();
 
