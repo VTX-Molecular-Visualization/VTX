@@ -55,7 +55,8 @@ namespace VTX::UI::Widget::Settings
 		CustomWidget::IntegerFieldWidget * _defaultTrajectorySpeedWidget	= nullptr;
 
 		// Data
-		QComboBox * _symbolDisplayModeWidget = nullptr;
+		QComboBox *	  _symbolDisplayModeWidget = nullptr;
+		QPushButton * _restoreLayoutButton	   = nullptr;
 
 		int _currentRow = 0;
 
@@ -77,8 +78,11 @@ namespace VTX::UI::Widget::Settings
 		void _changeSymbolDisplayMode( const int p_displayMode );
 
 		void _restoreSettingsAction();
+		void _restoreLayoutAction();
 
 		void _addItemInLayout( QWidget * const p_item, const QString & p_label );
+		void _addItemInLayout( QWidget * const p_item );
+
 		void _startSection( const QString & p_title );
 		void _finishSection();
 	};

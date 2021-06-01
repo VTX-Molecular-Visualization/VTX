@@ -186,7 +186,7 @@ namespace VTX::UI
 		if ( _settingWidget->isVisible() )
 			_settingWidget->hide();
 
-		if ( _settingWidget->isVisible() )
+		if ( _informationWidget->isVisible() )
 			_informationWidget->hide();
 	}
 

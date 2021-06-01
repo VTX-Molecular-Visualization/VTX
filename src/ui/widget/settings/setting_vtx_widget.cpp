@@ -1,10 +1,12 @@
 #include "setting_vtx_widget.hpp"
 #include "action/action_manager.hpp"
+#include "action/main.hpp"
 #include "action/setting.hpp"
 #include "setting.hpp"
 #include "style.hpp"
 #include "trajectory/trajectory_enum.hpp"
 #include "ui/dialog.hpp"
+#include "ui/main_window.hpp"
 #include "ui/widget_factory.hpp"
 #include "util/ui.hpp"
 #include "vtx_app.hpp"
@@ -75,8 +77,8 @@ namespace VTX::UI::Widget::Settings
 		for ( const std::string & symbolModeStr : Style::SYMBOL_DISPLAY_MODE_STRING )
 			_symbolDisplayModeWidget->addItem( QString::fromStdString( symbolModeStr ) );
 
+		_restoreLayoutButton   = new QPushButton( this );
 		_restoreSettingsButton = new QPushButton( this );
-		_restoreSettingsButton->setText( "Restore" );
 
 		_startSection( "Controller" );
 		_addItemInLayout( _activeControllerElasticityWidget, "Activate elasticity" );
@@ -101,6 +103,7 @@ namespace VTX::UI::Widget::Settings
 
 		_startSection( "Data" );
 		_addItemInLayout( _symbolDisplayModeWidget, "Symbol display mode" );
+		_addItemInLayout( _restoreLayoutButton );
 		_finishSection();
 
 		bottomLayout->addStretch( 1000 );
@@ -163,10 +166,15 @@ namespace VTX::UI::Widget::Settings
 				 QOverload<int>::of( ( &QComboBox::currentIndexChanged ) ),
 				 this,
 				 &SettingVTXWidget::_changeSymbolDisplayMode );
+		connect( _restoreLayoutButton, &QPushButton::clicked, this, &SettingVTXWidget::_restoreLayoutAction );
 
 		connect( _restoreSettingsButton, &QPushButton::clicked, this, &SettingVTXWidget::_restoreSettingsAction );
 	};
-	void SettingVTXWidget::localize() {};
+	void SettingVTXWidget::localize()
+	{
+		_restoreLayoutButton->setText( "Restore layout" );
+		_restoreSettingsButton->setText( "Restore" );
+	};
 
 	void SettingVTXWidget::_refreshData()
 	{
@@ -281,7 +289,11 @@ namespace VTX::UI::Widget::Settings
 		if ( VTX_SETTING().getSymbolDisplayMode() != displayMode )
 			VTX_ACTION( new Action::Setting::ChangeSymbolDisplayMode( displayMode ) );
 	}
-
+	void SettingVTXWidget::_restoreLayoutAction()
+	{
+		VTX_ACTION( new Action::Main::RestoreWindowLayout() );
+		VTXApp::get().getMainWindow().showWidget( ID::UI::Window::SETTINGS, true );
+	}
 	void SettingVTXWidget::_restoreSettingsAction()
 	{
 		UI::Dialog::confirmActionDialog(
@@ -297,6 +309,11 @@ namespace VTX::UI::Widget::Settings
 		_settingsLayout->addWidget( labelWidget, _currentRow, 0 );
 		_settingsLayout->addWidget( p_item, _currentRow, 1 );
 
+		_currentRow++;
+	}
+	void SettingVTXWidget::_addItemInLayout( QWidget * const p_item )
+	{
+		_settingsLayout->addWidget( p_item, _currentRow, 0, 1, 2, Qt::AlignmentFlag::AlignCenter );
 		_currentRow++;
 	}
 	void SettingVTXWidget::_startSection( const QString & p_title )

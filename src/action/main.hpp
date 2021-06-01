@@ -19,6 +19,7 @@
 #include "state/visualization.hpp"
 #include "tool/logger.hpp"
 #include "ui/dialog.hpp"
+#include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "worker/loader.hpp"
@@ -349,6 +350,15 @@ namespace VTX::Action::Main
 		explicit ClearConsoleInterface() {}
 
 		virtual void execute() override { VTX_EVENT( new Event::VTXEvent( Event::Global::CLEAR_CONSOLE ) ); };
+		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
+	};
+
+	class RestoreWindowLayout : public BaseAction
+	{
+	  public:
+		explicit RestoreWindowLayout() {}
+
+		virtual void execute() override { VTXApp::get().getMainWindow().restoreDefaultLayout(); };
 		virtual void displayUsage() override { VTX_INFO( "No parameters" ); }
 	};
 
