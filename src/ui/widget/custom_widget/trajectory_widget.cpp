@@ -3,6 +3,7 @@
 #include "action/molecule.hpp"
 #include "trajectory/trajectory_enum.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/ui.hpp"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
@@ -39,6 +40,8 @@ namespace VTX::UI::Widget::CustomWidget
 		QLabel * playModeLabel = new QLabel( this );
 		playModeLabel->setText( "Play mode" );
 		_playModeWidget = new CustomWidget::QComboBoxMultiField( this );
+		Util::UI::filterEventOnWidget( _playModeWidget, QEvent::Type::Wheel );
+
 		_fillPlayModeComboBox();
 
 		QLabel * speedLabel = new QLabel( this );

@@ -2,6 +2,7 @@
 #include "ui/main_window.hpp"
 #include "ui/widget/settings/setting_widget.hpp"
 #include "ui/widget_factory.hpp"
+#include "util/ui.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX::UI::Widget::CustomWidget
@@ -15,6 +16,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_layout = new QHBoxLayout( this );
 
 		_colorModeComboBox = new QComboBoxMultiField( this );
+		Util::UI::filterEventOnWidget( _colorModeComboBox, QEvent::Type::Wheel );
 
 		QStringList colorModeList = QStringList();
 		for ( const std::string colorModeStrings : Generic::COLOR_MODE_STRING )

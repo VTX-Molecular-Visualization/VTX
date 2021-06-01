@@ -1,5 +1,6 @@
 #include "integer_field_widget.hpp"
 #include "util/math.hpp"
+#include "util/ui.hpp"
 #include <QHBoxLayout>
 #include <string>
 
@@ -17,12 +18,14 @@ namespace VTX::UI::Widget::CustomWidget
 
 		QHBoxLayout * const mainLayout = new QHBoxLayout( this );
 		mainLayout->setSpacing( 2 );
-		mainLayout->setContentsMargins(0, 0, 0, 0);
+		mainLayout->setContentsMargins( 0, 0, 0, 0 );
 
-		_slider	   = new QSlider( Qt::Orientation::Horizontal, this );
-		_slider->setContentsMargins(0, 0, 0, 0);
+		_slider = new QSlider( Qt::Orientation::Horizontal, this );
+		_slider->setContentsMargins( 0, 0, 0, 0 );
+		Util::UI::filterEventOnWidget( _slider, QEvent::Type::Wheel );
+
 		_textField = new QLineEdit( this );
-		_textField->setContentsMargins(0, 0, 0, 0);
+		_textField->setContentsMargins( 0, 0, 0, 0 );
 
 		mainLayout->addWidget( _slider, 10 );
 		mainLayout->addWidget( _textField, 1 );
