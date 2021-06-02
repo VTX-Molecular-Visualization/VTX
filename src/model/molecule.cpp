@@ -43,10 +43,7 @@ namespace VTX
 				MVC::MvcManager::get().deleteModel( _secondaryStructure );
 		}
 
-		void Molecule::setPdbIdCode( const std::string & p_pdbId )
-		{
-			_pdbIdCode = p_pdbId;
-		}
+		void Molecule::setPdbIdCode( const std::string & p_pdbId ) { _pdbIdCode = p_pdbId; }
 
 		Chain & Molecule::addChain()
 		{
@@ -925,6 +922,7 @@ namespace VTX
 				}
 			}
 
+			/*
 			for ( const uint & bondId : parent->getIndexExtraBondStart() )
 			{
 				const Bond * const bond = _bonds[ bondId ];
@@ -953,6 +951,7 @@ namespace VTX
 						std::find( otherExtraResidues.begin(), otherExtraResidues.end(), bondId ) );
 				}
 			}
+			*/
 
 			// Delete Atom
 			if ( p_delete )
