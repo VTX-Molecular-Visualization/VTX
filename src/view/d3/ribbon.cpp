@@ -46,11 +46,19 @@ namespace VTX::View::D3
 				continue;
 			}
 
-			const Representation::TargetRange & data = representationData.second.getRibbons();
+			const Representation::TargetRange & target = representationData.second.getRibbons();
+			_model->getBuffer()->getVao().multiDrawElement( Renderer::GL::VertexArray::DrawMode::PATCHES,
+															(GLsizei *)( &target.counts ),
+															Renderer::GL::VertexArray::Type::UNSIGNED_INT,
+															(void **)( &target.indices ),
+															GLsizei( target.indices.size() ) );
+
+			/*
 			_model->getBuffer()->getVao().drawElement( Renderer::GL::VertexArray::DrawMode::PATCHES,
 													   data.second,
 													   Renderer::GL::VertexArray::Type::UNSIGNED_INT,
 													   (void *)( data.first * sizeof( uint ) ) );
+													   */
 		}
 		//_gl()->glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	}

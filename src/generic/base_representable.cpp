@@ -134,6 +134,8 @@ namespace VTX
 					}
 				}
 			}
+
+			VTX_DEBUG( "computeRepresentationTargets" );
 		}
 
 		bool BaseRepresentable::_isResidueVisible( const Model::Residue & p_residue ) const

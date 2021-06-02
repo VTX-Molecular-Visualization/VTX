@@ -11,7 +11,11 @@ namespace VTX
 {
 	namespace Representation
 	{
-		using TargetRange = std::pair<uint, uint>; // <index, count>
+		struct TargetRange
+		{
+			std::vector<uint> indices = std::vector<uint>();
+			std::vector<uint> counts  = std::vector<uint>();
+		};
 
 		class RepresentationTarget
 		{
@@ -30,12 +34,13 @@ namespace VTX
 			}
 
 		  private:
-			TargetRange _atoms	 = TargetRange( 0, 0 );
-			TargetRange _bonds	 = TargetRange( 0, 0 );
-			TargetRange _ribbons = TargetRange( 0, 0 );
+			TargetRange _atoms	 = TargetRange();
+			TargetRange _bonds	 = TargetRange();
+			TargetRange _ribbons = TargetRange();
 
 			void _append( TargetRange & p_range, const uint p_index, const uint p_count )
 			{
+				/*
 				// Init.
 				if ( p_range.second == 0 )
 				{
@@ -57,6 +62,7 @@ namespace VTX
 				else
 				{
 				}
+				*/
 			}
 		};
 	} // namespace Representation

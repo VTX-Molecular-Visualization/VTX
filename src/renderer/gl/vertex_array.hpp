@@ -134,10 +134,10 @@ namespace VTX::Renderer::GL
 									  const GLsizei * const		   p_count,
 									  const Type				   p_type,
 									  const GLvoid * const * const p_offset,
-									  const GLsizei				   primcount ) const
+									  const GLsizei				   p_primcount ) const
 		{
 			bind();
-			_gl->glMultiDrawElements( GLenum( p_mode ), p_count, GLenum( p_type ), p_offset, primcount );
+			_gl->glMultiDrawElements( GLenum( p_mode ), p_count, GLenum( p_type ), p_offset, p_primcount );
 			unbind();
 			VTX_STAT().drawCalls++;
 		}
