@@ -69,9 +69,9 @@ namespace VTX
 			case Generic::REPRESENTATION::STICK:
 				// !V0.1
 				// case Generic::REPRESENTATION::TRACE:
-				//	res = Representation::FlagDataTargeted( Representation::FlagDataTargeted::ATOM
-				//											| Representation::FlagDataTargeted::BOND );
-				//	break;
+				res = Representation::FlagDataTargeted( Representation::FlagDataTargeted::ATOM
+														| Representation::FlagDataTargeted::BOND );
+				break;
 
 			case Generic::REPRESENTATION::STICK_AND_CARTOON:
 			case Generic::REPRESENTATION::BALL_AND_STICK_AND_CARTOON:
