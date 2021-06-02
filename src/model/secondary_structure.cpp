@@ -257,6 +257,9 @@ namespace VTX
 				{
 					const Residue * const residue = _molecule->getResidue( residueIdx );
 
+					if ( residue == nullptr )
+						continue;
+
 					switch ( residue->getRepresentation()->getSecondaryStructureColorMode() )
 					{
 					case Generic::SECONDARY_STRUCTURE_COLOR_MODE::JMOL:
