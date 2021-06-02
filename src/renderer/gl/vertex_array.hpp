@@ -107,13 +107,37 @@ namespace VTX::Renderer::GL
 			unbind();
 			VTX_STAT().drawCalls++;
 		}
-		inline void drawElement( const DrawMode p_mode,
-								 const GLsizei	p_count,
-								 const Type		p_type,
-								 const GLvoid * p_offset = 0 ) const
+
+		inline void multiDrawArray( const DrawMode		  p_mode,
+									const GLint * const	  p_first,
+									const GLsizei * const p_count,
+									const GLsizei		  p_primcount ) const
+		{
+			bind();
+			_gl->glMultiDrawArrays( GLenum( p_mode ), p_first, p_count, p_primcount );
+			unbind();
+			VTX_STAT().drawCalls++;
+		}
+
+		inline void drawElement( const DrawMode		  p_mode,
+								 const GLsizei		  p_count,
+								 const Type			  p_type,
+								 const GLvoid * const p_offset = 0 ) const
 		{
 			bind();
 			_gl->glDrawElements( GLenum( p_mode ), p_count, GLenum( p_type ), p_offset );
+			unbind();
+			VTX_STAT().drawCalls++;
+		}
+
+		inline void multiDrawElement( const DrawMode			   p_mode,
+									  const GLsizei * const		   p_count,
+									  const Type				   p_type,
+									  const GLvoid * const * const p_offset,
+									  const GLsizei				   primcount ) const
+		{
+			bind();
+			_gl->glMultiDrawElements( GLenum( p_mode ), p_count, GLenum( p_type ), p_offset, primcount );
 			unbind();
 			VTX_STAT().drawCalls++;
 		}
