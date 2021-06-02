@@ -124,15 +124,6 @@ namespace VTX
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::BOND ) )
 				{
 					representationTargets.appendBonds( residue->getIndexFirstBond() * 2, residue->getBondCount() * 2 );
-
-					for ( const uint bond : residue->getIndexExtraBondStart() )
-					{
-						representationTargets.appendBonds( bond * 2, 2 );
-					}
-					for ( const uint bond : residue->getIndexExtraBondEnd() )
-					{
-						representationTargets.appendBonds( bond * 2, 2 );
-					}
 				}
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::RIBBON ) )
 				{

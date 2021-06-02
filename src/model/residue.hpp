@@ -96,21 +96,17 @@ namespace VTX
 			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
 			inline const std::string & getSymbolShort() const { return SYMBOL_SHORT_STR[ (int)_symbol ]; }
 
-			inline uint						 getIndexFirstAtom() const { return _indexFirstAtom; };
-			inline void						 setIndexFirstAtom( const uint p_id ) { _indexFirstAtom = p_id; };
-			inline uint						 getAtomCount() const { return _atomCount; };
-			void							 setAtomCount( const uint p_count );
-			inline uint						 getIndexFirstBond() const { return _indexFirstBond; };
-			inline void						 setIndexFirstBond( const uint p_id ) { _indexFirstBond = p_id; };
-			inline uint						 getBondCount() const { return _bondCount; };
-			inline void						 setBondCount( const uint p_count ) { _bondCount = p_count; };
-			inline const std::vector<uint> & getIndexExtraBondStart() const { return _indexExtraBondStart; };
-			inline std::vector<uint> &		 getIndexExtraBondStart() { return _indexExtraBondStart; };
-			inline const std::vector<uint> & getIndexExtraBondEnd() const { return _indexExtraBondEnd; };
-			inline std::vector<uint> &		 getIndexExtraBondEnd() { return _indexExtraBondEnd; };
-			inline uint						 getRealAtomCount() const { return _realAtomCount; };
-			void							 removeToAtoms( const uint p_atomIndex );
-			inline char						 getInsertionCode() const { return _insertionCode; }
+			inline uint		  getIndexFirstAtom() const { return _indexFirstAtom; };
+			inline void		  setIndexFirstAtom( const uint p_id ) { _indexFirstAtom = p_id; };
+			inline uint		  getAtomCount() const { return _atomCount; };
+			void			  setAtomCount( const uint p_count );
+			inline uint		  getIndexFirstBond() const { return _indexFirstBond; };
+			inline void		  setIndexFirstBond( const uint p_id ) { _indexFirstBond = p_id; };
+			inline uint		  getBondCount() const { return _bondCount; };
+			inline void		  setBondCount( const uint p_count ) { _bondCount = p_count; };
+			inline uint		  getRealAtomCount() const { return _realAtomCount; };
+			void			  removeToAtoms( const uint p_atomIndex );
+			inline char		  getInsertionCode() const { return _insertionCode; }
 			inline void		  setInsertionCode( char p_insertionCode ) { _insertionCode = p_insertionCode; }
 			inline bool		  hasInsertionCode() const { return _insertionCode != ' '; }
 			inline Atom::TYPE getAtomType() const { return _atomType; }
@@ -139,13 +135,11 @@ namespace VTX
 
 			SYMBOL _symbol = SYMBOL::UNKNOWN;
 
-			uint					 _indexFirstAtom	  = 0;
-			uint					 _atomCount			  = 0;
-			uint					 _realAtomCount		  = 0;
-			uint					 _indexFirstBond	  = 0;
-			uint					 _bondCount			  = 0;
-			std::vector<uint>		 _indexExtraBondStart = std::vector<uint>();
-			std::vector<uint>		 _indexExtraBondEnd	  = std::vector<uint>();
+			uint					 _indexFirstAtom	 = 0;
+			uint					 _atomCount			 = 0;
+			uint					 _realAtomCount		 = 0;
+			uint					 _indexFirstBond	 = 0;
+			uint					 _bondCount			 = 0;
 			Atom::TYPE				 _atomType			 = Atom::TYPE::NORMAL; // Set to solvent/ion only if full of it.
 			SecondaryStructure::TYPE _secondaryStructure = SecondaryStructure::TYPE::COIL;
 			char					 _insertionCode		 = ' ';

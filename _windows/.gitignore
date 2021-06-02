@@ -9,5 +9,5 @@ Debug/
 Release/
 RelWithDebInfo/
 build/
-imgui.ini
 VTX_autogen/
+enc_temp_folder/

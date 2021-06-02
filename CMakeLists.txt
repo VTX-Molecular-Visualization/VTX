@@ -17,25 +17,25 @@ message("Downloading depdendencies...")
 
 # Download dependencies.
 set(LIB_URL "https://www.simonguionniere.com/private/VTX")
-set(ZIP_LIB "lib.zip")
-set(ZIP_LIB_SRC "lib_src.zip")
-set(FFMPEG "ffmpeg.exe")
+#set(ZIP_LIB "lib.zip")
+#set(ZIP_LIB_SRC "lib_src.zip")
+#set(FFMPEG "ffmpeg.exe")
 
-if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${PATH_LIB})
-  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${ZIP_LIB})
-    file(DOWNLOAD ${LIB_URL}/${ZIP_LIB} ${CMAKE_SOURCE_DIR}/${ZIP_LIB} SHOW_PROGRESS)
-	execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${CMAKE_SOURCE_DIR}/${ZIP_LIB} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB})
-	file(REMOVE ${CMAKE_SOURCE_DIR}/${ZIP_LIB})
-  endif()
-endif()
+#if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${PATH_LIB})
+#  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${ZIP_LIB})
+#    file(DOWNLOAD ${LIB_URL}/${ZIP_LIB} ${CMAKE_SOURCE_DIR}/${ZIP_LIB} SHOW_PROGRESS)
+#	execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${CMAKE_SOURCE_DIR}/${ZIP_LIB} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB})
+#	file(REMOVE ${CMAKE_SOURCE_DIR}/${ZIP_LIB})
+# endif()
+#endif()
 
-if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
-  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC})
-    file(DOWNLOAD ${LIB_URL}/${ZIP_LIB_SRC} ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC} SHOW_PROGRESS)
-	execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
-	file(REMOVE ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC})
-  endif()
-endif()
+#if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
+#  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC})
+#    file(DOWNLOAD ${LIB_URL}/${ZIP_LIB_SRC} ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC} SHOW_PROGRESS)
+#	execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
+#	file(REMOVE ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC})
+#  endif()
+#endif()
 
 
 if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
@@ -134,6 +134,10 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 link_directories(${PATH_LIB}/assimp/lib/x64)
 link_directories(${PATH_LIB}/chemfiles/lib/x64)
 
+# Product properties.
+#add_definitions(-DVER_COMPANYNAME_STR="LALALALAL")
+#add_definitions(-DVER_FILEVERSION_STR="6,1,0.0")
+	
 # Declare executable with source files.
 add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESOURCES})
 
@@ -219,7 +223,7 @@ set_property(TARGET VTX PROPERTY AUTOUIC_OPTIONS "--no-autoconnection")
 if(CMAKE_COMPILER_IS_GNUCC)
     target_compile_options(VTX PRIVATE "-Wall -Wextra")
 elseif(MSVC)
-	#General.
+	# General.
     target_compile_options(VTX PRIVATE "/W3")  # Warning level 3.
 	target_compile_options(VTX PRIVATE "/WX")  # Warnings as errors.
 	target_compile_options(VTX PRIVATE "/MP")  # Multicore compilation.
@@ -227,7 +231,7 @@ elseif(MSVC)
 	target_compile_options(VTX PRIVATE "/execution-charset:utf-8") # To display Angstrom symbol for example.
 	#target_compile_options(VTX PRIVATE "/DEBUG:FASTLINK") # https://devblogs.microsoft.com/cppblog/debugfastlink-for-vs2015-update-1/
 	
-	#Optimization.
+	# Optimization.
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/O2>")
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/Ob2>")
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:Release>:/Ot>")
@@ -237,10 +241,10 @@ elseif(MSVC)
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:RelWithDebInfo>:/Ot>")
 	target_compile_options(VTX PRIVATE "$<$<CONFIG:RelWithDebInfo>:/Oi>")
 	
-	#Code Generation.
+	# Code Generation.
 	target_compile_options(VTX PRIVATE "/fp:fast") # Floating Point Model.
 	
-	#Preprocessor definitions
+	# Preprocessor definitions
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-DNOMINMAX)
 	

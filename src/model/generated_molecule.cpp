@@ -278,6 +278,7 @@ namespace VTX::Model
 
 				const uint generatedBondIndex = getBondCount() - 1;
 
+				/*
 				Model::Residue * const startResidue = getAtom( indexFirstAtom )->getResiduePtr();
 				Model::Residue * const endResidue	= getAtom( indexSecondAtom )->getResiduePtr();
 				const bool			   extraBound	= startResidue != endResidue;
@@ -288,6 +289,7 @@ namespace VTX::Model
 					endResidue->getIndexExtraBondEnd().emplace_back( generatedBondIndex );
 				}
 				else
+				*/
 				{
 					if ( getAtom( indexFirstAtom )->getResiduePtr() != previousResidue )
 					{
@@ -392,10 +394,12 @@ namespace VTX::Model
 
 				_extractBond( bondData );
 
+				/*
 				Model::Residue * const firstResidue = getAtom( bondData.getFirstIndex() )->getResiduePtr();
 				firstResidue->getIndexExtraBondStart().emplace_back( newBondID );
 				Model::Residue * const secondResidue = getAtom( bondData.getSecondIndex() )->getResiduePtr();
 				secondResidue->getIndexExtraBondEnd().emplace_back( newBondID );
+				*/
 			}
 			else
 			{
@@ -640,8 +644,10 @@ namespace VTX::Model
 			residue.setRepresentableMolecule( this );
 
 			// Clear extra bond, will be filled at end of process
+			/*
 			residue.getIndexExtraBondStart().clear();
 			residue.getIndexExtraBondEnd().clear();
+			*/
 		}
 	}
 
@@ -663,8 +669,10 @@ namespace VTX::Model
 		residue.setIndexFirstAtom( indexFirstAtom );
 
 		// Clear extra bond ( will be filled at end of process )
+		/*
 		residue.getIndexExtraBondStart().clear();
 		residue.getIndexExtraBondEnd().clear();
+		*/
 
 		return residue;
 	}
@@ -828,6 +836,7 @@ namespace VTX::Model
 				else if ( !bondData.isSecondIndexLinked() && bondData.getBond()->getIndexSecondAtom() == idAtom )
 					bondData.setSecondIndex( newAtomIndex );
 			}
+			/*
 			for ( uint idBond : fromResidue.getIndexExtraBondStart() )
 			{
 				Model::Bond * const bond = p_fromMolecule.getBond( idBond );
@@ -858,6 +867,7 @@ namespace VTX::Model
 					p_fromMolecule.removeBond( idBond, false, false );
 				}
 			}
+			*/
 
 			// Only emplace atom currently to not modify it before checking all bonds
 			getAtoms().emplace_back( &atom );
@@ -897,6 +907,7 @@ namespace VTX::Model
 														   const Model::Residue & p_fromResidue,
 														   const uint			  p_offsetAtomIndex )
 	{
+		/*
 		bool externalBondDataExists = false;
 
 		for ( const uint idBond : p_fromResidue.getIndexExtraBondStart() )
@@ -927,6 +938,7 @@ namespace VTX::Model
 			}
 		}
 
+
 		for ( const uint idBond : p_fromResidue.getIndexExtraBondEnd() )
 		{
 			const Model::Bond * const bond = p_fromMolecule.getBond( idBond );
@@ -954,6 +966,7 @@ namespace VTX::Model
 				_externalBondExtractData.emplace_back( extractData );
 			}
 		}
+		*/
 	}
 
 	void GeneratedMolecule::_extractBond( const BondExtractData & p_bondData )
