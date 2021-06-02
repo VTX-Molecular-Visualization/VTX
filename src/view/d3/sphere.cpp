@@ -30,10 +30,10 @@ namespace VTX::View::D3
 				_program->setBool( "u_isRadiusFixed", sphereData._isRadiusFixed );
 
 				const Representation::TargetRange & target = representationData.second.getAtoms();
-
+				assert( target.counts.size() > 0 );
 				_model->getBuffer()->getVao().multiDrawArray( Renderer::GL::VertexArray::DrawMode::POINTS,
-															  (GLint *)( &target.indices ),
-															  (GLsizei *)( &target.counts ),
+															  (GLint *)( &target.indices[ 0 ] ),
+															  (GLsizei *)( &target.counts[ 0 ] ),
 															  GLsizei( target.indices.size() ) );
 				/*
 				_model->getBuffer()->getVao().drawArray(

@@ -7,14 +7,17 @@
 
 #include <map>
 
+#define BUFFER_OFFSET( p_offset ) ( static_cast<char *>( 0 ) + ( p_offset ) )
+
 namespace VTX
 {
 	namespace Representation
 	{
 		struct TargetRange
 		{
-			std::vector<uint> indices = std::vector<uint>();
-			std::vector<uint> counts  = std::vector<uint>();
+			std::vector<uint>	indices = std::vector<uint>();
+			std::vector<uint>	counts	= std::vector<uint>();
+			std::vector<void *> offsets = std::vector<void *>();
 		};
 
 		class RepresentationTarget
@@ -26,11 +29,14 @@ namespace VTX
 			inline const TargetRange & getBonds() const { return _bonds; };
 			inline const TargetRange & getRibbons() const { return _ribbons; };
 
-			inline void appendAtoms( const uint p_index, const uint p_count ) { _append( _atoms, p_index, p_count ); }
-			inline void appendBonds( const uint p_index, const uint p_count ) { _append( _bonds, p_index, p_count ); }
-			inline void appendRibbons( const uint p_index, const uint p_count )
+			inline void appendAtoms( const uint p_indice, const uint p_count ) { _append( _atoms, p_indice, p_count ); }
+			inline void appendBonds( const uint p_indice, const uint p_count )
 			{
-				_append( _ribbons, p_index, p_count );
+				_append( _bonds, (void *)( p_indice * sizeof( uint ) ), p_count );
+			}
+			inline void appendRibbons( const uint p_indice, const uint p_count )
+			{
+				_append( _ribbons, (void *)( p_indice * sizeof( uint ) ), p_count );
 			}
 
 		  private:
@@ -38,8 +44,10 @@ namespace VTX
 			TargetRange _bonds	 = TargetRange();
 			TargetRange _ribbons = TargetRange();
 
-			void _append( TargetRange & p_range, const uint p_index, const uint p_count )
+			void _append( TargetRange & p_range, const uint p_indice, const uint p_count )
 			{
+				p_range.indices.push_back( p_indice );
+				p_range.counts.push_back( p_count );
 				/*
 				// Init.
 				if ( p_range.second == 0 )
@@ -63,6 +71,12 @@ namespace VTX
 				{
 				}
 				*/
+			}
+
+			void _append( TargetRange & p_range, void * const p_offset, const uint p_count )
+			{
+				p_range.offsets.push_back( p_offset );
+				p_range.counts.push_back( p_count );
 			}
 		};
 	} // namespace Representation

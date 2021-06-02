@@ -47,11 +47,12 @@ namespace VTX::View::D3
 			}
 
 			const Representation::TargetRange & target = representationData.second.getRibbons();
+			assert( target.counts.size() > 0 );
 			_model->getBuffer()->getVao().multiDrawElement( Renderer::GL::VertexArray::DrawMode::PATCHES,
-															(GLsizei *)( &target.counts ),
+															(GLsizei *)( &target.counts[ 0 ] ),
 															Renderer::GL::VertexArray::Type::UNSIGNED_INT,
-															(void **)( &target.indices ),
-															GLsizei( target.indices.size() ) );
+															(GLvoid **)( &target.offsets[ 0 ] ),
+															GLsizei( target.offsets.size() ) );
 
 			/*
 			_model->getBuffer()->getVao().drawElement( Renderer::GL::VertexArray::DrawMode::PATCHES,

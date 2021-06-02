@@ -26,12 +26,12 @@ namespace VTX::View::D3
 
 				const Representation::TargetRange & target = representationData.second.getBonds();
 				/// TODO: use glDrawRangeElements?
-
+				assert( target.counts.size() > 0 );
 				_model->getBuffer()->getVao().multiDrawElement( Renderer::GL::VertexArray::DrawMode::LINES,
-																(GLsizei *)( &target.counts ),
+																(GLsizei *)( &target.counts[ 0 ] ),
 																Renderer::GL::VertexArray::Type::UNSIGNED_INT,
-																(GLvoid **)( &target.indices ),
-																GLsizei( target.indices.size() ) );
+																(GLvoid **)( &target.offsets[ 0 ] ),
+																GLsizei( target.offsets.size() ) );
 
 				/*
 				_model->getBuffer()->getVao().drawElement( Renderer::GL::VertexArray::DrawMode::LINES,
