@@ -21,8 +21,8 @@ namespace VTX::UI::Widget::CustomWidget
 		QGridLayout * const _mainLayout		   = new QGridLayout( this );
 		QHBoxLayout * const _playButtonsLayout = new QHBoxLayout();
 
-		_timeline
-			= WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldWidget>( this, "trajectory_timeline" );
+		_timeline = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldSliderWidget>(
+			this, "trajectory_timeline" );
 		_timeline->setSingleStep( 1 );
 		_timeline->setMin( 0 );
 
@@ -46,8 +46,8 @@ namespace VTX::UI::Widget::CustomWidget
 
 		QLabel * speedLabel = new QLabel( this );
 		speedLabel->setText( "Speed" );
-		_speedWidget
-			= WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldWidget>( this, "trajectory_speed" );
+		_speedWidget = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldSliderWidget>(
+			this, "trajectory_speed" );
 		_speedWidget->setMinMax( Setting::MIN_TRAJECTORY_SPEED, Setting::MAX_TRAJECTORY_SPEED );
 
 		// QLabel * playRangeLabel = new QLabel( this );
@@ -72,8 +72,10 @@ namespace VTX::UI::Widget::CustomWidget
 	}
 	void TrajectoryWidget::_setupSlots()
 	{
-		connect(
-			_timeline, &CustomWidget::IntegerFieldWidget::onValueChange, this, &TrajectoryWidget::_setFrameAction );
+		connect( _timeline,
+				 &CustomWidget::IntegerFieldSliderWidget::onValueChange,
+				 this,
+				 &TrajectoryWidget::_setFrameAction );
 
 		connect( _backToStartButton, &QPushButton::clicked, this, &TrajectoryWidget::_backToStartAction );
 		connect( _previousFrameButton, &QPushButton::clicked, this, &TrajectoryWidget::_previousFrameAction );
@@ -86,8 +88,10 @@ namespace VTX::UI::Widget::CustomWidget
 				 this,
 				 &TrajectoryWidget::_playModeChange );
 
-		connect(
-			_speedWidget, &CustomWidget::IntegerFieldWidget::onValueChange, this, &TrajectoryWidget::_speedChange );
+		connect( _speedWidget,
+				 &CustomWidget::IntegerFieldSliderWidget::onValueChange,
+				 this,
+				 &TrajectoryWidget::_speedChange );
 	}
 
 	void TrajectoryWidget::refreshTimer()

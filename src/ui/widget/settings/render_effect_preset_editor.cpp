@@ -33,15 +33,15 @@ namespace VTX::UI::Widget::Settings
 		_enableSSAO = new QCheckBox( _viewport );
 
 		_ssaoIntensity
-			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldWidget>( _viewport, "ssaoIntensity" );
+			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( _viewport, "ssaoIntensity" );
 		_ssaoIntensity->setMinMax( Setting::AO_INTENSITY_MIN, Setting::AO_INTENSITY_MAX );
 		_ssaoBlurSize
-			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldWidget>( _viewport, "ssaoBlurSize" );
+			= VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>( _viewport, "ssaoBlurSize" );
 		_ssaoBlurSize->setMinMax( Setting::AO_BLUR_SIZE_MIN, Setting::AO_BLUR_SIZE_MAX );
 
-		_enableOutline = new QCheckBox( _viewport );
-		_outlineThickness
-			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( _viewport, "outlineThickness" );
+		_enableOutline	  = new QCheckBox( _viewport );
+		_outlineThickness = VTX::UI::WidgetFactory::get().instantiateWidget<IntegerFieldSliderWidget>(
+			_viewport, "outlineThickness" );
 		_outlineThickness->setMinMax( Setting::OUTLINE_THICKNESS_MIN, Setting::OUTLINE_THICKNESS_MAX );
 		_outlineSensivity
 			= VTX::UI::WidgetFactory::get().instantiateWidget<FloatFieldSliderWidget>( _viewport, "outlineSensivity" );
@@ -141,11 +141,11 @@ namespace VTX::UI::Widget::Settings
 				 this,
 				 &RenderEffectPresetEditor::_onSSAOStateChanged );
 		connect( _ssaoIntensity,
-				 QOverload<int>::of( &IntegerFieldWidget::onValueChange ),
+				 QOverload<int>::of( &IntegerFieldSliderWidget::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onSSAOIntensityChanged );
 		connect( _ssaoBlurSize,
-				 QOverload<int>::of( &IntegerFieldWidget::onValueChange ),
+				 QOverload<int>::of( &IntegerFieldSliderWidget::onValueChange ),
 				 this,
 				 &RenderEffectPresetEditor::_onSSAOBlurSizeChanged );
 
@@ -154,7 +154,7 @@ namespace VTX::UI::Widget::Settings
 				 this,
 				 &RenderEffectPresetEditor::_onOutlineStateChanged );
 		connect( _outlineThickness,
-				 QOverload<float>::of( &FloatFieldSliderWidget::onValueChange ),
+				 &IntegerFieldSliderWidget::onValueChange,
 				 this,
 				 &RenderEffectPresetEditor::_onOutlineThicknessChanged );
 		connect( _outlineSensivity,
@@ -330,7 +330,7 @@ namespace VTX::UI::Widget::Settings
 		if ( !signalsBlocked() && enable != _preset->isOutlineEnabled() )
 			VTX_ACTION( new Action::Renderer::EnableOutline( *_preset, enable ) );
 	}
-	void RenderEffectPresetEditor::_onOutlineThicknessChanged( const float p_value )
+	void RenderEffectPresetEditor::_onOutlineThicknessChanged( const uint p_value )
 	{
 		if ( !signalsBlocked() && p_value != _preset->getOutlineThickness() )
 			VTX_ACTION( new Action::Renderer::ChangeOutlineThickness( *_preset, p_value ) );

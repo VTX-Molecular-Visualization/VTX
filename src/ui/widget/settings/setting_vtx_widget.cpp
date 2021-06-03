@@ -68,7 +68,7 @@ namespace VTX::UI::Widget::Settings
 		for ( const std::string & playmodeStr : Trajectory::PLAY_MODE_STRING )
 			_defaultTrajectoryPlayModeWidget->addItem( QString::fromStdString( playmodeStr ) );
 
-		_defaultTrajectorySpeedWidget = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldWidget>(
+		_defaultTrajectorySpeedWidget = WidgetFactory::get().instantiateWidget<CustomWidget::IntegerFieldSliderWidget>(
 			viewport, "DefaultTrajectorySpeedWidget" );
 		_defaultTrajectorySpeedWidget->setMinMax( Setting::MIN_TRAJECTORY_SPEED, Setting::MAX_TRAJECTORY_SPEED );
 
@@ -158,7 +158,7 @@ namespace VTX::UI::Widget::Settings
 				 this,
 				 &SettingVTXWidget::_changeDefaultTrajectoryPlayMode );
 		connect( _defaultTrajectorySpeedWidget,
-				 &CustomWidget::IntegerFieldWidget::onValueChange,
+				 &CustomWidget::IntegerFieldSliderWidget::onValueChange,
 				 this,
 				 &SettingVTXWidget::_changeDefaultTrajectorySpeed );
 

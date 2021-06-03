@@ -11,7 +11,7 @@
 #include "ui/widget/custom_widget/color_field_button.hpp"
 #include "ui/widget/custom_widget/filename_field_widget.hpp"
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"
-#include "ui/widget/custom_widget/integer_field_widget.hpp"
+#include "ui/widget/custom_widget/integer_field_slider_widget.hpp"
 #include "view/base_view.hpp"
 #include "view/ui/editor_view.hpp"
 #include "view/ui/widget/renderer/render_effect_preset_view.hpp"
@@ -30,7 +30,7 @@ namespace VTX::UI::Widget::Settings
 		VTX_WIDGET
 
 	  private:
-		using IntegerFieldWidget	 = VTX::UI::Widget::CustomWidget::IntegerFieldWidget;
+		using IntegerFieldSliderWidget	 = VTX::UI::Widget::CustomWidget::IntegerFieldSliderWidget;
 		using FloatFieldSliderWidget = VTX::UI::Widget::CustomWidget::FloatFieldSliderWidget;
 		using ColorFieldButton		 = VTX::UI::Widget::CustomWidget::ColorFieldButton;
 
@@ -65,11 +65,11 @@ namespace VTX::UI::Widget::Settings
 		QComboBox * _shading = nullptr;
 
 		QCheckBox *			 _enableSSAO	= nullptr;
-		IntegerFieldWidget * _ssaoIntensity = nullptr;
-		IntegerFieldWidget * _ssaoBlurSize	= nullptr;
+		IntegerFieldSliderWidget * _ssaoIntensity = nullptr;
+		IntegerFieldSliderWidget * _ssaoBlurSize	= nullptr;
 
 		QCheckBox *				 _enableOutline	   = nullptr;
-		FloatFieldSliderWidget * _outlineThickness = nullptr;
+		IntegerFieldSliderWidget *	 _outlineThickness = nullptr;
 		FloatFieldSliderWidget * _outlineSensivity = nullptr;
 		ColorFieldButton *		 _outlineColor	   = nullptr;
 
@@ -108,7 +108,7 @@ namespace VTX::UI::Widget::Settings
 		void _onSSAOBlurSizeChanged( const int p_value );
 
 		void _onOutlineStateChanged( const int p_state );
-		void _onOutlineThicknessChanged( const float p_value );
+		void _onOutlineThicknessChanged( const uint p_value );
 		void _onOutlineSensivityChanged( const float p_value );
 		void _onOutlineColorChanged( const Color::Rgb & p_color );
 
