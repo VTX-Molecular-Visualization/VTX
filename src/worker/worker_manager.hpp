@@ -98,11 +98,12 @@ namespace VTX
 				if ( _workers.find( p_worker ) != _workers.end() )
 				{
 					CallbackThread * const callback = _workers[ p_worker ];
+					
+					_workers.erase( _workers.find( p_worker ) );
 
 					if ( callback != nullptr )
 					{
 						( *callback )( p_returnCode );
-						_workers.erase( _workers.find( p_worker ) );
 						delete callback;
 					}
 				}
