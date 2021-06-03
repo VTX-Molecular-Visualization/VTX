@@ -24,12 +24,16 @@ namespace VTX::View::D3
 				/// TODO: put a mask
 				_program->setFloat( "u_cylRad", cylinderData._radius );
 
-				const Representation::TargetRange & data = representationData.second.getBonds();
+				const Representation::TargetRange<void *> & target = representationData.second.getBonds();
 				/// TODO: use glDrawRangeElements?
-				_model->getBuffer()->getVao().drawElement( Renderer::GL::VertexArray::DrawMode::LINES,
-														   data.second,
-														   Renderer::GL::VertexArray::Type::UNSIGNED_INT,
-														   (void *)( data.first * sizeof( uint ) ) );
+				if ( target.indices.size() > 0 )
+				{
+					_model->getBuffer()->getVao().multiDrawElement( Renderer::GL::VertexArray::DrawMode::LINES,
+																	(GLsizei *)( &target.counts[ 0 ] ),
+																	Renderer::GL::VertexArray::Type::UNSIGNED_INT,
+																	(GLvoid **)( &target.indices[ 0 ] ),
+																	GLsizei( target.indices.size() ) );
+				}
 			}
 		}
 	}
