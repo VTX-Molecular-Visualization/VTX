@@ -15,35 +15,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 
 message("Downloading depdendencies...")
 
-# Download dependencies.
-set(LIB_URL "https://www.simonguionniere.com/private/VTX")
-#set(ZIP_LIB "lib.zip")
-#set(ZIP_LIB_SRC "lib_src.zip")
-#set(FFMPEG "ffmpeg.exe")
-
-#if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${PATH_LIB})
-#  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${ZIP_LIB})
-#    file(DOWNLOAD ${LIB_URL}/${ZIP_LIB} ${CMAKE_SOURCE_DIR}/${ZIP_LIB} SHOW_PROGRESS)
-#	execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${CMAKE_SOURCE_DIR}/${ZIP_LIB} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB})
-#	file(REMOVE ${CMAKE_SOURCE_DIR}/${ZIP_LIB})
-# endif()
-#endif()
-
-#if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
-#  if(NOT EXISTS ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC})
-#    file(DOWNLOAD ${LIB_URL}/${ZIP_LIB_SRC} ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC} SHOW_PROGRESS)
-#	execute_process(COMMAND ${CMAKE_COMMAND} -E tar -xf ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC} WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC})
-#	file(REMOVE ${CMAKE_SOURCE_DIR}/${ZIP_LIB_SRC})
-#  endif()
-#endif()
-
-
 if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
 	file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
-#if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FFMPEG})
-#	file(DOWNLOAD ${LIB_URL}/${FFMPEG} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${FFMPEG} SHOW_PROGRESS)
-#endif()
 
 message("Downloading dependencies... DONE")
 message("Copying all sources...")
@@ -169,16 +143,6 @@ target_link_libraries(VTX PRIVATE Qt5::Widgets)
 target_link_libraries(VTX PRIVATE Qt5::Network)
 target_link_libraries(VTX PRIVATE Qt5::Gamepad)
 target_link_libraries(VTX PRIVATE Qt5::Svg)
-
-# TODO: Find optional packages.
-if(0)
-	add_definitions(-DCUDA_DEFINED)
-	add_definitions(-DOPTIX_DEFINED)
-	target_include_directories(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/include")
-	target_include_directories(VTX PRIVATE "C:/ProgramData/NVIDIA Corporation/OptiX SDK 7.1.0/include")
-	target_link_libraries(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/lib/x64/cudart_static.lib")
-	target_link_libraries(VTX PRIVATE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.0/lib/x64/cuda.lib")
-endif()
 
 if(WIN32)
 	# Add specific libs.

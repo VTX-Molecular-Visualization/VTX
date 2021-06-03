@@ -28,18 +28,6 @@ namespace VTX::UI::Widget::Render
 		{
 			delete _rendererGL;
 		}
-#ifdef CUDA_DEFINED
-		if ( _rendererRT != nullptr )
-		{
-			delete _rendererRT;
-		}
-#endif
-#ifdef OPTIX_DEFINED
-		if ( _rendererOptix != nullptr )
-		{
-			delete _rendererOptix;
-		}
-#endif
 
 		Renderer::GL::ProgramManager::get().dispose();
 
@@ -121,48 +109,11 @@ namespace VTX::UI::Widget::Render
 			if ( _rendererGL == nullptr )
 			{
 				_rendererGL = new Renderer::GL::GL( _gl );
-				needInit	= true;
 			}
 			_renderer = _rendererGL;
 			break;
-#ifdef CUDA_DEFINED
-		case Renderer::MODE::RT_CPU:
-			if ( _rendererRT == nullptr )
-			{
-				_rendererRT = new Renderer::RayTracer();
-				needInit	= true;
-			}
-			_renderer = _rendererRT;
-			break;
-#endif
-#ifdef OPTIX_DEFINED
-		case Renderer::MODE::RT_OPTIX:
-			if ( _rendererOptix == nullptr )
-			{
-				_rendererOptix = new Renderer::Optix::OptixRayTracer();
-				needInit	   = true;
-			}
-			_renderer = _rendererOptix;
-			break;
-#endif
 
 		default: _renderer = nullptr;
-		}
-
-		if ( _renderer != nullptr )
-		{
-			/*
-			if ( needInit )
-			{
-				_renderer->init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT );
-			}
-			// Resize if needed.
-			else if ( _renderer->getWidth() != getScene().getCamera().getScreenWidth() || _renderer->getHeight() !=
-			getScene().getCamera().getScreenHeight() )
-			{
-				_renderer->resize( getScene().getCamera().getScreenWidth(), getScene().getCamera().getScreenHeight() );
-			}
-			*/
 		}
 	}
 
