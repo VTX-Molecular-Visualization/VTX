@@ -13,11 +13,11 @@ namespace VTX
 {
 	namespace Representation
 	{
+		template<typename T>
 		struct TargetRange
 		{
-			std::vector<uint>	indices = std::vector<uint>();
-			std::vector<uint>	counts	= std::vector<uint>();
-			std::vector<void *> offsets = std::vector<void *>();
+			std::vector<T>	  indices;
+			std::vector<uint> counts;
 		};
 
 		class RepresentationTarget
@@ -25,9 +25,9 @@ namespace VTX
 		  public:
 			RepresentationTarget() = default;
 
-			inline const TargetRange & getAtoms() const { return _atoms; };
-			inline const TargetRange & getBonds() const { return _bonds; };
-			inline const TargetRange & getRibbons() const { return _ribbons; };
+			inline const TargetRange<uint> &   getAtoms() const { return _atoms; };
+			inline const TargetRange<void *> & getBonds() const { return _bonds; };
+			inline const TargetRange<void *> & getRibbons() const { return _ribbons; };
 
 			inline void appendAtoms( const uint p_indice, const uint p_count ) { _append( _atoms, p_indice, p_count ); }
 			inline void appendBonds( const uint p_indice, const uint p_count )
@@ -40,11 +40,12 @@ namespace VTX
 			}
 
 		  private:
-			TargetRange _atoms	 = TargetRange();
-			TargetRange _bonds	 = TargetRange();
-			TargetRange _ribbons = TargetRange();
+			TargetRange<uint>	_atoms;
+			TargetRange<void *> _bonds;
+			TargetRange<void *> _ribbons;
 
-			void _append( TargetRange & p_range, const uint p_indice, const uint p_count )
+			template<typename T>
+			void _append( TargetRange<T> & p_range, const T p_indice, const uint p_count )
 			{
 				p_range.indices.push_back( p_indice );
 				p_range.counts.push_back( p_count );
@@ -71,12 +72,6 @@ namespace VTX
 				{
 				}
 				*/
-			}
-
-			void _append( TargetRange & p_range, void * const p_offset, const uint p_count )
-			{
-				p_range.offsets.push_back( p_offset );
-				p_range.counts.push_back( p_count );
 			}
 		};
 	} // namespace Representation

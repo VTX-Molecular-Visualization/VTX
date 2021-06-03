@@ -29,7 +29,7 @@ namespace VTX::View::D3
 				_program->setFloat( "u_radiusAdd", sphereData._radiusAdd );
 				_program->setBool( "u_isRadiusFixed", sphereData._isRadiusFixed );
 
-				const Representation::TargetRange & target = representationData.second.getAtoms();
+				const Representation::TargetRange<uint> & target = representationData.second.getAtoms();
 				assert( target.counts.size() > 0 );
 				_model->getBuffer()->getVao().multiDrawArray( Renderer::GL::VertexArray::DrawMode::POINTS,
 															  (GLint *)( &target.indices[ 0 ] ),
