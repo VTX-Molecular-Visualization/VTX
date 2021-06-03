@@ -96,6 +96,7 @@ namespace VTX
 
 		// Prevent events throw for nothing when quitting app
 		Event::EventManager::get().freezeEvent( true );
+		Worker::WorkerManager::get().stopAll();
 
 		_setting.backup();
 

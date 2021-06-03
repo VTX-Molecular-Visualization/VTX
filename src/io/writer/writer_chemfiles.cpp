@@ -17,11 +17,13 @@ namespace VTX::IO::Writer
 		_writeTrajectory( trajectory, p_molecule );
 		trajectory.close();
 	}
-	void ChemfilesWriter::writeBuffer( std::string & p_buffer, const Model::Molecule & p_molecule )
+	void ChemfilesWriter::writeBuffer( std::string &		   p_buffer,
+									   const Model::Molecule & p_molecule,
+									   const std::string &	   p_format )
 	{
 		_prepareChemfiles();
 
-		chemfiles::Trajectory & trajectory = chemfiles::Trajectory::memory_writer( "PDB" );
+		chemfiles::Trajectory & trajectory = chemfiles::Trajectory::memory_writer( p_format );
 		_writeTrajectory( trajectory, p_molecule );
 
 		chemfiles::span<const char> & span = trajectory.memory_buffer().value_or( chemfiles::span<const char>() );

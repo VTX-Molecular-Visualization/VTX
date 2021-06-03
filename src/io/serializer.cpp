@@ -60,7 +60,7 @@ namespace VTX
 		{
 			Writer::ChemfilesWriter chemfileWriter = Writer::ChemfilesWriter();
 			std::string				buffer		   = std::string();
-			chemfileWriter.writeBuffer( buffer, p_molecule );
+			chemfileWriter.writeBuffer( buffer, p_molecule, "PDB" );
 
 			return { { "TRANSFORM", serialize( p_molecule.getTransform() ) },
 					 { "DATA", buffer },
@@ -264,7 +264,16 @@ namespace VTX
 					if ( jsonMolecule.contains( "MOLECULE" ) )
 					{
 						Model::Molecule * const molecule = MVC::MvcManager::get().instantiateModel<Model::Molecule>();
-						deserialize( jsonMolecule.at( "MOLECULE" ), *molecule );
+
+						try
+						{
+							deserialize( jsonMolecule.at( "MOLECULE" ), *molecule );
+						}
+						catch ( std::exception e )
+						{
+							MVC::MvcManager::get().deleteModel( molecule );
+							throw e;
+						}
 
 						molecule->getConfiguration().sceneIndex = _get<int>( jsonMolecule, "INDEX", MAXINT );
 						molecules[ molecule->getConfiguration().sceneIndex ] = molecule;

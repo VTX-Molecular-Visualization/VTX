@@ -40,10 +40,8 @@ namespace VTX
 			void run( BaseThread * p_worker, CallbackThread * const p_callback = nullptr )
 			{
 				p_worker->setParent( this );
-				if ( p_callback != nullptr )
-				{
-					_workers.emplace( p_worker, p_callback );
-				}
+				_workers.emplace( p_worker, p_callback );
+
 				connect( p_worker, &Worker::BaseThread::resultReady, this, &WorkerManager::_resultReady );
 				connect( p_worker, &Worker::BaseThread::updateProgress, this, &WorkerManager::_updateProgress );
 				connect( p_worker, &Worker::BaseThread::logInfo, this, &WorkerManager::_logInfo );
@@ -66,11 +64,7 @@ namespace VTX
 				delete p_worker;
 			}
 
-		  private:
-			WorkerManager() { qRegisterMetaType<std::string>(); }
-			WorkerManager( const WorkerManager & ) = delete;
-			WorkerManager & operator=( const WorkerManager & ) = delete;
-			~WorkerManager()
+			void stopAll()
 			{
 				// Stop and delete all running threads.
 				for ( const std::pair<BaseThread *, CallbackThread *> & pair : _workers )
@@ -81,7 +75,15 @@ namespace VTX
 					delete pair.second;
 					delete pair.first;
 				}
+
+				_workers.clear();
 			}
+
+		  private:
+			WorkerManager() { qRegisterMetaType<std::string>(); }
+			WorkerManager( const WorkerManager & ) = delete;
+			WorkerManager & operator=( const WorkerManager & ) = delete;
+			~WorkerManager() { stopAll(); }
 
 			std::map<BaseThread *, CallbackThread *> _workers = std::map<BaseThread *, CallbackThread *>();
 
@@ -96,9 +98,13 @@ namespace VTX
 				if ( _workers.find( p_worker ) != _workers.end() )
 				{
 					CallbackThread * const callback = _workers[ p_worker ];
-					( *callback )( p_returnCode );
-					_workers.erase( _workers.find( p_worker ) );
-					delete callback;
+
+					if ( callback != nullptr )
+					{
+						( *callback )( p_returnCode );
+						_workers.erase( _workers.find( p_worker ) );
+						delete callback;
+					}
 				}
 
 				delete p_worker;

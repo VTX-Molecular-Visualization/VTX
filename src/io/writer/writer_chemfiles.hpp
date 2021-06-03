@@ -23,7 +23,7 @@ namespace VTX::IO::Writer
 		ChemfilesWriter() : ChemfilesIO() {};
 
 		void writeFile( const FilePath &, const Model::Molecule & );
-		void writeBuffer( std::string &, const Model::Molecule & );
+		void writeBuffer( std::string &, const Model::Molecule &, const std::string & p_format = "PDB" );
 		void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
 
 		bool isChainMerged( const Model::Chain & p_chain ) const;
