@@ -5,9 +5,8 @@
 #pragma once
 #endif
 
+#include "define.hpp"
 #include <map>
-
-#define BUFFER_OFFSET( p_offset ) ( static_cast<char *>( 0 ) + ( p_offset ) )
 
 namespace VTX
 {
@@ -20,59 +19,60 @@ namespace VTX
 			std::vector<uint> counts;
 		};
 
+		using TargetRangeArrays	  = TargetRange<uint>;
+		using TargetRangeElements = TargetRange<void *>;
+		using TargetRangeMap	  = std::map<uint, uint>;
+
 		class RepresentationTarget
 		{
 		  public:
 			RepresentationTarget() = default;
+			~RepresentationTarget();
 
-			inline const TargetRange<uint> &   getAtoms() const { return _atoms; };
-			inline const TargetRange<void *> & getBonds() const { return _bonds; };
-			inline const TargetRange<void *> & getRibbons() const { return _ribbons; };
+			inline const TargetRangeArrays & getAtoms() const
+			{
+				assert( _atomsMap == nullptr ); // Ensure compiled.
+				return _atoms;
+			};
+			inline const TargetRangeElements & getBonds() const
+			{
+				assert( _bondsMap == nullptr ); // Ensure compiled.
+				return _bonds;
+			};
+			inline const TargetRangeElements & getRibbons() const
+			{
+				assert( _ribbonsMap == nullptr ); // Ensure compiled.
+				return _ribbons;
+			};
 
-			inline void appendAtoms( const uint p_indice, const uint p_count ) { _append( _atoms, p_indice, p_count ); }
+			inline void appendAtoms( const uint p_indice, const uint p_count )
+			{
+				_append( *_atomsMap, p_indice, p_count );
+			}
 			inline void appendBonds( const uint p_indice, const uint p_count )
 			{
-				_append( _bonds, (void *)( p_indice * sizeof( uint ) ), p_count );
+				_append( *_bondsMap, p_indice, p_count );
 			}
 			inline void appendRibbons( const uint p_indice, const uint p_count )
 			{
-				_append( _ribbons, (void *)( p_indice * sizeof( uint ) ), p_count );
+				_append( *_ribbonsMap, p_indice, p_count );
 			}
+
+			void compile();
 
 		  private:
-			TargetRange<uint>	_atoms;
-			TargetRange<void *> _bonds;
-			TargetRange<void *> _ribbons;
+			TargetRangeArrays	_atoms	 = TargetRangeArrays();
+			TargetRangeElements _bonds	 = TargetRangeElements();
+			TargetRangeElements _ribbons = TargetRangeElements();
 
-			template<typename T>
-			void _append( TargetRange<T> & p_range, const T p_indice, const uint p_count )
-			{
-				p_range.indices.push_back( p_indice );
-				p_range.counts.push_back( p_count );
-				/*
-				// Init.
-				if ( p_range.second == 0 )
-				{
-					p_range.first  = p_index;
-					p_range.second = p_count;
-				}
-				// Extend lower bound.
-				else if ( p_index <= p_range.first )
-				{
-					p_range.second += ( p_range.first - p_index );
-					p_range.first = p_index;
-				}
-				// Extend upper bound.
-				else if ( p_index >= p_range.first + p_range.second )
-				{
-					p_range.second = p_index + p_count - p_range.first;
-				}
-				// Range already contained.
-				else
-				{
-				}
-				*/
-			}
+			TargetRangeMap * _atomsMap	 = new TargetRangeMap();
+			TargetRangeMap * _bondsMap	 = new TargetRangeMap();
+			TargetRangeMap * _ribbonsMap = new TargetRangeMap();
+
+			void _append( TargetRangeMap & p_range, const uint p_indice, const uint p_count );
+
+			void _mapToRangeArrays( const TargetRangeMap & p_map, TargetRangeArrays & p_rangeArrays );
+			void _mapToRangeElements( const TargetRangeMap & p_map, TargetRangeElements & p_rangeElements );
 		};
 	} // namespace Representation
 } // namespace VTX
