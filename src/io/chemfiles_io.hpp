@@ -24,8 +24,8 @@ namespace VTX
 		{
 		  public:
 			ChemfilesIO() : _thread( nullptr ) {}
-			ChemfilesIO( Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
-			ChemfilesIO( Worker::BaseWorker * const p_worker ) : _thread( nullptr ) {}
+			ChemfilesIO( const Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
+			ChemfilesIO( const Worker::BaseWorker * const p_worker ) : _thread( nullptr ) {}
 
 		  protected:
 			void _prepareChemfiles() const;
@@ -36,7 +36,7 @@ namespace VTX
 			void _logDebug( const std::string & p_log ) const;
 
 		  private:
-			Worker::BaseThread * const _thread;
+			const Worker::BaseThread * const _thread;
 		};
 	} // namespace IO
 } // namespace VTX
