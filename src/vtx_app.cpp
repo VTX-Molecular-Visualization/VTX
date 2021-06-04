@@ -10,6 +10,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "renderer/gl/program_manager.hpp"
 #include "selection/selection_manager.hpp"
+#include "ui/dialog.hpp"
 #include "ui/main_window.hpp"
 #include "util/filesystem.hpp"
 #include "worker/worker_manager.hpp"
@@ -59,6 +60,12 @@ namespace VTX
 		_mainWindow->setupUi();
 		_mainWindow->show();
 
+		if ( !_mainWindow->isOpenGLValid() )
+		{
+			UI::Dialog::openGLInitializationFail();
+			return;
+		}
+
 		// Fix Issue for fullscreen on windows. Need to be called after show and before set fullscreen //////////
 		// https://doc.qt.io/qt-5/windows-issues.html#fullscreen-opengl-based-windows ///////////////////////////
 		QWindowsWindowFunctions::setHasBorderInFullScreen( _mainWindow->windowHandle(), true );
@@ -90,10 +97,12 @@ namespace VTX
 
 	void VTXApp::stop()
 	{
-		_timer->stop();
-
-		delete _timer;
-
+		// _timer can be uninitialized if critical error append during start (i.e. OpenGL init fail)
+		if ( _timer != nullptr )
+		{
+			_timer->stop();
+			delete _timer;
+		}
 		// Prevent events throw for nothing when quitting app
 		Event::EventManager::get().freezeEvent( true );
 		Worker::WorkerManager::get().stopAll();

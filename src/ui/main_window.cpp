@@ -408,6 +408,8 @@ namespace VTX::UI
 		_settingWidget->raise();
 	}
 
+	bool MainWindow::isOpenGLValid() const { return _renderWidget->getOpenGLWidget().isValid(); }
+
 	WindowMode MainWindow::_getWindowModeFromWindowState( const Qt::WindowStates & p_state )
 	{
 		WindowMode res;

@@ -60,6 +60,8 @@ namespace VTX
 			void toggleWidget( const ID::VTX_ID & p_winId ) const;
 			void openSettingWindow( const Widget::Settings::SETTING_MENU & p_menuIndex ) const;
 
+			bool isOpenGLValid() const;
+
 			WindowMode getWindowMode();
 			void	   setWindowMode( const WindowMode & p_mode );
 			void	   toggleWindowState();

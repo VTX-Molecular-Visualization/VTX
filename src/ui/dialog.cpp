@@ -4,6 +4,7 @@
 #include "ui/widget/dialog/download_molecule_dialog.hpp"
 #include "util/filesystem.hpp"
 #include "util/ui.hpp"
+#include "vtx_app.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
 
@@ -177,6 +178,19 @@ namespace VTX::UI
 
 			VTX_ACTION( new Action::Main::ImportRenderEffectPreset( filepathes ) );
 		}
+	}
+
+	void Dialog::openGLInitializationFail()
+	{
+		QMessageBox::critical( &VTXApp::get().getMainWindow(),
+							   "Error",
+							   "OpenGL initialization fail. It seems like your GPU is too old. Maybe try to force its "
+							   "usage in your settings.",
+							   QMessageBox::StandardButton::Ok,
+							   QMessageBox::StandardButton::Ok );
+
+		VTXApp::get().getMainWindow().close();
+		std::exit( 0 );
 	}
 
 } // namespace VTX::UI

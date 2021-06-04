@@ -31,6 +31,8 @@ namespace VTX::UI
 		static void importRepresentationPresetDialog();
 		static void importRenderEffectPresetDialog();
 
+		static void openGLInitializationFail();
+
 		static void confirmActionDialog( Action::BaseAction * const p_action,
 										 const QString &			p_title,
 										 const QString &			p_message );
