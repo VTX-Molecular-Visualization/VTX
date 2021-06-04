@@ -182,12 +182,12 @@ namespace VTX::UI
 
 	void Dialog::openGLInitializationFail()
 	{
-		QMessageBox::critical( &VTXApp::get().getMainWindow(),
-							   "Error",
-							   "OpenGL initialization fail. It seems like your GPU is too old. Maybe try to force its "
-							   "usage in your settings.",
-							   QMessageBox::StandardButton::Ok,
-							   QMessageBox::StandardButton::Ok );
+		QMessageBox::critical(
+			&VTXApp::get().getMainWindow(),
+			"Error",
+			"Unable to create OpenGL 4.5 context. Update your drivers or chek your material compatibility.",
+			QMessageBox::StandardButton::Ok,
+			QMessageBox::StandardButton::Ok );
 
 		VTXApp::get().getMainWindow().close();
 		std::exit( 0 );
