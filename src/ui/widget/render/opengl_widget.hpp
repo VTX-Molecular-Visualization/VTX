@@ -19,14 +19,7 @@ namespace VTX
 		{
 			class GL;
 		} // namespace GL
-		class RayTracer;
-#ifdef OPTIX_DEFINED
-		namespace Optix
-		{
-			class OptixRayTracer;
-		}
-#endif
-	} // namespace Renderer
+	}	  // namespace Renderer
 
 	namespace UI::Widget::Render
 	{
@@ -58,12 +51,6 @@ namespace VTX
 
 			Renderer::BaseRenderer * _renderer	 = nullptr;
 			Renderer::GL::GL *		 _rendererGL = nullptr;
-#ifdef CUDA_DEFINED
-			Renderer::RayTracer * _rendererRT = nullptr;
-#endif
-#ifdef OPTIX_DEFINED
-			Renderer::Optix::OptixRayTracer * _rendererOptix = nullptr;
-#endif
 		};
 	} // namespace UI::Widget::Render
 
