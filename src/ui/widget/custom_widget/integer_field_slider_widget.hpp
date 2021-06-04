@@ -14,13 +14,13 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	class IntegerFieldWidget : public BaseManualWidget<QWidget>, public UI::TMultiDataFieldEquatable<const int>
+	class IntegerFieldSliderWidget : public BaseManualWidget<QWidget>, public UI::TMultiDataFieldEquatable<const int>
 	{
 		VTX_WIDGET
 		Q_OBJECT
 
 	  public:
-		~IntegerFieldWidget() = default;
+		~IntegerFieldSliderWidget() = default;
 
 		const int getValue() const { return _value; };
 		void	  setValue( const int p_value );
@@ -42,7 +42,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void onValueChange( const int p_value );
 
 	  protected:
-		IntegerFieldWidget( QWidget * p_parent );
+		IntegerFieldSliderWidget( QWidget * p_parent );
 		void _setupUi( const QString & p_name ) override;
 		void _setupSlots() override;
 		void _refresh();

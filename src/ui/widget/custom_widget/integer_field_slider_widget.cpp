@@ -1,4 +1,4 @@
-#include "integer_field_widget.hpp"
+#include "integer_field_slider_widget.hpp"
 #include "util/math.hpp"
 #include "util/ui.hpp"
 #include <QHBoxLayout>
@@ -6,13 +6,13 @@
 
 namespace VTX::UI::Widget::CustomWidget
 {
-	IntegerFieldWidget::IntegerFieldWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
+	IntegerFieldSliderWidget::IntegerFieldSliderWidget( QWidget * p_parent ) : BaseManualWidget( p_parent )
 	{
 		_min = INT16_MIN;
 		_max = INT16_MAX;
 	};
 
-	void IntegerFieldWidget::_setupUi( const QString & p_name )
+	void IntegerFieldSliderWidget::_setupUi( const QString & p_name )
 	{
 		BaseManualWidget::_setupUi( p_name );
 
@@ -31,17 +31,17 @@ namespace VTX::UI::Widget::CustomWidget
 		mainLayout->addWidget( _textField, 1 );
 	}
 
-	void IntegerFieldWidget::_setupSlots()
+	void IntegerFieldSliderWidget::_setupSlots()
 	{
 		connect( _slider,
 				 QOverload<const int>::of( &QSlider::valueChanged ),
 				 this,
-				 &IntegerFieldWidget::_onInternalValueChanged );
+				 &IntegerFieldSliderWidget::_onInternalValueChanged );
 
-		connect( _textField, &QLineEdit::editingFinished, this, &IntegerFieldWidget::_onTextFieldEdited );
+		connect( _textField, &QLineEdit::editingFinished, this, &IntegerFieldSliderWidget::_onTextFieldEdited );
 	}
 
-	void IntegerFieldWidget::_onTextFieldEdited()
+	void IntegerFieldSliderWidget::_onTextFieldEdited()
 	{
 		const int newValue = _textField->text().toInt();
 		if ( newValue != _value )
@@ -50,7 +50,7 @@ namespace VTX::UI::Widget::CustomWidget
 			emit onValueChange( _value );
 		}
 	}
-	void IntegerFieldWidget::_onInternalValueChanged( const int p_newValue )
+	void IntegerFieldSliderWidget::_onInternalValueChanged( const int p_newValue )
 	{
 		if ( p_newValue != _value )
 		{
@@ -59,15 +59,15 @@ namespace VTX::UI::Widget::CustomWidget
 		}
 	}
 
-	void IntegerFieldWidget::_refresh()
+	void IntegerFieldSliderWidget::_refresh()
 	{
 		_slider->setValue( _value );
 		_textField->setText( QString::fromStdString( std::to_string( _value ) ) );
 	}
 
-	void IntegerFieldWidget::localize() {};
+	void IntegerFieldSliderWidget::localize() {};
 
-	void IntegerFieldWidget::setValue( const int p_value )
+	void IntegerFieldSliderWidget::setValue( const int p_value )
 	{
 		if ( _value != p_value )
 		{
@@ -75,7 +75,7 @@ namespace VTX::UI::Widget::CustomWidget
 			_refresh();
 		}
 	};
-	void IntegerFieldWidget::setMin( const int p_min )
+	void IntegerFieldSliderWidget::setMin( const int p_min )
 	{
 		_min = p_min;
 		_max = _min > _max ? _min : _max;
@@ -85,7 +85,7 @@ namespace VTX::UI::Widget::CustomWidget
 		_value = _value < _min ? _min : _value;
 		_refresh();
 	};
-	void IntegerFieldWidget::setMax( const int p_max )
+	void IntegerFieldSliderWidget::setMax( const int p_max )
 	{
 		_max = p_max;
 		_min = _min > _max ? _max : _min;
@@ -95,7 +95,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		_refresh();
 	};
-	void IntegerFieldWidget::setMinMax( const int p_min, const int p_max )
+	void IntegerFieldSliderWidget::setMinMax( const int p_min, const int p_max )
 	{
 		_min = p_min;
 		_max = p_max;
@@ -106,28 +106,28 @@ namespace VTX::UI::Widget::CustomWidget
 		_value = Util::Math::clamp( _value, p_min, p_max );
 		_refresh();
 	};
-	void IntegerFieldWidget::setSingleStep( const int p_step ) { _slider->setSingleStep( p_step ); }
-	void IntegerFieldWidget::setPageStep( const int p_step ) { _slider->setPageStep( p_step ); }
+	void IntegerFieldSliderWidget::setSingleStep( const int p_step ) { _slider->setSingleStep( p_step ); }
+	void IntegerFieldSliderWidget::setPageStep( const int p_step ) { _slider->setPageStep( p_step ); }
 
-	void IntegerFieldWidget::setEnabled( const bool p_enable )
+	void IntegerFieldSliderWidget::setEnabled( const bool p_enable )
 	{
 		QWidget::setEnabled( p_enable );
 		_slider->setEnabled( p_enable );
 		_textField->setEnabled( p_enable );
 	}
 
-	void IntegerFieldWidget::resetState()
+	void IntegerFieldSliderWidget::resetState()
 	{
 		TMultiDataFieldEquatable::resetState();
 		_refresh();
 	}
-	void IntegerFieldWidget::_setSingleValue( const int & p_value )
+	void IntegerFieldSliderWidget::_setSingleValue( const int & p_value )
 	{
 		const bool oldBlockState = blockSignals( true );
 		setValue( p_value );
 		blockSignals( oldBlockState );
 	}
 
-	void IntegerFieldWidget::_displayDifferentsDataFeedback() { _textField->setText( "-" ); }
+	void IntegerFieldSliderWidget::_displayDifferentsDataFeedback() { _textField->setText( "-" ); }
 
 } // namespace VTX::UI::Widget::CustomWidget

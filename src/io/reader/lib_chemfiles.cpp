@@ -8,7 +8,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
-#include "worker/loader.hpp"
+#include "worker/base_thread.hpp"
 #include <QDir>
 #include <QFileInfo>
 #include <algorithm>
@@ -20,7 +20,7 @@
 
 namespace VTX::IO::Reader
 {
-	LibChemfiles::LibChemfiles( Worker::Loader * const p_loader ) : ChemfilesIO( p_loader ) {}
+	LibChemfiles::LibChemfiles( const Worker::BaseThread * const p_loader ) : ChemfilesIO( p_loader ) {}
 
 	void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 	{

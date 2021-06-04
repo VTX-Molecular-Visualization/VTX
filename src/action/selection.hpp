@@ -739,8 +739,11 @@ namespace VTX::Action::Selection
 			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeSelectionData :
 				  _selection.getItems() )
 			{
-				const Model::ID & idMolSource = _selection.getItems().begin()->first;
+				const Model::ID & idMolSource = moleculeSelectionData.first;
 				Model::Molecule & molecule	  = MVC::MvcManager::get().getModel<Model::Molecule>( idMolSource );
+
+				if ( _selection.isMoleculeFullySelected( molecule ) )
+					continue;
 
 				Model::GeneratedMolecule * const generatedMolecule
 					= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();

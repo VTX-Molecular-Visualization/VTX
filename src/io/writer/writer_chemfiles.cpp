@@ -17,11 +17,13 @@ namespace VTX::IO::Writer
 		_writeTrajectory( trajectory, p_molecule );
 		trajectory.close();
 	}
-	void ChemfilesWriter::writeBuffer( std::string & p_buffer, const Model::Molecule & p_molecule )
+	void ChemfilesWriter::writeBuffer( std::string &		   p_buffer,
+									   const Model::Molecule & p_molecule,
+									   const std::string &	   p_format )
 	{
 		_prepareChemfiles();
 
-		chemfiles::Trajectory & trajectory = chemfiles::Trajectory::memory_writer( "PDB" );
+		chemfiles::Trajectory & trajectory = chemfiles::Trajectory::memory_writer( p_format );
 		_writeTrajectory( trajectory, p_molecule );
 
 		chemfiles::span<const char> & span = trajectory.memory_buffer().value_or( chemfiles::span<const char>() );
@@ -60,120 +62,122 @@ namespace VTX::IO::Writer
 
 	void ChemfilesWriter::_writeTrajectory( chemfiles::Trajectory & p_trajectory, const Model::Molecule & p_molecule )
 	{
-		chemfiles::Frame frame = chemfiles::Frame();
-
-		frame.reserve( p_molecule.getAtomCount() );
-
-		frame.set( "name", p_molecule.getName() );
-		frame.set( "pdb_idcode", p_molecule.getPdbIdCode() );
-
-		uint													   currentExportedAtomIndex	   = 0;
-		uint													   currentExportedResidueIndex = 0;
-		std::map<std::string, uint>								   newChainIndexes = std::map<std::string, uint>();
-		std::map<std::string, std::vector<const Model::Residue *>> mapChainResidus
-			= std::map<std::string, std::vector<const Model::Residue *>>();
-
-		std::vector<const Model::Chain *> sortedChains = std::vector<const Model::Chain *>();
-		sortedChains.reserve( p_molecule.getRealChainCount() );
-
-		for ( const Model::Chain * const chain : p_molecule.getChains() )
+		for ( uint i = 0; i < p_molecule.getFrameCount(); i++ )
 		{
-			if ( chain == nullptr )
-				continue;
+			chemfiles::Frame frame = chemfiles::Frame();
 
-			sortedChains.emplace_back( chain );
-		}
+			frame.reserve( p_molecule.getAtomCount() );
 
-		std::sort( sortedChains.begin(),
-				   sortedChains.end(),
-				   []( const Model::Chain * a, const Model::Chain * b ) { return a->getName() < b->getName(); } );
+			frame.set( "name", p_molecule.getName() );
+			frame.set( "pdb_idcode", p_molecule.getPdbIdCode() );
 
-		const Model::Chain * previousChain = nullptr;
+			uint													   currentExportedAtomIndex	   = 0;
+			uint													   currentExportedResidueIndex = 0;
+			std::map<std::string, uint>								   newChainIndexes = std::map<std::string, uint>();
+			std::map<std::string, std::vector<const Model::Residue *>> mapChainResidus
+				= std::map<std::string, std::vector<const Model::Residue *>>();
 
-		for ( const Model::Chain * const chain : sortedChains )
-		{
-			const std::string & chainName = chain->getName();
+			std::vector<const Model::Chain *> sortedChains = std::vector<const Model::Chain *>();
+			sortedChains.reserve( p_molecule.getRealChainCount() );
 
-			if ( previousChain != nullptr && chainName == previousChain->getName() )
+			for ( const Model::Chain * const chain : p_molecule.getChains() )
 			{
-				_mergedChains.emplace( chain->getIndex() );
-				_mergedChains.emplace( previousChain->getIndex() );
-			}
-
-			for ( uint residueIndex = chain->getIndexFirstResidue(); residueIndex <= chain->getIndexLastResidue();
-				  residueIndex++ )
-			{
-				const VTX::Model::Residue * const residue = p_molecule.getResidue( residueIndex );
-
-				if ( residue == nullptr )
+				if ( chain == nullptr )
 					continue;
 
-				uint			   firstResAtomIdx = residue->getIndexFirstAtom();
-				const uint		   atomCount	   = firstResAtomIdx + residue->getAtomCount();
-				chemfiles::Residue chemResidue
-					= chemfiles::Residue( residue->getSymbolStr(), residue->getIndexInOriginalChain() );
-
-				chemResidue.set( "chainname", chainName );
-				chemResidue.set( "chainid", chainName );
-
-				chemResidue.set( "secondary_structure",
-								 Util::SecondaryStructure::enumToPdbFormattedSecondaryStructure(
-									 residue->getSecondaryStructure() ) );
-
-				const bool stdPdb = residue->getType() == Model::Residue::TYPE::STANDARD
-									&& residue->getSymbol() != Model::Residue::SYMBOL::UNKNOWN;
-
-				if ( residue->hasInsertionCode() )
-					chemResidue.set( "insertion_code", std::string( 1, residue->getInsertionCode() ) );
-
-				chemResidue.set( "is_standard_pdb", stdPdb );
-
-				// A specific value is needed for compsition_type to create "TER" tag in pdb export.
-				// if ( stdPdb )
-				//	chemResidue.set( "composition_type", "TER" );
-
-				for ( firstResAtomIdx; firstResAtomIdx < atomCount; ++firstResAtomIdx )
-				{
-					const VTX::Model::Atom * const atom = p_molecule.getAtom( firstResAtomIdx );
-
-					if ( atom == nullptr )
-						continue;
-
-					const VTX::Vec3f &	vtxAtomPos = p_molecule.getAtomPositionFrame( 0 )[ firstResAtomIdx ];
-					chemfiles::Vector3D chemAtomPos
-						= chemfiles::Vector3D( vtxAtomPos[ 0 ], vtxAtomPos[ 1 ], vtxAtomPos[ 2 ] );
-
-					frame.add_atom( chemfiles::Atom( atom->getName(), atom->getSymbolStr() ), chemAtomPos );
-					chemResidue.add_atom( currentExportedAtomIndex );
-
-					_mapNewAtomIndexes[ firstResAtomIdx ] = currentExportedAtomIndex;
-					currentExportedAtomIndex++;
-				}
-
-				frame.add_residue( chemResidue );
-				_mapNewResidueIndexes[ residue->getIndex() ] = currentExportedResidueIndex;
-
-				mapChainResidus[ chainName ].emplace_back( residue );
-				currentExportedResidueIndex++;
+				sortedChains.emplace_back( chain );
 			}
 
-			previousChain = chain;
+			std::sort( sortedChains.begin(),
+					   sortedChains.end(),
+					   []( const Model::Chain * a, const Model::Chain * b ) { return a->getName() < b->getName(); } );
+
+			const Model::Chain * previousChain = nullptr;
+
+			for ( const Model::Chain * const chain : sortedChains )
+			{
+				const std::string & chainName = chain->getName();
+
+				if ( previousChain != nullptr && chainName == previousChain->getName() )
+				{
+					_mergedChains.emplace( chain->getIndex() );
+					_mergedChains.emplace( previousChain->getIndex() );
+				}
+
+				for ( uint residueIndex = chain->getIndexFirstResidue(); residueIndex <= chain->getIndexLastResidue();
+					  residueIndex++ )
+				{
+					const VTX::Model::Residue * const residue = p_molecule.getResidue( residueIndex );
+
+					if ( residue == nullptr )
+						continue;
+
+					uint			   firstResAtomIdx = residue->getIndexFirstAtom();
+					const uint		   atomCount	   = firstResAtomIdx + residue->getAtomCount();
+					chemfiles::Residue chemResidue
+						= chemfiles::Residue( residue->getSymbolStr(), residue->getIndexInOriginalChain() );
+
+					chemResidue.set( "chainname", chainName );
+					chemResidue.set( "chainid", chainName );
+
+					chemResidue.set( "secondary_structure",
+									 Util::SecondaryStructure::enumToPdbFormattedSecondaryStructure(
+										 residue->getSecondaryStructure() ) );
+
+					const bool stdPdb = residue->getType() == Model::Residue::TYPE::STANDARD
+										&& residue->getSymbol() != Model::Residue::SYMBOL::UNKNOWN;
+
+					if ( residue->hasInsertionCode() )
+						chemResidue.set( "insertion_code", std::string( 1, residue->getInsertionCode() ) );
+
+					chemResidue.set( "is_standard_pdb", stdPdb );
+
+					// A specific value is needed for compsition_type to create "TER" tag in pdb export.
+					// if ( stdPdb )
+					//	chemResidue.set( "composition_type", "TER" );
+
+					for ( firstResAtomIdx; firstResAtomIdx < atomCount; ++firstResAtomIdx )
+					{
+						const VTX::Model::Atom * const atom = p_molecule.getAtom( firstResAtomIdx );
+
+						if ( atom == nullptr )
+							continue;
+
+						const VTX::Vec3f &	vtxAtomPos = p_molecule.getAtomPositionFrame( i )[ firstResAtomIdx ];
+						chemfiles::Vector3D chemAtomPos
+							= chemfiles::Vector3D( vtxAtomPos[ 0 ], vtxAtomPos[ 1 ], vtxAtomPos[ 2 ] );
+
+						frame.add_atom( chemfiles::Atom( atom->getName(), atom->getSymbolStr() ), chemAtomPos );
+						chemResidue.add_atom( currentExportedAtomIndex );
+
+						_mapNewAtomIndexes[ firstResAtomIdx ] = currentExportedAtomIndex;
+						currentExportedAtomIndex++;
+					}
+
+					frame.add_residue( chemResidue );
+					_mapNewResidueIndexes[ residue->getIndex() ] = currentExportedResidueIndex;
+
+					mapChainResidus[ chainName ].emplace_back( residue );
+					currentExportedResidueIndex++;
+				}
+
+				previousChain = chain;
+			}
+
+			// add bonds
+			for ( VTX::uint bond = 0; bond < p_molecule.getBondCount(); bond++ )
+			{
+				const VTX::Model::Bond * bnd = p_molecule.getBond( bond );
+
+				if ( bnd == nullptr )
+					continue;
+
+				frame.add_bond( _mapNewAtomIndexes[ bnd->getIndexFirstAtom() ],
+								_mapNewAtomIndexes[ bnd->getIndexSecondAtom() ],
+								chemfiles::Bond::UNKNOWN );
+			}
+			p_trajectory.write( frame );
 		}
-
-		// add bonds
-		for ( VTX::uint bond = 0; bond < p_molecule.getBondCount(); bond++ )
-		{
-			const VTX::Model::Bond * bnd = p_molecule.getBond( bond );
-
-			if ( bnd == nullptr )
-				continue;
-
-			frame.add_bond( _mapNewAtomIndexes[ bnd->getIndexFirstAtom() ],
-							_mapNewAtomIndexes[ bnd->getIndexSecondAtom() ],
-							chemfiles::Bond::UNKNOWN );
-		}
-
-		p_trajectory.write( frame );
 	}
 
 	bool ChemfilesWriter::isChainMerged( const Model::Chain & p_chain ) const

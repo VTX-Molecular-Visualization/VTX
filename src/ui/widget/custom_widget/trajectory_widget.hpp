@@ -8,7 +8,7 @@
 #include "model/molecule.hpp"
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
-#include "ui/widget/custom_widget/integer_field_widget.hpp"
+#include "ui/widget/custom_widget/integer_field_slider_widget.hpp"
 //#include "ui/widget/custom_widget/integer_range_widget.hpp"
 #include "ui/widget/custom_widget/qt_multi_data_field.hpp"
 #include <QWidget>
@@ -37,7 +37,7 @@ namespace VTX::UI::Widget::CustomWidget
 		void _displayDifferentsDataFeedback() override;
 
 	  private:
-		CustomWidget::IntegerFieldWidget * _timeline = nullptr;
+		CustomWidget::IntegerFieldSliderWidget * _timeline = nullptr;
 
 		QPushButton * _backToStartButton   = nullptr;
 		QPushButton * _previousFrameButton = nullptr;
@@ -46,7 +46,7 @@ namespace VTX::UI::Widget::CustomWidget
 		QPushButton * _goToEndButton	   = nullptr;
 
 		CustomWidget::QComboBoxMultiField * _playModeWidget = nullptr;
-		CustomWidget::IntegerFieldWidget *	_speedWidget	= nullptr;
+		CustomWidget::IntegerFieldSliderWidget * _speedWidget	 = nullptr;
 		// CustomWidget::IntegerRangeWidget *	_playRangeWidget= nullptr;
 
 		std::unordered_set<Model::Molecule *> _molecules = std::unordered_set<Model::Molecule *>();

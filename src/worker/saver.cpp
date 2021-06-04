@@ -40,7 +40,7 @@ namespace VTX::Worker
 	{
 		bool result = 1;
 
-		IO::Writer::ChemfilesWriter * writer = new IO::Writer::ChemfilesWriter();
+		IO::Writer::ChemfilesWriter * writer = new IO::Writer::ChemfilesWriter( this );
 
 		// Write.
 		try
