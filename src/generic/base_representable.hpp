@@ -53,17 +53,17 @@ namespace VTX
 			void computeAllRepresentationData();
 			void computeRepresentationTargets();
 
-			inline const Representation::TargetRange & getRepresentationAtoms(
+			inline const Representation::TargetRangeArrays & getRepresentationAtoms(
 				const InstantiatedRepresentation * const p_representation ) const
 			{
 				return _representationTargets[ p_representation ].getAtoms();
 			}
-			inline const Representation::TargetRange & getRepresentationBonds(
+			inline const Representation::TargetRangeElements & getRepresentationBonds(
 				const InstantiatedRepresentation * const p_representation ) const
 			{
 				return _representationTargets[ p_representation ].getBonds();
 			}
-			inline const Representation::TargetRange & getRepresentationRibbons(
+			inline const Representation::TargetRangeElements & getRepresentationRibbons(
 				const InstantiatedRepresentation * const p_representation ) const
 			{
 				return _representationTargets[ p_representation ].getRibbons();

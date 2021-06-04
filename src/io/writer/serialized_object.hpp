@@ -8,6 +8,8 @@
 #include "base_writer.hpp"
 #include "define.hpp"
 #include "io/serializer.hpp"
+#include "worker/base_thread.hpp"
+#include "worker/base_worker.hpp"
 #include <fstream>
 #include <nlohmann/json.hpp>
 
@@ -17,9 +19,13 @@ namespace VTX::IO::Writer
 	class SerializedObject : public BaseWriter<T>
 	{
 	  public:
+		SerializedObject() : _thread( nullptr ) {}
+		SerializedObject( const Worker::BaseThread * const p_thread ) : _thread( p_thread ) {}
+		SerializedObject( const Worker::BaseWorker * const p_worker ) : _thread( nullptr ) {}
+
 		void writeFile( const FilePath & p_path, const T & p_data ) override
 		{
-			IO::Serializer serializer = IO::Serializer();
+			IO::Serializer serializer = IO::Serializer( _thread );
 
 			nlohmann::json json = { { "_VERSION",
 									  { { "MAJOR", VTX_VERSION_MAJOR },
@@ -31,6 +37,38 @@ namespace VTX::IO::Writer
 			os << std::setw( 4 ) << json << std::endl;
 			os.close();
 		}
+
+	  protected:
+		void SerializedObject::_logError( const std::string & p_log ) const
+		{
+			if ( _thread != nullptr )
+				emit _thread->logError( p_log );
+			else
+				VTX_Error( p_log );
+		}
+		void SerializedObject::_logWarning( const std::string & p_log ) const
+		{
+			if ( _thread != nullptr )
+				emit _thread->logWarning( p_log );
+			else
+				VTX_WARNING( p_log );
+		}
+		void SerializedObject::_logInfo( const std::string & p_log ) const
+		{
+			if ( _thread != nullptr )
+				emit _thread->logInfo( p_log );
+			else
+		}
+		void SerializedObject::_logDebug( const std::string & p_log ) const
+		{
+			if ( _thread != nullptr )
+				emit _thread->logDebug( p_log );
+			else
+				VTX_DEBUG( p_log );
+		}
+
+	  private:
+		const Worker::BaseThread * const _thread;
 	};
 } // namespace VTX::IO::Writer
 #endif

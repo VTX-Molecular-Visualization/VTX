@@ -103,18 +103,15 @@ namespace VTX
 					continue;
 				}
 
-				const Model::Representation::InstantiatedRepresentation * const representation
-					= residue->getRepresentation();
+				const InstantiatedRepresentation * const representation = residue->getRepresentation();
 
 				if ( _molecule->_representationTargets.find( representation )
 					 == _molecule->_representationTargets.end() )
 				{
-					_molecule->_representationTargets.emplace( representation,
-															   VTX::Representation::RepresentationTarget() );
+					_molecule->_representationTargets.emplace( representation, RepresentationTarget() );
 				}
 
-				VTX::Representation::RepresentationTarget & representationTargets
-					= _molecule->_representationTargets[ representation ];
+				RepresentationTarget & representationTargets = _molecule->_representationTargets[ representation ];
 				const VTX::Representation::FlagDataTargeted dataFlag = representation->getFlagDataTargeted();
 
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::ATOM ) )
@@ -124,15 +121,6 @@ namespace VTX
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::BOND ) )
 				{
 					representationTargets.appendBonds( residue->getIndexFirstBond() * 2, residue->getBondCount() * 2 );
-
-					for ( const uint bond : residue->getIndexExtraBondStart() )
-					{
-						representationTargets.appendBonds( bond * 2, 2 );
-					}
-					for ( const uint bond : residue->getIndexExtraBondEnd() )
-					{
-						representationTargets.appendBonds( bond * 2, 2 );
-					}
 				}
 				if ( (bool)( dataFlag & VTX::Representation::FlagDataTargeted::RIBBON ) )
 				{
@@ -143,6 +131,17 @@ namespace VTX
 					}
 				}
 			}
+
+			// Compile all targets for gl draw calls.
+			for ( std::map<const InstantiatedRepresentation *, RepresentationTarget>::iterator & it
+				  = _molecule->_representationTargets.begin();
+				  it != _molecule->_representationTargets.end();
+				  it++ )
+			{
+				it->second.compile();
+			}
+
+			VTX_DEBUG( "computeRepresentationTargets" );
 		}
 
 		bool BaseRepresentable::_isResidueVisible( const Model::Residue & p_residue ) const

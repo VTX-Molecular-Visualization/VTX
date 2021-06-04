@@ -15,13 +15,6 @@ namespace VTX::Renderer
 	enum class MODE : int
 	{
 		GL,
-#ifdef CUDA_DEFINED
-		RT_CPU,
-
-#ifdef OPTIX_DEFINED
-		RT_OPTIX,
-#endif
-#endif
 		COUNT
 	};
 

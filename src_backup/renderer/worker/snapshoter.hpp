@@ -18,7 +18,9 @@ namespace VTX
 		  public:
 			enum class MODE : int
 			{
-				GL
+				GL,
+				RT_CPU,
+				RT_OPTIX
 			};
 
 			explicit Snapshoter( const MODE & p_mode, const FilePath & p_path ) : _mode( p_mode ), _path( p_path ) {}
@@ -29,12 +31,16 @@ namespace VTX
 				switch ( _mode )
 				{
 				case MODE::GL: _takeSnapshotGL(); break;
+				case MODE::RT_CPU: _takeSnapshotRTCPU(); break;
+				case MODE::RT_OPTIX: _takeSnapshotRTOptix(); break;
 				default: break;
 				}
 			}
 
 		  private:
 			const void _takeSnapshotGL() const;
+			const void _takeSnapshotRTCPU() const;
+			const void _takeSnapshotRTOptix() const;
 
 			void _addWatermark( QImage & ) const;
 

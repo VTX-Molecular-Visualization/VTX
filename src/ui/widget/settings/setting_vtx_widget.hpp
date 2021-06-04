@@ -7,7 +7,7 @@
 
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"
-#include "ui/widget/custom_widget/integer_field_widget.hpp"
+#include "ui/widget/custom_widget/integer_field_slider_widget.hpp"
 #include <QCheckBox>
 #include <QComboBox>
 #include <QGridLayout>
@@ -52,7 +52,7 @@ namespace VTX::UI::Widget::Settings
 
 		// Trajectory
 		QComboBox *						   _defaultTrajectoryPlayModeWidget = nullptr;
-		CustomWidget::IntegerFieldWidget * _defaultTrajectorySpeedWidget	= nullptr;
+		CustomWidget::IntegerFieldSliderWidget * _defaultTrajectorySpeedWidget	  = nullptr;
 
 		// Data
 		QComboBox *	  _symbolDisplayModeWidget = nullptr;

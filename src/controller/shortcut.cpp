@@ -49,6 +49,7 @@ namespace VTX
 				VTX_ACTION( new Action::Setting::ChangeShading( Renderer::SHADING(
 					( (uint)VTX_RENDER_EFFECT().getShading() + 1 ) % (uint)Renderer::SHADING::COUNT ) ) );
 				break;
+				/*
 			case ScanCode::F5:
 				VTX_ACTION(
 					new Action::Viewpoint::Create( *VTXApp::get().getScene().getPaths()[ 0 ],
@@ -58,6 +59,7 @@ namespace VTX
 													   .getItem<State::Visualization>( ID::State::VISUALIZATION )
 													   ->getCurrentCameraController() ) );
 				break;
+				*/
 			case ScanCode::F6: VTX_ACTION( new Action::Setting::RestoreLayout() ); break;
 
 			case ScanCode::F8:
@@ -65,14 +67,18 @@ namespace VTX
 					VTX_ACTION( new Action::Dev::CompileShaders() );
 				break;
 
-			case ScanCode::F10:
-				VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
+			case ScanCode::F9:
+				if ( DEV_MODE )
+					VTX_ACTION( new Action::Setting::ActiveRenderer( !VTX_SETTING().getActivateRenderer() ) );
 				break;
 
+				/*
 			case ScanCode::F11:
 				VTX_ACTION( new Action::Setting::ChangeRenderMode(
 					Renderer::MODE( ( (uint)VTX_SETTING().mode + 1 ) % (uint)Renderer::MODE::COUNT ) ) );
 				break;
+				*/
+
 			default: break;
 			}
 		}

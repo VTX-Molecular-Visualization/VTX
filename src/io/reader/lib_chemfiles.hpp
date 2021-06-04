@@ -19,14 +19,14 @@ namespace VTX
 	}
 	namespace Worker
 	{
-		class Loader;
+		class BaseThread;
 	}
 	namespace IO::Reader
 	{
 		class LibChemfiles : public BaseReader<Model::Molecule>, ChemfilesIO
 		{
 		  public:
-			LibChemfiles( Worker::Loader * const p_loader );
+			LibChemfiles( const Worker::BaseThread * const p_loader );
 
 			void readFile( const FilePath &, Model::Molecule & ) override;
 			void readBuffer( const std::string &, const FilePath &, Model::Molecule & ) override;

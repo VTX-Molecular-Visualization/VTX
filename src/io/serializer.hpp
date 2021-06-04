@@ -21,6 +21,11 @@ namespace VTX
 		class Scene;
 	}
 
+	namespace Worker
+	{
+		class BaseThread;
+	}
+
 	namespace Model
 	{
 		class Molecule;
@@ -47,6 +52,8 @@ namespace VTX
 		class Serializer
 		{
 		  public:
+			Serializer( const Worker::BaseThread * const p_thread = nullptr );
+
 			nlohmann::json serialize( const VTXApp & ) const;
 			nlohmann::json serialize( const Object3D::Scene & ) const;
 			nlohmann::json serialize( const Model::Molecule & ) const;
@@ -108,6 +115,8 @@ namespace VTX
 				else
 					return p_defaultValue;
 			}
+
+			const Worker::BaseThread * const _thread;
 		};
 
 	} // namespace IO
