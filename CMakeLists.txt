@@ -7,7 +7,7 @@ project(VTX)
 # Create paths.
 set(PATH_SRC "src")
 set(PATH_LIB "lib")
-set(PATH_LIB_SRC "lib_src")
+set(PATH_LIB_BIN "lib_bin")
 set(PATH_WINDOWS_RESOURCE "_windows/resource")
 set(PATH_QT_RESOURCE "asset/qt_resources")
 set(CONFIGS "Debug;Release;RelWithDebInfo")
@@ -40,16 +40,6 @@ foreach(SRC IN ITEMS ${SOURCES})
     string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
 	# Create group to make visual studio filters.
     source_group("Sources${GROUP_PATH}" FILES "${SRC}")
-endforeach()
-
-# Get libs.
-file(GLOB_RECURSE LIBS ${PATH_LIB_SRC}/*.hpp ${PATH_LIB_SRC}/*.h ${PATH_LIB_SRC}/*.inl ${PATH_LIB_SRC}/*.c ${PATH_LIB_SRC}/*.cpp)
-foreach(SRC IN ITEMS ${LIBS})
-    get_filename_component(SRC_PATH "${SRC}" PATH)
-    file(RELATIVE_PATH SRC_PATH_REL "${CMAKE_SOURCE_DIR}/${PATH_LIB_SRC}" "${SRC_PATH}")
-    string(REPLACE "/" "\\" GROUP_PATH "/${SRC_PATH_REL}")
-	# Create group to make visual studio filters.
-    source_group("Libs${GROUP_PATH}" FILES "${SRC}")
 endforeach()
 
 # Get all resources.
@@ -126,7 +116,6 @@ find_package(Qt5 COMPONENTS Svg REQUIRED)
 # Includes directories.
 target_include_directories(VTX PRIVATE ${PATH_SRC})
 target_include_directories(VTX PRIVATE ${PATH_LIB})
-target_include_directories(VTX PRIVATE ${PATH_LIB_SRC})
 target_include_directories(VTX PRIVATE ${PATH_LIB}/msgpack)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/assimp/include)
 target_include_directories(VTX PRIVATE ${PATH_LIB}/chemfiles/include)
@@ -153,12 +142,18 @@ if(WIN32)
 # Debug
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/assimp-vc142-mtd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/assimp-vc142-mtd.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/zlibd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/zlibd1.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB_BIN}/libcrypto-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/libcrypto-1_1-x64.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB_BIN}/libssl-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/libssl-1_1-x64.dll)
 # Release
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Release/assimp-vc142-mt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/assimp-vc142-mt.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Release/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/zlib1.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB_BIN}/libcrypto-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/libcrypto-1_1-x64.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB_BIN}/libssl-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/libssl-1_1-x64.dll)
 # RelWithDebInfo
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/assimp-vc142-mt.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/assimp-vc142-mt.dll)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/RelWithDebInfo/zlib.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/zlib1.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB_BIN}/libcrypto-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/libcrypto-1_1-x64.dll)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB_BIN}/libssl-1_1-x64.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/RelWithDebInfo/libssl-1_1-x64.dll)
 
 # Copy Qt DLL to output.
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Core> $<TARGET_FILE_DIR:VTX>)
