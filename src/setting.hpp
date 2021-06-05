@@ -35,22 +35,16 @@ namespace VTX
 	{
 	  public:
 		// UI.
-		static const std::string ORGANIZATION_NAME;
-		static const std::string PROJECT_NAME;
-		static const std::string LAYOUT_SETTINGS_FOLDER;
-		static const std::string LAYOUT_SETTINGS_FILENAME;
-
 		static const Style::SYMBOL_DISPLAY_MODE SYMBOL_DISPLAY_MODE_DEFAULT;
 
 		static const int  WINDOW_WIDTH_DEFAULT;
 		static const int  WINDOW_HEIGHT_DEFAULT;
 		static const bool WINDOW_FULLSCREEN_DEFAULT;
 
-		static const char * STYLESHEET_FILE_DEFAULT;
-		static const int	CONSOLE_WIDGET_HEIGHT_DEFAULT;
-		static const int	SCENE_WIDGET_WIDTH_DEFAULT;
-		static const int	INSPECTOR_WIDGET_WIDTH_DEFAULT;
-		static const int	RENDER_WIDGET_HEIGHT_DEFAULT;
+		static const int CONSOLE_WIDGET_HEIGHT_DEFAULT;
+		static const int SCENE_WIDGET_WIDTH_DEFAULT;
+		static const int INSPECTOR_WIDGET_WIDTH_DEFAULT;
+		static const int RENDER_WIDGET_HEIGHT_DEFAULT;
 
 		static const int STATUS_PROGRESS_BAR_CHUNKS;
 		static const int STATUS_PROGRESS_BAR_WIDTH;

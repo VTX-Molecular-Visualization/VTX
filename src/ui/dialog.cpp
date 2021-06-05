@@ -182,15 +182,15 @@ namespace VTX::UI
 
 	void Dialog::openGLInitializationFail()
 	{
-		QMessageBox::critical(
-			&VTXApp::get().getMainWindow(),
-			"Error",
-			"Unable to create OpenGL 4.5 context. Update your drivers or chek your material compatibility.",
-			QMessageBox::StandardButton::Ok,
-			QMessageBox::StandardButton::Ok );
+		std::string msg
+			= "Unable to create OpenGL 4.5 context. Update your drivers or chek your material compatibility.";
+		VTX_ERROR( msg );
 
-		VTXApp::get().getMainWindow().close();
-		std::exit( 0 );
+		QMessageBox::critical( &VTXApp::get().getMainWindow(),
+							   "Error",
+							   msg.c_str(),
+							   QMessageBox::StandardButton::Ok,
+							   QMessageBox::StandardButton::Ok );
 	}
 
 } // namespace VTX::UI

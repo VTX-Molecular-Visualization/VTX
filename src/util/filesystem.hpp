@@ -78,7 +78,11 @@ namespace VTX
 				= FilePath( LIBRARIES_DIR.string() + "/render_effects" );
 
 			static const FilePath SETTING_JSON_FILE = FilePath( EXECUTABLE_DIR.string() + "/setting.json" );
-			static const FilePath FFMPEG_EXE_FILE	= FilePath( "bin/ffmpeg.exe" );
+			static const FilePath CONFIG_INI_FILE	= FilePath( EXECUTABLE_DIR.string() + "/config.ini" );
+
+			static const FilePath FFMPEG_EXE_FILE = FilePath( "bin/ffmpeg.exe" );
+
+			static const char * STYLESHEET_FILE_DEFAULT = ":/stylesheet.css";
 
 			inline const FilePath getDataPath( const std::string & p_filename )
 			{

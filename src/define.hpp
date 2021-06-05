@@ -39,13 +39,10 @@ namespace VTX
 	using FilePath = std::filesystem::path;
 
 	// VTX.
-	constexpr int VTX_VERSION_MAJOR	   = 0;
-	constexpr int VTX_VERSION_MINOR	   = 1;
-	constexpr int VTX_VERSION_REVISION = 0;
-
-	constexpr int	  OPENGL_VERSION_MAJOR = 4;
-	constexpr int	  OPENGL_VERSION_MINOR = 5;
-	const std::string GLSL_VERSION		   = "#version 450";
+	const std::string VTX_PROJECT_NAME	   = "VTX";
+	constexpr int	  VTX_VERSION_MAJOR	   = 0;
+	constexpr int	  VTX_VERSION_MINOR	   = 1;
+	constexpr int	  VTX_VERSION_REVISION = 0;
 
 	const std::string VTX_WEBSITE_URL		= "http://vtx.drugdesign.fr";
 	const std::string VTX_GIT_URL			= "http://vtx.drugdesign.fr";

@@ -62,11 +62,6 @@ namespace VTX::UI::Widget::Render
 		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT, defaultFramebufferObject() );
 
 		_frameTimer.start();
-
-		if ( !isValid() )
-		{
-			Dialog::openGLInitializationFail();
-		}
 	}
 
 	void OpenGLWidget::paintGL()

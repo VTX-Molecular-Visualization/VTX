@@ -16,21 +16,15 @@
 namespace VTX
 {
 	// UI.
-	const std::string Setting::ORGANIZATION_NAME		= "CNAM_GBCM";
-	const std::string Setting::PROJECT_NAME				= "VTX";
-	const std::string Setting::LAYOUT_SETTINGS_FOLDER	= PROJECT_NAME;
-	const std::string Setting::LAYOUT_SETTINGS_FILENAME = "Settings";
-
 	const Style::SYMBOL_DISPLAY_MODE Setting::SYMBOL_DISPLAY_MODE_DEFAULT = Style::SYMBOL_DISPLAY_MODE::SHORT;
 	const int						 Setting::WINDOW_WIDTH_DEFAULT		  = 1280;
 	const int						 Setting::WINDOW_HEIGHT_DEFAULT		  = 720;
 	const bool						 Setting::WINDOW_FULLSCREEN_DEFAULT	  = false;
 
-	const char * Setting::STYLESHEET_FILE_DEFAULT		 = ":/stylesheet.css";
-	const int	 Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT	 = 200;
-	const int	 Setting::SCENE_WIDGET_WIDTH_DEFAULT	 = 50;
-	const int	 Setting::INSPECTOR_WIDGET_WIDTH_DEFAULT = 50;
-	const int	 Setting::RENDER_WIDGET_HEIGHT_DEFAULT
+	const int Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT  = 200;
+	const int Setting::SCENE_WIDGET_WIDTH_DEFAULT	  = 50;
+	const int Setting::INSPECTOR_WIDGET_WIDTH_DEFAULT = 50;
+	const int Setting::RENDER_WIDGET_HEIGHT_DEFAULT
 		= Setting::WINDOW_HEIGHT_DEFAULT - Setting::CONSOLE_WIDGET_HEIGHT_DEFAULT;
 
 	const int Setting::STATUS_PROGRESS_BAR_CHUNKS = 10;
@@ -233,8 +227,8 @@ namespace VTX
 	{
 		const QSettings settings( QSettings::Format::NativeFormat,
 								  QSettings::Scope::UserScope,
-								  QString::fromStdString( Setting::PROJECT_NAME ),
-								  QString::fromStdString( Setting::PROJECT_NAME ) );
+								  QString::fromStdString( VTX_PROJECT_NAME ),
+								  QString::fromStdString( VTX_PROJECT_NAME ) );
 
 		int		counter = 0;
 		QString key		= QString::fromStdString( "RecentLoadedPath" + std::to_string( counter ) );
@@ -269,8 +263,8 @@ namespace VTX
 	{
 		QSettings settings( QSettings::Format::NativeFormat,
 							QSettings::Scope::UserScope,
-							QString::fromStdString( Setting::PROJECT_NAME ),
-							QString::fromStdString( Setting::PROJECT_NAME ) );
+							QString::fromStdString( VTX_PROJECT_NAME ),
+							QString::fromStdString( VTX_PROJECT_NAME ) );
 
 		int counter = 0;
 		for ( const FilePath & path : recentLoadingPath )
