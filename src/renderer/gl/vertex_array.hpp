@@ -10,6 +10,8 @@
 #include "generic/base_opengl.hpp"
 #include "vtx_app.hpp"
 
+#define VTX_USE_OPENGL_MULTI_DRAW 1
+
 namespace VTX::Renderer::GL
 {
 	// TODO: methods such as 'enableAttrib', 'setVertexBuffer', etc. might be merged...
@@ -114,7 +116,17 @@ namespace VTX::Renderer::GL
 									const GLsizei		  p_primcount ) const
 		{
 			bind();
+#if VTX_USE_OPENGL_MULTI_DRAW
 			_gl->glMultiDrawArrays( GLenum( p_mode ), p_first, p_count, p_primcount );
+#else
+			for ( uint i = 0; i < p_primcount; i++ )
+			{
+				if ( p_count[ i ] > 0 )
+				{
+					glDrawArrays( GLenum( p_mode ), p_first[ i ], p_count[ i ] );
+				}
+			}
+#endif
 			unbind();
 			VTX_STAT().drawCalls++;
 		}
@@ -137,7 +149,17 @@ namespace VTX::Renderer::GL
 									  const GLsizei				   p_primcount ) const
 		{
 			bind();
+#if VTX_USE_OPENGL_MULTI_DRAW
 			_gl->glMultiDrawElements( GLenum( p_mode ), p_count, GLenum( p_type ), p_offset, p_primcount );
+#else
+			for ( uint i = 0; i < p_primcount; i++ )
+			{
+				if ( p_count[ i ] > 0 )
+				{
+					glDrawElements( GLenum( p_mode ), p_count[ i ], GLenum( p_type ), p_offset[ i ] );
+				}
+			}
+#endif
 			unbind();
 			VTX_STAT().drawCalls++;
 		}
