@@ -13,13 +13,10 @@ set(PATH_QT_RESOURCE "asset/qt_resources")
 set(CONFIGS "Debug;Release;RelWithDebInfo")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build/bin)
 
-message("Downloading depdendencies...")
-
 if(NOT EXISTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}})
 	file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 endif()
 
-message("Downloading dependencies... DONE")
 message("Copying all sources...")
 
 # Get all .hpp.
