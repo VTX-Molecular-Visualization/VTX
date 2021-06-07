@@ -80,7 +80,8 @@ namespace VTX::UI::Widget::Render
 
 		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6f;
 
-		if ( DEV_MODE && _showCounter )
+#ifndef VTX_PRODUCTION
+		if ( _showCounter )
 		{
 			_painter.begin( this );
 			_painter.setPen( Qt::white );
@@ -90,6 +91,7 @@ namespace VTX::UI::Widget::Render
 													   + " - draw calls: " + std::to_string( VTX_STAT().drawCalls ) ) );
 			_painter.end();
 		}
+#endif
 	}
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )

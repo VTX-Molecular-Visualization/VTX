@@ -140,8 +140,6 @@ namespace VTX
 			{
 				it->second.compile();
 			}
-
-			VTX_DEBUG( "computeRepresentationTargets" );
 		}
 
 		bool BaseRepresentable::_isResidueVisible( const Model::Residue & p_residue ) const

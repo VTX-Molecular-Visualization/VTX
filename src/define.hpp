@@ -49,8 +49,6 @@ namespace VTX
 	const std::string VTX_DOCUMENTATION_URL = "https://gitlab.com/VTX_mol/VTX";
 	const std::string VTX_BUG_REPORT_URL	= "https://gitlab.com/VTX_mol/VTX/-/issues";
 
-	constexpr bool DEV_MODE = true;
-
 	// API.
 	const std::string API_URL_MMTF = "https://mmtf.rcsb.org/v1.0/full/";
 
