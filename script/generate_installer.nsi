@@ -3,8 +3,19 @@ Unicode True
 # Installer filename.
 OutFile VTX_0.1.0_SelfExtractor.exe
  
-# Install dir 
+# Installer directory.
 InstallDir $EXEDIR\VTX_0.1.0
+
+# Installer name.
+Name "VTX v0.1.0"
+
+# Meta tags.
+VIProductVersion "0.1.0.0"
+VIAddVersionKey "ProductName" "VTX"
+VIAddVersionKey "CompanyName" "CNAM GBCM"
+VIAddVersionKey "LegalCopyright" "Copyright (C) 2021"
+VIAddVersionKey "FileDescription" "High performance molecular visualization software"
+VIAddVersionKey "FileVersion" "0.1.0"
 
 Section
  
