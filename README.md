@@ -2,11 +2,11 @@
 
 ## USER GUIDE
 
--   Install Visual C++: [link](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
--   Download last release: [link](https://gitlab.com/VTX_mol/VTX/-/releases)
--   Extract archive and run bin/VTX.exe
--   Report bugs, features, ideas or anything else by creating a new issue: [link](https://gitlab.com/VTX_mol/VTX/-/issues)
--   Issues labeled "Discussion" need to be discuted together, let's debate!
+- Install Visual C++: [link](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
+- Download last release: [link](https://gitlab.com/VTX_mol/VTX/-/releases)
+- Extract archive and run bin/VTX.exe
+- Report bugs, features, ideas or anything else by creating a new issue: [link](https://gitlab.com/VTX_mol/VTX/-/issues)
+- Issues labeled "Discussion" need to be discuted together, let's debate!
 
 ### CONTROLLERS
 
@@ -20,9 +20,9 @@
 
 #### Freefly
 
--   ZSQD or arrows keys to move the camera
--   Hold left mouse button and move to look around
--   Hold right mouse button and move to rotate on the side
+- ZSQD or arrows keys to move the camera
+- Hold left mouse button and move to look around
+- Hold right mouse button and move to rotate on the side
 
 ### SHORTCUTS
 

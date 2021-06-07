@@ -1,2 +1,2 @@
-cmake --build ../_windows --config Release -- /p:MyConstants="VTX_PRODUCTION=1"
+cmake --build ../_windows --config Release -- /p:CustomPreprocessorDefinitions=VTX_PRODUCTION
 PAUSE
