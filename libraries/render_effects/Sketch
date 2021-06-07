@@ -1,0 +1,46 @@
+{
+    "DATA": {
+        "BACKGROUND_COLOR": {
+            "B": 1.0,
+            "G": 1.0,
+            "R": 1.0
+        },
+        "CAMERA_AA": true,
+        "CAMERA_FAR_CLIP": 10000.0,
+        "CAMERA_FOV": 45.0,
+        "CAMERA_LIGHT_COLOR": {
+            "B": 1.0,
+            "G": 1.0,
+            "R": 1.0
+        },
+        "CAMERA_NEAR_CLIP": 0.0,
+        "CAMERA_PERSPECTIVE_PROJECTION": true,
+        "FOG": false,
+        "FOG_COLOR": {
+            "B": 1.0,
+            "G": 1.0,
+            "R": 1.0
+        },
+        "FOG_DENSITY": 0.800000011920929,
+        "FOG_FAR": 80.0,
+        "FOG_NEAR": 30.0,
+        "OUTLINE": true,
+        "OUTLINE_COLOR": {
+            "B": 0.0,
+            "G": 0.0,
+            "R": 0.0
+        },
+        "OUTLINE_SENSIVITY": 0.4000000059604645,
+        "OUTLINE_THICKNESS": 1,
+        "QUICK_ACCESS": true,
+        "SHADING": 3,
+        "SSAO": true,
+        "SSAO_BLUR_SIZE": 17,
+        "SSAO_INTENSITY": 5
+    },
+    "_VERSION": {
+        "MAJOR": 0,
+        "MINOR": 1,
+        "REVISION": 0
+    }
+}

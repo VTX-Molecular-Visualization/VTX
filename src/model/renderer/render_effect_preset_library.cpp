@@ -21,13 +21,13 @@ namespace VTX::Model::Renderer
 		libraryLoader->activeNotify( false );
 		VTX_WORKER( libraryLoader );
 
-		if ( _presets.size() <= 0 )
+		if ( getPresetByName( "Default" ) == nullptr )
 		{
-			_init();
+			_generateDefaultPreset();
 		}
 
 		const int defaultIndex = getPresetIndex( VTX_SETTING().getTmpRenderEffectPresetDefaultName() );
-		VTX_SETTING().setDefaultRenderEffectPresetIndex( defaultIndex == -1 ? Setting::RENDER_EFFECT_DEFAULT_INDEX
+		VTX_SETTING().setDefaultRenderEffectPresetIndex( defaultIndex == -1 ? getPresetIndex( "Default" )
 																			: defaultIndex );
 		VTX_SETTING().setTmpRenderEffectPresetDefaultName( "" );
 	};
@@ -66,7 +66,7 @@ namespace VTX::Model::Renderer
 	};
 	const RenderEffectPreset * const RenderEffectPresetLibrary::getPresetByName( const std::string & p_name ) const
 	{
-		for ( auto it : _presets )
+		for ( RenderEffectPreset * const it : _presets )
 		{
 			if ( it->getName() == p_name )
 				return it;
@@ -75,9 +75,18 @@ namespace VTX::Model::Renderer
 		return nullptr;
 	};
 
-	void RenderEffectPresetLibrary::addPreset( RenderEffectPreset * const p_preset, const bool p_notify )
+	void RenderEffectPresetLibrary::addPreset( RenderEffectPreset * const p_preset,
+											   const bool				  p_emplace,
+											   const bool				  p_notify )
 	{
-		_presets.emplace_back( p_preset );
+		if ( p_emplace )
+		{
+			_presets.emplace_back( p_preset );
+		}
+		else
+		{
+			_presets.insert( _presets.begin(), p_preset );
+		}
 
 		View::CallbackView<RenderEffectPreset, RenderEffectPresetLibrary> * const callbackView
 			= MVC::MvcManager::get().instantiateView<View::CallbackView<RenderEffectPreset, RenderEffectPresetLibrary>>(
@@ -265,49 +274,13 @@ namespace VTX::Model::Renderer
 		return true;
 	}
 
-	void RenderEffectPresetLibrary::_init()
+	void RenderEffectPresetLibrary::_generateDefaultPreset()
 	{
 		// Preset default
 		RenderEffectPreset * const preset0 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
 		preset0->setName( "Default" );
 		setQuickAccessToPreset( *preset0, true );
-		addPreset( preset0, false );
-		//
-
-		// Preset 1
-		RenderEffectPreset * const preset1 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
-		preset1->setName( "Preset 1" );
-		setQuickAccessToPreset( *preset1, true );
-		preset1->setShading( VTX::Renderer::SHADING::DIFFUSE );
-
-		preset1->setSSAOIntensity( 5 );
-		preset1->setSSAOBlurSize( 17 );
-		preset1->enableSSAO( true );
-
-		preset1->enableOutline( false );
-		preset1->enableFog( false );
-		addPreset( preset1, false );
-		//
-
-		// Preset 2
-		RenderEffectPreset * const preset3 = MVC::MvcManager::get().instantiateModel<RenderEffectPreset>();
-		preset3->setName( "Sketch" );
-		setQuickAccessToPreset( *preset3, true );
-		preset3->setShading( VTX::Renderer::SHADING::FLAT_COLOR );
-
-		preset3->setSSAOIntensity( 5 );
-		preset3->setSSAOBlurSize( 17 );
-		preset3->enableSSAO( true );
-
-		preset3->setOutlineThickness( 1.0f );
-		preset3->setOutlineColor( Color::Rgb::BLACK );
-		preset3->enableOutline( true );
-
-		preset3->enableFog( false );
-
-		preset3->setBackgroundColor( Color::Rgb::WHITE );
-		addPreset( preset3, false );
-		//
+		addPreset( preset0, false, false );
 	}
 
 	void RenderEffectPresetLibrary::_onPresetChange( const Event::VTXEvent * const p_event )

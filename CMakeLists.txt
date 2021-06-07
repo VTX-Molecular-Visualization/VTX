@@ -98,7 +98,9 @@ link_directories(${PATH_LIB}/chemfiles/lib/x64)
 # Product properties.
 #add_definitions(-DVER_COMPANYNAME_STR="LALALALAL")
 #add_definitions(-DVER_FILEVERSION_STR="6,1,0.0")
-	
+
+message("Linking all dependencies...")
+
 # Declare executable with source files.
 add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESOURCES})
 
@@ -134,7 +136,10 @@ if(WIN32)
 	# Add specific libs.
 	target_link_libraries(VTX PRIVATE ws2_32)
  endif()
- 
+
+message("Linking all dependencies... DONE")
+message("Creating post build events...")
+
 # Copy DLL to output.	
 # Debug
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/${PATH_LIB}/assimp/bin/x64/Debug/assimp-vc142-mtd.dll ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/assimp-vc142-mtd.dll)
@@ -168,10 +173,15 @@ set_property(TARGET VTX_SHADERS APPEND PROPERTY SOURCES ${SHADERS}) # Workaround
 
 add_dependencies(VTX VTX_SHADERS)
 
+# Copy render effect presets to build directory.
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/libraries/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../libraries)
+
 # Readme, license and changelog.
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/README.md ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../README.md)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/CHANGELOG.md ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../CHANGELOG.md)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/license.txt ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../license.txt)
+
+message("Creating post build events... DONE")
 
 # Qt options
 set_property(TARGET VTX PROPERTY AUTOUIC_OPTIONS "--no-autoconnection")

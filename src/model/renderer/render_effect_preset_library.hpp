@@ -30,8 +30,8 @@ namespace VTX::Model::Renderer
 		inline const std::vector<RenderEffectPreset *> & getPresets() const { return _presets; };
 		inline int										 getPresetCount() const { return (int)_presets.size(); };
 
-		void					   addPreset( RenderEffectPreset * const p_preset, const bool p_notify = true );
-		void					   copyPreset( const int p_index );
+		void addPreset( RenderEffectPreset * const p_preset, const bool p_emplace = true, const bool p_notify = true );
+		void copyPreset( const int p_index );
 		RenderEffectPreset * const removePreset( const int p_index );
 		void					   deletePreset( const int p_index );
 
@@ -56,7 +56,7 @@ namespace VTX::Model::Renderer
 		RenderEffectPresetLibrary();
 		~RenderEffectPresetLibrary();
 
-		void _init();
+		void _generateDefaultPreset();
 		void _onPresetChange( const Event::VTXEvent * const p_event );
 		int	 _getNbPresetWithQuickAccess() const;
 

@@ -32,7 +32,7 @@ namespace VTX::Worker
 				{
 					reader->readFile( fileIterator->path(), *preset );
 					preset->setName( fileIterator->path().filename().string() );
-					_library.addPreset( preset, _notify );
+					_library.addPreset( preset, true, _notify );
 				}
 				catch ( const std::exception & p_e )
 				{
@@ -70,7 +70,7 @@ namespace VTX::Worker
 			try
 			{
 				reader->readFile( path, *preset );
-				Model::Renderer::RenderEffectPresetLibrary::get().addPreset( preset, true );
+				Model::Renderer::RenderEffectPresetLibrary::get().addPreset( preset, true, true );
 			}
 			catch ( const std::exception & p_e )
 			{
