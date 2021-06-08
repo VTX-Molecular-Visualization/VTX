@@ -817,6 +817,7 @@ namespace VTX::Action::Selection
 				{
 					// Call notify only once after all modif in molecule
 					molecule.refreshStructure();
+					molecule.computeAllRepresentationData();
 					molecule.forceNotifyDataChanged();
 				}
 			}

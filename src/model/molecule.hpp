@@ -199,7 +199,6 @@ namespace VTX
 				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 				refreshBondsBuffer();
 				refreshSecondaryStructure();
-				computeAllRepresentationData();
 			}
 
 			void refreshSelection( const Selection::MapChainIds * const );

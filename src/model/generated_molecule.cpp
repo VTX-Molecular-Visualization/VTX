@@ -380,6 +380,7 @@ namespace VTX::Model
 
 		molecule.forceNotifyDataChanged();
 		molecule.refreshStructure();
+		molecule.computeAllRepresentationData();
 	};
 
 	void GeneratedMolecule::_applyExtraBondsData()
@@ -432,6 +433,7 @@ namespace VTX::Model
 
 		molecule.forceNotifyDataChanged();
 		molecule.refreshStructure();
+		molecule.computeAllRepresentationData();
 	}
 	void GeneratedMolecule::extractResidue( const Model::Residue & p_residue )
 	{
@@ -460,6 +462,7 @@ namespace VTX::Model
 
 		molecule.forceNotifyDataChanged();
 		molecule.refreshStructure();
+		molecule.computeAllRepresentationData();
 	}
 	void GeneratedMolecule::extractAtom( const Model::Atom & p_atom )
 	{
@@ -485,6 +488,7 @@ namespace VTX::Model
 
 		molecule.forceNotifyDataChanged();
 		molecule.refreshStructure();
+		molecule.computeAllRepresentationData();
 
 		chrono.stop();
 
