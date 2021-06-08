@@ -77,11 +77,11 @@ BEGIN
     BEGIN
         BLOCK "000904b0"
         BEGIN
-            VALUE "CompanyName", "CNAM / Limoges University"
+            VALUE "CompanyName", "VTX Consortium"
             VALUE "FileDescription", "High performance molecular visualization software"
             VALUE "FileVersion", "0.1.0.0"
             VALUE "InternalName", "VTX"
-            VALUE "LegalCopyright", "Copyright (C) 2020"
+            VALUE "LegalCopyright", "Copyright (C) 2021"
             VALUE "OriginalFilename", "VTX.rc"
             VALUE "ProductName", "VTX"
             VALUE "ProductVersion", "0.1.0.0"

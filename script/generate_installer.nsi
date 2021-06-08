@@ -12,7 +12,7 @@ Name "VTX v0.1.0"
 # Meta tags.
 VIProductVersion "0.1.0.0"
 VIAddVersionKey "ProductName" "VTX"
-VIAddVersionKey "CompanyName" "CNAM GBCM"
+VIAddVersionKey "CompanyName" "VTX Consortium"
 VIAddVersionKey "LegalCopyright" "Copyright (C) 2021"
 VIAddVersionKey "FileDescription" "High performance molecular visualization software"
 VIAddVersionKey "FileVersion" "0.1.0"

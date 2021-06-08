@@ -1,5 +1,5 @@
 cmake --build ../_windows --config Release -- /p:CustomPreprocessorDefinitions=VTX_PRODUCTION
-robocopy ../_windows/build build /nfl /ndl /njh
+robocopy ../_windows/build build /nfl /ndl /njh /E
 rmdir /s /q build\bin\Debug
 rmdir /s /q build\bin\RelWithDebInfo
 rmdir /s /q build\libraries\representations
