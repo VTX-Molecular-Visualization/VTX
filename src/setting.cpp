@@ -62,7 +62,7 @@ namespace VTX
 #ifdef VTX_PRODUCTION
 	const bool Setting::ACTIVE_VSYNC_DEFAULT = true;
 #else
-	const bool Setting::ACTIVE_VSYNC_DEFAULT   = true;
+	const bool Setting::ACTIVE_VSYNC_DEFAULT   = false;
 #endif
 	const bool		 Setting::ACTIVE_AO_DEFAULT			= true;
 	const int		 Setting::AO_INTENSITY_DEFAULT		= 5;

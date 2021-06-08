@@ -121,4 +121,9 @@ namespace VTX::UI::Widget::Render
 		}
 	}
 
+	void OpenGLWidget::activeVSync( const bool p_active )
+	{
+		QSurfaceFormat::defaultFormat().setSwapInterval( p_active );
+	}
+
 } // namespace VTX::UI::Widget::Render

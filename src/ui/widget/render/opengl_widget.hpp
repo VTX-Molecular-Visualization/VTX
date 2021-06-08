@@ -42,6 +42,8 @@ namespace VTX
 
 			void switchRenderer( const Renderer::MODE );
 
+			void activeVSync( const bool p_active );
+
 		  private:
 			QElapsedTimer _timer		= QElapsedTimer();
 			QElapsedTimer _frameTimer	= QElapsedTimer();

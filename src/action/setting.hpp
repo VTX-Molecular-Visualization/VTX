@@ -262,7 +262,7 @@ namespace VTX::Action::Setting
 		virtual void execute() override
 		{
 			VTX_SETTING().setVSync( _active );
-			// TODO
+			VTXApp::get().getMainWindow().getOpenGLWidget().activeVSync( _active );
 		};
 
 	  private:
