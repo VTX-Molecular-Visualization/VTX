@@ -123,7 +123,7 @@ namespace VTX::UI::Widget::Render
 
 	void OpenGLWidget::activeVSync( const bool p_active )
 	{
-		QSurfaceFormat::defaultFormat().setSwapInterval( p_active );
+		// TODO: no solution found.
 	}
 
 } // namespace VTX::UI::Widget::Render
