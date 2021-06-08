@@ -31,6 +31,8 @@ namespace VTX
 					VTX_ACTION( new Action::Main::ToggleCameraController() );
 				}
 				break;
+			case ScanCode::F6: VTX_ACTION( new Action::Setting::RestoreLayout() ); break;
+#ifndef VTX_PRODUCTION
 			case ScanCode::F2:
 				VTX_ACTION( new Action::Setting::ChangeDefaultRepresentation(
 					( ( VTX_SETTING().getDefaultRepresentationIndex() + 1 )
@@ -54,8 +56,6 @@ namespace VTX
 					Worker::Snapshoter::MODE::GL,
 					Util::Filesystem::getSnapshotsPath( Util::Time::getTimestamp() + ".png" ) ) );
 				break;
-			case ScanCode::F6: VTX_ACTION( new Action::Setting::RestoreLayout() ); break;
-#ifndef VTX_PRODUCTION
 			case ScanCode::F8: VTX_ACTION( new Action::Dev::CompileShaders() ); break;
 
 			case ScanCode::F9:

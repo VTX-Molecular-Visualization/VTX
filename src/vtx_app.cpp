@@ -83,16 +83,6 @@ namespace VTX
 
 		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPath( "4hhb.pdb" ) ) );
 		VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
-
-//#define RT_ENABLED
-#ifdef RT_ENABLED
-		// Path * path	   = new Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
-		FilePath path = FilePath( DATA_DIR + "6vsb.mmtf" );
-		VTX_ACTION( new Action::Open( path ) );
-		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
-		Action::ActionManager::get().update( 0.f );
-		Worker::WorkerManager::get().update( 0.f );
-#endif
 	}
 
 	void VTXApp::stop()

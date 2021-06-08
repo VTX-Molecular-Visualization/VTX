@@ -28,9 +28,6 @@
 
 - F1: Toggle camera controller
 - CTRL + F1: Reset current camera controller
-- F2: Change default representation
-- F3: Change color mode
-- F4: Change shading
 - F5: Take a snapshot
 - F6: Restore the default layout
 
