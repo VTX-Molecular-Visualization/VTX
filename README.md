@@ -1,12 +1,12 @@
-# VTX
+# VTX - High performance molecular visualization software
 
 ## USER GUIDE
 
 - Install Visual C++: [link](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
 - Download last release: [link](https://gitlab.com/VTX_mol/VTX/-/releases)
-- Extract archive and run bin/VTX.exe
+- Run the installer (it will automatically extract files in the current folder)
+- Launch VTX
 - Report bugs, features, ideas or anything else by creating a new issue: [link](https://gitlab.com/VTX_mol/VTX/-/issues)
-- Issues labeled "Discussion" need to be discuted together, let's debate!
 
 ### CONTROLLERS
 
