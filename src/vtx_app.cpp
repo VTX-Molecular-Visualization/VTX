@@ -81,8 +81,10 @@ namespace VTX
 		_elapsedTimer.start();
 		_tickTimer.start();
 
+#ifdef VTX_PRODUCTION
 		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPath( "4hhb.pdb" ) ) );
 		VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
+#endif
 	}
 
 	void VTXApp::stop()
