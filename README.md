@@ -15,12 +15,12 @@
 - Hold left/right mouse button and move to rotate the scene
 - Hold wheel button and move to translate the rotation center
 - Use wheel to zoom
-- QDAERF to rotate
-- ZS to zoom
+- ADQERF to rotate
+- WS to zoom
 
 #### Freefly
 
-- ZSQD or arrows keys to move the camera
+- ZASD or arrows keys to move the camera
 - Hold left mouse button and move to look around
 - Hold right mouse button and move to rotate on the side
 
