@@ -2,11 +2,11 @@
 
 ## USER GUIDE
 
-- Install Visual C++: [link](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
-- Download last release: [link](https://gitlab.com/VTX_mol/VTX/-/releases)
+- Install [Visual C++](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
+- Download [last release](https://gitlab.com/VTX_mol/VTX/-/releases)
 - Run the installer (it will automatically extract files in the current folder)
 - Launch VTX
-- Report bugs, features, ideas or anything else by creating a new issue: [link](https://gitlab.com/VTX_mol/VTX/-/issues)
+- Report bugs, features, ideas or anything else by [creating a new issue](https://gitlab.com/VTX_mol/VTX/-/issues)
 
 ### CONTROLLERS
 
@@ -31,10 +31,14 @@
 - F5: Take a snapshot
 - F6: Restore the default layout
 
-### SAVES AND EXPORTS
+### SNAPSHOTS
 
 - Snapshots are saved in the /snapshots folder
-- Render presets are saved in /libraries/render_effects folder, you can manually add/remove files (will be updated at next launch)
+
+### RENDER PRESETS
+
+- Render presets are saved in /libraries/render_effects folder
+- You can manually add/remove files (will be updated at the next launch), this allows you to share presets between users.
 
 ### BUGS AND CRASH REPORTS
 
