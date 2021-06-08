@@ -34,7 +34,10 @@ WriteUninstaller $INSTDIR\uninstall.exe
 SectionEnd
  
 Section "Uninstall"
- 
+
+# Delete registry keys.
+DeleteRegKey HKCU "SOFTWARE\VTX"
+
 # Always delete uninstaller first.
 Delete $INSTDIR\uninstall.exe
  
