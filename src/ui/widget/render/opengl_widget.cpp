@@ -62,6 +62,11 @@ namespace VTX::UI::Widget::Render
 		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT, defaultFramebufferObject() );
 
 		_frameTimer.start();
+
+		if ( !isValid() )
+		{
+			Dialog::openGLInitializationFail();
+		}
 	}
 
 	void OpenGLWidget::paintGL()
@@ -123,7 +128,13 @@ namespace VTX::UI::Widget::Render
 
 	void OpenGLWidget::activeVSync( const bool p_active )
 	{
-		// TODO: no solution found.
+		makeCurrent();
+		QFunctionPointer func = context()->getProcAddress( "GLX_EXT_swap_control" );
+		if ( func == nullptr )
+		{
+			VTX_DEBUG( "NULL" );
+		}
+		doneCurrent();
 	}
 
 } // namespace VTX::UI::Widget::Render

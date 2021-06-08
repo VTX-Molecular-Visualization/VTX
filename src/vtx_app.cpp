@@ -63,7 +63,7 @@ namespace VTX
 		if ( !_mainWindow->isOpenGLValid() )
 		{
 			UI::Dialog::openGLInitializationFail();
-			stop();
+			return;
 		}
 
 		// Fix Issue for fullscreen on windows. Need to be called after show and before set fullscreen //////////

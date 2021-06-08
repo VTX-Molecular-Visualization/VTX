@@ -191,6 +191,8 @@ namespace VTX::UI
 							   msg.c_str(),
 							   QMessageBox::StandardButton::Ok,
 							   QMessageBox::StandardButton::Ok );
+		VTXApp::get().getMainWindow().close();
+		std::exit( 0 );
 	}
 
 } // namespace VTX::UI
