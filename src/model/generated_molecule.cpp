@@ -72,9 +72,8 @@ namespace VTX::Model
 		for ( AtomPositionsFrame & atomPositions : getAtomPositionFrames() )
 			atomPositions.shrink_to_fit();
 
-		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
-
 		chrono.stop();
+		VTX_INFO( "Copy done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 	}
 
 	void GeneratedMolecule::copyFromMolecule( const Model::Molecule & p_molecule )
@@ -249,13 +248,27 @@ namespace VTX::Model
 										   const std::map<const uint, const uint> & p_mapAtomIds )
 	{
 		// Bonds
-		Model::Residue * previousResidue = nullptr;
-		uint			 counter		 = 0;
 		getBufferBonds().reserve( p_source.getBufferBonds().size() );
 
-		for ( uint i = 0; i < p_source.getBondCount(); i++ )
+		uint				indexFirstValidBond = 0;
+		const Model::Bond * bondPtr				= p_source.getBonds()[ indexFirstValidBond ];
+
+		while ( indexFirstValidBond < p_source.getBondCount() && bondPtr == nullptr )
 		{
-			const Model::Bond * const bondPtr = p_source.getBonds()[ i ];
+			indexFirstValidBond++;
+			bondPtr = p_source.getBonds()[ indexFirstValidBond ];
+		}
+
+		if ( bondPtr == nullptr )
+			return;
+
+		Model::Residue * previousResidue	  = getAtom( bondPtr->getIndexFirstAtom() )->getResiduePtr();
+		uint			 previousResidueIndex = previousResidue->getIndex();
+		uint			 counter			  = 0;
+
+		for ( uint i = indexFirstValidBond; i < p_source.getBondCount(); i++ )
+		{
+			bondPtr = p_source.getBonds()[ i ];
 
 			if ( bondPtr == nullptr )
 				continue;
@@ -278,40 +291,27 @@ namespace VTX::Model
 
 				const uint generatedBondIndex = getBondCount() - 1;
 
-				/*
-				Model::Residue * const startResidue = getAtom( indexFirstAtom )->getResiduePtr();
-				Model::Residue * const endResidue	= getAtom( indexSecondAtom )->getResiduePtr();
-				const bool			   extraBound	= startResidue != endResidue;
+				Model::Residue * const currentResidue	   = getAtom( indexFirstAtom )->getResiduePtr();
+				const uint			   currentResidueIndex = currentResidue->getIndex();
 
-				if ( extraBound )
+				if ( currentResidueIndex > previousResidueIndex )
 				{
-					startResidue->getIndexExtraBondStart().emplace_back( generatedBondIndex );
-					endResidue->getIndexExtraBondEnd().emplace_back( generatedBondIndex );
+					previousResidue->setBondCount( counter );
+					currentResidue->setIndexFirstBond( generatedBondIndex );
+
+					previousResidue		 = currentResidue;
+					previousResidueIndex = currentResidueIndex;
+
+					counter = 1;
 				}
 				else
-				*/
 				{
-					if ( getAtom( indexFirstAtom )->getResiduePtr() != previousResidue )
-					{
-						if ( previousResidue != nullptr )
-						{
-							previousResidue->setBondCount( counter );
-						}
-						getAtom( indexFirstAtom )->getResiduePtr()->setIndexFirstBond( generatedBondIndex );
-						previousResidue = getAtom( indexFirstAtom )->getResiduePtr();
-
-						counter = 1;
-					}
-					else
-					{
-						counter++;
-					}
+					counter++;
 				}
 			}
 		}
 
-		if ( previousResidue != nullptr )
-			previousResidue->setBondCount( counter );
+		previousResidue->setBondCount( counter );
 	}
 
 	void GeneratedMolecule::_validateBuffers()
