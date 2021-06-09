@@ -378,7 +378,7 @@ namespace VTX::Model
 
 		VTX_INFO( "Extract done in : " + std::to_string( chrono.elapsedTime() ) + "s" );
 
-		molecule.forceNotifyDataChanged();
+		molecule.notifyStructureChange();
 		molecule.refreshStructure();
 	};
 

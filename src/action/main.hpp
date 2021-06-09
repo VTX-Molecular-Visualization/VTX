@@ -10,6 +10,7 @@
 #include "define.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
+#include "io/scene_path_data.hpp"
 #include "model/molecule.hpp"
 #include "model/path.hpp"
 #include "mvc/mvc_manager.hpp"
@@ -134,6 +135,8 @@ namespace VTX::Action::Main
 
 							if ( result.sourceType == Worker::Loader::SOURCE_TYPE::FILE )
 							{
+								if ( result.molecule != nullptr )
+									VTXApp::get().getScenePathData().registerLoading( result.molecule, filepath );
 								VTX::Setting::enqueueNewLoadingPath( filepath );
 							}
 							else if ( result.sourceType == Worker::Loader::SOURCE_TYPE::BUFFER )

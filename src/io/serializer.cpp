@@ -59,14 +59,14 @@ namespace VTX::IO
 
 	nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
 	{
-		Writer::ChemfilesWriter chemfileWriter = Writer::ChemfilesWriter( _thread );
-		std::string				buffer		   = std::string();
-		chemfileWriter.writeBuffer( buffer, p_molecule, "PDB" );
+		const FilePath moleculePath = VTXApp::get().getScenePathData().getData( &p_molecule ).getFilepath();
+		const Writer::ChemfilesWriter * const writer
+			= VTXApp::get().getScenePathData().getData( &p_molecule ).getWriter();
 
 		return { { "TRANSFORM", serialize( p_molecule.getTransform() ) },
-				 { "DATA", buffer },
-				 { "REPRESENTATIONS", _serializeMoleculeRepresentations( p_molecule, chemfileWriter ) },
-				 { "VISIBILITIES", _serializeMoleculeVisibilities( p_molecule, chemfileWriter ) },
+				 { "PATH", moleculePath.string() },
+				 { "REPRESENTATIONS", _serializeMoleculeRepresentations( p_molecule, writer ) },
+				 { "VISIBILITIES", _serializeMoleculeVisibilities( p_molecule, writer ) },
 				 { "NAME", p_molecule.getName() },
 				 { "PDB_ID", p_molecule.getPdbIdCode() },
 				 { "DISPLAY_NAME", p_molecule.getDisplayName() } };
@@ -317,9 +317,19 @@ namespace VTX::IO
 			p_molecule.applyTransform( transform );
 		}
 
-		const std::string		 buffer = _get<std::string>( p_json, "DATA" );
-		IO::Reader::LibChemfiles reader = IO::Reader::LibChemfiles( _thread );
-		reader.readBuffer( buffer, "mol.pdb", p_molecule );
+		const FilePath molPath = _get<std::string>( p_json, "PATH" );
+
+		try
+		{
+			IO::Reader::LibChemfiles reader = IO::Reader::LibChemfiles( _thread );
+			reader.readFile( molPath, p_molecule );
+			VTXApp::get().getScenePathData().registerLoading( &p_molecule, molPath );
+		}
+		catch ( const std::filesystem::filesystem_error & p_exception )
+		{
+			_logWarning( "Error when loading " + molPath.string() + " : " + p_exception.what() );
+			throw p_exception;
+		}
 
 		if ( p_json.contains( "REPRESENTATIONS" ) )
 			_deserializeMoleculeRepresentations( p_json.at( "REPRESENTATIONS" ), p_molecule );
@@ -604,7 +614,7 @@ namespace VTX::IO
 	}
 
 	nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,
-																  const Writer::ChemfilesWriter & p_writer ) const
+																  const Writer::ChemfilesWriter * p_writer ) const
 	{
 		nlohmann::json jsonArrayRepresentations = nlohmann::json::array();
 		nlohmann::json jsonRepresentation		= { { "TARGET_TYPE", ID::Model::MODEL_MOLECULE },
@@ -630,8 +640,9 @@ namespace VTX::IO
 
 				if ( residue->hasCustomRepresentation() )
 				{
-					const uint newResidueIndex = p_writer.getNewResidueIndex( *residue );
-					jsonRepresentation		   = { { "TARGET_TYPE", ID::Model::MODEL_RESIDUE },
+					const uint newResidueIndex
+						= p_writer != nullptr ? p_writer->getNewResidueIndex( *residue ) : residue->getIndex();
+					jsonRepresentation = { { "TARGET_TYPE", ID::Model::MODEL_RESIDUE },
 										   { "INDEX", newResidueIndex },
 										   { "REPRESENTATION", serialize( *residue->getRepresentation() ) } };
 
@@ -639,8 +650,10 @@ namespace VTX::IO
 				}
 				else if ( chainCustomRep != nullptr )
 				{
-					const uint newResidueIndex = p_writer.getNewResidueIndex( *residue );
-					jsonRepresentation		   = { { "TARGET_TYPE", ID::Model::MODEL_RESIDUE },
+					const uint newResidueIndex
+						= p_writer != nullptr ? p_writer->getNewResidueIndex( *residue ) : residue->getIndex();
+
+					jsonRepresentation = { { "TARGET_TYPE", ID::Model::MODEL_RESIDUE },
 										   { "INDEX", newResidueIndex },
 										   { "REPRESENTATION", serialize( *chainCustomRep ) } };
 
@@ -652,7 +665,7 @@ namespace VTX::IO
 		return jsonArrayRepresentations;
 	}
 	nlohmann::json Serializer::_serializeMoleculeVisibilities( const Model::Molecule &		   p_molecule,
-															   const Writer::ChemfilesWriter & p_writer ) const
+															   const Writer::ChemfilesWriter * p_writer ) const
 	{
 		nlohmann::json jsonChainVisibilitiesArray	= nlohmann::json::array();
 		nlohmann::json jsonResidueVisibilitiesArray = nlohmann::json::array();
@@ -665,7 +678,7 @@ namespace VTX::IO
 
 			if ( !chain->isVisible() )
 			{
-				if ( p_writer.isChainMerged( *chain ) )
+				if ( p_writer != nullptr && p_writer->isChainMerged( *chain ) )
 				{
 					for ( uint residueIndex = chain->getIndexFirstResidue();
 						  residueIndex <= chain->getIndexLastResidue();
@@ -676,7 +689,7 @@ namespace VTX::IO
 						if ( residue == nullptr )
 							continue;
 
-						jsonResidueVisibilitiesArray.emplace_back( p_writer.getNewResidueIndex( *residue ) );
+						jsonResidueVisibilitiesArray.emplace_back( p_writer->getNewResidueIndex( *residue ) );
 					}
 				}
 				else
@@ -692,7 +705,11 @@ namespace VTX::IO
 				continue;
 
 			if ( !residue->isVisible() )
-				jsonResidueVisibilitiesArray.emplace_back( p_writer.getNewResidueIndex( *residue ) );
+			{
+				const uint newResidueIndex
+					= p_writer != nullptr ? p_writer->getNewResidueIndex( *residue ) : residue->getIndex();
+				jsonResidueVisibilitiesArray.emplace_back( newResidueIndex );
+			}
 		}
 
 		for ( const Model::Atom * const atom : p_molecule.getAtoms() )
@@ -701,7 +718,10 @@ namespace VTX::IO
 				continue;
 
 			if ( !atom->isVisible() )
-				jsonAtomVisibilitiesArray.emplace_back( p_writer.getNewAtomIndex( *atom ) );
+			{
+				const uint newAtomIndex = p_writer != nullptr ? p_writer->getNewAtomIndex( *atom ) : atom->getIndex();
+				jsonAtomVisibilitiesArray.emplace_back( newAtomIndex );
+			}
 		}
 
 		return { { "CHAINS", jsonChainVisibilitiesArray },
@@ -776,4 +796,34 @@ namespace VTX::IO
 			}
 		}
 	}
+
+	void Serializer::_logError( const std::string & p_msg ) const
+	{
+		if ( _thread != nullptr )
+			_thread->logError( p_msg );
+		else
+			VTX_ERROR( p_msg );
+	}
+	void Serializer::_logWarning( const std::string & p_msg ) const
+	{
+		if ( _thread != nullptr )
+			_thread->logWarning( p_msg );
+		else
+			VTX_WARNING( p_msg );
+	}
+	void Serializer::_logDebug( const std::string & p_msg ) const
+	{
+		if ( _thread != nullptr )
+			_thread->logDebug( p_msg );
+		else
+			VTX_DEBUG( p_msg );
+	}
+	void Serializer::_logInfo( const std::string & p_msg ) const
+	{
+		if ( _thread != nullptr )
+			_thread->logInfo( p_msg );
+		else
+			VTX_INFO( p_msg );
+	}
+
 } // namespace VTX::IO

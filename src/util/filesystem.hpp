@@ -10,6 +10,7 @@
 #include "tool/logger.hpp"
 #include <QString>
 #include <fstream>
+#include <set>
 
 #ifdef _MSC_VER
 #include <Windows.h>
@@ -56,6 +57,8 @@ namespace VTX
 			static const FilePath LOGS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/logs" );
 			static const FilePath LIBRARIES_DIR = FilePath( EXECUTABLE_DIR.string() + "/libraries" );
 
+			static const FilePath SCENE_OBJECT_FOLDER = FilePath( "obj" );
+
 			static const FilePath LICENSE_PATH = FilePath( EXECUTABLE_DIR.string() + "/license.txt" );
 
 			static const FilePath DATA_DIR				  = "../data";
@@ -63,12 +66,56 @@ namespace VTX
 			static const QString  DEFAULT_SAVE_FOLDER	  = "../save";
 			static const QString  DEFAULT_MOLECULE_FOLDER = "../data";
 
-			static const QString MOLECULE_EXTENSIONS = "*.pdb *.cif *.mmtf *.mol2 *.arc *.psf *.prm";
-			static const QString VTX_EXTENSIONS		 = "*.vtx";
+			static const QString DEFAULT_MOLECULE_READ_FILTER  = "All (*)";
+			static const QString DEFAULT_MOLECULE_WRITE_FILTER = "MMCIF(*.mmcif)";
 
-			static const QString MOLECULE_FILE_FILTERS = "Molecule file (" + MOLECULE_EXTENSIONS + ")";
-			static const QString OPEN_FILE_FILTERS = "VTX file (" + VTX_EXTENSIONS + " " + MOLECULE_EXTENSIONS + ")";
-			static const QString SAVE_FILE_FILTERS = "VTX file (" + VTX_EXTENSIONS + ")";
+			static const QString MOLECULE_EXTENSIONS_READ
+				= "Amber Net CDF (*.nc);;"
+				  "CIF(*.cif );;"
+				  "CML (*.cml);;"
+				  "CSSR (*.cssr);;"
+				  "DCD (*.dcd);;"
+				  "GRO (*.gro);;"
+				  "LAMMPS (*.lammpstrj);;"
+				  "MMCIF(*.mmcif);;"
+				  "MMTF (*.mmtf);;"
+				  "MOL2 (*.mol2);;"
+				  "Molden (*.molden);;"
+				  "PDB (*.pdb);;"
+				  "SDF (*.sdf);;"
+				  "SMI (*.smi);;"
+				  "Tinker (*.arc *.psf *.prm);;"
+				  "TNG (*.tng);;"
+				  "TRJ (*.trj);;"
+				  "TRR (*.trr);;"
+				  "XTC (*.xtc);;"
+				  "XYZ (*.xyz);;"
+				  "All (*)";
+
+			static const QString MOLECULE_EXTENSIONS_WRITE
+				= "Amber Net CDF (*.nc);;"
+				  "CIF(*.cif );;"
+				  "CML (*.cml);;"
+				  "CSSR (*.cssr);;"
+				  "GRO (*.gro);;"
+				  "LAMMPS (*.lammpstrj);;"
+				  "MMCIF(*.mmcif);;"
+				  "MMTF (*.mmtf);;"
+				  "MOL2 (*.mol2);;"
+				  "PDB (*.pdb);;"
+				  "SDF (*.sdf);;"
+				  "SMI (*.smi);;"
+				  "Tinker (*.arc *.psf *.prm);;"
+				  "TRR (*.trr);;"
+				  "XTC (*.xtc);;"
+				  "XYZ (*.xyz);;";
+
+			static const QString VTX_EXTENSIONS = "VTX file (*.vtx)";
+
+			static const QString LOAD_MOLECULE_FILTERS	 = MOLECULE_EXTENSIONS_READ;
+			static const QString EXPORT_MOLECULE_FILTERS = MOLECULE_EXTENSIONS_WRITE;
+			static const QString OPEN_FILE_FILTERS		 = VTX_EXTENSIONS + ";;" + MOLECULE_EXTENSIONS_READ;
+			static const QString SAVE_SCENE_FILTERS		 = VTX_EXTENSIONS;
 
 			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
@@ -178,6 +225,9 @@ namespace VTX
 				return result;
 			}
 
+			inline void		createDirectory( const FilePath & p_path ) { std::filesystem::create_directory( p_path ); }
+			inline FilePath getParentPath( const FilePath & p_path ) { return p_path.parent_path(); }
+
 			inline FilePath getFileNameWithoutExtension( const FilePath & p_path )
 			{
 				return p_path.filename().replace_extension();
@@ -187,11 +237,12 @@ namespace VTX
 			{
 				uint counter = 2;
 
-				std::string defaultFileName = p_path.filename().string();
+				const std::string defaultFileName = getFileNameWithoutExtension( p_path ).string();
+				const std::string extension		  = p_path.extension().string();
 
 				while ( std::filesystem::exists( p_path ) )
 				{
-					p_path.replace_filename( defaultFileName + " " + std::to_string( counter ) );
+					p_path.replace_filename( defaultFileName + " " + std::to_string( counter ) + extension );
 					counter++;
 				}
 			}
@@ -230,7 +281,55 @@ namespace VTX
 				return succeed;
 			}
 
+			inline void getFilesInDirectory( const FilePath & p_directory, std::set<std::string> & p_container )
+			{
+				for ( const FilePath & file : std::filesystem::directory_iterator( p_directory ) )
+					p_container.emplace( file.string() );
+			}
+
+			inline bool remove( const FilePath & p_filename )
+			{
+				bool succeed;
+				try
+				{
+					succeed = std::filesystem::remove( p_filename );
+				}
+				catch ( const std::exception & e )
+				{
+					VTX_ERROR( "Error when removing file " + p_filename.string() + " : " + e.what() );
+					succeed = false;
+				}
+
+				return succeed;
+			}
+
 			inline bool exists( const FilePath & p_path ) { return std::filesystem::exists( p_path ); }
+
+			inline FilePath getSceneSaveDirectory( const FilePath & p_savePath )
+			{
+				const FilePath projectDirectoryName
+					= FilePath( getFileNameWithoutExtension( p_savePath ).string() + "_Data" );
+
+				return getParentPath( p_savePath ) / projectDirectoryName;
+			}
+			inline FilePath getSceneObjectsSaveDirectory( const FilePath & p_savePath )
+			{
+				const FilePath projectDirectoryName
+					= FilePath( getFileNameWithoutExtension( p_savePath ).string() + "_Data" );
+
+				return getSceneSaveDirectory( p_savePath ) / SCENE_OBJECT_FOLDER;
+			}
+
+			inline void checkSaveDirectoryHierarchy( const FilePath & p_savePath )
+			{
+				const FilePath projectDirectory = getSceneSaveDirectory( p_savePath );
+				if ( !Util::Filesystem::exists( projectDirectory ) )
+					createDirectory( projectDirectory );
+
+				const FilePath objectsPath = getSceneObjectsSaveDirectory( p_savePath );
+				if ( !Util::Filesystem::exists( objectsPath ) )
+					createDirectory( objectsPath );
+			}
 		} // namespace Filesystem
 	}	  // namespace Util
 } // namespace VTX

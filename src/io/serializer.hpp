@@ -100,9 +100,9 @@ namespace VTX
 
 		  private:
 			nlohmann::json _serializeMoleculeRepresentations( const Model::Molecule &,
-															  const VTX::IO::Writer::ChemfilesWriter & ) const;
+															  const VTX::IO::Writer::ChemfilesWriter * ) const;
 			nlohmann::json _serializeMoleculeVisibilities( const Model::Molecule &,
-														   const VTX::IO::Writer::ChemfilesWriter & ) const;
+														   const VTX::IO::Writer::ChemfilesWriter * ) const;
 
 			void _deserializeMoleculeRepresentations( const nlohmann::json &, Model::Molecule & ) const;
 			void _deserializeMoleculeVisibilities( const nlohmann::json &, Model::Molecule & ) const;
@@ -115,6 +115,11 @@ namespace VTX
 				else
 					return p_defaultValue;
 			}
+
+			void _logError( const std::string & p_msg ) const;
+			void _logWarning( const std::string & p_msg ) const;
+			void _logInfo( const std::string & p_msg ) const;
+			void _logDebug( const std::string & p_msg ) const;
 
 			const Worker::BaseThread * const _thread;
 		};

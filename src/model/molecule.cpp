@@ -845,7 +845,7 @@ namespace VTX
 
 			// Notify
 			if ( p_notifyViews )
-				_notifyDataChanged();
+				notifyStructureChange();
 		}
 
 		void Molecule::removeResidue( const uint p_id,
@@ -896,7 +896,7 @@ namespace VTX
 
 				// Notify
 				if ( p_notifyViews )
-					_notifyDataChanged();
+					notifyStructureChange();
 			}
 		}
 
@@ -976,7 +976,7 @@ namespace VTX
 
 				// Notify
 				if ( p_notifyViews )
-					_notifyDataChanged();
+					notifyStructureChange();
 			}
 		}
 
@@ -991,7 +991,13 @@ namespace VTX
 			_bufferBonds[ p_id * 2u + 1u ] = 0;
 
 			if ( p_notifyViews )
-				_notifyDataChanged();
+				notifyStructureChange();
+		}
+
+		void Molecule::notifyStructureChange()
+		{
+			_notifyDataChanged();
+			VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_STRUCTURE_CHANGE, this ) );
 		}
 
 		void Molecule::setDisplayName( const std::string & p_name )

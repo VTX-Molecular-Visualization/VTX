@@ -1,4 +1,5 @@
 #include "saver.hpp"
+#include "io/scene_path_data.hpp"
 #include "io/writer/serialized_object.hpp"
 #include "io/writer/writer_chemfiles.hpp"
 #include "model/molecule.hpp"
@@ -8,6 +9,7 @@
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "util/filesystem.hpp"
+#include <set>
 
 namespace VTX::Worker
 {
@@ -38,8 +40,7 @@ namespace VTX::Worker
 
 	bool Saver::_saveMolecule()
 	{
-		bool result = 1;
-
+		bool						  result = 1;
 		IO::Writer::ChemfilesWriter * writer = new IO::Writer::ChemfilesWriter( this );
 
 		// Write.
@@ -75,16 +76,66 @@ namespace VTX::Worker
 
 		return result;
 	}
+
 	bool Saver::_saveSession()
 	{
 		bool result = 1;
 
-		IO::Writer::SerializedObject<VTXApp> * writer = new IO::Writer::SerializedObject<VTXApp>();
+		Util::Filesystem::checkSaveDirectoryHierarchy( _path.string() );
+
+		const FilePath itemDirectory = Util::Filesystem::getSceneObjectsSaveDirectory( _path );
+
+		std::set<std::string> filesToRemove = std::set<std::string>();
+		Util::Filesystem::getFilesInDirectory( itemDirectory, filesToRemove );
+
+		IO::Writer::SerializedObject<VTXApp> * const writer = new IO::Writer::SerializedObject<VTXApp>( this );
 
 		// Write.
 		try
 		{
-			writer->writeFile( _path.string(), VTXApp::get() );
+			// for each molecule check if :
+			// If not saved on computer => Create file in scene molecule directory
+			// Else if has any modifications => Create / Save file in scene molecule directory.
+			for ( const std::pair<Model::Molecule *, float> & molecule : VTXApp::get().getScene().getMolecules() )
+			{
+				const IO::ScenePathData::Data & moleculePathData
+					= VTXApp::get().getScenePathData().getData( molecule.first );
+
+				FilePath filePath = moleculePathData.getFilepath();
+
+				if ( moleculePathData.needToSaveMolecule() )
+				{
+					IO::Writer::ChemfilesWriter * const moleculeWriter = new IO::Writer::ChemfilesWriter( this );
+
+					if ( Util::Filesystem::getParentPath( filePath ) != itemDirectory )
+					{
+						filePath = itemDirectory / "molecule.mmcif";
+						Util::Filesystem::generateUniqueFileName( filePath );
+						VTXApp::get().getScenePathData().getData( molecule.first ).registerPath( filePath );
+					}
+
+					moleculeWriter->writeFile( filePath.string(), *molecule.first );
+					VTXApp::get().getScenePathData().getData( molecule.first ).registerWriter( moleculeWriter );
+				}
+
+				filesToRemove.erase( filePath.string() );
+			}
+
+			writer->writeFile( _path, VTXApp::get() );
+
+			for ( const std::pair<Model::Molecule *, float> & molecule : VTXApp::get().getScene().getMolecules() )
+			{
+				VTXApp::get().getScenePathData().getData( molecule.first ).deleteWriter();
+				VTXApp::get().getScenePathData().getData( molecule.first ).setHasChanged( false );
+			}
+
+			// Clean files
+			while ( filesToRemove.size() > 0 )
+			{
+				const std::string fileToRemove = *filesToRemove.begin();
+				filesToRemove.erase( filesToRemove.begin() );
+				Util::Filesystem::remove( FilePath( fileToRemove ) );
+			}
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -102,8 +153,11 @@ namespace VTX::Worker
 	{
 		FilePath extension = p_path.extension();
 
-		if ( extension == ".sdf" || extension == ".pdb" || extension == ".mmtf" || extension == ".cif"
-			 || extension == ".arc" || extension == ".xyz" || extension == ".dcd" || extension == ".mol2" )
+		if ( extension == ".nc" || extension == ".cif" || extension == ".cml" || extension == ".cssr"
+			 || extension == ".dcd" || extension == ".gro" || extension == ".lammpstrj" || extension == ".mmcif"
+			 || extension == ".mmtf" || extension == ".mol2" || extension == ".molden" || extension == ".sdf"
+			 || extension == ".smi" || extension == ".arc" || extension == ".trr" || extension == ".mmtf"
+			 || extension == ".xtc" || extension == ".tng" || extension == ".trj" || extension == ".xyz" )
 		{
 			return MODE::MOLECULE;
 		}

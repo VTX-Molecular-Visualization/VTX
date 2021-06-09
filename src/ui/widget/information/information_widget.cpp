@@ -93,7 +93,7 @@ namespace VTX::UI::Widget::Information
 			"" );
 
 		QLabel * iconAuthorsTitle = new QLabel( this );
-		iconAuthorsTitle->setText( "Icon authors:" );
+		iconAuthorsTitle->setText( "Icons authors:" );
 		QLabel * iconAuthors = new QLabel( this );
 		iconAuthors->setTextInteractionFlags( libraryDesc->textInteractionFlags()
 											  | Qt::TextInteractionFlag::LinksAccessibleByMouse );

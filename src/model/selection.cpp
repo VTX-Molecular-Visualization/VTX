@@ -780,12 +780,6 @@ namespace VTX::Model
 				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
 			unselectMolecule( *castedEvent.ptr );
 		}
-		else if ( p_event.name == Event::MOLECULE_STRUCTURE_CHANGE )
-		{
-			const Event::VTXEventPtr<Model::Molecule> & castedEvent
-				= dynamic_cast<const Event::VTXEventPtr<Model::Molecule> &>( p_event );
-			unselectMolecule( *castedEvent.ptr );
-		}
 	}
 
 	void Selection::_notifyDataChanged()

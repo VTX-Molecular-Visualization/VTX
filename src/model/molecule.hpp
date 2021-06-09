@@ -253,6 +253,7 @@ namespace VTX
 
 			// Hide BaseColorable::setColor
 			void setColor( const Color::Rgb & p_color );
+			void notifyStructureChange();
 
 		  protected:
 			void _init() override;

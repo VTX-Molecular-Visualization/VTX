@@ -182,8 +182,11 @@ namespace VTX
 		{
 			FilePath extension = p_path.extension();
 
-			if ( extension == ".sdf" || extension == ".pdb" || extension == ".mmtf" || extension == ".cif"
-				 || extension == ".arc" || extension == ".xyz" || extension == ".dcd" || extension == ".mol2" )
+			if ( extension == ".nc" || extension == ".cif" || extension == ".cml" || extension == ".cssr"
+				 || extension == ".dcd" || extension == ".gro" || extension == ".lammpstrj" || extension == ".mmcif"
+				 || extension == ".mmtf" || extension == ".mol2" || extension == ".molden" || extension == ".sdf"
+				 || extension == ".smi" || extension == ".arc" || extension == ".trr" || extension == ".mmtf"
+				 || extension == ".xtc" || extension == ".tng" || extension == ".trj" || extension == ".xyz" )
 			{
 				return MODE::MOLECULE;
 			}

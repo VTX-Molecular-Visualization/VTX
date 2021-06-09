@@ -18,10 +18,13 @@ namespace VTX::UI
 
 	void Dialog::openLoadMoleculeDialog()
 	{
-		const QStringList filenames = QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
+		QString * const	  defaultFilter = new QString( Util::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
+		const QStringList filenames		= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
 																	 "Open molecule",
 																	 Util::Filesystem::DEFAULT_MOLECULE_FOLDER,
-																	 Util::Filesystem::MOLECULE_FILE_FILTERS );
+																	 Util::Filesystem::LOAD_MOLECULE_FILTERS,
+																	 defaultFilter );
+		delete defaultFilter;
 
 		if ( !filenames.isEmpty() )
 		{
@@ -34,11 +37,13 @@ namespace VTX::UI
 	}
 	void Dialog::openExportMoleculeDialog()
 	{
-		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
-															   "Export molecule",
-															   Util::Filesystem::DEFAULT_MOLECULE_FOLDER,
-															   Util::Filesystem::MOLECULE_FILE_FILTERS );
-
+		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_MOLECULE_WRITE_FILTER );
+		const QString	filename	  = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
+																  "Export molecule",
+																  Util::Filesystem::DEFAULT_MOLECULE_FOLDER,
+																  Util::Filesystem::EXPORT_MOLECULE_FILTERS,
+																  defaultFilter );
+		delete defaultFilter;
 		if ( !filename.isNull() )
 		{
 			const FilePath path = FilePath( filename.toStdString() );
@@ -103,7 +108,7 @@ namespace VTX::UI
 		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
 															   "Save session",
 															   Util::Filesystem::DEFAULT_SAVE_FOLDER,
-															   Util::Filesystem::SAVE_FILE_FILTERS );
+															   Util::Filesystem::SAVE_SCENE_FILTERS );
 
 		if ( !filename.isNull() )
 		{
