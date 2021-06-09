@@ -215,6 +215,16 @@ elseif(MSVC)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 	add_definitions(-DNOMINMAX)
 	
+	# Add variable that permit to add custom preprocessor definitions with msbuild command line.
+	# Trick not working.
+	#add_definitions("-D%(CustomPreprocessorDefinitions)")
+	
+	option(DEFINE_PRODUCTION "Enable production mode" OFF)
+	if(DEFINE_PRODUCTION)
+		add_definitions(-DVTX_PRODUCTION)
+	endif()
+	
+	
 	# Set default startup project.
 	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT VTX)
 	#set_target_properties(VTX PROPERTIES VS_GLOBAL_DisableFastUpToDateCheck false)

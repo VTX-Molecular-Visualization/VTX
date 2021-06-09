@@ -101,6 +101,7 @@ namespace VTX::Action::Atom
 			else
 			{
 				molecule->refreshStructure();
+				molecule->computeAllRepresentationData();
 			}
 
 			VTXApp::get().MASK |= VTX_MASK_SELECTION_UPDATED;

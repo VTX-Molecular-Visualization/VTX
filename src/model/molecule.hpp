@@ -196,7 +196,6 @@ namespace VTX
 			}
 			inline void refreshStructure()
 			{
-				computeAllRepresentationData();
 				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 				refreshBondsBuffer();
 				refreshSecondaryStructure();

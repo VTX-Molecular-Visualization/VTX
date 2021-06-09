@@ -31,8 +31,12 @@ namespace VTX
 	const int Setting::STATUS_PROGRESS_BAR_WIDTH  = 100;
 
 	// Rendering.
-	const bool									  Setting::ACTIVE_RENDERER_DEFAULT		= true;
-	const bool									  Setting::FORCE_RENDERER_DEFAULT		= true;
+	const bool Setting::ACTIVE_RENDERER_DEFAULT = true;
+#ifdef VTX_PRODUCTION
+	const bool Setting::FORCE_RENDERER_DEFAULT = false;
+#else
+	const bool Setting::FORCE_RENDERER_DEFAULT = true;
+#endif
 	const Color::Rgb							  Setting::BACKGROUND_COLOR_DEFAULT		= Color::Rgb::BLACK;
 	const float									  Setting::BACKGROUND_OPACITY_DEFAULT	= 1.0f;
 	const int									  Setting::REPRESENTATION_DEFAULT_INDEX = 0;
@@ -54,34 +58,38 @@ namespace VTX
 	const std::string Setting::NEW_RENDER_EFFECT_PRESET_DEFAULT_NAME = "New render preset";
 	const int		  Setting::RENDER_EFFECT_DEFAULT_INDEX			 = 0;
 
-	const Renderer::SHADING Setting::SHADING_DEFAULT		   = Renderer::SHADING::DIFFUSE;
-	const bool				Setting::ACTIVE_VSYNC_DEFAULT	   = true;
-	const bool				Setting::ACTIVE_AO_DEFAULT		   = true;
-	const int				Setting::AO_INTENSITY_DEFAULT	   = 5;
-	const int				Setting::AO_INTENSITY_MIN		   = 1;
-	const int				Setting::AO_INTENSITY_MAX		   = 20;
-	const int				Setting::AO_BLUR_SIZE_DEFAULT	   = 17;
-	const int				Setting::AO_BLUR_SIZE_MIN		   = 1;
-	const int				Setting::AO_BLUR_SIZE_MAX		   = 99;
-	const bool				Setting::ACTIVE_OUTLINE_DEFAULT	   = false;
-	const uint				Setting::OUTLINE_THICKNESS_DEFAULT = 2;
-	const uint				Setting::OUTLINE_THICKNESS_MIN	   = 1;
-	const uint				Setting::OUTLINE_THICKNESS_MAX	   = 5;
-	const float				Setting::OUTLINE_SENSIVITY_DEFAULT = 0.4f;
-	const float				Setting::OUTLINE_SENSIVITY_MIN	   = 0.01f;
-	const float				Setting::OUTLINE_SENSIVITY_MAX	   = 1.f;
-	const Color::Rgb		Setting::OUTLINE_COLOR_DEFAULT	   = Color::Rgb::WHITE;
-	const bool				Setting::ACTIVE_FOG_DEFAULT		   = false;
-	const float				Setting::FOG_NEAR_DEFAULT		   = 30;
-	const float				Setting::FOG_NEAR_MIN			   = 0.f;
-	const float				Setting::FOG_NEAR_MAX			   = 1000.f;
-	const float				Setting::FOG_FAR_DEFAULT		   = 80.f;
-	const float				Setting::FOG_FAR_MIN			   = 0.f;
-	const float				Setting::FOG_FAR_MAX			   = 1000.f;
-	const float				Setting::FOG_DENSITY_DEFAULT	   = 0.8f;
-	const Color::Rgb		Setting::FOG_COLOR_DEFAULT		   = Color::Rgb::WHITE;
-	const bool				Setting::ACTIVE_AA_DEFAULT		   = true;
-	const Color::Rgb		Setting::LIGHT_COLOR_DEFAULT	   = Color::Rgb::WHITE;
+	const Renderer::SHADING Setting::SHADING_DEFAULT = Renderer::SHADING::DIFFUSE;
+#ifdef VTX_PRODUCTION
+	const bool Setting::ACTIVE_VSYNC_DEFAULT = true;
+#else
+	const bool Setting::ACTIVE_VSYNC_DEFAULT   = false;
+#endif
+	const bool		 Setting::ACTIVE_AO_DEFAULT			= true;
+	const int		 Setting::AO_INTENSITY_DEFAULT		= 5;
+	const int		 Setting::AO_INTENSITY_MIN			= 1;
+	const int		 Setting::AO_INTENSITY_MAX			= 20;
+	const int		 Setting::AO_BLUR_SIZE_DEFAULT		= 17;
+	const int		 Setting::AO_BLUR_SIZE_MIN			= 1;
+	const int		 Setting::AO_BLUR_SIZE_MAX			= 99;
+	const bool		 Setting::ACTIVE_OUTLINE_DEFAULT	= false;
+	const uint		 Setting::OUTLINE_THICKNESS_DEFAULT = 2;
+	const uint		 Setting::OUTLINE_THICKNESS_MIN		= 1;
+	const uint		 Setting::OUTLINE_THICKNESS_MAX		= 5;
+	const float		 Setting::OUTLINE_SENSIVITY_DEFAULT = 0.4f;
+	const float		 Setting::OUTLINE_SENSIVITY_MIN		= 0.01f;
+	const float		 Setting::OUTLINE_SENSIVITY_MAX		= 1.f;
+	const Color::Rgb Setting::OUTLINE_COLOR_DEFAULT		= Color::Rgb::WHITE;
+	const bool		 Setting::ACTIVE_FOG_DEFAULT		= false;
+	const float		 Setting::FOG_NEAR_DEFAULT			= 30;
+	const float		 Setting::FOG_NEAR_MIN				= 0.f;
+	const float		 Setting::FOG_NEAR_MAX				= 1000.f;
+	const float		 Setting::FOG_FAR_DEFAULT			= 80.f;
+	const float		 Setting::FOG_FAR_MIN				= 0.f;
+	const float		 Setting::FOG_FAR_MAX				= 1000.f;
+	const float		 Setting::FOG_DENSITY_DEFAULT		= 0.8f;
+	const Color::Rgb Setting::FOG_COLOR_DEFAULT			= Color::Rgb::WHITE;
+	const bool		 Setting::ACTIVE_AA_DEFAULT			= true;
+	const Color::Rgb Setting::LIGHT_COLOR_DEFAULT		= Color::Rgb::WHITE;
 
 	// Camera.
 	const float Setting::CAMERA_NEAR_DEFAULT		= 0.f;

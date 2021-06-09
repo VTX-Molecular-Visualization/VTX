@@ -1,113 +1,49 @@
-# VTX
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/25aeed2cf0e54f45b39496354738bfc4)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sguionni/VTX&amp;utm_campaign=Badge_Grade)
+# VTX - High performance molecular visualization software
 
 ## USER GUIDE
 
--   Install Visual C++: [link](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
--   Download last release (VTX.rar in assets): [link](https://github.com/sguionni/VTX/releases)
--   Extract archive and run bin/VTX.exe
--   Report bugs, features, ideas or anything else by creating a new issue: [link](https://github.com/sguionni/VTX/issues)
--   Issues labeled "Discussion" need to be discuted together, let's debate!
+- Install [Visual C++](https://support.microsoft.com/fr-fr/help/2977003/the-latest-supported-visual-c-downloads)
+- Download [last release](https://gitlab.com/VTX_mol/VTX/-/releases)
+- Run the installer (it will automatically extract files in the current folder)
+- Launch VTX
+- Report bugs, features, ideas or anything else by [creating a new issue](https://gitlab.com/VTX_mol/VTX/-/issues)
 
-### CONTROLS
-
-#### Freefly
-
--   ZSQD or arrows keys to move the camera
--   Hold left mouse button and move to look around
--   Hold right mouse button and move to rotate on the side
--   Right click on item name in scene to open context menu
--   Left click on item in the scene view to open details in inspector view
+### CONTROLLERS
 
 #### Trackball
 
 - Hold left/right mouse button and move to rotate the scene
 - Hold wheel button and move to translate the rotation center
 - Use wheel to zoom
-- QDAERF to rotate
-- ZS to zoom
+- ADQERF to rotate
+- WS to zoom
+
+#### Freefly
+
+- ZASD or arrows keys to move the camera
+- Hold left mouse button and move to look around
+- Hold right mouse button and move to rotate on the side
 
 ### SHORTCUTS
 
-- F1: Toggle camera controls
-- F2: Change representation
-- F3: Change color mode
-- F4: Change shading
-- F5: Add camera viewpoint at current position
+- F1: Toggle camera controller
+- CTRL + F1: Reset current camera controller
+- F5: Take a snapshot
+- F6: Restore the default layout
 
-### EXPORTS
+### SNAPSHOTS
 
 - Snapshots are saved in the /snapshots folder
-- Videos are saved in the /videos folder
+
+### RENDER PRESETS
+
+- Render presets are saved in /libraries/render_effects folder
+- You can manually add/remove files (will be updated at the next launch), this allows you to share presets between users.
 
 ### BUGS AND CRASH REPORTS
 
 - A log file is saved in the /logs folder, please attach this file with your ticket
 
-### SCRIPTABLE ACTIONS
+## LICENSE
 
-command < param | param1 param2 ... | ... >
-
--   snapshot
--   change_representation < BALL_AND_STICK | VAN_DER_WAALS | STICK | SAS >
--   change_shading < LAMBERT | BLINN_PHONG | TOON | FLAT_COLOR >
--   change_color_mode < ATOM | RESIDUE | CHAIN | PROTEIN >
--   change_auto_rotate_speed < x y z | xyz > (float values between 0.0 and 1.0)
-
-## CHANGELOG
-
-### 0.0.6
-
-TODO
-
-### 0.0.5
-
-- Multi representation
-- Trackball controls
-- Adaptive SSAO
-- Outline shader
-- Background color
-- Options to change bond and atom radius
-
-## DEVELOPPER GUIDE
-
-### WINDOWS VISUAL STUDIO 2019 x64
-
-### 1. Prerequisites
-
--   Install Visual Studio 2019 latest version with C++ tools.
--   [Download Qt](https://www.qt.io/download-open-source)
--   Launch Qt installer
--   Under "Qt 5.15.1", select "MSVC 2019 64-bit" and "Sources"
--   Under "Developer and Designer Tools", select "Debugging Tools for Windows"
--   Install
--   Add an environment variable : Qt5_DIR = <QtInstallDir>/5.15.1/msvc2019_64
-
-#### 2. Make solution
-
--   Run _cmake.bat
-
-#### 3. Open solution
-
-Open "_windows/VTX.sln".
-
-#### 4. Install/configure ClangFormat
-
-Install [ClangFormat VS extension](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.ClangFormat).  
-Go to Tools -> Options, then under LLVM/Clang, set the following values:
--   Format On Save
-    -   Enable: True
-
--   Format Options
-    -   Fallback Style: LLVM
-    -   Sort includes: True
-    -   Style: file
-
-### Some architecture points
-
--   Action is designed to be undoable and launched by scripts. All menu items have to throw an action. An action can change the application state or stack workers.
--   State is an application state with its enabled/disabled UI components and its controllers (mouse, keyboard...). For example the visualization state handles the FPS camera controler, refresh the renderer and update the scene each frame.
--   Workers are functionalities that can be threaded, for example taking a snapshot or parse a file to load.
-
-For example to load a file from the API:
-Action OpenAPI launch the APIFetcher worker that fetch the server, then launch OpenAction with loaded data. This action run the Loader worker that parse data to create model and add result to the scene.
+Please look at the license.txt file

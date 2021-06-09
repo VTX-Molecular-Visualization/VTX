@@ -66,7 +66,7 @@ namespace VTX
 		if ( !_mainWindow->isOpenGLValid() )
 		{
 			UI::Dialog::openGLInitializationFail();
-			stop();
+			return;
 		}
 
 		// Fix Issue for fullscreen on windows. Need to be called after show and before set fullscreen //////////
@@ -84,17 +84,9 @@ namespace VTX
 		_elapsedTimer.start();
 		_tickTimer.start();
 
+#ifndef VTX_PRODUCTION
 		// VTX_ACTION( new Action::Main::Open( Util::Filesystem::getDataPath( "4hhb.pdb" ) ) );
 		VTX_ACTION( new Action::Main::OpenApi( "4hhb" ) );
-
-//#define RT_ENABLED
-#ifdef RT_ENABLED
-		// Path * path	   = new Path( DATA_DIR + "spike_closed_glycans_lipids_amarolab.pdb" );
-		FilePath path = FilePath( DATA_DIR + "6vsb.mmtf" );
-		VTX_ACTION( new Action::Open( path ) );
-		VTX_ACTION( new Action::Snapshot( Worker::Snapshoter::MODE::RT ) );
-		Action::ActionManager::get().update( 0.f );
-		Worker::WorkerManager::get().update( 0.f );
 #endif
 	}
 

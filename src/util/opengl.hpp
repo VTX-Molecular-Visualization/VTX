@@ -5,6 +5,7 @@
 #pragma once
 #endif
 
+#include "exception.hpp"
 #include <iostream>
 
 namespace VTX
@@ -61,7 +62,7 @@ namespace VTX
 
 				switch ( p_severity )
 				{
-				case GL_DEBUG_SEVERITY_HIGH:
+				case GL_DEBUG_SEVERITY_HIGH: throw Exception::GLException( message ); break;
 				case GL_DEBUG_SEVERITY_MEDIUM:
 				case GL_DEBUG_SEVERITY_LOW: std::cout << message << std::endl;
 				default: break;

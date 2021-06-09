@@ -91,8 +91,10 @@ namespace VTX::UI::Widget::Settings
 
 		_startSection( "Graphic" );
 		_addItemInLayout( _snapshotBackgroundOpacitySlider, "Snapshot background opacity" );
+#ifndef VTX_PRODUCTION
 		_addItemInLayout( _vsyncWidget, "VSync" );
 		_addItemInLayout( _forceRendererWidget, "Force render" );
+#endif;
 		_addItemInLayout( _fullscreenWidget, "Full screen" );
 		_finishSection();
 

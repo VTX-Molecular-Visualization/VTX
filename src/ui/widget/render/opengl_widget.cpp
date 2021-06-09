@@ -62,6 +62,11 @@ namespace VTX::UI::Widget::Render
 		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT, defaultFramebufferObject() );
 
 		_frameTimer.start();
+
+		if ( !isValid() )
+		{
+			Dialog::openGLInitializationFail();
+		}
 	}
 
 	void OpenGLWidget::paintGL()
@@ -80,7 +85,8 @@ namespace VTX::UI::Widget::Render
 
 		VTX_STAT().renderTime = (float)_timer.nsecsElapsed() * 1e-6f;
 
-		if ( DEV_MODE && _showCounter )
+#ifndef VTX_PRODUCTION
+		if ( _showCounter )
 		{
 			_painter.begin( this );
 			_painter.setPen( Qt::white );
@@ -90,6 +96,7 @@ namespace VTX::UI::Widget::Render
 													   + " - draw calls: " + std::to_string( VTX_STAT().drawCalls ) ) );
 			_painter.end();
 		}
+#endif
 	}
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )
@@ -117,6 +124,17 @@ namespace VTX::UI::Widget::Render
 
 		default: _renderer = nullptr;
 		}
+	}
+
+	void OpenGLWidget::activeVSync( const bool p_active )
+	{
+		makeCurrent();
+		QFunctionPointer func = context()->getProcAddress( "GLX_EXT_swap_control" );
+		if ( func == nullptr )
+		{
+			VTX_DEBUG( "NULL" );
+		}
+		doneCurrent();
 	}
 
 } // namespace VTX::UI::Widget::Render

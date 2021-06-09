@@ -12,7 +12,6 @@ namespace VTX::IO
 		_registerEvent( Event::Global::MOLECULE_ADDED );
 		_registerEvent( Event::Global::MOLECULE_REMOVED );
 		_registerEvent( Event::Global::MOLECULE_STRUCTURE_CHANGE );
-		_registerEvent( Event::Global::MOLECULE_RENAMED );
 	}
 
 	void ScenePathData::receiveEvent( const Event::VTXEvent & p_event )
