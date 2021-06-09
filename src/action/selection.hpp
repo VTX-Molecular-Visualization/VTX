@@ -24,6 +24,7 @@
 #include "selection/selection_manager.hpp"
 #include "state/state_machine.hpp"
 #include "state/visualization.hpp"
+#include "tool/chrono.hpp"
 #include "visible.hpp"
 #include "vtx_app.hpp"
 #include <vector>
@@ -709,20 +710,30 @@ namespace VTX::Action::Selection
 		explicit Copy( const Model::Selection & p_source ) : _selection( p_source ) {}
 		virtual void execute() override
 		{
+			Tool::Chrono chrono;
+
 			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeSelectionData :
 				  _selection.getItems() )
 			{
 				Model::GeneratedMolecule * generatedMolecule
 					= MVC::MvcManager::get().instantiateModel<Model::GeneratedMolecule>();
+
 				generatedMolecule->copyFromSelection( moleculeSelectionData );
+
+				chrono.start();
 				VTX_EVENT(
 					new Event::VTXEventPtr<Model::Molecule>( Event::Global::MOLECULE_CREATED, generatedMolecule ) );
+				chrono.stop();
+				VTX_DEBUG( "Event::Global::MOLECULE_CREATED : " + chrono.elapsedTimeStr() );
 
 				const float offset = generatedMolecule->getAABB().radius() + _selection.getAABB().radius()
 									 + VTX::Setting::COPIED_MOLECULE_OFFSET;
 
 				generatedMolecule->setTranslation( VTX::Vec3f( offset, 0, 0 ) );
+				chrono.start();
 				VTXApp::get().getScene().addMolecule( generatedMolecule );
+				chrono.stop();
+				VTX_DEBUG( "addMolecule: " + chrono.elapsedTimeStr() );
 			}
 		}
 
@@ -788,7 +799,7 @@ namespace VTX::Action::Selection
 
 					if ( chainIds.second.getFullySelectedChildCount() == chain.getRealResidueCount() )
 					{
-						molecule.removeChain( chain.getIndex(), true, true, true );
+						molecule.removeChain( chain.getIndex(), true, true, false );
 						continue;
 					}
 
@@ -798,13 +809,13 @@ namespace VTX::Action::Selection
 
 						if ( residueIds.second.getFullySelectedChildCount() == residue.getRealAtomCount() )
 						{
-							molecule.removeResidue( residue.getIndex(), true, true, true, true );
+							molecule.removeResidue( residue.getIndex(), true, true, true, false );
 							continue;
 						}
 
 						for ( const uint atomId : residueIds.second )
 						{
-							molecule.removeAtom( atomId, true, true, true, true );
+							molecule.removeAtom( atomId, true, true, true, false );
 						}
 					}
 				}

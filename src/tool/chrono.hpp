@@ -18,10 +18,11 @@ namespace VTX
 			using Duration = std::chrono::duration<float>;
 
 		  public:
-			void  start() { begin = interval = Clock::now(); }
-			void  stop() { end = interval = Clock::now(); }
-			float elapsedTime() const { return ( std::chrono::duration_cast<Duration>( end - begin ) ).count(); }
-			float intervalTime()
+			void		start() { begin = interval = Clock::now(); }
+			void		stop() { end = interval = Clock::now(); }
+			float		elapsedTime() const { return ( std::chrono::duration_cast<Duration>( end - begin ) ).count(); }
+			std::string elapsedTimeStr() const { return std::to_string( elapsedTime() ); }
+			float		intervalTime()
 			{
 				Duration intervalTime = std::chrono::duration_cast<Duration>( Clock::now() - interval );
 				interval			  = Clock::now();
