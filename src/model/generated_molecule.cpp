@@ -528,6 +528,7 @@ namespace VTX::Model
 		p_chain.setMoleculePtr( this );
 		p_chain.setIndex( getChainCount() - 1 );
 		p_chain.setName( p_chainSource.getName() );
+		p_chain.setOriginalChainID( p_chainSource.getOriginalChainID() );
 		p_chain.setIndexFirstResidue( getResidueCount() );
 		p_chain.setColor( Model::Chain::getChainIdColor( p_chain.getName() ) );
 

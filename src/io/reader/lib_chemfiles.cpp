@@ -231,6 +231,7 @@ namespace VTX::IO::Reader
 				modelChain->setMoleculePtr( &p_molecule );
 				modelChain->setIndexFirstResidue( residueIdx );
 				modelChain->setResidueCount( 0 );
+				modelChain->setOriginalChainID( chainId );
 				modelChain->setColor( Model::Chain::getChainIdColor( chainId ) );
 				lastChainName	= chainName;
 				oldIndexInChain = INT_MIN;

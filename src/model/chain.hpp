@@ -13,6 +13,7 @@
 #include "id.hpp"
 #include "math/aabb.hpp"
 #include <iostream>
+#include <string>
 
 namespace VTX
 {
@@ -47,7 +48,9 @@ namespace VTX
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			void					setMoleculePtr( Molecule * const p_molecule );
 
-			static Color::Rgb getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
+			const std::string & getOriginalChainID() const { return _originalChainID; };
+			void				setOriginalChainID( const std::string & p_chainId ) { _originalChainID = p_chainId; };
+			static Color::Rgb	getChainIdColor( const std::string & p_chainId, const bool p_isHetAtm = false );
 
 			inline const std::string & getName() const { return _name; };
 			inline void				   setName( const std::string & p_name )
@@ -79,8 +82,9 @@ namespace VTX
 
 		  private:
 			// TYPE	   _type		= TYPE::STANDARD;
-			uint	   _index		= 0;
-			Molecule * _moleculePtr = nullptr;
+			uint		_index			 = 0;
+			Molecule *	_moleculePtr	 = nullptr;
+			std::string _originalChainID = "";
 
 			std::string _name			   = "unknown";
 			uint		_indexFirstResidue = 0;

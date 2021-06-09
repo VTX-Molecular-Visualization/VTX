@@ -678,24 +678,7 @@ namespace VTX::IO
 
 			if ( !chain->isVisible() )
 			{
-				if ( p_writer != nullptr && p_writer->isChainMerged( *chain ) )
-				{
-					for ( uint residueIndex = chain->getIndexFirstResidue();
-						  residueIndex <= chain->getIndexLastResidue();
-						  residueIndex++ )
-					{
-						const Model::Residue * const residue = p_molecule.getResidue( residueIndex );
-
-						if ( residue == nullptr )
-							continue;
-
-						jsonResidueVisibilitiesArray.emplace_back( p_writer->getNewResidueIndex( *residue ) );
-					}
-				}
-				else
-				{
-					jsonChainVisibilitiesArray.emplace_back( chain->getIndex() );
-				}
+				jsonChainVisibilitiesArray.emplace_back( chain->getIndex() );
 			}
 		}
 

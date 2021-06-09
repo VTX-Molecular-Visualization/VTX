@@ -184,9 +184,10 @@ namespace VTX
 
 			if ( extension == ".nc" || extension == ".cif" || extension == ".cml" || extension == ".cssr"
 				 || extension == ".dcd" || extension == ".gro" || extension == ".lammpstrj" || extension == ".mmcif"
-				 || extension == ".mmtf" || extension == ".mol2" || extension == ".molden" || extension == ".sdf"
-				 || extension == ".smi" || extension == ".arc" || extension == ".trr" || extension == ".mmtf"
-				 || extension == ".xtc" || extension == ".tng" || extension == ".trj" || extension == ".xyz" )
+				 || extension == ".mmtf" || extension == ".mol2" || extension == ".molden" || extension == ".pdb"
+				 || extension == ".sdf" || extension == ".smi" || extension == ".arc" || extension == ".trr"
+				 || extension == ".mmtf" || extension == ".xtc" || extension == ".tng" || extension == ".trj"
+				 || extension == ".xyz" )
 			{
 				return MODE::MOLECULE;
 			}

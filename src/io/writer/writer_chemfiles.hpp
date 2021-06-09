@@ -11,9 +11,9 @@
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
 #pragma warning( pop )
-#include <map>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 namespace VTX::IO::Writer
 {
@@ -28,7 +28,6 @@ namespace VTX::IO::Writer
 		void writeBuffer( std::string &, const Model::Molecule &, const std::string & p_format = "PDB" );
 		void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
 
-		bool isChainMerged( const Model::Chain & p_chain ) const;
 		uint getNewResidueIndex( const Model::Residue & ) const;
 		uint getNewAtomIndex( const Model::Atom & ) const;
 
@@ -36,8 +35,8 @@ namespace VTX::IO::Writer
 		void _writeTrajectory( chemfiles::Trajectory &, const Model::Molecule & );
 
 		std::unordered_set<uint> _mergedChains		   = std::unordered_set<uint>();
-		std::map<uint, uint>	 _mapNewResidueIndexes = std::map<uint, uint>();
-		std::map<uint, uint>	 _mapNewAtomIndexes	   = std::map<uint, uint>();
+		std::vector<uint>		 _vecNewResidueIndexes = std::vector<uint>();
+		std::vector<uint>		 _vecNewAtomIndexes	   = std::vector<uint>();
 	};
 } // namespace VTX::IO::Writer
 #endif
