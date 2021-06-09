@@ -28,7 +28,12 @@ namespace VTX
 				return Vec3f( _translation[ 3 ][ 0 ], _translation[ 3 ][ 1 ], _translation[ 3 ][ 2 ] );
 			};
 
-			inline Vec3f getEulerAngles() const { return _internalEulerCache; };
+			inline Vec3f getEulerAngles() const
+			{
+				if ( std::isnan( _internalEulerCache.x ) )
+					_internalEulerCache = Util::Math::rotationMatrixToEuler( _rotation );
+				return _internalEulerCache;
+			};
 
 			inline Vec3f getScaleVector() const
 			{
@@ -73,9 +78,9 @@ namespace VTX
 
 			inline void rotate( const float p_angle, const Vec3f & p_axis )
 			{
-				_rotation = Util::Math::rotate( _rotation, p_angle, p_axis );
+				_rotation			  = Util::Math::rotate( _rotation, p_angle, p_axis );
+				_internalEulerCache.x = std::nanf( "" );
 				update();
-				_internalEulerCache = Util::Math::rotationMatrixToEuler( _rotation );
 			}
 
 			inline void setRotation( const float p_pitch, const float p_yaw, const float p_roll )
@@ -91,8 +96,8 @@ namespace VTX
 
 			inline void setRotation( const Mat4f & p_mat )
 			{
-				_rotation			= p_mat;
-				_internalEulerCache = Util::Math::rotationMatrixToEuler( p_mat );
+				_rotation			  = p_mat;
+				_internalEulerCache.x = std::nanf( "" );
 				update();
 			}
 
@@ -132,7 +137,7 @@ namespace VTX
 			Mat4f _rotation	   = MAT4F_ID;
 			Mat4f _scale	   = MAT4F_ID;
 
-			Vec3f _internalEulerCache = VEC3F_ZERO;
+			mutable Vec3f _internalEulerCache = VEC3F_ZERO;
 		};
 	} // namespace Math
 } // namespace VTX
