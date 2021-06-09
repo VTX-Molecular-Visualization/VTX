@@ -131,7 +131,6 @@ namespace VTX::Model
 		Selection() : BaseModel( ID::Model::MODEL_SELECTION )
 		{
 			_registerEvent( Event::MOLECULE_REMOVED );
-			_registerEvent( Event::MOLECULE_STRUCTURE_CHANGE );
 		}
 		~Selection() = default;
 
