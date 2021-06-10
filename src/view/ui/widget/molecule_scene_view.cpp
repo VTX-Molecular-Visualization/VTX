@@ -949,7 +949,7 @@ namespace VTX::View::UI::Widget
 	bool MoleculeSceneView::_isResidueExpanded( const Model::Residue & p_residue ) const
 	{
 		const Model::Chain * const chain = p_residue.getChainPtr();
-		return _isChainExpanded( *chain ) && _getTreeWidgetItem( *chain )->childCount() > 0;
+		return _isChainExpanded( *chain ) && _getTreeWidgetItem( p_residue )->childCount() > 0;
 	}
 
 	QMimeData * MoleculeSceneView::_getDataForDrag() { return VTX::UI::MimeType::generateMoleculeData( *_model ); }
