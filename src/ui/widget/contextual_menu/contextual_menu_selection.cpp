@@ -57,8 +57,8 @@ namespace VTX::UI::Widget::ContextualMenu
 		_actions.emplace_back( new ActionData( "Copy", TypeMask::All, this, &ContextualMenuSelection::_copyAction ) );
 		_actions.emplace_back(
 			new ActionData( "Extract", TypeMask::AllButMolecule, this, &ContextualMenuSelection::_extractAction ) );
-		_actions.emplace_back( new ActionData(
-			"Delete", TypeMask::All, this, &ContextualMenuSelection::_deleteAction, QKeySequence::Delete ) );
+		_actions.emplace_back(
+			new ActionData( "Delete", TypeMask::All, this, &ContextualMenuSelection::_deleteAction ) );
 
 		_actions.emplace_back( new ActionDataSection( "Export", TypeMask::Molecule, this ) );
 		_actions.emplace_back(

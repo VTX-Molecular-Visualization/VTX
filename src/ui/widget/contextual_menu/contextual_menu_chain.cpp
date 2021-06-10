@@ -26,7 +26,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Hide", this, &ContextualMenuChain::_hideAction );
 		addAction( "Copy", this, &ContextualMenuChain::_copyAction );
 		addAction( "Extract", this, &ContextualMenuChain::_extractAction );
-		addAction( "Delete", this, &ContextualMenuChain::_deleteAction, QKeySequence::Delete );
+		addAction( "Delete", this, &ContextualMenuChain::_deleteAction );
 
 		connect( _representationMenu,
 				 &CustomWidget::SetRepresentationMenu ::onRepresentationChange,

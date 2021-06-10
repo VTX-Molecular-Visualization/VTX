@@ -41,7 +41,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Show", this, &ContextualMenuMolecule::_showAction );
 		addAction( "Hide", this, &ContextualMenuMolecule::_hideAction );
 		addAction( "Copy", this, &ContextualMenuMolecule::_copyAction );
-		addAction( "Delete", this, &ContextualMenuMolecule::_deleteAction, QKeySequence::Delete );
+		addAction( "Delete", this, &ContextualMenuMolecule::_deleteAction );
 
 		addSeparator();
 		addAction( "Export", this, &ContextualMenuMolecule::_exportAction );

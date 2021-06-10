@@ -16,7 +16,7 @@ namespace VTX::UI::Widget::ContextualMenu
 		addAction( "Hide", this, &ContextualMenuAtom::_hideAction );
 		addAction( "Copy", this, &ContextualMenuAtom::_copyAction );
 		addAction( "Extract", this, &ContextualMenuAtom::_extractAction );
-		addAction( "Delete", this, &ContextualMenuAtom::_deleteAction, QKeySequence::Delete );
+		addAction( "Delete", this, &ContextualMenuAtom::_deleteAction );
 	}
 
 	void ContextualMenuAtom::localize() {}
