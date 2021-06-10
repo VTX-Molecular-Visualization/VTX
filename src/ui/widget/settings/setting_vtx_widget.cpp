@@ -59,9 +59,12 @@ namespace VTX::UI::Widget::Settings
 			viewport, "SnapshotBackgroundOpacitySlider" );
 		_snapshotBackgroundOpacitySlider->setMinMax( 0.f, 1.f );
 
+#ifndef VTX_PRODUCTION
 		_vsyncWidget		 = new QCheckBox( viewport );
 		_forceRendererWidget = new QCheckBox( viewport );
-		_fullscreenWidget	 = new QCheckBox( viewport );
+#endif;
+
+		_fullscreenWidget = new QCheckBox( viewport );
 
 		// Trajectory
 		_defaultTrajectoryPlayModeWidget = new QComboBox( viewport );
@@ -151,8 +154,10 @@ namespace VTX::UI::Widget::Settings
 				 &CustomWidget::FloatFieldSliderWidget::onValueChange,
 				 this,
 				 &SettingVTXWidget::_changeSnapshotBackgroundOpacity );
+#ifndef VTX_PRODUCTION
 		connect( _vsyncWidget, &QCheckBox::stateChanged, this, &SettingVTXWidget::_activeVSyncAction );
 		connect( _forceRendererWidget, &QCheckBox::stateChanged, this, &SettingVTXWidget::_activeForceRendererAction );
+#endif;
 		connect( _fullscreenWidget, &QCheckBox::stateChanged, this, &SettingVTXWidget::_activeFullscreenAction );
 
 		connect( _defaultTrajectoryPlayModeWidget,
@@ -200,8 +205,10 @@ namespace VTX::UI::Widget::Settings
 		_controllerYAxisInvertedWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getYAxisInverted() ) );
 
 		_snapshotBackgroundOpacitySlider->setValue( VTX_SETTING().getSnapshotBackgroundOpacity() );
+#ifndef VTX_PRODUCTION
 		_vsyncWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getVSync() ) );
 		_forceRendererWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getForceRenderer() ) );
+#endif
 		_fullscreenWidget->setCheckState( Util::UI::getCheckState( VTX_SETTING().getWindowFullscreen() ) );
 
 		_defaultTrajectoryPlayModeWidget->setCurrentIndex( int( VTX_SETTING().getDefaultTrajectoryPlayMode() ) );

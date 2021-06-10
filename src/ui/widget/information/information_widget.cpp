@@ -84,11 +84,11 @@ namespace VTX::UI::Widget::Information
 		libraryDesc->setFrameShape( QFrame::Shape::Panel );
 		libraryDesc->setFrameShadow( QFrame::Shadow::Sunken );
 		libraryDesc->setText(
-			"<a href \"http://assimp.org/\">Assimp</a> - "
-			"<a href \"https://chemfiles.org/\">Chemfiles</a> - "
-			"<a href \"https://www.opengl.org/sdk/libs/GLM/\">GLM</a> - "
-			"<a href \"https://github.com/Neargye/magic_enum\">Magic enum</a> - "
-			"<a href \"https://github.com/nlohmann/json\">nlohmann</a> - "
+			"<a href = \"http://assimp.org/\">Assimp</a> - "
+			"<a href =\"https://chemfiles.org/\">Chemfiles</a> - "
+			"<a href =\"https://www.opengl.org/sdk/libs/GLM/\">GLM</a> - "
+			"<a href =\"https://github.com/Neargye/magic_enum\">Magic enum</a> - "
+			"<a href =\"https://github.com/nlohmann/json\">nlohmann</a> - "
 			"<a href = \"https://www.qt.io/\">Qt</a>"
 			"" );
 
@@ -112,7 +112,8 @@ namespace VTX::UI::Widget::Information
 			"<a href = \"https://www.flaticon.com/authors/mavadee\">mavadee</a> - "
 			"<a href = \"https://www.flaticon.com/authors/pixel-perfect\">pixel-perfect</a> - "
 			"<a href = \"https://www.flaticon.com/authors/roundicons\">roundicons</a> - "
-			"<a href = \"https://www.flaticon.com/authors/vectors-market\">vectors-market</a>" );
+			"<a href = \"https://www.flaticon.com/authors/vectors-market\">vectors-market</a>"
+		"");
 
 		QVBoxLayout * const mainVerticalLayout = new QVBoxLayout( this );
 		QHBoxLayout * const headerLayout	   = new QHBoxLayout();
