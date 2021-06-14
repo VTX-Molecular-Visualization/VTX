@@ -25,17 +25,15 @@ namespace VTX::IO::Reader
 	void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
-		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string() );
+		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
 		_readTrajectory( trajectory, p_path, p_molecule );
 	}
 
 	void LibChemfiles::readBuffer( const std::string & p_buffer, const FilePath & p_path, Model::Molecule & p_molecule )
 	{
-		std::string extension = p_path.extension().string().substr( 1, p_path.extension().string().size() );
-		std::transform( extension.begin(), extension.end(), extension.begin(), toupper );
 		_prepareChemfiles();
 		chemfiles::Trajectory trajectory
-			= chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), extension );
+			= chemfiles::Trajectory::memory_reader( p_buffer.c_str(), p_buffer.size(), _getFormat( p_path ) );
 		_readTrajectory( trajectory, p_path, p_molecule );
 	}
 
@@ -264,7 +262,7 @@ namespace VTX::IO::Reader
 
 			// Check residue index in chain.
 			int indexInChain = (int)residue.id().value_or( INT_MIN );
-			assert( oldIndexInChain <= indexInChain );
+			// assert( oldIndexInChain <= indexInChain );
 			modelResidue->setIndexInOriginalChain( indexInChain );
 
 			const std::string insertionCodeStr
@@ -521,5 +519,97 @@ namespace VTX::IO::Reader
 		}
 
 		assert( counter == counterOld );
+	}
+
+	// http://chemfiles.org/chemfiles/latest/formats.html#list-of-supported-formats
+	const std::string LibChemfiles::_getFormat( const FilePath & p_path )
+	{
+		std::string extension = p_path.extension().string().substr( 1, p_path.extension().string().size() );
+		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );
+		if ( extension == "nc" )
+		{
+			return "Amber NetCDF";
+		}
+		else if ( extension == "cif" )
+		{
+			return "mmCIF"; // Workaround.
+		}
+		else if ( extension == "cml" )
+		{
+			return "CML";
+		}
+		else if ( extension == "cssr" )
+		{
+			return "CSSR";
+		}
+		else if ( extension == "dcd" )
+		{
+			return "DCD";
+		}
+		else if ( extension == "gro" )
+		{
+			return "GRO";
+		}
+		else if ( extension == "lammpstrj" )
+		{
+			return "LAMMPS";
+		}
+		else if ( extension == "mmcif" )
+		{
+			return "mmCIF";
+		}
+		else if ( extension == "mmtf" )
+		{
+			return "MMTF";
+		}
+		else if ( extension == "mol2" )
+		{
+			return "MOL2";
+		}
+		else if ( extension == "molden" )
+		{
+			return "Molden";
+		}
+		else if ( extension == "pdb" )
+		{
+			return "PDB";
+		}
+		else if ( extension == "sdf" )
+		{
+			return "SDF";
+		}
+		else if ( extension == "smi" )
+		{
+			return "SMI";
+		}
+		else if ( extension == "arc" )
+		{
+			return "Tinker";
+		}
+		else if ( extension == "tng" )
+		{
+			return "TNG";
+		}
+		else if ( extension == "trj" )
+		{
+			return "TRJ";
+		}
+		else if ( extension == "trr" )
+		{
+			return "TRR";
+		}
+		else if ( extension == "xtc" )
+		{
+			return "XTC";
+		}
+		else if ( extension == "xyz" )
+		{
+			return "XYZ";
+		}
+		else
+		{
+			assert( false );
+			return "Unknown";
+		}
 	}
 } // namespace VTX::IO::Reader
