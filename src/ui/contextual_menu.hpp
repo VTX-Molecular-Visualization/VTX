@@ -38,9 +38,9 @@ namespace VTX::UI
 		}
 
 		template<typename T, typename = std::enable_if<std::is_base_of<QMenu, T>::value>>
-		const T * const getMenu( const Menu & p_menu ) const
+		static T * const getMenu( const Menu & p_menu )
 		{
-			return dynamic_cast<T *>( _menus[ int( p_menu ) ] );
+			return dynamic_cast<T * const>( _getInstance()._menus[ int( p_menu ) ] );
 		}
 
 		template<typename P>
