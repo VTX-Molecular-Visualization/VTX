@@ -59,7 +59,7 @@ namespace VTX::Representation
 
 		RepresentationManager::InstantiatedRepresentation * instantiateCopy(
 			const InstantiatedRepresentation * const p_source,
-			Generic::BaseRepresentable &			 p_target );
+			Generic::BaseRepresentable &			 p_target, const bool p_recompute = true, const bool p_notify = true);
 		void instantiateRepresentations( const Representation * const p_representation,
 										 const Model::Selection &	  p_selection );
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseRepresentable, T>::value>>

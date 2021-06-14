@@ -505,7 +505,7 @@ namespace VTX::Model
 
 		if ( p_molecule.hasCustomRepresentation() )
 		{
-			VTX::Representation::RepresentationManager::get().instantiateCopy( p_molecule.getRepresentation(), *this );
+			VTX::Representation::RepresentationManager::get().instantiateCopy( p_molecule.getRepresentation(), *this, false, false );
 		}
 
 		for ( int i = 0; i < p_molecule.getAtomPositionFrames().size(); i++ )
@@ -535,7 +535,7 @@ namespace VTX::Model
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
 			VTX::Representation::RepresentationManager::get().instantiateCopy( p_chainSource.getRepresentation(),
-																			   *this );
+																			   *this, false, false );
 		}
 	}
 	void GeneratedMolecule::_copyResidueData( Model::Residue &		 p_residue,
@@ -556,7 +556,7 @@ namespace VTX::Model
 		if ( p_residueSource.hasCustomRepresentation() )
 		{
 			VTX::Representation::RepresentationManager::get().instantiateCopy( p_residueSource.getRepresentation(),
-																			   *this );
+																			   *this, false, false );
 		}
 	}
 	void GeneratedMolecule::_copyAtomData( Model::Atom &		  p_atom,
