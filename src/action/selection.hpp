@@ -782,7 +782,11 @@ namespace VTX::Action::Selection
 		virtual void execute() override
 		{
 			std::vector<Model::Molecule *> moleculesToDelete = std::vector<Model::Molecule *>();
-			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : _selection.getItems() )
+
+			const std::map<Model::ID, Model::Selection::MapChainIds> itemsToDeleteCopy = _selection.getItems();
+			_selection.clear();
+
+			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & molIds : itemsToDeleteCopy )
 			{
 				Model::Molecule & molecule = MVC::MvcManager::get().getModel<Model::Molecule>( molIds.first );
 
@@ -831,8 +835,6 @@ namespace VTX::Action::Selection
 					molecule.notifyStructureChange();
 				}
 			}
-
-			_selection.clear();
 
 			for ( Model::Molecule * const moleculeToDelete : moleculesToDelete )
 			{
