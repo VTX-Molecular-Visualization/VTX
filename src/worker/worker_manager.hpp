@@ -1,10 +1,6 @@
 #ifndef __VTX_WORKER_MANAGER__
 #define __VTX_WORKER_MANAGER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_thread.hpp"
 #include "base_worker.hpp"
 #include "event/event_manager.hpp"

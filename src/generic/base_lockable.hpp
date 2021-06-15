@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_LOCKABLE__
 #define __VTX_BASE_LOCKABLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include <iostream>
 #include <mutex>
 

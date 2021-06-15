@@ -1,10 +1,6 @@
 #ifndef __VTX_GL_PROGRAM_MANAGER__
 #define __VTX_GL_PROGRAM_MANAGER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include "generic/base_opengl.hpp"
 #include "program.hpp"

@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_CHAIN__
 #define __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_CHAIN__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/chain.hpp"
 #include "model/representation/instantiated_representation.hpp"
 #include "model/representation/representation.hpp"

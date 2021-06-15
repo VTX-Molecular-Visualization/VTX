@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_SET_REPRESENTATION_MENU__
 #define __VTX_UI_WIDGET_CUSTOM_SET_REPRESENTATION_MENU__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/widget/base_manual_widget.hpp"
 #include <QAction>
 #include <QActionGroup>

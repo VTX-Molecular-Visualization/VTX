@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_RENDERABLE__
 #define __VTX_BASE_RENDERABLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 namespace VTX
 {
 	namespace Object3D

@@ -1,10 +1,6 @@
 #ifndef __VTX_EVENT_MANAGER__
 #define __VTX_EVENT_MANAGER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_event_receiver_keyboard.hpp"
 #include "base_event_receiver_mouse.hpp"
 #include "base_event_receiver_vtx.hpp"

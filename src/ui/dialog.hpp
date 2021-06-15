@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_DIALOG__
 #define __VTX_UI_DIALOG__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "action/base_action.hpp"
 #include "worker/worker_manager.hpp"
 #include <QString>

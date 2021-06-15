@@ -1,10 +1,6 @@
 #ifndef __VTX_TOOL_LOGGER__
 #define __VTX_TOOL_LOGGER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "io/writer/log.hpp"
 #include "util/time.hpp"
 #include <iostream>

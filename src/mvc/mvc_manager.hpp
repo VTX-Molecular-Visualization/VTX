@@ -1,10 +1,6 @@
 #ifndef __VTX_MVC_MANAGER__
 #define __VTX_MVC_MANAGER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "id.hpp"
 #include "model/base_model.hpp"
 #include "mvc_data.hpp"

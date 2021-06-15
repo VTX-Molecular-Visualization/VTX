@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_PATH__
 #define __VTX_ACTION_PATH__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_action.hpp"
 #include "model/path.hpp"
 #include "state/export.hpp"

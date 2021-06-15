@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_MANAGER__
 #define __VTX_ACTION_MANAGER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_action_undonable.hpp"
 #include "define.hpp"
 #include "generic/base_updatable.hpp"

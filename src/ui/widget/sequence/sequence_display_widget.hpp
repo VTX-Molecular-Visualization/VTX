@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SEQUENCE_DISPLAY_WIDGET__
 #define __VTX_UI_WIDGET_SEQUENCE_DISPLAY_WIDGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/residue.hpp"
 #include "sequence_chain_data.hpp"
 #include <QFontMetricsF>

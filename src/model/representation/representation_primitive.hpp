@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_REPRESENTATION_PRIMITIVE__
 #define __VTX_MODEL_REPRESENTATION_PRIMITIVE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 namespace VTX::Model::Representation
 {
 	class SphereData

@@ -1,10 +1,6 @@
 #ifndef __VTX_SETTING__
 #define __VTX_SETTING__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "color/rgb.hpp"
 #include "define.hpp"
 #include "generic/base_colorable.hpp"

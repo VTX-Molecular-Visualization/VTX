@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MENU_EXTENSIONS_ALL__
 #define __VTX_UI_WIDGET_MENU_EXTENSIONS_ALL__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/main_menu/extensions/extension_keyword_editor_gui.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"

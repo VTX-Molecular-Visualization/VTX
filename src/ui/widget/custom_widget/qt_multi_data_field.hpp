@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_QT_MUTLI_DATA_FIELD__
 #define __VTX_UI_WIDGET_CUSTOM_QT_MUTLI_DATA_FIELD__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/multi_data_field.hpp"
 #include <QComboBox>
 #include <QLabel>

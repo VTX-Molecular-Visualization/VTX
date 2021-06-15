@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_EVENT_RECEIVER__
 #define __VTX_BASE_EVENT_RECEIVER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event.hpp"
 #include <iostream>
 

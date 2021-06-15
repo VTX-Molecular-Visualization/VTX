@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_READER_LINE__
 #define __VTX_BASE_READER_LINE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_reader.hpp"
 #include <fstream>
 

@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MENU_TOOLTAB__
 #define __VTX_UI_WIDGET_MENU_TOOLTAB__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "menu_toolblock_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget_factory.hpp"

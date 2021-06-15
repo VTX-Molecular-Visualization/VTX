@@ -1,10 +1,6 @@
 #ifndef __VTX_READER_LIB_MMTF__
 #define __VTX_READER_LIB_MMTF__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_reader.hpp"
 #pragma warning( push, 0 )
 //#include <mmtf/mmtf.hpp>

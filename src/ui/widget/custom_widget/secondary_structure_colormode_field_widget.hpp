@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SECONDARY_STRUCTURE_COLORMODE_FIELD_WIDGET__
 #define __VTX_UI_WIDGET_SECONDARY_STRUCTURE_COLORMODE_FIELD_WIDGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "color/rgb.hpp"
 #include "color_field_button.hpp"
 #include "generic/base_colorable.hpp"

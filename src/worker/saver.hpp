@@ -1,10 +1,6 @@
 #ifndef __VTX_SAVER__
 #define __VTX_SAVER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_thread.hpp"
 #include "define.hpp"
 

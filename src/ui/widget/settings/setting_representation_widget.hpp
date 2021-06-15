@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SETTING_REPRESENTATION__
 #define __VTX_UI_WIDGET_SETTING_REPRESENTATION__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/widget/base_manual_widget.hpp"
 #include "view/ui/widget/representation/representation_library_view.hpp"
 #include <QString>

@@ -1,10 +1,6 @@
 #ifndef __VTX_VIEW_CALLBACK_VIEW__
 #define __VTX_VIEW_CALLBACK_VIEW__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_view.hpp"
 #include "event/event.hpp"
 

@@ -1,10 +1,6 @@
 #ifndef __VTX_VIEW_3D_MOLECULE_SPHERE__
 #define __VTX_VIEW_3D_MOLECULE_SPHERE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "view/base_view_3d_molecule.hpp"
 
 namespace VTX

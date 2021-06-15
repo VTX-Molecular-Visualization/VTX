@@ -1,10 +1,6 @@
 #ifndef __VTX_VIEW_UI_WIDGET_MOLECULE_SCENE_VIEW__
 #define __VTX_VIEW_UI_WIDGET_MOLECULE_SCENE_VIEW__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/base_event_receiver_vtx.hpp"
 #include "generic/base_visible.hpp"
 #include "id.hpp"

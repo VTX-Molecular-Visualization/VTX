@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_TRANSFORMABLE__
 #define __VTX_BASE_TRANSFORMABLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "math/transform.hpp"
 
 namespace VTX

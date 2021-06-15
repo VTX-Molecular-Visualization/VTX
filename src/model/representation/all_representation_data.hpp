@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_ALL_REPRESENTATION_DATA__
 #define __VTX_MODEL_ALL_REPRESENTATION_DATA__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "representation_data.hpp"
 
 namespace VTX::Model::Representation

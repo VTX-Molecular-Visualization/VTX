@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_SELECTION_ACTION__
 #define __VTX_UI_WIDGET_MENU_VISUALIZATION_SELECTION_ACTION__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"

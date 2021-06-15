@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CONTEXTUAL_MENU_SCENE__
 #define __VTX_UI_WIDGET_CONTEXTUAL_MENU_SCENE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "contextual_menu_template.hpp"
 #include "object3d/scene.hpp"
 #include <QMenu>

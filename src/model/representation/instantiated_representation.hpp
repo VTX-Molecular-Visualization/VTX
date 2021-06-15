@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_INSTANTIATED_REPRESENTATION__
 #define __VTX_MODEL_INSTANTIATED_REPRESENTATION__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "color/rgb.hpp"
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"

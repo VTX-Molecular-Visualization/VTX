@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MULTIPLE_OBJECT_INSPECTOR__
 #define __VTX_UI_WIDGET_MULTIPLE_OBJECT_INSPECTOR__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event.hpp"
 #include "inspector_item_widget.hpp"
 #include "inspector_section_flag.hpp"

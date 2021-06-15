@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_SECTION_FLAG__
 #define __VTX_UI_WIDGET_INSPECTOR_SECTION_FLAG__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 namespace VTX::UI::Widget::Inspector
 {
 	enum class SectionFlag : int

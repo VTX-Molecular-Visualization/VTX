@@ -1,10 +1,6 @@
 #ifndef __VTX_HAS_COLLECTION__
 #define __VTX_HAS_COLLECTION__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "tool/logger.hpp"
 #include <algorithm>
 #include <map>

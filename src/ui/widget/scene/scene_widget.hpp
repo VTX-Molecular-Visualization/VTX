@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SCENE__
 #define __VTX_UI_WIDGET_SCENE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "scene_item_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDockWidget>

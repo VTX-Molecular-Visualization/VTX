@@ -1,10 +1,6 @@
 #ifndef __VTX_IO_CHEMFILES__
 #define __VTX_IO_CHEMFILES__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
 #pragma warning( pop )

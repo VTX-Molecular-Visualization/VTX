@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_MOUSE_CONTROLLER__
 #define __VTX_BASE_MOUSE_CONTROLLER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_controller.hpp"
 #include "define.hpp"
 #include "event/base_event_receiver_mouse.hpp"

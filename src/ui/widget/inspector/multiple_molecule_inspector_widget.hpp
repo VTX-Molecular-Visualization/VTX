@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_MOLECULE__
 #define __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_MOLECULE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/molecule.hpp"
 #include "model/representation/instantiated_representation.hpp"
 #include "model/representation/representation.hpp"

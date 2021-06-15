@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CLOUDMANAGER__
 #define __VTX_UI_WIDGET_CLOUDMANAGER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/qt_form/ui_cloud_connector_window.h"
 #include "ui/widget/custom_widget/custom_qdockwidget.hpp"
 

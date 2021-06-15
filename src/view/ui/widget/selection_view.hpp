@@ -1,10 +1,6 @@
 #ifndef __VTX_VIEW_UI_WIDGET_SELECTION_VIEW__
 #define __VTX_VIEW_UI_WIDGET_SELECTION_VIEW__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/atom.hpp"
 #include "model/chain.hpp"
 #include "model/molecule.hpp"

@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_OPENGL__
 #define __VTX_BASE_OPENGL__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 // To change openGL version: just change these 2 lines.
 #include <QOpenGLFunctions_4_5_Core>
 using OpenGLFunctions = QOpenGLFunctions_4_5_Core;

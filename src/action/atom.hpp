@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_ATOM__
 #define __VTX_ACTION_ATOM__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "model/atom.hpp"

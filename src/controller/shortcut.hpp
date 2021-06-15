@@ -1,10 +1,6 @@
 #ifndef __VTX_CONTROLLER_SHORTCUT__
 #define __VTX_CONTROLLER_SHORTCUT__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_keyboard_controller.hpp"
 #include "id.hpp"
 

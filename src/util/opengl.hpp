@@ -1,10 +1,6 @@
 #ifndef __VTX_UTIL_OPENGL__
 #define __VTX_UTIL_OPENGL__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "exception.hpp"
 #include <iostream>
 

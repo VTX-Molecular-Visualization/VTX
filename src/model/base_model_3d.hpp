@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_MODEL_3D__
 #define __VTX_BASE_MODEL_3D__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "buffer/base_buffer_opengl.hpp"
 #include "define.hpp"
 #include "event/event.hpp"

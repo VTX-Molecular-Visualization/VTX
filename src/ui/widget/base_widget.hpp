@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_BASE_WIDGET__
 #define __VTX_UI_WIDGET_BASE_WIDGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/base_event_receiver_vtx.hpp"
 #include <QPainter>
 #include <QStyleOption>

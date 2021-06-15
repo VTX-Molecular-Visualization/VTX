@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_REPRESENTATION__
 #define __VTX_MODEL_REPRESENTATION__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "color/rgb.hpp"
 #include "generic/base_colorable.hpp"
 #include "model/base_model.hpp"

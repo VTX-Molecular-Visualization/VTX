@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR__ITEM_FIELD__
 #define __VTX_UI_WIDGET_INSPECTOR__ITEM_FIELD__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include <QGridLayout>
 #include <QLabel>
 #include <string>

@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_GENERATED_MOLECULE__
 #define __VTX_MODEL_GENERATED_MOLECULE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "bond.hpp"
 #include "molecule.hpp"
 

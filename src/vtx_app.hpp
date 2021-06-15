@@ -1,10 +1,6 @@
 #ifndef __VTX_APP__
 #define __VTX_APP__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "setting.hpp"
 #include "stat.hpp"
 #include <QElapsedTimer>

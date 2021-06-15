@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION__
 #define __VTX_UI_WIDGET_MENU_VISUALIZATION__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "menu_visualization_camera_action_widget.hpp"
 #include "menu_visualization_object_display_widget.hpp"
 #include "menu_visualization_render_effects_widget.hpp"

@@ -1,10 +1,6 @@
 #ifndef __VTX_SELECTION_MANAGER__
 #define __VTX_SELECTION_MANAGER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include <unordered_set>
 
 namespace VTX

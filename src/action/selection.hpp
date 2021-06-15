@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_SELECTION__
 #define __VTX_ACTION_SELECTION__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "action/visible.hpp"
 #include "base_action.hpp"
 #include "event/event.hpp"

@@ -1,10 +1,6 @@
 #ifndef __VTX_SCENE_LOADER__
 #define __VTX_SCENE_LOADER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_worker.hpp"
 #include "define.hpp"
 #include <map>

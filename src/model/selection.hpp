@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_SELECTION__
 #define __VTX_MODEL_SELECTION__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_model.hpp"
 #include "define.hpp"
 #include "event/base_event_receiver_vtx.hpp"

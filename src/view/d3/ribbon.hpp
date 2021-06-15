@@ -1,10 +1,6 @@
 #ifndef __VTX_VIEW_3D_RIBBON__
 #define __VTX_VIEW_3D_RIBBON__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/secondary_structure.hpp"
 #include "view/base_view_3d.hpp"
 

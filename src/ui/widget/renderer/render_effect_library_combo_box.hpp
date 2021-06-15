@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_RENDER_EFFECT_REPRESENTATION_LIBRARY_COMBO_BOX__
 #define __VTX_UI_WIDGET_RENDER_EFFECT_REPRESENTATION_LIBRARY_COMBO_BOX__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event.hpp"
 #include "id.hpp"
 #include "ui/widget/base_manual_widget.hpp"

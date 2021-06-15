@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CONTEXTUAL_MENU_RESIDUE__
 #define __VTX_UI_WIDGET_CONTEXTUAL_MENU_RESIDUE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "contextual_menu_template.hpp"
 #include "model/residue.hpp"
 #include "ui/widget/custom_widget/set_representation_menu.hpp"

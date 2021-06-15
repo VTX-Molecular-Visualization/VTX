@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_VIEWPOINT__
 #define __VTX_MODEL_VIEWPOINT__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_model.hpp"
 #include "define.hpp"
 #include "id.hpp"

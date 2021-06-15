@@ -1,10 +1,6 @@
 #ifndef __VTX_BUFFER_SECONDARY_STRUCTURE__
 #define __VTX_BUFFER_SECONDARY_STRUCTURE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_buffer_opengl.hpp"
 #include "color/rgb.hpp"
 #include "define.hpp"

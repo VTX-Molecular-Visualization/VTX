@@ -1,10 +1,6 @@
 #ifndef __VTX_VIEW_UI_WIDGET_RENDER_EFFECT_PRESET_LIBRARY__
 #define __VTX_VIEW_UI_WIDGET_RENDER_EFFECT_PRESET_LIBRARY__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/renderer/render_effect_preset_library.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/renderer/render_effect_library_combo_box.hpp"

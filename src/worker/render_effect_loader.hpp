@@ -1,10 +1,6 @@
 #ifndef __VTX_WORKER_RENDER_EFFECT_PRESET_LOADER__
 #define __VTX_WORKER_RENDER_EFFECT_PRESET_LOADER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_worker.hpp"
 #include "define.hpp"
 #include "util/filesystem.hpp"

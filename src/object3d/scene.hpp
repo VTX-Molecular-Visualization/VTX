@@ -1,10 +1,6 @@
 #ifndef __VTX_SCENE__
 #define __VTX_SCENE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "generic/base_updatable.hpp"
 #include "math/aabb.hpp"
 #include <map>

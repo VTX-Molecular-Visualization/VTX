@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SCENE_ITEM_SELECTION_MODEL__
 #define __VTX_UI_WIDGET_SCENE_ITEM_SELECTION_MODEL__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "id.hpp"
 #include "model/molecule.hpp"
 #include "model/selection.hpp"

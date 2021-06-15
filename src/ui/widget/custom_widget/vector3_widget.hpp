@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_VECTOR3__
 #define __VTX_UI_WIDGET_CUSTOM_VECTOR3__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "float_field_draggable_widget.hpp"
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"

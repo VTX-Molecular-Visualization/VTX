@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CONTEXTUAL_MENU_MOLECULE__
 #define __VTX_UI_WIDGET_CONTEXTUAL_MENU_MOLECULE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "contextual_menu_template.hpp"
 #include "model/molecule.hpp"
 #include "ui/widget/custom_widget/set_representation_menu.hpp"

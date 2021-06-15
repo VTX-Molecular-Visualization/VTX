@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_RENDER__
 #define __VTX_UI_WIDGET_RENDER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "opengl_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"

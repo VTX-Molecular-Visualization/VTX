@@ -1,10 +1,6 @@
 #ifndef __VTX_WORKER_RENDER_EFFECT_PRESET_SAVER__
 #define __VTX_WORKER_RENDER_EFFECT_PRESET_SAVER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_thread.hpp"
 #include "base_worker.hpp"
 #include "define.hpp"

@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MAIN_MENU_BAR__
 #define __VTX_UI_WIDGET_MAIN_MENU_BAR__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 // !V0.1
 //#include "extensions/menu_extensions_widget.hpp"
 //#include <QLabel>

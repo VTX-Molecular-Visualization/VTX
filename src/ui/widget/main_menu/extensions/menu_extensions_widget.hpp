@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MENU_EXTENSIONS__
 #define __VTX_UI_WIDGET_MENU_EXTENSIONS__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "menu_extensions_all_widget.hpp"
 #include "menu_extensions_jobs.hpp"
 #include "ui/widget/main_menu/menu_tooltab_widget.hpp"

@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_RESIDUE__
 #define __VTX_MODEL_RESIDUE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "atom.hpp"
 #include "base_model.hpp"
 #include "define.hpp"

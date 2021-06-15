@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_AUTO_ROTATE_WIDGET__
 #define __VTX_UI_WIDGET_CUSTOM_AUTO_ROTATE_WIDGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "generic/base_auto_rotate.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/float_field_slider_widget.hpp"

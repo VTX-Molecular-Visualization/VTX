@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_REPRESENTATION_ENUM__
 #define __VTX_MODEL_REPRESENTATION_ENUM__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "tool/logger.hpp"
 
 namespace VTX

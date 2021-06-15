@@ -1,10 +1,6 @@
 #ifndef __VTX_STATE_PLAY__
 #define __VTX_STATE_PLAY__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_state.hpp"
 
 namespace VTX

@@ -1,10 +1,6 @@
 #ifndef __VTX_IO_SCENE_PATH_DATA__
 #define __VTX_IO_SCENE_PATH_DATA__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include "event/base_event_receiver_vtx.hpp"
 #include "event/event.hpp"

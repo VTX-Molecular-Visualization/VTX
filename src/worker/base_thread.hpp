@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_THREAD__
 #define __VTX_BASE_THREAD__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include <QThread>
 #include <functional>
 #include <thread>

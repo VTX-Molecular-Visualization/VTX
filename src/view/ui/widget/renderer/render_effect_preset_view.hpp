@@ -1,10 +1,6 @@
 #ifndef __VTX_VIEW_UI_WIDGET_RENDER_EFFECT_PRESET__
 #define __VTX_VIEW_UI_WIDGET_RENDER_EFFECT_PRESET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/renderer/render_effect_preset.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "view/base_view.hpp"

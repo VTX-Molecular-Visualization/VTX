@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CHAIN_SEQUENCE_WIDGET__
 #define __VTX_UI_WIDGET_CHAIN_SEQUENCE_WIDGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "sequence_chain_data.hpp"

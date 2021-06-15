@@ -1,10 +1,6 @@
 #ifndef __VTX_VIEW_UI_WIDGET_BASE_WIDGET_VIEW__
 #define __VTX_VIEW_UI_WIDGET_BASE_WIDGET_VIEW__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/base_model.hpp"
 #include "ui/widget/base_manual_widget_initializer.hpp"
 #include "ui/widget/view_item_widget.hpp"

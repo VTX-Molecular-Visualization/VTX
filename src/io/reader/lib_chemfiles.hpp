@@ -1,10 +1,6 @@
 #ifndef __VTX_READER_LIB_CHEMFILES__
 #define __VTX_READER_LIB_CHEMFILES__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_reader.hpp"
 #include "io/chemfiles_io.hpp"
 #pragma warning( push, 0 )

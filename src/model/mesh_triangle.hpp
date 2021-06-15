@@ -1,10 +1,6 @@
 #ifndef __MODEL_MESH_TRIANGLE__
 #define __MODEL_MESH_TRIANGLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_model_3d.hpp"
 #include "buffer/mesh_triangle.hpp"
 #include "color/rgb.hpp"

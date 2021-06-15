@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_BUFFER_OPENGL__
 #define __VTX_BASE_BUFFER_OPENGL__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include "generic/base_opengl.hpp"
 #include "renderer/gl/vertex_array.hpp"

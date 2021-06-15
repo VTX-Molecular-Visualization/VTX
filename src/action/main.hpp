@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_MAIN__
 #define __VTX_ACTION_MAIN__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "action/action_manager.hpp"
 #include "base_action.hpp"
 #include "define.hpp"

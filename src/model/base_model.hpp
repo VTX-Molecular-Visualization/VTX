@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_MODEL__
 #define __VTX_BASE_MODEL__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include "event/event.hpp"
 #include "id.hpp"

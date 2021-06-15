@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_VISIBLE__
 #define __VTX_BASE_VISIBLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 namespace VTX
 {
 	namespace Generic

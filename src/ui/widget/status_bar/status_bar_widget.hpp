@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_STATUS_BAR__
 #define __VTX_UI_WIDGET_STATUS_BAR__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/widget/base_manual_widget.hpp"
 #include <QLabel>
 #include <QProgressBar>

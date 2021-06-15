@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SETTING_MENU_ITEM__
 #define __VTX_UI_WIDGET_SETTING_MENU_ITEM__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "setting_widget_enum.hpp"
 #include <QObject>
 #include <QPushButton>

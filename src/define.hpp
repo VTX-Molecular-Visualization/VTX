@@ -1,10 +1,6 @@
 #ifndef __VTX_DEFINE__
 #define __VTX_DEFINE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include <filesystem>
 #include <glm/detail/qualifier.hpp>
 #include <glm/detail/type_quat.hpp>

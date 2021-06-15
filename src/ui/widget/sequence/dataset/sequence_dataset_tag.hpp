@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SEQUENCE_DATASET_TAG__
 #define __VTX_UI_WIDGET_SEQUENCE_DATASET_TAG__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "sequence_dataset.hpp"
 #include "util/ui.hpp"
 

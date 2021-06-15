@@ -1,10 +1,6 @@
 #ifndef __VTX_CONTROLLER_TRACKBALL__
 #define __VTX_CONTROLLER_TRACKBALL__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_camera_controller.hpp"
 
 namespace VTX
