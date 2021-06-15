@@ -33,7 +33,8 @@ namespace VTX
 			void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
 
 		  private:
-			void _readTrajectory( chemfiles::Trajectory &, const FilePath &, Model::Molecule & ) const;
+			void			  _readTrajectory( chemfiles::Trajectory &, const FilePath &, Model::Molecule & ) const;
+			const std::string _getFormat( const FilePath & );
 		};
 	} // namespace IO::Reader
 } // namespace VTX
