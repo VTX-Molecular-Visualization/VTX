@@ -1,6 +1,7 @@
 #include "renderer.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "renderer/gl/gl.hpp"
+#include "object3d/camera.hpp"
 #include "ui/main_window.hpp"
 #include "worker/render_effect_loader.hpp"
 #include "worker/render_effect_saver.hpp"
@@ -221,6 +222,7 @@ namespace VTX::Action::Renderer
 
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
+			VTXApp::get().getScene().getCamera().setFov( _fov );
 			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 		}
 	};
@@ -231,6 +233,7 @@ namespace VTX::Action::Renderer
 
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
+			VTXApp::get().getScene().getCamera().setNear( _near );
 			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 		}
 	};
@@ -241,6 +244,7 @@ namespace VTX::Action::Renderer
 
 		if ( Model::Renderer::RenderEffectPresetLibrary::get().isAppliedPreset( _preset ) )
 		{
+			VTXApp::get().getScene().getCamera().setFar( _far );
 			VTXApp::get().MASK |= VTX_MASK_CAMERA_UPDATED;
 		}
 	};
