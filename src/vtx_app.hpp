@@ -81,13 +81,8 @@ namespace VTX
 		}
 
 		inline const FilePath & getCurrentPath() const { return _currentFilePath; }
-		inline void				setCurrentPath( const FilePath & p_filePath, const bool p_addInRecentPath = true )
-		{
-			_currentFilePath = p_filePath;
-			if ( p_addInRecentPath )
-				Setting::enqueueNewLoadingPath( p_filePath );
-		}
-		inline void clearCurrentPath() { _currentFilePath = FilePath(); }
+		void					setCurrentPath( const FilePath & p_filePath, const bool p_addInRecentPath = true );
+		void					clearCurrentPath();
 
 		bool notify( QObject * const, QEvent * const ) override;
 

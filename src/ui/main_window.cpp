@@ -35,19 +35,7 @@ namespace VTX::UI
 		const QSize winsize = QSize( VTX_SETTING().WINDOW_WIDTH_DEFAULT, VTX_SETTING().WINDOW_HEIGHT_DEFAULT );
 		resize( winsize );
 		setWindowState( Qt::WindowState::WindowNoState );
-		std::string title = VTX_PROJECT_NAME + " v" + std::to_string( VTX_VERSION_MAJOR ) + "."
-							+ std::to_string( VTX_VERSION_MINOR ) + "." + std::to_string( VTX_VERSION_REVISION )
-							+ " (BETA)";
-#ifndef VTX_PRODUCTION
-		title += " - DEV";
-#ifdef _DEBUG
-		title += " - DEBUG";
-#else
-		title += " - RELEASE";
-#endif
-#endif
-
-		setWindowTitle( QString::fromStdString( title ) );
+		refreshWindowTitle();
 		setContextMenuPolicy( Qt::ContextMenuPolicy::PreventContextMenu );
 
 		_mainMenuBar = WidgetFactory::get().instantiateWidget<Widget::MainMenu::MainMenuBar>( this, "mainMenuBar" );
@@ -120,6 +108,27 @@ namespace VTX::UI
 		connect( _consoleWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 		connect( _settingWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
 		connect( _sequenceWidget, &QDockWidget::visibilityChanged, this, &MainWindow::_onDockWindowVisibilityChange );
+	}
+
+	void MainWindow::refreshWindowTitle()
+	{
+		std::string title = VTX_PROJECT_NAME + " v" + std::to_string( VTX_VERSION_MAJOR ) + "."
+							+ std::to_string( VTX_VERSION_MINOR ) + "." + std::to_string( VTX_VERSION_REVISION )
+							+ " (BETA)";
+#ifndef VTX_PRODUCTION
+		title += " - DEV";
+#ifdef _DEBUG
+		title += " - DEBUG";
+#else
+		title += " - RELEASE";
+#endif
+#endif
+		const FilePath & currentSessionFilepath = VTXApp::get().getCurrentPath();
+
+		if ( !currentSessionFilepath.empty() )
+			title += " - " + currentSessionFilepath.filename().string();
+
+		setWindowTitle( QString::fromStdString( title ) );
 	}
 
 	void MainWindow::restoreDefaultLayout()

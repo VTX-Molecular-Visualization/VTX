@@ -206,6 +206,7 @@ namespace VTX
 			{
 				return getRenderEffectPresetLibraryDirectory() / p_filename;
 			}
+			inline bool isSessionFile( const FilePath & p_filePath ) { return p_filePath.extension() == ".vtx"; }
 
 			inline const std::string readPath( const FilePath & p_path )
 			{

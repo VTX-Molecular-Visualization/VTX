@@ -94,6 +94,14 @@ namespace VTX
 	constexpr VTX_MASK VTX_MASK_3D_MODEL_UPDATED  = 0x04;
 	constexpr VTX_MASK VTX_MASK_UNIFORM_UPDATED	  = 0x08;
 	constexpr VTX_MASK VTX_MASK_FORCE_AA		  = 0x10;
+
+	// Register Keys
+	namespace RegisterKey
+	{
+		const std::string RECENT_LOADED_PATH_PREFIX		= "RecentLoadedPath";
+		const std::string RECENT_DOWNLOADED_CODE_PREFIX = "RecentDownloadCode";
+	} // namespace RegisterKey
+
 } // namespace VTX
 
 #endif

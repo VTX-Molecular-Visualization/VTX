@@ -57,19 +57,14 @@ namespace VTX::Action::InstantiatedRepresentation
 		{
 			for ( T * const representable : p_representables )
 			{
-				if ( representable->hasCustomRepresentation() )
-				{
-					_instantiatedRepresentations.emplace( representable->getCustomRepresentation() );
-				}
-				else
+				if ( !representable->hasCustomRepresentation() )
 				{
 					Model::Representation::InstantiatedRepresentation * instantiatedRepresentation
 						= VTX::Representation::RepresentationManager::get().instantiateCopy(
-							representable->getRepresentation(), *representable );
-
-					representable->computeAllRepresentationData();
-					_instantiatedRepresentations.emplace( instantiatedRepresentation );
+							representable->getRepresentation(), *representable, true, false );
 				}
+
+				_instantiatedRepresentations.emplace( representable->getCustomRepresentation() );
 			}
 		}
 

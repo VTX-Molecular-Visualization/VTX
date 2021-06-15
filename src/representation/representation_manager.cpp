@@ -66,11 +66,9 @@ namespace VTX::Representation
 		else
 		{
 			Model::Representation::InstantiatedRepresentation * instantiatedRepresentation
-				= instantiateCopy( &p_source, p_representable );
-
-			if ( p_recompute )
-				instantiatedRepresentation->getTarget()->computeAllRepresentationData();
+				= instantiateCopy( &p_source, p_representable, p_recompute, true );
 		}
+		
 	};
 
 	void RepresentationManager::instantiateRepresentations( const Representation * const p_representation,
@@ -109,10 +107,10 @@ namespace VTX::Representation
 	}
 	RepresentationManager::InstantiatedRepresentation * RepresentationManager::instantiateCopy(
 		const InstantiatedRepresentation * const p_source,
-		Generic::BaseRepresentable &			 p_target )
+		Generic::BaseRepresentable &			 p_target, const bool p_recompute, const bool p_notify )
 	{
 		InstantiatedRepresentation * const copy
-			= instantiateRepresentation( p_source->getLinkedRepresentation(), p_target, false, false );
+			= instantiateRepresentation( p_source->getLinkedRepresentation(), p_target, p_recompute, p_notify );
 		copy->copy( *p_source );
 
 		return copy;

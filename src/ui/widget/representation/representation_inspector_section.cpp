@@ -318,6 +318,7 @@ namespace VTX::UI::Widget::Representation
 			_representationSettingWidget->updateWithNewValue( *_dummyRepresentation );
 
 			_baseRepresentationIndex = baseRepresentationIndex;
+			_state					 = MultiDataField::State::Identical;
 		}
 		else
 		{
@@ -326,7 +327,6 @@ namespace VTX::UI::Widget::Representation
 				if ( baseRepresentationIndex == _baseRepresentationIndex )
 				{
 					_representationSettingWidget->updateWithNewValue( p_representation );
-					_state = MultiDataField::State::Identical;
 				}
 				else // Can't managed modifications on multiple representation presets
 				{

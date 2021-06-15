@@ -45,6 +45,8 @@ namespace VTX
 			void setupUi();
 			void initWindowLayout();
 
+			void refreshWindowTitle();
+
 			inline const Widget::Render::OpenGLWidget & getOpenGLWidget() const
 			{
 				return _renderWidget->getOpenGLWidget();

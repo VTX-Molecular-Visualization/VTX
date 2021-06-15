@@ -5,6 +5,7 @@
 #include "ui/dialog.hpp"
 #include "ui/widget_factory.hpp"
 #include "view/ui/widget/molecule_scene_view.hpp"
+#include <QTimer>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -93,6 +94,19 @@ namespace VTX::UI::Widget::ContextualMenu
 
 	void ContextualMenuSelection::localize() {}
 
+	void ContextualMenuSelection::hideEvent( QHideEvent * p_event )
+	{
+		ContextualMenuTemplate::hideEvent( p_event );
+
+		// Delayed action because hide call before launching QAction
+		QTimer::singleShot( 0, this, [ this ] { _focusedTarget = nullptr; } );
+	}
+
+	void ContextualMenuSelection::setFocusedTarget( Model::BaseModel * const p_focusedTarget )
+	{
+		_focusedTarget = p_focusedTarget;
+	}
+
 	void ContextualMenuSelection::_updateActionsWithSelection()
 	{
 		std::set<ID::VTX_ID> typesInSelection = std::set<ID::VTX_ID>();
@@ -167,13 +181,75 @@ namespace VTX::UI::Widget::ContextualMenu
 	void ContextualMenuSelection::_orientAction() { VTX_ACTION( new Action::Selection::Orient( *_target ) ); }
 	void ContextualMenuSelection::_showAction()
 	{
-		VTX_ACTION( new Action::Selection::ChangeVisibility(
-			*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+		if ( _focusedTarget != nullptr )
+		{
+			const ID::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
+			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
+
+			if ( focusedModelTypeID == ID::Model::MODEL_MOLECULE )
+				focusedModelBaseVisible = static_cast<Model::Molecule *>( _focusedTarget );
+			else if ( focusedModelTypeID == ID::Model::MODEL_CHAIN )
+				focusedModelBaseVisible = static_cast<Model::Chain *>( _focusedTarget );
+			else if ( focusedModelTypeID == ID::Model::MODEL_RESIDUE )
+				focusedModelBaseVisible = static_cast<Model::Residue *>( _focusedTarget );
+			else if ( focusedModelTypeID == ID::Model::MODEL_ATOM )
+				focusedModelBaseVisible = static_cast<Model::Atom *>( _focusedTarget );
+
+			if ( focusedModelBaseVisible != nullptr )
+			{
+				VTX_ACTION( new Action::Selection::ChangeVisibility(
+					*_target,
+					*focusedModelBaseVisible,
+					focusedModelTypeID,
+					Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+			}
+			else
+			{
+				VTX_ACTION( new Action::Selection::ChangeVisibility(
+					*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+			}
+		}
+		else
+		{
+			VTX_ACTION( new Action::Selection::ChangeVisibility(
+				*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::ALL ) );
+		}
 	}
 	void ContextualMenuSelection::_hideAction()
 	{
-		VTX_ACTION( new Action::Selection::ChangeVisibility(
-			*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+		if ( _focusedTarget != nullptr )
+		{
+			const ID::VTX_ID &	   focusedModelTypeID	   = _focusedTarget->getTypeId();
+			Generic::BaseVisible * focusedModelBaseVisible = nullptr;
+
+			if ( focusedModelTypeID == ID::Model::MODEL_MOLECULE )
+				focusedModelBaseVisible = static_cast<Model::Molecule *>( _focusedTarget );
+			else if ( focusedModelTypeID == ID::Model::MODEL_CHAIN )
+				focusedModelBaseVisible = static_cast<Model::Chain *>( _focusedTarget );
+			else if ( focusedModelTypeID == ID::Model::MODEL_RESIDUE )
+				focusedModelBaseVisible = static_cast<Model::Residue *>( _focusedTarget );
+			else if ( focusedModelTypeID == ID::Model::MODEL_ATOM )
+				focusedModelBaseVisible = static_cast<Model::Atom *>( _focusedTarget );
+
+			if ( focusedModelBaseVisible != nullptr )
+			{
+				VTX_ACTION( new Action::Selection::ChangeVisibility(
+					*_target,
+					*focusedModelBaseVisible,
+					focusedModelTypeID,
+					Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+			}
+			else
+			{
+				VTX_ACTION( new Action::Selection::ChangeVisibility(
+					*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+			}
+		}
+		else
+		{
+			VTX_ACTION( new Action::Selection::ChangeVisibility(
+				*_target, Action::Visible::ChangeVisibility::VISIBILITY_MODE::HIDE ) );
+		}
 	}
 	void ContextualMenuSelection::_copyAction() { VTX_ACTION( new Action::Selection::Copy( *_target ) ); }
 	void ContextualMenuSelection::_extractAction() { VTX_ACTION( new Action::Selection::Extract( *_target ) ); }

@@ -6,10 +6,12 @@
 #endif
 
 #include "contextual_menu_template.hpp"
+#include "model/base_model.hpp"
 #include "model/selection.hpp"
 #include "ui/widget/custom_widget/set_representation_menu.hpp"
 #include <QMenu>
 #include <vector>
+#include <QHideEvent>
 
 namespace VTX::UI::Widget::ContextualMenu
 {
@@ -150,11 +152,15 @@ namespace VTX::UI::Widget::ContextualMenu
 		~ContextualMenuSelection();
 		void localize() override;
 
+		void setFocusedTarget( Model::BaseModel * const p_focusedTarget );
+
 	  protected:
 		ContextualMenuSelection( QWidget * p_parent = nullptr );
 		void _setupUi( const QString & p_name ) override;
-
 		void _setupSlots() override;
+
+		void hideEvent( QHideEvent * p_event ) override;
+
 		void _updateActionsWithSelection();
 
 		void _renameAction();
@@ -180,6 +186,8 @@ namespace VTX::UI::Widget::ContextualMenu
 	  private:
 		std::vector<ItemData *>				  _actions = std::vector<ItemData *>();
 		CustomWidget::SetRepresentationMenu * _representationMenu;
+
+		Model::BaseModel * _focusedTarget = nullptr;
 
 		TypeMask _getTypeMaskFromTypeSet( const std::set<ID::VTX_ID> & p_typeIds );
 		void	 _updateCurrentRepresentationFeedback();
