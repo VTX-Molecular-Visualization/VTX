@@ -1,4 +1,5 @@
 #include "setting.hpp"
+#include "define.hpp"
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "io/reader/serialized_object.hpp"
@@ -239,7 +240,7 @@ namespace VTX
 								  QString::fromStdString( VTX_PROJECT_NAME ) );
 
 		int		counter = 0;
-		QString key		= QString::fromStdString( "RecentLoadedPath" + std::to_string( counter ) );
+		QString key		= QString::fromStdString( RegisterKey::RECENT_LOADED_PATH_PREFIX + std::to_string( counter ) );
 
 		while ( settings.contains( key ) )
 		{
@@ -252,11 +253,11 @@ namespace VTX
 			}
 
 			counter++;
-			key = QString::fromStdString( "RecentLoadedPath" + std::to_string( counter ) );
+			key = QString::fromStdString( RegisterKey::RECENT_LOADED_PATH_PREFIX + std::to_string( counter ) );
 		}
 
 		counter = 0;
-		key		= QString::fromStdString( "recentDownloadCode" + std::to_string( counter ) );
+		key		= QString::fromStdString( RegisterKey::RECENT_DOWNLOADED_CODE_PREFIX + std::to_string( counter ) );
 
 		while ( settings.contains( key ) )
 		{
@@ -264,7 +265,7 @@ namespace VTX
 			recentDownloadCodes.push_back( code );
 
 			counter++;
-			key = QString::fromStdString( "recentDownloadCode" + std::to_string( counter ) );
+			key = QString::fromStdString( RegisterKey::RECENT_DOWNLOADED_CODE_PREFIX + std::to_string( counter ) );
 		}
 	}
 	void Setting::saveRecentPaths()
@@ -277,7 +278,8 @@ namespace VTX
 		int counter = 0;
 		for ( const FilePath & path : recentLoadingPath )
 		{
-			const QString key = QString::fromStdString( "RecentLoadedPath" + std::to_string( counter ) );
+			const QString key
+				= QString::fromStdString( RegisterKey::RECENT_LOADED_PATH_PREFIX + std::to_string( counter ) );
 			settings.setValue( key, QString::fromStdString( path.string() ) );
 
 			counter++;
@@ -286,7 +288,8 @@ namespace VTX
 		counter = 0;
 		for ( const std::string & code : recentDownloadCodes )
 		{
-			const QString key = QString::fromStdString( "recentDownloadCode" + std::to_string( counter ) );
+			const QString key
+				= QString::fromStdString( RegisterKey::RECENT_DOWNLOADED_CODE_PREFIX + std::to_string( counter ) );
 			settings.setValue( key, QString::fromStdString( code ) );
 
 			counter++;
