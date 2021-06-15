@@ -627,8 +627,13 @@ namespace VTX::IO
 			if ( chain == nullptr )
 				continue;
 
-			const Model::Representation::InstantiatedRepresentation * const chainCustomRep
-				= chain->hasCustomRepresentation() ? chain->getRepresentation() : nullptr;
+			if ( chain->hasCustomRepresentation() )
+			{
+				jsonRepresentation = { { "TARGET_TYPE", ID::Model::MODEL_CHAIN },
+									   { "INDEX", chain->getIndex() },
+									   { "REPRESENTATION", serialize( *chain->getRepresentation() ) } };
+				jsonArrayRepresentations.emplace_back( jsonRepresentation );
+			}
 
 			for ( uint residueIndex = 0; residueIndex < chain->getResidueCount(); residueIndex++ )
 			{
@@ -645,17 +650,6 @@ namespace VTX::IO
 					jsonRepresentation = { { "TARGET_TYPE", ID::Model::MODEL_RESIDUE },
 										   { "INDEX", newResidueIndex },
 										   { "REPRESENTATION", serialize( *residue->getRepresentation() ) } };
-
-					jsonArrayRepresentations.emplace_back( jsonRepresentation );
-				}
-				else if ( chainCustomRep != nullptr )
-				{
-					const uint newResidueIndex
-						= p_writer != nullptr ? p_writer->getNewResidueIndex( *residue ) : residue->getIndex();
-
-					jsonRepresentation = { { "TARGET_TYPE", ID::Model::MODEL_RESIDUE },
-										   { "INDEX", newResidueIndex },
-										   { "REPRESENTATION", serialize( *chainCustomRep ) } };
 
 					jsonArrayRepresentations.emplace_back( jsonRepresentation );
 				}
