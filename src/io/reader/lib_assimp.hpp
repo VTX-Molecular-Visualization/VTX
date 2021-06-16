@@ -1,10 +1,6 @@
 #ifndef __VTX_READER_LIB_ASSIMP__
 #define __VTX_READER_LIB_ASSIMP__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_reader.hpp"
 
 namespace VTX

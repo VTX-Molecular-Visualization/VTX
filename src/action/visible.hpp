@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_VISIBLE__
 #define __VTX_ACTION_VISIBLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_action.hpp"
 #include "generic/base_visible.hpp"
 #include "tool/logger.hpp"

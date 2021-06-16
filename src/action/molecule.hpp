@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_MOLECULE__
 #define __VTX_ACTION_MOLECULE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event_manager.hpp"
 #include "generic/base_colorable.hpp"
 #include "model/generated_molecule.hpp"

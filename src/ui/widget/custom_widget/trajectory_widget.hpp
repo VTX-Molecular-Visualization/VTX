@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_TRAJECTORY_WIDGET__
 #define __VTX_UI_WIDGET_CUSTOM_TRAJECTORY_WIDGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/molecule.hpp"
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"

@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGETFACTORY__
 #define __VTX_UI_WIDGETFACTORY__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "mvc/mvc_manager.hpp"
 #include "widget/base_manual_widget.hpp"
 #include "widget/base_manual_widget_initializer.hpp"

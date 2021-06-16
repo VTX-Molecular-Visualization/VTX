@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_ATOM__
 #define __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_ATOM__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/atom.hpp"
 #include "ui//widget/custom_widget/qt_multi_data_field.hpp"
 #include "ui/multi_data_field.hpp"

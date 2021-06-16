@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_READER__
 #define __VTX_BASE_READER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include "exception.hpp"
 

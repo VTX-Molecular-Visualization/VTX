@@ -1,10 +1,6 @@
 #ifndef __VTX_PROGRAM_LAUNCHER__
 #define __VTX_PROGRAM_LAUNCHER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_thread.hpp"
 
 namespace VTX

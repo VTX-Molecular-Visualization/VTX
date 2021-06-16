@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SELECTION__
 #define __VTX_UI_WIDGET_SELECTION__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "selection/selection_enum.hpp"
 #include "model/selection.hpp"
 #include "ui/widget/base_manual_widget.hpp"

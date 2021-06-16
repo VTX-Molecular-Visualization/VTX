@@ -1,10 +1,6 @@
 #ifndef __VTX_RENDERER_GL__
 #define __VTX_RENDERER_GL__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "buffer.hpp"
 #include "pass/blur.hpp"
 #include "pass/fxaa.hpp"

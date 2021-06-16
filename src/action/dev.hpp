@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_DEV__
 #define __VTX_ACTION_DEV__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_action.hpp"
 #include "renderer/gl/program_manager.hpp"
 #include "util/filesystem.hpp"

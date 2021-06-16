@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SEQUENCE_UNKNOWN_DATASET__
 #define __VTX_UI_WIDGET_SEQUENCE_UNKNOWN_DATASET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/chain.hpp"
 #include "sequence_dataset.hpp"
 

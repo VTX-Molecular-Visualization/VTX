@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_TRANSFORMABLE__
 #define __VTX_ACTION_TRANSFORMABLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_action.hpp"
 #include "base_action_undonable.hpp"
 #include "generic/base_auto_rotate.hpp"

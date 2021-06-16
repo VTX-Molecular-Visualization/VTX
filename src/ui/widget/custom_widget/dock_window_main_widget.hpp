@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_DOCK_WINDOW_MAIN_WIDGET__
 #define __VTX_UI_WIDGET_CUSTOM_DOCK_WINDOW_MAIN_WIDGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include <QWidget>
 #include <type_traits>
 

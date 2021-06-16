@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_BASE_MENUTOOLBLOCK_WIDGET__
 #define __VTX_UI_WIDGET_BASE_MENUTOOLBLOCK_WIDGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "menu_toolbutton_widget.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QGridLayout>

@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_OBJECT_DISPLAY__
 #define __VTX_UI_WIDGET_MENU_VISUALIZATION_OBJECT_DISPLAY__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event.hpp"
 #include "model/molecule.hpp"
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"

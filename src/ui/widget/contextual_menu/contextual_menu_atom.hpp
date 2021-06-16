@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CONTEXTUAL_MENU_ATOM__
 #define __VTX_UI_WIDGET_CONTEXTUAL_MENU_ATOM__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "contextual_menu_template.hpp"
 #include "model/atom.hpp"
 #include <QMenu>

@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SETTING__
 #define __VTX_UI_WIDGET_SETTING__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "setting_widget_enum.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/base_manual_widget_initializer.hpp"

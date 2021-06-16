@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_STATE__
 #define __VTX_BASE_STATE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "controller/base_controller.hpp"
 #include "event/base_event_receiver_vtx.hpp"
 #include "generic/base_updatable.hpp"

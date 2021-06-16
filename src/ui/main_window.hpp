@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_MAIN_WINDOW__
 #define __VTX_UI_MAIN_WINDOW__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "contextual_menu.hpp"
 #include "ui_main_window.h"
 #include "widget/base_widget.hpp"

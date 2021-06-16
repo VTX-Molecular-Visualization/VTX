@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_REPRESENTABLE__
 #define __VTX_BASE_REPRESENTABLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include "representation/representation_target.hpp"
 #include <map>

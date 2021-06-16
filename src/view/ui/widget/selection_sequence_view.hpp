@@ -1,10 +1,6 @@
 #ifndef __VTX_VIEW_UI_WIDGET_SELECTION_SEQUENCE_VIEW__
 #define __VTX_VIEW_UI_WIDGET_SELECTION_SEQUENCE_VIEW__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/selection.hpp"
 #include "ui/widget/sequence/sequence_widget.hpp"
 #include "view/base_view.hpp"

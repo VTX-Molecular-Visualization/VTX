@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_BASE_MANUAL_WIDGET__
 #define __VTX_UI_WIDGET_BASE_MANUAL_WIDGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_manual_widget_initializer.hpp"
 #include "event/base_event_receiver_vtx.hpp"
 #include <QWidget>

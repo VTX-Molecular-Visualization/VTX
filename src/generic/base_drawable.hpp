@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_DRAWABLE__
 #define __VTX_BASE_DRAWABLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_visible.hpp"
 
 namespace VTX

@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_BASE_REPRESENTATION_WIDGET__
 #define __VTX_UI_WIDGET_BASE_REPRESENTATION_WIDGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/representation/instantiated_representation.hpp"
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"

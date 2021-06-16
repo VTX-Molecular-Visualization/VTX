@@ -1,10 +1,6 @@
 #ifndef __VTX_EVENT__
 #define __VTX_EVENT__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include <string>
 
 namespace VTX

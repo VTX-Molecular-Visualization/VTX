@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_SECONDARY_STRUCTURE__
 #define __VTX_MODEL_SECONDARY_STRUCTURE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_model_3d.hpp"
 #include "buffer/secondary_structure.hpp"
 #include "color/rgb.hpp"

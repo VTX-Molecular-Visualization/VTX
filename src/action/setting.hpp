@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_SETTING__
 #define __VTX_ACTION_SETTING__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_action.hpp"
 #include "io/reader/serialized_object.hpp"
 #include "io/writer/serialized_object.hpp"

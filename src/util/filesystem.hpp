@@ -1,10 +1,6 @@
 #ifndef __VTX_UTIL_FILESYSTEM__
 #define __VTX_UTIL_FILESYSTEM__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "../exception.hpp"
 #include "define.hpp"
 #include "tool/logger.hpp"

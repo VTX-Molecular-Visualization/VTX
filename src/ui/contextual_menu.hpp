@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_CONTEXTUAL_MENU__
 #define __VTX_UI_CONTEXTUAL_MENU__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/widget/contextual_menu/contextual_menu_template.hpp"
 #include <QMenu>
 #include <QPoint>

@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_MIME_TYPE__
 #define __VTX_UI_MIME_TYPE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "id.hpp"
 #include <QByteArray>
 #include <QMimeData>

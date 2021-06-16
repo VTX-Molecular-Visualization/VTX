@@ -1,10 +1,6 @@
 #ifndef __VTX_NETWORK_MANAGER__
 #define __VTX_NETWORK_MANAGER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #define QT_NO_BEARERMANAGEMENT
 #include <QNetworkAccessManager>
 #include <QNetworkReply>

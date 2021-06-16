@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_VDW_REPRESENTATION_WIDGET__
 #define __VTX_UI_WIDGET_VDW_REPRESENTATION_WIDGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_representation_widget.hpp"
 
 namespace VTX::UI::Widget::Representation

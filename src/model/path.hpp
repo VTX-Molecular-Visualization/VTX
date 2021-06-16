@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_PATH__
 #define __VTX_MODEL_PATH__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_model.hpp"
 #include "define.hpp"
 #include "setting.hpp"

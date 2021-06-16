@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SEQUENCE_DATASET__
 #define __VTX_UI_WIDGET_SEQUENCE_DATASET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/residue.hpp"
 #include "style.hpp"
 #include <QPoint>

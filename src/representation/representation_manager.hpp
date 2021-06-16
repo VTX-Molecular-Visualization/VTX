@@ -1,10 +1,6 @@
 #ifndef __VTX_REPRESENTATION_MANAGER__
 #define __VTX_REPRESENTATION_MANAGER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event.hpp"
 #include "id.hpp"
 #include "model/representation/representation_data.hpp"

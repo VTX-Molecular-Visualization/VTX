@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_RENDER_EFFECT_PRESET_EDITOR__
 #define __VTX_UI_WIDGET_RENDER_EFFECT_PRESET_EDITOR__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "color/rgb.hpp"
 #include "model/renderer/render_effect_preset.hpp"
 #include "ui/widget/base_manual_widget.hpp"

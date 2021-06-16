@@ -1,10 +1,6 @@
 #ifndef __VTX__AABB__
 #define __VTX__AABB__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include "util/math.hpp"
 

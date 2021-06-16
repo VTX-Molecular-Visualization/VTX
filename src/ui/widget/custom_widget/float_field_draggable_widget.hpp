@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_FLOAT_FIELD_DRAGGABLE__
 #define __VTX_UI_WIDGET_CUSTOM_FLOAT_FIELD_DRAGGABLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QLabel>

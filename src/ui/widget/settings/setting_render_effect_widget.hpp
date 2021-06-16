@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SETTING_RENDER_EFFECT__
 #define __VTX_UI_WIDGET_SETTING_RENDER_EFFECT__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/widget/base_manual_widget.hpp"
 #include "view/ui/widget/renderer/render_effect_preset_library_view.hpp"
 #include <QShowEvent>

@@ -1,10 +1,6 @@
 #ifndef __VTX_VIEW_UI_WIDGET_REPRESENTATION_LIBRARY__
 #define __VTX_VIEW_UI_WIDGET_REPRESENTATION_LIBRARY__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/representation/representation_library.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/representation/base_representation_widget.hpp"

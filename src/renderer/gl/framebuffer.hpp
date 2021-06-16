@@ -1,10 +1,6 @@
 #ifndef __VTX_GL_FRAMEBUFFER__
 #define __VTX_GL_FRAMEBUFFER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include "generic/base_opengl.hpp"
 #include "texture_2d.hpp"

@@ -1,10 +1,6 @@
 #ifndef __VTX__UTIL_MATH__
 #define __VTX__UTIL_MATH__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include "glm/gtc/type_ptr.hpp"
 #include <glm/gtc/matrix_transform.hpp>

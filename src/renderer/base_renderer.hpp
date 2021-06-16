@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_RENDERER__
 #define __VTX_BASE_RENDERER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "generic/base_opengl.hpp"
 #include "gl/framebuffer.hpp"
 #include "object3d/scene.hpp"

@@ -1,10 +1,6 @@
 #ifndef __VTX_SERIALIZER__
 #define __VTX_SERIALIZER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "io/writer/writer_chemfiles.hpp"
 #include "math/transform.hpp"
 #include "util/math.hpp"

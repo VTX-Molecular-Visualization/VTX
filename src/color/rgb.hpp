@@ -1,10 +1,6 @@
 #ifndef __VTX_RGB__
 #define __VTX_RGB__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "util/math.hpp"
 #include <QColor>
 #include <iomanip>

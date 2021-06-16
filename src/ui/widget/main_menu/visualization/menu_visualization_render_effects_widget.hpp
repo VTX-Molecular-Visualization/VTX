@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_RENDER_EFFECTS__
 #define __VTX_UI_WIDGET_MENU_VISUALIZATION_RENDER_EFFECTS__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event.hpp"
 #include "menu_visualization_render_effect_button_widget.hpp"
 #include "model/renderer/render_effect_preset_library.hpp"

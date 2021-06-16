@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_CONFIGURATION_MOLECULE__
 #define __VTX_MODEL_CONFIGURATION_MOLECULE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include <set>
 

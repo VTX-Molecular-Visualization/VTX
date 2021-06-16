@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_BOND__
 #define __VTX_MODEL_BOND__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_model.hpp"
 #include "id.hpp"
 

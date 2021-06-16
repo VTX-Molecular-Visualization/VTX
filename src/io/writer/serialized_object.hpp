@@ -1,10 +1,6 @@
 #ifndef __VTX_WRITER_SERIALIZED_OBJECT__
 #define __VTX_WRITER_VTX__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_writer.hpp"
 #include "define.hpp"
 #include "io/serializer.hpp"

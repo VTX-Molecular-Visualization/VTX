@@ -1,10 +1,6 @@
 #ifndef __VTX_VIEW_UI_WIDGET_INSTANTIATED_REPRESENTATION_INSPECTOR_VIEW__
 #define __VTX_VIEW_UI_WIDGET_INSTANTIATED_REPRESENTATION_INSPECTOR_VIEW__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "color/rgb.hpp"
 #include "event/event.hpp"
 #include "generic/base_colorable.hpp"

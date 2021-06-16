@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MENU_HOME__
 #define __VTX_UI_WIDGET_MENU_HOME__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "menu_home_molecule_widget.hpp"
 #include "menu_home_session_widget.hpp"
 #include "ui/widget/main_menu/menu_tooltab_widget.hpp"

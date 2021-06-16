@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_JOBMANAGER__
 #define __VTX_UI_WIDGET_JOBMANAGER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "extensions/job_manager/extension_job_manager.hpp"
 #include "ui/qt_form/ui_job_manager_window.h"
 #include "ui/widget/custom_widget/custom_qdockwidget.hpp"

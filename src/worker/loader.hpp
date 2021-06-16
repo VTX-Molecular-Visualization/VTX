@@ -1,10 +1,6 @@
 #ifndef __VTX_LOADER__
 #define __VTX_LOADER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_thread.hpp"
 #include "define.hpp"
 #include <map>

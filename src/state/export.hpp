@@ -1,10 +1,6 @@
 #ifndef __VTX_STATE_EXPORT__
 #define __VTX_STATE_EXPORT__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_state.hpp"
 #include "worker/snapshoter.hpp"
 

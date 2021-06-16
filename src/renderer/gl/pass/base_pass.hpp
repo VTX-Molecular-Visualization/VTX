@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_PASS__
 #define __VTX_BASE_PASS__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include "generic/base_opengl.hpp"
 #include "object3d/scene.hpp"

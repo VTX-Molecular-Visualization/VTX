@@ -1,10 +1,6 @@
 #ifndef __VTX_UTIL_UI__
 #define __VTX_UTIL_UI__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "color/rgb.hpp"
 #include <QEvent>
 #include <QString>

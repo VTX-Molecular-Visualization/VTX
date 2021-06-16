@@ -1,10 +1,6 @@
 #ifndef __VTX_STYLE__
 #define __VTX_STYLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "id.hpp"
 #include "model/representation/representation_enum.hpp"
 #include "selection/selection_enum.hpp"

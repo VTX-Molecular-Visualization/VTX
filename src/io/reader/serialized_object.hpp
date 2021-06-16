@@ -1,10 +1,6 @@
 #ifndef __VTX_READER_SERIALIZED_OBJECT__
 #define __VTX_READER_SERIALIZED_OBJECT__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_reader.hpp"
 #include "define.hpp"
 #include "io/serializer.hpp"

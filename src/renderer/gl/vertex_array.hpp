@@ -1,10 +1,6 @@
 #ifndef __VTX_GL_VERETX_ARRAY__
 #define __VTX_GL_VERETX_ARRAY__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "buffer.hpp"
 #include "define.hpp"
 #include "generic/base_opengl.hpp"

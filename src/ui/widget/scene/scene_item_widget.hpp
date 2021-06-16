@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SCENE_ITEM__
 #define __VTX_UI_WIDGET_SCENE_ITEM__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/base_model.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QDragEnterEvent>

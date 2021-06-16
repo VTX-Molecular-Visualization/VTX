@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MENU_VISUALIZATION_RENDER_EFFECT_BUTTON__
 #define __VTX_UI_WIDGET_MENU_VISUALIZATION_RENDER_EFFECT_BUTTON__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 
 namespace VTX::UI::Widget::MainMenu

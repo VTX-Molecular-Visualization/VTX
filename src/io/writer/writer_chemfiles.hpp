@@ -1,10 +1,6 @@
 #ifndef __VTX_WRITE_CHEMFILES__
 #define __VTX_WRITE_CHEMFILES__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_writer.hpp"
 #include "io/chemfiles_io.hpp"
 #include "model/molecule.hpp"

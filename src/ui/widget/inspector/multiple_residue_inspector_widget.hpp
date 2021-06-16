@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_RESIDUE__
 #define __VTX_UI_WIDGET_INSPECTOR_MULTIPLE_RESIDUE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/representation/instantiated_representation.hpp"
 #include "model/representation/representation.hpp"
 #include "model/residue.hpp"

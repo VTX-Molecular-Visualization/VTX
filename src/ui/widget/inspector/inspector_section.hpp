@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR_SECTION__
 #define __VTX_UI_WIDGET_INSPECTOR_SECTION__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "style.hpp"
 #include "ui/widget/custom_widget/collapsing_header_widget.hpp"
 #include "ui/widget_factory.hpp"

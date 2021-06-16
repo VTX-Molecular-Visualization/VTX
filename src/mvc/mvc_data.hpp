@@ -1,10 +1,6 @@
 #ifndef __VTX_MVC_DATA__
 #define __VTX_MVC_DATA__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "id.hpp"
 #include "model/base_model.hpp"
 #include "view/base_view_3d.hpp"

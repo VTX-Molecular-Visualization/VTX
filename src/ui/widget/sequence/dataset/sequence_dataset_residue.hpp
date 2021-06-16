@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SEQUENCE_DATASET_RESIDUE__
 #define __VTX_UI_WIDGET_SEQUENCE_DATASET_RESIDUE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "model/chain.hpp"
 #include "model/molecule.hpp"
 #include "sequence_dataset.hpp"

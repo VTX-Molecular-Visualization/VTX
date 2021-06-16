@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_INTEGER_FIELD__
 #define __VTX_UI_WIDGET_CUSTOM_INTEGER_FIELD__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"
 #include <QLineEdit>

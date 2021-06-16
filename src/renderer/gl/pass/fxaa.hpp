@@ -1,10 +1,6 @@
 #ifndef __VTX_PASS_FXAA__
 #define __VTX_PASS_FXAA__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_pass.hpp"
 #include "renderer/gl/texture_2d.hpp"
 

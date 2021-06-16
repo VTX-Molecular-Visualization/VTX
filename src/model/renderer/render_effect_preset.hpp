@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_RENDERER_RENDER_EFFECT_PRESET__
 #define __VTX_MODEL_RENDERER_RENDER_EFFECT_PRESET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "color/rgb.hpp"
 #include "id.hpp"
 #include "model/base_model.hpp"

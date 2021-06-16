@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_CHAIN__
 #define __VTX_ACTION_CHAIN__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "generic/base_colorable.hpp"

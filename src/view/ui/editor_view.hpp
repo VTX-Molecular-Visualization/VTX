@@ -1,10 +1,6 @@
 #ifndef __VTX_VIEW_UI_EDITOR_TARGET_VIEW__
 #define __VTX_VIEW_UI_EDITOR_TARGET_VIEW__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event.hpp"
 #include "mvc/mvc_manager.hpp"
 #include "ui/widget/base_manual_widget.hpp"

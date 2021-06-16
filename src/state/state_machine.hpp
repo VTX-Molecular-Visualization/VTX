@@ -1,10 +1,6 @@
 #ifndef __VTX_STATE_MACHINE__
 #define __VTX_STATE_MACHINE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_state.hpp"
 #include "generic/base_updatable.hpp"
 #include "generic/has_collection.hpp"

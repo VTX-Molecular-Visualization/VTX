@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_WORKER__
 #define __VTX_BASE_WORKER__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 namespace VTX
 {
 	namespace Worker

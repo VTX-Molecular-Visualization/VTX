@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_INSPECTOR__
 #define __VTX_UI_WIDGET_INSPECTOR__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "id.hpp"
 #include "model/atom.hpp"
 #include "model/chain.hpp"

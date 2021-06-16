@@ -1,10 +1,6 @@
 #ifndef __VTX_MODEL_REPRESENTATION_LIBRARY__
 #define __VTX_MODEL_REPRESENTATION_LIBRARY__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event.hpp"
 #include "model/base_model.hpp"
 #include "mvc/mvc_manager.hpp"

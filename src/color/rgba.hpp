@@ -1,10 +1,6 @@
 #ifndef __VTX_RGBA__
 #define __VTX_RGBA__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "rgb.hpp"
 
 namespace VTX

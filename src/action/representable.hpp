@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_REPRESENTABLE__
 #define __VTX_ACTION_REPRESENTABLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_action.hpp"
 #include "generic/base_colorable.hpp"
 #include "generic/base_representable.hpp"

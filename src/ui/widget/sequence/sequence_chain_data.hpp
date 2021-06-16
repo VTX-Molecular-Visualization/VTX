@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_SEQUENCE_CHAIN_DATA__
 #define __VTX_UI_WIDGET_SEQUENCE_CHAIN_DATA__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "dataset/sequence_dataset.hpp"
 #include "model/chain.hpp"
 #include <QString>

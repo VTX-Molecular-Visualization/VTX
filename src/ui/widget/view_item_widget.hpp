@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_VIEW_ITEM_WIDGET__
 #define __VTX_UI_WIDGET_VIEW_ITEM_WIDGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_manual_widget.hpp"
 #include <QWidget>
 #include <type_traits>

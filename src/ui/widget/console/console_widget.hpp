@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CONSOLE__
 #define __VTX_UI_WIDGET_CONSOLE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/custom_widget/dock_window_main_widget.hpp"
 #include <QColor>

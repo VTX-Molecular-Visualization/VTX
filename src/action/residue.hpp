@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_RESIDUE__
 #define __VTX_ACTION_RESIDUE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event.hpp"
 #include "event/event_manager.hpp"
 #include "model/chain.hpp"

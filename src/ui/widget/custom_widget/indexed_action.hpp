@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_INDEXED_ACTION__
 #define __VTX_UI_WIDGET_INDEXED_ACTION__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include <QAction>
 #include <QWidget>
 

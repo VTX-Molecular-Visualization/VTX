@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_VIEW__
 #define __VTX_BASE_VIEW__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "event/event.hpp"
 #include "model/base_model.hpp"
 #include "tool/logger.hpp"

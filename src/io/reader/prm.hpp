@@ -1,10 +1,6 @@
 #ifndef __VTX_READER_PRM__
 #define __VTX_READER_PRM__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_reader_line.hpp"
 #include "define.hpp"
 #include <vector>

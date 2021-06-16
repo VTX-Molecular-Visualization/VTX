@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_CUSTOM_COLOR_FIELD_BUTTON__
 #define __VTX_UI_WIDGET_CUSTOM_COLOR_FIELD_BUTTON__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "color/rgb.hpp"
 #include "ui/multi_data_field.hpp"
 #include "ui/widget/base_manual_widget.hpp"

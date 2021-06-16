@@ -1,10 +1,6 @@
 #ifndef __VTX_REPRESENTATION_TARGET__
 #define __VTX_REPRESENTATION_TARGET__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include <map>
 

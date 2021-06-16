@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MENU_EXTENSIONS_JOBS__
 #define __VTX_UI_WIDGET_MENU_EXTENSIONS_JOBS__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/widget/base_manual_widget.hpp"
 #include "ui/widget/main_menu/extensions/extension_cloud_connector_gui.hpp"
 #include "ui/widget/main_menu/extensions/extension_job_manager_gui.hpp"

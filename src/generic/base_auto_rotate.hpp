@@ -1,10 +1,6 @@
 #ifndef __VTX_BASE_AUTO_ROTATE__
 #define __VTX_BASE_AUTO_ROTATE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include "util/math.hpp"
 

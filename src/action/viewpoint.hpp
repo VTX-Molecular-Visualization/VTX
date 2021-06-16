@@ -1,10 +1,6 @@
 #ifndef __VTX_ACTION_VIEWPOINT__
 #define __VTX_ACTION_VIEWPOINT__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "base_action.hpp"
 #include "controller/trackball.hpp"
 #include "model/path.hpp"

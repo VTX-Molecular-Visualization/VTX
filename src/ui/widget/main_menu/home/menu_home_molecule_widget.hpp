@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_WIDGET_MENU_HOME_MOLECULE__
 #define __VTX_UI_WIDGET_MENU_HOME_MOLECULE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "ui/widget/main_menu/menu_toolblock_widget.hpp"
 #include "ui/widget/main_menu/menu_toolbutton_widget.hpp"
 #include <QWidget>

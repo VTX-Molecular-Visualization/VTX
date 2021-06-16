@@ -1,10 +1,6 @@
 #ifndef __VTX__BSPLINE__
 #define __VTX__BSPLINE__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include "define.hpp"
 #include "util/math.hpp"
 #include <vector>

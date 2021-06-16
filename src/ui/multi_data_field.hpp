@@ -1,10 +1,6 @@
 #ifndef __VTX_UI_MULTI_DATA_FIELD__
 #define __VTX_UI_MULTI_DATA_FIELD__
 
-#ifdef _MSC_VER
-#pragma once
-#endif
-
 #include <QComboBox>
 #include <QLabel>
 #include <QWidget>
