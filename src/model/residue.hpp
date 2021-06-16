@@ -60,15 +60,27 @@ namespace VTX
 				TRP,
 				TYR,
 				VAL,
+				SEC,
+				PYL,
 				ASX,
 				GLX,
+				C,
+				G,
+				A,
+				U,
+				I,
+				DC,
+				DG,
+				DA,
+				DU,
+				DT,
+				DI,
 				WAT,
 				HOH,
-				HEM,
-				PO4,
-				MEL,
 				COUNT
 			};
+
+			static const int SYMBOL_COUNT = int( SYMBOL::COUNT );
 
 			// Static const mapping.
 			static const std::string SYMBOL_STR[ (int)SYMBOL::COUNT ];
@@ -76,6 +88,12 @@ namespace VTX
 			static const std::string SYMBOL_NAME[ (int)SYMBOL::COUNT ];
 			static const Color::Rgb	 SYMBOL_COLOR[ (int)SYMBOL::COUNT ];
 
+			static const Color::Rgb getResidueColor( const Model::Residue & p_residue );
+
+			inline bool isStandardResidue() const
+			{
+				return int( SYMBOL::ALA ) <= _symbol && _symbol <= int( SYMBOL::PYL );
+			}
 			inline TYPE			 getType() const { return _type; }
 			inline void			 setType( const TYPE p_type ) { _type = p_type; }
 			inline uint			 getIndex() const { return _index; };
@@ -86,15 +104,12 @@ namespace VTX
 			inline Chain * const getChainPtr() const { return _chainPtr; }
 			void				 setChainPtr( Chain * const p_chain );
 
-			inline const SYMBOL		   getSymbol() const { return _symbol; };
-			inline const std::string & getSymbolStr() const { return SYMBOL_STR[ (int)_symbol ]; }
-			inline void				   setSymbol( const SYMBOL p_type )
-			{
-				_symbol = p_type;
-				BaseModel::setDefaultName( &getSymbolName() );
-			};
-			inline const std::string & getSymbolName() const { return SYMBOL_NAME[ (int)_symbol ]; }
-			inline const std::string & getSymbolShort() const { return SYMBOL_SHORT_STR[ (int)_symbol ]; }
+			inline const SYMBOL getSymbol() const { return SYMBOL( _symbol ); };
+			const std::string & getSymbolStr() const;
+			void				setSymbol( const SYMBOL & p_symbol );
+			void				setSymbol( const int p_symbolValue );
+			const std::string & getSymbolName() const;
+			const std::string & getSymbolShort() const;
 
 			inline uint		  getIndexFirstAtom() const { return _indexFirstAtom; };
 			inline void		  setIndexFirstAtom( const uint p_id ) { _indexFirstAtom = p_id; };
@@ -133,7 +148,7 @@ namespace VTX
 			int		_indexInOriginalChain = INT_MIN;
 			Chain * _chainPtr			  = nullptr;
 
-			SYMBOL _symbol = SYMBOL::UNKNOWN;
+			int _symbol = int( SYMBOL::UNKNOWN );
 
 			uint					 _indexFirstAtom	 = 0;
 			uint					 _atomCount			 = 0;

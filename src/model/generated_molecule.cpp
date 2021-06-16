@@ -505,7 +505,8 @@ namespace VTX::Model
 
 		if ( p_molecule.hasCustomRepresentation() )
 		{
-			VTX::Representation::RepresentationManager::get().instantiateCopy( p_molecule.getRepresentation(), *this, false, false );
+			VTX::Representation::RepresentationManager::get().instantiateCopy(
+				p_molecule.getRepresentation(), *this, false, false );
 		}
 
 		for ( int i = 0; i < p_molecule.getAtomPositionFrames().size(); i++ )
@@ -534,8 +535,8 @@ namespace VTX::Model
 
 		if ( p_chainSource.hasCustomRepresentation() )
 		{
-			VTX::Representation::RepresentationManager::get().instantiateCopy( p_chainSource.getRepresentation(),
-																			   *this, false, false );
+			VTX::Representation::RepresentationManager::get().instantiateCopy(
+				p_chainSource.getRepresentation(), *this, false, false );
 		}
 	}
 	void GeneratedMolecule::_copyResidueData( Model::Residue &		 p_residue,
@@ -547,7 +548,7 @@ namespace VTX::Model
 		p_residue.setIndexInOriginalChain( p_residueSource.getIndexInOriginalChain() );
 		p_residue.setIndexFirstAtom( getAtomCount() );
 		p_residue.setSymbol( p_residueSource.getSymbol() );
-		p_residue.setColor( Model::Residue::SYMBOL_COLOR[ int( p_residueSource.getSymbol() ) ] );
+		p_residue.setColor( Model::Residue::getResidueColor( p_residueSource ) );
 		p_residue.setType( p_residueSource.getType() );
 		// TODO copy secondary structure
 		p_residue.setSecondaryStructure( p_residueSource.getSecondaryStructure() );
@@ -555,8 +556,8 @@ namespace VTX::Model
 
 		if ( p_residueSource.hasCustomRepresentation() )
 		{
-			VTX::Representation::RepresentationManager::get().instantiateCopy( p_residueSource.getRepresentation(),
-																			   *this, false, false );
+			VTX::Representation::RepresentationManager::get().instantiateCopy(
+				p_residueSource.getRepresentation(), *this, false, false );
 		}
 	}
 	void GeneratedMolecule::_copyAtomData( Model::Atom &		  p_atom,

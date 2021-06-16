@@ -252,16 +252,28 @@ namespace VTX::IO::Reader
 							residueSymbol.begin(),
 							[]( unsigned char c ) { return std::toupper( c ); } );
 			std::optional symbol = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
-			symbol.has_value() ? modelResidue->setSymbol( symbol.value() )
-							   : p_molecule.addUnknownResidueSymbol( residueSymbol );
 
-			modelResidue->setColor( Model::Residue::SYMBOL_COLOR[ int( modelResidue->getSymbol() ) ] );
+			int symbolValue;
 
-			bool isStandard = residue.properties().get( "is_standard_pdb" ).value_or( true ).as_bool();
+			if ( symbol.has_value() )
+			{
+				symbolValue = int( symbol.value() );
+			}
+			else
+			{
+				symbolValue
+					= int( Model::Residue::SYMBOL::COUNT ) + p_molecule.addUnknownResidueSymbol( residueSymbol );
+			}
+
+			modelResidue->setSymbol( symbolValue );
+
+			modelResidue->setColor( Model::Residue::getResidueColor( *modelResidue ) );
+
+			const bool isStandard = residue.properties().get( "is_standard_pdb" ).value_or( true ).as_bool();
 			modelResidue->setType( isStandard ? Model::Residue::TYPE::STANDARD : Model::Residue::TYPE::NON_STANDARD );
 
 			// Check residue index in chain.
-			int indexInChain = (int)residue.id().value_or( INT_MIN );
+			const int indexInChain = (int)residue.id().value_or( INT_MIN );
 			// assert( oldIndexInChain <= indexInChain );
 			modelResidue->setIndexInOriginalChain( indexInChain );
 

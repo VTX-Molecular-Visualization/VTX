@@ -78,6 +78,20 @@ namespace VTX
 			return *bond;
 		}
 
+		int Molecule::addUnknownResidueSymbol( const std::string & p_symbol )
+		{
+			int residueIndex;
+
+			for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
+			{
+				if ( _unknownResidueSymbol[ residueIndex ] == p_symbol )
+					return residueIndex;
+			}
+
+			_unknownResidueSymbol.emplace_back( p_symbol );
+			return residueIndex;
+		}
+
 		void Molecule::_init()
 		{
 			BaseModel::setDefaultName( &_displayName );
@@ -586,7 +600,7 @@ namespace VTX
 					  + " / Bonds: " + std::to_string( _bonds.size() ) );
 
 			// Display unknown symbols.
-			const std::unordered_set<std::string> & unknownResidueSymbols = getUnknownResidueSymbols();
+			const std::vector<std::string> & unknownResidueSymbols = getUnknownResidueSymbols();
 			if ( unknownResidueSymbols.empty() == false )
 			{
 				std::string unknownResidueSymbolsStr = "";
