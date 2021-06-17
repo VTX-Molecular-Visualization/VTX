@@ -22,15 +22,12 @@
 namespace VTX
 {
 	int ZERO = 0;
-	VTXApp::VTXApp() : QApplication( ZERO, nullptr ) {}
-
-	VTXApp::~VTXApp()
+	VTXApp::VTXApp() : QApplication( ZERO, nullptr )
 	{
-		if ( _mainWindow != nullptr )
-		{
-			delete _mainWindow;
-		}
+		connect( this, &QCoreApplication::aboutToQuit, this, &VTXApp::_stop );
 	}
+
+	VTXApp::~VTXApp() { std::cout << "-----------------------------------------~VTXApp" << std::endl; }
 
 	void VTXApp::start()
 	{
@@ -142,6 +139,8 @@ namespace VTX
 
 	void VTXApp::_stop()
 	{
+		std::cout << "-----------------------------------------_stop" << std::endl;
+
 		// _timer can be uninitialized if critical error append during start (i.e. OpenGL init fail)
 		if ( _timer != nullptr )
 		{
@@ -167,6 +166,10 @@ namespace VTX
 		if ( _scene != nullptr )
 		{
 			delete _scene;
+		}
+		if ( _mainWindow != nullptr )
+		{
+			delete _mainWindow;
 		}
 	}
 

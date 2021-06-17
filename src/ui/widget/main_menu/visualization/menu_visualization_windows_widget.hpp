@@ -37,6 +37,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		MenuToolButtonWidget * _windowComboBoxButton = nullptr;
 		MenuToolButtonWidget * _settingsButton		 = nullptr;
 		MenuToolButtonWidget * _informationButton	 = nullptr;
+		MenuToolButtonWidget * _quitButton			 = nullptr;
 
 		QMenu * _windowsMenu = nullptr;
 
@@ -56,6 +57,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		void _displaySettingsWindow();
 		void _displayInformationWindow();
+		void _quit();
 	};
 } // namespace VTX::UI::Widget::MainMenu::Visualization
 #endif

@@ -241,7 +241,8 @@ namespace VTX::UI
 
 	void MainWindow::closeEvent( QCloseEvent * p_event )
 	{
-		VTXApp::get().quit();
+		VTX_DEBUG( "-----------------------------------------closeEvent" );
+		// VTXApp::get().quit();
 		/*
 		VTXApp::get().stop();
 		p_event->accept();

@@ -1,4 +1,5 @@
 #include "menu_visualization_windows_widget.hpp"
+#include "action/main.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/widget_factory.hpp"
@@ -38,6 +39,10 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_informationButton->setData( "About", ":/sprite/info_button.png", Qt::Orientation::Vertical );
 		pushButton( *_informationButton, 2 );
 
+		_quitButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "quitButton" );
+		_quitButton->setData( "Quit", ":/sprite/info_button.png", Qt::Orientation::Vertical );
+		pushButton( *_quitButton, 3 );
+
 		_windowsMenu = new QMenu( this );
 
 		_instantiateButton( ID::UI::Window::RENDER, &MenuVisualizationWindowsWidget::_toggleRenderWindow );
@@ -73,6 +78,8 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 				 &MenuToolButtonWidget::clicked,
 				 this,
 				 &MenuVisualizationWindowsWidget::_displaySettingsWindow );
+
+		connect( _quitButton, &MenuToolButtonWidget::clicked, this, &MenuVisualizationWindowsWidget::_quit );
 	}
 	void MenuVisualizationWindowsWidget::localize() { setTitle( "Windows" ); }
 	void MenuVisualizationWindowsWidget::refresh()
@@ -144,5 +151,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 	{
 		VTXApp::get().getMainWindow().showWidget( ID::UI::Window::INFORMATION, true );
 	}
+
+	void MenuVisualizationWindowsWidget::_quit() { VTX_ACTION( new Action::Main::Quit() ); }
 
 } // namespace VTX::UI::Widget::MainMenu::Visualization
