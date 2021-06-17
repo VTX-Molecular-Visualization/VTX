@@ -27,7 +27,7 @@ namespace VTX
 		connect( this, &QCoreApplication::aboutToQuit, this, &VTXApp::_stop );
 	}
 
-	VTXApp::~VTXApp() { std::cout << "-----------------------------------------~VTXApp" << std::endl; }
+	VTXApp::~VTXApp() {}
 
 	void VTXApp::start()
 	{
@@ -139,8 +139,6 @@ namespace VTX
 
 	void VTXApp::_stop()
 	{
-		std::cout << "-----------------------------------------_stop" << std::endl;
-
 		// _timer can be uninitialized if critical error append during start (i.e. OpenGL init fail)
 		if ( _timer != nullptr )
 		{

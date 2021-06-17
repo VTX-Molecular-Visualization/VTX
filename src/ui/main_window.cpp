@@ -239,18 +239,6 @@ namespace VTX::UI
 		}
 	}
 
-	void MainWindow::closeEvent( QCloseEvent * p_event )
-	{
-		VTX_DEBUG( "-----------------------------------------closeEvent" );
-		// VTXApp::get().quit();
-		/*
-		VTXApp::get().stop();
-		p_event->accept();
-
-		QMainWindow::closeEvent( p_event );
-		*/
-	}
-
 	void MainWindow::dragEnterEvent( QDragEnterEvent * p_event )
 	{
 		// if ( p_event->mimeData()->hasFormat( "text/plain" ) )

@@ -71,7 +71,6 @@ namespace VTX
 			void restoreDefaultLayout();
 
 		  protected:
-			void closeEvent( QCloseEvent * ) override;
 			void resizeEvent( QResizeEvent * ) override;
 			void showEvent( QShowEvent * ) override;
 			void dragEnterEvent( QDragEnterEvent * ) override;

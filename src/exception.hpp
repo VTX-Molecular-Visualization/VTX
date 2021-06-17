@@ -12,40 +12,16 @@ namespace VTX
 {
 	namespace Exception
 	{
-		class SDLException : public std::runtime_error
+		class VTXException : public std::runtime_error
 		{
 		  public:
-			explicit SDLException( const std::string & p_err ) : std::runtime_error( "[SDL] " + p_err ) {}
+			explicit VTXException( const std::string & p_err ) : std::runtime_error( "[VTX] " + p_err ) {}
 		};
 
 		class GLException : public std::runtime_error
 		{
 		  public:
 			explicit GLException( const std::string & p_err ) : std::runtime_error( "[GL] " + p_err ) {}
-		};
-
-		class OptixException : public std::runtime_error
-		{
-		  public:
-			explicit OptixException( const std::string & p_err ) : std::runtime_error( "[OPTIX] " + p_err ) {}
-		};
-
-		class CudaException : public std::runtime_error
-		{
-		  public:
-			explicit CudaException( const std::string & p_err ) : std::runtime_error( "[CUDA] " + p_err ) {}
-		};
-
-		class IMGUIException : public std::runtime_error
-		{
-		  public:
-			explicit IMGUIException( const std::string & p_err ) : std::runtime_error( "[IMGUI] " + p_err ) {}
-		};
-
-		class VTXException : public std::runtime_error
-		{
-		  public:
-			explicit VTXException( const std::string & p_err ) : std::runtime_error( "[VTX] " + p_err ) {}
 		};
 
 		class HTTPException : public std::runtime_error

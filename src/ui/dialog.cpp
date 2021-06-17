@@ -210,7 +210,7 @@ namespace VTX::UI
 							   msg.c_str(),
 							   QMessageBox::StandardButton::Ok,
 							   QMessageBox::StandardButton::Ok );
-		VTXApp::get().exit( -1 );
+		VTXApp::get().quit();
 	}
 
 } // namespace VTX::UI

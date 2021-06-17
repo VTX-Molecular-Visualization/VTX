@@ -9,7 +9,7 @@ namespace VTX::IO
 	void ChemfilesIO::_prepareChemfiles() const
 	{
 #ifdef VTX_PRODUCTION
-		chemfiles::warning_callback_t callback = []( const std::string & p_log ) { _logFile( p_log ); };
+		chemfiles::warning_callback_t callback = [ & ]( const std::string & p_log ) { _logFile( p_log ); };
 #else
 		chemfiles::warning_callback_t callback = [ & ]( const std::string & p_log ) { _logWarning( p_log ); };
 #endif
