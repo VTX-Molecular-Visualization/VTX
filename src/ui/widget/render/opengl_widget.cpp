@@ -40,7 +40,18 @@ namespace VTX::UI::Widget::Render
 		VTX_INFO( "Initializing OpenGL..." );
 
 		_gl = context()->versionFunctions<OpenGLFunctions>();
+
+		if ( _gl == nullptr )
+		{
+			Dialog::openGLInitializationFail();
+		}
+
 		_gl->initializeOpenGLFunctions();
+
+		if ( !isValid() )
+		{
+			Dialog::openGLInitializationFail();
+		}
 
 		const uchar * glVersion	  = _gl->glGetString( GL_VERSION );
 		const uchar * glslVersion = _gl->glGetString( GL_SHADING_LANGUAGE_VERSION );
@@ -62,11 +73,6 @@ namespace VTX::UI::Widget::Render
 		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT, defaultFramebufferObject() );
 
 		_frameTimer.start();
-
-		if ( !isValid() )
-		{
-			Dialog::openGLInitializationFail();
-		}
 	}
 
 	void OpenGLWidget::paintGL()
@@ -129,11 +135,13 @@ namespace VTX::UI::Widget::Render
 	void OpenGLWidget::activeVSync( const bool p_active )
 	{
 		makeCurrent();
+		/*
 		QFunctionPointer func = context()->getProcAddress( "GLX_EXT_swap_control" );
 		if ( func == nullptr )
 		{
 			VTX_DEBUG( "NULL" );
 		}
+		*/
 		doneCurrent();
 	}
 
