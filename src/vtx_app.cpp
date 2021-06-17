@@ -24,7 +24,13 @@ namespace VTX
 	int ZERO = 0;
 	VTXApp::VTXApp() : QApplication( ZERO, nullptr ) {}
 
-	VTXApp::~VTXApp() {}
+	VTXApp::~VTXApp()
+	{
+		if ( _mainWindow != nullptr )
+		{
+			delete _mainWindow;
+		}
+	}
 
 	void VTXApp::start()
 	{
@@ -90,43 +96,6 @@ namespace VTX
 #endif
 	}
 
-	void VTXApp::stop()
-	{
-		// _timer can be uninitialized if critical error append during start (i.e. OpenGL init fail)
-		if ( _timer != nullptr )
-		{
-			_timer->stop();
-			delete _timer;
-		}
-		// Prevent events throw for nothing when quitting app
-		Event::EventManager::get().freezeEvent( true );
-		Worker::WorkerManager::get().stopAll();
-
-		_setting.backup();
-
-		MVC::MvcManager::get().deleteModel( _representationLibrary );
-		MVC::MvcManager::get().deleteModel( _renderEffectLibrary );
-
-		Selection::SelectionManager::get().deleteModel();
-
-		if ( _stateMachine != nullptr )
-		{
-			delete _stateMachine;
-		}
-		if ( _scene != nullptr )
-		{
-			delete _scene;
-		}
-		if ( _mainWindow != nullptr )
-		{
-			delete _mainWindow;
-		}
-
-		Setting::cleanRecentPaths();
-
-		exit();
-	}
-
 	void VTXApp::_initQt()
 	{
 		this->setWindowIcon( QIcon( ":/sprite/logo.png" ) );
@@ -138,18 +107,6 @@ namespace VTX
 #ifdef _DEBUG
 		QLoggingCategory::setFilterRules( QStringLiteral( "qt.gamepad.debug=true" ) );
 #endif
-	}
-
-	void VTXApp::goToState( const std::string & p_name, void * const p_arg )
-	{
-		try
-		{
-			_stateMachine->goToState( p_name, p_arg );
-		}
-		catch ( const std::exception & p_e )
-		{
-			VTX_ERROR( p_e.what() );
-		}
 	}
 
 	void VTXApp::_update()
@@ -167,9 +124,6 @@ namespace VTX
 		// Action manager.
 		Action::ActionManager::get().update( elapsed );
 
-		// Worker manager.
-		// Worker::WorkerManager::get().update( elapsed );
-
 		// Call late update event for processes at end of frame
 		VTX_EVENT( new Event::VTXEvent( Event::Global::LATE_UPDATE ) );
 
@@ -183,6 +137,48 @@ namespace VTX
 			//		  + "Render time: " + std::to_string( VTX_STAT().renderTime ) + " ms" );
 			_tickCounter = 0;
 			_tickTimer.restart();
+		}
+	}
+
+	void VTXApp::_stop()
+	{
+		// _timer can be uninitialized if critical error append during start (i.e. OpenGL init fail)
+		if ( _timer != nullptr )
+		{
+			_timer->stop();
+			delete _timer;
+		}
+		// Prevent events throw for nothing when quitting app
+		Event::EventManager::get().freezeEvent( true );
+		Worker::WorkerManager::get().stopAll();
+
+		_setting.backup();
+		_mainWindow->saveLayout();
+
+		MVC::MvcManager::get().deleteModel( _representationLibrary );
+		MVC::MvcManager::get().deleteModel( _renderEffectLibrary );
+
+		Selection::SelectionManager::get().deleteModel();
+
+		if ( _stateMachine != nullptr )
+		{
+			delete _stateMachine;
+		}
+		if ( _scene != nullptr )
+		{
+			delete _scene;
+		}
+	}
+
+	void VTXApp::goToState( const std::string & p_name, void * const p_arg )
+	{
+		try
+		{
+			_stateMachine->goToState( p_name, p_arg );
+		}
+		catch ( const std::exception & p_e )
+		{
+			VTX_ERROR( p_e.what() );
 		}
 	}
 

@@ -262,7 +262,6 @@ namespace VTX
 		static void							 enqueueNewDownloadCode( const std::string & );
 		static const std::string * const	 getRecentDownloadCode( const int p_index );
 
-		static void cleanRecentPaths();
 		static void loadRecentPaths();
 		static void saveRecentPaths();
 

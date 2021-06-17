@@ -42,7 +42,7 @@ namespace VTX::Action::Main
 	class Quit : public BaseAction
 	{
 	  public:
-		virtual void execute() override { VTXApp::get().stop(); };
+		virtual void execute() override { VTXApp::get().quit(); };
 	};
 
 	class Open : public BaseAction

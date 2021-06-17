@@ -46,7 +46,6 @@ namespace VTX
 		VTX_MASK MASK = VTX_MASK_NEED_UPDATE;
 
 		void start();
-		void stop();
 		void goToState( const std::string &, void * const = nullptr );
 		void renderScene() const;
 
@@ -106,6 +105,7 @@ namespace VTX
 
 		void _initQt();
 		void _update();
+		void _stop();
 	};
 
 	Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT();

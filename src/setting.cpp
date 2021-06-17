@@ -220,18 +220,6 @@ namespace VTX
 		return &( *it );
 	}
 
-	void Setting::cleanRecentPaths()
-	{
-		while ( recentLoadingPath.size() > 0 )
-		{
-			recentLoadingPath.pop_front();
-		}
-		while ( recentDownloadCodes.size() > 0 )
-		{
-			recentDownloadCodes.pop_front();
-		}
-	}
-
 	void Setting::loadRecentPaths()
 	{
 		const QSettings settings( QSettings::Format::NativeFormat,
