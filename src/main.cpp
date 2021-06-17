@@ -1,5 +1,6 @@
 #include "io/writer/writer_exception.hpp"
 #include "tool/logger.hpp"
+#include "ui/dialog.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 
@@ -28,6 +29,10 @@ int main( int p_argc, char * p_argv[] )
 	catch ( const std::exception & p_e )
 	{
 		VTX_ERROR( p_e.what() );
+#ifdef VTX_PRODUCTION
+		UI::Dialog::unhandledException();
+#else
 		return EXIT_FAILURE;
+#endif
 	}
 }

@@ -28,6 +28,7 @@ namespace VTX::UI
 		static void importRenderEffectPresetDialog();
 
 		static void openGLInitializationFail();
+		static void unhandledException();
 
 		static void confirmActionDialog( Action::BaseAction * const p_action,
 										 const QString &			p_title,

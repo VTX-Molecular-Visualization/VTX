@@ -32,64 +32,86 @@ namespace VTX
 
 			explicit BaseGamepadController( QObject * p_parent = nullptr ) : QObject( p_parent )
 			{
-				connect( QGamepadManager::instance(), &QGamepadManager::gamepadConnected, this, []( int deviceID ) {
-					VTX_DEBUG( "-----------------------GAMEPAD OK" );
-				} );
+				connect( QGamepadManager::instance(),
+						 &QGamepadManager::gamepadConnected,
+						 this,
+						 []( int deviceID ) { VTX_DEBUG( "-----------------------GAMEPAD OK" ); } );
 
 				_setupGamepad();
 
 				if ( isGamepadeConnected() )
 				{
-					connect( _gamepad, &QGamepad::axisLeftXChanged, this, [ & ]( double p_value ) {
-						VTX_DEBUG( "X: " + std::to_string( p_value ) );
-						_axisLeft.x = p_value;
-					} );
-					connect( _gamepad, &QGamepad::axisLeftYChanged, this, [ & ]( double p_value ) {
-						VTX_DEBUG( "Y: " + std::to_string( p_value ) );
-						_axisLeft.y = p_value;
-					} );
-					connect( _gamepad, &QGamepad::axisRightXChanged, this, [ & ]( double p_value ) {
-						_axisRight.x = p_value;
-					} );
+					connect( _gamepad,
+							 &QGamepad::axisLeftXChanged,
+							 this,
+							 [ & ]( double p_value )
+							 {
+								 VTX_DEBUG( "X: " + std::to_string( p_value ) );
+								 _axisLeft.x = p_value;
+							 } );
+					connect( _gamepad,
+							 &QGamepad::axisLeftYChanged,
+							 this,
+							 [ & ]( double p_value )
+							 {
+								 VTX_DEBUG( "Y: " + std::to_string( p_value ) );
+								 _axisLeft.y = p_value;
+							 } );
+					connect( _gamepad,
+							 &QGamepad::axisRightXChanged,
+							 this,
+							 [ & ]( double p_value ) { _axisRight.x = p_value; } );
 
-					connect( _gamepad, &QGamepad::axisRightYChanged, this, [ & ]( double p_value ) {
-						_axisRight.y = p_value;
-					} );
+					connect( _gamepad,
+							 &QGamepad::axisRightYChanged,
+							 this,
+							 [ & ]( double p_value ) { _axisRight.y = p_value; } );
 
-					connect( _gamepad, &QGamepad::buttonAChanged, this, [ & ]( bool p_pressed ) {
-						_handleButtonChangeEvent( BUTTON::A, p_pressed );
-					} );
-					connect( _gamepad, &QGamepad::buttonBChanged, this, [ & ]( bool p_pressed ) {
-						_handleButtonChangeEvent( BUTTON::B, p_pressed );
-					} );
-					connect( _gamepad, &QGamepad::buttonXChanged, this, [ & ]( bool p_pressed ) {
-						_handleButtonChangeEvent( BUTTON::X, p_pressed );
-					} );
-					connect( _gamepad, &QGamepad::buttonYChanged, this, [ & ]( bool p_pressed ) {
-						_handleButtonChangeEvent( BUTTON::Y, p_pressed );
-					} );
-					connect( _gamepad, &QGamepad::buttonL1Changed, this, [ & ]( bool p_pressed ) {
-						_handleButtonChangeEvent( BUTTON::L1, p_pressed );
-					} );
-					connect( _gamepad, &QGamepad::buttonR1Changed, this, [ & ]( bool p_pressed ) {
-						_handleButtonChangeEvent( BUTTON::R1, p_pressed );
-					} );
-					connect( _gamepad, &QGamepad::buttonStartChanged, this, [ & ]( bool p_pressed ) {
-						_handleButtonChangeEvent( BUTTON::START, p_pressed );
-					} );
-					connect( _gamepad, &QGamepad::buttonSelectChanged, this, [ & ]( bool p_pressed ) {
-						_handleButtonChangeEvent( BUTTON::SELECT, p_pressed );
-					} );
-					connect( _gamepad, &QGamepad::buttonGuideChanged, this, [ & ]( bool p_pressed ) {
-						_handleButtonChangeEvent( BUTTON::GUIDE, p_pressed );
-					} );
+					connect( _gamepad,
+							 &QGamepad::buttonAChanged,
+							 this,
+							 [ & ]( bool p_pressed ) { _handleButtonChangeEvent( BUTTON::A, p_pressed ); } );
+					connect( _gamepad,
+							 &QGamepad::buttonBChanged,
+							 this,
+							 [ & ]( bool p_pressed ) { _handleButtonChangeEvent( BUTTON::B, p_pressed ); } );
+					connect( _gamepad,
+							 &QGamepad::buttonXChanged,
+							 this,
+							 [ & ]( bool p_pressed ) { _handleButtonChangeEvent( BUTTON::X, p_pressed ); } );
+					connect( _gamepad,
+							 &QGamepad::buttonYChanged,
+							 this,
+							 [ & ]( bool p_pressed ) { _handleButtonChangeEvent( BUTTON::Y, p_pressed ); } );
+					connect( _gamepad,
+							 &QGamepad::buttonL1Changed,
+							 this,
+							 [ & ]( bool p_pressed ) { _handleButtonChangeEvent( BUTTON::L1, p_pressed ); } );
+					connect( _gamepad,
+							 &QGamepad::buttonR1Changed,
+							 this,
+							 [ & ]( bool p_pressed ) { _handleButtonChangeEvent( BUTTON::R1, p_pressed ); } );
+					connect( _gamepad,
+							 &QGamepad::buttonStartChanged,
+							 this,
+							 [ & ]( bool p_pressed ) { _handleButtonChangeEvent( BUTTON::START, p_pressed ); } );
+					connect( _gamepad,
+							 &QGamepad::buttonSelectChanged,
+							 this,
+							 [ & ]( bool p_pressed ) { _handleButtonChangeEvent( BUTTON::SELECT, p_pressed ); } );
+					connect( _gamepad,
+							 &QGamepad::buttonGuideChanged,
+							 this,
+							 [ & ]( bool p_pressed ) { _handleButtonChangeEvent( BUTTON::GUIDE, p_pressed ); } );
 
-					connect( _gamepad, &QGamepad::buttonL2Changed, this, [ & ]( double p_value ) {
-						_triggers.x = p_value;
-					} );
-					connect( _gamepad, &QGamepad::buttonR2Changed, this, [ & ]( double p_value ) {
-						_triggers.y = p_value;
-					} );
+					connect( _gamepad,
+							 &QGamepad::buttonL2Changed,
+							 this,
+							 [ & ]( double p_value ) { _triggers.x = p_value; } );
+					connect( _gamepad,
+							 &QGamepad::buttonR2Changed,
+							 this,
+							 [ & ]( double p_value ) { _triggers.y = p_value; } );
 				}
 			}
 			~BaseGamepadController()
@@ -120,11 +142,11 @@ namespace VTX
 				if ( gamepads.isEmpty() == false )
 				{
 					_gamepad = new QGamepad( *gamepads.begin(), this );
-					VTX_INFO( "Gamepad connected" );
+					VTX_DEBUG( "Gamepad connected" );
 				}
 				else
 				{
-					VTX_INFO( "Gamepad not connected" );
+					VTX_DEBUG( "Gamepad not connected" );
 				}
 			}
 

@@ -55,7 +55,7 @@ namespace VTX
 
 		// Create statemachine.
 		_stateMachine = new State::StateMachine();
-		_stateMachine->goToState( ID::State::VISUALIZATION );
+		goToState( ID::State::VISUALIZATION );
 
 		// Create UI.
 		_initQt();
@@ -219,10 +219,12 @@ namespace VTX
 		{
 			return QApplication::notify( receiver, event );
 		}
-		catch ( const std::exception & exception )
+		catch ( const std::exception & p_e )
 		{
-			VTX_ERROR( exception.what() );
-			// throw( exception );
+			VTX_ERROR( p_e.what() );
+#ifdef VTX_PRODUCTION
+			UI::Dialog::unhandledException();
+#endif
 			return true;
 		}
 	}

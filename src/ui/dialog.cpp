@@ -200,4 +200,18 @@ namespace VTX::UI
 		std::exit( 0 );
 	}
 
+	void Dialog::unhandledException()
+	{
+		std::string msg = "An unhandlded error has occured, please open an issue at \n" + VTX_BUG_REPORT_URL
+						  + " \nwith your latest file in the /logs directory.";
+		VTX_ERROR( msg );
+
+		QMessageBox::critical( &VTXApp::get().getMainWindow(),
+							   "Error",
+							   msg.c_str(),
+							   QMessageBox::StandardButton::Ok,
+							   QMessageBox::StandardButton::Ok );
+		std::exit( -1 );
+	}
+
 } // namespace VTX::UI
