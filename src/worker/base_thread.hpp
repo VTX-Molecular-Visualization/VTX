@@ -26,6 +26,7 @@ namespace VTX
 			void logWarning( const std::string p_msg ) const;
 			void logError( const std::string p_msg ) const;
 			void logDebug( const std::string p_msg ) const;
+			void logFile( const std::string p_msg ) const;
 
 		  protected:
 			virtual uint _run() = 0;

@@ -8,12 +8,10 @@ namespace VTX::IO
 {
 	void ChemfilesIO::_prepareChemfiles() const
 	{
-#ifdef _DEBUG
-		chemfiles::warning_callback_t callback;
-		callback = [ & ]( const std::string & p_log ) { _logWarning( p_log ); };
-
+#ifdef VTX_PRODUCTION
+		chemfiles::warning_callback_t callback = []( const std::string & p_log ) { _logFile( p_log ); };
 #else
-		chemfiles::warning_callback_t callback = []( const std::string & p_log ) { /*VTX_WARNING( p_log );*/ };
+		chemfiles::warning_callback_t callback = [ & ]( const std::string & p_log ) { _logWarning( p_log ); };
 #endif
 		chemfiles::set_warning_callback( callback );
 	}
@@ -46,5 +44,12 @@ namespace VTX::IO
 			emit _thread->logDebug( p_log );
 		else
 			VTX_DEBUG( p_log );
+	}
+	void ChemfilesIO::_logFile( const std::string & p_log ) const
+	{
+		if ( _thread != nullptr )
+			emit _thread->logFile( p_log );
+		else
+			VTX_LOG_FILE( p_log );
 	}
 } // namespace VTX::IO

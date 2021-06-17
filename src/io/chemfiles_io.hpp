@@ -30,6 +30,7 @@ namespace VTX
 			void _logWarning( const std::string & p_log ) const;
 			void _logInfo( const std::string & p_log ) const;
 			void _logDebug( const std::string & p_log ) const;
+			void _logFile( const std::string & p_log ) const;
 
 		  private:
 			const Worker::BaseThread * const _thread;
