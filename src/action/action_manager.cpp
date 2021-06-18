@@ -122,9 +122,18 @@ namespace VTX
 			}
 
 			VTX_DEBUG( "Undo (" + std::to_string( _bufferUndo.size() - 1 ) + " more)" );
-			_bufferUndo.front()->undo();
-			_bufferRedo.push_front( _bufferUndo.front() );
+			BaseActionUndonable * const actionToUndo = _bufferUndo.front();
+
+			actionToUndo->undo();
+			_bufferRedo.push_front( actionToUndo );
 			_bufferUndo.pop_front();
+
+			switch ( actionToUndo->getTag() )
+			{
+			case ACTION_TAG::MODIFY_SCENE: VTXApp::get().getScenePathData().decrementSceneModifications(); break;
+			case ACTION_TAG::NONE:
+			default: break;
+			}
 		}
 
 		bool ActionManager::canRedo() const { return _bufferRedo.size() > 0; }
@@ -137,9 +146,17 @@ namespace VTX
 			}
 
 			VTX_DEBUG( "Redo (" + std::to_string( _bufferRedo.size() - 1 ) + " more)" );
-			_bufferRedo.front()->redo();
-			_bufferUndo.push_front( _bufferRedo.front() );
+			BaseActionUndonable * const actionToRedo = _bufferRedo.front();
+			actionToRedo->redo();
+			_bufferUndo.push_front( actionToRedo );
 			_bufferRedo.pop_front();
+
+			switch ( actionToRedo->getTag() )
+			{
+			case ACTION_TAG::MODIFY_SCENE: VTXApp::get().getScenePathData().incrementSceneModifications(); break;
+			case ACTION_TAG::NONE:
+			default: break;
+			}
 		}
 
 		void ActionManager::update( const float & p_deltaTime )
@@ -153,9 +170,23 @@ namespace VTX
 
 		void ActionManager::_flushAction( BaseAction * const p_action )
 		{
+			BaseActionUndonable * undonable			= dynamic_cast<BaseActionUndonable *>( p_action );
+			const bool			  isActionUndonable = undonable != nullptr;
+
 			try
 			{
 				p_action->execute();
+				switch ( p_action->getTag() )
+				{
+				case ACTION_TAG::MODIFY_SCENE:
+					if ( isActionUndonable )
+						VTXApp::get().getScenePathData().incrementSceneModifications();
+					else // if the action is not undoable, it make a permanent modification on scene
+						VTXApp::get().getScenePathData().forceSceneModifications();
+					break;
+				case ACTION_TAG::NONE:
+				default: break;
+				}
 			}
 			catch ( const std::exception & p_e )
 			{
@@ -164,8 +195,7 @@ namespace VTX
 
 			// Handle undo.
 			/*
-			BaseActionUndonable * undonable = dynamic_cast<BaseActionUndonable *>( p_action );
-			if ( undonable != nullptr )
+			if ( isActionUndonable )
 			{
 				_bufferUndo.push_front( undonable );
 				_purgeBuffer();
@@ -190,6 +220,12 @@ namespace VTX
 			{
 				delete _bufferUndo.back();
 				_bufferUndo.pop_back();
+			}
+
+			// If we loose the last action which modify scene before saving, the scene can't return to unmodified state
+			if ( VTXApp::get().getScenePathData().getSceneModificationsCounter() < 0 )
+			{
+				VTXApp::get().getScenePathData().forceSceneModifications();
 			}
 		}
 	} // namespace Action

@@ -1,6 +1,7 @@
 #include "main_window.hpp"
 #include "action/main.hpp"
 #include "event/event_manager.hpp"
+#include "io/scene_path_data.hpp"
 #include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 #include "widget_factory.hpp"
@@ -15,6 +16,8 @@ namespace VTX::UI
 	MainWindow::MainWindow( QWidget * p_parent ) : BaseWidget( p_parent )
 	{
 		_registerEvent( Event::Global::CHANGE_STATE );
+		_registerEvent( Event::Global::SCENE_MODIFICATION_STATE_CHANGE );
+		_registerEvent( Event::Global::SCENE_PATH_CHANGE );
 	}
 
 	MainWindow::~MainWindow() { delete _contextualMenu; }
@@ -27,6 +30,11 @@ namespace VTX::UI
 				= dynamic_cast<const Event::VTXEventValue<ID::VTX_ID> &>( p_event );
 
 			ID::VTX_ID state = event.value;
+		}
+		else if ( p_event.name == Event::Global::SCENE_PATH_CHANGE
+				  || p_event.name == Event::Global::SCENE_MODIFICATION_STATE_CHANGE )
+		{
+			refreshWindowTitle();
 		}
 	}
 
@@ -123,10 +131,17 @@ namespace VTX::UI
 		title += " - RELEASE";
 #endif
 #endif
-		const FilePath & currentSessionFilepath = VTXApp::get().getCurrentPath();
+		const FilePath & currentSessionFilepath = VTXApp::get().getScenePathData().getCurrentPath();
 
 		if ( !currentSessionFilepath.empty() )
+		{
 			title += " - " + currentSessionFilepath.filename().string();
+
+			if ( VTXApp::get().getScenePathData().sceneHasModifications() )
+			{
+				title += Style::WINDOW_TITLE_SCENE_MODIFIED_FEEDBACK;
+			}
+		}
 
 		setWindowTitle( QString::fromStdString( title ) );
 	}

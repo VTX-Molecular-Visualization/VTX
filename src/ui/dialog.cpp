@@ -4,6 +4,7 @@
 #include "ui/widget/dialog/download_molecule_dialog.hpp"
 #include "util/filesystem.hpp"
 #include "util/ui.hpp"
+#include "io/scene_path_data.hpp"
 #include "vtx_app.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
@@ -65,7 +66,7 @@ namespace VTX::UI
 
 	void Dialog::leavingSessionDialog( Worker::CallbackThread & p_callback )
 	{
-		if ( VTXApp::get().getScene().isEmpty() && VTXApp::get().getCurrentPath().empty() )
+		if ( VTXApp::get().getScene().isEmpty() && VTXApp::get().getScenePathData().getCurrentPath().empty() )
 		{
 			p_callback( 1 );
 			return;
@@ -80,7 +81,7 @@ namespace VTX::UI
 
 		if ( res == QMessageBox::StandardButton::Save )
 		{
-			const FilePath & filePath = VTXApp::get().getCurrentPath();
+			const FilePath & filePath = VTXApp::get().getScenePathData().getCurrentPath();
 
 			Worker::CallbackThread * threadCallback = new Worker::CallbackThread( p_callback );
 

@@ -25,15 +25,15 @@ namespace VTX::Action::Residue
 	class ChangeColor : public BaseAction
 	{
 	  public:
-		explicit ChangeColor( Model::Residue & p_residue, const Color::Rgb & p_color ) : _color( p_color )
+		explicit ChangeColor( Model::Residue & p_residue, const Color::Rgb & p_color ) :
+			_color( p_color ), _residues { &p_residue }
 		{
-			_residues.emplace( &p_residue );
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit ChangeColor( const std::unordered_set<Model::Residue *> & p_residues, const Color::Rgb & p_color ) :
-			_color( p_color )
+			_color( p_color ), _residues( p_residues )
 		{
-			for ( Model::Residue * const residue : p_residues )
-				_residues.emplace( residue );
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -55,8 +55,8 @@ namespace VTX::Action::Residue
 		}
 
 	  private:
-		std::unordered_set<Model::Residue *> _residues = std::unordered_set<Model::Residue *>();
-		const Color::Rgb					 _color;
+		const std::unordered_set<Model::Residue *> _residues;
+		const Color::Rgb						   _color;
 	};
 
 	class ChangeVisibility : public Visible::ChangeVisibility
@@ -65,6 +65,7 @@ namespace VTX::Action::Residue
 		explicit ChangeVisibility( Model::Residue & p_residue, const VISIBILITY_MODE p_mode ) :
 			Visible::ChangeVisibility( p_residue, p_mode )
 		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -101,16 +102,16 @@ namespace VTX::Action::Residue
 	{
 	  public:
 		explicit ChangeRepresentationPreset( Model::Residue & p_residue, const int p_indexPreset ) :
-			_indexPreset( p_indexPreset )
+			_indexPreset( p_indexPreset ), _residues { &p_residue }
 		{
-			_residues.emplace( &p_residue );
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit ChangeRepresentationPreset( const std::unordered_set<Model::Residue *> & p_residues,
 											 const int									  p_indexPreset ) :
-			_indexPreset( p_indexPreset )
+			_indexPreset( p_indexPreset ),
+			_residues( p_residues )
 		{
-			for ( Model::Residue * const residue : p_residues )
-				_residues.emplace( residue );
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -123,18 +124,21 @@ namespace VTX::Action::Residue
 		}
 
 	  private:
-		std::unordered_set<Model::Residue *> _residues = std::unordered_set<Model::Residue *>();
-		const int							 _indexPreset;
+		const std::unordered_set<Model::Residue *> _residues;
+		const int								   _indexPreset;
 	};
 
 	class RemoveRepresentation : public BaseAction
 	{
 	  public:
-		explicit RemoveRepresentation( Model::Residue & p_chain ) { _residues.emplace( &p_chain ); }
-		explicit RemoveRepresentation( const std::unordered_set<Model::Residue *> & p_chains )
+		explicit RemoveRepresentation( Model::Residue & p_residue ) : _residues { &p_residue }
 		{
-			for ( Model::Residue * const residue : p_chains )
-				_residues.emplace( residue );
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
+		explicit RemoveRepresentation( const std::unordered_set<Model::Residue *> & p_residues ) :
+			_residues( p_residues )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -144,7 +148,7 @@ namespace VTX::Action::Residue
 		}
 
 	  private:
-		std::unordered_set<Model::Residue *> _residues = std::unordered_set<Model::Residue *>();
+		const std::unordered_set<Model::Residue *> _residues;
 	};
 
 	class Orient : public BaseAction
@@ -167,7 +171,10 @@ namespace VTX::Action::Residue
 	class Delete : public BaseAction
 	{
 	  public:
-		explicit Delete( Model::Residue & p_residue ) : _residue( p_residue ) {}
+		explicit Delete( Model::Residue & p_residue ) : _residue( p_residue )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
 
 		virtual void execute() override
 		{
@@ -198,7 +205,10 @@ namespace VTX::Action::Residue
 	class Copy : public BaseAction
 	{
 	  public:
-		explicit Copy( const Model::Residue & p_target ) : _target( p_target ) {}
+		explicit Copy( const Model::Residue & p_target ) : _target( p_target )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
 		virtual void execute() override
 		{
 			Model::GeneratedMolecule * generatedMolecule
@@ -222,7 +232,10 @@ namespace VTX::Action::Residue
 	class Extract : public BaseAction
 	{
 	  public:
-		explicit Extract( const Model::Residue & p_target ) : _target( p_target ) {}
+		explicit Extract( const Model::Residue & p_target ) : _target( p_target )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
 		virtual void execute() override
 		{
 			Model::GeneratedMolecule * const generatedMolecule
@@ -248,10 +261,9 @@ namespace VTX::Action::Residue
 									  const Model::Representation::InstantiatedRepresentation & p_source,
 									  const Model::Representation::MEMBER_FLAG &				p_flag ) :
 			_representation( p_source ),
-			_flag( p_flag )
+			_flag( p_flag ), _residues( p_residues )
 		{
-			for ( Model::Residue * const residue : p_residues )
-				_residues.emplace( residue );
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -261,7 +273,7 @@ namespace VTX::Action::Residue
 		}
 
 	  private:
-		std::unordered_set<Model::Residue *>					  _residues = std::unordered_set<Model::Residue *>();
+		const std::unordered_set<Model::Residue *>				  _residues;
 		const Model::Representation::InstantiatedRepresentation & _representation;
 		const Model::Representation::MEMBER_FLAG				  _flag;
 	};

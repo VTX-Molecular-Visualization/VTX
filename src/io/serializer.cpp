@@ -69,7 +69,11 @@ namespace VTX::IO
 				 { "VISIBILITIES", _serializeMoleculeVisibilities( p_molecule, writer ) },
 				 { "NAME", p_molecule.getName() },
 				 { "PDB_ID", p_molecule.getPdbIdCode() },
-				 { "DISPLAY_NAME", p_molecule.getDisplayName() } };
+				 { "DISPLAY_NAME", p_molecule.getDisplayName() },
+				 { "CURRENT_FRAME", p_molecule.getFrame() },
+				 { "TRAJECTORY_FPS", p_molecule.getFPS() },
+				 { "TRAJECTORY_PLAYMODE", p_molecule.getPlayMode() },
+				 { "TRAJECTORY_ISPLAYING", p_molecule.isPlaying() } };
 	}
 
 	nlohmann::json Serializer::serialize( const Model::Path & p_path ) const
@@ -339,6 +343,11 @@ namespace VTX::IO
 		p_molecule.setName( _get<std::string>( p_json, "NAME" ) );
 		p_molecule.setPdbIdCode( _get<std::string>( p_json, "PDB_ID" ) );
 		p_molecule.setDisplayName( _get<std::string>( p_json, "DISPLAY_NAME" ) );
+
+		p_molecule.setFrame( _get<uint>( p_json, "CURRENT_FRAME" ) );
+		p_molecule.setFPS( _get<uint>( p_json, "TRAJECTORY_FPS" ) );
+		p_molecule.setPlayMode( _get<Trajectory::PlayMode>( p_json, "TRAJECTORY_PLAYMODE" ) );
+		p_molecule.setIsPlaying( _get<bool>( p_json, "TRAJECTORY_ISPLAYING" ) );
 	}
 
 	void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const

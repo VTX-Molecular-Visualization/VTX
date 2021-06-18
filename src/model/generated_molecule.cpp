@@ -523,6 +523,11 @@ namespace VTX::Model
 
 		getBufferAtomRadius().reserve( p_molecule.getAtomCount() );
 		_transform = p_molecule.getTransform();
+
+		setFPS( p_molecule.getFPS() );
+		setPlayMode( p_molecule.getPlayMode() );
+		setFrame( p_molecule.getFrame() );
+		setIsPlaying( p_molecule.isPlaying() );
 	}
 	void GeneratedMolecule::_copyChainData( Model::Chain & p_chain, const Model::Chain & p_chainSource )
 	{

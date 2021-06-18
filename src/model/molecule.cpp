@@ -406,8 +406,11 @@ namespace VTX
 			}
 
 			_currentFrame = p_frameIdx;
-			_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
-			_secondaryStructure->refresh( true );
+			if ( _buffer != nullptr )
+				_buffer->setAtomPositions( _atomPositionsFrames[ _currentFrame ] );
+
+			if ( _secondaryStructure != nullptr )
+				_secondaryStructure->refresh( true );
 
 			_notifyViews( new Event::VTXEvent( Event::Model::TRAJECTORY_FRAME_CHANGE ) );
 

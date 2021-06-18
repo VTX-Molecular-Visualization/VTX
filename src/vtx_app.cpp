@@ -194,20 +194,6 @@ namespace VTX
 		}
 	}
 
-	void VTXApp::setCurrentPath( const FilePath & p_filePath, const bool p_addInRecentPath )
-	{
-		_currentFilePath = p_filePath;
-		if ( p_addInRecentPath )
-			Setting::enqueueNewLoadingPath( p_filePath );
-
-		_mainWindow->refreshWindowTitle();
-	}
-	void VTXApp::clearCurrentPath()
-	{
-		_currentFilePath = FilePath();
-		_mainWindow->refreshWindowTitle();
-	}
-
 	Model::Renderer::RenderEffectPreset & VTX_RENDER_EFFECT()
 	{
 		return Model::Renderer::RenderEffectPresetLibrary::get().getAppliedPreset();

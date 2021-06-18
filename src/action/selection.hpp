@@ -444,6 +444,7 @@ namespace VTX::Action::Selection
 			Visible::ChangeVisibility( p_mode ),
 			_selection( p_selection ), _objRefTypeId( p_objRefTypeId )
 		{
+			_tag	 = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 			_visible = _getVisibilityBool( p_objReference );
 		}
 
@@ -665,6 +666,7 @@ namespace VTX::Action::Selection
 		explicit ChangeRepresentationPreset( Model::Selection & p_selection, const int p_indexPreset ) :
 			_selection( p_selection ), _indexPreset( p_indexPreset )
 		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -703,7 +705,10 @@ namespace VTX::Action::Selection
 	class Copy : public BaseAction
 	{
 	  public:
-		explicit Copy( const Model::Selection & p_source ) : _selection( p_source ) {}
+		explicit Copy( const Model::Selection & p_source ) : _selection( p_source )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
 		virtual void execute() override
 		{
 			Tool::Chrono chrono;
@@ -740,7 +745,10 @@ namespace VTX::Action::Selection
 	class Extract : public BaseAction
 	{
 	  public:
-		explicit Extract( const Model::Selection & p_source ) : _selection( p_source ) {}
+		explicit Extract( const Model::Selection & p_source ) : _selection( p_source )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
 		virtual void execute() override
 		{
 			for ( const std::pair<Model::ID, Model::Selection::MapChainIds> & moleculeSelectionData :
@@ -774,7 +782,10 @@ namespace VTX::Action::Selection
 	class Delete : public BaseAction
 	{
 	  public:
-		explicit Delete( Model::Selection & p_selection ) : _selection( p_selection ) {}
+		explicit Delete( Model::Selection & p_selection ) : _selection( p_selection )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
 
 		virtual void execute() override
 		{

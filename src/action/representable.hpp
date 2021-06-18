@@ -23,12 +23,14 @@ namespace VTX::Action
 			_representable( &p_representable ),
 			_representation( p_representation )
 		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit RepresentableSetRepresentation( const Model::Selection * const			 p_selection,
 												 Model::Representation::Representation * p_representation ) :
 			_selection( p_selection ),
 			_representation( p_representation )
 		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		void execute()
@@ -58,6 +60,7 @@ namespace VTX::Action
 		explicit RepresentableRemoveRepresentation( Generic::BaseRepresentable & p_representable ) :
 			_representable( &p_representable )
 		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		void execute()
