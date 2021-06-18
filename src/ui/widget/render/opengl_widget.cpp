@@ -43,14 +43,18 @@ namespace VTX::UI::Widget::Render
 
 		if ( _gl == nullptr )
 		{
+			setUpdatesEnabled( false );
 			Dialog::openGLInitializationFail();
+			return;
 		}
 
 		_gl->initializeOpenGLFunctions();
 
 		if ( !isValid() )
 		{
+			setUpdatesEnabled( false );
 			Dialog::openGLInitializationFail();
+			return;
 		}
 
 		const uchar * glVersion	  = _gl->glGetString( GL_VERSION );
@@ -107,6 +111,11 @@ namespace VTX::UI::Widget::Render
 
 	void OpenGLWidget::resizeGL( int p_width, int p_height )
 	{
+		if ( _gl == nullptr ) // Avoid first resize if gl == nullptr.
+		{
+			return;
+		}
+
 		makeCurrent();
 		VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
 		getRenderer().resize( p_width, p_height, defaultFramebufferObject() );

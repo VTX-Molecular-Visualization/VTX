@@ -66,12 +66,6 @@ namespace VTX
 		_mainWindow->setupUi();
 		_mainWindow->show();
 
-		if ( !_mainWindow->isOpenGLValid() )
-		{
-			UI::Dialog::openGLInitializationFail();
-			return;
-		}
-
 		// Fix Issue for fullscreen on windows. Need to be called after show and before set fullscreen //////////
 		// https://doc.qt.io/qt-5/windows-issues.html#fullscreen-opengl-based-windows ///////////////////////////
 		QWindowsWindowFunctions::setHasBorderInFullScreen( _mainWindow->windowHandle(), true );
@@ -79,6 +73,12 @@ namespace VTX
 
 		_mainWindow->initWindowLayout();
 		VTX_INFO( "Application started" );
+
+		if ( !_mainWindow->isOpenGLValid() )
+		{
+			UI::Dialog::openGLInitializationFail();
+			return;
+		}
 
 		// Start timers.
 		_timer = new QTimer( this );

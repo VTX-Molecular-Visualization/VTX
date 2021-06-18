@@ -196,7 +196,7 @@ namespace VTX::UI
 							   msg.c_str(),
 							   QMessageBox::StandardButton::Ok,
 							   QMessageBox::StandardButton::Ok );
-		VTXApp::get().quit();
+		std::exit( EXIT_FAILURE );
 	}
 
 	void Dialog::unhandledException()
@@ -210,7 +210,7 @@ namespace VTX::UI
 							   msg.c_str(),
 							   QMessageBox::StandardButton::Ok,
 							   QMessageBox::StandardButton::Ok );
-		VTXApp::get().quit();
+		VTXApp::get().exit( EXIT_FAILURE );
 	}
 
 } // namespace VTX::UI
