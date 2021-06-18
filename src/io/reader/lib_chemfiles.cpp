@@ -25,8 +25,9 @@ namespace VTX::IO::Reader
 	void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
-		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
-		_readTrajectory( trajectory, p_path, p_molecule );
+		chemfiles::Trajectory trajectory	 = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
+		const bool			  recomputeBonds = _needToRecomputeBonds( _getFormat( p_path ) );
+		_readTrajectory( trajectory, p_path, p_molecule, recomputeBonds );
 	}
 
 	void LibChemfiles::readBuffer( const std::string & p_buffer, const FilePath & p_path, Model::Molecule & p_molecule )
@@ -69,7 +70,8 @@ namespace VTX::IO::Reader
 
 	void LibChemfiles::_readTrajectory( chemfiles::Trajectory & p_trajectory,
 										const FilePath &		p_path,
-										Model::Molecule &		p_molecule ) const
+										Model::Molecule &		p_molecule,
+										const bool				p_recomputeBonds ) const
 	{
 		_logInfo( std::to_string( p_trajectory.nsteps() ) + " frames found" );
 
@@ -109,7 +111,7 @@ namespace VTX::IO::Reader
 		chemfiles::Frame frame = p_trajectory.read();
 		chrono.stop();
 
-		_logInfo( "Trajectory read in: " + std::to_string( chrono.elapsedTime() ) + "s" );
+		_logInfo( "Trajectory read in: " + chrono.elapsedTimeStr() );
 
 		const chemfiles::Topology &				topology = frame.topology();
 		const std::vector<chemfiles::Residue> & residues = topology.residues();
@@ -367,6 +369,16 @@ namespace VTX::IO::Reader
 			{
 				_logWarning( "Empty residue found" );
 			}
+
+			std::vector<std::vector<size_t>> atomsForBondCreation;
+			const bool recomputeResidueBonds = p_recomputeBonds && !modelResidue->isStandardResidue();
+			if ( recomputeResidueBonds )
+			{
+				atomsForBondCreation = std::vector<std::vector<size_t>>();
+				atomsForBondCreation.resize( 1 );
+				atomsForBondCreation[ 0 ].reserve( residue.size() );
+			}
+
 			for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 			{
 				const uint				atomId = uint( *it );
@@ -398,6 +410,12 @@ namespace VTX::IO::Reader
 
 				const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 				const chemfiles::Vector3D &					 position  = positions[ atomId ];
+
+				if ( recomputeResidueBonds )
+				{
+					atomsForBondCreation[ 0 ].emplace_back( atomId );
+				}
+
 				Vec3f atomPosition	 = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
 				modelFrame[ atomId ] = atomPosition;
 
@@ -436,6 +454,12 @@ namespace VTX::IO::Reader
 
 				// Radius.
 				p_molecule.getBufferAtomRadius()[ atomId ] = modelAtom->getVdwRadius();
+			}
+
+			if ( recomputeResidueBonds )
+			{
+				std::vector<std::vector<size_t>> neighbours = { { 0 } };
+				frame.createBonds( atomsForBondCreation, neighbours, INT_MAX, FLOAT_MAX );
 			}
 
 			// Check residue full of solvent/ion.
@@ -624,4 +648,7 @@ namespace VTX::IO::Reader
 			return "Unknown";
 		}
 	}
+
+	const bool LibChemfiles::_needToRecomputeBonds( const std::string & p_format ) const { return p_format == "mmCIF"; }
+
 } // namespace VTX::IO::Reader
