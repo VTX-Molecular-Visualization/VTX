@@ -128,6 +128,7 @@ namespace VTX
 				_secondaryStructure = p_structure;
 			};
 			const Atom * const findFirstAtomByName( const std::string & ) const;
+			const uint		   findBondIndex( const uint p_firstAtomIndex, const uint p_secondAtomIndex ) const;
 
 			// Mask BaseVisible::setVisible
 			void setVisible( const bool p_visible );
