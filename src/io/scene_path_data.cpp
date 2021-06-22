@@ -30,6 +30,7 @@ namespace VTX::IO
 		_registerEvent( Event::Global::MOLECULE_REMOVED );
 		_registerEvent( Event::Global::MOLECULE_STRUCTURE_CHANGE );
 		_registerEvent( Event::Global::SCENE_SAVED );
+		_registerEvent( Event::Global::SCENE_PATH_CHANGE );
 	}
 
 	void ScenePathData::receiveEvent( const Event::VTXEvent & p_event )
@@ -55,7 +56,7 @@ namespace VTX::IO
 
 			_mapMoleculePath[ molecule ].setHasChanged( true );
 		}
-		else if ( p_event.name == Event::Global::SCENE_SAVED )
+		else if ( p_event.name == Event::Global::SCENE_SAVED || p_event.name == Event::Global::SCENE_PATH_CHANGE )
 		{
 			resetSceneModifications();
 		}

@@ -1,10 +1,10 @@
 #include "dialog.hpp"
 #include "action/action_manager.hpp"
 #include "action/main.hpp"
+#include "io/scene_path_data.hpp"
 #include "ui/widget/dialog/download_molecule_dialog.hpp"
 #include "util/filesystem.hpp"
 #include "util/ui.hpp"
-#include "io/scene_path_data.hpp"
 #include "vtx_app.hpp"
 #include <QFileDialog>
 #include <QMessageBox>
@@ -66,7 +66,13 @@ namespace VTX::UI
 
 	void Dialog::leavingSessionDialog( Worker::CallbackThread & p_callback )
 	{
-		if ( VTXApp::get().getScene().isEmpty() && VTXApp::get().getScenePathData().getCurrentPath().empty() )
+		const bool hasSavePath	   = !VTXApp::get().getScenePathData().getCurrentPath().empty();
+		const bool sceneIsEmpty	   = VTXApp::get().getScene().isEmpty();
+		const bool sceneHasChanged = VTXApp::get().getScenePathData().sceneHasModifications();
+
+		const bool skipPopUp = ( !hasSavePath && sceneIsEmpty ) || ( hasSavePath && !sceneHasChanged );
+
+		if ( skipPopUp )
 		{
 			p_callback( 1 );
 			return;
@@ -106,10 +112,12 @@ namespace VTX::UI
 
 	void Dialog::openSaveSessionDialog( Worker::CallbackThread * const p_callback )
 	{
-		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
-															   "Save session",
-															   Util::Filesystem::DEFAULT_SAVE_FOLDER,
-															   Util::Filesystem::SAVE_SCENE_FILTERS );
+		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_FILE_WRITE_FILTER );
+		const QString	filename	  = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
+																  "Save session",
+																  Util::Filesystem::DEFAULT_SAVE_FOLDER,
+																  Util::Filesystem::SAVE_SCENE_FILTERS,
+																  defaultFilter );
 
 		if ( !filename.isNull() )
 		{
@@ -119,10 +127,12 @@ namespace VTX::UI
 	}
 	void Dialog::openLoadSessionDialog()
 	{
-		const QString filename = QFileDialog::getOpenFileName( &VTXApp::get().getMainWindow(),
-															   "Open session",
-															   Util::Filesystem::DEFAULT_SAVE_FOLDER,
-															   Util::Filesystem::OPEN_FILE_FILTERS );
+		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_FILE_READ_FILTER );
+		const QString	filename	  = QFileDialog::getOpenFileName( &VTXApp::get().getMainWindow(),
+																  "Open session",
+																  Util::Filesystem::DEFAULT_SAVE_FOLDER,
+																  Util::Filesystem::OPEN_FILE_FILTERS,
+																  defaultFilter );
 
 		if ( !filename.isNull() )
 		{

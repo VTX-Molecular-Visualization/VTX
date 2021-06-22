@@ -62,8 +62,6 @@ namespace VTX
 			static const QString  DEFAULT_SAVE_FOLDER	  = "../save";
 			static const QString  DEFAULT_MOLECULE_FOLDER = "../data";
 
-			static const QString DEFAULT_MOLECULE_READ_FILTER  = "All (*)";
-			static const QString DEFAULT_MOLECULE_WRITE_FILTER = "MMCIF(*.mmcif)";
 
 			static const QString MOLECULE_EXTENSIONS_READ
 				= "Amber Net CDF (*.nc);;"
@@ -112,6 +110,11 @@ namespace VTX
 			static const QString EXPORT_MOLECULE_FILTERS = MOLECULE_EXTENSIONS_WRITE;
 			static const QString OPEN_FILE_FILTERS		 = VTX_EXTENSIONS + ";;" + MOLECULE_EXTENSIONS_READ;
 			static const QString SAVE_SCENE_FILTERS		 = VTX_EXTENSIONS;
+
+			static const QString DEFAULT_MOLECULE_READ_FILTER  = "All (*)";
+			static const QString DEFAULT_MOLECULE_WRITE_FILTER = "MMCIF(*.mmcif)";
+			static const QString DEFAULT_FILE_READ_FILTER  = "All (*)";
+			static const QString DEFAULT_FILE_WRITE_FILTER	   = VTX_EXTENSIONS;
 
 			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
