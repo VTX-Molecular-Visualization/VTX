@@ -289,6 +289,7 @@ namespace VTX::IO
 				if ( molecule == nullptr )
 					continue;
 
+				molecule->refreshVisibilities(false);
 				VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
 				p_scene.addMolecule( molecule );
 			}

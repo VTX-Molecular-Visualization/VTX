@@ -309,7 +309,7 @@ namespace VTX
 			_buffer->setAtomColors( _bufferAtomColors );
 		}
 
-		void Molecule::_fillBufferAtomVisibilities()
+		void Molecule::_fillBufferAtomVisibilities( const bool p_applyToBuffer )
 		{
 			_bufferAtomVisibilities.clear();
 
@@ -366,7 +366,8 @@ namespace VTX
 				}
 			}
 
-			_buffer->setAtomVisibilities( _bufferAtomVisibilities );
+			if ( p_applyToBuffer )
+				_buffer->setAtomVisibilities( _bufferAtomVisibilities );
 		}
 
 		void Molecule::_fillBufferAtomSelections( const Model::Selection::MapChainIds * const p_selection )

@@ -179,10 +179,11 @@ namespace VTX
 				_fillBufferAtomColors();
 				_secondaryStructure->refreshColors();
 			}
-			inline void refreshVisibilities()
+			inline void refreshVisibilities(const bool p_applyBuffer = true)
 			{
-				_fillBufferAtomVisibilities();
-				_secondaryStructure->refreshVisibilities();
+				_fillBufferAtomVisibilities( p_applyBuffer );
+				if ( _secondaryStructure != nullptr)
+					_secondaryStructure->refreshVisibilities();
 			}
 			inline void refreshStructure()
 			{
@@ -311,7 +312,7 @@ namespace VTX
 			bool _showIon	   = true;
 
 			void _fillBufferAtomColors();
-			void _fillBufferAtomVisibilities();
+			void _fillBufferAtomVisibilities(const bool p_applyToBuffer = true);
 			void _fillBufferAtomSelections( const Selection::MapChainIds * const = nullptr );
 
 #ifdef _DEBUG
