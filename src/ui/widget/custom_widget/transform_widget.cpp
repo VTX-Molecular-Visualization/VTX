@@ -83,6 +83,9 @@ namespace VTX::UI::Widget::CustomWidget
 
 	void TransformWidget::updateWithNewValue( const Math::Transform & p_value )
 	{
+		if ( _state == MultiDataField::State::Uninitialized )
+			_transform = p_value;
+
 		_positionWidget->updateWithNewValue( p_value.getTranslationVector() );
 		_rotationWidget->updateWithNewValue( p_value.getEulerAngles() );
 		_scaleWidget->updateWithNewValue( p_value.getScaleVector() );
