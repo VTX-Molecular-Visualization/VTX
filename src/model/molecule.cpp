@@ -78,17 +78,17 @@ namespace VTX
 			return *bond;
 		}
 
-		int Molecule::addUnknownResidueSymbol( const std::string & p_symbol )
+		int Molecule::addUnknownResidueSymbol( const UnknownResidueData & p_residueData )
 		{
 			int residueIndex;
 
 			for ( residueIndex = 0; residueIndex < _unknownResidueSymbol.size(); residueIndex++ )
 			{
-				if ( _unknownResidueSymbol[ residueIndex ] == p_symbol )
+				if ( _unknownResidueSymbol[ residueIndex ].symbolStr == p_residueData.symbolStr )
 					return residueIndex;
 			}
 
-			_unknownResidueSymbol.emplace_back( p_symbol );
+			_unknownResidueSymbol.emplace_back( p_residueData );
 			return residueIndex;
 		}
 
@@ -604,13 +604,13 @@ namespace VTX
 					  + " / Bonds: " + std::to_string( _bonds.size() ) );
 
 			// Display unknown symbols.
-			const std::vector<std::string> & unknownResidueSymbols = getUnknownResidueSymbols();
+			const std::vector<UnknownResidueData> & unknownResidueSymbols = getUnknownResidueSymbols();
 			if ( unknownResidueSymbols.empty() == false )
 			{
 				std::string unknownResidueSymbolsStr = "";
-				for ( std::string symbol : unknownResidueSymbols )
+				for ( UnknownResidueData unknownResidueData : unknownResidueSymbols )
 				{
-					unknownResidueSymbolsStr += symbol + " ";
+					unknownResidueSymbolsStr += unknownResidueData.symbolStr + " ";
 				}
 				VTX_WARNING( "Unknown residue symbols : " + unknownResidueSymbolsStr );
 			}

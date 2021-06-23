@@ -19,13 +19,15 @@ namespace VTX
 
 		const std::string & Residue::getSymbolStr() const
 		{
-			return _symbol < SYMBOL_COUNT ? SYMBOL_STR[ _symbol ]
-										  : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ];
+			return _symbol < SYMBOL_COUNT
+					   ? SYMBOL_STR[ _symbol ]
+					   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ].symbolStr;
 		}
 		const std::string & Residue::getSymbolName() const
 		{
-			return _symbol < SYMBOL_COUNT ? SYMBOL_NAME[ _symbol ]
-										  : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ];
+			return _symbol < SYMBOL_COUNT
+					   ? SYMBOL_NAME[ _symbol ]
+					   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ].symbolName;
 		}
 		const std::string & Residue::getSymbolShort() const
 		{
@@ -256,7 +258,7 @@ namespace VTX
 			"Guanine",		  // G
 			"Adenine",		  // A
 			"Uracil",		  // U
-			"Inosine"		  // I
+			"Inosine",		  // I
 			"Cytosine",		  // DC
 			"Guanine",		  // DG
 			"Adenine",		  // DA

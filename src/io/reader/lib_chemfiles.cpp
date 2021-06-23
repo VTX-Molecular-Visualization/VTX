@@ -8,6 +8,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
+#include "util/molecule.hpp"
 #include "worker/base_thread.hpp"
 #include <QDir>
 #include <QFileInfo>
@@ -263,8 +264,14 @@ namespace VTX::IO::Reader
 			}
 			else
 			{
+				if ( !Util::Molecule::isHetatmDictionaryLoaded() )
+					Util::Molecule::loadHetatmDictionary();
+				Model::UnknownResidueData unknownResidueData = Model::UnknownResidueData();
+				unknownResidueData.symbolStr				 = residueSymbol;
+				unknownResidueData.symbolName				 = Util::Molecule::getResidueFullName( residueSymbol );
+
 				symbolValue
-					= int( Model::Residue::SYMBOL::COUNT ) + p_molecule.addUnknownResidueSymbol( residueSymbol );
+					= int( Model::Residue::SYMBOL::COUNT ) + p_molecule.addUnknownResidueSymbol( unknownResidueData );
 			}
 
 			modelResidue->setSymbol( symbolValue );
@@ -555,6 +562,8 @@ namespace VTX::IO::Reader
 		}
 
 		assert( counter == counterOld );
+
+		Util::Molecule::unloadHetatmDictionary();
 	}
 
 	// http://chemfiles.org/chemfiles/latest/formats.html#list-of-supported-formats

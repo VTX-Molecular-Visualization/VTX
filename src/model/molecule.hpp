@@ -27,6 +27,7 @@ namespace VTX
 	{
 		class Chain;
 		class Residue;
+		class UnknownResidueData;
 		class Atom;
 		class Bond;
 		class SecondaryStructure;
@@ -121,10 +122,13 @@ namespace VTX
 			inline const float &	  getAtomRadius( const uint p_idx ) const { return _bufferAtomRadius[ p_idx ]; }
 			inline const Color::Rgb & getAtomColor( const uint p_idx ) const { return _bufferAtomColors[ p_idx ]; }
 
-			inline const std::vector<std::string> & getUnknownResidueSymbols() const { return _unknownResidueSymbol; }
+			inline const std::vector<UnknownResidueData> & getUnknownResidueSymbols() const
+			{
+				return _unknownResidueSymbol;
+			}
 			inline const std::unordered_set<std::string> & getUnknownAtomSymbols() const { return _unknownAtomSymbol; }
 
-			int			addUnknownResidueSymbol( const std::string & p_symbol );
+			int			addUnknownResidueSymbol( const UnknownResidueData & p_data );
 			inline void addUnknownAtomSymbol( const std::string & p_symbol ) { _unknownAtomSymbol.emplace( p_symbol ); }
 
 			inline AtomPositionsFrame & addAtomPositionFrame()
@@ -285,7 +289,7 @@ namespace VTX
 			Generic::COLOR_MODE _colorMode = Generic::COLOR_MODE::INHERITED;
 
 			// Missing symbols.
-			std::vector<std::string>		_unknownResidueSymbol = std::vector<std::string>();
+			std::vector<UnknownResidueData> _unknownResidueSymbol = std::vector<UnknownResidueData>();
 			std::unordered_set<std::string> _unknownAtomSymbol	  = std::unordered_set<std::string>();
 
 			std::vector<float>		_bufferAtomRadius		= std::vector<float>();

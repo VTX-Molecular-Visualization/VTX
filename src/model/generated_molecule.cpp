@@ -516,7 +516,7 @@ namespace VTX::Model
 			generatedAtomPosFrame.reserve( atomPosFrame.size() );
 		}
 
-		for ( const std::string & unknownSymbol : p_molecule.getUnknownResidueSymbols() )
+		for ( const UnknownResidueData & unknownSymbol : p_molecule.getUnknownResidueSymbols() )
 			addUnknownResidueSymbol( unknownSymbol );
 		for ( const std::string & unknownSymbol : p_molecule.getUnknownAtomSymbols() )
 			addUnknownAtomSymbol( unknownSymbol );
