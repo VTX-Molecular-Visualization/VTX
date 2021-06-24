@@ -23,6 +23,7 @@
 #include "trajectory/trajectory_enum.hpp"
 #include "worker/base_thread.hpp"
 #include <algorithm>
+#include <magic_enum.hpp>
 
 namespace VTX::IO
 {
@@ -140,18 +141,18 @@ namespace VTX::IO
 		return {
 			{ "COLOR", serialize( p_representation.getColor() ) },
 			{ "QUICK_ACCESS", p_representation.hasQuickAccess() },
-			{ "TYPE", p_representation.getRepresentationType() },
+			{ "TYPE", magic_enum::enum_name( p_representation.getRepresentationType() ) },
 			{ "SPHERE_RADIUS", p_representation.getData().getSphereRadius() },
 			{ "CYLINDER_RADIUS", p_representation.getData().getCylinderRadius() },
-			{ "COLOR_MODE", p_representation.getData().getColorMode() },
-			{ "SS_COLOR_MODE", p_representation.getData().getSecondaryStructureColorMode() },
+			{ "COLOR_MODE", magic_enum::enum_name( p_representation.getData().getColorMode() ) },
+			{ "SS_COLOR_MODE", magic_enum::enum_name( p_representation.getData().getSecondaryStructureColorMode() ) },
 		};
 	}
 	nlohmann::json Serializer::serialize( const Model::Renderer::RenderEffectPreset & p_preset ) const
 	{
 		return {
 			{ "QUICK_ACCESS", p_preset.hasQuickAccess() },
-			{ "SHADING", p_preset.getShading() },
+			{ "SHADING", magic_enum::enum_name( p_preset.getShading() ) },
 			{ "SSAO", p_preset.isSSAOEnabled() },
 			{ "SSAO_INTENSITY", p_preset.getSSAOIntensity() },
 			{ "SSAO_BLUR_SIZE", p_preset.getSSAOBlurSize() },
@@ -238,7 +239,8 @@ namespace VTX::IO
 				 { "CONTROLLER_ELASTICITY_FACTOR", p_setting.getControllerElasticityFactor() },
 
 				 { "DEFAULT_TRAJECTORY_SPEED", p_setting.getDefaultTrajectorySpeed() },
-				 { "DEFAULT_TRAJECTORY_PLAY_MODE", p_setting.getDefaultTrajectoryPlayMode() } };
+				 { "DEFAULT_TRAJECTORY_PLAY_MODE",
+				   magic_enum::enum_name( p_setting.getDefaultTrajectoryPlayMode() ) } };
 	}
 
 	void Serializer::deserialize( const nlohmann::json & p_json, VTXApp & p_app ) const
@@ -289,7 +291,7 @@ namespace VTX::IO
 				if ( molecule == nullptr )
 					continue;
 
-				molecule->refreshVisibilities(false);
+				molecule->refreshVisibilities( false );
 				VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, molecule ) );
 				p_scene.addMolecule( molecule );
 			}
@@ -432,12 +434,21 @@ namespace VTX::IO
 		}
 		if ( p_json.contains( "COLOR_MODE" ) )
 		{
-			p_representation.setColorMode( p_json.at( "COLOR_MODE" ).get<Generic::COLOR_MODE>() );
+			std::string value	  = p_json.at( "COLOR_MODE" ).get<std::string>();
+			auto		valueEnum = magic_enum::enum_cast<Generic::COLOR_MODE>( value );
+			if ( valueEnum.has_value() )
+			{
+				p_representation.setColorMode( valueEnum.value() );
+			}
 		}
 		if ( p_json.contains( "SS_COLOR_MODE" ) )
 		{
-			p_representation.setSecondaryStructureColorMode(
-				p_json.at( "SS_COLOR_MODE" ).get<Generic::SECONDARY_STRUCTURE_COLOR_MODE>() );
+			std::string value	  = p_json.at( "SS_COLOR_MODE" ).get<std::string>();
+			auto		valueEnum = magic_enum::enum_cast<Generic::SECONDARY_STRUCTURE_COLOR_MODE>( value );
+			if ( valueEnum.has_value() )
+			{
+				p_representation.setSecondaryStructureColorMode( valueEnum.value() );
+			}
 		}
 		if ( p_json.contains( "COLOR" ) )
 		{
@@ -460,22 +471,22 @@ namespace VTX::IO
 		p_representation.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
 
 		p_representation.changeRepresentationType(
-			_get<Generic::REPRESENTATION>( p_json, "TYPE", Setting::DEFAULT_REPRESENTATION_TYPE ), false );
+			_getEnum<Generic::REPRESENTATION>( p_json, "TYPE", Setting::DEFAULT_REPRESENTATION_TYPE ), false );
 		p_representation.getData().setSphereRadius(
 			_get<float>( p_json, "SPHERE_RADIUS", Setting::ATOMS_RADIUS_DEFAULT ) );
 		p_representation.getData().setCylinderRadius(
 			_get<float>( p_json, "CYLINDER_RADIUS", Setting::BONDS_RADIUS_DEFAULT ) );
 		p_representation.getData().setColorMode(
-			_get<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Setting::COLOR_MODE_DEFAULT ) );
-		p_representation.getData().setSecondaryStructureColorMode(
-			_get<Generic::SECONDARY_STRUCTURE_COLOR_MODE>( p_json, "SS_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
+			_getEnum<Generic::COLOR_MODE>( p_json, "COLOR_MODE", Setting::COLOR_MODE_DEFAULT ) );
+		p_representation.getData().setSecondaryStructureColorMode( _getEnum<Generic::SECONDARY_STRUCTURE_COLOR_MODE>(
+			p_json, "SS_COLOR_MODE", Setting::SS_COLOR_MODE_DEFAULT ) );
 	}
 	void Serializer::deserialize( const nlohmann::json & p_json, Model::Renderer::RenderEffectPreset & p_preset ) const
 	{
 		Color::Rgb color;
 
 		p_preset.setQuickAccess( _get<bool>( p_json, "QUICK_ACCESS", false ) );
-		p_preset.setShading( _get<Renderer::SHADING>( p_json, "SHADING", Setting::SHADING_DEFAULT ) );
+		p_preset.setShading( _getEnum<Renderer::SHADING>( p_json, "SHADING", Setting::SHADING_DEFAULT ) );
 		p_preset.enableSSAO( _get<bool>( p_json, "SSAO", Setting::ACTIVE_AO_DEFAULT ) );
 		p_preset.setSSAOIntensity( _get<int>( p_json, "SSAO_INTENSITY", Setting::AO_INTENSITY_DEFAULT ) );
 		p_preset.setSSAOBlurSize( _get<int>( p_json, "SSAO_BLUR_SIZE", Setting::AO_BLUR_SIZE_DEFAULT ) );
@@ -617,10 +628,8 @@ namespace VTX::IO
 
 		p_setting.setDefaultTrajectorySpeed(
 			_get<int>( p_json, "DEFAULT_TRAJECTORY_SPEED", Setting::DEFAULT_TRAJECTORY_SPEED ) );
-		const Trajectory::PlayMode playMode = _get<Trajectory::PlayMode>(
-			p_json, "DEFAULT_TRAJECTORY_PLAY_MODE", Setting::DEFAULT_TRAJECTORY_PLAY_MODE );
-		p_setting.setDefaultTrajectoryPlayMode(
-			Trajectory::PlayMode( int( playMode ) % int( Trajectory::PlayMode::COUNT ) ) );
+		p_setting.setDefaultTrajectoryPlayMode( _getEnum<Trajectory::PlayMode>(
+			p_json, "DEFAULT_TRAJECTORY_PLAY_MODE", Setting::DEFAULT_TRAJECTORY_PLAY_MODE ) );
 	}
 
 	nlohmann::json Serializer::_serializeMoleculeRepresentations( const Model::Molecule &		  p_molecule,

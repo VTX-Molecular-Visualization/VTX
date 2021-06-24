@@ -33,7 +33,7 @@
         "OUTLINE_SENSIVITY": 0.4000000059604645,
         "OUTLINE_THICKNESS": 1,
         "QUICK_ACCESS": true,
-        "SHADING": 3,
+        "SHADING": "FLAT_COLOR",
         "SSAO": true,
         "SSAO_BLUR_SIZE": 17,
         "SSAO_INTENSITY": 5

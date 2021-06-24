@@ -111,6 +111,27 @@ namespace VTX
 				else
 					return p_defaultValue;
 			}
+			template<typename T>
+			T _getEnum( const nlohmann::json & p_json, const std::string & p_key, const T & p_defaultValue = T() ) const
+			{
+				if ( p_json.contains( p_key ) )
+				{
+					std::string value	  = p_json.at( p_key ).get<std::string>();
+					auto		valueEnum = magic_enum::enum_cast<T>( value );
+					if ( valueEnum.has_value() )
+					{
+						return valueEnum.value();
+					}
+					else
+					{
+						return p_defaultValue;
+					}
+				}
+				else
+				{
+					return p_defaultValue;
+				}
+			}
 
 			void _logError( const std::string & p_msg ) const;
 			void _logWarning( const std::string & p_msg ) const;
