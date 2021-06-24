@@ -45,25 +45,24 @@ namespace VTX
 			static const Path EXECUTABLE_DIR = EXECUTABLE_FILE.parent_path().parent_path();
 #endif
 
-			static const FilePath SHADERS_DIR	= FilePath( EXECUTABLE_DIR.string() + "/shaders" );
-			static const FilePath SNAPSHOTS_DIR = FilePath( EXECUTABLE_DIR.string() + "/snapshots" );
-			static const FilePath RENDERS_DIR	= FilePath( EXECUTABLE_DIR.string() + "/renders" );
-			static const FilePath PATHS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/paths" );
-			static const FilePath VIDEOS_DIR	= FilePath( EXECUTABLE_DIR.string() + "/videos" );
-			static const FilePath LOGS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/logs" );
-			static const FilePath LIBRARIES_DIR = FilePath( EXECUTABLE_DIR.string() + "/libraries" );
+			static const FilePath SHADERS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/shaders" );
+			static const FilePath SNAPSHOTS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/snapshots" );
+			static const FilePath RENDERS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/renders" );
+			static const FilePath PATHS_DIR			= FilePath( EXECUTABLE_DIR.string() + "/paths" );
+			static const FilePath VIDEOS_DIR		= FilePath( EXECUTABLE_DIR.string() + "/videos" );
+			static const FilePath LOGS_DIR			= FilePath( EXECUTABLE_DIR.string() + "/logs" );
+			static const FilePath LIBRARIES_DIR		= FilePath( EXECUTABLE_DIR.string() + "/libraries" );
+			static const FilePath INTERNAL_DATA_DIR = FilePath( EXECUTABLE_DIR.string() + "/data" );
 
 			static const FilePath SCENE_OBJECT_FOLDER = FilePath( "obj" );
 
-			static const FilePath LICENSE_PATH = FilePath( EXECUTABLE_DIR.string() + "/license.txt" );
+			static const FilePath LICENSE_PATH		  = FilePath( EXECUTABLE_DIR.string() + "/license.txt" );
+			static const FilePath HET_DICTIONARY_PATH = INTERNAL_DATA_DIR / "het_dictionary.txt";
 
 			static const FilePath DATA_DIR				  = "../data";
 			static const FilePath SHADERS_DIR_SRC		  = "../src/shader";
 			static const QString  DEFAULT_SAVE_FOLDER	  = "../save";
 			static const QString  DEFAULT_MOLECULE_FOLDER = "../data";
-
-			static const QString DEFAULT_MOLECULE_READ_FILTER  = "All (*)";
-			static const QString DEFAULT_MOLECULE_WRITE_FILTER = "MMCIF(*.mmcif)";
 
 			static const QString MOLECULE_EXTENSIONS_READ
 				= "Amber Net CDF (*.nc);;"
@@ -112,6 +111,11 @@ namespace VTX
 			static const QString EXPORT_MOLECULE_FILTERS = MOLECULE_EXTENSIONS_WRITE;
 			static const QString OPEN_FILE_FILTERS		 = VTX_EXTENSIONS + ";;" + MOLECULE_EXTENSIONS_READ;
 			static const QString SAVE_SCENE_FILTERS		 = VTX_EXTENSIONS;
+
+			static const QString DEFAULT_MOLECULE_READ_FILTER  = "All (*)";
+			static const QString DEFAULT_MOLECULE_WRITE_FILTER = "MMCIF(*.mmcif)";
+			static const QString DEFAULT_FILE_READ_FILTER	   = "All (*)";
+			static const QString DEFAULT_FILE_WRITE_FILTER	   = VTX_EXTENSIONS;
 
 			static const QString REPRESENTATION_PRESET_FILE_FILTERS = "Representation file (*)";
 			static const QString RENDER_EFFECT_PRESET_FILE_FILTERS	= "Render effect file (*)";
@@ -220,6 +224,22 @@ namespace VTX
 				file.close();
 
 				return result;
+			}
+
+			inline void readPath( const FilePath & p_path, std::string & p_content )
+			{
+				std::ifstream file;
+				file.open( p_path, std::ios::in );
+
+				if ( !file.is_open() )
+				{
+					throw Exception::IOException( "Cannot open file " + p_path.string() );
+				}
+
+				const uintmax_t size = std::filesystem::file_size( p_path );
+				p_content.resize( size, '\0' );
+				file.read( p_content.data(), size );
+				file.close();
 			}
 
 			inline void		createDirectory( const FilePath & p_path ) { std::filesystem::create_directory( p_path ); }

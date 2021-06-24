@@ -75,10 +75,6 @@ namespace VTX
 			return *_renderEffectLibrary;
 		}
 
-		inline const FilePath & getCurrentPath() const { return _currentFilePath; }
-		void					setCurrentPath( const FilePath & p_filePath, const bool p_addInRecentPath = true );
-		void					clearCurrentPath();
-
 		bool notify( QObject * const, QEvent * const ) override;
 
 	  private:
@@ -95,8 +91,6 @@ namespace VTX
 		IO::ScenePathData *							   _pathSceneData		  = nullptr;
 		Model::Representation::RepresentationLibrary * _representationLibrary = nullptr;
 		Model::Renderer::RenderEffectPresetLibrary *   _renderEffectLibrary	  = nullptr;
-
-		FilePath _currentFilePath = FilePath();
 
 		VTXApp();
 		VTXApp( const VTXApp & ) = delete;

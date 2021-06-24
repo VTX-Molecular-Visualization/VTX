@@ -55,16 +55,18 @@ namespace VTX::Representation
 
 		RepresentationManager::InstantiatedRepresentation * instantiateCopy(
 			const InstantiatedRepresentation * const p_source,
-			Generic::BaseRepresentable &			 p_target, const bool p_recompute = true, const bool p_notify = true);
+			Generic::BaseRepresentable &			 p_target,
+			const bool								 p_recompute = true,
+			const bool								 p_notify	 = true );
 		void instantiateRepresentations( const Representation * const p_representation,
 										 const Model::Selection &	  p_selection );
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseRepresentable, T>::value>>
-		void instantiateRepresentations( const Representation * const p_representation,
-										 std::unordered_set<T *> &	  p_targets )
+		void instantiateRepresentations( const Representation * const	 p_representation,
+										 const std::unordered_set<T *> & p_targets )
 		{
 			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 
-			for ( T * representable : p_targets )
+			for ( T * const representable : p_targets )
 			{
 				instantiateRepresentation( p_representation, *representable, false );
 				molecules.emplace( representable->getMolecule() );
@@ -123,11 +125,11 @@ namespace VTX::Representation
 				p_representable.getMolecule()->computeAllRepresentationData();
 		}
 		template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseRepresentable, T>::value>>
-		void removeInstantiatedRepresentations( std::unordered_set<T *> & p_targets )
+		void removeInstantiatedRepresentations( const std::unordered_set<T *> & p_targets )
 		{
 			std::unordered_set<Model::Molecule *> molecules = std::unordered_set<Model::Molecule *>();
 
-			for ( T * representable : p_targets )
+			for ( T * const representable : p_targets )
 			{
 				removeInstantiatedRepresentation( *representable, false, true );
 				molecules.emplace( representable->getMolecule() );

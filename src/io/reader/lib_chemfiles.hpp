@@ -29,8 +29,12 @@ namespace VTX
 			void fillTrajectoryFrames( chemfiles::Trajectory &, Model::Molecule & ) const;
 
 		  private:
-			void			  _readTrajectory( chemfiles::Trajectory &, const FilePath &, Model::Molecule & ) const;
+			void			  _readTrajectory( chemfiles::Trajectory &,
+											   const FilePath &,
+											   Model::Molecule &,
+											   const bool p_recomputeBonds = false ) const;
 			const std::string _getFormat( const FilePath & );
+			const bool		  _needToRecomputeBonds( const std::string & p_format ) const;
 		};
 	} // namespace IO::Reader
 } // namespace VTX

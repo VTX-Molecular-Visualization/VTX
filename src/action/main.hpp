@@ -35,7 +35,7 @@ namespace VTX::Action::Main
 		virtual void execute() override
 		{
 			VTXApp::get().getScene().reset();
-			VTXApp::get().clearCurrentPath();
+			VTXApp::get().getScenePathData().clearCurrentPath();
 		}
 	};
 
@@ -60,7 +60,7 @@ namespace VTX::Action::Main
 
 				for ( const FilePath & path : _paths )
 				{
-					VTXApp::get().setCurrentPath( path, true );
+					VTXApp::get().getScenePathData().setCurrentPath( path, true );
 				}
 			}
 
@@ -205,7 +205,10 @@ namespace VTX::Action::Main
 			VTX_THREAD( saver, _callback );
 
 			if ( _path.extension() == ".vtx" )
-				VTXApp::get().setCurrentPath( _path, true );
+			{
+				VTXApp::get().getScenePathData().setCurrentPath( _path, true );
+				VTX_EVENT( new Event::VTXEvent( Event::Global::SCENE_SAVED ) );
+			}
 			else
 				VTX::Setting::enqueueNewLoadingPath( _path );
 		}

@@ -4,6 +4,7 @@
 #include "define.hpp"
 #include "setting.hpp"
 #include "ui/dialog.hpp"
+#include "io/scene_path_data.hpp"
 #include "ui/widget/custom_widget/indexed_action.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
@@ -98,7 +99,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 	void MenuHomeSessionWidget::_openFile() { Dialog::openLoadSessionDialog(); }
 	void MenuHomeSessionWidget::_saveSession() const
 	{
-		VTX_ACTION( new Action::Main::Save( VTXApp::get().getCurrentPath() ) );
+		VTX_ACTION( new Action::Main::Save( VTXApp::get().getScenePathData().getCurrentPath() ) );
 	}
 	void MenuHomeSessionWidget::_saveAsSession() const { Dialog::openSaveSessionDialog(); }
 

@@ -1,5 +1,6 @@
 #include "residue.hpp"
 #include "atom.hpp"
+#include "bond.hpp"
 #include "chain.hpp"
 #include "molecule.hpp"
 
@@ -18,13 +19,15 @@ namespace VTX
 
 		const std::string & Residue::getSymbolStr() const
 		{
-			return _symbol < SYMBOL_COUNT ? SYMBOL_STR[ _symbol ]
-										  : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ];
+			return _symbol < SYMBOL_COUNT
+					   ? SYMBOL_STR[ _symbol ]
+					   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ].symbolStr;
 		}
 		const std::string & Residue::getSymbolName() const
 		{
-			return _symbol < SYMBOL_COUNT ? SYMBOL_NAME[ _symbol ]
-										  : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ];
+			return _symbol < SYMBOL_COUNT
+					   ? SYMBOL_NAME[ _symbol ]
+					   : getMoleculePtr()->getUnknownResidueSymbols()[ _symbol - SYMBOL_COUNT ].symbolName;
 		}
 		const std::string & Residue::getSymbolShort() const
 		{
@@ -81,6 +84,26 @@ namespace VTX
 			}
 
 			return nullptr;
+		}
+
+		const uint Residue::findBondIndex( const uint p_firstAtomIndex, const uint p_secondAtomIndex ) const
+		{
+			const uint lastBondIndex = getIndexFirstBond() + getBondCount() - 1;
+
+			// Start from the end because this function will mostly be call to find external bonds that are at the end
+			// of bond range.
+			for ( uint i = lastBondIndex; i >= getIndexFirstBond(); i-- )
+			{
+				const Bond * const bond = getMoleculePtr()->getBond( i );
+
+				if ( bond == nullptr )
+					continue;
+
+				if ( bond->getIndexFirstAtom() == p_firstAtomIndex && bond->getIndexSecondAtom() == p_secondAtomIndex )
+					return i;
+			}
+
+			return UINT_MAX;
 		}
 
 		void Residue::setVisible( const bool p_visible )
@@ -235,7 +258,7 @@ namespace VTX
 			"Guanine",		  // G
 			"Adenine",		  // A
 			"Uracil",		  // U
-			"Inosine"		  // I
+			"Inosine",		  // I
 			"Cytosine",		  // DC
 			"Guanine",		  // DG
 			"Adenine",		  // DA

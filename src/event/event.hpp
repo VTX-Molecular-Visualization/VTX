@@ -44,6 +44,9 @@ namespace VTX
 			RECENT_FILES_CHANGE,
 			RECENT_DOWNLOAD_CODE_CHANGE,
 			SETTINGS_CHANGE,
+			SCENE_SAVED,
+			SCENE_MODIFICATION_STATE_CHANGE,
+			SCENE_PATH_CHANGE,
 		};
 
 		// Model events for notifier pattern (model->views)[1-n].

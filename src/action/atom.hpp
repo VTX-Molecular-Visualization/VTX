@@ -41,6 +41,7 @@ namespace VTX::Action::Atom
 		explicit ChangeVisibility( Model::Atom & p_atom, const VISIBILITY_MODE p_mode ) :
 			Visible::ChangeVisibility( p_atom, p_mode )
 		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -80,7 +81,10 @@ namespace VTX::Action::Atom
 	class Delete : public BaseAction
 	{
 	  public:
-		explicit Delete( Model::Atom & p_atom ) : _atom( p_atom ) {}
+		explicit Delete( Model::Atom & p_atom ) : _atom( p_atom )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
 
 		virtual void execute() override
 		{
@@ -111,7 +115,10 @@ namespace VTX::Action::Atom
 	class Copy : public BaseAction
 	{
 	  public:
-		explicit Copy( const Model::Atom & p_target ) : _target( p_target ) {}
+		explicit Copy( const Model::Atom & p_target ) : _target( p_target )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
 		virtual void execute() override
 		{
 			Model::GeneratedMolecule * generatedMolecule
@@ -135,7 +142,10 @@ namespace VTX::Action::Atom
 	class Extract : public BaseAction
 	{
 	  public:
-		explicit Extract( const Model::Atom & p_target ) : _target( p_target ) {}
+		explicit Extract( const Model::Atom & p_target ) : _target( p_target )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
 		virtual void execute() override
 		{
 			Model::GeneratedMolecule * const generatedMolecule

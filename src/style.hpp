@@ -190,6 +190,8 @@ namespace VTX
 			inline const char * const SETTING_SECTION_TITLE = "SETTING_SECTION_TITLE";
 		} // namespace WidgetProperty
 
+		inline static const std::string WINDOW_TITLE_SCENE_MODIFIED_FEEDBACK = "*";
+
 		inline static const QSize INSPECTOR_PREFERED_SIZE = QSize( 300, 100 );
 		inline static const QSize INSPECTOR_MINIMUM_SIZE  = QSize( 50, 50 );
 		inline static const QSize RENDER_PREFERED_SIZE	  = QSize( 1000, 1000 );

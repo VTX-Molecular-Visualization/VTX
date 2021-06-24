@@ -18,6 +18,7 @@ namespace VTX::Action::Transformable
 		explicit Rotate( Generic::BaseTransformable & p_transformable, const float p_angle, const Vec3f & p_axis ) :
 			_transformable( p_transformable ), _angle( p_angle ), _axis( p_axis )
 		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -39,6 +40,7 @@ namespace VTX::Action::Transformable
 		explicit SetScale( T & p_transformable, const float p_scale ) :
 			_transformable( p_transformable ), _scale( p_scale ), _scaleOld( p_transformable.getTransform().getScale() )
 		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -66,6 +68,7 @@ namespace VTX::Action::Transformable
 			_transformable( p_transformable ), _translation( p_translation ),
 			_translationOld( p_transformable.getTransform().getTranslation() )
 		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -94,9 +97,9 @@ namespace VTX::Action::Transformable
 								 const Generic::BaseTransformable::TransformComposantMask p_mask
 								 = Generic::BaseTransformable::TransformComposantMask::TRANSFORM ) :
 			_transform( p_transform ),
-			_mask( p_mask )
+			_mask( p_mask ), _transformables { &p_transformable }
 		{
-			_transformables.emplace_back( &p_transformable );
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 		explicit ApplyTransform( const std::unordered_set<Model::Molecule *> &			  p_transformables,
 								 const Math::Transform &								  p_transform,
@@ -105,8 +108,9 @@ namespace VTX::Action::Transformable
 			_transform( p_transform ),
 			_mask( p_mask )
 		{
-			_transformables.reserve( p_transformables.size() );
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 
+			_transformables.reserve( p_transformables.size() );
 			for ( Model::Molecule * const molecule : p_transformables )
 			{
 				_transformables.emplace_back( molecule );
@@ -137,6 +141,7 @@ namespace VTX::Action::Transformable
 			_autoRotateComponents( p_autoRotateComponent ),
 			_orientation( p_orientation )
 		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override
@@ -157,6 +162,7 @@ namespace VTX::Action::Transformable
 			_autoRotateComponents( p_autoRotateComponent ),
 			_speed( p_speed )
 		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 		}
 
 		virtual void execute() override

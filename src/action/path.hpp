@@ -18,6 +18,7 @@ namespace VTX
 				explicit ChangeDuration( Model::Path & p_path, const float p_duration ) :
 					_path( p_path ), _duration( p_duration )
 				{
+					_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 				}
 
 				virtual void execute() override
@@ -37,6 +38,7 @@ namespace VTX
 				explicit ChangeDurationMode( Model::Path & p_path, const Model::Path::DURATION_MODE p_mode ) :
 					_path( p_path ), _mode( p_mode )
 				{
+					_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 				}
 
 				virtual void execute() override
@@ -56,6 +58,7 @@ namespace VTX
 				explicit ChangeInterpolationMode( Model::Path & p_path, const Model::Path::INTERPOLATION_MODE p_mode ) :
 					_path( p_path ), _mode( p_mode )
 				{
+					_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 				}
 
 				virtual void execute() override
@@ -107,6 +110,7 @@ namespace VTX
 				explicit ChangeIsLooping( Model::Path & p_path, const bool p_isLooping ) :
 					_path( p_path ), _isLooping( p_isLooping )
 				{
+					_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
 				}
 
 				virtual void execute() override { _path.setIsLooping( _isLooping ); }

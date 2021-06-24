@@ -49,10 +49,24 @@ namespace VTX
 
 			void registerLoading( const Model::Molecule * const p_molecule, const FilePath & p_filepath );
 
+			inline const FilePath & getCurrentPath() const { return _currentFilePath; }
+			void					setCurrentPath( const FilePath & p_filePath, const bool p_addInRecentPath = true );
+			void					clearCurrentPath();
+
 			Data & getData( const Model::Molecule * const p_molecule );
 
+			void	   incrementSceneModifications();
+			void	   decrementSceneModifications();
+			const int  getSceneModificationsCounter() const;
+			const bool sceneHasModifications() const;
+			void	   forceSceneModifications();
+			void	   resetSceneModifications();
+
 		  private:
+			FilePath								_currentFilePath = FilePath();
 			std::map<const Model::Molecule *, Data> _mapMoleculePath;
+			int										_sceneModificationsCount = 0;
+			bool									_forceSceneModifications = false;
 		};
 	} // namespace IO
 } // namespace VTX

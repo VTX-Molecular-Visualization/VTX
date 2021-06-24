@@ -516,13 +516,18 @@ namespace VTX::Model
 			generatedAtomPosFrame.reserve( atomPosFrame.size() );
 		}
 
-		for ( const std::string & unknownSymbol : p_molecule.getUnknownResidueSymbols() )
+		for ( const UnknownResidueData & unknownSymbol : p_molecule.getUnknownResidueSymbols() )
 			addUnknownResidueSymbol( unknownSymbol );
 		for ( const std::string & unknownSymbol : p_molecule.getUnknownAtomSymbols() )
 			addUnknownAtomSymbol( unknownSymbol );
 
 		getBufferAtomRadius().reserve( p_molecule.getAtomCount() );
 		_transform = p_molecule.getTransform();
+
+		setFPS( p_molecule.getFPS() );
+		setPlayMode( p_molecule.getPlayMode() );
+		setFrame( p_molecule.getFrame() );
+		setIsPlaying( p_molecule.isPlaying() );
 	}
 	void GeneratedMolecule::_copyChainData( Model::Chain & p_chain, const Model::Chain & p_chainSource )
 	{
