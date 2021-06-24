@@ -53,8 +53,8 @@ namespace VTX
 			nlohmann::json serialize( const VTXApp & ) const;
 			nlohmann::json serialize( const Object3D::Scene & ) const;
 			nlohmann::json serialize( const Model::Molecule & ) const;
-			nlohmann::json serialize( const Model::Path & ) const;
-			nlohmann::json serialize( const Model::Viewpoint & ) const;
+			// nlohmann::json serialize( const Model::Path & ) const;
+			// nlohmann::json serialize( const Model::Viewpoint & ) const;
 			nlohmann::json serialize( const Model::Representation::InstantiatedRepresentation & ) const;
 
 			nlohmann::json serialize( const Model::Representation::Representation & ) const;
@@ -75,8 +75,8 @@ namespace VTX
 			void deserialize( const nlohmann::json &, VTXApp & ) const;
 			void deserialize( const nlohmann::json &, Object3D::Scene & ) const;
 			void deserialize( const nlohmann::json &, Model::Molecule & ) const;
-			void deserialize( const nlohmann::json &, Model::Path & ) const;
-			void deserialize( const nlohmann::json &, Model::Viewpoint & ) const;
+			// void deserialize( const nlohmann::json &, Model::Path & ) const;
+			// void deserialize( const nlohmann::json &, Model::Viewpoint & ) const;
 			void deserialize( const nlohmann::json &, Model::Representation::InstantiatedRepresentation & ) const;
 
 			void deserialize( const nlohmann::json &, Model::Representation::Representation & ) const;

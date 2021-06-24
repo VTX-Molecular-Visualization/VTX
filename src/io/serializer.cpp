@@ -45,17 +45,21 @@ namespace VTX::IO
 			jsonArrayMolecules.emplace_back( json );
 		}
 
+		/*
 		nlohmann::json jsonArrayPaths = nlohmann::json::array();
 		for ( const Model::Path * const path : p_scene.getPaths() )
 		{
 			jsonArrayPaths.emplace_back( serialize( *path ) );
 		}
+		*/
 
-		return { { "CAMERA_POSITION", serialize( p_scene.getCamera().getPosition() ) },
-				 { "CAMERA_ROTATION", serialize( p_scene.getCamera().getRotation() ) },
-				 { "MOLECULE_COUNT", p_scene.getMolecules().size() },
-				 { "MOLECULES", jsonArrayMolecules },
-				 { "PATHS", jsonArrayPaths } };
+		return {
+			{ "CAMERA_POSITION", serialize( p_scene.getCamera().getPosition() ) },
+			{ "CAMERA_ROTATION", serialize( p_scene.getCamera().getRotation() ) },
+			{ "MOLECULE_COUNT", p_scene.getMolecules().size() },
+			{ "MOLECULES", jsonArrayMolecules } /*,
+			{ "PATHS", jsonArrayPaths } */
+		};
 	}
 
 	nlohmann::json Serializer::serialize( const Model::Molecule & p_molecule ) const
@@ -77,6 +81,7 @@ namespace VTX::IO
 				 { "TRAJECTORY_ISPLAYING", p_molecule.isPlaying() } };
 	}
 
+	/*
 	nlohmann::json Serializer::serialize( const Model::Path & p_path ) const
 	{
 		nlohmann::json jsonArray = nlohmann::json::array();
@@ -109,6 +114,7 @@ namespace VTX::IO
 				 { "CONTROLLER", p_viewpoint.getController() },
 				 { "ACTIONS", jsonArray } };
 	}
+	*/
 
 	nlohmann::json Serializer::serialize(
 		const Model::Representation::InstantiatedRepresentation & p_representation ) const
@@ -297,6 +303,7 @@ namespace VTX::IO
 			}
 		}
 
+		/*
 		if ( p_json.contains( "PATHS" ) )
 		{
 			for ( const nlohmann::json & jsonPath : p_json.at( "PATHS" ) )
@@ -306,6 +313,7 @@ namespace VTX::IO
 				p_scene.addPath( path );
 			}
 		}
+		*/
 
 		VTXApp::get()
 			.getStateMachine()
@@ -353,6 +361,7 @@ namespace VTX::IO
 		p_molecule.setIsPlaying( _get<bool>( p_json, "TRAJECTORY_ISPLAYING" ) );
 	}
 
+	/*
 	void Serializer::deserialize( const nlohmann::json & p_json, Model::Path & p_path ) const
 	{
 		p_path.setDurationMode( _get<Model::Path::DURATION_MODE>( p_json, "MODE_DURATION" ) );
@@ -410,6 +419,7 @@ namespace VTX::IO
 			}
 		}
 	}
+	*/
 
 	void Serializer::deserialize( const nlohmann::json &							  p_json,
 								  Model::Representation::InstantiatedRepresentation & p_representation ) const
