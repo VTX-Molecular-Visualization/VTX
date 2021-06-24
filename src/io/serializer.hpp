@@ -116,13 +116,20 @@ namespace VTX
 			{
 				if ( p_json.contains( p_key ) )
 				{
-					std::string value	  = p_json.at( p_key ).get<std::string>();
-					auto		valueEnum = magic_enum::enum_cast<T>( value );
-					if ( valueEnum.has_value() )
+					try
 					{
-						return valueEnum.value();
+						std::string value	  = p_json.at( p_key ).get<std::string>();
+						auto		valueEnum = magic_enum::enum_cast<T>( value );
+						if ( valueEnum.has_value() )
+						{
+							return valueEnum.value();
+						}
+						else
+						{
+							return p_defaultValue;
+						}
 					}
-					else
+					catch ( const std::exception & )
 					{
 						return p_defaultValue;
 					}

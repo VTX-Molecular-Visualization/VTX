@@ -77,7 +77,7 @@ namespace VTX::IO
 				 { "DISPLAY_NAME", p_molecule.getDisplayName() },
 				 { "CURRENT_FRAME", p_molecule.getFrame() },
 				 { "TRAJECTORY_FPS", p_molecule.getFPS() },
-				 { "TRAJECTORY_PLAYMODE", p_molecule.getPlayMode() },
+				 { "TRAJECTORY_PLAYMODE", magic_enum::enum_name( p_molecule.getPlayMode() ) },
 				 { "TRAJECTORY_ISPLAYING", p_molecule.isPlaying() } };
 	}
 
@@ -133,9 +133,9 @@ namespace VTX::IO
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::CYLINDER_RADIUS ) )
 			json[ "CYLINDER_RADIUS" ] = p_representation.getCylinderData()._radius;
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::COLOR_MODE ) )
-			json[ "COLOR_MODE" ] = p_representation.getColorMode();
+			json[ "COLOR_MODE" ] = magic_enum::enum_name( p_representation.getColorMode() );
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::SS_COLOR_MODE ) )
-			json[ "SS_COLOR_MODE" ] = p_representation.getSecondaryStructureColorMode();
+			json[ "SS_COLOR_MODE" ] = magic_enum::enum_name( p_representation.getSecondaryStructureColorMode() );
 		if ( p_representation.isMemberOverrided( Model::Representation::MEMBER_FLAG::COLOR ) )
 			json[ "COLOR" ] = serialize( p_representation.getColor() );
 
@@ -357,7 +357,7 @@ namespace VTX::IO
 
 		p_molecule.setFrame( _get<uint>( p_json, "CURRENT_FRAME" ) );
 		p_molecule.setFPS( _get<uint>( p_json, "TRAJECTORY_FPS" ) );
-		p_molecule.setPlayMode( _get<Trajectory::PlayMode>( p_json, "TRAJECTORY_PLAYMODE" ) );
+		p_molecule.setPlayMode( _getEnum<Trajectory::PlayMode>( p_json, "TRAJECTORY_PLAYMODE" ) );
 		p_molecule.setIsPlaying( _get<bool>( p_json, "TRAJECTORY_ISPLAYING" ) );
 	}
 
