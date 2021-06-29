@@ -21,6 +21,8 @@ int main( int p_argc, char * p_argv[] )
 {
 	try
 	{
+		QCoreApplication::setAttribute( Qt::ApplicationAttribute::AA_EnableHighDpiScaling );
+		// QGuiApplication::setHighDpiScaleFactorRoundingPolicy( Qt::HighDpiScaleFactorRoundingPolicy::Ceil );
 		VTXApp & app = VTXApp::get();
 		app.start();
 

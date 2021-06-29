@@ -6,6 +6,7 @@
 #include "ui/dialog.hpp"
 #include "util/opengl.hpp"
 #include "vtx_app.hpp"
+#include <QDesktopWidget>
 #include <QMainWindow>
 
 namespace VTX::UI::Widget::Render
@@ -74,7 +75,11 @@ namespace VTX::UI::Widget::Render
 
 		VTX_PROGRAM_MANAGER( _gl );
 		switchRenderer( Setting::MODE_DEFAULT );
-		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT, Setting::WINDOW_HEIGHT_DEFAULT, defaultFramebufferObject() );
+
+		float pixelRatio = VTXApp::get().desktop()->devicePixelRatioF();
+		getRenderer().init( Setting::WINDOW_WIDTH_DEFAULT * pixelRatio,
+							Setting::WINDOW_HEIGHT_DEFAULT * pixelRatio,
+							defaultFramebufferObject() );
 
 		_frameTimer.start();
 	}
@@ -118,7 +123,8 @@ namespace VTX::UI::Widget::Render
 
 		makeCurrent();
 		VTXApp::get().getScene().getCamera().setScreenSize( p_width, p_height );
-		getRenderer().resize( p_width, p_height, defaultFramebufferObject() );
+		float pixelRatio = VTXApp::get().desktop()->devicePixelRatioF();
+		getRenderer().resize( p_width * pixelRatio, p_height * pixelRatio, defaultFramebufferObject() );
 		doneCurrent();
 	}
 
