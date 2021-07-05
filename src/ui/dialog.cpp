@@ -66,13 +66,7 @@ namespace VTX::UI
 
 	void Dialog::leavingSessionDialog( Worker::CallbackThread & p_callback )
 	{
-		const bool hasSavePath	   = !VTXApp::get().getScenePathData().getCurrentPath().empty();
-		const bool sceneIsEmpty	   = VTXApp::get().getScene().isEmpty();
-		const bool sceneHasChanged = VTXApp::get().getScenePathData().sceneHasModifications();
-
-		const bool skipPopUp = ( !hasSavePath && sceneIsEmpty ) || ( hasSavePath && !sceneHasChanged );
-
-		if ( skipPopUp )
+		if ( !VTXApp::get().hasAnyModifications() )
 		{
 			p_callback( 1 );
 			return;

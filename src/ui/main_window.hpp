@@ -76,6 +76,8 @@ namespace VTX
 			void dragEnterEvent( QDragEnterEvent * ) override;
 			void dropEvent( QDropEvent * ) override;
 
+			void closeEvent( QCloseEvent * ) override;
+
 		  private:
 			Widget::MainMenu::MainMenuBar * _mainMenuBar = nullptr;
 

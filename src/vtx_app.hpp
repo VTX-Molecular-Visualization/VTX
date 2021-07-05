@@ -75,6 +75,8 @@ namespace VTX
 			return *_renderEffectLibrary;
 		}
 
+		bool hasAnyModifications() const;
+
 		bool notify( QObject * const, QEvent * const ) override;
 
 	  private:

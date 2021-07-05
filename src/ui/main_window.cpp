@@ -38,6 +38,26 @@ namespace VTX::UI
 		}
 	}
 
+	void MainWindow::closeEvent( QCloseEvent * p_closeEvent )
+	{
+		if ( VTXApp::get().hasAnyModifications() )
+		{
+			p_closeEvent->ignore();
+			Worker::CallbackThread callback = Worker::CallbackThread(
+				[]( const uint p_code )
+				{
+					if ( p_code )
+						VTXApp::get().quit();
+				} );
+
+			UI::Dialog::leavingSessionDialog( callback );
+		}
+		else
+		{
+			p_closeEvent->accept();
+		}
+	}
+
 	void MainWindow::setupUi()
 	{
 		const QSize winsize = QSize( VTX_SETTING().WINDOW_WIDTH_DEFAULT, VTX_SETTING().WINDOW_HEIGHT_DEFAULT );

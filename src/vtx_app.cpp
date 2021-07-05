@@ -137,6 +137,18 @@ namespace VTX
 		}
 	}
 
+	bool VTXApp::hasAnyModifications() const
+	{
+		const bool hasSavePath	   = !getScenePathData().getCurrentPath().empty();
+		const bool sceneIsEmpty	   = getScene().isEmpty();
+		const bool sceneHasChanged = getScenePathData().sceneHasModifications();
+		#ifdef VTX_PRODUCTION
+		return ( !hasSavePath && !sceneIsEmpty ) || ( hasSavePath && sceneHasChanged );
+		#else 
+		return hasSavePath && sceneHasChanged;
+		#endif
+	}
+
 	void VTXApp::_stop()
 	{
 		// _timer can be uninitialized if critical error append during start (i.e. OpenGL init fail)

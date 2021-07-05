@@ -24,6 +24,7 @@
 	<file>sprite/delete_preset_icon.png</file>
 	<file>sprite/delete_selection_icon.png</file>
 	<file>sprite/download_molecule_icon.png</file>
+	<file>sprite/exit_icon.png</file>
 	<file>sprite/extract_selection_icon.png</file>
 	<file>sprite/fullscreen_icon.png</file>
 	<file>sprite/hide_hydrogen_icon.png</file>

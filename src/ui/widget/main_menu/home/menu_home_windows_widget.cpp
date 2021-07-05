@@ -1,21 +1,20 @@
-#include "menu_visualization_windows_widget.hpp"
+#include "menu_home_windows_widget.hpp"
 #include "action/main.hpp"
 #include "ui/main_window.hpp"
 #include "ui/widget/settings/setting_widget_enum.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
 
-namespace VTX::UI::Widget::MainMenu::Visualization
+namespace VTX::UI::Widget::MainMenu::Home
 {
-	MenuVisualizationWindowsWidget::MenuVisualizationWindowsWidget( QWidget * p_parent ) :
-		MenuToolBlockWidget( p_parent )
+	MenuHomeWindowsWidget::MenuHomeWindowsWidget( QWidget * p_parent ) : MenuToolBlockWidget( p_parent )
 	{
 		_registerEvent( Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE );
 	}
 
-	MenuVisualizationWindowsWidget::~MenuVisualizationWindowsWidget() {}
+	MenuHomeWindowsWidget::~MenuHomeWindowsWidget() {}
 
-	void MenuVisualizationWindowsWidget::receiveEvent( const Event::VTXEvent & p_event )
+	void MenuHomeWindowsWidget::receiveEvent( const Event::VTXEvent & p_event )
 	{
 		if ( p_event.name == Event::Global::DOCK_WINDOW_VISIBILITY_CHANGE )
 		{
@@ -23,7 +22,7 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		}
 	}
 
-	void MenuVisualizationWindowsWidget::_setupUi( const QString & p_name )
+	void MenuHomeWindowsWidget::_setupUi( const QString & p_name )
 	{
 		MenuToolBlockWidget::_setupUi( p_name );
 
@@ -35,15 +34,23 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_settingsButton->setData( "Settings", ":/sprite/settings_icon.png", Qt::Orientation::Vertical );
 		pushButton( *_settingsButton, 1 );
 
+		_informationButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "informationButton" );
+		_informationButton->setData( "About", ":/sprite/info_button.png", Qt::Orientation::Vertical );
+		pushButton( *_informationButton, 2 );
+
+		_quitButton = WidgetFactory::get().instantiateWidget<MenuToolButtonWidget>( this, "quitButton" );
+		_quitButton->setData( "Quit", ":/sprite/exit_icon.png", Qt::Orientation::Vertical );
+		pushButton( *_quitButton, 3 );
+
 		_windowsMenu = new QMenu( this );
 
-		_instantiateButton( ID::UI::Window::RENDER, &MenuVisualizationWindowsWidget::_toggleRenderWindow );
-		_instantiateButton( ID::UI::Window::SCENE, &MenuVisualizationWindowsWidget::_toggleSceneWindow );
-		_instantiateButton( ID::UI::Window::INSPECTOR, &MenuVisualizationWindowsWidget::_toggleInspectorWindow );
+		_instantiateButton( ID::UI::Window::RENDER, &MenuHomeWindowsWidget::_toggleRenderWindow );
+		_instantiateButton( ID::UI::Window::SCENE, &MenuHomeWindowsWidget::_toggleSceneWindow );
+		_instantiateButton( ID::UI::Window::INSPECTOR, &MenuHomeWindowsWidget::_toggleInspectorWindow );
 		// !V0.1
-		//_instantiateButton( ID::UI::Window::SELECTION, &MenuVisualizationWindowsWidget::_toggleSelectionWindow );
-		_instantiateButton( ID::UI::Window::SEQUENCE, &MenuVisualizationWindowsWidget::_toggleSequenceWindow );
-		_instantiateButton( ID::UI::Window::CONSOLE, &MenuVisualizationWindowsWidget::_toggleConsoleWindow );
+		//_instantiateButton( ID::UI::Window::SELECTION, &MenuHomeWindowsWidget::_toggleSelectionWindow );
+		_instantiateButton( ID::UI::Window::SEQUENCE, &MenuHomeWindowsWidget::_toggleSequenceWindow );
+		_instantiateButton( ID::UI::Window::CONSOLE, &MenuHomeWindowsWidget::_toggleConsoleWindow );
 
 		_windowComboBoxButton->setMenu( _windowsMenu );
 
@@ -59,20 +66,25 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 
 		validate();
 	}
-	void MenuVisualizationWindowsWidget::_setupSlots()
+	void MenuHomeWindowsWidget::_setupSlots()
 	{
-		connect( _settingsButton,
+		connect( _informationButton,
 				 &MenuToolButtonWidget::clicked,
 				 this,
-				 &MenuVisualizationWindowsWidget::_displaySettingsWindow );
+				 &MenuHomeWindowsWidget::_displayInformationWindow );
+
+		connect(
+			_settingsButton, &MenuToolButtonWidget::clicked, this, &MenuHomeWindowsWidget::_displaySettingsWindow );
+
+		connect( _quitButton, &MenuToolButtonWidget::clicked, this, &MenuHomeWindowsWidget::_quit );
 	}
-	void MenuVisualizationWindowsWidget::localize() { setTitle( "Windows" ); }
-	void MenuVisualizationWindowsWidget::refresh()
+	void MenuHomeWindowsWidget::localize() { setTitle( "Windows" ); }
+	void MenuHomeWindowsWidget::refresh()
 	{
 		for ( const std::pair<const ID::VTX_ID *, QAction *> & pair : _mapWindowsActions )
 			_refreshButton( *pair.first );
 	}
-	void MenuVisualizationWindowsWidget::_refreshButton( const ID::VTX_ID & p_id )
+	void MenuHomeWindowsWidget::_refreshButton( const ID::VTX_ID & p_id )
 	{
 		const bool	windowVisibility = VTXApp::get().getMainWindow().getWidgetVisibility( p_id );
 		std::string windowName		 = p_id;
@@ -82,9 +94,9 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		//_mapWindowsActions[ &p_id ]->setIcon( *Style::IconConst::get().getWindowIcon( p_id ) );
 	}
 
-	void MenuVisualizationWindowsWidget::_instantiateButton( const ID::VTX_ID & p_id,
-															 void ( MenuVisualizationWindowsWidget::*p_action )(),
-															 const QKeySequence & p_shortcut )
+	void MenuHomeWindowsWidget::_instantiateButton( const ID::VTX_ID & p_id,
+													void ( MenuHomeWindowsWidget::*p_action )(),
+													const QKeySequence & p_shortcut )
 	{
 		std::string windowName = p_id;
 		std::transform( ++windowName.begin(), windowName.end(), ++windowName.begin(), ::tolower );
@@ -101,34 +113,42 @@ namespace VTX::UI::Widget::MainMenu::Visualization
 		_mapWindowsActions.emplace( &p_id, action );
 	}
 
-	void MenuVisualizationWindowsWidget::_toggleSceneWindow()
+	void MenuHomeWindowsWidget::_toggleSceneWindow()
 	{
 		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SCENE );
 	}
-	void MenuVisualizationWindowsWidget::_toggleRenderWindow()
+	void MenuHomeWindowsWidget::_toggleRenderWindow()
 	{
 		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::RENDER );
 	}
-	void MenuVisualizationWindowsWidget::_toggleConsoleWindow()
+	void MenuHomeWindowsWidget::_toggleConsoleWindow()
 	{
 		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::CONSOLE );
 	}
-	void MenuVisualizationWindowsWidget::_toggleInspectorWindow()
+	void MenuHomeWindowsWidget::_toggleInspectorWindow()
 	{
 		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::INSPECTOR );
 	}
 	// !V0.1
-	// void MenuVisualizationWindowsWidget::_toggleSelectionWindow()
+	// void MenuHomeWindowsWidget::_toggleSelectionWindow()
 	//{
 	//	VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SELECTION );
 	//}
-	void MenuVisualizationWindowsWidget::_toggleSequenceWindow()
+	void MenuHomeWindowsWidget::_toggleSequenceWindow()
 	{
 		VTXApp::get().getMainWindow().toggleWidget( ID::UI::Window::SEQUENCE );
 	}
 
-	void MenuVisualizationWindowsWidget::_displaySettingsWindow()
+	void MenuHomeWindowsWidget::_displaySettingsWindow()
 	{
 		VTXApp::get().getMainWindow().openSettingWindow( Settings::SETTING_MENU::VTX );
 	}
-} // namespace VTX::UI::Widget::MainMenu::Visualization
+
+	void MenuHomeWindowsWidget::_displayInformationWindow()
+	{
+		VTXApp::get().getMainWindow().showWidget( ID::UI::Window::INFORMATION, true );
+	}
+
+	void MenuHomeWindowsWidget::_quit() { VTX_ACTION( new Action::Main::Quit() ); }
+
+} // namespace VTX::UI::Widget::MainMenu::Home
