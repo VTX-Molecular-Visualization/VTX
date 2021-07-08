@@ -1,6 +1,7 @@
 #include "representation_loader.hpp"
 #include "io/reader/serialized_object.hpp"
 #include "model/representation/representation_library.hpp"
+#include "representation/representation_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include <filesystem>
@@ -16,7 +17,11 @@ namespace VTX::Worker
 
 		chrono.start();
 
-		_library.clear( false );
+		if ( _restore )
+		{
+			Representation::RepresentationManager::get().storeRepresentations();
+			Representation::RepresentationManager::get().clearAllRepresentations( false );
+		}
 
 		std::filesystem::directory_iterator fileIterator = std::filesystem::directory_iterator( _path );
 
@@ -46,6 +51,31 @@ namespace VTX::Worker
 		VTX_INFO( "Representation library loaded." );
 
 		delete reader;
+
+		if ( _library.getRepresentationCount() <= 0 )
+		{
+			_library.applyDefault( _notify );
+		}
+
+		if ( VTXApp::get().getSetting().getTmpRepresentationDefaultName() != "" )
+		{
+			Model::Representation::Representation * const defaultRepresentation
+				= _library.getRepresentationByName( VTXApp::get().getSetting().getTmpRepresentationDefaultName() );
+
+			const int defaultRepresentationIndex = defaultRepresentation == nullptr
+													   ? Setting::REPRESENTATION_DEFAULT_INDEX
+													   : _library.getRepresentationIndex( defaultRepresentation );
+
+			VTX_SETTING().setDefaultRepresentationIndex( defaultRepresentationIndex );
+			_library.setDefaultRepresentation( defaultRepresentationIndex, false );
+		}
+		else
+		{
+			_library.setDefaultRepresentation( VTX_SETTING().getDefaultRepresentationIndex(), false );
+		}
+
+		if ( _restore )
+			Representation::RepresentationManager::get().restoreRepresentations();
 
 		if ( _notify )
 			_library.forceNotifyDataChanged();

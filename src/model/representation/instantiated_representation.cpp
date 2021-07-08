@@ -89,17 +89,24 @@ namespace VTX::Model::Representation
 		_ribbonData.resetSource( &_linkedRepresentation->getData().getRibbonData() );
 	}
 
-	void InstantiatedRepresentation::setLinkedRepresentation( const Representation * const p_linkedRepresentation )
+	void InstantiatedRepresentation::setLinkedRepresentation( const Representation * const p_linkedRepresentation,
+															  const bool				   p_eraseOverride )
 	{
 		_linkedRepresentation = p_linkedRepresentation;
 
-		_color	   = Generic::OverridableParameter<Color::Rgb>( _linkedRepresentation->getColor() );
-		_colorMode = Generic::OverridableParameter( _linkedRepresentation->getData().getColorMode() );
-		_ssColorMode
-			= Generic::OverridableParameter( _linkedRepresentation->getData().getSecondaryStructureColorMode() );
-		_sphereData	  = Generic::OverridableParameter( _linkedRepresentation->getData().getSphereData() );
-		_cylinderData = Generic::OverridableParameter( _linkedRepresentation->getData().getCylinderData() );
-		_ribbonData	  = Generic::OverridableParameter( _linkedRepresentation->getData().getRibbonData() );
+		if ( p_eraseOverride || !_color.isOverrided() )
+			_color = Generic::OverridableParameter<Color::Rgb>( _linkedRepresentation->getColor() );
+		if ( p_eraseOverride || !_colorMode.isOverrided() )
+			_colorMode = Generic::OverridableParameter( _linkedRepresentation->getData().getColorMode() );
+		if ( p_eraseOverride || !_ssColorMode.isOverrided() )
+			_ssColorMode
+				= Generic::OverridableParameter( _linkedRepresentation->getData().getSecondaryStructureColorMode() );
+		if ( p_eraseOverride || !_sphereData.isOverrided() )
+			_sphereData = Generic::OverridableParameter( _linkedRepresentation->getData().getSphereData() );
+		if ( p_eraseOverride || !_cylinderData.isOverrided() )
+			_cylinderData = Generic::OverridableParameter( _linkedRepresentation->getData().getCylinderData() );
+		if ( p_eraseOverride || !_ribbonData.isOverrided() )
+			_ribbonData = Generic::OverridableParameter( _linkedRepresentation->getData().getRibbonData() );
 	}
 
 	const Generic::BaseRepresentable * const InstantiatedRepresentation::getTarget() const { return _target; }

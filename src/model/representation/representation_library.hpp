@@ -33,7 +33,7 @@ namespace VTX::Model::Representation
 		void			 deleteRepresentation( const int p_representation, const bool p_notify = true );
 		void			 deleteRepresentation( const Representation * const p_index, const bool p_notify = true );
 
-		void			 setDefaultRepresentation( const int p_representationIndex );
+		void			 setDefaultRepresentation( const int p_representationIndex, const bool p_notify = true );
 		int				 getDefaultRepresentationIndex() const;
 		Representation * getDefaultRepresentation();
 
@@ -42,6 +42,8 @@ namespace VTX::Model::Representation
 
 		void clear( const bool p_notify = true );
 
+		void applyDefault( const bool p_notify = true );
+
 	  protected:
 		RepresentationLibrary();
 		~RepresentationLibrary();
@@ -49,7 +51,6 @@ namespace VTX::Model::Representation
 		virtual void _onRepresentationChange( const Event::VTXEvent * const p_event );
 
 	  private:
-		void						  _init();
 		std::vector<Representation *> _representations;
 		Representation *			  _defaultRepresentation = nullptr;
 	};

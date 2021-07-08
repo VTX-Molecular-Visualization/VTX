@@ -122,7 +122,9 @@ namespace VTX::Action::Molecule
 
 		virtual void execute() override
 		{
-			Representation::RepresentationManager::get().removeInstantiatedRepresentations( _molecules );
+			for (Model::Molecule * const molecule : _molecules)
+				VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation( *molecule );
+
 			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
 		}
 

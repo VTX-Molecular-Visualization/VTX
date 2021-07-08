@@ -78,7 +78,9 @@ namespace VTX::Representation
 			}
 		}
 
-		InstantiatedRepresentation * instantiateDefaultRepresentation( Generic::BaseRepresentable & p_target );
+		InstantiatedRepresentation * instantiateDefaultRepresentation( Generic::BaseRepresentable & p_target,
+																	   const bool					p_recompute = true,
+																	   const bool					p_notify = true );
 
 		void applyRepresentation( Generic::BaseRepresentable &				 p_representable,
 								  const InstantiatedRepresentation &		 p_source,
@@ -119,6 +121,9 @@ namespace VTX::Representation
 
 			_mapRepresentationInstances[ representation ].erase( instantiatedRepresentation );
 
+			if (_mapRepresentationInstances[ representation ].size() == 0)
+				_mapRepresentationInstances.erase( representation );
+
 			p_representable.removeRepresentation( p_notify );
 
 			if ( p_recompute )
@@ -141,7 +146,9 @@ namespace VTX::Representation
 			}
 		}
 
-		void deleteRepresentation( const Representation *& p_representation );
+		void clearAllRepresentations( const bool p_notify = true );
+
+		void deleteRepresentation( const Representation * const p_representation );
 		void setQuickAccessToPreset( Representation * const p_representation, const bool p_quickAccess );
 
 		InstantiatedRepresentation * const getRepresentationByName( const std::string & p_representationName );
@@ -154,6 +161,9 @@ namespace VTX::Representation
 		}
 		InstantiatedRepresentation * instantiateDummy( const InstantiatedRepresentation & p_source );
 
+		void storeRepresentations();
+		void restoreRepresentations();
+
 	  protected:
 		RepresentationManager();
 		RepresentationManager( const RepresentationManager & ) = delete;
@@ -165,11 +175,13 @@ namespace VTX::Representation
 			= std::map<Generic::BaseRepresentable *, std::unordered_set<InstantiatedRepresentation *>>;
 		using MapRepresentationInstances
 			= std::map<const Model::Representation::Representation *, std::unordered_set<InstantiatedRepresentation *>>;
+		using MapStoredRepresentation = std::map<std::string, const std::unordered_set<InstantiatedRepresentation *>>;
 
 		MapRepresentationInstances		_mapRepresentationInstances				 = MapRepresentationInstances();
 		MapRepresentationRepresentables _mapRepresentablesLinkedToRepresentation = MapRepresentationRepresentables();
 
-		Representation * _lastRepresentationQuickAccessed = nullptr;
+		Representation *		_lastRepresentationQuickAccessed = nullptr;
+		MapStoredRepresentation _storedRepresentations;
 
 		void _instantiateViewOnRepresentation( const Representation * const p_representation );
 		void _deleteViewOnRepresentation( const Representation * const p_representation ) const;

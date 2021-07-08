@@ -175,7 +175,6 @@ namespace VTX
 			inline const uint getAtomCount() const { return uint( _atoms.size() ); }
 			inline const uint getBondCount() const { return uint( _bonds.size() ); }
 
-			void removeRepresentation( const bool p_notify = true );
 			void removeChildrenRepresentations() const;
 
 			inline void refreshColors()

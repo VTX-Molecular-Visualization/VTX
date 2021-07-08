@@ -17,10 +17,12 @@ namespace VTX::Representation
 	RepresentationManager::RepresentationManager() {}
 
 	RepresentationManager::InstantiatedRepresentation * RepresentationManager::instantiateDefaultRepresentation(
-		Generic::BaseRepresentable & p_target )
+		Generic::BaseRepresentable & p_target,
+		const bool					 p_recompute,
+		const bool					 p_notify )
 	{
 		const Representation * const defaultRepresentation = RepresentationLibrary::get().getDefaultRepresentation();
-		return instantiateRepresentation( defaultRepresentation, p_target, true, false );
+		return instantiateRepresentation( defaultRepresentation, p_target, p_recompute, p_notify );
 	}
 
 	RepresentationManager::InstantiatedRepresentation * RepresentationManager::instantiateRepresentation(
@@ -68,7 +70,6 @@ namespace VTX::Representation
 			Model::Representation::InstantiatedRepresentation * instantiatedRepresentation
 				= instantiateCopy( &p_source, p_representable, p_recompute, true );
 		}
-		
 	};
 
 	void RepresentationManager::instantiateRepresentations( const Representation * const p_representation,
@@ -107,7 +108,9 @@ namespace VTX::Representation
 	}
 	RepresentationManager::InstantiatedRepresentation * RepresentationManager::instantiateCopy(
 		const InstantiatedRepresentation * const p_source,
-		Generic::BaseRepresentable &			 p_target, const bool p_recompute, const bool p_notify )
+		Generic::BaseRepresentable &			 p_target,
+		const bool								 p_recompute,
+		const bool								 p_notify )
 	{
 		InstantiatedRepresentation * const copy
 			= instantiateRepresentation( p_source->getLinkedRepresentation(), p_target, p_recompute, p_notify );
@@ -133,7 +136,22 @@ namespace VTX::Representation
 			p_representable.getMolecule()->computeAllRepresentationData();
 	}*/
 
-	void RepresentationManager::deleteRepresentation( const Representation *& p_representation )
+	void RepresentationManager::clearAllRepresentations( const bool p_notify )
+	{
+		while ( RepresentationLibrary::get().getRepresentationCount() > 0 )
+		{
+			const Representation * const representation = RepresentationLibrary::get().getRepresentation( 0 );
+			if ( _mapRepresentationInstances.find( representation ) != _mapRepresentationInstances.end() )
+			{
+				_mapRepresentationInstances.erase( representation );
+				_deleteViewOnRepresentation( representation );
+			}
+
+			RepresentationLibrary::get().deleteRepresentation( 0, p_notify );
+		}
+	}
+
+	void RepresentationManager::deleteRepresentation( const Representation * const p_representation )
 	{
 		if ( _mapRepresentationInstances.find( p_representation ) != _mapRepresentationInstances.end() )
 		{
@@ -262,6 +280,56 @@ namespace VTX::Representation
 
 		dummy->copy( p_source );
 		return dummy;
+	}
+
+	void RepresentationManager::storeRepresentations()
+	{
+		_storedRepresentations.clear();
+
+		for ( const std::pair<const Model::Representation::Representation *,
+							  std::unordered_set<InstantiatedRepresentation *>> &
+				  instantiatedRepresentationPerRepresentation : _mapRepresentationInstances )
+		{
+			_storedRepresentations.emplace( instantiatedRepresentationPerRepresentation.first->getName(),
+											instantiatedRepresentationPerRepresentation.second );
+		}
+	}
+
+	void RepresentationManager::restoreRepresentations()
+	{
+		_mapRepresentationInstances.clear();
+
+		for ( Representation * const representation : RepresentationLibrary::get().getRepresentations() )
+		{
+			MapStoredRepresentation::iterator it = _storedRepresentations.find( representation->getName() );
+			if ( it != _storedRepresentations.end() )
+			{
+				_instantiateViewOnRepresentation( representation );
+				_mapRepresentationInstances.emplace( representation, it->second );
+
+				for ( InstantiatedRepresentation * const instantiatedRepresentation : it->second )
+				{
+					instantiatedRepresentation->setLinkedRepresentation( representation, false );
+					instantiatedRepresentation->forceNotifyDataChanged();
+				}
+
+				_storedRepresentations.erase( it );
+			}
+		}
+
+		for ( const std::pair<std::string, const std::unordered_set<InstantiatedRepresentation *>> &
+				  storedRepresentation : _storedRepresentations )
+		{
+			for ( InstantiatedRepresentation * const instantiatedRepresentation : storedRepresentation.second )
+			{
+				if ( instantiatedRepresentation->getTarget()->hasParent() )
+					removeInstantiatedRepresentation( *instantiatedRepresentation->getTarget() );
+				else
+					instantiateDefaultRepresentation( *instantiatedRepresentation->getTarget() );
+			}
+		}
+
+		_storedRepresentations.clear();
 	}
 
 } // namespace VTX::Representation

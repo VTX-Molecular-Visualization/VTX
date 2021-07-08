@@ -36,7 +36,8 @@ namespace VTX::Model::Representation
 		Generic::BaseRepresentable * const		 getTarget();
 		void									 setTarget( Generic::BaseRepresentable * p_target );
 
-		void setLinkedRepresentation( const Representation * const p_linkedRepresentation );
+		void setLinkedRepresentation( const Representation * const p_linkedRepresentation,
+									  const bool				   p_eraseOverride = true );
 
 		const std::string & getName() const { return _linkedRepresentation->getName(); };
 

@@ -34,7 +34,7 @@ namespace VTX
 									  const bool						 p_recompute = true,
 									  const bool						 p_notify	 = true );
 
-			void removeRepresentation( const bool p_notify = true );
+			virtual void removeRepresentation( const bool p_notify = true );
 
 			bool hasCustomRepresentation() const;
 

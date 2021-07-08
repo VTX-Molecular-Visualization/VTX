@@ -116,7 +116,8 @@ namespace VTX
 				}
 				else
 				{
-					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation( *this );
+					VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation(
+						*this, true, false );
 				}
 			}
 		}
@@ -134,15 +135,6 @@ namespace VTX
 			return true;
 		}
 
-		void Molecule::removeRepresentation( const bool p_notify )
-		{
-			BaseRepresentable::removeRepresentation( false );
-
-			VTX::Representation::RepresentationManager::get().instantiateDefaultRepresentation( *this );
-
-			if ( p_notify )
-				_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );
-		}
 		void Molecule::removeChildrenRepresentations() const
 		{
 			for ( Model::Chain * const chain : _chains )
@@ -156,6 +148,7 @@ namespace VTX
 				chain->removeChildrenRepresentations();
 			}
 		}
+
 		void Molecule::_onRepresentationChange()
 		{
 			_notifyViews( new Event::VTXEvent( Event::Model::REPRESENTATION_CHANGE ) );

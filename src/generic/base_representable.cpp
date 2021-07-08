@@ -35,7 +35,8 @@ namespace VTX
 
 		void BaseRepresentable::setRepresentation( InstantiatedRepresentation * const p_representation )
 		{
-			removeRepresentation( false );
+			if ( hasCustomRepresentation() )
+				removeRepresentation( false );
 
 			_representation = p_representation;
 			p_representation->setTarget( this );

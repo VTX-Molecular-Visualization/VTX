@@ -31,6 +31,7 @@ namespace VTX
 			}
 
 			inline void activeNotify( const bool p_notify ) { _notify = p_notify; };
+			inline void activeRepresentationRestoration( const bool p_restore ) { _restore = p_restore; };
 
 		  protected:
 			void _run() override;
@@ -38,7 +39,8 @@ namespace VTX
 		  private:
 			FilePath									   _path;
 			Model::Representation::RepresentationLibrary & _library;
-			bool										   _notify = true;
+			bool										   _notify	= true;
+			bool										   _restore = true;
 		};
 
 		class RepresentationLoader : public Worker::BaseWorker
