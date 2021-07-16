@@ -27,7 +27,7 @@ namespace VTX::IO::Reader
 	void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
-		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
+		chemfiles::Trajectory trajectory	 = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
 		const bool			  recomputeBonds = _needToRecomputeBonds( _getFormat( p_path ) );
 		_readTrajectory( trajectory, p_path, p_molecule, recomputeBonds );
 	}
@@ -205,10 +205,8 @@ namespace VTX::IO::Reader
 		uint		   chainModelId	   = -1;
 		bool		   chainIsStandard = true;
 
-		std::map<uint, std::vector<const chemfiles::Bond *>> mapResidueBonds
-			= std::map<uint, std::vector<const chemfiles::Bond *>>();
-		std::map<uint, std::vector<const chemfiles::Bond *>> mapResidueExtraBonds
-			= std::map<uint, std::vector<const chemfiles::Bond *>>();
+		std::map<uint, std::vector<size_t>> mapResidueBonds		 = std::map<uint, std::vector<size_t>>();
+		std::map<uint, std::vector<size_t>> mapResidueExtraBonds = std::map<uint, std::vector<size_t>>();
 
 		int oldIndexInChain = INT_MIN;
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
@@ -293,8 +291,8 @@ namespace VTX::IO::Reader
 
 			oldIndexInChain = indexInChain;
 
-			mapResidueBonds.emplace( modelResidue->getIndex(), std::vector<const chemfiles::Bond *>() );
-			mapResidueExtraBonds.emplace( modelResidue->getIndex(), std::vector<const chemfiles::Bond *>() );
+			mapResidueBonds.emplace( modelResidue->getIndex(), std::vector<size_t>() );
+			mapResidueExtraBonds.emplace( modelResidue->getIndex(), std::vector<size_t>() );
 
 			// PDB only.
 			// TODO: modify chemfiles to load handedness!
@@ -491,14 +489,14 @@ namespace VTX::IO::Reader
 			if ( residueStart == residueEnd )
 			{
 				// Intra bonds.
-				mapResidueBonds[ residueStart->getIndex() ].emplace_back( &bond );
+				mapResidueBonds[ residueStart->getIndex() ].emplace_back( boundIdx );
 				counter++;
 			}
 			else
 			{
 				// Extra bonds.
-				mapResidueExtraBonds[ residueStart->getIndex() ].emplace_back( &bond );
-				mapResidueExtraBonds[ residueEnd->getIndex() ].emplace_back( &bond );
+				mapResidueExtraBonds[ residueStart->getIndex() ].emplace_back( boundIdx );
+				mapResidueExtraBonds[ residueEnd->getIndex() ].emplace_back( boundIdx );
 				counter += 2;
 			}
 		}
@@ -507,26 +505,30 @@ namespace VTX::IO::Reader
 		p_molecule.getBonds().resize( counter );
 		p_molecule.getBufferBonds().resize( counter * 2 );
 
-		uint counterOld = counter;
-		counter			= 0;
+		const uint counterOld = counter;
+		counter				  = 0;
 		for ( uint residueIdx = 0; residueIdx < residues.size(); ++residueIdx )
 		{
-			Model::Residue * const						 residue		  = p_molecule.getResidue( residueIdx );
-			const std::vector<const chemfiles::Bond *> & vectorBonds	  = mapResidueBonds[ residueIdx ];
-			const std::vector<const chemfiles::Bond *> & vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
+			Model::Residue * const		residue			 = p_molecule.getResidue( residueIdx );
+			const std::vector<size_t> & vectorBonds		 = mapResidueBonds[ residueIdx ];
+			const std::vector<size_t> & vectorExtraBonds = mapResidueExtraBonds[ residueIdx ];
 
 			residue->setIndexFirstBond( counter );
 			residue->setBondCount( uint( vectorBonds.size() ) + uint( vectorExtraBonds.size() ) );
 
 			for ( uint i = 0; i < vectorBonds.size(); ++i, ++counter )
 			{
-				const chemfiles::Bond & bond	  = *vectorBonds[ i ];
+				const chemfiles::Bond & bond	  = topology.bonds()[ vectorBonds[ i ] ];
 				Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
 				p_molecule.getBonds()[ counter ]  = modelBond;
 
 				modelBond->setMoleculePtr( &p_molecule );
 				modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
 				modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
+
+				const chemfiles::Bond::BondOrder bondOrder = topology.bond_orders()[ vectorBonds[ i ] ];
+				const Model::Bond::TYPE			 bondType  = Model::Bond::TYPE( int( bondOrder ) );
+				modelBond->setBondType( bondType );
 
 				p_molecule.getBufferBonds()[ counter * 2u ]		 = uint( bond[ 0 ] );
 				p_molecule.getBufferBonds()[ counter * 2u + 1u ] = uint( bond[ 1 ] );
@@ -534,13 +536,17 @@ namespace VTX::IO::Reader
 
 			for ( uint i = 0; i < vectorExtraBonds.size(); ++i, ++counter )
 			{
-				const chemfiles::Bond & bond	  = *vectorExtraBonds[ i ];
+				const chemfiles::Bond & bond	  = topology.bonds()[ vectorExtraBonds[ i ] ];
 				Model::Bond *			modelBond = MVC::MvcManager::get().instantiateModel<Model::Bond>();
 				p_molecule.getBonds()[ counter ]  = modelBond;
 
 				modelBond->setMoleculePtr( &p_molecule );
 				modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
 				modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
+
+				const chemfiles::Bond::BondOrder bondOrder = topology.bond_orders()[ vectorExtraBonds[ i ] ];
+				const Model::Bond::TYPE			 bondType  = Model::Bond::TYPE( int( bondOrder ) );
+				modelBond->setBondType( bondType );
 
 				p_molecule.getBufferBonds()[ counter * 2u ]		 = uint( bond[ 0 ] );
 				p_molecule.getBufferBonds()[ counter * 2u + 1u ] = uint( bond[ 1 ] );
