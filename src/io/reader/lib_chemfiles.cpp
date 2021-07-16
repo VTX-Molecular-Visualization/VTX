@@ -8,6 +8,7 @@
 #include "mvc/mvc_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
+#include "util/chemfiles.hpp"
 #include "util/molecule.hpp"
 #include "worker/base_thread.hpp"
 #include <QDir>
@@ -26,7 +27,7 @@ namespace VTX::IO::Reader
 	void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
-		chemfiles::Trajectory trajectory	 = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
+		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
 		const bool			  recomputeBonds = _needToRecomputeBonds( _getFormat( p_path ) );
 		_readTrajectory( trajectory, p_path, p_molecule, recomputeBonds );
 	}
@@ -85,10 +86,10 @@ namespace VTX::IO::Reader
 		QFileInfo fileInfo( QString::fromStdString( p_path.string() ) );
 		if ( fileInfo.suffix().toStdString() == "dcd" )
 		{
-			std::string filePathWithoutExt
+			const std::string filePathWithoutExt
 				= QString( fileInfo.path() + QDir::separator() + fileInfo.baseName() ).toStdString();
-			std::vector<std::string> topExtensions	= { ".xyz", ".pdb", ".mol2" };
-			std::string				 foundExtension = "";
+			const std::vector<std::string> topExtensions  = { ".xyz", ".pdb", ".mol2" };
+			std::string					   foundExtension = "";
 			for ( size_t ext = 0; ext < topExtensions.size(); ext++ )
 			{
 				std::fstream topFile;
@@ -254,7 +255,7 @@ namespace VTX::IO::Reader
 							residueSymbol.end(),
 							residueSymbol.begin(),
 							[]( unsigned char c ) { return std::toupper( c ); } );
-			std::optional symbol = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
+			const std::optional symbol = magic_enum::enum_cast<Model::Residue::SYMBOL>( residueSymbol );
 
 			int symbolValue;
 
@@ -377,15 +378,6 @@ namespace VTX::IO::Reader
 				_logWarning( "Empty residue found" );
 			}
 
-			std::vector<std::vector<size_t>> atomsForBondCreation;
-			const bool recomputeResidueBonds = p_recomputeBonds && !modelResidue->isStandardResidue();
-			if ( recomputeResidueBonds )
-			{
-				atomsForBondCreation = std::vector<std::vector<size_t>>();
-				atomsForBondCreation.resize( 1 );
-				atomsForBondCreation[ 0 ].reserve( residue.size() );
-			}
-
 			for ( std::vector<size_t>::const_iterator it = residue.begin(); it != residue.end(); it++ )
 			{
 				const uint				atomId = uint( *it );
@@ -418,13 +410,8 @@ namespace VTX::IO::Reader
 				const chemfiles::span<chemfiles::Vector3D> & positions = frame.positions();
 				const chemfiles::Vector3D &					 position  = positions[ atomId ];
 
-				if ( recomputeResidueBonds )
-				{
-					atomsForBondCreation[ 0 ].emplace_back( atomId );
-				}
-
-				Vec3f atomPosition	 = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
-				modelFrame[ atomId ] = atomPosition;
+				const Vec3f atomPosition = Vec3f( position[ 0 ], position[ 1 ], position[ 2 ] );
+				modelFrame[ atomId ]	 = atomPosition;
 
 				// Check PRM.
 				// TODO: look for a better way to do this.
@@ -463,12 +450,6 @@ namespace VTX::IO::Reader
 				p_molecule.getBufferAtomRadius()[ atomId ] = modelAtom->getVdwRadius();
 			}
 
-			if ( recomputeResidueBonds )
-			{
-				std::vector<std::vector<size_t>> neighbours = { { 0 } };
-				frame.createBonds( atomsForBondCreation, neighbours, INT_MAX, FLOAT_MAX );
-			}
-
 			// Check residue full of solvent/ion.
 			// This is working only with pdb/psf files,
 			// not with arc/prm because arc do not contains topology.
@@ -489,6 +470,11 @@ namespace VTX::IO::Reader
 			//	&LibChemfiles::fillTrajectoryFrames, this, std::ref( p_trajectory ), std::ref( p_molecule ) );
 			// fillFrames.detach();
 			fillTrajectoryFrames( p_trajectory, p_molecule );
+		}
+
+		if ( p_recomputeBonds )
+		{
+			Util::Chemfiles::recomputeBonds( frame, p_molecule.getAABB() );
 		}
 
 		// Bonds.
