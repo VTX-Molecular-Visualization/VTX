@@ -47,6 +47,10 @@ namespace VTX::UI::Widget::Inspector
 		_nbAtomsLabel->setWordWrap( true );
 		_infoSection->appendField( "Nb Atoms", _nbAtomsLabel );
 
+		_bondsLabel = new QLabel( this );
+		_bondsLabel->setWordWrap( true );
+		_infoSection->appendField( "Bonds", _bondsLabel );
+
 		_appendSection( _representationSection );
 		_appendSection( _infoSection );
 
@@ -107,6 +111,8 @@ namespace VTX::UI::Widget::Inspector
 						_fullnameLabel->updateWithNewValue( residue->getSymbolName() );
 					if ( !_nbAtomsLabel->hasDifferentData() )
 						_nbAtomsLabel->updateWithNewValue( std::to_string( residue->getAtomCount() ) );
+
+					_appendBondInfo( *residue );
 				}
 			}
 		}
@@ -121,6 +127,7 @@ namespace VTX::UI::Widget::Inspector
 		{
 			_fullnameLabel->resetState();
 			_nbAtomsLabel->resetState();
+			_bondsLabel->setText( "" );
 		}
 	}
 
@@ -211,6 +218,70 @@ namespace VTX::UI::Widget::Inspector
 	void MultipleResidueWidget::_onRevertRepresentation() const
 	{
 		VTX_ACTION( new Action::Residue::RemoveRepresentation( _getTargets() ) );
+	}
+
+	void MultipleResidueWidget::_appendBondInfo( const Model::Residue & p_residue )
+	{
+		QString						  bondInfoStr = _bondsLabel->text();
+		const Model::Molecule * const moleculePtr = p_residue.getMoleculePtr();
+		for ( uint i = p_residue.getIndexFirstBond(); i < p_residue.getIndexFirstBond() + p_residue.getBondCount();
+			  i++ )
+		{
+			const Model::Bond * const bond = moleculePtr->getBond( i );
+			if ( bond == nullptr )
+				continue;
+
+			const Model::Molecule * const moleculePtr = p_residue.getMoleculePtr();
+
+			const Model::Atom * const firstAtom	 = moleculePtr->getAtom( bond->getIndexFirstAtom() );
+			const Model::Atom * const secondAtom = moleculePtr->getAtom( bond->getIndexSecondAtom() );
+
+			if ( firstAtom == nullptr || secondAtom == nullptr )
+				continue;
+
+			const QString firstAtomStr
+				= QString::fromStdString( firstAtom->getSymbolStr() + std::to_string( firstAtom->getIndex() ) );
+			const QString secondAtomStr
+				= QString::fromStdString( secondAtom->getSymbolStr() + std::to_string( secondAtom->getIndex() ) );
+
+			QString					linkCountStr;
+			const Model::Bond::TYPE bondType = bond->getBondType();
+			if ( int( bondType ) & int( Model::Bond::TYPE::SINGLE ) )
+			{
+				linkCountStr = '1';
+			}
+			else if ( int( bondType ) & int( Model::Bond::TYPE::DOUBLE ) )
+			{
+				linkCountStr = '2';
+			}
+			else if ( int( bondType ) & int( Model::Bond::TYPE::TRIPLE ) )
+			{
+				linkCountStr = '3';
+			}
+			else if ( int( bondType ) & int( Model::Bond::TYPE::QUADRUPLE ) )
+			{
+				linkCountStr = '4';
+			}
+			else if ( int( bondType ) & int( Model::Bond::TYPE::QUINTUPLET ) )
+			{
+				linkCountStr = '5';
+			}
+			else // UNKNOWN
+			{
+				linkCountStr = '?';
+			}
+
+			if ( bondInfoStr.isEmpty() )
+			{
+				bondInfoStr.append( firstAtomStr + "--" + linkCountStr + "--" + secondAtomStr );
+			}
+			else
+			{
+				bondInfoStr.append( '\n' + firstAtomStr + "--" + linkCountStr + "--" + secondAtomStr );
+			}
+		}
+
+		_bondsLabel->setText( bondInfoStr );
 	}
 
 } // namespace VTX::UI::Widget::Inspector
