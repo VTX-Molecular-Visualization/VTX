@@ -246,25 +246,29 @@ namespace VTX::UI::Widget::Inspector
 
 			QString					linkCountStr;
 			const Model::Bond::TYPE bondType = bond->getBondType();
-			if ( int( bondType ) & int( Model::Bond::TYPE::SINGLE ) )
+			if ( bondType == Model::Bond::TYPE::SINGLE )
 			{
 				linkCountStr = '1';
 			}
-			else if ( int( bondType ) & int( Model::Bond::TYPE::DOUBLE ) )
+			else if ( bondType == Model::Bond::TYPE::DOUBLE )
 			{
 				linkCountStr = '2';
 			}
-			else if ( int( bondType ) & int( Model::Bond::TYPE::TRIPLE ) )
+			else if ( bondType == Model::Bond::TYPE::TRIPLE )
 			{
 				linkCountStr = '3';
 			}
-			else if ( int( bondType ) & int( Model::Bond::TYPE::QUADRUPLE ) )
+			else if ( bondType == Model::Bond::TYPE::QUADRUPLE )
 			{
 				linkCountStr = '4';
 			}
-			else if ( int( bondType ) & int( Model::Bond::TYPE::QUINTUPLET ) )
+			else if ( bondType == Model::Bond::TYPE::QUINTUPLET )
 			{
 				linkCountStr = '5';
+			}
+			else if ( bondType == Model::Bond::TYPE::AROMATIC )
+			{
+				linkCountStr = 'A';
 			}
 			else // UNKNOWN
 			{

@@ -470,10 +470,19 @@ namespace VTX::IO::Reader
 			fillTrajectoryFrames( p_trajectory, p_molecule );
 		}
 
+		Tool::Chrono bondComputationChrono = Tool::Chrono();
 		if ( p_recomputeBonds )
 		{
+			bondComputationChrono.start();
 			Util::Chemfiles::recomputeBonds( frame, p_molecule.getAABB() );
+			bondComputationChrono.stop();
+			_logInfo( "recomputeBonds : " + bondComputationChrono.elapsedTimeStr() );
 		}
+
+		bondComputationChrono.start();
+		Util::Chemfiles::recomputeBondOrders( frame );
+		bondComputationChrono.stop();
+		_logInfo( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
 
 		// Bonds.
 		// Sort by residus.

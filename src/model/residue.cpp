@@ -3,11 +3,24 @@
 #include "bond.hpp"
 #include "chain.hpp"
 #include "molecule.hpp"
+#include <algorithm>
 
 namespace VTX
 {
 	namespace Model
 	{
+		bool Residue::IsStandard( const std::string & p_residueSymbol ) 
+		{ 
+			std::string residueSymbol = p_residueSymbol;
+			std::transform( residueSymbol.begin(), residueSymbol.end(), residueSymbol.begin(), []( unsigned char c ) {
+				return std::toupper( c );
+			} );
+			
+			return std::find( std::begin( SYMBOL_STR ), std::end( SYMBOL_STR ), residueSymbol )
+				   != std::end( SYMBOL_STR );
+		}
+
+
 		Molecule * const Residue::getMoleculePtr() const { return _chainPtr->getMoleculePtr(); };
 		void			 Residue::setChainPtr( Chain * const p_chain )
 		{

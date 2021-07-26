@@ -6,10 +6,19 @@
 #pragma warning( push, 0 )
 #include <chemfiles.hpp>
 #pragma warning( pop )
+#include <algorithm>
 #include <string>
+#include <unordered_set>
 
 namespace VTX::Util::Chemfiles
 {
+	enum CycleState : int
+	{
+		None   = 0,
+		Cyclic = 1,
+		Planar = 2,
+	};
+
 	struct CellList
 	{
 	  public:
@@ -65,12 +74,79 @@ namespace VTX::Util::Chemfiles
 		size_t _getIndexFromPosition( const chemfiles::Vector3D & p_position ) const;
 		void   _generateNeighbourList();
 	};
+	struct NeighbourData
+	{
+	  public:
+		struct AtomData
+		{
+			AtomData() {}
+			AtomData( const size_t p_index, const chemfiles::Vector3D & p_position, const float p_distance ) :
+				index( p_index ), position( p_position ), distance( p_distance )
+			{
+			}
+
+			size_t				index;
+			chemfiles::Vector3D position;
+			float				distance;
+		};
+
+		NeighbourData()
+		{
+			oxygens.reserve( 4 );
+			carbons.reserve( 2 );
+			nitrogens.reserve( 3 );
+		}
+
+		std::vector<AtomData> oxygens	= std::vector<AtomData>();
+		std::vector<AtomData> carbons	= std::vector<AtomData>();
+		std::vector<AtomData> nitrogens = std::vector<AtomData>();
+	};
 
 	void recomputeBonds( chemfiles::Frame & p_frame, const VTX::Math::AABB & p_aabb );
 
 	void recomputeBondsOfNonStandardResidues( chemfiles::Frame & frame, const CellList & p_cellList );
 
-	void recomputeDisulfides( chemfiles::Frame & p_frame, const CellList & p_cellList, const std::unordered_set<size_t> & p_sulphurAtoms );
+	void recomputeDisulfides( chemfiles::Frame &				 p_frame,
+							  const CellList &					 p_cellList,
+							  const std::unordered_set<size_t> & p_sulphurAtoms );
+
+	void recomputeBondOrders( chemfiles::Frame & p_frame );
+
+	void buildNeighbourStruct( const chemfiles::Frame &			  p_frame,
+							   std::vector<std::vector<size_t>> & p_linkedAtomsVector );
+
+	void checkBondOrders( chemfiles::Frame &					   p_frame,
+						  const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
+						  const std::vector<CycleState> &		   p_cycleStatePerAtom );
+
+	void tagCycles( chemfiles::Frame &						 p_frame,
+					const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
+					std::vector<CycleState> &				 p_cycleStatePerAtom );
+
+	void _tagCyclesRecursive( const chemfiles::Frame &				   p_frame,
+							  const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
+							  std::vector<CycleState> &				   p_cycleStatePerAtom,
+							  std::vector<size_t> &					   p_cycleIndexes,
+							  short									   p_counter );
+
+	float computeAverageCenterDotCross( const chemfiles::Frame & p_frame, const std::vector<size_t> & p_atoms );
+	float computeAverageRingDotCross( const chemfiles::Frame &	  p_frame,
+									  const std::vector<size_t> & p_atoms,
+									  const int					  p_atomCount,
+									  chemfiles::Vector3D &		  dir );
+	bool  verifyPlanarBonds( const chemfiles::Frame &				  p_frame,
+							 const std::vector<size_t> &			  p_atoms,
+							 const int								  p_atomCount,
+							 const std::vector<std::vector<size_t>> & p_linkedAtomsVector,
+							 const chemfiles::Vector3D &			  dir,
+							 const float							  cutoff );
+	void  normalizeVector( chemfiles::Vector3D & p_vector );
+
+	void setBondOrder( chemfiles::Frame &				p_frame,
+					   const size_t						p_firstAtomIndex,
+					   const size_t						p_secondAtomIndex,
+					   const chemfiles::Bond::BondOrder p_bondOrder,
+					   const bool						p_force = false );
 
 } // namespace VTX::Util::Chemfiles
 
