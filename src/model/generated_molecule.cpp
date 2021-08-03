@@ -285,7 +285,7 @@ namespace VTX::Model
 
 				generatedBond.setIndexFirstAtom( indexFirstAtom );
 				generatedBond.setIndexSecondAtom( indexSecondAtom );
-				generatedBond.setBondType( bond.getBondType() );
+				generatedBond.setOrder( bond.getOrder() );
 
 				getBufferBonds().emplace_back( indexFirstAtom );
 				getBufferBonds().emplace_back( indexSecondAtom );

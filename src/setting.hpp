@@ -188,6 +188,7 @@ namespace VTX
 		// Misc.
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
+		static const bool LOAD_BOND_ORDER_FROM_FILE = true;
 
 		// Parameters
 		enum class PARAMETER

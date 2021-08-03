@@ -1,53 +1,29 @@
 #ifndef __VTX_UTIL_MOLECULE__
 #define __VTX_UTIL_MOLECULE__
 
-#include "util/filesystem.hpp"
+#include "io/reader/residue_data_reader.hpp"
+#include <map>
 #include <string>
+#include <vector>
 
-namespace VTX::Util::Molecule
+namespace VTX
 {
-	inline static std::string hetatmDictionary = "";
-
-	static void loadHetatmDictionary()
+	namespace Model
 	{
-		Util::Filesystem::readPath( Util::Filesystem::HET_DICTIONARY_PATH, hetatmDictionary );
-	}
-	static void unloadHetatmDictionary() { hetatmDictionary = ""; }
-	static bool isHetatmDictionaryLoaded() { return hetatmDictionary != ""; }
-
-	static std::string getResidueFullName( const std::string & p_residueSymbol )
-	{
-		const bool dicoWasLoad = hetatmDictionary != "";
-
-		if ( !dicoWasLoad )
-			loadHetatmDictionary();
-
-		const std::string keyName	 = "HETNAM     " + p_residueSymbol + " ";
-		const std::string keyNameEnd = "FORMUL      " + p_residueSymbol + " ";
-
-		const size_t indexStartName = hetatmDictionary.find( keyName );
-		const size_t indexEndName	= hetatmDictionary.find( keyNameEnd, indexStartName );
-
-		const std::string namePart = hetatmDictionary.substr( indexStartName, indexEndName - indexStartName );
-
-		std::string name;
-
-		size_t lastCheckedPos = 0;
-		size_t endOfLinePos	  = namePart.find( '\n' );
-
-		while ( endOfLinePos != std::string::npos )
-		{
-			name += namePart.substr( lastCheckedPos + 15, ( endOfLinePos - lastCheckedPos ) - 15 );
-			lastCheckedPos = endOfLinePos + 1;
-			endOfLinePos   = namePart.find( '\n', lastCheckedPos );
-		}
-
-		if ( !dicoWasLoad )
-			unloadHetatmDictionary();
-
-		return name;
+		class Molecule;
 	}
 
-} // namespace VTX::Util::Molecule
+	namespace Util::Molecule
+	{
+		inline std::map<std::string, IO::Reader::ResidueData> mapLoadedResidueData
+			= std::map<std::string, IO::Reader::ResidueData>();
+
+		void									  loadResidueData( const std::string & p_residueSymbol );
+		const std::string &						  getResidueFullName( const std::string & p_residueSymbol );
+		const std::vector<IO::Reader::BondData> & getResidueBonds( const std::string & p_residueSymbol );
+		void									  recomputeBondOrdersWithFile( Model::Molecule & p_molecule );
+
+	} // namespace Util::Molecule
+} // namespace VTX
 
 #endif

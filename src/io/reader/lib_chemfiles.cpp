@@ -6,6 +6,7 @@
 #include "model/molecule.hpp"
 #include "model/residue.hpp"
 #include "mvc/mvc_manager.hpp"
+#include "setting.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
 #include "util/chemfiles.hpp"
@@ -263,8 +264,6 @@ namespace VTX::IO::Reader
 			}
 			else
 			{
-				if ( !Util::Molecule::isHetatmDictionaryLoaded() )
-					Util::Molecule::loadHetatmDictionary();
 				Model::UnknownResidueData unknownResidueData = Model::UnknownResidueData();
 				unknownResidueData.symbolStr				 = residueSymbol;
 				unknownResidueData.symbolName				 = Util::Molecule::getResidueFullName( residueSymbol );
@@ -479,10 +478,13 @@ namespace VTX::IO::Reader
 			_logInfo( "recomputeBonds : " + bondComputationChrono.elapsedTimeStr() );
 		}
 
-		bondComputationChrono.start();
-		Util::Chemfiles::recomputeBondOrders( frame );
-		bondComputationChrono.stop();
-		_logInfo( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
+		if ( !Setting::LOAD_BOND_ORDER_FROM_FILE )
+		{
+			bondComputationChrono.start();
+			Util::Chemfiles::recomputeBondOrders( frame );
+			bondComputationChrono.stop();
+			_logInfo( "recomputeBondOrders : " + bondComputationChrono.elapsedTimeStr() );
+		}
 
 		// Bonds.
 		// Sort by residus.
@@ -535,9 +537,9 @@ namespace VTX::IO::Reader
 				modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
 				modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
 
-				const chemfiles::Bond::BondOrder bondOrder = topology.bond_orders()[ vectorBonds[ i ] ];
-				const Model::Bond::TYPE			 bondType  = Model::Bond::TYPE( int( bondOrder ) );
-				modelBond->setBondType( bondType );
+				const chemfiles::Bond::BondOrder bondOrder	= topology.bond_orders()[ vectorBonds[ i ] ];
+				const Model::Bond::ORDER		 modelOrder = Model::Bond::ORDER( int( bondOrder ) );
+				modelBond->setOrder( modelOrder );
 
 				p_molecule.getBufferBonds()[ counter * 2u ]		 = uint( bond[ 0 ] );
 				p_molecule.getBufferBonds()[ counter * 2u + 1u ] = uint( bond[ 1 ] );
@@ -553,18 +555,24 @@ namespace VTX::IO::Reader
 				modelBond->setIndexFirstAtom( uint( bond[ 0 ] ) );
 				modelBond->setIndexSecondAtom( uint( bond[ 1 ] ) );
 
-				const chemfiles::Bond::BondOrder bondOrder = topology.bond_orders()[ vectorExtraBonds[ i ] ];
-				const Model::Bond::TYPE			 bondType  = Model::Bond::TYPE( int( bondOrder ) );
-				modelBond->setBondType( bondType );
+				const chemfiles::Bond::BondOrder bondOrder		= topology.bond_orders()[ vectorExtraBonds[ i ] ];
+				const Model::Bond::ORDER		 modelBondOrder = Model::Bond::ORDER( int( bondOrder ) );
+				modelBond->setOrder( modelBondOrder );
 
 				p_molecule.getBufferBonds()[ counter * 2u ]		 = uint( bond[ 0 ] );
 				p_molecule.getBufferBonds()[ counter * 2u + 1u ] = uint( bond[ 1 ] );
 			}
 		}
 
-		assert( counter == counterOld );
+		if ( Setting::LOAD_BOND_ORDER_FROM_FILE )
+		{
+			bondComputationChrono.start();
+			Util::Molecule::recomputeBondOrdersWithFile( p_molecule );
+			bondComputationChrono.stop();
+			_logInfo( "recomputeBondOrdersWithFile : " + bondComputationChrono.elapsedTimeStr() );
+		}
 
-		Util::Molecule::unloadHetatmDictionary();
+		assert( counter == counterOld );
 	}
 
 	// http://chemfiles.org/chemfiles/latest/formats.html#list-of-supported-formats

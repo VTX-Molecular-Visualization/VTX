@@ -245,28 +245,28 @@ namespace VTX::UI::Widget::Inspector
 				= QString::fromStdString( secondAtom->getSymbolStr() + std::to_string( secondAtom->getIndex() ) );
 
 			QString					linkCountStr;
-			const Model::Bond::TYPE bondType = bond->getBondType();
-			if ( bondType == Model::Bond::TYPE::SINGLE )
+			const Model::Bond::ORDER bondOrder = bond->getOrder();
+			if ( bondOrder == Model::Bond::ORDER::SINGLE )
 			{
 				linkCountStr = '1';
 			}
-			else if ( bondType == Model::Bond::TYPE::DOUBLE )
+			else if ( bondOrder == Model::Bond::ORDER::DOUBLE )
 			{
 				linkCountStr = '2';
 			}
-			else if ( bondType == Model::Bond::TYPE::TRIPLE )
+			else if ( bondOrder == Model::Bond::ORDER::TRIPLE )
 			{
 				linkCountStr = '3';
 			}
-			else if ( bondType == Model::Bond::TYPE::QUADRUPLE )
+			else if ( bondOrder == Model::Bond::ORDER::QUADRUPLE )
 			{
 				linkCountStr = '4';
 			}
-			else if ( bondType == Model::Bond::TYPE::QUINTUPLET )
+			else if ( bondOrder == Model::Bond::ORDER::QUINTUPLET )
 			{
 				linkCountStr = '5';
 			}
-			else if ( bondType == Model::Bond::TYPE::AROMATIC )
+			else if ( bondOrder == Model::Bond::ORDER::AROMATIC )
 			{
 				linkCountStr = 'A';
 			}

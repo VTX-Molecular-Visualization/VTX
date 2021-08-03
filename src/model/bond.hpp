@@ -15,7 +15,7 @@ namespace VTX
 			VTX_MODEL
 
 		  public:
-			enum class TYPE
+			enum class ORDER
 			{
 				UNKNOWN	   = 0, ///< Bond order is unknown or unspecified
 				SINGLE	   = 1, ///< Single bond
@@ -23,27 +23,28 @@ namespace VTX
 				TRIPLE	   = 3, ///< Triple bond
 				QUADRUPLE  = 4, ///< Quadruplet bond
 				QUINTUPLET = 5, ///< Quintuplet bond
+				AROMATIC   = 6, ///< Aromatic bond
 				COUNT,
 
 				// space for more bond types if needed
-				DOWN = 250, ///< Single bond direction from first atom to second is 'down'. Used for cis-trans isomers
-				UP	 = 251, ///< Single bond direction from first atom to second is 'up'. Used for cis-trans isomers
-				DATIVE_R = 252, ///< Dative bond where the electrons are localized to the first atom
-				DATIVE_L = 253, ///< Dative bond where the electrons are localized to the second atom
-				AMIDE	 = 254, ///< Amide bond (C(=O)-NH)
-				AROMATIC = 255, ///< Aromatic bond (for example the ring bonds in benzene)
+				// DOWN = 250, ///< Single bond direction from first atom to second is 'down'. Used for cis-trans
+				// isomers UP	 = 251, ///< Single bond direction from first atom to second is 'up'. Used for cis-trans
+				// isomers DATIVE_R = 252, ///< Dative bond where the electrons are localized to the first atom DATIVE_L
+				// = 253, ///< Dative bond where the electrons are localized to the second atom
+				// AMIDE	 = 254, ///< Amide bond (C(=O)-NH)
+				// AROMATIC = 255, ///< Aromatic bond (for example the ring bonds in benzene)
 			};
 
-			inline static const std::string TYPE_STR[ int( TYPE::COUNT ) ] { "Unknown", "Simple",	 "Double",
-																			 "Triple",	"Quadruple", "Quintuple" };
+			inline static const std::string TYPE_STR[ int( ORDER::COUNT ) ] { "Unknown", "Simple",	  "Double",
+																			  "Triple",	 "Quadruple", "Quintuple" };
 
-			inline uint getIndexFirstAtom() const { return _indexFirstAtom; };
-			inline void setIndexFirstAtom( const uint p_index ) { _indexFirstAtom = p_index; };
-			inline uint getIndexSecondAtom() const { return _indexSecondAtom; };
-			inline void setIndexSecondAtom( const uint p_index ) { _indexSecondAtom = p_index; };
+			inline uint getIndexFirstAtom() const { return _indexFirstAtom; }
+			inline void setIndexFirstAtom( const uint p_index ) { _indexFirstAtom = p_index; }
+			inline uint getIndexSecondAtom() const { return _indexSecondAtom; }
+			inline void setIndexSecondAtom( const uint p_index ) { _indexSecondAtom = p_index; }
 
-			inline TYPE getBondType() const { return _type; };
-			inline void setBondType( const TYPE p_type ) { _type = p_type; };
+			inline ORDER getOrder() const { return _order; }
+			inline void	 setOrder( const ORDER p_order ) { _order = p_order; }
 
 			inline Molecule * const getMoleculePtr() const { return _moleculePtr; }
 			inline void				setMoleculePtr( Molecule * const p_molecule ) { _moleculePtr = p_molecule; }
@@ -51,7 +52,7 @@ namespace VTX
 		  private:
 			uint	   _indexFirstAtom	= 0;
 			uint	   _indexSecondAtom = 0;
-			TYPE	   _type			= TYPE::UNKNOWN;
+			ORDER	   _order			= ORDER::UNKNOWN;
 			Molecule * _moleculePtr		= nullptr;
 
 			Bond() : BaseModel( ID::Model::MODEL_BOND ) {};
