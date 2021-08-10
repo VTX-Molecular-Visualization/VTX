@@ -150,31 +150,31 @@ set(MAGIC_ENUM_INCLUDE_DIR ${SOURCE_DIR}/include)
 # Custom function to build external projects.
 function (BuildExternalProject p_url p_tag p_target p_config)
 
+# Write another CMakeLists.txt.
 	set(CMAKELIST_CONTENT "
-		cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
-		project(build_external_project)
-		include(ExternalProject)
-		ExternalProject_add(
-			${p_target}
-			GIT_REPOSITORY ${p_url}
-			GIT_TAG ${p_tag}
-			LOG_DOWNLOAD ON
-			CMAKE_GENERATOR \"${CMAKE_GENERATOR}\"
-			CMAKE_GENERATOR_PLATFORM \"${CMAKE_GENERATOR_PLATFORM}\"
-			CMAKE_GENERATOR_TOOLSET \"${CMAKE_GENERATOR_TOOLSET}\"
-			CMAKE_GENERATOR_INSTANCE \"${CMAKE_GENERATOR_INSTANCE}\"
-			CMAKE_ARGS -D CMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/${PATH_LIB}/${p_target}/${p_config}
-		)
-		add_custom_target(build_external_project)
-		add_dependencies(build_external_project ${p_target})
-	")
+cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
+project(build_external_project)
+include(ExternalProject)
+ExternalProject_add(
+	${p_target}
+	GIT_REPOSITORY ${p_url}
+	GIT_TAG ${p_tag}
+	LOG_DOWNLOAD ON
+	CMAKE_GENERATOR \"${CMAKE_GENERATOR}\"
+	CMAKE_GENERATOR_PLATFORM \"${CMAKE_GENERATOR_PLATFORM}\"
+	CMAKE_GENERATOR_TOOLSET \"${CMAKE_GENERATOR_TOOLSET}\"
+	CMAKE_GENERATOR_INSTANCE \"${CMAKE_GENERATOR_INSTANCE}\"
+	CMAKE_ARGS -D CMAKE_INSTALL_PREFIX=${CMAKE_SOURCE_DIR}/${PATH_LIB}/${p_target}
+)
+add_custom_target(build_external_project)
+add_dependencies(build_external_project ${p_target})
+")
 
 	set(TARGET_DIR "${CMAKE_SOURCE_DIR}/${PATH_EXTERNAL_PROJECT}/${p_target}")
-
 	file(WRITE "${TARGET_DIR}/CMakeLists.txt" "${CMAKELIST_CONTENT}")
-
 	file(MAKE_DIRECTORY "${TARGET_DIR}" "${TARGET_DIR}/build")
-
+	
+	# Run lib cmake.
 	execute_process(COMMAND ${CMAKE_COMMAND}
 		-G "${CMAKE_GENERATOR}"
 		-A "${CMAKE_GENERATOR_PLATFORM}"
@@ -182,7 +182,7 @@ function (BuildExternalProject p_url p_tag p_target p_config)
 		..
 		WORKING_DIRECTORY "${TARGET_DIR}/build")
 
-
+	# Build lib.
 	execute_process(COMMAND ${CMAKE_COMMAND}
 		--build .
 		--config ${p_config}
@@ -193,14 +193,26 @@ endfunction()
 message("Building external projects...")
 
 # Chemfiles.
+# For windows, build in Debug then in Release, and move .lib after cmake install to the correct folder.
 if(MSVC)
 	BuildExternalProject(https://github.com/chemfiles/chemfiles.git 3e82aebde9c4648122ec0258c3f18d0a745d780a chemfiles Debug)
+	file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/)
 	BuildExternalProject(https://github.com/chemfiles/chemfiles.git 3e82aebde9c4648122ec0258c3f18d0a745d780a chemfiles Release)
+	file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
+	file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/cmake)
+	file(REMOVE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib)
 else()
 	BuildExternalProject(https://github.com/chemfiles/chemfiles.git 3e82aebde9c4648122ec0258c3f18d0a745d780a chemfiles ${CMAKE_BUILD_TYPE})
 endif()
 
 message("Looking for dependencies...")
+
+# Set link directories.
+if(MSVC)
+	link_directories(${PATH_LIB}/chemfiles/lib)
+else()
+	find_package(chemfiles REQUIRED PATHS "${CMAKE_SOURCE_DIR}/lib/chemfiles" NO_DEFAULT_PATH)
+endif()
 
 # Find required packages.
 find_package(Qt5 COMPONENTS Core REQUIRED)
@@ -209,7 +221,6 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt5 COMPONENTS Network REQUIRED)
 find_package(Qt5 COMPONENTS Gamepad REQUIRED) 
 find_package(Qt5 COMPONENTS Svg REQUIRED)
-find_package(chemfiles REQUIRED PATHS "${CMAKE_SOURCE_DIR}/lib/chemfiles" NO_DEFAULT_PATH)
 
 # Declare executable with source files.
 add_executable(VTX ${HEADERS} ${SOURCES} ${LIBS} ${RESOURCES} ${FORMS} ${QT_RESOURCES})
@@ -224,6 +235,9 @@ target_include_directories(VTX PRIVATE ${PATH_SRC})
 target_include_directories(VTX PRIVATE ${GLM_INCLUDE_DIR})
 target_include_directories(VTX PRIVATE ${JSON_INCLUDE_DIR})
 target_include_directories(VTX PRIVATE ${MAGIC_ENUM_INCLUDE_DIR})
+if(MSVC)
+	target_include_directories(VTX PRIVATE ${PATH_LIB}/chemfiles/include)
+endif()
 
 # Link libs.
 target_link_libraries(VTX PRIVATE Qt5::Core)
