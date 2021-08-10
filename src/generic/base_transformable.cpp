@@ -11,7 +11,19 @@ namespace VTX
 			_transformModifiedEvent();
 		}
 
+		void BaseTransformable::setRotation( const Vec3f & p_euler )
+		{
+			_transform.setRotation( p_euler );
+			_transformModifiedEvent();
+		}
+
 		void BaseTransformable::setScale( const float & p_scale )
+		{
+			_transform.setScale( p_scale );
+			_transformModifiedEvent();
+		}
+
+		void BaseTransformable::setScale( const Vec3f & p_scale )
 		{
 			_transform.setScale( p_scale );
 			_transformModifiedEvent();

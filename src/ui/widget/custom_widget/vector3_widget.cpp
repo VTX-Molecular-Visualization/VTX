@@ -16,14 +16,17 @@ namespace VTX::UI::Widget::CustomWidget
 		_widgetX = WidgetFactory::get().instantiateWidget<FloatFieldDraggableWidget>( this, "vector_widget_x" );
 		_widgetX->setLabel( "x" );
 		_widgetX->setMinimumWidth( spinBoxMinimumWidth );
+		_widgetX->separateChangeAndDrag( true );
 
 		_widgetY = WidgetFactory::get().instantiateWidget<FloatFieldDraggableWidget>( this, "vector_widget_x" );
 		_widgetY->setLabel( "y" );
 		_widgetY->setMinimumWidth( spinBoxMinimumWidth );
+		_widgetY->separateChangeAndDrag( true );
 
 		_widgetZ = WidgetFactory::get().instantiateWidget<FloatFieldDraggableWidget>( this, "vector_widget_x" );
 		_widgetZ->setLabel( "z" );
 		_widgetZ->setMinimumWidth( spinBoxMinimumWidth );
+		_widgetZ->separateChangeAndDrag( true );
 
 		mainLayout->addWidget( _widgetX );
 		mainLayout->addWidget( _widgetY );
@@ -35,6 +38,10 @@ namespace VTX::UI::Widget::CustomWidget
 		connect( _widgetX, &FloatFieldDraggableWidget::onValueChange, this, &Vector3Widget::_onInternalValueXChanged );
 		connect( _widgetY, &FloatFieldDraggableWidget::onValueChange, this, &Vector3Widget::_onInternalValueYChanged );
 		connect( _widgetZ, &FloatFieldDraggableWidget::onValueChange, this, &Vector3Widget::_onInternalValueZChanged );
+
+		connect( _widgetX, &FloatFieldDraggableWidget::onValueDragged, this, &Vector3Widget::_onInternalValueXDragged );
+		connect( _widgetY, &FloatFieldDraggableWidget::onValueDragged, this, &Vector3Widget::_onInternalValueYDragged );
+		connect( _widgetZ, &FloatFieldDraggableWidget::onValueDragged, this, &Vector3Widget::_onInternalValueZDragged );
 	}
 
 	const Vec3f & Vector3Widget::getData() const { return _data; };
@@ -84,6 +91,28 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_data.z = p_newValue;
 		emit onValueChange( _data );
+	}
+
+	void Vector3Widget::_onInternalValueXDragged( const float p_delta )
+	{
+		const Vec3f delta = { p_delta, 0, 0 };
+		_data.x			  = p_delta;
+
+		emit onValueDragged( delta );
+	}
+	void Vector3Widget::_onInternalValueYDragged( const float p_delta )
+	{
+		const Vec3f delta = { 0, p_delta, 0 };
+		_data.y			  = p_delta;
+
+		emit onValueDragged( delta );
+	}
+	void Vector3Widget::_onInternalValueZDragged( const float p_delta )
+	{
+		const Vec3f delta = { 0, 0, p_delta };
+		_data.z			  = p_delta;
+
+		emit onValueDragged( delta );
 	}
 
 	void Vector3Widget::_refresh()

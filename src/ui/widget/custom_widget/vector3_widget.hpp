@@ -38,7 +38,8 @@ namespace VTX::UI::Widget::CustomWidget
 		//////////////////////////////////////////////////////////////
 
 	  signals:
-		void onValueChange( const Vec3f & value );
+		void onValueChange( const Vec3f & p_value );
+		void onValueDragged( const Vec3f & p_delta );
 
 	  protected:
 		Vector3Widget( QWidget * p_parent ) : BaseManualWidget( p_parent ), TMultiDataField<const Vec3f>() {};
@@ -54,6 +55,10 @@ namespace VTX::UI::Widget::CustomWidget
 		void _onInternalValueXChanged( const float p_newValue );
 		void _onInternalValueYChanged( const float p_newValue );
 		void _onInternalValueZChanged( const float p_newValue );
+
+		void _onInternalValueXDragged( const float p_delta );
+		void _onInternalValueYDragged( const float p_delta );
+		void _onInternalValueZDragged( const float p_delta );
 
 	  private:
 		FloatFieldDraggableWidget * _widgetX = nullptr;

@@ -33,7 +33,10 @@ namespace VTX::UI::Widget::CustomWidget
 		//////////////////////////////////////////////////////////////
 
 	  signals:
-		void onValueChange( const Math::Transform & value ) const;
+		void onValueChange( const Math::Transform & p_value ) const;
+		void onPositionDragged( const Vec3f & p_delta ) const;
+		void onRotationDragged( const Vec3f & p_delta ) const;
+		void onScaleDragged( const Vec3f & p_delta ) const;
 
 	  protected:
 		TransformWidget( QWidget * p_parent ) :
@@ -54,6 +57,10 @@ namespace VTX::UI::Widget::CustomWidget
 		void _onPositionChange( const Vec3f & p_position );
 		void _onRotationChange( const Vec3f & p_euler );
 		void _onScaleChange( const Vec3f & p_scale );
+
+		void _onPositionDragged( const Vec3f & p_delta );
+		void _onRotationDragged( const Vec3f & p_delta );
+		void _onScaleDragged( const Vec3f & p_delta );
 
 		Math::Transform _transform = Math::Transform();
 	};

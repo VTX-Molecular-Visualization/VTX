@@ -89,6 +89,18 @@ namespace VTX::UI::Widget::Inspector
 				 &CustomWidget::TransformWidget::onValueChange,
 				 this,
 				 &MultipleMoleculeWidget::_onTransformChange );
+		connect( _transformWidget,
+				 &CustomWidget::TransformWidget::onPositionDragged,
+				 this,
+				 &MultipleMoleculeWidget::_onPositionDragged );
+		connect( _transformWidget,
+				 &CustomWidget::TransformWidget::onRotationDragged,
+				 this,
+				 &MultipleMoleculeWidget::_onRotationDragged );
+		connect( _transformWidget,
+				 &CustomWidget::TransformWidget::onScaleDragged,
+				 this,
+				 &MultipleMoleculeWidget::_onScaleDragged );
 
 		connect( _representationWidget,
 				 &Representation::RepresentationInspectorSection::onRepresentationPresetChange,
@@ -224,6 +236,49 @@ namespace VTX::UI::Widget::Inspector
 			VTX_ACTION( new Action::Transformable::ApplyTransform( _getTargets(), p_transform ) );
 		}
 	}
+
+	void MultipleMoleculeWidget::_onPositionDragged( const Vec3f & p_delta ) const
+	{
+		if ( !signalsBlocked() )
+		{
+			std::unordered_set<Generic::BaseTransformable *> transformableSet
+				= std::unordered_set<Generic::BaseTransformable *>();
+			transformableSet.reserve( _getTargets().size() );
+
+			for ( Model::Molecule * target : _getTargets() )
+				transformableSet.emplace( target );
+
+			VTX_ACTION( new Action::Transformable::Translate( transformableSet, p_delta ) );
+		}
+	}
+	void MultipleMoleculeWidget::_onRotationDragged( const Vec3f & p_delta ) const
+	{
+		if ( !signalsBlocked() )
+		{
+			std::unordered_set<Generic::BaseTransformable *> transformableSet
+				= std::unordered_set<Generic::BaseTransformable *>();
+			transformableSet.reserve( _getTargets().size() );
+
+			for ( Model::Molecule * target : _getTargets() )
+				transformableSet.emplace( target );
+
+			VTX_ACTION( new Action::Transformable::Rotate( transformableSet, p_delta ) );
+		}
+	}
+	void MultipleMoleculeWidget::_onScaleDragged( const Vec3f & p_delta ) const
+	{
+		if ( !signalsBlocked() )
+		{
+			std::unordered_set<Generic::BaseTransformable *> transformableSet
+				= std::unordered_set<Generic::BaseTransformable *>();
+			transformableSet.reserve( _getTargets().size() );
+
+			for ( Model::Molecule * target : _getTargets() )
+				transformableSet.emplace( target );
+			VTX_ACTION( new Action::Transformable::Scale( transformableSet, p_delta ) );
+		}
+	}
+
 	void MultipleMoleculeWidget::_onRepresentationPresetChange( const int p_presetIndex ) const
 	{
 		VTX_ACTION( new Action::Molecule::ChangeRepresentationPreset( _getTargets(), p_presetIndex ) );
