@@ -290,7 +290,7 @@ add_dependencies(VTX VTX_SHADERS)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/libraries/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../libraries)
 
 # Copy Data.
-add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/vtx_internal_data/het_dictionary.txt ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../data/het_dictionary.txt)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/vtx_internal_data ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../data)
 
 # Readme, license and changelog.
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/README.md ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../README.md)

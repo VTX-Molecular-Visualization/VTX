@@ -56,8 +56,8 @@ namespace VTX
 
 			static const FilePath SCENE_OBJECT_FOLDER = FilePath( "obj" );
 
-			static const FilePath LICENSE_PATH		  = FilePath( EXECUTABLE_DIR.string() + "/license.txt" );
-			static const FilePath HET_DICTIONARY_PATH = INTERNAL_DATA_DIR / "het_dictionary.txt";
+			static const FilePath LICENSE_PATH			 = FilePath( EXECUTABLE_DIR.string() + "/license.txt" );
+			static const FilePath RESIDUE_DATA_DIRECTORY = INTERNAL_DATA_DIR / "residue_data";
 
 			static const FilePath DATA_DIR				  = "../data";
 			static const FilePath SHADERS_DIR_SRC		  = "../src/shader";
@@ -347,6 +347,12 @@ namespace VTX
 				if ( !Util::Filesystem::exists( objectsPath ) )
 					createDirectory( objectsPath );
 			}
+
+			inline FilePath getResidueDataFilePath( const std::string & p_residueName )
+			{
+				return RESIDUE_DATA_DIRECTORY / p_residueName.substr(0, 1);
+			}
+
 		} // namespace Filesystem
 	}	  // namespace Util
 } // namespace VTX

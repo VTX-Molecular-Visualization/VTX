@@ -147,7 +147,7 @@ namespace VTX::IO::Writer
 
 				frame.add_bond( _vecNewAtomIndexes[ bnd->getIndexFirstAtom() ],
 								_vecNewAtomIndexes[ bnd->getIndexSecondAtom() ],
-								chemfiles::Bond::UNKNOWN );
+								chemfiles::Bond::BondOrder( int( bnd->getOrder() ) ) );
 			}
 			p_trajectory.write( frame );
 		}

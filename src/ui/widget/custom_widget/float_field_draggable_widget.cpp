@@ -88,7 +88,8 @@ namespace VTX::UI::Widget::CustomWidget
 
 			// freeze cursor
 			cursor().setPos( _mousePressPos );
-			_onInternalValueChanged( _value + valueDelta );
+
+			_onValueDragged( valueDelta );
 
 			p_event->accept();
 		}
@@ -135,6 +136,20 @@ namespace VTX::UI::Widget::CustomWidget
 		{
 			setValue( p_value );
 			emit onValueChange( _value );
+		}
+	}
+	void FloatFieldDraggableWidget::_onValueDragged( const float p_delta )
+	{
+		if ( abs( p_delta ) > _epsilon )
+		{
+			const float newValue = _value + p_delta;
+
+			setValue( newValue );
+
+			if ( _separateChangeAndDrag )
+				emit onValueDragged( p_delta );
+			else
+				emit onValueChange( newValue );
 		}
 	}
 
@@ -193,6 +208,10 @@ namespace VTX::UI::Widget::CustomWidget
 		QWidget::setEnabled( p_enable );
 		_label->setEnabled( p_enable );
 		_textField->setEnabled( p_enable );
+	}
+	void FloatFieldDraggableWidget::separateChangeAndDrag( const bool p_separate )
+	{
+		_separateChangeAndDrag = p_separate;
 	}
 
 	bool FloatFieldDraggableWidget::_canDragAtPos( const QPoint & p_globalPos ) const

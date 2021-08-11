@@ -188,6 +188,7 @@ namespace VTX
 		// Misc.
 		static const int  CONSOLE_SIZE;
 		static const uint ACTION_BUFFER_SIZE; // For undo/redo
+		static const bool LOAD_BOND_ORDER_FROM_FILE = true;
 
 		// Parameters
 		enum class PARAMETER
@@ -276,6 +277,15 @@ namespace VTX
 			_tmpRenderEffectDefaultName = p_tmpRenderEffectDefaultName;
 		};
 
+		static QString getLastLoadedSessionFolder();
+		static void	   saveLastLoadedSessionFolder( const QString & p_path );
+		static QString getLastSavedSessionFolder();
+		static void	   saveLastSavedSessionFolder( const QString & p_path );
+		static QString getLastImportedMoleculeFolder();
+		static void	   saveLastImportedMoleculeFolder( const QString & p_path );
+		static QString getLastExportedMoleculeFolder();
+		static void	   saveLastExportedMoleculeFolder( const QString & p_path );
+
 		void backup();
 		void recover();
 		void restore();
@@ -308,6 +318,8 @@ namespace VTX
 		Trajectory::PlayMode defaultTrajectoryPlayMode = DEFAULT_TRAJECTORY_PLAY_MODE;
 
 		Style::SYMBOL_DISPLAY_MODE symbolDisplayMode = SYMBOL_DISPLAY_MODE_DEFAULT;
+
+		static QString _getFileInRegisterKey( const QString & p_key, const QString & p_default );
 
 		void _sendDataChangedEvent( const PARAMETER & p_parameter );
 	};

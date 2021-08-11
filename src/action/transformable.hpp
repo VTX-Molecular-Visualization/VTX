@@ -12,55 +12,6 @@
 
 namespace VTX::Action::Transformable
 {
-	class Rotate : public BaseAction
-	{
-	  public:
-		explicit Rotate( Generic::BaseTransformable & p_transformable, const float p_angle, const Vec3f & p_axis ) :
-			_transformable( p_transformable ), _angle( p_angle ), _axis( p_axis )
-		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
-		}
-
-		virtual void execute() override
-		{
-			_transformable.rotate( _angle, _axis );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
-
-	  private:
-		Generic::BaseTransformable & _transformable;
-		const float					 _angle;
-		const Vec3f					 _axis;
-	};
-
-	template<typename T, typename = std::enable_if<std::is_base_of<Generic::BaseTransformable, T>::value>>
-	class SetScale : public BaseActionUndonable
-	{
-	  public:
-		explicit SetScale( T & p_transformable, const float p_scale ) :
-			_transformable( p_transformable ), _scale( p_scale ), _scaleOld( p_transformable.getTransform().getScale() )
-		{
-			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
-		}
-
-		virtual void execute() override
-		{
-			_transformable.setScale( _scale );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
-
-		virtual void undo() override
-		{
-			_transformable.setScale( _scaleOld );
-			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
-		}
-
-	  private:
-		Generic::BaseTransformable & _transformable;
-		const float					 _scale;
-		const Mat4f					 _scaleOld;
-	};
-
 	class SetTranslation : public BaseActionUndonable
 	{
 	  public:
@@ -87,6 +38,179 @@ namespace VTX::Action::Transformable
 		Generic::BaseTransformable & _transformable;
 		const Vec3f					 _translation;
 		const Mat4f					 _translationOld;
+	};
+	class Translate : public BaseAction
+	{
+	  public:
+		explicit Translate( Generic::BaseTransformable & p_transformable, const Vec3f & p_delta ) :
+			_transformables { &p_transformable }, _delta( p_delta )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
+		explicit Translate( std::unordered_set<Generic::BaseTransformable *> & p_transformables,
+							const Vec3f &									   p_delta ) :
+			_transformables( p_transformables ),
+			_delta( p_delta )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
+
+		virtual void execute() override
+		{
+			for ( Generic::BaseTransformable * transformable : _transformables )
+			{
+				transformable->setTranslation( transformable->getTransform().getTranslationVector() + _delta );
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Generic::BaseTransformable *> _transformables;
+		const Vec3f										 _delta;
+	};
+
+	class SetRotation : public BaseActionUndonable
+	{
+	  public:
+		explicit SetRotation( Generic::BaseTransformable & p_transformable, const Vec3f & p_euler ) :
+			_transformable( p_transformable ), _euler( p_euler ),
+			_eulerOld( p_transformable.getTransform().getEulerAngles() )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
+
+		virtual void execute() override
+		{
+			_transformable.setRotation( _euler );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+		virtual void undo() override
+		{
+			_transformable.setRotation( _eulerOld );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Generic::BaseTransformable & _transformable;
+		const Vec3f					 _euler;
+		const Vec3f					 _eulerOld;
+	};
+	class Rotate : public BaseAction
+	{
+	  private:
+		enum class RotationType
+		{
+			Axis_Angle,
+			Euler
+		};
+
+	  public:
+		explicit Rotate( Generic::BaseTransformable & p_transformable, const float p_angle, const Vec3f & p_axis ) :
+			_transformables { &p_transformable }, _angle( p_angle ), _axis( p_axis ),
+			_rotationType( RotationType::Axis_Angle )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
+		explicit Rotate( const std::unordered_set<Generic::BaseTransformable *> & p_transformables,
+						 const float											  p_angle,
+						 const Vec3f &											  p_axis ) :
+			_transformables( p_transformables ),
+			_angle( p_angle ), _axis( p_axis ), _rotationType( RotationType::Axis_Angle )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
+
+		explicit Rotate( Generic::BaseTransformable & p_transformable, const Vec3f & p_euler ) :
+			_transformables { &p_transformable }, _axis( p_euler ), _angle( 0 ), _rotationType( RotationType::Euler )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
+		explicit Rotate( const std::unordered_set<Generic::BaseTransformable *> & p_transformables,
+						 const Vec3f &											  p_euler ) :
+			_transformables( p_transformables ),
+			_axis( p_euler ), _angle( 0 ), _rotationType( RotationType::Euler )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
+
+		virtual void execute() override
+		{
+			for ( Generic::BaseTransformable * const transformable : _transformables )
+			{
+				switch ( _rotationType )
+				{
+				case RotationType::Axis_Angle: transformable->rotate( _angle, _axis ); break;
+				case RotationType::Euler:
+					transformable->setRotation( transformable->getTransform().getEulerAngles() + _axis );
+					break;
+				}
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Generic::BaseTransformable *> _transformables;
+		RotationType									 _rotationType;
+		const float										 _angle;
+		const Vec3f										 _axis;
+	};
+
+	class SetScale : public BaseActionUndonable
+	{
+	  public:
+		explicit SetScale( Generic::BaseTransformable & p_transformable, const float p_scale ) :
+			_transformable( p_transformable ), _scale( p_scale ), _scaleOld( p_transformable.getTransform().getScale() )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
+
+		virtual void execute() override
+		{
+			_transformable.setScale( _scale );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+		virtual void undo() override
+		{
+			_transformable.setScale( _scaleOld );
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		Generic::BaseTransformable & _transformable;
+		const float					 _scale;
+		const Mat4f					 _scaleOld;
+	};
+	class Scale : public BaseAction
+	{
+	  public:
+		explicit Scale( Generic::BaseTransformable & p_transformable, const Vec3f & p_delta ) :
+			_transformables { &p_transformable }, _delta( p_delta )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
+		explicit Scale( std::unordered_set<Generic::BaseTransformable *> & p_transformables, const Vec3f & p_delta ) :
+			_transformables( p_transformables ), _delta( p_delta )
+		{
+			_tag = ACTION_TAG( _tag | ACTION_TAG::MODIFY_SCENE );
+		}
+
+		virtual void execute() override
+		{
+			for ( Generic::BaseTransformable * transformable : _transformables )
+			{
+				transformable->setScale( transformable->getTransform().getScaleVector() + _delta );
+			}
+
+			VTXApp::get().MASK |= VTX_MASK_3D_MODEL_UPDATED;
+		}
+
+	  private:
+		std::unordered_set<Generic::BaseTransformable *> _transformables;
+		const Vec3f										 _delta;
 	};
 
 	class ApplyTransform : public BaseAction

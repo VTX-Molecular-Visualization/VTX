@@ -10,6 +10,7 @@
 #include "ui/widget/inspector/multiple_model_inspector_widget.hpp"
 #include "ui/widget/representation/representation_inspector_section.hpp"
 #include "view/base_view.hpp"
+#include <QLabel>
 #include <QWidget>
 
 namespace VTX::UI::Widget::Inspector
@@ -38,6 +39,7 @@ namespace VTX::UI::Widget::Inspector
 
 		CustomWidget::QLabelMultiField * _fullnameLabel = nullptr;
 		CustomWidget::QLabelMultiField * _nbAtomsLabel	= nullptr;
+		QLabel *						 _bondsLabel	= nullptr;
 
 		void _onRepresentationPresetChange( const int p_presetIndex );
 		void _onRepresentationChange( const Model::Representation::InstantiatedRepresentation & p_representation,
@@ -49,6 +51,7 @@ namespace VTX::UI::Widget::Inspector
 
 		void _resetFieldStates( const SectionFlag & p_flag );
 		void _changeMoleculesColor( const Color::Rgb & p_color ) const;
+		void _appendBondInfo( const Model::Residue & p_residue );
 	};
 } // namespace VTX::UI::Widget::Inspector
 

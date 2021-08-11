@@ -284,6 +284,81 @@ namespace VTX
 		}
 	}
 
+	QString Setting::getLastLoadedSessionFolder()
+	{
+		const QString key = QString::fromStdString( RegisterKey::LAST_OPEN_SESSION_FOLDER );
+		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_SAVE_FOLDER );
+	}
+	void Setting::saveLastLoadedSessionFolder( const QString & p_path )
+	{
+		QSettings settings( QSettings::Format::NativeFormat,
+							QSettings::Scope::UserScope,
+							QString::fromStdString( VTX_PROJECT_NAME ),
+							QString::fromStdString( VTX_PROJECT_NAME ) );
+
+		settings.setValue( QString::fromStdString( RegisterKey::LAST_OPEN_SESSION_FOLDER ), p_path );
+	}
+
+	QString Setting::getLastSavedSessionFolder()
+	{
+		const QString key = QString::fromStdString( RegisterKey::LAST_SAVED_SESSION_FOLDER );
+		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_SAVE_FOLDER );
+	}
+	void Setting::saveLastSavedSessionFolder( const QString & p_path )
+	{
+		QSettings settings( QSettings::Format::NativeFormat,
+							QSettings::Scope::UserScope,
+							QString::fromStdString( VTX_PROJECT_NAME ),
+							QString::fromStdString( VTX_PROJECT_NAME ) );
+
+		settings.setValue( QString::fromStdString( RegisterKey::LAST_SAVED_SESSION_FOLDER ), p_path );
+	}
+
+	QString Setting::getLastImportedMoleculeFolder()
+	{
+		const QString key = QString::fromStdString( RegisterKey::LAST_IMPORTED_MOLECULE_FOLDER );
+		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_MOLECULE_FOLDER );
+	}
+	void Setting::saveLastImportedMoleculeFolder( const QString & p_path )
+	{
+		QSettings settings( QSettings::Format::NativeFormat,
+							QSettings::Scope::UserScope,
+							QString::fromStdString( VTX_PROJECT_NAME ),
+							QString::fromStdString( VTX_PROJECT_NAME ) );
+
+		settings.setValue( QString::fromStdString( RegisterKey::LAST_IMPORTED_MOLECULE_FOLDER ), p_path );
+	}
+
+	QString Setting::getLastExportedMoleculeFolder()
+	{
+		const QString key = QString::fromStdString( RegisterKey::LAST_EXPORTED_MOLECULE_FOLDER );
+		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_MOLECULE_FOLDER );
+	}
+	void Setting::saveLastExportedMoleculeFolder( const QString & p_path )
+	{
+		QSettings settings( QSettings::Format::NativeFormat,
+							QSettings::Scope::UserScope,
+							QString::fromStdString( VTX_PROJECT_NAME ),
+							QString::fromStdString( VTX_PROJECT_NAME ) );
+
+		settings.setValue( QString::fromStdString( RegisterKey::LAST_EXPORTED_MOLECULE_FOLDER ), p_path );
+	}
+
+	QString Setting::_getFileInRegisterKey( const QString & p_key, const QString & p_default )
+	{
+		const QSettings settings( QSettings::Format::NativeFormat,
+								  QSettings::Scope::UserScope,
+								  QString::fromStdString( VTX_PROJECT_NAME ),
+								  QString::fromStdString( VTX_PROJECT_NAME ) );
+
+		QString path = settings.value( p_key, p_default ).toString();
+
+		if ( path.isEmpty() || !Util::Filesystem::exists( path.toStdString() ) )
+			return p_default;
+
+		return path;
+	}
+
 	void Setting::backup()
 	{
 		IO::Writer::SerializedObject<VTX::Setting> writer = IO::Writer::SerializedObject<VTX::Setting>();

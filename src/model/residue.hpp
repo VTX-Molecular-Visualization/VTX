@@ -83,6 +83,8 @@ namespace VTX
 				COUNT
 			};
 
+			static bool IsStandard( const std::string & p_residueName );
+
 			static const int SYMBOL_COUNT = int( SYMBOL::COUNT );
 
 			// Static const mapping.

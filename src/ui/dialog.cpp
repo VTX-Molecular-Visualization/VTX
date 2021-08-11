@@ -19,16 +19,20 @@ namespace VTX::UI
 
 	void Dialog::openLoadMoleculeDialog()
 	{
-		QString * const	  defaultFilter = new QString( Util::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
-		const QStringList filenames		= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
+		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_MOLECULE_READ_FILTER );
+		QString			defaultPath	  = Setting::getLastImportedMoleculeFolder();
+
+		const QStringList filenames = QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
 																	 "Open molecule",
-																	 Util::Filesystem::DEFAULT_MOLECULE_FOLDER,
+																	 defaultPath,
 																	 Util::Filesystem::LOAD_MOLECULE_FILTERS,
 																	 defaultFilter );
 		delete defaultFilter;
 
 		if ( !filenames.isEmpty() )
 		{
+			Setting::saveLastImportedMoleculeFolder( filenames[ 0 ] );
+
 			std::vector<FilePath> filepathes = std::vector<FilePath>();
 			for ( const QString & qstr : filenames )
 				filepathes.emplace_back( FilePath( qstr.toStdString() ) );
@@ -39,14 +43,18 @@ namespace VTX::UI
 	void Dialog::openExportMoleculeDialog()
 	{
 		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_MOLECULE_WRITE_FILTER );
-		const QString	filename	  = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
-																  "Export molecule",
-																  Util::Filesystem::DEFAULT_MOLECULE_FOLDER,
-																  Util::Filesystem::EXPORT_MOLECULE_FILTERS,
-																  defaultFilter );
+		QString			defaultPath	  = Setting::getLastExportedMoleculeFolder();
+
+		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
+															   "Export molecule",
+															   defaultPath,
+															   Util::Filesystem::EXPORT_MOLECULE_FILTERS,
+															   defaultFilter );
 		delete defaultFilter;
+
 		if ( !filename.isNull() )
 		{
+			Setting::saveLastExportedMoleculeFolder( filename );
 			const FilePath path = FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Save( path ) );
 		}
@@ -107,14 +115,19 @@ namespace VTX::UI
 	void Dialog::openSaveSessionDialog( Worker::CallbackThread * const p_callback )
 	{
 		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_FILE_WRITE_FILTER );
-		const QString	filename	  = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
-																  "Save session",
-																  Util::Filesystem::DEFAULT_SAVE_FOLDER,
-																  Util::Filesystem::SAVE_SCENE_FILTERS,
-																  defaultFilter );
+		QString			defaultPath	  = Setting::getLastSavedSessionFolder();
+
+		const QString filename = QFileDialog::getSaveFileName( &VTXApp::get().getMainWindow(),
+															   "Save session",
+															   defaultPath,
+															   Util::Filesystem::SAVE_SCENE_FILTERS,
+															   defaultFilter );
+
+		delete defaultFilter;
 
 		if ( !filename.isNull() )
 		{
+			Setting::saveLastSavedSessionFolder( filename );
 			const FilePath path = FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Save( path, p_callback ) );
 		}
@@ -122,14 +135,19 @@ namespace VTX::UI
 	void Dialog::openLoadSessionDialog()
 	{
 		QString * const defaultFilter = new QString( Util::Filesystem::DEFAULT_FILE_READ_FILTER );
-		const QString	filename	  = QFileDialog::getOpenFileName( &VTXApp::get().getMainWindow(),
-																  "Open session",
-																  Util::Filesystem::DEFAULT_SAVE_FOLDER,
-																  Util::Filesystem::OPEN_FILE_FILTERS,
-																  defaultFilter );
+		QString			defaultPath	  = Setting::getLastLoadedSessionFolder();
+
+		const QString filename = QFileDialog::getOpenFileName( &VTXApp::get().getMainWindow(),
+															   "Open session",
+															   defaultPath,
+															   Util::Filesystem::OPEN_FILE_FILTERS,
+															   defaultFilter );
+
+		delete defaultFilter;
 
 		if ( !filename.isNull() )
 		{
+			Setting::saveLastLoadedSessionFolder( filename );
 			const FilePath path = FilePath( filename.toStdString() );
 			VTX_ACTION( new Action::Main::Open( path ) );
 		}

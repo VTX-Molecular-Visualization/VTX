@@ -52,6 +52,10 @@ namespace VTX::UI::Widget::Inspector
 		CustomWidget::QLabelMultiField * _nbAtomsLabel	  = nullptr;
 
 		void _onTransformChange( const Math::Transform & ) const;
+		void _onPositionDragged( const Vec3f & ) const;
+		void _onRotationDragged( const Vec3f & ) const;
+		void _onScaleDragged( const Vec3f & ) const;
+
 		void _onRepresentationPresetChange( const int p_presetIndex ) const;
 		void _onRepresentationChange( const Model::Representation::InstantiatedRepresentation & p_representation,
 									  const Model::Representation::MEMBER_FLAG &				p_flag ) const;

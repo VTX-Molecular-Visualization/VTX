@@ -36,7 +36,9 @@ namespace VTX
 			inline virtual const Math::Transform & getTransform() const { return _transform; };
 
 			void rotate( const float, const Vec3f & );
+			void setRotation( const Vec3f & );
 			void setScale( const float & );
+			void setScale( const Vec3f & );
 			void setScale( const Mat4f & );
 			void setTranslation( const Vec3f & );
 			void setTranslation( const Mat4f & );

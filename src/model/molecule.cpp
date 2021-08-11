@@ -605,7 +605,7 @@ namespace VTX
 				{
 					unknownResidueSymbolsStr += unknownResidueData.symbolStr + " ";
 				}
-				VTX_WARNING( "Unknown residue symbols : " + unknownResidueSymbolsStr );
+				VTX_INFO( "Unknown residue symbols : " + unknownResidueSymbolsStr );
 			}
 
 			const std::unordered_set<std::string> & unknownAtomSymbols = getUnknownAtomSymbols();

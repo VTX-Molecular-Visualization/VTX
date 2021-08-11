@@ -96,6 +96,12 @@ namespace VTX
 	{
 		const std::string RECENT_LOADED_PATH_PREFIX		= "RecentLoadedPath";
 		const std::string RECENT_DOWNLOADED_CODE_PREFIX = "RecentDownloadCode";
+
+		const std::string LAST_OPEN_SESSION_FOLDER		= "LastOpenSessionFolder";
+		const std::string LAST_SAVED_SESSION_FOLDER		= "LastSavedSessionFolder";
+		const std::string LAST_IMPORTED_MOLECULE_FOLDER = "LastImportedMoleculeFolder";
+		const std::string LAST_EXPORTED_MOLECULE_FOLDER = "LastExportedMoleculeFolder";
+
 	} // namespace RegisterKey
 
 } // namespace VTX

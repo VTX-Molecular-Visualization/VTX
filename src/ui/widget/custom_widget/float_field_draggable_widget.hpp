@@ -34,12 +34,15 @@ namespace VTX::UI::Widget::CustomWidget
 		void setDragValueFactor( const float p_factor );
 		void setEnabled( const bool p_enable );
 
+		void separateChangeAndDrag( const bool p_separate );
+
 		// MultiDataField Implementation //////////////////////////////
 		void resetState() override;
 		//////////////////////////////////////////////////////////////
 
 	  signals:
 		void onValueChange( const float p_value );
+		void onValueDragged( const float p_delta );
 
 	  protected:
 		FloatFieldDraggableWidget( QWidget * p_parent );
@@ -54,6 +57,7 @@ namespace VTX::UI::Widget::CustomWidget
 
 		void _onTextFieldEdited();
 		void _onInternalValueChanged( const float p_newValue );
+		void _onValueDragged( const float p_delta );
 
 		// MultiDataField Implementation //////////////////////////////
 		void		  _displayDifferentsDataFeedback();
@@ -65,8 +69,9 @@ namespace VTX::UI::Widget::CustomWidget
 		QLabel *	_label	   = nullptr;
 		QLineEdit * _textField = nullptr;
 
-		int	  _nbDecimals = 2;
-		float _epsilon	  = 0.01f;
+		int	  _nbDecimals			 = 2;
+		float _epsilon				 = 0.01f;
+		bool  _separateChangeAndDrag = false;
 
 		float _value = 0;
 		float _min;

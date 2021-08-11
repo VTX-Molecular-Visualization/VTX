@@ -39,8 +39,11 @@ namespace VTX::UI::Widget::CustomWidget
 	void TransformWidget::_setupSlots()
 	{
 		connect( _positionWidget, &Vector3Widget::onValueChange, this, &TransformWidget::_onPositionChange );
+		connect( _positionWidget, &Vector3Widget::onValueDragged, this, &TransformWidget::_onPositionDragged );
 		connect( _rotationWidget, &Vector3Widget::onValueChange, this, &TransformWidget::_onRotationChange );
+		connect( _rotationWidget, &Vector3Widget::onValueDragged, this, &TransformWidget::_onRotationDragged );
 		connect( _scaleWidget, &Vector3Widget::onValueChange, this, &TransformWidget::_onScaleChange );
+		connect( _scaleWidget, &Vector3Widget::onValueDragged, this, &TransformWidget::_onScaleDragged );
 	}
 
 	void TransformWidget::_refresh()
@@ -70,6 +73,22 @@ namespace VTX::UI::Widget::CustomWidget
 	{
 		_transform.setScale( p_scale );
 		emit onValueChange( _transform );
+	}
+
+	void TransformWidget::_onPositionDragged( const Vec3f & p_delta )
+	{
+		_transform.translate( p_delta );
+		emit onPositionDragged( p_delta );
+	}
+	void TransformWidget::_onRotationDragged( const Vec3f & p_delta )
+	{
+		_transform.setRotation( _transform.getEulerAngles() + p_delta );
+		emit onRotationDragged( p_delta );
+	}
+	void TransformWidget::_onScaleDragged( const Vec3f & p_delta )
+	{
+		_transform.setScale( _transform.getScaleVector() + p_delta );
+		emit onScaleDragged( p_delta );
 	}
 
 	void TransformWidget::resetState()
