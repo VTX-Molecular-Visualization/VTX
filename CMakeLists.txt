@@ -206,7 +206,7 @@ if(MSVC)
 else()
 # For Linux (solo conf), juste build in current mode.
 # Then use find_package to automatically add include folder and link lib. 
-	BuildExternalProject(https://github.com/chemfiles/chemfiles.git 3e82aebde9c4648122ec0258c3f18d0a745d780a chemfiles ${CMAKE_BUILD_TYPE})
+	BuildExternalProject(https://github.com/chemfiles/chemfiles.git 3e82aebde9c4648122ec0258c3f18d0a745d780a chemfiles "${CMAKE_BUILD_TYPE}")
 endif()
 
 message("Looking for dependencies...")
