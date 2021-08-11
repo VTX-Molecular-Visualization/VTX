@@ -151,7 +151,7 @@ set(MAGIC_ENUM_INCLUDE_DIR ${SOURCE_DIR}/include)
 function (BuildExternalProject p_url p_tag p_target p_config)
 
 # Write another CMakeLists.txt.
-	set(CMAKELIST_CONTENT "
+set(CMAKELIST_CONTENT "
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 project(build_external_project)
 include(ExternalProject)
@@ -193,15 +193,19 @@ endfunction()
 message("Building external projects...")
 
 # Chemfiles.
-# For windows, build in Debug then in Release, and move .lib after cmake install to the correct folder.
+# For windows(multi conf), build in Debug then in Release, and move .lib after cmake install to the correct folder.
+# Then, use link_directories to link and and target_include_directories to add include directory.
 if(MSVC)
 	BuildExternalProject(https://github.com/chemfiles/chemfiles.git 3e82aebde9c4648122ec0258c3f18d0a745d780a chemfiles Debug)
+	file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/ ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
 	file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/)
 	BuildExternalProject(https://github.com/chemfiles/chemfiles.git 3e82aebde9c4648122ec0258c3f18d0a745d780a chemfiles Release)
 	file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
 	file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/cmake)
 	file(REMOVE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib)
 else()
+# For Linux (solo conf), juste build in current mode.
+# Then use find_package to automatically add include folder and link lib. 
 	BuildExternalProject(https://github.com/chemfiles/chemfiles.git 3e82aebde9c4648122ec0258c3f18d0a745d780a chemfiles ${CMAKE_BUILD_TYPE})
 endif()
 
@@ -286,7 +290,7 @@ add_dependencies(VTX VTX_SHADERS)
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/libraries/ ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../libraries)
 
 # Copy Data.
-add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/external_data/het_dictionary.txt ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../data/het_dictionary.txt)
+add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/vtx_internal_data/het_dictionary.txt ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../data/het_dictionary.txt)
 
 # Readme, license and changelog.
 add_custom_command(TARGET VTX POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/README.md ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/../README.md)
