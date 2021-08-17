@@ -3,6 +3,7 @@
 
 #include "define.hpp"
 #include <map>
+#include <vector>
 
 namespace VTX
 {

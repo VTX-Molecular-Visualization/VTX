@@ -12,6 +12,7 @@
 #include "object3d/scene.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
+#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -25,7 +26,7 @@ namespace VTX
 			for ( const FilePath & path : _paths )
 			{
 				chrono.start();
-				VTX_INFO( "Loading " + path.filename().string() );
+				VTX_INFO( "Loading " + Util::Filesystem::getFileName( path ) );
 
 				IO::Reader::SerializedObject<VTXApp> * const reader = new IO::Reader::SerializedObject<VTXApp>();
 

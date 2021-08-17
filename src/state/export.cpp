@@ -75,8 +75,8 @@ namespace VTX
 			std::string counterStr = std::to_string( _frame );
 			std::string fileName   = "frame" + std::string( 6 - counterStr.length(), '0' ) + counterStr;
 
-			VTX_ACTION( new Action::Main::Snapshot(
-				_arg.mode, Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ) );
+			// VTX_ACTION( new Action::Main::Snapshot(
+			//	_arg.mode, Util::Filesystem::getVideosPath( _directoryName, fileName + ".png" ) ) );
 
 			VTX_INFO( std::to_string( (uint)( _frame * 100 / _frameCount ) ) + "%" );
 
@@ -84,7 +84,7 @@ namespace VTX
 			{
 				try
 				{
-					_generareVideo();
+					//_generareVideo();
 				}
 				catch ( const std::exception & p_e )
 				{
@@ -99,6 +99,7 @@ namespace VTX
 			}
 		}
 
+		/*
 		void Export::_generareVideo() const
 		{
 			if ( std::filesystem::exists( Util::Filesystem::FFMPEG_EXE_FILE ) == false )
@@ -120,6 +121,7 @@ namespace VTX
 			// Clean frames
 			Util::Filesystem::removeAll( Util::Filesystem::getVideosBatchPath( _directoryName ) );
 		}
+		*/
 
 	} // namespace State
 } // namespace VTX

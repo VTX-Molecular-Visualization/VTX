@@ -178,7 +178,7 @@ namespace VTX::UI
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
 											 "Import representation preset",
-											 QString::fromStdString( Util::Filesystem::EXECUTABLE_DIR.string() ),
+											 QString::fromStdString( Util::Filesystem::getExecutableDir() ),
 											 Util::Filesystem::REPRESENTATION_PRESET_FILE_FILTERS );
 
 		if ( !filenames.isEmpty() )
@@ -195,7 +195,7 @@ namespace VTX::UI
 		const QStringList filenames
 			= QFileDialog::getOpenFileNames( &VTXApp::get().getMainWindow(),
 											 "Import render effect preset",
-											 QString::fromStdString( Util::Filesystem::EXECUTABLE_DIR.string() ),
+											 QString::fromStdString( Util::Filesystem::getExecutableDir() ),
 											 Util::Filesystem::RENDER_EFFECT_PRESET_FILE_FILTERS );
 
 		if ( !filenames.isEmpty() )

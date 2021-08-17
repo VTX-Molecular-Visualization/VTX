@@ -20,7 +20,7 @@ namespace VTX
 		{
 		  public:
 			explicit RepresentationLibraryLoader( Model::Representation::RepresentationLibrary & p_library ) :
-				RepresentationLibraryLoader( p_library, Util::Filesystem::getRepresentationLibraryDirectory() )
+				RepresentationLibraryLoader( p_library, Util::Filesystem::getRepresentationsLibraryDir() )
 			{
 			}
 			explicit RepresentationLibraryLoader( Model::Representation::RepresentationLibrary & p_library,

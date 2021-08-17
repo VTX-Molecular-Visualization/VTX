@@ -8,16 +8,16 @@
 namespace VTX::Renderer::GL
 {
 	const ProgramManager::MapStringToEnum ProgramManager::EXTENSIONS
-		= MapStringToEnum( { { ".vert", SHADER_TYPE::VERTEX },
-							 { ".geom", SHADER_TYPE::GEOMETRY },
-							 { ".frag", SHADER_TYPE::FRAGMENT },
-							 { ".comp", SHADER_TYPE::COMPUTE },
-							 { ".tesc", SHADER_TYPE::TESS_CONTROL },
-							 { ".tese", SHADER_TYPE::TESS_EVALUATION } } );
+		= MapStringToEnum( { { "vert", SHADER_TYPE::VERTEX },
+							 { "geom", SHADER_TYPE::GEOMETRY },
+							 { "frag", SHADER_TYPE::FRAGMENT },
+							 { "comp", SHADER_TYPE::COMPUTE },
+							 { "tesc", SHADER_TYPE::TESS_CONTROL },
+							 { "tese", SHADER_TYPE::TESS_EVALUATION } } );
 
 	SHADER_TYPE ProgramManager::getShaderType( const FilePath & p_name )
 	{
-		std::string extension = p_name.extension().string();
+		std::string extension = Util::Filesystem::getFileExtension( p_name );
 		if ( ProgramManager::EXTENSIONS.find( extension ) != ProgramManager::EXTENSIONS.end() )
 		{
 			return ProgramManager::EXTENSIONS.at( extension );
@@ -100,9 +100,9 @@ namespace VTX::Renderer::GL
 
 	GLuint ProgramManager::_createShader( const FilePath & p_path )
 	{
-		VTX_DEBUG( "Creating shader: " + p_path.filename().string() );
+		const std::string name = Util::Filesystem::getFileName( p_path );
+		VTX_DEBUG( "Creating shader: " + name );
 
-		const std::string name = p_path.filename().string();
 		const SHADER_TYPE type = getShaderType( name );
 		if ( type == SHADER_TYPE::INVALID )
 		{
@@ -114,7 +114,7 @@ namespace VTX::Renderer::GL
 		if ( shaderId == GL_INVALID_INDEX )
 		{
 			shaderId			   = _gl->glCreateShader( (int)type );
-			FilePath		  path = Util::Filesystem::getShadersPath( p_path.string() );
+			FilePath		  path = Util::Filesystem::getShadersPath( p_path );
 			const std::string src  = Util::Filesystem::readPath( path );
 			if ( src.empty() )
 			{
@@ -193,7 +193,7 @@ namespace VTX::Renderer::GL
 			Program * const program = pair.second;
 			// Don't need to delete program.
 			//_gl->glDeleteProgram( program->getId() );
-			//program->setId( _gl->glCreateProgram() );
+			// program->setId( _gl->glCreateProgram() );
 			for ( const FilePath & shader : program->getShaderPaths() )
 			{
 				GLuint id = _createShader( shader );

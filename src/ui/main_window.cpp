@@ -101,7 +101,7 @@ namespace VTX::UI
 		_mainMenuBar->setCurrentTab( 0 );
 		_renderWidget->setFocus();
 
-		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT );
+		_loadStyleSheet( Util::Filesystem::STYLESHEET_FILE_DEFAULT.c_str() );
 	}
 	void MainWindow::initWindowLayout()
 	{
@@ -155,7 +155,7 @@ namespace VTX::UI
 
 		if ( !currentSessionFilepath.empty() )
 		{
-			title += " - " + currentSessionFilepath.filename().string();
+			title += " - " + Util::Filesystem::getFileName( currentSessionFilepath );
 
 			if ( VTXApp::get().getScenePathData().sceneHasModifications() )
 			{
@@ -376,15 +376,13 @@ namespace VTX::UI
 
 	bool MainWindow::hasValidLayoutSave() const
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::CONFIG_INI_FILE.string() ),
-							QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
 		return settings.status() == QSettings::NoError && settings.allKeys().length() > 0;
 	}
 
 	void MainWindow::loadLastLayout()
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::CONFIG_INI_FILE.string() ),
-							QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
 		restoreGeometry( settings.value( "Geometry" ).toByteArray() );
 
 		// Delayed restore state because all widgets grows when restore in maximized (sizes are stored when maximized,
@@ -410,8 +408,7 @@ namespace VTX::UI
 	}
 	void MainWindow::_restoreStateDelayedAction()
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::CONFIG_INI_FILE.string() ),
-							QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
 		restoreState( settings.value( "WindowState" ).toByteArray() );
 		delete _restoreStateTimer;
 		_restoreStateTimer = nullptr;
@@ -420,15 +417,13 @@ namespace VTX::UI
 
 	void MainWindow::saveLayout() const
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::CONFIG_INI_FILE.string() ),
-							QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
 		settings.setValue( "Geometry", saveGeometry() );
 		settings.setValue( "WindowState", saveState() );
 	}
 	void MainWindow::deleteLayoutSaveFile() const
 	{
-		QSettings settings( QString::fromStdString( Util::Filesystem::CONFIG_INI_FILE.string() ),
-							QSettings::IniFormat );
+		QSettings settings( QString::fromStdString( Util::Filesystem::getConfigIniFile() ), QSettings::IniFormat );
 		settings.clear();
 	}
 

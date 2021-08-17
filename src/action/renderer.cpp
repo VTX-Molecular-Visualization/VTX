@@ -1,7 +1,7 @@
 #include "renderer.hpp"
 #include "mvc/mvc_manager.hpp"
-#include "renderer/gl/gl.hpp"
 #include "object3d/camera.hpp"
+#include "renderer/gl/gl.hpp"
 #include "ui/main_window.hpp"
 #include "worker/render_effect_loader.hpp"
 #include "worker/render_effect_saver.hpp"
@@ -20,7 +20,8 @@ namespace VTX::Action::Renderer
 	{
 		if ( _clearDirectory )
 		{
-			Util::Filesystem::removeAll( Util::Filesystem::RENDER_EFFECT_PRESET_LIBRARY_DIR );
+			Util::Filesystem::removeAll( Util::Filesystem::getRenderEffectPresetsLibraryDir() );
+			Util::Filesystem::createDirectory( Util::Filesystem::getRenderEffectPresetsLibraryDir() );
 		}
 
 		for ( const Model::Renderer::RenderEffectPreset * const renderEffect : _renderEffectPresets )

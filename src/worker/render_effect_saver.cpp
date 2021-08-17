@@ -24,7 +24,7 @@ namespace VTX::Worker
 		// Write.
 		try
 		{
-			writer->writeFile( path.string(), *_preset );
+			writer->writeFile( path, *_preset );
 		}
 		catch ( const std::exception & p_e )
 		{
@@ -53,7 +53,7 @@ namespace VTX::Worker
 		// Write.
 		try
 		{
-			writer->writeFile( _path.string(), *_preset );
+			writer->writeFile( _path, *_preset );
 		}
 		catch ( const std::exception & p_e )
 		{

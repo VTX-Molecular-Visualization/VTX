@@ -12,6 +12,7 @@
 #include "object3d/scene.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
+#include "util/filesystem.hpp"
 #include "vtx_app.hpp"
 
 namespace VTX
@@ -26,13 +27,14 @@ namespace VTX
 			std::vector<FilePath>::iterator itPath = _paths.begin();
 			while ( itPath != _paths.end() )
 			{
-				if ( itPath->extension() == ".prm" )
+				const std::string extension = Util::Filesystem::getFileExtension( *itPath );
+				if ( extension == "prm" )
 				{
 					IO::Reader::PRM reader = IO::Reader::PRM();
 					reader.readFile( *itPath, config );
 					itPath = _paths.erase( itPath );
 				}
-				else if ( itPath->extension() == ".psf" )
+				else if ( extension == "psf" )
 				{
 					IO::Reader::PSF reader = IO::Reader::PSF();
 					reader.readFile( *itPath, config );
@@ -49,7 +51,7 @@ namespace VTX
 			for ( FilePath & path : _paths )
 			{
 				chrono.start();
-				emit logInfo( "Loading " + path.filename().string() );
+				emit logInfo( "Loading " + Util::Filesystem::getFileName( path ) );
 				MODE mode = _getMode( path );
 
 				_pathResult.emplace( path, Result( SOURCE_TYPE::FILE ) );
@@ -136,7 +138,7 @@ namespace VTX
 			for ( const std::pair<FilePath, std::string *> & pair : _mapFileNameBuffer )
 			{
 				chrono.start();
-				emit logInfo( "Loading " + pair.first.filename().string() );
+				emit logInfo( "Loading " + Util::Filesystem::getFileName( pair.first ) );
 				MODE mode = _getMode( pair.first );
 
 				_pathResult.emplace( pair.first, Result( SOURCE_TYPE::BUFFER ) );
@@ -180,14 +182,14 @@ namespace VTX
 
 		Loader::MODE Loader::_getMode( const FilePath & p_path ) const
 		{
-			FilePath extension = p_path.extension();
+			FilePath extension = Util::Filesystem::getFileExtension( p_path );
 
-			if ( extension == ".nc" || extension == ".cif" || extension == ".cml" || extension == ".cssr"
-				 || extension == ".dcd" || extension == ".gro" || extension == ".lammpstrj" || extension == ".mmcif"
-				 || extension == ".mmtf" || extension == ".mol2" || extension == ".molden" || extension == ".pdb"
-				 || extension == ".sdf" || extension == ".smi" || extension == ".arc" || extension == ".trr"
-				 || extension == ".mmtf" || extension == ".xtc" || extension == ".tng" || extension == ".trj"
-				 || extension == ".xyz" )
+			if ( extension == "nc" || extension == "cif" || extension == "cml" || extension == "cssr"
+				 || extension == "dcd" || extension == "gro" || extension == "lammpstrj" || extension == "mmcif"
+				 || extension == "mmtf" || extension == "mol2" || extension == "molden" || extension == "pdb"
+				 || extension == "sdf" || extension == "smi" || extension == "arc" || extension == "trr"
+				 || extension == "mmtf" || extension == "xtc" || extension == "tng" || extension == "trj"
+				 || extension == "xyz" )
 			{
 				return MODE::MOLECULE;
 			}

@@ -69,7 +69,7 @@ namespace VTX::IO
 			= VTXApp::get().getScenePathData().getData( &p_molecule ).getWriter();
 
 		return { { "TRANSFORM", serialize( p_molecule.getTransform() ) },
-				 { "PATH", moleculePath.string() },
+				 { "PATH", moleculePath },
 				 { "REPRESENTATIONS", _serializeMoleculeRepresentations( p_molecule, writer ) },
 				 { "VISIBILITIES", _serializeMoleculeVisibilities( p_molecule, writer ) },
 				 { "NAME", p_molecule.getName() },
@@ -340,9 +340,9 @@ namespace VTX::IO
 			reader.readFile( molPath, p_molecule );
 			VTXApp::get().getScenePathData().registerLoading( &p_molecule, molPath );
 		}
-		catch ( const std::filesystem::filesystem_error & p_exception )
+		catch ( const std::exception & p_exception )
 		{
-			_logWarning( "Error when loading " + molPath.string() + " : " + p_exception.what() );
+			_logWarning( "Error when loading " + molPath + " : " + p_exception.what() );
 			throw p_exception;
 		}
 

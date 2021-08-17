@@ -268,7 +268,7 @@ namespace VTX
 		{
 			const QString key
 				= QString::fromStdString( RegisterKey::RECENT_LOADED_PATH_PREFIX + std::to_string( counter ) );
-			settings.setValue( key, QString::fromStdString( path.string() ) );
+			settings.setValue( key, QString::fromStdString( path ) );
 
 			counter++;
 		}
@@ -287,7 +287,7 @@ namespace VTX
 	QString Setting::getLastLoadedSessionFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_OPEN_SESSION_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_SAVE_FOLDER );
+		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_SAVE_FOLDER ) );
 	}
 	void Setting::saveLastLoadedSessionFolder( const QString & p_path )
 	{
@@ -302,7 +302,7 @@ namespace VTX
 	QString Setting::getLastSavedSessionFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_SAVED_SESSION_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_SAVE_FOLDER );
+		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_SAVE_FOLDER ) );
 	}
 	void Setting::saveLastSavedSessionFolder( const QString & p_path )
 	{
@@ -317,7 +317,7 @@ namespace VTX
 	QString Setting::getLastImportedMoleculeFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_IMPORTED_MOLECULE_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_MOLECULE_FOLDER );
+		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_MOLECULE_FOLDER ) );
 	}
 	void Setting::saveLastImportedMoleculeFolder( const QString & p_path )
 	{
@@ -332,7 +332,7 @@ namespace VTX
 	QString Setting::getLastExportedMoleculeFolder()
 	{
 		const QString key = QString::fromStdString( RegisterKey::LAST_EXPORTED_MOLECULE_FOLDER );
-		return _getFileInRegisterKey( key, Util::Filesystem::DEFAULT_MOLECULE_FOLDER );
+		return _getFileInRegisterKey( key, QString::fromStdString( Util::Filesystem::DEFAULT_MOLECULE_FOLDER ) );
 	}
 	void Setting::saveLastExportedMoleculeFolder( const QString & p_path )
 	{
@@ -364,7 +364,7 @@ namespace VTX
 		IO::Writer::SerializedObject<VTX::Setting> writer = IO::Writer::SerializedObject<VTX::Setting>();
 		try
 		{
-			writer.writeFile( Util::Filesystem::SETTING_JSON_FILE, *this );
+			writer.writeFile( Util::Filesystem::getSettingJsonFile(), *this );
 			VTX_INFO( "Settings Saved " );
 		}
 		catch ( const std::exception & p_e )
@@ -377,7 +377,7 @@ namespace VTX
 		IO::Reader::SerializedObject<VTX::Setting> reader = IO::Reader::SerializedObject<VTX::Setting>();
 		try
 		{
-			reader.readFile( Util::Filesystem::SETTING_JSON_FILE, VTX_SETTING() );
+			reader.readFile( Util::Filesystem::getSettingJsonFile(), VTX_SETTING() );
 			VTX_INFO( "Settings loaded " );
 		}
 		catch ( const std::exception & p_e )

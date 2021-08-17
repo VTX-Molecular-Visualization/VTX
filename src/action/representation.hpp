@@ -59,7 +59,8 @@ namespace VTX::Action::Representation
 		{
 			if ( _clearDirectory )
 			{
-				Util::Filesystem::removeAll( Util::Filesystem::REPRESENTATION_LIBRARY_DIR );
+				Util::Filesystem::removeAll( Util::Filesystem::getRepresentationsLibraryDir() );
+				Util::Filesystem::createDirectory( Util::Filesystem::getRepresentationsLibraryDir() );
 			}
 
 			for ( const Model::Representation::Representation * const representation : _representations )

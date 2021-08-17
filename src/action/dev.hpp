@@ -14,9 +14,9 @@ namespace VTX::Action::Dev
 		virtual void execute() override
 		{
 			// Delete files.
-			Util::Filesystem::removeAll( Util::Filesystem::SHADERS_DIR );
+			Util::Filesystem::removeAll( Util::Filesystem::getShadersDir() );
 			// Copy from sources.
-			Util::Filesystem::copy( Util::Filesystem::SHADERS_DIR_SRC, Util::Filesystem::SHADERS_DIR );
+			Util::Filesystem::copyDir( Util::Filesystem::SHADERS_DIR_SRC, Util::Filesystem::getShadersDir() );
 			// Recompile.
 			VTX_PROGRAM_MANAGER().refreshShaders();
 			VTXApp::get().MASK |= VTX_MASK_NEED_UPDATE;

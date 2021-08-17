@@ -4,7 +4,7 @@
 #include "representation/representation_manager.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
-#include <filesystem>
+#include "util/filesystem.hpp"
 
 namespace VTX::Worker
 {
@@ -23,29 +23,24 @@ namespace VTX::Worker
 			Representation::RepresentationManager::get().clearAllRepresentations( false );
 		}
 
-		std::filesystem::directory_iterator fileIterator = std::filesystem::directory_iterator( _path );
+		std::set<FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
 
-		while ( !fileIterator._At_end() )
+		for ( const FilePath & file : files )
 		{
-			if ( fileIterator->is_regular_file() )
+			Model::Representation::Representation * const representation
+				= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
+
+			try
 			{
-				Model::Representation::Representation * const representation
-					= MVC::MvcManager::get().instantiateModel<Model::Representation::Representation>();
-
-				try
-				{
-					reader->readFile( fileIterator->path(), *representation );
-					representation->setName( fileIterator->path().filename().string() );
-					_library.addRepresentation( representation, false );
-				}
-				catch ( const std::exception & p_e )
-				{
-					VTX_ERROR( "Cannot load representation library : " + std::string( p_e.what() ) );
-					MVC::MvcManager::get().deleteModel( representation );
-				}
+				reader->readFile( file, *representation );
+				representation->setName( Util::Filesystem::getFileNameWithoutExtension( file ) );
+				_library.addRepresentation( representation, false );
 			}
-
-			fileIterator++;
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Cannot load representation library " + file + ": " + std::string( p_e.what() ) );
+				MVC::MvcManager::get().deleteModel( representation );
+			}
 		}
 
 		VTX_INFO( "Representation library loaded." );
@@ -106,11 +101,11 @@ namespace VTX::Worker
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load representation at " + path.string() + " : " + std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load representation at " + path + " : " + std::string( p_e.what() ) );
 				MVC::MvcManager::get().deleteModel( representation );
 			}
 
-			VTX_INFO( "representation " + path.filename().string() + " loaded." );
+			VTX_INFO( "Representation " + Util::Filesystem::getFileNameWithoutExtension( path ) + " loaded." );
 		}
 
 		delete reader;

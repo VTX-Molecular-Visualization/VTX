@@ -2,9 +2,9 @@
 #include "action/main.hpp"
 #include "action/setting.hpp"
 #include "define.hpp"
+#include "io/scene_path_data.hpp"
 #include "setting.hpp"
 #include "ui/dialog.hpp"
-#include "io/scene_path_data.hpp"
 #include "ui/widget/custom_widget/indexed_action.hpp"
 #include "ui/widget_factory.hpp"
 #include "vtx_app.hpp"
@@ -80,7 +80,7 @@ namespace VTX::UI::Widget::MainMenu::Home
 		{
 			CustomWidget::IndexedAction * const action
 				= new CustomWidget::IndexedAction( actionIndex, _recentSessionMenu );
-			const QString path = QString::fromStdString( recentFile.string() );
+			const QString path = QString::fromStdString( recentFile );
 			action->setText( path );
 
 			connect( action,

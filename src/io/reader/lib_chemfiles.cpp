@@ -28,7 +28,7 @@ namespace VTX::IO::Reader
 	void LibChemfiles::readFile( const FilePath & p_path, Model::Molecule & p_molecule )
 	{
 		_prepareChemfiles();
-		chemfiles::Trajectory trajectory	 = chemfiles::Trajectory( p_path.string(), 'r', _getFormat( p_path ) );
+		chemfiles::Trajectory trajectory	 = chemfiles::Trajectory( p_path, 'r', _getFormat( p_path ) );
 		const bool			  recomputeBonds = _needToRecomputeBonds( _getFormat( p_path ) );
 		_readTrajectory( trajectory, p_path, p_molecule, recomputeBonds );
 	}
@@ -84,7 +84,7 @@ namespace VTX::IO::Reader
 		}
 
 		// if opening a DCD file check if a topology file is present in the same folder
-		QFileInfo fileInfo( QString::fromStdString( p_path.string() ) );
+		QFileInfo fileInfo( QString::fromStdString( p_path ) );
 		if ( fileInfo.suffix().toStdString() == "dcd" )
 		{
 			const std::string filePathWithoutExt
@@ -295,7 +295,7 @@ namespace VTX::IO::Reader
 
 			// PDB only.
 			// TODO: modify chemfiles to load handedness!
-			if ( p_path.extension() == ".pdb" )
+			if ( Util::Filesystem::getFileExtension( p_path ) == "pdb" )
 			{
 				std::string secondaryStructure
 					= residue.properties().get( "secondary_structure" ).value_or( "" ).as_string();
@@ -578,7 +578,7 @@ namespace VTX::IO::Reader
 	// http://chemfiles.org/chemfiles/latest/formats.html#list-of-supported-formats
 	const std::string LibChemfiles::_getFormat( const FilePath & p_path )
 	{
-		std::string extension = p_path.extension().string().substr( 1, p_path.extension().string().size() );
+		std::string extension = Util::Filesystem::getFileExtension( p_path );
 		std::transform( extension.begin(), extension.end(), extension.begin(), tolower );
 		if ( extension == "nc" )
 		{

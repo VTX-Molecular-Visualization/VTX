@@ -20,7 +20,7 @@ namespace VTX
 		  public:
 			explicit RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary & p_library ) :
 				RenderEffectPresetLibraryLoader( p_library,
-												 FilePath( Util::Filesystem::getRenderEffectPresetLibraryDirectory() ) )
+												 FilePath( Util::Filesystem::getRenderEffectPresetsLibraryDir() ) )
 			{
 			}
 			explicit RenderEffectPresetLibraryLoader( Model::Renderer::RenderEffectPresetLibrary & p_library,

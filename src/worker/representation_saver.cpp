@@ -56,7 +56,7 @@ namespace VTX::Worker
 		// Write.
 		try
 		{
-			writer->writeFile( _path.string(), *_representation );
+			writer->writeFile( _path, *_representation );
 		}
 		catch ( const std::exception & p_e )
 		{

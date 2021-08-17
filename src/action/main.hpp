@@ -78,7 +78,7 @@ namespace VTX::Action::Main
 			bool loadScene = false;
 			for ( const FilePath & path : _paths )
 			{
-				loadScene = loadScene || path.extension() == ".vtx";
+				loadScene = loadScene || Util::Filesystem::getFileExtension( path ) == "vtx";
 			}
 
 			if ( loadScene )
@@ -138,13 +138,13 @@ namespace VTX::Action::Main
 							else if ( result.sourceType == Worker::Loader::SOURCE_TYPE::BUFFER )
 							{
 								VTX::Setting::enqueueNewDownloadCode(
-									Util::Filesystem::getFileNameWithoutExtension( filepath ).string() );
+									Util::Filesystem::getFileNameWithoutExtension( filepath ) );
 							}
 
 							if ( result.molecule != nullptr )
 							{
 								result.molecule->setDisplayName(
-									Util::Filesystem::getFileNameWithoutExtension( filepath ).string() );
+									Util::Filesystem::getFileNameWithoutExtension( filepath ) );
 								result.molecule->print();
 								VTX_EVENT( new Event::VTXEventPtr( Event::Global::MOLECULE_CREATED, result.molecule ) );
 								VTXApp::get().getScene().addMolecule( result.molecule );
@@ -204,7 +204,7 @@ namespace VTX::Action::Main
 
 			VTX_THREAD( saver, _callback );
 
-			if ( _path.extension() == ".vtx" )
+			if ( Util::Filesystem::getFileExtension( _path ) == "vtx" )
 			{
 				VTXApp::get().getScenePathData().setCurrentPath( _path, true );
 				VTX_EVENT( new Event::VTXEvent( Event::Global::SCENE_SAVED ) );
@@ -231,9 +231,9 @@ namespace VTX::Action::Main
 			bool fileHasBeenImported = false;
 			for ( const FilePath & path : _paths )
 			{
-				FilePath target = Util::Filesystem::getRepresentationPath( path.filename().string() );
+				FilePath target = Util::Filesystem::getRepresentationPath( path );
 				Util::Filesystem::generateUniqueFileName( target );
-				if ( Util::Filesystem::copy( path, target ) )
+				if ( Util::Filesystem::copyFile( path, target ) )
 				{
 					Worker::RepresentationLoader * const loader = new Worker::RepresentationLoader( target );
 					VTX_WORKER( loader );
@@ -258,9 +258,9 @@ namespace VTX::Action::Main
 			bool fileHasBeenImported = false;
 			for ( const FilePath & path : _paths )
 			{
-				FilePath target = Util::Filesystem::getRenderEffectPath( path.filename().string() );
+				FilePath target = Util::Filesystem::getRenderEffectPath( path );
 				Util::Filesystem::generateUniqueFileName( target );
-				if ( Util::Filesystem::copy( path, target ) )
+				if ( Util::Filesystem::copyFile( path, target ) )
 				{
 					Worker::RenderEffectPresetLoader * const loader = new Worker::RenderEffectPresetLoader( target );
 					VTX_WORKER( loader );

@@ -13,7 +13,7 @@ namespace VTX::IO::Writer
 	{
 		_prepareChemfiles();
 
-		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path.string(), 'w' );
+		chemfiles::Trajectory trajectory = chemfiles::Trajectory( p_path, 'w' );
 		_writeTrajectory( trajectory, p_molecule );
 		trajectory.close();
 	}

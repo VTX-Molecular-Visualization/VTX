@@ -5,9 +5,8 @@ namespace VTX::IO::Reader
 {
 	void ResidueDataReader::readResidueData( const std::string & p_residueSymbol, ResidueData & p_residueData )
 	{
-		const FilePath filepath = Util::Filesystem::getResidueDataFilePath( p_residueSymbol );
-		std::string	   residueFileData;
-		Util::Filesystem::readPath( filepath, residueFileData );
+		const FilePath filepath		   = Util::Filesystem::getResidueDataFilePath( p_residueSymbol );
+		std::string	   residueFileData = Util::Filesystem::readPath( filepath );
 
 		std::stringstream stream = std::stringstream( residueFileData );
 

@@ -3,6 +3,7 @@
 #include "action/setting.hpp"
 #include "renderer/gl/gl.hpp"
 #include "ui/main_window.hpp"
+#include "util/filesystem.hpp"
 #include "util/time.hpp"
 #include "vtx_app.hpp"
 #include <QPainter>
@@ -17,7 +18,7 @@ namespace VTX
 	{
 		const void Snapshoter::_takeSnapshotGL() const
 		{
-			if ( std::filesystem::exists( _path ) )
+			if ( Util::Filesystem::exists( _path ) )
 			{
 				VTX_ERROR( "File already exists" );
 				return;
@@ -53,9 +54,9 @@ namespace VTX
 
 #ifndef VTX_DEBUG_WATERMARK
 			// Save.
-			if ( render.save( QString( _path.string().c_str() ), "png", 0 ) )
+			if ( render.save( QString::fromStdString( _path ), "png", 0 ) )
 			{
-				VTX_INFO( "Snapshot taken: " + _path.filename().string() );
+				VTX_INFO( "Snapshot taken: " + Util::Filesystem::getFileName( _path ) );
 			}
 			else
 			{

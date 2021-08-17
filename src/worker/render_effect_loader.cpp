@@ -4,7 +4,6 @@
 #include "model/renderer/render_effect_preset_library.hpp"
 #include "tool/chrono.hpp"
 #include "tool/logger.hpp"
-#include <filesystem>
 
 namespace VTX::Worker
 {
@@ -19,29 +18,24 @@ namespace VTX::Worker
 
 		_library.clear( false );
 
-		std::filesystem::directory_iterator fileIterator = std::filesystem::directory_iterator( _path );
+		std::set<FilePath> files = Util::Filesystem::getFilesInDirectory( _path );
 
-		while ( !fileIterator._At_end() )
+		for ( const FilePath & file : files )
 		{
-			if ( fileIterator->is_regular_file() )
+			Model::Renderer::RenderEffectPreset * const preset
+				= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
+
+			try
 			{
-				Model::Renderer::RenderEffectPreset * const preset
-					= MVC::MvcManager::get().instantiateModel<Model::Renderer::RenderEffectPreset>();
-
-				try
-				{
-					reader->readFile( fileIterator->path(), *preset );
-					preset->setName( fileIterator->path().filename().string() );
-					_library.addPreset( preset, true, _notify );
-				}
-				catch ( const std::exception & p_e )
-				{
-					VTX_ERROR( "Cannot load render effect library : " + std::string( p_e.what() ) );
-					MVC::MvcManager::get().deleteModel( preset );
-				}
+				reader->readFile( file, *preset );
+				preset->setName( Util::Filesystem::getFileNameWithoutExtension( file ) );
+				_library.addPreset( preset, true, _notify );
 			}
-
-			fileIterator++;
+			catch ( const std::exception & p_e )
+			{
+				VTX_ERROR( "Cannot load render effect library " + file + ": " + std::string( p_e.what() ) );
+				MVC::MvcManager::get().deleteModel( preset );
+			}
 		}
 
 		VTX_INFO( "Render effect library loaded." );
@@ -74,11 +68,11 @@ namespace VTX::Worker
 			}
 			catch ( const std::exception & p_e )
 			{
-				VTX_ERROR( "Cannot load render effect preset at " + path.string() + " : " + std::string( p_e.what() ) );
+				VTX_ERROR( "Cannot load render effect preset at " + path + " : " + std::string( p_e.what() ) );
 				MVC::MvcManager::get().deleteModel( preset );
 			}
 
-			VTX_INFO( "render effect preset " + path.filename().string() + " loaded." );
+			VTX_INFO( "Render effect preset " + Util::Filesystem::getFileNameWithoutExtension( path ) + " loaded." );
 		}
 
 		delete reader;
