@@ -192,21 +192,24 @@ endfunction()
 
 message("Building external projects...")
 
-# Chemfiles.
-# For windows(multi conf), build in Debug then in Release, and move .lib after cmake install to the correct folder.
-# Then, use link_directories to link and and target_include_directories to add include directory.
-if(MSVC)
-	BuildExternalProject(https://github.com/sacraiou/chemfiles.git 62523767d13881901bf68d34832be1bbf92f249c chemfiles Debug)
-	file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/ ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
-	file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/)
-	BuildExternalProject(https://github.com/sacraiou/chemfiles.git 62523767d13881901bf68d34832be1bbf92f249c chemfiles Release)
-	file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
-	file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/cmake)
-	file(REMOVE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib)
-else()
-# For Linux (solo conf), juste build in current mode.
-# Then use find_package to automatically add include folder and link lib. 
-	BuildExternalProject(https://github.com/sacraiou/chemfiles.git 62523767d13881901bf68d34832be1bbf92f249c chemfiles "${CMAKE_BUILD_TYPE}")
+option(BUILD_LIB "Build libs" ON)
+if(BUILD_LIB)
+	# Chemfiles.
+	# For windows(multi conf), build in Debug then in Release, and move .lib after cmake install to the correct folder.
+	# Then, use link_directories to link and and target_include_directories to add include directory.
+	if(MSVC)
+		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 62523767d13881901bf68d34832be1bbf92f249c chemfiles Debug)
+		file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/ ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
+		file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Debug/)
+		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 62523767d13881901bf68d34832be1bbf92f249c chemfiles Release)
+		file(COPY ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib DESTINATION ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/Release/)
+		file(REMOVE_RECURSE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/cmake)
+		file(REMOVE ${CMAKE_SOURCE_DIR}/${PATH_LIB}/chemfiles/lib/chemfiles.lib)
+	else()
+	# For Linux (solo conf), juste build in current mode.
+	# Then use find_package to automatically add include folder and link lib. 
+		BuildExternalProject(https://github.com/sacraiou/chemfiles.git 62523767d13881901bf68d34832be1bbf92f249c chemfiles "${CMAKE_BUILD_TYPE}")
+	endif()
 endif()
 
 message("Looking for dependencies...")
