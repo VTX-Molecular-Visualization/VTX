@@ -229,7 +229,7 @@ namespace VTX::Action::Main
 			bool fileHasBeenImported = false;
 			for ( const IO::FilePath & path : _paths )
 			{
-				IO::FilePath target = Util::Filesystem::getRepresentationPath( path );
+				IO::FilePath target = Util::Filesystem::getRepresentationPath( path.filename() );
 				Util::Filesystem::generateUniqueFileName( target );
 				if ( Util::Filesystem::copyFile( path, target ) )
 				{
@@ -256,7 +256,7 @@ namespace VTX::Action::Main
 			bool fileHasBeenImported = false;
 			for ( const IO::FilePath & path : _paths )
 			{
-				IO::FilePath target = Util::Filesystem::getRenderEffectPath( path );
+				IO::FilePath target = Util::Filesystem::getRenderEffectPath( path.filename() );
 				Util::Filesystem::generateUniqueFileName( target );
 				if ( Util::Filesystem::copyFile( path, target ) )
 				{

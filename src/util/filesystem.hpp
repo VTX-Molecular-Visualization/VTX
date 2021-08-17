@@ -193,11 +193,13 @@ namespace VTX
 				const std::string extension		  = p_filePath.extension();
 
 				QDir dir = QDir( p_filePath.qpath() );
+				dir.cdUp();
 
 				while ( QFileInfo( p_filePath.qpath() ).exists() )
 				{
-					p_filePath = dir.absolutePath().toStdString() + defaultFileName + " " + std::to_string( counter )
-								 + extension;
+					p_filePath = dir.filePath( QString::fromStdString( defaultFileName + " " + std::to_string( counter )
+																	   + extension ) )
+									 .toStdString();
 					counter++;
 				}
 			}
